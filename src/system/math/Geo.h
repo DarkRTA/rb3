@@ -67,6 +67,7 @@ inline BinStream& operator>>(BinStream& bs, Box& box){
 }
 
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
+bool Intersect(const Vector3&, const class BSPNode*);
 bool Intersect(const Segment&, const Sphere&);
 bool Intersect(const Transform&, const Hmx::Polygon&, const class BSPNode*);
 void Multiply(const Box&, float, Box&);

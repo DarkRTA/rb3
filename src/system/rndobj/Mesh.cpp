@@ -3,6 +3,7 @@
 #include "math/strips/Striper.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
+#include "obj/DataUtl.h"
 #include "os/Debug.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Trans.h"
@@ -14,15 +15,12 @@
 
 INIT_REVS(RndMesh)
 
+PatchVerts gPatchVerts;
+
 int RndMesh::MaxBones() { return MAX_BONES; }
-
-// DECOMP_FORCEFUNC(Mesh, ObjVector<RndBone>, resize(3)) TODO figure out why this is a nothing burger
-
 bool RndMesh::IsSkinned() const { return mBones.size(); }
-
 void RndMesh::SetMat(RndMat* m) { mMat = m; }
-
-void RndMesh::SetGeomOwner(RndMesh* m) {MILO_ASSERT(m, 487); mOwner = m;}
+void RndMesh::SetGeomOwner(RndMesh* m) {MILO_ASSERT(m, 487); mGeomOwner = m;}
 
 void RndMesh::ScaleBones(float f) {
     for (std::vector<RndBone>::iterator it = mBones.begin(); it != mBones.end(); it++) {
@@ -30,8 +28,8 @@ void RndMesh::ScaleBones(float f) {
     }
 }
 
-RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
-    unk_0xF0(0), unk_0xF4(1), unk_0xF8(0), unk_0xFC(0), unk_0x108(0), unk_0x10C(0), unk_0x110(0), unk_0x114(0),
+RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
+    mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), unk_0xFC(0), unk_0x114(0),
     unk_0x118(0), unk_0x11C(0) {
     unk9p0 = false;
     mKeepMeshData = false;
@@ -41,9 +39,9 @@ RndMesh::RndMesh() : mMat(this, NULL), mOwner(this, this), mBones(this),
 
 RndMesh::~RndMesh() { 
     delete unk_0x11C; unk_0x11C = NULL; 
-    delete unk_0xF8; unk_0xF8 = NULL; 
-    delete unk_0xFC; unk_0xFC = NULL; ClearCompressedVerts();
-    
+    delete mBSPTree; mBSPTree = NULL; 
+    delete unk_0xFC; unk_0xFC = NULL;
+    ClearCompressedVerts();
 }
 
 RndMesh::Vert::Vert() : pos(0,0,0), norm(0,1.0f,0), boneWeights(),
@@ -70,7 +68,7 @@ void RndMesh::PostLoadVertices(BinStream& bs) {
 }
 
 RndMultiMesh* RndMesh::CreateMultiMesh() {
-    RndMesh* m = &(*mOwner);
+    RndMesh* m = &(*mGeomOwner);
     if (!m->unk_0xFC) {
         m->unk_0xFC = Hmx::Object::New<RndMultiMesh>();
         m->unk_0xFC->SetMesh(m);
@@ -91,8 +89,8 @@ BinStream& operator>>(BinStream& bs, STRIPERRESULT& sr) {
 
 bool RndMesh::CacheStrips(BinStream& bs) {
     bool ret = false;
-    if (bs.Cached() && bs.GetPlatform() == kPlatformWii && mOwner.mPtr == this && mFaces.size() != 0
-        && mVerts.size() != 0 && !(unk_0xF0 & 0x20)) ret = true;
+    if (bs.Cached() && bs.GetPlatform() == kPlatformWii && mGeomOwner.mPtr == this && mFaces.size() != 0
+        && mVerts.size() != 0 && !(mMutable & 0x20)) ret = true;
     return ret;
 }
 
@@ -139,7 +137,7 @@ void RndMesh::PreLoad(BinStream& bs) {
     if (gRev == 27) {
         bs.ReadString(blag, 128); // allegedly this is for a second, funnier mat
         
-        bs >> mOwner;
+        bs >> mGeomOwner;
     }
 
     PreLoadVertices(bs);
@@ -148,72 +146,72 @@ void RndMesh::PreLoad(BinStream& bs) {
 #pragma push
 #pragma dont_inline on
 void RndMesh::PostLoad(BinStream& bs) {
-    PostLoadVertices(bs);
-    bs >> mFaces;
-    if ((ushort)(gRev + 0xFFFB) <= 18) {
-        int i; u16 a,b;
-        for (bs >> i; i != 0; i--) {
-            bs >> a >> b;
-        }
-    }
-    if (gRev > 23) bs >> unk_0xD0;
-    else {
-        if (gRev > 21) {
-            unk_0xD0.clear();
-            int i; 
-            for (bs >> i; i != 0; i--) {
-                int x; std::vector<u16> v; std::vector<uint> v2;
-                bs >> x >> v >> v2;
-                u8 y = x; unk_0xD0.push_back(y);
-            }
-        } else {
-            if (gRev > 16) bs >> unk_0xD0;
-        }
-    }
-    if (gRev > 28) {
-        bs >> mBones;
-        if (mBones.size() > MaxBones()) mBones.resize(MaxBones());
-    } else {
-        if (gRev > 13) {
-            ObjPtr<RndTransformable, class ObjectDir> t(this, NULL);
-            bs >> t;
-            if ((RndTransformable*)t) {
-                mBones.resize(4);
-                if (gRev > 22) {
-                    (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = t;
-                    bs >> mBones[1] >> mBones[2] >> mBones[3];
-                    bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
-                    if (gRev < 25) { // incoming headache
-                        for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
-                            // it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
-                            //     it->why.GetX(), it->why.GetY(), it->why.GetZ());
-                        }
-                    }
-                } else {
-                    if (TransConstraint() == kParentWorld) 
-                        (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = TransParent(); 
-                    else (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = this;
-                    mBones[0].mOffset.Reset();
-                    (ObjPtr<RndTransformable, class ObjectDir>&)mBones[1] = t;
-                    bs >> mBones[2];
-                    bs >> mBones[1].mOffset >> mBones[2].mOffset;
-                    (ObjPtr<RndTransformable, class ObjectDir>&)mBones[3] = NULL;
-                }
-            }
-            mBones.clear();
-        }
-    }
-    RemoveInvalidBones();
+    // PostLoadVertices(bs);
+    // bs >> mFaces;
+    // if ((ushort)(gRev + 0xFFFB) <= 18) {
+    //     int i; u16 a,b;
+    //     for (bs >> i; i != 0; i--) {
+    //         bs >> a >> b;
+    //     }
+    // }
+    // if (gRev > 23) bs >> unk_0xD0;
+    // else {
+    //     if (gRev > 21) {
+    //         unk_0xD0.clear();
+    //         int i; 
+    //         for (bs >> i; i != 0; i--) {
+    //             int x; std::vector<u16> v; std::vector<uint> v2;
+    //             bs >> x >> v >> v2;
+    //             u8 y = x; unk_0xD0.push_back(y);
+    //         }
+    //     } else {
+    //         if (gRev > 16) bs >> unk_0xD0;
+    //     }
+    // }
+    // if (gRev > 28) {
+    //     bs >> mBones;
+    //     if (mBones.size() > MaxBones()) mBones.resize(MaxBones());
+    // } else {
+    //     if (gRev > 13) {
+    //         ObjPtr<RndTransformable, class ObjectDir> t(this, NULL);
+    //         bs >> t;
+    //         if ((RndTransformable*)t) {
+    //             mBones.resize(4);
+    //             if (gRev > 22) {
+    //                 (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = t;
+    //                 // bs >> mBones[1] >> mBones[2] >> mBones[3];
+    //                 // bs >> mBones[0].mOffset >> mBones[1].mOffset >> mBones[2].mOffset >> mBones[3].mOffset;
+    //                 if (gRev < 25) { // incoming headache
+    //                     for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
+    //                         // it->why.Set(1 - it->why.GetX() - it->why.GetY() - it->why.GetZ(), 
+    //                         //     it->why.GetX(), it->why.GetY(), it->why.GetZ());
+    //                     }
+    //                 }
+    //             } else {
+    //                 if (TransConstraint() == kParentWorld) 
+    //                     (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = TransParent(); 
+    //                 else (ObjPtr<RndTransformable, class ObjectDir>&)mBones[0] = this;
+    //                 mBones[0].mOffset.Reset();
+    //                 (ObjPtr<RndTransformable, class ObjectDir>&)mBones[1] = t;
+    //                 bs >> mBones[2];
+    //                 bs >> mBones[1].mOffset >> mBones[2].mOffset;
+    //                 (ObjPtr<RndTransformable, class ObjectDir>&)mBones[3] = NULL;
+    //             }
+    //         }
+    //         mBones.clear();
+    //     }
+    // }
+    // RemoveInvalidBones();
 
 
-    for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
+    // for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
                             
-    }
-    if (gRev > 37) { bool b; bs >> b; unk9p0 = b;}
-    if (gAltRev > 1) { bool b; bs >> b; unk9p3 = b;}
-    if (gAltRev > 3) { bool b; bs >> b;}
-    Sync(191);
-    if (gAltRev >= 3 || NumBones() > 1) MILO_WARN("%s", PathName(this));
+    // }
+    // if (gRev > 37) { bool b; bs >> b; unk9p0 = b;}
+    // if (gAltRev > 1) { bool b; bs >> b; unk9p3 = b;}
+    // if (gAltRev > 3) { bool b; bs >> b;}
+    // Sync(191);
+    // if (gAltRev >= 3 || NumBones() > 1) MILO_WARN("%s", PathName(this));
 }
 
 DECOMP_FORCEBLOCK(Mesh, (Hmx::Color32* c), { c->Clear(); c->fr(); c->fg(); c->fb(); c->fa(); })
@@ -242,15 +240,15 @@ TextStream& operator<<(TextStream& ts, RndMesh::Volume v) {
     else if (v == RndMesh::kVolumeBox) ts << "kVolumeBox";
     return ts;
 }
-
+#ifdef MILO_DEBUG
 int RndMesh::NumFaces() const { return mFaces.size(); }
 int RndMesh::NumVerts() const { return mVerts.size(); }
+#endif
 
 BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
     bs >> f.idx0 >> f.idx1 >> f.idx2;
     if (RndMesh::gRev < 1) {
-        int x, y, z;
-        bs >> z >> y >> x;
+        Vector3 v; bs >> v;
     }
     return bs;
 }
@@ -265,6 +263,7 @@ void RndMesh::ClearCompressedVerts() {
     unk_0x118 = 0;
 }
 
+#pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(RndMesh)
     HANDLE(compare_edge_verts, OnCompareEdgeVerts)
@@ -291,13 +290,20 @@ BEGIN_HANDLERS(RndMesh)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(2306)
 END_HANDLERS
-#pragma dont_inline reset
+#pragma pop
+
+DataNode RndMesh::OnPointCollide(const DataArray* da){
+    BSPNode* tree = GetBSPTree();
+    Vector3 v(da->Float(2), da->Float(3), da->Float(4));
+    Multiply(WorldXfm(), v, v);
+    return DataNode(tree && Intersect(v, tree));
+}
 
 DataNode RndMesh::OnAttachMesh(const DataArray* da) {
     RndMesh* m = da->Obj<RndMesh>(2);
     AttachMesh(this, m);
     delete m;
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
@@ -308,7 +314,7 @@ DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
     *da->Var(3) = DataNode(v->norm.x);
     *da->Var(4) = DataNode(v->norm.y);
     *da->Var(5) = DataNode(v->norm.z);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
@@ -320,7 +326,7 @@ DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
     v->norm.y = da->Float(4);
     v->norm.z = da->Float(5);
     Sync(31);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
@@ -331,7 +337,7 @@ DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
     *da->Var(3) = DataNode(v->pos.x);
     *da->Var(4) = DataNode(v->pos.y);
     *da->Var(5) = DataNode(v->pos.z);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
@@ -343,7 +349,7 @@ DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
     v->pos.y = da->Float(4);
     v->pos.z = da->Float(5);
     Sync(31);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnGetVertUV(const DataArray* da) {
@@ -353,7 +359,7 @@ DataNode RndMesh::OnGetVertUV(const DataArray* da) {
     v = &mVerts[index];
     *da->Var(3) = DataNode(v->uv.x);
     *da->Var(4) = DataNode(v->uv.y);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnSetVertUV(const DataArray* da) {
@@ -364,7 +370,7 @@ DataNode RndMesh::OnSetVertUV(const DataArray* da) {
     v->uv.x = da->Float(3);
     v->uv.y = da->Float(4);
     Sync(31);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnGetFace(const DataArray* da) {
@@ -375,7 +381,7 @@ DataNode RndMesh::OnGetFace(const DataArray* da) {
     *da->Var(3) = DataNode(f->idx0);
     *da->Var(4) = DataNode(f->idx1);
     *da->Var(5) = DataNode(f->idx2);
-    return DataNode();
+    return DataNode(0);
 }
 
 DataNode RndMesh::OnSetFace(const DataArray* da) {
@@ -385,22 +391,109 @@ DataNode RndMesh::OnSetFace(const DataArray* da) {
     f = &mFaces[index];
     f->idx0 = da->Int(3); f->idx1 = da->Int(4); f->idx2 = da->Int(5);
     Sync(32);
-    return DataNode();
+    return DataNode(0);
 }
 
-bool PropSync(RndBone& b, DataNode& _val, DataArray* _prop, int _i, PropOp _op) {
-    if(_i == _prop->Size()) return true; \
-    else { \
-        Symbol sym = _prop->Sym(_i);
-        SYNC_PROP(bone, (ObjPtr<RndTransformable,class ObjectDir>&)b);
-        SYNC_PROP(offset, b.mOffset)
-        return false;
+DataNode RndMesh::OnUnitizeNormals(const DataArray* da){
+    for(Vert* it = Verts().begin(); it != Verts().end(); ++it){
+        Normalize(it->norm, it->norm);
     }
+    return DataNode(0);
 }
 
+DataNode RndMesh::OnConfigureMesh(const DataArray* da){
+    if(Type() != configurable_mesh) MILO_WARN("Can't configure nonconfigurable mesh %s\n", Name());
+    else {
+        float fleft = Property(left, true)->Float(0);
+        float fright = Property(right, true)->Float(0);
+        float fheight = Property(height, true)->Float(0);
+        Vector3 v54(fleft, 0, fheight);
+        Vector3 v60(fleft, 0, 0);
+        Vector3 v6c(fright, 0, 0);
+        Vector3 v78(fright, 0, fheight);
+        mVerts[0].pos = v54;
+        mVerts[1].pos = v60;
+        mVerts[2].pos = v6c;
+        mVerts[3].pos = v78;
+        Sync(0x3F);
+    }
+    return DataNode(0);
+}
+
+BEGIN_CUSTOM_PROPSYNC(RndBone)
+    SYNC_PROP(bone, o.mBone)
+    SYNC_PROP(offset, o.mOffset)
+END_CUSTOM_PROPSYNC
+
+#pragma push
+#pragma pool_data off
 BEGIN_PROPSYNCS(RndMesh)
     SYNC_PROP(mat, mMat)
-    SYNC_PROP(geom_owner, mOwner)
-
-
+    SYNC_PROP_MODIFY_ALT(geom_owner, mGeomOwner, if(!mGeomOwner) mGeomOwner = this)
+    {
+        static Symbol _s("mutable");
+        if(sym == _s){
+            _i++;
+            if(_i < _prop->Size()){
+                DataNode& node = _prop->Node(_i);
+                int res = 0;
+                switch(node.Type()){
+                    case kDataInt:
+                        res = node.Int(0);
+                        break;
+                    case kDataSymbol:
+                        const char* bitstr = node.Sym(0).Str();
+                        if(strncmp("BIT_", bitstr, 4) != 0){
+                            MILO_FAIL("%s does not begin with BIT_", bitstr);
+                        }
+                        Symbol bitsym(bitstr + 4);
+                        DataArray* macro = DataGetMacro(bitsym);
+                        if(!macro){
+                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
+                        }
+                        res = macro->Int(0);
+                        break;
+                    default:
+                        MILO_ASSERT(0, 0xB90);
+                        break;
+                }
+                MILO_ASSERT(_op <= kPropInsert, 0xB90);
+                if(_op == kPropGet){
+                    int final = mGeomOwner->mMutable & res;
+                    _val = DataNode(final > 0);
+                }
+                else {
+                    if(_val.Int(0) != 0) mGeomOwner->mMutable |= res;
+                    else mGeomOwner->mMutable &= ~res;
+                }
+                return true;
+            }
+            else return PropSync(mGeomOwner->mMutable, _val, _prop, _i, _op);
+        }
+    }
+    SYNC_PROP_SET(num_verts, Verts().size(), SetNumVerts(_val.Int(0)))
+    SYNC_PROP_SET(num_faces, (int)Faces().size(), SetNumFaces(_val.Int(0)))
+    SYNC_PROP_SET(volume, GetVolume(), SetVolume((Volume)_val.Int(0)))
+    SYNC_PROP_SET(has_valid_bones, HasValidBones(0), _val.Int(0))
+    SYNC_PROP(bones, mBones)
+    {
+        static Symbol _s("has_ao_calculation");
+        if(sym == _s){
+            if(_op == kPropSet) unk9p0 = _val.Int(0);
+            else _val = DataNode(unk9p0);
+            return true;
+        }
+    }
+    {
+        static Symbol _s("force_no_quantize");
+        if(sym == _s){
+            if(_op == kPropSet) unk9p3 = _val.Int(0);
+            else _val = DataNode(unk9p3);
+            return true;
+        }
+    }
+    SYNC_PROP_SET(keep_mesh_data, mKeepMeshData, SetKeepMeshData(_val.Int(0)))
+    SYNC_SUPERCLASS(RndTransformable)
+    SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS
+#pragma pop

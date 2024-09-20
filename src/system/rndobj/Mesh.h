@@ -17,12 +17,31 @@
 
 class RndMultiMesh;
 
-class RndBone : public ObjPtr<RndTransformable, class ObjectDir> {
-    public:
-    RndBone(Hmx::Object* o) : ObjPtr<RndTransformable, class ObjectDir>(o, NULL) {}
-    operator ObjPtr<RndTransformable, class ObjectDir>&() { return *this; } 
+class PatchVerts {
+public:
+    PatchVerts() : mCentroid(0,0,0) {}
+    ~PatchVerts(){}
+    Vector3 mCentroid; // 0x0
+    std::vector<int> mPatchVerts; // 0xc
+};
+
+class MotionBlurCache {
+public:
+    MotionBlurCache(){
+        mCacheKey[0] = 0;
+        mCacheKey[1] = 0;
+        mShouldCache = false;
+    }
+    unsigned int mCacheKey[2]; // 0x0, 0x4
+    bool mShouldCache; // 0x8
+};
+
+class RndBone {
+public:
+    RndBone(Hmx::Object* o) : mBone(o, NULL) {}
     void Load(BinStream&);
 
+    ObjPtr<RndTransformable, ObjectDir> mBone; // 0x0
     Transform mOffset;
 };
 
@@ -53,22 +72,23 @@ public:
     };
 
     class VertVector { // more custom STL! woohoo!!!! i crave death
-        public:
-        VertVector() { mVerts = NULL; mSize = 0; mCapacity = 0;}
+    public:
+        VertVector() { mVerts = NULL; mNumVerts = 0; mCapacity = 0;}
         ~VertVector() { mCapacity = 0; resize(0, true); }
-        int size() const { return mSize; };
+        int size() const { return mNumVerts; }
+        bool empty() const { return mNumVerts == 0; }
         void resize(int, bool);
         void reserve(int, bool);
         Vert& operator[](int i){ return mVerts[i]; }
         const Vert& operator[](int i) const { return mVerts[i]; }
         VertVector& operator=(const VertVector&);
-        Vert* begin();
-        Vert* end();
+        Vert* begin(){ return &mVerts[0]; }
+        Vert* end(){ return &mVerts[mNumVerts]; }
         unsigned short capacity() const { return mCapacity; }
         void clear(){ resize(0, true); }
 
         Vert* mVerts;
-        u32 mSize;
+        int mNumVerts;
         u16 mCapacity;
     };
 
@@ -93,34 +113,15 @@ public:
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
     virtual void DrawFaces() {}
+#ifdef MILO_DEBUG
     virtual int NumFaces() const;
     virtual int NumVerts() const;
+#endif
     virtual void Print();
     virtual void OnSync(int);
 
-    RndMat* GetMat() const { return mMat; }
-    VertVector& Verts(){ return mOwner->mVerts; }
-    std::vector<Face>& Faces(){ return mOwner->mFaces; }
-    const Vector3& VertPos(int idx) const {
-        return mOwner->mVerts[idx].pos;
-    }
-
-    // TODO: figure out what RndMesh's members do
-    VertVector mVerts; // 0xB0
-    std::vector<Face> mFaces; // 0xBC
-    ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
-    std::vector<u8, u16> unk_0xD0; // ???
-    ObjOwnerPtr<RndMesh, class ObjectDir> mOwner; // 0xD8
-    ObjVector<RndBone> mBones; // 0xe4
-    int unk_0xF0, unk_0xF4;
-    BSPNode* unk_0xF8;
-    RndMultiMesh* unk_0xFC; // ...why?
-    std::vector<STRIPERRESULT> unk_0x100;
-    int unk_0x108, unk_0x10C;
-    u8 unk_0x110;
-    int* unk_0x114, unk_0x118;
-    FileLoader* unk_0x11C;
-
+    void SetNumVerts(int);
+    void SetNumFaces(int);
     bool CacheStrips(BinStream&);
     void ClearCompressedVerts();
     void CopyBones(const RndMesh*);
@@ -137,8 +138,20 @@ public:
     void SetMat(RndMat*);
     void SetGeomOwner(RndMesh*);
     void Sync(int);
+    bool HasValidBones(unsigned int*) const;
     void SetBone(int, RndTransformable*, bool);
+    void SetVolume(Volume);
+    void SetKeepMeshData(bool);
+
     bool KeepMeshData() const { return mKeepMeshData; }
+    Volume GetVolume() const { return mGeomOwner->mVolume; }
+    BSPNode* GetBSPTree() const { return mGeomOwner->mBSPTree; }
+    RndMat* GetMat() const { return mMat; }
+    VertVector& Verts(){ return mGeomOwner->mVerts; }
+    std::vector<Face>& Faces(){ return mGeomOwner->mFaces; }
+    const Vector3& VertPos(int idx) const {
+        return mGeomOwner->mVerts[idx].pos;
+    }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
@@ -161,6 +174,28 @@ public:
     DataNode OnConfigureMesh(const DataArray*);
     
     static int MaxBones();
+
+    // TODO: figure out what RndMesh's members do
+    VertVector mVerts; // 0xB0
+    std::vector<Face> mFaces; // 0xBC
+    ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
+    std::vector<u8, u16> unk_0xD0; // ???
+    ObjOwnerPtr<RndMesh, class ObjectDir> mGeomOwner; // 0xD8
+    ObjVector<RndBone> mBones; // 0xe4
+    int mMutable; // 0xf0
+    Volume mVolume; // 0xf4
+    BSPNode* mBSPTree; // 0xf8
+    RndMultiMesh* unk_0xFC; // ...why?
+    std::vector<STRIPERRESULT> unk_0x100; // maybe some struct that has a STRIPERRESULT?
+    MotionBlurCache mMotionCache; // 0x108
+    int* unk_0x114, unk_0x118;
+    FileLoader* unk_0x11C;
+    int unk120;
+    int unk124;
+    int unk128;
+    int unk12c;
+    int unk130;
+    int unk134;
 };
 
 BinStream& operator>>(BinStream&, RndMesh::Face&);
