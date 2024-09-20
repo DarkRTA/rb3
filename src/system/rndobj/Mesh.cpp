@@ -31,10 +31,10 @@ void RndMesh::ScaleBones(float f) {
 RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
     mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), unk_0xFC(0), unk_0x114(0),
     unk_0x118(0), unk_0x11C(0) {
-    unk9p0 = false;
+    mHasAOCalc = false;
     mKeepMeshData = false;
     unk9p2 = true;
-    unk9p3 = false;
+    mForceNoQuantize = false;
 }
 
 RndMesh::~RndMesh() { 
@@ -115,31 +115,103 @@ void RndMesh::Load(BinStream& bs) {
     PostLoad(bs);
 }
 
-void RndMesh::PreLoad(BinStream& bs) {
-    uint dump, asdf, fdsa, uuuuu;
-    char blag[128];
-    LOAD_REVS(bs)
+void RndMesh::PreLoad(BinStream& bs){
+    LOAD_REVS(bs);
     ASSERT_REVS(38, 6)
-    if (gRev > 25) Hmx::Object::Load(bs);
-    RndTransformable::Load(bs);
-    RndDrawable::Load(bs);
-    if (gRev < 15) {
-        ObjPtrList<Hmx::Object, class ObjectDir> l(this, kObjListNoNull);
-        bs >> dump >> l;
+    if(gRev > 25) LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndTransformable)
+    LOAD_SUPERCLASS(RndDrawable)
+    if(gRev < 15){
+        int i;
+        ObjPtrList<Hmx::Object, ObjectDir> l(this, kObjListNoNull);
+        bs >> i;
+        bs >> l;
     }
-    if (gRev < 20) {
-        bs >> asdf >> fdsa;
+    int zmode = 0;
+    if(gRev < 0x14){
+        int i14, i18;
+        bs >> i14;
+        bs >> i18;
+        if(i14 == 0 || i18 == 0) zmode = 0;
+        else if(i14 == 1) zmode = 2;
+        else {
+            zmode = 1;
+            if(i18 == 7) zmode = 3;
+        }
     }
-    if (gRev < 3) {
-        bs >> uuuuu;
+    if(gRev < 3){
+        int i; bs >> i;
     }
     bs >> mMat;
-    if (gRev == 27) {
-        bs.ReadString(blag, 128); // allegedly this is for a second, funnier mat
-        
-        bs >> mGeomOwner;
+    if(gRev == 0x1B){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        if(!mMat && buf[0] != '\0'){
+            mMat = LookupOrCreateMat(buf, Dir());
+        }
     }
-
+    bs >> mGeomOwner;
+    if(!mGeomOwner) mGeomOwner = this;
+    if(gRev < 0x14 && mMat){
+        if(zmode != 0){
+            if(!mMat->GetZMode()){
+                goto lol;
+            }
+        }
+        mMat->SetZMode((ZMode)zmode);
+    }
+lol:
+    if(gRev < 0xD){
+        ObjOwnerPtr<RndMesh, ObjectDir> meshOwner(this, 0);
+        bs >> meshOwner;
+        if(meshOwner != mGeomOwner) MILO_WARN("Combining face and vert owner of %s", Name());
+    }
+    if(gRev < 0xF){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        bs >> tPtr;
+        SetTransParent(tPtr, false);
+        SetTransConstraint(RndTransformable::kParentWorld, 0, false);
+    }
+    if(gRev < 0xE){
+        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        ObjPtr<RndTransformable, ObjectDir> tPtr2(this, 0);
+        bs >> tPtr >> tPtr2;
+    }
+    if(gRev < 3){
+        Vector3 v; bs >> v;
+    }
+    if(gRev < 0xF){
+        Sphere s;
+        bs >> s;
+        SetSphere(s);
+    }
+    if(gRev == 5 || gRev == 6 || gRev == 7){
+        bool b; bs >> b;
+    }
+    if(gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 ||
+        gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20){
+        String str;
+        bs >> str;
+        int i; bs >> i;
+    }
+    if(gRev > 0xF) bs >> mMutable;
+    else if(gRev > 0xB){
+        bool b; bs >> b;
+        int num = 0;
+        if(b) num = 0x1F;
+        mMutable = num;
+    }
+    if(gRev > 0x11) bs >> (int&)mVolume;
+    if(gRev > 0x12){
+        RELEASE(mBSPTree);
+        bs >> mBSPTree;
+    }
+    if(gRev == 7){
+        bool b; bs >> b;
+    }
+    if(gRev == 9 || gRev == 10){
+        int i; bs >> i;
+    }
     PreLoadVertices(bs);
 }
 
@@ -207,8 +279,8 @@ void RndMesh::PostLoad(BinStream& bs) {
     // for (Vert* it = mVerts.begin(); it != mVerts.end(); it++) {
                             
     // }
-    // if (gRev > 37) { bool b; bs >> b; unk9p0 = b;}
-    // if (gAltRev > 1) { bool b; bs >> b; unk9p3 = b;}
+    // if (gRev > 37) { bool b; bs >> b; mHasAOCalc = b;}
+    // if (gAltRev > 1) { bool b; bs >> b; mForceNoQuantize = b;}
     // if (gAltRev > 3) { bool b; bs >> b;}
     // Sync(191);
     // if (gAltRev >= 3 || NumBones() > 1) MILO_WARN("%s", PathName(this));
@@ -479,16 +551,16 @@ BEGIN_PROPSYNCS(RndMesh)
     {
         static Symbol _s("has_ao_calculation");
         if(sym == _s){
-            if(_op == kPropSet) unk9p0 = _val.Int(0);
-            else _val = DataNode(unk9p0);
+            if(_op == kPropSet) mHasAOCalc = _val.Int(0);
+            else _val = DataNode(mHasAOCalc);
             return true;
         }
     }
     {
         static Symbol _s("force_no_quantize");
         if(sym == _s){
-            if(_op == kPropSet) unk9p3 = _val.Int(0);
-            else _val = DataNode(unk9p3);
+            if(_op == kPropSet) mForceNoQuantize = _val.Int(0);
+            else _val = DataNode(mForceNoQuantize);
             return true;
         }
     }
