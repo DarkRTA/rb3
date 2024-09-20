@@ -6,6 +6,7 @@
 
 class Segment {
 public:
+    Segment(){}
     Vector3 start;
     Vector3 end;
 };
@@ -70,6 +71,8 @@ void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
 bool Intersect(const Vector3&, const class BSPNode*);
 bool Intersect(const Segment&, const Sphere&);
 bool Intersect(const Transform&, const Hmx::Polygon&, const class BSPNode*);
+bool Intersect(const Segment&, const class BSPNode*, float&, Plane&);
+bool Intersect(const Segment&, const Triangle&, bool, float&);
 void Multiply(const Box&, float, Box&);
 
 #endif

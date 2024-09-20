@@ -19,13 +19,102 @@ PatchVerts gPatchVerts;
 int MESH_REV_SEP_COLOR = 0x25;
 
 int RndMesh::MaxBones() { return MAX_BONES; }
-bool RndMesh::IsSkinned() const { return mBones.size(); }
+bool RndMesh::IsSkinned() const { return !mBones.empty(); }
+
+RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
+    Segment sega0;
+    Transform tf58;
+    sLastCollide = -1;
+    if(IsSkinned() || sRawCollide) sega0 = seg;
+    else {
+        FastInvert(WorldXfm(), tf58);
+        Multiply(seg.start, tf58, sega0.start);
+        Multiply(seg.end, tf58, sega0.end);
+    }
+    if(mGeomOwner->mBSPTree){
+        if(Intersect(sega0, mGeomOwner->mBSPTree, f, pl) && f){
+            Multiply(pl, WorldXfm(), pl);
+            return this;
+        }
+    }
+    else {
+        if(GetVolume() == kVolumeTriangles){
+            bool b1 = false;
+            f = 1.0f;
+            for(std::vector<Face>::iterator it = Faces().begin(); it != Faces().end(); ++it){
+                const Vert& vert0 = VertAt(it->idx0);
+                const Vert& vert1 = VertAt(it->idx1);
+                const Vert& vert2 = VertAt(it->idx2);
+                Triangle tri;
+                if(IsSkinned() && !sRawCollide){
+                    tri.Set(SkinVertex(vert0, 0), SkinVertex(vert1, 0), SkinVertex(vert2, 0));
+                }
+                else tri.Set(vert0.pos, vert1.pos, vert2.pos);
+                float fintersect;
+                if(Intersect(sega0, tri, false, fintersect)){
+                    Interp(sega0.start, sega0.end, fintersect, sega0.end);
+                    f *= fintersect;
+                    pl.Set(tri.origin, tri.frame.z);
+                    b1 = true;
+                    sLastCollide = (it - Faces().begin());
+                }
+            }
+            if(b1){
+                if(!sRawCollide) Multiply(pl, WorldXfm(), pl);
+                return this;
+            }
+        }
+    }
+    return 0;
+}
+
+void RndMesh::UpdateSphere(){
+    Sphere s;
+    if(mBones.empty()){
+        MakeWorldSphere(s, true);
+        Transform tf;
+        FastInvert(WorldXfm(), tf);
+        Multiply(s, tf, s);
+    }
+    else s.Zero();
+    RndDrawable::SetSphere(s);
+}
+
+float RndMesh::GetDistanceToPlane(const Plane& p, Vector3& v){
+    if(Verts().empty()) return 0;
+    else {
+        Transform& world = WorldXfm();
+        Vector3 v58;
+        Multiply(Verts()[0].pos, world, v58);
+        v = v58;
+        float dot = p.Dot(v);
+        for(Vert* it = Verts().begin(); it != Verts().end(); ++it){
+            Multiply(it->pos, world, v58);
+            float dotted = p.Dot(v58);
+            if(std::fabs(dotted) < std::fabs(dot)){
+                dot = dotted;
+                v = v58;
+            }
+        }
+        return dot;
+    }
+}
+
 void RndMesh::SetMat(RndMat* m) { mMat = m; }
 void RndMesh::SetGeomOwner(RndMesh* m) {MILO_ASSERT(m, 487); mGeomOwner = m;}
 
 void RndMesh::ScaleBones(float f) {
     for (std::vector<RndBone>::iterator it = mBones.begin(); it != mBones.end(); it++) {
         it->mOffset.v *= f;
+    }
+}
+
+void RndMesh::SetBone(int i, RndTransformable* t, bool b){
+    mBones[i].mBone = t;
+    if(b){
+        Transform tf48;
+        Invert(t->WorldXfm(), tf48);
+        Multiply(WorldXfm(), tf48, mBones[i].mOffset);
     }
 }
 
@@ -379,6 +468,14 @@ void RndMesh::PostLoad(BinStream& bs) {
 }
 #pragma pop
 
+void RndMesh::CopyGeometryFromOwner(){
+    RndMesh* owner = GeometryOwner();
+    if(owner != this){
+        CopyGeometry(owner, true);
+        Sync(0x3F);
+    }
+}
+
 BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
     bs >> v.pos;
     if (RndMesh::gRev != 10 && RndMesh::gRev < 23) { int a,b; bs >> a >> b; }
@@ -419,9 +516,18 @@ void RndMesh::Sync(int i) {
 }
 
 void RndMesh::ClearCompressedVerts() {
-    delete mCompressedVerts;
-    mCompressedVerts = NULL;
+    RELEASE(mCompressedVerts);
     mNumCompressedVerts = 0;
+}
+
+void RndMesh::SetNumVerts(int num){
+    Verts().resize(num, true);
+    Sync(0x3F);
+}
+
+void RndMesh::SetNumFaces(int num){
+    Faces().resize(num);
+    Sync(0x3F);
 }
 
 #pragma push

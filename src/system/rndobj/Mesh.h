@@ -148,15 +148,18 @@ public:
     void SetVolume(Volume);
     void SetKeepMeshData(bool);
     void SetZeroWeightBones();
+    void CopyGeometry(const RndMesh*, bool);
+    Vector3 SkinVertex(const RndMesh::Vert&, Vector3*);
 
+    RndMesh* GeometryOwner() const { return mGeomOwner; }
     bool KeepMeshData() const { return mKeepMeshData; }
     Volume GetVolume() const { return mGeomOwner->mVolume; }
     BSPNode* GetBSPTree() const { return mGeomOwner->mBSPTree; }
     RndMat* GetMat() const { return mMat; }
     VertVector& Verts(){ return mGeomOwner->mVerts; }
     std::vector<Face>& Faces(){ return mGeomOwner->mFaces; }
-    const Vector3& VertPos(int idx) const {
-        return mGeomOwner->mVerts[idx].pos;
+    const Vert& VertAt(int idx) const {
+        return mGeomOwner->mVerts[idx];
     }
 
     DECLARE_REVS
@@ -180,6 +183,8 @@ public:
     DataNode OnConfigureMesh(const DataArray*);
     
     static int MaxBones();
+    static int sLastCollide;
+    static bool sRawCollide;
 
     // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0
