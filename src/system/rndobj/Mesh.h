@@ -161,6 +161,7 @@ public:
 
     RndMesh* GeometryOwner() const { return mGeomOwner; }
     bool KeepMeshData() const { return mKeepMeshData; }
+    int GetMutable() const { return mGeomOwner->mMutable; }
     Volume GetVolume() const { return mGeomOwner->mVolume; }
     BSPNode* GetBSPTree() const { return mGeomOwner->mBSPTree; }
     RndMat* GetMat() const { return mMat; }

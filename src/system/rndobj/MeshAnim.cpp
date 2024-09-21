@@ -90,7 +90,48 @@ float RndMeshAnim::EndFrame(){
 }
 
 void RndMeshAnim::SetFrame(float frame, float blend){
-    
+    RndAnimatable::SetFrame(frame, blend);
+    if(mMesh){
+        if((mMesh->GetMutable() & 0x1F) == 0){
+            MILO_NOTIFY_ONCE("Mesh %s is animated but not mutable.\n", mMesh->Name());
+        }
+        else {
+            int syncnum = 0;
+            if(!VertPointsKeys().empty()){
+                const Key<std::vector<Vector3> >* prev;
+                const Key<std::vector<Vector3> >* next;
+                float ref = 0;
+                VertPointsKeys().AtFrame(frame, prev, next, ref);
+                // InterpVertData<Vector3, GetVertPoint>(const std::vector<Vector3>&, const std::vector<Vector3>&, float, RndMesh::VertVector&, float)
+                syncnum = 0x1F;
+            }
+            if(!VertNormalsKeys().empty()){
+                const Key<std::vector<Vector3> >* prev;
+                const Key<std::vector<Vector3> >* next;
+                float ref = 0;
+                VertNormalsKeys().AtFrame(frame, prev, next, ref);
+                // InterpVertData<Vector3, GetVertNormal>(const std::vector<Vector3>&, const std::vector<Vector3>&, float, RndMesh::VertVector&, float)
+                syncnum = 0x1F;
+            }
+            if(!VertTexsKeys().empty()){
+                const Key<std::vector<Vector2> >* prev;
+                const Key<std::vector<Vector2> >* next;
+                float ref = 0;
+                VertTexsKeys().AtFrame(frame, prev, next, ref);
+                // InterpVertData<Vector2, GetVertTex>(const std::vector<Vector2>&, const std::vector<Vector2>&, float, RndMesh::VertVector&, float)
+                syncnum = 0x1F;
+            }
+            if(!VertColorsKeys().empty()){
+                const Key<std::vector<Hmx::Color32> >* prev;
+                const Key<std::vector<Hmx::Color32> >* next;
+                float ref = 0;
+                VertColorsKeys().AtFrame(frame, prev, next, ref);
+                // InterpVertData<Hmx::Color32, GetVertColor>(const std::vector<Hmx::Color32>&, const std::vector<Hmx::Color32>&, float, RndMesh::VertVector&, float)
+                syncnum = 0x1F;
+            }
+            if(syncnum != 0) mMesh->Sync(syncnum);
+        }
+    }
 }
 
 void RndMeshAnim::SetKey(float){}
