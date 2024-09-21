@@ -180,4 +180,6 @@ inline void Interp(const Hmx::Color& c1, const Hmx::Color& c2, float f, Hmx::Col
     res.Set(Interp(c1.red,c2.red,f), Interp(c1.green,c2.green,f), Interp(c1.blue,c2.blue,f), Interp(c1.alpha,c2.alpha,f));
 }
 
+void Interp(const Hmx::Color32&, const Hmx::Color32&, float, Hmx::Color32&);
+
 #endif

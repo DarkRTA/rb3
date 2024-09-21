@@ -89,6 +89,68 @@ float RndMeshAnim::EndFrame(){
     return end;
 }
 
+// scratch with current GetVertX work: https://decomp.me/scratch/CjTpq
+struct GetVertPoint {
+    static Vector3& get(RndMesh::Vert*);
+};
+struct GetVertNormal {
+    static Vector3& get(RndMesh::Vert* v){ return v->norm; }
+};
+struct GetVertTex {
+    static Vector2& get(RndMesh::Vert* v);
+};
+struct GetVertColor {
+    static Hmx::Color32& get(RndMesh::Vert*);
+};
+
+template <class T1, class T2>
+void InterpVertData(const std::vector<T1>& a, const std::vector<T1>& b, float ref, RndMesh::VertVector& verts, float blend){
+    MILO_ASSERT(a.size() == b.size(), 0x133);
+    std::vector<T1>::const_iterator ait = a.begin();
+    std::vector<T1>::const_iterator bit = b.begin();
+    std::vector<T1>::const_iterator aend = a.end();
+    RndMesh::Vert* vertit = verts.begin();
+    if(a.size() > verts.size()){
+        aend -= (a.size() - verts.size());
+    }
+    if(ref == 0.0f){
+        if(blend != 1.0f){
+            for(; ait != aend; ++ait, vertit++){
+                Interp(T2::get(vertit), *ait, blend, T2::get(vertit));
+            }
+        }
+        else {
+            for(; ait != aend; ++ait, ++vertit){
+                T2::get(vertit) = *ait;
+            }
+        }
+    }
+    else if(ref == 1.0f){
+        if(blend != 1.0f){
+            for(; ait != aend; ++ait, ++bit, ++vertit){
+                Interp(T2::get(vertit), *bit, blend, T2::get(vertit));
+            }
+        }
+        else {
+            for(; ait != aend; ++ait, ++bit, ++vertit){
+                T2::get(vertit) = *bit;
+            }
+        }
+    }
+    else if(blend != 1.0f){
+        for(; ait != aend; ++ait, ++bit, ++vertit){
+            T1 tmp;
+            Interp(*ait, *bit, ref, tmp);
+            Interp(T2::get(vertit), tmp, blend, T2::get(vertit));
+        }
+    }
+    else {
+        for(; ait != aend; ++ait, ++bit, ++vertit){
+            Interp(*ait, *bit, ref, T2::get(vertit));
+        }
+    }
+}
+
 void RndMeshAnim::SetFrame(float frame, float blend){
     RndAnimatable::SetFrame(frame, blend);
     if(mMesh){
@@ -102,32 +164,32 @@ void RndMeshAnim::SetFrame(float frame, float blend){
                 const Key<std::vector<Vector3> >* next;
                 float ref = 0;
                 VertPointsKeys().AtFrame(frame, prev, next, ref);
-                // InterpVertData<Vector3, GetVertPoint>(const std::vector<Vector3>&, const std::vector<Vector3>&, float, RndMesh::VertVector&, float)
-                syncnum = 0x1F;
+                InterpVertData<Vector3, GetVertPoint>(prev->value, next->value, ref, mMesh->Verts(), blend);
+                syncnum |= 0x1F;
             }
             if(!VertNormalsKeys().empty()){
                 const Key<std::vector<Vector3> >* prev;
                 const Key<std::vector<Vector3> >* next;
                 float ref = 0;
                 VertNormalsKeys().AtFrame(frame, prev, next, ref);
-                // InterpVertData<Vector3, GetVertNormal>(const std::vector<Vector3>&, const std::vector<Vector3>&, float, RndMesh::VertVector&, float)
-                syncnum = 0x1F;
+                InterpVertData<Vector3, GetVertNormal>(prev->value, next->value, ref, mMesh->Verts(), blend);
+                syncnum |= 0x1F;
             }
             if(!VertTexsKeys().empty()){
                 const Key<std::vector<Vector2> >* prev;
                 const Key<std::vector<Vector2> >* next;
                 float ref = 0;
                 VertTexsKeys().AtFrame(frame, prev, next, ref);
-                // InterpVertData<Vector2, GetVertTex>(const std::vector<Vector2>&, const std::vector<Vector2>&, float, RndMesh::VertVector&, float)
-                syncnum = 0x1F;
+                InterpVertData<Vector2, GetVertTex>(prev->value, next->value, ref, mMesh->Verts(), blend);
+                syncnum |= 0x1F;
             }
             if(!VertColorsKeys().empty()){
                 const Key<std::vector<Hmx::Color32> >* prev;
                 const Key<std::vector<Hmx::Color32> >* next;
                 float ref = 0;
                 VertColorsKeys().AtFrame(frame, prev, next, ref);
-                // InterpVertData<Hmx::Color32, GetVertColor>(const std::vector<Hmx::Color32>&, const std::vector<Hmx::Color32>&, float, RndMesh::VertVector&, float)
-                syncnum = 0x1F;
+                InterpVertData<Hmx::Color32, GetVertColor>(prev->value, next->value, ref, mMesh->Verts(), blend);
+                syncnum |= 0x1F;
             }
             if(syncnum != 0) mMesh->Sync(syncnum);
         }
