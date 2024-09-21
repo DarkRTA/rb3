@@ -19,7 +19,7 @@ RndLine::RndLine() : mWidth(1.0f), mFoldAngle(1.570796f), mMat(this, 0) {
     mLinePairs = false;
     mLineUpdate = true;
     mMesh = Hmx::Object::New<RndMesh>();
-    mMesh->mOwner->unk_0xF0 = 0x1F;
+    mMesh->mGeomOwner->mMutable = 0x1F;
     mMesh->SetTransParent(this, false);
     UpdateInternal();
 }
