@@ -171,6 +171,7 @@ public:
         return mGeomOwner->mVerts[idx];
     }
     bool IsSkinned() const { return !mBones.empty(); }
+    void SetMutable(int m){ mGeomOwner->mMutable = m; }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)

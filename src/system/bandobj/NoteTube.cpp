@@ -80,7 +80,7 @@ void NoteTube::InitializePlate(TubePlate* plate, RndMat* mat, RndGroup* parent){
     MILO_ASSERT(parent, 0x9A);
     RndMesh* mesh = plate->mMesh;
     MILO_ASSERT(mesh, 0x9D);
-    mesh->mOwner->unk_0xF0 = 0x3F; // TODO: this should be inlined
+    mesh->SetMutable(0x3F);
     mesh->SetGeomOwner(mesh);
     mesh->SetMat(mat);
     mesh->SetTransParent(parent, false);
@@ -173,7 +173,7 @@ void TubePlate::Bake(){
         if(mDeploy){
             mMatSize = verts[verts.size() - 2].uv.x;
         }
-        if(!mDeploy) mMesh->mOwner->unk_0xF0 = 0;
+        if(!mDeploy) mMesh->SetMutable(0);
         mMesh->Sync(0x2BF);
         mMesh->SetShowing(true);
         mBaked = true;
@@ -190,7 +190,7 @@ float TubePlate::CurrentEndX(float f) const { return mBeginX + mWidthX + f; }
 void TubePlate::Reset(){
     mMesh->SetShowing(false);
     if(mParent) mParent->RemoveObject(mMesh);
-    mMesh->mOwner->unk_0xF0 = 0x3F; // TODO: this should be inlined
+    mMesh->SetMutable(0x3F);
     mMesh->Verts().clear();
     mMesh->Faces().clear();
     mWidthX = 0;
