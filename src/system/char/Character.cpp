@@ -221,7 +221,7 @@ void Character::SyncShadow(){
                 if(mesh){
                     if(!mesh->mBones.empty()){
                         for(int i = 0; i < mesh->mBones.size(); i++){
-                            mesh->SetBone(i, AddShadowBone(mesh->mBones[i]), false);
+                            mesh->SetBone(i, AddShadowBone(mesh->mBones[i].mBone), false);
                         }
                     }
                     else {

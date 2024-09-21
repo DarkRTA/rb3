@@ -187,6 +187,7 @@
             "system/rndobj/Mat.cpp": "NonMatching",
             "system/rndobj/MatAnim.cpp": "NonMatching",
             "system/rndobj/Mesh.cpp": "NonMatching",
+            "system/rndobj/MeshAnim.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "Equivalent",
             "system/rndobj/MultiMeshProxy.cpp": "NonMatching",

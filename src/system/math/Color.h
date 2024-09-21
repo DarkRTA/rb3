@@ -112,7 +112,11 @@ namespace Hmx {
         float fa() const { return a * 0.0039215688593685627f;}
     };
 
-    inline Color& Hmx::Color::operator=(const Color32& c32){
+    inline Color::Color(const Color32& c32){
+        UnpackAlpha(c32.color);
+    }
+
+    inline Color& Color::operator=(const Color32& c32){
         UnpackAlpha(c32.color);
         return *this;
     }
@@ -175,5 +179,7 @@ inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Col
 inline void Interp(const Hmx::Color& c1, const Hmx::Color& c2, float f, Hmx::Color& res){
     res.Set(Interp(c1.red,c2.red,f), Interp(c1.green,c2.green,f), Interp(c1.blue,c2.blue,f), Interp(c1.alpha,c2.alpha,f));
 }
+
+void Interp(const Hmx::Color32&, const Hmx::Color32&, float, Hmx::Color32&);
 
 #endif

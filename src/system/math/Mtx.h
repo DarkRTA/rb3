@@ -256,6 +256,9 @@ public:
 
 class Triangle {
 public:
+    Triangle(){}
+    void Set(const Vector3&, const Vector3&, const Vector3&);
+
     Vector3 origin; // 0x0
     Hmx::Matrix3 frame; // 0xc
 };
@@ -282,6 +285,8 @@ void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void Multiply(const Transform&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
+void Multiply(const Vector3&, const Transform&, Vector3&);
+void Multiply(const Plane&, const Transform&, Plane&);
 void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){

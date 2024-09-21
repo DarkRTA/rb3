@@ -44,7 +44,7 @@ void CharCollide::Highlight(){
     if(mMesh){
         int numspheres = NumSpheres();
         for(int i = 0; i < numspheres * 2; i++){
-            UtilDrawSphere(mMesh->VertPos(unk_structs[i].unk0), 0.1f, Hmx::Color(0.0f, 0.0f, 1.0f));
+            UtilDrawSphere(mMesh->VertAt(unk_structs[i].unk0).pos, 0.1f, Hmx::Color(0.0f, 0.0f, 1.0f));
         }
     }
 }

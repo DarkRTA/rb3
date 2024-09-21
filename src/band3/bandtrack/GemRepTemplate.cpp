@@ -53,10 +53,9 @@ void GemRepTemplate::ReturnTail(RndMesh* m) {
 
 RndMesh* GemRepTemplate::CreateTail() {
     RndMesh* m = Hmx::Object::New<RndMesh>();
-    m->mOwner->unk_0xF0 = 0x3f;
-    m->mOwner->mVerts.reserve(mTailVerts.size() * (1 + mNumTailSections), true);
-    std::vector<RndMesh::Face>* asdf = &m->mOwner->mFaces;
-    asdf->reserve((mTailVerts.size() - 1) * mNumTailSections * 2);
+    m->SetMutable(0x3F);
+    m->Verts().reserve(mTailVerts.size() * (1 + mNumTailSections), true);
+    m->Faces().reserve((mTailVerts.size() - 1) * mNumTailSections * 2);
     return m;
 }
 
@@ -81,7 +80,7 @@ bool VertLess(const RndMesh::Vert& v1, const RndMesh::Vert& v2) {
 }
 
 void GemRepTemplate::SetupTailVerts() {
-    objectDir->Find<RndMesh>("tail02.mesh", false)->mOwner->mVerts = mTailVerts; // where assert
+    objectDir->Find<RndMesh>("tail02.mesh", false)->Verts() = mTailVerts; // where assert
     MILO_ASSERT(!(mTailVerts.size()%2), 212);
     std::sort(mTailVerts.begin(), mTailVerts.end(), VertLess);
     unk_0x64 = mTailVerts;

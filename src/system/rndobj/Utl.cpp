@@ -107,9 +107,9 @@ bool SortDraws(RndDrawable* draw1, RndDrawable* draw2){
 }
 
 void CalcBox(RndMesh* m, Box& b) {
-    m->mOwner->mOwner;
-    m->mOwner->mOwner;
-    m->mOwner->mOwner;
+    m->mGeomOwner->mGeomOwner;
+    m->mGeomOwner->mGeomOwner;
+    m->mGeomOwner->mGeomOwner;
 }
 
 int GenerationCount(RndTransformable* t1, RndTransformable* t2) {
