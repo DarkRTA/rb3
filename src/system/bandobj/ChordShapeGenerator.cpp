@@ -168,7 +168,7 @@ RndMesh* ChordShapeGenerator::MakeInvertedMesh(const RndMesh* mesh){
     }
     if(TheLoadMgr.EditMode()){
         ret->Sync(0x3F);
-        ret->mOwner->unk_0xF0 = 0;
+        ret->SetMutable(0);
     }
     return ret;
 }
