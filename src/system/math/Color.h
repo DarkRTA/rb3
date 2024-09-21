@@ -112,7 +112,11 @@ namespace Hmx {
         float fa() const { return a * 0.0039215688593685627f;}
     };
 
-    inline Color& Hmx::Color::operator=(const Color32& c32){
+    inline Color::Color(const Color32& c32){
+        UnpackAlpha(c32.color);
+    }
+
+    inline Color& Color::operator=(const Color32& c32){
         UnpackAlpha(c32.color);
         return *this;
     }

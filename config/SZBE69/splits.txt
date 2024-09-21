@@ -1568,10 +1568,10 @@ system/rndobj/Mesh.cpp:
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
 
 system/rndobj/MeshAnim.cpp:
-	.text       start:0x80606C98 end:0x8060DD24
+	.text       start:0x80606C98 end:0x8060DD10
 
 system/rndobj/MeshDeform.cpp:
-	.text       start:0x8060DD24 end:0x80610528
+	.text       start:0x8060DD10 end:0x80610528
 
 system/rndobj/Morph.cpp:
 	.text       start:0x80610528 end:0x80613A80

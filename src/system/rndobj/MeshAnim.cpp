@@ -3,10 +3,29 @@
 
 INIT_REVS(RndMeshAnim);
 
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(MeshAnim, __FILE__, "o")
+#endif
 
 RndMeshAnim::RndMeshAnim() : mMesh(this, 0), mKeysOwner(this, this) {
 
+}
+
+int RndMeshAnim::NumVerts(){
+    int num = 0;
+    if(VertPointsKeys().size() != 0){
+        MaxEq<int>(num, VertPointsKeys().size());
+    }
+    if(VertNormalsKeys().size() != 0){
+        MaxEq<int>(num, VertNormalsKeys().size());
+    }
+    if(VertTexsKeys().size() != 0){
+        MaxEq<int>(num, VertTexsKeys().size());
+    }
+    if(VertColorsKeys().size() != 0){
+        MaxEq<int>(num, VertColorsKeys().size());
+    }
+    return num;
 }
 
 void RndMeshAnim::Replace(Hmx::Object* from, Hmx::Object* to){
@@ -60,6 +79,35 @@ void RndMeshAnim::Print(){
     t << "   vertNormalsKeys: " << mVertNormalsKeys << "\n";
     t << "   vertTexsKeys: " << mVertTexsKeys << "\n";
     t << "   vertColorsKeys: " << mVertColorsKeys << "\n";
+}
+
+float RndMeshAnim::EndFrame(){
+    float end = VertPointsKeys().LastFrame();
+    MaxEq(end, VertNormalsKeys().LastFrame());
+    MaxEq(end, VertTexsKeys().LastFrame());
+    MaxEq(end, VertColorsKeys().LastFrame());
+    return end;
+}
+
+void RndMeshAnim::SetFrame(float frame, float blend){
+    
+}
+
+void RndMeshAnim::SetKey(float){}
+
+void RndMeshAnim::ShrinkVerts(int num){
+    for(Keys<std::vector<Vector3>, std::vector<Vector3> >::iterator it = VertPointsKeys().begin(); it != VertPointsKeys().end(); ++it){
+        it->value.resize(num);
+    }
+    for(Keys<std::vector<Vector3>, std::vector<Vector3> >::iterator it = VertNormalsKeys().begin(); it != VertNormalsKeys().end(); ++it){
+        it->value.resize(num);
+    }
+    for(Keys<std::vector<Vector2>, std::vector<Vector2> >::iterator it = VertTexsKeys().begin(); it != VertTexsKeys().end(); ++it){
+        it->value.resize(num);
+    }
+    for(Keys<std::vector<Hmx::Color32>, std::vector<Hmx::Color32> >::iterator it = VertColorsKeys().begin(); it != VertColorsKeys().end(); ++it){
+        it->value.resize(num);
+    }
 }
 
 #pragma push
