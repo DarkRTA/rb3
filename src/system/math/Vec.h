@@ -134,7 +134,8 @@ public:
     float GetX() const { return x / 65535.0f;}
     float GetY() const { return y / 65535.0f;}
     float GetZ() const { return z / 65535.0f;}
-    inline u16 ScaleFloat01ToUShort(float f) { 
+    float GetW() const { return w / 65535.0f;}
+    u16 ScaleFloat01ToUShort(float f) { 
         MILO_ASSERT(f >= 0.0f, 543);
         MILO_ASSERT(f <= 1.0f, 544);
         return f * 65535.0f;

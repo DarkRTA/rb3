@@ -72,6 +72,8 @@ public:
     class Face {
     public:
         Face() : idx0(0), idx1(0), idx2(0) {}
+
+        const unsigned short& operator[](int i) const { return *(&idx0 + i); }
         u16 idx0, idx1, idx2;
     };
 
@@ -197,7 +199,7 @@ public:
     VertVector mVerts; // 0xB0
     std::vector<Face> mFaces; // 0xBC
     ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
-    std::vector<unsigned char> mPatches; // 0xd0 - mPatches?
+    std::vector<unsigned char> mPatches; // 0xd0
     ObjOwnerPtr<RndMesh, class ObjectDir> mGeomOwner; // 0xD8
     ObjVector<RndBone> mBones; // 0xe4
     int mMutable; // 0xf0

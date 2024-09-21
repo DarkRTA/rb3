@@ -102,6 +102,29 @@ float RndMesh::GetDistanceToPlane(const Plane& p, Vector3& v){
     }
 }
 
+void RndMesh::SetVolume(RndMesh::Volume vol){
+    if(mGeomOwner != this) mGeomOwner->SetVolume(vol);
+    else {
+        mVolume = vol;
+        RELEASE(mBSPTree);
+        if(!mVerts.empty() && !mFaces.empty()){
+            if(mVolume == kVolumeBox){
+                Box box;
+                for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
+                    box.GrowToContain(it->pos, mVerts.begin()->pos == it->pos);
+                }
+                mBSPTree = new BSPNode();
+                for(int i = 0; i < 6; i++){
+                    
+                }
+            }
+            else if(mVolume == kVolumeBSP){
+
+            }
+        }
+    }
+}
+
 void RndMesh::SetMat(RndMat* m) { mMat = m; }
 void RndMesh::SetGeomOwner(RndMesh* m) {MILO_ASSERT(m, 487); mGeomOwner = m;}
 
@@ -511,11 +534,71 @@ void RndMesh::PostLoad(BinStream& bs) {
 }
 #pragma pop
 
+void RndMesh::SetZeroWeightBones(){
+    if(mBones.size() >= 2){
+        for(int i = 0; i < mVerts.size(); i++){
+            Vert& curvert = mVerts[i];
+            if(curvert.boneWeights.GetY() == 0) curvert.boneIndices[1] = curvert.boneIndices[0];
+            if(curvert.boneWeights.GetZ() == 0) curvert.boneIndices[2] = curvert.boneIndices[0];
+            if(curvert.boneWeights.GetW() == 0) curvert.boneIndices[3] = curvert.boneIndices[0];
+        }
+    }
+}
+
 void RndMesh::CopyGeometryFromOwner(){
     RndMesh* owner = GeometryOwner();
     if(owner != this){
         CopyGeometry(owner, true);
         Sync(0x3F);
+    }
+}
+
+void RndMesh::CopyBones(const RndMesh* mesh){
+    if(mesh) mBones = mesh->mBones;
+    else mBones.clear();
+}
+
+BEGIN_COPYS(RndMesh)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndTransformable)
+    COPY_SUPERCLASS(RndDrawable)
+    CREATE_COPY(RndMesh)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mMat)
+        if(ty != kCopyFromMax) COPY_MEMBER(mKeepMeshData)
+        if(ty == kCopyFromMax) mMutable |= c->mMutable;
+        else COPY_MEMBER(mMutable)
+        mHasAOCalc = false;
+        COPY_MEMBER(mForceNoQuantize)
+        if(ty == kCopyShallow || (ty == kCopyFromMax && c->mGeomOwner != c)){
+            COPY_MEMBER(mGeomOwner)
+            CopyBones(c);
+        }
+        else {
+            CopyGeometry(c, ty != kCopyFromMax);
+            if(ty != kCopyFromMax) COPY_MEMBER(mHasAOCalc);
+        }
+    END_COPYING_MEMBERS
+    Sync(0xBF);
+END_COPYS
+
+void RndMesh::CopyGeometry(const RndMesh* mesh, bool b){
+    mGeomOwner = this;
+    mVerts = mesh->mGeomOwner->mVerts;
+    mFaces = mesh->mGeomOwner->mFaces;
+    mPatches = mesh->mGeomOwner->mPatches;
+    if(b) SetVolume(mesh->mGeomOwner->mVolume);
+    mBones = mesh->mBones;
+    // some operation on mStriperResults that sets every member to 0
+    mStriperResults = std::vector<STRIPERRESULT>();
+
+    if(mStriperResults.size() != 0){
+        MemDoTempAllocations m(true, false);
+        mStriperResults.resize(mStriperResults.size());
+        int stripersize = mStriperResults.size();
+        for(int i = 0; i < stripersize; i++){
+            mStriperResults[i] = mesh->mStriperResults[i];
+        }
     }
 }
 
@@ -586,6 +669,14 @@ BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
     return bs;
 }
 
+void FaceCenter(RndMesh* mesh, RndMesh::Face* face, Vector3& v){
+    v.Set(0,0,0);
+    for(int i = 0; i < 3; i++){
+        v += mesh->VertAt(face->operator[](i)).pos;
+    }
+    v *= 0.33333333f;
+}
+
 void RndMesh::Sync(int i) {
     OnSync(mKeepMeshData ? i | 0x200 : i);
 }
@@ -603,6 +694,17 @@ void RndMesh::SetNumVerts(int num){
 void RndMesh::SetNumFaces(int num){
     Faces().resize(num);
     Sync(0x3F);
+}
+
+void RndMesh::SetKeepMeshData(bool keep){
+    if(keep != mKeepMeshData){
+        mKeepMeshData = keep;
+        if(!mKeepMeshData){
+            mVerts.clear();
+            mFaces = std::vector<Face>();
+            mPatches = std::vector<unsigned char>();
+        }
+    }
 }
 
 #pragma push
