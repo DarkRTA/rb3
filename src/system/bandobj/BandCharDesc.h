@@ -137,7 +137,7 @@ public:
 
     DataNode ListOutfits(Symbol);
 
-    static CharClip* GetDeformClip(Symbol);
+    static class CharClip* GetDeformClip(Symbol);
     static ObjectDir* GetPrefabs();
     static int SaveSize(int);
     static void Init();
