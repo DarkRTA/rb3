@@ -15,7 +15,9 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~BandLabel();
+    virtual void PreLoad(BinStream&);
     virtual void Poll();
+    virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void SetDisplayText(const char*, bool);
     virtual void Count(int, int, float, Symbol);
     virtual void FinishCount();
