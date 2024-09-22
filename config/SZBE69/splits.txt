@@ -970,6 +970,9 @@ system/bandobj/BandConfiguration.cpp:
 system/bandobj/BandDirector.cpp:
 	.text       start:0x803937F8 end:0x803A1E7C
 
+system/bandobj/BandHighlight.cpp:
+	.text       start:0x803A8A44 end:0x803A9C80
+
 system/bandobj/BandLabel.cpp:
 	.text       start:0x803B0390 end:0x803B1FA8
 
