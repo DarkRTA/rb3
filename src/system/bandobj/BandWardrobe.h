@@ -4,13 +4,13 @@
 #include "char/FileMerger.h"
 #include "bandobj/BandCamShot.h"
 
-class TargetNames {
-public:
-    Symbol names[4];
-};
-
 class BandWardrobe : public virtual Hmx::Object {
 public:
+    class TargetNames {
+    public:
+        Symbol names[4];
+    };
+
     BandWardrobe();
     OBJ_CLASSNAME(BandWardrobe);
     OBJ_SET_TYPE(BandWardrobe);
@@ -31,6 +31,7 @@ public:
     void SyncVignetteInterest(int);
     void SyncEnableBlinks(int);
     void ForceBlink(int);
+    class BandCharacter* FindTarget(Symbol, const TargetNames&);
 
     DataNode OnFindTarget(DataArray*);
     DataNode OnEnterVenue(DataArray*);

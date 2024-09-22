@@ -17,6 +17,8 @@ public:
     public:
         TargTransform xfms[3];
         Waypoint* mWay;
+
+        static int sNumPlayModes;
     };
 
     BandConfiguration();
@@ -30,6 +32,7 @@ public:
     virtual void Load(BinStream&);
 
     void SyncPlayMode();
+    int ConfigIndex();
 
     DataNode OnStoreConfiguration(DataArray*);
     DataNode OnReleaseConfiguration(DataArray*);

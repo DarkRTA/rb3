@@ -1,5 +1,6 @@
 #include "bandobj/BandLabel.h"
 #include "ui/UI.h"
+#include "utl/Locale.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(BandLabel);
@@ -151,7 +152,53 @@ void BandLabel::LoadOldBandTextComp(BinStream& bs){
     }
 }
 
+void BandLabel::Poll(){
+    UILabel::Poll();
+    if(unk1dc.size() >= 2){
+        float val = 0;
+        float uisecs = TheTaskMgr.UISeconds() * 1000.0f;
+        unk1dc.AtFrame(uisecs, val);
+        SetTokenFmt(unk1e4, LocalizeSeparatedInt(val));
+        if(uisecs > unk1dc.LastFrame()){
+            unk1dc.clear();
+            TheUI->Handle(BandLabelCountDoneMsg(this), false);
+        }
+    }
+    UpdateHandler();
+}
 
+void BandLabel::Count(int i1, int i2, float f, Symbol s){
+    unk1dc.clear();
+    Key<float> key;
+    key.value = TheTaskMgr.UISeconds() * 1000.0f;
+    key.frame = i1;
+    unk1dc.push_back(key);
+    key.value += f;
+    key.frame = i2;
+    unk1dc.push_back(key);
+    unk1e4 = s;
+}
+
+void BandLabel::FinishCount(){
+    if(unk1dc.size() >= 2){
+        Key<float>& key = unk1dc[1];
+        SetTokenFmt(unk1e4, LocalizeSeparatedInt(key.value));
+        unk1dc.clear();
+    }
+}
+
+bool BandLabel::IsEmptyValue() const { return unk114 == gNullStr; }
+
+void BandLabel::FinishValueChange(){
+    UILabel::SetDisplayText(unk1e8.c_str(), unk1f4);
+    UITransitionHandler::FinishValueChange();
+}
+
+void BandLabel::SetDisplayText(const char* cc, bool b){
+    unk1e8 = cc;
+    unk1f4 = b;
+    UITransitionHandler::StartValueChange();
+}
 
 BEGIN_HANDLERS(BandLabel)
     HANDLE_ACTION(start_count, Count(_msg->Int(2), _msg->Int(3), _msg->Float(4), _msg->Sym(5)))

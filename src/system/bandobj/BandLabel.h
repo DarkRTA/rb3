@@ -40,4 +40,10 @@ public:
     bool unk1f4; // 0x1f4
 };
 
+BEGIN_MESSAGE(BandLabelCountDoneMsg, count_done, BandLabel*);
+END_MESSAGE;
+
+inline BandLabelCountDoneMsg::BandLabelCountDoneMsg(BandLabel* label) : 
+    Message(Type(), DataNode(label)){}
+
 #endif // BANDOBJ_BANDLABEL_H
