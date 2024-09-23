@@ -70,6 +70,7 @@
             "system/bandobj/BandLabel.cpp": "NonMatching",
             "system/bandobj/BandList.cpp": "NonMatching",
             "system/bandobj/BandScoreboard.cpp": "NonMatching",
+            "system/bandobj/BandSong.cpp": "NonMatching",
             "system/bandobj/ChordShapeGenerator.cpp": "NonMatching",
             "system/bandobj/CrowdAudio.cpp": "NonMatching",
             "system/bandobj/CrowdMeterIcon.cpp": "NonMatching",

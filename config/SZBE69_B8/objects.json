@@ -170,7 +170,7 @@
             "system/bandobj/BandPatchMesh.cpp": "NonMatching",
             "system/bandobj/BandRetargetVignette.cpp": "NonMatching",
             "system/bandobj/BandScoreboard.cpp": "NonMatching",
-            "system/bandobj/BandSong.cpp": "NonMatching",
+            "system/bandobj/BandSong.cpp": "Matching",
             "system/bandobj/BandSongPref.cpp": "Matching",
             "system/bandobj/BandStarDisplay.cpp": "NonMatching",
             "system/bandobj/BandSwatch.cpp": "NonMatching",
