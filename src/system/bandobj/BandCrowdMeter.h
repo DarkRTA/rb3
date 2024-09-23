@@ -12,6 +12,10 @@ public:
         IconData(BandCrowdMeter*, CrowdMeterIcon*, RndGroup*);
         ~IconData(){}
 
+        void Reset();
+        void SetUsed(bool);
+        void SetVal(float);
+
         ObjPtr<CrowdMeterIcon, ObjectDir> unk0; // 0x0
         ObjPtr<RndGroup, ObjectDir> unkc; // 0xc
         bool unk18; // 0x18
@@ -49,19 +53,30 @@ public:
     void DisablePlayer(int);
     void ShowPeakArrow(bool);
     void OnShowWorstCase();
+    void Disable();
+    void Enable();
+    void SetPlayerValue(int, float);
+    void SetPlayerQuarantined(int, bool);
+    void DropInPlayer(int);
+    void DropOutPlayer(int);
+    bool Draining() const;
+    bool Deploying() const;
+    void UpdateJoinInProgress(bool, bool);
+    void FailedJoinInProgress();
+    float InitialCrowdRating() const;
     CrowdMeterIcon* PlayerIcon(int);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    std::vector<IconData> mIcons; // 0x18c
+    std::vector<IconData> mIconData; // 0x18c
     bool mMaxed; // 0x194
     float mPeakValue; // 0x198
     bool mDisabled; // 0x19c
     std::vector<Hmx::Color> mLevelColors; // 0x1a0
     int unk1a8; // 0x1a8
-    int unk1ac; // 0x1ac
+    int unk1ac; // 0x1ac - TrackPanelInterface*
     ObjPtrList<RndGroup, ObjectDir> unk1b0; // 0x1b0
     ObjPtr<EventTrigger, ObjectDir> mBandEnergyDeployTrig; // 0x1c0
     ObjPtr<EventTrigger, ObjectDir> mBandEnergyStopTrig; // 0x1cc
