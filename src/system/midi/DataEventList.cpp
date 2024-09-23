@@ -12,7 +12,6 @@ DataEventList::DataEventList() : mCurIndex(0), mSize(0), mElement(-1), mCompType
     
 }
 
-// fn_8052A590
 DataEventList::~DataEventList(){
 
 }
@@ -38,7 +37,7 @@ void DataEventList::InsertEvent(float start, float end, const DataNode& node, in
         if(mSize == 0){
             mComps.reserve(32);
             mCompType = node.Type();
-            mTemplate.mMsg->Node(mElement) = node;
+            mTemplate.Msg()->Node(mElement) = node;
             MILO_ASSERT(mCompType == kDataSymbol || mCompType == kDataInt, 0x43);
         }
         else if(mCompType != node.Type()){

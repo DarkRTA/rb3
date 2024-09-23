@@ -17,6 +17,7 @@ public:
         mMsg = da;
         if(mMsg) mMsg->AddRef();
     }
+    DataArray* Msg() const { return mMsg; }
 
     float start; // 0x0
     float end; // 0x4
@@ -44,6 +45,7 @@ public:
     DataEvent* NextEvent(float);
     float* EndPtr(int);
     void Invert(float);
+    int CurIndex() const { return mCurIndex; }
 
     int mCurIndex; // 0x0
     int mSize; // 0x4

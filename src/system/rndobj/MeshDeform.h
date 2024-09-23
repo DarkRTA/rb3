@@ -38,6 +38,7 @@ public:
     virtual void Print();
 
     void SetMesh(RndMesh*);
+    RndMesh* Mesh() const;
 
     NEW_OVERLOAD
     NEW_OBJ(RndMeshDeform)

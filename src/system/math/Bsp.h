@@ -34,5 +34,6 @@ extern int gBSPMaxCandidates;
 extern float gBSPCheckScale;
 
 void NumNodes(const BSPNode*, int&, int&);
+BinStream& operator>>(BinStream&, BSPNode*&);
 
 #endif // MATH_BSP_H

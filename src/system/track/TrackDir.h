@@ -8,6 +8,7 @@ class RndGroup;
 class RndMesh;
 class TrackTest;
 class TrackWidget;
+class ArpeggioShapePool;
 
 class TrackDir : public PanelDir {
 public:
@@ -28,7 +29,7 @@ public:
     virtual void SyncFingerFeedback();
     virtual void SetDisplayRange(float){}
     virtual void SetDisplayOffset(float, bool){}
-    virtual int SmasherPlate(); // change return type
+    virtual RndDir* SmasherPlate();
     virtual float GetFretPosOffset(int) const;
     virtual int GetNumFretPosOffsets() const { return 0; }
     virtual float GetCurrentChordLabelPosOffset() const;
@@ -38,13 +39,13 @@ public:
     virtual void ClearChordMeshRefCounts();
     virtual void DeleteUnusedChordMeshes();
     virtual void AddChordImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, class String);
-    virtual int GetArpeggioShapePool();
+    virtual ArpeggioShapePool* GetArpeggioShapePool();
     virtual bool IsBlackKey(int) const;
     virtual void KeyMissLeft();
     virtual void KeyMissRight();
     virtual bool IsActiveInSession() const { return false; }
-    virtual void PreDraw();
-    virtual void PostDraw();
+    virtual void PreDraw(){}
+    virtual void PostDraw(){}
 
     void AddActiveWidget(class TrackWidget*);
     void AddTestWidget(class TrackWidget*, int);
@@ -66,9 +67,15 @@ public:
     void SetScrollSpeed(float);
     float ViewTimeSeconds() const;
     void SetRunning(bool);
+    bool WarnOnResort() const { return mWarnOnResort; }
+    const Transform& SlotAt(int idx) const { return mSlots[idx]; }
 
     DECLARE_REVS;
     NEW_OBJ(TrackDir)
+
+    static void Register(){
+        REGISTER_OBJ_FACTORY(TrackDir);
+    }
 
     bool mRunning; // 0x1d6
     ObjPtr<RndGroup, ObjectDir> mDrawGroup; // 0x1d8

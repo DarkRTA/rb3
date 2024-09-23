@@ -22,9 +22,21 @@ public:
     void SetPresetsEquivalent(bool);
     void GetPresets(LightPreset*&, LightPreset*&);
     void ReportError();
+    void SchedulePstKey(LightPreset::KeyframeCmd);
+    void Interp(Symbol, Symbol, float);
+    void ForcePreset(LightPreset*, float);
+    void ForcePresets(LightPreset*, LightPreset*, float);
+    void StompPresets(LightPreset*, LightPreset*);
+    void SelectPreset(LightPreset*, bool);
+    void SetLighting(Symbol, bool);
+    LightPreset* PickRandomPreset(Symbol);
 
     NEW_POOL_OVERLOAD(LightPresetManager)
     DELETE_POOL_OVERLOAD(LightPresetManager)
+
+    DataNode OnToggleLightingEvents(DataArray*);
+    DataNode OnForcePreset(DataArray*);
+    DataNode OnForceTwoPresets(DataArray*);
 
     std::map<Symbol, std::vector<LightPreset*> > mPresets; // 0x4
     Symbol mLastCategory; // 0x1c
@@ -39,7 +51,7 @@ public:
     float mBlend; // 0x40
     float unk44; // 0x44
     int unk48; // 0x48
-    bool unk4c; // 0x4c
+    bool mIgnoreLightingEvents; // 0x4c
 };
 
 #endif

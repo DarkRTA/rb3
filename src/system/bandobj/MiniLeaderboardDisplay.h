@@ -21,8 +21,11 @@ class MiniLeaderboardDisplay : public UIComponent {
 
     bool mAllowSoloScores;
 
-    static void Init();
     NEW_OBJ(MiniLeaderboardDisplay)
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(MiniLeaderboardDisplay)
+    }
 
     DECLARE_REVS
 };

@@ -3,7 +3,9 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Poll.h"
+#include "rndobj/Env.h"
 
+class RndGroup;
 class RndFlare;
 class RndMesh;
 class RndTex;
@@ -18,12 +20,14 @@ public:
         BeamDef(const BeamDef&);
         ~BeamDef();
         void OnSetMat(RndMat*);
+        void Load(BinStream&);
+        const Vector2& NGRadii() const;
         
         RndMesh* mBeam; // 0x0
         bool mIsCone; // 0x4
         float mLength; // 0x8
         float mTopRadius; // 0xc
-        float mRadius; // 0x10
+        float mBottomRadius; // 0x10
         float mTopSideBorder; // 0x14
         float mBottomSideBorder; // 0x18
         float mBottomBorder; // 0x1c
@@ -54,37 +58,86 @@ public:
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
     virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
     virtual int CollidePlane(const Plane&);
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual ~Spotlight();
 
     virtual void UpdateBounds();
     virtual void Poll();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     
+    void BuildNGCone(BeamDef&, int);
+    void BuildNGSheet(BeamDef&);
+    void BuildNGQuad(BeamDef&, RndTransformable::Constraint);
+    void BuildNGShaft(BeamDef&);
+    void BuildShaft(BeamDef&);
+    void BuildCone(BeamDef&);
+    void BuildBeam(BeamDef&);
+
     bool GetAnimateFromPreset() const {
         return mAnimateColorFromPreset || mAnimateOrientationFromPreset;
     }
     void CalculateDirection(RndTransformable*, Hmx::Matrix3&);
+    void CloseSlaves();
+    void UpdateSlaves();
+    void SetFlareEnabled(bool);
+    void UpdateFlare();
+    void SetFlareIsBillboard(bool);
+    void ConvertGroupToMesh(RndGroup*);
+    void Generate();
+    void PropogateToPresets(int);
+    void UpdateTransforms();
+    void SetColor(int);
+    void SetIntensity(float);
+    void SetColorIntensity(const Hmx::Color&, float);
+    RndTransformable* ResolveTarget();
+    void CheckFloorSpotTransform();
+    void UpdateFloorSpotTransform(const Transform&);
+    Hmx::Color32 Color() const { return mColorOwner->mColor; }
+    float Intensity() const { return mColorOwner->mIntensity; }
+    bool LightCanSort() const { return mLightCanSort; }
+
+    RndTransformable* GetFloorSpotTarget() const {
+        return mSpotTarget ? mSpotTarget : mTarget;
+    }
+
+    bool DoFloorSpot() const {
+        bool ret = false;
+        if(mDiscMat && GetFloorSpotTarget()){
+            if(GetFloorSpotTarget()->WorldXfm().m.y.z != 0.0f) ret = true;
+        }
+        return ret;
+    }
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(Spotlight)
+    static void Register(){
+        REGISTER_OBJ_FACTORY(Spotlight)
+    }
 
     static void Init();
+    static void BuildBoard();
+    static RndEnviron* sEnviron;
+    static RndMesh* sDiskMesh;
 
     ObjPtr<RndMat, ObjectDir> mDiscMat; // 0xb8
     RndFlare* mFlare; // 0xc4
     float mFlareOffset; // 0xc8
     float mSpotScale; // 0xcc
     float mSpotHeight; // 0xd0
-    Transform unkd4;
-    Transform unk104;
-    int unk134;
-    float unk138;
+    Transform mFloorSpotXfm; // 0xd4
+    Transform mLensXfm; // 0x104
+    Hmx::Color32 mColor; // 0x134 - packed color
+    float mIntensity; // 0x138
     ObjOwnerPtr<Spotlight, ObjectDir> mColorOwner; // 0x13c
     float mLensSize; // 0x148
     float mLensOffset; // 0x14c
     ObjPtr<RndMat, ObjectDir> mLensMaterial; // 0x150
     BeamDef mBeam; // 0x15c
     ObjPtrList<RndLight, ObjectDir> mSlaves; // 0x1c4
-    ObjPtr<RndMesh, ObjectDir> mLightCanMesh;
-    Transform mLightCanXfm;
+    ObjPtr<RndMesh, ObjectDir> mLightCanMesh; // 0x1d4
+    Transform mLightCanXfm; // 0x1e0
     float mLightCanOffset; // 0x210
     ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x214
     ObjPtr<RndTransformable, ObjectDir> mSpotTarget; // 0x220
@@ -104,5 +157,10 @@ public:
     bool mAnimateOrientationFromPreset; // 0x28b
     bool unk28c;
 };
+
+inline BinStream& operator>>(BinStream& bs, Spotlight::BeamDef& bd){
+    bd.Load(bs);
+    return bs;
+}
 
 #endif

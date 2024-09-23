@@ -7,12 +7,35 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Font.h"
+#include <float.h>
 #include <set>
+
+class TrackWidget;
 
 class RndText : public RndDrawable, public RndTransformable {
 public:
-    enum Style {
+    class Style {
+    public:
+        Style()
+            : font(0), size(0.0), italics(-1), unk_c(true), unk_d(false),
+              color(0, 0, 0, 0), unk_28(0), unk_2c(FLT_MAX), brk(true), pre(true) {}
 
+        TrackWidget *font;
+        float size;
+        float italics;
+
+        bool unk_c;
+        bool unk_d;
+
+        Hmx::Color color;
+
+        bool brk;
+        bool pre;
+
+        float zOffset;
+
+        float unk_28;
+        float unk_2c;
     };
 
     enum Alignment {
@@ -66,6 +89,7 @@ public:
     NEW_OBJ(RndText)
 
     float GetStringWidthUTF8(const char*, const char*, bool, Style*) const;
+    void SyncMeshes();
     void ReserveLines(int);
     void UpdateText(bool);
     void SetFont(RndFont*);
@@ -75,6 +99,7 @@ public:
     void SetFixedLength(int);
     void GetCurrentStringDimensions(float&, float&);
     Alignment GetAlignment() const { return (Alignment)mAlign; }
+    RndFont* GetFont() const { return mFont; }
     float MaxLineWidth() const;
     void SetMarkup(bool);
     void ResizeText(int);
@@ -86,6 +111,7 @@ public:
     void SetAltSizeAndZOffset(float, float);
     void SetAlignment(Alignment);
     void SetLeading(float);
+    void SetColor(const Hmx::Color32&);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -103,14 +129,14 @@ public:
     RndFont* unkd8; // 0xd8
     float mSize; // 0xdc
     float mItalicStrength; // 0xe0
-    int mColor; // packed color? Hmx::Color32?
+    Hmx::Color32 mColor; // 0xe4
     bool unke8;
     bool unke9;
     float mZOffset;
     RndFont* unkf0;
     float mAltSize;
     float mAltItalicStrength;
-    int mAltColor;
+    Hmx::Color32 mAltColor;
     bool unk100;
     bool unk101;
     float mAltZOffset;

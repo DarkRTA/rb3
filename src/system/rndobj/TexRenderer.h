@@ -19,7 +19,7 @@ public:
     virtual void Load(BinStream&);
     virtual void DrawShowing();
     virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual void DrawPreClear();
+    virtual void DrawPreClear(){ DrawToTexture(); }
     virtual void UpdatePreClearState();
     virtual ~RndTexRenderer();
     virtual void Enter();

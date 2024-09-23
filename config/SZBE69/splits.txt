@@ -55,11 +55,11 @@ libs/quazal/refcountedobject.cpp:
 	.text       start:0x800176FC end:0x8001784C
 	.data       start:0x80818510 end:0x80818558
 
-libs/quazal/qresult.cpp:
+network/Platform/Result.cpp:
 	.text       start:0x80017898 end:0x80017964
 	.data       start:0x80818558 end:0x80818588
 
-libs/quazal/rootobject.cpp:
+network/Platform/RootObject.cpp:
 	.text       start:0x80017964 end:0x80017AFC
 
 libs/quazal/string.cpp:
@@ -531,10 +531,10 @@ system/math/strips/RevisitedRadix.cpp:
 	.text       start:0x802E1614 end:0x802E1AC8
 
 system/math/StreamChecksum.cpp:
-	.text       start:0x802E1AC8 end:0x802E1FE8
+	.text       start:0x802E1AC8 end:0x802E1DDC
 
 system/math/strips/Striper.cpp:
-	.text       start:0x802E1FE8 end:0x802E2D24
+	.text       start:0x802E1DDC end:0x802E2D24
 
 rb3/unknown/802/unk_802E0CA0.cpp:
 	.text       start:0x802E2D24 end:0x802E2E28
@@ -954,12 +954,44 @@ system/zlib/inffast.c:
 	.text       start:0x803846EC end:0x80384BA8
 	.data       start:0x80874978 end:0x808749C8
 
-rb3/chordshapegenerator.cpp:
+system/bandobj/ArpeggioShape.cpp:
+	.text       start:0x80384BA8 end:0x803869D8
+
+system/bandobj/BandButton.cpp:
+	.text       start:0x80387FF4 end:0x80389678
+
+system/bandobj/BandCamShot.cpp:
+	.text       start:0x80389678 end:0x80392CF0
+	.ctors      start:0x807EFF84 end:0x807EFF88
+
+system/bandobj/BandDirector.cpp:
+	.text       start:0x803937F8 end:0x803A1E7C
+
+system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94
 
-rb3/notetube.cpp:
-	.text       start:0x803FC0A8 end:0x803FC164
+system/bandobj/EndingBonus.cpp:
+	.text       start:0x803F5BE8 end:0x803F83A0
+
+system/bandobj/FingerShape.cpp:
+	.text       start:0x803F83A0 end:0x803F8E50
+
+system/bandobj/NoteTube.cpp:
+	.text       start:0x803FC0A8 end:0x803FD9E8
+
+system/bandobj/OutfitConfig.cpp:
+	.text       start:0x803FD9E8 end:0x8040EB9C
+
+system/bandobj/PatchDir.cpp:
+	.text       start:0x8040EB9C end:0x8041419C
+	.ctors      start:0x807EFF94 end:0x807EFF98
+
+system/bandobj/ScrollbarDisplay.cpp:
+	.text       start:0x80419BC4 end:0x8041B308
+
+system/bandobj/StarDisplay.cpp:
+	.text       start:0x8041D674 end:0x8041ED7C
 
 rb3/micinputarrow.cpp:
 	.text       start:0x80420108 end:0x804213CC
@@ -977,22 +1009,25 @@ rb3/overdrivemeter.cpp:
 rb3/gemtrackdir.cpp:
 	.text       start:0x80426FDC end:0x80430F2C
 
-rb3/unknown/804/unk_80421240.cpp:
-	.text       start:0x80430F2C end:0x804431F4
+system/bandobj/VocalTrackDir.cpp:
+	.text       start:0x80431DC8 end:0x8043B9C0
 
 rb3/trackpaneldir.cpp:
 	.text       start:0x804431F4 end:0x80448CD0
 
-rb3/crowdmetericon.cpp:
+system/bandobj/CrowdMeterIcon.cpp:
 	.text       start:0x80448CD0 end:0x80449EC8
 
-rb3/crowdaudio.cpp:
+system/bandobj/CrowdAudio.cpp:
 	.text       start:0x80449EC8 end:0x8044C194
 
-rb3/unisonicon.cpp:
+system/bandobj/InlineHelp.cpp:
+	.text       start:0x8044C194 end:0x8044EFF4
+
+system/bandobj/UnisonIcon.cpp:
 	.text       start:0x8044EFF4 end:0x8044FAF4
 
-rb3/songsectioncontroller.cpp:
+system/bandobj/SongSectionController.cpp:
 	.text       start:0x8044FAF4 end:0x8045593C
 
 system/bandobj/OvershellDir.cpp:
@@ -1235,12 +1270,27 @@ rb3/storeoffer.cpp:
 rb3/panels/storepanel.cpp:
 	.text       start:0x80525830 end:0x8052901C
 
-rb3/unknown/805/unk_8052A44C.cpp:
-	.text       start:0x8052A44C end:0x8052D22C
+system/midi/DataEventList.cpp:
+	.text       start:0x8052A508 end:0x8052CD54
 
 system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
+
+system/midi/MidiParserMgr.cpp:
+	.text       start:0x80531574 end:0x80533670
+
+system/track/Track.cpp:
+	.text       start:0x8053E0F4 end:0x8053E2A4
+
+system/track/TrackDir.cpp:
+	.text       start:0x8053E2A4 end:0x80541078
+
+system/track/TrackWidget.cpp:
+	.text       start:0x80541078 end:0x80546394
+
+system/track/TrackWidgetImp.cpp:
+	.text       start:0x80546394 end:0x80549150
 
 system/ui/LabelNumberTicker.cpp:
 	.text       start:0x80549150 end:0x8054A190
@@ -1378,6 +1428,31 @@ system/world/LightPreset.cpp:
 system/world/LightHue.cpp:
 	.text       start:0x805AECCC end:0x805B04EC
 
+system/world/LightPresetManager.cpp:
+	.text       start:0x805B04EC end:0x805B22D8
+
+system/world/Reflection.cpp:
+	.text       start:0x805B22D8 end:0x805B31E8
+
+system/world/World.cpp:
+	.text       start:0x805B31E8 end:0x805B368C
+
+system/world/Spotlight.cpp:
+	.text       start:0x805B368C end:0x805BB3BC
+
+system/world/SpotlightDrawer.cpp:
+	.text       start:0x805BB3BC end:0x805C0E04
+	.ctors      start:0x807EFFD8 end:0x807EFFDC
+
+system/world/SpotlightEnder.cpp:
+	.text       start:0x805C0E04 end:0x805C13F8
+
+system/world/Instance.cpp:
+	.text       start:0x805C13F8 end:0x805C40C4
+
+system/world/EventAnim.cpp:
+	.text       start:0x805C40C4 end:0x805C6814
+
 system/rndobj/Anim.cpp:
 	.text       start:0x805C6814 end:0x805C8850
 	.data       start:0x808944E0 end:0x80894738
@@ -1493,10 +1568,10 @@ system/rndobj/Mesh.cpp:
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
 
 system/rndobj/MeshAnim.cpp:
-	.text       start:0x80606C98 end:0x8060DD24
+	.text       start:0x80606C98 end:0x8060DD10
 
 system/rndobj/MeshDeform.cpp:
-	.text       start:0x8060DD24 end:0x80610528
+	.text       start:0x8060DD10 end:0x80610528
 
 system/rndobj/Morph.cpp:
 	.text       start:0x80610528 end:0x80613A80
@@ -1866,6 +1941,10 @@ libs/bt/stack/l2cap/l2c_utils.c:
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
+sdk/RVL_SDK/revolution/os/OSReboot.c:
+	.text       start:0x80769E30 end:0x80769EC0
+	.sbss       start:0x808E5498 end:0x808E54A0
+
 sdk/RVL_SDK/revolution/os/OSSemaphore.c:
 	.text       start:0x8076B2A0 end:0x8076B3D0
 
@@ -1880,3 +1959,8 @@ sdk/RVL_SDK/revolution/sc/scsystem.c:
 	.data       start:0x808D2AF8 end:0x808D2CF0
 	.sdata      start:0x808E35F8 end:0x808E3708
 	.bss        start:0x809ECC20 end:0x809F4DC0
+
+sdk/DWC/dwc_common/dwc_init.c:
+	.text       start:0x807E7480 end:0x807E7540
+	.data       start:0x808E1FA8 end:0x808E2018
+	.sbss       start:0x808E57D8 end:0x808E57E0

@@ -8,9 +8,12 @@
 
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
-    ObjPtr(Hmx::Object* obj, T1* cls = 0);
-    ObjPtr(const ObjPtr& oPtr);
-
+    ObjPtr(Hmx::Object* obj, T1* cls = 0) : mOwner(obj), mPtr(cls) {
+        if(mPtr != 0) mPtr->AddRef(this);
+    }
+    ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
+        if(mPtr != 0) mPtr->AddRef(this);
+    }
     virtual ~ObjPtr(){ if(mPtr != 0) mPtr->Release(this); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
@@ -36,16 +39,6 @@ public:
     Hmx::Object* mOwner;
     T1* mPtr;
 };
-
-template <class T1, class T2>
-RETAIL_DONT_INLINE_FUNC ObjPtr<T1, T2>::ObjPtr(Hmx::Object* obj, T1* cls) : mOwner(obj), mPtr(cls) {
-    if(mPtr != 0) mPtr->AddRef(this);
-}
-
-template <class T1, class T2>
-RETAIL_DONT_INLINE_FUNC ObjPtr<T1, T2>::ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
-    if(mPtr != 0) mPtr->AddRef(this);
-}
 
 template <class T1>
 DONT_INLINE BinStream& operator<<(BinStream& bs, const ObjPtr<T1, class ObjectDir>& f){
@@ -161,6 +154,7 @@ public:
         }
 
         bool operator!=(iterator it){ return mNode != it.mNode; }
+        bool operator==(iterator it){ return mNode == it.mNode; }
         bool operator!(){ return mNode == 0; }
 
         struct Node* mNode;

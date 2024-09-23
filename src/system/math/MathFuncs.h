@@ -142,6 +142,10 @@ inline bool IsFloatZero(float f){
     return fabs_f(f) < 0.0001f;
 }
 
+inline bool IsFloatOne(float f){
+    return fabs_f(f - 1.0f) < 0.000099999997f;
+}
+
 inline float pow_f(double x, double y){
     return pow(x, y);
 }

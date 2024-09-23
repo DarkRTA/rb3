@@ -96,9 +96,18 @@ public:
     void AltFontResourceFileUpdated(bool);
     RndFont* AltFont();
     RndFont* Font();
+    void UpdateAndDrawHighlightMesh();
 
-    void SetTokenFmt(Symbol s, const char* cc){
-        SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(cc)));
+    template <class T1> void SetTokenFmt(Symbol s, T1 t1) {
+        SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(t1)));
+    }
+
+    template <class T1, class T2> void SetTokenFmt(Symbol s, T1 t1, T2 t2) {
+        SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(t1), DataNode(t2)));
+    }
+
+    template <class T1, class T2, class T3> void SetTokenFmt(Symbol s, T1 t1, T2 t2, T3 t3) {
+        SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(t1), DataNode(t2), DataNode(t3)));
     }
 
     bool HasHighlightMesh() const {

@@ -2,6 +2,7 @@
 #define BEATMATCH_RGUTL_H
 #include <vector>
 #include "beatmatch/GameGem.h"
+#include "beatmatch/RGState.h"
 
 void RGSetTuning(const std::vector<int>&);
 unsigned char RGGetTuning(int);
@@ -14,6 +15,9 @@ bool HandleInterval(char*, int, const GameGem&, int, int&);
 void HandleNoThird(char*, int, const GameGem&, int, int&);
 void HandleNoSeventh(char*, int, const GameGem&, int, int&);
 void HandleNoSeventhMinor(char*, int, const GameGem&, int, int&);
+bool RGGetHeldFretRange(const RGState&, int&, int&);
+void RGGetFretLabelInfo(const RGState&, int&, int&);
 const char* RGFretNumberToString(int);
+void RGUnpackChordShapeID(unsigned int, std::vector<int>&, std::vector<bool>*);
 
 #endif

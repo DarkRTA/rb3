@@ -82,6 +82,7 @@ public:
     void DoReset(int);
     float GetFPS();
     void SimulateZeroTime();
+    void SetManagedHookup(bool b){ mManagedHookup = b; }
 
     DECLARE_REVS;
 
@@ -100,7 +101,7 @@ public:
     ObjPtr<Character, ObjectDir> mMe; // 0x44
     ObjPtr<RndWind, ObjectDir> mWind; // 0x50
     ObjPtrList<CharCollide, ObjectDir> mCollide; // 0x5c
-    bool unk6c; // 0x6c
+    bool mManagedHookup; // 0x6c
 };
 
 BinStream& operator>>(BinStream& bs, CharHair::Point& pt);

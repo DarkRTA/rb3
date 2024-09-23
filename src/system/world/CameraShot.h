@@ -120,12 +120,12 @@ public:
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);
-    virtual float StartFrame();
+    virtual float StartFrame(){ return 0; }
     virtual float EndFrame();
     virtual Hmx::Object* AnimTarget();
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
     virtual void SetPreFrame(float, float){}
-    virtual void CurrentShot(){}
+    virtual CamShot* CurrentShot(){}
     virtual bool CheckShotStarted();
     virtual bool CheckShotOver(float);
 
@@ -142,6 +142,10 @@ public:
     bool SetPos(CamShotFrame&, RndCam*);
     void Shake(float, float, const Vector2&, Vector3&, Vector3&);
     void Disable(bool, int);
+    void SetNear(float n){ mNear = n; }
+    void SetFar(float f){ mFar = f; }
+    float Duration() const { return mDuration; }
+    Symbol Category() const { return mCategory; }
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);

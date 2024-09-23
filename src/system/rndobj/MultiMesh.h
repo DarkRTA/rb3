@@ -58,6 +58,8 @@ public:
     DataNode OnScrambleXfms(const DataArray*);
     DataNode OnDistribute(const DataArray*);
 
+    RndMesh* GetMesh() const { return mMesh; }
+
     ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x20
     std::list<RndMultiMesh::Instance> mInstances; // 0x2C
 

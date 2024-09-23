@@ -5,26 +5,23 @@
 #include "rndobj/Text.h"
 #include "ui/UI.h"
 #include "ui/UIComponent.h"
-#include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
 
 INIT_REVS(StarDisplay)
 
 void StarDisplay::Init() {
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
+    Register();
     TheUI->InitResources("StarDisplay");
 }
 
-StarDisplay::StarDisplay() : unk_0x114(0), unk_0x115(1), unk_0x116(0), mStars(5), unk_0x11C(5),
-    unk_0x120(RndText::kMiddleLeft), unk_0x124(gNullStr), unk_0x128(gNullStr) {
-        unk_0x10C = New<BandLabel>();
-        unk_0x110 = New<BandLabel>();
+StarDisplay::StarDisplay() : mForceMixedMode(0), mShowDenominator(1), mShowEmptyStars(0), mStars(5), mTotalStars(5),
+    mAlignment(RndText::kMiddleLeft), mIconOverride(gNullStr), mEmptyIconOverride(gNullStr) {
+        mRsrcStarsLabel = New<BandLabel>();
+        mRsrcStarsMixedLabel = New<BandLabel>();
     }
 StarDisplay::~StarDisplay() {
-    delete unk_0x10C;
-    delete unk_0x110;
+    delete mRsrcStarsLabel;
+    delete mRsrcStarsMixedLabel;
 }
 
 BEGIN_COPYS(StarDisplay)
@@ -36,13 +33,13 @@ void StarDisplay::CopyMembers(const UIComponent* ui, Hmx::Object::CopyType ct) {
     const StarDisplay* starDisplay = dynamic_cast<const StarDisplay*>(ui);
     MILO_ASSERT(starDisplay, 62);
     mStars = starDisplay->mStars;
-    unk_0x11C = starDisplay->unk_0x11C;
-    unk_0x114 = starDisplay->unk_0x114;
-    unk_0x115 = starDisplay->unk_0x115;
-    unk_0x116 = starDisplay->unk_0x116;
-    unk_0x120 = starDisplay->unk_0x120;
-    unk_0x124 = starDisplay->unk_0x124;
-    unk_0x128 = starDisplay->unk_0x128;
+    mTotalStars = starDisplay->mTotalStars;
+    mForceMixedMode = starDisplay->mForceMixedMode;
+    mShowDenominator = starDisplay->mShowDenominator;
+    mShowEmptyStars = starDisplay->mShowEmptyStars;
+    mAlignment = starDisplay->mAlignment;
+    mIconOverride = starDisplay->mIconOverride;
+    mEmptyIconOverride = starDisplay->mEmptyIconOverride;
 }
 
 SAVE_OBJ(StarDisplay, 86)
@@ -56,24 +53,24 @@ void StarDisplay::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(6, 0)
     if (gRev != 1) bs >> mStars;
-    bs >> unk_0x11C;
-    bs >> unk_0x114;
+    bs >> mTotalStars;
+    bs >> mForceMixedMode;
     if (gRev >= 3) {
-        bs >> unk_0x115;
-        bs >> unk_0x116;
+        bs >> mShowDenominator;
+        bs >> mShowEmptyStars;
         if (gRev < 5) { 
             int x = 0; bs >> x; 
         }
     }
-    if (gRev >= 4) bs >> (int&)unk_0x120;
+    if (gRev >= 4) bs >> (int&)mAlignment;
     if (gRev == 5) {
         String s;
         bs >> s;
         bs >> s;
     }
     if (gRev >= 6) {
-        bs >> unk_0x124;
-        bs >> unk_0x128;
+        bs >> mIconOverride;
+        bs >> mEmptyIconOverride;
     } 
     UIComponent::PreLoad(bs);
 }
@@ -86,21 +83,14 @@ void StarDisplay::PostLoad(BinStream& bs) {
 void StarDisplay::Enter() { UIComponent::Enter(); UpdateDisplay(); }
 
 Symbol StarDisplay::GetSymbolForStarCount(int i) {
-    switch (i) {
-        case 0:
-            return stars_0; 
-        case 1:
-            return stars_1; 
-        case 2:
-            return stars_2; 
-        case 3:
-            return stars_3; 
-        case 4:
-            return stars_4;
-        case 5:
-            return stars_5;  
-        case 6:
-            return stars_6;
+    switch(i){
+        case 0: return stars_0; 
+        case 1: return stars_1; 
+        case 2: return stars_2; 
+        case 3: return stars_3; 
+        case 4: return stars_4;
+        case 5: return stars_5;  
+        case 6: return stars_6;
         default:
             MILO_FAIL("Number of stars is unsupported: stars = %i", i);
             return gNullStr; 
@@ -108,48 +98,98 @@ Symbol StarDisplay::GetSymbolForStarCount(int i) {
 }
 
 int StarDisplay::GetStarCountForSymbol(Symbol s) {
-    int i = 0;
-    Symbol* s2;
-    do {
-        s2 = &GetSymbolForStarCount(i);
-        if (*s2 == s) return i;
-    } while (++i <= 6);
+    for(int i = 0; i <= 6; i++){
+        if(GetSymbolForStarCount(i) == s) return i;
+    }
     MILO_FAIL("can't set star display to token %s", s.Str());
     return 0;
 }
 
-void StarDisplay::DrawShowing() {
-    ObjectDir* dir = mResource->mDir.mDir;
-    MILO_ASSERT(dir, 312);
-    unk_0x10C->SetTransParent(this, false);
-    unk_0x10C->Draw();
-    unk_0x110->SetTransParent(this, false);
-    unk_0x110->Draw();
-    Transform* t;
-    if (mCache->mFlags & 1) t = &WorldXfm_Force();
-    else t = &mWorldXfm;
-    SetWorldXfm(*t);
+// this gets inlined, but "*" has to be part of the stringbase - fix this
+inline bool StarDisplay::HasStarIcon() const {
+    return mIconOverride != gNullStr && strcmp(mIconOverride.Str(), "*") != 0;
 }
 
-void StarDisplay::SetValues(int st, int max) { mStars = st; unk_0x11C = max; UpdateDisplay(); }
+char StarDisplay::GetStarIcon() const {
+    char ret = '*';
+    bool hasstaricon = mIconOverride != gNullStr && strcmp(mIconOverride.Str(), "*") != 0;
+    if(hasstaricon){
+        String str(mIconOverride);
+        if(!str.empty()){
+            ret = str[0];
+        }
+    }
+    return ret;
+}
 
+// fn_8041DE94
+char StarDisplay::GetEmptyStarIcon() const {
+    char ret = 'p';
+    if(mEmptyIconOverride != gNullStr && strcmp(mEmptyIconOverride.mStr, "p") != 0){
+        String str(mEmptyIconOverride);
+        if(!str.empty()){
+            ret = str[0];
+        }
+    }
+    return ret;
+}
+
+// fn_8041DF40
+void StarDisplay::UpdateDisplay(){
+    bool show = !mForceMixedMode ? mTotalStars : true;
+    mRsrcStarsMixedLabel->SetShowing(show);
+    mRsrcStarsLabel->SetShowing(!show);
+    if(show){
+        char icon = GetStarIcon();
+        String str("");
+        str += icon;
+        if(mShowDenominator){
+            mRsrcStarsMixedLabel->SetTokenFmt(tour_stars_fraction_fmt, mStars, mTotalStars, str);
+        }
+        else {
+            mRsrcStarsMixedLabel->SetTokenFmt(tour_stars_simple_fmt, mStars, str);
+        }
+    }
+    else {
+        mRsrcStarsLabel->SetTextToken(gNullStr);
+        for(int i = 0; i < mTotalStars; i++){
+            char icon;
+            if(mStars == 6 && !HasStarIcon()) icon = '=';
+            else if(i < mStars) icon = GetStarIcon();
+            else if(mShowEmptyStars) icon = GetEmptyStarIcon();
+            else continue;
+            mRsrcStarsLabel->AppendIcon(icon);
+        }
+    }
+    mRsrcStarsLabel->SetAlignment(mAlignment);
+    mRsrcStarsMixedLabel->SetAlignment(mAlignment);
+}
+
+void StarDisplay::DrawShowing() {
+    RndDir* dir = mResource->Dir();
+    MILO_ASSERT(dir, 312);
+    mRsrcStarsLabel->SetTransParent(this, false);
+    mRsrcStarsLabel->Draw();
+    mRsrcStarsMixedLabel->SetTransParent(this, false);
+    mRsrcStarsMixedLabel->Draw();
+    SetWorldXfm(WorldXfm());
+}
+
+void StarDisplay::SetValues(int st, int max) { mStars = st; mTotalStars = max; UpdateDisplay(); }
 void StarDisplay::SetToToken(Symbol s) { mStars = GetStarCountForSymbol(s); UpdateDisplay(); }
-
-void StarDisplay::SetAlignment(RndText::Alignment a) { unk_0x120 = a; UpdateDisplay(); }
-
-void StarDisplay::SetForceMixedMode(bool b) { unk_0x114 = b; UpdateDisplay(); }
-
-void StarDisplay::SetShowDenominator(bool b) { unk_0x115 = b; UpdateDisplay(); }
+void StarDisplay::SetAlignment(RndText::Alignment a) { mAlignment = a; UpdateDisplay(); }
+void StarDisplay::SetForceMixedMode(bool b) { mForceMixedMode = b; UpdateDisplay(); }
+void StarDisplay::SetShowDenominator(bool b) { mShowDenominator = b; UpdateDisplay(); }
 
 void StarDisplay::Update() {
     UIComponent::Update();
-    DataArray* typeDef = mTypeDef;
+    const DataArray* typeDef = TypeDef();
     MILO_ASSERT(typeDef, 369);
-    ObjectDir* dir = mResource->mDir.mDir;
+    RndDir* dir = mResource->Dir();
     MILO_ASSERT(dir, 372);
-    unk_0x10C->ResourceCopy(dir->Find<BandLabel>(typeDef->FindArray(resource_stars_label, true)->Str(1), true));
-    BandLabel* bl2 = dir->Find<BandLabel>(typeDef->FindArray(resource_stars_mixed_label, true)->Str(1), true);
-    unk_0x110->ResourceCopy(bl2);
+    mRsrcStarsLabel->ResourceCopy(dir->Find<BandLabel>(typeDef->FindStr(resource_stars_label), true));
+    BandLabel* bl2 = dir->Find<BandLabel>(typeDef->FindStr(resource_stars_mixed_label), true);
+    mRsrcStarsMixedLabel->ResourceCopy(bl2);
     UpdateDisplay();
 }
 
@@ -162,14 +202,14 @@ END_HANDLERS
 
 BEGIN_PROPSYNCS(StarDisplay)
     SYNC_PROP_MODIFY(stars, mStars, UpdateDisplay())
-    SYNC_PROP_MODIFY(total_stars, unk_0x11C, UpdateDisplay())
-    SYNC_PROP_MODIFY(force_mixed_mode, unk_0x114, UpdateDisplay())
-    SYNC_PROP_MODIFY(show_empty_stars, unk_0x116, UpdateDisplay())
-    SYNC_PROP_MODIFY(show_denominator, unk_0x115, UpdateDisplay())
-    SYNC_PROP_SET(alignment, unk_0x120, SetAlignment((RndText::Alignment)_val.Int(NULL)))
-    SYNC_PROP_MODIFY(icon_override, unk_0x124, UpdateDisplay())
-    SYNC_PROP_MODIFY(empty_icon_override, unk_0x128, UpdateDisplay())
-    SYNC_PROP_SET(float_stars, (float)mStars, SetValues(_val.Float(NULL), unk_0x11C))
-    SYNC_PROP_SET(float_total_stars, (float)unk_0x11C, SetValues(mStars, _val.Float(NULL)))
+    SYNC_PROP_MODIFY(total_stars, mTotalStars, UpdateDisplay())
+    SYNC_PROP_MODIFY(force_mixed_mode, mForceMixedMode, UpdateDisplay())
+    SYNC_PROP_MODIFY(show_empty_stars, mShowEmptyStars, UpdateDisplay())
+    SYNC_PROP_MODIFY(show_denominator, mShowDenominator, UpdateDisplay())
+    SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int(NULL)))
+    SYNC_PROP_MODIFY(icon_override, mIconOverride, UpdateDisplay())
+    SYNC_PROP_MODIFY(empty_icon_override, mEmptyIconOverride, UpdateDisplay())
+    SYNC_PROP_SET(float_stars, (float)mStars, SetValues(_val.Float(NULL), mTotalStars))
+    SYNC_PROP_SET(float_total_stars, (float)mTotalStars, SetValues(mStars, _val.Float(NULL)))
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

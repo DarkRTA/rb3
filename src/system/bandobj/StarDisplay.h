@@ -27,24 +27,34 @@ class StarDisplay : public UIComponent {
     void SetToToken(Symbol);
     void UpdateDisplay();
     void DrawShowing();
+    void SetForceMixedMode(bool);
+    void SetShowDenominator(bool b);
+    void SetAlignment(RndText::Alignment);
+    char GetStarIcon() const;
+    char GetEmptyStarIcon() const;
+
+    bool HasStarIcon() const;
     
     static Symbol GetSymbolForStarCount(int);
     static int GetStarCountForSymbol(Symbol);
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(StarDisplay);
+    }
 
     DECLARE_REVS
     NEW_OBJ(StarDisplay)
 
-    BandLabel* unk_0x10C; // 0x10C
-    BandLabel* unk_0x110; // 0x110
-    bool unk_0x114; void SetForceMixedMode(bool); // 0x114
-    bool unk_0x115; void SetShowDenominator(bool b); // 0x115
-    bool unk_0x116; // 0x116
+    BandLabel* mRsrcStarsLabel; // 0x10C
+    BandLabel* mRsrcStarsMixedLabel; // 0x110
+    bool mForceMixedMode; // 0x114
+    bool mShowDenominator; // 0x115
+    bool mShowEmptyStars; // 0x116
     int mStars; // 0x118
-    int unk_0x11C; // 0x11C
-    RndText::Alignment unk_0x120; void SetAlignment(RndText::Alignment); // 0x120
-    Symbol unk_0x124; // 0x124
-    Symbol unk_0x128; // 0x128
+    int mTotalStars; // 0x11C
+    RndText::Alignment mAlignment; // 0x120
+    Symbol mIconOverride; // 0x124
+    Symbol mEmptyIconOverride; // 0x128
 }; 
 
 #endif // BANDOBJ_STARDISPLAY_H

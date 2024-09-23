@@ -152,7 +152,7 @@ public:
         if(AddToNotifies(cc, mNotifies)){
             TheDebugNotifier << cc;
         }
-        return *this;
+        // return *this;
     }
 };
 #ifdef MILO_DEBUG

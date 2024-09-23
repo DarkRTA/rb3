@@ -102,9 +102,9 @@
   "json.schemas": [
     {
       "fileMatch": [
-        "config/**/flags.json"
+        "config/**/config.json"
       ],
-      "url": "./doc/flags_schema.json"
+      "url": "./doc/config_schema.json"
     },
     {
       "fileMatch": [

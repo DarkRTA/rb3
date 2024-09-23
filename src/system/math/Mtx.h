@@ -53,12 +53,12 @@ namespace Hmx {
             float s = Sine(angle);
             Set(1.0f, 0.0f, 0.0f, 0.0f, c, s, 0.0f, -s, c);
         }
-        RETAIL_DONT_INLINE_CLASS void Identity(){
+        void Identity(){
             x.Set(1.0f, 0.0f, 0.0f);
             y.Set(0.0f, 1.0f, 0.0f);
             z.Set(0.0f, 0.0f, 1.0f);
         }
-        RETAIL_DONT_INLINE_CLASS Matrix3& operator=(const Matrix3& mtx){
+        Matrix3& operator=(const Matrix3& mtx){
             PSQ_MOVE(x.x, mtx.x.x);
             x.z = mtx.x.z;
 
@@ -75,7 +75,7 @@ namespace Hmx {
             return x == mtx.x && y == mtx.y && z == mtx.z;
         }
 
-        RETAIL_DONT_INLINE_CLASS bool operator!=(const Matrix3& mtx) const {
+        bool operator!=(const Matrix3& mtx) const {
             return x != mtx.x || y != mtx.y || z != mtx.z;
         }
 
@@ -187,13 +187,6 @@ public:
         m = mtx; v = vec;
     }
 
-    void SetFromDA(const class DataArray* da) {
-        Reset();
-        v.x = da->Float(2);
-        v.y = da->Float(3);
-        v.z = da->Float(4);
-    }
-
     void LookAt(const Vector3&, const Vector3&);
     void Zero(){
         m.Zero();
@@ -224,6 +217,7 @@ public:
     void Set(const TransformNoScale&);
     void SetRot(const Hmx::Matrix3&);
     void Reset();
+    TransformNoScale& operator=(const TransformNoScale& t){ Set(t); }
 
     ShortQuat q; // 0x0/2/4/6
     class Vector3 v; // 0x8
@@ -262,6 +256,9 @@ public:
 
 class Triangle {
 public:
+    Triangle(){}
+    void Set(const Vector3&, const Vector3&, const Vector3&);
+
     Vector3 origin; // 0x0
     Hmx::Matrix3 frame; // 0xc
 };
@@ -288,6 +285,8 @@ void Multiply(const Vector3&, const Hmx::Matrix3&, Vector3&);
 void Multiply(const Transform&, const Transform&, Transform&);
 void Multiply(const Transform&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
+void Multiply(const Vector3&, const Transform&, Vector3&);
+void Multiply(const Plane&, const Transform&, Plane&);
 void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){

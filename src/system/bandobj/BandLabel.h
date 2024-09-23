@@ -2,6 +2,7 @@
 #define BANDOBJ_BANDLABEL_H
 #include "ui/UITransitionHandler.h"
 #include "ui/UILabel.h"
+#include "math/Key.h"
 
 class BandLabel : public UILabel, public UITransitionHandler {
 public:
@@ -21,13 +22,17 @@ public:
     virtual bool IsEmptyValue() const;
     virtual void FinishValueChange();
 
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    static void LoadOldBandTextComp(BinStream&);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandLabel);
     }
     NEW_OBJ(BandLabel);
 
-    std::vector<int> unk1dc; // 0x1dc
+    Keys<float, float> unk1dc; // 0x1dc
     Symbol unk1e4; // 0x1e4
     String unk1e8; // 0x1e8
     bool unk1f4; // 0x1f4

@@ -111,6 +111,7 @@ public:
     bool GetRefractEnabled(bool);
     RndTex* GetRefractNormalMap();
     float GetRefractStrength();
+    ZMode GetZMode() const { return mZMode; }
     RndMat* NextPass() const { return mNextPass; }
     const Transform& TexXfm() const { return mTexXfm; }
     void SetTexXfm(const Transform& tf){
@@ -135,6 +136,36 @@ public:
     void SetColor(const Hmx::Color& col){
         mColor.Set(col.red, col.green, col.blue);
         mDirty |= 1;
+    }
+    void SetUseEnv(bool use_env){
+        mUseEnviron = use_env;
+        mDirty |= 2;
+    }
+    void SetPreLit(bool lit){
+        mPreLit = lit;
+        mDirty |= 2;
+    }
+    void SetBlend(Blend blend){
+        mBlend = blend;
+        mDirty |= 2;
+    }
+    void SetAlphaCut(bool cut){
+        mAlphaCut = cut;
+        mDirty |= 2;
+    }
+    void SetAlphaThreshold(int thresh){
+        mAlphaThresh = thresh;
+    }
+    void SetTexWrap(TexWrap wrap){
+        mTexWrap = wrap;
+        mDirty |= 2;
+    }
+    void SetPerPixelLit(bool lit){
+        mPerPixelLit = lit;
+        mDirty |= 2;
+    }
+    void SetPointLights(bool lit){
+        mPointLights = lit;
     }
 
     DataNode OnAllowedNextPass(const DataArray*);

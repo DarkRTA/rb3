@@ -225,7 +225,14 @@ template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::map
 }
 
 template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
-
+    int size;
+    bs >> size;
+    for(; size != 0; size--){
+        T1 key;
+        bs >> key;
+        bs >> map[key];
+    }
+    return bs;
 }
 
 template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2>& p) {

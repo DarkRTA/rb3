@@ -39,6 +39,7 @@ public:
     DELETE_POOL_OVERLOAD(DirLoader);
 
     static bool sPrintTimes;
+    static class ObjectDir* sTopSaveDir;
     static DirLoader* Find(const FilePath&);
     static DirLoader* FindLast(const FilePath&);
     static void PrintLoaded(const char*);

@@ -1,4 +1,15 @@
 {
+    "progress_categories": {
+        "game": "Game Code",
+        "network": "Networking Code",
+        "engine": "Milo Engine Code",
+        "lib": "Third-Party Libraries",
+        "sdk": "SDK Code"
+    },
+    "asflags": [
+        "-mgekko",
+        "--strip-local-absolute"
+    ],
     "ldflags": [
         "-fp hardware",
         "-nodefaults",
@@ -7,7 +18,6 @@
     ],
     "cflags": {
         "base": {
-            "base": null,
             "flags": [
                 "-nodefaults",
                 "-nosyspath",
@@ -26,6 +36,7 @@
                 "-RTTI on",
                 "-Cpp_exceptions off",
 
+                "-Isrc/",
                 "-d NDEBUG"
             ]
         },
@@ -41,7 +52,7 @@
 
                 "-O4,p",
                 "-inline noauto",
-                "-func_align 4" 
+                "-func_align 4"
             ]
         },
         "runtime": {
@@ -63,9 +74,9 @@
         "rvl_sdk": {
             "base": "base",
             "flags": [
-                "-func_align 16",
-                "-lang=c",
-                "-O4"
+                "-lang=c99",
+                "-O4",
+                "-func_align 16"
             ]
         },
         "band3": {
@@ -155,6 +166,14 @@
                 "-lang=c99",
                 "-O4,p",
                 "-inline auto"
+            ]
+        },
+        "sdk/DWC": {
+            "base": "base",
+            "flags": [
+                "-O4,p",
+                "-func_align 16",
+                "-Isrc/sdk/DWC"
             ]
         }
     }

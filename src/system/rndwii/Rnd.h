@@ -8,6 +8,10 @@
 
 class WiiRnd : public Rnd {
 public:
+    enum SharedTexType {
+
+    };
+
     WiiRnd();
     virtual ~WiiRnd();
     virtual DataNode Handle(DataArray*, bool);
@@ -21,6 +25,7 @@ public:
     void DrawQuad(const Hmx::Rect&);
     void DrawLine(const Vector3&, const Vector3&, const Hmx::Color&, bool);
     void WiiPreInit();
+    RndTex* GetSharedTex(SharedTexType, bool);
 
     void* unk_0x1A8, *unk_0x1AC;
     Mtx44 unk_0x1BC, unk_0x1FC, unk_0x23C;
@@ -36,6 +41,7 @@ public:
 
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);
 void RndGXEnd();
+void RndGxDrawDone();
 
 extern WiiRnd TheWiiRnd;
 extern int gSuppressPointTest;

@@ -72,6 +72,7 @@ public:
     static void Register(){
         REGISTER_OBJ_FACTORY(EventTrigger)
     }
+    void SetEnabled(bool e){ mEnabled = e; }
 
     void RegisterEvents();
     void UnregisterEvents();

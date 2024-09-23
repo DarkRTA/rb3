@@ -23,6 +23,11 @@ class ColorPalette : public Hmx::Object {
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     
+    const Hmx::Color& GetColor(int idx) const {
+        MILO_ASSERT(mColors.size(), 0x19);
+        return mColors[idx % mColors.size()];
+    }
+
     DECLARE_REVS
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -31,7 +36,7 @@ class ColorPalette : public Hmx::Object {
         REGISTER_OBJ_FACTORY(ColorPalette)
     }
 
-    std::vector<Hmx::Color> mColors;
+    std::vector<Hmx::Color> mColors; // 0x1C
 };
 
 BinStream& operator>>(BinStream&, ColorSet&);

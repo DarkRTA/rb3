@@ -192,8 +192,11 @@ float TrackDir::YToSeconds(float f) const {
 float TrackDir::CutOffY() const {
     if(TheLoadMgr.EditMode()){
         return mBottomY;
+    } else {
+        float secs = TheTaskMgr.Seconds(TaskMgr::b);
+        float bias = secs * mYPerSecond;
+        return mBottomY + bias;
     }
-    else return mBottomY + (TheTaskMgr.Seconds(TaskMgr::b) * mYPerSecond);
 }
 
 // fn_8053FC48
@@ -284,7 +287,7 @@ void TrackDir::AddTestWidget(TrackWidget* widget, int i){
 void TrackDir::AddActiveWidget(TrackWidget* widget){
     std::vector<TrackWidget*>::iterator it = std::find(mActiveWidgets.begin(), mActiveWidgets.end(), widget);
     MILO_ASSERT(it == mActiveWidgets.end(), 0x2A5);
-    if(mActiveWidgets.size() == mActiveWidgets.capacity()){
+    if(mActiveWidgets.size() == mActiveWidgets.capacity() && mActiveWidgets.size() == mActiveWidgets.capacity()){
         MILO_FAIL("Number of active widgets exceeds capacity %d", mActiveWidgets.capacity());
     }
     mActiveWidgets.push_back(widget);

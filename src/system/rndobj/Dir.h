@@ -45,7 +45,7 @@ public:
     virtual void Enter();
     virtual void Exit();
     virtual void ListPollChildren(std::list<RndPollable*>&) const;
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual void Export(DataArray*, bool);
     virtual void ChainSourceSubdir(MsgSource*, ObjectDir*);
 

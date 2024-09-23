@@ -80,7 +80,9 @@ static void DebugModal(bool& fail, char* msg, bool wait){
         String str(msg);
         gNotifies.push_back(str);
     }
+    #ifdef MILO_DEBUG
     TheDebug << MakeString("%s\n", msg);
+    #endif
     if(wait && fail){
         OSFatal(DebugTextColor, DebugBGColor, msg);
     }
@@ -293,6 +295,7 @@ void Debug::Print(const char* msg) {
 }
 
 void Debug::StartLog(const char* file, bool always_flush){
+    #ifdef MILO_DEBUG
     delete mLog;
     mLog = 0;
     mLog = new TextFileStream(file, false);
@@ -302,11 +305,14 @@ void Debug::StartLog(const char* file, bool always_flush){
         delete mLog;
         mLog = 0;
     }
+    #endif
 }
 
 void Debug::StopLog(){
+    #ifdef MILO_DEBUG
     delete mLog;
     mLog = 0;
+    #endif
 }
 
 Debug::Debug() : mNoDebug(0), mFailing(0), mExiting(0), mNoTry(0), mNoModal(0), mTry(0), mLog(0), mReflect(0), mModalCallback(DebugModal), mFailThreadMsg(0), mNotifyThreadMsg(0) {

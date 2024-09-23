@@ -14,14 +14,24 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndMeshAnim();
+    virtual ~RndMeshAnim(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget();
+    virtual Hmx::Object* AnimTarget(){ return mMesh; }
     virtual void SetKey(float);
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
+    int NumVerts();
+    void ShrinkVerts(int);
+    void ShrinkKeys(int);
+
+    Keys<std::vector<Vector3>, std::vector<Vector3> >& VertPointsKeys(){ return mKeysOwner->mVertPointsKeys; }
+    Keys<std::vector<Vector3>, std::vector<Vector3> >& VertNormalsKeys(){ return mKeysOwner->mVertNormalsKeys; }
+    Keys<std::vector<Vector2>, std::vector<Vector2> >& VertTexsKeys(){ return mKeysOwner->mVertTexsKeys; }
+    Keys<std::vector<Hmx::Color32>, std::vector<Hmx::Color32> >& VertColorsKeys(){ return mKeysOwner->mVertColorsKeys; }
+
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndMeshAnim)

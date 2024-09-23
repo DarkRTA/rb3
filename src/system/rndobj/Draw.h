@@ -86,10 +86,10 @@ public:
     bool mLinePairs : 1; // used in RndLine
     bool mLineUpdate : 1; // used in RndLine
 
-    bool unk9p0 : 1;
+    bool mHasAOCalc : 1; // used in RndMesh
     bool mKeepMeshData : 1; // used in RndMesh
     bool unk9p2 : 1;
-    bool unk9p3 : 1;
+    bool mForceNoQuantize : 1; // used in RndMesh
     bool unk9p4 : 1; // used in RndMultiMesh
     bool mUseCurrentRect : 1; // used in RndScreenMask
     bool unk9p6 : 1; // used in RndTexBlender

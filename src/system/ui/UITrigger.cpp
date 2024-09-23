@@ -37,7 +37,7 @@ BEGIN_LOADS(UITrigger)
         ObjPtr<RndAnimatable, ObjectDir> animPtr(this, 0);
         bs >> animPtr;
         mAnims.clear();
-        mAnims.alloc_back();
+        mAnims.push_back();
         EventTrigger::Anim& anim = mAnims.back();
         anim.mAnim = animPtr;
     }

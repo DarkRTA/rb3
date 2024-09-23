@@ -26,6 +26,14 @@ public:
     void SetMat(RndMat*);
     void SetPointTest(bool);
     void SetSteps(int);
+    void SetTestDone(){ mTestDone = true; }
+    RndMat* GetMat() const { return mMat; }
+    int GetSteps() const { return mSteps; }
+
+    void SetVisible(bool b){
+        SetTestDone();
+        mVisible = b;
+    }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

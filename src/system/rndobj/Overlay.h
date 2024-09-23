@@ -24,6 +24,11 @@ public:
     void SetCallback(Callback* cb){ mCallback = cb; }
     bool Showing() const { return mShowing; }
 
+    void SetOverlay(bool b){
+        mShowing = b;
+        mTimer.Restart();
+    }
+
     void SetTimeout(float);
     void SetLines(int);
     void Clear();

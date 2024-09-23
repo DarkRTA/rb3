@@ -4,9 +4,9 @@
 #include "rndobj/Text.h"
 #include "obj/ObjPtr_p.h"
 #include "track/TrackWidgetImp.h"
+#include "track/TrackDir.h"
 
 class RndEnviron;
-class TrackDir;
 
 class TrackWidget : public RndDrawable {
 public:
@@ -22,6 +22,7 @@ public:
     virtual void DrawShowing();
     virtual ~TrackWidget();
 
+    void SetScale(float);
     void Clear();
     void SyncImp();
     void Init();
@@ -30,15 +31,21 @@ public:
     void CheckScales() const;
     void SetInactive();
     void SetTextAlignment(RndText::Alignment);
-    bool Empty();
+    int Size() const;
     void ApplyOffsets(Transform&);
     void UpdateActiveStatus();
     void RemoveAt(float);
+    void RemoveAt(float, int);
     float GetFirstInstanceY();
     void AddInstance(Transform, float);
     void AddTextInstance(const Transform&, class String, bool);
     void AddMeshInstance(const Transform&, RndMesh*, float);
     void SetTrackDir(TrackDir* dir){ mTrackDir = dir; }
+    bool Empty(){ return mImp->Empty(); }
+
+    float NewYOffset(float secs) const {
+        return mYOffset + mTrackDir->SecondsToY(secs);
+    }
 
     DataNode OnSetMeshes(const DataArray*);
     DataNode OnAddInstance(const DataArray*);
@@ -50,6 +57,10 @@ public:
     DELETE_OVERLOAD
     DECLARE_REVS
 
+    static void Register(){
+        REGISTER_OBJ_FACTORY(TrackWidget);
+    }
+
     ObjPtrList<RndMesh, class ObjectDir> mMeshes; // 0x20
     ObjPtrList<RndMesh, class ObjectDir> mMeshesLeft; // 0x30
     ObjPtrList<RndMesh, class ObjectDir> mMeshesSpan; // 0x40
@@ -57,7 +68,9 @@ public:
     ObjPtr<RndEnviron, class ObjectDir> mEnviron; // 0x60
     float mBaseLength; // 0x6c
     float mBaseWidth; // 0x70
-    Vector3 mOffset; // 0x74
+    float mXOffset; // 0x74
+    float mYOffset; // 0x78
+    float mZOffset; // 0x7c
     TrackDir* mTrackDir; // 0x80
     TrackWidgetImpBase* mImp; // 0x84
     ObjPtr<RndFont, class ObjectDir> mFont; // 0x88
@@ -66,26 +79,16 @@ public:
     Hmx::Color mTextColor; // 0xa4
     Hmx::Color mAltTextColor; // 0xb4
     ObjPtr<RndMat, class ObjectDir> mMat; // 0xc4
-    bool unkd0b7 : 1; // 0xd0 >> 7 & 1
+    // 0xd0
+    bool mActive : 1; // 0xd0 >> 7 & 1
     bool mWideWidget : 1; // 0xd0 >> 6 & 1
     bool mAllowRotation : 1; // 0xd0 >> 5 & 1
     bool mAllowShift : 1; // 0xd0 >> 4 & 1
     bool mAllowLineRotation : 1; // 0xd0 >> 3 & 1
-    bool unkd1;
-    bool unkd2;
-    bool unkd3;
-    int unkd4 : 10;
-
-    // rlwinm r0, r5, 0, 8, 4: accesses bits 27-23 (sets to 0) - 5 bits
-    // rlwimi r0, r4, 15, 8, 16: 15-23? - 7 bits
-    // rlwinm r0, r0, 0, 27, 16: accesses bits 15-4 (sets to 0) - 12 bits
-
-    // mMaxMeshes: 0xd0...? - accesses bits 14-23
-    // mCharsPerInst: 0xd0...? - accesses bits 4-14
-    // mWidgetType: 0xd0...? - accesses bits 23-26
-
-    // accesses bits 0-21
-    // mMaxTextInstances: 0xd4 >> 0x16, accesses bits 22-31???
+    int mWidgetType : 3;
+    int mMaxMeshes : 9;
+    int mCharsPerInst : 10; 
+    int mMaxTextInstances : 10;
 };
 
 #endif // TRACK_TRACKWIDGET_H

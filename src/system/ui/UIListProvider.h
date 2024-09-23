@@ -60,8 +60,8 @@ public:
     mutable int mOffset; // 0x8
     bool mFluidWidth; // 0xc
     bool unkd; // 0xd
-    std::list<Symbol> unk10; // 0x10
-    std::list<Symbol> unk18; // 0x18
+    std::list<Symbol> mDisabled; // 0x10
+    std::list<Symbol> mDimmed; // 0x18
     std::vector<float> mWidths; // 0x20
     UIList* mList; // 0x28
 };

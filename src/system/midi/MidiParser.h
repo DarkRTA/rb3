@@ -54,6 +54,12 @@ public:
     int GetIndex();
     void SetGlobalVars(int, int, const DataNode&);
     void HandleEvent(int, int, const DataNode&);
+    void Poll();
+    void FixGap(float*);
+    void InsertDataEvent(float, float, const DataNode&);
+    int ParseAll(GemListInterface*, std::vector<VocalEvent, unsigned int>&);
+    void PushIdle(float, float, int, Symbol);
+    DataEventList* Events() const { return mEvents; }
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
@@ -79,7 +85,7 @@ public:
     DataArray* mCurParser; // 0x38
     DataArray* mAllowedNotes; // 0x3c
     std::vector<VocalEvent>* mVocalEvents; // 0x40
-    std::vector<Note, unsigned int> mNotes; // 0x48
+    std::vector<Note, unsigned int> mNotes; // 0x44
     GemListInterface* mGems; // 0x50
     bool mInverted; // 0x54
     PostProcess mProcess; // 0x58

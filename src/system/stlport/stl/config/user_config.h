@@ -170,9 +170,7 @@
  *  Define this macro to disable STLport extensions (for example, to make sure your code will
  *  compile with some other implementation )
  */
-/*
 #define _STLP_NO_EXTENSIONS 1
-*/
 
 /*
  * boris : this setting is here as we cannot detect precense of new Platform SDK automatically
