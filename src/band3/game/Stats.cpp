@@ -107,9 +107,6 @@ void Stats::GetSectionInfo(int) const {}
 
 void Stats::GetAverageMsError() const {}
 
-
-
-
 SingerStats::SingerStats(int) {}
 void SingerStats::Finalize() {}
 void SingerStats::SetPartPercentage(int, float) {}

@@ -152,43 +152,39 @@ public:
     void SetTripleHarmonyPhraseCount(int);
     void AccessSingerStats(int);
 
-
-    int mHitCount;   // 0x00
-    int mMissCount;  // 0x04
-    int m0x08;
-    int m0x0c;
-    int m0x10;
-    int m0x14;
-    float mNotesHitFraction; // 0x18
-    bool mFailedDeploy; // 0x1c
-    int mDeployCount;  // 0x20
-    int mFillHitCount; // 0x24
-    int m0x28;
-    int m0x2c;
-    int m0x30;
-    bool m0x34;
-    bool mFinalized;
-    int mSoloPercentage;
-    int m0x3c;
-    bool mPerfectSoloWithSoloButtons;
-    bool m0x41;
-    int mNumberOfSingers; // 0x44
-    int m0x48;
-    int mDoubleHarmonyHit; // 0x4c
-    int mDoubleHarmonyPhraseCount; // 0x50
-    int mTripleHarmonyHit; // 0x54
-    int mTripleHarmonyPhraseCount; // 0x58
-    int m0x5c;
-    int m0x60;
-    int m0x64;
-    int m0x68;
-    int m0x6c;
-    int m0x70; // vector
-    int m0x74;
-    int m0x78; // vector
-    int m0x7c;
-    int m0x80; // vector
-    int m0x84;
+    int mHitCount;                             // 0x000
+    int mMissCount;                            // 0x004
+    int m0x08;                                 // 0x008
+    int m0x0c;                                 // 0x00c
+    int m0x10;                                 // 0x010
+    int m0x14;                                 // 0x014
+    float mNotesHitFraction;                   // 0x018
+    bool mFailedDeploy;                        // 0x01c
+    int mDeployCount;                          // 0x020
+    int mFillHitCount;                         // 0x024
+    int m0x28;                                 // 0x028
+    int m0x2c;                                 // 0x02c
+    int m0x30;                                 // 0x030
+    bool m0x34;                                // 0x034
+    bool mFinalized;                           // 0x035
+    int mSoloPercentage;                       // 0x038
+    int m0x3c;                                 // 0x03c
+    bool mPerfectSoloWithSoloButtons;          // 0x040
+    bool m0x41;                                // 0x041
+    int mNumberOfSingers;                      // 0x044
+    int m0x48;                                 // 0x048
+    int mDoubleHarmonyHit;                     // 0x04c
+    int mDoubleHarmonyPhraseCount;             // 0x050
+    int mTripleHarmonyHit;                     // 0x054
+    int mTripleHarmonyPhraseCount;             // 0x058
+    int m0x5c;                                 // 0x05c
+    int m0x60;                                 // 0x060
+    int m0x64;                                 // 0x064
+    int m0x68;                                 // 0x068
+    int m0x6c;                                 // 0x06c
+    std::vector<int> m0x70;                    // 0x070
+    std::vector<int> m0x78;                    // 0x078
+    std::vector<int> m0x80;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
     int mSolo; // 0x90
