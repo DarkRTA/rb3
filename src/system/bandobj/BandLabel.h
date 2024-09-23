@@ -15,7 +15,9 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~BandLabel();
+    virtual void PreLoad(BinStream&);
     virtual void Poll();
+    virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void SetDisplayText(const char*, bool);
     virtual void Count(int, int, float, Symbol);
     virtual void FinishCount();
@@ -37,5 +39,11 @@ public:
     String unk1e8; // 0x1e8
     bool unk1f4; // 0x1f4
 };
+
+BEGIN_MESSAGE(BandLabelCountDoneMsg, count_done, BandLabel*);
+END_MESSAGE;
+
+inline BandLabelCountDoneMsg::BandLabelCountDoneMsg(BandLabel* label) : 
+    Message(Type(), DataNode(label)){}
 
 #endif // BANDOBJ_BANDLABEL_H

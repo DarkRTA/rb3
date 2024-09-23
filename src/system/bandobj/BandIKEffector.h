@@ -11,7 +11,6 @@ public:
     public:
         Constraint(Hmx::Object*);
         Constraint(const Constraint&);
-
         Constraint& operator=(const Constraint&);
 
         ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
@@ -32,6 +31,15 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual void SetName(const char*, ObjectDir*);
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    static CharClip* sDeformClip;
+    static void SetDeformClip(Hmx::Object*);
+    static void NeutralLocalXfm(RndTransformable*, Transform&);
+    static void NeutralWorldXfm(RndTransformable*, Transform&);
 
     ObjPtr<RndTransformable, ObjectDir> mEffector; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mGround; // 0x34

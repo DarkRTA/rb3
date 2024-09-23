@@ -19,7 +19,12 @@ public:
     virtual void Poll();
     virtual void Enter();
 
+    int GetColor(int);
     void SyncScores();
+
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     ObjPtr<RndAnimatable, ObjectDir> mNeedleAnim; // 0x18c
     ObjPtr<RndAnimatable, ObjectDir> mLogoGlowAnim; // 0x198

@@ -203,6 +203,12 @@ inline BinStream& operator>>(BinStream& bs, Transform& tf){
     return bs;
 }
 
+class QuatXfm {
+public:
+    Vector3 v; // 0x0
+    Hmx::Quat q; // 0xc
+};
+
 class ShortQuat {
 public:
     short x, y, z, w;

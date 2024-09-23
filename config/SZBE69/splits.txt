@@ -964,8 +964,26 @@ system/bandobj/BandCamShot.cpp:
 	.text       start:0x80389678 end:0x80392CF0
 	.ctors      start:0x807EFF84 end:0x807EFF88
 
+system/bandobj/BandConfiguration.cpp:
+	.text       start:0x80392CF0 end:0x803937F8
+
 system/bandobj/BandDirector.cpp:
 	.text       start:0x803937F8 end:0x803A1E7C
+
+system/bandobj/BandCrowdMeter.cpp:
+	.text       start:0x803A1E7C end:0x803A8A44
+
+system/bandobj/BandHighlight.cpp:
+	.text       start:0x803A8A44 end:0x803A9C80
+
+system/bandobj/BandLabel.cpp:
+	.text       start:0x803B0390 end:0x803B1FA8
+
+system/bandobj/BandList.cpp:
+	.text       start:0x803B364C end:0x803BA73C
+
+system/bandobj/BandScoreboard.cpp:
+	.text       start:0x803C4DD0 end:0x803C6DC8
 
 system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
