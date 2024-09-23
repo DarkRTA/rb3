@@ -55,10 +55,20 @@ public:
     virtual void AdjustTrans(Transform&, const UIListElementDrawState&);
     virtual void AdjustTransSelected(Transform&);
 
+    void StartPulseAnim(int);
+    void StartFocusAnim(int, AnimState);
+    void StartRevealAnim(int, Transform&);
+    void RevealAnimPoll(int, Transform&);
+    void UpdateFocusAndPulseAnims(int, Transform&);
     void UpdateRevealState(int, Transform&);
     void UpdateConcealState(int, Transform&);
     void UpdateRevealConcealState(int, Transform&);
+    void UpdatePulseAnim(int, Transform&);
     void ForceConcealedStateOnAllEntries();
+    void StartConcealAnim(int, Transform&);
+    void ForceConcealed(int, Transform&);
+    void ForceRevealed(int, Transform&);
+    void ConcealAnimPoll(int, Transform&);
     void ConcealNow();
     void Conceal();
     void Reveal();
@@ -81,6 +91,7 @@ public:
     void MakeRevealTransform(float, Transform&);
     void MakeConcealTransform(float, Transform&);
     bool SupportsRevealConcealAnim() const { return mRevealAnim || mConcealAnim; }
+    bool IsRevealed(){ return mBandListState == kReveal && !IsAnimating(); }
 
     static void Init();
     static void Register(){

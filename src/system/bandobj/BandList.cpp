@@ -121,20 +121,98 @@ void BandList::AdjustTransSelected(Transform& tf){
     UpdateRevealConcealState(Selected() - FirstShowing(), tf);
 }
 
+void BandList::AdjustTrans(Transform& tf, const UIListElementDrawState& state){
+    int showing = state.mShowing;
+    UpdateRevealConcealState(state.mDisplay, tf);
+    if(mFocusAnim){
+        Transform tf40;
+        AnimState astate = mAnimStates[showing];
+        if(state.mElementState != 0 && (astate == kGoingOut || astate == kOut)){
+            StartFocusAnim(showing, kIn);
+        }
+        else if(state.mElementState == kUIListWidgetActive && (astate == kGoingIn || astate == kIn)){
+            StartFocusAnim(showing, kOut);
+        }
+        UpdateFocusAndPulseAnims(showing, tf40);
+        Multiply(tf, tf40, tf);
+    }
+}
+
 void BandList::UpdateRevealConcealState(int i, Transform& tf){
-    if(mBandListState - 1 < 2){
-        UpdateConcealState(i, tf);
+    switch(mBandListState){
+        case kReveal:
+            UpdateRevealState(i, tf);
+            break;
+        case kConceal:
+        case kImmediateConceal:
+            UpdateConcealState(i, tf);
+            break;
+        default:
+            MILO_FAIL("Unknown state: %d", mBandListState);
+            break;
     }
-    else if(mBandListState == 0){
-        UpdateRevealState(i, tf);
+}
+
+void BandList::UpdateRevealState(int i, Transform& tf){
+    RevealState rstate = mRevealStates[i];
+    if(rstate != kRevealed){
+        if(!SupportsRevealConcealAnim()){
+            mRevealStates[i] = kRevealed;
+        }
+        else if(RevealTimedOut()){
+            mRevealStates[i] = kRevealed;
+        }
+        else {
+            if(rstate != kRevealing) StartRevealAnim(i, tf);
+            RevealAnimPoll(i, tf);
+        }
     }
-    else MILO_FAIL("Unknown state: %d", mBandListState);
+}
+
+void BandList::UpdateConcealState(int i, Transform& tf){
+    if(!SupportsRevealConcealAnim()){
+        mRevealStates[i] = kConcealed;
+        UpdateShowingState();
+    }
+    else if(mBandListState == kImmediateConceal){
+        ForceConcealed(i, tf);
+    }
+    else if(ConcealTimedOut()){
+        ForceConcealed(i, tf);
+    }
+    else {
+        RevealState rstate = mRevealStates[i];
+        if(rstate == kConcealed){
+            ForceConcealed(i, tf);
+        }
+        else {
+            if(rstate != kConcealing){
+                StartConcealAnim(i, tf);
+            }
+            ConcealAnimPoll(i, tf);
+        }
+    }
 }
 
 void BandList::ForceConcealedStateOnAllEntries(){
     for(std::map<int, RevealState>::iterator it = mRevealStates.begin(); it != mRevealStates.end(); ++it){
         it->second = kConcealed;
     }
+}
+
+void BandList::ForceConcealed(int i, Transform& tf){
+    mRevealStates[i] = kConcealed;
+    UpdateShowingState();
+    Transform tf40;
+    MakeConcealTransform(GetConcealEndFrame(), tf40);
+    Multiply(tf, tf40, tf);
+}
+
+void BandList::ForceRevealed(int i, Transform& tf){
+    mRevealStates[i] = kRevealed;
+    Transform tf40;
+    MakeRevealTransform(GetRevealEndFrame(), tf40);
+    Multiply(tf, tf40, tf);
 }
 
 bool BandList::RevealTimedOut(){
@@ -162,7 +240,175 @@ bool BandList::ConcealTimedOut(){
     return (numframes / fps) + numdisp * mConcealEntryDelay + mConcealStartDelay <= timePassed;
 }
 
-DECOMP_FORCEACTIVE(BandList, "bad goal parameter to StartAnim()!\n", "StartAnim() called while already in or going to goal state!\n")
+void BandList::StartRevealAnim(int i, Transform& tf){
+    MILO_ASSERT(SupportsRevealConcealAnim(), 0x1EA);
+    if(mRevealStates[i] == kConcealed) mRevealStates[i] = kRevealing;
+    else ForceRevealed(i, tf);
+    int numdisp = NumDisplay();
+    int i7 = 0;
+    for(int i = 0; i < numdisp; i++){
+        RevealState rstate = mRevealStates[i];
+        if(rstate == kConcealing || rstate == kRevealed) i7++;
+    }
+    float f1 = 0;
+    if(i7 > 0) f1 = (float)i7 * mRevealEntryDelay + mRevealStartDelay;
+    mRevealStartTimes[i] = TheTaskMgr.UISeconds() - f1;
+    unk264[i] = false;
+}
+
+void BandList::StartConcealAnim(int i, Transform& tf){
+    MILO_ASSERT(SupportsRevealConcealAnim(), 0x212);
+    if(mRevealStates[i] == kRevealed) mRevealStates[i] = kConcealing;
+    else ForceConcealed(i, tf);
+    int numdisp = NumDisplay();
+    int i7 = 0;
+    for(int i = 0; i < numdisp; i++){
+        RevealState rstate = mRevealStates[i];
+        if(rstate == kConcealed || rstate == kRevealing) i7++;
+    }
+    float f1 = 0;
+    if(i7 > 0) f1 = (float)i7 * mConcealEntryDelay + mConcealStartDelay;
+    mRevealStartTimes[i] = TheTaskMgr.UISeconds() - f1;
+    unk264[i] = false;
+}
+
+void BandList::RevealAnimPoll(int i, Transform& tf){
+    MILO_ASSERT(SupportsRevealConcealAnim(), 0x23D);
+    if(mRevealStates[i] == kRevealing){
+        float f1 = TheTaskMgr.UISeconds() - mRevealStartTimes[i];
+        float f3 = mRevealSoundDelay;
+        float frame = 0;
+        float f4 = mRevealEntryDelay * (float)i + mRevealStartDelay;
+        if(f1 > f4) frame = (f1 - f4) * GetRevealFramesPerSecond();
+        if(!unk264[i] && (f1 > f4 + f3)){
+            if(mRevealSound) mRevealSound->Play(0,0,0);
+            unk264[i] = true;
+        }
+        float curframe = GetCurrentRevealFrame(frame);
+        if(IsRevealAnimFinished(curframe)){
+            curframe = GetRevealEndFrame();
+            mRevealStates[i] = kRevealed;
+        }
+        Transform tf90;
+        MakeRevealTransform(curframe, tf90);
+        Multiply(tf, tf90, tf);
+    }
+}
+
+void BandList::ConcealAnimPoll(int i, Transform& tf){
+    MILO_ASSERT(SupportsRevealConcealAnim(), 0x270);
+    if(mRevealStates[i] == kConcealing){
+        float f1 = TheTaskMgr.UISeconds() - mRevealStartTimes[i];
+        int numdisp = NumDisplay();
+        numdisp = (numdisp - i) - 1;
+        float f3 = mConcealSoundDelay;
+        float frame = 0;
+        float f4 = mConcealEntryDelay * (float)numdisp + mConcealStartDelay;
+        if(f1 > f4) frame = (f1 - f4) * GetConcealFramesPerSecond();
+        if(!unk264[i] && (f1 > f4 + f3)){
+            if(mConcealSound) mConcealSound->Play(0,0,0);
+            unk264[i] = true;
+        }
+        float curframe = GetCurrentConcealFrame(frame);
+        if(IsConcealAnimFinished(curframe)){
+            curframe = GetConcealEndFrame();
+            mRevealStates[i] = kConcealed;
+            UpdateShowingState();
+        }
+        Transform tf90;
+        MakeConcealTransform(curframe, tf90);
+        Multiply(tf, tf90, tf);
+    }
+}
+
+void BandList::StartFocusAnim(int i, BandList::AnimState astate){
+    float f8 = TheTaskMgr.UISeconds();
+    float f9 = mFocusAnim->StartFrame();
+    float f10 = mFocusAnim->EndFrame();
+    AnimState curastate = mAnimStates[i];
+    if(astate != kOut && astate != kIn){
+        MILO_WARN("bad goal parameter to StartAnim()!\n");
+    }
+    if(astate == kOut && (curastate == kOut || curastate == kGoingOut) || (astate == kIn && (curastate == kGoingIn || curastate == kIn))){
+        MILO_WARN("StartAnim() called while already in or going to goal state!\n");
+    }
+    bool b = false;
+    if(curastate == kGoingOut || curastate == kOut) b = true;
+    if(b) f10 = f9;
+    if(curastate != kOut && curastate != kIn){
+        float curframe = mFrames[i];
+        float f11 = Abs(f10 - curframe);
+        f8 = (f8 - (f11 / mFocusAnim->FramesPerUnit()));
+        f10 = curframe;
+    }
+    mAnimStates[i] = astate == kIn ? kGoingIn : kGoingOut;
+    mStartTimes[i] = f8;
+    mFrames[i] = f10;
+}
+
+void BandList::UpdateFocusAndPulseAnims(int i, Transform& tf){
+    float starttime = mStartTimes[i];
+    float time = TheTaskMgr.UISeconds();
+    float startframe = mFocusAnim->StartFrame();
+    float endframe = mFocusAnim->EndFrame();
+    float defaulttime = 0;
+    time = (time - starttime) * mFocusAnim->FramesPerUnit();
+    AnimState astate = mAnimStates[i];
+    switch(astate){
+        case kGoingIn:
+            time = startframe + time;
+            if(time >= endframe){
+                mAnimStates[i] = kIn;
+                time = endframe;
+                if(mPulseAnim) StartPulseAnim(i);
+            }
+            break;
+        case kGoingOut:
+            time = endframe - time;
+            if(time <= startframe){
+                mAnimStates[i] = kOut;
+                time = startframe;
+            }
+            break;
+        case kIn:
+            time = endframe;
+            if(mPulseAnim){
+                UpdatePulseAnim(i, tf);
+                return;
+            }
+            break;
+        case kOut:
+            time = startframe;
+            break;
+        default:
+            time = defaulttime;
+            break;
+    }
+    mFrames[i] = time;
+    mFocusAnim->MakeTransform(time, tf, true, 1.0f);
+}
+
+void BandList::StartPulseAnim(int idx){
+    float uisecs = TheTaskMgr.UISeconds();
+    float start = mPulseAnim->StartFrame();
+    mAnimStates[idx] = kIn;
+    mStartTimes[idx] = uisecs;
+    mFrames[idx] = start;
+}
+
+void BandList::UpdatePulseAnim(int i, Transform& tf){
+    if(mAnimStates[i] == kIn){
+        mStartTimes[i];
+        float f5 = TheTaskMgr.UISeconds();
+        float f6 = mPulseAnim->StartFrame();
+        float f7 = mPulseAnim->EndFrame();
+        float f8 = mPulseAnim->FramesPerUnit();
+        f5 = f6 + (f5 - mStartTimes[i]) * f8;
+        if(f5 > f7) f5 = ModRange(f6, f7, f5);
+        mFrames[i] = f5;
+        mPulseAnim->MakeTransform(f5, tf, true, 1.0f);
+    }
+}
 
 void BandList::Reveal(){
     mBandListState = kReveal;
@@ -180,6 +426,15 @@ void BandList::Conceal(){
 void BandList::ConcealNow(){
     mBandListState = kImmediateConceal;
     mShouldbeRevealedTimeStamp = TheTaskMgr.UISeconds();
+}
+
+bool BandList::IsAnimating(){
+    int max = mListState.NumDisplayWithData();
+    for(int i = 0; i < max; i++){
+        if(mBandListState == kReveal && mRevealStates[i] != kRevealed && !RevealTimedOut()) return true;
+        if((mBandListState == kConceal || mBandListState == kImmediateConceal) && mRevealStates[i] != kConcealed && !ConcealTimedOut()) return true;
+    }
+    return false;
 }
 
 float BandList::GetRevealFramesPerSecond() const {
@@ -302,12 +557,44 @@ bool BandList::IsConcealAnimFinished(float f) const {
     else return f >= frame;
 }
 
+void BandList::UpdateShowingState(){
+    if(SupportsRevealConcealAnim()){
+        if(mBandListState == kReveal) SetShowing(true);
+        else {
+            for(int i = 0; i < NumDisplay(); i++){
+                if(mRevealStates[i] != kConcealed){
+                    SetShowing(true);
+                    return;
+                }
+            }
+            SetShowing(false);
+        }
+    }
+}
+
+void BandList::DrawShowing(){
+    UIList::DrawShowing();
+    for(ObjVector<HighlightObject>::iterator it = mHighlightObjects.begin(); it != mHighlightObjects.end(); ++it){
+        RndTransformable* obj = it->mTargetObj;
+        if(obj){
+            obj->SetTransParent(this, false);
+            float z = it->mZOffset;
+            if(mListDir){
+                float space = mListDir->ElementSpacing();
+                z = -(space * (float)SelectedDisplay() - z);
+            }
+            Vector3 v(it->mXOffset, it->mYOffset, z);
+            obj->SetLocalPos(v);
+        }
+    }
+}
+
 BEGIN_HANDLERS(BandList)
     HANDLE_ACTION(reveal, Reveal())
     HANDLE_ACTION(conceal, Conceal())
     HANDLE_ACTION(conceal_now, ConcealNow())
     HANDLE_ACTION(is_animating, IsAnimating())
-    HANDLE_EXPR(is_revealed, !mBandListState && !IsAnimating())
+    HANDLE_EXPR(is_revealed, IsRevealed())
     HANDLE_ACTION(restart_highlight_matanim, mListDir->ListEntered())
     HANDLE_SUPERCLASS(UIList)
     HANDLE_CHECK(0x468)
