@@ -20,6 +20,8 @@ public:
     void SetStarType(Symbol, bool);
     void Reset();
 
+    float GetNumStars() const { return mNumStars; }
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
