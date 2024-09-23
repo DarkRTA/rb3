@@ -1,13 +1,3 @@
-<<<<<<< HEAD
-#ifndef BANDOBJ_BANDCHARACTER_H
-#define BANDOBJ_BANDCHARACTER_H
-
-class BandCharacter {
-
-};
-
-#endif // BANDOBJ_BANDCHARACTER_H
-=======
 #pragma once
 #include "char/Character.h"
 #include "char/CharCollide.h"
@@ -187,4 +177,3 @@ public:
     ObjPtrList<RndMesh, ObjectDir> unk73c; // 0x73c
     ObjPtrList<RndMesh, ObjectDir> unk74c; // 0x74c
 };
->>>>>>> upstream
