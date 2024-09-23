@@ -1,11 +1,13 @@
 #include "bandobj/BandCrowdMeter.h"
 #include "bandobj/TrackPanelDirBase.h"
 #include "bandobj/TrackPanelInterface.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
+#include <algorithm>
 
 INIT_REVS(BandCrowdMeter);
 
-BandCrowdMeter::BandCrowdMeter() : mMaxed(0), mPeakValue(1.0f), mDisabled(0), unk1a8(2), mTrackPanel(0), unk1b0(this, kObjListNoNull), mBandEnergyDeployTrig(this, 0),
+BandCrowdMeter::BandCrowdMeter() : mMaxed(0), mPeakValue(1.0f), mDisabled(0), unk1a8(2), mTrackPanel(0), mOrderedPeaks(this, kObjListNoNull), mBandEnergyDeployTrig(this, 0),
     mBandEnergyStopTrig(this, 0), mDisabledStartTrig(this, 0), mDisabledStopTrig(this, 0), mShowPeakArrowTrig(this, 0), mHidePeakArrowTrig(this, 0),
     mCanJoinTrig(this, 0), mCannotJoinTrig(this, 0), mJoinInvalidTrig(this, 0), unk234(2), mCrowdMeterAnim(this, 0), mValue(0.5f) {
     for(int i = 0; i < 5; i++) mLevelColors.push_back(Hmx::Color(0));
@@ -34,7 +36,7 @@ void BandCrowdMeter::IconData::SetVal(float val){
 }
 
 void BandCrowdMeter::IconData::SetUsed(bool used){
-    unk1b = used;
+    mUsed = used;
     unk0->SetShowing(used);
 }
 
@@ -44,7 +46,7 @@ float BandCrowdMeter::InitialCrowdRating() const {
 }
 
 void BandCrowdMeter::Reset(){
-    unk1b0.clear();
+    mOrderedPeaks.clear();
     ShowPeakArrow(false);
     bool editmode = TheLoadMgr.EditMode();
     for(int i = 0; i < mIconData.size(); i++){
@@ -59,11 +61,93 @@ void BandCrowdMeter::Reset(){
     unk234 = 2;
 }
 
+void BandCrowdMeter::UpdatePlayers(const std::vector<TrackInstrument>& insts){
+    bool draining = Draining();
+    bool deploying = Deploying();
+    for(int i = 0; i < insts.size(); i++){
+        IconData& curicon = mIconData[i];
+        bool curused = curicon.Used();
+        bool i10 = 0;
+        if(insts[i] != kInstNone && insts[i] != kInstPending){
+            if(curicon.unk0->HasIcon()) i10 = 1;
+        }
+        if(i10 != curused){
+            curicon.SetUsed(i10);
+            if(!i10){
+                curicon.unk18 = 0;
+                curicon.unk1a = 0;
+                if(curicon.unk19){
+                    curicon.unk19 = 0;
+                    mOrderedPeaks.remove(curicon.unkc);
+                }
+            }
+        }
+    }
+    if(draining && !Draining()){
+        mDisabledStopTrig->Trigger();
+        UpdateExcitement(true);
+    }
+    if(deploying && !Deploying()){
+        mBandEnergyStopTrig->Trigger();
+    }
+}
+
+void BandCrowdMeter::Poll(){
+    RndDir::Poll();
+    if(!mDisabled && !TheLoadMgr.EditMode()){
+        int oldgrpsize = mOrderedPeaks.size();
+        float f13 = GetPeakValue();
+        for(int i = 0; i < mIconData.size(); i++){
+            IconData& curicon = mIconData[i];
+            if(curicon.Used() && curicon.unk20){
+                float f15 = curicon.unk1c;
+                curicon.unkc->GetFrame();
+                if(f13 >= f15){
+                    if(!curicon.unk19){
+                        curicon.unk19 = 1;
+                        mOrderedPeaks.push_back(curicon.unkc);
+                        curicon.unk0->ArrowShow(false);
+                    }
+                }
+                else {
+                    if(curicon.unk19){
+                        curicon.unk19 = 0;
+                        mOrderedPeaks.remove(curicon.unkc);
+                        curicon.unk0->ArrowShow(true);
+                    }
+                    curicon.unkc->SetFrame(curicon.unk1c, 1.0f);
+                }
+                curicon.unk20 = 0;
+            }
+        }
+        int idx = 0;
+        for(ObjPtrList<RndGroup, ObjectDir>::iterator it = mOrderedPeaks.begin(); it != mOrderedPeaks.end(); ++it, ++idx){
+            float loc80 = idx + 2.0f;
+            RndGroup* curgrp = *it;
+            float d15 = curgrp->GetFrame();
+            if(d15 < loc80){
+                float max = std::max(1.0f, loc80 - d15);
+                float min = std::min(loc80, d15 + (max * 0.1f));
+                curgrp->SetFrame(max, 1.0f);              
+            }
+            else if(d15 > loc80){
+                float max = std::max(1.0f, d15 - loc80);
+                max = std::max(loc80, d15 + (max * -0.1f));
+                curgrp->SetFrame(max, 1.0f);
+            }
+        }
+        std::sort(mDraws.begin(), mDraws.end(), SortDraws);
+        if(mOrderedPeaks.size() != oldgrpsize){
+            ShowPeakArrow(mOrderedPeaks.size());
+        }
+    }
+}
+
 float BandCrowdMeter::GetPeakValue(){
     float f3 = 1.0f;
-    if(unk1b0.size() <= 0) return f3;
+    if(mOrderedPeaks.size() <= 0) return f3;
     for(int i = 0; i < mIconData.size(); i++){
-        if(mIconData[i].unk1b && mIconData[i].unk1c >= 1.0f) return mPeakValue;
+        if(mIconData[i].mUsed && mIconData[i].unk1c >= 1.0f) return mPeakValue;
     }
     return f3;
 }
@@ -97,7 +181,7 @@ void BandCrowdMeter::Disable(){
 bool BandCrowdMeter::Draining() const {
     if(mDisabled) return false;
     for(int i = 0; i < mIconData.size(); i++){
-        if(mIconData[i].unk1b && mIconData[i].unk18) return true;
+        if(mIconData[i].mUsed && mIconData[i].unk18) return true;
     }
     return false;
 }
@@ -105,7 +189,7 @@ bool BandCrowdMeter::Draining() const {
 bool BandCrowdMeter::Deploying() const {
     if(mDisabled) return false;
     for(int i = 0; i < mIconData.size(); i++){
-        if(mIconData[i].unk1b && mIconData[i].unk1a) return true;
+        if(mIconData[i].mUsed && mIconData[i].unk1a) return true;
     }
     return false;
 }
@@ -237,7 +321,7 @@ void BandCrowdMeter::FailedJoinInProgress(){
 }
 
 BandCrowdMeter::IconData::IconData(BandCrowdMeter* bcm, CrowdMeterIcon* icon, RndGroup* grp) : unk0(bcm, icon), unkc(bcm, grp),
-    unk18(0), unk19(0), unk1a(0), unk1b(0), unk1c(0), unk20(0) {
+    unk18(0), unk19(0), unk1a(0), mUsed(0), unk1c(0), unk20(0) {
 
 }
 
