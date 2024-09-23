@@ -7,10 +7,10 @@
 #include "types.h"
 
 struct TrackerDesc {
-    Symbol symbol1;
-    Symbol symbol2;
-    Symbol symbol3;
-    int int1;
+    Symbol symbol1;  // 0x00
+    Symbol symbol2;  // 0x04
+    Symbol symbol3;  // 0x08
+    int int1;        // 0x0c
 };
 
 class Tracker {

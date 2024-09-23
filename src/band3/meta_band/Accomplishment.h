@@ -39,8 +39,9 @@ private:
     Symbol GetCategory() const;
     int GetContextID() const;
     void GetIconArt() const;
+protected:
     virtual bool IsFulfilled(BandProfile*) const;
-
+private:
     virtual bool IsRelevantForSong(Symbol) const;
     virtual bool InqProgressValues(BandProfile*, int&, int&);
 public:
@@ -65,7 +66,9 @@ private:
     bool GetRequiresUnisonAbility() const;
     bool GetRequiresBREAbility() const;
     virtual void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
+protected:
     virtual void InitializeTrackerDesc(TrackerDesc&) const;
+private:
     bool CanBeEarnedWithNoFail() const;
     bool IsTrackedInLeaderboard() const;
     Symbol GetUnitsToken(int) const;

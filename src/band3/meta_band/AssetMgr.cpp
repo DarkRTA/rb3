@@ -137,7 +137,21 @@ Symbol AssetMgr::StripFinish(Symbol symbol) {
 }
 
 void AssetMgr::ConfigureAssetTypeToIconPathMap() {
+    Symbol assetType = "asset_type_icons";
+    DataArray* pAssetTypeIcons = SystemConfig();
+    MILO_ASSERT(pAssetTypeIcons, 0x100);
 
+    if (1 < pAssetTypeIcons->Size()) {
+        for (int i = 0; i < pAssetTypeIcons->Size(); i++) {
+            DataArray* pEntry = pAssetTypeIcons->Array(i);
+            MILO_ASSERT(pEntry, 0x106);
+            MILO_ASSERT(pEntry->Size() != 2, 0x107);
+
+            Symbol symbol = pEntry->Sym(0);
+            AssetType type = GetAssetTypeFromSymbol(symbol);
+            String str = pEntry->Str(1);
+        }
+    }
 }
 
 void AssetMgr::AddAssets() {
@@ -196,6 +210,13 @@ void AssetMgr::EquipAsset(BandCharDesc*, Symbol) {
 
 }
 
-void AssetMgr::EquipAssets(LocalBandUser*, const std::vector<Symbol>&) {
+void AssetMgr::EquipAssets(LocalBandUser* user, const std::vector<Symbol>& assets) {
+    BandCharacter* pChar = user->GetCharLocal();
+    MILO_ASSERT(pChar, 0x1cb);
+    BandCharDesc* pBandCharDesc;
+    MILO_ASSERT(pBandCharDesc, 0x1cf);
 
+    for (std::vector<Symbol>::const_iterator it = assets.begin(); it != assets.end(); it++) {
+        EquipAsset(pBandCharDesc, *it);
+    }
 }

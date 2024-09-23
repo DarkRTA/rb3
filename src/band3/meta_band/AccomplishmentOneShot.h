@@ -5,6 +5,8 @@
 #include "system/ui/UILabel.h"
 #include "AccomplishmentConditional.h"
 
+class Performer;
+
 class AccomplishmentOneShot : public AccomplishmentConditional {
 public:
     AccomplishmentOneShot(DataArray*, int);
@@ -13,10 +15,9 @@ public:
 private:
     void Configure(DataArray*);
     int GetType() const;
-    // void AreOneShotConditionsMet(ScoreType, Difficulty, Performer*, Symbol, int);
+    bool AreOneShotConditionsMet(ScoreType, Difficulty, Performer*, Symbol, int);
     void InitializeTrackerDesc(TrackerDesc&) const;
     bool HasSpecificSongsToLaunch() const;
-    void UpdateIncrementalEntryName(UILabel*, Symbol);
 
     Symbol mOneShotSong; // 0x7c
     int mOneShotPlayerMin; // 0x80

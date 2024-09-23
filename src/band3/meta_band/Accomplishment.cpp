@@ -351,7 +351,7 @@ bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
     if (mControllerTypes.empty()) {
         returnValue = true;
     } else {
-        for (const ControllerType* i = mControllerTypes.begin(); i != mControllerTypes.end(); i++) {
+        for (std::vector<ControllerType>::const_iterator i = mControllerTypes.begin(); i != mControllerTypes.end(); i++) {
             if (controllerType == *i) {
                 returnValue = true;
             }

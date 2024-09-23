@@ -20,9 +20,9 @@ class AssetProvider : public UIListProvider, public Hmx::Object {
     int NumData() const;
     bool HasAsset(Symbol);
 
-    BandProfile* mProfile; // 0x20
+    BandProfile* mProfile;       // 0x20
     std::vector<Symbol> mAssets; // 0x28
-    AssetGender mGender;   // 0x2c
+    AssetGender mGender;         // 0x2c
 };
 
 #endif // METABAND_ASSETPROVIDER_H

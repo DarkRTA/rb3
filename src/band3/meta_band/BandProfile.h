@@ -18,6 +18,7 @@ class LocalSavedSetlist;
 class Stats;
 class RockCentralOpCompleteMsg;
 class LocalBandUser;
+class ProfilePicture;
 
 class BandProfile : public Profile, virtual Hmx::Object {
 public:
@@ -42,8 +43,8 @@ public:
     StandIn* GetStandIn(int) const;
     StandIn* AccessStandIn(int);
     int GetNumStandins() const;
-    void GetTourProgress();
-    void OwnsTourProgress(const TourProgress*);
+    TourProgress* GetTourProgress();
+    bool OwnsTourProgress(const TourProgress*);
     void UpdateScore(int, const PerformerStatsInfo&, bool);
     void UploadPerformance(PerformanceData*);
     void GetNumDirtyPerformanceData();
@@ -82,7 +83,7 @@ public:
     void IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const;
     void IsProBassSongLessonSectionComplete(int, Difficulty, int) const;
     void IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const;
-    void IsLessonComplete(const Symbol&, float) const;
+    bool IsLessonComplete(const Symbol&, float) const;
     void GetLessonComplete(const Symbol&) const;
     void GetLessonCompleteSpeed(const Symbol&) const;
     void SetLessonComplete(const Symbol&, float);
@@ -121,9 +122,11 @@ public:
 private:
     int padding;
     int padding2;
-    std::vector<CharData*> mChars; // 0x24
-    // tour progress 0x2c
+    std::vector<CharData*> mChars; // 0x24 
+    TourProgress* mTourProgress;   // 0x2c correct up to here
+    // ameplayOptions mGameplayOptions;
     // Gameplay options 0x2e
+    // lessons 0x34
     // AccomplishmentProgress* 0x3d
     // song status mgr 0x48
     // saved song lists 0x4c
@@ -137,6 +140,7 @@ private:
 
 public:
     ProfileAssets* mProfileAssets; // 0x6f78
+    ProfilePicture* mProfilePicture; // 0x6fbc
 
     // upload friends token 0x6fb4
     // hardcore icon level 0x6fb8
