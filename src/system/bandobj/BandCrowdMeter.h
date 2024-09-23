@@ -75,9 +75,9 @@ public:
     float mPeakValue; // 0x198
     bool mDisabled; // 0x19c
     std::vector<Hmx::Color> mLevelColors; // 0x1a0
-    int unk1a8; // 0x1a8
-    int unk1ac; // 0x1ac - TrackPanelInterface*
-    ObjPtrList<RndGroup, ObjectDir> unk1b0; // 0x1b0
+    int unk1a8; // 0x1a8 - excitementlevel mexcitement?
+    TrackPanelInterface* mTrackPanel; // 0x1ac
+    ObjPtrList<RndGroup, ObjectDir> unk1b0; // 0x1b0 - morderedpeaks?
     ObjPtr<EventTrigger, ObjectDir> mBandEnergyDeployTrig; // 0x1c0
     ObjPtr<EventTrigger, ObjectDir> mBandEnergyStopTrig; // 0x1cc
     ObjPtr<EventTrigger, ObjectDir> mDisabledStartTrig; // 0x1d8

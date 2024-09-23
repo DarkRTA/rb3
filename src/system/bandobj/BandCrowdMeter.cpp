@@ -1,10 +1,11 @@
 #include "bandobj/BandCrowdMeter.h"
 #include "bandobj/TrackPanelDirBase.h"
+#include "bandobj/TrackPanelInterface.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(BandCrowdMeter);
 
-BandCrowdMeter::BandCrowdMeter() : mMaxed(0), mPeakValue(1.0f), mDisabled(0), unk1a8(2), unk1ac(0), unk1b0(this, kObjListNoNull), mBandEnergyDeployTrig(this, 0),
+BandCrowdMeter::BandCrowdMeter() : mMaxed(0), mPeakValue(1.0f), mDisabled(0), unk1a8(2), mTrackPanel(0), unk1b0(this, kObjListNoNull), mBandEnergyDeployTrig(this, 0),
     mBandEnergyStopTrig(this, 0), mDisabledStartTrig(this, 0), mDisabledStopTrig(this, 0), mShowPeakArrowTrig(this, 0), mHidePeakArrowTrig(this, 0),
     mCanJoinTrig(this, 0), mCannotJoinTrig(this, 0), mJoinInvalidTrig(this, 0), unk234(2), mCrowdMeterAnim(this, 0), mValue(0.5f) {
     for(int i = 0; i < 5; i++) mLevelColors.push_back(Hmx::Color(0));
@@ -38,7 +39,8 @@ void BandCrowdMeter::IconData::SetUsed(bool used){
 }
 
 float BandCrowdMeter::InitialCrowdRating() const {
-    // uses unk1ac, a ptr to some class
+    if(mTrackPanel) return mTrackPanel->CrowdRatingDefaultVal(easy);
+    else return 0.5f;
 }
 
 void BandCrowdMeter::Reset(){
@@ -55,6 +57,15 @@ void BandCrowdMeter::Reset(){
     mDisabledStopTrig->Trigger();
     UpdateExcitement(true);
     unk234 = 2;
+}
+
+float BandCrowdMeter::GetPeakValue(){
+    float f3 = 1.0f;
+    if(unk1b0.size() <= 0) return f3;
+    for(int i = 0; i < mIconData.size(); i++){
+        if(mIconData[i].unk1b && mIconData[i].unk1c >= 1.0f) return mPeakValue;
+    }
+    return f3;
 }
 
 TrackInstrument GetTrackInstrument(Symbol s){
@@ -113,7 +124,18 @@ void BandCrowdMeter::SetCrowd(float f){
 }
 
 void BandCrowdMeter::UpdateExcitement(bool b){
-    
+    if(!mDisabled){
+        int i = unk1a8;
+        if(mTrackPanel) i = mTrackPanel->GetGameExcitement();
+        if(i != unk1a8 || b){
+            unk1a8 = i;
+            bool peak = unk1a8 == 4;
+            if(mMaxed != peak){
+                SetMaxed(peak);
+            }
+            if(!Draining()) mExcitementTrigs[unk1a8]->Trigger();
+        }
+    }
 }
 
 void BandCrowdMeter::SetPlayerIconState(int trackIdx, CrowdMeterState cstate){
@@ -134,6 +156,11 @@ void BandCrowdMeter::DropInPlayer(int trackIdx){
 void BandCrowdMeter::DropOutPlayer(int trackIdx){
     MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1A5);
     mIconData[trackIdx].unk0->DropOut();
+}
+
+void BandCrowdMeter::SetMaxed(bool b){
+    mMaxed = b;
+    if(mTrackPanel) mTrackPanel->PushCrowdReaction(mMaxed);
 }
 
 void BandCrowdMeter::Deploy(int trackIdx){
