@@ -12,42 +12,47 @@ extern "C" {
 // Forward declarations
 typedef struct NANDCommandBlock;
 
+typedef s32 NANDResult;
+enum NANDResult_et {
+    NAND_RESULT_OK              = 0,
+
+    NAND_RESULT_FATAL_ERROR     = -128,
+    NAND_RESULT_UNKNOWN         = -64,
+
+    NAND_RESULT_ACCESS          = -1,
+    NAND_RESULT_ALLOC_FAILED    = -2,
+    NAND_RESULT_BUSY            = -3,
+    NAND_RESULT_CORRUPT         = -4,
+    NAND_RESULT_ECC_CRIT        = -5,
+    NAND_RESULT_EXISTS          = -6,
+
+    NAND_RESULT_INVALID         = -8,
+    NAND_RESULT_MAXBLOCKS       = -9,
+    NAND_RESULT_MAXFD           = -10,
+    NAND_RESULT_MAXFILES        = -11,
+    NAND_RESULT_NOEXISTS        = -12,
+    NAND_RESULT_NOTEMPTY        = -13,
+    NAND_RESULT_OPENFD          = -14,
+    NAND_RESULT_AUTHENTICATION  = -15,
+    NAND_RESULT_MAXDEPTH        = -16,
+
+#define NAND_ESUCCESS	NAND_RESULT_OK
+#define NAND_EFATAL		NAND_RESULT_FATAL_ERROR
+};
+
 typedef enum {
-    NAND_RESULT_FATAL_ERROR = -128,
-    NAND_RESULT_UNKNOWN = -64,
-
-    NAND_RESULT_MAXDEPTH = -16,
-    NAND_RESULT_AUTHENTICATION,
-    NAND_RESULT_OPENFD,
-    NAND_RESULT_NOTEMPTY,
-    NAND_RESULT_NOEXISTS,
-    NAND_RESULT_MAXFILES,
-    NAND_RESULT_MAXFD,
-    NAND_RESULT_MAXBLOCKS,
-    NAND_RESULT_INVALID,
-
-    NAND_RESULT_EXISTS = -6,
-    NAND_RESULT_ECC_CRIT,
-    NAND_RESULT_CORRUPT,
-    NAND_RESULT_BUSY,
-    NAND_RESULT_ALLOC_FAILED,
-    NAND_RESULT_ACCESS,
-
-    NAND_RESULT_OK,
-} NANDResult;
-
-typedef enum {
-    NAND_SEEK_BEG,
+    NAND_SEEK_SET,
     NAND_SEEK_CUR,
-    NAND_SEEK_END,
+    NAND_SEEK_END
 } NANDSeekMode;
 
-typedef enum {
+typedef u8 NANDAccessType;
+enum NANDAccessType_et {
     NAND_ACCESS_NONE,
     NAND_ACCESS_READ,
     NAND_ACCESS_WRITE,
     NAND_ACCESS_RW
-} NANDAccessType;
+};
 
 typedef enum {
     NAND_FILE_TYPE_NONE,

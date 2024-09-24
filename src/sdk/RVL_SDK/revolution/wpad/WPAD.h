@@ -7,11 +7,9 @@
 
 #include <types.h>
 
-#include "WUD.h"
+#include <revolution/wpad/WUD.h>
 
 #include <revolution/SC/scsystem.h>
-
-//#include "context_rvl.h"
 
 /*******************************************************************************
  * macros
@@ -37,18 +35,18 @@ enum WPADResult_et
 	WPAD_ERR_OK						= 0,
 
 	WPAD_ERR_NO_CONTROLLER			= -1,	/* name known from asserts */
-	WPAD_ERR_COMMUNICATION_ERROR	= -2,
-	WPAD_ERR_3						= -3,
-	WPAD_ERR_INVALID_ARG			= -4,
+	WPAD_ERR_COMMUNICATION_ERROR	= -2,	// [RT3P54] has this as WPAD_ERR_BUSY
+	WPAD_ERR_3						= -3,	// [RT3P54] has this as WPAD_ERR_TRANSFER
+	WPAD_ERR_INVALID				= -4,	/* name comes from [R89JEL] */
 //	WPAD_ERR_5						= -5,	/* unknown */
 //	WPAD_ERR_6						= -6,	/* unknown */
-	WPAD_ERR_INVALID_DATA			= -7,
+	WPAD_ERR_CORRUPTED				= -7,	/* name comes from [R89JEL] */
 
 #define WPAD_ESUCCESS	WPAD_ERR_OK
 #define WPAD_ENODEV		WPAD_ERR_NO_CONTROLLER
 #define WPAD_ECOMM		WPAD_ERR_COMMUNICATION_ERROR
-
-#define WPAD_EINVAL		WPAD_ERR_INVALID_ARG
+// #define WPAD_E3
+#define WPAD_EINVAL		WPAD_ERR_INVALID
 
 /* maybe? i was scouring the internet for explanation and usage of this error
  * macro, and it seems close enough
@@ -56,7 +54,7 @@ enum WPADResult_et
  * it's not ENODATA, that's more like if you got no data, but here it's that we
  * did get the data but it wasn't good
  */
-#define WPAD_EBADE		WPAD_ERR_INVALID_DATA
+#define WPAD_EBADE		WPAD_ERR_CORRUPTED
 
 // apparently enum vs literal is a thing. cool
 #define WPAD_CESUCCESS	(WPAD_ESUCCESS + 0)
@@ -627,7 +625,7 @@ void WPADControlMotor(WPADChannel chan, WPADMotorCommand command);
 void WPADEnableMotor(BOOL enabled);
 BOOL WPADIsMotorEnabled(void);
 WPADResult WPADControlLed(WPADChannel chan, u8 ledFlags, WPADCallback cb);
-BOOL WPADSaveConfig(SCFlushCallback *cb);
+BOOL WPADSaveConfig(SCFlushCallback cb);
 
 /* NOTE: status should match the WPADStatus type for the channel; a check
  * against the currently assigned device type is made to know how much to copy

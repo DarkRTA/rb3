@@ -94,6 +94,10 @@
       "type": "string",
       "oneOf": [
         {
+          "description": "This object has no source file yet.",
+          "const": "MISSING"
+        },
+        {
           "description": "This object is fully matching.",
           "const": "Matching"
         },

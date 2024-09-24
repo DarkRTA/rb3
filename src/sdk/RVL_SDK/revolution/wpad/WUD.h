@@ -7,7 +7,7 @@
 
 #include <types.h>
 
-#include "context_bte.h"
+#include <revolution/bte/context_bte.h>
 
 /*******************************************************************************
  * macros

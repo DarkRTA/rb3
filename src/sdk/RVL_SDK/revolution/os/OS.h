@@ -7,7 +7,8 @@
 extern "C" {
 #endif
 
-typedef enum {
+typedef u32 OSConsoleType;
+enum OSConsoleType_et {
     OS_CONSOLE_MASK = 0xF0000000,
     OS_CONSOLE_MASK_RVL = 0x00000000,
     OS_CONSOLE_MASK_EMU = 0x10000000,
@@ -24,15 +25,17 @@ typedef enum {
     OS_CONSOLE_NDEV_1_2 = 0x10000012,
     OS_CONSOLE_NDEV_2_0 = 0x10000020,
     OS_CONSOLE_NDEV_2_1 = 0x10000021,
-} OSConsoleType;
+};
 
-typedef enum {
+typedef u8 OSAppType;
+enum OSAppType_et {
     OS_APP_TYPE_IPL = 0x40,
     OS_APP_TYPE_DVD = 0x80,
     OS_APP_TYPE_CHANNEL = 0x81,
-} OSAppType;
+};
 
-typedef enum {
+typedef u8 OSExceptionType;
+enum OSExceptionType_et {
     OS_EXC_SYSTEM_RESET,
     OS_EXC_MACHINE_CHECK,
     OS_EXC_DSI,
@@ -50,7 +53,7 @@ typedef enum {
     OS_EXC_THERMAL_INT,
 
     OS_EXC_MAX
-} OSExceptionType;
+};
 
 typedef struct OSIOSRev {
     u8 idHi;       // at 0x0
@@ -62,7 +65,7 @@ typedef struct OSIOSRev {
     u16 buildYear; // at 0x6
 } OSIOSRev;
 
-typedef void (*OSExceptionHandler)(u8 type, OSContext* ctx);
+typedef void (*OSExceptionHandler)(OSExceptionType type, OSContext* ctx);
 
 extern BOOL __OSInIPL;
 extern BOOL __OSInNandBoot;
@@ -73,16 +76,16 @@ extern OSExecParams __OSRebootParams;
 void __OSFPRInit(void);
 u32 __OSGetHollywoodRev(void);
 void __OSGetIOSRev(OSIOSRev* rev);
-u32 OSGetConsoleType(void);
+OSConsoleType OSGetConsoleType(void);
 void OSInit(void);
-OSExceptionHandler __OSSetExceptionHandler(u8 type, OSExceptionHandler handler);
-OSExceptionHandler __OSGetExceptionHandler(u8 type);
-void OSDefaultExceptionHandler(u8 type, OSContext* ctx);
+OSExceptionHandler __OSSetExceptionHandler(OSExceptionType type, OSExceptionHandler handler);
+OSExceptionHandler __OSGetExceptionHandler(OSExceptionType type);
+void OSDefaultExceptionHandler(OSExceptionType type, OSContext* ctx);
 void __OSPSInit(void);
 u32 __OSGetDIConfig(void);
 void OSRegisterVersion(const char* ver);
 const char* OSGetAppGamename(void);
-u8 OSGetAppType(void);
+OSAppType OSGetAppType(void);
 
 #ifdef __cplusplus
 }
