@@ -5,7 +5,7 @@
 
 // fn_80472568
 PlayerTrackConfigList::PlayerTrackConfigList(int reserve_num_players) : mAutoVocals(0), mUseVocalHarmony(0), mUseRealDrums(0), mDiscoUnflip(0), unk2c(0),
-    mGameCymbalLanes(0), unk34(0), unk38(0), unk3c(1), mProcessed(0) {
+    mGameCymbalLanes(0), mUseGHDrums(0), mDefaultDifficulty(0), mNeedsProcessing(1), mProcessed(0) {
     MILO_ASSERT(kMorePlayersThanWeWillEverNeed > reserve_num_players, 0x21);
     mTrackDiffs.reserve(kMorePlayersThanWeWillEverNeed);
     mTrackNums.reserve(kMorePlayersThanWeWillEverNeed);
@@ -21,7 +21,7 @@ void PlayerTrackConfigList::Reset(){
     mTrackOccupied.clear();
     mConfigs.clear();
     mProcessed = false;
-    unk38 = 0;
+    mDefaultDifficulty = 0;
     mAutoVocals = false;
     mUseRealDrums = false;
     mDiscoUnflip = false;
@@ -126,11 +126,11 @@ void PlayerTrackConfigList::Process(std::vector<TrackType>& tracktypes){
     mTrackNums.reserve(size);
     mTrackOccupied.reserve(size);
     for(int i = 0; i < size; i++){
-        mTrackDiffs.push_back(unk38);
+        mTrackDiffs.push_back(mDefaultDifficulty);
         mTrackNums.push_back(i);
         mTrackOccupied.push_back(0);
     }
-    if(unk3c){
+    if(mNeedsProcessing){
         for(int i = 0; i < mConfigs.size(); i++){
             ProcessConfig(mConfigs[i]);
         }

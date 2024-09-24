@@ -27,13 +27,15 @@ public:
 
 class PostProcessor {
 public:
-    PostProcessor(){}
-    virtual ~PostProcessor(){}
-    virtual void BeginWorld(){}
-    virtual void EndWorld(){}
-    virtual void DoPost(){}
-    virtual void OnGPHangRecover(){ OSReport("Base PostProcessor::OnGPHangRecover called.\n"); }
-    virtual float Priority(){ return 1.0f; }
+    PostProcessor() {}
+    virtual ~PostProcessor() {}
+    virtual void BeginWorld() {}
+    virtual void EndWorld() {}
+    virtual void DoPost() {}
+    virtual void OnGPHangRecover() {
+        OSReport("Base PostProcessor::OnGPHangRecover called.\n");
+    }
+    virtual float Priority() { return 1.0f; }
 };
 
 class RndPostProc : public Hmx::Object, public PostProcessor {
@@ -42,24 +44,24 @@ public:
     virtual ~RndPostProc();
     OBJ_CLASSNAME(PostProc);
     OBJ_SET_TYPE(PostProc);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     virtual void Select();
     virtual void Unselect();
-    virtual void EndWorld(){}
+    virtual void EndWorld() {}
     virtual void DoPost();
-    virtual void OnGPHangRecover(){}
-    virtual void SetPriority(float f){ mPriority = f; }
-    virtual float Priority(){ return mPriority; }
-    virtual void QueueMotionBlurObject(RndDrawable*){}
-    virtual void SetBloomColor(){}
+    virtual void OnGPHangRecover() {}
+    virtual void SetPriority(float f) { mPriority = f; }
+    virtual float Priority() { return mPriority; }
+    virtual void QueueMotionBlurObject(RndDrawable *) {}
+    virtual void SetBloomColor() {}
     virtual void OnSelect();
     virtual void OnUnselect();
-    
+
     float BloomIntensity() const;
     bool DoGradientMap() const;
     bool DoRefraction() const;
@@ -68,25 +70,23 @@ public:
     void UpdateTimeDelta();
     void UpdateColorModulation();
     void UpdateBlendPrevious();
-    void Interp(const RndPostProc*, const RndPostProc*, float);
-    void LoadRev(BinStream&, int);
-    DataNode OnAllowedNormalMap(const DataArray*);
+    void Interp(const RndPostProc *, const RndPostProc *, float);
+    void LoadRev(BinStream &, int);
+    DataNode OnAllowedNormalMap(const DataArray *);
     bool BlendPrevious() const;
     float EmulateFPS() const { return mEmulateFPS; }
 
     static void Reset();
-    static RndPostProc* sCurrent;
-    static RndPostProc* Current();
+    static RndPostProc *sCurrent;
+    static RndPostProc *Current();
     static DOFOverrideParams sDOFOverride;
-    static DOFOverrideParams& DOFOverrides(){ return sDOFOverride; }
+    static DOFOverrideParams &DOFOverrides() { return sDOFOverride; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
     DECLARE_REVS
     NEW_OBJ(RndPostProc)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndPostProc)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndPostProc) }
 
     float mPriority; // 0x20
     Hmx::Color mBloomColor; // 0x24

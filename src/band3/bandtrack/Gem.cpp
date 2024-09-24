@@ -28,8 +28,10 @@ Gem& Gem::operator=(const Gem& g) {
     mWidgets = g.mWidgets;
 }
 
-bool Gem::OnScreen(float) {
+bool Gem::OnScreen(float ms) {
+    float bottomSeconds = mGemManager->mTrackDir->BottomSeconds();
 
+    return (ms / 1000.0f) + bottomSeconds > mEnd;
 }
 
 bool Gem::UseRGChordStyle() const {
