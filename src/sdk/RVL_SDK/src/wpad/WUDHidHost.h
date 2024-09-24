@@ -7,7 +7,7 @@
  * headers
  */
 
-#include "context_bte.h"
+#include <revolution/bte/context_bte.h>
 
 /*******************************************************************************
  * functions

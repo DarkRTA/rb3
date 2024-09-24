@@ -1,4 +1,5 @@
 #include <revolution/wpad/WPAD.h>
+#include "WPAD.h"
 
 /*******************************************************************************
  * headers
@@ -11,24 +12,33 @@
 #include "lint.h"
 #include "WPADHIDParser.h"
 #include "WPADMem.h"
-#include "WPADMem2.h"
 #include "WUD.h"
-#include "WPAD2.h"
 
-#include <revolution/OS.h>
-#include <revolution/IPC/ipcMain.h>
-#include <revolution/SC/scapi.h>
-#include <revolution/SC/scsystem.h>
-#include <revolution/VI/vi.h>
-
-#include "context_bte.h"
+#include <revolution/bte/context_bte.h>
+#include <revolution/os/OSAlarm.h>
+#include <revolution/os/OSCache.h>
+#include <revolution/os/OSContext.h>
+#include <revolution/os/OSError.h>
+#include <revolution/os/OSInterrupt.h>
+#include <revolution/os/OSReset.h>
+#include <revolution/os/OSTime.h>
+// #include <revolution/os/__OSGlobals.h>
+#include <revolution/ipc/ipcMain.h>
+#include <revolution/sc/scapi.h>
+#include <revolution/sc/scsystem.h>
+#include <revolution/vi/vi.h>
 
 /*******************************************************************************
  * macros
  */
 
+#if defined(NDEBUG)
 #define RVL_SDK_WPAD_VERSION_STRING	\
-	"<< RVL_SDK - WPAD \trelease build: Dec 11 2009 15:59:48 (0x4302_) >>"
+	"<< RVL_SDK - WPAD \trelease build: Dec 11 2009 15:59:48 (" STR(__CWCC__) "_" STR(__CWBUILD__) ") >>"
+#else
+#define RVL_SDK_WPAD_VERSION_STRING	\
+	"<< RVL_SDK - WPAD \tdebug build: Dec 11 2009 15:55:10 (" STR(__CWCC__) "_" STR(__CWBUILD__) ") >>"
+#endif
 
 /*******************************************************************************
  * local function declarations
@@ -307,7 +317,7 @@ static BOOL OnShutdown(OSShutdownPass pass, OSShutdownEvent event)
 {
 	WUDLibStatus wudLibStatus = WUDGetStatus();
 
-	if (pass != OS_SD_PASS_FIRST || wudLibStatus == WUD_LIB_STATUS_0)
+	if (pass != OS_SHUTDOWN_PASS_FIRST || wudLibStatus == WUD_LIB_STATUS_0)
 		return TRUE;
 
 	if (wudLibStatus == WUD_LIB_STATUS_4 || wudLibStatus == WUD_LIB_STATUS_1
@@ -323,26 +333,25 @@ static BOOL OnShutdown(OSShutdownPass pass, OSShutdownEvent event)
 	}
 
 	BOOL isCleanup;
-
 	switch (event)
 	{
-	case OS_SD_EVENT_FATAL:
+	case OS_SHUTDOWN_EVENT_FATAL:
 		WPADRegisterAllocator(&__wpadNoAlloc, &__wpadNoFree);
 
 		// fallthrough
 
-	case OS_SD_EVENT_SHUTDOWN:
-	case OS_SD_EVENT_3:
+	case OS_SHUTDOWN_EVENT_SHUTDOWN:
+	case OS_SHUTDOWN_EVENT_3:
 		isCleanup = TRUE;
 		break;
 
-	case OS_SD_EVENT_1:
-	case OS_SD_EVENT_RESTART:
-	case OS_SD_EVENT_LAUNCH_APP:
+	case OS_SHUTDOWN_EVENT_1:
+	case OS_SHUTDOWN_EVENT_RESTART:
+	case OS_SHUTDOWN_EVENT_LAUNCH_APP:
 		isCleanup = FALSE;
 		break;
 
-	case OS_SD_EVENT_RETURN_TO_MENU:
+	case OS_SHUTDOWN_EVENT_RETURN_TO_MENU:
 		isCleanup = __OSIsReturnToIdle ? 1 : 0;
 		break;
 

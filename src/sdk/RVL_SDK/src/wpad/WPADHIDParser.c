@@ -1,6 +1,5 @@
 #include "WPADHIDParser.h"
 
-
 /*******************************************************************************
  * headers
  */
@@ -12,15 +11,13 @@
 #include <types.h>
 
 #include "WPAD.h"
-#include "WPAD2.h"
 #include "WPADEncrypt.h"
-#include <revolution/WPAD/WUD.h> // WUDIsLinkedWBC
 
-#include <revolution/OS/OS.h> // __OSInIPL
-#include <revolution/OS/OSCrc.h> // OSCalcCRC32
-#include <revolution/OS/OSInterrupt.h>
-
-#include "context_bte.h" // UINT8
+#include <revolution/bte/context_bte.h> // UINT8
+#include <revolution/os/OS.h> // __OSInIPL
+#include <revolution/os/OSCrc.h> // OSCalcCRC32
+#include <revolution/os/OSInterrupt.h>
+#include <revolution/wpad/WUD.h> // WUDIsLinkedWBC
 
 /*******************************************************************************
  * constants

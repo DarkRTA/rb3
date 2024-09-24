@@ -1,5 +1,4 @@
 #include "lint.h"
-//#if 0
 
 /*******************************************************************************
  * headers
@@ -7,16 +6,21 @@
 
 #include <limits.h>
 #include <string.h> // memset
-#include "types.h"
 
 /*******************************************************************************
  * macros
  */
 
 #define ULONG_BIT				(sizeof(ULONG) * CHAR_BIT)
-#define ULLONG_BIT				(sizeof(u64) * CHAR_BIT)
+#define ULLONG_BIT				(sizeof(ULLONG) * CHAR_BIT)
 
 #define ULLONG_ULONG_BIT_DIFF	(ULLONG_BIT - ULONG_BIT)
+
+/*******************************************************************************
+ * types
+ */
+
+typedef unsigned long long ULLONG;
 
 /*******************************************************************************
  * explanation
@@ -40,15 +44,15 @@
  * functions
  */
 
-int LINTCmp(const u32 *lhs, const u32 *rhs)
+int LINTCmp(const ULONG *lhs, const ULONG *rhs)
 {
 	int i;
 
-	u32 lhsSize = lhs[0];
-	u32 rhsSize = rhs[0];
+	ULONG lhsSize = lhs[0];
+	ULONG rhsSize = rhs[0];
 
-	const u32 *lhsData = lhs + 1;
-	const u32 *rhsData = rhs + 1;
+	const ULONG *lhsData = lhs + 1;
+	const ULONG *rhsData = rhs + 1;
 
 	if (lhsSize > rhsSize)
 		return 1;
@@ -69,28 +73,27 @@ int LINTCmp(const u32 *lhs, const u32 *rhs)
 }
 
 // const fucks up loop optimization on release
-void LINTLshift(u32 *dst, /* const */ u32 *src, u32 shift)
+void LINTLshift(ULONG *dst, /* const */ ULONG *src, ULONG shift)
 {
 	// i being int here just fucks up release in general
-	u32 i;
+	ULONG i;
 
-	u32 size = src[0];
+	ULONG size = src[0];
 
-	u32 *srcData = src + 1;
-	u32 *dstData = dst + 1;
+	ULONG *srcData = src + 1;
+	ULONG *dstData = dst + 1;
 
-	u32 bigShift = shift / ULONG_BIT;
-	u32 smallShift = shift % ULONG_BIT;
-
-	u64 num = 0;
+	ULONG bigShift = shift / ULONG_BIT;
+	ULONG smallShift = shift % ULONG_BIT;
 
 	for (i = 0; i < bigShift; i++)
 		dstData[i] = 0;
 
+	ULLONG num = 0;
 
 	for (i = 0; i < size; i++)
 	{
-		num += (u64)srcData[i] << smallShift;
+		num += (ULLONG)srcData[i] << smallShift;
 
 		dstData[i + bigShift] = num & ULONG_MAX;
 		num = (num >> ULLONG_ULONG_BIT_DIFF) & ULONG_MAX;
@@ -103,15 +106,15 @@ void LINTLshift(u32 *dst, /* const */ u32 *src, u32 shift)
 		(*dst)++;
 }
 
-int LINTMsb(const u32 *data)
+int LINTMsb(const ULONG *data)
 {
 	int i;
 
-	u32 size = data[0];
+	ULONG size = data[0];
 
-	u32 last = LINTNextElement(data, size - 1);
-	u32 msbPos = ULONG_BIT;
-	u32 a;
+	ULONG last = LINTNextElement(data, size - 1);
+	ULONG msbPos = ULONG_BIT;
+	ULONG a __attribute__((unused));
 
 	i = 0;
 	while (i < ULONG_BIT)
@@ -126,24 +129,24 @@ int LINTMsb(const u32 *data)
 	return msbPos + (size - 1) * ULONG_BIT;
 }
 
-void LINTSub(u32 *dst, const u32 *lhs, const u32 *rhs)
+void LINTSub(ULONG *dst, const ULONG *lhs, const ULONG *rhs)
 {
 	int i;
 
-	u32 lhsSize = lhs[0];
-	u32 rhsSize = rhs[0];
+	ULONG lhsSize = lhs[0];
+	ULONG rhsSize = rhs[0];
 
-	const u32 *lhsData = lhs + 1;
-	const u32 *rhsData = rhs + 1;
-	u32 *dstData = dst + 1;
+	const ULONG *lhsData = lhs + 1;
+	const ULONG *rhsData = rhs + 1;
+	ULONG *dstData = dst + 1;
 
-	u64 num = 0;
+	ULLONG num = 0;
 
 	for (i = 0; i < lhsSize; i++)
 	{
 		dstData[i] = lhsData[i] - (ULONG)num;
 
-		if ((u64)dstData[i] > ULONG_MAX - num)
+		if ((ULLONG)dstData[i] > ULONG_MAX - num)
 			num = 1;
 		else
 			num = 0;
@@ -163,19 +166,18 @@ void LINTSub(u32 *dst, const u32 *lhs, const u32 *rhs)
 }
 
 // TODO on release
-void LINTMul(u32 *dst, const u32 *lhs, const u32 *rhs)
+void LINTMul(ULONG *dst, const ULONG *lhs, const ULONG *rhs)
 {
 	int i, j;
 
-	const u32 lhsSize = lhs[0];
-	const u32 rhsSize = rhs[0];
+	const ULONG lhsSize = lhs[0];
+	const ULONG rhsSize = rhs[0];
 
-	const u32 *lhsData = lhs + 1;
-	const u32 *rhsData = rhs + 1;
-	u32 *dstData = dst + 1;
-	u32 a; // ?
+	const ULONG *lhsData = lhs + 1;
+	const ULONG *rhsData = rhs + 1;
+	ULONG *dstData = dst + 1;
 
-	u64 num = 0;
+	ULLONG num = 0;
 
 	dst[0] = 1;
 
@@ -191,7 +193,7 @@ void LINTMul(u32 *dst, const u32 *lhs, const u32 *rhs)
 
 		for (j = 0; j < lhsSize; j++)
 		{
-			num = (u64)lhsData[j] * rhsData[i] + num
+			num = (ULLONG)lhsData[j] * rhsData[i] + num
 			    + dstData[i + j];
 
 			dstData[i + j] = num & ULONG_MAX;
@@ -202,6 +204,7 @@ void LINTMul(u32 *dst, const u32 *lhs, const u32 *rhs)
 		dstData[i + j] = num;
 	}
 
+	ULONG a __attribute__((unused)); // ?
 	if (num == 0)
 		a = *dst = lhsSize + rhsSize - 1;
 	else

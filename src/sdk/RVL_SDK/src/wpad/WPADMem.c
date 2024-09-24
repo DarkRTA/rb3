@@ -8,9 +8,8 @@
 #include <types.h>
 
 #include "WPAD.h"
-#include "WPAD2.h"
 
-#include <revolution/OS/OSInterrupt.h>
+#include <revolution/os/OSInterrupt.h>
 
 /*******************************************************************************
  * functions

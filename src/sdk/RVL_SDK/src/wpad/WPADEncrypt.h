@@ -9,7 +9,7 @@
 
 #include <types.h>
 
-#include <revolution/WPAD/WPAD.h> // WPADChannel
+#include <revolution/wpad/WPAD.h> // WPADChannel
 
 /*******************************************************************************
  * functions

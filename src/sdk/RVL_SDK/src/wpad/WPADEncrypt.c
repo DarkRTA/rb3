@@ -10,11 +10,9 @@
 #include <types.h>
 
 #include "WPAD.h"
-#include "WPAD2.h"
 
-
-#include <revolution/OS/OSInterrupt.h>
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSInterrupt.h>
+#include <revolution/os/OSTime.h>
 
 /*******************************************************************************
  * local function declarations
@@ -872,7 +870,7 @@ void WPADiCreateKey(WPADChannel chan)
 
 	SEED = OSGetTick() >> 8 & 0xff;
 	NUM_A = OSGetTick() >> 16 & 0x3f;
-	NUM_B = (u8)(OSGetTick() >> 24) & 0x4c;
+	NUM_B = OSGetTick() >> 24 & 0x4c;
 	NUM_C = 0xff;
 
 	u8 numRand = random() % 7;
@@ -934,7 +932,7 @@ void WPADiCreateKeyFor3rd(WPADChannel chan)
 
 	SEED = OSGetTick() >> 8 & 0xff;
 	NUM_A = OSGetTick() >> 16 & 0x3f;
-	NUM_B = (u8)(OSGetTick() >> 24) & 0x4c;
+	NUM_B = OSGetTick() >> 24 & 0x4c;
 	NUM_C = 0xff;
 
 	u8 numRand = random() % 7;

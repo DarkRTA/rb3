@@ -17,17 +17,17 @@
 
 #include "WUDHidHost.h" // WUDiHidHostEventCallback
 
-
-#include <revolution/OS/OSContext.h> // OSSwitchFiberEx
-#include <revolution/OS/OSError.h>
-#include <revolution/OS/OSInterrupt.h>
-#include <revolution/OS/OSTime.h>
-#include <revolution/NAND.h>
-#include <revolution/SC/scapi.h>
-#include <revolution/SC/scapi_prdinfo.h>
-#include <revolution/SC/scsystem.h>
-
-#include "context_bte.h"
+#include <revolution/bte/context_bte.h>
+#include <revolution/os/OSContext.h> // OSSwitchFiberEx
+#include <revolution/os/OSError.h>
+#include <revolution/os/OSInterrupt.h>
+#include <revolution/os/OSTime.h>
+#include <revolution/nand/nand.h>
+// #include <revolution/nand/NANDCore.h> // NANDInit
+#include <revolution/nand/NANDOpenClose.h>
+#include <revolution/sc/scapi.h>
+#include <revolution/sc/scapi_prdinfo.h>
+#include <revolution/sc/scsystem.h>
 
 /*******************************************************************************
  * macros

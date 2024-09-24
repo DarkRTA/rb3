@@ -1,25 +1,55 @@
 #ifndef CONTEXT_BTE_H
 #define CONTEXT_BTE_H
 
+// TODO: Remove this file when bte is properly implemented
+
 #include <stdint.h>
 
 /* Contains the context of the BTE library that the WPAD library needs to
  * compile.
  *
- * This is not the full context; the other half of the context is in
- * "context_rvl.h".
- *
  * Most of this code is copyright (C) 2003-2012 Broadcom Corporation under the
- * Apache 2.0 License; however, some of the code is modified. Comments will be
- * marked with my name to show where and what I modified.
+ * Apache 2.0 License <http://www.apache.org/licenses/LICENSE-2.0>. The original
+ * source can be found at
+ * <https://android.googlesource.com/platform/external/bluetooth/bluedroid>;
+ * specifically, I used the earliest commit available (late 2012, commit hash
+ * 5738f83aeb59361a0a2eda2460113f6dc9194271).
  */
+
+/* License redistribution conditions
+ *
+ * a. You may obtain a copy of the License at
+ *    <http://www.apache.org/licenses/LICENSE-2.0>.
+ * b. Some of the code is modified. Comments will be marked with my name
+ *    (muff1n) to show what I modified and where.
+ * c. See the following comment block, which is copied verbatim from bluedroid
+ *    source.
+ * d. No NOTICE file is present in the commit that I used.
+ */
+
+/******************************************************************************
+ *
+ *  Copyright (C) 2003-2012 Broadcom Corporation
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at:
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ ******************************************************************************/
 
 // from bluedroid source
 
 typedef uint8_t UINT8;
 typedef uint16_t UINT16;
 typedef uint32_t UINT32;
-typedef uint8_t byte_t;
 
 typedef int8_t INT8;
 

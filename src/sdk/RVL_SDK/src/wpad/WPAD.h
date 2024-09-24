@@ -12,13 +12,10 @@
 #include "lint.h" // ULONG
 #include "WPADHIDParser.h" // RPT_MAX_SIZE
 #include "WPADMem.h"
-#include "WPADMem2.h"
 
-
-#include <revolution/OS/OSTime.h>
-#include <revolution/OS/OSThread.h>
-
-//#include "context_rvl.h"
+#include <revolution/bte/context_bte.h>
+#include <revolution/os/OSTime.h>
+#include <revolution/os/OSThread.h>
 
 /*******************************************************************************
  * macros

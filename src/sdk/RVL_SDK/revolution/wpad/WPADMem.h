@@ -7,9 +7,9 @@
 
 #include <types.h>
 
-#include "WPAD.h"
+#include <revolution/wpad/WPAD.h>
 
-#include <revolution/os/OSTime.h>
+#include <revolution/OS/OSTime.h>
 
 /*******************************************************************************
  * macros

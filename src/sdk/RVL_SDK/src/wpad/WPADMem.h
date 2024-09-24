@@ -1,13 +1,13 @@
 #ifndef RVL_SDK_WPAD_INTERNAL_MEMORY_H
 #define RVL_SDK_WPAD_INTERNAL_MEMORY_H
 
-#include <revolution/WPAD/WPADMem.h>
+#include <revolution/wpad/WPADMem.h>
 
 /*******************************************************************************
  * headers
  */
 
-#include <revolution/WPAD/WPAD.h> // WPADChannel
+#include <revolution/wpad/WPAD.h> // WPADChannel
 
 /*******************************************************************************
  * types

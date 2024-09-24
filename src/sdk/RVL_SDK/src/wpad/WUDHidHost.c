@@ -8,9 +8,8 @@
 
 #include "WUD.h"
 
-#include <revolution/os/OSAssert.h>
-
-#include "context_bte.h"
+#include <revolution/bte/context_bte.h>
+// #include <revolution/os/OSAssert.h>
 
 /*******************************************************************************
  * macros

@@ -7,7 +7,7 @@
  * headers
  */
 
-#include "context_bte.h" // UINT8
+#include <revolution/bte/context_bte.h> // UINT8
 
 /*******************************************************************************
  * macros
