@@ -868,9 +868,9 @@ void WPADiCreateKey(WPADChannel chan)
 {
 	wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
-	SEED = OSGetTick() >> 8 & 0xff;
-	NUM_A = OSGetTick() >> 16 & 0x3f;
-	NUM_B = OSGetTick() >> 24 & 0x4c;
+	SEED = (u32)OSGetTick() >> 8 & 0xff;
+	NUM_A = (u32)OSGetTick() >> 16 & 0x3f;
+	NUM_B = (u32)OSGetTick() >> 24 & 0x4c;
 	NUM_C = 0xff;
 
 	u8 numRand = random() % 7;
@@ -930,9 +930,9 @@ void WPADiCreateKeyFor3rd(WPADChannel chan)
 {
 	wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
-	SEED = OSGetTick() >> 8 & 0xff;
-	NUM_A = OSGetTick() >> 16 & 0x3f;
-	NUM_B = OSGetTick() >> 24 & 0x4c;
+	SEED = (u32)OSGetTick() >> 8 & 0xff;
+	NUM_A = (u32)OSGetTick() >> 16 & 0x3f;
+	NUM_B = (u32)OSGetTick() >> 24 & 0x4c;
 	NUM_C = 0xff;
 
 	u8 numRand = random() % 7;
