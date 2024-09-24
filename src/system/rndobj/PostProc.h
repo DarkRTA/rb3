@@ -60,6 +60,11 @@ public:
     virtual void OnSelect();
     virtual void OnUnselect();
     
+    float BloomIntensity() const;
+    bool DoGradientMap() const;
+    bool DoRefraction() const;
+    bool DoVignette() const;
+    bool HallOfTime() const;
     void UpdateTimeDelta();
     void UpdateColorModulation();
     void UpdateBlendPrevious();

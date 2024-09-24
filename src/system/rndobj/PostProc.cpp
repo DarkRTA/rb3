@@ -69,6 +69,46 @@ void RndPostProc::OnUnselect(){
 
 RndPostProc* RndPostProc::Current(){ return sCurrent; }
 
+float RndPostProc::BloomIntensity() const {
+    if(mBloomGlare != 0 && TheHiResScreen->mActive != 0)
+    {
+        return mBloomIntensity / 3.0f;
+    }
+    return mBloomIntensity;
+}
+
+bool RndPostProc::DoGradientMap() const
+{
+    bool ret = false;
+
+    if((mGradientMapOpacity > 0.0f) && mGradientMap.mPtr != 0){
+        ret = 1;
+    }
+    return ret;
+}
+
+bool RndPostProc::DoRefraction() const 
+{
+    bool ret = false;
+
+    if(mRefractMap.mPtr != 0 && (0.0f != mRefractDist)){
+        ret = 1;
+    }
+    return ret;
+}
+
+bool RndPostProc::DoVignette() const 
+{
+    return mVignetteIntensity != 0.0f;
+}
+
+bool RndPostProc::HallOfTime() const
+{
+    return mHallOfTimeRate != 0.0f;
+}
+
+
+
 // fn_80624B04
 void RndPostProc::UpdateTimeDelta(){
     float secs = TheTaskMgr.Seconds(TaskMgr::b);
