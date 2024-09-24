@@ -1,5 +1,5 @@
-#include "revolution/GX.h"
-#include "revolution/gx/GXTypes.h"
+#include <revolution/GX.h>
+#include <revolution/gx/GXTypes.h>
 
 void GXSetTevIndirect(GXTevStageID tevStage, GXIndTexStageID texStage,
                       GXIndTexFormat texFmt, GXIndTexBiasSel biasSel,
@@ -176,7 +176,7 @@ void GXSetTevIndBumpST(){
 }
 
 //unused
-void GXSetTevIndBumpXYZ(){    
+void GXSetTevIndBumpXYZ(){
 }
 
 

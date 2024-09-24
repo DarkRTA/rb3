@@ -1,7 +1,8 @@
-#include "revolution/os/OSArena.h"
-#include "revolution/os/OSExec.h"
-#include "revolution/os/OSInterrupt.h"
+#include <revolution/os/OSArena.h>
+#include <revolution/os/OSExec.h>
+#include <revolution/os/OSInterrupt.h>
 #include "types.h"
+
 void* SaveStart = NULL;
 void* SaveEnd = NULL;
 

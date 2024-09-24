@@ -1,7 +1,6 @@
-#include "scsystem.h"
-#include "revolution/OS.h"
-#include "revolution/NAND.h"
-#include "revolution/os/OSInterrupt.h"
+#include <revolution/sc/scsystem.h>
+#include <revolution/OS.h>
+#include <revolution/NAND.h>
 #include "types.h"
 
 static OSMutex Control;

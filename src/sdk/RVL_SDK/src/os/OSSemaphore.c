@@ -1,6 +1,6 @@
-#include "OSSemaphore.h"
-#include "revolution/os/OSInterrupt.h"
-#include "revolution/os/OSThread.h"
+#include <revolution/os/OSSemaphore.h>
+#include <revolution/os/OSInterrupt.h>
+#include <revolution/os/OSThread.h>
 
 void OSInitSemaphore(OSSemaphore *sema, s32 active_signals) {
     BOOL status = OSDisableInterrupts();

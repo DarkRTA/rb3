@@ -1,5 +1,5 @@
-#include "revolution/math.h"
-#include "revolution/GX.h"
+#include <revolution/math.h>
+#include <revolution/GX.h>
 
 #define XF_MEM_LOBJ_SIZE 16
 
@@ -228,7 +228,7 @@ inline void WriteLightObj(register volatile void* dst,
         stw r6, 0(dst)
         stw r6, 0(dst)
         stw r6, 0(dst)
-            
+
         stw color,   0(dst)
         psq_st ps_0, 0(dst), 0, 0
         psq_st ps_1, 0(dst), 0, 0

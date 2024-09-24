@@ -81,7 +81,7 @@ void LINTLshift(u32 *dst, /* const */ u32 *src, u32 shift)
 
 	u32 bigShift = shift / ULONG_BIT;
 	u32 smallShift = shift % ULONG_BIT;
-	
+
 	u64 num = 0;
 
 	for (i = 0; i < bigShift; i++)

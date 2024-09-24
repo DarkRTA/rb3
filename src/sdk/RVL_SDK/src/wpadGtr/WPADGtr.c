@@ -1,5 +1,5 @@
 #include "WPADGtr.h"
-#include "revolution/OS.h"
+#include <revolution/OS.h>
 
 const char* __WPADGtrVersion = "<< RVL_SDK - WPADGtr \trelease build: Dec 22 2009 01:21:33 (0x4302_145) >>";
 

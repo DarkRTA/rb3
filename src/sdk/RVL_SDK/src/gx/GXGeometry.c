@@ -1,4 +1,4 @@
-#include "revolution/GX.h"
+#include <revolution/GX.h>
 #include "decomp.h"
 
 inline void __GXSetAmbMat(u32 dirtyFlags) {
