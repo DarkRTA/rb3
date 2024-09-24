@@ -72,8 +72,11 @@ public:
     class Face {
     public:
         Face() : idx0(0), idx1(0), idx2(0) {}
-
         const unsigned short& operator[](int i) const { return *(&idx0 + i); }
+        void Set(u16 i0, u16 i1, u16 i2){
+            idx0 = i0; idx1 = i1; idx2 = i2;
+        }
+
         u16 idx0, idx1, idx2;
     };
 
@@ -172,6 +175,7 @@ public:
     }
     bool IsSkinned() const { return !mBones.empty(); }
     void SetMutable(int m){ mGeomOwner->mMutable = m; }
+    bool HasAOCalc() const { return mHasAOCalc; }
     void SetHasAOCalc(bool b){ mHasAOCalc = b; }
 
     DECLARE_REVS

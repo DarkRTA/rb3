@@ -60,11 +60,11 @@ public:
     virtual void SetInterestFilterFlags(int);
     virtual void ClearInterestFilterFlags();
     virtual void TextureCompressed(int);
-    virtual int GetPatchTex(Patch&);
-    virtual int GetPatchMesh(Patch&);
+    virtual RndTex* GetPatchTex(Patch&);
+    virtual RndMesh* GetPatchMesh(Patch&);
     virtual int GetBandLogo();
     virtual void Compress(RndTex*, bool);
-    virtual int GetPatchDir(){}
+    virtual ObjectDir* GetPatchDir(){}
     virtual void AddOverlays(BandPatchMesh&);
     virtual void MiloReload();
     virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*);

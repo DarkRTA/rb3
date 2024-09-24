@@ -5,6 +5,8 @@
 #include "rndobj/Tex.h"
 #include "rndobj/Trans.h"
 
+class BandCharDesc;
+
 class BandPatchMesh {
 public:
     class MeshPair {
@@ -57,7 +59,10 @@ public:
     bool ReProject();
     void ProjectPatches(const Transform&, RndTex*, bool);
     void ListDrawChildren(std::list<RndDrawable*>&);
+    void PreRender(BandCharDesc*, int);
     void PostRender();
+    void Compress(BandCharDesc*);
+    bool FindXfm(RndMesh*, const Vector2&, Transform&);
 
     static void SetRenderToVert(RndMesh::Vert&, const Vector2&, const Vector2&);
     DECLARE_REVS;

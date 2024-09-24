@@ -1,4 +1,5 @@
 #include "bandobj/BandPatchMesh.h"
+#include "bandobj/BandCharDesc.h"
 #include "math/Rot.h"
 #include "utl/Symbols.h"
 
@@ -86,6 +87,82 @@ bool BandPatchMesh::ReProject(){
     return mRenderTo;
 }
 
+void BandPatchMesh::PreRender(BandCharDesc* desc, int iii){
+    if(mCategory == 0 || (iii & mCategory)){
+        for(ObjVector<MeshPair>::iterator mp = mMeshes.begin(); mp != mMeshes.end(); ++mp){
+            MILO_ASSERT(mp->patches.empty(), 0x509);
+        }
+        if(mSrc){
+            for(ObjVector<MeshPair>::iterator mp = mMeshes.begin(); mp != mMeshes.end(); ++mp){
+                mp->AddPatch(true);
+            }
+        }
+        ObjectDir* pdir = desc->GetPatchDir();
+        if(pdir){
+            for(int i = 0; i < desc->mPatches.size(); i++){
+                BandCharDesc::Patch& patch = desc->mPatches[i];
+                if(patch.mCategory & mCategory){
+                    RndMesh* mesh = desc->GetPatchMesh(patch);
+                    RndTex* tex = 0;
+                    if(patch.mTexture == -1){
+                        if(mesh && mesh->GetMat()){
+                            tex = mesh->GetMat()->GetDiffuseTex();
+                        }
+                        else {
+                            MILO_WARN("%s could not find texture from placement mesh, category %d.", PathName(pdir), mCategory);
+                        }
+                    }
+                    else tex = desc->GetPatchTex(patch);
+                    if(tex){
+                        if(!mesh){
+                            if(!patch.mMeshName.empty()){
+                                MILO_WARN("%s: could not find placement mesh %s", PathName(pdir), patch.mMeshName.c_str());
+                            }
+                            else ConstructQuad(tex);
+                        }
+                        else if(patch.mTexture == -1){
+                            if(mMeshes.size() == 1){
+                                AddMappingPatch(mMeshes[0], mesh);
+                            }
+                        }
+                        else {
+                            Transform tf60;
+                            if(FindXfm(mesh, patch.mUV, tf60)){
+                                Hmx::Matrix3 m88;
+                                m88.RotateAboutZ(patch.mRotation);
+                                Multiply(m88, tf60.m, tf60.m);
+                                tf60.m.x *= (patch.mScale.x * 0.5f);
+                                tf60.m.y *= (patch.mScale.y * 0.5f);
+                                ProjectPatches(tf60, tex, false);
+                            }
+                            else {
+                                MILO_WARN("Could not project %s onto %s\n", tex->Name(), mesh->Name());
+                            }
+                        }
+                    }
+                }
+            }
+            desc->AddOverlays(*this);
+        }
+    }
+}
+
+void BandPatchMesh::Compress(BandCharDesc* desc){
+    ObjectDir* pdir = desc->GetPatchDir();
+    for(int i = 0; i < mMeshes.size(); i++){
+        for(int j = 0; j < mMeshes[i].patches.size(); j++){
+            RndMesh* patch = mMeshes[i].patches[j].mPatch;
+            if(patch){
+                RndTex* tex = mMeshes[i].patches[j].mTex;
+                if(tex && pdir && tex->Dir() == pdir){
+                    delete tex;
+                }
+                if(!patch->Dir()) delete patch;
+            }
+        }
+    }
+}
+
 void BandPatchMesh::ListDrawChildren(std::list<RndDrawable*>& list){
     if(mRenderTo){
         for(int i = 0; i < mMeshes.size(); i++){
@@ -125,11 +202,25 @@ void BandPatchMesh::Construct(BandPatchMesh::MeshPair& meshpair, RndTex* tex, bo
         patchpair.mPatch->SetOrder(0.01f);
         patchpair.mPatch->CopyBones(meshpair.mesh);
         patchpair.mPatch->RndTransformable::Copy(meshpair.mesh, Hmx::Object::kCopyDeep);
-        patchpair.mPatch->SetHasAOCalc(meshpair.mesh->mHasAOCalc);
+        patchpair.mPatch->SetHasAOCalc(meshpair.mesh->HasAOCalc());
     }
     if(quad){
         if(!mRenderTo) MILO_WARN("Generating quad patch for non render to!");
-        // ...
+        patchpair.mPatch->Verts().resize(4, true);
+        patchpair.mPatch->Faces().resize(2);
+        for(int i = 0; i < 4; i++){
+            bool b13 = false;
+            if(i == 1 || i == 2) b13 = true;
+            float x, y;
+            if(b13) x = 1.0f;
+            else x = 0;
+            if(i < 2) y = 1.0f;
+            else y = 0;
+            Vector2 v30(y, x);
+            SetRenderToVert((RndMesh::Vert&)patchpair.mPatch->VertAt(i), v30, v30);
+        }
+        patchpair.mPatch->Faces()[0].Set(0, 1, 2);
+        patchpair.mPatch->Faces()[1].Set(0, 2, 3);
     }
     else wv->SetVertsAndFaces(patchpair.mPatch, mRenderTo);
     patchpair.mPatch->Sync(0x13F);
