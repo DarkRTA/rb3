@@ -196,6 +196,7 @@ public:
     static int MaxBones();
     static int sLastCollide;
     static bool sRawCollide;
+    static void SetRawCollide(bool b){ sRawCollide = b; }
 
     // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0

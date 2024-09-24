@@ -982,6 +982,9 @@ system/bandobj/BandLabel.cpp:
 system/bandobj/BandList.cpp:
 	.text       start:0x803B364C end:0x803BA73C
 
+system/bandobj/BandPatchMesh.cpp:
+	.text       start:0x803BA73C end:0x803C4DD0
+
 system/bandobj/BandScoreboard.cpp:
 	.text       start:0x803C4DD0 end:0x803C6DC8
 
