@@ -625,7 +625,7 @@ void WPADControlMotor(WPADChannel chan, WPADMotorCommand command);
 void WPADEnableMotor(BOOL enabled);
 BOOL WPADIsMotorEnabled(void);
 WPADResult WPADControlLed(WPADChannel chan, u8 ledFlags, WPADCallback cb);
-BOOL WPADSaveConfig(SCFlushCallback *cb);
+BOOL WPADSaveConfig(SCFlushCallback cb);
 
 /* NOTE: status should match the WPADStatus type for the channel; a check
  * against the currently assigned device type is made to know how much to copy

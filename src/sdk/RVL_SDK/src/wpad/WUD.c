@@ -1094,7 +1094,7 @@ static void __wudOpenWiiFitFile(void)
 		return;
 
 	_wudNandLocked = TRUE;
-	NANDOpenAsync(rpHealthFilePath, &_wudNandFileInfo, NAND_OPEN_WRITE,
+	NANDOpenAsync(rpHealthFilePath, &_wudNandFileInfo, NAND_ACCESS_WRITE,
 	              &__wudOpenWiiFitCallback, &_wudNandBlock);
 }
 
@@ -2010,7 +2010,7 @@ static WUDInitState __wudGetDevInfoFromWiiFit(void)
 			_wudNandWbcCrc = 0;
 
 			result =
-				NANDOpenAsync(wfFilePath, &_wudNandFileInfo, NAND_OPEN_READ,
+				NANDOpenAsync(wfFilePath, &_wudNandFileInfo, NAND_ACCESS_READ,
 			                  &__wudNandResultCallback, &_wudNandBlock);
 		}
 		else

@@ -6,17 +6,22 @@ extern "C" {
 #endif
 
 
-typedef enum _OSShutdownPass { OS_SD_PASS_FIRST, OS_SD_PASS_SECOND } OSShutdownPass;
+typedef int OSShutdownPass;
+enum OSShutdownPass_et {
+    OS_SHUTDOWN_PASS_FIRST,
+    OS_SHUTDOWN_PASS_SECOND
+};
 
-typedef enum _OSShutdownEvent {
-    OS_SD_EVENT_FATAL = 0,
-    OS_SD_EVENT_1 = 1,
-    OS_SD_EVENT_SHUTDOWN = 2,
-    OS_SD_EVENT_3 = 3,
-    OS_SD_EVENT_RESTART = 4,
-    OS_SD_EVENT_RETURN_TO_MENU = 5,
-    OS_SD_EVENT_LAUNCH_APP = 6,
-} OSShutdownEvent;
+typedef u32 OSShutdownEvent;
+enum OSShutdownEvent_et {
+    OS_SHUTDOWN_EVENT_FATAL,
+    OS_SHUTDOWN_EVENT_1,
+    OS_SHUTDOWN_EVENT_SHUTDOWN,
+    OS_SHUTDOWN_EVENT_3,
+    OS_SHUTDOWN_EVENT_RESTART,
+    OS_SHUTDOWN_EVENT_RETURN_TO_MENU,
+    OS_SHUTDOWN_EVENT_LAUNCH_APP,
+};
 
 typedef BOOL (*OSShutdownFunction)(OSShutdownPass pass, OSShutdownEvent event);
 
@@ -35,8 +40,8 @@ typedef struct OSShutdownFunctionQueue {
 extern BOOL __OSIsReturnToIdle;
 
 void OSRegisterShutdownFunction(OSShutdownFunctionInfo* info);
-BOOL __OSCallShutdownFunctions(u32 pass, u32 event);
-void __OSShutdownDevices(u32 event);
+BOOL __OSCallShutdownFunctions(OSShutdownPass pass, OSShutdownEvent event);
+void __OSShutdownDevices(OSShutdownEvent event);
 void __OSGetDiscState(u8* out);
 void OSShutdownSystem(void);
 void OSReturnToMenu(void);

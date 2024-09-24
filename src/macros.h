@@ -4,6 +4,10 @@
 #include "compiler_macros.h"
 
 // Useful macros
+
+#define STR_(x)     #x
+#define STR(x)      STR_(x)
+
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MINEQ(x, y) ((x) <= (y) ? (x) : (y))

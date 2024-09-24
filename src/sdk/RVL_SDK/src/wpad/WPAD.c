@@ -453,7 +453,7 @@ static WPADResult __wpadSendDataSub(WPADChannel chan, struct WPADCmd cmdBlk)
 
 		p_wpd->cmdBlkCB = cmdBlk.cmdCB;
 		p_wpd->lastReportID = rep_id;
-		p_wpd->lastReportSendTime = __OSGetSystemTime() + OS_TIMER_CLOCK * 2;
+		p_wpd->lastReportSendTime = __OSGetSystemTime() + OS_TIME_SPEED * 2;
 		p_wpd->unk_0xb08 = 0;
 	}
 
@@ -495,7 +495,7 @@ static WPADResult __wpadSendData(WPADChannel chan, struct WPADCmd cmdBlk)
 	}
 	else if (connStatus == WPAD_ECOMM)
 	{
-		if ((__OSGetSystemTime() - p_wpd->lastReportSendTime) / OS_TIMER_CLOCK
+		if ((__OSGetSystemTime() - p_wpd->lastReportSendTime) / OS_TIME_SPEED
 		    > 1)
 		{
 			p_wpd->lastReportSendTime = __OSGetSystemTime();
@@ -965,7 +965,7 @@ static void __wpadCalcControllerData(WPADChannel chan)
 	else if (_wpadSleepTime)
 	{
 		s32 time = (__OSGetSystemTime() - p_wpd->lastControllerDataUpdate)
-		         / OS_TIMER_CLOCK;
+		         / OS_TIME_SPEED;
 
 		if (time > _wpadSleepTime * 60)
 			__wpadDisconnect(chan, 0);
@@ -2205,7 +2205,7 @@ end:
 	return status;
 }
 
-BOOL WPADSaveConfig(SCFlushCallback *cb)
+BOOL WPADSaveConfig(SCFlushCallback cb)
 {
 	BOOL success = TRUE;
 
