@@ -172,6 +172,7 @@ public:
     }
     bool IsSkinned() const { return !mBones.empty(); }
     void SetMutable(int m){ mGeomOwner->mMutable = m; }
+    void SetHasAOCalc(bool b){ mHasAOCalc = b; }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)

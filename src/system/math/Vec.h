@@ -150,7 +150,9 @@ public:
     u16 ScaleFloat01ToUShort(float f) { 
         MILO_ASSERT(f >= 0.0f, 543);
         MILO_ASSERT(f <= 1.0f, 544);
-        return f * 65535.0f;
+
+        f32 size_u16 = 65535.f;
+        return f * size_u16;
     }
     void Set(float f0, float f1, float f2, float f3) {
         SetX(f0);

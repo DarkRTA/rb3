@@ -45,6 +45,7 @@ public:
     static void Init(){
         REGISTER_OBJ_FACTORY(RndMeshDeform)
     }
+    static RndMeshDeform* FindDeform(RndMesh*);
 
     ObjPtr<RndMesh, ObjectDir> mMesh;
     Transform mMeshInverse;

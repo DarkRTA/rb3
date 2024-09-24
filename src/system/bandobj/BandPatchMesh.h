@@ -1,6 +1,7 @@
 #pragma once
 #include "obj/Object.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/MeshDeform.h"
 #include "rndobj/Tex.h"
 #include "rndobj/Trans.h"
 
@@ -16,10 +17,14 @@ public:
             ObjPtr<RndTex, ObjectDir> mTex; // 0xc
         };
 
-        MeshPair(Hmx::Object* o) : mesh(o, 0), mPatches(o) {}
+        MeshPair(Hmx::Object* o) : mesh(o, 0), patches(o) {}
+        void AddMappingPatch(RndMesh*);
+        PatchPair& AddPatch(bool);
+        RndTex* OutputTex() const;
+        const char* PatchName() const;
 
         ObjPtr<RndMesh, ObjectDir> mesh; // 0x0
-        ObjVector<PatchPair> mPatches; // 0xc
+        ObjVector<PatchPair> patches; // 0xc
     };
 
     class MeshVert {
@@ -38,8 +43,21 @@ public:
         unsigned char unk26;
     };
 
+    class WorkVerts {
+    public:
+        void SetVertsAndFaces(RndMesh*, bool);
+        void CopyDeformWeights(RndMeshDeform*, RndMeshDeform*);
+    };
+
     BandPatchMesh(Hmx::Object*);
     BandPatchMesh& operator=(const BandPatchMesh&);
+    void AddMappingPatch(MeshPair&, RndMesh*);
+    void ConstructQuad(RndTex*);
+    void Construct(MeshPair&, RndTex*, bool, bool, WorkVerts*);
+    bool ReProject();
+    void ProjectPatches(const Transform&, RndTex*, bool);
+    void ListDrawChildren(std::list<RndDrawable*>&);
+    void PostRender();
 
     static void SetRenderToVert(RndMesh::Vert&, const Vector2&, const Vector2&);
     DECLARE_REVS;
