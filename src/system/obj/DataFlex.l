@@ -16,7 +16,7 @@
 #define ECHO /* don't echo unmatched characters */
 %}
 
-IDENTIFIER          [^ \t\n\r\(\)\[\]\{\}]+
+/* TODO: '-' has a significant usage outside of SIGN */
 
 DIGIT               [0-9]
 HEX_DIGIT           [A-Fa-f0-9]
@@ -25,30 +25,41 @@ SIGN                [+-]
 HEX_NUMBER          0x{HEX_DIGIT}+
 INTEGER             {SIGN}?{DIGIT}+
 FLOAT               {SIGN}?{DIGIT}*\.{DIGIT}*
-FLOAT_PRECISION     {SIGN}?{DIGIT}*\.{DIGIT}*[Ee]{SIGN}?{DIGIT}+
+FLOAT_EXPONENT      {SIGN}?{DIGIT}*\.{DIGIT}*[Ee]{SIGN}?{DIGIT}+
 
-STRING_LITERAL      \"[^\"]*\"
-SYMBOL_LITERAL      \'[^\']*\'
+IDENTIFIER          [^ \t\n\r\(\)\[\]\{\}]+
+
+SYMBOL              {IDENTIFIER}
+VARIABLE            \${IDENTIFIER}
+QUOTED_SYMBOL       \'[^\']*\'
+STRING              \"[^\"]*\"
+
+COMMENT             ;[^\n]*
 
 %x BLOCK_COMMENT
+/* BUG: /** won't start a block */
+BCOMMENT_START      \/\*[^\n\*]*
+BCOMMENT_TEXT       [^\n\*]*
+BCOMMENT_SKIP       \*+
+BCOMMENT_END        \*+\/
 
 %%
 \r                                                  { /* skip carriage returns */ }
 \n                                                  { gDataLine++; }
-{STRING_LITERAL}                                    { return kDataTokenString; }
-{SYMBOL_LITERAL}                                    { return kDataTokenQuotedSymbol; }
-\/\* /* BUG: /** won't start a block */             { BEGIN(BLOCK_COMMENT); }
-<BLOCK_COMMENT>[^\n\*]*                             { /* ignore text in block comments */ }
-<BLOCK_COMMENT>\*+                                  { /* ignore *s in block comments */ }
+{STRING}                                            { return kDataTokenString; }
+{QUOTED_SYMBOL}                                     { return kDataTokenQuotedSymbol; }
+{BCOMMENT_START}                                    { BEGIN(BLOCK_COMMENT); }
+<BLOCK_COMMENT>{BCOMMENT_TEXT}                      { /* ignore text in block comments */ }
+<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ }
 <BLOCK_COMMENT>\n                                   { gDataLine++; }
-<BLOCK_COMMENT>\*\/                                 { BEGIN(INITIAL); }
-;.*\n                                               { /* comment */ }
-kUnhandled                                          { return kDataTokenUnhandled; }
+<BLOCK_COMMENT>{BCOMMENT_END}                       { BEGIN(INITIAL); }
+{COMMENT}                                           { /* skip comments */ }
+kDataUnhandled                                      { return kDataTokenUnhandled; }
 
 {HEX_NUMBER}                                        { return kDataTokenHex; }
 {INTEGER}                                           { return kDataTokenInt; }
 {FLOAT}                                             { return kDataTokenFloat; }
-{FLOAT_PRECISION}                                   { return kDataTokenFloat; }
+{FLOAT_EXPONENT}                                    { return kDataTokenFloat; }
 
 #include_opt                                        { return kDataTokenIncludeOptional; }
 #include                                            { return kDataTokenInclude; }
@@ -62,8 +73,8 @@ kUnhandled                                          { return kDataTokenUnhandled
 #autorun                                            { return kDataTokenAutorun; }
 #{IDENTIFIER}                                       { DataFail("bad # directive"); }
 
-\${IDENTIFIER}                                      { return kDataTokenVar; }
-{IDENTIFIER}                                        { return kDataTokenSymbol; }
+{VARIABLE}                                          { return kDataTokenVar; }
+{SYMBOL}                                            { return kDataTokenSymbol; }
 
 \(                                                  { return kDataTokenArrayOpen; }
 \)                                                  { return kDataTokenArrayClose; }
