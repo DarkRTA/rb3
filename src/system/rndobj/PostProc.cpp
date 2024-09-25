@@ -19,13 +19,13 @@ RndPostProc::RndPostProc()
     : mPriority(1.0f), mBloomColor(1.0f, 1.0f, 1.0f, 0.0f), mBloomThreshold(4.0f),
       mBloomIntensity(0.0f), mBloomGlare(0), mBloomStreak(0),
       mBloomStreakAttenuation(0.9f), mBloomStreakAngle(0.0f), mLuminanceMap(this, 0),
-      mForceCurrentInterp(0), mColorXfm(), mNumLevels(0.0f), mMinIntensity(1.0f),
+      mForceCurrentInterp(0), mColorXfm(), mPosterLevels(0.0f), mPosterMin(1.0f),
       mKaleidoscopeComplexity(0.0f), mKaleidoscopeSize(0.5f), mKaleidoscopeAngle(0.0f),
-      mKaleidoscopeRadius(0.0f), mKaleidoscopeFlipUVs(1), mFlickerIntensity(0.0f, 0.0f),
-      mFlickerSecsRange(0.001f, 0.007f), unk108(0.0f, 0.0f), unk110(1.0f),
-      mNoiseBaseScale(32.0f, 24.0f), unk11c(1.35914f), mNoiseIntensity(0.0f),
-      mNoiseStationary(0), mNoiseMidtone(1), mNoiseMap(this, 0), mThreshold(1.0f),
-      mDuration(0.0f), unk13c(1.0f, 1.0f, 0.0f), mEmulateFPS(30.0f), unk14c(0.0f),
+      mKaleidoscopeRadius(0.0f), mKaleidoscopeFlipUVs(1), mFlickerModBounds(0.0f, 0.0f),
+      mFlickerTimeBounds(0.001f, 0.007f), mFlickerSeconds(0.0f, 0.0f), mColorModulation(1.0f),
+      mNoiseBaseScale(32.0f, 24.0f), mNoiseTopScale(1.35914f), mNoiseIntensity(0.0f),
+      mNoiseStationary(0), mNoiseMidtone(1), mNoiseMap(this, 0), mTrailThreshold(1.0f),
+      mTrailDuration(0.0f), mBlendVec(1.0f, 1.0f, 0.0f), mEmulateFPS(30.0f), mLastRender(0.0f),
       mHallOfTimeType(0), mHallOfTimeRate(0.0f), mHallOfTimeColor(1.0f, 1.0f, 1.0f, 0.0f),
       mHallOfTimeMix(0.0f), mMotionBlurWeight(1.0f, 1.0f, 1.0f, 0.0f),
       mMotionBlurBlend(0.0f), mMotionBlurVelocity(1), mGradientMap(this, 0),
@@ -117,10 +117,10 @@ bool RndPostProc::HallOfTime() const {
 // fn_80624B04
 void RndPostProc::UpdateTimeDelta() {
     float secs = TheTaskMgr.Seconds(TaskMgr::b);
-    float val150 = secs - unk14c;
-    unk150 = val150;
-    unk150 = Clamp(0.0f, 1.0f, val150);
-    unk14c = secs;
+    float val150 = secs - mLastRender;
+    mDeltaSecs = val150;
+    mDeltaSecs = Clamp(0.0f, 1.0f, val150);
+    mLastRender = secs;
 }
 
 void RndPostProc::DoPost() {
@@ -131,24 +131,37 @@ void RndPostProc::DoPost() {
 
 // fn_80624BB4
 void RndPostProc::UpdateColorModulation() {
-    if (mFlickerSecsRange.x > 0 && mFlickerSecsRange.y > 0 && mFlickerIntensity.y > 0) {
-        if (unk108.x >= unk108.y) {
-            float unk108diff = unk108.x - unk108.y;
-            unk108.x = unk108diff;
+    if (mFlickerTimeBounds.x > 0 && mFlickerTimeBounds.y > 0 && mFlickerModBounds.y > 0) {
+        if (mFlickerSeconds.x >= mFlickerSeconds.y) {
+            float unk108diff = mFlickerSeconds.x - mFlickerSeconds.y;
+            mFlickerSeconds.x = unk108diff;
             float maxed = Max(unk108diff, 0.0f);
-            unk108.x = maxed;
-            unk110 = 1.0f - RandomFloat(mFlickerIntensity.x, mFlickerIntensity.y);
-            unk108.y = RandomFloat(mFlickerSecsRange.x, mFlickerSecsRange.y);
-            float maxed2 = Max(unk108.x, unk108.y);
-            unk108.y = maxed2;
+            mFlickerSeconds.x = maxed;
+            mColorModulation = 1.0f - RandomFloat(mFlickerModBounds.x, mFlickerModBounds.y);
+            mFlickerSeconds.y = RandomFloat(mFlickerTimeBounds.x, mFlickerTimeBounds.y);
+            float maxed2 = Max(mFlickerSeconds.x, mFlickerSeconds.y);
+            mFlickerSeconds.y = maxed2;
         }
-        unk108.x += unk150;
+        mFlickerSeconds.x += mDeltaSecs;
     } else
-        unk110 = 1.0f;
+        mColorModulation = 1.0f;
+}
+
+void RndPostProc::UpdateBlendPrevious() {
+    bool shouldBlend = mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen->IsActive();
+    if(shouldBlend) {
+        if(mTrailDuration <= 0.0f) {
+            MILO_ASSERT(mTrailDuration > 0.0f, 0xf6);
+        }
+        mBlendVec.x = mTrailThreshold;
+        mBlendVec.y = mDeltaSecs / mTrailDuration;
+        mBlendVec.z = 0.3333333333f;
+    }
+    return;
 }
 
 bool RndPostProc::BlendPrevious() const {
-    return mThreshold < 1.0f && mDuration > 0.0f && !TheHiResScreen->IsActive();
+    return mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen->IsActive();
 }
 
 SAVE_OBJ(RndPostProc, 524)
@@ -186,6 +199,22 @@ void RndPostProc::LoadRev(BinStream &bs, int rev) {
     }
     if (rev > 5)
         bs >> mLuminanceMap;
+
+    if (rev > 7) {
+        bs >> mTrailThreshold;
+        bs >> mTrailDuration;
+        bs >> mEmulateFPS;
+    }
+
+    if (rev > 9 ) {
+        if (rev > 0x12) {
+            // color correction stuff?
+        }
+        bs >> mPosterLevels;
+    }
+
+    if(rev >> 13)
+        bs >> mPosterMin;
 
     if (rev > 32)
         bs >> mBloomGlare;
@@ -225,6 +254,45 @@ void ProcCounter::SetEvenOddDisabled(bool eod) {
         mEvenOddDisabled = eod;
     if (mEvenOddDisabled)
         mCount = -1;
+}
+
+int ProcCounter::ProcCommands() {
+  int count;
+  int retCmd;
+  
+  if ((this->mProcAndLock != false) && (this->mCount == 0)) {
+    return 0;
+  }
+  if (this->mEvenOddDisabled == false) {
+    count = this->mCount;
+    retCmd = 0;
+    if (count == -1) {
+      this->mCount = -1;
+      retCmd = 7;
+    }
+    else if (count == 0) {
+      retCmd = 1;
+    }
+    else if (count == 1) {
+      retCmd = 6;
+      if (this->mTriFrameRendering != false) {
+        retCmd = 4;
+      }
+    }
+    else if (count == 2) {
+      retCmd = 2;
+    }
+    count = this->mCount + 1;
+    this->mCount = count;
+    int compare_value = (mTriFrameRendering != 0) ? 2 : 1;
+
+    if (count > compare_value) {
+      this->mCount = 0;
+    }
+    return retCmd;
+  }
+  return 7;
+
 }
 
 DOFOverrideParams::DOFOverrideParams()

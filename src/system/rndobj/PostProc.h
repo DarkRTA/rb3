@@ -98,35 +98,35 @@ public:
     float mBloomStreakAngle; // 0x44
     ObjPtr<RndTex, ObjectDir> mLuminanceMap; // 0x48
     bool mForceCurrentInterp;
-    RndColorXfm mColorXfm;
-    float mNumLevels;
-    float mMinIntensity;
+    RndColorXfm mColorXfm; // 0x6c
+    float mPosterLevels;
+    float mPosterMin;
     float mKaleidoscopeComplexity;
     float mKaleidoscopeSize;
     float mKaleidoscopeAngle;
     float mKaleidoscopeRadius;
     bool mKaleidoscopeFlipUVs;
-    Vector2 mFlickerIntensity; // 0xf8
-    Vector2 mFlickerSecsRange; // 0x100
+    Vector2 mFlickerModBounds; // 0xf8
+    Vector2 mFlickerTimeBounds; // 0x100
+    Vector2 mFlickerSeconds;
 
-    Vector2 unk108;
-    float unk110;
+    float mColorModulation;
 
     Vector2 mNoiseBaseScale;
 
-    float unk11c;
+    float mNoiseTopScale;
 
     float mNoiseIntensity;
     bool mNoiseStationary;
     bool mNoiseMidtone;
     ObjPtr<RndTex, ObjectDir> mNoiseMap;
-    float mThreshold; // 0x134
-    float mDuration; // 0x138
+    float mTrailThreshold; // 0x134
+    float mTrailDuration; // 0x138
 
-    Vector3 unk13c;
+    Vector3 mBlendVec; // 0x13c
     float mEmulateFPS; // 0x148
-    float unk14c;
-    float unk150;
+    float mLastRender;
+    float mDeltaSecs;
 
     int mHallOfTimeType;
     float mHallOfTimeRate;
