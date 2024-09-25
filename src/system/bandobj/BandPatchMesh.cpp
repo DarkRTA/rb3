@@ -315,6 +315,18 @@ BandPatchMesh::BandPatchMesh(Hmx::Object* o) : mMeshes(o), mRenderTo(true), mSrc
 
 }
 
+BandPatchMesh::BandPatchMesh(const BandPatchMesh& mesh) : mMeshes(mesh.mMeshes), mRenderTo(mesh.mRenderTo), mSrc(mesh.mSrc), mCategory(mesh.mCategory) {
+
+}
+
+BandPatchMesh& BandPatchMesh::operator=(const BandPatchMesh& mesh){
+    mSrc = mesh.mSrc;
+    mMeshes = mesh.mMeshes;
+    mRenderTo = mesh.mRenderTo;
+    mCategory = mesh.mCategory;
+    return *this;
+}
+
 bool BandPatchMesh::ReProject(){
     PostRender();
     if(mSrc) ProjectPatches(mSrc->LocalXfm(), 0, true);

@@ -88,6 +88,7 @@ public:
     };
 
     BandPatchMesh(Hmx::Object*);
+    BandPatchMesh(const BandPatchMesh&);
     BandPatchMesh& operator=(const BandPatchMesh&);
     void AddMappingPatch(MeshPair&, RndMesh*);
     void ConstructQuad(RndTex*);

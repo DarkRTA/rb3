@@ -119,12 +119,12 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual RndTex* GetPatchTex(Patch&);
-    virtual RndMesh* GetPatchMesh(Patch&);
+    virtual RndTex* GetPatchTex(Patch&){ return 0; }
+    virtual RndMesh* GetPatchMesh(Patch&){ return 0; }
     virtual int GetBandLogo(){ return 0; }
     virtual void Compress(RndTex*, bool);
-    virtual ObjectDir* GetPatchDir();
-    virtual void AddOverlays(BandPatchMesh&);
+    virtual ObjectDir* GetPatchDir(){ return 0; }
+    virtual void AddOverlays(BandPatchMesh&){}
     virtual void MiloReload(){}
 
     void SetChanged(int);
