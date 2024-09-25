@@ -37,8 +37,9 @@ public:
     virtual void PreSave(BinStream&);
     virtual void Print();
 
+    void CopyWeights(int, int, RndMeshDeform*);
     void SetMesh(RndMesh*);
-    RndMesh* Mesh() const;
+    RndMesh* Mesh() const { return mMesh; }
 
     NEW_OVERLOAD
     NEW_OBJ(RndMeshDeform)

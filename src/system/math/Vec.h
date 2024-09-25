@@ -12,7 +12,7 @@ public:
 
     void Set(float xx, float yy){ x = xx; y = yy; }
 
-    Vector2& operator*(float f) { 
+    Vector2& operator*=(float f) { 
         x *= f; y *= f; 
         return *this;
     }
@@ -21,6 +21,12 @@ public:
     Vector2& operator/=(float f){
         x /= f;
         y /= f;
+        return *this;
+    }
+
+    Vector2& operator+=(const Vector2& v){
+        x += v.x;
+        y += v.y;
         return *this;
     }
 

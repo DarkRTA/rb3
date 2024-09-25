@@ -2,6 +2,7 @@
 #include "bandobj/BandCharDesc.h"
 #include "math/Rot.h"
 #include "utl/Symbols.h"
+#include <algorithm>
 
 INIT_REVS(BandPatchMesh);
 
@@ -22,6 +23,35 @@ void BandPatchMesh::MeshVert::ZeroOut(){
     unk1c.Zero();
     unk4.Zero();
     unk10.Zero();
+}
+
+int BandPatchMesh::MeshVert::AddUV(const BandPatchMesh::MeshVert* mv, const Vector2& vr, const Vector2* vp){
+    MILO_ASSERT(this != mv, 0x55);
+    MILO_ASSERT(mv->mVert, 0x57);
+    Vector3 v48;
+    Subtract(mVert->pos, mv->mVert->pos, v48);
+    float lensq = LengthSquared(v48);
+    float dot = Dot(v48, mv->mVert->norm);
+    ScaleAddEq(v48, mv->mVert->norm, -dot);
+    Vector2 v50(mv->unk1c.x, mv->unk1c.y);
+    float newlensq = LengthSquared(v48);
+    if(newlensq > 0){
+        float recipsq = RecipSqrtAccurate(newlensq / lensq);
+        float dot4 = Dot(v48, mv->unk10);
+        float vry = vr.y;
+        float dot5 = Dot(v48, mv->unk4);
+        v50 += Vector2(recipsq * vr.x * dot5, recipsq * vry * dot4);
+    }
+    else if(lensq > 0) return 0;
+    if(vp){ // && some float that takes in vp and v50 <= 0.25
+        return 0;
+    }
+    else {
+        unk1c += v50;
+        unk4 += mv->unk4;
+        unk10 += mv->unk10;
+        return 1;
+    }
 }
 
 void BandPatchMesh::MeshVert::Normalize(int count){
@@ -52,6 +82,211 @@ void BandPatchMesh::MeshVert::Normalize(int count){
     else if(unk1c.x > 1.0f) unk26 |= 2;
     if(unk1c.y < 0) unk26 |= 4;
     else if(unk1c.y > 1.0f) unk26 |= 8;
+}
+
+struct SortByZ {
+    bool operator()(RndMesh::Vert* v1, RndMesh::Vert* v2){
+        if(v1->pos.z != v2->pos.z) return v1->pos.z < v2->pos.z;
+        else if(v1->pos.y != v2->pos.y) return v1->pos.y < v2->pos.y;
+        else return v1->pos.x < v2->pos.x;
+    }
+};
+
+struct SortByWorkVertZ {
+    bool operator()(BandPatchMesh::MeshVert* v1, BandPatchMesh::MeshVert* v2){ return v1->mVert->pos.z < v2->mVert->pos.z; }
+};
+
+BandPatchMesh::WorkVerts::WorkVerts(RndMesh* mesh, const Vector2& v2) : unkc(0), mMesh(mesh), unk34(v2), unk3c((1.0f / v2.x), (1.0f / v2.y)) {
+    unk0 = 0;
+    MemDoTempAllocations m(true, false);
+    unk18.resize(mMesh->Verts().size());
+    for(int i = 0; i < unk18.size(); i++){
+        unk18[i] = &mMesh->VertAt(i);
+    }
+    std::sort(unk18.begin(), unk18.end(), SortByZ());
+}
+
+BandPatchMesh::WorkVerts::~WorkVerts(){
+    delete [] unkc;
+}
+
+void BandPatchMesh::WorkVerts::SortWorkVertsByZ(){
+    std::sort(unk10.begin(), unk10.end(), SortByWorkVertZ());
+}
+
+void BandPatchMesh::WorkVerts::SetMeshVerts(){
+    MILO_ASSERT(mMeshVerts.empty(), 0x10C);
+    MemDoTempAllocations m(true, false);
+    unk10.reserve(mMesh->Verts().size());
+    unk20.reserve(mMesh->Faces().size());
+    unk28.resize(mMesh->Faces().size());
+    for(int i = 0; i < unk28.size(); i++){
+        unk28[i] = -1;
+    }
+    mMeshVerts.resize(mMesh->Verts().size());
+    // for(int i = 0; i < mMeshVerts.size(); i++){
+    //     mMeshVerts[i]->mVert = 0;
+    // }
+    // for(int i = 0; i < unk30->Faces().size(); i++){
+    //     RndMesh::Face& curface = unk30->Faces()[i];
+    //     for(int j = 0; j < 3; j++){
+    //         mMeshVerts[curface[j]]->mVert++;
+    //     }
+    // }
+    // int count = 0;
+    // for(int i = 0; i < mMeshVerts.size(); i++){
+
+    // }
+}
+
+void BandPatchMesh::WorkVerts::AddFace(int i, MeshVert* mv){
+    RndMesh::Face& curface = mMesh->Faces()[i];
+    for(int n = 0; n < 3; n++){
+        SetMeshVertAndTwins(curface[n], mv);
+    }
+    TryAddFace(i, 3);
+}
+
+void BandPatchMesh::WorkVerts::SpreadEdges(int i){
+    MeshVert* meshverts[3];
+    RndMesh::Face& curface = mMesh->Faces()[unk20[i]];
+    for(int n = 0; n < 3; n++){
+        meshverts[n] = mMeshVerts[curface[n]];
+    }
+    AddEdge(meshverts[1], meshverts[0]);
+    AddEdge(meshverts[2], meshverts[1]);
+    AddEdge(meshverts[0], meshverts[2]);
+}
+
+int BandPatchMesh::WorkVerts::AddUvs(BandPatchMesh::MeshVert* mv1, BandPatchMesh::MeshVert* mv2, const Vector2* v2){
+    int ret = 0;
+    for(int i = 0; i < mv2->unk30; i++){
+        RndMesh::Face& curface = mMesh->Faces()[i];
+        for(int j = 0; j < 3; j++){
+            MeshVert* curmv = mMeshVerts[curface[j]];
+            if(curmv != mv2 && curmv != 0 && curmv->unk24 != unk0){
+                curmv->unk24 = unk0;
+                ret += mv1->AddUV(curmv, unk34, v2);
+            }
+        }
+    }
+    return ret;
+}
+
+void BandPatchMesh::WorkVerts::SetMeshVertAndTwins(int idx, BandPatchMesh::MeshVert* first){
+    MeshVert* cur = mMeshVerts[idx];
+    MILO_ASSERT(!cur->mVert, 0x3BA);
+    cur->SetVert(&mMesh->VertAt(idx));
+    unk10.push_back(cur);
+    MILO_ASSERT(cur->mVert, 0x3C7);
+    MILO_ASSERT(first->mVert, 0x3C8);
+    cur->AddUV(first, unk34, 0);
+    cur->Normalize(1);
+    MILO_ASSERT(cur->mVert, 0x3D3);
+    for(int num = cur->unk28; num != -1; num = mMeshVerts[num]->unk2c){
+        MeshVert* mt = mMeshVerts[num];
+        if(mt != cur){
+            MILO_ASSERT(!mt->mVert, 0x3DB);
+            unk10.push_back(mt);
+            mt->SetVert(cur, &mMesh->VertAt(num));
+        }
+    }
+}
+
+void BandPatchMesh::WorkVerts::AddMeshVertAndTwins(int idx, BandPatchMesh::MeshVert* first){
+    MeshVert* cur = mMeshVerts[idx];
+    MILO_ASSERT(!cur->mVert, 0x3EA);
+    cur->SetVert(&mMesh->VertAt(idx));
+    unk10.push_back(cur);
+    unk0++;
+    MILO_ASSERT(cur->mVert, 0x3F9);
+    MILO_ASSERT(first->mVert, 0x3FA);
+    cur->AddUV(first, unk34, 0);
+    cur->unk24 = unk0;
+    first->unk24 = unk0;
+    Vector2 v18(cur->unk1c);
+    int count = 1;
+    for(int num = cur->unk28; num != -1; num = mMeshVerts[num]->unk2c){
+        MeshVert* mt = mMeshVerts[num];
+        count += AddUvs(cur, mt, &v18);
+    }
+    cur->Normalize(count);
+    MILO_ASSERT(cur->mVert, 0x412);
+    for(int num = cur->unk28; num != -1; num = mMeshVerts[num]->unk2c){
+        MeshVert* mt = mMeshVerts[num];
+        if(mt != cur){
+            MILO_ASSERT(!mt->mVert, 0x41A);
+            unk10.push_back(mt);
+            mt->SetVert(cur, &mMesh->VertAt(num));
+        }
+    }
+}
+
+void BandPatchMesh::WorkVerts::Project(){
+    for(int i = 0; i < unk20.size(); i++) SpreadEdges(i);
+}
+
+struct SortByPointer {
+    bool operator()(BandPatchMesh::MeshVert* v1, BandPatchMesh::MeshVert* v2){ return v1->mVert < v2->mVert; }
+};
+
+void BandPatchMesh::WorkVerts::SetVertsAndFaces(RndMesh* mesh, bool b){
+    std::sort(unk10.begin(), unk10.end(), SortByPointer());
+    for(int i = 0; i < unk10.size(); i++){
+        unk10[i]->unk24 = i;
+    }
+    std::sort(unk20.begin(), unk20.end());
+    mesh->Verts().resize(unk10.size(), true);
+    mesh->Faces().resize(unk20.size());
+    if(b){
+        MILO_ASSERT(mMesh->Mat(), 0x475);
+        RndTex* dest = mMesh->Mat()->GetDiffuseTex();
+        MILO_ASSERT(dest, 0x477);
+        unk44.Set(dest->Width(), dest->Height());
+        unk44 *= 0.707f;
+        unk4c.Set(1.0f / unk44.x, 1.0f / unk44.y);
+        unk54.Set(std::fabs(unk3c.x), std::fabs(unk3c.y));
+        unk5c.Set(1.0f / unk54.x, 1.0f / unk54.y);
+        for(int i = 0; i < mesh->Verts().size(); i++){
+            MeshVert* cur = unk10[i];
+            Vector2 v40(0,0);
+            Vector2 v48(0,0);
+            ExtendTwin((const MeshVert*)this, v40, v48);
+            v40 += cur->mVert->uv;
+            v48 += cur->unk1c;
+            SetRenderToVert(mesh->VertAt(i), v40, v48);
+        }
+    }
+    else {
+        for(int i = 0; i < mesh->Verts().size(); i++){
+            MeshVert* cur = unk10[i];
+            mesh->VertAt(i) = *cur->mVert;
+            mesh->VertAt(i).uv = cur->unk1c;
+        }
+    }
+    for(int i = 0; i < mesh->Faces().size(); i++){
+        RndMesh::Face& myface = mMesh->Faces()[unk20[i]];
+        for(int j = 0; j < 3; j++){
+            mesh->Faces()[i][j] = mMeshVerts[myface[j]]->unk24;
+        }
+    }
+}
+
+void BandPatchMesh::WorkVerts::CopyDeformWeights(RndMeshDeform* m1, RndMeshDeform* md){
+    MILO_ASSERT(mMesh == md->Mesh(), 0x49E);
+    for(int i = 0; i < unk10.size(); i++){
+        m1->CopyWeights(i, (unk10[i]->mVert - &mMesh->VertAt(0)), md);
+    }
+}
+
+RndTex* BandPatchMesh::MeshPair::OutputTex() const {
+    if(mesh && mesh->Mat()) return mesh->Mat()->GetDiffuseTex();
+    else return 0;
+}
+
+void BandPatchMesh::MeshPair::AddMappingPatch(RndMesh* themesh){
+    patches.push_back();
+    patches.back().mPatch = themesh;
 }
 
 BandPatchMesh::MeshPair::PatchPair& BandPatchMesh::MeshPair::AddPatch(bool permanent){
@@ -105,8 +340,8 @@ void BandPatchMesh::PreRender(BandCharDesc* desc, int iii){
                     RndMesh* mesh = desc->GetPatchMesh(patch);
                     RndTex* tex = 0;
                     if(patch.mTexture == -1){
-                        if(mesh && mesh->GetMat()){
-                            tex = mesh->GetMat()->GetDiffuseTex();
+                        if(mesh && mesh->Mat()){
+                            tex = mesh->Mat()->GetDiffuseTex();
                         }
                         else {
                             MILO_WARN("%s could not find texture from placement mesh, category %d.", PathName(pdir), mCategory);
@@ -143,6 +378,41 @@ void BandPatchMesh::PreRender(BandCharDesc* desc, int iii){
                 }
             }
             desc->AddOverlays(*this);
+        }
+    }
+}
+
+void BandPatchMesh::Render(RndTex* tex, RndMat* mat){
+    for(int i = 0; i < mMeshes.size(); i++){
+        RndTex* outputtex = mMeshes[i].OutputTex();
+        if(outputtex == tex){
+            for(int j = 0; j < mMeshes[i].patches.size(); j++){
+                BandPatchMesh::MeshPair::PatchPair& ppair = mMeshes[i].patches[j];
+                RndMesh* patch = ppair.mPatch;
+                if(patch){
+                    RndMat* patchmat = patch->Mat();
+                    if(patchmat){
+                        mat->SetColor(patchmat->mColor);
+                        mat->SetTexWrap(patchmat->GetTexWrap());
+                        mat->SetBlend(patchmat->GetBlend());
+                        mat->SetDiffuseTex(patchmat->GetDiffuseTex());
+                    }
+                    else {
+                        mat->SetColor(Hmx::Color(1,1,1,1));
+                        mat->SetTexWrap(kBorderBlack);
+                        mat->SetBlend(kPreMultAlpha);
+                        mat->SetDiffuseTex(mMeshes[i].patches[j].mTex);
+                    }
+                    Transform tf88;
+                    tf88.Reset();
+                    tf88.m.y *= (float)tex->Height() / (float)tex->Width();
+                    patch->SetLocalXfm(tf88);
+                    patch->SetMat(mat);
+                    if(mat->GetDiffuseTex()) patch->DrawShowing();
+                    patch->SetMat(patchmat);
+                    patch->DirtyLocalXfm().Reset();
+                }
+            }
         }
     }
 }
@@ -217,7 +487,7 @@ void BandPatchMesh::Construct(BandPatchMesh::MeshPair& meshpair, RndTex* tex, bo
             if(i < 2) y = 1.0f;
             else y = 0;
             Vector2 v30(y, x);
-            SetRenderToVert((RndMesh::Vert&)patchpair.mPatch->VertAt(i), v30, v30);
+            SetRenderToVert(patchpair.mPatch->VertAt(i), v30, v30);
         }
         patchpair.mPatch->Faces()[0].Set(0, 1, 2);
         patchpair.mPatch->Faces()[1].Set(0, 2, 3);

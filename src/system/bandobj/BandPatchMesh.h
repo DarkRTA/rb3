@@ -29,8 +29,13 @@ public:
         ObjVector<PatchPair> patches; // 0xc
     };
 
+    class MeshFace {
+    public:
+    };
+
     class MeshVert {
     public:
+        int AddUV(const MeshVert*, const Vector2&, const Vector2*);
         void SetVert(const MeshVert*, const RndMesh::Vert*);
         void SetVert(const RndMesh::Vert*);
         void ZeroOut();
@@ -40,15 +45,46 @@ public:
         Vector3 unk4; // 0x4
         Vector3 unk10; // 0x10
         Vector2 unk1c; // 0x1c
-        bool unk24;
-        bool unk25;
+        unsigned short unk24; // 0x24
         unsigned char unk26;
+        int unk28;
+        int unk2c;
+        unsigned short unk30;
     };
 
     class WorkVerts {
     public:
+        WorkVerts(RndMesh*, const Vector2&);
+        ~WorkVerts();
+
+        void Project();
+        void SetMeshVerts();
+        void SpreadEdges(int);
+        void AddEdge(MeshVert*, MeshVert*);
+        void AddFace(int, MeshVert*);
+        int AddUvs(MeshVert*, MeshVert*, const Vector2*);
+        void SetMeshVertAndTwins(int, MeshVert*);
+        void AddMeshVertAndTwins(int, MeshVert*);
+        void TryAddFace(int, int);
+        void SortWorkVertsByZ();
         void SetVertsAndFaces(RndMesh*, bool);
+        void ExtendTwin(const MeshVert*, Vector2&, Vector2&);
         void CopyDeformWeights(RndMeshDeform*, RndMeshDeform*);
+
+        int unk0;
+        std::vector<MeshVert*> mMeshVerts; // 0x4
+        void* unkc;
+        std::vector<MeshVert*> unk10;
+        std::vector<RndMesh::Vert*> unk18;
+        std::vector<unsigned short> unk20;
+        std::vector<char> unk28;
+        RndMesh* mMesh; // 0x30
+        Vector2 unk34;
+        Vector2 unk3c;
+        Vector2 unk44;
+        Vector2 unk4c;
+        Vector2 unk54;
+        Vector2 unk5c;
     };
 
     BandPatchMesh(Hmx::Object*);
@@ -62,6 +98,7 @@ public:
     void PreRender(BandCharDesc*, int);
     void PostRender();
     void Compress(BandCharDesc*);
+    void Render(RndTex*, RndMat*);
     bool FindXfm(RndMesh*, const Vector2&, Transform&);
 
     static void SetRenderToVert(RndMesh::Vert&, const Vector2&, const Vector2&);

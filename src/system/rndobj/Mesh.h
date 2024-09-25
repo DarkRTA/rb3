@@ -72,7 +72,7 @@ public:
     class Face {
     public:
         Face() : idx0(0), idx1(0), idx2(0) {}
-        const unsigned short& operator[](int i) const { return *(&idx0 + i); }
+        unsigned short& operator[](int i){ return *(&idx0 + i); }
         void Set(u16 i0, u16 i1, u16 i2){
             idx0 = i0; idx1 = i1; idx2 = i2;
         }
@@ -167,12 +167,10 @@ public:
     int GetMutable() const { return mGeomOwner->mMutable; }
     Volume GetVolume() const { return mGeomOwner->mVolume; }
     BSPNode* GetBSPTree() const { return mGeomOwner->mBSPTree; }
-    RndMat* GetMat() const { return mMat; }
+    RndMat* Mat() const { return mMat; }
     VertVector& Verts(){ return mGeomOwner->mVerts; }
     std::vector<Face>& Faces(){ return mGeomOwner->mFaces; }
-    const Vert& VertAt(int idx) const {
-        return mGeomOwner->mVerts[idx];
-    }
+    Vert& VertAt(int idx){ return mGeomOwner->mVerts[idx]; }
     bool IsSkinned() const { return !mBones.empty(); }
     void SetMutable(int m){ mGeomOwner->mMutable = m; }
     bool HasAOCalc() const { return mHasAOCalc; }
