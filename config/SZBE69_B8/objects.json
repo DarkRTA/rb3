@@ -2034,11 +2034,11 @@
         "cflags": "sdk/RVL_SDK",
         "objects": {
             "sdk/RVL_SDK/src/wpad/lint.c": "NonMatching",
-            "sdk/RVL_SDK/src/wpad/WPAD.c": "MISSING",
+            "sdk/RVL_SDK/src/wpad/WPAD.c": "NonMatching",
             "sdk/RVL_SDK/src/wpad/WPADEncrypt.c": "Matching",
             "sdk/RVL_SDK/src/wpad/WPADHIDParser.c": "NonMatching",
             "sdk/RVL_SDK/src/wpad/WPADMem.c": "Matching",
-            "sdk/RVL_SDK/src/wpad/WUD.c": "MISSING",
+            "sdk/RVL_SDK/src/wpad/WUD.c": "NonMatching",
             "sdk/RVL_SDK/src/wpad/WUDHidHost.c": "Matching",
 
             "sdk/RVL_SDK/src/wpadDrm/WPADDrm.c": "Matching",
