@@ -2,6 +2,7 @@
 #define METABAND_CAMPAIGN_H
 
 #include "obj/Data.h"
+#include "os/User.h"
 
 class Campaign {
 public:
@@ -9,6 +10,6 @@ public:
     Symbol GetLaunchUser() const;
 };
 
-static Campaign* TheCampaign;
+extern Campaign* TheCampaign;
 
 #endif // METABAND_CAMPAIGN_H

@@ -1,7 +1,9 @@
 #ifndef RVL_SDK_OS_THREAD_H
 #define RVL_SDK_OS_THREAD_H
+
 #include "revolution/os/OSContext.h"
 #include "types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -19,39 +21,63 @@ typedef enum {
     OS_THREAD_STATE_MORIBUND = 8
 } OSThreadState;
 
-typedef enum { OS_THREAD_DETACHED = (1 << 0) } OSThreadFlag;
+typedef u16 OSThreadFlags;
+enum OSThreadFlags_et {
+    OS_THREAD_NO_FLAGS = 0,
+    OS_THREAD_DETACHED = (1 << 0),
+};
+
+typedef struct OSThreadLink {
+    struct OSThread *next;  // size 0x04, offset 0x00
+    struct OSThread *prev;  // size 0x04, offset 0x04
+} OSThreadLink; // size 0x08
 
 typedef struct OSThreadQueue {
-    struct OSThread* head; // at 0x0
-    struct OSThread* tail; // at 0x4
+    struct OSThread *head; // at 0x0
+    struct OSThread *tail; // at 0x4
 } OSThreadQueue;
 
+typedef struct OSMutexLink
+{
+    struct OSMutex *next;  // size 0x04, offset 0x00
+    struct OSMutex *prev;  // size 0x04, offset 0x04
+} OSMutexLink; // size 0x08
+
 typedef struct OSMutexQueue {
-    struct OSMutex* head; // at 0x0
-    struct OSMutex* tail; // at 0x4
+    struct OSMutex *head;  // at 0x0
+    struct OSMutex *tail;  // at 0x4
 } OSMutexQueue;
 
 typedef struct OSThread {
-    OSContext context;
-    u16 state;                   // at 0x2C8
-    u16 flags;                   // at 0x2CA
-    s32 suspend;                 // at 0x2CC
-    s32 priority;                // at 0x2D0
-    s32 base;                    // at 0x2D4
-    u32 val;                     // at 0x2D8
-    OSThreadQueue* queue;        // at 0x2DC
-    struct OSThread* next;       // at 0x2E0
-    struct OSThread* prev;       // at 0x2E4
-    OSThreadQueue joinQueue;     // at 0x2E8
-    struct OSMutex* mutex;       // at 0x2F0
-    OSMutexQueue mutexQueue;     // at 0x2F4
-    struct OSThread* nextActive; // at 0x2FC
-    struct OSThread* prevActive; // at 0x300
-    u32* stackBegin;             // at 0x304
-    u32* stackEnd;               // at 0x308
-    s32 error;                   // at 0x30C
-    void* specific[2];           // at 0x310
-} OSThread;
+    OSContext       context;        // size 0x2c8, offset 0x000
+    u16             state;          // size 0x002, offset 0x2c8
+    u16             attr;           // size 0x002, offset 0x2ca
+    s32             suspend;        // size 0x004, offset 0x2cc
+    s32             priority;       // size 0x004, offset 0x2d0
+    s32             base;           // size 0x004, offset 0x2d4
+    void            *val;           // size 0x004, offset 0x2d8
+    OSThreadQueue   *queue;         // size 0x004, offset 0x2dc
+    OSThreadLink    link;           // size 0x008, offset 0x2e0
+    OSThreadQueue   queueJoin;      // size 0x008, offset 0x2e8
+    struct OSMutex  *mutex;         // size 0x004, offset 0x2f0
+    OSMutexQueue    queueMutex;     // size 0x008, offset 0x2f4
+    OSThreadLink    linkActive;     // size 0x008, offset 0x2fc
+    u8              *stackBase;     // size 0x004, offset 0x304
+    u32             *stackEnd;      // size 0x004, offset 0x308
+    s32             error;          // size 0x004, offset 0x30c
+    void            *specific[2];   // size 0x008, offset 0x310
+} OSThread; // size 0x318
+
+typedef struct OSMutex {
+    OSThreadQueue   queue;    // size 0x08, offset 0x00
+    OSThread        *thread;  // size 0x04, offset 0x08
+    s32             count;    // size 0x04, offset 0x0c
+    OSMutexLink     link;     // size 0x08, offset 0x10
+} OSMutex; // size 0x18
+
+typedef struct OSCond {
+    OSThreadQueue queue;
+} OSCond;
 
 typedef void (*OSSwitchThreadCallback)(OSThread* currThread,
                                        OSThread* newThread);
@@ -85,6 +111,16 @@ BOOL OSSetThreadPriority(OSThread* thread, s32 prio);
 s32 OSGetThreadPriority(OSThread* thread);
 void OSClearStack(u8 val);
 void OSSleepTicks(s64 ticks);
+
+void OSInitMutex(OSMutex* mutex);
+void OSLockMutex(OSMutex* mutex);
+void OSUnlockMutex(OSMutex* mutex);
+void __OSUnlockAllMutex(OSThread* thread);
+BOOL OSTryLockMutex(OSMutex* mutex);
+
+void OSInitCond(OSCond* cond);
+void OSWaitCond(OSCond* cond, OSMutex* mutex);
+void OSSignalCond(OSCond* cond);
 
 #ifdef __cplusplus
 }
