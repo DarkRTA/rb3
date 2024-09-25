@@ -1,5 +1,6 @@
 #pragma once
 #include "rndobj/Dir.h"
+#include "rndobj/EventTrigger.h"
 #include "synth/Sequence.h"
 
 class BandStarDisplay : public RndDir {
@@ -19,6 +20,8 @@ public:
     void SetNumStars(float, bool);
     void SetStarType(Symbol, bool);
     void Reset();
+    void SetupStars();
+    void ResetStars();
 
     float GetNumStars() const { return mNumStars; }
 
@@ -27,12 +30,12 @@ public:
     DELETE_OVERLOAD;
 
     float mNumStars; // 0x18c
-    ObjVector<int> unk190; // 0x190
-    ObjVector<int> unk19c; // 0x19c
-    ObjVector<int> unk1a8; // 0x1a8
-    ObjVector<int> unk1b4; // 0x1b4
-    ObjPtr<RndAnimatable, ObjectDir> unk1c0; // 0x1c0
-    ObjPtr<Sequence, ObjectDir> unk1cc; // 0x1cc
-    ObjPtr<Sequence, ObjectDir> unk1d8; // 0x1d8
+    ObjVector<ObjPtr<RndDir, ObjectDir> > mStars; // 0x190
+    ObjVector<ObjPtr<RndAnimatable, ObjectDir> > mStarSweepAnims; // 0x19c
+    ObjVector<ObjPtr<EventTrigger, ObjectDir> > mStarFullTriggers; // 0x1a8
+    ObjVector<ObjPtr<EventTrigger, ObjectDir> > mStarGoldTriggers; // 0x1b4
+    ObjPtr<RndAnimatable, ObjectDir> mStarOffsetAnim; // 0x1c0
+    ObjPtr<Sequence, ObjectDir> mEarnStarSfx; // 0x1cc
+    ObjPtr<Sequence, ObjectDir> mEarnSpadeSfx; // 0x1d8
     Symbol mStarType; // 0x1e4
 };

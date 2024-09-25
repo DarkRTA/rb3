@@ -991,6 +991,9 @@ system/bandobj/BandScoreboard.cpp:
 system/bandobj/BandSong.cpp:
 	.text       start:0x803C6DC8 end:0x803C711C
 
+system/bandobj/BandStarDisplay.cpp:
+	.text       start:0x803C711C end:0x803CA700
+
 system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94
