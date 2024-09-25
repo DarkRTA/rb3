@@ -8,12 +8,23 @@
 %option noyywrap
 
 %{
+/* Flex is stupid and doesn't include this under C mode for malloc/realloc */
+#include <stdlib.h>
+
 #include "DataFlex.h"
 
 #define YY_INPUT(buf, result, max_size) \
     (result) = (DataInput((buf), 1) != 0)
 
-#define ECHO /* don't echo unmatched characters */
+#ifdef DATAFLEX_TESTER
+#define TESTER_TERMINATE() yyterminate()
+#define TESTER_RETURN(value) return value
+#else
+#define TESTER_TERMINATE()
+#define TESTER_RETURN(value)
+#endif
+
+#define ECHO TESTER_RETURN(kDataTokenNotRecognized) /* don't echo unmatched characters */
 %}
 
 /* TODO: '-' has a significant usage outside of SIGN */
@@ -44,16 +55,16 @@ BCOMMENT_SKIP       \*+
 BCOMMENT_END        \*+\/
 
 %%
-\r                                                  { /* skip carriage returns */ }
-\n                                                  { gDataLine++; }
+\r                                                  { /* skip carriage returns */ TESTER_RETURN(kDataTokenCarriageReturn); }
+\n                                                  { gDataLine++; TESTER_RETURN(kDataTokenNewline); }
 {STRING}                                            { return kDataTokenString; }
 {QUOTED_SYMBOL}                                     { return kDataTokenQuotedSymbol; }
-{BCOMMENT_START}                                    { BEGIN(BLOCK_COMMENT); }
-<BLOCK_COMMENT>{BCOMMENT_TEXT}                      { /* ignore text in block comments */ }
-<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ }
-<BLOCK_COMMENT>\n                                   { gDataLine++; }
-<BLOCK_COMMENT>{BCOMMENT_END}                       { BEGIN(INITIAL); }
-{COMMENT}                                           { /* skip comments */ }
+{BCOMMENT_START}                                    { BEGIN(BLOCK_COMMENT); TESTER_RETURN(kDataTokenBlockCommentStart); }
+<BLOCK_COMMENT>{BCOMMENT_TEXT}                      { /* ignore text in block comments */ TESTER_RETURN(kDataTokenBlockCommentText); }
+<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentAsterisk); }
+<BLOCK_COMMENT>\n                                   { gDataLine++; TESTER_RETURN(kDataTokenBlockCommentNewline); }
+<BLOCK_COMMENT>{BCOMMENT_END}                       { BEGIN(INITIAL); TESTER_RETURN(kDataTokenBlockCommentEnd); }
+{COMMENT}                                           { /* skip comments */ TESTER_RETURN(kDataTokenComment); }
 kDataUnhandled                                      { return kDataTokenUnhandled; }
 
 {HEX_NUMBER}                                        { return kDataTokenHex; }
@@ -71,7 +82,7 @@ kDataUnhandled                                      { return kDataTokenUnhandled
 #endif                                              { return kDataTokenEndif; }
 #define                                             { return kDataTokenDefine; }
 #autorun                                            { return kDataTokenAutorun; }
-#{IDENTIFIER}                                       { DataFail("bad # directive"); }
+#{IDENTIFIER}                                       { DataFail("bad # directive"); TESTER_TERMINATE(); }
 
 {VARIABLE}                                          { return kDataTokenVar; }
 {SYMBOL}                                            { return kDataTokenSymbol; }
