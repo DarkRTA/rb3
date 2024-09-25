@@ -1,18 +1,24 @@
 #ifndef RVL_SDK_OS_ERROR_H
 #define RVL_SDK_OS_ERROR_H
+
 #include "types.h"
 #include <stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define OSError_FileLine(file_, line_, ...) \
+    OSPanic(file_, line_, __VA_ARGS__)
+
+#define OSError_Line(line_, ...) \
+    OSError_FileLine(__FILE__, line_, __VA_ARGS__)
+
+#define OSError(...) \
+    OSError_Line(__LINE__, __VA_ARGS__)
+
 // Forward declarations
 typedef struct OSContext;
-
-#define OSError(...) OSPanic(__FILE__, __LINE__, __VA_ARGS__)
-#define OSAssert(exp, ...)                                                     \
-    if (!(exp))                                                                \
-    OSPanic(__FILE__, __LINE__, __VA_ARGS__)
 
 typedef enum {
     OS_ERR_SYSTEM_RESET,
@@ -48,9 +54,8 @@ DECL_WEAK void OSVReport(const char* msg, va_list arg);
 OSErrorHandler OSSetErrorHandler(u16 error, OSErrorHandler handler);
 void __OSUnhandledException(u8 error, struct OSContext* ctx, u32 dsisr, u32 dar);
 
-
-
 #ifdef __cplusplus
 }
 #endif
+
 #endif

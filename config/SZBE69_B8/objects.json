@@ -2039,7 +2039,7 @@
             "sdk/RVL_SDK/src/wpad/WPADHIDParser.c": "NonMatching",
             "sdk/RVL_SDK/src/wpad/WPADMem.c": "Matching",
             "sdk/RVL_SDK/src/wpad/WUD.c": "MISSING",
-            "sdk/RVL_SDK/src/wpad/WUDHidHost.c": "MISSING",
+            "sdk/RVL_SDK/src/wpad/WUDHidHost.c": "Matching",
 
             "sdk/RVL_SDK/src/wpadDrm/WPADDrm.c": "Matching",
             "sdk/RVL_SDK/src/wpadGtr/WPADGtr.c": "Matching"
