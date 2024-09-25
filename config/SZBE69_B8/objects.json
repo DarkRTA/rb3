@@ -2025,8 +2025,14 @@
             "sdk/RVL_SDK/src/vi/vi.c": "MISSING",
             "sdk/RVL_SDK/src/vi/vi3in1.c": "MISSING",
 
-            "sdk/RVL_SDK/src/wenc/wenc.c": "MISSING",
-
+            "sdk/RVL_SDK/src/wenc/wenc.c": "MISSING"
+        }
+    },
+    "sdk/RVL_SDK/wpad": {
+        "progress_category": "sdk",
+        "mw_version": "Wii/1.0",
+        "cflags": "sdk/RVL_SDK",
+        "objects": {
             "sdk/RVL_SDK/src/wpad/lint.c": "NonMatching",
             "sdk/RVL_SDK/src/wpad/WPAD.c": "MISSING",
             "sdk/RVL_SDK/src/wpad/WPADEncrypt.c": "Matching",
