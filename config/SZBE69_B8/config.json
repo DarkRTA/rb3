@@ -205,7 +205,8 @@
             "flags": [
                 "-func_align 16",
                 "-O4,p",
-                "-lang=c99"
+                "-lang=c99",
+                "-d NDEBUG"
             ]
         },
         "sdk/RVL_SDK/bte": {

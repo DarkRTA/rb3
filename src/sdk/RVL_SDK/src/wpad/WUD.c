@@ -18,8 +18,8 @@
 #include "WUDHidHost.h" // WUDiHidHostEventCallback
 
 #include <revolution/bte/context_bte.h>
+#include <revolution/os/OSAssert.h>
 #include <revolution/os/OSContext.h> // OSSwitchFiberEx
-#include <revolution/os/OSError.h>
 #include <revolution/os/OSInterrupt.h>
 #include <revolution/os/OSTime.h>
 #include <revolution/nand/nand.h>
