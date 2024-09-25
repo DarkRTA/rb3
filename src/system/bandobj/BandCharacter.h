@@ -54,7 +54,7 @@ public:
     virtual void CalcBoundingSphere();
     virtual float ComputeScreenSize(RndCam*);
     virtual void DrawLodOrShadow(int, DrawMode);
-    virtual CharEyes* GetEyes(){ return unk568; }
+    virtual CharEyes* GetEyes(){ return mEyes; }
     virtual bool ValidateInterest(CharInterest*, ObjectDir*);
     virtual bool SetFocusInterest(CharInterest*, int);
     virtual void SetInterestFilterFlags(int);
@@ -83,6 +83,14 @@ public:
     void SetInstrumentType(Symbol);
     void SetGroupName(const char*);
     void SetHeadLookatWeight(float);
+    void SetState(const char*, int, int, bool, bool);
+    bool InVignetteOrCloset() const;
+    void RemoveDrawAndPoll(Character*);
+    void SetClipTypes(Symbol, Symbol);
+    void SetTempoGenreVenue(Symbol, Symbol, const char*);
+
+    static void MakeMRU(BandCharacter*, CharClip*);
+    static Symbol NameToDrumVenue(const char*);
 
     DataNode OnListDircuts();
     DataNode OnPlayGroup(DataArray*);
@@ -117,21 +125,21 @@ public:
 
     int unk450; // 0x450
     ObjPtr<CharDriver, ObjectDir> unk454; // 0x454
-    CharDriver* unk460; // 0x460
-    CharDriver* unk464; // 0x464
-    char mGroupName[0x40]; // 0x468
-    char unk4a8[0x40]; // 0x4a8
-    char unk4e8[0x40]; // 0x4e8
+    CharDriver* mAddDriver; // 0x460
+    CharDriver* mFaceDriver; // 0x464
+    char mGroupName[64]; // 0x468
+    char mFaceGroupName[64]; // 0x4a8
+    char mOverrideGroup[64]; // 0x4e8
     bool unk528; // 0x528
     bool mForceVertical; // 0x529
-    ObjPtr<Character, ObjectDir> unk52c; // 0x52c
-    ObjPtr<Character, ObjectDir> unk538; // 0x538
+    ObjPtr<Character, ObjectDir> mOutfitDir; // 0x52c
+    ObjPtr<Character, ObjectDir> mInstDir; // 0x538
     Symbol mTempo; // 0x544
-    FileMerger* unk548; // 0x548
-    RndOverlay* unk54c; // 0x54c
-    ObjPtr<CharLookAt, ObjectDir> unk550; // 0x550
-    ObjPtr<CharLookAt, ObjectDir> unk55c; // 0x55c
-    ObjPtr<CharEyes, ObjectDir> unk568; // 0x568
+    FileMerger* mFileMerger; // 0x548
+    RndOverlay* mOverlay; // 0x54c
+    ObjPtr<CharLookAt, ObjectDir> mHeadLookAt; // 0x550
+    ObjPtr<CharLookAt, ObjectDir> mNeckLookAt; // 0x55c
+    ObjPtr<CharEyes, ObjectDir> mEyes; // 0x568
     bool unk574; // 0x574
     ObjOwnerPtr<BandCharDesc, ObjectDir> mTestPrefab; // 0x578
     Symbol mGenre; // 0x584
@@ -143,7 +151,7 @@ public:
     bool unk5a1; // 0x5a1
     bool unk5a2; // 0x5a2
     bool unk5a3; // 0x5a3
-    ObjPtr<CharWeightSetter, ObjectDir> unk5a4; // 0x5a4
+    ObjPtr<CharWeightSetter, ObjectDir> mSingalongWeight; // 0x5a4
     ObjPtrList<CharMeshHide, ObjectDir> unk5b0; // 0x5b0
     ObjPtrList<CharIKScale, ObjectDir> unk5c0; // 0x5c0
     ObjPtrList<CharIKHand, ObjectDir> unk5d0; // 0x5d0

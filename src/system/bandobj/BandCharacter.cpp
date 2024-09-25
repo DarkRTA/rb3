@@ -1,4 +1,5 @@
 #include "bandobj/BandCharacter.h"
+#include "char/CharServoBone.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(BandCharacter)
@@ -25,17 +26,17 @@ const char* BandIntensityString(int num){
 void BandCharacter::Init(){ Register(); }
 void BandCharacter::Terminate(){}
 
-BandCharacter::BandCharacter() : unk450(0), unk454(this, 0), unk460(0), unk464(0), unk528(0), mForceVertical(1), unk52c(this, 0), unk538(this, 0), mTempo("medium"), unk548(0),
-    unk550(this, 0), unk55c(this, 0), unk568(this, 0), unk574(0), mTestPrefab(this, 0), mGenre("rocker"), mDrumVenue("small_club"), mTestTourEndingVenue(0), mInstrumentType("none"), unk594(this, 0),
-    mInCloset(0), unk5a1(0), unk5a2(0), unk5a3(0), unk5a4(this, 0), unk5b0(this, kObjListNoNull), unk5c0(this, kObjListNoNull), unk5d0(this, kObjListNoNull),
+BandCharacter::BandCharacter() : unk450(0), unk454(this, 0), mAddDriver(0), mFaceDriver(0), unk528(0), mForceVertical(1), mOutfitDir(this, 0), mInstDir(this, 0), mTempo("medium"), mFileMerger(0),
+    mHeadLookAt(this, 0), mNeckLookAt(this, 0), mEyes(this, 0), unk574(0), mTestPrefab(this, 0), mGenre("rocker"), mDrumVenue("small_club"), mTestTourEndingVenue(0), mInstrumentType("none"), unk594(this, 0),
+    mInCloset(0), unk5a1(0), unk5a2(0), unk5a3(0), mSingalongWeight(this, 0), unk5b0(this, kObjListNoNull), unk5c0(this, kObjListNoNull), unk5d0(this, kObjListNoNull),
     unk5e0(this, kObjListNoNull), unk5f0(this, kObjListNoNull), unk600(this, kObjListNoNull), unk610(this, kObjListNoNull), unk620(this, kObjListNoNull),
     unk630(this, kObjListNoNull), unk640(this, kObjListNoNull), unk650(this, kObjListNoNull), unk660(this, kObjListNoNull), unk670(this, kObjListNoNull),
     unk680(this, 0), unk68c(this, 0), unk698(this, 0), unk6a4(this, 0), unk6b0(this, 0), mUseMicStandClips(0), unk6bd(1), unk6c0(this, 0), mInTourEnding(0), unk6d8(0), unk6ec(0),
     unk738(0), unk73c(this, kObjListNoNull), unk74c(this, kObjListNoNull) {
     mGroupName[0] = 0;
-    unk4e8[0] = 0;
-    unk4a8[0] = 0;
-    unk54c = RndOverlay::Find("char_status", true);
+    mOverrideGroup[0] = 0;
+    mFaceGroupName[0] = 0;
+    mOverlay = RndOverlay::Find("char_status", true);
     unk734 = Hmx::Object::New<Waypoint>();
     unk734->SetRadius(2.0f);
     unk734->SetStrictRadiusDelta(5.0f);
@@ -53,22 +54,87 @@ BandCharacter::~BandCharacter(){
 
 void BandCharacter::AddedObject(Hmx::Object* o){
     Character::AddedObject(o);
-    if(streq(o->Name(), "main_add.drv")) unk460 = dynamic_cast<CharDriver*>(o);
-    if(streq(o->Name(), "expression.drv")) unk464 = dynamic_cast<CharDriver*>(o);
-    else if(streq(o->Name(), "head.lookat")) unk550 = dynamic_cast<CharLookAt*>(o);
-    else if(streq(o->Name(), "neck.lookat")) unk55c = dynamic_cast<CharLookAt*>(o);
-    else if(streq(o->Name(), "FileMerger.fm")) unk548 = dynamic_cast<FileMerger*>(o);
-    else if(streq(o->Name(), "outfit")) unk52c = dynamic_cast<Character*>(o);
-    else if(streq(o->Name(), "instrument")) unk538 = dynamic_cast<Character*>(o);
-    else if(streq(o->Name(), "CharEyes.eyes")) unk568 = dynamic_cast<CharEyes*>(o);
-    else if(streq(o->Name(), "singalong.weight")) unk5a4 = dynamic_cast<CharWeightSetter*>(o);
+    if(streq(o->Name(), "main_add.drv")) mAddDriver = dynamic_cast<CharDriver*>(o);
+    if(streq(o->Name(), "expression.drv")) mFaceDriver = dynamic_cast<CharDriver*>(o);
+    else if(streq(o->Name(), "head.lookat")) mHeadLookAt = dynamic_cast<CharLookAt*>(o);
+    else if(streq(o->Name(), "neck.lookat")) mNeckLookAt = dynamic_cast<CharLookAt*>(o);
+    else if(streq(o->Name(), "FileMerger.fm")) mFileMerger = dynamic_cast<FileMerger*>(o);
+    else if(streq(o->Name(), "outfit")) mOutfitDir = dynamic_cast<Character*>(o);
+    else if(streq(o->Name(), "instrument")) mInstDir = dynamic_cast<Character*>(o);
+    else if(streq(o->Name(), "CharEyes.eyes")) mEyes = dynamic_cast<CharEyes*>(o);
+    else if(streq(o->Name(), "singalong.weight")) mSingalongWeight = dynamic_cast<CharWeightSetter*>(o);
     else AddObject(o);
 }
 
 void BandCharacter::RemovingObject(Hmx::Object* o){
     Character::RemovingObject(o);
-    if(o == unk460) unk460 = 0;
-    else if(o == unk548) unk548 = 0;
+    if(o == mAddDriver) mAddDriver = 0;
+    else if(o == mFileMerger) mFileMerger = 0;
+}
+
+void BandCharacter::Replace(Hmx::Object* from, Hmx::Object* to){
+    BandCharDesc::Replace(from, to);
+    Character::Replace(from, to);
+    if(from == mTestPrefab){
+        mTestPrefab = dynamic_cast<BandCharDesc*>(to);
+        if(mTestPrefab) CopyCharDesc(mTestPrefab);
+    }
+}
+
+void BandCharacter::Enter(){
+    OnRestoreCategories(0);
+    mForceVertical = true;
+    unk528 = false;
+    unk574 = false;
+    unk5a2 = false;
+    unk5a3 = false;
+    unk594 = 0;
+    mGroupName[0] = 0;
+    unk450 &= 0x300000;
+    mOverrideGroup[0] = 0;
+    mFaceGroupName[0] = 0;
+    mFrozen = false;
+    Character::Enter();
+    SetState("", unk450, 2, false, false);
+    SetHeadLookatWeight(0);
+    unk6c0 = 0;
+    if(mDriver){
+        Message msg("get_matching_dude");
+        DataNode handled = HandleType(msg);
+        if(handled.Type() == kDataObject){
+            unk6c0 = handled.Obj<BandCharacter>(0);
+            if(unk6c0){
+                unk6c0->unk6c0 = this;
+                CharClip* clip = unk6c0->mDriver->FirstPlayingClip();
+                if(clip) MakeMRU(this, clip);
+            }
+        }
+    }
+}
+
+void BandCharacter::Exit(){ Character::Exit(); }
+
+bool BandCharacter::InVignetteOrCloset() const {
+    bool ret = false;
+    if(mDriver->mClipType == shell || mDriver->mClipType == vignette) ret = true;
+    return ret;
+}
+
+void BandCharacter::RemoveDrawAndPoll(Character* c){
+    if(c){
+        c->SyncObjects();
+        VectorRemove(mDraws, c);
+        VectorRemove(mPolls, c);
+    }
+}
+
+void BandCharacter::SetClipTypes(Symbol s1, Symbol s2){
+    if(mDriver){
+        mDriver->SetClipType(s2);
+        if(BoneServo()){
+            BoneServo()->SetClipType(s1);
+        }
+    }
 }
 
 SAVE_OBJ(BandCharacter, 0x3EB)
@@ -94,6 +160,50 @@ void BandCharacter::PostLoad(BinStream& bs){
         test.Load(bs);
     }
     else BandCharDesc::Load(bs);
+}
+
+BEGIN_COPYS(BandCharacter)
+    COPY_SUPERCLASS(Character)
+    COPY_SUPERCLASS(BandCharDesc)
+    CREATE_COPY(BandCharacter)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(unk450)
+        COPY_MEMBER(mTempo)
+        COPY_MEMBER(mDrumVenue)
+        COPY_MEMBER(mTestPrefab)
+        COPY_MEMBER(mInstrumentType)
+    END_COPYING_MEMBERS
+END_COPYS
+
+void BandCharacter::CollideList(const Segment& seg, std::list<Collision>& colls){
+    if(CollideSphere(seg)){
+        if(IsProxy()) RndDrawable::CollideList(seg, colls);
+        else {
+            if(mOutfitDir) mOutfitDir->CollideListSubParts(seg, colls);
+            if(mInstDir) mInstDir->CollideListSubParts(seg, colls);
+            RndDir::CollideList(seg, colls);
+        }
+    }
+}
+
+RndDrawable* BandCharacter::CollideShowing(const Segment& s, float& f, Plane& pl){
+    if(mOutfitDir->CollideShowing(s, f, pl)) return this;
+    else return RndDir::CollideShowing(s, f, pl);
+}
+
+void BandCharacter::Teleport(Waypoint* way){
+    Character::Teleport(way);
+    unk594 = way;
+    if(mOutfitDir) mOutfitDir->mTeleported = true;
+}
+
+void BandCharacter::SetTempoGenreVenue(Symbol s1, Symbol s2, const char* cc){
+    mTempo = s1;
+    mGenre = s2;
+    mDrumVenue = NameToDrumVenue(cc);
+    if(strstr(cc, "big_club")) mTestTourEndingVenue = "big_club";
+    else if(strstr(cc, "arena")) mTestTourEndingVenue = "arena";
+    else if(strstr(cc, "festival")) mTestTourEndingVenue = "festival";
 }
 
 #pragma push
@@ -196,7 +306,7 @@ BEGIN_PROPSYNCS(BandCharacter)
     SYNC_PROP(force_vertical, mForceVertical)
     SYNC_PROP_SET(instrument_type, mInstrumentType, SetInstrumentType(_val.Sym(0)))
     SYNC_PROP_SET(group_name, mGroupName, SetGroupName(_val.Str(0)))
-    SYNC_PROP_SET(head_lookat_weight, unk550 ? unk550->Weight() : 0, SetHeadLookatWeight(_val.Float(0)))
+    SYNC_PROP_SET(head_lookat_weight, mHeadLookAt ? mHeadLookAt->Weight() : 0, SetHeadLookatWeight(_val.Float(0)))
     SYNC_PROP_SET(in_closet, mInCloset, StartLoad(false, _val.Int(0), false))
     SYNC_PROP(test_prefab, mTestPrefab)
     SYNC_PROP(use_mic_stand_clips, mUseMicStandClips)

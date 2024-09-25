@@ -134,6 +134,7 @@ public:
     void SetWeight(float);
     void SetMuscle(float);
     void SetSkinColor(int);
+    void CopyCharDesc(const BandCharDesc*);
 
     DataNode ListOutfits(Symbol);
 

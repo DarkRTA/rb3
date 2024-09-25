@@ -40,6 +40,7 @@ public:
     void Clear();
     CharClip* FindClip(const DataNode&, bool);
     CharClip* FirstClip();
+    CharClip* FirstPlayingClip();
     CharClipDriver* Play(CharClip*, int, float, float, float);
     CharClipDriver* Play(const DataNode&, int, float, float, float);
     CharClipDriver* PlayGroup(const char*, int, float, float, float);
