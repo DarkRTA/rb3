@@ -57,9 +57,9 @@ COMMENT             ;[^\n]*
 
 %x BLOCK_COMMENT
 /* BUG: /** won't start a block */
-BCOMMENT_START      \/\*[^\n\*]*
+BCOMMENT_START      (\/\*)+[^\n\*]*
 BCOMMENT_TEXT       [^\n\*]*
-BCOMMENT_SKIP       \*+
+BCOMMENT_SKIP       \*+[^\n\/\*]*
 BCOMMENT_END        \*+\/
 
 %%
