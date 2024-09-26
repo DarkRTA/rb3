@@ -104,7 +104,7 @@ void DumpTokens() {
     };
 
     gDataLine = 0;
-    yytarget::yyrestart(nullptr);
+    yytarget::yy_actually_restart();
 
     while (DataToken token = (DataToken)yytarget::yylex()) {
         if (ignoreTokens.contains(token)) {
@@ -126,7 +126,7 @@ void CompareTokens(bool printSuccess) {
     };
 
     gDataLine = 0;
-    yytarget::yyrestart(nullptr);
+    yytarget::yy_actually_restart();
     std::vector<MatchedToken> targetTokens;
     while (DataToken token = (DataToken)yytarget::yylex()) {
         targetTokens.emplace_back(token, yytarget::yytext);
@@ -135,7 +135,7 @@ void CompareTokens(bool printSuccess) {
     gCurrentText->clear();
     gCurrentText->seekg(0);
     gDataLine = 0;
-    yyrestart(nullptr);
+    yy_actually_restart();
     std::vector<MatchedToken> currentTokens;
     while (DataToken token = (DataToken)yylex()) {
         currentTokens.emplace_back(token, yytext);

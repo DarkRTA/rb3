@@ -587,13 +587,18 @@ char *yytext;
 /*
  * requires the following commit of flex:
  * https://github.com/westes/flex/commit/fe84af1738b78edeca58752c5a549a175236420a
+ *
+ * run with the following command-line args in the root of the repo:
+ * -L "-osrc/system/obj/DataFlex.c" "src/system/obj/DataFlex.l"
  */
 /* %option nounistd - not supported on the version of flex used */
 #define YY_NEVER_INTERACTIVE 1
-/* Flex is stupid and doesn't include this under C mode for malloc/realloc */
+/* This version of Flex is stupid and doesn't include this under C mode for malloc/realloc */
 #include <stdlib.h>
 
-#include "DataFlex_target.h"
+#include "DataFlex.h"
+
+namespace yytarget {
 
 #define YY_INPUT(buf, result, max_size) \
     (result) = (DataInput((buf), 1) != 0)
@@ -601,12 +606,20 @@ char *yytext;
 #ifdef DATAFLEX_TESTER
 #define TESTER_TERMINATE() yyterminate()
 #define TESTER_RETURN(value) return value
+/* This version of Flex is even more stupid and doesn't reset the lexing state when restarting */
+void yy_actually_restart() {
+    BEGIN(INITIAL);
+    yyrestart(NULL);
+}
 #else
 #define TESTER_TERMINATE()
 #define TESTER_RETURN(value)
 #endif
 
 #define ECHO TESTER_RETURN(kDataTokenNotRecognized) /* don't echo unmatched characters */
+
+}
+
 /* TODO: '-' has a significant usage outside of SIGN */
 #define BLOCK_COMMENT 1
 

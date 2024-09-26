@@ -92,6 +92,8 @@ enum DataToken {
 extern void yyrestart(FILE*);
 extern int yylex();
 
+extern void yy_actually_restart();
+
 extern FILE *yyin, *yyout;
 
 extern char *yytext;

@@ -586,7 +586,7 @@ char *yytext;
  */
 /* %option nounistd - not supported on the version of flex used */
 #define YY_NEVER_INTERACTIVE 1
-/* Flex is stupid and doesn't include this under C mode for malloc/realloc */
+/* This version of Flex is stupid and doesn't include this under C mode for malloc/realloc */
 #include <stdlib.h>
 
 #include "DataFlex.h"
@@ -597,6 +597,11 @@ char *yytext;
 #ifdef DATAFLEX_TESTER
 #define TESTER_TERMINATE() yyterminate()
 #define TESTER_RETURN(value) return value
+/* This version of Flex is even more stupid and doesn't reset the lexing state when restarting */
+void yy_actually_restart() {
+    BEGIN(INITIAL);
+    yyrestart(NULL);
+}
 #else
 #define TESTER_TERMINATE()
 #define TESTER_RETURN(value)
