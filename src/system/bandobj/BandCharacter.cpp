@@ -459,6 +459,11 @@ bool BandCharacter::AddDircut(Symbol s1, Symbol s2, int i){
     return AddDircut(fp);
 }
 
+bool BandCharacter::AddDircut(const FilePath& f){
+    MILO_ASSERT(!f.empty(), 0x794);
+    // more
+}
+
 int BandCharacter::GetShotFlags(Symbol s){
     BandCharDesc::CharInstrumentType ty = BandCharDesc::GetInstrumentFromSym(mInstrumentType);
     if(ty >= BandCharDesc::kNumInstruments) return 0;
@@ -787,6 +792,23 @@ DataNode BandCharacter::OnCamTeleport(DataArray* da){
         unk5a2 = false;
     }
     return DataNode(0);
+}
+
+DataNode BandCharacter::OnChangeFaceGroup(DataArray* da){
+    if(!mFaceDriver || !mFaceDriver->ClipDir()) return DataNode(0);
+    else if(strcmp(mFaceGroupName, da->Str(2)) != 0){
+        strcpy(mFaceGroupName, da->Str(2));
+        PlayFaceClip();
+    }
+    return DataNode(0);
+}
+
+void ReplaceRefs(Hmx::Object*, Hmx::Object* mine){
+    MILO_ASSERT(mine, 0xA72);
+}
+
+MergeFilter::Action BandCharacter::FilterSubdir(ObjectDir* o1, ObjectDir*){
+    return DefaultSubdirAction(o1, mFileMerger->mSubdirs);
 }
 
 BEGIN_PROPSYNCS(BandCharacter)

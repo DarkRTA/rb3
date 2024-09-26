@@ -106,6 +106,7 @@ public:
     OutfitConfig* GetOutfitConfig(const char*);
     void SetLipSync(CharLipSync*);
     void SetSongOwner(CharLipSyncDriver*);
+    void PlayFaceClip();
 
     static void MakeMRU(BandCharacter*, CharClip*);
     static Symbol NameToDrumVenue(const char*);
