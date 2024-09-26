@@ -198,6 +198,10 @@ RndDrawable* BandCharacter::CollideShowing(const Segment& s, float& f, Plane& pl
     else return RndDir::CollideShowing(s, f, pl);
 }
 
+void BandCharacter::DrawShowing(){
+
+}
+
 void BandCharacter::Teleport(Waypoint* way){
     Character::Teleport(way);
     unk594 = way;
@@ -680,7 +684,9 @@ BEGIN_HANDLERS(BandCharacter)
     HANDLE(hide_categories, OnHideCategories)
     HANDLE(restore_categories, OnRestoreCategories)
     HANDLE_ACTION(game_over, GameOver())
+#ifdef MILO_DEBUG
     HANDLE(toggle_interests_overlay, OnToggleInterestDebugOverlay)
+#endif
     HANDLE(list_drum_venues, OnListDrumVenues)
     HANDLE(portrait_begin, OnPortraitBegin)
     HANDLE(portrait_end, OnPortraitEnd)
@@ -720,6 +726,67 @@ DataNode BandCharacter::OnListDircuts(){
         else if(mGenre == "spazz") mask |= 0x80;
     }
     return ListAnimGroups(mask);
+}
+
+DataNode BandCharacter::OnLoadDircut(DataArray* da){
+    Symbol sym = da->Sym(2);
+    if(sym == ""){
+        return DataNode(0);
+    }
+    else {
+        ClearDircuts();
+        return DataNode(AddDircut(sym, mGenre, GetShotFlags(sym)));
+    }
+}
+
+DataNode BandCharacter::OnPlayGroup(DataArray* da){
+    bool b6 = false;
+    if(da->Size() > 3) b6 = da->Int(3);
+    bool b1 = false;
+    if(da->Size() > 4) b1 = da->Int(4);
+    float f7 = 0;
+    int i5 = 0;
+    Symbol s;
+    if(da->Size() > 5){
+        f7 = da->Float(5);
+        i5 = da->Int(6);
+        s = da->Sym(7);
+    }
+    int i3 = 2;
+    if(b1) i3 = 1;
+    PlayGroup(da->Str(2), b6, i3, f7, (TaskUnits)i5, s);
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnGroupOverride(DataArray* da){
+    strcpy(mOverrideGroup, da->Str(2));
+    mForceNextGroup = true;
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnSetPlay(DataArray* da){
+    SetState(mGroupName, mPlayFlags & 0xFFF80FFF | da->Int(2), 3, false, false);
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnClosetTeleport(DataArray* da){
+    unk734->DirtyLocalXfm() = LocalXfm();
+    Teleport(unk734);
+    unk5a2 = false;
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnCamTeleport(DataArray* da){
+    if(da->Int(2)){
+        Teleport(unk594);
+    }
+    else {
+        Waypoint* w = unk594;
+        Teleport(0);
+        unk594 = w;
+        unk5a2 = false;
+    }
+    return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(BandCharacter)
