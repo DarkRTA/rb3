@@ -580,6 +580,9 @@ char *yytext;
 /*
  * requires the following commit of flex:
  * https://github.com/westes/flex/commit/fe84af1738b78edeca58752c5a549a175236420a
+ *
+ * run with the following command-line args in the root of the repo:
+ * -L "-osrc/system/obj/DataFlex.c" "src/system/obj/DataFlex.l"
  */
 /* %option nounistd - not supported on the version of flex used */
 #define YY_NEVER_INTERACTIVE 1
@@ -1021,7 +1024,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-{ /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentAsterisk); }
+{ /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentSkip); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP

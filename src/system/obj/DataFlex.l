@@ -64,7 +64,7 @@ BCOMMENT_END        \*+\/
 {QUOTED_SYMBOL}                                     { return kDataTokenQuotedSymbol; }
 {BCOMMENT_START}                                    { BEGIN(BLOCK_COMMENT); TESTER_RETURN(kDataTokenBlockCommentStart); }
 <BLOCK_COMMENT>{BCOMMENT_TEXT}                      { /* ignore text in block comments */ TESTER_RETURN(kDataTokenBlockCommentText); }
-<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentAsterisk); }
+<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentSkip); }
 <BLOCK_COMMENT>\n                                   { gDataLine++; TESTER_RETURN(kDataTokenBlockCommentNewline); }
 <BLOCK_COMMENT>{BCOMMENT_END}                       { BEGIN(INITIAL); TESTER_RETURN(kDataTokenBlockCommentEnd); }
 {COMMENT}                                           { /* skip comments */ TESTER_RETURN(kDataTokenComment); }

@@ -1033,7 +1033,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-{ /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentAsterisk); }
+{ /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentSkip); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP

@@ -20,7 +20,7 @@ enum DataToken {
     kDataTokenComment,
     kDataTokenBlockCommentStart,
     kDataTokenBlockCommentText,
-    kDataTokenBlockCommentAsterisk,
+    kDataTokenBlockCommentSkip,
     kDataTokenBlockCommentNewline,
     kDataTokenBlockCommentEnd,
 

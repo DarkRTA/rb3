@@ -54,7 +54,7 @@ const char *TokenToString(DataToken token) {
     TOKENCASE(kDataTokenComment);
     TOKENCASE(kDataTokenBlockCommentStart);
     TOKENCASE(kDataTokenBlockCommentText);
-    TOKENCASE(kDataTokenBlockCommentAsterisk);
+    TOKENCASE(kDataTokenBlockCommentSkip);
     TOKENCASE(kDataTokenBlockCommentNewline);
     TOKENCASE(kDataTokenBlockCommentEnd);
 
