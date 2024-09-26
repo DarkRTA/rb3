@@ -64,7 +64,7 @@ public:
     virtual void TextureCompressed(int);
     virtual RndTex* GetPatchTex(Patch&);
     virtual RndMesh* GetPatchMesh(Patch&);
-    virtual int GetBandLogo();
+    virtual RndTex* GetBandLogo();
     virtual void Compress(RndTex*, bool);
     virtual ObjectDir* GetPatchDir(){}
     virtual void AddOverlays(BandPatchMesh&);
@@ -102,12 +102,16 @@ public:
     CharLipSyncDriver* GetLipSyncDriver();
     int GetShotFlags(Symbol);
     void SetVisemes();
+    void RecomposePatches(BandCharDesc*, int);
     OutfitConfig* GetOutfitConfig(const char*);
+    void SetLipSync(CharLipSync*);
+    void SetSongOwner(CharLipSyncDriver*);
 
     static void MakeMRU(BandCharacter*, CharClip*);
     static Symbol NameToDrumVenue(const char*);
 
     DataNode OnListDircuts();
+    DataNode ListAnimGroups(int);
     DataNode OnPlayGroup(DataArray*);
     DataNode OnGroupOverride(DataArray*);
     DataNode OnChangeFaceGroup(DataArray*);

@@ -136,7 +136,7 @@ public:
     virtual void Load(BinStream&);
     virtual RndTex* GetPatchTex(Patch&){ return 0; }
     virtual RndMesh* GetPatchMesh(Patch&){ return 0; }
-    virtual int GetBandLogo(){ return 0; }
+    virtual RndTex* GetBandLogo(){ return 0; }
     virtual void Compress(RndTex*, bool);
     virtual ObjectDir* GetPatchDir(){ return 0; }
     virtual void AddOverlays(BandPatchMesh&){}

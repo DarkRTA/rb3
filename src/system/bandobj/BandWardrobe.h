@@ -3,6 +3,7 @@
 #include "obj/Dir.h"
 #include "char/FileMerger.h"
 #include "bandobj/BandCamShot.h"
+#include "bandobj/BandCharDesc.h"
 
 class BandWardrobe : public virtual Hmx::Object {
 public:

@@ -5,6 +5,7 @@
 #include "char/CharClipDriver.h"
 #include "char/CharFaceServo.h"
 #include "char/CharMeshCacheMgr.h"
+#include "math/Rand.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -573,24 +574,82 @@ RndMesh* BandCharacter::GetPatchMesh(Patch& patch){
     return dir->Find<RndMesh>(patch.mMeshName.c_str(), false);
 }
 
-// void __thiscall BandCharacter::GetPatchMesh(BandCharacter *this,Patch *param_1)
+RndTex* BandCharacter::GetBandLogo(){
+    if(TheLoadMgr.EditMode()){
+        return TheRnd->GetNullTexture();
+    }
+    else {
+        RndTex* ret;
+        DataNode handled = HandleType(get_band_logo_msg);
+        if(handled.Type() == kDataObject){
+            ret = handled.Obj<RndTex>(0);
+        }
+        else ret = 0;
+        return ret;
+    }
+}
 
-// {
-//   undefined4 uVar1;
-  
-//   if ((*(uint *)(param_1 + 0xc) & 0x2e00) != 0) {
-//     this = *(BandCharacter **)(this + 0x540);
-//   }
-//   uVar1 = ObjectDir::FindObject((ObjectDir *)this,*(char **)(param_1 + 0x18),false);
-//   __dynamic_cast(uVar1,0,&RndMesh::__RTTI,&Hmx::Object::__RTTI,0);
-//   return;
-// }
+void BandCharacter::Compress(RndTex* tex, bool b){
+    tex->Compress(b);
+}
 
 void BandCharacter::TextureCompressed(int i){
     std::list<int>::iterator it;
     for(it = mCompressedTextureIDs.begin(); it != mCompressedTextureIDs.end() && *it != i; ++it);
     if(it == mCompressedTextureIDs.end()) MILO_WARN("%s Could not find compress texture id %d\n", PathName(this), i);
     else mCompressedTextureIDs.erase(it);
+}
+
+void BandCharacter::RecomposePatches(BandCharDesc* desc, int i){
+    CopyCharDesc(desc);
+    if(!mInCloset){
+        unk224 |= 1;
+        StartLoad(true, mInCloset, true);
+    }
+    else {
+        for(ObjPtrList<OutfitConfig, ObjectDir>::iterator it = unk620.begin(); it != unk620.end(); ++it){
+            (*it)->RecomposePatches(i);
+        }
+    }
+}
+
+void BandCharacter::SetInstrumentType(Symbol s){
+    if(s != mInstrumentType){
+        mInstrumentType = s;
+        SetChanged(8);
+    }
+}
+
+void BandCharacter::ClearGroup(){
+    SetState("", mPlayFlags, 1, false, false);
+    mGroupName[0] = 0;
+    if(mDriver) mDriver->Clear();
+    if(mAddDriver) mAddDriver->Clear();
+}
+
+void BandCharacter::MiloReload(){
+    StartLoad(false, mInCloset, false);
+}
+
+void BandCharacter::SetLipSync(CharLipSync* sync){
+    CharLipSyncDriver* driver = Find<CharLipSyncDriver>("song.lipdrv", false);
+    if(driver){
+        driver->mSongOwner = 0;
+        driver->SetLipSync(sync);
+    }
+}
+
+void BandCharacter::SetSongOwner(CharLipSyncDriver* driver){
+    CharLipSyncDriver* drvr = Find<CharLipSyncDriver>("song.lipdrv", false);
+    if(drvr){
+        drvr->mSongOwner = driver;
+        drvr->SetLipSync(Find<CharLipSync>("blinktrack.lipsync", false));
+        drvr->mSongOffset = RandomFloat(0, 1000.0f);
+    }
+}
+
+void BandCharacter::SetSingalong(float f){
+    if(mSingalongWeight) mSingalongWeight->SetWeight(f);
 }
 
 #pragma push
@@ -630,6 +689,38 @@ BEGIN_HANDLERS(BandCharacter)
     HANDLE_CHECK(0x9A6)
 END_HANDLERS
 #pragma pop
+
+void BandCharacter::GameOver(){
+    for(ObjPtrList<CharIKMidi, ObjectDir>::iterator it = unk650.begin(); it != unk650.end(); ++it){
+        CharIKMidi* cur = *it;
+        cur->Handle(Message("game_over"), true);
+    }
+    for(ObjPtrList<CharDriverMidi, ObjectDir>::iterator it = unk660.begin(); it != unk660.end(); ++it){
+        CharDriverMidi* cur = *it;
+        cur->Handle(Message("game_over"), true);
+    }
+    for(ObjPtrList<CharKeyHandMidi, ObjectDir>::iterator it = unk670.begin(); it != unk670.end(); ++it){
+        CharKeyHandMidi* cur = *it;
+        cur->Handle(Message("game_over"), true);
+    }
+}
+
+DataNode BandCharacter::OnListDircuts(){
+    int mask = 0x3E00;
+    if(mGender == "female"){
+        if(mGenre == "banger") mask |= 0x4;
+        else if(mGenre == "dramatic") mask |= 0x2;
+        else if(mGenre == "rocker") mask |= 0x1;
+        else if(mGenre == "spazz") mask |= 8;
+    }
+    else {
+        if(mGenre == "banger") mask |= 0x40;
+        else if(mGenre == "dramatic") mask |= 0x20;
+        else if(mGenre == "rocker") mask |= 0x10;
+        else if(mGenre == "spazz") mask |= 0x80;
+    }
+    return ListAnimGroups(mask);
+}
 
 BEGIN_PROPSYNCS(BandCharacter)
     SYNC_PROP(tempo, mTempo)
