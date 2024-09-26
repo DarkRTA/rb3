@@ -114,7 +114,9 @@
         },
         "system/flex": {
             "base": "system/zlib",
-            "flags": []
+            "flags": [
+                "-ipa file"
+            ]
         },
         "system/speex": {
             "base": "system/zlib",
@@ -205,7 +207,8 @@
             "flags": [
                 "-func_align 16",
                 "-O4,p",
-                "-lang=c99"
+                "-lang=c99",
+                "-d NDEBUG"
             ]
         },
         "sdk/RVL_SDK/bte": {

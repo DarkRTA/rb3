@@ -16,9 +16,9 @@
 
 #include <revolution/bte/context_bte.h>
 #include <revolution/os/OSAlarm.h>
+#include <revolution/os/OSAssert.h>
 #include <revolution/os/OSCache.h>
 #include <revolution/os/OSContext.h>
-#include <revolution/os/OSError.h>
 #include <revolution/os/OSInterrupt.h>
 #include <revolution/os/OSReset.h>
 #include <revolution/os/OSTime.h>
