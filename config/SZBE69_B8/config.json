@@ -114,7 +114,9 @@
         },
         "system/flex": {
             "base": "system/zlib",
-            "flags": []
+            "flags": [
+                "-ipa file"
+            ]
         },
         "system/speex": {
             "base": "system/zlib",

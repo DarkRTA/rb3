@@ -86,6 +86,11 @@ public:
         mValue.integer = i;
     }
 
+    DataNode(DataType ty, const char* s){
+        mType = ty;
+        mValue.symbol = s;
+    }
+
     DataNode(float f){
         mValue.real = f;
         mType = kDataFloat;
@@ -242,7 +247,7 @@ public:
     }
 
     NEW_POOL_OVERLOAD(DataArray);
-    DELETE_POOL_OVERLOAD(DataArray);    
+    DELETE_POOL_OVERLOAD(DataArray);
 };
 
 inline BinStream& operator<<(BinStream &bs, const DataNode& node) {
@@ -273,7 +278,7 @@ public:
     DataArrayPtr(){
         mData = new DataArray(0);
     }
-    
+
     DataArrayPtr(const DataNode& node){
         mData = new DataArray(1);
         mData->Node(0) = node;

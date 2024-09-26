@@ -1,0 +1,129 @@
+; strings
+"asdf"
+"" ""
+
+"
+asdf
+jkl
+qwerty
+"
+
+; quoted symbols
+'asdf'
+'' ''
+
+'
+asdf
+jkl
+qwerty
+'
+
+; kDataUnhandled is its own token
+kDataUnhandled
+
+; hex numbers
+0x1 0xA 0xa
+0xFFFFFFFF
+0xFFFFFFFFFFFFFFFF
+0xFFFFFFFFFFFFFFFFFFFFFFFF
+; invalid (lexed as symbols)
+0x  x1
++0x2 -0x3
++0xB -0xC
++0xb -0xc
+
+; integers
+1 +2 -3
+01 +02 -03
+
+; floats
+1.0    +2.0    -3.0
+1.     +2.     -3.
+.1     +.2     -.3
+; these are valid
+.      +.      -.
+
+; floats with exponents
+; valid                 -  invalid
+1.0E1  +2.0E1  -3.0E1      1.0-E1  +2.0-E1  -3.0-E1
+1.0E+1 +2.0E+1 -3.0E+1     1.0-E+1 +2.0-E+1 -3.0-E+1
+1.0E-1 +2.0E-1 -3.0E-1     1.0-E-1 +2.0-E-1 -3.0-E-1
+
+1.E1   +2.E1   -3.E1       1.-E1   +2.-E1   -3.-E1
+1.E+1  +2.E+1  -3.E+1      1.-E+1  +2.-E+1  -3.-E+1
+1.E-1  +2.E-1  -3.E-1      1.-E-1  +2.-E-1  -3.-E-1
+
+.1E1   +.2E1   -.3E1       .1-E1   +.2-E1   -.3-E1
+.1E+1  +.2E+1  -.3E+1      .1-E+1  +.2-E+1  -.3-E+1
+.1E-1  +.2E-1  -.3E-1      .1-E-1  +.2-E-1  -.3-E-1
+
+.E1    +.E1    -.E1        .-E1    +.-E1    -.-E1
+.E+1   +.E+1   -.E+1       .-E+1   +.-E+1   -.-E+1
+.E-1   +.E-1   -.E-1       .-E-1   +.-E-1   -.-E-1
+
+; directives
+#include_opt ../file.dta
+#include ../file.dta
+#merge ../file.dta
+#ifdef kDefine
+#undef kDefine
+#endif
+#ifndef kDefine
+#define kDefine
+#else
+#autorun {action}
+#endif
+; invalid
+; #bad
+##
+
+; *not* directives, these are lexed as symbols
+#
+# # ; space-separated
+#	# ; tab-separated
+; lexed as symbols and arrays
+#(#) ; '#', '(', '#', ')'
+#{#} ; '#', '{', '#', '}'
+#[#] ; '#', '[', '#', ']'
+
+
+; identifiers
+$variable   ; var
+kDataSymbol ; symbol
+
+; arrays
+(array 1 2)  ; array
+{+ 1 2}      ; command
+[property] ; property
+
+; line comment
+;;
+; ;
+;	;
+;;;;;;;;
+;nospace
+asdf;jkl ; invalid, lexed as part of the symbol
+
+/*
+block comment
+*/
+
+/*asdf*/ ; invalid, lexed as a symbol
+/*jkl */
+
+/**/ ; invalid, lexed as a symbol
+/* */
+/*	*/
+
+; stray block-comment close, lexed as a symbol
+*/
+
+/*****/ ; invalid, lexed as a symbol
+
+/***** ; invalid, lexed as a symbol
+
+    /*
+
+    *****
+
+***/

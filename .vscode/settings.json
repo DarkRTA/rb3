@@ -113,5 +113,6 @@
       "url": "./doc/objects_schema.json"
     }
   ],
-  "python.analysis.typeCheckingMode": "standard"
+  "python.analysis.typeCheckingMode": "standard",
+  "cmake.ignoreCMakeListsMissing": true
 }
