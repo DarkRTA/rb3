@@ -5,6 +5,7 @@
 #include "obj/ObjVector.h"
 
 class RndMesh;
+class SyncMeshCB;
 
 class RndMeshDeform : public Hmx::Object {
 public:
@@ -38,6 +39,7 @@ public:
     virtual void Print();
 
     void CopyWeights(int, int, RndMeshDeform*);
+    void Reskin(SyncMeshCB*, bool);
     void SetMesh(RndMesh*);
     RndMesh* Mesh() const { return mMesh; }
 

@@ -46,6 +46,8 @@ public:
     DataNode OnGetCurrentInterests(DataArray*);
     DataNode OnEnableDebugInterests(DataArray*);
 
+    static DataArray* GetGroupArray(BandCharDesc::CharInstrumentType);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

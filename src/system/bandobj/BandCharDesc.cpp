@@ -10,9 +10,7 @@ void BandCharDesc::Init(){
 
 BandCharDesc::OutfitPiece::OutfitPiece(){
     mName = Symbol();
-    mColor0 = 0;
-    mColor1 = 0;
-    mColor2 = 0;
+    for(int i = 0; i < 3; i++) mColors[i] = 0;
     mSaveSizeMethod = &SaveSize;
 }
 
@@ -61,9 +59,9 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(BandCharDesc::OutfitPiece)
     SYNC_PROP_MODIFY(name, o.mName, gBandCharDescMe->SetChanged(1))
-    SYNC_PROP_MODIFY(color0, o.mColor0, gBandCharDescMe->SetChanged(1))
-    SYNC_PROP_MODIFY(color1, o.mColor1, gBandCharDescMe->SetChanged(1))
-    SYNC_PROP_MODIFY(color2, o.mColor2, gBandCharDescMe->SetChanged(1))
+    SYNC_PROP_MODIFY(color0, o.mColors[0], gBandCharDescMe->SetChanged(1))
+    SYNC_PROP_MODIFY(color1, o.mColors[1], gBandCharDescMe->SetChanged(1))
+    SYNC_PROP_MODIFY(color2, o.mColors[2], gBandCharDescMe->SetChanged(1))
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(BandCharDesc::Outfit)

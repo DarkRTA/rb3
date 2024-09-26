@@ -53,6 +53,7 @@ public:
     bool Starved();
     void SetStarved(Symbol);
     ObjectDir* ClipDir() const { return mClips; }
+    float SetBlendWidth(float w){ mBlendWidth = w; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

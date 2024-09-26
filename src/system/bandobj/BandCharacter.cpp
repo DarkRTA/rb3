@@ -1,6 +1,12 @@
 #include "bandobj/BandCharacter.h"
+#include "bandobj/BandHeadShaper.h"
+#include "bandobj/BandWardrobe.h"
 #include "char/CharServoBone.h"
+#include "char/CharClipDriver.h"
+#include "char/CharFaceServo.h"
+#include "char/CharMeshCacheMgr.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(BandCharacter)
 
@@ -26,7 +32,7 @@ const char* BandIntensityString(int num){
 void BandCharacter::Init(){ Register(); }
 void BandCharacter::Terminate(){}
 
-BandCharacter::BandCharacter() : unk450(0), unk454(this, 0), mAddDriver(0), mFaceDriver(0), unk528(0), mForceVertical(1), mOutfitDir(this, 0), mInstDir(this, 0), mTempo("medium"), mFileMerger(0),
+BandCharacter::BandCharacter() : mPlayFlags(0), unk454(this, 0), mAddDriver(0), mFaceDriver(0), mForceNextGroup(0), mForceVertical(1), mOutfitDir(this, 0), mInstDir(this, 0), mTempo("medium"), mFileMerger(0),
     mHeadLookAt(this, 0), mNeckLookAt(this, 0), mEyes(this, 0), unk574(0), mTestPrefab(this, 0), mGenre("rocker"), mDrumVenue("small_club"), mTestTourEndingVenue(0), mInstrumentType("none"), unk594(this, 0),
     mInCloset(0), unk5a1(0), unk5a2(0), unk5a3(0), mSingalongWeight(this, 0), unk5b0(this, kObjListNoNull), unk5c0(this, kObjListNoNull), unk5d0(this, kObjListNoNull),
     unk5e0(this, kObjListNoNull), unk5f0(this, kObjListNoNull), unk600(this, kObjListNoNull), unk610(this, kObjListNoNull), unk620(this, kObjListNoNull),
@@ -84,18 +90,18 @@ void BandCharacter::Replace(Hmx::Object* from, Hmx::Object* to){
 void BandCharacter::Enter(){
     OnRestoreCategories(0);
     mForceVertical = true;
-    unk528 = false;
+    mForceNextGroup = false;
     unk574 = false;
     unk5a2 = false;
     unk5a3 = false;
     unk594 = 0;
     mGroupName[0] = 0;
-    unk450 &= 0x300000;
+    mPlayFlags &= 0x300000;
     mOverrideGroup[0] = 0;
     mFaceGroupName[0] = 0;
     mFrozen = false;
     Character::Enter();
-    SetState("", unk450, 2, false, false);
+    SetState("", mPlayFlags, 2, false, false);
     SetHeadLookatWeight(0);
     unk6c0 = 0;
     if(mDriver){
@@ -167,7 +173,7 @@ BEGIN_COPYS(BandCharacter)
     COPY_SUPERCLASS(BandCharDesc)
     CREATE_COPY(BandCharacter)
     BEGIN_COPYING_MEMBERS
-        COPY_MEMBER(unk450)
+        COPY_MEMBER(mPlayFlags)
         COPY_MEMBER(mTempo)
         COPY_MEMBER(mDrumVenue)
         COPY_MEMBER(mTestPrefab)
@@ -204,6 +210,23 @@ void BandCharacter::SetTempoGenreVenue(Symbol s1, Symbol s2, const char* cc){
     if(strstr(cc, "big_club")) mTestTourEndingVenue = "big_club";
     else if(strstr(cc, "arena")) mTestTourEndingVenue = "arena";
     else if(strstr(cc, "festival")) mTestTourEndingVenue = "festival";
+}
+
+void BandCharacter::DrawLodOrShadowMode(int i, DrawMode mode){
+    Character::DrawLodOrShadow(i, mode);
+    if(mode == kCharDrawTranslucent){
+        mOutfitDir->DrawLodOrShadow(i, mode);
+        if(!unk574) mInstDir->DrawLodOrShadow(i, mode);
+    }
+    else {
+        if(!unk574) mInstDir->DrawLodOrShadow(i, mode);
+        mOutfitDir->DrawLodOrShadow(i, mode);
+    }
+}
+
+float BandCharacter::ComputeScreenSize(RndCam* cam){
+    if(mOutfitDir) return mOutfitDir->ComputeScreenSize(cam);
+    else return 0;
 }
 
 #pragma push
@@ -250,9 +273,278 @@ void BandCharacter::AddObject(Hmx::Object* o){
 }
 #pragma pop
 
+void BandCharacter::AddOverlays(BandPatchMesh& mesh){
+    for(ObjPtrList<OutfitConfig, ObjectDir>::iterator it = unk620.begin(); it != unk620.end(); ++it){
+        for(ObjVector<OutfitConfig::Overlay>::iterator oit = (*it)->mOverlays.begin(); oit != (*it)->mOverlays.end(); ++oit){
+            if((*oit).mCategory & mesh.mCategory){
+                mesh.ConstructQuad((*oit).mTexture);
+            }
+        }
+    }
+}
+
+void BandCharacter::DeformHead(SyncMeshCB* cb){
+    if(mOutfitDir){
+        RndMesh* mesh = mOutfitDir->Find<RndMesh>("head.mesh", false);
+        if(mesh){
+            BandHeadShaper shaper;
+            if(!shaper.Start(this, mGender, mesh, cb, false)) return;
+            else mHead.SetShape(shaper);
+        }
+    }
+}
+
+void BandCharacter::SyncOutfitConfig(OutfitConfig* cfg){
+    char buf[256];
+    strcpy(buf, cfg->Name());
+    char* dot = strchr(buf, '.');
+    MILO_ASSERT(dot, 0x5EA);
+    *dot = 0;
+    Symbol sym(buf);
+    int colors[6];
+    if(sym == eyes){
+        colors[3] = 0;
+        colors[4] = 0;
+        colors[5] = 0;
+        colors[3] = mHead.mEyeColor;
+        cfg->SetColors(&colors[3]);
+    }
+    else if(sym == skin || sym == heads){
+        colors[0] = 0;
+        colors[1] = 0;
+        colors[2] = 0;
+        colors[0] = mSkinColor;
+        cfg->SetColors(colors);
+    }
+    else {
+        BandCharDesc::OutfitPiece* piece = mOutfit.GetPiece(sym);
+        if(piece) cfg->SetColors(piece->mColors);
+        else {
+            BandCharDesc::OutfitPiece* instpiece = mInstruments.GetPiece(sym);
+            if(instpiece) cfg->SetColors(instpiece->mColors);
+            else cfg->Recompose();
+        }
+    }
+    if(sym == skin){
+        OutfitConfig::SetSkinTextures(this, mOutfitDir, this);
+        if(unk738){
+            cfg->RecomposePatches(unk738);
+            unk738 = 0;
+        }
+    }
+}
+
+void BandCharacter::SetDeformation(){
+    CharClip* clip = BandCharDesc::GetDeformClip(mGender);
+    if(clip){
+        CharBonesMeshes meshes;
+        meshes.SetName("tmp_bones", this);
+        clip->StuffBones(meshes);
+        clip->ScaleDown(meshes, 0);
+        clip->ScaleAdd(meshes, 1, 0, 0);
+        meshes.PoseMeshes();
+        if(TheLoadMgr.EditMode() && BoneServo()){
+            BoneServo()->AcquirePose();
+        }
+        for(ObjPtrList<CharIKScale, ObjectDir>::iterator it = unk5c0.begin(); it != unk5c0.end(); ++it){
+            (*it)->CaptureBefore();
+        }
+        CharMeshCacheMgr* mgr = new CharMeshCacheMgr();
+        mgr->Disable(!mInCloset);
+        for(ObjPtrList<RndMesh, ObjectDir>::iterator it = unk73c.begin(); it != unk73c.end(); ++it){
+            mgr->SyncMesh(*it, 0xBF);
+        }
+        DeformHead(mgr);
+        for(ObjPtrList<CharCuff, ObjectDir>::iterator it = unk600.begin(); it != unk600.end(); ++it){
+            (*it)->Deform(mgr, mFileMerger);
+        }
+        unk73c.clear();
+        mgr->StuffMeshes(unk73c);
+        clip->ScaleDown(meshes, 0);
+        float weights[18];
+        ComputeDeformWeights(weights);
+        for(int i = 0; i < 18; i++){
+            clip->ScaleAdd(meshes, weights[i], i, 0);
+        }
+        meshes.PoseMeshes();
+        for(ObjPtrList<RndMeshDeform, ObjectDir>::iterator it = unk610.begin(); it != unk610.end(); ++it){
+            (*it)->Reskin(mgr, (unk224 >> 1) & 1);
+        }
+        for(ObjPtrList<CharCollide, ObjectDir>::iterator it = unk5e0.begin(); it != unk5e0.end(); ++it){
+            CharCollide* col = *it;
+            RndMesh* colmesh = col->mMesh;
+            if(colmesh && mgr->HasMesh(colmesh)){
+                col->Deform();
+            }
+        }
+        for(ObjPtrList<CharIKScale, ObjectDir>::iterator it = unk5c0.begin(); it != unk5c0.end(); ++it){
+            (*it)->CaptureAfter();
+        }
+        for(ObjPtrList<CharIKHand, ObjectDir>::iterator it = unk5d0.begin(); it != unk5d0.end(); ++it){
+            (*it)->MeasureLengths();
+        }
+        for(ObjPtrList<OutfitConfig, ObjectDir>::iterator it = unk620.begin(); it != unk620.end(); ++it){
+            SyncOutfitConfig(*it);
+            (*it)->ApplyAO(mgr);
+        }
+        delete mgr;
+        unk224 &= 0xfffffffd; // i think this might be a bitfield
+    }
+}
+
+void BandCharacter::PlayGroup(const char* cc, bool b, int i, float f, TaskUnits u, Symbol s){
+    if(mOverrideGroup[0] != 0 && AllowOverride(cc)){
+        cc = mOverrideGroup;
+        f = 0;
+    }
+    if(*cc){
+        bool b528 = mForceNextGroup;
+        bool b3 = false;
+        unk5a3 = false;
+        mForceNextGroup = false;
+        if((b | b528) || f != 0){
+            b3 = true;
+        }
+        CharClipDriver* driver = SetState(cc, mPlayFlags, i, b3, true);
+        if(driver){
+            mFrozen = false;
+            driver->SetBeatOffset(f, u, s);
+        }
+        if(BoneServo()->mRegulate && !mTeleported){
+            Teleport(BoneServo()->mRegulate);
+        }
+    }
+}
+
+CharLipSyncDriver* BandCharacter::GetLipSyncDriver(){
+    return Find<CharLipSyncDriver>("song.lipdrv", false);
+}
+
+DECOMP_FORCEACTIVE(BandCharacter, "BandCharacter::SetFaceOverrideClip couldn't find clip named %s for %s\n",
+    "BandCharacter::SetFaceOverrideClip couldnt find  lip sync driver for %s\n", 
+    "!mFileMerger->IsLoading()", "head")
+
+void BandCharacter::SetHeadLookatWeight(float f){
+    if(mHeadLookAt){
+        mHeadLookAt->SetWeight(f);
+        if(mNeckLookAt) mNeckLookAt->SetWeight(f * 0.5f);
+    }
+}
+
+bool BandCharacter::SetPrefab(BandCharDesc* desc){
+    mTestPrefab = desc;
+    if(mTestPrefab) CopyCharDesc(mTestPrefab);
+    return unk224;
+}
+
 void BandCharacter::ClearDircuts(){ mDircuts.clear(); }
 
+bool BandCharacter::AddDircut(Symbol s1, Symbol s2, int i){
+    Symbol animinst = BandCharDesc::GetAnimInstrument(mInstrumentType);
+    FilePath fp;
+    bool ismale = mGender != "female";
+    int mask = 0x8000;
+    if(!ismale) mask = 0x4000;
+    if(i & mask){
+        fp.Set(FileRoot(), MakeString("char/main/anim/%s/dircut/%s/%s_%s.milo", animinst, mGender, s1, s2));
+    }
+    else {
+        fp.Set(FileRoot(), MakeString("char/main/anim/%s/dircut/%s/%s.milo", animinst, mGender, s1));
+    }
+    return AddDircut(fp);
+}
+
+int BandCharacter::GetShotFlags(Symbol s){
+    BandCharDesc::CharInstrumentType ty = BandCharDesc::GetInstrumentFromSym(mInstrumentType);
+    if(ty >= BandCharDesc::kNumInstruments) return 0;
+    else {
+        DataArray* arr = BandWardrobe::GetGroupArray(ty);
+        for(int i = 0; i < arr->Size(); i++){
+            if(arr->Array(i)->Sym(0) == s){
+                return arr->Array(i)->Int(1);
+            }
+        }
+    }
+    return 0;
+}
+
+void BandCharacter::SetContext(Symbol s){
+    CharWeightable* w = Find<CharWeightable>("venue.weight", false);
+    if(w) w->SetWeight(s == "venue");
+    CharWeightable* cw = Find<CharWeightable>("closet.weight", false);
+    if(cw) cw->SetWeight(s == "closet");
+    mOverrideGroup[0] = 0;
+    int hideallint = 0;
+    if(s == "vignette"){
+        SetClipTypes(s, s);
+        hideallint = 0x2000;
+        mDriver->SetBlendWidth(1.0f);
+    }
+    else if(s == "closet"){
+        SetClipTypes("shell", "shell");
+        mDriver->SetBlendWidth(2.0f);
+    }
+    else if(s == "venue"){
+        ObjectDir* clipsdir = Find<ObjectDir>("body_clips", true);
+        mDriver->SetClips(clipsdir);
+        mDriver->SetBlendWidth(1.0f);
+        switch(BandCharDesc::GetInstrumentFromSym(mInstrumentType)){
+            case kGuitar:
+            case kBass:
+                SetClipTypes("guitar_all", "guitar_body");
+                break;
+            case kDrum:
+                SetClipTypes("drum_all", "drum_body");
+                break;
+            case kMic:
+                SetClipTypes("mic_body", "mic_body");
+                break;
+            case kKeyboard:
+                SetClipTypes("keyboard_all", "keyboard_body");
+                break;
+            default:
+                break;
+        }
+        HandleType(on_set_instrument_clip_types_msg);
+    }
+    else {
+        MILO_WARN("%s illegal context %s", PathName(this), s);
+    }
+    CharMeshHide::HideAll(unk5b0, hideallint);
+}
+
+void ReplaceSubdir(ObjectDir*, ObjectDir*);
+
+void BandCharacter::SetVisemes(){
+    ObjectDir* visemedir = Find<ObjectDir>("visemes", false);
+    if(visemedir){
+        ObjectDir* viseme = BandHeadShaper::GetViseme(mGender, false);
+        if(viseme) ReplaceSubdir(visemedir, viseme);
+        CharLipSyncDriver* lsdriver = Find<CharLipSyncDriver>("song.lipdrv", false);
+        if(lsdriver) lsdriver->SetClips(visemedir);
+        CharFaceServo* servo = Find<CharFaceServo>("face.faceservo", false);
+        if(servo) servo->SetClips(visemedir);
+    }
+    ObjectDir* vignettedir = Find<ObjectDir>("vignette_visemes", false);
+    if(vignettedir){
+        ObjectDir* viseme = BandHeadShaper::GetViseme(mGender, false);
+        if(viseme) ReplaceSubdir(vignettedir, viseme);
+        CharLipSyncDriver* lsdriver = Find<CharLipSyncDriver>("vignette.lipdrv", false);
+        if(lsdriver) lsdriver->SetClips(vignettedir);
+    }
+}
+
 void BandCharacter::SetGroupName(const char* name){ strcpy(mGroupName, name); }
+
+OutfitConfig* BandCharacter::GetOutfitConfig(const char* cc){
+    ObjectDir* pObjectDir;
+    if(strcmp(cc, "guitar.cfg") == 0 || strcmp(cc, "bass.cfg") == 0 || strcmp(cc, "drum.cfg") == 0 || strcmp(cc, "mic.cfg") == 0 || strcmp(cc, "keyboard.cfg") == 0){
+        pObjectDir = mInstDir;
+    }
+    else pObjectDir = mOutfitDir;
+    MILO_ASSERT(pObjectDir, 0x8AD);
+    return pObjectDir->Find<OutfitConfig>(cc, false);
+}
 
 void BandCharacter::TextureCompressed(int i){
     std::list<int>::iterator it;
@@ -264,7 +556,7 @@ void BandCharacter::TextureCompressed(int i){
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(BandCharacter)
-    HANDLE_EXPR(get_play_flags, unk450)
+    HANDLE_EXPR(get_play_flags, mPlayFlags)
     HANDLE(play_group, OnPlayGroup)
     HANDLE(group_override, OnGroupOverride)
     HANDLE(change_face_group, OnChangeFaceGroup)

@@ -6,6 +6,7 @@
 #include "char/CharDriverMidi.h"
 #include "char/CharEyes.h"
 #include "char/CharHair.h"
+#include "char/CharLipSyncDriver.h"
 #include "char/CharLookAt.h"
 #include "char/CharMeshHide.h"
 #include "char/FileMerger.h"
@@ -16,6 +17,7 @@
 #include "char/CharWeightSetter.h"
 #include "char/CharBoneOffset.h"
 #include "bandobj/BandCharDesc.h"
+#include "bandobj/BandPatchMesh.h"
 #include "bandobj/OutfitConfig.h"
 #include "bandobj/CharKeyHandMidi.h"
 #include "obj/Utl.h"
@@ -70,6 +72,7 @@ public:
     virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*);
     virtual Action FilterSubdir(ObjectDir* o1, ObjectDir*);
 
+    void DrawLodOrShadowMode(int, DrawMode);
     void AddObject(Hmx::Object*);
     void ClearGroup();
     void StartLoad(bool, bool, bool);
@@ -83,11 +86,23 @@ public:
     void SetInstrumentType(Symbol);
     void SetGroupName(const char*);
     void SetHeadLookatWeight(float);
-    void SetState(const char*, int, int, bool, bool);
+    CharClipDriver* SetState(const char*, int, int, bool, bool);
     bool InVignetteOrCloset() const;
     void RemoveDrawAndPoll(Character*);
     void SetClipTypes(Symbol, Symbol);
     void SetTempoGenreVenue(Symbol, Symbol, const char*);
+    void DeformHead(SyncMeshCB*);
+    void SyncOutfitConfig(OutfitConfig*);
+    void SetDeformation();
+    void PlayGroup(const char*, bool, int, float, TaskUnits, Symbol);
+    bool AllowOverride(const char*);
+    bool SetPrefab(BandCharDesc*);
+    bool AddDircut(Symbol, Symbol, int);
+    bool AddDircut(const FilePath&);
+    CharLipSyncDriver* GetLipSyncDriver();
+    int GetShotFlags(Symbol);
+    void SetVisemes();
+    OutfitConfig* GetOutfitConfig(const char*);
 
     static void MakeMRU(BandCharacter*, CharClip*);
     static Symbol NameToDrumVenue(const char*);
@@ -123,14 +138,14 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    int unk450; // 0x450
+    int mPlayFlags; // 0x450
     ObjPtr<CharDriver, ObjectDir> unk454; // 0x454
     CharDriver* mAddDriver; // 0x460
     CharDriver* mFaceDriver; // 0x464
     char mGroupName[64]; // 0x468
     char mFaceGroupName[64]; // 0x4a8
     char mOverrideGroup[64]; // 0x4e8
-    bool unk528; // 0x528
+    bool mForceNextGroup; // 0x528
     bool mForceVertical; // 0x529
     ObjPtr<Character, ObjectDir> mOutfitDir; // 0x52c
     ObjPtr<Character, ObjectDir> mInstDir; // 0x538

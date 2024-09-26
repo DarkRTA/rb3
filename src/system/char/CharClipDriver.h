@@ -12,6 +12,7 @@ public:
     void DeleteStack();
     CharClipDriver* Exit(bool);
     void ExecuteEvent(Symbol);
+    void SetBeatOffset(float, TaskUnits, Symbol);
     CharClipDriver* DeleteClip(Hmx::Object*);
 
     NEW_POOL_OVERLOAD(CharClipDriver)

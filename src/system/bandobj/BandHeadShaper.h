@@ -11,6 +11,10 @@ public:
     BandHeadShaper();
     ~BandHeadShaper();
 
+    bool Start(ObjectDir*, Symbol, RndMesh*, SyncMeshCB*, bool);
+
+    static ObjectDir* GetViseme(Symbol, bool);
+
     static int sNoseNum;
     static int sMouthNum;
     static int sEyeNum;
