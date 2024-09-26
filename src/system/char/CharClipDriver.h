@@ -14,6 +14,8 @@ public:
     void ExecuteEvent(Symbol);
     void SetBeatOffset(float, TaskUnits, Symbol);
     CharClipDriver* DeleteClip(Hmx::Object*);
+    CharClipDriver* Next() const { return mNext; }
+    CharClip* GetClip() const { return mClip; }
 
     NEW_POOL_OVERLOAD(CharClipDriver)
     DELETE_POOL_OVERLOAD(CharClipDriver)

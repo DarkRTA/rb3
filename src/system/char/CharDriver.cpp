@@ -140,6 +140,12 @@ CharClipDriver* CharDriver::PlayGroup(const char* cc, int i, float f1, float f2,
 
 void CharDriver::SetStarved(Symbol starved){ mStarvedHandler = starved; }
 
+CharClipDriver* CharDriver::FirstPlaying(){
+    CharClipDriver* d;
+    for(d = mFirst; d != 0 && !d->mBlendFrac; d = d->Next());
+    return d;
+}
+
 void CharDriver::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     change.push_back(mBones);
 }

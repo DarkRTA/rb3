@@ -8,6 +8,7 @@
 #include "char/CharInterest.h"
 #include "char/CharMeshCacheMgr.h"
 #include "math/Rand.h"
+#include "obj/Utl.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -295,6 +296,39 @@ const char* BandCharacter::FlagString(int flags){
     if(flags != 0 || buf[0] == 0) strcat(buf, MakeString("0x%x", flags));
     else buf[strlen(buf) - 1] = 0;
     return MakeString(buf);
+}
+
+void BandCharacter::UpdateOverlay(){
+    if(mOverlay->Showing()){
+        *mOverlay << Name() << "- " << mInstrumentType << ": " << mGroupName << " " << FlagString(mPlayFlags & 0x7F000);
+        CharClipDriver* firstplaying = mDriver->FirstPlaying();
+        if(firstplaying){
+            if(AddDriverClipDir()){
+                *mOverlay << " " << SafeName(firstplaying->GetClip());
+                CharClipDriver* firstaddplaying = mAddDriver->FirstPlaying();
+                if(firstaddplaying){
+                    const char* firstaddflagstr = FlagString(firstaddplaying->GetClip()->PlayFlags() & 0x7F000);
+                    *mOverlay << "/" << SafeName(firstaddplaying->GetClip()) << " " << firstaddflagstr << " ";
+                    *mOverlay << " " << CharClip::BeatAlignString(firstaddplaying->mPlayFlags);
+                    *mOverlay << MakeString(" %.2f %.2f", std::fmod(TheTaskMgr.Beat(), 1.0f), std::fmod(firstaddplaying->mBeat, 1.0f));
+                }
+                else {
+                    const char* firstaddflagstr = FlagString(firstplaying->GetClip()->PlayFlags() & 0x7F000);
+                    *mOverlay << " " << firstaddflagstr;
+                    const char* beatalign = CharClip::BeatAlignString(firstaddplaying->mPlayFlags);
+                    *mOverlay << " " << beatalign;
+                    *mOverlay << MakeString(" %.2f %.2f", std::fmod(TheTaskMgr.Beat(), 1.0f), std::fmod(firstplaying->mBeat, 1.0f));
+                }
+            }
+            else {
+                const char* firstaddflagstr = FlagString(firstplaying->GetClip()->PlayFlags() & 0x7F000);
+                *mOverlay << " " << SafeName(firstplaying->GetClip()) << " " << firstaddflagstr;
+                *mOverlay << " " << CharClip::BeatAlignString(firstplaying->mPlayFlags);
+                *mOverlay << MakeString(" %.2f %.2f", std::fmod(TheTaskMgr.Beat(), 1.0f), std::fmod(firstplaying->mBeat, 1.0f));
+            }
+        }
+        *mOverlay << "\n";
+    }
 }
 
 void BandCharacter::RemoveDrawAndPoll(Character* c){
