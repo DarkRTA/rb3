@@ -141,8 +141,8 @@ void CompareTokens(bool printSuccess) {
         currentTokens.emplace_back(token, yytext);
     }
 
-    auto header = []() {
-        static bool written = false;
+    bool written = false;
+    auto header = [&written]() {
         if (!written && !gCurrentPath.empty()) {
             std::cout << gCurrentPath.string() << ":" << std::endl;
             written = true;
