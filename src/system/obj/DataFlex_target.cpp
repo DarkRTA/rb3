@@ -4,6 +4,16 @@
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
 
+#if defined(DATAFLEX_TESTER) && defined(__cplusplus)
+#define DATAFLEX_NAMESPACE yytarget::
+#define DATAFLEX_NAMESPACE_BEGIN namespace yytarget {
+#define DATAFLEX_NAMESPACE_END }
+#else
+#define DATAFLEX_NAMESPACE
+#define DATAFLEX_NAMESPACE_BEGIN
+#define DATAFLEX_NAMESPACE_END
+#endif
+
 #include <stdio.h>
 
 
@@ -45,7 +55,7 @@
 #define YY_USE_PROTOS
 #endif
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 #ifdef YY_USE_CONST
 #define yyconst const
@@ -129,7 +139,7 @@ int yylex_destroy YY_PROTO((void* scanner));
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
 
 /* Special action meaning "start processing a new file". */
-#define YY_NEW_FILE yytarget::yyrestart( YY_G(yyin) YY_CALL_LAST_ARG )
+#define YY_NEW_FILE DATAFLEX_NAMESPACE yyrestart( YY_G(yyin) YY_CALL_LAST_ARG )
 
 #define YY_END_OF_BUFFER_CHAR 0
 
@@ -581,7 +591,7 @@ static char *yy_last_accepting_cpos;
 char *yytext;
 #endif
 
-}
+DATAFLEX_NAMESPACE_END
 
 #define INITIAL 0
 /*
@@ -598,7 +608,7 @@ char *yytext;
 
 #include "DataFlex.h"
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 #define YY_INPUT(buf, result, max_size) \
     (result) = (DataInput((buf), 1) != 0)
@@ -618,14 +628,14 @@ void yy_actually_restart() {
 
 #define ECHO TESTER_RETURN(kDataTokenNotRecognized) /* don't echo unmatched characters */
 
-}
+DATAFLEX_NAMESPACE_END
 
 /* TODO: '-' has a significant usage outside of SIGN */
 #define BLOCK_COMMENT 1
 
 /* BUG: /** won't start a block */
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 #ifndef YY_EXTRA_TYPE
 #define YY_EXTRA_TYPE void *
@@ -801,7 +811,7 @@ static int yy_top_state YY_PROTO(( YY_ONLY_ARG ));
 #define YY_NO_TOP_STATE 1
 #endif
 
-}
+DATAFLEX_NAMESPACE_END
 
 #ifdef YY_MALLOC_DECL
 YY_MALLOC_DECL
@@ -818,7 +828,7 @@ YY_MALLOC_DECL
 #endif
 #endif
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
@@ -1413,7 +1423,7 @@ YY_DECL_LAST_ARG
 		if ( number_to_move == YY_MORE_ADJ )
 			{
 			ret_val = EOB_ACT_END_OF_FILE;
-			yytarget::yyrestart( YY_G(yyin)  YY_CALL_LAST_ARG);
+			DATAFLEX_NAMESPACE yyrestart( YY_G(yyin)  YY_CALL_LAST_ARG);
 			}
 
 		else
@@ -1599,7 +1609,7 @@ static int input(YY_ONLY_ARG)
 					 */
 
 					/* Reset buffer status. */
-					yytarget::yyrestart( YY_G(yyin) YY_CALL_LAST_ARG);
+					DATAFLEX_NAMESPACE yyrestart( YY_G(yyin) YY_CALL_LAST_ARG);
 
 					/* fall through */
 
@@ -2347,4 +2357,4 @@ int main()
 	}
 #endif
 
-}
+DATAFLEX_NAMESPACE_END
