@@ -546,6 +546,46 @@ OutfitConfig* BandCharacter::GetOutfitConfig(const char* cc){
     return pObjectDir->Find<OutfitConfig>(cc, false);
 }
 
+RndTex* BandCharacter::GetPatchTex(Patch& patch){
+    static Message get_patch_tex("get_patch_tex", DataNode(0), DataNode(0));
+    get_patch_tex[0] = DataNode(patch.mTexture);
+    get_patch_tex[1] = DataNode(patch.mMeshName);
+    DataNode handled = HandleType(get_patch_tex);
+    if(handled.Type() != kDataUnhandled){
+        if(handled.Obj<RndTex>(0)){
+            goto ret;
+        }
+    }
+    if(!mPrefab.Null()){
+        return Find<RndTex>(MakeString("prefab_art%02d.tex", patch.mTexture), false);
+    }
+    else if(TheLoadMgr.EditMode()) return Find<RndTex>("patchtest.tex", false);
+    else return 0;
+ret:
+    return handled.Obj<RndTex>(0);
+}
+
+RndMesh* BandCharacter::GetPatchMesh(Patch& patch){
+    ObjectDir* dir = this;
+    if(patch.mCategory & 0x2E00){
+        dir = mInstDir;
+    }
+    return dir->Find<RndMesh>(patch.mMeshName.c_str(), false);
+}
+
+// void __thiscall BandCharacter::GetPatchMesh(BandCharacter *this,Patch *param_1)
+
+// {
+//   undefined4 uVar1;
+  
+//   if ((*(uint *)(param_1 + 0xc) & 0x2e00) != 0) {
+//     this = *(BandCharacter **)(this + 0x540);
+//   }
+//   uVar1 = ObjectDir::FindObject((ObjectDir *)this,*(char **)(param_1 + 0x18),false);
+//   __dynamic_cast(uVar1,0,&RndMesh::__RTTI,&Hmx::Object::__RTTI,0);
+//   return;
+// }
+
 void BandCharacter::TextureCompressed(int i){
     std::list<int>::iterator it;
     for(it = mCompressedTextureIDs.begin(); it != mCompressedTextureIDs.end() && *it != i; ++it);
