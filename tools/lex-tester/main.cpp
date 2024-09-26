@@ -15,13 +15,33 @@
 
 namespace fsys = std::filesystem;
 
+// not thread-local due to linker issues
 int gDataLine;
-fsys::path gCurrentPath;
-std::unique_ptr<std::istream> gCurrentText;
+
+thread_local fsys::path gCurrentPath;
+thread_local std::unique_ptr<std::istream> gCurrentText;
+
+thread_local std::unique_ptr<void, decltype(&yylex_destroy)> yy_current_globals(
+    []() {
+        void *ptr;
+        yylex_init(&ptr);
+        return ptr;
+    }(),
+    &yylex_destroy
+);
+
+thread_local std::unique_ptr<void, decltype(&yytarget::yylex_destroy)> yy_target_globals(
+    []() {
+        void *ptr;
+        yytarget::yylex_init(&ptr);
+        return ptr;
+    }(),
+    &yytarget::yylex_destroy
+);
 
 void DataFail(const char *msg) {
     std::string path = !gCurrentPath.empty() ? gCurrentPath.string() : "<file>";
-    std::cout << path << "(" << (gDataLine + 1) << "): " << msg << std::endl;
+    std::cout << std::format("{}({}): {}\n", path, gDataLine + 1, msg) << std::flush;
 }
 
 int DataInput(void *buffer, int size) {
@@ -104,16 +124,18 @@ void DumpTokens() {
     };
 
     gDataLine = 0;
-    yytarget::yy_actually_restart();
+    yytarget::yy_actually_restart(yy_target_globals.get());
 
-    while (DataToken token = (DataToken)yytarget::yylex()) {
+    while (DataToken token = (DataToken)yytarget::yylex(yy_target_globals.get())) {
         if (ignoreTokens.contains(token)) {
             continue;
         }
 
         std::cout << std::format(
-            "Token: {:35} Text: {}", TokenToString(token), yytarget::yytext
-        ) << std::endl;
+            "Token: {:35} Text: {}\n",
+            TokenToString(token),
+            yytarget::yyget_text(yy_target_globals.get())
+        ) << std::flush;
     }
 }
 
@@ -126,36 +148,28 @@ void CompareTokens(bool printSuccess) {
     };
 
     gDataLine = 0;
-    yytarget::yy_actually_restart();
+    yytarget::yy_actually_restart(yy_target_globals.get());
     std::vector<MatchedToken> targetTokens;
-    while (DataToken token = (DataToken)yytarget::yylex()) {
-        targetTokens.emplace_back(token, yytarget::yytext);
+    while (DataToken token = (DataToken)yytarget::yylex(yy_target_globals.get())) {
+        targetTokens.emplace_back(token, yytarget::yyget_text(yy_target_globals.get()));
     }
 
     gCurrentText->clear();
     gCurrentText->seekg(0);
     gDataLine = 0;
-    yy_actually_restart();
+    yy_actually_restart(yy_current_globals.get());
     std::vector<MatchedToken> currentTokens;
-    while (DataToken token = (DataToken)yylex()) {
-        currentTokens.emplace_back(token, yytext);
+    while (DataToken token = (DataToken)yylex(yy_current_globals.get())) {
+        currentTokens.emplace_back(token, yyget_text(yy_current_globals.get()));
     }
 
-    bool written = false;
-    auto header = [&written]() {
-        if (!written && !gCurrentPath.empty()) {
-            std::cout << gCurrentPath.string() << ":" << std::endl;
-            written = true;
-        }
-    };
-
     if (currentTokens.size() != targetTokens.size()) {
-        header();
         std::cout << std::format(
-            "Current token count ({}) mismatches target token count ({})!",
+            "{}: Current token count ({}) mismatches target token count ({})!\n",
+            gCurrentPath.string(),
             currentTokens.size(),
             targetTokens.size()
-        ) << std::endl;
+        ) << std::flush;
     }
 
     size_t count = std::min(targetTokens.size(), currentTokens.size());
@@ -164,19 +178,22 @@ void CompareTokens(bool printSuccess) {
         auto &current = currentTokens[i];
 
         if (current.token != target.token || current.text != target.text) {
-            header();
             // clang-format off
-            std::cout << std::format("Tokens differ at index {}!\n", i);
-            std::cout << std::format("- Current: token: {}, text: {}\n", TokenToString(current.token), current.text);
-            std::cout << std::format("- Target:  token: {}, text: {}\n", TokenToString(target.token), target.text);
+            std::cout << std::format(
+                "{}: Tokens differ at index {}!\n"
+                "- Current: token: {}, text: {}\n"
+                "- Target:  token: {}, text: {}\n",
+                gCurrentPath.string(), i,
+                TokenToString(current.token), current.text,
+                TokenToString(target.token), target.text
+            ) << std::flush;
             // clang-format on
-            std::cout << std::flush;
             return;
         }
     }
 
     if (printSuccess) {
-        std::cout << "Tokens are identical." << std::endl;
+        std::cout << "Tokens are identical.\n" << std::flush;
     }
 }
 

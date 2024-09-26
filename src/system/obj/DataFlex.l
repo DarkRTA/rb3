@@ -22,11 +22,6 @@
 #ifdef DATAFLEX_TESTER
 #define TESTER_TERMINATE() yyterminate()
 #define TESTER_RETURN(value) return value
-/* This version of Flex is even more stupid and doesn't reset the lexing state when restarting */
-void yy_actually_restart() {
-    BEGIN(INITIAL);
-    yyrestart(NULL);
-}
 #else
 #define TESTER_TERMINATE()
 #define TESTER_RETURN(value)
@@ -102,3 +97,11 @@ kDataUnhandled                                      { return kDataTokenUnhandled
 \[                                                  { return kDataTokenPropertyOpen; }
 \]                                                  { return kDataTokenPropertyClose; }
 %%
+
+#ifdef DATAFLEX_TESTER
+/* This version of Flex is even more stupid and doesn't reset the lexing state when restarting */
+void yy_actually_restart(YY_ONLY_ARG) {
+    BEGIN(INITIAL);
+    yyrestart(NULL YY_CALL_LAST_ARG);
+}
+#endif
