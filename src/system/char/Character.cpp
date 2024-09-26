@@ -90,7 +90,11 @@ void Character::Terminate(){}
 
 Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0), mTransGroup(this, 0), mDriver(0),
     mSelfShadow(0), mSpotCutout(0), mFloorShadow(1), mSphereBase(this, this), mBounding(), mPollState(kCharCreated), mTest(new CharacterTest(this)),
-    mFrozen(0), mDrawMode(kCharDrawAll), mTeleported(1), mInterestToForce(), unk1fc(this, 0), mDebugDrawInterestObjects(0) {
+    mFrozen(0), mDrawMode(kCharDrawAll), mTeleported(1), mInterestToForce(), unk1fc(this, 0)
+#ifdef MILO_DEBUG
+    , mDebugDrawInterestObjects(0)
+#endif
+{
 
 }
 
@@ -415,7 +419,7 @@ BEGIN_HANDLERS(Character)
     HANDLE_ACTION(force_interest, SetFocusInterest(_msg->Obj<CharInterest>(2), false))
     HANDLE_ACTION(force_interest_named, SetFocusInterest(_msg->Sym(2), 0))
     HANDLE_ACTION(enable_blink, if(_msg->Size() > 3) EnableBlinks(_msg->Int(2), _msg->Int(3)); else EnableBlinks(_msg->Int(2), false))
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     HANDLE(list_interest_objects, OnGetCurrentInterests)
     HANDLE_MEMBER_PTR(mTest)
 #endif
@@ -438,7 +442,9 @@ DataNode Character::OnPlayClip(DataArray* msg){
     else return DataNode(0);
 }
 
+#ifdef MILO_DEBUG
 void Character::SetDebugDrawInterestObjects(bool b){ mDebugDrawInterestObjects = b; }
+#endif
 
 DataNode Character::OnGetCurrentInterests(DataArray* da){
     int size = 0;

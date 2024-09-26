@@ -3,7 +3,9 @@
 #include "bandobj/BandWardrobe.h"
 #include "char/CharServoBone.h"
 #include "char/CharClipDriver.h"
+#include "char/CharClipGroup.h"
 #include "char/CharFaceServo.h"
+#include "char/CharInterest.h"
 #include "char/CharMeshCacheMgr.h"
 #include "math/Rand.h"
 #include "utl/Symbols.h"
@@ -112,7 +114,7 @@ void BandCharacter::Enter(){
             unk6c0 = handled.Obj<BandCharacter>(0);
             if(unk6c0){
                 unk6c0->unk6c0 = this;
-                CharClip* clip = unk6c0->mDriver->FirstPlayingClip();
+                CharClip* clip = unk6c0->GetDriver()->FirstPlayingClip();
                 if(clip) MakeMRU(this, clip);
             }
         }
@@ -122,9 +124,177 @@ void BandCharacter::Enter(){
 void BandCharacter::Exit(){ Character::Exit(); }
 
 bool BandCharacter::InVignetteOrCloset() const {
+    Symbol cliptype = mDriver->ClipType();
     bool ret = false;
-    if(mDriver->mClipType == shell || mDriver->mClipType == vignette) ret = true;
+    if(cliptype == shell || cliptype == vignette) ret = true;
     return ret;
+}
+
+CharClipDriver* BandCharacter::PlayMainClip(int i, bool b){
+    if(mGroupName[0] == 0 || !unk454) return 0;
+    else {
+        ObjectDir* clipdir = unk454->ClipDir();
+        if(!clipdir) return 0;
+        else {
+            CharClipGroup* grp = clipdir->Find<CharClipGroup>(mGroupName, false);
+            if(!grp){
+                MILO_NOTIFY_ONCE("%s could not find group %s in %s\n", PathName(this), mGroupName, PathName(clipdir));
+                return 0;
+            }
+            else {
+                bool invorc = InVignetteOrCloset();
+                int mask = mPlayFlags;
+                if(invorc){
+                    mask = mGender == "male" ? 0x20 : 0x40;
+                }
+                else if(streq(mGroupName, "realtime_idle")){
+                    mask = mask & 0xFFF80FFF | 0x1000;
+                }
+                CharClip* clp = 0;
+                if(mUseMicStandClips || mInstrumentType == keyboard && ((i & 0xF) != 2) && !b){
+                    CharClip* firstclip = unk454->FirstClip();
+                    if(firstclip){
+                        if(firstclip->InGroup(grp)){
+                            i = i & 0xfffffff0U | 4;
+                            clp = firstclip;
+                        }
+                    }
+                }
+                if(!clp) clp = grp->GetClip(mask);
+                if(!clp && invorc && mask == 0x40){
+                    MILO_NOTIFY_ONCE("%s no female vignette clip in %s, using male", PathName(this), PathName(grp));
+                    mask = 0x20;
+                    clp = grp->GetClip(0x20);
+                }
+                if(!clp){
+                    MILO_NOTIFY_ONCE("%s no clip w. flags %s in %s", PathName(this), FlagString(mask), PathName(grp));
+                    invorc = 0;
+                }
+                else {
+                    if(invorc) clp->SetFlags(clp->Flags() | 0xF);
+                    else {
+                        if(IsLoading()){
+                            int imask = (mask & 0xF) ? 2 : 1;
+                            CharDriver* drv = mDriver;
+                            if(unk454 == drv) drv = mAddDriver;
+                            CharClip* stillclip = drv->ClipDir()->Find<CharClip>("still", false);
+                            if(stillclip) drv->Play(stillclip, imask, -1.0f, 1e+30f, 0.0f);
+                            else PathName(drv);
+                        }
+                    }
+                    CharClipDriver* played = unk454->Play(clp, mask, -1.0f, 1e+30f, 0.0f);
+                    if((mask & 0xF) == 2) mTeleported = true;
+                    if(played){
+                        MakeMRU(unk6c0, clp);
+                    }
+                    return played;
+                }
+            }
+        }
+    }
+}
+
+void BandCharacter::MakeMRU(BandCharacter* bchar, CharClip* clip){
+    MILO_ASSERT(clip, 0x1A1);
+    if(bchar && bchar->GetDriver()->ClipDir()){
+        CharClip* clip2 = bchar->GetDriver()->ClipDir()->Find<CharClip>(clip->Name(), false);
+        if(clip2) clip2->MakeMRU();
+    }
+}
+
+void BandCharacter::PlayFaceClip(){
+    if(mFaceDriver){
+        CharClipGroup* grp = mFaceDriver->ClipDir()->Find<CharClipGroup>(mFaceGroupName, false);
+        if(!grp){
+            MILO_WARN("Could not find CharClipGroup %s in %s\n", mFaceGroupName, PathName(mDriver->ClipDir()));
+        }
+        else mFaceDriver->Play(grp->GetClip(), 4, -1.0f, 1e+30f, 0.0f);
+    }
+}
+
+bool BandCharacter::AllowOverride(const char* cc){
+    if(mInstrumentType == "mic"){
+        if(!streq(cc, "stand") && !streq(cc, "closeup") && !streq(cc, "extreme_closeup") && !streq(cc, "")){
+            return false;
+        }
+    }
+    return true;
+}
+
+void BandCharacter::CalcBoundingSphere(){
+    mBounding.Zero();
+    Sphere s48(Vector3(0,0,5.0f), 45.0f);
+    Multiply(s48, mSphereBase->WorldXfm(), s48);
+    mBounding.GrowToContain(s48);
+    if(mInstDir){
+        Sphere s58;
+        mInstDir->MakeWorldSphere(s58, false);
+        mBounding.GrowToContain(s58);
+    }
+    Transform tf38;
+    FastInvert(mSphereBase->WorldXfm(), tf38);
+    Multiply(mBounding, tf38, s48);
+    SetSphere(s48);
+}
+
+bool BandCharacter::ValidateInterest(CharInterest* ci, ObjectDir* dir){
+    if(!ci) return false;
+    if(dir){
+        if(dir == this || ci->Dir() == this){
+            if(ci->CategoryFlags() & 0x200) return false;
+        }
+        DataNode* prop = dir->Property("lookat_cameras", false);
+        if(prop && (ci->CategoryFlags() & 1) && !prop->Int(0)) return false;
+    }
+    return true;
+}
+
+bool BandCharacter::SetFocusInterest(CharInterest* ci, int i){
+    if(mEyes) return mEyes->SetFocusInterest(ci, i);
+    else return Character::SetFocusInterest(ci, i);
+}
+
+void BandCharacter::SetInterestFilterFlags(int i){
+    if(mEyes) mEyes->SetInterestFilterFlags(i);
+    else Character::SetInterestFilterFlags(i);
+}
+
+void BandCharacter::ClearInterestFilterFlags(){
+    if(mEyes) mEyes->ClearInterestFilterFlags();
+    else Character::ClearInterestFilterFlags();
+}
+
+DataNode BandCharacter::OnToggleInterestDebugOverlay(DataArray* da){
+    if(mEyes) mEyes->ToggleInterestsDebugOverlay();
+    return DataNode(0);
+}
+
+struct FlagPair {
+    int flag;
+    const char* str;
+};
+
+const char* BandCharacter::FlagString(int flags){
+    static FlagPair pairs[7] = {
+        {0x1000, "IR|"},
+        {0x2000, "I|"},
+        {0x4000, "II|"},
+        {0x8000, "PM|"},
+        {0x10000, "P|"},
+        {0x20000, "PI|"},
+        {0x40000, "PS|"},
+    };
+    char buf[256];
+    buf[0] = 0;
+    for(unsigned int i = 0; i < 7; i++){
+        if(flags & pairs[i].flag){
+            strcat(buf, pairs[i].str);
+            flags &= ~(pairs[i].flag);
+        }
+    }
+    if(flags != 0 || buf[0] == 0) strcat(buf, MakeString("0x%x", flags));
+    else buf[strlen(buf) - 1] = 0;
+    return MakeString(buf);
 }
 
 void BandCharacter::RemoveDrawAndPoll(Character* c){

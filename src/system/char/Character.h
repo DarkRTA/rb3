@@ -143,7 +143,9 @@ public:
     Symbol mInterestToForce; // 0x1f8
     ObjPtr<RndEnviron, ObjectDir> unk1fc; // 0x1fc
     int unk208; // 0x208
+#ifdef MILO_DEBUG
     bool mDebugDrawInterestObjects; // 0x20c
+#endif
 };
 
 #endif

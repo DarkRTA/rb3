@@ -97,8 +97,11 @@ public:
     void SetBeatAlignMode(int);
     void SetRelative(CharClip*);
     int AllocSize();
+    void MakeMRU();
+    bool InGroup(Hmx::Object*);
     void EvaluateChannel(void*, const void*, float);
     void LockAndDelete(CharClip**, int, int);
+    int Flags() const { return mFlags; }
     float StartBeat() const { return mBeatTrack.front().value; }
     float EndBeat() const { return mBeatTrack.back().value; }
     float LengthBeats() const { return EndBeat() - StartBeat(); }

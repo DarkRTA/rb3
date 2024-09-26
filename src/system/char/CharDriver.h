@@ -52,6 +52,7 @@ public:
     void SetClipType(Symbol);
     bool Starved();
     void SetStarved(Symbol);
+    Symbol ClipType() const { return mClipType; }
     ObjectDir* ClipDir() const { return mClips; }
     float SetBlendWidth(float w){ mBlendWidth = w; }
 

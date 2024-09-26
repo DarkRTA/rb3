@@ -107,6 +107,7 @@ public:
     void SetLipSync(CharLipSync*);
     void SetSongOwner(CharLipSyncDriver*);
     void PlayFaceClip();
+    CharClipDriver* PlayMainClip(int, bool);
 
     static void MakeMRU(BandCharacter*, CharClip*);
     static Symbol NameToDrumVenue(const char*);

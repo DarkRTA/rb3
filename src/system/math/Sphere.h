@@ -6,6 +6,7 @@
 class Sphere {
 public:
     Sphere(){ Zero(); }
+    Sphere(const Vector3& v, float f){ Set(v, f); }
     void Zero(){ radius = 0.0f; center.Zero(); }
     float GetRadius() const { return radius; }
 
