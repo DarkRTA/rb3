@@ -73,7 +73,7 @@ kDataUnhandled                                      { return kDataTokenUnhandled
 {HEX_NUMBER}                                        { return kDataTokenHex; }
 {INTEGER}                                           { return kDataTokenInt; }
 {FLOAT}                                             { return kDataTokenFloat; }
-{FLOAT_EXPONENT}                                    { return kDataTokenFloat; }
+{FLOAT_EXPONENT}                                    { TESTER_RETURN(kDataTokenFloatExp); return kDataTokenFloat; }
 
 #include_opt                                        { return kDataTokenIncludeOptional; }
 #include                                            { return kDataTokenInclude; }

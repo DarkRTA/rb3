@@ -1083,7 +1083,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-{ return kDataTokenFloat; }
+{ TESTER_RETURN(kDataTokenFloatExp); return kDataTokenFloat; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
