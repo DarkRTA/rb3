@@ -1,17 +1,174 @@
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/BandHeadShaper.h"
+#include "obj/DataFunc.h"
 #include "utl/Symbols.h"
 
+ObjectDir* gPrefabs;
+ObjectDir* gDeforms;
+Symbol gInstNames[6];
 BandCharDesc* gBandCharDescMe;
 
+ObjectDir* BandCharDesc::GetPrefabs(){ return gPrefabs; }
+
+BandCharDesc* BandCharDesc::FindPrefab(const char* cc, bool b){
+    return gPrefabs->Find<BandCharDesc>(cc, false);
+}
+
+void BandCharDesc::ReloadPrefabs(){
+    ObjectDir* old = gPrefabs;
+    const char* prefabpath = "";
+    gPrefabs = 0;
+    DataArray* cfg = SystemConfig("objects", "BandCharDesc");
+    if(cfg->FindData("prefabs_path", prefabpath, false) && prefabpath[0] != 0){
+        static int _x = MemFindHeap("char");
+        MemPushHeap(_x);
+        gPrefabs = DirLoader::LoadObjects(FilePath(prefabpath), 0, 0);
+        MemPopHeap();
+    }
+    if(gPrefabs && old){
+        MILO_ASSERT(gPrefabs != old, 0x49);
+        for(ObjDirItr<BandCharDesc> it(old, true); it != 0; ++it){
+            BandCharDesc* from = it;
+            BandCharDesc* to = FindPrefab(from->Name(), false); // this should be inlined
+            MILO_ASSERT(from != to, 0x4E);
+            const std::vector<ObjRef*>& refs = it->Refs();
+            while(!refs.empty()){
+                refs.back()->Replace(it, to);
+            }
+        }
+    }
+    delete old;
+}
+
+DECOMP_FORCEACTIVE(BandCharDesc, "from != to")
+
+CharClip* BandCharDesc::GetDeformClip(Symbol s){
+    if(!gDeforms) return 0;
+    else return gDeforms->Find<CharClip>(s.Str(), false);
+}
+
+DataNode OnBandCharDescPrefabs(DataArray*){
+    return DataNode(gPrefabs);
+}
+
+DataNode OnBandCharDescReloadPrefabs(DataArray*){
+    BandCharDesc::ReloadPrefabs();
+    return DataNode(0);
+}
+
+#pragma push
+#pragma pool_data off
 void BandCharDesc::Init(){
+    gInstNames[0] = "guitar";
+    gInstNames[1] = "bass";
+    gInstNames[2] = "drum";
+    gInstNames[3] = "mic";
+    gInstNames[4] = "keyboard";
+    gInstNames[5] = "none";
+    FilePathTracker tracker(FileRoot());
     Register();
+    DataRegisterFunc("bandchardesc_prefabs", OnBandCharDescPrefabs);
+    DataRegisterFunc("bandchardesc_reload_prefabs", OnBandCharDescReloadPrefabs);
+    ReloadPrefabs();
+    const char* dfpath = "";
+    DataArray* cfg = SystemConfig("objects", "BandCharDesc");
+    if(cfg->FindData("deform_path", dfpath, false)){
+        if(dfpath[0] != 0){
+            static int _x = MemFindHeap("char");
+            MemPushHeap(_x);
+            gDeforms = DirLoader::LoadObjects(FilePath(dfpath), 0, 0);
+            MemPopHeap();
+        }
+    }
+}
+#pragma pop
+
+Symbol BandCharDesc::GetInstrumentSym(int inst){
+    MILO_ASSERT(inst <= kNumInstruments && inst >= 0, 0xD7);
+    return gInstNames[inst];
+}
+
+BandCharDesc::CharInstrumentType BandCharDesc::GetInstrumentFromSym(Symbol sym){
+    for(int i = 0; i < 5; i++){
+        if(GetInstrumentSym(i) == sym) return (CharInstrumentType)i;
+    }
+    return kNumInstruments;
+}
+
+Symbol BandCharDesc::GetAnimInstrument(Symbol s){
+    if(s == "bass") return "guitar";
+    else return s;
+}
+
+void BandCharDesc::SaveFixed(FixedSizeSaveableStream& stream) const {
+    FixedSizeSaveable::SaveSymbolID(stream, mGender);
+    stream << mSkinColor;
+    stream << mHead;
+    stream << mOutfit;
+    stream << mHeight;
+    stream << mWeight;
+    stream << mMuscle;
+    stream << mInstruments;
+    FixedSizeSaveable::SaveStdFixed(stream, mPatches, 0x10);
+}
+
+int BandCharDesc::SaveSize(int i){
+    int size = Head::SaveSize(i);
+    size += Outfit::SaveSize(i);
+    size += InstrumentOutfit::SaveSize(i);
+    size += Patch::SaveSize(i) * 0x10 + 0x4;
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "BandCharDesc", size);
+    }
+    return size;
+}
+
+void BandCharDesc::LoadFixed(FixedSizeSaveableStream& stream, int i){
+    mPrefab = Symbol("");
+    FixedSizeSaveable::LoadSymbolFromID(stream, mGender);
+    stream >> mSkinColor;
+    stream >> mHead;
+    stream >> mOutfit;
+    stream >> mHeight;
+    stream >> mWeight;
+    stream >> mMuscle;
+    stream >> mInstruments;
+    FixedSizeSaveable::LoadStdFixed(stream, mPatches, 0x10, i);
 }
 
 BandCharDesc::OutfitPiece::OutfitPiece(){
     mName = Symbol();
     for(int i = 0; i < 3; i++) mColors[i] = 0;
     mSaveSizeMethod = &SaveSize;
+}
+
+bool BandCharDesc::OutfitPiece::operator==(const BandCharDesc::OutfitPiece& piece) const {
+    if(mName != piece.mName) return false;
+    if(mColors[0] != piece.mColors[0]) return false;
+    if(mColors[1] != piece.mColors[1]) return false;
+    if(mColors[2] != piece.mColors[2]) return false;
+    return true;
+}
+
+void BandCharDesc::OutfitPiece::SaveFixed(FixedSizeSaveableStream& stream) const {
+    FixedSizeSaveable::SaveFixedSymbol(stream, mName);
+    for(int i = 0; i < 3; i++){
+        stream << mColors[i];
+    }
+}
+
+int BandCharDesc::OutfitPiece::SaveSize(int i){
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "BandCharDesc::OutfitPiece", 0x3E);
+    }
+    return 0x3E;
+}
+
+void BandCharDesc::OutfitPiece::LoadFixed(FixedSizeSaveableStream& stream, int){
+    FixedSizeSaveable::LoadFixedSymbol(stream, mName);
+    for(int i = 0; i < 3; i++){
+        stream >> mColors[i];
+    }
 }
 
 BandCharDesc::Outfit::Outfit(){

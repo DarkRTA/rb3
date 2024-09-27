@@ -41,6 +41,8 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        bool operator==(const OutfitPiece&) const;
+
         static int SaveSize(int);
 
         Symbol mName; // 0x8
@@ -161,6 +163,8 @@ public:
     static Symbol GetInstrumentSym(int);
     static class CharClip* GetDeformClip(Symbol);
     static ObjectDir* GetPrefabs();
+    static BandCharDesc* FindPrefab(const char*, bool);
+    static void ReloadPrefabs();
     static int SaveSize(int);
     static void Init();
     static void Register(){
