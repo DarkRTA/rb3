@@ -50,14 +50,17 @@ public:
     TrackData(SubmixCollection*, const std::vector<int>&, bool, bool);
     ~TrackData();
     void Init(SubmixCollection*, bool);
+    void Miss(int, float);
     void SetMapping(const std::vector<int>&);
     void SetSucceeding(bool, int, float);
     void SetMapping(const char*);
+    void SetNonmutable(bool);
+    void SetUserGuid(const UserGuid&);
     void FillChannelList(std::list<int>&) const;
     void Reset();
 
     bool mSucceeding; // 0x0
-    std::vector<int> mSucceedingVec; // 0x4 - needs to be bool but errors out for some reason
+    std::vector<bool> mSucceedingVec; // 0x4
     std::vector<float> mLastGemTimes; // 0xc
     bool mMultiSlot; // 0x14
     int mLastPlayedGem; // 0x18
@@ -115,7 +118,7 @@ public:
     virtual void FilteredWhammyBar(float){}
     virtual void SwingAtHopo(int, float, int){}
     virtual void Hopo(int, float, int){}
-    virtual void SetCurrentPhrase(int, const PhraseInfo&){}
+    virtual void SetCurrentPhrase(int, const PhraseInfo&){ return;}
     virtual void NoCurrentPhrase(int){}
     virtual void FillReset(){}
     virtual void FillComplete(int, int){}
@@ -124,17 +127,27 @@ public:
     void SetupChannels(SongInfo*);
     void SetupTracks(SongInfo*, PlayerTrackConfigList*);
     bool IsLoaded();
+    void FadeOutDrums(int);
     void ResetTrack(int, bool);
     void ResetTrack(AudioTrackNum, bool);
     void SetAutoOn(AudioTrackNum, int);
     void SetupTrackChannel(int, bool, float, bool, bool);
     void SetupBackgroundChannel(int, bool, float, bool, bool);
+    void SetBackgroundVolume(float);
+    void SetForegroundVolume(float);
+    void SetMuckWithPitch(bool);
+    void SetMuteMaster(bool);
+    void SetPracticeMode(bool);
+    void SetStereo(bool);
+    void SetTrackFader(AudioTrackNum, int, Symbol, float, float);
+    void ToggleMuteMaster();
     void ConfigureVocalFaders(int, bool);
     bool Fail();
     bool IsFinished() const;
     void Play();
     void Jump(float);
     void UnmuteAllTracks();
+    void UpdateMasterFader();
     void ResetSlipTrack(AudioTrackNum, bool);
     void SetTimeOffset(float);
 

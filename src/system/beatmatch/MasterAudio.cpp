@@ -8,13 +8,24 @@ namespace {
     int kMaxSlots = 8;
 }
 
-MasterAudio::MasterAudio(DataArray* da, int num_players, BeatMaster* master, SongData* data) : mNumPlayers(num_players), mSongStream(0), mSongData(data), mStreamEnabled(0),
-    mMasterFader(Hmx::Object::New<Fader>()), mForegroundFader(Hmx::Object::New<Fader>()), mMultiplayerFader(Hmx::Object::New<Fader>()),
-    mBackgroundFader(Hmx::Object::New<Fader>()), mBackgroundAttenFader(Hmx::Object::New<Fader>()), mCommonFader(Hmx::Object::New<Fader>()),
-    mRemoteFader(Hmx::Object::New<Fader>()), mPracticeFader(Hmx::Object::New<Fader>()), mVocalDuckFader(Hmx::Object::New<Fader>()),
-    mVocalCueFader(Hmx::Object::New<Fader>()), mVocalFailFader(Hmx::Object::New<Fader>()), mCrowdFader(Hmx::Object::New<Fader>()), mBaseCrowdFader(Hmx::Object::New<Fader>()),
-    mPlayingInCommon(0), mMuteVolume(-96.0f), mVocalMuteVolume(-96.0f), mUnplayedVolume(-96.0f), mCueVolume(-12.0f), mPracticeVolume(0), mRemoteVolume(0), mMuteMaster(0), mMuckWithPitch(1),
-    mPitchMucker(0), mWhammyEnabled(1), mTimeOffset(0) {
+MasterAudio::MasterAudio(
+    DataArray *da, int num_players, BeatMaster *master, SongData *data
+)
+    : mNumPlayers(num_players), mSongStream(0), mSongData(data), mStreamEnabled(0),
+      mMasterFader(Hmx::Object::New<Fader>()),
+      mForegroundFader(Hmx::Object::New<Fader>()),
+      mMultiplayerFader(Hmx::Object::New<Fader>()),
+      mBackgroundFader(Hmx::Object::New<Fader>()),
+      mBackgroundAttenFader(Hmx::Object::New<Fader>()),
+      mCommonFader(Hmx::Object::New<Fader>()), mRemoteFader(Hmx::Object::New<Fader>()),
+      mPracticeFader(Hmx::Object::New<Fader>()),
+      mVocalDuckFader(Hmx::Object::New<Fader>()),
+      mVocalCueFader(Hmx::Object::New<Fader>()),
+      mVocalFailFader(Hmx::Object::New<Fader>()), mCrowdFader(Hmx::Object::New<Fader>()),
+      mBaseCrowdFader(Hmx::Object::New<Fader>()), mPlayingInCommon(0),
+      mMuteVolume(-96.0f), mVocalMuteVolume(-96.0f), mUnplayedVolume(-96.0f),
+      mCueVolume(-12.0f), mPracticeVolume(0), mRemoteVolume(0), mMuteMaster(0),
+      mMuckWithPitch(1), mPitchMucker(0), mWhammyEnabled(1), mTimeOffset(0) {
     mMasterFader->SetName("MasterFader", ObjectDir::Main());
     mForegroundFader->SetName("ForegroundFader", ObjectDir::Main());
     mMultiplayerFader->SetName("MultiplayerFader", ObjectDir::Main());
@@ -37,16 +48,21 @@ MasterAudio::MasterAudio(DataArray* da, int num_players, BeatMaster* master, Son
 
     mMultiplayerCommonVolume = -da->FindFloat("multiplayer_common_attenuation");
     mBackgroundVolume = -da->FindFloat("background_attenuation");
-    if(DataVariable("no_background_atten").Int(0)) mBackgroundVolume = 0;
+    if (DataVariable("no_background_atten").Int(0))
+        mBackgroundVolume = 0;
 
     float practice;
-    if(da->FindData("practice_attenuation", practice, false)) mPracticeVolume = -practice;
+    if (da->FindData("practice_attenuation", practice, false))
+        mPracticeVolume = -practice;
     float unplayed;
-    if(da->FindData("unplayed_attenuation", unplayed, false)) mUnplayedVolume = -unplayed;
+    if (da->FindData("unplayed_attenuation", unplayed, false))
+        mUnplayedVolume = -unplayed;
     float cue;
-    if(da->FindData("cue_attenuation", cue, false)) mCueVolume = -cue;
+    if (da->FindData("cue_attenuation", cue, false))
+        mCueVolume = -cue;
     float remote;
-    if(da->FindData("remote_attenuation", remote, false)) mRemoteVolume = -remote;
+    if (da->FindData("remote_attenuation", remote, false))
+        mRemoteVolume = -remote;
 
     da->FindData("mute_volume", mMuteVolume, false);
     mPassVolume = mMuteVolume;
@@ -60,15 +76,19 @@ MasterAudio::MasterAudio(DataArray* da, int num_players, BeatMaster* master, Son
     mPitchMucker = new PitchMucker();
 }
 
-MasterAudio::~MasterAudio(){
-    for(std::vector<ChannelData*>::iterator it = mChannelData.begin(); it != mChannelData.end(); it++){
+MasterAudio::~MasterAudio() {
+    for (std::vector<ChannelData *>::iterator it = mChannelData.begin();
+         it != mChannelData.end();
+         it++) {
         RELEASE(*it);
     }
-    for(std::vector<TrackData*>::iterator it = mTrackData.mTrackData.begin(); it != mTrackData.mTrackData.end(); it++){
+    for (std::vector<TrackData *>::iterator it = mTrackData.mTrackData.begin();
+         it != mTrackData.mTrackData.end();
+         it++) {
         RELEASE(*it);
     }
-    if(mSongStream){
-        for(int i = 0; i < 2; i++){
+    if (mSongStream) {
+        for (int i = 0; i < 2; i++) {
             mSongStream->SetFX(i, false);
         }
     }
@@ -91,7 +111,7 @@ MasterAudio::~MasterAudio(){
     RELEASE(mPitchMucker);
 }
 
-void MasterAudio::Load(SongInfo* info, PlayerTrackConfigList* player_track_config_list){
+void MasterAudio::Load(SongInfo *info, PlayerTrackConfigList *player_track_config_list) {
     MILO_ASSERT(mSongData, 0x186);
     MILO_ASSERT(player_track_config_list, 0x187);
     mSongStream = TheSynth->NewStream(info->GetBaseFileName(), 0, 0, false);
@@ -106,54 +126,56 @@ void MasterAudio::Load(SongInfo* info, PlayerTrackConfigList* player_track_confi
 
     SetupChannels(info);
     SetupTracks(info, player_track_config_list);
-    if(player_track_config_list->UseVocalHarmony()){
+    if (player_track_config_list->UseVocalHarmony()) {
         count = info->GetNumVocalParts();
     }
 
-    for(int i = 1; i < count; i++){
+    for (int i = 1; i < count; i++) {
         mTrackData.mTrackData.push_back(new TrackData());
     }
 }
 
-bool MasterAudio::IsLoaded(){
+bool MasterAudio::IsLoaded() {
     return mSongStream->IsReady();
 }
 
-void MasterAudio::SetupChannels(SongInfo* info){
+void MasterAudio::SetupChannels(SongInfo *info) {
     info->GetTracks();
-    const std::vector<float>& pans = info->GetPans();
-    const std::vector<float>& vols = info->GetVols();
-    const std::vector<int>& cores = info->GetCores();
-    const std::vector<int>& crowd_channels = info->GetCrowdChannels();
+    const std::vector<float> &pans = info->GetPans();
+    const std::vector<float> &vols = info->GetVols();
+    const std::vector<int> &cores = info->GetCores();
+    const std::vector<int> &crowd_channels = info->GetCrowdChannels();
     MILO_ASSERT(pans.size() == vols.size(), 0x1BE);
     MILO_ASSERT(cores.size() == vols.size(), 0x1BF);
-    
-    int i9 = 0;
-    for(int i = 0; i < vols.size(); i++){
-        if(!info->IsPlayTrackChannel(i)){
 
+    int i9 = 0;
+    for (int i = 0; i < vols.size(); i++) {
+        if (!info->IsPlayTrackChannel(i)) {
         }
         float voltouse = vols[i];
-        if(voltouse < -40.0f){
+        if (voltouse < -40.0f) {
             i9++;
-            if(3 < i9) voltouse = -40.0f;
+            if (3 < i9)
+                voltouse = -40.0f;
         }
-        mChannelData.push_back(new ChannelData(mSongStream, i, voltouse, (float)pans[i], (FXCore)cores[i]));
+        mChannelData.push_back(
+            new ChannelData(mSongStream, i, voltouse, (float)pans[i], (FXCore)cores[i])
+        );
     }
 }
 
-void MasterAudio::ResetTrack(int i, bool b){
+void MasterAudio::ResetTrack(int i, bool b) {
     ResetTrack(mSongData->GetAudioTrackNum(i), b);
 }
 
-void MasterAudio::ResetTrack(AudioTrackNum num, bool b){
+void MasterAudio::ResetTrack(AudioTrackNum num, bool b) {
     std::list<int> iList;
     mTrackData.mTrackData[num.mVal]->FillChannelList(iList);
     mTrackData.mTrackData[num.mVal]->Reset();
     SetAutoOn(num, 0);
-    for(std::list<int>::iterator it = iList.begin(); it != iList.end(); it++){
+    for (std::list<int>::iterator it = iList.begin(); it != iList.end(); it++) {
         int idx = *it;
-        FaderGroup* grp = mSongStream->ChannelFaders(idx);
+        FaderGroup *grp = mSongStream->ChannelFaders(idx);
         grp->Remove(mBackgroundAttenFader);
         grp->Remove(mBackgroundFader);
         grp->Remove(mCommonFader);
@@ -165,51 +187,132 @@ void MasterAudio::ResetTrack(AudioTrackNum num, bool b){
 
         bool b3 = false;
         bool b1 = mTrackData.mTrackData[num.mVal]->mVocals;
-        if(b1 && b) b3 = true;
+        if (b1 && b)
+            b3 = true;
         float f2 = b3 ? mCueVolume : 0;
-        if(b) SetupTrackChannel(idx, b1, f2, b3, false);
-        else SetupBackgroundChannel(idx, b1, f2, b3, false);
+        if (b)
+            SetupTrackChannel(idx, b1, f2, b3, false);
+        else
+            SetupBackgroundChannel(idx, b1, f2, b3, false);
     }
 }
 
-void MasterAudio::ConfigureVocalFaders(int i, bool b){
-    FaderGroup* grp = mSongStream->ChannelFaders(i);
-    if(b) grp->Add(mVocalDuckFader);
-    else grp->Add(mVocalFailFader);
+void MasterAudio::ConfigureVocalFaders(int i, bool b) {
+    FaderGroup *grp = mSongStream->ChannelFaders(i);
+    if (b)
+        grp->Add(mVocalDuckFader);
+    else
+        grp->Add(mVocalFailFader);
 }
 
-bool MasterAudio::Fail(){
-    if(mSongStream) return mSongStream->Fail();
-    else return true;
+void MasterAudio::FadeOutDrums(int trackNum) {
+    // this is very close to being right not quite, can't figure out what is wrong
+    /*    AudioTrackNum audioTrackNum = mSongData->GetAudioTrackNum(trackNum);
+        mTrackData.mTrackData[audioTrackNum.mVal]->mInFill = 1;
+        Symbol drum_fill = Symbol("drum_fill");
+        SetTrackFader(audioTrackNum, -1, drum_fill, -96.0f, 1000.0f);
+        */
 }
 
-bool MasterAudio::IsReady(){
+bool MasterAudio::Fail() {
+    if (mSongStream)
+        return mSongStream->Fail();
+    else
+        return true;
+}
+
+float MasterAudio::GetTime() const {
+    float time;
+    if (mSongStream != 0) {
+        time = mSongStream->GetTime();
+    } else {
+        time = 0.0f;
+    }
+    return time + mTimeOffset;
+}
+
+bool MasterAudio::IsReady() {
     bool b = false;
-    if(mSongStream && mSongStream->IsReady()) b = true;
+    if (mSongStream && mSongStream->IsReady())
+        b = true;
     mStreamEnabled = b;
     return b;
 }
 
 bool MasterAudio::IsFinished() const {
     bool b = false;
-    if(mSongStream && mSongStream->IsFinished()) b = true;
+    if (mSongStream && mSongStream->IsFinished())
+        b = true;
     return b;
 }
 
-void MasterAudio::Play(){
+void MasterAudio::SetBackgroundVolume(float volume) {
+    mBackgroundFader->SetVal(volume);
+}
+
+void MasterAudio::SetForegroundVolume(float volume) {
+    mForegroundFader->SetVal(volume);
+}
+
+void MasterAudio::SetMasterVolume(float volume) {
+    mMasterVolume = volume;
+    UpdateMasterFader();
+}
+
+void MasterAudio::SetMuckWithPitch(bool enabled) {
+    mMuckWithPitch = enabled;
+}
+
+void MasterAudio::SetMuteMaster(bool muted) {
+    mMuteMaster = muted;
+    UpdateMasterFader();
+}
+
+void MasterAudio::SetPracticeMode(bool enabled) {
+    mPracticeFader->SetVal(enabled ? mPracticeVolume : 0.0f);
+}
+
+void MasterAudio::SetStereo(bool b) {
+    for (int i = 0; i < mChannelData.size(); i++) {
+        mChannelData[i]->SetStereo(b);
+    }
+}
+
+void MasterAudio::SetTimeOffset(float offset) {
+    mTimeOffset = offset;
+}
+
+void MasterAudio::ToggleMuteMaster() {
+    bool b = mMuteMaster;
+    SetMuteMaster(!b);
+    return;
+}
+
+void MasterAudio::UpdateMasterFader() {
+    float masterVolume;
+    if (mMuteMaster != 0) {
+        masterVolume = -96.0f;
+    } else {
+        masterVolume = mMasterVolume;
+    }
+    mMasterFader->SetVal(masterVolume);
+    return;
+}
+
+void MasterAudio::Play() {
     MILO_ASSERT(mSongStream, 0x334);
     mSongStream->Play();
-    for(int i = 0; i < mChannelData.size(); i++){
+    for (int i = 0; i < mChannelData.size(); i++) {
         mChannelData[i]->ForceOn();
     }
 }
 
-void MasterAudio::Jump(float f){
+void MasterAudio::Jump(float f) {
     mSongStream->Stop();
     mStreamEnabled = false;
     mSongStream->Resync(f);
     UnmuteAllTracks();
-    for(int i = 0; i < mTrackData.mTrackData.size(); i++){
+    for (int i = 0; i < mTrackData.mTrackData.size(); i++) {
         mTrackData.mTrackData[i]->Reset();
         AudioTrackNum num;
         num.mVal = i;
@@ -217,86 +320,123 @@ void MasterAudio::Jump(float f){
     }
 }
 
-ChannelData::ChannelData(Stream* stream, int chan, float vol, float pan, FXCore core) : mStream(stream), mChannel(chan), mSlipTrack(0), mIsTrackChannel(0),
-    mPan(pan), mOriginalPan(pan), mCore(core), mOverallSpeed(1.0f), mSpeed(1.0f), mDirty(0), mVolume(vol) {
+ChannelData::ChannelData(Stream *stream, int chan, float vol, float pan, FXCore core)
+    : mStream(stream), mChannel(chan), mSlipTrack(0), mIsTrackChannel(0), mPan(pan),
+      mOriginalPan(pan), mCore(core), mOverallSpeed(1.0f), mSpeed(1.0f), mDirty(0),
+      mVolume(vol) {
     mBaseFader = stream->ChannelFaders(chan)->AddLocal("base");
     mBaseFader->SetVal(vol);
     stream->SetPan(chan, mPan);
     stream->SetFXCore(chan, mCore);
 }
 
-ChannelData::~ChannelData(){
+ChannelData::~ChannelData() {
     RELEASE(mSlipTrack);
 }
 
-void ChannelData::SetSlippable(bool b){
-    if(b){
-        if(!mSlipTrack){
+void ChannelData::SetSlippable(bool b) {
+    if (b) {
+        if (!mSlipTrack) {
             mSlipTrack = new SlipTrack(mStream, mChannel);
         }
-    }
-    else if(mSlipTrack) RELEASE(mSlipTrack);
+    } else if (mSlipTrack)
+        RELEASE(mSlipTrack);
 }
 
-void ChannelData::ForceOn(){
-    if(mSlipTrack) mSlipTrack->ForceOn();
+void ChannelData::ForceOn() {
+    if (mSlipTrack)
+        mSlipTrack->ForceOn();
 }
 
-void ChannelData::Reset(bool b){
-    if(mOverallSpeed != 1.0f || mDirty || b){
+void ChannelData::Reset(bool b) {
+    if (mOverallSpeed != 1.0f || mDirty || b) {
         mSlipTrack->SetOffset(0);
         SetSlipTrackSpeed(1.0f);
         mDirty = false;
     }
 }
 
-void ChannelData::Poll(){
-    if(mSlipTrack) mSlipTrack->Poll();
+void ChannelData::Poll() {
+    if (mSlipTrack)
+        mSlipTrack->Poll();
 }
 
-void ChannelData::SetSlipTrackSpeed(float f){
-    if(mSlipTrack){
-        if(mSlipTrack->mMaxSlip * 0.9f < __fabs(mSlipTrack->GetCurrentOffset())){
-            f = 1.0f;
+void ChannelData::SetSlipTrackSpeed(float trackSpeed) {
+    if (mSlipTrack) {
+        if (mSlipTrack->mMaxSlip * 0.9f < __fabs(mSlipTrack->GetCurrentOffset())) {
+            trackSpeed = 1.0f;
         }
-        if(mSpeed != f || mOverallSpeed != 1.0f){
-            mSlipTrack->SetSpeed(f * mOverallSpeed);
-            mSpeed = f;
+        if (mSpeed != trackSpeed || mOverallSpeed != 1.0f) {
+            mSlipTrack->SetSpeed(trackSpeed * mOverallSpeed);
+            mSpeed = trackSpeed;
             mDirty = true;
         }
     }
 }
 
-void ChannelData::SetFX(FXCore core, bool b){
-    if(mCore == core){
+void ChannelData::SetFX(FXCore core, bool b) {
+    if (mCore == core) {
         mStream->SetFX(mChannel, b);
     }
 }
 
-void ChannelData::SetStereo(bool b){
-    mStream->SetPan(mChannel, b ? mPan : 0);
+void ChannelData::SetStereo(bool enabled) {
+    mStream->SetPan(mChannel, enabled ? mPan : 0);
 }
 
-void ChannelData::SetFaderVal(float val){
+void ChannelData::SetFaderVal(float val) {
     mBaseFader->SetVal(val);
 }
 
-void ChannelData::SetPan(float pan){
+void ChannelData::SetPan(float pan) {
     mPan = pan;
     mStream->SetPan(mChannel, mPan);
 }
 
-TrackData::TrackData(){
+TrackData::TrackData() {
     Init(0, false);
 }
 
-TrackData::TrackData(SubmixCollection* submixes, const std::vector<int>& vec, bool b1, bool b2){
+TrackData::TrackData(
+    SubmixCollection *submixes, const std::vector<int> &vec, bool b1, bool b2
+) {
     Init(submixes, b1);
     SetMapping(vec);
     mVocals = b2;
 }
 
-void TrackData::Init(SubmixCollection* submixes, bool b){
+void TrackData::Miss(int i, float f) {
+    SetSucceeding(false, i, f);
+}
+
+void TrackData::SetNonmutable(bool nonmutable) {
+    mNonmutable = nonmutable;
+}
+
+void TrackData::SetSucceeding(bool succeeding, int gemId, float lastGemTime) {
+    if (mMultiSlot != 0) {
+        if (gemId == -1) {
+            int var = 0;
+            for (int j = 0; j < mSucceedingVec.size(); j++) {
+                mSucceedingVec[j] = succeeding;
+                mLastGemTimes[var] = lastGemTime;
+                var++;
+            }
+            return;
+        }
+        mSucceedingVec[gemId] = succeeding;
+        mLastGemTimes[gemId] = lastGemTime;
+    } else {
+        mSucceeding = succeeding;
+        return;
+    }
+}
+
+void TrackData::SetUserGuid(const UserGuid &guid) {
+    mUserGuid = guid;
+}
+
+void TrackData::Init(SubmixCollection *submixes, bool b) {
     mSubmixes = submixes;
     mMultiSlot = false;
     mSucceeding = false;
