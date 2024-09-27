@@ -1,11 +1,14 @@
+#include <atomic>
 #include <array>
 #include <cassert>
 #include <chrono>
 #include <concepts>
 #include <filesystem>
+#include <functional>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <set>
 #include <string>
 #include <sstream>
@@ -170,7 +173,7 @@ void DumpTokens() {
     }
 }
 
-void CompareTokens(bool printSuccess) {
+bool CompareTokens(bool printSuccess) {
     struct MatchedToken {
         DataToken token;
         std::string text;
@@ -194,6 +197,7 @@ void CompareTokens(bool printSuccess) {
         currentTokens.emplace_back(token, yyget_text(yy_current_globals.get()));
     }
 
+    bool success = true;
     if (currentTokens.size() != targetTokens.size()) {
         std::cout << std::format(
             "{}: Current token count ({}) mismatches target token count ({})!\n",
@@ -201,6 +205,7 @@ void CompareTokens(bool printSuccess) {
             currentTokens.size(),
             targetTokens.size()
         ) << std::flush;
+        success = false;
     }
 
     size_t count = std::min(targetTokens.size(), currentTokens.size());
@@ -219,13 +224,15 @@ void CompareTokens(bool printSuccess) {
                 TokenToString(target.token), target.text
             ) << std::flush;
             // clang-format on
-            return;
+            success = false;
         }
     }
 
-    if (printSuccess) {
+    if (success && printSuccess) {
         std::cout << "Tokens are identical.\n" << std::flush;
     }
+
+    return success;
 }
 
 void PromptTokenMode() {
@@ -318,6 +325,42 @@ void ReadDirectory() {
     }
 }
 
+static void Parallelize(
+    std::function<void(int threadCount, int threadIndex)> workProc,
+    std::function<void()> monitorProc
+) {
+    unsigned int cores = std::thread::hardware_concurrency();
+    if (cores > 1) {
+        // Leave at least one core available to avoid tanking the OS completely
+        cores--;
+    }
+
+    auto startTime = std::chrono::steady_clock::now();
+
+    std::vector<std::thread> threads;
+    for (int i = 0; i < cores; i++) {
+        threads.emplace_back(workProc, cores, i);
+    }
+
+    bool finished = false;
+    std::thread monitor([&finished, &monitorProc] {
+        while (!finished) {
+            monitorProc();
+        }
+    });
+
+    for (auto &thread : threads) {
+        thread.join();
+    }
+
+    finished = true;
+    monitor.join();
+
+    auto endTime = std::chrono::steady_clock::now();
+    std::cout << std::format("Time elapsed: {0:%j}:{0:%T}\n", endTime - startTime)
+              << std::flush;
+}
+
 const static std::vector<char> recurseChars = []() {
     // clang-format off
     std::vector<char> chars = { '\t', '\n', '\r' };
@@ -348,38 +391,185 @@ static void RecurseImpl(int depth, const std::string &str) {
 }
 
 void Recurse(int depth) {
-    auto threadProc = [depth](size_t offset, size_t count) {
-        size_t end = std::min(offset + count, recurseChars.size());
-        for (size_t i = offset; i < end; i++) {
-            RecurseImpl(depth, std::string(1, recurseChars[i]));
+    Parallelize(
+        [depth](int threadCount, int threadIndex) {
+            size_t count = std::ceil((float)recurseChars.size() / threadCount);
+            size_t start = threadIndex * count;
+            size_t end = std::min(start + count, recurseChars.size());
+
+            for (size_t i = start; i < end; i++) {
+                RecurseImpl(depth, std::string(1, recurseChars[i]));
+            }
+        },
+        [] { std::this_thread::sleep_for(std::chrono::seconds(1)); }
+    );
+}
+
+// clang-format off
+const std::vector<std::string> fragments = {
+    "0x12345678",
+    "0x", "x1",
+
+    "123", "+123", "-123",
+
+    "1.0", "+2.0", "-3.0",
+    "1.",  "+2.",  "-3.",
+    ".1",  "+.2",  "-.3",
+    ".",   "+.",   "-.",
+
+    "1.0E1",  "+2.0E1",  "-3.0E1",      "1.0-E1",  "+2.0-E1",  "-3.0-E1",
+    "1.0E+1", "+2.0E+1", "-3.0E+1",     "1.0-E+1", "+2.0-E+1", "-3.0-E+1",
+    "1.0E-1", "+2.0E-1", "-3.0E-1",     "1.0-E-1", "+2.0-E-1", "-3.0-E-1",
+
+    "1.E1",   "+2.E1",   "-3.E1",       "1.-E1",   "+2.-E1",   "-3.-E1",
+    "1.E+1",  "+2.E+1",  "-3.E+1",      "1.-E+1",  "+2.-E+1",  "-3.-E+1",
+    "1.E-1",  "+2.E-1",  "-3.E-1",      "1.-E-1",  "+2.-E-1",  "-3.-E-1",
+
+    ".1E1",   "+.2E1",   "-.3E1",       ".1-E1",   "+.2-E1",   "-.3-E1",
+    ".1E+1",  "+.2E+1",  "-.3E+1",      ".1-E+1",  "+.2-E+1",  "-.3-E+1",
+    ".1E-1",  "+.2E-1",  "-.3E-1",      ".1-E-1",  "+.2-E-1",  "-.3-E-1",
+
+    ".E1",    "+.E1",    "-.E1",        ".-E1",    "+.-E1",    "-.-E1",
+    ".E+1",   "+.E+1",   "-.E+1",       ".-E+1",   "+.-E+1",   "-.-E+1",
+    ".E-1",   "+.E-1",   "-.E-1",       ".-E-1",   "+.-E-1",   "-.-E-1",
+
+    "\"asdf\"", "\"1234\"",
+    "\'asdf\'", "\'1234\'",
+
+    "$variable",
+    "$index",
+    "$count",
+    "$name",
+    "$id",
+
+    "symbol",
+    "../file.dta",
+    "kDefine",
+
+    "kDataUnhandled",
+
+    "(array 1 2)",
+    "{+ 1 2}",
+    "[property]",
+
+    "#include_opt",
+    "#include",
+    "#merge",
+    "#ifdef",
+    "#undef",
+    "#endif",
+    "#ifndef",
+    "#define",
+    "#else",
+    "#autorun",
+    "#endif",
+
+    "; line comment\n",
+    ";\n",
+    "; ;\n",
+    ";\t;\n",
+    ";;;;;;;;\n",
+    ";nospace\n",
+    "asdf;jkl",
+
+    "/* block comment */",
+    "/*asdf*/",
+    "/*jkl */",
+    "/**/",
+    "/* */",
+    "/*\t*/",
+    "/*****/",
+    "/***** /* ***** ***/",
+
+    "()", "{}", "[]",
+
+    "/*", "*/",
+};
+// clang-format on
+
+const std::vector<char> chars = [] {
+    // clang-format off
+    std::vector<char> chars = { '\n', '\r', '\t', };
+    // clang-format on
+    for (int c = 32; c < 127; c++) {
+        chars.push_back(c);
+    }
+    return chars;
+}();
+
+std::atomic<size_t> gShuffleCount = 0;
+std::atomic<bool> gShuffleSuccess = false;
+
+static void ShuffleImpl(const std::string &insert, int seed) {
+    std::mt19937 random(seed);
+
+    std::uniform_int_distribution<unsigned int> fragCount(1, 10);
+    std::uniform_int_distribution<unsigned int> fragPick(0, fragments.size() - 1);
+
+    std::uniform_int_distribution<unsigned int> charStrCount(3, 15);
+    std::uniform_int_distribution<unsigned int> charCount(1, 10);
+    std::uniform_int_distribution<unsigned int> charPick(0, chars.size() - 1);
+
+    // std::uniform_int_distribution<unsigned int> insertCount(1, 15);
+
+    while (!gShuffleSuccess) {
+        std::vector<std::string> picks;
+        for (unsigned int frags = fragCount(random); frags > 0; frags--) {
+            picks.push_back(fragments[fragPick(random)]);
         }
-    };
 
-    unsigned int cores = std::thread::hardware_concurrency();
-    if (cores > 2) {
-        // Leave some cores available
-        cores -= std::ceil((float)cores / 4);
+        for (unsigned int charStrs = charStrCount(random); charStrs > 0; charStrs--) {
+            std::string str;
+            for (unsigned int cc = charCount(random); cc > 0; cc--) {
+                str += chars[charPick(random)];
+            }
+
+            picks.push_back(str);
+        }
+
+        for (auto &pick : picks) {
+            assert(pick.length() > 0);
+            std::uniform_int_distribution<unsigned int> strPick(0, pick.length() - 1);
+            pick.insert(strPick(random), insert);
+        }
+
+        std::string str;
+        for (size_t i = 0; i < picks.size(); i++) {
+            if (random() % 2) {
+                str += ' ';
+            }
+            str += picks[i];
+        }
+
+        gShuffleCount++;
+        gCurrentPath = str;
+        gCurrentText = std::make_unique<std::istringstream>(str);
+        gSilenceFail = true;
+        if (!CompareTokens(false)) {
+            gShuffleSuccess = true;
+            break;
+        }
     }
-    size_t perthread = std::ceil((float)recurseChars.size() / cores);
+}
 
-    auto startTime = std::chrono::steady_clock::now();
-
-    std::vector<std::thread> threads;
-    for (int i = 0; i < cores; i++) {
-        threads.emplace_back(threadProc, i * perthread, perthread);
-    }
-
-    for (auto &thread : threads) {
-        thread.join();
-    }
-
-    auto endTime = std::chrono::steady_clock::now();
-    std::cout << std::format("Time elapsed: {0:%j}:{0:%T}\n", endTime - startTime) << std::flush;
+void Shuffle(const std::string &insert) {
+    std::random_device seeder;
+    Parallelize(
+        [&](int threadCount, int threadIndex) {
+            ShuffleImpl(insert, seeder() * threadCount * threadIndex);
+        },
+        [] {
+            std::cout << std::format("Shuffles tested: {}", gShuffleCount.load())
+                      << std::endl;
+            std::this_thread::sleep_for(std::chrono::seconds(10));
+        }
+    );
+    // ShuffleImpl(insert, seeder());
 }
 
 void CharacterInsertions() {
     // clang-format off
-    std::vector<std::string> tests = {
+    const std::vector<std::string> tests = {
         "0x12345678",
         "0x", "x1",
 
