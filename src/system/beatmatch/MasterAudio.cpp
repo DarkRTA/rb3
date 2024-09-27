@@ -254,6 +254,26 @@ void MasterAudio::SetForegroundVolume(float volume) {
     mForegroundFader->SetVal(volume);
 }
 
+void MasterAudio::SetFX(int channel, FXCore core, bool enabled) {
+    if (mTrackData.mTrackData.size() != 0) {
+        AudioTrackNum trackNum = mSongData->GetAudioTrackNum(channel);
+        SetFX(trackNum, core, enabled);
+    }
+    return;
+}
+
+void MasterAudio::SetFX(AudioTrackNum trackNum, FXCore core, bool enabled) {
+    if (core == -1) {
+        MILO_ASSERT(core != kFXCoreNone, 0x406);
+    }
+
+    std::list<int> iList;
+    mTrackData.mTrackData[trackNum.mVal]->FillChannelList(iList, -1);
+    for (std::list<int>::iterator it = iList.begin(); it != iList.end(); it++) {
+        mChannelData[*it]->SetFX(core, enabled);
+    }
+}
+
 void MasterAudio::SetMasterVolume(float volume) {
     mMasterVolume = volume;
     UpdateMasterFader();
@@ -282,10 +302,36 @@ void MasterAudio::SetTimeOffset(float offset) {
     mTimeOffset = offset;
 }
 
+void MasterAudio::SetVocalFailFader(float fader) {
+    mVocalFailFader->DoFade(fader, 0.0f);
+}
+
+void MasterAudio::SetVocalState(bool state) {
+    float fader;
+    if (state != 0) {
+        fader = 0.0f;
+    } else {
+        fader = mVocalMuteVolume;
+    }
+    SetVocalFailFader(fader);
+}
+
 void MasterAudio::ToggleMuteMaster() {
     bool b = mMuteMaster;
     SetMuteMaster(!b);
     return;
+}
+
+void MasterAudio::UnmuteAllTracks() {
+    for (int i = 0; i < mTrackData.mTrackData.size(); i++) {
+        AudioTrackNum num;
+        num.mVal = i;
+        UnmuteTrack(num, -1);
+    }
+}
+
+void MasterAudio::UnmuteTrack(AudioTrackNum trackNum, int i) {
+    SetTrackMuteFader(trackNum, i, 0.0f, 0.0f);
 }
 
 void MasterAudio::UpdateMasterFader() {
@@ -405,8 +451,61 @@ TrackData::TrackData(
     mVocals = b2;
 }
 
+void TrackData::FillChannelList(std::list<int> &list) const {
+    if (mChannelMapping == 0) {
+        return;
+    }
+    mChannelMapping->FillChannelList(list);
+}
+
+void TrackData::FillChannelList(std::list<int> &list, int i) const {
+    if (mMultiSlot == 0) {
+        return;
+    }
+    mChannelMapping->FillChannelList(list, i);
+}
+
+int TrackData::GetSucceeding(int slot) const {
+    int ret;
+    if (mMultiSlot) {
+        if (slot == -1) {
+            MILO_ASSERT(slot != -1, 0x698);
+        }
+        ret = mSucceedingVec[slot];
+    } else {
+        ret = mSucceeding;
+    }
+    return ret;
+}
+
+void TrackData::Hit(int gemID, int i, float f) {
+    SetSucceeding(true, i, f);
+    mLastPlayedGem = gemID;
+}
+
+bool TrackData::IsSlotActive(int i, float f) const {
+    if (mMultiSlot) {
+        return (f - mLastGemTimes[i] < 5000.0f);
+    }
+    return true;
+}
+
 void TrackData::Miss(int i, float f) {
     SetSucceeding(false, i, f);
+}
+
+void TrackData::Reset() {
+    SetSucceeding(true, -1, -10000.0f);
+    mInFill = 0;
+}
+
+void TrackData::SetButtonMashingMode(bool enabled, float lastMashTime) {
+    mButtonMashingMode = enabled;
+    mLastMashTime = lastMashTime;
+}
+
+void TrackData::SetLastMashTime(float lastMashTime) {
+    mLastMashTime = lastMashTime;
 }
 
 void TrackData::SetNonmutable(bool nonmutable) {
