@@ -175,12 +175,116 @@ BandCharDesc::Outfit::Outfit(){
     mSaveSizeMethod = &SaveSize;
 }
 
+void BandCharDesc::Outfit::SaveFixed(FixedSizeSaveableStream& stream) const {
+    stream << mEyebrows;
+    stream << mEarrings;
+    stream << mFaceHair;
+    stream << mGlasses;
+    stream << mHair;
+    stream << mPiercings;
+    stream << mFeet;
+    stream << mHands;
+    stream << mLegs;
+    stream << mRings;
+    stream << mTorso;
+    stream << mWrist;
+}
+
+int BandCharDesc::Outfit::SaveSize(int i){
+    int size = OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "BandCharDesc::Outfit", size);
+    }
+    return size;
+}
+
+void BandCharDesc::Outfit::LoadFixed(FixedSizeSaveableStream& stream, int i){
+    stream >> mEyebrows;
+    stream >> mEarrings;
+    stream >> mFaceHair;
+    stream >> mGlasses;
+    stream >> mHair;
+    stream >> mPiercings;
+    stream >> mFeet;
+    stream >> mHands;
+    stream >> mLegs;
+    stream >> mRings;
+    stream >> mTorso;
+    stream >> mWrist;
+}
+
 BandCharDesc::InstrumentOutfit::InstrumentOutfit(){
     mSaveSizeMethod = &SaveSize;
 }
 
+void BandCharDesc::InstrumentOutfit::SaveFixed(FixedSizeSaveableStream& stream) const {
+    stream << mGuitar;
+    stream << mBass;
+    stream << mDrum;
+    stream << mMic;
+    stream << mKeyboard;
+}
+
+int BandCharDesc::InstrumentOutfit::SaveSize(int i){
+    int size = OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    size += OutfitPiece::SaveSize(i);
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "BandCharDesc::InstrumentOutfit", size);
+    }
+    return size;
+}
+
+void BandCharDesc::InstrumentOutfit::LoadFixed(FixedSizeSaveableStream& stream, int){
+    stream >> mGuitar;
+    stream >> mBass;
+    stream >> mDrum;
+    stream >> mMic;
+    stream >> mKeyboard;
+}
+
 BandCharDesc::Patch::Patch() : mTexture(0), mCategory(0), mUV(0.5f, 0.5f), mRotation(0), mScale(1.0f, 1.0f) {
     mSaveSizeMethod = &SaveSize;
+}
+
+void BandCharDesc::Patch::SaveFixed(FixedSizeSaveableStream& stream) const {
+    stream << mTexture;
+    stream << mCategory;
+    FixedSizeSaveable::SaveFixedString(stream, mMeshName);
+    stream << mUV;
+    stream << mRotation;
+    stream << mScale;
+}
+
+int BandCharDesc::Patch::SaveSize(int i){
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "BandCharDesc::Patch", 0x9C);
+    }
+    return 0x9C;
+}
+
+DECOMP_FORCEACTIVE(BandCharDesc, "tattoo_head")
+
+void BandCharDesc::Patch::LoadFixed(FixedSizeSaveableStream& stream, int){
+    stream >> mTexture;
+    stream >> mCategory;
+    FixedSizeSaveable::LoadFixedString(stream, mMeshName);
+    stream >> mUV;
+    stream >> mRotation;
+    stream >> mScale;
 }
 
 BandCharDesc::BandCharDesc() : mGender("male"), mSkinColor(3), mHeight(0.5f), mWeight(0.5f), mMuscle(0.5f), unk224(0) {

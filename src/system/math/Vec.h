@@ -38,6 +38,11 @@ public:
     float y;
 };
 
+inline BinStream& operator<<(BinStream& bs, const Vector2& vec){
+    bs << vec.x << vec.y;
+    return bs;
+}
+
 inline BinStream& operator>>(BinStream& bs, Vector2& vec){
     bs >> vec.x >> vec.y;
     return bs;
