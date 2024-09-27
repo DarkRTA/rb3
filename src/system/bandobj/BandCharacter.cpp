@@ -22,7 +22,6 @@ ObjectDir* sCharSharedDir;
 ObjectDir* sInstrumentDir;
 ObjectDir* sInstResourceDir;
 ObjectDir* sToDir;
-float sDrawOrder = -1.0f;
 
 const char* BandIntensityString(int num){
     if(num != 0){
@@ -448,6 +447,8 @@ void BandCharacter::SyncObjects(){
     else MILO_NOTIFY_ONCE("Can't find eye settings prop anim %s. This is required to set range of motion and lid tracking for each eye shape.", eyedfname);
 }
 #pragma pop
+
+float sDrawOrder = -1.0f;
 
 void BandCharacter::SetClipTypes(Symbol s1, Symbol s2){
     if(mDriver){
@@ -1169,6 +1170,9 @@ DataNode BandCharacter::OnInstallFilter(DataArray* da){
     sOutfitDir = da->Obj<ObjectDir>(2);
     sToDir = da->Obj<ObjectDir>(3);
     sInstrumentDir = da->Obj<ObjectDir>(4);
+    const char* bodyparts[] = {
+        "hair", "glasses", "facehair", "earrings", "piercings", "eyebrows", "wrist", "torso", "head", "legs", "feet", "rings", "hands"
+    };
     return DataNode(0);
 }
 
@@ -1192,6 +1196,11 @@ DataNode BandCharacter::OnCopyPrefab(DataArray* da){
     if(mTestPrefab) CopyCharDesc(mTestPrefab);
     return DataNode(0);
 }
+
+// just here temporarily until we match the corresponding funcs these strings belong to
+DECOMP_FORCEACTIVE(BandCharacter, "Mesh", "%s is being merged into", "mine->Dir() == this", "bone_", "exo_", "world.wind",
+    "instruments can only have one subdir, which is the resource or colorpalettes.milo", "bone_pelvis.mesh",
+    "outfits can only have one subdir, which is the resource")
 
 DataNode BandCharacter::OnSetFileMerger(DataArray* da){
     FilePathTracker tracker(FileRoot());
@@ -1224,7 +1233,7 @@ DataNode BandCharacter::OnSetFileMerger(DataArray* da){
     FilePath fpf4("");
     mPlayFlags &= 0xffcfffff;
     Symbol animinst = BandCharDesc::GetAnimInstrument(mInstrumentType);
-    BandCharDesc::CharInstrumentType ty = BandCharDesc::GetInstrumentFromSym(animinst);
+    BandCharDesc::CharInstrumentType ty = BandCharDesc::GetInstrumentFromSym(mInstrumentType);
     if(ty == BandCharDesc::kGuitar) mPlayFlags |= 0x100000;
     else if(ty == BandCharDesc::kBass) mPlayFlags |= 0x200000;
     if(ty != BandCharDesc::kNumInstruments){
