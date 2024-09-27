@@ -419,7 +419,7 @@
             "network/net/MessageBroker.cpp": "MISSING",
             "network/net/MessageBrokerDDL_Wii.cpp": "MISSING",
             "network/net/Net.cpp": "MISSING",
-            "network/net/NetLog.cpp": "MISSING",
+            "network/net/NetLog.cpp": "Matching",
             "network/net/NetMessage.cpp": "NonMatching",
             "network/net/NetMessenger.cpp": "MISSING",
             "network/net/NetSearchResult.cpp": "MISSING",
