@@ -39,6 +39,7 @@ public:
     void SyncShape();
     int NumSpheres();
     void Deform();
+    void ClearMesh(){ mMesh = 0; }
 
     float GetRadius(const Vector3& v1, Vector3& vout) const {
         Subtract(v1, unk1a0, vout);

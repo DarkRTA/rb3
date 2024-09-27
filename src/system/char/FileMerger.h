@@ -30,4 +30,7 @@ public:
     virtual void FailedLoading(Loader*);
     virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*);
     virtual Action FilterSubdir(class ObjectDir* o1, class ObjectDir*);
+
+    bool StartLoad(bool);
+    void Select(Symbol, const FilePath&, bool);
 };

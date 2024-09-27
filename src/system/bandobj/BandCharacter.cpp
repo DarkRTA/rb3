@@ -7,6 +7,7 @@
 #include "char/CharFaceServo.h"
 #include "char/CharInterest.h"
 #include "char/CharMeshCacheMgr.h"
+#include "char/CharUtl.h"
 #include "math/Rand.h"
 #include "obj/Utl.h"
 #include "utl/Symbols.h"
@@ -131,6 +132,8 @@ bool BandCharacter::InVignetteOrCloset() const {
     return ret;
 }
 
+DECOMP_FORCEACTIVE(BandCharacter, "BandCharacter.no_anim")
+
 CharClipDriver* BandCharacter::PlayMainClip(int i, bool b){
     if(mGroupName[0] == 0 || !unk454) return 0;
     else {
@@ -180,7 +183,7 @@ CharClipDriver* BandCharacter::PlayMainClip(int i, bool b){
                             if(unk454 == drv) drv = mAddDriver;
                             CharClip* stillclip = drv->ClipDir()->Find<CharClip>("still", false);
                             if(stillclip) drv->Play(stillclip, imask, -1.0f, 1e+30f, 0.0f);
-                            else PathName(drv);
+                            else MILO_NOTIFY_ONCE("%s could not find still clip", PathName(drv));
                         }
                     }
                     CharClipDriver* played = unk454->Play(clp, mask, -1.0f, 1e+30f, 0.0f);
@@ -220,6 +223,21 @@ bool BandCharacter::AllowOverride(const char* cc){
         }
     }
     return true;
+}
+
+void BandCharacter::Poll(){
+    START_AUTO_TIMER("cc_poll");
+    if(unk5a2){
+        Teleport(unk594);
+        unk5a2 = false;
+    }
+    if(unk5a3){
+        const char* name;
+        if(mOverrideGroup[0] != 0) name = mOverrideGroup;
+        else name = mInstrumentType == drum ? "sit" : "stand";
+        SetState(name, mPlayFlags, 2, false, true);
+        unk5a3 = false;
+    }
 }
 
 void BandCharacter::CalcBoundingSphere(){
@@ -307,22 +325,18 @@ void BandCharacter::UpdateOverlay(){
                 *mOverlay << " " << SafeName(firstplaying->GetClip());
                 CharClipDriver* firstaddplaying = mAddDriver->FirstPlaying();
                 if(firstaddplaying){
-                    const char* firstaddflagstr = FlagString(firstaddplaying->GetClip()->PlayFlags() & 0x7F000);
-                    *mOverlay << "/" << SafeName(firstaddplaying->GetClip()) << " " << firstaddflagstr << " ";
+                    *mOverlay << "/" << SafeName(firstaddplaying->GetClip()) << " " << FlagString(firstaddplaying->GetClip()->Flags() & 0x7F000) << " ";
                     *mOverlay << " " << CharClip::BeatAlignString(firstaddplaying->mPlayFlags);
                     *mOverlay << MakeString(" %.2f %.2f", std::fmod(TheTaskMgr.Beat(), 1.0f), std::fmod(firstaddplaying->mBeat, 1.0f));
                 }
                 else {
-                    const char* firstaddflagstr = FlagString(firstplaying->GetClip()->PlayFlags() & 0x7F000);
-                    *mOverlay << " " << firstaddflagstr;
-                    const char* beatalign = CharClip::BeatAlignString(firstaddplaying->mPlayFlags);
-                    *mOverlay << " " << beatalign;
+                    *mOverlay << " " << FlagString(firstplaying->GetClip()->Flags() & 0x7F000);
+                    *mOverlay << " " << CharClip::BeatAlignString(firstplaying->mPlayFlags);
                     *mOverlay << MakeString(" %.2f %.2f", std::fmod(TheTaskMgr.Beat(), 1.0f), std::fmod(firstplaying->mBeat, 1.0f));
                 }
             }
             else {
-                const char* firstaddflagstr = FlagString(firstplaying->GetClip()->PlayFlags() & 0x7F000);
-                *mOverlay << " " << SafeName(firstplaying->GetClip()) << " " << firstaddflagstr;
+                *mOverlay << " " << SafeName(firstplaying->GetClip()) << " " << FlagString(firstplaying->GetClip()->Flags() & 0x7F000);
                 *mOverlay << " " << CharClip::BeatAlignString(firstplaying->mPlayFlags);
                 *mOverlay << MakeString(" %.2f %.2f", std::fmod(TheTaskMgr.Beat(), 1.0f), std::fmod(firstplaying->mBeat, 1.0f));
             }
@@ -338,6 +352,93 @@ void BandCharacter::RemoveDrawAndPoll(Character* c){
         VectorRemove(mPolls, c);
     }
 }
+
+#pragma push
+#pragma pool_data off
+void BandCharacter::SyncObjects(){
+    unk6b0 = Find<CharWeightable>("lod0.weight", false);
+    static const char* bones[8] = {
+        "bone_pelvis.mesh", "bone_prop0.mesh", "bone_prop1.mesh", "bone_prop2.mesh", 
+        "bone_prop3.mesh", "spot_neck.mesh", "spot_navel.mesh", "bone_mic_stand_bottom.mesh"
+    };
+    for(const char** ptr = bones; *ptr != 0; ptr++){
+        RndTransformable* t = Find<RndTransformable>(*ptr, false);
+        if(t) t->SetTransParent(this, false);
+    }
+    SetDeformation();
+    RndMat* feetmat = Find<RndMat>("feet_socks_skin.mat", false);
+    if(feetmat){
+        RndMat* legmat = mOutfitDir->Find<RndMat>("legs_socks_swap.mat", false);
+        if(legmat) feetmat->Copy(legmat, kCopyDeep);
+        else {
+            RndMat* skinmat = Find<RndMat>("feet_skin.mat", false);
+            if(skinmat) feetmat->Copy(skinmat, kCopyDeep);
+        }
+    }
+
+//   iVar4 = *(int *)(this + 0x5e4);
+//   if ((iVar4 != 0) && (*(int *)(iVar4 + 4) != 0)) {
+//     piVar12 = *(int **)(iVar4 + 8);
+//     for (piVar3 = (int *)piVar12[2]; piVar11 = piVar3, piVar3 != piVar12; piVar3 = (int *)piVar3[2 ])
+//     {
+//       for (; piVar11 != piVar12; piVar11 = (int *)piVar11[1]) {
+//         iVar4 = *piVar11;
+//         iVar5 = *(int *)piVar11[1];
+//         if (*(float *)(iVar5 + 0x178) <= *(float *)(iVar4 + 0x178)) break;
+//         *piVar11 = iVar5;
+//         *(int *)piVar11[1] = iVar4;
+//       }
+//     }
+//   }
+
+    for(ObjPtrList<CharHair, ObjectDir>::iterator it = unk5f0.begin(); it != unk5f0.end(); ++it){
+        (*it)->Hookup(unk5e0);
+    }
+    Character::SyncObjects();
+    for(ObjPtrList<CharBoneOffset, ObjectDir>::iterator it = unk640.begin(); it != unk640.end(); ++it){
+        (*it)->ApplyToLocal();
+        mOutfitDir->RemoveFromPoll(*it);
+    }
+    RemoveDrawAndPoll(mOutfitDir);
+    RemoveDrawAndPoll(mInstDir);
+    if(!mInCloset){
+        for(ObjPtrList<OutfitConfig, ObjectDir>::iterator it = unk620.begin(); it != unk620.end(); ++it){
+            (*it)->CompressTextures();
+        }
+        while(!unk610.empty()){
+            RndMeshDeform* df = unk610.front();
+            if(!df->Mesh()) MILO_FAIL("BandCharacter::SyncObjects() - character missing mesh data.");
+            df->Mesh()->SetKeepMeshData(false);
+            delete df;
+        }
+        while(!unk600.empty()){
+            delete unk600.front();
+        }
+        for(ObjPtrList<CharCollide, ObjectDir>::iterator it = unk5e0.begin(); it != unk5e0.end(); ++it){
+            (*it)->ClearMesh();
+        }
+    }
+    CharMeshHide::HideAll(unk5b0, -(mDriver->ClipType() == "vignette") & 0x2000);
+    if(InVignetteOrCloset()){
+        CharClipDriver* first = mDriver->FirstPlaying();
+        if(first && mGroupName[0] != 0){
+            int mask = mGender == "male" ? 0x20 : 0x40;
+        }
+    }
+    const char* eyedfname = mGender == "male" ? "eyesdeform_male.anim" : "eyesdeform_female.anim";
+    RndPropAnim* panim = Find<RndPropAnim>(eyedfname, false);
+    if(panim){
+        int numeyeshapes = BandHeadShaper::sEyeNum;
+        if((int)panim->EndFrame() != numeyeshapes)
+            MILO_NOTIFY_ONCE("%s must have a frame for each eye shape.  It currently has %d frames, but there are %d eye shapes",
+                eyedfname, (int)panim->EndFrame(), BandHeadShaper::sEyeNum);
+        if(!DataVariable("eyetweaker.loadedsettings").Int(0)){
+            panim->SetFrame(mHead.mEye, 1.0f);
+        }
+    }
+    else MILO_NOTIFY_ONCE("Can't find eye settings prop anim %s. This is required to set range of motion and lid tracking for each eye shape.", eyedfname);
+}
+#pragma pop
 
 void BandCharacter::SetClipTypes(Symbol s1, Symbol s2){
     if(mDriver){
@@ -403,7 +504,17 @@ RndDrawable* BandCharacter::CollideShowing(const Segment& s, float& f, Plane& pl
 }
 
 void BandCharacter::DrawShowing(){
+    if(!unk6bd || !IsLoading()){
+        if(DataVariable("bandcharacter.show_spheres").Int(0)){
 
+        }
+        Character::DrawShowing();
+        static DataNode& n = DataVariable("bandcharacter.show_slot");
+        if(n.Int(0)){
+            Transform& headxfm = CharUtlFindBoneTrans("bone_head", this)->WorldXfm();
+            MakeString("slot%d pos%d");
+        }
+    }
 }
 
 void BandCharacter::Teleport(Waypoint* way){
@@ -436,6 +547,27 @@ void BandCharacter::DrawLodOrShadowMode(int i, DrawMode mode){
 float BandCharacter::ComputeScreenSize(RndCam* cam){
     if(mOutfitDir) return mOutfitDir->ComputeScreenSize(cam);
     else return 0;
+}
+
+void BandCharacter::StartLoad(bool b1, bool b2, bool b3){
+    bool b4 = false;
+    if(!mInCloset){
+        if(b2 || (unk224 & 7)) b4 = true;
+    }
+    bool bvar1 = mInCloset;
+    unk5a1 = b4;
+    mInCloset = b2;
+    if(bvar1 && !b2) b3 = true;
+    if(!IsLoading() || !unk6bd || b3){
+        b4 = false;
+        if(unk5a1 || b3) b4 = true;
+        unk6bd = b4;
+    }
+
+    if(!mFileMerger->StartLoad(b1) && (mInCloset || (bvar1 && !mInCloset))){
+        mFileMerger->Select("blank", FilePath(""), true);
+        mFileMerger->StartLoad(b1);
+    }
 }
 
 #pragma push
