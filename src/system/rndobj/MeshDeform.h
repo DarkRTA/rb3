@@ -5,6 +5,7 @@
 #include "obj/ObjVector.h"
 
 class RndMesh;
+class SyncMeshCB;
 
 class RndMeshDeform : public Hmx::Object {
 public:
@@ -37,14 +38,17 @@ public:
     virtual void PreSave(BinStream&);
     virtual void Print();
 
+    void CopyWeights(int, int, RndMeshDeform*);
+    void Reskin(SyncMeshCB*, bool);
     void SetMesh(RndMesh*);
-    RndMesh* Mesh() const;
+    RndMesh* Mesh() const { return mMesh; }
 
     NEW_OVERLOAD
     NEW_OBJ(RndMeshDeform)
     static void Init(){
         REGISTER_OBJ_FACTORY(RndMeshDeform)
     }
+    static RndMeshDeform* FindDeform(RndMesh*);
 
     ObjPtr<RndMesh, ObjectDir> mMesh;
     Transform mMeshInverse;

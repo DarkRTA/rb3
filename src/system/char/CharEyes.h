@@ -72,6 +72,15 @@ public:
     void UpdateOverlay();
     bool EitherEyeClamped();
 
+    void SetInterestFilterFlags(int i){
+        mInterestFilterFlags = i;
+        unk150 = true;
+    }
+
+    void ClearInterestFilterFlags(){
+        mInterestFilterFlags = mDefaultFilterFlags;
+    }
+
     DataNode OnToggleForceFocus(DataArray*);
     DataNode OnToggleInterestOverlay(DataArray*);
     DataNode OnAddInterest(DataArray*);
@@ -120,7 +129,8 @@ public:
     float unk140;
     int unk144;
     float unk148, unk14c;
-    int unk150, unk154, unk158;
+    bool unk150;
+    int unk154, unk158;
     bool unk15c, unk15d;
 };
 

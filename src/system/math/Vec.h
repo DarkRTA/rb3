@@ -10,13 +10,25 @@ public:
     Vector2(float xx, float yy) : x(xx), y(yy) {}
     Vector2(const Vector2& vec) : x(vec.x), y(vec.y) {}
 
-    RETAIL_DONT_INLINE_CLASS void Set(float xx, float yy){ x = xx; y = yy; }
+    void Set(float xx, float yy){ x = xx; y = yy; }
 
-    Vector2& operator*(float f) { 
+    Vector2& operator*=(float f) { 
         x *= f; y *= f; 
         return *this;
     }
     void Zero(){ x = y = 0.0f; }
+
+    Vector2& operator/=(float f){
+        x /= f;
+        y /= f;
+        return *this;
+    }
+
+    Vector2& operator+=(const Vector2& v){
+        x += v.x;
+        y += v.y;
+        return *this;
+    }
 
     bool operator!() const {
         return x == 0.0f && y == 0.0f;
@@ -127,24 +139,32 @@ inline BinStream& operator>>(BinStream& bs, Vector4& vec){
 class Vector4_16_01 {
 public:
     Vector4_16_01(){}
-    Vector4_16_01(float f0, float f1, float f2, float f3) :
-        x(ScaleFloat01ToUShort(f0)), y(ScaleFloat01ToUShort(f1)),
-        z(ScaleFloat01ToUShort(f2)), w(ScaleFloat01ToUShort(f3)) {}
+    Vector4_16_01(float f0, float f1, float f2, float f3){
+        SetX(f0); SetY(f1); SetZ(f2); SetW(f3);
+    }
     
     float GetX() const { return x / 65535.0f;}
     float GetY() const { return y / 65535.0f;}
     float GetZ() const { return z / 65535.0f;}
     float GetW() const { return w / 65535.0f;}
+
+    void SetX(float f){ x = ScaleFloat01ToUShort(f); }
+    void SetY(float f){ y = ScaleFloat01ToUShort(f); }
+    void SetZ(float f){ z = ScaleFloat01ToUShort(f); }
+    void SetW(float f){ w = ScaleFloat01ToUShort(f); }
+
     u16 ScaleFloat01ToUShort(float f) { 
         MILO_ASSERT(f >= 0.0f, 543);
         MILO_ASSERT(f <= 1.0f, 544);
-        return f * 65535.0f;
+
+        f32 size_u16 = 65535.f;
+        return f * size_u16;
     }
     void Set(float f0, float f1, float f2, float f3) {
-        x = ScaleFloat01ToUShort(f0);
-        y = ScaleFloat01ToUShort(f1);
-        z = ScaleFloat01ToUShort(f2);
-        w = ScaleFloat01ToUShort(f3);
+        SetX(f0);
+        SetY(f1);
+        SetZ(f2);
+        SetW(f3);
     }
 
     u16 x, y, z, w;

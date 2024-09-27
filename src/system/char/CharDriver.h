@@ -4,10 +4,10 @@
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "char/CharBones.h"
+#include "char/CharClipDriver.h"
 
 // forward decs
 class CharClip;
-class CharClipDriver;
 
 class CharDriver : public RndHighlightable, public CharWeightable, public CharPollable {
 public:
@@ -40,6 +40,8 @@ public:
     void Clear();
     CharClip* FindClip(const DataNode&, bool);
     CharClip* FirstClip();
+    CharClipDriver* FirstPlaying();
+    CharClip* FirstPlayingClip();
     CharClipDriver* Play(CharClip*, int, float, float, float);
     CharClipDriver* Play(const DataNode&, int, float, float, float);
     CharClipDriver* PlayGroup(const char*, int, float, float, float);
@@ -51,7 +53,9 @@ public:
     void SetClipType(Symbol);
     bool Starved();
     void SetStarved(Symbol);
+    Symbol ClipType() const { return mClipType; }
     ObjectDir* ClipDir() const { return mClips; }
+    float SetBlendWidth(float w){ mBlendWidth = w; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

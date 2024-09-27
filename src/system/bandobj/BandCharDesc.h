@@ -2,10 +2,21 @@
 #include "obj/Object.h"
 #include "meta/FixedSizeSaveable.h"
 #include "bandobj/BandPatchMesh.h"
+#include "bandobj/BandHeadShaper.h"
 #include "rndobj/Tex.h"
 
 class BandCharDesc : public virtual Hmx::Object, public FixedSizeSaveable {
 public:
+
+    enum CharInstrumentType {
+        kGuitar,
+        kBass,
+        kDrum,
+        kMic,
+        kKeyboard,
+        kNumInstruments
+    };
+
     class Patch : public FixedSizeSaveable {
     public:
         Patch();
@@ -33,9 +44,7 @@ public:
         static int SaveSize(int);
 
         Symbol mName; // 0x8
-        int mColor0; // 0xc
-        int mColor1; // 0x10
-        int mColor2; // 0x14
+        int mColors[3]; // 0xc
     };
 
     class Head : public FixedSizeSaveable {
@@ -44,6 +53,8 @@ public:
         virtual ~Head(){}
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
+        void SetShape(BandHeadShaper&);
 
         static int SaveSize(int);
 
@@ -76,6 +87,8 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        OutfitPiece* GetPiece(Symbol);
+
         static int SaveSize(int);
 
         OutfitPiece mEyebrows; // 0x8
@@ -99,6 +112,8 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        OutfitPiece* GetPiece(Symbol);
+
         static int SaveSize(int);
 
         OutfitPiece mGuitar; // 0x8
@@ -119,12 +134,12 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual int GetPatchTex(Patch&);
-    virtual int GetPatchMesh(Patch&);
-    virtual int GetBandLogo(){ return 0; }
+    virtual RndTex* GetPatchTex(Patch&){ return 0; }
+    virtual RndMesh* GetPatchMesh(Patch&){ return 0; }
+    virtual RndTex* GetBandLogo(){ return 0; }
     virtual void Compress(RndTex*, bool);
-    virtual int GetPatchDir();
-    virtual void AddOverlays(BandPatchMesh&);
+    virtual ObjectDir* GetPatchDir(){ return 0; }
+    virtual void AddOverlays(BandPatchMesh&){}
     virtual void MiloReload(){}
 
     void SetChanged(int);
@@ -134,9 +149,16 @@ public:
     void SetWeight(float);
     void SetMuscle(float);
     void SetSkinColor(int);
+    void MakeInstrumentPath(Symbol, Symbol, FilePath&);
+    void MakeOutfitPath(Symbol, FilePath&);
+    void CopyCharDesc(const BandCharDesc*);
+    void ComputeDeformWeights(float*) const;
 
     DataNode ListOutfits(Symbol);
 
+    static CharInstrumentType GetInstrumentFromSym(Symbol);
+    static Symbol GetAnimInstrument(Symbol);
+    static Symbol GetInstrumentSym(int);
     static class CharClip* GetDeformClip(Symbol);
     static ObjectDir* GetPrefabs();
     static int SaveSize(int);
@@ -157,7 +179,7 @@ public:
     float mHeight; // 0x218
     float mWeight; // 0x21c
     float mMuscle; // 0x220
-    int unk224; // 0x224
+    int unk224; // 0x224 - likely a bitfield as seen in BandCharacter methods
     std::vector<Patch> mPatches; // 0x228
 };
 

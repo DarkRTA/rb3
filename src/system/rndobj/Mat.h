@@ -111,6 +111,8 @@ public:
     bool GetRefractEnabled(bool);
     RndTex* GetRefractNormalMap();
     float GetRefractStrength();
+    TexWrap GetTexWrap() const { return mTexWrap; }
+    Blend GetBlend() const { return mBlend; }
     ZMode GetZMode() const { return mZMode; }
     RndMat* NextPass() const { return mNextPass; }
     const Transform& TexXfm() const { return mTexXfm; }

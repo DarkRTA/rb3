@@ -204,8 +204,8 @@ void TubePlate::Reset(){
 }
 
 String TubePlate::GetMatName(){
-    if(mMesh && mMesh->GetMat()){
-        return String(mMesh->GetMat()->Name());
+    if(mMesh && mMesh->Mat()){
+        return String(mMesh->Mat()->Name());
     }
     else return String("<no mat>");
 }

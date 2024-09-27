@@ -143,6 +143,7 @@ public:
     Aspect GetAspect() const { return mAspect; }
     int Width() const { return mWidth; }
     int Height() const { return mHeight; }
+    RndTex* GetNullTexture();
 
     Hmx::Color mClearColor; // 0x20
     int mWidth; // 0x30
@@ -163,8 +164,9 @@ public:
     RndEnviron* unk98; // 0x98
     RndLight* unk9c; // 0x9c
 
-    int unk_arr[8]; // 0xa0 - 0xbc, inclusive
+    int unk_arr[7]; // 0xa0 - 0xb8, inclusive
 
+    RndTex* mNullTex; // 0xbc
     float unkc0; // 0xc0
     int unkc4; // 0xc4
     int unkc8; // 0xc8

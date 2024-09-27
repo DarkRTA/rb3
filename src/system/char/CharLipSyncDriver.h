@@ -24,6 +24,9 @@ public:
     virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
     virtual void Enter();
 
+    void SetClips(ObjectDir*);
+    void SetLipSync(CharLipSync*);
+
     ObjPtr<CharLipSync, ObjectDir> mLipSync;
     ObjPtr<ObjectDir, ObjectDir> mClips;
     ObjPtr<CharClip, ObjectDir> mBlinkClip;

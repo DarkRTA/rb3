@@ -2,6 +2,7 @@
 #define CHAR_CHARCUFF_H
 #include "rndobj/Trans.h"
 #include "rndobj/Mesh.h"
+#include "char/FileMerger.h"
 #include "obj/ObjPtr_p.h"
 
 struct Shape {
@@ -22,6 +23,7 @@ public:
     virtual ~CharCuff();
     virtual void Highlight();
 
+    void Deform(SyncMeshCB*, FileMerger*);
     float Eccentricity(const Vector2&) const;
 
     DECLARE_REVS;

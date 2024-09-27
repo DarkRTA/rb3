@@ -3,8 +3,7 @@
 #include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
 
-unsigned short UIColor::gRev = 0;
-unsigned short UIColor::gAltRev = 0;
+INIT_REVS(UIColor);
 
 UIColor::UIColor() : mColor(1.0f,1.0f,1.0f,1.0f) {
     

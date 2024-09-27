@@ -20,6 +20,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
+    int CategoryFlags() const { return mCategoryFlags; }
     void SyncMaxViewAngle();
     CharEyeDartRuleset* GetDartRulesetOverride() const;
     bool IsMatchingFilterFlags(int);

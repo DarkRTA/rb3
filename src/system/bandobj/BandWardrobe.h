@@ -3,6 +3,7 @@
 #include "obj/Dir.h"
 #include "char/FileMerger.h"
 #include "bandobj/BandCamShot.h"
+#include "bandobj/BandCharDesc.h"
 
 class BandWardrobe : public virtual Hmx::Object {
 public:
@@ -45,6 +46,8 @@ public:
     DataNode OnGetMatchingDude(DataArray*);
     DataNode OnGetCurrentInterests(DataArray*);
     DataNode OnEnableDebugInterests(DataArray*);
+
+    static DataArray* GetGroupArray(BandCharDesc::CharInstrumentType);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
