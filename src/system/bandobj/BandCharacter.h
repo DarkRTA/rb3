@@ -108,13 +108,11 @@ public:
     void SetSongOwner(CharLipSyncDriver*);
     void PlayFaceClip();
     void UpdateOverlay();
+    void SetDircuts();
     CharClipDriver* PlayMainClip(int, bool);
     bool AddDriverClipDir(){
         return mAddDriver && mAddDriver->ClipDir();
     }
-
-    static void MakeMRU(BandCharacter*, CharClip*);
-    static Symbol NameToDrumVenue(const char*);
 
     DataNode OnListDircuts();
     DataNode ListAnimGroups(int);
@@ -138,6 +136,8 @@ public:
     DataNode OnPortraitBegin(DataArray*);
     DataNode OnPortraitEnd(DataArray*);
 
+    static void MakeMRU(BandCharacter*, CharClip*);
+    static Symbol NameToDrumVenue(const char*);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandCharacter);

@@ -33,4 +33,5 @@ public:
 
     bool StartLoad(bool);
     void Select(Symbol, const FilePath&, bool);
+    int FindMergerIndex(Symbol, bool);
 };

@@ -15,6 +15,15 @@
 
 INIT_REVS(BandCharacter)
 
+ObjectDir* sBoneMergeDir;
+ObjectDir* sOutfitDir;
+ObjectDir* sResourceDir;
+ObjectDir* sCharSharedDir;
+ObjectDir* sInstrumentDir;
+ObjectDir* sInstResourceDir;
+ObjectDir* sToDir;
+float sDrawOrder = -1.0f;
+
 const char* BandIntensityString(int num){
     if(num != 0){
         int intensity = num & 0x7F000;
@@ -640,9 +649,9 @@ void BandCharacter::SyncOutfitConfig(OutfitConfig* cfg){
     strcpy(buf, cfg->Name());
     char* dot = strchr(buf, '.');
     MILO_ASSERT(dot, 0x5EA);
+    int colors[7];
     *dot = 0;
     Symbol sym(buf);
-    int colors[6];
     if(sym == eyes){
         colors[3] = 0;
         colors[4] = 0;
@@ -800,6 +809,11 @@ bool BandCharacter::AddDircut(const FilePath& f){
     // more
 }
 
+void BandCharacter::SetDircuts(){
+    int maxNum = mFileMerger->FindMergerIndex("directed_cut_0", true);
+    MILO_ASSERT(maxNum < 32, 0x7AE);
+}
+
 int BandCharacter::GetShotFlags(Symbol s){
     BandCharDesc::CharInstrumentType ty = BandCharDesc::GetInstrumentFromSym(mInstrumentType);
     if(ty >= BandCharDesc::kNumInstruments) return 0;
@@ -859,7 +873,14 @@ void BandCharacter::SetContext(Symbol s){
     CharMeshHide::HideAll(unk5b0, hideallint);
 }
 
-void ReplaceSubdir(ObjectDir*, ObjectDir*);
+void ReplaceSubdir(ObjectDir* d1, ObjectDir* d2){
+    for(int i = 0; i < d1->mSubDirs.size(); i++){
+        ObjDirPtr<ObjectDir> dPtr(d1->mSubDirs[i].Ptr());
+        d1->RemoveSubDir(dPtr);
+    }
+    ObjDirPtr<ObjectDir> dPtr(d2);
+    d1->AppendSubDir(dPtr);
+}
 
 void BandCharacter::SetVisemes(){
     ObjectDir* visemedir = Find<ObjectDir>("visemes", false);
@@ -873,7 +894,7 @@ void BandCharacter::SetVisemes(){
     }
     ObjectDir* vignettedir = Find<ObjectDir>("vignette_visemes", false);
     if(vignettedir){
-        ObjectDir* viseme = BandHeadShaper::GetViseme(mGender, false);
+        ObjectDir* viseme = BandHeadShaper::GetViseme(mGender, true);
         if(viseme) ReplaceSubdir(vignettedir, viseme);
         CharLipSyncDriver* lsdriver = Find<CharLipSyncDriver>("vignette.lipdrv", false);
         if(lsdriver) lsdriver->SetClips(vignettedir);
@@ -896,18 +917,14 @@ RndTex* BandCharacter::GetPatchTex(Patch& patch){
     static Message get_patch_tex("get_patch_tex", DataNode(0), DataNode(0));
     get_patch_tex[0] = DataNode(patch.mTexture);
     get_patch_tex[1] = DataNode(patch.mMeshName);
-    DataNode handled = HandleType(get_patch_tex);
-    if(handled.Type() != kDataUnhandled){
-        if(handled.Obj<RndTex>(0)){
-            goto ret;
+    const DataNode& handled = HandleType(get_patch_tex);
+    if(handled.Type() == kDataUnhandled || !handled.Obj<RndTex>(0)){
+        if(!mPrefab.Null()){
+            return Find<RndTex>(MakeString("prefab_art%02d.tex", patch.mTexture), false);
         }
+        else if(TheLoadMgr.EditMode()) return Find<RndTex>("patchtest.tex", false);
+        else return 0;
     }
-    if(!mPrefab.Null()){
-        return Find<RndTex>(MakeString("prefab_art%02d.tex", patch.mTexture), false);
-    }
-    else if(TheLoadMgr.EditMode()) return Find<RndTex>("patchtest.tex", false);
-    else return 0;
-ret:
     return handled.Obj<RndTex>(0);
 }
 
@@ -1145,6 +1162,145 @@ void ReplaceRefs(Hmx::Object*, Hmx::Object* mine){
 
 MergeFilter::Action BandCharacter::FilterSubdir(ObjectDir* o1, ObjectDir*){
     return DefaultSubdirAction(o1, mFileMerger->mSubdirs);
+}
+
+DataNode BandCharacter::OnInstallFilter(DataArray* da){
+    sBoneMergeDir = 0;
+    sOutfitDir = da->Obj<ObjectDir>(2);
+    sToDir = da->Obj<ObjectDir>(3);
+    sInstrumentDir = da->Obj<ObjectDir>(4);
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnPreClear(DataArray* da){
+    Symbol sym = da->Sym(2);
+    FileMerger* fm = da->Obj<FileMerger>(3);
+    static Symbol ocn("OutfitConfig");
+    return DataNode(0);
+}
+
+void BandCharacter::SavePrefabFromCloset(){
+    MILO_ASSERT(0, 0xB95);
+}
+
+DataNode BandCharacter::OnSavePrefab(DataArray* da){
+    if(mTestPrefab) mTestPrefab->CopyCharDesc(this);
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnCopyPrefab(DataArray* da){
+    if(mTestPrefab) CopyCharDesc(mTestPrefab);
+    return DataNode(0);
+}
+
+DataNode BandCharacter::OnSetFileMerger(DataArray* da){
+    FilePathTracker tracker(FileRoot());
+    SetVisemes();
+    unk224 &= 0xfffffff2;
+    if(!mFileMerger) return DataNode(0);
+    FilePath fp70;
+    if(!mPrefab.Null()) fp70.SetRoot(MakeString("char/main/prefab/%s.milo", mPrefab));
+    mFileMerger->Select("prefab", fp70, unk5a1);
+    const char* bodyparts[] = {
+        "head", "eyebrows", "torso", "legs", "hands", "wrist", "rings", "feet", "hair", "facehair", "earrings", "glasses", "piercings"
+    };
+    for(const char** ptr = bodyparts; *ptr != 0; ptr++){
+        FilePath fp7c;
+        MakeOutfitPath(*ptr, fp7c);
+        mFileMerger->Select(*ptr, fp7c, unk5a1);
+    }
+    for(int i = 0; i < 5; i++){
+        mFileMerger->Select(BandCharDesc::GetInstrumentSym(i), FilePath(0), false);
+    }
+    FilePath fp88("");
+    FilePath fp94("");
+    FilePath fpa0("");
+    FilePath fpac("");
+    FilePath fpb8("");
+    FilePath fpc4("");
+    FilePath fpd0("");
+    FilePath fpdc("");
+    FilePath fpe8("");
+    FilePath fpf4("");
+    mPlayFlags &= 0xffcfffff;
+    Symbol animinst = BandCharDesc::GetAnimInstrument(mInstrumentType);
+    BandCharDesc::CharInstrumentType ty = BandCharDesc::GetInstrumentFromSym(animinst);
+    if(ty == BandCharDesc::kGuitar) mPlayFlags |= 0x100000;
+    else if(ty == BandCharDesc::kBass) mPlayFlags |= 0x200000;
+    if(ty != BandCharDesc::kNumInstruments){
+        if(!mGenre.Null() && !mTempo.Null()){
+            if(ty == BandCharacter::kMic){
+                mUseMicStandClips = mGenre != "banger";
+            }
+            fp94.SetRoot(MakeString("char/main/anim/%s/body/%s/realtime_%s.milo", animinst, mGender, mGenre));
+            fpa0.SetRoot(MakeString("char/main/anim/%s/body/%s/%s_%s.milo", animinst, mGender, mTempo, mGenre));
+            if(ty == BandCharDesc::kDrum){
+                fpac.SetRoot(MakeString("char/main/anim/%s/body_add/%s/%s_%s.milo", animinst, mGender, mTempo, mGenre));
+                fpb8.SetRoot(MakeString("char/main/anim/%s/body_add/%s/body_add_base.milo", animinst, mGender));
+            }
+        }
+        switch(ty){
+            case BandCharDesc::kGuitar:
+            case BandCharDesc::kBass:
+                fp88.SetRoot("char/main/rigging/guitar_rh.milo");
+                if(mGender == "female") fpf4.SetRoot("char/main/anim/rigging/guitar/fret_left_female.milo");
+                else fpf4.SetRoot("char/main/anim/rigging/guitar/fret_left.milo");
+                break;
+            case BandCharDesc::kDrum:
+                fp88.SetRoot("char/main/rigging/drum.milo");
+                fpc4.SetRoot(MakeString("char/main/anim/rigging/drum/stick_left_%s.milo", mGender));
+                fpd0.SetRoot(MakeString("char/main/anim/rigging/drum/stick_right_%s.milo", mGender));
+                if(mGender == "female"){
+                    fpdc.SetRoot("char/main/anim/rigging/drum/pedal_right_female.milo");
+                    fpe8.SetRoot("char/main/anim/rigging/drum/pedal_left_female.milo");
+                }
+                else {
+                    fpdc.SetRoot("char/main/anim/rigging/drum/pedal_right.milo");
+                    fpe8.SetRoot("char/main/anim/rigging/drum/pedal_left.milo");
+                }
+                break;
+            case BandCharDesc::kMic:
+                fp88.SetRoot("char/main/rigging/vocal.milo");
+                break;
+            case BandCharDesc::kKeyboard:
+                fp88.SetRoot("char/main/rigging/keyboard.milo");
+                break;
+            default:
+                MILO_FAIL("new instrument type added but not supported");
+                break;
+        }
+        if(ty != BandCharDesc::kDrum || !mDrumVenue.Null()){
+            FilePath fp100("");
+            MakeInstrumentPath(mInstrumentType, mDrumVenue, fp100);
+            mFileMerger->Select(mInstrumentType, fp100, unk5a1);
+        }
+    }
+    if(mInTourEnding && !mTestTourEndingVenue.Null()){
+        FilePath fp10c(MakeString("char/main/anim/%s/finale/%s/%s/tour_endings.milo", animinst, mGender, mTestTourEndingVenue));
+        mFileMerger->Select("tour_ending_clips", fp10c, false);
+    }
+    else {
+        if(TheLoadMgr.EditMode() && !mTestTourEndingVenue.Null()){
+            FilePath fp118(MakeString("char/main/anim/%s/finale/%s/%s/tour_endings.milo", animinst, mGender, mTestTourEndingVenue));
+            mFileMerger->Select("tour_ending_clips", fp118, false);
+        }
+        else {
+            mFileMerger->Select("tour_ending_clips", FilePath(""), false);
+        }
+    }
+    mFileMerger->Select("rigging", fp88, false);
+    mFileMerger->Select("body_realtime_clips", fp94, false);
+    mFileMerger->Select("body_tempo_clips", fpa0, false);
+    mFileMerger->Select("body_add_clips", fpac, false);
+    mFileMerger->Select("body_add_base", fpb8, false);
+    mFileMerger->Select("stick_left", fpc4, false);
+    mFileMerger->Select("stick_right", fpd0, false);
+    mFileMerger->Select("drum_pedal_right", fpdc, false);
+    mFileMerger->Select("drum_pedal_left", fpe8, false);
+    mFileMerger->Select("guitar_fret", fpf4, false);
+    SetDircuts();
+    unk5a1 = false;
+    return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(BandCharacter)

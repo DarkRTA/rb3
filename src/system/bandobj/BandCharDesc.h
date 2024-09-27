@@ -149,6 +149,8 @@ public:
     void SetWeight(float);
     void SetMuscle(float);
     void SetSkinColor(int);
+    void MakeInstrumentPath(Symbol, Symbol, FilePath&);
+    void MakeOutfitPath(Symbol, FilePath&);
     void CopyCharDesc(const BandCharDesc*);
     void ComputeDeformWeights(float*) const;
 
