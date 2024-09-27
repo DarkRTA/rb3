@@ -1210,13 +1210,13 @@ DataNode BandCharacter::OnSetFileMerger(DataArray* da){
     FilePath fp70;
     if(!mPrefab.Null()) fp70.SetRoot(MakeString("char/main/prefab/%s.milo", mPrefab));
     mFileMerger->Select("prefab", fp70, unk5a1);
-    const char* bodyparts[] = {
-        "head", "eyebrows", "torso", "legs", "hands", "wrist", "rings", "feet", "hair", "facehair", "earrings", "glasses", "piercings"
+    const char* bodyparts[14] = {
+        "head", "eyebrows", "torso", "legs", "hands", "wrist", "rings", "feet", "hair", "facehair", "earrings", "glasses", "piercings", 0
     };
-    for(const char** ptr = bodyparts; *ptr != 0; ptr++){
+    for(int i = 0; bodyparts[i] != 0; i++){
         FilePath fp7c;
-        MakeOutfitPath(*ptr, fp7c);
-        mFileMerger->Select(*ptr, fp7c, unk5a1);
+        MakeOutfitPath(bodyparts[i], fp7c);
+        mFileMerger->Select(bodyparts[i], fp7c, unk5a1);
     }
     for(int i = 0; i < 5; i++){
         mFileMerger->Select(BandCharDesc::GetInstrumentSym(i), FilePath(0), false);
