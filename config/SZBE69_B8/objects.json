@@ -1063,7 +1063,7 @@
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
 
-            "system/movie/CustomSplash_Wii.cpp": "MISSING",
+            "system/movie/CustomSplash_Wii.cpp": "NonMatching",
             "system/movie/Movie_Wii.cpp": "MISSING",
             "system/movie/Movie.cpp": "MISSING",
             "system/movie/Splash.cpp": "NonMatching",

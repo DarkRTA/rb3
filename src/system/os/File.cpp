@@ -4,116 +4,125 @@
 #include "os/Debug.h"
 #include "utl/FilePath.h"
 #include <vector>
+#include "os/BlockMgr.h"
 #include "os/System.h"
 #include "utl/Loader.h"
 #include "obj/DataFunc.h"
 #include "utl/Option.h"
 
 int File::sOpenCount[4];
-std::vector<File*> gFiles;
-File* gOpenCaptureFile;
+std::vector<File *> gFiles;
+File *gOpenCaptureFile;
 int gCaptureFileMode;
 static char gRoot[256];
 static char gExecRoot[256];
 static char gSystemRoot[256];
 std::vector<String> gDirList;
 int kNoHandle;
-DataArray* gFrameRateArray;
+DataArray *gFrameRateArray;
 bool gNullFiles;
 
-void DirListCB(const char* cc1, const char* cc2){
+void DirListCB(const char *cc1, const char *cc2) {
     gDirList.push_back(String(cc2));
 }
 
-const char* FileRoot(){
+const char *FileRoot() {
     return gRoot;
 }
 
-const char* FileExecRoot(){
+const char *FileExecRoot() {
     return gExecRoot;
 }
 
-const char* FileSystemRoot(){
+const char *FileSystemRoot() {
     return gSystemRoot;
 }
 
-static DataNode OnFileExecRoot(DataArray* da){
+static DataNode OnFileExecRoot(DataArray *da) {
     return DataNode(gExecRoot);
 }
 
-static DataNode OnFileRoot(DataArray* da){
+static DataNode OnFileRoot(DataArray *da) {
     return DataNode(gRoot);
 }
 
-static DataNode OnFileGetDrive(DataArray* da){
+static DataNode OnFileGetDrive(DataArray *da) {
     return DataNode(FileGetDrive(da->Str(1)));
 }
 
-static DataNode OnFileGetPath(DataArray* da){
+static DataNode OnFileGetPath(DataArray *da) {
     return DataNode(FileGetPath(da->Str(1), 0));
 }
 
-static DataNode OnFileGetBase(DataArray* da){
+static DataNode OnFileGetBase(DataArray *da) {
     return DataNode(FileGetBase(da->Str(1), 0));
 }
 
-static DataNode OnFileGetExt(DataArray* da){
+static DataNode OnFileGetExt(DataArray *da) {
     return DataNode(FileGetExt(da->Str(1)));
 }
 
-static DataNode OnFileMatch(DataArray* da){
+static DataNode OnFileMatch(DataArray *da) {
     return DataNode(FileMatch(da->Str(1), da->Str(2)));
 }
 
-static DataNode OnFileAbsolutePath(DataArray* da){
+static DataNode OnFileAbsolutePath(DataArray *da) {
     return DataNode(FileMakePath(da->Str(1), da->Str(2), 0));
 }
 
-static DataNode OnFileRelativePath(DataArray* da){
+static DataNode OnFileRelativePath(DataArray *da) {
     return DataNode(FileRelativePath(da->Str(1), da->Str(2)));
 }
 
-static DataNode OnWithFileRoot(DataArray* da){
+static DataNode OnWithFileRoot(DataArray *da) {
     FilePathTracker fpt(da->Str(1));
     int i;
     int thresh = da->Size() - 1;
-    for(i = 2; i < thresh; i++){
+    for (i = 2; i < thresh; i++) {
         da->Command(i)->Execute();
     }
     DataNode ret = da->Evaluate(i);
     return ret;
 }
 
-static DataNode OnSynchProc(DataArray* da){
+static DataNode OnSynchProc(DataArray *da) {
     TheDebug.Fail(MakeString("calling synchproc on non-pc platform"));
     return DataNode("");
 }
 
-static DataNode OnToggleFakeFileErrors(DataArray* da){
+static DataNode OnToggleFakeFileErrors(DataArray *da) {
     return DataNode(0);
 }
 
-void OnFrameRateRecurseCB(const char* cc1, const char* cc2){
+void OnFrameRateRecurseCB(const char *cc1, const char *cc2) {
     MILO_ASSERT(gFrameRateArray, 0x148);
     String str(cc2);
-    const char* keepStr = MakeString("_keep_%s.dta", PlatformSymbol(TheLoadMgr.GetPlatform()));
+    const char *keepStr =
+        MakeString("_keep_%s.dta", PlatformSymbol(TheLoadMgr.GetPlatform()));
     int theStrLen = strlen(str.c_str());
     int keepLen = strlen(keepStr);
     str = str.substr(0, theStrLen - keepLen);
     gFrameRateArray->Insert(gFrameRateArray->Size(), DataNode(str));
 }
 
-static DataNode OnEnumerateFrameRateResults(DataArray* da){
+static DataNode OnEnumerateFrameRateResults(DataArray *da) {
     DataNode ret(new DataArray(0), kDataArray);
     gFrameRateArray = ret.Array(0);
-    FileRecursePattern(MakeString("ui/framerate/venue_test/*%s", MakeString("_keep_%s.dta", PlatformSymbol(TheLoadMgr.GetPlatform()))), OnFrameRateRecurseCB, false);
+    FileRecursePattern(
+        MakeString(
+            "ui/framerate/venue_test/*%s",
+            MakeString("_keep_%s.dta", PlatformSymbol(TheLoadMgr.GetPlatform()))
+        ),
+        OnFrameRateRecurseCB,
+        false
+    );
     gFrameRateArray = 0;
     return ret;
 }
 
 extern void HolmesClientInit();
 
-void FileInit(){
+void FileInit() {
     strcpy(gRoot, ".");
     strcpy(gExecRoot, ".");
     strcpy(gSystemRoot, FileMakePath(gExecRoot, "../../system/run", 0));
@@ -132,14 +141,14 @@ void FileInit(){
     DataRegisterFunc("toggle_fake_file_errors", OnToggleFakeFileErrors);
     DataRegisterFunc("enumerate_frame_rate_results", OnEnumerateFrameRateResults);
     HolmesClientInit();
-    const char* optionStr = OptionStr("file_order", 0);
-    if(optionStr && *optionStr){
+    const char *optionStr = OptionStr("file_order", 0);
+    if (optionStr && *optionStr) {
         gOpenCaptureFile = NewFile(optionStr, 0xA04);
         MILO_ASSERT(gOpenCaptureFile, 0x1AE);
     }
 }
 
-void FileTerminate(){
+void FileTerminate() {
     delete gOpenCaptureFile;
     gOpenCaptureFile = 0;
     *gRoot = 0;
@@ -147,41 +156,43 @@ void FileTerminate(){
     *gSystemRoot = 0;
 }
 
-File* NewFile(const char* cc, int i){
-    File* retFile = 0;
-    if(gNullFiles){
+File *NewFile(const char *cc, int i) {
+    File *retFile = 0;
+    if (gNullFiles) {
         return new NullFile();
-    }
-    else {
-        if(!MainThread()){
+    } else {
+        if (!MainThread()) {
             MILO_WARN("NewFile(%s) from !MainThread()", cc);
         }
-        if(!cc || !*cc) return 0;
+        if (!cc || !*cc)
+            return 0;
         else {
-            if(strstr(cc, "/band3_ng/")){
+            if (strstr(cc, "/band3_ng/")) {
                 MILO_WARN("Loading files from the wrong branch: %s", cc);
                 return 0;
-            }
-            else {
-                
+            } else {
             }
         }
     }
 }
 
-bool FileExists(const char* filepath, int iMode){
+void FileDiscSpinUp() { TheBlockMgr.SpinUp(); }
+
+bool FileExists(const char *filepath, int iMode) {
     MILO_ASSERT((iMode & ~FILE_OPEN_NOARK) == 0, 0x2D5);
-    File* theFile = NewFile(filepath, iMode | 0x40002);
-    if(theFile){
+    File *theFile = NewFile(filepath, iMode | 0x40002);
+    if (theFile) {
         delete theFile;
         return true;
-    }
-    else return false;
+    } else
+        return false;
 }
 
-bool FileReadOnly(const char*){ return true; }
+bool FileReadOnly(const char *) {
+    return true;
+}
 
-const char* FileGetPath(const char* arg1, char* arg2){
+const char *FileGetPath(const char *arg1, char *arg2) {
     static char static_path[256];
     char *p2;
     if (arg2 == 0)
@@ -206,7 +217,7 @@ const char* FileGetPath(const char* arg1, char* arg2){
     return arg2;
 }
 
-const char* FileGetExt(const char* root) {
+const char *FileGetExt(const char *root) {
     const char *end = root + strlen(root);
     for (const char *search = end - 1; search >= root; search--) {
         if (*search == '.') {
@@ -218,40 +229,43 @@ const char* FileGetExt(const char* root) {
     return end;
 }
 
-const char* FileGetDrive(const char* file){
+const char *FileGetDrive(const char *file) {
     static char drive[256];
-    const char* p = strchr(file, ':');
-    if(p != 0){
+    const char *p = strchr(file, ':');
+    if (p != 0) {
         strncpy(drive, file, p - file);
         drive[p - file] = '\0';
-    }
-    else drive[0] = '\0';
+    } else
+        drive[0] = '\0';
     return drive;
 }
 
-const char* FileGetBase(const char* file, char* base){
+const char *FileGetBase(const char *file, char *base) {
     static char my_path[256];
-    const char* dir;
-    char* ext;
-    if(base == 0 && !MainThread())
+    const char *dir;
+    char *ext;
+    if (base == 0 && !MainThread())
         MILO_WARN("FileGetBase called from !MainThread with \"%s\"\n", file);
-    if(base == 0) base = my_path;
+    if (base == 0)
+        base = my_path;
     dir = strrchr(file, '/');
-    if((dir != 0) || (dir = strrchr(file, '\\'), (dir != 0)))
+    if ((dir != 0) || (dir = strrchr(file, '\\'), (dir != 0)))
         strcpy(base, dir + 1);
-    else strcpy(base, file);
+    else
+        strcpy(base, file);
     ext = strrchr(base, '.');
-    if(ext != 0) *ext = 0;
+    if (ext != 0)
+        *ext = 0;
     return base;
 }
 
-const char* FileGetName(const char* file){
+const char *FileGetName(const char *file) {
     static char path[256];
-    const char* dir = strrchr(file, '/');
-    if((dir != 0) || (dir = strrchr(file, '\\'), (dir != 0))){
+    const char *dir = strrchr(file, '/');
+    if ((dir != 0) || (dir = strrchr(file, '\\'), (dir != 0))) {
         strcpy(path, dir + 1);
-    }
-    else strcpy(path, file);
+    } else
+        strcpy(path, file);
     return path;
 }
 

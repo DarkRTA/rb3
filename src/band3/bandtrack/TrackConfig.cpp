@@ -4,8 +4,8 @@
 
 #include "decomp.h"
 
-TrackConfig::TrackConfig(BandUser* bu) : mUser(bu), unk_0x4(true), mTrackNum(0), mMaxSlots(0), unk_0x10(0),
-    unk_0x14(), mLefty(false), mCymbalLanes(0), mDisableHopos(0) {}
+TrackConfig::TrackConfig(BandUser* bu) : mUser(bu), kDualPerspective(true), mTrackNum(0), mMaxSlots(0), mNumSlots(0),
+    mName(), mLefty(false), mCymbalLanes(0), mDisableHopos(0) {}
 
 const BandUser* TrackConfig::GetBandUser() const { return mUser; }
 

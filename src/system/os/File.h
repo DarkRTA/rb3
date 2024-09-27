@@ -88,6 +88,8 @@ extern "C" {
     int FileWrite(int iFd, void* iBuff, unsigned int iLen);
     int FileMkDir();
 
+    void FileDiscSpinUp();
+
     bool FileMatch(const char*, const char*);
     void FileEnumerate(const char*, void(*)(const char*, const char*), bool, const char*, bool);
     void FileRecursePattern(const char*, void (*)(char const *,char const *), bool);

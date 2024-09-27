@@ -19,7 +19,7 @@ GemRepTemplate::GemRepTemplate(const TrackConfig& tc) : mConfig(SystemConfig("tr
     kTailMaxLength(mConfig->FindArray("tail_max_length", true)->Float(1)),
     kTailFrequencyRange(mConfig->FindArray("tail_min_freq", true)->Float(1), mConfig->FindArray("tail_max_freq", true)->Float(1)),
     kTailAmplitudeRange(mConfig->FindArray("tail_min_amp", true)->Float(1), mConfig->FindArray("tail_max_amp", true)->Float(1)),
-    mTrackCfg(tc), unk_0x3C(0), unk_0x40(1.0f), objectDir(NULL) {
+    mTrackCfg(tc), unk_0x3C(0), unk_0x40(1.0f), mObjectDir(NULL) {
     mSlots = (RndMat**)new void*[tc.GetMaxSlots()]; // it doesn't call the ctors, so i have to do This to just alloc
 }
 
@@ -69,7 +69,7 @@ int GemRepTemplate::GetRequiredFaceCount(int i) const {
 
 RndMat* GemRepTemplate::GetMatByTag(const char* c, int slot) {
     const char* s = mConfig->FindArray("mat_formats", true)->FindArray(c, true)->Str(1);
-    return objectDir->Find<RndMat>(MakeString("%s.mat", MakeString(s, slot < mTrackCfg.GetMaxSlots() ? mTrackCfg.GetSlotColor(slot) : "star")), true);
+    return mObjectDir->Find<RndMat>(MakeString("%s.mat", MakeString(s, slot < mTrackCfg.GetMaxSlots() ? mTrackCfg.GetSlotColor(slot) : "star")), true);
 }
 
 bool VertLess(const RndMesh::Vert& v1, const RndMesh::Vert& v2) {
@@ -80,13 +80,13 @@ bool VertLess(const RndMesh::Vert& v1, const RndMesh::Vert& v2) {
 }
 
 void GemRepTemplate::SetupTailVerts() {
-    objectDir->Find<RndMesh>("tail02.mesh", false)->Verts() = mTailVerts; // where assert
+    mObjectDir->Find<RndMesh>("tail02.mesh", false)->Verts() = mTailVerts; // where assert
     MILO_ASSERT(!(mTailVerts.size()%2), 212);
     std::sort(mTailVerts.begin(), mTailVerts.end(), VertLess);
-    unk_0x64 = mTailVerts;
+    mCapVerts = mTailVerts;
     int i = 420;
     mTailVerts.resize(i, true);
-    unk_0x64.resize(i, true);
+    mCapVerts.resize(i, true);
 }
 
 int GemRepTemplate::GetNumTailSections(GemRepTemplate::TailType type) const {

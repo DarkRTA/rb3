@@ -42,14 +42,14 @@ class GemRepTemplate {
     RndMat** mSlots; // 0x38
     float unk_0x3C;
     float unk_0x40;
-    ObjectDir* objectDir; // 0x44
+    ObjectDir* mObjectDir; // 0x44
     uint mNumTailSections;
     u32 pad1;
     float mTailSectionLen;
     u32 pad2;
 
     RndMesh::VertVector mTailVerts; // 0x58
-    RndMesh::VertVector unk_0x64;
+    RndMesh::VertVector mCapVerts;
 
     int pad[3];
 
