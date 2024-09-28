@@ -34,6 +34,35 @@ public:
     static void LoadStd(FixedSizeSaveableStream&, std::set<Symbol>&, int);
     static void EnablePrintouts(bool);
 
+    template <class T1, class T2> static void SaveStdFixed(FixedSizeSaveableStream& stream, const std::vector<T1, T2>& vec, int maxsize){
+        int savesize = T1::SaveSize(FixedSizeSaveable::sSaveVersion);
+        int vecsize = vec.size();
+        if(vecsize > maxsize){
+            MILO_WARN("The vector size is greater than the maximum supplied! size=%i max=%i\n", vecsize, maxsize);
+            vecsize = maxsize;
+        }
+        stream << vecsize;
+        for(int i = 0; i < vecsize; i++){
+            vec[i].SaveFixed(stream);
+        }
+        if(maxsize > vecsize) PadStream(stream, savesize * (maxsize - vecsize));
+    }
+
+    template <class T1, class T2> static void LoadStdFixed(FixedSizeSaveableStream& stream, std::vector<T1, T2>& vec, int maxsize, int i2){
+        int savesize = T1::SaveSize(i2);
+        if(vec.size() != 0){
+            MILO_WARN("vector is not empty!");
+            vec.clear();
+        }
+        int vecsize;
+        stream >> vecsize;
+        vec.resize(vecsize);
+        for(int i = 0; i < vecsize; i++){
+            vec[i].LoadFixed(stream, i2);
+        }
+        if(maxsize > vecsize) DepadStream(stream, savesize * (maxsize - vecsize));
+    }
+
     static int GetMaxSymbols(){
         MILO_ASSERT(sMaxSymbols >= 0, 0x1C0);
         return sMaxSymbols;

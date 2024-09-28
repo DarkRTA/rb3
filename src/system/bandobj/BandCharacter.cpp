@@ -482,6 +482,24 @@ void BandCharacter::PostLoad(BinStream& bs){
         test.Load(bs);
     }
     else BandCharDesc::Load(bs);
+    bs >> mPlayFlags;
+    bs >> mTempo;
+    if(gRev < 6){
+        if(gRev < 4){
+            int i; bs >> i;
+            if(gRev < 3){
+                Symbol s; bs >> s;
+            }
+        }
+        Symbol s; bs >> s;
+    }
+    if(gRev > 6) bs >> mDrumVenue;
+    if(gRev != 0) mTestPrefab.Load(bs, true, BandCharDesc::GetPrefabs());
+    if(gRev == 2 || gRev == 3 || gRev == 4){ bool b; bs >> b; }
+    if(gRev > 7){
+        if(gLoadingProxyFromDisk){ Symbol s; bs >> s; }
+        else bs >> mInstrumentType;
+    }
 }
 
 BEGIN_COPYS(BandCharacter)
