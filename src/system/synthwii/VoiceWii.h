@@ -212,7 +212,7 @@ public:
     void SetVolume(float);
     void SetVolume(float, bool);
 
-    int mState; // 0x0 this is an enum, figure out the values todo
+    int mState; // 0x0 todo this is an enum, figure out the values
     struct _AXVPB *mVoice; // 0x4
     unsigned char *mVoiceBuffer; // 0x8
     int mVoiceBufferSize; // 0xC
