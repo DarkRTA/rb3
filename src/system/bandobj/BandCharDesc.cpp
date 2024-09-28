@@ -1,6 +1,7 @@
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/BandHeadShaper.h"
 #include "obj/DataFunc.h"
+#include "obj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(BandCharDesc)
@@ -8,6 +9,14 @@ ObjectDir* gPrefabs;
 ObjectDir* gDeforms;
 Symbol gInstNames[6];
 BandCharDesc* gBandCharDescMe;
+
+const char* BandCharDesc::sDrumVenueMappings[] = {
+    "small_club", "small_club",
+    "arena", "big_club",
+    "big_club", "big_club",
+    "festival", "big_club",
+    "video", "none"
+};
 
 ObjectDir* BandCharDesc::GetPrefabs(){ return gPrefabs; }
 
@@ -503,6 +512,17 @@ void BandCharDesc::SetSkinColor(int i){
     }
 }
 
+Symbol BandCharDesc::NameToDrumVenue(const char* name){
+    for(const char** ptr = sDrumVenueMappings; *ptr != 0; ptr += 2){
+        if(strstr(name, *ptr)){
+            return Symbol(*ptr);
+        }
+    }
+    return Symbol(sDrumVenueMappings[0]);
+}
+
+DECOMP_FORCEACTIVE(BandCharDesc, "f", "female")
+
 BinStream& operator<<(BinStream& bs, const BandCharDesc::Patch& patch){
     bs << patch.mTexture;
     bs << patch.mCategory;
@@ -770,6 +790,38 @@ bool BandCharDesc::IsSameCharDesc(const BandCharDesc& desc) const {
     return bdesc.unk224 == 0;
 }
 
+int BandCharDesc::AddNewPatch(BandCharDesc::Patch::Category cat, const char* cc){
+    int size;
+    Patch patch;
+    patch.mCategory = cat;
+    patch.mMeshName = cc;
+    mPatches.push_back(patch);
+    size = mPatches.size();
+    return size - 1;
+}
+
+int BandCharDesc::FindPatchIndex(BandCharDesc::Patch::Category cat, const char* cc){
+    for(int i = 0; i < mPatches.size(); i++){
+        Patch& curpatch = mPatches[i];
+        if(curpatch.mCategory == cat && curpatch.mMeshName == cc) return i;
+    }
+    return -1;
+}
+
+BandCharDesc::Patch* BandCharDesc::GetPatch(int index){
+    MILO_ASSERT(( 0) <= (index) && (index) < ( mPatches.size()), 0x5CD);
+    return &mPatches[index];
+}
+
+void BandCharDesc::ClearPatch(BandCharDesc::Patch::Category cat, const char* cc){
+    for(std::vector<Patch>::iterator it = mPatches.begin(); it != mPatches.end(); it){
+        if(it->mCategory == cat && it->mMeshName == cc){
+            it = mPatches.erase(it);
+        }
+        else it++;
+    }
+}
+
 void BandCharDesc::Compress(RndTex* tex, bool b){
     tex->Compress(b);
 }
@@ -785,6 +837,18 @@ BEGIN_HANDLERS(BandCharDesc)
     if(ClassName() == StaticClassName()) HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x604)
 END_HANDLERS
+
+DataNode BandCharDesc::ListOutfits(Symbol s){
+    const char* str;
+    if(s == "prefab"){
+        str = MakeString("char/main/%s/*.milo", s);
+    }
+    else if(GetInstrumentFromSym(s) == kNumInstruments){
+        str = MakeString("char/main/%s/%s/*.milo", s, mGender);
+    }
+    else str = MakeString("char/main/%s/*.milo", s);
+    return MakeFileList(str, true, s == "drum" ? DrumCallback : 0);
+}
 
 BEGIN_CUSTOM_PROPSYNC(BandCharDesc::Patch)
     SYNC_PROP_MODIFY(category, o.mCategory, gBandCharDescMe->SetChanged(1))

@@ -19,6 +19,10 @@ public:
 
     class Patch : public FixedSizeSaveable {
     public:
+        enum Category {
+
+        };
+
         Patch();
         virtual ~Patch(){}
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
@@ -26,7 +30,7 @@ public:
 
         bool operator==(const Patch&) const;
         bool operator!=(const Patch&) const;
-        
+
         static int SaveSize(int);
 
         int mTexture; // 0x8
@@ -165,12 +169,20 @@ public:
     void CopyCharDesc(const BandCharDesc*);
     void ComputeDeformWeights(float*) const;
     bool IsSameCharDesc(const BandCharDesc&) const;
+    int AddNewPatch(Patch::Category, const char*);
+    int FindPatchIndex(Patch::Category, const char*);
+    Patch* GetPatch(int);
+    void ClearPatch(Patch::Category, const char*);
 
     DataNode ListOutfits(Symbol);
 
+    static const char* sDrumVenueMappings[];
+
     static CharInstrumentType GetInstrumentFromSym(Symbol);
+    static Symbol NameToDrumVenue(const char*);
     static Symbol GetAnimInstrument(Symbol);
     static Symbol GetInstrumentSym(int);
+    static bool DrumCallback(char*);
     static class CharClip* GetDeformClip(Symbol);
     static ObjectDir* GetPrefabs();
     static BandCharDesc* FindPrefab(const char*, bool);
