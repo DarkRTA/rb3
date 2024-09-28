@@ -177,6 +177,15 @@ BandCharDesc::Outfit::Outfit(){
     mSaveSizeMethod = &SaveSize;
 }
 
+inline bool BandCharDesc::Outfit::operator==(const BandCharDesc::Outfit& o) const {
+    return mEyebrows == o.mEyebrows && mEarrings == o.mEarrings && mFaceHair == o.mFaceHair && mGlasses == o.mGlasses && mHair == o.mHair &&
+        mPiercings == o.mPiercings && mFeet == o.mFeet && mHands == o.mHands && mLegs == o.mLegs && mRings == o.mRings && mTorso == o.mTorso && mWrist == o.mWrist;
+}
+
+inline bool BandCharDesc::Outfit::operator!=(const BandCharDesc::Outfit& o) const {
+    return !(*this == o);
+}
+
 void BandCharDesc::Outfit::SaveFixed(FixedSizeSaveableStream& stream) const {
     stream << mEyebrows;
     stream << mEarrings;
@@ -258,8 +267,25 @@ void BandCharDesc::InstrumentOutfit::LoadFixed(FixedSizeSaveableStream& stream, 
     stream >> mKeyboard;
 }
 
+inline bool BandCharDesc::InstrumentOutfit::operator==(const BandCharDesc::InstrumentOutfit& o) const {
+    return mGuitar == o.mGuitar && mBass == o.mBass && mDrum == o.mDrum && mMic == o.mMic && mKeyboard == o.mKeyboard;
+}
+
+inline bool BandCharDesc::InstrumentOutfit::operator!=(const BandCharDesc::InstrumentOutfit& o) const {
+    return !(*this == o);
+}
+
 BandCharDesc::Patch::Patch() : mTexture(0), mCategory(0), mUV(0.5f, 0.5f), mRotation(0), mScale(1.0f, 1.0f) {
     mSaveSizeMethod = &SaveSize;
+}
+
+inline bool BandCharDesc::Patch::operator==(const BandCharDesc::Patch& p) const {
+    return mTexture == p.mTexture && mCategory == p.mCategory && streq(mMeshName.c_str(), p.mMeshName.c_str()) &&
+        mUV == p.mUV && mRotation == p.mRotation && mScale == p.mScale;
+}
+
+inline bool BandCharDesc::Patch::operator!=(const BandCharDesc::Patch& p) const {
+    return !(*this == p);
 }
 
 void BandCharDesc::Patch::SaveFixed(FixedSizeSaveableStream& stream) const {
@@ -297,6 +323,17 @@ BandCharDesc::Head::Head() : mHide(0), mEyeColor(0), mShape(0), mChin(0), mChinW
     mNose(0), mNoseWidth(0.5f), mNoseHeight(0.5f), mEye(0), mEyeSeparation(0.5f), mEyeHeight(0.5f), mEyeRotation(0.5f), mMouth(0),
     mMouthWidth(0.5f), mMouthHeight(0.5f), mBrowSeparation(0.5f), mBrowHeight(0.5f) {
     mSaveSizeMethod = &SaveSize;
+}
+
+inline bool BandCharDesc::Head::operator==(const BandCharDesc::Head& h) const {
+    return mHide == h.mHide && mEyeColor == h.mEyeColor && mShape == h.mShape && mChin == h.mChin && mChinWidth == h.mChinWidth && mChinHeight == h.mChinHeight &&
+        mJawWidth == h.mJawWidth && mJawHeight == h.mJawHeight && mNose == h.mNose && mNoseWidth == h.mNoseWidth && mNoseHeight == h.mNoseHeight && mEye == h.mEye &&
+        mEyeSeparation == h.mEyeSeparation && mEyeHeight == h.mEyeHeight && mEyeRotation == h.mEyeRotation && mMouth == h.mMouth && mMouthWidth == h.mMouthWidth &&
+        mMouthHeight == h.mMouthHeight && mBrowSeparation == h.mBrowSeparation && mBrowHeight == h.mBrowHeight;
+}
+
+inline bool BandCharDesc::Head::operator!=(const BandCharDesc::Head& h) const {
+    return !(*this == h);
 }
 
 void BandCharDesc::Head::SetShape(BandHeadShaper& shaper){
@@ -690,28 +727,47 @@ BEGIN_COPYS(BandCharDesc)
 END_COPYS
 
 void BandCharDesc::CopyCharDesc(const BandCharDesc* desc){
+    SetPrefab(desc->mPrefab);
+    SetGender(desc->mGender);
+    SetSkinColor(desc->mSkinColor);
+    SetHeight(desc->mHeight);
+    SetWeight(desc->mWeight);
+    SetMuscle(desc->mMuscle);
+    if(mHead != desc->mHead){
+        if((mHead.mBrowHeight != desc->mHead.mBrowHeight) ||
+        (mHead.mBrowSeparation != desc->mHead.mBrowSeparation)){
+            SetChanged(2);
+        }
+        mHead = desc->mHead;
+        SetChanged(4);
+    }
+    if(mOutfit != desc->mOutfit){
+        mOutfit = desc->mOutfit;
+        SetChanged(1);
+    }
+    if(mInstruments != desc->mInstruments){
+        mInstruments = desc->mInstruments;
+        SetChanged(8);
+    }
+    if(mPatches.size() != desc->mPatches.size()){
+        SetChanged(1);
+        mPatches.resize(desc->mPatches.size());
+    }
 
+    for(int i = 0; i < mPatches.size(); i++){
+        if(mPatches[i] != desc->mPatches[i]){
+            mPatches[i] = desc->mPatches[i];
+            SetChanged(1);
+        }
+    }
 }
-
-    // Symbol mPrefab; // 0xc
-    // Symbol mGender; // 0x10
-    // int mSkinColor; // 0x14
-    // Head mHead; // 0x18
-    // Outfit mOutfit; // 0x70
-    // InstrumentOutfit mInstruments; // 0x198
-    // float mHeight; // 0x218
-    // float mWeight; // 0x21c
-    // float mMuscle; // 0x220
-    // int unk224; // 0x224 - likely a bitfield as seen in BandCharacter methods
-    // std::vector<Patch> mPatches; // 0x228
 
 bool BandCharDesc::IsSameCharDesc(const BandCharDesc& desc) const {
     BandCharDesc bdesc;
     bdesc.CopyCharDesc(this);
-    bool ret = false;
+    bdesc.unk224 = 0;
     bdesc.CopyCharDesc(&desc);
-    ret = ret == 0;
-    return ret;
+    return bdesc.unk224 == 0;
 }
 
 void BandCharDesc::Compress(RndTex* tex, bool b){

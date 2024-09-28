@@ -24,6 +24,9 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        bool operator==(const Patch&) const;
+        bool operator!=(const Patch&) const;
+        
         static int SaveSize(int);
 
         int mTexture; // 0x8
@@ -57,6 +60,8 @@ public:
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
         void SetShape(BandHeadShaper&);
+        bool operator==(const Head&) const;
+        bool operator!=(const Head&) const;
 
         static int SaveSize(int);
 
@@ -90,6 +95,8 @@ public:
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
         OutfitPiece* GetPiece(Symbol);
+        bool operator==(const Outfit&) const;
+        bool operator!=(const Outfit&) const;
 
         static int SaveSize(int);
 
@@ -115,6 +122,8 @@ public:
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
         OutfitPiece* GetPiece(Symbol);
+        bool operator==(const InstrumentOutfit&) const;
+        bool operator!=(const InstrumentOutfit&) const;
 
         static int SaveSize(int);
 

@@ -30,6 +30,10 @@ public:
         return *this;
     }
 
+    bool operator==(const Vector2& v) const {
+        return x == v.x && y == v.y;
+    }
+
     bool operator!() const {
         return x == 0.0f && y == 0.0f;
     }
