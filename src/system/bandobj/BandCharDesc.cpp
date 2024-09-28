@@ -3,6 +3,7 @@
 #include "obj/DataFunc.h"
 #include "utl/Symbols.h"
 
+INIT_REVS(BandCharDesc)
 ObjectDir* gPrefabs;
 ObjectDir* gDeforms;
 Symbol gInstNames[6];
@@ -27,13 +28,12 @@ void BandCharDesc::ReloadPrefabs(){
     }
     if(gPrefabs && old){
         MILO_ASSERT(gPrefabs != old, 0x49);
-        for(ObjDirItr<BandCharDesc> it(old, true); it != 0; ++it){
-            BandCharDesc* from = it;
-            BandCharDesc* to = FindPrefab(from->Name(), false); // this should be inlined
+        for(ObjDirItr<BandCharDesc> from(old, true); from != 0; ++from){
+            BandCharDesc* to = gPrefabs->Find<BandCharDesc>(from->Name(), false); // this should actually be FindPrefab but inlined
             MILO_ASSERT(from != to, 0x4E);
-            const std::vector<ObjRef*>& refs = it->Refs();
+            const std::vector<ObjRef*>& refs = from->Refs();
             while(!refs.empty()){
-                refs.back()->Replace(it, to);
+                refs.back()->Replace(from, to);
             }
         }
     }
@@ -363,6 +363,359 @@ void BandCharDesc::Head::LoadFixed(FixedSizeSaveableStream& stream, int){
 
 BandCharDesc::~BandCharDesc(){
 
+}
+
+BandCharDesc::OutfitPiece* BandCharDesc::Outfit::GetPiece(Symbol s){
+    if(s == "torso") return &mTorso;
+    else if(s == "legs") return &mLegs;
+    else if(s == "hands") return &mHands;
+    else if(s == "feet") return &mFeet;
+    else if(s == "hair") return &mHair;
+    else if(s == "wrist") return &mWrist;
+    else if(s == "facehair") return &mFaceHair;
+    else if(s == "rings") return &mRings;
+    else if(s == "piercings") return &mPiercings;
+    else if(s == "earrings") return &mEarrings;
+    else if(s == "glasses") return &mGlasses;
+    else if(s == "eyebrows") return &mEyebrows;
+    else return 0;
+}
+
+BandCharDesc::OutfitPiece* BandCharDesc::InstrumentOutfit::GetPiece(Symbol s){
+    if(s == "guitar") return &mGuitar;
+    else if(s == "bass") return &mBass;
+    else if(s == "drum") return &mDrum;
+    else if(s == "mic") return &mMic;
+    else if(s == "keyboard") return &mKeyboard;
+    else return 0;
+}
+
+void BandCharDesc::MakeOutfitPath(Symbol s, FilePath& fp){
+    Symbol piecename;
+    if(s == "head"){
+        if(!mHead.mHide) piecename = s;
+    }
+    else {
+        OutfitPiece* piece = mOutfit.GetPiece(s);
+        if(piece) piecename = piece->mName;
+        else MILO_WARN("unknown body part %s", s);
+    }
+    if(piecename.Null()) fp.SetRoot("");
+    else {
+        fp.SetRoot(MakeString("char/main/%s/%s/%s.milo", s, mGender, piecename));
+    }
+}
+
+void BandCharDesc::MakeInstrumentPath(Symbol s1, Symbol s2, FilePath& fp){
+    Symbol piecename;
+    OutfitPiece* piece = mInstruments.GetPiece(s1);
+    if(piece) piecename = piece->mName;
+    else MILO_WARN("unknown instrument %s", s1);
+    if(piecename.Null()) fp.SetRoot("");
+    else if(s1 != "drum"){
+        fp.SetRoot(MakeString("char/main/%s/%s.milo", s1, piecename));
+    }
+    else {
+        fp.SetRoot(MakeString("char/main/%s/%s_%s.milo", s1, piecename, s2));
+    }
+}
+
+void BandCharDesc::SetChanged(int i){
+    unk224 |= i;
+}
+
+void BandCharDesc::SetGender(Symbol s){
+    if(s != mGender){
+        mGender = s;
+        SetChanged(1);
+    }
+}
+
+void BandCharDesc::SetPrefab(Symbol s){
+    if(s != mPrefab){
+        mPrefab = s;
+        SetChanged(1);
+    }
+}
+
+void BandCharDesc::SetHeight(float f){
+    if(f != mHeight){
+        mHeight = f;
+        SetChanged(2);
+    }
+}
+
+void BandCharDesc::SetWeight(float f){
+    if(f != mWeight){
+        mWeight = f;
+        SetChanged(2);
+    }
+}
+
+void BandCharDesc::SetMuscle(float f){
+    if(f != mMuscle){
+        mMuscle = f;
+        SetChanged(2);
+    }
+}
+
+void BandCharDesc::SetSkinColor(int i){
+    if(i != mSkinColor){
+        mSkinColor = i;
+        SetChanged(1);
+    }
+}
+
+BinStream& operator<<(BinStream& bs, const BandCharDesc::Patch& patch){
+    bs << patch.mTexture;
+    bs << patch.mCategory;
+    bs << patch.mMeshName;
+    bs << patch.mUV;
+    bs << patch.mRotation;
+    bs << patch.mScale;
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, BandCharDesc::Patch& patch){
+    bs >> patch.mTexture;
+    bs >> patch.mCategory;
+    bs >> patch.mMeshName;
+    bs >> patch.mUV;
+    bs >> patch.mRotation;
+    bs >> patch.mScale;
+    return bs;
+}
+
+BinStream& operator<<(BinStream& bs, BandCharDesc::OutfitPiece& piece){
+    bs << piece.mName;
+    for(int i = 0; i < 3; i++){
+        unsigned char col = piece.mColors[i];
+        bs << col;
+    }
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, BandCharDesc::OutfitPiece& piece){
+    bs >> piece.mName;
+    unsigned char col;
+    bs >> col;
+    piece.mColors[0] = col;
+    bs >> col;
+    piece.mColors[1] = col;
+    if(BandCharDesc::gRev > 0xB){
+        bs >> col;
+        piece.mColors[2] = col;
+    }
+    return bs;
+}
+
+BinStream& operator<<(BinStream& bs, BandCharDesc::Outfit& outfit){
+    bs << outfit.mEyebrows;
+    bs << outfit.mEarrings;
+    bs << outfit.mFaceHair;
+    bs << outfit.mGlasses;
+    bs << outfit.mHair;
+    bs << outfit.mPiercings;
+    bs << outfit.mFeet;
+    bs << outfit.mHands;
+    bs << outfit.mLegs;
+    bs << outfit.mRings;
+    bs << outfit.mTorso;
+    bs << outfit.mWrist;
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, BandCharDesc::Outfit& outfit){
+    if(BandCharDesc::gRev < 5){
+        BandCharDesc::OutfitPiece piece;
+        bs >> piece;
+    }
+    else bs >> outfit.mEyebrows;
+    bs >> outfit.mEarrings;
+    if(BandCharDesc::gRev < 5){
+        BandCharDesc::OutfitPiece piece;
+        bs >> piece;
+    }
+    bs >> outfit.mFaceHair;
+    bs >> outfit.mGlasses;
+    bs >> outfit.mHair;
+    if(BandCharDesc::gRev < 5){
+        BandCharDesc::OutfitPiece piece;
+        bs >> piece;
+    }
+    bs >> outfit.mPiercings;
+    bs >> outfit.mFeet;
+    bs >> outfit.mHands;
+    bs >> outfit.mLegs;
+    bs >> outfit.mRings;
+    bs >> outfit.mTorso;
+    bs >> outfit.mWrist;
+    return bs;
+}
+
+BinStream& operator<<(BinStream& bs, BandCharDesc::InstrumentOutfit& outfit){
+    bs << outfit.mGuitar;
+    bs << outfit.mBass;
+    bs << outfit.mDrum;
+    bs << outfit.mMic;
+    bs << outfit.mKeyboard;
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, BandCharDesc::InstrumentOutfit& outfit){
+    bs >> outfit.mGuitar;
+    bs >> outfit.mBass;
+    bs >> outfit.mDrum;
+    bs >> outfit.mMic;
+    bs >> outfit.mKeyboard;
+    return bs;
+}
+
+BinStream& operator<<(BinStream& bs, BandCharDesc::Head& head){
+    bs << head.mHide;
+    bs << head.mEyeColor;
+    bs << head.mShape;
+    bs << head.mChin;
+    bs << head.mChinWidth;
+    bs << head.mChinHeight;
+    bs << head.mJawWidth;
+    bs << head.mJawHeight;
+    bs << head.mNose;
+    bs << head.mNoseWidth;
+    bs << head.mNoseHeight;
+    bs << head.mEye;
+    bs << head.mEyeSeparation;
+    bs << head.mEyeHeight;
+    bs << head.mEyeRotation;
+    bs << head.mMouth;
+    bs << head.mMouthWidth;
+    bs << head.mMouthHeight;
+    bs << head.mBrowSeparation;
+    bs << head.mBrowHeight;
+    return bs;
+}
+
+BinStream& operator>>(BinStream& bs, BandCharDesc::Head& head){
+    if(BandCharDesc::gRev > 7) bs >> head.mHide;
+    bs >> head.mEyeColor;
+    bs >> head.mShape;
+    bs >> head.mChin;
+    if(BandCharDesc::gRev > 6){
+        bs >> head.mChinWidth;
+        bs >> head.mChinHeight;
+    }
+    bs >> head.mJawWidth;
+    bs >> head.mJawHeight;
+    bs >> head.mNose;
+    if(BandCharDesc::gRev > 5) bs >> head.mNoseWidth;
+    bs >> head.mNoseHeight;
+    bs >> head.mEye;
+    bs >> head.mEyeSeparation;
+    bs >> head.mEyeHeight;
+    if(BandCharDesc::gRev > 10) bs >> head.mEyeRotation;
+    bs >> head.mMouth;
+    bs >> head.mMouthWidth;
+    bs >> head.mMouthHeight;
+    if(BandCharDesc::gRev > 8) bs >> head.mBrowSeparation;
+    bs >> head.mBrowHeight;
+    return bs;
+}
+
+void BandCharDesc::Save(BinStream& bs){
+    bs << packRevs(0, 0x11);
+    if(ClassName() == StaticClassName()) Hmx::Object::Save(bs);
+    bs << mPrefab;
+    bs << mGender;
+    bs << mSkinColor;
+    bs << mHead;
+    bs << mOutfit;
+    bs << mHeight;
+    bs << mWeight;
+    bs << mMuscle;
+    bs << mInstruments;
+    bs << mPatches;
+}
+
+BEGIN_LOADS(BandCharDesc)
+    LOAD_REVS(bs);
+    ASSERT_REVS(0x11, 0);
+    if(ClassName() == StaticClassName()) LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev > 0x10) bs >> mPrefab;
+    bs >> mGender;
+    if(gRev != 0){
+        bs >> mSkinColor;
+        if(gRev < 5){
+            int i, j;
+            bs >> i; bs >> j;
+        }
+        else bs >> mHead;
+    }
+    bs >> mOutfit;
+    if(gRev < 10){
+        Outfit o;
+        bs >> o;
+    }
+    if(gRev > 1){
+        int i88 = 0;
+        if(gRev < 0xF) bs >> i88;
+        if(gRev > 0xD) bs >> mHeight;
+        else {
+            float f17c[3] = { 0.5f, 1.0f, 0.0f };
+            mHeight = f17c[Mod(i88, 3)];
+            i88 /= 3;
+        }
+        if(gRev > 0xE){
+            bs >> mWeight;
+            bs >> mMuscle;
+        }
+        else {
+            float farr1[5] = { 0.5f, 1.0f, 0.5f, 0.0f, 0.5f };
+            mWeight = farr1[i88];
+            float farr2[5] = { 0.5f, 0.5f, 1.0f, 0.5f, 0.0f };
+            mMuscle = farr2[i88];
+        }
+        if(gRev < 3){ bool b; bs >> b; }
+    }
+    if(gRev > 3){
+        if(gRev < 0x10){ Symbol s; bs >> s; }
+        bs >> mInstruments;
+    }
+    if(gRev > 0xC) bs >> mPatches;
+END_LOADS
+
+BEGIN_COPYS(BandCharDesc)
+    if(ClassName() == StaticClassName()) COPY_SUPERCLASS(Hmx::Object);
+    CREATE_COPY(BandCharDesc)
+    if(c) CopyCharDesc(c);
+END_COPYS
+
+void BandCharDesc::CopyCharDesc(const BandCharDesc* desc){
+
+}
+
+    // Symbol mPrefab; // 0xc
+    // Symbol mGender; // 0x10
+    // int mSkinColor; // 0x14
+    // Head mHead; // 0x18
+    // Outfit mOutfit; // 0x70
+    // InstrumentOutfit mInstruments; // 0x198
+    // float mHeight; // 0x218
+    // float mWeight; // 0x21c
+    // float mMuscle; // 0x220
+    // int unk224; // 0x224 - likely a bitfield as seen in BandCharacter methods
+    // std::vector<Patch> mPatches; // 0x228
+
+bool BandCharDesc::IsSameCharDesc(const BandCharDesc& desc) const {
+    BandCharDesc bdesc;
+    bdesc.CopyCharDesc(this);
+    bool ret = false;
+    bdesc.CopyCharDesc(&desc);
+    ret = ret == 0;
+    return ret;
+}
+
+void BandCharDesc::Compress(RndTex* tex, bool b){
+    tex->Compress(b);
 }
 
 BEGIN_HANDLERS(BandCharDesc)

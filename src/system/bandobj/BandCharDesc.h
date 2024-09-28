@@ -155,6 +155,7 @@ public:
     void MakeOutfitPath(Symbol, FilePath&);
     void CopyCharDesc(const BandCharDesc*);
     void ComputeDeformWeights(float*) const;
+    bool IsSameCharDesc(const BandCharDesc&) const;
 
     DataNode ListOutfits(Symbol);
 
@@ -171,6 +172,7 @@ public:
         REGISTER_OBJ_FACTORY(BandCharDesc);
     }
     NEW_OBJ(BandCharDesc);
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
