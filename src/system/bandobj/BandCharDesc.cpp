@@ -113,8 +113,10 @@ void BandCharDesc::SaveFixed(FixedSizeSaveableStream& stream) const {
 }
 
 int BandCharDesc::SaveSize(int i){
-    int size = Head::SaveSize(i);
+    int size = 8;
+    size += Head::SaveSize(i);
     size += Outfit::SaveSize(i);
+    size += 12;
     size += InstrumentOutfit::SaveSize(i);
     size += Patch::SaveSize(i) * 0x10 + 0x4;
     if(FixedSizeSaveable::sPrintoutsEnabled){
@@ -144,9 +146,9 @@ BandCharDesc::OutfitPiece::OutfitPiece(){
 
 bool BandCharDesc::OutfitPiece::operator==(const BandCharDesc::OutfitPiece& piece) const {
     if(mName != piece.mName) return false;
-    if(mColors[0] != piece.mColors[0]) return false;
-    if(mColors[1] != piece.mColors[1]) return false;
-    if(mColors[2] != piece.mColors[2]) return false;
+    for(int i = 0; i < 3; i++){
+        if(mColors[i] != piece.mColors[i]) return false;
+    }
     return true;
 }
 
@@ -295,6 +297,72 @@ BandCharDesc::Head::Head() : mHide(0), mEyeColor(0), mShape(0), mChin(0), mChinW
     mNose(0), mNoseWidth(0.5f), mNoseHeight(0.5f), mEye(0), mEyeSeparation(0.5f), mEyeHeight(0.5f), mEyeRotation(0.5f), mMouth(0),
     mMouthWidth(0.5f), mMouthHeight(0.5f), mBrowSeparation(0.5f), mBrowHeight(0.5f) {
     mSaveSizeMethod = &SaveSize;
+}
+
+void BandCharDesc::Head::SetShape(BandHeadShaper& shaper){
+    shaper.AddDegrees("nose", mNose, &mNoseWidth, 2);
+    shaper.AddDegrees("mouth", mMouth, &mMouthWidth, 2);
+    shaper.AddDegrees("eye", mEye, &mEyeSeparation, 3);
+    shaper.AddFrame("shape", mShape, 1.0f);
+    shaper.AddDegrees("jaw", 0, &mJawWidth, 2);
+    shaper.AddDegrees("chin", mChin, &mChinWidth, 2);
+    shaper.AddDegrees("brow", 0, &mBrowSeparation, 2);
+    shaper.End();
+}
+
+void BandCharDesc::Head::SaveFixed(FixedSizeSaveableStream& stream) const {
+    stream << mEyeColor;
+    stream << mShape;
+    stream << mChin;
+    stream << mChinWidth;
+    stream << mChinHeight;
+    stream << mJawWidth;
+    stream << mJawHeight;
+    stream << mNose;
+    stream << mNoseWidth;
+    stream << mNoseHeight;
+    stream << mEye;
+    stream << mEyeSeparation;
+    stream << mEyeHeight;
+    stream << mEyeRotation;
+    stream << mMouth;
+    stream << mMouthWidth;
+    stream << mMouthHeight;
+    stream << mBrowSeparation;
+    stream << mBrowHeight;
+}
+
+int BandCharDesc::Head::SaveSize(int i){
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "BandCharDesc::Head", 0x4C);
+    }
+    return 0x4C;
+}
+
+void BandCharDesc::Head::LoadFixed(FixedSizeSaveableStream& stream, int){
+    stream >> mEyeColor;
+    stream >> mShape;
+    stream >> mChin;
+    stream >> mChinWidth;
+    stream >> mChinHeight;
+    stream >> mJawWidth;
+    stream >> mJawHeight;
+    stream >> mNose;
+    stream >> mNoseWidth;
+    stream >> mNoseHeight;
+    stream >> mEye;
+    stream >> mEyeSeparation;
+    stream >> mEyeHeight;
+    stream >> mEyeRotation;
+    stream >> mMouth;
+    stream >> mMouthWidth;
+    stream >> mMouthHeight;
+    stream >> mBrowSeparation;
+    stream >> mBrowHeight;
+}
+
+BandCharDesc::~BandCharDesc(){
+
 }
 
 BEGIN_HANDLERS(BandCharDesc)

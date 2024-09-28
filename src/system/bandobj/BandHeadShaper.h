@@ -12,6 +12,9 @@ public:
     ~BandHeadShaper();
 
     bool Start(ObjectDir*, Symbol, RndMesh*, SyncMeshCB*, bool);
+    void AddDegrees(const char*, int, float*, int);
+    void AddFrame(const char*, int, float);
+    void End();
 
     static ObjectDir* GetViseme(Symbol, bool);
 
