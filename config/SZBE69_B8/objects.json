@@ -1276,7 +1276,7 @@
             "system/synth/Utl.cpp": "MISSING",
             "system/synth/VoiceBeat.cpp": "MISSING",
             "system/synth/VorbisReader.cpp": "MISSING",
-            "system/synth/WavReader.cpp": "MISSING",
+            "system/synth/WavReader.cpp": "NonMatching",
 
             "system/synthwii/EnvelopeWii.cpp": "MISSING",
             "system/synthwii/FXWii.cpp": "MISSING",

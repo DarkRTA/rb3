@@ -98,7 +98,9 @@ public:
 
     void PollStream();
     void ClearLoopMarkers();
+    void ConsumeData(void**, int, int);
     void Init(float, float, Symbol, bool);
+    void InitInfo(int, int, bool, int);
     void Destroy();
 
     State mState; // 0x14
