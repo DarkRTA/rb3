@@ -19,10 +19,17 @@ public:
 
     class Patch : public FixedSizeSaveable {
     public:
+        enum Category {
+
+        };
+
         Patch();
         virtual ~Patch(){}
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
+        bool operator==(const Patch&) const;
+        bool operator!=(const Patch&) const;
 
         static int SaveSize(int);
 
@@ -41,6 +48,8 @@ public:
         virtual void SaveFixed(FixedSizeSaveableStream&) const;
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+        bool operator==(const OutfitPiece&) const;
+
         static int SaveSize(int);
 
         Symbol mName; // 0x8
@@ -55,6 +64,8 @@ public:
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
         void SetShape(BandHeadShaper&);
+        bool operator==(const Head&) const;
+        bool operator!=(const Head&) const;
 
         static int SaveSize(int);
 
@@ -88,6 +99,8 @@ public:
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
         OutfitPiece* GetPiece(Symbol);
+        bool operator==(const Outfit&) const;
+        bool operator!=(const Outfit&) const;
 
         static int SaveSize(int);
 
@@ -113,6 +126,8 @@ public:
         virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
         OutfitPiece* GetPiece(Symbol);
+        bool operator==(const InstrumentOutfit&) const;
+        bool operator!=(const InstrumentOutfit&) const;
 
         static int SaveSize(int);
 
@@ -153,20 +168,32 @@ public:
     void MakeOutfitPath(Symbol, FilePath&);
     void CopyCharDesc(const BandCharDesc*);
     void ComputeDeformWeights(float*) const;
+    bool IsSameCharDesc(const BandCharDesc&) const;
+    int AddNewPatch(Patch::Category, const char*);
+    int FindPatchIndex(Patch::Category, const char*);
+    Patch* GetPatch(int);
+    void ClearPatch(Patch::Category, const char*);
 
     DataNode ListOutfits(Symbol);
 
+    static const char* sDrumVenueMappings[];
+
     static CharInstrumentType GetInstrumentFromSym(Symbol);
+    static Symbol NameToDrumVenue(const char*);
     static Symbol GetAnimInstrument(Symbol);
     static Symbol GetInstrumentSym(int);
+    static bool DrumCallback(char*);
     static class CharClip* GetDeformClip(Symbol);
     static ObjectDir* GetPrefabs();
+    static BandCharDesc* FindPrefab(const char*, bool);
+    static void ReloadPrefabs();
     static int SaveSize(int);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandCharDesc);
     }
     NEW_OBJ(BandCharDesc);
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 

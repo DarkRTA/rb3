@@ -30,6 +30,10 @@ public:
         return *this;
     }
 
+    bool operator==(const Vector2& v) const {
+        return x == v.x && y == v.y;
+    }
+
     bool operator!() const {
         return x == 0.0f && y == 0.0f;
     }
@@ -37,6 +41,11 @@ public:
     float x;
     float y;
 };
+
+inline BinStream& operator<<(BinStream& bs, const Vector2& vec){
+    bs << vec.x << vec.y;
+    return bs;
+}
 
 inline BinStream& operator>>(BinStream& bs, Vector2& vec){
     bs >> vec.x >> vec.y;
