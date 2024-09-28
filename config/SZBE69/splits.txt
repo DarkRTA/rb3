@@ -1004,6 +1004,10 @@ system/bandobj/BandCharDesc.cpp:
 	.text       start:0x803D9BAC end:0x803DF620
 	.ctors      start:0x807EFF88 end:0x807EFF8C
 
+system/bandobj/BandHeadShaper.cpp:
+	.text       start:0x803DF620 end:0x803E0EB0
+	.ctors      start:0x807EFF8C end:0x807EFF90
+
 system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94

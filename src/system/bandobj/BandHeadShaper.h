@@ -14,9 +14,13 @@ public:
     bool Start(ObjectDir*, Symbol, RndMesh*, SyncMeshCB*, bool);
     void AddDegrees(const char*, int, float*, int);
     void AddFrame(const char*, int, float);
+    void AddChildBones(RndTransformable*);
+    void Reskin();
     void End();
 
     static ObjectDir* GetViseme(Symbol, bool);
+    static void Init();
+    static void Terminate();
 
     static int sNoseNum;
     static int sMouthNum;

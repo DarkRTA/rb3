@@ -7,7 +7,7 @@
 INIT_REVS(BandCharDesc)
 ObjectDir* gPrefabs;
 ObjectDir* gDeforms;
-Symbol gInstNames[6];
+Symbol gInstNames[6] = { Symbol(), Symbol(), Symbol(), Symbol(), Symbol(), Symbol() };
 BandCharDesc* gBandCharDescMe;
 
 const char* BandCharDesc::sDrumVenueMappings[] = {
