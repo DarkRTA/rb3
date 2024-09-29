@@ -1,4 +1,4 @@
-using _STLP_VENDOR_STD::strstreambuf;
-using _STLP_VENDOR_STD::istrstream;
-using _STLP_VENDOR_STD::ostrstream;
-using _STLP_VENDOR_STD::strstream;
+using _STLP_NEW_IO_NAMESPACE::strstreambuf;
+using _STLP_NEW_IO_NAMESPACE::istrstream;
+using _STLP_NEW_IO_NAMESPACE::ostrstream;
+using _STLP_NEW_IO_NAMESPACE::strstream;

@@ -9,7 +9,7 @@
  * in supporting documentation.  Silicon Graphics makes no
  * representations about the suitability of this software for any
  * purpose.  It is provided "as is" without express or implied warranty.
- */
+ */ 
 
 // WARNING: This is an internal header file, included by other C++
 // standard library headers.  You should not attempt to use this header
@@ -18,14 +18,14 @@
 #ifndef _STLP_INTERNAL_CTRAITS_FUNCTIONS_H
 #define _STLP_INTERNAL_CTRAITS_FUNCTIONS_H
 
-#ifndef _STLP_INTERNAL_FUNCTION_BASE_H
+#ifndef _STLP_INTERNAL_FUNCTION_BASE_H 
 #  include <stl/_function_base.h>
 #endif
 
 // This file contains a few small adapters that allow a character
 // traits class to be used as a function object.
 
-namespace _STLP_PRIV {
+_STLP_BEGIN_NAMESPACE
 
 template <class _Traits>
 struct _Eq_traits
@@ -78,7 +78,7 @@ struct _Lt_traits
 };
 #endif
 
-}
+_STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_CTRAITS_FUNCTIONS_H */
 

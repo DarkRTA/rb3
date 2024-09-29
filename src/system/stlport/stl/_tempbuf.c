@@ -10,13 +10,13 @@
  * Copyright (c) 1997
  * Moscow Center for SPARC Technology
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
@@ -30,10 +30,10 @@
 # include <stl/_tempbuf.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
 template <class _Tp>
-pair<_Tp*, ptrdiff_t>
+pair<_Tp*, ptrdiff_t> _STLP_CALL 
 __get_temporary_buffer(ptrdiff_t __len, _Tp*)
 {
   if (__len > ptrdiff_t(INT_MAX / sizeof(_Tp)))
@@ -48,7 +48,7 @@ __get_temporary_buffer(ptrdiff_t __len, _Tp*)
 
   return pair<_Tp*, ptrdiff_t>((_Tp*)0, 0);
 }
-}
+_STLP_END_NAMESPACE
 
 #endif /*  _STLP_TEMPBUF_C */
 

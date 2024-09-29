@@ -1,12 +1,12 @@
 /*
  *
  * Copyright (c) 2003
- * Franï¿½ois Dumont
+ * François Dumont
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
@@ -18,10 +18,10 @@
 #define _STLP_MOVE_CONSTRUCT_FWK_H
 
 #ifndef _STLP_TYPE_TRAITS_H
-#  include <stl/type_traits.h>
+# include <stl/type_traits.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
 /*************************************************************
  * Move constructor framework
@@ -35,7 +35,7 @@ template <class _Tp>
 class __move_source {
 public:
   explicit __move_source (_Tp &_src) : _M_data(_src)
-  {}
+  {};
 
   _Tp& get() const
   { return _M_data; }
@@ -55,24 +55,19 @@ struct __move_traits {
    * copy constructor is just fine. Most of the time the copy constructor is fine only
    * if the following info is true.
    */
+#if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND) && \
+   !defined (_STLP_CLASS_PARTIAL_SPECIALIZATION) && \
+   !defined (_STLP_NO_MOVE_SEMANTIC)
+  typedef typename _IsSTLportClass<_Tp>::_Ret implemented;
+#else
   typedef __false_type implemented;
-
+#endif /* _STLP_USE_PARTIAL_SPEC_WORKAROUND */
   /*
    * complete tells if the move is complete or partial, that is to say, does the source
    * needs to be destroyed once it has been moved.
    */
   typedef typename __type_traits<_Tp>::has_trivial_destructor complete;
 };
-
-#if !defined (_STLP_NO_MOVE_SEMANTIC)
-typedef __true_type __stlp_movable;
-#else
-typedef __false_type __stlp_movable;
-#endif
-
-}
-
-namespace _STLP_PRIV {
 
 /*
  * This struct should never be used if the user has not explicitely stipulated
@@ -84,16 +79,23 @@ template <class _Tp>
 struct _MoveSourceTraits {
   typedef typename __move_traits<_Tp>::implemented _MvImpRet;
   enum {_MvImp = __type2bool<_MvImpRet>::_Ret};
-  typedef typename __select<_MvImp, __move_source<_Tp>, _Tp const&>::_Ret _Type;
+  typedef typename __select<_MvImp,
+                            __move_source<_Tp>,
+                            _Tp const&>::_Ret _Type;
 };
 
 //The helper function
 template <class _Tp>
-inline typename _MoveSourceTraits<_Tp>::_Type
+inline _STLP_TYPENAME_ON_RETURN_TYPE _MoveSourceTraits<_Tp>::_Type
 _AsMoveSource (_Tp &src) {
   typedef typename _MoveSourceTraits<_Tp>::_Type _SrcType;
   return _SrcType(src);
 }
+
+struct __move_traits_POD {
+  typedef __false_type implemented;
+  typedef __true_type complete;
+};
 
 //Helper structs used for many class.
 template <class _Tp>
@@ -124,26 +126,15 @@ struct __move_traits_help {
 };
 
 template <class _Tp1, class _Tp2>
-struct __move_traits_help1 {
-  typedef __move_traits<_Tp1> _MoveTraits1;
-  typedef __move_traits<_Tp2> _MoveTraits2;
-
-  typedef typename _Lor2<typename _MoveTraits1::implemented,
-                         typename _MoveTraits2::implemented>::_Ret implemented;
-  typedef typename _Land2<typename _MoveTraits1::complete,
-                          typename _MoveTraits2::complete>::_Ret complete;
-};
-
-template <class _Tp1, class _Tp2>
 struct __move_traits_help2 {
   typedef __move_traits<_Tp1> _MoveTraits1;
   typedef __move_traits<_Tp2> _MoveTraits2;
 
-  typedef __stlp_movable implemented;
+  typedef __true_type implemented;
   typedef typename _Land2<typename _MoveTraits1::complete,
                           typename _MoveTraits2::complete>::_Ret complete;
 };
 
-}
+_STLP_END_NAMESPACE
 
 #endif /* _STLP_MOVE_CONSTRUCT_FWK_H */

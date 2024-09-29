@@ -2,19 +2,19 @@
  * Copyright (c) 1999
  * Silicon Graphics Computer Systems, Inc.
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  *
- */
+ */ 
 // WARNING: This is an internal header file, included by other C++
 // standard library headers.  You should not attempt to use this header
 // file directly.
@@ -25,18 +25,16 @@
 #ifndef _STLP_C_LOCALE_H
 #  include <stl/c_locale.h>
 #endif
-
 #ifndef _STLP_INTERNAL_LOCALE_H
 #  include <stl/_locale.h>
 #endif
-
 #ifndef _STLP_INTERNAL_ALGOBASE_H
 #  include <stl/_algobase.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
-class ctype_base {
+class _STLP_CLASS_DECLSPEC ctype_base {
 public:
   enum mask {
     space   = _Locale_SPACE,
@@ -60,9 +58,16 @@ template <class charT> class ctype_byname {};
 
 //ctype specializations
 
-template<>
-class ctype<char> : public locale::facet, public ctype_base {
-  friend class ctype<wchar_t>;
+_STLP_TEMPLATE_NULL
+class _STLP_CLASS_DECLSPEC ctype<char> : public locale::facet, public ctype_base {
+#ifndef _STLP_NO_WCHAR_T
+#  ifdef _STLP_MSVC
+    typedef ctype<wchar_t> _Wctype;
+    friend _Wctype;
+#  else
+    friend class ctype<wchar_t>;
+#  endif
+#endif
   friend class _Locale_impl;
 public:
 
@@ -83,34 +88,38 @@ public:
   const char* scan_not(mask __m, const char* __low, const char* __high) const;
 
   char        (toupper)(char __c) const { return do_toupper(__c); }
-  const char* (toupper)(char* __low, const char* __high) const {
-    return do_toupper(__low, __high);
+  const char* (toupper)(char* __low, const char* __high) const { 
+    return do_toupper(__low, __high); 
   }
 
   char        (tolower)(char __c) const { return do_tolower(__c); }
-  const char* (tolower)(char* __low, const char* __high) const {
-    return do_tolower(__low, __high);
+  const char* (tolower)(char* __low, const char* __high) const { 
+    return do_tolower(__low, __high); 
   }
-
+  
   char        widen(char __c) const { return do_widen(__c); }
-  const char* widen(const char* __low, const char* __high, char* __to) const {
-    return do_widen(__low, __high, __to);
+  const char* widen(const char* __low, const char* __high, char* __to) const { 
+    return do_widen(__low, __high, __to); 
   }
 
-  char        narrow(char __c, char __dfault) const {
-    return do_narrow(__c, __dfault);
+  char        narrow(char __c, char __dfault) const { 
+    return do_narrow(__c, __dfault); 
   }
   const char* narrow(const char* __low, const char* __high,
-                     char __dfault, char* __to) const {
-    return do_narrow(__low, __high, __dfault, __to);
+                     char __dfault, char* __to) const { 
+    return do_narrow(__low, __high, __dfault, __to); 
   }
 
-  static locale::id id;
+  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
+# if defined(_STLP_STATIC_CONST_INIT_BUG)
+  enum __TableSize { table_size = 256 };
+# else
   static const size_t table_size = 256;
+# endif
 
 protected:
   const mask* table() const _STLP_NOTHROW { return _M_ctype_table; }
-  static const mask* classic_table() _STLP_NOTHROW;
+  static const mask* _STLP_CALL classic_table() _STLP_NOTHROW;
 
   ~ctype();
 
@@ -137,10 +146,10 @@ private:
   bool _M_delete;
 };
 
-template<>
-class ctype_byname<char>: public ctype<char> {
+_STLP_TEMPLATE_NULL
+class _STLP_CLASS_DECLSPEC ctype_byname<char>: public ctype<char> {
 public:
-  explicit ctype_byname(const char*, size_t = 0, _Locale_name_hint* __hint = 0);
+  explicit ctype_byname(const char*, size_t = 0);
   ~ctype_byname();
 
   virtual char        do_toupper(char __c) const;
@@ -157,11 +166,12 @@ private:
   typedef ctype_byname<char> _Self;
   ctype_byname(_Self const&);
   _Self& operator = (_Self const&);
-  friend _Locale_name_hint* _Locale_extract_hint(ctype_byname<char>*);
 };
 
-template<>
-class ctype<wchar_t> : public locale::facet, public ctype_base
+
+# ifndef _STLP_NO_WCHAR_T
+_STLP_TEMPLATE_NULL
+class _STLP_CLASS_DECLSPEC ctype<wchar_t> : public locale::facet, public ctype_base 
 {
   friend class _Locale_impl;
 public:
@@ -176,11 +186,11 @@ public:
                     mask* __vec) const
     { return do_is(__low, __high, __vec); }
 
-  const wchar_t* scan_is(mask __m,
+  const wchar_t* scan_is(mask __m, 
                          const wchar_t* __low, const wchar_t* __high) const
     { return do_scan_is(__m, __low, __high); }
 
-  const wchar_t* scan_not (mask __m,
+  const wchar_t* scan_not (mask __m, 
                            const wchar_t* __low, const wchar_t* __high) const
     { return do_scan_not(__m, __low, __high); }
 
@@ -203,7 +213,7 @@ public:
                         char __dfault, char* __to) const
     { return do_narrow(__low, __high, __dfault, __to); }
 
-  static locale::id id;
+  static _STLP_STATIC_MEMBER_DECLSPEC locale::id id;
 
 protected:
   ~ctype();
@@ -225,10 +235,10 @@ protected:
                                    char, char*) const;
 };
 
-template<>
-class ctype_byname<wchar_t>: public ctype<wchar_t> {
+_STLP_TEMPLATE_NULL
+class _STLP_CLASS_DECLSPEC ctype_byname<wchar_t>: public ctype<wchar_t> {
 public:
-  explicit ctype_byname(const char* __name, size_t __refs = 0, _Locale_name_hint* __hint = 0);
+  explicit ctype_byname(const char* __name, size_t __refs = 0);
 
 protected:
   ~ctype_byname();
@@ -253,10 +263,13 @@ private:
   _Self& operator = (_Self const&);
 };
 
-}
+# endif /* WCHAR_T */
+
+_STLP_END_NAMESPACE
 
 #endif /* _STLP_INTERNAL_CTYPE_H */
 
 // Local Variables:
 // mode:C++
 // End:
+

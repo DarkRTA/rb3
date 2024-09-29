@@ -145,6 +145,18 @@ do { \
       __const_binary_operator_requirement_violation; \
   __y = __y; __x = __x; } while (0)
 
+
+#ifdef _STLP_NO_FUNCTION_PTR_IN_CLASS_TEMPLATE
+
+#define _STLP_CLASS_REQUIRES(__type_var, __concept)
+#define _STLP_CLASS_REQUIRES_SAME_TYPE(__type_x, __type_y)
+#define _STLP_CLASS_GENERATOR_CHECK(__func, __ret)
+#define _STLP_CLASS_UNARY_FUNCTION_CHECK(__func, __ret, __arg)
+#define _STLP_CLASS_BINARY_FUNCTION_CHECK(__func, __ret, __first, __second)
+#define _STLP_CLASS_REQUIRES_BINARY_OP(__opname, __ret, __first, __second)
+
+#else
+
 // Use this macro inside of template classes, where you would
 // like to place requirements on the template arguments to the class
 // Warning: do not pass pointers and such (e.g. T*) in as the __type_var,
@@ -212,6 +224,8 @@ do { \
   __binary_operator_requirement_violation>  \
   __dummy_ptr_##__func##__ret##__first##__second##_binary_op
 
+#endif
+
 /* helper class for finding non-const version of a type. Need to have
    something to assign to etc. when testing constant iterators. */
 
@@ -244,7 +258,7 @@ template <class _Type> struct __check_equal { };
 template <class _TypeX, class _TypeY>
 struct _STL_SAME_TYPE_ERROR {
   static void
-  __type_X_not_same_as_type_Y(_TypeX , _TypeY ) {
+  __type_X_not_same_as_type_Y(_TypeX , _TypeY ) { 
     __check_equal<_TypeX> t1 = __check_equal<_TypeY>();
   }
 };
@@ -289,7 +303,7 @@ template <class _Func, class _Ret, class _First, class _Second>
 struct _STL_BINARY_FUNCTION_ERROR {
   static _Ret
   __binary_function_requirement_violation(_Func& __f,
-                                          const _First& __first,
+                                          const _First& __first, 
                                           const _Second& __second) {
     return __f(__first, __second);
   }
@@ -299,7 +313,7 @@ template <class _Func, class _First, class _Second>
 struct _STL_BINARY_FUNCTION_ERROR<_Func, void, _First, _Second> {
   static void
   __binary_function_requirement_violation(_Func& __f,
-                                          const _First& __first,
+                                          const _First& __first, 
                                           const _Second& __second) {
     __f(__first, __second);
   }
@@ -364,14 +378,14 @@ struct _STL_ERROR {
   }
   template <class _Type>
   static _Type
-  __const_parameter_required_for_copy_constructor(_Type /* __a */,
+  __const_parameter_required_for_copy_constructor(_Type /* __a */, 
                                                   const _Type& __b) {
     _Type __c(__b);
     return __c;
   }
   template <class _Type>
   static _Type
-  __const_parameter_required_for_assignment_operator(_Type __a,
+  __const_parameter_required_for_assignment_operator(_Type __a, 
                                                      const _Type& __b) {
     __a = __b;
     return __a;
@@ -426,7 +440,7 @@ struct _STL_ERROR {
   }
   template <class _Iterator, class _Distance>
   static _Iterator
-  __iterator_addition_assignment_requirement_violation(_Iterator __i,
+  __iterator_addition_assignment_requirement_violation(_Iterator __i, 
                                                        _Distance __n) {
     __i += __n;
     return __i;
@@ -476,34 +490,34 @@ struct _STL_ERROR {
 
 /* Associated Type Requirements */
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 template <class _Iterator> struct iterator_traits;
-}
+_STLP_END_NAMESPACE
 
-template <class _Iter>
+template <class _Iter> 
 struct __value_type_type_definition_requirement_violation {
   typedef typename __STD::iterator_traits<_Iter>::value_type value_type;
 };
 
-template <class _Iter>
+template <class _Iter> 
 struct __difference_type_type_definition_requirement_violation {
   typedef typename __STD::iterator_traits<_Iter>::difference_type
           difference_type;
 };
 
-template <class _Iter>
+template <class _Iter> 
 struct __reference_type_definition_requirement_violation {
   typedef typename __STD::iterator_traits<_Iter>::reference reference;
 };
 
-template <class _Iter>
+template <class _Iter> 
 struct __pointer_type_definition_requirement_violation {
   typedef typename __STD::iterator_traits<_Iter>::pointer pointer;
 };
 
-template <class _Iter>
+template <class _Iter> 
 struct __iterator_category_type_definition_requirement_violation {
-  typedef typename __STD::iterator_traits<_Iter>::iterator_category
+  typedef typename __STD::iterator_traits<_Iter>::iterator_category 
           iterator_category;
 };
 
@@ -694,13 +708,13 @@ _RandomAccessIterator_requirement_violation(_RandAccIter __i) {
   // Refinement of LessThanComparable
   _LessThanComparable_concept_specification<_RandAccIter>::
     _LessThanComparable_requirement_violation(__i);
-  typedef typename
+  typedef typename 
         __value_type_type_definition_requirement_violation<_RandAccIter>
         ::value_type
     value_type;
   typedef typename
         __difference_type_type_definition_requirement_violation<_RandAccIter>
-        ::difference_type
+        ::difference_type 
     _Dist;
   typedef typename _Mutable_trait<_Dist>::_Type _MutDist;
 
