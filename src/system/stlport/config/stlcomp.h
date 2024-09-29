@@ -88,7 +88,13 @@
 #  include <config/stl_apple.h>
 # elif defined (__MWERKS__)
 /* Metrowerks CodeWarrior */
-#  include <config/stl_mwerks.h>
+#  if defined (__PPCBROADWAY__)
+#   include <config/stl_mwbroadway.h>
+#  elif defined (__PPCGECKO__)
+#   include <config/stl_mwgecko.h>
+#  else
+#   include <config/stl_mwerks.h>
+#  endif
 # elif defined(__hpux)
 /* HP compilers */
 #  include <config/stl_hpacc.h>

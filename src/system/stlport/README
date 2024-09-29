@@ -5,6 +5,7 @@ Sourced from https://sourceforge.net/projects/stlport/files/STLport/STLport%205.
 Modifications are made as needed to suit the decompilation project, including but not limited to:
 
 - Only the `stlport` directory has been included from the original package, as STLport iostreams/locale/etc. code are not necessary for this project.
+- Additional compiler configuration headers [`config/stl_mwbroadway.h`](config/stl_mwbroadway.h) and [`config/stl_mwgecko.h`](config/stl_mwgecko.h) have been added to support MWCC for GC/Wii.
 
 # License
 
