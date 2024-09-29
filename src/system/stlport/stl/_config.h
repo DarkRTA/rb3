@@ -520,15 +520,15 @@
 #endif
 
 #if !defined (_STLP_USE_RAW_SGI_ALLOCATORS)
-#  define _STLP_DEFAULT_ALLOCATOR(_Tp) allocator< _Tp >
-#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) __DFL_TMPL_PARAM(_Alloc, allocator< _Tp >)
-#  define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) allocator< pair < _Key, _Tp > >
+#  define _STLP_DEFAULT_ALLOCATOR(_Tp) StlNodeAlloc< _Tp >
+#  define _STLP_DEFAULT_ALLOCATOR_SELECT( _Tp ) __DFL_TMPL_PARAM(_Alloc, StlNodeAlloc< _Tp >)
+#  define _STLP_DEFAULT_PAIR_ALLOCATOR(_Key, _Tp) StlNodeAlloc< pair < _Key, _Tp > >
 #  if defined (_STLP_LIMITED_DEFAULT_TEMPLATES)
 #    define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) class _Alloc
 #    define _STLP_USE_WRAPPER_FOR_ALLOC_PARAM 1
 #  else
 #    define _STLP_DEFAULT_PAIR_ALLOCATOR_SELECT(_Key, _Tp ) \
-            class _Alloc = allocator< pair < _Key, _Tp > >
+            class _Alloc = StlNodeAlloc< pair < _Key, _Tp > >
 #  endif
 #else
 #  define _STLP_DEFAULT_ALLOCATOR( _Tp ) __sgi_alloc

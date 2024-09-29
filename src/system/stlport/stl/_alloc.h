@@ -639,6 +639,9 @@ _STLP_END_NAMESPACE
 
 #undef _STLP_DO_CLEAN_NODE_ALLOC
 
+// decomp hack: custom default allocator type
+#include <system/utl/StlAlloc.h>
+
 #endif /* _STLP_INTERNAL_ALLOC_H */
 
 // Local Variables:
