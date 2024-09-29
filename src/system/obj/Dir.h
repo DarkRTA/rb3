@@ -227,6 +227,7 @@ public:
     Hmx::Object* CurCam(){ return mCurCam; }
     bool IsSubDir() const { return mIsSubDir; }
     const char* GetPathName() const { return mPathName; }
+    KeylessHash<const char*, Entry>& HashTable(){ return mHashTable; }
 
     DataNode OnFind(DataArray*);
 

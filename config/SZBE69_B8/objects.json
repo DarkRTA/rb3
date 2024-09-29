@@ -988,7 +988,7 @@
             "system/char/ClipCompressor.cpp": "Matching",
             "system/char/ClipDistMap.cpp": "MISSING",
             "system/char/ClipGraphGen.cpp": "NonMatching",
-            "system/char/FileMerger.cpp": "MISSING",
+            "system/char/FileMerger.cpp": "NonMatching",
             "system/char/FileMergerOrganizer.cpp": "MISSING",
             "system/char/Waypoint.cpp": "NonMatching",
 
