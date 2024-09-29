@@ -3,6 +3,7 @@
 #include "obj/Dir.h"
 #include "char/FileMerger.h"
 #include "bandobj/BandCamShot.h"
+#include "bandobj/BandCharacter.h"
 #include "bandobj/BandCharDesc.h"
 
 class BandWardrobe : public virtual Hmx::Object {
@@ -25,7 +26,7 @@ public:
     Symbol GetPlayMode();
     void SetVenueDir(ObjectDir*);
     void StartVenueShot(BandCamShot*);
-    ObjectDir* GetCharacter(int) const;
+    BandCharacter* GetCharacter(int) const;
     void LoadPrefabPrefs();
     void SyncInterestObjects();
     void SetPlayMode(Symbol, BandCamShot*);

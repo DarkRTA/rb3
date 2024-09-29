@@ -18,6 +18,9 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void EnterDir() const;
+
+    static const char* sIkfs[];
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
