@@ -1011,6 +1011,9 @@ system/bandobj/BandHeadShaper.cpp:
 system/bandobj/BandRetargetVignette.cpp:
 	.text       start:0x803E0EB0 end:0x803E2710
 
+system/bandobj/BandWardrobe.cpp:
+	.text       start:0x803E2C74 end:0x803EA774
+
 system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94

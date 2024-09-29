@@ -10,6 +10,8 @@ class BandWardrobe : public virtual Hmx::Object {
 public:
     class TargetNames {
     public:
+        int FindTarget(Symbol) const;
+
         Symbol names[4];
     };
 
@@ -23,6 +25,8 @@ public:
     virtual void Load(BinStream&);
     virtual ~BandWardrobe();
 
+    int GetShotFlags(CamShot*);
+    Symbol GetCoopMode(BandCamShot*);
     Symbol GetPlayMode();
     void SetVenueDir(ObjectDir*);
     void StartVenueShot(BandCamShot*);
@@ -33,7 +37,23 @@ public:
     void SyncVignetteInterest(int);
     void SyncEnableBlinks(int);
     void ForceBlink(int);
-    class BandCharacter* FindTarget(Symbol, const TargetNames&);
+    void SetDir(ObjectDir*);
+    void SyncTransProxies();
+    void SyncPlayMode();
+    void SetContexts(Symbol);
+    void SetSongAnimGenre(Symbol);
+    void SetSongInfo(Symbol, Symbol);
+    void LoadMainCharacters(BandCamShot*);
+    BandCharacter* FindTarget(Symbol, const TargetNames&);
+    BandCharacter* FindTarget(Symbol);
+    bool AllCharsLoaded();
+    bool DircutRecurse(BandCamShot*, int);
+    bool AddDircut(BandCharacter*, BandCamShot*, Symbol, int);
+    bool AddDircut(BandCamShot*);
+    void ClearDircuts();
+    void SendMessage(Symbol, Symbol, bool);
+    bool ValidGenreGender(CamShot*);
+    void LoadCharacters(Symbol, bool);
 
     DataNode OnFindTarget(DataArray*);
     DataNode OnEnterVenue(DataArray*);
@@ -48,8 +68,13 @@ public:
     DataNode OnGetCurrentInterests(DataArray*);
     DataNode OnEnableDebugInterests(DataArray*);
 
+    static DataArray* GetRemap(Symbol);
     static DataArray* GetGroupArray(BandCharDesc::CharInstrumentType);
-
+    static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(BandWardrobe);
+    }
+    NEW_OBJ(BandWardrobe);
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -61,13 +86,10 @@ public:
     TargetNames unk34; // 0x34
     TargetNames unk44; // 0x44
     TargetNames unk54; // 0x54
-    TargetNames* unk64; // 0x64
-    int unk68; // 0x68
-    int unk6c; // 0x6c
-    int unk70; // 0x70
-    int unk74; // 0x74
+    TargetNames* mCurNames; // 0x64
+    BandCharacter* mTargets[4]; // 0x68
     Symbol unk78; // 0x78
-    int unk7c; // 0x7c
+    bool unk7c; // 0x7c
     ObjectDir* mVenueDir; // 0x80 - dir
     Symbol mGenre; // 0x84
     Symbol mTempo; // 0x88

@@ -208,4 +208,10 @@ inline void Interp(bool b1, bool b2, float f, bool& bres){
     bres = f < 1.0f ? b1 : b2;
 }
 
+inline bool IsPowerOf2(int num){
+    if(num < 0) return false;
+    else if(num == 0) return true;
+    else return (num & num - 1) == 0;
+}
+
 #endif
