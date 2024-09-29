@@ -87,6 +87,12 @@ public:
     bool HasLocalPlayer() const;
     int GetPlayerDifficulty() const;
     void SetCrowdRating(float, CrowdMeterState);
+    void SetSuppressSoloDisplay(bool);
+    void DropIn();
+    void DropOut();
+    void SoloHide();
+    void UnisonEnd();
+    void UnisonStart();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -104,7 +110,7 @@ public:
     bool unk1c; // 0x1c
     bool mInUse; // 0x1d
     bool unk1e; // 0x1e
-    bool unk1f; // 0x1f
+    bool mSoloDisplay; // 0x1f
     ObjPtr<RndDir, ObjectDir> mPlayerIntro; // 0x20
     ObjPtr<OverdriveMeter, ObjectDir> mStarPowerMeter; // 0x2c
     ObjPtr<StreakMeter, ObjectDir> mStreakMeter; // 0x38
@@ -127,8 +133,8 @@ public:
     ObjPtr<Task, ObjectDir> unke4; // 0xe4
     ObjPtr<Task, ObjectDir> unkf0; // 0xf0
     ObjPtr<RndGroup, ObjectDir> mBeatAnimsGrp; // 0xfc
-    bool unk108; // 0x108
-    bool unk109; // 0x109
-    int unk10c; // 0x10c
+    bool mShowOverDriveMeter; // 0x108
+    bool mShowCrowdMeter; // 0x109
+    int mTrackIdx; // 0x10c
     Symbol unk110; // 0x110
 };

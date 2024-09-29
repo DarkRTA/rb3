@@ -25,11 +25,11 @@ bool TrackConfig::GetDisableHopos() const { return mDisableHopos; }
 bool TrackConfig::UseLeftyGems() const { return mLefty; }
 
 bool TrackConfig::IsDrumTrack() const { return mUser->GetTrackType() == kTrackDrum; }
-bool TrackConfig::IsKeyboardTrack() const { return mUser->GetTrackType() == kTrackKeyboard; }
+bool TrackConfig::IsKeyboardTrack() const { return mUser->GetTrackType() == kTrackKeys; }
 
 bool TrackConfig::AllowsOverlappingGems() const {
     bool b = 0;
-    if (mUser->GetTrackType() == kTrackKeyboard || mUser->GetTrackType() == 4) b = true;
+    if (mUser->GetTrackType() == kTrackKeys || mUser->GetTrackType() == 4) b = true;
     return b;
 }
 
@@ -38,7 +38,7 @@ bool TrackConfig::AllowsPartialHits() const { return mUser->GetControllerType() 
 bool TrackConfig::IsRealGuitarTrack() const {
     TrackType t = mUser->GetTrackType();
     bool b = 0;
-    if (t == kTrackProGuitar || t == kTrackProBass) b = true;
+    if (t == kTrackRealGuitar || t == kTrackRealBass) b = true;
     return b;
 }
 
