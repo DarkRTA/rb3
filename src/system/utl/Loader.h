@@ -44,6 +44,7 @@ public:
     Loader* AddLoader(const FilePath&, LoaderPos);
     Loader* GetLoader(const FilePath&) const;
     void PollUntilLoaded(Loader*, Loader*);
+    void Poll();
     void RegisterFactory(const char*, LoaderFactoryFunc*);
     void StartAsyncUnload();
     void FinishAsyncUnload();

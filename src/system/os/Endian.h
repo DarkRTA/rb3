@@ -8,6 +8,10 @@ template<> void EndianSwapEq(unsigned int& i){
     i = i >> 0x18 | i << 0x18 | i >> 8 & 0xFF00 | (i & 0xFF00) << 8;
 }
 
+template<> void EndianSwapEq(unsigned short& s){
+    s = (s << 8 | s >> 8);
+}
+
 template<> void EndianSwapEq(short& s){
     s = (s << 8 | s >> 8);
 }

@@ -157,6 +157,7 @@ public:
     bool mIsOnlineRestricted;
     bool unkce69;
     bool unkce6a;
+    bool unkce6b; // checked in Utl's MaxAllowedHmxMaturityLevel, need to come up with a better name
 } __attribute__((aligned(32)));
 
 Symbol PlatformRegionToSymbol(PlatformRegion);

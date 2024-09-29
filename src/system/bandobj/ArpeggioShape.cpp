@@ -1,9 +1,20 @@
 #include "bandobj/ArpeggioShape.h"
 #include "utl/Symbols.h"
 
-ArpeggioShape::ArpeggioShape(RndGroup* grp, RndMesh* mesh, RndText* txt1, RndText* txt2, RndMat* mat, RndMatAnim* manim) : unk0(Hmx::Object::New<RndTransformable>()),
-    mParentGroup(grp), mChordShapeMesh(Hmx::Object::New<RndMesh>()), mFretNumbersChord(Hmx::Object::New<RndText>()), mChordLabel(Hmx::Object::New<RndText>()), mChordShapeMat(Hmx::Object::New<RndMat>()),
-    mFadeMatAnim(Hmx::Object::New<RndMatAnim>()) {
+ArpeggioShape::ArpeggioShape(
+    RndGroup *grp,
+    RndMesh *mesh,
+    RndText *txt1,
+    RndText *txt2,
+    RndMat *mat,
+    RndMatAnim *manim
+)
+    : unk0(Hmx::Object::New<RndTransformable>()), mParentGroup(grp),
+      mChordShapeMesh(Hmx::Object::New<RndMesh>()),
+      mFretNumbersChord(Hmx::Object::New<RndText>()),
+      mChordLabel(Hmx::Object::New<RndText>()),
+      mChordShapeMat(Hmx::Object::New<RndMat>()),
+      mFadeMatAnim(Hmx::Object::New<RndMatAnim>()) {
     mChordShapeMesh->Copy(mesh, Hmx::Object::kCopyDeep);
     mFretNumbersChord->Copy(txt1, Hmx::Object::kCopyDeep);
     mChordLabel->Copy(txt2, Hmx::Object::kCopyDeep);
@@ -16,7 +27,7 @@ ArpeggioShape::ArpeggioShape(RndGroup* grp, RndMesh* mesh, RndText* txt1, RndTex
     mChordShapeMesh->SetMat(mChordShapeMat);
 }
 
-ArpeggioShape::~ArpeggioShape(){
+ArpeggioShape::~ArpeggioShape() {
     UnhookFromParentGroup();
     RELEASE(mChordShapeMesh);
     RELEASE(mFretNumbersChord);
@@ -26,36 +37,36 @@ ArpeggioShape::~ArpeggioShape(){
     RELEASE(mFadeMatAnim);
 }
 
-void ArpeggioShape::HookupToParentGroup(){
-    if(mChordLabel->Showing()){
+void ArpeggioShape::HookupToParentGroup() {
+    if (mChordLabel->Showing()) {
         mParentGroup->AddObjectAtFront(mChordLabel);
     }
-    if(mFretNumbersChord->Showing()){
+    if (mFretNumbersChord->Showing()) {
         mParentGroup->AddObjectAtFront(mFretNumbersChord);
     }
-    if(mChordShapeMesh->Showing()){
+    if (mChordShapeMesh->Showing()) {
         mParentGroup->AddObjectAtFront(mChordShapeMesh);
     }
 }
 
-void ArpeggioShape::UnhookFromParentGroup(){
-    if(mChordLabel->Showing()){
+void ArpeggioShape::UnhookFromParentGroup() {
+    if (mChordLabel->Showing()) {
         mParentGroup->RemoveObject(mChordLabel);
     }
-    if(mFretNumbersChord->Showing()){
+    if (mFretNumbersChord->Showing()) {
         mParentGroup->RemoveObject(mFretNumbersChord);
     }
-    if(mChordShapeMesh->Showing()){
+    if (mChordShapeMesh->Showing()) {
         mParentGroup->RemoveObject(mChordShapeMesh);
     }
 }
 
-void ArpeggioShape::SetChordShape(RndMesh* mesh){
+void ArpeggioShape::SetChordShape(RndMesh *mesh) {
     mChordShapeMesh->SetGeomOwner(mesh ? mesh : mChordShapeMesh);
     mChordShapeMesh->SetShowing(true);
 }
 
-void ArpeggioShape::Reset(){
+void ArpeggioShape::Reset() {
     UnhookFromParentGroup();
     mChordShapeMesh->SetGeomOwner(mChordShapeMesh);
     mChordShapeMesh->SetShowing(false);
@@ -67,63 +78,95 @@ void ArpeggioShape::Reset(){
     mFadeMatAnim->SetFrame(0, 1.0f);
 }
 
-void ArpeggioShape::FadeOutChordShape(){
+void ArpeggioShape::FadeOutChordShape() {
     static float period = 0.1f;
-    if(mChordShapeMesh->Showing() || mFretNumbersChord->Showing()){
-        mFadeMatAnim->Animate(0.0f, false, 0.0f, RndAnimatable::k30_fps, 0.0f, 1.0f, period, 1.0f, dest);
+    if (mChordShapeMesh->Showing() || mFretNumbersChord->Showing()) {
+        mFadeMatAnim->Animate(
+            0.0f, false, 0.0f, RndAnimatable::k30_fps, 0.0f, 1.0f, period, 1.0f, dest
+        );
         mFretNumbersChord->SetShowing(false);
     }
 }
 
-void ArpeggioShape::ShowChordShape(bool show){
+void ArpeggioShape::ShowChordShape(bool show) {
     mChordShapeMesh->SetShowing(show);
     mFretNumbersChord->SetShowing(show);
 }
 
-void ArpeggioShape::SetChordLabel(const String& str, float f, bool b){
+void ArpeggioShape::SetChordLabel(const String &str, float f, bool b) {
     mChordLabel->SetText(str.c_str());
     Vector3 v(mChordLabel->mLocalXfm.v);
     v.x = f;
     mChordLabel->SetLocalPos(v);
     mChordLabel->SetShowing(str != "");
-    if(b){
+    if (b) {
         RndText::Alignment a = mChordLabel->GetAlignment();
-        if(a != RndText::kBottomLeft) mChordLabel->SetAlignment(RndText::kBottomLeft);
-    }
-    else {
+        if (a != RndText::kBottomLeft)
+            mChordLabel->SetAlignment(RndText::kBottomLeft);
+    } else {
         RndText::Alignment a = mChordLabel->GetAlignment();
-        if(a != RndText::kBottomRight) mChordLabel->SetAlignment(RndText::kBottomRight);
+        if (a != RndText::kBottomRight)
+            mChordLabel->SetAlignment(RndText::kBottomRight);
     }
 }
 
-void ArpeggioShape::SetFretNumber(const String& str, const Vector3& vec){
+void ArpeggioShape::SetFretNumber(const String &str, const Vector3 &vec) {
     mFretNumbersChord->SetText(str.c_str());
     mFretNumbersChord->SetLocalPos(vec);
     mFretNumbersChord->SetShowing(str != "");
 }
 
-void ArpeggioShape::SetYPos(float f){
+void ArpeggioShape::SetYPos(float f) {
     Transform tf;
     tf.Reset();
     tf.v.y = f;
     unk0->SetWorldXfm(tf);
 }
 
-float ArpeggioShape::GetYPos() const { return unk0->WorldXfm().v.y; }
-
-ArpeggioShapePool::ArpeggioShapePool(ObjectDir* dir, RndGroup* shapes, int i) : mChordShapeMesh(dir->Find<RndMesh>("chord_shape.mesh", true)),
-    mFretNumbersChord(dir->Find<RndText>("fret_numbers_chord.txt", true)), mChordLabel(dir->Find<RndText>("chord_label.txt", true)), mShapesGroup(shapes),
-    mChordShapeMat(dir->Find<RndMat>("chord_shape.mat", true)), mFadeMatAnim(dir->Find<RndMatAnim>("fade.mnm", true)), unk20(i), unk24(0) {
-    for(int n = 0; n < unk20; n++) CreateArpeggioShape();
+float ArpeggioShape::GetYPos() const {
+    return unk0->WorldXfm().v.y;
 }
 
-ArpeggioShapePool::~ArpeggioShapePool(){
-    for(std::list<ArpeggioShape*>::iterator it = mShapes.begin(); it != mShapes.end(); it++){
+ArpeggioShapePool::ArpeggioShapePool(ObjectDir *dir, RndGroup *shapes, int i)
+    : mChordShapeMesh(dir->Find<RndMesh>("chord_shape.mesh", true)),
+      mFretNumbersChord(dir->Find<RndText>("fret_numbers_chord.txt", true)),
+      mChordLabel(dir->Find<RndText>("chord_label.txt", true)), mShapesGroup(shapes),
+      mChordShapeMat(dir->Find<RndMat>("chord_shape.mat", true)),
+      mFadeMatAnim(dir->Find<RndMatAnim>("fade.mnm", true)), mInitialPoolSize(i),
+      mCurrentPoolSize(0) {
+    for (int n = 0; n < mInitialPoolSize; n++)
+        CreateArpeggioShape();
+}
+
+ArpeggioShapePool::~ArpeggioShapePool() {
+    for (std::list<ArpeggioShape *>::iterator it = mShapes.begin(); it != mShapes.end();
+         it++) {
         RELEASE(*it);
     }
 }
 
-void ArpeggioShapePool::CreateArpeggioShape(){
-    mShapes.push_back(new ArpeggioShape(mShapesGroup, mChordShapeMesh, mFretNumbersChord, mChordLabel, mChordShapeMat, mFadeMatAnim));
-    unk24++;
+void ArpeggioShapePool::CreateArpeggioShape() {
+    mShapes.push_back(new ArpeggioShape(
+        mShapesGroup,
+        mChordShapeMesh,
+        mFretNumbersChord,
+        mChordLabel,
+        mChordShapeMat,
+        mFadeMatAnim
+    ));
+    mCurrentPoolSize++;
+}
+
+ArpeggioShape *ArpeggioShapePool::GetArpeggioShape() {
+    if (mShapes.empty()) {
+        CreateArpeggioShape();
+        TheDebug.Notify(MakeString(
+            "Created new ArpeggioShape on the fly; initial pool size should be increased from %d to %d; report this incident to Matt Sharpe",
+            mInitialPoolSize,
+            mCurrentPoolSize
+        ));
+    }
+    ArpeggioShape *shape = mShapes.front();
+    mShapes.pop_front();
+    return shape;
 }
