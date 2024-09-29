@@ -2,12 +2,49 @@
 #include "game/Defines.h"
 #include "utl/Symbols.h"
 
-BandUser::BandUser() : unk_0x8(DefaultDifficulty()), unk_0xC(0), unk_0x10(10), unk_0x14(5), unk_0x18(0), unk_0x19(0), unk_0x1C(10),
-    unk_0x20(5), unk_0x30(0), unk_0x70(0), unk_0x78(0), unk_0x7C(0), unk_0x80(0), unk_0x84(0),
-    unk_0x85(0), unk_0x86(0) { unk_0x74 = none; }
+BandUser::BandUser()
+    : mDifficulty(DefaultDifficulty()), unk_0xC(0), mTrackType(kTrackNone),
+      mControllerType(kControllerNone), unk_0x18(0), unk_0x19(0), unk_0x1C(10),
+      unk_0x20(5), mChar(0), mAutoplay(0), mLastHitFraction(0), mTrack(0), mPlayer(0),
+      mParticipating(0), mIsWiiRemoteController(0), mJustDisconnected(0) {
+    mPreviousAward = none;
+}
 
-BandUser::~BandUser() { }
+BandUser::~BandUser() {}
+
+Difficulty BandUser::GetDifficulty() const {
+    return mDifficulty;
+}
+
+Symbol BandUser::GetDifficultySym() const {
+    return DifficultyToSym(mDifficulty);
+}
+
+bool BandUser::IsFullyInGame() const {
+    bool retVal = false;
+    if ((unk_0xC != 0) && (mTrackType != kTrackPending)
+        && (mTrackType != kTrackPendingVocals)) {
+        retVal = true;
+    }
+    return retVal;
+}
 
 ControllerType BandUser::GetControllerType() const {
-    return (ControllerType)unk_0x14;
+    return mControllerType;
+}
+
+TrackType BandUser::GetTrackType() const {
+    return mTrackType;
+}
+
+Symbol BandUser::GetTrackSym() const {
+    return TrackTypeToSym(mTrackType);
+}
+
+bool BandUser::HasChar() {
+    return mChar != 0;
+}
+
+bool NullLocalBandUser::IsNullUser() const {
+    return true;
 }
