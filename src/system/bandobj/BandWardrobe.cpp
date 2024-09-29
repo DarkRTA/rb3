@@ -10,6 +10,8 @@
 
 BandWardrobe* TheBandWardrobe;
 
+INIT_REVS(BandWardrobe);
+
 const char* FlagString(int flags){
     const char* flagstrs[] = { "FR", "FD", "FB", "FS", "MR", "MD", "MB", "MS", "Required", "Dircut", "Intro",
         "FinaleArena", "FinaleBigClub", "FinaleFestival", "FemaleGenreSplit", "MaleGenreSplit" };
@@ -298,7 +300,7 @@ bool BandWardrobe::ValidGenreGender(CamShot* shot){
     int flags = shot->Flags();
     if((flags & 0xF03) == 0xF03) return true;
     else {
-        if(!IsPowerOf2(flags & 0xF8000)){
+        if(!PowerOf2(flags & 0xF8000)){
             MILO_FAIL("%s has bad focus flags", PathName(shot));
         }
         int instnum;
@@ -327,6 +329,24 @@ BandCharacter* BandWardrobe::FindTarget(Symbol s){
     return FindTarget(s, *mCurNames);
 }
 
+DECOMP_FORCEACTIVE(BandWardrobe, "0")
+
+int BandWardrobe::GetInstrumentForTarget(Symbol mode, int i){
+    if(mode == "coop_bk"){
+        int arr[4] = { 1, 2, 3, 4 };
+        return arr[i];
+    }
+    else if(mode == "coop_gk"){
+        int arr[4] = { 0, 2, 3, 4 };
+        return arr[i];
+    }
+    else {
+        MILO_ASSERT(mode == "coop_bg", 0x420);
+        int arr[4] = { 1, 2, 3, 0 };
+        return arr[i];
+    }
+}
+
 void BandWardrobe::LoadCharacters(Symbol s, bool b){
     unk78 = s;
     unk7c = b;
@@ -336,12 +356,81 @@ void BandWardrobe::LoadCharacters(Symbol s, bool b){
 int InstrumentIndex(std::vector<Symbol>& syms, Symbol s){
     int idx = 0;
     for(; idx < syms.size(); idx++){
-        if(syms[idx] == s) break;
+        if(s == syms[idx]) break;
     }
     return idx;
 }
 
+Symbol GrabInstrument(std::vector<Symbol>& syms, Symbol s){
+    int idx = InstrumentIndex(syms, s);
+    if(idx == syms.size()) idx = 0;
+    s = syms[idx];
+    syms.erase(syms.begin() + idx);
+    return s;
+}
+
+const char* PrefabSuffix(char* c){
+    const char* names[2] = { "_male", "_female" };
+}
+
+DataNode BandWardrobe::GetUserTrack(int i){
+    static Message msg("get_user_track", DataNode(0));
+    msg[0] = DataNode(i);
+    return HandleType(msg);
+}
+
+void BandWardrobe::LoadMainCharacters(BandCamShot* shot){
+    MILO_ASSERT(DemandLoad() || !shot, 0x45C);
+    HandleType(on_loading_characters_msg);
+}
+
+void BandWardrobe::SetContexts(Symbol s){
+    for(int i = 0; i < 4; i++){
+        mTargets[i]->SetContext(s);
+    }
+}
+
+#define kNumTargets 4
+
+BandCharacter* BandWardrobe::GetCharacter(int which) const {
+    MILO_ASSERT(which >= 0 && which < kNumTargets, 0x5AC);
+    return mTargets[which];
+}
+
 SAVE_OBJ(BandWardrobe, 0x6D3)
+
+BEGIN_LOADS(BandWardrobe)
+    LOAD_REVS(bs)
+    ASSERT_REVS(5, 0)
+    LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev != 0){
+        Symbol s;
+        bs >> mGenre;
+        bs >> mTempo;
+        if(gRev > 4) bs >> mVocalGender;
+        bs >> s;
+        bs >> mShotSetPlayMode;
+        bs >> mPlayShot5;
+        if(gRev == 2 || gRev == 3){
+            Symbol s2; bs >> s2;
+            if(gRev > 2){
+                bs >> s2;
+                bs >> s2;
+                bs >> s2;
+            }
+        }
+        SetPlayMode(s, 0);
+    }
+    if(Dir()){
+        for(int i = 0; i < 4; i++){
+            mTargets[i] = Dir()->Find<BandCharacter>(MakeString("player%d", i), false);
+        }
+    }
+END_LOADS
+
+BEGIN_COPYS(BandWardrobe)
+    COPY_SUPERCLASS(Hmx::Object)
+END_COPYS
 
 #pragma push
 #pragma dont_inline on
@@ -368,6 +457,106 @@ BEGIN_HANDLERS(BandWardrobe)
     HANDLE_CHECK(0x73A)
 END_HANDLERS
 #pragma pop
+
+DataNode BandWardrobe::OnFindTarget(DataArray* da){
+    if(TheLoadMgr.EditMode() && da->Size() > 3){
+        StartVenueShot(da->Obj<BandCamShot>(3));
+    }
+    return DataNode(FindTarget(da->Sym(2), *mCurNames));
+}
+
+DataNode BandWardrobe::OnEnterVenue(DataArray* da){
+    MILO_ASSERT(!TheBandDirector, 0x750);
+    ObjectDir* dir = da->Obj<ObjectDir>(2);
+    MILO_ASSERT(dir, 0x752);
+    LoadCharacters(dir->Name(), false);
+    SetVenueDir(dir);
+    return DataNode(0);
+}
+
+DataNode BandWardrobe::OnUnloadVenue(DataArray* da){
+    for(int i = 0; i < 4; i++){
+        BandCharacter* bc = GetCharacter(i);
+        if(bc){
+            bc->ClearDircuts();
+            bc->SetTempoGenreVenue(Symbol(), Symbol(), "");
+            bc->SetInstrumentType(Symbol());
+            bc->StartLoad(false, bc->mInCloset, true);
+        }
+    }
+    return DataNode(0);
+}
+
+DataNode BandWardrobe::OnGetCurrentInterests(DataArray* da){
+    int playerIdx = da->Int(2);
+    MILO_ASSERT(playerIdx < kNumTargets, 0x772);
+    if(mTargets[playerIdx]) return mTargets[playerIdx]->OnGetCurrentInterests(0);
+    else {
+        DataArray* arr = new DataArray(1);
+        arr->Node(0) = DataNode(Symbol());
+        DataNode ret(arr, kDataArray);
+        arr->Release();
+        return DataNode(ret);
+    }
+}
+
+DataNode BandWardrobe::OnEnableDebugInterests(DataArray* da){
+    int playerIdx = da->Int(2);
+    bool i3 = da->Int(3);
+    MILO_ASSERT(playerIdx < kNumTargets, 0x785);
+    if(mTargets[playerIdx]){
+        mTargets[playerIdx]->SetDebugDrawInterestObjects(i3);
+    }
+    return DataNode(0);
+}
+
+DataNode BandWardrobe::OnEnterCloset(DataArray* da){
+    ObjectDir* dir = da->Obj<ObjectDir>(2);
+    MILO_ASSERT(dir, 0x795);
+    if(dir){
+        int i3 = da->Int(3);
+        if(i3 != -1){
+            mCurNames = &unk44;
+            SetContexts("closet");
+            CharDriver* driver = mTargets[i3]->GetDriver();
+            if(driver){
+                driver->SetClips(dir->Find<ObjectDir>("clips", false));
+                for(int i = 0; i < 4; i++){
+                    unk44.names[i] = i == i3 ? "closet_character" : "";
+                }
+                SetDir(dir);
+                for(int i = 0; i < 4; i++){
+                    mTargets[i]->SetShowing(i == i3);
+                }
+            }
+        }
+    }
+    return DataNode(0);
+}
+
+void BandWardrobe::SyncVignetteInterest(int playerIdx){
+    MILO_ASSERT(playerIdx < kNumTargets, 0x876);
+    BandCharacter* bc = FindTarget(mCurNames->names[playerIdx], *mCurNames);
+    if(bc){
+        bc->Character::SetFocusInterest(mPlayerForcedFocuses[playerIdx], 0);
+    }
+}
+
+void BandWardrobe::SyncEnableBlinks(int playerIdx){
+    MILO_ASSERT(playerIdx < kNumTargets, 0x883);
+    BandCharacter* bc = FindTarget(mCurNames->names[playerIdx], *mCurNames);
+    if(bc){
+        bc->EnableBlinks(mPlayerEnableBlinks[playerIdx], false);
+    }
+}
+
+void BandWardrobe::ForceBlink(int playerIdx){
+    MILO_ASSERT(playerIdx < kNumTargets, 0x891);
+    BandCharacter* bc = FindTarget(mCurNames->names[playerIdx], *mCurNames);
+    if(bc){
+        bc->ForceBlink();
+    }
+}
 
 BEGIN_PROPSYNCS(BandWardrobe)
     SYNC_PROP(genre, mGenre)

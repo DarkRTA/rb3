@@ -5,6 +5,7 @@
 #include "bandobj/BandCamShot.h"
 #include "bandobj/BandCharacter.h"
 #include "bandobj/BandCharDesc.h"
+#include "bandobj/BandDirector.h"
 
 class BandWardrobe : public virtual Hmx::Object {
 public:
@@ -51,10 +52,15 @@ public:
     bool AddDircut(BandCharacter*, BandCamShot*, Symbol, int);
     bool AddDircut(BandCamShot*);
     void ClearDircuts();
+    int GetInstrumentForTarget(Symbol, int);
     void SendMessage(Symbol, Symbol, bool);
     bool ValidGenreGender(CamShot*);
     void LoadCharacters(Symbol, bool);
+    bool DemandLoad() const {
+        return !TheBandDirector || !mDemandLoad.Null();
+    }
 
+    DataNode GetUserTrack(int);
     DataNode OnFindTarget(DataArray*);
     DataNode OnEnterVenue(DataArray*);
     DataNode OnUnloadVenue(DataArray*);
