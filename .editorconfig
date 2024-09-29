@@ -8,3 +8,10 @@ trim_trailing_whitespace = true
 [{*.c,*.h,*.cpp,*.hpp}]
 indent_style=space
 indent_size=4
+
+# info(Nate): got annoyed with having to manually undo whitespace changes and whatnot
+[**/stlport/**]
+indent_style = space
+indent_size = 2
+insert_final_newline = false
+trim_trailing_whitespace = false
