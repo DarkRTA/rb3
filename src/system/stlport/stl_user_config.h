@@ -36,9 +36,7 @@
  * If you want iostreams, you have to compile library in ../build/lib
  * and supply resulting library at link time.
  */
-/*
 #define _STLP_NO_IOSTREAMS 1
-*/
 
 /* 
  * Set _STLP_DEBUG to turn the "Debug Mode" on.
@@ -291,9 +289,7 @@
  * and pointer to class member method. So if you have instanciating any container with
  * such a type compilation will failed.
  */
-/*
 #define _STLP_USE_PTR_SPECIALIZATIONS 1
-*/
 
 /*
  * To achieve many different optimizations within the template implementations STLport
