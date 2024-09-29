@@ -539,7 +539,7 @@
             "network/Plugins/ConnectionManager.cpp": "MISSING",
             "network/Plugins/ConnectionOrientedStream.cpp": "MISSING",
             "network/Plugins/ConnectivityManager.cpp": "MISSING",
-            "network/Plugins/EmulationDevice.cpp": "Matching",
+            "network/Plugins/EmulationDevice.cpp": "NonMatching",
             "network/Plugins/EncryptionAlgorithm.cpp": "MISSING",
             "network/Plugins/EndPoint.cpp": "MISSING",
             "network/Plugins/HighLevelStream.cpp": "MISSING",

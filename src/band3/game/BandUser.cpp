@@ -3,7 +3,7 @@
 #include "utl/Symbols.h"
 
 BandUser::BandUser()
-    : mDifficulty(DefaultDifficulty()), unk_0xC(0), mTrackType(kTrackNone),
+    : mDifficulty(DefaultDifficulty()), unk_0xC(0), mTrackType(kTrackDrum),
       mControllerType(kControllerNone), unk_0x18(0), unk_0x19(0), unk_0x1C(10),
       unk_0x20(5), mChar(0), mAutoplay(0), mLastHitFraction(0), mTrack(0), mPlayer(0),
       mParticipating(0), mIsWiiRemoteController(0), mJustDisconnected(0) {
@@ -18,15 +18,6 @@ Difficulty BandUser::GetDifficulty() const {
 
 Symbol BandUser::GetDifficultySym() const {
     return DifficultyToSym(mDifficulty);
-}
-
-bool BandUser::IsFullyInGame() const {
-    bool retVal = false;
-    if ((unk_0xC != 0) && (mTrackType != kTrackPending)
-        && (mTrackType != kTrackPendingVocals)) {
-        retVal = true;
-    }
-    return retVal;
 }
 
 ControllerType BandUser::GetControllerType() const {

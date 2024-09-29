@@ -1,3 +1,3 @@
-#include "system/utl/LogFile.h"
+#include "NetLog.h"
 
-static LogFile NetLog = LogFile("netlog-%05d.txt");
+LogFile NetLog = LogFile("netlog-%05d.txt");
