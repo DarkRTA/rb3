@@ -36,6 +36,8 @@ struct _exception;
 #      define _STRUCT_FILE
 #    endif
 
+/*
+// decomp hack: this is unnecessary for our version of MWCC
 #    if defined(__MWERKS__) && !defined(N_PLAT_NLM)
 #      undef stdin
 #      undef stdout
@@ -45,6 +47,7 @@ struct _exception;
 #      define stdout  (&_STLP_VENDOR_CSTD::__files[1])
 #      define stderr  (&_STLP_VENDOR_CSTD::__files[2])
 #    endif
+*/
 
 #  endif /* WINCE */
 

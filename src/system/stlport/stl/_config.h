@@ -51,9 +51,12 @@
 
 /* Include useful information about system:
  */
+/*
+// decomp hack: skip this include to prevent VS Code include issues
 #ifdef __linux__
 #  include <features.h>
 #endif
+*/
 
 
 /* Definition of the STLport version informations */

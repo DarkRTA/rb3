@@ -1,6 +1,7 @@
 #ifndef OBJ_DATA_H
 #define OBJ_DATA_H
 #include "utl/BinStream.h"
+#include "utl/PoolAlloc.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
