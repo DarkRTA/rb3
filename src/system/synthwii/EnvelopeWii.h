@@ -4,7 +4,6 @@
 #include "system/os/Debug.h"
 #include "system/os/Timer.h"
 
-
 class EnvelopeWii {
 public:
     EnvelopeWii();
@@ -21,7 +20,7 @@ public:
     float mReleaseDuration; // 0x34
 
     bool mInRelease; // 0x38
-    bool mIsPaused; // 0x39 
+    bool mIsPaused; // 0x39
 
     float mReleaseStart; // 0x3C
 };

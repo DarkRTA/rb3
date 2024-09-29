@@ -199,7 +199,7 @@ public:
         _AXPB pb; // 0x28
     };
 
-    Voice(const void*, int, bool, bool);
+    Voice(const void *, int, bool, bool);
     ~Voice();
     void *GetAddr();
     bool IsPaused();

@@ -258,6 +258,16 @@ void UsbMidiGuitar::SetFretDown(int pad, int str, bool down){
     mFretDown[pad][str] = down;
 }
 
+void UsbMidiGuitar::UpdateStringStrummed(int pad, int str){
+    mLastSixStringsStrummed[pad][6] = mLastSixStringsStrummed[pad][5];
+    mLastSixStringsStrummed[pad][5] = mLastSixStringsStrummed[pad][4];
+    mLastSixStringsStrummed[pad][4] = mLastSixStringsStrummed[pad][3];
+    mLastSixStringsStrummed[pad][3] = mLastSixStringsStrummed[pad][2];
+    mLastSixStringsStrummed[pad][2] = mLastSixStringsStrummed[pad][1];
+    mLastSixStringsStrummed[pad][1] = mLastSixStringsStrummed[pad][0];
+    mLastSixStringsStrummed[pad][0] = str;
+}
+
 Queue::Queue(int i) : mArrayStart(0) {
     Initialize(i);
 }
