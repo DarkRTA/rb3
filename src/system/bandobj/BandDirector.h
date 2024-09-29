@@ -70,9 +70,10 @@ public:
     bool PostProcsFromPresets(const RndPostProc*&, const RndPostProc*&, float&);
     void UpdatePostProcOverlay(const char*, const RndPostProc*, const RndPostProc*, float);
 
-    bool IsMusicVideo(){
-        return strstr(mVenue.mName.Str(), "video");
-    }
+    bool IsMusicVideo();
+    // bool IsMusicVideo(){
+    //     return strstr(mVenue.mName.Str(), "video");
+    // }
     LightPresetManager* LightPresetMgr(){
         return mCurWorld ? &mCurWorld->mPresetManager : 0;
     }

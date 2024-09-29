@@ -2,9 +2,11 @@
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/BandDirector.h"
 #include "char/CharInterest.h"
+#include "obj/DataUtl.h"
 #include "obj/Utl.h"
 #include "rndobj/TransProxy.h"
 #include "rndobj/Wind.h"
+#include <algorithm>
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -379,9 +381,104 @@ DataNode BandWardrobe::GetUserTrack(int i){
     return HandleType(msg);
 }
 
+// TODO: remove this once LoadMainCharacters is fully matched
+DECOMP_FORCEACTIVE(BandWardrobe, "DemandLoad() || !shot", "PowerOf2(ff)", "male", "pc", "xbox", "%s_budget_%s", "could not find fallback prefab",
+    "none", "guitar", "bass", "drum", "keyboard",
+    "j != DIM(instOrder)", "NOTIFY: %s (%s) has no %s\n", "kelly02_triburst", "mb4_triburst", "generic_zebra", "e935_resource", "m50_resource", "hey, we shouldn't be here")
+
 void BandWardrobe::LoadMainCharacters(BandCamShot* shot){
     MILO_ASSERT(DemandLoad() || !shot, 0x45C);
     HandleType(on_loading_characters_msg);
+    Symbol playmode = GetPlayMode();
+    Symbol gender = female;
+    if(shot){
+        int shotflags = GetShotFlags(shot);
+        if((shotflags & 0xFF) != 0xFF){
+            int flags = shot->Flags();
+            int ff = flags & 0xF8000;
+            MILO_ASSERT(PowerOf2(ff), 0x479);
+            for(int i = 0; i < 5; i++){
+                if(ff == gInstFocus[i]){
+                    if(shotflags & 0xF0){
+                        gender = "male";
+                    }
+                    break;
+                }
+            }
+            flags = shotflags >> 4;
+            if(shotflags & 0xF) flags = shotflags;
+
+            for(int i = 0; i < 4; i++){
+                if(flags & 1 << i){
+                    mGenre = gGenres[i];
+                    break;
+                }
+            }
+        }
+    }
+    std::vector<Symbol> syms(4);
+    for(int i = 0; i < 4; i++){
+        syms[i] = BandCharDesc::GetInstrumentSym(GetInstrumentForTarget(playmode, i));
+    }
+    int iarr[4];
+    int count = 0;
+    for(int i = 0; i < 4; i++){
+        DataNode tracknode = GetUserTrack(i);
+        Symbol inst = "none";
+        if(tracknode.Type() != kDataUnhandled){
+            int instidx = InstrumentIndex(syms, tracknode.Sym(0));
+            if(instidx != syms.size()){
+                inst = GrabInstrument(syms, tracknode.Sym(0));
+                goto lol;
+            }
+            iarr[i] = i;
+            count++;
+        }
+        else {
+lol:
+            mTargets[i]->SetInstrumentType(inst);
+        }
+    }
+    for(int i = 0; i < count; i++){
+        int i15 = iarr[i];
+        Symbol instsyms[5] = { "guitar", "bass", "mic", "drum", "keyboard" };
+        int instidx = 0;
+        for(; instidx < 5; instidx++){
+            if(InstrumentIndex(syms, instsyms[instidx]) != syms.size()) break;
+        }
+        mTargets[i15]->SetInstrumentType(GrabInstrument(syms, instsyms[instidx]));
+    }
+    if(InstrumentIndex(syms, mic) != syms.size()){
+
+    }
+}
+
+void BandWardrobe::StartClipLoads(bool b, BandCamShot* shot){
+    if(shot){
+        ClearDircuts();
+        AddDircut(shot);
+        b = true;
+    }
+    for(int i = 0; i < 4; i++){
+        if(b) mTargets[i]->SetTempoGenreVenue(mTempo, mGenre, unk78.Str());
+        else mTargets[i]->SetTempoGenreVenue(Symbol(), Symbol(), unk78.Str());
+        DataArray* mac = DataGetMacro("HX_SYSTEST");
+        if(!mac && TheBandDirector->IsMusicVideo()){
+            BandCharDesc* desc = Hmx::Object::New<BandCharDesc>();
+            desc->mHead.mHide = true;
+            mTargets[i]->CopyCharDesc(desc);
+            delete desc;
+            b = false;
+        }
+        else mTargets[i]->StartLoad(unk7c, mTargets[i]->mInCloset, false);
+    }
+    FileMerger* merger = Dir()->Find<FileMerger>("crowd_clips.fm", false);
+    if(merger){
+        static Message msg("load_tempo", DataNode(0), DataNode(0), DataNode(0));
+        msg[0] = DataNode(b ? mTempo : Symbol());
+        msg[1] = DataNode(unk7c);
+        merger->HandleType(msg);
+    }
 }
 
 void BandWardrobe::SetContexts(Symbol s){
@@ -395,6 +492,57 @@ void BandWardrobe::SetContexts(Symbol s){
 BandCharacter* BandWardrobe::GetCharacter(int which) const {
     MILO_ASSERT(which >= 0 && which < kNumTargets, 0x5AC);
     return mTargets[which];
+}
+
+DECOMP_FORCEACTIVE(BandWardrobe, "Bandcharacter is not target")
+
+bool BandWardrobe::AddDircut(BandCharacter* bchar, BandCamShot*, Symbol, int){
+    if(!bchar) MILO_FAIL("BandWardrobe::AddDircut character is NULL");
+    MakeString("%s could not find directed cut group %s for inst %s");
+    MakeString("%s intro camera looking for non-intro anim group");
+    MakeString("%s can't load %s, group is %s, character is %s");
+}
+
+void BandWardrobe::SelectExtra(FileMerger::Merger& merger){
+    FilePathTracker tracker(FileRoot());
+    ObjectDir* dir = merger.mDir;
+    if(!dir) return;
+    else {
+        DataNode node = dir->PropertyArray("proxies");
+        DataArray* proparr = node.Array(0);
+        for(std::list<Symbol>::iterator it = unk2c.begin(); it != unk2c.end(); ++it){
+            Symbol cur = *it;
+            for(int i = 0; i < proparr->Size(); i++){
+                if(cur == proparr->Sym(i)){
+                    unk2c.insert(it, *it);
+                    FilePath fp(MakeString("char/extras/%s.milo", cur));
+                }
+            }
+        }
+        MILO_FAIL("Couldn't find match!");
+    }
+}
+
+BandCharDesc* BandWardrobe::GetPrefab(int target, int variation){
+    MILO_ASSERT(target < kNumTargets && target >= 0, 0x6AF);
+    MILO_ASSERT(variation < 2 && target >= 0, 0x6B0);
+    if(!mDemandLoad.Null()){
+        char buf[256];
+        const char* platstr = PlatformSymbol(TheLoadMgr.GetPlatform()).Str();
+        Symbol platsym = streq(platstr, "pc") ? "xbox" : platstr;
+        strcpy(buf, MakeString("%s_%s", mDemandLoad, platsym));
+        if(variation == 1){
+            char* suffix = (char*)PrefabSuffix(buf);
+            strcpy(suffix + 1, strstr(suffix, "female") ? "male" : "female");
+        }
+        return BandCharDesc::FindPrefab(buf, false);
+    }
+    else {
+        Symbol prefabsym = MakeString("milopref_prefab%d_%c", target, variation + 'a');
+        Symbol findsym = DataVarExists(prefabsym) ? DataVariable(prefabsym).Sym(0) : Symbol();
+        if(!findsym.Null()) return BandCharDesc::FindPrefab(findsym.Str(), false);
+        else return 0;
+    }
 }
 
 SAVE_OBJ(BandWardrobe, 0x6D3)
@@ -556,6 +704,78 @@ void BandWardrobe::ForceBlink(int playerIdx){
     if(bc){
         bc->ForceBlink();
     }
+}
+
+DataNode BandWardrobe::OnExtraLoaded(DataArray* da){
+    Character* c1 = da->Obj<Character>(2);
+    Character* c2 = da->Obj<Character>(3);
+    if(c1 && c2){
+        c2->CopyBoundingSphere(c1);
+        c2->SetShowing(false);
+    }
+    return DataNode(0);
+}
+
+#pragma push
+#pragma dont_inline on
+DataNode BandWardrobe::OnSelectExtras(DataArray* da){
+    FileMerger* merger = da->Obj<FileMerger>(2);
+    if(unk20 != merger){
+        ObjectDir* mergerdir = merger->Dir();
+        merger->Clear();
+        merger->Mergers().clear();
+        unk20 = merger;
+        unk2c.clear();
+        for(ObjectDir::Entry* e = mergerdir->HashTable().Begin(); e != 0; e = mergerdir->HashTable().Next(e)){
+            Hmx::Object* o = e->obj;
+            if(o->Type() == extras && o->ClassName() == "Character"){
+                FileMerger::Merger m(unk20);
+                m.mName = o->Name();
+                m.mDir = dynamic_cast<ObjectDir*>(o);
+                m.mSubdirs = 3;
+                unk20->Mergers().push_back(m);
+                DataNode propnode = o->PropertyArray(proxies);
+                DataArray* proparr = propnode.Array(0);
+                for(int i = 0; i < proparr->Size(); i++){
+                    unk2c.push_back(proparr->Sym(i));
+                }
+            }
+        }
+        unk2c.sort();
+        unk2c.unique();
+        int size = unk2c.size();
+        for(std::list<Symbol>::iterator it = unk2c.begin(); it != unk2c.end(); ++it){
+            int rint = RandomInt(0, size--);
+            std::list<Symbol>::iterator cur = it;
+            while(rint-- != 0) ++cur;
+            std::swap<Symbol>(*cur, *it);
+        }
+    }
+    for(int i = 0; i < merger->Mergers().size(); i++){
+        SelectExtra(merger->Mergers()[i]);
+    }
+    std::sort(merger->Mergers().begin(), merger->Mergers().end(), FileMerger::Merger::SortBySelected());
+    return DataNode(0);
+}
+#pragma pop
+
+int NodeCmp(const void* a, const void* b){
+    DataNode* na = (DataNode*)a;
+    DataNode* nb = (DataNode*)b;
+    const char* stra = na->Str(0);
+    const char* strb = nb->Str(0);
+    const char* strstra = strstr(stra, ".tp");
+    const char* strstrb = strstr(strb, ".tp");
+    if((strstra != 0) == (strstrb != 0)){
+        return stricmp(stra, strb);
+    }
+    else return strstra != 0 ? -1 : 1;
+}
+
+DataNode BandWardrobe::OnSortTargets(DataArray* da){
+    DataArray* arr = da->Array(2);
+    qsort(arr->mNodes, arr->Size(), 8, NodeCmp);
+    return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(BandWardrobe)

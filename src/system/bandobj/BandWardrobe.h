@@ -16,6 +16,14 @@ public:
         Symbol names[4];
     };
 
+    class SlotInfo {
+    public:
+        bool human; // 0x0
+        float score; // 0x4
+        Symbol inst; // 0x8
+        int hint; // 0xc
+    };
+
     BandWardrobe();
     OBJ_CLASSNAME(BandWardrobe);
     OBJ_SET_TYPE(BandWardrobe);
@@ -56,8 +64,11 @@ public:
     void SendMessage(Symbol, Symbol, bool);
     bool ValidGenreGender(CamShot*);
     void LoadCharacters(Symbol, bool);
+    void StartClipLoads(bool, BandCamShot*);
+    void SelectExtra(FileMerger::Merger&);
+    BandCharDesc* GetPrefab(int, int);
     bool DemandLoad() const {
-        return !TheBandDirector || !mDemandLoad.Null();
+        return TheLoadMgr.EditMode() || !TheBandDirector || !mDemandLoad.Null();
     }
 
     DataNode GetUserTrack(int);

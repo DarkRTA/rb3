@@ -15,7 +15,36 @@ class FileMerger : public Hmx::Object, public Loader::Callback, public MergeFilt
 public:
     class Merger {
     public:
-        Merger(Hmx::Object*);
+        struct SortBySelected {
+            bool operator()(Merger a, Merger b){ return false; }
+        };
+
+        Merger(Hmx::Object* o) : mProxy(0), mPreClear(0), mSubdirs(4), mDir(o, 0), mLoadedObjects(o, kObjListNoNull), mLoadedSubdirs(o, kObjListNoNull) {}
+        Merger(const Merger& m) : mDir(m.mDir.Owner(), 0), mLoadedObjects(m.mLoadedObjects.mOwner, kObjListNoNull), mLoadedSubdirs(m.mLoadedSubdirs.mOwner, kObjListNoNull){
+            mName = m.mName;
+            mSelected = m.mSelected;
+            unk10 = m.unk10;
+            mLoaded = m.mLoaded;
+            mDir = m.mDir;
+            mProxy = m.mProxy;
+            mSubdirs = m.mSubdirs;
+            mLoadedObjects = m.mLoadedObjects;
+            mLoadedSubdirs = m.mLoadedSubdirs;
+            mPreClear = m.mPreClear;
+        }
+        ~Merger(){}
+        Merger& operator=(const Merger& m){
+            mName = m.mName;
+            mSelected = m.mSelected;
+            unk10 = m.unk10;
+            mLoaded = m.mLoaded;
+            mDir = m.mDir;
+            mProxy = m.mProxy;
+            mSubdirs = m.mSubdirs;
+            mLoadedObjects = m.mLoadedObjects;
+            mLoadedSubdirs = m.mLoadedSubdirs;
+            mPreClear = m.mPreClear;
+        }
 
         Symbol mName; // 0x0
         FilePath mSelected; // 0x4
@@ -49,9 +78,11 @@ public:
     virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*);
     virtual Action FilterSubdir(class ObjectDir* o1, class ObjectDir*);
 
+    void Clear();
     bool StartLoad(bool);
     void Select(Symbol, const FilePath&, bool);
     int FindMergerIndex(Symbol, bool);
+    std::vector<Merger, unsigned int>& Mergers(){ return mMergers; }
 
     static bool sDisableAll;
 
