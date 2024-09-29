@@ -11,7 +11,7 @@ Voice::Voice(const void *buffer, int bufBytes, bool bUseInPlace, bool bUseMEM2) 
 
     mFormat = SampleData::kBigEndPCM;
     mState = 1;
-    mBufferStart = (char*)buffer;
+    mBufferStart = (char *)buffer;
     mBufferBytes = bufBytes;
 
     mStartByte = -1;
@@ -23,11 +23,7 @@ Voice::Voice(const void *buffer, int bufBytes, bool bUseInPlace, bool bUseMEM2) 
     // float decibels = RatioToDb();
     // mVolume = decibels * 10.0f;
 
-
     // TODO IMPL THE REST
-
-
-
 }
 
 bool Voice::IsPaused() {
