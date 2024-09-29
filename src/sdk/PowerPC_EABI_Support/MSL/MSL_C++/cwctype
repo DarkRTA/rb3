@@ -1,6 +1,6 @@
 #ifndef MSL_CPP_CWTYPE_H
 #define MSL_CPP_CWTYPE_H
-#include <wctype.h>
+#include <MSL_C/wctype.h>
 
 namespace std {
     using ::wctrans_t;

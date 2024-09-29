@@ -1,6 +1,6 @@
 #ifndef MSL_CPP_CWCHAR_H
 #define MSL_CPP_CWCHAR_H
-#include <wchar.h>
+#include <MSL_C/wchar.h>
 
 namespace std {
     using ::mbstate_t;
