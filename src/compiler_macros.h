@@ -1,7 +1,7 @@
 #ifndef COMPILER_MACROS_H
 #define COMPILER_MACROS_H
 
-#ifndef __MWERKS__
+#if !defined(__MWERKS__) || defined(__VS_CODE__)
 #define __option(x)
 #define __declspec(x)
 #define __attribute__(x)

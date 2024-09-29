@@ -9,9 +9,9 @@
 extern "C" {
 #endif
 
-#ifndef __MWERKS__
+#if !defined(__MWERKS__) || defined(__VS_CODE__)
 /* Get clangd to shut up about __fabs being undefined. */
-#define __fabs(x) (x)
+#define __fabs(x) fabs(x)
 #define __frsqrte(x) (x)
 #endif
 
