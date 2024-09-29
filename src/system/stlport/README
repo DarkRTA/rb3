@@ -1,0 +1,11 @@
+# STLport 5.0.3
+
+Sourced from https://sourceforge.net/projects/stlport/files/STLport/STLport%205.0.3/
+
+Modifications are made as needed to suit the decompilation project, including but not limited to:
+
+- Only the `stlport` directory has been included from the original package, as STLport iostreams/locale/etc. code are not necessary for this project.
+
+# License
+
+The original license text from the STLport readme may be found in the [LICENSE](LICENSE) file. Refer there for more information.
