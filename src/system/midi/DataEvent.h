@@ -49,7 +49,7 @@ public:
 
     int mCurIndex; // 0x0
     int mSize; // 0x4
-    std::vector<DataEvent, unsigned short> mEvents; // 0x8
+    std::vector<DataEvent> mEvents; // 0x8
     std::vector<CompEv, unsigned int> mComps; // 0x10
     int mElement; // 0x1c
     DataEvent mTemplate; // 0x20, 0x24, 0x28

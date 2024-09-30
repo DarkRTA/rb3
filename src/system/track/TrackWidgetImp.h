@@ -131,12 +131,12 @@ public:
     DELETE_OVERLOAD
 
     bool mDirty; // 0x4
-    bool unk_0x5; 
+    bool unk_0x5;
     int unk_0x8, unk_0xC;
     RndText* unk_0x10;
     std::list<TextInstance> mInstances; // 0x14
     RndFont* unk_0x1C;
-    std::vector<int, u16> unk_0x20;
+    std::vector<int> unk_0x20;
 };
 
 class MeshInstance {
@@ -160,7 +160,7 @@ public:
     RndMat* mMat; // 0xc
 };
 
-class MultiMeshWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> { 
+class MultiMeshWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> {
 public:
     MultiMeshWidgetImp(const ObjPtrList<RndMesh, ObjectDir>&, bool);
     virtual ~MultiMeshWidgetImp();

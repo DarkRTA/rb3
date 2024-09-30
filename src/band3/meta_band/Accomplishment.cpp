@@ -231,7 +231,7 @@ Symbol Accomplishment::GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const
     return gNullStr;
 }
 
-bool Accomplishment::InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const {
+bool Accomplishment::InqIncrementalSymbols(BandProfile*, std::vector<Symbol>&) const {
     return 0;
 }
 
@@ -372,7 +372,7 @@ ScoreType Accomplishment::GetRequiredScoreType() const {
     if ((int)scoreTypes.size() == 1) {
         std::set<ScoreType>::iterator iterator = scoreTypes.begin();
         return *iterator;
-    } 
+    }
     return (ScoreType)10;
 }
 

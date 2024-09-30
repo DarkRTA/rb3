@@ -9,7 +9,7 @@ namespace {
 }
 
 DataEventList::DataEventList() : mCurIndex(0), mSize(0), mElement(-1), mCompType(kDataUnhandled), mValue(0) {
-    
+
 }
 
 DataEventList::~DataEventList(){
@@ -129,5 +129,5 @@ void DataEventList::Clear(){
     mSize = 0;
     // probably wrong
     mComps = std::vector<CompEv, unsigned int>();
-    mEvents = std::vector<DataEvent, unsigned short>();
+    mEvents = std::vector<DataEvent>();
 }

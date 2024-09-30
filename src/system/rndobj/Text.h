@@ -49,7 +49,7 @@ public:
         kBottomCenter = 66,
         kBottomRight = 68,
     };
-    
+
     enum CapsMode {
         kCapsModeNone = 0,
         kForceLower = 1,
@@ -121,7 +121,7 @@ public:
     DataNode OnSetWrapWidth(DataArray*);
     DataNode OnSetColor(DataArray*);
 
-    std::vector<Line, unsigned short> mLines; // 0xb0
+    std::vector<Line> mLines; // 0xb0
     ObjOwnerPtr<RndFont, ObjectDir> mFont; // 0xb8
     float mWrapWidth; // 0xc4
     float mLeading; // 0xc8
