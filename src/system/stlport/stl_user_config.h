@@ -157,17 +157,13 @@
  *  Define this macro to disable anachronistic constructs (like the ones used in HP STL and
  *  not included in final standard, etc. 
  */
-/*
 #define _STLP_NO_ANACHRONISMS 1
-*/
 
 /*
  *  Define this macro to disable STLport extensions (for example, to make sure your code will 
  *  compile with some other implementation )
  */
-/*
 #define _STLP_NO_EXTENSIONS 1
-*/
 
 /* 
  * You should define this macro if compiling with MFC - STLport <stl/_config.h>
