@@ -2,6 +2,7 @@
 #include "bandobj/BandWardrobe.h"
 #include "rndobj/Group.h"
 #include "bandobj/CrowdAudio.h"
+#include "world/Dir.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -9,6 +10,7 @@ INIT_REVS(BandDirector)
 
 DataArray* BandDirector::sPropArr;
 BandDirector* TheBandDirector;
+bool gIsLoadingDlc;
 
 const char* gVenues[5] = { "arena", "big_club", "festival", "small_club", "video" };
 
@@ -162,6 +164,8 @@ void BandDirector::Exit(){
     if(mVenue.Dir()) mVenue.Dir()->Exit();
 }
 
+DECOMP_FORCEACTIVE(BandDirector, "video")
+
 bool BandDirector::PostProcsFromPresets(const RndPostProc*& p1, const RndPostProc*& p2, float& fref){
     MILO_ASSERT(IsMusicVideo() && LightPresetMgr(), 0x161);
     LightPreset* mgr1 = 0;
@@ -225,15 +229,18 @@ void BandDirector::Poll(){
             }
         }
         UpdatePostProcOverlay(presets, p1, p2, fref);
+#ifdef MILO_DEBUG
         DataNode& fps_var = DataVariable("cheat.emulate_fps");
         if(fps_var.Int(0) > 0){
             int ifps = fps_var.Int(0);
             unk74->mEmulateFPS = ifps;
         }
+#endif
     }
 }
 
 void BandDirector::UpdatePostProcOverlay(const char* cc, const RndPostProc* p1, const RndPostProc* p2, float f){
+#ifdef MILO_DEBUG
     RndOverlay* o = RndOverlay::Find("postproc", true);
     if(o->Showing()){
         TextStream* ts = TheDebug.mReflect;
@@ -247,6 +254,7 @@ void BandDirector::UpdatePostProcOverlay(const char* cc, const RndPostProc* p1, 
         MILO_LOG("PostProc set by %s, blend is %.2f%%\n", cc ? cc : "", f * 100.0f);
         TheDebug.SetReflect(ts);
     }
+#endif
 }
 
 void BandDirector::ListPollChildren(std::list<RndPollable*>& polls) const {
@@ -306,12 +314,18 @@ WorldDir* BandDirector::GetWorld(){
     else return 0;
 }
 
+bool BandDirector::DirectedCut(Symbol s) const {
+    return strncmp(s.mStr, "directed_", 9) == 0;
+}
+
+bool BandDirector::BFTB(Symbol s) const { return strncmp(s.mStr, "BFTB_", 5) == 0; }
+
 bool BandDirector::FacingCamera(Symbol s) const {
-    return (strnicmp(s.Str(), "coop_", 5) == 0 && !BehindCamera(s));
+    return (strnicmp(s.mStr, "coop_", 5) == 0 && !BehindCamera(s));
 }
 
 bool BandDirector::BehindCamera(Symbol s) const {
-    const char* str = s.Str();
+    const char* str = s.mStr;
     int len = strlen(str);
     return (len > 7 && strcmp(str + (len - 7), "_behind") == 0);
 }
@@ -332,9 +346,11 @@ void BandDirector::FindNextShot(){
                 filts.push_back(curfilt);
             }
             unkc4 = dynamic_cast<BandCamShot*>(dir->mCameraManager.FindCameraShot(unkdc, filts));
+#ifdef MILO_DEBUG
             if(!unkc4){
                 MILO_LOG("NOTIFY could not find BandCamShot %s in %s at %s, ignoring\n", unkdc, dir->mPathName, TheTaskMgr.GetMBT());
             }
+#endif
         }
     }
 }
@@ -352,9 +368,11 @@ void BandDirector::EnterVenue(){
                 unk58 = true;
                 if(mCurWorld){
                     if(TheCrowdAudio) TheCrowdAudio->SetBank(mCurWorld);
+#ifdef MILO_DEBUG
                     if(TheLoadMgr.EditMode()){
                         GetWorld()->mSphere = mCurWorld->mSphere;
                     }
+#endif
                     mCurWorld->Handle(setup_midi_parsers_msg, false);
                     ClearLighting();
                 }
@@ -385,14 +403,233 @@ void GetVenuePath(FilePath& fp, const char* cc){
     }
 }
 
+bool BandDirector::IsMusicVideo(){
+    return strstr(mVenue.Name().mStr, "video");
+}
+
 void BandDirector::SetShot(Symbol cat, Symbol s2){
     bool b1 = true;
     if(TheBandWardrobe){
-        if(!IsDirected(s2)) b1 = false;
+        if(!DirectedCut(cat)) b1 = false;
     }
     if(!b1){
         MILO_ASSERT(!BFTB(cat), 0x326);
+        bool shot5 = s2 == "shot_5";
+        bool playshot5 = TheBandWardrobe->PlayShot5();
+        if(shot5 == playshot5){
+            if(shot5){
+                cat = RemapCat(cat, TheBandWardrobe->GetPlayMode());
+            }
+            else {
+                if(s2 != TheBandWardrobe->GetPlayMode()) return;
+            }
+            unkdc = cat;
+            unk58 = true;
+        }
     }
+}
+
+bool BandDirector::ReadyForMidiParsers(){
+    if(!mPropAnim && gIsLoadingDlc){
+        static Message msg("on_pre_merge", DataNode(0), DataNode(0), DataNode(0));
+        msg[0] = DataNode(song);
+        msg[1] = DataNode((Hmx::Object*)0);
+        OnFileLoaded(msg);
+    }
+    bool ret = false;
+    bool b2 = false;
+    if(mPropAnim){
+        bool b1 = true;
+        if(!mVenue.Dir()){
+            if(mVenue.Name() == "none"){
+
+            }
+            else b1 = false;
+        }
+        if(b1) b2 = true;
+    }
+    if(b2 && TheBandWardrobe->AllCharsLoaded()) ret = true;
+    return ret;
+}
+
+void BandDirector::SendMessage(Symbol s1, Symbol s2){
+    if(TheBandWardrobe) TheBandWardrobe->SendMessage(s1, s2, true);
+}
+
+void BandDirector::SetCrowd(Symbol s){
+    static Message msg("");
+    msg.SetType(s);
+    HandleType(msg);
+}
+
+inline BandCharacter* BandDirector::GetCharacter(int idx) const {
+    if(TheBandWardrobe) return TheBandWardrobe->GetCharacter(idx);
+    else return 0;
+}
+
+DataNode BandDirector::OnGetFaceOverrideClips(DataArray* da){
+    std::list<Symbol> syms;
+    BandCharacter* bchar = GetCharacter(da->Int(2));
+    if(bchar){
+        CharLipSyncDriver* driver = bchar->GetLipSyncDriver();
+        if(driver){
+            ObjectDir* overridedir = driver->OverrideDir();
+            if(overridedir){
+                for(ObjDirItr<CharClip> it(overridedir, false); it; ++it){
+                    String blendstr("BLEND_");
+                    blendstr += it->Name();
+                    syms.push_back(blendstr.c_str());
+                    String addstr("ADD_");
+                    addstr += it->Name();
+                    syms.push_back(addstr.c_str());
+                }
+            }
+        }
+    }
+    DataArray* arr = new DataArray(syms.size() + 1);
+    arr->Node(0) = DataNode(Symbol());
+    int idx = 1;
+    for(std::list<Symbol>::iterator it = syms.begin(); it != syms.end(); ++it, ++idx){
+        arr->Node(idx) = DataNode(*it);
+    }
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return ret;
+}
+
+void BandDirector::ForceShot(BandCamShot* shot){
+    unkc4 = shot;
+    unke4 = unkc4;
+}
+
+void BandDirector::PickIntroShot(){
+    unkc4 = 0;
+    DataNode handled = HandleType(pick_intro_shot_msg);
+    unkd0 = unkc4;
+    unkc4 = 0;
+}
+
+Symbol GetShotTrack(){
+    if(TheBandWardrobe->PlayShot5()){
+        return "shot_5";
+    }
+    else {
+        char buf[10];
+        strcpy(buf, TheBandWardrobe->GetPlayMode().mStr);
+        memcpy(buf, "shot", 4);
+        return buf;
+    }
+}
+
+void BandDirector::AddDircut(Symbol s, float frame){
+    DirectedCut(s);
+    std::vector<CameraManager::PropertyFilter> filts;
+    BandCamShot* shot = dynamic_cast<BandCamShot*>(mVenue.Dir()->mCameraManager.FindCameraShot(s, filts));
+    if(TheBandWardrobe && !TheBandWardrobe->AddDircut(shot)){
+        PathName(shot);
+        shot = 0;
+    }
+    if(shot){
+        float f2c = shot->mZeroTime;
+        if(shot->ConvertFrames(f2c)){
+            frame = frame - f2c;
+        }
+    }
+    mDircuts.Add(shot, frame, false);
+}
+
+void BandDirector::VenueLoaded(WorldDir*){
+    mDircuts.clear();
+}
+
+void BandDirector::HarvestDircuts(){
+    if(mPropAnim && mVenue.Dir()){
+        mDircuts.clear();
+        TheBandWardrobe->ClearDircuts();
+        unkd0 = 0;
+        if(!TheBandWardrobe->DemandLoadSym()){
+            CameraManager::PropertyFilter filt;
+            int mask = 0;
+            Symbol playmode = TheBandWardrobe->GetPlayMode();
+            if(strncmp(playmode.mStr, "coop", 4) == 0){
+                if(playmode == coop_bg) mask = 0x100000;
+                else if(playmode == coop_bk) mask = 0x400000;
+                else mask = 0x200000;
+            }
+            WorldDir* wdir = mVenue.Dir();
+            for(std::vector<CameraManager::Category, unsigned int>::iterator it = wdir->mCameraManager.mCameraShotCategories.begin();
+                it != wdir->mCameraManager.mCameraShotCategories.end(); ++it){
+                for(ObjPtrList<CamShot, ObjectDir>::iterator cit = it->unk4->begin(); cit != it->unk4->end(); ++cit){
+                    CamShot* shot = *cit;
+                    shot->Disable(!TheBandWardrobe->ValidGenreGender(shot), 2);
+                    shot->Disable((mask & shot->Flags()) == 0, 4);
+                }
+            }
+            PickIntroShot();
+            DataArrayPtr ptr(GetShotTrack());
+            SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, (DataArray*)ptr));
+            if(skeys){
+                Keys<Symbol, Symbol>& keys = skeys->AsSymbolKeys();
+                for(int i = 0; i < keys.size(); i++){
+                    Symbol val = keys[i].value;
+                    if(DirectedCut(val)){
+                        if(TheBandWardrobe->PlayShot5()){
+                            val = RemapCat(val, TheBandWardrobe->GetPlayMode());
+                        }
+                        float frame = keys[i].frame;
+                        AddDircut(val, frame / 30.0f);
+                    }
+                }
+            }
+        }
+        TheBandWardrobe->StartClipLoads(true, 0);
+    }
+}
+
+void BandDirector::AddSymbolKey(Symbol s1, Symbol s2, float f){
+    if(mPropAnim){
+        DataArrayPtr ptr = DataArrayPtr(DataNode(s1));
+        SymbolKeys* keys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, (DataArray*)ptr));
+        if(keys) keys->Add(s2, f * 30.0f, false);
+    }
+}
+
+void BandDirector::ClearSymbolKeys(Symbol s){
+    if(mPropAnim){
+        DataArrayPtr ptr = DataArrayPtr(DataNode(s));
+        SymbolKeys* keys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, (DataArray*)ptr));
+        if(keys) keys->clear();
+    }
+}
+
+void BandDirector::ClearSymbolKeysFrameRange(Symbol s, float fstart, float fend){
+    if(mPropAnim){
+        DataArrayPtr ptr = DataArrayPtr(DataNode(s));
+        SymbolKeys* keys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, (DataArray*)ptr));
+        if(keys){
+            int numkeys = keys->NumKeys();
+            for(int i = 0; i < numkeys; i){
+                float frame = 0;
+                keys->FrameFromIndex(i, frame);
+                frame /= 30.0f;
+                if(frame >= fstart && frame <= fend) keys->RemoveKey(i);
+                else i++;
+            }
+        }   
+    }
+}
+
+void BandDirector::SetSongEnd(float f){
+    unk10c = f;
+}
+
+Symbol BandDirector::RemapCat(Symbol s1, Symbol s2){
+    DataArray* remaparr = BandWardrobe::GetRemap(s2);
+    DataArray* foundarr = remaparr->FindArray(s1, false);
+    if(foundarr){
+        s1 = foundarr->Sym(RandomInt(1, foundarr->Size()));
+    }
+    return s1;
 }
 
 #pragma push
@@ -415,7 +652,7 @@ BEGIN_HANDLERS(BandDirector)
     HANDLE_EXPR(facing_camera, FacingCamera(_msg->Sym(2)))
     HANDLE_ACTION(load_venue, LoadVenue(_msg->Sym(2), kLoadStayBack))
     HANDLE_ACTION(set_character_hide_hack_enabled, SetCharacterHideHackEnabled(_msg->Int(2)))
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     HANDLE(debug_char_interests, OnDebugInterestsForNextCharacter)
     HANDLE(toggle_interests_overlay, OnToggleInterestDebugOverlay)
     HANDLE(shot_annotate, OnShotAnnotate)
@@ -445,6 +682,59 @@ BEGIN_HANDLERS(BandDirector)
     HANDLE_CHECK(0x513)
 END_HANDLERS
 #pragma pop
+
+void BandDirector::FilterShot(int& flags){
+    if(unkb8){
+        if(strstr(unkb8->Category().mStr, "_behind")){
+            flags |= 0x10;
+        }
+        else {
+            bool b1 = false;
+            if(!(flags & 0x20U)){
+                if(strstr(unkb8->Category().mStr, "_far")){
+                    b1 = true;
+                }
+            }
+            if(b1) flags |= 0x100;
+        }
+    }
+}
+
+// void __thiscall BandDirector::FilterShot(BandDirector *this,int *param_1)
+
+// {
+//   bool bVar1;
+//   int iVar2;
+//   void *pvVar3;
+//   char *pcVar4;
+  
+//   iVar2 = MergedGet0x8(this + 0xb8);
+//   if (iVar2 != 0) {
+//     pvVar3 = (void *)MergedGet0x8(this + 0xb8);
+//     pcVar4 = (char *)MergedGet0x30(pvVar3);
+//     pcVar4 = strstr(pcVar4,s__behind_80875b96);
+//     if (pcVar4 == (char *)0x0) {
+
+//       bVar1 = false;
+//       if ((*param_1 & 0x20U) == 0) {
+//         pvVar3 = (void *)MergedGet0x8(this + 0xb8);
+//         pcVar4 = (char *)MergedGet0x30(pvVar3);
+//         pcVar4 = strstr(pcVar4,s__far_80875be2);
+//         if (pcVar4 != (char *)0x0) {
+//           bVar1 = true;
+//         }
+//       }
+//       if (bVar1) {
+//         *param_1 = *param_1 | 0x100;
+//       }
+
+//     }
+//     else {
+//       *param_1 = *param_1 | 0x10;
+//     }
+//   }
+//   return;
+// }
 
 DataNode BandDirector::OnPostProcs(DataArray* da){
     DataNode* v2 = da->Var(2);

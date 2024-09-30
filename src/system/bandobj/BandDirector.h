@@ -20,6 +20,7 @@ public:
 
         void Unload(bool);
         void Load(const FilePath&, LoaderPos, bool);
+        Symbol Name() const { return mName; }
         WorldDir* Dir() const { return mDir; }
 
         WorldDir* mDir; // 0x4
@@ -69,17 +70,19 @@ public:
     void ClearLighting();
     bool PostProcsFromPresets(const RndPostProc*&, const RndPostProc*&, float&);
     void UpdatePostProcOverlay(const char*, const RndPostProc*, const RndPostProc*, float);
+    bool ReadyForMidiParsers();
+    class BandCharacter* GetCharacter(int) const;
+    void ForceShot(BandCamShot*);
+    void AddDircut(Symbol, float);
+    void FilterShot(int&);
 
     bool IsMusicVideo();
-    // bool IsMusicVideo(){
-    //     return strstr(mVenue.mName.Str(), "video");
-    // }
     LightPresetManager* LightPresetMgr(){
         return mCurWorld ? &mCurWorld->mPresetManager : 0;
     }
 
-    bool IsDirected(Symbol s) const { return strncmp(s.Str(), "directed_", 9) == 0; }
-    bool BFTB(Symbol s) const { return strncmp(s.Str(), "BFTB_", 5) == 0; }
+    bool DirectedCut(Symbol s) const;
+    bool BFTB(Symbol s) const;
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);
@@ -105,6 +108,7 @@ public:
     DataNode OnLoadSong(DataArray*);
     DataNode OnMidiShotCategory(DataArray*);
 
+    static Symbol RemapCat(Symbol, Symbol);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandDirector);
