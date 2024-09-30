@@ -823,7 +823,7 @@
             "system/bandobj/BandSwatch.cpp": "NonMatching",
             "system/bandobj/BandTrack.cpp": "NonMatching",
             "system/bandobj/BandWardrobe.cpp": "NonMatching",
-            "system/bandobj/CharDeform.cpp": "MISSING",
+            "system/bandobj/CharDeform.cpp": "Matching",
             "system/bandobj/CharKeyHandMidi.cpp": "NonMatching",
             "system/bandobj/CheckboxDisplay.cpp": "Matching",
             "system/bandobj/ChordShapeGenerator.cpp": "NonMatching",
