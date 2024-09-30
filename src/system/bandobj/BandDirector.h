@@ -7,6 +7,7 @@
 #include "char/FileMerger.h"
 #include "world/Dir.h"
 #include "bandobj/BandCamShot.h"
+#include "bandobj/BandSongPref.h"
 #include "utl/Loader.h"
 
 class BandDirector : public RndPollable, public RndDrawable {
@@ -75,6 +76,7 @@ public:
     void ForceShot(BandCamShot*);
     void AddDircut(Symbol, float);
     void FilterShot(int&);
+    Symbol GetModeInst(Symbol);
 
     bool IsMusicVideo();
     LightPresetManager* LightPresetMgr(){
@@ -109,6 +111,7 @@ public:
     DataNode OnMidiShotCategory(DataArray*);
 
     static Symbol RemapCat(Symbol, Symbol);
+    static const char* PickDist(float*, char*, char*);
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(BandDirector);
@@ -127,34 +130,34 @@ public:
     ObjPtr<FileMerger, ObjectDir> mMerger; // 0x40
     ObjPtr<WorldDir, ObjectDir> mCurWorld; // 0x4c
     bool unk58; // 0x58
-    int unk5c; // 0x5c
-    int unk60; // 0x60
-    Symbol unk64[4]; // 0x64
-    ObjPtr<RndPostProc, ObjectDir> unk74; // 0x74
-    ObjPtr<RndPostProc, ObjectDir> unk80; // 0x80
-    ObjPtr<RndPostProc, ObjectDir> unk8c; // 0x8c
-    ObjPtr<RndPostProc, ObjectDir> unk98; // 0x98
-    float unka4; // 0xa4
-    Symbol unka8; // 0xa8
-    Symbol unkac; // 0xac
-    float unkb0; // 0xb0
-    bool unkb4; // 0xb4
-    bool unkb5; // 0xb5
-    bool unkb6; // 0xb6
-    ObjPtr<BandCamShot, ObjectDir> unkb8; // 0xb8
-    ObjPtr<BandCamShot, ObjectDir> unkc4; // 0xc4
-    ObjPtr<BandCamShot, ObjectDir> unkd0; // 0xd0
-    Symbol unkdc; // 0xdc
+    int mNumPlayersFailed; // 0x5c
+    int mExcitement; // 0x60 - ExcitementLevel?
+    Symbol mForceAttention[4]; // 0x64
+    ObjPtr<RndPostProc, ObjectDir> mWorldPostProc; // 0x74
+    ObjPtr<RndPostProc, ObjectDir> mCamPostProc; // 0x80
+    ObjPtr<RndPostProc, ObjectDir> mPostProcA; // 0x8c
+    ObjPtr<RndPostProc, ObjectDir> mPostProcB; // 0x98
+    float mPostProcBlend; // 0xa4
+    Symbol mLightPresetCatA; // 0xa8
+    Symbol mLightPresetCatB; // 0xac
+    float mLightPresetCatBlend; // 0xb0
+    bool mLightPresetInterpEnabled; // 0xb4
+    bool mDisabled; // 0xb5
+    bool mAsyncLoad; // 0xb6
+    ObjPtr<BandCamShot, ObjectDir> mCurShot; // 0xb8
+    ObjPtr<BandCamShot, ObjectDir> mNextShot; // 0xc4
+    ObjPtr<BandCamShot, ObjectDir> mIntroShot; // 0xd0
+    Symbol mShotCategory; // 0xdc
     float unke0; // 0xe0
-    bool unke4; // 0xe4
+    bool mDisablePicking; // 0xe4
     bool unke5; // 0xe5
     Keys<BandCamShot*, BandCamShot*> mDircuts; // 0xe8 - Keys<BandCamShot*>
     VenueLoader mVenue; // 0xf0
     Keys<Symbol, Symbol> unk100; // 0x100
     float unk108; // 0x108
-    float unk10c; // 0x10c
+    float mEndOfSongSec; // 0x10c
     bool unk110; // 0x110
-    int unk114; // 0x114
+    BandSongPref* mSongPref; // 0x114
 };
 
 extern BandDirector* TheBandDirector;

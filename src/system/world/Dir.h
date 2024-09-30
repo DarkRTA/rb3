@@ -68,6 +68,7 @@ public:
     void SyncCamShots(bool);
     void SyncHUD();
     void SetCrowds(ObjVector<CamShotCrowd>&);
+    CameraManager& CamManager(){ return mCameraManager; }
 
     DECLARE_REVS;
 

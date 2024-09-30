@@ -82,6 +82,7 @@ public:
     bool StartLoad(bool);
     void Select(Symbol, const FilePath&, bool);
     int FindMergerIndex(Symbol, bool);
+    Merger* FindMerger(Symbol, bool);
     std::vector<Merger, unsigned int>& Mergers(){ return mMergers; }
 
     static bool sDisableAll;

@@ -56,12 +56,12 @@ void BandDirector::Terminate(){
     sPropArr->Release();
 }
 
-BandDirector::BandDirector() : mPropAnim(this, 0), mMerger(this, 0), mCurWorld(this, 0), unk58(0), unk74(this, 0), unk80(this, 0), unk8c(this, 0), unk98(this, 0),
-    unka4(0), unkb0(0), unkb4(1), unkb5(0), unkb6(0), unkb8(this, 0), unkc4(this, 0), unkd0(this, 0), unke0(-1e+30f), unke4(0), unke5(1), unk108(-1.0f), unk10c(0),
-    unk110(0), unk114(0) {
+BandDirector::BandDirector() : mPropAnim(this, 0), mMerger(this, 0), mCurWorld(this, 0), unk58(0), mWorldPostProc(this, 0), mCamPostProc(this, 0), mPostProcA(this, 0), mPostProcB(this, 0),
+    mPostProcBlend(0), mLightPresetCatBlend(0), mLightPresetInterpEnabled(1), mDisabled(0), mAsyncLoad(0), mCurShot(this, 0), mNextShot(this, 0), mIntroShot(this, 0), unke0(-1e+30f), mDisablePicking(0), unke5(1), unk108(-1.0f), mEndOfSongSec(0),
+    unk110(0), mSongPref(0) {
     static DataNode& banddirector = DataVariable("banddirector");
     banddirector = DataNode(this);
-    unkb6 = !TheLoadMgr.EditMode();
+    mAsyncLoad = !TheLoadMgr.EditMode();
     if(TheBandDirector){
         MILO_WARN("Trying to make > 1 BandDirector, which should be single");
     }
@@ -96,40 +96,40 @@ Symbol HiddenInstrument(Symbol s){
 void BandDirector::Enter(){
     RndPollable::Enter();
     if(mMerger){
-        unk5c = 0;
-        unk60 = 3;
+        mNumPlayersFailed = 0;
+        mExcitement = 3;
         unke0 = -1e+30f;
-        unkdc = "";
-        unk74 = GetWorld()->Find<RndPostProc>("world.pp", true);
+        mShotCategory = "";
+        mWorldPostProc = GetWorld()->Find<RndPostProc>("world.pp", true);
         RndPostProc* profilm = GetWorld()->Find<RndPostProc>("ProFilm_a.pp", true);
-        if(profilm) unk74->Copy(profilm, kCopyDeep);
-        unk74->Select();
-        unk8c = unk74;
-        unk98 = unk74;
-        unka4 = 0;
+        if(profilm) mWorldPostProc->Copy(profilm, kCopyDeep);
+        mWorldPostProc->Select();
+        mPostProcA = mWorldPostProc;
+        mPostProcB = mWorldPostProc;
+        mPostProcBlend = 0;
         sMotionBlurBlendAmount = SystemConfig("rnd", "motion_blur")->Float(1);
-        unk80 = 0;
-        unka8 = unkac = gNullStr;
-        unkb0 = 0;
+        mCamPostProc = 0;
+        mLightPresetCatA = mLightPresetCatB = gNullStr;
+        mLightPresetCatBlend = 0;
         unk108 = -1.0f;
-        unkb5 = 0;
+        mDisabled = 0;
         mCurWorld = 0;
         if(mPropAnim){
             mPropAnim->StartAnim();
             mPropAnim->SetFrame(-1e+30f, 1.0f);
         }
         EnterVenue();
-        unke4 = 0;
-        unkc4 = 0;
+        mDisablePicking = 0;
+        mNextShot = 0;
         static Message allowMsg("allow_intro_shot", DataNode(0));
         int handled = HandleType(allowMsg).Int(0);
-        if(handled && !unkd0) PickIntroShot();
-        if(handled && unkd0){
+        if(handled && !mIntroShot) PickIntroShot();
+        if(handled && mIntroShot){
             static Message msg("set_intro_shot", DataNode(0));
-            msg[0] = DataNode(unkd0);
+            msg[0] = DataNode(mIntroShot);
             DataNode handled = HandleType(msg);
-            unkc4 = unkd0;
-            unkd0 = 0;
+            mNextShot = mIntroShot;
+            mIntroShot = 0;
         }
         else FindNextShot();
         Symbol hidden = HiddenInstrument(TheBandWardrobe->GetPlayMode());
@@ -147,7 +147,7 @@ void BandDirector::Enter(){
                 skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
             }
             if(skeys && skeys->empty()){
-                float cap = Min(unk10c, 241.0f);
+                float cap = Min(mEndOfSongSec, 241.0f);
                 for(float f = 0.0f; f + 60.0f < cap; f += 60.0f){
                     skeys->Add(on, (f + 15.0f) * 30.0f, false);
                     skeys->Add(off, (f + 30.0f) * 30.0f, false);
@@ -177,13 +177,13 @@ bool BandDirector::PostProcsFromPresets(const RndPostProc*& p1, const RndPostPro
         if(proc1){
             RndPostProc* proc2 = mgr2 ? mgr2->GetCurrentPostProc() : 0;
             if(proc2){
-                unk74->Interp(proc1, proc2, unkb0);
+                mWorldPostProc->Interp(proc1, proc2, mLightPresetCatBlend);
                 p1 = proc1;
                 p2 = proc2;
-                fref = unkb0;
+                fref = mLightPresetCatBlend;
             }
             else {
-                unk74->Copy(proc1, kCopyDeep);
+                mWorldPostProc->Copy(proc1, kCopyDeep);
                 p1 = proc1;
                 p2 = 0;
                 fref = 1.0f;
@@ -198,21 +198,21 @@ void BandDirector::Poll(){
     if(unke5){
         if(mCurWorld){
             mCurWorld->Poll();
-            if(unkb4 && (unka8 != gNullStr || unkac != gNullStr)){
-                LightPresetMgr()->Interp(unka8, unkac, unkb0);
+            if(mLightPresetInterpEnabled && (mLightPresetCatA != gNullStr || mLightPresetCatB != gNullStr)){
+                LightPresetMgr()->Interp(mLightPresetCatA, mLightPresetCatB, mLightPresetCatBlend);
             }
             LightPresetMgr()->Poll();
         }
     }
-    if(unk74){
+    if(mWorldPostProc){
         const RndPostProc* p1 = 0;
         const RndPostProc* p2 = 0;
         float fref = 1.0f;
         const char* presets = "";
-        if(unk80){
-            unk74->Copy(unk80, kCopyDeep);
+        if(mCamPostProc){
+            mWorldPostProc->Copy(mCamPostProc, kCopyDeep);
             presets = "camera";
-            p1 = unk80;
+            p1 = mCamPostProc;
         }
         else {
             bool ppfp = false;
@@ -221,11 +221,11 @@ void BandDirector::Poll(){
                 if(ppfp) presets = "music video light presets";
             }
             if(!ppfp){
-                unk74->Interp(unk8c, unk98, unka4);
-                fref = unka4;
+                mWorldPostProc->Interp(mPostProcA, mPostProcB, mPostProcBlend);
+                fref = mPostProcBlend;
                 presets = "song authoring";
-                p1 = unk8c;
-                p2 = unk98;
+                p1 = mPostProcA;
+                p2 = mPostProcB;
             }
         }
         UpdatePostProcOverlay(presets, p1, p2, fref);
@@ -233,7 +233,7 @@ void BandDirector::Poll(){
         DataNode& fps_var = DataVariable("cheat.emulate_fps");
         if(fps_var.Int(0) > 0){
             int ifps = fps_var.Int(0);
-            unk74->mEmulateFPS = ifps;
+            mWorldPostProc->mEmulateFPS = ifps;
         }
 #endif
     }
@@ -331,24 +331,24 @@ bool BandDirector::BehindCamera(Symbol s) const {
 }
 
 void BandDirector::FindNextShot(){
-    unkc4 = 0;
-    if(!unkdc.Null()){
+    mNextShot = 0;
+    if(!mShotCategory.Null()){
         WorldDir* dir = mVenue.Dir();
         if(dir){
             std::vector<CameraManager::PropertyFilter> filts;
             CameraManager::PropertyFilter curfilt;
-            BandCamShot* shot = unkb8;
-            if(!FacingCamera(unkdc)) shot = 0;
+            BandCamShot* shot = mCurShot;
+            if(!FacingCamera(mShotCategory)) shot = 0;
             if(shot && !BehindCamera(shot->Category())){
                 curfilt.prop = DataNode(flags_any);
                 curfilt.match = DataNode(1);
                 curfilt.mask = ~shot->Flags() & 0x7000;
                 filts.push_back(curfilt);
             }
-            unkc4 = dynamic_cast<BandCamShot*>(dir->mCameraManager.FindCameraShot(unkdc, filts));
+            mNextShot = dynamic_cast<BandCamShot*>(dir->mCameraManager.FindCameraShot(mShotCategory, filts));
 #ifdef MILO_DEBUG
-            if(!unkc4){
-                MILO_LOG("NOTIFY could not find BandCamShot %s in %s at %s, ignoring\n", unkdc, dir->mPathName, TheTaskMgr.GetMBT());
+            if(!mNextShot){
+                MILO_LOG("NOTIFY could not find BandCamShot %s in %s at %s, ignoring\n", mShotCategory, dir->mPathName, TheTaskMgr.GetMBT());
             }
 #endif
         }
@@ -423,7 +423,7 @@ void BandDirector::SetShot(Symbol cat, Symbol s2){
             else {
                 if(s2 != TheBandWardrobe->GetPlayMode()) return;
             }
-            unkdc = cat;
+            mShotCategory = cat;
             unk58 = true;
         }
     }
@@ -498,15 +498,15 @@ DataNode BandDirector::OnGetFaceOverrideClips(DataArray* da){
 }
 
 void BandDirector::ForceShot(BandCamShot* shot){
-    unkc4 = shot;
-    unke4 = unkc4;
+    mNextShot = shot;
+    mDisablePicking = mNextShot;
 }
 
 void BandDirector::PickIntroShot(){
-    unkc4 = 0;
+    mNextShot = 0;
     DataNode handled = HandleType(pick_intro_shot_msg);
-    unkd0 = unkc4;
-    unkc4 = 0;
+    mIntroShot = mNextShot;
+    mNextShot = 0;
 }
 
 Symbol GetShotTrack(){
@@ -546,7 +546,7 @@ void BandDirector::HarvestDircuts(){
     if(mPropAnim && mVenue.Dir()){
         mDircuts.clear();
         TheBandWardrobe->ClearDircuts();
-        unkd0 = 0;
+        mIntroShot = 0;
         if(!TheBandWardrobe->DemandLoadSym()){
             CameraManager::PropertyFilter filt;
             int mask = 0;
@@ -620,7 +620,7 @@ void BandDirector::ClearSymbolKeysFrameRange(Symbol s, float fstart, float fend)
 }
 
 void BandDirector::SetSongEnd(float f){
-    unk10c = f;
+    mEndOfSongSec = f;
 }
 
 Symbol BandDirector::RemapCat(Symbol s1, Symbol s2){
@@ -684,14 +684,14 @@ END_HANDLERS
 #pragma pop
 
 void BandDirector::FilterShot(int& flags){
-    if(unkb8){
-        if(strstr(unkb8->Category().mStr, "_behind")){
+    if(mCurShot){
+        if(strstr(mCurShot->Category().mStr, "_behind")){
             flags |= 0x10;
         }
         else {
             bool b1 = false;
             if(!(flags & 0x20U)){
-                if(strstr(unkb8->Category().mStr, "_far")){
+                if(strstr(mCurShot->Category().mStr, "_far")){
                     b1 = true;
                 }
             }
@@ -700,76 +700,211 @@ void BandDirector::FilterShot(int& flags){
     }
 }
 
-// void __thiscall BandDirector::FilterShot(BandDirector *this,int *param_1)
+const char* BandDirector::PickDist(float* fp, char* c1, char* c2){
+    static const char* distNames[] = { "closeup", "near", "far", "behind" };
+    float f1 = 0;
+    for(int i = 0; i < 4; i++) f1 += fp[i];
+    float randfl = RandomFloat(0.0f, f1);
+    int idx = 0;
+    for(; idx < 3; idx++){
+        randfl = randfl - fp[idx];
+        if(randfl < 0.0f) break;
+    }
+    if(idx == 0 && *c1 != 'v'){
+        strcpy(c2, RandomFloat(0.0f, 100.0f) > 30.0f ? "_hand" : "_head");
+    }
+    else *c2 = '\0';
+    return distNames[idx];
+}
 
-// {
-//   bool bVar1;
-//   int iVar2;
-//   void *pvVar3;
-//   char *pcVar4;
-  
-//   iVar2 = MergedGet0x8(this + 0xb8);
-//   if (iVar2 != 0) {
-//     pvVar3 = (void *)MergedGet0x8(this + 0xb8);
-//     pcVar4 = (char *)MergedGet0x30(pvVar3);
-//     pcVar4 = strstr(pcVar4,s__behind_80875b96);
-//     if (pcVar4 == (char *)0x0) {
+DataNode BandDirector::OnCycleShot(DataArray* da){
+    WorldDir* wdir = mVenue.Dir();
+    if(wdir){
+        BandCamShot* shot = dynamic_cast<BandCamShot*>(wdir->CamManager().ShotAfter(mCurShot));
+        ForceShot(shot);
+    }
+    return DataNode(0);
+}
 
-//       bVar1 = false;
-//       if ((*param_1 & 0x20U) == 0) {
-//         pvVar3 = (void *)MergedGet0x8(this + 0xb8);
-//         pcVar4 = (char *)MergedGet0x30(pvVar3);
-//         pcVar4 = strstr(pcVar4,s__far_80875be2);
-//         if (pcVar4 != (char *)0x0) {
-//           bVar1 = true;
-//         }
-//       }
-//       if (bVar1) {
-//         *param_1 = *param_1 | 0x100;
-//       }
+DataNode BandDirector::OnForceShot(DataArray* da){
+    WorldDir* wdir = mVenue.Dir();
+    if(wdir){
+        ForceShot(wdir->Find<BandCamShot>(da->Str(2), false));
+    }
+    return DataNode(0);
+}
 
-//     }
-//     else {
-//       *param_1 = *param_1 | 0x10;
-//     }
-//   }
-//   return;
-// }
+DataNode BandDirector::OnLoadSong(DataArray* da){
+    FilePathTracker tracker(FileRoot());
+    const char* songfile = da->Str(2);
+    gIsLoadingDlc = FileIsDLC(songfile);
+    Symbol s3 = da->Sym(3);
+    int i4 = da->Int(4);
+    Symbol s5 = da->Sym(5);
+    bool i6 = da->Int(6);
+    DataArray* genrearr = TypeDef()->FindArray("anim_genres", true);
+    DataArray* s3arr = genrearr->FindArray(s3, false);
+    if(s3arr) s3 = s3arr->Sym(1);
+    else s3 = "rocker";
+
+    Symbol speed;
+    if(i4 == 0x10) speed = "slow";
+    else if(i4 == 0x40) speed = "fast";
+    else speed = "medium";
+
+    if(TheBandWardrobe){
+        TheBandWardrobe->SetSongInfo(speed, s5);
+        TheBandWardrobe->SetSongAnimGenre(s3);
+    }
+
+    mMerger->Select("song", FilePath(songfile), true);
+    if(i6) mMerger->StartLoad(mAsyncLoad);
+    return DataNode(0);
+}
+
+DataNode BandDirector::OnFileLoaded(DataArray* da){
+    Symbol sym = da->Sym(2);
+    ObjectDir* dir = da->Obj<ObjectDir>(3);
+    if(sym == song){
+        mEndOfSongSec = 0;
+        if(dir){
+            mPropAnim = dir->Find<RndPropAnim>("song.anim", false);
+            mSongPref = dir->Find<BandSongPref>("BandSongPref", false);
+            if(TheBandWardrobe && mSongPref){
+                TheBandWardrobe->SetSongAnimGenre(mSongPref->GetAnimGenre());
+            }
+        }
+        if(!mPropAnim){
+            unk110 = true;
+            mPropAnim = Hmx::Object::New<RndPropAnim>();
+            FileMerger::Merger* merger = mMerger->FindMerger("song", true);
+            merger->mLoadedObjects.push_back(mPropAnim);
+            mPropAnim->SetName("song.anim", mMerger->Dir());
+            mPropAnim->SetType("song_anim");
+            mPropAnim->SetRate(RndAnimatable::k480_fpb);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("shot_bg"))), PropKeys::kSymbol); 
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("bass_intensity"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("drum_intensity"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("guitar_intensity"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("mic_intensity"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("crowd"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("world_event"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("lightpreset"))), PropKeys::kSymbol);
+            mPropAnim->SetInterpHandler(this, DataArrayPtr(DataNode(Symbol("lightpreset"))), Symbol("lightpreset_interp"));
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("lightpreset_keyframe"))), PropKeys::kSymbol);
+            mPropAnim->SetInterpHandler(this, DataArrayPtr(DataNode(Symbol("lightpreset_keyframe"))), Symbol("lightpreset_keyframe_interp"));
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("postproc"))), PropKeys::kObject);
+            mPropAnim->SetInterpHandler(this, DataArrayPtr(DataNode(Symbol("postproc"))), Symbol("postproc_interp"));
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("spot_bass"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("spot_drums"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("spot_guitar"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("spot_keyboard"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("spot_vocal"))), PropKeys::kSymbol);
+            AddStageKitKeys(mPropAnim, this);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("part2_sing"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("part3_sing"))), PropKeys::kSymbol);
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("part4_sing"))), PropKeys::kSymbol);
+        }
+        else unk110 = false;
+        const char* instIntensities[] = { "mic_intensity", "bass_intensity", "drum_intensity", "guitar_intensity", "key_intensity" };
+        for(const char** ptr = instIntensities; *ptr != 0; ptr++){
+            DataArrayPtr dptr = DataArrayPtr(DataNode(Symbol(*ptr)));
+            SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, dptr));
+            if(skeys) skeys->unk30 = true;
+        }
+        if(!mVenue.Name().Null()){
+            if(TheBandWardrobe){
+                TheBandWardrobe->LoadCharacters(mVenue.Name(), mAsyncLoad);
+                if(mCurWorld){
+                    FileMerger* m = mCurWorld->Find<FileMerger>("extras.fm", false);
+                    if(m) m->StartLoad(true);
+                }
+                if(dir){
+                    CharLipSync* sync = dir->Find<CharLipSync>("song.lipsync", false);
+                    Symbol guitarmodeinst = mSongPref ? GetModeInst(mSongPref->Part2Inst()) : GetModeInst("guitar");
+                    Symbol bassmodeinst = mSongPref ? GetModeInst(mSongPref->Part3Inst()) : GetModeInst("bass");
+                    Symbol drummodeinst = mSongPref ? GetModeInst(mSongPref->Part3Inst()) : GetModeInst("drum");
+
+                    BandCharacter* bchar2 = 0;
+                    BandCharacter* bchar3 = 0;
+                    BandCharacter* bchar4 = 0;
+                    CharLipSyncDriver* thelipsyncdriver = 0;
+                    for(int i = 0; i < 4; i++){
+                        BandCharacter* bcharcur = TheBandWardrobe->GetCharacter(i);
+                        Symbol bcharinst = bcharcur->InstrumentType();
+                        if(bcharinst == "mic"){
+                            bcharcur->SetLipSync(sync);
+                            bcharcur->SetSingalong(1.0f);
+                            thelipsyncdriver = bcharcur->GetLipSyncDriver();
+                        }
+                        else if(bcharinst == guitarmodeinst) bchar2 = bcharcur;
+                        else if(bcharinst == bassmodeinst) bchar3 = bcharcur;
+                        else if(bcharinst == drummodeinst) bchar4 = bcharcur;
+                    }
+
+                    if(bchar2){
+                        bchar2->SetSingalong(0.0f);
+                        CharLipSync* lipsync2 = dir->Find<CharLipSync>("part2.lipsync", false);
+                        if(lipsync2) bchar2->SetLipSync(lipsync2);
+                        else bchar2->SetSongOwner(thelipsyncdriver);
+                    }
+                    if(bchar3){
+                        bchar3->SetSingalong(0.0f);
+                        CharLipSync* lipsync3 = dir->Find<CharLipSync>("part3.lipsync", false);
+                        if(lipsync3) bchar3->SetLipSync(lipsync3);
+                        else bchar3->SetSongOwner(thelipsyncdriver);
+                    }
+                    if(bchar4){
+                        bchar4->SetSingalong(0.0f);
+                        CharLipSync* lipsync4 = dir->Find<CharLipSync>("part4.lipsync", false);
+                        if(lipsync4) bchar4->SetLipSync(lipsync4);
+                        else bchar4->SetSongOwner(thelipsyncdriver);
+                    }
+                }
+            }
+            else {
+                FilePathTracker tracker(FileRoot());
+                mChars.LoadFile(FilePath("world/shared/world_chars.milo"), false, true, kLoadFront, false);
+            }
+        }
+    }
+    return DataNode(0);
+}
 
 DataNode BandDirector::OnPostProcs(DataArray* da){
     DataNode* v2 = da->Var(2);
     DataNode* v3 = da->Var(3);
     DataNode* v4 = da->Var(4);
-    *v2 = DataNode(unk8c);
-    *v3 = DataNode(unk98);
-    *v4 = DataNode(unka4);
+    *v2 = DataNode(mPostProcA);
+    *v3 = DataNode(mPostProcB);
+    *v4 = DataNode(mPostProcBlend);
     return DataNode(0);
 }
 
 DataNode BandDirector::OnPostProcInterp(DataArray* da){
-    unk8c = da->Obj<RndPostProc>(2);
-    unk98 = da->Obj<RndPostProc>(3);
-    unka4 = da->Float(4);
+    mPostProcA = da->Obj<RndPostProc>(2);
+    mPostProcB = da->Obj<RndPostProc>(3);
+    mPostProcBlend = da->Float(4);
     return DataNode(0);
 }
 
 BEGIN_PROPSYNCS(BandDirector)
-    SYNC_PROP_SET(shot_5, unkdc, SetShot(_val.Sym(0), "shot_5"))
-    SYNC_PROP_SET(shot_bg, unkdc, SetShot(_val.Sym(0), coop_bg))
-    SYNC_PROP_SET(shot_bk, unkdc, SetShot(_val.Sym(0), coop_bk))
-    SYNC_PROP_SET(shot_gk, unkdc, SetShot(_val.Sym(0), coop_gk))
+    SYNC_PROP_SET(shot_5, mShotCategory, SetShot(_val.Sym(0), "shot_5"))
+    SYNC_PROP_SET(shot_bg, mShotCategory, SetShot(_val.Sym(0), coop_bg))
+    SYNC_PROP_SET(shot_bk, mShotCategory, SetShot(_val.Sym(0), coop_bk))
+    SYNC_PROP_SET(shot_gk, mShotCategory, SetShot(_val.Sym(0), coop_gk))
     SYNC_PROP_SET(postproc, (Hmx::Object*)0, )
     SYNC_PROP_SET(lightpreset, verse, )
     SYNC_PROP_SET(lightpreset_keyframe, next, )
     SYNC_PROP_SET(world_event, none, ExportWorldEvent(_val.Sym(0)))
     SYNC_PROP(merger, mMerger)
-    SYNC_PROP(disable_picking, unke4)
-    SYNC_PROP(disabled, unkb5)
-    SYNC_PROP(lightpreset_interp_enabled, unkb4)
-    SYNC_PROP(excitement, unk60)
-    SYNC_PROP(num_players_failed, unk5c)
-    SYNC_PROP(cam_postproc, unk80)
-    SYNC_PROP_SET(cur_shot, unkb8, )
+    SYNC_PROP(disable_picking, mDisablePicking)
+    SYNC_PROP(disabled, mDisabled)
+    SYNC_PROP(lightpreset_interp_enabled, mLightPresetInterpEnabled)
+    SYNC_PROP(excitement, mExcitement)
+    SYNC_PROP(num_players_failed, mNumPlayersFailed)
+    SYNC_PROP(cam_postproc, mCamPostProc)
+    SYNC_PROP_SET(cur_shot, mCurShot, )
     SYNC_PROP_SET(cur_world, mCurWorld, )
     SYNC_PROP_SET(bass_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "bass"))
     SYNC_PROP_SET(drum_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "drum"))
