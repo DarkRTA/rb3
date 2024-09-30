@@ -28,10 +28,10 @@
 /*
  * The general vector class.
  */
-template <class _Tp, _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, _STLP_VECTOR_SIZE_DFLT_PARAM _STLP_DEFAULT_ALLOCATOR_SELECT(_Tp) >
 class vector {
-  typedef _Vector_impl<_Tp, _Alloc> _Base;
-  typedef vector<_Tp, _Alloc> _Self;
+  typedef _Vector_impl<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc> _Base;
+  typedef vector<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc> _Self;
 public:
   _STLP_FORCE_ALLOCATORS(_Tp, _Alloc)
   
@@ -177,18 +177,18 @@ private:
 };
 
 #if defined (_STLP_USE_TEMPLATE_EXPORT)
-_STLP_EXPORT_TEMPLATE_CLASS _Vector_base<void*,allocator<void*> >;
-_STLP_EXPORT_TEMPLATE_CLASS _Vector_impl<void*,allocator<void*> >;
+_STLP_EXPORT_TEMPLATE_CLASS _Vector_base<void*, _STLP_VECTOR_SIZE_DFLT_ARG allocator<void*> >;
+_STLP_EXPORT_TEMPLATE_CLASS _Vector_impl<void*, _STLP_VECTOR_SIZE_DFLT_ARG allocator<void*> >;
 #endif
 
 /*
  * The pointer partial specialization.
  */
-template <class _Tp, class _Alloc>
-class vector<_Tp*, _Alloc> {
+template <class _Tp, _STLP_VECTOR_SIZE_PARAM class _Alloc>
+class vector<_Tp*, _STLP_VECTOR_SIZE_ARG _Alloc> {
   typedef typename _Alloc_traits<void*, _Alloc>::allocator_type _VoidAlloc;
-  typedef _Vector_impl<void*, _VoidAlloc> _Base;
-  typedef vector<_Tp*, _Alloc> _Self;
+  typedef _Vector_impl<void*, _STLP_VECTOR_SIZE_ARG _VoidAlloc> _Base;
+  typedef vector<_Tp*, _STLP_VECTOR_SIZE_ARG _Alloc> _Self;
   typedef __void_ptr_traits<_Tp> cast_traits;
   
 public:

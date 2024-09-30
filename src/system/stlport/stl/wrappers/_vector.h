@@ -35,9 +35,9 @@
 #endif
 
 #if defined (_STLP_DEBUG)
-#  define _VEC_SUPER _DBG_vector<_Tp, _STLP_DEFAULT_ALLOCATOR(_Tp) >
+#  define _VEC_SUPER _DBG_vector<_Tp, _STLP_VECTOR_SIZE_DFLT_ARG _STLP_DEFAULT_ALLOCATOR(_Tp) >
 #else
-#  define _VEC_SUPER __vector__<_Tp, _STLP_DEFAULT_ALLOCATOR(_Tp) >
+#  define _VEC_SUPER __vector__<_Tp, _STLP_VECTOR_SIZE_DFLT_ARG _STLP_DEFAULT_ALLOCATOR(_Tp) >
 #endif
 
 _STLP_BEGIN_NAMESPACE

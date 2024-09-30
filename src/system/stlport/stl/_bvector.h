@@ -310,7 +310,7 @@ protected:
 
 #if defined(_STLP_CLASS_PARTIAL_SPECIALIZATION) && ! defined(_STLP_NO_BOOL) && ! defined (__SUNPRO_CC)
 # define _STLP_VECBOOL_TEMPLATE
-# define __BVEC_TMPL_HEADER template <class _Alloc>
+# define __BVEC_TMPL_HEADER template <_STLP_VECTOR_SIZE_PARAM class _Alloc>
 #else
 # undef _STLP_VECBOOL_TEMPLATE
 # ifdef _STLP_NO_BOOL
@@ -330,9 +330,9 @@ protected:
 # define __BVECTOR           bit_vector
 #else
 # ifdef _STLP_VECBOOL_TEMPLATE
-#  define __BVECTOR_QUALIFIED __WORKAROUND_DBG_RENAME(vector) <bool, _Alloc>
+#  define __BVECTOR_QUALIFIED __WORKAROUND_DBG_RENAME(vector) <bool, _STLP_VECTOR_SIZE_ARG _Alloc>
 # else
-#  define __BVECTOR_QUALIFIED __WORKAROUND_DBG_RENAME(vector) <bool, allocator<bool> >
+#  define __BVECTOR_QUALIFIED __WORKAROUND_DBG_RENAME(vector) <bool, _STLP_VECTOR_SIZE_ARG allocator<bool> >
 # endif
 #if defined (_STLP_PARTIAL_SPEC_NEEDS_TEMPLATE_ARGS)
 # define __BVECTOR __BVECTOR_QUALIFIED
@@ -819,7 +819,7 @@ public:
   
 #if !defined (_STLP_NO_BOOL)
 // This typedef is non-standard.  It is provided for backward compatibility.
-  typedef __WORKAROUND_DBG_RENAME(vector) <bool, allocator<bool> > bit_vector;
+  typedef __WORKAROUND_DBG_RENAME(vector) <bool, _STLP_VECTOR_SIZE_DFLT_ARG allocator<bool> > bit_vector;
 #endif
 
 _STLP_END_NAMESPACE

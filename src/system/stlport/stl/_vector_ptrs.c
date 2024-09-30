@@ -23,11 +23,11 @@
  * modified is included with the above copyright notice.
  *
  */
-#ifndef _STLP_VECTOR_C
-#define _STLP_VECTOR_C
+#ifndef _STLP_VECTOR_PTRS_C
+#define _STLP_VECTOR_PTRS_C
 
-#if !defined (_STLP_INTERNAL_VECTOR_H)
-#  include <stl/_vector.h>
+#if !defined (_STLP_INTERNAL_VECTOR_PTRS_H)
+#  include <stl/_vector_ptrs.h>
 #endif
 
 #include <stl/_range_errors.h>

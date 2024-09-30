@@ -37,17 +37,17 @@
 #  define _DBG_vector vector
 // # endif
 
-#  define _STLP_DBG_VECTOR_BASE __WORKAROUND_DBG_RENAME(vector) <_Tp, _Alloc>
+#  define _STLP_DBG_VECTOR_BASE __WORKAROUND_DBG_RENAME(vector) <_Tp, _STLP_VECTOR_SIZE_ARG _Alloc>
 
 _STLP_BEGIN_NAMESPACE
 
 # ifdef _STLP_DEBUG_USE_DISTINCT_VALUE_TYPE_HELPERS
-template <class _Tp, class _Alloc>
+template <class _Tp, _STLP_VECTOR_SIZE_PARAM class _Alloc>
 inline _Tp*
 value_type(const  _DBG_iter_base< _STLP_DBG_VECTOR_BASE >&) {
   return (_Tp*)0;
 }
-template <class _Tp, class _Alloc>
+template <class _Tp, _STLP_VECTOR_SIZE_PARAM class _Alloc>
 inline random_access_iterator_tag
 iterator_category(const  _DBG_iter_base< _STLP_DBG_VECTOR_BASE >&) {
   return random_access_iterator_tag();
@@ -101,16 +101,16 @@ struct _Vector_const_traits<bool, _Bit_iterator> {
  * Once done we will be able to handle the iterator range validy check on constructor
  * correctly without problem under MSVC6.
  */
-template <class _Tp, _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
+template <class _Tp, _STLP_VECTOR_SIZE_DFLT_PARAM _STLP_DBG_ALLOCATOR_SELECT(_Tp) >
 class _DBG_vector : private __construct_checker<_STLP_DBG_VECTOR_BASE >,
                     public _STLP_DBG_VECTOR_BASE
 #if defined (_STLP_USE_PARTIAL_SPEC_WORKAROUND)
-                     , public __stlport_class<_DBG_vector<_Tp, _Alloc> >
+                     , public __stlport_class<_DBG_vector<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc> >
 #endif
 {
 private:
   typedef _STLP_DBG_VECTOR_BASE _Base;
-  typedef _DBG_vector<_Tp, _Alloc> _Self;
+  typedef _DBG_vector<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc> _Self;
   typedef __construct_checker<_STLP_DBG_VECTOR_BASE > _ConstructCheck;
   __owned_list _M_iter_list;
 
@@ -348,8 +348,8 @@ public:
   }
 };
 
-#define _STLP_TEMPLATE_HEADER template <class _Tp, class _Alloc>
-#define _STLP_TEMPLATE_CONTAINER _DBG_vector<_Tp, _Alloc>
+#define _STLP_TEMPLATE_HEADER template <class _Tp, _STLP_VECTOR_SIZE_PARAM class _Alloc>
+#define _STLP_TEMPLATE_CONTAINER _DBG_vector<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc>
 #define _STLP_TEMPLATE_CONTAINER_BASE _STLP_DBG_VECTOR_BASE
 #include <stl/debug/_relops_cont.h>
 #undef _STLP_TEMPLATE_CONTAINER_BASE
@@ -357,8 +357,8 @@ public:
 #undef _STLP_TEMPLATE_HEADER
 
 #ifdef _STLP_CLASS_PARTIAL_SPECIALIZATION
-template <class _Tp, class _Alloc>
-struct __move_traits<vector<_Tp, _Alloc> > :
+template <class _Tp, _STLP_VECTOR_SIZE_PARAM class _Alloc>
+struct __move_traits<vector<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc> > :
   __move_traits_aux<_STLP_DBG_VECTOR_BASE >
 {};
 #endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
