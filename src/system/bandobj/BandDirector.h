@@ -77,6 +77,8 @@ public:
     void AddDircut(Symbol, float);
     void FilterShot(int&);
     Symbol GetModeInst(Symbol);
+    void UnloadVenue(bool);
+    BandCamShot* FindNextDircut();
 
     bool IsMusicVideo();
     LightPresetManager* LightPresetMgr(){

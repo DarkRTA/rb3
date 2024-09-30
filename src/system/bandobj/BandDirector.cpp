@@ -806,7 +806,7 @@ DataNode BandDirector::OnFileLoaded(DataArray* da){
             mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("part4_sing"))), PropKeys::kSymbol);
         }
         else unk110 = false;
-        const char* instIntensities[] = { "mic_intensity", "bass_intensity", "drum_intensity", "guitar_intensity", "key_intensity" };
+        const char* instIntensities[] = { "mic_intensity", "bass_intensity", "drum_intensity", "guitar_intensity", "key_intensity", 0 };
         for(const char** ptr = instIntensities; *ptr != 0; ptr++){
             DataArrayPtr dptr = DataArrayPtr(DataNode(Symbol(*ptr)));
             SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, dptr));
@@ -866,6 +866,132 @@ DataNode BandDirector::OnFileLoaded(DataArray* da){
                 FilePathTracker tracker(FileRoot());
                 mChars.LoadFile(FilePath("world/shared/world_chars.milo"), false, true, kLoadFront, false);
             }
+        }
+    }
+    return DataNode(0);
+}
+
+void BandDirector::LoadVenue(Symbol s, LoaderPos pos){
+    FilePath fp;
+    GetVenuePath(fp, s.mStr);
+    mVenue.Load(fp, pos, mAsyncLoad);
+}
+
+void BandDirector::UnloadVenue(bool b){
+    mVenue.Unload(b);
+}
+
+DataNode BandDirector::OnSaveSong(DataArray* da){
+    return DataNode(0);
+}
+
+void ExtractPstCatAdjs(DataArray* arr, Symbol& s1, Symbol& s2){
+    DataNode eval2(arr->Evaluate(2));
+    if(eval2.Type() == kDataSymbol){
+        s1 = eval2.Sym(arr);
+    }
+    else {
+        MILO_WARN("unhandled light preset category at %f seconds\n", DataNode(arr->Evaluate(4)));
+    }
+    DataNode eval3(arr->Evaluate(3));
+    if(eval3.Type() == kDataArray){
+        DataArray* evalarr = eval3.Array(arr);
+        int arrsize = evalarr->Size();
+        if(arrsize > 0){
+            s2 = evalarr->Sym(0);
+            if(arrsize > 1){
+                MILO_WARN("unhandled light preset adjective: %s, %f secs\n", evalarr->Str(1), DataNode(arr->Evaluate(4)));
+            }
+        }
+    }
+}
+
+void ExtractCatAdj(Symbol s, Symbol& s1, Symbol& s2){
+    char buf[256];
+    StrNCopy(buf, s.mStr, 255);
+    char* strplus = strstr(buf, "+");
+    if(strplus){
+        *strplus = 0;
+        s1 = strplus == buf ? gNullStr : buf;
+        s2 = !(strplus + 1) ? gNullStr : strplus + 1;
+    }
+    else {
+        s1 = s;
+        s2 = gNullStr;
+    }
+}
+
+Symbol ConcatCatAdj(Symbol s1, Symbol s2){
+    Symbol ret;
+    if(s2 != gNullStr){
+        ret = MakeString("%s+%s", s1.mStr, s2.mStr);
+    }
+    else ret = s1;
+    return ret;
+}
+
+void BandDirector::OnMidiPresetCleanup(){
+    if(!mPropAnim || !mVenue.Dir()) return;
+    DataArrayPtr dptr(DataNode(Symbol("lightpreset")));
+    PropKeys* keys = mPropAnim->GetKeys(this, dptr);
+    if(!keys) return;
+    WorldDir* wdir = mVenue.Dir();
+    Keys<Symbol, Symbol>& skeys = keys->AsSymbolKeys();
+    Keys<Symbol, Symbol> local_keys;
+    for(int i = 0; i < skeys.size(); i++){
+        Symbol s1, s2;
+        ExtractCatAdj(skeys[i].value, s1, s2);
+        if(s2 != gNullStr) s1 = s2;
+        skeys[i].value = s1;
+        LightPreset* lpreset = wdir->mPresetManager.PickRandomPreset(skeys[i].value);
+        if(lpreset && i > 0){
+            float fadein = lpreset->LegacyFadeIn() / 480.0f;
+            ClampEq(fadein, 0.0f, 4.0f);
+            float stb = SecondsToBeat(skeys[i].frame / 30.0f);
+            float bts = BeatToSeconds(Max(0.0f, stb - fadein));
+            float newframe = bts * 30.0f;
+            if(skeys[i - 1].frame <= newframe){
+                local_keys.push_back(Key<Symbol>(skeys[i - 1].value, newframe));
+            }              
+        }
+        else if(!lpreset){
+            MILO_WARN("Can't find light preset %s, %f secs", s1.mStr, skeys[i].frame / 30.0f);
+        }
+    }
+    for(int i = 0; i < local_keys.size(); i++){
+        skeys.Add(local_keys[i].value, local_keys[i].frame, true);
+    }
+}
+
+DataNode BandDirector::OnMidiAddPreset(DataArray* da){
+    MILO_ASSERT(mPropAnim, 0x7C4);
+    DataArrayPtr dptr(DataNode(Symbol("lightpreset")));
+    SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, dptr.mData));
+    if(skeys){
+        Symbol s1, s2;
+        ExtractPstCatAdjs(da, s1, s2);
+        float frame = da->Float(4) * 30.0f;
+        const Key<Symbol>* next;
+        const Key<Symbol>* prev;
+        float ref;
+        int at = skeys->AtFrame(frame, next, prev, ref);
+        if(next){
+            Symbol s50 = next->value;
+            Symbol s54, s58;
+            ExtractCatAdj(s50, s54, s58);
+            if(s2 == gNullStr){
+                s2 = s1 == gNullStr ? gNullStr : s58;
+            }
+            if(s1 == gNullStr) s1 = s54;
+            Symbol s5c = ConcatCatAdj(s1, s2);
+            if(at >= 0 && skeys->at(at).frame == frame){
+                skeys->at(at).value = s5c;
+            }
+            else skeys->Add(s5c, frame, false);
+        }
+        else {
+            Symbol s60 = ConcatCatAdj(s1, s2);
+            if(s60 != gNullStr) skeys->Add(s60, frame, false);
         }
     }
     return DataNode(0);

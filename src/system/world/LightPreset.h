@@ -177,6 +177,7 @@ public:
     void AnimateLightFromPreset(RndLight*, const EnvLightEntry&, float);
     void AnimateSpotlightDrawerFromPreset(SpotlightDrawer*, const SpotlightDrawerEntry&, float);
     void SetHue(LightHue* hue){ mHue = hue; }
+    float LegacyFadeIn() const { return mLegacyFadeIn; }
 
     static void ResetEvents();
     static std::deque<std::pair<KeyframeCmd, float> > sManualEvents;
