@@ -42,6 +42,7 @@
             },
             "defines": [
                 "MILO_DEBUG",
+                "HX_WII",
                 "__MWERKS__=0x4302",
                 "__PPCBROADWAY__",
                 "__PPCGECKO__",

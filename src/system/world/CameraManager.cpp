@@ -3,6 +3,7 @@
 #include "rndobj/DOFProc.h"
 #include "rndwii/Rnd.h"
 #include "utl/Symbols.h"
+#include "utl/VectorSizeDefs.h"
 
 Rand CameraManager::sRand(0);
 int CameraManager::sSeed;
@@ -17,7 +18,7 @@ CameraManager::~CameraManager(){
     StartShot_(0);
     if(TheDOFProc) TheDOFProc->UnSet();
     RELEASE(mFreeCam);
-    for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
+    for(std::vector<Category VECTOR_SIZE_LARGE>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
         delete it->unk4;
     }
 }
@@ -28,7 +29,7 @@ void CameraManager::RandomizeCategory(ObjPtrList<CamShot, ObjectDir>& camlist){
 
 void CameraManager::Randomize(){
     sRand.Seed(sSeed);
-    for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
+    for(std::vector<Category VECTOR_SIZE_LARGE>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
         RandomizeCategory(*it->unk4);
     }
 }
@@ -83,7 +84,7 @@ CamShot* CameraManager::PickCameraShot(Symbol s, const std::vector<PropertyFilte
             it->match.Print(str, false);
             if(it->prop == DataNode(flags_any) || it->prop == DataNode(flags_exact)){
                 str << MakeString(" 0x%x", it->mask);
-            } 
+            }
             str << ")";
         }
         MILO_WARN(str.c_str());
@@ -302,7 +303,7 @@ DataNode CameraManager::OnRandomSeed(DataArray* da){
 DataNode CameraManager::OnIterateShot(DataArray* da){
     DataNode* var = da->Var(2);
     DataNode d28(*var);
-    for(std::vector<Category, u32>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
+    for(std::vector<Category VECTOR_SIZE_LARGE>::iterator it = mCameraShotCategories.begin(); it != mCameraShotCategories.end(); ++it){
         for(ObjPtrList<CamShot, ObjectDir>::iterator lit = it->unk4->begin(); lit != it->unk4->end(); ++lit){
             *var = DataNode(*lit);
             for(int i = 3; i < da->Size(); i++){

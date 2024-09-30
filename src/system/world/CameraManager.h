@@ -4,6 +4,7 @@
 #include "world/CameraShot.h"
 #include "world/FreeCamera.h"
 #include "math/Rand.h"
+#include "utl/VectorSizeDefs.h"
 
 class WorldDir;
 
@@ -67,7 +68,7 @@ public:
     static int sSeed;
 
     WorldDir* mParent; // 0x4
-    std::vector<Category, unsigned int> mCameraShotCategories; // 0x8
+    std::vector<Category VECTOR_SIZE_LARGE> mCameraShotCategories; // 0x8
     ObjPtr<CamShot, class ObjectDir> mNextShot; // 0x14
     ObjPtr<CamShot, class ObjectDir> mCurrentShot; // 0x20
     float mCamStartTime; // 0x2c

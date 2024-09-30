@@ -305,3 +305,9 @@
 */
 
 /*==========================================================*/
+
+/* Custom configuration */
+
+#ifdef HX_WII
+#  define _STLP_USE_SIZED_VECTOR
+#endif

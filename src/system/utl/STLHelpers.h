@@ -1,6 +1,7 @@
 #ifndef UTL_STLHELPERS_H
 #define UTL_STLHELPERS_H
 #include <vector>
+#include "utl/VectorSizeDefs.h"
 
 template <class T>
 inline void DeleteInstance(const int& /* purpose not known yet */, T* t) {

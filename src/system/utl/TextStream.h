@@ -31,18 +31,22 @@ public:
     void Space(int i);
 };
 
-template<class T1, class T2> TextStream& operator<<(TextStream& ts, const std::vector<T1, T2>& vec){
+// Note: `Allocator` here is actually the size/capacity type parameter on Wii.
+// The name is based on Xbox 360 symbols, which show the allocator type instead.
+template<class T, class Allocator>
+TextStream& operator<<(TextStream& ts, const std::vector<T, Allocator>& vec){
     ts << "(size:" << vec.size() << ")";
-    for(std::vector<T1, T2>::const_iterator it = vec.begin(); it != vec.end(); it++){
+    for(std::vector<T, Allocator>::const_iterator it = vec.begin(); it != vec.end(); it++){
         ts << "\n" << it - vec.begin() << "\t" << *it;
     }
     return ts;
 }
 
-template<class T1, class T2> TextStream& operator<<(TextStream& ts, const std::list<T1, T2>& list){
+template<class T, class Allocator>
+TextStream& operator<<(TextStream& ts, const std::list<T, Allocator>& list){
     ts << "(size:" << list.size() << ")";
     int i = 0;
-    for(std::list<T1, T2>::const_iterator it = list.begin(); it != list.end(); it++){
+    for(std::list<T, Allocator>::const_iterator it = list.begin(); it != list.end(); it++){
         ts << "\n" << i << "\t" << *it;
         i++;
     }

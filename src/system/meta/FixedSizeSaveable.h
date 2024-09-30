@@ -34,8 +34,11 @@ public:
     static void LoadStd(FixedSizeSaveableStream&, std::set<Symbol>&, int);
     static void EnablePrintouts(bool);
 
-    template <class T1, class T2> static void SaveStdFixed(FixedSizeSaveableStream& stream, const std::vector<T1, T2>& vec, int maxsize){
-        int savesize = T1::SaveSize(FixedSizeSaveable::sSaveVersion);
+    // Note: `Allocator` here is actually the size/capacity type parameter on Wii.
+    // The name is based on Xbox 360 symbols, which show the allocator type instead.
+    template <class T, class Allocator>
+    static void SaveStdFixed(FixedSizeSaveableStream& stream, const std::vector<T, Allocator>& vec, int maxsize){
+        int savesize = T::SaveSize(FixedSizeSaveable::sSaveVersion);
         int vecsize = vec.size();
         if(vecsize > maxsize){
             MILO_WARN("The vector size is greater than the maximum supplied! size=%i max=%i\n", vecsize, maxsize);
@@ -48,8 +51,9 @@ public:
         if(maxsize > vecsize) PadStream(stream, savesize * (maxsize - vecsize));
     }
 
-    template <class T1, class T2> static void LoadStdFixed(FixedSizeSaveableStream& stream, std::vector<T1, T2>& vec, int maxsize, int i2){
-        int savesize = T1::SaveSize(i2);
+    template <class T, class Allocator>
+    static void LoadStdFixed(FixedSizeSaveableStream& stream, std::vector<T, Allocator>& vec, int maxsize, int i2){
+        int savesize = T::SaveSize(i2);
         if(vec.size() != 0){
             MILO_WARN("vector is not empty!");
             vec.clear();
