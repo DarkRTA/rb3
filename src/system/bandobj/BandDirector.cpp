@@ -1161,6 +1161,62 @@ DataNode BandDirector::OnToggleInterestDebugOverlay(DataArray* da){
     return DataNode(0);
 }
 
+DataNode BandDirector::OnShotAnnotate(DataArray* da){
+    if(!mPropAnim) return DataNode(0);
+    else {
+        RndPropAnim* propanim = da->Obj<RndPropAnim>(2);
+        DataArray* arr3 = da->Array(3);
+        PropKeys* keys = propanim->GetKeys(this, arr3);
+        int i7 = da->Int(4);
+        if(!keys || i7 < 0) return DataNode(0);
+        else {
+            Keys<Symbol, Symbol>& skeys = keys->AsSymbolKeys();
+            Key<Symbol>& skey = skeys[i7];
+            Symbol symval = skey.value;
+            DataArrayPtr ptr;
+            float f1 = 0;
+            if(i7 + 1 < skeys.size()){
+                f1 = (skeys[i7 + 1].frame - skey.frame) / 30.0f;
+            }
+            ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame), DataNode(MakeString("%.1f sec", f1)))));
+            if(strneq(symval.mStr, "directed_", 9)){
+                static DataArray* limits = SystemConfig("objects", "BandCamShot", "types", "band", "dircut_limits")->Array(1);
+                static DataArray* freeDircuts = SystemConfig("objects", "BandCamShot", "types", "band", "free_dircuts")->Array(1);
+                float f19 = 7.5f;
+                float f21 = 0;
+                DataArray* symarr = limits->FindArray(symval, false);
+                float f18 = f19;
+                float f20 = f19;
+                if(symarr){
+                    f21 = symarr->Float(1);
+                    float f17 = symarr->Float(2);
+                    if(f17 > 7.5f) f20 = f17;
+                    f17 = symarr->Float(3);
+                    if(f17 > 7.5f) f18 = f17;
+                    f17 = symarr->Float(4);
+                    if(f17 > 7.5f) f19 = f17;
+                }
+                else MILO_NOTIFY_ONCE("could not find %s in dircut_limits", symval);
+
+                ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame + 7.5f), DataNode("fallback_end"))));
+                ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame - f21), DataNode("zero_time"))));
+                ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame + f20), DataNode("min_time"))));
+                ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame + f18), DataNode("dur_min"))));
+                ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame + f19), DataNode("dur_max"))));
+
+                for(int i = 0; i < freeDircuts->Size(); i++){
+                    if(symval == freeDircuts->Sym(i)){
+                        ptr->Insert(ptr->Size(), DataNode(DataArrayPtr(DataNode(skey.frame), DataNode("free_dircut"))));
+                        break;
+                    }
+                }
+            }
+            DataNode ret = DataNode(ptr, kDataArray);
+            // return DataNode(ret);
+        }
+    }
+}
+
 DataNode BandDirector::OnPostProcs(DataArray* da){
     DataNode* v2 = da->Var(2);
     DataNode* v3 = da->Var(3);
