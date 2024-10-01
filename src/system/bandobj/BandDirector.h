@@ -81,6 +81,7 @@ public:
     BandCamShot* FindNextDircut();
     void FindNextPstKeyframe(float, float, Symbol);
     void SendCurWorldMsg(Symbol, bool);
+    void PlayNextShot();
 
     bool IsMusicVideo();
     LightPresetManager* LightPresetMgr(){
