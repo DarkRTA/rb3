@@ -66,8 +66,10 @@ typedef _STLP_LONG_LONG streamoff;
 #  else
 typedef ptrdiff_t streamoff;
 #  endif
-#else // __unix
+#elif defined (__unix) // decomp hack: don't assume Unix as the default case
 typedef off_t streamoff;
+#else
+typedef ptrdiff_t streamoff;
 #endif /* _STLP_HAS_NO_NEW_C_HEADERS */
 
 #if defined (_STLP_WIN32)

@@ -650,11 +650,14 @@ basic_string<_CharT, _Traits, _Alloc>::basic_string(const basic_string<_CharT, _
   _M_range_initialize(__s._M_Start(), __s._M_Finish());
 }
   
+// decomp hack: this is straight-up just duplicated from _string.h??
+/*
 #if !defined (_STLP_STATIC_CONST_INIT_BUG) && \
    (!defined (__GNUC__) || (__GNUC__ != 2) || (__GNUC_MINOR__ != 96))
 template <class _CharT, class _Traits, class _Alloc>
 const size_t basic_string<_CharT, _Traits, _Alloc>::npos;
 #endif
+*/
 
 _STLP_END_NAMESPACE
 

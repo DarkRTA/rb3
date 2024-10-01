@@ -73,7 +73,7 @@ template <class _Tp, class _Size, class _Alloc>
 void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_insert_overflow_aux(pointer __pos, const _Tp& __x, const __false_type& /*NOT TO USE!!*/,
                                                        size_type __fill_len, bool __atend ) {
   const size_type __old_size = size();
-  const size_type __len = __old_size + (max)(__old_size, __fill_len);
+  size_type __len = __old_size + (max)(__old_size, __fill_len);
 
   pointer __new_start = this->_M_ptr.allocate(__len);
   pointer __new_finish = __new_start;
@@ -98,7 +98,7 @@ template <class _Tp, class _Size, class _Alloc>
 void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_insert_overflow(pointer __pos, const _Tp& __x, const __true_type& /*_TrivialCpy*/,
                                                    size_type __fill_len, bool __atend ) {
   const size_type __old_size = size();
-  const size_type __len = __old_size + (max)(__old_size, __fill_len);
+  size_type __len = __old_size + (max)(__old_size, __fill_len);
 
   pointer __new_start = this->_M_ptr.allocate(__len);
   pointer __new_finish = (pointer)__copy_trivial(this->_M_start(), __pos, __new_start);

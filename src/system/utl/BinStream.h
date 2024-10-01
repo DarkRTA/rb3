@@ -235,7 +235,7 @@ BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
     int size;
     bs >> size;
     for(; size != 0; size--){
-        T key;
+        T1 key;
         bs >> key;
         bs >> map[key];
     }
