@@ -164,7 +164,8 @@ public:
         }
     }
 
-    // looks like this gets the index in the Keys vector in which the frame ff is located
+    // TODO: rename function to FindLastBefore
+    // finds the last possible index in which the corresponding frame <= ff
     int LowerBound(float ff) const {
         if(empty() || (ff < front().frame)) return -1;
         else {
@@ -180,7 +181,8 @@ public:
         }
     }
 
-    // ditto, but it's comparing this frame to the back instead of the front
+    // TODO: rename function to FindFirstAfter
+    // finds the first possible index in which the corresponding frame > ff
     int UpperBound(float ff) const {
         if(empty() || (ff <= front().frame)) return 0;
         else {
@@ -199,6 +201,16 @@ public:
                 while (threshold > 1 && (*this)[threshold - 1].SameFrame((*this)[threshold])) threshold--;
                 return threshold;
             }
+        }
+    }
+
+    // returns the first Key that fits in the range of frames f1 to f2
+    Key<T1>* GetFirstInRange(float f1, float f2){
+        int idx = LowerBound(f1);
+        if(idx == -1) return 0;
+        else {
+            if(f2 >= (*this)[idx].frame) return 0;
+            else return &(*this)[idx];
         }
     }
 };

@@ -966,7 +966,7 @@ void BandDirector::OnMidiPresetCleanup(){
 DataNode BandDirector::OnMidiAddPreset(DataArray* da){
     MILO_ASSERT(mPropAnim, 0x7C4);
     DataArrayPtr dptr(DataNode(Symbol("lightpreset")));
-    SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, dptr.mData));
+    SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, dptr));
     if(skeys){
         Symbol s1, s2;
         ExtractPstCatAdjs(da, s1, s2);
@@ -995,6 +995,17 @@ DataNode BandDirector::OnMidiAddPreset(DataArray* da){
         }
     }
     return DataNode(0);
+}
+
+BandCamShot* BandDirector::FindNextDircut(){
+    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float delta = secs - TheTaskMgr.DeltaSeconds();
+    Key<BandCamShot*>* key = mDircuts.GetFirstInRange(secs, delta);
+    if(!key) return 0;
+    else {
+        if(key->value) unk58 = true;
+        return key->value;
+    }
 }
 
 DataNode BandDirector::OnPostProcs(DataArray* da){
