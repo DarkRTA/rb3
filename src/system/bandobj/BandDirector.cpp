@@ -1008,6 +1008,45 @@ BandCamShot* BandDirector::FindNextDircut(){
     }
 }
 
+int curInterestDebugChar = 5;
+
+DataNode BandDirector::OnDebugInterestsForNextCharacter(DataArray* da){
+    int i4 = curInterestDebugChar;
+    curInterestDebugChar = (curInterestDebugChar + 1) % 6;
+    if(curInterestDebugChar == 4){
+        for(i4 = 0; i4 < 4; i4++){
+            BandCharacter* bc = TheBandWardrobe ? TheBandWardrobe->GetCharacter(i4) : 0;
+            if(bc) bc->SetDebugDrawInterestObjects(true);
+        }
+    }
+    else if(curInterestDebugChar == 5){
+        RndOverlay* o = RndOverlay::Find("eye_status", false);
+        if(o) o->SetOverlay(false);
+        for(i4 = 0; i4 < 4; i4++){
+            BandCharacter* bc = TheBandWardrobe ? TheBandWardrobe->GetCharacter(i4) : 0;
+            if(bc) bc->SetDebugDrawInterestObjects(false);
+        }
+    }
+    else {
+        RndOverlay* o = RndOverlay::Find("eye_status", false);
+        if(o) o->SetOverlay(true);
+        int c = curInterestDebugChar;
+        BandCharacter* bc = TheBandWardrobe ? TheBandWardrobe->GetCharacter(c) : 0;
+        if(bc) bc->SetDebugDrawInterestObjects(true);
+        if(i4 < 4){
+            BandCharacter* bc = TheBandWardrobe ? TheBandWardrobe->GetCharacter(i4) : 0;
+            if(bc) bc->SetDebugDrawInterestObjects(false);
+        }
+    }
+    return DataNode(0);
+}
+
+DataNode BandDirector::OnToggleInterestDebugOverlay(DataArray* da){
+    RndOverlay* o = RndOverlay::Find("eye_status", false);
+    if(o) o->SetOverlay(o->Showing() == 0);
+    return DataNode(0);
+}
+
 DataNode BandDirector::OnPostProcs(DataArray* da){
     DataNode* v2 = da->Var(2);
     DataNode* v3 = da->Var(3);
