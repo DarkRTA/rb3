@@ -392,22 +392,18 @@ public:
 
   // Moves the element that follows __prev to *this, inserting it immediately
   //  after __pos.  This is constant time.
-  void splice_after(iterator __pos, _Self& __x, iterator __prev) {
+  void splice_after(iterator __pos, iterator __prev) {
     _STLP_DEBUG_CHECK(_Dereferenceable(__pos))
     _STLP_DEBUG_CHECK(__check_if_owner(&_M_iter_list, __pos))
     _STLP_DEBUG_CHECK(_Dereferenceable(__prev))
     iterator __elem = __prev; ++__elem;
-    _Base::splice_after(__pos._M_iterator, *((_Base *)&__x), __prev._M_iterator);
-    if (this->get_allocator() == __x.get_allocator()) {
-      __change_ite_owner(__elem, &_M_iter_list);
-    } else {
-      __x._Invalidate_iterator(__elem);
-    }
+    _Base::splice_after(__pos._M_iterator, __prev._M_iterator);
+    __change_ite_owner(__elem, &_M_iter_list);
   }
 
   // Moves the range [__before_first + 1, __before_last + 1) to *this,
   //  inserting it immediately after __pos.  This is constant time.
-  void splice_after(iterator __pos, _Self& __x,
+  void splice_after(iterator __pos,
                     iterator __before_first, iterator __before_last) {
     _STLP_DEBUG_CHECK(_Dereferenceable(__pos))
     _STLP_DEBUG_CHECK(__check_if_owner(&_M_iter_list,__pos))
@@ -416,12 +412,8 @@ public:
     _STLP_DEBUG_CHECK(_Dereferenceable(__before_last))
     iterator __first = __before_first; ++__first;
     iterator __last = __before_last; ++__last;
-    if (this->get_allocator() == __x.get_allocator()) {
-      __change_range_owner(__first, __last, &_M_iter_list);
-    } else {
-      __x._Invalidate_iterators(__first, __last);
-    }
-    _Base::splice_after(__pos._M_iterator, *((_Base *)&__x),
+    __change_range_owner(__first, __last, &_M_iter_list);
+    _Base::splice_after(__pos._M_iterator,
                         __before_first._M_iterator, __before_last._M_iterator);
   }
 

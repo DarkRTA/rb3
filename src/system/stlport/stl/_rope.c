@@ -409,7 +409,7 @@ rope<_CharT,_Alloc>::_S_destr_leaf_concat_char_iter (_RopeLeaf* __r, const _Char
   }
   __r->_M_decr(); // - ptr, __r->_M_ref_count == 1 or 0
   size_t __old_len = __r->_M_size._M_data;
-  if (_S_rounded_up_size(__old_len) == _S_rounded_up_size(__old_len + __len)) {
+  if (_S_allocated_capacity(__old_len) >= __old_len + __len) {
     // The space has been partially initialized for the standard
     // character types.  But that doesn't matter for those types.
     uninitialized_copy_n(__iter, __len, __r->_M_data + __old_len);
@@ -519,9 +519,10 @@ rope<_CharT,_Alloc>::_S_destr_concat_char_iter(
     return _S_concat_char_iter(__r, __s, __slen);
   }
   if (0 == __slen) {
+    // __r->_M_ref_count = 2;      // One more than before
+    __r->_M_incr();
     return __r;
   }
-  __r->_M_decr();
   if (__orig_size + __slen <= _S_copy_max && _RopeRep::_S_leaf == __r->_M_tag) {
     return _S_destr_leaf_concat_char_iter((_RopeLeaf*)__r, __s, __slen);
   }

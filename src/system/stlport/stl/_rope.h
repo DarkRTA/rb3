@@ -365,6 +365,16 @@ public:
     _M_tag(__t), _M_is_balanced(__b), _M_depth(__d), _M_c_string(0), _M_size(__a, _p_size)
   { }
 
+  static size_t _S_rounded_up_size_aux(size_t __n, __true_type const& /*_IsBasicCharType*/) {
+    // Allow slop for in-place expansion.
+    return (__n + _S_alloc_granularity) & ~(_S_alloc_granularity-1);
+  }
+  
+  static size_t _S_rounded_up_size_aux(size_t __n, __false_type const& /*_IsBasicCharType*/) {
+    // Allow slop for in-place expansion.
+    return (__n + _S_alloc_granularity - 1) & ~(_S_alloc_granularity-1);
+  }
+  
   typedef typename _AreSameUnCVTypes<_CharT, char>::_Ret _IsChar;
 # ifdef _STLP_HAS_WCHAR_T
   typedef typename _AreSameUnCVTypes<_CharT, wchar_t>::_Ret _IsWCharT;
@@ -374,27 +384,10 @@ public:
 
   typedef typename _Lor2<_IsChar, _IsWCharT>::_Ret _IsBasicCharType;
   
-#if 0
-  /* Please tell why this code is necessary if you uncomment it.
-   * Problem with it is that rope implementation expect that _S_rounded_up_size(n)
-   * returns a size > n in order to store the terminating null charater. When
-   * instanciation type is not a char or wchar_t this is not guaranty resulting in
-   * memory overrun.
-   */
-  static size_t _S_rounded_up_size_aux(size_t __n, __true_type const& /*_IsBasicCharType*/) {
-    // Allow slop for in-place expansion.
-    return (__n + _S_alloc_granularity) & ~(_S_alloc_granularity - 1);
-  }
-
-  static size_t _S_rounded_up_size_aux(size_t __n, __false_type const& /*_IsBasicCharType*/) {
-    // Allow slop for in-place expansion.
-    return (__n + _S_alloc_granularity - 1) & ~(_S_alloc_granularity - 1);
-  }
-#endif
   // fbp : moved from RopeLeaf
-  static size_t _S_rounded_up_size(size_t __n)
-  //{ return _S_rounded_up_size_aux(__n, _IsBasicCharType()); }
-  { return (__n + _S_alloc_granularity) & ~(_S_alloc_granularity - 1); }
+  static size_t _S_rounded_up_size(size_t __n) {
+    return _S_rounded_up_size_aux(__n, _IsBasicCharType());
+  }
 
   static void _S_free_string( _CharT* __s, size_t __len,
                              allocator_type __a) {
@@ -1150,20 +1143,25 @@ public:
   typedef _Rope_char_consumer<_CharT> _CharConsumer;
 #endif
   void apply_to_pieces(size_t __begin, size_t __end,
-                       _CharConsumer& __c) const
-  { _S_apply_to_pieces(__c, _M_tree_ptr._M_data, __begin, __end); }
+                       _CharConsumer& __c) const {
+    _S_apply_to_pieces(__c, _M_tree_ptr._M_data, __begin, __end);
+  }
 
 protected:
 
-  static size_t _S_rounded_up_size(size_t __n)
-  { return _RopeRep::_S_rounded_up_size(__n); }
+  static size_t _S_rounded_up_size(size_t __n) {
+    return _RopeRep::_S_rounded_up_size(__n);
+  }
 
+  static size_t _S_allocated_capacity(size_t __n) {
+    return _RopeRep::_S_rounded_up_size_aux(__n, __false_type());
+  }
+                
   // Allocate and construct a RopeLeaf using the supplied allocator
   // Takes ownership of s instead of copying.
   static _RopeLeaf* _S_new_RopeLeaf(_CharT *__s,
                                     size_t _p_size, allocator_type __a) {
-    _RopeLeaf* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
-                                                _RopeLeaf).allocate(1);
+    _RopeLeaf* __space = _STLP_CREATE_ALLOCATOR(allocator_type,__a, _RopeLeaf).allocate(1,(const void*)0);
     _STLP_TRY {
       _STLP_PLACEMENT_NEW(__space) _RopeLeaf(__s, _p_size, __a);
     }
@@ -1174,22 +1172,22 @@ protected:
 
   static _RopeConcatenation* _S_new_RopeConcatenation(_RopeRep* __left, _RopeRep* __right,
                                                       allocator_type __a) {
-   _RopeConcatenation* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
-                                                        _RopeConcatenation).allocate(1);
+   _RopeConcatenation* __space = _STLP_CREATE_ALLOCATOR(allocator_type,__a,
+                                                    _RopeConcatenation).allocate(1,(const void*)0);
     return _STLP_PLACEMENT_NEW(__space) _RopeConcatenation(__left, __right, __a);
   }
 
   static _RopeFunction* _S_new_RopeFunction(char_producer<_CharT>* __f,
                                             size_t _p_size, bool __d, allocator_type __a) {
-   _RopeFunction* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
-                                                   _RopeFunction).allocate(1);
+   _RopeFunction* __space = _STLP_CREATE_ALLOCATOR(allocator_type,__a, 
+                                               _RopeFunction).allocate(1,(const void*)0);
     return _STLP_PLACEMENT_NEW(__space) _RopeFunction(__f, _p_size, __d, __a);
   }
 
   static _RopeSubstring* _S_new_RopeSubstring(_Rope_RopeRep<_CharT,_Alloc>* __b, size_t __s,
                                               size_t __l, allocator_type __a) {
-   _RopeSubstring* __space = _STLP_CREATE_ALLOCATOR(allocator_type, __a,
-                                                    _RopeSubstring).allocate(1);
+   _RopeSubstring* __space = _STLP_CREATE_ALLOCATOR(allocator_type,__a, 
+                                                _RopeSubstring).allocate(1,(const void*)0);
     return _STLP_PLACEMENT_NEW(__space) _RopeSubstring(__b, __s, __l, __a);
   }
 
@@ -1307,13 +1305,6 @@ protected:
   
   void _M_throw_out_of_range() const;
 
-  void _M_reset(_RopeRep* __r) {
-    //if (__r != _M_tree_ptr._M_data) {
-      _S_unref(_M_tree_ptr._M_data);
-      _M_tree_ptr._M_data = __r;
-    //}
-  }
-
 public:
   bool empty() const { return 0 == _M_tree_ptr._M_data; }
 
@@ -1358,8 +1349,6 @@ public:
     _CharT* __buf = _M_tree_ptr.allocate(_S_rounded_up_size(1));
 
     _Copy_Construct(__buf, __c);
-    _S_construct_null(__buf + 1);
-
     _STLP_TRY {
       _M_tree_ptr._M_data = _S_new_RopeLeaf(__buf, 1, __a);
     }
@@ -1451,9 +1440,11 @@ public:
   }
 
   _Self& operator=(const _Self& __x) {
+    _RopeRep* __old = _M_tree_ptr._M_data;
     _STLP_ASSERT(get_allocator() == __x.get_allocator())
-    _S_ref(__x._M_tree_ptr._M_data);
-    _M_reset(__x._M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __x._M_tree_ptr._M_data;
+    _S_ref(_M_tree_ptr._M_data);
+    _S_unref(__old);
     return *this;
   }
   
@@ -1462,7 +1453,9 @@ public:
     _M_tree_ptr._M_data = 0;
   }
   void push_back(_CharT __x) {
-    _M_reset(_S_destr_concat_char_iter(_M_tree_ptr._M_data, &__x, 1));
+    _RopeRep* __old = _M_tree_ptr._M_data;
+    _M_tree_ptr._M_data = _S_destr_concat_char_iter(_M_tree_ptr._M_data, &__x, 1);
+    _S_unref(__old);
   }
 
   void pop_back() {
@@ -1619,7 +1612,10 @@ public:
   // The first argument should be an input iterator or
   // forward iterator with value_type _CharT.
   _Self& append(const _CharT* __iter, size_t __n) {
-    _M_reset(_S_destr_concat_char_iter(_M_tree_ptr._M_data, __iter, __n));
+    _RopeRep* __result = 
+      _S_destr_concat_char_iter(_M_tree_ptr._M_data, __iter, __n);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
     return *this;
   }
 
@@ -1630,7 +1626,10 @@ public:
   }
 
   _Self& append(const _CharT* __s, const _CharT* __e) {
-    _M_reset(_S_destr_concat_char_iter(_M_tree_ptr._M_data, __s, __e - __s));
+    _RopeRep* __result =
+      _S_destr_concat_char_iter(_M_tree_ptr._M_data, __s, __e - __s);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
     return *this;
   }
 
@@ -1638,12 +1637,18 @@ public:
     _STLP_ASSERT(__s._M_root == __e._M_root)
     _STLP_ASSERT(get_allocator() == __s._M_root->get_allocator())
     _Self_destruct_ptr __appendee(_S_substring(__s._M_root, __s._M_current_pos, __e._M_current_pos));
-    _M_reset(_S_concat_rep(_M_tree_ptr._M_data, (_RopeRep*)__appendee));
+    _RopeRep* __result = 
+      _S_concat_rep(_M_tree_ptr._M_data, (_RopeRep*)__appendee);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
     return *this;
   }
 
   _Self& append(_CharT __c) {
-    _M_reset(_S_destr_concat_char_iter(_M_tree_ptr._M_data, &__c, 1));
+    _RopeRep* __result = 
+      _S_destr_concat_char_iter(_M_tree_ptr._M_data, &__c, 1);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
     return *this;
   }
 
@@ -1651,7 +1656,9 @@ public:
 
   _Self& append(const _Self& __y) {
     _STLP_ASSERT(__y.get_allocator() == get_allocator())
-    _M_reset(_S_concat_rep(_M_tree_ptr._M_data, __y._M_tree_ptr._M_data));
+    _RopeRep* __result = _S_concat_rep(_M_tree_ptr._M_data, __y._M_tree_ptr._M_data);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
     return *this;
   }
 
@@ -1692,8 +1699,11 @@ protected:
 public:
   void insert(size_t __p, const _Self& __r) {
     if (__p > size()) _M_throw_out_of_range();
+    _RopeRep* __result = 
+      replace(_M_tree_ptr._M_data, __p, __p, __r._M_tree_ptr._M_data);
     _STLP_ASSERT(get_allocator() == __r.get_allocator())
-    _M_reset(replace(_M_tree_ptr._M_data, __p, __p, __r._M_tree_ptr._M_data));
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
   }
 
   void insert(size_t __p, size_t __n, _CharT __c) {
@@ -1710,7 +1720,9 @@ public:
     // _S_ destr_concat_char_iter should be safe here.
     // But as it stands it's probably not a win, since __left
     // is likely to have additional references.
-    _M_reset(_S_concat_rep(__left_result, __right));
+    _RopeRep* __result = _S_concat_rep(__left_result, __right);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
   }
 
   void insert(size_t __p, const _CharT* __c_string) {
@@ -1746,7 +1758,10 @@ public:
   // (position, length) versions of replace operations:
   void replace(size_t __p, size_t __n, const _Self& __r) {
     if (__p > size()) _M_throw_out_of_range();
-    _M_reset(replace(_M_tree_ptr._M_data, __p, __p + __n, __r._M_tree_ptr._M_data));
+    _RopeRep* __result = 
+      replace(_M_tree_ptr._M_data, __p, __p + __n, __r._M_tree_ptr._M_data);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
   }
 
   void replace(size_t __p, size_t __n, 
@@ -1819,7 +1834,9 @@ public:
   // Erase, (position, size) variant.
   void erase(size_t __p, size_t __n) {
     if (__p > size()) _M_throw_out_of_range();
-    _M_reset(replace(_M_tree_ptr._M_data, __p, __p + __n, 0));
+    _RopeRep* __result = replace(_M_tree_ptr._M_data, __p, __p + __n, 0);
+    _S_unref(_M_tree_ptr._M_data);
+    _M_tree_ptr._M_data = __result;
   }
 
   // Erase, single character

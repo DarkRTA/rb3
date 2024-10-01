@@ -400,7 +400,7 @@ public:
   bool empty() const { return this->_M_head._M_data._M_next == 0; }
 
   void swap(_Self& __x) {
-    _STLP_STD::swap(this->_M_head, __x._M_head);
+    _STLP_STD::swap(this->_M_head, __x._M_head); 
   }
 
 public:
@@ -669,87 +669,52 @@ public:
 public:
   // Moves the range [__before_first + 1, __before_last + 1) to *this,
   //  inserting it immediately after __pos.  This is constant time.
-  void splice_after(iterator __pos, _Self& __x,
+  void splice_after(iterator __pos,
                     iterator __before_first, iterator __before_last) {
     if (__before_first != __before_last) {
-      if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node,
-                                                    __before_first._M_node, __before_last._M_node);
-      }
-      else {
-        this->insert_after(__pos, iterator(__before_first._M_node->_M_next), iterator(__before_last._M_node->_M_next));
-        __x.erase_after(__before_first, ++__before_last);
-      }
+      _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node,
+                                                  __before_first._M_node, 
+                                                  __before_last._M_node);
     }
   }
 
   // Moves the element that follows __prev to *this, inserting it immediately
   //  after __pos.  This is constant time.
-  void splice_after(iterator __pos, _Self& __x, iterator __prev) {
-    if (this->get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node,
-                                                  __prev._M_node, __prev._M_node->_M_next);
-    }
-    else {
-      this->insert_after(__pos, __STATIC_CAST(_Node*, __prev._M_node->_M_next)->_M_data);
-      __x.erase_after(__prev);
-    }
+  void splice_after(iterator __pos, iterator __prev) {
+    _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node,
+                                                __prev._M_node, 
+                                                __prev._M_node->_M_next);
   }
 
   // Removes all of the elements from the list __x to *this, inserting
   // them immediately after __pos.  __x must not be *this.  Complexity:
   // linear in __x.size().
   void splice_after(iterator __pos, _Self& __x) {
-    if (this->get_allocator() == __x.get_allocator())
-      _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node, &__x._M_head._M_data);
-    else {
-      this->insert_after(__pos, __x.begin(), __x.end());
-      __x.clear();
-    }
+    _STLP_PRIV::_Sl_global_inst::__splice_after(__pos._M_node, &__x._M_head._M_data);
   }
 
   // Linear in distance(begin(), __pos), and linear in __x.size().
   void splice(iterator __pos, _Self& __x) {
-    if (__x._M_head._M_data._M_next) {
-      if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
-                                                    &__x._M_head._M_data,
-                                                    _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, 0));
-      }
-      else {
-        insert(__pos, __x.begin(), __x.end());
-        __x.clear();
-      }
-    }
+    if (__x._M_head._M_data._M_next)
+      _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+                                                  &__x._M_head._M_data, 
+                                                  _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, 0));
   }
 
   // Linear in distance(begin(), __pos), and in distance(__x.begin(), __i).
   void splice(iterator __pos, _Self& __x, iterator __i) {
-    if (this->get_allocator() == __x.get_allocator()) {
-      _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
-                                                  _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, __i._M_node),
-                                                  __i._M_node);
-    }
-    else {
-      insert(__pos, *__i);
-      __x.erase(__i);
-    }
+    _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+                                                _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, __i._M_node),
+                                                __i._M_node);
   }
 
   // Linear in distance(begin(), __pos), in distance(__x.begin(), __first),
   // and in distance(__first, __last).
   void splice(iterator __pos, _Self& __x, iterator __first, iterator __last) {
-    if (__first != __last) {
-      if (this->get_allocator() == __x.get_allocator()) {
-        _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
-                                                    _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, __first._M_node),
-                                                    _STLP_PRIV::_Sl_global_inst::__previous(__first._M_node, __last._M_node));
-      }
-      else {
-        insert(__pos, __first, __last);
-        __x.erase(__first, __last);
-      }
-    }
+    if (__first != __last)
+      _STLP_PRIV::_Sl_global_inst::__splice_after(_STLP_PRIV::_Sl_global_inst::__previous(&this->_M_head._M_data, __pos._M_node),
+                                                  _STLP_PRIV::_Sl_global_inst::__previous(&__x._M_head._M_data, __first._M_node),
+                                                  _STLP_PRIV::_Sl_global_inst::__previous(__first._M_node, __last._M_node));
   }
 
 public:

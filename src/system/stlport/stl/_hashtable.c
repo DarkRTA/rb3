@@ -64,8 +64,7 @@ size_t _Stl_prime<_Dummy>::_S_next_size(size_t __n) {
 #else
   const size_t* __last =  _list + (28/sizeof(size_t)); // stupid MWERKS
 #endif
-  const size_t* pos = __lower_bound(__first, __last, __n, 
-                                    __less((size_t*)0), __less((size_t*)0), (ptrdiff_t*)0);
+  const size_t* pos = __lower_bound(__first, __last, __n, __less((size_t*)0), (ptrdiff_t*)0);
   return (pos == __last ? *(__last - 1) : *pos);
 };
 
@@ -108,26 +107,13 @@ bool hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::_M_equal(
 }
 */
 
-/* Returns the iterator before the first iterator of the bucket __n and set
- * __n to the first previous bucket having the same first iterator as bucket
- * __n.
- */
-template <class _Val, class _Key, class _HF,
+template <class _Val, class _Key, class _HF, 
           class _Traits, class _ExK, class _EqK, class _All>
 __iterator__
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_before_begin(size_type &__n) const {
-  return _S_before_begin(_M_elems, _M_buckets, __n);
-}
-
-template <class _Val, class _Key, class _HF,
-          class _Traits, class _ExK, class _EqK, class _All>
-__iterator__
-hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
-  ::_S_before_begin(const _ElemsCont& __elems, const _BucketVector& __buckets,
-                    size_type &__n) {
-  _ElemsCont &__mutable_elems = __CONST_CAST(_ElemsCont&, __elems);
-  typename _BucketVector::const_iterator __bpos(__buckets.begin() + __n);
+  _ElemsCont &__mutable_elems = __CONST_CAST(_ElemsCont&, _M_elems);
+  typename _BucketVector::const_iterator __bpos(_M_buckets.begin() + __n);
 
   _ElemsIte __pos(*__bpos);
   if (__pos == __mutable_elems.begin()) {
@@ -139,14 +125,14 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   _BucketType *__pos_node = __pos._M_node;
   for (--__bcur; __pos_node == *__bcur; --__bcur);
 
-  __n = __bcur - __buckets.begin() + 1;
+  __n = __bcur - _M_buckets.begin() + 1;
   _ElemsIte __cur(*__bcur);
   _ElemsIte __prev = __cur++;
   for (; __cur != __pos; ++__prev, ++__cur);
   return __prev;
 }
-
-template <class _Val, class _Key, class _HF,
+  
+template <class _Val, class _Key, class _HF, 
           class _Traits, class _ExK, class _EqK, class _All>
 __iterator__ 
 hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
@@ -174,9 +160,6 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   if (__cur != __last) {
     for (; __cur != __last; ++__cur) {
       if (_M_equals(_M_get_key(*__cur), _M_get_key(__obj)))
-        //We check that equivalent keys have equals hash code as otherwise, on resize,
-        //equivalent value might not be in the same bucket
-        _STLP_ASSERT(_M_hash(_M_get_key(*__cur)) == _M_hash(_M_get_key(__obj)))
         return pair<iterator, bool>(iterator(__cur), false);
     }
     /* Here we do not rely on the _M_insert_noresize method as we know
@@ -204,9 +187,6 @@ hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
     for (; __cur != __last; ++__cur) {
       if (_M_equals(_M_get_key(*__cur), _M_get_key(__obj))) {
-        //We check that equivalent keys have equals hash code as otherwise, on resize,
-        //equivalent value might not be in the same bucket
-        _STLP_ASSERT(_M_hash(_M_get_key(*__cur)) == _M_hash(_M_get_key(__obj)))
         ++_M_num_elements;
         return _M_elems.insert_after(__cur, __obj);
       }
@@ -403,9 +383,6 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
 
   size_type __num_buckets_hint = (size_type)((float)(max) (__num_elements_hint, size()) / max_load_factor());
   size_type __num_buckets = _STLP_PRIV::_Stl_prime_type::_S_next_size(__num_buckets_hint);
-#if defined (_STLP_DEBUG)
-  _M_check();
-#endif
   _M_rehash(__num_buckets);
 }
 
@@ -415,46 +392,37 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_rehash(size_type __num_buckets) {
   _ElemsCont __tmp_elems(_M_elems.get_allocator());
   _BucketVector __tmp(__num_buckets + 1, __STATIC_CAST(_BucketType*, 0), _M_buckets.get_allocator());
-  _ElemsIte __cur, __last(_M_elems.end());
+  _ElemsIte __cur;
   while (!_M_elems.empty()) {
     __cur = _M_elems.begin();
     size_type __new_bucket = _M_bkt_num(*__cur, __num_buckets);
-    _ElemsIte __ite(__cur), __before_ite(__cur);
-    for (++__ite;
-         __ite != __last && _M_equals(_M_get_key(*__cur), _M_get_key(*__ite));
-         ++__ite, ++__before_ite);
-    size_type __prev_bucket = __new_bucket;
-    _ElemsIte  __prev = _S_before_begin(__tmp_elems, __tmp, __prev_bucket)._M_ite;
-    __tmp_elems.splice_after(__prev, _M_elems, _M_elems.before_begin(), __before_ite);
-    fill(__tmp.begin() + __prev_bucket, __tmp.begin() + __new_bucket + 1, __cur._M_node);
+    if (__tmp[__new_bucket] != __tmp[__new_bucket + 1]) {
+      __tmp_elems.splice_after(__tmp[__new_bucket], _M_elems.before_begin());
+    }
+    else {
+      size_type __prev_bucket;
+      _ElemsIte  __prev;
+      if (__tmp_elems.begin()._M_node == __tmp[__new_bucket]) {
+        __prev_bucket = 0;
+        __prev = __tmp_elems.before_begin();
+      }
+      else {
+        __prev_bucket = __new_bucket - 1;
+        for (; (__tmp[__prev_bucket] == __tmp[__new_bucket]) && (__prev_bucket != 0);
+               --__prev_bucket);
+        _ElemsIte __pos(__tmp[__prev_bucket]);
+        for (__prev = __pos, ++__pos; __pos._M_node != __tmp[__new_bucket]; ++__prev, ++__pos);
+        ++__prev_bucket;
+      }
+      __tmp_elems.splice_after(__prev, _M_elems.before_begin());
+      fill(__tmp.begin() + __prev_bucket, __tmp.begin() + __new_bucket + 1, __cur._M_node);
+    }
   }
   _M_elems.swap(__tmp_elems);
   _M_buckets.swap(__tmp);
 }
 
-#if defined (_STLP_DEBUG)
-template <class _Val, class _Key, class _HF,
-          class _Traits, class _ExK, class _EqK, class _All>
-void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::_M_check() const {
-  //We check that hash code of stored keys haven't change and also that equivalent
-  //relation hasn't been modified
-  size_t __num_buckets = bucket_count();
-  for (size_t __b = 0; __b < __num_buckets; ++__b) {
-    _ElemsIte __cur(_M_buckets[__b]), __last(_M_buckets[__b + 1]);
-    _ElemsIte __fst(__cur), __snd(__cur);
-    for (; __cur != __last; ++__cur) {
-      _STLP_ASSERT( _M_bkt_num(*__cur, __num_buckets) == __b )
-      _STLP_ASSERT( !_M_equals(_M_get_key(*__fst), _M_get_key(*__cur)) || _M_equals(_M_get_key(*__snd), _M_get_key(*__cur)) )
-      if (__fst != __snd)
-        ++__fst;
-      if (__snd != __cur)
-        ++__snd;
-    }
-  }
-}
-#endif
-
-template <class _Val, class _Key, class _HF,
+template <class _Val, class _Key, class _HF, 
           class _Traits, class _ExK, class _EqK, class _All>
 void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::clear() {
   _M_elems.clear();
@@ -462,7 +430,8 @@ void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>::clear() {
   _M_num_elements = 0;
 }
 
-template <class _Val, class _Key, class _HF,
+    
+template <class _Val, class _Key, class _HF, 
           class _Traits, class _ExK, class _EqK, class _All>
 void hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>
   ::_M_copy_from(const hashtable<_Val,_Key,_HF,_Traits,_ExK,_EqK,_All>& __ht) {

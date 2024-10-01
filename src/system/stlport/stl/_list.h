@@ -333,7 +333,6 @@ public:
     } else {
       _STLP_STD::swap(this->_M_node, __x._M_node);
       _STLP_STD::swap(this->_M_node._M_data._M_prev->_M_next, __x._M_node._M_data._M_prev->_M_next);
-      _STLP_STD::swap(this->_M_node._M_data._M_next->_M_prev, __x._M_node._M_data._M_next->_M_prev);
     }
   }
 

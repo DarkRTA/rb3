@@ -613,9 +613,9 @@ replace(_ForwardIter __first, _ForwardIter __last,
       *__first = __new_value;
 }
 
-template <class _ForwardIter, class _Tp, class _Compare1, class _Compare2, class _Distance>
+template <class _ForwardIter, class _Tp, class _Compare, class _Distance>
 _ForwardIter __lower_bound(_ForwardIter __first, _ForwardIter __last,
-                           const _Tp& __val, _Compare1 __comp1, _Compare2 __comp2, _Distance*);
+                           const _Tp& __val, _Compare __comp, _Distance*);
 
 _STLP_END_NAMESPACE
 

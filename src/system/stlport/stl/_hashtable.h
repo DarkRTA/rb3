@@ -520,9 +520,6 @@ public:
 
 private:
   void _M_rehash(size_type __num_buckets);
-#if defined (_STLP_DEBUG)
-  void _M_check() const;
-#endif
 
 public:
   void rehash(size_type __num_buckets_hint);
@@ -532,13 +529,11 @@ public:
   // this is for hash_map::operator[]
   reference _M_insert(const value_type& __obj);
 
-private:
   //__n is set to the first bucket that has to be modified if any
   //erase/insert operation is done after the returned iterator.
   iterator _M_before_begin(size_type &__n) const;
 
-  static iterator _S_before_begin(const _ElemsCont& __elems, const _BucketVector& __buckets,
-                                  size_type &__n);
+private:
 
   void _M_initialize_buckets(size_type __n) {
     const size_type __n_buckets = _STLP_PRIV::_Stl_prime_type::_S_next_size(__n) + 1;
