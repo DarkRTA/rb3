@@ -79,6 +79,7 @@ public:
     Symbol GetModeInst(Symbol);
     void UnloadVenue(bool);
     BandCamShot* FindNextDircut();
+    void FindNextPstKeyframe(float, float, Symbol);
 
     bool IsMusicVideo();
     LightPresetManager* LightPresetMgr(){
@@ -87,6 +88,23 @@ public:
 
     bool DirectedCut(Symbol s) const;
     bool BFTB(Symbol s) const;
+
+    // TODO: find a better name for this
+    bool NoWorlds(){
+        bool b1;
+        bool ret;
+        bool b2;
+        
+        ret = true;
+        b2 = true;
+        b1 = false;
+        if(mDisablePicking || !GetWorld()) b1 = true;
+        if(!b1 && !GetWorld()->mCameraManager.HasFreeCam()){
+            b2 = false;
+        }
+        if(!b2 && mVenue.Dir()) ret = false;
+        return ret;
+    }
 
     DataNode OnFirstShotOK(DataArray*);
     DataNode OnShotOver(DataArray*);

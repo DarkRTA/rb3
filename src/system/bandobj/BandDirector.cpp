@@ -1064,6 +1064,113 @@ DataNode BandDirector::OnPostProcInterp(DataArray* da){
     return DataNode(0);
 }
 
+DataNode BandDirector::OnShotOver(DataArray* da){
+    BandCamShot* shot = da->Obj<BandCamShot>(2);
+    if(DirectedCut(shot->Category()) || BFTB(shot->Category())){
+        unk58 = true;
+        unke0 = -1000.0f;
+    }
+    else unke0 = -1e+30f;
+    return DataNode(0);
+}
+
+DataNode BandDirector::OnSetDircut(DataArray* da){
+    WorldDir* wdir = mVenue.Dir();
+    if(wdir && !NoWorlds()){
+        Symbol sym = da->Sym(2);
+        std::vector<CameraManager::PropertyFilter> filts;
+        mNextShot = dynamic_cast<BandCamShot*>(wdir->CamManager().FindCameraShot(sym, filts));
+    }
+    return DataNode(mNextShot);
+}
+
+DataNode BandDirector::OnLightPresetInterp(DataArray* da){
+    if(da->Type(2) == kDataSymbol && da->Type(3) == kDataSymbol){
+        mLightPresetCatA = da->Sym(2);
+        mLightPresetCatB = da->Sym(3);
+        mLightPresetCatBlend = da->Float(4);
+        if(da->Type(6) == kDataSymbol){
+            Symbol sym = da->Sym(6);
+            if(mLightPresetCatA != mLightPresetCatB && sym != mLightPresetCatA){
+                mLightPresetCatB = mLightPresetCatA;
+            }
+        }
+        else mLightPresetCatB = mLightPresetCatA;
+    }
+    return DataNode(0);
+}
+
+float FindFrameWithLeadIn(){
+    float beat = TheTaskMgr.Beat();
+    float bts = BeatToSeconds(beat + 4.0f);
+    return bts * 30.0f;
+}
+
+void BandDirector::FindNextPstKeyframe(float f1, float f2, Symbol s){
+    unk108 = 1e+30f;
+    float stb = SecondsToBeat(f2 / 30.0f);
+    float beat = TheTaskMgr.Beat();
+    if((stb - beat) + 1.1920929E-7f > 4.0f) unk108 = f2;
+    else {
+        DataArrayPtr ptr(DataNode(Symbol("lightpreset_keyframe")));
+        SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
+        if(skeys){
+            int idx = skeys->FindFirstAfter(f1);
+            Keys<Symbol, Symbol>& keys = skeys->AsSymbolKeys();
+            for(; idx < keys.size(); idx++){
+                unk108 = keys[idx].frame;
+                if(keys[idx].value != none){
+                    if(f1 != unk108) break;
+                }
+            }
+        }
+    }
+}
+
+DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray* da){
+    if(!mCurWorld) return DataNode(0);
+    else {
+        float leadin = FindFrameWithLeadIn();
+        bool b10 = unk108 < 0.0f;
+        if(leadin >= unk108){
+            Symbol s58;
+            DataArrayPtr ptr(DataNode(Symbol("lightpreset_keyframe")));
+            SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
+            if(skeys){
+                int idx = skeys->FindLastBefore(unk108);
+                Keys<Symbol, Symbol>& keys = skeys->AsSymbolKeys();
+                if(idx > 0) s58 = keys[idx].value;
+            }
+            if(SymToPstKeyframe(s58) != LightPreset::kPresetKeyframeNum){
+                LightPresetMgr()->SchedulePstKey(SymToPstKeyframe(s58));
+            }
+            b10 = true;
+        }
+        if(b10 || TheLoadMgr.EditMode()){
+            float f5 = da->Float(5);
+            Symbol s60 = da->Sym(3);
+            float f108 = unk108;
+            FindNextPstKeyframe(leadin, f5, s60);
+            if(!b10 && f108 != unk108) LightPreset::ResetEvents();
+        }
+        return DataNode(0);
+    }
+}
+
+DataNode BandDirector::OnForcePreset(DataArray* da){
+    if(LightPresetMgr()){
+        DataNode& eval = da->Evaluate(2);
+        float f3 = da->Size() > 3 ? da->Float(3) : 0;
+        LightPreset* lp;
+        if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
+            lp = mCurWorld->Find<LightPreset>(eval.Str(0), false);
+        }
+        else lp = eval.Obj<LightPreset>(0);
+        LightPresetMgr()->ForcePreset(lp, f3);
+    }
+    return DataNode(0);
+}
+
 BEGIN_PROPSYNCS(BandDirector)
     SYNC_PROP_SET(shot_5, mShotCategory, SetShot(_val.Sym(0), "shot_5"))
     SYNC_PROP_SET(shot_bg, mShotCategory, SetShot(_val.Sym(0), coop_bg))

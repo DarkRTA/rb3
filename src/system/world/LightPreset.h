@@ -245,4 +245,6 @@ inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightDrawerEntry& e
     return bs;
 }
 
+LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s);
+
 #endif
