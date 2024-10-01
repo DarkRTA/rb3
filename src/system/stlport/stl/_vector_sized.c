@@ -59,11 +59,11 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::reserve(size_type __n) {
 
     const size_type __old_size = size();
     pointer __tmp;
-    if (this->_M_start) {
-      __tmp = _M_allocate_and_copy(__n, this->_M_start, this->_M_finish);
+    if (this->_M_ptr._M_data) {
+      __tmp = _M_allocate_and_copy(__n, this->_M_start(), this->_M_finish());
       _M_clear();
     } else {
-      __tmp = this->_M_end_of_storage.allocate(__n);
+      __tmp = this->_M_ptr.allocate(__n);
     }
     _M_set(__tmp, __tmp + __old_size, __tmp + __n);
   }
@@ -75,10 +75,10 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_insert_overflow_aux(pointer __pos, con
   const size_type __old_size = size();
   const size_type __len = __old_size + (max)(__old_size, __fill_len);
 
-  pointer __new_start = this->_M_end_of_storage.allocate(__len);
+  pointer __new_start = this->_M_ptr.allocate(__len);
   pointer __new_finish = __new_start;
   _STLP_TRY {
-    __new_finish = __uninitialized_move(this->_M_start, __pos, __new_start, _TrivialUCpy(), _Movable());
+    __new_finish = __uninitialized_move(this->_M_start(), __pos, __new_start, _TrivialUCpy(), _Movable());
     // handle insertion
     if (__fill_len == 1) {
       _Copy_Construct(__new_finish, __x);
@@ -86,10 +86,10 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_insert_overflow_aux(pointer __pos, con
     } else
       __new_finish = __uninitialized_fill_n(__new_finish, __fill_len, __x, __false_type());
     if (!__atend)
-      __new_finish = __uninitialized_move(__pos, this->_M_finish, __new_finish, _TrivialUCpy(), _Movable()); // copy remainder
+      __new_finish = __uninitialized_move(__pos, this->_M_finish(), __new_finish, _TrivialUCpy(), _Movable()); // copy remainder
   }
   _STLP_UNWIND((_STLP_STD::_Destroy_Range(__new_start,__new_finish),
-               this->_M_end_of_storage.deallocate(__new_start,__len)))
+               this->_M_ptr.deallocate(__new_start,__len)))
   _M_clear_after_move();
   _M_set(__new_start, __new_finish, __new_start + __len);
 }
@@ -100,12 +100,12 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_insert_overflow(pointer __pos, const _
   const size_type __old_size = size();
   const size_type __len = __old_size + (max)(__old_size, __fill_len);
 
-  pointer __new_start = this->_M_end_of_storage.allocate(__len);
-  pointer __new_finish = (pointer)__copy_trivial(this->_M_start, __pos, __new_start);
+  pointer __new_start = this->_M_ptr.allocate(__len);
+  pointer __new_finish = (pointer)__copy_trivial(this->_M_start(), __pos, __new_start);
   // handle insertion
   __new_finish = __fill_n(__new_finish, __fill_len, __x);
   if (!__atend)
-    __new_finish = (pointer)__copy_trivial(__pos, this->_M_finish, __new_finish); // copy remainder
+    __new_finish = (pointer)__copy_trivial(__pos, this->_M_finish(), __new_finish); // copy remainder
   _M_clear();
   _M_set(__new_start, __new_finish, __new_start + __len);
 }
@@ -118,14 +118,14 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_fill_insert_aux (iterator __pos, size_
     _M_fill_insert_aux(__pos, __n, __x_copy, __true_type());
     return;
   }
-  iterator __src = this->_M_finish - 1;
+  iterator __src = this->_M_finish() - 1;
   iterator __dst = __src + __n;
   for (; __src >= __pos; --__dst, --__src) {
     _STLP_STD::_Move_Construct(__dst, *__src);
     _STLP_STD::_Destroy_Moved(__src);
   }
   __uninitialized_fill_n(__pos, __n, __x, _PODType());
-  this->_M_finish += __n;
+  _M_inc_finish_idx(__n);
 }
 template <class _Tp, class _Size, class _Alloc>
 void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_fill_insert_aux (iterator __pos, size_type __n, 
@@ -136,17 +136,18 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_fill_insert_aux (iterator __pos, size_
     _M_fill_insert_aux(__pos, __n, __x_copy, __false_type());
     return;
   }
-  const size_type __elems_after = this->_M_finish - __pos;
-  pointer __old_finish = this->_M_finish;
+  const size_type __elems_after = this->_M_finish() - __pos;
+  pointer __old_finish = this->_M_finish();
   if (__elems_after > __n) {
-    __uninitialized_copy(this->_M_finish - __n, this->_M_finish, this->_M_finish, _TrivialUCpy());
-    this->_M_finish += __n;
+    __uninitialized_copy(this->_M_finish() - __n, this->_M_finish(), this->_M_finish(), _TrivialUCpy());
+    _M_inc_finish_idx(__n);
     __copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialAss());
     _STLP_STD::fill(__pos, __pos + __n, __x);
   } else {
-    this->_M_finish = __uninitialized_fill_n(this->_M_finish, __n - __elems_after, __x, _PODType());
-    __uninitialized_copy(__pos, __old_finish, this->_M_finish, _TrivialUCpy());
-    this->_M_finish += __elems_after;
+    iterator __end = __uninitialized_fill_n(this->_M_finish(), __n - __elems_after, __x, _PODType());
+    _M_set_finish_idx(__end - this->_M_ptr._M_data);
+    __uninitialized_copy(__pos, __old_finish, this->_M_finish(), _TrivialUCpy());
+    _M_inc_finish_idx(__elems_after);
     _STLP_STD::fill(__pos, __old_finish, __x);
   }
 }
@@ -155,7 +156,7 @@ template <class _Tp, class _Size, class _Alloc>
 void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_fill_insert(iterator __pos,
                                                size_type __n, const _Tp& __x) {
   if (__n != 0) {
-    if (size_type(this->_M_end_of_storage._M_data - this->_M_finish) >= __n) {
+    if (size_type(this->_M_end_of_storage() - this->_M_finish()) >= __n) {
       _M_fill_insert_aux(__pos, __n, __x, _Movable());
     } else 
       _M_insert_overflow(__pos, __x, _TrivialCpy(), __n);
@@ -168,19 +169,19 @@ _VECTOR_IMPL<_Tp, _Size, _Alloc>::operator=(const _VECTOR_IMPL<_Tp, _Size, _Allo
   if (&__x != this) {
     const size_type __xlen = __x.size();
     if (__xlen > capacity()) {
-      pointer __tmp = _M_allocate_and_copy(__xlen, __CONST_CAST(const_pointer, __x._M_start)+0, __CONST_CAST(const_pointer, __x._M_finish)+0);
+      pointer __tmp = _M_allocate_and_copy(__xlen, __CONST_CAST(const_pointer, __x._M_start())+0, __CONST_CAST(const_pointer, __x._M_finish())+0);
       _M_clear();
-      this->_M_start = __tmp;
-      this->_M_end_of_storage._M_data = this->_M_start + __xlen;
+      this->_M_ptr._M_data = __tmp;
+      _M_set_data_size(__xlen);
     } else if (size() >= __xlen) {
-      pointer __i = __copy_ptrs(__CONST_CAST(const_pointer, __x._M_start)+0, __CONST_CAST(const_pointer, __x._M_finish)+0, this->_M_start, _TrivialAss());
-      _STLP_STD::_Destroy_Range(__i, this->_M_finish);
+      pointer __i = __copy_ptrs(__CONST_CAST(const_pointer, __x._M_start())+0, __CONST_CAST(const_pointer, __x._M_finish())+0, this->_M_start(), _TrivialAss());
+      _STLP_STD::_Destroy_Range(__i, this->_M_finish());
     } else {
-      __copy_ptrs(__CONST_CAST(const_pointer, __x._M_start), __CONST_CAST(const_pointer, __x._M_start) + size(), this->_M_start, _TrivialAss());
-      __uninitialized_copy(__CONST_CAST(const_pointer, __x._M_start) + size(), 
-                           __CONST_CAST(const_pointer, __x._M_finish)+0, this->_M_finish, _TrivialUCpy());
+      __copy_ptrs(__CONST_CAST(const_pointer, __x._M_start()), __CONST_CAST(const_pointer, __x._M_start()) + size(), this->_M_start(), _TrivialAss());
+      __uninitialized_copy(__CONST_CAST(const_pointer, __x._M_start()) + size(), 
+                           __CONST_CAST(const_pointer, __x._M_finish())+0, this->_M_finish(), _TrivialUCpy());
     }
-    this->_M_finish = this->_M_start + __xlen;
+    _M_set_finish_idx(__xlen);
   }
   return *this;
 }
@@ -192,7 +193,8 @@ void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_fill_assign(size_t __n, const _Tp& __v
     __tmp.swap(*this);
   } else if (__n > size()) {
     fill(begin(), end(), __val);
-    this->_M_finish = __uninitialized_fill_n(this->_M_finish, __n - size(), __val, _PODType());
+    iterator __end = __uninitialized_fill_n(this->_M_finish(), __n - size(), __val, _PODType());
+    _M_set_finish_idx(__end - begin());
   } else
     erase(__fill_n(begin(), __n, __val), end());
 }

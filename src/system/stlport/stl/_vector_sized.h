@@ -49,6 +49,15 @@
 #undef  vector
 #define vector __WORKAROUND_DBG_RENAME(vector)
 
+#ifdef MILO_DEBUG
+// From system/os/Debug.cpp
+// Declared here since it's not relevant anywhere else
+void std_vec_range_assert(size_t value, size_t max, const char *func);
+#  define _STLP_VEC_RANGE_ASSERT(value, max) std_vec_range_assert(value, max, __FUNCTION__)
+#else
+#  define _STLP_VEC_RANGE_ASSERT(value, max) (void)0
+#endif
+
 _STLP_BEGIN_NAMESPACE 
 
 // The vector base class serves two purposes.  First, its constructor
@@ -65,37 +74,74 @@ public:
   typedef _STLP_alloc_proxy<_Tp*, _Tp, allocator_type> _AllocProxy;
 
   _Vector_base(const _Alloc& __a)
-    : _M_start(0), _M_finish(0), _M_end_of_storage(__a, 0) {
+    : _M_ptr(__a, 0), _M_finish_idx(0), _M_data_size(0) {
   }
   _Vector_base(size_t __n, const _Alloc& __a)
-    : _M_start(0), _M_finish(0), _M_end_of_storage(__a, 0) {
-    _M_start = _M_end_of_storage.allocate(__n);
-    _M_finish = _M_start;
-    _M_end_of_storage._M_data = _M_start + __n;
+    : _M_ptr(__a, 0), _M_finish_idx(0), _M_data_size(0) {
+    _M_ptr._M_data = _M_ptr.allocate(__n);
+    _M_set_data_size(__n);
     _STLP_MPWFIX_TRY _STLP_MPWFIX_CATCH
   }
 
   _Vector_base(__move_source<_Self> src)
-    : _M_start(src.get()._M_start), _M_finish(src.get()._M_finish),
-      _M_end_of_storage(__move_source<_AllocProxy>(src.get()._M_end_of_storage)) {
+    : _M_ptr(__move_source<_AllocProxy>(src.get()._M_ptr)),
+      _M_finish_idx(src.get()._M_finish_idx), _M_data_size(src.get()._M_data_size) {
     //Set the source as empty:
-    src.get()._M_start = 0;
-    src.get()._M_finish = 0;
-    src.get()._M_end_of_storage._M_data = 0;
+    src.get()._M_ptr._M_data = 0;
+    src.get()._M_finish_idx = 0;
+    src.get()._M_data_size = 0;
   }
 
-  ~_Vector_base() { 
-    if (_M_start != 0) 
-      _M_end_of_storage.deallocate(_M_start, _M_end_of_storage._M_data - _M_start); 
+  ~_Vector_base() {
+    if (_M_ptr._M_data != 0)
+      _M_ptr.deallocate(_M_ptr._M_data, _M_data_size);
+
+    _M_ptr._M_data = 0;
+    _M_finish_idx = 0;
+    _M_data_size = 0;
   }
 
 protected:
   void _M_throw_length_error() const;
   void _M_throw_out_of_range() const;
 
-  _Tp* _M_start;
-  _Tp* _M_finish;
-  _AllocProxy _M_end_of_storage;
+  _Tp* _M_start() { return _M_ptr._M_data; }
+  const _Tp* _M_start() const { return _M_ptr._M_data; }
+
+  _Tp* _M_finish() { return _M_ptr._M_data + _M_finish_idx; }
+  const _Tp* _M_finish() const { return _M_ptr._M_data + _M_finish_idx; }
+
+  _Tp* _M_end_of_storage() { return _M_ptr._M_data + _M_data_size; }
+  const _Tp* _M_end_of_storage() const { return _M_ptr._M_data + _M_data_size; }
+
+  // _M_inc_finish_idx in retail doesn't match with size_t as the parameter,
+  // but symbols in bank 8 indicate it uses size_t
+#ifdef VERSION_SZBE69
+  void _M_inc_finish_idx(_Size increment) {
+#else
+  void _M_inc_finish_idx(size_t increment) {
+#endif
+    _STLP_VEC_RANGE_ASSERT(_M_finish_idx + increment, (_Size)~0);
+    _M_finish_idx = _M_finish_idx + increment;
+  }
+
+  void _M_set_finish_idx(size_t idx) {
+    _STLP_VEC_RANGE_ASSERT(idx, (_Size)~0);
+    _M_finish_idx = idx;
+  }
+
+  void _M_set_data_size(size_t size) {
+    _STLP_VEC_RANGE_ASSERT(size, (_Size)~0);
+    _M_data_size = size;
+  }
+
+  _AllocProxy _M_ptr;
+  _Size _M_finish_idx;
+  _Size _M_data_size;
+
+  // _Tp* _M_start;
+  // _Tp* _M_finish;
+  // _AllocProxy _M_end_of_storage;
 };
 
 #ifndef _STLP_DONT_USE_PTR_SPECIALIZATIONS
@@ -132,7 +178,7 @@ public:
   typedef typename _Vector_base<_Tp, _Size, _Alloc>::allocator_type allocator_type;
 
   allocator_type get_allocator() const {
-    return _STLP_CONVERT_ALLOCATOR((const allocator_type&)this->_M_end_of_storage, _Tp);
+    return _STLP_CONVERT_ALLOCATOR((const allocator_type&)this->_M_ptr, _Tp);
   }
 protected:
   typedef typename __type_traits<_Tp>::has_trivial_assignment_operator _TrivialAss;
@@ -162,30 +208,30 @@ protected:
   void _M_insert_overflow(pointer __pos, const _Tp& __x, const __true_type& /*_TrivialCpy*/, 
                           size_type __fill_len, bool __atend = false);
   void _M_range_check(size_type __n) const {
-    if (__n >= size_type(this->_M_finish-this->_M_start))
+    if (__n >= size_type(this->_M_finish_idx))
       this->_M_throw_out_of_range();
   }
 
 public:
-  iterator begin()             { return this->_M_start; }
-  const_iterator begin() const { return this->_M_start; }
-  iterator end()               { return this->_M_finish; }
-  const_iterator end() const   { return this->_M_finish; }
+  iterator begin()             { return this->_M_start(); }
+  const_iterator begin() const { return this->_M_start(); }
+  iterator end()               { return this->_M_finish(); }
+  const_iterator end() const   { return this->_M_finish(); }
 
   reverse_iterator rbegin()              { return reverse_iterator(end()); }
   const_reverse_iterator rbegin() const  { return const_reverse_iterator(end()); }
   reverse_iterator rend()                { return reverse_iterator(begin()); }
   const_reverse_iterator rend() const    { return const_reverse_iterator(begin()); }
 
-  size_type size() const        { return size_type(this->_M_finish - this->_M_start); }
+  size_type size() const        { return size_type(this->_M_finish_idx); }
   size_type max_size() const {
     size_type __vector_max_size = size_type(-1) / sizeof(_Tp);
-    typename allocator_type::size_type __alloc_max_size = this->_M_end_of_storage.max_size();
+    typename allocator_type::size_type __alloc_max_size = this->_M_ptr.max_size();
     return (__alloc_max_size < __vector_max_size)?__alloc_max_size:__vector_max_size;
   }
 
-  size_type capacity() const    { return size_type(this->_M_end_of_storage._M_data - this->_M_start); }
-  bool empty() const            { return this->_M_start == this->_M_finish; }
+  size_type capacity() const    { return this->_M_data_size; }
+  bool empty() const            { return !this->_M_finish_idx; }
 
   reference operator[](size_type __n) { return *(begin() + __n); }
   const_reference operator[](size_type __n) const { return *(begin() + __n); }
@@ -208,20 +254,23 @@ public:
 #endif /*_STLP_DONT_SUP_DFLT_PARAM*/
          const allocator_type& __a = allocator_type()) 
     : _Vector_base<_Tp, _Size, _Alloc>(__n, __a) { 
-    this->_M_finish = __uninitialized_fill_n(this->_M_start, __n, __val, _PODType());
+    iterator __end = __uninitialized_fill_n(this->_M_start(), __n, __val, _PODType());
+    _M_set_finish_idx(__end - this->_M_start());
   }
 
 #if defined(_STLP_DONT_SUP_DFLT_PARAM)
   explicit _VECTOR_IMPL(size_type __n)
     : _Vector_base<_Tp, _Size, _Alloc>(__n, allocator_type() ) {
-    this->_M_finish = __uninitialized_fill_n(this->_M_start, __n, _STLP_DEFAULT_CONSTRUCTED(_Tp), _PODType());
+    iterator __end = __uninitialized_fill_n(this->_M_start(), __n, _STLP_DEFAULT_CONSTRUCTED(_Tp), _PODType());
+    _M_set_finish_idx(__end - this->_M_start());
   }
 #endif /*_STLP_DONT_SUP_DFLT_PARAM*/
 
   _VECTOR_IMPL(const _Self& __x) 
     : _Vector_base<_Tp, _Size, _Alloc>(__x.size(), __x.get_allocator()) { 
-    this->_M_finish = __uninitialized_copy(__x.begin(), __x.end(),
-                                           this->_M_start, _TrivialUCpy());
+    iterator __end = __uninitialized_copy(__x.begin(), __x.end(),
+                                           this->_M_start(), _TrivialUCpy());
+    _M_set_finish_idx(__end - this->_M_start());
   }
 
   _VECTOR_IMPL(__move_source<_Self> src)
@@ -233,9 +282,11 @@ public:
   template <class _Integer>
   void _M_initialize_aux(_Integer __n, _Integer __val,
                          const __true_type& /*_IsIntegral*/) {
-    this->_M_start = this->_M_end_of_storage.allocate(__n);
-    this->_M_end_of_storage._M_data = this->_M_start + __n; 
-    this->_M_finish = __uninitialized_fill_n(this->_M_start, __n, __val, _PODType());
+    this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
+    _M_set_data_size(__n);
+    _M_set_finish_idx(__n);
+    iterator __end = __uninitialized_fill_n(this->_M_start(), __n, __val, _PODType());
+    _M_set_finish_idx(__end - this->_M_start());
   }
 
   template <class _InputIterator>
@@ -266,7 +317,8 @@ public:
   _VECTOR_IMPL(const _Tp* __first, const _Tp* __last,
          const allocator_type& __a = allocator_type())
     : _Vector_base<_Tp, _Size, _Alloc>(__last - __first, __a) { 
-      this->_M_finish = __uninitialized_copy(__first, __last, this->_M_start, _TrivialUCpy()); 
+    iterator __end = __uninitialized_copy(__first, __last, this->_M_start(), _TrivialUCpy()); 
+    _M_set_finish_idx(__end - this->_M_start());
   }
 #endif /* _STLP_MEMBER_TEMPLATES */
 
@@ -300,15 +352,16 @@ public:
       _M_set(__tmp, __tmp + __len, __tmp + __len);
     }
     else if (size() >= __len) {
-      iterator __new_finish = copy(__first, __last, this->_M_start);
-      _STLP_STD::_Destroy_Range(__new_finish, this->_M_finish);
-      this->_M_finish = __new_finish;
+      iterator __new_finish = copy(__first, __last, this->_M_start());
+      _STLP_STD::_Destroy_Range(__new_finish, this->_M_finish());
+      _M_set_finish_idx(__new_finish - this->_M_start());
     }
     else {
       _ForwardIter __mid = __first;
       advance(__mid, size());
-      copy(__first, __mid, this->_M_start);
-      this->_M_finish = __uninitialized_copy(__mid, __last, this->_M_finish, _TrivialUCpy());
+      copy(__first, __mid, this->_M_start());
+      iterator __new_finish = __uninitialized_copy(__mid, __last, this->_M_finish(), _TrivialUCpy());
+      _M_set_finish_idx(__new_finish - this->_M_start());
     }
   }
 
@@ -347,12 +400,12 @@ public:
 #else
   void push_back(const _Tp& __x) {
 #endif /*!_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
-    if (this->_M_finish != this->_M_end_of_storage._M_data) {
-      _Copy_Construct(this->_M_finish, __x);
-      ++this->_M_finish;
+    if (this->_M_finish_idx != this->_M_data_size) {
+      _Copy_Construct(this->_M_finish(), __x);
+      _M_inc_finish_idx(1);
     }
     else
-      _M_insert_overflow(this->_M_finish, __x, _TrivialCpy(), 1UL, true);
+      _M_insert_overflow(this->_M_finish(), __x, _TrivialCpy(), 1UL, true);
   }
 
 #if !defined(_STLP_DONT_SUP_DFLT_PARAM) && !defined(_STLP_NO_ANACHRONISMS)
@@ -367,9 +420,9 @@ public:
 # endif /*_STLP_DONT_SUP_DFLT_PARAM && !_STLP_NO_ANACHRONISMS*/
 
   void swap(_Self& __x) {
-    _STLP_STD::swap(this->_M_start, __x._M_start);
-    _STLP_STD::swap(this->_M_finish, __x._M_finish);
-    _STLP_STD::swap(this->_M_end_of_storage, __x._M_end_of_storage);
+    _STLP_STD::swap(this->_M_ptr, __x._M_ptr);
+    _STLP_STD::swap(this->_M_finish_idx, __x._M_finish_idx);
+    _STLP_STD::swap(this->_M_data_size, __x._M_data_size);
   }
 
 private:
@@ -378,7 +431,7 @@ private:
   void _M_fill_insert (iterator __pos, size_type __n, const _Tp& __x);
 
   bool _M_is_inside(const value_type& __x) const {
-    return (&__x >= this->_M_start && &__x < this->_M_finish);
+    return (&__x >= this->_M_start() && &__x < this->_M_finish());
   }
 
 #if defined (_STLP_MEMBER_TEMPLATES)
@@ -392,15 +445,15 @@ private:
                                size_type __n) {
     const size_type __old_size = size();
     const size_type __len = __old_size + (max)(__old_size, __n);
-    pointer __new_start = this->_M_end_of_storage.allocate(__len);
+    pointer __new_start = this->_M_ptr.allocate(__len);
     pointer __new_finish = __new_start;
     _STLP_TRY {
-      __new_finish = __uninitialized_move(this->_M_start, __pos, __new_start, _TrivialUCpy(), _Movable());
+      __new_finish = __uninitialized_move(this->_M_start(), __pos, __new_start, _TrivialUCpy(), _Movable());
       __new_finish = __uninitialized_copy(__first, __last, __new_finish, _TrivialUCpy());
-      __new_finish = __uninitialized_move(__pos, this->_M_finish, __new_finish, _TrivialUCpy(), _Movable());
+      __new_finish = __uninitialized_move(__pos, this->_M_finish(), __new_finish, _TrivialUCpy(), _Movable());
     }
     _STLP_UNWIND((_STLP_STD::_Destroy_Range(__new_start,__new_finish), 
-                  this->_M_end_of_storage.deallocate(__new_start,__len)))
+                  this->_M_ptr.deallocate(__new_start,__len)))
     _M_clear_after_move();
     _M_set(__new_start, __new_finish, __new_start + __len);
   }
@@ -414,14 +467,14 @@ private:
                            const_iterator __first, const_iterator __last,
 #endif /* _STLP_MEMBER_TEMPLATES */
                            size_type __n, const __true_type& /*_Movable*/) {
-    iterator __src = this->_M_finish - 1;
+    iterator __src = this->_M_finish() - 1;
     iterator __dst = __src + __n;
     for (; __src >= __pos; --__dst, --__src) {
       _STLP_STD::_Move_Construct(__dst, *__src);
       _STLP_STD::_Destroy_Moved(__src);
     }
     __uninitialized_copy(__first, __last, __pos, _TrivialUCpy());
-    this->_M_finish += __n;
+    _M_inc_finish_idx(__n);
   }
 
 #if defined (_STLP_MEMBER_TEMPLATES)
@@ -433,11 +486,11 @@ private:
                            const_iterator __first, const_iterator __last,
 #endif /* _STLP_MEMBER_TEMPLATES */
                            size_type __n, const __false_type& /*_Movable*/) {
-    const size_type __elems_after = this->_M_finish - __pos;
-    pointer __old_finish = this->_M_finish;
+    const size_type __elems_after = this->_M_finish() - __pos;
+    pointer __old_finish = this->_M_finish();
     if (__elems_after > __n) {
-      __uninitialized_copy(this->_M_finish - __n, this->_M_finish, this->_M_finish, _TrivialUCpy());
-      this->_M_finish += __n;
+      __uninitialized_copy(this->_M_finish() - __n, this->_M_finish(), this->_M_finish(), _TrivialUCpy());
+      _M_inc_finish_idx(__n);
       __copy_backward_ptrs(__pos, __old_finish - __n, __old_finish, _TrivialAss());
       copy(__first, __last, __pos);
     }
@@ -448,10 +501,10 @@ private:
 # else
       const_pointer __mid = __first + __elems_after;
 # endif
-      __uninitialized_copy(__mid, __last, this->_M_finish, _TrivialUCpy());
-      this->_M_finish += __n - __elems_after;
-      __uninitialized_copy(__pos, __old_finish, this->_M_finish, _TrivialUCpy());
-      this->_M_finish += __elems_after;
+      __uninitialized_copy(__mid, __last, this->_M_finish(), _TrivialUCpy());
+      _M_inc_finish_idx(__n - __elems_after);
+      __uninitialized_copy(__pos, __old_finish, this->_M_finish(), _TrivialUCpy());
+      _M_inc_finish_idx(__elems_after);
       copy(__first, __mid, __pos);
     } /* elems_after */
   }
@@ -505,7 +558,7 @@ public:
     if (__first != __last) {
       size_type __n = distance(__first, __last);
 
-      if (size_type(this->_M_end_of_storage._M_data - this->_M_finish) >= __n) {
+      if (size_type(this->_M_end_of_storage() - this->_M_finish()) >= __n) {
         _M_range_insert_aux(__pos, __first, __last, __n, _Movable());
       }
       else {
@@ -519,8 +572,8 @@ public:
   { _M_fill_insert(__pos, __n, __x); }
   
   void pop_back() {
-    --this->_M_finish;
-    _STLP_STD::_Destroy(this->_M_finish);
+    _M_inc_finish_idx(-1);
+    _STLP_STD::_Destroy(this->_M_finish());
   }
 
 protected:
@@ -532,14 +585,14 @@ protected:
       _STLP_STD::_Move_Construct(__dst, *__src);
       _STLP_STD::_Destroy_Moved(__src);
     }
-    this->_M_finish = __dst;
+    _M_set_finish_idx(__dst - this->_M_start());
     return __pos;
   }
   iterator _M_erase(iterator __pos, const __false_type& /*_Movable*/) {
     if (__pos + 1 != end())
-      __copy_ptrs(__pos + 1, this->_M_finish, __pos, _TrivialAss());
-    --this->_M_finish;
-    _STLP_STD::_Destroy(this->_M_finish);
+      __copy_ptrs(__pos + 1, this->_M_finish(), __pos, _TrivialAss());
+    _M_inc_finish_idx(-1);
+    _STLP_STD::_Destroy(this->_M_finish());
     return __pos;
   }
   iterator _M_erase(iterator __first, iterator __last, const __true_type& /*_Movable*/) {
@@ -562,13 +615,13 @@ protected:
       }
       _STLP_STD::_Destroy_Moved_Range(__dst, __end);
     }
-    this->_M_finish = __dst;
+    _M_set_finish_idx(__dst - this->_M_start());
     return __first;
   }
   iterator _M_erase(iterator __first, iterator __last, const __false_type& /*_Movable*/) {
-    pointer __i = __copy_ptrs(__last, this->_M_finish, __first, _TrivialAss());
-    _STLP_STD::_Destroy_Range(__i, this->_M_finish);
-    this->_M_finish = __i;
+    pointer __i = __copy_ptrs(__last, this->_M_finish(), __first, _TrivialAss());
+    _STLP_STD::_Destroy_Range(__i, this->_M_finish());
+    _M_set_finish_idx(__i - this->_M_start());
     return __first;
   }
 
@@ -605,18 +658,18 @@ protected:
 
   void _M_clear() {
     _STLP_STD::_Destroy_Range(rbegin(), rend());
-    this->_M_end_of_storage.deallocate(this->_M_start, this->_M_end_of_storage._M_data - this->_M_start);
+    this->_M_ptr.deallocate(this->_M_ptr._M_data, this->_M_data_size);
   }
 
   void _M_clear_after_move() {
     _STLP_STD::_Destroy_Moved_Range(rbegin(), rend());
-    this->_M_end_of_storage.deallocate(this->_M_start, this->_M_end_of_storage._M_data - this->_M_start);
+    this->_M_ptr.deallocate(this->_M_ptr._M_data, this->_M_data_size);
   }
 
   void _M_set(pointer __s, pointer __f, pointer __e) {
-    this->_M_start = __s;
-    this->_M_finish = __f;
-    this->_M_end_of_storage._M_data = __e;
+    this->_M_ptr._M_data = __s;
+    _M_set_finish_idx(__f - __s);
+    _M_set_data_size(__e - __s);
   }
 
 #if defined (_STLP_MEMBER_TEMPLATES)
@@ -628,7 +681,7 @@ protected:
                                const_pointer __last)
 #endif /* _STLP_MEMBER_TEMPLATES */
   {
-    pointer __result = this->_M_end_of_storage.allocate(__n);
+    pointer __result = this->_M_ptr.allocate(__n);
     _STLP_TRY {
 #if !defined(__MRC__)  //*TY 12/17/2000 - added workaround for MrCpp. it confuses on nested try/catch block
       __uninitialized_copy(__first, __last, __result, _TrivialUCpy());
@@ -637,7 +690,7 @@ protected:
 #endif
       return __result;
     }
-    _STLP_UNWIND(this->_M_end_of_storage.deallocate(__result, __n))
+    _STLP_UNWIND(this->_M_ptr.deallocate(__result, __n))
     _STLP_RET_AFTER_THROW(__result)
   }
 
@@ -654,9 +707,10 @@ protected:
   void _M_range_initialize(_ForwardIterator __first,
                            _ForwardIterator __last, const forward_iterator_tag &) {
     size_type __n = distance(__first, __last);
-    this->_M_start = this->_M_end_of_storage.allocate(__n);
-    this->_M_end_of_storage._M_data = this->_M_start + __n;
-    this->_M_finish = __uninitialized_copy(__first, __last, this->_M_start, _TrivialUCpy());
+    this->_M_ptr._M_data = this->_M_ptr.allocate(__n);
+    _M_set_data_size(__n);
+    iterator __end = __uninitialized_copy(__first, __last, this->_M_start(), _TrivialUCpy());
+    _M_set_finish_idx(__end - this->_M_start());
   }
   
 #endif /* _STLP_MEMBER_TEMPLATES */
