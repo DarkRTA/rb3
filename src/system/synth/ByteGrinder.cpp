@@ -209,7 +209,7 @@ DataNode op7(DataArray* msg) {
 
 DataNode op8(DataArray* msg) {
     u32 op = msg->Int(1);
-    u8 ret = u8(msg->Int(2)) + u8(op);
+    u8 ret = u8(op) + u8(msg->Int(2));
     return DataNode(ret ^ u8(op));
 }
 
@@ -221,60 +221,178 @@ DataNode op9(DataArray* msg) {
     return DataNode(u8(a + b));
 }
 
-DataNode op10(DataArray* msg);
-DataNode op11(DataArray* msg);
-DataNode op12(DataArray* msg);
-DataNode op13(DataArray* msg);
-DataNode op14(DataArray* msg);
-DataNode op15(DataArray* msg);
-DataNode op16(DataArray* msg);
-DataNode op17(DataArray* msg);
-DataNode op18(DataArray* msg);
-DataNode op19(DataArray* msg);
-DataNode op20(DataArray* msg);
-DataNode op21(DataArray* msg);
-DataNode op22(DataArray* msg);
-DataNode op23(DataArray* msg);
-DataNode op24(DataArray* msg);
-DataNode op25(DataArray* msg);
-DataNode op26(DataArray* msg);
-DataNode op27(DataArray* msg);
-DataNode op28(DataArray* msg);
-DataNode op29(DataArray* msg);
-DataNode op30(DataArray* msg);
-DataNode op31(DataArray* msg);
-DataNode op32(DataArray* msg);
-DataNode op33(DataArray* msg);
-DataNode op34(DataArray* msg);
-DataNode op35(DataArray* msg);
-DataNode op36(DataArray* msg);
-DataNode op37(DataArray* msg);
-DataNode op38(DataArray* msg);
-DataNode op39(DataArray* msg);
-DataNode op40(DataArray* msg);
-DataNode op41(DataArray* msg);
-DataNode op42(DataArray* msg);
-DataNode op43(DataArray* msg);
-DataNode op44(DataArray* msg);
-DataNode op45(DataArray* msg);
-DataNode op46(DataArray* msg);
-DataNode op47(DataArray* msg);
-DataNode op48(DataArray* msg);
-DataNode op49(DataArray* msg);
-DataNode op50(DataArray* msg);
-DataNode op51(DataArray* msg);
-DataNode op52(DataArray* msg);
-DataNode op53(DataArray* msg);
-DataNode op54(DataArray* msg);
-DataNode op55(DataArray* msg);
-DataNode op56(DataArray* msg);
-DataNode op57(DataArray* msg);
-DataNode op58(DataArray* msg);
-DataNode op59(DataArray* msg);
-DataNode op60(DataArray* msg);
-DataNode op61(DataArray* msg);
-DataNode op62(DataArray* msg);
-DataNode op63(DataArray* msg);
+DataNode op10(DataArray* msg) {
+
+}
+DataNode op11(DataArray* msg) {
+
+}
+DataNode op12(DataArray* msg) {
+
+}
+DataNode op13(DataArray* msg) {
+
+}
+DataNode op14(DataArray* msg) {
+
+}
+DataNode op15(DataArray* msg) {
+
+}
+DataNode op16(DataArray* msg) {
+
+}
+DataNode op17(DataArray* msg) {
+
+}
+DataNode op18(DataArray* msg) {
+    u32 operand = msg->Int(1);
+    u32 w = msg->Int(2);
+    u8 w2 = (w & 0xFF) << 8;
+    u32 w3 = (w2 & 0xFF) | (w & 0xFFFFFF00);
+
+    return DataNode(kDataInt, u8((w3 >> 5) + operand));
+}
+DataNode op19(DataArray* msg) {
+
+}
+DataNode op20(DataArray* msg) {
+
+}
+DataNode op21(DataArray* msg) {
+
+}
+DataNode op22(DataArray* msg) {
+
+}
+DataNode op23(DataArray* msg) {
+
+}
+DataNode op24(DataArray* msg) {
+
+}
+DataNode op25(DataArray* msg) {
+
+}
+DataNode op26(DataArray* msg) {
+
+}
+DataNode op27(DataArray* msg) {
+
+}
+DataNode op28(DataArray* msg) {
+
+}
+DataNode op29(DataArray* msg) {
+
+}
+DataNode op30(DataArray* msg) {
+
+}
+DataNode op31(DataArray* msg) {
+
+}
+DataNode op32(DataArray* msg) {
+
+}
+DataNode op33(DataArray* msg) {
+
+}
+DataNode op34(DataArray* msg) {
+
+}
+DataNode op35(DataArray* msg) {
+
+}
+DataNode op36(DataArray* msg) {
+
+}
+DataNode op37(DataArray* msg) {
+
+}
+DataNode op38(DataArray* msg) {
+
+}
+DataNode op39(DataArray* msg) {
+
+}
+DataNode op40(DataArray* msg) {
+
+}
+DataNode op41(DataArray* msg) {
+
+}
+DataNode op42(DataArray* msg) {
+
+}
+DataNode op43(DataArray* msg) {
+
+}
+DataNode op44(DataArray* msg) {
+
+}
+DataNode op45(DataArray* msg) {
+
+}
+DataNode op46(DataArray* msg) {
+
+}
+DataNode op47(DataArray* msg) {
+
+}
+DataNode op48(DataArray* msg) {
+
+}
+DataNode op49(DataArray* msg) {
+
+}
+DataNode op50(DataArray* msg) {
+
+}
+DataNode op51(DataArray* msg) {
+
+}
+DataNode op52(DataArray* msg) {
+
+}
+DataNode op53(DataArray* msg) {
+
+}
+DataNode op54(DataArray* msg) {
+
+}
+DataNode op55(DataArray* msg) {
+
+}
+DataNode op56(DataArray* msg) {
+
+}
+DataNode op57(DataArray* msg) {
+
+}
+DataNode op58(DataArray* msg) {
+
+}
+DataNode op59(DataArray* msg) {
+
+}
+DataNode op60(DataArray* msg) {
+
+}
+DataNode op61(DataArray* msg) {
+
+}
+DataNode op62(DataArray* msg) {
+
+}
+DataNode op63(DataArray* msg) {
+    u32 operand = msg->Int(1);
+    u32 w = msg->Int(2);
+
+    u32 working2 = (u8(w) ^ 255);
+    u32 working3 = (u8(w) << 8);
+    return DataNode(kDataInt, u8(operand ^ ((working2 | working3) >> 6)));
+}
 
 extern DataArray* DataReadString(const char*);
 

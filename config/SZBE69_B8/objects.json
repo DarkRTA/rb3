@@ -1552,7 +1552,7 @@
             "lib/binkwii/fft.c": "MISSING",
             "lib/binkwii/popmal.c": "MISSING",
             "lib/binkwii/radcb.c": "MISSING",
-            "lib/binkwii/radmem.c": "MISSING",
+            "lib/binkwii/radmem.c": "NonMatching",
             "lib/binkwii/wiiax.c": "MISSING",
             "lib/binkwii/wiifile.c": "MISSING"
         }
