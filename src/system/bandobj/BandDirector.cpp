@@ -971,12 +971,12 @@ DataNode BandDirector::OnMidiAddPreset(DataArray* da){
         Symbol s1, s2;
         ExtractPstCatAdjs(da, s1, s2);
         float frame = da->Float(4) * 30.0f;
-        const Key<Symbol>* next;
         const Key<Symbol>* prev;
+        const Key<Symbol>* next;
         float ref;
-        int at = skeys->AtFrame(frame, next, prev, ref);
-        if(next){
-            Symbol s50 = next->value;
+        int at = skeys->AtFrame(frame, prev, next, ref);
+        if(prev){
+            Symbol s50 = prev->value;
             Symbol s54, s58;
             ExtractCatAdj(s50, s54, s58);
             if(s2 == gNullStr){
@@ -1171,6 +1171,147 @@ DataNode BandDirector::OnForcePreset(DataArray* da){
     return DataNode(0);
 }
 
+DataNode BandDirector::OnStompPresets(DataArray* da){
+    if(LightPresetMgr()){
+        DataNode& eval2 = da->Evaluate(2);
+        DataNode& eval3 = da->Evaluate(3);
+        LightPreset* lp1;
+        LightPreset* lp2;
+
+        if(eval2.Type() == kDataSymbol || eval2.Type() == kDataString){
+            lp1 = mCurWorld->Find<LightPreset>(eval2.Str(0), false);
+        }
+        else lp1 = eval2.Obj<LightPreset>(0);
+
+        if(eval3.Type() == kDataSymbol || eval3.Type() == kDataString){
+            lp2 = mCurWorld->Find<LightPreset>(eval3.Str(0), false);
+        }
+        else lp2 = eval3.Obj<LightPreset>(0);
+
+        LightPresetMgr()->StompPresets(lp1, lp2);
+    }
+    return DataNode(0);
+}
+
+DataNode BandDirector::OnGetCatList(DataArray* da){
+    Symbol s2 = da->Sym(2);
+    DataArray* arr3 = da->Array(3);
+    DataArray* arr = new DataArray(arr3->Size());
+
+    int i1 = 0;
+    for(int i = 0; i < arr3->Size(); i++){
+        Symbol cursym = arr3->Sym(i);
+        if(RemapCat(cursym, s2) != cursym){
+            // ???
+        }
+        else {
+            arr->Node(i1++) = DataNode(cursym);
+        }
+    }
+    arr->Resize(i1);
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return DataNode(arr, kDataArray);
+}
+
+DataNode BandDirector::OnCopyCats(DataArray* da){
+    if(!mPropAnim) return DataNode(0);
+    else {
+        Symbol s2 = da->Sym(2);
+        String str30(s2.Str());
+        str30.replace(0, 4, "shot");
+        PropKeys* shotkeys = mPropAnim->GetKeys(this, DataArrayPtr(DataNode(Symbol(str30.c_str()))));
+        PropKeys* shot5keys = mPropAnim->GetKeys(this, DataArrayPtr(DataNode(Symbol("shot_5"))));
+        if(!shotkeys || !shot5keys) return DataNode(0);
+        else {
+            Keys<Symbol, Symbol>& sym5keys = shot5keys->AsSymbolKeys();
+            Keys<Symbol, Symbol>& symkeys = shotkeys->AsSymbolKeys();
+            symkeys.clear();
+            for(int i = 0; i < sym5keys.size(); i++){
+                Key<Symbol> curkey(sym5keys[i]);
+                curkey.value = RemapCat(curkey.value, s2);
+                symkeys.push_back(curkey);
+            }
+        }
+        return DataNode(0);
+    }
+}
+
+void BandDirector::OnMidiAddPostProc(Symbol s, float f1, float f2){
+    MILO_ASSERT(mPropAnim, 0x9A1);
+    DataArrayPtr dptr(DataNode(Symbol("postproc")));
+    ObjectKeys* okeys = dynamic_cast<ObjectKeys*>(mPropAnim->GetKeys(this, dptr));
+    if(okeys && mVenue.Dir()){
+        RndPostProc* proc = mVenue.Dir()->Find<RndPostProc>(s.Str(), false);
+        if(proc){
+            float frame = f1 * 30.0f;
+            const Key<ObjectStage>* prev;
+            const Key<ObjectStage>* next;
+            float ref;
+            okeys->AtFrame(frame, prev, next, ref);
+            if(prev){
+                okeys->Add(prev->value, frame, false);
+            }
+            else {
+                RndPostProc* profilma = mVenue.Dir()->Find<RndPostProc>("ProFilm_a.pp", false);
+                if(profilma){
+                    if(frame > 0) okeys->Add(profilma, 0, false);
+                    okeys->Add(profilma, frame, false);
+                }
+            }
+            okeys->Add(proc, f2 * 30.0f + frame, false);
+        }
+        else MILO_WARN("PostProc %s not found.  Cannot add to song.anim!\n", s.Str());
+    }
+}
+
+void BandDirector::ExportWorldEvent(Symbol s){
+    if(s != none){
+        if(mCurWorld){
+            static Message msg("");
+            msg.SetType(s);
+            mCurWorld->Export(msg, false);
+        }
+    }
+}
+
+void BandDirector::SendCurWorldMsg(Symbol s, bool b){
+    static Message msg("");
+    if(mCurWorld){
+        msg.SetType(s);
+        if(b) mCurWorld->HandleType(msg);
+        else mCurWorld->Handle(msg, false);
+    }
+}
+
+void BandDirector::SetCharSpot(Symbol s1, Symbol s2){
+    Symbol playmode = TheBandWardrobe->GetPlayMode();
+    if(HiddenInstrument(playmode) != s1){
+        SendCurWorldMsg(MakeString("spotlight_%s_%s", s1.Str(), s2.Str()), false);
+    }
+}
+
+void BandDirector::SetFog(Symbol){}
+
+Symbol BandDirector::GetModeInst(Symbol s){
+    if(s == "guitar" || s == "bass"){
+        Symbol playmode = TheBandWardrobe->GetPlayMode();
+        if(s == "guitar" && playmode == coop_bk) return keyboard;
+        if(s == "bass" && playmode == coop_gk) return keyboard;
+    }
+    return s;
+}
+
+void BandDirector::SetCharacterHideHackEnabled(bool b){
+    int hack = BandCamShot::sHideAllCharactersHack - 1;
+    bool hax = BandCamShot::sHideAllCharactersHack != 0;
+    if(b) hack = BandCamShot::sHideAllCharactersHack + 1;
+    BandCamShot::sHideAllCharactersHack = hack;
+    if((hack != 0) == hax) return;
+    unk58 = true;
+    unke0 = -1000.0f;
+}
+
 BEGIN_PROPSYNCS(BandDirector)
     SYNC_PROP_SET(shot_5, mShotCategory, SetShot(_val.Sym(0), "shot_5"))
     SYNC_PROP_SET(shot_bg, mShotCategory, SetShot(_val.Sym(0), coop_bg))
@@ -1194,16 +1335,16 @@ BEGIN_PROPSYNCS(BandDirector)
     SYNC_PROP_SET(guitar_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "guitar"))
     SYNC_PROP_SET(mic_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "mic"))
     SYNC_PROP_SET(keyboard_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "keyboard"))
-    SYNC_PROP_SET(part2_sing, Symbol("singalong_off"), ) // fix set part
-    SYNC_PROP_SET(part3_sing, Symbol("singalong_off"), ) // fix set part
-    SYNC_PROP_SET(part4_sing, Symbol("singalong_off"), ) // fix set part
+    SYNC_PROP_SET(part2_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part2Inst()) : GetModeInst("guitar"), _val.Sym(0)))
+    SYNC_PROP_SET(part3_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part3Inst()) : GetModeInst("bass"), _val.Sym(0)))
+    SYNC_PROP_SET(part4_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part4Inst()) : GetModeInst("drum"), _val.Sym(0)))
     SYNC_PROP_SET(crowd, Symbol("crowd_realtime"), SetCrowd(_val.Sym(0)))
     SYNC_PROP(propanim, mPropAnim)
-    SYNC_PROP_SET(spot_bass, Symbol("off"), SetCharSpot("bass", _val.Sym(0)))
-    SYNC_PROP_SET(spot_drums, Symbol("off"), SetCharSpot("drums", _val.Sym(0)))
-    SYNC_PROP_SET(spot_guitar, Symbol("off"), SetCharSpot("guitar", _val.Sym(0)))
-    SYNC_PROP_SET(spot_keyboard, Symbol("off"), SetCharSpot("keyboard", _val.Sym(0)))
-    SYNC_PROP_SET(spot_vocal, Symbol("off"), SetCharSpot("vocal", _val.Sym(0)))
+    SYNC_PROP_SET(spot_bass, Symbol("off"), SetCharSpot(Symbol("bass"), _val.Sym(0)))
+    SYNC_PROP_SET(spot_drums, Symbol("off"), SetCharSpot(Symbol("drums"), _val.Sym(0)))
+    SYNC_PROP_SET(spot_guitar, Symbol("off"), SetCharSpot(Symbol("guitar"), _val.Sym(0)))
+    SYNC_PROP_SET(spot_keyboard, Symbol("off"), SetCharSpot(Symbol("keyboard"), _val.Sym(0)))
+    SYNC_PROP_SET(spot_vocal, Symbol("off"), SetCharSpot(Symbol("vocal"), _val.Sym(0)))
     SYNC_PROP_SET(stagekit_fog, Symbol("off"), SetFog(_val.Sym(0)))
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS

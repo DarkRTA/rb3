@@ -80,6 +80,7 @@ public:
     void UnloadVenue(bool);
     BandCamShot* FindNextDircut();
     void FindNextPstKeyframe(float, float, Symbol);
+    void SendCurWorldMsg(Symbol, bool);
 
     bool IsMusicVideo();
     LightPresetManager* LightPresetMgr(){
