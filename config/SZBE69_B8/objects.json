@@ -604,9 +604,9 @@
             "network/Products/JobTerminateFacade.cpp": "MISSING",
             "network/Products/NetZ.cpp": "MISSING",
             "network/Products/NetZProductInfo.cpp": "MISSING",
-            "network/Products/NetZSpecifics.cpp": "MISSING",
+            "network/Products/NetZSpecifics.cpp": "NonMatching",
             "network/Products/ProductFacade.cpp": "MISSING",
-            "network/Products/ProductSpecifics.cpp": "MISSING",
+            "network/Products/ProductSpecifics.cpp": "Matching",
             "network/Products/RendezVousProductInfo.cpp": "MISSING",
 
             "network/Protocol/CallProtocolMethodOperation.cpp": "MISSING",
