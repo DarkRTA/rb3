@@ -46,6 +46,12 @@ namespace std {
 
     using ::bsearch;
     using ::qsort;
+
+    inline long abs(long x) { return labs(x); }
+    inline long long abs(long long x) { return llabs(x); }
+
+    inline ldiv_t div(long x, long y) { return ldiv(x, y); }
+    inline lldiv_t div(long long x, long long y) { return lldiv(x, y); }
 }
 
 #endif

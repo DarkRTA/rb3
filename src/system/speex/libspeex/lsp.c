@@ -96,15 +96,6 @@ Heavily modified by Jean-Marc Valin (c) 2002-2006 (fixed-point,
 #define NULL 0
 #endif
 
-inline int abs(int i){
-  return __abs(i);
-}
-
-inline double fabs(double x)
-{
-   return __fabs(x) ;
-}
-
 #ifdef FIXED_POINT
 
 #define FREQ_SCALE 16384

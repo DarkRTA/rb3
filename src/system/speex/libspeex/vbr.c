@@ -73,11 +73,6 @@ const float vbr_uhb_thresh[2][11]={
    { 3.9f,  2.5f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f,  0.0f, -1.0f}  /*  2 kbps */
 };
 
-inline double fabs(double x)
-{
-   return __fabs(x) ;
-}
-
 void vbr_init(VBRState *vbr)
 {
    int i;

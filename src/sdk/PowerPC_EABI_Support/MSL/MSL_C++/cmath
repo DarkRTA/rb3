@@ -6,34 +6,142 @@ namespace std {
     using ::double_t;
     using ::float_t;
 
-    using ::fabs;
-    using ::fmod;
+#define _IMPORT_MATH_NAME(name)                                                          \
+    using ::name;                                                                        \
+    using ::name##f;                                                                     \
+    using ::name##l
 
-    using ::exp;
-    using ::log;
-    using ::log10;
+#define _IMPORT_MATH(name)                                                               \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(float x) { return name##f(x); }                                    \
+    inline long double name(long double x) { return name##l(x); }
 
-    using ::pow;
-    using ::sqrt;
+#define _IMPORT_MATHC(name, argtype, arg)                                                \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(argtype arg) { return name##f(arg); }                              \
+    inline long double name(argtype arg) { return name##l(arg); }
 
-    using ::sin;
-    using ::cos;
-    using ::tan;
-    using ::asin;
-    using ::acos;
-    using ::atan;
-    using ::atan2;
+#define _IMPORT_MATHR(name, ret)                                                         \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline ret name(float x) { return name##f(x); }                                      \
+    inline ret name(long double x) { return name##l(x); }
 
-    using ::sinh;
-    using ::cosh;
-    using ::tanh;
+#define _IMPORT_MATH2(name)                                                              \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(float x, float y) { return name##f(x, y); }                        \
+    inline long double name(long double x, long double y) { return name##l(x, y); }
 
-    using ::ceil;
-    using ::floor;
+#define _IMPORT_MATH2C(name, arg2type, arg2)                                             \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(float x, arg2type arg2) { return name##f(x, arg2); }               \
+    inline long double name(long double x, arg2type arg2) { return name##l(x, arg2); }
 
-    using ::frexp;
-    using ::ldexp;
-    using ::modf;
+#define _IMPORT_MATH2P(name, arg2name)                                                   \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(float x, float *arg2name) { return name##f(x, arg2name); }         \
+    inline long double name(long double x, long double *arg2name) {                      \
+        return name##l(x, arg2name);                                                     \
+    }
+
+#define _IMPORT_MATH3(name)                                                              \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(float x, float y, float z) { return name(x, y, z); }               \
+    inline long double name##f(long double x, long double y, long double z) {            \
+        return name##l(x, y, z);                                                         \
+    }
+
+#define _IMPORT_MATH3C(name, arg3type, arg3)                                             \
+    _IMPORT_MATH_NAME(name);                                                             \
+    inline float name(float x, float y, arg3type arg3) { return name##f(x, y, arg3); }   \
+    inline long double name(long double x, long double y, arg3type arg3) {               \
+        return name##l(x, y, arg3);                                                      \
+    }
+
+    _IMPORT_MATH(fabs);
+    _IMPORT_MATH2(fmod);
+    _IMPORT_MATH2(remainder);
+    _IMPORT_MATH3C(remquo, int *, quo);
+    _IMPORT_MATH3(fma);
+    _IMPORT_MATH2(fmax);
+    _IMPORT_MATH2(fmin);
+    _IMPORT_MATH2(fdim);
+
+    // _IMPORT_MATHC(nan, const char *, str);
+
+    _IMPORT_MATH(exp);
+    _IMPORT_MATH(exp2);
+    _IMPORT_MATH(expm1);
+    _IMPORT_MATH(log);
+    _IMPORT_MATH(log10);
+    _IMPORT_MATH(log2);
+    _IMPORT_MATH(log1p);
+
+    _IMPORT_MATH2(pow);
+    _IMPORT_MATH(sqrt);
+    _IMPORT_MATH(cbrt);
+    _IMPORT_MATH2(hypot);
+
+    _IMPORT_MATH(sin);
+    _IMPORT_MATH(cos);
+    _IMPORT_MATH(tan);
+    _IMPORT_MATH(asin);
+    _IMPORT_MATH(acos);
+    _IMPORT_MATH(atan);
+    _IMPORT_MATH2(atan2);
+
+    _IMPORT_MATH(sinh);
+    _IMPORT_MATH(cosh);
+    _IMPORT_MATH(tanh);
+    _IMPORT_MATH(asinh);
+    _IMPORT_MATH(acosh);
+    _IMPORT_MATH(atanh);
+
+    _IMPORT_MATH(erf);
+    _IMPORT_MATH(erfc);
+    _IMPORT_MATH(tgamma);
+    _IMPORT_MATH(lgamma);
+
+    _IMPORT_MATH(ceil);
+    _IMPORT_MATH(floor);
+    _IMPORT_MATH(trunc);
+    _IMPORT_MATH(round);
+    _IMPORT_MATHR(lround, long);
+    _IMPORT_MATHR(llround, long long);
+
+    _IMPORT_MATH(nearbyint);
+    _IMPORT_MATH(rint);
+    _IMPORT_MATHR(lrint, long);
+    _IMPORT_MATHR(llrint, long long);
+
+    _IMPORT_MATH2C(frexp, int *, exp);
+    _IMPORT_MATH2C(ldexp, int, exp);
+
+    _IMPORT_MATH2P(modf, iptr);
+
+    _IMPORT_MATH2C(scalbn, int, exp);
+    _IMPORT_MATH2C(scalbln, long, exp);
+    _IMPORT_MATHR(ilogb, int);
+    _IMPORT_MATH(logb);
+
+    _IMPORT_MATH2(nextafter);
+    _IMPORT_MATH2C(nexttoward, long double, to);
+
+    _IMPORT_MATH2(copysign);
+
+#undef _IMPORT_MATH_NAME
+#undef _IMPORT_MATH
+#undef _IMPORT_MATHC
+#undef _IMPORT_MATHR
+#undef _IMPORT_MATH2
+#undef _IMPORT_MATH2C
+#undef _IMPORT_MATH2P
+#undef _IMPORT_MATH3
+#undef _IMPORT_MATH3C
+
+    inline float abs(float x) { return fabsf(x); }
+    inline double abs(double x) { return fabs(x); }
+    inline long double abs(long double x) { return fabsl(x); }
+
 }
 
 #endif
