@@ -6,7 +6,7 @@
 #include "system/utl/Symbols4.h"
 #include "game/Defines.h"
 #include "os/Debug.h"
-#include <string>
+#include <string.h>
 #include "Campaign.h"
 
 #include "decomp.h"
