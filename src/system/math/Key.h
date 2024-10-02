@@ -60,8 +60,8 @@ public:
         }
         else {
             // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
-            istart = LowerBound(Max(fstart, front().frame));
-            iend = UpperBound(Min(fend, back().frame));
+            istart = FindLastBefore(Max(fstart, front().frame));
+            iend = FindFirstAfter(Min(fend, back().frame));
         }
     }
 
@@ -90,7 +90,7 @@ public:
 
     // fn_805FC18C for Vector3
     int Add(const T1& val, float f, bool unique){
-        int bound = UpperBound(f);
+        int bound = FindFirstAfter(f);
         if(unique && bound != size() && f == (*this)[bound].frame){
             (*this)[bound].value = val;
         }
@@ -105,8 +105,8 @@ public:
 
     // fn_80653DE0 for Vector3 and fn_80653CE4 for Hmx::Quat
     int Remove(float fstart, float fend){
-        int bound1 = UpperBound(fstart);
-        int bound2 = UpperBound(fend);
+        int bound1 = FindFirstAfter(fstart);
+        int bound2 = FindFirstAfter(fend);
         erase(&(*this)[bound1], &(*this)[bound2]);
         return bound1;
     }
@@ -153,7 +153,7 @@ public:
                 return size() - 1;
             }
             else {
-                int frameIdx = LowerBound(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
+                int frameIdx = FindLastBefore(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
                 prev = &(*this)[frameIdx];
                 next = &(*this)[frameIdx + 1];
                 float den = next->frame - prev->frame;
@@ -164,8 +164,9 @@ public:
         }
     }
 
-    // looks like this gets the index in the Keys vector in which the frame ff is located
-    int LowerBound(float ff) const {
+    // TODO: rename function to FindLastBefore
+    // finds the last possible index in which the corresponding frame <= ff
+    int FindLastBefore(float ff) const {
         if(empty() || (ff < front().frame)) return -1;
         else {
             int cnt = 0;
@@ -180,8 +181,9 @@ public:
         }
     }
 
-    // ditto, but it's comparing this frame to the back instead of the front
-    int UpperBound(float ff) const {
+    // TODO: rename function to FindFirstAfter
+    // finds the first possible index in which the corresponding frame > ff
+    int FindFirstAfter(float ff) const {
         if(empty() || (ff <= front().frame)) return 0;
         else {
             const Key<T1>& backKey = back();
@@ -199,6 +201,16 @@ public:
                 while (threshold > 1 && (*this)[threshold - 1].SameFrame((*this)[threshold])) threshold--;
                 return threshold;
             }
+        }
+    }
+
+    // returns the first Key that fits in the range of frames f1 to f2
+    Key<T1>* GetFirstInRange(float f1, float f2){
+        int idx = FindLastBefore(f1);
+        if(idx == -1) return 0;
+        else {
+            if(f2 >= (*this)[idx].frame) return 0;
+            else return &(*this)[idx];
         }
     }
 };

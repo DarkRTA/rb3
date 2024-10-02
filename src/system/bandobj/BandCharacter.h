@@ -110,6 +110,7 @@ public:
     void UpdateOverlay();
     void SetDircuts();
     CharClipDriver* PlayMainClip(int, bool);
+    Symbol InstrumentType() const { return mInstrumentType; }
     bool AddDriverClipDir(){
         return mAddDriver && mAddDriver->ClipDir();
     }

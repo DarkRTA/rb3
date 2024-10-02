@@ -26,22 +26,27 @@ public:
 
     void SetClips(ObjectDir*);
     void SetLipSync(CharLipSync*);
+    ObjectDir* ClipDir() const { return mClips; }
+    ObjectDir* OverrideDir() const {
+        if(mOverrideOptions) return mOverrideOptions;
+        else return ClipDir();
+    }
 
-    ObjPtr<CharLipSync, ObjectDir> mLipSync;
-    ObjPtr<ObjectDir, ObjectDir> mClips;
-    ObjPtr<CharClip, ObjectDir> mBlinkClip;
-    ObjPtr<CharLipSyncDriver, ObjectDir> mSongOwner;
-    float mSongOffset;
-    bool mLoop;
-    int mSongPlayer; // PlayBack*
-    ObjPtr<CharBonesObject, ObjectDir> mBones;
-    ObjPtr<CharClip, ObjectDir> mTestClip;
-    float mTestWeight;
-    ObjPtr<CharClip, ObjectDir> mOverrideClip;
-    float mOverrideWeight;
-    ObjPtr<ObjectDir, ObjectDir> mOverrideOptions;
-    bool mApplyOverrideAdditively;
-    ObjPtr<CharDriver, ObjectDir> mAlternateDriver;
+    ObjPtr<CharLipSync, ObjectDir> mLipSync; // 0x28
+    ObjPtr<ObjectDir, ObjectDir> mClips; // 0x34
+    ObjPtr<CharClip, ObjectDir> mBlinkClip; // 0x40
+    ObjPtr<CharLipSyncDriver, ObjectDir> mSongOwner; // 0x4c
+    float mSongOffset; // 0x58
+    bool mLoop; // 0x5c
+    int mSongPlayer; // 0x60 - PlayBack*
+    ObjPtr<CharBonesObject, ObjectDir> mBones; // 0x64
+    ObjPtr<CharClip, ObjectDir> mTestClip; // 0x70
+    float mTestWeight; // 0x7c
+    ObjPtr<CharClip, ObjectDir> mOverrideClip; // 0x80
+    float mOverrideWeight; // 0x8c
+    ObjPtr<ObjectDir, ObjectDir> mOverrideOptions; // 0x90
+    bool mApplyOverrideAdditively; // 0x9c
+    ObjPtr<CharDriver, ObjectDir> mAlternateDriver; // 0xa0
 };
 
 #endif

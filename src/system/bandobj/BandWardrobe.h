@@ -70,6 +70,8 @@ public:
     bool DemandLoad() const {
         return TheLoadMgr.EditMode() || !TheBandDirector || !mDemandLoad.Null();
     }
+    bool DemandLoadSym() const { return !mDemandLoad.Null(); }
+    bool PlayShot5() const { return mPlayShot5; }
 
     DataNode GetUserTrack(int);
     DataNode OnFindTarget(DataArray*);

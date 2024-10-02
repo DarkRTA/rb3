@@ -806,7 +806,10 @@
             "system/bandobj/BandCharacter.cpp": "NonMatching",
             "system/bandobj/BandConfiguration.cpp": "NonMatching",
             "system/bandobj/BandCrowdMeter.cpp": "NonMatching",
-            "system/bandobj/BandDirector.cpp": "NonMatching",
+            "system/bandobj/BandDirector.cpp": {
+                "status": "NonMatching",
+                "extra_cflags": ["-inline deferred"]
+            },
             "system/bandobj/BandFaceDeform.cpp": "NonMatching",
             "system/bandobj/BandHeadShaper.cpp": "NonMatching",
             "system/bandobj/BandHighlight.cpp": "NonMatching",
@@ -823,7 +826,7 @@
             "system/bandobj/BandSwatch.cpp": "NonMatching",
             "system/bandobj/BandTrack.cpp": "NonMatching",
             "system/bandobj/BandWardrobe.cpp": "NonMatching",
-            "system/bandobj/CharDeform.cpp": "MISSING",
+            "system/bandobj/CharDeform.cpp": "Matching",
             "system/bandobj/CharKeyHandMidi.cpp": "NonMatching",
             "system/bandobj/CheckboxDisplay.cpp": "Matching",
             "system/bandobj/ChordShapeGenerator.cpp": "NonMatching",
