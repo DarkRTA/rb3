@@ -17,7 +17,7 @@ namespace Quazal {
         unsigned int GetMinute() const;
         unsigned int GetSecond() const;
 
-        static DateTime* Never;
+        static const DateTime& Never;
         static void GetSystemTime(Quazal::DateTime&);
 
         unsigned long long m_ui64Value;

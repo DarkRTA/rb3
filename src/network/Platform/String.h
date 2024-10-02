@@ -9,6 +9,7 @@ namespace Quazal {
         String(const char*);
         String(const String&);
         ~String();
+        Quazal::String& operator=(const Quazal::String&);
         
         char* m_szContent;
     };

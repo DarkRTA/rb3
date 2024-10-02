@@ -2,6 +2,7 @@
 #define PLATFORM_OUTPUTFORMAT_H
 #include "Platform/RootObject.h"
 #include <stdarg.h>
+#include "types.h"
 
 namespace Quazal {
     class OutputFormat : public RootObject {
@@ -15,6 +16,9 @@ namespace Quazal {
         virtual void AddIndent(char*, unsigned int);
         virtual int AddMessage(char*, unsigned int, const char*, va_list);
         virtual void EndString(char*, unsigned int);
+
+        void IncreaseIndent(uint);
+        void DecreaseIndent(uint);
 
         unsigned int m_uiIndent;
         unsigned int m_uiNumberTrace;

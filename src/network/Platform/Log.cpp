@@ -1,6 +1,7 @@
 #include "Log.h"
 #include "Platform/LogDeviceDebugOutput.h"
 #include "Platform/OutputFormat.h"
+#include "Platform/String.h"
 #include <sdk/PowerPC_EABI_Support/MSL/MSL_C/string.h>
 #include <cstdarg>
 
@@ -11,7 +12,7 @@ namespace Quazal {
     Log::~Log() {
         delete m_oOutputFormat;
         if (m_oLogDevice) delete m_oLogDevice;
-        // delete 0xC
+        if (unk_0xC) delete unk_0xC;
     }
 
     void Log::Output(const char* cc, ...) {
@@ -29,7 +30,7 @@ namespace Quazal {
     void Log::OutputImpl(const char* cc, va_list l, void* v) {
         char buf[0x1000];
         if (m_oLogDevice == NULL) return;
-        // 0xC validity check
+        if (unk_0xC != NULL && !unk_0xC->AcquireRef()) return;
         if (m_oOutputFormat == NULL) return;
 
         memset(buf, 0, 0x1000);
@@ -41,7 +42,7 @@ namespace Quazal {
         m_oOutputFormat->AddIndent(buf, 4094);
         m_oOutputFormat->AddMessage(buf, 4094, cc, l);
         m_oOutputFormat->EndString(buf, 4094);
-        m_oLogDevice->Output(buf);
+        m_oLogDevice->Output(buf); // >:(
     }
 
     void Log::AddCustomPrefix(char*, int, void*) { }

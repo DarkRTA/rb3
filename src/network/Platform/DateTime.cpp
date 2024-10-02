@@ -1,7 +1,7 @@
 #include "Platform/DateTime.h"
 
 namespace Quazal {
-    DateTime* DateTime::Never;
+    const DateTime& DateTime::Never = DateTime(); // yeah sure
 
     DateTime::DateTime() : m_ui64Value(0) {
 

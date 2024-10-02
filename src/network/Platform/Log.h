@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Platform/OutputFormat.h"
-#include "Platform/RootObject.h"
+#include "Platform/RefCountedObject.h"
 #include "Platform/String.h"
 #include <stdarg.h>
 #include <types.h>
@@ -29,6 +29,6 @@ namespace Quazal {
 
         LogDevice* m_oLogDevice; // 0x4
         OutputFormat* m_oOutputFormat; // 0x8
-        void* unk_0xC; // this guy has a virtual dtor and its 2nd virtual function is nonvoid and that's all the context i get
+        RefCountedObject* unk_0xC; // this guy has a virtual dtor and its 2nd virtual function is nonvoid and that's all the context i get
     };
 }
