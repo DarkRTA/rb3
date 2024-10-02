@@ -239,8 +239,8 @@
         "sdk/RevoEX": {
             "base": "base",
             "flags": [
-                "-func_align 4",
-                "-O4,p"
+                "-O4,p",
+                "-func_align 4"
             ]
         },
         "sdk/DWC": {

@@ -1,4 +1,6 @@
 #include "SystemComponent.h"
+#include "Core/PseudoSingleton.h"
+#include "Core/Scheduler.h"
 #include "decomp.h"
 #include "network/Platform/TraceLog.h"
 
@@ -199,7 +201,14 @@ SystemComponent::Use::~Use() {
     }
 }
 
-void SystemComponent::WaitForTerminatedState(unsigned int) {
-    
+void SystemComponent::WaitForTerminatedState(unsigned int ui) { // returns struct
+    Terminate();
+    if (ui != 0 && Scheduler::CurrentThreadCanWaitForJob()) {
+        if (PseudoSingleton::GetCurrentContext() == 0) {
+
+        } else {
+            
+        }
+    }
 }
 }

@@ -338,24 +338,10 @@ enum so_opt_t {
 static inline so_ret_t SOStartup(void) {
     return SOStartupEx(60000);
 }
-static inline so_ret_t SORecvFrom(
-        so_fd_t socket, void *buffer, size_t buffer_size, int flags,
-        so_addr_t *addr) {
-    return SOiRecvFrom(0, socket, buffer, buffer_size, flags, addr);
-}
-static inline so_ret_t SORecv(
-        so_fd_t socket, void *buffer, size_t buffer_size, int flags) {
-    return SOiRecvFrom(0, socket, buffer, buffer_size, flags, NULL);
-}
-static inline so_ret_t SOSendTo(
-        so_fd_t socket, const void *buffer, size_t buffer_size, int flags,
-        const so_addr_t *addr) {
-    return SOiSendTo(0, socket, buffer, buffer_size, flags, addr);
-}
-static inline so_ret_t SOSend(
-        so_fd_t socket, const void *buffer, size_t buffer_size, int flags) {
-    return SOiSendTo(0, socket, buffer, buffer_size, flags, NULL);
-}
+so_ret_t SORecvFrom(so_fd_t socket, void *buffer, size_t buffer_size, int flags, so_addr_t *addr);
+so_ret_t SORecv(so_fd_t socket, void *buffer, size_t buffer_size, int flags);
+so_ret_t SOSendTo(so_fd_t socket, const void *buffer, size_t buffer_size, int flags, const so_addr_t *addr);
+so_ret_t SOSend(so_fd_t socket, const void *buffer, size_t buffer_size, int flags);
 
 // past this point are things i had to grab from mkwii since this so.h just Doesn't Have Them
 int SOiPrepare(const char*, s32*);
