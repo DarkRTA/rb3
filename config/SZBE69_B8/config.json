@@ -165,6 +165,18 @@
                 "-inline auto"
             ]
         },
+        "bink": {
+            "base": "base",
+            "flags": [
+                "-pool on",
+                "-str reuse,pool",
+                "-pragma \"merge_float_consts on\"",
+
+                "-lang=c99",
+                "-O4,s",
+                "-inline auto"
+            ]
+        },
         "sdk/MSL": {
             "base": "base",
             "flags": [
@@ -227,8 +239,8 @@
         "sdk/RevoEX": {
             "base": "base",
             "flags": [
-                "-func_align 4",
-                "-O4,p"
+                "-O4,p",
+                "-func_align 4"
             ]
         },
         "sdk/DWC": {

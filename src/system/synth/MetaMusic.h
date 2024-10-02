@@ -16,7 +16,7 @@ public:
     virtual const char *StateName() const { return "MetaMusicLoader"; }
     virtual void PollLoading();
 
-    void DoneLoading() { return; }
+    void DoneLoading(); // { return; }
 };
 
 class MetaMusic : public Hmx::Object {

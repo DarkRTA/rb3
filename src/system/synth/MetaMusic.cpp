@@ -1,5 +1,7 @@
 #include "synth/MetaMusic.h"
 
+void MetaMusicLoader::DoneLoading() {}
+
 MetaMusic::MetaMusic(const char *cc)
     : mStream(0), mLoop(0), mFadeTime(1.0f), mVolume(0), mPlayFromBuffer(1), mRndHeap(0),
       mBufferH(0), mBuf(0), mFile(0), mBufSize(0), mBytesRead(0),
