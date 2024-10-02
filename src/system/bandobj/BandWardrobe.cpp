@@ -523,6 +523,24 @@ void BandWardrobe::SelectExtra(FileMerger::Merger& merger){
     }
 }
 
+void BandWardrobe::LoadPrefabPrefs(){
+    if(TheLoadMgr.EditMode()){
+        for(int i = 0; i < 4; i++){
+            BandCharDesc* desc = 0;
+            for(int j = 0; j < 2 && !desc; j++){
+                desc = GetPrefab(i, j);
+            }
+            if(desc){
+                BandCharacter* bchar = mTargets[i];
+                bchar->SetInstrumentType(bchar->mInstrumentType);
+                if(bchar->SetPrefab(desc)){
+                    bchar->StartLoad(false, false, false);
+                }
+            }
+        }
+    }
+}
+
 BandCharDesc* BandWardrobe::GetPrefab(int target, int variation){
     MILO_ASSERT(target < kNumTargets && target >= 0, 0x6AF);
     MILO_ASSERT(variation < 2 && target >= 0, 0x6B0);
@@ -703,6 +721,28 @@ void BandWardrobe::ForceBlink(int playerIdx){
     BandCharacter* bc = FindTarget(mCurNames->names[playerIdx], *mCurNames);
     if(bc){
         bc->ForceBlink();
+    }
+}
+
+DataNode BandWardrobe::OnListVenueAnimGroups(DataArray* da){
+    MILO_ASSERT(TheLoadMgr.EditMode(), 0x947);
+    BandCamShot* shot = da->Obj<BandCamShot>(3);
+    StartVenueShot(shot);
+    Symbol sym = da->Sym(2);
+    BandCharacter* bchar = FindTarget(sym, unk54);
+    if(bchar){
+        return bchar->ListAnimGroups(GetShotFlags(shot));      
+    }
+    else {
+        Character* chr = mVenueDir->Find<Character>(sym.Str(), false);
+        if(chr) return DataNode(0);
+        else {
+            DataArray* arr = new DataArray(1);
+            arr->Node(0) = DataNode(Symbol());
+            DataNode ret(arr, kDataArray);
+            arr->Release();
+            return DataNode(ret);
+        }
     }
 }
 

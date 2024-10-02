@@ -3,6 +3,7 @@
 #include "utl/MemMgr.h"
 
 class BandSongPref : public Hmx::Object {
+public:
     BandSongPref();
     virtual ~BandSongPref() {}
     OBJ_CLASSNAME(BandSongPref)
@@ -14,7 +15,13 @@ class BandSongPref : public Hmx::Object {
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
 
     DECLARE_REVS
+    NEW_OVERLOAD
     DELETE_OVERLOAD
+
+    Symbol Part2Inst() const { return mPart2Instrument; }
+    Symbol Part3Inst() const { return mPart3Instrument; }
+    Symbol Part4Inst() const { return mPart4Instrument; }
+    Symbol GetAnimGenre() const { return mAnimGenre; }
 
     Symbol mPart2Instrument, mPart3Instrument, mPart4Instrument, mAnimGenre;
 };

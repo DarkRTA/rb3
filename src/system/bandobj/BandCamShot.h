@@ -95,6 +95,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     static std::list<TargetCache> sCache;
+    static int sHideAllCharactersHack;
 
     ObjVector<Target> mTargets; // 0x124
     int mMinTime; // 0x130

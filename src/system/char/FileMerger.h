@@ -16,7 +16,7 @@ public:
     class Merger {
     public:
         struct SortBySelected {
-            bool operator()(Merger a, Merger b){ return false; }
+            bool operator()(const Merger& a, const Merger& b){ return stricmp(a.mSelected.c_str(), b.mSelected.c_str()) < 0; }
         };
 
         Merger(Hmx::Object* o) : mProxy(0), mPreClear(0), mSubdirs(4), mDir(o, 0), mLoadedObjects(o, kObjListNoNull), mLoadedSubdirs(o, kObjListNoNull) {}
@@ -82,6 +82,7 @@ public:
     bool StartLoad(bool);
     void Select(Symbol, const FilePath&, bool);
     int FindMergerIndex(Symbol, bool);
+    Merger* FindMerger(Symbol, bool);
     std::vector<Merger, unsigned int>& Mergers(){ return mMergers; }
 
     static bool sDisableAll;
