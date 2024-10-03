@@ -22,7 +22,7 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
         mGemMashAnims.push_back(propAnim);
         mDrumMashAnims.push_back(propAnim);
         mFillLaneAnims.push_back(propAnim);
-        mRGMashAnims.push_back(propAnim);
+        mRealGuitarMashAnims.push_back(propAnim);
         mDrumRollTrigs.push_back(std::make_pair(trig, trig));
         mTrillTrigs.push_back(std::make_pair(trig, trig));
     }
@@ -71,7 +71,7 @@ BEGIN_COPYS(GemTrackDir)
         COPY_MEMBER(mGemMashAnims)
         COPY_MEMBER(mDrumMashAnims)
         COPY_MEMBER(mFillLaneAnims)
-        COPY_MEMBER(mRGMashAnims)
+        COPY_MEMBER(mRealGuitarMashAnims)
         COPY_MEMBER(mFillHitTrigs)
         COPY_MEMBER(mDrumFillResetTrig)
         COPY_MEMBER(mDrumMash2ndPassActivateAnim)
@@ -150,7 +150,7 @@ void GemTrackDir::PreLoad(BinStream& bs){
         }
         if(gRev >= 11){
             for(int i = 0; i < 6; i++){
-                bs >> mRGMashAnims[i];
+                bs >> mRealGuitarMashAnims[i];
             }
         }
         if(gRev >= 2) bs >> mStreakMeterOffset;
@@ -233,7 +233,7 @@ void GemTrackDir::SyncObjects(){
     if(!mKeysShiftAnim) mKeysShiftAnim = Find<RndAnimatable>("keys_shift.anim", false);
     if(!mChordShapeGen) mChordShapeGen = Find<RndDir>("RG_chord_generator", true)->Find<ChordShapeGenerator>("ChordShapeGenerator01", true);
     bool b1 = true;
-    if(unk10 != 6 && unk10 != 5) b1 = false;
+    if(mTrackInstrument != kInstRealBass && mTrackInstrument != kInstRealGuitar) b1 = false;
     if(!mFingerShape && b1){
         SyncFingerFeedback();
         RndDir* outlinedir = Find<RndDir>("chord_shape_outline", true);
@@ -310,7 +310,7 @@ void GemTrackDir::UpdateSurfaceTexture(){
 
 void GemTrackDir::OnUpdateFx(int fx){
     delete unk600;
-    if(mEffectSelector && (unk10 == 2 || unk10 == 0)){
+    if(mEffectSelector && (mTrackInstrument == kInstBass || mTrackInstrument == kInstGuitar)){
         mEffectSelector->SetShowing(true);
         for(int i = 0; i < 5; i++){
             BandButton* btn = mEffectSelector->Find<BandButton>(MakeString("guitar_fx_%1d.btn", i), false);
@@ -347,7 +347,7 @@ void GemTrackDir::TrackReset(){
     ResetSmashers(true);
     if(BandTrack::mParent) BandTrack::mParent->UpdateGems();
     RndPropAnim* anim = Find<RndPropAnim>("instrument_setup.anim", false);
-    if(anim) anim->SetFrame(unk10, 1.0f);
+    if(anim) anim->SetFrame(mTrackInstrument, 1.0f);
     ResetEffectSelector();
     if(!BandTrack::mParent || !BandTrack::mParent->FailedAtStart()){
         EnablePlayer();
@@ -361,14 +361,14 @@ void GemTrackDir::SetupSmasherPlate(){
     GemTrackResourceManager* mgr = MyTrackPanelDir()->GetGemTrackResourceManager();
     if(!mgr) MILO_WARN("GemTrackResourceManager not available!");
     else {
-        mSmasherPlate = mgr->GetFreeSmasherPlate((TrackInstrument)unk10);
+        mSmasherPlate = mgr->GetFreeSmasherPlate(mTrackInstrument);
         if(mSmasherPlate){
             RndGroup* smashergrp = Find<RndGroup>("smashers.grp", true);
             RndGroup* keygrp = Find<RndGroup>("key_shift_stationary_middle.grp", true);
-            if(unk10 == 7) keygrp->AddObject(mSmasherPlate, 0);
+            if(mTrackInstrument == kInstRealKeys) keygrp->AddObject(mSmasherPlate, 0);
             else smashergrp->AddObject(mSmasherPlate, 0);
             if(!TheLoadMgr.EditMode() || IsProxy()){
-                RndGroup* grptoadd = unk10 == 7 ? Find<RndGroup>("key_shift_stationary_front.grp", true) : Find<RndGroup>("smasher_fx.grp", true);
+                RndGroup* grptoadd = mTrackInstrument == kInstRealKeys ? Find<RndGroup>("key_shift_stationary_front.grp", true) : Find<RndGroup>("smasher_fx.grp", true);
                 RndGroup* after = mSmasherPlate->Find<RndGroup>("after_gems.grp", false);
                 if(after) after->AddObject(grptoadd, 0);
                 RndGroup* keysback = Find<RndGroup>("key_shift_stationary_back.grp", true);
@@ -377,7 +377,7 @@ void GemTrackDir::SetupSmasherPlate(){
                 RndGroup* afterhide = mSmasherPlate->Find<RndGroup>("after_hide.grp", false);
                 if(afterhide) afterhide->SetShowing(false);
             }
-            if(unk10 == 7){
+            if(mTrackInstrument == kInstRealKeys){
                 unk654 = mSmasherPlate->Find<RndAnimatable>("shift.anim", true);
                 unk680.clear();
                 unk688.clear();
@@ -493,6 +493,218 @@ void GemTrackDir::Retract(bool b){
     if(mEffectSelector) mEffectSelector->SetShowing(false);
 }
 
+void GemTrackDir::SetStreak(int i1, int i2, int i3, bool b){
+    BandTrack::SetStreak(i1, i2, i3, b);
+    if(mStreakMeter){
+        float f1 = 1.0f;
+        if(i2 < unk14){
+            if(i1 == 0 || i1 % i3){
+                f1 = (i1 % i3) / (float)i3;
+            }
+        }
+        mStreakMeter->SetWipe(f1);
+    }
+}
+
+void GemTrackDir::RefreshStreakMeter(int i1, int i2, int i3){
+    BandTrack::RefreshStreakMeter(i1, i2, i3);
+    if(mStreakMeter){
+        float f38 = 1.0f;
+        if(i2 < unk14){
+            if(i1 == 0 || i1 % i3){
+                f38 = (i1 % i3) / (float)i3;
+            }
+        }
+        Message msg("set_wipe", f38);
+        TheTaskMgr.Start(new MessageTask(mStreakMeter, msg), kTaskSeconds, 0.01f);
+    }
+}
+
+void GemTrackDir::PeakState(bool b1, bool b2){
+    if(b1 != unk1a){
+        if(b1) mPeakStateOnTrig->Trigger();
+        else if(b2 && mPeakStopImmediateTrig) mPeakStopImmediateTrig->Trigger();
+        else mPeakStateOffTrig->Trigger();
+    }
+    BandTrack::PeakState(b1, b2);
+}
+
+void GemTrackDir::SuperStreak(bool b1, bool b2){
+    if(b1 != unk19){
+        if(b1) mBassSuperStreakOnTrig->Trigger();
+        else if(b2 && mBassSSOffImmediateTrig) mBassSSOffImmediateTrig->Trigger();
+        else mBassSuperStreakOffTrig->Trigger();
+        Message msg(b1 ? "start_super_streak" : "end_super_streak");
+        if(mPlayerFeedback && !unk1e && !b2){
+            mPlayerFeedback->Handle(msg, true);
+        }
+    }
+    BandTrack::SuperStreak(b1, b2);
+}
+
+void GemTrackDir::Deploy(){
+    BandTrack::Deploy();
+    if(mTrackInstrument == kInstDrum && BandTrack::mParent){
+        unk618 = new MessageTask(BandTrack::mParent, update_gems_msg);
+        TheTaskMgr.Start(unk618, kTaskSeconds, 0.0f);
+    }
+}
+
+void GemTrackDir::EnterCoda(){
+    BandTrack::EnterCoda();
+    if(mPlayerFeedback){
+        mPlayerFeedback->HandleType(reset_msg);
+    }
+    if(BandTrack::mParent){
+        DataNode* prop = FindObject("gamemode", true)->Property("is_practice", true);
+        if(!prop){
+            BandTrack::mParent->SetGemsEnabled(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f);
+        }
+    }
+}
+
+void GemTrackDir::DisablePlayer(int i){
+    if(!mDisabled && MyTrackPanelDir()){
+        MyTrackPanelDir()->UnisonEnd();
+    }
+    if(unk624) delete unk624;
+    BandTrack::DisablePlayer(i);
+}
+
+DECOMP_FORCEACTIVE(GemTrackDir, "drum_fill.mesh", "guitar_fill.mesh", "unison_mask.mesh", "guitar_solo_mask.mesh", "bar_blue_beat.wid")
+
+void GemTrackDir::GemPass(int i1, int i2){
+    unk494++;
+    if((i2 & 1U) && mTrackInstrument == kInstDrum){
+        TrackInterface* par = BandTrack::mParent;
+        if(par){
+            mKickPassCounter++;
+            if(mKickPassCounter >= 8){
+                float kickms = par->NextKickNoteMs();
+                if(mKickPassCounter == 8){
+                    if(kickms > 5000.0f) mKickPassCounter = 7;
+                    else PopupHelp("kick", true);
+                }
+                else if(kickms > 5000.0f){
+                    PopupHelp("kick", false);
+                    mKickPassCounter = 7;
+                }
+            }
+        }
+    }
+}
+
+void GemTrackDir::GemHit(int i){
+    unk494 = 0;
+    if(mTrackInstrument != kInstDrum) return;
+    if(!(i & 1U)) return;
+    mKickPassCounter = 0;
+}
+
+void GemTrackDir::SeeKick(){
+    if(mPopupObject) mPopupObject->Handle(kick_note_msg, true);
+}
+
+void GemTrackDir::KickSwing(){
+    PopupHelp("kick", false);
+    mKickPassCounter = 0;
+}
+
+void GemTrackDir::SpotlightPhraseSuccess(){
+    mSpotlightPhraseSuccessTrig->Trigger();
+    BandTrack::SpotlightPhraseSuccess();
+}
+
+void GemTrackDir::SetPerformanceMode(bool b){
+    SetShowing(!b);
+    BandTrack::SetPerformanceMode(b);
+}
+
+void GemTrackDir::Mash(int slot){
+    RndAnimatable* anim;
+    if(mTrackInstrument != kInstDrum || (slot != 0)){
+        if(mTrackInstrument == kInstDrum){
+            if(BandTrack::mParent && BandTrack::mParent->Lefty()){
+                slot = 5 - slot;
+            }
+            MILO_ASSERT((slot > 0) && (slot < mDrumMashAnims.size()), 0x479);
+            anim = mDrumMashAnims[slot];
+        }
+        else if(mTrackInstrument == kInstRealGuitar || mTrackInstrument == kInstRealBass){
+            MILO_ASSERT(slot < mRealGuitarMashAnims.size(), 0x47F);
+            anim = mRealGuitarMashAnims[slot];
+        }
+        else if(mTrackInstrument == kInstRealKeys) anim = mKeysMashAnim;
+        else {
+            MILO_ASSERT(slot < mGemMashAnims.size(), 0x488);
+            anim = mGemMashAnims[slot];
+        }
+        anim->Animate(0, false, 0);
+    }
+}
+
+void GemTrackDir::FillMash(int slot){
+    MILO_ASSERT(mTrackInstrument == kInstDrum, 0x491);
+    if(slot != 0){
+        if(BandTrack::mParent && BandTrack::mParent->Lefty()){
+            slot = 5 - slot;
+        }
+        MILO_ASSERT((slot > 0) && (slot < mFillLaneAnims.size()), 0x49B);
+        mFillLaneAnims[slot]->Animate(0, false, 0);
+    }
+}
+
+void GemTrackDir::FillHit(int numNotes){
+    if(numNotes <= mFillHitTrigs.size()){
+        MILO_ASSERT(numNotes > 0, 0x4A4);
+        if(numNotes > 0) mFillHitTrigs[numNotes - 1]->Trigger();
+    }
+}
+
+void GemTrackDir::ResetDrumFill(){
+    mDrumFillResetTrig->Trigger();
+    float delay = 1.0f - (std::floor(TheTaskMgr.Beat()) - TheTaskMgr.Beat()) - 0.2f;
+    if(mDrumMash2ndPassActivateAnim){
+        if(delay < 0.0f) delay += 1.0f;
+        mDrumMash2ndPassActivateAnim->Animate(0, true, delay, mDrumMash2ndPassActivateAnim->GetRate(), 0.0f, 1.0f, 0.0f, 1.0f, loop);
+    }
+}
+
+void GemTrackDir::ResetCoda(){
+    mDrumMashHitAnimGrp->SetFrame(mDrumMashHitAnimGrp->EndFrame(), 1.0f);
+    mFillColorsGrp->SetFrame(mFillColorsGrp->EndFrame(), 1.0f);
+}
+
+void GemTrackDir::CrashFill(){
+    if(BandTrack::mParent){
+        BandTrack::mParent->GetSmasher(4)->Handle(drum_fill_complete_msg, true);
+    }
+}
+
+void GemTrackDir::SetInstrument(TrackInstrument inst){
+    BandTrack::SetInstrument(inst);
+    TrackReset();
+}
+
+DECOMP_FORCEACTIVE(GemTrackDir, "game.cam")
+
+void GemTrackDir::SetPlayerLocal(float f){
+    bool b2 = true;
+    bool b1 = false;
+    if(BandTrack::mParent && BandTrack::mParent->HasNetPlayer()) b1 = true;
+    if(!b1 && !mSimulatedNet) b2 = false;
+    if(b2) Find<EventTrigger>("network_remote.trig", true)->Trigger();
+    else Find<EventTrigger>("network_local.trig", true)->Trigger();
+}
+
+void GemTrackDir::SetDisplayRange(float f){
+    if(f != 10.0f) MILO_WARN("keyboard range must be 10 white keys inclusive");
+    mSmasherPlate->SetProperty(range, f);
+    mSmasherPlate->HandleType(update_range_msg);
+    if(BandTrack::mParent) BandTrack::mParent->UpdateSlotXfms();
+    unk678 = f;
+}
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(GemTrackDir)
@@ -552,12 +764,12 @@ BEGIN_PROPSYNCS(GemTrackDir)
     SYNC_PROP(fill_lane_2_anim, mFillLaneAnims[2])
     SYNC_PROP(fill_lane_3_anim, mFillLaneAnims[3])
     SYNC_PROP(fill_lane_4_anim, mFillLaneAnims[4])
-    SYNC_PROP(real_guitar_mash_0_anim, mRGMashAnims[0])
-    SYNC_PROP(real_guitar_mash_1_anim, mRGMashAnims[1])
-    SYNC_PROP(real_guitar_mash_2_anim, mRGMashAnims[2])
-    SYNC_PROP(real_guitar_mash_3_anim, mRGMashAnims[3])
-    SYNC_PROP(real_guitar_mash_4_anim, mRGMashAnims[4])
-    SYNC_PROP(real_guitar_mash_5_anim, mRGMashAnims[5])
+    SYNC_PROP(real_guitar_mash_0_anim, mRealGuitarMashAnims[0])
+    SYNC_PROP(real_guitar_mash_1_anim, mRealGuitarMashAnims[1])
+    SYNC_PROP(real_guitar_mash_2_anim, mRealGuitarMashAnims[2])
+    SYNC_PROP(real_guitar_mash_3_anim, mRealGuitarMashAnims[3])
+    SYNC_PROP(real_guitar_mash_4_anim, mRealGuitarMashAnims[4])
+    SYNC_PROP(real_guitar_mash_5_anim, mRealGuitarMashAnims[5])
     SYNC_PROP(fill_hit_1_trig, mFillHitTrigs[0])
     SYNC_PROP(fill_hit_2_trig, mFillHitTrigs[1])
     SYNC_PROP(fill_hit_3_trig, mFillHitTrigs[2])

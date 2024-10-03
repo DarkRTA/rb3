@@ -87,6 +87,14 @@ public:
     void ToggleKeyShifting();
     void UpdateSurfaceTexture();
     void OnUpdateFx(int);
+    void GemPass(int, int);
+    void GemHit(int);
+    void SeeKick();
+    void KickSwing();
+    void FillMash(int);
+    void FillHit(int);
+    void ResetDrumFill();
+    void ResetCoda();
 
     DataNode OnDrawSampleChord(DataArray*);
 
@@ -122,7 +130,7 @@ public:
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mGemMashAnims; // 0x570
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mDrumMashAnims; // 0x578
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mFillLaneAnims; // 0x580
-    std::vector<ObjPtr<RndPropAnim, ObjectDir> > mRGMashAnims; // 0x588
+    std::vector<ObjPtr<RndPropAnim, ObjectDir> > mRealGuitarMashAnims; // 0x588
     std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mDrumRollTrigs; // 0x590
     std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mTrillTrigs; // 0x598
     std::vector<ObjPtr<EventTrigger, ObjectDir> > mFillHitTrigs; // 0x5a0

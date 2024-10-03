@@ -102,7 +102,7 @@ public:
     bool mDisabled; // 0x8
     bool mSimulatedNet; // 0x9
     Symbol mInstrument; // 0xc
-    int unk10; // 0x10 - should be enum TrackInstrument
+    TrackInstrument mTrackInstrument; // 0x10
     int unk14; // 0x14
     bool unk18; // 0x18
     bool unk19; // 0x19
