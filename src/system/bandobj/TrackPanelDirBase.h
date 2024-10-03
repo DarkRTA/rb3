@@ -68,7 +68,7 @@ public:
     virtual void SetApplauseMeterScale(int, int){}
     virtual void StartPulseAnims(float);
     virtual float GetPulseAnimStartDelay(bool) const;
-    virtual GemTrackResourceManager* GetGemTrackResourceManager() const;
+    virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return 0; }
 
     void SetShowing(bool);
     bool ModifierActive(Symbol);

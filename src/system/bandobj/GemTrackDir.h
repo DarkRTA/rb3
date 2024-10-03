@@ -85,6 +85,8 @@ public:
     void Mash(int);
     void CrashFill();
     void ToggleKeyShifting();
+    void UpdateSurfaceTexture();
+    void OnUpdateFx(int);
 
     DataNode OnDrawSampleChord(DataArray*);
 

@@ -1,6 +1,9 @@
 #include "bandobj/GemTrackDir.h"
+#include "bandobj/BandButton.h"
+#include "bandobj/GemTrackResourceManager.h"
 #include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(GemTrackDir)
 
@@ -247,6 +250,247 @@ void GemTrackDir::SyncObjects(){
         RndGroup* shapesgrp = Find<RndGroup>("arpeggio_shapes.grp", true);
         mArpShapePool = new ArpeggioShapePool(arpdir, shapesgrp, 15);
     }
+}
+
+void GemTrackDir::Poll(){
+    TrackDir::Poll();
+    if(mSmasherPlate) mSmasherPlate->Poll();
+}
+
+void GemTrackDir::SetPitch(float pitch){
+    if(TheLoadMgr.EditMode() || mTrackPitch != pitch){
+        mTrackPitch = pitch;
+        Hmx::Matrix3 mtx;
+        Vector3 v;
+        MakeEuler(mRotater->LocalXfm().m, v);
+        v.x = pitch * DEG2RAD;
+        MakeRotMatrix(v, mtx, true);
+        mRotater->SetLocalRot(mtx);
+        mStreakMeter->SetPitch(pitch + 90.0f + mStreakMeterTilt);
+        // Clamp(5.0f, 2.0f, -(pitch + 30.0f));
+        RndGroup* grp = Find<RndGroup>("streak.grp", true);
+        float sined = std::sin((-pitch + 30.0f) * DEG2RAD);
+        Vector3 v58(grp->mLocalXfm.v);
+        v58.y = -mStreakMeterOffset / sined;
+        grp->SetLocalPos(v58);
+    }
+}
+
+void GemTrackDir::SetFade(float f1, float f2){
+    float frange = f1 + f2;
+    if(mTrackEnv){
+        RndPropAnim* anim = Find<RndPropAnim>("intro_fade.anim", true);
+        anim->SetFrame(10.0f, 1.0f);
+        mTrackEnv->SetFadeRange(f1, frange);
+        anim->SetKey(10.0f);
+    }
+    if(GetCam()){
+        GetCam()->SetFrustum(GetCam()->mNearPlane, frange, GetCam()->mYFov, 1.0f);
+    }
+}
+
+void GemTrackDir::SetFOV(float fov){
+    RndCam* cam = GetCam();
+    if(cam){
+        cam->SetFrustum(cam->mNearPlane, cam->mFarPlane, fov * DEG2RAD, 1.0f);
+    }
+}
+
+void GemTrackDir::SetCamPos(float x, float y, float z){
+    if(GetCam()){
+        GetCam()->SetLocalPos(x, y, z);
+    }
+}
+
+void GemTrackDir::UpdateSurfaceTexture(){
+    if(mSurfaceMat && mSurfaceTexture){
+        mSurfaceMat->SetDiffuseTex(mSurfaceTexture);
+    }
+}
+
+void GemTrackDir::OnUpdateFx(int fx){
+    delete unk600;
+    if(mEffectSelector && (unk10 == 2 || unk10 == 0)){
+        mEffectSelector->SetShowing(true);
+        for(int i = 0; i < 5; i++){
+            BandButton* btn = mEffectSelector->Find<BandButton>(MakeString("guitar_fx_%1d.btn", i), false);
+            if(btn) btn->SetState((UIComponent::State)(i == fx));
+        }
+        static Message hide("set_showing", 0);
+        unk600 = new MessageTask(mEffectSelector, hide);
+        TheTaskMgr.Start(unk600, kTaskUISeconds, 1.0f);
+    }
+}
+
+void GemTrackDir::PlayIntro(){
+    mResetTrig->Trigger();
+    BandTrack::PlayIntro();
+    if(!BandTrack::mParent || (!BandTrack::mParent->PlayerDisconnected() && !BandTrack::mParent->FailedAtStart())){
+        bool b2 = false;
+        if(BandTrack::mParent){
+            if(!BandTrack::mParent->InGameMode(h2h)) b2 = true;
+        }
+        float f1;
+        if(b2) f1 = mTrackIdx / 4.0f + 0.05f;
+        else f1 = 0.55f;
+
+        unk624 = new MessageTask(mIntroTrig, trigger_msg);
+        TheTaskMgr.Start(unk624, kTaskUISeconds, f1);
+    }
+    if(BandTrack::mParent) BandTrack::mParent->PlayKeyIntros();
+}
+
+void GemTrackDir::TrackReset(){
+    UpdateSurfaceTexture();
+    ClearAllWidgets();
+    if(BandTrack::mParent) BandTrack::mParent->RebuildBeats();
+    ResetSmashers(true);
+    if(BandTrack::mParent) BandTrack::mParent->UpdateGems();
+    RndPropAnim* anim = Find<RndPropAnim>("instrument_setup.anim", false);
+    if(anim) anim->SetFrame(unk10, 1.0f);
+    ResetEffectSelector();
+    if(!BandTrack::mParent || !BandTrack::mParent->FailedAtStart()){
+        EnablePlayer();
+    }
+    mKickPassCounter = 0;
+    unk494 = 0;
+}
+
+void GemTrackDir::SetupSmasherPlate(){
+    if(mSmasherPlate) MILO_FAIL("Trying to acquire a new smasher plate when we already have one!");
+    GemTrackResourceManager* mgr = MyTrackPanelDir()->GetGemTrackResourceManager();
+    if(!mgr) MILO_WARN("GemTrackResourceManager not available!");
+    else {
+        mSmasherPlate = mgr->GetFreeSmasherPlate((TrackInstrument)unk10);
+        if(mSmasherPlate){
+            RndGroup* smashergrp = Find<RndGroup>("smashers.grp", true);
+            RndGroup* keygrp = Find<RndGroup>("key_shift_stationary_middle.grp", true);
+            if(unk10 == 7) keygrp->AddObject(mSmasherPlate, 0);
+            else smashergrp->AddObject(mSmasherPlate, 0);
+            if(!TheLoadMgr.EditMode() || IsProxy()){
+                RndGroup* grptoadd = unk10 == 7 ? Find<RndGroup>("key_shift_stationary_front.grp", true) : Find<RndGroup>("smasher_fx.grp", true);
+                RndGroup* after = mSmasherPlate->Find<RndGroup>("after_gems.grp", false);
+                if(after) after->AddObject(grptoadd, 0);
+                RndGroup* keysback = Find<RndGroup>("key_shift_stationary_back.grp", true);
+                RndGroup* keylanes = mSmasherPlate->Find<RndGroup>("key_lanes.grp", false);
+                if(keylanes) keysback->AddObject(keylanes, 0);
+                RndGroup* afterhide = mSmasherPlate->Find<RndGroup>("after_hide.grp", false);
+                if(afterhide) afterhide->SetShowing(false);
+            }
+            if(unk10 == 7){
+                unk654 = mSmasherPlate->Find<RndAnimatable>("shift.anim", true);
+                unk680.clear();
+                unk688.clear();
+                unk690.clear();
+                DataArray* proparr = mSmasherPlate->Property(smasher_list, true)->Array(0);
+                for(int i = 0; i < proparr->Size(); i++){
+                    RndDir* curdir = proparr->Obj<RndDir>(i);
+                    unk680.push_back(curdir);
+                    unk688.push_back(curdir->Find<EventTrigger>("show.trig", true));
+                    unk690.push_back(curdir->Find<EventTrigger>("hide.trig", true));
+                }
+                SetupKeyShifting(mSmasherPlate);
+            }
+            mSmasherPlate->HandleType(reset_msg);
+        }
+    }
+}
+
+void GemTrackDir::ReleaseSmasherPlate(){
+    if(mSmasherPlate){
+        GemTrackResourceManager* mgr = MyTrackPanelDir()->GetGemTrackResourceManager();
+        if(!mgr) MILO_WARN("GemTrackResourceManager not available!");
+        else {
+            RndGroup* smashergrp = Find<RndGroup>("smashers.grp", true);
+            RndGroup* keygrp = Find<RndGroup>("key_shift_stationary_middle.grp", true);
+            if(!TheLoadMgr.EditMode() || IsProxy()){
+                RndGroup* smashgrp = Find<RndGroup>("smasher_fx.grp", true);
+                RndGroup* keyfrontgrp = Find<RndGroup>("key_shift_stationary_front.grp", true);
+                RndGroup* after = mSmasherPlate->Find<RndGroup>("after_gems.grp", false);
+                if(after){
+                    smashgrp->RemoveObject(after);
+                    keyfrontgrp->RemoveObject(after);
+                }
+                RndGroup* keysback = Find<RndGroup>("key_shift_stationary_back.grp", true);
+                RndGroup* keylanes = mSmasherPlate->Find<RndGroup>("key_lanes.grp", false);
+                if(keylanes) keysback->RemoveObject(keylanes);
+            }
+            smashergrp->RemoveObject(mSmasherPlate);
+            keygrp->RemoveObject(mSmasherPlate);
+            mgr->ReleaseSmasherPlate(mSmasherPlate);
+            ResetKeyShifting();
+            mSmasherPlate = 0;
+        }
+    }
+}
+
+void GemTrackDir::ResetSmashers(bool b){
+    if(BandTrack::mParent){
+        BandTrack::mParent->ResetSmashers(reset_particles_msg);
+    }
+    mKickDrummerTrig->BasicReset();
+    mKickDrummerResetTrig->Trigger();
+    if(mFingerShape) mFingerShape->Reset(true);
+}
+
+void GemTrackDir::ResetEffectSelector(){
+    if(mEffectSelector){
+        mEffectSelector->SetShowing(false);
+        if(!TheLoadMgr.EditMode()){
+            DataArray* cfg = SystemConfig("track_graphics", "effects");
+            DataArray* instarr = cfg->FindArray(mInstrument, false);
+            if(instarr){
+                for(int i = 0; i < 5; i++){
+                    BandButton* btn = mEffectSelector->Find<BandButton>(MakeString("guitar_fx_%1d.btn", i), true);
+                    btn->SetTextToken(instarr->Sym(i + 1));
+                }
+            }
+        }
+    }
+}
+
+void GemTrackDir::SetupInstrument(){
+    RndPropAnim* anim = Find<RndPropAnim>("instrument_setup.anim", false);
+    if(anim){
+        if(mInstrument == "bass") anim->SetFrame(0, 1.0f);
+        else if(mInstrument == "drum") anim->SetFrame(1.0f, 1.0f);
+        else if(mInstrument == "guitar" || mInstrument == "keys") anim->SetFrame(2.0f, 1.0f);
+        else if(mInstrument == "real_keys") anim->SetFrame(7.0f, 1.0f);
+        else if(mInstrument == "real_guitar" || mInstrument == "real_bass") anim->SetFrame(5.0f, 1.0f);
+        else MILO_ASSERT(0, 0x35F);
+    }
+}
+
+bool GemTrackDir::IsActiveInSession() const { return mInUse; }
+
+void GemTrackDir::GameWon(){
+    Find<EventTrigger>("win_retract.trig", true)->Trigger();
+    BandTrack::GameWon();
+}
+
+void GemTrackDir::Extend(bool b){
+    Reset();
+    RndGroup* grp = Find<RndGroup>("intro_anim.grp", false);
+    if(grp){
+        if(b) grp->SetFrame(grp->EndFrame(), 1.0f);
+        else grp->Animate(grp->StartFrame(), grp->EndFrame(), grp->Units(), 0, 0);
+    }
+    TrackWidget* widget = Find<TrackWidget>("guitar_solo_mask.wid", false);
+    if(widget) widget->Clear();
+}
+
+void GemTrackDir::Retract(bool b){
+    BandTrack::Retract(b);
+    if(unk624) delete unk624;
+    if(!b){
+        unk60c = new MessageTask(this, clear_all_msg);
+        TheTaskMgr.Start(unk60c, kTaskSeconds, 1.0f);
+    }
+    else {
+        RndGroup* grp = Find<RndGroup>("intro_anim.grp", false);
+        if(grp) grp->SetFrame(grp->StartFrame(), 1.0f);
+    }
+    if(mEffectSelector) mEffectSelector->SetShowing(false);
 }
 
 #pragma push

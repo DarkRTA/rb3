@@ -55,6 +55,10 @@ public:
         mAmbientFogOwner->mFogStart = start;
         mAmbientFogOwner->mFogEnd = end;
     }
+    void SetFadeRange(float start, float end){
+        mFadeStart = start;
+        mFadeEnd = end;
+    }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
