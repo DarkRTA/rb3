@@ -976,6 +976,9 @@ system/bandobj/BandCrowdMeter.cpp:
 system/bandobj/BandHighlight.cpp:
 	.text       start:0x803A8A44 end:0x803A9C80
 
+system/bandobj/BandFaceDeform.cpp:
+	.text       start:0x803A9C80 end:0x803ABC68
+
 system/bandobj/BandLabel.cpp:
 	.text       start:0x803B0390 end:0x803B1FA8
 

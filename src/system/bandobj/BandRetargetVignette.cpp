@@ -27,7 +27,7 @@ void BandRetargetVignette::Poll(){
         for(std::list<String>::iterator it = mEffectors.begin(); it != mEffectors.end(); ++it){
             const char* cur = it->c_str();
             if(strncmp(cur, "player", 6) == 0 && strlen(cur) == 7){
-                BandCharacter* bchar = TheBandWardrobe->FindTarget(cur, TheBandWardrobe->unk34);
+                BandCharacter* bchar = TheBandWardrobe->FindTarget(cur, TheBandWardrobe->mVignetteNames);
                 if(bchar) bchar->Poll();
                 else MILO_NOTIFY_ONCE("%s has NULL for %s", PathName(this), cur);
             }
@@ -50,7 +50,7 @@ void BandRetargetVignette::ListPollChildren(std::list<RndPollable*>& polls) cons
 void BandRetargetVignette::EnterDir() const {
     for(int i = 0; i < 4; i++){
         BandCharacter* bchar = TheBandWardrobe->GetCharacter(i);
-        Symbol name = TheBandWardrobe->unk34.names[i];
+        Symbol name = TheBandWardrobe->mVignetteNames.names[i];
         for(const char** ptr = sIkfs; *ptr != 0; ptr++){
             BandIKEffector* ik = bchar->Find<BandIKEffector>(*ptr, false);
             if(ik){
