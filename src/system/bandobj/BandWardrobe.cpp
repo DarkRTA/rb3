@@ -106,7 +106,7 @@ int BandWardrobe::TargetNames::FindTarget(Symbol s) const {
 
 void BandWardrobe::Init(){ Register(); }
 
-BandWardrobe::BandWardrobe() : unk8(0), unk14(0), unk20(this, 0), mCurNames(&unk54), mVenueDir(0), mGenre(gGenres[0]), mTempo("medium"), unk90(this, 0), mShotSetPlayMode(1), mPlayShot5(0), mDemandLoad("") {
+BandWardrobe::BandWardrobe() : unk8(0), unk14(0), unk20(this, 0), mCurNames(&mVenueNames), mVenueDir(0), mGenre(gGenres[0]), mTempo("medium"), mModeSink(this, 0), mShotSetPlayMode(1), mPlayShot5(0), mDemandLoad("") {
     static DataNode& bandwardrobe = DataVariable("bandwardrobe");
     if(TheBandWardrobe) MILO_WARN("Trying to make > 1 BandWardrobe, which should be single");
     bandwardrobe = DataNode(this);
@@ -146,7 +146,7 @@ void BandWardrobe::SetDir(ObjectDir* dir){
 
 void BandWardrobe::SetVenueDir(ObjectDir* dir){
     static const char* genders[2] = { "male", "female" };
-    mCurNames = &unk54;
+    mCurNames = &mVenueNames;
     SetDir(dir);
     SyncPlayMode();
     SetContexts("venue");
@@ -222,7 +222,7 @@ void BandWardrobe::SetPlayMode(Symbol s, BandCamShot* shot){
 }
 
 void BandWardrobe::SyncPlayMode(){
-    if(unk90) unk90->Handle(sync_play_mode_msg, true);
+    if(mModeSink) mModeSink->Handle(sync_play_mode_msg, true);
 }
 
 void BandWardrobe::SyncInterestObjects(){
@@ -263,7 +263,7 @@ bool BandWardrobe::AllCharsLoaded(){
 bool BandWardrobe::DircutRecurse(BandCamShot* shot, int i){
     for(ObjVector<BandCamShot::Target>::iterator it = shot->mTargets.begin(); it != shot->mTargets.end(); ++it){
         if(!it->mAnimGroup.Null()){
-            BandCharacter* bc = FindTarget(it->mTarget, unk54);
+            BandCharacter* bc = FindTarget(it->mTarget, mVenueNames);
             if(bc){
                 if(!AddDircut(bc, shot, it->mAnimGroup, i)) return false;
             }
@@ -288,7 +288,7 @@ void BandWardrobe::SendMessage(Symbol s1, Symbol s2, bool b){
     static Message msg("");
     if(s1 == "mic") s1 = "vocal";
     for(int i = 0; i < 4; i++){
-        if(strstr(unk54.names[i].Str(), s1.Str())){
+        if(strstr(mVenueNames.names[i].Str(), s1.Str())){
             msg.SetType(s2);
             if(b) mTargets[i]->HandleType(msg);
             else mTargets[i]->Handle(msg, true);
@@ -314,7 +314,7 @@ bool BandWardrobe::ValidGenreGender(CamShot* shot){
         instsym = MakeString("player_%s0", instsym);
         int shotflags = GetShotFlags(shot);
         int genderflags = 0;
-        BandCharacter* bc = FindTarget(instsym, unk54);
+        BandCharacter* bc = FindTarget(instsym, mVenueNames);
         if(bc) genderflags = GetGenreGenderFlags(mGenre, bc->mGender);
         return (shotflags & genderflags) & 0xFF;
     }
@@ -682,13 +682,13 @@ DataNode BandWardrobe::OnEnterCloset(DataArray* da){
     if(dir){
         int i3 = da->Int(3);
         if(i3 != -1){
-            mCurNames = &unk44;
+            mCurNames = &mClosetNames;
             SetContexts("closet");
             CharDriver* driver = mTargets[i3]->GetDriver();
             if(driver){
                 driver->SetClips(dir->Find<ObjectDir>("clips", false));
                 for(int i = 0; i < 4; i++){
-                    unk44.names[i] = i == i3 ? "closet_character" : "";
+                    mClosetNames.names[i] = i == i3 ? "closet_character" : "";
                 }
                 SetDir(dir);
                 for(int i = 0; i < 4; i++){
@@ -729,7 +729,7 @@ DataNode BandWardrobe::OnListVenueAnimGroups(DataArray* da){
     BandCamShot* shot = da->Obj<BandCamShot>(3);
     StartVenueShot(shot);
     Symbol sym = da->Sym(2);
-    BandCharacter* bchar = FindTarget(sym, unk54);
+    BandCharacter* bchar = FindTarget(sym, mVenueNames);
     if(bchar){
         return bchar->ListAnimGroups(GetShotFlags(shot));      
     }

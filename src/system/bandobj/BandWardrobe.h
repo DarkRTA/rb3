@@ -72,6 +72,8 @@ public:
     }
     bool DemandLoadSym() const { return !mDemandLoad.Null(); }
     bool PlayShot5() const { return mPlayShot5; }
+    TargetNames& VenueNames(){ return mVenueNames; }
+    void SetModeSink(Hmx::Object* o){ mModeSink = o; }
 
     DataNode GetUserTrack(int);
     DataNode OnFindTarget(DataArray*);
@@ -102,9 +104,9 @@ public:
     ObjDirPtr<ObjectDir> unk14; // 0x14
     ObjPtr<FileMerger, ObjectDir> unk20; // 0x20
     std::list<Symbol> unk2c; // 0x2c
-    TargetNames unk34; // 0x34
-    TargetNames unk44; // 0x44
-    TargetNames unk54; // 0x54
+    TargetNames mVignetteNames; // 0x34
+    TargetNames mClosetNames; // 0x44
+    TargetNames mVenueNames; // 0x54
     TargetNames* mCurNames; // 0x64
     BandCharacter* mTargets[4]; // 0x68
     Symbol unk78; // 0x78
@@ -113,7 +115,7 @@ public:
     Symbol mGenre; // 0x84
     Symbol mTempo; // 0x88
     Symbol mVocalGender; // 0x8c
-    ObjPtr<Hmx::Object, ObjectDir> unk90; // 0x90
+    ObjPtr<Hmx::Object, ObjectDir> mModeSink; // 0x90
     bool mShotSetPlayMode; // 0x9c
     bool mPlayShot5; // 0x9d
     Symbol mDemandLoad; // 0xa0
