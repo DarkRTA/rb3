@@ -306,4 +306,5 @@
 
 #ifdef HX_WII
 #  define _STLP_USE_SIZED_VECTOR
+#  define _STLP_INTERNAL_BVECTOR_H /* disable vector<bool> specialization by pretending its header is included */
 #endif
