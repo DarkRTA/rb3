@@ -2,7 +2,7 @@
 #define UTL_SYMBOL_H
 #include <string.h>
 
-#define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(&str)
+#define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(const_cast<char**>(&str))
 
 extern const char* gNullStr;
 
