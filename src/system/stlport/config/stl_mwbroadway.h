@@ -13,6 +13,10 @@
 
 #define _STLP_BIG_ENDIAN
 
+// No -l or -f suffix versions of math.h functions
+#define _STLP_NO_VENDOR_MATH_L 1
+#define _STLP_NO_VENDOR_MATH_F 1
+
 #undef _STLP_NO_UNCAUGHT_EXCEPT_SUPPORT
 #undef _STLP_NO_UNEXPECTED_EXCEPT_SUPPORT
 
