@@ -1,5 +1,8 @@
 #include "bandobj/GemTrackDir.h"
+#include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
+
+INIT_REVS(GemTrackDir)
 
 #pragma push
 #pragma dont_inline on
@@ -43,13 +46,149 @@ GemTrackDir::~GemTrackDir(){
 }
 #pragma pop
 
+BEGIN_COPYS(GemTrackDir)
+    COPY_SUPERCLASS(TrackDir)
+    CREATE_COPY(GemTrackDir)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mNumTracks)
+        COPY_MEMBER(mSurfaceTexture)
+        COPY_MEMBER(mSurfaceMesh)
+        COPY_MEMBER(mEffectSelector)
+        COPY_MEMBER(mSurfaceMat)
+        COPY_MEMBER(mTrackEnv)
+        COPY_MEMBER(mTrackMissGemsEnv)
+        COPY_MEMBER(mGameCam)
+        COPY_MEMBER(mPeakStateOnTrig)
+        COPY_MEMBER(mPeakStateOffTrig)
+        COPY_MEMBER(mBassSuperStreakOnTrig)
+        COPY_MEMBER(mBassSuperStreakOffTrig)
+        COPY_MEMBER(mKickDrummerTrig)
+        COPY_MEMBER(mKickDrummerResetTrig)
+        COPY_MEMBER(mSpotlightPhraseSuccessTrig)
+        COPY_MEMBER(mGemMashAnims)
+        COPY_MEMBER(mDrumMashAnims)
+        COPY_MEMBER(mFillLaneAnims)
+        COPY_MEMBER(mRGMashAnims)
+        COPY_MEMBER(mFillHitTrigs)
+        COPY_MEMBER(mDrumFillResetTrig)
+        COPY_MEMBER(mDrumMash2ndPassActivateAnim)
+        COPY_MEMBER(mDrumMashHitAnimGrp)
+        COPY_MEMBER(mFillColorsGrp)
+        COPY_MEMBER(mLodAnim)
+        COPY_MEMBER(mGlowWidgets)
+        COPY_MEMBER(mStreakMeterOffset)
+        COPY_MEMBER(mStreakMeterTilt)
+        COPY_MEMBER(mFretPosOffsets)
+        COPY_MEMBER(mChordLabelPosOffset)
+        CopyTrack(c);
+    END_COPYING_MEMBERS
+END_COPYS
+
 SAVE_OBJ(GemTrackDir, 0xBC)
 
 DECOMP_FORCEACTIVE(GemTrackDir, "ObjPtr_p.h", "f.Owner()", "")
 
+BEGIN_LOADS(GemTrackDir)
+    PreLoad(bs);
+    PostLoad(bs);
+END_LOADS
+
 void GemTrackDir::PreLoad(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(0xC, 0);
+    if(gRev < 9){
+        int i68 = 0;
+        bs >> i68;
+        bs >> mEffectSelector;
+        if(gRev < 1){
+            if(gLoadingProxyFromDisk){
+                ObjPtr<RndTex, ObjectDir> tex(0, 0);
+                bs >> tex;
+            }
+            else bs >> mSurfaceTexture;
+        }
+    }
+    if(!IsProxy()){
+        if(gRev >= 9) bs >> mEffectSelector;
+        bs >> mSurfaceMesh;
+        bs >> mSurfaceMat;
+        bs >> mTrackEnv;
+        bs >> mGameCam;
+        bs >> mBassSuperStreakOnTrig;
+        bs >> mBassSuperStreakOffTrig;
+        bs >> mKickDrummerTrig;
+        bs >> mSpotlightPhraseSuccessTrig;
+        if(gRev < 0xC){
+            ObjPtr<EventTrigger, ObjectDir> trig(this, 0);
+            bs >> trig;
+        }
+        bs >> mDrumFillResetTrig;
+        bs >> mDrumMash2ndPassActivateAnim;
+        bs >> mDrumMashHitAnimGrp;
+        bs >> mFillColorsGrp;
+        bs >> mLodAnim;
+        bs >> mRotater;
+        bs >> mGlowWidgets;
+
+        for(int i = 0; i < 5; i++){
+            bs >> mGemMashAnims[i];
+        }
+
+        if(gRev >= 6 && gRev <= 10){
+            ObjPtr<RndAnimatable, ObjectDir> anim(this, 0);
+            bs >> anim;
+        }
+
+        for(int i = 1; i < 5; i++){
+            bs >> mDrumMashAnims[i];
+        }
+        for(int i = 0; i < 3; i++){
+            bs >> mFillHitTrigs[i];
+        }
+        if(gRev >= 11){
+            for(int i = 0; i < 6; i++){
+                bs >> mRGMashAnims[i];
+            }
+        }
+        if(gRev >= 2) bs >> mStreakMeterOffset;
+        if(gRev >= 3) bs >> mStreakMeterTilt;
+        if(gRev >= 4){
+            int oldsize = mFretPosOffsets.size();
+            bs >> mFretPosOffsets;
+            while(mFretPosOffsets.size() < oldsize){
+                mFretPosOffsets.push_back(0);
+            }
+            while(mFretPosOffsets.size() > oldsize){
+                mFretPosOffsets.pop_back();
+            }
+        }
+        if(gRev >= 5) bs >> mKickDrummerResetTrig;
+        if(gRev >= 7) bs >> mChordLabelPosOffset;
+        if(gRev >= 8){
+            if(gRev < 10){
+                ObjPtr<EventTrigger, ObjectDir> trig(this, 0);
+                bs >> trig;
+                bs >> trig;
+            }
+            bs >> mPeakStateOnTrig;
+            bs >> mPeakStateOffTrig;
+        }
+        if(gRev >= 12){
+            for(int i = 1; i < 5; i++){
+                bs >> mFillLaneAnims[i];
+            }
+        }
+    }
+    LoadTrack(bs, IsProxy(), gLoadingProxyFromDisk, false);
+    PushRev(packRevs(gAltRev, gRev), this);
+    TrackDir::PreLoad(bs);
+}
+
+void GemTrackDir::PostLoad(BinStream& bs){
+    TrackDir::PostLoad(bs);
+    int revs = PopRev(this);
+    gRev = getHmxRev(revs);
+    gAltRev = getAltRev(revs);
 }
 
 void GemTrackDir::SyncFingerFeedback(){
