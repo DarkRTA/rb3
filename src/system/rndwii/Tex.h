@@ -1,7 +1,5 @@
-#ifndef RNDWII_TEX_H
-#define RNDWII_TEX_H
+#pragma once
 
-#include "obj/Object.h"
 #include "rndobj/Tex.h"
 #include "utl/PoolAlloc.h"
 
@@ -13,8 +11,16 @@ public:
     OBJ_SET_TYPE(WiiTex)
     NEW_OBJ(WiiTex)
 
-    void* operator new(unsigned long i) { return _PoolAlloc(i, i, FastPool); }
-    void operator delete(void* obj) {_PoolFree(0xd0, FastPool, obj); }
-};
+    void PresyncBitmap();
+    void DeleteSurface();
+    void CopyFromFB(int, int, int, int, bool, bool);
 
-#endif // RNDWII_TEX_H
+    u8 pad[32];
+    void* mImageData; // 0x84
+    GXTexFmt mFormat; // 0x88
+
+    static bool bComposingOutfitTexture;
+
+    void* operator new(unsigned long i) { return _PoolAlloc(i, i, FastPool); }
+    void operator delete(void* obj) { _PoolFree(0xd0, FastPool, obj); }
+};

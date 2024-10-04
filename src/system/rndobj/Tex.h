@@ -10,17 +10,17 @@
 class RndTex : public Hmx::Object {
 public:
     enum Type {
-        Regular = 1,
-        Rendered = 2,
-        Movie = 4,
-        BackBuffer = 8,
-        FrontBuffer = 0x18,
-        RenderedNoZ = 0x22,
-        ShadowMap = 0x42,
-        DepthVolumeMap = 0xA2,
-        DensityMap = 0x122,
-        Scratch = 0x200,
-        DeviceTexture = 0x1000
+        kRegular = 1,
+        kRendered = 2,
+        kMovie = 4,
+        kBackBuffer = 8,
+        kFrontBuffer = 0x18,
+        kRenderedNoZ = 0x22,
+        kShadowMap = 0x42,
+        kDepthVolumeMap = 0xA2,
+        kDensityMap = 0x122,
+        kScratch = 0x200,
+        kDeviceTexture = 0x1000
     };
 
     RndTex();
@@ -60,7 +60,7 @@ public:
 
     static const char* CheckSize(int, int, int, int, RndTex::Type, bool);
     static void PlatformBppOrder(const char*, int&, int&, bool);
-    inline bool IsRenderTarget() { return mType & Rendered; }
+    inline bool IsRenderTarget() { return mType & kRendered; }
     int Width() const { return mWidth; }
     int Height() const { return mHeight; }
     Type GetType() const { return mType; }

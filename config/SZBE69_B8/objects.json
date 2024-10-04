@@ -1230,7 +1230,7 @@
             "system/rndwii/PostProc.cpp": "MISSING",
             "system/rndwii/Rnd.cpp": "NonMatching",
             "system/rndwii/SplitPostProc.cpp": "MISSING",
-            "system/rndwii/Tex.cpp": "MISSING",
+            "system/rndwii/Tex.cpp": "NonMatching",
             "system/rndwii/TexRenderer.cpp": "MISSING",
 
             "system/synth/ADSR.cpp": "Matching",

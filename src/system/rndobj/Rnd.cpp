@@ -436,7 +436,7 @@ DataNode Rnd::OnShowOverlay(const DataArray* da){
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleHeap(const DataArray* da){
+DataNode Rnd::OnToggleHeap(const DataArray*){
     int num = MemNumHeaps();
     RndOverlay* o = mHeapOverlay;
     if(!o->mShowing){
@@ -480,7 +480,7 @@ DataNode Rnd::OnToggleOverlay(const DataArray* da){
     return DataNode(o->mShowing);
 }
 
-DataNode Rnd::OnToggleOverlayPosition(const DataArray* da){
+DataNode Rnd::OnToggleOverlayPosition(const DataArray*){
     RndOverlay::TogglePosition();
     return DataNode(0);
 }
@@ -501,14 +501,14 @@ void Rnd::ResetProcCounter(){
 bool Rnd::GetEvenOddDisabled() const { return mProcCounter.mEvenOddDisabled; }
 void Rnd::SetEvenOddDisabled(bool b){ mProcCounter.SetEvenOddDisabled(b); }
 
-String UniqueFileName(const char* cc){
+String UniqueFileName(const char*){
 
 }
 
 void Rnd::ScreenDump(const char* cc){
     RndTex* tex = Hmx::Object::New<RndTex>();
     RndBitmap bmap;
-    tex->SetBitmap(0, 0, 0, RndTex::FrontBuffer, 0, 0);
+    tex->SetBitmap(0, 0, 0, RndTex::kFrontBuffer, 0, 0);
     tex->LockBitmap(bmap, true);
     FileStream fs(cc, FileStream::kWrite, true);
     if(fs.Fail()) MILO_WARN("Screenshot failed; could not open destination file (%s).", cc);
@@ -520,34 +520,34 @@ void Rnd::ScreenDumpUnique(const char* cc){
     ScreenDump(UniqueFileName(cc).c_str());
 }
 
-DataNode Rnd::OnShowConsole(const DataArray* da){
+DataNode Rnd::OnShowConsole(const DataArray*){
     ShowConsole(true);
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleTimers(const DataArray* da){
+DataNode Rnd::OnToggleTimers(const DataArray*){
     SetShowTimers(unkec || !mTimersOverlay->mShowing, false);
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleTimersVerbose(const DataArray* da){
+DataNode Rnd::OnToggleTimersVerbose(const DataArray*){
     SetShowTimers(unkec == 0, unkec == 0);
     return DataNode(0);
 }
 
-DataNode Rnd::OnClearColorR(const DataArray* da){
+DataNode Rnd::OnClearColorR(const DataArray*){
     return DataNode(mClearColor.red);
 }
 
-DataNode Rnd::OnClearColorG(const DataArray* da){
+DataNode Rnd::OnClearColorG(const DataArray*){
     return DataNode(mClearColor.green);
 }
 
-DataNode Rnd::OnClearColorB(const DataArray* da){
+DataNode Rnd::OnClearColorB(const DataArray*){
     return DataNode(mClearColor.blue);
 }
 
-DataNode Rnd::OnClearColorPacked(const DataArray* da){
+DataNode Rnd::OnClearColorPacked(const DataArray*){
     return DataNode((int)mClearColor.Pack());
 }
 

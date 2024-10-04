@@ -43,6 +43,7 @@ extern GXRenderModeObj GXEurgb60Hz480ProgSoft;
 
 void GXSetTexCopySrc(u16 x, u16 y, u16 w, u16 h);
 void GXSetTexCopyDst(u16 w, u16 h, GXTexFmt fmt, GXBool mipmap);
+void GXGetTexBufferSize(u16 w, u16 h, GXTexFmt fmt, u32, u32);
 
 void GXSetCopyClamp(GXCopyClamp clamp);
 
