@@ -1056,7 +1056,7 @@ rb3/streakmeter.cpp:
 rb3/overdrivemeter.cpp:
 	.text       start:0x804260A4 end:0x80426FDC
 
-rb3/gemtrackdir.cpp:
+system/bandobj/GemTrackDir.cpp:
 	.text       start:0x80426FDC end:0x80430F2C
 
 system/bandobj/GemTrackResourceManager.cpp:

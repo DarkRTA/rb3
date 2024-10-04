@@ -17,7 +17,11 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
     mKickDrummerResetTrig(this, 0), mSpotlightPhraseSuccessTrig(this, 0), mDrumFillResetTrig(this, 0), mDrumMash2ndPassActivateAnim(this, 0), mDrumMashHitAnimGrp(this, 0),
     mFillColorsGrp(this, 0), mLodAnim(this, 0), mSmasherPlate(this, 0), mGlowWidgets(this, kObjListNoNull), unk600(this, 0), unk60c(this, 0), unk618(this, 0),
     unk624(this, 0), mGemWhiteMesh(this, 0), mMissOutofRangeRightTrig(this, 0), mMissOutofRangeLeftTrig(this, 0), unk654(this, 0), mKeysShiftAnim(this, 0), mKeysMashAnim(this, 0), mKeyRange(-1.0f), mKeyOffset(-1.0f),
-    mFingerShape(0), mChordLabelPosOffset(0), mChordShapeGen(this, 0), mArpShapePool(0), unk6e8(0), mFakeFingerShape(0), mCycleFakeFingerShapes(0), mRandomShapeFrameCount(0x96) {
+    mFingerShape(0), mChordLabelPosOffset(0), mChordShapeGen(this, 0), mArpShapePool(0), unk6e8(0)
+#ifdef MILO_DEBUG
+    , mFakeFingerShape(0), mCycleFakeFingerShapes(0), mRandomShapeFrameCount(0x96)
+#endif
+{
     ObjPtr<RndPropAnim, ObjectDir> propAnim(this, 0);
     ObjPtr<EventTrigger, ObjectDir> trig(this, 0);
     for(int i = 0; i < 6; i++){
@@ -34,6 +38,7 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
     for(int i = 0; i < 5; i++){
         mFretPosOffsets.push_back(0);
     }
+#ifdef MILO_DEBUG
     DataArray* cfg = SystemConfig();
     DataArray* arr = cfg->FindArray("fake_finger_shape", false);
     if(arr){
@@ -43,6 +48,7 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
         mFakeFingerShape = true;
         if(arr->Size() > 7) mCycleFakeFingerShapes = arr->Int(7);
     }
+#endif
 }
 
 GemTrackDir::~GemTrackDir(){
@@ -91,7 +97,11 @@ END_COPYS
 
 SAVE_OBJ(GemTrackDir, 0xBC)
 
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(GemTrackDir, "ObjPtr_p.h", "f.Owner()", "")
+#else
+DECOMP_FORCEACTIVE(GemTrackDir, "")
+#endif
 
 BEGIN_LOADS(GemTrackDir)
     PreLoad(bs);
@@ -746,6 +756,7 @@ float GemTrackDir::GetKeyRange(){ return mKeyRange; }
 float GemTrackDir::GetKeyOffset(){ return mKeyOffset; }
 
 void GemTrackDir::UpdateFingerFeedback(const RGState& state){
+#ifdef MILO_DEBUG
     static int count;
     const RGState& touse = mFakeFingerShape ? mRGState : state;
     if(mCycleFakeFingerShapes){
@@ -758,6 +769,9 @@ void GemTrackDir::UpdateFingerFeedback(const RGState& state){
         }
     }
     if(mFingerShape) mFingerShape->Update(touse, true, false);
+#else    
+    if(mFingerShape) mFingerShape->Update(state, true, false);
+#endif
 }
 
 void GemTrackDir::UpdateLeftyFlip(bool b){
@@ -805,7 +819,9 @@ BEGIN_HANDLERS(GemTrackDir)
     HANDLE(draw_sample_chord, OnDrawSampleChord)
     HANDLE_ACTION(set_key_range, SetDisplayRange(_msg->Float(2)))
     HANDLE_ACTION(set_key_offset, SetDisplayOffset(_msg->Float(2), false))
+#ifdef MILO_DEBUG
     HANDLE_EXPR(toggle_key_shifting, ToggleKeyShifting())
+#endif
     HANDLE_SUPERCLASS(BandTrack)
     HANDLE_SUPERCLASS(TrackDir)
     HANDLE_CHECK(0x7B4)
@@ -868,9 +884,11 @@ BEGIN_PROPSYNCS(GemTrackDir)
     SYNC_PROP(fret_pos_offset_4, mFretPosOffsets[4])
     SYNC_PROP(chord_label_pos_offset, mChordLabelPosOffset)
     SYNC_PROP(gem_track_dir_id, mGemTrackDirID)
+#ifdef MILO_DEBUG
     SYNC_PROP(fake_finger_shape, mFakeFingerShape)
     SYNC_PROP(cycle_fake_finger_shapes, mCycleFakeFingerShapes)
     SYNC_PROP(random_shape_frame_count, mRandomShapeFrameCount)
+#endif
     SYNC_SUPERCLASS(BandTrack)
     SYNC_SUPERCLASS(TrackDir)
 END_PROPSYNCS

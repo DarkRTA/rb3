@@ -107,7 +107,9 @@ public:
     Transform unk308;
     Transform unk338;
     float unk368;
+#ifdef MILO_DEBUG
     TrackTest* mTest; // 0x36c
+#endif
 };
 
 #endif // TRACK_TRACKDIR_H

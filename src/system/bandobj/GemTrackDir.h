@@ -169,8 +169,10 @@ public:
     std::map<unsigned int, std::pair<int, RndMesh*> > unk6cc; // 0x6cc
     ArpeggioShapePool* mArpShapePool; // 0x6e4
     bool unk6e8; // 0x6e8
+#ifdef MILO_DEBUG
     bool mFakeFingerShape; // 0x6e9
     bool mCycleFakeFingerShapes; // 0x6ea
     int mRandomShapeFrameCount; // 0x6ec
     RGState mRGState; // 0x6f0
+#endif
 };
