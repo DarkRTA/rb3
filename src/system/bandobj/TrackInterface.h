@@ -56,7 +56,7 @@ public:
     virtual void SetGemsEnabledByPlayer(){}
     virtual void UpdateGems(){}
     virtual float NextKickNoteMs() const { return 3.4028235E+38f; }
-    virtual int GetSmasher(int){ return 0; }
+    virtual Hmx::Object* GetSmasher(int){ return 0; } // TODO: this return type is almost definitely wrong, fix it
     virtual void ResetSmashers(bool){}
     virtual bool Lefty() const { return 0; }
     virtual void RebuildBeats(){}

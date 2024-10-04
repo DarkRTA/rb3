@@ -51,6 +51,7 @@ public:
     void SetPartPct(int, float, bool);
     void SetNumParts(int);
     void SyncVoxPhraseTriggers();
+    void SetPitch(float);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

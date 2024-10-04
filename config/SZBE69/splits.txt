@@ -976,6 +976,9 @@ system/bandobj/BandCrowdMeter.cpp:
 system/bandobj/BandHighlight.cpp:
 	.text       start:0x803A8A44 end:0x803A9C80
 
+system/bandobj/BandFaceDeform.cpp:
+	.text       start:0x803A9C80 end:0x803ABC68
+
 system/bandobj/BandLabel.cpp:
 	.text       start:0x803B0390 end:0x803B1FA8
 
@@ -1053,8 +1056,11 @@ rb3/streakmeter.cpp:
 rb3/overdrivemeter.cpp:
 	.text       start:0x804260A4 end:0x80426FDC
 
-rb3/gemtrackdir.cpp:
+system/bandobj/GemTrackDir.cpp:
 	.text       start:0x80426FDC end:0x80430F2C
+
+system/bandobj/GemTrackResourceManager.cpp:
+	.text       start:0x80430F2C end:0x80431DC8
 
 system/bandobj/VocalTrackDir.cpp:
 	.text       start:0x80431DC8 end:0x8043B9C0

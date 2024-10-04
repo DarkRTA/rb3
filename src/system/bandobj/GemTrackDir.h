@@ -84,7 +84,23 @@ public:
     void SetSideAngle(float);
     void Mash(int);
     void CrashFill();
-    void ToggleKeyShifting();
+    bool ToggleKeyShifting();
+    void UpdateSurfaceTexture();
+    void OnUpdateFx(int);
+    void GemPass(int, int);
+    void GemHit(int);
+    void SeeKick();
+    void KickSwing();
+    void FillMash(int);
+    void FillHit(int);
+    void ResetDrumFill();
+    void ResetCoda();
+    float GetKeyRange();
+    float GetKeyOffset();
+    void UpdateFingerFeedback(const RGState&);
+    void UpdateLeftyFlip(bool);
+    bool KeyShifting();
+    void AddChordRepImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, String);
 
     DataNode OnDrawSampleChord(DataArray*);
 
@@ -120,7 +136,7 @@ public:
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mGemMashAnims; // 0x570
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mDrumMashAnims; // 0x578
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mFillLaneAnims; // 0x580
-    std::vector<ObjPtr<RndPropAnim, ObjectDir> > mRGMashAnims; // 0x588
+    std::vector<ObjPtr<RndPropAnim, ObjectDir> > mRealGuitarMashAnims; // 0x588
     std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mDrumRollTrigs; // 0x590
     std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mTrillTrigs; // 0x598
     std::vector<ObjPtr<EventTrigger, ObjectDir> > mFillHitTrigs; // 0x5a0
@@ -141,8 +157,8 @@ public:
     ObjPtr<RndAnimatable, ObjectDir> unk654; // 0x654
     ObjPtr<RndAnimatable, ObjectDir> mKeysShiftAnim; // 0x660
     ObjPtr<RndPropAnim, ObjectDir> mKeysMashAnim; // 0x66c
-    float unk678; // 0x678
-    float unk67c; // 0x67c
+    float mKeyRange; // 0x678
+    float mKeyOffset; // 0x67c
     std::vector<RndDir*> unk680; // 0x680
     std::vector<EventTrigger*> unk688; // 0x688
     std::vector<EventTrigger*> unk690; // 0x690
@@ -154,8 +170,10 @@ public:
     std::map<unsigned int, std::pair<int, RndMesh*> > unk6cc; // 0x6cc
     ArpeggioShapePool* mArpShapePool; // 0x6e4
     bool unk6e8; // 0x6e8
+#ifdef MILO_DEBUG
     bool mFakeFingerShape; // 0x6e9
     bool mCycleFakeFingerShapes; // 0x6ea
     int mRandomShapeFrameCount; // 0x6ec
-    RGState unk6f0; // 0x6f0
+    RGState mRGState; // 0x6f0
+#endif
 };

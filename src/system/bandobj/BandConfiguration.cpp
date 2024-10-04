@@ -44,7 +44,7 @@ void BandConfiguration::SyncPlayMode(){
     for(int i = 0; i < 4; i++){
         TargTransform& curtargxfm = mXfms[i].xfms[idx];
         mXfms[i].mWay->SetLocalXfm(curtargxfm.xfm);
-        BandCharacter* bchar = TheBandWardrobe->FindTarget(curtargxfm.targName, TheBandWardrobe->unk54);
+        BandCharacter* bchar = TheBandWardrobe->FindTarget(curtargxfm.targName, TheBandWardrobe->mVenueNames);
         if(bchar) bchar->Teleport(mXfms[i].mWay);
     }
 }
@@ -75,7 +75,7 @@ BEGIN_LOADS(BandConfiguration)
         bs >> mXfms[i];
     }
     if(TheBandWardrobe){
-        TheBandWardrobe->unk90 = this;
+        TheBandWardrobe->SetModeSink(this);
     }
 END_LOADS
 
@@ -98,6 +98,28 @@ BEGIN_HANDLERS(BandConfiguration)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x9F)
 END_HANDLERS
+
+DataNode BandConfiguration::OnStoreConfiguration(DataArray* da){
+    int cfgidx = ConfigIndex();
+    for(int i = 0; i < 4; i++){
+        TargTransform& curtarg = mXfms[i].xfms[cfgidx];
+        BandCharacter* bchar = TheBandWardrobe->GetCharacter(i);
+        if(bchar){
+            curtarg.targName = TheBandWardrobe->VenueNames().names[i];
+            curtarg.xfm = bchar->LocalXfm();
+        }
+    }
+    SyncPlayMode();
+    return 0;
+}
+
+DataNode BandConfiguration::OnReleaseConfiguration(DataArray* da){
+    for(int i = 0; i < 4; i++){
+        BandCharacter* bchar = TheBandWardrobe->GetCharacter(i);
+        if(bchar) bchar->Teleport(0);
+    }
+    return 0;
+}
 
 BEGIN_PROPSYNCS(BandConfiguration)
 END_PROPSYNCS

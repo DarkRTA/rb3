@@ -236,7 +236,7 @@ void BandTrack::SetMaxMultiplier(int mult) {
 void BandTrack::SetupPlayerIntro() {
     if (mPlayerIntro) {
         mPlayerIntro->HandleType(reset_msg);
-        if (unk10 <= 7) {
+        if (mTrackInstrument <= 7) {
             static Message setIcon = Message("set_icon", DataNode("G"));
             if (mParent) {
                 setIcon[0] = DataNode(mParent->GetTrackIcon());
@@ -262,31 +262,27 @@ void BandTrack::SetupCrowdMeter() {
 }
 
 void BandTrack::SyncInstrument() {
-    // static DebugNotifyOncer _dw; -- .bss and .sbss variable
-
     Symbol instrument = mInstrument;
     if (instrument == guitar) {
-        unk10 = 0;
+        mTrackInstrument = kInstGuitar;
     } else if (instrument == bass) {
-        unk10 = 2;
+        mTrackInstrument = kInstBass;
     } else if (instrument == drums) {
-        unk10 = 1;
+        mTrackInstrument = kInstDrum;
     } else if (instrument == vocals) {
-        unk10 = 3;
+        mTrackInstrument = kInstVocals;
     } else if (instrument == keys) {
-        unk10 = 4;
+        mTrackInstrument = kInstKeys;
     } else if (instrument == real_guitar) {
-        unk10 = 5;
+        mTrackInstrument = kInstRealGuitar;
     } else if (instrument == real_bass) {
-        unk10 = 6;
+        mTrackInstrument = kInstRealBass;
     } else if (instrument == real_keys) {
-        unk10 = 7;
+        mTrackInstrument = kInstRealKeys;
     } else {
-        // TODO: there is something weird here with _dw which needs to be impl'd, I am not
-        // sure how to do it; once that is done this function will be complete
-        TheDebug.Notify(MakeString("unexpected instrument symbol \"%s\"", instrument));
+        MILO_NOTIFY_ONCE("unexpected instrument symbol \"%s\"", instrument);
 
-        unk10 = -1;
+        mTrackInstrument = kInstNone;
     }
 }
 

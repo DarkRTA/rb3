@@ -15,7 +15,11 @@ TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mA
     mStationaryBackAfterKeyShift(this, 0), mMovingBack(this, 0), mKeyShiftMovingBack(this, 0), mKeyShiftStationaryMiddle(this, 0),
     mStationaryMiddle(this, 0), mMovingFront(this, 0), mKeyShiftMovingFront(this, 0), mKeyShiftStationaryFront(this, 0),
     mStationaryFront(this, 0), mAlwaysShowing(this, 0), mRotatorCam(this, 0), mTrack(this, 0), 
-    mTrackGems(this, 0), unk368(1.0f), mTest(new TrackTest(this)) {
+    mTrackGems(this, 0), unk368(1.0f)
+#ifdef MILO_DEBUG
+        , mTest(new TrackTest(this))
+#endif
+{
     mActiveWidgets.reserve(0x32);
     unk2d8.Reset();
     unk308.Reset();
@@ -23,7 +27,9 @@ TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mA
 }
 
 TrackDir::~TrackDir(){
+#ifdef MILO_DEBUG
     delete mTest;
+#endif
 }
 
 // fn_8053E7D4
@@ -79,8 +85,10 @@ BEGIN_COPYS(TrackDir)
         COPY_MEMBER(mBottomY)
         COPY_MEMBER(mSlots)
         COPY_MEMBER(mWarnOnResort)
+#ifdef MILO_DEBUG
         COPY_MEMBER(mTest->mWidget)
         COPY_MEMBER(mTest->mSlot)
+#endif
     END_COPYING_MEMBERS
 END_COPYS
 
@@ -122,9 +130,11 @@ void TrackDir::PostLoad(BinStream& bs){
             }
         }
         if(gRev > 4) bs >> mWarnOnResort;
+#ifdef MILO_DEBUG
         if(gRev > 3){
             bs >> mTest->mWidget >> mTest->mSlot;
         }
+#endif
     }
     for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
         it->SetTrackDir(this);
@@ -311,6 +321,8 @@ BEGIN_PROPSYNCS(TrackDir)
     SYNC_PROP(bottom_y, mBottomY)
     SYNC_PROP(slots, mSlots)
     SYNC_PROP(warn_on_resort, mWarnOnResort)
+#ifdef MILO_DEBUG
     SYNC_PROP(TrackTesting, *mTest)
+#endif
     SYNC_SUPERCLASS(PanelDir)
 END_PROPSYNCS
