@@ -2,10 +2,12 @@
 #include "bandobj/BandButton.h"
 #include "bandobj/GemTrackResourceManager.h"
 #include "obj/ObjVersion.h"
+#include "math/Rand.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
 INIT_REVS(GemTrackDir)
+bool kKeyShifting = true;
 
 #pragma push
 #pragma dont_inline on
@@ -14,7 +16,7 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
     mPeakStateOnTrig(this, 0), mPeakStateOffTrig(this, 0), mPeakStopImmediateTrig(this, 0), mBassSuperStreakOnTrig(this, 0), mBassSuperStreakOffTrig(this, 0), mBassSSOffImmediateTrig(this, 0), mKickDrummerTrig(this, 0),
     mKickDrummerResetTrig(this, 0), mSpotlightPhraseSuccessTrig(this, 0), mDrumFillResetTrig(this, 0), mDrumMash2ndPassActivateAnim(this, 0), mDrumMashHitAnimGrp(this, 0),
     mFillColorsGrp(this, 0), mLodAnim(this, 0), mSmasherPlate(this, 0), mGlowWidgets(this, kObjListNoNull), unk600(this, 0), unk60c(this, 0), unk618(this, 0),
-    unk624(this, 0), mGemWhiteMesh(this, 0), mMissOutofRangeRightTrig(this, 0), mMissOutofRangeLeftTrig(this, 0), unk654(this, 0), mKeysShiftAnim(this, 0), mKeysMashAnim(this, 0), unk678(-1.0f), unk67c(-1.0f),
+    unk624(this, 0), mGemWhiteMesh(this, 0), mMissOutofRangeRightTrig(this, 0), mMissOutofRangeLeftTrig(this, 0), unk654(this, 0), mKeysShiftAnim(this, 0), mKeysMashAnim(this, 0), mKeyRange(-1.0f), mKeyOffset(-1.0f),
     mFingerShape(0), mChordLabelPosOffset(0), mChordShapeGen(this, 0), mArpShapePool(0), unk6e8(0), mFakeFingerShape(0), mCycleFakeFingerShapes(0), mRandomShapeFrameCount(0x96) {
     ObjPtr<RndPropAnim, ObjectDir> propAnim(this, 0);
     ObjPtr<EventTrigger, ObjectDir> trig(this, 0);
@@ -36,7 +38,7 @@ GemTrackDir::GemTrackDir() : BandTrack(this), mNumTracks(1), unk488(-1), mGemTra
     DataArray* arr = cfg->FindArray("fake_finger_shape", false);
     if(arr){
         for(int i = 0; i < 6; i++){
-            unk6f0.FretDown(i, arr->Int(i + 1));
+            mRGState.FretDown(i, arr->Int(i + 1));
         }
         mFakeFingerShape = true;
         if(arr->Size() > 7) mCycleFakeFingerShapes = arr->Int(7);
@@ -702,7 +704,82 @@ void GemTrackDir::SetDisplayRange(float f){
     mSmasherPlate->SetProperty(range, f);
     mSmasherPlate->HandleType(update_range_msg);
     if(BandTrack::mParent) BandTrack::mParent->UpdateSlotXfms();
-    unk678 = f;
+    mKeyRange = f;
+}
+
+int WhiteKeyToSemitone(int whiteKey){
+    MILO_ASSERT(whiteKey > -1, 0x557);
+    int semitone = 0;
+    while(true){
+        whiteKey -= 7;
+        semitone += 12;
+        if(whiteKey == 3) return semitone + 5;
+        if(whiteKey < 3){
+            if(whiteKey == 1) return semitone + 2;
+            if(whiteKey < 1){
+                break;
+            }
+            return semitone + 4;
+        }
+        if(whiteKey == 6) return semitone + 11;
+        if(whiteKey < 6){
+            if(whiteKey < 5) return semitone + 7;
+            return semitone + 9;
+        }
+    }
+    if(whiteKey > -1) return semitone;
+    MILO_FAIL("unexpected white key %d", whiteKey);
+    return semitone;
+}
+
+float GemTrackDir::GetFretPosOffset(int idx) const {
+    float f;
+    if(idx > mFretPosOffsets.size()){
+        if(idx > 0) MILO_WARN("fret position %d is unhandled - must be in [-1,%d]", idx, mFretPosOffsets.size() - 1);
+        f = 0;
+    }
+    else f = mFretPosOffsets[idx];
+    return f;
+}
+
+float GemTrackDir::GetKeyRange(){ return mKeyRange; }
+float GemTrackDir::GetKeyOffset(){ return mKeyOffset; }
+
+void GemTrackDir::UpdateFingerFeedback(const RGState& state){
+    static int count;
+    const RGState& touse = mFakeFingerShape ? mRGState : state;
+    if(mCycleFakeFingerShapes){
+        count++;
+        if(count == mRandomShapeFrameCount){
+            for(int i = 0; i < 6; i++){
+                mRGState.FretDown(i, RandomInt(0, 5));
+            }
+            count = 0;
+        }
+    }
+    if(mFingerShape) mFingerShape->Update(touse, true, false);
+}
+
+void GemTrackDir::UpdateLeftyFlip(bool b){
+    if(mFingerShape) mFingerShape->UpdateLeftyFlip(b);
+}
+
+void GemTrackDir::KeyMissRight(){
+    if(mMissOutofRangeRightTrig) mMissOutofRangeRightTrig->Trigger();
+}
+
+void GemTrackDir::KeyMissLeft(){
+    if(mMissOutofRangeLeftTrig) mMissOutofRangeLeftTrig->Trigger();
+}
+
+void GemTrackDir::SetUnisonProgress(float f){
+    if(mUnisonIcon) mUnisonIcon->SetProgress(f);
+}
+
+bool GemTrackDir::KeyShifting(){ return kKeyShifting; }
+bool GemTrackDir::ToggleKeyShifting(){
+    kKeyShifting = kKeyShifting == 0;
+    return kKeyShifting;
 }
 
 #pragma push
@@ -728,7 +805,7 @@ BEGIN_HANDLERS(GemTrackDir)
     HANDLE(draw_sample_chord, OnDrawSampleChord)
     HANDLE_ACTION(set_key_range, SetDisplayRange(_msg->Float(2)))
     HANDLE_ACTION(set_key_offset, SetDisplayOffset(_msg->Float(2), false))
-    HANDLE_ACTION(toggle_key_shifting, ToggleKeyShifting())
+    HANDLE_EXPR(toggle_key_shifting, ToggleKeyShifting())
     HANDLE_SUPERCLASS(BandTrack)
     HANDLE_SUPERCLASS(TrackDir)
     HANDLE_CHECK(0x7B4)

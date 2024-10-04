@@ -84,7 +84,7 @@ public:
     void SetSideAngle(float);
     void Mash(int);
     void CrashFill();
-    void ToggleKeyShifting();
+    bool ToggleKeyShifting();
     void UpdateSurfaceTexture();
     void OnUpdateFx(int);
     void GemPass(int, int);
@@ -95,6 +95,11 @@ public:
     void FillHit(int);
     void ResetDrumFill();
     void ResetCoda();
+    float GetKeyRange();
+    float GetKeyOffset();
+    void UpdateFingerFeedback(const RGState&);
+    void UpdateLeftyFlip(bool);
+    bool KeyShifting();
 
     DataNode OnDrawSampleChord(DataArray*);
 
@@ -151,8 +156,8 @@ public:
     ObjPtr<RndAnimatable, ObjectDir> unk654; // 0x654
     ObjPtr<RndAnimatable, ObjectDir> mKeysShiftAnim; // 0x660
     ObjPtr<RndPropAnim, ObjectDir> mKeysMashAnim; // 0x66c
-    float unk678; // 0x678
-    float unk67c; // 0x67c
+    float mKeyRange; // 0x678
+    float mKeyOffset; // 0x67c
     std::vector<RndDir*> unk680; // 0x680
     std::vector<EventTrigger*> unk688; // 0x688
     std::vector<EventTrigger*> unk690; // 0x690
@@ -167,5 +172,5 @@ public:
     bool mFakeFingerShape; // 0x6e9
     bool mCycleFakeFingerShapes; // 0x6ea
     int mRandomShapeFrameCount; // 0x6ec
-    RGState unk6f0; // 0x6f0
+    RGState mRGState; // 0x6f0
 };
