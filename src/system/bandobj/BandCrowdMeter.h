@@ -4,6 +4,9 @@
 #include "rndobj/EventTrigger.h"
 #include "rndobj/MatAnim.h"
 #include "bandobj/CrowdMeterIcon.h"
+#include "bandobj/TrackInstruments.h"
+
+class TrackPanelInterface;
 
 class BandCrowdMeter : public RndDir {
 public:

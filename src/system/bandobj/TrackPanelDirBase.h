@@ -1,25 +1,12 @@
 #pragma once
 #include "ui/PanelDir.h"
+#include "bandobj/BandTrack.h"
+#include "bandobj/TrackInstruments.h"
 
-class BandTrack;
 class TrackPanelInterface;
 class GemTrackResourceManager;
 class EndingBonus;
 class BandCrowdMeter;
-
-enum TrackInstrument {
-    kInstGuitar = 0,
-    kInstDrum = 1,
-    kInstBass = 2,
-    kInstVocals = 3,
-    kInstKeys = 4,
-    kInstRealGuitar = 5,
-    kInstRealBass = 6,
-    kInstRealKeys = 7,
-    kNumTrackInstruments = 8,
-    kInstPending = -2,
-    kInstNone = -1
-};
 
 class TrackPanelDirBase : public PanelDir {
 public:
@@ -71,6 +58,8 @@ public:
     virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return 0; }
 
     void SetShowing(bool);
+    void UpdateJoinInProgress(bool, bool);
+    void FailedJoinInProgress();
     bool ModifierActive(Symbol);
 
     DataNode DataForEachConfigObj(DataArray*);
@@ -85,7 +74,7 @@ public:
     ObjPtrList<RndTransformable, ObjectDir> mConfigurableObjects; // 0x1f4
     std::vector<int> unk204; // 0x204
     ObjVector<int> unk20c; // 0x20c - BandSlot?
-    ObjVector<int> unk21c; // 0x21c - BandTrack*
+    ObjVector<ObjPtr<BandTrack, ObjectDir> > unk21c; // 0x21c - ObjPtr<BandTrack, ObjectDir>
     bool unk224; // 0x224
     int unk228; // 0x228
     ObjPtr<RndDir, ObjectDir> unk22c; // 0x22c

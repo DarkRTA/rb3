@@ -2,7 +2,6 @@
 #include "rndobj/Dir.h"
 #include "rndobj/EventTrigger.h"
 #include "bandobj/BandLabel.h"
-#include "bandobj/TrackPanelDirBase.h"
 
 enum CrowdMeterState {
     kCrowdMeterNormal = 0,
@@ -10,6 +9,8 @@ enum CrowdMeterState {
     kCrowdMeterFailed = 2,
     kCrowdMeterInvalidState = 3
 };
+
+class TrackPanelDirBase;
 
 class CrowdMeterIcon : public RndDir {
 public:

@@ -1,4 +1,5 @@
 #include "bandobj/BandTrack.h"
+#include "bandobj/TrackPanelDirBase.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 #include <os/Debug.h>

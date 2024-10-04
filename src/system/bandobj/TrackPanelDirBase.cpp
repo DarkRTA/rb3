@@ -1,4 +1,5 @@
 #include "bandobj/TrackPanelDirBase.h"
+#include "bandobj/BandCrowdMeter.h"
 #include "obj/DataFunc.h"
 #include "rndobj/Group.h"
 #include "obj/ObjVersion.h"
@@ -113,6 +114,14 @@ float GetTrackViewTime(const Symbol& s1, Symbol s2){
 
 void TrackPanelDirBase::SetShowing(bool b){
     Find<RndGroup>("draw_order.grp", true)->SetShowing(b);
+}
+
+void TrackPanelDirBase::UpdateJoinInProgress(bool b1, bool b2){
+    GetCrowdMeter()->UpdateJoinInProgress(b1, b2);
+}
+
+void TrackPanelDirBase::FailedJoinInProgress(){
+    GetCrowdMeter()->FailedJoinInProgress();
 }
 
 void TrackPanelDirBase::CodaSuccess(){
