@@ -1,8 +1,9 @@
 #pragma once
 #include "ui/PanelDir.h"
-#include "bandobj/BandTrack.h"
+#include "bandobj/GemTrackDir.h"
 #include "bandobj/TrackInstruments.h"
 
+class BandTrack;
 class TrackPanelInterface;
 class GemTrackResourceManager;
 class EndingBonus;
@@ -61,10 +62,17 @@ public:
     void UpdateJoinInProgress(bool, bool);
     void FailedJoinInProgress();
     bool ModifierActive(Symbol);
+    void ToggleSurface();
+    void ToggleNowbar();
+    void SetPlayerLocal(BandTrack*);
+    bool ReservedVocalPlayerSlot(int);
+    BandTrack* GetBandTrackInSlot(int);
 
     DataNode DataForEachConfigObj(DataArray*);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     float mViewTimeEasy; // 0x1d8
     float mViewTimeExpert; // 0x1dc
@@ -73,14 +81,14 @@ public:
     ObjPtr<Hmx::Object, ObjectDir> mConfiguration; // 0x1e8
     ObjPtrList<RndTransformable, ObjectDir> mConfigurableObjects; // 0x1f4
     std::vector<int> unk204; // 0x204
-    ObjVector<int> unk20c; // 0x20c - BandSlot?
-    ObjVector<ObjPtr<BandTrack, ObjectDir> > unk21c; // 0x21c - ObjPtr<BandTrack, ObjectDir>
+    ObjVector<ObjPtr<BandTrack, ObjectDir> > mTracks; // 0x20c
+    ObjVector<ObjPtr<GemTrackDir, ObjectDir> > mGemTracks; // 0x218
     bool unk224; // 0x224
-    int unk228; // 0x228
+    TrackPanelInterface* mTrackPanel; // 0x228
     ObjPtr<RndDir, ObjectDir> unk22c; // 0x22c
     int unk238; // 0x238
     int unk23c; // 0x23c
-    bool unk240; // 0x240
+    bool mPerformanceMode; // 0x240
     bool mDoubleSpeedActive; // 0x241
     bool mIndependentTrackSpeeds; // 0x242
 };
