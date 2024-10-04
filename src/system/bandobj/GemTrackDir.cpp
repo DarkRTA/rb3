@@ -718,28 +718,71 @@ void GemTrackDir::SetDisplayRange(float f){
     mKeyRange = f;
 }
 
+enum {
+    kWhiteKeyC = 0,
+    kWhiteKeyD = 1,
+    kWhiteKeyE = 2,
+    kWhiteKeyF = 3,
+    kWhiteKeyG = 4,
+    kWhiteKeyA = 5,
+    kWhiteKeyB = 6,
+    kNumWhiteKeys = 7
+} WhiteKey;
+
+enum {
+    kNoteC = 0,
+    kNoteCSharp = 1,
+    kNoteDFlat = 1,
+    kNoteD = 2,
+    kNoteDSharp = 3,
+    kNoteEFlat = 3,
+    kNoteE = 4,
+    kNoteF = 5,
+    kNoteFSharp = 6,
+    kNoteGFlat = 6,
+    kNoteG = 7,
+    kNoteGSharp = 8,
+    kNoteAFlat = 8,
+    kNoteA = 9,
+    kNoteASharp = 10,
+    kNoteBFlat = 10,
+    kNoteB = 11,
+    kNumSemitones = 12
+} SemitoneName;
+
 int WhiteKeyToSemitone(int whiteKey){
     MILO_ASSERT(whiteKey > -1, 0x557);
     int semitone = 0;
-    while(true){
-        whiteKey -= 7;
-        semitone += 12;
-        if(whiteKey == 3) return semitone + 5;
-        if(whiteKey < 3){
-            if(whiteKey == 1) return semitone + 2;
-            if(whiteKey < 1){
-                break;
-            }
-            return semitone + 4;
-        }
-        if(whiteKey == 6) return semitone + 11;
-        if(whiteKey < 6){
-            if(whiteKey < 5) return semitone + 7;
-            return semitone + 9;
-        }
+    while(whiteKey >= kNumWhiteKeys){
+        whiteKey -= kNumWhiteKeys;
+        semitone += kNumSemitones;
     }
-    if(whiteKey > -1) return semitone;
-    MILO_FAIL("unexpected white key %d", whiteKey);
+    switch(whiteKey){
+        case kWhiteKeyC:
+            semitone += kNoteC;
+            break;
+        case kWhiteKeyD:
+            semitone += kNoteD;
+            break;
+        case kWhiteKeyE:
+            semitone += kNoteE;
+            break;
+        case kWhiteKeyF:
+            semitone += kNoteF;
+            break;
+        case kWhiteKeyG:
+            semitone += kNoteG;
+            break;
+        case kWhiteKeyA:
+            semitone += kNoteA;
+            break;
+        case kWhiteKeyB:
+            semitone += kNoteB;
+            break;
+        default:
+            MILO_FAIL("unexpected white key %d", whiteKey);
+            break;
+    }
     return semitone;
 }
 
