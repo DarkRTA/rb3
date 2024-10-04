@@ -3,6 +3,7 @@
 #include "bandobj/GemTrackResourceManager.h"
 #include "obj/ObjVersion.h"
 #include "math/Rand.h"
+#include "beatmatch/RGUtl.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -788,6 +789,66 @@ void GemTrackDir::KeyMissLeft(){
 
 void GemTrackDir::SetUnisonProgress(float f){
     if(mUnisonIcon) mUnisonIcon->SetProgress(f);
+}
+
+#define kNumRGStrings 6
+
+void GemTrackDir::AddChordRepImpl(RndMesh* mesh, TrackWidget* widget1, TrackWidget* widget2, TrackWidget* widget3,
+    float f, const std::vector<int>& fretNums, String chordLabel){
+    float secy = SecondsToY(f);
+    if(widget1 && mesh){
+        Transform tf60;
+        tf60.Reset();
+        tf60.v.y = secy;
+        widget1->AddMeshInstance(tf60, mesh, 0.0f);
+    }
+    if(widget2){
+        MILO_ASSERT(fretNums.size() == kNumRGStrings, 0x71F);
+        for(int i = 0; i < 6; i++){
+            int curi = fretNums[i];
+            if(curi > -1){
+                Transform tf90 = SlotAt(i);
+                tf90.v.y = secy;
+                widget2->AddTextInstance(tf90, String(RGFretNumberToString(curi)), false);
+            }
+        }
+    }
+    if(widget3){
+        MILO_ASSERT(!chordLabel.empty(), 0x72F);
+        Transform tfc0;
+        tfc0.Reset();
+        tfc0.v.y = secy;
+        tfc0.v.x = GetCurrentChordLabelPosOffset();
+        widget3->AddTextInstance(tfc0, chordLabel, false);
+    }
+}
+
+float GemTrackDir::GetCurrentChordLabelPosOffset() const {
+    if(BandTrack::mParent){
+        if(BandTrack::mParent->Lefty()) return -mChordLabelPosOffset;
+        else return mChordLabelPosOffset;
+    }
+    else return mChordLabelPosOffset;
+}
+
+DataNode GemTrackDir::OnDrawSampleChord(DataArray* da){
+    RndMesh* mesh = da->Obj<RndMesh>(2);
+    TrackWidget* widget1 = da->Obj<TrackWidget>(3);
+    TrackWidget* widget2 = da->Obj<TrackWidget>(4);
+    TrackWidget* widget3 = da->Obj<TrackWidget>(5);
+    int i6 = da->Int(6);
+    int i7 = da->Int(7);
+    RndTransformable* trans = da->Obj<RndTransformable>(8);
+    Transform tf68(trans->WorldXfm());
+    String str78(da->Str(9));
+    static std::vector<int> fretNums;
+    if(fretNums.empty()) fretNums.resize(6);
+    for(int i = 0; i < 6; i++){
+        if(i == i6) fretNums[i] = i7;
+        else fretNums[i] = -1;
+    }
+    AddChordImpl(mesh, widget1, widget2, widget3, 0, fretNums, str78);
+    return 0;
 }
 
 bool GemTrackDir::KeyShifting(){ return kKeyShifting; }
