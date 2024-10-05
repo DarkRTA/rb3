@@ -61,6 +61,7 @@ public:
     void ConfigureCrowdMeter();
     void ApplyVocalTrackShowingStatus();
     TrackInstrument GetInstrument(int) const;
+    void SetBotbBandIcon(ObjectDir*, RndDir*, bool);
 
     DECLARE_REVS;
     NEW_OVERLOAD;

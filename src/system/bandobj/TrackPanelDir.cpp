@@ -2,6 +2,7 @@
 #include "bandobj/TrackPanelInterface.h"
 #include "bandobj/GemTrackDir.h"
 #include "obj/ObjVersion.h"
+#include "rndobj/TexRenderer.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -293,6 +294,28 @@ void TrackPanelDir::ApplyVocalTrackShowingStatus(){
     MILO_ASSERT(mVocalTrack, 500);
     mVocalTrack->SetShowing(mVocalTrack->mInUse);
     mVocalTrack->mIsTop = true;
+}
+
+void TrackPanelDir::SetBotbBandIcon(ObjectDir* target, RndDir* source, bool b3){
+    if(!target || !source){
+        if(!target) MILO_WARN("Could not find botb band logo target");
+        if(!source) MILO_WARN("Could not find botb band logo source");
+    }
+    else {
+        RndTex* tex = b3 ? target->Find<RndTex>("logo_target.tex", false) : target->Find<RndTex>("logo_target_rival.tex", false);
+        RndTexRenderer* texrenderer = target->Find<RndTexRenderer>("band_logo.rndtex", false);
+        RndMat* logomat = target->Find<RndMat>("logo.mat", false);
+        if(tex && texrenderer && logomat){
+            texrenderer->SetProperty(output_texture, tex);
+            texrenderer->SetDraw(source);
+            logomat->SetDiffuseTex(tex);
+        }
+        else {
+            if(!tex) MILO_WARN("Could not find logo_target.tex");
+            if(!texrenderer) MILO_WARN("Could not find band_logo.rndtex");
+            if(!texrenderer) MILO_WARN("Could not find logo.mat");
+        }
+    }
 }
 
 void TrackPanelDir::CleanUpChordMeshes(){
