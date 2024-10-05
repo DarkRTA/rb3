@@ -5,6 +5,9 @@
 #include "rndobj/Rnd.h"
 #include "rndobj/Tex.h"
 #include "rndwii/Rnd.h"
+#include <set>
+
+std::set<WiiTex*> gRenderTextureSet;
 
 bool WiiTex::bComposingOutfitTexture = false;
 

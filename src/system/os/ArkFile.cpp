@@ -1,4 +1,5 @@
 #include "os/ArkFile.h"
+#include "os/AsyncTask.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "os/Archive.h"
@@ -37,6 +38,12 @@ bool ArkFile::ReadAsync(void* iBuff, int iBytes){
     else {
         mBytesRead = 0;
         if(iBytes == 0) return true;
+#ifndef MILO_DEBUG
+        mReadAhead = false;
+        if (mTell + iBytes > mSize) {
+            iBytes = mSize - mTell;
+        }
+#endif
 #ifdef MILO_DEBUG
         if(mReadAhead){
             unsigned int last = mFilename.find_last_of('_');
@@ -58,9 +65,30 @@ bool ArkFile::ReadAsync(void* iBuff, int iBytes){
         }
         MILO_ASSERT(iBytes >= 0, 0x82);
 #endif
+        u64 byte_start = mByteStart + mTell;
         int a = 0, b = 0, c = 0;
         TheBlockMgr.GetAssociatedBlocks(mByteStart, iBytes, a, b, c);
-
+        u64 byte_end = mByteStart + iBytes;
+        int max = (b + c) - 1;
+        bool first_loop = true; 
+        for (int i = c; i <= max; i++) {
+            u32 x;
+            if (i == a) {
+                x = byte_start % c;
+            } else x = 0;
+            u32 y = c;
+            if (i == max && iBytes != 0) {
+                u32 gjksf = byte_end % c;
+                if (gjksf != 0) y = gjksf;
+            }
+            AsyncTask at(this, iBuff, mArkfileNum, i, x, y, mFilename.c_str());
+            mNumOutstandingTasks++;
+            iBuff = (void*)((u32)iBuff + (y - x));
+            if (!first_loop || !at.FillData()) {
+                first_loop = false;
+                TheBlockMgr.AddTask(at);
+            }
+        }
         TheBlockMgr.Poll();
         return true;
     }
