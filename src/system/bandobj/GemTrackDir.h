@@ -102,6 +102,7 @@ public:
     bool KeyShifting();
     void FreeChordMeshes();
     void AddChordRepImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, String);
+    void SetGemTrackID(int id){ mGemTrackDirID = id; }
 
     DataNode OnDrawSampleChord(DataArray*);
 

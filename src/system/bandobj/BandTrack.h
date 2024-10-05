@@ -102,6 +102,8 @@ public:
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }
+    void SetTrackIdx(int idx){ mTrackIdx = idx; }
+    void SetSimulatedNet(bool net){ mSimulatedNet = net; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

@@ -12,12 +12,12 @@ TrackPanelDir::TrackPanelDir() : unk244(1), mTestMultiplier(1), unk24c(0), unk25
     unk2ac(1), unk2ad(0), mTracksExtended(0), mGemTrackRsrcMgr(this, 0), mVocals(1), mVocalsNet(0) {
     for(int i = 0; i < 4; i++){
         mGemTracks.push_back(ObjPtr<GemTrackDir, ObjectDir>(this, 0));
-        unk2d0[i] = 0;
+        mGemNet[i] = 0;
     }
-    unk2c0 = 0;
-    unk2c4 = 1;
-    unk2c8 = 2;
-    unk2cc = -1;
+    mGemInst[0] = 0;
+    mGemInst[1] = 1;
+    mGemInst[2] = 2;
+    mGemInst[3] = -1;
 }
 
 TrackPanelDir::~TrackPanelDir(){
@@ -62,19 +62,19 @@ void TrackPanelDir::SyncObjects(){
     if(!mPulseAnimGrp) mPulseAnimGrp = Find<RndGroup>("beat_anims.grp", false);
     if(!mGemTracks[0]){
         mGemTracks[0] = Find<GemTrackDir>("track_0", true);
-        mGemTracks[0]->mGemTrackDirID = 0;
+        mGemTracks[0]->SetGemTrackID(0);
     }
     if(!mGemTracks[1]){
         mGemTracks[1] = Find<GemTrackDir>("track_1", true);
-        mGemTracks[1]->mGemTrackDirID = 1;
+        mGemTracks[1]->SetGemTrackID(1);
     }
     if(!mGemTracks[2]){
         mGemTracks[2] = Find<GemTrackDir>("track_2", true);
-        mGemTracks[2]->mGemTrackDirID = 2;
+        mGemTracks[2]->SetGemTrackID(2);
     }
     if(!mGemTracks[3]){
         mGemTracks[3] = Find<GemTrackDir>("track_3", true);
-        mGemTracks[3]->mGemTrackDirID = 3;
+        mGemTracks[3]->SetGemTrackID(3);
     }
     if(!mVocalTrack->mEndgameFeedback) mVocalTrack->mEndgameFeedback = Find<RndDir>("endgame_feedback_vox", false);
     if(!mGemTrackRsrcMgr || !mGemTrackRsrcMgr->unk1c){
@@ -88,6 +88,47 @@ void TrackPanelDir::AssignTracks(){
     MILO_ASSERT(TheLoadMgr.EditMode(), 0xA3);
     mInstruments.clear();
     for(int i = 0; i < 5; i++) mInstruments.push_back(kInstNone);
+    if(mVocals){
+        mInstruments[2] = kInstVocals;
+        mVocalTrack->SetSimulatedNet(mVocalsNet);
+    }
+    for(int i = 0; i < 4; i++){
+        if(i < 2) mInstruments[i] = (TrackInstrument)mGemInst[i];
+        else mInstruments[i + 1] = (TrackInstrument)mGemInst[i];
+        mGemTracks[i]->SetSimulatedNet(mGemNet[i]);
+    }
+    mVocalTrack->SetUsed(false);
+    for(int i = 0; i < mGemTracks.size(); i++){
+        mGemTracks[i]->SetUsed(false);
+    }
+    mTracks.clear();
+    unk24c = 0;
+    int i11 = 0;
+    unk250 = 0;
+    for(int i = 0; i < mInstruments.size(); i++){
+        mTracks.push_back(ObjPtr<BandTrack, ObjectDir>(this, 0));
+        if(mInstruments[i] == kInstNone){
+            if(!ReservedVocalPlayerSlot(i)) i11++;
+        }
+        else {
+            if(mInstruments[i] == kInstVocals){
+                if(unk250) MILO_FAIL("too many vocal tracks");
+                mTracks[i] = mVocalTrack;
+                unk250++;
+            }
+            else {
+                if(i11 >= mGemTracks.size()) MILO_FAIL("too many gem tracks");
+                GemTrackDir* trackdir = mGemTracks[i11];
+                trackdir->unk488 = unk24c;
+                mTracks[i] = trackdir;
+                i11++;
+                unk24c++;
+            }
+            mTracks[i]->SetTrackIdx(i);
+            mTracks[i]->SetInstrument(mInstruments[i]);
+            mTracks[i]->SetUsed(true);
+        }
+    }
 }
 
 void TrackPanelDir::SetTrackPanel(TrackPanelInterface* interface){
@@ -205,13 +246,49 @@ void TrackPanelDir::Reset(){
     ResetAll();
     SetMultiplier(1, false);
     mBandScoreMultiplier->HandleType(reset_msg);
-    mCrowdMeter->mTrackPanel = mTrackPanel;
+    mCrowdMeter->SetTrackPanel(mTrackPanel);
     mCrowdMeter->Reset();
     mCrowdMeter->UpdatePlayers(mInstruments);
     unk2ad = false;
     if(mEndingBonus){
         // stuff
     }
+
+//       if (iVar4 != 0) {
+//     iVar4 = MergedGet0x8(this + 0x288);
+//     fn_80444BEC(iVar4 + 0x1a4);
+//     if (*(int *)(this + 0x228) == 0) {
+//       for (uVar11 = 0; uVar6 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x204)),
+//           uVar11 < uVar6; uVar11 = uVar11 + 1) {
+//         uVar2 = stlpmtx_std::_Vector_impl<><>::operator_[]
+//                           ((_Vector_impl<><> *)(this + 0x204),uVar11);
+//         iVar4 = MergedGet0x8(this + 0x288);
+//         fn_800E7928(iVar4 + 0x1a4,uVar2);
+//       }
+//     }
+//     else {
+//       iVar4 = MergedGet0x8(this + 0x288);
+//       (**(code **)(*(int *)(*(int *)(this + 0x228) + 4) + 0x60))
+//                 (*(int *)(this + 0x228),iVar4 + 0x1a4,0);
+//     }
+//     pEVar5 = (EndingBonus *)MergedGet0x8(this + 0x288);
+//     EndingBonus::Reset(pEVar5);
+//     for (uVar11 = 0; uVar6 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x20c)),
+//         uVar11 < uVar6; uVar11 = uVar11 + 1) {
+//       pvVar8 = (void *)stlpmtx_std::vector<><>::operator_[]((vector<><> *)(this + 0x20c),uVar11);
+//       iVar4 = MergedGet0x8(pvVar8);
+//       if (iVar4 != 0) {
+//         pvVar8 = (void *)stlpmtx_std::vector<><>::operator_[]((vector<><> *)(this + 0x20c),uVar11) ;
+//         MergedGet0x8(pvVar8);
+//         pcVar10 = (char *)fn_8043EE1C();
+//         pEVar5 = (EndingBonus *)MergedGet0x8(this + 0x288);
+//         EndingBonus::SetIconText(pEVar5,uVar11,pcVar10);
+//         pEVar5 = (EndingBonus *)MergedGet0x8(this + 0x288);
+//         EndingBonus::EnablePlayer(pEVar5,uVar11);
+//       }
+//     }
+//   }
+
     UpdateTrackSpeed();
     if(mTrackPanel){
         bool show = mTrackPanel->ShowApplauseMeter();
@@ -404,3 +481,18 @@ BEGIN_HANDLERS(TrackPanelDir)
     HANDLE_SUPERCLASS(TrackPanelDirBase)
     HANDLE_CHECK(0x3F3)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(TrackPanelDir)
+    SYNC_PROP(vocals, mVocals)
+    SYNC_PROP(vocals_net, mVocalsNet)
+    SYNC_PROP(instrument_A, mGemInst[0])
+    SYNC_PROP(inst_A_net, mGemNet[0])
+    SYNC_PROP(instrument_B, mGemInst[1])
+    SYNC_PROP(inst_B_net, mGemNet[1])
+    SYNC_PROP(instrument_C, mGemInst[2])
+    SYNC_PROP(inst_C_net, mGemNet[2])
+    SYNC_PROP(instrument_D, mGemInst[3])
+    SYNC_PROP(inst_D_net, mGemNet[3])
+    SYNC_PROP(test_multiplier, mTestMultiplier)
+    SYNC_SUPERCLASS(TrackPanelDirBase)
+END_PROPSYNCS

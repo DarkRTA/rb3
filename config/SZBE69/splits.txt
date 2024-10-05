@@ -1068,7 +1068,7 @@ system/bandobj/VocalTrackDir.cpp:
 system/bandobj/TrackPanelDirBase.cpp:
 	.text       start:0x80440C44 end:0x804431F4
 
-rb3/trackpaneldir.cpp:
+system/bandobj/TrackPanelDir.cpp:
 	.text       start:0x804431F4 end:0x80448CD0
 
 system/bandobj/CrowdMeterIcon.cpp:

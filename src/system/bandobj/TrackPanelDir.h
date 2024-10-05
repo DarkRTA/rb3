@@ -84,9 +84,6 @@ public:
     ObjPtr<GemTrackResourceManager, ObjectDir> mGemTrackRsrcMgr; // 0x2b0
     bool mVocals; // 0x2bc
     bool mVocalsNet; // 0x2bd
-    int unk2c0; // 0x2c0
-    int unk2c4; // 0x2c4
-    int unk2c8; // 0x2c8
-    int unk2cc; // 0x2cc
-    bool unk2d0[4]; // 0x2d0
+    int mGemInst[4]; // 0x2c0
+    bool mGemNet[4]; // 0x2d0
 };
