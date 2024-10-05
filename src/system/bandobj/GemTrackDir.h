@@ -100,6 +100,7 @@ public:
     void UpdateFingerFeedback(const RGState&);
     void UpdateLeftyFlip(bool);
     bool KeyShifting();
+    void FreeChordMeshes();
     void AddChordRepImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, String);
 
     DataNode OnDrawSampleChord(DataArray*);

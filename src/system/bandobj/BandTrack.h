@@ -94,6 +94,8 @@ public:
     void SoloHide();
     void UnisonEnd();
     void UnisonStart();
+    void SetBandMultiplier(int);
+    void SoloEnd(int, Symbol);
     Symbol GetPlayerDifficultySym() const;
     TrackPanelDirBase* MyTrackPanelDir();
     Symbol GetInstrumentSymbol() const;

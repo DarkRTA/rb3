@@ -1,6 +1,9 @@
 #include "bandobj/TrackPanelDir.h"
+#include "bandobj/TrackPanelInterface.h"
+#include "bandobj/GemTrackDir.h"
 #include "obj/ObjVersion.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 INIT_REVS(TrackPanelDir);
 
@@ -85,6 +88,310 @@ void TrackPanelDir::AssignTracks(){
     MILO_ASSERT(TheLoadMgr.EditMode(), 0xA3);
     mInstruments.clear();
     for(int i = 0; i < 5; i++) mInstruments.push_back(kInstNone);
+}
+
+void TrackPanelDir::SetTrackPanel(TrackPanelInterface* interface){
+    mTrackPanel = interface;
+    if(mInstruments.empty()){
+        mInstruments.resize(mTrackPanel->GetTrackCount(), kInstNone);
+    }
+}
+
+void TrackPanelDir::RemoveTrack(int iSlot){
+    TrackInstrument inst = mInstruments[iSlot];
+    if(inst != kInstNone){
+        if(inst == kInstVocals){
+            MILO_ASSERT(ReservedVocalPlayerSlot(iSlot), 0x13C);
+            unk250--;
+        }
+        else {
+            MILO_ASSERT(!ReservedVocalPlayerSlot(iSlot), 0x144);
+            unk24c--;
+        }
+        if(mEndingBonus) mEndingBonus->DisablePlayer(mTracks[iSlot]->mTrackIdx);
+        mTracks[iSlot]->SetUsed(false);
+        mTracks[iSlot]->ReleaseSmasherPlate();
+        mTracks[iSlot] = 0;
+        mInstruments[iSlot] = kInstNone;
+    }
+}
+
+void TrackPanelDir::ConfigureTrack(int i){
+    GemTrackDir* cur = mGemTracks[i];
+    if(cur->mInUse) cur->mNumTracks = unk24c;
+}
+
+void TrackPanelDir::ConfigureCrowdMeter(){
+    Hmx::Object* modeobj = FindObject("gamemode", true);
+    bool b1 = false;
+    if(modeobj){
+        if(modeobj->Property("is_practice", true)->Int(0)) b1 = true;
+    }
+    if(b1 || (mTrackPanel && mTrackPanel->GetNoCrowdMeter()) || (mTrackPanel && mTrackPanel->GameResumedNoScore())){
+        mCrowdMeter->Disable();
+        mCrowdMeter->SetShowing(false);
+        return;
+    }
+    mCrowdMeter->UpdatePlayers(mInstruments);
+    mCrowdMeter->Enable();
+    bool show = false;
+    if(modeobj){
+        if(modeobj->Property("show_crowd_meter", true)->Int(0)) show = true;
+    }
+    else if(!TheLoadMgr.EditMode()) show = true;
+    mCrowdMeter->SetShowing(show);
+}
+
+void TrackPanelDir::SetConfiguration(Hmx::Object* o, bool b){
+    TrackPanelDirBase::SetConfiguration(o, b);
+    ApplyVocalTrackShowingStatus();
+    ConfigureCrowdMeter();
+}
+
+void TrackPanelDir::ReapplyConfiguration(bool b){
+    TrackPanelDirBase::ReapplyConfiguration(true);
+    ApplyVocalTrackShowingStatus();
+    ConfigureCrowdMeter();
+}
+
+void TrackPanelDir::ApplyVocalTrackShowingStatus(){
+    MILO_ASSERT(mVocalTrack, 500);
+    mVocalTrack->SetShowing(mVocalTrack->mInUse);
+    mVocalTrack->mIsTop = true;
+}
+
+void TrackPanelDir::CleanUpChordMeshes(){
+    for(int i = 0; i < mGemTracks.size(); i++){
+        mGemTracks[i]->FreeChordMeshes();
+    }
+}
+
+TrackInstrument TrackPanelDir::GetInstrument(int trackIdx) const {
+    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mInstruments.size()), 0x275);
+    return mInstruments[trackIdx];
+}
+
+void TrackPanelDir::DisablePlayer(int idx, bool enable){
+    if(idx != -1){
+        if(GetInstrument(idx) != kInstVocals) UnisonEnd();
+        static Hmx::Object* gameMode = FindObject("gamemode", true);
+        if(mCrowdMeter && gameMode){
+            if(gameMode->Property("update_crowd_meter", true)->Int(0)){
+                if(enable){
+                    mCrowdMeter->EnablePlayer(idx);
+                    mCrowdMeter->PlayerIcon(idx)->SetState(kCrowdMeterFailed, false);
+                }
+                else mCrowdMeter->DisablePlayer(idx);
+            }
+        }
+        if(mEndingBonus) mEndingBonus->DisablePlayer(idx);
+    }
+}
+
+void TrackPanelDir::EnablePlayer(int idx){
+    if(idx != -1){
+        GetInstrument(idx);
+        static Hmx::Object* gameMode = FindObject("gamemode", true);
+        if(mCrowdMeter && gameMode){
+            if(gameMode->Property("update_crowd_meter", true)->Int(0)){
+                mCrowdMeter->EnablePlayer(idx);
+            }
+        }
+        if(mEndingBonus) mEndingBonus->EnablePlayer(idx);
+    }
+}
+
+void TrackPanelDir::Reset(){
+    ResetAll();
+    SetMultiplier(1, false);
+    mBandScoreMultiplier->HandleType(reset_msg);
+    mCrowdMeter->mTrackPanel = mTrackPanel;
+    mCrowdMeter->Reset();
+    mCrowdMeter->UpdatePlayers(mInstruments);
+    unk2ad = false;
+    if(mEndingBonus){
+        // stuff
+    }
+    UpdateTrackSpeed();
+    if(mTrackPanel){
+        bool show = mTrackPanel->ShowApplauseMeter();
+        if(show){
+            mApplauseMeter->HandleType(reset_msg);
+        }
+        Find<RndGroup>("applause_meter.grp", true)->SetShowing(show);
+        static Message set_config("set_config", "");
+        set_config[0] = show ? "botb" : "normal";
+        if(mScoreboard) mScoreboard->HandleType(set_config);
+    }
+    mPerformanceMode = ModifierActive("mod_nohud");
+    for(int i = 0; i < mTracks.size(); i++){
+        BandTrack* track = mTracks[i];
+        if(track) track->SetPerformanceMode(mPerformanceMode);
+    }
+    SetShowing(false);
+    mTracksExtended = false;
+    if(TheLoadMgr.EditMode()) PlayIntro();
+}
+
+void TrackPanelDir::ResetAll(){
+    Find<EventTrigger>("reset_all.trig", true)->Trigger();
+    mVocalTrack->Retract(true);
+    for(int i = 0; i < mGemTracks.size(); i++){
+        GemTrackDir* track = mGemTracks[i];
+        if(track) track->Retract(true);
+    }
+}
+
+void TrackPanelDir::ResetPlayers(){
+    mInstruments.clear();
+    mInstruments.resize(mTrackPanel->GetTrackCount(), kInstNone);
+    mTracks.clear();
+    unk24c = 0;
+    unk250 = 0;
+    for(int i = 0; i < mGemTracks.size(); i++){
+        mGemTracks[i]->SetUsed(false);
+    }
+    mVocalTrack->SetUsed(false);
+}
+
+void TrackPanelDir::PlayIntro(){
+    Find<EventTrigger>("intro.trig", true)->Trigger();
+    for(int i = 0; i < mTracks.size(); i++){
+        BandTrack* track = mTracks[i];
+        if(track) track->PlayIntro();
+    }
+    SetShowing(!mPerformanceMode);
+    mTracksExtended = true;
+}
+
+void TrackPanelDir::HideScore(){
+    Find<EventTrigger>("reset_all.trig", true)->Trigger();
+}
+
+void TrackPanelDir::SetMultiplier(int mult, bool b){
+    if(b) mBandScoreMultiplier->SetProperty("last_multiplier", -1);
+    if(mult != mBandScoreMultiplier->Property("last_multiplier", true)->Int(0)){
+        if(unk2ac && (mult > 1) && (!mTrackPanel || mTrackPanel->GetNumPlayers() > 1)){
+            static Message set_multiplier("set_multiplier", 1);
+            set_multiplier[0] = mult;
+            TheTaskMgr.Start(new MessageTask(mBandScoreMultiplier, set_multiplier), kTaskUISeconds, 0);
+            mBandScoreMultiplier->SetShowing(true);
+            mBandScoreMultiplierTrig->Trigger();
+        }
+        else {
+            mBandScoreMultiplier->SetShowing(false);
+            mBandScoreMultiplier->SetProperty("last_multiplier", mult);
+        }
+        for(int i = 0; i < mTracks.size(); i++){
+            BandTrack* track = mTracks[i];
+            if(track) track->SetBandMultiplier(mult);
+        }
+    }
+}
+
+void TrackPanelDir::GameOver(){
+    for(int i = 0; i < mTracks.size(); i++){
+        BandTrack* track = mTracks[i];
+        if(track) track->GameOver();
+    }
+}
+
+void TrackPanelDir::GameWon(){
+    Find<EventTrigger>("game_won.trig", true)->Trigger();
+    for(int i = 0; i < mTracks.size(); i++){
+        BandTrack* track = mTracks[i];
+        if(track) track->GameWon();
+    }
+}
+
+void TrackPanelDir::StartFinale(){
+    Find<EventTrigger>("game_won.trig", true)->Trigger();
+    for(int i = 0; i < mTracks.size(); i++){
+        mTracks[i]->StartFinale(i);
+    }
+}
+
+void TrackPanelDir::GameLost(){
+    for(int i = 0; i < mTracks.size(); i++){
+        BandTrack* track = mTracks[i];
+        if(track) track->StopDeploy();
+    }
+    UnisonEnd();
+    Find<EventTrigger>("game_lost.trig", true)->Trigger();
+    GameOver();
+    SetMultiplier(1, false);
+}
+
+void TrackPanelDir::SetCrowdRating(float f){
+    mCrowdMeter->SetCrowd(f);
+}
+
+void TrackPanelDir::Coda(){
+    if(!unk2ad){
+        Hmx::Object* modeobj = FindObject("gamemode", true);
+        if(modeobj){
+            if(!modeobj->Property("enable_coda", true)->Int(0)) return;
+        }
+        if(TheLoadMgr.EditMode() || (mTrackPanel && !mTrackPanel->IsGameOver()) && unk24c){
+            Find<EventTrigger>("bre_start.trig", true)->Trigger();
+            mEndingBonus->Start(!mTrackPanel->AutoVocals());
+            for(int i = 0; i < mTracks.size(); i++){
+                BandTrack* track = mTracks[i];
+                if(track) track->EnterCoda();
+            }
+        }
+        unk2ad = true;
+    }
+}
+
+void TrackPanelDir::CodaEnd(){
+    if(unk24c){
+        mEndingBonus->CodaEnd();
+        unk2ad = false;
+    }
+}
+
+void TrackPanelDir::SetCodaScore(int i){
+    if(unk24c) mEndingBonus->SetScore(i);
+}
+
+void TrackPanelDir::CodaSuccess(){
+    Find<EventTrigger>("bre_success.trig", true)->Trigger();
+    if(unk24c) mEndingBonus->Success();
+}
+
+void TrackPanelDir::SoloEnd(BandTrack* t, int i, Symbol s){
+    t->SoloEnd(i, s);
+}
+
+void TrackPanelDir::UnisonStart(int i){
+    if(!mPerformanceMode){
+        mEndingBonus->UnisonStart(i);
+        for(int x = 0; x < mGemTracks.size(); x++){
+            GemTrackDir* track = mGemTracks[x];
+            if(track->mInUse) track->UnisonStart();
+        }
+    }
+}
+
+void TrackPanelDir::UnisonEnd(){
+    if(!mPerformanceMode){
+        mEndingBonus->UnisonEnd();
+        for(int x = 0; x < mGemTracks.size(); x++){
+            GemTrackDir* track = mGemTracks[x];
+            if(track->mInUse) track->UnisonEnd();
+        }
+    }
+}
+
+void TrackPanelDir::UnisonSucceed(){
+    if(!mPerformanceMode) mEndingBonus->UnisonSucceed();
+}
+
+void TrackPanelDir::StartPulseAnims(float f){
+    if(mPulseAnimGrp){
+        mPulseAnimGrp->Animate(0, false, f, RndAnimatable::k480_fpb, 0, 960.0f, 0, 1.0f, loop);
+    }
 }
 
 BEGIN_HANDLERS(TrackPanelDir)

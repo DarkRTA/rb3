@@ -58,6 +58,9 @@ public:
 
     void GameWon();
     void GameLost();
+    void ConfigureCrowdMeter();
+    void ApplyVocalTrackShowingStatus();
+    TrackInstrument GetInstrument(int) const;
 
     DECLARE_REVS;
     NEW_OVERLOAD;
