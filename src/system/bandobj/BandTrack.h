@@ -96,6 +96,7 @@ public:
     void UnisonStart();
     void SetBandMultiplier(int);
     void SoloEnd(int, Symbol);
+    const char* GetTrackIcon() const;
     Symbol GetPlayerDifficultySym() const;
     TrackPanelDirBase* MyTrackPanelDir();
     Symbol GetInstrumentSymbol() const;

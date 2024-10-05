@@ -66,7 +66,7 @@ public:
     int mScore; // 0x190
     bool mSucceeded; // 0x194
     ObjPtr<Task, ObjectDir> mCodaEndTask; // 0x198
-    std::vector<int> mTrackOrder; // 0x1a4
+    std::vector<TrackInstrument> mTrackOrder; // 0x1a4
     std::vector<MiniIconData> mIconData; // 0x1ac
     ObjPtr<BandLabel, ObjectDir> mScoreLabel; // 0x1b4
     ObjPtr<EventTrigger, ObjectDir> mUnisonStartTrig; // 0x1c0

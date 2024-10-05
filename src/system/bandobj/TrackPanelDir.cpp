@@ -251,44 +251,23 @@ void TrackPanelDir::Reset(){
     mCrowdMeter->UpdatePlayers(mInstruments);
     unk2ad = false;
     if(mEndingBonus){
-        // stuff
+        mEndingBonus->mTrackOrder.clear();
+        if(mTrackPanel){
+            mTrackPanel->GetTrackOrder(&mEndingBonus->mTrackOrder, false);
+        }
+        else {
+            for(int i = 0; i < mInstruments.size(); i++){
+                mEndingBonus->mTrackOrder.push_back(mInstruments[i]);
+            }
+        }
+        mEndingBonus->Reset();
+        for(int i = 0; i < mTracks.size(); i++){
+            if(mTracks[i]){
+                mEndingBonus->SetIconText(i, mTracks[i]->GetTrackIcon());
+                mEndingBonus->EnablePlayer(i);
+            }
+        }
     }
-
-//       if (iVar4 != 0) {
-//     iVar4 = MergedGet0x8(this + 0x288);
-//     fn_80444BEC(iVar4 + 0x1a4);
-//     if (*(int *)(this + 0x228) == 0) {
-//       for (uVar11 = 0; uVar6 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x204)),
-//           uVar11 < uVar6; uVar11 = uVar11 + 1) {
-//         uVar2 = stlpmtx_std::_Vector_impl<><>::operator_[]
-//                           ((_Vector_impl<><> *)(this + 0x204),uVar11);
-//         iVar4 = MergedGet0x8(this + 0x288);
-//         fn_800E7928(iVar4 + 0x1a4,uVar2);
-//       }
-//     }
-//     else {
-//       iVar4 = MergedGet0x8(this + 0x288);
-//       (**(code **)(*(int *)(*(int *)(this + 0x228) + 4) + 0x60))
-//                 (*(int *)(this + 0x228),iVar4 + 0x1a4,0);
-//     }
-//     pEVar5 = (EndingBonus *)MergedGet0x8(this + 0x288);
-//     EndingBonus::Reset(pEVar5);
-//     for (uVar11 = 0; uVar6 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x20c)),
-//         uVar11 < uVar6; uVar11 = uVar11 + 1) {
-//       pvVar8 = (void *)stlpmtx_std::vector<><>::operator_[]((vector<><> *)(this + 0x20c),uVar11);
-//       iVar4 = MergedGet0x8(pvVar8);
-//       if (iVar4 != 0) {
-//         pvVar8 = (void *)stlpmtx_std::vector<><>::operator_[]((vector<><> *)(this + 0x20c),uVar11) ;
-//         MergedGet0x8(pvVar8);
-//         pcVar10 = (char *)fn_8043EE1C();
-//         pEVar5 = (EndingBonus *)MergedGet0x8(this + 0x288);
-//         EndingBonus::SetIconText(pEVar5,uVar11,pcVar10);
-//         pEVar5 = (EndingBonus *)MergedGet0x8(this + 0x288);
-//         EndingBonus::EnablePlayer(pEVar5,uVar11);
-//       }
-//     }
-//   }
-
     UpdateTrackSpeed();
     if(mTrackPanel){
         bool show = mTrackPanel->ShowApplauseMeter();
