@@ -1219,7 +1219,7 @@
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
-            "system/rndwii/Cam.cpp": "MISSING",
+            "system/rndwii/Cam.cpp": "NonMatching",
             "system/rndwii/Env.cpp": "MISSING",
             "system/rndwii/Lit.cpp": "MISSING",
             "system/rndwii/Mat.cpp": "MISSING",
@@ -1231,7 +1231,7 @@
             "system/rndwii/Rnd.cpp": "NonMatching",
             "system/rndwii/SplitPostProc.cpp": "MISSING",
             "system/rndwii/Tex.cpp": "NonMatching",
-            "system/rndwii/TexRenderer.cpp": "MISSING",
+            "system/rndwii/TexRenderer.cpp": "Matching",
 
             "system/synth/ADSR.cpp": "Matching",
             "system/synth/BinkClip.cpp": "Matching",

@@ -15,6 +15,7 @@ bool gInBegin, gBeginIntState;
 int gSuppressPointTest;
 void* sDispFB;
 OSThreadQueue drawDoneThreadQueue;
+WiiRnd TheWiiRnd;
 
 void WiiRnd::SwapFrameBuffer() {
     if (sDispFB == unk_0x1A8) sDispFB = unk_0x1AC;

@@ -20,7 +20,6 @@ public:
     void SetTriFrameRendering(bool);
     void SetOrthoProj();
     void DoPointTests();
-    void* GetCurrXFB();
     bool GetProgressiveScan();
     void DrawQuad(const Hmx::Rect&);
     void DrawLine(const Vector3&, const Vector3&, const Hmx::Color&, bool);
@@ -37,6 +36,7 @@ public:
 
     static bool mUseLockedCache, mShowParticle, mShowAssetName;
     static void SyncFree(void*);
+    static void* GetCurrXFB();
 };
 
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);

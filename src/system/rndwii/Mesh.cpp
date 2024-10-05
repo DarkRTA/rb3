@@ -6,7 +6,9 @@
 #include "os/Debug.h"
 #include "revolution/GX.h"
 #include "revolution/gx/GXAttr.h"
+#include "revolution/gx/GXTransform.h"
 #include "revolution/gx/GXTypes.h"
+#include "revolution/mtx/mtx.h"
 #include "revolution/os/OSCache.h"
 #include "rndwii/Rnd.h"
 #include "utl/MemMgr.h"
@@ -150,25 +152,92 @@ END_COPYS
 
 void WiiMesh::Init() {
     REGISTER_OBJ_FACTORY(WiiMesh)
-    GXSetVtxAttrFmt((_GXVtxFmt)0, GX_VA_POS, (GXCompCnt)1, (GXCompType)4, 0);
-    GXSetVtxAttrFmt((_GXVtxFmt)0, GX_VA_NRM, (GXCompCnt)0, (GXCompType)1, 6);
-    GXSetVtxAttrFmt((_GXVtxFmt)0, GX_VA_CLR0, (GXCompCnt)1, (GXCompType)5, 0);
-    GXSetVtxAttrFmt((_GXVtxFmt)0, GX_VA_TEX0, (GXCompCnt)1, (GXCompType)3, 9);
-    GXSetVtxAttrFmt((_GXVtxFmt)1, GX_VA_POS, (GXCompCnt)1, (GXCompType)4, 0);
-    GXSetVtxAttrFmt((_GXVtxFmt)1, GX_VA_NBT, (GXCompCnt)1, (GXCompType)4, 0);
-    GXSetVtxAttrFmt((_GXVtxFmt)1, GX_VA_CLR0, (GXCompCnt)1, (GXCompType)5, 0);
-    GXSetVtxAttrFmt((_GXVtxFmt)1, GX_VA_TEX0, (GXCompCnt)1, (GXCompType)3, 9);
-    GXSetVtxAttrFmt((_GXVtxFmt)4, GX_VA_POS, (GXCompCnt)1, (GXCompType)3, 5);
-    GXSetVtxAttrFmt((_GXVtxFmt)4, GX_VA_NRM, (GXCompCnt)0, (GXCompType)1, 6);
-    GXSetVtxAttrFmt((_GXVtxFmt)4, GX_VA_CLR0, (GXCompCnt)1, (GXCompType)5, 0);
-    GXSetVtxAttrFmt((_GXVtxFmt)4, GX_VA_TEX0, (GXCompCnt)1, (GXCompType)3, 9);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, (GXCompType)4, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, (GXCompType)1, 6);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, (GXCompType)5, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_TEX0, GX_TEX_ST, (GXCompType)3, 9);
+    GXSetVtxAttrFmt(GX_VTXFMT1, GX_VA_POS, GX_POS_XYZ, (GXCompType)4, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT1, GX_VA_NBT, GX_NRM_NBT, (GXCompType)4, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT1, GX_VA_CLR0, GX_CLR_RGBA, (GXCompType)5, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT1, GX_VA_TEX0, GX_TEX_ST, (GXCompType)3, 9);
+    GXSetVtxAttrFmt(GX_VTXFMT4, GX_VA_POS, GX_POS_XYZ, (GXCompType)3, 5);
+    GXSetVtxAttrFmt(GX_VTXFMT4, GX_VA_NRM, GX_NRM_XYZ, (GXCompType)1, 6);
+    GXSetVtxAttrFmt(GX_VTXFMT4, GX_VA_CLR0, GX_CLR_RGBA, (GXCompType)5, 0);
+    GXSetVtxAttrFmt(GX_VTXFMT4, GX_VA_TEX0, GX_TEX_ST, (GXCompType)3, 9);
 
     DisplayList::Init();
     DataRegisterFunc("toggle_ao", OnToggleAO);
 }
 
 void WiiMesh::ReleaseBuffers() {
+    WiiRnd::SyncFree(unk_0x148);
+    WiiRnd::SyncFree(unk_0x14C);
+    WiiRnd::SyncFree(unk_0x138);
+    WiiRnd::SyncFree(unk_0x13C);
+    WiiRnd::SyncFree(unk_0x140);
+    WiiRnd::SyncFree(unk_0x144);
+    WiiRnd::SyncFree(unk_0x150);
+    unk_0x138 = NULL;
+    unk_0x13C = NULL;
+    unk_0x140 = NULL;
+    unk_0x144 = NULL;
+    unk_0x148 = NULL;
+    unk_0x14C = NULL;
+    unk_0x150 = NULL;
+}
+
+void* SkinAlloc(int i1, char*, int i2) {
+
+}
+
+void WiiMesh::CreateBuffers() {
 
 }
 
 WiiMesh::~WiiMesh() { }
+
+void WiiMesh::SetVertexDesc() {
+    GXClearVtxDesc();
+    GXAttrType x = GX_INDEX16;
+    if (mDisplays.unk_0x8 < 0x100) x = GX_INDEX8;
+    GXSetVtxDesc(GX_VA_POS, x);
+    GXSetVtxDesc(GX_VA_NRM, x);
+    GXSetVtxDesc(GX_VA_CLR0, x);
+    GXSetVtxDesc(GX_VA_TEX0, x);
+    GXInvalidateVtxCache();
+}
+
+void WiiMesh::SetVertexBuffers(const void*) {
+    const void* v = unk_0x138;
+    GXSetArray(GX_VA_CLR0, v, 8);
+    GXSetArray(GX_VA_TEX0, (const void*)((u32)v + 4), 8);
+}
+
+void WiiMesh::DrawFaces() {
+    mDisplays.Draw((u32)this, bitmask_1 ? GX_VTXFMT4 : GX_VTXFMT0);
+}
+
+void WiiMesh::DrawReflection(bool b) {
+    if (mVerts.empty()) {
+        MILO_WARN("WiiMesh::DrawReflection: no vertices to render!\n");
+        return;
+    }
+    if (mFaces.empty()) {
+        MILO_WARN("WiiMesh::DrawReflection: no faces to render!\n");
+        return;
+    }
+    GXClearVtxDesc();
+    GXSetVtxDesc(GX_VA_POS, GX_INDEX16);
+    GXSetVtxDesc(GX_VA_NBT, GX_DIRECT);
+    GXSetVtxDesc(GX_VA_CLR0, GX_INDEX16);
+    GXSetVtxDesc(GX_VA_TEX0, GX_INDEX16);
+    Mtx mtx;
+    PSMTXIdentity(mtx);
+    GXLoadNrmMtxImm(mtx, 0);
+}
+
+void WiiMesh::RemoveVertData() {
+    mVerts.resize(0, true);
+
+    ReleaseBuffers();
+}

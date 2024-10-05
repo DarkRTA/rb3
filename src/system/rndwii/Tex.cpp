@@ -11,7 +11,7 @@ std::set<WiiTex*> gRenderTextureSet;
 
 bool WiiTex::bComposingOutfitTexture = false;
 
-WiiTex::WiiTex() { }
+WiiTex::WiiTex() : mImageData(NULL), mFormat(   ) { }
 
 WiiTex::~WiiTex() { DeleteSurface(); }
 
@@ -37,6 +37,10 @@ u32 OrderFromFormat(unsigned int ui) {
     }
 }
 
+void WiiTex::MovieSwapFrames() {
+
+}
+
 void WiiTex::CopyFromFB(int src_x, int src_y, int src_w, int src_h, bool copy_bool, bool is_mip) {
     MILO_ASSERT(mImageData, 711);
     MILO_ASSERT(mType & kRendered, 712);
@@ -51,4 +55,18 @@ void WiiTex::CopyFromFB(int src_x, int src_y, int src_w, int src_h, bool copy_bo
     GXSetCopyClamp(GX_CLAMP_ALL);
     GXCopyTex(mImageData, u8(copy_bool));
     if (bComposingOutfitTexture || !TheRnd->mInGame) RndGxDrawDone();
+}
+
+bool ConvertAndStoreYUV2BMP(void*, int, int, void*);
+
+void WiiTex::CreateScreenShot() {
+    DeleteSurface();
+    if (!ConvertAndStoreYUV2BMP(WiiRnd::GetCurrXFB(), mWidth, mHeight, mImageData)) {
+        MILO_WARN("[WiiTex::CreateScreenShot] Failed to covert XFB to BMP!\n"); // BUG: covert
+        DeleteSurface();
+    }
+}
+
+bool ConvertAndStoreYUV2BMP(void*, int, int, void*) {
+
 }

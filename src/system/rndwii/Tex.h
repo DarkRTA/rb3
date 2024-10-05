@@ -13,7 +13,9 @@ public:
 
     void PresyncBitmap();
     void DeleteSurface();
+    void MovieSwapFrames();
     void CopyFromFB(int, int, int, int, bool, bool);
+    void CreateScreenShot();
 
     u8 pad[32];
     void* mImageData; // 0x84

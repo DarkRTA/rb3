@@ -21,8 +21,8 @@ public:
     void ReadMarkers();
     void ReadNumSamples();
     IListChunk& PrepareToProvideData();
-    short NumChannels() const { return mNumChannels; }
-    short BitsPerSample() const { return mBitsPerSample; }
+    u16 NumChannels() const { return mNumChannels; }
+    u16 BitsPerSample() const { return mBitsPerSample; }
     int SamplesPerSec() const { return mSamplesPerSec; }
     int NumSamples() const { return mNumSamples; }
     short Format() const { return mFormat; }

@@ -14,8 +14,8 @@ public:
     virtual bool Done() = 0;
     virtual bool Fail() = 0;
     virtual void Init() = 0;
-    void ConsumeData(void**, int, int);
-    void EndData();
+    virtual void ConsumeData(void**, int, int);
+    virtual void EndData();
 
     int mNumChannels; // 0x4
     int mSampleRate; // 0x8
