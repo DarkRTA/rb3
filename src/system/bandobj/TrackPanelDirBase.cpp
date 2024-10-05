@@ -6,6 +6,7 @@
 #include "obj/ObjVersion.h"
 #include "obj/Msg.h"
 #include "rndobj/EventTrigger.h"
+#include "utl/TimeConversion.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(TrackPanelDirBase);
@@ -28,6 +29,12 @@ TrackPanelDirBase::TrackPanelDirBase() : mViewTimeEasy(0), mViewTimeExpert(0), m
 }
 
 SAVE_OBJ(TrackPanelDirBase, 0x3F)
+
+float TrackPanelDirBase::GetPulseAnimStartDelay(bool b) const {
+    float beat = MsToBeat(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f + 16.70000076293945f);
+    if(b) beat = beat + mPulseOffset;
+    return std::floor(beat) + 1.0f - beat;
+}
 
 void TrackPanelDirBase::PreLoad(BinStream& bs){
     LOAD_REVS(bs);
@@ -115,6 +122,55 @@ float GetTrackViewTime(const Symbol& s1, Symbol s2){
     return cfg->FindFloat(s2);
 }
 
+void TrackPanelDirBase::UpdateTrackSpeed(){
+    if(!mTrackPanel || !mTrackPanel->ShouldUpdateScrollSpeed()) return;
+    else {
+        mDoubleSpeedActive = ModifierActive(mod_doublespeed);
+        mIndependentTrackSpeeds = ModifierActive(mod_independent_track_speeds);
+        float f1 = mDoubleSpeedActive ? 1.5f : 1.0f;
+        if(mIndependentTrackSpeeds){
+            for(int i = 0; i < mGemTracks.size(); i++){
+                GemTrackDir* tdir = mGemTracks[i];
+                TrackInstrument inst = tdir->GetInstrument();
+                Symbol diffsym = tdir->GetPlayerDifficultySym();
+                if(tdir->InUse() && inst >= kInstGuitar && diffsym != gNullStr){
+                    Symbol instsym = tdir->GetInstrumentSymbol();
+                    float viewtime = GetTrackViewTime(instsym, diffsym);
+                    tdir->SetScrollSpeed(viewtime / f1);
+                }
+            }
+        }
+        else {
+            float f14 = 0;
+            float f11 = f14;
+            float f13 = f14;
+            float f15 = f14;
+            for(int i = 0; i < mGemTracks.size(); i++){
+                GemTrackDir* tdir = mGemTracks[i];
+                TrackInstrument inst = tdir->GetInstrument();
+                Symbol diffsym = tdir->GetPlayerDifficultySym();
+                if(tdir->InUse() && inst >= kInstGuitar && diffsym != gNullStr){
+                    Symbol instsym = tdir->GetInstrumentSymbol();
+                    float viewtime = GetTrackViewTime(instsym, diffsym);
+                    f15 += 1.0f;
+                    f11 += viewtime;
+                    if(!tdir->HasNetPlayer()){
+                        f13 += 1.0f;
+                        f14 += viewtime;
+                    }
+                }
+            }
+            if(f15 > 0){
+                float speed = f13 == 0 ? f11 / f15 : f14 / f13;
+                speed /= f1;
+                for(int i = 0; i < mGemTracks.size(); i++){
+                    mGemTracks[i]->SetScrollSpeed(speed);
+                }
+            }
+        }
+    }
+}
+
 void TrackPanelDirBase::SetShowing(bool b){
     Find<RndGroup>("draw_order.grp", true)->SetShowing(b);
 }
@@ -172,7 +228,7 @@ BEGIN_HANDLERS(TrackPanelDirBase)
     HANDLE_ACTION(game_over, GameOver())
     HANDLE_ACTION(coda, Coda())
     HANDLE_ACTION(set_showing, SetShowing(_msg->Int(2)))
-    HANDLE_EXPR(showing, Find<RndGroup>("draw_order.grp", true)->Showing())
+    HANDLE_EXPR(showing, Showing())
     HANDLE_ACTION(toggle_surface, ToggleSurface())
     HANDLE_ACTION(toggle_nowbar, ToggleNowbar())
     HANDLE(foreach_configurable_object, DataForEachConfigObj)

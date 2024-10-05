@@ -94,7 +94,12 @@ public:
     void SoloHide();
     void UnisonEnd();
     void UnisonStart();
+    Symbol GetPlayerDifficultySym() const;
     TrackPanelDirBase* MyTrackPanelDir();
+    Symbol GetInstrumentSymbol() const;
+
+    TrackInstrument GetInstrument() const { return mTrackInstrument; }
+    bool InUse() const { return mInUse; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

@@ -58,7 +58,12 @@ public:
     virtual float GetPulseAnimStartDelay(bool) const;
     virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return 0; }
 
+    bool Showing(){
+        return Find<RndGroup>("draw_order.grp", true)->Showing();
+    }
+
     void SetShowing(bool);
+    void UpdateTrackSpeed();
     void UpdateJoinInProgress(bool, bool);
     void FailedJoinInProgress();
     bool ModifierActive(Symbol);
