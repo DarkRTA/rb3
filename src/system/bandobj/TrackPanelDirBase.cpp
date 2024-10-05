@@ -19,7 +19,7 @@ DataNode ToggleHUD(DataArray* da){
 }
 
 TrackPanelDirBase::TrackPanelDirBase() : mViewTimeEasy(0), mViewTimeExpert(0), mNetTrackAlpha(0), mPulseOffset(0), mConfiguration(this, 0), mConfigurableObjects(this, kObjListNoNull),
-    mTracks(this), mGemTracks(this), unk224(0), mTrackPanel(0), unk22c(this, 0), unk238(0), unk23c(0), mPerformanceMode(0), mDoubleSpeedActive(0), mIndependentTrackSpeeds(0) {
+    mTracks(this), mGemTracks(this), unk224(0), mTrackPanel(0), mApplauseMeter(this, 0), mBandLogoRival(0), mBandLogo(0), mPerformanceMode(0), mDoubleSpeedActive(0), mIndependentTrackSpeeds(0) {
     DataRegisterFunc("toggle_hud", ToggleHUD);
     if(SystemConfig()->FindArray("track_graphics", false)){
         if(SystemConfig("track_graphics")->FindArray("pulse_offset", false)){

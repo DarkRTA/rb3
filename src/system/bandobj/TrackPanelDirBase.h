@@ -85,14 +85,14 @@ public:
     float mPulseOffset; // 0x1e4
     ObjPtr<Hmx::Object, ObjectDir> mConfiguration; // 0x1e8
     ObjPtrList<RndTransformable, ObjectDir> mConfigurableObjects; // 0x1f4
-    std::vector<int> unk204; // 0x204
+    std::vector<TrackInstrument> mInstruments; // 0x204
     ObjVector<ObjPtr<BandTrack, ObjectDir> > mTracks; // 0x20c
     ObjVector<ObjPtr<GemTrackDir, ObjectDir> > mGemTracks; // 0x218
     bool unk224; // 0x224
     TrackPanelInterface* mTrackPanel; // 0x228
-    ObjPtr<RndDir, ObjectDir> unk22c; // 0x22c
-    int unk238; // 0x238
-    int unk23c; // 0x23c
+    ObjPtr<RndDir, ObjectDir> mApplauseMeter; // 0x22c
+    RndDir* mBandLogoRival; // 0x238
+    RndDir* mBandLogo; // 0x23c
     bool mPerformanceMode; // 0x240
     bool mDoubleSpeedActive; // 0x241
     bool mIndependentTrackSpeeds; // 0x242
