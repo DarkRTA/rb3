@@ -33,6 +33,9 @@ void _MemOrPoolFree(int, PoolType, void*);
 void* _MemOrPoolAllocSTL(int, PoolType);
 void _MemOrPoolFreeSTL(int, PoolType, void*);
 
+#define kNoHeap -3
+#define kSystemHeap -1
+
 int GetCurrentHeapNum();
 int MemFindHeap(const char*);
 void MemPushHeap(int);

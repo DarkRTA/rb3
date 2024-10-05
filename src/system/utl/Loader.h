@@ -44,6 +44,7 @@ public:
     Loader* AddLoader(const FilePath&, LoaderPos);
     Loader* GetLoader(const FilePath&) const;
     void PollUntilLoaded(Loader*, Loader*);
+    void PollUntilEmpty();
     void Poll();
     void RegisterFactory(const char*, LoaderFactoryFunc*);
     void StartAsyncUnload();
@@ -58,17 +59,19 @@ public:
 
     static const char* LoaderPosString(LoaderPos, bool);
 
-    std::list<Loader*> mLoaders;
-    unsigned int mPlatform;
-    bool mEditMode;
-    bool mCacheMode;
-    std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories;
+    std::list<Loader*> mLoaders; // 0x0
+    unsigned int mPlatform; // 0x8
+    bool mEditMode; // 0xC
+    bool mCacheMode; // 0xD
+    std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories; // 0x10
     float unk18; // mPeriod?
     float unk1c;
     std::list<Loader*> unk20; // mLoading?
-    Timer mTimer;
+    Timer mTimer; // 0x28
     int unk58;
     int unk5c;
+
+    static void (*sFileOpenCallback)(const FilePath&);
 };
 
 extern LoadMgr TheLoadMgr;

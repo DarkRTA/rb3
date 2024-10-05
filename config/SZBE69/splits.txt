@@ -489,6 +489,12 @@ rb3/ui/uistats.cpp:
 rb3/panels/voiceoverpanel.cpp:
 	.text       start:0x8029E738 end:0x8029F41C
 
+band3/tour/TourReward.cpp:
+	.text       start:0x802C06A8 end:0x802C0DC4
+	.data       start:0x8084FB00 end:0x8084FB38
+	.sbss       start:0x808E4370 end:0x808E4378
+	.bss        start:0x80900740 end:0x80900758
+
 rb3/unknown/802/unk_802D4B74.cpp:
 	.text       start:0x802D4B74 end:0x802DCE58
 
