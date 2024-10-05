@@ -27,17 +27,17 @@ public:
         _MemFree(v);
     }
 
-    int mArkfileNum;
-    unsigned long long mByteStart;
-    int mSize;
-    int mUCSize;
-    int mNumOutstandingTasks;
-    int mBytesRead;
-    int mTell;
-    int mFail;
-    float mReadStartTime;
-    bool mReadAhead;
-    String mFilename;
+    int mArkfileNum; // 0x4
+    u64 mByteStart; // 0x8
+    int mSize; // 0x10
+    int mUCSize; // 0x14
+    int mNumOutstandingTasks; // 0x18
+    int mBytesRead; // 0x1C
+    int mTell; // 0x20
+    int mFail; // 0x24
+    float mReadStartTime; // 0x28
+    bool mReadAhead; // 0x2C
+    String mFilename; // 0x30
 };
 
 #endif

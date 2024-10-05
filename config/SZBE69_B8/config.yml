@@ -26,3 +26,23 @@ block_relocations:
   end: .text:0x80A2F064
 - source: .text:0x80A2F208 # strcmp
   end: .text:0x80A2F20C
+
+add_relocations:
+- source: .text:0x807c8968
+  type: l
+  target: TheLoadMgr
+- source: .text:0x807c897c
+  type: l
+  target: __RTTI__10UILabelDir
+- source: .text:0x807c8980
+  type: l
+  target: __RTTI__9ObjectDir
+- source: .text:0x807c8b08
+  type: l
+  target: TheLoadMgr
+- source: .text:0x807c8b1c
+  type: l
+  target: __RTTI__10UILabelDir
+- source: .text:0x807c8b20
+  type: l
+  target: __RTTI__9ObjectDir

@@ -67,7 +67,7 @@ void RndCubeTex::SetBitmap(CubeFace face, const FilePath& fp, bool b){
 bool RndCubeTex::ValidateBitmapProperties(std::vector<CubeFace>& faces){
     if(props.mWidth == 0 || props.mHeight == 0) return false;
     else {
-        const char* sizeStr = RndTex::CheckSize(props.mWidth, props.mHeight, props.mBpp, props.mNumMips, RndTex::Regular, false);
+        const char* sizeStr = RndTex::CheckSize(props.mWidth, props.mHeight, props.mBpp, props.mNumMips, RndTex::kRegular, false);
         if(sizeStr){
             MILO_WARN(sizeStr, Name());
             return false;

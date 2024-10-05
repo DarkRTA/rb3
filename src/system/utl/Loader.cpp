@@ -1,4 +1,7 @@
 #include "utl/Loader.h"
+#include "os/Debug.h"
+#include "os/File.h"
+#include "utl/MemMgr.h"
 #include "utl/Option.h"
 #include "obj/DataFunc.h"
 
@@ -85,9 +88,33 @@ Loader* LoadMgr::GetLoader(const FilePath& fp) const {
     }
 }
 
+Loader* LoadMgr::AddLoader(const FilePath& file, LoaderPos pos) {
+    if (file.empty()) return NULL;
+    if (sFileOpenCallback != NULL) {
+        sFileOpenCallback(file);
+    }
+    const char* ext = FileGetExt(file.c_str());
+    for (std::list<Loader*>::iterator it = mLoaders.begin(); it != mLoaders.end(); it++) {
+        if ((*it)->mFile == ext) {
+            (*it)->StateName();
+        }
+    }
+    return new FileLoader(file, file.c_str(), pos, 0, false, true, NULL);
+}
+
 DECOMP_FORCEACTIVE(Loader,
     "PollUntilLoaded circular dependency %s on %s"
 )
+
+void LoadMgr::PollUntilEmpty() {
+    
+}
+
+void LoadMgr::Print() {
+    for (std::list<Loader*>::iterator it = unk20.begin(); it != unk20.end(); it++) {
+        TheDebug << (*it)->mFile.c_str() << " " << LoaderPosString((*it)->mPos, 0)<< "\n";
+    }
+}
 
 const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
     static const char* names[4] = { "kLoadFront", "kLoadBack", "kLoadFrontStayBack", "kLoadStayBack" };
@@ -97,6 +124,9 @@ const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
     else return names[pos];
 }
 
+void LoadMgr::StartAsyncUnload() { unk58++; }
+void LoadMgr::FinishAsyncUnload() { unk58--; }
+
 void LoadMgr::RegisterFactory(const char* cc, LoaderFactoryFunc* func){
     for(std::list<std::pair<String, LoaderFactoryFunc*> >::iterator it = mFactories.begin(); it != mFactories.end(); it++){
         if((*it).first == cc){
@@ -104,4 +134,19 @@ void LoadMgr::RegisterFactory(const char* cc, LoaderFactoryFunc* func){
         }
     }
     mFactories.push_back(std::pair<String, LoaderFactoryFunc*>(String(cc), func));
+}
+
+Loader::Loader(const FilePath& fp, LoaderPos pos) : mPos(pos), mFile(fp) {
+    mHeap = GetCurrentHeapNum();
+    MILO_ASSERT(MemNumHeaps() == 0 || (mHeap != kNoHeap && mHeap != kSystemHeap), 446);
+    MILO_ASSERT(!streq(MemHeapName(mHeap), "fast"), 448);
+}
+
+Loader::~Loader() {
+
+}
+
+FileLoader::FileLoader(const FilePath& fp, const char*, LoaderPos pos, int, bool, bool, BinStream* bs) : 
+    Loader(fp, pos), mFile(NULL), mStream(bs), mBuffer(NULL), mBufLen(0) {
+
 }

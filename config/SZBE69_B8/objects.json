@@ -322,7 +322,7 @@
             "band3/tour/TourProperty.cpp": "Matching",
             "band3/tour/TourPropertyCollection.cpp": "MISSING",
             "band3/tour/TourQuestGameRules.cpp": "Matching",
-            "band3/tour/TourReward.cpp": "NonMatching",
+            "band3/tour/TourReward.cpp": "Equivalent",
             "band3/tour/TourSavable.cpp": "MISSING",
             "band3/tour/TourWeightManager.cpp": "MISSING"
         }
@@ -1219,7 +1219,7 @@
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",
 
-            "system/rndwii/Cam.cpp": "MISSING",
+            "system/rndwii/Cam.cpp": "NonMatching",
             "system/rndwii/Env.cpp": "MISSING",
             "system/rndwii/Lit.cpp": "MISSING",
             "system/rndwii/Mat.cpp": "MISSING",
@@ -1230,8 +1230,8 @@
             "system/rndwii/PostProc.cpp": "MISSING",
             "system/rndwii/Rnd.cpp": "NonMatching",
             "system/rndwii/SplitPostProc.cpp": "MISSING",
-            "system/rndwii/Tex.cpp": "MISSING",
-            "system/rndwii/TexRenderer.cpp": "MISSING",
+            "system/rndwii/Tex.cpp": "NonMatching",
+            "system/rndwii/TexRenderer.cpp": "Matching",
 
             "system/synth/ADSR.cpp": "Matching",
             "system/synth/BinkClip.cpp": "Matching",
@@ -1422,7 +1422,7 @@
 
             "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",
-            "system/world/ColorPalette.cpp": "NonMatching",
+            "system/world/ColorPalette.cpp": "Equivalent",
             "system/world/Crowd.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
             "system/world/EventAnim.cpp": "NonMatching",
@@ -1451,7 +1451,7 @@
         "mw_version": "Wii/1.3",
         "cflags": "system/speex",
         "objects": {
-            "system/speex/libspeex/bits.c": "NonMatching",
+            "system/speex/libspeex/bits.c": {"status": "LinkIssues", "comment": "Has issues with Quazal"},
             "system/speex/libspeex/cb_search.c": "Matching",
             "system/speex/libspeex/exc_10_16_table.c": "Matching",
             "system/speex/libspeex/exc_10_32_table.c": "Matching",

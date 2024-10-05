@@ -32,6 +32,7 @@
 
 */
 
+#include "decomp.h"
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -55,7 +56,12 @@ EXPORT void speex_bits_init(SpeexBits *bits)
 
    bits->owner=1;
 
-   speex_bits_reset(bits);
+   //speex_bits_reset(bits);
+   bits->chars[0]=0;
+   bits->nbBits=0;
+   bits->charPtr=0;
+   bits->bitPtr=0;
+   bits->overflow=0;
 }
 
 EXPORT void speex_bits_init_buffer(SpeexBits *bits, void *buff, int buf_size)
@@ -89,7 +95,7 @@ EXPORT void speex_bits_destroy(SpeexBits *bits)
    /* Will do something once the allocation is dynamic */
 }
 
-static inline EXPORT void speex_bits_reset(SpeexBits *bits)
+EXPORT void speex_bits_reset(SpeexBits *bits)
 {
    /* We only need to clear the first byte now */
    bits->chars[0]=0;

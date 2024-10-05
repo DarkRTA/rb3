@@ -412,7 +412,7 @@ DataNode OnTestDrawGroups(DataArray* da){
 // fn_80659D74
 void TestTextureSize(ObjectDir* dir, int iType, int i3, int i4, int i5, int maxBpp){
     bool rendered = false;
-    if(iType == RndTex::Rendered || iType == RndTex::RenderedNoZ) rendered = true;
+    if(iType == RndTex::kRendered || iType == RndTex::kRenderedNoZ) rendered = true;
     bool b2 = false;
     if(GetGfxMode() == 0 || rendered) b2 = true;
     int ivar4 = 1;

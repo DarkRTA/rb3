@@ -22,7 +22,7 @@ public:
     virtual ~RndCam();
     virtual void UpdatedWorldXfm();
     virtual void Select();
-    virtual int ProjectZ(float){ return 0; }
+    virtual u32 ProjectZ(float){ return 0; }
 
     void SetFrustum(float, float, float, float);
     void SetTargetTex(RndTex*);

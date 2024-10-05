@@ -25,7 +25,7 @@ void CopyBottomMip(RndBitmap& dst, const RndBitmap& src) {
     dst.Create(src, src.mBpp, src.mOrder, NULL);
 }
 
-RndTex::RndTex() : mMipMapK(-8.0f), mType(Regular), mWidth(0), mHeight(0), mBpp(32), mFilepath(), mNumMips(0), mOptimizeForPS3(0), mLoader(0) {
+RndTex::RndTex() : mMipMapK(-8.0f), mType(kRegular), mWidth(0), mHeight(0), mBpp(32), mFilepath(), mNumMips(0), mOptimizeForPS3(0), mLoader(0) {
 
 }
 
@@ -88,13 +88,13 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
     mFilepath.SetRoot("");
     mNumMips = 0;
     mBitmap.Reset();
-    if(mType & BackBuffer){
+    if(mType & kBackBuffer){
         mWidth = TheRnd->mWidth;
         mHeight = TheRnd->mHeight;
         SetPowerOf2();
         mBpp = TheRnd->mScreenBpp;
     }
-    else if(mType & Rendered){
+    else if(mType & kRendered){
         if(useMips){
             for(int i = mWidth, j = mHeight; i > 0x10 && j > 0x10; i >>= 1, j >>= 1){
                 mNumMips++;
@@ -130,7 +130,7 @@ void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
     mHeight = bmap.Height();
     SetPowerOf2();
     mBpp = bmap.Bpp();
-    mType = Regular;
+    mType = kRegular;
     mFilepath.SetRoot("");
     mNumMips = bmap.NumMips();
     MILO_ASSERT(!mNumMips, 0x111);
@@ -152,7 +152,7 @@ void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
 
 void RndTex::SetBitmap(FileLoader* fl){
     PresyncBitmap();
-    mType = Regular;
+    mType = kRegular;
     void* buffer;
     if(fl){
         mFilepath = ((Loader*)fl)->mFile;
@@ -207,7 +207,7 @@ const char* CheckDim(int dim, RndTex::Type ty, bool b){
     const char* ret = 0;
     if(dim == 0) return ret;
     else {
-        if(ty == RndTex::Movie && (dim % 16 != 0)){
+        if(ty == RndTex::kMovie && (dim % 16 != 0)){
             ret = "%s: dimensions not multiple of 16";
         }
         if(GetGfxMode() == 0){
@@ -234,7 +234,7 @@ const char* CheckDim(int dim, RndTex::Type ty, bool b){
 
 const char* RndTex::CheckSize(int width, int height, int bpp, int numMips, Type ty, bool file){
     const char* ret;
-    if(ty == DepthVolumeMap || ty == DensityMap || (ty & DeviceTexture)) return 0;
+    if(ty == kDepthVolumeMap || ty == kDensityMap || (ty & kDeviceTexture)) return 0;
     else {
         ret = CheckDim(width, ty, file);
         if(!ret) ret = CheckDim(height, ty, file);
@@ -347,7 +347,7 @@ void RndTex::PostLoad(BinStream& bs){
         bs >> (int&)mType;
     }
     else if(gRev > 5){
-        Type types[5] = { Regular, Rendered, Movie, BackBuffer, FrontBuffer };
+        Type types[5] = { kRegular, kRendered, kMovie, kBackBuffer, kFrontBuffer };
         int i;
         bs >> i;
         mType = types[i];
@@ -355,13 +355,13 @@ void RndTex::PostLoad(BinStream& bs){
     else if(gRev > 4){
         bool b;
         bs >> b;
-        Type ty = Regular;
-        if(b) ty = Rendered;
+        Type ty = kRegular;
+        if(b) ty = kRendered;
         mType = ty;
     }
 
     if(mFilepath.empty()){
-        if(strcmp(Name(), "movie.tex") != 0 && strcmp(Name(), "movie_splash.tex") != 0 && (mType & Rendered)){
+        if(strcmp(Name(), "movie.tex") != 0 && strcmp(Name(), "movie_splash.tex") != 0 && (mType & kRendered)){
             while(mWidth > 0x100) mWidth /= 2;
             while(mHeight > 0x100) mHeight /= 2;
         }
@@ -399,7 +399,7 @@ void RndTex::PostLoad(BinStream& bs){
         MILO_ASSERT(!mNumMips, 0x3B7);
         SyncBitmap();
     }
-    else if(mFilepath.empty() || mType != Regular){
+    else if(mFilepath.empty() || mType != kRegular){
         MILO_ASSERT(!mNumMips, 0x3BE);
         SetBitmap(mWidth, mHeight, mBpp, mType, false, 0);
     }
@@ -443,27 +443,41 @@ DECOMP_FORCEACTIVE(Tex,
 )
 
 TextStream& operator<<(TextStream& ts, RndTex::Type ty){
-    if(ty <= RndTex::RenderedNoZ){
-        if(ty <= RndTex::Movie){
-            if(ty <= RndTex::Rendered){
-                if(ty < RndTex::Rendered && ty > 0) ts << "Regular";
-                else if(ty == RndTex::Rendered) ts << "Rendered";
-            }
-            else if(ty == RndTex::Movie) ts << "Movie";
-        }
-        else if(ty <= RndTex::FrontBuffer){
-            if(ty < RndTex::FrontBuffer && ty == RndTex::BackBuffer) ts << "BackBuffer";
-            else if(ty == RndTex::FrontBuffer) ts << "FrontBuffer";
-        }
-        else if(ty == RndTex::RenderedNoZ) ts << "RenderedNoZ";
+    switch (ty) {
+    case RndTex::kRegular:
+        ts << "Regular";
+        break;
+    case RndTex::kRendered:
+        ts << "Rendered";
+        break;
+    case RndTex::kMovie:
+        ts << "Movie";
+        break;
+    case RndTex::kBackBuffer:
+        ts << "BackBuffer";
+        break;
+    case RndTex::kFrontBuffer:
+        ts << "FrontBuffer";
+        break;
+    case RndTex::kRenderedNoZ:
+        ts << "RenderedNoZ";
+        break;
+    case RndTex::kShadowMap:
+        ts << "ShadowMap";
+        break;
+    case RndTex::kDepthVolumeMap:
+        ts << "DepthVolumeMap";
+        break;
+    case RndTex::kDensityMap:
+        ts << "DensityMap";
+        break;
+    case RndTex::kDeviceTexture:
+        ts << "DeviceTexture";
+        break;
+    case RndTex::kScratch:
+        ts << "Scratch";
+        break;
     }
-    else if(ty <= RndTex::DensityMap){
-        if(ty < RndTex::DepthVolumeMap && ty == RndTex::ShadowMap) ts << "ShadowMap";
-        else if(ty == RndTex::DepthVolumeMap) ts << "DepthVolumeMap";
-        else if(ty == RndTex::DensityMap) ts << "DensityMap";
-    }
-    else if(ty == RndTex::DeviceTexture) ts << "DeviceTexture";
-    else if(ty < RndTex::DeviceTexture && ty == RndTex::Scratch) ts << "Scratch";
     return ts;
 }
 

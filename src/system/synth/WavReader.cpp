@@ -1,33 +1,44 @@
 #include "WavReader.h"
+#include "utl/FileStream.h"
 
 WavReader::WavReader(File *file, bool enableReads, StandardStream *stream) {
     mInFile = file;
     mOutStream = stream;
     MILO_ASSERT(mInFile, 0x1a);
 
-    // TODO: figure out how to properly construct these, can't quite get it right
-    //FileStream fileStream = FileStream(mInFile, true);
-    //mInFileStream = &fileStream;
+    mInFileStream = new (_MemAlloc(sizeof(FileStream), 0)) FileStream(file, true);
 
-    //WaveFile waveFile(*mInFileStream);
-    //mInWaveFile = &waveFile;
+    mInWaveFile = new WaveFile(*mInFileStream);
 
     // this only likes 44100khz, 16-bit, stereo files
-    MILO_ASSERT(mInWaveFile->SamplesPerSec() == 44100, 0x21);
-    MILO_ASSERT(mInWaveFile->BitsPerSample() == 16, 0x21);
-    MILO_ASSERT(mInWaveFile->NumChannels() <= 2, 0x21);
+    MILO_ASSERT(mInWaveFile->SamplesPerSec() == 44100, 33);
+    ((mInWaveFile->BitsPerSample() == (s16)16)
+     || (TheDebugFailer << (MakeString(
+             kAssertStr,
+             "WavReader.cpp",
+             34,
+             "mInWaveFile->BitsPerSample() == 16"
+         )),
+         0));
+    ((mInWaveFile->NumChannels() <= (s16)2)
+     || (TheDebugFailer << (MakeString(
+             kAssertStr,
+             "WavReader.cpp",
+             35,
+             "mInWaveFile->NumChannels() <= 2"
+         )),
+         0));
 
     mNumChannels = mInWaveFile->mNumChannels;
     mSampleRate = mInWaveFile->mSamplesPerSec;
     mSamplesLeft = mInWaveFile->mNumSamples;
 
-    //WaveFileData waveFileData(*mInWaveFile);
-    //mInWaveFileData = &waveFileData;
+    mInWaveFileData = new WaveFileData(*mInWaveFile);
 
-    mInputBuffers[0] = new unsigned short[0x2000];
-    mInputBuffers[1] = new unsigned short[0x2000];
+    mInputBuffers[0] = new unsigned short[0x1000];
+    mInputBuffers[1] = new unsigned short[0x1000];
 
-    mRawInputBuffer = new unsigned short[0x4000];
+    mRawInputBuffer = new unsigned short[0x2000];
 
     mTotalSamplesConsumed = 0;
     mBufNumSamples = 0;
@@ -37,19 +48,30 @@ WavReader::WavReader(File *file, bool enableReads, StandardStream *stream) {
 }
 
 WavReader::~WavReader() {
-    if (this != nullptr) {
-        if (mInWaveFileData != nullptr) {
-            mInWaveFileData->~WaveFileData();
-        }
-        mInWaveFile->~WaveFile();
-        if (mInFileStream != nullptr) {
-            mInFileStream->~FileStream();
-        }
-        delete (mInputBuffers[0]);
-        delete (mInputBuffers[1]);
-        delete (mRawInputBuffer);
+    delete mInWaveFileData;
+    delete mInWaveFile;
+    delete mInFileStream;
+    delete[] (mInputBuffers[0]);
+    delete[] (mInputBuffers[1]);
+    delete[] (mRawInputBuffer);
+}
+
+void WavReader::Poll(float) {
+    if (!mInitted) {
+        mInitted = true;
+        Init();
     }
-    return;
+    if (mBufNumSamples != 0) {  
+        ConsumeData((void**)(mInputBuffers + (mBufOffset * 2)), mBufNumSamples, mTotalSamplesConsumed);
+
+        while (mSamplesLeft != 0) {
+            
+        }
+    }
+}
+
+void WavReader::Seek(int pos) {
+    mInWaveFileData->Seek(pos * mNumChannels * 2, BinStream::kSeekBegin);
 }
 
 void WavReader::Init() {
@@ -64,14 +86,6 @@ void WavReader::ConsumeData(void **pcm, int samples, int startSamp) {
     mOutStream->ConsumeData(pcm, samples, startSamp);
 }
 
-bool WavReader::Done() {
-    return mSamplesLeft == 0;
-}
-
-void WavReader::EnableReads(bool enabled) {
-    mEnableReads = enabled;
-}
-
 void WavReader::EndData() {
     return;
 }
@@ -80,6 +94,10 @@ bool WavReader::Fail() {
     return false;
 }
 
-void WavReader::Seek(int pos) {
-    mInWaveFileData->Seek(pos * mNumChannels * 2, BinStream::kSeekBegin);
+bool WavReader::Done() {
+    return mSamplesLeft == 0;
+}
+
+void WavReader::EnableReads(bool enabled) {
+    mEnableReads = enabled;
 }
