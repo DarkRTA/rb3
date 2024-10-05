@@ -100,6 +100,7 @@ public:
     Symbol GetPlayerDifficultySym() const;
     TrackPanelDirBase* MyTrackPanelDir();
     Symbol GetInstrumentSymbol() const;
+    void CombineStreakMultipliers(bool);
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }

@@ -138,6 +138,40 @@ void TrackPanelDir::SetTrackPanel(TrackPanelInterface* interface){
     }
 }
 
+void TrackPanelDir::AssignTrack(int iSlot, TrackInstrument iInstrument, bool b){
+    MILO_ASSERT(iInstrument != kInstNone, 0xF0);
+    if(mTracks.size() == 0){
+        for(int i = 0; i < mTrackPanel->GetTrackCount(); i++){
+            mTracks.push_back(ObjPtr<BandTrack, ObjectDir>(this, 0));
+        }
+    }
+    TrackInstrument oldInstrument = mInstruments[iSlot];
+    if(iInstrument != oldInstrument){
+        bool wasPending = oldInstrument == kInstPending;
+        MILO_ASSERT((oldInstrument == kInstNone) || wasPending, 0x103);
+        MILO_ASSERT(wasPending || (mTracks[iSlot] == NULL), 0x104);
+        if(iInstrument == kInstVocals){
+            MILO_ASSERT(ReservedVocalPlayerSlot(iSlot), 0x10A);
+            mTracks[iSlot] = mVocalTrack;
+            unk250++;
+        }
+        else {
+            MILO_ASSERT(!ReservedVocalPlayerSlot(iSlot), 0x112);
+            GemTrackDir* gemTrackDir = mGemTracks[iSlot];
+            MILO_ASSERT(wasPending || !gemTrackDir->InUse(), 0x115);
+            mTracks[iSlot] = gemTrackDir;
+            gemTrackDir->unk488 = unk24c;
+            if(!wasPending) unk24c++;
+        }
+        mTracks[iSlot]->SetTrackIdx(iSlot);
+        mTracks[iSlot]->SetInstrument(iInstrument);
+        mTracks[iSlot]->SetUsed(true);
+        mInstruments[iSlot] = iInstrument;
+        mTracks[iSlot]->SetupSmasherPlate();
+        if(b) mTracks[iSlot]->Reset();
+    }
+}
+
 void TrackPanelDir::RemoveTrack(int iSlot){
     TrackInstrument inst = mInstruments[iSlot];
     if(inst != kInstNone){
@@ -155,6 +189,66 @@ void TrackPanelDir::RemoveTrack(int iSlot){
         mTracks[iSlot] = 0;
         mInstruments[iSlot] = kInstNone;
     }
+}
+
+void TrackPanelDir::ConfigureTracks(bool b){
+    Hmx::Object* modeobj = FindObject("gamemode", true);
+    bool b18 = false;
+    if(modeobj){
+        if(modeobj->Property("is_practice", true)->Int(0)) b18 = true;
+    }
+    if(TheLoadMgr.EditMode()) AssignTracks();
+    for(int i = 0; i < mGemTracks.size(); i++){
+        ConfigureTrack(i);
+    }
+    RndCam* camcam = Find<RndCam>("Cam.cam", true);
+    camcam->SetLocalPos(Vector3(0,0,0));
+    Vector3 rot(0,0,0);
+    camcam->SetLocalRot(rot);
+    const char* aspectstr = MakeString(TheRnd->GetAspect() == Rnd::kRegular ? "regular" : "wide");
+    const char* objname = !unk24c ? MakeString("vocal_only_%s", aspectstr) : MakeString("%1d_player_%s", unk24c, aspectstr);
+    SetConfiguration(Find<Hmx::Object>(objname, true), b);
+    bool b1 = !b18;
+    if(mTrackPanel){
+        b1 = b1 && mTrackPanel->GameResumedNoScore();
+    }
+    if(b1){
+        float f19 = 1.0f;
+        if(mVocalTrack->InUse() && !mPerformanceMode) f19 = 0;
+        Find<RndTransAnim>("scoreboard_to_top.tnm", true)->SetFrame(f19, 1.0f);
+        Find<RndTransAnim>("applause_meter_to_top.tnm", true)->SetFrame(f19, 1.0f);
+        Find<RndTransAnim>("mtv_overlay_to_top.tnm", true)->SetFrame(f19, 1.0f);
+        bool b15 = true;
+        if(mTrackPanel) b15 = mTrackPanel->ShowApplauseMeter();
+        Find<RndGroup>("scoreboard.grp", true)->SetShowing(true);
+        Find<RndGroup>("applause_meter.grp", true)->SetShowing(b15);
+    }
+    else {
+        Find<RndGroup>("scoreboard.grp", true)->SetShowing(false);
+        Find<RndGroup>("applause_meter.grp", true)->SetShowing(false);
+    }
+    if(b18){
+        Find<RndTransAnim>("mtv_overlay_to_top.tnm", true)->SetFrame(0.1f, 1.0f);
+    }
+    unk224 = unk24c > 2;
+    for(int i = 0; i < mGemTracks.size(); i++){
+        SetPlayerLocal(mGemTracks[i]);
+    }
+    if(unk250 && b){
+        mVocalTrack->unk2a7 = false;
+        SetPlayerLocal(mVocalTrack);
+        mVocalTrack->UpdateConfiguration();
+    }
+    if(mTrackPanel){
+        bool single = mTrackPanel->GetNumPlayers() == 1;
+        for(int i = 0; i < mTracks.size(); i++){
+            if(mTracks[i]){
+                mTracks[i]->CombineStreakMultipliers(single);
+            }
+        }
+        SetMultiplier(mBandScoreMultiplier->Property("last_multiplier", true)->Int(0), true);
+    }
+    unk2ac = true;
 }
 
 void TrackPanelDir::ConfigureTrack(int i){
@@ -362,8 +456,9 @@ void TrackPanelDir::GameWon(){
 
 void TrackPanelDir::StartFinale(){
     Find<EventTrigger>("game_won.trig", true)->Trigger();
+    TIMER_GET_CYCLES(tick);
     for(int i = 0; i < mTracks.size(); i++){
-        mTracks[i]->StartFinale(i);
+        mTracks[i]->StartFinale(tick);
     }
 }
 
