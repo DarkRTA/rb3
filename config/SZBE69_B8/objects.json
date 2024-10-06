@@ -215,7 +215,7 @@
             "band3/meta_band/OvershellPartSelectProvider.cpp": "MISSING",
             "band3/meta_band/OvershellProfileProvider_Wii.cpp": "MISSING",
             "band3/meta_band/OvershellSlot.cpp": "MISSING",
-            "band3/meta_band/OvershellSlotState.cpp": "MISSING",
+            "band3/meta_band/OvershellSlotState.cpp": "NonMatching",
             "band3/meta_band/ParentalControlPanel.cpp": "MISSING",
             "band3/meta_band/PassiveMessagesPanel.cpp": "MISSING",
             "band3/meta_band/PassiveMessenger.cpp": "MISSING",
