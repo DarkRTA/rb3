@@ -173,7 +173,7 @@
             "band3/meta_band/CriticalUserListener.cpp": "MISSING",
             "band3/meta_band/CurrentOutfitProvider.cpp": "MISSING",
             "band3/meta_band/CustomizePanel.cpp": "MISSING",
-            "band3/meta_band/CymbalSelectionProvider.cpp": "MISSING",
+            "band3/meta_band/CymbalSelectionProvider.cpp": "Matching",
             "band3/meta_band/EditSetlistPanel.cpp": "MISSING",
             "band3/meta_band/EventDialogPanel.cpp": "MISSING",
             "band3/meta_band/EyebrowsProvider.cpp": "MISSING",
