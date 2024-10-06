@@ -121,6 +121,8 @@ public:
         mData->Node(1) = DataNode(type);
     }
 
+    Symbol Type() const { return mData->Sym(1); }
+
     DataNode& operator[](int idx){
         return mData->Node(idx + 2);
     }
