@@ -34,6 +34,10 @@ public:
     void DrawToTexture();
     void InitTexture();
     DataNode OnGetRenderTextures(DataArray*);
+    void SetDraw(RndDrawable* draw){
+        mDraw = draw;
+        mDirty = true;
+    }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

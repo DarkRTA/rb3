@@ -1,5 +1,6 @@
 #include "bandobj/CrowdMeterIcon.h"
 #include "rndobj/Part.h"
+#include "bandobj/TrackPanelDirBase.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CrowdMeterIcon)

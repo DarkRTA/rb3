@@ -1,13 +1,14 @@
 #pragma once
 #include "obj/Object.h"
 #include "bandobj/CrowdMeterIcon.h"
-#include "bandobj/TrackPanelDirBase.h"
 #include "rndobj/Dir.h"
 #include "bandobj/OverdriveMeter.h"
 #include "bandobj/StreakMeter.h"
 #include "bandobj/UnisonIcon.h"
-#include "bandobj/TrackInterface.h"
 #include "bandobj/BandCrowdMeter.h"
+#include "bandobj/TrackInterface.h"
+
+class TrackPanelDirBase;
 
 class BandTrack : public virtual Hmx::Object {
 public:
@@ -93,7 +94,18 @@ public:
     void SoloHide();
     void UnisonEnd();
     void UnisonStart();
+    void SetBandMultiplier(int);
+    void SoloEnd(int, Symbol);
+    const char* GetTrackIcon() const;
+    Symbol GetPlayerDifficultySym() const;
     TrackPanelDirBase* MyTrackPanelDir();
+    Symbol GetInstrumentSymbol() const;
+    void CombineStreakMultipliers(bool);
+
+    TrackInstrument GetInstrument() const { return mTrackInstrument; }
+    bool InUse() const { return mInUse; }
+    void SetTrackIdx(int idx){ mTrackIdx = idx; }
+    void SetSimulatedNet(bool net){ mSimulatedNet = net; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

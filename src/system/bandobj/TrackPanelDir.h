@@ -58,6 +58,10 @@ public:
 
     void GameWon();
     void GameLost();
+    void ConfigureCrowdMeter();
+    void ApplyVocalTrackShowingStatus();
+    TrackInstrument GetInstrument(int) const;
+    void SetBotbBandIcon(ObjectDir*, RndDir*, bool);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -68,17 +72,19 @@ public:
     int unk24c; // 0x24c
     int unk250; // 0x250
     int unk254; // 0x254
-    ObjPtr<VocalTrackDir, ObjectDir> unk258; // 0x258
+    ObjPtr<VocalTrackDir, ObjectDir> mVocalTrack; // 0x258
     ObjPtr<BandCrowdMeter, ObjectDir> mCrowdMeter; // 0x264
-    ObjPtr<RndDir, ObjectDir> unk270; // 0x270
-    ObjPtr<EventTrigger, ObjectDir> unk27c; // 0x27c
+    ObjPtr<RndDir, ObjectDir> mBandScoreMultiplier; // 0x270
+    ObjPtr<EventTrigger, ObjectDir> mBandScoreMultiplierTrig; // 0x27c
     ObjPtr<EndingBonus, ObjectDir> mEndingBonus; // 0x288
-    ObjPtr<RndDir, ObjectDir> unk294; // 0x294
-    ObjPtr<RndGroup, ObjectDir> unk2a0; // 0x2a0
+    ObjPtr<RndDir, ObjectDir> mScoreboard; // 0x294
+    ObjPtr<RndGroup, ObjectDir> mPulseAnimGrp; // 0x2a0
     bool unk2ac; // 0x2ac
     bool unk2ad; // 0x2ad
     bool mTracksExtended; // 0x2ae
     ObjPtr<GemTrackResourceManager, ObjectDir> mGemTrackRsrcMgr; // 0x2b0
     bool mVocals; // 0x2bc
     bool mVocalsNet; // 0x2bd
+    int mGemInst[4]; // 0x2c0
+    bool mGemNet[4]; // 0x2d0
 };

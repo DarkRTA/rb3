@@ -4,6 +4,9 @@
 #include "rndobj/EventTrigger.h"
 #include "rndobj/MatAnim.h"
 #include "bandobj/CrowdMeterIcon.h"
+#include "bandobj/TrackInstruments.h"
+
+class TrackPanelInterface;
 
 class BandCrowdMeter : public RndDir {
 public:
@@ -67,6 +70,7 @@ public:
     void UpdatePlayers(const std::vector<TrackInstrument>&);
     float InitialCrowdRating() const;
     CrowdMeterIcon* PlayerIcon(int);
+    void SetTrackPanel(TrackPanelInterface* panel){ mTrackPanel = panel; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

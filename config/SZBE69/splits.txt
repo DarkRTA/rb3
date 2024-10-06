@@ -1071,7 +1071,10 @@ system/bandobj/GemTrackResourceManager.cpp:
 system/bandobj/VocalTrackDir.cpp:
 	.text       start:0x80431DC8 end:0x8043B9C0
 
-rb3/trackpaneldir.cpp:
+system/bandobj/TrackPanelDirBase.cpp:
+	.text       start:0x80440C44 end:0x804431F4
+
+system/bandobj/TrackPanelDir.cpp:
 	.text       start:0x804431F4 end:0x80448CD0
 
 system/bandobj/CrowdMeterIcon.cpp:

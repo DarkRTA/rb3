@@ -18,6 +18,6 @@ public:
     virtual float CrowdRatingDefaultVal(Symbol) const = 0;
     virtual bool ShouldUpdateScrollSpeed() const = 0;
     virtual bool SlotReservedForVocals(int) const = 0;
-    virtual void GameResumedNoScore() const = 0;
+    virtual bool GameResumedNoScore() const = 0;
     virtual bool AutoVocals() const = 0;
 };
