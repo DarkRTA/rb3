@@ -259,22 +259,15 @@ void TrackPanelDir::ConfigureTrack(int i){
 
 void TrackPanelDir::ConfigureCrowdMeter(){
     Hmx::Object* modeobj = FindObject("gamemode", true);
-    bool b1 = false;
-    if(modeobj){
-        if(modeobj->Property("is_practice", true)->Int(0)) b1 = true;
-    }
-    if(b1 || (mTrackPanel && mTrackPanel->GetNoCrowdMeter()) || (mTrackPanel && mTrackPanel->GameResumedNoScore())){
+    bool practice = modeobj && modeobj->Property("is_practice", true)->Int(0);
+    if(practice || (mTrackPanel && mTrackPanel->GetNoCrowdMeter()) || (mTrackPanel && mTrackPanel->GameResumedNoScore())){
         mCrowdMeter->Disable();
         mCrowdMeter->SetShowing(false);
         return;
     }
     mCrowdMeter->UpdatePlayers(mInstruments);
     mCrowdMeter->Enable();
-    bool show = false;
-    if(modeobj){
-        if(modeobj->Property("show_crowd_meter", true)->Int(0)) show = true;
-    }
-    else if(!TheLoadMgr.EditMode()) show = true;
+    bool show = modeobj && modeobj->Property("show_crowd_meter", true)->Int(0) || TheLoadMgr.EditMode();
     mCrowdMeter->SetShowing(show);
 }
 
@@ -316,6 +309,55 @@ void TrackPanelDir::SetBotbBandIcon(ObjectDir* target, RndDir* source, bool b3){
             if(!texrenderer) MILO_WARN("Could not find logo.mat");
         }
     }
+}
+
+#pragma push
+#pragma pool_data off
+void TrackPanelDir::SetupApplauseMeter(int i1, const char* c2, const char* c3, RndDir* dir4, RndDir* dir5, bool b6, Symbol s7){
+    if(b6){
+        Find<BandLabel>("other_band_name.lbl", true)->SetTextToken(c3);
+        Find<BandLabel>("this_band_name.lbl", true)->SetTextToken(c2);
+        if(mBandLogoRival && dir5) SetBotbBandIcon(mBandLogoRival, dir5, false);
+        if(mBandLogo && dir4) SetBotbBandIcon(mBandLogo, dir4, true);
+        Find<RndGroup>("applause_meter.grp", true)->SetShowing(true);
+    }
+    if(mScoreboard){
+        static Message set_opponent_score("set_opponent_score", 0);
+        if(s7 == stars){
+            set_opponent_score[0] = (float)i1 / 100.0f;
+        }
+        else set_opponent_score[0] = i1;
+        mScoreboard->HandleType(set_opponent_score);
+        static Message set_config("set_config", "botb");
+        if(s7 == stars){
+            SetApplauseMeterScale(i1, 0);
+            set_config[0] = "botb_star";
+            unk2ac = true;
+        }
+        else if(s7 == streak){
+            SetApplauseMeterScale(i1, 0);
+            set_config[0] = "botb";
+            unk2ac = false;
+        }
+        else {
+            set_config[0] = "botb";
+            unk2ac = true;
+        }
+        mScoreboard->HandleType(set_config);
+    }
+}
+#pragma pop
+
+void TrackPanelDir::SetApplauseMeterScale(int i1, int i2){
+    if(mApplauseMeter){
+        mApplauseMeter->SetProperty(max_diff, i1);
+        mApplauseMeter->SetProperty(tie_window, tie_window);
+    }
+}
+
+void TrackPanelDir::FadeBotbBandNames(bool b){
+    if(b) Find<EventTrigger>("botb_band_names_fade_in.trig", true)->Trigger();
+    else Find<EventTrigger>("botb_band_names_fade_out.trig", true)->Trigger();
 }
 
 void TrackPanelDir::CleanUpChordMeshes(){
@@ -506,7 +548,7 @@ void TrackPanelDir::Coda(){
         if(modeobj){
             if(!modeobj->Property("enable_coda", true)->Int(0)) return;
         }
-        if(TheLoadMgr.EditMode() || (mTrackPanel && !mTrackPanel->IsGameOver()) && unk24c){
+        if((TheLoadMgr.EditMode() || (mTrackPanel && !mTrackPanel->IsGameOver())) && unk24c){
             Find<EventTrigger>("bre_start.trig", true)->Trigger();
             mEndingBonus->Start(!mTrackPanel->AutoVocals());
             for(int i = 0; i < mTracks.size(); i++){

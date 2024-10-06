@@ -2,6 +2,7 @@
 #include "rndobj/Dir.h"
 #include "rndobj/EventTrigger.h"
 #include "obj/Task.h"
+#include "bandobj/TrackInstruments.h"
 #include "bandobj/BandLabel.h"
 #include "bandobj/UnisonIcon.h"
 
