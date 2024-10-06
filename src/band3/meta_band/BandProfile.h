@@ -1,6 +1,5 @@
 #ifndef METABAND_BANDPROFILE_H
 #define METABAND_BANDPROFILE_H
-
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
 #include <vector>
@@ -24,6 +23,16 @@ class BandProfile : public Profile, virtual Hmx::Object {
 public:
     BandProfile(int);
     virtual ~BandProfile();
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool HasCheated() const;
+    virtual bool IsUnsaved() const;
+    virtual void SaveLoadComplete(ProfileSaveState);
+    virtual bool HasSomethingToUpload();
+    virtual void DeleteAll();
+    virtual void PreLoad();
+
     void Poll();
     void GetAvailableStandins(int, std::vector<TourCharLocal*>&) const;
     void GetAllChars(std::vector<TourCharLocal*>&) const;
@@ -61,17 +70,9 @@ public:
     void DeleteSavedSetlist(LocalSavedSetlist*);
     void SetlistChanged(LocalSavedSetlist*);
     void NumSavedSetlists() const;
-    virtual bool HasCheated() const;
     void GetUploadFriendsToken() const;
     void SetUploadFriendsToken(int);
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
     void SaveSize(int);
-    virtual void PreLoad();
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
-    virtual bool IsUnsaved() const;
-    virtual void SaveLoadComplete(ProfileSaveState);
-    virtual bool HasSomethingToUpload();
-    virtual void DeleteAll();
     LocalBandUser* GetAssociatedLocalBandUser() const;
     void CheckForFinishedTrainerAccomplishments();
     void SetProGuitarSongLessonComplete(int, Difficulty);
@@ -115,7 +116,6 @@ public:
     void SetLastCharUsed(CharData*);
     void SetLastPrefabCharUsed(Symbol);
     void FakeProfileFill();
-    virtual DataNode Handle(DataArray*, bool);
     void GetPictureTex();
     void AutoFakeFill(int);
 

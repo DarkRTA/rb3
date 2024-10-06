@@ -390,7 +390,7 @@ band3/meta_band/OvershellPanel.cpp:
 	.text       start:0x8023FAF4 end:0x802473C0
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
-rb3/unknown/802/unk_80252B98.cpp:
+band3/meta_band/OvershellSlotState.cpp:
 	.text       start:0x80252B98 end:0x80253774
 
 rb3/panels/parentalcontrolpanel.cpp:
