@@ -1,24 +1,28 @@
 #ifndef GAME_DEFINES_H
 #define GAME_DEFINES_H
-
+#include "beatmatch/TrackType.h"
 #include "utl/Symbol.h"
 
 enum Difficulty {
-    kDifficultyEasy,
-    kDifficultyMedium,
-    kDifficultyHard,
-    kDifficultyExpert
+    kDifficultyEasy = 0,
+    kDifficultyMedium = 1,
+    kDifficultyHard = 2,
+    kDifficultyExpert = 3,
+    kNumDifficulties = 4
 };
 
 Difficulty DefaultDifficulty();
 Symbol DifficultyToSym(Difficulty);
+Difficulty SymToDifficulty(Symbol);
 
 enum ControllerType {
     kControllerDrum = 0,
     kControllerGuitar = 1,
     kControllerVocals = 2,
-    kControllerNone = 3,
-    kNumControllerTypes = 3,
+    kControllerKeys = 3,
+    kControllerRealGuitar = 4,
+    kControllerNone = 5,
+    kNumControllerTypes = 5
 };
 
 enum ScoreType {
@@ -37,20 +41,10 @@ enum ScoreType {
     kNumScoreTypes = 11
 };
 
-enum TrackType {
-    kTrackDrum = 0,
-    kTrackGuitar = 1, // guess
-    kTrackBass = 2, // guess
-
-    kTrack4 = 4,
-    kTrackKeyboard = 5,
-    kTrackProGuitar = 6,
-
-    kTrackProBass = 8
-};
-
 TrackType ScoreTypeToTrackType(ScoreType scoreType);
 ControllerType TrackTypeToControllerType(TrackType trackType);
 Symbol TrackTypeToSym(TrackType);
+Symbol ControllerTypeToSym(ControllerType);
+ControllerType SymToControllerType(Symbol);
 
 #endif // GAME_DEFINES_H
