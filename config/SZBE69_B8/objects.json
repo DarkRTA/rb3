@@ -232,7 +232,7 @@
             "band3/meta_band/SavedSetlist.cpp": "MISSING",
             "band3/meta_band/SelectDifficultyPanel.cpp": "MISSING",
             "band3/meta_band/SessionMgr.cpp": "MISSING",
-            "band3/meta_band/SessionUsersProviders.cpp": "MISSING",
+            "band3/meta_band/SessionUsersProviders.cpp": "NonMatching",
             "band3/meta_band/SetlistMergePanel.cpp": "MISSING",
             "band3/meta_band/SetlistSortByLength.cpp": "Matching",
             "band3/meta_band/SetlistSortByLocation.cpp": "MISSING",
