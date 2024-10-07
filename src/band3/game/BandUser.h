@@ -41,9 +41,6 @@ public:
     Symbol GetTrackSym() const;
     BandCharacter* GetCharLocal();
     bool HasChar();
-    LocalBandUser* NewLocalBandUser();
-    RemoteBandUser* NewRemoteBandUser();
-    NullLocalBandUser* NewNullLocalBandUser();
     void SetDifficulty(Difficulty);
     void UpdateData(unsigned int);
     void SetDifficulty(Symbol);
@@ -65,6 +62,10 @@ public:
     GameplayOptions* GetGameplayOptions();
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f){ mLastHitFraction = f; }
+    
+    static LocalBandUser* NewLocalBandUser();
+    static RemoteBandUser* NewRemoteBandUser();
+    static NullLocalBandUser* NewNullLocalBandUser();
 
     DataNode OnSetDifficulty(DataArray*);
     DataNode OnSetTrackType(DataArray*);

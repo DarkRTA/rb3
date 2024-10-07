@@ -35,7 +35,7 @@
             "band3/game/Band.cpp": "MISSING",
             "band3/game/BandPerformer.cpp": "MISSING",
             "band3/game/BandUser.cpp": "NonMatching",
-            "band3/game/BandUserMgr.cpp": "MISSING",
+            "band3/game/BandUserMgr.cpp": "NonMatching",
             "band3/game/ChordbookPanel.cpp": "MISSING",
             "band3/game/ChordPreview.cpp": "MISSING",
             "band3/game/CommonPhraseCapturer.cpp": "MISSING",
