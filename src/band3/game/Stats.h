@@ -21,6 +21,7 @@ class Stats {
 public:
     Stats();
     Stats(const Stats&);
+    ~Stats();
     void BuildHitStreak(int, float);
     int GetCurrentStreak() const;
     void SetCurrentStreak(int);
@@ -253,7 +254,7 @@ public:
     int mSustainGemsHitCompletely; // 0x188
     int mSustainGemsHitPartially; // 0x18c
     int mSustainGemCount; // 0x190
-    int m0x194;
+    float m0x194;
     int mRollCount; // 0x198
     int mRollsHitCompletely; // 0x19c
     int mTrillCount; // 0x1a0
@@ -262,6 +263,10 @@ public:
     int mSymbolGemInfo1; // 0x1ac
     int mSymbolGemInfo2; // 0x1b0
     int mSymbolGemInfo3; // 0x1b4
+    std::vector<int> unk1b8; // 0x1b8
+    float unk1c0;
+    float unk1c4;
+    // float unk1c8;
 
     bool mMultiplierActive; // 0x205
 };

@@ -39,7 +39,7 @@
             "band3/game/ChordbookPanel.cpp": "MISSING",
             "band3/game/ChordPreview.cpp": "MISSING",
             "band3/game/CommonPhraseCapturer.cpp": "MISSING",
-            "band3/game/CrowdRating.cpp": "MISSING",
+            "band3/game/CrowdRating.cpp": "NonMatching",
             "band3/game/Defines.cpp": "MISSING",
             "band3/game/DeployCountTracker.cpp": "MISSING",
             "band3/game/DirectInstrument.cpp": "MISSING",

@@ -1,4 +1,12 @@
 #include "Stats.h"
+#include "game/Performer.h"
+
+Performer::Performer(BandUser* user, Band* band) : unk8(0), unk10(Stats()), unk1dc(band), unk1e0(0), unk1e1(0), unk1e2(0), unk1e4(0), unk1fc(0), unk1fd(1), unk1fe(1), unk1ff(1), unk200(0),
+    unk204(0), unk205(1), unk208(0) {
+    unkc = new CrowdRating(user, kDifficultyEasy);
+}
+
+SongPos::SongPos() : mTotalTick(0), mMeasure(0), mBeat(0), mTick(0) {}
 
 Stats::Stats(const Stats& copy) {
     mHitCount = copy.mHitCount;
