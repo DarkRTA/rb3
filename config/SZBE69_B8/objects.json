@@ -201,7 +201,7 @@
             "band3/meta_band/MetaNetMsgs.cpp": "MISSING",
             "band3/meta_band/MetaPanel.cpp": "MISSING",
             "band3/meta_band/MetaPerformer.cpp": "MISSING",
-            "band3/meta_band/ModifierMgr.cpp": "MISSING",
+            "band3/meta_band/ModifierMgr.cpp": "NonMatching",
             "band3/meta_band/MultiSelectListPanel.cpp": "MISSING",
             "band3/meta_band/MusicLibrary.cpp": "MISSING",
             "band3/meta_band/MusicLibraryNetSetlists.cpp": "MISSING",

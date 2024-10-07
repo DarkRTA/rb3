@@ -11,7 +11,7 @@
 #include "utl/Messages.h"
 
 OvershellSlot::OvershellSlot(int i, OvershellPanel* panel, OvershellDir* dir, BandUserMgr* umgr, SessionMgr* smgr) : mStateMgr(new OvershellSlotStateMgr()), mState(0), unk24(5), unk28(0x82),
-    mOvershell(panel), mBandUserMgr(umgr), mSessionMgr(smgr), mSlotNum(i), mOvershellDir(dir), unk54(0), unk55(0), unk5c(0), mInGame(0), unk5e(0), unk80(0), unk81(0), unk84(0), unk88(0), unk90(0) {
+    mOvershell(panel), mBandUserMgr(umgr), mSessionMgr(smgr), mSlotNum(i), mOvershellDir(dir), unk54(0), unk55(0), unk58(gNullStr), unk5c(0), mInGame(0), unk5e(0), unk80(0), unk81(0), unk84(0), unk88(0), unk90(0) {
     mMessageQueue = new PassiveMessageQueue(this);
     unk98 = new SessionUsersProvider(false, true, false);
     unk9c = new SessionUsersProvider(true, true, false);
