@@ -19,7 +19,7 @@ public:
     void Poll();
 
     float mMessageDuration; // 0x4
-    std::list<PassiveMessage> mQueue; // 0x8
+    std::list<PassiveMessage*> mQueue; // 0x8
     Hmx::Object* mCallback; // 0x10
     Timer mTimer; // 0x14
 };
