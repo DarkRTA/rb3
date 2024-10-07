@@ -156,7 +156,7 @@ template <class _Tp, class _Size, class _Alloc>
 void _VECTOR_IMPL<_Tp, _Size, _Alloc>::_M_fill_insert(iterator __pos,
                                                size_type __n, const _Tp& __x) {
   if (__n != 0) {
-    if (size_type(this->_M_end_of_storage() - this->_M_finish()) >= __n) {
+    if (size_type(this->_M_data_size - this->_M_finish_idx) >= __n) {
       _M_fill_insert_aux(__pos, __n, __x, _Movable());
     } else 
       _M_insert_overflow(__pos, __x, _TrivialCpy(), __n);

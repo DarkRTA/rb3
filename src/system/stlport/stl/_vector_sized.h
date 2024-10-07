@@ -117,22 +117,22 @@ protected:
   // _M_inc_finish_idx in retail doesn't match with size_t as the parameter,
   // but symbols in bank 8 indicate it uses size_t
 #ifdef VERSION_SZBE69
-  void _M_inc_finish_idx(_Size increment) {
+  void _M_inc_finish_idx(_Size __increment) {
 #else
-  void _M_inc_finish_idx(size_t increment) {
+  void _M_inc_finish_idx(size_t __increment) {
 #endif
-    _STLP_VEC_RANGE_ASSERT(_M_finish_idx + increment, (_Size)~0);
-    _M_finish_idx = _M_finish_idx + increment;
+    _STLP_VEC_RANGE_ASSERT(__increment + _M_finish_idx, _Size(-1));
+    _M_finish_idx = _M_finish_idx + __increment;
   }
 
-  void _M_set_finish_idx(size_t idx) {
-    _STLP_VEC_RANGE_ASSERT(idx, (_Size)~0);
-    _M_finish_idx = idx;
+  void _M_set_finish_idx(size_t __idx) {
+    _STLP_VEC_RANGE_ASSERT(__idx, _Size(-1));
+    _M_finish_idx = __idx;
   }
 
-  void _M_set_data_size(size_t size) {
-    _STLP_VEC_RANGE_ASSERT(size, (_Size)~0);
-    _M_data_size = size;
+  void _M_set_data_size(size_t __size) {
+    _STLP_VEC_RANGE_ASSERT(__size, _Size(-1));
+    _M_data_size = __size;
   }
 
   _AllocProxy _M_ptr;
@@ -431,7 +431,7 @@ private:
   void _M_fill_insert (iterator __pos, size_type __n, const _Tp& __x);
 
   bool _M_is_inside(const value_type& __x) const {
-    return (&__x >= this->_M_start() && &__x < this->_M_finish());
+    return (&__x >= this->_M_start() && _Size(&__x - this->_M_start()) < this->_M_finish_idx);
   }
 
 #if defined (_STLP_MEMBER_TEMPLATES)
@@ -558,7 +558,7 @@ public:
     if (__first != __last) {
       size_type __n = distance(__first, __last);
 
-      if (size_type(this->_M_end_of_storage() - this->_M_finish()) >= __n) {
+      if (size_type(this->_M_data_size - this->_M_finish_idx) >= __n) {
         _M_range_insert_aux(__pos, __first, __last, __n, _Movable());
       }
       else {
