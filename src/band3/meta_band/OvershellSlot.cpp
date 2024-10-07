@@ -7,6 +7,7 @@
 #include "meta_band/OvershellPartSelectProvider.h"
 #include "meta_band/CymbalSelectionProvider.h"
 #include "game/GameMessages.h"
+#include "meta_band/ModifierMgr.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -28,6 +29,9 @@ OvershellSlot::OvershellSlot(int i, OvershellPanel* panel, OvershellDir* dir, Ba
     setupProviders[2] = 0;
     setupProviders[3] = mPartSelectProvider;
     setupProviders[4] = mCymbalProvider;
+    setupProviders[5] = TheModifierMgr;
+    mOvershellDir->HandleType(setupProviders);
+    unk2c = mOvershellDir->Find<BandLabel>("user_name.lbl", true);
 }
 
 OvershellSlot::~OvershellSlot(){
