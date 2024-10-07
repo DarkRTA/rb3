@@ -61,6 +61,7 @@ public:
     const char* IntroName() const;
     int GetSlot() const;
     const char* GetTrackIcon() const;
+    void SetOvershellSlotState(OvershellSlotStateID);
     GameplayOptions* GetGameplayOptions();
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f){ mLastHitFraction = f; }
@@ -87,7 +88,7 @@ public:
     Symbol mPreviousAward; // 0x74
     float mLastHitFraction; // 0x78
     void *mTrack; // 0x7c
-    Player* mPlayer; // 0x80 - Player*
+    Player* mPlayer; // 0x80
     bool mParticipating; // 0x84
     bool mIsWiiRemoteController; // 0x85
     bool mJustDisconnected; // 0x86
@@ -104,22 +105,28 @@ public:
     virtual RemoteBandUser* GetRemoteBandUser() const;
     virtual int GetFriendsConsoleCodes() const;
     virtual void Reset();
-    virtual int ConnectedControllerType() const;
+    virtual ControllerType ConnectedControllerType() const;
     virtual int GetCurrentInstrumentCareerScore() const;
     virtual int GetCurrentHardcoreIconLevel() const;
     virtual int GetCymbalConfiguration() const;
 
+    bool HasSeenRealGuitarPrompt() const;
+    void SetHasSeenRealGuitarPrompt();
+    void SetOvershellFocus(const char*);
+    ControllerType DebugGetControllerTypeOverride() const;
+    void DebugSetControllerTypeOverride(ControllerType);
+
     bool unkc; // 0xc
-    bool unkd; // 0xd
-    std::set<TrackType> unk10; // 0x10
-    int unk28; // 0x28
+    bool mHasSeenRealGuitarPrompt; // 0xd
+    std::set<TrackType> mShownIntrosSet; // 0x10
+    ControllerType mControllerTypeOverride; // 0x28
 };
 
 class RemoteBandUser : public virtual BandUser, public virtual RemoteUser {
 public:
     RemoteBandUser();
     virtual DataNode Handle(DataArray*, bool);
-    virtual ~RemoteBandUser(){}
+    virtual ~RemoteBandUser();
     virtual LocalBandUser* GetLocalBandUser();
     virtual LocalBandUser* GetLocalBandUser() const;
     virtual RemoteBandUser* GetRemoteBandUser();
@@ -130,12 +137,21 @@ public:
     virtual int GetCymbalConfiguration() const;
     virtual void Reset();
     virtual void SyncLoad(BinStream&, unsigned int);
+
+    int unkc; // TourCharRemote*
+    std::vector<int> unk10; // 0x10
+    bool unk18;
+    bool unk19;
+    bool unk1a;
+    int unk1c;
+    int unk20;
+    int unk24;
 };
 
 class NullLocalBandUser : public LocalBandUser {
 public:
     NullLocalBandUser(){}
-    virtual ~NullLocalBandUser();
+    virtual ~NullLocalBandUser(){}
     virtual bool IsNullUser() const { return true; }
     virtual bool IsJoypadConnected() const { return false; }
     virtual bool CanSaveData() const { return false; }

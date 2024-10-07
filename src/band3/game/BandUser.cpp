@@ -81,6 +81,11 @@ Symbol BandUser::GetTrackSym() const {
     return TrackTypeToSym(mTrackType);
 }
 
+void BandUser::SetOvershellSlotState(OvershellSlotStateID id){
+    mOvershellState = id;
+    UpdateData(1);   
+}
+
 const char* BandUser::GetOvershellFocus(){ return mOvershellFocus.c_str(); }
 
 void BandUser::SetTrackType(TrackType ty){
@@ -233,10 +238,76 @@ BEGIN_PROPSYNCS(BandUser)
     SYNC_SUPERCLASS(User)
 END_PROPSYNCS
 
-LocalBandUser::LocalBandUser() : unk28(5) {
+LocalBandUser::LocalBandUser() : mControllerTypeOverride(kControllerNone) {
     unkc = 1;
-    unkd = 0;
+    mHasSeenRealGuitarPrompt = 0;
 }
 
 LocalBandUser* LocalBandUser::GetLocalBandUser(){}
 LocalBandUser* LocalBandUser::GetLocalBandUser() const {}
+
+RemoteBandUser* LocalBandUser::GetRemoteBandUser(){
+    MILO_FAIL("Bad Conversion");
+    return 0;
+}
+
+RemoteBandUser* LocalBandUser::GetRemoteBandUser() const {
+    MILO_FAIL("Bad Conversion");
+    return 0;
+}
+
+void LocalBandUser::Reset(){
+    BandUser::Reset();
+    LocalUser::Reset();
+    mShownIntrosSet.clear();
+    mHasSeenRealGuitarPrompt = 0;
+    unkc = 1;
+}
+
+bool LocalBandUser::HasSeenRealGuitarPrompt() const { return mHasSeenRealGuitarPrompt; }
+void LocalBandUser::SetHasSeenRealGuitarPrompt(){ mHasSeenRealGuitarPrompt = true; }
+
+void LocalBandUser::SetOvershellFocus(const char* cc){
+    mOvershellFocus = cc;
+    UpdateData(1);
+}
+
+ControllerType LocalBandUser::DebugGetControllerTypeOverride() const { return mControllerTypeOverride; }
+
+void LocalBandUser::DebugSetControllerTypeOverride(ControllerType ct){
+    MILO_ASSERT(( 0) <= (ct) && (ct) <= ( kNumControllerTypes), 0x3B2);
+    mControllerTypeOverride = ct;
+}
+
+BEGIN_HANDLERS(LocalBandUser)
+    HANDLE_EXPR(can_save_data, CanSaveData())
+    HANDLE_EXPR(can_get_achievements, CanSaveData())
+    HANDLE_EXPR(connected_controller_type, ConnectedControllerType())
+    HANDLE_EXPR(connected_controller_sym, ControllerTypeToSym(ConnectedControllerType()))
+    HANDLE_ACTION(set_contributes_song_progress, unkc = _msg->Int(2))
+    HANDLE_ACTION(has_as_friend, _msg->Obj<BandUser>(2); return 1; )
+    HANDLE_SUPERCLASS(LocalUser)
+    HANDLE_SUPERCLASS(BandUser)
+    HANDLE_CHECK(0x3CC)
+END_HANDLERS
+
+RemoteBandUser::RemoteBandUser(){
+
+}
+
+RemoteBandUser::~RemoteBandUser(){
+    
+}
+
+LocalBandUser* RemoteBandUser::GetLocalBandUser(){
+    MILO_FAIL("Bad Conversion");
+    return 0;
+}
+
+LocalBandUser* RemoteBandUser::GetLocalBandUser() const {
+    MILO_FAIL("Bad Conversion");
+    return 0;
+}
+
+RemoteBandUser* RemoteBandUser::GetRemoteBandUser(){}
+RemoteBandUser* RemoteBandUser::GetRemoteBandUser() const {}
