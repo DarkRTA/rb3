@@ -1,7 +1,8 @@
 #pragma once
 #include "obj/Object.h"
-#include "meta_band/OvershellSlot.h"
 #include "obj/Msg.h"
+
+class OvershellSlot;
 
 enum OvershellSlotStateID {
     kState_NoInstrument = 0,

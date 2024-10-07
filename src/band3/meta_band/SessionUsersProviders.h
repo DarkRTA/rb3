@@ -5,7 +5,7 @@
 class SessionUsersProvider : public UIListProvider, public Hmx::Object {
 public:
     SessionUsersProvider(bool, bool, bool);
-    virtual ~SessionUsersProvider();
+    virtual ~SessionUsersProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual int NumData() const;

@@ -1,4 +1,5 @@
 #include "meta_band/OvershellSlotState.h"
+#include "meta_band/OvershellSlot.h"
 #include "utl/Messages.h"
 
 OvershellSlotState::OvershellSlotState(DataArray* da, OvershellSlot* slot) : mSlot(slot) {

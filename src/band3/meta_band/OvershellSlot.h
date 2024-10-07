@@ -1,12 +1,20 @@
 #pragma once
 #include "obj/Object.h"
 #include "net_band/DataResults.h"
+#include "game/BandUserMgr.h"
+#include "bandobj/OvershellDir.h"
+#include "meta_band/SessionMgr.h"
+#include "bandobj/BandLabel.h"
 
 class OvershellPanel;
-class OvershellDir;
-class BandUserMgr;
-class SessionMgr;
+class OvershellSlotState;
 class OvershellSlotStateMgr;
+class PassiveMessageQueue;
+class CharProvider;
+class SessionUsersProvider;
+class OvershellProfileProvider;
+class OvershellPartSelectProvider;
+class CymbalSelectionProvider;
 
 enum OvershellOverrideFlow {
     kOverrideFlow_None = 0,
@@ -24,28 +32,36 @@ public:
 
     bool InOverrideFlow(OvershellOverrideFlow) const;
 
-    OvershellSlotStateMgr* unk1c;
-    int unk20;
+    OvershellSlotStateMgr* mStateMgr; // 0x1c
+    OvershellSlotState* mState; // 0x20
     int unk24;
     int unk28;
-    int unk2c;
-    OvershellPanel* unk30;
-    BandUserMgr* unk34;
-    SessionMgr* unk38;
-    int unk3c;
+    BandLabel* unk2c;
+    OvershellPanel* mOvershell; // 0x30
+    BandUserMgr* mBandUserMgr; // 0x34
+    SessionMgr* mSessionMgr; // 0x38
+    int mSlotNum; // 0x3c
     std::vector<int> unk40;
     std::vector<int> unk48;
-    OvershellDir* unk50;
+    OvershellDir* mOvershellDir; // 0x50
     bool unk54;
     bool unk55;
     Symbol unk58;
     bool unk5c;
-    bool unk5d;
+    bool mInGame; // 0x5d
     bool unk5e;
-    std::vector<int> unk60;
-    DataResultList unk68;
+    std::vector<int> mPotentialUsers; // 0x60 - PotentialUserEntry - seems to be 3 words long
+    DataResultList mLinkingCodeResultList; // 0x68
     bool unk80;
     bool unk81;
     int unk84;
     int unk88;
+    PassiveMessageQueue* mMessageQueue; // 0x8c
+    int unk90;
+    CharProvider* mCharProvider; // 0x94
+    SessionUsersProvider* unk98;
+    SessionUsersProvider* unk9c;
+    OvershellProfileProvider* mSwappableProfilesProvider; // 0xa0
+    OvershellPartSelectProvider* mPartSelectProvider; // 0xa4
+    CymbalSelectionProvider* mCymbalProvider; // 0xa8
 };
