@@ -27,6 +27,8 @@ public:
     virtual bool IsHidden(int) const;
     virtual bool IsActive(int) const;
 
+    bool IsModifierActive(Symbol) const;
+
     static void Init();
 
     std::vector<Modifier*> unk20; // 0x20

@@ -25,6 +25,7 @@ public:
     virtual void OnSynchronized(unsigned int);
 
     bool CanGuitarPlayKeys() const;
+    void UpdateAll();
 
     std::vector<int> unk70; // 0x70
     std::vector<int> unk78; // 0x78
