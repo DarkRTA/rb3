@@ -1,12 +1,13 @@
 #include "BandUser.h"
 #include "game/Defines.h"
 #include "beatmatch/TrackType.h"
+#include "game/Player.h"
 #include "utl/Symbols.h"
 
 BandUser::BandUser()
     : mDifficulty(DefaultDifficulty()), unk_0xC(0), mTrackType(kTrackNone),
       mControllerType(kControllerNone), mHasButtonGuitar(0), mHas22FretGuitar(0), mPreferredScoreType(kScoreBand),
-      unk_0x20(5), mChar(0), mAutoplay(0), mLastHitFraction(0), mTrack(0), mPlayer(0),
+      mOvershellState(kState_JoinedDefault), mChar(0), mAutoplay(0), mLastHitFraction(0), mTrack(0), mPlayer(0),
       mParticipating(0), mIsWiiRemoteController(0), mJustDisconnected(0) {
     mPreviousAward = none;
 }
@@ -27,7 +28,7 @@ NullLocalBandUser* BandUser::NewNullLocalBandUser(){
 
 void BandUser::Reset(){
     User::Reset();
-    unk_0x20 = 5;
+    mOvershellState = kState_JoinedDefault;
     mDifficulty = DefaultDifficulty();
     unk_0xC = 0;
     mTrackType = kTrackNone;
@@ -55,8 +56,8 @@ void BandUser::SetDifficulty(Difficulty d){
     Difficulty old = mDifficulty;
     unk_0xC = true;
     mDifficulty = d;
-    if(old != d){
-
+    if(old != d && mPlayer){
+        
     }
 }
 
@@ -132,9 +133,105 @@ void BandUser::BandUser::SetHas22FretGuitar(bool b){
     UpdateData(1);
 }
 
-bool BandUser::HasChar() {
-    return mChar != 0;
+bool BandUser::HasChar(){ return mChar; }
+CharData* BandUser::GetChar(){ return mChar; }
+
+DataNode BandUser::OnSetDifficulty(DataArray* da){
+    DataNode& eval = da->Node(2).Evaluate();
+    if(eval.Type() == kDataInt){
+        SetDifficulty((Difficulty)eval.Int(0));
+    }
+    else if(eval.Type() == kDataSymbol){
+        SetDifficulty(eval.Sym(0));
+    }
+    else if(eval.Type() == kDataString){
+        SetDifficulty(eval.ForceSym(0));
+    }
+    else MILO_FAIL("bad difficulty arg");
+    return 1;
 }
+
+DataNode BandUser::OnSetTrackType(DataArray* da){
+    DataNode& eval = da->Node(2).Evaluate();
+    if(eval.Type() == kDataInt){
+        SetTrackType((TrackType)eval.Int(0));
+    }
+    else if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
+        SetTrackType(eval.ForceSym(0));
+    }
+    else MILO_FAIL("bad TrackType arg");
+    return 1;
+}
+
+DataNode BandUser::OnSetHas22FretGuitar(DataArray* da){
+    DataNode& eval = da->Node(2).Evaluate();
+    if(eval.Type() == kDataInt){
+        SetHas22FretGuitar(eval.Int(0));
+    }
+    else MILO_FAIL("bad bool arg");
+    return 1;
+}
+
+DataNode BandUser::OnSetPreferredScoreType(DataArray* da){
+    DataNode& eval = da->Node(2).Evaluate();
+    if(eval.Type() == kDataInt){
+        SetPreferredScoreType((ScoreType)eval.Int(0));
+    }
+    else MILO_FAIL("bad ScoreType arg");
+    return 1;
+}
+
+DataNode BandUser::OnSetControllerType(DataArray* da){
+    DataNode& eval = da->Node(2).Evaluate();
+    if(eval.Type() == kDataInt){
+        SetControllerType((ControllerType)eval.Int(0));
+    }
+    else if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
+        SetControllerType(eval.ForceSym(0));
+    }
+    else MILO_FAIL("bad ControllerType arg");
+    return 1;
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(BandUser)
+    HANDLE_EXPR(get_difficulty, GetDifficulty())
+    HANDLE_EXPR(get_difficulty_sym, GetDifficultySym())
+    HANDLE(set_difficulty, OnSetDifficulty)
+    HANDLE_EXPR(intro_name, IntroName())
+    HANDLE_EXPR(get_user_name, UserName())
+    HANDLE_EXPR(get_slot_num, GetSlot())
+    HANDLE_EXPR(get_track_type, GetTrackType())
+    HANDLE_EXPR(get_track_sym, GetTrackSym())
+    HANDLE_EXPR(get_track_icon, GetTrackIcon())
+    HANDLE(set_track_type, OnSetTrackType)
+    HANDLE_EXPR(get_preferred_score_type, GetPreferredScoreType())
+    HANDLE(set_preferred_score_type, OnSetPreferredScoreType)
+    HANDLE_EXPR(get_controller_type, GetControllerType())
+    HANDLE_EXPR(get_controller_sym, GetControllerSym())
+    HANDLE(set_controller_type, OnSetControllerType)
+    HANDLE(set_has_22_fret_guitar, OnSetHas22FretGuitar)
+    HANDLE_EXPR(get_gameplay_options, GetGameplayOptions())
+    HANDLE_EXPR(is_participating, IsParticipating())
+    HANDLE_EXPR(player, mPlayer)
+    HANDLE_EXPR(get_player, mPlayer)
+    HANDLE_EXPR(get_hardcore_icon_level, GetCurrentHardcoreIconLevel())
+    HANDLE(set_prefab_char, OnSetPrefabChar)
+    HANDLE_EXPR(has_char, mChar != 0)
+    HANDLE_EXPR(is_char_customizable, mChar->IsCustomizable())
+    HANDLE_EXPR(get_last_hit_fraction, GetLastHitFraction())
+    HANDLE_ACTION(set_last_hit_fraction, SetLastHitFraction(_msg->Float(2)))
+    HANDLE_SUPERCLASS(User)
+    HANDLE_CHECK(0x2D5)
+END_HANDLERS
+#pragma pop
+
+BEGIN_PROPSYNCS(BandUser)
+    SYNC_PROP(autoplay, mAutoplay)
+    SYNC_PROP(previous_award, mPreviousAward)
+    SYNC_SUPERCLASS(User)
+END_PROPSYNCS
 
 LocalBandUser::LocalBandUser() : unk28(5) {
     unkc = 1;

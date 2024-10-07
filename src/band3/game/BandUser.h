@@ -2,6 +2,8 @@
 #define GAME_BANDUSER_H
 #include "game/Defines.h"
 #include "meta_band/GameplayOptions.h"
+#include "meta_band/OvershellSlotState.h"
+#include "meta_band/CharData.h"
 #include "os/User.h"
 #include "types.h"
 #include "system/bandobj/BandCharacter.h"
@@ -10,6 +12,7 @@ class BandCharDesc;
 class LocalBandUser;
 class RemoteBandUser;
 class NullLocalBandUser;
+class Player;
 
 class BandUser : public virtual User {
 public:
@@ -54,6 +57,20 @@ public:
     void SetControllerType(Symbol);
     void SetHasButtonGuitar(bool);
     void SetHas22FretGuitar(bool);
+    CharData* GetChar();
+    const char* IntroName() const;
+    int GetSlot() const;
+    const char* GetTrackIcon() const;
+    GameplayOptions* GetGameplayOptions();
+    float GetLastHitFraction() const { return mLastHitFraction; }
+    void SetLastHitFraction(float f){ mLastHitFraction = f; }
+
+    DataNode OnSetDifficulty(DataArray*);
+    DataNode OnSetTrackType(DataArray*);
+    DataNode OnSetHas22FretGuitar(DataArray*);
+    DataNode OnSetPreferredScoreType(DataArray*);
+    DataNode OnSetControllerType(DataArray*);
+    DataNode OnSetPrefabChar(DataArray*);
 
     Difficulty mDifficulty; // 0x8
     u8 unk_0xC; // 0xC
@@ -62,15 +79,15 @@ public:
     bool mHasButtonGuitar; // 0x18
     bool mHas22FretGuitar; // 0x19
     ScoreType mPreferredScoreType; // 0x1C
-    int unk_0x20; // 0x20 - OvershellSlotStateID
+    OvershellSlotStateID mOvershellState; // 0x20
     String mOvershellFocus; // 0x24
-    int mChar; // 0x30 - CharData*
+    CharData* mChar; // 0x30 - CharData*
     GameplayOptions mGameplayOptions; // 0x34
     bool mAutoplay; // 0x70
     Symbol mPreviousAward; // 0x74
     float mLastHitFraction; // 0x78
     void *mTrack; // 0x7c
-    void *mPlayer; // 0x80 - Performer*
+    Player* mPlayer; // 0x80 - Player*
     bool mParticipating; // 0x84
     bool mIsWiiRemoteController; // 0x85
     bool mJustDisconnected; // 0x86
