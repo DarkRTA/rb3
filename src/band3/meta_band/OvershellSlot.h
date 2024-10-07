@@ -1,10 +1,12 @@
 #pragma once
 #include "obj/Object.h"
+#include "net_band/DataResults.h"
 
 class OvershellPanel;
 class OvershellDir;
 class BandUserMgr;
 class SessionMgr;
+class OvershellSlotStateMgr;
 
 enum OvershellOverrideFlow {
     kOverrideFlow_None = 0,
@@ -22,7 +24,7 @@ public:
 
     bool InOverrideFlow(OvershellOverrideFlow) const;
 
-    int unk1c;
+    OvershellSlotStateMgr* unk1c;
     int unk20;
     int unk24;
     int unk28;
@@ -41,8 +43,7 @@ public:
     bool unk5d;
     bool unk5e;
     std::vector<int> unk60;
-    int unk68, unk6c;
-    int unk70, unk74, unk78, unk7c;
+    DataResultList unk68;
     bool unk80;
     bool unk81;
     int unk84;
