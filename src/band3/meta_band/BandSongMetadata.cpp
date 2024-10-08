@@ -181,3 +181,115 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
         mAlbum = buf;
     }
 }
+
+const char* BandSongMetadata::Title() const { return mTitle.c_str(); }
+const char* BandSongMetadata::Artist() const { return mArtist.c_str(); }
+const char* BandSongMetadata::Album() const { return mAlbum.c_str(); }
+int BandSongMetadata::AlbumTrackNum() const { return mAlbumTrackNum; }
+Symbol BandSongMetadata::Genre() const { return mGenre; }
+int BandSongMetadata::LengthMs() const { return mLengthMs; }
+bool BandSongMetadata::HasAlternatePath() const { return mHasAlternatePath; }
+bool BandSongMetadata::MuteWinCues() const { return mMuteWinCues; }
+const std::map<Symbol, float>& BandSongMetadata::Ranks() const { return mRanks; }
+int BandSongMetadata::Rating() const { return mRating; }
+float BandSongMetadata::GuidePitchVolume() const { return mGuidePitchVolume; }
+int BandSongMetadata::VocalTonicNote() const { return mVocalTonicNote; }
+
+int BandSongMetadata::SongKey() const {
+    return mSongKey >= 0 ? mSongKey : mVocalTonicNote;
+}
+
+int BandSongMetadata::SongTonality() const { return mSongTonality; }
+float BandSongMetadata::ScrollSpeed() const { return mSongScrollSpeed; }
+float BandSongMetadata::TuningOffset() const { return mTuningOffsetCents; }
+Symbol BandSongMetadata::VocalPercussionBank() const { return mVocalPercussionBank; }
+Symbol BandSongMetadata::DrumKitBank() const { return mDrumKitBank; }
+bool BandSongMetadata::HasAlbumArt() const { return mHasAlbumArt; }
+bool BandSongMetadata::IsMasterRecording() const { return mIsMasterRecording; }
+Symbol BandSongMetadata::BandFailCue() const { return mBandFailCue; }
+
+Symbol BandSongMetadata::Decade() const {
+    int year = (mDateReleased.Year() / 10) - 1900;
+    return MakeString("the%is", year);
+}
+
+bool BandSongMetadata::HasVocalHarmony() const {
+    return HasPart(vocals, false) && SongMetadata::NumVocalParts() > 1;
+}
+
+bool BandSongMetadata::IsPrivate() const {
+    return mIsTutorial || (mIsFake && !BandSongMgr::GetFakeSongsAllowed());
+}
+
+bool BandSongMetadata::IsRanked() const { return !mRanks.empty(); }
+
+bool BandSongMetadata::IsVersionOK() const {
+    bool ret = false;
+    if(mVersion <= 0x1E) ret = true;
+    return ret;
+}
+
+Symbol BandSongMetadata::LengthSym() const {
+    DataArray* cfg = SystemConfig(song_select, song_lengths);
+    for(int i = 1; i < cfg->Size(); i++){
+        DataArray* arr = cfg->Array(i);
+        if(arr->Size() == 1 || mLengthMs <= arr->Int(1)){
+            return arr->Sym(0);
+        }
+    }
+    MILO_FAIL("No song_length definitions!");
+    return gNullStr;
+}
+
+Symbol BandSongMetadata::RatingSym() const {
+    return MakeString("rating_%i", (int)mRating);
+}
+
+Symbol BandSongMetadata::SourceSym() const {
+    bool official_dlc = GameOrigin() == rb3_dlc || GameOrigin() == rb1_dlc;
+    Symbol ret = dlc;
+    if(!official_dlc){
+        Symbol orig = GameOrigin();
+        ret = ugc;
+        if(orig != ugc_plus) ret = GameOrigin();
+    }
+    return ret;
+}
+
+Symbol BandSongMetadata::VocalPartsSym() const {
+    return MakeString("vocal_parts_%i", NumVocalParts());
+}
+
+Symbol BandSongMetadata::HasProGuitarSym() const {
+    bool haspropart = HasPart(real_guitar, false) || HasPart(real_bass, false);
+    return haspropart ? has_part_yes : has_part_no;
+}
+
+bool BandSongMetadata::HasKeys() const {
+    return HasPart(keys, false) || HasPart(real_keys, false);
+}
+
+bool BandSongMetadata::HasGuitar() const {
+    return HasPart(guitar, false) || HasPart(real_guitar, false);
+}
+
+bool BandSongMetadata::HasBass() const {
+    return HasPart(bass, false) || HasPart(real_bass, false);
+}
+
+Symbol BandSongMetadata::HasKeysSym() const {
+    bool haskeypart = HasPart(keys, false) || HasPart(real_keys, false);
+    return haskeypart ? has_part_yes : has_part_no;
+}
+
+bool BandSongMetadata::HasSolo(Symbol s) const {
+    if(s == real_guitar) s = guitar;
+    else if(s == real_bass) s = bass;
+    else if(s == real_keys) s = keys;
+    else if(s == real_drum) s = drum;
+    return std::find(mSolos.begin(), mSolos.end(), s) != mSolos.end();
+}
+
+Symbol BandSongMetadata::HasSoloSym(Symbol s) const {
+    return HasSolo(s) ? has_part_yes : has_part_no;
+}

@@ -45,6 +45,7 @@ public:
     virtual const char* ContentAltDirs();
 
     void AddSongs(DataArray* songs);
+    static bool GetFakeSongsAllowed();
 
     int unkc0;
     std::map<int, Symbol> unkc4;

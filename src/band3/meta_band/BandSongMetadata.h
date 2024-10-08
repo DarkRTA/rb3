@@ -14,6 +14,46 @@ public:
     virtual bool IsVersionOK() const;
 
     void InitBandSongMetadata();
+    const char* Title() const;
+    const char* Artist() const;
+    const char* Album() const;
+    int AlbumTrackNum() const;
+    Symbol Genre() const;
+    int LengthMs() const;
+    bool HasAlternatePath() const;
+    bool MuteWinCues() const;
+    const std::map<Symbol, float>& Ranks() const;
+    int Rating() const;
+    float GuidePitchVolume() const;
+    int VocalTonicNote() const;
+    int SongKey() const;
+    int SongTonality() const;
+    float ScrollSpeed() const;
+    float TuningOffset() const;
+    Symbol VocalPercussionBank() const;
+    Symbol DrumKitBank() const;
+    bool HasAlbumArt() const;
+    bool IsMasterRecording() const;
+    Symbol BandFailCue() const;
+    int RealGuitarTuning(int) const;
+    int RealBassTuning(int) const;
+    Symbol Decade() const;
+    bool HasPart(Symbol, bool) const;
+    float Rank(Symbol) const;
+    bool HasVocalHarmony() const;
+    bool IsPrivate() const;
+    bool IsRanked() const;
+    Symbol LengthSym() const;
+    Symbol RatingSym() const;
+    Symbol SourceSym() const;
+    Symbol VocalPartsSym() const;
+    Symbol HasProGuitarSym() const;
+    bool HasKeys() const;
+    bool HasGuitar() const;
+    bool HasBass() const;
+    Symbol HasKeysSym() const;
+    bool HasSolo(Symbol) const;
+    Symbol HasSoloSym(Symbol) const;
 
     static int sBandSaveVer;
 
