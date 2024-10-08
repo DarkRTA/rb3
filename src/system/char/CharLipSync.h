@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "rndobj/PropAnim.h"
 #include "obj/ObjPtr_p.h"
+#include "utl/STLHelpers.h"
 
 class CharLipSync : public Hmx::Object {
 public:
@@ -43,7 +44,7 @@ public:
     ObjPtr<RndPropAnim, ObjectDir> mPropAnim;
     std::vector<String> mVisemes;
     int mFrames;
-    std::vector<unsigned char, unsigned int> mData;
+    std::vector<unsigned char VECTOR_SIZE_LARGE> mData;
 };
 
 #endif

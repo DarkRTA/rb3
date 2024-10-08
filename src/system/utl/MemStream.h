@@ -2,6 +2,7 @@
 #define UTL_MEMSTREAM_H
 
 #include "utl/BinStream.h"
+#include "utl/VectorSizeDefs.h"
 #include <vector>
 
 class MemStream : public BinStream {
@@ -22,7 +23,7 @@ public:
 
     bool mFail;
     int mTell;
-    std::vector<char, unsigned int> mBuffer;
+    std::vector<char VECTOR_SIZE_LARGE> mBuffer;
 
 };
 

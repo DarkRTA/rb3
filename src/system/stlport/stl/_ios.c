@@ -2,19 +2,19 @@
  * Copyright (c) 1999
  * Silicon Graphics Computer Systems, Inc.
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  *
- */
+ */ 
 #ifndef _STLP_IOS_C
 #define _STLP_IOS_C
 
@@ -30,7 +30,7 @@
 # include <stl/_numpunct.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
 // basic_ios<>'s non-inline member functions
 
@@ -119,7 +119,7 @@ void basic_ios<_CharT, _Traits>::_M_handle_exception(ios_base::iostate __flag)
     _STLP_RETHROW;
 }
 
-}
+_STLP_END_NAMESPACE
 
 #endif /* _STLP_IOS_C */
 

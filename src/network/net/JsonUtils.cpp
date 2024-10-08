@@ -74,7 +74,7 @@ JsonConverter::JsonConverter() {
 }
 
 JsonConverter::~JsonConverter() {
-    if (objects.size() != 0) {
+    if (!objects.empty()) {
         int count = objects.size() - 1;
         while (count >= 0) {
             JsonObject *o = objects[count];

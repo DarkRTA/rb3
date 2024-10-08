@@ -2,34 +2,34 @@
  * Copyright (c) 1999
  * Silicon Graphics Computer Systems, Inc.
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  *
- */
+ */ 
 
 
 // This header defines classes basic_stringbuf, basic_istringstream,
-// basic_ostringstream, and basic_stringstream.  These classes
+// basic_ostringstream, and basic_stringstream.  These classes 
 // represent streamsbufs and streams whose sources or destinations are
 // C++ strings.
 
-#ifndef _STLP_INTERNAL_SSTREAM
-#define _STLP_INTERNAL_SSTREAM
+#ifndef _STLP_SSTREAM_H
+#define _STLP_SSTREAM_H
 
 #ifndef _STLP_INTERNAL_STREAMBUF
 #  include <stl/_streambuf.h>
 #endif
 
-#ifndef _STLP_INTERNAL_ISTREAM
+#ifndef _STLP_INTERNAL_ISTREAM_H
 #  include <stl/_istream.h> // Includes <ostream>, <ios>, <iosfwd>
 #endif
 
@@ -37,7 +37,7 @@
 #  include <stl/_string.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------------
 // This version of basic_stringbuf relies on the internal details of
@@ -88,9 +88,9 @@ protected:                      // Overridden virtual member functions.
 
   virtual _Base* setbuf(_CharT* __buf, streamsize __n);
   virtual pos_type seekoff(off_type __off, ios_base::seekdir __dir,
-                           ios_base::openmode __mode
+                           ios_base::openmode __mode 
                                       = ios_base::in | ios_base::out);
-  virtual pos_type seekpos(pos_type __pos, ios_base::openmode __mode
+  virtual pos_type seekpos(pos_type __pos, ios_base::openmode __mode 
                                       = ios_base::in | ios_base::out);
 
 private:                        // Helper functions.
@@ -105,6 +105,13 @@ private:
   enum _JustName { _S_BufSiz = 8 };
   _CharT _M_Buf[ 8 /* _S_BufSiz */];
 };
+
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
+_STLP_EXPORT_TEMPLATE_CLASS basic_stringbuf<char, char_traits<char>, allocator<char> >;
+#  if !defined (_STLP_NO_WCHAR_T)
+_STLP_EXPORT_TEMPLATE_CLASS basic_stringbuf<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
+#  endif
+#endif /* _STLP_USE_TEMPLATE_EXPORT */
 
 //----------------------------------------------------------------------
 // Class basic_istringstream, an input stream that uses a stringbuf.
@@ -132,13 +139,20 @@ public:                         // Constructors, destructor.
 public:                         // Member functions
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return const_cast<_Buf*>(&_M_buf); }
+    { return __CONST_CAST(_Buf*,&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
   void str(const _String& __s) { _M_buf.str(__s); }
-
+  
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
+
+#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
+  typedef basic_istringstream<_CharT, _Traits> _Self;
+  //explicitely defined as private to avoid warnings:
+  basic_istringstream(_Self const&);
+  _Self& operator = (_Self const&);
+#endif
 };
 
 
@@ -168,7 +182,7 @@ public:                         // Constructors, destructor.
 public:                         // Member functions.
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return const_cast<_Buf*>(&_M_buf); }
+    { return __CONST_CAST(_Buf*,&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
     void str(const _String& __s) { _M_buf.str(__s); } // dwa 02/07/00 - BUG STOMPER DAVE
@@ -176,6 +190,13 @@ public:                         // Member functions.
 
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
+
+#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
+  typedef basic_ostringstream<_CharT, _Traits> _Self;
+  //explicitely defined as private to avoid warnings:
+  basic_ostringstream(_Self const&);
+  _Self& operator = (_Self const&);
+#endif
 };
 
 
@@ -195,7 +216,7 @@ public:                         // Typedefs
   typedef basic_iostream<_CharT, _Traits>            _Base;
   typedef basic_string<_CharT, _Traits, _Alloc>      _String;
   typedef basic_stringbuf<_CharT, _Traits, _Alloc>  _Buf;
-
+  
   typedef ios_base::openmode openmode;
 
 public:                         // Constructors, destructor.
@@ -207,22 +228,41 @@ public:                         // Constructors, destructor.
 public:                         // Member functions.
 
   basic_stringbuf<_CharT, _Traits, _Alloc>* rdbuf() const
-    { return const_cast<_Buf*>(&_M_buf); }
+    { return __CONST_CAST(_Buf*,&_M_buf); }
 
   _String str() const { return _M_buf.str(); }
     void str(const _String& __s) { _M_buf.str(__s); }
 
 private:
   basic_stringbuf<_CharT, _Traits, _Alloc> _M_buf;
+
+#if defined (_STLP_MSVC) && (_STLP_MSVC >= 1300 && _STLP_MSVC <= 1310)
+  typedef basic_stringstream<_CharT, _Traits> _Self;
+  //explicitely defined as private to avoid warnings:
+  basic_stringstream(_Self const&);
+  _Self& operator = (_Self const&);
+#endif
 };
 
-}
+
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
+_STLP_EXPORT_TEMPLATE_CLASS basic_istringstream<char, char_traits<char>, allocator<char> >;
+_STLP_EXPORT_TEMPLATE_CLASS basic_ostringstream<char, char_traits<char>, allocator<char> >;
+_STLP_EXPORT_TEMPLATE_CLASS basic_stringstream<char, char_traits<char>, allocator<char> >;
+#  if !defined (_STLP_NO_WCHAR_T)
+_STLP_EXPORT_TEMPLATE_CLASS basic_istringstream<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
+_STLP_EXPORT_TEMPLATE_CLASS basic_ostringstream<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
+_STLP_EXPORT_TEMPLATE_CLASS basic_stringstream<wchar_t, char_traits<wchar_t>, allocator<wchar_t>  >;
+#  endif
+#endif /* _STLP_USE_TEMPLATE_EXPORT */
+
+_STLP_END_NAMESPACE
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_sstream.c>
 #endif
 
-#endif /* _STLP_INTERNAL_SSTREAM */
+#endif /* _STLP_SSTREAM_H */
 
 // Local Variables:
 // mode:C++

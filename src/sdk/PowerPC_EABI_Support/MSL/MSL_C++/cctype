@@ -1,6 +1,6 @@
 #ifndef MSL_CPP_CCTYPE_H
 #define MSL_CPP_CCTYPE_H
-#include <ctype.h>
+#include <MSL_C/ctype.h>
 
 namespace std {
     using ::isalnum;

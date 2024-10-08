@@ -41,7 +41,12 @@
                 "limitSymbolsToIncludedHeaders": true
             },
             "defines": [
-                "MILO_DEBUG"
+                "MILO_DEBUG",
+                "HX_WII",
+                "__MWERKS__=0x4302",
+                "__PPCBROADWAY__",
+                "__PPCGECKO__",
+                "__VS_CODE__"
             ]
         }
     ],

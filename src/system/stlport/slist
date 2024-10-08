@@ -24,13 +24,6 @@
 #  pragma once
 #endif
 
-#if defined (_STLP_NO_EXTENSIONS)
-/* Comment following if you want to use the slist constainer even if you ask for
- * no extension.
- */
-#  error The slist class is an STLport extension.
-#endif
-
 #ifndef _STLP_INTERNAL_SLIST_H
 #  include <stl/_slist.h>
 #endif

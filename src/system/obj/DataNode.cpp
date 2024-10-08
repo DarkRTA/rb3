@@ -123,7 +123,7 @@ Symbol DataNode::LiteralSym(const DataArray* a) const {
         else MILO_FAIL("Data %s is not Symbol", String(s));
     }
 #endif
-    return STR_TO_SYM((char*)mValue.symbol);
+    return STR_TO_SYM(mValue.symbol);
 }
 
 Symbol DataNode::ForceSym(const DataArray* a) const {
@@ -229,7 +229,7 @@ DataFunc* DataNode::Func(const DataArray* a) const {
         if(a) MILO_FAIL("Data %s is not Func (file %s, line %d)", s.c_str(), a->mFile.mStr, (int)a->mLine);
         else MILO_FAIL("Data %s is not Func", String(s));
     }
-#endif  
+#endif
     return mValue.func;
 }
 
@@ -613,7 +613,7 @@ void DataNode::Load(BinStream& d){
         case kDataVar: {
             Symbol sym;
             d >> sym;
-            mValue.var = &gDataVars.hack_indexer(sym);
+            mValue.var = &gDataVars[sym];
             break;
         }
         case kDataUnhandled:

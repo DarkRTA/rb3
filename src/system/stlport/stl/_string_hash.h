@@ -2,13 +2,13 @@
  * Copyright (c) 1997-1999
  * Silicon Graphics Computer Systems, Inc.
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
@@ -27,10 +27,10 @@
 # include <stl/_string.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
 template <class _CharT, class _Traits, class _Alloc>
-inline size_t
+_STLP_INLINE_LOOP size_t
 __stl_string_hash(const basic_string<_CharT,_Traits,_Alloc>& __s) {
   unsigned long __h = 0;
   size_t __len = __s.size();
@@ -40,12 +40,32 @@ __stl_string_hash(const basic_string<_CharT,_Traits,_Alloc>& __s) {
   return size_t(__h);
 }
 
+#if defined (_STLP_CLASS_PARTIAL_SPECIALIZATION)
+
 template <class _CharT, class _Traits, class _Alloc>
 struct hash<basic_string<_CharT,_Traits,_Alloc> > {
   size_t operator()(const basic_string<_CharT,_Traits,_Alloc>& __s) const
     { return __stl_string_hash(__s); }
 };
 
-}
+#else
+
+_STLP_TEMPLATE_NULL 
+struct _STLP_CLASS_DECLSPEC hash<string> {
+  size_t operator()(const string& __s) const
+    { return __stl_string_hash(__s); }
+};
+
+#  if defined (_STLP_HAS_WCHAR_T)
+_STLP_TEMPLATE_NULL
+struct _STLP_CLASS_DECLSPEC hash<wstring> {
+  size_t operator()(const wstring& __s) const
+    { return __stl_string_hash(__s); }
+};
+#  endif
+
+#endif /* _STLP_CLASS_PARTIAL_SPECIALIZATION */
+
+_STLP_END_NAMESPACE
 
 #endif

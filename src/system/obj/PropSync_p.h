@@ -6,6 +6,7 @@
 #include "math/Vec.h"
 #include "utl/FilePath.h"
 #include "utl/Symbol.h"
+#include "utl/VectorSizeDefs.h"
 #include "os/Debug.h"
 #include "math/Geo.h"
 #include <list>
@@ -194,7 +195,8 @@ template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray*
     }
 }
 
-template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
+template <class T VECTOR_SIZE_PARAM>
+bool PropSync(std::vector<T VECTOR_SIZE_ARG>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
         MILO_ASSERT(op == kPropSize, 0xB9);
@@ -202,7 +204,7 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
         return true;
     }
     else {
-        std::vector<T, T2>::iterator it = vec.begin() + prop->Int(i++);
+        std::vector<T VECTOR_SIZE_ARG>::iterator it = vec.begin() + prop->Int(i++);
         if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
             return PropSync(*it, node, prop, i, op);
         }
@@ -222,7 +224,8 @@ template <class T, typename T2> bool PropSync(std::vector<T, T2>& vec, DataNode&
 }
 
 #include "obj/ObjVector.h"
-template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode& node, DataArray* prop, int i, PropOp op)  {
+template <class T VECTOR_SIZE_PARAM>
+bool PropSync(ObjVector<T VECTOR_SIZE_ARG>& objVec, DataNode& node, DataArray* prop, int i, PropOp op)  {
     if(op == kPropUnknown0x40) return false;
     else if(i == prop->Size()){
         MILO_ASSERT(op == kPropSize, 0x17F);
@@ -230,7 +233,7 @@ template <class T, typename T2> bool PropSync(ObjVector<T, T2>& objVec, DataNode
         return true;
     }
     else {
-        std::vector<T, T2>::iterator it = objVec.begin() + prop->Int(i++);
+        ObjVector<T VECTOR_SIZE_ARG>::iterator it = objVec.begin() + prop->Int(i++);
         if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
             return PropSync(*it, node, prop, i, op);
         }

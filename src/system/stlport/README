@@ -1,0 +1,16 @@
+# STLport 5.0.2
+
+Sourced from https://sourceforge.net/projects/stlport/files/STLport/STLport%205.0.2/
+
+Modifications are made as needed to suit the decompilation project, including but not limited to:
+
+- Only the `stlport` directory has been included from the original package, as STLport iostreams/locale/etc. code are not necessary for this project.
+- Additional compiler configuration headers [`config/stl_mwbroadway.h`](config/stl_mwbroadway.h) and [`config/stl_mwgecko.h`](config/stl_mwgecko.h) have been added to support MWCC for GC/Wii.
+- A custom allocator is used as the default allocator instead of `std::allocator`.
+- A modified version of `vector` has been introduced which accepts a third template parameter for the integer type used for size/capacity, based on symbol/RTTI names and decompiled code.
+
+Any other important modifications or hacks can be found by searching for `// decomp hack:` inside this folder.
+
+# License
+
+The original license text from the STLport readme may be found in the [LICENSE](LICENSE) file. Refer there for more information.

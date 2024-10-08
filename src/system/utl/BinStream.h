@@ -187,32 +187,37 @@ public:
     BS_READ_FUNC(float, Float);
 };
 
-template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::vector<T1, T2>& vec){
+// Note: `Allocator` here is actually the size/capacity type parameter on Wii.
+// The name is based on Xbox 360 symbols, which show the allocator type instead.
+template<class T, class Allocator>
+BinStream& operator<<(BinStream& bs, const std::vector<T, Allocator>& vec){
     bs << (int)vec.size();
-    for(std::vector<T1, T2>::const_iterator it = vec.begin(); it != vec.end(); it++){
+    for(std::vector<T, Allocator>::const_iterator it = vec.begin(); it != vec.end(); it++){
         bs << *it;
     }
     return bs;
 }
 
-template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::vector<T1, T2>& vec){
+template<class T, class Allocator>
+BinStream& operator>>(BinStream& bs, std::vector<T, Allocator>& vec){
     unsigned int length;
     bs >> length;
     vec.resize(length);
 
-    for(std::vector<T1, T2>::iterator it = vec.begin(); it != vec.end(); it++){
+    for(std::vector<T, Allocator>::iterator it = vec.begin(); it != vec.end(); it++){
         bs >> *it;
     }
 
     return bs;
 }
 
-template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::list<T1, T2>& list){
+template<class T, class Allocator>
+BinStream& operator>>(BinStream& bs, std::list<T, Allocator>& list){
     unsigned int length;
     bs >> length;
     list.resize(length);
 
-    for(std::list<T1, T2>::iterator it = list.begin(); it != list.end(); it++){
+    for(std::list<T, Allocator>::iterator it = list.begin(); it != list.end(); it++){
         bs >> *it;
     }
 
@@ -220,11 +225,13 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::list<T1, 
 }
 
 // TODO: implement
-template<class T1, class T2> BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
+template<class T1, class T2>
+BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
 
 }
 
-template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
+template<class T1, class T2>
+BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
     int size;
     bs >> size;
     for(; size != 0; size--){
@@ -235,12 +242,14 @@ template<class T1, class T2> BinStream& operator>>(BinStream& bs, std::map<T1, T
     return bs;
 }
 
-template <class T1, class T2> BinStream& operator>>(BinStream& bs, std::pair<T1, T2>& p) {
+template <class T1, class T2>
+BinStream& operator>>(BinStream& bs, std::pair<T1, T2>& p) {
     bs >> p.first >> p.second;
     return bs;
 }
 
-template <class T1> BinStream& operator>>(BinStream& bs, T1* t) {
+template <class T>
+BinStream& operator>>(BinStream& bs, T* t) {
     t->Load(bs);
 }
 

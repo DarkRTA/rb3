@@ -1,7 +1,7 @@
 #ifndef MSL_CPP_CERRNO_H
 #define MSL_CPP_CERRNO_H
 
-#include <errno.h>
+#include <MSL_C/errno.h>
 
 namespace std {
     using ::errno;

@@ -1,5 +1,6 @@
 #include "midi/DataEvent.h"
 #include "os/Debug.h"
+#include "utl/VectorSizeDefs.h"
 #include <algorithm>
 
 namespace {
@@ -9,7 +10,7 @@ namespace {
 }
 
 DataEventList::DataEventList() : mCurIndex(0), mSize(0), mElement(-1), mCompType(kDataUnhandled), mValue(0) {
-    
+
 }
 
 DataEventList::~DataEventList(){
@@ -128,6 +129,6 @@ void DataEventList::Clear(){
     mCurIndex = 0;
     mSize = 0;
     // probably wrong
-    mComps = std::vector<CompEv, unsigned int>();
-    mEvents = std::vector<DataEvent, unsigned short>();
+    mComps = std::vector<CompEv VECTOR_SIZE_LARGE>();
+    mEvents = std::vector<DataEvent>();
 }

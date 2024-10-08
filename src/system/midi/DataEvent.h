@@ -1,6 +1,7 @@
 #ifndef MIDI_DATAEVENT_H
 #define MIDI_DATAEVENT_H
 #include "obj/Data.h"
+#include "utl/VectorSizeDefs.h"
 #include <vector>
 #include <list>
 
@@ -49,8 +50,8 @@ public:
 
     int mCurIndex; // 0x0
     int mSize; // 0x4
-    std::vector<DataEvent, unsigned short> mEvents; // 0x8
-    std::vector<CompEv, unsigned int> mComps; // 0x10
+    std::vector<DataEvent> mEvents; // 0x8
+    std::vector<CompEv VECTOR_SIZE_LARGE> mComps; // 0x10
     int mElement; // 0x1c
     DataEvent mTemplate; // 0x20, 0x24, 0x28
     DataType mCompType; // 0x2c

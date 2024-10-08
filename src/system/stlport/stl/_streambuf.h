@@ -2,19 +2,19 @@
  * Copyright (c) 1999
  * Silicon Graphics Computer Systems, Inc.
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
  * modified is included with the above copyright notice.
  *
- */
+ */ 
 #ifndef _STLP_INTERNAL_STREAMBUF
 #define _STLP_INTERNAL_STREAMBUF
 
@@ -22,7 +22,7 @@
 #  include <stl/_ios_base.h>      // Needed for ios_base bitfield members.
 #endif                            // <ios_base> includes <iosfwd>.
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
 //----------------------------------------------------------------------
 // Class basic_streambuf<>, the base class of the streambuf hierarchy.
@@ -42,7 +42,7 @@ namespace _STLP_STD {
 
 // The second template parameter, _Traits, defaults to char_traits<_CharT>.
 // The default is declared in header <iosfwd>, and it isn't declared here
-// because C++ language rules do not allow it to be declared twice.
+// because C++ language rules do not allow it to be declared twice. 
 
 template <class _CharT, class _Traits>
 class basic_streambuf {
@@ -75,13 +75,22 @@ public:                         // Destructor.
   virtual ~basic_streambuf();
 
 protected:                      // The default constructor.
-  basic_streambuf();
+  basic_streambuf()
+#if defined (_STLP_MSVC) && (_STLP_MSVC < 1300) && defined (_STLP_USE_STATIC_LIB)
+    //We make it inline to avoid unresolved symbol.
+    : _M_gbegin(0), _M_gnext(0), _M_gend(0),
+      _M_pbegin(0), _M_pnext(0), _M_pend(0),
+      _M_locale()
+  {}
+#else
+  ;
+#endif
 
 protected:                      // Protected interface to the get area.
   char_type* eback() const { return _M_gbegin; } // Beginning
   char_type* gptr()  const { return _M_gnext; }  // Current position
   char_type* egptr() const { return _M_gend; }   // End
-
+  
   void gbump(int __n) { _M_gnext += __n; }
   void setg(char_type* __gbegin, char_type* __gnext, char_type* __gend) {
     _M_gbegin = __gbegin;
@@ -127,13 +136,13 @@ protected:                      // Virtual buffer management functions.
   virtual pos_type
   seekpos(pos_type, ios_base::openmode = ios_base::in | ios_base::out);
 
-  // Synchronizes (i.e. flushes) the buffer.  All subclasses are expected to
+  // Synchronizes (i.e. flushes) the buffer.  All subclasses are expected to 
   // override this virtual member function.
   virtual int sync();
 
 
 public:                         // Buffer management.
-  basic_streambuf<_CharT, _Traits>* pubsetbuf(char_type* __s, streamsize __n)
+  basic_streambuf<_CharT, _Traits>* pubsetbuf(char_type* __s, streamsize __n) 
   { return this->setbuf(__s, __n); }
 
   pos_type pubseekoff(off_type __offset, ios_base::seekdir __way,
@@ -154,7 +163,7 @@ protected:                      // Virtual get area functions, as defined in
   // override this virtual member function.
   virtual streamsize showmanyc();
 
-  // Reads up to __n characters.  Return value is the number of
+  // Reads up to __n characters.  Return value is the number of 
   // characters read.
   virtual streamsize xsgetn(char_type* __s, streamsize __n);
 
@@ -163,7 +172,7 @@ protected:                      // Virtual get area functions, as defined in
   // this virtual member function.
   virtual int_type underflow();
 
-  // Similar to underflow(), but used for unbuffered input.  Most
+  // Similar to underflow(), but used for unbuffered input.  Most 
   // subclasses should probably override this virtual member function.
   virtual int_type uflow();
 
@@ -209,35 +218,35 @@ public:                         // Public members for reading characters.
   streamsize in_avail() {
     return (_M_gnext < _M_gend) ? (_M_gend - _M_gnext) : this->showmanyc();
   }
-
+  
   // Advance to the next character and return it.
   int_type snextc() {
-  return ( _M_gend - _M_gnext > 1 ?
+	return ( _M_gend - _M_gnext > 1 ?
              _Traits::to_int_type(*++_M_gnext) :
              this->_M_snextc_aux());
   }
 
   // Return the current character and advance to the next.
   int_type sbumpc() {
-    return _M_gnext < _M_gend ? _Traits::to_int_type(*_M_gnext++)
+    return _M_gnext < _M_gend ? _Traits::to_int_type(*_M_gnext++) 
       : this->uflow();
   }
-
+  
   // Return the current character without advancing to the next.
   int_type sgetc() {
-    return _M_gnext < _M_gend ? _Traits::to_int_type(*_M_gnext)
+    return _M_gnext < _M_gend ? _Traits::to_int_type(*_M_gnext) 
       : this->underflow();
   }
-
+  
   streamsize sgetn(char_type* __s, streamsize __n)
   { return this->xsgetn(__s, __n); }
-
+  
   int_type sputbackc(char_type __c) {
     return ((_M_gbegin < _M_gnext) && _Traits::eq(__c, *(_M_gnext - 1)))
       ? _Traits::to_int_type(*--_M_gnext)
       : this->pbackfail(_Traits::to_int_type(__c));
   }
-
+  
   int_type sungetc() {
     return (_M_gbegin < _M_gnext)
       ? _Traits::to_int_type(*--_M_gnext)
@@ -259,9 +268,27 @@ public:                         // Locale-related functions.
 #if !defined (_STLP_NO_ANACHRONISMS)
   void stossc() { this->sbumpc(); }
 #endif
+#if defined (__MVS__) || defined (__OS400__)
+private: // Data members.
+
+  char_type* _M_gbegin; // Beginning of get area
+  char_type* _M_gnext; // Current position within the get area
+  char_type* _M_gend; // End of get area
+
+  char_type* _M_pbegin; // Beginning of put area
+  char_type* _M_pnext; // Current position within the put area
+  char_type* _M_pend; // End of put area
+#endif
 };
 
-}
+#if defined (_STLP_USE_TEMPLATE_EXPORT)
+_STLP_EXPORT_TEMPLATE_CLASS basic_streambuf<char, char_traits<char> >;
+#  if !defined (_STLP_NO_WCHAR_T)
+_STLP_EXPORT_TEMPLATE_CLASS basic_streambuf<wchar_t, char_traits<wchar_t> >;
+#  endif // _STLP_NO_WCHAR_T
+#endif // _STLP_USE_TEMPLATE_EXPORT
+
+_STLP_END_NAMESPACE
 
 #if defined (_STLP_EXPOSE_STREAM_IMPLEMENTATION) && !defined (_STLP_LINK_TIME_INSTANTIATION)
 #  include <stl/_streambuf.c>

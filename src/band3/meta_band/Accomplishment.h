@@ -48,7 +48,7 @@ public:
     virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
 private:
     virtual Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
-    virtual bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol, unsigned short>&) const;
+    virtual bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol>&) const;
     virtual bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
     virtual bool CanBeLaunched() const;
     virtual bool HasSpecificSongsToLaunch() const;

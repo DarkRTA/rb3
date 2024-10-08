@@ -3,6 +3,7 @@
 #include "midi/Midi.h"
 #include "midi/MidiParser.h"
 #include "obj/Object.h"
+#include "utl/VectorSizeDefs.h"
 #include <vector>
 
 class GemListInterface; // forward dec
@@ -29,8 +30,8 @@ public:
     MidiParser* GetParser(Symbol);
     const char* GetSongName() const { return mSongName.Str(); }
 
-    std::vector<int, unsigned int> unk24; // 0x24
-    std::vector<MidiParser::VocalEvent, unsigned int> unk30; // 0x30
+    std::vector<int VECTOR_SIZE_LARGE> unk24; // 0x24
+    std::vector<MidiParser::VocalEvent VECTOR_SIZE_LARGE> unk30; // 0x30
     GemListInterface* mGems; // 0x3c
     bool mLoaded; // 0x40
     const char* mFilename; // 0x44

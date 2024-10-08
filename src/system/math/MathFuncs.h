@@ -1,6 +1,7 @@
 #ifndef MATH_MATHFUNCS_H
 #define MATH_MATHFUNCS_H
 #include <math.h>
+#include <cmath>
 
 extern "C" float asin_f(double);
 extern "C" float acos_f(double);

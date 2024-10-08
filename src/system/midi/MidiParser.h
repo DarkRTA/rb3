@@ -2,13 +2,14 @@
 #define MIDI_MIDIPARSER_H
 #include "obj/MsgSource.h"
 #include "midi/DataEvent.h"
+#include "utl/VectorSizeDefs.h"
 #include <vector>
 #include <list>
 
 class GemListInterface; // forward dec
 
 class MidiParser : public MsgSource { // 0xd0
-public: 
+public:
     struct PostProcess {
         PostProcess();
         bool zeroLength;
@@ -57,7 +58,7 @@ public:
     void Poll();
     void FixGap(float*);
     void InsertDataEvent(float, float, const DataNode&);
-    int ParseAll(GemListInterface*, std::vector<VocalEvent, unsigned int>&);
+    int ParseAll(GemListInterface*, std::vector<VocalEvent VECTOR_SIZE_LARGE>&);
     void PushIdle(float, float, int, Symbol);
     DataEventList* Events() const { return mEvents; }
 
@@ -85,7 +86,7 @@ public:
     DataArray* mCurParser; // 0x38
     DataArray* mAllowedNotes; // 0x3c
     std::vector<VocalEvent>* mVocalEvents; // 0x40
-    std::vector<Note, unsigned int> mNotes; // 0x44
+    std::vector<Note VECTOR_SIZE_LARGE> mNotes; // 0x44
     GemListInterface* mGems; // 0x50
     bool mInverted; // 0x54
     PostProcess mProcess; // 0x58

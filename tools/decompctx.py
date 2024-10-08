@@ -36,6 +36,9 @@ default_arguments: list[str] = [
 
 default_defines: dict[str, str] = {
     "__MWERKS__": "0x4302",
+    "__PPCBROADWAY__": "1",
+    "__PPCGECKO__": "1",
+    "HX_WII": "1",
 }
 
 mwcc_options: dict[str, bool] = {
@@ -86,6 +89,7 @@ passthrough_defines: list[str] = [
     # pass it through, pcpp never executes the define for _STLP_HAS_NO_NAMESPACES
     "_STLP_HAS_NO_NAMESPACES",
     "_STLP_USE_NAMESPACES",
+    "_STLP_USE_OWN_NAMESPACE",
     "_STLP_NO_NAMESPACES",
 ]
 

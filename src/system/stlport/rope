@@ -23,13 +23,6 @@
 #  pragma once
 #endif
 
-#if defined (_STLP_NO_EXTENSIONS)
-/* Comment following if you want to use rope class even if you ask for
- * no extension.
- */
-#  error The rope class is a STLport extension.
-#endif
-
 #include <stl/_rope.h>
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x54)

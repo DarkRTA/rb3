@@ -37,7 +37,9 @@
                 "-Cpp_exceptions off",
 
                 "-Isrc/",
-                "-d NDEBUG"
+
+                "-d NDEBUG",
+                "-d HX_WII"
             ]
         },
         "main": {

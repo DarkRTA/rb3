@@ -10,13 +10,13 @@
  * Copyright (c) 1997
  * Moscow Center for SPARC Technology
  *
- * Copyright (c) 1999
+ * Copyright (c) 1999 
  * Boris Fomitchev
  *
  * This material is provided "as is", with absolutely no warranty expressed
  * or implied. Any use is at your own risk.
  *
- * Permission to use or copy this software for any purpose is hereby granted
+ * Permission to use or copy this software for any purpose is hereby granted 
  * without fee, provided the above notices are retained on all copies.
  * Permission to modify the code and to distribute modified code is granted,
  * provided the above notices are retained, and a notice that the code was
@@ -30,13 +30,14 @@
 # include <stl/_numeric.h>
 #endif
 
-namespace _STLP_PRIV {
+_STLP_BEGIN_NAMESPACE
 
 template <class _InputIterator, class _OutputIterator, class _Tp,
           class _BinaryOperation>
-_OutputIterator
-__partial_sum(_InputIterator __first, _InputIterator __last,
-              _OutputIterator __result, _Tp*, _BinaryOperation __binary_op) {
+_OutputIterator 
+__partial_sum(_InputIterator __first, _InputIterator __last, 
+              _OutputIterator __result, _Tp*, _BinaryOperation __binary_op)
+{
   _STLP_DEBUG_CHECK(__check_range(__first, __last))
   if (__first == __last) return __result;
   *__result = *__first;
@@ -49,10 +50,10 @@ __partial_sum(_InputIterator __first, _InputIterator __last,
   return ++__result;
 }
 
-template <class _InputIterator, class _OutputIterator, class _Tp,
+template <class _InputIterator, class _OutputIterator, class _Tp, 
           class _BinaryOperation>
 _OutputIterator
-__adjacent_difference(_InputIterator __first, _InputIterator __last,
+__adjacent_difference(_InputIterator __first, _InputIterator __last, 
                       _OutputIterator __result, _Tp*,
                       _BinaryOperation __binary_op) {
   _STLP_DEBUG_CHECK(__check_range(__first, __last))
@@ -69,7 +70,9 @@ __adjacent_difference(_InputIterator __first, _InputIterator __last,
 
 
 template <class _Tp, class _Integer, class _MonoidOperation>
-_Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) {
+_Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) 
+{
+  _STLP_MPWFIX_TRY
   if (__n == 0)
     return __identity_element(__opr);
   else {
@@ -78,6 +81,7 @@ _Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) {
       __x = __opr(__x, __x);
     }
     _Tp __result = __x;
+	_STLP_MPWFIX_TRY
     __n >>= 1;
     while (__n != 0) {
       __x = __opr(__x, __x);
@@ -86,10 +90,12 @@ _Tp __power(_Tp __x, _Integer __n, _MonoidOperation __opr) {
       __n >>= 1;
     }
     return __result;
+	_STLP_MPWFIX_CATCH
   }
+  _STLP_MPWFIX_CATCH_ACTION(__x = _Tp())
 }
 
-}
+_STLP_END_NAMESPACE
 
 #endif /*  _STLP_NUMERIC_C */
 

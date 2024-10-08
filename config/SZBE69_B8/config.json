@@ -40,7 +40,8 @@
                 "-RTTI on",
                 "-Cpp_exceptions off",
 
-                "-d MILO_DEBUG"
+                "-d MILO_DEBUG",
+                "-d HX_WII"
             ]
         },
         "main": {

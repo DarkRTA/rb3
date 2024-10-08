@@ -1,11 +1,15 @@
 #ifndef _STLP_INTERNAL_IOSFWD
 #define _STLP_INTERNAL_IOSFWD
 
+#if defined(__sgi) && !defined(__GNUC__) && !defined(_STANDARD_C_PLUS_PLUS)
+#error This header file requires the -LANG:std option
+#endif
+
 // This file provides forward declarations of the most important I/O
 // classes.  Note that almost all of those classes are class templates,
-// with default template arguments.  According to the C++ standard,
+// with default template arguments.  According to the C++ standard, 
 // if a class template is declared more than once in the same scope
-// then only one of those declarations may have default arguments.
+// then only one of those declarations may have default arguments.  
 
 // <iosfwd> contains the same declarations as other headers, and including
 // both <iosfwd> and (say) <iostream> is permitted.  This means that only
@@ -18,87 +22,104 @@
 #  include <stl/char_traits.h>
 #endif
 
-namespace _STLP_STD {
+_STLP_BEGIN_NAMESPACE
 
-class ios_base;
+class _STLP_CLASS_DECLSPEC ios_base;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_ios;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_streambuf;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_istream;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_ostream;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_iostream;
 
-template <class _CharT, class  _Traits = char_traits<_CharT>,
-          class _Allocator = allocator<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM( _Traits , char_traits<_CharT>),
+          __DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
 class basic_stringbuf;
 
-template <class _CharT, class _Traits = char_traits<_CharT>,
-          class _Allocator = allocator<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>),
+          __DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
 class basic_istringstream;
 
-template <class _CharT, class _Traits = char_traits<_CharT>,
-          class _Allocator = allocator<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>),
+          __DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
 class basic_ostringstream;
 
-template <class _CharT, class _Traits = char_traits<_CharT>,
-          class _Allocator = allocator<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>),
+          __DFL_TMPL_PARAM(_Allocator , allocator<_CharT>) >
 class basic_stringstream;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_filebuf;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_ifstream;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_ofstream;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class basic_fstream;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class istreambuf_iterator;
 
-template <class _CharT, class _Traits = char_traits<_CharT> >
+template <class _CharT, __DFL_TMPL_PARAM(_Traits , char_traits<_CharT>) >
 class ostreambuf_iterator;
 
 typedef basic_ios<char, char_traits<char> >    ios;
+
+# ifndef _STLP_NO_WCHAR_T
 typedef basic_ios<wchar_t, char_traits<wchar_t> > wios;
+# endif
 
 // Forward declaration of class locale, and of the most important facets.
 class locale;
+# ifdef _STLP_NO_EXPLICIT_FUNCTION_TMPL_ARGS
+template <class _Facet>
+struct _Use_facet {
+  const locale& __loc;
+  _Use_facet(const locale& __p_loc) : __loc(__p_loc) {}
+  inline const _Facet& operator *() const;
+};
+# define use_facet *_Use_facet
+# else
 template <class _Facet> inline const _Facet& use_facet(const locale&);
+# endif
 
 template <class _CharT> class ctype;
 template <class _CharT> class ctype_byname;
 template <class _CharT> class collate;
 template <class _CharT> class collate_byname;
 
-template<> class ctype<char>;
-template<> class ctype_byname<char>;
-template<> class collate<char>;
-template<> class collate_byname<char>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC ctype<char>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC ctype_byname<char>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC collate<char>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC collate_byname<char>;
 
-template<> class ctype<wchar_t>;
-template<> class ctype_byname<wchar_t>;
-template<> class collate<wchar_t>;
-template<> class collate_byname<wchar_t>;
+#  ifndef _STLP_NO_WCHAR_T
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC ctype<wchar_t>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC ctype_byname<wchar_t>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC collate<wchar_t>;
+_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC collate_byname<wchar_t>;
+#  endif
 
+# if !(defined (__SUNPRO_CC) && __SUNPRO_CC < 0x500 ) && !defined(_STLP_WINCE)
 // Typedefs for ordinary (narrow-character) streams.
-//template<> class basic_streambuf<char, char_traits<char> >;
+//_STLP_TEMPLATE_NULL class _STLP_CLASS_DECLSPEC basic_streambuf<char, char_traits<char> >;
+# endif
 
-typedef basic_istream<char, char_traits<char> >  istream;
-typedef basic_ostream<char, char_traits<char> >  ostream;
-typedef basic_iostream<char, char_traits<char> > iostream;
+typedef basic_istream<char, char_traits<char> >   istream;
+typedef basic_ostream<char, char_traits<char> >   ostream;
+typedef basic_iostream<char, char_traits<char> >  iostream;
 typedef basic_streambuf<char,char_traits<char> > streambuf;
 
 typedef basic_stringbuf<char, char_traits<char>, allocator<char> >     stringbuf;
@@ -111,6 +132,7 @@ typedef basic_ifstream<char, char_traits<char> > ifstream;
 typedef basic_ofstream<char, char_traits<char> > ofstream;
 typedef basic_fstream<char, char_traits<char> >  fstream;
 
+# ifndef _STLP_NO_WCHAR_T
 // Typedefs for wide-character streams.
 typedef basic_streambuf<wchar_t, char_traits<wchar_t> > wstreambuf;
 typedef basic_istream<wchar_t, char_traits<wchar_t> >   wistream;
@@ -126,8 +148,9 @@ typedef basic_filebuf<wchar_t, char_traits<wchar_t> >  wfilebuf;
 typedef basic_ifstream<wchar_t, char_traits<wchar_t> > wifstream;
 typedef basic_ofstream<wchar_t, char_traits<wchar_t> > wofstream;
 typedef basic_fstream<wchar_t, char_traits<wchar_t> >  wfstream;
+# endif
 
-}
+_STLP_END_NAMESPACE
 
 #endif
 
