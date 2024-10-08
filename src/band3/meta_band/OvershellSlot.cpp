@@ -719,6 +719,16 @@ void OvershellSlot::SetOverrideType(OvershellOverrideFlow type, bool b){
     if(b) mOvershell->UpdateAll();
 }
 
+DECOMP_FORCEACTIVE(OvershellSlot, "overshell_up.cue", "overshell_down.cue", "go_to_wiiprofilecreator",
+    "update_controller_type", "update_user_name", "update_local_status", "update_restart_allowed", "update_sign_in_continue",
+    "update_pad_num", "update_remote_feedback", "update_remote_status", "update_show_vocal_bg", "update_song_difficulty_ranking",
+    "update_lefty_and_static_toggle", "set_difficulty_restriction", "update_mics", "update_online_enabled", "!InGame()", "mCharForEdit != NULL",
+    "illegal attempt made to delete guest character\n", "pProfile", "illegal attempt made to rename guest character to %s\n",
+    "pUser && pUser->IsLocal()", "button_error.cue", "overshell_back.cue", "on_start", "Local user %s cannot join", "play_instr_sfx_local",
+    "slider.cue", "overshell_select.cue", "mCharProvider", "update_char_provider", "update_users_provider", "update_profiles_provider",
+    "update_part_select_provider", "update_character_portrait", "update_char_more_options", "slot state %i is not an Enter Flow Prompt\n"
+)
+
 void OvershellSlot::Update(){
     UpdateState();
     UpdateView();
