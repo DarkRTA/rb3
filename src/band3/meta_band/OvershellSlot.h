@@ -8,6 +8,9 @@
 #include "bandobj/BandLabel.h"
 #include "meta_band/OvershellProfileProvider.h"
 #include "game/GameMessages.h"
+#include "ui/UIMessages.h"
+#include "os/JoypadMsgs.h"
+#include "os/VirtualKeyboard.h"
 
 class OvershellPanel;
 class OvershellSlotState;
@@ -151,12 +154,27 @@ public:
     int GetDefaultCharIndex() const;
     void SelectChar(int);
     void ShowEnterFlowPrompt(OvershellSlotStateID);
-    void ConfirmSwapUserProfile();
+    bool ConfirmSwapUserProfile();
     void AttemptToggleAutoVocals();
     void ConfirmChooseDiff();
+    void RenameCharacter(const char*);
+    void DeleteCharacter();
+    bool CanEditCharacter(int) const;
+    bool IsWiiProfileFull() const;
+    bool IsWiiProfileDeleteQueueFull() const;
+    const char* GetWiiProfileListSelectedName() const;
+    void ToggleWiiSpeak();
+    Hmx::Object* GetUserWiiProfile(); // TODO: change the return type once this is implemented
 
     DataNode OnMsg(const AddLocalUserResultMsg&);
     DataNode OnMsg(const LocalUserLeftMsg&);
+    DataNode OnMsg(const RockCentralOpCompleteMsg&);
+    DataNode OnMsg(const UIComponentScrollMsg&);
+    DataNode OnMsg(const UIComponentSelectMsg&);
+    DataNode OnMsg(const VirtualKeyboardResultMsg&);
+    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const ButtonUpMsg&);
+    DataNode OnMsg(const UserLoginMsg&);
 
     OvershellSlotStateMgr* mStateMgr; // 0x1c
     OvershellSlotState* mState; // 0x20
