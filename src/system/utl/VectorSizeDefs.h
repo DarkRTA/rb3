@@ -10,7 +10,7 @@
  * allocator on standard STL implementations and fail miserably.
  *
  * Usage examples:
-    template <class T VECTOR_SIZE_DFLT>
+    template <class T VECTOR_SIZE_DFLT_PARAM>
     class Vector2 : public std::vector<T VECTOR_SIZE_ARG> {};
 
     template <class T VECTOR_SIZE_PARAM>
