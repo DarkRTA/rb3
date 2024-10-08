@@ -2,6 +2,8 @@
 #define GAME_BANDUSER_H
 #include "game/Defines.h"
 #include "meta_band/GameplayOptions.h"
+#include "meta_band/OvershellSlotState.h"
+#include "meta_band/CharData.h"
 #include "os/User.h"
 #include "types.h"
 #include "system/bandobj/BandCharacter.h"
@@ -10,6 +12,7 @@ class BandCharDesc;
 class LocalBandUser;
 class RemoteBandUser;
 class NullLocalBandUser;
+class Player;
 
 class BandUser : public virtual User {
 public:
@@ -38,9 +41,6 @@ public:
     Symbol GetTrackSym() const;
     BandCharacter* GetCharLocal();
     bool HasChar();
-    LocalBandUser* NewLocalBandUser();
-    RemoteBandUser* NewRemoteBandUser();
-    NullLocalBandUser* NewNullLocalBandUser();
     void SetDifficulty(Difficulty);
     void UpdateData(unsigned int);
     void SetDifficulty(Symbol);
@@ -54,6 +54,25 @@ public:
     void SetControllerType(Symbol);
     void SetHasButtonGuitar(bool);
     void SetHas22FretGuitar(bool);
+    CharData* GetChar();
+    const char* IntroName() const;
+    int GetSlot() const;
+    const char* GetTrackIcon() const;
+    void SetOvershellSlotState(OvershellSlotStateID);
+    GameplayOptions* GetGameplayOptions();
+    float GetLastHitFraction() const { return mLastHitFraction; }
+    void SetLastHitFraction(float f){ mLastHitFraction = f; }
+    
+    static LocalBandUser* NewLocalBandUser();
+    static RemoteBandUser* NewRemoteBandUser();
+    static NullLocalBandUser* NewNullLocalBandUser();
+
+    DataNode OnSetDifficulty(DataArray*);
+    DataNode OnSetTrackType(DataArray*);
+    DataNode OnSetHas22FretGuitar(DataArray*);
+    DataNode OnSetPreferredScoreType(DataArray*);
+    DataNode OnSetControllerType(DataArray*);
+    DataNode OnSetPrefabChar(DataArray*);
 
     Difficulty mDifficulty; // 0x8
     u8 unk_0xC; // 0xC
@@ -62,15 +81,15 @@ public:
     bool mHasButtonGuitar; // 0x18
     bool mHas22FretGuitar; // 0x19
     ScoreType mPreferredScoreType; // 0x1C
-    int unk_0x20; // 0x20 - OvershellSlotStateID
+    OvershellSlotStateID mOvershellState; // 0x20
     String mOvershellFocus; // 0x24
-    int mChar; // 0x30 - CharData*
+    CharData* mChar; // 0x30 - CharData*
     GameplayOptions mGameplayOptions; // 0x34
     bool mAutoplay; // 0x70
     Symbol mPreviousAward; // 0x74
     float mLastHitFraction; // 0x78
     void *mTrack; // 0x7c
-    void *mPlayer; // 0x80 - Performer*
+    Player* mPlayer; // 0x80
     bool mParticipating; // 0x84
     bool mIsWiiRemoteController; // 0x85
     bool mJustDisconnected; // 0x86
@@ -87,22 +106,28 @@ public:
     virtual RemoteBandUser* GetRemoteBandUser() const;
     virtual int GetFriendsConsoleCodes() const;
     virtual void Reset();
-    virtual int ConnectedControllerType() const;
+    virtual ControllerType ConnectedControllerType() const;
     virtual int GetCurrentInstrumentCareerScore() const;
     virtual int GetCurrentHardcoreIconLevel() const;
     virtual int GetCymbalConfiguration() const;
 
+    bool HasSeenRealGuitarPrompt() const;
+    void SetHasSeenRealGuitarPrompt();
+    void SetOvershellFocus(const char*);
+    ControllerType DebugGetControllerTypeOverride() const;
+    void DebugSetControllerTypeOverride(ControllerType);
+
     bool unkc; // 0xc
-    bool unkd; // 0xd
-    std::set<TrackType> unk10; // 0x10
-    int unk28; // 0x28
+    bool mHasSeenRealGuitarPrompt; // 0xd
+    std::set<TrackType> mShownIntrosSet; // 0x10
+    ControllerType mControllerTypeOverride; // 0x28
 };
 
 class RemoteBandUser : public virtual BandUser, public virtual RemoteUser {
 public:
     RemoteBandUser();
     virtual DataNode Handle(DataArray*, bool);
-    virtual ~RemoteBandUser(){}
+    virtual ~RemoteBandUser();
     virtual LocalBandUser* GetLocalBandUser();
     virtual LocalBandUser* GetLocalBandUser() const;
     virtual RemoteBandUser* GetRemoteBandUser();
@@ -113,12 +138,21 @@ public:
     virtual int GetCymbalConfiguration() const;
     virtual void Reset();
     virtual void SyncLoad(BinStream&, unsigned int);
+
+    int unkc; // TourCharRemote*
+    std::vector<int> unk10; // 0x10
+    bool unk18;
+    bool unk19;
+    bool unk1a;
+    int unk1c;
+    int unk20;
+    int unk24;
 };
 
 class NullLocalBandUser : public LocalBandUser {
 public:
     NullLocalBandUser(){}
-    virtual ~NullLocalBandUser();
+    virtual ~NullLocalBandUser(){}
     virtual bool IsNullUser() const { return true; }
     virtual bool IsJoypadConnected() const { return false; }
     virtual bool CanSaveData() const { return false; }

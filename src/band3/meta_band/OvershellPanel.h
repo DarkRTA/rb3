@@ -3,6 +3,7 @@
 #include "net/Synchronize.h"
 #include "obj/MsgSource.h"
 #include "math/Rand.h"
+#include "meta_band/OvershellSlot.h"
 
 class SessionMgr;
 class BandUserMgr;
@@ -25,6 +26,10 @@ public:
     virtual void OnSynchronized(unsigned int);
 
     bool CanGuitarPlayKeys() const;
+    void UpdateAll();
+    void EndOverrideFlow(OvershellOverrideFlow, bool);
+    bool IsFinding() const;
+    bool InSong() const;
 
     std::vector<int> unk70; // 0x70
     std::vector<int> unk78; // 0x78

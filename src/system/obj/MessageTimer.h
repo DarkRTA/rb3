@@ -45,7 +45,7 @@ public:
 
     static bool sActive;
 
-    MessageTimer(class Hmx::Object* o, Symbol message) : mTimer(), mObject(o), mMessage(message) { mTimer.Restart(); }
+    MessageTimer(class Hmx::Object* o, Symbol message) : mTimer() { mObject = o; mMessage = message; mTimer.Restart(); }
     ~MessageTimer(){
         AddTime(mObject, mMessage, mTimer.SplitMs());
     }

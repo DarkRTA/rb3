@@ -42,6 +42,7 @@ public:
 };
 
 BEGIN_MESSAGE(VirtualKeyboardResultMsg, virtual_keyboard_result_msg, int, const char*);
+    MESSAGE_ARRAY_CTOR(VirtualKeyboardResultMsg)
 END_MESSAGE;
 
 inline VirtualKeyboardResultMsg::VirtualKeyboardResultMsg(int i, const char* c)
