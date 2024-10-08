@@ -216,7 +216,7 @@ oh:
 }
 
 bool TrackWatcherImpl::InSlopWindow(float f1, float f2) const {
-    return fabs_f(f2 + mSyncOffset) - f1 <= mSlop;
+    return std::fabs(f2 + mSyncOffset - f1) <= mSlop;
 }
 
 void TrackWatcherImpl::SetGemsPlayedUntil(int thresh){

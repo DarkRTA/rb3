@@ -32,15 +32,6 @@
 #define NEGINF -9999.f
 static double stereo_threshholds[]={0.0, .5, 1.0, 1.5, 2.5, 4.5, 8.5, 16.5, 9e10};
 
-inline int abs(int i){
-  return __abs(i);
-}
-
-inline double fabs(double x)
-{
-   return __fabs(x) ;
-}
-
 vorbis_look_psy_global *_vp_global_look(vorbis_info *vi){
   codec_setup_info *ci=vi->codec_setup;
   vorbis_info_psy_global *gi=&ci->psy_g_param;

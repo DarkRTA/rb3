@@ -31,7 +31,7 @@ float MultiTempoTempoMap::GetTempoBPM(int tick) const {
 // float ConvertTimeBase(float value, float srcStart, float srcEnd, float destStart, float destEnd,) {
 //     float loopTickLength = srcEnd - srcStart;
 //     float loopTick = value - srcEnd;
-//     float loopPercent = floor(loopTick / loopTickLength);
+//     float loopPercent = std::floor(loopTick / loopTickLength);
 
 //     float loopTimeLength = destEnd - destStart;
 //     float loopTime = loopTimeLength * loopPercent + destEnd;
@@ -52,7 +52,7 @@ float MultiTempoTempoMap::TickToTime(float tick) const {
     } else {
         float loopTickLength = mEndLoopTick - startTick;
         float loopTick = tick - mEndLoopTick;
-        float loopPercent = floor(loopTick / loopTickLength);
+        float loopPercent = std::floor(loopTick / loopTickLength);
 
         float loopTimeLength = mEndLoopTime - mStartLoopTime;
         float loopTime = loopTimeLength * loopPercent + mEndLoopTime;
@@ -75,7 +75,7 @@ float MultiTempoTempoMap::TimeToTick(float time) const {
     } else {
         // float loopTimeLength = endTime - mStartLoopTime;
         // float loopTime = time - endTime;
-        // float loopPercent = floor_f(loopTime / loopTimeLength);
+        // float loopPercent = std::floor(loopTime / loopTimeLength);
 
         // float a = time + -(loopTimeLength * loopPercent - loopTime);
 
@@ -89,7 +89,7 @@ float MultiTempoTempoMap::TimeToTick(float time) const {
 
         float loopTimeLength = endTime - startTime;
         float loopTime = time - endTime;
-        float loopPercent = floor(loopTime / loopTimeLength);
+        float loopPercent = std::floor(loopTime / loopTimeLength);
 
         float loopTickLength = endTick - startTick;
         float loopTick = loopTickLength * loopPercent + endTick;
@@ -170,7 +170,7 @@ float MultiTempoTempoMap::GetTimeInLoop(float time){
     float timeFromStart = time - startTime;
     MILO_ASSERT(timeFromStart >= 0.0f, 0xE3);
 
-    float a = floor_f(timeFromStart / loopLength);
+    float a = std::floor(timeFromStart / loopLength);
     return startTime + -(loopLength * a - timeFromStart);
 }
 

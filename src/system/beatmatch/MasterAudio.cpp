@@ -409,7 +409,7 @@ void ChannelData::Poll() {
 
 void ChannelData::SetSlipTrackSpeed(float trackSpeed) {
     if (mSlipTrack) {
-        if (mSlipTrack->mMaxSlip * 0.9f < __fabs(mSlipTrack->GetCurrentOffset())) {
+        if (std::fabs(mSlipTrack->GetCurrentOffset()) > mSlipTrack->mMaxSlip * 0.9f) {
             trackSpeed = 1.0f;
         }
         if (mSpeed != trackSpeed || mOverallSpeed != 1.0f) {

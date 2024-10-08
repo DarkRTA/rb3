@@ -223,8 +223,9 @@ void CharIKHand::IKElbow(RndTransformable* trans1, RndTransformable* trans2){
                 v188 -= v140;
                 Normalize(v188, v188);
                 Scale(v188, v164len, v188);
-                float sine = sin(asined / 2);
-                float cosine = cos(asined / 2);
+                double half = asined / 2.0;
+                float sine = sin(half);
+                float cosine = cos(half);
                 Hmx::Quat q198(v188.x, v188.y, v188.z, 0.0f);
                 Hmx::Quat q1a8(v170.x * sine, v170.y * sine, v170.z* sine, cosine);
                 Hmx::Quat q1b8;
@@ -281,7 +282,7 @@ void CharIKHand::MeasureLengths(){
                 unk64 = len * 2.0f * parentlen;
                 mInv2ab = parentlen * parentlen + (len * len + 0.0f);
                 if(unk64 != 0.0f) unk64 = 1.0f / unk64;
-                mAAPlusBB = len + parentlen;        
+                mAAPlusBB = len + parentlen;
             }
         }
     }
@@ -318,13 +319,13 @@ BEGIN_LOADS(CharIKHand)
     bs >> mStretch;
     if(gRev > 1) bs >> mScalable;
     else mScalable = false;
-    
+
     if(gRev > 3) bs >> mMoveElbow;
     else mMoveElbow = true;
 
     if(gRev > 5) bs >> mElbowSwing;
     else mElbowSwing = 0.0f;
-    
+
     if(gRev > 6) bs >> mAlwaysIKElbow;
     if(gRev > 7){
         bs >> mConstrainWrist;

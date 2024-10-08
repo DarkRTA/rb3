@@ -29,9 +29,9 @@ const char* TickFormat(int tick, const MeasureMap& map){
     else return "negative tick";
 }
 
-// this feels fake, double check retail and see if fmod_f or something to that effect got called
 const char* FormatTimeMSH(float f){
-    double f2 = fmod((double)f, 60000.0);
-    double f3 = fmod((double)f, 1000.0);
+    // this feels fake, double check retail and see if fmod_f or something to that effect got called
+    double f2 = std::fmod((double)f, 60000.0);
+    double f3 = std::fmod((double)f, 1000.0);
     return MakeString("%d:%02d.%02d", (int)(f / 60000.0f), (int)(f2 / 1000.0), (int)(f3 / 10.0));
 }

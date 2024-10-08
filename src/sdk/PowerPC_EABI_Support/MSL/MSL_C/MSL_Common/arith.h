@@ -5,6 +5,11 @@
 extern "C" {
 #endif
 
+#if !defined(__MWERKS__) || defined(__VS_CODE__)
+#define __abs(x) abs(x)
+#define __labs(x) labs(x)
+#endif
+
 typedef struct {
     int quot;
     int rem;

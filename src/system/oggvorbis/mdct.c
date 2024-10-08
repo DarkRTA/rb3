@@ -46,11 +46,6 @@
 #include "os.h"
 #include "misc.h"
 
-inline double fabs(double x)
-{
-   return __fabs(x) ;
-}
-
 /* build lookups for trig functions; also pre-figure scaling and
    some window function algebra. */
 

@@ -17,11 +17,11 @@ CharInterest::CharInterest() : mMaxViewAngle(20.0f), mPriority(1.0f), mMinLookTi
 }
 
 CharInterest::~CharInterest(){
-    
+
 }
 
 void CharInterest::SyncMaxViewAngle(){
-    mMaxViewAngleCos = cos_f(mMaxViewAngle * 0.017453292f);
+    mMaxViewAngleCos = std::cos(mMaxViewAngle * 0.017453292f);
 }
 
 // https://decomp.me/scratch/ekyoO retail scratch
@@ -63,13 +63,13 @@ BEGIN_LOADS(CharInterest)
     if (u16(temp - 2) <= 3) {
         ObjPtr<Hmx::Object, ObjectDir> obj(this, NULL);
         bs >> obj;
-    } else if (temp > 5) { bs >> mDartOverride; } 
+    } else if (temp > 5) { bs >> mDartOverride; }
     if (gRev > 2) {
         bs >> mCategoryFlags;
         if (gRev == 3) {
             u8 x;
             bs >> x;
-        } 
+        }
     }
     if (gRev > 4) {
         bs >> mOverrideMinTargetDistance;
@@ -125,20 +125,20 @@ float CharInterest::ComputeScore(const Vector3& v1, const Vector3& v2, const Vec
     Subtract(v7c, v2, v88);
     float lensq = LengthSquared(v88);
     Normalize(v88, v88);
-    
+
     float dot = Dot(v1, v88);
     float f1 = 0.0f;
     if(dot >= mMaxViewAngleCos) f1 = 1.0f;
-    
+
     float dot2 = Dot(v3, v88);
     float f2 = 0.0f;
     if(dot2 >= mMaxViewAngleCos) f2 = 1.0f;
-    
+
     float f7 = -(lensq * f - 1.0f);
     if(IsNaN(f7)){
         f7 = 0.2f;
     }
-    
+
     float f4 = f7 + f1 + f2 + neg99;
     if(f4 >= 0.0f){
         f4 = f4 + RandomFloat(-0.25f, 0.25);

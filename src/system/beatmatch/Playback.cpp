@@ -35,7 +35,7 @@ void Playback::Poll(float f){
                 }
             }
 
-            while(floc <= mTime || mTime < f && (fabs_f(floc - mTime) < fabs_f(floc - f))){
+            while(floc <= mTime || mTime < f && (std::fabs(floc - mTime) < std::fabs(floc - f))){
                 DoCommand(arr);
                 mCommandIndex++;
                 if(mCommandIndex >= cmdSize) break;
@@ -81,7 +81,7 @@ void Playback::DoCommand(DataArray* arr){
                 sink->ForceMercurySwitch(arr->Int(3) != 0);
             }
         }
-    }   
+    }
 }
 
 bool Playback::LoadFile(const class String& str){

@@ -9,18 +9,18 @@ void deadstripped_assert() {MILO_ASSERT(false, 0);}
 void TransformNoScale::SetRot(const Hmx::Matrix3& m) {
     Hmx::Quat quat;
     quat.Set(m);
-    
+
     float nu_x = 32767.0f * quat.x + 0.5f;
-    q.x = floor(nu_x > quat.x ? nu_x : (nu_x < -32767.0f ? nu_x : quat.x));
+    q.x = std::floor(nu_x > quat.x ? nu_x : (nu_x < -32767.0f ? nu_x : quat.x));
 
     float nu_y = 32767.0f * quat.y + 0.5f;
-    q.y = floor(nu_y > quat.y ? nu_y : (nu_y < -32767.0f ? nu_y : quat.y));
+    q.y = std::floor(nu_y > quat.y ? nu_y : (nu_y < -32767.0f ? nu_y : quat.y));
 
     float nu_z = 32767.0f * quat.z + 0.5f;
-    q.z = floor(nu_z > quat.z ? nu_z : (nu_z < -32767.0f ? nu_z : quat.z));
+    q.z = std::floor(nu_z > quat.z ? nu_z : (nu_z < -32767.0f ? nu_z : quat.z));
 
     float nu_w = 32767.0f * quat.w + 0.5f;
-    q.w = floor(nu_w > quat.w ? nu_w : (nu_w < -32767.0f ? nu_w : quat.w));
+    q.w = std::floor(nu_w > quat.w ? nu_w : (nu_w < -32767.0f ? nu_w : quat.w));
 
 }
 
@@ -39,17 +39,17 @@ BinStream& operator>>(BinStream& bs, TransformNoScale& t) {
 
 float GetXAngle(const Hmx::Matrix3& m) {
     float z = m.y.z;
-    return atan2(z, m.y.y);
+    return std::atan2(z, m.y.y);
 }
 
 float GetYAngle(const Hmx::Matrix3& m) {
     float z = -m.x.z;
-    return atan2(z, m.z.z);
+    return std::atan2(z, m.z.z);
 }
 
 float GetZAngle(const Hmx::Matrix3& m) {
     float x = m.y.x;
-    return -atan2(x, m.y.y);
+    return -std::atan2(x, m.y.y);
 }
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v) {
