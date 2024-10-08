@@ -361,7 +361,7 @@ static void Parallelize(
               << std::flush;
 }
 
-const static std::vector<char> recurseChars = []() {
+const static std::vector<char> recurseChars = [] {
     // clang-format off
     std::vector<char> chars = { '\t', '\n', '\r' };
     // clang-format on
@@ -407,6 +407,8 @@ void Recurse(int depth) {
 
 // clang-format off
 const std::vector<std::string> fragments = {
+    "",
+
     "0x12345678",
     "0x", "x1",
 
@@ -496,6 +498,27 @@ const std::vector<char> chars = [] {
     }
     return chars;
 }();
+
+void TestFragments() {
+    for (auto &fragment : fragments) {
+        std::cout << std::format("Testing fragment {}", fragment) << std::endl;
+        for (char c : chars) {
+            for (size_t count = 1; count <= 5; count++) {
+                for (size_t i = 0; i < fragment.size(); i++) {
+                    std::string str = fragment;
+                    str.insert(i, count, c);
+
+                    gCurrentPath = str;
+                    gCurrentText = std::make_unique<std::istringstream>(str);
+                    gSilenceFail = true;
+                    if (!CompareTokens(false)) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
 
 std::atomic<size_t> gShuffleCount = 0;
 std::atomic<bool> gShuffleSuccess = false;
