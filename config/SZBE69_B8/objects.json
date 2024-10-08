@@ -1721,25 +1721,25 @@
 
             "sdk/RVL_SDK/src/arc/arc.c": "MISSING",
 
-            "sdk/RVL_SDK/src/ax/AX.c": "MISSING",
+            "sdk/RVL_SDK/src/ax/AX.c": "Matching",
             "sdk/RVL_SDK/src/ax/AXAlloc.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXAux.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXCL.c": "MISSING",
-            "sdk/RVL_SDK/src/ax/AXComp.c": "MISSING",
+            "sdk/RVL_SDK/src/ax/AXComp.c": "Matching",
             "sdk/RVL_SDK/src/ax/AXOut.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXProf.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXSPB.c": "MISSING",
             "sdk/RVL_SDK/src/ax/AXVPB.c": "MISSING",
-            "sdk/RVL_SDK/src/ax/DSPCode.c": "MISSING",
+            "sdk/RVL_SDK/src/ax/DSPCode.c": "Matching",
 
             "sdk/RVL_SDK/src/axfx/AXFXChorus.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXChorusExp.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXDelay.c": "MISSING",
-            "sdk/RVL_SDK/src/axfx/AXFXHooks.c": "MISSING",
-            "sdk/RVL_SDK/src/axfx/AXFXLfoTable.c": "MISSING",
+            "sdk/RVL_SDK/src/axfx/AXFXHooks.c": "Matching",
+            "sdk/RVL_SDK/src/axfx/AXFXLfoTable.c": "Matching",
             "sdk/RVL_SDK/src/axfx/AXFXReverbHi.c": "MISSING",
             "sdk/RVL_SDK/src/axfx/AXFXReverbHiExp.c": "MISSING",
-            "sdk/RVL_SDK/src/axfx/AXFXSrcCoef.c": "MISSING",
+            "sdk/RVL_SDK/src/axfx/AXFXSrcCoef.c": "Matching",
 
             "sdk/RVL_SDK/src/base/PPCArch.c": "Matching",
 
