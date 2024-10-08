@@ -4,6 +4,16 @@
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 5
 
+#if defined(DATAFLEX_TESTER) && defined(__cplusplus)
+#define DATAFLEX_NAMESPACE yytarget::
+#define DATAFLEX_NAMESPACE_BEGIN namespace yytarget {
+#define DATAFLEX_NAMESPACE_END }
+#else
+#define DATAFLEX_NAMESPACE
+#define DATAFLEX_NAMESPACE_BEGIN
+#define DATAFLEX_NAMESPACE_END
+#endif
+
 #include <stdio.h>
 
 
@@ -45,7 +55,7 @@
 #define YY_USE_PROTOS
 #endif
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 #ifdef YY_USE_CONST
 #define yyconst const
@@ -129,7 +139,7 @@ int yylex_destroy YY_PROTO((void* scanner));
 #define YY_STATE_EOF(state) (YY_END_OF_BUFFER + state + 1)
 
 /* Special action meaning "start processing a new file". */
-#define YY_NEW_FILE yytarget::yyrestart( YY_G(yyin) YY_CALL_LAST_ARG )
+#define YY_NEW_FILE DATAFLEX_NAMESPACE yyrestart( YY_G(yyin) YY_CALL_LAST_ARG )
 
 #define YY_END_OF_BUFFER_CHAR 0
 
@@ -581,19 +591,24 @@ static char *yy_last_accepting_cpos;
 char *yytext;
 #endif
 
-}
+DATAFLEX_NAMESPACE_END
 
 #define INITIAL 0
 /*
  * requires the following commit of flex:
  * https://github.com/westes/flex/commit/fe84af1738b78edeca58752c5a549a175236420a
+ *
+ * run with the following command-line args in the root of the repo:
+ * -L "-osrc/system/obj/DataFlex.c" "src/system/obj/DataFlex.l"
  */
 /* %option nounistd - not supported on the version of flex used */
 #define YY_NEVER_INTERACTIVE 1
-/* Flex is stupid and doesn't include this under C mode for malloc/realloc */
+/* This version of Flex is stupid and doesn't include this under C mode for malloc/realloc */
 #include <stdlib.h>
 
-#include "DataFlex_target.h"
+#include "DataFlex.h"
+
+DATAFLEX_NAMESPACE_BEGIN
 
 #define YY_INPUT(buf, result, max_size) \
     (result) = (DataInput((buf), 1) != 0)
@@ -607,12 +622,15 @@ char *yytext;
 #endif
 
 #define ECHO TESTER_RETURN(kDataTokenNotRecognized) /* don't echo unmatched characters */
+
+DATAFLEX_NAMESPACE_END
+
 /* TODO: '-' has a significant usage outside of SIGN */
 #define BLOCK_COMMENT 1
 
 /* BUG: /** won't start a block */
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 #ifndef YY_EXTRA_TYPE
 #define YY_EXTRA_TYPE void *
@@ -788,7 +806,7 @@ static int yy_top_state YY_PROTO(( YY_ONLY_ARG ));
 #define YY_NO_TOP_STATE 1
 #endif
 
-}
+DATAFLEX_NAMESPACE_END
 
 #ifdef YY_MALLOC_DECL
 YY_MALLOC_DECL
@@ -805,7 +823,7 @@ YY_MALLOC_DECL
 #endif
 #endif
 
-namespace yytarget {
+DATAFLEX_NAMESPACE_BEGIN
 
 /* Amount of stuff to slurp up with each read. */
 #ifndef YY_READ_BUF_SIZE
@@ -1033,7 +1051,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-{ /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentAsterisk); }
+{ /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentSkip); }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
@@ -1065,7 +1083,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-{ return kDataTokenFloat; }
+{ TESTER_RETURN(kDataTokenFloatExp); return kDataTokenFloat; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
@@ -1400,7 +1418,7 @@ YY_DECL_LAST_ARG
 		if ( number_to_move == YY_MORE_ADJ )
 			{
 			ret_val = EOB_ACT_END_OF_FILE;
-			yytarget::yyrestart( YY_G(yyin)  YY_CALL_LAST_ARG);
+			DATAFLEX_NAMESPACE yyrestart( YY_G(yyin)  YY_CALL_LAST_ARG);
 			}
 
 		else
@@ -1586,7 +1604,7 @@ static int input(YY_ONLY_ARG)
 					 */
 
 					/* Reset buffer status. */
-					yytarget::yyrestart( YY_G(yyin) YY_CALL_LAST_ARG);
+					DATAFLEX_NAMESPACE yyrestart( YY_G(yyin) YY_CALL_LAST_ARG);
 
 					/* fall through */
 
@@ -2334,4 +2352,13 @@ int main()
 	}
 #endif
 
+
+#ifdef DATAFLEX_TESTER
+/* This version of Flex is even more stupid and doesn't reset the lexing state when restarting */
+void yy_actually_restart(YY_ONLY_ARG) {
+    BEGIN(INITIAL);
+    yyrestart(NULL YY_CALL_LAST_ARG);
 }
+#endif
+
+DATAFLEX_NAMESPACE_END

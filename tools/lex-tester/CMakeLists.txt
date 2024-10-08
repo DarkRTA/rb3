@@ -23,4 +23,6 @@ target_include_directories(DataFlexTester
 target_compile_definitions(DataFlexTester
     PUBLIC
     "DATAFLEX_TESTER"
+    "YY_REENTRANT"
+    "YY_USE_PROTOS"
 )

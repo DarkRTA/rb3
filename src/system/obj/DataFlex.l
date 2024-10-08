@@ -11,7 +11,7 @@
 %option noyywrap
 
 %{
-/* Flex is stupid and doesn't include this under C mode for malloc/realloc */
+/* This version of Flex is stupid and doesn't include this under C mode for malloc/realloc */
 #include <stdlib.h>
 
 #include "DataFlex.h"
@@ -52,9 +52,9 @@ COMMENT             ;[^\n]*
 
 %x BLOCK_COMMENT
 /* BUG: /** won't start a block */
-BCOMMENT_START      \/\*[^\n\*]*
+BCOMMENT_START      (\/\*)+[^\n\*]*
 BCOMMENT_TEXT       [^\n\*]*
-BCOMMENT_SKIP       \*+
+BCOMMENT_SKIP       \*+[^\n\/\*]*
 BCOMMENT_END        \*+\/
 
 %%
@@ -64,7 +64,7 @@ BCOMMENT_END        \*+\/
 {QUOTED_SYMBOL}                                     { return kDataTokenQuotedSymbol; }
 {BCOMMENT_START}                                    { BEGIN(BLOCK_COMMENT); TESTER_RETURN(kDataTokenBlockCommentStart); }
 <BLOCK_COMMENT>{BCOMMENT_TEXT}                      { /* ignore text in block comments */ TESTER_RETURN(kDataTokenBlockCommentText); }
-<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentAsterisk); }
+<BLOCK_COMMENT>{BCOMMENT_SKIP}                      { /* ignore *s in block comments */ TESTER_RETURN(kDataTokenBlockCommentSkip); }
 <BLOCK_COMMENT>\n                                   { gDataLine++; TESTER_RETURN(kDataTokenBlockCommentNewline); }
 <BLOCK_COMMENT>{BCOMMENT_END}                       { BEGIN(INITIAL); TESTER_RETURN(kDataTokenBlockCommentEnd); }
 {COMMENT}                                           { /* skip comments */ TESTER_RETURN(kDataTokenComment); }
@@ -73,7 +73,7 @@ kDataUnhandled                                      { return kDataTokenUnhandled
 {HEX_NUMBER}                                        { return kDataTokenHex; }
 {INTEGER}                                           { return kDataTokenInt; }
 {FLOAT}                                             { return kDataTokenFloat; }
-{FLOAT_EXPONENT}                                    { return kDataTokenFloat; }
+{FLOAT_EXPONENT}                                    { TESTER_RETURN(kDataTokenFloatExp); return kDataTokenFloat; }
 
 #include_opt                                        { return kDataTokenIncludeOptional; }
 #include                                            { return kDataTokenInclude; }
@@ -97,3 +97,11 @@ kDataUnhandled                                      { return kDataTokenUnhandled
 \[                                                  { return kDataTokenPropertyOpen; }
 \]                                                  { return kDataTokenPropertyClose; }
 %%
+
+#ifdef DATAFLEX_TESTER
+/* This version of Flex is even more stupid and doesn't reset the lexing state when restarting */
+void yy_actually_restart(YY_ONLY_ARG) {
+    BEGIN(INITIAL);
+    yyrestart(NULL YY_CALL_LAST_ARG);
+}
+#endif
