@@ -144,7 +144,7 @@
             "band3/meta_band/BandPreloadPanel.cpp": "MISSING",
             "band3/meta_band/BandProfile.cpp": "NonMatching",
             "band3/meta_band/BandScreen.cpp": "MISSING",
-            "band3/meta_band/BandSongMetadata.cpp": "MISSING",
+            "band3/meta_band/BandSongMetadata.cpp": "NonMatching",
             "band3/meta_band/BandSongMgr.cpp": "NonMatching",
             "band3/meta_band/BandStoreOffer.cpp": "MISSING",
             "band3/meta_band/BandStorePanel.cpp": "MISSING",
