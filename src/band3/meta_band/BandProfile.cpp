@@ -1,6 +1,7 @@
 #include "BandProfile.h"
 #include "ProfileMgr.h"
 #include "AccomplishmentManager.h"
+#include "game/GameMessages.h"
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols3.h"
 
@@ -198,7 +199,7 @@ void BandProfile::UnlockModifier(Symbol) {}
 bool BandProfile::HasUnlockedModifier(Symbol) {}
 void BandProfile::HandlePerformanceDataUploadSuccess() {}
 void BandProfile::UpdatePerformanceData(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool) {}
-void BandProfile::OnMsg(const RockCentralOpCompleteMsg&) {}
+
 void BandProfile::GetLocalBandUser() const {}
 void BandProfile::GetAssociatedUsers(std::vector<LocalBandUser*>&) const {}
 void BandProfile::CheckWebLinkStatus() {}
@@ -235,7 +236,7 @@ BEGIN_HANDLERS(BandProfile)
     HANDLE_ACTION(set_has_seen_hint, SetHasSeenHint(_msg->Sym(2)))
     HANDLE_ACTION(access_accomplishment_progress, AccessAccomplishmentProgress())
     HANDLE_ACTION(auto_fake_fill, AutoFakeFill(_msg->Int(2)))
-
+    HANDLE_MESSAGE(RockCentralOpCompleteMsg)
     HANDLE_CHECK(0x67a)
 END_HANDLERS
 #pragma pop

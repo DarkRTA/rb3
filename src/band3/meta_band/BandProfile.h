@@ -105,7 +105,7 @@ public:
     bool HasUnlockedModifier(Symbol);
     void HandlePerformanceDataUploadSuccess();
     void UpdatePerformanceData(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool);
-    void OnMsg(const RockCentralOpCompleteMsg&);
+    DataNode OnMsg(const RockCentralOpCompleteMsg&);
     void GetLocalBandUser() const;
     void GetAssociatedUsers(std::vector<LocalBandUser*>&) const;
     void CheckWebLinkStatus();

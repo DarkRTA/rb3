@@ -11,6 +11,7 @@
 #include "ui/UIMessages.h"
 #include "os/JoypadMsgs.h"
 #include "os/VirtualKeyboard.h"
+#include "tour/TourCharLocal.h"
 
 class OvershellPanel;
 class OvershellSlotState;
@@ -198,7 +199,7 @@ public:
     DataResultList mLinkingCodeResultList; // 0x68
     bool unk80;
     bool unk81;
-    int mCharForEdit; // 0x84 - TourCharLocal*
+    TourCharLocal* mCharForEdit; // 0x84 - TourCharLocal*
     unsigned int mCymbalConfiguration; // 0x88
     PassiveMessageQueue* mMessageQueue; // 0x8c
     OvershellOverrideFlow mSlotOverrideFlow; // 0x90

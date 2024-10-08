@@ -15,6 +15,12 @@ BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, );
     MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
 END_MESSAGE;
 
-BEGIN_MESSAGE(RockCentralOpCompleteMsg, rock_central_op_complete_msg, );
-    MESSAGE_ARRAY_CTOR(RockCentralOpCompleteMsg)
-END_MESSAGE;
+#include "obj/Object.h"
+
+class RockCentralOpCompleteMsg : public Message, public Hmx::Object {
+public:
+    RockCentralOpCompleteMsg();
+    RockCentralOpCompleteMsg(DataArray* da) : Message(da) {}
+    virtual ~RockCentralOpCompleteMsg(){}
+    static Symbol Type(){ static Symbol t("rock_central_op_complete_msg"); return t; }
+};
