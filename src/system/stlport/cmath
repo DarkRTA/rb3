@@ -99,8 +99,48 @@ inline long double log10l(long double v) { return __log10l(v); }
 //using ::abs;
 //_STLP_END_NAMESPACE
 
-#ifndef _STLP_CMATH_H_HEADER
-#  include <stl/_cmath.h>
+// decomp hack: use native cmath directly
+#ifdef _STLP_CMATH_ONLY_VENDOR
+_STLP_BEGIN_NAMESPACE
+
+#define _STLP_USE_MATH(name)       \
+  using _STLP_VENDOR_STD::name;    \
+  using _STLP_VENDOR_STD::name##f; \
+  using _STLP_VENDOR_STD::name##l;
+
+using _STLP_VENDOR_STD::abs;
+
+_STLP_USE_MATH(acos);
+_STLP_USE_MATH(asin);
+_STLP_USE_MATH(atan);
+_STLP_USE_MATH(atan2);
+_STLP_USE_MATH(ceil);
+_STLP_USE_MATH(cos);
+_STLP_USE_MATH(cosh);
+_STLP_USE_MATH(exp);
+_STLP_USE_MATH(fabs);
+_STLP_USE_MATH(floor);
+_STLP_USE_MATH(fmod);
+_STLP_USE_MATH(frexp);
+_STLP_USE_MATH(hypot);
+_STLP_USE_MATH(ldexp);
+_STLP_USE_MATH(log);
+_STLP_USE_MATH(log10);
+_STLP_USE_MATH(modf);
+_STLP_USE_MATH(pow);
+_STLP_USE_MATH(sin);
+_STLP_USE_MATH(sinh);
+_STLP_USE_MATH(sqrt);
+_STLP_USE_MATH(tan);
+_STLP_USE_MATH(tanh);
+
+#undef _STLP_USE_MATH
+
+_STLP_END_NAMESPACE
+#else
+#  ifndef _STLP_CMATH_H_HEADER
+#    include <stl/_cmath.h>
+#  endif
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID ==  0x110 )
