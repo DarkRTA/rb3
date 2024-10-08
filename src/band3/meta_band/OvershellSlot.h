@@ -7,6 +7,7 @@
 #include "meta_band/SessionMgr.h"
 #include "bandobj/BandLabel.h"
 #include "meta_band/OvershellProfileProvider.h"
+#include "game/GameMessages.h"
 
 class OvershellPanel;
 class OvershellSlotState;
@@ -136,6 +137,26 @@ public:
     void UpdateKickUsersList();
     void UpdateProfilesList();
     void UpdatePartSelectList();
+    void ShowProfiles();
+    void ShowOnlineOptions();
+    void AttemptRegisterOnline();
+    void ShowOptionsDrum();
+    void CancelLinkingCode();
+    void ShowCharEdit(int);
+    void AttemptShowCharDelete();
+    void ShowChoosePartWait();
+    void ToggleHiHatPedal();
+    void RefreshHighlightedChar(int);
+    void UpdateCharacterList();
+    int GetDefaultCharIndex() const;
+    void SelectChar(int);
+    void ShowEnterFlowPrompt(OvershellSlotStateID);
+    void ConfirmSwapUserProfile();
+    void AttemptToggleAutoVocals();
+    void ConfirmChooseDiff();
+
+    DataNode OnMsg(const AddLocalUserResultMsg&);
+    DataNode OnMsg(const LocalUserLeftMsg&);
 
     OvershellSlotStateMgr* mStateMgr; // 0x1c
     OvershellSlotState* mState; // 0x20

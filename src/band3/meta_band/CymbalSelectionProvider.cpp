@@ -24,7 +24,7 @@ void CymbalSelectionProvider::ReloadData(){
 
 bool CymbalSelectionProvider::IsActive(int data) const {
     MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x2C);
-    if(unk20[data] == overshell_cymbals_continue && !mSlot->unk88) return false;
+    if(unk20[data] == overshell_cymbals_continue && !mSlot->mCymbalConfiguration) return false;
     else return true;
 }
 

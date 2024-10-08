@@ -2,6 +2,7 @@
 #include "ui/UIListProvider.h"
 #include "rndobj/Mat.h"
 #include "game/BandUser.h"
+#include "game/BandUserMgr.h"
 
 class SessionUsersProvider : public UIListProvider, public Hmx::Object {
 public:

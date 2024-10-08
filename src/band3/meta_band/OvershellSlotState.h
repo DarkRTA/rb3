@@ -53,7 +53,7 @@ enum OvershellSlotStateID {
     kState_OptionsExtras = 0x2d,
     kState_ModifierUnlock = 0x2e,
     kState_OptionsSystem = 0x2f,
-    kState_LinkingCode = 0x30,
+    kState_LinkingCode = 0x2f,
     kState_CharCreatorDenial = 0x31,
     kState_CalibrationDenial = 0x32,
     kState_ReconnectController = 0x33,

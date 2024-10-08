@@ -8,3 +8,7 @@ END_MESSAGE;
 BEGIN_MESSAGE(UserLoginMsg, user_login, );
     MESSAGE_ARRAY_CTOR(UserLoginMsg)
 END_MESSAGE;
+
+BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, );
+    MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
+END_MESSAGE;
