@@ -273,7 +273,7 @@ void OvershellSlot::SelectDifficulty(Difficulty diff){
     MILO_ASSERT(pUser->IsLocal(), 0x3C8);
     bool old5e = mSongOptionsRequired;
     mSongOptionsRequired = 0;
-    if(mOvershell->unk88){
+    if(mOvershell->mSongOptionsRequired){
         if(!old5e && mOvershell->InSong()){
             if(!TheGameMode->Property("skip_choose_diff_prompt", true)->Int(0)){
                 Difficulty pUserDiff = pUser->GetDifficulty();
@@ -338,7 +338,7 @@ void OvershellSlot::LeaveChooseDifficulty(){
 void OvershellSlot::CancelSongSettings(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x42E);
-    if(!mOvershell->unk88){
+    if(!mOvershell->mSongOptionsRequired){
         if(mBandUserMgr->GetNumParticipants() < 2){
             mOvershell->EndOverrideFlow(kOverrideFlow_SongSettings, true);
         }

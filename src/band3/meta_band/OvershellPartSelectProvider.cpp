@@ -1,8 +1,9 @@
 #include "meta_band/OvershellPartSelectProvider.h"
 #include "meta_band/Utl.h"
+#include "game/GameMode.h"
 #include "utl/Symbols.h"
 
-OvershellPartSelectProvider::OvershellPartSelectProvider(OvershellPanel* panel) : unk20(kControllerNone), unk2c(0), unk30(panel) {
+OvershellPartSelectProvider::OvershellPartSelectProvider(OvershellPanel* panel) : mControllerType(kControllerNone), mUser(0), mOvershell(panel) {
 
 }
 
@@ -12,8 +13,8 @@ OvershellPartSelectProvider::~OvershellPartSelectProvider(){
 
 void OvershellPartSelectProvider::Reload(ControllerType ty, BandUser* user){
     Clear();
-    unk20 = ty;
-    unk2c = user;
+    mControllerType = ty;
+    mUser = user;
     switch(ty){
         case kControllerDrum:
             AddPart(overshell_drums, kTrackDrum, GetFontCharFromTrackType(kTrackDrum, 0));
@@ -22,7 +23,7 @@ void OvershellPartSelectProvider::Reload(ControllerType ty, BandUser* user){
         case kControllerGuitar:
             AddPart(overshell_guitar, kTrackGuitar, GetFontCharFromTrackType(kTrackGuitar, 0));
             AddPart(overshell_bass, kTrackBass, GetFontCharFromTrackType(kTrackBass, 0));
-            if(unk30->CanGuitarPlayKeys()){
+            if(mOvershell->CanGuitarPlayKeys()){
                 AddPart(overshell_keys, kTrackKeys, GetFontCharFromTrackType(kTrackKeys, 0));
             }
             break;
@@ -39,6 +40,12 @@ void OvershellPartSelectProvider::Reload(ControllerType ty, BandUser* user){
         case kControllerRealGuitar:
             AddPart(overshell_real_guitar, kTrackRealGuitar, GetFontCharFromTrackType(kTrackRealGuitar, 0));
             AddPart(overshell_real_bass, kTrackRealBass, GetFontCharFromTrackType(kTrackRealBass, 0));
+            if(mUser->mHasButtonGuitar){
+                if(TheGameMode->Property("allow_coreguitars_with_real", true)->Int(0)){
+                    AddPart(overshell_guitar, kTrackGuitar, GetFontCharFromTrackType(kTrackGuitar, 0));
+                    AddPart(overshell_bass, kTrackBass, GetFontCharFromTrackType(kTrackBass, 0));
+                }
+            }
             break;
         default:
             break;
