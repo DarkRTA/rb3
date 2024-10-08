@@ -23,13 +23,13 @@
 
 #define BLOCKTYPE_IMPULSE    0
 #define BLOCKTYPE_PADDING    1
-#define BLOCKTYPE_TRANSITION 0 
+#define BLOCKTYPE_TRANSITION 0
 #define BLOCKTYPE_LONG       1
 
 #define PACKETBLOBS 15
 
 typedef struct vorbis_block_internal{
-  float  **pcmdelay;  /* this is a pointer into local storage */ 
+  float  **pcmdelay;  /* this is a pointer into local storage */
   float  ampmax;
   int    blocktype;
 
@@ -57,7 +57,7 @@ typedef void vorbis_info_mapping;
 
 typedef struct private_state {
   /* local lookup storage */
-  envelope_lookup        *ve; /* envelope lookup */    
+  envelope_lookup        *ve; /* envelope lookup */
   int                     window[2];
   vorbis_look_transform **transform[2];    /* block, type */
   drft_lookup             fft_look[2];
@@ -84,7 +84,7 @@ typedef struct private_state {
 /* codec_setup_info contains all the setup information specific to the
    specific compression/decompression mode in progress (eg,
    psychoacoustic settings, channel setup, options, codebook
-   etc).  
+   etc).
 *********************************************************************/
 
 #include "highlevel.h"
@@ -124,11 +124,16 @@ typedef struct codec_setup_info {
   highlevel_encode_setup hi; /* used only by vorbisenc.c.  It's a
                                 highly redundant structure, but
                                 improves clarity of program flow. */
-  int         halfrate_flag; /* painless downsample for decode */  
+  int         halfrate_flag; /* painless downsample for decode */
 } codec_setup_info;
 
 extern vorbis_look_psy_global *_vp_global_look(vorbis_info *vi);
 extern void _vp_global_free(vorbis_look_psy_global *look);
+
+#ifdef __MWERKS__
+/* decomp hack: needs to be a macro and not a define */
+#define abs(x) __abs(x)
+#endif
 
 #endif
 
