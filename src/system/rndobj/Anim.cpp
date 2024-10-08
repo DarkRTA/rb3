@@ -39,7 +39,7 @@ bool RndAnimatable::ConvertFrames(float& f){
 }
 
 RndAnimatable::RndAnimatable() : mFrame(0.0f), mRate(k30_fps) {
-    
+
 }
 
 void RndAnimatable::Save(BinStream&){
@@ -94,9 +94,9 @@ BEGIN_LOADS(RndAnimatable)
             RndAnimFilter* filtObj = Dir()->New<RndAnimFilter>(filt);
             filtObj->SetProperty("anim", DataNode(this));
             filtObj->SetProperty("scale", DataNode(theScale));
-            filtObj->SetProperty("offset", DataNode(theOffset));            
+            filtObj->SetProperty("offset", DataNode(theOffset));
             filtObj->SetProperty("min", DataNode(theMin));
-            filtObj->SetProperty("max", DataNode(theMax));            
+            filtObj->SetProperty("max", DataNode(theMax));
             filtObj->SetProperty("loop", DataNode(theLoop));
         }
         ObjPtrList<RndAnimatable, class ObjectDir> animList(this, kObjListNoNull);
@@ -154,11 +154,11 @@ Task* RndAnimatable::Animate(float blend, bool wait, float delay, Rate rate, flo
     float taskStart = start;
     if(type == dest) start = mFrame;
     if(period){
-        fpu = __fabs(end - taskStart);
+        fpu = std::fabs(end - taskStart);
         fpu = fpu / period;
     }
     else fpu = scale * gRateFpu[rate];
-    
+
     AnimTask* task = new AnimTask(this, start, end, fpu, type == loop, blend);
     if(wait){
         AnimTask* blendTask = task->BlendTask();
@@ -173,7 +173,7 @@ Task* RndAnimatable::Animate(float blend, bool wait, float delay, Rate rate, flo
 Task* RndAnimatable::Animate(float start, float end, TaskUnits units, float period, float blend){
     float fpu;
     if(period){
-        fpu = __fabs(end - start);
+        fpu = std::fabs(end - start);
         fpu = fpu / period;
     }
     else {
@@ -242,7 +242,7 @@ DataNode RndAnimatable::OnAnimate(DataArray* arr){
     if(periodArr){
         p = periodArr->Float(1);
         MILO_ASSERT(p, 0x1A9);
-        p = float(__fabs((animTaskEnd - animTaskStart))) / p;
+        p = std::fabs(animTaskEnd - animTaskStart) / p;
     }
 
     AnimTask* theTask = new AnimTask(this, animTaskStart, animTaskEnd, p, animTaskLoop, local_blend);

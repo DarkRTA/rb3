@@ -354,7 +354,7 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream& bs){
             }
             else {
                 double base = 2;
-                int powed = pow_d(base, ts_den);
+                int powed = std::pow(base, ts_den);
                 if(ts_num == 0){
                     MILO_WARN("%s (%s): Time signature %d/%d at %s has invalid numerator (%d)",
                         mStreamName.c_str(), mCurTrackName.c_str(), ts_num, powed, TickFormat(i, *mMeasureMap), ts_num);

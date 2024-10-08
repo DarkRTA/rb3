@@ -8,8 +8,8 @@
 
 #define kNumGemSlotMats 1
 
-GemRepTemplate::GemRepTemplate(const TrackConfig& tc) : mConfig(SystemConfig("track_graphics", "gem")), 
-    kTailPulseRate(mConfig->FindArray("tail_pulse_rate", true)->Float(1)), 
+GemRepTemplate::GemRepTemplate(const TrackConfig& tc) : mConfig(SystemConfig("track_graphics", "gem")),
+    kTailPulseRate(mConfig->FindArray("tail_pulse_rate", true)->Float(1)),
     kTailPulseSmoothing(mConfig->FindArray("tail_pulse_smoothing", true)->Float(1)),
     kTailOffsetX(mConfig->FindArray("tail_offset_x", true)->Float(1)),
     kTailMinAlpha(mConfig->FindArray("tail_min_alpha", true)->Float(1)),
@@ -73,7 +73,7 @@ RndMat* GemRepTemplate::GetMatByTag(const char* c, int slot) {
 }
 
 bool VertLess(const RndMesh::Vert& v1, const RndMesh::Vert& v2) {
-    if ((float)__fabs(v1.pos.y - v2.pos.y) < 0.1f) { // nonsense regswap
+    if ((float)std::fabs(double(v1.pos.y - v2.pos.y)) < 0.1f) { // nonsense regswap
         return v1.pos.x < v2.pos.x;
     }
     return v1.pos.y < v2.pos.y;

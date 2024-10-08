@@ -321,7 +321,7 @@ void UILabel::Update() {
 }
 
 void UILabel::LabelUpdate(bool b, bool c) {
-    
+
 }
 
 RndFont* UILabel::AltFont(){
@@ -462,7 +462,7 @@ float GetTextSizeFromPctHeight(float f){
         Vector2 vec2_2(0.0f, f);
         Vector3 vec3_2;
         TheUI->unk34->ScreenToWorld(vec2_2, transnum, vec3_2);
-        return __fabs(vec3_1.z - vec3_2.z);
+        return std::fabs(vec3_1.z - vec3_2.z);
     }
     else return f;
 }
@@ -475,7 +475,7 @@ float GetPctHeightFromTextSize(float f){
         Vector3 vec3_2(0.0f, 0.0f, -f);
         Vector2 vec2_2;
         TheUI->unk34->WorldToScreen(vec3_2, vec2_2);
-        return __fabs(vec2_1.y - vec2_2.y);
+        return std::fabs(vec2_1.y - vec2_2.y);
     }
     else return f;
 }

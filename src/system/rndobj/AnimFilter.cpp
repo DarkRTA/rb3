@@ -37,7 +37,7 @@ BEGIN_COPYS(RndAnimFilter)
 END_COPYS
 
 RndAnimFilter::RndAnimFilter() : mAnim(this, 0), mPeriod(0.0f), mStart(0.0f), mEnd(0.0f), mScale(1.0f), mOffset(0.0f), mSnap(0.0f), mJitter(0.0f), mJitterFrame(0.0f), mType(kRange) {
-    
+
 }
 
 SAVE_OBJ(RndAnimFilter, 0x4A)
@@ -83,7 +83,7 @@ float RndAnimFilter::StartFrame(){
     else {
         float denom = Scale();
         if(denom == 0.0f) denom = 1.0f;
-        
+
         return (mStart - FrameOffset()) / denom;
     }
 }
@@ -93,7 +93,7 @@ float RndAnimFilter::EndFrame(){
     else {
         float denom = Scale();
         if(denom == 0.0f) denom = 1.0f;
-        
+
         float ret = (mEnd - FrameOffset()) / denom;
         if(mType == kShuttle){
             ret *= 2.0f;
@@ -128,7 +128,7 @@ DataNode RndAnimFilter::OnSafeAnims(DataArray* da){
 
 BEGIN_PROPSYNCS(RndAnimFilter)
     SYNC_PROP_SET(anim, mAnim, SetAnim(_val.Obj<RndAnimatable>(0)))
-    SYNC_PROP_SET(scale, mScale, mScale = __fabs(_val.Float(0)))
+    SYNC_PROP_SET(scale, mScale, mScale = std::fabs(_val.Float(0)))
     SYNC_PROP(offset, mOffset)
     SYNC_PROP(period, mPeriod)
     SYNC_PROP(start, mStart)

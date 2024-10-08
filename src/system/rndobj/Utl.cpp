@@ -357,8 +357,8 @@ void RndUtlTerminate(){
 
 // fn_806598A0
 float ConvertFov(float a, float b) {
-    float x = tan(0.5f * a);
-    return atan(b * x) * 2;
+    float x = std::tan(0.5f * a);
+    return std::atan(b * x) * 2;
 }
 
 // fn_806598F4

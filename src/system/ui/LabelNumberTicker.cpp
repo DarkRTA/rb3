@@ -82,7 +82,7 @@ void LabelNumberTicker::Poll(){
         float animsum = animdelay + animtime;
         if(split >= animdelay){
             float quotient = (split - animdelay) / animtime;
-            quotient *= pow_f(quotient, mAcceleration);
+            quotient *= std::pow(quotient, mAcceleration);
             int somenum = unk12c + (int)(quotient * (mDesiredValue - unk12c));
             if(mTickTrigger && mTickEvery != 0){
                 if((somenum / mTickEvery) > (unk130 / mTickEvery)){

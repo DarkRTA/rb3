@@ -32,7 +32,7 @@ BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
 
 PropKeys::PropKeys(Hmx::Object* o1, Hmx::Object* o2) : mTarget(o1, o2), mProp(0), mTrans(0), mInterpHandler(),
     mLastKeyFrameIndex(-2), mKeysType(kFloat), mInterpolation(kLinear), mPropExceptionID(kNoException), unk18lastbit(0) {
-    
+
 }
 
 PropKeys::~PropKeys(){
@@ -60,7 +60,7 @@ int PropKeys::SetKey(float frame){
     float f = 0.0f;
     for(int i = 0; i < NumKeys(); i++){
         if(FrameFromIndex(i, f)){
-            float fabsFloat = __fabs(frame - f);
+            float fabsFloat = std::fabs(frame - f);
             if(fabsFloat < 0.000099999997f)
                 return i;
         }

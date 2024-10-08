@@ -1,6 +1,6 @@
 #include "math/Rand.h"
+#include "math/MathFuncs.h"
 #include "os/Debug.h"
-#include <math.h>
 #include "os/OSFuncs.h"
 
 Rand gRand(0x29A);
@@ -58,8 +58,8 @@ float Rand::Gaussian() {
                 f5 = f2 * f2 + f3 * f3;
             } while (f5 >= 1.0f);
         } while (0 == f5);
-        f4 = log(f5);
-        f5 = sqrt((-2.0f * f4) / f5);
+        f4 = std::log(f5);
+        f5 = std::sqrt((-2.0f * f4) / f5);
         mSpareGaussianValue = f2 * f5;
         mSpareGaussianAvailable = true;
         return f3 * f5;

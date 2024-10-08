@@ -194,15 +194,15 @@ void CharLookAt::SyncLimits(){
     ClampEq(mMaxYaw, -80.0f, 80.0f);
     ClampEq(mMinPitch, -80.0f, 80.0f);
     ClampEq(mMaxPitch, -80.0f, 80.0f);
-    float max_yaw = Max(fabs_f(mMinYaw), fabs_f(mMaxYaw));
-    float max_pitch = Max(fabs_f(mMinPitch), fabs_f(mMaxPitch));
+    float max_yaw = Max(std::fabs(mMinYaw), std::fabs(mMaxYaw));
+    float max_pitch = Max(std::fabs(mMinPitch), std::fabs(mMaxPitch));
     float max_overall = Max(max_yaw, max_pitch);
-    mBounds.mMin.y = cos(max_overall * DEG2RAD);
+    mBounds.mMin.y = std::cos(max_overall * DEG2RAD);
     mBounds.mMax.y = 1.0E+29f;
-    mBounds.mMin.z = mBounds.mMin.y * tan(mMinYaw * DEG2RAD);
-    mBounds.mMax.z = mBounds.mMin.y * tan(mMaxYaw * DEG2RAD);
-    mBounds.mMin.x = mBounds.mMin.y * tan(mMinPitch * DEG2RAD);
-    mBounds.mMax.x = mBounds.mMin.y * tan(mMaxPitch * DEG2RAD);
+    mBounds.mMin.z = mBounds.mMin.y * std::tan(mMinYaw * DEG2RAD);
+    mBounds.mMax.z = mBounds.mMin.y * std::tan(mMaxYaw * DEG2RAD);
+    mBounds.mMin.x = mBounds.mMin.y * std::tan(mMinPitch * DEG2RAD);
+    mBounds.mMax.x = mBounds.mMin.y * std::tan(mMaxPitch * DEG2RAD);
 }
 
 void CharLookAt::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){

@@ -116,7 +116,7 @@ void TimerStats::PrintPctile(float pctile) {
         }
     }
 
-    int a = floor(pctile * 100);
+    int a = std::floor(pctile * 100);
     if (target > MAX_TOP_VALS) {
         TheDebug << MakeString("   %dth pctile:   <%.2f THIS IS AN OVERESTIMATE.  For accurate percentile, increase MAX_TOP_VALS in Timer.h\n",
             a, top

@@ -361,7 +361,7 @@ static DataNode DataMax(DataArray* da){
 
 static DataNode DataAbs(DataArray* da){
     DataNode& n = da->Evaluate(1);
-    float f = fabs_f(n.LiteralFloat(da));
+    float f = std::fabs(n.LiteralFloat(da));
     if(n.Type() == kDataInt)
         return DataNode((int)f);
     else return DataNode(f);
@@ -488,7 +488,7 @@ static DataNode DataDivideEq(DataArray* da){
 }
 
 static DataNode DataSqrt(DataArray* da){
-    return DataNode(sqrt(da->Float(1)));
+    return DataNode(std::sqrt(da->Float(1)));
 }
 
 DefDataFunc(Mod, {
@@ -516,7 +516,7 @@ static DataNode DataDist(DataArray *da) {
     z = da->Float(3) - da->Float(6);
     y = da->Float(2) - da->Float(5);
     x = da->Float(1) - da->Float(4);
-    return DataNode(sqrt(x*x+y*y+z*z));
+    return DataNode(std::sqrt(x*x+y*y+z*z));
 }
 
 static DataNode DataSymbol(DataArray* da){
@@ -545,11 +545,11 @@ static DataNode DataRound(DataArray* da){
 }
 
 static DataNode DataFloor(DataArray* da){
-    return DataNode(floor_f(da->Float(1)));
+    return DataNode(std::floor(da->Float(1)));
 }
 
 static DataNode DataCeil(DataArray* da){
-    return DataNode(ceil_f(da->Float(1)));
+    return DataNode(std::ceil(da->Float(1)));
 }
 
 static DataNode DataDelete(DataArray* da){
