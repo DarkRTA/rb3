@@ -4,6 +4,7 @@
 #include "types.h"
 
 void __AXVPBInit();
+void __AXVPBInitSpecifyMem(u32, u32);
 void __AXVPBQuit();
 
 #endif
