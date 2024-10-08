@@ -17,7 +17,7 @@
     void foo(Vector2<T VECTOR_SIZE_ARG>& vec) { ... }
  */
 // clang-format off
-#if defined(HX_WII) && defined(STLPORT)
+#if defined(STLPORT) && defined(_STLP_USE_SIZED_VECTOR)
     // Set vector to use a short size type
     #define VECTOR_SIZE_SMALL , unsigned short
     // Set vector to use a large size type
@@ -34,8 +34,9 @@
     #define VECTOR_SIZE_SMALL
     #define VECTOR_SIZE_LARGE
     #define VECTOR_SIZE_PARAM
-    #define VECTOR_SIZE_DFLT
     #define VECTOR_SIZE_ARG
+    #define VECTOR_SIZE_DFLT_PARAM
+    #define VECTOR_SIZE_DFLT_ARG
 #endif
 // clang-format on
 
