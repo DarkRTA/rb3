@@ -49,38 +49,36 @@ void GameMode::SetMode(Symbol mode){
         mMode = mode;
         DataArray* cloned = cfg->FindArray(mMode, true)->Clone(true, false, 0);
         if(cloned->FindArray(parent_only, false)){
-            if(cloned->FindInt(parent_only)){
+            if(cloned->FindArray(parent_only, true)->Int(1)){
                 MILO_FAIL("Trying to set mode %s, which is a parent_only mode!\n", mMode);
             }
         }
-
         Symbol iter = mMode;
         while(cfg->FindArray(iter, true)->FindArray(parent_mode, false)){
             iter = cfg->FindArray(iter, true)->FindArray(parent_mode, true)->Sym(1);
             DataMergeTags(cloned, cfg->FindArray(iter, true));
         }
-
         DataMergeTags(cloned, cfg->FindArray("defaults", true));
         SetTypeDef(cloned);
         cloned->Release();
         HandleType(enter_msg);
         ThePlatformMgr.unkce55 = Property("online_play_required", true)->Int(0);
-        unk20 = Property("enable_overdrive", true)->Int(0);
-        unk2c = InMode("h2h");
-        unk30 = InMode("practice");
-        unk34 = Property("can_lose", true)->Int(0);
-        unk3c = Property("crowd_reacts", true)->Int(0);
-        unk40 = Property("is_solo", true)->Int(0);
-        unk44 = Property("disable_guitar_fx", true)->Int(0);
-        unk48 = InMode("drum_trainer");
-        unk50 = Property("enable_streak", true)->Int(0);
-        unk58 = InMode("tutorial");
-        unk5c = Property("load_chars", true)->Int(0);
-        unk60 = Property("show_stars", true)->Int(0);
-        unk64 = Property("has_song_sections", true)->Int(0);
-        unk68 = Property("enable_whammy", true)->Int(0);
-        unk6c = Property("end_with_song", true)->Int(0);
-        unk70 = InMode("story");
+        mOverdriveEnabled = Property("enable_overdrive", true)->Int(0);
+        mH2HArrangement = InMode("h2h");
+        mIsPractice = InMode("practice");
+        mCanLose = Property("can_lose", true)->Int(0);
+        mCrowdReacts = Property("crowd_reacts", true)->Int(0);
+        mIsSolo = Property("is_solo", true)->Int(0);
+        mDisableGuitarFx = Property("disable_guitar_fx", true)->Int(0);
+        mIsDrumTrainer = InMode("drum_trainer");
+        mEnableStreak = Property("enable_streak", true)->Int(0);
+        mIsTutorial = InMode("tutorial");
+        mLoadChars = Property("load_chars", true)->Int(0);
+        mShowStars = Property("show_stars", true)->Int(0);
+        mHasSongSections = Property("has_song_sections", true)->Int(0);
+        mEnableWhammy = Property("enable_whammy", true)->Int(0);
+        mEndWithSong = Property("end_with_song", true)->Int(0);
+        mIsStory = InMode("story");
         static ModeChangedMsg msg;
         MsgSource::Handle(msg, false);
     }
