@@ -51,7 +51,7 @@
             "band3/game/GameConfig.cpp": "MISSING",
             "band3/game/GameMic.cpp": "MISSING",
             "band3/game/GameMicManager.cpp": "MISSING",
-            "band3/game/GameMode.cpp": "MISSING",
+            "band3/game/GameMode.cpp": "NonMatching",
             "band3/game/GamePanel.cpp": "MISSING",
             "band3/game/GemPlayer.cpp": "MISSING",
             "band3/game/GemTrainerPanel.cpp": "MISSING",

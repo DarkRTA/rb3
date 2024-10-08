@@ -38,14 +38,14 @@ public:
     bool IsFinding() const;
     bool InSong() const;
 
-    std::vector<OvershellSlot*> unk70; // 0x70
+    std::vector<OvershellSlot*> mSlots; // 0x70
     std::vector<int> unk78; // 0x78
     OvershellOverrideFlow mPanelOverrideFlow; // 0x80
     OvershellActiveStatus mActiveStatus; // 0x84
     bool mSongOptionsRequired; // 0x88
     bool unk89;
     bool unk8a;
-    std::vector<int> unk8c;
+    std::vector<LocalBandUser*> mQueuedJoinUsers; // 0x8c
     SessionMgr* mSessionMgr; // 0x94
     BandUserMgr* mBandUserMgr; // 0x98
     BandUser* mPartRestrictedUser; // 0x9c

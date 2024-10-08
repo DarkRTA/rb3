@@ -15,6 +15,12 @@ BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, );
     MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
 END_MESSAGE;
 
+BEGIN_MESSAGE(ModeChangedMsg, mode_changed, );
+    MESSAGE_ARRAY_CTOR(ModeChangedMsg)
+END_MESSAGE;
+
+inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
+
 #include "obj/Object.h"
 
 class RockCentralOpCompleteMsg : public Message, public Hmx::Object {
