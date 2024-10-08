@@ -2,52 +2,86 @@
 #include "utl/UTF8.h"
 #include "utl/Symbols.h"
 
-BandSongMetadata::BandSongMetadata(BandSongMgr* mgr) : unk100(mgr) {
+int BandSongMetadata::sBandSaveVer = 0x11;
+
+void BandSongMetadata::InitBandSongMetadata(){
+    mTitle = 0;
+    mArtist = 0;
+    mAlbum = 0;
+    mAlbumTrackNum = -1;
+    mGenre = rock;
+    mAnimTempo = 0;
+    mLengthMs = 0;
+    mHasAlternatePath = 0;
+    mBasePoints = 0;
+    mIsBonus = 0;
+    mIsFake = 0;
+    mIsTutorial = 0;
+    mMuteWinCues = 0;
+    mRating = 1;
+    mGuidePitchVolume = 0;
+    mVocalTonicNote = -1;
+    mSongKey = -1;
+    mSongTonality = -1;
+    mSongScrollSpeed = 0;
+    mTuningOffsetCents = 0;
+    mBandFailCue = 0;
+    mVocalPercussionBank = 0;
+    mDrumKitBank = 0;
+    mHasAlbumArt = 0;
+    mIsMasterRecording = 0;
+    mIsTriFrame = 0;
+    for(int i = 0; i < 6; i++) mRealGuitarTuning[i] = 0;
+    for(int i = 0; i < 4; i++) mRealBassTuning[i] = 0;
+    mHasDiscUpdate = 0;
+}
+
+BandSongMetadata::BandSongMetadata(BandSongMgr* mgr) : mSongMgr(mgr) {
     InitBandSongMetadata();
 }
 
-BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, bool onDisc, BandSongMgr* mgr) : SongMetadata(main_arr, backup_arr, onDisc), unk100(mgr) {
+BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, bool onDisc, BandSongMgr* mgr) : SongMetadata(main_arr, backup_arr, onDisc), mSongMgr(mgr) {
     InitBandSongMetadata();
     DataArray* member_arr;
     if(FIND_WITH_BACKUP(name)){
-        unk40 = member_arr->Str(1);
+        mTitle = member_arr->Str(1);
     }
     if(FIND_WITH_BACKUP(artist)){
-        unk4c = member_arr->Str(1);
+        mArtist = member_arr->Str(1);
     }
     if(FIND_WITH_BACKUP(album_name)){
-        unk58 = member_arr->Str(1);
+        mAlbum = member_arr->Str(1);
     }
     if(FIND_WITH_BACKUP(album_track_number)){
-        unk64 = member_arr->Int(1);
+        mAlbumTrackNum = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(year_released)){
-        unk6e = DateTime(member_arr->Int(1), 1, 1, 0, 0, 0);
+        mDateReleased = DateTime(member_arr->Int(1), 1, 1, 0, 0, 0);
     }
     if(FIND_WITH_BACKUP(year_recorded)){
-        unk68 = DateTime(member_arr->Int(1), 1, 1, 0, 0, 0);
+        mDateRecorded = DateTime(member_arr->Int(1), 1, 1, 0, 0, 0);
     }
-    else unk68 = unk6e;
+    else mDateRecorded = mDateReleased;
     if(FIND_WITH_BACKUP(genre)){
-        unk74 = member_arr->Sym(1);
+        mGenre = member_arr->Sym(1);
     }
     if(FIND_WITH_BACKUP(anim_tempo)){
-        unk78 = member_arr->Int(1);
+        mAnimTempo = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(vocal_gender)){
-        unk7c = member_arr->Sym(1);
+        mVocalGender = member_arr->Sym(1);
     }
     if(FIND_WITH_BACKUP(song_length)){
-        unk80 = member_arr->Int(1);
+        mLengthMs = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(alternate_path)){
-        unkf4 = member_arr->Int(1);
+        mHasAlternatePath = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(base_points)){
-        unk84 = member_arr->Int(1);
+        mBasePoints = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(bonus)){
-        unkf5 = member_arr->Int(1);
+        mIsBonus = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(fake)){
         bool ret = false;
@@ -55,73 +89,73 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
         if(node.Type() == kDataInt){
             if(CONST_ARRAY(member_arr)->Node(1).LiteralInt(0)) ret = true;
         }
-        unkf6 = ret;
+        mIsFake = ret;
     }
     if(FIND_WITH_BACKUP(tutorial)){
-        unkf7 = member_arr->Int(1);
+        mIsTutorial = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(mute_win_cues)){
-        unkf8 = true;
+        mMuteWinCues = true;
     }
     if(FIND_WITH_BACKUP(rank)){
         for(int i = 1; i < member_arr->Size(); i++){
             DataArray* arr = member_arr->Array(i);
-            unk88[arr->Sym(0)] = arr->Float(1);
+            mRanks[arr->Sym(0)] = arr->Float(1);
         }
     }
     if(FIND_WITH_BACKUP(rating)){
-        unk66 = member_arr->Int(1);
+        mRating = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(guide_pitch_volume)){
-        unka0 = member_arr->Float(1);
+        mGuidePitchVolume = member_arr->Float(1);
     }
     if(FIND_WITH_BACKUP(vocal_tonic_note)){
-        unka4 = member_arr->Int(1);
+        mVocalTonicNote = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(song_key)){
-        unka8 = member_arr->Int(1);
+        mSongKey = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(song_tonality)){
-        unkac = member_arr->Int(1);
+        mSongTonality = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(song_scroll_speed)){
-        unkb0 = member_arr->Float(1);
+        mSongScrollSpeed = member_arr->Float(1);
     }
     if(FIND_WITH_BACKUP(tuning_offset_cents)){
-        unkb4 = member_arr->Float(1);
+        mTuningOffsetCents = member_arr->Float(1);
     }
     if(FIND_WITH_BACKUP(bank)){
-        unkb8 = member_arr->Str(1);
+        mVocalPercussionBank = member_arr->Str(1);
     }
     if(FIND_WITH_BACKUP(drum_bank)){
-        unkbc = member_arr->Str(1);
+        mDrumKitBank = member_arr->Str(1);
     }
     if(FIND_WITH_BACKUP(band_fail_cue)){
-        unkc0 = member_arr->Str(1);
+        mBandFailCue = member_arr->Str(1);
     }
     if(FIND_WITH_BACKUP(album_art)){
-        unkf9 = member_arr->Int(1);
+        mHasAlbumArt = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(master)){
-        unkfa = member_arr->Int(1);
+        mIsMasterRecording = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(tri_frame)){
-        unkfb = member_arr->Int(1);
+        mIsTriFrame = member_arr->Int(1);
     }
     if(FIND_WITH_BACKUP(real_guitar_tuning)){
         for(int i = 0; i < 6; i++){
             DataArray* arr = member_arr->Array(1);
-            unkc4[i] = arr->Int(i);
+            mRealGuitarTuning[i] = arr->Int(i);
         }
     }
     if(FIND_WITH_BACKUP(real_bass_tuning)){
         for(int i = 0; i < 4; i++){
             DataArray* arr = member_arr->Array(1);
-            unkdc[i] = arr->Int(i);
+            mRealBassTuning[i] = arr->Int(i);
         }
     }
     if(FIND_WITH_BACKUP(extra_authoring)){
-        unkfc = member_arr->Contains(disc_update);
+        mHasDiscUpdate = member_arr->Contains(disc_update);
     }
     if(FIND_WITH_BACKUP(solo)){
         DataArray* arr = member_arr->Array(1);
@@ -129,7 +163,7 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
             Symbol solosym = arr->Sym(i);
             if(solosym != vocals){
                 if(solosym == vocal_percussion) solosym = vocals;
-                unkec.push_back(solosym);
+                mSolos.push_back(solosym);
             }
         }
     }
@@ -139,11 +173,11 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
     }
     if(islatin1){
         char buf[0x100];
-        ASCIItoUTF8(buf, 0x100, unk40.c_str());
-        unk40 = buf;
-        ASCIItoUTF8(buf, 0x100, unk4c.c_str());
-        unk4c = buf;
-        ASCIItoUTF8(buf, 0x100, unk58.c_str());
-        unk58 = buf;
+        ASCIItoUTF8(buf, 0x100, mTitle.c_str());
+        mTitle = buf;
+        ASCIItoUTF8(buf, 0x100, mArtist.c_str());
+        mArtist = buf;
+        ASCIItoUTF8(buf, 0x100, mAlbum.c_str());
+        mAlbum = buf;
     }
 }
