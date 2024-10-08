@@ -600,7 +600,7 @@ void BandDirector::HarvestDircuts(){
                 else mask = 0x200000;
             }
             WorldDir* wdir = mVenue.Dir();
-            for(std::vector<CameraManager::Category, unsigned int>::iterator it = wdir->mCameraManager.mCameraShotCategories.begin();
+            for(std::vector<CameraManager::Category VECTOR_SIZE_LARGE>::iterator it = wdir->mCameraManager.mCameraShotCategories.begin();
                 it != wdir->mCameraManager.mCameraShotCategories.end(); ++it){
                 for(ObjPtrList<CamShot, ObjectDir>::iterator cit = it->unk4->begin(); cit != it->unk4->end(); ++cit){
                     CamShot* shot = *cit;
@@ -658,7 +658,7 @@ void BandDirector::ClearSymbolKeysFrameRange(Symbol s, float fstart, float fend)
                 if(frame >= fstart && frame <= fend) keys->RemoveKey(i);
                 else i++;
             }
-        }   
+        }
     }
 }
 
@@ -896,7 +896,7 @@ DataNode BandDirector::OnFileLoaded(DataArray* da){
             mPropAnim->SetName("song.anim", mMerger->Dir());
             mPropAnim->SetType("song_anim");
             mPropAnim->SetRate(RndAnimatable::k480_fpb);
-            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("shot_bg"))), PropKeys::kSymbol); 
+            mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("shot_bg"))), PropKeys::kSymbol);
             mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("bass_intensity"))), PropKeys::kSymbol);
             mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("drum_intensity"))), PropKeys::kSymbol);
             mPropAnim->AddKeys(this, DataArrayPtr(DataNode(Symbol("guitar_intensity"))), PropKeys::kSymbol);
@@ -1066,7 +1066,7 @@ void BandDirector::OnMidiPresetCleanup(){
             float newframe = bts * 30.0f;
             if(skeys[i - 1].frame <= newframe){
                 local_keys.push_back(Key<Symbol>(skeys[i - 1].value, newframe));
-            }              
+            }
         }
         else if(!lpreset){
             MILO_WARN("Can't find light preset %s, %f secs", s1.mStr, skeys[i].frame / 30.0f);

@@ -3,6 +3,7 @@
 #include "utl/Loader.h"
 #include "obj/Utl.h"
 #include "obj/ObjPtr_p.h"
+#include "utl/STLHelpers.h"
 
 class OriginalPathable {
 public:
@@ -83,7 +84,7 @@ public:
     void Select(Symbol, const FilePath&, bool);
     int FindMergerIndex(Symbol, bool);
     Merger* FindMerger(Symbol, bool);
-    std::vector<Merger, unsigned int>& Mergers(){ return mMergers; }
+    std::vector<Merger VECTOR_SIZE_LARGE>& Mergers(){ return mMergers; }
 
     static bool sDisableAll;
 
@@ -91,7 +92,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjVector<Merger, unsigned int> mMergers; // 0x30
+    ObjVector<Merger VECTOR_SIZE_LARGE> mMergers; // 0x30
     bool mAsyncLoad; // 0x40
     bool mLoadingLoad; // 0x41
     int unk44;
