@@ -54,6 +54,9 @@ public:
     Symbol HasKeysSym() const;
     bool HasSolo(Symbol) const;
     Symbol HasSoloSym(Symbol) const;
+    bool IsUGC() const;
+    const char* MidiUpdate() const;
+    bool IsDownload() const;
 
     static int sBandSaveVer;
 

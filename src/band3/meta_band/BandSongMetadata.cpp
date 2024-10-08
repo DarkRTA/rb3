@@ -293,3 +293,111 @@ bool BandSongMetadata::HasSolo(Symbol s) const {
 Symbol BandSongMetadata::HasSoloSym(Symbol s) const {
     return HasSolo(s) ? has_part_yes : has_part_no;
 }
+
+bool BandSongMetadata::IsUGC() const {
+    return GameOrigin() == ugc || GameOrigin() == ugc_plus;
+}
+
+const char* BandSongMetadata::MidiUpdate() const {
+    if(mHasDiscUpdate) return MakeString("./songs/updates/%s/%s_update.mid", mShortName, mShortName);
+    else return 0;
+}
+
+bool BandSongMetadata::IsDownload() const {
+    return GameOrigin() != rb3;
+}
+
+void BandSongMetadata::Save(BinStream& bs){
+    bs << sBandSaveVer;
+    SongMetadata::Save(bs);
+    bs << mTitle;
+    bs << mArtist;
+    bs << mAlbum;
+    bs << mAlbumTrackNum;
+    bs << mDateRecorded;
+    bs << mDateReleased;
+    bs << mGenre;
+    bs << mBasePoints;
+    bs << mIsBonus;
+    bs << mIsFake;
+    bs << mIsTutorial;
+    bs << mMuteWinCues;
+    bs << mRanks;
+    bs << mRating;
+    bs << mGuidePitchVolume;
+    bs << mSongScrollSpeed;
+    bs << mTuningOffsetCents;
+    bs << mVocalPercussionBank;
+    bs << mDrumKitBank;
+    bs << mVocalTonicNote;
+    bs << mSongKey;
+    bs << mSongTonality;
+    bs << mLengthMs;
+    bs << mHasAlbumArt;
+    bs << mIsMasterRecording;
+    bs << mHasAlternatePath;
+    bs << mIsTriFrame;
+    bs << mAnimTempo;
+    bs << mVocalGender;
+    for(int i = 0; i < 6; i++) bs << mRealGuitarTuning[i];
+    for(int i = 0; i < 4; i++) bs << mRealBassTuning[i];
+    bs << mHasDiscUpdate;
+    bs << mSolos;
+}
+
+void BandSongMetadata::Load(BinStream& bs){
+    int rev;
+    bs >> rev;
+    SongMetadata::Load(bs);
+    bs >> mTitle;
+    bs >> mArtist;
+    bs >> mAlbum;
+    bs >> mAlbumTrackNum;
+    bs >> mDateRecorded;
+    bs >> mDateReleased;
+    bs >> mGenre;
+    if(rev < 0xD){ String s; bs >> s; }
+    bs >> mBasePoints;
+    bs >> mIsBonus;
+    bs >> mIsFake;
+    bs >> mIsTutorial;
+    bs >> mMuteWinCues;
+    bs >> mRanks;
+    bs >> mRating;
+    if(rev < 0xC){ short s; bs >> s; }
+    bs >> mGuidePitchVolume;
+    if(rev < 0xF){ String s; bs >> s; }
+    bs >> mSongScrollSpeed;
+    bs >> mTuningOffsetCents;
+    bs >> mVocalPercussionBank;
+    if(rev >= 9) bs >> mDrumKitBank;
+    if(rev >= 1) bs >> mVocalTonicNote;
+    if(rev >= 11){
+        bs >> mSongKey;
+        bs >> mSongTonality;
+    }
+    if(rev - 2U <= 11){
+        std::vector<std::map<Symbol, String> > gross;
+        bs >> gross;
+    }
+    if(rev >= 3) bs >> mLengthMs;
+    if(rev >= 4){
+        bs >> mHasAlbumArt;
+        bs >> mIsMasterRecording;
+    }
+    if(rev >= 5){
+        bs >> mHasAlternatePath;
+        if(rev < 8){
+            bool b, c; bs >> b; bs >> c;
+        }
+        bs >> mIsTriFrame;
+    }
+    if(rev >= 6) bs >> mAnimTempo;
+    if(rev >= 16) bs >> mVocalGender;
+    if(rev >= 7){
+        for(int i = 0; i < 6; i++) bs >> mRealGuitarTuning[i];
+        for(int i = 0; i < 4; i++) bs >> mRealBassTuning[i];
+    }
+    if(rev >= 10) bs >> mHasDiscUpdate;
+    if(rev >= 0x11) bs >> mSolos;
+}

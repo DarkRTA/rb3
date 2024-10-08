@@ -224,10 +224,13 @@ BinStream& operator>>(BinStream& bs, std::list<T, Allocator>& list){
     return bs;
 }
 
-// TODO: implement
 template<class T1, class T2>
 BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
-
+    bs << map.size();
+    for(std::map<T1, T2>::const_iterator it = map.begin(); it != map.end(); ++it){
+        bs << it->first << it->second;
+    }
+    return bs;
 }
 
 template<class T1, class T2>
