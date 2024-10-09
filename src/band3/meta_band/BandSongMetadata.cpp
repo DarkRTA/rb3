@@ -209,8 +209,9 @@ bool BandSongMetadata::IsMasterRecording() const { return mIsMasterRecording; }
 Symbol BandSongMetadata::BandFailCue() const { return mBandFailCue; }
 
 Symbol BandSongMetadata::Decade() const {
-    int year = (mDateReleased.Year() / 10) - 1900;
-    return MakeString("the%is", year);
+    int year = mDateReleased.Year();
+    Symbol sym = MakeString("the%is", year - (year % 10));
+    return sym;
 }
 
 bool BandSongMetadata::HasVocalHarmony() const {
@@ -401,3 +402,20 @@ void BandSongMetadata::Load(BinStream& bs){
     if(rev >= 10) bs >> mHasDiscUpdate;
     if(rev >= 0x11) bs >> mSolos;
 }
+
+BEGIN_HANDLERS(BandSongMetadata)
+    HANDLE_EXPR(id, ID())
+    HANDLE_EXPR(title, mTitle.c_str())
+    HANDLE_EXPR(genre, mGenre)
+    HANDLE_EXPR(anim_tempo, mAnimTempo)
+    HANDLE_EXPR(vocal_gender, mVocalGender)
+    HANDLE_EXPR(year_released, mDateReleased.Year())
+    HANDLE_EXPR(year_recorded, mDateRecorded.Year())
+    HANDLE_EXPR(length_ms, mLengthMs)
+    HANDLE_EXPR(has_part, HasPart(_msg->Sym(2), false))
+    HANDLE_EXPR(is_ugc, GameOrigin() == ugc || GameOrigin() == ugc_plus)
+    HANDLE_EXPR(is_download, GameOrigin() != rb3)
+    HANDLE_EXPR(rating, mRating)
+    HANDLE_SUPERCLASS(SongMetadata)
+    HANDLE_CHECK(0x379)
+END_HANDLERS

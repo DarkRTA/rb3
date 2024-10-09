@@ -7,7 +7,7 @@ class BandSongMetadata : public SongMetadata {
 public:
     BandSongMetadata(BandSongMgr*);
     BandSongMetadata(DataArray*, DataArray*, bool, BandSongMgr*);
-    virtual ~BandSongMetadata();
+    virtual ~BandSongMetadata(){}
     virtual DataNode Handle(DataArray*, bool);
     virtual void Save(BinStream&);
     virtual void Load(BinStream&);

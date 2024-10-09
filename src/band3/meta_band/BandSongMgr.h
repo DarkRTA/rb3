@@ -1,6 +1,8 @@
 #ifndef META_BAND_BANDSONGMGR_H
 #define META_BAND_BANDSONGMGR_H
 #include "system/meta/SongMgr.h"
+#include "meta_band/SongUpgradeMgr.h"
+#include "meta_band/LicenseMgr.h"
 
 class BandSongMgr : public SongMgr {
 public:
@@ -47,20 +49,20 @@ public:
     void AddSongs(DataArray* songs);
     static bool GetFakeSongsAllowed();
 
-    int unkc0;
-    std::map<int, Symbol> unkc4;
-    std::map<Symbol, int> unkdc;
-    std::map<int, Symbol> unkf4;
-    std::list<SongRanking> unk10c;
-    std::list<int> unk114;
-    std::vector<int> unk11c;
-    bool unk124;
-    int unk128; // SongUpgradeMgr*
-    int unk12c; // LicenseMgr*
+    int unkc0; // 0xc0
+    std::map<int, Symbol> unkc4; // 0xc4
+    std::map<Symbol, int> unkdc; // 0xdc
+    std::map<int, Symbol> unkf4; // 0xf4
+    std::list<SongRanking> mSongRankings; // 0x10c
+    std::list<int> unk114; // 0x114
+    std::vector<Symbol> unk11c; // 0x11c
+    bool unk124; // 0x124
+    SongUpgradeMgr* mUpgradeMgr; // 0x128
+    LicenseMgr* mLicenseMgr; // 0x12c
     std::vector<String> unk130;
-    int unk138; // max song count
-    bool unk13c;
-    int unk140;
+    int mMaxSongCount; // 0x138
+    bool unk13c; // 0x13c
+    int unk140; // 0x140
 };
 
 extern BandSongMgr* TheSongMgr;
