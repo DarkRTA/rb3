@@ -192,6 +192,14 @@ int BandSongMgr::GetValidSongCount(const std::map<int, SongMetadata*>& songs) co
 bool BandSongMgr::GetFakeSongsAllowed(){ return sFakeSongsAllowed; }
 void BandSongMgr::SetFakeSongsAllowed(bool b){ sFakeSongsAllowed = b; }
 
+void BandSongMgr::CheatToggleMaxSongCount(){
+    DataArray* cfg = SystemConfig(song_mgr);
+    int max = cfg->FindInt(max_song_count);
+    int max_debug = cfg->FindInt(max_song_count_debug);
+    if(mMaxSongCount == max) max = max_debug;
+    mMaxSongCount = max;
+}
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(BandSongMgr)

@@ -1,31 +1,65 @@
 #ifndef GAME_STATS_H
 #define GAME_STATS_H
-
 #include <vector>
 #include "system/utl/BinStream.h"
 
+class SingerStats {
+public:
+    SingerStats(int);
+    void Finalize();
+    void SetPartPercentage(int, float);
+    void GetRankData(int) const;
+    void SetPitchDeviationInfo(float, float);
+    void GetPitchDeviationInfo(float&, float&) const;
+
+    int unk0;
+    int unk4;
+    float mPitchDeviation1; // 0x08
+    float mPitchDeviation2; // 0x0c
+
+};
+
 class Stats {
+public:
     class StreakInfo {
+    public:
         StreakInfo();
 
+        bool operator>(const StreakInfo& s){
+            return mDuration > s.mDuration;
+        }
+
+        int mStart; // 0x0
+        int mDuration; // 0x4
     };
 
     class MultiplierInfo {
+    public:
         MultiplierInfo();
+
+        float mStartMs; // 0x0
+        float mDurationMs; // 0x4
+        int mStartingMultiplier; // 0x8
+        int mEndingMultiplier; // 0xc
+        float mPoints; // 0x10
     };
 
     class SectionInfo {
+    public:
         SectionInfo();
+
+        Symbol unk0; // 0x0
+        float unk4; // 0x4
+        float unk8; // 0x8
     };
 
-public:
     Stats();
     Stats(const Stats&);
     ~Stats();
     void BuildHitStreak(int, float);
     int GetCurrentStreak() const;
     void SetCurrentStreak(int);
-    void GetLongestStreak() const;
+    int GetLongestStreak() const;
     void SetPersistentStreak(int);
     void EndHitStreak();
     void BuildMissStreak(int);
@@ -152,13 +186,15 @@ public:
     void SetTripleHarmonyHit(int);
     void SetTripleHarmonyPhraseCount(int);
     void AccessSingerStats(int);
+    
+    template <class T> void SaveHighest(std::vector<T>&, const T&);
 
     int mHitCount;                             // 0x000
     int mMissCount;                            // 0x004
     int m0x08;                                 // 0x008
     int m0x0c;                                 // 0x00c
-    int m0x10;                                 // 0x010
-    int m0x14;                                 // 0x014
+    int mPersistentStreak;                     // 0x010
+    int mLongestPersistentStreak;              // 0x014
     float mNotesHitFraction;                   // 0x018
     bool mFailedDeploy;                        // 0x01c
     int mDeployCount;                          // 0x020
@@ -184,7 +220,7 @@ public:
     int m0x68;                                 // 0x068
     int m0x6c;                                 // 0x06c
     std::vector<int> m0x70;                    // 0x070
-    std::vector<int> m0x78;                    // 0x078
+    std::vector<SingerStats> m0x78;            // 0x078
     std::vector<int> m0x80;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
@@ -199,44 +235,25 @@ public:
     float mTambourine; // 0xac
     int mHarmony; // 0xb0
     bool m0xb4;
-    int m0xb8;
-    int m0xbc;
-    int mCurrentStreak; // 0xc0
-    int m0xc4;
-    int m0xc8;
-    int m0xcc;
-    int m0xd0;
-    int m0xd4;
-    int m0xd8;
-    int m0xdc;
-    int m0xe0;
-    int m0xe4;
-    int m0xe8;
+    float m0xb8;
+    StreakInfo unkbc; // 0xbc
+    std::vector<StreakInfo> unkc4; // 0xc4
+    StreakInfo unkcc; // 0xcc
+    std::vector<StreakInfo> unkd4; // 0xd4
+    std::vector<float> unkdc; // 0xdc
+    std::vector<float> unke4; // 0xe4
     int mPlayersSaved; // 0xec
-    int m0xf0;
-    int m0xf4;
+    std::vector<float> unkf0; // 0xf0
     int mTimesSaved; // 0xf8
-    int m0xfc;
-    int m0x100;
-    int m0x104;
-    int m0x108;
-    int m0x10c;
-    int m0x110;
-    int m0x114;
-    int m0x118;
-    int m0x11c;
-    int m0x120;
-    int m0x124;
+    std::vector<float> unkfc; // 0xfc
+    std::vector<int> unk104; // 0x104
+    MultiplierInfo unk10c; // 0x10c
+    std::vector<MultiplierInfo> unk120; // 0x120
     float mTotalOverdriveDuration; // 0x128
-    int m0x12c;
-    int m0x130;
-    int m0x134;
-    int m0x138;
-    int m0x13c;
-    int m0x140;
-    int m0x144;
+    MultiplierInfo unk12c; // 0x12c
+    std::vector<MultiplierInfo> unk140; // 0x140
     float mTotalMultiplierDuration; // 0x148
-    int m0x14c;
+    int m0x14c; // 0x14c
     int m0x150;
     int mEndGameScore; // 0x154
     float mEndGameCrowdLevel; // 0x158
@@ -266,22 +283,9 @@ public:
     std::vector<int> unk1b8; // 0x1b8
     float unk1c0;
     float unk1c4;
-    // float unk1c8;
+    float unk1c8;
 
-    bool mMultiplierActive; // 0x205
-};
-
-class SingerStats {
-    SingerStats(int);
-    void Finalize();
-    void SetPartPercentage(int, float);
-    void GetRankData(int) const;
-    void SetPitchDeviationInfo(float, float);
-    void GetPitchDeviationInfo(float&, float&) const;
-
-    float mPitchDeviation1; // 0x08
-    float mPitchDeviation2; // 0x0c
-
+    // bool mMultiplierActive; // 0x205
 };
 
 #endif // GAME_STATS_H
