@@ -236,14 +236,11 @@ float BandSongMetadata::Rank(Symbol s) const {
         if(data) return data->Rank(s);
     }
     else {
-        for(std::map<Symbol, float>::const_iterator it = mRanks.begin(); it != mRanks.end(); ++it){
-            if(it->first == s){
-                return it->second;
-            }
+        std::map<Symbol, float>::const_iterator it = mRanks.find(s);
+        if (it != mRanks.end()) {
+            return it->second;
         }
-        // i think the way to do this is either std::find or mRanks[s], but they won't work for some reason
-        // probably due to the method being const
-        return 0;
+        else return 0;
     }
 }
 

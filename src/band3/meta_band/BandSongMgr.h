@@ -4,10 +4,18 @@
 #include "meta_band/SongUpgradeMgr.h"
 #include "meta_band/LicenseMgr.h"
 
+enum SongID {
+    kSongID_Invalid = 0,
+    kSongID_Any,
+    kSongID_Random
+};
+
 class BandSongMgr : public SongMgr {
 public:
     class SongRanking {
     public:
+        Symbol mInstrument; // 0x0
+        std::vector<int> mTierRanges; // 0x4
     };
 
     BandSongMgr();
@@ -15,24 +23,18 @@ public:
     virtual ~BandSongMgr(){}
     virtual void Init();
     virtual void Terminate();
-
     virtual SongMetadata* Data(int) const; // fix return type
     virtual SongInfo* SongAudioData(int) const;
-
     virtual void ContentDone();
     virtual void ContentMounted(const char*, const char*);
-
     virtual void GetContentNames(Symbol, std::vector<Symbol>&) const;
-
     virtual bool SongCacheNeedsWrite() const;
     virtual void ClearSongCacheNeedsWrite();
     virtual void AllowCacheWrite(bool);
     virtual void ClearCachedContent();
-
     virtual Symbol GetShortNameFromSongID(int, bool) const;
     virtual int GetSongIDFromShortName(Symbol, bool) const;
-    virtual Symbol SongName(int) const;
-
+    virtual const char* SongName(int) const;
     virtual bool CanAddSong() const;
     virtual bool AllowContentToBeAdded(DataArray*, ContentLocT);
     virtual void AddSongData(DataArray*, DataLoader*, ContentLocT);
@@ -40,18 +42,25 @@ public:
     virtual void AddSongIDMapping(int, Symbol);
     virtual void ReadCachedMetadataFromStream(BinStream&, int);
     virtual void WriteCachedMetadataFromStream(BinStream&) const;
-
     virtual const char* ContentPattern();
     virtual const char* ContentDir();
     virtual bool HasContentAltDirs();
     virtual const char* ContentAltDirs();
 
     void AddSongs(DataArray* songs);
+    const char* UpgradeMidiFile(int) const;
+    const char* MidiFile(Symbol) const;
+    const char* SongName(Symbol) const;
     SongUpgradeData* GetUpgradeData(int) const;
+    const char* SongFilePath(Symbol, const char*, bool) const;
+    const char* GetAlbumArtPath(Symbol) const;
+    const char* SongPath(Symbol) const;
+    int NumRankTiers(Symbol) const;
+    Symbol RankTierToken(int) const;
 
     static bool GetFakeSongsAllowed();
 
-    int unkc0; // 0xc0
+    mutable DataArraySongInfo* unkc0; // 0xc0
     std::map<int, Symbol> unkc4; // 0xc4
     std::map<Symbol, int> unkdc; // 0xdc
     std::map<int, Symbol> unkf4; // 0xf4

@@ -14,6 +14,7 @@ public:
     int RealGuitarTuning(int) const;
     int RealBassTuning(int) const;
     float Rank(Symbol) const;
+    const char* MidiFile() const;
 
     int mUpgradeVersion; // 0x0
     String mMidiFile; // 0x4
@@ -34,8 +35,12 @@ public:
     virtual const char* ContentPattern();
     virtual const char* ContentDir();
 
+    bool HasUpgrade(int) const;
+    const char* ContentName(int) const;
+    SongUpgradeData* UpgradeData(int) const;
+
     std::set<int> unk4; // 0x4
-    std::map<int, SongUpgradeData> unk1c; // 0x1c
+    std::map<int, SongUpgradeData*> unk1c; // 0x1c
     std::map<Symbol, std::vector<int> > unk34; // 0x34
     std::map<int, Symbol> unk4c; // 0x4c
     bool unk64; // 0x64
