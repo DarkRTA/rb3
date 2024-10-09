@@ -46,7 +46,7 @@ public:
     virtual const char* GetExtraMidiFile(int) const = 0;
 };
 
-class SongInfoCopy {
+class SongInfoCopy : public SongInfo {
 public:
     SongInfoCopy();
     SongInfoCopy(const SongInfo*);

@@ -83,7 +83,7 @@ void DateTime::ToMiniDateString(class String& str) const {
     str += MakeString("%02d/%02d", mMonth + 1, mDay);
 }
 
-unsigned short DateTime::Year() const {
+int DateTime::Year() const {
     return mYear + 1900;
 }
 

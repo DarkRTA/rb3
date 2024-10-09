@@ -46,7 +46,7 @@ public:
     virtual void ClearCachedContent();
     virtual Symbol GetShortNameFromSongID(int, bool) const = 0;
     virtual int GetSongIDFromShortName(Symbol, bool) const = 0;
-    virtual Symbol SongName(int) const = 0;
+    virtual const char* SongName(int) const = 0;
     virtual bool CanAddSong() const = 0;
     virtual bool AllowContentToBeAdded(DataArray*, ContentLocT){ return true; }
     virtual void AddSongData(DataArray*, DataLoader*, ContentLocT) = 0;

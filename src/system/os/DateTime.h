@@ -22,7 +22,7 @@ public:
     void ToString(class String&) const;
     void ToDateString(class String&) const;
     void ToMiniDateString(class String&) const;
-    unsigned short Year() const;
+    int Year() const;
     void Format(class String&) const;
 };
 

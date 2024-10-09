@@ -28,6 +28,13 @@ public:
     virtual bool IsActive(int) const;
 
     bool IsModifierActive(Symbol) const;
+    Modifier* GetModifierAtListData(int) const;
+    bool IsModifierUnlocked(Modifier*) const;
+    bool IsModifierActive(Modifier*) const;
+    bool HasModifier(Symbol);
+    Modifier* GetModifier(Symbol, bool) const;
+    void ToggleModifierEnabled(Symbol);
+    bool IsModifierDelayedEffect(Symbol) const;
 
     static void Init();
 

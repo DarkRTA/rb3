@@ -8,6 +8,13 @@
 class SessionMgr;
 class BandUserMgr;
 
+enum OvershellActiveStatus {
+    kOvershellInactive = 0,
+    kOvershellInShell = 1,
+    kOvershellInGameShell = 2,
+    kOvershellInSong = 3
+};
+
 class OvershellPanel : public UIPanel, public Synchronizable, public MsgSource {
 public:
     OvershellPanel(SessionMgr*, BandUserMgr*);
@@ -31,16 +38,23 @@ public:
     bool IsFinding() const;
     bool InSong() const;
 
-    std::vector<int> unk70; // 0x70
+    std::vector<OvershellSlot*> mSlots; // 0x70
     std::vector<int> unk78; // 0x78
-    int unk80;
-    int unk84;
-    bool unk88;
+    OvershellOverrideFlow mPanelOverrideFlow; // 0x80
+    OvershellActiveStatus mActiveStatus; // 0x84
+    bool mSongOptionsRequired; // 0x88
     bool unk89;
     bool unk8a;
-    std::vector<int> unk8c;
-    int unk9c;
-    int unka0;
-    int unka4;
-    Rand unka8; // 0xa8
+    std::vector<LocalBandUser*> mQueuedJoinUsers; // 0x8c
+    SessionMgr* mSessionMgr; // 0x94
+    BandUserMgr* mBandUserMgr; // 0x98
+    BandUser* mPartRestrictedUser; // 0x9c
+    TrackType mPartRestriction; // 0xa0
+    Difficulty mMinimumDifficulty; // 0xa4
+    Rand mPartResolver; // 0xa8
+    int unk4b8; // 0x4b8
+    bool unk4bc;
+    std::vector<int> unk4c0;
+    bool unk4c8;
+    int unk4cc;
 };
