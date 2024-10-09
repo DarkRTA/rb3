@@ -44,8 +44,8 @@ public:
     virtual void WriteCachedMetadataFromStream(BinStream&) const;
     virtual const char* ContentPattern();
     virtual const char* ContentDir();
-    virtual bool HasContentAltDirs();
-    virtual const char* ContentAltDirs();
+    virtual bool HasContentAltDirs(){ return !mContentAltDirs.empty(); }
+    virtual std::vector<String>* ContentAltDirs(){ return &mContentAltDirs; }
 
     void AddSongs(DataArray* songs);
     const char* UpgradeMidiFile(int) const;
@@ -57,20 +57,33 @@ public:
     const char* SongPath(Symbol) const;
     int NumRankTiers(Symbol) const;
     Symbol RankTierToken(int) const;
+    void GetRankedSongs(std::vector<int>&, bool, bool) const;
+    int GetValidSongCount(const std::map<int, SongMetadata*>&) const;
+    bool IsRestricted(int) const;
+    int RankTier(float, Symbol) const;
+    int GetNumVocalParts(Symbol) const;
+    void AddRecentSong(int);
+    bool IsDemo(int) const;
+    bool HasLicense(Symbol) const;
+    void SyncSharedSongs();
+    int GetMaxSongCount() const;
+    void CheatToggleMaxSongCount();
 
     static bool GetFakeSongsAllowed();
+    static void SetFakeSongsAllowed(bool);
+    static bool sFakeSongsAllowed;
 
     mutable DataArraySongInfo* unkc0; // 0xc0
-    std::map<int, Symbol> unkc4; // 0xc4
-    std::map<Symbol, int> unkdc; // 0xdc
-    std::map<int, Symbol> unkf4; // 0xf4
+    std::map<int, Symbol> mSongNameLookup; // 0xc4
+    std::map<Symbol, int> mSongIDLookup; // 0xdc
+    std::map<int, Symbol> mExtraSongIDMap; // 0xf4
     std::list<SongRanking> mSongRankings; // 0x10c
     std::list<int> unk114; // 0x114
     std::vector<Symbol> unk11c; // 0x11c
     bool unk124; // 0x124
     SongUpgradeMgr* mUpgradeMgr; // 0x128
     LicenseMgr* mLicenseMgr; // 0x12c
-    std::vector<String> unk130;
+    std::vector<String> mContentAltDirs; // 0x130
     int mMaxSongCount; // 0x138
     bool unk13c; // 0x13c
     int unk140; // 0x140

@@ -233,15 +233,15 @@ bool BandSongMetadata::HasPart(Symbol, bool) const {
 float BandSongMetadata::Rank(Symbol s) const {
     if(s == real_guitar || s == real_bass){
         SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
-        if(data) return data->Rank(s);
+        if(data) {
+            return data->Rank(s);
+        } 
     }
-    else {
-        std::map<Symbol, float>::const_iterator it = mRanks.find(s);
-        if (it != mRanks.end()) {
-            return it->second;
-        }
-        else return 0;
+    std::map<Symbol, float>::const_iterator it = mRanks.find(s);
+    if (it != mRanks.end()) {
+        return it->second;
     }
+    return 0;
 }
 
 bool BandSongMetadata::HasVocalHarmony() const {
@@ -303,9 +303,14 @@ bool BandSongMetadata::HasBass() const {
     return HasPart(bass, false) || HasPart(real_bass, false);
 }
 
+// FIXME: how do we get the regular HasKeys() to inline here but not anywhere else?
+// this hack is in place for now
+inline bool BandSongMetadata::HasKeysDebug() const {
+    return HasPart(keys, false) || HasPart(real_keys, false);
+}
+
 Symbol BandSongMetadata::HasKeysSym() const {
-    bool haskeypart = HasPart(keys, false) || HasPart(real_keys, false);
-    return haskeypart ? has_part_yes : has_part_no;
+    return HasKeysDebug() ? has_part_yes : has_part_no;
 }
 
 bool BandSongMetadata::HasSolo(Symbol s) const {
