@@ -226,6 +226,27 @@ Symbol BandSongMetadata::Decade() const {
     return sym;
 }
 
+bool BandSongMetadata::HasPart(Symbol, bool) const {
+
+}
+
+float BandSongMetadata::Rank(Symbol s) const {
+    if(s == real_guitar || s == real_bass){
+        SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
+        if(data) return data->Rank(s);
+    }
+    else {
+        for(std::map<Symbol, float>::const_iterator it = mRanks.begin(); it != mRanks.end(); ++it){
+            if(it->first == s){
+                return it->second;
+            }
+        }
+        // i think the way to do this is either std::find or mRanks[s], but they won't work for some reason
+        // probably due to the method being const
+        return 0;
+    }
+}
+
 bool BandSongMetadata::HasVocalHarmony() const {
     return HasPart(vocals, false) && SongMetadata::NumVocalParts() > 1;
 }
@@ -260,13 +281,8 @@ Symbol BandSongMetadata::RatingSym() const {
 
 Symbol BandSongMetadata::SourceSym() const {
     bool official_dlc = GameOrigin() == rb3_dlc || GameOrigin() == rb1_dlc;
-    Symbol ret = dlc;
-    if(!official_dlc){
-        Symbol orig = GameOrigin();
-        ret = ugc;
-        if(orig != ugc_plus) ret = GameOrigin();
-    }
-    return ret;
+    if(official_dlc) return dlc;
+    else return GameOrigin() == ugc_plus ? ugc : GameOrigin();
 }
 
 Symbol BandSongMetadata::VocalPartsSym() const {
