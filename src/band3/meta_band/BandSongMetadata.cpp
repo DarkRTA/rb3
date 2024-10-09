@@ -208,6 +208,18 @@ bool BandSongMetadata::HasAlbumArt() const { return mHasAlbumArt; }
 bool BandSongMetadata::IsMasterRecording() const { return mIsMasterRecording; }
 Symbol BandSongMetadata::BandFailCue() const { return mBandFailCue; }
 
+int BandSongMetadata::RealGuitarTuning(int i) const {
+    SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
+    if(data) return data->RealGuitarTuning(i);
+    else return mRealGuitarTuning[i];
+}
+
+int BandSongMetadata::RealBassTuning(int i) const {
+    SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
+    if(data) return data->RealBassTuning(i);
+    else return mRealBassTuning[i];
+}
+
 Symbol BandSongMetadata::Decade() const {
     int year = mDateReleased.Year();
     Symbol sym = MakeString("the%is", year - (year % 10));

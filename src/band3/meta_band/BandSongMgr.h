@@ -47,6 +47,8 @@ public:
     virtual const char* ContentAltDirs();
 
     void AddSongs(DataArray* songs);
+    SongUpgradeData* GetUpgradeData(int) const;
+
     static bool GetFakeSongsAllowed();
 
     int unkc0; // 0xc0

@@ -31,6 +31,12 @@ void VectorRemove(std::vector<T1,T2>& vec, const T3& obj){
     }
 }
 
+template <typename T>
+inline void ClearAndShrink(std::vector<T>& vec) {
+    std::vector<T> temp;
+    temp.swap(vec);
+}
+
 // TODO: implement for RndTransformable.cpp
 template <class T> void RemoveSwap(std::vector<T*>&, T*);
 

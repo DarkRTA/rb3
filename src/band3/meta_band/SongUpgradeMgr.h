@@ -11,6 +11,8 @@ public:
     SongUpgradeData(DataArray*);
 
     void InitSongUpgradeData();
+    int RealGuitarTuning(int) const;
+    int RealBassTuning(int) const;
 
     int mUpgradeVersion; // 0x0
     String mMidiFile; // 0x4
