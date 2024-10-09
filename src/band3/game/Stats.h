@@ -12,8 +12,7 @@ public:
     void SetPitchDeviationInfo(float, float);
     void GetPitchDeviationInfo(float&, float&) const;
 
-    int unk0;
-    int unk4;
+    std::vector<std::pair<int, float> > unk0; // 0x0
     float mPitchDeviation1; // 0x08
     float mPitchDeviation2; // 0x0c
 
@@ -71,8 +70,8 @@ public:
     void SetSoloButtonedSoloPercentage(int);
     void SetVocalSingerAndPartCounts(int, int);
     void SetSingerPartPercentage(int, int, float);
-    void GetSingerRankedPercentage(int, int) const;
-    void GetSingerRankedPart(int, int) const;
+    float GetSingerRankedPercentage(int, int) const;
+    int GetSingerRankedPart(int, int) const;
     void SetSingerPitchDeviationInfo(int, float, float);
     void UpdateBestTambourineSection(int);
     void SaveForEndGame(BinStream&) const;
@@ -116,7 +115,7 @@ public:
     void IncrementTrillsHit(bool);
     void SetCymbalGemInfo(int, int, int);
     void SetSectionInfo(int, Symbol, float, float);
-    void GetSectionInfo(int) const;
+    const SectionInfo& GetSectionInfo(int) const;
     void GetAverageMsError() const;
 
 
@@ -205,7 +204,7 @@ public:
     bool m0x34;                                // 0x034
     bool mFinalized;                           // 0x035
     int mSoloPercentage;                       // 0x038
-    int m0x3c;                                 // 0x03c
+    int mSoloButtonedSoloPercentage;           // 0x03c
     bool mPerfectSoloWithSoloButtons;          // 0x040
     bool m0x41;                                // 0x041
     int mNumberOfSingers;                      // 0x044
@@ -220,7 +219,7 @@ public:
     int m0x68;                                 // 0x068
     int m0x6c;                                 // 0x06c
     std::vector<int> m0x70;                    // 0x070
-    std::vector<SingerStats> m0x78;            // 0x078
+    std::vector<SingerStats> mSingerStats;     // 0x078
     std::vector<int> m0x80;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
@@ -235,11 +234,11 @@ public:
     float mTambourine; // 0xac
     int mHarmony; // 0xb0
     bool m0xb4;
-    float m0xb8;
-    StreakInfo unkbc; // 0xbc
-    std::vector<StreakInfo> unkc4; // 0xc4
-    StreakInfo unkcc; // 0xcc
-    std::vector<StreakInfo> unkd4; // 0xd4
+    float mNoScorePercent; // 0xb8
+    StreakInfo mCurrentHitStreak; // 0xbc
+    std::vector<StreakInfo> mHitStreaks; // 0xc4
+    StreakInfo mCurrentMissStreak; // 0xcc
+    std::vector<StreakInfo> mMissStreaks; // 0xd4
     std::vector<float> unkdc; // 0xdc
     std::vector<float> unke4; // 0xe4
     int mPlayersSaved; // 0xec
@@ -247,11 +246,11 @@ public:
     int mTimesSaved; // 0xf8
     std::vector<float> unkfc; // 0xfc
     std::vector<int> unk104; // 0x104
-    MultiplierInfo unk10c; // 0x10c
-    std::vector<MultiplierInfo> unk120; // 0x120
-    float mTotalOverdriveDuration; // 0x128
-    MultiplierInfo unk12c; // 0x12c
-    std::vector<MultiplierInfo> unk140; // 0x140
+    MultiplierInfo mCurrentOverdriveDeployment; // 0x10c
+    std::vector<MultiplierInfo> mBestOverdriveDeployments; // 0x120
+    float mTotalOverdriveDurationMs; // 0x128
+    MultiplierInfo mCurrentStreakMultiplier; // 0x12c
+    std::vector<MultiplierInfo> mBestStreakMultipliers; // 0x140
     float mTotalMultiplierDuration; // 0x148
     int m0x14c; // 0x14c
     int m0x150;
@@ -277,15 +276,21 @@ public:
     int mTrillCount; // 0x1a0
     int mTrillsHitCompletely; // 0x1a4
     int mTrillsHitPartially; // 0x1a8
-    int mSymbolGemInfo1; // 0x1ac
-    int mSymbolGemInfo2; // 0x1b0
-    int mSymbolGemInfo3; // 0x1b4
-    std::vector<int> unk1b8; // 0x1b8
+    int mCymbalGemInfo1; // 0x1ac
+    int mCymbalGemInfo2; // 0x1b0
+    int mCymbalGemInfo3; // 0x1b4
+    std::vector<SectionInfo> mSections; // 0x1b8
     float unk1c0;
     float unk1c4;
     float unk1c8;
 
     // bool mMultiplierActive; // 0x205
 };
+
+BinStream& operator<<(BinStream&, const Stats::StreakInfo&);
+BinStream& operator>>(BinStream&, Stats::StreakInfo&);
+BinStream& operator<<(BinStream&, const Stats::SectionInfo&);
+BinStream& operator>>(BinStream&, Stats::SectionInfo&);
+bool operator>(const Stats::MultiplierInfo&, const Stats::MultiplierInfo&);
 
 #endif // GAME_STATS_H
