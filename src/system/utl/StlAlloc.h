@@ -42,7 +42,7 @@ namespace STLPORT {
         ~StlNodeAlloc() {}
 
         template <class T2>
-        allocator<T> &operator=(const allocator<T2> &right) {}
+        StlNodeAlloc<T> &operator=(const StlNodeAlloc<T2> &right) {}
 
         template <class T2>
         bool operator==(const StlNodeAlloc<T2> &) const {
