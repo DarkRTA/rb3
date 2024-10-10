@@ -1389,15 +1389,20 @@ def generate_clangd_commands(
     cflag_prefixes = (
         ("-i ", "-I"),
         ("-d ", "-D"),
-        ("-lang", "-std"),
     )
 
     # MWCC cflags to replace wholly
-    cflag_replacements = {
-        "-Cpp_exceptions off": "-fno-cxx-exceptions",
-        "-Cpp_exceptions on": "-fcxx-exceptions",
-        "-RTTI off": "-fno-rtti",
-        "-RTTI on": "-frtti",
+    cflag_replacements: dict[str, tuple[str, ...]] = {
+        "-Cpp_exceptions off": ("-fno-cxx-exceptions",),
+        "-Cpp_exceptions on": ("-fcxx-exceptions",),
+
+        "-RTTI off": ("-fno-rtti",),
+        "-RTTI on": ("-frtti",),
+
+        "-lang c": ("--language=c", "--std=c89"),
+        "-lang c99": ("--language=c", "--std=c99"),
+        "-lang c++": ("--language=c++", "--std=c++99"),
+        "-lang cplus": ("--language=c++", "--std=c++99"),
     }
 
     clangd_config = []
@@ -1427,7 +1432,7 @@ def generate_clangd_commands(
                         break
                 else:
                     if flag in cflag_replacements:
-                        cflags.append(cflag_replacements[flag])
+                        cflags.extend(cflag_replacements[flag])
                     # else drop the flag
 
         if not isinstance(obj.options["cflags"], list):
