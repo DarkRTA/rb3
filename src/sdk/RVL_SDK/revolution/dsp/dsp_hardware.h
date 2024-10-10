@@ -10,7 +10,7 @@ extern "C" {
  * DSP Hardware Registers
  * https://www.gc-forever.com/yagcd/chap5.html#sec5.6
  */
-volatile u16 DSP_HW_REGS[] AT_ADDRESS(0xCC005000);
+volatile u16 DSP_HW_REGS[VARSIZE_ARRAY] AT_ADDRESS(0xCC005000);
 
 /**
  * Hardware register indexes

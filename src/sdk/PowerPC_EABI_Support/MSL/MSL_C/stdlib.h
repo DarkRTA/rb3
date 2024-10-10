@@ -1,12 +1,12 @@
 #ifndef _STDLIB_H
 #define _STDLIB_H
 
-#include "MSL_Common/alloc.h"
-#include "MSL_Common/arith.h"
-#include "MSL_Common/mbstring.h"
-#include "MSL_Common/rand.h"
-#include "MSL_Common/strtold.h"
-#include "MSL_Common/strtoul.h"
+#include "MSL_Common/alloc.h" /* IWYU pragma: export */
+#include "MSL_Common/arith.h" /* IWYU pragma: export */
+#include "MSL_Common/mbstring.h" /* IWYU pragma: export */
+#include "MSL_Common/rand.h" /* IWYU pragma: export */
+#include "MSL_Common/strtold.h" /* IWYU pragma: export */
+#include "MSL_Common/strtoul.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

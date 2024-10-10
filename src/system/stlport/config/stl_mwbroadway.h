@@ -3,11 +3,13 @@
 #define _STLP_NATIVE_INCLUDE_PATH              sdk/PowerPC_EABI_Support/MSL/MSL_C++
 #define _STLP_NATIVE_C_INCLUDE_PATH            sdk/PowerPC_EABI_Support/MSL/MSL_C
 
-#if __option(longlong)
+#include "compiler_macros.h"
+
+#if __option(longlong) || defined(DECOMP_IDE_FLAG)
 # define _STLP_LONG_LONG  long long
 #endif
 
-#if !__option(wchar_type)
+#if !__option(wchar_type) || defined(DECOMP_IDE_FLAG)
 # define _STLP_WCHAR_T_IS_USHORT
 #endif
 

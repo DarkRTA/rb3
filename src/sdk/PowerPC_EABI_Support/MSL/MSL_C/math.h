@@ -1,15 +1,15 @@
 #ifndef _MATH_H
 #define _MATH_H
 
-#include "MSL_Common/math_api.h"
-#include "MSL_Common/float.h"
-#include "MSL_Common_Embedded/Math/Double_precision/fdlibm.h"
+#include "MSL_Common/math_api.h" /* IWYU pragma: export */
+#include "MSL_Common/float.h" /* IWYU pragma: export */
+#include "MSL_Common_Embedded/Math/Double_precision/fdlibm.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if !defined(__MWERKS__) || defined(__VS_CODE__)
+#ifdef DECOMP_IDE_FLAG
 /* Get clangd to shut up about __fabs being undefined. */
 #define __fabs(x) fabs(x)
 #define __frsqrte(x) (x)

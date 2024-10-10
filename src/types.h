@@ -1,9 +1,17 @@
 #ifndef RB3_TYPES_H
 #define RB3_TYPES_H
-#include "macros.h"
+#include "macros.h" /* IWYU pragma: keep */
 #include <stddef.h>
 
 typedef int BOOL;
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 typedef signed char s8;
 typedef signed short s16;
@@ -31,20 +39,5 @@ typedef volatile f64 vf64;
 
 typedef unsigned char	byte_t;
 typedef unsigned int	register_t;
-
-#ifdef NULL
-#undef NULL
-#endif
-#define NULL 0
-
-#ifdef TRUE
-#undef TRUE
-#endif
-#define TRUE 1
-
-#ifdef FALSE
-#undef FALSE
-#endif
-#define FALSE 0
 
 #endif

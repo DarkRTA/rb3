@@ -36,7 +36,7 @@
 #endif
 
 #ifndef _STLP_INTERNAL_STACK_H
-#  include <stl/_stack.h>
+#  include <stl/_stack.h> /* IWYU pragma: export */
 #endif
 
 #if defined (_STLP_IMPORT_VENDOR_STD)

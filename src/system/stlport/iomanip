@@ -29,7 +29,7 @@
 #endif
 
 #include <stl/_ioserr.h>
-#include <stl/_istream.h>              // Includes <ostream> and <ios>
+#include <stl/_istream.h>  /* IWYU pragma: export */ // Includes <ostream> and <ios>
 
 _STLP_BEGIN_NAMESPACE
 

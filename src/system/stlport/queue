@@ -36,7 +36,7 @@
 #endif
 
 #ifndef _STLP_INTERNAL_QUEUE_H
-#  include <stl/_queue.h>
+#  include <stl/_queue.h> /* IWYU pragma: export */
 #endif
 
 #ifndef _STLP_FUNCTIONAL

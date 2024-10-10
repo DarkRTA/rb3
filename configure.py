@@ -147,6 +147,8 @@ config.reconfig_deps = [
     objects_path,
 ]
 
+config.make_clangd_config = True
+
 # Build flags
 flags = json.load(open(config_json_path, "r", encoding="utf-8"))
 progress_categories: dict[str, str] = flags["progress_categories"]

@@ -33,7 +33,7 @@
 # endif
 
 # ifndef _STLP_INTERNAL_FUNCTION_H
-#  include <stl/_function.h>
+#  include <stl/_function.h> /* IWYU pragma: export */
 # endif
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x27)

@@ -77,18 +77,14 @@
       "label": "all_source_host",
       "type": "shell",
       "command": "ninja all_source_host",
-      "problemMatcher": {
-        "base": "$gcc"
-      },
+      "problemMatcher": [],
       "group": "build"
     },
     {
       "label": "current file (host)",
       "type": "shell",
       "command": "ninja host/${relativeFile}",
-      "problemMatcher": {
-        "base": "$gcc"
-      },
+      "problemMatcher": [],
       "group": "build"
     },
     {

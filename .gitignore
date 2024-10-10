@@ -10,6 +10,10 @@ build/
 build.ninja
 objdiff.json
 
+# clangd
+.cache/
+compile_commands.json
+
 # Doxygen output
 doxygen/
 

@@ -28,7 +28,7 @@
 # endif
 
 # include <stl/_ioserr.h>
-# include <stl/_ostream.h>
+# include <stl/_ostream.h> /* IWYU pragma: export */
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x1050)
 #  include <stl/_epilog.h>

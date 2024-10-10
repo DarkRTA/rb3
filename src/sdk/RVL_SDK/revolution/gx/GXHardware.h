@@ -13,8 +13,9 @@
 
 #ifndef RVL_SDK_GX_HARDWARE_H
 #define RVL_SDK_GX_HARDWARE_H
-#include "revolution/gx/GXTypes.h"
 #include "types.h"
+#include "revolution/gx/GXTypes.h"
+#include "revolution/os/OSUtils.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -43,7 +44,7 @@ extern volatile union {
     unsigned int ui;
     void* p;
     float f;
-} WGPIPE : 0xCC008000;
+} WGPIPE AT_ADDRESS(0xCC008000);
 
 /**
  * FIFO commands

@@ -25,7 +25,7 @@
 #  pragma once
 #endif
 
-#include <stl/_unordered_set.h>
+#include <stl/_unordered_set.h> /* IWYU pragma: export */
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x4031)
 #  include <stl/_epilog.h>

@@ -36,7 +36,7 @@
 #endif
 
 #ifndef _STLP_INTERNAL_DEQUE_H
-#  include <stl/_deque.h>
+#  include <stl/_deque.h> /* IWYU pragma: export */
 #endif
 
 #if defined (_STLP_IMPORT_VENDOR_STD)

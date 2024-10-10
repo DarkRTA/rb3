@@ -1,7 +1,7 @@
 #ifndef _INTTYPES_H
 #define _INTTYPES_H
 
-#include "MSL_Common/imaxdiv_def.h"
+#include "MSL_Common/imaxdiv_def.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

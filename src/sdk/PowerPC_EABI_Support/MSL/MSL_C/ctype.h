@@ -1,8 +1,8 @@
 #ifndef _CTYPE_H
 #define _CTYPE_H
 
-#include "MSL_Common/locale_def.h"
-#include "MSL_Common/ctype_api.h"
+#include "MSL_Common/locale_def.h" /* IWYU pragma: export */
+#include "MSL_Common/ctype_api.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

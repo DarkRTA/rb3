@@ -29,18 +29,18 @@
 # endif
 
 # ifndef _STLP_INTERNAL_ALLOC_H
-#  include <stl/_alloc.h>
+#  include <stl/_alloc.h> /* IWYU pragma: export */
 # endif
 
 # ifndef _STLP_INTERNAL_TEMPBUF_H
-#  include <stl/_tempbuf.h>
+#  include <stl/_tempbuf.h> /* IWYU pragma: export */
 # endif
 
 # ifndef _STLP_INTERNAL_RAW_STORAGE_ITER_H
-#  include <stl/_raw_storage_iter.h>
+#  include <stl/_raw_storage_iter.h> /* IWYU pragma: export */
 # endif
 
-# include <stl/_auto_ptr.h>
+# include <stl/_auto_ptr.h> /* IWYU pragma: export */
 
 # if defined (_STLP_IMPORT_VENDOR_STD)
 

@@ -2,8 +2,9 @@
 #define _TIME_H
 
 #include "MSL_Common/restrict_def.h"
-#include "MSL_Common/size_def.h"
-#include "MSL_Common/time_def.h"
+
+#include "MSL_Common/size_def.h" /* IWYU pragma: export */
+#include "MSL_Common/time_def.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

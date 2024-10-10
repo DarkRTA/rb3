@@ -35,7 +35,7 @@
 #  pragma once
 #endif
 
-#include <stl/_set.h>
+#include <stl/_set.h> /* IWYU pragma: export */
 
 #if defined (_STLP_IMPORT_VENDOR_STD)
 #  include _STLP_NATIVE_HEADER(set)

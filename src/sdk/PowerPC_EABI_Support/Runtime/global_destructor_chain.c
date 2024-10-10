@@ -2,6 +2,7 @@
  */
 
 #include "MWCPlusLib.h"
+#include "compiler_macros.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,7 +30,7 @@ void __destroy_global_chain(void) {
 
 int __register_atexit(void (*func)(void)) {}
 
-__declspec(section ".dtors") static void *const __destroy_global_chain_reference = __destroy_global_chain;
+DECL_SECTION(".dtors") static void *const __destroy_global_chain_reference = __destroy_global_chain;
 
 #ifdef __cplusplus
 }

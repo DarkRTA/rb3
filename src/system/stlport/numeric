@@ -33,7 +33,7 @@
 #endif
 
 #ifndef _STLP_INTERNAL_NUMERIC_H
-#  include <stl/_numeric.h>
+#  include <stl/_numeric.h> /* IWYU pragma: export */
 #endif
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x49)

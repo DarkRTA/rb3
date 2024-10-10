@@ -66,7 +66,7 @@
 /*
  * ASM macros, to prevent IDEs from complaining
  */
-#if defined(__MWERKS__) && !defined(__VS_CODE__)
+#if defined(__MWERKS__) && !defined(DECOMP_IDE_FLAG)
 #define ASM_DECL asm
 #define ASM_BLOCK asm
 #else

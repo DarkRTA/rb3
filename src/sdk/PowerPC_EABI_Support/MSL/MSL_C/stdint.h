@@ -2,7 +2,7 @@
 #define _STDINT_H
 
 #include <limits.h>
-#include "MSL_Common/intmax_def.h"
+#include "MSL_Common/intmax_def.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

@@ -25,7 +25,7 @@
 #endif
 
 #ifndef _STLP_INTERNAL_SLIST_H
-#  include <stl/_slist.h>
+#  include <stl/_slist.h> /* IWYU pragma: export */
 #endif
 
 #if defined (_STLP_IMPORT_VENDOR_STD)

@@ -33,7 +33,7 @@
 // std, as called for by the draft C++ standard
   
 #  define _STLP_COMPLEX_NAMESPACE _STLP_STD
-#  include <stl/_complex.h>
+#  include <stl/_complex.h> /* IWYU pragma: export */
 
 # if (_STLP_OUTERMOST_HEADER_ID ==  0x10 )
 #  include <stl/_epilog.h>

@@ -1,13 +1,15 @@
 #ifndef MSL_COMMON_FLOAT_H
 #define MSL_COMMON_FLOAT_H
 
+#include "compiler_macros.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-__declspec(section ".data") extern int __float_nan;
-__declspec(section ".data") extern float __float_huge;
-__declspec(section ".data") extern double __double_huge;
+DECL_SECTION(".data") extern int __float_nan;
+DECL_SECTION(".data") extern float __float_huge;
+DECL_SECTION(".data") extern double __double_huge;
 
 #define INFINITY (__float_huge)
 #define NAN (*(float *)&__float_nan)

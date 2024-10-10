@@ -10,7 +10,7 @@ extern "C" {
 ///// USEFUL MACROS/DEFINES //////
 // Macro for making clear things are addresses.
 // if-def for future proofing and so VSCode doesn't yell.
-#if defined(__MWERKS__) && !defined(__VS_CODE__)
+#if defined(__MWERKS__) && !defined(DECOMP_IDE_FLAG)
 #define AT_ADDRESS(addr) : (addr)
 #else
 #define AT_ADDRESS(addr)

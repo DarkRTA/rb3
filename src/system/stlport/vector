@@ -37,7 +37,7 @@
 # endif
 
 #ifndef _STLP_INTERNAL_VECTOR_H
-# include <stl/_vector.h>
+# include <stl/_vector.h> /* IWYU pragma: export */
 #endif
 
 #if defined (_STLP_IMPORT_VENDOR_STD) && ! defined (_STLP_MINIMUM_IMPORT_STD)
