@@ -9,7 +9,7 @@
 
 #pragma push
 #pragma dont_inline on
-Performer::Performer(BandUser* user, Band* band) : mPollMs(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0), mScore(0), unk1fc(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
+Performer::Performer(BandUser* user, Band* band) : mPollMs(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0), mScore(0), mQuarantined(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
     unk204(0), mMultiplierActive(1), mNumRestarts(0) {
     Difficulty diff = !user ? TheGameConfig->GetAverageDifficulty() : user->GetDifficulty();
     mCrowd = new CrowdRating(user, diff);

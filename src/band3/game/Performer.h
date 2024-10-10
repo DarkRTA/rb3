@@ -73,6 +73,7 @@ public:
     void SetNoScorePercent(float);
     bool IsLocal() const { return !IsNet(); }
     Band* GetBand() const { return mBand; }
+    bool GetQuarantined() const { return mQuarantined; }
 
     float mPollMs; // 0x8
     CrowdRating* mCrowd; // 0xc
@@ -83,7 +84,7 @@ public:
     bool unk1e2;
     float mScore; // 0x1e4
     SongPos mSongPos; // 0x1e8
-    bool unk1fc;
+    bool mQuarantined; // 0x1fc
     bool unk1fd;
     bool unk1fe;
     bool unk1ff;
