@@ -1,31 +1,76 @@
 #ifndef GAME_STATS_H
 #define GAME_STATS_H
-
 #include <vector>
 #include "system/utl/BinStream.h"
 
+class SingerStats {
+public:
+    SingerStats(int);
+    void Finalize();
+    void SetPartPercentage(int, float);
+    void GetRankData(int) const;
+    void SetPitchDeviationInfo(float, float);
+    void GetPitchDeviationInfo(float&, float&) const;
+
+    std::vector<std::pair<int, float> > unk0; // 0x0
+    float mPitchDeviation1; // 0x08
+    float mPitchDeviation2; // 0x0c
+
+};
+
 class Stats {
+public:
     class StreakInfo {
+    public:
         StreakInfo();
 
+        bool operator>(const StreakInfo& s){
+            return mDuration > s.mDuration;
+        }
+
+        int mStart; // 0x0
+        int mDuration; // 0x4
     };
 
     class MultiplierInfo {
+    public:
         MultiplierInfo();
+
+        float mStartMs; // 0x0
+        float mDurationMs; // 0x4
+        int mStartingMultiplier; // 0x8
+        int mEndingMultiplier; // 0xc
+        float mPoints; // 0x10
     };
 
     class SectionInfo {
+    public:
         SectionInfo();
+
+        Symbol unk0; // 0x0
+        float unk4; // 0x4
+        float unk8; // 0x8
     };
 
-public:
     Stats();
-    Stats(const Stats&);
-    ~Stats();
+    Stats(const Stats& s);
+    
+
+    // Stats::Stats(const Stats& s) : mHitCount(s.mHitCount), mMissCount(s.mMissCount), m0x08(s.m0x08), m0x0c(s.m0x0c), mPersistentStreak(s.mPersistentStreak), mLongestPersistentStreak(s.mLongestPersistentStreak),
+    //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), m0x28(s.m0x28), m0x2c(s.m0x2c), m0x30(s.m0x30), m0x34(s.m0x34),
+    //     mFinalized(s.mFinalized), mSoloPercentage(s.mSoloPercentage), mSoloButtonedSoloPercentage(s.mSoloButtonedSoloPercentage), mPerfectSoloWithSoloButtons(s.mPerfectSoloWithSoloButtons), m0x41(s.m0x41),
+    //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
+    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), m0x80(s.m0x80),
+    //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
+    //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), m0xb4(s.m0xb4), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
+        
+    // }
+
+    ~Stats(){}
     void BuildHitStreak(int, float);
     int GetCurrentStreak() const;
     void SetCurrentStreak(int);
-    void GetLongestStreak() const;
+    int GetLongestStreak() const;
     void SetPersistentStreak(int);
     void EndHitStreak();
     void BuildMissStreak(int);
@@ -37,8 +82,8 @@ public:
     void SetSoloButtonedSoloPercentage(int);
     void SetVocalSingerAndPartCounts(int, int);
     void SetSingerPartPercentage(int, int, float);
-    void GetSingerRankedPercentage(int, int) const;
-    void GetSingerRankedPart(int, int) const;
+    float GetSingerRankedPercentage(int, int) const;
+    int GetSingerRankedPart(int, int) const;
     void SetSingerPitchDeviationInfo(int, float, float);
     void UpdateBestTambourineSection(int);
     void SaveForEndGame(BinStream&) const;
@@ -64,7 +109,7 @@ public:
     float GetTambourine() const;
     int GetHarmony() const;
     void SetNoScorePercent(float);
-    void FailedNoScore() const;
+    bool FailedNoScore() const;
     void AddFailurePoint(float);
     void AddToPlayersSaved(int, float);
     void AddToTimesSaved(float, float);
@@ -82,28 +127,26 @@ public:
     void IncrementTrillsHit(bool);
     void SetCymbalGemInfo(int, int, int);
     void SetSectionInfo(int, Symbol, float, float);
-    void GetSectionInfo(int) const;
+    const SectionInfo& GetSectionInfo(int) const;
     void GetAverageMsError() const;
 
-
-    // These are implemented in Performer
-    int GetDoubleHarmonyHit() const;
-    int GetDoubleHarmonyPhraseCount() const;
-    int GetTripleHarmonyHit() const;
-    int GetTripleHarmonyPhraseCount() const;
-    int GetHitCount() const;
-    float GetNotesHitFraction() const;
-    int GetNumberOfSingers() const;
-    void GetVocalPartPercentage(int) const;
-    bool GetFailedDeploy() const;
-    int GetPlayersSaved() const;
-    int GetFillHitCount() const;
-    void GetStrummedDown() const;
-    void GetStrummedUp() const;
-    int GetDeployCount() const;
-    int GetSoloPercentage() const;
-    bool GetPerfectSoloWithSoloButtons() const;
-    bool GetFinalized() const;
+    int GetDoubleHarmonyHit() const { return mDoubleHarmonyHit; }
+    int GetDoubleHarmonyPhraseCount() const { return mDoubleHarmonyPhraseCount; }
+    int GetTripleHarmonyHit() const { return mTripleHarmonyHit; }
+    int GetTripleHarmonyPhraseCount() const { return mTripleHarmonyPhraseCount; }
+    int GetHitCount() const { return mHitCount; }
+    float GetNotesHitFraction() const { return mNotesHitFraction; }
+    int GetNumberOfSingers() const { return mNumberOfSingers; }
+    float GetVocalPartPercentage(int i) const { return m0x70[i]; }    
+    bool GetFailedDeploy() const { return mFailedDeploy; }
+    int GetPlayersSaved() const { return mPlayersSaved; }
+    int GetFillHitCount() const { return mFillHitCount; }
+    bool GetStrummedDown() const { return m0x2c > 0; }
+    bool GetStrummedUp() const { return m0x28 > 0; }
+    int GetDeployCount() const { return mDeployCount; }
+    int GetSoloPercentage() const { return mSoloPercentage; }
+    bool GetPerfectSoloWithSoloButtons() const { return mPerfectSoloWithSoloButtons; }
+    bool GetFinalized() const { return mFinalized; }
 
     // These are implemented in PerformanceData
     void AccessPerformanceAwards();
@@ -152,13 +195,15 @@ public:
     void SetTripleHarmonyHit(int);
     void SetTripleHarmonyPhraseCount(int);
     void AccessSingerStats(int);
+    
+    template <class T> void SaveHighest(std::vector<T>&, const T&);
 
     int mHitCount;                             // 0x000
     int mMissCount;                            // 0x004
     int m0x08;                                 // 0x008
     int m0x0c;                                 // 0x00c
-    int m0x10;                                 // 0x010
-    int m0x14;                                 // 0x014
+    int mPersistentStreak;                     // 0x010
+    int mLongestPersistentStreak;              // 0x014
     float mNotesHitFraction;                   // 0x018
     bool mFailedDeploy;                        // 0x01c
     int mDeployCount;                          // 0x020
@@ -169,7 +214,7 @@ public:
     bool m0x34;                                // 0x034
     bool mFinalized;                           // 0x035
     int mSoloPercentage;                       // 0x038
-    int m0x3c;                                 // 0x03c
+    int mSoloButtonedSoloPercentage;           // 0x03c
     bool mPerfectSoloWithSoloButtons;          // 0x040
     bool m0x41;                                // 0x041
     int mNumberOfSingers;                      // 0x044
@@ -183,9 +228,9 @@ public:
     int m0x64;                                 // 0x064
     int m0x68;                                 // 0x068
     int m0x6c;                                 // 0x06c
-    std::vector<int> m0x70;                    // 0x070
-    std::vector<int> m0x78;                    // 0x078
-    std::vector<int> m0x80;                    // 0x080
+    std::vector<float> m0x70;                    // 0x070
+    std::vector<SingerStats> mSingerStats;     // 0x078
+    std::vector<Symbol> m0x80;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
     int mSolo; // 0x90
@@ -199,44 +244,25 @@ public:
     float mTambourine; // 0xac
     int mHarmony; // 0xb0
     bool m0xb4;
-    int m0xb8;
-    int m0xbc;
-    int mCurrentStreak; // 0xc0
-    int m0xc4;
-    int m0xc8;
-    int m0xcc;
-    int m0xd0;
-    int m0xd4;
-    int m0xd8;
-    int m0xdc;
-    int m0xe0;
-    int m0xe4;
-    int m0xe8;
+    float mNoScorePercent; // 0xb8
+    StreakInfo mCurrentHitStreak; // 0xbc
+    std::vector<StreakInfo> mHitStreaks; // 0xc4
+    StreakInfo mCurrentMissStreak; // 0xcc
+    std::vector<StreakInfo> mMissStreaks; // 0xd4
+    std::vector<float> unkdc; // 0xdc
+    std::vector<float> unke4; // 0xe4
     int mPlayersSaved; // 0xec
-    int m0xf0;
-    int m0xf4;
+    std::vector<float> unkf0; // 0xf0
     int mTimesSaved; // 0xf8
-    int m0xfc;
-    int m0x100;
-    int m0x104;
-    int m0x108;
-    int m0x10c;
-    int m0x110;
-    int m0x114;
-    int m0x118;
-    int m0x11c;
-    int m0x120;
-    int m0x124;
-    float mTotalOverdriveDuration; // 0x128
-    int m0x12c;
-    int m0x130;
-    int m0x134;
-    int m0x138;
-    int m0x13c;
-    int m0x140;
-    int m0x144;
+    std::vector<float> unkfc; // 0xfc
+    std::vector<int> unk104; // 0x104
+    MultiplierInfo mCurrentOverdriveDeployment; // 0x10c
+    std::vector<MultiplierInfo> mBestOverdriveDeployments; // 0x120
+    float mTotalOverdriveDurationMs; // 0x128
+    MultiplierInfo mCurrentStreakMultiplier; // 0x12c
+    std::vector<MultiplierInfo> mBestStreakMultipliers; // 0x140
     float mTotalMultiplierDuration; // 0x148
-    int m0x14c;
+    int m0x14c; // 0x14c
     int m0x150;
     int mEndGameScore; // 0x154
     float mEndGameCrowdLevel; // 0x158
@@ -260,28 +286,21 @@ public:
     int mTrillCount; // 0x1a0
     int mTrillsHitCompletely; // 0x1a4
     int mTrillsHitPartially; // 0x1a8
-    int mSymbolGemInfo1; // 0x1ac
-    int mSymbolGemInfo2; // 0x1b0
-    int mSymbolGemInfo3; // 0x1b4
-    std::vector<int> unk1b8; // 0x1b8
+    int mCymbalGemInfo1; // 0x1ac
+    int mCymbalGemInfo2; // 0x1b0
+    int mCymbalGemInfo3; // 0x1b4
+    std::vector<SectionInfo> mSections; // 0x1b8
     float unk1c0;
     float unk1c4;
-    // float unk1c8;
+    float unk1c8;
 
-    bool mMultiplierActive; // 0x205
+    // bool mMultiplierActive; // 0x205
 };
 
-class SingerStats {
-    SingerStats(int);
-    void Finalize();
-    void SetPartPercentage(int, float);
-    void GetRankData(int) const;
-    void SetPitchDeviationInfo(float, float);
-    void GetPitchDeviationInfo(float&, float&) const;
-
-    float mPitchDeviation1; // 0x08
-    float mPitchDeviation2; // 0x0c
-
-};
+BinStream& operator<<(BinStream&, const Stats::StreakInfo&);
+BinStream& operator>>(BinStream&, Stats::StreakInfo&);
+BinStream& operator<<(BinStream&, const Stats::SectionInfo&);
+BinStream& operator>>(BinStream&, Stats::SectionInfo&);
+bool operator>(const Stats::MultiplierInfo&, const Stats::MultiplierInfo&);
 
 #endif // GAME_STATS_H

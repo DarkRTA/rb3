@@ -93,7 +93,7 @@ void Stats::SetBestOverdriveDeploymentsCount(int bestOverdriveDeploymentsCount) 
 void Stats::AccessBestOverdriveDeployment(int) {}
 void Stats::SetBestStreakMultipliersCount(int bestStreakMultipliersCount) {}
 void Stats::AccessBestStreakMultiplier(int) {}
-void Stats::SetTotalOverdriveDuration(float totalOverdriveDuration) { mTotalOverdriveDuration = totalOverdriveDuration; }
+void Stats::SetTotalOverdriveDuration(float totalOverdriveDuration) { mTotalOverdriveDurationMs = totalOverdriveDuration; }
 void Stats::SetTotalMultiplierDuration(float totalMultiplierDuration) { mTotalMultiplierDuration = totalMultiplierDuration; }
 void Stats::SetRollsHitCompletely(int rollsHitCompletely) { mRollsHitCompletely = rollsHitCompletely; }
 void Stats::SetRollCount(int rollCount) { mRollCount = rollCount; }

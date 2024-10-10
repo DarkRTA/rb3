@@ -58,6 +58,8 @@ public:
     const char* MidiUpdate() const;
     bool IsDownload() const;
 
+    inline bool HasKeysDebug() const;
+
     static int sBandSaveVer;
 
     String mTitle; // 0x40

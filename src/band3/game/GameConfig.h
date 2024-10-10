@@ -2,6 +2,7 @@
 #include "obj/Object.h"
 #include "beatmatch/PlayerTrackConfig.h"
 #include "game/PracticeSectionProvider.h"
+#include "game/Defines.h"
 
 class GameConfig : public Hmx::Object {
 public:
@@ -9,6 +10,9 @@ public:
     virtual ~GameConfig();
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+
+    Difficulty GetAverageDifficulty() const;
+    bool CanEndGame() const;
 
     PlayerTrackConfigList* mPlayerTrackConfigList; // 0x1c
     PracticeSectionProvider* mPracticeSectionProvider; // 0x20

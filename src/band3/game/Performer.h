@@ -25,7 +25,7 @@ public:
     virtual float GetNumStarsFloat() const = 0;
     virtual float GetTotalStars() const;
     virtual bool PastFinalNote() const = 0;
-    virtual int GetExcitement() const;
+    virtual ExcitementLevel GetExcitement() const;
     virtual void Poll(float, const SongPos&);
     virtual void AddPoints(float, bool, bool);
     virtual void Hit();
@@ -41,28 +41,54 @@ public:
     virtual void ForceScore(int);
     virtual float GetNotesHitFraction(bool*) const = 0;
     virtual void SetQuarantined(bool);
-    virtual Symbol GetStreakType() const;
+    virtual Symbol GetStreakType() const { return "default"; }
     virtual float GetCrowdBoost() const;
     virtual void RemoteUpdateCrowd(float);
-    virtual int GetScoreForStars(int) const;
+    virtual int GetScoreForStars(int) const { return 0; }
     virtual void FinalizeStats();
-    virtual bool CanStreak() const;
+    virtual bool CanStreak() const { return false; }
 
-    float unk8;
-    CrowdRating* unkc;
-    Stats unk10;
-    Band* unk1dc;
+    int GetIndividualScore() const;
+    int GetPercentComplete() const;
+    int GetSongNumVocalParts() const;
+    int GetNotesPerStreak() const;
+    void WinGame(int);
+    bool LoseGame();
+    float GetRawValue() const;
+    float GetDisplayValue() const;
+    void UpdateScore(int);
+    void SendRemoteStats(BandUser*);
+    void SetRemoteStreak(int);
+    void RemoteFinishedSong(int);
+    void SetLost();
+    bool GetMultiplierActive() const;
+    float PollMs() const;
+    void SetCrowdMeterActive(bool);
+    bool GetCrowdMeterActive();
+    void SetStats(int, const Stats&);
+    void SendStreak();
+    void TrulyWinGame();
+    void ForceStars(int);
+    int GetNumRestarts() const;
+    void SetNoScorePercent(float);
+    bool IsLocal() const { return !IsNet(); }
+    Band* GetBand() const { return mBand; }
+
+    float mPollMs; // 0x8
+    CrowdRating* mCrowd; // 0xc
+    Stats mStats; // 0x10
+    Band* mBand; // 0x1dc
     bool unk1e0;
     bool unk1e1;
     bool unk1e2;
-    float unk1e4;
-    SongPos unk1e8;
+    float mScore; // 0x1e4
+    SongPos mSongPos; // 0x1e8
     bool unk1fc;
     bool unk1fd;
     bool unk1fe;
     bool unk1ff;
-    float unk200;
+    float mProgressMs; // 0x200
     bool unk204;
-    bool unk205;
-    int unk208;
+    bool mMultiplierActive; // 0x205
+    int mNumRestarts; // 0x208
 };

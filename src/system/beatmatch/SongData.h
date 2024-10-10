@@ -115,9 +115,12 @@ public:
     unsigned int GetGameCymbalLanes() const;
 
     GameGemList* GetGemList(int);
+    GameGemList* GetGemListByDiff(int, int);
     AudioTrackNum GetAudioTrackNum(int) const;
     void Load(SongInfo*, int, PlayerTrackConfigList*, std::vector<MidiReceiver*>&, bool, SongDataValidate);
     bool Poll();
+    void SendPhrases(int);
+    void ChangeTrackDiff(int, int);
 
     int unkc; // 0xc
     int unk10; // 0x10
@@ -157,7 +160,7 @@ public:
     int unke0; // 0xe0
     String unke4; // 0xe4
     std::map<int, float> mapf0; // 0xf0
-    std::vector<RangeSection> mRangeSections;
+    std::vector<RangeSection> mRangeSections; // 0x108
     std::vector<std::vector<RangeSection> > mKeyboardRangeSections;
     int unk118;
     int unk11c;

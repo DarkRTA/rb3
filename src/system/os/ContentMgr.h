@@ -47,7 +47,7 @@ public:
         virtual void ContentCancelled(){}
         virtual const char* ContentPattern(){ return ""; }
         virtual const char* ContentDir(){ return "."; }
-        virtual const char* ContentAltDirs(){ return 0; }
+        virtual std::vector<String>* ContentAltDirs(){ return 0; }
         virtual bool HasContentAltDirs(){ return false; }
     };
 
