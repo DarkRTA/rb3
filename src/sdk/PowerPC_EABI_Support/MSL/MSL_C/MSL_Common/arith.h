@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#if !defined(__MWERKS__) || defined(__VS_CODE__)
+#ifdef DECOMP_IDE_FLAG
 #define __abs(x) abs(x)
 #define __labs(x) labs(x)
 #endif

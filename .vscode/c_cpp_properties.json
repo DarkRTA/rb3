@@ -43,6 +43,7 @@
             "defines": [
                 "MILO_DEBUG",
                 "HX_WII",
+                "DECOMP_IDE_FLAG",
                 "__MWERKS__=0x4302",
                 "__PPCBROADWAY__",
                 "__PPCGECKO__",

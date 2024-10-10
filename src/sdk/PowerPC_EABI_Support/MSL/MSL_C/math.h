@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#if !defined(__MWERKS__) || defined(__VS_CODE__)
+#ifdef DECOMP_IDE_FLAG
 /* Get clangd to shut up about __fabs being undefined. */
 #define __fabs(x) fabs(x)
 #define __frsqrte(x) (x)
