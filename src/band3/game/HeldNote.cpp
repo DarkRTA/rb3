@@ -18,7 +18,7 @@ HeldNote::HeldNote(
 
     unk_0x20 = true;
 
-    int tailPoints = TheScoring.GetTailPoints(trackType, ticks);
+    int tailPoints = TheScoring->GetTailPoints(trackType, ticks);
 
     unk_0x10 = tailPoints * bits;
     unk_0x18 = tailPoints * slots;
@@ -98,7 +98,7 @@ double HeldNote::SetHoldTime(float time) {
 }
 
 float HeldNote::GetPointFraction() {
-    int headPoints = TheScoring.GetHeadPoints(mTrackType);
+    int headPoints = TheScoring->GetHeadPoints(mTrackType);
     int pointsPlus = headPoints + unk_0x18;
 
     if (pointsPlus) {
@@ -143,7 +143,7 @@ void HeldNote::ReleaseSlot(int slot) {
         unk_0x1c = (unsigned int)gem;
 
         int bits = gem->CountBitsInSlotType(mask);
-        int tailPoints = TheScoring.GetTailPoints(mTrackType, mGameGem->mDurationTicks);
+        int tailPoints = TheScoring->GetTailPoints(mTrackType, mGameGem->mDurationTicks);
         unk_0x10 = tailPoints * bits;
         unk_0x20 = false;
         unk_0xc *= bits / (bits + 1);
