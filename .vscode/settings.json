@@ -69,6 +69,8 @@
     "utility": "cpp",
     "valarray": "cpp",
     "vector": "cpp",
+
+    ".clangd": "yaml",
   },
   "C/C++ Include Guard.Macro Type": "Filepath",
   "C/C++ Include Guard.Prefix": "",
