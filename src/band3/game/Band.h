@@ -9,4 +9,8 @@ public:
     Band(bool, int, BandUser*, BeatMaster*);
     virtual ~Band();
     virtual DataNode Handle(DataArray*, bool);
+
+    int EnergyMultiplier() const;
+    int EnergyCrowdBoost() const;
+    void ForceStars(int);
 };

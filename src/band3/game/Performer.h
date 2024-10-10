@@ -25,7 +25,7 @@ public:
     virtual float GetNumStarsFloat() const = 0;
     virtual float GetTotalStars() const;
     virtual bool PastFinalNote() const = 0;
-    virtual int GetExcitement() const;
+    virtual ExcitementLevel GetExcitement() const;
     virtual void Poll(float, const SongPos&);
     virtual void AddPoints(float, bool, bool);
     virtual void Hit();
@@ -41,10 +41,10 @@ public:
     virtual void ForceScore(int);
     virtual float GetNotesHitFraction(bool*) const = 0;
     virtual void SetQuarantined(bool);
-    virtual Symbol GetStreakType() const;
+    virtual Symbol GetStreakType() const { return "default"; }
     virtual float GetCrowdBoost() const;
     virtual void RemoteUpdateCrowd(float);
-    virtual int GetScoreForStars(int) const;
+    virtual int GetScoreForStars(int) const { return 0; }
     virtual void FinalizeStats();
     virtual bool CanStreak() const { return false; }
 
@@ -53,7 +53,7 @@ public:
     int GetSongNumVocalParts() const;
     int GetNotesPerStreak() const;
     void WinGame(int);
-    void LoseGame();
+    bool LoseGame();
     float GetRawValue() const;
     float GetDisplayValue() const;
     void UpdateScore(int);
@@ -62,9 +62,19 @@ public:
     void RemoteFinishedSong(int);
     void SetLost();
     bool GetMultiplierActive() const;
+    float PollMs() const;
+    void SetCrowdMeterActive(bool);
+    bool GetCrowdMeterActive();
+    void SetStats(int, const Stats&);
+    void SendStreak();
+    void TrulyWinGame();
+    void ForceStars(int);
+    int GetNumRestarts() const;
+    void SetNoScorePercent(float);
+    bool IsLocal() const { return !IsNet(); }
     Band* GetBand() const { return mBand; }
 
-    float unk8;
+    float mPollMs; // 0x8
     CrowdRating* mCrowd; // 0xc
     Stats mStats; // 0x10
     Band* mBand; // 0x1dc

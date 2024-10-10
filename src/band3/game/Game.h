@@ -10,6 +10,7 @@ class Game : public Hmx::Object {
     virtual ~Game();
 
     void SetPaused(bool, bool, bool);
+    void SetGameOver(bool);
 
     u8 pad[0x4C];
     bool mIsPaused; // 0x68 iunno

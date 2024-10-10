@@ -3,11 +3,13 @@
 #include "game/GameConfig.h"
 #include "game/BandUser.h"
 #include "game/Band.h"
+#include "game/Game.h"
 #include "utl/Symbols.h"
+#include "utl/Messages.h"
 
 #pragma push
 #pragma dont_inline on
-Performer::Performer(BandUser* user, Band* band) : unk8(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0), mScore(0), unk1fc(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
+Performer::Performer(BandUser* user, Band* band) : mPollMs(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0), mScore(0), unk1fc(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
     unk204(0), mMultiplierActive(1), mNumRestarts(0) {
     Difficulty diff = !user ? TheGameConfig->GetAverageDifficulty() : user->GetDifficulty();
     mCrowd = new CrowdRating(user, diff);
@@ -27,6 +29,169 @@ int Performer::GetIndividualScore() const {
     int score = GetScore();
     if(score > 0) return score - (int)mStats.GetBandContribution();
     else return 0;
+}
+
+int Performer::GetMultiplier(bool b, int& i1, int& i2, int& i3) const {
+    i1 = 1;
+    i2 = 1;
+    i3 = 1;
+    if(mMultiplierActive){
+        i2 = mBand->EnergyMultiplier();
+        return i2;
+    }
+    else return 1;
+}
+
+float Performer::GetCrowdRating() const {
+    return mCrowd->GetValue();
+}
+
+float Performer::GetCrowdWarningLevel() const {
+    return mCrowd->GetValue();
+}
+
+float Performer::GetRawCrowdRating() const {
+    return mCrowd->GetRawValue();
+}
+
+bool Performer::IsInCrowdWarning() const {
+    return mCrowd->IsInWarning();
+}
+
+float Performer::PollMs() const { return mPollMs; }
+
+float Performer::GetCrowdBoost() const {
+    return mBand->EnergyCrowdBoost();
+}
+
+#pragma push
+#pragma dont_inline on
+void Performer::Restart(bool b){
+    mPollMs = 0;
+    mProgressMs = 0;
+    mScore = 0;
+    unk204 = false;
+    if(!b) mStats = Stats();
+    unk1e0 = 0;
+    unk1e1 = 0;
+    unk1e2 = 0;
+    mCrowd->Reset();
+    mNumRestarts++;
+}
+#pragma pop
+
+ExcitementLevel Performer::GetExcitement() const {
+    return mCrowd->GetExcitement();
+}
+
+void Performer::SetMultiplierActive(bool b){ mMultiplierActive = b; }
+bool Performer::GetMultiplierActive() const { return mMultiplierActive; }
+void Performer::SetCrowdMeterActive(bool b){ mCrowd->SetActive(b); }
+bool Performer::GetCrowdMeterActive(){ return mCrowd->IsActive(); }
+
+void Performer::UpdateScore(int i){
+    if(IsNet()) mScore = i;
+}
+
+void Performer::ForceScore(int i){ mScore = i; }
+
+void Performer::SetStats(int i, const Stats& stats){
+    mStats = stats;
+    mStats.SetFinalized(true);
+    mScore = i;
+}
+
+void Performer::BuildHitStreak(int i, float f){
+    if(IsLocal()){
+        mStats.BuildHitStreak(i, f);
+        SendStreak();
+    }
+}
+
+void Performer::EndHitStreak(){
+    if(IsLocal()){
+        mStats.EndHitStreak();
+        SendStreak();
+    }
+}
+
+void Performer::BuildMissStreak(int i){
+    if(IsLocal()){
+        mStats.BuildMissStreak(i);
+    }
+}
+
+void Performer::EndMissStreak(){
+    if(IsLocal()){
+        mStats.EndMissStreak();
+    }
+}
+
+void Performer::SendStreak(){
+    MILO_ASSERT(IsLocal(), 0x170);
+    if(unk1fe){
+        Handle(send_streak_msg, false);
+    }
+}
+
+void Performer::SetRemoteStreak(int i){
+    if(IsNet()){
+        mStats.SetCurrentStreak(i);
+    }
+}
+
+void Performer::TrulyWinGame(){
+    if(unk204 || !TheGameConfig->CanEndGame()) return;
+    else {
+        TheGame->SetGameOver(true);
+        unk204 = true;
+    }
+}
+
+void Performer::WinGame(int i){
+    if(i > 0){
+        mBand->ForceStars(i);
+        TrulyWinGame();
+    }
+    if(IsLocal()){
+        unk1e2 = true;
+        Handle(send_finished_song_msg, false);
+    }
+}
+
+void Performer::ForceStars(int i){
+    mScore = GetScoreForStars(i);
+}
+
+bool Performer::LoseGame(){
+    if(unk204 || !TheGameConfig->CanEndGame() || !TheGame->mIsPaused) return false; // TODO: fix the variable pulled from TheGame
+    else {
+        mCrowd->SetActive(false);
+        TheGame->SetGameOver(false);
+        SetLost();
+        return true;
+    }
+}
+
+void Performer::SetLost(){
+    unk1e0 = true;
+    unk204 = true;
+}
+
+void Performer::RemoteUpdateCrowd(float f){
+    mCrowd->SetDisplayValue(f);
+}
+
+void Performer::RemoteFinishedSong(int i){
+    UpdateScore(i);
+    unk1e2 = true;
+}
+
+int Performer::GetNumRestarts() const { return mNumRestarts; }
+
+void Performer::SetNoScorePercent(float f){
+    mScore = 0;
+    mStats.SetNoScorePercent(f);
 }
 
 #pragma push

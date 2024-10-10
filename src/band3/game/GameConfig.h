@@ -12,6 +12,7 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
 
     Difficulty GetAverageDifficulty() const;
+    bool CanEndGame() const;
 
     PlayerTrackConfigList* mPlayerTrackConfigList; // 0x1c
     PracticeSectionProvider* mPracticeSectionProvider; // 0x20
