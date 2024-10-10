@@ -33,29 +33,29 @@
 
 // Individual facets
 #ifndef _STLP_INTERNAL_CTYPE_H
-# include <stl/_ctype.h>
+# include <stl/_ctype.h> /* IWYU pragma: export */
 #endif
 
 #ifndef _STLP_INTERNAL_CODECVT_H
-# include <stl/_codecvt.h>
+# include <stl/_codecvt.h> /* IWYU pragma: export */
 #endif
 
 #ifndef _STLP_INTERNAL_COLLATE_H
-# include <stl/_collate.h>
+# include <stl/_collate.h> /* IWYU pragma: export */
 #endif
 
 #ifndef _STLP_INTERNAL_NUM_PUT_H
-# include <stl/_num_put.h>
+# include <stl/_num_put.h> /* IWYU pragma: export */
 #endif
 
 #ifndef _STLP_INTERNAL_NUM_GET_H
-# include <stl/_num_get.h>
+# include <stl/_num_get.h> /* IWYU pragma: export */
 #endif
 
 // those never included separately anyway
-#include <stl/_monetary.h>
-#include <stl/_time_facets.h>
-#include <stl/_messages_facets.h>
+#include <stl/_monetary.h> /* IWYU pragma: export */
+#include <stl/_time_facets.h> /* IWYU pragma: export */
+#include <stl/_messages_facets.h> /* IWYU pragma: export */
 
 // some stuff for streambuf iterators ended up defined there
 // Strictly speaking, _istream.h portion is only required for <iterator>, but it may break too many 

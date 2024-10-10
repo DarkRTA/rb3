@@ -1,6 +1,6 @@
 #ifndef RB3_TYPES_H
 #define RB3_TYPES_H
-#include "macros.h"
+#include "macros.h" /* IWYU pragma: keep */
 #include <stddef.h>
 
 typedef int BOOL;

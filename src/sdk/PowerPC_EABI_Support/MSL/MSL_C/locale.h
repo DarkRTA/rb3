@@ -1,7 +1,7 @@
 #ifndef _LOCALE_H
 #define _LOCALE_H
 
-#include "MSL_Common/locale_def.h"
+#include "MSL_Common/locale_def.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

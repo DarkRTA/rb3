@@ -1,6 +1,6 @@
 #ifndef _STDBOOL_H_
 #define _STDBOOL_H_
 
-#include "MSL_Common/bool_def.h"
+#include "MSL_Common/bool_def.h" /* IWYU pragma: export */
 
 #endif

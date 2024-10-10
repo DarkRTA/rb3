@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include "MSL_Common/assert_api.h"
+#include "MSL_Common/assert_api.h" /* IWYU pragma: export */
 
 #ifdef NDEBUG
 #define assert(condition) ((void)0)

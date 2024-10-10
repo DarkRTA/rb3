@@ -34,9 +34,9 @@
 #    include <cwchar>
 #  endif /* _STLP_HAS_WCHAR_T && !_STLP_CWCHAR */			
 
-#  include <stl/_iosfwd.h>
+#  include <stl/_iosfwd.h> /* IWYU pragma: export */
 #else
-#  include <stl/char_traits.h> 
+#  include <stl/char_traits.h>  /* IWYU pragma: export */
 #endif /* _STLP_USE_NO_IOSTREAMS */
 
 #if (_STLP_OUTERMOST_HEADER_ID == 0x1034)

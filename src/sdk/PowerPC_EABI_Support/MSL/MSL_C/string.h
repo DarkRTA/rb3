@@ -1,10 +1,11 @@
 #ifndef _STRING_H
 #define _STRING_H
 
-#include "PowerPC_EABI_Support/Runtime/__mem.h"
 #include "MSL_Common/restrict_def.h"
-#include "MSL_Common/string_api.h"
-#include "MSL_Common/extras.h"
+
+#include "PowerPC_EABI_Support/Runtime/__mem.h" /* IWYU pragma: export */
+#include "MSL_Common/string_api.h" /* IWYU pragma: export */
+#include "MSL_Common/extras.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

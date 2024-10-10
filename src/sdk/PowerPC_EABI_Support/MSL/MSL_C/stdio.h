@@ -1,11 +1,11 @@
 #ifndef _STDIO_H
 #define _STDIO_H
 
-#include "MSL_Common/stdio_api.h"
-#include "MSL_Common/FILE_POS.h"
-#include "MSL_Common/file_io.h"
-#include "MSL_Common/printf.h"
-#include "MSL_Common/scanf.h"
+#include "MSL_Common/stdio_api.h" /* IWYU pragma: export */
+#include "MSL_Common/FILE_POS.h" /* IWYU pragma: export */
+#include "MSL_Common/file_io.h" /* IWYU pragma: export */
+#include "MSL_Common/printf.h" /* IWYU pragma: export */
+#include "MSL_Common/scanf.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 #ifndef _SETJMP_H
 #define _SETJMP_H
 
-#include "PowerPC_EABI_Support/Runtime/Gecko_setjmp.h"
+#include "PowerPC_EABI_Support/Runtime/Gecko_setjmp.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

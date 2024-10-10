@@ -28,7 +28,7 @@
 #  pragma once
 # endif
 
-#include <stl/_hash_set.h>
+#include <stl/_hash_set.h> /* IWYU pragma: export */
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x4029)
 #  include <stl/_epilog.h>

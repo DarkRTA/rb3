@@ -29,7 +29,7 @@
 # endif
 
 # include <stl/_ioserr.h>
-# include <stl/_ios.h>
+# include <stl/_ios.h> /* IWYU pragma: export */
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x1032)
 #  include <stl/_epilog.h>

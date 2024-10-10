@@ -59,7 +59,7 @@ using _STLP_VENDOR_CSTD::malloc;
 # endif
 
 #ifndef _STLP_NEW_H_HEADER
-# include <stl/_new.h>
+# include <stl/_new.h> /* IWYU pragma: export */
 #endif
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x447)

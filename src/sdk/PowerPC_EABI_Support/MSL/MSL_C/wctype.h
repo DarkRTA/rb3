@@ -1,9 +1,9 @@
 #ifndef _WCTYPE_H
 #define _WCTYPE_H
 
-#include "MSL_Common/locale_def.h"
-#include "MSL_Common/wctype_api.h"
-#include "MSL_Common/wint_def.h"
+#include "MSL_Common/locale_def.h" /* IWYU pragma: export */
+#include "MSL_Common/wctype_api.h" /* IWYU pragma: export */
+#include "MSL_Common/wint_def.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 extern "C" {

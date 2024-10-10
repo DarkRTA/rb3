@@ -40,11 +40,11 @@
 #endif /* IMPORT */
 
 # ifndef _STLP_INTERNAL_ITERATOR_H
-#  include <stl/_iterator.h>
+#  include <stl/_iterator.h> /* IWYU pragma: export */
 # endif
 
 # ifndef _STLP_INTERNAL_STREAM_ITERATOR_H
-#  include <stl/_stream_iterator.h>
+#  include <stl/_stream_iterator.h> /* IWYU pragma: export */
 # endif
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x38)

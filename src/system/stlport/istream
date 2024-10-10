@@ -32,7 +32,7 @@
 // circular dependancies
 // #  include <iterator>
 # include <stl/_ioserr.h>
-# include <stl/_istream.h>
+# include <stl/_istream.h> /* IWYU pragma: export */
 
 # if (_STLP_OUTERMOST_HEADER_ID == 0x1036)
 #  include <stl/_epilog.h>
