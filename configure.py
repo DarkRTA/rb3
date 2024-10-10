@@ -243,16 +243,16 @@ objects: dict[str, dict] = json.load(open(objects_path, "r", encoding="utf-8"))
 for (lib, lib_config) in objects.items():
     # config_cflags: str | list[str]
     config_cflags: list[str] = lib_config.pop("cflags")
-    lib_cflags = get_cflags(config_cflags) if type(config_cflags) is str else config_cflags
+    lib_cflags = get_cflags(config_cflags) if isinstance(config_cflags, str) else config_cflags
 
     lib_objects: list[Object] = []
     # config_objects: dict[str, str | dict]
-    config_objects: dict[str, dict] = lib_config.pop("objects")
+    config_objects: dict[str, Union[str, dict[str, Union[str, Any]]]] = lib_config.pop("objects")
     if len(config_objects) < 1:
         continue
 
     for (path, obj_config) in config_objects.items():
-        if type(obj_config) is str:
+        if isinstance(obj_config, str):
             completed = get_object_completed(obj_config)
             lib_objects.append(Object(completed, path))
         else:
@@ -260,11 +260,10 @@ for (lib, lib_config) in objects.items():
 
             if "cflags" in obj_config:
                 object_cflags = obj_config["cflags"]
-                if type(object_cflags) is str:
+                if isinstance(object_cflags, str):
                     obj_config["cflags"] = get_cflags(object_cflags)
 
             lib_objects.append(Object(completed, path, **obj_config))
-        pass
 
     libs.append({
         "lib": lib,
