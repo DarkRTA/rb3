@@ -1,6 +1,8 @@
 #ifndef _ERRNO_H
 #define _ERRNO_H
 
+#include "compiler_macros.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -53,7 +55,7 @@ extern "C" {
 #define EUNKNOWN      99
 /* clang-format on */
 
-__declspec(section ".sdata") extern int errno;
+DECL_SECTION(".sdata") extern int errno;
 
 #ifdef __cplusplus
 }
