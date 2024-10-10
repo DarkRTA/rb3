@@ -1,6 +1,11 @@
 #include "meta_band/MetaPerformer.h"
 #include "game/Performer.h"
 #include "meta_band/Utl.h"
+#include "game/GameMode.h"
+#include "meta_band/SessionMgr.h"
+#include "network/net/NetSession.h"
+#include "meta_band/ProfileMgr.h"
+#include "utl/Symbols.h"
 
 MetaPerformer* MetaPerformer::sMetaPerformer;
 
@@ -86,4 +91,16 @@ bool QuickplayPerformerImpl::HasSyncPermission() const { return IsLeaderLocal();
 void MetaPerformer::Init(){
     MILO_ASSERT(!sMetaPerformer, 0xE9);
     sMetaPerformer = new MetaPerformer(*TheSongMgr, "meta_performer");
+}
+
+MetaPerformer::MetaPerformer(const BandSongMgr& mgr, const char* cc) : Synchronizable(cc), unk38(0), unk40(0), unk44(gNullStr), unk48(), unk4c(gNullStr), unk5c(0), unk5d(0),
+    unk80(mgr), unk2bc(0), unk2bd(0), unk2c0(0), unk2c4(0), unk2c5(0), unk334(0), unk338(0), unk33c(-1), unk340(-1), unk35c(0), unk35d(0), unk360(2), unk364(gNullStr) {
+    SetName(cc, ObjectDir::sMainDir);
+    unk3c = new QuickplayPerformerImpl();
+    if(TheGameMode) TheGameMode->AddSink(this, mode_changed);
+    if(TheSessionMgr) TheSessionMgr->AddSink(this, new_remote_user);
+    if(unk364 == gNullStr) unk364 = no_venue_override;
+    TheNetSession->AddSink(this);
+    TheProfileMgr.AddSink(this, Symbol("primary_profile_changed_msg"));
+    unk64 = false;
 }

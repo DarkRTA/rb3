@@ -5,6 +5,8 @@
 #include "game/Defines.h"
 #include "game/Performer.h"
 #include "meta_band/BandProfile.h"
+#include "meta_band/Instarank.h"
+#include "net_band/DataResults.h"
 
 class PerformerStatsInfo {
 public:
@@ -44,6 +46,16 @@ public:
 
     PerformerStatsInfo mBandStats; // 0x4
     std::vector<std::pair<BandProfile*, PerformerStatsInfo> > mSoloStats; // 0x44
+};
+
+class PendingDataInfo {
+public:
+    PendingDataInfo(){}
+
+    DataResultList ir_result; // 0x0
+    bool friendMode; // 0x18
+    BandStatsInfo stats; // 0x1c
+    Symbol song; // 0x68
 };
 
 class MetaPerformerImpl : public Hmx::Object {
@@ -86,4 +98,49 @@ public:
     static void Init();
     static MetaPerformer* Current();
     static MetaPerformer* sMetaPerformer;
+
+    bool unk38;
+    QuickplayPerformerImpl* unk3c;
+    bool unk40;
+    Symbol unk44;
+    Symbol unk48;
+    Symbol unk4c;
+    String unk50;
+    bool unk5c;
+    bool unk5d;
+    int unk60;
+    bool unk64;
+    int unk68;
+    int unk6c;
+    std::vector<int> unk70;
+    std::vector<int> unk78;
+    const BandSongMgr& unk80;
+    Instarank unk84;
+    Instarank unkdc;
+    Instarank unk134[4];
+    int unk294;
+    int unk298;
+    int unk29c;
+    int unk2a0;
+    int unk2a4;
+    int unk2a8;
+    int unk2ac;
+    int unk2b0;
+    int unk2b4;
+    int unk2b8;
+    bool unk2bc;
+    bool unk2bd;
+    int unk2c0;
+    bool unk2c4;
+    bool unk2c5;
+    PendingDataInfo unk2c8;
+    bool unk334;
+    int unk338;
+    int unk33c;
+    int unk340;
+    DataResultList unk344;
+    bool unk35c;
+    bool unk35d;
+    int unk360;
+    Symbol unk364;
 };

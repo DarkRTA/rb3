@@ -1,9 +1,9 @@
 #ifndef METABAND_PROFILEMGR_H
 #define METABAND_PROFILEMGR_H
-#include "obj/Object.h"
+#include "obj/MsgSource.h"
 #include "meta/Profile.h"
 
-class ProfileMgr : public virtual Hmx::Object {
+class ProfileMgr : public MsgSource {
 public:
     int GetSliderStepCount() const;
     Profile* GetProfileForUser(const LocalUser*);
