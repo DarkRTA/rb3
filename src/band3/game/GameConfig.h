@@ -4,6 +4,8 @@
 #include "game/PracticeSectionProvider.h"
 #include "game/Defines.h"
 
+class BandUser;
+
 class GameConfig : public Hmx::Object {
 public:
     GameConfig();
@@ -13,6 +15,8 @@ public:
 
     Difficulty GetAverageDifficulty() const;
     bool CanEndGame() const;
+    int GetTrackNum(const UserGuid&) const;
+    Symbol GetController(BandUser*) const;
 
     PlayerTrackConfigList* mPlayerTrackConfigList; // 0x1c
     PracticeSectionProvider* mPracticeSectionProvider; // 0x20
