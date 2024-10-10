@@ -1,6 +1,5 @@
 #ifndef GAME_MULTIPLAYERANALYZER_H
 #define GAME_MULTIPLAYERANALYZER_H
-
 #include "beatmatch/SongData.h"
 #include "system/utl/HxGuid.h"
 

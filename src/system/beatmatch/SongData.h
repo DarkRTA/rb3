@@ -118,6 +118,7 @@ public:
     AudioTrackNum GetAudioTrackNum(int) const;
     void Load(SongInfo*, int, PlayerTrackConfigList*, std::vector<MidiReceiver*>&, bool, SongDataValidate);
     bool Poll();
+    void SendPhrases(int);
 
     int unkc; // 0xc
     int unk10; // 0x10

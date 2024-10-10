@@ -1,32 +1,56 @@
 #ifndef GAME_SONGDB_H
 #define GAME_SONGDB_H
-
 #include "system/beatmatch/SongData.h"
 #include "system/beatmatch/SongParserSink.h"
+#include "game/MultiplayerAnalyzer.h"
+#include "midi/DataEvent.h"
 #include <vector>
 
 class SongDB : public SongParserSink {
 public:
+    class TrackData {
+    public:
+        TrackType unk0;
+        std::vector<int> unk4;
+        std::vector<int> unkc;
+        std::vector<int> unk14;
+        std::vector<int> unk1c;
+        std::vector<int> unk24;
+        std::vector<int> unk2c;
+        std::vector<int> unk34;
+        std::vector<int> unk3c;
+    };
+
     SongDB();
     virtual ~SongDB();
-
     virtual void SetNumTracks(int);
     virtual void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
     virtual void AddMultiGem(int, const GameGem&);
     virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase&);
 
     float GetSongDurationMs();
+    void ParseEvents(DataEventList*);
+    void SpewAllVocalNotes() const;
+    void SpewTrackSizes() const;
+    void SetupPhrases();
+    void DisableCodaGems();
+    void RunMultiplayerAnalyzer();
+    void SetupPracticeSections();
+    void PostLoad(DataEventList*);
+    void RebuildPhrases(int);
+    void ClearTrackPhrases(int);
+    void RebuildData();
 
     SongData* GetSongData() { return mSongData; }
 
-    SongData* mSongData;
-    std::vector<int> mTrackData; // todo: type
-    float mSongDurationMs;
-    int mCodaStartTick;
-    int mMultiplayerAnalyzer; // MultiplayerAnalyzer*
-    std::vector<int> mPracticeSections; // todo: type
-    int mUnk1;
-    int mUnk2;
+    SongData* mSongData; // 0x4
+    std::vector<TrackData> mTrackData; // 0x8
+    float mSongDurationMs; // 0x10
+    int mCodaStartTick; // 0x14
+    MultiplayerAnalyzer* mMultiplayerAnalyzer; // 0x18
+    std::vector<int> mPracticeSections; // 0x1c
+    int unk24; // 0x24
+    int unk28; // 0x28
 };
 
 extern SongDB* TheSongDB;
