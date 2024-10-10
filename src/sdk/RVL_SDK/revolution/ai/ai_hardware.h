@@ -10,7 +10,7 @@ extern "C" {
  * AI Hardware Registers
  * https://www.gc-forever.com/yagcd/chap5.html#sec5.10
  */
-volatile u32 AI_HW_REGS[] AT_ADDRESS(0xCD006C00);
+volatile u32 AI_HW_REGS[VARSIZE_ARRAY] AT_ADDRESS(0xCD006C00);
 
 /**
  * Hardware register indexes

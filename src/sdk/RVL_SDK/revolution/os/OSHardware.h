@@ -149,7 +149,7 @@ OS_DEF_GLOBAL_ARR(u8, SC_PRDINFO, 0x100,                 0x80003800);
 /**
  * PI hardware globals
  */
-volatile u32 PI_HW_REGS[] AT_ADDRESS(0xCC003000);
+volatile u32 PI_HW_REGS[VARSIZE_ARRAY] AT_ADDRESS(0xCC003000);
 typedef enum {
     PI_INTSR,    //!< 0xCC003000
     PI_INTMR,    //!< 0xCC003004
@@ -203,7 +203,7 @@ typedef enum {
  * MI Hardware Registers
  * https://www.gc-forever.com/yagcd/chap5.html#sec5.5
  */
-volatile u16 MI_HW_REGS[] AT_ADDRESS(0xCC004000);
+volatile u16 MI_HW_REGS[VARSIZE_ARRAY] AT_ADDRESS(0xCC004000);
 typedef enum {
     MI_PAGE_MEM0_H, //!< 0xCC004000
     MI_PAGE_MEM0_L, //!< 0xCC004002

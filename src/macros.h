@@ -25,6 +25,7 @@
 #define ROTATE_LEFT(x, i)  (((x) << (i)) | ((x) >> ((sizeof((x)) * 8) - (i))))
 #define ROTATE_RIGHT(x, i) (((x) >> (i)) | ((x) << ((sizeof((x)) * 8) - (i))))
 
+#define VARSIZE_ARRAY 1
 #define ARRAY_LENGTH(x) (sizeof((x)) / sizeof((x)[0]))
 
 #define	null	0

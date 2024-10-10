@@ -3,6 +3,7 @@
 #include "types.h"
 #include "revolution/OS.h"
 #include "revolution/ESP.h"
+#include "revolution/dvd/dvdidutils.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -28,9 +29,8 @@ extern "C" {
 #define DVD_RESULT_CANCELED -3
 
 // Forward declarations
-typedef struct DVDDiskID;
-typedef struct DVDCommandBlock;
-typedef struct DVDFileInfo;
+typedef struct DVDCommandBlock DVDCommandBlock;
+typedef struct DVDFileInfo DVDFileInfo;
 
 typedef struct DVDDriveInfo {
     u16 revision;    // at 0x0
@@ -42,7 +42,7 @@ typedef struct DVDDriveInfo {
 
 typedef void (*DVDCBCallback)(s32 result, struct DVDCommandBlock* block);
 
-typedef struct DVDCommandBlock {
+struct DVDCommandBlock {
     struct DVDCommandBlock* next;
     struct DVDCommandBlock* prev;
     u32 command;
@@ -55,7 +55,7 @@ typedef struct DVDCommandBlock {
     struct DVDDiskID* id;
     DVDCBCallback callback;
     void* userData;
-} DVDCommandBlock;
+};
 
 
 typedef void (*DVDOptionalCommandChecker)(DVDCommandBlock* block, void (*cb)(u32));
@@ -77,7 +77,7 @@ typedef struct DVDGamePartition {
     u32 tmdSize;
     ESTitleMeta* tmd;
     u32 certBlobSize;
-    void* certBlob;      
+    void* certBlob;
     u8* h3Hashes;
     u8* encryptedArea;
 } DVDGamePartition;
