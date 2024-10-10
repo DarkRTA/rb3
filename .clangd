@@ -3,11 +3,6 @@ CompileFlags:
     # Remove all built-in definitions
     "-undef",
 
-    # Compiler defines
-    "-D__MWERKS__=0x4302",
-    "-D__PPCBROADWAY__",
-    "-D__PPCGECKO__",
-
     # Indicator for things which shouldn't be processed in IDEs
     "-DDECOMP_IDE_FLAG",
 

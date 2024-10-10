@@ -17,7 +17,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union, cast
+from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union, cast
 
 from . import ninja_syntax
 from .ninja_syntax import serialize_path
@@ -1386,13 +1386,13 @@ def generate_clangd_commands(
         extra_flags = config.clangd_flags
 
     # MWCC cflags prefixes to replace
-    cflag_prefixes = (
+    CFLAG_PREFIXES = (
         ("-i ", "-I"),
         ("-d ", "-D"),
     )
 
     # MWCC cflags to replace wholly
-    cflag_replacements: dict[str, tuple[str, ...]] = {
+    CFLAG_REPLACEMENTS: dict[str, tuple[str, ...]] = {
         "-Cpp_exceptions off": ("-fno-cxx-exceptions",),
         "-Cpp_exceptions on": ("-fcxx-exceptions",),
 
@@ -1405,9 +1405,69 @@ def generate_clangd_commands(
         "-lang cplus": ("--language=c++", "--std=c++99"),
     }
 
+    # Defines for specific target platforms
+    GC_DEFINES: Tuple[str, ...] = ("__PPCGEKKO__",)
+    WII_DEFINES: Tuple[str, ...] = (
+        *GC_DEFINES,
+        "__PPCBROADWAY__",
+    )
+
+    def gc_defines(mwerks: str) -> Tuple[str, ...]:
+        return (*GC_DEFINES, f"__MWERKS__={mwerks}")
+
+    def gc_defines_2(mwerks: str, cwbuild: str) -> Tuple[str, ...]:
+        return (
+            *GC_DEFINES,
+            f"__MWERKS__={mwerks}",
+            f"__CWCC__={mwerks}",
+            f"__CWBUILD__={cwbuild}",
+        )
+
+    def wii_defines(mwerks: str, cwbuild: str) -> Tuple[str, ...]:
+        return (
+            *WII_DEFINES,
+            f"__MWERKS__={mwerks}",
+            f"__CWCC__={mwerks}",
+            f"__CWBUILD__={cwbuild}",
+        )
+
+    # Defines for specific compiler versions
+    # Based on a lot of manual testing
+    COMPILER_DEFINES: dict[str, Tuple[str, ...]] = {
+        "GC/1.0": gc_defines("0x2301"),
+        "GC/1.1": gc_defines("0x2301"),
+        "GC/1.2.5": gc_defines("0x2301"),
+        "GC/1.2.5e": gc_defines("0x2301"),
+        "GC/1.2.5n": gc_defines("0x2301"),
+        "GC/1.3": gc_defines("0x2406"),
+        "GC/1.3.2": gc_defines("0x2407"),
+        "GC/1.3.2r": gc_defines("0x2407"),
+        "GC/2.0": gc_defines("0x2407"),
+        "GC/2.0p1": gc_defines("0x2407"),
+        "GC/2.5": gc_defines("0x2407"),
+        "GC/2.6": gc_defines("0x2407"),
+        "GC/2.7": gc_defines("0x2407"),
+        "GC/3.0a3": gc_defines_2("0x4100", "51213"),
+        "GC/3.0a3.2": gc_defines_2("0x4200", "60126"),
+        "GC/3.0a3.3": gc_defines_2("0x4200", "60289"),
+        "GC/3.0a3.4": gc_defines_2("0x4200", "60308"),
+        "GC/3.0a5": gc_defines_2("0x4200", "60422"),
+        "GC/3.0a5.2": wii_defines("0x4199", "60831"),
+        "GC/3.0": wii_defines("0x4199", "60831"),
+        "Wii/0x4201_127": wii_defines("0x4201", "142"),
+        "Wii/1.0RC1": wii_defines("0x4201", "140"),
+        "Wii/1.0a": wii_defines("0x4201", "142"),
+        "Wii/1.0": wii_defines("0x4302", "145"),
+        "Wii/1.1": wii_defines("0x4302", "151"),
+        "Wii/1.3": wii_defines("0x4302", "172"),
+        "Wii/1.5": wii_defines("0x4302", "188"),
+        "Wii/1.6": wii_defines("0x4302", "202"),
+        "Wii/1.7": wii_defines("0x4302", "213"),
+    }
+
     clangd_config = []
 
-    def add_unit(build_obj: Dict[str, Any], module_name: str) -> None:
+    def add_unit(build_obj: Dict[str, Any]) -> None:
         obj = objects.get(build_obj["name"])
         if obj is None:
             return
@@ -1424,15 +1484,15 @@ def generate_clangd_commands(
 
         # clangd complains about unsupported cflags, so we need to filter those out.
         # For this reason, currently only cflag lists are supported for command generation.
-        def append_cflags(flags: list[str]) -> None:
+        def append_cflags(flags: Iterable[str]) -> None:
             for flag in flags:
-                for prefix, replacement in cflag_prefixes:
+                for prefix, replacement in CFLAG_PREFIXES:
                     if flag.startswith(prefix):
                         cflags.append(flag.replace(prefix, replacement))
                         break
                 else:
-                    if flag in cflag_replacements:
-                        cflags.extend(cflag_replacements[flag])
+                    if flag in CFLAG_REPLACEMENTS:
+                        cflags.extend(CFLAG_REPLACEMENTS[flag])
                     # else drop the flag
 
         if not isinstance(obj.options["cflags"], list):
@@ -1445,7 +1505,16 @@ def generate_clangd_commands(
         if isinstance(obj.options["extra_cflags"], list):
             append_cflags(obj.options["extra_cflags"])
 
-        mwcc = compilers / Path(obj.options["mw_version"]) / "mwcceppc.exe"
+        mw_version = Path(obj.options["mw_version"])
+        mwcc = compilers / mw_version / "mwcceppc.exe"
+
+        mw_version_str = mw_version.as_posix()
+        compiler_defines = COMPILER_DEFINES.get(mw_version_str)
+        if compiler_defines is None:
+            print(f"Missing version value for compiler {mw_version_str}")
+        else:
+            for define in compiler_defines:
+                cflags.append(f"-D{define}")
 
         in_path = obj.src_path
         out_path = obj.src_obj_path
@@ -1476,12 +1545,12 @@ def generate_clangd_commands(
 
     # Add DOL units
     for unit in build_config["units"]:
-        add_unit(unit, build_config["name"])
+        add_unit(unit)
 
     # Add REL units
     for module in build_config["modules"]:
         for unit in module["units"]:
-            add_unit(unit, module["name"])
+            add_unit(unit)
 
     # Write compile_commands.json
     with open("compile_commands.json", "w", encoding="utf-8") as w:
