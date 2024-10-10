@@ -34,6 +34,7 @@ public:
     void GetCodaExtents(const UserGuid &, int &, int &);
     void AddGems();
     void AddCodas();
+    void OverrideBasePoints(int, TrackType, const UserGuid&, int, int, int);
 
     const MysteryType *GetData(const UserGuid &) const;
     MysteryType *GetData(const UserGuid &);
@@ -43,7 +44,7 @@ public:
 
     // Whatever type is here is 0x40 size
     std::vector<MysteryType> mUnk_0x8;
-    std::vector<PlayerScoreInfo *> mUnk_0x10;
+    std::vector<PlayerScoreInfo *> mUnk_0x10; // 0x10 - base scores
     int mUnk_0x18;
 };
 

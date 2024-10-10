@@ -3,6 +3,7 @@
 #include "system/beatmatch/SongData.h"
 #include "system/beatmatch/SongParserSink.h"
 #include "game/MultiplayerAnalyzer.h"
+#include "game/Defines.h"
 #include "midi/DataEvent.h"
 #include <vector>
 
@@ -10,6 +11,8 @@ class SongDB : public SongParserSink {
 public:
     class TrackData {
     public:
+        TrackData(TrackType ty) : unk0(ty) {}
+
         TrackType unk0;
         std::vector<int> unk4;
         std::vector<int> unkc;
@@ -25,10 +28,10 @@ public:
     virtual ~SongDB();
     virtual void SetNumTracks(int);
     virtual void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
-    virtual void AddMultiGem(int, const GameGem&);
+    virtual void AddMultiGem(int, const GameGem&){}
     virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase&);
 
-    float GetSongDurationMs();
+    float GetSongDurationMs() const;
     void ParseEvents(DataEventList*);
     void SpewAllVocalNotes() const;
     void SpewTrackSizes() const;
@@ -40,6 +43,21 @@ public:
     void RebuildPhrases(int);
     void ClearTrackPhrases(int);
     void RebuildData();
+    void OverrideBasePoints(int, TrackType, const UserGuid&, int, int, int);
+    int TotalBasePoints();
+    int GetCodaStartTick() const;
+    bool IsInCoda(int) const;
+    int GetNumTracks() const;
+    int GetNumTrackData() const;
+    int GetBaseMaxPoints(const UserGuid&) const;
+    int GetBaseMaxStreakPoints(const UserGuid&) const;
+    int GetBaseBonusPoints(const UserGuid&) const;
+    GameGemList* GetGemList(int) const;
+    GameGemList* GetGemListByDiff(int, int) const;
+    const std::vector<GameGem>& GetGems(int) const;
+    std::vector<RangeSection>& GetRangeSections();
+    void ChangeDifficulty(int, Difficulty);
+    void SetTrainerGems(int, int);
 
     SongData* GetSongData() { return mSongData; }
 
