@@ -4,7 +4,7 @@
 class Instarank : public virtual Hmx::Object {
 public:
     Instarank();
-    virtual ~Instarank();
+    virtual ~Instarank(){}
 
     bool unk4;
     int unk8;

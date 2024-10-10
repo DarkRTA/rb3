@@ -11,6 +11,7 @@ class Game : public Hmx::Object {
 
     void SetPaused(bool, bool, bool);
     void SetGameOver(bool);
+    bool ResumedNoScore() const;
 
     u8 pad[0x4C];
     bool mIsPaused; // 0x68 iunno

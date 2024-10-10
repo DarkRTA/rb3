@@ -47,5 +47,6 @@ Symbol TrackTypeToSym(TrackType);
 Symbol ControllerTypeToSym(ControllerType);
 ControllerType SymToControllerType(Symbol);
 TrackType ControllerTypeToTrackType(ControllerType, bool);
+ScoreType TrackTypeToScoreType(TrackType, bool, bool);
 
 #endif // GAME_DEFINES_H
