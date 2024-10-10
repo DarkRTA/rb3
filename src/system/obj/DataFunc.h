@@ -41,6 +41,9 @@ public:
     }
 };
 
+#define DEF_DATA_FUNC(name) \
+    static DataNode name(DataArray* array)
+
 void DataRegisterFunc(Symbol s, DataFunc* func);
 Symbol DataFuncName(DataFunc*);
 bool FileListCallBack(char*);
