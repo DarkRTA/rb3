@@ -155,6 +155,8 @@ class ProjectConfig:
         self.custom_build_steps: Optional[Dict[str, List[Dict[str, Any]]]] = (
             None  # Custom build steps, types are ["pre-compile", "post-compile", "post-link", "post-build"]
         )
+        self.make_clangd_config: bool = False
+        self.clangd_flags: Optional[List[str]] = None
 
         # Progress output, progress.json and report.json config
         self.progress_all: bool = True  # Include combined "all" category
@@ -201,6 +203,32 @@ class ProjectConfig:
 
     def out_path(self) -> Path:
         return self.build_dir / str(self.version)
+
+    def compilers(self) -> Path:
+        if self.compilers_path:
+            return self.compilers_path
+        elif self.compilers_tag:
+            return self.build_dir / "compilers"
+        else:
+            sys.exit("ProjectConfig.compilers_tag missing")
+
+    def compiler_wrapper(self) -> Optional[Path]:
+        wrapper = self.wrapper
+
+        if self.use_wibo():
+            wrapper = self.build_dir / "tools" / "wibo"
+        if not is_windows() and wrapper is None:
+            wrapper = Path("wine")
+
+        return wrapper
+
+    def use_wibo(self) -> bool:
+        return (
+            self.wibo_tag is not None
+            and sys.platform == "linux"
+            and platform.machine() in ("i386", "x86_64")
+            and self.wrapper is None
+        )
 
 
 def is_windows() -> bool:
@@ -257,6 +285,7 @@ def generate_build(config: ProjectConfig) -> None:
     build_config = load_build_config(config, config.out_path() / "config.json")
     generate_build_ninja(config, objects, build_config)
     generate_objdiff_config(config, objects, build_config)
+    generate_clangd_commands(config, objects, build_config)
 
 
 # Generate build.ninja
@@ -403,16 +432,10 @@ def generate_build_ninja(
     else:
         sys.exit("ProjectConfig.sjiswrap_tag missing")
 
+    wrapper = config.compiler_wrapper()
     # Only add an implicit dependency on wibo if we download it
-    wrapper = config.wrapper
     wrapper_implicit: Optional[Path] = None
-    if (
-        config.wibo_tag is not None
-        and sys.platform == "linux"
-        and platform.machine() in ("i386", "x86_64")
-        and config.wrapper is None
-    ):
-        wrapper = build_tools_path / "wibo"
+    if wrapper is not None and config.use_wibo():
         wrapper_implicit = wrapper
         n.build(
             outputs=wrapper,
@@ -423,15 +446,11 @@ def generate_build_ninja(
                 "tag": config.wibo_tag,
             },
         )
-    if not is_windows() and wrapper is None:
-        wrapper = Path("wine")
     wrapper_cmd = f"{wrapper} " if wrapper else ""
 
+    compilers = config.compilers()
     compilers_implicit: Optional[Path] = None
-    if config.compilers_path:
-        compilers = config.compilers_path
-    elif config.compilers_tag:
-        compilers = config.build_dir / "compilers"
+    if config.compilers_tag:
         compilers_implicit = compilers
         n.build(
             outputs=compilers,
@@ -442,8 +461,6 @@ def generate_build_ninja(
                 "tag": config.compilers_tag,
             },
         )
-    else:
-        sys.exit("ProjectConfig.compilers_tag missing")
 
     binutils_implicit = None
     if config.binutils_path:
@@ -1350,6 +1367,126 @@ def generate_objdiff_config(
             return str(input).replace(os.sep, "/") if input else ""
 
         json.dump(objdiff_config, w, indent=4, default=unix_path)
+
+
+def generate_clangd_commands(
+    config: ProjectConfig,
+    objects: Dict[str, Object],
+    build_config: Optional[Dict[str, Any]],
+) -> None:
+    if build_config is None:
+        return
+
+    compilers = config.compilers()
+    wrapper = config.compiler_wrapper()
+
+    # Extra cflags to give to clangd
+    extra_flags = []
+    if config.clangd_flags is not None:
+        extra_flags = config.clangd_flags
+
+    # MWCC cflags prefixes to replace
+    cflag_prefixes = (
+        ("-i ", "-I"),
+        ("-d ", "-D"),
+        ("-lang", "-std"),
+    )
+
+    # MWCC cflags to replace wholly
+    cflag_replacements = {
+        "-Cpp_exceptions off": "-fno-cxx-exceptions",
+        "-Cpp_exceptions on": "-fcxx-exceptions",
+        "-RTTI off": "-fno-rtti",
+        "-RTTI on": "-frtti",
+    }
+
+    clangd_config = []
+
+    def add_unit(build_obj: Dict[str, Any], module_name: str) -> None:
+        obj = objects.get(build_obj["name"])
+        if obj is None:
+            return
+
+        if (
+            obj.src_path is None
+            or obj.src_obj_path is None
+            or obj.src_path.suffix not in (".c", ".cp", ".cpp")
+        ):
+            return
+
+        # Gather cflags for source file
+        cflags: list[str] = [*extra_flags]
+
+        # clangd complains about unsupported cflags, so we need to filter those out.
+        # For this reason, currently only cflag lists are supported for command generation.
+        def append_cflags(flags: list[str]) -> None:
+            for flag in flags:
+                for prefix, replacement in cflag_prefixes:
+                    if flag.startswith(prefix):
+                        cflags.append(flag.replace(prefix, replacement))
+                        break
+                else:
+                    if flag in cflag_replacements:
+                        cflags.append(cflag_replacements[flag])
+                    # else drop the flag
+
+        if not isinstance(obj.options["cflags"], list):
+            print(
+                f"clangd config generation does not support cflags as a single string: {obj.src_path}"
+            )
+            return
+        append_cflags(obj.options["cflags"])
+
+        if isinstance(obj.options["extra_cflags"], list):
+            append_cflags(obj.options["extra_cflags"])
+
+        mwcc = compilers / Path(obj.options["mw_version"]) / "mwcceppc.exe"
+
+        in_path = obj.src_path
+        out_path = obj.src_obj_path
+
+        # Noted for future reference if cflag strings become supported
+        # cflags_str = make_flags_str(obj.options["cflags"])
+        # if obj.options["extra_cflags"] is not None:
+        #     extra_cflags_str = make_flags_str(obj.options["extra_cflags"])
+        #     cflags_str += " " + extra_cflags_str
+        # mwcc_cmd = f"{wrapper_cmd}{mwcc} {cflags_str} -MMD -c {in_path} -o {out_path}"
+
+        unit_config = {
+            "directory": Path.cwd(),
+            "file": in_path,
+            "output": out_path,
+            # "command": mwcc_cmd,
+            "arguments": [
+                *([wrapper, mwcc] if wrapper else [mwcc]),
+                *cflags,
+                "-MMD",
+                "-c",
+                in_path,
+                "-o",
+                out_path.parent,
+            ],
+        }
+        clangd_config.append(unit_config)
+
+    # Add DOL units
+    for unit in build_config["units"]:
+        add_unit(unit, build_config["name"])
+
+    # Add REL units
+    for module in build_config["modules"]:
+        for unit in module["units"]:
+            add_unit(unit, module["name"])
+
+    # Write compile_commands.json
+    with open("compile_commands.json", "w", encoding="utf-8") as w:
+
+        def default_format(o):
+            if isinstance(o, Path):
+                return o.resolve().as_posix()
+            return str(o)
+
+        json.dump(clangd_config, w, indent=4, default=default_format)
 
 
 # Calculate, print and write progress to progress.json

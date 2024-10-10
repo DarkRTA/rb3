@@ -147,6 +147,31 @@ config.reconfig_deps = [
     objects_path,
 ]
 
+config.make_clangd_config = True
+config.clangd_flags = [
+    # Remove all built-in definitions
+    "-undef",
+
+    # Compiler defines
+    "-D__MWERKS__=0x4302",
+    "-D__PPCBROADWAY__",
+    "-D__PPCGECKO__",
+
+    # Indicator for things which shouldn't be processed in IDEs
+    "-DDECOMP_IDE_FLAG",
+
+    # Default to C++
+    "-std=c++98",
+
+    # No standard includes
+    "-nostdinc",
+    "-nostdinc++",
+    "-fno-builtin",
+
+    # Target definitions
+    "--target=ppc32-unknown=linux-eabi",
+]
+
 # Build flags
 flags = json.load(open(config_json_path, "r", encoding="utf-8"))
 progress_categories: dict[str, str] = flags["progress_categories"]
