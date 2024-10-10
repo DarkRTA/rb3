@@ -1,6 +1,7 @@
 #ifndef UTL_MEMMGR_H
 #define UTL_MEMMGR_H
 #include <stddef.h>
+#include <new>
 #include "utl/PoolAlloc.h"
 
 class MemDoTempAllocations {
@@ -18,9 +19,9 @@ public:
 
 void MemFreeH(MemHandle*);
 
-void* operator new(size_t) throw();
+void *operator new(size_t size) throw(std::bad_alloc);
 void operator delete(void*) throw();
-void* operator new[](size_t) throw();
+void *operator new[](size_t size) throw(std::bad_alloc);
 void operator delete[](void*) throw();
 
 void* _MemAlloc(int, int);
