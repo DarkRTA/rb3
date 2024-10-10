@@ -245,7 +245,7 @@ float Stats::GetTambourine() const { return mTambourine; }
 int Stats::GetHarmony() const { return mHarmony; }
 
 void Stats::SetNoScorePercent(float) {}
-void Stats::FailedNoScore() const {}
+bool Stats::FailedNoScore() const {}
 void Stats::AddFailurePoint(float) {}
 void Stats::AddToPlayersSaved(int, float) {}
 void Stats::AddToTimesSaved(float, float) {}

@@ -53,8 +53,20 @@ public:
     };
 
     Stats();
-    Stats(const Stats&);
-    ~Stats();
+    Stats(const Stats& s);
+    
+
+    // Stats::Stats(const Stats& s) : mHitCount(s.mHitCount), mMissCount(s.mMissCount), m0x08(s.m0x08), m0x0c(s.m0x0c), mPersistentStreak(s.mPersistentStreak), mLongestPersistentStreak(s.mLongestPersistentStreak),
+    //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), m0x28(s.m0x28), m0x2c(s.m0x2c), m0x30(s.m0x30), m0x34(s.m0x34),
+    //     mFinalized(s.mFinalized), mSoloPercentage(s.mSoloPercentage), mSoloButtonedSoloPercentage(s.mSoloButtonedSoloPercentage), mPerfectSoloWithSoloButtons(s.mPerfectSoloWithSoloButtons), m0x41(s.m0x41),
+    //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
+    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), m0x80(s.m0x80),
+    //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
+    //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), m0xb4(s.m0xb4), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
+        
+    // }
+
+    ~Stats(){}
     void BuildHitStreak(int, float);
     int GetCurrentStreak() const;
     void SetCurrentStreak(int);
@@ -97,7 +109,7 @@ public:
     float GetTambourine() const;
     int GetHarmony() const;
     void SetNoScorePercent(float);
-    void FailedNoScore() const;
+    bool FailedNoScore() const;
     void AddFailurePoint(float);
     void AddToPlayersSaved(int, float);
     void AddToTimesSaved(float, float);
@@ -118,25 +130,23 @@ public:
     const SectionInfo& GetSectionInfo(int) const;
     void GetAverageMsError() const;
 
-
-    // These are implemented in Performer
-    int GetDoubleHarmonyHit() const;
-    int GetDoubleHarmonyPhraseCount() const;
-    int GetTripleHarmonyHit() const;
-    int GetTripleHarmonyPhraseCount() const;
-    int GetHitCount() const;
-    float GetNotesHitFraction() const;
-    int GetNumberOfSingers() const;
-    void GetVocalPartPercentage(int) const;
-    bool GetFailedDeploy() const;
-    int GetPlayersSaved() const;
-    int GetFillHitCount() const;
-    void GetStrummedDown() const;
-    void GetStrummedUp() const;
-    int GetDeployCount() const;
-    int GetSoloPercentage() const;
-    bool GetPerfectSoloWithSoloButtons() const;
-    bool GetFinalized() const;
+    int GetDoubleHarmonyHit() const { return mDoubleHarmonyHit; }
+    int GetDoubleHarmonyPhraseCount() const { return mDoubleHarmonyPhraseCount; }
+    int GetTripleHarmonyHit() const { return mTripleHarmonyHit; }
+    int GetTripleHarmonyPhraseCount() const { return mTripleHarmonyPhraseCount; }
+    int GetHitCount() const { return mHitCount; }
+    float GetNotesHitFraction() const { return mNotesHitFraction; }
+    int GetNumberOfSingers() const { return mNumberOfSingers; }
+    float GetVocalPartPercentage(int i) const { return m0x70[i]; }    
+    bool GetFailedDeploy() const { return mFailedDeploy; }
+    int GetPlayersSaved() const { return mPlayersSaved; }
+    int GetFillHitCount() const { return mFillHitCount; }
+    bool GetStrummedDown() const { return m0x2c > 0; }
+    bool GetStrummedUp() const { return m0x28 > 0; }
+    int GetDeployCount() const { return mDeployCount; }
+    int GetSoloPercentage() const { return mSoloPercentage; }
+    bool GetPerfectSoloWithSoloButtons() const { return mPerfectSoloWithSoloButtons; }
+    bool GetFinalized() const { return mFinalized; }
 
     // These are implemented in PerformanceData
     void AccessPerformanceAwards();
@@ -218,9 +228,9 @@ public:
     int m0x64;                                 // 0x064
     int m0x68;                                 // 0x068
     int m0x6c;                                 // 0x06c
-    std::vector<int> m0x70;                    // 0x070
+    std::vector<float> m0x70;                    // 0x070
     std::vector<SingerStats> mSingerStats;     // 0x078
-    std::vector<int> m0x80;                    // 0x080
+    std::vector<Symbol> m0x80;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
     int mSolo; // 0x90
