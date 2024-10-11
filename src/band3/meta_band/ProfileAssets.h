@@ -25,7 +25,6 @@ public:
     virtual void LoadFixed(FixedSizeSaveableStream&, int);
     void FakeFill();
 
-private:
     BandProfile* mParentProfile;   // 0x04
     std::set<Symbol> mAssets;   // 0x08
     std::set<Symbol> mNewAssets;   // 0x24

@@ -30,6 +30,7 @@ public:
     int GetNumLocalParticipants() const;
     bool IsMultiplayerGame() const;
     int GetNumLocalPlayers() const;
+    LocalBandUser* GetUserFromPad(int);
     bool AllLocalUsersInSessionAreGuests() const;
     void GetBandUsers(std::vector<BandUser*>*, int) const;
     void GetLocalBandUsers(std::vector<LocalBandUser*>*, int) const;

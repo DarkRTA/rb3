@@ -6,6 +6,9 @@
 #include <vector>
 #include "StandIn.h"
 #include "ProfileAssets.h"
+#include "meta_band/AccomplishmentProgress.h"
+#include "net_band/DataResults.h"
+#include "meta_band/PerformanceData.h"
 
 class TourCharLocal;
 class PatchDir;
@@ -15,7 +18,7 @@ class PerformerStatsInfo;
 class PerformanceData;
 class PatchDescriptor;
 class LocalSavedSetlist;
-class Stats;
+class SongStatusMgr;
 class RockCentralOpCompleteMsg;
 class LocalBandUser;
 class ProfilePicture;
@@ -73,7 +76,6 @@ public:
     void NumSavedSetlists() const;
     void GetUploadFriendsToken() const;
     void SetUploadFriendsToken(int);
-    void SaveSize(int);
     LocalBandUser* GetAssociatedLocalBandUser() const;
     void CheckForFinishedTrainerAccomplishments();
     void SetProGuitarSongLessonComplete(int, Difficulty);
@@ -107,7 +109,7 @@ public:
     void HandlePerformanceDataUploadSuccess();
     void UpdatePerformanceData(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool);
     DataNode OnMsg(const RockCentralOpCompleteMsg&);
-    void GetLocalBandUser() const;
+    LocalBandUser* GetLocalBandUser() const;
     void GetAssociatedUsers(std::vector<LocalBandUser*>&) const;
     void CheckWebLinkStatus();
     void CheckWebSetlistStatus();
@@ -120,36 +122,41 @@ public:
     void GetPictureTex();
     void AutoFakeFill(int);
     
+    static int SaveSize(int);
+
     bool unk18;
-    std::vector<int> unk1c; // 0x1c
+    std::vector<PatchDir*> unk1c; // 0x1c
     std::vector<CharData*> mChars; // 0x24 
     TourProgress* mTourProgress;   // 0x2c correct up to here
     std::map<Symbol, float> unk30; // 0x30
-    int unk48; // 0x48 - SongStatusMgr
+    SongStatusMgr* mScores; // 0x48
     std::vector<int> unk4c; // 0x4c
-    // Gameplay options 0x2e
-    // lessons 0x34
-    // AccomplishmentProgress* 0x3d
     // song status mgr 0x48
     // saved song lists 0x4c
-    std::vector<StandIn*> mStandIns; // 0x54
+    std::vector<StandIn> mStandIns; // 0x54
     HxGuid unk5c; // 0x5c
     Symbol unk6c; // 0x6c
     std::set<Symbol> unk70; // 0x70
     std::set<Symbol> unk88; // 0x88
     std::set<Symbol> unka0; // 0xa0
     GameplayOptions mGameplayOptions; // 0xb8
-    // accomplishment progress 0xf4
-    // something involving performance data 0x6f70
-    // 0x6f74
-    ProfileAssets* mProfileAssets; // 0x6f78
+    AccomplishmentProgress mAccomplishmentProgress; // 0xf4
+    int unk740;
+    int unk744;
+    int unk748;
+    int unk74c;
+    int unk750;
+    DataResultList unk754;
+    DataResultList unk76c;
+    int unk784;
+    PerformanceData unk788[0x32];
+    int unk6f70;
+    int unk6f74;
+    ProfileAssets mProfileAssets; // 0x6f78
+    int unk6fb4;
+    int unk6fb8;
     ProfilePicture* mProfilePicture; // 0x6fbc
-
-    // upload friends token 0x6fb4
-    // hardcore icon level 0x6fb8
-    // profile picture 0x6fbc
-    // tour band 0x6fc0
-
+    int unk6fc0; // TourBand*
 };
 
 #endif // METABAND_BANDPROFILE_H

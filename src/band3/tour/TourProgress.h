@@ -8,11 +8,13 @@
 #include "tour/QuestJournal.h"
 
 class TourProgress : public TourSavable, public FixedSizeSaveable {
-    public:
+public:
     TourProgress();
     virtual DataNode Handle(DataArray*, bool);
     virtual ~TourProgress();
     virtual int SecBetweenUploads() const;
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
     void HandleTourRewardApplied();
     void SetOnTour(bool);

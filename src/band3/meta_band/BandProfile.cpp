@@ -2,18 +2,34 @@
 #include "ProfileMgr.h"
 #include "AccomplishmentManager.h"
 #include "game/GameMessages.h"
+#include "meta_band/SongStatusMgr.h"
+#include "meta_band/BandSongMgr.h"
+#include "game/BandUserMgr.h"
+#include "bandobj/PatchDir.h"
+#include "os/ProfilePicture.h"
+#include "tour/TourProgress.h"
 #include "system/utl/Symbols.h"
-#include "system/utl/Symbols3.h"
 
-BandProfile::BandProfile(int i) : Profile(i) {
-
+BandProfile::BandProfile(int i) : Profile(i), unk18(0), mAccomplishmentProgress(this), unk740(0), unk744(-1), unk74c(-1), unk750(-1), unk784(-1), unk6f70(0), unk6f74(0), mProfileAssets(this), unk6fb4(0), unk6fb8(0) {
+    mSaveSizeMethod = &SaveSize;
+    LocalBandUser* user = GetAssociatedLocalBandUser();
+    mScores = new SongStatusMgr(user, TheSongMgr);
+    mProfilePicture = new ProfilePicture(GetPadNum(), this);
+    for(int n = 0; n < 8; n++) unk1c.push_back(new PatchDir());
+    for(int n = 0; n < 4; n++) mStandIns.push_back(StandIn());
+    mTourProgress = new TourProgress();
 }
 
 BandProfile::~BandProfile() {
-
+    DeleteAll();
+    RELEASE(mScores);
+    RELEASE(mProfilePicture);
+    // RELEASE(unk6fc0);
+    RELEASE(mTourProgress);
 }
 
 void BandProfile::Poll() {
+    mProfilePicture->Poll();
 }
 
 void BandProfile::GetAvailableStandins(int, std::vector<TourCharLocal*>&) const {
@@ -65,34 +81,34 @@ void BandProfile::GetFirstEmptyPatch() {}
 void BandProfile::GetTexAtPatchIndex(int) const {}
 void BandProfile::GetPatchIndex(const PatchDir*) const {}
 
-void BandProfile::PotentiallyDeleteStandin(HxGuid guid) {
-    for (std::vector<StandIn*>::iterator it = mStandIns.begin(); it != mStandIns.end(); it++) {
-        // standin guid is 0x1c
-        // it->SetNone();
-    }
-}
+// void BandProfile::PotentiallyDeleteStandin(HxGuid guid) {
+//     for (std::vector<StandIn*>::iterator it = mStandIns.begin(); it != mStandIns.end(); it++) {
+//         // standin guid is 0x1c
+//         // it->SetNone();
+//     }
+// }
 
-void BandProfile::GetCharacterStandinIndex(CharData*) const {}
-StandIn* BandProfile::GetStandIn(int index) const {
-    MILO_ASSERT(( 0) <= (index) && (index) < mStandIns.size(), 0x14d);
-    return mStandIns[index];
-}
+// void BandProfile::GetCharacterStandinIndex(CharData*) const {}
+// StandIn* BandProfile::GetStandIn(int index) const {
+//     MILO_ASSERT(( 0) <= (index) && (index) < mStandIns.size(), 0x14d);
+//     return mStandIns[index];
+// }
 
-StandIn* BandProfile::AccessStandIn(int index) {
-    MILO_ASSERT(( 0) <= (index) && (index) < mStandIns.size(), 0x14d);
-    return mStandIns[index];
-}
+// StandIn* BandProfile::AccessStandIn(int index) {
+//     MILO_ASSERT(( 0) <= (index) && (index) < mStandIns.size(), 0x14d);
+//     return mStandIns[index];
+// }
 
-int BandProfile::GetNumStandins() const {
-    int standIns = 0;
-    for (std::vector<StandIn*>::const_iterator it = mStandIns.begin(); it != mStandIns.end(); it++) {
-        StandIn* standIn = *it;
-        if (!standIn->IsNone()) {
-            standIns++;
-        }
-    }
-    return standIns;
-}
+// int BandProfile::GetNumStandins() const {
+//     int standIns = 0;
+//     for (std::vector<StandIn*>::const_iterator it = mStandIns.begin(); it != mStandIns.end(); it++) {
+//         StandIn* standIn = *it;
+//         if (!standIn->IsNone()) {
+//             standIns++;
+//         }
+//     }
+//     return standIns;
+// }
 
 TourProgress* BandProfile::GetTourProgress() {
     return mTourProgress;
@@ -125,7 +141,6 @@ bool BandProfile::HasCheated() const {
 void BandProfile::GetUploadFriendsToken() const {}
 void BandProfile::SetUploadFriendsToken(int) {}
 void BandProfile::SaveFixed(FixedSizeSaveableStream&) const {}
-void BandProfile::SaveSize(int) {}
 void BandProfile::PreLoad() {}
 
 void BandProfile::LoadFixed(FixedSizeSaveableStream&, int) {
@@ -200,7 +215,10 @@ bool BandProfile::HasUnlockedModifier(Symbol) {}
 void BandProfile::HandlePerformanceDataUploadSuccess() {}
 void BandProfile::UpdatePerformanceData(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool) {}
 
-void BandProfile::GetLocalBandUser() const {}
+LocalBandUser* BandProfile::GetLocalBandUser() const {
+    return TheBandUserMgr->GetUserFromPad(GetPadNum());
+}
+
 void BandProfile::GetAssociatedUsers(std::vector<LocalBandUser*>&) const {}
 void BandProfile::CheckWebLinkStatus() {}
 void BandProfile::CheckWebSetlistStatus() {}
