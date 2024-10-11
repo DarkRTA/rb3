@@ -28,7 +28,7 @@ void DataEventList::Compress(DataArray* arr, int i){
 void DataEventList::InsertEvent(float start, float end, const DataNode& node, int idx){
     if(mElement < 0){
         if(mSize == 0) mEvents.reserve(32);
-        mEvents.insert(mEvents.begin() + idx, DataEvent(start, end, node.Array(0)));
+        mEvents.insert(mEvents.begin() + idx, DataEvent(start, end, node.Array()));
     }
     else {
         CompEv event;

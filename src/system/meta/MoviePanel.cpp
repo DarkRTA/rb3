@@ -29,7 +29,7 @@ void MoviePanel::Load(){
     UIPanel::Load();
     mMovies.clear();
 
-    DataArray* config = SystemConfig("videos", Property("videos", true)->Str(0));
+    DataArray* config = SystemConfig("videos", Property("videos", true)->Str());
 
     DataArray* files = config->FindArray("files", true);
     for(int i = 1; i < files->Size(); i++){

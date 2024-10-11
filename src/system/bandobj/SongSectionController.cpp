@@ -138,7 +138,7 @@ void SongSectionController::UpdateOverlay(){
     if(mOverlay){
         if(!TheLoadMgr.EditMode()){
             static DataNode& disable = DataVariable("cheat.song_section_ctrl");
-            mOverlay->SetOverlay(disable.Int(0));
+            mOverlay->SetOverlay(disable.Int());
         }
         if(mOverlay->Showing()){
             String cursec(mMidiSection.Null() ? "<none>" : mMidiSection.Str());
@@ -180,7 +180,7 @@ void SongSectionController::UpdateOverlay(){
             if(!mActivePool) str48 = "<none>";
             else {
                 static Message debugStr("debug_str");
-                str48 = mActivePool->HandleType(debugStr).Str(0);
+                str48 = mActivePool->HandleType(debugStr).Str();
             }
             *mOverlay << "[current pool content]: " << str48.c_str() << "\n";
         }

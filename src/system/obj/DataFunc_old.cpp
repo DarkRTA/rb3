@@ -230,12 +230,12 @@ DataNode DataAndEqual(DataArray *da) {
     if (da->Type(1) == kDataProperty) {
         arr = da->Union(1).array;
         int res =
-            gDataThis->Property((DataArray *)arr, true)->Int(0) & da->Int(2);
+            gDataThis->Property((DataArray *)arr, true)->Int() & da->Int(2);
         gDataThis->SetProperty((DataArray *)arr, DataNode(res));
         return DataNode(res);
     } else {
         DataNode *dn_var = da->Var(1);
-        int res = dn_var->Int(0) & da->Int(2);
+        int res = dn_var->Int() & da->Int(2);
         return (*dn_var = DataNode(res));
     }
 }
@@ -246,12 +246,12 @@ DataNode DataMaskEqual(DataArray *da) {
     if (da->Type(1) == kDataProperty) {
         arr = da->Union(1).array;
         int res =
-            gDataThis->Property((DataArray *)arr, true)->Int(0) & ~da->Int(2);
+            gDataThis->Property((DataArray *)arr, true)->Int() & ~da->Int(2);
         gDataThis->SetProperty((DataArray *)arr, DataNode(res));
         return DataNode(res);
     } else {
         DataNode *dn_var = da->Var(1);
-        int res = dn_var->Int(0) & ~da->Int(2);
+        int res = dn_var->Int() & ~da->Int(2);
         return (*dn_var = DataNode(res));
     }
 }
@@ -262,12 +262,12 @@ DataNode DataOrEqual(DataArray *da) {
     if (da->Type(1) == kDataProperty) {
         arr = da->Union(1).array;
         int res =
-            gDataThis->Property((DataArray *)arr, true)->Int(0) | da->Int(2);
+            gDataThis->Property((DataArray *)arr, true)->Int() | da->Int(2);
         gDataThis->SetProperty((DataArray *)arr, DataNode(res));
         return DataNode(res);
     } else {
         DataNode *dn_var = da->Var(1);
-        int res = dn_var->Int(0) | da->Int(2);
+        int res = dn_var->Int() | da->Int(2);
         return (*dn_var = DataNode(res));
     }
 }
@@ -574,7 +574,7 @@ extern char lbl_808E4478[2];
 // fn_8031D6A8
 DataNode DataChar(DataArray *da) {
     DataNode *dn = &da->Evaluate(1);
-    lbl_808E4478[0] = dn->Int(nullptr);
+    lbl_808E4478[0] = dn->Int();
     lbl_808E4478[1] = 0;
     return DataNode(lbl_808E4478);
 }
@@ -593,7 +593,7 @@ DataNode DataInt(DataArray *da) {
 // fn_8031D7C4
 DataNode DataRound(DataArray *da) {
     DataNode *dn = &da->Evaluate(1);
-    return DataNode(Round(dn->LiteralFloat(nullptr)));
+    return DataNode(Round(dn->LiteralFloat()));
 }
 
 // fn_8031D810
@@ -888,10 +888,10 @@ DataNode DataNewArray(DataArray* da){
     // DataNode* eval = &da->Evaluate(1);
     // DataArrayPtr ptr;
     // if(eval->Type() == kDataInt){
-    //     ptr.GetArray()->Resize(eval->LiteralInt(nullptr));
+    //     ptr.GetArray()->Resize(eval->LiteralInt());
     // }
     // else if(eval->Type() == kDataArray){
-    //     ptr = eval->LiteralArray(nullptr)->Clone(true, true, 0);
+    //     ptr = eval->LiteralArray()->Clone(true, true, 0);
     // }
     // else {
     //     int line = da->GetLine();
@@ -951,7 +951,7 @@ DataNode DataInc(DataArray* da){
     if(da->Type(1) == kDataProperty){
         void* arr = da->Union(1).array;
         DataNode* prop = gDataThis->Property((DataArray*)arr, true);
-        int i = prop->Int(nullptr) + 1;
+        int i = prop->Int() + 1;
         {
         DataNode inc(i);
         gDataThis->SetProperty((DataArray*)arr, inc);
@@ -960,7 +960,7 @@ DataNode DataInc(DataArray* da){
     }
     else {
         DataNode* var = da->Var(1);
-        int i = var->Int(nullptr);
+        int i = var->Int();
         DataNode inc(i + 1);
         return DataNode((var->operator=(inc)));
     }
@@ -971,7 +971,7 @@ DataNode DataDec(DataArray* da){
     if(da->Type(1) == kDataProperty){
         void* arr = da->Union(1).array;
         DataNode* prop = gDataThis->Property((DataArray*)arr, true);
-        int i = prop->Int(nullptr) - 1;
+        int i = prop->Int() - 1;
         {
         DataNode inc(i);
         gDataThis->SetProperty((DataArray*)arr, inc);
@@ -980,7 +980,7 @@ DataNode DataDec(DataArray* da){
     }
     else {
         DataNode* var = da->Var(1);
-        int i = var->Int(nullptr);
+        int i = var->Int();
         DataNode inc(i - 1);
         return DataNode((var->operator=(inc)));
     }
@@ -1098,12 +1098,12 @@ DataNode DataSubStr(DataArray *da) {
 // fn_8031FAD0
 DataNode DataStrCat(DataArray *da) {
     DataNode *dn = da->Var(1);
-    String str(dn->Str(nullptr));
+    String str(dn->Str());
     for (int i = 2; i < da->Size(); i++) {
         str += da->Str(i);
     }
     *dn = DataNode(str.c_str());
-    return DataNode(dn->Str(nullptr));
+    return DataNode(dn->Str());
 }
 
 extern DataArray *DataGetMacro(Symbol);

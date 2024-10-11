@@ -168,7 +168,7 @@ Symbol BandSongMgr::RankTierToken(int i) const {
 
 void BandSongMgr::GetRankedSongs(std::vector<int>& vec, bool b1, bool b2) const {
     if(b1){
-        TheGameMode->Property("demos_allowed", true)->Int(0);
+        TheGameMode->Property("demos_allowed", true)->Int();
     }
     vec.clear();
     for(std::set<int>::const_iterator it = mAvailableSongs.begin(); it != mAvailableSongs.end(); ++it){

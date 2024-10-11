@@ -15,7 +15,7 @@ void TourGameRules::Init(const DataArray* i_pConfig) {
     MILO_ASSERT(pTargetArray, 37);
     MILO_ASSERT(pTargetArray->Size() > 1, 40);
     for (int i = 1; i < pTargetArray->Size(); i++) {
-        float f = pTargetArray->Node(i).Float(NULL);
+        float f = pTargetArray->Node(i).Float();
         if (m_vTargets.size() < 2) m_vTargets.push_back(f);
         else MILO_WARN("Too many targets specified for game type: %i", mGameType);
     }
@@ -28,6 +28,6 @@ void TourGameRules::Init(const DataArray* i_pConfig) {
 }
 
 TourGameType TourGameRules::GetGameType() const { return mGameType; }
-u16 TourGameRules::GetNumTargets() const { return m_vTargets.size(); } 
+u16 TourGameRules::GetNumTargets() const { return m_vTargets.size(); }
 float TourGameRules::GetTarget(int i_iIndex) const { MILO_ASSERT(i_iIndex < m_vTargets.size(), 90); return m_vTargets[i_iIndex]; }
 const DataArray* TourGameRules::GetChallengeSpecificData() const { return mChallengeData; }

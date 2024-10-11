@@ -91,14 +91,14 @@ void TrackPanelDirBase::ReapplyConfiguration(bool b){
 bool TrackPanelDirBase::ModifierActive(Symbol s){
     Hmx::Object* gamemodeobj = FindObject("gamemode", true);
     if(gamemodeobj){
-        if(gamemodeobj->Property("always_show_hud", true)->Int(0) == 0){
-            if(gamemodeobj->Property("is_practice", true)->Int(0) != 0) return false;
+        if(gamemodeobj->Property("always_show_hud", true)->Int() == 0){
+            if(gamemodeobj->Property("is_practice", true)->Int() != 0) return false;
             else {
                 Hmx::Object* modmgr = FindObject("modifier_mgr", true);
                 if(modmgr){
                     static Message active("is_modifier_active", "");
                     active[0] = s;
-                    int ret = modmgr->Handle(active, true).Int(0);
+                    int ret = modmgr->Handle(active, true).Int();
                     if(ret != 0) return true;
                 }
             }

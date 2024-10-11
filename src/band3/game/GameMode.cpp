@@ -27,12 +27,12 @@ bool GameMode::InMode(Symbol target){
 
     DataArray* modes = SystemConfig("modes");
     Symbol iter = mMode;
-    
+
     while(modes->FindArray(iter, true)->FindArray(parent_mode, false)){
         iter = modes->FindArray(iter, true)->FindArray(parent_mode, true)->Sym(1);
         if(iter == target) return true;
     }
-    
+
     return false;
 }
 
@@ -62,22 +62,22 @@ void GameMode::SetMode(Symbol mode){
         SetTypeDef(cloned);
         cloned->Release();
         HandleType(enter_msg);
-        ThePlatformMgr.unkce55 = Property("online_play_required", true)->Int(0);
-        mOverdriveEnabled = Property("enable_overdrive", true)->Int(0);
+        ThePlatformMgr.unkce55 = Property("online_play_required", true)->Int();
+        mOverdriveEnabled = Property("enable_overdrive", true)->Int();
         mH2HArrangement = InMode("h2h");
         mIsPractice = InMode("practice");
-        mCanLose = Property("can_lose", true)->Int(0);
-        mCrowdReacts = Property("crowd_reacts", true)->Int(0);
-        mIsSolo = Property("is_solo", true)->Int(0);
-        mDisableGuitarFx = Property("disable_guitar_fx", true)->Int(0);
+        mCanLose = Property("can_lose", true)->Int();
+        mCrowdReacts = Property("crowd_reacts", true)->Int();
+        mIsSolo = Property("is_solo", true)->Int();
+        mDisableGuitarFx = Property("disable_guitar_fx", true)->Int();
         mIsDrumTrainer = InMode("drum_trainer");
-        mEnableStreak = Property("enable_streak", true)->Int(0);
+        mEnableStreak = Property("enable_streak", true)->Int();
         mIsTutorial = InMode("tutorial");
-        mLoadChars = Property("load_chars", true)->Int(0);
-        mShowStars = Property("show_stars", true)->Int(0);
-        mHasSongSections = Property("has_song_sections", true)->Int(0);
-        mEnableWhammy = Property("enable_whammy", true)->Int(0);
-        mEndWithSong = Property("end_with_song", true)->Int(0);
+        mLoadChars = Property("load_chars", true)->Int();
+        mShowStars = Property("show_stars", true)->Int();
+        mHasSongSections = Property("has_song_sections", true)->Int();
+        mEnableWhammy = Property("enable_whammy", true)->Int();
+        mEndWithSong = Property("end_with_song", true)->Int();
         mIsStory = InMode("story");
         static ModeChangedMsg msg;
         MsgSource::Handle(msg, false);

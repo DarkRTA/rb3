@@ -48,7 +48,7 @@ void CrowdAudio::Enter(){
     mWon = false;
     mLoopChangeTime = 1e+30f;
     mLastClapBeat = 0;
-    mWantDuck = HandleType(want_outro_duck_msg).Int(0);
+    mWantDuck = HandleType(want_outro_duck_msg).Int();
     SetEnabled(true);
     SetPaused(false);
 }
@@ -64,8 +64,8 @@ void CrowdAudio::Exit(){
 
 void CrowdAudio::Poll(){
     static DataNode& override_crowd_audio_level = DataVariable("override_crowd_audio_level");
-    if(override_crowd_audio_level.Int(0)){
-        mOverrideExcitementLevel = (ExcitementLevel)override_crowd_audio_level.Int(0);
+    if(override_crowd_audio_level.Int()){
+        mOverrideExcitementLevel = (ExcitementLevel)override_crowd_audio_level.Int();
         if(mOverrideExcitementLevelPrev != mOverrideExcitementLevel) SetExcitement(mOverrideExcitementLevel);
     }
     else mOverrideExcitementLevel = (ExcitementLevel)-1;
@@ -232,7 +232,7 @@ void CrowdAudio::StopCloseupAudio(){
 
 void CrowdAudio::UpdateVolume(){
     static DataNode& volumeSetting = DataVariable("crowd_audio.volume");
-    float f1 = mCrowdVol + mCamShotVol + volumeSetting.Float(0);
+    float f1 = mCrowdVol + mCamShotVol + volumeSetting.Float();
     if(f1 > 3.0f){
         MILO_WARN("Excessive crowd audio volume!\n");
         f1 = 3.0f;
@@ -468,7 +468,7 @@ BEGIN_HANDLERS(CrowdAudio)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CrowdAudio)
-    SYNC_PROP_SET(enabled, mEnabled, SetEnabled(_val.Int(0)))
+    SYNC_PROP_SET(enabled, mEnabled, SetEnabled(_val.Int()))
     SYNC_PROP(crowd_reacts, mCrowdReacts)
     SYNC_PROP(should_play_venue_intro, mShouldPlayVenueIntro)
     SYNC_PROP(should_play_venue_outro, mShouldPlayVenueOutro)

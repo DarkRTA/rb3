@@ -197,9 +197,9 @@ END_CUSTOM_PROPSYNC
 BEGIN_PROPSYNCS(Sfx)
     SYNC_PROP(sfxmaps, mMaps)
     SYNC_PROP(moggclip_maps, mMoggClipMaps)
-    SYNC_PROP_SET(send, (Hmx::Object*)mSend, SetSend(_val.Obj<FxSend>(0)))
-    SYNC_PROP_SET(reverb_mix_db, mReverbMixDb, SetReverbMixDb(_val.Float(0)))
-    SYNC_PROP_SET(reverb_enable, mReverbEnable, SetReverbEnable(_val.Int(0)))
+    SYNC_PROP_SET(send, (Hmx::Object*)mSend, SetSend(_val.Obj<FxSend>()))
+    SYNC_PROP_SET(reverb_mix_db, mReverbMixDb, SetReverbMixDb(_val.Float()))
+    SYNC_PROP_SET(reverb_enable, mReverbEnable, SetReverbEnable(_val.Int()))
     SYNC_PROP(faders, mFaders)
     SYNC_SUPERCLASS(Sequence)
 END_PROPSYNCS

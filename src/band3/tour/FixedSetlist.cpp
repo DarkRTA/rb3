@@ -8,7 +8,7 @@ FixedSetlist::FixedSetlist() : mWeight(1), m_pSongEntries(NULL), mName("") {
 }
 
 FixedSetlist::~FixedSetlist() {
-    
+
 }
 
 void FixedSetlist::Init(const DataArray *i_pConfig) {
@@ -62,9 +62,9 @@ bool FixedSetlist::InqSongs(std::vector<Symbol>& o_rSongs) const {
         Symbol song = gNullStr;
         const DataNode& songEntryNode = const_cast<const DataArray*>(m_pSongEntries)->Node(i);
         if (songEntryNode.Type() == kDataSymbol) {
-            song = songEntryNode.Sym(0);
+            song = songEntryNode.Sym();
         } else if (songEntryNode.Type() == kDataArray) {
-            DataArray* pArray = songEntryNode.Array(0);
+            DataArray* pArray = songEntryNode.Array();
             MILO_ASSERT(pArray->Size() == 1, 0x63);
             int difficultyIndex = pArray->Int(0);
             song = TheAccomplishmentMgr->GetTourSafeDiscSongAtDifficultyIndex(difficultyIndex);

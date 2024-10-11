@@ -36,7 +36,7 @@ RndTransformable* BandCamShot::FindTarget(Symbol s, bool b){
     DataNode handled = HandleType(msg);
     RndTransformable* ret = 0;
     if(handled.Type() != kDataUnhandled){
-        ret = handled.Obj<RndTransformable>(0);
+        ret = handled.Obj<RndTransformable>();
     }
     if(!ret){
         if(Dir()) ret = Dir()->Find<RndTransformable>(s.Str(), false);
@@ -342,14 +342,14 @@ void BandCamShot::Target::UpdateTarget(Symbol s, BandCamShot* shot){
 #pragma push
 #pragma pool_data off
 BEGIN_CUSTOM_PROPSYNC(BandCamShot::Target)
-    SYNC_PROP_SET(target, o.mTarget, o.UpdateTarget(_val.Sym(0), gBandCamShotOwner))
+    SYNC_PROP_SET(target, o.mTarget, o.UpdateTarget(_val.Sym(), gBandCamShotOwner))
     SYNC_PROP_MODIFY(anim_group, o.mAnimGroup, gBandCamShotOwner->StartAnim())
     SYNC_PROP(fast_forward, o.mFastForward)
     SYNC_PROP(forward_event, o.mForwardEvent)
     {
         static Symbol _s("force_lod");
         if(sym == _s){
-            if(_op == kPropSet) o.mForceLod = _val.Int(0);
+            if(_op == kPropSet) o.mForceLod = _val.Int();
             else _val = DataNode(o.mForceLod);
             return true;
         }
@@ -357,7 +357,7 @@ BEGIN_CUSTOM_PROPSYNC(BandCamShot::Target)
     {
         static Symbol _s("teleport");
         if(sym == _s){
-            if(_op == kPropSet) o.mTeleport = _val.Int(0);
+            if(_op == kPropSet) o.mTeleport = _val.Int();
             else _val = DataNode(o.mTeleport);
             return true;
         }
@@ -365,7 +365,7 @@ BEGIN_CUSTOM_PROPSYNC(BandCamShot::Target)
     {
         static Symbol _s("return");
         if(sym == _s){
-            if(_op == kPropSet) o.mReturn = _val.Int(0);
+            if(_op == kPropSet) o.mReturn = _val.Int();
             else _val = DataNode(o.mReturn);
             return true;
         }
@@ -373,7 +373,7 @@ BEGIN_CUSTOM_PROPSYNC(BandCamShot::Target)
     {
         static Symbol _s("self_shadow");
         if(sym == _s){
-            if(_op == kPropSet) o.mSelfShadow = _val.Int(0);
+            if(_op == kPropSet) o.mSelfShadow = _val.Int();
             else _val = DataNode(o.mSelfShadow);
             return true;
         }
@@ -381,7 +381,7 @@ BEGIN_CUSTOM_PROPSYNC(BandCamShot::Target)
     {
         static Symbol _s("hide");
         if(sym == _s){
-            if(_op == kPropSet) o.mHide = _val.Int(0);
+            if(_op == kPropSet) o.mHide = _val.Int();
             else _val = DataNode(o.mHide);
             return true;
         }
@@ -424,7 +424,7 @@ END_HANDLERS
 DataNode BandCamShot::OnListTargets(const DataArray* da){
     DataNode handled = HandleType(list_targets_msg);
     if(handled.Type() != kDataUnhandled){
-        return DataNode(handled.Array(0), kDataArray);
+        return DataNode(handled.Array(), kDataArray);
     }
     else return ObjectList(Dir(), "Trans", true);
 }
@@ -435,7 +435,7 @@ DataNode BandCamShot::OnListAnimGroups(const DataArray* da){
     m[0] = DataNode(sym);
     DataNode handled = HandleType(m);
     if(handled.Type() != kDataUnhandled){
-        return DataNode(handled.Array(0), kDataArray);
+        return DataNode(handled.Array(), kDataArray);
     }
     else {
         Character* c = dynamic_cast<Character*>(FindTarget(sym, false));
@@ -451,7 +451,7 @@ DataNode BandCamShot::OnListAnimGroups(const DataArray* da){
         }
         else {
             handled = DataNode(new DataArray(1), kDataArray);
-            handled.Array(0)->Node(0) = DataNode(Symbol());
+            handled.Array()->Node(0) = DataNode(Symbol());
             return DataNode(handled);
         }
     }
@@ -468,9 +468,9 @@ DataNode BandCamShot::OnAllowableNextShots(const DataArray* da){
     }
     static DataNode& milo_prop_path = DataVariable("milo_prop_path");
     if(milo_prop_path.Type() == kDataArray){
-        if(milo_prop_path.Array(0)->Size() == 2){
+        if(milo_prop_path.Array()->Size() == 2){
             ObjPtrList<BandCamShot, ObjectDir>::iterator it = mNextShots.begin();
-            it += milo_prop_path.Array(0)->Int(1);
+            it += milo_prop_path.Array()->Int(1);
             ptr->Insert(ptr->Size(), DataNode(*it));
         }
     }

@@ -140,7 +140,7 @@ void CharEyes::Highlight(){
                 Vector3 v100(
                     tf1.m.y.x * 3.0f + tf2.v.x,
                     tf1.m.y.y * 3.0f + tf2.v.y,
-                    tf1.m.y.z * 3.0f + tf2.v.z                
+                    tf1.m.y.z * 3.0f + tf2.v.z
                 );
                 if(it->mEye->unkb1)
                     oneframe->AddLine(trans->WorldXfm().v, v100, Hmx::Color(1.0f, 0.0f, 0.0f), true);
@@ -177,7 +177,7 @@ void CharEyes::Highlight(){
         else {
             if(unkc8){
                 oneframe->AddString3D(MakeString("interest = '%s'", unkc8->Name()), v10c, Hmx::Color(0.0f, 1.0f, 0.0f));
-            }     
+            }
         }
         if(mInterests.size() != 0){
             // more happens here
@@ -450,10 +450,10 @@ BEGIN_PROPSYNCS(CharEyes)
                 int res = 0;
                 switch(node.Type()){
                     case kDataInt:
-                        res = node.Int(0);
+                        res = node.Int();
                         break;
                     case kDataSymbol:
-                        const char* bitstr = node.Sym(0).Str();
+                        const char* bitstr = node.Sym().Str();
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
                         }
@@ -474,7 +474,7 @@ BEGIN_PROPSYNCS(CharEyes)
                     _val = DataNode(final > 0);
                 }
                 else {
-                    if(_val.Int(0) != 0) mDefaultFilterFlags |= res;
+                    if(_val.Int() != 0) mDefaultFilterFlags |= res;
                     else mDefaultFilterFlags &= ~res;
                 }
                 return true;
@@ -498,10 +498,10 @@ BEGIN_PROPSYNCS(CharEyes)
                 int res = 0;
                 switch(node.Type()){
                     case kDataInt:
-                        res = node.Int(0);
+                        res = node.Int();
                         break;
                     case kDataSymbol:
-                        const char* bitstr = node.Sym(0).Str();
+                        const char* bitstr = node.Sym().Str();
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
                         }
@@ -522,7 +522,7 @@ BEGIN_PROPSYNCS(CharEyes)
                     _val = DataNode(final > 0);
                 }
                 else {
-                    if(_val.Int(0) != 0) mInterestFilterFlags |= res;
+                    if(_val.Int() != 0) mInterestFilterFlags |= res;
                     else mInterestFilterFlags &= ~res;
                 }
                 return true;

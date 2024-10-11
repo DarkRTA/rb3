@@ -382,7 +382,7 @@ void UILabel::OnSetIcon(const char* cc){
 DataNode UILabel::OnSetTokenFmt(const DataArray* da){
     DataNode& n = da->Evaluate(2);
     if(n.Type() == kDataArray){
-        DataArray* arr = n.Array(0);
+        DataArray* arr = n.Array();
         bool b = false;
         if(arr->Size() > 1){
             if(arr->Evaluate(1).Type() == kDataArray) b = true;
@@ -419,7 +419,7 @@ void UILabel::SetTokenFmtImp(Symbol s, const DataArray* da1, const DataArray* da
                 for(; i < da2->Size(); i++){
                     DataNode& n = da2->Evaluate(i);
                     if(n.Type() == kDataSymbol){
-                        str << Localize(n.Sym(0), 0);
+                        str << Localize(n.Sym(), 0);
                     }
                     else str << n;
                 }
@@ -529,32 +529,32 @@ BEGIN_HANDLERS(UILabel)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(UILabel)
-    SYNC_PROP_SET(text_token, mTextToken, SetTextToken(_val.ForceSym(0)))
-    SYNC_PROP_SET(icon, mIcon.c_str(), OnSetIcon(_val.Str(0)))
-    SYNC_PROP_SET(text_size, GetPctHeightFromTextSize(mTextSize), mTextSize = GetTextSizeFromPctHeight(_val.Float(0)); Update())
-    SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int(0)))
-    SYNC_PROP_SET(caps_mode, mCapsMode, SetCapsMode((RndText::CapsMode)_val.Int(0)))
-    SYNC_PROP_SET(markup, mMarkup, mMarkup = _val.Int(0); Update())
+    SYNC_PROP_SET(text_token, mTextToken, SetTextToken(_val.ForceSym()))
+    SYNC_PROP_SET(icon, mIcon.c_str(), OnSetIcon(_val.Str()))
+    SYNC_PROP_SET(text_size, GetPctHeightFromTextSize(mTextSize), mTextSize = GetTextSizeFromPctHeight(_val.Float()); Update())
+    SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int()))
+    SYNC_PROP_SET(caps_mode, mCapsMode, SetCapsMode((RndText::CapsMode)_val.Int()))
+    SYNC_PROP_SET(markup, mMarkup, mMarkup = _val.Int(); Update())
     SYNC_PROP_MODIFY(leading, mLeading, Update())
     SYNC_PROP_MODIFY(kerning, mKerning, LabelUpdate(true, false))
     SYNC_PROP_MODIFY(italics, mItalics, Update())
-    SYNC_PROP_SET(fit_type, mFitType, SetFitType((FitType)_val.Int(0)))
+    SYNC_PROP_SET(fit_type, mFitType, SetFitType((FitType)_val.Int()))
     SYNC_PROP_MODIFY(width, mWidth, Update())
     SYNC_PROP_MODIFY(height, mHeight, Update())
     SYNC_PROP_MODIFY(fixed_length, mFixedLength, Update())
     SYNC_PROP_MODIFY(reserve_lines, mReservedLine, Update())
     SYNC_PROP_MODIFY_ALT(preserve_trunc_text, mPreserveTruncText, Update())
-    SYNC_PROP_SET(use_highlight_mesh, mUseHighlightMesh, SetUseHighlightMesh(_val.Int(0)))
+    SYNC_PROP_SET(use_highlight_mesh, mUseHighlightMesh, SetUseHighlightMesh(_val.Int()))
     SYNC_PROP(color_override, mColorOverride)
     SYNC_PROP(alpha, mAlpha)
     SYNC_PROP_MODIFY_ALT(alt_font_resource_name, mAltFontResourceName, AltFontResourceFileUpdated(false))
-    SYNC_PROP_SET(alt_text_size, GetPctHeightFromTextSize(mAltTextSize), mAltTextSize = GetTextSizeFromPctHeight(_val.Float(0)); Update())
+    SYNC_PROP_SET(alt_text_size, GetPctHeightFromTextSize(mAltTextSize), mAltTextSize = GetTextSizeFromPctHeight(_val.Float()); Update())
     SYNC_PROP_MODIFY(alt_kerning, mAltKerning, Update())
     SYNC_PROP_MODIFY_ALT(alt_text_color, mAltTextColor, Update())
     SYNC_PROP_MODIFY(alt_z_offset, mAltZOffset, Update())
     SYNC_PROP_MODIFY(alt_italics, mAltItalics, Update())
     SYNC_PROP_MODIFY(alt_alpha, mAltAlpha, Update())
-    SYNC_PROP_SET(alt_style_enabled, mAltStyleEnabled, mAltStyleEnabled = _val.Int(0); Update())
+    SYNC_PROP_SET(alt_style_enabled, mAltStyleEnabled, mAltStyleEnabled = _val.Int(); Update())
     SYNC_PROP_MODIFY(font_mat_variation, mFontMatVariation, LabelUpdate(false, false))
     SYNC_PROP_MODIFY(alt_mat_variation, mAltMatVariation, Update())
     SYNC_SUPERCLASS(UIComponent)

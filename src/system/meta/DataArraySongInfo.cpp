@@ -40,7 +40,7 @@ DataArraySongInfo::DataArraySongInfo(DataArray* main_arr, DataArray* backup_arr,
         for(int i = 0; i < vol_arr->Size(); i++){
             mVols.push_back(vol_arr->Float(i));
         }
-    }    
+    }
     if(FIND_WITH_BACKUP(cores)){
         DataArray* core_arr = member_arr->Array(1);
         mCores.reserve(core_arr->Size());
@@ -77,17 +77,17 @@ DataArraySongInfo::DataArraySongInfo(DataArray* main_arr, DataArray* backup_arr,
             mTrackChannels[i].mAudioType = SymbolToAudioType(chan_arr->Sym(0));
             DataNode& chan_node = chan_arr->Node(1);
             if(chan_node.Type() == kDataArray){
-                DataArray* chan_nums = chan_node.Array(0);
+                DataArray* chan_nums = chan_node.Array();
                 for(int j = 0; j < chan_nums->Size(); j++){
                     mTrackChannels[i].mChannels.push_back(chan_nums->Int(j));
                 }
             }
             else {
-                mTrackChannels[i].mChannels.push_back(chan_node.Int(0));
+                mTrackChannels[i].mChannels.push_back(chan_node.Int());
             }
         }
     }
-    
+
 }
 
 DataArraySongInfo::DataArraySongInfo(SongInfo* info) : SongInfoCopy(info) {
@@ -95,11 +95,11 @@ DataArraySongInfo::DataArraySongInfo(SongInfo* info) : SongInfoCopy(info) {
 }
 
 DataArraySongInfo::DataArraySongInfo(){
-    
+
 }
 
 DataArraySongInfo::~DataArraySongInfo(){
-    
+
 }
 
 void DataArraySongInfo::Save(BinStream& bs) const {

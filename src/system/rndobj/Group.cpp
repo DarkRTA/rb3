@@ -100,7 +100,7 @@ BEGIN_PROPSYNCS(RndGroup)
     {
         static Symbol _s("sort_in_world");
         if(sym == _s){
-            if(_op == kPropSet) mSortInWorld = _val.Int(0);
+            if(_op == kPropSet) mSortInWorld = _val.Int();
             else _val = DataNode(mSortInWorld);
             return true;
         }

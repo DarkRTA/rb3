@@ -225,13 +225,13 @@ DEF_DATA_FUNC(DataAndEqual){
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x141);
         DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
-        int res = gDataThis->Property(arr, true)->Int(0) & array->Int(2);
+        int res = gDataThis->Property(arr, true)->Int() & array->Int(2);
         gDataThis->SetProperty(arr, DataNode(res));
         return res;
     }
     else {
         DataNode* var = array->Var(1);
-        int res = var->Int(0) & array->Int(2);
+        int res = var->Int() & array->Int(2);
         return (*var = DataNode(res));
     }
 }
@@ -241,13 +241,13 @@ DEF_DATA_FUNC(DataMaskEqual){
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x157);
         DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
-        int res = gDataThis->Property(arr, true)->Int(0) & ~array->Int(2);
+        int res = gDataThis->Property(arr, true)->Int() & ~array->Int(2);
         gDataThis->SetProperty(arr, DataNode(res));
         return res;
     }
     else {
         DataNode* var = array->Var(1);
-        int res = var->Int(0) & ~array->Int(2);
+        int res = var->Int() & ~array->Int(2);
         return (*var = DataNode(res));
     }
 }
@@ -257,13 +257,13 @@ DEF_DATA_FUNC(DataOrEqual){
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x16E);
         DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
-        int res = gDataThis->Property(arr, true)->Int(0) | array->Int(2);
+        int res = gDataThis->Property(arr, true)->Int() | array->Int(2);
         gDataThis->SetProperty(arr, DataNode(res));
         return res;
     }
     else {
         DataNode* var = array->Var(1);
-        int res = var->Int(0) | array->Int(2);
+        int res = var->Int() | array->Int(2);
         return (*var = DataNode(res));
     }
 }
@@ -540,7 +540,7 @@ DEF_DATA_FUNC(DataSymbol){
 DEF_DATA_FUNC(DataChar){
     static char newChar[2];
     DataNode& n = array->Evaluate(1);
-    newChar[0] = n.Int(0);
+    newChar[0] = n.Int();
     newChar[1] = '\0';
     return newChar;
 }
@@ -555,7 +555,7 @@ DEF_DATA_FUNC(DataInt){
 }
 
 DEF_DATA_FUNC(DataRound){
-    return Round(array->Evaluate(1).LiteralFloat(0));
+    return Round(array->Evaluate(1).LiteralFloat());
 }
 
 DEF_DATA_FUNC(DataFloor){
@@ -878,10 +878,10 @@ DEF_DATA_FUNC(DataNewArray){
     DataNode& n = array->Evaluate(1);
     DataArrayPtr ptr;
     if(n.Type() == kDataInt){
-        UNCONST_ARRAY(ptr)->Resize(n.LiteralInt(0));
+        UNCONST_ARRAY(ptr)->Resize(n.LiteralInt());
     }
     else if(n.Type() == kDataArray){
-        ptr = n.LiteralArray(0)->Clone(true, true, 0);
+        ptr = n.LiteralArray()->Clone(true, true, 0);
     }
     else MILO_FAIL("DataNewArray wrong argument for %s %d", array->File(), array->Line());
     return ptr;
@@ -928,13 +928,13 @@ DEF_DATA_FUNC(DataInc) {
     if (n.Type() == kDataProperty) {
         MILO_ASSERT(gDataThis, 1286);
         DataArray* a = CONST_ARRAY(array)->Node(1).mValue.array;
-        int x = gDataThis->Property(a, true)->Int(NULL) + 1;
+        int x = gDataThis->Property(a, true)->Int() + 1;
         gDataThis->SetProperty(a, x);
         return x;
 
     } else {
         DataNode* Pn = array->Var(1);
-        int i = Pn->Int(NULL);
+        int i = Pn->Int();
         return *Pn = DataNode(i+1);
     }
 }
@@ -944,13 +944,13 @@ DEF_DATA_FUNC(DataDec) {
     if (n.Type() == kDataProperty) {
         MILO_ASSERT(gDataThis, 1303);
         DataArray* a = CONST_ARRAY(array)->Node(1).mValue.array;
-        int x = gDataThis->Property(a, true)->Int(NULL) - 1;
+        int x = gDataThis->Property(a, true)->Int() - 1;
         gDataThis->SetProperty(a, x);
         return x;
 
     } else {
         DataNode* Pn = array->Var(1);
-        int i = Pn->Int(NULL);
+        int i = Pn->Int();
         return *Pn = DataNode(i-1);
     }
 }
@@ -1103,8 +1103,8 @@ DEF_DATA_FUNC(DataFindObj){
     int i;
     for (i = 1; i < array->Size() - 1; i++) {
         DataNode& n = array->Evaluate(i);
-        if(n.Type() == kDataObject) d = n.Obj<class ObjectDir>(0);
-        else d = dynamic_cast<class ObjectDir*>(d->FindObject(n.LiteralStr(0), false));
+        if(n.Type() == kDataObject) d = n.Obj<class ObjectDir>();
+        else d = dynamic_cast<class ObjectDir*>(d->FindObject(n.LiteralStr(), false));
         if(!d) return d;
     }
     return d->FindObject(array->Str(i), false);
@@ -1156,12 +1156,12 @@ DEF_DATA_FUNC(DataSubStr) {
 
 DEF_DATA_FUNC(DataStrCat) {
     DataNode& n = *array->Var(1);
-    class String s(n.Str(NULL));
+    class String s(n.Str());
     for (int i = 2; i < array->Size(); i++) {
         s += array->Str(i);
     }
     n = DataNode(s.c_str());
-    return n.Str(0);
+    return n.Str();
 }
 
 DEF_DATA_FUNC(DataStringFlags){
@@ -1249,9 +1249,9 @@ DEF_DATA_FUNC(DataMacroElem){
 }
 
 DataMergeFilter::DataMergeFilter(const DataNode& node, Subdirs subs) : MergeFilter(kMerge, subs), mType(node.Type()) {
-    if(mType == kDataInt) mInt = node.Int(0);
-    else if(mType == kDataFunc) mFunc = node.Func(0);
-    else if(mType == kDataObject) mObj = node.GetObj(0);
+    if(mType == kDataInt) mInt = node.Int();
+    else if(mType == kDataFunc) mFunc = node.Func();
+    else if(mType == kDataObject) mObj = node.GetObj();
     else if(mType == kDataSymbol){
         mObj = gDataDir->FindObject(node.mValue.symbol, true);
         if(!mObj){
@@ -1353,9 +1353,9 @@ bool FileListCallBack(char* s) {
     DataArray* array = sFileMsg;
     DataNode* n = array->Var(3);
     DataNode n2 = *n; {DataNode n3 = s; *n = n3;}
-    ret = (bool)sFileMsg->ExecuteBlock(4).Int(NULL);
+    ret = (bool)sFileMsg->ExecuteBlock(4).Int();
     if (ret) {
-        strcpy(s, n->Str(0));
+        strcpy(s, n->Str());
     }
     *n = n2;
     return ret;
@@ -1596,8 +1596,8 @@ MergeFilter::Action DataMergeFilter::Filter(Hmx::Object* from, Hmx::Object* to, 
         d.Node(1) = DataNode(from);
         d.Node(2) = DataNode(to);
         if(mType == kDataFunc){
-            return (MergeFilter::Action) mFunc(UNCONST_ARRAY(d)).Int(0);
+            return (MergeFilter::Action) mFunc(UNCONST_ARRAY(d)).Int();
         }
-        else return (MergeFilter::Action) mObj->Handle(UNCONST_ARRAY(d), true).Int(0);
+        else return (MergeFilter::Action) mObj->Handle(UNCONST_ARRAY(d), true).Int();
     }
 }

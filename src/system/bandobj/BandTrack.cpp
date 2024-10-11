@@ -250,7 +250,7 @@ void BandTrack::SetupPlayerIntro() {
 
 void BandTrack::SetupCrowdMeter() {
     static Hmx::Object *gameMode = ThisDir()->FindObject("gamemode", true);
-    mShowCrowdMeter = gameMode->Property("update_crowd_meter", true)->Int(0);
+    mShowCrowdMeter = gameMode->Property("update_crowd_meter", true)->Int();
     BandCrowdMeter *meter = GetCrowdMeter();
     const char *icon = mParent ? mParent->GetTrackIcon() : MakeString("G");
     if (meter && !meter->Disabled() && mTrackIdx > -1) {

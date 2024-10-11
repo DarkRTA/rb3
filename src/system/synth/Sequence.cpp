@@ -14,7 +14,7 @@ namespace {
     }
 }
 
-Sequence::Sequence() : mInsts(this, kObjListNoNull), mAvgVol(0.0f), mVolSpread(0.0f), mAvgTranspose(0.0f), 
+Sequence::Sequence() : mInsts(this, kObjListNoNull), mAvgVol(0.0f), mVolSpread(0.0f), mAvgTranspose(0.0f),
     mTransposeSpread(0.0f), mAvgPan(0.0f), mPanSpread(0.0f), mFaders(this), mCanStop(true) {
 
 }
@@ -144,7 +144,7 @@ BEGIN_PROPSYNCS(Sequence)
     SYNC_PROP(avg_pan, mAvgPan)
     SYNC_PROP(pan_spread, mPanSpread)
     SYNC_PROP(can_stop, mCanStop)
-    SYNC_PROP_SET(trigger_sound, 0, OnTriggerSound(_val.Int(0)))
+    SYNC_PROP_SET(trigger_sound, 0, OnTriggerSound(_val.Int()))
 END_PROPSYNCS
 
 WaitSeq::WaitSeq() : mAvgWaitSecs(0.0f), mWaitSpread(0.0f) {

@@ -44,7 +44,7 @@ PropKeys::~PropKeys(){
 
 void PropKeys::SetProp(DataNode& node){
     if(node.Type() == kDataArray){
-        DataArray* nodeArr = node.Array(0);
+        DataArray* nodeArr = node.Array();
         if(mProp){
             mProp->Release();
             mProp = 0;
@@ -673,21 +673,21 @@ int SymbolKeys::SetKey(float frame){
 }
 
 void FloatKeys::SetToCurrentVal(int i){
-    (*this)[i].value = mTarget->Property(mProp, true)->Float(0);
+    (*this)[i].value = mTarget->Property(mProp, true)->Float();
 }
 
 void ColorKeys::SetToCurrentVal(int i){
-    (*this)[i].value = Hmx::Color(mTarget->Property(mProp, true)->Int(0));
+    (*this)[i].value = Hmx::Color(mTarget->Property(mProp, true)->Int());
 }
 
 void ObjectKeys::SetToCurrentVal(int i){
     if(mPropExceptionID != kDirEvent){
-        (*this)[i].value = ObjectStage(mTarget->Property(mProp, true)->GetObj(0));
+        (*this)[i].value = ObjectStage(mTarget->Property(mProp, true)->GetObj());
     }
 }
 
 void BoolKeys::SetToCurrentVal(int i){
-    (*this)[i].value = mTarget->Property(mProp, true)->Int(0);
+    (*this)[i].value = mTarget->Property(mProp, true)->Int();
 }
 
 void QuatKeys::SetToCurrentVal(int i){
@@ -729,7 +729,7 @@ void SymbolKeys::SetToCurrentVal(int i){
             (*this)[i].value = (*this)[i - 1].value;
         }
     }
-    else (*this)[i].value = mTarget->Property(mProp, true)->Sym(0);
+    else (*this)[i].value = mTarget->Property(mProp, true)->Sym();
 }
 
 // then finally, Copys

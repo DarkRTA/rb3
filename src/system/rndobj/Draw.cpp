@@ -258,7 +258,7 @@ BEGIN_PROPSYNCS(RndDrawable)
     static Symbol _s("showing");
     if(sym == _s){
         if(_op == kPropSet){
-            mShowing = _val.Int(0) != 0;
+            mShowing = _val.Int() != 0;
         }
         else {
             _val = DataNode(mShowing);

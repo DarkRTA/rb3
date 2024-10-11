@@ -10,7 +10,7 @@ OvershellSlotState::OvershellSlotState(DataArray* da, OvershellSlot* slot) : mSl
 OvershellSlotStateID OvershellSlotState::GetStateID() const { return mStateID; }
 
 Symbol OvershellSlotState::GetView(){
-    return HandleMsg(view_msg).Sym(0);
+    return HandleMsg(view_msg).Sym();
 }
 
 void OvershellSlotState::UpdateView(){
@@ -24,63 +24,63 @@ bool OvershellSlotState::UsesRemoteStatusView(){
 
 Symbol OvershellSlotState::GetRemoteStatus(){
     DataNode handled = HandleMsg(remote_status_msg);
-    if(handled.Type() != kDataUnhandled) return handled.Sym(0);
+    if(handled.Type() != kDataUnhandled) return handled.Sym();
     else return gNullStr;
 }
 
 bool OvershellSlotState::AllowsInputToShell(){
     DataNode handled = HandleMsg(allows_input_to_shell_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::PreventsOverride(){
     DataNode handled = HandleMsg(prevents_override_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::RequiresOnlineSession(){
     DataNode handled = HandleMsg(requires_online_session_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::RequiresRemoteUsers(){
     DataNode handled = HandleMsg(requires_remote_users_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::AllowsHiding(){
     DataNode handled = HandleMsg(allows_hiding_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::RetractedPosition(){
     DataNode handled = HandleMsg(retracted_position_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::ShowsExtendedMicArrows(){
     DataNode handled = HandleMsg(shows_extended_mic_arrows_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::InSongSettingsFlow(){
     DataNode handled = HandleMsg(song_settings_flow_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
@@ -89,7 +89,7 @@ bool OvershellSlotState::IsPartUnresolved(){
     else {
         DataNode handled = HandleMsg(part_unresolved_msg);
         bool ret = false;
-        if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+        if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
         return ret;
     }
 }
@@ -97,35 +97,35 @@ bool OvershellSlotState::IsPartUnresolved(){
 bool OvershellSlotState::InRegisterOnlineFlow(){
     DataNode handled = HandleMsg(register_online_flow_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::InChooseCharFlow(){
     DataNode handled = HandleMsg(choose_char_flow_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::InCharEditFlow(){
     DataNode handled = HandleMsg(char_edit_flow_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::IsRemoveUserPrompt(){
     DataNode handled = HandleMsg(remove_user_prompt_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 
 bool OvershellSlotState::IsReadyToPlay(){
     DataNode handled = HandleMsg(ready_to_play_msg);
     bool ret = false;
-    if(handled.Type() != kDataUnhandled && handled.Int(0) != 0) ret = true;
+    if(handled.Type() != kDataUnhandled && handled.Int() != 0) ret = true;
     return ret;
 }
 

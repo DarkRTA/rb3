@@ -914,12 +914,12 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(BandCharDesc)
     gBandCharDescMe = this;
-    SYNC_PROP_SET(prefab, mPrefab, SetPrefab(_val.Sym(0)))
-    SYNC_PROP_SET(gender, mGender, SetGender(_val.Sym(0)))
-    SYNC_PROP_SET(height, mHeight, SetHeight(_val.Float(0)))
-    SYNC_PROP_SET(weight, mWeight, SetWeight(_val.Float(0)))
-    SYNC_PROP_SET(muscle, mMuscle, SetMuscle(_val.Float(0)))
-    SYNC_PROP_SET(skin_color, mSkinColor, SetSkinColor(_val.Int(0)))
+    SYNC_PROP_SET(prefab, mPrefab, SetPrefab(_val.Sym()))
+    SYNC_PROP_SET(gender, mGender, SetGender(_val.Sym()))
+    SYNC_PROP_SET(height, mHeight, SetHeight(_val.Float()))
+    SYNC_PROP_SET(weight, mWeight, SetWeight(_val.Float()))
+    SYNC_PROP_SET(muscle, mMuscle, SetMuscle(_val.Float()))
+    SYNC_PROP_SET(skin_color, mSkinColor, SetSkinColor(_val.Int()))
     SYNC_PROP_MODIFY_ALT(head, mHead, SetChanged(1))
     SYNC_PROP(instruments, mInstruments)
     SYNC_PROP(outfit, mOutfit)

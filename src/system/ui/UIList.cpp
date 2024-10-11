@@ -643,13 +643,13 @@ DataNode UIList::OnSetSelected(DataArray* da){
     int i6 = -1;
     if(node.Type() == kDataInt){
         if(da->Size() == 4) i6 = da->Int(3);
-        SetSelected(node.Int(0), i6);
+        SetSelected(node.Int(), i6);
         return DataNode(1);
     }
     else if(node.Type() == kDataSymbol || node.Type() == kDataString){
         bool i3 = da->Size() == 4 ? da->Int(3) : true;
         if(da->Size() == 5) i6 = da->Int(4);
-        return DataNode(SetSelected(node.ForceSym(0), i3, i6));
+        return DataNode(SetSelected(node.ForceSym(), i3, i6));
     }
     else {
         MILO_FAIL("bad arg to set_selected");
@@ -660,12 +660,12 @@ DataNode UIList::OnSetSelected(DataArray* da){
 DataNode UIList::OnSetSelectedSimulateScroll(DataArray* da){
     DataNode node = da->Evaluate(2);
     if(node.Type() == kDataInt){
-        SetSelectedSimulateScroll(node.Int(0));
+        SetSelectedSimulateScroll(node.Int());
         return DataNode(1);
     }
     else if(node.Type() == kDataSymbol || node.Type() == kDataString){
         bool b3 = da->Size() == 4 ? da->Int(3) : true;
-        return DataNode(SetSelectedSimulateScroll(node.ForceSym(0), b3));
+        return DataNode(SetSelectedSimulateScroll(node.ForceSym(), b3));
     }
     else {
         MILO_FAIL("bad arg to set_selected_simulate_scroll");
@@ -697,24 +697,24 @@ void UIList::FinishValueChange(){
 void UIList::SetDrawManuallyControlledWidgets(bool b){ mDrawManuallyControlledWidgets = b; }
 
 BEGIN_PROPSYNCS(UIList)
-    SYNC_PROP_SET(display_num, mListState.mNumDisplay, SetNumDisplay(_val.Int(0)))
-    SYNC_PROP_SET(grid_span, mListState.mGridSpan, SetGridSpan(_val.Int(0)))
-    SYNC_PROP_SET(circular, mListState.mCircular, SetCircular(_val.Int(0)))
-    SYNC_PROP_SET(scroll_time, mListState.Speed(), SetSpeed(_val.Float(0)))
+    SYNC_PROP_SET(display_num, mListState.mNumDisplay, SetNumDisplay(_val.Int()))
+    SYNC_PROP_SET(grid_span, mListState.mGridSpan, SetGridSpan(_val.Int()))
+    SYNC_PROP_SET(circular, mListState.mCircular, SetCircular(_val.Int()))
+    SYNC_PROP_SET(scroll_time, mListState.Speed(), SetSpeed(_val.Float()))
     SYNC_PROP(paginate, mPaginate)
-    SYNC_PROP_SET(min_display, mListState.MinDisplay(), mListState.SetMinDisplay(_val.Int(0)))
-    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int(0)))
-    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int(0)))
-    SYNC_PROP_SET(max_display, mListState.MaxDisplay(), mListState.SetMaxDisplay(_val.Int(0)))
-    SYNC_PROP_SET(scroll_past_max_display, mListState.ScrollPastMaxDisplay(), mListState.SetScrollPastMaxDisplay(_val.Int(0)))
+    SYNC_PROP_SET(min_display, mListState.MinDisplay(), mListState.SetMinDisplay(_val.Int()))
+    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int()))
+    SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int()))
+    SYNC_PROP_SET(max_display, mListState.MaxDisplay(), mListState.SetMaxDisplay(_val.Int()))
+    SYNC_PROP_SET(scroll_past_max_display, mListState.ScrollPastMaxDisplay(), mListState.SetScrollPastMaxDisplay(_val.Int()))
     SYNC_PROP_MODIFY(num_data, mNumData, Update())
     SYNC_PROP(auto_scroll_pause, mAutoScrollPause)
     SYNC_PROP(auto_scroll_send_messages, mAutoScrollSendMessages)
     SYNC_PROP(extended_label_entries, mExtendedLabelEntries)
     SYNC_PROP(extended_mesh_entries, mExtendedMeshEntries)
     SYNC_PROP(extended_custom_entries, mExtendedCustomEntries)
-    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>(0)))
-    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>()))
+    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>()))
     SYNC_SUPERCLASS(ScrollSelect)
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

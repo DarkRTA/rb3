@@ -14,7 +14,7 @@ CheckboxDisplay::CheckboxDisplay() : mChecked(1) {
 }
 
 CheckboxDisplay::~CheckboxDisplay(){
-    
+
 }
 
 BEGIN_COPYS(CheckboxDisplay)
@@ -73,6 +73,6 @@ BEGIN_HANDLERS(CheckboxDisplay)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CheckboxDisplay)
-    SYNC_PROP_SET(checked, mChecked, SetChecked(_val.Int(0)))
+    SYNC_PROP_SET(checked, mChecked, SetChecked(_val.Int()))
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

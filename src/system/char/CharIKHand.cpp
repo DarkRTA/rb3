@@ -384,7 +384,7 @@ BEGIN_CUSTOM_PROPSYNC(CharIKHand::IKTarget)
 END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(CharIKHand)
-    SYNC_PROP_SET(hand, mHand, SetHand(_val.Obj<RndTransformable>(0)))
+    SYNC_PROP_SET(hand, mHand, SetHand(_val.Obj<RndTransformable>()))
     SYNC_PROP(finger, mFinger)
     SYNC_PROP(targets, mTargets)
     SYNC_PROP(orientation, mOrientation)

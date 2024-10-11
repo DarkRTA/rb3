@@ -41,8 +41,8 @@ void CharInterest::Highlight(){
         DataNode* minrad = mDartOverride->Property("min_radius", false);
         DataNode* maxrad = mDartOverride->Property("max_radius", false);
         if(minrad && maxrad){
-            oneframe->AddSphere(WorldXfm().v, minrad->Float(0), Hmx::Color(0.7f, 0.7f, 0.7f));
-            oneframe->AddSphere(WorldXfm().v, maxrad->Float(0), Hmx::Color(1.0f, 1.0f, 1.0f));
+            oneframe->AddSphere(WorldXfm().v, minrad->Float(), Hmx::Color(0.7f, 0.7f, 0.7f));
+            oneframe->AddSphere(WorldXfm().v, maxrad->Float(), Hmx::Color(1.0f, 1.0f, 1.0f));
         }
     }
 }
@@ -163,10 +163,10 @@ BEGIN_PROPSYNCS(CharInterest)
                 int flags = 0;
                 switch(node.Type()){
                     case kDataInt:
-                        flags = node.Int(0);
+                        flags = node.Int();
                         break;
                     case kDataSymbol:
-                        const char* str = node.Sym(0).Str();
+                        const char* str = node.Sym().Str();
                         if(strncmp("BIT_", str, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", str);
                         }
@@ -186,7 +186,7 @@ BEGIN_PROPSYNCS(CharInterest)
                     _val = DataNode(mCategoryFlags & flags);
                 }
                 else {
-                    int themask = _val.Int(0);
+                    int themask = _val.Int();
                     if(themask != 0) mCategoryFlags |= themask;
                     else mCategoryFlags &= ~themask;
                 }

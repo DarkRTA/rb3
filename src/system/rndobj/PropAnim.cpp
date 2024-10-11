@@ -299,28 +299,28 @@ void RndPropAnim::SetKeyVal(Hmx::Object* o, DataArray* da, float frame, const Da
         PropKeys* cur = *keys;
         switch(cur->mKeysType){
             case PropKeys::kFloat:
-                cur->AsFloatKeys().Add(node.Float(0), frame, unique);
+                cur->AsFloatKeys().Add(node.Float(), frame, unique);
                 break;
             case PropKeys::kColor:
-                cur->AsColorKeys().Add(Hmx::Color(node.Int(0)), frame, unique);
+                cur->AsColorKeys().Add(Hmx::Color(node.Int()), frame, unique);
                 break;
             case PropKeys::kObject:
-                cur->AsObjectKeys().Add(node.GetObj(0), frame, unique);
+                cur->AsObjectKeys().Add(node.GetObj(), frame, unique);
                 break;
             case PropKeys::kBool:
-                cur->AsBoolKeys().Add(node.Int(0), frame, unique);
+                cur->AsBoolKeys().Add(node.Int(), frame, unique);
                 break;
             case PropKeys::kSymbol:
-                cur->AsSymbolKeys().Add(node.Sym(0), frame, unique);
+                cur->AsSymbolKeys().Add(node.Sym(), frame, unique);
                 break;
             case PropKeys::kVector3:
                 cur->AsVector3Keys().Add(
-                    Vector3(node.Array(0)->Float(0), node.Array(0)->Float(1), node.Array(0)->Float(2)),
+                    Vector3(node.Array()->Float(0), node.Array()->Float(1), node.Array()->Float(2)),
                     frame, unique);
                 break;
             case PropKeys::kQuat:
                 cur->AsQuatKeys().Add(
-                    Hmx::Quat(node.Array(0)->Float(0), node.Array(0)->Float(1), node.Array(0)->Float(2), node.Array(0)->Float(3)),
+                    Hmx::Quat(node.Array()->Float(0), node.Array()->Float(1), node.Array()->Float(2), node.Array()->Float(3)),
                     frame, unique);
                 break;
             default:

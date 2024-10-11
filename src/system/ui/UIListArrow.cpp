@@ -42,7 +42,7 @@ void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState
     const Vector3* vec = mOnHighlight ? &drawstate.mHighlightPos : (mPosition == kUIListArrowBack ? &drawstate.mFirstPos : &drawstate.mLastPos);
     bool onhighlight = mOnHighlight;
 
-    if(box || !mShowOnlyScroll || 
+    if(box || !mShowOnlyScroll ||
         ((mPosition != kUIListArrowBack || liststate.CanScrollBack(onhighlight)) &&
         (mPosition != kUIListArrowNext || liststate.CanScrollNext(mOnHighlight)))){
         Transform& worldxfm = mMesh->WorldXfm();
@@ -54,7 +54,7 @@ void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState
         CalcXfm(tf, *vec, xfm2);
         DrawMesh(mMesh, drawstate.mHighlightElementState, compstate, xfm2, box);
         mMesh->SetWorldXfm(xfm1);
-    }    
+    }
 }
 
 void UIListArrow::StartScroll(int i, bool) { // holy fakematch
@@ -76,7 +76,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(UIListArrow)
     SYNC_PROP(mesh, mMesh)
     SYNC_PROP(scroll_anim, mScrollAnim)
-    SYNC_PROP_SET(position, mPosition, mPosition = (UIListArrowPosition)_val.Int(0))
+    SYNC_PROP_SET(position, mPosition, mPosition = (UIListArrowPosition)_val.Int())
     SYNC_PROP(show_only_scroll, mShowOnlyScroll)
     SYNC_PROP(on_highlight, mOnHighlight)
     SYNC_SUPERCLASS(UIListWidget)

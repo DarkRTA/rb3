@@ -380,7 +380,7 @@ DataArray* DataArray::Clone(bool b1, bool b2, int i){
         da->mNodes[i] = (b2) ? mNodes[i].Evaluate() : mNodes[i];
         if(b1){
             if(da->mNodes[i].Type() == kDataArray){
-                DataArray* cloned = da->mNodes[i].LiteralArray(0)->Clone(true, b2, 0);
+                DataArray* cloned = da->mNodes[i].LiteralArray()->Clone(true, b2, 0);
                 da->mNodes[i] = DataNode(cloned, kDataArray);
                 cloned->Release();
             }
@@ -425,18 +425,18 @@ int DataArray::NodeCmp(const void* a, const void* b){
     switch(anode->Type()){
         case kDataFloat:
         case kDataInt: {
-            float a = anode->LiteralFloat(0);
-            float b = bnode->LiteralFloat(0);
+            float a = anode->LiteralFloat();
+            float b = bnode->LiteralFloat();
             if(a < b) return -1;
             return a != b;
         }
         case kDataString:
         case kDataSymbol:
-            return stricmp(anode->Str(0), bnode->Str(0));
+            return stricmp(anode->Str(), bnode->Str());
         case kDataArray:
-            return NodeCmp(&(anode->Array(0)->Node(0)), &(bnode->Array(0)->Node(0)));
+            return NodeCmp(&(anode->Array()->Node(0)), &(bnode->Array()->Node(0)));
         case kDataObject:
-            return stricmp(anode->GetObj(0) ? anode->GetObj(0)->Name() : "", bnode->GetObj(0) ? bnode->GetObj(0)->Name() : "");
+            return stricmp(anode->GetObj() ? anode->GetObj()->Name() : "", bnode->GetObj() ? bnode->GetObj()->Name() : "");
         default:
             MILO_WARN("could not sort array, bad type");
             return 0;

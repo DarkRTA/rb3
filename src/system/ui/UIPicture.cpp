@@ -10,9 +10,9 @@
 
 INIT_REVS(UIPicture)
 
-UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile(), 
+UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile(),
     mTex(Hmx::Object::New<RndTex>()), mLoader(0), mHookTex(true), mDelayedTexFile("") {
-    
+
 }
 
 UIPicture::~UIPicture() {
@@ -176,9 +176,9 @@ BEGIN_HANDLERS(UIPicture)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(UIPicture)
-    SYNC_PROP_SET(tex_file, mTexFile, SetTex(FilePath(_val.Str(0))))
-    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>(0)))
-    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(tex_file, mTexFile, SetTex(FilePath(_val.Str())))
+    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>()))
+    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>()))
     SYNC_PROP_MODIFY_ALT(mesh, mMesh, HookupMesh())
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

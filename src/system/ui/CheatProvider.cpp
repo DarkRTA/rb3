@@ -68,13 +68,13 @@ void CheatProvider::Text(int i, int j, UIListLabel* listlabel, UILabel* label) c
                 if(value_arr){
                     DataNode& n = value_arr->Node(1).Evaluate();
                     if(n.Type() == kDataSymbol || n.Type() == kDataString){
-                        label->SetEditText(n.Str(0));
+                        label->SetEditText(n.Str());
                     }
                     else if(n.Type() == kDataInt){
-                        label->SetInt(n.Int(0), false);
+                        label->SetInt(n.Int(), false);
                     }
                     else if(n.Type() == kDataFloat){
-                        label->SetFloat("%f", n.Float(0));
+                        label->SetFloat("%f", n.Float());
                     }
                     else label->SetEditText("?");
                 }

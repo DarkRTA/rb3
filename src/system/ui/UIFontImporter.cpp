@@ -313,14 +313,14 @@ void UIFontImporter::ImportSettingsFromFont(RndFont* font){
         if(font->Type() == imported_font) has_import_font = true;
     }
     if(has_import_font){
-        SetProperty("font_name", DataNode(font->Property("font_name", true)->Str(0)));
-        SetProperty("font_size", DataNode(FontSizeToPercentHD(-font->Property("font_size", true)->Int(0))));
-        SetProperty("bold", DataNode(font->Property("bold", true)->Int(0)));
-        SetProperty("italics", DataNode(font->Property("italics", true)->Int(0)));
-        SetProperty("left", DataNode(font->Property("left", true)->Int(0)));
-        SetProperty("right", DataNode(font->Property("right", true)->Int(0)));
-        SetProperty("top", DataNode(font->Property("top", true)->Int(0)));
-        SetProperty("bottom", DataNode(font->Property("bottom", true)->Int(0)));
+        SetProperty("font_name", DataNode(font->Property("font_name", true)->Str()));
+        SetProperty("font_size", DataNode(FontSizeToPercentHD(-font->Property("font_size", true)->Int())));
+        SetProperty("bold", DataNode(font->Property("bold", true)->Int()));
+        SetProperty("italics", DataNode(font->Property("italics", true)->Int()));
+        SetProperty("left", DataNode(font->Property("left", true)->Int()));
+        SetProperty("right", DataNode(font->Property("right", true)->Int()));
+        SetProperty("top", DataNode(font->Property("top", true)->Int()));
+        SetProperty("bottom", DataNode(font->Property("bottom", true)->Int()));
     }
     else MILO_WARN("Can't import settings from Font because it doesnt have import_font type");
 }
@@ -469,11 +469,11 @@ BEGIN_PROPSYNCS(UIFontImporter)
     SYNC_PROP_MODIFY(font_pct_size, mFontPctSize, GenerateBitmapFilename())
     SYNC_PROP_SET(font_point_size,
         mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize) : FontPercentToSizeSD(mFontPctSize),
-        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int(0)) : FontSizeToPercentSD(-_val.Int(0)))
+        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int()) : FontSizeToPercentSD(-_val.Int()))
     SYNC_PROP_SET(font_pixel_size,
         std::abs(mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize) : FontPercentToSizeSD(mFontPctSize)),
-        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int(0)) : FontSizeToPercentSD(-_val.Int(0)))
-    SYNC_PROP_SET(bold, std::abs(mFontWeight), mFontWeight = _val.Int(0) ? 800 : 400; GenerateBitmapFilename())
+        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int()) : FontSizeToPercentSD(-_val.Int()))
+    SYNC_PROP_SET(bold, std::abs(mFontWeight), mFontWeight = _val.Int() ? 800 : 400; GenerateBitmapFilename())
     SYNC_PROP_MODIFY(italics, mItalics, GenerateBitmapFilename())
     SYNC_PROP(font_quality, (int&)mFontQuality)
     SYNC_PROP(pitch_and_family, mPitchAndFamily)

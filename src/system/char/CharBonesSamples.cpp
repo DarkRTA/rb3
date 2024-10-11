@@ -96,7 +96,7 @@ void CharBonesSamples::SetPreview(int i){
 
 BEGIN_PROPSYNCS(CharBonesSamples)
     SYNC_PROP(num_samples, mNumSamples)
-    SYNC_PROP_SET(preview_sample, mPreviewSample, SetPreview(_val.Int(0)))
+    SYNC_PROP_SET(preview_sample, mPreviewSample, SetPreview(_val.Int()))
     SYNC_PROP(frames, mFrames)
     SYNC_PROP_SET(compression, mCompression, )
     else {

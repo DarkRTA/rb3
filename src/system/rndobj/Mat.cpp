@@ -275,7 +275,7 @@ BEGIN_COPYS(RndMat)
         COPY_MEMBER_FROM(m, mDiffuseTex)
     }
     else {
-        
+
     }
     mDirty = 3;
 END_COPYS
@@ -529,7 +529,7 @@ BEGIN_PROPSYNCS(RndMat)
     {
         static Symbol _s("point_lights");
         if(sym == _s){
-            if(_op == kPropSet) mPointLights = _val.Int(0);
+            if(_op == kPropSet) mPointLights = _val.Int();
             else _val = DataNode(mPointLights);
             return true;
         }
@@ -537,7 +537,7 @@ BEGIN_PROPSYNCS(RndMat)
     {
         static Symbol _s("fog");
         if(sym == _s){
-            if(_op == kPropSet) mFog = _val.Int(0);
+            if(_op == kPropSet) mFog = _val.Int();
             else _val = DataNode(mFog);
             return true;
         }
@@ -545,7 +545,7 @@ BEGIN_PROPSYNCS(RndMat)
     {
         static Symbol _s("fade_out");
         if(sym == _s){
-            if(_op == kPropSet) mFadeout = _val.Int(0);
+            if(_op == kPropSet) mFadeout = _val.Int();
             else _val = DataNode(mFadeout);
             return true;
         }
@@ -553,13 +553,13 @@ BEGIN_PROPSYNCS(RndMat)
     {
         static Symbol _s("color_adjust");
         if(sym == _s){
-            if(_op == kPropSet) mColorAdjust = _val.Int(0);
+            if(_op == kPropSet) mColorAdjust = _val.Int();
             else _val = DataNode(mColorAdjust);
             return true;
         }
     }
-    SYNC_PROP_SET(recv_proj_lights, mPerfSettings.mRecvProjLights, mPerfSettings.mRecvProjLights = _val.Int(0) > 0)
-    SYNC_PROP_SET(recv_point_cube_tex, mPerfSettings.mRecvPointCubeTex, mPerfSettings.mRecvPointCubeTex = _val.Int(0) > 0)
-    SYNC_PROP_SET(ps3_force_trilinear, mPerfSettings.mPS3ForceTrilinear, mPerfSettings.mPS3ForceTrilinear = _val.Int(0) > 0)
+    SYNC_PROP_SET(recv_proj_lights, mPerfSettings.mRecvProjLights, mPerfSettings.mRecvProjLights = _val.Int() > 0)
+    SYNC_PROP_SET(recv_point_cube_tex, mPerfSettings.mRecvPointCubeTex, mPerfSettings.mRecvPointCubeTex = _val.Int() > 0)
+    SYNC_PROP_SET(ps3_force_trilinear, mPerfSettings.mPS3ForceTrilinear, mPerfSettings.mPS3ForceTrilinear = _val.Int() > 0)
 END_PROPSYNCS
 #pragma pop

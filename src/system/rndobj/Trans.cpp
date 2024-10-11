@@ -315,7 +315,7 @@ BEGIN_LOADS(RndTransformable)
             bs >> tPtr;
             SetTransParent(tPtr, false);
         }
-        else tPtr.Load(bs, false, 0); 
+        else tPtr.Load(bs, false, 0);
     }
     else if(gRev > 6){
         ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
@@ -534,8 +534,8 @@ DataNode RndTransformable::OnGetChildren(const DataArray* da){
 }
 
 BEGIN_PROPSYNCS(RndTransformable)
-    SYNC_PROP_SET(trans_parent, mParent, SetTransParent(_val.Obj<RndTransformable>(0), true))
-    SYNC_PROP_SET(trans_constraint, mConstraint, SetTransConstraint((Constraint)_val.Int(0), mTarget, mPreserveScale))
-    SYNC_PROP_SET(trans_target, (Hmx::Object*)mTarget, SetTransConstraint((Constraint)mConstraint, _val.Obj<RndTransformable>(0), mPreserveScale))
-    SYNC_PROP_SET(preserve_scale, mPreserveScale, SetTransConstraint((Constraint)mConstraint, mTarget, _val.Int(0)))
+    SYNC_PROP_SET(trans_parent, mParent, SetTransParent(_val.Obj<RndTransformable>(), true))
+    SYNC_PROP_SET(trans_constraint, mConstraint, SetTransConstraint((Constraint)_val.Int(), mTarget, mPreserveScale))
+    SYNC_PROP_SET(trans_target, (Hmx::Object*)mTarget, SetTransConstraint((Constraint)mConstraint, _val.Obj<RndTransformable>(), mPreserveScale))
+    SYNC_PROP_SET(preserve_scale, mPreserveScale, SetTransConstraint((Constraint)mConstraint, mTarget, _val.Int()))
 END_PROPSYNCS

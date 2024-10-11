@@ -48,7 +48,7 @@ MasterAudio::MasterAudio(
 
     mMultiplayerCommonVolume = -da->FindFloat("multiplayer_common_attenuation");
     mBackgroundVolume = -da->FindFloat("background_attenuation");
-    if (DataVariable("no_background_atten").Int(0))
+    if (DataVariable("no_background_atten").Int())
         mBackgroundVolume = 0;
 
     float practice;

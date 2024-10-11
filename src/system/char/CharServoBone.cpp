@@ -111,8 +111,8 @@ BEGIN_HANDLERS(CharServoBone)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharServoBone)
-    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym(0)))
-    SYNC_PROP_SET(move_self, mMoveSelf, SetMoveSelf(_val.Int(0)))
+    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym()))
+    SYNC_PROP_SET(move_self, mMoveSelf, SetMoveSelf(_val.Int()))
     SYNC_PROP(delta_changed, mDeltaChanged)
     SYNC_PROP(regulate, mRegulate)
     SYNC_SUPERCLASS(CharBonesMeshes)

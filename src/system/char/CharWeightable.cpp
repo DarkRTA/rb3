@@ -48,7 +48,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(CharWeightable)
     if(sym == weight){
         if(_op == kPropSet){
-            SetWeight(_val.Float(0));
+            SetWeight(_val.Float());
         }
         else {
             if((int)_op == 0x40) return false;
@@ -58,7 +58,7 @@ BEGIN_PROPSYNCS(CharWeightable)
     }
     if(sym == weight_owner){
         if(_op == kPropSet){
-            SetWeightOwner(_val.Obj<CharWeightable>(0));
+            SetWeightOwner(_val.Obj<CharWeightable>());
         }
         else {
             if((int)_op == 0x40) return false;

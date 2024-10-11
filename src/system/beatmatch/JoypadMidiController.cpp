@@ -1,6 +1,6 @@
 #include "beatmatch/JoypadMidiController.h"
 
-JoypadMidiController::JoypadMidiController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool disabled) : 
+JoypadMidiController::JoypadMidiController(User* user, const DataArray* cfg, BeatMatchControllerSink* bsink, bool disabled) :
     JoypadController(user, cfg, bsink, disabled, false), mWhammy(0.0f) {
     JoypadSubscribe(this);
 }
@@ -63,7 +63,7 @@ int JoypadMidiController::OnMsg(const KeyboardModMsg& msg){
 
 JoypadButton JoypadMidiController::MidiNoteToButton(int note) const {
     static DataNode& keyboard_wide_frets = DataVariable("keyboard_wide_frets");
-    if(keyboard_wide_frets.Int(0)){
+    if(keyboard_wide_frets.Int()){
         int octave = note / 12;
         int pad = mLocalUser->GetPadNum();
         if (pad <= 1u && (octave % 2) != pad) {
@@ -93,7 +93,7 @@ int JoypadMidiController::OnMsg(const ButtonDownMsg& msg){
         mSink->ForceMercurySwitch(true);
         mSink->ForceMercurySwitch(false);
     }
-    return 0;    
+    return 0;
 }
 
 BEGIN_HANDLERS(JoypadMidiController)

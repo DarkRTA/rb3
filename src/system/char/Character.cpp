@@ -475,14 +475,14 @@ END_CUSTOM_PROPSYNC
 
 #include "utl/ClassSymbols.h"
 BEGIN_PROPSYNCS(Character)
-    SYNC_PROP_SET(sphere_base, mSphereBase, SetSphereBase(_val.Obj<RndTransformable>(0)))
+    SYNC_PROP_SET(sphere_base, mSphereBase, SetSphereBase(_val.Obj<RndTransformable>()))
     SYNC_PROP(lods, mLods)
     SYNC_PROP(force_lod, mMinLod)
     SYNC_PROP(trans_group, mTransGroup)
     SYNC_PROP(self_shadow, mSelfShadow)
     SYNC_PROP(bounding, mBounding)
     SYNC_PROP(frozen, mFrozen)
-    SYNC_PROP_SET(shadow, mShadow, SetShadow(_val.Obj<RndGroup>(0)))
+    SYNC_PROP_SET(shadow, mShadow, SetShadow(_val.Obj<RndGroup>()))
     SYNC_PROP_SET(driver, mDriver, )
     SYNC_PROP_MODIFY(interest_to_force, mInterestToForce, SetFocusInterest(mInterestToForce, 0))
 #ifdef VERSION_SZBE69_B8

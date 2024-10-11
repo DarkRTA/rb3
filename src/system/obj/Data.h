@@ -121,25 +121,27 @@ public:
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
 
-    int Int(const DataArray* a) const;
-    int LiteralInt(const DataArray* a) const;
-    Symbol Sym(const DataArray* a) const;
-    Symbol LiteralSym(const DataArray* a) const;
-    Symbol ForceSym(const DataArray* a) const;
-    const char* Str(const DataArray* a) const;
-    const char* LiteralStr(const DataArray* a) const;
-    void* Glob(int* size, const DataArray* a) const;
-    float Float(const DataArray* a) const;
-    float LiteralFloat(const DataArray* a) const;
-    DataFunc* Func(const DataArray* a) const;
-    Hmx::Object* GetObj(const DataArray* a) const;
-    DataArray* Array(const DataArray* a) const;
-    DataArray* LiteralArray(const DataArray* a) const;
-    DataArray* Command(const DataArray* a) const;
-    DataNode* Var(const DataArray* a) const;
+    int Int(const DataArray* source = nullptr) const;
+    int LiteralInt(const DataArray* source = nullptr) const;
+    Symbol Sym(const DataArray* source = nullptr) const;
+    Symbol LiteralSym(const DataArray* source = nullptr) const;
+    Symbol ForceSym(const DataArray* source = nullptr) const;
+    const char* Str(const DataArray* source = nullptr) const;
+    const char* LiteralStr(const DataArray* source = nullptr) const;
+    void* Glob(int* size, const DataArray* source = nullptr) const;
+    float Float(const DataArray* source = nullptr) const;
+    float LiteralFloat(const DataArray* source = nullptr) const;
+    DataFunc* Func(const DataArray* source = nullptr) const;
+    Hmx::Object* GetObj(const DataArray* source = nullptr) const;
+    DataArray* Array(const DataArray* source = nullptr) const;
+    DataArray* LiteralArray(const DataArray* source = nullptr) const;
+    DataArray* Command(const DataArray* source = nullptr) const;
+    DataNode* Var(const DataArray* source = nullptr) const;
+
     // for retrieving a Hmx::Object derivative from a DataNode
-    template <class T> T* Obj(const DataArray* a) const {
-        return dynamic_cast<T*>(GetObj(a));
+    template <class T>
+    T* Obj(const DataArray* source = nullptr) const {
+        return dynamic_cast<T*>(GetObj(source));
     }
 
     bool operator==(const DataNode& n) const;

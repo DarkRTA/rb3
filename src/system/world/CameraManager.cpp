@@ -50,17 +50,17 @@ bool CameraManager::ShotMatches(CamShot* shot, const std::vector<PropertyFilter>
     for(std::vector<PropertyFilter>::const_iterator it = filts.begin(); it != filts.end(); ++it){
         DataNode d28;
         if(it->prop.Type() == kDataArray){
-            d28 = shot->Property(it->prop.Array(0), true)->Evaluate();
+            d28 = shot->Property(it->prop.Array(), true)->Evaluate();
         }
         else {
-            Symbol sym = it->prop.Sym(0);
+            Symbol sym = it->prop.Sym();
             if(sym == flags_exact) d28 = DataNode(flags & it->mask);
             else if(sym == flags_any) d28 = DataNode((flags & it->mask) != 0);
             else d28 = shot->Property(sym, true)->Evaluate();
         }
 
         if(it->match.Type() == kDataArray){
-            DataArray* arr = it->match.Array(0);
+            DataArray* arr = it->match.Array();
             int idx;
             for(idx = 0; idx != arr->Size(); idx++){
                 if(d28 == arr->Node(idx)) break;
@@ -136,7 +136,7 @@ Symbol CameraManager::MakeCategoryAndFilters(DataArray* da, std::vector<Property
             filt.prop = currArr->Evaluate(0);
             bool b1 = false;
             if(filt.prop.Type() == kDataSymbol){
-                if(filt.prop.Sym(0) == flags_exact){
+                if(filt.prop.Sym() == flags_exact){
                     b1 = true;
                 }
             }
@@ -147,7 +147,7 @@ Symbol CameraManager::MakeCategoryAndFilters(DataArray* da, std::vector<Property
             else {
                 b1 = false;
                 if(filt.prop.Type() == kDataSymbol){
-                    if(filt.prop.Sym(0) == flags_any){
+                    if(filt.prop.Sym() == flags_any){
                         b1 = true;
                     }
                 }
@@ -236,7 +236,7 @@ CamShot* CameraManager::MiloCamera(){
     if(TheLoadMgr.EditMode()){
         static DataNode& anim = DataVariable("milo.anim");
         if(anim.Type() == kDataObject){
-            return anim.Obj<CamShot>(0);
+            return anim.Obj<CamShot>();
         }
     }
     return 0;

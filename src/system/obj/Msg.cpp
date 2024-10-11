@@ -12,7 +12,7 @@ void MsgSource::Sink::Export(DataArray* da){
         case kExportType: obj->Export(da, true); break;
     }
 }
-    
+
 MsgSource::MsgSource() : mSinks(), mEventSinks(), mExporting(0) {}
 
 MsgSource::~MsgSource(){
@@ -193,10 +193,10 @@ DataNode MsgSource::OnAddSink(DataArray* da){
             for(int i = 0; i < arr->Size(); i++){
                 DataNode node(arr->Evaluate(i));
                 if(node.Type() == kDataArray){
-                    AddSink(obj, node.LiteralArray(0)->LiteralSym(0), node.LiteralArray(0)->LiteralSym(1), mode);
+                    AddSink(obj, node.LiteralArray()->LiteralSym(0), node.LiteralArray()->LiteralSym(1), mode);
                 }
                 else {
-                    AddSink(obj, node.LiteralSym(0), Symbol(), mode);
+                    AddSink(obj, node.LiteralSym(), Symbol(), mode);
                 }
             }
         }

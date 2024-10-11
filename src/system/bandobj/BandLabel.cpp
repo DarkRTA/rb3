@@ -15,7 +15,7 @@ BandLabel::BandLabel() : UITransitionHandler(this), unk1e8(""), unk1f4(0) {
 }
 
 BandLabel::~BandLabel(){
-    
+
 }
 
 BEGIN_COPYS(BandLabel)
@@ -208,7 +208,7 @@ BEGIN_HANDLERS(BandLabel)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(BandLabel)
-    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>(0)))
-    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>(0)))
+    SYNC_PROP_SET(in_anim, GetInAnim(), SetInAnim(_val.Obj<RndAnimatable>()))
+    SYNC_PROP_SET(out_anim, GetOutAnim(), SetOutAnim(_val.Obj<RndAnimatable>()))
     SYNC_SUPERCLASS(UILabel)
 END_PROPSYNCS

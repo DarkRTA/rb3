@@ -192,8 +192,8 @@ void OvershellSlot::ShowSongOptions(){
             pUser->SetOvershellSlotState(kState_ReadyToPlay);
         }
         else {
-            if(TheGameMode->Property("skip_choose_part", true)->Int(0)){
-                int part = TheGameMode->Property("forced_part", true)->Int(0);
+            if(TheGameMode->Property("skip_choose_part", true)->Int()){
+                int part = TheGameMode->Property("forced_part", true)->Int();
                 if(part == kTrackNone){
                     part = ControllerTypeToTrackType(pUser->GetControllerType(), false);
                 }
@@ -201,7 +201,7 @@ void OvershellSlot::ShowSongOptions(){
                 pUser->SetOvershellSlotState(kState_ChooseDiff);
             }
             else pUser->SetOvershellSlotState(kState_ChoosePart);
-        } 
+        }
     }
     mOvershell->UpdateAll();
 }
@@ -275,7 +275,7 @@ void OvershellSlot::SelectDifficulty(Difficulty diff){
     mSongOptionsRequired = 0;
     if(mOvershell->mSongOptionsRequired){
         if(!old5e && mOvershell->InSong()){
-            if(!TheGameMode->Property("skip_choose_diff_prompt", true)->Int(0)){
+            if(!TheGameMode->Property("skip_choose_diff_prompt", true)->Int()){
                 Difficulty pUserDiff = pUser->GetDifficulty();
                 if(diff == pUserDiff) CancelSongSettings();
                 else {
@@ -327,7 +327,7 @@ void OvershellSlot::LeaveChoosePartWait(){
 void OvershellSlot::LeaveChooseDifficulty(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x41A);
-    if(!TheGameMode->Property("skip_choose_part", true)->Int(0) && (!mInGame || mSongOptionsRequired)){
+    if(!TheGameMode->Property("skip_choose_part", true)->Int() && (!mInGame || mSongOptionsRequired)){
         pUser->SetTrackType(kTrackNone);
         pUser->SetOvershellSlotState(kState_ChoosePart);
     }
@@ -410,7 +410,7 @@ void OvershellSlot::KickUser(int i){
 }
 
 void OvershellSlot::ConfirmKick(){
-    BandUser* pUserToKick = mState->Property("kick_user", true)->Obj<BandUser>(0);
+    BandUser* pUserToKick = mState->Property("kick_user", true)->Obj<BandUser>();
     MILO_ASSERT(pUserToKick != NULL, 0x505);
     mKickUsersProvider->KickPlayer(pUserToKick);
     LeaveKickConfirmation();
@@ -699,7 +699,7 @@ void OvershellSlot::RevertToOverrideFlowReturnState(){
 }
 
 bool OvershellSlot::IsQuitToken(Symbol s) const {
-    return s == TheGameMode->Property("pause_menu_quit_token", true)->Sym(0);
+    return s == TheGameMode->Property("pause_menu_quit_token", true)->Sym();
 }
 
 void OvershellSlot::BeginOverrideFlow(OvershellOverrideFlow type, bool b){
@@ -867,7 +867,7 @@ BEGIN_HANDLERS(OvershellSlot)
     HANDLE_ACTION(leave_difficulty_confirmation, LeaveDifficultyConfirmation())
     HANDLE_ACTION(confirm_kick, ConfirmKick())
     HANDLE_ACTION(leave_kick_confirmation, LeaveKickConfirmation())
-    HANDLE_EXPR(is_in_track_mode, mOvershellDir->Property("in_track_mode", true)->Int(0))
+    HANDLE_EXPR(is_in_track_mode, mOvershellDir->Property("in_track_mode", true)->Int())
     HANDLE_ACTION(reset_slot_cam, ResetSlotCamera())
     HANDLE_ACTION(show_chord_book, ShowChordBook())
     HANDLE_ACTION(practice_new_section, PracticeNewSection())

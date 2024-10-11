@@ -66,7 +66,7 @@ int BandWardrobe::GetShotFlags(CamShot* shot){
             flags |= 0x200;
             DataNode* prop = shot->Property("free_dircuts", false);
             if(prop){
-                DataArray* proparr = prop->Array(0);
+                DataArray* proparr = prop->Array();
                 for(int i = 0; i < proparr->Size(); i++){
                     if(shot->Category() == proparr->Sym(i)){
                         flags &= ~0x200;
@@ -193,7 +193,7 @@ void BandWardrobe::StartVenueShot(BandCamShot* shot){
 
 Symbol BandWardrobe::GetPlayMode(){
     static DataNode& pm = DataVariable("band.play_mode");
-    return pm.Sym(0);
+    return pm.Sym();
 }
 
 void BandWardrobe::SetSongInfo(Symbol s1, Symbol s2){
@@ -426,9 +426,9 @@ void BandWardrobe::LoadMainCharacters(BandCamShot* shot){
         DataNode tracknode = GetUserTrack(i);
         Symbol inst = "none";
         if(tracknode.Type() != kDataUnhandled){
-            int instidx = InstrumentIndex(syms, tracknode.Sym(0));
+            int instidx = InstrumentIndex(syms, tracknode.Sym());
             if(instidx != syms.size()){
-                inst = GrabInstrument(syms, tracknode.Sym(0));
+                inst = GrabInstrument(syms, tracknode.Sym());
                 goto lol;
             }
             iarr[i] = i;
@@ -509,7 +509,7 @@ void BandWardrobe::SelectExtra(FileMerger::Merger& merger){
     if(!dir) return;
     else {
         DataNode node = dir->PropertyArray("proxies");
-        DataArray* proparr = node.Array(0);
+        DataArray* proparr = node.Array();
         for(std::list<Symbol>::iterator it = unk2c.begin(); it != unk2c.end(); ++it){
             Symbol cur = *it;
             for(int i = 0; i < proparr->Size(); i++){
@@ -557,7 +557,7 @@ BandCharDesc* BandWardrobe::GetPrefab(int target, int variation){
     }
     else {
         Symbol prefabsym = MakeString("milopref_prefab%d_%c", target, variation + 'a');
-        Symbol findsym = DataVarExists(prefabsym) ? DataVariable(prefabsym).Sym(0) : Symbol();
+        Symbol findsym = DataVarExists(prefabsym) ? DataVariable(prefabsym).Sym() : Symbol();
         if(!findsym.Null()) return BandCharDesc::FindPrefab(findsym.Str(), false);
         else return 0;
     }
@@ -731,7 +731,7 @@ DataNode BandWardrobe::OnListVenueAnimGroups(DataArray* da){
     Symbol sym = da->Sym(2);
     BandCharacter* bchar = FindTarget(sym, mVenueNames);
     if(bchar){
-        return bchar->ListAnimGroups(GetShotFlags(shot));      
+        return bchar->ListAnimGroups(GetShotFlags(shot));
     }
     else {
         Character* chr = mVenueDir->Find<Character>(sym.Str(), false);
@@ -775,7 +775,7 @@ DataNode BandWardrobe::OnSelectExtras(DataArray* da){
                 m.mSubdirs = 3;
                 unk20->Mergers().push_back(m);
                 DataNode propnode = o->PropertyArray(proxies);
-                DataArray* proparr = propnode.Array(0);
+                DataArray* proparr = propnode.Array();
                 for(int i = 0; i < proparr->Size(); i++){
                     unk2c.push_back(proparr->Sym(i));
                 }
@@ -802,8 +802,8 @@ DataNode BandWardrobe::OnSelectExtras(DataArray* da){
 int NodeCmp(const void* a, const void* b){
     DataNode* na = (DataNode*)a;
     DataNode* nb = (DataNode*)b;
-    const char* stra = na->Str(0);
-    const char* strb = nb->Str(0);
+    const char* stra = na->Str();
+    const char* strb = nb->Str();
     const char* strstra = strstr(stra, ".tp");
     const char* strstrb = strstr(strb, ".tp");
     if((strstra != 0) == (strstrb != 0)){
@@ -822,7 +822,7 @@ BEGIN_PROPSYNCS(BandWardrobe)
     SYNC_PROP(genre, mGenre)
     SYNC_PROP(tempo, mTempo)
     SYNC_PROP(vocal_gender, mVocalGender)
-    SYNC_PROP_SET(play_mode, GetPlayMode(), SetPlayMode(_val.Sym(0), 0))
+    SYNC_PROP_SET(play_mode, GetPlayMode(), SetPlayMode(_val.Sym(), 0))
     SYNC_PROP(shot_set_play_mode, mShotSetPlayMode)
     SYNC_PROP(play_shot_5, mPlayShot5)
     SYNC_PROP_MODIFY(player0_forced_focus, mPlayerForcedFocuses[0], SyncVignetteInterest(0))
@@ -833,10 +833,10 @@ BEGIN_PROPSYNCS(BandWardrobe)
     SYNC_PROP_MODIFY(player1_enable_blinks, mPlayerEnableBlinks[1], SyncEnableBlinks(1))
     SYNC_PROP_MODIFY(player2_enable_blinks, mPlayerEnableBlinks[2], SyncEnableBlinks(2))
     SYNC_PROP_MODIFY(player3_enable_blinks, mPlayerEnableBlinks[3], SyncEnableBlinks(3))
-    SYNC_PROP_SET(player0_force_blink, 0, if(_val.Int(0)) ForceBlink(0))
-    SYNC_PROP_SET(player1_force_blink, 0, if(_val.Int(0)) ForceBlink(1))
-    SYNC_PROP_SET(player2_force_blink, 0, if(_val.Int(0)) ForceBlink(2))
-    SYNC_PROP_SET(player3_force_blink, 0, if(_val.Int(0)) ForceBlink(3))
+    SYNC_PROP_SET(player0_force_blink, 0, if(_val.Int()) ForceBlink(0))
+    SYNC_PROP_SET(player1_force_blink, 0, if(_val.Int()) ForceBlink(1))
+    SYNC_PROP_SET(player2_force_blink, 0, if(_val.Int()) ForceBlink(2))
+    SYNC_PROP_SET(player3_force_blink, 0, if(_val.Int()) ForceBlink(3))
     SYNC_PROP(demand_load, mDemandLoad)
     SYNC_PROP(dir, mVenueDir)
 END_PROPSYNCS

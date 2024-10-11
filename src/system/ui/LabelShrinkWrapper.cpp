@@ -105,7 +105,7 @@ BEGIN_HANDLERS(LabelShrinkWrapper)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(LabelShrinkWrapper)
-    SYNC_PROP_SET(label, Label(), SetLabel(_val.Obj<UILabel>(0)))
-    SYNC_PROP_SET(show, m_pShow, SetShouldShow(_val.Int(0)))
+    SYNC_PROP_SET(label, Label(), SetLabel(_val.Obj<UILabel>()))
+    SYNC_PROP_SET(show, m_pShow, SetShouldShow(_val.Int()))
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

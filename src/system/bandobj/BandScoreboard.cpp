@@ -11,7 +11,7 @@ BandScoreboard::BandScoreboard() : mScore(-1), mThousandsCommaMesh(this, 0), mMi
 }
 
 BandScoreboard::~BandScoreboard(){
-    
+
 }
 
 void BandScoreboard::SetScore(int score){
@@ -117,8 +117,8 @@ void BandScoreboard::PostLoad(BinStream& bs){
 }
 
 BEGIN_PROPSYNCS(BandScoreboard)
-    SYNC_PROP_SET(score, mScore, SetScore(_val.Int(0)))
-    SYNC_PROP_SET(num_stars, GetNumStars(), SetNumStars(_val.Float(0), true))
+    SYNC_PROP_SET(score, mScore, SetScore(_val.Int()))
+    SYNC_PROP_SET(num_stars, GetNumStars(), SetNumStars(_val.Float(), true))
     SYNC_PROP(star_display, mStarDisplay)
     SYNC_SUPERCLASS(RndDir)
 END_PROPSYNCS

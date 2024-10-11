@@ -8,7 +8,7 @@
 
 static int TRANSANIM_REV = 7;
 
-RndTransAnim::RndTransAnim() : mTrans(this, 0), mTransSpline(0), mScaleSpline(0), mRotSlerp(0), mRotSpline(0), 
+RndTransAnim::RndTransAnim() : mTrans(this, 0), mTransSpline(0), mScaleSpline(0), mRotSlerp(0), mRotSpline(0),
     mRotKeys(), mTransKeys(), mScaleKeys(), mKeysOwner(this, this), mRepeatTrans(0), mFollowPath(0) {
 
 }
@@ -243,6 +243,6 @@ DataNode RndTransAnim::OnSetTrans(const DataArray* da) {
 }
 
 BEGIN_PROPSYNCS(RndTransAnim)
-    SYNC_PROP_SET(keys_owner, mKeysOwner, SetKeysOwner(_val.Obj<RndTransAnim>(NULL)))
+    SYNC_PROP_SET(keys_owner, mKeysOwner, SetKeysOwner(_val.Obj<RndTransAnim>()))
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS

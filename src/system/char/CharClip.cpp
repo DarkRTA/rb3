@@ -61,7 +61,7 @@ void CharClip::Init(){
     REGISTER_OBJ_FACTORY(CharClip);
 }
 
-CharClip::CharClip() : mTransitions(this), mFramesPerSec(30.0f), mBeatTrack(), mFlags(0), mPlayFlags(0), mRange(0.0f), 
+CharClip::CharClip() : mTransitions(this), mFramesPerSec(30.0f), mBeatTrack(), mFlags(0), mPlayFlags(0), mRange(0.0f),
     mDirty(1), mDoNotCompress(0), unk42(-1), mRelative(this, 0), mBeatEvents(), mSyncAnim(this, 0), mFull(), mOne(), mFacing() {
     mBeatTrack.resize(1, Key<float>(0,0));
     mBeatTrack.front().frame = 0.0f;
@@ -69,7 +69,7 @@ CharClip::CharClip() : mTransitions(this), mFramesPerSec(30.0f), mBeatTrack(), m
 }
 
 CharClip::~CharClip(){
-    
+
 }
 
 CharBoneDir* CharClip::GetResource() const {
@@ -179,15 +179,15 @@ bool PropSync(CharClip::Transitions& o, DataNode& val, DataArray* prop, int i, P
     else {
         int idx = prop->Int(i++);
         if(i < prop->Size() || op & kPropSize|kPropGet){
-            
+
         }
         else return false;
     }
 }
 
 BEGIN_CUSTOM_PROPSYNC(CharClip::BeatEvent)
-    SYNC_PROP_SET(beat, o.beat, o.beat = _val.Float(0))
-    SYNC_PROP_SET(event, o.event, o.event = _val.Sym(0))
+    SYNC_PROP_SET(beat, o.beat, o.beat = _val.Float())
+    SYNC_PROP_SET(event, o.event, o.event = _val.Sym())
 END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(CharClip)
@@ -197,12 +197,12 @@ BEGIN_PROPSYNCS(CharClip)
     SYNC_PROP_SET(frames_per_sec, mFramesPerSec, )
     SYNC_PROP_SET(length_seconds, LengthSeconds(), )
     SYNC_PROP_SET(average_beats_per_sec, AverageBeatsPerSecond(), )
-    SYNC_PROP_SET(flags, mFlags, SetFlags(_val.Int(0)))
-    SYNC_PROP_SET(default_blend, mPlayFlags & 0xF, SetDefaultBlend(_val.Int(0)))
-    SYNC_PROP_SET(default_loop, mPlayFlags & 0xF0, SetDefaultLoop(_val.Int(0)))
-    SYNC_PROP_SET(beat_align, mPlayFlags & 0xF600, SetBeatAlignMode(_val.Int(0)))
+    SYNC_PROP_SET(flags, mFlags, SetFlags(_val.Int()))
+    SYNC_PROP_SET(default_blend, mPlayFlags & 0xF, SetDefaultBlend(_val.Int()))
+    SYNC_PROP_SET(default_loop, mPlayFlags & 0xF0, SetDefaultLoop(_val.Int()))
+    SYNC_PROP_SET(beat_align, mPlayFlags & 0xF600, SetBeatAlignMode(_val.Int()))
     SYNC_PROP(range, mRange)
-    SYNC_PROP_SET(relative, mRelative, SetRelative(_val.Obj<CharClip>(0)))
+    SYNC_PROP_SET(relative, mRelative, SetRelative(_val.Obj<CharClip>()))
     SYNC_PROP(events, mBeatEvents)
     SYNC_PROP_SET(dirty, mDirty, )
     SYNC_PROP_SET(size, AllocSize(), )

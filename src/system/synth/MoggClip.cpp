@@ -233,11 +233,11 @@ void MoggClip::SetupPanInfo(float f1, float f2, bool b){
 }
 
 BEGIN_PROPSYNCS(MoggClip)
-    SYNC_PROP_SET(file, mFilePath, SetFile(_val.Str(0)))
-    SYNC_PROP_SET(volume, mVolume, SetVolume(_val.Float(0)))
-    SYNC_PROP_SET(loop, mLoop, SetLoop(_val.Int(0) != 0))
-    SYNC_PROP_SET(loop_start_sample, mLoopStart, SetLoopStart(_val.Int(0)))
-    SYNC_PROP_SET(loop_end_sample, mLoopEnd, SetLoopEnd(_val.Int(0)))
+    SYNC_PROP_SET(file, mFilePath, SetFile(_val.Str()))
+    SYNC_PROP_SET(volume, mVolume, SetVolume(_val.Float()))
+    SYNC_PROP_SET(loop, mLoop, SetLoop(_val.Int() != 0))
+    SYNC_PROP_SET(loop_start_sample, mLoopStart, SetLoopStart(_val.Int()))
+    SYNC_PROP_SET(loop_end_sample, mLoopEnd, SetLoopEnd(_val.Int()))
 END_PROPSYNCS
 
 BEGIN_HANDLERS(MoggClip)

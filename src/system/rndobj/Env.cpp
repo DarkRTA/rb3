@@ -36,10 +36,10 @@ void RndEnviron::Select(const Vector3* v) {
 }
 
 RndEnviron::RndEnviron() : mLightsReal(this, kObjListNoNull), mLightsApprox(this, kObjListNoNull), mLightsOld(this, kObjListNoNull), mAmbientColor(0.0f, 0.0f, 0.0f, 1.0f),
-    unk5c(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this), 
+    unk5c(0), mNumLightsReal(0), mNumLightsApprox(0), mNumLightsPoint(0), mNumLightsProj(0), mHasPointCubeTex(false), mAmbientFogOwner(this, this),
     mFogEnable(0), mFogStart(0.0f), mFogEnd(1.0f), mFogColor(1.0f,1.0f,1.0f), mFadeOut(0), mFadeStart(0.0f), mFadeEnd(1000.0f), mFadeMax(1.0f),
     mFadeRef(this, NULL), mLRFade(0.0f, 0.0f, 0.0f, 0.0f), mColorXfm(),
-    mUseColorAdjust(0), mAnimateFromPreset(1), mAOEnabled(1), mAOStrength(1.0f), mUpdateTimer(), mIntensityAverage(0.0f), 
+    mUseColorAdjust(0), mAnimateFromPreset(1), mAOEnabled(1), mAOStrength(1.0f), mUpdateTimer(), mIntensityAverage(0.0f),
     mIntensityRate(0.1f), mExposure(1.0f), mWhitePoint(1.0f), mUseToneMapping(0), mUseApprox_Local(1), mUseApprox_Global(1) {
     mUpdateTimer.Restart();
 }
@@ -254,8 +254,8 @@ DataNode RndEnviron::OnAllowableLights_Real(const DataArray* da){
     }
     static DataNode& milo_prop_path = DataVariable("milo_prop_path");
     if(milo_prop_path.Type() == kDataArray){
-        if(milo_prop_path.Array(0)->Size() == 2){
-            int num = milo_prop_path.Array(0)->Int(1);
+        if(milo_prop_path.Array()->Size() == 2){
+            int num = milo_prop_path.Array()->Int(1);
             ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsReal.begin();
             it += num;
             ptr->Insert(ptr->Size(), *it);
@@ -273,8 +273,8 @@ DataNode RndEnviron::OnAllowableLights_Approx(const DataArray* da){
     }
     static DataNode& milo_prop_path = DataVariable("milo_prop_path");
     if(milo_prop_path.Type() == kDataArray){
-        if(milo_prop_path.Array(0)->Size() == 2){
-            int num = milo_prop_path.Array(0)->Int(1);
+        if(milo_prop_path.Array()->Size() == 2){
+            int num = milo_prop_path.Array()->Int(1);
             ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsApprox.begin();
             it += num;
             ptr->Insert(ptr->Size(), *it);

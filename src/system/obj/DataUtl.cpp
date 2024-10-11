@@ -75,7 +75,7 @@ Symbol DataGetMacroByInt(int value, const char* prefix){
         if(macro_array->Size() != 0){
             DataNode& node = (*it).second->Node(0);
             if(node.Type() == kDataInt){
-                if(node.Int(0) == value){
+                if(node.Int() == value){
                     String name((*it).first);
                     if(name.find(prefix) == 0){
                         return (*it).first;

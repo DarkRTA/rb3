@@ -309,7 +309,7 @@ bool UIScreen::IsLoaded() const {
     // please don't tell me const_cast is what they did lol
     DataNode result = const_cast<UIScreen*>(this)->HandleType(is_loaded_msg);
     if (result.Type() != kDataUnhandled) {
-        return result.Int(NULL);
+        return result.Int();
     }
 
     return true;
@@ -345,7 +345,7 @@ void UIScreen::Print(TextStream& s) {
                 if (fileArray != NULL) {
                     DataNode type = fileArray->Node(1);
                     if (type.Type() == kDataString || type.Type() == kDataSymbol) {
-                        s << "(" << type.LiteralStr(NULL) << ") ";
+                        s << "(" << type.LiteralStr() << ") ";
                     } else {
                         s << "(dynamic) ";
                     }
@@ -369,7 +369,7 @@ DataNode UIScreen::OnMsg(const ButtonDownMsg& msg) {
     if (mBack != NULL && msg.GetAction() == kAction_Cancel) {
         DataNode n = mBack->Evaluate(1);
         if (n.Type() != kDataUnhandled) {
-            Message m(go_back_screen, n.Str(NULL), msg.GetUser());
+            Message m(go_back_screen, n.Str(), msg.GetUser());
             TheUI->Handle(m, true);
         }
     }

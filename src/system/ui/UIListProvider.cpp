@@ -56,17 +56,17 @@ void DataProvider::Text(int i, int j, UIListLabel* listlabel, UILabel* label) co
             label->Handle(msg, false);
         }
         else if(TheLoadMgr.EditMode()){
-            label->SetEditText(Localize(node.Array(0)->Sym(0), 0));
+            label->SetEditText(Localize(node.Array()->Sym(0), 0));
         }
         else {
-            label->SetTextToken(node.Array(0)->Sym(0));
+            label->SetTextToken(node.Array()->Sym(0));
         }
     }
     else if(TheLoadMgr.EditMode()){
-        label->SetEditText(Localize(node.ForceSym(0), 0));
+        label->SetEditText(Localize(node.ForceSym(), 0));
     }
     else {
-        label->SetTextToken(node.ForceSym(0));
+        label->SetTextToken(node.ForceSym());
     }
     if(mFluidWidth){
         float* curwidth = (float*)&mWidths[j];
@@ -123,7 +123,7 @@ RndMat* DataProvider::Mat(int i, int j, UIListMesh* mesh) const {
     else {
         ObjectDir* pDir = mList->ResourceDir();
         MILO_ASSERT(pDir, 0x9C);
-        RndMat* ret = pDir->Find<RndMat>(handled.Str(0), false);
+        RndMat* ret = pDir->Find<RndMat>(handled.Str(), false);
         if(!ret) return mesh->DefaultMat();
         return ret;
     }

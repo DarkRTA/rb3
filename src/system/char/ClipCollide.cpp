@@ -65,7 +65,7 @@ bool ClipCollide::ValidWaypoint(Waypoint* w){
     vw[0] = DataNode(w);
     DataNode handled = Handle(vw, true);
     if(handled.Type() == kDataUnhandled) return true;
-    else return handled.Int(0);
+    else return handled.Int();
 }
 
 bool ClipCollide::ValidClip(CharClip* clip){
@@ -76,7 +76,7 @@ bool ClipCollide::ValidClip(CharClip* clip){
         vw[1] = DataNode(mWaypoint);
         DataNode handled = Handle(vw, true);
         if(handled.Type() == kDataUnhandled) return true;
-        else return handled.Int(0);
+        else return handled.Int();
     }
 }
 
@@ -143,7 +143,7 @@ DataNode ClipCollide::OnVenueName(DataArray* da){
         Message msg("current_file");
         DataNode handled = miloObj->Handle(msg, true);
         char buf[0x100];
-        strcpy(buf, handled.Str(0));
+        strcpy(buf, handled.Str());
         int len = strlen(buf);
         char* p = buf + len;
         if(buf <= p){
@@ -189,7 +189,7 @@ void ClipCollide::SyncMode(){
     if(!mMode.Null()){
         Message msg("set_mode", DataNode(mMode));
         Handle(msg, true);
-    }   
+    }
 }
 
 BEGIN_HANDLERS(ClipCollide)
@@ -267,7 +267,7 @@ BEGIN_PROPSYNCS(ClipCollide)
     SYNC_PROP_MODIFY(mode, mMode, SyncMode())
     SYNC_PROP(clip, mClip)
     SYNC_PROP_SET(clips, Clips(), )
-    SYNC_PROP_SET(pick_report, mReportString, PickReport(_val.Str(0)))
+    SYNC_PROP_SET(pick_report, mReportString, PickReport(_val.Str()))
     SYNC_PROP(world_lines, mWorldLines)
     SYNC_PROP(move_camera, mMoveCamera)
 END_PROPSYNCS

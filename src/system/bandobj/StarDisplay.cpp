@@ -58,8 +58,8 @@ void StarDisplay::PreLoad(BinStream& bs) {
     if (gRev >= 3) {
         bs >> mShowDenominator;
         bs >> mShowEmptyStars;
-        if (gRev < 5) { 
-            int x = 0; bs >> x; 
+        if (gRev < 5) {
+            int x = 0; bs >> x;
         }
     }
     if (gRev >= 4) bs >> (int&)mAlignment;
@@ -71,7 +71,7 @@ void StarDisplay::PreLoad(BinStream& bs) {
     if (gRev >= 6) {
         bs >> mIconOverride;
         bs >> mEmptyIconOverride;
-    } 
+    }
     UIComponent::PreLoad(bs);
 }
 
@@ -84,16 +84,16 @@ void StarDisplay::Enter() { UIComponent::Enter(); UpdateDisplay(); }
 
 Symbol StarDisplay::GetSymbolForStarCount(int i) {
     switch(i){
-        case 0: return stars_0; 
-        case 1: return stars_1; 
-        case 2: return stars_2; 
-        case 3: return stars_3; 
+        case 0: return stars_0;
+        case 1: return stars_1;
+        case 2: return stars_2;
+        case 3: return stars_3;
         case 4: return stars_4;
-        case 5: return stars_5;  
+        case 5: return stars_5;
         case 6: return stars_6;
         default:
             MILO_FAIL("Number of stars is unsupported: stars = %i", i);
-            return gNullStr; 
+            return gNullStr;
     }
 }
 
@@ -206,10 +206,10 @@ BEGIN_PROPSYNCS(StarDisplay)
     SYNC_PROP_MODIFY(force_mixed_mode, mForceMixedMode, UpdateDisplay())
     SYNC_PROP_MODIFY(show_empty_stars, mShowEmptyStars, UpdateDisplay())
     SYNC_PROP_MODIFY(show_denominator, mShowDenominator, UpdateDisplay())
-    SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int(NULL)))
+    SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int()))
     SYNC_PROP_MODIFY(icon_override, mIconOverride, UpdateDisplay())
     SYNC_PROP_MODIFY(empty_icon_override, mEmptyIconOverride, UpdateDisplay())
-    SYNC_PROP_SET(float_stars, (float)mStars, SetValues(_val.Float(NULL), mTotalStars))
-    SYNC_PROP_SET(float_total_stars, (float)mTotalStars, SetValues(mStars, _val.Float(NULL)))
+    SYNC_PROP_SET(float_stars, (float)mStars, SetValues(_val.Float(), mTotalStars))
+    SYNC_PROP_SET(float_total_stars, (float)mTotalStars, SetValues(mStars, _val.Float()))
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

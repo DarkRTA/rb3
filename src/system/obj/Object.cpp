@@ -207,7 +207,7 @@ void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
 int Hmx::Object::PropertySize(DataArray* prop){
     static DataNode n;
     if(SyncProperty(n, prop, 0, kPropSize)){
-        return n.Int(nullptr);
+        return n.Int();
     }
     else {
         MILO_ASSERT(prop->Size() == 1, 0x192);
@@ -293,7 +293,7 @@ void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
         const char* objname = obj->Name();
         const char* selfname = Name();
         const Symbol typ  = obj->Type();
-        
+
         MILO_WARN("Can't copy type \"%s\" or type props of %s to %s, different classes %s and %s",  typ, selfname, objname, selfclass, className);
     }
 }

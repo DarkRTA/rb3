@@ -219,13 +219,13 @@ FormatString& FormatString::operator<<(const DataNode& node){
 
     int n;
     if(mType == kInt){
-        n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, node.LiteralInt(0));
+        n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, node.LiteralInt());
     }
     else if(mType == kFloat){
-        n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, node.LiteralFloat(0));
+        n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, node.LiteralFloat());
     }
     else if(mType == kStr){
-        n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, node.LiteralStr(0));
+        n = snprintf(mBuf + 2048 - mBufSize, mBufSize, mFmt, node.LiteralStr());
     }
     else{
         MILO_WARN("FormatString: Couldn't convert DataNode to '%s'", mFmt);

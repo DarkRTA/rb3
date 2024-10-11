@@ -31,7 +31,7 @@ RndWind::RndWind() : mPrevailing(0.0f, 0.0f, 0.0f), mRandom(0.0f, 0.0f, 0.0f), m
 }
 
 RndWind::~RndWind(){
-    
+
 }
 
 void RndWind::SetWindOwner(RndWind* wind){
@@ -106,7 +106,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(RndWind)
     SYNC_PROP(prevailing, mPrevailing)
     SYNC_PROP(random, mRandom)
-    SYNC_PROP_SET(wind_owner, mWindOwner, SetWindOwner(_val.Obj<RndWind>(0)))
+    SYNC_PROP_SET(wind_owner, mWindOwner, SetWindOwner(_val.Obj<RndWind>()))
     SYNC_PROP_MODIFY(time_loop, mTimeLoop, SyncLoops())
     SYNC_PROP_MODIFY(space_loop, mSpaceLoop, SyncLoops())
 END_PROPSYNCS
