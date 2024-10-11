@@ -37,13 +37,14 @@ public:
     void ToggleModifierEnabled(Symbol);
     bool IsModifierDelayedEffect(Symbol) const;
     int SaveSize(int);
+    void DisableAutoVocals() const;
     void Save(FixedSizeSaveableStream&);
     void Load(FixedSizeSaveableStream&, int);
 
     static void Init();
 
-    std::vector<Modifier*> unk20; // 0x20
-    std::vector<Modifier*> unk28; // 0x28
+    std::vector<Modifier*> mModifiers; // 0x20
+    std::vector<Modifier*> mModifiersList; // 0x28
 };
 
 extern ModifierMgr* TheModifierMgr;

@@ -1,5 +1,6 @@
 #include "meta_band/ModifierMgr.h"
 #include "os/Debug.h"
+#include "meta_band/ProfileMgr.h"
 #include "ui/UIListLabel.h"
 #include "utl/Symbols.h"
 
@@ -28,22 +29,22 @@ ModifierMgr::ModifierMgr(){
     SetName("modifier_mgr", ObjectDir::sMainDir);
     DataArray* allModifiersArray = SystemConfig(modifiers, modifiers);
     MILO_ASSERT(allModifiersArray, 0x6A);
-    unk20.reserve(allModifiersArray->Size() - 1);
+    mModifiers.reserve(allModifiersArray->Size() - 1);
     for(int i = 1; i < allModifiersArray->Size(); i++){
         DataArray* modifierArray = allModifiersArray->Array(i);
         MILO_ASSERT(modifierArray, 0x75);
         Modifier* mod = new Modifier(modifierArray);
-        unk20.push_back(mod);
+        mModifiers.push_back(mod);
         if(!mod->CustomLocation()){
-            unk28.push_back(mod);
+            mModifiersList.push_back(mod);
         }
         if(mod->DefaultEnabled()) mod->mDefaultEnabled = true;
     }
 }
 
 ModifierMgr::~ModifierMgr(){
-    unk28.clear();
-    unk20.clear();
+    mModifiersList.clear();
+    DeleteAll(mModifiers);
 }
 
 Symbol ModifierMgr::DataSymbol(int idx) const {
@@ -52,7 +53,7 @@ Symbol ModifierMgr::DataSymbol(int idx) const {
     return pModifier->mData->Sym(0);
 }
 
-int ModifierMgr::NumData() const { return unk28.size(); }
+int ModifierMgr::NumData() const { return mModifiersList.size(); }
 
 void ModifierMgr::Text(int i1, int i2, UIListLabel* listlabel, UILabel* label) const {
     Modifier* mod = GetModifierAtListData(i2);
@@ -96,7 +97,7 @@ void ModifierMgr::ToggleModifierEnabled(Symbol s){
     Modifier* mod = GetModifier(s, true);
     mod->mDefaultEnabled = mod->mDefaultEnabled == 0;
     if(mod->UseSaveValue()){
-        // set profilemgr value
+        TheProfileMgr.mGlobalOptionsDirty = true;
     }
 }
 
@@ -109,14 +110,66 @@ bool ModifierMgr::IsModifierDelayedEffect(Symbol s) const {
     return GetModifier(s, true)->DelayedEffect();
 }
 
-// void __thiscall ModifierMgr::IsModifierDelayedEffect(ModifierMgr *this,Symbol param_1)
+bool ModifierMgr::IsModifierActive(Modifier* mod) const {
+    if(!mod || !mod->mDefaultEnabled) return false;
+    else if(IsModifierUnlocked(mod)) return true;
+    else {
+        mod->mDefaultEnabled = false;
+        return false;
+    }
+}
 
-// {
-//   Modifier *this_00;
-//   undefined4 local_8 [2];
-  
-//   local_8[0] = *(undefined4 *)param_1.mStr;
-//   this_00 = (Modifier *)GetModifier(this,(Symbol)local_8,true);
-//   Modifier::DelayedEffect(this_00);
-//   return;
-// }
+Modifier* ModifierMgr::GetModifier(Symbol s, bool fail) const {
+    for(std::vector<Modifier*>::const_iterator it = mModifiers.begin(); it != mModifiers.end(); ++it){
+        Modifier* ret = *it;
+        if(ret->mData->Sym(0) == s) return ret;
+    }
+    if(fail) MILO_FAIL("Couldn't find Modifier for %s.", s);
+    return 0;
+}
+
+Modifier* ModifierMgr::GetModifierAtListData(int data) const {
+    MILO_ASSERT(data < mModifiersList.size(), 0x124);
+    return mModifiersList[data];
+}
+
+void ModifierMgr::DisableAutoVocals() const {
+    Modifier* mod = GetModifier(mod_auto_vocals, true);
+    mod->mDefaultEnabled = false;
+}
+
+void ModifierMgr::Save(FixedSizeSaveableStream& bs){
+    for(int i = 0; i < mModifiers.size(); i++){
+        if(mModifiers[i]->SaveValue()){
+            bs << mModifiers[i]->mDefaultEnabled;
+        }
+    }
+}
+
+void ModifierMgr::Load(FixedSizeSaveableStream& bs, int rev){
+    for(int i = 0; i < mModifiers.size(); i++){
+        if(mModifiers[i]->SaveValue()){
+            bool b; bs >> b;
+            if(mModifiers[i]->UseSaveValue()){
+                mModifiers[i]->mDefaultEnabled = b;
+            }
+        }
+    }
+}
+
+int ModifierMgr::SaveSize(int){
+    int size = 0;
+    for(int i = 0; i < mModifiers.size(); i++){
+        if(mModifiers[i]->SaveValue()) size++;
+    }
+    return size;
+}
+
+BEGIN_HANDLERS(ModifierMgr)
+    HANDLE_ACTION(toggle_modifier_enabled, ToggleModifierEnabled(_msg->Sym(2)))
+    HANDLE_EXPR(is_modifier_active, IsModifierActive(_msg->Sym(2)))
+    HANDLE_EXPR(is_modifier_delayed_effect, IsModifierDelayedEffect(_msg->Sym(2)))
+    HANDLE_ACTION(enable_auto_vocals, Modifier* m = GetModifier("mod_auto_vocals", true); m->mDefaultEnabled = true;)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x162)
+END_HANDLERS
