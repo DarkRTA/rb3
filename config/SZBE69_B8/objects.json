@@ -225,7 +225,7 @@
             "band3/meta_band/PlayerLeaderboards.cpp": "MISSING",
             "band3/meta_band/PrefabMgr.cpp": "MISSING",
             "band3/meta_band/ProfileAssets.cpp": "Matching",
-            "band3/meta_band/ProfileMgr.cpp": "MISSING",
+            "band3/meta_band/ProfileMgr.cpp": "NonMatching",
             "band3/meta_band/RetryAudioPanel.cpp": "MISSING",
             "band3/meta_band/SaveLoadManager.cpp": "MISSING",
             "band3/meta_band/SaveLoadStatusPanel.cpp": "MISSING",

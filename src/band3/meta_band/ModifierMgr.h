@@ -1,6 +1,7 @@
 #pragma once
 #include "obj/Object.h"
 #include "ui/UIListProvider.h"
+#include "meta/FixedSizeSaveableStream.h"
 
 class Modifier {
 public:
@@ -35,6 +36,9 @@ public:
     Modifier* GetModifier(Symbol, bool) const;
     void ToggleModifierEnabled(Symbol);
     bool IsModifierDelayedEffect(Symbol) const;
+    int SaveSize(int);
+    void Save(FixedSizeSaveableStream&);
+    void Load(FixedSizeSaveableStream&, int);
 
     static void Init();
 
