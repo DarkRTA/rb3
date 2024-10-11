@@ -256,7 +256,7 @@
             "band3/meta_band/SongStatusMgr.cpp": "NonMatching",
             "band3/meta_band/SongUpgradeMgr.cpp": "NonMatching",
             "band3/meta_band/StandIn.cpp": "Matching",
-            "band3/meta_band/StandInProvider.cpp": "MISSING",
+            "band3/meta_band/StandInProvider.cpp": "Matching",
             "band3/meta_band/StoreInfoPanel.cpp": "MISSING",
             "band3/meta_band/StoreMainPanel.cpp": "MISSING",
             "band3/meta_band/StoreMenuPanel.cpp": "MISSING",
