@@ -2,6 +2,7 @@
 #define GAME_STATS_H
 #include <vector>
 #include "system/utl/BinStream.h"
+#include "os/Debug.h"
 
 class SingerStats {
 public:
@@ -286,9 +287,9 @@ public:
     int mOverdrivePhraseCount; // 0x164
     int mUnisonPhraseCompleted; // 0x168
     int mUnisonPhraseCount; // 0x16c
-    int mHopoGemInfo1; // 0x170
-    int mHopoGemInfo2; // 0x174
-    int mHopoGemInfo3; // 0x178
+    int mHopoGemsHopoed; // 0x170
+    int mHopoGemsStrummed; // 0x174
+    int mHopoGemCount; // 0x178
     int mHighGemsHitHigh; // 0x17c
     int mHighGemsHitLow; // 0x180
     int mHighFretGemCount; // 0x184

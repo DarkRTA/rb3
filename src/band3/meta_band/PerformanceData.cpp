@@ -247,9 +247,22 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
 }
 #pragma pop
 
-void PerformanceData::Prune(Stats&) {}
+void PerformanceData::Prune(Stats& stats){
+    while(stats.mFailurePoints.size() > 3) stats.mFailurePoints.pop_back();
+    while(stats.mSavedPoints.size() > 3) stats.mSavedPoints.pop_back();
+    while(stats.mClosestTimesSaved.size() > 3) stats.mClosestTimesSaved.pop_back();
+    while(stats.mClosestPlayersSaved.size() > 3) stats.mClosestPlayersSaved.pop_back();
+    while(stats.mBestSolos.size() > 3) stats.mBestSolos.pop_back();
+    stats.mSections.resize(0);
+}
 
-void PerformanceData::InitializeStatsVectors() {}
+void PerformanceData::InitializeStatsVectors(){
+    mStats.mFailurePoints.resize(3);
+    mStats.mSavedPoints.resize(3);
+    mStats.mClosestTimesSaved.resize(3);
+    mStats.mClosestPlayersSaved.resize(3);
+    mStats.mBestSolos.resize(3);
+}
 
 BEGIN_HANDLERS(PerformanceData)
     HANDLE_SUPERCLASS(Hmx::Object)

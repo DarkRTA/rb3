@@ -83,7 +83,17 @@ public:
 
     template <class T, class Allocator>
     static void LoadStd(FixedSizeSaveableStream& stream, std::vector<T, Allocator>& vec, int maxsize, int savesize){
-        
+        if(vec.size() != 0){
+            MILO_WARN("vector is not empty!");
+            vec.clear();
+        }
+        int vecsize;
+        stream >> vecsize;
+        vec.resize(vecsize);
+        for(int i = 0; i < vecsize; i++){
+            stream >> vec[i];
+        }
+        if(maxsize > vecsize) DepadStream(stream, savesize * (maxsize - vecsize));
     }
 
     static int GetMaxSymbols(){
