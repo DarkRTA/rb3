@@ -418,7 +418,10 @@ BEGIN_HANDLERS(Character)
     HANDLE_ACTION(find_interest_objects, FindInterestObjects(_msg->Obj<ObjectDir>(2)))
     HANDLE_ACTION(force_interest, SetFocusInterest(_msg->Obj<CharInterest>(2), false))
     HANDLE_ACTION(force_interest_named, SetFocusInterest(_msg->Sym(2), 0))
-    HANDLE_ACTION(enable_blink, if(_msg->Size() > 3) EnableBlinks(_msg->Int(2), _msg->Int(3)); else EnableBlinks(_msg->Int(2), false))
+    HANDLE_ACTION_IF_ELSE(enable_blink, _msg->Size() > 3,
+        EnableBlinks(_msg->Int(2), _msg->Int(3)),
+        EnableBlinks(_msg->Int(2), false)
+    )
 #ifdef MILO_DEBUG
     HANDLE(list_interest_objects, OnGetCurrentInterests)
     HANDLE_MEMBER_PTR(mTest)

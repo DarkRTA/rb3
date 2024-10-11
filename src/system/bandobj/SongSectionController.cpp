@@ -284,7 +284,7 @@ DataNode SongSectionController::OnWaitForEventReceived(const DataArray* da){
 
 BEGIN_HANDLERS(SongSectionController)
     HANDLE_ACTION(trigger_debug_pool, DebugActivate())
-    HANDLE_ACTION(reset_all, ResetAll(); ForceCatchAll(); )
+    HANDLE_ACTION(reset_all, (ResetAll(), ForceCatchAll()))
     HANDLE(find_pools, OnFindPools)
     HANDLE_ACTION(toggle_overlay, OnToggleOverlay())
     HANDLE(add_trigger_pool, OnAddTriggerPool)

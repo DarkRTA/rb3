@@ -156,7 +156,10 @@ BEGIN_HANDLERS(UIManager)
     HANDLE_ACTION(use_joypad, UseJoypad(_msg->Int(2), true))
     HANDLE_ACTION(set_virtual_dpad, mJoyClient->SetVirtualDpad(_msg->Int(2)))
     HANDLE_ACTION(push_screen, PushScreen(_msg->Obj<UIScreen>(2)))
-    HANDLE_ACTION(pop_screen, if(_msg->Size() > 2) PopScreen(_msg->Obj<UIScreen>(2)); else PopScreen(0); )
+    HANDLE_ACTION_IF_ELSE(pop_screen, _msg->Size() > 2,
+        PopScreen(_msg->Obj<UIScreen>(2)),
+        PopScreen(0)
+    )
     HANDLE_EXPR(pushed_screens, (int)mPushedScreens.size())
     HANDLE(goto_screen, OnGotoScreen)
     HANDLE(go_back_screen, OnGoBackScreen)

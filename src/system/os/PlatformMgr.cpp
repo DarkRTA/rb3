@@ -149,7 +149,7 @@ BEGIN_HANDLERS(PlatformMgr)
     HANDLE_MESSAGE(ButtonDownMsg)
     HANDLE_MESSAGE(ButtonUpMsg)
     HANDLE_ACTION(trigger_disk_error, SetDiskError(kFailedChecksum))
-    HANDLE_ACTION(debug_spam_profanity_check, unkce69 = true; StartProfanity("This is a string", 0))
+    HANDLE_ACTION(debug_spam_profanity_check, (unkce69 = true, StartProfanity("This is a string", 0)))
     HANDLE_SUPERCLASS(MsgSource)
     HANDLE_CHECK(0x1BA)
 END_HANDLERS

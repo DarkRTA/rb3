@@ -63,9 +63,30 @@ const char* PathName(const class Hmx::Object*);
 #define HANDLE_EXPR(symbol, expr) \
     if (sym == symbol) return expr;
 
-#define HANDLE_ACTION(symbol, expr) \
-    if(sym == symbol){ \
-        expr; \
+#define HANDLE_ACTION(symbol, action) \
+    if (sym == symbol) { \
+        /* for style, require any side-actions to be performed via comma operator */ \
+        (action); \
+        return 0; \
+    }
+
+#define HANDLE_ACTION_IF(symbol, cond, action) \
+    if (sym == symbol) { \
+        if (cond) { \
+            /* for style, require any side-actions to be performed via comma operator */ \
+            (action); \
+        } \
+        return 0; \
+    }
+
+#define HANDLE_ACTION_IF_ELSE(symbol, cond, action_true, action_false) \
+    if (sym == symbol) { \
+        if (cond) { \
+            /* for style, require any side-actions to be performed via comma operator */ \
+            (action_true); \
+        } else { \
+            (action_false); \
+        } \
         return 0; \
     }
 
@@ -110,6 +131,27 @@ const char* PathName(const class Hmx::Object*);
 
 #define HANDLE_MEMBER_PTR(member) \
     if (member) HANDLE_FORWARD(member->Handle)
+
+#define HANDLE_ARRAY(array) \
+    { \
+        /* this needs to be placed up here to match Hmx::Object::Handle */ \
+        DataArray* found; \
+        if(array && (found = array->FindArray(sym, false))){ \
+            _HANDLE_CHECKED(found->ExecuteScript(1, this, _msg, 2)) \
+        } \
+    }
+
+#define HANDLE_LOG(...) \
+    if(!_warn) MILO_LOG(__VA_ARGS__);
+
+#define HANDLE_LOG_IF(cond, ...) \
+    if((cond) && !_warn) MILO_LOG(__VA_ARGS__);
+
+#define HANDLE_WARN(...) \
+    if(_warn) MILO_WARN(__VA_ARGS__);
+
+#define HANDLE_WARN_IF(cond, ...) \
+    if((cond) && _warn) MILO_WARN(__VA_ARGS__);
 
 #define HANDLE_CHECK(line_num) \
     if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, line_num, PathName(this), sym);

@@ -385,11 +385,7 @@ BEGIN_HANDLERS(Hmx::Object)
     HANDLE_EXPR_STATIC(is_a, IsASubclass(ClassName(), _msg->Sym(2)));
     HANDLE_EXPR_STATIC(get_type, Type());
     HANDLE_EXPR_STATIC(get_heap, AllocHeapName());
-    // if none of those symbols matched, we fall back here
-    DataArray* found;
-    if(mTypeDef && (found = mTypeDef->FindArray(sym, false))){
-        _HANDLE_CHECKED(found->ExecuteScript(1, this, _msg, 2))
-    }
+    HANDLE_ARRAY(mTypeDef)
     HANDLE_CHECK(0x2E6);
 END_HANDLERS
 #pragma pop

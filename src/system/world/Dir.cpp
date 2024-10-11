@@ -408,7 +408,7 @@ void WorldDir::PresetOverride::Sync(bool b){
 }
 
 BEGIN_HANDLERS(WorldDir)
-    if(mEchoMsgs && !_warn) MILO_LOG("World msg: %s\n", sym);
+    HANDLE_LOG_IF(mEchoMsgs, "World msg: %s\n", sym)
     HANDLE_MEMBER_PTR((&mCameraManager)) // ???
     HANDLE_MEMBER_PTR((&mPresetManager)) // ???
     HANDLE_SUPERCLASS(PanelDir)
