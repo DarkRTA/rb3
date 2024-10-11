@@ -117,7 +117,7 @@ END_LOADS
 // fn_8055B51C - https://decomp.me/scratch/NAYDg
 void UIFontImporter::FontImporterSyncObjects(){
     if(!mDefaultMat && NumMatVariations() > 0 && mGennedFonts.size() > 0){
-        for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end(); it){
+        for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end();){
             RndMat* old = *it;
             it = mMatVariations.erase(it);
             delete old;
@@ -389,14 +389,11 @@ void UIFontImporter::HandmadeFontChanged(){
                 if(text) delete text;
             }
             mGennedFonts.Set(mGennedFonts.begin(), mHandmadeFont);
-            ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin();
-            it++;
-            for(; it != mGennedFonts.end(); it){
+            for(ObjPtrList<RndFont, class ObjectDir>::iterator it = ++mGennedFonts.begin(); it != mGennedFonts.end(); it++){
                 if(*it == mHandmadeFont){
                     mGennedFonts.erase(it);
                     break;
                 }
-                else it++;
             }
         }
         else mGennedFonts.push_back(mHandmadeFont);
@@ -415,7 +412,7 @@ void UIFontImporter::HandmadeFontChanged(){
 
 // fn_8055DA08
 void UIFontImporter::SyncWithGennedFonts(){
-    for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end(); it){
+    for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end();){
         RndFont* font = *it;
         bool matfound = false;
         for(ObjPtrList<RndMat, class ObjectDir>::iterator mit = mMatVariations.begin(); mit != mMatVariations.end(); ++mit){
@@ -423,7 +420,6 @@ void UIFontImporter::SyncWithGennedFonts(){
         }
         if(font->mMat == mDefaultMat) matfound = true;
         if(!matfound){
-            font->mMat;
             RndText* text = FindTextForFont(font);
             it = mGennedFonts.erase(it);
             delete font;

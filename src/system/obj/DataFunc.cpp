@@ -16,7 +16,6 @@
 #include "os/DateTime.h"
 #include "utl/Symbols.h"
 #include <cstring>
-#include <list>
 #include <map>
 #include <stdlib.h>
 
@@ -666,7 +665,7 @@ DEF_DATA_FUNC(DataExists){
 }
 
 DEF_DATA_FUNC(DataLocalize){
-    const char* loc = Localize(array->ForceSym(1), false);
+    const char* loc = Localize(array->ForceSym(1), nullptr);
     const char* ret = (loc) ? loc : gNullStr;
     return ret;
 }

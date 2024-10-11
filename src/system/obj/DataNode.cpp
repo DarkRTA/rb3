@@ -4,8 +4,6 @@
 #include "utl/MakeString.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
-#include <new>
-#include "utl/PoolAlloc.h"
 #include <map>
 
 #include "decomp.h"
