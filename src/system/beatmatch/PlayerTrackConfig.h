@@ -30,6 +30,7 @@ public:
 class PlayerTrackConfigList {
 public:
     PlayerTrackConfigList(int);
+    ~PlayerTrackConfigList(){}
     void Reset();
     void AddPlaceholderConfig(const UserGuid &, int, bool);
     void AddConfig(const UserGuid &, TrackType, int, int, bool);

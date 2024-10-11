@@ -4,14 +4,19 @@
 class StandIn : public FixedSizeSaveable {
 public:
     StandIn();
-    ~StandIn();
+    virtual ~StandIn();
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
     void SetNone();
     void SetName(Symbol);
     void SetGuid(HxGuid);
     bool IsNone() const;
     bool IsPrefabCharacter() const;
     bool IsCustomCharacter() const;
-    void SaveSize(int);
-    void SaveFixed(FixedSizeSaveableStream&) const;
-    void LoadFixed(FixedSizeSaveableStream&, int);
+
+    static int SaveSize(int);
+
+    Symbol mName; // 0x8
+    HxGuid mGuid; // 0xc
 };

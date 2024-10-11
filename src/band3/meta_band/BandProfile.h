@@ -37,7 +37,7 @@ public:
     void GetAvailableStandins(int, std::vector<TourCharLocal*>&) const;
     void GetAllChars(std::vector<TourCharLocal*>&) const;
     void GetAvailableCharacters(std::vector<TourCharLocal*>&) const;
-    void GetCharFromGuid(const HxGuid&);
+    CharData* GetCharFromGuid(const HxGuid&);
     int GetMaxChars() const;
     void AddNewChar(TourCharLocal*);
     void DeleteChar(TourCharLocal*);
