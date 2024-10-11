@@ -34,6 +34,7 @@ public:
     bool AllLocalUsersInSessionAreGuests() const;
     void GetBandUsers(std::vector<BandUser*>*, int) const;
     void GetLocalBandUsers(std::vector<LocalBandUser*>*, int) const;
+    bool IsCharAvailable(const CharData*) const;
 
     void GetLocalParticipants(std::vector<LocalBandUser*>&) const;
     void GetLocalBandUsersInSession(std::vector<LocalBandUser*>&) const;

@@ -29,7 +29,6 @@ bool Profile::HasValidSaveData() const {
 #pragma dont_inline on
 // Force ordering of GetName/GetPadNum
 DECOMP_FORCEFUNC(Profile, Profile, GetName());
-DECOMP_FORCEFUNC(Profile, Profile, GetPadNum());
 #pragma pop
 
 // const char* Profile::GetName() const {
@@ -37,9 +36,9 @@ DECOMP_FORCEFUNC(Profile, Profile, GetPadNum());
 //     return u->UserName();
 // }
 
-// int Profile::GetPadNum() const {
-//     return mPadNum;
-// }
+int Profile::GetPadNum() const {
+    return mPadNum;
+}
 
 DECOMP_FORCEACTIVE(Profile,
     __FILE__,
@@ -78,7 +77,7 @@ void Profile::MakeDirty(){
 }
 
 BEGIN_HANDLERS(Profile)
-    HANDLE_EXPR(get_pad_num, GetPadNum())
+    HANDLE_EXPR(get_pad_num, mPadNum)
     HANDLE_EXPR(get_name, GetName())
     HANDLE_EXPR(has_cheated, HasCheated())
     HANDLE_SUPERCLASS(Hmx::Object)

@@ -22,6 +22,7 @@ class SongStatusMgr;
 class RockCentralOpCompleteMsg;
 class LocalBandUser;
 class ProfilePicture;
+class TourBand;
 
 class BandProfile : public Profile {
 public:
@@ -52,7 +53,7 @@ public:
     void GetTexAtPatchIndex(int) const;
     void GetPatchIndex(const PatchDir*) const;
     void PotentiallyDeleteStandin(HxGuid);
-    void GetCharacterStandinIndex(CharData*) const;
+    int GetCharacterStandinIndex(CharData*) const;
     StandIn* GetStandIn(int) const;
     StandIn* AccessStandIn(int);
     int GetNumStandins() const;
@@ -126,7 +127,7 @@ public:
 
     bool unk18;
     std::vector<PatchDir*> unk1c; // 0x1c
-    std::vector<CharData*> mChars; // 0x24 
+    std::vector<CharData*> mCharacters; // 0x24 
     TourProgress* mTourProgress;   // 0x2c correct up to here
     std::map<Symbol, float> unk30; // 0x30
     SongStatusMgr* mScores; // 0x48
@@ -156,7 +157,7 @@ public:
     int unk6fb4;
     int unk6fb8;
     ProfilePicture* mProfilePicture; // 0x6fbc
-    int unk6fc0; // TourBand*
+    TourBand* unk6fc0; // TourBand*
 };
 
 #endif // METABAND_BANDPROFILE_H

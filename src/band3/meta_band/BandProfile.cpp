@@ -8,6 +8,7 @@
 #include "bandobj/PatchDir.h"
 #include "os/ProfilePicture.h"
 #include "tour/TourProgress.h"
+#include "tour/TourBand.h"
 #include "system/utl/Symbols.h"
 
 BandProfile::BandProfile(int i) : Profile(i), unk18(0), mAccomplishmentProgress(this), unk740(0), unk744(-1), unk74c(-1), unk750(-1), unk784(-1), unk6f70(0), unk6f74(0), mProfileAssets(this), unk6fb4(0), unk6fb8(0) {
@@ -18,13 +19,14 @@ BandProfile::BandProfile(int i) : Profile(i), unk18(0), mAccomplishmentProgress(
     for(int n = 0; n < 8; n++) unk1c.push_back(new PatchDir());
     for(int n = 0; n < 4; n++) mStandIns.push_back(StandIn());
     mTourProgress = new TourProgress();
+    unk6fc0 = new TourBand(this);
 }
 
 BandProfile::~BandProfile() {
     DeleteAll();
     RELEASE(mScores);
     RELEASE(mProfilePicture);
-    // RELEASE(unk6fc0);
+    RELEASE(unk6fc0);
     RELEASE(mTourProgress);
 }
 
@@ -32,21 +34,33 @@ void BandProfile::Poll() {
     mProfilePicture->Poll();
 }
 
-void BandProfile::GetAvailableStandins(int, std::vector<TourCharLocal*>&) const {
-    for (int i = 0; i < mChars.size(); i++) {
-        CharData* pCharacter = mChars.at(i);
+void BandProfile::GetAvailableStandins(int idx, std::vector<TourCharLocal*>& chars) const {
+    for (int i = 0; i < mCharacters.size(); i++) {
+        CharData* pCharacter = mCharacters[i];
         MILO_ASSERT(pCharacter, 0x76);
-        GetCharacterStandinIndex(pCharacter);
+        int charidx = GetCharacterStandinIndex(pCharacter);
+        if(charidx == -1 || charidx == idx){
+            chars.push_back((TourCharLocal*)pCharacter);
+        }
     }
 }
 
-void BandProfile::GetAllChars(std::vector<TourCharLocal*>&) const {
-    for (int i = 0; i < mChars.size(); i++) {
-        
+void BandProfile::GetAllChars(std::vector<TourCharLocal*>& chars) const {
+    for (int i = 0; i < mCharacters.size(); i++) {
+        TourCharLocal* tchar = (TourCharLocal*)mCharacters[i];
+        chars.push_back(tchar);
     }
 }
 
-void BandProfile::GetAvailableCharacters(std::vector<TourCharLocal*>&) const {}
+void BandProfile::GetAvailableCharacters(std::vector<TourCharLocal*>& chars) const {
+    for (int i = 0; i < mCharacters.size(); i++) {
+        CharData* pCharacter = mCharacters[i];
+        MILO_ASSERT(pCharacter, 0x90);
+        if(TheBandUserMgr->IsCharAvailable(pCharacter)){
+            chars.push_back((TourCharLocal*)pCharacter);
+        }
+    }
+}
 
 CharData* BandProfile::GetCharFromGuid(const HxGuid&) {}
 
@@ -58,18 +72,18 @@ void BandProfile::AddNewChar(TourCharLocal* pChar) {
     MILO_ASSERT(pChar, 0xaf);
     int kMaxCharacters = 5;
     MILO_ASSERT(NumChars() < kMaxCharacters, 0xb0);
-    // mChars.push_back(pChar);
+    // mCharacters.push_back(pChar);
 }
 
 void BandProfile::DeleteChar(TourCharLocal*) {}
 void BandProfile::RenameCharacter(TourCharLocal*, const char*) {}
 
 int BandProfile::NumChars() const {
-    return mChars.size();
+    return mCharacters.size();
 }
 
 bool BandProfile::HasChar(const TourCharLocal* character) {
-    // for (std::vector<TourCharLocal*>::const_iterator it = mChars.begin(); it != mChars.end(); it++) {
+    // for (std::vector<TourCharLocal*>::const_iterator it = mCharacters.begin(); it != mCharacters.end(); it++) {
     //     if (*it == character) {
     //         return true;
     //     }
