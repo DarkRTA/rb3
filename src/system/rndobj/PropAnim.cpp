@@ -564,7 +564,7 @@ BEGIN_HANDLERS(RndPropAnim)
     HANDLE_EXPR(interp_handler, InterpHandler(_msg->Obj<Hmx::Object>(2), _msg->Array(3)))
     HANDLE_ACTION(set_interp_handler, SetInterpHandler(_msg->Obj<Hmx::Object>(2), _msg->Array(3), _msg->Sym(4)))
     HANDLE_ACTION(replace_target, Replace(_msg->Obj<Hmx::Object>(2), _msg->Obj<Hmx::Object>(3)))
-    if(sym == foreach_target) return ForEachTarget(_msg);
+    HANDLE_EXPR(foreach_target, ForEachTarget(_msg))
     HANDLE(forall_keyframes, ForAllKeyframes)
     HANDLE(foreach_keyframe, ForeachKeyframe)
     HANDLE(foreach_frame, ForeachFrame)

@@ -1,8 +1,11 @@
 #ifndef OBJ_OBJMACROS_H
 #define OBJ_OBJMACROS_H
-#include "os/System.h"
-#include "obj/PropSync_p.h"
-#include "obj/MessageTimer.h"
+
+// These headers are prerequisites for the macros here to function correctly
+// #include "obj/Object.h" // We're included
+#include "os/System.h" /* IWYU pragma: keep */
+#include "obj/PropSync_p.h" /* IWYU pragma: keep */
+#include "obj/MessageTimer.h" /* IWYU pragma: keep */
 
 const char* PathName(const class Hmx::Object*);
 
@@ -48,64 +51,65 @@ const char* PathName(const class Hmx::Object*);
         Symbol sym = _msg->Sym(1);
 #endif
 
-#define HANDLE(symbol, func) \
-    if(sym == symbol){ \
-        DataNode result = func(_msg); \
-        if(result.Type() != kDataUnhandled) return DataNode(result); \
+#define _HANDLE_CHECKED(expr) \
+    { \
+        DataNode result = expr; \
+        if(result.Type() != kDataUnhandled) return result; \
     }
 
+#define HANDLE(symbol, func) \
+    if(sym == symbol) _HANDLE_CHECKED(func(_msg))
+
 #define HANDLE_EXPR(symbol, expr) \
-    if (sym == symbol) return DataNode(expr);
+    if (sym == symbol) return expr;
 
 #define HANDLE_ACTION(symbol, expr) \
     if(sym == symbol){ \
         expr; \
-        return DataNode(0); \
+        return 0; \
     }
+
+#define HANDLE_CONDITION(cond, expr) \
+    if (cond) return expr;
 
 #define HANDLE_MESSAGE(msg) \
-    if(sym == msg::Type()){ \
-        DataNode result = OnMsg(msg(_msg)); \
-        if(result.Type() != kDataUnhandled) return DataNode(result); \
-    }
+    if(sym == msg::Type()) _HANDLE_CHECKED(OnMsg(msg(_msg)))
 
-#define NEW_STATIC_SYMBOL(str) \
+#define _NEW_STATIC_SYMBOL(str) \
     static Symbol _s(#str);
 
 #define HANDLE_STATIC(sym, func) { \
-    NEW_STATIC_SYMBOL(sym) \
+    _NEW_STATIC_SYMBOL(sym) \
     HANDLE(_s, func); \
 }
 
 #define HANDLE_EXPR_STATIC(symbol, expr) { \
-    NEW_STATIC_SYMBOL(symbol) \
+    _NEW_STATIC_SYMBOL(symbol) \
     HANDLE_EXPR(_s, expr) \
 }
 
 #define HANDLE_ACTION_STATIC(symbol, expr) { \
-    NEW_STATIC_SYMBOL(symbol) \
+    _NEW_STATIC_SYMBOL(symbol) \
     HANDLE_ACTION(_s, expr) \
 }
 
+#define HANDLE_METHOD(func) \
+    _HANDLE_CHECKED(func(_msg))
+
+#define HANDLE_FORWARD(func) \
+    _HANDLE_CHECKED(func(_msg, false))
+
 #define HANDLE_SUPERCLASS(parent) \
-    { \
-        DataNode baseResult = parent::Handle(_msg, false); \
-        if (baseResult.Type() != kDataUnhandled) return baseResult; \
-    }
+    HANDLE_FORWARD(parent::Handle)
+
+#define HANDLE_VIRTUAL_SUPERCLASS(parent) \
+    if(ClassName() == StaticClassName()) HANDLE_SUPERCLASS(parent)
 
 #define HANDLE_MEMBER(member) \
-    { \
-        DataNode baseResult = member.Handle(_msg, false); \
-        if (baseResult.Type() != kDataUnhandled) return baseResult; \
-    }
+    HANDLE_FORWARD(member.Handle)
 
 #define HANDLE_MEMBER_PTR(member) \
-    { \
-        if (member) {\
-            DataNode baseResult = member->Handle(_msg, false); \
-            if (baseResult.Type() != kDataUnhandled) return baseResult; \
-        } \
-    }
+    if (member) HANDLE_FORWARD(member->Handle)
 
 #define HANDLE_CHECK(line_num) \
     if(_warn) MILO_WARN("%s(%d): %s unhandled msg: %s", __FILE__, line_num, PathName(this), sym);
@@ -178,17 +182,17 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
         }
 
 #define SYNC_PROP_STATIC(symbol, member) { \
-    NEW_STATIC_SYMBOL(symbol) \
+    _NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP(_s, member) \
 }
 
 #define SYNC_PROP_SET_STATIC(symbol, member, func) { \
-    NEW_STATIC_SYMBOL(symbol) \
+    _NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP_SET(_s, member, func) \
 }
 
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \
-    NEW_STATIC_SYMBOL(symbol) \
+    _NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP_MODIFY(_s, member, func) \
 }
 
@@ -223,6 +227,9 @@ void objType::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 
 #define COPY_SUPERCLASS(parent) \
     parent::Copy(o, ty);
+
+#define COPY_VIRTUAL_SUPERCLASS(parent) \
+    if(ClassName() == StaticClassName()) COPY_SUPERCLASS(Hmx::Object)
 
 #define COPY_SUPERCLASS_FROM(parent, obj) \
     parent::Copy(obj, ty);

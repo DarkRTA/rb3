@@ -175,9 +175,7 @@ void MsgSource::Export(DataArray* da, bool b){
 BEGIN_HANDLERS(MsgSource);
     HANDLE(add_sink, OnAddSink);
     HANDLE(remove_sink, OnRemoveSink);
-    if(ClassName() == StaticClassName()){
-        HANDLE_SUPERCLASS(Hmx::Object);
-    }
+    HANDLE_VIRTUAL_SUPERCLASS(Hmx::Object);
     Export(_msg, false);
 END_HANDLERS;
 

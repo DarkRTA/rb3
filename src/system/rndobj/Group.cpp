@@ -73,17 +73,7 @@ BEGIN_HANDLERS(RndGroup)
     HANDLE_ACTION(remove_object, RemoveObject(_msg->GetObj(2)))
     HANDLE_ACTION(clear_objects, ClearObjects())
     HANDLE(get_draws, OnGetDraws)
-    if(sym == has_object){
-        Hmx::Object* target = _msg->GetObj(2);
-        Hmx::Object* existing_obj = 0;
-        for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
-            if(*it == target){
-                existing_obj = *it;
-                break;
-            }
-        }
-        return DataNode(existing_obj != 0);
-    }
+    HANDLE_EXPR(has_object, mObjects.find(_msg->GetObj(2)) != mObjects.end())
     HANDLE_SUPERCLASS(RndAnimatable)
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(RndTransformable)

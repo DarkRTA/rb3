@@ -230,7 +230,7 @@ void RndTransformable::DistributeChildren(bool b, float f){
 }
 
 BEGIN_COPYS(RndTransformable)
-    if(ClassName() == StaticClassName()) COPY_SUPERCLASS(Hmx::Object)
+    COPY_VIRTUAL_SUPERCLASS(Hmx::Object)
     CREATE_COPY(RndTransformable)
     BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mWorldXfm)
@@ -355,13 +355,11 @@ BEGIN_HANDLERS(RndTransformable)
     HANDLE(get_world_pos, OnGetWorldPos)
     HANDLE(get_world_rot, OnGetWorldRot)
     HANDLE_ACTION(set_trans_parent, SetTransParent(_msg->Obj<RndTransformable>(2), _msg->Size() > 3 ? _msg->Int(3) != 0 : false))
-    HANDLE_EXPR(trans_parent, mParent)
+    HANDLE_EXPR(trans_parent, mParent.Ptr())
     HANDLE_ACTION(reset_xfm, DirtyLocalXfm().Reset())
     HANDLE_ACTION(distribute_children, DistributeChildren(_msg->Int(2) != 0, _msg->Float(3)))
     HANDLE(get_children, OnGetChildren)
-    if(ClassName() == StaticClassName()){
-        HANDLE_SUPERCLASS(Hmx::Object)
-    }
+    HANDLE_VIRTUAL_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x357)
 END_HANDLERS
 #pragma pop

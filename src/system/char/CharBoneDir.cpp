@@ -229,7 +229,7 @@ BEGIN_COPYS(CharBoneDir)
 END_COPYS
 
 BEGIN_HANDLERS(CharBoneDir)
-    if(sym == get_context_flags) return GetContextFlags();
+    HANDLE_EXPR(get_context_flags, GetContextFlags())
     HANDLE_SUPERCLASS(ObjectDir)
     HANDLE_CHECK(0x1D1)
 END_HANDLERS

@@ -284,7 +284,7 @@ BEGIN_HANDLERS(EventTrigger)
     HANDLE_ACTION(disable, unkdf = false)
     HANDLE_ACTION(wait_for, unkdf = true; Trigger();)
     HANDLE(proxy_calls, OnProxyCalls)
-    if (sym == supported_events) return DataNode(SupportedEvents(), kDataArray);
+    HANDLE_EXPR(supported_events, DataNode(SupportedEvents(), kDataArray))
     HANDLE_ACTION(basic_cleanup, BasicReset())
     HANDLE_SUPERCLASS(RndAnimatable)
     HANDLE_SUPERCLASS(Hmx::Object)

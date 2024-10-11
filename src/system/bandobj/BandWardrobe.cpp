@@ -613,7 +613,7 @@ BEGIN_HANDLERS(BandWardrobe)
     HANDLE_EXPR(get_character, GetCharacter(_msg->Int(2)))
     HANDLE(list_venue_anim_groups, OnListVenueAnimGroups)
     HANDLE(sort_targets, OnSortTargets)
-    if(sym == prefabs_list) return ObjectList(BandCharDesc::GetPrefabs(), "BandCharDesc", true);
+    HANDLE_EXPR(prefabs_list, ObjectList(BandCharDesc::GetPrefabs(), "BandCharDesc", true))
     HANDLE(get_matching_dude, OnGetMatchingDude)
     HANDLE(list_interest_objects, OnGetCurrentInterests)
     HANDLE(enable_debug_interests, OnEnableDebugInterests)

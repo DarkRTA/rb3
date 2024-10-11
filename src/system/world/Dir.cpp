@@ -178,7 +178,7 @@ void WorldDir::PreLoad(BinStream& bs){
         ObjPtr<RndCam, ObjectDir> ptr(this, 0);
         bs >> ptr;
     }
-    if(gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || 
+    if(gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 ||
         gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 ||
         gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20){
         int i, j;
@@ -409,8 +409,8 @@ void WorldDir::PresetOverride::Sync(bool b){
 
 BEGIN_HANDLERS(WorldDir)
     if(mEchoMsgs && !_warn) MILO_LOG("World msg: %s\n", sym);
-    HANDLE_MEMBER(mCameraManager)
-    HANDLE_MEMBER(mPresetManager)
+    HANDLE_MEMBER_PTR((&mCameraManager)) // ???
+    HANDLE_MEMBER_PTR((&mPresetManager)) // ???
     HANDLE_SUPERCLASS(PanelDir)
     HANDLE_CHECK(0x3CB)
 END_HANDLERS

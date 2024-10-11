@@ -106,8 +106,8 @@ JavaScriptQuotes: Leave
 JavaScriptWrapImports: true
 KeepEmptyLinesAtTheStartOfBlocks: false
 LambdaBodyIndentation: Signature
-MacroBlockBegin: ""
-MacroBlockEnd: ""
+MacroBlockBegin: "BEGIN_.*"
+MacroBlockEnd: "END_.*"
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 ObjCBinPackProtocolList: Auto

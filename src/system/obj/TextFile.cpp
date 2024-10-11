@@ -46,10 +46,7 @@ void TextFile::Print(const char* str){
 // FIXME: in order for this TU to link, the bss for "_s" needs to come BEFORE the bss for SetType's "types"
 BEGIN_HANDLERS(TextFile);
     HANDLE(print, OnPrint);
-    {
-        static Symbol _s("printf");
-        HANDLE(_s, OnPrintf);
-    }
+    HANDLE_STATIC(printf, OnPrintf)
     HANDLE(reflect, OnReflect);
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x4D);

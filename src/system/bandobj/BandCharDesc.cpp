@@ -827,14 +827,14 @@ void BandCharDesc::Compress(RndTex* tex, bool b){
 }
 
 BEGIN_HANDLERS(BandCharDesc)
-    if(sym == list_outfits) return ListOutfits(_msg->Sym(2));
+    HANDLE_EXPR(list_outfits, ListOutfits(_msg->Sym(2)))
     HANDLE_EXPR(nose_num, BandHeadShaper::sNoseNum)
     HANDLE_EXPR(mouth_num, BandHeadShaper::sMouthNum)
     HANDLE_EXPR(eye_num, BandHeadShaper::sEyeNum)
     HANDLE_EXPR(shape_num, BandHeadShaper::sShapeNum)
     HANDLE_EXPR(chin_num, BandHeadShaper::sChinNum)
     HANDLE_ACTION(milo_reload, MiloReload())
-    if(ClassName() == StaticClassName()) HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_VIRTUAL_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x604)
 END_HANDLERS
 

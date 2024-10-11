@@ -1052,7 +1052,7 @@ BEGIN_HANDLERS(BandCharacter)
     HANDLE(copy_prefab, OnCopyPrefab)
     HANDLE(save_prefab, OnSavePrefab)
     HANDLE(set_file_merger, OnSetFileMerger)
-    if(sym == list_dircuts) return OnListDircuts();
+    HANDLE_EXPR(list_dircuts, OnListDircuts())
     HANDLE(load_dircut, OnLoadDircut)
     HANDLE_ACTION(set_context, SetContext(_msg->Sym(2)))
     HANDLE_ACTION(save_from_closet, SavePrefabFromCloset())

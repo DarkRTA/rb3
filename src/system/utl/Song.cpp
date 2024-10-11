@@ -211,8 +211,8 @@ void Song::JumpTo(int i){
 }
 
 BEGIN_HANDLERS(Song)
-    if(sym == get_bookmarkers) return GetBookmarks();
-    if(sym == get_midi_parsers) return GetMidiParsers();
+    HANDLE_EXPR(get_bookmarkers, GetBookmarks());
+    HANDLE_EXPR(get_midi_parsers, GetMidiParsers());
     HANDLE_ACTION(jump_to, _msg->Type(2) == kDataSymbol ? JumpTo(_msg->Sym(2)) : JumpTo(_msg->Int(2)))
     HANDLE_ACTION(sync_state, SyncState())
     HANDLE_ACTION(set_loop_start, SetLoopStart(_msg->Float(2)))
