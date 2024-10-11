@@ -73,10 +73,11 @@ extern int* gpDbgFrameID;
 #  define MILO_LOG(...) TheDebug << MakeString(__VA_ARGS__)
 
 // Usage:
-// MILO_TRY(errMsg) {
+// MILO_TRY {
 //     // The code to try
-// } MILO_CATCH {
-//     // errMsg is valid here
+// } MILO_CATCH(errMsg) {
+//     // Use errMsg here, e.g.:
+//     MILO_WARN("An unexpected thing happened: %s", errMsg);
 // }
 #  define MILO_TRY \
     TheDebug.SetTry(true); \
@@ -84,6 +85,7 @@ extern int* gpDbgFrameID;
      * The return of setjmp should only be used in control flow, \
      * but here it's used to propogate an error message. \
      */ \
+    /* TODO: Only one MILO_TRY can be used within the same scope currently */ \
     const char* _msg = (const char*)setjmp(TheDebugJump); \
     if (_msg == nullptr) { \
         do
