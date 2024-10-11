@@ -1,6 +1,5 @@
 #ifndef METABAND_PERFORMANCEDATA_H
 #define METABAND_PERFORMANCEDATA_H
-
 #include "system/obj/Object.h"
 #include "system/meta/FixedSizeSaveable.h"
 #include "band3/game/Defines.h"
@@ -10,13 +9,13 @@ class PerformanceData : public Hmx::Object, public FixedSizeSaveable {
 public:
     PerformanceData();
     virtual ~PerformanceData();
-    void Initialize(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool);
+    virtual DataNode Handle(DataArray*, bool);
     virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    static int SaveSize(int);
     virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
     void Prune(Stats&);
     void InitializeStatsVectors();
-    DataNode Handle(DataArray*, bool);
+    void Initialize(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool);
 
     // Located in RockCentral.cpp
     Symbol GetMode() const;
@@ -31,7 +30,8 @@ public:
     int GetStars() const;
     int GetBattleID() const;
 
-private: 
+    static int SaveSize(int);
+
     int m0x24;
     bool m0x28;
     bool mIsOnline;         // 0x29

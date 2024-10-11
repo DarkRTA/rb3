@@ -60,7 +60,7 @@ public:
     //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), m0x28(s.m0x28), m0x2c(s.m0x2c), m0x30(s.m0x30), m0x34(s.m0x34),
     //     mFinalized(s.mFinalized), mSoloPercentage(s.mSoloPercentage), mSoloButtonedSoloPercentage(s.mSoloButtonedSoloPercentage), mPerfectSoloWithSoloButtons(s.mPerfectSoloWithSoloButtons), m0x41(s.m0x41),
     //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
-    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), m0x80(s.m0x80),
+    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
     //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
     //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), m0xb4(s.m0xb4), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
         
@@ -149,15 +149,15 @@ public:
     bool GetFinalized() const { return mFinalized; }
 
     // These are implemented in PerformanceData
-    void AccessPerformanceAwards();
-    void SetEndGameScore(int);
-    void SetNotesHitFraction(float);
-    void SetHitCount(int);
-    void SetMissCount(int);
-    void AccessFailurePoints();
-    void AccessSavedPoints();
-    void AccessClosestTimesSaved();
-    void AccessClosestPlayersSaved();
+    std::vector<Symbol>& AccessPerformanceAwards(){ return mAccessPerformanceAwards; }
+    void SetEndGameScore(int endGameScore) { mEndGameScore = endGameScore; }
+    void SetNotesHitFraction(float notesHitFraction) { mNotesHitFraction = notesHitFraction; }
+    void SetHitCount(int hitCount) { mHitCount = hitCount; }
+    void SetMissCount(int missCount) { mMissCount = missCount; }
+    std::vector<float>& AccessFailurePoints(){ return mFailurePoints; }
+    std::vector<float>& AccessSavedPoints(){ return mSavedPoints; }
+    std::vector<float>& AccessClosestTimesSaved(){ return mClosestTimesSaved; }
+    std::vector<float>& AccessClosestPlayersSaved(){ return mClosestPlayersSaved; }
     void SetTimesSaved(int);
     void SetPlayersSaved(int);
     void AccessCurrentStreakInfo();
@@ -230,7 +230,7 @@ public:
     int m0x6c;                                 // 0x06c
     std::vector<float> m0x70;                    // 0x070
     std::vector<SingerStats> mSingerStats;     // 0x078
-    std::vector<Symbol> m0x80;                    // 0x080
+    std::vector<Symbol> mAccessPerformanceAwards;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
     int mSolo; // 0x90
@@ -249,12 +249,12 @@ public:
     std::vector<StreakInfo> mHitStreaks; // 0xc4
     StreakInfo mCurrentMissStreak; // 0xcc
     std::vector<StreakInfo> mMissStreaks; // 0xd4
-    std::vector<float> unkdc; // 0xdc
-    std::vector<float> unke4; // 0xe4
+    std::vector<float> mFailurePoints; // 0xdc
+    std::vector<float> mSavedPoints; // 0xe4
     int mPlayersSaved; // 0xec
-    std::vector<float> unkf0; // 0xf0
+    std::vector<float> mClosestPlayersSaved; // 0xf0
     int mTimesSaved; // 0xf8
-    std::vector<float> unkfc; // 0xfc
+    std::vector<float> mClosestTimesSaved; // 0xfc
     std::vector<int> unk104; // 0x104
     MultiplierInfo mCurrentOverdriveDeployment; // 0x10c
     std::vector<MultiplierInfo> mBestOverdriveDeployments; // 0x120
