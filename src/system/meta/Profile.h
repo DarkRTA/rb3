@@ -12,7 +12,7 @@ enum ProfileSaveState {
     kMetaProfileUnchanged = -1
 };
 
-class Profile : public FixedSizeSaveable, virtual Hmx::Object {
+class Profile : public FixedSizeSaveable, public virtual Hmx::Object {
 public:
     Profile(int);
     virtual ~Profile();

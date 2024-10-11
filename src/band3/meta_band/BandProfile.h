@@ -2,6 +2,7 @@
 #define METABAND_BANDPROFILE_H
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
+#include "meta_band/GameplayOptions.h"
 #include <vector>
 #include "StandIn.h"
 #include "ProfileAssets.h"
@@ -19,7 +20,7 @@ class RockCentralOpCompleteMsg;
 class LocalBandUser;
 class ProfilePicture;
 
-class BandProfile : public Profile, virtual Hmx::Object {
+class BandProfile : public Profile {
 public:
     BandProfile(int);
     virtual ~BandProfile();
@@ -118,27 +119,29 @@ public:
     void FakeProfileFill();
     void GetPictureTex();
     void AutoFakeFill(int);
-
-private:
-    int padding;
-    int padding2;
+    
+    bool unk18;
+    std::vector<int> unk1c; // 0x1c
     std::vector<CharData*> mChars; // 0x24 
     TourProgress* mTourProgress;   // 0x2c correct up to here
-    // ameplayOptions mGameplayOptions;
+    std::map<Symbol, float> unk30; // 0x30
+    int unk48; // 0x48 - SongStatusMgr
+    std::vector<int> unk4c; // 0x4c
     // Gameplay options 0x2e
     // lessons 0x34
     // AccomplishmentProgress* 0x3d
     // song status mgr 0x48
     // saved song lists 0x4c
     std::vector<StandIn*> mStandIns; // 0x54
+    HxGuid unk5c; // 0x5c
+    Symbol unk6c; // 0x6c
+    std::set<Symbol> unk70; // 0x70
+    std::set<Symbol> unk88; // 0x88
+    std::set<Symbol> unka0; // 0xa0
+    GameplayOptions mGameplayOptions; // 0xb8
     // accomplishment progress 0xf4
-
     // something involving performance data 0x6f70
     // 0x6f74
-
- 
-
-public:
     ProfileAssets* mProfileAssets; // 0x6f78
     ProfilePicture* mProfilePicture; // 0x6fbc
 
