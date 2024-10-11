@@ -69,7 +69,7 @@ void PerformanceData::SaveFixed(FixedSizeSaveableStream& stream) const {
     stream << mStats.mOverdrivePhraseCount;
     stream << mStats.mUnisonPhraseCompleted;
     stream << mStats.mUnisonPhraseCount;
-    FixedSizeSaveable::SaveStd(stream, mStats.unk104, 3, 4);
+    FixedSizeSaveable::SaveStd(stream, mStats.mBestSolos, 3, 4);
     stream << mStats.mHitStreaks.size();
 }
 
@@ -120,182 +120,130 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
     FixedSizeSaveable::LoadStd(stream, savepoints, 3, 4);
     FixedSizeSaveable::LoadStd(stream, closesttimessaved, 3, 4);
     FixedSizeSaveable::LoadStd(stream, closestplayerssaved, 3, 4);
-    
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetTimesSaved((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetPlayersSaved((Stats *)(this + 0x48),iVar2);
-//   piVar3 = (int *)Stats::AccessCurrentStreakInfo((Stats *)(this + 0x48));
-//   BinStream::operator_>>((BinStream *)param_1,piVar3);
-//   BinStream::operator_>>((BinStream *)param_1,piVar3 + 1);
-//   dVar9 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//   Stats::SetEndGameOverdrive((Stats *)(this + 0x48),(float)dVar9);
-//   dVar9 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//   Stats::SetEndGameCrowdLevel((Stats *)(this + 0x48),(float)dVar9);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetCodaPoints((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetOverdrivePhrasesCompleted((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetOverdrivePhraseCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetUnisonPhrasesCompleted((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetUnisonPhraseCount((Stats *)(this + 0x48),iVar2);
-//   this_04 = (vector<> *)Stats::AccessBestSolos((Stats *)(this + 0x48));
-//   stlpmtx_std::vector<><>::clear((vector<><> *)this_04);
-//   FixedSizeSaveable::LoadStd(param_1,this_04,3,4);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetHitStreakCount((Stats *)(this + 0x48),iVar2);
-//   iVar8 = 0;
-//   do {
-//     if (iVar8 < iVar2) {
-//       piVar3 = (int *)Stats::AccessHitStreak((Stats *)(this + 0x48),iVar8);
-//       BinStream::operator_>>((BinStream *)param_1,piVar3);
-//       BinStream::operator_>>((BinStream *)param_1,piVar3 + 1);
-//     }
-//     else {
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//     }
-//     iVar8 = iVar8 + 1;
-//   } while (iVar8 < 3);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetMissStreakCount((Stats *)(this + 0x48),iVar2);
-//   iVar8 = 0;
-//   do {
-//     if (iVar8 < iVar2) {
-//       piVar3 = (int *)Stats::AccessMissStreak((Stats *)(this + 0x48),iVar8);
-//       BinStream::operator_>>((BinStream *)param_1,piVar3);
-//       BinStream::operator_>>((BinStream *)param_1,piVar3 + 1);
-//     }
-//     else {
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//     }
-//     iVar8 = iVar8 + 1;
-//   } while (iVar8 < 3);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetBestOverdriveDeploymentsCount((Stats *)(this + 0x48),iVar2);
-//   iVar8 = 0;
-//   do {
-//     if (iVar8 < iVar2) {
-//       pfVar4 = (float *)Stats::AccessBestOverdriveDeployment((Stats *)(this + 0x48),iVar8);
-//       BinStream::operator_>>((BinStream *)param_1,pfVar4);
-//       BinStream::operator_>>((BinStream *)param_1,pfVar4 + 1);
-//       BinStream::operator_>>((BinStream *)param_1,(int *)(pfVar4 + 2));
-//       BinStream::operator_>>((BinStream *)param_1,(int *)(pfVar4 + 3));
-//       BinStream::operator_>>((BinStream *)param_1,pfVar4 + 4);
-//     }
-//     else {
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//       FixedSizeSaveableStream::ReadFloat(param_1);
-//       FixedSizeSaveableStream::ReadFloat(param_1);
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//     }
-//     iVar8 = iVar8 + 1;
-//   } while (iVar8 < 3);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetBestStreakMultipliersCount((Stats *)(this + 0x48),iVar2);
-//   iVar8 = 0;
-//   do {
-//     if (iVar8 < iVar2) {
-//       pfVar4 = (float *)Stats::AccessBestStreakMultiplier((Stats *)(this + 0x48),iVar8);
-//       BinStream::operator_>>((BinStream *)param_1,pfVar4);
-//       BinStream::operator_>>((BinStream *)param_1,pfVar4 + 1);
-//       BinStream::operator_>>((BinStream *)param_1,(int *)(pfVar4 + 2));
-//       BinStream::operator_>>((BinStream *)param_1,(int *)(pfVar4 + 3));
-//       BinStream::operator_>>((BinStream *)param_1,pfVar4 + 4);
-//     }
-//     else {
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//       FixedSizeSaveableStream::ReadFloat(param_1);
-//       FixedSizeSaveableStream::ReadFloat(param_1);
-//       FixedSizeSaveableStream::ReadInt(param_1);
-//     }
-//     iVar8 = iVar8 + 1;
-//   } while (iVar8 < 3);
-//   dVar9 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//   Stats::SetTotalOverdriveDuration((Stats *)(this + 0x48),(float)dVar9);
-//   dVar9 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//   Stats::SetTotalMultiplierDuration((Stats *)(this + 0x48),(float)dVar9);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetRollsHitCompletely((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetRollCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   iVar8 = FixedSizeSaveableStream::ReadInt(param_1);
-//   iVar5 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetHopoGemInfo((Stats *)(this + 0x48),iVar5,iVar8,iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetHighGemsHitHigh((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetHighGemsHitLow((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetHighFretGemCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetSustainGemsHitCompletely((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetSustainGemsHitPartially((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetSustainGemCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetTrillsHitCompletely((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetTrillsHitPartially((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetTrillCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   iVar8 = FixedSizeSaveableStream::ReadInt(param_1);
-//   iVar5 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetCymbalGemInfo((Stats *)(this + 0x48),iVar5,iVar8,iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetDoubleHarmonyHit((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetDoubleHarmonyPhraseCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetTripleHarmonyHit((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetTripleHarmonyPhraseCount((Stats *)(this + 0x48),iVar2);
-//   iVar2 = FixedSizeSaveableStream::ReadInt(param_1);
-//   iVar8 = FixedSizeSaveableStream::ReadInt(param_1);
-//   Stats::SetVocalSingerAndPartCounts((Stats *)(this + 0x48),iVar2,iVar8);
-//   iVar5 = 0;
-//   do {
-//     if (iVar5 < iVar2) {
-//       this_05 = (SingerStats *)Stats::AccessSingerStats((Stats *)(this + 0x48),iVar5);
-//       iVar7 = 0;
-//       do {
-//         if (iVar7 < iVar8) {
-//           dVar9 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//           iVar6 = FixedSizeSaveableStream::ReadInt(param_1);
-//           SingerStats::SetPartPercentage(this_05,iVar6,(float)dVar9);
-//         }
-//         else {
-//           FixedSizeSaveableStream::ReadInt(param_1);
-//           FixedSizeSaveableStream::ReadFloat(param_1);
-//         }
-//         iVar7 = iVar7 + 1;
-//       } while (iVar7 < 3);
-//       dVar9 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//       dVar10 = (double)FixedSizeSaveableStream::ReadFloat(param_1);
-//       SingerStats::SetPitchDeviationInfo(this_05,(float)dVar10,(float)dVar9);
-//     }
-//     else {
-//       iVar7 = 0;
-//       do {
-//         FixedSizeSaveableStream::ReadInt(param_1);
-//         FixedSizeSaveableStream::ReadFloat(param_1);
-//         iVar7 = iVar7 + 1;
-//       } while (iVar7 < 3);
-//       FixedSizeSaveableStream::ReadFloat(param_1);
-//       FixedSizeSaveableStream::ReadFloat(param_1);
-//     }
-//     iVar5 = iVar5 + 1;
-//   } while (iVar5 < 3);
-//   return;
+    mStats.SetTimesSaved(stream.ReadInt());
+    mStats.SetPlayersSaved(stream.ReadInt());
+    Stats::StreakInfo& info = mStats.AccessCurrentStreakInfo();
+    stream >> info.mStart;
+    stream >> info.mDuration;
+    mStats.SetEndGameOverdrive(stream.ReadFloat());
+    mStats.SetEndGameCrowdLevel(stream.ReadFloat());
+    mStats.SetCodaPoints(stream.ReadInt());
+    mStats.SetOverdrivePhrasesCompleted(stream.ReadInt());
+    mStats.SetOverdrivePhraseCount(stream.ReadInt());
+    mStats.SetUnisonPhrasesCompleted(stream.ReadInt());
+    mStats.SetUnisonPhraseCount(stream.ReadInt());
+    std::vector<int>& bestsolos = mStats.AccessBestSolos();
+    bestsolos.clear();
+    FixedSizeSaveable::LoadStd(stream, bestsolos, 3, 4);
+    int hitcount = stream.ReadInt();
+    mStats.SetHitStreakCount(hitcount);
+    for(int i = 0; i < 3; i++){
+        if(i < hitcount){
+            Stats::StreakInfo& info = mStats.AccessHitStreak(i);
+            stream >> info.mStart;
+            stream >> info.mDuration;
+        }
+        else {
+            stream.ReadInt();
+            stream.ReadInt();
+        }
+    }
+    int misscount = stream.ReadInt();
+    mStats.SetMissStreakCount(misscount);
+    for(int i = 0; i < 3; i++){
+        if(i < misscount){
+            Stats::StreakInfo& info = mStats.AccessMissStreak(i);
+            stream >> info.mStart;
+            stream >> info.mDuration;
+        }
+        else {
+            stream.ReadInt();
+            stream.ReadInt();
+        }
+    }
+    int oddeploycount = stream.ReadInt();
+    mStats.SetBestOverdriveDeploymentsCount(oddeploycount);
+    for(int i = 0; i < 3; i++){
+        if(i < oddeploycount){
+            Stats::MultiplierInfo& info = mStats.AccessBestOverdriveDeployment(i);
+            stream >> info.mStartMs;
+            stream >> info.mDurationMs;
+            stream >> info.mStartingMultiplier;
+            stream >> info.mEndingMultiplier;
+            stream >> info.mPoints;
+        }
+        else {
+            stream.ReadInt();
+            stream.ReadInt();
+            stream.ReadFloat();
+            stream.ReadFloat();
+            stream.ReadInt();
+        }
+    }
+    int multcount = stream.ReadInt();
+    mStats.SetBestStreakMultipliersCount(multcount);
+    for(int i = 0; i < 3; i++){
+        if(i < multcount){
+            Stats::MultiplierInfo& info = mStats.AccessBestStreakMultiplier(i);
+            stream >> info.mStartMs;
+            stream >> info.mDurationMs;
+            stream >> info.mStartingMultiplier;
+            stream >> info.mEndingMultiplier;
+            stream >> info.mPoints;
+        }
+        else {
+            stream.ReadInt();
+            stream.ReadInt();
+            stream.ReadFloat();
+            stream.ReadFloat();
+            stream.ReadInt();
+        }
+    }
+    mStats.SetTotalOverdriveDuration(stream.ReadFloat());
+    mStats.SetTotalMultiplierDuration(stream.ReadFloat());
+    mStats.SetRollsHitCompletely(stream.ReadInt());
+    mStats.SetRollCount(stream.ReadInt());
+    mStats.SetHopoGemInfo(stream.ReadInt(), stream.ReadInt(), stream.ReadInt());
+    mStats.SetHighGemsHitHigh(stream.ReadInt());
+    mStats.SetHighGemsHitLow(stream.ReadInt());
+    mStats.SetHighFretGemCount(stream.ReadInt());
+    mStats.SetSustainGemsHitCompletely(stream.ReadInt());
+    mStats.SetSustainGemsHitPartially(stream.ReadInt());
+    mStats.SetSustainGemCount(stream.ReadInt());
+    mStats.SetTrillsHitCompletely(stream.ReadInt());
+    mStats.SetTrillsHitPartially(stream.ReadInt());
+    mStats.SetTrillCount(stream.ReadInt());
+    mStats.SetCymbalGemInfo(stream.ReadInt(), stream.ReadInt(), stream.ReadInt());
+    mStats.SetDoubleHarmonyHit(stream.ReadInt());
+    mStats.SetDoubleHarmonyPhraseCount(stream.ReadInt());
+    mStats.SetTripleHarmonyHit(stream.ReadInt());
+    mStats.SetTripleHarmonyPhraseCount(stream.ReadInt());
+    int vocsingercount = stream.ReadInt();
+    int vocpartcount = stream.ReadInt();
+    mStats.SetVocalSingerAndPartCounts(vocsingercount, vocpartcount);
+    for(int i = 0; i < 3; i++){
+        if(i < vocsingercount){
+            SingerStats& stats = mStats.AccessSingerStats(i);
+            for(int j = 0; j < 3; j++){
+                if(j < vocpartcount){
+                    stats.SetPartPercentage(stream.ReadInt(), stream.ReadFloat());
+                }
+                else {
+                    stream.ReadInt();
+                    stream.ReadFloat();
+                }
+            }
+            stats.SetPitchDeviationInfo(stream.ReadFloat(), stream.ReadFloat());
+        }
+        else {
+            for(int j = 0; j < 3; j++){
+                stream.ReadInt();
+                stream.ReadFloat();
+            }
+            stream.ReadFloat();
+            stream.ReadFloat();
+        }
+    }
 }
 #pragma pop
 
@@ -307,41 +255,3 @@ BEGIN_HANDLERS(PerformanceData)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x2a8);
 END_HANDLERS
-
-void Stats::SetTimesSaved(int timesSaved) { mTimesSaved = timesSaved; }
-void Stats::SetPlayersSaved(int playersSaved) { mPlayersSaved = playersSaved; }
-void Stats::AccessCurrentStreakInfo() {}
-void Stats::SetEndGameOverdrive(float endGameOverdrive) { mEndGameOverdrive = endGameOverdrive; }
-void Stats::SetEndGameCrowdLevel(float endGameCrowdLevel) { mEndGameCrowdLevel = endGameCrowdLevel; }
-void Stats::SetCodaPoints(int codaPoints) { mCodaPoints = codaPoints; }
-void Stats::SetOverdrivePhrasesCompleted(int overdrivePhrasesCompleted) { mOverdrivePhrasesCompleted = overdrivePhrasesCompleted; }
-void Stats::SetOverdrivePhraseCount(int overdrivePhraseCount) { mOverdrivePhraseCount = overdrivePhraseCount; }
-void Stats::SetUnisonPhrasesCompleted(int unisonPhrasesCompleted) { mUnisonPhraseCompleted = unisonPhrasesCompleted; }
-void Stats::SetUnisonPhraseCount(int unisonPhraseCount) { mUnisonPhraseCount = unisonPhraseCount; }
-void Stats::AccessBestSolos() {}
-void Stats::SetHitStreakCount(int hitStreakCount) { }
-void Stats::AccessHitStreak(int) {}
-void Stats::SetMissStreakCount(int missStreakCount) { }
-void Stats::AccessMissStreak(int) {}
-void Stats::SetBestOverdriveDeploymentsCount(int bestOverdriveDeploymentsCount) { }
-void Stats::AccessBestOverdriveDeployment(int) {}
-void Stats::SetBestStreakMultipliersCount(int bestStreakMultipliersCount) {}
-void Stats::AccessBestStreakMultiplier(int) {}
-void Stats::SetTotalOverdriveDuration(float totalOverdriveDuration) { mTotalOverdriveDurationMs = totalOverdriveDuration; }
-void Stats::SetTotalMultiplierDuration(float totalMultiplierDuration) { mTotalMultiplierDuration = totalMultiplierDuration; }
-void Stats::SetRollsHitCompletely(int rollsHitCompletely) { mRollsHitCompletely = rollsHitCompletely; }
-void Stats::SetRollCount(int rollCount) { mRollCount = rollCount; }
-void Stats::SetHighGemsHitHigh(int highGemsHitHigh) { mHighGemsHitHigh = highGemsHitHigh; }
-void Stats::SetHighGemsHitLow(int highGemsHitLow) { mHighGemsHitLow = highGemsHitLow; }
-void Stats::SetHighFretGemCount(int highFretGemCount) { mHighFretGemCount = highFretGemCount; }
-void Stats::SetSustainGemsHitCompletely(int sustainGemsHitCompletely) { mSustainGemsHitCompletely = sustainGemsHitCompletely; }
-void Stats::SetSustainGemsHitPartially(int sustainGemsHitPartially) { mSustainGemsHitPartially = sustainGemsHitPartially; }
-void Stats::SetSustainGemCount(int sustainGemCount) { mSustainGemCount = sustainGemCount; }
-void Stats::SetTrillsHitCompletely(int trillsHitCompletely) { mTrillsHitCompletely = trillsHitCompletely; }
-void Stats::SetTrillsHitPartially(int trillsHitPartially) { mTrillsHitPartially = trillsHitPartially; }
-void Stats::SetTrillCount(int trillCount) { mTrillCount = trillCount; }
-void Stats::SetDoubleHarmonyHit(int doubleHarmonyHit) { mDoubleHarmonyHit = doubleHarmonyHit; }
-void Stats::SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) { mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount; }
-void Stats::SetTripleHarmonyHit(int tripleHarmonyHit) { mTripleHarmonyHit = tripleHarmonyHit; }
-void Stats::SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
-void Stats::AccessSingerStats(int) {}

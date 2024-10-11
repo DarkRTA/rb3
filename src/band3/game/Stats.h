@@ -158,43 +158,58 @@ public:
     std::vector<float>& AccessSavedPoints(){ return mSavedPoints; }
     std::vector<float>& AccessClosestTimesSaved(){ return mClosestTimesSaved; }
     std::vector<float>& AccessClosestPlayersSaved(){ return mClosestPlayersSaved; }
-    void SetTimesSaved(int);
-    void SetPlayersSaved(int);
-    void AccessCurrentStreakInfo();
-    void SetEndGameOverdrive(float);
-    void SetEndGameCrowdLevel(float);
-    void SetCodaPoints(int);
-    void SetOverdrivePhrasesCompleted(int);
-    void SetOverdrivePhraseCount(int);
-    void SetUnisonPhrasesCompleted(int);
-    void SetUnisonPhraseCount(int);
-    void AccessBestSolos();
-    void SetHitStreakCount(int);
-    void AccessHitStreak(int);
-    void SetMissStreakCount(int);
-    void AccessMissStreak(int);
-    void SetBestOverdriveDeploymentsCount(int);
-    void AccessBestOverdriveDeployment(int);
-    void SetBestStreakMultipliersCount(int);
-    void AccessBestStreakMultiplier(int);
-    void SetTotalOverdriveDuration(float);
-    void SetTotalMultiplierDuration(float);
-    void SetRollsHitCompletely(int);
-    void SetRollCount(int);
-    void SetHighGemsHitHigh(int);
-    void SetHighGemsHitLow(int);
-    void SetHighFretGemCount(int);
-    void SetSustainGemsHitCompletely(int);
-    void SetSustainGemsHitPartially(int);
-    void SetSustainGemCount(int);
-    void SetTrillsHitCompletely(int);
-    void SetTrillsHitPartially(int);
-    void SetTrillCount(int);
-    void SetDoubleHarmonyHit(int);
-    void SetDoubleHarmonyPhraseCount(int);
-    void SetTripleHarmonyHit(int);
-    void SetTripleHarmonyPhraseCount(int);
-    void AccessSingerStats(int);
+    StreakInfo& AccessCurrentStreakInfo(){ return mCurrentHitStreak; }
+    std::vector<int>& AccessBestSolos(){ return mBestSolos; }
+    StreakInfo& AccessHitStreak(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mHitStreaks.size()), 0x1C5);
+        return mHitStreaks[index];
+    }
+    StreakInfo& AccessMissStreak(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mMissStreaks.size()), 0x1D3);
+        return mMissStreaks[index];
+    }
+    MultiplierInfo& AccessBestOverdriveDeployment(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mBestOverdriveDeployments.size()), 0x1E1);
+        return mBestOverdriveDeployments[index];
+    }
+    MultiplierInfo& AccessBestStreakMultiplier(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mBestStreakMultipliers.size()), 0x1EF);
+        return mBestStreakMultipliers[index];
+    }
+    SingerStats& AccessSingerStats(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mSingerStats.size()), 0xC6);
+        return mSingerStats[index];
+    }
+    void SetTimesSaved(int timesSaved) { mTimesSaved = timesSaved; }
+    void SetPlayersSaved(int playersSaved) { mPlayersSaved = playersSaved; }
+    void SetEndGameOverdrive(float endGameOverdrive) { mEndGameOverdrive = endGameOverdrive; }
+    void SetEndGameCrowdLevel(float endGameCrowdLevel) { mEndGameCrowdLevel = endGameCrowdLevel; }
+    void SetCodaPoints(int codaPoints) { mCodaPoints = codaPoints; }
+    void SetOverdrivePhrasesCompleted(int overdrivePhrasesCompleted) { mOverdrivePhrasesCompleted = overdrivePhrasesCompleted; }
+    void SetOverdrivePhraseCount(int overdrivePhraseCount) { mOverdrivePhraseCount = overdrivePhraseCount; }
+    void SetUnisonPhrasesCompleted(int unisonPhrasesCompleted) { mUnisonPhraseCompleted = unisonPhrasesCompleted; }
+    void SetUnisonPhraseCount(int unisonPhraseCount) { mUnisonPhraseCount = unisonPhraseCount; }
+    void SetHitStreakCount(int hitStreakCount) { mHitStreaks.resize(hitStreakCount); }
+    void SetMissStreakCount(int missStreakCount) { mMissStreaks.resize(missStreakCount); }
+    void SetBestOverdriveDeploymentsCount(int bestOverdriveDeploymentsCount) { mBestOverdriveDeployments.resize(bestOverdriveDeploymentsCount); }
+    void SetBestStreakMultipliersCount(int bestStreakMultipliersCount) { mBestStreakMultipliers.resize(bestStreakMultipliersCount); }
+    void SetTotalOverdriveDuration(float totalOverdriveDuration) { mTotalOverdriveDurationMs = totalOverdriveDuration; }
+    void SetTotalMultiplierDuration(float totalMultiplierDuration) { mTotalMultiplierDuration = totalMultiplierDuration; }
+    void SetRollsHitCompletely(int rollsHitCompletely) { mRollsHitCompletely = rollsHitCompletely; }
+    void SetRollCount(int rollCount) { mRollCount = rollCount; }
+    void SetHighGemsHitHigh(int highGemsHitHigh) { mHighGemsHitHigh = highGemsHitHigh; }
+    void SetHighGemsHitLow(int highGemsHitLow) { mHighGemsHitLow = highGemsHitLow; }
+    void SetHighFretGemCount(int highFretGemCount) { mHighFretGemCount = highFretGemCount; }
+    void SetSustainGemsHitCompletely(int sustainGemsHitCompletely) { mSustainGemsHitCompletely = sustainGemsHitCompletely; }
+    void SetSustainGemsHitPartially(int sustainGemsHitPartially) { mSustainGemsHitPartially = sustainGemsHitPartially; }
+    void SetSustainGemCount(int sustainGemCount) { mSustainGemCount = sustainGemCount; }
+    void SetTrillsHitCompletely(int trillsHitCompletely) { mTrillsHitCompletely = trillsHitCompletely; }
+    void SetTrillsHitPartially(int trillsHitPartially) { mTrillsHitPartially = trillsHitPartially; }
+    void SetTrillCount(int trillCount) { mTrillCount = trillCount; }
+    void SetDoubleHarmonyHit(int doubleHarmonyHit) { mDoubleHarmonyHit = doubleHarmonyHit; }
+    void SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) { mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount; }
+    void SetTripleHarmonyHit(int tripleHarmonyHit) { mTripleHarmonyHit = tripleHarmonyHit; }
+    void SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
     
     template <class T> void SaveHighest(std::vector<T>&, const T&);
 
@@ -255,7 +270,7 @@ public:
     std::vector<float> mClosestPlayersSaved; // 0xf0
     int mTimesSaved; // 0xf8
     std::vector<float> mClosestTimesSaved; // 0xfc
-    std::vector<int> unk104; // 0x104
+    std::vector<int> mBestSolos; // 0x104
     MultiplierInfo mCurrentOverdriveDeployment; // 0x10c
     std::vector<MultiplierInfo> mBestOverdriveDeployments; // 0x120
     float mTotalOverdriveDurationMs; // 0x128
