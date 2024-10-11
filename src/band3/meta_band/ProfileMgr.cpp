@@ -3,22 +3,32 @@
 #include "rndobj/Rnd.h"
 
 INIT_REVS(ProfileMgr);
+ProfileMgr TheProfileMgr;
 
 namespace {
     float kNotForcingGain = -1.0f;
 }
 
-ProfileMgr::ProfileMgr() : unk1c(0), unk20(50.0f), unk24(70.0f), unk28(0), mGlobalOptionsSaveState(kMetaProfileUnloaded), mGlobalOptionsDirty(0), mBackgroundVolume(11), mForegroundVolume(11), mFxVolume(11), mCrowdVolume(11), mVocalCueVolume(11), mVoiceChatVolume(11),
-    mHasSeenFirstTimeCalibration(0), mHasConnectedProGuitar(0), unk578(0), unk57c(0), mBassBoost(0), mDolby(0), unk582(0), unk584(0), mOverscan(0), mSynapseEnabled(0), unk58a(0), mSecondPedalHiHat(0), mWiiSpeakToggle(1), mWiiSpeakFriendsVolume(6), mWiiSpeakMicrophoneSensitivity(3),
-    unk5b0(0), mWiiSpeakEchoSuppression(0), unk5b2(0), mWiiFriendsPromptShown(0), mUsingWiiFriends(0), unk5b8(0), unk5cc(0), unk5d8(0), mAllUnlocked(0) {
-    unk578 = -unk20;
-    unk57c = unk20 - unk1c;
+ProfileMgr::ProfileMgr() : mPlatformAudioLatency(0), mPlatformVideoLatency(50.0f), mInGameExtraVideoLatency(70.0f), mInGameSyncOffsetAdjustment(0), mGlobalOptionsSaveState(kMetaProfileUnloaded),
+    mGlobalOptionsDirty(0), mBackgroundVolume(11), mForegroundVolume(11), mFxVolume(11), mCrowdVolume(11), mVocalCueVolume(11), mVoiceChatVolume(11),
+    mHasSeenFirstTimeCalibration(0), mHasConnectedProGuitar(0), mSyncOffset(0), mSongToTaskMgrMs(0), mBassBoost(0), mDolby(0), unk582(0), mSyncPresetIx(0), mOverscan(0), mSynapseEnabled(1),
+    unk58a(1), mSecondPedalHiHat(0), mWiiSpeakToggle(1), mWiiSpeakFriendsVolume(6), mWiiSpeakMicrophoneSensitivity(3),
+    mWiiSpeakHeadphoneMode(0), mWiiSpeakEchoSuppression(0), unk5b2(0), mWiiFriendsPromptShown(0), mUsingWiiFriends(0), unk5b8(0), mCymbalConfiguration(0), unk5d8(0), mAllUnlocked(0) {
+    mSyncOffset = -mPlatformVideoLatency;
+    mSongToTaskMgrMs = mPlatformVideoLatency - mPlatformAudioLatency;
     for(int i = 0; i < 3; i++){
         unk5bc.push_back(8);
         unk5e0.push_back(kNotForcingGain);
     }
+    for(int i = 0; i < kJoypadNumTypes; i++){
+        for(int j = 0; j < kNumLagContexts; j++){
+            mJoypadExtraLagOffsets[i][j] = GetJoypadExtraLagInits((JoypadType)i, (LagContext)j);
+        }
+    }
     UpdatePrimaryProfile();
 }
+
+DECOMP_FORCEACTIVE(ProfileMgr, "profile_mgr", "signin_changed")
 
 bool ProfileMgr::GetAllUnlocked(){ return mAllUnlocked; }
 int ProfileMgr::GetMaxCharacters() const { return 10; }
@@ -47,8 +57,8 @@ int ProfileMgr::GetGlobalOptionsSize(){
 
 void ProfileMgr::SaveGlobalOptions(FixedSizeSaveableStream& bs){
     bs << packRevs(2, 7);
-    bs << unk578;
-    bs << unk57c;
+    bs << mSyncOffset;
+    bs << mSongToTaskMgrMs;
     bs << mBackgroundVolume;
     bs << mForegroundVolume;
     bs << mFxVolume;
@@ -56,18 +66,18 @@ void ProfileMgr::SaveGlobalOptions(FixedSizeSaveableStream& bs){
     bs << mBassBoost;
     bs << mCrowdVolume;
     bs << mDolby;
-    bs << unk584;
+    bs << mSyncPresetIx;
     bs << mOverscan;
     bs << mSynapseEnabled;
     bs << mWiiSpeakToggle;
     bs << mWiiSpeakFriendsVolume;
     bs << mWiiSpeakMicrophoneSensitivity;
-    bs << unk5b0;
+    bs << mWiiSpeakHeadphoneMode;
     bs << mWiiSpeakEchoSuppression;
     bs << mVoiceChatVolume;
     bs << mHasSeenFirstTimeCalibration;
     bs << mHasConnectedProGuitar;
-    bs << unk5cc;
+    bs << mCymbalConfiguration;
     bs << unk58a;
     bs << mSecondPedalHiHat;
     TheModifierMgr->Save(bs);
@@ -83,8 +93,8 @@ void ProfileMgr::SaveGlobalOptions(FixedSizeSaveableStream& bs){
 void ProfileMgr::LoadGlobalOptions(FixedSizeSaveableStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(7, 2);
-    bs >> unk578;
-    bs >> unk57c;
+    bs >> mSyncOffset;
+    bs >> mSongToTaskMgrMs;
     if(gRev != 0){
         bs >> mBackgroundVolume;
         bs >> mForegroundVolume;
@@ -98,7 +108,7 @@ void ProfileMgr::LoadGlobalOptions(FixedSizeSaveableStream& bs){
     bs >> mBassBoost;
     bs >> mCrowdVolume;
     bs >> mDolby;
-    bs >> unk584;
+    bs >> mSyncPresetIx;
     bs >> mOverscan;
     if(gRev > 1){
         if(gRev > 2) bs >> mSynapseEnabled;
@@ -109,12 +119,12 @@ void ProfileMgr::LoadGlobalOptions(FixedSizeSaveableStream& bs){
     bs >> mWiiSpeakToggle;
     bs >> mWiiSpeakFriendsVolume;
     bs >> mWiiSpeakMicrophoneSensitivity;
-    bs >> unk5b0;
+    bs >> mWiiSpeakHeadphoneMode;
     bs >> mWiiSpeakEchoSuppression;
     bs >> mVoiceChatVolume;
     bs >> mHasSeenFirstTimeCalibration;
     bs >> mHasConnectedProGuitar;
-    bs >> unk5cc;
+    bs >> mCymbalConfiguration;
     bs >> unk58a;
     if(gRev > 4) bs >> mSecondPedalHiHat;
     if(gRev >= 7) TheModifierMgr->Load(bs, gRev);
@@ -286,3 +296,110 @@ void ProfileMgr::SetSecondPedalHiHat(bool b){
     mSecondPedalHiHat = b;
     mGlobalOptionsDirty = true;
 }
+
+void ProfileMgr::SetSyncPresetIx(int ix){
+    mSyncPresetIx = ix;
+    mGlobalOptionsDirty = true;
+}
+
+float ProfileMgr::GetSongToTaskMgrMsRaw() const { return mSongToTaskMgrMs; }
+
+void ProfileMgr::SetSongToTaskMgrMsRaw(float ms){
+    if(mSongToTaskMgrMs != ms){
+        mSongToTaskMgrMs = ms;
+        mGlobalOptionsDirty = true;
+    }
+}
+float ProfileMgr::GetJoypadExtraLag(JoypadType type, LagContext ctx) const {
+    MILO_ASSERT(( 0) <= (type) && (type) < ( kJoypadNumTypes), 0x6DE);
+    MILO_ASSERT(( 0) <= (ctx) && (ctx) < ( kNumLagContexts), 0x6DF);
+    return mJoypadExtraLagOffsets[type][ctx];
+}
+
+void ProfileMgr::SetJoypadExtraLag(JoypadType type, LagContext ctx, float lag){
+    MILO_ASSERT(( 0) <= (type) && (type) < ( kJoypadNumTypes), 0x6E5);
+    MILO_ASSERT(( 0) <= (ctx) && (ctx) < ( kNumLagContexts), 0x6E6);
+    mJoypadExtraLagOffsets[type][ctx] = lag;
+}
+
+float ProfileMgr::GetPadExtraLag(int pad, LagContext ctx) const {
+    return mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][ctx];
+}
+
+void ProfileMgr::SetPlatformAudioLatency(float lat){ mPlatformAudioLatency = lat; }
+void ProfileMgr::SetPlatformVideoLatency(float lat){ mPlatformVideoLatency = lat; }
+float ProfileMgr::GetInGameExtraVideoLatency() const { return mInGameExtraVideoLatency; }
+void ProfileMgr::SetInGameExtraVideoLatency(float lat){ mInGameExtraVideoLatency = lat; }
+float ProfileMgr::GetInGameSyncOffsetAdjustment() const { return mInGameSyncOffsetAdjustment; }
+void ProfileMgr::SetInGameSyncOffsetAdjustment(float adj){ mInGameSyncOffsetAdjustment = adj; }
+
+float ProfileMgr::GetSyncOffset(int pad) const {
+    float lag = 0;
+    if(pad != -1){
+        lag = mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][0];
+    }
+    return (mSyncOffset + mInGameSyncOffsetAdjustment) - lag;
+}
+
+float ProfileMgr::GetSyncOffsetRaw() const { return mSyncOffset; }
+
+void ProfileMgr::SetSyncOffsetRaw(float offset){
+    if(mSyncOffset != offset){
+        mSyncOffset = offset;
+        mGlobalOptionsDirty = true;
+        PushAllOptions();
+    }
+}
+
+float ProfileMgr::GetExcessVideoLag() const { return -(mPlatformVideoLatency + mSyncOffset); }
+
+void ProfileMgr::SetExcessVideoLag(float lag){
+    SetSyncOffsetRaw(-(lag + mPlatformVideoLatency));
+    SetExcessAudioLag(-(mPlatformAudioLatency + mSongToTaskMgrMs + mSyncOffset));
+}
+
+float ProfileMgr::GetPlatformAudioLatency() const { return mPlatformAudioLatency; }
+float ProfileMgr::GetPlatformVideoLatency() const { return mPlatformVideoLatency; }
+
+float ProfileMgr::GetExcessAudioLagNeutral(int pad, bool b) const {
+    int i2 = 0;
+    if(b) i2 = 2;
+    return mPlatformAudioLatency + mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][i2];
+}
+
+float ProfileMgr::GetExcessVideoLagNeutral(int pad, bool b) const {
+    return mPlatformVideoLatency + mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][b];
+}
+
+float ProfileMgr::GetExcessAudioLag() const {
+    return -(mPlatformAudioLatency + mSongToTaskMgrMs + mSyncOffset);
+}
+
+void ProfileMgr::SetExcessAudioLag(float lag){
+    SetSongToTaskMgrMsRaw(-(lag + mPlatformAudioLatency + mSyncOffset));
+}
+
+float ProfileMgr::GetBackgroundVolumeDb() const { return SliderIxToDb(mBackgroundVolume); }
+int ProfileMgr::GetBackgroundVolume() const { return mBackgroundVolume; }
+float ProfileMgr::GetForegroundVolumeDb() const { return SliderIxToDb(mForegroundVolume); }
+int ProfileMgr::GetForegroundVolume() const { return mForegroundVolume; }
+
+float ProfileMgr::GetFxVolumeDb() const {
+    return SliderIxToDb(unk582 ? 0 : mFxVolume);
+}
+
+float ProfileMgr::GetCrowdVolumeDb(){ return SliderIxToDb(mCrowdVolume); }
+int ProfileMgr::GetCrowdVolume() const { return mCrowdVolume; }
+float ProfileMgr::GetVocalCueVolumeDb(){ return SliderIxToDb(mVocalCueVolume); }
+int ProfileMgr::GetVocalCueVolume() const { return mVocalCueVolume; }
+float ProfileMgr::GetVoiceChatVolumeDb(){ return SliderIxToDb(mVoiceChatVolume); }
+int ProfileMgr::GetVoiceChatVolume() const { return mVoiceChatVolume; }
+
+unsigned int ProfileMgr::GetCymbalConfiguration() const { return mCymbalConfiguration; }
+
+void ProfileMgr::SetCymbalConfiguration(unsigned int ui){
+    mCymbalConfiguration = ui;
+    mGlobalOptionsDirty = true;
+}
+
+bool ProfileMgr::HasLoaded(){ return unk5b2; }
