@@ -14,7 +14,7 @@ public:
     bool operator<(const HxGuid&) const;
     int Chunk32(int) const;
     const char* ToString() const;
-    int SaveSize();
+    static int SaveSize();
 
     int mData[4];
 };

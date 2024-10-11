@@ -147,9 +147,10 @@ void ModifierMgr::Save(FixedSizeSaveableStream& bs){
 }
 
 void ModifierMgr::Load(FixedSizeSaveableStream& bs, int rev){
+    bool b;
     for(int i = 0; i < mModifiers.size(); i++){
         if(mModifiers[i]->SaveValue()){
-            bool b; bs >> b;
+            bs >> b;
             if(mModifiers[i]->UseSaveValue()){
                 mModifiers[i]->mDefaultEnabled = b;
             }
