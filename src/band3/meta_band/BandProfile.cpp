@@ -32,7 +32,7 @@ void BandProfile::GetAllChars(std::vector<TourCharLocal*>&) const {
 
 void BandProfile::GetAvailableCharacters(std::vector<TourCharLocal*>&) const {}
 
-void BandProfile::GetCharFromGuid(const HxGuid&) {}
+CharData* BandProfile::GetCharFromGuid(const HxGuid&) {}
 
 int BandProfile::GetMaxChars() const {
     return 10;
