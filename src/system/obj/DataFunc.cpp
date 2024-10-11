@@ -27,29 +27,6 @@ DataThisPtr gDataThisPtr;
 extern Hmx::Object *gDataThis;
 extern class ObjectDir* gDataDir;
 
-// from RBVR PDB build
-namespace {
-    inline void PrintToStream(TextStream& stream, const DataArray* array, int start) {
-        for (int i = start; i < array->Size(); i++){
-            array->Evaluate(i).Print(stream, true);
-        }
-    }
-
-    inline bool SwitchMatch(DataNode& dn1, DataNode& dn2) {
-        if (dn1.Type() == kDataArray) {
-            DataArray *arr = dn1.mValue.array;
-            for (int i = 0; i < arr->Size(); i++) {
-                if (arr->Node(i) == dn2) {
-                    return true;
-                }
-            }
-            return false;
-        } else {
-            return dn1 == dn2;
-        }
-    }
-}
-
 // Force ~MergeFilter() to generate here
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
@@ -86,13 +63,17 @@ DEF_DATA_FUNC(DataPrintf) {
 }
 
 DEF_DATA_FUNC(DataPrint) {
-    PrintToStream(TheDebug, array, 1);
+    for (int i = 1; i < array->Size(); i++){
+        array->Evaluate(i).Print(TheDebug, true);
+    }
     return 0;
 }
 
 DEF_DATA_FUNC(DataSprint) {
     class String str;
-    PrintToStream(str, array, 1);
+    for (int i = 1; i < array->Size(); i++){
+        array->Evaluate(i).Print(str, true);
+    }
     return str.c_str();
 }
 
@@ -285,16 +266,7 @@ DEF_DATA_FUNC(DataBitNot){
 }
 
 DEF_DATA_FUNC(DataLowestBit) {
-    int num = array->Int(1);
-    int res;
-    if(num == 0) res = 0;
-    else {
-        int j = 1;
-        while(!(j & num))
-            j *= 2;
-        res = j;
-    }
-    return res;
+    return LowestBit(array->Int(1));
 }
 
 DEF_DATA_FUNC(DataCountBits) {
@@ -738,7 +710,9 @@ DEF_DATA_FUNC(DataRandomSeed) {
 DEF_DATA_FUNC(DataNotify){
 #ifdef MILO_DEBUG
     class String str;
-    PrintToStream(str, array, 1);
+    for (int i = 1; i < array->Size(); i++){
+        array->Evaluate(i).Print(str, true);
+    }
     TheDebug.Notify(str.c_str());
 #endif
     return 0;
@@ -747,7 +721,9 @@ DEF_DATA_FUNC(DataNotify){
 DEF_DATA_FUNC(DataNotifyBeta) {
 #ifdef MILO_DEBUG
     class String str;
-    PrintToStream(str, array, 1);
+    for (int i = 1; i < array->Size(); i++){
+        array->Evaluate(i).Print(str, true);
+    }
     TheDebug << MakeString(str.c_str());
 #endif
     return 0;
@@ -791,7 +767,9 @@ DEF_DATA_FUNC(DataNotifyBeta) {
 DEF_DATA_FUNC(DataFail){
 #ifdef MILO_DEBUG
     class String str;
-    PrintToStream(str, array, 1);
+    for (int i = 1; i < array->Size(); i++){
+        array->Evaluate(i).Print(str, true);
+    }
     TheDebug << MakeString("%d\n", array->Line());
     TheDebug.Fail(str.c_str());
 #endif
@@ -801,7 +779,9 @@ DEF_DATA_FUNC(DataFail){
 DEF_DATA_FUNC(DataNotifyOnce) {
 #ifdef MILO_DEBUG
     class String str;
-    PrintToStream(str, array, 1);
+    for (int i = 1; i < array->Size(); i++){
+        array->Evaluate(i).Print(str, true);
+    }
     MILO_NOTIFY_ONCE(str.c_str())
 #endif
     return 0;
@@ -819,6 +799,23 @@ DEF_DATA_FUNC(DataCond){
         else return array->ExecuteScript(i, gDataThis, 0, 1);
     }
     return 0;
+}
+
+// naming from RBVR PDB build
+namespace {
+    inline bool SwitchMatch(DataNode& dn1, DataNode& dn2) {
+        if (dn1.Type() == kDataArray) {
+            DataArray *arr = dn1.mValue.array;
+            for (int i = 0; i < arr->Size(); i++) {
+                if (arr->Node(i) == dn2) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return dn1 == dn2;
+        }
+    }
 }
 
 DEF_DATA_FUNC(DataSwitch){

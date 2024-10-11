@@ -18,6 +18,30 @@ inline int CountBits(int num) {
     return var_r4;
 }
 
+inline int HighestBit(int num) {
+    if(num == 0) {
+        return 0;
+    } else {
+        int bit = 0x80000000;
+        while(!(bit & num)) {
+            bit >>= 1;
+        }
+        return bit;
+    }
+}
+
+inline int LowestBit(int num) {
+    if(num == 0) {
+        return 0;
+    } else {
+        int bit = 1;
+        while(!(bit & num)) {
+            bit <<= 1;
+        }
+        return bit;
+    }
+}
+
 inline int Round(float f) {
     if (f > (float)0.0) {
         return (int)((float)0.5 + f);
