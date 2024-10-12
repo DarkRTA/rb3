@@ -60,7 +60,7 @@ bool hasquestfilterlol(QuestManager* q, Symbol s){
 GigFilter* QuestManager::GetQuestFilter(Symbol s) const {
     std::map<Symbol, GigFilter*>::const_iterator it = mMapQuestFilters.find(s);
     if(it != mMapQuestFilters.end()) return it->second;
-    else return 0;
+    else return nullptr;
 }
 
 void QuestManager::ConfigureFixedSetlistData(DataArray* da) {
@@ -86,7 +86,7 @@ bool hasfixedsetlistlol(QuestManager* q, Symbol s){
 FixedSetlist* QuestManager::GetFixedSetlist(Symbol s) const {
     std::map<Symbol, FixedSetlist*>::const_iterator it = mMapFixedSetlists.find(s);
     if(it != mMapFixedSetlists.end()) return it->second;
-    else return 0;
+    else return nullptr;
 }
 
 void QuestManager::ConfigureQuestData(DataArray* da) {
@@ -111,7 +111,7 @@ bool hasquestlol(QuestManager* q, Symbol s){
 Quest* QuestManager::GetQuest(Symbol s) const {
     std::map<Symbol, Quest*>::const_iterator it = mMapQuests.find(s);
     if(it != mMapQuests.end()) return it->second;
-    else return 0;
+    else return nullptr;
 }
 
 bool QuestManager::IsQuestAvailable(const TourProgress& progress, Symbol s1, Symbol s2, int i){
