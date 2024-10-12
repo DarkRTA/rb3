@@ -195,4 +195,6 @@ inline int packRevs(unsigned short alt, unsigned short rev){
     return (rev & ~0xFFFF0000) | (alt << 0x10);
 }
 
+#define NULL_OBJ (Hmx::Object*)nullptr
+
 #endif
