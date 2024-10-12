@@ -48,11 +48,11 @@ void AssetProvider::Update(AssetType, AssetBoutique) {
 
 UIComponent::State AssetProvider::ComponentStateOverride(int param_1, int param_2, UIComponent::State param_3) const {
     Symbol s; // TODO: Get symbol from profile, don't know which method is being used
-    bool hasAsset = mProfile->mProfileAssets->HasAsset(s);
+    // bool hasAsset = mProfile.mProfileAssets->HasAsset(s);
 
-    if (!hasAsset) {
-        param_3 = UIComponent::kDisabled;
-    }
+    // if (!hasAsset) {
+    //     param_3 = UIComponent::kDisabled;
+    // }
 
     return param_3;
 }
@@ -61,10 +61,10 @@ void AssetProvider::Text(int, int, UIListLabel* slot, UILabel* label) const {
     MILO_ASSERT(slot, 200);
     MILO_ASSERT(label, 0xc9);
 
-    ProfileAssets* profileAssets = mProfile->mProfileAssets;
+    // ProfileAssets* profileAssets = mProfile.mProfileAssets;
     
-    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
-    MILO_ASSERT(pAssetMgr, 0xd0);
+    // AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    // MILO_ASSERT(pAssetMgr, 0xd0);
 
     
 }

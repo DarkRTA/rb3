@@ -12,7 +12,7 @@ enum ProfileSaveState {
     kMetaProfileUnchanged = -1
 };
 
-class Profile : public FixedSizeSaveable, virtual Hmx::Object {
+class Profile : public FixedSizeSaveable, public virtual Hmx::Object {
 public:
     Profile(int);
     virtual ~Profile();
@@ -32,16 +32,16 @@ public:
     void SetSaveState(ProfileSaveState);
     void MakeDirty();
 
-    // int GetPadNum() const;
+    int GetPadNum() const;
     // const char* GetName() const;
     const char* GetName() const {
         LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
         return u->UserName();
     }
 
-    int GetPadNum() const {
-        return mPadNum;
-    }
+    // int GetPadNum() const {
+    //     return mPadNum;
+    // }
 
     // int GetPadNum() const { return mPadNum; }
     // const char* GetName() const {
@@ -49,9 +49,9 @@ public:
     //     return u->UserName();
     // }
 
-    bool mDirty;
-    mutable int mPadNum;
-    ProfileSaveState mState;
+    bool mDirty; // 0xc
+    mutable int mPadNum; // 0x10
+    ProfileSaveState mState; // 0x14
 };
 
 #endif

@@ -67,6 +67,35 @@ public:
         if(maxsize > vecsize) DepadStream(stream, savesize * (maxsize - vecsize));
     }
 
+    template <class T, class Allocator>
+    static void SaveStd(FixedSizeSaveableStream& stream, const std::vector<T, Allocator>& vec, int maxsize, int savesize){
+        int vecsize = vec.size();
+        if(vecsize > maxsize){
+            MILO_WARN("The vector size is greater than the maximum supplied! size=%i max=%i\n", vecsize, maxsize);
+            vecsize = maxsize;
+        }
+        stream << vecsize;
+        for(int i = 0; i < vecsize; i++){
+            stream << vec[i];
+        }
+        if(maxsize > vecsize) PadStream(stream, (savesize * (maxsize - vecsize)));
+    }
+
+    template <class T, class Allocator>
+    static void LoadStd(FixedSizeSaveableStream& stream, std::vector<T, Allocator>& vec, int maxsize, int savesize){
+        if(vec.size() != 0){
+            MILO_WARN("vector is not empty!");
+            vec.clear();
+        }
+        int vecsize;
+        stream >> vecsize;
+        vec.resize(vecsize);
+        for(int i = 0; i < vecsize; i++){
+            stream >> vec[i];
+        }
+        if(maxsize > vecsize) DepadStream(stream, savesize * (maxsize - vecsize));
+    }
+
     static int GetMaxSymbols(){
         MILO_ASSERT(sMaxSymbols >= 0, 0x1C0);
         return sMaxSymbols;

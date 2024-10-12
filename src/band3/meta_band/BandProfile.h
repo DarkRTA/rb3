@@ -2,11 +2,17 @@
 #define METABAND_BANDPROFILE_H
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
+#include "meta_band/GameplayOptions.h"
 #include <vector>
 #include "StandIn.h"
 #include "ProfileAssets.h"
+#include "meta_band/AccomplishmentProgress.h"
+#include "net_band/DataResults.h"
+#include "meta_band/PerformanceData.h"
+#include "tour/TourCharLocal.h"
 
-class TourCharLocal;
+#define kMaxCharacters 10
+
 class PatchDir;
 class CharData;
 class TourProgress;
@@ -14,12 +20,13 @@ class PerformerStatsInfo;
 class PerformanceData;
 class PatchDescriptor;
 class LocalSavedSetlist;
-class Stats;
+class SongStatusMgr;
 class RockCentralOpCompleteMsg;
 class LocalBandUser;
 class ProfilePicture;
+class TourBand;
 
-class BandProfile : public Profile, virtual Hmx::Object {
+class BandProfile : public Profile {
 public:
     BandProfile(int);
     virtual ~BandProfile();
@@ -42,13 +49,12 @@ public:
     void AddNewChar(TourCharLocal*);
     void DeleteChar(TourCharLocal*);
     void RenameCharacter(TourCharLocal*, const char*);
-    int NumChars() const;
     bool HasChar(const TourCharLocal*);
     void GetFirstEmptyPatch();
     void GetTexAtPatchIndex(int) const;
     void GetPatchIndex(const PatchDir*) const;
     void PotentiallyDeleteStandin(HxGuid);
-    void GetCharacterStandinIndex(CharData*) const;
+    int GetCharacterStandinIndex(CharData*) const;
     StandIn* GetStandIn(int) const;
     StandIn* AccessStandIn(int);
     int GetNumStandins() const;
@@ -72,7 +78,6 @@ public:
     void NumSavedSetlists() const;
     void GetUploadFriendsToken() const;
     void SetUploadFriendsToken(int);
-    void SaveSize(int);
     LocalBandUser* GetAssociatedLocalBandUser() const;
     void CheckForFinishedTrainerAccomplishments();
     void SetProGuitarSongLessonComplete(int, Difficulty);
@@ -106,7 +111,7 @@ public:
     void HandlePerformanceDataUploadSuccess();
     void UpdatePerformanceData(const Stats&, int, ScoreType, Difficulty, Symbol, int, int, bool);
     DataNode OnMsg(const RockCentralOpCompleteMsg&);
-    void GetLocalBandUser() const;
+    LocalBandUser* GetLocalBandUser() const;
     void GetAssociatedUsers(std::vector<LocalBandUser*>&) const;
     void CheckWebLinkStatus();
     void CheckWebSetlistStatus();
@@ -118,35 +123,43 @@ public:
     void FakeProfileFill();
     void GetPictureTex();
     void AutoFakeFill(int);
+    int NumChars() const { return mCharacters.size(); }
+    
+    static int SaveSize(int);
 
-private:
-    int padding;
-    int padding2;
-    std::vector<CharData*> mChars; // 0x24 
-    TourProgress* mTourProgress;   // 0x2c correct up to here
-    // ameplayOptions mGameplayOptions;
-    // Gameplay options 0x2e
-    // lessons 0x34
-    // AccomplishmentProgress* 0x3d
+    bool unk18;
+    std::vector<PatchDir*> mPatches; // 0x1c
+    std::vector<TourCharLocal*> mCharacters; // 0x24 
+    TourProgress* mTourProgress; // 0x2c
+    std::map<Symbol, float> unk30; // 0x30
+    SongStatusMgr* mScores; // 0x48
+    std::vector<int> unk4c; // 0x4c
     // song status mgr 0x48
     // saved song lists 0x4c
-    std::vector<StandIn*> mStandIns; // 0x54
-    // accomplishment progress 0xf4
-
-    // something involving performance data 0x6f70
-    // 0x6f74
-
- 
-
-public:
-    ProfileAssets* mProfileAssets; // 0x6f78
+    std::vector<StandIn> mStandIns; // 0x54
+    HxGuid unk5c; // 0x5c
+    Symbol unk6c; // 0x6c
+    std::set<Symbol> unk70; // 0x70
+    std::set<Symbol> unk88; // 0x88
+    std::set<Symbol> unka0; // 0xa0
+    GameplayOptions mGameplayOptions; // 0xb8
+    AccomplishmentProgress mAccomplishmentProgress; // 0xf4
+    int unk740;
+    int unk744;
+    int unk748;
+    int unk74c;
+    int unk750;
+    DataResultList unk754;
+    DataResultList unk76c;
+    int unk784;
+    PerformanceData unk788[0x32];
+    int unk6f70;
+    int unk6f74;
+    ProfileAssets mProfileAssets; // 0x6f78
+    int unk6fb4;
+    int unk6fb8;
     ProfilePicture* mProfilePicture; // 0x6fbc
-
-    // upload friends token 0x6fb4
-    // hardcore icon level 0x6fb8
-    // profile picture 0x6fbc
-    // tour band 0x6fc0
-
+    TourBand* unk6fc0; // TourBand*
 };
 
 #endif // METABAND_BANDPROFILE_H

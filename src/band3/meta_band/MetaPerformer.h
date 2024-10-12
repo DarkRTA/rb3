@@ -29,7 +29,7 @@ public:
     int mDoubleAwesomes; // 0x2c
     int mTripleAwesomes; // 0x30
     int mSoloPercent; // 0x34
-    int unk38;
+    int mHOPOPercent; // 0x38
     int mUnisonPhrasesHit; // 0x3c
 };
 

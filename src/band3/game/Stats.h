@@ -2,6 +2,7 @@
 #define GAME_STATS_H
 #include <vector>
 #include "system/utl/BinStream.h"
+#include "os/Debug.h"
 
 class SingerStats {
 public:
@@ -60,7 +61,7 @@ public:
     //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), m0x28(s.m0x28), m0x2c(s.m0x2c), m0x30(s.m0x30), m0x34(s.m0x34),
     //     mFinalized(s.mFinalized), mSoloPercentage(s.mSoloPercentage), mSoloButtonedSoloPercentage(s.mSoloButtonedSoloPercentage), mPerfectSoloWithSoloButtons(s.mPerfectSoloWithSoloButtons), m0x41(s.m0x41),
     //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
-    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), m0x80(s.m0x80),
+    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
     //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
     //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), m0xb4(s.m0xb4), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
         
@@ -149,52 +150,67 @@ public:
     bool GetFinalized() const { return mFinalized; }
 
     // These are implemented in PerformanceData
-    void AccessPerformanceAwards();
-    void SetEndGameScore(int);
-    void SetNotesHitFraction(float);
-    void SetHitCount(int);
-    void SetMissCount(int);
-    void AccessFailurePoints();
-    void AccessSavedPoints();
-    void AccessClosestTimesSaved();
-    void AccessClosestPlayersSaved();
-    void SetTimesSaved(int);
-    void SetPlayersSaved(int);
-    void AccessCurrentStreakInfo();
-    void SetEndGameOverdrive(float);
-    void SetEndGameCrowdLevel(float);
-    void SetCodaPoints(int);
-    void SetOverdrivePhrasesCompleted(int);
-    void SetOverdrivePhraseCount(int);
-    void SetUnisonPhrasesCompleted(int);
-    void SetUnisonPhraseCount(int);
-    void AccessBestSolos();
-    void SetHitStreakCount(int);
-    void AccessHitStreak(int);
-    void SetMissStreakCount(int);
-    void AccessMissStreak(int);
-    void SetBestOverdriveDeploymentsCount(int);
-    void AccessBestOverdriveDeployment(int);
-    void SetBestStreakMultipliersCount(int);
-    void AccessBestStreakMultiplier(int);
-    void SetTotalOverdriveDuration(float);
-    void SetTotalMultiplierDuration(float);
-    void SetRollsHitCompletely(int);
-    void SetRollCount(int);
-    void SetHighGemsHitHigh(int);
-    void SetHighGemsHitLow(int);
-    void SetHighFretGemCount(int);
-    void SetSustainGemsHitCompletely(int);
-    void SetSustainGemsHitPartially(int);
-    void SetSustainGemCount(int);
-    void SetTrillsHitCompletely(int);
-    void SetTrillsHitPartially(int);
-    void SetTrillCount(int);
-    void SetDoubleHarmonyHit(int);
-    void SetDoubleHarmonyPhraseCount(int);
-    void SetTripleHarmonyHit(int);
-    void SetTripleHarmonyPhraseCount(int);
-    void AccessSingerStats(int);
+    std::vector<Symbol>& AccessPerformanceAwards(){ return mAccessPerformanceAwards; }
+    void SetEndGameScore(int endGameScore) { mEndGameScore = endGameScore; }
+    void SetNotesHitFraction(float notesHitFraction) { mNotesHitFraction = notesHitFraction; }
+    void SetHitCount(int hitCount) { mHitCount = hitCount; }
+    void SetMissCount(int missCount) { mMissCount = missCount; }
+    std::vector<float>& AccessFailurePoints(){ return mFailurePoints; }
+    std::vector<float>& AccessSavedPoints(){ return mSavedPoints; }
+    std::vector<float>& AccessClosestTimesSaved(){ return mClosestTimesSaved; }
+    std::vector<float>& AccessClosestPlayersSaved(){ return mClosestPlayersSaved; }
+    StreakInfo& AccessCurrentStreakInfo(){ return mCurrentHitStreak; }
+    std::vector<int>& AccessBestSolos(){ return mBestSolos; }
+    StreakInfo& AccessHitStreak(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mHitStreaks.size()), 0x1C5);
+        return mHitStreaks[index];
+    }
+    StreakInfo& AccessMissStreak(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mMissStreaks.size()), 0x1D3);
+        return mMissStreaks[index];
+    }
+    MultiplierInfo& AccessBestOverdriveDeployment(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mBestOverdriveDeployments.size()), 0x1E1);
+        return mBestOverdriveDeployments[index];
+    }
+    MultiplierInfo& AccessBestStreakMultiplier(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mBestStreakMultipliers.size()), 0x1EF);
+        return mBestStreakMultipliers[index];
+    }
+    SingerStats& AccessSingerStats(int index){
+        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mSingerStats.size()), 0xC6);
+        return mSingerStats[index];
+    }
+    void SetTimesSaved(int timesSaved) { mTimesSaved = timesSaved; }
+    void SetPlayersSaved(int playersSaved) { mPlayersSaved = playersSaved; }
+    void SetEndGameOverdrive(float endGameOverdrive) { mEndGameOverdrive = endGameOverdrive; }
+    void SetEndGameCrowdLevel(float endGameCrowdLevel) { mEndGameCrowdLevel = endGameCrowdLevel; }
+    void SetCodaPoints(int codaPoints) { mCodaPoints = codaPoints; }
+    void SetOverdrivePhrasesCompleted(int overdrivePhrasesCompleted) { mOverdrivePhrasesCompleted = overdrivePhrasesCompleted; }
+    void SetOverdrivePhraseCount(int overdrivePhraseCount) { mOverdrivePhraseCount = overdrivePhraseCount; }
+    void SetUnisonPhrasesCompleted(int unisonPhrasesCompleted) { mUnisonPhraseCompleted = unisonPhrasesCompleted; }
+    void SetUnisonPhraseCount(int unisonPhraseCount) { mUnisonPhraseCount = unisonPhraseCount; }
+    void SetHitStreakCount(int hitStreakCount) { mHitStreaks.resize(hitStreakCount); }
+    void SetMissStreakCount(int missStreakCount) { mMissStreaks.resize(missStreakCount); }
+    void SetBestOverdriveDeploymentsCount(int bestOverdriveDeploymentsCount) { mBestOverdriveDeployments.resize(bestOverdriveDeploymentsCount); }
+    void SetBestStreakMultipliersCount(int bestStreakMultipliersCount) { mBestStreakMultipliers.resize(bestStreakMultipliersCount); }
+    void SetTotalOverdriveDuration(float totalOverdriveDuration) { mTotalOverdriveDurationMs = totalOverdriveDuration; }
+    void SetTotalMultiplierDuration(float totalMultiplierDuration) { mTotalMultiplierDuration = totalMultiplierDuration; }
+    void SetRollsHitCompletely(int rollsHitCompletely) { mRollsHitCompletely = rollsHitCompletely; }
+    void SetRollCount(int rollCount) { mRollCount = rollCount; }
+    void SetHighGemsHitHigh(int highGemsHitHigh) { mHighGemsHitHigh = highGemsHitHigh; }
+    void SetHighGemsHitLow(int highGemsHitLow) { mHighGemsHitLow = highGemsHitLow; }
+    void SetHighFretGemCount(int highFretGemCount) { mHighFretGemCount = highFretGemCount; }
+    void SetSustainGemsHitCompletely(int sustainGemsHitCompletely) { mSustainGemsHitCompletely = sustainGemsHitCompletely; }
+    void SetSustainGemsHitPartially(int sustainGemsHitPartially) { mSustainGemsHitPartially = sustainGemsHitPartially; }
+    void SetSustainGemCount(int sustainGemCount) { mSustainGemCount = sustainGemCount; }
+    void SetTrillsHitCompletely(int trillsHitCompletely) { mTrillsHitCompletely = trillsHitCompletely; }
+    void SetTrillsHitPartially(int trillsHitPartially) { mTrillsHitPartially = trillsHitPartially; }
+    void SetTrillCount(int trillCount) { mTrillCount = trillCount; }
+    void SetDoubleHarmonyHit(int doubleHarmonyHit) { mDoubleHarmonyHit = doubleHarmonyHit; }
+    void SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) { mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount; }
+    void SetTripleHarmonyHit(int tripleHarmonyHit) { mTripleHarmonyHit = tripleHarmonyHit; }
+    void SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
     
     template <class T> void SaveHighest(std::vector<T>&, const T&);
 
@@ -230,7 +246,7 @@ public:
     int m0x6c;                                 // 0x06c
     std::vector<float> m0x70;                    // 0x070
     std::vector<SingerStats> mSingerStats;     // 0x078
-    std::vector<Symbol> m0x80;                    // 0x080
+    std::vector<Symbol> mAccessPerformanceAwards;                    // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
     int mSolo; // 0x90
@@ -249,13 +265,13 @@ public:
     std::vector<StreakInfo> mHitStreaks; // 0xc4
     StreakInfo mCurrentMissStreak; // 0xcc
     std::vector<StreakInfo> mMissStreaks; // 0xd4
-    std::vector<float> unkdc; // 0xdc
-    std::vector<float> unke4; // 0xe4
+    std::vector<float> mFailurePoints; // 0xdc
+    std::vector<float> mSavedPoints; // 0xe4
     int mPlayersSaved; // 0xec
-    std::vector<float> unkf0; // 0xf0
+    std::vector<float> mClosestPlayersSaved; // 0xf0
     int mTimesSaved; // 0xf8
-    std::vector<float> unkfc; // 0xfc
-    std::vector<int> unk104; // 0x104
+    std::vector<float> mClosestTimesSaved; // 0xfc
+    std::vector<int> mBestSolos; // 0x104
     MultiplierInfo mCurrentOverdriveDeployment; // 0x10c
     std::vector<MultiplierInfo> mBestOverdriveDeployments; // 0x120
     float mTotalOverdriveDurationMs; // 0x128
@@ -271,9 +287,9 @@ public:
     int mOverdrivePhraseCount; // 0x164
     int mUnisonPhraseCompleted; // 0x168
     int mUnisonPhraseCount; // 0x16c
-    int mHopoGemInfo1; // 0x170
-    int mHopoGemInfo2; // 0x174
-    int mHopoGemInfo3; // 0x178
+    int mHopoGemsHopoed; // 0x170
+    int mHopoGemsStrummed; // 0x174
+    int mHopoGemCount; // 0x178
     int mHighGemsHitHigh; // 0x17c
     int mHighGemsHitLow; // 0x180
     int mHighFretGemCount; // 0x184

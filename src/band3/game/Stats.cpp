@@ -5,10 +5,10 @@
 Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0), m0x28(0), m0x2c(0),
     m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0), m0x48(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0),
     mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0), mSolo(0), mOverdrive(0), mSustain(0), mScoreStreak(0),
-    mBandContribution(0), mCodaPoints(0), m0xa8(0), m0x09(0), mTambourine(0), mHarmony(0), m0xb4(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), unkdc(3, -1.0f), unke4(3, -1.0f), mPlayersSaved(0),
-    unkf0(3, 2.0f), mTimesSaved(0), unkfc(3, 2.0f), unk104(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0), m0x14c(0), m0x150(0), mEndGameScore(0),
-    mEndGameCrowdLevel(0), mEndGameOverdrive(0), mOverdrivePhrasesCompleted(0), mOverdrivePhraseCount(0), mUnisonPhraseCompleted(0), mUnisonPhraseCount(0), mHopoGemInfo1(0), mHopoGemInfo2(0),
-    mHopoGemInfo3(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0), m0x194(0), mRollCount(0),
+    mBandContribution(0), mCodaPoints(0), m0xa8(0), m0x09(0), mTambourine(0), mHarmony(0), m0xb4(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0),
+    mClosestPlayersSaved(3, 2.0f), mTimesSaved(0), mClosestTimesSaved(3, 2.0f), mBestSolos(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0), m0x14c(0), m0x150(0), mEndGameScore(0),
+    mEndGameCrowdLevel(0), mEndGameOverdrive(0), mOverdrivePhrasesCompleted(0), mOverdrivePhraseCount(0), mUnisonPhraseCompleted(0), mUnisonPhraseCount(0), mHopoGemsHopoed(0), mHopoGemsStrummed(0),
+    mHopoGemCount(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0), m0x194(0), mRollCount(0),
     mRollsHitCompletely(0), mTrillCount(0), mTrillsHitCompletely(0), mTrillsHitPartially(0), mCymbalGemInfo1(0), mCymbalGemInfo2(0), mCymbalGemInfo3(0), unk1c0(0), unk1c4(0), unk1c8(0) {
 
 }
@@ -85,8 +85,8 @@ void Stats::SetFinalized(bool b){
 
 void Stats::UpdateBestSolo(int i){
     int item = i;
-    SaveHighest(unk104, item);
-    int& asdf = unk104[0];
+    SaveHighest(mBestSolos, item);
+    int& asdf = mBestSolos[0];
     MaxEq(asdf, 0);
     mSoloPercentage = asdf;
 }
@@ -285,9 +285,9 @@ void Stats::EndMultiplier(Stats::MultiplierInfo& info, std::vector<Stats::Multip
 void Stats::GetUnisonPhrasePercent() const {}
 
 void Stats::SetHopoGemInfo(int i1, int i2, int i3){
-    mHopoGemInfo1 = i1;
-    mHopoGemInfo2 = i2;
-    mHopoGemInfo3 = i3;
+    mHopoGemsHopoed = i1;
+    mHopoGemsStrummed = i2;
+    mHopoGemCount = i3;
 }
 
 void Stats::IncrementHighFretGemsHit(bool b){

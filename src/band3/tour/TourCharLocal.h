@@ -8,4 +8,6 @@ public:
     virtual RndTex* GetTexAtPatchIndex(int, bool) const;
     virtual ~TourCharLocal();
     virtual void SetDirty(bool, int);
+
+    void SetCharacterName(const char*);
 };

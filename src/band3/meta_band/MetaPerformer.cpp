@@ -13,7 +13,7 @@
 MetaPerformer* MetaPerformer::sMetaPerformer;
 
 PerformerStatsInfo::PerformerStatsInfo() : mInstrumentMask(0), mScoreType(kScoreBand), unkc(-1), unk10(-1), mDifficulty(kDifficultyEasy), mScore(0), mStars(0), mAccuracy(0), mStreak(0), mAwesomes(0), mDoubleAwesomes(0),
-    mTripleAwesomes(0), mSoloPercent(0), unk38(0), mUnisonPhrasesHit(0) {
+    mTripleAwesomes(0), mSoloPercent(0), mHOPOPercent(0), mUnisonPhrasesHit(0) {
 
 }
 
@@ -35,7 +35,7 @@ void PerformerStatsInfo::Clear(){
     mDoubleAwesomes = 0;
     mTripleAwesomes = 0;
     mSoloPercent = 0;
-    unk38 = 0;
+    mHOPOPercent = 0;
     mUnisonPhrasesHit = 0;
 }
 
@@ -56,7 +56,7 @@ void PerformerStatsInfo::Update(int i1, int i2, ScoreType ty, Difficulty diff, s
     mDoubleAwesomes = stats.mDoubleHarmonyHit;
     mTripleAwesomes = stats.mTripleHarmonyHit;
     mSoloPercent = stats.mSoloPercentage;
-    unk38 = ((float)stats.mHopoGemInfo1 / (float)stats.mHopoGemInfo3) * 100.0f;
+    mHOPOPercent = ((float)stats.mHopoGemsHopoed / (float)stats.mHopoGemCount) * 100.0f;
     mUnisonPhrasesHit = stats.mUnisonPhraseCompleted;
 }
 

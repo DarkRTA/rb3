@@ -40,8 +40,11 @@ class SongStatusCacheMgr {
 
 };
 
+class BandSongMgr;
+
 class SongStatusMgr {
-    // SongStatusMgr(LocalBandUser*, BandSongMgr*);
+public:
+    SongStatusMgr(LocalBandUser*, BandSongMgr*);
     ~SongStatusMgr();
     void Clear();
     void GetScore(int, ScoreType) const;
