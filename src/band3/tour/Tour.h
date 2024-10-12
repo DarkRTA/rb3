@@ -3,7 +3,8 @@
 #include "tour/TourProperty.h"
 #include "utl/Symbol.h"
 class Tour {
-    public:
+public:
+    bool HasTourProperty(Symbol) const;
     TourProperty* GetTourProperty(Symbol) const;
 };
 

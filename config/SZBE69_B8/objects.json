@@ -320,7 +320,7 @@
             "band3/tour/TourPerformerRemote.cpp": "MISSING",
             "band3/tour/TourProgress.cpp": "NonMatching",
             "band3/tour/TourProperty.cpp": "Matching",
-            "band3/tour/TourPropertyCollection.cpp": "MISSING",
+            "band3/tour/TourPropertyCollection.cpp": "NonMatching",
             "band3/tour/TourQuestGameRules.cpp": "Matching",
             "band3/tour/TourReward.cpp": "Equivalent",
             "band3/tour/TourSavable.cpp": "Matching",
