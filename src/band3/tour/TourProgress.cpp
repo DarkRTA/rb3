@@ -1,7 +1,12 @@
 #include "TourProgress.h"
 #include "QuestJournal.h"
+#include "Tour.h"
+#include "TourDesc.h"
 #include "meta/FixedSizeSaveable.h"
+#include "meta_band/AccomplishmentManager.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/MetaPerformer.h"
+#include "meta_band/ProfileMgr.h"
 #include "obj/Object.h"
 #include "os/DateTime.h"
 #include "os/Debug.h"
@@ -119,6 +124,16 @@ TourPropertyCollection& TourProgress::GetPerformanceProperties(){ return mPerfor
 void TourProgress::ClearPerformanceState(){ ClearPeformanceProperties(); }
 void TourProgress::ClearPeformanceProperties(){ mPerformanceProperties.Clear(); }
 
+void TourProgress::UpdateMostStars(){
+    BandProfile* owner = TheProfileMgr.FindTourProgressOwner(this);
+    if(owner){
+        owner->AccessAccomplishmentProgress();
+        int stars = GetNumStars();
+        TheAccomplishmentMgr->UpdateMostStarsForAllParticipants(m_symTourDesc, stars);
+        TheTour->UpdateProgressWithCareerData();
+    }
+}
+
 void TourProgress::HandleQuestFinished(){
     SetCurrentQuest(gNullStr);
     ClearQuestFilters();
@@ -137,8 +152,122 @@ void TourProgress::SetTourDesc(Symbol s){
     HandleDirty(3);
 }
 
+Symbol TourProgress::GetFilterForCurrentGig() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x13F);
+        return pTourDesc->GetFilterForGigNum(mCurrentGigNum);
+    }
+}
+
+Symbol TourProgress::GetSetlistTypeForCurrentGig(int i) const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x14E);
+        return pTourDesc->GetSetlistTypeForGigNum(mCurrentGigNum, i);
+    }
+}
+
+int TourProgress::GetNumSongsForCurrentGig() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return 0;
+    else {
+        MILO_ASSERT(pTourDesc, 0x15D);
+        return pTourDesc->GetNumSongsForGigNum(mCurrentGigNum);
+    }
+}
+
+Symbol TourProgress::GetVenueForCurrentGig() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x16C);
+        return pTourDesc->GetVenueForGigNum(mCurrentGigNum);
+    }
+}
+
+bool TourProgress::IsTourComplete() const {
+    if(!mOnTour) return false;
+    else return GetNumTotalGigs() <= mNumCompletedGigs;
+}
+
+bool TourProgress::AreAllTourGigsComplete() const {
+    return GetNumTotalGigs() <= mNumCompletedGigs;
+}
+
+Symbol TourProgress::GetTourLeaderboardGoal() const {
+    MILO_ASSERT(m_symTourDesc != "", 0x18E);
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x196);
+        return pTourDesc->GetLeaderboardGoal();
+    }
+}
+
+bool TourProgress::DoesTourHaveLeaderboard() const {
+    MILO_ASSERT(m_symTourDesc != "", 0x19E);
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return false;
+    else {
+        MILO_ASSERT(pTourDesc, 0x1A6);
+        return pTourDesc->HasLeaderboardGoal();
+    }
+}
+
 int TourProgress::GetNumTotalGigs() const {
     MILO_ASSERT(m_symTourDesc != "", 0x1AE);
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return 0;
+    else {
+        MILO_ASSERT(pTourDesc, 0x1B6);
+        return pTourDesc->GetNumGigs();
+    }
+}
+
+void TourProgress::SetNumCompletedGigs(int num){
+    mNumCompletedGigs = num;
+    HandleDirty(3);
+}
+
+int TourProgress::GetCurrentGigNum() const { return mCurrentGigNum; }
+
+int TourProgress::GetNumStarsForGig(int gig) const {
+    if(gig >= unk70.size()) return 0;
+    else return unk70[gig];
+}
+
+int TourProgress::GetNumCompletedGigs() const { return mNumCompletedGigs; }
+
+void TourProgress::SetCurrentGigNum(int num){
+    mCurrentGigNum = num;
+    HandleDirty(3);
+}
+
+void TourProgress::SetCurrentQuest(Symbol q){
+    mCurrentQuest = q;
+    HandleDirty(3);
+}
+
+void TourProgress::ResetTourData(){
+    mQuests.Clear();
+    mTourProperties.Clear();
+    unk70.clear();
+    mNewStars = 0;
+    mWonQuest = false;
+    mCurrentGigNum = 0;
+    mOnTour = false;
+    mCurrentQuest = gNullStr;
+    mMetaScore = 0;
+    unk88.clear();
+    unka0.clear();
+    m_symTourDesc = gNullStr;
+    ClearQuestFilters();
+    ClearPerformanceState();
+    SetNumCompletedGigs(0);
+    HandleDirty(3);
 }
 
 void TourProgress::FinalizeNewStars(){

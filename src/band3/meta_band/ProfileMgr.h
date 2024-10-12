@@ -104,6 +104,7 @@ public:
     int GetVoiceChatVolume() const;
     unsigned int GetCymbalConfiguration() const;
     bool HasLoaded();
+    BandProfile* FindTourProgressOwner(const TourProgress*);
 
     DECLARE_REVS;
 

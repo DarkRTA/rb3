@@ -38,6 +38,22 @@ public:
     int GetNumTotalGigs() const;
     void FinalizeNewStars();
     void ClearNewStars();
+    void UpdateMostStars();
+    int GetNumStars() const;
+    Symbol GetFilterForCurrentGig() const;
+    Symbol GetSetlistTypeForCurrentGig(int) const;
+    int GetNumSongsForCurrentGig() const;
+    Symbol GetVenueForCurrentGig() const;
+    bool IsTourComplete() const;
+    bool AreAllTourGigsComplete() const;
+    Symbol GetTourLeaderboardGoal() const;
+    bool DoesTourHaveLeaderboard() const;
+    void SetNumCompletedGigs(int);
+    int GetCurrentGigNum() const;
+    int GetNumStarsForGig(int) const;
+    int GetNumCompletedGigs() const;
+    void SetCurrentGigNum(int);
+    void ResetTourData();
 
     static int SaveSize(int);
 
@@ -45,9 +61,9 @@ public:
     TourPropertyCollection mTourProperties; // 0x40
     unsigned int mLastTouchTime; // 0x60
     bool mOnTour; // 0x64
-    Symbol m_symTourDesc; // 0x68
+    mutable Symbol m_symTourDesc; // 0x68
     int mNumCompletedGigs; // 0x6c
-    std::vector<int> unk70;
+    std::vector<int> unk70; // 0x70
     Symbol mCurrentQuest; // 0x78
     Symbol mQuestFilters[3]; // 0x7c, 0x80, 0x84
     std::map<Symbol, int> unk88;

@@ -10,6 +10,7 @@
 class Award;
 
 class AccomplishmentManager {
+public:
     std::map<Symbol, Award*> mAwards;
     std::map<Symbol, AccomplishmentCategory> mAccomplishmentCategory;
     std::map<Symbol, Accomplishment*> mAccomplishments;
@@ -53,12 +54,10 @@ class AccomplishmentManager {
     void GetAwardSource(Symbol) const;
     void GetAwardSourceList(Symbol) const;
     void AddAwardSource(Symbol, Symbol);
-    
-public:
+    void UpdateMostStarsForAllParticipants(Symbol, int);
     bool DoesAssetHaveSource(Symbol) const;
 
 
-public:
     AccomplishmentManager();
     virtual ~AccomplishmentManager();
 
@@ -69,7 +68,6 @@ public:
 
     void CheckForFinishedTrainerAccomplishmentsForUser(LocalBandUser*);
 
-private:
 
 };
 
