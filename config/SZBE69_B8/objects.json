@@ -309,7 +309,7 @@
             "band3/tour/TourChallengeResultsPanel.cpp": "MISSING",
             "band3/tour/TourChar.cpp": "Matching",
             "band3/tour/TourCharLocal.cpp": "Matching",
-            "band3/tour/TourCharRemote.cpp": "MISSING",
+            "band3/tour/TourCharRemote.cpp": "Matching",
             "band3/tour/TourCondition.cpp": "MISSING",
             "band3/tour/TourDesc.cpp": "MISSING",
             "band3/tour/TourDescPanel.cpp": "MISSING",

@@ -13,6 +13,7 @@ public:
     virtual LocalUser* GetLocalUser(const UserGuid&, bool) const;
     virtual RemoteUser* GetRemoteUser(const UserGuid&, bool) const;
 
+    BandUser* GetUserWithChar(const CharData*);
     BandUser* GetBandUser(const UserGuid&, bool) const;
     LocalBandUser* GetLocalBandUser(const UserGuid&, bool) const;
     RemoteBandUser* GetRemoteBandUser(const UserGuid&, bool) const;

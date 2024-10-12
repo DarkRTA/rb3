@@ -60,6 +60,7 @@ public:
     DataArrayPtr GetNetErrorStringAsDataArray(bool);
     void ClearNetError();
     void ClearDWCError();
+    bool CanSeeUserCreatedContent(const OnlineID*) const;
 
     bool IsUserAWiiGuest(const LocalUser*) const;
     int InitNintendoConnection();
