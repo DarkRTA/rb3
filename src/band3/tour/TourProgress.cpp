@@ -12,6 +12,7 @@
 #include "os/DateTime.h"
 #include "os/Debug.h"
 #include "stl/pointers/_vector.h"
+#include "tour/TourProperty.h"
 #include "tour/TourPropertyCollection.h"
 #include "tour/TourSavable.h"
 #include "utl/BinStream.h"
@@ -427,6 +428,16 @@ void TourProgress::FakeFill(){
     mPerformanceProperties.FakeFill();
 }
 
+void TourProgress::DumpProperties(){
+    MILO_LOG("\n***** Tour Property Dump *****\n\n");
+    const std::map<Symbol, TourProperty*>& propmap = TheTour->TourProperties();
+    for(std::map<Symbol, TourProperty*>::const_iterator it = propmap.begin(); it != propmap.end(); ++it){
+        Symbol name = it->first;
+        MILO_LOG("%s = %f\n", name.Str(), mTourProperties.GetPropertyValue(name));
+    }
+    MILO_LOG("\n******************************\n");
+}
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(TourProgress)
@@ -435,7 +446,7 @@ BEGIN_HANDLERS(TourProgress)
     HANDLE_EXPR(is_tour_complete, IsTourComplete())
     HANDLE_ACTION(set_tour_desc, SetTourDesc(_msg->Sym(2)))
     HANDLE_EXPR(get_total_gigs, GetNumTotalGigs())
-    HANDLE_EXPR(get_current_gig_num, GetCurrentGigNum())
+    HANDLE_EXPR(get_current_gig_num, GetCurrentGigNum() + 1)
     HANDLE_EXPR(get_num_completed_gigs, GetNumCompletedGigs())
     HANDLE_EXPR(get_stars_for_gig, GetNumStarsForGig(_msg->Int(2)))
     HANDLE_EXPR(are_all_tour_gigs_complete, AreAllTourGigsComplete())
