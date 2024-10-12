@@ -1380,30 +1380,52 @@ def generate_clangd_commands(
     compilers = config.compilers()
     wrapper = config.compiler_wrapper()
 
-    # Extra cflags to give to clangd
-    extra_flags = []
+    # Extra flags to give to clangd
+    extra_flags: List[str] = []
     if config.clangd_flags is not None:
         extra_flags = config.clangd_flags
 
-    # MWCC cflags prefixes to replace
-    CFLAG_PREFIXES = (
-        ("-i ", "-I"),
-        ("-d ", "-D"),
-    )
+    # Flags to ignore explicitly
+    CFLAG_IGNORE: Set[str] = {
+        # Search order modifier
+        # Has a different meaning to Clang, and would otherwise
+        # be picked up by the include passthrough prefix
+        "-I-",
+        "-i-",
+    }
+    CFLAG_IGNORE_PREFIX: Tuple[str, ...] = tuple()
 
-    # MWCC cflags to replace wholly
-    CFLAG_REPLACEMENTS: dict[str, tuple[str, ...]] = {
+    # Flags to replace
+    CFLAG_REPLACE: Dict[str, Tuple[str, ...]] = {
+        # Exceptions
         "-Cpp_exceptions off": ("-fno-cxx-exceptions",),
         "-Cpp_exceptions on": ("-fcxx-exceptions",),
-
+        # RTTI
         "-RTTI off": ("-fno-rtti",),
         "-RTTI on": ("-frtti",),
-
+        # Language configuration
         "-lang c": ("--language=c", "--std=c89"),
         "-lang c99": ("--language=c", "--std=c99"),
         "-lang c++": ("--language=c++", "--std=c++99"),
         "-lang cplus": ("--language=c++", "--std=c++99"),
     }
+    CFLAG_REPLACE_PREFIX: Tuple[Tuple[str, str], ...] = (
+        # includes
+        ("-i ", "-I"),
+        ("-I ", "-I"),
+        ("-I+", "-I"),
+        # defines
+        ("-d ", "-D"),
+        ("-D ", "-D"),
+        ("-D+", "-D"),
+    )
+
+    # Flags to pass through
+    CFLAG_PASSTHROUGH: Set[str] = set()
+    CFLAG_PASSTHROUGH_PREFIX: Tuple[str, ...] = (
+        "-I",  # includes
+        "-D",  # defines
+    )
 
     # Defines for specific target platforms
     GC_DEFINES: Tuple[str, ...] = ("__PPCGEKKO__",)
@@ -1433,7 +1455,7 @@ def generate_clangd_commands(
 
     # Defines for specific compiler versions
     # Based on a lot of manual testing
-    COMPILER_DEFINES: dict[str, Tuple[str, ...]] = {
+    COMPILER_DEFINES: Dict[str, Tuple[str, ...]] = {
         "GC/1.0": gc_defines("0x2301"),
         "GC/1.1": gc_defines("0x2301"),
         "GC/1.2.5": gc_defines("0x2301"),
@@ -1485,15 +1507,49 @@ def generate_clangd_commands(
         # clangd complains about unsupported cflags, so we need to filter those out.
         # For this reason, currently only cflag lists are supported for command generation.
         def append_cflags(flags: Iterable[str]) -> None:
-            for flag in flags:
-                for prefix, replacement in CFLAG_PREFIXES:
+            def flag_match(
+                flag: str, concrete: Set[str], prefixes: Tuple[str, ...]
+            ) -> bool:
+                if flag in concrete:
+                    return True
+
+                for prefix in prefixes:
                     if flag.startswith(prefix):
-                        cflags.append(flag.replace(prefix, replacement))
-                        break
-                else:
-                    if flag in CFLAG_REPLACEMENTS:
-                        cflags.extend(CFLAG_REPLACEMENTS[flag])
-                    # else drop the flag
+                        return True
+
+                return False
+
+            def should_ignore(flag: str) -> bool:
+                return flag_match(flag, CFLAG_IGNORE, CFLAG_IGNORE_PREFIX)
+
+            def try_passthrough(flag: str) -> bool:
+                return flag_match(flag, CFLAG_PASSTHROUGH, CFLAG_PASSTHROUGH_PREFIX)
+
+            def try_replace(flag: str) -> bool:
+                if flag in CFLAG_REPLACE:
+                    cflags.extend(CFLAG_REPLACE[flag])
+                    return True
+
+                for prefix, replacement in CFLAG_REPLACE_PREFIX:
+                    if flag.startswith(prefix):
+                        cflags.append(flag.replace(prefix, replacement, 1))
+                        return True
+
+                return False
+
+            for flag in flags:
+                # Ignore flags first
+                if should_ignore(flag):
+                    continue
+
+                # Then find replacements
+                if try_replace(flag):
+                    continue
+
+                # Pass flags through last
+                if try_passthrough(flag):
+                    cflags.append(flag)
+                    continue
 
         if not isinstance(obj.options["cflags"], list):
             print(
