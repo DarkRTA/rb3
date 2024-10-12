@@ -10,7 +10,7 @@ namespace std {
         typedef T value_type;
         typedef integral_constant type;
 
-        const operator value_type() const throw() { return value; }
+        operator const value_type() const throw() { return value; }
         const value_type operator()() const throw() { return value; }
     };
 

@@ -3,8 +3,9 @@
 
 #include "MSL_C++/Metrowerks/type_traits.h"
 
-#include "MSL_C++/MSL_Common/type_traits/integral_constant.h"
-#include "MSL_C++/MSL_Common/type_traits/relationship.h"
+#include "MSL_C++/MSL_Common/type_traits/integral_constant.h" /* IWYU pragma: keep */
+#include "MSL_C++/MSL_Common/type_traits/category.h" /* IWYU pragma: keep */
+#include "MSL_C++/MSL_Common/type_traits/relationship.h" /* IWYU pragma: keep */
 
 // clang-format off: conciseness
 namespace std {

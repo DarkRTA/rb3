@@ -47,12 +47,15 @@ namespace std {
         static short max() { return 0x7FFF; }
     };
 
+// clangd treats `short` and `signed short` the same, while MWCC treats them differently
+#ifndef DECOMP_IDE_FLAG
     template <>
     class numeric_limits<signed short> {
     public:
         static signed short min() { return -0x8000; }
         static signed short max() { return 0x7FFF; }
     };
+#endif
 
     template <>
     class numeric_limits<unsigned short> {
@@ -68,12 +71,14 @@ namespace std {
         static int max() { return 0x7FFFFFFF; }
     };
 
+#ifndef DECOMP_IDE_FLAG
     template <>
     class numeric_limits<signed int> {
     public:
         static signed int min() { return -0x80000000; }
         static signed int max() { return 0x7FFFFFFF; }
     };
+#endif
 
     template <>
     class numeric_limits<unsigned int> {
@@ -89,12 +94,14 @@ namespace std {
         static long max() { return 0x7FFFFFFF; }
     };
 
+#ifndef DECOMP_IDE_FLAG
     template <>
     class numeric_limits<signed long> {
     public:
         static signed long min() { return -0x80000000; }
         static signed long max() { return 0x7FFFFFFF; }
     };
+#endif
 
     template <>
     class numeric_limits<unsigned long> {
@@ -110,12 +117,14 @@ namespace std {
         static long long max() { return 0x7FFFFFFFFFFFFFFF; }
     };
 
+#ifndef DECOMP_IDE_FLAG
     template <>
     class numeric_limits<signed long long> {
     public:
         static signed long long min() { return -0x8000000000000000; }
         static signed long long max() { return 0x7FFFFFFFFFFFFFFF; }
     };
+#endif
 
     template <>
     class numeric_limits<unsigned long long> {
@@ -123,6 +132,8 @@ namespace std {
         static unsigned long long min() { return 0x0; }
         static unsigned long long max() { return 0xFFFFFFFFFFFFFFFF; }
     };
+
+    typedef numeric_limits<signed short> test_limits;
 
 }
 

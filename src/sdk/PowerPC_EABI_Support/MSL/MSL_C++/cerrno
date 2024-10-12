@@ -3,8 +3,10 @@
 
 #include <MSL_C/errno.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::errno;
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

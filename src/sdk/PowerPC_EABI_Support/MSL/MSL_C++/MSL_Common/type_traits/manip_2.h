@@ -5,8 +5,8 @@
 
 #include <MSL_C++/cstddef>
 
-#include "MSL_C++/MSL_Common/type_traits/category.h"
-#include "MSL_C++/MSL_Common/type_traits/manip.h"
+#include "MSL_C++/MSL_Common/type_traits/category.h" /* IWYU pragma: keep */
+#include "MSL_C++/MSL_Common/type_traits/manip.h" /* IWYU pragma: keep */
 
 // clang-format off: conciseness
 namespace std {
@@ -35,12 +35,12 @@ namespace std {
         struct make_signed : public make_signed_helper<T> {};
 
         template <typename T>
-        struct make_signed<T, true> : public make_signed_helper<underlying_type<T>::type> {};
+        struct make_signed<T, true> : public make_signed_helper<typename underlying_type<T>::type> {};
 
     }
 
     template <typename T>
-    struct make_signed : public detail::copy_cv<T, detail::make_signed<remove_cv<T>::type> > {};
+    struct make_signed : public detail::copy_cv<T, detail::make_signed<typename remove_cv<T>::type> > {};
 
     namespace detail {
 
@@ -65,28 +65,28 @@ namespace std {
         struct make_unsigned : public make_unsigned_helper<T> {};
 
         template <typename T>
-        struct make_unsigned<T, true> : public make_unsigned_helper<underlying_type<T>::type> {};
+        struct make_unsigned<T, true> : public make_unsigned_helper<typename underlying_type<T>::type> {};
 
     }
 
     template <typename T>
-    struct make_unsigned : public detail::copy_cv<T, detail::make_unsigned<remove_cv<T>::type> > {};
+    struct make_unsigned : public detail::copy_cv<T, detail::make_unsigned<typename remove_cv<T>::type> > {};
 #pragma endregion
 
     template<class T>
     struct decay
     {
     private:
-        typedef remove_reference<T>::type U;
+        typedef typename remove_reference<T>::type U;
 
     public:
-        typedef conditional<
+        typedef typename conditional<
             is_array<U>::value,
-            add_pointer<remove_extent<U>::type>::type,
-            conditional<
+            typename add_pointer<typename remove_extent<U>::type>::type,
+            typename conditional<
                 is_function<U>::value,
-                add_pointer<U>::type,
-                remove_cv<U>::type
+                typename add_pointer<U>::type,
+                typename remove_cv<U>::type
             >::type
         >::type type;
     };

@@ -177,7 +177,7 @@ double x, y;
         }
     }
 
-    ax = __fabs(x);
+    ax = fabs(x);
     /* special value of x */
     if (lx == 0) {
         if (ix == 0x7ff00000 || ix == 0 || ix == 0x3ff00000) {

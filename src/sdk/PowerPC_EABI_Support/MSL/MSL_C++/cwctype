@@ -2,6 +2,7 @@
 #define MSL_CPP_CWTYPE_H
 #include <MSL_C/wctype.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::wctrans_t;
     using ::wctype_t;
@@ -26,5 +27,6 @@ namespace std {
     using ::towupper;
     using ::wctrans;
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

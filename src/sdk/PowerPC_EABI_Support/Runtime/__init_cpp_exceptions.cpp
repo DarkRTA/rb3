@@ -28,6 +28,6 @@ void __fini_cpp_exceptions() {
 #pragma section ".dtors$10"
 #pragma section ".dtors$15"
 
-DECL_SECTION(".ctors$10") extern void *const __init_cpp_exceptions_reference = __init_cpp_exceptions;
-DECL_SECTION(".dtors$10") extern void *const __destroy_global_chain_reference = __destroy_global_chain;
-DECL_SECTION(".dtors$15") extern void *const __fini_cpp_exceptions_reference = __fini_cpp_exceptions;
+DECL_SECTION(".ctors$10") extern void (*const __init_cpp_exceptions_reference)() = &__init_cpp_exceptions;
+DECL_SECTION(".dtors$10") extern void (*const __destroy_global_chain_reference)() = &__destroy_global_chain;
+DECL_SECTION(".dtors$15") extern void (*const __fini_cpp_exceptions_reference)() = &__fini_cpp_exceptions;

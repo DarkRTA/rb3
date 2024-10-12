@@ -88,7 +88,7 @@ namespace std {
         explicit front_insert_iterator(Container& c) : container(&c) { }
 
         front_insert_iterator& operator=(typename Container::const_reference value) {
-            iter = container->push_front(iter, value);
+            typename Container::iterator iter = container->push_front(iter, value);
             ++iter;
             return *this;
         }
@@ -122,7 +122,7 @@ namespace std {
         explicit back_insert_iterator(Container& c) : container(&c) { }
 
         back_insert_iterator& operator=(typename Container::const_reference value) {
-            iter = container->push_back(iter, value);
+            typename Container::iterator iter = container->push_back(iter, value);
             ++iter;
             return *this;
         }
@@ -142,18 +142,18 @@ namespace std {
 
     template <class Iter>
     class reverse_iterator : public iterator<
-        iterator_traits<Iter>::iterator_category,
-        iterator_traits<Iter>::value_type,
-        iterator_traits<Iter>::difference_type,
-        iterator_traits<Iter>::pointer,
-        iterator_traits<Iter>::reference
+        typename iterator_traits<Iter>::iterator_category,
+        typename iterator_traits<Iter>::value_type,
+        typename iterator_traits<Iter>::difference_type,
+        typename iterator_traits<Iter>::pointer,
+        typename iterator_traits<Iter>::reference
     > {
         typedef iterator<
-            iterator_traits<Iter>::iterator_category,
-            iterator_traits<Iter>::value_type,
-            iterator_traits<Iter>::difference_type,
-            iterator_traits<Iter>::pointer,
-            iterator_traits<Iter>::reference
+            typename iterator_traits<Iter>::iterator_category,
+            typename iterator_traits<Iter>::value_type,
+            typename iterator_traits<Iter>::difference_type,
+            typename iterator_traits<Iter>::pointer,
+            typename iterator_traits<Iter>::reference
         > _Base;
 
     public:
@@ -345,7 +345,7 @@ namespace std {
     template <class Iterator>
     typename iterator_traits<Iterator>::difference_type
     __distance(Iterator first, Iterator last, input_iterator_tag) {
-        iterator_traits<Iterator>::difference_type result = 0;
+        typename iterator_traits<Iterator>::difference_type result = 0;
         for (; first != last; ++first)
             ++result;
         return result;

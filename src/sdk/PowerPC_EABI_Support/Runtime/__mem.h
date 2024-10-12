@@ -1,7 +1,7 @@
 #ifndef RUNTIME_MEM_H
 #define RUNTIME_MEM_H
 
-#include "MSL_C/MSL_Common/size_def.h"
+#include "MSL_C/MSL_Common/size_def.h" /* IWYU pragma: keep */
 #include "MSL_C/MSL_Common/restrict_def.h"
 
 #include "compiler_macros.h"

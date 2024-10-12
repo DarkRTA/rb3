@@ -1,7 +1,6 @@
 #ifndef _NMWEXCEPTION
 #define _NMWEXCEPTION
 
-#include "types.h"
 #include "__ppc_eabi_linker.h"
 
 #ifdef __cplusplus

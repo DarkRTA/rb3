@@ -1,8 +1,8 @@
 #ifndef _METROWERKS_PAIR
 #define _METROWERKS_PAIR
 
-#include "MSL_C++/MSL_Common/type_traits.h"
-#include "MSL_C++/Metrowerks/type_traits.h"
+#include "MSL_C++/MSL_Common/type_traits.h" /* IWYU pragma: keep */
+#include "MSL_C++/Metrowerks/type_traits.h" /* IWYU pragma: keep */
 
 namespace Metrowerks {
 
@@ -117,14 +117,16 @@ namespace Metrowerks {
 
     template <typename T1, typename T2>
     struct compressed_pair : public details::compressed_pair_imp<T1, T2> {
+        typedef typename details::compressed_pair_imp<T1, T2> _Base;
+
         typedef typename details::compressed_pair_imp<T1, T2>::first_param first_param;
         typedef typename details::compressed_pair_imp<T1, T2>::second_param second_param;
 
         compressed_pair() {}
-        compressed_pair(first_param first) : compressed_pair_imp(first) {}
-        compressed_pair(second_param second) : compressed_pair_imp(second) {}
+        compressed_pair(first_param first) : _Base(first) {}
+        compressed_pair(second_param second) : _Base(second) {}
         compressed_pair(first_param first, second_param second)
-            : compressed_pair_imp(first, second) {}
+            : _Base(first, second) {}
     };
 
 }

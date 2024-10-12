@@ -2,6 +2,7 @@
 #define _METROWERKS_MOVE_PTR
 
 #include "MSL_C++/MSL_Common/detail/default_delete.h"
+#include "MSL_C++/Metrowerks/compressed_pair.h"
 
 namespace Metrowerks {
 

@@ -58,7 +58,7 @@ namespace std {
 #pragma endregion
 
 #pragma region "pointer modifications"
-    template <typename T> struct add_pointer { typedef remove_reference<T>::type* type; };
+    template <typename T> struct add_pointer { typedef typename remove_reference<T>::type* type; };
 
     template <typename T> struct remove_pointer { typedef T type; };
     template <typename T> struct remove_pointer<T*> { typedef T type; };
@@ -73,8 +73,8 @@ namespace std {
     template <typename T, std::size_t N> struct remove_extent<T[N]> { typedef T type; };
 
     template <typename T> struct remove_all_extents { typedef T type; };
-    template <typename T> struct remove_all_extents<T[]> { typedef remove_all_extents<T>::type type; };
-    template <typename T, std::size_t N> struct remove_all_extents<T[N]> { typedef remove_all_extents<T>::type type; };
+    template <typename T> struct remove_all_extents<T[]> { typedef typename remove_all_extents<T>::type type; };
+    template <typename T, std::size_t N> struct remove_all_extents<T[N]> { typedef typename remove_all_extents<T>::type type; };
 #pragma endregion
 
 #pragma region "miscellaneous transformations"
@@ -86,14 +86,14 @@ namespace std {
 
     template <typename T>
     struct remove_cvref {
-        typedef remove_cv<remove_reference<T>::value>::value type;
+        typedef typename remove_cv<typename remove_reference<T>::value>::value type;
     };
 
     // template <typename... T> struct common_type;
 
     template <typename T>
     struct underlying_type {
-        typedef Metrowerks::underlying_type<T>::value type;
+        typedef typename Metrowerks::underlying_type<T>::value type;
     };
 
     // template <typename Fn, typename... ArgTypes> struct result_of;

@@ -1,6 +1,8 @@
 #ifndef RUNTIME_RUNTIME_H
 #define RUNTIME_RUNTIME_H
 
+#include "decomp.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -15,19 +17,19 @@ extern "C" {
 #define RESTORE_GPR(reg) _restgpr_ ## reg
 #define RESTORE32_GPR(reg) _rest32gpr_ ## reg
 
-asm void __div2u(void);
-asm void __div2i(void);
-asm void __mod2u(void);
-asm void __mod2i(void);
-asm void __shl2i(void);
-asm void __shr2u(void);
-asm void __shr2i(void);
-asm void __cvt_sll_dbl(void);
-asm void __cvt_ull_dbl(void);
-asm void __cvt_sll_flt(void);
-asm void __cvt_ull_flt(void);
-asm void __cvt_dbl_usll(void);
-asm void __cvt_dbl_ull(void);
+ASM_DECL void __div2u(void);
+ASM_DECL void __div2i(void);
+ASM_DECL void __mod2u(void);
+ASM_DECL void __mod2i(void);
+ASM_DECL void __shl2i(void);
+ASM_DECL void __shr2u(void);
+ASM_DECL void __shr2i(void);
+ASM_DECL void __cvt_sll_dbl(void);
+ASM_DECL void __cvt_ull_dbl(void);
+ASM_DECL void __cvt_sll_flt(void);
+ASM_DECL void __cvt_ull_flt(void);
+ASM_DECL void __cvt_dbl_usll(void);
+ASM_DECL void __cvt_dbl_ull(void);
 
 void SAVE_FPR(14)(void);
 void SAVE_FPR(15)(void);
