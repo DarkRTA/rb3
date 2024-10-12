@@ -5,7 +5,7 @@
 
 #ifdef _STLP_USE_SIZED_VECTOR
 #  ifndef _STLP_INTERNAL_VECTOR_SIZED_H
-#    include <stl/_vector_sized.h>
+#    include <stl/_vector_sized.h> /* IWYU pragma: export */
 #  endif
 #  define _STLP_VECTOR_SIZE_PARAM  class _Size,
 #  define _STLP_VECTOR_SIZE_ARG    _Size,
@@ -13,7 +13,7 @@
 #  define _STLP_VECTOR_SIZE_DFLT_ARG    unsigned short,
 #else
 #  ifndef _STLP_INTERNAL_VECTOR_PTRS_H
-#    include <stl/_vector_ptrs.h>
+#    include <stl/_vector_ptrs.h> /* IWYU pragma: export */
 #  endif
 #  define _STLP_VECTOR_SIZE_PARAM
 #  define _STLP_VECTOR_SIZE_ARG
@@ -24,7 +24,7 @@
 _STLP_BEGIN_NAMESPACE
 
 #ifndef _STLP_DONT_USE_PTR_SPECIALIZATIONS
-#  include <stl/pointers/_vector.h>
+#  include <stl/pointers/_vector.h> /* IWYU pragma: export */
 #endif /* _STLP_DONT_USE_PTR_SPECIALIZATIONS */
 
 #define _STLP_TEMPLATE_HEADER    template <class _Tp, _STLP_VECTOR_SIZE_PARAM class _Alloc>
@@ -45,15 +45,15 @@ struct __move_traits<vector<_Tp, _STLP_VECTOR_SIZE_ARG _Alloc> > {
 _STLP_END_NAMESPACE
 
 #ifndef _STLP_INTERNAL_BVECTOR_H
-#  include <stl/_bvector.h>
+#  include <stl/_bvector.h> /* IWYU pragma: export */
 #endif
 
 #if defined (_STLP_DEBUG)
-#  include <stl/debug/_vector.h>
+#  include <stl/debug/_vector.h> /* IWYU pragma: export */
 #endif
 
 #if defined (_STLP_USE_WRAPPER_FOR_ALLOC_PARAM)
-#  include <stl/wrappers/_vector.h>
+#  include <stl/wrappers/_vector.h> /* IWYU pragma: export */
 #endif
 
 #undef _STLP_VECTOR_TEMPL_PARAMS

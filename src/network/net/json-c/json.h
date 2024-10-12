@@ -18,13 +18,13 @@
 extern "C" {
 #endif
 
-#include "bits.h"
-#include "debug.h"
-#include "linkhash.h"
-#include "arraylist.h"
-#include "json_util.h"
-#include "json_object.h"
-#include "json_tokener.h"
+#include "bits.h" /* IWYU pragma: export */
+#include "debug.h" /* IWYU pragma: export */
+#include "linkhash.h" /* IWYU pragma: export */
+#include "arraylist.h" /* IWYU pragma: export */
+#include "json_util.h" /* IWYU pragma: export */
+#include "json_object.h" /* IWYU pragma: export */
+#include "json_tokener.h" /* IWYU pragma: export */
 
 #ifdef __cplusplus
 }
