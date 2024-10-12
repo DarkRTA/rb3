@@ -1,6 +1,7 @@
 #ifndef GAME_DEFINES_H
 #define GAME_DEFINES_H
 #include "beatmatch/TrackType.h"
+#include "utl/Str.h"
 #include "utl/Symbol.h"
 
 enum Difficulty {
@@ -48,5 +49,6 @@ Symbol ControllerTypeToSym(ControllerType);
 ControllerType SymToControllerType(Symbol);
 TrackType ControllerTypeToTrackType(ControllerType, bool);
 ScoreType TrackTypeToScoreType(TrackType, bool, bool);
+void CensorString(String &);
 
 #endif // GAME_DEFINES_H
