@@ -14,4 +14,8 @@ public:
     Symbol GetLeaderboardGoal() const;
     bool HasLeaderboardGoal() const;
     int GetNumGigs() const;
+    int GetNumStarsPossibleForTour() const;
+    Symbol GetCityForGigNum(int) const;
+    Symbol GetName() const;
+    Symbol GetWelcome() const;
 };

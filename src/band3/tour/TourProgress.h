@@ -7,6 +7,8 @@
 #include "tour/QuestJournal.h"
 #include "utl/BinStream.h"
 
+#define kTour_NumQuestFilters 3
+
 class TourProgress : public TourSavable, public FixedSizeSaveable {
 public:
     TourProgress();
@@ -54,6 +56,20 @@ public:
     int GetNumCompletedGigs() const;
     void SetCurrentGigNum(int);
     void ResetTourData();
+    float GetTourPropertyValue(Symbol) const;
+    void RemoveStars(int);
+    void EarnStars(int);
+    bool GetWonQuest() const;
+    void SetWonQuest(bool);
+    int GetTotalStarsForTour() const;
+    Symbol GetTourStatus(int) const;
+    int GetNumStarsForTourStatus(int) const;
+    bool DoesTourStatusExist(int) const;
+    Symbol GetNextCity() const;
+    Symbol GetTourName() const;
+    Symbol GetTourWelcome() const;
+    bool AreQuestFiltersEmpty() const;
+    Symbol GetQuestFilter(int) const;
 
     static int SaveSize(int);
 

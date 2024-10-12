@@ -10,6 +10,7 @@
 #include "obj/Object.h"
 #include "os/DateTime.h"
 #include "os/Debug.h"
+#include "stl/pointers/_vector.h"
 #include "tour/TourPropertyCollection.h"
 #include "utl/BinStream.h"
 #include "utl/Symbol.h"
@@ -270,6 +271,52 @@ void TourProgress::ResetTourData(){
     HandleDirty(3);
 }
 
+float TourProgress::GetTourPropertyValue(Symbol s) const {
+    return mTourProperties.GetPropertyValue(s);
+}
+
+void TourProgress::RemoveStars(int i){
+    mNewStars -= i;
+    HandleDirty(2);
+}
+
+void TourProgress::EarnStars(int i){
+    mNewStars += i;
+    HandleDirty(2);
+}
+
+bool TourProgress::GetWonQuest() const { return mWonQuest; }
+void TourProgress::SetWonQuest(bool won){ mWonQuest = won; }
+
+int TourProgress::GetTotalStarsForTour() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return 0;
+    else {
+        MILO_ASSERT(pTourDesc, 0x22D);
+        return pTourDesc->GetNumStarsPossibleForTour();
+    }
+}
+
+int TourProgress::GetNumStars() const {
+    int num = mNewStars;
+    for(std::vector<int>::const_iterator it = unk70.begin(); it != unk70.end(); ++it){
+        num += *it;
+    }
+    return num;
+}
+
+Symbol TourProgress::GetTourStatus(int i) const {
+    return TheTour->GetTourStatusForStarCount(GetNumStars(), i);
+}
+
+int TourProgress::GetNumStarsForTourStatus(int i) const {
+    return TheTour->GetStarsForTourStatus(GetTourStatus(i));
+}
+
+bool TourProgress::DoesTourStatusExist(int i) const {
+    return TheTour->DoesTourStatusExist(GetNumStars(), i);
+}
+
 void TourProgress::FinalizeNewStars(){
     unk70.push_back(mNewStars);
     ClearNewStars();
@@ -280,6 +327,63 @@ void TourProgress::ClearNewStars(){
     mNewStars = 0;
     HandleDirty(2);
 }
+
+Symbol TourProgress::GetNextCity() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x270);
+        return pTourDesc->GetCityForGigNum(mNumCompletedGigs);
+    }
+}
+
+Symbol TourProgress::GetTourName() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x27E);
+        return pTourDesc->GetName();
+    }
+}
+
+Symbol TourProgress::GetTourWelcome() const {
+    TourDesc* pTourDesc = TheTour->GetTourDesc(m_symTourDesc);
+    if(!pTourDesc) return gNullStr;
+    else {
+        MILO_ASSERT(pTourDesc, 0x28C);
+        return pTourDesc->GetWelcome();
+    }
+}
+
+bool TourProgress::AreQuestFiltersEmpty() const {
+    for(int i = 0; i < 3; i++){
+        if(mQuestFilters[i] != gNullStr) return false;
+    }
+    return true;
+}
+
+Symbol TourProgress::GetQuestFilter(int i_iIndex) const {
+    MILO_ASSERT(( 0) <= ( i_iIndex) && ( i_iIndex) < ( kTour_NumQuestFilters), 0x2A2);
+    return mQuestFilters[i_iIndex];
+}
+
+// undefined4 __thiscall TourProgress::GetQuestFilter(TourProgress *this,int param_1)
+
+// {
+//   bool bVar1;
+//   char *pcVar2;
+  
+//   bVar1 = false;
+//   if ((param_1 > -1) && (param_1 < 3)) {
+//     bVar1 = true;
+//   }
+//   if (!bVar1) {
+//     pcVar2 = ::MakeString(kAssertStr,s_TourProgress.cpp_80bacbf1,0x2a2,
+//                           s_(_0)_<=_(_i_iIndex)_&&_(_i_iInde_80bacc20);
+//     Debug::Fail((Debug *)TheDebug,pcVar2);
+//   }
+//   return *(undefined4 *)(this + param_1 * 4 + 0x7c);
+// }
 
 BEGIN_HANDLERS(TourProgress)
     HANDLE_ACTION(set_on_tour, SetOnTour(_msg->Int(2)))

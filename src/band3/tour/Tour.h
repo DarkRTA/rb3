@@ -8,6 +8,9 @@ public:
     TourProperty* GetTourProperty(Symbol) const;
     void UpdateProgressWithCareerData();
     TourDesc* GetTourDesc(Symbol) const;
+    Symbol GetTourStatusForStarCount(int, int) const;
+    int GetStarsForTourStatus(Symbol) const;
+    bool DoesTourStatusExist(int, int) const;
 };
 
 extern Tour* TheTour;
