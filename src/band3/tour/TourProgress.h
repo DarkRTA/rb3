@@ -1,27 +1,62 @@
 #ifndef TOUR_TOURPROGRESS_H
 #define TOUR_TOURPROGRESS_H
-
 #include "obj/Object.h"
 #include "tour/TourPropertyCollection.h"
 #include "tour/TourSavable.h"
 #include "meta/FixedSizeSaveable.h"
 #include "tour/QuestJournal.h"
+#include "utl/BinStream.h"
 
 class TourProgress : public TourSavable, public FixedSizeSaveable {
 public:
     TourProgress();
     virtual DataNode Handle(DataArray*, bool);
     virtual ~TourProgress();
-    virtual int SecBetweenUploads() const;
+    virtual int SecBetweenUploads() const { return 45; }
     virtual void SaveFixed(FixedSizeSaveableStream&) const;
     virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
     void HandleTourRewardApplied();
     void SetOnTour(bool);
-    TourPropertyCollection& GetPerformanceProperties();
+    void ClearQuestFilters();
+    void SyncSave(BinStream&);
+    void SyncLoad(BinStream&);
+    void HandleDirty(int);
+    void UpdateLastTouchTime();
+    String GetLastTouchedDateString() const;
     TourPropertyCollection& GetTourProperties();
+    const TourPropertyCollection& GetTourProperties() const;
+    TourPropertyCollection& GetPerformanceProperties();
+    const TourPropertyCollection& GetPerformanceProperties() const;
+    void ClearPerformanceState();
+    void ClearPeformanceProperties();
+    void HandleQuestFinished();
+    void SetCurrentQuest(Symbol);
+    bool IsOnTour() const;
+    Symbol GetTourDesc() const;
+    void SetTourDesc(Symbol);
+    int GetNumTotalGigs() const;
+    void FinalizeNewStars();
+    void ClearNewStars();
 
-    QuestJournal mQuests;
+    static int SaveSize(int);
+
+    QuestJournal mQuests; // 0x1c
+    TourPropertyCollection mTourProperties; // 0x40
+    unsigned int mLastTouchTime; // 0x60
+    bool mOnTour; // 0x64
+    Symbol m_symTourDesc; // 0x68
+    int mNumCompletedGigs; // 0x6c
+    std::vector<int> unk70;
+    Symbol mCurrentQuest; // 0x78
+    Symbol mQuestFilters[3]; // 0x7c, 0x80, 0x84
+    std::map<Symbol, int> unk88;
+    std::map<Symbol, int> unka0;
+    int mMetaScore; // 0xb8
+    int mNewStars; // 0xbc
+    bool mWonQuest; // 0xc0
+    int mCurrentGigNum; // 0xc4
+    TourPropertyCollection mPerformanceProperties; // 0xc8
 };
 
 #endif // TOUR_TOURPROGRESS_H
