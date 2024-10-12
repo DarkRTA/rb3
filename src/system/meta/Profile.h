@@ -49,9 +49,9 @@ public:
     //     return u->UserName();
     // }
 
-    bool mDirty;
-    mutable int mPadNum;
-    ProfileSaveState mState;
+    bool mDirty; // 0xc
+    mutable int mPadNum; // 0x10
+    ProfileSaveState mState; // 0x14
 };
 
 #endif

@@ -9,8 +9,10 @@
 #include "meta_band/AccomplishmentProgress.h"
 #include "net_band/DataResults.h"
 #include "meta_band/PerformanceData.h"
+#include "tour/TourCharLocal.h"
 
-class TourCharLocal;
+#define kMaxCharacters 10
+
 class PatchDir;
 class CharData;
 class TourProgress;
@@ -47,7 +49,6 @@ public:
     void AddNewChar(TourCharLocal*);
     void DeleteChar(TourCharLocal*);
     void RenameCharacter(TourCharLocal*, const char*);
-    int NumChars() const;
     bool HasChar(const TourCharLocal*);
     void GetFirstEmptyPatch();
     void GetTexAtPatchIndex(int) const;
@@ -122,13 +123,14 @@ public:
     void FakeProfileFill();
     void GetPictureTex();
     void AutoFakeFill(int);
+    int NumChars() const { return mCharacters.size(); }
     
     static int SaveSize(int);
 
     bool unk18;
-    std::vector<PatchDir*> unk1c; // 0x1c
-    std::vector<CharData*> mCharacters; // 0x24 
-    TourProgress* mTourProgress;   // 0x2c correct up to here
+    std::vector<PatchDir*> mPatches; // 0x1c
+    std::vector<TourCharLocal*> mCharacters; // 0x24 
+    TourProgress* mTourProgress; // 0x2c
     std::map<Symbol, float> unk30; // 0x30
     SongStatusMgr* mScores; // 0x48
     std::vector<int> unk4c; // 0x4c
