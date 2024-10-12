@@ -107,7 +107,7 @@ void OnFrameRateRecurseCB(const char *cc1, const char *cc2) {
 
 static DataNode OnEnumerateFrameRateResults(DataArray *da) {
     DataNode ret(new DataArray(0), kDataArray);
-    gFrameRateArray = ret.Array(0);
+    gFrameRateArray = ret.Array();
     FileRecursePattern(
         MakeString(
             "ui/framerate/venue_test/*%s",

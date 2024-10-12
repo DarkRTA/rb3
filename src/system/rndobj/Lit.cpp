@@ -7,7 +7,7 @@
 
 INIT_REVS(RndLight)
 
-RndLight::RndLight() : mColor(1.0f,1.0f,1.0f), mColorOwner(this, this), mRange(1000.0f), mFalloffStart(0.0f), mType(kPoint), 
+RndLight::RndLight() : mColor(1.0f,1.0f,1.0f), mColorOwner(this, this), mRange(1000.0f), mFalloffStart(0.0f), mType(kPoint),
     mAnimateColorFromPreset(1), mAnimatePositionFromPreset(1), mAnimateRangeFromPreset(1), mShowing(1), mTexture(this, 0),
     mShadowOverride(0), mShadowObjects(this, kObjListNoNull), mTopRadius(0.0f), mBotRadius(30.0f), mProjectedBlend(0), mOnlyProjection(0) {
         mTextureXfm.Reset();
@@ -157,18 +157,18 @@ BEGIN_PROPSYNCS(RndLight)
     SYNC_PROP(animate_color_from_preset, mAnimateColorFromPreset)
     SYNC_PROP(animate_position_from_preset, mAnimatePositionFromPreset)
     SYNC_PROP(animate_range_from_preset, mAnimateRangeFromPreset)
-    SYNC_PROP_SET(type, mType, SetLightType((Type)_val.Int(0)))
-    SYNC_PROP_SET(range, mRange, SetRange(_val.Float(0)))
-    SYNC_PROP_SET(falloff_start, mFalloffStart, SetFalloffStart(_val.Float(0)))
-    SYNC_PROP_SET(color, PackedColor(), SetPackedColor(_val.Int(0), Intensity()))
-    SYNC_PROP_SET(intensity, Intensity(), SetPackedColor(PackedColor(), _val.Float(0)))
-    SYNC_PROP_SET(topradius, mTopRadius, SetTopRadius(_val.Float(0)))
-    SYNC_PROP_SET(botradius, mBotRadius, SetBotRadius(_val.Float(0)))
+    SYNC_PROP_SET(type, mType, SetLightType((Type)_val.Int()))
+    SYNC_PROP_SET(range, mRange, SetRange(_val.Float()))
+    SYNC_PROP_SET(falloff_start, mFalloffStart, SetFalloffStart(_val.Float()))
+    SYNC_PROP_SET(color, PackedColor(), SetPackedColor(_val.Int(), Intensity()))
+    SYNC_PROP_SET(intensity, Intensity(), SetPackedColor(PackedColor(), _val.Float()))
+    SYNC_PROP_SET(topradius, mTopRadius, SetTopRadius(_val.Float()))
+    SYNC_PROP_SET(botradius, mBotRadius, SetBotRadius(_val.Float()))
     SYNC_PROP(color_owner, mColorOwner)
     SYNC_PROP(texture, mTexture)
     SYNC_PROP(texture_xfm, mTextureXfm)
     SYNC_PROP(only_projection, mOnlyProjection)
-    SYNC_PROP_SET(projected_blend, mProjectedBlend, SetProjectedBlend(_val.Int(0)))
+    SYNC_PROP_SET(projected_blend, mProjectedBlend, SetProjectedBlend(_val.Int()))
     SYNC_PROP(shadow_objects, mShadowObjects)
     SYNC_SUPERCLASS(RndTransformable)
 END_PROPSYNCS

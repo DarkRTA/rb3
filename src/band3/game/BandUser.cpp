@@ -57,7 +57,7 @@ void BandUser::SetDifficulty(Difficulty d){
     unk_0xC = true;
     mDifficulty = d;
     if(old != d && mPlayer){
-        
+
     }
 }
 
@@ -83,7 +83,7 @@ Symbol BandUser::GetTrackSym() const {
 
 void BandUser::SetOvershellSlotState(OvershellSlotStateID id){
     mOvershellState = id;
-    UpdateData(1);   
+    UpdateData(1);
 }
 
 const char* BandUser::GetOvershellFocus(){ return mOvershellFocus.c_str(); }
@@ -144,13 +144,13 @@ CharData* BandUser::GetChar(){ return mChar; }
 DataNode BandUser::OnSetDifficulty(DataArray* da){
     DataNode& eval = da->Node(2).Evaluate();
     if(eval.Type() == kDataInt){
-        SetDifficulty((Difficulty)eval.Int(0));
+        SetDifficulty((Difficulty)eval.Int());
     }
     else if(eval.Type() == kDataSymbol){
-        SetDifficulty(eval.Sym(0));
+        SetDifficulty(eval.Sym());
     }
     else if(eval.Type() == kDataString){
-        SetDifficulty(eval.ForceSym(0));
+        SetDifficulty(eval.ForceSym());
     }
     else MILO_FAIL("bad difficulty arg");
     return 1;
@@ -159,10 +159,10 @@ DataNode BandUser::OnSetDifficulty(DataArray* da){
 DataNode BandUser::OnSetTrackType(DataArray* da){
     DataNode& eval = da->Node(2).Evaluate();
     if(eval.Type() == kDataInt){
-        SetTrackType((TrackType)eval.Int(0));
+        SetTrackType((TrackType)eval.Int());
     }
     else if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
-        SetTrackType(eval.ForceSym(0));
+        SetTrackType(eval.ForceSym());
     }
     else MILO_FAIL("bad TrackType arg");
     return 1;
@@ -171,7 +171,7 @@ DataNode BandUser::OnSetTrackType(DataArray* da){
 DataNode BandUser::OnSetHas22FretGuitar(DataArray* da){
     DataNode& eval = da->Node(2).Evaluate();
     if(eval.Type() == kDataInt){
-        SetHas22FretGuitar(eval.Int(0));
+        SetHas22FretGuitar(eval.Int());
     }
     else MILO_FAIL("bad bool arg");
     return 1;
@@ -180,7 +180,7 @@ DataNode BandUser::OnSetHas22FretGuitar(DataArray* da){
 DataNode BandUser::OnSetPreferredScoreType(DataArray* da){
     DataNode& eval = da->Node(2).Evaluate();
     if(eval.Type() == kDataInt){
-        SetPreferredScoreType((ScoreType)eval.Int(0));
+        SetPreferredScoreType((ScoreType)eval.Int());
     }
     else MILO_FAIL("bad ScoreType arg");
     return 1;
@@ -189,10 +189,10 @@ DataNode BandUser::OnSetPreferredScoreType(DataArray* da){
 DataNode BandUser::OnSetControllerType(DataArray* da){
     DataNode& eval = da->Node(2).Evaluate();
     if(eval.Type() == kDataInt){
-        SetControllerType((ControllerType)eval.Int(0));
+        SetControllerType((ControllerType)eval.Int());
     }
     else if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
-        SetControllerType(eval.ForceSym(0));
+        SetControllerType(eval.ForceSym());
     }
     else MILO_FAIL("bad ControllerType arg");
     return 1;
@@ -285,7 +285,7 @@ BEGIN_HANDLERS(LocalBandUser)
     HANDLE_EXPR(connected_controller_type, ConnectedControllerType())
     HANDLE_EXPR(connected_controller_sym, ControllerTypeToSym(ConnectedControllerType()))
     HANDLE_ACTION(set_contributes_song_progress, unkc = _msg->Int(2))
-    HANDLE_ACTION(has_as_friend, _msg->Obj<BandUser>(2); return 1; )
+    HANDLE_EXPR(has_as_friend, (_msg->Obj<BandUser>(2), 1))
     HANDLE_SUPERCLASS(LocalUser)
     HANDLE_SUPERCLASS(BandUser)
     HANDLE_CHECK(0x3CC)
@@ -296,7 +296,7 @@ RemoteBandUser::RemoteBandUser(){
 }
 
 RemoteBandUser::~RemoteBandUser(){
-    
+
 }
 
 LocalBandUser* RemoteBandUser::GetLocalBandUser(){

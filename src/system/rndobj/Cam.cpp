@@ -13,7 +13,7 @@
 
 RndCam* RndCam::sCurrent = 0;
 int CAM_REV = 12;
-Transform sFlipYZ; 
+Transform sFlipYZ;
 
 float RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
     s = mZRange;
@@ -142,9 +142,9 @@ DataNode RndCam::OnFarPlane(const DataArray*){
 
 BEGIN_PROPSYNCS(RndCam)
     SYNC_SUPERCLASS(RndTransformable)
-    SYNC_PROP_SET(near_plane, mNearPlane, SetFrustum(_val.Float(NULL), mFarPlane, mYFov, 1))
-    SYNC_PROP_SET(far_plane, mFarPlane, SetFrustum(mNearPlane, _val.Float(NULL), mYFov, 1))
-    SYNC_PROP_SET(y_fov, mYFov * RAD2DEG, SetFrustum(mNearPlane, mFarPlane, _val.Float(NULL) * DEG2RAD, 1))
+    SYNC_PROP_SET(near_plane, mNearPlane, SetFrustum(_val.Float(), mFarPlane, mYFov, 1))
+    SYNC_PROP_SET(far_plane, mFarPlane, SetFrustum(mNearPlane, _val.Float(), mYFov, 1))
+    SYNC_PROP_SET(y_fov, mYFov * RAD2DEG, SetFrustum(mNearPlane, mFarPlane, _val.Float() * DEG2RAD, 1))
     SYNC_PROP(z_range, mZRange)
     SYNC_PROP_MODIFY_ALT(screen_rect, mScreenRect, UpdateLocal())
 END_PROPSYNCS

@@ -226,16 +226,14 @@ void RndPostProc::LoadRev(BinStream &bs, int rev) {
 }
 
 BEGIN_HANDLERS(RndPostProc)
-HANDLE_SUPERCLASS(Hmx::Object)
-HANDLE_ACTION(select, Select())
-HANDLE_ACTION(unselect, Unselect())
-HANDLE_ACTION(multi_select, OnSelect())
-HANDLE_ACTION(multi_unselect, OnUnselect())
-HANDLE_ACTION(
-    interp, Interp(_msg->Obj<RndPostProc>(2), _msg->Obj<RndPostProc>(3), _msg->Float(4))
-)
-HANDLE(allowed_normal_map, OnAllowedNormalMap)
-HANDLE_CHECK(0x3BB)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_ACTION(select, Select())
+    HANDLE_ACTION(unselect, Unselect())
+    HANDLE_ACTION(multi_select, OnSelect())
+    HANDLE_ACTION(multi_unselect, OnUnselect())
+    HANDLE_ACTION(interp, Interp(_msg->Obj<RndPostProc>(2), _msg->Obj<RndPostProc>(3), _msg->Float(4)))
+    HANDLE(allowed_normal_map, OnAllowedNormalMap)
+    HANDLE_CHECK(0x3BB)
 END_HANDLERS
 
 ProcCounter::ProcCounter()
@@ -259,7 +257,7 @@ void ProcCounter::SetEvenOddDisabled(bool eod) {
 int ProcCounter::ProcCommands() {
   int count;
   int retCmd;
-  
+
   if ((this->mProcAndLock != false) && (this->mCount == 0)) {
     return 0;
   }

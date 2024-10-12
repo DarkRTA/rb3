@@ -79,7 +79,7 @@ BEGIN_HANDLERS(UIListCustom)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(UIListCustom)
-    SYNC_PROP_SET(object, mObject, SetObject(_val.GetObj(NULL)))
+    SYNC_PROP_SET(object, mObject, SetObject(_val.GetObj()))
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
 

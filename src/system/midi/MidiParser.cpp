@@ -32,7 +32,7 @@ void MidiParser::ClearManagedParsers(){
         if(cur){
             MsgSource* src = ObjectDir::Main()->Find<MsgSource>(cur->Name(), false);
             if(src){
-                
+
             }
             else cur->mEvents->Clear();
         }
@@ -139,7 +139,7 @@ bool MidiParser::InsertIdle(float f, int i){
     mBefore = i;
     if(mIdleParser){
         DataNode node = mIdleParser->ExecuteScript(1, this, 0, 1);
-        if(node.Int(0) != 0) return true;
+        if(node.Int() != 0) return true;
     }
     return false;
 }
@@ -205,19 +205,19 @@ void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode& data)
     *mpData = data;
     if(mCurParser == mTextParser){
         MILO_ASSERT(data.Type() == kDataArray, 0x230);
-        if(data.Array(0)->Type(0) == kDataSymbol){
-            *mpVal = DataNode(data.Array(0)->Sym(0));
+        if(data.Array()->Type(0) == kDataSymbol){
+            *mpVal = DataNode(data.Array()->Sym(0));
         }
         else MILO_WARN("Text Event in midi file is missing Text.  \n");
     }
     else if(mCurParser == mLyricParser){
         MILO_ASSERT(data.Type() == kDataString, 0x23A);
-        *mpVal = DataNode(data.Str(0));
+        *mpVal = DataNode(data.Str());
     }
     else {
         *mpVal = data;
         if(mCurParser == mGemParser){
-            int gemval = data.Int(0);
+            int gemval = data.Int();
             int i6 = 0x1000000;
             int d8 = 0;
             int d7 = 0x17;
@@ -269,7 +269,7 @@ bool MidiParser::AddMessage(float f1, float f2, DataArray* arr, int idx){
     if(!mCompressed){
         int arr_size;
         if(node.Type() == kDataArray){
-            arr = node.Array(0);
+            arr = node.Array();
             idx = 0;
             arr_size = arr->Size();
             arr_size++;
@@ -352,7 +352,7 @@ float MidiParser::GetEnd(int i){
 
 #pragma dont_inline on
 BEGIN_HANDLERS(MidiParser)
-    HANDLE_EXPR(add_message, AddMessage(MidiParser::mpStart->Float(0), MidiParser::mpEnd->Float(0), _msg, 2))
+    HANDLE_EXPR(add_message, AddMessage(MidiParser::mpStart->Float(), MidiParser::mpEnd->Float(), _msg, 2))
     HANDLE_EXPR(add_message_se, AddMessage(_msg->Float(2), _msg->Float(3), _msg, 4))
     HANDLE(get_start, OnGetStart)
     HANDLE(get_end, OnGetEnd)
@@ -501,7 +501,7 @@ DataNode MidiParser::OnPrevVal(DataArray* arr){
 
 DataNode MidiParser::OnDelta(DataArray* arr){
     int idx = GetIndex();
-    return DataNode(GetStart(idx + 1) - mpStart->Float(0));
+    return DataNode(GetStart(idx + 1) - mpStart->Float());
 }
 
 DataNode MidiParser::OnHasSpace(DataArray* arr){
@@ -509,8 +509,8 @@ DataNode MidiParser::OnHasSpace(DataArray* arr){
     float f3 = arr->Float(3);
     int idx = GetIndex();
     bool ret = false;
-    if(mpPrevStartDelta->Float(0) > f2){
-        if(GetStart(idx + 1) - mpStart->Float(0) > f3){
+    if(mpPrevStartDelta->Float() > f2){
+        if(GetStart(idx + 1) - mpStart->Float() > f3){
             ret = true;
         }
     }
@@ -519,8 +519,8 @@ DataNode MidiParser::OnHasSpace(DataArray* arr){
 
 DataNode MidiParser::OnRtComputeSpace(DataArray* arr){
     int idx = GetIndex();
-    *mpBeforeDeltaSec = DataNode(BeatToSeconds(mpStart->Float(0) - GetEnd(idx - 1)));
-    *mpAfterDeltaSec = DataNode(BeatToSeconds(GetStart(idx + 1) - mpEnd->Float(0)));
+    *mpBeforeDeltaSec = DataNode(BeatToSeconds(mpStart->Float() - GetEnd(idx - 1)));
+    *mpAfterDeltaSec = DataNode(BeatToSeconds(GetStart(idx + 1) - mpEnd->Float()));
     return DataNode(0);
 }
 
@@ -534,6 +534,6 @@ BEGIN_PROPSYNCS(MidiParser)
     SYNC_PROP(max_gap, mProcess.maxGap)
     SYNC_PROP(use_realtime_gaps, mProcess.useRealtimeGaps)
     SYNC_PROP(variable_blend_pct, mProcess.variableBlendPct)
-    SYNC_PROP_SET(index, GetIndex(), SetIndex(_val.Int(0)))
+    SYNC_PROP_SET(index, GetIndex(), SetIndex(_val.Int()))
     SYNC_PROP_SET(song_name, TheMidiParserMgr->GetSongName(), )
 END_PROPSYNCS

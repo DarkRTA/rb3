@@ -10,17 +10,24 @@
 #include "utl/MemMgr.h"
 #include "utl/Symbol.h"
 
-std::list<bool> gDataArrayConditional;
-Symbol DataArray::gFile;
-bool gNodesLinearAlloc;
-int gLinearNodesMemSize;
-void* gLinearNodesMemPos;
-int gNumLinearAllocs;
-void * gLinearNodesMem;
-DataArray* gCallStack[100];
-DataArray** gCallStackPtr;
-int gPreExecuteLevel;
 int gIndent;
+
+std::list<bool> gDataArrayConditional;
+
+Symbol DataArray::gFile;
+DataFunc* DataArray::sDefaultHandler;
+
+DataFunc* gPreExecuteFunc;
+int gPreExecuteLevel;
+
+DataArray* gCallStack[100];
+DataArray** gCallStackPtr = gCallStack;
+
+char* gLinearNodesMem;
+char* gLinearNodesMemPos;
+int gNumLinearAllocs;
+int gLinearNodesMemSize;
+bool gNodesLinearAlloc;
 
 bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     int len = strlen(cc);
@@ -145,11 +152,11 @@ bool DataArray::PrintUnused(TextStream& ts, DataType ty, bool b) const {
 }
 
 void* NodesLinearAlloc(int i){
-    MILO_ASSERT(gLinearNodesMemSize > 0, 0x108);
-    void* oldpos = gLinearNodesMemPos;
-    (char*)gLinearNodesMemPos += i;
+    MILO_ASSERT(gLinearNodesMemSize > 0, 264);
     gNumLinearAllocs++;
-    // MILO_ASSERT((gLinearNodesMemPos - &gLinearNodesMem[0]) <= gLinearNodesMemSize, 1);
+    void* oldpos = gLinearNodesMemPos;
+    gLinearNodesMemPos += i;
+    MILO_ASSERT((gLinearNodesMemPos - &gLinearNodesMem[0]) <= gLinearNodesMemSize, 268);
     return oldpos;
 }
 
@@ -158,21 +165,13 @@ void* NodesAlloc(int i){
     else return _MemOrPoolAlloc(i, FastPool);
 }
 
-// extern char *lbl_8091A478; // 4 bytes long
+inline bool AddrIsInLinearMem(void* mem) {
+    return mem >= gLinearNodesMem && mem < gLinearNodesMem + gLinearNodesMemSize;
+}
 
-// // this probably isn't a pointer
-// extern char *lbl_8091A484; // 0x14 bytes long
-// extern "C" bool fn_80315C7C(void *);
-
-// // fn_80315C7C
-
-// // Checks if v is within a memory region
-// bool fn_80315C7C(void *v) {
-//     return (v >= lbl_8091A478) && (v < &lbl_8091A478[(int)lbl_8091A484]);
-// }
-
-void NodesFree(int i, DataNode* n){
-    _MemOrPoolFree(i, FastPool, n);
+void NodesFree(int i, DataNode* mem){
+    MILO_ASSERT(!AddrIsInLinearMem(mem), 0x13D);
+    _MemOrPoolFree(i, FastPool, mem);
 }
 
 void DataArray::Insert(int count, const DataNode &dn) {
@@ -304,7 +303,7 @@ DataArray* DataArray::FindArray(int tag, bool fail) const {
 
 DataArray* DataArray::FindArray(Symbol tag, bool fail) const {
     DataArray* found = FindArray((int)tag.mStr, false);
-    if(found == 0 && fail) MILO_FAIL("Couldn't find %s in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
+    if(found == 0 && fail) MILO_FAIL("Couldn't find '%s' in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
     return found;
 }
 
@@ -381,7 +380,7 @@ DataArray* DataArray::Clone(bool b1, bool b2, int i){
         da->mNodes[i] = (b2) ? mNodes[i].Evaluate() : mNodes[i];
         if(b1){
             if(da->mNodes[i].Type() == kDataArray){
-                DataArray* cloned = da->mNodes[i].LiteralArray(0)->Clone(true, b2, 0);
+                DataArray* cloned = da->mNodes[i].LiteralArray()->Clone(true, b2, 0);
                 da->mNodes[i] = DataNode(cloned, kDataArray);
                 cloned->Release();
             }
@@ -425,18 +424,19 @@ int DataArray::NodeCmp(const void* a, const void* b){
     const DataNode* bnode = (const DataNode*)b;
     switch(anode->Type()){
         case kDataFloat:
-        case kDataInt:
-            float a = anode->LiteralFloat(0);
-            float b = bnode->LiteralFloat(0);
+        case kDataInt: {
+            float a = anode->LiteralFloat();
+            float b = bnode->LiteralFloat();
             if(a < b) return -1;
             return a != b;
+        }
         case kDataString:
         case kDataSymbol:
-            return stricmp(anode->Str(0), bnode->Str(0));
+            return stricmp(anode->Str(), bnode->Str());
         case kDataArray:
-            return NodeCmp(&(anode->Array(0)->Node(0)), &(bnode->Array(0)->Node(0)));
+            return NodeCmp(&(anode->Array()->Node(0)), &(bnode->Array()->Node(0)));
         case kDataObject:
-            return stricmp(anode->GetObj(0) ? anode->GetObj(0)->Name() : "", bnode->GetObj(0) ? bnode->GetObj(0)->Name() : "");
+            return stricmp(anode->GetObj() ? anode->GetObj()->Name() : "", bnode->GetObj() ? bnode->GetObj()->Name() : "");
         default:
             MILO_WARN("could not sort array, bad type");
             return 0;

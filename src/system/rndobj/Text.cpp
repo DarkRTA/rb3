@@ -1,4 +1,5 @@
 #include "Text.h"
+#include "math/MathFuncs.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
@@ -291,7 +292,7 @@ void RndText::SetTextASCII(const char* cc) {
     ASCIItoWideVector(vec, cc);
     WideVectorToUTF8(vec, s);
     SetText(s.c_str());
-    
+
 }
 
 BEGIN_HANDLERS(RndText)
@@ -302,10 +303,7 @@ BEGIN_HANDLERS(RndText)
     HANDLE(set_size, OnSetSize)
     HANDLE(set_wrap_width, OnSetWrapWidth)
     HANDLE(set_color, OnSetColor)
-    if (sym == get_text_size) {
-        int x = strlen(unk_cc.c_str()), y = s16(mAlign) >> 16;
-        return DataNode(y < x ? x : y);
-    }
+    HANDLE_EXPR(get_text_size, Max(mFixedLength, (int)unk_cc.length()))
     HANDLE_EXPR(get_string_width, GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
 
     HANDLE_SUPERCLASS(RndDrawable)

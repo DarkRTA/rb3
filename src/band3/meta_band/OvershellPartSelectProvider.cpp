@@ -41,7 +41,7 @@ void OvershellPartSelectProvider::Reload(ControllerType ty, BandUser* user){
             AddPart(overshell_real_guitar, kTrackRealGuitar, GetFontCharFromTrackType(kTrackRealGuitar, 0));
             AddPart(overshell_real_bass, kTrackRealBass, GetFontCharFromTrackType(kTrackRealBass, 0));
             if(mUser->mHasButtonGuitar){
-                if(TheGameMode->Property("allow_coreguitars_with_real", true)->Int(0)){
+                if(TheGameMode->Property("allow_coreguitars_with_real", true)->Int()){
                     AddPart(overshell_guitar, kTrackGuitar, GetFontCharFromTrackType(kTrackGuitar, 0));
                     AddPart(overshell_bass, kTrackBass, GetFontCharFromTrackType(kTrackBass, 0));
                 }

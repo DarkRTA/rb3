@@ -6,7 +6,7 @@
 
 INIT_REVS(UILabelDir)
 
-UILabelDir::UILabelDir() : mDefaultColor(this, 0), mColors(), mTextObj(this, 0), mFocusAnim(this, 0), mPulseAnim(this, 0), mTopLeftHighlightBone(this, 0), 
+UILabelDir::UILabelDir() : mDefaultColor(this, 0), mColors(), mTextObj(this, 0), mFocusAnim(this, 0), mPulseAnim(this, 0), mTopLeftHighlightBone(this, 0),
     mTopRightHighlightBone(this, 0), mBottomLeftHighlightBone(this, 0), mBottomRightHighlightBone(this, 0), mHighlightMeshGroup(this, 0),
     mFocusedBackgroundGroup(this, 0), mUnfocusedBackgroundGroup(this, 0), mAllowEditText(0) {
     for(int i = 0; i < UIComponent::kNumStates; i++){
@@ -131,11 +131,11 @@ BEGIN_PROPSYNCS(UILabelDir)
     SYNC_PROP(focused_background_group, mFocusedBackgroundGroup)
     SYNC_PROP(unfocused_background_group, mUnfocusedBackgroundGroup)
     SYNC_PROP(default_color, mDefaultColor)
-    SYNC_PROP_SET(normal_color, (Hmx::Object*)mColors[UIComponent::kNormal], SetColor(UIComponent::kNormal, _val.Obj<UIColor>(0)))
-    SYNC_PROP_SET(focused_color, (Hmx::Object*)mColors[UIComponent::kFocused], SetColor(UIComponent::kFocused, _val.Obj<UIColor>(0)))
-    SYNC_PROP_SET(disabled_color, (Hmx::Object*)mColors[UIComponent::kDisabled], SetColor(UIComponent::kDisabled, _val.Obj<UIColor>(0)))
-    SYNC_PROP_SET(selecting_color, (Hmx::Object*)mColors[UIComponent::kSelecting], SetColor(UIComponent::kSelecting, _val.Obj<UIColor>(0)))
-    SYNC_PROP_SET(selected_color, (Hmx::Object*)mColors[UIComponent::kSelected], SetColor(UIComponent::kSelected, _val.Obj<UIColor>(0)))
+    SYNC_PROP_SET(normal_color, (Hmx::Object*)mColors[UIComponent::kNormal], SetColor(UIComponent::kNormal, _val.Obj<UIColor>()))
+    SYNC_PROP_SET(focused_color, (Hmx::Object*)mColors[UIComponent::kFocused], SetColor(UIComponent::kFocused, _val.Obj<UIColor>()))
+    SYNC_PROP_SET(disabled_color, (Hmx::Object*)mColors[UIComponent::kDisabled], SetColor(UIComponent::kDisabled, _val.Obj<UIColor>()))
+    SYNC_PROP_SET(selecting_color, (Hmx::Object*)mColors[UIComponent::kSelecting], SetColor(UIComponent::kSelecting, _val.Obj<UIColor>()))
+    SYNC_PROP_SET(selected_color, (Hmx::Object*)mColors[UIComponent::kSelected], SetColor(UIComponent::kSelected, _val.Obj<UIColor>()))
     SYNC_SUPERCLASS(UIFontImporter)
     SYNC_SUPERCLASS(RndDir)
 END_PROPSYNCS

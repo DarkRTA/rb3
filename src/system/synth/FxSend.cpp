@@ -7,12 +7,12 @@
 
 INIT_REVS(FxSend);
 
-FxSend::FxSend() : mNextSend(this, 0), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f), 
+FxSend::FxSend() : mNextSend(this, 0), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f),
     mInputGain(0.0f), mReverbMixDb(-96.0f), mReverbEnable(0), mEnableUpdates(1), mChannels(kSendAll) {
 }
 
 FxSend::~FxSend(){
-    
+
 }
 
 void FxSend::Replace(Hmx::Object* from, Hmx::Object* to){
@@ -169,8 +169,8 @@ BEGIN_HANDLERS(FxSend)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSend)
-    SYNC_PROP_SET(next_send, mNextSend, SetNextSend(_val.Obj<FxSend>(0)))
-    SYNC_PROP_SET(stage, mStage, SetStage(_val.Int(0)))
+    SYNC_PROP_SET(next_send, mNextSend, SetNextSend(_val.Obj<FxSend>()))
+    SYNC_PROP_SET(stage, mStage, SetStage(_val.Int()))
     SYNC_PROP_MODIFY(dry_gain, mDryGain, UpdateMix())
     SYNC_PROP_MODIFY(wet_gain, mWetGain, UpdateMix())
     SYNC_PROP_MODIFY(input_gain, mInputGain, UpdateMix())

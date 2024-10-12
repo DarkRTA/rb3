@@ -121,7 +121,7 @@ void BandCharacter::Enter(){
         Message msg("get_matching_dude");
         DataNode handled = HandleType(msg);
         if(handled.Type() == kDataObject){
-            unk6c0 = handled.Obj<BandCharacter>(0);
+            unk6c0 = handled.Obj<BandCharacter>();
             if(unk6c0){
                 unk6c0->unk6c0 = this;
                 CharClip* clip = unk6c0->GetDriver()->FirstPlayingClip();
@@ -271,7 +271,7 @@ bool BandCharacter::ValidateInterest(CharInterest* ci, ObjectDir* dir){
             if(ci->CategoryFlags() & 0x200) return false;
         }
         DataNode* prop = dir->Property("lookat_cameras", false);
-        if(prop && (ci->CategoryFlags() & 1) && !prop->Int(0)) return false;
+        if(prop && (ci->CategoryFlags() & 1) && !prop->Int()) return false;
     }
     return true;
 }
@@ -366,7 +366,7 @@ void BandCharacter::RemoveDrawAndPoll(Character* c){
 void BandCharacter::SyncObjects(){
     unk6b0 = Find<CharWeightable>("lod0.weight", false);
     static const char* bones[8] = {
-        "bone_pelvis.mesh", "bone_prop0.mesh", "bone_prop1.mesh", "bone_prop2.mesh", 
+        "bone_pelvis.mesh", "bone_prop0.mesh", "bone_prop1.mesh", "bone_prop2.mesh",
         "bone_prop3.mesh", "spot_neck.mesh", "spot_navel.mesh", "bone_mic_stand_bottom.mesh"
     };
     for(const char** ptr = bones; *ptr != 0; ptr++){
@@ -440,7 +440,7 @@ void BandCharacter::SyncObjects(){
         if((int)panim->EndFrame() != numeyeshapes)
             MILO_NOTIFY_ONCE("%s must have a frame for each eye shape.  It currently has %d frames, but there are %d eye shapes",
                 eyedfname, (int)panim->EndFrame(), BandHeadShaper::sEyeNum);
-        if(!DataVariable("eyetweaker.loadedsettings").Int(0)){
+        if(!DataVariable("eyetweaker.loadedsettings").Int()){
             panim->SetFrame(mHead.mEye, 1.0f);
         }
     }
@@ -533,12 +533,12 @@ RndDrawable* BandCharacter::CollideShowing(const Segment& s, float& f, Plane& pl
 
 void BandCharacter::DrawShowing(){
     if(!unk6bd || !IsLoading()){
-        if(DataVariable("bandcharacter.show_spheres").Int(0)){
+        if(DataVariable("bandcharacter.show_spheres").Int()){
 
         }
         Character::DrawShowing();
         static DataNode& n = DataVariable("bandcharacter.show_slot");
-        if(n.Int(0)){
+        if(n.Int()){
             Transform& headxfm = CharUtlFindBoneTrans("bone_head", this)->WorldXfm();
             MakeString("slot%d pos%d");
         }
@@ -790,7 +790,7 @@ CharLipSyncDriver* BandCharacter::GetLipSyncDriver(){
 }
 
 DECOMP_FORCEACTIVE(BandCharacter, "BandCharacter::SetFaceOverrideClip couldn't find clip named %s for %s\n",
-    "BandCharacter::SetFaceOverrideClip couldnt find  lip sync driver for %s\n", 
+    "BandCharacter::SetFaceOverrideClip couldnt find  lip sync driver for %s\n",
     "!mFileMerger->IsLoading()", "head")
 
 void BandCharacter::SetHeadLookatWeight(float f){
@@ -937,14 +937,14 @@ RndTex* BandCharacter::GetPatchTex(Patch& patch){
     get_patch_tex[0] = DataNode(patch.mTexture);
     get_patch_tex[1] = DataNode(patch.mMeshName);
     const DataNode& handled = HandleType(get_patch_tex);
-    if(handled.Type() == kDataUnhandled || !handled.Obj<RndTex>(0)){
+    if(handled.Type() == kDataUnhandled || !handled.Obj<RndTex>()){
         if(!mPrefab.Null()){
             return Find<RndTex>(MakeString("prefab_art%02d.tex", patch.mTexture), false);
         }
         else if(TheLoadMgr.EditMode()) return Find<RndTex>("patchtest.tex", false);
         else return 0;
     }
-    return handled.Obj<RndTex>(0);
+    return handled.Obj<RndTex>();
 }
 
 RndMesh* BandCharacter::GetPatchMesh(Patch& patch){
@@ -963,7 +963,7 @@ RndTex* BandCharacter::GetBandLogo(){
         RndTex* ret;
         DataNode handled = HandleType(get_band_logo_msg);
         if(handled.Type() == kDataObject){
-            ret = handled.Obj<RndTex>(0);
+            ret = handled.Obj<RndTex>();
         }
         else ret = 0;
         return ret;
@@ -1052,7 +1052,7 @@ BEGIN_HANDLERS(BandCharacter)
     HANDLE(copy_prefab, OnCopyPrefab)
     HANDLE(save_prefab, OnSavePrefab)
     HANDLE(set_file_merger, OnSetFileMerger)
-    if(sym == list_dircuts) return OnListDircuts();
+    HANDLE_EXPR(list_dircuts, OnListDircuts())
     HANDLE(load_dircut, OnLoadDircut)
     HANDLE_ACTION(set_context, SetContext(_msg->Sym(2)))
     HANDLE_ACTION(save_from_closet, SavePrefabFromCloset())
@@ -1335,10 +1335,10 @@ BEGIN_PROPSYNCS(BandCharacter)
     SYNC_PROP(genre, mGenre)
     SYNC_PROP(drum_venue, mDrumVenue)
     SYNC_PROP(force_vertical, mForceVertical)
-    SYNC_PROP_SET(instrument_type, mInstrumentType, SetInstrumentType(_val.Sym(0)))
-    SYNC_PROP_SET(group_name, mGroupName, SetGroupName(_val.Str(0)))
-    SYNC_PROP_SET(head_lookat_weight, mHeadLookAt ? mHeadLookAt->Weight() : 0, SetHeadLookatWeight(_val.Float(0)))
-    SYNC_PROP_SET(in_closet, mInCloset, StartLoad(false, _val.Int(0), false))
+    SYNC_PROP_SET(instrument_type, mInstrumentType, SetInstrumentType(_val.Sym()))
+    SYNC_PROP_SET(group_name, mGroupName, SetGroupName(_val.Str()))
+    SYNC_PROP_SET(head_lookat_weight, mHeadLookAt ? mHeadLookAt->Weight() : 0, SetHeadLookatWeight(_val.Float()))
+    SYNC_PROP_SET(in_closet, mInCloset, StartLoad(false, _val.Int(), false))
     SYNC_PROP(test_prefab, mTestPrefab)
     SYNC_PROP(use_mic_stand_clips, mUseMicStandClips)
     SYNC_PROP(in_tour_ending, mInTourEnding)

@@ -138,8 +138,8 @@ BEGIN_HANDLERS(LabelNumberTicker)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(LabelNumberTicker)
-    SYNC_PROP_SET(label, Label(), SetLabel(_val.Obj<UILabel>(0)))
-    SYNC_PROP_SET(desired_value, mDesiredValue, SetDesiredValue(_val.Int(0)))
+    SYNC_PROP_SET(label, Label(), SetLabel(_val.Obj<UILabel>()))
+    SYNC_PROP_SET(desired_value, mDesiredValue, SetDesiredValue(_val.Int()))
     SYNC_PROP_MODIFY(wrapper_text, mWrapperText, UpdateDisplay())
     SYNC_PROP_MODIFY(anim_time, mAnimTime, UpdateDisplay())
     SYNC_PROP_MODIFY(anim_delay, mAnimDelay, UpdateDisplay())

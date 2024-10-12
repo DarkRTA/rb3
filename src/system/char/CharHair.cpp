@@ -24,7 +24,7 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
         float len = mPoints.size() != 0 ? mPoints.back().length : 0;
         mBaseMat = mRoot->LocalXfm().m;
         SetAngle(mAngle);
-        
+
         // i hate the way these are structured, i'd rather just make for loops but nooo
         int depth = 0;
         RndTransformable* it = mRoot;
@@ -51,7 +51,7 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
             pt->length = bone->LocalXfm().v.y;
             pt->pos = bone->WorldXfm().v;
         }
-        
+
         Point* backpt = &mPoints.back();
         if(!len){
             if(pt) len = pt->length;
@@ -91,7 +91,7 @@ CharHair::CharHair() : mStiffness(0.04f), mTorsion(0.1f), mInertia(0.7f), mGravi
 }
 
 CharHair::Strand::~Strand(){
-    
+
 }
 
 CharHair::~CharHair(){
@@ -214,7 +214,7 @@ void CharHair::SimulateLoops(int count, float f){
 //   undefined4 local_28;
 //   undefined4 local_24;
 //   Symbol aSStack_20 [12];
-  
+
 //   if ((this[0x40] != (CharHair)0x0) &&
 //      (iVar1 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x30)), iVar1 != 0)) {
 //     local_24 = ObjPtrList<>::begin((ObjPtrList<> *)(this + 0x5c));
@@ -496,8 +496,8 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(CharHair::Strand)
     gStrand = &o;
-    SYNC_PROP_SET(root, o.mRoot, o.SetRoot(_val.Obj<RndTransformable>(0)))
-    SYNC_PROP_SET(angle, o.mAngle, o.SetAngle(_val.Float(0)))
+    SYNC_PROP_SET(root, o.mRoot, o.SetRoot(_val.Obj<RndTransformable>()))
+    SYNC_PROP_SET(angle, o.mAngle, o.SetAngle(_val.Float()))
     SYNC_PROP(points, o.mPoints)
     SYNC_PROP(hookup_flags, o.mHookupFlags)
     SYNC_PROP(show_spheres, o.mShowSpheres)

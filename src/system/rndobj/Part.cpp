@@ -263,7 +263,7 @@ bool AngleVectorSync(Vector2& vec, DataNode& _val, DataArray* _prop, int _i, Pro
     else {
         Symbol sym = _prop->Sym(_i);
         if(sym == x){
-            if(_op == kPropSet) vec.x = DegreesToRadians(_val.Float(0));
+            if(_op == kPropSet) vec.x = DegreesToRadians(_val.Float());
             else if(_op == kPropGet) _val = DataNode(RadiansToDegrees(vec.x));
             else return false;
         }
@@ -278,7 +278,7 @@ bool AngleVectorSync(Vector2& vec, DataNode& _val, DataArray* _prop, int _i, Pro
 #pragma pool_data off
 BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(mat, mMat)
-    SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(0), GetType()))
+    SYNC_PROP_SET(max_parts, mMaxParticles, SetPool(_val.Int(), GetType()))
     SYNC_PROP(emit_rate, mEmitRate)
     SYNC_PROP(screen_aspect, mScreenAspect)
     SYNC_PROP(life, mLife)
@@ -296,9 +296,9 @@ BEGIN_PROPSYNCS(RndParticleSys)
     SYNC_PROP(end_alpha_low, mEndColorLow.alpha)
     SYNC_PROP(end_alpha_high, mEndColorHigh.alpha)
     SYNC_PROP(preserve, mPreserveParticles)
-    SYNC_PROP_SET(fancy, mType, SetPool(mMaxParticles, (Type)_val.Int(0)))
-    SYNC_PROP_SET(grow_ratio, mGrowRatio, SetGrowRatio(_val.Float(0)))
-    SYNC_PROP_SET(shrink_ratio, mShrinkRatio, SetShrinkRatio(_val.Float(0)))
+    SYNC_PROP_SET(fancy, mType, SetPool(mMaxParticles, (Type)_val.Int()))
+    SYNC_PROP_SET(grow_ratio, mGrowRatio, SetGrowRatio(_val.Float()))
+    SYNC_PROP_SET(shrink_ratio, mShrinkRatio, SetShrinkRatio(_val.Float()))
     SYNC_PROP(drag, mDrag)
     SYNC_PROP(mid_color_ratio, mMidColorRatio)
     SYNC_PROP(mid_color_low, mMidColorLow)
@@ -308,7 +308,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("bubble");
         if(sym == _s){
-            if(_op == kPropSet){ mBubble = _val.Int(0); }
+            if(_op == kPropSet){ mBubble = _val.Int(); }
             else _val = DataNode(mBubble);
             return true;
         }
@@ -322,7 +322,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("spin");
         if(sym == _s){
-            if(_op == kPropSet){ mSpin = _val.Int(0); }
+            if(_op == kPropSet){ mSpin = _val.Int(); }
             else _val = DataNode(mSpin);
             return true;
         }
@@ -334,7 +334,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("random_direction");
         if(sym == _s){
-            if(_op == kPropSet){ mRandomDirection = _val.Int(0); }
+            if(_op == kPropSet){ mRandomDirection = _val.Int(); }
             else _val = DataNode(mRandomDirection);
             return true;
         }
@@ -342,7 +342,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("velocity_align");
         if(sym == _s){
-            if(_op == kPropSet){ mVelocityAlign = _val.Int(0); }
+            if(_op == kPropSet){ mVelocityAlign = _val.Int(); }
             else _val = DataNode(mVelocityAlign);
             return true;
         }
@@ -350,7 +350,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("stretch_with_velocity");
         if(sym == _s){
-            if(_op == kPropSet){ mStretchWithVelocity = _val.Int(0); }
+            if(_op == kPropSet){ mStretchWithVelocity = _val.Int(); }
             else _val = DataNode(mStretchWithVelocity);
             return true;
         }
@@ -359,7 +359,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("constant_area");
         if(sym == _s){
-            if(_op == kPropSet){ mConstantArea = _val.Int(0); }
+            if(_op == kPropSet){ mConstantArea = _val.Int(); }
             else _val = DataNode(mConstantArea);
             return true;
         }
@@ -367,12 +367,12 @@ BEGIN_PROPSYNCS(RndParticleSys)
     {
         static Symbol _s("perspective");
         if(sym == _s){
-            if(_op == kPropSet){ mPerspective = _val.Int(0); }
+            if(_op == kPropSet){ mPerspective = _val.Int(); }
             else _val = DataNode(mPerspective);
             return true;
         }
     }
-    SYNC_PROP_SET(mesh_emitter, mMesh, SetMesh(_val.Obj<RndMesh>(0)))
+    SYNC_PROP_SET(mesh_emitter, mMesh, SetMesh(_val.Obj<RndMesh>()))
     SYNC_PROP(box_extent_1, mBoxExtent1)
     SYNC_PROP(box_extent_2, mBoxExtent2)
     {
@@ -389,19 +389,19 @@ BEGIN_PROPSYNCS(RndParticleSys)
             return true;
         }
     }
-    SYNC_PROP_SET(relative_parent, mRelativeParent, SetRelativeMotion(mRelativeMotion, _val.Obj<RndTransformable>(0)))
-    SYNC_PROP_SET(relative_motion, mRelativeMotion, SetRelativeMotion(_val.Float(0), mRelativeParent))
-    SYNC_PROP_SET(subsamples, mSubSamples, SetSubSamples(_val.Int(0)))
-    SYNC_PROP_SET(frame_drive, mFrameDrive, SetFrameDrive(_val.Int(0)))
+    SYNC_PROP_SET(relative_parent, mRelativeParent, SetRelativeMotion(mRelativeMotion, _val.Obj<RndTransformable>()))
+    SYNC_PROP_SET(relative_motion, mRelativeMotion, SetRelativeMotion(_val.Float(), mRelativeParent))
+    SYNC_PROP_SET(subsamples, mSubSamples, SetSubSamples(_val.Int()))
+    SYNC_PROP_SET(frame_drive, mFrameDrive, SetFrameDrive(_val.Int()))
     {
         static Symbol _s("pre_spawn");
         if(sym == _s){
-            if(_op == kPropSet){ mPreSpawn = _val.Int(0); }
+            if(_op == kPropSet){ mPreSpawn = _val.Int(); }
             else _val = DataNode(mPreSpawn);
             return true;
         }
     }
-    SYNC_PROP_SET(pause_offscreen, mPauseOffscreen, SetPauseOffscreen(_val.Int(0)))
+    SYNC_PROP_SET(pause_offscreen, mPauseOffscreen, SetPauseOffscreen(_val.Int()))
     SYNC_SUPERCLASS(RndAnimatable)
     SYNC_SUPERCLASS(RndTransformable)
     SYNC_SUPERCLASS(RndDrawable)

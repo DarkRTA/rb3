@@ -5,7 +5,7 @@ AccomplishmentConditional::AccomplishmentConditional(DataArray* i_pConfig, int i
     AccomplishmentConditional::Configure(i_pConfig);
 }
 
-AccomplishmentConditional::~AccomplishmentConditional() { 
+AccomplishmentConditional::~AccomplishmentConditional() {
 
 }
 
@@ -13,17 +13,17 @@ void AccomplishmentConditional::UpdateConditionOptionalData(AccomplishmentCondit
     MILO_ASSERT(i_pConditionEntryArray->Size() >= 2, 0x1f);
 
     for (int i = 2; i < i_pConditionEntryArray->Size(); i++) {
-        DataArray* pEntry = i_pConditionEntryArray->Node(i).Array(0);
+        DataArray* pEntry = i_pConditionEntryArray->Node(i).Array();
         MILO_ASSERT(pEntry, 0x29);
         Symbol name = Accomplishment::GetName();
         if (pEntry->Size() != 2) {
             TheDebug.Fail(MakeString("Invalid condition entry in %s.", name.Str()));
         }
-        Symbol s = pEntry->Node(0).Sym(0);
+        Symbol s = pEntry->Node(0).Sym();
         if(s == instrument) {
-            condition.scoreType = (ScoreType)pEntry->Node(1).Int(0);
+            condition.scoreType = (ScoreType)pEntry->Node(1).Int();
         } else if (s == difficulty) {
-            condition.difficulty = (Difficulty)pEntry->Node(1).Int(0);
+            condition.difficulty = (Difficulty)pEntry->Node(1).Int();
         } else {
             MILO_ASSERT(false, 0x3b);
         }
@@ -36,17 +36,17 @@ void AccomplishmentConditional::Configure(DataArray* i_pConfig) {
     if (pConditionArray != NULL) {
         MILO_ASSERT(pConditionArray->Size() > 1, 0x4b);
         for (int i = 1; i < pConditionArray->Size(); i++) {
-            DataArray* pConditionEntryArray = pConditionArray->Node(i).Array(0);
+            DataArray* pConditionEntryArray = pConditionArray->Node(i).Array();
             MILO_ASSERT(pConditionEntryArray, 0x50);
 
             AccomplishmentCondition condition;
             condition.test2 = 0;
             condition.difficulty = (Difficulty)0;
             condition.scoreType = (ScoreType)10;
-            condition.s = pConditionEntryArray->Node(0).Sym(0);
+            condition.s = pConditionEntryArray->Node(0).Sym();
 
             if (pConditionEntryArray->Size() >= 2) {
-                condition.test2 = pConditionEntryArray->Node(1).Int(0);
+                condition.test2 = pConditionEntryArray->Node(1).Int();
                 UpdateConditionOptionalData(condition, pConditionEntryArray);
             }
 

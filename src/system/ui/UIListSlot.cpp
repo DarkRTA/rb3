@@ -99,7 +99,7 @@ void UIListSlot::StartScroll(int i, bool b){
 }
 
 void UIListSlot::CompleteScroll(const UIListState& liststate, int i){
-    
+
 }
 
 void UIListSlot::Poll(){
@@ -137,6 +137,6 @@ BEGIN_HANDLERS(UIListSlot)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(UIListSlot)
-    SYNC_PROP_SET(slot_draw_type, (int)mSlotDrawType, mSlotDrawType = (UIListSlotDrawType)_val.Int(0))
+    SYNC_PROP_SET(slot_draw_type, (int)mSlotDrawType, mSlotDrawType = (UIListSlotDrawType)_val.Int())
     SYNC_SUPERCLASS(UIListWidget)
 END_PROPSYNCS

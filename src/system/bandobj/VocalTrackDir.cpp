@@ -153,17 +153,17 @@ const char* TypeToString(DataType ty){
 
 const char* DataToString(const DataNode& node){
     switch(node.Type()){
-        case kDataInt: return MakeString("%d", node.Int(0));
-        case kDataFloat: return MakeString("%f", node.Float(0));
-        case kDataVar: return MakeString("%s", DataVarName(node.Var(0)));
-        case kDataFunc: return MakeString("%s", DataFuncName(node.Func(0)));
+        case kDataInt: return MakeString("%d", node.Int());
+        case kDataFloat: return MakeString("%f", node.Float());
+        case kDataVar: return MakeString("%s", DataVarName(node.Var()));
+        case kDataFunc: return MakeString("%s", DataFuncName(node.Func()));
         case kDataObject:
-            if(node.NotNull()) return MakeString("%s", node.GetObj(0)->Name());
+            if(node.NotNull()) return MakeString("%s", node.GetObj()->Name());
             else return MakeString("<null>");
-        case kDataSymbol: return node.Sym(0).Str();
+        case kDataSymbol: return node.Sym().Str();
         case kDataArray: return MakeString("<array>");
         case kDataCommand: return MakeString("<command>");
-        case kDataString: return node.Str(0);
+        case kDataString: return node.Str();
         case kDataProperty: return MakeString("<property>");
         case kDataGlob: return MakeString("<glob>");
         default: return MakeString("unhandled");
@@ -330,8 +330,8 @@ void VocalTrackDir::SetConfiguration(Hmx::Object* o, HarmonyShowingState state){
     if(o != mVoxCfg || state != unk4b4){
         mVoxCfg = o;
         unk4b4 = state;
-        mRemoteVocals = mVoxCfg->Property(remote, true)->Int(0);
-        unk4b0 = mVoxCfg->Property(align, true)->Sym(0) == top;
+        mRemoteVocals = mVoxCfg->Property(remote, true)->Int();
+        unk4b0 = mVoxCfg->Property(align, true)->Sym() == top;
         if(unk2a7 && mPlayerIntro){
             mPlayerIntro->SetLocalPos(Find<RndTransformable>("h2h_player_intro_trans.grp", true)->mLocalXfm.v);
         }
@@ -641,17 +641,17 @@ DECOMP_FORCEACTIVE(VocalTrackDir, "pitch_window_mat_config.anim", "massive pitch
 void VocalTrackDir::ApplyArrowStyle(Hmx::Object* o){
     if(o && o->Type() == arrow_style){
         if(mPitchArrow1 && o->Property(arrow_A, true)->NotNull()){
-            FilePath fp(o->Property(arrow_A, true)->Str(0));
+            FilePath fp(o->Property(arrow_A, true)->Str());
             mPitchArrow1->SetProxyFile(fp, false);
             mPitchArrow1->Reset(0);
         }
         if(mPitchArrow2 && o->Property(arrow_B, true)->NotNull()){
-            FilePath fp(o->Property(arrow_B, true)->Str(0));
+            FilePath fp(o->Property(arrow_B, true)->Str());
             mPitchArrow2->SetProxyFile(fp, false);
             mPitchArrow2->Reset(0);
         }
         if(mPitchArrow3 && o->Property(arrow_C, true)->NotNull()){
-            FilePath fp(o->Property(arrow_C, true)->Str(0));
+            FilePath fp(o->Property(arrow_C, true)->Str());
             mPitchArrow3->SetProxyFile(fp, false);
             mPitchArrow3->Reset(0);
         }
@@ -685,25 +685,25 @@ void VocalTrackDir::ApplyFontStyle(Hmx::Object* o){
         Hmx::Object* miloObj = ObjectDir::sMainDir->FindObject("milo", false);
         bool objexists = miloObj;
         if(o->Property(lead_text, true)->NotNull()){
-            mLeadText = o->Property(lead_text, true)->Obj<RndText>(0);
+            mLeadText = o->Property(lead_text, true)->Obj<RndText>();
             mLeadText->SetShowing(objexists);
             mLeadText->SetColor(c20);
         }
         else mLeadText = 0;
         if(o->Property(harmony_text, true)->NotNull()){
-            mHarmText = o->Property(harmony_text, true)->Obj<RndText>(0);
+            mHarmText = o->Property(harmony_text, true)->Obj<RndText>();
             mHarmText->SetShowing(objexists);
             mHarmText->SetColor(c30);
         }
         else mHarmText = 0;
         if(o->Property(lead_phoneme_text, true)->NotNull()){
-            mLeadPhonemeText = o->Property(lead_phoneme_text, true)->Obj<RndText>(0);
+            mLeadPhonemeText = o->Property(lead_phoneme_text, true)->Obj<RndText>();
             mLeadPhonemeText->SetShowing(objexists);
             mLeadPhonemeText->SetColor(c40);
         }
         else mLeadPhonemeText = mLeadText;
         if(o->Property(harmony_phoneme_text, true)->NotNull()){
-            mHarmPhonemeText = o->Property(harmony_phoneme_text, true)->Obj<RndText>(0);
+            mHarmPhonemeText = o->Property(harmony_phoneme_text, true)->Obj<RndText>();
             mHarmPhonemeText->SetShowing(objexists);
             mHarmPhonemeText->SetColor(c50);
         }
@@ -722,30 +722,30 @@ void VocalTrackDir::UpdateTubeStyle(){
     if(mTubeStyle){
         if(!mSpotlightMat) mSpotlightMat = Find<RndMat>("spotlight.mat", true);
         if(!mLeadBackMat && mTubeStyle->Property(lead_back, true)->NotNull()){
-            mLeadBackMat = mTubeStyle->Property(lead_back, true)->Obj<RndMat>(0);
+            mLeadBackMat = mTubeStyle->Property(lead_back, true)->Obj<RndMat>();
         }
         if(!mLeadFrontMat && mTubeStyle->Property(lead_front, true)->NotNull()){
-            mLeadFrontMat = mTubeStyle->Property(lead_front, true)->Obj<RndMat>(0);
+            mLeadFrontMat = mTubeStyle->Property(lead_front, true)->Obj<RndMat>();
         }
         if(!mLeadGlowMat && mTubeStyle->Property(lead_glow, true)->NotNull()){
-            mLeadGlowMat = mTubeStyle->Property(lead_glow, true)->Obj<RndMat>(0);
+            mLeadGlowMat = mTubeStyle->Property(lead_glow, true)->Obj<RndMat>();
         }
         if(!mLeadPhonemeMat && mTubeStyle->Property(lead_phoneme, true)->NotNull()){
-            mLeadPhonemeMat = mTubeStyle->Property(lead_phoneme, true)->Obj<RndMat>(0);
+            mLeadPhonemeMat = mTubeStyle->Property(lead_phoneme, true)->Obj<RndMat>();
         }
         if(!mHarm1BackMat && mTubeStyle->Property(harmony_1_back, true)->NotNull()){
-            mHarm1BackMat = mTubeStyle->Property(harmony_1_back, true)->Obj<RndMat>(0);
+            mHarm1BackMat = mTubeStyle->Property(harmony_1_back, true)->Obj<RndMat>();
         }
         if(!mHarm1FrontMat && mTubeStyle->Property(harmony_1_front, true)->NotNull()){
-            mHarm1FrontMat = mTubeStyle->Property(harmony_1_front, true)->Obj<RndMat>(0);
+            mHarm1FrontMat = mTubeStyle->Property(harmony_1_front, true)->Obj<RndMat>();
         }
         if(!mHarm1GlowMat && mTubeStyle->Property(harmony_1_glow, true)->NotNull()){
-            mHarm1GlowMat = mTubeStyle->Property(harmony_1_glow, true)->Obj<RndMat>(0);
+            mHarm1GlowMat = mTubeStyle->Property(harmony_1_glow, true)->Obj<RndMat>();
         }
         if(!mHarm1PhonemeMat && mTubeStyle->Property(harmony_1_phoneme, true)->NotNull()){
-            mHarm1PhonemeMat = mTubeStyle->Property(harmony_1_phoneme, true)->Obj<RndMat>(0);
+            mHarm1PhonemeMat = mTubeStyle->Property(harmony_1_phoneme, true)->Obj<RndMat>();
         }
-        if(mTubeStyle->Property(same_as_harmony_1, true)->Int(0)){
+        if(mTubeStyle->Property(same_as_harmony_1, true)->Int()){
             mHarm2BackMat = mHarm1BackMat;
             mHarm2FrontMat = mHarm1FrontMat;
             mHarm2GlowMat = mHarm1GlowMat;
@@ -753,20 +753,20 @@ void VocalTrackDir::UpdateTubeStyle(){
         }
         else {
             if(!mHarm2BackMat && mTubeStyle->Property(harmony_2_back, true)->NotNull()){
-                mHarm2BackMat = mTubeStyle->Property(harmony_2_back, true)->Obj<RndMat>(0);
+                mHarm2BackMat = mTubeStyle->Property(harmony_2_back, true)->Obj<RndMat>();
             }
             if(!mHarm2FrontMat && mTubeStyle->Property(harmony_2_front, true)->NotNull()){
-                mHarm2FrontMat = mTubeStyle->Property(harmony_2_front, true)->Obj<RndMat>(0);
+                mHarm2FrontMat = mTubeStyle->Property(harmony_2_front, true)->Obj<RndMat>();
             }
             if(!mHarm2GlowMat && mTubeStyle->Property(harmony_2_glow, true)->NotNull()){
-                mHarm2GlowMat = mTubeStyle->Property(harmony_2_glow, true)->Obj<RndMat>(0);
+                mHarm2GlowMat = mTubeStyle->Property(harmony_2_glow, true)->Obj<RndMat>();
             }
             if(!mHarm2PhonemeMat && mTubeStyle->Property(harmony_2_phoneme, true)->NotNull()){
-                mHarm2PhonemeMat = mTubeStyle->Property(harmony_2_phoneme, true)->Obj<RndMat>(0);
+                mHarm2PhonemeMat = mTubeStyle->Property(harmony_2_phoneme, true)->Obj<RndMat>();
             }
         }
-        mGlowSize = mTubeStyle->Property(glow_size, true)->Float(0);
-        mGlowAlpha = mTubeStyle->Property(glow_alpha, true)->Float(0);
+        mGlowSize = mTubeStyle->Property(glow_size, true)->Float();
+        mGlowAlpha = mTubeStyle->Property(glow_alpha, true)->Float();
         if(mLeadGlowMat) mLeadGlowMat->SetAlpha(mGlowAlpha);
         if(mHarm1GlowMat) mHarm1GlowMat->SetAlpha(mGlowAlpha);
         if(mHarm2GlowMat) mHarm2GlowMat->SetAlpha(mGlowAlpha);
@@ -925,7 +925,7 @@ BEGIN_HANDLERS(VocalTrackDir)
     HANDLE_ACTION(spotlight_phrase_success, SpotlightPhraseSuccess())
     HANDLE_ACTION(set_enable_vocals_options, SetEnableVocalsOptions(_msg->Int(2)))
     HANDLE(foreach_configurable_object, DataForEachConfigObj)
-    HANDLE_ACTION(rebuild_hud, if(BandTrack::mParent) BandTrack::mParent->RebuildVocalHUD())
+    HANDLE_ACTION_IF(rebuild_hud, BandTrack::mParent, BandTrack::mParent->RebuildVocalHUD())
     HANDLE_ACTION(apply_font_style, ApplyFontStyle(_msg->Obj<Hmx::Object>(2)))
     HANDLE_ACTION(apply_arrow_style, ApplyArrowStyle(_msg->Obj<Hmx::Object>(2)))
     HANDLE(set_lyric_color, OnSetLyricColor)

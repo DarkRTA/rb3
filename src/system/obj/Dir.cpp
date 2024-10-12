@@ -242,7 +242,7 @@ void ObjectDir::PreLoad(BinStream& bs){
 #pragma pop
 
 // TODO: put these in their proper places in PreLoad
-DECOMP_FORCEACTIVE(Dir, "( kInlineCached) <= (b) && (b) <= ( kInlineCachedShared)", 
+DECOMP_FORCEACTIVE(Dir, "( kInlineCached) <= (b) && (b) <= ( kInlineCachedShared)",
     "inlineProxy != 1", "!inlineProxy", "mSubDirs.capacity() >= offset + inlinedSubDirs.size()")
 
 #pragma push
@@ -644,7 +644,7 @@ FilePath ObjectDir::GetSubDirPath(const FilePath& fp, const BinStream& bs){
     if(handled.Type() == kDataUnhandled) localFP = fp;
     else {
         const char* strcmp2 = "stream_cache";
-        const char* strcmp1 = handled.Str(0);
+        const char* strcmp1 = handled.Str();
         bool matched = strcmp(strcmp1, strcmp2) == 0;
         if(matched){
             bool bscached = bs.Cached();
@@ -655,7 +655,7 @@ FilePath ObjectDir::GetSubDirPath(const FilePath& fp, const BinStream& bs){
             localFP = period;
         }
         else {
-            const char* cc2 = handled.Str(0);
+            const char* cc2 = handled.Str();
             const char* cc1 = FileRoot();
             FilePath root;
             root.Set(cc1, cc2);
@@ -704,7 +704,7 @@ BEGIN_HANDLERS(ObjectDir)
     HANDLE_EXPR(proxy_name, mLoader ? (mLoader->mProxyName ? mLoader->mProxyName : "") : "")
     HANDLE_ACTION(add_names, Reserve(mHashTable.mSize + _msg->Int(2) * 2, mStringTable.Size() + _msg->Int(2) * 0x14))
     HANDLE_ACTION(override_proxy, SetProxyFile(FilePath(_msg->Str(2)), true))
-    HANDLE_ACTION(delete_loader, delete mLoader; mLoader = 0;)
+    HANDLE_ACTION(delete_loader, RELEASE(mLoader))
     HANDLE_EXPR(get_path_name, mPathName)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x7FD)
@@ -764,7 +764,7 @@ bool PropSyncSubDirs(std::vector<ObjDirPtr<ObjectDir> >& vec, DataNode& val, Dat
             break;
         case kPropSet:
             theGDir->RemovingSubDir(ptr);
-            ptr = SyncSubDir(FilePath(val.Str(0)), theGDir);
+            ptr = SyncSubDir(FilePath(val.Str()), theGDir);
             theGDir->AddedSubDir(ptr);
             break;
         case kPropRemove:
@@ -772,7 +772,7 @@ bool PropSyncSubDirs(std::vector<ObjDirPtr<ObjectDir> >& vec, DataNode& val, Dat
             vec.erase(vecIt);
             break;
         case kPropInsert:
-            vecIt = vec.insert(vecIt, ObjDirPtr<ObjectDir>(SyncSubDir(FilePath(val.Str(0)), theGDir)));
+            vecIt = vec.insert(vecIt, ObjDirPtr<ObjectDir>(SyncSubDir(FilePath(val.Str()), theGDir)));
             theGDir->AddedSubDir(*vecIt);
             break;
         default: return false;
@@ -803,13 +803,13 @@ BEGIN_PROPSYNCS(ObjectDir)
     }
     if(sym == proxy_file){
         if(_op == kPropSet){
-            SetProxyFile(FilePath(_val.Str(0)), false);
+            SetProxyFile(FilePath(_val.Str()), false);
         }
-        else { 
-            if(_op == (PropOp)0x40) return false; 
-            _val = DataNode(ProxyFile().FilePathRelativeToRoot()); 
-        } 
-        return true; 
+        else {
+            if(_op == (PropOp)0x40) return false;
+            _val = DataNode(ProxyFile().FilePathRelativeToRoot());
+        }
+        return true;
     }
     SYNC_PROP(inline_proxy, mInlineProxy)
     SYNC_PROP_SET(path_name, mPathName, )

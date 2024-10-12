@@ -16,7 +16,7 @@ INIT_REVS(RndDir)
 DECOMP_FORCEACTIVE(Dir, "", __FILE__)
 
 RndDir::RndDir() : mEnv(this, 0) {
-    
+
 }
 
 void RndDir::Replace(Hmx::Object* o1, Hmx::Object* o2){
@@ -109,7 +109,7 @@ void RndDir::Enter(){
 #ifdef VERSION_SZBE69_B8
     if(TheLoadMgr.EditMode()){
         DataNode events = OnSupportedEvents(0);
-        DataArray* arr = events.Array(0);
+        DataArray* arr = events.Array();
         if(!arr->Contains(DataNode(mTestEvent))){
             mTestEvent = Symbol("");
         }

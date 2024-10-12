@@ -72,7 +72,7 @@ BEGIN_PROPSYNCS(RndScreenMask)
     static Symbol _s("use_cam_rect");
     if(sym == _s){
         if(_op == kPropSet){
-            mUseCurrentRect = _val.Int(0) != 0;
+            mUseCurrentRect = _val.Int() != 0;
         }
         else {
             _val = DataNode(mUseCurrentRect);

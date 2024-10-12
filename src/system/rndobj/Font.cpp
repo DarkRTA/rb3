@@ -41,11 +41,11 @@ int NonTransparentColumn(RndBitmap& bmp, int min, int max, int i3, int i4 ) {
 
 void RndFont::GetTexCoords(unsigned short us, Vector2& tl, Vector2& br) const {
     if (mTextureOwner != this) {
-        mTextureOwner->GetTexCoords(us, tl, br); 
+        mTextureOwner->GetTexCoords(us, tl, br);
     } else {
         char c;
         MILO_ASSERT(HasChar(c), 290);
-        float* r4; // TODO i have no damn clue what class this is. matchar???   
+        float* r4; // TODO i have no damn clue what class this is. matchar???
         tl.x = r4[5];
         br.x = (r4[7] * unk6c.x) + r4[5];
         tl.y = r4[6];
@@ -94,7 +94,7 @@ SAVE_OBJ(RndFont, 695)
 BEGIN_LOADS(RndFont)
     LOAD_REVS(bs)
     if (gRev < 7) Hmx::Object::Load(bs);
-    
+
     if (gRev < 3) {
         String s;
         int a,b,c,d;
@@ -143,12 +143,12 @@ void RndFont::Replace(Hmx::Object* from, Hmx::Object* to){
 }
 
 RndFont::~RndFont(){
-    
+
 }
 
 BEGIN_HANDLERS(RndFont)
-    HANDLE_EXPR(mat, mMat)
-    HANDLE_EXPR(texture_owner, mTextureOwner)
+    HANDLE_EXPR(mat, mMat.Ptr())
+    HANDLE_EXPR(texture_owner, mTextureOwner.Ptr())
     HANDLE_ACTION(bleed_test, BleedTest())
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(1224)

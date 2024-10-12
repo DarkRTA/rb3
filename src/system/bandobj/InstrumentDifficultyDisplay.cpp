@@ -75,7 +75,7 @@ void InstrumentDifficultyDisplay::UpdateDisplay(){
         Message msg(get_inst_icon);
         DataNode handled = HandleType(msg);
         if(handled.Type() == kDataString){
-            mInstrumentLabel->SetIcon(*handled.Str(0));
+            mInstrumentLabel->SetIcon(*handled.Str());
         }
         else MILO_WARN("InstrumentDifficultyDisplay::UpdateDisplay missing icon inst");
     }
@@ -150,7 +150,7 @@ BEGIN_PROPSYNCS(InstrumentDifficultyDisplay)
     SYNC_PROP_MODIFY(instrument_type, mInstrumentType, UpdateDisplay())
     SYNC_PROP_MODIFY(num_vocal_parts, mNumVocalParts, UpdateDisplay())
     SYNC_PROP_MODIFY(has_part, mHasPart, UpdateDisplay())
-    SYNC_PROP_SET(instrument_state, mInstrumentState, SetInstrumentState((InstrumentState)_val.Int(0)))
+    SYNC_PROP_SET(instrument_state, mInstrumentState, SetInstrumentState((InstrumentState)_val.Int()))
     SYNC_PROP(instrument_color_override, mInstrumentColorOverride)
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

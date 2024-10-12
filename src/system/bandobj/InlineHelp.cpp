@@ -2,7 +2,7 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "os/System.h"
-#include "ui/UI.h"  
+#include "ui/UI.h"
 #include "ui/UIComponent.h"
 #include "utl/Locale.h"
 #include "utl/Symbols.h"
@@ -36,7 +36,7 @@ void InlineHelp::ActionElement::SetString(const char* s, bool b) {
 }
 
 Symbol InlineHelp::ActionElement::GetToken(bool b) const {
-    if (b) return mSecondaryToken; 
+    if (b) return mSecondaryToken;
     return mPrimaryToken;
 }
 
@@ -47,20 +47,20 @@ const char* InlineHelp::ActionElement::GetText(bool b) const {
 
 void InlineHelp::ActionElement::SetConfig(DataNode& dn, bool b) {
     if (dn.Type() == kDataArray) {
-        DataArray* da = dn.Array(NULL);
+        DataArray* da = dn.Array();
         if (da->Size() == 0) return;
         FormatString fs(Localize(da->Sym(0), NULL));
         for (int i = 1; i < da->Size(); i++) {
             DataNode& dn2 = da->Evaluate(i);
             if (dn2.Type() == kDataSymbol) {
-                fs << Localize(dn2.Sym(NULL), NULL);
+                fs << Localize(dn2.Sym(), NULL);
             } else {
-                fs << dn2; 
+                fs << dn2;
             }
         }
         SetString(fs.Str(), b);
     } else {
-        SetToken(dn.Sym(NULL), b);
+        SetToken(dn.Sym(), b);
     }
 }
 
@@ -108,9 +108,9 @@ void InlineHelp::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(4, 0)
     bs >> mHorizontal;
-    bs >> mSpacing; 
+    bs >> mSpacing;
     bs >> mConfig;
-    if (gRev >= 1) bs >> mTextColor; 
+    if (gRev >= 1) bs >> mTextColor;
     if (u16(gRev + 0xFFFE) <= 1) { int x; bs >> x; }
     if (gRev >= 3) {
         bs >> mUseConnectedControllers;
@@ -294,8 +294,8 @@ END_HANDLERS
 
 BEGIN_CUSTOM_PROPSYNC(InlineHelp::ActionElement)
     SYNC_PROP(action, (int&)o.mAction)
-    SYNC_PROP_SET(text_token, o.GetToken(false), o.SetToken(_val.Sym(0), false))
-    SYNC_PROP_SET(secondary_token, o.GetToken(true), o.SetToken(_val.Sym(0), true))
+    SYNC_PROP_SET(text_token, o.GetToken(false), o.SetToken(_val.Sym(), false))
+    SYNC_PROP_SET(secondary_token, o.GetToken(true), o.SetToken(_val.Sym(), true))
 END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(InlineHelp)

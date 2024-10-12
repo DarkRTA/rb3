@@ -31,7 +31,7 @@ void Playback::Poll(float f){
             if(1 < arr->Size()){
                 DataNode& node = arr->Node(1);
                 if(node.Type() == kDataFloat){
-                    floc = node.Float(0);
+                    floc = node.Float();
                 }
             }
 
@@ -43,7 +43,7 @@ void Playback::Poll(float f){
                 if(1 < arr->Size()){
                     DataNode& node = arr->Node(1);
                     if(node.Type() == kDataFloat){
-                        floc = node.Float(0);
+                        floc = node.Float();
                     }
                 }
             }
@@ -113,7 +113,7 @@ void Playback::Jump(float f){
             if(1 < arr->Size()){
                 DataNode& node = arr->Node(1);
                 if(node.Type() == kDataFloat){
-                    if(node.Float(0) > f){
+                    if(node.Float() > f){
                         mCommandIndex = (mCommandIndex - 1) > 0 ? (mCommandIndex - 1) : 0;
                         return;
                     }

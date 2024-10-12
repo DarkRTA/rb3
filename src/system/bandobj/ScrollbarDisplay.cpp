@@ -16,7 +16,7 @@ ScrollbarDisplay::ScrollbarDisplay() : m_pList(this, 0), mScrollbarHeight(200.0f
 }
 
 ScrollbarDisplay::~ScrollbarDisplay(){
-    
+
 }
 
 BEGIN_COPYS(ScrollbarDisplay)
@@ -205,12 +205,12 @@ BEGIN_HANDLERS(ScrollbarDisplay)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(ScrollbarDisplay)
-    SYNC_PROP_SET(scrollbar_list, GetList(), SetList(_val.Obj<BandList>(0)))
-    SYNC_PROP_SET(always_show, GetAlwaysShow(), SetAlwaysShow(_val.Int(0)))
-    SYNC_PROP_SET(list_attached, GetListAttached(), SetListAttached(_val.Int(0)))
-    SYNC_PROP_SET(list_x_offset, GetListXOffset(), SetListXOffset(_val.Float(0)))
-    SYNC_PROP_SET(list_y_offset, GetListYOffset(), SetListYOffset(_val.Float(0)))
-    SYNC_PROP_SET(scrollbar_height, GetHeight(), SetHeight(_val.Float(0)))
-    SYNC_PROP_SET(min_thumb_height, GetMinThumbHeight(), SetMinThumbHeight(_val.Float(0)))
+    SYNC_PROP_SET(scrollbar_list, GetList(), SetList(_val.Obj<BandList>()))
+    SYNC_PROP_SET(always_show, GetAlwaysShow(), SetAlwaysShow(_val.Int()))
+    SYNC_PROP_SET(list_attached, GetListAttached(), SetListAttached(_val.Int()))
+    SYNC_PROP_SET(list_x_offset, GetListXOffset(), SetListXOffset(_val.Float()))
+    SYNC_PROP_SET(list_y_offset, GetListYOffset(), SetListYOffset(_val.Float()))
+    SYNC_PROP_SET(scrollbar_height, GetHeight(), SetHeight(_val.Float()))
+    SYNC_PROP_SET(min_thumb_height, GetMinThumbHeight(), SetMinThumbHeight(_val.Float()))
     SYNC_SUPERCLASS(UIComponent)
 END_PROPSYNCS

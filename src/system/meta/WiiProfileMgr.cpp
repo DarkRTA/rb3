@@ -82,7 +82,7 @@ void WiiProfile::SetFlag(uint Flag, bool Value) {
 }
 
 BEGIN_HANDLERS(WiiProfile)
-HANDLE_CHECK(0x98)
+    HANDLE_CHECK(0x98)
 END_HANDLERS
 
 WiiProfileMgr::WiiProfileMgr() {}

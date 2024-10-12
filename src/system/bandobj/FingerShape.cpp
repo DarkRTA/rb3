@@ -30,7 +30,7 @@ FingerShape::FingerShape(RndDir* dir) : mLastState(new RGState()), mFretNumberSh
     mFretNumberShowAnim = dir->Find<RndAnimatable>("fret_number_show.anim", true);
     mFretNumberPositionAnim = dir->Find<RndAnimatable>("fret_number_pos.tnm", true);
     mFretNumberText = dir->Find<RndText>("fret_numbers_chord.txt", true);
-    mAnimPeriod = dir->Property("anim_period", true)->Float(0);
+    mAnimPeriod = dir->Property("anim_period", true)->Float();
 }
 
 FingerShape::~FingerShape(){

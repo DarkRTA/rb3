@@ -18,8 +18,8 @@
 Hmx::Object* gClick;
 INIT_REVS(CharacterTest)
 
-CharacterTest::CharacterTest(class Character* thechar) : mMe(thechar), mDriver(thechar, 0), mClip1(thechar, 0), mClip2(thechar, 0), mFilterGroup(thechar, 0), 
-    mTeleportTo(thechar, 0), mWalkPath(thechar, kObjListNoNull), mShowDistMap(), mTransition(0), mCycleTransition(1), mMetronome(0), mZeroTravel(0), 
+CharacterTest::CharacterTest(class Character* thechar) : mMe(thechar), mDriver(thechar, 0), mClip1(thechar, 0), mClip2(thechar, 0), mFilterGroup(thechar, 0),
+    mTeleportTo(thechar, 0), mWalkPath(thechar, kObjListNoNull), mShowDistMap(), mTransition(0), mCycleTransition(1), mMetronome(0), mZeroTravel(0),
     mShowScreenSize(0), mShowFootExtents(0), unk68(0), unk6c(0), mOverlay(RndOverlay::Find("char_test", true)) {
     mShowDistMap = none;
 }
@@ -160,7 +160,7 @@ void CharacterTest::SetStartEndBeat(float f1, float f2, int bpm){
     if(miloObj){
         DataNode milohandled = miloObj->Handle(Message("cur_anim"), true);
         if(milohandled.Type() == kDataObject){
-            Hmx::Object* handledObj = milohandled.GetObj(0);
+            Hmx::Object* handledObj = milohandled.GetObj();
             if(handledObj == mMe){
                 mMe->mFrozen = 0; // i know this is wrong, just can't figure out the right member atm
                 miloObj->SetProperty("bpm", DataNode(bpm));

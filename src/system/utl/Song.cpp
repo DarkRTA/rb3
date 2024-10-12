@@ -95,7 +95,7 @@ MeasureMap* Song::GetMeasureMap(){
 float Song::UpdateOverlay(RndOverlay* o, float f){
     for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mDebugParsers.begin(); it != mDebugParsers.end(); ++it){
         const DataNode& node = (*it)->Handle(Message("debug_draw", DataNode(f), DataNode(GetBeat())), true);
-        f += node.Float(0);
+        f += node.Float();
     }
     return f;
 }
@@ -211,8 +211,8 @@ void Song::JumpTo(int i){
 }
 
 BEGIN_HANDLERS(Song)
-    if(sym == get_bookmarkers) return GetBookmarks();
-    if(sym == get_midi_parsers) return GetMidiParsers();
+    HANDLE_EXPR(get_bookmarkers, GetBookmarks());
+    HANDLE_EXPR(get_midi_parsers, GetMidiParsers());
     HANDLE_ACTION(jump_to, _msg->Type(2) == kDataSymbol ? JumpTo(_msg->Sym(2)) : JumpTo(_msg->Int(2)))
     HANDLE_ACTION(sync_state, SyncState())
     HANDLE_ACTION(set_loop_start, SetLoopStart(_msg->Float(2)))
@@ -234,7 +234,7 @@ DataNode Song::GetBookmarks(){
     for(std::map<int, Symbol>::iterator it = unk24.begin(); it != unk24.end(); ++it){
         ptr->Node(idx) = DataNode(it->second);
         idx++;
-    }  
+    }
     return DataNode(ptr);
 }
 
@@ -295,7 +295,7 @@ BEGIN_CUSTOM_PROPSYNC(MBT)
 END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(Song)
-    SYNC_PROP_SET(song, mSongName, SetSong(_val.Sym(0)))
+    SYNC_PROP_SET(song, mSongName, SetSong(_val.Sym()))
     SYNC_PROP_MODIFY(speed, mSpeed, SetSpeed())
     SYNC_PROP_MODIFY_ALT(debug_parsers, mDebugParsers, UpdateDebugParsers())
     SYNC_PROP(loop_start, mLoopStart)

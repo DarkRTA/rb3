@@ -48,7 +48,7 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
                     iter2->mStart = filter->Start();
                     iter2->mEnd = filter->End();
                     iter2->mPeriod = filter->Period();
-                    iter2->mScale = filter->Property("scale", true)->Float(0);
+                    iter2->mScale = filter->Property("scale", true)->Float();
                     if(filter->GetType() == RndAnimFilter::kLoop) iter2->mType = loop;
                     else iter2->mType = range;
                     delete filter;
@@ -282,9 +282,9 @@ BEGIN_HANDLERS(EventTrigger)
     HANDLE(trigger, OnTrigger)
     HANDLE_ACTION(enable, unkdf = true)
     HANDLE_ACTION(disable, unkdf = false)
-    HANDLE_ACTION(wait_for, unkdf = true; Trigger();)
+    HANDLE_ACTION(wait_for, (unkdf = true, Trigger()))
     HANDLE(proxy_calls, OnProxyCalls)
-    if (sym == supported_events) return DataNode(SupportedEvents(), kDataArray);
+    HANDLE_EXPR(supported_events, DataNode(SupportedEvents(), kDataArray))
     HANDLE_ACTION(basic_cleanup, BasicReset())
     HANDLE_SUPERCLASS(RndAnimatable)
     HANDLE_SUPERCLASS(Hmx::Object)
@@ -362,8 +362,8 @@ BEGIN_PROPSYNCS(EventTrigger)
             else return false;
         }
     }
-    SYNC_PROP_SET(enabled, mEnabled, mEnabled = _val.Int(0))
-    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabledAtStart = _val.Int(0))
+    SYNC_PROP_SET(enabled, mEnabled, mEnabled = _val.Int())
+    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabledAtStart = _val.Int())
     {
         static Symbol _s("wait_for_events");
         if(sym == _s){
@@ -376,7 +376,7 @@ BEGIN_PROPSYNCS(EventTrigger)
             else return false;
         }
     }
-    SYNC_PROP_SET(next_link, mNextLink, SetNextLink(_val.Obj<EventTrigger>(0)))
+    SYNC_PROP_SET(next_link, mNextLink, SetNextLink(_val.Obj<EventTrigger>()))
     SYNC_PROP(trigger_order, mTriggerOrder)
     SYNC_PROP(triggers_to_reset, mResetTriggers)
     SYNC_PROP(anim_trigger, mAnimTrigger)

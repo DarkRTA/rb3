@@ -177,7 +177,7 @@ void EndingBonus::SetProgress(int slot_index, float f){
 }
 
 BEGIN_HANDLERS(EndingBonus)
-    HANDLE_ACTION(coda_end_script, if(!mSucceeded) Find<EventTrigger>("failure.trig", true)->Trigger(); )
+    HANDLE_ACTION_IF(coda_end_script, !mSucceeded, Find<EventTrigger>("failure.trig", true)->Trigger())
     HANDLE_ACTION(start, Start(true))
     HANDLE(reset, OnReset)
     HANDLE_ACTION(success, Success())

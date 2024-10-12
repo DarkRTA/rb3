@@ -17,7 +17,7 @@ StreakMeter::StreakMeter() : mStreakMultiplier(1), mBandMultiplier(1), mMaxMulti
 void StreakMeter::SyncObjects(){
     bool audible = true;
     Hmx::Object* gamemodeObj = FindObject("gamemode", true);
-    if(gamemodeObj) audible = gamemodeObj->Property("play_streak_sfx", true)->Int(0);
+    if(gamemodeObj) audible = gamemodeObj->Property("play_streak_sfx", true)->Int();
     if(audible) mNewStreakTrig = Find<EventTrigger>("new_streak.trig", true);
     else mNewStreakTrig = Find<EventTrigger>("new_streak_silent.trig", true);
     mEndStreakTrig = Find<EventTrigger>("end_streak.trig", true);

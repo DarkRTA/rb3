@@ -100,7 +100,7 @@ BEGIN_HANDLERS(RndMultiMesh)
     HANDLE_ACTION(set_mesh, SetMesh(_msg->Obj<RndMesh>(2)))
     HANDLE_SUPERCLASS(RndDrawable)
     HANDLE_SUPERCLASS(Hmx::Object)
-    if(_warn) TheDebugNotifier << MakeString("%s(%d): %s unhandled msg: %s", __FILE__, 0x196, PathName(this), sym);
+    HANDLE_CHECK(0x196)
 END_HANDLERS
 
 DataNode RndMultiMesh::OnSetPos(const DataArray* da) {
@@ -111,7 +111,7 @@ DataNode RndMultiMesh::OnSetPos(const DataArray* da) {
         it++;
     }
     float nu_z = da->Float(5);
-    float nu_y = da->Float(4); 
+    float nu_y = da->Float(4);
     float nu_x = da->Float(3);
     inst->mXfm.v.x = nu_x; inst->mXfm.v.y = nu_y; inst->mXfm.v.z = nu_z;
     return DataNode();
@@ -129,7 +129,7 @@ DataNode RndMultiMesh::OnMoveXfms(const DataArray* da) {
 }
 
 DataNode RndMultiMesh::OnDistribute(const DataArray* da) {
-    DistributeXfms(this, da->Int(2), da->Float(3)); 
+    DistributeXfms(this, da->Int(2), da->Float(3));
     return DataNode();
 }
 

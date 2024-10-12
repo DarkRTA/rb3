@@ -179,7 +179,7 @@ END_HANDLERS
 
 BEGIN_PROPSYNCS(RndCubeTex)
     if(sym == right){
-        if(_op == kPropSet) SetBitmap(kCubeFaceRight, FilePath(_val.Str(0)), true);
+        if(_op == kPropSet) SetBitmap(kCubeFaceRight, FilePath(_val.Str()), true);
         else {
             if(_op == (PropOp)0x40) return false;
             _val = DataNode(FileRelativePath(FilePath::sRoot.c_str(), mFile[kCubeFaceRight].c_str()));
@@ -187,7 +187,7 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
     if(sym == left){
-        if(_op == kPropSet) SetBitmap(kCubeFaceLeft, FilePath(_val.Str(0)), true);
+        if(_op == kPropSet) SetBitmap(kCubeFaceLeft, FilePath(_val.Str()), true);
         else {
             if(_op == (PropOp)0x40) return false;
             _val = DataNode(FileRelativePath(FilePath::sRoot.c_str(), mFile[kCubeFaceLeft].c_str()));
@@ -195,7 +195,7 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
     if(sym == top){
-        if(_op == kPropSet) SetBitmap(kCubeFaceTop, FilePath(_val.Str(0)), true);
+        if(_op == kPropSet) SetBitmap(kCubeFaceTop, FilePath(_val.Str()), true);
         else {
             if(_op == (PropOp)0x40) return false;
             _val = DataNode(FileRelativePath(FilePath::sRoot.c_str(), mFile[kCubeFaceTop].c_str()));
@@ -203,7 +203,7 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
     if(sym == bottom){
-        if(_op == kPropSet) SetBitmap(kCubeFaceBottom, FilePath(_val.Str(0)), true);
+        if(_op == kPropSet) SetBitmap(kCubeFaceBottom, FilePath(_val.Str()), true);
         else {
             if(_op == (PropOp)0x40) return false;
             _val = DataNode(FileRelativePath(FilePath::sRoot.c_str(), mFile[kCubeFaceBottom].c_str()));
@@ -211,7 +211,7 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
     if(sym == front){
-        if(_op == kPropSet) SetBitmap(kCubeFaceFront, FilePath(_val.Str(0)), true);
+        if(_op == kPropSet) SetBitmap(kCubeFaceFront, FilePath(_val.Str()), true);
         else {
             if(_op == (PropOp)0x40) return false;
             _val = DataNode(FileRelativePath(FilePath::sRoot.c_str(), mFile[kCubeFaceFront].c_str()));
@@ -219,7 +219,7 @@ BEGIN_PROPSYNCS(RndCubeTex)
         return true;
     }
     if(sym == back){
-        if(_op == kPropSet) SetBitmap(kCubeFaceBack, FilePath(_val.Str(0)), true);
+        if(_op == kPropSet) SetBitmap(kCubeFaceBack, FilePath(_val.Str()), true);
         else {
             if(_op == (PropOp)0x40) return false;
             _val = DataNode(FileRelativePath(FilePath::sRoot.c_str(), mFile[kCubeFaceBack].c_str()));
@@ -230,5 +230,5 @@ END_PROPSYNCS
 
 DECOMP_FORCEBLOCK(CubeTex, (std::vector<RndCubeTex::CubeFace>& cf, RndCubeTex* ct), {
     cf.push_back(RndCubeTex::kCubeFaceBack);
-    
+
 })

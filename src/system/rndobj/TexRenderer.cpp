@@ -9,8 +9,8 @@
 
 INIT_REVS(RndTexRenderer)
 
-RndTexRenderer::RndTexRenderer() : mDirty(1), mForce(0), mDrawPreClear(1), mDrawWorldOnly(0), mDrawResponsible(1), 
-    mNoPoll(0), mPrimeDraw(0), mFirstDraw(1), mForceMips(0), mImposterHeight(0.0f), 
+RndTexRenderer::RndTexRenderer() : mDirty(1), mForce(0), mDrawPreClear(1), mDrawWorldOnly(0), mDrawResponsible(1),
+    mNoPoll(0), mPrimeDraw(0), mFirstDraw(1), mForceMips(0), mImposterHeight(0.0f),
     mOutputTexture(this, 0), mDraw(this, 0), mCam(this, 0), mMirrorCam(this, 0) {
 
 }
@@ -211,27 +211,27 @@ BEGIN_PROPSYNCS(RndTexRenderer)
     SYNC_PROP_MODIFY(imposter_height, mImposterHeight, mDirty = true)
     SYNC_PROP_MODIFY(draw_pre_clear, mDrawPreClear, UpdatePreClearState())
     {
-        static Symbol _s("draw_world_only"); 
+        static Symbol _s("draw_world_only");
         if(sym == _s){
-            if(_op == kPropSet) mDrawWorldOnly = _val.Int(0);
+            if(_op == kPropSet) mDrawWorldOnly = _val.Int();
             else _val = DataNode(mDrawWorldOnly);
-            return true; 
+            return true;
         }
     }
     {
-        static Symbol _s("draw_responsible"); 
+        static Symbol _s("draw_responsible");
         if(sym == _s){
-            if(_op == kPropSet) mDrawResponsible = _val.Int(0);
+            if(_op == kPropSet) mDrawResponsible = _val.Int();
             else _val = DataNode(mDrawResponsible);
-            return true; 
+            return true;
         }
     }
     {
-        static Symbol _s("no_poll"); 
+        static Symbol _s("no_poll");
         if(sym == _s){
-            if(_op == kPropSet) mNoPoll = _val.Int(0);
+            if(_op == kPropSet) mNoPoll = _val.Int();
             else _val = DataNode(mNoPoll);
-            return true; 
+            return true;
         }
     }
     SYNC_PROP_MODIFY(prime_draw, mPrimeDraw, mDirty = true)

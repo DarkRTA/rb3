@@ -170,7 +170,7 @@ BEGIN_HANDLERS(ModifierMgr)
     HANDLE_ACTION(toggle_modifier_enabled, ToggleModifierEnabled(_msg->Sym(2)))
     HANDLE_EXPR(is_modifier_active, IsModifierActive(_msg->Sym(2)))
     HANDLE_EXPR(is_modifier_delayed_effect, IsModifierDelayedEffect(_msg->Sym(2)))
-    HANDLE_ACTION(enable_auto_vocals, Modifier* m = GetModifier("mod_auto_vocals", true); m->mDefaultEnabled = true;)
+    HANDLE_ACTION(enable_auto_vocals, GetModifier("mod_auto_vocals", true)->SetDefaultEnabled(true))
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x162)
 END_HANDLERS

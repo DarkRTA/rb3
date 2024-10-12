@@ -205,7 +205,7 @@ void BudgetScreen::Enter(UIScreen* screen) {
     // TODO: This doesn't seem quite right...
     // Should probably be mEndTime and mFrameInc
     mTime = TheSongDB->GetSongDurationMs() / 1000.0f;
-    mEndTime = Property("frame_inc", true)->Float(nullptr);
+    mEndTime = Property("frame_inc", true)->Float();
 
     mLastGpu = 0;
     mLastCpu = 0;

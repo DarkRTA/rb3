@@ -41,42 +41,42 @@ bool PropSync(Box&, DataNode&, DataArray*, int, PropOp);
 inline bool PropSync(float& f, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x17);
     if(op == kPropGet) node = DataNode(f);
-    else f = node.Float(0);
+    else f = node.Float();
     return true;
 }
 
 inline bool PropSync(unsigned char& uc, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x21);
     if(op == kPropGet) node = DataNode(uc);
-    else uc = node.Int(0);
+    else uc = node.Int();
     return true;
 }
 
 inline bool PropSync(int& iref, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x2C);
     if(op == kPropGet) node = DataNode(iref);
-    else iref = node.Int(0);
+    else iref = node.Int();
     return true;
 }
 
 inline bool PropSync(short& s, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x36);
     if(op == kPropGet) node = DataNode(s);
-    else s = node.Int(0);
+    else s = node.Int();
     return true;
 }
 
 inline bool PropSync(bool& b, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x40);
     if(op == kPropGet) node = DataNode(b);
-    else b = node.Int(0) != 0;
+    else b = node.Int() != 0;
     return true;
 }
 
 inline bool PropSync(Symbol& sym, DataNode& node, DataArray* prop, int i, PropOp op){
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x4A);
     if(op == kPropGet) node = DataNode(sym);
-    else sym = node.Str(0);
+    else sym = node.Str();
     return true;
 }
 
@@ -85,7 +85,7 @@ template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x58);
         if(op == kPropGet) node = DataNode((Hmx::Object*)obj);
-        else obj = dynamic_cast<T*>(node.GetObj(0));
+        else obj = dynamic_cast<T*>(node.GetObj());
         return true;
     }
 }
@@ -95,7 +95,7 @@ template <class T> bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNode& node
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x125);
         if(op == kPropGet) node = DataNode(ptr.Ptr());
-        else ptr = dynamic_cast<T*>(node.GetObj(0));
+        else ptr = dynamic_cast<T*>(node.GetObj());
         return true;
     }
 }
@@ -105,7 +105,7 @@ template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode&
     else {
         MILO_ASSERT(op <= kPropInsert, 0x132);
         if(op == kPropGet) node = DataNode(ptr.Ptr());
-        else ptr = dynamic_cast<T*>(node.GetObj(0));
+        else ptr = dynamic_cast<T*>(node.GetObj());
         return true;
     }
 }
@@ -159,7 +159,7 @@ template <class T> inline bool PropSync(ObjDirPtr<T>& ptr, DataNode& node, DataA
         node = DataNode(ptr.GetFile());
     }
     else {
-        FilePath fp(node.Str(0));
+        FilePath fp(node.Str());
         ptr.LoadFile(fp, false, true, kLoadFront, false);
     }
     return true;

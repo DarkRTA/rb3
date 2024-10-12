@@ -395,7 +395,7 @@ void GemTrackDir::SetupSmasherPlate(){
                 unk680.clear();
                 unk688.clear();
                 unk690.clear();
-                DataArray* proparr = mSmasherPlate->Property(smasher_list, true)->Array(0);
+                DataArray* proparr = mSmasherPlate->Property(smasher_list, true)->Array();
                 for(int i = 0; i < proparr->Size(); i++){
                     RndDir* curdir = proparr->Obj<RndDir>(i);
                     unk680.push_back(curdir);
@@ -813,7 +813,7 @@ void GemTrackDir::UpdateFingerFeedback(const RGState& state){
         }
     }
     if(mFingerShape) mFingerShape->Update(touse, true, false);
-#else    
+#else
     if(mFingerShape) mFingerShape->Update(state, true, false);
 #endif
 }

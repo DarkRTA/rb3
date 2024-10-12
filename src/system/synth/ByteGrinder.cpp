@@ -152,7 +152,7 @@ DataNode op3(DataArray* msg){
     bool b = (operand == 0);
     unsigned long ret = u8(w) | ((w << 8) & 0xFF00);
     ret >>= b;
-    return DataNode(kDataInt, u8(ret)); 
+    return DataNode(kDataInt, u8(ret));
 }
 
 DataNode op4(DataArray* msg){
@@ -190,7 +190,7 @@ DataNode op5(DataArray* msg) {
     // r0 = u8(r5)
     ret = u8(~(w | w));
     u32 r3 = (operand << 29) >> 29, r4 = ret << 8;
-    ret |= r4; 
+    ret |= r4;
     ret >>= r3;
     return DataNode(u8(ret));
 }
@@ -502,7 +502,7 @@ unsigned long ByteGrinder::pickOneOf32A(bool b, long l){
     else {
         a = DataReadString("{xa}");
     }
-    unsigned long result = a->Evaluate(0).Int(nullptr);
+    unsigned long result = a->Evaluate(0).Int();
     a->Release();
     return result;
 }
@@ -517,7 +517,7 @@ unsigned long ByteGrinder::pickOneOf32B(bool b, long l){
     else {
         a = DataReadString("{ya}");
     }
-    unsigned long result = a->Evaluate(0).Int(nullptr);
+    unsigned long result = a->Evaluate(0).Int();
     a->Release();
     return result;
 }
@@ -646,12 +646,12 @@ void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind
 
     sprintf(script, "{ma %d 2}", seedA);
     mainScriptArray = DataReadString(script);
-    mainScriptArray->Evaluate(0).Int(nullptr);
+    mainScriptArray->Evaluate(0).Int();
     mainScriptArray->Release();
 
     sprintf(script, "{za %d 2}", seedB);
     mainScriptArray = DataReadString(script);
-    mainScriptArray->Evaluate(0).Int(nullptr);
+    mainScriptArray->Evaluate(0).Int();
     mainScriptArray->Release();
 
     String mainScript;
@@ -697,7 +697,7 @@ void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind
         }
         stringArgs += ")";
         DataArray* args = DataReadString(stringArgs.c_str());
-        arrayToGrind[i] = mainScriptArray->ExecuteScript(0, nullptr, args, 0).Int(nullptr);
+        arrayToGrind[i] = mainScriptArray->ExecuteScript(0, nullptr, args, 0).Int();
         args->Release();
     }
     mainScriptArray->Release();

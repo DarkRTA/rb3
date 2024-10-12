@@ -73,7 +73,7 @@ CharBoneDir::CharBoneDir() : mRecenter(this), mMoveContext(0), mBakeOutFacing(1)
 }
 
 CharBoneDir::~CharBoneDir(){
-    
+
 }
 
 void CharBoneDir::StuffBones(CharBones& bones, int i){
@@ -181,7 +181,7 @@ void CharBoneDir::SyncFilter(){
     for(ObjDirItr<CharBone> it(this, true); it != 0; ++it){
         if(mFilterContext & it->PositionContext() ||
             mFilterContext & it->ScaleContext() ||
-            (it->RotationType() != CharBones::TYPE_END && 
+            (it->RotationType() != CharBones::TYPE_END &&
             mFilterContext & it->RotationContext())
         )
         mFilterBones.push_back(it);
@@ -229,7 +229,7 @@ BEGIN_COPYS(CharBoneDir)
 END_COPYS
 
 BEGIN_HANDLERS(CharBoneDir)
-    if(sym == get_context_flags) return GetContextFlags();
+    HANDLE_EXPR(get_context_flags, GetContextFlags())
     HANDLE_SUPERCLASS(ObjectDir)
     HANDLE_CHECK(0x1D1)
 END_HANDLERS
@@ -242,7 +242,7 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(CharBoneDir)
     SYNC_PROP(recenter, mRecenter)
-    SYNC_PROP_SET(merge_character, "", MergeCharacter(FilePath(_val.Str(0))))
+    SYNC_PROP_SET(merge_character, "", MergeCharacter(FilePath(_val.Str())))
     SYNC_PROP(move_context, mMoveContext)
     SYNC_PROP(bake_out_facing, mBakeOutFacing)
     SYNC_PROP_MODIFY(filter_context, mFilterContext, SyncFilter())

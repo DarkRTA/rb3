@@ -114,7 +114,7 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                                 case 0:
                                     node_bool = (node.Type() != kDataString) && (node.Type() != kDataSymbol);
                                     break;
-                                case 1: 
+                                case 1:
                                     node_bool = node.Type() != kDataInt;
                                     break;
                                 case 2:
@@ -133,39 +133,39 @@ SuperFormatString::SuperFormatString(const char* cc, const DataArray* da, bool b
                             }
 
                             if(!node_bool){
-                                int sn_res = 0; 
+                                int sn_res = 0;
                                 LocaleGender gender;
                                 LocaleNumber  num;
                                 int x;
                                 switch(phType){
                                     case 0:
                                         if(node.Type() == kDataString){
-                                            sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", node.Str(0));
+                                            sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", node.Str());
                                         }
                                         else {
-                                            sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", Localize(node.Sym(0), false));
+                                            sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", Localize(node.Sym(), false));
                                         }
                                         break;
                                     case 1:
-                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, param, node.Int(0));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, param, node.Int());
                                         break;
                                     case 2:
-                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", LocalizeSeparatedInt(node.Int(0)));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", LocalizeSeparatedInt(node.Int()));
                                         break;
                                     case 3:
-                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, param, node.Float(0));
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, param, node.Float());
                                         break;
                                     case 4:
                                         sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", Localize(phInfo, false));
                                         break;
                                     case 5:
                                         gender = (LocaleGender)(param[0] != 'm');
-                                        num = (LocaleNumber)(param[1] != 's'); 
-                                        x = node.Int(0);
-                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s", 
-                                            LocalizeOrdinal(x, 
-                                                gender, 
-                                                num, 
+                                        num = (LocaleNumber)(param[1] != 's');
+                                        x = node.Int();
+                                        sn_res = snprintf(tempFmtPos, baseTempFmt - tempFmtPos, "%s",
+                                            LocalizeOrdinal(x,
+                                                gender,
+                                                num,
                                                 false));
                                         break;
                                 }

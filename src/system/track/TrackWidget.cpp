@@ -202,7 +202,7 @@ void TrackWidget::SetTextAlignment(RndText::Alignment a) {
 // void TrackWidget::Mats(std::list<class RndMat*>& mats, bool) {
 //     for (std::list<class RndMat*>::iterator i = mats.begin(); *i != NULL; i++) {
 
-        
+
 //     }
 // }
 
@@ -306,7 +306,7 @@ BEGIN_PROPSYNCS(TrackWidget)
     {
         static Symbol _s("wide_widget");
         if(sym == _s){
-            if(_op == kPropSet){ mWideWidget = _val.Int(0); }
+            if(_op == kPropSet){ mWideWidget = _val.Int(); }
             else _val = DataNode(mWideWidget);
             return true;
         }
@@ -320,7 +320,7 @@ BEGIN_PROPSYNCS(TrackWidget)
     {
         static Symbol _s("max_meshes");
         if(sym == _s){
-            if(_op == kPropSet){ mMaxMeshes = _val.Int(0); }
+            if(_op == kPropSet){ mMaxMeshes = _val.Int(); }
             else _val = DataNode(mMaxMeshes);
             return true;
         }
@@ -337,7 +337,7 @@ BEGIN_PROPSYNCS(TrackWidget)
     {
         static Symbol _s("allow_shift");
         if(sym == _s){
-            if(_op == kPropSet){ mAllowShift = _val.Int(0); }
+            if(_op == kPropSet){ mAllowShift = _val.Int(); }
             else _val = DataNode(mAllowShift);
             return true;
         }

@@ -59,7 +59,7 @@ BEGIN_LOADS(TexMovie) // retail matches, still some clownery afoot
     bs >> unk_0x38;
     DataNode dn = HandleType(change_file_msg);
     if (dn.Type() == kDataString) {
-        unk_0x38.SetRoot(dn.Str(NULL));
+        unk_0x38.SetRoot(dn.Str());
     }
     if (gRev > 1 && gRev < 3) {
         bs.ReadByte();
@@ -161,7 +161,7 @@ BEGIN_PROPSYNCS(TexMovie)
     SYNC_PROP_MODIFY_ALT(output_texture, mTex, BeginMovie(NULL))
     if (sym == bink_movie_file) {
         if (_op == kPropSet) {
-            FilePath fp(_val.Str(NULL));
+            FilePath fp(_val.Str());
             SetFile(fp);
         } else {
             if (_op == kPropUnknown0x40) return false;

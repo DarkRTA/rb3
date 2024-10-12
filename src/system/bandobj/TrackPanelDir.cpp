@@ -196,7 +196,7 @@ void TrackPanelDir::ConfigureTracks(bool b){
     Hmx::Object* modeobj = FindObject("gamemode", true);
     bool b18 = false;
     if(modeobj){
-        if(modeobj->Property("is_practice", true)->Int(0)) b18 = true;
+        if(modeobj->Property("is_practice", true)->Int()) b18 = true;
     }
     if(TheLoadMgr.EditMode()) AssignTracks();
     for(int i = 0; i < mGemTracks.size(); i++){
@@ -247,7 +247,7 @@ void TrackPanelDir::ConfigureTracks(bool b){
                 mTracks[i]->CombineStreakMultipliers(single);
             }
         }
-        SetMultiplier(mBandScoreMultiplier->Property("last_multiplier", true)->Int(0), true);
+        SetMultiplier(mBandScoreMultiplier->Property("last_multiplier", true)->Int(), true);
     }
     unk2ac = true;
 }
@@ -259,7 +259,7 @@ void TrackPanelDir::ConfigureTrack(int i){
 
 void TrackPanelDir::ConfigureCrowdMeter(){
     Hmx::Object* modeobj = FindObject("gamemode", true);
-    bool practice = modeobj && modeobj->Property("is_practice", true)->Int(0);
+    bool practice = modeobj && modeobj->Property("is_practice", true)->Int();
     if(practice || (mTrackPanel && mTrackPanel->GetNoCrowdMeter()) || (mTrackPanel && mTrackPanel->GameResumedNoScore())){
         mCrowdMeter->Disable();
         mCrowdMeter->SetShowing(false);
@@ -267,7 +267,7 @@ void TrackPanelDir::ConfigureCrowdMeter(){
     }
     mCrowdMeter->UpdatePlayers(mInstruments);
     mCrowdMeter->Enable();
-    bool show = modeobj && modeobj->Property("show_crowd_meter", true)->Int(0) || TheLoadMgr.EditMode();
+    bool show = modeobj && modeobj->Property("show_crowd_meter", true)->Int() || TheLoadMgr.EditMode();
     mCrowdMeter->SetShowing(show);
 }
 
@@ -376,7 +376,7 @@ void TrackPanelDir::DisablePlayer(int idx, bool enable){
         if(GetInstrument(idx) != kInstVocals) UnisonEnd();
         static Hmx::Object* gameMode = FindObject("gamemode", true);
         if(mCrowdMeter && gameMode){
-            if(gameMode->Property("update_crowd_meter", true)->Int(0)){
+            if(gameMode->Property("update_crowd_meter", true)->Int()){
                 if(enable){
                     mCrowdMeter->EnablePlayer(idx);
                     mCrowdMeter->PlayerIcon(idx)->SetState(kCrowdMeterFailed, false);
@@ -393,7 +393,7 @@ void TrackPanelDir::EnablePlayer(int idx){
         GetInstrument(idx);
         static Hmx::Object* gameMode = FindObject("gamemode", true);
         if(mCrowdMeter && gameMode){
-            if(gameMode->Property("update_crowd_meter", true)->Int(0)){
+            if(gameMode->Property("update_crowd_meter", true)->Int()){
                 mCrowdMeter->EnablePlayer(idx);
             }
         }
@@ -485,7 +485,7 @@ void TrackPanelDir::HideScore(){
 
 void TrackPanelDir::SetMultiplier(int mult, bool b){
     if(b) mBandScoreMultiplier->SetProperty("last_multiplier", -1);
-    if(mult != mBandScoreMultiplier->Property("last_multiplier", true)->Int(0)){
+    if(mult != mBandScoreMultiplier->Property("last_multiplier", true)->Int()){
         if(unk2ac && (mult > 1) && (!mTrackPanel || mTrackPanel->GetNumPlayers() > 1)){
             static Message set_multiplier("set_multiplier", 1);
             set_multiplier[0] = mult;
@@ -546,7 +546,7 @@ void TrackPanelDir::Coda(){
     if(!unk2ad){
         Hmx::Object* modeobj = FindObject("gamemode", true);
         if(modeobj){
-            if(!modeobj->Property("enable_coda", true)->Int(0)) return;
+            if(!modeobj->Property("enable_coda", true)->Int()) return;
         }
         if((TheLoadMgr.EditMode() || (mTrackPanel && !mTrackPanel->IsGameOver())) && unk24c){
             Find<EventTrigger>("bre_start.trig", true)->Trigger();

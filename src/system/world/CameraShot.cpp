@@ -15,7 +15,7 @@ Hmx::Object* CamShot::sAnimTarget;
 
 INIT_REVS(CamShot);
 
-CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f), mClampHeight(-1.0f), mCategory(), 
+CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f), mClampHeight(-1.0f), mCategory(),
     mAnims(this, kObjListNoNull), mPath(this, 0), mDrawOverrides(this, kObjListNoNull), mPathFrame(-1.0f), mPlatformOnly(0),
     mPostProcOverrides(this, kObjListNoNull), mCrowds(this), mGlowSpot(this, 0), unkc4(0.0f, 0.0f, 0.0f), unkd0(0.0f, 0.0f, 0.0f),
     unkdc(0.0f, 0.0f, 0.0f), unke8(0.0f, 0.0f, 0.0f), unkf4(0.0f, 0.0f, 0.0f), unk100(0.0f, 0.0f, 0.0f), unk10c(0), unk110(0),
@@ -153,11 +153,11 @@ bool CamShot::ShotOk(CamShot* shot){
             break;
         case kDataString:
             if(DataVariable("camera_spew") != DataNode(0)){
-                MILO_LOG("Shot %s rejected: %s.\n", Name(), handled.Str(0));
+                MILO_LOG("Shot %s rejected: %s.\n", Name(), handled.Str());
             }
             return false;
         default:
-            if(handled.Int(0)){
+            if(handled.Int()){
                 break;
             }
             else {
@@ -434,7 +434,7 @@ BEGIN_LOADS(CamShot)
     }
     else {
         DataNode* prop = Property("hide_crowd", false);
-        if(!prop || prop->Int(0) == 0){
+        if(!prop || prop->Int() == 0){
             ObjDirItr<WorldCrowd> iter(Dir(), true);
             if(iter){
                 csc.mCrowd = iter;
@@ -672,7 +672,7 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
             ::Interp(dist14, dist13, d11, f1fc);
             ::Interp(mScreenOffset, frame.mScreenOffset, d11, v1e0);
         }
-        
+
         if(sameTargets){
             Vector3 v1c0;
             v1c0.x = (-v1e0.x * f1fc) / cam->LocalProjectXfm().m.x.x;
@@ -681,7 +681,7 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
 
             Multiply(v1c0, tf130, tf130.v);
         }
-    
+
 
     }
     float f200;
@@ -898,7 +898,7 @@ BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
     SYNC_PROP(duration, o.mDuration)
     SYNC_PROP(blend, o.mBlend)
     SYNC_PROP(blend_ease, o.mBlendEase)
-    SYNC_PROP_SET(blend_ease_mode, o.mBlendEaseMode, o.mBlendEaseMode = _val.Int(0))
+    SYNC_PROP_SET(blend_ease_mode, o.mBlendEaseMode, o.mBlendEaseMode = _val.Int())
     SYNC_PROP(screen_offset, o.mScreenOffset)
     {
         static Symbol _s("targets");
@@ -915,9 +915,9 @@ BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
         }
     }
     SYNC_PROP(focal_target, o.mFocusTarget)
-    SYNC_PROP_SET(use_parent_rotation, o.unk8bp1, o.unk8bp1 = _val.Int(0))
-    SYNC_PROP_SET(parent_first_frame, o.unk8bp0, o.unk8bp0 = _val.Int(0))
-    SYNC_PROP_SET(field_of_view, o.FieldOfView() * RAD2DEG, o.SetFieldOfView(_val.Float(0) * DEG2RAD))
+    SYNC_PROP_SET(use_parent_rotation, o.unk8bp1, o.unk8bp1 = _val.Int())
+    SYNC_PROP_SET(parent_first_frame, o.unk8bp0, o.unk8bp0 = _val.Int())
+    SYNC_PROP_SET(field_of_view, o.FieldOfView() * RAD2DEG, o.SetFieldOfView(_val.Float() * DEG2RAD))
 END_CUSTOM_PROPSYNC
 
 #pragma push
@@ -934,13 +934,13 @@ BEGIN_PROPSYNCS(CamShot)
         }
     }
     SYNC_PROP(loop_keyframe, mLoopKeyframe)
-    SYNC_PROP_SET(category, mCategory, mCategory = _val.ForceSym(0))
+    SYNC_PROP_SET(category, mCategory, mCategory = _val.ForceSym())
     SYNC_PROP(filter, mFilter)
     SYNC_PROP(clamp_height, mClampHeight)
     SYNC_PROP(near_plane, mNear)
     SYNC_PROP(far_plane, mFar)
     SYNC_PROP_STATIC(duration, mDuration)
-    SYNC_PROP_SET(use_depth_of_field, mUseDepthOfField, mUseDepthOfField = _val.Int(0))
+    SYNC_PROP_SET(use_depth_of_field, mUseDepthOfField, mUseDepthOfField = _val.Int())
     SYNC_PROP(path, mPath)
     SYNC_PROP(path_frame, mPathFrame)
     SYNC_PROP(platform_only, mPlatformOnly)

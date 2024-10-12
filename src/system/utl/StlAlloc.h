@@ -33,13 +33,24 @@ namespace STLPORT {
         };
 
 #ifdef VERSION_SZBE69_B8
+        // Retail doesn't have constructor calls
         StlNodeAlloc() {}
         StlNodeAlloc(StlNodeAlloc<T> const &) {}
         template <class T2>
         StlNodeAlloc(const StlNodeAlloc<T2> &) {}
 #endif
 
+        // ...but still has the destructor
         ~StlNodeAlloc() {}
+
+#ifdef VERSION_SZBE69
+        // This is the only way to make allocator conversions
+        // work in retail without using constructors
+        template <class T2>
+        operator StlNodeAlloc<T2>() const {
+            return StlNodeAlloc<T2>();
+        }
+#endif
 
         template <class T2>
         StlNodeAlloc<T> &operator=(const StlNodeAlloc<T2> &right) {}

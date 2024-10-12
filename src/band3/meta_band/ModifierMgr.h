@@ -6,12 +6,17 @@
 class Modifier {
 public:
     Modifier(DataArray*);
+
     bool IsHidden() const;
     bool CustomLocation() const;
     bool SaveValue() const;
     bool UseSaveValue() const;
     bool DefaultEnabled() const;
     bool DelayedEffect() const;
+
+    void SetDefaultEnabled(bool value) {
+        mDefaultEnabled = value;
+    }
 
     DataArray* mData; // 0x0
     bool mDefaultEnabled; // 0x4

@@ -135,7 +135,7 @@ bool UIPanel::IsLoaded() const {
     if(mState != kUnloaded) return true;
     if(mLoader && !mLoader->IsLoaded()) return false;
     DataNode node = const_cast<UIPanel*>(this)->HandleType(is_loaded_msg);
-    if(node.Type() != kDataUnhandled) return node.Int(0);
+    if(node.Type() != kDataUnhandled) return node.Int();
     else return true;
 }
 

@@ -154,8 +154,8 @@ BEGIN_HANDLERS(CharFaceServo)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharFaceServo)
-    SYNC_PROP_SET(clips, mClips, SetClips(_val.Obj<ObjectDir>(0)))
-    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym(0)))
+    SYNC_PROP_SET(clips, mClips, SetClips(_val.Obj<ObjectDir>()))
+    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym()))
     SYNC_PROP(blink_clip_left, mBlinkClipLeftName)
     SYNC_PROP(blink_clip_left2, mBlinkClipLeftName2)
     SYNC_PROP(blink_clip_right, mBlinkClipRightName)

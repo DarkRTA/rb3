@@ -9,7 +9,7 @@ CharBonesBlender::CharBonesBlender() : mDest(this, 0), mClipType("") {
 }
 
 CharBonesBlender::~CharBonesBlender(){
-    
+
 }
 
 void CharBonesBlender::Enter(){
@@ -77,7 +77,7 @@ BEGIN_HANDLERS(CharBonesBlender)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharBonesBlender)
-    SYNC_PROP_SET(dest, mDest, SetDest(_val.Obj<CharBonesObject>(0)))
-    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym(0)))
+    SYNC_PROP_SET(dest, mDest, SetDest(_val.Obj<CharBonesObject>()))
+    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym()))
     SYNC_SUPERCLASS(CharBonesObject)
 END_PROPSYNCS

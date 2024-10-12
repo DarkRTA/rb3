@@ -7,25 +7,27 @@
 
 int gREV = 9;
 
-// idk what to name this, it's mainly used when assigning to mFontPctSize
-inline float fabs720(int i){
-    return std::fabs(i / 720.0f);
+#define HEIGHT_SD 480.0f
+#define HEIGHT_HD 720.0f
+
+inline float FontSizeToPercentSD(int i){
+    return std::fabs(i / HEIGHT_SD);
 }
 
-inline float fabs480(int i){
-    return std::fabs(i / 480.0f);
+inline float FontSizeToPercentHD(int i){
+    return std::fabs(i / HEIGHT_HD);
 }
 
-inline int round480(float f){
-    return -Round(f * 480.0f);
+inline int FontPercentToSizeSD(float f){
+    return -Round(f * HEIGHT_SD);
 }
 
-inline int round720(float f){
-    return -Round(f * 720.0f);
+inline int FontPercentToSizeHD(float f){
+    return -Round(f * HEIGHT_HD);
 }
 
 UIFontImporter::UIFontImporter() : mUpperCaseAthroughZ(1), mLowerCaseAthroughZ(1), mNumbers0through9(1), mPunctuation(1), mUpperEuro(1), mLowerEuro(1),
-    mPlus(""), mMinus(""), mFontName("Arial"), mFontPctSize(fabs720(-0xc)), mItalics(0), mFontQuality(kFontQuality_AntiAliased), mFontWeight(400),
+    mPlus(""), mMinus(""), mFontName("Arial"), mFontPctSize(FontSizeToPercentHD(-12)), mItalics(0), mFontQuality(kFontQuality_AntiAliased), mFontWeight(400),
     mPitchAndFamily(0x22), mFontCharset(0), mFontSupersample(kFontSuperSample_None), mLeft(0), mRight(0), mTop(0), mBottom(0), mFillWithSafeWhite(0),
     mFontToImportFrom(this, 0), mBitmapSavePath("ui/image/"), mBitMapSaveName("temp.BMP"), mGennedFonts(this, kObjListNoNull), mReferenceKerning(this, 0),
     mMatVariations(this, kObjListNoNull), mDefaultMat(this, 0), mHandmadeFont(this, 0), mCheckNG(0), mSyncResource(), mLastGenWasNG(1) {
@@ -88,7 +90,7 @@ BEGIN_LOADS(UIFontImporter)
     if(rev <= 4){
         int i;
         bs >> i;
-        mFontPctSize = fabs720(-i);
+        mFontPctSize = FontSizeToPercentHD(-i);
     }
     else bs >> mFontPctSize;
     bs >> mFontWeight >> mItalics >> mPitchAndFamily >> (int&)mFontQuality >> mFontCharset;
@@ -115,7 +117,7 @@ END_LOADS
 // fn_8055B51C - https://decomp.me/scratch/NAYDg
 void UIFontImporter::FontImporterSyncObjects(){
     if(!mDefaultMat && NumMatVariations() > 0 && mGennedFonts.size() > 0){
-        for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end(); it){
+        for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end();){
             RndMat* old = *it;
             it = mMatVariations.erase(it);
             delete old;
@@ -311,14 +313,14 @@ void UIFontImporter::ImportSettingsFromFont(RndFont* font){
         if(font->Type() == imported_font) has_import_font = true;
     }
     if(has_import_font){
-        SetProperty("font_name", DataNode(font->Property("font_name", true)->Str(0)));
-        SetProperty("font_size", DataNode(fabs720(-font->Property("font_size", true)->Int(0))));
-        SetProperty("bold", DataNode(font->Property("bold", true)->Int(0)));
-        SetProperty("italics", DataNode(font->Property("italics", true)->Int(0)));
-        SetProperty("left", DataNode(font->Property("left", true)->Int(0)));
-        SetProperty("right", DataNode(font->Property("right", true)->Int(0)));
-        SetProperty("top", DataNode(font->Property("top", true)->Int(0)));
-        SetProperty("bottom", DataNode(font->Property("bottom", true)->Int(0)));
+        SetProperty("font_name", DataNode(font->Property("font_name", true)->Str()));
+        SetProperty("font_size", DataNode(FontSizeToPercentHD(-font->Property("font_size", true)->Int())));
+        SetProperty("bold", DataNode(font->Property("bold", true)->Int()));
+        SetProperty("italics", DataNode(font->Property("italics", true)->Int()));
+        SetProperty("left", DataNode(font->Property("left", true)->Int()));
+        SetProperty("right", DataNode(font->Property("right", true)->Int()));
+        SetProperty("top", DataNode(font->Property("top", true)->Int()));
+        SetProperty("bottom", DataNode(font->Property("bottom", true)->Int()));
     }
     else MILO_WARN("Can't import settings from Font because it doesnt have import_font type");
 }
@@ -387,14 +389,11 @@ void UIFontImporter::HandmadeFontChanged(){
                 if(text) delete text;
             }
             mGennedFonts.Set(mGennedFonts.begin(), mHandmadeFont);
-            ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin();
-            it++;
-            for(; it != mGennedFonts.end(); it){
+            for(ObjPtrList<RndFont, class ObjectDir>::iterator it = ++mGennedFonts.begin(); it != mGennedFonts.end(); it++){
                 if(*it == mHandmadeFont){
                     mGennedFonts.erase(it);
                     break;
                 }
-                else it++;
             }
         }
         else mGennedFonts.push_back(mHandmadeFont);
@@ -413,7 +412,7 @@ void UIFontImporter::HandmadeFontChanged(){
 
 // fn_8055DA08
 void UIFontImporter::SyncWithGennedFonts(){
-    for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end(); it){
+    for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end();){
         RndFont* font = *it;
         bool matfound = false;
         for(ObjPtrList<RndMat, class ObjectDir>::iterator mit = mMatVariations.begin(); mit != mMatVariations.end(); ++mit){
@@ -421,7 +420,6 @@ void UIFontImporter::SyncWithGennedFonts(){
         }
         if(font->mMat == mDefaultMat) matfound = true;
         if(!matfound){
-            font->mMat;
             RndText* text = FindTextForFont(font);
             it = mGennedFonts.erase(it);
             delete font;
@@ -470,12 +468,12 @@ BEGIN_PROPSYNCS(UIFontImporter)
     SYNC_PROP(font_name, mFontName)
     SYNC_PROP_MODIFY(font_pct_size, mFontPctSize, GenerateBitmapFilename())
     SYNC_PROP_SET(font_point_size,
-        mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize),
-        mFontPctSize = mLastGenWasNG ? fabs720(-_val.Int(0)) : fabs480(-_val.Int(0)))
+        mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize) : FontPercentToSizeSD(mFontPctSize),
+        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int()) : FontSizeToPercentSD(-_val.Int()))
     SYNC_PROP_SET(font_pixel_size,
-        std::abs(mLastGenWasNG ? round720(mFontPctSize) : round480(mFontPctSize)),
-        mFontPctSize = mLastGenWasNG ? fabs720(-_val.Int(0)) : fabs480(-_val.Int(0)))
-    SYNC_PROP_SET(bold, std::abs(mFontWeight), mFontWeight = _val.Int(0) ? 800 : 400; GenerateBitmapFilename())
+        std::abs(mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize) : FontPercentToSizeSD(mFontPctSize)),
+        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int()) : FontSizeToPercentSD(-_val.Int()))
+    SYNC_PROP_SET(bold, std::abs(mFontWeight), mFontWeight = _val.Int() ? 800 : 400; GenerateBitmapFilename())
     SYNC_PROP_MODIFY(italics, mItalics, GenerateBitmapFilename())
     SYNC_PROP(font_quality, (int&)mFontQuality)
     SYNC_PROP(pitch_and_family, mPitchAndFamily)

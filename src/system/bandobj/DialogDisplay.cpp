@@ -14,7 +14,7 @@ DialogDisplay::DialogDisplay() : mDialogLabel(this, 0), mTopBone(this, 0), mBott
 }
 
 DialogDisplay::~DialogDisplay(){
-    
+
 }
 
 BEGIN_COPYS(DialogDisplay)
@@ -62,9 +62,9 @@ BEGIN_HANDLERS(DialogDisplay)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(DialogDisplay)
-    SYNC_PROP_SET(dialog_label, GetLabel(), SetLabel(_val.Obj<UILabel>(0)))
-    SYNC_PROP_SET(top_bone, GetTopBone(), SetTopBone(_val.Obj<RndMesh>(0)))
-    SYNC_PROP_SET(bottom_bone, GetBottomBone(), SetBottomBone(_val.Obj<RndMesh>(0)))
+    SYNC_PROP_SET(dialog_label, GetLabel(), SetLabel(_val.Obj<UILabel>()))
+    SYNC_PROP_SET(top_bone, GetTopBone(), SetTopBone(_val.Obj<RndMesh>()))
+    SYNC_PROP_SET(bottom_bone, GetBottomBone(), SetBottomBone(_val.Obj<RndMesh>()))
     SYNC_SUPERCLASS(RndPollable)
     SYNC_SUPERCLASS(Hmx::Object)
 END_PROPSYNCS

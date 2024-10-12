@@ -138,7 +138,7 @@ void SongSectionController::UpdateOverlay(){
     if(mOverlay){
         if(!TheLoadMgr.EditMode()){
             static DataNode& disable = DataVariable("cheat.song_section_ctrl");
-            mOverlay->SetOverlay(disable.Int(0));
+            mOverlay->SetOverlay(disable.Int());
         }
         if(mOverlay->Showing()){
             String cursec(mMidiSection.Null() ? "<none>" : mMidiSection.Str());
@@ -180,7 +180,7 @@ void SongSectionController::UpdateOverlay(){
             if(!mActivePool) str48 = "<none>";
             else {
                 static Message debugStr("debug_str");
-                str48 = mActivePool->HandleType(debugStr).Str(0);
+                str48 = mActivePool->HandleType(debugStr).Str();
             }
             *mOverlay << "[current pool content]: " << str48.c_str() << "\n";
         }
@@ -284,16 +284,16 @@ DataNode SongSectionController::OnWaitForEventReceived(const DataArray* da){
 
 BEGIN_HANDLERS(SongSectionController)
     HANDLE_ACTION(trigger_debug_pool, DebugActivate())
-    HANDLE_ACTION(reset_all, ResetAll(); ForceCatchAll(); )
+    HANDLE_ACTION(reset_all, (ResetAll(), ForceCatchAll()))
     HANDLE(find_pools, OnFindPools)
     HANDLE_ACTION(toggle_overlay, OnToggleOverlay())
     HANDLE(add_trigger_pool, OnAddTriggerPool)
     HANDLE(wait_for_event_received, OnWaitForEventReceived)
-    if(strlen(sym.Str()) < 4 || strncmp(sym.Str(), "prc_", 4) == 0){
-        static Message msg("section", DataNode(""));
-        msg[0] = DataNode(sym.Str());
+    if(strlen(sym.Str()) >= 4 && strncmp(sym.Str(), "prc_", 4) == 0){
+        static Message msg("section", "");
+        msg[0] = Symbol(sym.Str());
         Handle(msg, true);
-        return DataNode(0);
+        return 0;
     }
     HANDLE_SUPERCLASS(RndPollable)
     HANDLE_SUPERCLASS(Hmx::Object)

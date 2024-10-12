@@ -207,7 +207,7 @@ void Hmx::Object::SetProperty(Symbol prop, const DataNode& val){
 int Hmx::Object::PropertySize(DataArray* prop){
     static DataNode n;
     if(SyncProperty(n, prop, 0, kPropSize)){
-        return n.Int(nullptr);
+        return n.Int();
     }
     else {
         MILO_ASSERT(prop->Size() == 1, 0x192);
@@ -293,7 +293,7 @@ void Hmx::Object::Copy(const Hmx::Object* obj, Hmx::Object::CopyType ty){
         const char* objname = obj->Name();
         const char* selfname = Name();
         const Symbol typ  = obj->Type();
-        
+
         MILO_WARN("Can't copy type \"%s\" or type props of %s to %s, different classes %s and %s",  typ, selfname, objname, selfclass, className);
     }
 }
@@ -363,16 +363,9 @@ void Hmx::Object::Replace(Hmx::Object* obj1, Hmx::Object* obj2){
 #pragma push
 #pragma dont_inline on
 #pragma pool_data off
-DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
-    Symbol sym = _msg->Sym(1);
-    MessageTimer timer((MessageTimer::Active()) ? this : 0, sym);
+BEGIN_HANDLERS(Hmx::Object)
     HANDLE_STATIC(get, OnGet);
-    {
-        static Symbol _s("get_array");
-        if(sym == _s){
-            return PropertyArray(_msg->Sym(2));
-        }
-    }
+    HANDLE_EXPR_STATIC(get_array, PropertyArray(_msg->Sym(2)));
     HANDLE_EXPR_STATIC(size, PropertySize(_msg->Array(2)));
     HANDLE_STATIC(set, OnSet);
     HANDLE_ACTION_STATIC(insert, InsertProperty(_msg->Array(2), _msg->Evaluate(3)));
@@ -380,12 +373,7 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     HANDLE_ACTION_STATIC(clear, PropertyClear(_msg->Array(2)));
     HANDLE_STATIC(append, OnPropertyAppend);
     HANDLE_EXPR_STATIC(has, Property(_msg->Array(2), false) != 0);
-    {
-        static Symbol _s("prop_handle");
-        if(sym == _s){
-            return HandleProperty(_msg->Array(2), _msg, true);
-        }
-    }
+    HANDLE_EXPR_STATIC(prop_handle, HandleProperty(_msg->Array(2), _msg, true));
     HANDLE_ACTION_STATIC(copy, Copy(_msg->Obj<Hmx::Object>(2), (CopyType)_msg->Int(3)));
     HANDLE_ACTION_STATIC(replace, Replace(_msg->Obj<Hmx::Object>(2), _msg->Obj<Hmx::Object>(3)));
     HANDLE_EXPR_STATIC(class_name, ClassName());
@@ -397,20 +385,9 @@ DataNode Hmx::Object::Handle(DataArray* _msg, bool _warn){
     HANDLE_EXPR_STATIC(is_a, IsASubclass(ClassName(), _msg->Sym(2)));
     HANDLE_EXPR_STATIC(get_type, Type());
     HANDLE_EXPR_STATIC(get_heap, AllocHeapName());
-    // if none of those symbols matched, we fall back here
-    bool stank = false;
-    DataArray* found;
-    if(mTypeDef){
-        found = mTypeDef->FindArray(sym, false);
-        if(found) stank = true;
-    }
-    if(stank){
-        DataNode ran = found->ExecuteScript(1, this, _msg, 2);
-        if(ran.Type() != kDataUnhandled) return DataNode(ran);
-    }
+    HANDLE_ARRAY(mTypeDef)
     HANDLE_CHECK(0x2E6);
-    return DataNode(kDataUnhandled, 0);
-}
+END_HANDLERS
 #pragma pop
 
 DataNode Hmx::Object::HandleType(DataArray* msg){

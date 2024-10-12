@@ -64,7 +64,7 @@ Symbol NameGenerator::GetRandomNameFromList(Symbol x) {
 }
 
 BEGIN_HANDLERS(NameGenerator)
-HANDLE_EXPR(get_random_name, GetRandomNameFromList(_msg->Sym(2)))
-HANDLE_SUPERCLASS(Hmx::Object)
-HANDLE_CHECK(110)
+    HANDLE_EXPR(get_random_name, GetRandomNameFromList(_msg->Sym(2)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(110)
 END_HANDLERS

@@ -87,7 +87,7 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
         bool ret = false;
         DataNode& node = CONST_ARRAY(member_arr)->Node(1);
         if(node.Type() == kDataInt){
-            if(CONST_ARRAY(member_arr)->Node(1).LiteralInt(0)) ret = true;
+            if(CONST_ARRAY(member_arr)->Node(1).LiteralInt()) ret = true;
         }
         mIsFake = ret;
     }
@@ -235,7 +235,7 @@ float BandSongMetadata::Rank(Symbol s) const {
         SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
         if(data) {
             return data->Rank(s);
-        } 
+        }
     }
     std::map<Symbol, float>::const_iterator it = mRanks.find(s);
     if (it != mRanks.end()) {

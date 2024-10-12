@@ -72,7 +72,7 @@ END_HANDLERS
 BEGIN_PROPSYNCS(RndMovie)
     if(sym == movie_file){
         if(_op == kPropSet){
-            const char* str = _val.Str(0);
+            const char* str = _val.Str();
             FilePath fp;
             fp.SetRoot(str);
             SetFile(fp, mStream);
@@ -85,7 +85,7 @@ BEGIN_PROPSYNCS(RndMovie)
     }
     if(sym == stream){
         if(_op == kPropSet){
-            SetFile(mFile, _val.Int(0) != 0);
+            SetFile(mFile, _val.Int() != 0);
         }
         else {
             if(_op == (PropOp)0x40) return false;
@@ -96,7 +96,7 @@ BEGIN_PROPSYNCS(RndMovie)
     SYNC_PROP(loop, mLoop)
     if(sym == tex){
         if(_op == kPropSet){
-            SetTex(_val.Obj<RndTex>(0));
+            SetTex(_val.Obj<RndTex>());
         }
         else {
             if(_op == (PropOp)0x40) return false;

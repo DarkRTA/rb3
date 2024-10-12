@@ -206,7 +206,7 @@ void MetaPerformer::SetSongs(DataArray* arr){
 
 Symbol MetaPerformer::GetCompletedSong() const {
     if(unk78.empty()){
-        if(TheGameMode->Property("loop_setlist", true)->Int(0)){
+        if(TheGameMode->Property("loop_setlist", true)->Int()){
             MILO_ASSERT(!mSongs.empty(), 0x290);
             return mSongs.back();
         }
@@ -325,7 +325,7 @@ bool MetaPerformer::IsNoFailActive() const {
     bool set = IsBandNoFailSet();
     bool ret = false;
     if(set){
-        if(TheGameMode->Property(nofail_allowed, true)->Int(0)) ret = true;
+        if(TheGameMode->Property(nofail_allowed, true)->Int()) ret = true;
     }
     return ret;
 }
@@ -337,7 +337,7 @@ bool MetaPerformer::IsBandNoFailSet() const {
 
 bool MetaPerformer::CanUpdateScoreLeaderboards(){
     if(TheGameMode){
-        if(!TheGameMode->Property("update_leaderboards", true)->Int(0)) return false;
+        if(!TheGameMode->Property("update_leaderboards", true)->Int()) return false;
     }
     if(TheGame->ResumedNoScore()) return false;
     else return true;

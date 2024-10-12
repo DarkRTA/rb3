@@ -122,7 +122,7 @@ void BandDirector::Enter(){
         mDisablePicking = 0;
         mNextShot = 0;
         static Message allowMsg("allow_intro_shot", DataNode(0));
-        int handled = HandleType(allowMsg).Int(0);
+        int handled = HandleType(allowMsg).Int();
         if(handled && !mIntroShot) PickIntroShot();
         if(handled && mIntroShot){
             static Message msg("set_intro_shot", DataNode(0));
@@ -231,8 +231,8 @@ void BandDirector::Poll(){
         UpdatePostProcOverlay(presets, p1, p2, fref);
 #ifdef MILO_DEBUG
         DataNode& fps_var = DataVariable("cheat.emulate_fps");
-        if(fps_var.Int(0) > 0){
-            int ifps = fps_var.Int(0);
+        if(fps_var.Int() > 0){
+            int ifps = fps_var.Int();
             mWorldPostProc->mEmulateFPS = ifps;
         }
 #endif
@@ -1333,9 +1333,9 @@ DataNode BandDirector::OnForcePreset(DataArray* da){
         float f3 = da->Size() > 3 ? da->Float(3) : 0;
         LightPreset* lp;
         if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
-            lp = mCurWorld->Find<LightPreset>(eval.Str(0), false);
+            lp = mCurWorld->Find<LightPreset>(eval.Str(), false);
         }
-        else lp = eval.Obj<LightPreset>(0);
+        else lp = eval.Obj<LightPreset>();
         LightPresetMgr()->ForcePreset(lp, f3);
     }
     return DataNode(0);
@@ -1349,14 +1349,14 @@ DataNode BandDirector::OnStompPresets(DataArray* da){
         LightPreset* lp2;
 
         if(eval2.Type() == kDataSymbol || eval2.Type() == kDataString){
-            lp1 = mCurWorld->Find<LightPreset>(eval2.Str(0), false);
+            lp1 = mCurWorld->Find<LightPreset>(eval2.Str(), false);
         }
-        else lp1 = eval2.Obj<LightPreset>(0);
+        else lp1 = eval2.Obj<LightPreset>();
 
         if(eval3.Type() == kDataSymbol || eval3.Type() == kDataString){
-            lp2 = mCurWorld->Find<LightPreset>(eval3.Str(0), false);
+            lp2 = mCurWorld->Find<LightPreset>(eval3.Str(), false);
         }
-        else lp2 = eval3.Obj<LightPreset>(0);
+        else lp2 = eval3.Obj<LightPreset>();
 
         LightPresetMgr()->StompPresets(lp1, lp2);
     }
@@ -1529,14 +1529,14 @@ void BandDirector::SetCharacterHideHackEnabled(bool b){
 }
 
 BEGIN_PROPSYNCS(BandDirector)
-    SYNC_PROP_SET(shot_5, mShotCategory, SetShot(_val.Sym(0), "shot_5"))
-    SYNC_PROP_SET(shot_bg, mShotCategory, SetShot(_val.Sym(0), coop_bg))
-    SYNC_PROP_SET(shot_bk, mShotCategory, SetShot(_val.Sym(0), coop_bk))
-    SYNC_PROP_SET(shot_gk, mShotCategory, SetShot(_val.Sym(0), coop_gk))
+    SYNC_PROP_SET(shot_5, mShotCategory, SetShot(_val.Sym(), "shot_5"))
+    SYNC_PROP_SET(shot_bg, mShotCategory, SetShot(_val.Sym(), coop_bg))
+    SYNC_PROP_SET(shot_bk, mShotCategory, SetShot(_val.Sym(), coop_bk))
+    SYNC_PROP_SET(shot_gk, mShotCategory, SetShot(_val.Sym(), coop_gk))
     SYNC_PROP_SET(postproc, (Hmx::Object*)0, )
     SYNC_PROP_SET(lightpreset, verse, )
     SYNC_PROP_SET(lightpreset_keyframe, next, )
-    SYNC_PROP_SET(world_event, none, ExportWorldEvent(_val.Sym(0)))
+    SYNC_PROP_SET(world_event, none, ExportWorldEvent(_val.Sym()))
     SYNC_PROP(merger, mMerger)
     SYNC_PROP(disable_picking, mDisablePicking)
     SYNC_PROP(disabled, mDisabled)
@@ -1546,21 +1546,21 @@ BEGIN_PROPSYNCS(BandDirector)
     SYNC_PROP(cam_postproc, mCamPostProc)
     SYNC_PROP_SET(cur_shot, mCurShot, )
     SYNC_PROP_SET(cur_world, mCurWorld, )
-    SYNC_PROP_SET(bass_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "bass"))
-    SYNC_PROP_SET(drum_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "drum"))
-    SYNC_PROP_SET(guitar_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "guitar"))
-    SYNC_PROP_SET(mic_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "mic"))
-    SYNC_PROP_SET(keyboard_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(0), "keyboard"))
-    SYNC_PROP_SET(part2_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part2Inst()) : GetModeInst("guitar"), _val.Sym(0)))
-    SYNC_PROP_SET(part3_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part3Inst()) : GetModeInst("bass"), _val.Sym(0)))
-    SYNC_PROP_SET(part4_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part4Inst()) : GetModeInst("drum"), _val.Sym(0)))
-    SYNC_PROP_SET(crowd, Symbol("crowd_realtime"), SetCrowd(_val.Sym(0)))
+    SYNC_PROP_SET(bass_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(), "bass"))
+    SYNC_PROP_SET(drum_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(), "drum"))
+    SYNC_PROP_SET(guitar_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(), "guitar"))
+    SYNC_PROP_SET(mic_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(), "mic"))
+    SYNC_PROP_SET(keyboard_intensity, Symbol("idle_realtime"), SendMessage(_val.Sym(), "keyboard"))
+    SYNC_PROP_SET(part2_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part2Inst()) : GetModeInst("guitar"), _val.Sym()))
+    SYNC_PROP_SET(part3_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part3Inst()) : GetModeInst("bass"), _val.Sym()))
+    SYNC_PROP_SET(part4_sing, Symbol("singalong_off"), SendMessage(mSongPref ? GetModeInst(mSongPref->Part4Inst()) : GetModeInst("drum"), _val.Sym()))
+    SYNC_PROP_SET(crowd, Symbol("crowd_realtime"), SetCrowd(_val.Sym()))
     SYNC_PROP(propanim, mPropAnim)
-    SYNC_PROP_SET(spot_bass, Symbol("off"), SetCharSpot(Symbol("bass"), _val.Sym(0)))
-    SYNC_PROP_SET(spot_drums, Symbol("off"), SetCharSpot(Symbol("drums"), _val.Sym(0)))
-    SYNC_PROP_SET(spot_guitar, Symbol("off"), SetCharSpot(Symbol("guitar"), _val.Sym(0)))
-    SYNC_PROP_SET(spot_keyboard, Symbol("off"), SetCharSpot(Symbol("keyboard"), _val.Sym(0)))
-    SYNC_PROP_SET(spot_vocal, Symbol("off"), SetCharSpot(Symbol("vocal"), _val.Sym(0)))
-    SYNC_PROP_SET(stagekit_fog, Symbol("off"), SetFog(_val.Sym(0)))
+    SYNC_PROP_SET(spot_bass, Symbol("off"), SetCharSpot(Symbol("bass"), _val.Sym()))
+    SYNC_PROP_SET(spot_drums, Symbol("off"), SetCharSpot(Symbol("drums"), _val.Sym()))
+    SYNC_PROP_SET(spot_guitar, Symbol("off"), SetCharSpot(Symbol("guitar"), _val.Sym()))
+    SYNC_PROP_SET(spot_keyboard, Symbol("off"), SetCharSpot(Symbol("keyboard"), _val.Sym()))
+    SYNC_PROP_SET(spot_vocal, Symbol("off"), SetCharSpot(Symbol("vocal"), _val.Sym()))
+    SYNC_PROP_SET(stagekit_fog, Symbol("off"), SetFog(_val.Sym()))
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS

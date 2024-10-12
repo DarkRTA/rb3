@@ -29,7 +29,7 @@ void Award::Configure(DataArray *i_pConfig) {
     int i;
     for (i = 0; i < pAwardArray->Size(); i++) {
         DataNode node = pAwardArray->Node(i);
-        DataArray *pAwardEntryArray = node.Array(0);
+        DataArray *pAwardEntryArray = node.Array();
 
         MILO_ASSERT(pAwardEntryArray, 0x3f);
         MILO_ASSERT(pAwardEntryArray->Size() >= 1, 0x40);

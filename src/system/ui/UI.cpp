@@ -18,7 +18,7 @@ BEGIN_HANDLERS(Automator)
     HANDLE_ACTION(set_auto_script, mAutoPath = _msg->Str(2))
     HANDLE_ACTION(set_record_script, mRecordPath = _msg->Str(2))
     HANDLE_ACTION(add_message_type, AddMessageType(_msg->Obj<MsgSource>(2), _msg->Sym(3)))
-    if(!mScreenScripts && !mRecord) return DataNode(kDataUnhandled, 0);
+    HANDLE_CONDITION(!mScreenScripts && !mRecord, DataNode(kDataUnhandled, 0));
     HANDLE_MESSAGE(UITransitionCompleteMsg)
     HANDLE_MESSAGE(ButtonDownMsg)
     HANDLE_MESSAGE(UIComponentSelectMsg)
@@ -26,10 +26,7 @@ BEGIN_HANDLERS(Automator)
     HANDLE_MESSAGE(UIComponentFocusChangeMsg)
     HANDLE_MESSAGE(UIScreenChangeMsg)
     HANDLE(cheat_invoked, OnCheatInvoked)
-    {
-        DataNode result = OnCustomMsg(Message(_msg));
-        if(result.Type() != kDataUnhandled) return DataNode(result);
-    }
+    HANDLE_METHOD(OnCustomMsg)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x1B2)
 END_HANDLERS
@@ -154,18 +151,15 @@ UIResource* UIManager::FindResource(const DataArray* array) {
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(UIManager)
-    bool transitioning = false;
-    bool block = false;
-    if(InTransition() || InComponentSelect()) transitioning = true;
-    if(transitioning){
-        if(BlockHandlerDuringTransition(sym, _msg)) block = true;
-    }
-    if(block) return DataNode(0);
+    HANDLE_CONDITION((InTransition() || InComponentSelect()) && BlockHandlerDuringTransition(sym, _msg), 0)
     HANDLE_MEMBER_PTR(mSink);
     HANDLE_ACTION(use_joypad, UseJoypad(_msg->Int(2), true))
     HANDLE_ACTION(set_virtual_dpad, mJoyClient->SetVirtualDpad(_msg->Int(2)))
     HANDLE_ACTION(push_screen, PushScreen(_msg->Obj<UIScreen>(2)))
-    HANDLE_ACTION(pop_screen, if(_msg->Size() > 2) PopScreen(_msg->Obj<UIScreen>(2)); else PopScreen(0); )
+    HANDLE_ACTION_IF_ELSE(pop_screen, _msg->Size() > 2,
+        PopScreen(_msg->Obj<UIScreen>(2)),
+        PopScreen(0)
+    )
     HANDLE_EXPR(pushed_screens, (int)mPushedScreens.size())
     HANDLE(goto_screen, OnGotoScreen)
     HANDLE(go_back_screen, OnGoBackScreen)

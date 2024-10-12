@@ -127,8 +127,8 @@ DataNode RndAnimFilter::OnSafeAnims(DataArray* da){
 }
 
 BEGIN_PROPSYNCS(RndAnimFilter)
-    SYNC_PROP_SET(anim, mAnim, SetAnim(_val.Obj<RndAnimatable>(0)))
-    SYNC_PROP_SET(scale, mScale, mScale = std::fabs(_val.Float(0)))
+    SYNC_PROP_SET(anim, mAnim, SetAnim(_val.Obj<RndAnimatable>()))
+    SYNC_PROP_SET(scale, mScale, mScale = std::fabs(_val.Float()))
     SYNC_PROP(offset, mOffset)
     SYNC_PROP(period, mPeriod)
     SYNC_PROP(start, mStart)

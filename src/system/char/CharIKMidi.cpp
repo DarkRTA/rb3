@@ -82,5 +82,5 @@ BEGIN_PROPSYNCS(CharIKMidi)
     SYNC_PROP(bone, mBone)
     SYNC_PROP(anim_blend_weightable, mAnimBlender)
     SYNC_PROP(anim_blend_max, mMaxAnimBlend)
-    SYNC_PROP_SET(cur_spot, mCurSpot, NewSpot(_val.Obj<RndTransformable>(0), 0))
+    SYNC_PROP_SET(cur_spot, mCurSpot, NewSpot(_val.Obj<RndTransformable>(), 0))
 END_PROPSYNCS

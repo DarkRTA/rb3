@@ -39,7 +39,7 @@ SAVE_OBJ(PanelDir, 57)
 void PanelDir::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(8, 0)
-    PushRev(packRevs(gAltRev, gRev), this);    
+    PushRev(packRevs(gAltRev, gRev), this);
     RndDir::PreLoad(bs);
 }
 
@@ -277,7 +277,7 @@ BEGIN_HANDLERS(PanelDir)
     HANDLE(disable, OnDisableComponent)
     HANDLE_ACTION(set_focus, SetFocusComponent(_msg->Obj<UIComponent>(2), gNullStr))
     HANDLE_EXPR(focus_name, mFocusComponent ? mFocusComponent->Name() : "")
-    if(sym == get_focusable_components){ return GetFocusableComponentList(); }
+    HANDLE_EXPR(get_focusable_components, GetFocusableComponentList())
     HANDLE_ACTION(set_show_focus_component, SetShowFocusComponent(_msg->Int(2)))
     HANDLE_SUPERCLASS(RndDir)
     HANDLE_MESSAGE(ButtonDownMsg)
@@ -418,7 +418,7 @@ bool PanelDir::PropSyncEditModePanels(std::vector<FilePath>& panels, DataNode& v
                 val = DataNode(*it);
                 break;
             case kPropSet:
-                (*it).SetRoot(val.Str(0));
+                (*it).SetRoot(val.Str());
                 SyncEditModePanels();
                 break;
             case kPropRemove:
@@ -426,7 +426,7 @@ bool PanelDir::PropSyncEditModePanels(std::vector<FilePath>& panels, DataNode& v
                 SyncEditModePanels();
                 break;
             case kPropInsert:
-                panels.insert(it, FilePath(val.Str(0)));
+                panels.insert(it, FilePath(val.Str()));
                 SyncEditModePanels();
                 break;
             default:

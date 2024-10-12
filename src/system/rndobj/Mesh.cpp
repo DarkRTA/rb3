@@ -115,7 +115,7 @@ void RndMesh::SetVolume(RndMesh::Volume vol){
                 }
                 mBSPTree = new BSPNode();
                 for(int i = 0; i < 6; i++){
-                    
+
                 }
             }
             else if(mVolume == kVolumeBSP){
@@ -441,7 +441,7 @@ void RndMesh::PostLoad(BinStream& bs) {
         }
     }
     else if(gRev > 0x10) bs >> mPatches;
-    
+
     if(gRev > 0x1C){
         bs >> mBones;
         int max = MaxBones();
@@ -848,9 +848,9 @@ DataNode RndMesh::OnUnitizeNormals(const DataArray* da){
 DataNode RndMesh::OnConfigureMesh(const DataArray* da){
     if(Type() != configurable_mesh) MILO_WARN("Can't configure nonconfigurable mesh %s\n", Name());
     else {
-        float fleft = Property(left, true)->Float(0);
-        float fright = Property(right, true)->Float(0);
-        float fheight = Property(height, true)->Float(0);
+        float fleft = Property(left, true)->Float();
+        float fright = Property(right, true)->Float();
+        float fheight = Property(height, true)->Float();
         Vector3 v54(fleft, 0, fheight);
         Vector3 v60(fleft, 0, 0);
         Vector3 v6c(fright, 0, 0);
@@ -883,10 +883,10 @@ BEGIN_PROPSYNCS(RndMesh)
                 int res = 0;
                 switch(node.Type()){
                     case kDataInt:
-                        res = node.Int(0);
+                        res = node.Int();
                         break;
                     case kDataSymbol:
-                        const char* bitstr = node.Sym(0).Str();
+                        const char* bitstr = node.Sym().Str();
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
                         }
@@ -907,7 +907,7 @@ BEGIN_PROPSYNCS(RndMesh)
                     _val = DataNode(final > 0);
                 }
                 else {
-                    if(_val.Int(0) != 0) mGeomOwner->mMutable |= res;
+                    if(_val.Int() != 0) mGeomOwner->mMutable |= res;
                     else mGeomOwner->mMutable &= ~res;
                 }
                 return true;
@@ -915,15 +915,15 @@ BEGIN_PROPSYNCS(RndMesh)
             else return PropSync(mGeomOwner->mMutable, _val, _prop, _i, _op);
         }
     }
-    SYNC_PROP_SET(num_verts, Verts().size(), SetNumVerts(_val.Int(0)))
-    SYNC_PROP_SET(num_faces, (int)Faces().size(), SetNumFaces(_val.Int(0)))
-    SYNC_PROP_SET(volume, GetVolume(), SetVolume((Volume)_val.Int(0)))
-    SYNC_PROP_SET(has_valid_bones, HasValidBones(0), _val.Int(0))
+    SYNC_PROP_SET(num_verts, Verts().size(), SetNumVerts(_val.Int()))
+    SYNC_PROP_SET(num_faces, (int)Faces().size(), SetNumFaces(_val.Int()))
+    SYNC_PROP_SET(volume, GetVolume(), SetVolume((Volume)_val.Int()))
+    SYNC_PROP_SET(has_valid_bones, HasValidBones(0), _val.Int())
     SYNC_PROP(bones, mBones)
     {
         static Symbol _s("has_ao_calculation");
         if(sym == _s){
-            if(_op == kPropSet) mHasAOCalc = _val.Int(0);
+            if(_op == kPropSet) mHasAOCalc = _val.Int();
             else _val = DataNode(mHasAOCalc);
             return true;
         }
@@ -931,12 +931,12 @@ BEGIN_PROPSYNCS(RndMesh)
     {
         static Symbol _s("force_no_quantize");
         if(sym == _s){
-            if(_op == kPropSet) mForceNoQuantize = _val.Int(0);
+            if(_op == kPropSet) mForceNoQuantize = _val.Int();
             else _val = DataNode(mForceNoQuantize);
             return true;
         }
     }
-    SYNC_PROP_SET(keep_mesh_data, mKeepMeshData, SetKeepMeshData(_val.Int(0)))
+    SYNC_PROP_SET(keep_mesh_data, mKeepMeshData, SetKeepMeshData(_val.Int()))
     SYNC_SUPERCLASS(RndTransformable)
     SYNC_SUPERCLASS(RndDrawable)
 END_PROPSYNCS

@@ -5,7 +5,7 @@
 #include "synth/Utl.h"
 #include "utl/Symbols.h"
 
-NoteVoiceInst::NoteVoiceInst(MidiInstrument* minst, SampleZone* zone, unsigned char uc1, unsigned char uc2, int i1, int i2, float f) : 
+NoteVoiceInst::NoteVoiceInst(MidiInstrument* minst, SampleZone* zone, unsigned char uc1, unsigned char uc2, int i1, int i2, float f) :
     mSample(0), mVolume(0), mStartProgress(0), mTriggerNote(uc1), mCenterNote(zone->mCenterNote), mStarted(0), mStopped(0), mGlideID(i2), mGlideFrames(0),
     mGlideToNote(0), mGlideFromNote(0), mGlideFramesLeft(-1), mFineTune(f), mDurationFramesLeft(i1), mOwner(minst) {
     if(zone->mSample){
@@ -78,7 +78,7 @@ void NoteVoiceInst::SetPan(float f){
 
 DECOMP_FORCEFUNC(MidiInstrument, SampleInst, GetProgress())
 
-MidiInstrument::MidiInstrument() : mMultiSampleMap(this), mPatchNumber(0), mSend(this, 0), mReverbMixDb(-96.0f), mReverbEnable(0), 
+MidiInstrument::MidiInstrument() : mMultiSampleMap(this), mPatchNumber(0), mSend(this, 0), mReverbMixDb(-96.0f), mReverbEnable(0),
     mActiveVoices(this, kObjListNoNull), mFaders(this), mFineTuneCents(0.0f) {
     mFaders.Add(TheSynth->unk4c);
     mFaders.Add(TheSynth->unk54);
@@ -122,9 +122,9 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(MidiInstrument)
     SYNC_PROP(multisamplemaps, mMultiSampleMap)
-    SYNC_PROP_SET(send, mSend, SetSend(_val.Obj<FxSend>(0)))
-    SYNC_PROP_SET(reverb_mix_db, mReverbMixDb, SetReverbMixDb(_val.Float(0)))
-    SYNC_PROP_SET(reverb_enable, mReverbEnable, SetReverbEnable(_val.Int(0)))
+    SYNC_PROP_SET(send, mSend, SetSend(_val.Obj<FxSend>()))
+    SYNC_PROP_SET(reverb_mix_db, mReverbMixDb, SetReverbMixDb(_val.Float()))
+    SYNC_PROP_SET(reverb_enable, mReverbEnable, SetReverbEnable(_val.Int()))
     SYNC_PROP(faders, mFaders)
     SYNC_PROP(patchnum, mPatchNumber)
 END_PROPSYNCS

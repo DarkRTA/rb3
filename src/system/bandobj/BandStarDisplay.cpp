@@ -9,7 +9,7 @@ BandStarDisplay::BandStarDisplay() : mNumStars(0), mStars(this), mStarSweepAnims
 }
 
 BandStarDisplay::~BandStarDisplay(){
-    
+
 }
 
 void BandStarDisplay::SetNumStars(float f, bool b){
@@ -107,8 +107,8 @@ void BandStarDisplay::PostLoad(BinStream& bs){
 }
 
 BEGIN_PROPSYNCS(BandStarDisplay)
-    SYNC_PROP_SET(num_stars, mNumStars, SetNumStars(_val.Float(0), true))
-    SYNC_PROP_SET(star_type, mStarType, SetStarType(_val.Sym(0), false))
+    SYNC_PROP_SET(num_stars, mNumStars, SetNumStars(_val.Float(), true))
+    SYNC_PROP_SET(star_type, mStarType, SetStarType(_val.Sym(), false))
     SYNC_SUPERCLASS(RndDir)
 END_PROPSYNCS
 
