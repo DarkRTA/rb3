@@ -51,7 +51,7 @@ public:
     void RenameCharacter(TourCharLocal*, const char*);
     bool HasChar(const TourCharLocal*);
     void GetFirstEmptyPatch();
-    void GetTexAtPatchIndex(int) const;
+    RndTex* GetTexAtPatchIndex(int) const;
     void GetPatchIndex(const PatchDir*) const;
     void PotentiallyDeleteStandin(HxGuid);
     int GetCharacterStandinIndex(CharData*) const;
