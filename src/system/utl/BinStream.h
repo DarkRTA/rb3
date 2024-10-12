@@ -192,7 +192,7 @@ public:
 template<class T, class Allocator>
 BinStream& operator<<(BinStream& bs, const std::vector<T, Allocator>& vec){
     bs << (int)vec.size();
-    for(std::vector<T, Allocator>::const_iterator it = vec.begin(); it != vec.end(); it++){
+    for(typename std::vector<T, Allocator>::const_iterator it = vec.begin(); it != vec.end(); it++){
         bs << *it;
     }
     return bs;
@@ -204,7 +204,7 @@ BinStream& operator>>(BinStream& bs, std::vector<T, Allocator>& vec){
     bs >> length;
     vec.resize(length);
 
-    for(std::vector<T, Allocator>::iterator it = vec.begin(); it != vec.end(); it++){
+    for(typename std::vector<T, Allocator>::iterator it = vec.begin(); it != vec.end(); it++){
         bs >> *it;
     }
 
@@ -217,7 +217,7 @@ BinStream& operator>>(BinStream& bs, std::list<T, Allocator>& list){
     bs >> length;
     list.resize(length);
 
-    for(std::list<T, Allocator>::iterator it = list.begin(); it != list.end(); it++){
+    for(typename std::list<T, Allocator>::iterator it = list.begin(); it != list.end(); it++){
         bs >> *it;
     }
 
@@ -227,7 +227,7 @@ BinStream& operator>>(BinStream& bs, std::list<T, Allocator>& list){
 template<class T1, class T2>
 BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
     bs << map.size();
-    for(std::map<T1, T2>::const_iterator it = map.begin(); it != map.end(); ++it){
+    for(typename std::map<T1, T2>::const_iterator it = map.begin(); it != map.end(); ++it){
         bs << it->first << it->second;
     }
     return bs;
