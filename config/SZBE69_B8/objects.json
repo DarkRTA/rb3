@@ -324,7 +324,7 @@
             "band3/tour/TourQuestGameRules.cpp": "Matching",
             "band3/tour/TourReward.cpp": "Equivalent",
             "band3/tour/TourSavable.cpp": "Matching",
-            "band3/tour/TourWeightManager.cpp": "MISSING"
+            "band3/tour/TourWeightManager.cpp": "Matching"
         }
     },
     "network": {

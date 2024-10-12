@@ -114,6 +114,25 @@ Quest* QuestManager::GetQuest(Symbol s) const {
     else return 0;
 }
 
+bool QuestManager::IsQuestAvailable(const TourProgress& progress, Symbol s1, Symbol s2, int i){
+    Quest* pQuest = GetQuest(s1);
+    MILO_ASSERT(pQuest, 0xBD);
+    if(i != -1){
+        int tier = pQuest->GetTier();
+        if(tier != -1 && tier != i){
+            return false;
+        }
+    }
+    else {
+        if(s2 == "" || pQuest->GetGroup() == s2){
+            return pQuest->GetPrereqs()->IsMet(progress);
+            // if(!pQuest->GetPrereqs()->IsMet(progress)) return false;
+            // else return true;
+        }
+        else return false;
+    }
+}
+
 void QuestManager::CompleteQuest(TourProgress* i_pProgress, Symbol s) {
     MILO_ASSERT(i_pProgress, 230);
     QuestJournal* pJournal = &i_pProgress->mQuests;
