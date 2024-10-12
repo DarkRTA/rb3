@@ -7,15 +7,19 @@
 #include "meta_band/BandProfile.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ProfileMgr.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/DateTime.h"
 #include "os/Debug.h"
 #include "stl/pointers/_vector.h"
 #include "tour/TourPropertyCollection.h"
+#include "tour/TourSavable.h"
 #include "utl/BinStream.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 TourProgress::TourProgress() : mQuests(*this), mLastTouchTime(0), mOnTour(0), m_symTourDesc(""), mNumCompletedGigs(0), mCurrentQuest(gNullStr), mMetaScore(0), mNewStars(0), mWonQuest(0), mCurrentGigNum(0) {
     mSaveSizeMethod = &SaveSize;
@@ -190,8 +194,7 @@ Symbol TourProgress::GetVenueForCurrentGig() const {
 }
 
 bool TourProgress::IsTourComplete() const {
-    if(!mOnTour) return false;
-    else return GetNumTotalGigs() <= mNumCompletedGigs;
+    return !mOnTour ? false : GetNumTotalGigs() <= mNumCompletedGigs;
 }
 
 bool TourProgress::AreAllTourGigsComplete() const {
@@ -367,24 +370,94 @@ Symbol TourProgress::GetQuestFilter(int i_iIndex) const {
     return mQuestFilters[i_iIndex];
 }
 
-// undefined4 __thiscall TourProgress::GetQuestFilter(TourProgress *this,int param_1)
+bool TourProgress::HasQuestFilter(Symbol s) const {
+    bool isdynamic = s == filter_dynamic_artist;
+    for(int i = 0; i < 3; i++){
+        Symbol filt = GetQuestFilter(i);
+        if(filt == s) return true;
+        if(isdynamic && strncmp("filter_artist_", filt.Str(), 0xE) == 0) return true;
+    }
+    return false;
+}
 
-// {
-//   bool bVar1;
-//   char *pcVar2;
-  
-//   bVar1 = false;
-//   if ((param_1 > -1) && (param_1 < 3)) {
-//     bVar1 = true;
-//   }
-//   if (!bVar1) {
-//     pcVar2 = ::MakeString(kAssertStr,s_TourProgress.cpp_80bacbf1,0x2a2,
-//                           s_(_0)_<=_(_i_iIndex)_&&_(_i_iInde_80bacc20);
-//     Debug::Fail((Debug *)TheDebug,pcVar2);
-//   }
-//   return *(undefined4 *)(this + param_1 * 4 + 0x7c);
-// }
+void TourProgress::SetQuestFilter(int i_iIndex, Symbol s){
+    MILO_ASSERT(( 0) <= ( i_iIndex) && ( i_iIndex) < ( kTour_NumQuestFilters), 0x2C2);
+    mQuestFilters[i_iIndex] = s;
+    HandleDirty(3);
+}
 
+void TourProgress::ClearQuestFilters(){
+    for(int i = 0; i < 3; i++){
+        SetQuestFilter(i, gNullStr);
+    }
+}
+
+int TourProgress::GetToursPlayed(Symbol s) const {
+    int ret = 0;
+    std::map<Symbol, int>::const_iterator it = unka0.find(s);
+    if(it != unka0.end()) ret = it->second;
+    return ret;
+}
+
+int TourProgress::GetTourMostStars(Symbol s) const {
+    int ret = 0;
+    std::map<Symbol, int>::const_iterator it = unk88.find(s);
+    if(it != unk88.end()) ret = it->second;
+    return ret;
+}
+
+void TourProgress::SetMetaScore(int i){
+    mMetaScore = i;
+    HandleDirty(3);
+}
+
+void TourProgress::SetToursPlayedMap(const std::map<Symbol, int>& map){
+    unka0 = map;
+    HandleDirty(3);
+}
+
+void TourProgress::SetTourMostStarsMap(const std::map<Symbol, int>& map){
+    unk88 = map;
+    HandleDirty(3);
+}
+
+void TourProgress::FakeFill(){
+    mQuests.FakeFill();
+    mTourProperties.FakeFill();
+    mPerformanceProperties.FakeFill();
+}
+
+#pragma push
+#pragma dont_inline on
 BEGIN_HANDLERS(TourProgress)
     HANDLE_ACTION(set_on_tour, SetOnTour(_msg->Int(2)))
+    HANDLE_EXPR(is_on_tour, IsOnTour())
+    HANDLE_EXPR(is_tour_complete, IsTourComplete())
+    HANDLE_ACTION(set_tour_desc, SetTourDesc(_msg->Sym(2)))
+    HANDLE_EXPR(get_total_gigs, GetNumTotalGigs())
+    HANDLE_EXPR(get_current_gig_num, GetCurrentGigNum())
+    HANDLE_EXPR(get_num_completed_gigs, GetNumCompletedGigs())
+    HANDLE_EXPR(get_stars_for_gig, GetNumStarsForGig(_msg->Int(2)))
+    HANDLE_EXPR(are_all_tour_gigs_complete, AreAllTourGigsComplete())
+    HANDLE_ACTION(reset_tour_data, ResetTourData())
+    HANDLE_EXPR(get_property_value, GetTourPropertyValue(_msg->Sym(2)))
+    HANDLE_EXPR(is_quest_won, GetWonQuest())
+    HANDLE_EXPR(get_tour_status, GetTourStatus(_msg->Int(2)))
+    HANDLE_EXPR(does_tour_status_exist, DoesTourStatusExist(_msg->Int(2)))
+    HANDLE_EXPR(get_num_stars_for_tour_status, GetNumStarsForTourStatus(_msg->Int(2)))
+    HANDLE_EXPR(get_num_stars, GetNumStars())
+    HANDLE_EXPR(get_total_stars_for_tour, GetTotalStarsForTour())
+    HANDLE_EXPR(get_last_touched_date_string, GetLastTouchedDateString())
+    HANDLE_ACTION(clear_new_stars, ClearNewStars())
+    HANDLE_ACTION(handle_quest_finished, HandleQuestFinished())
+    HANDLE_ACTION(update_most_stars, UpdateMostStars())
+    HANDLE_EXPR(get_tour_welcome, GetTourWelcome())
+    HANDLE_EXPR(get_tour_name, GetTourName())
+    HANDLE_EXPR(get_next_city, GetNextCity())
+    HANDLE_EXPR(does_tour_have_leaderboard, DoesTourHaveLeaderboard())
+    HANDLE_EXPR(get_tour_leaderboard_goal, GetTourLeaderboardGoal())
+    HANDLE_ACTION(dump_properties, DumpProperties())
+    HANDLE_SUPERCLASS(TourSavable)
+    HANDLE_CHECK(0x373)
 END_HANDLERS
+#pragma pop

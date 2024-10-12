@@ -70,6 +70,15 @@ public:
     Symbol GetTourWelcome() const;
     bool AreQuestFiltersEmpty() const;
     Symbol GetQuestFilter(int) const;
+    bool HasQuestFilter(Symbol) const;
+    void SetQuestFilter(int, Symbol);
+    int GetToursPlayed(Symbol) const;
+    int GetTourMostStars(Symbol) const;
+    void SetMetaScore(int);
+    void SetToursPlayedMap(const std::map<Symbol, int>&);
+    void SetTourMostStarsMap(const std::map<Symbol, int>&);
+    void FakeFill();
+    void DumpProperties();
 
     static int SaveSize(int);
 

@@ -12,6 +12,7 @@ public:
     float GetPropertyValue(Symbol) const;
     void SetPropertyValue(Symbol, float);
     void Clear();
+    void FakeFill();
 
     static int SaveSize(int);
 
