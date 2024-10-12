@@ -16,7 +16,7 @@ CompileFlags:
     "-fno-builtin",
 
     # Target definitions
-    "--target=ppc32-unknown=linux-eabi",
+    "--target=ppc32-unknown-eabi",
   ]
 ---
 # C files
