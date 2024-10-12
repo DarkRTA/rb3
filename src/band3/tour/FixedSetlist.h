@@ -1,15 +1,12 @@
 #ifndef TOUR_FIXEDSETLIST_H
 #define TOUR_FIXEDSETLIST_H
-
 #include "system/obj/Data.h"
 
 class FixedSetlist {
-
 public:
     FixedSetlist();
     virtual ~FixedSetlist();
 
-private:
     void Init(const DataArray*);
     Symbol GetName() const;
     Symbol GetGroup() const;
