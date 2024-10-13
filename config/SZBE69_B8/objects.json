@@ -311,7 +311,7 @@
             "band3/tour/TourCharLocal.cpp": "Matching",
             "band3/tour/TourCharRemote.cpp": "Matching",
             "band3/tour/TourCondition.cpp": "Matching",
-            "band3/tour/TourDesc.cpp": "MISSING",
+            "band3/tour/TourDesc.cpp": "NonMatching",
             "band3/tour/TourDescPanel.cpp": "MISSING",
             "band3/tour/TourGameModifier.cpp": "Matching",
             "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
