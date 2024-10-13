@@ -2,6 +2,7 @@
 #define MSL_CPP_CMATH_H
 #include <MSL_C/math.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::double_t;
     using ::float_t;
@@ -141,7 +142,7 @@ namespace std {
     inline float abs(float x) { return fabsf(x); }
     inline double abs(double x) { return fabs(x); }
     inline long double abs(long double x) { return fabsl(x); }
-
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

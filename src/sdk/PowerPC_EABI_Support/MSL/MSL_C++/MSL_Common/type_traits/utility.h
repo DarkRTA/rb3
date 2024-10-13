@@ -3,6 +3,10 @@
 
 // clang-format off: conciseness
 
+#ifdef DECOMP_IDE_FLAG
+#define __static_assert(cond, msg)
+#endif
+
 #define __MWERKS_NOEVAL __static_assert(false, "Cannot be called from an evaluated context!")
 
 namespace std {

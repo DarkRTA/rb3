@@ -9,12 +9,6 @@
 extern "C" {
 #endif
 
-#ifdef DECOMP_IDE_FLAG
-/* Get clangd to shut up about __fabs being undefined. */
-#define __fabs(x) fabs(x)
-#define __frsqrte(x) (x)
-#endif
-
 /*
 #define HUGE_VALF
 #define HUGE_VALL
@@ -185,8 +179,6 @@ _DECL_MATH2(copysign);
 #undef _DECL_MATH2P
 #undef _DECL_MATH3
 #undef _DECL_MATH3C
-
-inline double fabs(double x) { return __fabs(x); }
 
 #ifdef __cplusplus
 }

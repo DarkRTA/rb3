@@ -17,7 +17,7 @@ import os
 import platform
 import sys
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional, Set, Tuple, Union, cast
+from typing import IO, Any, Dict, Iterable, List, Optional, Set, Tuple, cast
 
 from . import ninja_syntax
 from .ninja_syntax import serialize_path
@@ -155,10 +155,12 @@ class ProjectConfig:
         self.custom_build_steps: Optional[Dict[str, List[Dict[str, Any]]]] = (
             None  # Custom build steps, types are ["pre-compile", "post-compile", "post-link", "post-build"]
         )
-        self.make_clangd_config: bool = False
-        self.clangd_flags: Optional[List[str]] = None
+        self.generate_compile_commands: bool = (
+            True  # Generate compile_commands.json for clangd
+        )
 
         # Progress output, progress.json and report.json config
+        self.progress = True  # Enable progress output
         self.progress_all: bool = True  # Include combined "all" category
         self.progress_modules: bool = True  # Include combined "modules" category
         self.progress_each_module: bool = (
@@ -201,9 +203,12 @@ class ProjectConfig:
                 out[obj.name] = obj.resolve(self, lib)
         return out
 
+    # Gets the output path for build-related files.
     def out_path(self) -> Path:
         return self.build_dir / str(self.version)
 
+    # Gets the path to the compilers directory.
+    # Exits the program if neither `compilers_path` nor `compilers_tag` is provided.
     def compilers(self) -> Path:
         if self.compilers_path:
             return self.compilers_path
@@ -212,6 +217,7 @@ class ProjectConfig:
         else:
             sys.exit("ProjectConfig.compilers_tag missing")
 
+    # Gets the wrapper to use for compiler commands, if set.
     def compiler_wrapper(self) -> Optional[Path]:
         wrapper = self.wrapper
 
@@ -222,6 +228,7 @@ class ProjectConfig:
 
         return wrapper
 
+    # Determines whether or not to use wibo as the compiler wrapper.
     def use_wibo(self) -> bool:
         return (
             self.wibo_tag is not None
@@ -241,11 +248,26 @@ CHAIN = "cmd /c " if is_windows() else ""
 EXE = ".exe" if is_windows() else ""
 
 
-def make_flags_str(cflags: Union[str, List[str]]) -> str:
-    if isinstance(cflags, list):
-        return " ".join(cflags)
-    else:
-        return cflags
+def file_is_asm(path: Path) -> bool:
+    return path.suffix.lower() == ".s"
+
+
+def file_is_c(path: Path) -> bool:
+    return path.suffix.lower() == ".c"
+
+
+def file_is_cpp(path: Path) -> bool:
+    return path.suffix.lower() in (".cc", ".cp", ".cpp", ".cxx")
+
+
+def file_is_c_cpp(path: Path) -> bool:
+    return file_is_c(path) or file_is_cpp(path)
+
+
+def make_flags_str(flags: Optional[List[str]]) -> str:
+    if flags is None:
+        return ""
+    return " ".join(flags)
 
 
 # Load decomp-toolkit generated config.json
@@ -262,14 +284,14 @@ def load_build_config(
     build_config: Dict[str, Any] = json.load(f)
     config_version = build_config.get("version")
     if config_version is None:
-        # Invalid config.json
+        print("Invalid config.json, regenerating...")
         f.close()
         os.remove(build_config_path)
         return None
 
     dtk_version = str(config.dtk_tag)[1:]  # Strip v
     if versiontuple(config_version) < versiontuple(dtk_version):
-        # Outdated config.json
+        print("Outdated config.json, regenerating...")
         f.close()
         os.remove(build_config_path)
         return None
@@ -278,14 +300,14 @@ def load_build_config(
     return build_config
 
 
-# Generate build.ninja and objdiff.json
+# Generate build.ninja, objdiff.json and compile_commands.json
 def generate_build(config: ProjectConfig) -> None:
     config.validate()
     objects = config.objects()
     build_config = load_build_config(config, config.out_path() / "config.json")
     generate_build_ninja(config, objects, build_config)
     generate_objdiff_config(config, objects, build_config)
-    generate_clangd_commands(config, objects, build_config)
+    generate_compile_commands(config, objects, build_config)
 
 
 # Generate build.ninja
@@ -311,7 +333,7 @@ def generate_build_ninja(
     # Variables
     ###
     n.comment("Variables")
-    n.variable("ldflags", " ".join(config.ldflags or []))
+    n.variable("ldflags", make_flags_str(config.ldflags))
     if config.linker_version is None:
         sys.exit("ProjectConfig.linker_version missing")
     n.variable("mw_version", Path(config.linker_version))
@@ -450,7 +472,7 @@ def generate_build_ninja(
 
     compilers = config.compilers()
     compilers_implicit: Optional[Path] = None
-    if config.compilers_tag:
+    if config.compilers_path is None and config.compilers_tag is not None:
         compilers_implicit = compilers
         n.build(
             outputs=compilers,
@@ -674,7 +696,6 @@ def generate_build_ninja(
             n.comment(f"Link {self.name}")
             if self.module_id == 0:
                 elf_path = build_path / f"{self.name}.elf"
-                dol_path = build_path / f"{self.name}.dol"
                 elf_ldflags = f"$ldflags -lcf {serialize_path(self.ldscript)}"
                 if config.generate_map:
                     elf_map = map_path(elf_path)
@@ -739,16 +760,35 @@ def generate_build_ninja(
         source_added: Set[Path] = set()
 
         def c_build(obj: Object, src_path: Path) -> Optional[Path]:
-            cflags_str = make_flags_str(obj.options["cflags"])
-            if obj.options["extra_cflags"] is not None:
-                extra_cflags_str = make_flags_str(obj.options["extra_cflags"])
-                cflags_str += " " + extra_cflags_str
-            used_compiler_versions.add(obj.options["mw_version"])
-
             # Avoid creating duplicate build rules
             if obj.src_obj_path is None or obj.src_obj_path in source_added:
                 return obj.src_obj_path
             source_added.add(obj.src_obj_path)
+
+            cflags = obj.options["cflags"]
+            extra_cflags = obj.options["extra_cflags"]
+
+            # Add appropriate language flag if it doesn't exist already
+            # Added directly to the source so it flows to other generation tasks
+            if not any(flag.startswith("-lang") for flag in cflags) and (
+                extra_cflags is None
+                or not any(flag.startswith("-lang") for flag in extra_cflags)
+            ):
+                # Ensure extra_cflags is a unique instance,
+                # and insert into there to avoid modifying shared sets of flags
+                if extra_cflags is None:
+                    extra_cflags = []
+                extra_cflags = obj.options["extra_cflags"] = list(extra_cflags)
+                if file_is_cpp(src_path):
+                    extra_cflags.insert(0, "-lang=c++")
+                else:
+                    extra_cflags.insert(0, "-lang=c")
+
+            cflags_str = make_flags_str(cflags)
+            if extra_cflags is not None:
+                extra_cflags_str = make_flags_str(extra_cflags)
+                cflags_str += " " + extra_cflags_str
+            used_compiler_versions.add(obj.options["mw_version"])
 
             # Add MWCC build rule
             lib_name = obj.options["lib"]
@@ -781,7 +821,7 @@ def generate_build_ninja(
             if obj.options["host"] and obj.host_obj_path is not None:
                 n.build(
                     outputs=obj.host_obj_path,
-                    rule="host_cc" if src_path.suffix == ".c" else "host_cpp",
+                    rule="host_cc" if file_is_c(src_path) else "host_cpp",
                     inputs=src_path,
                     variables={
                         "basedir": os.path.dirname(obj.host_obj_path),
@@ -841,10 +881,10 @@ def generate_build_ninja(
             link_built_obj = obj.completed
             built_obj_path: Optional[Path] = None
             if obj.src_path is not None and obj.src_path.exists():
-                if obj.src_path.suffix in (".c", ".cp", ".cpp"):
+                if file_is_c_cpp(obj.src_path):
                     # Add MWCC & host build rules
                     built_obj_path = c_build(obj, obj.src_path)
-                elif obj.src_path.suffix == ".s":
+                elif file_is_asm(obj.src_path):
                     # Add assembler build rule
                     built_obj_path = asm_build(obj, obj.src_path, obj.src_obj_path)
                 else:
@@ -1051,7 +1091,12 @@ def generate_build_ninja(
         n.build(
             outputs=progress_path,
             rule="progress",
-            implicit=[ok_path, configure_script, python_lib, config.config_path],
+            implicit=[
+                ok_path,
+                configure_script,
+                python_lib,
+                report_path,
+            ],
         )
 
         ###
@@ -1164,8 +1209,10 @@ def generate_build_ninja(
     if build_config:
         if config.non_matching:
             n.default(link_outputs)
-        else:
+        elif config.progress:
             n.default(progress_path)
+        else:
+            n.default(ok_path)
     else:
         n.default(build_config_path)
 
@@ -1183,6 +1230,13 @@ def generate_objdiff_config(
 ) -> None:
     if build_config is None:
         return
+
+    # Load existing objdiff.json
+    existing_units = {}
+    if Path("objdiff.json").is_file():
+        with open("objdiff.json", "r", encoding="utf-8") as r:
+            existing_config = json.load(r)
+            existing_units = {unit["name"]: unit for unit in existing_config["units"]}
 
     objdiff_config: Dict[str, Any] = {
         "min_version": "2.0.0-beta.5",
@@ -1205,7 +1259,6 @@ def generate_objdiff_config(
     }
 
     # decomp.me compiler name mapping
-    # Commented out versions have not been added to decomp.me yet
     COMPILER_MAP = {
         "GC/1.0": "mwcc_233_144",
         "GC/1.1": "mwcc_233_159",
@@ -1242,14 +1295,26 @@ def generate_objdiff_config(
     ) -> None:
         obj_path, obj_name = build_obj["object"], build_obj["name"]
         base_object = Path(obj_name).with_suffix("")
+        name = str(Path(module_name) / base_object).replace(os.sep, "/")
         unit_config: Dict[str, Any] = {
-            "name": Path(module_name) / base_object,
+            "name": name,
             "target_path": obj_path,
+            "base_path": None,
+            "scratch": None,
             "metadata": {
-                "auto_generated": build_obj["autogenerated"],
+                "complete": None,
+                "reverse_fn_order": None,
+                "source_path": None,
                 "progress_categories": progress_categories,
+                "auto_generated": build_obj["autogenerated"],
             },
+            "symbol_mappings": None,
         }
+
+        # Preserve existing symbol mappings
+        existing_unit = existing_units.get(name)
+        if existing_unit is not None:
+            unit_config["symbol_mappings"] = existing_unit.get("symbol_mappings")
 
         obj = objects.get(obj_name)
         if obj is None:
@@ -1259,33 +1324,24 @@ def generate_objdiff_config(
         src_exists = obj.src_path is not None and obj.src_path.exists()
         if src_exists:
             unit_config["base_path"] = obj.src_obj_path
+            unit_config["metadata"]["source_path"] = obj.src_path
 
         cflags = obj.options["cflags"]
         reverse_fn_order = False
-        if type(cflags) is list:
-            for flag in cflags:
-                if not flag.startswith("-inline "):
-                    continue
-                for value in flag.split(" ")[1].split(","):
-                    if value == "deferred":
-                        reverse_fn_order = True
-                    elif value == "nodeferred":
-                        reverse_fn_order = False
+        for flag in cflags:
+            if not flag.startswith("-inline "):
+                continue
+            for value in flag.split(" ")[1].split(","):
+                if value == "deferred":
+                    reverse_fn_order = True
+                elif value == "nodeferred":
+                    reverse_fn_order = False
 
-            # Filter out include directories
-            def keep_flag(flag):
-                return not flag.startswith("-i ") and not flag.startswith("-I ")
+        # Filter out include directories
+        def keep_flag(flag):
+            return not flag.startswith("-i ") and not flag.startswith("-I ")
 
-            cflags = list(filter(keep_flag, cflags))
-
-            # Add appropriate lang flag
-            if obj.src_path is not None and not any(
-                flag.startswith("-lang") for flag in cflags
-            ):
-                if obj.src_path.suffix in (".cp", ".cpp"):
-                    cflags.insert(0, "-lang=c++")
-                else:
-                    cflags.insert(0, "-lang=c")
+        cflags = list(filter(keep_flag, cflags))
 
         compiler_version = COMPILER_MAP.get(obj.options["mw_version"])
         if compiler_version is None:
@@ -1316,7 +1372,6 @@ def generate_objdiff_config(
             {
                 "complete": obj.completed,
                 "reverse_fn_order": reverse_fn_order,
-                "source_path": obj.src_path,
                 "progress_categories": progress_categories,
             }
         )
@@ -1360,110 +1415,93 @@ def generate_objdiff_config(
     for category in config.progress_categories:
         add_category(category.id, category.name)
 
+    def cleandict(d):
+        if isinstance(d, dict):
+            return {k: cleandict(v) for k, v in d.items() if v is not None}
+        elif isinstance(d, list):
+            return [cleandict(v) for v in d]
+        else:
+            return d
+
     # Write objdiff.json
     with open("objdiff.json", "w", encoding="utf-8") as w:
 
         def unix_path(input: Any) -> str:
             return str(input).replace(os.sep, "/") if input else ""
 
-        json.dump(objdiff_config, w, indent=4, default=unix_path)
+        json.dump(cleandict(objdiff_config), w, indent=2, default=unix_path)
 
 
-def generate_clangd_commands(
+def generate_compile_commands(
     config: ProjectConfig,
     objects: Dict[str, Object],
     build_config: Optional[Dict[str, Any]],
 ) -> None:
-    if build_config is None:
+    if build_config is None or not config.generate_compile_commands:
         return
 
-    compilers = config.compilers()
-    wrapper = config.compiler_wrapper()
+    # The following code attempts to convert mwcc flags to clang flags
+    # for use with clangd.
 
-    # Extra cflags to give to clangd
-    extra_flags = []
-    if config.clangd_flags is not None:
-        extra_flags = config.clangd_flags
+    # Flags to ignore explicitly
+    CFLAG_IGNORE: Set[str] = {
+        # Search order modifier
+        # Has a different meaning to Clang, and would otherwise
+        # be picked up by the include passthrough prefix
+        "-I-",
+        "-i-",
+    }
+    CFLAG_IGNORE_PREFIX: Tuple[str, ...] = tuple()
 
-    # MWCC cflags prefixes to replace
-    CFLAG_PREFIXES = (
+    # Flags to replace
+    CFLAG_REPLACE: Dict[str, str] = {}
+    CFLAG_REPLACE_PREFIX: Tuple[Tuple[str, str], ...] = (
+        # Includes
         ("-i ", "-I"),
+        ("-I ", "-I"),
+        ("-I+", "-I"),
+        # Defines
         ("-d ", "-D"),
+        ("-D ", "-D"),
+        ("-D+", "-D"),
     )
 
-    # MWCC cflags to replace wholly
-    CFLAG_REPLACEMENTS: dict[str, tuple[str, ...]] = {
-        "-Cpp_exceptions off": ("-fno-cxx-exceptions",),
-        "-Cpp_exceptions on": ("-fcxx-exceptions",),
-
-        "-RTTI off": ("-fno-rtti",),
-        "-RTTI on": ("-frtti",),
-
-        "-lang c": ("--language=c", "--std=c89"),
-        "-lang c99": ("--language=c", "--std=c99"),
-        "-lang c++": ("--language=c++", "--std=c++99"),
-        "-lang cplus": ("--language=c++", "--std=c++99"),
-    }
-
-    # Defines for specific target platforms
-    GC_DEFINES: Tuple[str, ...] = ("__PPCGEKKO__",)
-    WII_DEFINES: Tuple[str, ...] = (
-        *GC_DEFINES,
-        "__PPCBROADWAY__",
+    # Flags with a finite set of options
+    CFLAG_REPLACE_OPTIONS: Tuple[Tuple[str, Dict[str, Tuple[str, ...]]], ...] = (
+        # Exceptions
+        (
+            "-Cpp_exceptions",
+            {
+                "off": ("-fno-cxx-exceptions",),
+                "on": ("-fcxx-exceptions",),
+            },
+        ),
+        # RTTI
+        (
+            "-RTTI",
+            {
+                "off": ("-fno-rtti",),
+                "on": ("-frtti",),
+            },
+        ),
+        # Language configuration
+        (
+            "-lang",
+            {
+                "c": ("--language=c", "--std=c89"),
+                "c99": ("--language=c", "--std=c99"),
+                "c++": ("--language=c++", "--std=c++98"),
+                "cplus": ("--language=c++", "--std=c++98"),
+            },
+        ),
     )
 
-    def gc_defines(mwerks: str) -> Tuple[str, ...]:
-        return (*GC_DEFINES, f"__MWERKS__={mwerks}")
-
-    def gc_defines_2(mwerks: str, cwbuild: str) -> Tuple[str, ...]:
-        return (
-            *GC_DEFINES,
-            f"__MWERKS__={mwerks}",
-            f"__CWCC__={mwerks}",
-            f"__CWBUILD__={cwbuild}",
-        )
-
-    def wii_defines(mwerks: str, cwbuild: str) -> Tuple[str, ...]:
-        return (
-            *WII_DEFINES,
-            f"__MWERKS__={mwerks}",
-            f"__CWCC__={mwerks}",
-            f"__CWBUILD__={cwbuild}",
-        )
-
-    # Defines for specific compiler versions
-    # Based on a lot of manual testing
-    COMPILER_DEFINES: dict[str, Tuple[str, ...]] = {
-        "GC/1.0": gc_defines("0x2301"),
-        "GC/1.1": gc_defines("0x2301"),
-        "GC/1.2.5": gc_defines("0x2301"),
-        "GC/1.2.5e": gc_defines("0x2301"),
-        "GC/1.2.5n": gc_defines("0x2301"),
-        "GC/1.3": gc_defines("0x2406"),
-        "GC/1.3.2": gc_defines("0x2407"),
-        "GC/1.3.2r": gc_defines("0x2407"),
-        "GC/2.0": gc_defines("0x2407"),
-        "GC/2.0p1": gc_defines("0x2407"),
-        "GC/2.5": gc_defines("0x2407"),
-        "GC/2.6": gc_defines("0x2407"),
-        "GC/2.7": gc_defines("0x2407"),
-        "GC/3.0a3": gc_defines_2("0x4100", "51213"),
-        "GC/3.0a3.2": gc_defines_2("0x4200", "60126"),
-        "GC/3.0a3.3": gc_defines_2("0x4200", "60289"),
-        "GC/3.0a3.4": gc_defines_2("0x4200", "60308"),
-        "GC/3.0a5": gc_defines_2("0x4200", "60422"),
-        "GC/3.0a5.2": wii_defines("0x4199", "60831"),
-        "GC/3.0": wii_defines("0x4199", "60831"),
-        "Wii/0x4201_127": wii_defines("0x4201", "142"),
-        "Wii/1.0RC1": wii_defines("0x4201", "140"),
-        "Wii/1.0a": wii_defines("0x4201", "142"),
-        "Wii/1.0": wii_defines("0x4302", "145"),
-        "Wii/1.1": wii_defines("0x4302", "151"),
-        "Wii/1.3": wii_defines("0x4302", "172"),
-        "Wii/1.5": wii_defines("0x4302", "188"),
-        "Wii/1.6": wii_defines("0x4302", "202"),
-        "Wii/1.7": wii_defines("0x4302", "213"),
-    }
+    # Flags to pass through
+    CFLAG_PASSTHROUGH: Set[str] = set()
+    CFLAG_PASSTHROUGH_PREFIX: Tuple[str, ...] = (
+        "-I",  # includes
+        "-D",  # defines
+    )
 
     clangd_config = []
 
@@ -1472,73 +1510,97 @@ def generate_clangd_commands(
         if obj is None:
             return
 
+        # Skip unresolved objects
         if (
             obj.src_path is None
             or obj.src_obj_path is None
-            or obj.src_path.suffix not in (".c", ".cp", ".cpp")
+            or not file_is_c_cpp(obj.src_path)
         ):
             return
 
         # Gather cflags for source file
-        cflags: list[str] = [*extra_flags]
+        cflags: list[str] = []
 
-        # clangd complains about unsupported cflags, so we need to filter those out.
-        # For this reason, currently only cflag lists are supported for command generation.
         def append_cflags(flags: Iterable[str]) -> None:
-            for flag in flags:
-                for prefix, replacement in CFLAG_PREFIXES:
+            # Match a flag against either a set of concrete flags, or a set of prefixes.
+            def flag_match(
+                flag: str, concrete: Set[str], prefixes: Tuple[str, ...]
+            ) -> bool:
+                if flag in concrete:
+                    return True
+
+                for prefix in prefixes:
                     if flag.startswith(prefix):
-                        cflags.append(flag.replace(prefix, replacement))
-                        break
-                else:
-                    if flag in CFLAG_REPLACEMENTS:
-                        cflags.extend(CFLAG_REPLACEMENTS[flag])
-                    # else drop the flag
+                        return True
 
-        if not isinstance(obj.options["cflags"], list):
-            print(
-                f"clangd config generation does not support cflags as a single string: {obj.src_path}"
-            )
-            return
+                return False
+
+            # Determine whether a flag should be ignored.
+            def should_ignore(flag: str) -> bool:
+                return flag_match(flag, CFLAG_IGNORE, CFLAG_IGNORE_PREFIX)
+
+            # Determine whether a flag should be passed through.
+            def should_passthrough(flag: str) -> bool:
+                return flag_match(flag, CFLAG_PASSTHROUGH, CFLAG_PASSTHROUGH_PREFIX)
+
+            # Attempts replacement for the given flag.
+            def try_replace(flag: str) -> bool:
+                replacement = CFLAG_REPLACE.get(flag)
+                if replacement is not None:
+                    cflags.append(replacement)
+                    return True
+
+                for prefix, replacement in CFLAG_REPLACE_PREFIX:
+                    if flag.startswith(prefix):
+                        cflags.append(flag.replace(prefix, replacement, 1))
+                        return True
+
+                for prefix, options in CFLAG_REPLACE_OPTIONS:
+                    if not flag.startswith(prefix):
+                        continue
+
+                    # "-lang c99" and "-lang=c99" are both generally valid option forms
+                    option = flag.removeprefix(prefix).removeprefix("=").lstrip()
+                    replacements = options.get(option)
+                    if replacements is not None:
+                        cflags.extend(replacements)
+
+                    return True
+
+                return False
+
+            for flag in flags:
+                # Ignore flags first
+                if should_ignore(flag):
+                    continue
+
+                # Then find replacements
+                if try_replace(flag):
+                    continue
+
+                # Pass flags through last
+                if should_passthrough(flag):
+                    cflags.append(flag)
+                    continue
+
         append_cflags(obj.options["cflags"])
-
         if isinstance(obj.options["extra_cflags"], list):
             append_cflags(obj.options["extra_cflags"])
 
-        mw_version = Path(obj.options["mw_version"])
-        mwcc = compilers / mw_version / "mwcceppc.exe"
-
-        mw_version_str = mw_version.as_posix()
-        compiler_defines = COMPILER_DEFINES.get(mw_version_str)
-        if compiler_defines is None:
-            print(f"Missing version value for compiler {mw_version_str}")
-        else:
-            for define in compiler_defines:
-                cflags.append(f"-D{define}")
-
-        in_path = obj.src_path
-        out_path = obj.src_obj_path
-
-        # Noted for future reference if cflag strings become supported
-        # cflags_str = make_flags_str(obj.options["cflags"])
-        # if obj.options["extra_cflags"] is not None:
-        #     extra_cflags_str = make_flags_str(obj.options["extra_cflags"])
-        #     cflags_str += " " + extra_cflags_str
-        # mwcc_cmd = f"{wrapper_cmd}{mwcc} {cflags_str} -MMD -c {in_path} -o {out_path}"
-
         unit_config = {
             "directory": Path.cwd(),
-            "file": in_path,
-            "output": out_path,
-            # "command": mwcc_cmd,
+            "file": obj.src_path,
+            "output": obj.src_obj_path,
             "arguments": [
-                *([wrapper, mwcc] if wrapper else [mwcc]),
+                "clang",
+                "-nostdinc",
+                "-fno-builtin",
+                "--target=powerpc-eabi",
                 *cflags,
-                "-MMD",
                 "-c",
-                in_path,
+                obj.src_path,
                 "-o",
-                out_path.parent,
+                obj.src_obj_path,
             ],
         }
         clangd_config.append(unit_config)
@@ -1560,150 +1622,126 @@ def generate_clangd_commands(
                 return o.resolve().as_posix()
             return str(o)
 
-        json.dump(clangd_config, w, indent=4, default=default_format)
+        json.dump(clangd_config, w, indent=2, default=default_format)
 
 
 # Calculate, print and write progress to progress.json
 def calculate_progress(config: ProjectConfig) -> None:
     config.validate()
-    objects = config.objects()
     out_path = config.out_path()
-    build_config = load_build_config(config, out_path / "config.json")
-    if build_config is None:
-        return
+    report_path = out_path / "report.json"
+    if not report_path.is_file():
+        sys.exit(f"Report file {report_path} does not exist")
 
-    class ProgressUnit:
-        def __init__(self, name: str) -> None:
-            self.name: str = name
-            self.code_total: int = 0
-            self.code_fancy_frac: int = config.progress_code_fancy_frac
-            self.code_fancy_item: str = config.progress_code_fancy_item
-            self.code_progress: int = 0
-            self.data_total: int = 0
-            self.data_fancy_frac: int = config.progress_data_fancy_frac
-            self.data_fancy_item: str = config.progress_data_fancy_item
-            self.data_progress: int = 0
-            self.objects_progress: int = 0
-            self.objects_total: int = 0
-            self.objects: Set[Object] = set()
+    report_data: Dict[str, Any] = {}
+    with open(report_path, "r", encoding="utf-8") as f:
+        report_data = json.load(f)
 
-        def add(self, build_obj: Dict[str, Any]) -> None:
-            self.code_total += build_obj["code_size"]
-            self.data_total += build_obj["data_size"]
+    # Convert string numbers (u64) to int
+    def convert_numbers(data: Dict[str, Any]) -> None:
+        for key, value in data.items():
+            if isinstance(value, str) and value.isdigit():
+                data[key] = int(value)
 
-            # Avoid counting the same object in different modules twice
-            include_object = build_obj["name"] not in self.objects
-            if include_object:
-                self.objects.add(build_obj["name"])
-                self.objects_total += 1
+    convert_numbers(report_data["measures"])
+    for category in report_data["categories"]:
+        convert_numbers(category["measures"])
 
-            if build_obj["autogenerated"]:
-                # Skip autogenerated objects
-                return
+    # Output to GitHub Actions job summary, if available
+    summary_path = os.getenv("GITHUB_STEP_SUMMARY")
+    summary_file: Optional[IO[str]] = None
+    if summary_path:
+        summary_file = open(summary_path, "a", encoding="utf-8")
+        summary_file.write("```\n")
 
-            obj = objects.get(build_obj["name"])
-            if obj is None or not obj.completed:
-                return
-
-            self.code_progress += build_obj["code_size"]
-            self.data_progress += build_obj["data_size"]
-            if include_object:
-                self.objects_progress += 1
-
-        def code_frac(self) -> float:
-            if self.code_total == 0:
-                return 1.0
-            return self.code_progress / self.code_total
-
-        def data_frac(self) -> float:
-            if self.data_total == 0:
-                return 1.0
-            return self.data_progress / self.data_total
-
-    progress_units: Dict[str, ProgressUnit] = {}
-    if config.progress_all:
-        progress_units["all"] = ProgressUnit("All")
-    progress_units["dol"] = ProgressUnit("DOL")
-    if len(build_config["modules"]) > 0:
-        if config.progress_modules:
-            progress_units["modules"] = ProgressUnit("Modules")
-    if len(config.progress_categories) > 0:
-        for category in config.progress_categories:
-            progress_units[category.id] = ProgressUnit(category.name)
-    if config.progress_each_module:
-        for module in build_config["modules"]:
-            progress_units[module["name"]] = ProgressUnit(module["name"])
-
-    def add_unit(id: str, unit: Dict[str, Any]) -> None:
-        progress = progress_units.get(id)
-        if progress is not None:
-            progress.add(unit)
-
-    # Add DOL units
-    for unit in build_config["units"]:
-        add_unit("all", unit)
-        add_unit("dol", unit)
-        obj = objects.get(unit["name"])
-        if obj is not None:
-            category_opt = obj.options["progress_category"]
-            if isinstance(category_opt, list):
-                for id in category_opt:
-                    add_unit(id, unit)
-            elif category_opt is not None:
-                add_unit(category_opt, unit)
-
-    # Add REL units
-    for module in build_config["modules"]:
-        for unit in module["units"]:
-            add_unit("all", unit)
-            add_unit("modules", unit)
-            add_unit(module["name"], unit)
-            obj = objects.get(unit["name"])
-            if obj is not None:
-                category_opt = obj.options["progress_category"]
-                if isinstance(category_opt, list):
-                    for id in category_opt:
-                        add_unit(id, unit)
-                elif category_opt is not None:
-                    add_unit(category_opt, unit)
+    def progress_print(s: str) -> None:
+        print(s)
+        if summary_file:
+            summary_file.write(s + "\n")
 
     # Print human-readable progress
-    print("Progress:")
+    progress_print("Progress:")
 
-    for unit in progress_units.values():
-        if unit.objects_total == 0:
-            continue
+    def print_category(name: str, measures: Dict[str, Any]) -> None:
+        total_code = measures.get("total_code", 0)
+        matched_code = measures.get("matched_code", 0)
+        matched_code_percent = measures.get("matched_code_percent", 0)
+        total_data = measures.get("total_data", 0)
+        matched_data = measures.get("matched_data", 0)
+        matched_data_percent = measures.get("matched_data_percent", 0)
+        total_functions = measures.get("total_functions", 0)
+        matched_functions = measures.get("matched_functions", 0)
+        complete_code_percent = measures.get("complete_code_percent", 0)
+        total_units = measures.get("total_units", 0)
+        complete_units = measures.get("complete_units", 0)
 
-        code_frac = unit.code_frac()
-        data_frac = unit.data_frac()
-        print(
-            f"  {unit.name}: {code_frac:.2%} code, {data_frac:.2%} data ({unit.objects_progress} / {unit.objects_total} files)"
+        progress_print(
+            f"  {name}: {matched_code_percent:.2f}% matched, {complete_code_percent:.2f}% linked ({complete_units} / {total_units} files)"
         )
-        print(f"    Code: {unit.code_progress} / {unit.code_total} bytes")
-        print(f"    Data: {unit.data_progress} / {unit.data_total} bytes")
-        if config.progress_use_fancy:
-            print(
-                "\nYou have {} out of {} {} and {} out of {} {}.".format(
-                    math.floor(code_frac * unit.code_fancy_frac),
-                    unit.code_fancy_frac,
-                    unit.code_fancy_item,
-                    math.floor(data_frac * unit.data_fancy_frac),
-                    unit.data_fancy_frac,
-                    unit.data_fancy_item,
-                )
+        progress_print(
+            f"    Code: {matched_code} / {total_code} bytes ({matched_functions} / {total_functions} functions)"
+        )
+        progress_print(
+            f"    Data: {matched_data} / {total_data} bytes ({matched_data_percent:.2f}%)"
+        )
+
+    print_category("All", report_data["measures"])
+    for category in report_data["categories"]:
+        print_category(category["name"], category["measures"])
+
+    if config.progress_use_fancy:
+        measures = report_data["measures"]
+        total_code = measures.get("total_code", 0)
+        total_data = measures.get("total_data", 0)
+        if total_code == 0 or total_data == 0:
+            return
+        code_frac = measures.get("complete_code", 0) / total_code
+        data_frac = measures.get("complete_data", 0) / total_data
+
+        progress_print(
+            "\nYou have {} out of {} {} and {} out of {} {}.".format(
+                math.floor(code_frac * config.progress_code_fancy_frac),
+                config.progress_code_fancy_frac,
+                config.progress_code_fancy_item,
+                math.floor(data_frac * config.progress_data_fancy_frac),
+                config.progress_data_fancy_frac,
+                config.progress_data_fancy_item,
             )
+        )
+
+    # Finalize GitHub Actions job summary
+    if summary_file:
+        summary_file.write("```\n")
+        summary_file.close()
 
     # Generate and write progress.json
     progress_json: Dict[str, Any] = {}
-    for id, unit in progress_units.items():
-        if unit.objects_total == 0:
-            continue
+
+    def add_category(id: str, measures: Dict[str, Any]) -> None:
         progress_json[id] = {
-            "code": unit.code_progress,
-            "code/total": unit.code_total,
-            "data": unit.data_progress,
-            "data/total": unit.data_total,
+            "code": measures.get("complete_code", 0),
+            "code/total": measures.get("total_code", 0),
+            "data": measures.get("complete_data", 0),
+            "data/total": measures.get("total_data", 0),
+            "matched_code": measures.get("matched_code", 0),
+            "matched_code/total": measures.get("total_code", 0),
+            "matched_data": measures.get("matched_data", 0),
+            "matched_data/total": measures.get("total_data", 0),
+            "matched_functions": measures.get("matched_functions", 0),
+            "matched_functions/total": measures.get("total_functions", 0),
+            "fuzzy_match": int(measures.get("fuzzy_match_percent", 0) * 100),
+            "fuzzy_match/total": 10000,
+            "units": measures.get("complete_units", 0),
+            "units/total": measures.get("total_units", 0),
         }
 
+    if config.progress_all:
+        add_category("all", report_data["measures"])
+    else:
+        # Support for old behavior where "dol" was the main category
+        add_category("dol", report_data["measures"])
+    for category in report_data["categories"]:
+        add_category(category["id"], category["measures"])
+
     with open(out_path / "progress.json", "w", encoding="utf-8") as w:
-        json.dump(progress_json, w, indent=4)
+        json.dump(progress_json, w, indent=2)

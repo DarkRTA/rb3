@@ -76,7 +76,7 @@ double __kernel_tan(double x, double y, int iy) {
     if (ix < 0x3e300000) { /* x < 2**-28 */
         if ((int)x == 0) { /* generate inexact */
             if (((ix | __LO(x)) | (iy + 1)) == 0)
-                return one / __fabs(x);
+                return one / fabs(x);
             else {
                 if (iy == 1)
                     return x;

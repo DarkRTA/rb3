@@ -81,35 +81,35 @@ namespace std {
         typedef __vec_deleter<T, Allocator> _Base;
 
     public:
-        typedef _Base::value_type value_type;
-        typedef _Base::allocator_type allocator_type;
+        typedef typename _Base::value_type value_type;
+        typedef typename _Base::allocator_type allocator_type;
 
-        typedef _Base::size_type size_type;
-        typedef _Base::difference_type difference_type;
+        typedef typename _Base::size_type size_type;
+        typedef typename _Base::difference_type difference_type;
 
-        typedef _Base::reference reference;
-        typedef _Base::const_reference const_reference;
+        typedef typename _Base::reference reference;
+        typedef typename _Base::const_reference const_reference;
         typedef typename Allocator::pointer pointer;
         typedef typename Allocator::const_pointer const_pointer;
 
-        typedef _Base::iterator iterator;
-        typedef _Base::const_iterator const_iterator;
-        typedef _Base::reverse_iterator reverse_iterator;
-        typedef _Base::const_reverse_iterator const_reverse_iterator;
+        typedef typename _Base::iterator iterator;
+        typedef typename _Base::const_iterator const_iterator;
+        typedef typename _Base::reverse_iterator reverse_iterator;
+        typedef typename _Base::const_reverse_iterator const_reverse_iterator;
 
         __vec_constructor() {}
         ~__vec_constructor() {}
 
         iterator existing_insert(iterator pos, const_reference value) {
             const T* valuePtr = &value;
-            T* end = m_Ptr + m_Count;
+            T* end = this->m_Ptr + this->m_Count;
 
             // ? checks if the address of `value` is within the vector's storage
             if (pos <= valuePtr && valuePtr < end) {
                 valuePtr++;
             }
 
-            m_Count++;
+            this->m_Count++;
             size_type moveSize = end - pos;
             std::memmove(end + 1 - moveSize, pos, moveSize);
             *pos = *valuePtr;
@@ -118,37 +118,37 @@ namespace std {
 
         iterator reallocate_insert(iterator pos, const_reference value) {
             // Retain old values for later
-            T* oldPtr = m_Ptr;
-            size_type oldCapacity = m_Capacity.first();
+            T* oldPtr = this->m_Ptr;
+            size_type oldCapacity = this->m_Capacity.first();
             size_type posDist = pos - oldPtr;
 
             // Reallocate with a larger storage area
             size_type newCapacity = _Base::grow_by(1);
-            m_Ptr = m_Capacity.second().allocate(newCapacity);
-            m_Capacity.first() = newCapacity;
+            this->m_Ptr = this->m_Capacity.second().allocate(newCapacity);
+            this->m_Capacity.first() = newCapacity;
 
             // Insert new element
-            m_Ptr[posDist] = value;
+            this->m_Ptr[posDist] = value;
 
             // Transfer old elements over
             if (oldPtr) {
                 // Move elements before inserted one
-                T* ptr = m_Ptr;
+                T* ptr = this->m_Ptr;
                 std::memmove(ptr, oldPtr, posDist);
 
                 // Move elements after inserted one
                 T* oldAfterPos = oldPtr + posDist;
                 T* newAfterPos = ptr + posDist;
-                size_type moveSize = (size_type)((oldPtr + m_Count) - (size_type)oldAfterPos);
+                size_type moveSize = (size_type)((oldPtr + this->m_Count) - (size_type)oldAfterPos);
                 std::memmove(newAfterPos + 1, oldAfterPos, moveSize);
 
                 // Free old storage
                 // Old elements are not destroyed, as
-                m_Capacity.second().deallocate(oldPtr, oldCapacity);
+                this->m_Capacity.second().deallocate(oldPtr, oldCapacity);
             }
 
-            m_Count++;
-            return m_Ptr + posDist;
+            this->m_Count++;
+            return this->m_Ptr + posDist;
         }
     };
 
@@ -157,21 +157,21 @@ namespace std {
         typedef __vec_constructor<T, Allocator, 1> _Base;
 
     public:
-        typedef _Base::value_type value_type;
-        typedef _Base::allocator_type allocator_type;
+        typedef typename _Base::value_type value_type;
+        typedef typename _Base::allocator_type allocator_type;
 
-        typedef _Base::size_type size_type;
-        typedef _Base::difference_type difference_type;
+        typedef typename _Base::size_type size_type;
+        typedef typename _Base::difference_type difference_type;
 
-        typedef _Base::reference reference;
-        typedef _Base::const_reference const_reference;
-        typedef _Base::pointer pointer;
-        typedef _Base::const_pointer const_pointer;
+        typedef typename _Base::reference reference;
+        typedef typename _Base::const_reference const_reference;
+        typedef typename _Base::pointer pointer;
+        typedef typename _Base::const_pointer const_pointer;
 
-        typedef _Base::iterator iterator;
-        typedef _Base::const_iterator const_iterator;
-        typedef _Base::reverse_iterator reverse_iterator;
-        typedef _Base::const_reverse_iterator const_reverse_iterator;
+        typedef typename _Base::iterator iterator;
+        typedef typename _Base::const_iterator const_iterator;
+        typedef typename _Base::reverse_iterator reverse_iterator;
+        typedef typename _Base::const_reverse_iterator const_reverse_iterator;
 
         vector() {}
         vector(const vector &other);
@@ -185,28 +185,28 @@ namespace std {
         template <class InputIter>
         vector(InputIter first, InputIter last, const Allocator &alloc = Allocator());
 
-        iterator begin() { return m_Ptr; }
-        const_iterator begin() const { return m_Ptr; }
-        iterator end() { return m_Ptr + m_Count; }
-        const_iterator end() const { return m_Ptr + m_Count; }
+        iterator begin() { return this->m_Ptr; }
+        const_iterator begin() const { return this->m_Ptr; }
+        iterator end() { return this->m_Ptr + this->m_Count; }
+        const_iterator end() const { return this->m_Ptr + this->m_Count; }
 
         reverse_iterator rbegin() { return reverse_iterator(end()); }
         const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
         reverse_iterator rend() { return reverse_iterator(begin()); }
         const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
 
-        pointer data() { return m_Ptr; }
-        const_pointer data() const { return m_Ptr; }
+        pointer data() { return this->m_Ptr; }
+        const_pointer data() const { return this->m_Ptr; }
 
-        size_type size() const { return m_Count; }
-        size_type capacity() const { return m_Capacity.first(); }
+        size_type size() const { return this->m_Count; }
+        size_type capacity() const { return this->m_Capacity.first(); }
 
         void push_back(const_reference value) {
             _Base::push_back(value);
         }
 
         iterator insert(iterator pos, const_reference value) {
-            if (m_Count >= m_Capacity.first()) {
+            if (this->m_Count >= this->m_Capacity.first()) {
                 // ? ends up doing nothing, grow_by has no side-effects
                 _Base::grow_by(1);
             } else {

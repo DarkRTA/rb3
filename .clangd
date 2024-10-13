@@ -3,32 +3,24 @@ CompileFlags:
     # Remove all built-in definitions
     "-undef",
 
+    # MWCC flags, for STLport
+    "-D__MWERKS__=0x4302",
+    "-D__PPCGEKKO__",
+    "-D__PPCBROADWAY__",
+
     # Indicator for things which shouldn't be processed in IDEs
     "-DDECOMP_IDE_FLAG",
-
-    # Default to C++03
-    "--language=c++",
-    "-std=c++03",
-
-    # No standard includes
-    "-nostdinc",
-    "-nostdinc++",
-    "-fno-builtin",
-
-    # Target definitions
-    "--target=ppc32-unknown=linux-eabi",
   ]
 ---
-# C files
+# STLport is not C
 If:
-  PathMatch: .*\.c
-  PathExclude: .*/stlport/.* # STLport is not C
+  PathMatch: .*/stlport/.*
 CompileFlags:
   Remove: [
     "--language=",
     "-std=",
   ]
   Add: [
-    "--language=c",
-    "-std=c99",
+    "--language=c++",
+    "-std=c++98",
   ]

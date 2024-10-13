@@ -2,8 +2,10 @@
 #define MSL_CPP_CSTDARG_H
 #include <MSL_C/stdarg.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::va_list;
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

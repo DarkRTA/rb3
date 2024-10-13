@@ -5,16 +5,16 @@
 
 #include "MSL_C++/Metrowerks/type_traits.h"
 
-#include "MSL_C++/MSL_Common/type_traits/integral_constant.h"
-#include "MSL_C++/MSL_Common/type_traits/manip.h"
-#include "MSL_C++/MSL_Common/type_traits/operation.h"
-#include "MSL_C++/MSL_Common/type_traits/relationship.h"
+#include "MSL_C++/MSL_Common/type_traits/integral_constant.h" /* IWYU pragma: keep */
+#include "MSL_C++/MSL_Common/type_traits/manip.h" /* IWYU pragma: keep */
+#include "MSL_C++/MSL_Common/type_traits/operation.h" /* IWYU pragma: keep */
+#include "MSL_C++/MSL_Common/type_traits/relationship.h" /* IWYU pragma: keep */
 
 // clang-format off: conciseness
 namespace std {
 
     template <typename T>
-    struct is_void : public is_same<remove_cv<T>::type, void> {};
+    struct is_void : public is_same<typename remove_cv<T>::type, void> {};
 
     template <typename T>
     struct is_integral : public bool_constant<Metrowerks::is_integral<T>::value> {};
@@ -63,7 +63,7 @@ namespace std {
 
     template <typename T>
     struct is_member_pointer
-        : public detail::is_member_pointer<remove_cv<T>::type> {};
+        : public detail::is_member_pointer<typename remove_cv<T>::type> {};
 
     template <typename T>
     struct is_member_object_pointer : public bool_constant<

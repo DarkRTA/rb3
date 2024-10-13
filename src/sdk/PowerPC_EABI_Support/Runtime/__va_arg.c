@@ -1,7 +1,7 @@
 /* https://github.com/SwareJonge/mkdd/blob/main/libs/PowerPC_EABI_Support/src/Runtime/__va_arg.c
  */
 
-#include <stdarg.h>
+#include <stdarg.h> /* IWYU pragma: keep */
 #include "types.h"
 
 #ifdef __cplusplus

@@ -129,7 +129,7 @@ double y, x;
     else if (hx < 0 && k < -60)
         z = 0.0; /* |y|/x < -2**60 */
     else
-        z = atan(__fabs(y / x)); /* safe to do y/x */
+        z = atan(fabs(y / x)); /* safe to do y/x */
     switch (m) {
     case 0:
         return z; /* atan(+,+) */

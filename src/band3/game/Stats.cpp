@@ -64,7 +64,7 @@ void Stats::EndStreak(Stats::StreakInfo& info, std::vector<Stats::StreakInfo>& v
 
 template <class T>
 void Stats::SaveHighest(std::vector<T>& vec, const T& item){
-    std::vector<T>::iterator it;
+    typename std::vector<T>::iterator it;
     for(it = vec.begin(); it != vec.end(); ++it){
         if(*it > item){
             vec.pop_back();

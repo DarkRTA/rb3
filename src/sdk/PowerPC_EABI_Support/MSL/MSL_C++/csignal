@@ -2,11 +2,13 @@
 #define MSL_CPP_CSIGNAL_H
 #include <MSL_C/signal.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::sig_atomic_t;
 
     using ::raise;
     using ::signal;
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

@@ -2,10 +2,12 @@
 #define MSL_CPP_CSETJMP_H
 #include <MSL_C/setjmp.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::jmp_buf;
 
     using ::longjmp;
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

@@ -16,7 +16,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Union
 from tools.project import *
 
 from tools.defines_common import (
@@ -146,8 +146,6 @@ config.reconfig_deps = [
     config_json_path,
     objects_path,
 ]
-
-config.make_clangd_config = True
 
 # Build flags
 flags = json.load(open(config_json_path, "r", encoding="utf-8"))

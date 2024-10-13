@@ -9,6 +9,28 @@ namespace Metrowerks {
 
     namespace detail {
 
+#ifdef DECOMP_IDE_FLAG
+#define __builtin_ntype(T) (detail::ntype)0
+#define __builtin_align(T) 0
+#define __builtin_is_pod(T) 0
+#define __builtin_is_polymorphic(T) 0
+#define __builtin_is_abstract(T) 0
+#define __builtin_trivial_members(T) 0
+#define __builtin_trivial_members(T) 0
+#define __builtin_trivial_members(T) 0
+#define __builtin_trivial_members(T) 0
+#define __builtin_trivial_members(T) 0
+#define __builtin_has_nothrow_default_constructor(T) 0
+#define __builtin_has_nothrow_copy(T) 0
+#define __builtin_has_nothrow_assign(T) 0
+#define __builtin_has_nothrow_destructor(T) 0
+#define __builtin_has_virtual_destructor(T) 0
+        typedef double short_double;
+        typedef double __vec2x32float__;
+#else
+        typedef short double short_double;
+#endif
+
         enum trivial_member {
             trivial_dtor = 0x01,
             trivial_copy_assign = 0x02,
@@ -69,6 +91,7 @@ namespace Metrowerks {
         template <ntype N>
         struct ntype_to_integral_helper;
 
+        template <> struct ntype_to_integral_helper<ntype_void> { typedef void type; };
         template <> struct ntype_to_integral_helper<ntype_bool> { typedef bool type; };
         template <> struct ntype_to_integral_helper<ntype_char> { typedef char type; };
         template <> struct ntype_to_integral_helper<ntype_signed_char> { typedef signed char type; };
@@ -90,7 +113,7 @@ namespace Metrowerks {
         struct ntype_to_floating_helper;
 
         template <> struct ntype_to_floating_helper<ntype_float> { typedef float type; };
-        template <> struct ntype_to_floating_helper<ntype_short_double> { typedef short double type; };
+        template <> struct ntype_to_floating_helper<ntype_short_double> { typedef short_double type; };
         template <> struct ntype_to_floating_helper<ntype_double> { typedef double type; };
         template <> struct ntype_to_floating_helper<ntype_long_double> { typedef long double type; };
         template <> struct ntype_to_floating_helper<ntype_vec2x32float> { typedef __vec2x32float__ type; };

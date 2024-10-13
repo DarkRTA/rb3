@@ -1,7 +1,7 @@
 #ifndef _MSL_TYPE_TRAITS_OPERATION
 #define _MSL_TYPE_TRAITS_OPERATION
 
-#include "MSL_C++/MSL_Common/type_traits/integral_constant.h"
+#include "MSL_C++/MSL_Common/type_traits/integral_constant.h" /* IWYU pragma: keep */
 
 // clang-format off: conciseness
 namespace std {

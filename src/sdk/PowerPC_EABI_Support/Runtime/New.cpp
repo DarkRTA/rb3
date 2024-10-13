@@ -1,6 +1,5 @@
 #include <new>
 #include <stdlib.h>
-#include "decomp.h"
 
 // Dummy implementations, these got deadstripped
 // Names changed to prevent multiply-defined errors

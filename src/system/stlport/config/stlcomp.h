@@ -90,7 +90,7 @@
 /* Metrowerks CodeWarrior */
 #  if defined (__PPCBROADWAY__)
 #   include <config/stl_mwbroadway.h>
-#  elif defined (__PPCGECKO__)
+#  elif defined (__PPCGEKKO__)
 #   include <config/stl_mwgecko.h>
 #  else
 #   include <config/stl_mwerks.h>

@@ -1,7 +1,7 @@
 #ifndef UTL_STLHELPERS_H
 #define UTL_STLHELPERS_H
 #include <vector>
-#include "utl/VectorSizeDefs.h"
+#include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
 template <class T>
 inline void DeleteInstance(const int& /* purpose not known yet */, T* t) {
@@ -23,7 +23,7 @@ inline void DeleteAll(Container &container) {
 
 template <class T1, class T2, class T3>
 void VectorRemove(std::vector<T1,T2>& vec, const T3& obj){
-    for(std::vector<T1,T2>::iterator it = vec.begin(); it != vec.end(); ++it){
+    for(typename std::vector<T1,T2>::iterator it = vec.begin(); it != vec.end(); ++it){
         if(*it == obj){
             vec.erase(it);
             return;

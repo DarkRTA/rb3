@@ -17,6 +17,12 @@
 extern "C" {
 #endif
 
+#ifdef DECOMP_IDE_FLAG
+/* Get clangd to shut up about fabs being undefined. */
+#define __fabs(x) fabs(x)
+#define __frsqrte(x) (x)
+#endif
+
 /* Sometimes it's necessary to define __LITTLE_ENDIAN explicitly
    but these catch some common cases. */
 
@@ -225,6 +231,8 @@ extern double __kernel_sin __P((double, double, int));
 extern double __kernel_cos __P((double, double));
 extern double __kernel_tan __P((double, double, int));
 extern int __kernel_rem_pio2 __P((double *, double *, int, int, int, const int *));
+
+inline double fabs(double x) { return __fabs(x); }
 
 #ifdef __cplusplus
 }

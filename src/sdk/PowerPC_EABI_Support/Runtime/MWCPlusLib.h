@@ -1,7 +1,7 @@
 #ifndef _RUNTIME_MWCPLUSLIB_H
 #define _RUNTIME_MWCPLUSLIB_H
 
-#include "types.h"
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {

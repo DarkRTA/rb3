@@ -2,9 +2,11 @@
 #define MSL_CPP_CSTDDEF_H
 #include <MSL_C/stddef.h>
 
+// NOLINTBEGIN(misc-unused-using-decls)
 namespace std {
     using ::ptrdiff_t;
     using ::size_t;
 }
+// NOLINTEND(misc-unused-using-decls)
 
 #endif

@@ -11,7 +11,7 @@
 #define CONCAT(x, y) __CONCAT(x, y)
 
 // Compile without matching hacks.
-#ifdef NON_MATCHING
+#if defined(NON_MATCHING) || !defined(__MWERKS__) || defined(DECOMP_IDE_FLAG)
 #define DECOMP_FORCEACTIVE(module, ...)
 #define DECOMP_FORCELITERAL(module, ...)
 #define DECOMP_FORCEFUNC(module, decl, ...)
