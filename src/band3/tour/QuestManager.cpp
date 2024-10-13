@@ -143,7 +143,7 @@ void QuestManager::CompleteQuest(TourProgress* i_pProgress, Symbol s) {
     QuestJournal* pJournal = &i_pProgress->mQuests;
     MILO_ASSERT(pJournal, 234);
     pJournal->CompleteQuest(s);
-    TourPerformerImpl* pTourPerformer = TheTour->unk24;
+    TourPerformerImpl* pTourPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pTourPerformer, 239);
     bool won = false;
     Quest* quest = GetQuest(s);

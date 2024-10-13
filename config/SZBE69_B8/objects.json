@@ -304,7 +304,7 @@
             "band3/tour/QuestFilterPanel.cpp": "MISSING",
             "band3/tour/QuestJournal.cpp": "Matching",
             "band3/tour/QuestManager.cpp": "Matching",
-            "band3/tour/Tour.cpp": "MISSING",
+            "band3/tour/Tour.cpp": "NonMatching",
             "band3/tour/TourBand.cpp": "NonMatching",
             "band3/tour/TourChallengeResultsPanel.cpp": "Matching",
             "band3/tour/TourChar.cpp": "Matching",

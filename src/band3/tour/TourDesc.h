@@ -53,9 +53,9 @@ public:
     Symbol GetFlavorForGigNum(int) const;
     Symbol GetMapScreenForGigNum(int) const;
     int GetNumSongs() const;
-    Symbol GetTourStarsBronzeGoalValue() const;
-    Symbol GetTourStarsSilverGoalValue() const;
-    Symbol GetTourStarsGoldGoalValue() const;
+    int GetTourStarsBronzeGoalValue() const;
+    int GetTourStarsSilverGoalValue() const;
+    int GetTourStarsGoldGoalValue() const;
     Symbol GetTourBronzeGoal() const;
     Symbol GetTourSilverGoal() const;
     Symbol GetTourGoldGoal() const;
