@@ -4,12 +4,12 @@
 
 class TourDescEntry {
 public:
-    TourDescEntry() : mTier(-1), mGroup(""), mGig(""), mNumSongs(0), mFilter(""), mVenue(""), mAnnouncementScreen(""), mMapScreen(""), mFlavor("") {}
+    TourDescEntry() : mTier(-1), mGroup(""), mQuest(""), mNumSongs(0), mFilter(""), mVenue(""), mAnnouncementScreen(""), mMapScreen(""), mFlavor("") {}
     virtual ~TourDescEntry(){}
 
     int mTier; // 0x4
     Symbol mGroup; // 0x8
-    Symbol mGig; // 0xc
+    Symbol mQuest; // 0xc
     int mNumSongs; // 0x10
     std::vector<Symbol> mSetlistTypes; // 0x14
     Symbol mFilter; // 0x1c
@@ -39,6 +39,31 @@ public:
     Symbol GetWelcome() const;
     void Cleanup();
     Symbol GetDescription() const;
+    Symbol GetConclusionText() const;
+    int GetIndex() const;
+    TourDescEntry* GetTourDescEntryForGigNum(int) const;
+    bool HasSpecificQuest(int) const;
+    Symbol GetSpecificQuestForGigNum(int) const;
+    Symbol GetQuestGroupForGigNum(int) const;
+    bool HasQuestGroup(int) const;
+    int GetQuestTierForGigNum(int) const;
+    Symbol GetAnnouncementScreenForGigNum(int) const;
+    bool HasQuestTier(int) const;
+    bool HasAnnouncementScreen(int) const;
+    Symbol GetFlavorForGigNum(int) const;
+    Symbol GetMapScreenForGigNum(int) const;
+    int GetNumSongs() const;
+    Symbol GetTourStarsBronzeGoalValue() const;
+    Symbol GetTourStarsSilverGoalValue() const;
+    Symbol GetTourStarsGoldGoalValue() const;
+    Symbol GetTourBronzeGoal() const;
+    Symbol GetTourSilverGoal() const;
+    Symbol GetTourGoldGoal() const;
+    bool HasRequiredCampaignLevel() const;
+    Symbol GetRequiredCampaignLevel() const;
+    const char* GetArt() const;
+    const char* GetGrayArt() const;
+    Symbol GetGigGuideMap() const;
 
     Symbol mName; // 0x4
     int mIndex; // 0x8
