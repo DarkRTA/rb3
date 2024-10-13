@@ -8,4 +8,5 @@ public:
     // TODO: fill out all the virtual methods where appropriate
 
     void SetFromCharacter(const CharData*);
+    void SetSongName(Symbol, bool);
 };

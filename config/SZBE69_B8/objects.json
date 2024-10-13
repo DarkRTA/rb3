@@ -306,7 +306,7 @@
             "band3/tour/QuestManager.cpp": "Matching",
             "band3/tour/Tour.cpp": "MISSING",
             "band3/tour/TourBand.cpp": "MISSING",
-            "band3/tour/TourChallengeResultsPanel.cpp": "NonMatching",
+            "band3/tour/TourChallengeResultsPanel.cpp": "Matching",
             "band3/tour/TourChar.cpp": "Matching",
             "band3/tour/TourCharLocal.cpp": "Matching",
             "band3/tour/TourCharRemote.cpp": "Matching",

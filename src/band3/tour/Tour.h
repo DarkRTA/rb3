@@ -6,6 +6,7 @@
 #include "utl/Symbol.h"
 #include "meta/SongMgr.h"
 #include "game/BandUserMgr.h"
+#include "tour/Quest.h"
 #include "tour/TourPerformer.h"
 
 class Tour : public Hmx::Object {
@@ -24,6 +25,7 @@ public:
     bool DoesTourStatusExist(int, int) const;
     const std::map<Symbol, TourProperty*>& TourProperties() const { return mTourProperties; }
     TourProgress* GetTourProgress() const;
+    Quest* GetQuest();
 
     SongMgr* unk1c;
     BandUserMgr* unk20;
