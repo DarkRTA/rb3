@@ -322,7 +322,7 @@
             "band3/tour/TourProperty.cpp": "Matching",
             "band3/tour/TourPropertyCollection.cpp": "NonMatching",
             "band3/tour/TourQuestGameRules.cpp": "Matching",
-            "band3/tour/TourReward.cpp": "Equivalent",
+            "band3/tour/TourReward.cpp": "Matching",
             "band3/tour/TourSavable.cpp": "Matching",
             "band3/tour/TourWeightManager.cpp": "Matching"
         }

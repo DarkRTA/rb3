@@ -73,7 +73,8 @@ void TourReward::ApplyAddReward(TourProgress* tp, TourPropertyCollection& pc, Da
 #ifdef MILO_DEBUG
     ValidatePropertyModification(s);
 #endif
-    float f = i_pArray->Float(2) + pc.GetPropertyValue(s);
+    float val = i_pArray->Float(2);
+    float f = pc.GetPropertyValue(s) + val;
     ApplyRewardValue(tp, pc, s, f);
 }
 
@@ -93,7 +94,8 @@ void TourReward::ApplyMultiplyReward(TourProgress* tp, TourPropertyCollection& p
 #ifdef MILO_DEBUG
     ValidatePropertyModification(s);
 #endif
-    float f = i_pArray->Float(2) * pc.GetPropertyValue(s);
+    float val = i_pArray->Float(2);
+    float f = pc.GetPropertyValue(s) * val;
     ApplyRewardValue(tp, pc, s, f);
 }
 
