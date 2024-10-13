@@ -116,7 +116,7 @@ bool BandProfile::HasChar(const TourCharLocal* character) {
 }
 
 void BandProfile::GetFirstEmptyPatch() {}
-void BandProfile::GetTexAtPatchIndex(int) const {}
+// void BandProfile::GetTexAtPatchIndex(int) const {}
 void BandProfile::GetPatchIndex(const PatchDir*) const {}
 
 // void BandProfile::PotentiallyDeleteStandin(HxGuid guid) {

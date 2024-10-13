@@ -56,6 +56,7 @@ public:
     void AddAwardSource(Symbol, Symbol);
     void UpdateMostStarsForAllParticipants(Symbol, int);
     bool DoesAssetHaveSource(Symbol) const;
+    void UpdateTourPlayedForAllParticipants(Symbol);
 
 
     AccomplishmentManager();

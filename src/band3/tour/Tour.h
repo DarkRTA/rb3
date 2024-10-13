@@ -1,6 +1,7 @@
 #pragma once
 #include "TourDesc.h"
 #include "obj/Object.h"
+#include "tour/TourProgress.h"
 #include "tour/TourProperty.h"
 #include "utl/Symbol.h"
 #include "meta/SongMgr.h"
@@ -21,10 +22,11 @@ public:
     int GetStarsForTourStatus(Symbol) const;
     bool DoesTourStatusExist(int, int) const;
     const std::map<Symbol, TourProperty*>& TourProperties() const { return mTourProperties; }
+    TourProgress* GetTourProgress() const;
 
     SongMgr* unk1c;
     BandUserMgr* unk20;
-    int unk24;
+    int unk24; // TourPerformerImpl*
     int unk28;
     std::map<Symbol, TourProperty*> mTourProperties; // 0x2c
 };
