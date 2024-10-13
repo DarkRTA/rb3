@@ -36,7 +36,7 @@ void QuestJournal::Clear() {
 }
 
 void QuestJournal::FakeFill() {
-    std::map<Symbol, Quest*>::iterator end_it = TheQuestMgr.unk_0x4.end(), it = TheQuestMgr.unk_0x4.begin();
+    std::map<Symbol, Quest*>::iterator end_it = TheQuestMgr.mMapQuests.end(), it = TheQuestMgr.mMapQuests.begin();
     while (it != end_it) {
         if (unk_0xC.size() >= 20) break;
         unk_0xC.insert(Symbol(it->first));

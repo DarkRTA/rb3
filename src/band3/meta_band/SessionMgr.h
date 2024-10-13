@@ -1,4 +1,5 @@
 #pragma once
+#include "BandMachineMgr.h"
 #include "net/Synchronize.h"
 #include "obj/MsgSource.h"
 #include "game/BandUser.h"
@@ -28,6 +29,14 @@ public:
     virtual void AddLocalUserImpl(LocalBandUser*);
     virtual void RemoveLocalUserImpl(LocalBandUser*);
     virtual void GetLocalUserListImpl(std::vector<LocalUser*>&) const;
+
+    int unk38;
+    int unk3c;
+    int unk40;
+    int unk44;
+    int unk48;
+    int unk4c;
+    BandMachineMgr* unk50;
 };
 
 extern SessionMgr* TheSessionMgr;

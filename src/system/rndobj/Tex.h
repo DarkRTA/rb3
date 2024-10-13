@@ -35,7 +35,7 @@ public:
     virtual void Print();
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
-    virtual void SetMipMapK(float);
+    virtual void SetMipMapK(float f){ mMipMapK = f; }
     virtual void LockBitmap(RndBitmap&, int);
     virtual void UnlockBitmap() {}
     virtual void MakeDrawTarget() {}

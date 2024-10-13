@@ -1,6 +1,7 @@
 #pragma once
 #include "obj/Object.h"
 #include "meta/FixedSizeSaveable.h"
+#include "tour/TourGameRules.h"
 
 class BandProfile;
 
@@ -13,6 +14,12 @@ public:
     virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
     void Clear();
+    int GetToursPlayed(Symbol) const;
+    void UpdateTourPlayedForAllParticipants(Symbol);
+    int GetToursGotAllStars(Symbol) const;
+    void SetToursGotAllStars(Symbol, int);
+    int GetQuestCompletedCount(TourGameType) const;
+    void SetQuestCompletedCount(TourGameType, int);
 
     static int SaveSize(int);
 

@@ -51,7 +51,7 @@ public:
     void RenameCharacter(TourCharLocal*, const char*);
     bool HasChar(const TourCharLocal*);
     void GetFirstEmptyPatch();
-    void GetTexAtPatchIndex(int) const;
+    RndTex* GetTexAtPatchIndex(int) const;
     void GetPatchIndex(const PatchDir*) const;
     void PotentiallyDeleteStandin(HxGuid);
     int GetCharacterStandinIndex(CharData*) const;
@@ -95,7 +95,7 @@ public:
     void SetLessonComplete(const Symbol&, float);
     void EarnAccomplishment(Symbol);
     void GetAccomplishmentProgress() const;
-    void AccessAccomplishmentProgress();
+    AccomplishmentProgress* AccessAccomplishmentProgress();
     void GetHardcoreIconLevel() const;
     void SetHardcoreIconLevel(int);
     void GetTourBand();

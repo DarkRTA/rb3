@@ -4,6 +4,7 @@
 #include "rndobj/Group.h"
 #include "rndobj/Tex.h"
 #include "rndobj/TransAnim.h"
+#include "utl/BinStream.h"
 #include "world/ColorPalette.h"
 #include "utl/IntPacker.h"
 
@@ -144,3 +145,6 @@ public:
     RndTex* mTex; // 0x1bc
     bool unk1c0; // 0x1c0
 };
+
+BinStream& operator<<(BinStream&, const PatchDescriptor&);
+BinStream& operator>>(BinStream&, PatchDescriptor&);
