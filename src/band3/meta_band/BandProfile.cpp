@@ -224,7 +224,7 @@ void BandProfile::SetLessonComplete(const Symbol&, float) {}
 void BandProfile::EarnAccomplishment(Symbol) {}
 void BandProfile::GetAccomplishmentProgress() const {}
 
-void BandProfile::AccessAccomplishmentProgress() {}
+// void BandProfile::AccessAccomplishmentProgress() {}
 
 void BandProfile::GetHardcoreIconLevel() const {}
 

@@ -1,8 +1,12 @@
 #include "QuestManager.h"
+#include "TourPerformer.h"
 #include "decomp.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/ProfileMgr.h"
 #include "os/Debug.h"
 #include "tour/GigFilter.h"
 #include "tour/Tour.h"
+#include "tour/TourReward.h"
 
 QuestManager TheQuestMgr;
 
@@ -139,58 +143,22 @@ void QuestManager::CompleteQuest(TourProgress* i_pProgress, Symbol s) {
     QuestJournal* pJournal = &i_pProgress->mQuests;
     MILO_ASSERT(pJournal, 234);
     pJournal->CompleteQuest(s);
-    void* pTourPerformer; // = TheTour->unk_0x24;
+    TourPerformerImpl* pTourPerformer = TheTour->unk24;
     MILO_ASSERT(pTourPerformer, 239);
+    bool won = false;
+    Quest* quest = GetQuest(s);
+    if(quest){
+        won = pTourPerformer->IsQuestWon(s);
+        const TourReward* reward = won ? quest->GetSuccessReward() : quest->GetFailureReward();
+        reward->Apply(i_pProgress);
+        i_pProgress->SetNumCompletedGigs(i_pProgress->GetNumCompletedGigs() + 1);
+    }
+    i_pProgress->SetWonQuest(won);
+    i_pProgress->FinalizeNewStars();
+    BandProfile* pProfile = TheProfileMgr.FindTourProgressOwner(i_pProgress);
+    MILO_ASSERT(pProfile, 0x103);
+    pTourPerformer->UpdateTourStats(i_pProgress);
+    if(i_pProgress->IsTourComplete()) pTourPerformer->UpdateCompleteTourStats(i_pProgress);
+    TheTour->UpdateProgressWithCareerData();
+    pProfile->MakeDirty();
 }
-
-// void __thiscall QuestManager::CompleteQuest(QuestManager *this,TourProgress *param_1,Symbol param _2)
-
-// {
-  
-//   if (param_1 == (TourProgress *)0x0) {
-//     pcVar1 = ::MakeString(kAssertStr,::@stringBase0,0xe6,s_i_pProgress_80ba9e36);
-//     Debug::Fail((Debug *)TheDebug,pcVar1);
-//   }
-//   if ((QuestJournal *)(param_1 + 0x1c) == (QuestJournal *)0x0) {
-//     pcVar1 = ::MakeString(kAssertStr,::@stringBase0,0xea,s_pJournal_80ba9e42);
-//     Debug::Fail((Debug *)TheDebug,pcVar1);
-//   }
-//   local_20[0] = *(undefined4 *)param_2.mStr;
-//   QuestJournal::CompleteQuest((QuestJournal *)(param_1 + 0x1c),(Symbol)local_20);
-//   this_03 = *(TourPerformerImpl **)(TheTour + 0x24); - TourPerformerImpl*
-//   if (this_03 == (TourPerformerImpl *)0x0) {
-//     pcVar1 = ::MakeString(kAssertStr,::@stringBase0,0xef,s_pTourPerformer_80ba9e4b);
-//     Debug::Fail((Debug *)TheDebug,pcVar1);
-//   }
-//   local_24 = *(undefined4 *)param_2.mStr;
-//   iVar3 = 0;
-//   this_00 = (Quest *)GetQuest(this,(Symbol)&local_24);
-//   if (this_00 != (Quest *)0x0) {
-//     local_28 = *(undefined4 *)param_2.mStr;
-//     iVar3 = TourPerformerImpl::IsQuestWon(this_03,(Symbol)&local_28);
-//     if (iVar3 == 0) {
-//       this_01 = (TourReward *)Quest::GetFailureReward(this_00);
-//     }
-//     else {
-//       this_01 = (TourReward *)Quest::GetSuccessReward(this_00);
-//     }
-//     TourReward::Apply(this_01,param_1);
-//     iVar2 = TourProgress::GetNumCompletedGigs(param_1);
-//     TourProgress::SetNumCompletedGigs(param_1,iVar2 + 1);
-//   }
-//   TourProgress::SetWonQuest(param_1,SUB41(iVar3,0));
-//   TourProgress::FinalizeNewStars(param_1);
-//   this_02 = (Profile *)ProfileMgr::FindTourProgressOwner((ProfileMgr *)TheProfileMgr,param_1);
-//   if (this_02 == (Profile *)0x0) {
-//     pcVar1 = ::MakeString(kAssertStr,::@stringBase0,0x103,s_pProfile_80ba9e5a);
-//     Debug::Fail((Debug *)TheDebug,pcVar1);
-//   }
-//   TourPerformerImpl::UpdateTourStats(this_03,param_1);
-//   iVar3 = TourProgress::IsTourComplete(param_1);
-//   if (iVar3 != 0) {
-//     TourPerformerImpl::UpdateCompleteTourStats(this_03,param_1);
-//   }
-//   Tour::UpdateProgressWithCareerData(TheTour);
-//   Profile::MakeDirty(this_02);
-//   return;
-// }

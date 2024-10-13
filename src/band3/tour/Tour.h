@@ -6,6 +6,7 @@
 #include "utl/Symbol.h"
 #include "meta/SongMgr.h"
 #include "game/BandUserMgr.h"
+#include "tour/TourPerformer.h"
 
 class Tour : public Hmx::Object {
 public:
@@ -26,7 +27,7 @@ public:
 
     SongMgr* unk1c;
     BandUserMgr* unk20;
-    int unk24; // TourPerformerImpl*
+    TourPerformerImpl* unk24; // 0x24
     int unk28;
     std::map<Symbol, TourProperty*> mTourProperties; // 0x2c
 };
