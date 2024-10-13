@@ -489,6 +489,9 @@ rb3/ui/uistats.cpp:
 rb3/panels/voiceoverpanel.cpp:
 	.text       start:0x8029E738 end:0x8029F41C
 
+band3/tour/TourPropertyCollection.cpp:
+	.text       start:0x802C0338 end:0x802C059C
+
 band3/tour/TourReward.cpp:
 	.text       start:0x802C06A8 end:0x802C0DC4
 	.data       start:0x8084FB00 end:0x8084FB38

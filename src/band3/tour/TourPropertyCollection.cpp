@@ -1,4 +1,5 @@
 #include "tour/TourPropertyCollection.h"
+#include "decomp.h"
 #include "meta/FixedSizeSaveable.h"
 #include "os/Debug.h"
 #include "tour/Tour.h"
@@ -45,6 +46,26 @@ float TourPropertyCollection::GetPropertyValue(Symbol s) const {
     }
 }
 
+DECOMP_FORCEACTIVE(TourPropertyCollection, "o_rEntries.empty()", "Property: %s is no longer a valid property.\n")
+
 void TourPropertyCollection::SaveFixed(FixedSizeSaveableStream& stream) const {
-    // FixedSizeSaveable::SaveStd(stream, mTourProperties, 0x14, 8);
+    FixedSizeSaveable::SaveStd(stream, mTourProperties, 0x14, 8);
+}
+
+int TourPropertyCollection::SaveSize(int){
+    if(FixedSizeSaveable::sPrintoutsEnabled){
+        MILO_LOG("* %s = %i\n", "TourPropertyCollection", 0xA4);
+    }
+    return 0xA4;
+}
+
+void TourPropertyCollection::LoadFixed(FixedSizeSaveableStream& stream, int rev){
+    FixedSizeSaveable::LoadStd(stream, mTourProperties, 0x14, 8);
+}
+
+void TourPropertyCollection::FakeFill(){
+    std::map<Symbol, TourProperty*>& propmap = TheTour->mTourProperties;
+    for(std::map<Symbol, TourProperty*>::iterator it = propmap.begin(); it != propmap.end(); ++it){
+        propmap[it->first]->mMaxValue = mTourProperties[it->first];
+    }
 }

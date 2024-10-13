@@ -96,6 +96,39 @@ public:
         if(maxsize > vecsize) DepadStream(stream, savesize * (maxsize - vecsize));
     }
 
+    template <class T>
+    static void SaveStd(FixedSizeSaveableStream& stream, const std::map<Symbol, T>& map, int maxsize, int savesize){
+        int mapsize = map.size();
+        if(mapsize > maxsize){
+            MILO_WARN("The hash_map size is greater than the maximum supplied! size=%i max=%i\n", mapsize, maxsize);
+            mapsize = maxsize;
+        }
+        stream << mapsize;
+        for(std::map<Symbol, T>::const_iterator it = map.begin(); it != map.end(); ++it){
+            FixedSizeSaveable::SaveSymbolID(stream, it->first);
+            stream << it->second;
+        }
+        if(maxsize > mapsize) PadStream(stream, savesize * (maxsize - mapsize));
+    }
+
+    template <class T>
+    static void LoadStd(FixedSizeSaveableStream& stream, std::map<Symbol, T>& map, int maxsize, int savesize){
+        if(map.size() != 0){
+            MILO_WARN("hash_map is not empty!");
+            map.clear();
+        }
+        int mapsize;
+        stream >> mapsize;
+        for(int i = 0; i < mapsize; i++){
+            Symbol key;
+            FixedSizeSaveable::LoadSymbolFromID(stream, key);
+            T value;
+            stream >> value;
+            map[key] = value;
+        }
+        if(maxsize > mapsize) DepadStream(stream, savesize * (maxsize - mapsize));
+    }
+
     static int GetMaxSymbols(){
         MILO_ASSERT(sMaxSymbols >= 0, 0x1C0);
         return sMaxSymbols;

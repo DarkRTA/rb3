@@ -17,6 +17,7 @@
 
             "band3/meta_band/OvershellSlotState.cpp": "NonMatching",
 
+            "band3/tour/TourPropertyCollection.cpp": "NonMatching",
             "band3/tour/TourReward.cpp": "NonMatching"
         }
     },
