@@ -16,6 +16,9 @@
             "band3/bandtrack/TrackConfig.cpp": "Equivalent",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentCategory.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentProgress.cpp": "NonMatching",
             "band3/meta_band/OvershellSlotState.cpp": "NonMatching",
 
             "band3/tour/TourPropertyCollection.cpp": "NonMatching",

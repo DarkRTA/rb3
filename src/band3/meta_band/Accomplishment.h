@@ -1,5 +1,6 @@
 #ifndef METABAND_ACCOMPLISHMENT_H
 #define METABAND_ACCOMPLISHMENT_H
+#include "os/Debug.h"
 #include "system/obj/Data.h"
 #include "utl/MemMgr.h"
 #include <set>
@@ -15,7 +16,7 @@ public:
     virtual ~Accomplishment();
     virtual int GetType() const;
     virtual bool ShowBestAfterEarn() const;
-    virtual void UpdateIncrementalEntryName(UILabel*, Symbol) = 0;
+    virtual void UpdateIncrementalEntryName(UILabel*, Symbol){ MILO_ASSERT(false, 109); }
     virtual bool IsFulfilled(BandProfile*) const;
     virtual bool IsRelevantForSong(Symbol) const;
     virtual Difficulty GetRequiredDifficulty() const;
@@ -48,7 +49,7 @@ public:
     Symbol GetDynamicPrereqsFilter() const;
     Symbol GetCategory() const;
     int GetContextID() const;
-    void GetIconArt() const;
+    const char* GetIconArt() const;
     Symbol GetAward() const;
     bool HasAward() const;
     Symbol GetMetaScoreValue() const;

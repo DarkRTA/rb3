@@ -5,6 +5,20 @@
 
 class BandProfile;
 
+class GamerAwardStatus : public FixedSizeSaveable {
+public:
+    GamerAwardStatus();
+    virtual ~GamerAwardStatus();
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
+    static int SaveSize(int);
+
+    int unk8; // 0x8
+    int unkc; // 0xc
+    bool unk10; // 0x10
+};
+
 class AccomplishmentProgress : public Hmx::Object, public FixedSizeSaveable {
 public:
     AccomplishmentProgress(BandProfile*);
@@ -20,11 +34,17 @@ public:
     void SetToursGotAllStars(Symbol, int);
     int GetQuestCompletedCount(TourGameType) const;
     void SetQuestCompletedCount(TourGameType, int);
+    bool AddAccomplishment(Symbol);
+    bool IsAccomplished(Symbol) const;
+    void NotifyPlayerOfAccomplishment(Symbol, const char*);
+    void NotifyPlayerOfCategoryComplete(Symbol);
+    void NotifyPlayerOfGroupComplete(Symbol);
+    void AddAward(Symbol, Symbol);
 
     static int SaveSize(int);
 
     std::map<Symbol, int> unk24; // 0x24
-    BandProfile* unk3c; // 0x3c
+    BandProfile* mParentProfile; // 0x3c
     int unk40; // 0x40
     std::list<int> unk44; // 0x44
     std::set<Symbol> unk4c; // 0x4c

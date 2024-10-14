@@ -193,16 +193,16 @@ int Accomplishment::GetContextID() const {
     return mContextId;
 }
 
-void Accomplishment::GetIconArt() const {
+const char* Accomplishment::GetIconArt() const {
     bool noIconArt;
     if (gNullStr) {
         noIconArt = !strcmp(mIconOverride.Str(), gNullStr);
     } else { noIconArt = (mIconOverride.Str() == gNullStr); }
 
     if (!noIconArt) {
-        MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mIconOverride.Str());
+        return MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mIconOverride.Str());
     } else {
-        MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mName.Str());
+        return MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mName.Str());
     }
 }
 

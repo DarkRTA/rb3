@@ -201,10 +201,16 @@ rb3/vocalplayer.cpp:
 	.ctors      start:0x807EFE58 end:0x807EFE5C
 
 rb3/unknown/801/unk_80188850.cpp:
-	.text       start:0x80188850 end:0x801ABEF8
+	.text       start:0x80188850 end:0x801A7544
+
+band3/meta_band/AccomplishmentProgress.cpp:
+	.text       start:0x801A7544 end:0x801ABEF8
 
 band3/meta_band/Accomplishment.cpp:
 	.text       start:0x801ABEF8 end:0x801ADF78
+
+band3/meta_band/AccomplishmentCategory.cpp:
+	.text       start:0x801ADF78 end:0x801AE0F4
 
 rb3/bandnetgamedata.cpp:
 	.text       start:0x801C14AC end:0x801C2718

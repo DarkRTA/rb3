@@ -83,9 +83,9 @@ void AccomplishmentManager::HasFanValue(Symbol) {}
 void AccomplishmentManager::GetMetaScoreValue(Symbol) {}
 void AccomplishmentManager::GetScaledFanValue(int) {}
 bool AccomplishmentManager::HasAccomplishmentCategory(Symbol) const {}
-void AccomplishmentManager::GetAccomplishmentCategory(Symbol) const {}
+// void AccomplishmentManager::GetAccomplishmentCategory(Symbol) const {}
 bool AccomplishmentManager::HasAccomplishmentGroup(Symbol) const {}
-void AccomplishmentManager::GetAccomplishmentGroup(Symbol) const {}
+// void AccomplishmentManager::GetAccomplishmentGroup(Symbol) const {}
 void AccomplishmentManager::GetPrecachedFilterCount(Symbol) const {}
 void AccomplishmentManager::SetPrecachedFilterCount(Symbol, int) {}
 void AccomplishmentManager::GetPrecachedFilter(Symbol) const {}

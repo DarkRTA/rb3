@@ -9,7 +9,6 @@ public:
     AccomplishmentGroup(DataArray*, int);
     virtual ~AccomplishmentGroup();
 
-private:
     virtual void Configure(DataArray*);
     int GetIndex() const;
     Symbol GetName() const;

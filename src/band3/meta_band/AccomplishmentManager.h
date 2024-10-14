@@ -1,6 +1,7 @@
 #ifndef METABAND_ACCOMPLISHMENTMANAGER_H
 #define METABAND_ACCOMPLISHMENTMANAGER_H
 
+#include "meta_band/AccomplishmentGroup.h"
 #include "system/obj/Data.h"
 #include <map>
 #include <utility>
@@ -43,9 +44,7 @@ public:
     void GetMetaScoreValue(Symbol);
     void GetScaledFanValue(int);
     bool HasAccomplishmentCategory(Symbol) const;
-    void GetAccomplishmentCategory(Symbol) const;
     bool HasAccomplishmentGroup(Symbol) const;
-    void GetAccomplishmentGroup(Symbol) const;
     void GetPrecachedFilterCount(Symbol) const;
     void SetPrecachedFilterCount(Symbol, int);
     void GetPrecachedFilter(Symbol) const;
@@ -57,7 +56,14 @@ public:
     void UpdateMostStarsForAllParticipants(Symbol, int);
     bool DoesAssetHaveSource(Symbol) const;
     void UpdateTourPlayedForAllParticipants(Symbol);
-
+    Accomplishment* GetAccomplishment(Symbol) const;
+    void AddGoalAcquisitionInfo(Symbol, const char*, Symbol);
+    int GetLeaderboardHardcoreStatus(int) const;
+    int GetIconHardCoreStatus(int) const;
+    AccomplishmentCategory* GetAccomplishmentCategory(Symbol) const;
+    bool IsCategoryComplete(BandProfile*, Symbol) const;
+    bool IsGroupComplete(BandProfile*, Symbol) const;
+    AccomplishmentGroup* GetAccomplishmentGroup(Symbol) const;
 
     AccomplishmentManager();
     virtual ~AccomplishmentManager();
