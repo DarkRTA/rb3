@@ -1,7 +1,7 @@
 #ifndef METABAND_ACCOMPLISHMENT_H
 #define METABAND_ACCOMPLISHMENT_H
-
 #include "system/obj/Data.h"
+#include "utl/MemMgr.h"
 #include <set>
 #include "BandProfile.h"
 #include "band3/game/BandUser.h"
@@ -13,21 +13,31 @@ class Accomplishment {
 public:
     Accomplishment(DataArray*, int);
     virtual ~Accomplishment();
-
-protected:
-    virtual Difficulty GetRequiredDifficulty() const;
-
-private:
-    void Configure(DataArray*);
     virtual int GetType() const;
-protected:
-    Symbol GetName() const;
-private:
+    virtual bool ShowBestAfterEarn() const;
+    virtual void UpdateIncrementalEntryName(UILabel*, Symbol) = 0;
+    virtual bool IsFulfilled(BandProfile*) const;
+    virtual bool IsRelevantForSong(Symbol) const;
+    virtual Difficulty GetRequiredDifficulty() const;
+    virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
+    virtual bool InqProgressValues(BandProfile*, int&, int&);
+    virtual bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol>&) const;
+    virtual bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
+    virtual Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
+    virtual bool CanBeLaunched() const;
+    virtual bool HasSpecificSongsToLaunch() const;
+    virtual void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
+    virtual void InitializeTrackerDesc(TrackerDesc&) const;
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    void Configure(DataArray*);    
+    Symbol GetName() const;    
     Symbol GetDescription() const;
     Symbol GetSecretDescription() const;
     Symbol GetFlavorText() const;
     bool GetShouldShowDenominator() const;
-    virtual bool ShowBestAfterEarn() const;
     bool HideProgress() const;
     Symbol GetSecretCampaignLevelPrereq() const;
     const std::vector<Symbol>& GetSecretPrereqs() const;
@@ -39,19 +49,6 @@ private:
     Symbol GetCategory() const;
     int GetContextID() const;
     void GetIconArt() const;
-protected:
-    virtual bool IsFulfilled(BandProfile*) const;
-private:
-    virtual bool IsRelevantForSong(Symbol) const;
-    virtual bool InqProgressValues(BandProfile*, int&, int&);
-public:
-    virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
-private:
-    virtual Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
-    virtual bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol>&) const;
-    virtual bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
-    virtual bool CanBeLaunched() const;
-    virtual bool HasSpecificSongsToLaunch() const;
     Symbol GetAward() const;
     bool HasAward() const;
     Symbol GetMetaScoreValue() const;
@@ -59,25 +56,16 @@ private:
     bool IsUserOnValidScoreType(LocalBandUser*) const;
     bool IsUserOnValidController(LocalBandUser*) const;
     ScoreType GetRequiredScoreType() const;
-
-private:
     int GetRequiredMinPlayers() const;
     int GetRequiredMaxPlayers() const;
     bool GetRequiresUnisonAbility() const;
-    bool GetRequiresBREAbility() const;
-    virtual void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, BandProfile*) const;
-protected:
-    virtual void InitializeTrackerDesc(TrackerDesc&) const;
-private:
+    bool GetRequiresBREAbility() const;    
     bool CanBeEarnedWithNoFail() const;
     bool IsTrackedInLeaderboard() const;
     Symbol GetUnitsToken(int) const;
     Symbol GetPassiveMsgChannel() const;
     int GetPassiveMsgPriority() const;
 
-    virtual void UpdateIncrementalEntryName(UILabel*, Symbol) = 0;
-
-private:
     Symbol mName;                                   // 0x04
     std::vector<Symbol> mSecretPrereqs;             // 0x08
     int mAccomplishmentType;                        // 0x10
@@ -98,12 +86,9 @@ private:
     std::vector<Symbol> mDynamicPrereqsSongs;       // 0x50
     Symbol mDynamicPrereqsFilter;                   // 0x58
     int mProgressStep;                              // 0x5c
-
     int mIndex;                                     // 0x60
-
     int mContextId;                                 // 0x64
     Symbol mMetaScoreValue;                         // 0x68
-
     bool mRequiresUnison;                           // 0x6c
     bool mRequiresBre;                              // 0x6d
     bool mDynamicAlwaysVisible;                     // 0x6e
