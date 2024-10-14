@@ -1,13 +1,20 @@
 #include "AccomplishmentManager.h"
+#include "obj/Dir.h"
 #include "os/Debug.h"
 
 AccomplishmentManager* TheAccomplishmentMgr;
 
 AccomplishmentManager::AccomplishmentManager() {
-
+    MILO_ASSERT(!TheAccomplishmentMgr, 0x60);
+    TheAccomplishmentMgr = this;
+    SetName("acc_mgr", ObjectDir::Main());
 }
 
 AccomplishmentManager::~AccomplishmentManager(){
+    Cleanup();
+}
+
+void AccomplishmentManager::Cleanup(){
 
 }
 
