@@ -40,6 +40,7 @@ public:
     void NotifyPlayerOfCategoryComplete(Symbol);
     void NotifyPlayerOfGroupComplete(Symbol);
     void AddAward(Symbol, Symbol);
+    void Poll();
 
     static int SaveSize(int);
 

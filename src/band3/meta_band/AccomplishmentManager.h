@@ -37,7 +37,7 @@ public:
     void Init(DataArray*);
     void SanityCheckAwards();
     void Poll();
-    void FactoryCreateAccomplishment(DataArray*, int);
+    Accomplishment* FactoryCreateAccomplishment(DataArray*, int);
     void ConfigureFanValueData(DataArray*);
     void ConfigureFanScalingData(DataArray*);
     void ConfigureAccomplishmentCategoryData(DataArray*);
@@ -52,7 +52,7 @@ public:
     void GetAccomplishmentSetForCategory(Symbol) const;
     void GetNumAccomplishmentsInCategory(Symbol) const;
     void GetNumAccomplishmentsInGroup(Symbol) const;
-    void HasFanValue(Symbol);
+    bool HasFanValue(Symbol);
     void GetMetaScoreValue(Symbol);
     void GetScaledFanValue(int);
     bool HasAccomplishmentCategory(Symbol) const;
@@ -60,7 +60,7 @@ public:
     int GetPrecachedFilterCount(Symbol) const;
     void SetPrecachedFilterCount(Symbol, int);
     void GetPrecachedFilter(Symbol) const;
-    void HasAward(Symbol) const;
+    bool HasAward(Symbol) const;
     void GetAwardSourceList(Symbol) const;
     void AddAwardSource(Symbol, Symbol);
     void UpdateMostStarsForAllParticipants(Symbol, int);
@@ -89,7 +89,7 @@ public:
     std::map<Symbol, Symbol> unk98; // 0x98
     std::map<Symbol, std::vector<Symbol>*> unkb0; // 0xb0
     std::map<Symbol, int> unkc8; // 0xc8
-    std::vector<int> unke0; // 0xe0
+    std::vector<std::pair<int, int> > unke0; // 0xe0
     std::map<Symbol, std::list<Symbol>*> unke8; // 0xe8
     std::map<Symbol, std::set<Symbol>*> unk100; // 0x100
     int unk118[4];
