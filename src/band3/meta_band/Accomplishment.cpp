@@ -87,7 +87,7 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(passive_msg_channel, mPassiveMsgChannel, false);
     i_pConfig->FindData(passive_msg_priority, mPassiveMsgPriority, false);
 
-    bool noMsgChannel = !(mPassiveMsgChannel == gNullStr);
+    bool noMsgChannel = mPassiveMsgChannel != gNullStr;
 
     if (noMsgChannel) {
         if (mPassiveMsgPriority < 1) {
@@ -304,9 +304,9 @@ Symbol Accomplishment::GetMetaScoreValue() const {
     return mMetaScoreValue;
 }
 
-char* Accomplishment::GetIconPath() {
+const char* Accomplishment::GetIconPath() {
     return "ui/accomplishments/accomplishment_art/%s_keep.png";
- }
+}
 
 bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
     bool returnValue = false;
@@ -336,21 +336,18 @@ bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
 
 bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
     MILO_ASSERT(i_pUser, 0x253);
-
     bool returnValue = false;
-    ControllerType controllerType = (*(BandUser**)i_pUser)->GetControllerType();
+    ControllerType controllerType = i_pUser->GetControllerType();
     bool isValid = IsUserOnValidScoreType(i_pUser);
-
     if (mControllerTypes.empty()) {
         returnValue = true;
     } else {
-        for (std::vector<ControllerType>::const_iterator i = mControllerTypes.begin(); i != mControllerTypes.end(); i++) {
-            if (controllerType == *i) {
+        for (std::vector<ControllerType>::const_iterator iter = mControllerTypes.begin(); iter != mControllerTypes.end(); ++iter) {
+            if (controllerType == *iter) {
                 returnValue = true;
             }
         }
     }
-
     return (isValid && returnValue);
 }
 

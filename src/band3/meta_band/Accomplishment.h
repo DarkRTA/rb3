@@ -52,7 +52,7 @@ public:
     Symbol GetAward() const;
     bool HasAward() const;
     Symbol GetMetaScoreValue() const;
-    char* GetIconPath();
+    const char* GetIconPath();
     bool IsUserOnValidScoreType(LocalBandUser*) const;
     bool IsUserOnValidController(LocalBandUser*) const;
     ScoreType GetRequiredScoreType() const;
