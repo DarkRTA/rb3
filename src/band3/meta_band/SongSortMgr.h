@@ -36,4 +36,8 @@ public:
         std::vector<int> excludedSongs; // 0xc
     };
 
+    bool DoesSongMatchFilter(int, const SongFilter*, Symbol) const;
+
 };
+
+extern SongSortMgr* TheSongSortMgr;

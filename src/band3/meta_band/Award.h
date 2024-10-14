@@ -11,6 +11,7 @@ public:
 };
 
 class Award {
+public:
     Award(DataArray *, int);
     virtual ~Award();
     void Configure(DataArray *);
