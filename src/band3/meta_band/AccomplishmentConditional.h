@@ -4,10 +4,10 @@
 #include "Accomplishment.h"
 
 struct AccomplishmentCondition {
-    Symbol s;   // 0x00 - mCondition
-    int test2;  // 0x04 - mValue
-    ScoreType scoreType;  // 0x08 - mScoreType
-    Difficulty difficulty;  // 0x0c - mDifficulty
+    Symbol mCondition;   // 0x00
+    int mValue;  // 0x04
+    ScoreType mScoreType;  // 0x08
+    Difficulty mDifficulty;  // 0x0c
 };
 
 class AccomplishmentConditional : public Accomplishment {

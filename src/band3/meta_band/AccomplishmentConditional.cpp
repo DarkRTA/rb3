@@ -21,9 +21,9 @@ void AccomplishmentConditional::UpdateConditionOptionalData(AccomplishmentCondit
         }
         Symbol s = pEntry->Node(0).Sym();
         if(s == instrument) {
-            condition.scoreType = (ScoreType)pEntry->Node(1).Int();
+            condition.mScoreType = (ScoreType)pEntry->Node(1).Int();
         } else if (s == difficulty) {
-            condition.difficulty = (Difficulty)pEntry->Node(1).Int();
+            condition.mDifficulty = (Difficulty)pEntry->Node(1).Int();
         } else {
             MILO_ASSERT(false, 0x3b);
         }
@@ -40,13 +40,13 @@ void AccomplishmentConditional::Configure(DataArray* i_pConfig) {
             MILO_ASSERT(pConditionEntryArray, 0x50);
 
             AccomplishmentCondition condition;
-            condition.test2 = 0;
-            condition.difficulty = (Difficulty)0;
-            condition.scoreType = (ScoreType)10;
-            condition.s = pConditionEntryArray->Node(0).Sym();
+            condition.mValue = 0;
+            condition.mDifficulty = (Difficulty)0;
+            condition.mScoreType = (ScoreType)10;
+            condition.mCondition = pConditionEntryArray->Node(0).Sym();
 
             if (pConditionEntryArray->Size() >= 2) {
-                condition.test2 = pConditionEntryArray->Node(1).Int();
+                condition.mValue = pConditionEntryArray->Node(1).Int();
                 UpdateConditionOptionalData(condition, pConditionEntryArray);
             }
 
@@ -64,9 +64,9 @@ bool AccomplishmentConditional::InqRequiredScoreTypes(std::set<ScoreType>& o_rSc
     MILO_ASSERT(o_rScoreTypes.empty(), 0x71);
 
     for (std::vector<AccomplishmentCondition>::const_iterator i = m_lConditions.begin(); i != m_lConditions.end(); i++) {
-        ScoreType scoreType = i->scoreType;
-        if (scoreType != 10) {
-            o_rScoreTypes.insert(scoreType);
+        ScoreType mScoreType = i->mScoreType;
+        if (mScoreType != 10) {
+            o_rScoreTypes.insert(mScoreType);
         }
     }
 
@@ -84,7 +84,7 @@ Difficulty AccomplishmentConditional::GetRequiredDifficulty() const {
 
     for (std::vector<AccomplishmentCondition>::const_iterator i = m_lConditions.begin(); i != m_lConditions.end(); i++) {
         const AccomplishmentCondition& cond = *i;
-        Difficulty conddiff = cond.difficulty;
+        Difficulty conddiff = cond.mDifficulty;
         if (conddiff < requiredDifficulty) {
             requiredDifficulty = conddiff;
         }
