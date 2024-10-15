@@ -900,6 +900,8 @@ void AccomplishmentManager::HandleSongCompleted(Symbol s, Difficulty diff){
     }
 }
 
+DECOMP_FORCEACTIVE(AccomplishmentManager, "tour", "i_pProfile", "")
+
 void AccomplishmentManager::HandlePreSongCompletedForUser(Symbol s, LocalBandUser* u){
     if(TheGameMode){
         if(!TheGameMode->Property("update_leaderboards", true)->Int()) return;
@@ -1069,23 +1071,26 @@ void AccomplishmentManager::UpdateReasonLabelForAward(Symbol s, UILabel* i_pLabe
     else i_pLabel->SetTextToken(s);
 }
 
-bool AccomplishmentManager::CanEquipAward(LocalBandUser* i_pUser, Symbol symAward) const {
+DECOMP_FORCEACTIVE(AccomplishmentManager, "pSetlistAccomplishment", "No player found while trying to update song status flags.", "pBand",
+    "pBandPerformer", "pOneShotAccomplishment", "pSongStatusMgr")
+
+bool AccomplishmentManager::CanEquipAward(LocalBandUser* i_pUser, Symbol i_symAward) const {
     MILO_ASSERT(i_pUser, 0x9B0);
-    MILO_ASSERT(symAward != gNullStr, 0x9B1);
+    MILO_ASSERT(i_symAward != gNullStr, 0x9B1);
     BandCharacter* loc = i_pUser->GetCharLocal();
     if(!loc) return false;
     else {
-        Award* pAward = GetAward(symAward);
+        Award* pAward = GetAward(i_symAward);
         MILO_ASSERT(pAward, 0x9BC);
         if(pAward->HasAssets()) return true;
         else return false;
     }
 }
 
-void AccomplishmentManager::EquipAward(LocalBandUser* i_pUser, Symbol symAward){
+void AccomplishmentManager::EquipAward(LocalBandUser* i_pUser, Symbol i_symAward){
     MILO_ASSERT(i_pUser, 0x9C9);
-    MILO_ASSERT(symAward != gNullStr, 0x9CA);
-    Award* pAward = GetAward(symAward);
+    MILO_ASSERT(i_symAward != gNullStr, 0x9CA);
+    Award* pAward = GetAward(i_symAward);
     MILO_ASSERT(pAward, 0x9CD);
     std::vector<Symbol> assets;
     bool hasassets = pAward->InqAssets(assets);
@@ -1226,6 +1231,8 @@ bool AccomplishmentManager::IsAvailable(Symbol s, bool b) const {
     }
 }
 
+DECOMP_FORCEACTIVE(AccomplishmentManager, "iNumInfos > 0")
+
 bool AccomplishmentManager::IsAvailableToView(Symbol s) const {
     return IsAvailable(s, true);
 }
@@ -1267,15 +1274,15 @@ int AccomplishmentManager::GetNumOtherGoalsAcquired(const char* cc, Symbol s){
     return num;
 }
 
-bool AccomplishmentManager::InqGoalsAcquiredForSong(BandUser* i_pUser, Symbol symSong, std::vector<Symbol>& o_rAcquiredGoals){
+bool AccomplishmentManager::InqGoalsAcquiredForSong(BandUser* i_pUser, Symbol i_symSong, std::vector<Symbol>& o_rAcquiredGoals){
     MILO_ASSERT(i_pUser, 0xB68);
-    MILO_ASSERT(symSong != gNullStr, 0xB69);
+    MILO_ASSERT(i_symSong != gNullStr, 0xB69);
     MILO_ASSERT(o_rAcquiredGoals.empty(), 0xB6A);
     const char* username = i_pUser->UserName();
     if(strcmp(username, "") == 0) return false;
     else {
         for(std::vector<GoalAcquisitionInfo>::iterator it = unk138.begin(); it != unk138.end(); ++it){
-            if(it->unk10 == symSong && strcmp(it->unk4.c_str(), username) == 0){
+            if(it->unk10 == i_symSong && strcmp(it->unk4.c_str(), username) == 0){
                 o_rAcquiredGoals.push_back(it->unk0);
             }
         }
