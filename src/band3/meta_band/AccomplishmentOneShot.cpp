@@ -30,7 +30,7 @@ AccomplishmentType AccomplishmentOneShot::GetType() const {
 
 bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty diff, Performer* i_pPerformer, Symbol s, int i) {
     MILO_ASSERT(i_pPerformer, 0x3c);
-    Stats& stats = i_pPerformer->mStats;
+    const Stats& stats = i_pPerformer->GetStats();
     for(std::vector<AccomplishmentCondition>::iterator it = m_lConditions.begin(); it != m_lConditions.end(); ++it){
         Symbol sym = it->mCondition;
         int iii = it->mValue;
