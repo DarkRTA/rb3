@@ -1,5 +1,6 @@
 #include "AccomplishmentManager.h"
 #include "BandProfile.h"
+#include "Campaign.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
@@ -16,11 +17,14 @@
 #include "os/Debug.h"
 #include "stl/_algo.h"
 #include "stl/_pair.h"
+#include "utl/Locale.h"
+#include "utl/MakeString.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
+#include <vector>
 
 AccomplishmentManager* TheAccomplishmentMgr;
 
@@ -63,14 +67,14 @@ void AccomplishmentManager::Cleanup(){
         RELEASE(it->second);
     }
     mAccomplishmentCategory.clear();
-    for(std::map<Symbol, std::set<Symbol>*>::iterator it = unk100.begin(); it != unk100.end(); ++it){
+    for(std::map<Symbol, std::set<Symbol>*>::iterator it = m_mapCategoryToAccomplishmentSet.begin(); it != m_mapCategoryToAccomplishmentSet.end(); ++it){
         RELEASE(it->second);
     }
-    unk100.clear();
-    for(std::map<Symbol, std::list<Symbol>*>::iterator it = unke8.begin(); it != unke8.end(); ++it){
+    m_mapCategoryToAccomplishmentSet.clear();
+    for(std::map<Symbol, std::list<Symbol>*>::iterator it = m_mapGroupToCategories.begin(); it != m_mapGroupToCategories.end(); ++it){
         RELEASE(it->second);
     }
-    unke8.clear();
+    m_mapGroupToCategories.clear();
     for(std::map<Symbol, AccomplishmentGroup*>::iterator it = mAccomplishmentGroups.begin(); it != mAccomplishmentGroups.end(); ++it){
         RELEASE(it->second);
     }
@@ -88,7 +92,7 @@ void AccomplishmentManager::Cleanup(){
     unk148.clear();
     unk150.clear();
     unkc8.clear();
-    unke0.clear();
+    m_vFanScalingData.clear();
     for(std::map<Symbol, SongSortMgr::SongFilter*>::iterator it = unk158.begin(); it != unk158.end(); ++it){
         RELEASE(it->second);
     }
@@ -140,27 +144,17 @@ void AccomplishmentManager::InitializeTourSafeDiscSongs(){
         int songid = *it;
         BandSongMetadata* pSongData = (BandSongMetadata*)TheSongMgr->Data(songid);
         MILO_ASSERT(pSongData, 0x107);
-        // why does this match but sticking all of this into one big && chain doesn't
-        if(!pSongData->IsDownload()){
-            if(pSongData->HasPart(drum, false)){
-                if(pSongData->HasPart(vocals, false)){
-                    if(pSongData->HasPart(bass, false)){
-                        if(pSongData->HasPart(guitar, false)){
-                            if(pSongData->HasPart(real_guitar, false)){
-                                if(pSongData->HasPart(real_bass, false)){
-                                    if(pSongData->HasPart(keys, false)){
-                                        if(pSongData->HasPart(real_keys, false)){
-                                            Symbol shortname = TheSongMgr->GetShortNameFromSongID(songid, true);
-                                            unk150.push_back(shortname);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        if(pSongData->IsDownload()) continue;
+        if(!pSongData->HasPart(drum, false)) continue;
+        if(!pSongData->HasPart(vocals, false)) continue;
+        if(!pSongData->HasPart(bass, false)) continue;
+        if(!pSongData->HasPart(guitar, false)) continue;
+        if(!pSongData->HasPart(real_guitar, false)) continue;
+        if(!pSongData->HasPart(real_bass, false)) continue;
+        if(!pSongData->HasPart(keys, false)) continue;
+        if(!pSongData->HasPart(real_keys, false)) continue;
+        Symbol shortname = TheSongMgr->GetShortNameFromSongID(songid, true);
+        unk150.push_back(shortname);
     }
     std::stable_sort(unk150.begin(), unk150.end(), SongDifficultyCmp(gNullStr));
 }
@@ -292,7 +286,7 @@ void AccomplishmentManager::ConfigureFanScalingData(DataArray* arr){
             // i3 = i9;
         }
         else {
-            unke0.push_back(std::make_pair(i3, i4));
+            m_vFanScalingData.push_back(std::make_pair(i3, i4));
             i8 = i4;
             i9 = i3;
         }
@@ -371,16 +365,261 @@ void AccomplishmentManager::ConfigureAwardData(DataArray* arr){
     }
 }
 
-void AccomplishmentManager::ConfigurePrecachedFilterData(DataArray*){}
-void AccomplishmentManager::ConfigureAccomplishmentData(DataArray*){}
-void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(){}
-void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(){}
-void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray*){}
-
-Symbol AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int index) {
-    if (index) {
-        TheDebug.Notify(MakeString("", 0));
+void AccomplishmentManager::ConfigureAccomplishmentData(DataArray* arr){
+    for(int i = 1; i < arr->Size(); i++){
+        Accomplishment* pAccomplishment = FactoryCreateAccomplishment(arr->Array(i), i);
+        MILO_ASSERT(pAccomplishment, 0x261);
+        Symbol name = pAccomplishment->GetName();
+        if(HasAccomplishment(name)){
+            MILO_WARN("%s accomplishment already exists, skipping", name.Str());
+            delete pAccomplishment;
+        }
+        else {
+            Symbol cat = pAccomplishment->GetCategory();
+            if(!HasAccomplishmentCategory(cat)){
+                MILO_WARN("%s accomplishment is using unknown category: %s", name.Str(), cat.Str());
+                delete pAccomplishment;
+            }
+            else {
+                if(pAccomplishment->GetDynamicPrereqsFilter() != gNullStr && pAccomplishment->GetDynamicPrereqsNumSongs() < 0){
+                    MILO_WARN("%s accomplishment is using using dynamic prereq filter but has no song count!", name.Str());
+                    delete pAccomplishment;
+                }
+                else {
+                    if(pAccomplishment->HasAward()){
+                        Symbol award = pAccomplishment->GetAward();
+                        if(!HasAward(award)){
+                            MILO_WARN("%s accomplishment is using unknown award: %s!", name.Str(), award.Str());
+                            delete pAccomplishment;
+                            continue;
+                        }
+                        AddAwardSource(pAccomplishment->GetAward(), pAccomplishment->GetName());
+                    }
+                    mAccomplishments[name] = pAccomplishment;
+                }
+            }
+        }
     }
+}
 
-    return NULL;
+void AccomplishmentManager::ConfigureAccomplishmentCategoryGroupingData(){
+    MILO_ASSERT(m_mapCategoryToAccomplishmentSet.empty(), 0x28F);
+    for(std::map<Symbol, Accomplishment*>::iterator it = mAccomplishments.begin(); it != mAccomplishments.end(); ++it){
+        Accomplishment* pAccomplishment = it->second;
+        MILO_ASSERT(pAccomplishment, 0x297);
+        Symbol cat = pAccomplishment->GetCategory();
+        Symbol name = pAccomplishment->GetName();
+        std::set<Symbol>* symset = GetAccomplishmentSetForCategory(cat);
+        if(!symset){
+            symset = new std::set<Symbol>();
+            m_mapCategoryToAccomplishmentSet[name] = symset;
+        }
+        symset->insert(cat);
+    }
+}
+
+void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(){
+    MILO_ASSERT(m_mapGroupToCategories.empty(), 0x2AB);
+    for(std::map<Symbol, AccomplishmentCategory*>::iterator it = mAccomplishmentCategory.begin(); it != mAccomplishmentCategory.end(); ++it){
+        AccomplishmentCategory* pCategory = it->second;
+        MILO_ASSERT(pCategory, 0x2B3);
+        Symbol name = pCategory->GetName();
+        Symbol group = pCategory->GetGroup();
+        std::list<Symbol>* symlist = GetCategoryListForGroup(group);
+        if(!symlist){
+            symlist = new std::list<Symbol>();
+            m_mapGroupToCategories[name] = symlist;
+        }
+        symlist->push_back(group);
+    }
+}
+
+void AccomplishmentManager::ConfigurePrecachedFilterData(DataArray* arr){
+
+}
+
+void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray* arr){
+    DataArray* pLeaderboardThresholds = arr->Array(1);
+    for(int i = 0; i < 4; i++){
+        MILO_ASSERT(pLeaderboardThresholds->Array(i+1)->Int(0) == i, 0x2EF);
+        unk118[i] = pLeaderboardThresholds->Array(i+1)->Int(1);
+    }
+    DataArray* pIconThresholds = arr->Array(2);
+    for(int i = 0; i < 4; i++){
+        MILO_ASSERT(pIconThresholds->Array( i + 1 )->Int( 0 ) == i, 0x2F6);
+        unk128[i] = pIconThresholds->Array(i+1)->Int(1);
+    }
+}
+
+std::list<Symbol>* AccomplishmentManager::GetCategoryListForGroup(Symbol s) const {
+    std::map<Symbol, std::list<Symbol>*>::const_iterator it = m_mapGroupToCategories.find(s);
+    if(it != m_mapGroupToCategories.end()) return it->second;
+    else return nullptr;
+}
+
+std::set<Symbol>* AccomplishmentManager::GetAccomplishmentSetForCategory(Symbol s) const {
+    std::map<Symbol, std::set<Symbol>*>::const_iterator it = m_mapCategoryToAccomplishmentSet.find(s);
+    if(it != m_mapCategoryToAccomplishmentSet.end()) return it->second;
+    else return nullptr;
+}
+
+int AccomplishmentManager::GetNumAccomplishmentsInCategory(Symbol s) const {
+    int num = 0;
+    std::set<Symbol>* symset = GetAccomplishmentSetForCategory(s);
+    if(symset){
+        for(std::set<Symbol>::const_iterator it = symset->begin(); it != symset->end(); ++it){
+            if(IsAvailableToView(*it)) num++;
+        }
+    }
+    return num;
+}
+
+int AccomplishmentManager::GetNumAccomplishmentsInGroup(Symbol i_symGroup) const {
+    MILO_ASSERT(i_symGroup != gNullStr, 0x32C);
+    std::list<Symbol>* pCategoryList = GetCategoryListForGroup(i_symGroup);
+    MILO_ASSERT(pCategoryList, 0x32F);
+    int num = 0;
+    for(std::list<Symbol>::const_iterator it = pCategoryList->begin(); it != pCategoryList->end(); ++it){
+        num += GetNumAccomplishmentsInCategory(*it);
+    }
+    return num;
+}
+
+bool AccomplishmentManager::HasFanValue(Symbol s){
+    return unkc8.find(s) != unkc8.end();
+}
+
+int AccomplishmentManager::GetMetaScoreValue(Symbol s){
+    std::map<Symbol, int>::iterator it = unkc8.find(s);
+    if(it != unkc8.end()) return it->second;
+    else return 0;
+}
+
+bool AccomplishmentManager::HasAccomplishmentCategory(Symbol s) const {
+    return mAccomplishmentCategory.find(s) != mAccomplishmentCategory.end();
+}
+
+AccomplishmentCategory* AccomplishmentManager::GetAccomplishmentCategory(Symbol s) const {
+    std::map<Symbol, AccomplishmentCategory*>::const_iterator it = mAccomplishmentCategory.find(s);
+    if(it != mAccomplishmentCategory.end()) return it->second;
+    else return nullptr;
+}
+
+bool AccomplishmentManager::HasAccomplishmentGroup(Symbol s) const {
+    return mAccomplishmentGroups.find(s) != mAccomplishmentGroups.end();
+}
+
+AccomplishmentGroup* AccomplishmentManager::GetAccomplishmentGroup(Symbol s) const {
+    std::map<Symbol, AccomplishmentGroup*>::const_iterator it = mAccomplishmentGroups.find(s);
+    if(it != mAccomplishmentGroups.end()) return it->second;
+    else return nullptr;
+}
+
+int AccomplishmentManager::GetPrecachedFilterCount(Symbol s) const {
+    std::map<Symbol, int>::const_iterator it = unk170.find(s);
+    if(it != unk170.end()) return it->second;
+    else return 0;
+}
+
+void AccomplishmentManager::SetPrecachedFilterCount(Symbol s, int i){
+    unk170[s] = i;
+}
+
+SongSortMgr::SongFilter* AccomplishmentManager::GetPrecachedFilter(Symbol s) const {
+    std::map<Symbol, SongSortMgr::SongFilter*>::const_iterator it = unk158.find(s);
+    if(it != unk158.end()) return it->second;
+    else return nullptr;
+}
+
+bool AccomplishmentManager::HasAward(Symbol s) const {
+    return mAwards.find(s) != mAwards.end();
+}
+
+Award* AccomplishmentManager::GetAward(Symbol s) const {
+    std::map<Symbol, Award*>::const_iterator it = mAwards.find(s);
+    if(it != mAwards.end()) return it->second;
+    else return nullptr;
+}
+
+Symbol AccomplishmentManager::GetAwardSource(Symbol s) const {
+    std::map<Symbol, Symbol>::const_iterator it = unk98.find(s);
+    if(it != unk98.end()) return it->second;
+    else return gNullStr;
+}
+
+std::vector<Symbol>* AccomplishmentManager::GetAwardSourceList(Symbol s) const {
+    std::map<Symbol, std::vector<Symbol>*>::const_iterator it = unkb0.find(s);
+    if(it != unkb0.end()) return it->second;
+    else return nullptr;
+}
+
+void AccomplishmentManager::AddAwardSource(Symbol s1, Symbol s2){
+    Symbol src = GetAwardSource(s1);
+    if(src != gNullStr){
+        std::vector<Symbol>* srclist = GetAwardSourceList(s1);
+        if(!srclist){
+            srclist = new std::vector<Symbol>();
+            srclist->push_back(src);
+            unkb0[s1] = srclist;
+        }
+        srclist->push_back(s2);
+        unk98[s1] = awardsource_multiple;
+    }
+    else unk98[s1] = s2;
+}
+
+bool AccomplishmentManager::DoesAssetHaveSource(Symbol s) const {
+    std::vector<Symbol> srclist;
+    return InqAssetSourceList(s, srclist);
+}
+
+bool AccomplishmentManager::InqAssetSourceList(Symbol s, std::vector<Symbol>& o_rSourceList) const {
+    MILO_ASSERT(o_rSourceList.empty(), 0x41C);
+    Symbol award = GetAssetAward(s);
+    if(award == gNullStr) return false;
+    else {
+        Symbol src = GetAwardSource(award);
+        if(src == awardsource_multiple){
+            std::vector<Symbol>* pSourceList = GetAwardSourceList(award);
+            MILO_ASSERT(pSourceList, 0x42B);
+            o_rSourceList = *pSourceList;
+        }
+        else if(src != gNullStr) o_rSourceList.push_back(src);
+        else o_rSourceList.push_back(award);
+        return !o_rSourceList.empty();
+    }
+}
+
+Symbol AccomplishmentManager::GetAssetAward(Symbol s) const {
+    std::map<Symbol, Symbol>::const_iterator it = unk80.find(s);
+    if(it != unk80.end()) return it->second;
+    else return gNullStr;
+}
+
+void AccomplishmentManager::AddAssetAward(Symbol s1, Symbol s2){
+    if(GetAssetAward(s1) != gNullStr) MILO_WARN("Asset:%s is earned by multiple sources!", s1.Str());
+    else unk80[s1] = s2;
+}
+
+String AccomplishmentManager::GetHintStringForSource(Symbol s) const {
+    String ret;
+    if(HasAccomplishment(s)){
+        ret = MakeString(Localize(asset_hint_goal, 0), Localize(s, 0));
+    }
+    else if(HasAccomplishmentCategory(s)){
+        ret = MakeString(Localize(asset_hint_goalcategory, 0), Localize(s, 0));
+    }
+    else if(HasAccomplishmentGroup(s)){
+        ret = MakeString(Localize(asset_hint_goalgroup, 0), Localize(s, 0)); 
+    }
+    else if(TheCampaign->HasCampaignLevel(s)){
+        ret = MakeString(Localize(asset_hint_campaignlevel, 0), Localize(s, 0));
+    }
+    else if(TheAccomplishmentMgr->HasAward(s)){
+        Award* pAward = TheAccomplishmentMgr->GetAward(s);
+        MILO_ASSERT(pAward, 0x473);
+        ret = MakeString(Localize(asset_hint_award, 0), Localize(pAward->GetDisplayName(), 0));
+    }
+    else MILO_ASSERT(false, 0x479);
+    return ret;
 }

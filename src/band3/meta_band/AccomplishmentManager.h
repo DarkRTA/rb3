@@ -48,20 +48,20 @@ public:
     void ConfigureAccomplishmentGroupToCategoriesData();
     void ConfigurePrecachedFilterData(DataArray*);
     void ConfigureAccomplishmentRewardData(DataArray*);
-    void GetCategoryListForGroup(Symbol) const;
-    void GetAccomplishmentSetForCategory(Symbol) const;
-    void GetNumAccomplishmentsInCategory(Symbol) const;
-    void GetNumAccomplishmentsInGroup(Symbol) const;
+    std::list<Symbol>* GetCategoryListForGroup(Symbol) const;
+    std::set<Symbol>* GetAccomplishmentSetForCategory(Symbol) const;
+    int GetNumAccomplishmentsInCategory(Symbol) const;
+    int GetNumAccomplishmentsInGroup(Symbol) const;
     bool HasFanValue(Symbol);
-    void GetMetaScoreValue(Symbol);
+    int GetMetaScoreValue(Symbol);
     void GetScaledFanValue(int);
     bool HasAccomplishmentCategory(Symbol) const;
     bool HasAccomplishmentGroup(Symbol) const;
     int GetPrecachedFilterCount(Symbol) const;
     void SetPrecachedFilterCount(Symbol, int);
-    void GetPrecachedFilter(Symbol) const;
+    SongSortMgr::SongFilter* GetPrecachedFilter(Symbol) const;
     bool HasAward(Symbol) const;
-    void GetAwardSourceList(Symbol) const;
+    std::vector<Symbol>* GetAwardSourceList(Symbol) const;
     void AddAwardSource(Symbol, Symbol);
     void UpdateMostStarsForAllParticipants(Symbol, int);
     bool DoesAssetHaveSource(Symbol) const;
@@ -80,6 +80,11 @@ public:
     void CheckForFinishedTrainerAccomplishmentsForUser(LocalBandUser*);
     void Cleanup();
     Symbol GetAwardSource(Symbol) const;
+    bool HasAccomplishment(Symbol) const;
+    bool IsAvailableToView(Symbol) const;
+    bool InqAssetSourceList(Symbol, std::vector<Symbol>&) const;
+    Symbol GetAssetAward(Symbol) const;
+    String GetHintStringForSource(Symbol) const;
 
     std::map<Symbol, Accomplishment*> mAccomplishments; // 0x20
     std::map<Symbol, AccomplishmentCategory*> mAccomplishmentCategory; // 0x38
@@ -89,9 +94,9 @@ public:
     std::map<Symbol, Symbol> unk98; // 0x98
     std::map<Symbol, std::vector<Symbol>*> unkb0; // 0xb0
     std::map<Symbol, int> unkc8; // 0xc8
-    std::vector<std::pair<int, int> > unke0; // 0xe0
-    std::map<Symbol, std::list<Symbol>*> unke8; // 0xe8
-    std::map<Symbol, std::set<Symbol>*> unk100; // 0x100
+    std::vector<std::pair<int, int> > m_vFanScalingData; // 0xe0
+    std::map<Symbol, std::list<Symbol>*> m_mapGroupToCategories; // 0xe8
+    std::map<Symbol, std::set<Symbol>*> m_mapCategoryToAccomplishmentSet; // 0x100
     int unk118[4];
     int unk128[4];
     std::vector<int> unk138; // 0x138

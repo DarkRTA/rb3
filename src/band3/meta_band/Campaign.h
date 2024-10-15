@@ -8,6 +8,7 @@ class Campaign {
 public:
     LocalUser* GetUser() const;
     Symbol GetLaunchUser() const;
+    bool HasCampaignLevel(Symbol) const;
 };
 
 extern Campaign* TheCampaign;
