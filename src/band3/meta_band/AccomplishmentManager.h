@@ -118,6 +118,7 @@ public:
     bool HasNewAwards() const;
     LocalBandUser* GetUserForFirstNewAward();
     Symbol GetReasonForFirstNewAward(LocalBandUser*) const;
+    Symbol GetNameForFirstNewAward(LocalBandUser*) const;
 
     DataNode OnEarnAccomplishment(const DataArray*);
 
@@ -125,21 +126,21 @@ public:
     std::map<Symbol, AccomplishmentCategory*> mAccomplishmentCategory; // 0x38
     std::map<Symbol, AccomplishmentGroup*> mAccomplishmentGroups; // 0x50
     std::map<Symbol, Award*> mAwards; // 0x68
-    std::map<Symbol, Symbol> unk80; // 0x80
-    std::map<Symbol, Symbol> unk98; // 0x98
+    std::map<Symbol, Symbol> mAssetToAward; // 0x80
+    std::map<Symbol, Symbol> mAwardToSource; // 0x98
     std::map<Symbol, std::vector<Symbol>*> unkb0; // 0xb0
-    std::map<Symbol, int> unkc8; // 0xc8
+    std::map<Symbol, int> mFanValues; // 0xc8
     std::vector<std::pair<int, int> > m_vFanScalingData; // 0xe0
     std::map<Symbol, std::list<Symbol>*> m_mapGroupToCategories; // 0xe8
     std::map<Symbol, std::set<Symbol>*> m_mapCategoryToAccomplishmentSet; // 0x100
-    int unk118[4]; // 0x118
-    int unk128[4]; // 0x128
+    int mAccomplishmentRewardLeaderboardThresholds[4]; // 0x118
+    int mAccomplishmentRewardIconThresholds[4]; // 0x128
     std::vector<int> unk138; // 0x138
     std::vector<int> unk140; // 0x140
-    std::vector<Symbol> unk148; // 0x148
-    std::vector<Symbol> unk150; // 0x150
-    std::map<Symbol, SongSortMgr::SongFilter*> unk158; // 0x158
-    std::map<Symbol, int> unk170; // 0x170
+    std::vector<Symbol> mDiscSongs; // 0x148
+    std::vector<Symbol> mTourSafeDiscSongs; // 0x150
+    std::map<Symbol, SongSortMgr::SongFilter*> mPrecachedFilters; // 0x158
+    std::map<Symbol, int> mPrecachedFilterCounts; // 0x170
 };
 
 extern AccomplishmentManager* TheAccomplishmentMgr;

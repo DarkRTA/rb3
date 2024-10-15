@@ -49,6 +49,7 @@ public:
     int GetNumCompleted() const;
     bool HasNewAwards() const;
     Symbol GetFirstNewAwardReason() const;
+    Symbol GetFirstNewAward() const;
 
     static int SaveSize(int);
 

@@ -1,6 +1,7 @@
 #include "AccomplishmentManager.h"
 #include "BandProfile.h"
 #include "Campaign.h"
+#include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/GameMode.h"
@@ -94,29 +95,29 @@ void AccomplishmentManager::Cleanup(){
         RELEASE(it->second);
     }
     unkb0.clear();
-    unk80.clear();
-    unk98.clear();
-    unk148.clear();
-    unk150.clear();
-    unkc8.clear();
+    mAssetToAward.clear();
+    mAwardToSource.clear();
+    mDiscSongs.clear();
+    mTourSafeDiscSongs.clear();
+    mFanValues.clear();
     m_vFanScalingData.clear();
-    for(std::map<Symbol, SongSortMgr::SongFilter*>::iterator it = unk158.begin(); it != unk158.end(); ++it){
+    for(std::map<Symbol, SongSortMgr::SongFilter*>::iterator it = mPrecachedFilters.begin(); it != mPrecachedFilters.end(); ++it){
         RELEASE(it->second);
     }
-    unk158.clear();
-    unk170.clear();
+    mPrecachedFilters.clear();
+    mPrecachedFilterCounts.clear();
     TheContentMgr->UnregisterCallback(this, true);
 }
 
 void AccomplishmentManager::InitializePrecachedFilters(){
-    unk170.clear();
+    mPrecachedFilterCounts.clear();
     std::vector<int> songs;
     TheSongMgr->GetRankedSongs(songs, false, false);
     for(std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it){
         int songid = *it;
         BandSongMetadata* pSongData = (BandSongMetadata*)TheSongMgr->Data(songid);
         MILO_ASSERT(pSongData, 200);
-        for(std::map<Symbol, SongSortMgr::SongFilter*>::iterator it = unk158.begin(); it != unk158.end(); ++it){
+        for(std::map<Symbol, SongSortMgr::SongFilter*>::iterator it = mPrecachedFilters.begin(); it != mPrecachedFilters.end(); ++it){
             SongSortMgr::SongFilter* pFilter = it->second;
             Symbol key = it->first;
             MILO_ASSERT(pFilter, 0xD1);
@@ -129,7 +130,7 @@ void AccomplishmentManager::InitializePrecachedFilters(){
 }
 
 void AccomplishmentManager::InitializeDiscSongs(){
-    unk148.clear();
+    mDiscSongs.clear();
     std::vector<int> songs;
     TheSongMgr->GetRankedSongs(songs, false, false);
     for(std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it){
@@ -137,14 +138,14 @@ void AccomplishmentManager::InitializeDiscSongs(){
         BandSongMetadata* pSongData = (BandSongMetadata*)TheSongMgr->Data(songid);
         MILO_ASSERT(pSongData, 0xEB);
         if(!pSongData->IsDownload()){
-            unk148.push_back(TheSongMgr->GetShortNameFromSongID(songid, true));
+            mDiscSongs.push_back(TheSongMgr->GetShortNameFromSongID(songid, true));
         }
     }
-    std::stable_sort(unk148.begin(), unk148.end(), SongDifficultyCmp(gNullStr));
+    std::stable_sort(mDiscSongs.begin(), mDiscSongs.end(), SongDifficultyCmp(gNullStr));
 }
 
 void AccomplishmentManager::InitializeTourSafeDiscSongs(){
-    unk150.clear();
+    mTourSafeDiscSongs.clear();
     std::vector<int> songs;
     TheSongMgr->GetRankedSongs(songs, false, false);
     for(std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it){
@@ -161,9 +162,9 @@ void AccomplishmentManager::InitializeTourSafeDiscSongs(){
         if(!pSongData->HasPart(keys, false)) continue;
         if(!pSongData->HasPart(real_keys, false)) continue;
         Symbol shortname = TheSongMgr->GetShortNameFromSongID(songid, true);
-        unk150.push_back(shortname);
+        mTourSafeDiscSongs.push_back(shortname);
     }
-    std::stable_sort(unk150.begin(), unk150.end(), SongDifficultyCmp(gNullStr));
+    std::stable_sort(mTourSafeDiscSongs.begin(), mTourSafeDiscSongs.end(), SongDifficultyCmp(gNullStr));
 }
 
 
@@ -269,7 +270,7 @@ void AccomplishmentManager::ConfigureFanValueData(DataArray* arr){
         if(HasFanValue(key)){
             MILO_WARN("Fan Value: %s already exists, skipping", key.Str());
         }
-        else unkc8[key] = val;
+        else mFanValues[key] = val;
     }
 }
 
@@ -441,6 +442,8 @@ void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(){
     }
 }
 
+DECOMP_FORCEACTIVE(AccomplishmentManager, "pDataArray", "%s precached filter already exists, skipping")
+
 void AccomplishmentManager::ConfigurePrecachedFilterData(DataArray* arr){
 
 }
@@ -449,12 +452,12 @@ void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray* arr){
     DataArray* pLeaderboardThresholds = arr->Array(1);
     for(int i = 0; i < 4; i++){
         MILO_ASSERT(pLeaderboardThresholds->Array(i+1)->Int(0) == i, 0x2EF);
-        unk118[i] = pLeaderboardThresholds->Array(i+1)->Int(1);
+        mAccomplishmentRewardLeaderboardThresholds[i] = pLeaderboardThresholds->Array(i+1)->Int(1);
     }
     DataArray* pIconThresholds = arr->Array(2);
     for(int i = 0; i < 4; i++){
         MILO_ASSERT(pIconThresholds->Array( i + 1 )->Int( 0 ) == i, 0x2F6);
-        unk128[i] = pIconThresholds->Array(i+1)->Int(1);
+        mAccomplishmentRewardIconThresholds[i] = pIconThresholds->Array(i+1)->Int(1);
     }
 }
 
@@ -492,13 +495,15 @@ int AccomplishmentManager::GetNumAccomplishmentsInGroup(Symbol i_symGroup) const
     return num;
 }
 
+DECOMP_FORCEACTIVE(AccomplishmentManager, "!m_vFanScalingData.empty()", "iNextPointValue > iLastPointValue", "i_iPointValue >= iLastPointValue", "iNextFanValue > iLastFanValue")
+
 bool AccomplishmentManager::HasFanValue(Symbol s){
-    return unkc8.find(s) != unkc8.end();
+    return mFanValues.find(s) != mFanValues.end();
 }
 
 int AccomplishmentManager::GetMetaScoreValue(Symbol s){
-    std::map<Symbol, int>::iterator it = unkc8.find(s);
-    if(it != unkc8.end()) return it->second;
+    std::map<Symbol, int>::iterator it = mFanValues.find(s);
+    if(it != mFanValues.end()) return it->second;
     else return 0;
 }
 
@@ -523,18 +528,18 @@ AccomplishmentGroup* AccomplishmentManager::GetAccomplishmentGroup(Symbol s) con
 }
 
 int AccomplishmentManager::GetPrecachedFilterCount(Symbol s) const {
-    std::map<Symbol, int>::const_iterator it = unk170.find(s);
-    if(it != unk170.end()) return it->second;
+    std::map<Symbol, int>::const_iterator it = mPrecachedFilterCounts.find(s);
+    if(it != mPrecachedFilterCounts.end()) return it->second;
     else return 0;
 }
 
 void AccomplishmentManager::SetPrecachedFilterCount(Symbol s, int i){
-    unk170[s] = i;
+    mPrecachedFilterCounts[s] = i;
 }
 
 SongSortMgr::SongFilter* AccomplishmentManager::GetPrecachedFilter(Symbol s) const {
-    std::map<Symbol, SongSortMgr::SongFilter*>::const_iterator it = unk158.find(s);
-    if(it != unk158.end()) return it->second;
+    std::map<Symbol, SongSortMgr::SongFilter*>::const_iterator it = mPrecachedFilters.find(s);
+    if(it != mPrecachedFilters.end()) return it->second;
     else return nullptr;
 }
 
@@ -549,8 +554,8 @@ Award* AccomplishmentManager::GetAward(Symbol s) const {
 }
 
 Symbol AccomplishmentManager::GetAwardSource(Symbol s) const {
-    std::map<Symbol, Symbol>::const_iterator it = unk98.find(s);
-    if(it != unk98.end()) return it->second;
+    std::map<Symbol, Symbol>::const_iterator it = mAwardToSource.find(s);
+    if(it != mAwardToSource.end()) return it->second;
     else return gNullStr;
 }
 
@@ -570,9 +575,9 @@ void AccomplishmentManager::AddAwardSource(Symbol s1, Symbol s2){
             unkb0[s1] = srclist;
         }
         srclist->push_back(s2);
-        unk98[s1] = awardsource_multiple;
+        mAwardToSource[s1] = awardsource_multiple;
     }
-    else unk98[s1] = s2;
+    else mAwardToSource[s1] = s2;
 }
 
 bool AccomplishmentManager::DoesAssetHaveSource(Symbol s) const {
@@ -598,14 +603,14 @@ bool AccomplishmentManager::InqAssetSourceList(Symbol s, std::vector<Symbol>& o_
 }
 
 Symbol AccomplishmentManager::GetAssetAward(Symbol s) const {
-    std::map<Symbol, Symbol>::const_iterator it = unk80.find(s);
-    if(it != unk80.end()) return it->second;
+    std::map<Symbol, Symbol>::const_iterator it = mAssetToAward.find(s);
+    if(it != mAssetToAward.end()) return it->second;
     else return gNullStr;
 }
 
 void AccomplishmentManager::AddAssetAward(Symbol s1, Symbol s2){
     if(GetAssetAward(s1) != gNullStr) MILO_WARN("Asset:%s is earned by multiple sources!", s1.Str());
-    else unk80[s1] = s2;
+    else mAssetToAward[s1] = s2;
 }
 
 String AccomplishmentManager::GetHintStringForSource(Symbol s) const {
@@ -832,7 +837,7 @@ void AccomplishmentManager::CheckForFinishedAccomplishmentsForUser(Symbol s, Loc
 int AccomplishmentManager::GetLeaderboardHardcoreStatus(int n) const {
     int ret = 0;
     for(int i = 0; i < 4; i++){
-        if(n < unk118[i]) break;
+        if(n < mAccomplishmentRewardLeaderboardThresholds[i]) break;
         else ret = i;
     }
     return ret;
@@ -841,7 +846,7 @@ int AccomplishmentManager::GetLeaderboardHardcoreStatus(int n) const {
 int AccomplishmentManager::GetIconHardCoreStatus(int n) const {
     int ret = 0;
     for(int i = 0; i < 4; i++){
-        if(n < unk128[i]) break;
+        if(n < mAccomplishmentRewardIconThresholds[i]) break;
         else ret = i;
     }
     return ret;
@@ -999,6 +1004,19 @@ Symbol AccomplishmentManager::GetReasonForFirstNewAward(LocalBandUser* i_pUser) 
     if(prog->HasNewAwards()) return prog->GetFirstNewAwardReason();
     else {
         MILO_ASSERT(false, 0x946);
+        Symbol ret = "";
+        return ret;
+    }
+}
+
+Symbol AccomplishmentManager::GetNameForFirstNewAward(LocalBandUser* i_pUser) const {
+    MILO_ASSERT(i_pUser, 0x950);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
+    MILO_ASSERT(pProfile, 0x953);
+    AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+    if(prog->HasNewAwards()) return prog->GetFirstNewAward();
+    else {
+        MILO_ASSERT(false, 0x95E);
         Symbol ret = "";
         return ret;
     }
