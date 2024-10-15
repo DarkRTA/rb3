@@ -282,7 +282,7 @@ void Stats::EndMultiplier(Stats::MultiplierInfo& info, std::vector<Stats::Multip
     info = MultiplierInfo();
 }
 
-void Stats::GetUnisonPhrasePercent() const {}
+// void Stats::GetUnisonPhrasePercent() const {}
 
 void Stats::SetHopoGemInfo(int i1, int i2, int i3){
     mHopoGemsHopoed = i1;

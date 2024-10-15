@@ -120,7 +120,7 @@ public:
     void EndStreakMultiplier(float, int);
     void BeginMultiplier(Stats::MultiplierInfo&, float, int, float);
     void EndMultiplier(Stats::MultiplierInfo&, std::vector<Stats::MultiplierInfo>&, float, int, float, float&);
-    void GetUnisonPhrasePercent() const;
+    int GetUnisonPhrasePercent() const;
     void SetHopoGemInfo(int, int, int);
     void IncrementHighFretGemsHit(bool);
     void IncrementSustainGemsHit(bool);
@@ -259,7 +259,7 @@ public:
     bool m0x09;        // 0xa9
     float mTambourine; // 0xac
     int mHarmony; // 0xb0
-    bool m0xb4;
+    bool m0xb4; // 0xb4
     float mNoScorePercent; // 0xb8
     StreakInfo mCurrentHitStreak; // 0xbc
     std::vector<StreakInfo> mHitStreaks; // 0xc4

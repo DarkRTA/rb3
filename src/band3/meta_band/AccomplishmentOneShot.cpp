@@ -1,9 +1,14 @@
 #include "AccomplishmentOneShot.h"
 
+#include "AccomplishmentConditional.h"
+#include "game/Performer.h"
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
 #include "Campaign.h"
 #include "ProfileMgr.h"
+#include "utl/Symbol.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 
 AccomplishmentOneShot::AccomplishmentOneShot(DataArray* i_pConfig, int i) : AccomplishmentConditional(i_pConfig, i), mOneShotSong(gNullStr), mOneShotPlayerMin(0) {
     AccomplishmentOneShot::Configure(i_pConfig);
@@ -23,41 +28,61 @@ AccomplishmentType AccomplishmentOneShot::GetType() const {
     return kAccomplishmentTypeOneShot;
 }
 
-bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType, Difficulty, Performer* i_pPerformer, Symbol, int) {
+bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty diff, Performer* i_pPerformer, Symbol s, int i) {
     MILO_ASSERT(i_pPerformer, 0x3c);
-
-    for (size_t i = 0; i < m_lConditions.size(); i++) {
-        Symbol condition = m_lConditions.at(i).s;
-        if (condition == stars) {
-            // TODO: check the performer's stars
-            return false;
-        } else if (condition == unison_percent) {
-
-        } else if (condition == unison_phrases) {
-
-        } else if (condition == upstrum_percent) {
-
-        } else if (condition == times_revived) {
-
-        } else if (condition == saves) {
-
-        } else if (condition == awesomes) {
-
-        } else if (condition == double_awesomes) {
-
-        } else if (condition == all_double_awesomes) {
-
-        } else if (condition == triple_awesomes) {
-
-        } else if (condition == all_triple_awesomes) {
-
-        } else {
-            if (condition != full_combo) {
-
+    Stats& stats = i_pPerformer->mStats;
+    for(std::vector<AccomplishmentCondition>::iterator it = m_lConditions.begin(); it != m_lConditions.end(); ++it){
+        Symbol sym = it->s;
+        int iii = it->test2;
+        if((mOneShotSong == gNullStr || mOneShotSong == s) && i >= mOneShotPlayerMin && diff >= it->difficulty){
+            if(sym == stars){
+                if(it->scoreType == score && i_pPerformer->GetNumStars() >= iii) return true;
             }
-            
+            else if(sym == unison_percent){
+                if(stats.GetUnisonPhrasePercent() >= iii) return true;
+            }
+            else if(sym == unison_phrases){
+                if(stats.mUnisonPhraseCount >= iii) return true;
+            }
+            else if(sym == upstrum_percent){
+                if(it->scoreType == score){
+                    int i4 = stats.mHitCount + stats.m0x08;
+                    if(i4 > 0) i4 = (float)stats.m0x28 * 100.0f / (float)i4;
+                    else i4 = 0;
+                    if(i4 >= iii) return true;
+                }
+            }
+            else if(sym == times_revived){
+                if(stats.mTimesSaved >= iii) return true;
+            }
+            else if(sym == saves){
+                if(stats.mPlayersSaved >= iii) return true;
+            }
+            else if(sym == awesomes){
+                if((score - 3 <= 1U) && it->scoreType == score && stats.mHitCount >= iii) return true;
+            }
+            else if(sym == double_awesomes){
+                if(it->scoreType == score && stats.mDoubleHarmonyHit >= iii) return true;
+            }
+            else if(sym == all_double_awesomes){
+                if(it->scoreType == score && stats.mDoubleHarmonyHit >= stats.mDoubleHarmonyPhraseCount) return true;
+            }
+            else if(sym == triple_awesomes){
+                if(it->scoreType == score && stats.mTripleHarmonyHit >= iii) return true;
+            }
+            else if(sym == all_triple_awesomes){
+                if(it->scoreType == score && stats.mTripleHarmonyHit >= stats.mTripleHarmonyPhraseCount) return true;
+            }
+            else if(sym == full_combo){
+                if(it->scoreType == score && stats.m0xb4) return true;
+            }
+            else {
+                MILO_WARN("GOAL: %s - Condition is not currently supported: %s \n", mName, sym);
+                return false;
+            }
         }
     }
+    return false;
 }
 
 void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& param_1) const {
@@ -80,6 +105,6 @@ void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& param_1) const {
 }
 
 bool AccomplishmentOneShot::HasSpecificSongsToLaunch() const {
-    return !(mOneShotSong == gNullStr);
+    return mOneShotSong != gNullStr;
 }
 

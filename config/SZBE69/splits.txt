@@ -203,6 +203,9 @@ rb3/vocalplayer.cpp:
 band3/meta_band/AccomplishmentManager.cpp:
 	.text       start:0x80188850 end:0x8019BE78
 
+band3/meta_band/AccomplishmentOneShot.cpp:
+	.text       start:0x8019BE78 end:0x8019C7D4
+
 band3/meta_band/AccomplishmentProgress.cpp:
 	.text       start:0x801A7544 end:0x801ABEF8
 
