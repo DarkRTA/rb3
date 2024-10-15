@@ -10,7 +10,7 @@ class AccomplishmentSetlist : private Accomplishment {
 public:
     AccomplishmentSetlist(DataArray*, int);
     virtual ~AccomplishmentSetlist();
-    virtual int GetType() const;
+    virtual AccomplishmentType GetType() const;
     virtual Difficulty GetRequiredDifficulty() const;
     virtual bool InqRequiredScoreTypes(std::set<ScoreType>&) const;
     virtual bool CanBeLaunched() const;

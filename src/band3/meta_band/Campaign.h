@@ -9,6 +9,7 @@ public:
     LocalUser* GetUser() const;
     Symbol GetLaunchUser() const;
     bool HasCampaignLevel(Symbol) const;
+    Symbol GetCurrentGoal() const;
 };
 
 extern Campaign* TheCampaign;

@@ -10,11 +10,26 @@
 #include "band3/meta_band/MusicLibrary.h"
 #include "system/ui/UILabel.h"
 
+enum AccomplishmentType {
+    kAccomplishmentTypeUnique = 0,
+    kAccomplishmentTypeSongListConditional = 1,
+    kAccomplishmentTypeSongFilterConditional = 2,
+    kAccomplishmentTypeLessonSongListConditional = 3,
+    kAccomplishmentTypeLessonDiscSongConditional = 4,
+    kAccomplishmentTypePlayerConditional = 5,
+    kAccomplishmentTypeTourConditional = 6,
+    kAccomplishmentTypeTrainerListConditional = 7,
+    kAccomplishmentTypeTrainerCategoryConditional = 8,
+    kAccomplishmentTypeOneShot = 9,
+    kAccomplishmentTypeSetlist = 10,
+    kAccomplishmentTypeDiscSongConditional = 11
+};
+
 class Accomplishment {
 public:
     Accomplishment(DataArray*, int);
     virtual ~Accomplishment();
-    virtual int GetType() const;
+    virtual AccomplishmentType GetType() const;
     virtual bool ShowBestAfterEarn() const;
     virtual void UpdateIncrementalEntryName(UILabel*, Symbol){ MILO_ASSERT(false, 109); }
     virtual bool IsFulfilled(BandProfile*) const;

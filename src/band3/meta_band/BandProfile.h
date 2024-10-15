@@ -94,7 +94,7 @@ public:
     void GetLessonCompleteSpeed(const Symbol&) const;
     void SetLessonComplete(const Symbol&, float);
     void EarnAccomplishment(Symbol);
-    void GetAccomplishmentProgress() const;
+    AccomplishmentProgress* GetAccomplishmentProgress() const;
     AccomplishmentProgress* AccessAccomplishmentProgress();
     void GetHardcoreIconLevel() const;
     void SetHardcoreIconLevel(int);

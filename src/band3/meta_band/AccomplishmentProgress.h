@@ -44,6 +44,11 @@ public:
     void UpdateTourPlayed(Symbol);
     void UpdateMostStars(Symbol, int);
     int GetCurrentValue(Symbol);
+    void ClearStepTrackingMap();
+    void SetCurrentValue(Symbol, int);
+    int GetNumCompleted() const;
+    bool HasNewAwards() const;
+    Symbol GetFirstNewAwardReason() const;
 
     static int SaveSize(int);
 

@@ -1,6 +1,7 @@
 #ifndef METABAND_ACCOMPLISHMENTMANAGER_H
 #define METABAND_ACCOMPLISHMENTMANAGER_H
 #include "BandProfile.h"
+#include "game/BandUser.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/SongSortMgr.h"
 #include "obj/Object.h"
@@ -28,7 +29,7 @@ public:
     AccomplishmentManager();
     virtual ~AccomplishmentManager();
     virtual DataNode Handle(DataArray*, bool);
-    virtual const char* ContentDir();
+    virtual const char* ContentDir(){ return nullptr; }
     virtual void ContentDone();
 
     void InitializeDiscSongs();
@@ -100,6 +101,23 @@ public:
     void CheckForFinishedTourAccomplishments();
     void CheckForFinishedTourAccomplishmentsForProfile(BandProfile*);
     void CheckForFinishedTourAccomplishmentsForUser(LocalBandUser*);
+    void CheckForFinishedAccomplishmentsForUser(Symbol, LocalBandUser*);
+    void HandlePreSongCompleted(Symbol);
+    void HandlePreSongCompletedForUser(Symbol, LocalBandUser*);
+    void HandleSetlistCompleted(Symbol, bool, Difficulty, int);
+    void HandleSetlistCompletedForUser(Symbol, bool, LocalBandUser*, Difficulty, int);
+    void HandleSongCompleted(Symbol, Difficulty);
+    void HandleSongCompletedForUser(Symbol, LocalBandUser*, Difficulty);
+    void InitializeSongIncrementalDataForUserGoal(Symbol, LocalBandUser*);
+    void UpdateSongStatusFlagsForUser(Symbol, LocalBandUser*, Difficulty);
+    void UpdateMiscellaneousSongDataForUser(Symbol, LocalBandUser*);
+    void CheckForOneShotAccomplishments(Symbol, LocalBandUser*, Difficulty);
+    int GetNumAccomplishments() const;
+    bool HasCompletedAccomplishment(LocalBandUser*, Symbol) const;
+    int GetNumCompletedAccomplishments(LocalBandUser*) const;
+    bool HasNewAwards() const;
+    LocalBandUser* GetUserForFirstNewAward();
+    Symbol GetReasonForFirstNewAward(LocalBandUser*) const;
 
     DataNode OnEarnAccomplishment(const DataArray*);
 
@@ -114,8 +132,8 @@ public:
     std::vector<std::pair<int, int> > m_vFanScalingData; // 0xe0
     std::map<Symbol, std::list<Symbol>*> m_mapGroupToCategories; // 0xe8
     std::map<Symbol, std::set<Symbol>*> m_mapCategoryToAccomplishmentSet; // 0x100
-    int unk118[4];
-    int unk128[4];
+    int unk118[4]; // 0x118
+    int unk128[4]; // 0x128
     std::vector<int> unk138; // 0x138
     std::vector<int> unk140; // 0x140
     std::vector<Symbol> unk148; // 0x148

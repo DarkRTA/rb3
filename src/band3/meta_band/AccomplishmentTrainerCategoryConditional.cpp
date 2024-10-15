@@ -12,8 +12,8 @@ void AccomplishmentTrainerCategoryConditional::Configure(DataArray* i_pConfig) {
 
 }
 
-int AccomplishmentTrainerCategoryConditional::GetType() const {
-    return 8;
+AccomplishmentType AccomplishmentTrainerCategoryConditional::GetType() const {
+    return kAccomplishmentTypeTrainerCategoryConditional;
 }
 
 bool AccomplishmentTrainerCategoryConditional::IsFulfilled(BandProfile*) const {

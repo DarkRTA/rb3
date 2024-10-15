@@ -3,6 +3,7 @@
 #include "Campaign.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
+#include "game/GameMode.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
@@ -215,40 +216,40 @@ Accomplishment* AccomplishmentManager::FactoryCreateAccomplishment(DataArray* ar
     arr->FindData(accomplishment_type, acctype, true);
     Accomplishment* ret = 0;
     switch(acctype){
-        case 0:
+        case kAccomplishmentTypeUnique:
             ret = new Accomplishment(arr, idx);
             break;
-        case 1:
+        case kAccomplishmentTypeSongListConditional:
             // ret = new AccomplishmentSongListConditional(arr, idx);
             break;
-        case 2:
+        case kAccomplishmentTypeSongFilterConditional:
             // ret = new AccomplishmentSongFilterConditional(arr, idx);
             break;
-        case 3:
+        case kAccomplishmentTypeLessonSongListConditional:
             // ret = new AccomplishmentLessonSongListConditional(arr, idx);
             break;
-        case 4:
+        case kAccomplishmentTypeLessonDiscSongConditional:
             // ret = new AccomplishmentLessonDiscSongConditional(arr, idx);
             break;
-        case 5:
+        case kAccomplishmentTypePlayerConditional:
             // ret = new AccomplishmentPlayerConditional(arr, idx);
             break;
-        case 6:
+        case kAccomplishmentTypeTourConditional:
             // ret = new AccomplishmentTourConditional(arr, idx);
             break;
-        case 7:
+        case kAccomplishmentTypeTrainerListConditional:
             // ret = AccomplishmentTrainerListConditional(arr, idx);
             break;
-        case 8:
+        case kAccomplishmentTypeTrainerCategoryConditional:
             // ret = new AccomplishmentTrainerCategoryConditional(arr, idx);
             break;
-        case 9:
+        case kAccomplishmentTypeOneShot:
             // ret = new AccomplishmentOneShot(arr, idx);
             break;
-        case 10:
+        case kAccomplishmentTypeSetlist:
             // ret = new AccomplishmentSetlist(arr, idx);
             break;
-        case 11:
+        case kAccomplishmentTypeDiscSongConditional:
             // ret = new AccomplishmentDiscSongConditional(arr, idx);
             break;
         default:
@@ -801,4 +802,204 @@ void AccomplishmentManager::CheckForFinishedTourAccomplishmentsForUser(LocalBand
     BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
     MILO_ASSERT(pProfile, 0x67B);
     CheckForFinishedTourAccomplishmentsForProfile(pProfile);
+}
+
+void AccomplishmentManager::CheckForFinishedAccomplishmentsForUser(Symbol s, LocalBandUser* u){
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(u);
+    MILO_ASSERT(pProfile, 0x684);
+    AccomplishmentProgress* pProgress = pProfile->AccessAccomplishmentProgress();
+    for(std::map<Symbol, Accomplishment*>::iterator it = mAccomplishments.begin(); it != mAccomplishments.end(); ++it){
+        Symbol key = it->first;
+        if(!pProgress->IsAccomplished(key)){
+            Accomplishment* pAccomplishment = it->second;
+            MILO_ASSERT(pAccomplishment, 0x694);
+            if(pAccomplishment->GetType() == kAccomplishmentTypeTrainerListConditional) continue;
+            if(pAccomplishment->GetType() == kAccomplishmentTypeTrainerCategoryConditional) continue;
+            if(pAccomplishment->GetType() == kAccomplishmentTypeLessonDiscSongConditional) continue;
+            if(pAccomplishment->GetType() == kAccomplishmentTypeLessonSongListConditional) continue;
+            if(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional) continue;
+            if(pAccomplishment->GetType() == kAccomplishmentTypeUnique) continue;
+            if(IsAvailableToEarn(key)){
+                if(!pAccomplishment->IsRelevantForSong(s)) continue;
+                if(!pAccomplishment->IsUserOnValidScoreType(u)) continue;
+                if(!pAccomplishment->IsFulfilled(pProfile)) continue;
+                EarnAccomplishment(u, key);
+            }
+        }
+    }
+}
+
+int AccomplishmentManager::GetLeaderboardHardcoreStatus(int n) const {
+    int ret = 0;
+    for(int i = 0; i < 4; i++){
+        if(n < unk118[i]) break;
+        else ret = i;
+    }
+    return ret;
+}
+
+int AccomplishmentManager::GetIconHardCoreStatus(int n) const {
+    int ret = 0;
+    for(int i = 0; i < 4; i++){
+        if(n < unk128[i]) break;
+        else ret = i;
+    }
+    return ret;
+}
+
+void AccomplishmentManager::HandlePreSongCompleted(Symbol s){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalParticipants(users);
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            if(pUser->CanSaveData()){
+                HandlePreSongCompletedForUser(s, pUser);
+            }
+        }
+    }
+}
+
+void AccomplishmentManager::HandleSetlistCompleted(Symbol s, bool b, Difficulty diff, int i){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalParticipants(users);
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            if(pUser->CanSaveData()){
+                HandleSetlistCompletedForUser(s, b, pUser, diff, i);
+            }
+        }
+    }
+}
+
+void AccomplishmentManager::HandleSongCompleted(Symbol s, Difficulty diff){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalParticipants(users);
+        bool multiplayer = users.size() > 1;
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            if(pUser->CanSaveData()){
+                if(multiplayer){
+                    EarnAccomplishment(pUser, acc_multiplayersession);
+                }
+                HandleSongCompletedForUser(s, pUser, diff);
+            }
+        }
+    }
+}
+
+void AccomplishmentManager::HandlePreSongCompletedForUser(Symbol s, LocalBandUser* u){
+    if(TheGameMode){
+        if(!TheGameMode->Property("update_leaderboards", true)->Int()) return;
+    }
+    Symbol goal = TheCampaign->GetCurrentGoal();
+    if(goal != gNullStr){
+        BandProfile* pProfile = TheProfileMgr.GetProfileForUser(u);
+        MILO_ASSERT(pProfile, 0x75C);
+        AccomplishmentProgress* prog = pProfile->AccessAccomplishmentProgress();
+        prog->ClearStepTrackingMap();
+        InitializeSongIncrementalDataForUserGoal(goal, u);
+    }
+}
+
+void AccomplishmentManager::HandleSongCompletedForUser(Symbol s, LocalBandUser* u, Difficulty diff){
+    if(TheGameMode){
+        if(!TheGameMode->Property("update_leaderboards", true)->Int()) return;
+    }
+    if(u->unkc){
+        UpdateSongStatusFlagsForUser(s, u, diff);
+        UpdateMiscellaneousSongDataForUser(s, u);
+        CheckForOneShotAccomplishments(s, u, diff);
+        CheckForFinishedAccomplishmentsForUser(s, u);
+        Symbol goal = TheCampaign->GetCurrentGoal();
+        if(goal != gNullStr){
+            CheckForIncrementalProgressForUserGoal(goal, s, u);
+        }
+    }
+}
+
+void AccomplishmentManager::InitializeSongIncrementalDataForUserGoal(Symbol s, LocalBandUser* i_pUser){
+    MILO_ASSERT(i_pUser, 0x81B);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
+    MILO_ASSERT(pProfile, 0x81E);
+    AccomplishmentProgress* prog = pProfile->AccessAccomplishmentProgress();
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
+    MILO_ASSERT(pAccomplishment, 0x823);
+    int i1c = 0;
+    int i20 = 0;
+    pAccomplishment->InqProgressValues(pProfile, i1c, i20);
+    prog->SetCurrentValue(s, i1c);
+}
+
+int AccomplishmentManager::GetNumAccomplishments() const {
+    int num = 0;
+    for(std::map<Symbol, Accomplishment*>::const_iterator it = mAccomplishments.begin(); it != mAccomplishments.end(); ++it){
+        if(IsAvailableToView(it->first)) num++;
+    }
+    return num;
+}
+
+bool AccomplishmentManager::HasCompletedAccomplishment(LocalBandUser* u, Symbol s) const {
+    BandProfile* p = TheProfileMgr.GetProfileForUser(u);
+    if(p){
+        AccomplishmentProgress* prog = p->GetAccomplishmentProgress();
+        return prog->IsAccomplished(s);
+    }
+    else return false;
+}
+
+int AccomplishmentManager::GetNumCompletedAccomplishments(LocalBandUser* u) const {
+    int ret = 0;
+    BandProfile* p = TheProfileMgr.GetProfileForUser(u);
+    if(p){
+        AccomplishmentProgress* prog = p->GetAccomplishmentProgress();
+        ret = prog->GetNumCompleted();
+    }
+    return ret;
+}
+
+bool AccomplishmentManager::HasNewAwards() const {
+    std::vector<LocalBandUser*> users;
+    TheBandUserMgr->GetLocalBandUsers(&users, 0x802);
+    for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+        LocalBandUser* pUser = *it;
+        MILO_ASSERT(pUser, 0x907);
+        BandProfile* p = TheProfileMgr.GetProfileForUser(pUser);
+        if(p && p->HasValidSaveData() && pUser->CanSaveData()){
+            AccomplishmentProgress* prog = p->GetAccomplishmentProgress();
+            if(prog->HasNewAwards()) return true;
+        }
+    }
+    return false;
+}
+
+LocalBandUser* AccomplishmentManager::GetUserForFirstNewAward(){
+    std::vector<LocalBandUser*> users;
+    TheBandUserMgr->GetLocalBandUsers(&users, 0x802);
+    for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+        LocalBandUser* pUser = *it;
+        MILO_ASSERT(pUser, 0x923);
+        BandProfile* p = TheProfileMgr.GetProfileForUser(pUser);
+        if(p){
+            AccomplishmentProgress* prog = p->GetAccomplishmentProgress();
+            if(prog->HasNewAwards()) return pUser;
+        }
+    }
+    MILO_ASSERT(false, 0x931);
+    return nullptr;
+}
+
+Symbol AccomplishmentManager::GetReasonForFirstNewAward(LocalBandUser* i_pUser) const {
+    MILO_ASSERT(i_pUser, 0x938);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
+    MILO_ASSERT(pProfile, 0x93B);
+    AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+    if(prog->HasNewAwards()) return prog->GetFirstNewAwardReason();
+    else {
+        MILO_ASSERT(false, 0x946);
+        Symbol ret = "";
+        return ret;
+    }
 }

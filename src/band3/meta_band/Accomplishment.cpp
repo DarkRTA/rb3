@@ -116,8 +116,8 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(metascore_value, mMetaScoreValue, true);
 }
 
-int Accomplishment::GetType() const {
-    return 0;
+AccomplishmentType Accomplishment::GetType() const {
+    return kAccomplishmentTypeUnique;
 }
 
 Symbol Accomplishment::GetName() const {

@@ -12,9 +12,8 @@ public:
     AccomplishmentOneShot(DataArray*, int);
     virtual ~AccomplishmentOneShot();
 
-private:
     void Configure(DataArray*);
-    int GetType() const;
+    AccomplishmentType GetType() const;
     bool AreOneShotConditionsMet(ScoreType, Difficulty, Performer*, Symbol, int);
     void InitializeTrackerDesc(TrackerDesc&) const;
     bool HasSpecificSongsToLaunch() const;

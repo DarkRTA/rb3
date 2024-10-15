@@ -19,8 +19,8 @@ void AccomplishmentOneShot::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(oneshot_playermin, mOneShotPlayerMin, false);
 }
 
-int AccomplishmentOneShot::GetType() const {
-    return 9;
+AccomplishmentType AccomplishmentOneShot::GetType() const {
+    return kAccomplishmentTypeOneShot;
 }
 
 bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType, Difficulty, Performer* i_pPerformer, Symbol, int) {
