@@ -108,7 +108,7 @@
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentCategory.cpp": "Matching",
-            "band3/meta_band/AccomplishmentConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentConditional.cpp": "Matching",
             "band3/meta_band/AccomplishmentDiscSongConditional.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentGroup.cpp": "Matching",
             "band3/meta_band/AccomplishmentLessonDiscSongConditional.cpp": "MISSING",

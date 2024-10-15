@@ -83,8 +83,10 @@ Difficulty AccomplishmentConditional::GetRequiredDifficulty() const {
     Difficulty requiredDifficulty = (Difficulty)3;
 
     for (std::vector<AccomplishmentCondition>::const_iterator i = m_lConditions.begin(); i != m_lConditions.end(); i++) {
-        if (i->difficulty < requiredDifficulty) {
-            requiredDifficulty = i->difficulty;
+        const AccomplishmentCondition& cond = *i;
+        Difficulty conddiff = cond.difficulty;
+        if (conddiff < requiredDifficulty) {
+            requiredDifficulty = conddiff;
         }
     }
 
