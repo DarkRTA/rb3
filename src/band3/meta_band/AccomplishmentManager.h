@@ -71,7 +71,6 @@ public:
     int GetNumAccomplishmentsInGroup(Symbol) const;
     bool HasFanValue(Symbol);
     int GetMetaScoreValue(Symbol);
-    void GetScaledFanValue(int);
     bool HasAccomplishmentCategory(Symbol) const;
     bool HasAccomplishmentGroup(Symbol) const;
     int GetPrecachedFilterCount(Symbol) const;
@@ -155,6 +154,7 @@ public:
     void CheatReloadData(DataArray*);
     bool HasNewRewardVignettes() const;
     void ClearGoalProgressionAcquisitionInfo();
+    int GetScaledFanValue(int);
 
     DataNode OnEarnAccomplishment(const DataArray*);
 
@@ -171,8 +171,8 @@ public:
     std::map<Symbol, std::set<Symbol>*> m_mapCategoryToAccomplishmentSet; // 0x100
     int mAccomplishmentRewardLeaderboardThresholds[4]; // 0x118
     int mAccomplishmentRewardIconThresholds[4]; // 0x128
-    std::vector<GoalAcquisitionInfo> unk138; // 0x138
-    std::vector<GoalProgressionInfo> unk140; // 0x140
+    std::vector<GoalAcquisitionInfo> mGoalAcquisitionInfos; // 0x138
+    std::vector<GoalProgressionInfo> mGoalProgressionInfos; // 0x140
     std::vector<Symbol> mDiscSongs; // 0x148
     std::vector<Symbol> mTourSafeDiscSongs; // 0x150
     std::map<Symbol, SongSortMgr::SongFilter*> mPrecachedFilters; // 0x158

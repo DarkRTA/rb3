@@ -450,7 +450,26 @@ void AccomplishmentManager::ConfigureAccomplishmentGroupToCategoriesData(){
 DECOMP_FORCEACTIVE(AccomplishmentManager, "pDataArray", "%s precached filter already exists, skipping")
 
 void AccomplishmentManager::ConfigurePrecachedFilterData(DataArray* arr){
-
+    for(int i = 1; i < arr->Size(); i++){
+        DataArray* pDataArray = arr->Array(i);
+        MILO_ASSERT(pDataArray, 0x2CA);
+        Symbol key = pDataArray->Sym(0);
+        SongSortMgr::SongFilter* pFilter = GetPrecachedFilter(key);
+        if(pFilter) MILO_WARN("%s precached filter already exists, skipping", key.Str());
+        else {
+            pFilter = new SongSortMgr::SongFilter();
+            MILO_ASSERT(pFilter, 0x2D5);
+            for(int j = 1; j < pDataArray->Size(); j++){
+                DataArray* pEntry = pDataArray->Array(j);
+                MILO_ASSERT(pEntry, 0x2DC);
+                MILO_ASSERT(pEntry->Size() == 2, 0x2DD);
+                FilterType ty = (FilterType)pEntry->Int(0);
+                Symbol filtsym = pEntry->Str(1);
+                pFilter->AddFilter(ty, filtsym);
+            }
+            mPrecachedFilters[key] = pFilter;
+        }
+    }
 }
 
 void AccomplishmentManager::ConfigureAccomplishmentRewardData(DataArray* arr){
@@ -500,8 +519,6 @@ int AccomplishmentManager::GetNumAccomplishmentsInGroup(Symbol i_symGroup) const
     return num;
 }
 
-DECOMP_FORCEACTIVE(AccomplishmentManager, "!m_vFanScalingData.empty()", "iNextPointValue > iLastPointValue", "i_iPointValue >= iLastPointValue", "iNextFanValue > iLastFanValue")
-
 bool AccomplishmentManager::HasFanValue(Symbol s){
     return mFanValues.find(s) != mFanValues.end();
 }
@@ -511,6 +528,16 @@ int AccomplishmentManager::GetMetaScoreValue(Symbol s){
     if(it != mFanValues.end()) return it->second;
     else return 0;
 }
+
+int AccomplishmentManager::GetScaledFanValue(int i_iPointValue){
+    MILO_ASSERT(!m_vFanScalingData.empty(), 0x355);
+    int fansize = m_vFanScalingData.size();
+    for(int i = 0; i < m_vFanScalingData.size(); i++){
+
+    }
+}
+
+DECOMP_FORCEACTIVE(AccomplishmentManager, "iNextPointValue > iLastPointValue", "i_iPointValue >= iLastPointValue", "iNextFanValue > iLastFanValue")
 
 bool AccomplishmentManager::HasAccomplishmentCategory(Symbol s) const {
     return mAccomplishmentCategory.find(s) != mAccomplishmentCategory.end();
@@ -776,6 +803,26 @@ void AccomplishmentManager::EarnAccomplishmentForAllParticipants(Symbol s){
     }
 }
 
+void AccomplishmentManager::CheckForFinishedTrainerAccomplishmentsForUser(LocalBandUser* u){
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(u);
+    MILO_ASSERT(pProfile, 0x5A1);
+    AccomplishmentProgress* prog = pProfile->AccessAccomplishmentProgress();
+    for(std::map<Symbol, Accomplishment*>::iterator it = mAccomplishments.begin(); it != mAccomplishments.end(); ++it){
+        Symbol key = it->first;
+        if(!prog->IsAccomplished(key)){
+            Accomplishment* pAccomplishment = it->second;
+            MILO_ASSERT(pAccomplishment, 0x5B1);
+            if(!IsAvailableToEarn(key)) continue;
+            if(pAccomplishment->GetType() != kAccomplishmentTypeTrainerListConditional &&
+                pAccomplishment->GetType() != kAccomplishmentTypeTrainerCategoryConditional &&
+                pAccomplishment->GetType() != kAccomplishmentTypeLessonDiscSongConditional &&
+                pAccomplishment->GetType() != kAccomplishmentTypeLessonSongListConditional
+            ) continue;
+            if(pAccomplishment->IsFulfilled(pProfile)) EarnAccomplishment(u, key);
+        }
+    }
+}
+
 void AccomplishmentManager::CheckForIncrementalProgressForUserGoal(Symbol s1, Symbol s2, LocalBandUser* i_pUser){
     MILO_ASSERT(i_pUser, 0x5CF);
     Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s1);
@@ -804,6 +851,23 @@ void AccomplishmentManager::CheckForFinishedTourAccomplishments(){
         }
         BandProfile* p = TheTour->GetProfile();
         if(p) CheckForFinishedTourAccomplishmentsForProfile(p);
+    }
+}
+
+DECOMP_FORCEACTIVE(AccomplishmentManager, "tour", "i_pProfile", "")
+
+void AccomplishmentManager::CheckForFinishedTourAccomplishmentsForProfile(BandProfile* i_pProfile){
+    MILO_ASSERT(i_pProfile, 0x64E);
+    AccomplishmentProgress* prog = i_pProfile->AccessAccomplishmentProgress();
+    for(std::map<Symbol, Accomplishment*>::iterator it = mAccomplishments.begin(); it != mAccomplishments.end(); ++it){
+        Symbol key = it->first;
+        if(!prog->IsAccomplished(key)){
+            Accomplishment* pAccomplishment = it->second;
+            MILO_ASSERT(pAccomplishment, 0x65F);
+            if(!IsAvailableToEarn(key)) continue;
+            if(pAccomplishment->GetType() != kAccomplishmentTypeTourConditional) continue;
+            if(pAccomplishment->IsFulfilled(i_pProfile)) EarnAccomplishment(i_pProfile, key);
+        }
     }
 }
 
@@ -899,8 +963,6 @@ void AccomplishmentManager::HandleSongCompleted(Symbol s, Difficulty diff){
         }
     }
 }
-
-DECOMP_FORCEACTIVE(AccomplishmentManager, "tour", "i_pProfile", "")
 
 void AccomplishmentManager::HandlePreSongCompletedForUser(Symbol s, LocalBandUser* u){
     if(TheGameMode){
@@ -1241,12 +1303,17 @@ bool AccomplishmentManager::IsAvailableToEarn(Symbol s) const {
     return IsAvailable(s, false);
 }
 
+void AccomplishmentManager::ClearGoalProgressionAcquisitionInfo(){
+    mGoalAcquisitionInfos.clear();
+    mGoalProgressionInfos.clear();
+}
+
 void AccomplishmentManager::HandleRemoteAccomplishmentEarned(Symbol s1, const char* cc, Symbol s2){
     GoalAcquisitionInfo info;
     info.unk0 = s1;
     info.unk4 = cc;
     info.unk10 = s2;
-    unk138.push_back(info);
+    mGoalAcquisitionInfos.push_back(info);
 }
 
 void AccomplishmentManager::AddGoalAcquisitionInfo(Symbol s1, const char* cc, Symbol s2){
@@ -1254,7 +1321,7 @@ void AccomplishmentManager::AddGoalAcquisitionInfo(Symbol s1, const char* cc, Sy
     info.unk0 = s1;
     info.unk4 = cc;
     info.unk10 = s2;
-    unk138.push_back(info);
+    mGoalAcquisitionInfos.push_back(info);
 }
 
 void AccomplishmentManager::AddGoalProgressionInfo(Symbol s1, const char* cc, Symbol s2, int iii){
@@ -1263,12 +1330,12 @@ void AccomplishmentManager::AddGoalProgressionInfo(Symbol s1, const char* cc, Sy
     info.unk4 = cc;
     info.unk10 = s2;
     info.unk14 = iii;
-    unk140.push_back(info);
+    mGoalProgressionInfos.push_back(info);
 }
 
 int AccomplishmentManager::GetNumOtherGoalsAcquired(const char* cc, Symbol s){
     int num = 0;
-    for(std::vector<GoalAcquisitionInfo>::iterator it = unk138.begin(); it != unk138.end(); ++it){
+    for(std::vector<GoalAcquisitionInfo>::iterator it = mGoalAcquisitionInfos.begin(); it != mGoalAcquisitionInfos.end(); ++it){
         if(strcmp(it->unk4.c_str(), cc) == 0 && it->unk0 != s) num++;
     }
     return num;
@@ -1281,7 +1348,7 @@ bool AccomplishmentManager::InqGoalsAcquiredForSong(BandUser* i_pUser, Symbol i_
     const char* username = i_pUser->UserName();
     if(strcmp(username, "") == 0) return false;
     else {
-        for(std::vector<GoalAcquisitionInfo>::iterator it = unk138.begin(); it != unk138.end(); ++it){
+        for(std::vector<GoalAcquisitionInfo>::iterator it = mGoalAcquisitionInfos.begin(); it != mGoalAcquisitionInfos.end(); ++it){
             if(it->unk10 == i_symSong && strcmp(it->unk4.c_str(), username) == 0){
                 o_rAcquiredGoals.push_back(it->unk0);
             }
@@ -1292,7 +1359,7 @@ bool AccomplishmentManager::InqGoalsAcquiredForSong(BandUser* i_pUser, Symbol i_
 
 bool AccomplishmentManager::DidUserMakeProgressOnGoal(LocalBandUser* i_pUser, Symbol s){
     MILO_ASSERT(i_pUser, 0xB8F);
-    for(std::vector<GoalProgressionInfo>::iterator it = unk140.begin(); it != unk140.end(); ++it){
+    for(std::vector<GoalProgressionInfo>::iterator it = mGoalProgressionInfos.begin(); it != mGoalProgressionInfos.end(); ++it){
         if(it->unk0 == s){
             if(strcmp(it->unk4.c_str(), i_pUser->ProfileName()) == 0) return true;
         }
