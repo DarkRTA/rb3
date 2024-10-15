@@ -667,7 +667,7 @@ Accomplishment* AccomplishmentManager::GetAccomplishment(Symbol s) const {
 }
 
 DataNode AccomplishmentManager::OnEarnAccomplishment(const DataArray* arr){
-    Hmx::Object* o = arr->GetObj(2);
+    Hmx::Object* o = arr->Obj<Hmx::Object>(2);
     Symbol sym = arr->Sym(3);
     LocalBandUser* user = dynamic_cast<LocalBandUser*>(o);
     if(user) EarnAccomplishment(user, sym);
@@ -1057,16 +1057,16 @@ Symbol AccomplishmentManager::GetAwardNameDisplay(Symbol s) const {
 void AccomplishmentManager::UpdateReasonLabelForAward(Symbol s, UILabel* i_pLabel){
     MILO_ASSERT(i_pLabel, 0x98F);
     if(HasAccomplishment(s)){
-        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_goal, s));
+        i_pLabel->SetTokenFmt(campaign_award_earned_by_goal, s);
     }
     else if(HasAccomplishmentCategory(s)){
-        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_category, s));
+        i_pLabel->SetTokenFmt(campaign_award_earned_by_category, s);
     }
     else if(HasAccomplishmentGroup(s)){
-        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_group, s));
+        i_pLabel->SetTokenFmt(campaign_award_earned_by_group, s);
     }
     else if(TheCampaign->HasCampaignLevel(s)){
-        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_level, s));
+        i_pLabel->SetTokenFmt(campaign_award_earned_by_level, s);
     }
     else i_pLabel->SetTextToken(s);
 }
