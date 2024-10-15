@@ -222,7 +222,7 @@ void BandProfile::GetLessonComplete(const Symbol&) const {}
 void BandProfile::GetLessonCompleteSpeed(const Symbol&) const {}
 void BandProfile::SetLessonComplete(const Symbol&, float) {}
 void BandProfile::EarnAccomplishment(Symbol) {}
-void BandProfile::GetAccomplishmentProgress() const {}
+// void BandProfile::GetAccomplishmentProgress() const {}
 
 // void BandProfile::AccessAccomplishmentProgress() {}
 
