@@ -1,22 +1,28 @@
 #include "AccomplishmentManager.h"
 #include "BandProfile.h"
 #include "Campaign.h"
+#include "game/BandUser.h"
+#include "game/BandUserMgr.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/AccomplishmentOneShot.h"
+#include "meta_band/AccomplishmentProgress.h"
 #include "meta_band/AccomplishmentTrainerCategoryConditional.h"
 #include "meta_band/Award.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
+#include "meta_band/MetaPerformer.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SongSortMgr.h"
+#include "meta_band/Utl.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "os/ContentMgr.h"
 #include "os/Debug.h"
 #include "stl/_algo.h"
 #include "stl/_pair.h"
+#include "tour/Tour.h"
 #include "utl/Locale.h"
 #include "utl/MakeString.h"
 #include "utl/Symbol.h"
@@ -622,4 +628,177 @@ String AccomplishmentManager::GetHintStringForSource(Symbol s) const {
     }
     else MILO_ASSERT(false, 0x479);
     return ret;
+}
+
+void AccomplishmentManager::UpdateAssetHintLabel(Symbol s, UILabel* i_pLabel){
+    MILO_ASSERT(TheCampaign, 0x482);
+    MILO_ASSERT(i_pLabel, 0x483);
+    std::vector<Symbol> srclist;
+    bool hasSource = InqAssetSourceList(s, srclist);
+    MILO_ASSERT(hasSource, 0x487);
+    String str;
+    for(std::vector<Symbol>::iterator it = srclist.begin(); it != srclist.end(); ++it){
+        String srcstr = GetHintStringForSource(*it);
+        if(str.empty()) str = srcstr;
+        else str = MakeString(Localize(career_asset_or, 0), str.c_str(), srcstr.c_str());
+    }
+    i_pLabel->SetTokenFmt(career_asset_hint, str);
+}
+
+bool AccomplishmentManager::HasAccomplishment(Symbol s) const {
+    return mAccomplishments.find(s) != mAccomplishments.end();
+}
+
+Accomplishment* AccomplishmentManager::GetAccomplishment(Symbol s) const {
+    std::map<Symbol, Accomplishment*>::const_iterator it = mAccomplishments.find(s);
+    if(it != mAccomplishments.end()) return it->second;
+    else return nullptr;
+}
+
+DataNode AccomplishmentManager::OnEarnAccomplishment(const DataArray* arr){
+    Hmx::Object* o = arr->GetObj(2);
+    Symbol sym = arr->Sym(3);
+    LocalBandUser* user = dynamic_cast<LocalBandUser*>(o);
+    if(user) EarnAccomplishment(user, sym);
+    else {
+        BandProfile* pf = dynamic_cast<BandProfile*>(o);
+        EarnAccomplishment(pf, sym);
+    }
+    return 0;
+}
+
+void AccomplishmentManager::EarnAccomplishment(LocalBandUser* u, Symbol s){
+    BandProfile* pf = TheProfileMgr.GetProfileForUser(u);
+    EarnAccomplishment(pf, s);
+}
+
+void AccomplishmentManager::EarnAccomplishment(BandProfile* p, Symbol s){
+    if(!HasAccomplishment(s)){
+        MILO_WARN("Accomplishment: %s does not exist.", s.Str());
+    }
+    else {
+        Accomplishment* pAccomplishment = GetAccomplishment(s);
+        MILO_ASSERT(pAccomplishment, 0x4E0);
+        MetaPerformer* pPerformer = MetaPerformer::Current();
+        MILO_ASSERT(pPerformer, 0x4E4);
+        if(!IsAvailableToEarn(s)) return;
+        if(pPerformer->IsNoFailActive() && !pAccomplishment->CanBeEarnedWithNoFail()) return;
+        EarnAccomplishmentForProfile(p, s);
+    }
+}
+
+void AccomplishmentManager::EarnAccomplishmentForProfile(BandProfile* p, Symbol s){
+    if(p){
+        p->EarnAccomplishment(s);
+        LocalBandUser* pProfileUser = p->GetLocalBandUser();
+        MILO_ASSERT(pProfileUser, 0x50D);
+        Accomplishment* pAccomplishment = GetAccomplishment(s);
+        MILO_ASSERT(pAccomplishment, 0x510);
+        int id = pAccomplishment->GetContextID();
+        if(id != -1){
+            // TheAchievements->Submit(pProfileUser, s, id);
+        }
+    }
+}
+
+void AccomplishmentManager::UpdateTourPlayedForAllParticipants(Symbol s){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalBandUsers(&users, 0x88A);
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            MILO_ASSERT(pUser, 0x526);
+            BandProfile* p = TheProfileMgr.GetProfileForUser(pUser);
+            if(p){
+                AccomplishmentProgress* prog = p->AccessAccomplishmentProgress();
+                prog->UpdateTourPlayed(s);
+            }
+        }
+        BandProfile* p = TheTour->GetProfile();
+        if(p){
+            AccomplishmentProgress* prog = p->AccessAccomplishmentProgress();
+            prog->UpdateTourPlayed(s);
+        }
+        if(IsLeaderLocal()){
+            UpdatePlayedTourForAllRemoteParticipants(s);
+        }
+    }
+}
+
+void AccomplishmentManager::UpdateMostStarsForAllParticipants(Symbol s, int i){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalBandUsers(&users, 0x88A);
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            MILO_ASSERT(pUser, 0x54C);
+            BandProfile* p = TheProfileMgr.GetProfileForUser(pUser);
+            if(p){
+                AccomplishmentProgress* prog = p->AccessAccomplishmentProgress();
+                prog->UpdateMostStars(s, i);
+            }
+        }
+        BandProfile* p = TheTour->GetProfile();
+        if(p){
+            AccomplishmentProgress* prog = p->AccessAccomplishmentProgress();
+            prog->UpdateMostStars(s, i);
+        }
+        if(IsLeaderLocal()){
+            UpdateMostStarsForAllRemoteParticipants(s, i);
+        }
+    }
+}
+
+void AccomplishmentManager::EarnAccomplishmentForAllParticipants(Symbol s){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalBandUsers(&users, 0x88A);
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            MILO_ASSERT(pUser, 0x586);
+            BandProfile* p = TheProfileMgr.GetProfileForUser(pUser);
+            EarnAccomplishmentForProfile(p, s);
+        }
+        if(IsLeaderLocal()){
+            EarnAccomplishmentForAllRemoteParticipants(s);
+        }
+    }
+}
+
+void AccomplishmentManager::CheckForIncrementalProgressForUserGoal(Symbol s1, Symbol s2, LocalBandUser* i_pUser){
+    MILO_ASSERT(i_pUser, 0x5CF);
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s1);
+    MILO_ASSERT(pAccomplishment, 0x5D3);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
+    MILO_ASSERT(pProfile, 0x5D6);
+    AccomplishmentProgress* pProgress = pProfile->AccessAccomplishmentProgress();
+    int i24 = 0;
+    int i28 = 0;
+    pAccomplishment->InqProgressValues(pProfile, i24, i28);
+    int val = pProgress->GetCurrentValue(s1);
+    if(i24 > val){
+        TheAccomplishmentMgr->AddGoalProgressionInfo(s1, i_pUser->ProfileName(), s2, i28 - i24);
+    }
+}
+
+void AccomplishmentManager::CheckForFinishedTourAccomplishments(){
+    if(TheBandUserMgr){
+        std::vector<LocalBandUser*> users;
+        TheBandUserMgr->GetLocalBandUsers(&users, 0x88A);
+        for(std::vector<LocalBandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            LocalBandUser* pUser = *it;
+            MILO_ASSERT(pUser, 0x639);
+            BandProfile* p = TheProfileMgr.GetProfileForUser(pUser);
+            if(p) CheckForFinishedTourAccomplishmentsForProfile(p);
+        }
+        BandProfile* p = TheTour->GetProfile();
+        if(p) CheckForFinishedTourAccomplishmentsForProfile(p);
+    }
+}
+
+void AccomplishmentManager::CheckForFinishedTourAccomplishmentsForUser(LocalBandUser* i_pUser){
+    MILO_ASSERT(i_pUser, 0x679);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
+    MILO_ASSERT(pProfile, 0x67B);
+    CheckForFinishedTourAccomplishmentsForProfile(pProfile);
 }

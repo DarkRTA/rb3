@@ -41,6 +41,9 @@ public:
     void NotifyPlayerOfGroupComplete(Symbol);
     void AddAward(Symbol, Symbol);
     void Poll();
+    void UpdateTourPlayed(Symbol);
+    void UpdateMostStars(Symbol, int);
+    int GetCurrentValue(Symbol);
 
     static int SaveSize(int);
 

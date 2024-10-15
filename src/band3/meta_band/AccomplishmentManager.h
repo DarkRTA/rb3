@@ -1,5 +1,6 @@
 #ifndef METABAND_ACCOMPLISHMENTMANAGER_H
 #define METABAND_ACCOMPLISHMENTMANAGER_H
+#include "BandProfile.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/SongSortMgr.h"
 #include "obj/Object.h"
@@ -85,6 +86,22 @@ public:
     bool InqAssetSourceList(Symbol, std::vector<Symbol>&) const;
     Symbol GetAssetAward(Symbol) const;
     String GetHintStringForSource(Symbol) const;
+    void UpdateAssetHintLabel(Symbol, UILabel*);
+    void EarnAccomplishment(LocalBandUser*, Symbol);
+    void EarnAccomplishment(BandProfile*, Symbol);
+    bool IsAvailableToEarn(Symbol) const;
+    void EarnAccomplishmentForProfile(BandProfile*, Symbol);
+    void UpdatePlayedTourForAllRemoteParticipants(Symbol);
+    void UpdateMostStarsForAllRemoteParticipants(Symbol, int);
+    void EarnAccomplishmentForAllParticipants(Symbol);
+    void EarnAccomplishmentForAllRemoteParticipants(Symbol);
+    void CheckForIncrementalProgressForUserGoal(Symbol, Symbol, LocalBandUser*);
+    void AddGoalProgressionInfo(Symbol, const char*, Symbol, int);
+    void CheckForFinishedTourAccomplishments();
+    void CheckForFinishedTourAccomplishmentsForProfile(BandProfile*);
+    void CheckForFinishedTourAccomplishmentsForUser(LocalBandUser*);
+
+    DataNode OnEarnAccomplishment(const DataArray*);
 
     std::map<Symbol, Accomplishment*> mAccomplishments; // 0x20
     std::map<Symbol, AccomplishmentCategory*> mAccomplishmentCategory; // 0x38

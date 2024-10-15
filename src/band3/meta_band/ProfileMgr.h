@@ -26,7 +26,7 @@ public:
     virtual int GetMicVol(int) const;
 
     int GetSliderStepCount() const;
-    Profile* GetProfileForUser(const LocalUser*);
+    BandProfile* GetProfileForUser(const LocalUser*);
     void SetCymbalConfiguration(unsigned int);
     void UpdatePrimaryProfile();
     bool GetAllUnlocked();
