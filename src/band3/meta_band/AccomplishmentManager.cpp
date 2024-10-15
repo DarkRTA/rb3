@@ -1,6 +1,8 @@
 #include "AccomplishmentManager.h"
+#include "AccomplishmentProgress.h"
 #include "BandProfile.h"
 #include "Campaign.h"
+#include "bandobj/BandCharacter.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
@@ -11,6 +13,7 @@
 #include "meta_band/AccomplishmentOneShot.h"
 #include "meta_band/AccomplishmentProgress.h"
 #include "meta_band/AccomplishmentTrainerCategoryConditional.h"
+#include "meta_band/AssetMgr.h"
 #include "meta_band/Award.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
@@ -20,6 +23,8 @@
 #include "meta_band/Utl.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/ContentMgr.h"
 #include "os/Debug.h"
 #include "stl/_algo.h"
@@ -1021,3 +1026,311 @@ Symbol AccomplishmentManager::GetNameForFirstNewAward(LocalBandUser* i_pUser) co
         return ret;
     }
 }
+
+Symbol AccomplishmentManager::GetAwardDescription(Symbol s) const {
+    if(s != ""){
+        Award* pAward = GetAward(s);
+        MILO_ASSERT(pAward, 0x96C);
+        return pAward->GetDescription();
+    }
+    else {
+        MILO_ASSERT(false, 0x972);
+        return "";
+    }
+}
+
+Symbol AccomplishmentManager::GetAwardNameDisplay(Symbol s) const {
+    Symbol ret(gNullStr);
+    if(s != ""){
+        Award* pAward = GetAward(s);
+        MILO_ASSERT(pAward, 0x980);
+        ret = pAward->GetDisplayName();
+    }
+    else {
+        MILO_ASSERT(false, 0x986);
+    }
+    return ret;
+}
+
+void AccomplishmentManager::UpdateReasonLabelForAward(Symbol s, UILabel* i_pLabel){
+    MILO_ASSERT(i_pLabel, 0x98F);
+    if(HasAccomplishment(s)){
+        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_goal, s));
+    }
+    else if(HasAccomplishmentCategory(s)){
+        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_category, s));
+    }
+    else if(HasAccomplishmentGroup(s)){
+        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_group, s));
+    }
+    else if(TheCampaign->HasCampaignLevel(s)){
+        i_pLabel->SetTokenFmt(DataArrayPtr(campaign_award_earned_by_level, s));
+    }
+    else i_pLabel->SetTextToken(s);
+}
+
+bool AccomplishmentManager::CanEquipAward(LocalBandUser* i_pUser, Symbol symAward) const {
+    MILO_ASSERT(i_pUser, 0x9B0);
+    MILO_ASSERT(symAward != gNullStr, 0x9B1);
+    BandCharacter* loc = i_pUser->GetCharLocal();
+    if(!loc) return false;
+    else {
+        Award* pAward = GetAward(symAward);
+        MILO_ASSERT(pAward, 0x9BC);
+        if(pAward->HasAssets()) return true;
+        else return false;
+    }
+}
+
+void AccomplishmentManager::EquipAward(LocalBandUser* i_pUser, Symbol symAward){
+    MILO_ASSERT(i_pUser, 0x9C9);
+    MILO_ASSERT(symAward != gNullStr, 0x9CA);
+    Award* pAward = GetAward(symAward);
+    MILO_ASSERT(pAward, 0x9CD);
+    std::vector<Symbol> assets;
+    bool hasassets = pAward->InqAssets(assets);
+    if(!hasassets) MILO_ASSERT(false, 0x9D2);
+    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    MILO_ASSERT(pAssetMgr, 0x9D6);
+    pAssetMgr->EquipAssets(i_pUser, assets);
+}
+
+bool AccomplishmentManager::HasAwardIcon(Symbol s) const {
+    if(s != ""){
+        Award* pAward = GetAward(s);
+        MILO_ASSERT(pAward, 0x9E1);
+        return pAward->HasIconArt();
+    }
+    else return false;
+}
+
+String AccomplishmentManager::GetAwardIcon(Symbol s) const {
+    String ret;
+    if(s != ""){
+        Award* pAward = GetAward(s);
+        MILO_ASSERT(pAward, 0x9F0);
+        ret = MakeString("ui/accomplishments/award_art/%s_keep.png", pAward->GetIconArt().Str());
+    }
+    else MILO_ASSERT(false, 0x9F9);
+    return ret;
+}
+
+void AccomplishmentManager::ClearFirstNewAward(LocalBandUser* i_pUser){
+    MILO_ASSERT(i_pUser, 0xA02);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
+    MILO_ASSERT(pProfile, 0xA05);
+    pProfile->AccessAccomplishmentProgress()->ClearFirstNewAward();
+}
+
+Symbol AccomplishmentManager::GetNameForFirstNewRewardVignette() const {
+    BandProfile* pProfile = TheProfileMgr.GetPrimaryProfile();
+    MILO_ASSERT(pProfile, 0xA31);
+    AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+    if(prog->HasNewRewardVignettes()) return prog->GetFirstNewRewardVignette();
+    else {
+        MILO_ASSERT(false, 0xA3B);
+        return "";
+    }
+}
+
+void AccomplishmentManager::ClearFirstNewRewardVignette(){
+    BandProfile* pProfile = TheProfileMgr.GetPrimaryProfile();
+    MILO_ASSERT(pProfile, 0xA46);
+    pProfile->AccessAccomplishmentProgress()->ClearFirstNewRewardVignette();
+}
+
+bool AccomplishmentManager::HasNewRewardVignetteFestival() const {
+    if(MetaPerformer::Current()->GetVenueClass() == festival){
+        BandProfile* p = TheProfileMgr.GetPrimaryProfile();
+        if(p && p->HasValidSaveData()){
+            AccomplishmentProgress* prog = p->GetAccomplishmentProgress();
+            if(prog->HasNewRewardVignetteFestival()) return true;
+        }
+    }
+    return false;
+}
+
+void AccomplishmentManager::ClearNewRewardVignetteFestival(){
+    BandProfile* pProfile = TheProfileMgr.GetPrimaryProfile();
+    MILO_ASSERT(pProfile, 0xA65);
+    pProfile->AccessAccomplishmentProgress()->ClearNewRewardVignetteFestival();
+}
+
+bool AccomplishmentManager::IsCategoryComplete(BandProfile* i_pProfile, Symbol s) const {
+    MILO_ASSERT(i_pProfile, 0xA6E);
+    AccomplishmentProgress* prog = i_pProfile->GetAccomplishmentProgress();
+    int numincat = GetNumAccomplishmentsInCategory(s);
+    return numincat <= prog->GetNumCompletedInCategory(s);
+}
+
+bool AccomplishmentManager::IsGroupComplete(BandProfile* i_pProfile, Symbol s) const {
+    MILO_ASSERT(i_pProfile, 0xA7B);
+    AccomplishmentProgress* prog = i_pProfile->GetAccomplishmentProgress();
+    int numincat = GetNumAccomplishmentsInGroup(s);
+    return numincat <= prog->GetNumCompletedInGroup(s);
+}
+
+Symbol AccomplishmentManager::GetFirstUnfinishedAccomplishmentEntry(BandProfile* i_pProfile, Symbol s){
+    MILO_ASSERT(i_pProfile, 0xA88);
+    MetaPerformer* pPerformer = MetaPerformer::Current();
+    MILO_ASSERT(pPerformer, 0xA8B);
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
+    MILO_ASSERT(pAccomplishment, 0xA8E);
+    std::vector<Symbol> vAccomplishmentEntries;
+    bool bGotSymbols = pAccomplishment->InqIncrementalSymbols(i_pProfile, vAccomplishmentEntries);
+    MILO_ASSERT(bGotSymbols, 0xA93);
+    AccomplishmentProgress* prog = i_pProfile->GetAccomplishmentProgress();
+    if(prog->IsAccomplished(s)){
+        MILO_ASSERT(!vAccomplishmentEntries.empty(), 0xA99);
+        return vAccomplishmentEntries[0];
+    }
+    else {
+        Symbol symFirst(gNullStr);
+        std::vector<Symbol>::iterator it;
+        for(it = vAccomplishmentEntries.begin(); it != vAccomplishmentEntries.end(); ++it){
+            if(pAccomplishment->IsSymbolEntryFulfilled(i_pProfile, *it)) break;
+        }
+        symFirst = *it;
+        if(symFirst == goal_filtersong_unknown){
+            symFirst = pAccomplishment->GetFirstUnfinishedAccomplishmentEntry(i_pProfile);
+        }
+        MILO_ASSERT(symFirst != gNullStr, 0xAB1);
+        return symFirst;
+    }
+}
+
+bool AccomplishmentManager::IsAvailable(Symbol s, bool b) const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
+    MILO_ASSERT(pAccomplishment, 0xAB9);
+    if(!pAccomplishment->IsDynamic()) return true;
+    else if(b && pAccomplishment->GetDynamicAlwaysVisible()) return true;
+    else {
+        Symbol filt = pAccomplishment->GetDynamicPrereqsFilter();
+        if(filt == gNullStr){
+            const std::vector<Symbol>& rSongs = pAccomplishment->GetDynamicPrereqsSongs();
+            int numrsongs = rSongs.size();
+            int iNumSongs = pAccomplishment->GetDynamicPrereqsNumSongs();
+            if(iNumSongs <= 0) iNumSongs = numrsongs;
+            MILO_ASSERT(iNumSongs <= rSongs.size(), 0xAD4);
+            int i7 = 0;
+            for(int i = 0; i < numrsongs; i++){
+                if(TheSongMgr->HasSong(rSongs[i], false)) i7++;
+                if(i7 >= iNumSongs) return true;
+            }
+        }
+        else {
+            int filtcount = GetPrecachedFilterCount(filt);
+            if(filtcount >= pAccomplishment->GetDynamicPrereqsNumSongs()) return true;
+        }
+        return false;
+    }
+}
+
+bool AccomplishmentManager::IsAvailableToView(Symbol s) const {
+    return IsAvailable(s, true);
+}
+
+bool AccomplishmentManager::IsAvailableToEarn(Symbol s) const {
+    return IsAvailable(s, false);
+}
+
+void AccomplishmentManager::HandleRemoteAccomplishmentEarned(Symbol s1, const char* cc, Symbol s2){
+    GoalAcquisitionInfo info;
+    info.unk0 = s1;
+    info.unk4 = cc;
+    info.unk10 = s2;
+    unk138.push_back(info);
+}
+
+void AccomplishmentManager::AddGoalAcquisitionInfo(Symbol s1, const char* cc, Symbol s2){
+    GoalAcquisitionInfo info;
+    info.unk0 = s1;
+    info.unk4 = cc;
+    info.unk10 = s2;
+    unk138.push_back(info);
+}
+
+void AccomplishmentManager::AddGoalProgressionInfo(Symbol s1, const char* cc, Symbol s2, int iii){
+    GoalProgressionInfo info;
+    info.unk0 = s1;
+    info.unk4 = cc;
+    info.unk10 = s2;
+    info.unk14 = iii;
+    unk140.push_back(info);
+}
+
+int AccomplishmentManager::GetNumOtherGoalsAcquired(const char* cc, Symbol s){
+    int num = 0;
+    for(std::vector<GoalAcquisitionInfo>::iterator it = unk138.begin(); it != unk138.end(); ++it){
+        if(strcmp(it->unk4.c_str(), cc) == 0 && it->unk0 != s) num++;
+    }
+    return num;
+}
+
+bool AccomplishmentManager::InqGoalsAcquiredForSong(BandUser* i_pUser, Symbol symSong, std::vector<Symbol>& o_rAcquiredGoals){
+    MILO_ASSERT(i_pUser, 0xB68);
+    MILO_ASSERT(symSong != gNullStr, 0xB69);
+    MILO_ASSERT(o_rAcquiredGoals.empty(), 0xB6A);
+    const char* username = i_pUser->UserName();
+    if(strcmp(username, "") == 0) return false;
+    else {
+        for(std::vector<GoalAcquisitionInfo>::iterator it = unk138.begin(); it != unk138.end(); ++it){
+            if(it->unk10 == symSong && strcmp(it->unk4.c_str(), username) == 0){
+                o_rAcquiredGoals.push_back(it->unk0);
+            }
+        }
+        return !o_rAcquiredGoals.empty();
+    }
+}
+
+bool AccomplishmentManager::DidUserMakeProgressOnGoal(LocalBandUser* i_pUser, Symbol s){
+    MILO_ASSERT(i_pUser, 0xB8F);
+    for(std::vector<GoalProgressionInfo>::iterator it = unk140.begin(); it != unk140.end(); ++it){
+        if(it->unk0 == s){
+            if(strcmp(it->unk4.c_str(), i_pUser->ProfileName()) == 0) return true;
+        }
+    }
+    return false;
+}
+
+Symbol AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int idx){
+    if(idx >= mTourSafeDiscSongs.size()){
+        MILO_WARN("Trying to access tour disc song %i which is beyond number of songs avaiable!", idx);
+        idx = mTourSafeDiscSongs.size() - 1;
+    }
+    return mTourSafeDiscSongs[idx];
+}
+
+void AccomplishmentManager::CheatReloadData(DataArray* arr){
+    Cleanup();
+    Init(arr->FindArray("accomplishment_info", true));
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(AccomplishmentManager)
+    HANDLE(earn_accomplishment, OnEarnAccomplishment)
+    HANDLE_ACTION(earn_accomplishment_for_all, EarnAccomplishmentForAllParticipants(_msg->Sym(2)))
+    HANDLE_EXPR(get_num_goals, GetNumAccomplishments())
+    HANDLE_EXPR(get_num_completed_goals, GetNumCompletedAccomplishments(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(has_completed_goal, HasCompletedAccomplishment(_msg->Obj<LocalBandUser>(2), _msg->Sym(3)))
+    HANDLE_EXPR(has_new_awards, HasNewAwards())
+    HANDLE_EXPR(get_award_description, GetAwardDescription(_msg->Sym(2)))
+    HANDLE_EXPR(get_award_name, GetAwardNameDisplay(_msg->Sym(2)))
+    HANDLE_EXPR(get_award_icon, GetAwardIcon(_msg->Sym(2)))
+    HANDLE_EXPR(has_award_icon, HasAwardIcon(_msg->Sym(2)))
+    HANDLE_ACTION(clear_first_new_award, ClearFirstNewAward(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(can_equip_award, CanEquipAward(_msg->Obj<LocalBandUser>(2), _msg->Sym(3)))
+    HANDLE_ACTION(equip_award, EquipAward(_msg->Obj<LocalBandUser>(2), _msg->Sym(3)))
+    HANDLE_EXPR(has_new_reward_vignettes, HasNewRewardVignettes())
+    HANDLE_EXPR(get_name_for_first_new_reward_vignette, GetNameForFirstNewRewardVignette())
+    HANDLE_ACTION(clear_first_new_reward_vignette, ClearFirstNewRewardVignette())
+    HANDLE_EXPR(has_new_reward_vignette_festival, HasNewRewardVignetteFestival())
+    HANDLE_ACTION(clear_new_reward_vignette_festival, ClearNewRewardVignetteFestival())
+    HANDLE_ACTION(update_reason_for_award, UpdateReasonLabelForAward(_msg->Sym(2), _msg->Obj<UILabel>(3)))
+    HANDLE_ACTION(clear_goal_info, ClearGoalProgressionAcquisitionInfo())
+    HANDLE_ACTION(check_for_tour_goals, CheckForFinishedTourAccomplishments())
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xBF6)
+END_HANDLERS
+#pragma pop

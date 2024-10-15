@@ -50,6 +50,14 @@ public:
     bool HasNewAwards() const;
     Symbol GetFirstNewAwardReason() const;
     Symbol GetFirstNewAward() const;
+    void ClearFirstNewAward();
+    bool HasNewRewardVignettes() const;
+    Symbol GetFirstNewRewardVignette() const;
+    void ClearFirstNewRewardVignette();
+    bool HasNewRewardVignetteFestival() const;
+    void ClearNewRewardVignetteFestival();
+    int GetNumCompletedInCategory(Symbol) const;
+    int GetNumCompletedInGroup(Symbol) const;
 
     static int SaveSize(int);
 

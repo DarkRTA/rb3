@@ -24,6 +24,21 @@ struct SongDifficultyCmp {
     Symbol mInst; // 0x0
 };
 
+struct GoalAcquisitionInfo {
+    GoalAcquisitionInfo(){}
+    Symbol unk0;
+    String unk4;
+    Symbol unk10;
+};
+
+struct GoalProgressionInfo {
+    GoalProgressionInfo(){}
+    Symbol unk0;
+    String unk4;
+    Symbol unk10;
+    int unk14;
+};
+
 class AccomplishmentManager : public Hmx::Object, public ContentMgr::Callback {
 public:
     AccomplishmentManager();
@@ -119,6 +134,27 @@ public:
     LocalBandUser* GetUserForFirstNewAward();
     Symbol GetReasonForFirstNewAward(LocalBandUser*) const;
     Symbol GetNameForFirstNewAward(LocalBandUser*) const;
+    Symbol GetAwardDescription(Symbol) const;
+    Symbol GetAwardNameDisplay(Symbol) const;
+    void UpdateReasonLabelForAward(Symbol, UILabel*);
+    bool CanEquipAward(LocalBandUser*, Symbol) const;
+    void EquipAward(LocalBandUser*, Symbol);
+    bool HasAwardIcon(Symbol) const;
+    String GetAwardIcon(Symbol) const;
+    void ClearFirstNewAward(LocalBandUser*);
+    Symbol GetNameForFirstNewRewardVignette() const;
+    void ClearFirstNewRewardVignette();
+    bool HasNewRewardVignetteFestival() const;
+    void ClearNewRewardVignetteFestival();
+    Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*, Symbol);
+    bool IsAvailable(Symbol, bool) const;
+    void HandleRemoteAccomplishmentEarned(Symbol, const char*, Symbol);
+    int GetNumOtherGoalsAcquired(const char*, Symbol);
+    bool InqGoalsAcquiredForSong(BandUser*, Symbol, std::vector<Symbol>&);
+    bool DidUserMakeProgressOnGoal(LocalBandUser*, Symbol);
+    void CheatReloadData(DataArray*);
+    bool HasNewRewardVignettes() const;
+    void ClearGoalProgressionAcquisitionInfo();
 
     DataNode OnEarnAccomplishment(const DataArray*);
 
@@ -135,8 +171,8 @@ public:
     std::map<Symbol, std::set<Symbol>*> m_mapCategoryToAccomplishmentSet; // 0x100
     int mAccomplishmentRewardLeaderboardThresholds[4]; // 0x118
     int mAccomplishmentRewardIconThresholds[4]; // 0x128
-    std::vector<int> unk138; // 0x138
-    std::vector<int> unk140; // 0x140
+    std::vector<GoalAcquisitionInfo> unk138; // 0x138
+    std::vector<GoalProgressionInfo> unk140; // 0x140
     std::vector<Symbol> mDiscSongs; // 0x148
     std::vector<Symbol> mTourSafeDiscSongs; // 0x150
     std::map<Symbol, SongSortMgr::SongFilter*> mPrecachedFilters; // 0x158

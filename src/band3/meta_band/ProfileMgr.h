@@ -107,6 +107,7 @@ public:
     BandProfile* FindTourProgressOwner(const TourProgress*);
     BandProfile* GetProfileForChar(const TourCharLocal*);
     std::vector<BandProfile*> GetSignedInProfiles();
+    BandProfile* GetPrimaryProfile() const;
 
     DECLARE_REVS;
 

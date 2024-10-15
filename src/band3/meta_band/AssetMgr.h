@@ -13,10 +13,10 @@
 class BandCharDesc;
 
 class AssetMgr : public Hmx::Object {
+public:
     AssetMgr();
     virtual ~AssetMgr();
     void Init();
-public:
     static AssetMgr* GetAssetMgr();
     Asset* GetAsset(Symbol) const;
     bool HasAsset(Symbol) const;
@@ -31,7 +31,6 @@ public:
     void EquipAsset(BandCharDesc*, Symbol);
     void EquipAssets(LocalBandUser*, const std::vector<Symbol>&);
 
-public:  
     std::map<Symbol, Asset*> mAssets;  
 };
 
