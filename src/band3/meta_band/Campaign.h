@@ -3,11 +3,12 @@
 
 #include "obj/Data.h"
 #include "os/User.h"
+#include "game/BandUser.h"
 
 class Campaign {
 public:
-    LocalUser* GetUser() const;
-    Symbol GetLaunchUser() const;
+    LocalBandUser* GetUser() const;
+    LocalBandUser* GetLaunchUser() const;
     bool HasCampaignLevel(Symbol) const;
     Symbol GetCurrentGoal() const;
 };

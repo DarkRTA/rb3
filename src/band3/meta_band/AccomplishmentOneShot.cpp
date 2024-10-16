@@ -74,7 +74,7 @@ bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty 
                 if(it->mScoreType == score && stats.mTripleHarmonyHit >= stats.mTripleHarmonyPhraseCount) return true;
             }
             else if(sym == full_combo){
-                if(it->mScoreType == score && stats.m0xb4) return true;
+                if(it->mScoreType == score && stats.mFullCombo) return true;
             }
             else {
                 MILO_WARN("GOAL: %s - Condition is not currently supported: %s \n", mName, sym);
@@ -85,22 +85,25 @@ bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty 
     return false;
 }
 
-void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& param_1) const {
-    Accomplishment::InitializeTrackerDesc(param_1);
+void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& desc) const {
+    Accomplishment::InitializeTrackerDesc(desc);
     MILO_ASSERT(!m_lConditions.empty(), 0xe6);
-    AccomplishmentCondition condition = m_lConditions[0];
+    const AccomplishmentCondition& condition = m_lConditions[0];
     MILO_ASSERT(TheCampaign, 0xe9);
-    LocalUser* pUser = TheCampaign->GetUser();
+    LocalBandUser* pUser = TheCampaign->GetUser();
     MILO_ASSERT(pUser, 0xeb);
     Profile* pProfile = TheProfileMgr.GetProfileForUser(pUser);
     MILO_ASSERT(pProfile, 0xee);
 
-    if (condition.mCondition == upstrum_percent) {
-
-    } else if (condition.mCondition == stars) {
-
-    } else if (condition.mCondition == unison_phrases) {
-
+    Symbol cond = condition.mCondition;
+    if(cond == upstrum_percent){
+        desc.mType = 0x14;
+        desc.unk18.push_back(condition.mValue);
+    }
+    else if(cond == stars) desc.unkc = 0;
+    else if(cond == unison_phrases){
+        desc.mType = 0x12;
+        desc.unk18.push_back(condition.mValue);
     }
 }
 

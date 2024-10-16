@@ -400,11 +400,9 @@ void Accomplishment::InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&,
 void Accomplishment::InitializeTrackerDesc(TrackerDesc& trackerDesc) const {
     MILO_ASSERT(TheCampaign, 0x2b8);
 
-    Symbol user = TheCampaign->GetLaunchUser();
-
-    trackerDesc.symbol2 = user;
+    trackerDesc.mUser = TheCampaign->GetLaunchUser();
     trackerDesc.symbol3 = mName;
-    trackerDesc.int1 = 2;
+    trackerDesc.unkc = 2;
 }
 
 bool Accomplishment::CanBeEarnedWithNoFail() const {

@@ -114,7 +114,7 @@
             "band3/meta_band/AccomplishmentLessonDiscSongConditional.cpp": "MISSING",
             "band3/meta_band/AccomplishmentLessonSongListConditional.cpp": "MISSING",
             "band3/meta_band/AccomplishmentManager.cpp": "NonMatching",
-            "band3/meta_band/AccomplishmentOneShot.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentOneShot.cpp": "Matching",
             "band3/meta_band/AccomplishmentPanel.cpp": "MISSING",
             "band3/meta_band/AccomplishmentPlayerConditional.cpp": "MISSING",
             "band3/meta_band/AccomplishmentProgress.cpp": "NonMatching",

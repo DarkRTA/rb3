@@ -3,14 +3,17 @@
 
 #include "game/Defines.h"
 #include "meta_band/GameplayOptions.h"
-#include "os/User.h"
+#include "game/BandUser.h"
 #include "types.h"
 
 struct TrackerDesc {
-    Symbol symbol1;  // 0x00
-    Symbol symbol2;  // 0x04
+    int mType; // 0x0 - enum TrackerType
+    LocalBandUser* mUser;  // 0x04 - LocalBandUser*
     Symbol symbol3;  // 0x08
-    int int1;        // 0x0c
+    int unkc;        // 0x0c
+    int unk10;
+    int unk14;
+    std::vector<float> unk18;
 };
 
 class Tracker {
