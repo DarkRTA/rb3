@@ -45,7 +45,7 @@ void GamerAwardStatus::LoadFixed(FixedSizeSaveableStream& stream, int rev){
     unkc = iii;
 }
 
-AccomplishmentProgress::AccomplishmentProgress(BandProfile* profile) : mParentProfile(profile), mMetaScore(0), unk644(1), unk648(0) {
+AccomplishmentProgress::AccomplishmentProgress(BandProfile* profile) : mParentProfile(profile), mMetaScore(0), mUploadDirty(1), unk648(0) {
     Clear();
     mSaveSizeMethod = &SaveSize;
 }
@@ -59,14 +59,14 @@ AccomplishmentProgress::~AccomplishmentProgress(){
 
 void AccomplishmentProgress::Clear(){
     mHardCoreStatusUpdatePending = false;
-    unk644 = false;
-    unk4c.clear();
+    mUploadDirty = false;
+    mAccomplishments.clear();
     unk64.clear();
     unkb0.clear();
-    unka8.clear();
-    unka0.clear();
+    mNewRewardVignettes.clear();
+    mNewAwards.clear();
     unk7c.clear();
-    unk88.clear();
+    mAwards.clear();
     unk648 = 0;
     mMetaScore = 0;
     mTotalGemsSmashed = 0;
@@ -109,12 +109,12 @@ void AccomplishmentProgress::Clear(){
         mBestSoloButtonPercent[i] = 0;
         mBestDrumRollPercent[i] = 0;
     }
-    unk5dc = 0;
-    unk5e0 = 0;
-    unk5e4.clear();
-    unk5fc.clear();
-    unk614.clear();
-    unk62c.clear();
+    mTotalSongsPlayed = 0;
+    mTourTotalSongsPlayed = 0;
+    mToursPlayedMap.clear();
+    mTourMostStarsMap.clear();
+    mToursGotAllStarsMap.clear();
+    mGigTypeCompletedMap.clear();
     unk645 = false;
 }
 
@@ -131,9 +131,9 @@ bool AccomplishmentProgress::AddAccomplishment(Symbol s){
         if(pAccomplishment->HasAward()){
             AddAward(pAccomplishment->GetAward(), s);
         }
-        int lbhcstatus = TheAccomplishmentMgr->GetLeaderboardHardcoreStatus(unk4c.size());
-        TheAccomplishmentMgr->GetIconHardCoreStatus(unk4c.size());
-        unk4c.insert(s);
+        int lbhcstatus = TheAccomplishmentMgr->GetLeaderboardHardcoreStatus(mAccomplishments.size());
+        TheAccomplishmentMgr->GetIconHardCoreStatus(mAccomplishments.size());
+        mAccomplishments.insert(s);
         unk64.insert(s);
 
         Symbol cat = pAccomplishment->GetCategory();
@@ -169,55 +169,55 @@ bool AccomplishmentProgress::AddAccomplishment(Symbol s){
 }
 
 bool AccomplishmentProgress::IsAccomplished(Symbol s) const {
-    return unk4c.find(s) != unk4c.end();
+    return mAccomplishments.find(s) != mAccomplishments.end();
 }
 
 bool AccomplishmentProgress::HasNewAwards() const {
-    return !unka0.empty();
+    return !mNewAwards.empty();
 }
 
 Symbol AccomplishmentProgress::GetFirstNewAward() const {
     MILO_ASSERT(HasNewAwards(), 0x158);
-    return unka0.front().first;
+    return mNewAwards.front().first;
 }
 
 Symbol AccomplishmentProgress::GetFirstNewAwardReason() const {
     MILO_ASSERT(HasNewAwards(), 0x161);
-    return unka0.front().second;
+    return mNewAwards.front().second;
 }
 
 void AccomplishmentProgress::ClearFirstNewAward(){
     MILO_ASSERT(HasNewAwards(), 0x16A);
-    unka0.pop_front();
+    mNewAwards.pop_front();
     mParentProfile->MakeDirty();
 }
 
 void AccomplishmentProgress::AddNewRewardVignette(Symbol s){
     std::list<Symbol>::iterator it;
-    for(it = unka8.begin(); it != unka8.end() && *it != s; ++it);
-    if(it == unka8.end()){
-        unka8.push_back(s);
+    for(it = mNewRewardVignettes.begin(); it != mNewRewardVignettes.end() && *it != s; ++it);
+    if(it == mNewRewardVignettes.end()){
+        mNewRewardVignettes.push_back(s);
     }
     unkb0.insert(s);
     mParentProfile->MakeDirty();
 }
 
 bool AccomplishmentProgress::IsUploadDirty() const {
-    return unk644 || !unk64.empty();
+    return mUploadDirty || !unk64.empty();
 }
 
 bool AccomplishmentProgress::HasNewRewardVignettes() const {
-    return !unka8.empty();
+    return !mNewRewardVignettes.empty();
 }
 
 Symbol AccomplishmentProgress::GetFirstNewRewardVignette() const {
     MILO_ASSERT(HasNewRewardVignettes(), 0x18C);
-    return unka8.front();
+    return mNewRewardVignettes.front();
 }
 
 void AccomplishmentProgress::ClearFirstNewRewardVignette(){
     MILO_ASSERT(HasNewRewardVignettes(), 0x194);
-    unka8.pop_front();
+    mNewRewardVignettes.pop_front();
     mParentProfile->MakeDirty();
 }
 
@@ -232,8 +232,8 @@ void AccomplishmentProgress::ClearNewRewardVignetteFestival(){
 
 bool AccomplishmentProgress::AddAward(Symbol s1, Symbol s2){
     if(!HasAward(s1)){
-        unk88.insert(s1);
-        unka0.push_back(std::make_pair(s1, s2));
+        mAwards.insert(s1);
+        mNewAwards.push_back(std::make_pair(s1, s2));
         Award* pAward = TheAccomplishmentMgr->GetAward(s1);
         MILO_ASSERT(pAward, 0x1BD);
         pAward->GrantAwards(mParentProfile);
@@ -244,17 +244,17 @@ bool AccomplishmentProgress::AddAward(Symbol s1, Symbol s2){
 }
 
 bool AccomplishmentProgress::HasAward(Symbol s) const {
-    return unk88.find(s) != unk88.end();
+    return mAwards.find(s) != mAwards.end();
 }
 
 void AccomplishmentProgress::Poll(){}
 
 void AccomplishmentProgress::SaveFixed(FixedSizeSaveableStream& stream) const {
-    stream << unk644;
-    FixedSizeSaveable::SaveStd(stream, unk4c, 1000);
+    stream << mUploadDirty;
+    FixedSizeSaveable::SaveStd(stream, mAccomplishments, 1000);
     FixedSizeSaveable::SaveStd(stream, unk64, 1000);
-    FixedSizeSaveable::SaveStd(stream, unk88, 500);
-    FixedSizeSaveable::SaveStd(stream, unka8, 20);
+    FixedSizeSaveable::SaveStd(stream, mAwards, 500);
+    FixedSizeSaveable::SaveStd(stream, mNewRewardVignettes, 20);
     FixedSizeSaveable::SaveStd(stream, unkb0, 20);
     stream << mHardCoreStatusUpdatePending;
     stream << mMetaScore;
@@ -296,13 +296,13 @@ void AccomplishmentProgress::SaveFixed(FixedSizeSaveableStream& stream) const {
         stream << mBestSoloButtonPercent[i];
         stream << mBestDrumRollPercent[i];
     }
-    stream << unk5dc;
-    stream << unk5e0;
+    stream << mTotalSongsPlayed;
+    stream << mTourTotalSongsPlayed;
     stream << unk645;
-    FixedSizeSaveable::SaveStd(stream, unk5e4, 10, 8);
-    FixedSizeSaveable::SaveStd(stream, unk5fc, 10, 8);
-    FixedSizeSaveable::SaveStd(stream, unk614, 10, 8);
-    FixedSizeSaveable::SaveStd(stream, unk62c, 0x32, 8);
+    FixedSizeSaveable::SaveStd(stream, mToursPlayedMap, 10, 8);
+    FixedSizeSaveable::SaveStd(stream, mTourMostStarsMap, 10, 8);
+    FixedSizeSaveable::SaveStd(stream, mToursGotAllStarsMap, 10, 8);
+    FixedSizeSaveable::SaveStd(stream, mGigTypeCompletedMap, 0x32, 8);
     FixedSizeSaveable::SaveStdPtr(stream, mGamerAwardStatusList, 0x32, GamerAwardStatus::SaveSize(0x97));
 }
 
@@ -332,7 +332,7 @@ void AccomplishmentProgress::SendHardCoreStatusUpdateToRockCentral(){
 
 void AccomplishmentProgress::HandlePendingGamerRewards(){}
 
-int AccomplishmentProgress::GetNumCompleted() const { return unk4c.size(); }
+int AccomplishmentProgress::GetNumCompleted() const { return mAccomplishments.size(); }
 
 int AccomplishmentProgress::GetNumCompletedInCategory(Symbol s) const {
     int num = 0;
@@ -520,8 +520,111 @@ void AccomplishmentProgress::SetCurrentValue(Symbol s, int val){
     mStepTrackingMap[s] = val;
 }
 
+int AccomplishmentProgress::GetTotalSongsPlayed() const { return mTotalSongsPlayed; }
+int AccomplishmentProgress::GetTourTotalSongsPlayed() const { return mTourTotalSongsPlayed; }
+
+int AccomplishmentProgress::GetToursPlayed() const {
+    int num = 0;
+    for(std::map<Symbol, int>::const_iterator it = mToursPlayedMap.begin(); it != mToursPlayedMap.end(); ++it){
+        num += it->second;
+    }
+    return num;
+}
+
+int AccomplishmentProgress::GetToursPlayed(Symbol s) const {
+    int val = 0;
+    std::map<Symbol, int>::const_iterator it = mToursPlayedMap.find(s);
+    if(it != mToursPlayedMap.end()) val = it->second;
+    return val;
+}
+
+int AccomplishmentProgress::GetTourMostStars(Symbol s) const {
+    int val = 0;
+    std::map<Symbol, int>::const_iterator it = mTourMostStarsMap.find(s);
+    if(it != mTourMostStarsMap.end()) val = it->second;
+    return val;
+}
+
+int AccomplishmentProgress::GetToursGotAllStars() const {
+    int num = 0;
+    for(std::map<Symbol, int>::const_iterator it = mToursGotAllStarsMap.begin(); it != mToursGotAllStarsMap.end(); ++it){
+        num += it->second;
+    }
+    return num;
+}
+
+int AccomplishmentProgress::GetToursGotAllStars(Symbol s) const {
+    int val = 0;
+    std::map<Symbol, int>::const_iterator it = mToursGotAllStarsMap.find(s);
+    if(it != mToursGotAllStarsMap.end()) val = it->second;
+    return val;
+}
+
+int AccomplishmentProgress::GetQuestCompletedCount() const {
+    int num = 0;
+    for(std::map<int, int>::const_iterator it = mGigTypeCompletedMap.begin(); it != mGigTypeCompletedMap.end(); ++it){
+        num += it->second;
+    }
+    return num;
+}
+
+int AccomplishmentProgress::GetQuestCompletedCount(TourGameType ty) const {
+    int val = 0;
+    std::map<int, int>::const_iterator it = mGigTypeCompletedMap.find(ty);
+    if(it != mGigTypeCompletedMap.end()) val = it->second;
+    return val;
+}
+
+void AccomplishmentProgress::SetTotalSongsPlayed(int songs){
+    mTotalSongsPlayed = songs;
+    MILO_ASSERT(mParentProfile, 0x6D4);
+    mParentProfile->MakeDirty();
+}
+
+void AccomplishmentProgress::SetTourTotalSongsPlayed(int songs){
+    mTourTotalSongsPlayed = songs;
+    MILO_ASSERT(mParentProfile, 0x6DD);
+    mParentProfile->MakeDirty();
+}
+
+void AccomplishmentProgress::SetToursPlayed(Symbol s, int tours){
+    mToursPlayedMap[s] = tours;
+    MILO_ASSERT(mParentProfile, 0x6E6);
+    mParentProfile->MakeDirty();
+}
+
+void AccomplishmentProgress::UpdateTourPlayed(Symbol s){
+    int tourcount = GetToursPlayed(s);
+    SetToursPlayed(s, tourcount + 1);
+}
+
+void AccomplishmentProgress::UpdateMostStars(Symbol s, int stars){
+    int moststars = GetTourMostStars(s);
+    if(stars > moststars){
+        SetMostStars(s, stars);
+    }
+}
+
+void AccomplishmentProgress::SetMostStars(Symbol s, int stars){
+    mTourMostStarsMap[s] = stars;
+    MILO_ASSERT(mParentProfile, 0x700);
+    mParentProfile->MakeDirty();
+}
+
+void AccomplishmentProgress::SetToursGotAllStars(Symbol s, int stars){
+    mToursGotAllStarsMap[s] = stars;
+    MILO_ASSERT(mParentProfile, 0x709);
+    mParentProfile->MakeDirty();
+}
+
+void AccomplishmentProgress::SetQuestCompletedCount(TourGameType ty, int count){
+    mGigTypeCompletedMap[ty] = count;
+    MILO_ASSERT(mParentProfile, 0x712);
+    mParentProfile->MakeDirty();
+}
+
 BEGIN_HANDLERS(AccomplishmentProgress)
-    HANDLE_EXPR(get_icon_hardcore_status, TheAccomplishmentMgr->GetIconHardCoreStatus(unk4c.size()))
+    HANDLE_EXPR(get_icon_hardcore_status, TheAccomplishmentMgr->GetIconHardCoreStatus(mAccomplishments.size()))
     HANDLE_ACTION(add_award, AddAward(_msg->Sym(2), _msg->Sym(3)))
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_MESSAGE(RockCentralOpCompleteMsg)

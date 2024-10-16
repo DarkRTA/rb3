@@ -112,6 +112,16 @@ public:
     int GetBestDrumRollPercentAtMinDifficulty(Difficulty) const;
     int GetBestSoloButtonPercent(Difficulty) const;
     int GetBestSoloButtonPercentAtMinDifficulty(Difficulty) const;
+    int GetTotalSongsPlayed() const;
+    int GetTourTotalSongsPlayed() const;
+    int GetToursPlayed() const;
+    int GetTourMostStars(Symbol) const;
+    int GetToursGotAllStars() const;
+    int GetQuestCompletedCount() const;
+    void SetTotalSongsPlayed(int);
+    void SetTourTotalSongsPlayed(int);
+    void SetToursPlayed(Symbol, int);
+    void SetMostStars(Symbol, int);
 
     DataNode OnMsg(const RockCentralOpCompleteMsg&);
 
@@ -121,13 +131,13 @@ public:
     BandProfile* mParentProfile; // 0x3c
     bool mHardCoreStatusUpdatePending; // 0x40
     std::list<GamerAwardStatus*> mGamerAwardStatusList; // 0x44
-    std::set<Symbol> unk4c; // 0x4c
+    std::set<Symbol> mAccomplishments; // 0x4c
     std::set<Symbol> unk64; // 0x64
-    std::vector<int> unk7c; // 0x7c
+    std::vector<Symbol> unk7c; // 0x7c
     int mMetaScore; // 0x84
-    std::set<Symbol> unk88; // 0x88
-    std::list<std::pair<Symbol, Symbol> > unka0; // 0xa0
-    std::list<Symbol> unka8; // 0xa8
+    std::set<Symbol> mAwards; // 0x88
+    std::list<std::pair<Symbol, Symbol> > mNewAwards; // 0xa0
+    std::list<Symbol> mNewRewardVignettes; // 0xa8
     std::set<Symbol> unkb0; // 0xb0
     int mTotalGemsSmashed; // 0xc8
     int mTotalBassHopos; // 0xcc
@@ -161,13 +171,13 @@ public:
     int mTotalProDrumRollCount[kNumDifficulties]; // 0x5ac
     int mBestSoloButtonPercent[kNumDifficulties]; // 0x5bc
     int mBestDrumRollPercent[kNumDifficulties]; // 0x5cc
-    int unk5dc; // 0x5dc
-    int unk5e0; // 0x5e0
-    std::map<Symbol, int> unk5e4; // 0x5e4
-    std::map<Symbol, int> unk5fc; // 0x5fc
-    std::map<Symbol, int> unk614; // 0x614
-    std::map<int, int> unk62c; // 0x62c
-    bool unk644; // 0x644
+    int mTotalSongsPlayed; // 0x5dc
+    int mTourTotalSongsPlayed; // 0x5e0
+    std::map<Symbol, int> mToursPlayedMap; // 0x5e4
+    std::map<Symbol, int> mTourMostStarsMap; // 0x5fc
+    std::map<Symbol, int> mToursGotAllStarsMap; // 0x614
+    std::map<int, int> mGigTypeCompletedMap; // 0x62c
+    bool mUploadDirty; // 0x644
     bool unk645; // 0x645
     int unk648; // 0x648
 };
