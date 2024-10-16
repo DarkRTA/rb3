@@ -388,9 +388,36 @@ int AccomplishmentProgress::GetBestStarsAtMinDifficulty(ScoreType s, Difficulty 
 
 int AccomplishmentProgress::GetBestSolo(ScoreType s, Difficulty d) const { return mBestSolo[s][d]; }
 
+int AccomplishmentProgress::GetBestSoloAtMinDifficulty(ScoreType s, Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestSolo[s][i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
+
 int AccomplishmentProgress::GetBestAccuracy(ScoreType s, Difficulty d) const { return mBestAccuracy[s][d]; }
 
+int AccomplishmentProgress::GetBestAccuracyAtMinDifficulty(ScoreType s, Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestAccuracy[s][i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
+
 int AccomplishmentProgress::GetBestHoposPercent(ScoreType s, Difficulty d) const { return mBestHoposPercent[s][d]; }
+
+int AccomplishmentProgress::GetBestHoposPercentAtMinDifficulty(ScoreType s, Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestHoposPercent[s][i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
 
 int AccomplishmentProgress::GetBestStreak(ScoreType s) const { return mBestStreak[s]; }
 int AccomplishmentProgress::GetBestScore(ScoreType s) const { return mBestScore[s]; }
@@ -405,19 +432,93 @@ int AccomplishmentProgress::GetMostUnisonPhrases(ScoreType s) const { return mMo
 int AccomplishmentProgress::GetTotalBREsHit(ScoreType s) const { return mTotalBREsHit[s]; }
 int AccomplishmentProgress::GetBestPercussionPercent(Difficulty d) const { return mBestPercussionPercent[d]; }
 
+int AccomplishmentProgress::GetBestPercussionPercentAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestPercussionPercent[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
+
 int AccomplishmentProgress::GetTotalDrumRollCount(Difficulty d) const { return mTotalDrumRollCount[d]; }
+
+int AccomplishmentProgress::GetTotalDrumRollCountAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mTotalDrumRollCount[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
 
 int AccomplishmentProgress::GetTotalProDrumRollCount(Difficulty d) const { return mTotalProDrumRollCount[d]; }
 
+int AccomplishmentProgress::GetTotalProDrumRollCountAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mTotalProDrumRollCount[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
+
 int AccomplishmentProgress::GetBestKickPercent(Difficulty d) const { return mBestKickPercent[d]; }
+
+int AccomplishmentProgress::GetBestKickPercentAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestKickPercent[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
 
 int AccomplishmentProgress::GetBestProKickPercent(Difficulty d) const { return mBestProKickPercent[d]; }
 
+int AccomplishmentProgress::GetBestProKickPercentAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestProKickPercent[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
+
 int AccomplishmentProgress::GetBestDrumRollPercent(Difficulty d) const { return mBestDrumRollPercent[d]; }
+
+int AccomplishmentProgress::GetBestDrumRollPercentAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestDrumRollPercent[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
 
 int AccomplishmentProgress::GetBestSoloButtonPercent(Difficulty d) const { return mBestSoloButtonPercent[d]; }
 
+int AccomplishmentProgress::GetBestSoloButtonPercentAtMinDifficulty(Difficulty d) const {
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestSoloButtonPercent[i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
+}
+
 void AccomplishmentProgress::ClearStepTrackingMap(){ mStepTrackingMap.clear(); }
+
+int AccomplishmentProgress::GetCurrentValue(Symbol s){
+    int val = 0;
+    std::map<Symbol, int>::iterator it = mStepTrackingMap.find(s);
+    if(it != mStepTrackingMap.end()) val = it->second;
+    return val;
+}
+
+void AccomplishmentProgress::SetCurrentValue(Symbol s, int val){
+    mStepTrackingMap[s] = val;
+}
 
 BEGIN_HANDLERS(AccomplishmentProgress)
     HANDLE_EXPR(get_icon_hardcore_status, TheAccomplishmentMgr->GetIconHardCoreStatus(unk4c.size()))
