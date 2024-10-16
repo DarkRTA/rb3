@@ -39,7 +39,7 @@ void GamerAwardStatus::LoadFixed(FixedSizeSaveableStream& stream, int rev){
     unkc = iii;
 }
 
-AccomplishmentProgress::AccomplishmentProgress(BandProfile* profile) : mParentProfile(profile), unk84(0), unk644(1), unk648(0) {
+AccomplishmentProgress::AccomplishmentProgress(BandProfile* profile) : mParentProfile(profile), mMetaScore(0), unk644(1), unk648(0) {
     Clear();
     mSaveSizeMethod = &SaveSize;
 }
@@ -86,10 +86,10 @@ bool AccomplishmentProgress::AddAccomplishment(Symbol s){
             }
         }
 
-        Symbol level4 = TheCampaign->GetCampaignLevelForMetaScore(unk84);
+        Symbol level4 = TheCampaign->GetCampaignLevelForMetaScore(mMetaScore);
         int metascoreval = TheAccomplishmentMgr->GetMetaScoreValue(pAccomplishment->GetMetaScoreValue());
-        SetMetaScore(unk84 + metascoreval);
-        Symbol level5 = TheCampaign->GetCampaignLevelForMetaScore(unk84);
+        SetMetaScore(mMetaScore + metascoreval);
+        Symbol level5 = TheCampaign->GetCampaignLevelForMetaScore(mMetaScore);
         if(level5 != level4){
             // MILO ASSERT pLevel
         }
@@ -186,45 +186,45 @@ void AccomplishmentProgress::SaveFixed(FixedSizeSaveableStream& stream) const {
     FixedSizeSaveable::SaveStd(stream, unk88, 500);
     FixedSizeSaveable::SaveStd(stream, unka8, 20);
     FixedSizeSaveable::SaveStd(stream, unkb0, 20);
-    stream << unk40;
-    stream << unk84;
-    stream << unkc8;
-    stream << unkd0;
-    stream << unkcc;
-    stream << unkd4;
-    stream << unkd8;
-    stream << unkdc;
-    stream << unke0;
-    stream << unke4;
-    stream << unke8;
-    stream << unkec;
-    stream << unk3dc;
+    stream << mHardCoreStatusUpdatePending;
+    stream << mMetaScore;
+    stream << mTotalGemsSmashed;
+    stream << mTotalGuitarHopos;
+    stream << mTotalBassHopos;
+    stream << mTotalUpstrums;
+    stream << mTotalTimesRevived;
+    stream << mTotalSaves;
+    stream << mTotalAwesomes;
+    stream << mTotalDoubleAwesomes;
+    stream << mTotalTripleAwesomes;
+    stream << mCareerFills;
+    stream << mBestBandScore;
     for(int i = 0; i < 11; i++){
-        stream << unk3e0[i];
-        stream << unk3b0[i];
-        stream << unk40c[i];
-        stream << unk438[i];
-        stream << unk464[i];
-        stream << unk490[i];
-        stream << unk4bc[i];
-        stream << unk4e8[i];
-        stream << unk514[i];
-        stream << unk540[i];
+        stream << mBestStreak[i];
+        stream << mBestScore[i];
+        stream << mTotalOverdriveDeploys[i];
+        stream << mTotalOverdriveTime[i];
+        stream << mTotalOverdrivePhrases[i];
+        stream << mTotalUnisonPhrases[i];
+        stream << mMostOverdriveDeploys[i];
+        stream << mMostOverdriveTime[i];
+        stream << mMostUnisonPhrases[i];
+        stream << mTotalBREsHit[i];
         for(int j = 0; j < 4; j++){
-            stream << unkf0[i][j];
-            stream << unk1a0[i][j];
-            stream << unk250[i][j];
-            stream << unk300[i][j];
+            stream << mBestStars[i][j];
+            stream << mBestSolo[i][j];
+            stream << mBestAccuracy[i][j];
+            stream << mBestHoposPercent[i][j];
         }
     }
     for(int i = 0; i < 4; i++){
-        stream << unk56c[i];
-        stream << unk57c[i];
-        stream << unk58c[i];
-        stream << unk59c[i];
-        stream << unk5ac[i];
-        stream << unk5bc[i];
-        stream << unk5cc[i];
+        stream << mBestPercussionPercent[i];
+        stream << mBestKickPercent[i];
+        stream << mBestProKickPercent[i];
+        stream << mTotalDrumRollCount[i];
+        stream << mTotalProDrumRollCount[i];
+        stream << mBestSoloButtonPercent[i];
+        stream << mBestDrumRollPercent[i];
     }
     stream << unk5dc;
     stream << unk5e0;
@@ -233,5 +233,113 @@ void AccomplishmentProgress::SaveFixed(FixedSizeSaveableStream& stream) const {
     FixedSizeSaveable::SaveStd(stream, unk5fc, 10, 8);
     FixedSizeSaveable::SaveStd(stream, unk614, 10, 8);
     FixedSizeSaveable::SaveStd(stream, unk62c, 0x32, 8);
-    FixedSizeSaveable::SaveStdPtr(stream, unk44, 0x32, GamerAwardStatus::SaveSize(0x97));
+    FixedSizeSaveable::SaveStdPtr(stream, mGamerAwardStatusList, 0x32, GamerAwardStatus::SaveSize(0x97));
 }
+
+int AccomplishmentProgress::SaveSize(int i){
+    int i3 = 0x2c9e;
+    if(i >= 0x91) i3 = 0x2cbe;
+    int size = GamerAwardStatus::SaveSize(i);
+    size *= 0x32;
+    size += i3;
+    size += 0x2BD;
+    REPORT_SIZE("AccomplishmentProgress", size);
+}
+
+void AccomplishmentProgress::SetHardCoreStatusUpdatePending(bool b){
+    if(b != mHardCoreStatusUpdatePending){
+        mHardCoreStatusUpdatePending = b;
+        mParentProfile->MakeDirty();
+    }
+}
+
+bool AccomplishmentProgress::IsHardCoreStatusUpdatePending(){ return mHardCoreStatusUpdatePending; }
+
+void AccomplishmentProgress::SendHardCoreStatusUpdateToRockCentral(){
+    unk648++;
+    SetHardCoreStatusUpdatePending(true);
+}
+
+void AccomplishmentProgress::HandlePendingGamerRewards(){}
+
+int AccomplishmentProgress::GetNumCompleted() const { return unk4c.size(); }
+
+int AccomplishmentProgress::GetNumCompletedInCategory(Symbol s) const {
+    int num = 0;
+    std::set<Symbol>* accset = TheAccomplishmentMgr->GetAccomplishmentSetForCategory(s);
+    if(accset){
+        for(std::set<Symbol>::iterator it = accset->begin(); it != accset->end(); ++it){
+            Symbol key = *it;
+            if(!TheAccomplishmentMgr->IsAvailableToView(key)) continue;
+            if(!IsAccomplished(key)) continue;
+            num++;
+        }
+    }
+    return num;
+}
+
+int AccomplishmentProgress::GetNumCompletedInGroup(Symbol group) const {
+    MILO_ASSERT(group != gNullStr, 0x3F5);
+    std::list<Symbol>* pCategoryList = TheAccomplishmentMgr->GetCategoryListForGroup(group);
+    MILO_ASSERT(pCategoryList, 0x3F8);
+    int num = 0;
+    for(std::list<Symbol>::iterator it = pCategoryList->begin(); it != pCategoryList->end(); ++it){
+        num += GetNumCompletedInCategory(*it);
+    }
+    return num;
+}
+
+void AccomplishmentProgress::SetMetaScore(int score){
+    mMetaScore = score;
+}
+
+int AccomplishmentProgress::GetMetaScore() const { return mMetaScore; }
+
+int AccomplishmentProgress::GetTotalGemsSmashed() const { return mTotalGemsSmashed; }
+int AccomplishmentProgress::GetTotalGuitarHopos() const { return mTotalGuitarHopos; }
+int AccomplishmentProgress::GetTotalBassHopos() const { return mTotalBassHopos; }
+int AccomplishmentProgress::GetTotalUpstrums() const { return mTotalUpstrums; }
+int AccomplishmentProgress::GetTotalTimesRevived() const { return mTotalTimesRevived; }
+int AccomplishmentProgress::GetTotalSaves() const { return mTotalSaves; }
+int AccomplishmentProgress::GetTotalAwesomes() const { return mTotalAwesomes; }
+int AccomplishmentProgress::GetTotalDoubleAwesomes() const { return mTotalDoubleAwesomes; }
+int AccomplishmentProgress::GetTotalTripleAwesomes() const { return mTotalTripleAwesomes; }
+int AccomplishmentProgress::GetCareerFills() const { return mCareerFills; }
+int AccomplishmentProgress::GetBestStars(ScoreType s, Difficulty d) const { return mBestStars[s][d]; }
+
+int AccomplishmentProgress::GetBestStarsAtMinDifficulty(ScoreType s, Difficulty d) const {
+
+}
+
+int AccomplishmentProgress::GetBestSolo(ScoreType s, Difficulty d) const { return mBestSolo[s][d]; }
+
+int AccomplishmentProgress::GetBestAccuracy(ScoreType s, Difficulty d) const { return mBestAccuracy[s][d]; }
+
+int AccomplishmentProgress::GetBestHoposPercent(ScoreType s, Difficulty d) const { return mBestHoposPercent[s][d]; }
+
+int AccomplishmentProgress::GetBestStreak(ScoreType s) const { return mBestStreak[s]; }
+int AccomplishmentProgress::GetBestScore(ScoreType s) const { return mBestScore[s]; }
+int AccomplishmentProgress::GetBestBandScore() const { return mBestBandScore; }
+int AccomplishmentProgress::GetTotalOverdriveDeploys(ScoreType s) const { return mTotalOverdriveDeploys[s]; }
+int AccomplishmentProgress::GetTotalOverdriveTime(ScoreType s) const { return mTotalOverdriveTime[s]; }
+int AccomplishmentProgress::GetTotalOverdrivePhrases(ScoreType s) const { return mTotalOverdrivePhrases[s]; }
+int AccomplishmentProgress::GetTotalUnisonPhrases(ScoreType s) const { return mTotalUnisonPhrases[s]; }
+int AccomplishmentProgress::GetMostOverdriveDeploys(ScoreType s) const { return mMostOverdriveDeploys[s]; }
+int AccomplishmentProgress::GetMostOverdriveTime(ScoreType s) const { return mMostOverdriveTime[s]; }
+int AccomplishmentProgress::GetMostUnisonPhrases(ScoreType s) const { return mMostUnisonPhrases[s]; }
+int AccomplishmentProgress::GetTotalBREsHit(ScoreType s) const { return mTotalBREsHit[s]; }
+int AccomplishmentProgress::GetBestPercussionPercent(Difficulty d) const { return mBestPercussionPercent[d]; }
+
+int AccomplishmentProgress::GetTotalDrumRollCount(Difficulty d) const { return mTotalDrumRollCount[d]; }
+
+int AccomplishmentProgress::GetTotalProDrumRollCount(Difficulty d) const { return mTotalProDrumRollCount[d]; }
+
+int AccomplishmentProgress::GetBestKickPercent(Difficulty d) const { return mBestKickPercent[d]; }
+
+int AccomplishmentProgress::GetBestProKickPercent(Difficulty d) const { return mBestProKickPercent[d]; }
+
+int AccomplishmentProgress::GetBestDrumRollPercent(Difficulty d) const { return mBestDrumRollPercent[d]; }
+
+int AccomplishmentProgress::GetBestSoloButtonPercent(Difficulty d) const { return mBestSoloButtonPercent[d]; }
+
+void AccomplishmentProgress::ClearStepTrackingMap(){ mStepTrackingMap.clear(); }

@@ -175,4 +175,10 @@ public:
 FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream&, const FixedSizeSaveable&);
 FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream&, FixedSizeSaveable&);
 
+#define REPORT_SIZE(name, size) \
+    if(FixedSizeSaveable::sPrintoutsEnabled){ \
+        MILO_LOG("* %s = %i\n", name, size); \
+    } \
+    return size;
+
 #endif

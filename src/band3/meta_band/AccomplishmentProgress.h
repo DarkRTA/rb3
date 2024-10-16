@@ -2,6 +2,7 @@
 #include "obj/Object.h"
 #include "meta/FixedSizeSaveable.h"
 #include "tour/TourGameRules.h"
+#include "game/Defines.h"
 
 class BandProfile;
 
@@ -62,53 +63,101 @@ public:
     void AddNewRewardVignette(Symbol);
     bool IsUploadDirty() const;
     bool HasAward(Symbol) const;
+    void SetHardCoreStatusUpdatePending(bool);
+    bool IsHardCoreStatusUpdatePending();
+    void SendHardCoreStatusUpdateToRockCentral();
+    void HandlePendingGamerRewards();
+    int GetMetaScore() const;
+    int GetTotalGemsSmashed() const;
+    int GetTotalGuitarHopos() const;
+    int GetTotalBassHopos() const;
+    int GetTotalUpstrums() const;
+    int GetTotalTimesRevived() const;
+    int GetTotalSaves() const;
+    int GetTotalAwesomes() const;
+    int GetTotalDoubleAwesomes() const;
+    int GetTotalTripleAwesomes() const;
+    int GetCareerFills() const;
+    int GetBestStars(ScoreType, Difficulty) const;
+    int GetBestStarsAtMinDifficulty(ScoreType, Difficulty) const;
+    int GetBestSolo(ScoreType, Difficulty) const;
+    int GetBestSoloAtMinDifficulty(ScoreType, Difficulty) const;
+    int GetBestAccuracy(ScoreType, Difficulty) const;
+    int GetBestAccuracyAtMinDifficulty(ScoreType, Difficulty) const;
+    int GetBestHoposPercent(ScoreType, Difficulty) const;
+    int GetBestHoposPercentAtMinDifficulty(ScoreType, Difficulty) const;
+    int GetBestStreak(ScoreType) const;
+    int GetBestScore(ScoreType) const;
+    int GetBestBandScore() const;
+    int GetTotalOverdriveDeploys(ScoreType) const;
+    int GetTotalOverdriveTime(ScoreType) const;
+    int GetTotalOverdrivePhrases(ScoreType) const;
+    int GetTotalUnisonPhrases(ScoreType) const;
+    int GetMostOverdriveDeploys(ScoreType) const;
+    int GetMostOverdriveTime(ScoreType) const;
+    int GetMostUnisonPhrases(ScoreType) const;
+    int GetTotalBREsHit(ScoreType) const;
+    int GetBestPercussionPercent(Difficulty) const;
+    int GetBestPercussionPercentAtMinDifficulty(Difficulty) const;
+    int GetTotalDrumRollCount(Difficulty) const;
+    int GetTotalDrumRollCountAtMinDifficulty(Difficulty) const;
+    int GetTotalProDrumRollCount(Difficulty) const;
+    int GetTotalProDrumRollCountAtMinDifficulty(Difficulty) const;
+    int GetBestKickPercent(Difficulty) const;
+    int GetBestKickPercentAtMinDifficulty(Difficulty) const;
+    int GetBestProKickPercent(Difficulty) const;
+    int GetBestProKickPercentAtMinDifficulty(Difficulty) const;
+    int GetBestDrumRollPercent(Difficulty) const;
+    int GetBestDrumRollPercentAtMinDifficulty(Difficulty) const;
+    int GetBestSoloButtonPercent(Difficulty) const;
+    int GetBestSoloButtonPercentAtMinDifficulty(Difficulty) const;
 
     static int SaveSize(int);
 
-    std::map<Symbol, int> unk24; // 0x24
+    std::map<Symbol, int> mStepTrackingMap; // 0x24
     BandProfile* mParentProfile; // 0x3c
-    bool unk40; // 0x40
-    std::list<GamerAwardStatus*> unk44; // 0x44
+    bool mHardCoreStatusUpdatePending; // 0x40
+    std::list<GamerAwardStatus*> mGamerAwardStatusList; // 0x44
     std::set<Symbol> unk4c; // 0x4c
     std::set<Symbol> unk64; // 0x64
     std::vector<int> unk7c; // 0x7c
-    int unk84; // 0x84
+    int mMetaScore; // 0x84
     std::set<Symbol> unk88; // 0x88
     std::list<std::pair<Symbol, Symbol> > unka0; // 0xa0
     std::list<Symbol> unka8; // 0xa8
     std::set<Symbol> unkb0; // 0xb0
-    int unkc8; // 0xc8
-    int unkcc; // 0xcc
-    int unkd0; // 0xd0
-    int unkd4; // 0xd4
-    int unkd8; // 0xd8
-    int unkdc; // 0xdc
-    int unke0; // 0xe0
-    int unke4; // 0xe4
-    int unke8; // 0xe8
-    int unkec; // 0xec
-    int unkf0[11][4]; // 0xf0
-    int unk1a0[11][4]; // 0x1a0
-    int unk250[11][4]; // 0x250
-    int unk300[11][4]; // 0x300
-    int unk3b0[11]; // 0x3b0
-    int unk3dc; // 0x3dc
-    int unk3e0[11]; // 0x3e0
-    int unk40c[11]; // 0x40c
-    int unk438[11]; // 0x438
-    int unk464[11]; // 0x464
-    int unk490[11]; // 0x490
-    int unk4bc[11]; // 0x4bc
-    int unk4e8[11]; // 0x4e8
-    int unk514[11]; // 0x514
-    int unk540[11]; // 0x540
-    int unk56c[4]; // 0x56c
-    int unk57c[4]; // 0x57c
-    int unk58c[4]; // 0x58c
-    int unk59c[4]; // 0x59c
-    int unk5ac[4]; // 0x5ac
-    int unk5bc[4]; // 0x5bc
-    int unk5cc[4]; // 0x5cc
+    int mTotalGemsSmashed; // 0xc8
+    int mTotalBassHopos; // 0xcc
+    int mTotalGuitarHopos; // 0xd0
+    int mTotalUpstrums; // 0xd4
+    int mTotalTimesRevived; // 0xd8
+    int mTotalSaves; // 0xdc
+    int mTotalAwesomes; // 0xe0
+    int mTotalDoubleAwesomes; // 0xe4
+    int mTotalTripleAwesomes; // 0xe8
+    int mCareerFills; // 0xec
+    int mBestStars[kNumScoreTypes][kNumDifficulties]; // 0xf0
+    int mBestSolo[kNumScoreTypes][kNumDifficulties]; // 0x1a0
+    int mBestAccuracy[kNumScoreTypes][kNumDifficulties]; // 0x250
+    int mBestHoposPercent[kNumScoreTypes][kNumDifficulties]; // 0x300
+    int mBestScore[kNumScoreTypes]; // 0x3b0
+    int mBestBandScore; // 0x3dc
+    int mBestStreak[kNumScoreTypes]; // 0x3e0
+    int mTotalOverdriveDeploys[kNumScoreTypes]; // 0x40c
+    int mTotalOverdriveTime[kNumScoreTypes]; // 0x438
+    int mTotalOverdrivePhrases[kNumScoreTypes]; // 0x464
+    int mTotalUnisonPhrases[kNumScoreTypes]; // 0x490
+    int mMostOverdriveDeploys[kNumScoreTypes]; // 0x4bc
+    int mMostOverdriveTime[kNumScoreTypes]; // 0x4e8
+    int mMostUnisonPhrases[kNumScoreTypes]; // 0x514
+    int mTotalBREsHit[kNumScoreTypes]; // 0x540
+    int mBestPercussionPercent[kNumDifficulties]; // 0x56c
+    int mBestKickPercent[kNumDifficulties]; // 0x57c
+    int mBestProKickPercent[kNumDifficulties]; // 0x58c
+    int mTotalDrumRollCount[kNumDifficulties]; // 0x59c
+    int mTotalProDrumRollCount[kNumDifficulties]; // 0x5ac
+    int mBestSoloButtonPercent[kNumDifficulties]; // 0x5bc
+    int mBestDrumRollPercent[kNumDifficulties]; // 0x5cc
     int unk5dc; // 0x5dc
     int unk5e0; // 0x5e0
     std::map<Symbol, int> unk5e4; // 0x5e4
