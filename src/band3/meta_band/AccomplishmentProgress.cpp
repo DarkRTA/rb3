@@ -2,15 +2,21 @@
 #include "Accomplishment.h"
 #include "Campaign.h"
 #include "game/BandUser.h"
+#include "game/Defines.h"
+#include "game/GameMessages.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/MetaPerformer.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "stl/_pair.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 
 GamerAwardStatus::GamerAwardStatus() : unk8(-1), unkc(0), unk10(0) {
     mSaveSizeMethod = &SaveSize;
@@ -45,7 +51,71 @@ AccomplishmentProgress::AccomplishmentProgress(BandProfile* profile) : mParentPr
 }
 
 AccomplishmentProgress::~AccomplishmentProgress(){
+    for(std::list<GamerAwardStatus*>::iterator it = mGamerAwardStatusList.begin(); it != mGamerAwardStatusList.end(); ++it){
+        delete *it;
+    }
+    mGamerAwardStatusList.clear();
+}
 
+void AccomplishmentProgress::Clear(){
+    mHardCoreStatusUpdatePending = false;
+    unk644 = false;
+    unk4c.clear();
+    unk64.clear();
+    unkb0.clear();
+    unka8.clear();
+    unka0.clear();
+    unk7c.clear();
+    unk88.clear();
+    unk648 = 0;
+    mMetaScore = 0;
+    mTotalGemsSmashed = 0;
+    mTotalGuitarHopos = 0;
+    mTotalBassHopos = 0;
+    mTotalUpstrums = 0;
+    mTotalTimesRevived = 0;
+    mTotalSaves = 0;
+    mTotalAwesomes = 0;
+    mTotalDoubleAwesomes = 0;
+    mTotalTripleAwesomes = 0;
+    mCareerFills = 0;
+    mBestBandScore = 0;
+
+    for(int i = 0; i < kNumScoreTypes; i++){
+        mBestStreak[i] = 0;
+        mBestScore[i] = 0;
+        mTotalOverdriveDeploys[i] = 0;
+        mTotalOverdriveTime[i] = 0;
+        mTotalOverdrivePhrases[i] = 0;
+        mTotalUnisonPhrases[i] = 0;
+        mMostOverdriveDeploys[i] = 0;
+        mMostOverdriveTime[i] = 0;
+        mMostUnisonPhrases[i] = 0;
+        mTotalBREsHit[i] = 0;
+        for(int j = 0; j < kNumDifficulties; j++){
+            mBestStars[i][j] = 0;
+            mBestSolo[i][j] = 0;
+            mBestAccuracy[i][j] = 0;
+            mBestHoposPercent[i][j] = 0;
+        }
+    }
+
+    for(int i = 0; i < kNumDifficulties; i++){
+        mBestPercussionPercent[i] = 0;
+        mBestKickPercent[i] = 0;
+        mBestProKickPercent[i] = 0;
+        mTotalDrumRollCount[i] = 0;
+        mTotalProDrumRollCount[i] = 0;
+        mBestSoloButtonPercent[i] = 0;
+        mBestDrumRollPercent[i] = 0;
+    }
+    unk5dc = 0;
+    unk5e0 = 0;
+    unk5e4.clear();
+    unk5fc.clear();
+    unk614.clear();
+    unk62c.clear();
+    unk645 = false;
 }
 
 bool AccomplishmentProgress::AddAccomplishment(Symbol s){
@@ -308,7 +378,12 @@ int AccomplishmentProgress::GetCareerFills() const { return mCareerFills; }
 int AccomplishmentProgress::GetBestStars(ScoreType s, Difficulty d) const { return mBestStars[s][d]; }
 
 int AccomplishmentProgress::GetBestStarsAtMinDifficulty(ScoreType s, Difficulty d) const {
-
+    int best = 0;
+    for(int i = d; i < kNumDifficulties; i++){
+        int curbest = mBestStars[s][i];
+        if(curbest > best) best = curbest;
+    }
+    return best;
 }
 
 int AccomplishmentProgress::GetBestSolo(ScoreType s, Difficulty d) const { return mBestSolo[s][d]; }
@@ -343,3 +418,11 @@ int AccomplishmentProgress::GetBestDrumRollPercent(Difficulty d) const { return 
 int AccomplishmentProgress::GetBestSoloButtonPercent(Difficulty d) const { return mBestSoloButtonPercent[d]; }
 
 void AccomplishmentProgress::ClearStepTrackingMap(){ mStepTrackingMap.clear(); }
+
+BEGIN_HANDLERS(AccomplishmentProgress)
+    HANDLE_EXPR(get_icon_hardcore_status, TheAccomplishmentMgr->GetIconHardCoreStatus(unk4c.size()))
+    HANDLE_ACTION(add_award, AddAward(_msg->Sym(2), _msg->Sym(3)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_MESSAGE(RockCentralOpCompleteMsg)
+    HANDLE_CHECK(0x795)
+END_HANDLERS

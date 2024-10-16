@@ -3,6 +3,7 @@
 #include "meta/FixedSizeSaveable.h"
 #include "tour/TourGameRules.h"
 #include "game/Defines.h"
+#include "game/GameMessages.h"
 
 class BandProfile;
 
@@ -111,6 +112,8 @@ public:
     int GetBestDrumRollPercentAtMinDifficulty(Difficulty) const;
     int GetBestSoloButtonPercent(Difficulty) const;
     int GetBestSoloButtonPercentAtMinDifficulty(Difficulty) const;
+
+    DataNode OnMsg(const RockCentralOpCompleteMsg&);
 
     static int SaveSize(int);
 
