@@ -27,7 +27,7 @@ void SongStatusLookup::Load(FixedSizeSaveableStream&, int) {}
 
 SongStatusMgr::~SongStatusMgr() {}
 void SongStatusMgr::Clear() {}
-void SongStatusMgr::GetScore(int, ScoreType) const {}
-void SongStatusMgr::GetStars(int, ScoreType, Difficulty) const {}
-void SongStatusMgr::GetBestStars(int, ScoreType, Difficulty) const {
-}
+// void SongStatusMgr::GetScore(int, ScoreType) const {}
+// void SongStatusMgr::GetStars(int, ScoreType, Difficulty) const {}
+// void SongStatusMgr::GetBestStars(int, ScoreType, Difficulty) const {
+// }

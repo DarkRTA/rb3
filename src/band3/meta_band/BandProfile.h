@@ -69,7 +69,7 @@ public:
     void UploadDirtyData();
     void SetSongReview(int, int);
     void GetSongReview(int);
-    void GetSongStatusMgr() const;
+    SongStatusMgr* GetSongStatusMgr() const;
     void GetSongHighScore(int, ScoreType) const;
     void GetSavedSetlists() const;
     void AddSavedSetlist(const char*, const char*, bool, const PatchDescriptor&, const std::vector<int>&);
