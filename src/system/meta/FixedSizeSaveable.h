@@ -111,6 +111,35 @@ public:
         if(maxsize > mapsize) PadStream(stream, savesize * (maxsize - mapsize));
     }
 
+    template <class T1, class T2>
+    static void SaveStd(FixedSizeSaveableStream& stream, const std::map<T1, T2>& map, int maxsize, int savesize){
+        int mapsize = map.size();
+        if(mapsize > maxsize){
+            MILO_WARN("The hash_map size is greater than the maximum supplied! size=%i max=%i\n", mapsize, maxsize);
+            mapsize = maxsize;
+        }
+        stream << mapsize;
+        for(std::map<T1, T2>::const_iterator it = map.begin(); it != map.end(); ++it){
+            stream << it->first;
+            stream << it->second;
+        }
+        if(maxsize > mapsize) PadStream(stream, savesize * (maxsize - mapsize));
+    }
+
+    template <class T, class Allocator>
+    static void SaveStdPtr(FixedSizeSaveableStream& stream, const std::list<T*, Allocator>& list, int maxsize, int savesize){
+        int lsize = list.size();
+        if(lsize > maxsize){
+            MILO_WARN("The list size is greater than the maximum supplied! size=%i max=%i\n", lsize, maxsize);
+            lsize = maxsize;
+        }
+        stream << lsize;
+        for(std::list<T*, Allocator>::const_iterator it = list.begin(); it != list.end(); ++it){
+            stream << *(*it);
+        }
+        if(maxsize > lsize) PadStream(stream, (savesize * (maxsize - lsize)));
+    }
+
     template <class T>
     static void LoadStd(FixedSizeSaveableStream& stream, std::map<Symbol, T>& map, int maxsize, int savesize){
         if(map.size() != 0){

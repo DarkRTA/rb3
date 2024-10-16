@@ -11,6 +11,7 @@ public:
     LocalBandUser* GetLaunchUser() const;
     bool HasCampaignLevel(Symbol) const;
     Symbol GetCurrentGoal() const;
+    Symbol GetCampaignLevelForMetaScore(int) const;
 };
 
 extern Campaign* TheCampaign;

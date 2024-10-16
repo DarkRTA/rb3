@@ -1,5 +1,6 @@
 #include "meta_band/AccomplishmentProgress.h"
 #include "Accomplishment.h"
+#include "Campaign.h"
 #include "game/BandUser.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/AccomplishmentCategory.h"
@@ -7,7 +8,9 @@
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/MetaPerformer.h"
 #include "os/Debug.h"
+#include "stl/_pair.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
 
 GamerAwardStatus::GamerAwardStatus() : unk8(-1), unkc(0), unk10(0) {
     mSaveSizeMethod = &SaveSize;
@@ -82,88 +85,153 @@ bool AccomplishmentProgress::AddAccomplishment(Symbol s){
                 AddAward(pGroup->GetAward(), group);
             }
         }
+
+        Symbol level4 = TheCampaign->GetCampaignLevelForMetaScore(unk84);
+        int metascoreval = TheAccomplishmentMgr->GetMetaScoreValue(pAccomplishment->GetMetaScoreValue());
+        SetMetaScore(unk84 + metascoreval);
+        Symbol level5 = TheCampaign->GetCampaignLevelForMetaScore(unk84);
+        if(level5 != level4){
+            // MILO ASSERT pLevel
+        }
+        return true;
     }
     else return false;
 }
 
-// undefined4 __thiscall
-// AccomplishmentProgress::AddAccomplishment(AccomplishmentProgress *this,Symbol param_1)
-
-// {
-  
-//   local_38[0] = *(undefined4 *)param_1.mStr;
-//   iVar1 = IsAccomplished(this,(Symbol)local_38);
-//   if (iVar1 == 0) {
-
-//     this_00 = (Accomplishment *)
-//               AccomplishmentManager::GetAccomplishment(TheAccomplishmentMgr,(Symbol)&local_3c); pAccomplishment=
-//     iVar1 = BandProfile::GetAssociatedLocalBandUser(*(BandProfile **)(this + 0x3c)); pUser
-//     this_01 = (MetaPerformer *)MetaPerformer::Current(); pPerformer
-
-//     uVar3 = Accomplishment::GetCategory(this_00);
-//     local_54 = uVar3;
-//     this_02 = (AccomplishmentCategory *)
-//               AccomplishmentManager::GetAccomplishmentCategory
-//                         (TheAccomplishmentMgr,(Symbol)&local_54); pCategory
-
-//     uVar3 = AccomplishmentCategory::GetGroup(this_02);
-//     local_68 = uVar3;
-//     this_03 = (AccomplishmentGroup *)
-//               AccomplishmentManager::GetAccomplishmentGroup(TheAccomplishmentMgr,(Symbol)&local_68 ); pGroup
-
-//     iVar4 = Campaign::GetCampaignLevelForMetaScore(TheCampaign,*(int *)(this + 0x84));
-//     local_7c = Accomplishment::GetMetaScoreValue(this_00);
-//     iVar5 = AccomplishmentManager::GetMetaScoreValue(TheAccomplishmentMgr,(Symbol)&local_7c);
-//     SetMetaScore(this,*(int *)(this + 0x84) + iVar5);
-//     iVar5 = Campaign::GetCampaignLevelForMetaScore(TheCampaign,*(int *)(this + 0x84));
-//     if (iVar5 != iVar4) {
-//       local_80 = iVar5;
-//       this_04 = (CampaignLevel *)Campaign::GetCampaignLevel(TheCampaign,(Symbol)&local_80);
-//       if (this_04 == (CampaignLevel *)0x0) {
-//         pcVar2 = ::MakeString(kAssertStr,s_AccomplishmentProgress.cpp_80b891cd,0x112,
-//                               s_pLevel_80b8921a);
-//         Debug::Fail((Debug *)TheDebug,pcVar2);
-//       }
-//       local_84 = CampaignLevel::GetEarnedText(this_04);
-//       NotifyPlayerOfCampaignLevel(this,(Symbol)&local_84);
-//       if (*(int *)(this + 0x3c) == 0) {
-//         pcVar2 = ::MakeString(kAssertStr,s_AccomplishmentProgress.cpp_80b891cd,0x11a,
-//                               s_mParentProfile_80b89221);
-//         Debug::Fail((Debug *)TheDebug,pcVar2);
-//       }
-//       uVar3 = Profile::GetPadNum(*(Profile **)(this + 0x3c));
-//       local_8c = career_level;
-//       local_88 = pid;
-//       local_90 = iVar5;
-//       iVar4 = (**(code **)(*(int *)(TheServer + 4) + 0x40))(TheServer,uVar3);
-//       SendDataPoint(s_career/levelup_80b89230,(Symbol)&local_88,iVar4,(Symbol)&local_8c,
-//                     (Symbol)&local_90);
-//       iVar4 = CampaignLevel::HasAward(this_04);
-//       if (iVar4 != 0) {
-//         local_94 = CampaignLevel::GetAward(this_04);
-//         local_98 = iVar5;
-//         AddAward(this,(Symbol)&local_94,(Symbol)&local_98);
-//       }
-//     }
-//     iVar4 = AccomplishmentManager::GetLeaderboardHardcoreStatus
-//                       (TheAccomplishmentMgr,*(int *)(this + 0x5c));
-//     if (iVar1 != iVar4) {
-//       SendHardCoreStatusUpdateToRockCentral(this);
-//     }
-//     if (*(int *)(this + 0x3c) == 0) {
-//       pcVar2 = ::MakeString(kAssertStr,s_AccomplishmentProgress.cpp_80b891cd,0x13e,
-//                             s_mParentProfile_80b89221);
-//       Debug::Fail((Debug *)TheDebug,pcVar2);
-//     }
-//     Profile::MakeDirty(*(Profile **)(this + 0x3c));
-//     uVar3 = 1;
-//   }
-//   else {
-//     uVar3 = 0;
-//   }
-//   return uVar3;
-// }
-
 bool AccomplishmentProgress::IsAccomplished(Symbol s) const {
     return unk4c.find(s) != unk4c.end();
+}
+
+bool AccomplishmentProgress::HasNewAwards() const {
+    return !unka0.empty();
+}
+
+Symbol AccomplishmentProgress::GetFirstNewAward() const {
+    MILO_ASSERT(HasNewAwards(), 0x158);
+    return unka0.front().first;
+}
+
+Symbol AccomplishmentProgress::GetFirstNewAwardReason() const {
+    MILO_ASSERT(HasNewAwards(), 0x161);
+    return unka0.front().second;
+}
+
+void AccomplishmentProgress::ClearFirstNewAward(){
+    MILO_ASSERT(HasNewAwards(), 0x16A);
+    unka0.pop_front();
+    mParentProfile->MakeDirty();
+}
+
+void AccomplishmentProgress::AddNewRewardVignette(Symbol s){
+    std::list<Symbol>::iterator it;
+    for(it = unka8.begin(); it != unka8.end() && *it != s; ++it);
+    if(it == unka8.end()){
+        unka8.push_back(s);
+    }
+    unkb0.insert(s);
+    mParentProfile->MakeDirty();
+}
+
+bool AccomplishmentProgress::IsUploadDirty() const {
+    return unk644 || !unk64.empty();
+}
+
+bool AccomplishmentProgress::HasNewRewardVignettes() const {
+    return !unka8.empty();
+}
+
+Symbol AccomplishmentProgress::GetFirstNewRewardVignette() const {
+    MILO_ASSERT(HasNewRewardVignettes(), 0x18C);
+    return unka8.front();
+}
+
+void AccomplishmentProgress::ClearFirstNewRewardVignette(){
+    MILO_ASSERT(HasNewRewardVignettes(), 0x194);
+    unka8.pop_front();
+    mParentProfile->MakeDirty();
+}
+
+bool AccomplishmentProgress::HasNewRewardVignetteFestival() const {
+    return !unk645;
+}
+
+void AccomplishmentProgress::ClearNewRewardVignetteFestival(){
+    unk645 = true;
+    unkb0.insert(campaign_rewardvignette_festival_replay_screen);
+}
+
+bool AccomplishmentProgress::AddAward(Symbol s1, Symbol s2){
+    if(!HasAward(s1)){
+        unk88.insert(s1);
+        unka0.push_back(std::make_pair(s1, s2));
+        Award* pAward = TheAccomplishmentMgr->GetAward(s1);
+        MILO_ASSERT(pAward, 0x1BD);
+        pAward->GrantAwards(mParentProfile);
+        mParentProfile->MakeDirty();
+        return true;
+    }
+    else return false;
+}
+
+bool AccomplishmentProgress::HasAward(Symbol s) const {
+    return unk88.find(s) != unk88.end();
+}
+
+void AccomplishmentProgress::Poll(){}
+
+void AccomplishmentProgress::SaveFixed(FixedSizeSaveableStream& stream) const {
+    stream << unk644;
+    FixedSizeSaveable::SaveStd(stream, unk4c, 1000);
+    FixedSizeSaveable::SaveStd(stream, unk64, 1000);
+    FixedSizeSaveable::SaveStd(stream, unk88, 500);
+    FixedSizeSaveable::SaveStd(stream, unka8, 20);
+    FixedSizeSaveable::SaveStd(stream, unkb0, 20);
+    stream << unk40;
+    stream << unk84;
+    stream << unkc8;
+    stream << unkd0;
+    stream << unkcc;
+    stream << unkd4;
+    stream << unkd8;
+    stream << unkdc;
+    stream << unke0;
+    stream << unke4;
+    stream << unke8;
+    stream << unkec;
+    stream << unk3dc;
+    for(int i = 0; i < 11; i++){
+        stream << unk3e0[i];
+        stream << unk3b0[i];
+        stream << unk40c[i];
+        stream << unk438[i];
+        stream << unk464[i];
+        stream << unk490[i];
+        stream << unk4bc[i];
+        stream << unk4e8[i];
+        stream << unk514[i];
+        stream << unk540[i];
+        for(int j = 0; j < 4; j++){
+            stream << unkf0[i][j];
+            stream << unk1a0[i][j];
+            stream << unk250[i][j];
+            stream << unk300[i][j];
+        }
+    }
+    for(int i = 0; i < 4; i++){
+        stream << unk56c[i];
+        stream << unk57c[i];
+        stream << unk58c[i];
+        stream << unk59c[i];
+        stream << unk5ac[i];
+        stream << unk5bc[i];
+        stream << unk5cc[i];
+    }
+    stream << unk5dc;
+    stream << unk5e0;
+    stream << unk645;
+    FixedSizeSaveable::SaveStd(stream, unk5e4, 10, 8);
+    FixedSizeSaveable::SaveStd(stream, unk5fc, 10, 8);
+    FixedSizeSaveable::SaveStd(stream, unk614, 10, 8);
+    FixedSizeSaveable::SaveStd(stream, unk62c, 0x32, 8);
+    FixedSizeSaveable::SaveStdPtr(stream, unk44, 0x32, GamerAwardStatus::SaveSize(0x97));
 }
