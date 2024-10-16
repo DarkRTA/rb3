@@ -122,6 +122,8 @@ public:
     void SetTourTotalSongsPlayed(int);
     void SetToursPlayed(Symbol, int);
     void SetMostStars(Symbol, int);
+    bool InqGoalLeaderboardData(std::map<Symbol, int>&) const;
+    void HandleUploadStarted();
 
     DataNode OnMsg(const RockCentralOpCompleteMsg&);
 

@@ -5,6 +5,7 @@
 #include "game/Defines.h"
 #include "game/GameMessages.h"
 #include "meta/FixedSizeSaveable.h"
+#include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/AccomplishmentManager.h"
@@ -316,6 +317,65 @@ int AccomplishmentProgress::SaveSize(int i){
     REPORT_SIZE("AccomplishmentProgress", size);
 }
 
+void AccomplishmentProgress::LoadFixed(FixedSizeSaveableStream& stream, int rev){
+    stream >> mUploadDirty;
+    FixedSizeSaveable::LoadStd(stream, mAccomplishments, 1000);
+    FixedSizeSaveable::LoadStd(stream, unk64, 1000);
+    FixedSizeSaveable::LoadStd(stream, mAwards, 500);
+    FixedSizeSaveable::LoadStd(stream, mNewRewardVignettes, 20);
+    FixedSizeSaveable::LoadStd(stream, unkb0, 20);
+    stream >> mHardCoreStatusUpdatePending;
+    stream >> mMetaScore;
+    stream >> mTotalGemsSmashed;
+    stream >> mTotalGuitarHopos;
+    stream >> mTotalBassHopos;
+    stream >> mTotalUpstrums;
+    stream >> mTotalTimesRevived;
+    stream >> mTotalSaves;
+    stream >> mTotalAwesomes;
+    stream >> mTotalDoubleAwesomes;
+    stream >> mTotalTripleAwesomes;
+    stream >> mCareerFills;
+    stream >> mBestBandScore;
+    for(int i = 0; i < 11; i++){
+        stream >> mBestStreak[i];
+        stream >> mBestScore[i];
+        stream >> mTotalOverdriveDeploys[i];
+        stream >> mTotalOverdriveTime[i];
+        stream >> mTotalOverdrivePhrases[i];
+        stream >> mTotalUnisonPhrases[i];
+        stream >> mMostOverdriveDeploys[i];
+        stream >> mMostOverdriveTime[i];
+        stream >> mMostUnisonPhrases[i];
+        stream >> mTotalBREsHit[i];
+        for(int j = 0; j < 4; j++){
+            stream >> mBestStars[i][j];
+            stream >> mBestSolo[i][j];
+            stream >> mBestAccuracy[i][j];
+            stream >> mBestHoposPercent[i][j];
+        }
+    }
+    for(int i = 0; i < 4; i++){
+        stream >> mBestPercussionPercent[i];
+        stream >> mBestKickPercent[i];
+        stream >> mBestProKickPercent[i];
+        if(rev >= 0x91){
+            stream >> mTotalDrumRollCount[i];
+            stream >> mTotalProDrumRollCount[i];
+        }
+        stream >> mBestSoloButtonPercent[i];
+        stream >> mBestDrumRollPercent[i];
+    }
+    stream >> mTotalSongsPlayed;
+    stream >> mTourTotalSongsPlayed;
+    stream >> unk645;
+    FixedSizeSaveable::LoadStd(stream, mToursPlayedMap, 10, 8);
+    FixedSizeSaveable::LoadStd(stream, mTourMostStarsMap, 10, 8);
+    FixedSizeSaveable::LoadStd(stream, mToursGotAllStarsMap, 10, 8);
+    FixedSizeSaveable::LoadStd(stream, mGigTypeCompletedMap, 0x32, 8);
+    FixedSizeSaveable::LoadStdPtr(stream, mGamerAwardStatusList, 0x32, GamerAwardStatus::SaveSize(rev));
+}
+
 void AccomplishmentProgress::SetHardCoreStatusUpdatePending(bool b){
     if(b != mHardCoreStatusUpdatePending){
         mHardCoreStatusUpdatePending = b;
@@ -621,6 +681,34 @@ void AccomplishmentProgress::SetQuestCompletedCount(TourGameType ty, int count){
     mGigTypeCompletedMap[ty] = count;
     MILO_ASSERT(mParentProfile, 0x712);
     mParentProfile->MakeDirty();
+}
+
+bool AccomplishmentProgress::InqGoalLeaderboardData(std::map<Symbol, int>& o_rLeaderboardGoalToValueMap) const {
+    MILO_ASSERT(o_rLeaderboardGoalToValueMap.empty(), 0x719);
+    int fanvalue = TheAccomplishmentMgr->GetScaledFanValue(TheCampaign->GetCampaignMetaScoreForProfile(mParentProfile));
+    o_rLeaderboardGoalToValueMap[campaign_metascore] = fanvalue;
+
+    const std::map<Symbol, Accomplishment*>& accs = TheAccomplishmentMgr->GetAccomplishments();
+    for(std::map<Symbol, Accomplishment*>::const_iterator it = accs.begin(); it != accs.end(); ++it){
+        Accomplishment* pAccomplishment = it->second;
+        Symbol key = it->first;
+        MILO_ASSERT(pAccomplishment, 0x729);
+        if(pAccomplishment->IsTrackedInLeaderboard()){
+            int i44 = 0;
+            int i48 = 0;
+            pAccomplishment->InqProgressValues(mParentProfile, i44, i48);
+            o_rLeaderboardGoalToValueMap[key] = i44;
+        }
+    }
+    return true;
+}
+
+void AccomplishmentProgress::HandleUploadStarted(){
+    unk7c.clear();
+    for(std::set<Symbol>::iterator it = unk64.begin(); it != unk64.end(); ++it){
+        Symbol cur = *it;
+        unk7c.push_back(cur);
+    }
 }
 
 BEGIN_HANDLERS(AccomplishmentProgress)

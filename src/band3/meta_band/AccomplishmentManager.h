@@ -155,6 +155,7 @@ public:
     bool HasNewRewardVignettes() const;
     void ClearGoalProgressionAcquisitionInfo();
     int GetScaledFanValue(int);
+    const std::map<Symbol, Accomplishment*>& GetAccomplishments() const { return mAccomplishments; }
 
     DataNode OnEarnAccomplishment(const DataArray*);
 

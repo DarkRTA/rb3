@@ -4,6 +4,7 @@
 #include "utl/BufStream.h"
 #include "meta/FixedSizeSaveableStream.h"
 #include "os/Debug.h"
+#include "utl/STLHelpers.h"
 #include <set>
 
 typedef int SaveSizeMethodFunc(int);
@@ -156,6 +157,40 @@ public:
             map[key] = value;
         }
         if(maxsize > mapsize) DepadStream(stream, savesize * (maxsize - mapsize));
+    }
+
+    template <class T1, class T2>
+    static void LoadStd(FixedSizeSaveableStream& stream, std::map<T1, T2>& map, int maxsize, int savesize){
+        if(map.size() != 0){
+            MILO_WARN("hash_map is not empty!");
+            map.clear();
+        }
+        int mapsize;
+        stream >> mapsize;
+        for(int i = 0; i < mapsize; i++){
+            T1 key;
+            stream >> key;
+            T2 value;
+            stream >> value;
+            map[key] = value;
+        }
+        if(maxsize > mapsize) DepadStream(stream, savesize * (maxsize - mapsize));
+    }
+
+    template <class T, class Allocator>
+    static void LoadStdPtr(FixedSizeSaveableStream& stream, std::list<T*, Allocator>& list, int maxsize, int savesize){
+        if(list.size() != 0){
+            MILO_WARN("list is not empty!");
+            DeleteAll(list);
+        }
+        int lsize;
+        stream >> lsize;
+        for(int i = 0; i < lsize; i++){
+            T* itemptr = new T();
+            stream >> *itemptr;
+            list.push_back(itemptr);
+        }
+        if(maxsize > lsize) DepadStream(stream, (savesize * (maxsize - lsize)));
     }
 
     static int GetMaxSymbols(){
