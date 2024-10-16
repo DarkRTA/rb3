@@ -1,6 +1,7 @@
 #include "AccomplishmentTrainerConditional.h"
-
+#include "os/Debug.h"
 #include "system/utl/Symbols.h"
+#include "utl/Symbols2.h"
 
 AccomplishmentTrainerConditional::AccomplishmentTrainerConditional(DataArray* i_pConfig, int i) : Accomplishment(i_pConfig, i){
     Configure(i_pConfig);
@@ -17,16 +18,16 @@ void AccomplishmentTrainerConditional::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(pConditionArray->Size() > 1, 0x23);
 
     for (int i = 1; i < pConditionArray->Size(); i++) {
-        DataArray* pConditionEntryArray = pConditionArray->Array(i);
+        DataArray* pConditionEntryArray = pConditionArray->Node(i).Array();
         MILO_ASSERT(pConditionEntryArray, 0x28);
 
         TrainerCondition condition;
 
-        condition.c = pConditionEntryArray->Sym(0);
+        condition.mCondition = pConditionEntryArray->Node(0).Sym();
         if (pConditionEntryArray->Size() > 1) {
-            condition.d = pConditionEntryArray->Float(1);
+            condition.mValue = pConditionEntryArray->Node(1).Float();
         } else {
-            condition.d = 0.0;
+            condition.mValue = 0.0;
         }
 
         mConditions.push_back(condition);
@@ -43,13 +44,13 @@ bool AccomplishmentTrainerConditional::CheckLessonCompleteCondition(BandProfile*
 bool AccomplishmentTrainerConditional::CheckConditionsForLesson(BandProfile* profile, Symbol param_2) const {
     for (std::list<TrainerCondition>::const_iterator it = mConditions.begin(); it != mConditions.end(); it++) {
         TrainerCondition condition = *it;
-        if (complete_lesson == condition.c) {
-            bool result = CheckLessonCompleteCondition(profile, param_2, condition.d);
+        if (condition.mCondition == complete_lesson) {
+            bool result = CheckLessonCompleteCondition(profile, param_2, condition.mValue);
             if (result) {
                 return true;
             }
         } else {
-            TheDebug.Notify(MakeString("GOAL: %s - Condition is not currently supported: %s \n", param_2, condition.c));
+            MILO_WARN("GOAL: %s - Condition is not currently supported: %s \n", mName, condition.mCondition);
             return false;
         }
     }
@@ -61,10 +62,12 @@ void AccomplishmentTrainerConditional::UpdateIncrementalEntryName(UILabel* label
     label->SetTextToken(text);
 }
 
-bool AccomplishmentTrainerConditional::InqProgressValues(BandProfile* profile, int& i, int& j) {
-    if (profile != NULL) {
-        
-    }  
+bool AccomplishmentTrainerConditional::InqProgressValues(BandProfile* profile, int& i1, int& i2) {
+    i2 = GetTotalNumLessons();
+    i1 = 0;
+    if(profile){
+        i1 = GetNumCompletedLessons(profile);
+    }
     return true;
 }
 

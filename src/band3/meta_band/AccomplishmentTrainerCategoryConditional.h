@@ -12,7 +12,7 @@ class AccomplishmentTrainerCategoryConditional : public AccomplishmentTrainerCon
     void Configure(DataArray*);
     virtual AccomplishmentType GetType() const;
     virtual bool IsFulfilled(BandProfile*) const;
-    virtual void GetNumCompletedLessons(BandProfile*) const;
+    virtual int GetNumCompletedLessons(BandProfile*) const;
     virtual bool InqIncrementalSymbols(BandProfile*, std::vector<Symbol>&) const;
     virtual Symbol GetFirstUnfinishedAccomplishmentEntry(BandProfile*) const;
     virtual int GetTotalNumLessons() const;

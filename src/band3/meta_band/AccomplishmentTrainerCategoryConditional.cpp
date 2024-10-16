@@ -20,7 +20,7 @@ bool AccomplishmentTrainerCategoryConditional::IsFulfilled(BandProfile*) const {
 
 }
 
-void AccomplishmentTrainerCategoryConditional::GetNumCompletedLessons(BandProfile*) const {
+int AccomplishmentTrainerCategoryConditional::GetNumCompletedLessons(BandProfile*) const {
 
 }
 

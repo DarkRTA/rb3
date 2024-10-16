@@ -4,23 +4,27 @@
 #include "Accomplishment.h"
 
 struct TrainerCondition {
-    Symbol c;
-    float d;
+    TrainerCondition(){}
+    Symbol mCondition;
+    float mValue;
 };
 
 class AccomplishmentTrainerConditional : public Accomplishment {
 public:
     AccomplishmentTrainerConditional(DataArray*, int);
     virtual ~AccomplishmentTrainerConditional();
-private:
-    void Configure(DataArray*);
-    bool CheckLessonCompleteCondition(BandProfile*, Symbol, float) const;
-    bool CheckConditionsForLesson(BandProfile*, Symbol) const;
+    virtual bool ShowBestAfterEarn() const;
     virtual void UpdateIncrementalEntryName(UILabel*, Symbol);
     virtual bool InqProgressValues(BandProfile*, int&, int&);
     virtual bool IsSymbolEntryFulfilled(BandProfile*, Symbol) const;
-    virtual bool ShowBestAfterEarn() const;
     virtual bool CanBeLaunched() const;
+    virtual int GetNumCompletedLessons(BandProfile*) const = 0;
+    virtual int GetTotalNumLessons() const = 0;
+    
+    void Configure(DataArray*);
+    bool CheckLessonCompleteCondition(BandProfile*, Symbol, float) const;
+    bool CheckConditionsForLesson(BandProfile*, Symbol) const;
+
     std::list<TrainerCondition> mConditions;
 };
 
