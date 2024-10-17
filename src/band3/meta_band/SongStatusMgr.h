@@ -72,6 +72,8 @@ public:
     bool IsProGuitarSongLessonComplete(int, Difficulty) const;
     bool IsProBassSongLessonComplete(int, Difficulty) const;
     bool IsProKeyboardSongLessonComplete(int, Difficulty) const;
+    int GetCachedTotalScore(ScoreType) const;
+    int GetCachedTotalDiscScore(ScoreType) const;
 };
 
 #endif // METAGAME_SONGSTATUSMGR_H
