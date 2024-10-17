@@ -25,9 +25,12 @@ public:
     Lesson* GetLesson(Symbol) const;
     TrackType GetTrackTypeFromTrainer(Symbol);
     std::vector<Symbol>* GetLessonsFromCategory(Symbol) const;
+    std::vector<Symbol>* GetCategoriesFromTrainer(Symbol) const;
     int GetCompletedCountFromTrainer(BandProfile*, Symbol);
     int GetTotalCountFromTrainer(Symbol);
     Difficulty GetDifficulty() const;
+    int GetTotalCountFromCategory(Symbol);
+    int GetCompletedCountFromCategory(BandProfile*, Symbol);
 
     static void Init();
     static LessonMgr* GetLessonMgr();
