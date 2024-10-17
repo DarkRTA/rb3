@@ -69,6 +69,9 @@ public:
     int GetBestDoubleAwesomes(int, ScoreType, Difficulty) const;
     int GetBestTripleAwesomes(int, ScoreType, Difficulty) const;
     int GetBestSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty) const;
+    bool IsProGuitarSongLessonComplete(int, Difficulty) const;
+    bool IsProBassSongLessonComplete(int, Difficulty) const;
+    bool IsProKeyboardSongLessonComplete(int, Difficulty) const;
 };
 
 #endif // METAGAME_SONGSTATUSMGR_H
