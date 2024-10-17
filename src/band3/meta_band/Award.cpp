@@ -101,9 +101,9 @@ void Award::GrantAward(const AwardEntry &awardEntry, BandProfile *i_pProfile) {
     }
 }
 
-void Award::InqAssets(std::vector<Symbol> &o_rAssets) {
-    MILO_ASSERT(o_rAssets.empty(), 0xe5);
-}
+// void Award::InqAssets(std::vector<Symbol> &o_rAssets) {
+//     MILO_ASSERT(o_rAssets.empty(), 0xe5);
+// }
 
 bool Award::HasAssets() const {
     for (int i = 0; i < mAwardEntries.size(); i++) {

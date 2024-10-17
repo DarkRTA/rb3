@@ -6,6 +6,17 @@
 #include "system/meta/FixedSizeSaveableStream.h"
 #include "game/BandUser.h"
 
+enum SongStatusFlagType {
+    kSongStatusFlagNone = 0,
+    kSongStatusFlag_HitBRE = 1,
+    kSongStatusFlag_ChordbookComplete = 2,
+    kSongStatusFlag_FullCombo = 4,
+    kSongStatusFlag_LessonComplete = 8,
+    kSongStatusFlag_PerfectDrumRolls = 0x10,
+    kSongStatusFlag_AllDoubleAwesomes = 0x20,
+    kSongStatusFlag_AllTripleAwesomes = 0x40
+};
+
 class SongStatusData {
     void Clear(ScoreType);
     void SaveSize(int);
@@ -47,9 +58,22 @@ public:
     SongStatusMgr(LocalBandUser*, BandSongMgr*);
     ~SongStatusMgr();
     void Clear();
-    void GetScore(int, ScoreType) const;
-    void GetStars(int, ScoreType, Difficulty) const;
-    void GetBestStars(int, ScoreType, Difficulty) const;
+    int GetScore(int, ScoreType) const;
+    int GetStars(int, ScoreType, Difficulty) const;
+    int GetBestStars(int, ScoreType, Difficulty) const;
+    int GetBestAccuracy(int, ScoreType, Difficulty) const;
+    int GetBestStreak(int, ScoreType, Difficulty) const;
+    int GetBestHOPOPercent(int, ScoreType, Difficulty) const;
+    int GetBestSoloPercent(int, ScoreType, Difficulty) const;
+    int GetBestAwesomes(int, ScoreType, Difficulty) const;
+    int GetBestDoubleAwesomes(int, ScoreType, Difficulty) const;
+    int GetBestTripleAwesomes(int, ScoreType, Difficulty) const;
+    int GetBestSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty) const;
+    bool IsProGuitarSongLessonComplete(int, Difficulty) const;
+    bool IsProBassSongLessonComplete(int, Difficulty) const;
+    bool IsProKeyboardSongLessonComplete(int, Difficulty) const;
+    int GetCachedTotalScore(ScoreType) const;
+    int GetCachedTotalDiscScore(ScoreType) const;
 };
 
 #endif // METAGAME_SONGSTATUSMGR_H

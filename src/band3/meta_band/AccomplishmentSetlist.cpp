@@ -30,8 +30,8 @@ void AccomplishmentSetlist::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(min_stars, mMinStars, false);
 }
 
-int AccomplishmentSetlist::GetType() const {
-    return 10;
+AccomplishmentType AccomplishmentSetlist::GetType() const {
+    return kAccomplishmentTypeSetlist;
 }
 
 bool AccomplishmentSetlist::CanBeLaunched() const {

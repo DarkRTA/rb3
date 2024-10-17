@@ -74,6 +74,7 @@ public:
     bool IsLocal() const { return !IsNet(); }
     Band* GetBand() const { return mBand; }
     bool GetQuarantined() const { return mQuarantined; }
+    const Stats& GetStats() const { return mStats; }
 
     float mPollMs; // 0x8
     CrowdRating* mCrowd; // 0xc

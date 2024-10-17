@@ -1,4 +1,5 @@
 #include "Accomplishment.h"
+#include "obj/Data.h"
 #include "system/utl/MakeString.h"
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols2.h"
@@ -13,9 +14,9 @@
 
 Accomplishment::Accomplishment(DataArray* i_pConfig, int index) : mName(gNullStr), mAccomplishmentType(0), mCategory(gNullStr),
     mAward(gNullStr), mUnitsToken(gNullStr), mUnitsTokenSingular(gNullStr), mIconOverride(gNullStr), mSecretCampaignLevelPrereq(gNullStr),
-    mScoreType((ScoreType)10), mLaunchableDifficulty((Difficulty)0), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(-1),
+    mScoreType(kScoreBand), mLaunchableDifficulty(kDifficultyEasy), mPassiveMsgChannel(gNullStr), mPassiveMsgPriority(-1),
     mPlayerCountMin(-1), mPlayerCountMax(-1), mDynamicPrereqsNumSongs(-1), mDynamicPrereqsFilter(gNullStr), mProgressStep(0),
-    mIndex(index), mContextId(0), mMetaScoreValue(gNullStr), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false),
+    mIndex(index), mContextId(-1), mMetaScoreValue(gNullStr), mRequiresUnison(false), mRequiresBre(false), mDynamicAlwaysVisible(false),
     mShouldShowDenominator(true), mShowBestAfterEarn(true), mHideProgress(false), mCanBeEarnedWithNoFail(true), mIsTrackedInLeaderboard(false) {
 
     Configure(i_pConfig);
@@ -27,16 +28,13 @@ Accomplishment::~Accomplishment() {
 
 void Accomplishment::Configure(DataArray* i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x3e);
-
     mName = i_pConfig->Sym(0);
 
     DataArray* controllerTypes = i_pConfig->FindArray(launchable_controller_types, false);
     if (controllerTypes != NULL) {
         mControllerTypes.reserve(controllerTypes->Size() - 1);
         for (int i = 1; i < controllerTypes->Size(); i++) {
-            DataNode& node = controllerTypes->Node(i);
-            ControllerType controllerType = (ControllerType)node.Int(controllerTypes);
-
+            ControllerType controllerType = (ControllerType)controllerTypes->Int(i);
             mControllerTypes.push_back(controllerType);
         }
     }
@@ -61,9 +59,7 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     if (secretPrereqs != NULL) {
         mSecretPrereqs.reserve(secretPrereqs->Size() - 1);
         for (int i = 1; i < secretPrereqs->Size(); i++) {
-            DataNode& node = secretPrereqs->Node(i);
-            Symbol s = node.Sym(secretPrereqs);
-
+            Symbol s = secretPrereqs->Sym(i);
             mSecretPrereqs.push_back(s);
         }
     }
@@ -74,19 +70,16 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
         dynamicPrereqs->FindData(always_visible, mDynamicAlwaysVisible, false);
         dynamicPrereqs->FindData(precached_filter, mDynamicPrereqsFilter, false);
 
-        dynamicPrereqs = dynamicPrereqs->FindArray(songs, false);
-
-        if(dynamicPrereqs != NULL){
-            mDynamicPrereqsSongs.reserve(dynamicPrereqs->Size() - 1);
-            for (int i = 1; i < dynamicPrereqs->Size(); i++) {
-                DataNode& node = dynamicPrereqs->Node(i);
-                Symbol s = node.Sym(dynamicPrereqs);
-
+        DataArray* songsarr = dynamicPrereqs->FindArray(songs, false);
+        if(songsarr != NULL){
+            mDynamicPrereqsSongs.reserve(songsarr->Size() - 1);
+            for (int i = 1; i < songsarr->Size(); i++) {
+                Symbol s = songsarr->Sym(i);
                 mDynamicPrereqsSongs.push_back(s);
             }
             if (mDynamicPrereqsSongs.size() < mDynamicPrereqsNumSongs) {
-                TheDebug.Notify(MakeString("There are less songs in the dynamic prereq song list than the num_songs provided: %s\n", mName.Str()));
-                mDynamicPrereqsNumSongs = 0xffffffff;
+                MILO_WARN("There are less songs in the dynamic prereq song list than the num_songs provided: %s\n", mName.Str());
+                mDynamicPrereqsNumSongs = -1;
             }
         }
     }
@@ -94,14 +87,14 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(passive_msg_channel, mPassiveMsgChannel, false);
     i_pConfig->FindData(passive_msg_priority, mPassiveMsgPriority, false);
 
-    bool noMsgChannel = !(mPassiveMsgChannel == gNullStr);
+    bool noMsgChannel = mPassiveMsgChannel != gNullStr;
 
     if (noMsgChannel) {
         if (mPassiveMsgPriority < 1) {
-            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is less than the minimum: %i!\n", mName.Str(), 1));
+            MILO_WARN("Passive Message Priority for goal %s is less than the minimum: %i!\n", mName.Str(), 1);
             mPassiveMsgPriority = 1;
         } else if (1000 < mPassiveMsgPriority) {
-            TheDebug.Notify(MakeString("Passive Message Priority for goal %s is more than the maximum: %i!\n", mName.Str(), 1000));
+            MILO_WARN("Passive Message Priority for goal %s is more than the maximum: %i!\n", mName.Str(), 1000);
             mPassiveMsgPriority = 1000;
         }
     }
@@ -123,8 +116,8 @@ void Accomplishment::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(metascore_value, mMetaScoreValue, true);
 }
 
-int Accomplishment::GetType() const {
-    return 0;
+AccomplishmentType Accomplishment::GetType() const {
+    return kAccomplishmentTypeUnique;
 }
 
 Symbol Accomplishment::GetName() const {
@@ -200,16 +193,16 @@ int Accomplishment::GetContextID() const {
     return mContextId;
 }
 
-void Accomplishment::GetIconArt() const {
+const char* Accomplishment::GetIconArt() const {
     bool noIconArt;
     if (gNullStr) {
         noIconArt = !strcmp(mIconOverride.Str(), gNullStr);
     } else { noIconArt = (mIconOverride.Str() == gNullStr); }
 
     if (!noIconArt) {
-        MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mIconOverride.Str());
+        return MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mIconOverride.Str());
     } else {
-        MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mName.Str());
+        return MakeString("ui/accomplishments/accomplishment_art/%s_keep.png", mName.Str());
     }
 }
 
@@ -311,9 +304,9 @@ Symbol Accomplishment::GetMetaScoreValue() const {
     return mMetaScoreValue;
 }
 
-char* Accomplishment::GetIconPath() {
+const char* Accomplishment::GetIconPath() {
     return "ui/accomplishments/accomplishment_art/%s_keep.png";
- }
+}
 
 bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
     bool returnValue = false;
@@ -343,21 +336,19 @@ bool Accomplishment::IsUserOnValidScoreType(LocalBandUser* i_pUser) const {
 
 bool Accomplishment::IsUserOnValidController(LocalBandUser* i_pUser) const {
     MILO_ASSERT(i_pUser, 0x253);
-
     bool returnValue = false;
-    ControllerType controllerType = (*(BandUser**)i_pUser)->GetControllerType();
+    ControllerType controllerType = i_pUser->GetControllerType();
     bool isValid = IsUserOnValidScoreType(i_pUser);
-
     if (mControllerTypes.empty()) {
         returnValue = true;
     } else {
-        for (std::vector<ControllerType>::const_iterator i = mControllerTypes.begin(); i != mControllerTypes.end(); i++) {
-            if (controllerType == *i) {
+        for (std::vector<ControllerType>::const_iterator iter = mControllerTypes.begin(); iter != mControllerTypes.end(); ++iter) {
+            ControllerType type = *iter;
+            if (controllerType == type) {
                 returnValue = true;
             }
         }
     }
-
     return (isValid && returnValue);
 }
 
@@ -409,11 +400,9 @@ void Accomplishment::InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&,
 void Accomplishment::InitializeTrackerDesc(TrackerDesc& trackerDesc) const {
     MILO_ASSERT(TheCampaign, 0x2b8);
 
-    Symbol user = TheCampaign->GetLaunchUser();
-
-    trackerDesc.symbol2 = user;
+    trackerDesc.mUser = TheCampaign->GetLaunchUser();
     trackerDesc.symbol3 = mName;
-    trackerDesc.int1 = 2;
+    trackerDesc.unkc = 2;
 }
 
 bool Accomplishment::CanBeEarnedWithNoFail() const {

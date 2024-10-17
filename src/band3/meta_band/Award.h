@@ -11,6 +11,7 @@ public:
 };
 
 class Award {
+public:
     Award(DataArray *, int);
     virtual ~Award();
     void Configure(DataArray *);
@@ -21,7 +22,7 @@ class Award {
     Symbol GetIconArt() const;
     bool IsBonus() const;
     void GrantAward(const AwardEntry &, BandProfile *);
-    void InqAssets(std::vector<Symbol> &);
+    bool InqAssets(std::vector<Symbol> &);
     bool HasAssets() const;
     void GrantAwards(BandProfile *);
 

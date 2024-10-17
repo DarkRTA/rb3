@@ -69,7 +69,7 @@ public:
     void UploadDirtyData();
     void SetSongReview(int, int);
     void GetSongReview(int);
-    void GetSongStatusMgr() const;
+    SongStatusMgr* GetSongStatusMgr() const;
     void GetSongHighScore(int, ScoreType) const;
     void GetSavedSetlists() const;
     void AddSavedSetlist(const char*, const char*, bool, const PatchDescriptor&, const std::vector<int>&);
@@ -94,7 +94,7 @@ public:
     void GetLessonCompleteSpeed(const Symbol&) const;
     void SetLessonComplete(const Symbol&, float);
     void EarnAccomplishment(Symbol);
-    void GetAccomplishmentProgress() const;
+    AccomplishmentProgress* GetAccomplishmentProgress() const;
     AccomplishmentProgress* AccessAccomplishmentProgress();
     void GetHardcoreIconLevel() const;
     void SetHardcoreIconLevel(int);

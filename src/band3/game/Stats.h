@@ -63,7 +63,7 @@ public:
     //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
     //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
     //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
-    //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), m0xb4(s.m0xb4), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
+    //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), mFullCombo(s.mFullCombo), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
         
     // }
 
@@ -120,7 +120,7 @@ public:
     void EndStreakMultiplier(float, int);
     void BeginMultiplier(Stats::MultiplierInfo&, float, int, float);
     void EndMultiplier(Stats::MultiplierInfo&, std::vector<Stats::MultiplierInfo>&, float, int, float, float&);
-    void GetUnisonPhrasePercent() const;
+    int GetUnisonPhrasePercent() const;
     void SetHopoGemInfo(int, int, int);
     void IncrementHighFretGemsHit(bool);
     void IncrementSustainGemsHit(bool);
@@ -259,7 +259,7 @@ public:
     bool m0x09;        // 0xa9
     float mTambourine; // 0xac
     int mHarmony; // 0xb0
-    bool m0xb4;
+    bool mFullCombo; // 0xb4
     float mNoScorePercent; // 0xb8
     StreakInfo mCurrentHitStreak; // 0xbc
     std::vector<StreakInfo> mHitStreaks; // 0xc4

@@ -4,6 +4,7 @@
 #include "utl/BufStream.h"
 #include "meta/FixedSizeSaveableStream.h"
 #include "os/Debug.h"
+#include "utl/STLHelpers.h"
 #include <set>
 
 typedef int SaveSizeMethodFunc(int);
@@ -111,6 +112,35 @@ public:
         if(maxsize > mapsize) PadStream(stream, savesize * (maxsize - mapsize));
     }
 
+    template <class T1, class T2>
+    static void SaveStd(FixedSizeSaveableStream& stream, const std::map<T1, T2>& map, int maxsize, int savesize){
+        int mapsize = map.size();
+        if(mapsize > maxsize){
+            MILO_WARN("The hash_map size is greater than the maximum supplied! size=%i max=%i\n", mapsize, maxsize);
+            mapsize = maxsize;
+        }
+        stream << mapsize;
+        for(std::map<T1, T2>::const_iterator it = map.begin(); it != map.end(); ++it){
+            stream << it->first;
+            stream << it->second;
+        }
+        if(maxsize > mapsize) PadStream(stream, savesize * (maxsize - mapsize));
+    }
+
+    template <class T, class Allocator>
+    static void SaveStdPtr(FixedSizeSaveableStream& stream, const std::list<T*, Allocator>& list, int maxsize, int savesize){
+        int lsize = list.size();
+        if(lsize > maxsize){
+            MILO_WARN("The list size is greater than the maximum supplied! size=%i max=%i\n", lsize, maxsize);
+            lsize = maxsize;
+        }
+        stream << lsize;
+        for(std::list<T*, Allocator>::const_iterator it = list.begin(); it != list.end(); ++it){
+            stream << *(*it);
+        }
+        if(maxsize > lsize) PadStream(stream, (savesize * (maxsize - lsize)));
+    }
+
     template <class T>
     static void LoadStd(FixedSizeSaveableStream& stream, std::map<Symbol, T>& map, int maxsize, int savesize){
         if(map.size() != 0){
@@ -129,6 +159,40 @@ public:
         if(maxsize > mapsize) DepadStream(stream, savesize * (maxsize - mapsize));
     }
 
+    template <class T1, class T2>
+    static void LoadStd(FixedSizeSaveableStream& stream, std::map<T1, T2>& map, int maxsize, int savesize){
+        if(map.size() != 0){
+            MILO_WARN("hash_map is not empty!");
+            map.clear();
+        }
+        int mapsize;
+        stream >> mapsize;
+        for(int i = 0; i < mapsize; i++){
+            T1 key;
+            stream >> key;
+            T2 value;
+            stream >> value;
+            map[key] = value;
+        }
+        if(maxsize > mapsize) DepadStream(stream, savesize * (maxsize - mapsize));
+    }
+
+    template <class T, class Allocator>
+    static void LoadStdPtr(FixedSizeSaveableStream& stream, std::list<T*, Allocator>& list, int maxsize, int savesize){
+        if(list.size() != 0){
+            MILO_WARN("list is not empty!");
+            DeleteAll(list);
+        }
+        int lsize;
+        stream >> lsize;
+        for(int i = 0; i < lsize; i++){
+            T* itemptr = new T();
+            stream >> *itemptr;
+            list.push_back(itemptr);
+        }
+        if(maxsize > lsize) DepadStream(stream, (savesize * (maxsize - lsize)));
+    }
+
     static int GetMaxSymbols(){
         MILO_ASSERT(sMaxSymbols >= 0, 0x1C0);
         return sMaxSymbols;
@@ -145,5 +209,11 @@ public:
 
 FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream&, const FixedSizeSaveable&);
 FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream&, FixedSizeSaveable&);
+
+#define REPORT_SIZE(name, size) \
+    if(FixedSizeSaveable::sPrintoutsEnabled){ \
+        MILO_LOG("* %s = %i\n", name, size); \
+    } \
+    return size;
 
 #endif

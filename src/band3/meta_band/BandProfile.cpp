@@ -165,7 +165,7 @@ void BandProfile::UploadDirtyScoreData() {}
 void BandProfile::UploadDirtyData() {}
 void BandProfile::SetSongReview(int, int) {}
 void BandProfile::GetSongReview(int) {}
-void BandProfile::GetSongStatusMgr() const {}
+// void BandProfile::GetSongStatusMgr() const {}
 void BandProfile::GetSongHighScore(int, ScoreType) const {}
 void BandProfile::GetSavedSetlists() const {}
 void BandProfile::AddSavedSetlist(const char*, const char*, bool, const PatchDescriptor&, const std::vector<int>&) {}
@@ -222,7 +222,7 @@ void BandProfile::GetLessonComplete(const Symbol&) const {}
 void BandProfile::GetLessonCompleteSpeed(const Symbol&) const {}
 void BandProfile::SetLessonComplete(const Symbol&, float) {}
 void BandProfile::EarnAccomplishment(Symbol) {}
-void BandProfile::GetAccomplishmentProgress() const {}
+// void BandProfile::GetAccomplishmentProgress() const {}
 
 // void BandProfile::AccessAccomplishmentProgress() {}
 

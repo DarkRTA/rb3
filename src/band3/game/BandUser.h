@@ -33,6 +33,7 @@ public:
     virtual void Reset();
     virtual void SyncSave();
 
+    const char* ProfileName() const;
     bool IsFullyInGame() const;
     ControllerType GetControllerType() const;
     Difficulty GetDifficulty() const;
