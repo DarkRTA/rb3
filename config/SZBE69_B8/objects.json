@@ -189,7 +189,7 @@
             "band3/meta_band/InterstitialPanel.cpp": "MISSING",
             "band3/meta_band/JoinInvitePanel.cpp": "MISSING",
             "band3/meta_band/Leaderboard.cpp": "MISSING",
-            "band3/meta_band/LessonMgr.cpp": "MISSING",
+            "band3/meta_band/LessonMgr.cpp": "NonMatching",
             "band3/meta_band/LessonProvider.cpp": "MISSING",
             "band3/meta_band/LicenseMgr.cpp": "NonMatching",
             "band3/meta_band/LockStepMgr.cpp": "MISSING",
