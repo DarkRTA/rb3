@@ -270,7 +270,10 @@
             "band3/meta_band/TokenRedemptionPanel.cpp": "MISSING",
             "band3/meta_band/TrainerProvider.cpp": "Matching",
             "band3/meta_band/TrainingMgr.cpp": "Matching",
-            "band3/meta_band/TrainingPanel.cpp": "MISSING",
+            "band3/meta_band/TrainingPanel.cpp": {
+                "status": "Equivalent",
+                "comment": "bss meme"
+            },
             "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",
             "band3/meta_band/UIEvent.cpp": "MISSING",
             "band3/meta_band/UIEventMgr.cpp": "MISSING",
