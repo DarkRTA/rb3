@@ -12,7 +12,7 @@ struct TrackerDesc {
     Symbol symbol3;  // 0x08
     int unkc;        // 0x0c
     int unk10;
-    int unk14;
+    float unk14;
     std::vector<float> unk18;
 };
 
