@@ -156,6 +156,7 @@ public:
     void ClearGoalProgressionAcquisitionInfo();
     int GetScaledFanValue(int);
     const std::map<Symbol, Accomplishment*>& GetAccomplishments() const { return mAccomplishments; }
+    const std::vector<Symbol>& GetDiscSongs() const { return mDiscSongs; }
 
     DataNode OnEarnAccomplishment(const DataArray*);
 

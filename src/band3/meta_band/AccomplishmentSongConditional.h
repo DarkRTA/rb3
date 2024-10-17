@@ -6,6 +6,7 @@
 #include "SongStatusMgr.h"
 
 class AccomplishmentSongConditional : public AccomplishmentConditional {
+public:
     AccomplishmentSongConditional(DataArray*, int);
     virtual ~AccomplishmentSongConditional();
     virtual bool ShowBestAfterEarn() const;
