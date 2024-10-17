@@ -268,7 +268,7 @@
             "band3/meta_band/TabInterfacePanel.cpp": "MISSING",
             "band3/meta_band/TexLoadPanel.cpp": "NonMatching",
             "band3/meta_band/TokenRedemptionPanel.cpp": "MISSING",
-            "band3/meta_band/TrainerProvider.cpp": "MISSING",
+            "band3/meta_band/TrainerProvider.cpp": "Matching",
             "band3/meta_band/TrainingMgr.cpp": "MISSING",
             "band3/meta_band/TrainingPanel.cpp": "MISSING",
             "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",

@@ -1,4 +1,5 @@
 #pragma once
+#include "BandProfile.h"
 #include "beatmatch/TrackType.h"
 #include "game/Defines.h"
 #include "obj/Object.h"
@@ -24,6 +25,8 @@ public:
     Lesson* GetLesson(Symbol) const;
     TrackType GetTrackTypeFromTrainer(Symbol);
     std::vector<Symbol>* GetLessonsFromCategory(Symbol) const;
+    int GetCompletedCountFromTrainer(BandProfile*, Symbol);
+    int GetTotalCountFromTrainer(Symbol);
 
     static void Init();
     static LessonMgr* GetLessonMgr();

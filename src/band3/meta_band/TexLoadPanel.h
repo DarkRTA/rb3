@@ -40,7 +40,7 @@ public:
     OBJ_CLASSNAME(TexLoadPanel);
     OBJ_SET_TYPE(TexLoadPanel);
     virtual DataNode Handle(DataArray*, bool);
-    virtual ~TexLoadPanel();
+    virtual ~TexLoadPanel(){}
     virtual void Poll();
     virtual void Load();
     virtual void Unload();
@@ -49,7 +49,7 @@ public:
     virtual void FinishLoad();
     virtual void ContentMounted(const char*, const char*);    
     virtual void ContentFailed(const char*);    
-    virtual const char* ContentDir();
+    virtual const char* ContentDir(){ return 0; }
 
     bool RegisterForContent() const;
     bool TexturesLoaded() const;
