@@ -266,7 +266,7 @@
             "band3/meta_band/StoreRootPanel.cpp": "MISSING",
             "band3/meta_band/StoreSongSortNode.cpp": "MISSING",
             "band3/meta_band/TabInterfacePanel.cpp": "MISSING",
-            "band3/meta_band/TexLoadPanel.cpp": "MISSING",
+            "band3/meta_band/TexLoadPanel.cpp": "NonMatching",
             "band3/meta_band/TokenRedemptionPanel.cpp": "MISSING",
             "band3/meta_band/TrainerProvider.cpp": "MISSING",
             "band3/meta_band/TrainingMgr.cpp": "MISSING",
