@@ -60,3 +60,36 @@ LessonMgr::~LessonMgr(){
 
 void LessonMgr::Init(){ TheLessonMgr = new LessonMgr(); }
 LessonMgr* LessonMgr::GetLessonMgr(){ return TheLessonMgr; }
+
+std::vector<Symbol>* LessonMgr::GetLessonsFromCategory(Symbol s) const {
+    std::map<Symbol, std::vector<Symbol>*>::const_iterator it = mCategoryToLessonsMap.find(s);
+    if(it != mCategoryToLessonsMap.end()) return it->second;
+    else return nullptr;
+}
+
+// undefined4 __thiscall LessonMgr::GetLessonsFromCategory(LessonMgr *this,Symbol param_1)
+
+// {
+//   LessonMgr *pLVar1;
+//   LessonMgr *pLVar2;
+//   LessonMgr *pLVar3;
+  
+//   pLVar1 = *(LessonMgr **)(this + 0x40);
+//   pLVar3 = this + 0x3c;
+//   while (pLVar2 = pLVar1, pLVar2 != (LessonMgr *)0x0) {
+//     if (*(uint *)(pLVar2 + 0x10) < *(uint *)param_1.mStr) {
+//       pLVar1 = *(LessonMgr **)(pLVar2 + 0xc);
+//     }
+//     else {
+//       pLVar1 = *(LessonMgr **)(pLVar2 + 8);
+//       pLVar3 = pLVar2;
+//     }
+//   }
+//   if ((pLVar3 != this + 0x3c) && (*(uint *)param_1.mStr < *(uint *)(pLVar3 + 0x10))) {
+//     pLVar3 = this + 0x3c;
+//   }
+//   if (pLVar3 != this + 0x3c) {
+//     return *(undefined4 *)(pLVar3 + 0x14);
+//   }
+//   return 0;
+// }

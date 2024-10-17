@@ -123,7 +123,7 @@
             "band3/meta_band/AccomplishmentSongFilterConditional.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentSongListConditional.cpp": "Matching",
             "band3/meta_band/AccomplishmentTourConditional.cpp": "NonMatching",
-            "band3/meta_band/AccomplishmentTrainerCategoryConditional.cpp": "NonMatching",
+            "band3/meta_band/AccomplishmentTrainerCategoryConditional.cpp": "Matching",
             "band3/meta_band/AccomplishmentTrainerConditional.cpp": "Matching",
             "band3/meta_band/AccomplishmentTrainerListConditional.cpp": "Matching",
             "band3/meta_band/AppInlineHelp.cpp": "MISSING",

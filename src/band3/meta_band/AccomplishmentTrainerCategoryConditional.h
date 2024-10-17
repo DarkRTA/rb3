@@ -17,7 +17,7 @@ public:
     virtual int GetNumCompletedLessons(BandProfile*) const;
     virtual int GetTotalNumLessons() const;
 
-    void InqCompletedLessons(BandProfile*, std::vector<Symbol>&) const;
+    bool InqCompletedLessons(BandProfile*, std::vector<Symbol>&) const;
     void Configure(DataArray*);
     
     Symbol mCategory; // 0x7c

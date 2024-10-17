@@ -23,6 +23,7 @@ public:
 
     Lesson* GetLesson(Symbol) const;
     TrackType GetTrackTypeFromTrainer(Symbol);
+    std::vector<Symbol>* GetLessonsFromCategory(Symbol) const;
 
     static void Init();
     static LessonMgr* GetLessonMgr();
