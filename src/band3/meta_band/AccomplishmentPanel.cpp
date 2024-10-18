@@ -1,4 +1,5 @@
 #include "meta_band/AccomplishmentPanel.h"
+#include "Accomplishment.h"
 #include "BandProfile.h"
 #include "Campaign.h"
 #include "game/BandUser.h"
@@ -6,7 +7,12 @@
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/AccomplishmentManager.h"
+#include "meta_band/AccomplishmentOneShot.h"
 #include "meta_band/AccomplishmentProgress.h"
+#include "meta_band/AccomplishmentSetlist.h"
+#include "meta_band/AccomplishmentTourConditional.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/MetaPerformer.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/TexLoadPanel.h"
 #include "obj/Data.h"
@@ -17,6 +23,8 @@
 #include "ui/UIPanel.h"
 #include "utl/Messages2.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols2.h"
+#include <vector>
 
 AccomplishmentGroupCmp::AccomplishmentGroupCmp(const AccomplishmentManager* mgr) : mAccomplishmentMgr(mgr) {
 
@@ -347,3 +355,170 @@ DataNode AccomplishmentPanel::OnMsg(const ButtonDownMsg& msg){
             return DataNode(kDataUnhandled, 0);
     }
 }
+
+bool AccomplishmentPanel::CanNavigateList() const {
+    if(GetState() != kUp) return false;
+    if(unk4c - 1 <= 1U) return false;
+    Symbol selacc = SelectedAccomplishment();
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
+    if(!acc) return false;
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    MILO_ASSERT(pProfile, 0x520);
+    if(IsAccomplishmentSecret(acc, pProfile)) return false;
+    if(!TheAccomplishmentMgr->IsAvailableToEarn(selacc)) return false;
+    std::vector<Symbol> vec;
+    if(!acc->InqIncrementalSymbols(pProfile, vec)) return false;
+    return true;
+}
+
+bool AccomplishmentPanel::CanLaunchGoal() const {
+    if(unk4c - 1 <= 1U) return false;
+    Symbol selacc = SelectedAccomplishment();
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
+    if(!acc) return false;
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    MILO_ASSERT(pProfile, 0x547);
+    if(IsAccomplishmentSecret(acc, pProfile)) return false;
+    if(!TheAccomplishmentMgr->IsAvailableToEarn(selacc)) return false;
+    return acc->CanBeLaunched();
+}
+
+void AccomplishmentPanel::BuildSetList(){
+    Symbol selacc = SelectedAccomplishment();
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(selacc);
+    MILO_ASSERT(pAccomplishment, 0x561);
+    if(pAccomplishment->GetType() == kAccomplishmentTypeSetlist){
+        MetaPerformer* pPerformer = MetaPerformer::Current();
+        MILO_ASSERT(pPerformer, 0x567);
+        AccomplishmentSetlist* pSetListAccomplishment = dynamic_cast<AccomplishmentSetlist*>(pAccomplishment);
+        MILO_ASSERT(pSetListAccomplishment, 0x56A);
+        pPerformer->SetSetlist(pSetListAccomplishment->mSetlist);
+    }
+    else if(pAccomplishment->GetType() == kAccomplishmentTypeOneShot){
+        MetaPerformer* pPerformer = MetaPerformer::Current();
+        MILO_ASSERT(pPerformer, 0x572);
+        AccomplishmentOneShot* pOneShotAccomplishment = dynamic_cast<AccomplishmentOneShot*>(pAccomplishment);
+        MILO_ASSERT(pOneShotAccomplishment, 0x575);
+        Symbol symSong = pOneShotAccomplishment->mOneShotSong;
+        MILO_ASSERT(symSong != gNullStr, 0x578);
+        pPerformer->SetSong(symSong);
+    }
+    else FillSetlistWithAccomplishmentSongs(selacc, 0);
+}
+
+void AccomplishmentPanel::FillSetlistWithAccomplishmentSongs(Symbol s, int i){
+    MetaPerformer* pPerformer = MetaPerformer::Current();
+    MILO_ASSERT(pPerformer, 0x586);
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
+    MILO_ASSERT(pAccomplishment, 0x589);
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    MILO_ASSERT(pProfile, 0x58C);
+    AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+    bool accomplished = prog->IsAccomplished(s);
+    std::vector<Symbol> vSongs;
+    std::vector<Symbol> v40;
+    bool bGotSymbols = pAccomplishment->InqIncrementalSymbols(pProfile, v40);
+    MILO_ASSERT(bGotSymbols, 0x593);
+    int count = 0;
+    for(std::vector<Symbol>::iterator it = v40.begin(); it != v40.end(); ++it){
+        Symbol cur = *it;
+        if(accomplished || !pAccomplishment->IsSymbolEntryFulfilled(pProfile, cur)){
+            vSongs.push_back(cur);
+            count++;
+            if(i > 0 && i <= count) break;
+        }
+    }
+    MILO_ASSERT(!vSongs.empty(), 0x5AA);
+    MILO_ASSERT(std::find( vSongs.begin(), vSongs.end(), gNullStr ) == vSongs.end(), 0x5AB);
+    pPerformer->SetSongs(vSongs);
+}
+
+void AccomplishmentPanel::CreateAndSubmitMusicLibraryTask(){
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    MILO_ASSERT(pAccomplishment, 0x5B6);
+    // requires MusicLibraryTask
+}
+
+#pragma push
+#pragma pool_data off
+void AccomplishmentPanel::LaunchGoal(LocalBandUser* user){
+    MILO_ASSERT(CanLaunchGoal(), 0x5C8);
+    Symbol selectedacc = SelectedAccomplishment();
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(selectedacc);
+    MILO_ASSERT(pAccomplishment, 0x5CC);
+    TheCampaign->SetupLaunchedAccomplishmentInfo(selectedacc);
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    MILO_ASSERT(pProfile, 0x5E0);
+
+    if(selectedacc == acc_calibrate){
+        Handle(handle_launch_calibration_msg, true);
+    }
+    else if(selectedacc == acc_charactercreate){
+        if(pProfile->NumChars() >= 10){
+            Handle(handle_cant_launch_charactercreator_msg, true);
+        }
+        else {
+            static Message cMsg("handle_launch_charactercreator", 0);
+            cMsg[0] = user;
+            Handle(cMsg, true);
+        }
+    }
+    else if(selectedacc == acc_bandcreate || selectedacc == acc_bandlogo || selectedacc == acc_standins ||
+        selectedacc == acc_joinalabel || selectedacc == acc_startalabel){
+        static Message cMsg("handle_launch_customize", 0);
+        cMsg[0] = user;
+        Handle(cMsg, true);
+    }
+    else if(selectedacc == acc_multiplayersession){
+        CreateAndSubmitMusicLibraryTask();
+        TheCampaign->SetWasLaunchedIntoMusicLibrary(true);
+        Handle(handle_goto_musiclibrary_msg, true);
+    }
+    else if(selectedacc == acc_createsetlist || selectedacc == acc_HMXrecommends){
+        Handle(handle_launch_oneway_setlistbrowser_msg, true);
+    }
+    else if(selectedacc == acc_guitartutorial01){
+        Handle(handle_acc_guitartutorial01_msg, true);
+    }
+    else if(selectedacc == acc_guitartutorial02){
+        Handle(handle_acc_guitartutorial02_msg, true);
+    }
+    else if(selectedacc == acc_guitartutorial03){
+        Handle(handle_acc_guitartutorial03_msg, true);
+    }
+    else if(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional){
+        AccomplishmentTourConditional* pTourAccomplishment = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+        MILO_ASSERT(pTourAccomplishment, 0x627);
+        static Message cMsg("handle_launch_tour", 0);
+        cMsg[0] = pTourAccomplishment->GetAssociatedTour();
+        Handle(cMsg, true);
+    }
+    else if(pAccomplishment->GetType() == kAccomplishmentTypeLessonSongListConditional ||
+        pAccomplishment->GetType() == kAccomplishmentTypeLessonDiscSongConditional){
+        Symbol entry = TheAccomplishmentMgr->GetFirstUnfinishedAccomplishmentEntry(pProfile, selectedacc);
+        static Message cMsg("handle_goto_trainer_songlesson", 0, 0, 0, 0);
+        cMsg[0] = entry;
+        cMsg[1] = TheCampaign->GetRequiredTrackTypeForGoal(selectedacc);
+        cMsg[2] = pAccomplishment->GetRequiredDifficulty();
+        cMsg[3] = user;
+        Handle(cMsg, true);
+    }
+    else if(pAccomplishment->GetType() == kAccomplishmentTypeTrainerListConditional ||
+        pAccomplishment->GetType() == kAccomplishmentTypeTrainerCategoryConditional){
+        Symbol entry = TheAccomplishmentMgr->GetFirstUnfinishedAccomplishmentEntry(pProfile, selectedacc);
+        static Message cMsg("handle_goto_trainer_lesson", 0, 0);
+        cMsg[0] = entry;
+        cMsg[1] = user;
+        Handle(cMsg, true);
+    }
+    else if(pAccomplishment->HasSpecificSongsToLaunch()){
+        BuildSetList();
+        Handle(handle_goto_difficultyselect_msg, true);
+    }
+    else {
+        CreateAndSubmitMusicLibraryTask();
+        TheCampaign->SetWasLaunchedIntoMusicLibrary(true);
+        Handle(handle_goto_musiclibrary_msg, true);
+    }
+}
+#pragma pop

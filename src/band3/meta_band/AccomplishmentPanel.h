@@ -117,6 +117,10 @@ public:
     bool CanNavigateList() const;
     bool HasLeaderboard() const;
     bool CanLaunchSelectedEntry() const;
+    void BuildSetList();
+    void FillSetlistWithAccomplishmentSongs(Symbol, int);
+    void CreateAndSubmitMusicLibraryTask();
+    void LaunchGoal(LocalBandUser*);
 
     DataNode OnMsg(const UIComponentScrollMsg&);
     DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);
