@@ -1,9 +1,11 @@
 #pragma once
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
+#include "os/JoypadMsgs.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
+#include "ui/UIMessages.h"
 
 class AccomplishmentGroupCmp {
 public:
@@ -102,11 +104,31 @@ public:
     Symbol SelectedAccomplishmentCategory() const;
     Symbol SelectedAccomplishmentGroup() const;
     void LoadCampaignIcons();
+    void RefreshCategoryList();
+    void UpdateForGroupSelection();
+    void RefreshGoalList();
+    void UpdateForCategorySelection();
+    void UpdateForGoalSelection();
+    void UpdateDetailsListState();
+    void HandleSoundSelect(LocalUser*);
+    void HandleSoundBack(LocalUser*);
+    void HandleSoundToggle(LocalUser*);
+    bool CanLaunchGoal() const;
+    bool CanNavigateList() const;
+    bool HasLeaderboard() const;
+    bool CanLaunchSelectedEntry() const;
+
+    DataNode OnMsg(const UIComponentScrollMsg&);
+    DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);
+    DataNode Category_HandleButtonDownMsg(const ButtonDownMsg&);
+    DataNode Goal_HandleButtonDownMsg(const ButtonDownMsg&);
+    DataNode Details_HandleButtonDownMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const ButtonDownMsg&);
 
     int unk4c; // career state
-    Symbol unk50;
-    Symbol unk54;
-    Symbol unk58;
+    Symbol unk50; // 0x50
+    Symbol unk54; // 0x54
+    Symbol unk58; // 0x58
     AccomplishmentEntryProvider* mAccomplishmentEntryProvider; // 0x5c
     AccomplishmentProvider* mAccomplishmentProvider; // 0x60
     AccomplishmentCategoryProvider* mAccomplishmentCategoryProvider; // 0x64

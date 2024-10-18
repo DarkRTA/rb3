@@ -5,12 +5,17 @@
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
+#include "meta_band/AccomplishmentManager.h"
 #include "meta_band/AccomplishmentProgress.h"
+#include "meta_band/ProfileMgr.h"
 #include "meta_band/TexLoadPanel.h"
+#include "obj/Data.h"
 #include "os/Debug.h"
+#include "stl/_algo.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIList.h"
 #include "ui/UIPanel.h"
+#include "utl/Messages2.h"
 #include "utl/Symbol.h"
 
 AccomplishmentGroupCmp::AccomplishmentGroupCmp(const AccomplishmentManager* mgr) : mAccomplishmentMgr(mgr) {
@@ -143,4 +148,202 @@ void AccomplishmentPanel::Enter(){
         SetCareerState((CareerState)unk4c, false);
     }
     Refresh();
+}
+
+void AccomplishmentPanel::LoadCampaignIcons(){
+    std::vector<Symbol> vec;
+    const std::map<Symbol, Accomplishment*>& accs = TheAccomplishmentMgr->GetAccomplishments();
+    for(std::map<Symbol, Accomplishment*>::const_iterator it = accs.begin(); it != accs.end(); ++it){
+        Symbol key = it->first;
+        vec.push_back(key);
+    }
+    std::stable_sort(vec.begin(), vec.end(), GoalAlpaCmp());
+    for(std::vector<Symbol>::iterator it = vec.begin(); it != vec.end(); ++it){
+        Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(*it);
+        MILO_ASSERT(pAccomplishment, 0x3E0);
+        Symbol name = pAccomplishment->GetName();
+        const char* art = pAccomplishment->GetIconArt();
+        if(strlen(art) != 0) AddTex(art, name.Str(), true, false);
+    }
+    const char* sekrit = MakeString(Accomplishment::GetIconPath(), "acc_secret");
+    AddTex(sekrit, "acc_secret", true, false);
+}
+
+void AccomplishmentPanel::Unload(){
+    unk70 = 0;
+    TexLoadPanel::Unload();
+    RELEASE(mAccomplishmentProvider);
+    RELEASE(mAccomplishmentGridProvider);
+    RELEASE(mAccomplishmentEntryProvider);
+    RELEASE(mAccomplishmentGroupProvider);
+    RELEASE(mAccomplishmentCategoryProvider);
+}
+
+void AccomplishmentPanel::UpdateForGroupSelection(){
+    unk54 = SelectedAccomplishmentGroup();
+    RefreshCategoryList();
+}
+
+void AccomplishmentPanel::UpdateForCategorySelection(){
+    unk58 = SelectedAccomplishmentCategory();
+    RefreshGoalList();
+}
+
+void AccomplishmentPanel::UpdateForGoalSelection(){
+    unk50 = SelectedAccomplishment();
+    UpdateDetailsListState();
+}
+
+void AccomplishmentPanel::HandleSoundSelect(LocalUser* user){
+    static Message cMsg("handle_sound_select", 0);
+    cMsg[0] = user;
+    Handle(cMsg, true);
+}
+
+void AccomplishmentPanel::HandleSoundBack(LocalUser* user){
+    static Message cMsg("handle_sound_back", 0);
+    cMsg[0] = user;
+    Handle(cMsg, true);
+}
+
+void AccomplishmentPanel::HandleSoundToggle(LocalUser* user){
+    static Message cMsg("handle_sound_toggle", 0);
+    cMsg[0] = user;
+    Handle(cMsg, true);
+}
+
+DataNode AccomplishmentPanel::OnMsg(const UIComponentScrollMsg& msg){
+    if(GetState() == kUp){
+        if(strcmp(msg.GetUIComponent()->mName, "details.lst") == 0){
+            // lol
+        }
+        else if(strcmp(msg.GetUIComponent()->mName, "categories.lst") == 0){
+            UpdateForCategorySelection();
+        }
+        else if(strcmp(msg.GetUIComponent()->mName, "groups.lst") == 0){
+            UpdateForGroupSelection();
+        }
+        else UpdateForGoalSelection();
+    }
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode AccomplishmentPanel::Group_HandleButtonDownMsg(const ButtonDownMsg& msg){
+    switch(msg.GetAction()){
+        case kAction_Confirm:
+            SetCareerState((CareerState)2, true);
+            HandleSoundSelect(msg.GetUser());
+            return 0;
+        case kAction_Cancel:
+            static Message cMsg("handle_exit_career");
+            Handle(cMsg, true);
+            HandleSoundBack(msg.GetUser());
+            break;
+        case kAction_Option:
+            Handle(handle_goto_leaderboard_hub_msg, true);
+            HandleSoundSelect(msg.GetUser());
+            break;
+        default:
+            break;
+    }
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode AccomplishmentPanel::Category_HandleButtonDownMsg(const ButtonDownMsg& msg){
+    switch(msg.GetAction()){
+        case kAction_Confirm:
+            SetCareerState((CareerState)3, true);
+            HandleSoundSelect(msg.GetUser());
+            return 0;
+        case kAction_Cancel:
+            SetCareerState((CareerState)1, true);
+            HandleSoundBack(msg.GetUser());
+            break;
+        default:
+            break;
+    }
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode AccomplishmentPanel::Goal_HandleButtonDownMsg(const ButtonDownMsg& msg){
+    switch(msg.GetAction()){
+        case kAction_Confirm:
+            if(CanLaunchGoal()){
+                static Message cMsg("handle_launch_goal", 0);
+                cMsg[0] = msg.GetUser();
+                Handle(cMsg, true);
+                HandleSoundSelect(msg.GetUser());
+            }
+            return 0;
+        case kAction_Cancel:
+            SetCareerState((CareerState)2, true);
+            HandleSoundSelect(msg.GetUser());
+            break;
+        case kAction_WiiHomeMenu:
+            if(CanNavigateList()){
+                SetCareerState((CareerState)4, true);
+                HandleSoundSelect(msg.GetUser());
+            }
+            break;
+        case kAction_Option:
+            if(HasLeaderboard()){
+                Handle(handle_goto_leaderboard_msg, true);
+                HandleSoundSelect(msg.GetUser());
+            }
+            break;
+        default:
+            break;
+    }
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode AccomplishmentPanel::Details_HandleButtonDownMsg(const ButtonDownMsg& msg){
+    switch(msg.GetAction()){
+        case kAction_Confirm:
+            if(CanLaunchSelectedEntry()){
+                static Message cMsg("handle_launch_selected_entry", 0);
+                cMsg[0] = msg.GetUser();
+                Handle(cMsg, true);
+                HandleSoundSelect(msg.GetUser());
+            }
+            return 0;
+        case kAction_Cancel:
+            SetCareerState((CareerState)3, true);
+            HandleSoundBack(msg.GetUser());
+            break;
+        case kAction_WiiHomeMenu:
+            SetCareerState((CareerState)3, true);
+            HandleSoundBack(msg.GetUser());
+            break;
+        case kAction_Option:
+            if(HasLeaderboard()){
+                Handle(handle_goto_leaderboard_msg, true);
+                HandleSoundSelect(msg.GetUser());
+            }
+            break;
+        default:
+            break;
+    }
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode AccomplishmentPanel::OnMsg(const ButtonDownMsg& msg){
+    if(msg.GetAction() == kAction_ViewModify){
+        TheProfileMgr.SetPrimaryProfileByUser(msg.GetUser());
+        HandleSoundToggle(msg.GetUser());
+        return DataNode(kDataUnhandled, 0);
+    }
+    else switch(unk4c){
+        case 1:
+            return Group_HandleButtonDownMsg(msg);
+        case 2:
+            return Category_HandleButtonDownMsg(msg);
+        case 3:
+            return Goal_HandleButtonDownMsg(msg);
+        case 4:
+            return Details_HandleButtonDownMsg(msg);
+        default:
+            MILO_ASSERT(false, 0x502);
+            return DataNode(kDataUnhandled, 0);
+    }
 }

@@ -6,6 +6,7 @@
 
 BEGIN_MESSAGE(UIComponentScrollMsg, component_scroll, UIComponent*, LocalUser*);
     MESSAGE_ARRAY_CTOR(UIComponentScrollMsg)
+    UIComponent* GetUIComponent() const { return mData->Obj<UIComponent>(2); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(UIComponentSelectMsg, component_select, UIComponent*, LocalUser*);

@@ -68,7 +68,6 @@ public:
     Symbol GetAward() const;
     bool HasAward() const;
     Symbol GetMetaScoreValue() const;
-    const char* GetIconPath();
     bool IsUserOnValidScoreType(LocalBandUser*) const;
     bool IsUserOnValidController(LocalBandUser*) const;
     ScoreType GetRequiredScoreType() const;
@@ -81,6 +80,7 @@ public:
     Symbol GetUnitsToken(int) const;
     Symbol GetPassiveMsgChannel() const;
     int GetPassiveMsgPriority() const;
+    static const char* GetIconPath();
 
     Symbol mName;                                   // 0x04
     std::vector<Symbol> mSecretPrereqs;             // 0x08
