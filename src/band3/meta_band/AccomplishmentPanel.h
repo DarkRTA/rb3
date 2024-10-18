@@ -2,6 +2,7 @@
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/JoypadMsgs.h"
+#include "stl/_algo.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
@@ -54,31 +55,6 @@ public:
     int unk28; // 0x28
 };
 
-// int fn_801A01B4(int param_1,Symbol *param_2)
-
-// {
-//   int iVar1;
-//   Symbol *pSVar2;
-//   Symbol *pSVar3;
-//   int iVar4;
-//   Symbol aSStack_18 [8];
-  
-//   pSVar3 = *(Symbol **)(param_1 + 0x20);
-//   iVar4 = 0;
-//   while( true ) {
-//     pSVar2 = (Symbol *)stlpmtx_std::_Vector_impl<><>::end((_Vector_impl<><> *)(param_1 + 0x20));
-//     if (pSVar3 == pSVar2) {
-//       return 0;
-//     }
-//     Symbol::Symbol(aSStack_18,pSVar3);
-//     iVar1 = Symbol::operator_==(param_2,aSStack_18);
-//     if (iVar1 != 0) break;
-//     pSVar3 = pSVar3 + 4;
-//     iVar4 = iVar4 + 1;
-//   }
-//   return iVar4;
-// }
-
 class AccomplishmentGroupProvider : public UIListProvider, public Hmx::Object {
 public:
     AccomplishmentGroupProvider(){}
@@ -86,10 +62,28 @@ public:
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const;
     virtual Symbol DataSymbol(int) const;
-    virtual int NumData() const;
+    virtual int NumData() const { return mGroups.size(); }
+
+    int GroupIndex(Symbol s) const {
+        int idx = 0;
+        for(std::vector<Symbol>::const_iterator it = mGroups.begin(); it != mGroups.end(); ++it, idx++){
+            if(s == *it) return idx;
+        }
+        return 0;
+    }
+
+    void Update(){
+        mGroups.clear();
+        const std::map<Symbol, AccomplishmentGroup*>& groups = TheAccomplishmentMgr->GetGroups();
+        for(std::map<Symbol, AccomplishmentGroup*>::const_iterator it = groups.begin(); it != groups.end(); ++it){
+            Symbol key = it->first;
+            if(TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(key) > 0) mGroups.push_back(key);
+        }
+        std::stable_sort(mGroups.begin(), mGroups.end(), AccomplishmentGroupCmp(TheAccomplishmentMgr));
+    }
 
     int unk20; // 0x20
-    std::vector<Symbol> unk24; // 0x24
+    std::vector<Symbol> mGroups; // 0x24
 };
 
 class AccomplishmentCategoryProvider : public UIListProvider, public Hmx::Object {
@@ -99,9 +93,19 @@ public:
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const;
     virtual Symbol DataSymbol(int) const;
-    virtual int NumData() const;
+    virtual int NumData() const { return mCategories.size(); }
 
-    std::vector<Symbol> unk20; // 0x20
+    int CategoryIndex(Symbol s) const {
+        int idx = 0;
+        for(std::vector<Symbol>::const_iterator it = mCategories.begin(); it != mCategories.end(); ++it, idx++){
+            if(s == *it) return idx;
+        }
+        return 0;
+    }
+
+    void Update(Symbol);
+
+    std::vector<Symbol> mCategories; // 0x20
 };
 
 class AccomplishmentEntryProvider : public UIListProvider, public Hmx::Object {
@@ -159,6 +163,7 @@ public:
     void SelectGoal(Symbol);
     void SelectCategory(Symbol);
     void SelectGroup(Symbol);
+    void RefreshGroupList();
 
     DataNode OnMsg(const UIComponentScrollMsg&);
     DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);

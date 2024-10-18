@@ -550,3 +550,67 @@ inline Symbol AccomplishmentProvider::DataSymbol(int i_iData) const {
     MILO_ASSERT(i_iData < NumData(), 0x341);
     return mGoals[i_iData];
 }
+
+void AccomplishmentPanel::SelectCategory(Symbol s){
+    int idx = 0;
+    if(s != ""){
+        idx = mAccomplishmentCategoryProvider->CategoryIndex(s);
+        mCategory = mAccomplishmentCategoryProvider->DataSymbol(idx);
+    }
+    UIList* pGoalsList = mDir->Find<UIList>("categories.lst", true);
+    MILO_ASSERT(pGoalsList, 0x695);
+    pGoalsList->SetSelected(idx, -1);
+    UpdateForGoalSelection();
+}
+
+inline Symbol AccomplishmentCategoryProvider::DataSymbol(int i_iData) const {
+    MILO_ASSERT(i_iData < NumData(), 0x1C1);
+    return mCategories[i_iData];
+}
+
+void AccomplishmentPanel::SelectGroup(Symbol s){
+    int idx = 0;
+    if(s != ""){
+        idx = mAccomplishmentGroupProvider->GroupIndex(s);
+        mGroup = mAccomplishmentGroupProvider->DataSymbol(idx);
+    }
+    UIList* pGroupList = mDir->Find<UIList>("groups.lst", true);
+    MILO_ASSERT(pGroupList, 0x6A7);
+    pGroupList->SetSelected(idx, -1);
+    UpdateForGoalSelection();
+}
+
+inline Symbol AccomplishmentGroupProvider::DataSymbol(int i_iData) const {
+    MILO_ASSERT(i_iData < NumData(), 0x140);
+    return mGroups[i_iData];
+}
+
+void AccomplishmentPanel::RefreshGroupList(){
+    MILO_ASSERT(mAccomplishmentGroupProvider, 0x6B0);
+    mAccomplishmentGroupProvider->Update();
+    static Message cUpdateGroupProviderMsg("update_group_provider", 0);
+    cUpdateGroupProviderMsg[0] = mAccomplishmentGroupProvider;
+    Handle(cUpdateGroupProviderMsg, true);
+    SelectGroup(mGroup);
+}
+
+void AccomplishmentPanel::RefreshCategoryList(){
+    MILO_ASSERT(mAccomplishmentCategoryProvider, 0x6BC);
+    mAccomplishmentCategoryProvider->Update(SelectedAccomplishmentGroup());
+    static Message cUpdateCategoryProviderMsg("update_category_provider", 0);
+    cUpdateCategoryProviderMsg[0] = mAccomplishmentCategoryProvider;
+    Handle(cUpdateCategoryProviderMsg, true);
+    SelectCategory(mCategory);
+}
+
+inline void AccomplishmentCategoryProvider::Update(Symbol i_symGroup){
+    MILO_ASSERT(i_symGroup != gNullStr, 0x174);
+    mCategories.clear();
+    std::list<Symbol>* pCategories = TheAccomplishmentMgr->GetCategoryListForGroup(i_symGroup);
+    MILO_ASSERT(pCategories, 0x17A);
+    for(std::list<Symbol>::iterator it = pCategories->begin(); it != pCategories->end(); ++it){
+        Symbol key = *it;
+        if(TheAccomplishmentMgr->GetNumAccomplishmentsInCategory(key) > 0) mCategories.push_back(key);
+    }
+    std::stable_sort(mCategories.begin(), mCategories.end(), AccomplishmentCategoryCmp(TheAccomplishmentMgr));
+}
