@@ -39,10 +39,10 @@ public:
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const;
     virtual Symbol DataSymbol(int) const;
-    virtual int NumData() const;
+    virtual int NumData() const { return unk20.size(); }
     virtual UIComponent::State ComponentStateOverride(int, int, UIComponent::State s) const;
 
-    std::vector<int> unk20; // 0x20
+    std::vector<Symbol> unk20; // 0x20
     int unk28; // 0x28
 };
 
@@ -56,7 +56,7 @@ public:
     virtual int NumData() const;
 
     int unk20; // 0x20
-    std::vector<int> unk24; // 0x24
+    std::vector<Symbol> unk24; // 0x24
 };
 
 class AccomplishmentCategoryProvider : public UIListProvider, public Hmx::Object {
@@ -68,7 +68,7 @@ public:
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;
 
-    std::vector<int> unk20; // 0x20
+    std::vector<Symbol> unk20; // 0x20
 };
 
 class AccomplishmentEntryProvider : public UIListProvider, public Hmx::Object {
@@ -79,7 +79,7 @@ public:
     virtual int NumData() const;
 
     int unk20; // 0x20
-    std::vector<int> unk24; // 0x24
+    std::vector<Symbol> unk24; // 0x24
 };
 
 enum CareerState {
@@ -121,6 +121,11 @@ public:
     void FillSetlistWithAccomplishmentSongs(Symbol, int);
     void CreateAndSubmitMusicLibraryTask();
     void LaunchGoal(LocalBandUser*);
+    Symbol GetMusicLibraryBackScreen();
+    Symbol GetMusicLibraryNextScreen();
+    void SelectGoal(Symbol);
+    void SelectCategory(Symbol);
+    void SelectGroup(Symbol);
 
     DataNode OnMsg(const UIComponentScrollMsg&);
     DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);
@@ -130,9 +135,9 @@ public:
     DataNode OnMsg(const ButtonDownMsg&);
 
     int unk4c; // career state
-    Symbol unk50; // 0x50
-    Symbol unk54; // 0x54
-    Symbol unk58; // 0x58
+    Symbol mGoal; // 0x50
+    Symbol mGroup; // 0x54
+    Symbol mCategory; // 0x58
     AccomplishmentEntryProvider* mAccomplishmentEntryProvider; // 0x5c
     AccomplishmentProvider* mAccomplishmentProvider; // 0x60
     AccomplishmentCategoryProvider* mAccomplishmentCategoryProvider; // 0x64

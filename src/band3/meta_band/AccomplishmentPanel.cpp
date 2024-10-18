@@ -21,6 +21,7 @@
 #include "ui/UIGridProvider.h"
 #include "ui/UIList.h"
 #include "ui/UIPanel.h"
+#include "utl/Messages.h"
 #include "utl/Messages2.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols2.h"
@@ -94,7 +95,7 @@ bool IsAccomplished(Symbol s, const BandProfile* profile){
     else return false;
 }
 
-AccomplishmentPanel::AccomplishmentPanel() : unk4c(0), unk50(gNullStr), unk54(gNullStr), unk58(gNullStr), mAccomplishmentEntryProvider(0),
+AccomplishmentPanel::AccomplishmentPanel() : unk4c(0), mGoal(gNullStr), mGroup(gNullStr), mCategory(gNullStr), mAccomplishmentEntryProvider(0),
     mAccomplishmentProvider(0), mAccomplishmentCategoryProvider(0), mAccomplishmentGroupProvider(0), unk70(0) {
 
 }
@@ -147,9 +148,9 @@ void AccomplishmentPanel::Enter(){
     MILO_ASSERT(!mAccomplishmentEntryProvider, 0x3B1);
     mAccomplishmentEntryProvider = new AccomplishmentEntryProvider();
     if(unk4c == 0){
-        unk50 = gNullStr;
-        unk58 = gNullStr;
-        unk54 = gNullStr;
+        mGoal = gNullStr;
+        mCategory = gNullStr;
+        mGroup = gNullStr;
         SetCareerState((CareerState)1, false);
     }
     else {
@@ -188,17 +189,17 @@ void AccomplishmentPanel::Unload(){
 }
 
 void AccomplishmentPanel::UpdateForGroupSelection(){
-    unk54 = SelectedAccomplishmentGroup();
+    mGroup = SelectedAccomplishmentGroup();
     RefreshCategoryList();
 }
 
 void AccomplishmentPanel::UpdateForCategorySelection(){
-    unk58 = SelectedAccomplishmentCategory();
+    mCategory = SelectedAccomplishmentCategory();
     RefreshGoalList();
 }
 
 void AccomplishmentPanel::UpdateForGoalSelection(){
-    unk50 = SelectedAccomplishment();
+    mGoal = SelectedAccomplishment();
     UpdateDetailsListState();
 }
 
@@ -522,3 +523,38 @@ void AccomplishmentPanel::LaunchGoal(LocalBandUser* user){
     }
 }
 #pragma pop
+
+Symbol AccomplishmentPanel::GetMusicLibraryBackScreen(){
+    MILO_ASSERT(GetState() == kUp, 0x662);
+    return Handle(get_musiclibrary_backscreen_msg, true).Sym();
+}
+
+Symbol AccomplishmentPanel::GetMusicLibraryNextScreen(){
+    MILO_ASSERT(GetState() == kUp, 0x66E);
+    return Handle(get_musiclibrary_nextscreen_msg, true).Sym();
+}
+
+void AccomplishmentPanel::SelectGoal(Symbol s){
+    int i9 = 0;
+    if(s != ""){
+        i9 = 0;
+        std::vector<Symbol>& syms = mAccomplishmentProvider->unk20;
+        for(std::vector<Symbol>::iterator it = syms.begin(); it != syms.end(); ++it, i9++){
+            if(s == *it){
+                i9 = 0;
+                break;
+            }
+        }
+        mGoal = mAccomplishmentProvider->DataSymbol(i9);
+    }
+
+    UIList* pGoalsList = mDir->Find<UIList>("accomplishments.lst", true);
+    MILO_ASSERT(pGoalsList, 0x683);
+    mAccomplishmentGridProvider->SetListToData(pGoalsList, i9);
+    UpdateForGoalSelection();
+}
+
+inline Symbol AccomplishmentProvider::DataSymbol(int i_iData) const {
+    MILO_ASSERT(i_iData < NumData(), 0x341);
+    return unk20[i_iData];
+}
