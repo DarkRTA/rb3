@@ -16,6 +16,9 @@ public:
     Symbol GetCurrentGoal() const;
     Symbol GetCampaignLevelForMetaScore(int) const;
     int GetCampaignMetaScoreForProfile(BandProfile*) const;
+    void SetupLaunchedAccomplishmentInfo(Symbol);
+    BandProfile* GetProfile() const;
+    bool HasReachedCampaignLevel(LocalBandUser*, Symbol) const;
 };
 
 extern Campaign* TheCampaign;
