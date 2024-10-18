@@ -57,7 +57,20 @@ LessonMgr::LessonMgr(){
 }
 
 LessonMgr::~LessonMgr(){
+    for(std::map<Symbol, Lesson*>::iterator it = mLessonsMap.begin(); it != mLessonsMap.end(); ++it){
+        RELEASE(it->second);
+    }
+    mLessonsMap.clear();
+        
+    for(std::map<Symbol, std::vector<Symbol>*>::iterator it = mTrainerToCategoriesMap.begin(); it != mTrainerToCategoriesMap.end(); ++it){
+        RELEASE(it->second);
+    }
+    mTrainerToCategoriesMap.clear();
 
+    for(std::map<Symbol, std::vector<Symbol>*>::iterator it = mCategoryToLessonsMap.begin(); it != mCategoryToLessonsMap.end(); ++it){
+        RELEASE(it->second);
+    }
+    mCategoryToLessonsMap.clear();
 }
 
 void LessonMgr::Init(){ TheLessonMgr = new LessonMgr(); }
