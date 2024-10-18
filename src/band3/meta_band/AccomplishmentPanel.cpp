@@ -535,26 +535,18 @@ Symbol AccomplishmentPanel::GetMusicLibraryNextScreen(){
 }
 
 void AccomplishmentPanel::SelectGoal(Symbol s){
-    int i9 = 0;
+    int idx = 0;
     if(s != ""){
-        i9 = 0;
-        std::vector<Symbol>& syms = mAccomplishmentProvider->unk20;
-        for(std::vector<Symbol>::iterator it = syms.begin(); it != syms.end(); ++it, i9++){
-            if(s == *it){
-                i9 = 0;
-                break;
-            }
-        }
-        mGoal = mAccomplishmentProvider->DataSymbol(i9);
+        idx = mAccomplishmentProvider->GoalIndex(s);
+        mGoal = mAccomplishmentProvider->DataSymbol(idx);
     }
-
     UIList* pGoalsList = mDir->Find<UIList>("accomplishments.lst", true);
     MILO_ASSERT(pGoalsList, 0x683);
-    mAccomplishmentGridProvider->SetListToData(pGoalsList, i9);
+    mAccomplishmentGridProvider->SetListToData(pGoalsList, idx);
     UpdateForGoalSelection();
 }
 
 inline Symbol AccomplishmentProvider::DataSymbol(int i_iData) const {
     MILO_ASSERT(i_iData < NumData(), 0x341);
-    return unk20[i_iData];
+    return mGoals[i_iData];
 }

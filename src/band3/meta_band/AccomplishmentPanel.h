@@ -39,12 +39,45 @@ public:
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const;
     virtual Symbol DataSymbol(int) const;
-    virtual int NumData() const { return unk20.size(); }
+    virtual int NumData() const { return mGoals.size(); }
     virtual UIComponent::State ComponentStateOverride(int, int, UIComponent::State s) const;
 
-    std::vector<Symbol> unk20; // 0x20
+    int GoalIndex(Symbol s) const {
+        int idx = 0;
+        for(std::vector<Symbol>::const_iterator it = mGoals.begin(); it != mGoals.end(); ++it, idx++){
+            if(s == *it) return idx;
+        }
+        return 0;
+    }
+
+    std::vector<Symbol> mGoals; // 0x20
     int unk28; // 0x28
 };
+
+// int fn_801A01B4(int param_1,Symbol *param_2)
+
+// {
+//   int iVar1;
+//   Symbol *pSVar2;
+//   Symbol *pSVar3;
+//   int iVar4;
+//   Symbol aSStack_18 [8];
+  
+//   pSVar3 = *(Symbol **)(param_1 + 0x20);
+//   iVar4 = 0;
+//   while( true ) {
+//     pSVar2 = (Symbol *)stlpmtx_std::_Vector_impl<><>::end((_Vector_impl<><> *)(param_1 + 0x20));
+//     if (pSVar3 == pSVar2) {
+//       return 0;
+//     }
+//     Symbol::Symbol(aSStack_18,pSVar3);
+//     iVar1 = Symbol::operator_==(param_2,aSStack_18);
+//     if (iVar1 != 0) break;
+//     pSVar3 = pSVar3 + 4;
+//     iVar4 = iVar4 + 1;
+//   }
+//   return iVar4;
+// }
 
 class AccomplishmentGroupProvider : public UIListProvider, public Hmx::Object {
 public:
