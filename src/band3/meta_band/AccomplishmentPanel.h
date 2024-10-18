@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/JoypadMsgs.h"
@@ -49,6 +50,18 @@ public:
             if(s == *it) return idx;
         }
         return 0;
+    }
+
+    void Update(Symbol s){
+        mGoals.clear();
+        std::set<Symbol>* symset = TheAccomplishmentMgr->GetAccomplishmentSetForCategory(s);
+        if(symset){
+            for(std::set<Symbol>::iterator it = symset->begin(); it != symset->end(); ++it){
+                Symbol key = *it;
+                if(TheAccomplishmentMgr->IsAvailableToView(key)) mGoals.push_back(key);
+            }
+            std::stable_sort(mGoals.begin(), mGoals.end(), AccomplishmentCmp(TheAccomplishmentMgr));
+        }
     }
 
     std::vector<Symbol> mGoals; // 0x20
@@ -113,9 +126,11 @@ public:
     AccomplishmentEntryProvider(){}
     virtual ~AccomplishmentEntryProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual int NumData() const;
+    virtual int NumData() const { return unk24.size(); }
 
-    int unk20; // 0x20
+    void Update(Accomplishment*);
+
+    Accomplishment* m_pAccomplishment; // 0x20
     std::vector<Symbol> unk24; // 0x24
 };
 
@@ -164,6 +179,29 @@ public:
     void SelectCategory(Symbol);
     void SelectGroup(Symbol);
     void RefreshGroupList();
+    void RefreshHeader();
+    int GetTotalAccomplishments();
+    int GetNumCompleted();
+    bool IsUserOnCorrectInstrument();
+    bool HasCorrectPlayerCount();
+    Symbol GetSelectedDetailsEntry();
+    Symbol GetAccomplishmentName();
+    bool IsSecret() const;
+    Symbol GetAccomplishmentDescription();
+    Symbol GetAccomplishmentFanValueToken();
+    Symbol GetAccomplishmentFlavor();
+    bool HasAward() const;
+    bool ShouldShowProgress() const;
+    bool HasProgress() const;
+    bool GetCurrentShouldShowDenominator() const;
+    Symbol GetCurrentUnits(int) const;
+    int GetCurrentValue() const;
+    int GetMaxValue() const;
+    bool ShouldShowBest() const;
+    void LaunchSelectedEntry(LocalBandUser*);
+    void BuildSelectedEntrySetList();
+    void ClearCareerState();
+    CareerState GetCareerState() const;
 
     DataNode OnMsg(const UIComponentScrollMsg&);
     DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);

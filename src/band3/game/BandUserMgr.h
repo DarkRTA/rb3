@@ -40,6 +40,7 @@ public:
     void GetLocalParticipants(std::vector<LocalBandUser*>&) const;
     void GetLocalBandUsersInSession(std::vector<LocalBandUser*>&) const;
     void GetParticipatingBandUsers(std::vector<BandUser*>&) const;
+    void GetParticipatingBandUsersInSession(std::vector<BandUser*>&) const;
 
     static BandUser* GetBandUser(User*);
     static LocalBandUser* GetLocalBandUser(LocalUser*);

@@ -1,8 +1,11 @@
 #include "meta_band/AccomplishmentPanel.h"
 #include "Accomplishment.h"
+#include "AccomplishmentPanel.h"
 #include "BandProfile.h"
 #include "Campaign.h"
 #include "game/BandUser.h"
+#include "game/BandUserMgr.h"
+#include "game/Defines.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
@@ -23,6 +26,8 @@
 #include "ui/UIPanel.h"
 #include "utl/Messages.h"
 #include "utl/Messages2.h"
+#include "utl/Messages3.h"
+#include "utl/Messages4.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols2.h"
 #include <vector>
@@ -613,4 +618,388 @@ inline void AccomplishmentCategoryProvider::Update(Symbol i_symGroup){
         if(TheAccomplishmentMgr->GetNumAccomplishmentsInCategory(key) > 0) mCategories.push_back(key);
     }
     std::stable_sort(mCategories.begin(), mCategories.end(), AccomplishmentCategoryCmp(TheAccomplishmentMgr));
+}
+
+void AccomplishmentPanel::RefreshGoalList(){
+    MILO_ASSERT(mAccomplishmentProvider, 0x6C8);
+    mAccomplishmentProvider->Update(SelectedAccomplishmentCategory());
+    UIList* uilist = mDir->Find<UIList>("accomplishments.lst", true);
+    uilist->Refresh(true);
+    uilist->SetProvider(mAccomplishmentGridProvider);
+    SelectGoal(mGoal);
+}
+
+void AccomplishmentPanel::RefreshHeader(){
+    Handle(refresh_header_msg, true);
+}
+
+void AccomplishmentPanel::Refresh(){
+    RefreshGroupList();
+    RefreshCategoryList();
+    RefreshGoalList();
+    Handle(refresh_msg, true);
+}
+
+int AccomplishmentPanel::GetTotalAccomplishments(){
+    MILO_ASSERT(mAccomplishmentProvider, 0x6E7);
+    return mAccomplishmentProvider->NumData();
+}
+
+int AccomplishmentPanel::GetNumCompleted(){
+    MILO_ASSERT(mAccomplishmentProvider, 0x6EF);
+    std::vector<Symbol>& goals = mAccomplishmentProvider->mGoals;
+    int count = 0;
+    BandProfile* profile = TheCampaign->GetProfile();
+    for(std::vector<Symbol>::iterator it = goals.begin(); it != goals.end(); ++it){
+        if(IsAccomplished(*it, profile)) count++;
+    }
+    return count;
+}
+
+bool AccomplishmentPanel::IsUserOnCorrectInstrument(){
+    LocalBandUser* pUser = TheCampaign->GetUser();
+    MILO_ASSERT(pUser, 0x6F8);
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    MILO_ASSERT(pAccomplishment, 0x6FC);
+    if(!pAccomplishment->IsUserOnValidController(pUser)) return false;
+    else return true;
+}
+
+bool AccomplishmentPanel::HasCorrectPlayerCount(){
+    LocalBandUser* pUser = TheCampaign->GetUser();
+    MILO_ASSERT(pUser, 0x72A);
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    MILO_ASSERT(pAccomplishment, 0x72E);
+    MILO_ASSERT(TheBandUserMgr, 0x730);
+    int num = TheBandUserMgr->GetNumParticipants();
+    int min = pAccomplishment->GetRequiredMinPlayers();
+    int max = pAccomplishment->GetRequiredMaxPlayers();
+    if(min != -1 && num < min) return false;
+    if(max != -1 && num > max) return false;
+    if(pAccomplishment->GetRequiresUnisonAbility()){
+        std::vector<BandUser*> users;
+        TheBandUserMgr->GetParticipatingBandUsers(users);
+        int newnum = TheBandUserMgr->GetNumParticipants();
+        for(std::vector<BandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            BandUser* pUser = *it;
+            MILO_ASSERT(pUser, 0x751);
+            if(pUser->GetControllerType() == kControllerVocals){
+                newnum--;
+                break;
+            }
+        }
+        if(newnum < 2) return false;
+    }
+    if(pAccomplishment->GetRequiresBREAbility()){
+        std::vector<BandUser*> users;
+        TheBandUserMgr->GetParticipatingBandUsersInSession(users);
+        int newnum = TheBandUserMgr->GetNumParticipants();
+        for(std::vector<BandUser*>::iterator it = users.begin(); it != users.end(); ++it){
+            BandUser* pUser = *it;
+            MILO_ASSERT(pUser, 0x770);
+            if(pUser->GetControllerType() == kControllerVocals){
+                newnum--;
+                break;
+            }
+        }
+        if(newnum < 1) return false;
+    }
+    return true;
+}
+
+bool AccomplishmentPanel::HasLeaderboard() const {
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    if(acc) return acc->IsTrackedInLeaderboard();
+    else return false;
+}
+
+Symbol AccomplishmentPanel::GetSelectedDetailsEntry(){
+    if(GetState() != kUp) return "";
+    else {
+        DataNode handled = Handle(get_selected_details_entry_index_msg, true);
+        int i = handled.Int();
+        if(mAccomplishmentEntryProvider->NumData() > 0) return mAccomplishmentEntryProvider->DataSymbol(i);
+        else return "";
+    }
+}
+
+Symbol AccomplishmentPanel::GetAccomplishmentName(){
+    if(IsSecret()) return acc_secret;
+    else return SelectedAccomplishment();
+}
+
+Symbol AccomplishmentPanel::GetAccomplishmentDescription(){
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    if(acc){
+        if(IsSecret()) return acc->GetSecretDescription();
+        else return acc->GetDescription();
+    }
+    else return gNullStr;
+}
+
+Symbol AccomplishmentPanel::GetAccomplishmentFanValueToken(){
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    if(acc) return acc->GetMetaScoreValue();
+    else return gNullStr;
+}
+
+Symbol AccomplishmentPanel::GetAccomplishmentFlavor(){
+    if(IsSecret()) return gNullStr;
+    else {
+        Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+        if(acc) return acc->GetFlavorText();
+        else return gNullStr;
+    }
+}
+
+void AccomplishmentPanel::UpdateDetailsListState(){
+    Symbol selectedacc = SelectedAccomplishment();
+    if(selectedacc == gNullStr || IsSecret()){
+        Handle(hide_list_msg, true);
+    }
+    else {
+        Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selectedacc);
+        if(acc){
+            mAccomplishmentEntryProvider->Update(acc);
+            if(mAccomplishmentEntryProvider->NumData() > 0){
+                Handle(show_list_msg, true);
+            }
+            else Handle(hide_list_msg, true);
+            UIList* pDetailsList = mDir->Find<UIList>("details.lst", true);
+            MILO_ASSERT(pDetailsList, 0x803);
+            pDetailsList->SetProvider(mAccomplishmentEntryProvider);
+            if(mAccomplishmentEntryProvider->NumData() > 0) pDetailsList->SetSelected(0, -1);
+        }
+    }
+}
+
+inline void AccomplishmentEntryProvider::Update(Accomplishment* acc){
+    m_pAccomplishment = acc;
+    MILO_ASSERT(m_pAccomplishment, 0x1F5);
+    unk24.clear();
+    BandProfile* profile = TheCampaign->GetProfile();
+    m_pAccomplishment->InqIncrementalSymbols(profile, unk24);
+}
+
+bool AccomplishmentPanel::HasAward() const {
+    if(IsSecret()) return false;
+    else {
+        Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+        if(acc) return acc->HasAward();
+        else return false;
+    }
+}
+
+bool AccomplishmentPanel::ShouldShowProgress() const {
+    if(!HasProgress()) return false;
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    MILO_ASSERT(pProfile, 0x82A);
+    Symbol selacc = SelectedAccomplishment();
+    AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+    if(prog->IsAccomplished(selacc)) return false;
+    else return true;
+}
+
+bool AccomplishmentPanel::HasProgress() const {
+    if(IsSecret()) return false;
+    else {
+        Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+        if(!acc) return false;
+        else {
+            if(acc->HideProgress()) return false;
+            else {
+                int i10 = 0;
+                int i14 = 0;
+                BandProfile* pProfile = TheCampaign->GetProfile();
+                MILO_ASSERT(pProfile, 0x84E);
+                return acc->InqProgressValues(pProfile, i10, i14);
+            }
+        }
+    }
+}
+
+bool AccomplishmentPanel::GetCurrentShouldShowDenominator() const {
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    bool ret = false;
+    if(acc) ret = acc->GetShouldShowDenominator();
+    return ret;
+}
+
+Symbol AccomplishmentPanel::GetCurrentUnits(int i) const {
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    Symbol ret = gNullStr;
+    if(acc) ret = acc->GetUnitsToken(i);
+    return ret;
+}
+
+int AccomplishmentPanel::GetCurrentValue() const {
+    if(IsSecret()) return 0;
+    else {
+        BandProfile* pProfile = TheCampaign->GetProfile();
+        MILO_ASSERT(pProfile, 0x879);
+        Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+        int i10 = 0;
+        if(acc){
+            int i14 = 0;
+            acc->InqProgressValues(pProfile, i10, i14);
+        }
+        return i10;
+    }
+}
+
+int AccomplishmentPanel::GetMaxValue() const {
+    if(IsSecret()) return 0;
+    else {
+        BandProfile* pProfile = TheCampaign->GetProfile();
+        MILO_ASSERT(pProfile, 0x890);
+        Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+        int i10 = 0;
+        int i14 = 0;
+        if(acc){
+            acc->InqProgressValues(pProfile, i10, i14);
+        }
+        return i14;
+    }
+}
+
+bool AccomplishmentPanel::ShouldShowBest() const {
+    if(!HasProgress()) return false;
+    else {
+        BandProfile* pProfile = TheCampaign->GetProfile();
+        MILO_ASSERT(pProfile, 0x8A7);
+        Symbol selacc = SelectedAccomplishment();
+        AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+        if(!prog->IsAccomplished(selacc)){
+            return false;
+        }
+        else {
+            Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
+            return !acc ? false : acc->ShowBestAfterEarn();
+        }
+    }
+}
+
+bool AccomplishmentPanel::IsSecret() const {
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    if(acc){
+        BandProfile* pProfile = TheCampaign->GetProfile();
+        MILO_ASSERT(pProfile, 0x8C8);
+        return IsAccomplishmentSecret(acc, pProfile);
+    }
+    else return false;
+}
+
+bool AccomplishmentPanel::CanLaunchSelectedEntry() const {
+    Symbol selacc = SelectedAccomplishment();
+    Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
+    if(!acc) return false;
+    if(!TheAccomplishmentMgr->IsAvailableToEarn(selacc)) return false;
+    return acc->CanBeLaunched();
+}
+
+#pragma push
+#pragma pool_data off
+void AccomplishmentPanel::LaunchSelectedEntry(LocalBandUser* user){
+    Symbol selacc = SelectedAccomplishment();
+    TheCampaign->SetupLaunchedAccomplishmentInfo(selacc);
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    MILO_ASSERT(pProfile, 0x91C);
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(selacc);
+    MILO_ASSERT(pAccomplishment, 0x91F);
+    if(pAccomplishment->GetType() == kAccomplishmentTypeLessonSongListConditional || pAccomplishment->GetType() == kAccomplishmentTypeLessonDiscSongConditional){
+        Symbol entry = GetSelectedDetailsEntry();
+        static Message cMsg("handle_goto_trainer_songlesson", 0, 0, 0, 0);
+        cMsg[0] = entry;
+        cMsg[1] = TheCampaign->GetRequiredTrackTypeForGoal(selacc);
+        cMsg[2] = pAccomplishment->GetRequiredDifficulty();
+        cMsg[3] = user;
+        Handle(cMsg, true);
+    }
+    else if(pAccomplishment->GetType() == kAccomplishmentTypeTrainerListConditional){
+        Symbol entry = GetSelectedDetailsEntry();
+        static Message cMsg("handle_goto_trainer_lesson", 0, 0);
+        cMsg[0] = entry;
+        cMsg[1] = user;
+        Handle(cMsg, true);
+    }
+    else if(pAccomplishment->GetType() == kAccomplishmentTypeTrainerCategoryConditional){
+        Symbol entry = TheAccomplishmentMgr->GetFirstUnfinishedAccomplishmentEntry(pProfile, selacc);
+        static Message cMsg("handle_goto_trainer_lesson", 0, 0);
+        cMsg[0] = entry;
+        cMsg[1] = user;
+        Handle(cMsg, true);
+    }
+    else {
+        BuildSelectedEntrySetList();
+        Handle(handle_goto_difficultyselect_msg, true);
+    }
+}
+#pragma pop
+
+void AccomplishmentPanel::ClearCareerState(){
+    SetCareerState((CareerState)0, true);
+}
+
+CareerState AccomplishmentPanel::GetCareerState() const { return (CareerState)unk4c; }
+
+void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
+    int oldstate = unk4c;
+    unk4c = state;
+    switch(unk4c){
+        case 0:
+            break;
+        case 1:
+            if(b){
+                if(oldstate == 2){
+                    Handle(handle_state_category_to_group_msg, true);
+                }
+                else MILO_ASSERT(false, 0x97A);
+            }
+            else {
+                Handle(handle_snap_state_group_msg, true);
+            }
+            break;
+        case 2:
+            if(b){
+                if(oldstate == 1){
+                    Handle(handle_state_group_to_category_msg, true);
+                }
+                else if(oldstate == 3){
+                    Handle(handle_state_goal_to_category_msg, true);
+                }
+                else MILO_ASSERT(false, 0x991);
+            }
+            else {
+                Handle(handle_snap_state_category_msg, true);
+            }
+            break;
+        case 3:
+            if(b){
+                if(oldstate == 4){
+                    Handle(handle_state_details_to_goal_msg, true);
+                }
+                else if(oldstate == 2){
+                    Handle(handle_state_category_to_goal_msg, true);
+                }
+                else MILO_ASSERT(false, 0x9A8);
+            }
+            else {
+                Handle(handle_snap_state_goal_msg, true);
+            }
+            break;
+        case 4:
+            if(b){
+                if(oldstate == 3){
+                    Handle(handle_state_goal_to_details_msg, true);
+                }
+                else MILO_ASSERT(false, 0x9BA);
+            }
+            else {
+                Handle(handle_snap_state_details_msg, true);
+            }
+            break;
+        default:
+            RefreshHeader();
+            break;
+    }
 }
