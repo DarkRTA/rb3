@@ -5,7 +5,7 @@
 class FaceTypeProvider : public UIListProvider, public Hmx::Object {
 public:
     FaceTypeProvider();
-    virtual ~FaceTypeProvider();
+    virtual ~FaceTypeProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;

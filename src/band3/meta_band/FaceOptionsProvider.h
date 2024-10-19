@@ -7,7 +7,7 @@
 class FaceOptionsProvider : public UIListProvider, public Hmx::Object {
 public:
     FaceOptionsProvider(const std::vector<DynamicTex*>& vec) : unk20(vec), unk24(gNullStr), unk30(0) {}
-    virtual ~FaceOptionsProvider();
+    virtual ~FaceOptionsProvider(){}
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual int NumData() const;
 

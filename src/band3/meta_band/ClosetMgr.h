@@ -8,6 +8,11 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~ClosetMgr();
 
+    void Poll();
+    void PreviewCharacter(bool, bool);
+    bool IsCurrentCharacterFinalized();
+    void UpdateCurrentCharacter();
+
     static ClosetMgr* GetClosetMgr();
 
     LocalBandUser* mUser; // 0x1c

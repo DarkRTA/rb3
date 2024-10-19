@@ -5,7 +5,7 @@
 class FaceHairProvider : public UIListProvider, public Hmx::Object {
 public:
     FaceHairProvider();
-    virtual ~FaceHairProvider();
+    virtual ~FaceHairProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;
