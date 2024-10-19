@@ -319,7 +319,7 @@
             "band3/tour/TourGameModifier.cpp": "Matching",
             "band3/tour/TourGameRules.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "band3/tour/TourPerformer.cpp": "NonMatching",
-            "band3/tour/TourPerformerLocal.cpp": "MISSING",
+            "band3/tour/TourPerformerLocal.cpp": "NonMatching",
             "band3/tour/TourPerformerRemote.cpp": "MISSING",
             "band3/tour/TourProgress.cpp": "Matching",
             "band3/tour/TourProperty.cpp": "Matching",
