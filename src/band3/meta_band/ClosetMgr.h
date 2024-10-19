@@ -12,6 +12,7 @@ public:
     void PreviewCharacter(bool, bool);
     bool IsCurrentCharacterFinalized();
     void UpdateCurrentCharacter();
+    void SetCurrentOutfitPiece(Symbol);
 
     static ClosetMgr* GetClosetMgr();
 

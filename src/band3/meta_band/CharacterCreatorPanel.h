@@ -2,6 +2,7 @@
 #include "FaceHairProvider.h"
 #include "FaceOptionsProvider.h"
 #include "OutfitProvider.h"
+#include "bandobj/BandCharDesc.h"
 #include "game/BandUser.h"
 #include "meta_band/ClosetMgr.h"
 #include "meta_band/EyebrowsProvider.h"
@@ -42,12 +43,17 @@ public:
     void UpdateNameLabel();
     const char* GetName();
     const char* GetDefaultVKName();
+    void SetOutfit(Symbol);
+    void SetEyeColor(int);
+    int GetEyeColor();
+    void SetGlasses(Symbol);
+    Symbol GetGlasses();
 
     CharCreatorState mCharCreatorState; // 0x4C
     std::map<int, UIComponent*> unk50; // 0x50
     ClosetMgr* mClosetMgr; // 0x68
     TourCharLocal* mCharacter; // 0x6c
-    int unk70;
+    BandCharDesc* mPreviewDesc; // preview desc?
     FaceTypeProvider* mFaceTypeProvider; // 0x74
     OutfitProvider* mOutfitProvider; // 0x78
     FaceHairProvider* mFaceHairProvider; // 0x7c
@@ -55,8 +61,8 @@ public:
     UIGridProvider* mFaceOptionsGridProvider; // 0x84
     EyebrowsProvider* mEyebrowsProvider; // 0x88
     UIGridProvider* mEyebrowsGridProvider; // 0x8c
-    Symbol mGender; // gender
-    Symbol mOutfit; // outfit
+    Symbol mGender; // 0x90
+    Symbol mOutfit; // 0x94
     bool unk98;
     bool unk99;
 };

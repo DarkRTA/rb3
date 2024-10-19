@@ -2,6 +2,7 @@
 #include "FaceHairProvider.h"
 #include "FaceOptionsProvider.h"
 #include "OutfitProvider.h"
+#include "PrefabMgr.h"
 #include "bandobj/BandHeadShaper.h"
 #include "game/BandUser.h"
 #include "meta_band/AssetMgr.h"
@@ -20,8 +21,9 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols4.h"
 
-CharacterCreatorPanel::CharacterCreatorPanel() : mCharCreatorState(kCharCreatorState_Invalid), mClosetMgr(0), mCharacter(0), unk70(0), mFaceTypeProvider(0), mOutfitProvider(0), mFaceHairProvider(0),
+CharacterCreatorPanel::CharacterCreatorPanel() : mCharCreatorState(kCharCreatorState_Invalid), mClosetMgr(0), mCharacter(0), mPreviewDesc(0), mFaceTypeProvider(0), mOutfitProvider(0), mFaceHairProvider(0),
     mFaceOptionsProvider(0), mFaceOptionsGridProvider(0), mEyebrowsProvider(0), mEyebrowsGridProvider(0), mGender(gNullStr), mOutfit(gNullStr), unk98(0), unk99(0) {
 
 }
@@ -155,4 +157,49 @@ const char* CharacterCreatorPanel::GetDefaultVKName(){
 void CharacterCreatorPanel::SetGender(Symbol gender){
     MILO_ASSERT(gender == male || gender == female, 0x195);
     mGender = gender;
+}
+
+void CharacterCreatorPanel::HandleGenderChanged(){
+    unk98 = true;
+    mFaceTypeProvider->Update(mGender);
+    mEyebrowsProvider->Update(mGender);
+    mFaceOptionsProvider->mGender = mGender;
+    PrefabMgr* pPrefabMgr = PrefabMgr::GetPrefabMgr();
+    MILO_ASSERT(pPrefabMgr, 0x1A3);
+    // more...
+}
+
+void CharacterCreatorPanel::SetOutfit(Symbol outfit){
+    mOutfit = outfit;
+    PrefabMgr* pPrefabMgr = PrefabMgr::GetPrefabMgr();
+    MILO_ASSERT(pPrefabMgr, 0x1C0);
+    // more...
+}
+
+void CharacterCreatorPanel::SetEyeColor(int color){
+    if(mPreviewDesc){
+        mPreviewDesc->mHead.mEyeColor = color;
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+int CharacterCreatorPanel::GetEyeColor(){
+    if(mPreviewDesc) return mPreviewDesc->mHead.mEyeColor;
+    else return 0;
+}
+
+void CharacterCreatorPanel::SetGlasses(Symbol s){
+    if(mPreviewDesc){
+        if(s == none_glasses) mPreviewDesc->mOutfit.mGlasses.mName = s;
+        else mPreviewDesc->mOutfit.mGlasses.mName = gNullStr;
+        mClosetMgr->SetCurrentOutfitPiece(glasses);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+Symbol CharacterCreatorPanel::GetGlasses(){
+    if(!mPreviewDesc) return gNullStr;
+    Symbol glassesname = mPreviewDesc->mOutfit.mGlasses.mName;
+    if(glassesname != gNullStr) return glassesname;
+    else return none_glasses;
 }
