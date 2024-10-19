@@ -32,6 +32,12 @@ public:
     virtual RndTex* GetTexAtPatchIndex(int, bool) const;
     virtual ~PrefabChar();
 
+    Symbol GetPrefabName() const;
+    void LoadPortrait();
+    void PollLoadingPortrait();
+    bool IsPortraitLoaded();
+    void UnloadPortrait();
+
     BandCharDesc* mBandCharDesc; // 0x18
     RndTex* mPortraitTex; // 0x1c
     FileLoader* unk20; // 0x20

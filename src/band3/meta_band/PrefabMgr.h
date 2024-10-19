@@ -2,6 +2,7 @@
 #include "bandobj/BandCharDesc.h"
 #include "game/BandUserMgr.h"
 #include "meta_band/CharData.h"
+#include "meta_band/OvershellSlot.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 
@@ -23,6 +24,18 @@ public:
     void Poll();
     void PollPortraits();
     void AssignPrefabsToSlots();
+    void GetPrefabs(std::vector<PrefabChar*>&) const;
+    void GetAvailablePrefabs(std::vector<PrefabChar*>&) const;
+    PrefabChar* GetPrefab(Symbol);
+    void EnableDebugPrefabs();
+    PrefabChar* GetDefaultPrefab(int) const;
+    CharCreatorPrefab* GetCharCreatorPrefab(Symbol, Symbol) const;
+    CharCreatorPrefab* GetRandomCharCreatorPrefab(Symbol) const;
+    CharCreatorPrefab* GetCharCreatorPrefabFromOutfit(const std::vector<CharCreatorPrefab*>&, Symbol) const;
+    void GetFaceTypes(std::vector<Symbol>&, Symbol) const;
+    BandCharDesc* GetFaceType(Symbol);
+    void LoadPortraits(OvershellSlot*);
+    void UnloadPortraits(OvershellSlot*);
 
     static PrefabMgr* GetPrefabMgr();
     static bool PrefabIsCustomizable();
@@ -37,10 +50,10 @@ public:
     std::vector<CharCreatorPrefab*> mCharCreatorMalePrefabs; // 0x24
     std::vector<CharCreatorPrefab*> mCharCreatorFemalePrefabs; // 0x2c
     std::vector<BandCharDesc*> unk34; // 0x34
-    std::vector<int> unk3c; // 0x3c
+    std::vector<PrefabChar*> mDefaultPrefabs; // 0x3c
     std::set<Symbol> unk44; // 0x64
     BandUserMgr* unk5c; // 0x5c
     bool unk60; // 0x60
-    std::vector<int> unk64; // 0x64
-    std::vector<int> unk6c; // 0x6c
+    std::vector<PrefabChar*> unk64; // 0x64
+    std::vector<OvershellSlot*> unk6c; // 0x6c
 };

@@ -1,12 +1,21 @@
 #include "meta_band/PrefabMgr.h"
+#include "MSL_Common/extras.h"
 #include "bandobj/BandCharDesc.h"
+#include "decomp.h"
 #include "game/BandUserMgr.h"
+#include "math/Rand.h"
 #include "meta_band/CharData.h"
+#include "meta_band/OvershellSlot.h"
 #include "obj/DataFunc.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
+#include "stl/_algo.h"
 #include "utl/STLHelpers.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 
 namespace {
     bool gPrefabIsCustomizable;
@@ -48,7 +57,7 @@ void PrefabMgr::Init(BandUserMgr* mgr){
     DataRegisterFunc("prefab_is_customizable", OnPrefabIsCustomizable);
     DataRegisterFunc("prefab_toggle_customizable", OnPrefabToggleCustomizable);
     DataRegisterFunc("prefab_uses_profile_patches", OnPrefabUsesProfilePatches);
-    DataRegisterFunc("prefab_toggle_uses_profile_patch", OnPrefabToggleUsesProfilePatches);
+    DataRegisterFunc("prefab_toggle_uses_profile_patches", OnPrefabToggleUsesProfilePatches);
 }
 
 void PrefabMgr::Poll(){
@@ -106,3 +115,180 @@ PrefabMgr::~PrefabMgr(){
     DeleteAll(mCharCreatorMalePrefabs);
     DeleteAll(mCharCreatorFemalePrefabs);
 }
+
+#define kGameNumSlots 4
+
+void PrefabMgr::AssignPrefabsToSlots(){
+    MILO_ASSERT(mPrefabs.size() >= kGameNumSlots, 0xD6);
+    MILO_ASSERT(mPrefabs.size() < 256, 0xDB);
+}
+
+DECOMP_FORCEACTIVE(PrefabMgr, "female", "male")
+
+void PrefabMgr::GetPrefabs(std::vector<PrefabChar*>& prefabs) const {
+    for(int i = 0; i < mPrefabs.size(); i++){
+        prefabs.push_back(mPrefabs[i]);
+    }
+}
+
+void PrefabMgr::GetAvailablePrefabs(std::vector<PrefabChar*>& prefabs) const {
+    for(int i = 0; i < mPrefabs.size(); i++){
+        if(unk5c->IsCharAvailable(mPrefabs[i])){
+            prefabs.push_back(mPrefabs[i]);
+        }
+    }
+}
+
+PrefabChar* PrefabMgr::GetPrefab(Symbol s){
+    for(int i = 0; i < mPrefabs.size(); i++){
+        PrefabChar* pPrefabChar = mPrefabs[i];
+        MILO_ASSERT(pPrefabChar, 0x10C);
+        if(pPrefabChar->GetPrefabName() == s) return pPrefabChar;
+    }
+    return nullptr;
+}
+
+void PrefabMgr::EnableDebugPrefabs(){
+    DeleteAll(mPrefabs);
+    for(ObjDirItr<BandCharDesc> it(BandCharDesc::GetPrefabs(), true); it != 0; ++it){
+        mPrefabs.push_back(new PrefabChar(it));
+    }
+}
+
+PrefabChar* PrefabMgr::GetDefaultPrefab(int slotNum) const {
+    MILO_ASSERT(( 0) <= (slotNum) && (slotNum) < ( mDefaultPrefabs.size()), 0x132);
+    return mDefaultPrefabs[slotNum];
+}
+
+PrefabMgr::CharCreatorPrefab* PrefabMgr::GetCharCreatorPrefab(Symbol genderSym, Symbol outfitSym) const {
+    if(genderSym == male){
+        return GetCharCreatorPrefabFromOutfit(mCharCreatorMalePrefabs, outfitSym);
+    }
+    else if(genderSym == female){
+        return GetCharCreatorPrefabFromOutfit(mCharCreatorFemalePrefabs, outfitSym);
+    }
+    else {
+        MILO_FAIL("Incorrect gender symbol %s\n", genderSym);
+        return nullptr;
+    }
+}
+
+PrefabMgr::CharCreatorPrefab* PrefabMgr::GetRandomCharCreatorPrefab(Symbol genderSym) const {
+    if(genderSym == male){
+        return mCharCreatorMalePrefabs[RandomInt(0, mCharCreatorMalePrefabs.size())];
+    }
+    else if(genderSym == female){
+        return mCharCreatorFemalePrefabs[RandomInt(0, mCharCreatorFemalePrefabs.size())];
+    }
+    else {
+        MILO_FAIL("Incorrect gender symbol %s\n", genderSym);
+        return nullptr;
+    }
+}
+
+PrefabMgr::CharCreatorPrefab* PrefabMgr::GetCharCreatorPrefabFromOutfit(const std::vector<CharCreatorPrefab*>& prefabs, Symbol outfitSym) const {
+    for(int i = 0; i < prefabs.size(); i++){
+        CharCreatorPrefab* cur = prefabs[i];
+        if(cur->unk4 == outfitSym) return cur;
+    }
+    MILO_FAIL("Incorrect outfit symbol %s\n", outfitSym);
+    return nullptr;
+}
+
+void PrefabMgr::GetFaceTypes(std::vector<Symbol>& faceTypes, Symbol s) const {
+    for(int i = 0; i < unk34.size(); i++){
+        BandCharDesc* pBandCharDesc = unk34[i];
+        MILO_ASSERT(pBandCharDesc, 0x177);
+        if(pBandCharDesc->mGender == s){
+            Symbol prefabSym = pBandCharDesc->Name();
+            faceTypes.push_back(prefabSym);
+        }
+    }
+}
+
+BandCharDesc* PrefabMgr::GetFaceType(Symbol s){
+    for(std::vector<BandCharDesc*>::iterator it = unk34.begin(); it != unk34.end(); ++it){
+        BandCharDesc* pFaceTypeDesc = *it;
+        MILO_ASSERT(pFaceTypeDesc, 0x188);
+        Symbol name = pFaceTypeDesc->Name();
+        if(name == s) return pFaceTypeDesc;
+    }
+    return nullptr;
+}
+
+struct SortPrefabByPortraitFileName {
+    bool operator()(PrefabChar* c1, PrefabChar* c2){
+        int cmp = stricmp(c1->unk24.c_str(), c2->unk24.c_str());
+        return cmp < 0;
+    }
+};
+
+void PrefabMgr::LoadPortraits(OvershellSlot* slot){
+    unk6c.push_back(slot);
+    if(!unk60 && unk6c.size() == 1){
+        for(std::vector<PrefabChar*>::iterator it = mPrefabs.begin(); it != mPrefabs.end(); ++it){
+            PrefabChar* cur = *it;
+            unk64.push_back(cur);
+        }
+        std::sort(unk64.begin(), unk64.end(), SortPrefabByPortraitFileName());
+        for(std::vector<PrefabChar*>::iterator it = unk64.begin(); it != unk64.end(); ++it){
+            (*it)->LoadPortrait();
+        }
+        unk60 = true;
+    }
+}
+
+void PrefabMgr::PollPortraits(){
+    bool removed = false;
+    for(std::vector<PrefabChar*>::iterator it = unk64.begin(); it != unk64.end(); it){
+        PrefabChar* cur = *it;
+        cur->PollLoadingPortrait();
+        if(cur->IsPortraitLoaded()){
+            it = unk64.erase(it);
+            removed = true;
+        }
+        else ++it;
+    }
+    if(removed){
+        for(std::vector<OvershellSlot*>::iterator it = unk6c.begin(); it != unk6c.end(); ++it){
+            OvershellSlot* cur = *it;
+            cur->UpdateView();
+        }
+    }
+    if(unk64.empty()) unk60 = false;
+}
+
+void PrefabMgr::UnloadPortraits(OvershellSlot* slot){
+    std::vector<OvershellSlot*>::iterator it;
+    for(it = unk6c.begin(); it != unk6c.end() && *it != slot; ++it);
+    if(it == unk6c.end()){
+        MILO_WARN("ignored request from slot %d to unload portraits.\n", slot->GetSlotNum());
+    }
+    else {
+        unk6c.erase(it);
+        if(unk6c.empty()){
+            unk64.clear();
+            for(std::vector<PrefabChar*>::iterator it = mPrefabs.begin(); it != mPrefabs.end(); ++it){
+                PrefabChar* cur = *it;
+                cur->UnloadPortrait();
+            }
+        }
+    }
+}
+
+PrefabMgr::CharCreatorPrefab::CharCreatorPrefab(BandCharDesc* pBandCharDesc, Symbol s) : unk0(0), unk4(s) {
+    MILO_ASSERT(pBandCharDesc, 0x229);
+    unk0 = new PrefabChar(pBandCharDesc);
+}
+
+PrefabMgr::CharCreatorPrefab::~CharCreatorPrefab(){
+    RELEASE(unk0);
+}
+
+BEGIN_HANDLERS(PrefabMgr)
+    HANDLE_ACTION(enable_debug_prefabs, EnableDebugPrefabs())
+    HANDLE_ACTION(load_portraits, LoadPortraits(_msg->Obj<OvershellSlot>(2)))
+    HANDLE_ACTION(unload_portraits, UnloadPortraits(_msg->Obj<OvershellSlot>(2)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x241)
+END_HANDLERS
