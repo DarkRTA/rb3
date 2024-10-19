@@ -108,8 +108,8 @@ bool IsAccomplished(Symbol s, const BandProfile* profile){
     else return false;
 }
 
-AccomplishmentPanel::AccomplishmentPanel() : unk4c(0), mGoal(gNullStr), mGroup(gNullStr), mCategory(gNullStr), mAccomplishmentEntryProvider(0),
-    mAccomplishmentProvider(0), mAccomplishmentCategoryProvider(0), mAccomplishmentGroupProvider(0), unk70(0) {
+AccomplishmentPanel::AccomplishmentPanel() : mCareerState(kCareerStateNone), mGoal(gNullStr), mGroup(gNullStr), mCategory(gNullStr), mAccomplishmentEntryProvider(0),
+    mAccomplishmentProvider(0), mAccomplishmentCategoryProvider(0), mAccomplishmentGroupProvider(0), mOtherUserToView(0) {
 
 }
 
@@ -160,14 +160,14 @@ void AccomplishmentPanel::Enter(){
     mAccomplishmentGridProvider = new UIGridProvider(mAccomplishmentProvider, 4);
     MILO_ASSERT(!mAccomplishmentEntryProvider, 0x3B1);
     mAccomplishmentEntryProvider = new AccomplishmentEntryProvider();
-    if(unk4c == 0){
+    if(mCareerState == kCareerStateNone){
         mGoal = gNullStr;
         mCategory = gNullStr;
         mGroup = gNullStr;
-        SetCareerState((CareerState)1, false);
+        SetCareerState(kCareerStateGroup, false);
     }
     else {
-        SetCareerState((CareerState)unk4c, false);
+        SetCareerState(mCareerState, false);
     }
     Refresh();
 }
@@ -192,7 +192,7 @@ void AccomplishmentPanel::LoadCampaignIcons(){
 }
 
 void AccomplishmentPanel::Unload(){
-    unk70 = 0;
+    mOtherUserToView = 0;
     TexLoadPanel::Unload();
     RELEASE(mAccomplishmentProvider);
     RELEASE(mAccomplishmentGridProvider);
@@ -253,7 +253,7 @@ DataNode AccomplishmentPanel::OnMsg(const UIComponentScrollMsg& msg){
 DataNode AccomplishmentPanel::Group_HandleButtonDownMsg(const ButtonDownMsg& msg){
     switch(msg.GetAction()){
         case kAction_Confirm:
-            SetCareerState((CareerState)2, true);
+            SetCareerState(kCareerStateCategory, true);
             HandleSoundSelect(msg.GetUser());
             return 0;
         case kAction_Cancel:
@@ -274,11 +274,11 @@ DataNode AccomplishmentPanel::Group_HandleButtonDownMsg(const ButtonDownMsg& msg
 DataNode AccomplishmentPanel::Category_HandleButtonDownMsg(const ButtonDownMsg& msg){
     switch(msg.GetAction()){
         case kAction_Confirm:
-            SetCareerState((CareerState)3, true);
+            SetCareerState(kCareerStateGoal, true);
             HandleSoundSelect(msg.GetUser());
             return 0;
         case kAction_Cancel:
-            SetCareerState((CareerState)1, true);
+            SetCareerState(kCareerStateGroup, true);
             HandleSoundBack(msg.GetUser());
             break;
         default:
@@ -298,12 +298,12 @@ DataNode AccomplishmentPanel::Goal_HandleButtonDownMsg(const ButtonDownMsg& msg)
             }
             return 0;
         case kAction_Cancel:
-            SetCareerState((CareerState)2, true);
+            SetCareerState(kCareerStateCategory, true);
             HandleSoundSelect(msg.GetUser());
             break;
         case kAction_WiiHomeMenu:
             if(CanNavigateList()){
-                SetCareerState((CareerState)4, true);
+                SetCareerState(kCareerStateDetails, true);
                 HandleSoundSelect(msg.GetUser());
             }
             break;
@@ -330,11 +330,11 @@ DataNode AccomplishmentPanel::Details_HandleButtonDownMsg(const ButtonDownMsg& m
             }
             return 0;
         case kAction_Cancel:
-            SetCareerState((CareerState)3, true);
+            SetCareerState(kCareerStateGoal, true);
             HandleSoundBack(msg.GetUser());
             break;
         case kAction_WiiHomeMenu:
-            SetCareerState((CareerState)3, true);
+            SetCareerState(kCareerStateGoal, true);
             HandleSoundBack(msg.GetUser());
             break;
         case kAction_Option:
@@ -355,14 +355,14 @@ DataNode AccomplishmentPanel::OnMsg(const ButtonDownMsg& msg){
         HandleSoundToggle(msg.GetUser());
         return DataNode(kDataUnhandled, 0);
     }
-    else switch(unk4c){
-        case 1:
+    else switch(mCareerState){
+        case kCareerStateGroup:
             return Group_HandleButtonDownMsg(msg);
-        case 2:
+        case kCareerStateCategory:
             return Category_HandleButtonDownMsg(msg);
-        case 3:
+        case kCareerStateGoal:
             return Goal_HandleButtonDownMsg(msg);
-        case 4:
+        case kCareerStateDetails:
             return Details_HandleButtonDownMsg(msg);
         default:
             MILO_ASSERT(false, 0x502);
@@ -372,7 +372,7 @@ DataNode AccomplishmentPanel::OnMsg(const ButtonDownMsg& msg){
 
 bool AccomplishmentPanel::CanNavigateList() const {
     if(GetState() != kUp) return false;
-    if(unk4c - 1 <= 1U) return false;
+    if(mCareerState == kCareerStateGroup || mCareerState == kCareerStateCategory) return false;
     Symbol selacc = SelectedAccomplishment();
     Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
     if(!acc) return false;
@@ -386,7 +386,7 @@ bool AccomplishmentPanel::CanNavigateList() const {
 }
 
 bool AccomplishmentPanel::CanLaunchGoal() const {
-    if(unk4c - 1 <= 1U) return false;
+    if(mCareerState == kCareerStateGroup || mCareerState == kCareerStateCategory) return false;
     Symbol selacc = SelectedAccomplishment();
     Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
     if(!acc) return false;
@@ -953,24 +953,24 @@ void AccomplishmentPanel::LaunchSelectedEntry(LocalBandUser* user){
 #pragma pop
 
 void AccomplishmentPanel::ClearCareerState(){
-    SetCareerState((CareerState)0, true);
+    SetCareerState(kCareerStateNone, true);
 }
 
-CareerState AccomplishmentPanel::GetCareerState() const { return (CareerState)unk4c; }
+CareerState AccomplishmentPanel::GetCareerState() const { return mCareerState; }
 
 void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
-    int oldstate = unk4c;
-    unk4c = state;
-    if(unk4c != 0 && GetState() == kUp){
-        switch(unk4c){
-            case 1:
+    CareerState oldstate = mCareerState;
+    mCareerState = state;
+    if(mCareerState != 0 && GetState() == kUp){
+        switch(mCareerState){
+            case kCareerStateGroup:
                 if(!b) Handle(handle_snap_state_group_msg, true);
                 else if(oldstate == 2){
                     Handle(handle_state_category_to_group_msg, true);
                 }
                 else MILO_ASSERT(false, 0x97A);
                 break;
-            case 2:
+            case kCareerStateCategory:
                 if(!b) Handle(handle_snap_state_category_msg, true);
                 else if(oldstate == 1){
                     Handle(handle_state_group_to_category_msg, true);
@@ -980,7 +980,7 @@ void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
                 }
                 else MILO_ASSERT(false, 0x991);
                 break;
-            case 3:
+            case kCareerStateGoal:
                 if(!b) Handle(handle_snap_state_goal_msg, true);
                 else if(oldstate == 4){
                     Handle(handle_state_details_to_goal_msg, true);
@@ -990,7 +990,7 @@ void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
                 }
                 else MILO_ASSERT(false, 0x9A8);
                 break;
-            case 4:
+            case kCareerStateDetails:
                 if(!b) Handle(handle_snap_state_details_msg, true);
                 else if(oldstate == 3){
                     Handle(handle_state_goal_to_details_msg, true);
@@ -1043,15 +1043,15 @@ void AccomplishmentPanel::UpdateCampaignMeterProgressLabel(UILabel* i_pLabel){
 
 void AccomplishmentPanel::UpdateHeaderLabel(UILabel* i_pLabel){
     MILO_ASSERT(i_pLabel, 0xA07);
-    switch(unk4c){
-        case 1:
+    switch(mCareerState){
+        case kCareerStateGroup:
             i_pLabel->SetTextToken(career_header_main);
             break;
-        case 2:
+        case kCareerStateCategory:
             i_pLabel->SetTokenFmt(career_header_group, mGroup);
             break;
-        case 3:
-        case 4:
+        case kCareerStateGoal:
+        case kCareerStateDetails:
             i_pLabel->SetTokenFmt(career_header_category, mGroup, mCategory);
             break;
         default:
@@ -1063,15 +1063,15 @@ void AccomplishmentPanel::UpdateHeaderLabel(UILabel* i_pLabel){
 void AccomplishmentPanel::RefreshAll(){ Refresh(); }
 
 void AccomplishmentPanel::FakeEarnSelected(){
-    switch(unk4c){
-        case 1:
+    switch(mCareerState){
+        case kCareerStateGroup:
             FakeEarnSelectedGroup();
             break;
-        case 2:
+        case kCareerStateCategory:
             FakeEarnSelectedCategory();
             break;
-        case 3:
-        case 4:
+        case kCareerStateGoal:
+        case kCareerStateDetails:
             FakeEarnSelectedGoal();
             break;
         default:
@@ -1137,7 +1137,7 @@ void AccomplishmentPanel::FakeEarnSelectedCategory(){
 BEGIN_HANDLERS(AccomplishmentPanel)
     HANDLE_ACTION(fake_earn_selected, FakeEarnSelected())
     HANDLE_EXPR(selected_accomplishment, SelectedAccomplishment())
-    HANDLE_ACTION(set_other_user_to_view, unk70 = _msg->Obj<LocalBandUser>(2))
+    HANDLE_ACTION(set_other_user_to_view, mOtherUserToView = _msg->Obj<LocalBandUser>(2))
     HANDLE_EXPR(can_navigate_list, CanNavigateList())
     HANDLE_EXPR(can_launch_goal, CanLaunchGoal())
     HANDLE_ACTION(launch_goal, LaunchGoal(_msg->Obj<LocalBandUser>(2)))

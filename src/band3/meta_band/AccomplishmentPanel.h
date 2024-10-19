@@ -137,7 +137,11 @@ public:
 };
 
 enum CareerState {
-
+    kCareerStateNone = 0,
+    kCareerStateGroup = 1,
+    kCareerStateCategory = 2,
+    kCareerStateGoal = 3,
+    kCareerStateDetails = 4
 };
 
 class AccomplishmentPanel : public TexLoadPanel {
@@ -223,7 +227,7 @@ public:
     DataNode Details_HandleButtonDownMsg(const ButtonDownMsg&);
     DataNode OnMsg(const ButtonDownMsg&);
 
-    int unk4c; // career state
+    CareerState mCareerState; // 0x4c
     Symbol mGoal; // 0x50
     Symbol mGroup; // 0x54
     Symbol mCategory; // 0x58
@@ -232,7 +236,7 @@ public:
     AccomplishmentCategoryProvider* mAccomplishmentCategoryProvider; // 0x64
     AccomplishmentGroupProvider* mAccomplishmentGroupProvider; // 0x68
     UIGridProvider* mAccomplishmentGridProvider; // 0x6c
-    LocalBandUser* unk70; // 0x70
+    LocalBandUser* mOtherUserToView; // 0x70
 };
 
 bool IsAccomplishmentSecret(Accomplishment*, const BandProfile*);
