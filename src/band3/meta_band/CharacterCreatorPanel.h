@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/ClosetMgr.h"
 #include "meta_band/TexLoadPanel.h"
 #include "ui/UIComponent.h"
 
@@ -16,13 +17,17 @@ public:
     virtual void FinishLoad();
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
 
+    void CreateNewCharacter();
+    void AddGridThumbnails(Symbol);
+    void SetGender(Symbol);
+
     int unk4c;
     std::map<int, UIComponent*> unk50; // 0x50
-    int unk68; // ClosetMgr*
+    ClosetMgr* mClosetMgr; // ClosetMgr*
     int unk6c; // TourCharLocal*
     int unk70;
     int unk74; // FaceTypeProvider*
-    int unk78; // OutfitProvider*
+    int mOutfitProvider; // OutfitProvider*
     int unk7c; // FaceHairProvider*
     int unk80; // FaceOptionsProvider*
     int unk84; // UIGridProvider*

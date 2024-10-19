@@ -1,7 +1,13 @@
 #include "meta_band/CharacterCreatorPanel.h"
+#include "game/BandUser.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/ClosetMgr.h"
+#include "meta_band/ProfileMgr.h"
+#include "meta_band/TexLoadPanel.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
 
-CharacterCreatorPanel::CharacterCreatorPanel() : unk4c(0), unk68(0), unk6c(0), unk70(0), unk74(0), unk78(0), unk7c(0), unk80(0), unk84(0), unk88(0), unk8c(0), unk90(gNullStr), unk94(gNullStr), unk98(0), unk99(0) {
+CharacterCreatorPanel::CharacterCreatorPanel() : unk4c(0), mClosetMgr(0), unk6c(0), unk70(0), unk74(0), mOutfitProvider(0), unk7c(0), unk80(0), unk84(0), unk88(0), unk8c(0), unk90(gNullStr), unk94(gNullStr), unk98(0), unk99(0) {
 
 }
 
@@ -10,6 +16,17 @@ CharacterCreatorPanel::~CharacterCreatorPanel(){
 }
 
 void CharacterCreatorPanel::Load(){
+    TexLoadPanel::Load();
+    mClosetMgr = ClosetMgr::GetClosetMgr();
+    LocalBandUser* closetUser = mClosetMgr->mUser;
+    BandProfile* profile = TheProfileMgr.GetProfileForUser(closetUser);
+    if(profile && closetUser && mClosetMgr){
+        CreateNewCharacter();
+        AddGridThumbnails(male);
+        AddGridThumbnails(female);
+        SetGender(male);
+    }
+
 //       this_00 = (ClosetMgr *)TexLoadPanel::Load((TexLoadPanel *)this);
 //   iVar1 = ClosetMgr::GetClosetMgr(this_00);
 //   *(int *)(this + 0x68) = iVar1;
