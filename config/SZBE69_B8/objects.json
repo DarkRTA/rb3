@@ -304,7 +304,7 @@
             "band3/tour/FixedSetlist.cpp": "Matching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "Matching",
-            "band3/tour/QuestFilterPanel.cpp": "MISSING",
+            "band3/tour/QuestFilterPanel.cpp": "NonMatching",
             "band3/tour/QuestJournal.cpp": "Matching",
             "band3/tour/QuestManager.cpp": "Matching",
             "band3/tour/Tour.cpp": "NonMatching",
