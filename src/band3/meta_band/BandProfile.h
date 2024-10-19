@@ -123,7 +123,7 @@ public:
     void FakeProfileFill();
     void GetPictureTex();
     void AutoFakeFill(int);
-    int NumChars() const { return mCharacters.size(); }
+    int NumChars() const;
     
     static int SaveSize(int);
 

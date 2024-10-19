@@ -1,4 +1,5 @@
 #pragma once
+#include "BandProfile.h"
 #include "beatmatch/TrackType.h"
 #include "game/Defines.h"
 #include "obj/Object.h"
@@ -9,11 +10,11 @@ public:
     ~Lesson();
     Difficulty GetDifficulty() const;
 
-    Symbol unk0;
-    Symbol unk4;
-    Symbol unk8;
-    Symbol unkc;
-    TrackType unk10;
+    Symbol mTrainer; // 0x0
+    Symbol mCategory; // 0x4
+    Symbol mName; // 0x8
+    Symbol mSong; // 0xc
+    TrackType mTrackType; // 0x10
 };
 
 class LessonMgr : public Hmx::Object {
@@ -24,6 +25,12 @@ public:
     Lesson* GetLesson(Symbol) const;
     TrackType GetTrackTypeFromTrainer(Symbol);
     std::vector<Symbol>* GetLessonsFromCategory(Symbol) const;
+    std::vector<Symbol>* GetCategoriesFromTrainer(Symbol) const;
+    int GetCompletedCountFromTrainer(BandProfile*, Symbol);
+    int GetTotalCountFromTrainer(Symbol);
+    Difficulty GetDifficulty() const;
+    int GetTotalCountFromCategory(Symbol);
+    int GetCompletedCountFromCategory(BandProfile*, Symbol);
 
     static void Init();
     static LessonMgr* GetLessonMgr();

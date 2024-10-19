@@ -23,7 +23,7 @@ public:
     virtual void UpdateExtendedText(int, int, UILabel*) const;
     virtual void UpdateExtendedMesh(int, int, RndMesh*) const;
     virtual void UpdateExtendedCustom(int, int, Hmx::Object*) const;
-    virtual Symbol DataSymbol(int) const { return Symbol(); }
+    virtual Symbol DataSymbol(int) const { return gNullStr; }
     virtual int DataIndex(Symbol) const;
     virtual int NumData() const = 0;
     virtual bool IsActive(int) const { return true; }

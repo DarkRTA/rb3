@@ -127,6 +127,7 @@ public:
     bool IsNoFailActive() const;
     bool IsBandNoFailSet() const;
     bool CanUpdateScoreLeaderboards();
+    void SetSetlist(Symbol);
 
     static void Init();
     static MetaPerformer* Current();

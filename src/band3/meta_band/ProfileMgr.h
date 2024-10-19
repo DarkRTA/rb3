@@ -108,6 +108,7 @@ public:
     BandProfile* GetProfileForChar(const TourCharLocal*);
     std::vector<BandProfile*> GetSignedInProfiles();
     BandProfile* GetPrimaryProfile() const;
+    void SetPrimaryProfileByUser(const LocalUser*);
 
     DECLARE_REVS;
 

@@ -2,6 +2,7 @@
 #define METABAND_ACCOMPLISHMENTMANAGER_H
 #include "BandProfile.h"
 #include "game/BandUser.h"
+#include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/SongSortMgr.h"
 #include "obj/Object.h"
@@ -156,6 +157,8 @@ public:
     void ClearGoalProgressionAcquisitionInfo();
     int GetScaledFanValue(int);
     const std::map<Symbol, Accomplishment*>& GetAccomplishments() const { return mAccomplishments; }
+    const std::map<Symbol, AccomplishmentCategory*>& GetCategories() const { return mAccomplishmentCategory; }
+    const std::map<Symbol, AccomplishmentGroup*>& GetGroups() const { return mAccomplishmentGroups; }
     const std::vector<Symbol>& GetDiscSongs() const { return mDiscSongs; }
 
     DataNode OnEarnAccomplishment(const DataArray*);

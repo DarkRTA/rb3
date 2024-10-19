@@ -469,11 +469,8 @@ rb3/panels/storerootpanel.cpp:
 rb3/storesongsortnode.cpp:
 	.text       start:0x80292750 end:0x802929D0
 
-rb3/dynamictex.cpp:
-	.text       start:0x802929D0 end:0x80292CA0
-
-rb3/panels/texloadpanel.cpp:
-	.text       start:0x80292CA0 end:0x80293878
+band3/meta_band/TexLoadPanel.cpp:
+	.text		start:0x80292A70 end:0x80293878
 
 rb3/panels/tokenredemptionpanel.cpp:
 	.text       start:0x80293878 end:0x80295408
