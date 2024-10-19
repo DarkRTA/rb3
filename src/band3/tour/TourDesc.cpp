@@ -1,4 +1,7 @@
 #include "tour/TourDesc.h"
+#include "meta_band/Accomplishment.h"
+#include "meta_band/AccomplishmentManager.h"
+#include "meta_band/AccomplishmentTourConditional.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/MakeString.h"
@@ -188,6 +191,33 @@ int TourDesc::GetNumSongs() const {
         songs += GetNumSongsForGigNum(i);
     }
     return songs;
+}
+
+int TourDesc::GetTourStarsBronzeGoalValue() const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(mTourStarsBronzeGoal);
+    MILO_ASSERT(pAccomplishment, 0x157);
+    MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional, 0x158);
+    AccomplishmentTourConditional* pTourGoal = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+    MILO_ASSERT(pTourGoal, 0x15A);
+    return pTourGoal->GetTourValue();
+}
+
+int TourDesc::GetTourStarsSilverGoalValue() const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(mTourStarsSilverGoal);
+    MILO_ASSERT(pAccomplishment, 0x163);
+    MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional, 0x164);
+    AccomplishmentTourConditional* pTourGoal = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+    MILO_ASSERT(pTourGoal, 0x166);
+    return pTourGoal->GetTourValue();
+}
+
+int TourDesc::GetTourStarsGoldGoalValue() const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(mTourStarsGoldGoal);
+    MILO_ASSERT(pAccomplishment, 0x16F);
+    MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional, 0x170);
+    AccomplishmentTourConditional* pTourGoal = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+    MILO_ASSERT(pTourGoal, 0x172);
+    return pTourGoal->GetTourValue();
 }
 
 Symbol TourDesc::GetTourBronzeGoal() const { return mTourStarsBronzeGoal; }
