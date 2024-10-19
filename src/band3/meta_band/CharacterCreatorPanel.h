@@ -1,7 +1,13 @@
 #pragma once
+#include "FaceHairProvider.h"
+#include "FaceOptionsProvider.h"
+#include "OutfitProvider.h"
 #include "meta_band/ClosetMgr.h"
+#include "meta_band/EyebrowsProvider.h"
+#include "meta_band/FaceTypeProvider.h"
 #include "meta_band/TexLoadPanel.h"
 #include "ui/UIComponent.h"
+#include "ui/UIGridProvider.h"
 
 class CharacterCreatorPanel : public TexLoadPanel {
 public:
@@ -21,20 +27,20 @@ public:
     void AddGridThumbnails(Symbol);
     void SetGender(Symbol);
 
-    int unk4c;
+    int unk4c; // char creator state
     std::map<int, UIComponent*> unk50; // 0x50
-    ClosetMgr* mClosetMgr; // ClosetMgr*
+    ClosetMgr* mClosetMgr; // 0x68
     int unk6c; // TourCharLocal*
     int unk70;
-    int unk74; // FaceTypeProvider*
-    int mOutfitProvider; // OutfitProvider*
-    int unk7c; // FaceHairProvider*
-    int unk80; // FaceOptionsProvider*
-    int unk84; // UIGridProvider*
-    int unk88; // EyebrowsProvider*
-    int unk8c; // UIGridProvider*
+    FaceTypeProvider* mFaceTypeProvider; // 0x74
+    OutfitProvider* mOutfitProvider; // 0x78
+    FaceHairProvider* mFaceHairProvider; // 0x7c
+    FaceOptionsProvider* mFaceOptionsProvider; // 0x80
+    UIGridProvider* mFaceOptionsGridProvider; // 0x84
+    EyebrowsProvider* mEyebrowsProvider; // 0x88
+    UIGridProvider* mEyebrowsGridProvider; // 0x8c
     Symbol unk90; // gender
-    Symbol unk94;
+    Symbol unk94; // outfit
     bool unk98;
     bool unk99;
 };
