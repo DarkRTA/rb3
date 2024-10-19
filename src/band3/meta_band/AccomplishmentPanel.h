@@ -214,6 +214,7 @@ public:
     void FakeEarnSelectedGoal();
     void FakeEarnSelectedGroup();
     void FakeEarnSelectedCategory();
+    void SetRandomUnplayedSong();
 
     DataNode OnMsg(const UIComponentScrollMsg&);
     DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);

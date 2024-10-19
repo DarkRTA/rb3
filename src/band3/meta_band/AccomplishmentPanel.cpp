@@ -13,6 +13,7 @@
 #include "meta_band/AccomplishmentOneShot.h"
 #include "meta_band/AccomplishmentProgress.h"
 #include "meta_band/AccomplishmentSetlist.h"
+#include "meta_band/AccomplishmentSongFilterConditional.h"
 #include "meta_band/AccomplishmentTourConditional.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/MetaPerformer.h"
@@ -569,10 +570,10 @@ void AccomplishmentPanel::SelectCategory(Symbol s){
         idx = mAccomplishmentCategoryProvider->CategoryIndex(s);
         mCategory = mAccomplishmentCategoryProvider->DataSymbol(idx);
     }
-    UIList* pGoalsList = mDir->Find<UIList>("categories.lst", true);
-    MILO_ASSERT(pGoalsList, 0x695);
-    pGoalsList->SetSelected(idx, -1);
-    UpdateForGoalSelection();
+    UIList* pCategoryList = mDir->Find<UIList>("categories.lst", true);
+    MILO_ASSERT(pCategoryList, 0x695);
+    pCategoryList->SetSelected(idx, -1);
+    UpdateForCategorySelection();
 }
 
 inline Symbol AccomplishmentCategoryProvider::DataSymbol(int i_iData) const {
@@ -894,6 +895,14 @@ bool AccomplishmentPanel::IsSecret() const {
         return IsAccomplishmentSecret(acc, pProfile);
     }
     else return false;
+}
+
+void AccomplishmentPanel::SetRandomUnplayedSong(){
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(SelectedAccomplishment());
+    MILO_ASSERT(pAccomplishment, 0x8D5);
+    MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeSongFilterConditional, 0x8D6);
+    AccomplishmentSongFilterConditional* pFilterAccomplishment = dynamic_cast<AccomplishmentSongFilterConditional*>(pAccomplishment);
+    MILO_ASSERT(pFilterAccomplishment, 0x8D9);
 }
 
 bool AccomplishmentPanel::CanLaunchSelectedEntry() const {
