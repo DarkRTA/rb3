@@ -1,5 +1,7 @@
 #pragma once
+#include "bandobj/BandCharDesc.h"
 #include "game/BandUserMgr.h"
+#include "meta_band/CharData.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 
@@ -7,6 +9,11 @@ class PrefabMgr : public Hmx::Object {
 public:
     class CharCreatorPrefab {
     public:
+        CharCreatorPrefab(BandCharDesc*, Symbol);
+        ~CharCreatorPrefab();
+
+        PrefabChar* unk0;
+        Symbol unk4;
     };
 
     PrefabMgr();
@@ -15,6 +22,7 @@ public:
 
     void Poll();
     void PollPortraits();
+    void AssignPrefabsToSlots();
 
     static PrefabMgr* GetPrefabMgr();
     static bool PrefabIsCustomizable();
@@ -25,10 +33,10 @@ public:
     static DataNode OnPrefabToggleUsesProfilePatches(DataArray*);
     static void Init(BandUserMgr*);
 
-    std::vector<int> mPrefabs; // 0x1c
-    std::vector<int> unk24; // 0x24
-    std::vector<int> unk2c; // 0x2c
-    std::vector<int> unk34; // 0x34
+    std::vector<PrefabChar*> mPrefabs; // 0x1c
+    std::vector<CharCreatorPrefab*> mCharCreatorMalePrefabs; // 0x24
+    std::vector<CharCreatorPrefab*> mCharCreatorFemalePrefabs; // 0x2c
+    std::vector<BandCharDesc*> unk34; // 0x34
     std::vector<int> unk3c; // 0x3c
     std::set<Symbol> unk44; // 0x64
     BandUserMgr* unk5c; // 0x5c
