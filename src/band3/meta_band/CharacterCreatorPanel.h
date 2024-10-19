@@ -48,12 +48,13 @@ public:
     int GetEyeColor();
     void SetGlasses(Symbol);
     Symbol GetGlasses();
+    void UpdateOutfitList();
 
     CharCreatorState mCharCreatorState; // 0x4C
     std::map<int, UIComponent*> unk50; // 0x50
     ClosetMgr* mClosetMgr; // 0x68
     TourCharLocal* mCharacter; // 0x6c
-    BandCharDesc* mPreviewDesc; // preview desc?
+    BandCharDesc* mPreviewDesc; // 0x70
     FaceTypeProvider* mFaceTypeProvider; // 0x74
     OutfitProvider* mOutfitProvider; // 0x78
     FaceHairProvider* mFaceHairProvider; // 0x7c

@@ -1,4 +1,5 @@
 #pragma once
+#include "bandobj/BandCharDesc.h"
 #include "game/BandUser.h"
 #include "obj/MsgSource.h"
 
@@ -13,6 +14,7 @@ public:
     bool IsCurrentCharacterFinalized();
     void UpdateCurrentCharacter();
     void SetCurrentOutfitPiece(Symbol);
+    void UpdateBandCharDesc(BandCharDesc*);
 
     static ClosetMgr* GetClosetMgr();
 
@@ -24,7 +26,7 @@ public:
     int unk30;
     int unk34;
     int unk38;
-    int unk3c;
+    BandCharDesc* unk3c;
     int unk40;
     Symbol unk44;
     int unk48;

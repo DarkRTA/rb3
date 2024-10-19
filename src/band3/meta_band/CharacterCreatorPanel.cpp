@@ -3,10 +3,12 @@
 #include "FaceOptionsProvider.h"
 #include "OutfitProvider.h"
 #include "PrefabMgr.h"
+#include "bandobj/BandCharDesc.h"
 #include "bandobj/BandHeadShaper.h"
 #include "game/BandUser.h"
 #include "meta_band/AssetMgr.h"
 #include "meta_band/BandProfile.h"
+#include "meta_band/CharData.h"
 #include "meta_band/ClosetMgr.h"
 #include "meta_band/EyebrowsProvider.h"
 #include "meta_band/FaceTypeProvider.h"
@@ -166,14 +168,32 @@ void CharacterCreatorPanel::HandleGenderChanged(){
     mFaceOptionsProvider->mGender = mGender;
     PrefabMgr* pPrefabMgr = PrefabMgr::GetPrefabMgr();
     MILO_ASSERT(pPrefabMgr, 0x1A3);
-    // more...
+    PrefabMgr::CharCreatorPrefab* pCharCreatorPrefab = pPrefabMgr->GetRandomCharCreatorPrefab(mGender);
+    MILO_ASSERT(pCharCreatorPrefab, 0x1A7);
+    mOutfit = pCharCreatorPrefab->unk4;
+    PrefabChar* pPrefabChar = pCharCreatorPrefab->unk0;
+    MILO_ASSERT(pPrefabChar, 0x1AE);
+    BandCharDesc* pPrefabCharDesc = pPrefabChar->GetBandCharDesc();
+    MILO_ASSERT(pPrefabCharDesc, 0x1B1);
+    mClosetMgr->UpdateBandCharDesc(pPrefabCharDesc);
+    mPreviewDesc = mClosetMgr->unk3c;
+    MILO_ASSERT(mPreviewDesc, 0x1B5);
+    mClosetMgr->PreviewCharacter(true, true);
 }
 
 void CharacterCreatorPanel::SetOutfit(Symbol outfit){
     mOutfit = outfit;
     PrefabMgr* pPrefabMgr = PrefabMgr::GetPrefabMgr();
     MILO_ASSERT(pPrefabMgr, 0x1C0);
-    // more...
+    PrefabMgr::CharCreatorPrefab* pCharCreatorPrefab = pPrefabMgr->GetCharCreatorPrefab(mGender, mOutfit);
+    MILO_ASSERT(pCharCreatorPrefab, 0x1C4);
+    PrefabChar* pPrefabChar = pCharCreatorPrefab->unk0;
+    MILO_ASSERT(pPrefabChar, 0x1C7);
+    BandCharDesc* pPrefabCharDesc = pPrefabChar->GetBandCharDesc();
+    MILO_ASSERT(pPrefabCharDesc, 0x1CA);
+    mPreviewDesc->mOutfit = pPrefabCharDesc->mOutfit;
+    mClosetMgr->PreviewCharacter(true, true);
+    UpdateOutfitList();
 }
 
 void CharacterCreatorPanel::SetEyeColor(int color){
