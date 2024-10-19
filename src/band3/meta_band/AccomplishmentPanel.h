@@ -1,10 +1,12 @@
 #pragma once
+#include "game/BandUser.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/JoypadMsgs.h"
 #include "stl/_algo.h"
 #include "ui/UIGridProvider.h"
+#include "ui/UILabel.h"
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
 #include "ui/UIMessages.h"
@@ -202,6 +204,16 @@ public:
     void BuildSelectedEntrySetList();
     void ClearCareerState();
     CareerState GetCareerState() const;
+    void SetSelectedGoal(Symbol);
+    void SetSelectedCategory(Symbol);
+    void SetSelectedGroup(Symbol);
+    void UpdateCampaignMeterProgressLabel(UILabel*);
+    void UpdateHeaderLabel(UILabel*);
+    void RefreshAll();
+    void FakeEarnSelected();
+    void FakeEarnSelectedGoal();
+    void FakeEarnSelectedGroup();
+    void FakeEarnSelectedCategory();
 
     DataNode OnMsg(const UIComponentScrollMsg&);
     DataNode Group_HandleButtonDownMsg(const ButtonDownMsg&);
@@ -219,7 +231,7 @@ public:
     AccomplishmentCategoryProvider* mAccomplishmentCategoryProvider; // 0x64
     AccomplishmentGroupProvider* mAccomplishmentGroupProvider; // 0x68
     UIGridProvider* mAccomplishmentGridProvider; // 0x6c
-    int unk70;
+    LocalBandUser* unk70; // 0x70
 };
 
 bool IsAccomplishmentSecret(Accomplishment*, const BandProfile*);

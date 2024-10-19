@@ -19,17 +19,24 @@
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/TexLoadPanel.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
+#include "os/JoypadMsgs.h"
 #include "stl/_algo.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIList.h"
+#include "ui/UIMessages.h"
 #include "ui/UIPanel.h"
+#include "utl/Locale.h"
 #include "utl/Messages.h"
 #include "utl/Messages2.h"
 #include "utl/Messages3.h"
 #include "utl/Messages4.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include <vector>
 
 AccomplishmentGroupCmp::AccomplishmentGroupCmp(const AccomplishmentManager* mgr) : mAccomplishmentMgr(mgr) {
@@ -945,61 +952,217 @@ CareerState AccomplishmentPanel::GetCareerState() const { return (CareerState)un
 void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
     int oldstate = unk4c;
     unk4c = state;
-    switch(unk4c){
-        case 0:
-            break;
-        case 1:
-            if(b){
-                if(oldstate == 2){
+    if(unk4c != 0 && GetState() == kUp){
+        switch(unk4c){
+            case 1:
+                if(!b) Handle(handle_snap_state_group_msg, true);
+                else if(oldstate == 2){
                     Handle(handle_state_category_to_group_msg, true);
                 }
                 else MILO_ASSERT(false, 0x97A);
-            }
-            else {
-                Handle(handle_snap_state_group_msg, true);
-            }
-            break;
-        case 2:
-            if(b){
-                if(oldstate == 1){
+                break;
+            case 2:
+                if(!b) Handle(handle_snap_state_category_msg, true);
+                else if(oldstate == 1){
                     Handle(handle_state_group_to_category_msg, true);
                 }
                 else if(oldstate == 3){
                     Handle(handle_state_goal_to_category_msg, true);
                 }
                 else MILO_ASSERT(false, 0x991);
-            }
-            else {
-                Handle(handle_snap_state_category_msg, true);
-            }
-            break;
-        case 3:
-            if(b){
-                if(oldstate == 4){
+                break;
+            case 3:
+                if(!b) Handle(handle_snap_state_goal_msg, true);
+                else if(oldstate == 4){
                     Handle(handle_state_details_to_goal_msg, true);
                 }
                 else if(oldstate == 2){
                     Handle(handle_state_category_to_goal_msg, true);
                 }
                 else MILO_ASSERT(false, 0x9A8);
-            }
-            else {
-                Handle(handle_snap_state_goal_msg, true);
-            }
-            break;
-        case 4:
-            if(b){
-                if(oldstate == 3){
+                break;
+            case 4:
+                if(!b) Handle(handle_snap_state_details_msg, true);
+                else if(oldstate == 3){
                     Handle(handle_state_goal_to_details_msg, true);
                 }
                 else MILO_ASSERT(false, 0x9BA);
-            }
-            else {
-                Handle(handle_snap_state_details_msg, true);
-            }
+                break;
+            default:
+                MILO_ASSERT(false, 0x9C0);
+                break;
+        }
+        RefreshHeader();
+    }
+}
+
+void AccomplishmentPanel::SetSelectedGoal(Symbol s){
+    mGoal = s;
+    if(s != gNullStr){
+        Accomplishment* pGoal = TheAccomplishmentMgr->GetAccomplishment(s);
+        MILO_ASSERT(pGoal, 0x9D1);
+        SetSelectedCategory(pGoal->GetCategory());
+    }
+}
+
+void AccomplishmentPanel::SetSelectedCategory(Symbol s){
+    mCategory = s;
+    if(s != gNullStr){
+        AccomplishmentCategory* pCategory = TheAccomplishmentMgr->GetAccomplishmentCategory(s);
+        MILO_ASSERT(pCategory, 0x9E0);
+        SetSelectedGroup(pCategory->GetGroup());
+    }
+}
+
+void AccomplishmentPanel::SetSelectedGroup(Symbol s){ mGroup = s; }
+
+void AccomplishmentPanel::UpdateCampaignMeterProgressLabel(UILabel* i_pLabel){
+    MILO_ASSERT(i_pLabel, 0x9EE);
+    if(GetCurrentShouldShowDenominator()){
+        int curval = GetCurrentValue();
+        int maxval = GetMaxValue();
+        String cur(LocalizeSeparatedInt(curval));
+        String max(LocalizeSeparatedInt(maxval));
+        i_pLabel->SetTokenFmt(campaign_meter_progress, cur, max, GetCurrentUnits(0));
+    }
+    else {
+        int curval = GetCurrentValue();
+        String cur(LocalizeSeparatedInt(curval));
+        i_pLabel->SetTokenFmt(campaign_meter_progress_simple, cur, GetCurrentUnits(0));
+    }
+}
+
+void AccomplishmentPanel::UpdateHeaderLabel(UILabel* i_pLabel){
+    MILO_ASSERT(i_pLabel, 0xA07);
+    switch(unk4c){
+        case 1:
+            i_pLabel->SetTextToken(career_header_main);
+            break;
+        case 2:
+            i_pLabel->SetTokenFmt(career_header_group, mGroup);
+            break;
+        case 3:
+        case 4:
+            i_pLabel->SetTokenFmt(career_header_category, mGroup, mCategory);
             break;
         default:
-            RefreshHeader();
+            MILO_ASSERT(false, 0xA20);
             break;
     }
 }
+
+void AccomplishmentPanel::RefreshAll(){ Refresh(); }
+
+void AccomplishmentPanel::FakeEarnSelected(){
+    switch(unk4c){
+        case 1:
+            FakeEarnSelectedGroup();
+            break;
+        case 2:
+            FakeEarnSelectedCategory();
+            break;
+        case 3:
+        case 4:
+            FakeEarnSelectedGoal();
+            break;
+        default:
+            MILO_ASSERT(false, 0xA45);
+            break;
+    }
+    Refresh();
+}
+
+void AccomplishmentPanel::FakeEarnSelectedGoal(){
+    Symbol selacc = SelectedAccomplishment();
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    if(pProfile){
+        std::vector<LocalBandUser*> owners;
+        pProfile->GetAssociatedUsers(owners);
+        MILO_ASSERT(!owners.empty(), 0xA57);
+        TheAccomplishmentMgr->EarnAccomplishment(owners[0], selacc);
+    }
+}
+
+void AccomplishmentPanel::FakeEarnSelectedGroup(){
+    Symbol selacc = SelectedAccomplishmentGroup();
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    if(pProfile){
+        std::vector<LocalBandUser*> owners;
+        pProfile->GetAssociatedUsers(owners);
+        MILO_ASSERT(!owners.empty(), 0xA67);
+        std::list<Symbol>* list = TheAccomplishmentMgr->GetCategoryListForGroup(selacc);
+        if(list){
+            for(std::list<Symbol>::iterator it = list->begin(); it != list->end(); ++it){
+                Symbol key = *it;
+                std::set<Symbol>* set = TheAccomplishmentMgr->GetAccomplishmentSetForCategory(key);
+                if(set){
+                    for(std::set<Symbol>::iterator sit = set->begin(); sit != set->end(); ++sit){
+                        Symbol skey = *sit;
+                        TheAccomplishmentMgr->EarnAccomplishment(owners[0], skey);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void AccomplishmentPanel::FakeEarnSelectedCategory(){
+    Symbol selacc = SelectedAccomplishmentCategory();
+    BandProfile* pProfile = TheCampaign->GetProfile();
+    if(pProfile){
+        std::vector<LocalBandUser*> owners;
+        pProfile->GetAssociatedUsers(owners);
+        MILO_ASSERT(!owners.empty(), 0xA8F);
+        std::set<Symbol>* set = TheAccomplishmentMgr->GetAccomplishmentSetForCategory(selacc);
+        if(set){
+            for(std::set<Symbol>::iterator sit = set->begin(); sit != set->end(); ++sit){
+                Symbol skey = *sit;
+                TheAccomplishmentMgr->EarnAccomplishment(owners[0], skey);
+            }
+        }
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(AccomplishmentPanel)
+    HANDLE_ACTION(fake_earn_selected, FakeEarnSelected())
+    HANDLE_EXPR(selected_accomplishment, SelectedAccomplishment())
+    HANDLE_ACTION(set_other_user_to_view, unk70 = _msg->Obj<LocalBandUser>(2))
+    HANDLE_EXPR(can_navigate_list, CanNavigateList())
+    HANDLE_EXPR(can_launch_goal, CanLaunchGoal())
+    HANDLE_ACTION(launch_goal, LaunchGoal(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(is_user_on_correct_instrument, IsUserOnCorrectInstrument())
+    HANDLE_EXPR(has_correct_playercount, HasCorrectPlayerCount())
+    HANDLE_EXPR(get_total, GetTotalAccomplishments())
+    HANDLE_EXPR(get_num_completed, GetNumCompleted())
+    HANDLE_EXPR(has_leaderboard, HasLeaderboard())
+    HANDLE_EXPR(get_accomplishment_description, GetAccomplishmentDescription())
+    HANDLE_EXPR(get_accomplishment_name, GetAccomplishmentName())
+    HANDLE_EXPR(get_accomplishment_fanvalue_token, GetAccomplishmentFanValueToken())
+    HANDLE_EXPR(has_award, HasAward())
+    HANDLE_EXPR(get_flavor_text, GetAccomplishmentFlavor())
+    HANDLE_EXPR(should_show_progress, ShouldShowProgress())
+    HANDLE_EXPR(get_current_value, GetCurrentValue())
+    HANDLE_EXPR(get_current_units, GetCurrentUnits(_msg->Int(2)))
+    HANDLE_EXPR(get_current_should_show_denominator, GetCurrentShouldShowDenominator())
+    HANDLE_EXPR(get_max_value, GetMaxValue())
+    HANDLE_EXPR(should_show_best, ShouldShowBest())
+    HANDLE_EXPR(is_accomplishment_secret, IsSecret())
+    HANDLE_ACTION(launch_selected_entry, LaunchSelectedEntry(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(can_launch_selected_entry, CanLaunchSelectedEntry())
+    HANDLE_ACTION(clear_career_state, ClearCareerState())
+    HANDLE_EXPR(get_career_state, GetCareerState())
+    HANDLE_ACTION(set_career_state, SetCareerState((CareerState)_msg->Int(2), false))
+    HANDLE_ACTION(update_header_label, UpdateHeaderLabel(_msg->Obj<UILabel>(2)))
+    HANDLE_ACTION(update_campaign_meter_progress, UpdateCampaignMeterProgressLabel(_msg->Obj<UILabel>(2)))
+    HANDLE_ACTION(set_goal, SetSelectedGoal(_msg->Sym(2)))
+    HANDLE_ACTION(set_category, SetSelectedCategory(_msg->Sym(2)))
+    HANDLE_ACTION(set_group, SetSelectedGroup(_msg->Sym(2)))
+    HANDLE_ACTION(refresh_all, RefreshAll())
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(UIComponentScrollMsg)
+    HANDLE_SUPERCLASS(TexLoadPanel)
+    HANDLE_CHECK(0xAFF)
+END_HANDLERS
+#pragma pop
