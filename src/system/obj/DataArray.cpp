@@ -342,8 +342,9 @@ bool DataArray::FindData(Symbol s, const char *&ret, bool b) const {
     if (arr != 0) {
         ret = arr->Str(1);
         return true;
-    } else
+    } else {
         return false;
+    }
 }
 
 bool DataArray::FindData(Symbol s, Symbol &ret, bool b) const {
@@ -351,8 +352,9 @@ bool DataArray::FindData(Symbol s, Symbol &ret, bool b) const {
     if (arr != nullptr) {
         ret = (arr->Sym(1));
         return true;
-    } else
+    } else {
         return false;
+    }
 }
 
 bool DataArray::FindData(Symbol s, String &ret, bool b) const {
@@ -361,8 +363,9 @@ bool DataArray::FindData(Symbol s, String &ret, bool b) const {
     if (found) {
         ret = c;
         return true;
-    } else
+    } else {
         return false;
+    }
 }
 
 bool DataArray::FindData(Symbol s, int &ret, bool b) const {
@@ -370,8 +373,9 @@ bool DataArray::FindData(Symbol s, int &ret, bool b) const {
     if (arr != nullptr) {
         ret = arr->Int(1);
         return true;
-    } else
+    } else {
         return false;
+    }
 }
 
 bool DataArray::FindData(Symbol s, float &ret, bool b) const {
@@ -379,8 +383,9 @@ bool DataArray::FindData(Symbol s, float &ret, bool b) const {
     if (arr != nullptr) {
         ret = arr->Float(1);
         return true;
-    } else
+    } else {
         return false;
+    }
 }
 
 bool DataArray::FindData(Symbol s, bool &ret, bool b) const {
@@ -388,8 +393,39 @@ bool DataArray::FindData(Symbol s, bool &ret, bool b) const {
     if (arr != nullptr) {
         ret = arr->Int(1);
         return true;
-    } else
+    } else {
         return false;
+    }
+}
+
+bool DataArray::FindData(Symbol s, Plane &ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != nullptr) {
+        ret.a = arr->Float(1);
+        ret.b = arr->Float(2);
+        ret.c = arr->Float(3);
+        ret.d = arr->Float(4);
+        return true;
+    } else {
+        return false;
+    }
+}
+
+bool DataArray::FindData(Symbol s, Hmx::Color &ret, bool b) const {
+    DataArray *arr = FindArray(s, b);
+    if (arr != nullptr) {
+        ret.red = arr->Float(1);
+        ret.green = arr->Float(2);
+        ret.blue = arr->Float(3);
+        if (arr->Size() > 4) {
+            ret.alpha = arr->Float(4);
+        } else {
+            ret.alpha = 1;
+        }
+        return true;
+    } else {
+        return false;
+    }
 }
 
 DataArray* DataArray::Clone(bool b1, bool b2, int i){
