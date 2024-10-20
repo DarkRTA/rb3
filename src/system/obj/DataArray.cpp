@@ -488,9 +488,12 @@ int DataArray::NodeCmp(const void* a, const void* b){
         case kDataSymbol:
             return stricmp(anode->Str(), bnode->Str());
         case kDataArray:
-            return NodeCmp(&(anode->Array()->Node(0)), &(bnode->Array()->Node(0)));
-        case kDataObject:
-            return stricmp(anode->GetObj() ? anode->GetObj()->Name() : "", bnode->GetObj() ? bnode->GetObj()->Name() : "");
+            return NodeCmp(&anode->Array()->Node(0), &bnode->Array()->Node(0));
+        case kDataObject: {
+            const char* a = anode->GetObj() ? anode->GetObj()->Name() : "";
+            const char* b = bnode->GetObj() ? bnode->GetObj()->Name() : "";
+            return stricmp(a, b);
+        }
         default:
             MILO_WARN("could not sort array, bad type");
             return 0;
