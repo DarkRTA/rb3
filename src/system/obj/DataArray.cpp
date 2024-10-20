@@ -780,42 +780,43 @@ DataNode DataArray::ExecuteBlock(int len){
     return Evaluate(len);
 }
 
+DataNode DataArray::ExecuteScript(int index, Hmx::Object *obj, const DataArray *_args, int _argStart) {
+#ifdef MILO_DEBUG
+    DataCallStackFrame frame(this);
+#endif
 
-// // extern void DataPushVar(DataNode *dn);
-// // extern void DataPopVar();
-// // extern Hmx::Object *DataSetThis(Hmx::Object *);
+    int numVars = 0;
+    int size = mSize;
 
-// // DataNode DataArray::ExecuteScript(int i, Hmx::Object *obj, const DataArray *da, int j) {
-// //     int arrCnt;
-// //     int nodeCnt = mSize;
+    if (index < (size - 1) && mNodes[index].Type() == kDataArray) {
+        DataArray* arr = mNodes[index].mValue.array;
+        numVars = arr->Size();
+        MILO_ASSERT(_args != NULL || numVars == 0, 0x565);
 
-// //     arrCnt = 0;
-// //     if (i < nodeCnt - 1) {
-// //         if (mNodes[i].GetType() == kDataArray) {
-// //             void *arr = mNodes[i].GetDataNodeVal().dataArray;
-// //             arrCnt = ((DataArray *)arr)->GetNodeCount();
-// //             for (int cnt = 0; cnt < arrCnt; cnt++) {
-// //                 DataNode *var = ((DataArray *)arr)->GetVarAtIndex(cnt);
-// //                 DataPushVar(var);
-// //                 DataNode *eval = EvaluateNodeAtIndex((DataArray *)da, cnt + j);
-// //                 *var = *eval;
-// //             }
-// //             i++;
-// //         }
-// //     }
-// //     DataNode ret = DataNode();
-// //     if (i >= nodeCnt) {
-// //         ret = DataNode(0);
-// //     } else {
-// //         Hmx::Object *setThis = DataSetThis(obj);
-// //         ret = RunCommandsFromIndex(i);
-// //         DataSetThis(setThis);
-// //     }
-// //     while (arrCnt-- != 0) {
-// //         DataPopVar();
-// //     }
-// //     return ret;
-// // }
+        for (int i = 0; i < numVars; i++) {
+            DataNode *var = arr->Var(i);
+            DataPushVar(var);
+            *var = _args->Evaluate(i + _argStart);
+        }
+
+        index++;
+    }
+
+    DataNode ret;
+    if (index >= size) {
+        ret = DataNode(0);
+    } else {
+        Hmx::Object *setThis = DataSetThis(obj);
+        ret = ExecuteBlock(index);
+        DataSetThis(setThis);
+    }
+
+    while (numVars-- != 0) {
+        DataPopVar();
+    }
+
+    return ret;
+}
 
 TextStream& operator<<(TextStream& ts, const DataArray* da){
     if(da) da->Print(ts, kDataArray, false);
