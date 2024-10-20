@@ -1,5 +1,4 @@
 #include "obj/Data.h"
-#include "types.h"
 #include <stdlib.h>
 #include <string.h>
 #include <list>
@@ -52,6 +51,11 @@ public:
 
 private:
 };
+
+// required to match `__FUNCTION__` strings
+DECOMP_FORCEBLOCK(DataArray, (std::vector<Vector3>& v),
+    v.erase(v.begin(), v.end());
+)
 
 bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     int len = strlen(cc);
@@ -843,3 +847,7 @@ BinStream &operator<<(BinStream &bs, const DataArray *da) {
         bs << false;
     return bs;
 }
+
+DECOMP_FORCEBLOCK(DataArray, (std::vector<Vector3>& v),
+    v.insert(v.end(), Vector3());
+)
