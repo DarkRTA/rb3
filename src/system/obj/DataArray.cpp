@@ -154,6 +154,10 @@ bool DataArray::PrintUnused(TextStream& ts, DataType ty, bool b) const {
     return ret;
 }
 
+DECOMP_FORCEACTIVE(DataArray,
+    "gLinearNodesMemSize == 0"
+)
+
 void* NodesLinearAlloc(int i){
     MILO_ASSERT(gLinearNodesMemSize > 0, 264);
     gNumLinearAllocs++;
@@ -309,6 +313,11 @@ DataArray* DataArray::FindArray(Symbol tag, bool fail) const {
     if(found == 0 && fail) MILO_FAIL("Couldn't find '%s' in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
     return found;
 }
+
+DECOMP_FORCEACTIVE(DataArray,
+    "a->Size()==3",
+    "AddrIsInLinearMem!\n"
+)
 
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
     return FindArray(s1, true)->FindArray(s2, true);
