@@ -12,5 +12,5 @@ public:
 
     void Update(Symbol);
 
-    std::vector<Symbol> unk20; // 0x20
+    std::vector<Symbol> mFaceTypes; // 0x20
 };
