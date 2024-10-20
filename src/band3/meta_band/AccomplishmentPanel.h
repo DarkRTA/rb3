@@ -2,6 +2,7 @@
 #include "game/BandUser.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
+#include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/JoypadMsgs.h"
@@ -99,6 +100,9 @@ public:
         }
         std::stable_sort(mGroups.begin(), mGroups.end(), AccomplishmentGroupCmp(TheAccomplishmentMgr));
     }
+
+    AccomplishmentGroup* GetAccomplishmentGroup(int data) const;
+    Symbol GetCareerLevel(float) const;
 
     const std::vector<DynamicTex*>& mIcons; // 0x20
     std::vector<Symbol> mGroups; // 0x24

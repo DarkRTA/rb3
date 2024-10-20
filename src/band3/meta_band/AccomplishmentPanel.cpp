@@ -1357,3 +1357,43 @@ inline void AccomplishmentGroupProvider::Custom(int, int data, UIListCustom* slo
         pMeter->SetShowing(true);
     }
 }
+
+inline AccomplishmentGroup* AccomplishmentGroupProvider::GetAccomplishmentGroup(int data) const {
+    AccomplishmentGroup* pAccomplishmentGroup = TheAccomplishmentMgr->GetAccomplishmentGroup(DataSymbol(data));
+    MILO_ASSERT(pAccomplishmentGroup, 0x160);
+    return pAccomplishmentGroup;
+}
+
+inline Symbol AccomplishmentGroupProvider::GetCareerLevel(float f) const {
+    if(f == 1.0f) return career_level8;
+    if(f > 0.86f) return career_level7;
+    if(f > 0.71f) return career_level6;
+    if(f > 0.57f) return career_level5;
+    if(f > 0.43f) return career_level4;
+    if(f > 0.29f) return career_level3;
+    if(f > 0.14f) return career_level2;
+    return career_level1;
+}
+
+inline void AccomplishmentGroupProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(i_iData < NumData(), 0xFF);
+    AccomplishmentGroup* pAccomplishmentGroup = GetAccomplishmentGroup(i_iData);
+    MILO_ASSERT(pAccomplishmentGroup, 0x102);
+    if(slot->Matches("name")){
+        label->SetTextToken(pAccomplishmentGroup->GetName());
+    }
+    else if(slot->Matches("instrument_icon")){
+        label->SetIcon(pAccomplishmentGroup->GetInstrumentIcon());
+    }
+    else if(slot->Matches("career_level")){
+        Symbol sym = DataSymbol(i_iData);
+        BandProfile* profile = TheCampaign->GetProfile();
+        AccomplishmentProgress* prog = profile->GetAccomplishmentProgress();
+        int iNumTotal = TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(sym);
+        int iNumCompleted = prog->GetNumCompletedInGroup(sym);
+        MILO_ASSERT(iNumCompleted <= iNumTotal, 0x115);
+        float level = (float)iNumCompleted / (float)iNumTotal;
+        label->SetTextToken(GetCareerLevel(level));
+    }
+    else label->SetTextToken(gNullStr);
+}
