@@ -57,6 +57,8 @@ public:
     DataNodeValue mValue;
     DataType mType;
 
+    friend class DataArray;
+
     DataNode(){
         mValue.integer = 0;
         mType = kDataInt;

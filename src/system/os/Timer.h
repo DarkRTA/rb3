@@ -142,24 +142,26 @@ public:
     float mTopValues[MAX_TOP_VALS]; // 0x24
 };
 
-typedef void (*StupidAutoTimerFunc)(float, void*);
+typedef void (*AutoTimerCallback)(float elapsed, void* context);
 
 class AutoTimer {
 public:
 
-    AutoTimer(Timer* t, float f, StupidAutoTimerFunc s, void* v) {
+    AutoTimer(Timer* t, float limit, AutoTimerCallback callback, void* context) {
         mTimer = t;
         if (!t) return;
-        unk_0x4 = f; unk_0x8 = s; unk_0xC = v;
+        mTimeLimit = limit;
+        mCallback = callback;
+        mContext = context;
         mTimer->Start();
     }
 
     ~AutoTimer() { if (mTimer) mTimer->Stop(); }
 
-    Timer* mTimer; // 0x0
-    float unk_0x4;
-    StupidAutoTimerFunc unk_0x8; // ???
-    void* unk_0xC;
+    Timer* mTimer;
+    float mTimeLimit;
+    AutoTimerCallback mCallback;
+    void* mContext;
 
     static int sCritFrameCount;
     static std::vector<std::pair<Timer, TimerStats> > sTimers;
@@ -168,12 +170,15 @@ public:
 };
 
 #ifdef VERSION_SZBE69_B8
-#define START_AUTO_TIMER(name) \
+#define START_AUTO_TIMER_CALLBACK(name, func, context) \
     static Timer* _t = AutoTimer::GetTimer(name); \
-    AutoTimer t(_t, 50.0f, NULL, NULL)
+    AutoTimer _at(_t, 50.0f, func, context)
 #else
-#define START_AUTO_TIMER(name) (void)0
+#define START_AUTO_TIMER_CALLBACK(name) (void)0
 #endif
+
+#define START_AUTO_TIMER(name) \
+    START_AUTO_TIMER_CALLBACK(name, NULL, NULL)
 
 #define TIMER_ACTION(name, action) { \
     START_AUTO_TIMER(name); \
