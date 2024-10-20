@@ -86,7 +86,7 @@ public:
     static CharCreatorState sCancelStates[18];
 
     CharCreatorState mCharCreatorState; // 0x4C
-    std::map<int, UIComponent*> unk50; // 0x50
+    std::map<int, UIComponent*> mFocusComponents; // 0x50
     ClosetMgr* mClosetMgr; // 0x68
     TourCharLocal* mCharacter; // 0x6c
     BandCharDesc* mPreviewDesc; // 0x70
@@ -99,6 +99,6 @@ public:
     UIGridProvider* mEyebrowsGridProvider; // 0x8c
     Symbol mGender; // 0x90
     Symbol mOutfit; // 0x94
-    bool unk98; // 0x98
+    bool mGenderChanged; // 0x98
     bool mWaitingToFinalize; // 0x99
 };

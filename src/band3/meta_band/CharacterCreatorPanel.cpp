@@ -1,4 +1,5 @@
 #include "meta_band/CharacterCreatorPanel.h"
+#include "CharacterCreatorPanel.h"
 #include "FaceHairProvider.h"
 #include "FaceOptionsProvider.h"
 #include "OutfitProvider.h"
@@ -43,12 +44,12 @@
 // CharacterCreatorPanel::CharCreatorState CharacterCreatorPanel::sCancelStates[18] = { 0, 0, 1, 1, 2, 4, 4, 6, 4, 4, 9, 0xA, 4, 0xC, 4, 0xE, 4, 16 };
 
 CharacterCreatorPanel::CharacterCreatorPanel() : mCharCreatorState(kCharCreatorState_Invalid), mClosetMgr(0), mCharacter(0), mPreviewDesc(0), mFaceTypeProvider(0), mOutfitProvider(0), mFaceHairProvider(0),
-    mFaceOptionsProvider(0), mFaceOptionsGridProvider(0), mEyebrowsProvider(0), mEyebrowsGridProvider(0), mGender(gNullStr), mOutfit(gNullStr), unk98(0), mWaitingToFinalize(0) {
+    mFaceOptionsProvider(0), mFaceOptionsGridProvider(0), mEyebrowsProvider(0), mEyebrowsGridProvider(0), mGender(gNullStr), mOutfit(gNullStr), mGenderChanged(0), mWaitingToFinalize(0) {
 
 }
 
 CharacterCreatorPanel::~CharacterCreatorPanel(){
-    unk50.clear();
+    mFocusComponents.clear();
 }
 
 void CharacterCreatorPanel::Load(){
@@ -56,7 +57,7 @@ void CharacterCreatorPanel::Load(){
     mClosetMgr = ClosetMgr::GetClosetMgr();
     LocalBandUser* closetUser = mClosetMgr->mUser;
     BandProfile* profile = TheProfileMgr.GetProfileForUser(closetUser);
-    if(profile && closetUser && mClosetMgr){
+    if(profile && closetUser && mClosetMgr && profile == mClosetMgr->unk28){
         CreateNewCharacter();
         AddGridThumbnails(male);
         AddGridThumbnails(female);
@@ -183,7 +184,7 @@ void CharacterCreatorPanel::SetGender(Symbol gender){
 }
 
 void CharacterCreatorPanel::HandleGenderChanged(){
-    unk98 = true;
+    mGenderChanged = true;
     mFaceTypeProvider->Update(mGender);
     mEyebrowsProvider->Update(mGender);
     mFaceOptionsProvider->mGender = mGender;
@@ -571,17 +572,17 @@ void CharacterCreatorPanel::SetCharCreatorState(CharCreatorState state){
 void CharacterCreatorPanel::SetFocusComponent(CharCreatorState state, Symbol s){
     UIComponent* pComponent = mDir->Find<UIComponent>(s.Str(), true);
     MILO_ASSERT(pComponent, 0x42E);
-    unk50[state] = pComponent;
+    mFocusComponents[state] = pComponent;
 }
 
 void CharacterCreatorPanel::StoreFocusComponent(){
     UIComponent* pFocusComponent = FocusComponent();
     MILO_ASSERT(pFocusComponent, 0x438);
-    unk50[mCharCreatorState] = pFocusComponent;
+    mFocusComponents[mCharCreatorState] = pFocusComponent;
 }
 
 UIComponent* CharacterCreatorPanel::GetFocusComponent(){
-    return unk50[mCharCreatorState];
+    return mFocusComponents[mCharCreatorState];
 }
 
 DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
@@ -779,3 +780,7 @@ BEGIN_HANDLERS(CharacterCreatorPanel)
     HANDLE_CHECK(0x556)
 END_HANDLERS
 #pragma pop
+
+BEGIN_PROPSYNCS(CharacterCreatorPanel)
+    SYNC_PROP(gender_changed, mGenderChanged)
+END_PROPSYNCS
