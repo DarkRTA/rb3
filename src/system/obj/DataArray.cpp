@@ -5,10 +5,13 @@
 #include <list>
 #include "math/MathFuncs.h"
 #include "obj/Object.h"
+#include "obj/DataFunc.h"
 #include "obj/DataUtl.h"
 #include "os/Debug.h"
 #include "utl/MemMgr.h"
 #include "utl/Symbol.h"
+
+#define HANDLE_STACK_SIZE 100
 
 int gIndent;
 
@@ -20,7 +23,7 @@ DataFunc* DataArray::sDefaultHandler;
 DataFunc* gPreExecuteFunc;
 int gPreExecuteLevel;
 
-DataArray* gCallStack[100];
+DataArray* gCallStack[HANDLE_STACK_SIZE];
 DataArray** gCallStackPtr = gCallStack;
 
 char* gLinearNodesMem;
@@ -28,6 +31,26 @@ char* gLinearNodesMemPos;
 int gNumLinearAllocs;
 int gLinearNodesMemSize;
 bool gNodesLinearAlloc;
+
+class DataCallStackFrame {
+public:
+    DataCallStackFrame(DataArray* arr) {
+        MILO_ASSERT(gCallStackPtr - gCallStack < HANDLE_STACK_SIZE, 48);
+        *gCallStackPtr++ = arr;
+
+        if (gPreExecuteFunc && (gCallStackPtr - gCallStack) <= gPreExecuteLevel) {
+            gPreExecuteFunc(arr);
+        }
+    }
+
+    ~DataCallStackFrame() {
+        if (--gCallStackPtr == gCallStack) {
+            gPreExecuteFunc = nullptr;
+        }
+    }
+
+private:
+};
 
 bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     int len = strlen(cc);
@@ -507,9 +530,74 @@ void DataArray::SortNodes() {
 }
 
 void DataArrayGlitchCB(float f, void* v){
-    DataArray* arr = ((DataArray*)v);
+    DataArray* arr = (DataArray*)v;
     arr->Node(0).Print(TheDebug, true);
     TheDebug << MakeString(" took %.2f ms (File: %s Line: %d)\n", f, arr->File(), arr->Line());
+}
+
+DataNode DataArray::Execute() {
+#ifdef MILO_DEBUG
+    DataCallStackFrame frame(this);
+#endif
+    START_AUTO_TIMER_CALLBACK("array_exec", DataArrayGlitchCB, this);
+
+    DataNode& node = Evaluate(0);
+    switch (node.Type()) {
+        case kDataFunc:
+            return node.mValue.func(this);
+        case kDataSymbol: {
+            Hmx::Object* object = gDataDir->FindObject(node.mValue.symbol, true);
+            if (object) {
+                return object->Handle(this, true);
+            }
+
+            std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(STR_TO_SYM(node.mValue.symbol));
+            if (func != gDataFuncs.end()) {
+                // Cache the function into the array to optimize repeat calls
+                node = func->second;
+                return func->second(this);
+            }
+            break;
+        }
+        case kDataObject: {
+            if (!node.mValue.object) {
+                MILO_WARN("###BAD THING HAPPENING###\n%s line %d: Trying to make a NULL object handle a message!\n###\n", File(), Line());
+                break;
+            }
+
+            return node.mValue.object->Handle(this, true);
+        }
+        case kDataString: {
+            Hmx::Object* object = gDataDir->FindObject(node.mValue.symbol, true);
+            if (object) {
+                return object->Handle(this, true);
+            }
+            break;
+        }
+        default:
+            break;
+    }
+
+    if (sDefaultHandler) {
+        DataNode n = sDefaultHandler(this);
+        if (n.Type() != kDataUnhandled) {
+            return n;
+        }
+    }
+
+    String s;
+    Node(0).Print(s, true);
+
+    String sn;
+    node.Print(sn,  true);
+
+    if (s == sn) {
+        MILO_WARN("%s not function or object (file %s, line %d)", s.c_str(), mFile, mLine);
+    } else {
+        MILO_WARN("%s = %s not function or object (file %s, line %d)", s.c_str(), sn.c_str(), mFile, mLine);
+    }
+
+    return 0;
 }
 
 void DataArray::Save(BinStream &bs) const {

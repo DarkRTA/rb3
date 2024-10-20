@@ -24,9 +24,6 @@
 std::map<Symbol, DataFunc*> gDataFuncs;
 DataThisPtr gDataThisPtr;
 
-extern Hmx::Object *gDataThis;
-extern class ObjectDir* gDataDir;
-
 // Force ~MergeFilter() to generate here
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
