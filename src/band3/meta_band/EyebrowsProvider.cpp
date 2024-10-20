@@ -31,7 +31,9 @@ RndMat* EyebrowsProvider::Mat(int, int data, UIListMesh* mesh) const {
 
 Symbol EyebrowsProvider::DataSymbol(int idx) const {
     int data = NumData() - 1;
-    if(idx <= data) data = idx & ~(idx >> 0x1F);
+    data = Clamp(0, data, idx);
     MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x41);
     return unk20[data];
 }
+
+int EyebrowsProvider::NumData() const { return unk20.size(); }

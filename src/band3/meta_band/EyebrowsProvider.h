@@ -9,7 +9,7 @@ public:
     virtual ~EyebrowsProvider(){}
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual Symbol DataSymbol(int) const;
-    virtual int NumData() const { return unk20.size(); }
+    virtual int NumData() const;
 
     void Update(Symbol);
     
