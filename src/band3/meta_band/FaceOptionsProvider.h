@@ -7,18 +7,18 @@
 
 class FaceOptionsProvider : public UIListProvider, public Hmx::Object {
 public:
-    FaceOptionsProvider(const std::vector<DynamicTex*>& vec) : unk20(vec), mGender(gNullStr), unk30(0) {}
+    FaceOptionsProvider(const std::vector<DynamicTex*>& vec) : mIcons(vec), mGender(gNullStr), mFaceOptionCount(0) {}
     virtual ~FaceOptionsProvider(){}
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual int NumData() const;
 
     void Update(Symbol s){
-        unk28 = s.mStr;
-        unk30 = BandHeadShaper::GetCount(s);
+        mFaceOption = s.mStr;
+        mFaceOptionCount = BandHeadShaper::GetCount(s);
     }
 
-    const std::vector<DynamicTex*>& unk20;
+    const std::vector<DynamicTex*>& mIcons; // 0x20
     Symbol mGender; // 0x24
-    String unk28;
-    int unk30;
+    String mFaceOption; // 0x28
+    int mFaceOptionCount; // 0x34
 };

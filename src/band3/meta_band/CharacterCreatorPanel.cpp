@@ -30,6 +30,7 @@
 #include "ui/UIComponent.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIList.h"
+#include "ui/UIListMesh.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
 #include "utl/Messages3.h"
@@ -787,3 +788,16 @@ END_HANDLERS
 BEGIN_PROPSYNCS(CharacterCreatorPanel)
     SYNC_PROP(gender_changed, mGenderChanged)
 END_PROPSYNCS
+
+inline int FaceOptionsProvider::NumData() const { return mFaceOptionCount; }
+
+inline RndMat* FaceOptionsProvider::Mat(int, int data, UIListMesh* mesh) const {
+    MILO_ASSERT(data < NumData(), 0x59);
+    if(mesh->Matches("icon")){
+        const char* genderStr = mGender.Str();
+        String str(MakeString("%s_%s_%d", genderStr, mFaceOption, data));
+        std::vector<DynamicTex*>::const_iterator it = std::find(mIcons.begin(), mIcons.end(), str);
+        if(it != mIcons.end()) return (*it)->mMat;
+    }
+    return nullptr;
+}
