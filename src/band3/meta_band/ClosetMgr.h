@@ -1,6 +1,7 @@
 #pragma once
 #include "bandobj/BandCharDesc.h"
 #include "game/BandUser.h"
+#include "meta_band/BandProfile.h"
 #include "obj/MsgSource.h"
 
 class ClosetMgr : public MsgSource {
@@ -15,13 +16,15 @@ public:
     void UpdateCurrentCharacter();
     void SetCurrentOutfitPiece(Symbol);
     void UpdateBandCharDesc(BandCharDesc*);
+    void FinalizeCharCreatorChanges();
+    void FinalizeChanges(bool, bool);
 
     static ClosetMgr* GetClosetMgr();
 
     LocalBandUser* mUser; // 0x1c
     int unk20;
     bool unk24;
-    int unk28;
+    BandProfile* unk28;
     int unk2c;
     int unk30;
     int unk34;

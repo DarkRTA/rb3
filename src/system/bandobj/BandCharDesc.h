@@ -101,16 +101,6 @@ public:
         OutfitPiece* GetPiece(Symbol);
         bool operator==(const Outfit&) const;
         bool operator!=(const Outfit&) const;
-        Outfit& operator=(const Outfit& o){
-            mTorso = o.mTorso;
-            mLegs = o.mLegs;
-            mFeet = o.mFeet;
-            mEarrings = o.mEarrings;
-            mHands = o.mHands;
-            mPiercings = o.mPiercings;
-            mRings = o.mRings;
-            mWrist = o.mWrist;
-        }
 
         static int SaveSize(int);
 

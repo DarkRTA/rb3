@@ -6,6 +6,9 @@
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/BandHeadShaper.h"
 #include "game/BandUser.h"
+#include "math/Rand.h"
+#include "meta_band/AccomplishmentManager.h"
+#include "meta_band/AppLabel.h"
 #include "meta_band/AssetMgr.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/CharData.h"
@@ -13,13 +16,19 @@
 #include "meta_band/EyebrowsProvider.h"
 #include "meta_band/FaceTypeProvider.h"
 #include "meta_band/NameGenerator.h"
+#include "meta_band/ProfileAssets.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/TexLoadPanel.h"
+#include "obj/Data.h"
 #include "os/Debug.h"
 #include "tour/TourCharLocal.h"
+#include "ui/UIComponent.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
+#include "utl/Messages3.h"
+#include "utl/Messages4.h"
+#include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -191,7 +200,15 @@ void CharacterCreatorPanel::SetOutfit(Symbol outfit){
     MILO_ASSERT(pPrefabChar, 0x1C7);
     BandCharDesc* pPrefabCharDesc = pPrefabChar->GetBandCharDesc();
     MILO_ASSERT(pPrefabCharDesc, 0x1CA);
-    mPreviewDesc->mOutfit = pPrefabCharDesc->mOutfit;
+    BandCharDesc* target = mPreviewDesc;
+    target->mOutfit.mTorso = pPrefabCharDesc->mOutfit.mTorso;
+    target->mOutfit.mLegs = pPrefabCharDesc->mOutfit.mLegs;
+    target->mOutfit.mFeet = pPrefabCharDesc->mOutfit.mFeet;
+    target->mOutfit.mEarrings = pPrefabCharDesc->mOutfit.mEarrings;
+    target->mOutfit.mHands = pPrefabCharDesc->mOutfit.mHands;
+    target->mOutfit.mPiercings = pPrefabCharDesc->mOutfit.mPiercings;
+    target->mOutfit.mRings = pPrefabCharDesc->mOutfit.mRings;
+    target->mOutfit.mWrist = pPrefabCharDesc->mOutfit.mWrist;
     mClosetMgr->PreviewCharacter(true, true);
     UpdateOutfitList();
 }
@@ -223,4 +240,334 @@ Symbol CharacterCreatorPanel::GetGlasses(){
     Symbol glassesName = mPreviewDesc->mOutfit.mGlasses.mName;
     if(glassesName == gNullStr) return none_glasses;
     else return mPreviewDesc->mOutfit.mHair.mName;
+}
+
+void CharacterCreatorPanel::SetHair(Symbol s){
+    BandCharDesc* desc = mPreviewDesc;
+    if(desc){
+        if(s != none_hair) desc->mOutfit.mHair.mName = s;
+        else desc->mOutfit.mHair.mName = gNullStr;
+        mClosetMgr->SetCurrentOutfitPiece(hair);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+Symbol CharacterCreatorPanel::GetHair(){
+    if(!mPreviewDesc) return gNullStr;
+    Symbol hairName = mPreviewDesc->mOutfit.mHair.mName;
+    if(hairName == gNullStr) return none_hair;
+    else return mPreviewDesc->mOutfit.mHair.mName;
+}
+
+void CharacterCreatorPanel::SetFaceHair(Symbol s){
+    BandCharDesc* desc = mPreviewDesc;
+    if(desc){
+        if(s != none_facehair) desc->mOutfit.mFaceHair.mName = s;
+        else desc->mOutfit.mFaceHair.mName = gNullStr;
+        mClosetMgr->SetCurrentOutfitPiece(facehair);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+Symbol CharacterCreatorPanel::GetFaceHair(){
+    if(!mPreviewDesc) return gNullStr;
+    Symbol facehairName = mPreviewDesc->mOutfit.mFaceHair.mName;
+    if(facehairName == gNullStr) return none_facehair;
+    else return facehairName;
+}
+
+void CharacterCreatorPanel::SetHeight(int height){
+    if(mPreviewDesc){
+        MILO_ASSERT(( 0) <= (height) && (height) <= ( 10), 0x268);
+        mPreviewDesc->SetHeight(height / 10.0f);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+int CharacterCreatorPanel::GetHeight(){
+    if(!mPreviewDesc) return 0;
+    else {
+        float fHeight = mPreviewDesc->mHeight;
+        MILO_ASSERT(( 0.0f) <= (fHeight) && (fHeight) <= ( 1.0f), 0x276);
+        return fHeight * 10.0f;
+    }
+}
+
+void CharacterCreatorPanel::SetWeight(int weight){
+    if(mPreviewDesc){
+        MILO_ASSERT(( 0) <= (weight) && (weight) <= ( 10), 0x282);
+        mPreviewDesc->SetWeight(weight / 10.0f);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+int CharacterCreatorPanel::GetWeight(){
+    if(!mPreviewDesc) return 0;
+    else {
+        float fWeight = mPreviewDesc->mWeight;
+        MILO_ASSERT(( 0.0f) <= (fWeight) && (fWeight) <= ( 1.0f), 0x290);
+        return fWeight * 10.0f;
+    }
+}
+
+void CharacterCreatorPanel::SetBuild(int build){
+    if(mPreviewDesc){
+        MILO_ASSERT(( 0) <= (build) && (build) <= ( 10), 0x29C);
+        mPreviewDesc->SetMuscle(build / 10.0f);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+int CharacterCreatorPanel::GetBuild(){
+    if(!mPreviewDesc) return 0;
+    else {
+        float fBuild = mPreviewDesc->mMuscle;
+        MILO_ASSERT(( 0.0f) <= (fBuild) && (fBuild) <= ( 1.0f), 0x2AA);
+        return fBuild * 10.0f;
+    }
+}
+
+void CharacterCreatorPanel::SetSkinTone(int tone){
+    if(mPreviewDesc){
+        mPreviewDesc->SetSkinColor(tone);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+int CharacterCreatorPanel::GetSkinTone(){
+    if(mPreviewDesc) return mPreviewDesc->mSkinColor;
+    else return 0;
+}
+
+void CharacterCreatorPanel::RandomizeFace(){
+    BandCharDesc* desc = mPreviewDesc;
+    desc->mHead.mShape = RandomInt(0, BandHeadShaper::GetCount(shape));
+    desc->mHead.mChin = RandomInt(0, BandHeadShaper::GetCount(chin));
+    desc->mHead.mEye = RandomInt(0, BandHeadShaper::GetCount(eye));
+    desc->mHead.mNose = RandomInt(0, BandHeadShaper::GetCount(nose));
+    desc->mHead.mMouth = RandomInt(0, BandHeadShaper::GetCount(mouth));
+    desc->mHead.mBrowHeight = 0.5f;
+    desc->mHead.mBrowSeparation = 0.5f;
+    desc->mHead.mChinHeight = 0.5f;
+    desc->mHead.mChinWidth = 0.5f;
+    desc->mHead.mEyeHeight = 0.5f;
+    desc->mHead.mEyeRotation = 0.5f;
+    desc->mHead.mEyeSeparation = 0.5f;
+    desc->mHead.mJawHeight = 0.5f;
+    desc->mHead.mJawWidth = 0.5f;
+    desc->mHead.mMouthHeight = 0.5f;
+    desc->mHead.mMouthWidth = 0.5f;
+    desc->mHead.mNoseHeight = 0.5f;
+    desc->mHead.mNoseWidth = 0.5f;
+    desc->mOutfit.mEyebrows.mName = GetRandomEyebrows();
+    mClosetMgr->PreviewCharacter(true, false);
+    mClosetMgr->FinalizeCharCreatorChanges();
+}
+
+void CharacterCreatorPanel::SetFaceType(Symbol s){
+    PrefabMgr* pPrefabMgr = PrefabMgr::GetPrefabMgr();
+    MILO_ASSERT(pPrefabMgr, 0x2EC);
+    BandCharDesc* pFaceTypeDesc = pPrefabMgr->GetFaceType(s);
+    MILO_ASSERT(pFaceTypeDesc, 0x2EF);
+    BandCharDesc* desc = mPreviewDesc;
+    desc->mHead.mBrowHeight = pFaceTypeDesc->mHead.mBrowHeight;
+    desc->mHead.mBrowSeparation = pFaceTypeDesc->mHead.mBrowSeparation;
+    desc->mHead.mChin = pFaceTypeDesc->mHead.mChin;
+    desc->mHead.mChinHeight = pFaceTypeDesc->mHead.mChinHeight;
+    desc->mHead.mChinWidth = pFaceTypeDesc->mHead.mChinWidth;
+    desc->mHead.mEye = pFaceTypeDesc->mHead.mEye;
+    desc->mHead.mEyeHeight = pFaceTypeDesc->mHead.mEyeHeight;
+    desc->mHead.mEyeRotation = pFaceTypeDesc->mHead.mEyeRotation;
+    desc->mHead.mEyeSeparation = pFaceTypeDesc->mHead.mEyeSeparation;
+    desc->mHead.mJawHeight = pFaceTypeDesc->mHead.mJawHeight;
+    desc->mHead.mJawWidth = pFaceTypeDesc->mHead.mJawWidth;
+    desc->mHead.mMouth = pFaceTypeDesc->mHead.mMouth;
+    desc->mHead.mMouthHeight = pFaceTypeDesc->mHead.mMouthHeight;
+    desc->mHead.mMouthWidth = pFaceTypeDesc->mHead.mMouthWidth;
+    desc->mHead.mNose = pFaceTypeDesc->mHead.mNose;
+    desc->mHead.mNoseHeight = pFaceTypeDesc->mHead.mNoseHeight;
+    desc->mHead.mNoseWidth = pFaceTypeDesc->mHead.mNoseWidth;
+    desc->mHead.mShape = pFaceTypeDesc->mHead.mShape;
+    BandCharDesc* eyebrowdesc = mPreviewDesc;
+    eyebrowdesc->mOutfit.mEyebrows = pFaceTypeDesc->mOutfit.mEyebrows;
+    mClosetMgr->PreviewCharacter(true, false);
+}
+
+Symbol CharacterCreatorPanel::GetRandomEyebrows(){
+    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    MILO_ASSERT(pAssetMgr, 0x312);
+    std::vector<Symbol> eyebrows;
+    pAssetMgr->GetEyebrows(eyebrows, mGender);
+    return eyebrows[RandomInt(0, eyebrows.size())];
+}
+
+void CharacterCreatorPanel::SetFaceOption(int option){
+    BandCharDesc* desc = mPreviewDesc;
+    switch(mCharCreatorState){
+        case 5:
+            desc->mHead.mShape = option;
+            break;
+        case 6:
+            desc->mHead.mChin = option;
+            break;
+        case 9:
+            desc->mHead.mEye = option;
+            break;
+        case 14:
+            desc->mHead.mNose = option;
+            break;
+        case 16:
+            desc->mHead.mMouth = option;
+            break;
+        default:
+            break;
+    }
+    mClosetMgr->PreviewCharacter(true, false);
+}
+
+void CharacterCreatorPanel::SetEyebrows(Symbol brows){
+    BandCharDesc* desc = mPreviewDesc;
+    if(desc){
+        desc->mOutfit.mEyebrows.mName = brows;
+        if(brows != none_eyebrows) desc->mOutfit.mEyebrows.mName = brows;
+        else desc->mOutfit.mEyebrows.mName = gNullStr;
+        mClosetMgr->SetCurrentOutfitPiece(eyebrows);
+        mClosetMgr->PreviewCharacter(true, false);
+    }
+}
+
+Symbol CharacterCreatorPanel::GetEyebrows(){
+    if(mPreviewDesc) return mPreviewDesc->mOutfit.mEyebrows.mName;
+    else return gNullStr;
+}
+
+int CharacterCreatorPanel::GetFeatureIndex(Symbol s){
+    if(!mPreviewDesc) return 0;
+    else {
+        DataArrayPtr ptr(head, s);
+        DataNode* featureIndex = mPreviewDesc->Property(ptr, true);
+        MILO_ASSERT(featureIndex, 0x36D);
+        return featureIndex->Int();
+    }
+}
+
+void CharacterCreatorPanel::ModifyFeature(Symbol s, float f){
+    if(mPreviewDesc){
+        DataArrayPtr ptr(head, s);
+        float prop = mPreviewDesc->Property(ptr, true)->Float();
+        float newfloat = prop + f;
+        ClampEq(newfloat, 0.0f, 1.0f);
+        if(newfloat != prop){
+            mPreviewDesc->SetProperty(ptr, newfloat);
+            mClosetMgr->PreviewCharacter(true, false);
+        }
+    }
+}
+
+void CharacterCreatorPanel::SetProviders(){
+    Handle(set_providers_msg, true);
+}
+
+void CharacterCreatorPanel::UpdateNameLabel(){
+    if(mCharacter){
+        static Message msg("get_name_label", 0);
+        DataNode handled = Handle(msg, true);
+        AppLabel* pAppLabel = handled.Obj<AppLabel>();
+        MILO_ASSERT(pAppLabel, 0x395);
+        pAppLabel->SetFromCharacter(mCharacter);
+    }
+}
+
+void CharacterCreatorPanel::UpdateOutfitList(){
+    Handle(update_outfit_list_msg, true);
+}
+
+void CharacterCreatorPanel::RefreshFaceOptionsList(){
+    Handle(refresh_face_options_list_msg, true);
+}
+
+void CharacterCreatorPanel::FinalizeCharacter(){
+    CheckCharacterAssets();
+    mCharacter->SetFinalized(true);
+    BandProfile* pProfile = mClosetMgr->unk28;
+    MILO_ASSERT(pProfile, 0x3B1);
+    pProfile->AddNewChar(mCharacter);
+    mClosetMgr->FinalizeChanges(true, false);
+    LocalBandUser* pUser = mClosetMgr->mUser;
+    MILO_ASSERT(pUser, 0x3B9);
+    TheAccomplishmentMgr->EarnAccomplishment(pUser, acc_charactercreate);
+}
+
+void CharacterCreatorPanel::SetIsWaitingToFinalize(bool b){ unk99 = b; }
+
+void CharacterCreatorPanel::CheckCharacterAssets(){
+    BandProfile* pProfile = mClosetMgr->unk28;
+    MILO_ASSERT(pProfile, 0x3C9);
+    Symbol syms[17] = {
+        "eyebrows", "facehair", "hair", "earrings", "glasses", "piercings", "feet", "hands",
+        "legs", "rings", "torso", "wrist", "guitar", "bass", "drum", "mic", "keyboard"
+    };
+    const ProfileAssets& assets = pProfile->mProfileAssets;
+    BandCharDesc::Outfit& outfit = mPreviewDesc->mOutfit;
+    BandCharDesc::InstrumentOutfit& ioutfit = mPreviewDesc->mInstruments;
+    for(int i = 0; i < 17; i++){
+        Symbol curSym = syms[i];
+        BandCharDesc::OutfitPiece* curPiece;
+        if(curSym == "guitar" || curSym == "bass" || curSym == "drum" || curSym == "mic" || curSym == "keyboard"){
+            curPiece = ioutfit.GetPiece(curSym);
+        }
+        else curPiece = outfit.GetPiece(curSym);
+        Symbol piecename = curPiece->mName;
+        if(!assets.HasAsset(piecename)){
+            MILO_WARN("Character has unsafe asset: (%s) in char/main/shared/nonselectable_prefabs.milo.", piecename.Str());
+        }
+    }
+}
+
+void CharacterCreatorPanel::SetCharCreatorState(CharCreatorState state){
+    Symbol bodypart = gNullStr;
+    switch(state){
+        case 5:
+            bodypart = shape;
+            break;
+        case 6:
+            bodypart = chin;
+            break;
+        case 9:
+            bodypart = eye;
+            break;
+        case 14:
+            bodypart = nose;
+            break;
+        case 16:
+            bodypart = mouth;
+            break;
+        default:
+            break;
+    }
+    if(bodypart != gNullStr){
+        mFaceOptionsProvider->Update(bodypart);
+        RefreshFaceOptionsList();
+    }
+    static Message msg("update_state", 0, 0);
+    msg[0] = state;
+    msg[1] = mCharCreatorState;
+    mCharCreatorState = state;
+    HandleType(msg);
+}
+
+void CharacterCreatorPanel::SetFocusComponent(CharCreatorState state, Symbol s){
+    UIComponent* pComponent = mDir->Find<UIComponent>(s.Str(), true);
+    MILO_ASSERT(pComponent, 0x42E);
+    unk50[state] = pComponent;
+}
+
+void CharacterCreatorPanel::StoreFocusComponent(){
+    UIComponent* pFocusComponent = FocusComponent();
+    MILO_ASSERT(pFocusComponent, 0x438);
+    unk50[mCharCreatorState] = pFocusComponent;
+}
+
+UIComponent* CharacterCreatorPanel::GetFocusComponent(){
+    return unk50[mCharCreatorState];
 }

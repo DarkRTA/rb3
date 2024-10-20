@@ -49,6 +49,33 @@ public:
     void SetGlasses(Symbol);
     Symbol GetGlasses();
     void UpdateOutfitList();
+    void SetHair(Symbol);
+    Symbol GetHair();
+    void SetFaceHair(Symbol);
+    Symbol GetFaceHair();
+    void SetHeight(int);
+    int GetHeight();
+    void SetWeight(int);
+    int GetWeight();
+    void SetBuild(int);
+    int GetBuild();
+    void SetSkinTone(int);
+    int GetSkinTone();
+    void RandomizeFace();
+    Symbol GetRandomEyebrows();
+    void SetFaceType(Symbol);
+    void SetFaceOption(int);
+    void SetEyebrows(Symbol);
+    Symbol GetEyebrows();
+    int GetFeatureIndex(Symbol);
+    void ModifyFeature(Symbol, float);
+    void RefreshFaceOptionsList();
+    void FinalizeCharacter();
+    void CheckCharacterAssets();
+    void SetIsWaitingToFinalize(bool);
+    void SetFocusComponent(CharCreatorState, Symbol);
+    void StoreFocusComponent();
+    UIComponent* GetFocusComponent();
 
     CharCreatorState mCharCreatorState; // 0x4C
     std::map<int, UIComponent*> unk50; // 0x50
