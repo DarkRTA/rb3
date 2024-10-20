@@ -37,7 +37,7 @@ public:
 
 class AccomplishmentProvider : public UIListProvider, public Hmx::Object {
 public:
-    AccomplishmentProvider(){}
+    AccomplishmentProvider(const std::vector<DynamicTex*>& vec) : mIcons(vec) {}
     virtual ~AccomplishmentProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual RndMat* Mat(int, int, UIListMesh*) const;
@@ -67,12 +67,12 @@ public:
     }
 
     std::vector<Symbol> mGoals; // 0x20
-    int unk28; // 0x28
+    const std::vector<DynamicTex*>& mIcons; // 0x28
 };
 
 class AccomplishmentGroupProvider : public UIListProvider, public Hmx::Object {
 public:
-    AccomplishmentGroupProvider(){}
+    AccomplishmentGroupProvider(const std::vector<DynamicTex*>& vec) : mIcons(vec) {}
     virtual ~AccomplishmentGroupProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const;
@@ -97,7 +97,7 @@ public:
         std::stable_sort(mGroups.begin(), mGroups.end(), AccomplishmentGroupCmp(TheAccomplishmentMgr));
     }
 
-    int unk20; // 0x20
+    const std::vector<DynamicTex*>& mIcons; // 0x20
     std::vector<Symbol> mGroups; // 0x24
 };
 
@@ -125,7 +125,7 @@ public:
 
 class AccomplishmentEntryProvider : public UIListProvider, public Hmx::Object {
 public:
-    AccomplishmentEntryProvider(){}
+    AccomplishmentEntryProvider() : m_pAccomplishment(0) {}
     virtual ~AccomplishmentEntryProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual int NumData() const { return unk24.size(); }

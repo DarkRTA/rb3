@@ -152,11 +152,11 @@ void AccomplishmentPanel::Enter(){
     BandProfile* pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0x3A5);
     MILO_ASSERT(!mAccomplishmentGroupProvider, 0x3A7);
-    mAccomplishmentGroupProvider = new AccomplishmentGroupProvider();
+    mAccomplishmentGroupProvider = new AccomplishmentGroupProvider(mTexs);
     MILO_ASSERT(!mAccomplishmentCategoryProvider, 0x3AA);
     mAccomplishmentCategoryProvider = new AccomplishmentCategoryProvider();
     MILO_ASSERT(!mAccomplishmentProvider, 0x3AD);
-    mAccomplishmentProvider = new AccomplishmentProvider();
+    mAccomplishmentProvider = new AccomplishmentProvider(mTexs);
     mAccomplishmentGridProvider = new UIGridProvider(mAccomplishmentProvider, 4);
     MILO_ASSERT(!mAccomplishmentEntryProvider, 0x3B1);
     mAccomplishmentEntryProvider = new AccomplishmentEntryProvider();
