@@ -66,6 +66,8 @@ public:
         }
     }
 
+    Accomplishment* GetAccomplishment(int data) const;
+
     std::vector<Symbol> mGoals; // 0x20
     const std::vector<DynamicTex*>& mIcons; // 0x28
 };

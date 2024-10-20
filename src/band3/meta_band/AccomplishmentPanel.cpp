@@ -3,6 +3,9 @@
 #include "AccomplishmentPanel.h"
 #include "BandProfile.h"
 #include "Campaign.h"
+#include "bandobj/MeterDisplay.h"
+#include "decomp.h"
+#include "game/Band.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
@@ -24,8 +27,14 @@
 #include "os/Debug.h"
 #include "os/JoypadMsgs.h"
 #include "stl/_algo.h"
+#include "ui/UIColor.h"
+#include "ui/UIComponent.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIList.h"
+#include "ui/UIListCustom.h"
+#include "ui/UIListLabel.h"
+#include "ui/UIListMesh.h"
+#include "ui/UIListProvider.h"
 #include "ui/UIMessages.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
@@ -1175,3 +1184,102 @@ BEGIN_HANDLERS(AccomplishmentPanel)
     HANDLE_CHECK(0xAFF)
 END_HANDLERS
 #pragma pop
+
+void FORCEFUNC_UIListProviderFuncs(UIListProvider* u){
+    u->SlotColorOverride(0, 0, 0, 0);
+    u->InitData(0);
+    u->IsActive(0);
+    u->DataIndex(gNullStr);
+}
+
+void FORCEFUNC_AccomplishmentProviderFuncs(AccomplishmentProvider* ap){
+    ap->ComponentStateOverride(0, 0, UIComponent::kNormal);
+    ap->Custom(0, 0, 0, 0);
+    ap->Mat(0, 0, 0);
+    ap->Text(0, 0, 0, 0);
+}
+
+inline UIComponent::State AccomplishmentProvider::ComponentStateOverride(int, int data, UIComponent::State state) const {
+    Symbol datasym = DataSymbol(data);
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(!IsAccomplished(datasym, profile)) return UIComponent::kDisabled;
+    else return state;
+}
+
+inline Accomplishment* AccomplishmentProvider::GetAccomplishment(int data) const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(DataSymbol(data));
+    MILO_ASSERT(pAccomplishment, 0x34B);
+    return pAccomplishment;
+}
+
+inline void AccomplishmentProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(slot->Matches("progress")){
+        Accomplishment* pAccomplishment = GetAccomplishment(data);
+        MILO_ASSERT(pAccomplishment, 0x2DE);
+        MeterDisplay* pMeter = dynamic_cast<MeterDisplay*>(obj);
+        MILO_ASSERT(pMeter, 0x2E1);
+        pMeter->SetShowText(false);
+        pMeter->SetShowing(false);
+        if(!IsAccomplishmentSecret(pAccomplishment, profile) && !pAccomplishment->HideProgress()){
+            if(!IsAccomplished(pAccomplishment->GetName(), profile)){
+                int i1c = 0;
+                int i20 = 0;
+                if(pAccomplishment->InqProgressValues(profile, i1c, i20)){
+                    pMeter->SetValues(i1c, i20);
+                    pMeter->SetShowing(true);
+                }
+            }
+        }
+    }
+}
+
+inline RndMat* AccomplishmentProvider::Mat(int, int i_iData, UIListMesh* slot) const {
+    MILO_ASSERT(i_iData < NumData(), 0x2B2);
+    Accomplishment* pAccomplishment = GetAccomplishment(i_iData);
+    MILO_ASSERT(pAccomplishment, 0x2B5);
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(slot->Matches("icon")){
+        bool isAccomplished = IsAccomplished(pAccomplishment->GetName(), profile);
+        String accName(pAccomplishment->GetName());
+        if(IsAccomplishmentSecret(pAccomplishment, profile)){
+            accName = "acc_secret";
+        }
+        std::vector<DynamicTex*>::const_iterator it = std::find(mIcons.begin(), mIcons.end(), accName);
+        if(it != mIcons.end()){
+            RndMat* pMat = (*it)->mMat;
+            MILO_ASSERT(pMat, 0x2C6);
+            if(isAccomplished) pMat->SetAlpha(1.0f);
+            else pMat->SetAlpha(0.25f);
+            return pMat;
+        }
+    }
+    return slot->DefaultMat();
+}
+
+inline void AccomplishmentProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(i_iData < NumData(), 0x273);
+    Accomplishment* pAccomplishment = GetAccomplishment(i_iData);
+    MILO_ASSERT(pAccomplishment, 0x276);
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(slot->Matches("name")){
+        if(IsAccomplishmentSecret(pAccomplishment, profile)){
+            label->SetTextToken(acc_secret);
+        }
+        else {
+            label->SetTextToken(pAccomplishment->GetName());
+        }
+    }
+    else if(slot->Matches("description")){
+        if(IsAccomplishmentSecret(pAccomplishment, profile)){
+            label->SetTextToken(acc_secret_desc);
+        } 
+        else {
+            label->SetTextToken(pAccomplishment->GetDescription());
+        }
+    }
+    else if(slot->Matches("best_score")){
+        label->SetTextToken(gNullStr);
+    }
+    else label->SetTextToken(gNullStr);
+}

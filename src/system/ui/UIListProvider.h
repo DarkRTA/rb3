@@ -24,7 +24,13 @@ public:
     virtual void UpdateExtendedMesh(int, int, RndMesh*) const;
     virtual void UpdateExtendedCustom(int, int, Hmx::Object*) const;
     virtual Symbol DataSymbol(int) const { return gNullStr; }
-    virtual int DataIndex(Symbol) const;
+    virtual int DataIndex(Symbol s) const {
+        int numdata = NumData();
+        for(int i = 0; i < numdata; i++){
+            if(DataSymbol(i) == s) return i;
+        }
+        return -1;
+    }
     virtual int NumData() const = 0;
     virtual bool IsActive(int) const { return true; }
     virtual bool IsHidden(int) const { return false; }
