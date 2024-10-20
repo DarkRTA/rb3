@@ -10,7 +10,7 @@ public:
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;
 
-    std::vector<Symbol> unk20; // 0x20
-    std::vector<Symbol> unk28; // 0x28
-    std::vector<Symbol>* unk30; // 0x30
+    std::vector<Symbol> mMaleFaceHair; // 0x20
+    std::vector<Symbol> mFemaleFaceHair; // 0x28
+    std::vector<Symbol>* mFaceHair; // 0x30
 };

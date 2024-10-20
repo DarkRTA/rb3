@@ -177,7 +177,7 @@
             "band3/meta_band/EditSetlistPanel.cpp": "MISSING",
             "band3/meta_band/EventDialogPanel.cpp": "MISSING",
             "band3/meta_band/EyebrowsProvider.cpp": "Matching",
-            "band3/meta_band/FaceHairProvider.cpp": "NonMatching",
+            "band3/meta_band/FaceHairProvider.cpp": "Matching",
             "band3/meta_band/FaceTypeProvider.cpp": "NonMatching",
             "band3/meta_band/GameTimePanel.cpp": "MISSING",
             "band3/meta_band/GameplayOptions.cpp": "Matching",
