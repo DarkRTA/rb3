@@ -146,12 +146,12 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
             i->Print(ts, b);
             i++;
         }
-        ts << " ";
+        ts << "\n";
         gIndent += 3;
         while (i < end) {
             ts.Space(gIndent);
             i->Print(ts, b);
-            ts << " ";
+            ts << "\n";
             i++;
         }
         gIndent -= 3;
@@ -161,7 +161,7 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
         ts << open;
         for (i = mNodes; i < end; i++) {
             if (i != mNodes) {
-                ts << "\n";
+                ts << " ";
             }
             i->Print(ts, b);
         }
