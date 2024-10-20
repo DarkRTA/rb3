@@ -209,9 +209,10 @@ int CharacterCreatorPanel::GetEyeColor(){
 }
 
 void CharacterCreatorPanel::SetGlasses(Symbol s){
-    if(mPreviewDesc){
-        if(s == none_glasses) mPreviewDesc->mOutfit.mGlasses.mName = s;
-        else mPreviewDesc->mOutfit.mGlasses.mName = gNullStr;
+    BandCharDesc* desc = mPreviewDesc;
+    if(desc){
+        if(s != none_glasses) desc->mOutfit.mGlasses.mName = s;
+        else desc->mOutfit.mGlasses.mName = gNullStr;
         mClosetMgr->SetCurrentOutfitPiece(glasses);
         mClosetMgr->PreviewCharacter(true, false);
     }
@@ -219,7 +220,7 @@ void CharacterCreatorPanel::SetGlasses(Symbol s){
 
 Symbol CharacterCreatorPanel::GetGlasses(){
     if(!mPreviewDesc) return gNullStr;
-    Symbol glassesname = mPreviewDesc->mOutfit.mGlasses.mName;
-    if(glassesname != gNullStr) return glassesname;
-    else return none_glasses;
+    Symbol glassesName = mPreviewDesc->mOutfit.mGlasses.mName;
+    if(glassesName == gNullStr) return none_glasses;
+    else return mPreviewDesc->mOutfit.mHair.mName;
 }
