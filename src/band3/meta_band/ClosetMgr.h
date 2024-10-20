@@ -18,6 +18,7 @@ public:
     void UpdateBandCharDesc(BandCharDesc*);
     void FinalizeCharCreatorChanges();
     void FinalizeChanges(bool, bool);
+    void ResetCharacterPreview();
 
     static ClosetMgr* GetClosetMgr();
 

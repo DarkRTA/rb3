@@ -5,6 +5,7 @@
 #include "PrefabMgr.h"
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/BandHeadShaper.h"
+#include "decomp.h"
 #include "game/BandUser.h"
 #include "math/Rand.h"
 #include "meta_band/AccomplishmentManager.h"
@@ -20,10 +21,14 @@
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/TexLoadPanel.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
+#include "os/Joypad.h"
+#include "os/JoypadMsgs.h"
 #include "tour/TourCharLocal.h"
 #include "ui/UIComponent.h"
 #include "ui/UIGridProvider.h"
+#include "ui/UIList.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
 #include "utl/Messages3.h"
@@ -32,10 +37,13 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
+// CharacterCreatorPanel::CharCreatorState CharacterCreatorPanel::sCancelStates[18] = { 0, 0, 1, 1, 2, 4, 4, 6, 4, 4, 9, 0xA, 4, 0xC, 4, 0xE, 4, 16 };
+
 CharacterCreatorPanel::CharacterCreatorPanel() : mCharCreatorState(kCharCreatorState_Invalid), mClosetMgr(0), mCharacter(0), mPreviewDesc(0), mFaceTypeProvider(0), mOutfitProvider(0), mFaceHairProvider(0),
-    mFaceOptionsProvider(0), mFaceOptionsGridProvider(0), mEyebrowsProvider(0), mEyebrowsGridProvider(0), mGender(gNullStr), mOutfit(gNullStr), unk98(0), unk99(0) {
+    mFaceOptionsProvider(0), mFaceOptionsGridProvider(0), mEyebrowsProvider(0), mEyebrowsGridProvider(0), mGender(gNullStr), mOutfit(gNullStr), unk98(0), mWaitingToFinalize(0) {
 
 }
 
@@ -94,6 +102,8 @@ void CharacterCreatorPanel::Exit(){
     if(mCharacter) SetCharCreatorState((CharCreatorState)0);
 }
 
+DECOMP_FORCEACTIVE(CharacterCreatorPanel, "mClosetMgr", "pUser", "pPreviousCharacter")
+
 void CharacterCreatorPanel::Unload(){
     RELEASE(mEyebrowsGridProvider);
     RELEASE(mEyebrowsProvider);
@@ -116,6 +126,8 @@ void CharacterCreatorPanel::AddGridThumbnails(Symbol s){
     AddGridThumbnails(s, nose);
     AddGridThumbnails(s, mouth);
 }
+
+DECOMP_FORCEACTIVE(CharacterCreatorPanel, "ui/character_creator/image/%s_keep.png")
 
 void CharacterCreatorPanel::AddGridThumbnails(Symbol s1, Symbol s2){
     int count;
@@ -198,17 +210,17 @@ void CharacterCreatorPanel::SetOutfit(Symbol outfit){
     MILO_ASSERT(pCharCreatorPrefab, 0x1C4);
     PrefabChar* pPrefabChar = pCharCreatorPrefab->unk0;
     MILO_ASSERT(pPrefabChar, 0x1C7);
-    BandCharDesc* pPrefabCharDesc = pPrefabChar->GetBandCharDesc();
-    MILO_ASSERT(pPrefabCharDesc, 0x1CA);
+    BandCharDesc* pPrefabBandCharDesc = pPrefabChar->GetBandCharDesc();
+    MILO_ASSERT(pPrefabBandCharDesc, 0x1CA);
     BandCharDesc* target = mPreviewDesc;
-    target->mOutfit.mTorso = pPrefabCharDesc->mOutfit.mTorso;
-    target->mOutfit.mLegs = pPrefabCharDesc->mOutfit.mLegs;
-    target->mOutfit.mFeet = pPrefabCharDesc->mOutfit.mFeet;
-    target->mOutfit.mEarrings = pPrefabCharDesc->mOutfit.mEarrings;
-    target->mOutfit.mHands = pPrefabCharDesc->mOutfit.mHands;
-    target->mOutfit.mPiercings = pPrefabCharDesc->mOutfit.mPiercings;
-    target->mOutfit.mRings = pPrefabCharDesc->mOutfit.mRings;
-    target->mOutfit.mWrist = pPrefabCharDesc->mOutfit.mWrist;
+    target->mOutfit.mTorso = pPrefabBandCharDesc->mOutfit.mTorso;
+    target->mOutfit.mLegs = pPrefabBandCharDesc->mOutfit.mLegs;
+    target->mOutfit.mFeet = pPrefabBandCharDesc->mOutfit.mFeet;
+    target->mOutfit.mEarrings = pPrefabBandCharDesc->mOutfit.mEarrings;
+    target->mOutfit.mHands = pPrefabBandCharDesc->mOutfit.mHands;
+    target->mOutfit.mPiercings = pPrefabBandCharDesc->mOutfit.mPiercings;
+    target->mOutfit.mRings = pPrefabBandCharDesc->mOutfit.mRings;
+    target->mOutfit.mWrist = pPrefabBandCharDesc->mOutfit.mWrist;
     mClosetMgr->PreviewCharacter(true, true);
     UpdateOutfitList();
 }
@@ -498,7 +510,7 @@ void CharacterCreatorPanel::FinalizeCharacter(){
     TheAccomplishmentMgr->EarnAccomplishment(pUser, acc_charactercreate);
 }
 
-void CharacterCreatorPanel::SetIsWaitingToFinalize(bool b){ unk99 = b; }
+void CharacterCreatorPanel::SetIsWaitingToFinalize(bool b){ mWaitingToFinalize = b; }
 
 void CharacterCreatorPanel::CheckCharacterAssets(){
     BandProfile* pProfile = mClosetMgr->unk28;
@@ -571,3 +583,199 @@ void CharacterCreatorPanel::StoreFocusComponent(){
 UIComponent* CharacterCreatorPanel::GetFocusComponent(){
     return unk50[mCharCreatorState];
 }
+
+DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
+    if(mWaitingToFinalize) return 1;
+    JoypadAction act = msg.GetAction();
+    if(mCharCreatorState == 7){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("chin_height", 0.1f);
+                break;
+            case kAction_Right:
+                ModifyFeature("chin_width", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("chin_height", -0.1f);
+                break;
+            case kAction_Left:
+                ModifyFeature("chin_width", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    else if(mCharCreatorState == 8){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("jaw_height", 0.1f);
+                break;
+            case kAction_Right:
+                ModifyFeature("jaw_width", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("jaw_height", -0.1f);
+                break;
+            case kAction_Left:
+                ModifyFeature("jaw_width", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    else if(mCharCreatorState == 10){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("eye_height", 0.1f);
+                break;
+            case kAction_Right:
+                ModifyFeature("eye_separation", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("eye_height", -0.1f);
+                break;
+            case kAction_Left:
+                ModifyFeature("eye_separation", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    else if(mCharCreatorState == 11){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("eye_rotation", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("eye_rotation", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    else if(mCharCreatorState == 13){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("brow_height", 0.1f);
+                break;
+            case kAction_Right:
+                ModifyFeature("brow_separation", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("brow_height", -0.1f);
+                break;
+            case kAction_Left:
+                ModifyFeature("brow_separation", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    else if(mCharCreatorState == 15){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("nose_height", 0.1f);
+                break;
+            case kAction_Right:
+                ModifyFeature("nose_width", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("nose_height", -0.1f);
+                break;
+            case kAction_Left:
+                ModifyFeature("nose_width", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    else if(mCharCreatorState == 17){
+        switch(act){
+            case kAction_Up:
+                ModifyFeature("mouth_height", 0.1f);
+                break;
+            case kAction_Right:
+                ModifyFeature("mouth_width", 0.1f);
+                break;
+            case kAction_Down:
+                ModifyFeature("mouth_height", -0.1f);
+                break;
+            case kAction_Left:
+                ModifyFeature("mouth_width", -0.1f);
+                break;
+            default:
+                break;
+        }
+    }
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode CharacterCreatorPanel::LeaveState(){
+    LocalBandUser* pUser = mClosetMgr->mUser;
+    MILO_ASSERT(pUser, 0x4D6);
+    static Message msg("handle_sound_back", 0);
+    msg[0] = pUser;
+    Handle(msg, true);
+    mClosetMgr->ResetCharacterPreview();
+    SetCharCreatorState(sCancelStates[mCharCreatorState]);
+    return 1;
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(CharacterCreatorPanel)
+    HANDLE_EXPR(get_user, GetUser())
+    HANDLE_ACTION(set_name, SetName(_msg->Str(2)))
+    HANDLE_EXPR(get_name, GetName())
+    HANDLE_EXPR(get_default_vk_name, GetDefaultVKName())
+    HANDLE_ACTION(update_name_label, UpdateNameLabel())
+    HANDLE_ACTION(set_gender, SetGender(_msg->Sym(2)))
+    HANDLE_EXPR(get_gender, GetGender())
+    HANDLE_ACTION(handle_gender_changed, HandleGenderChanged())
+    HANDLE_ACTION(set_outfit, SetOutfit(_msg->Sym(2)))
+    HANDLE_EXPR(get_outfit, GetOutfit())
+    HANDLE_ACTION(set_facetype, SetFaceType(_msg->Sym(2)))
+    HANDLE_ACTION(set_eye_color, SetEyeColor(_msg->Int(2)))
+    HANDLE_EXPR(get_eye_color, GetEyeColor())
+    HANDLE_ACTION(set_glasses, SetGlasses(_msg->Sym(2)))
+    HANDLE_EXPR(get_glasses, GetGlasses())
+    HANDLE_ACTION(set_hair, SetHair(_msg->Sym(2)))
+    HANDLE_EXPR(get_hair, GetHair())
+    HANDLE_ACTION(set_facehair, SetFaceHair(_msg->Sym(2)))
+    HANDLE_EXPR(get_facehair, GetFaceHair())
+    HANDLE_ACTION(set_eyebrows, SetEyebrows(_msg->Sym(2)))
+    HANDLE_EXPR(get_eyebrows, GetEyebrows())
+    HANDLE_ACTION(set_height, SetHeight(_msg->Int(2)))
+    HANDLE_EXPR(get_height, GetHeight())
+    HANDLE_ACTION(set_weight, SetWeight(_msg->Int(2)))
+    HANDLE_EXPR(get_weight, GetWeight())
+    HANDLE_ACTION(set_build, SetBuild(_msg->Int(2)))
+    HANDLE_EXPR(get_build, GetBuild())
+    HANDLE_ACTION(set_skin_tone, SetSkinTone(_msg->Int(2)))
+    HANDLE_EXPR(get_skin_tone, GetSkinTone())
+    HANDLE_ACTION(randomize_face, RandomizeFace())
+    HANDLE_ACTION(set_face_option, SetFaceOption(_msg->Int(2)))
+    HANDLE_EXPR(get_feature_index, GetFeatureIndex(_msg->Sym(2)))
+    HANDLE_ACTION(set_focus_component, SetFocusComponent((CharCreatorState)_msg->Int(2), _msg->Sym(3)))
+    HANDLE_ACTION(store_focus_component, StoreFocusComponent())
+    HANDLE_EXPR(get_focus_component, GetFocusComponent())
+    HANDLE_ACTION(finalize_character, FinalizeCharacter())
+    HANDLE_ACTION(set_is_waiting_to_finalize, SetIsWaitingToFinalize(_msg->Int(2)))
+    HANDLE_EXPR(is_waiting_to_finalize, mWaitingToFinalize)
+    HANDLE_ACTION(set_state, SetCharCreatorState((CharCreatorState)_msg->Int(2)))
+    HANDLE_EXPR(get_state, GetCharCreatorState())
+    HANDLE_ACTION(leave_state, LeaveState())
+    HANDLE_EXPR(outfit_provider, mOutfitProvider)
+    HANDLE_EXPR(facetype_provider, mFaceTypeProvider)
+    HANDLE_EXPR(facehair_provider, mFaceHairProvider)
+    HANDLE_ACTION(set_face_options_provider, _msg->Obj<UIList>(2)->SetProvider(mFaceOptionsGridProvider))
+    HANDLE_ACTION(set_eyebrows_provider, _msg->Obj<UIList>(2)->SetProvider(mEyebrowsGridProvider))
+    HANDLE_EXPR(get_face_options_selected, mFaceOptionsGridProvider->GetDataFromList(_msg->Obj<UIList>(2)))
+    HANDLE_ACTION(set_face_options_selected, mFaceOptionsGridProvider->SetListToData(_msg->Obj<UIList>(2), _msg->Int(3)))
+    HANDLE_EXPR(get_eyebrows_selected, mEyebrowsGridProvider->GetSymbolFromList(_msg->Obj<UIList>(2)))
+    HANDLE_ACTION(set_eyebrows_selected, mEyebrowsGridProvider->SetListToSymbol(_msg->Obj<UIList>(2), _msg->Sym(3)))
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_SUPERCLASS(TexLoadPanel)
+    HANDLE_CHECK(0x556)
+END_HANDLERS
+#pragma pop

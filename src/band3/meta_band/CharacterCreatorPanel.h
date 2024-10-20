@@ -76,6 +76,14 @@ public:
     void SetFocusComponent(CharCreatorState, Symbol);
     void StoreFocusComponent();
     UIComponent* GetFocusComponent();
+    Symbol GetGender() const { return mGender; }
+    Symbol GetOutfit(){ return mOutfit; }
+    CharCreatorState GetCharCreatorState() const { return mCharCreatorState; }
+
+    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode LeaveState();
+
+    static CharCreatorState sCancelStates[18];
 
     CharCreatorState mCharCreatorState; // 0x4C
     std::map<int, UIComponent*> unk50; // 0x50
@@ -91,6 +99,6 @@ public:
     UIGridProvider* mEyebrowsGridProvider; // 0x8c
     Symbol mGender; // 0x90
     Symbol mOutfit; // 0x94
-    bool unk98;
-    bool unk99;
+    bool unk98; // 0x98
+    bool mWaitingToFinalize; // 0x99
 };
