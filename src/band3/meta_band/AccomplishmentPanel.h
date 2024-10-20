@@ -1,6 +1,7 @@
 #pragma once
 #include "game/BandUser.h"
 #include "meta_band/Accomplishment.h"
+#include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/JoypadMsgs.h"
@@ -121,6 +122,7 @@ public:
     }
 
     void Update(Symbol);
+    AccomplishmentCategory* GetAccomplishmentCategory(int data) const;
 
     std::vector<Symbol> mCategories; // 0x20
 };
@@ -130,12 +132,12 @@ public:
     AccomplishmentEntryProvider() : m_pAccomplishment(0) {}
     virtual ~AccomplishmentEntryProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual int NumData() const { return unk24.size(); }
+    virtual int NumData() const { return m_vEntries.size(); }
 
     void Update(Accomplishment*);
 
     Accomplishment* m_pAccomplishment; // 0x20
-    std::vector<Symbol> unk24; // 0x24
+    std::vector<Symbol> m_vEntries; // 0x24
 };
 
 enum CareerState {

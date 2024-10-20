@@ -793,9 +793,9 @@ void AccomplishmentPanel::UpdateDetailsListState(){
 inline void AccomplishmentEntryProvider::Update(Accomplishment* acc){
     m_pAccomplishment = acc;
     MILO_ASSERT(m_pAccomplishment, 0x1F5);
-    unk24.clear();
+    m_vEntries.clear();
     BandProfile* profile = TheCampaign->GetProfile();
-    m_pAccomplishment->InqIncrementalSymbols(profile, unk24);
+    m_pAccomplishment->InqIncrementalSymbols(profile, m_vEntries);
 }
 
 bool AccomplishmentPanel::HasAward() const {
@@ -1282,4 +1282,78 @@ inline void AccomplishmentProvider::Text(int, int i_iData, UIListLabel* slot, UI
         label->SetTextToken(gNullStr);
     }
     else label->SetTextToken(gNullStr);
+}
+
+void FORCEFUNC_OtherAccomplishmentProviderFuncs(AccomplishmentEntryProvider* aep, AccomplishmentCategoryProvider* acp, AccomplishmentGroupProvider* agp){
+    aep->Text(0, 0, 0, 0);
+    acp->Custom(0, 0, 0, 0);
+    acp->Text(0, 0, 0, 0);
+    agp->Custom(0, 0, 0, 0);
+    agp->Text(0, 0, 0, 0);
+}
+
+inline void AccomplishmentEntryProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    if(!m_vEntries.empty()){
+        MILO_ASSERT(i_iData < m_vEntries.size(), 0x204);
+        Symbol entry = m_vEntries[i_iData];
+        if(slot->Matches("name")){
+            m_pAccomplishment->UpdateIncrementalEntryName(label, entry);
+        }
+        else if(slot->Matches("check")){
+            BandProfile* profile = TheCampaign->GetProfile();
+            if(m_pAccomplishment->IsSymbolEntryFulfilled(profile, entry)){
+                label->SetIcon('+');
+            }
+            else label->SetIcon('i');
+        }
+        else label->SetTextToken(gNullStr);
+    }
+}
+
+inline void AccomplishmentCategoryProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
+    if(slot->Matches("progress")){
+        Symbol sym = DataSymbol(data);
+        BandProfile* profile = TheCampaign->GetProfile();
+        AccomplishmentProgress* prog = profile->GetAccomplishmentProgress();
+        int numaccs = TheAccomplishmentMgr->GetNumAccomplishmentsInCategory(sym);
+        int numcompleted = prog->GetNumCompletedInCategory(sym);
+        MeterDisplay* pMeter = dynamic_cast<MeterDisplay*>(obj);
+        MILO_ASSERT(pMeter, 0x1B0);
+        pMeter->SetShowText(true);
+        pMeter->SetValues(numcompleted, numaccs);
+        pMeter->SetShowing(true);
+    }
+}
+
+inline AccomplishmentCategory* AccomplishmentCategoryProvider::GetAccomplishmentCategory(int data) const {
+    AccomplishmentCategory* pAccomplishmentCategory = TheAccomplishmentMgr->GetAccomplishmentCategory(DataSymbol(data));
+    MILO_ASSERT(pAccomplishmentCategory, 0x1E1);
+    return pAccomplishmentCategory;
+}
+
+inline void AccomplishmentCategoryProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(i_iData < NumData(), 0x192);
+    AccomplishmentCategory* pAccomplishmentCategory = GetAccomplishmentCategory(i_iData);
+    MILO_ASSERT(pAccomplishmentCategory, 0x195);
+    pAccomplishmentCategory->GetName();
+    if(slot->Matches("name")){
+        label->SetTextToken(pAccomplishmentCategory->GetName());
+    }
+    else label->SetTextToken(gNullStr);
+}
+
+inline void AccomplishmentGroupProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
+    if(slot->Matches("progress")){
+        Symbol sym = DataSymbol(data);
+        BandProfile* profile = TheCampaign->GetProfile();
+        AccomplishmentProgress* prog = profile->GetAccomplishmentProgress();
+        int numaccs = TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(sym);
+        int numcompleted = prog->GetNumCompletedInGroup(sym);
+        MeterDisplay* pMeter = dynamic_cast<MeterDisplay*>(obj);
+        MILO_ASSERT(pMeter, 0x12D);
+        pMeter->SetShowText(true);
+        pMeter->SetPercentageText(false);
+        pMeter->SetValues(numcompleted, numaccs);
+        pMeter->SetShowing(true);
+    }
 }
