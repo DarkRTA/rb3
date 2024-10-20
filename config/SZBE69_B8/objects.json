@@ -1075,7 +1075,7 @@
             "system/movie/Splash.cpp": "NonMatching",
             "system/movie/TexMovie.cpp": "Matching",
 
-            "system/obj/DataArray.cpp": "NonMatching",
+            "system/obj/DataArray.cpp": "Equivalent",
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
