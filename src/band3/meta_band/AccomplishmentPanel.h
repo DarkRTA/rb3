@@ -1,6 +1,8 @@
 #pragma once
 #include "game/BandUser.h"
 #include "meta_band/Accomplishment.h"
+#include "meta_band/AccomplishmentCategory.h"
+#include "meta_band/AccomplishmentGroup.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/JoypadMsgs.h"
@@ -37,7 +39,7 @@ public:
 
 class AccomplishmentProvider : public UIListProvider, public Hmx::Object {
 public:
-    AccomplishmentProvider(){}
+    AccomplishmentProvider(const std::vector<DynamicTex*>& vec) : mIcons(vec) {}
     virtual ~AccomplishmentProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual RndMat* Mat(int, int, UIListMesh*) const;
@@ -66,13 +68,15 @@ public:
         }
     }
 
+    Accomplishment* GetAccomplishment(int data) const;
+
     std::vector<Symbol> mGoals; // 0x20
-    int unk28; // 0x28
+    const std::vector<DynamicTex*>& mIcons; // 0x28
 };
 
 class AccomplishmentGroupProvider : public UIListProvider, public Hmx::Object {
 public:
-    AccomplishmentGroupProvider(){}
+    AccomplishmentGroupProvider(const std::vector<DynamicTex*>& vec) : mIcons(vec) {}
     virtual ~AccomplishmentGroupProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual void Custom(int, int, class UIListCustom*, Hmx::Object*) const;
@@ -97,7 +101,10 @@ public:
         std::stable_sort(mGroups.begin(), mGroups.end(), AccomplishmentGroupCmp(TheAccomplishmentMgr));
     }
 
-    int unk20; // 0x20
+    AccomplishmentGroup* GetAccomplishmentGroup(int data) const;
+    Symbol GetCareerLevel(float) const;
+
+    const std::vector<DynamicTex*>& mIcons; // 0x20
     std::vector<Symbol> mGroups; // 0x24
 };
 
@@ -119,25 +126,30 @@ public:
     }
 
     void Update(Symbol);
+    AccomplishmentCategory* GetAccomplishmentCategory(int data) const;
 
     std::vector<Symbol> mCategories; // 0x20
 };
 
 class AccomplishmentEntryProvider : public UIListProvider, public Hmx::Object {
 public:
-    AccomplishmentEntryProvider(){}
+    AccomplishmentEntryProvider() : m_pAccomplishment(0) {}
     virtual ~AccomplishmentEntryProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual int NumData() const { return unk24.size(); }
+    virtual int NumData() const { return m_vEntries.size(); }
 
     void Update(Accomplishment*);
 
     Accomplishment* m_pAccomplishment; // 0x20
-    std::vector<Symbol> unk24; // 0x24
+    std::vector<Symbol> m_vEntries; // 0x24
 };
 
 enum CareerState {
-
+    kCareerStateNone = 0,
+    kCareerStateGroup = 1,
+    kCareerStateCategory = 2,
+    kCareerStateGoal = 3,
+    kCareerStateDetails = 4
 };
 
 class AccomplishmentPanel : public TexLoadPanel {
@@ -223,7 +235,7 @@ public:
     DataNode Details_HandleButtonDownMsg(const ButtonDownMsg&);
     DataNode OnMsg(const ButtonDownMsg&);
 
-    int unk4c; // career state
+    CareerState mCareerState; // 0x4c
     Symbol mGoal; // 0x50
     Symbol mGroup; // 0x54
     Symbol mCategory; // 0x58
@@ -232,7 +244,7 @@ public:
     AccomplishmentCategoryProvider* mAccomplishmentCategoryProvider; // 0x64
     AccomplishmentGroupProvider* mAccomplishmentGroupProvider; // 0x68
     UIGridProvider* mAccomplishmentGridProvider; // 0x6c
-    LocalBandUser* unk70; // 0x70
+    LocalBandUser* mOtherUserToView; // 0x70
 };
 
 bool IsAccomplishmentSecret(Accomplishment*, const BandProfile*);

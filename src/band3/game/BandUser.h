@@ -56,6 +56,7 @@ public:
     void SetHasButtonGuitar(bool);
     void SetHas22FretGuitar(bool);
     CharData* GetChar();
+    void SetChar(CharData*);
     const char* IntroName() const;
     int GetSlot() const;
     const char* GetTrackIcon() const;

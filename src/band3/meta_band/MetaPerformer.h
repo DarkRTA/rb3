@@ -128,6 +128,8 @@ public:
     bool IsBandNoFailSet() const;
     bool CanUpdateScoreLeaderboards();
     void SetSetlist(Symbol);
+    void SelectRandomVenue();
+    void SetVenue(Symbol);
 
     static void Init();
     static MetaPerformer* Current();

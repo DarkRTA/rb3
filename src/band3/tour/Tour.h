@@ -71,6 +71,7 @@ public:
     bool HasBronzeMedal(Symbol) const;
     bool HasSilverMedal(Symbol) const;
     bool HasGoldMedal(Symbol) const;
+    void LaunchQuestFilter(int, Symbol, Symbol, Symbol, TourSetlistType, Symbol, Symbol, Symbol);
 
     const SongMgr& mSongMgr; // 0x1c
     BandUserMgr& mBandUserMgr; // 0x20

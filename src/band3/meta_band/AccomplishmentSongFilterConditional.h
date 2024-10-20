@@ -5,6 +5,7 @@
 #include "obj/Data.h"
 
 class AccomplishmentSongFilterConditional : public AccomplishmentSongConditional {
+public:
     AccomplishmentSongFilterConditional(DataArray*, int);
     virtual ~AccomplishmentSongFilterConditional();
     virtual AccomplishmentType GetType() const;

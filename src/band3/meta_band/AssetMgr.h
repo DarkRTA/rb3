@@ -31,6 +31,8 @@ public:
     void EquipAsset(BandCharDesc*, Symbol);
     void EquipAssets(LocalBandUser*, const std::vector<Symbol>&);
 
+    const std::map<Symbol, Asset*>& GetAssets() const { return mAssets; }
+
     std::map<Symbol, Asset*> mAssets;  
 };
 

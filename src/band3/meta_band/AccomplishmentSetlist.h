@@ -6,7 +6,7 @@
 #include <set>
 #include "Accomplishment.h"
 
-class AccomplishmentSetlist : private Accomplishment {
+class AccomplishmentSetlist : public Accomplishment {
 public:
     AccomplishmentSetlist(DataArray*, int);
     virtual ~AccomplishmentSetlist();

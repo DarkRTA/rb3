@@ -3,6 +3,9 @@
 #include "AccomplishmentPanel.h"
 #include "BandProfile.h"
 #include "Campaign.h"
+#include "bandobj/MeterDisplay.h"
+#include "decomp.h"
+#include "game/Band.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
@@ -24,8 +27,14 @@
 #include "os/Debug.h"
 #include "os/JoypadMsgs.h"
 #include "stl/_algo.h"
+#include "ui/UIColor.h"
+#include "ui/UIComponent.h"
 #include "ui/UIGridProvider.h"
 #include "ui/UIList.h"
+#include "ui/UIListCustom.h"
+#include "ui/UIListLabel.h"
+#include "ui/UIListMesh.h"
+#include "ui/UIListProvider.h"
 #include "ui/UIMessages.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
@@ -108,8 +117,8 @@ bool IsAccomplished(Symbol s, const BandProfile* profile){
     else return false;
 }
 
-AccomplishmentPanel::AccomplishmentPanel() : unk4c(0), mGoal(gNullStr), mGroup(gNullStr), mCategory(gNullStr), mAccomplishmentEntryProvider(0),
-    mAccomplishmentProvider(0), mAccomplishmentCategoryProvider(0), mAccomplishmentGroupProvider(0), unk70(0) {
+AccomplishmentPanel::AccomplishmentPanel() : mCareerState(kCareerStateNone), mGoal(gNullStr), mGroup(gNullStr), mCategory(gNullStr), mAccomplishmentEntryProvider(0),
+    mAccomplishmentProvider(0), mAccomplishmentCategoryProvider(0), mAccomplishmentGroupProvider(0), mOtherUserToView(0) {
 
 }
 
@@ -152,22 +161,22 @@ void AccomplishmentPanel::Enter(){
     BandProfile* pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0x3A5);
     MILO_ASSERT(!mAccomplishmentGroupProvider, 0x3A7);
-    mAccomplishmentGroupProvider = new AccomplishmentGroupProvider();
+    mAccomplishmentGroupProvider = new AccomplishmentGroupProvider(mTexs);
     MILO_ASSERT(!mAccomplishmentCategoryProvider, 0x3AA);
     mAccomplishmentCategoryProvider = new AccomplishmentCategoryProvider();
     MILO_ASSERT(!mAccomplishmentProvider, 0x3AD);
-    mAccomplishmentProvider = new AccomplishmentProvider();
+    mAccomplishmentProvider = new AccomplishmentProvider(mTexs);
     mAccomplishmentGridProvider = new UIGridProvider(mAccomplishmentProvider, 4);
     MILO_ASSERT(!mAccomplishmentEntryProvider, 0x3B1);
     mAccomplishmentEntryProvider = new AccomplishmentEntryProvider();
-    if(unk4c == 0){
+    if(mCareerState == kCareerStateNone){
         mGoal = gNullStr;
         mCategory = gNullStr;
         mGroup = gNullStr;
-        SetCareerState((CareerState)1, false);
+        SetCareerState(kCareerStateGroup, false);
     }
     else {
-        SetCareerState((CareerState)unk4c, false);
+        SetCareerState(mCareerState, false);
     }
     Refresh();
 }
@@ -192,7 +201,7 @@ void AccomplishmentPanel::LoadCampaignIcons(){
 }
 
 void AccomplishmentPanel::Unload(){
-    unk70 = 0;
+    mOtherUserToView = 0;
     TexLoadPanel::Unload();
     RELEASE(mAccomplishmentProvider);
     RELEASE(mAccomplishmentGridProvider);
@@ -253,7 +262,7 @@ DataNode AccomplishmentPanel::OnMsg(const UIComponentScrollMsg& msg){
 DataNode AccomplishmentPanel::Group_HandleButtonDownMsg(const ButtonDownMsg& msg){
     switch(msg.GetAction()){
         case kAction_Confirm:
-            SetCareerState((CareerState)2, true);
+            SetCareerState(kCareerStateCategory, true);
             HandleSoundSelect(msg.GetUser());
             return 0;
         case kAction_Cancel:
@@ -274,11 +283,11 @@ DataNode AccomplishmentPanel::Group_HandleButtonDownMsg(const ButtonDownMsg& msg
 DataNode AccomplishmentPanel::Category_HandleButtonDownMsg(const ButtonDownMsg& msg){
     switch(msg.GetAction()){
         case kAction_Confirm:
-            SetCareerState((CareerState)3, true);
+            SetCareerState(kCareerStateGoal, true);
             HandleSoundSelect(msg.GetUser());
             return 0;
         case kAction_Cancel:
-            SetCareerState((CareerState)1, true);
+            SetCareerState(kCareerStateGroup, true);
             HandleSoundBack(msg.GetUser());
             break;
         default:
@@ -298,12 +307,12 @@ DataNode AccomplishmentPanel::Goal_HandleButtonDownMsg(const ButtonDownMsg& msg)
             }
             return 0;
         case kAction_Cancel:
-            SetCareerState((CareerState)2, true);
+            SetCareerState(kCareerStateCategory, true);
             HandleSoundSelect(msg.GetUser());
             break;
         case kAction_WiiHomeMenu:
             if(CanNavigateList()){
-                SetCareerState((CareerState)4, true);
+                SetCareerState(kCareerStateDetails, true);
                 HandleSoundSelect(msg.GetUser());
             }
             break;
@@ -330,11 +339,11 @@ DataNode AccomplishmentPanel::Details_HandleButtonDownMsg(const ButtonDownMsg& m
             }
             return 0;
         case kAction_Cancel:
-            SetCareerState((CareerState)3, true);
+            SetCareerState(kCareerStateGoal, true);
             HandleSoundBack(msg.GetUser());
             break;
         case kAction_WiiHomeMenu:
-            SetCareerState((CareerState)3, true);
+            SetCareerState(kCareerStateGoal, true);
             HandleSoundBack(msg.GetUser());
             break;
         case kAction_Option:
@@ -355,14 +364,14 @@ DataNode AccomplishmentPanel::OnMsg(const ButtonDownMsg& msg){
         HandleSoundToggle(msg.GetUser());
         return DataNode(kDataUnhandled, 0);
     }
-    else switch(unk4c){
-        case 1:
+    else switch(mCareerState){
+        case kCareerStateGroup:
             return Group_HandleButtonDownMsg(msg);
-        case 2:
+        case kCareerStateCategory:
             return Category_HandleButtonDownMsg(msg);
-        case 3:
+        case kCareerStateGoal:
             return Goal_HandleButtonDownMsg(msg);
-        case 4:
+        case kCareerStateDetails:
             return Details_HandleButtonDownMsg(msg);
         default:
             MILO_ASSERT(false, 0x502);
@@ -372,7 +381,7 @@ DataNode AccomplishmentPanel::OnMsg(const ButtonDownMsg& msg){
 
 bool AccomplishmentPanel::CanNavigateList() const {
     if(GetState() != kUp) return false;
-    if(unk4c - 1 <= 1U) return false;
+    if(mCareerState == kCareerStateGroup || mCareerState == kCareerStateCategory) return false;
     Symbol selacc = SelectedAccomplishment();
     Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
     if(!acc) return false;
@@ -386,7 +395,7 @@ bool AccomplishmentPanel::CanNavigateList() const {
 }
 
 bool AccomplishmentPanel::CanLaunchGoal() const {
-    if(unk4c - 1 <= 1U) return false;
+    if(mCareerState == kCareerStateGroup || mCareerState == kCareerStateCategory) return false;
     Symbol selacc = SelectedAccomplishment();
     Accomplishment* acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
     if(!acc) return false;
@@ -784,9 +793,9 @@ void AccomplishmentPanel::UpdateDetailsListState(){
 inline void AccomplishmentEntryProvider::Update(Accomplishment* acc){
     m_pAccomplishment = acc;
     MILO_ASSERT(m_pAccomplishment, 0x1F5);
-    unk24.clear();
+    m_vEntries.clear();
     BandProfile* profile = TheCampaign->GetProfile();
-    m_pAccomplishment->InqIncrementalSymbols(profile, unk24);
+    m_pAccomplishment->InqIncrementalSymbols(profile, m_vEntries);
 }
 
 bool AccomplishmentPanel::HasAward() const {
@@ -953,24 +962,24 @@ void AccomplishmentPanel::LaunchSelectedEntry(LocalBandUser* user){
 #pragma pop
 
 void AccomplishmentPanel::ClearCareerState(){
-    SetCareerState((CareerState)0, true);
+    SetCareerState(kCareerStateNone, true);
 }
 
-CareerState AccomplishmentPanel::GetCareerState() const { return (CareerState)unk4c; }
+CareerState AccomplishmentPanel::GetCareerState() const { return mCareerState; }
 
 void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
-    int oldstate = unk4c;
-    unk4c = state;
-    if(unk4c != 0 && GetState() == kUp){
-        switch(unk4c){
-            case 1:
+    CareerState oldstate = mCareerState;
+    mCareerState = state;
+    if(mCareerState != 0 && GetState() == kUp){
+        switch(mCareerState){
+            case kCareerStateGroup:
                 if(!b) Handle(handle_snap_state_group_msg, true);
                 else if(oldstate == 2){
                     Handle(handle_state_category_to_group_msg, true);
                 }
                 else MILO_ASSERT(false, 0x97A);
                 break;
-            case 2:
+            case kCareerStateCategory:
                 if(!b) Handle(handle_snap_state_category_msg, true);
                 else if(oldstate == 1){
                     Handle(handle_state_group_to_category_msg, true);
@@ -980,7 +989,7 @@ void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
                 }
                 else MILO_ASSERT(false, 0x991);
                 break;
-            case 3:
+            case kCareerStateGoal:
                 if(!b) Handle(handle_snap_state_goal_msg, true);
                 else if(oldstate == 4){
                     Handle(handle_state_details_to_goal_msg, true);
@@ -990,7 +999,7 @@ void AccomplishmentPanel::SetCareerState(CareerState state, bool b){
                 }
                 else MILO_ASSERT(false, 0x9A8);
                 break;
-            case 4:
+            case kCareerStateDetails:
                 if(!b) Handle(handle_snap_state_details_msg, true);
                 else if(oldstate == 3){
                     Handle(handle_state_goal_to_details_msg, true);
@@ -1043,15 +1052,15 @@ void AccomplishmentPanel::UpdateCampaignMeterProgressLabel(UILabel* i_pLabel){
 
 void AccomplishmentPanel::UpdateHeaderLabel(UILabel* i_pLabel){
     MILO_ASSERT(i_pLabel, 0xA07);
-    switch(unk4c){
-        case 1:
+    switch(mCareerState){
+        case kCareerStateGroup:
             i_pLabel->SetTextToken(career_header_main);
             break;
-        case 2:
+        case kCareerStateCategory:
             i_pLabel->SetTokenFmt(career_header_group, mGroup);
             break;
-        case 3:
-        case 4:
+        case kCareerStateGoal:
+        case kCareerStateDetails:
             i_pLabel->SetTokenFmt(career_header_category, mGroup, mCategory);
             break;
         default:
@@ -1063,15 +1072,15 @@ void AccomplishmentPanel::UpdateHeaderLabel(UILabel* i_pLabel){
 void AccomplishmentPanel::RefreshAll(){ Refresh(); }
 
 void AccomplishmentPanel::FakeEarnSelected(){
-    switch(unk4c){
-        case 1:
+    switch(mCareerState){
+        case kCareerStateGroup:
             FakeEarnSelectedGroup();
             break;
-        case 2:
+        case kCareerStateCategory:
             FakeEarnSelectedCategory();
             break;
-        case 3:
-        case 4:
+        case kCareerStateGoal:
+        case kCareerStateDetails:
             FakeEarnSelectedGoal();
             break;
         default:
@@ -1137,7 +1146,7 @@ void AccomplishmentPanel::FakeEarnSelectedCategory(){
 BEGIN_HANDLERS(AccomplishmentPanel)
     HANDLE_ACTION(fake_earn_selected, FakeEarnSelected())
     HANDLE_EXPR(selected_accomplishment, SelectedAccomplishment())
-    HANDLE_ACTION(set_other_user_to_view, unk70 = _msg->Obj<LocalBandUser>(2))
+    HANDLE_ACTION(set_other_user_to_view, mOtherUserToView = _msg->Obj<LocalBandUser>(2))
     HANDLE_EXPR(can_navigate_list, CanNavigateList())
     HANDLE_EXPR(can_launch_goal, CanLaunchGoal())
     HANDLE_ACTION(launch_goal, LaunchGoal(_msg->Obj<LocalBandUser>(2)))
@@ -1175,3 +1184,216 @@ BEGIN_HANDLERS(AccomplishmentPanel)
     HANDLE_CHECK(0xAFF)
 END_HANDLERS
 #pragma pop
+
+void FORCEFUNC_UIListProviderFuncs(UIListProvider* u){
+    u->SlotColorOverride(0, 0, 0, 0);
+    u->InitData(0);
+    u->IsActive(0);
+    u->DataIndex(gNullStr);
+}
+
+void FORCEFUNC_AccomplishmentProviderFuncs(AccomplishmentProvider* ap){
+    ap->ComponentStateOverride(0, 0, UIComponent::kNormal);
+    ap->Custom(0, 0, 0, 0);
+    ap->Mat(0, 0, 0);
+    ap->Text(0, 0, 0, 0);
+}
+
+inline UIComponent::State AccomplishmentProvider::ComponentStateOverride(int, int data, UIComponent::State state) const {
+    Symbol datasym = DataSymbol(data);
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(!IsAccomplished(datasym, profile)) return UIComponent::kDisabled;
+    else return state;
+}
+
+inline Accomplishment* AccomplishmentProvider::GetAccomplishment(int data) const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(DataSymbol(data));
+    MILO_ASSERT(pAccomplishment, 0x34B);
+    return pAccomplishment;
+}
+
+inline void AccomplishmentProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(slot->Matches("progress")){
+        Accomplishment* pAccomplishment = GetAccomplishment(data);
+        MILO_ASSERT(pAccomplishment, 0x2DE);
+        MeterDisplay* pMeter = dynamic_cast<MeterDisplay*>(obj);
+        MILO_ASSERT(pMeter, 0x2E1);
+        pMeter->SetShowText(false);
+        pMeter->SetShowing(false);
+        if(!IsAccomplishmentSecret(pAccomplishment, profile) && !pAccomplishment->HideProgress()){
+            if(!IsAccomplished(pAccomplishment->GetName(), profile)){
+                int i1c = 0;
+                int i20 = 0;
+                if(pAccomplishment->InqProgressValues(profile, i1c, i20)){
+                    pMeter->SetValues(i1c, i20);
+                    pMeter->SetShowing(true);
+                }
+            }
+        }
+    }
+}
+
+inline RndMat* AccomplishmentProvider::Mat(int, int i_iData, UIListMesh* slot) const {
+    MILO_ASSERT(i_iData < NumData(), 0x2B2);
+    Accomplishment* pAccomplishment = GetAccomplishment(i_iData);
+    MILO_ASSERT(pAccomplishment, 0x2B5);
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(slot->Matches("icon")){
+        bool isAccomplished = IsAccomplished(pAccomplishment->GetName(), profile);
+        String accName(pAccomplishment->GetName());
+        if(IsAccomplishmentSecret(pAccomplishment, profile)){
+            accName = "acc_secret";
+        }
+        std::vector<DynamicTex*>::const_iterator it = std::find(mIcons.begin(), mIcons.end(), accName);
+        if(it != mIcons.end()){
+            RndMat* pMat = (*it)->mMat;
+            MILO_ASSERT(pMat, 0x2C6);
+            if(isAccomplished) pMat->SetAlpha(1.0f);
+            else pMat->SetAlpha(0.25f);
+            return pMat;
+        }
+    }
+    return slot->DefaultMat();
+}
+
+inline void AccomplishmentProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(i_iData < NumData(), 0x273);
+    Accomplishment* pAccomplishment = GetAccomplishment(i_iData);
+    MILO_ASSERT(pAccomplishment, 0x276);
+    BandProfile* profile = TheCampaign->GetProfile();
+    if(slot->Matches("name")){
+        if(IsAccomplishmentSecret(pAccomplishment, profile)){
+            label->SetTextToken(acc_secret);
+        }
+        else {
+            label->SetTextToken(pAccomplishment->GetName());
+        }
+    }
+    else if(slot->Matches("description")){
+        if(IsAccomplishmentSecret(pAccomplishment, profile)){
+            label->SetTextToken(acc_secret_desc);
+        } 
+        else {
+            label->SetTextToken(pAccomplishment->GetDescription());
+        }
+    }
+    else if(slot->Matches("best_score")){
+        label->SetTextToken(gNullStr);
+    }
+    else label->SetTextToken(gNullStr);
+}
+
+void FORCEFUNC_OtherAccomplishmentProviderFuncs(AccomplishmentEntryProvider* aep, AccomplishmentCategoryProvider* acp, AccomplishmentGroupProvider* agp){
+    aep->Text(0, 0, 0, 0);
+    acp->Custom(0, 0, 0, 0);
+    acp->Text(0, 0, 0, 0);
+    agp->Custom(0, 0, 0, 0);
+    agp->Text(0, 0, 0, 0);
+}
+
+inline void AccomplishmentEntryProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    if(!m_vEntries.empty()){
+        MILO_ASSERT(i_iData < m_vEntries.size(), 0x204);
+        Symbol entry = m_vEntries[i_iData];
+        if(slot->Matches("name")){
+            m_pAccomplishment->UpdateIncrementalEntryName(label, entry);
+        }
+        else if(slot->Matches("check")){
+            BandProfile* profile = TheCampaign->GetProfile();
+            if(m_pAccomplishment->IsSymbolEntryFulfilled(profile, entry)){
+                label->SetIcon('+');
+            }
+            else label->SetIcon('i');
+        }
+        else label->SetTextToken(gNullStr);
+    }
+}
+
+inline void AccomplishmentCategoryProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
+    if(slot->Matches("progress")){
+        Symbol sym = DataSymbol(data);
+        BandProfile* profile = TheCampaign->GetProfile();
+        AccomplishmentProgress* prog = profile->GetAccomplishmentProgress();
+        int numaccs = TheAccomplishmentMgr->GetNumAccomplishmentsInCategory(sym);
+        int numcompleted = prog->GetNumCompletedInCategory(sym);
+        MeterDisplay* pMeter = dynamic_cast<MeterDisplay*>(obj);
+        MILO_ASSERT(pMeter, 0x1B0);
+        pMeter->SetShowText(true);
+        pMeter->SetValues(numcompleted, numaccs);
+        pMeter->SetShowing(true);
+    }
+}
+
+inline AccomplishmentCategory* AccomplishmentCategoryProvider::GetAccomplishmentCategory(int data) const {
+    AccomplishmentCategory* pAccomplishmentCategory = TheAccomplishmentMgr->GetAccomplishmentCategory(DataSymbol(data));
+    MILO_ASSERT(pAccomplishmentCategory, 0x1E1);
+    return pAccomplishmentCategory;
+}
+
+inline void AccomplishmentCategoryProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(i_iData < NumData(), 0x192);
+    AccomplishmentCategory* pAccomplishmentCategory = GetAccomplishmentCategory(i_iData);
+    MILO_ASSERT(pAccomplishmentCategory, 0x195);
+    pAccomplishmentCategory->GetName();
+    if(slot->Matches("name")){
+        label->SetTextToken(pAccomplishmentCategory->GetName());
+    }
+    else label->SetTextToken(gNullStr);
+}
+
+inline void AccomplishmentGroupProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
+    if(slot->Matches("progress")){
+        Symbol sym = DataSymbol(data);
+        BandProfile* profile = TheCampaign->GetProfile();
+        AccomplishmentProgress* prog = profile->GetAccomplishmentProgress();
+        int numaccs = TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(sym);
+        int numcompleted = prog->GetNumCompletedInGroup(sym);
+        MeterDisplay* pMeter = dynamic_cast<MeterDisplay*>(obj);
+        MILO_ASSERT(pMeter, 0x12D);
+        pMeter->SetShowText(true);
+        pMeter->SetPercentageText(false);
+        pMeter->SetValues(numcompleted, numaccs);
+        pMeter->SetShowing(true);
+    }
+}
+
+inline AccomplishmentGroup* AccomplishmentGroupProvider::GetAccomplishmentGroup(int data) const {
+    AccomplishmentGroup* pAccomplishmentGroup = TheAccomplishmentMgr->GetAccomplishmentGroup(DataSymbol(data));
+    MILO_ASSERT(pAccomplishmentGroup, 0x160);
+    return pAccomplishmentGroup;
+}
+
+inline Symbol AccomplishmentGroupProvider::GetCareerLevel(float f) const {
+    if(f == 1.0f) return career_level8;
+    if(f > 0.86f) return career_level7;
+    if(f > 0.71f) return career_level6;
+    if(f > 0.57f) return career_level5;
+    if(f > 0.43f) return career_level4;
+    if(f > 0.29f) return career_level3;
+    if(f > 0.14f) return career_level2;
+    return career_level1;
+}
+
+inline void AccomplishmentGroupProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(i_iData < NumData(), 0xFF);
+    AccomplishmentGroup* pAccomplishmentGroup = GetAccomplishmentGroup(i_iData);
+    MILO_ASSERT(pAccomplishmentGroup, 0x102);
+    if(slot->Matches("name")){
+        label->SetTextToken(pAccomplishmentGroup->GetName());
+    }
+    else if(slot->Matches("instrument_icon")){
+        label->SetIcon(pAccomplishmentGroup->GetInstrumentIcon());
+    }
+    else if(slot->Matches("career_level")){
+        Symbol sym = DataSymbol(i_iData);
+        BandProfile* profile = TheCampaign->GetProfile();
+        AccomplishmentProgress* prog = profile->GetAccomplishmentProgress();
+        int iNumTotal = TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(sym);
+        int iNumCompleted = prog->GetNumCompletedInGroup(sym);
+        MILO_ASSERT(iNumCompleted <= iNumTotal, 0x115);
+        float level = (float)iNumCompleted / (float)iNumTotal;
+        label->SetTextToken(GetCareerLevel(level));
+    }
+    else label->SetTextToken(gNullStr);
+}

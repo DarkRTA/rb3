@@ -19,6 +19,7 @@ public:
     void End();
 
     static ObjectDir* GetViseme(Symbol, bool);
+    static int GetCount(Symbol);
     static void Init();
     static void Terminate();
 
