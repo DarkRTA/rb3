@@ -327,8 +327,14 @@ DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
     return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
 }
 
+// FindArray(Symbol, Symbol) isn't being inlined below, so this will have to do
+inline DataArray *FindArray_Fake(const DataArray* const ths, Symbol s1, Symbol s2) {
+    return ths->FindArray(s1, true)->FindArray(s2, true);
+}
+
 DataArray *DataArray::FindArray(Symbol s, const char *c) const {
-    return FindArray(s, Symbol(c));
+    // return FindArray(this, s, Symbol(c));
+    return FindArray_Fake(this, s, Symbol(c));
 }
 
 bool DataArray::FindData(Symbol s, const char *&ret, bool b) const {
