@@ -10,9 +10,17 @@
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentGroup.h"
+#include "meta_band/AccomplishmentLessonDiscSongConditional.h"
+#include "meta_band/AccomplishmentLessonSongListConditional.h"
 #include "meta_band/AccomplishmentOneShot.h"
+#include "meta_band/AccomplishmentPlayerConditional.h"
 #include "meta_band/AccomplishmentProgress.h"
+#include "meta_band/AccomplishmentSetlist.h"
+#include "meta_band/AccomplishmentSongFilterConditional.h"
+#include "meta_band/AccomplishmentSongListConditional.h"
+#include "meta_band/AccomplishmentTourConditional.h"
 #include "meta_band/AccomplishmentTrainerCategoryConditional.h"
+#include "meta_band/AccomplishmentTrainerListConditional.h"
 #include "meta_band/AssetMgr.h"
 #include "meta_band/Award.h"
 #include "meta_band/BandSongMetadata.h"
@@ -226,37 +234,37 @@ Accomplishment* AccomplishmentManager::FactoryCreateAccomplishment(DataArray* ar
             ret = new Accomplishment(arr, idx);
             break;
         case kAccomplishmentTypeSongListConditional:
-            // ret = new AccomplishmentSongListConditional(arr, idx);
+            ret = new AccomplishmentSongListConditional(arr, idx);
             break;
         case kAccomplishmentTypeSongFilterConditional:
-            // ret = new AccomplishmentSongFilterConditional(arr, idx);
+            ret = new AccomplishmentSongFilterConditional(arr, idx);
             break;
         case kAccomplishmentTypeLessonSongListConditional:
-            // ret = new AccomplishmentLessonSongListConditional(arr, idx);
+            ret = new AccomplishmentLessonSongListConditional(arr, idx);
             break;
         case kAccomplishmentTypeLessonDiscSongConditional:
-            // ret = new AccomplishmentLessonDiscSongConditional(arr, idx);
+            ret = new AccomplishmentLessonDiscSongConditional(arr, idx);
             break;
         case kAccomplishmentTypePlayerConditional:
-            // ret = new AccomplishmentPlayerConditional(arr, idx);
+            ret = new AccomplishmentPlayerConditional(arr, idx);
             break;
         case kAccomplishmentTypeTourConditional:
-            // ret = new AccomplishmentTourConditional(arr, idx);
+            ret = new AccomplishmentTourConditional(arr, idx);
             break;
         case kAccomplishmentTypeTrainerListConditional:
-            // ret = AccomplishmentTrainerListConditional(arr, idx);
+            ret = new AccomplishmentTrainerListConditional(arr, idx);
             break;
         case kAccomplishmentTypeTrainerCategoryConditional:
-            // ret = new AccomplishmentTrainerCategoryConditional(arr, idx);
+            ret = new AccomplishmentTrainerCategoryConditional(arr, idx);
             break;
         case kAccomplishmentTypeOneShot:
-            // ret = new AccomplishmentOneShot(arr, idx);
+            ret = new AccomplishmentOneShot(arr, idx);
             break;
         case kAccomplishmentTypeSetlist:
-            // ret = new AccomplishmentSetlist(arr, idx);
+            ret = new AccomplishmentSetlist(arr, idx);
             break;
         case kAccomplishmentTypeDiscSongConditional:
-            // ret = new AccomplishmentDiscSongConditional(arr, idx);
+            ret = new AccomplishmentDiscSongConditional(arr, idx);
             break;
         default:
             MILO_ASSERT(false, 0x1BB);
