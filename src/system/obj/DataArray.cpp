@@ -5,6 +5,7 @@
 #include <list>
 #include "math/MathFuncs.h"
 #include "obj/Object.h"
+#include "obj/DataFile.h"
 #include "obj/DataFunc.h"
 #include "obj/DataUtl.h"
 #include "os/Debug.h"
@@ -616,37 +617,127 @@ bool DataArrayDefined() {
 
 void DataArray::Load(BinStream& bs) {
     mFile = gFile;
-    u16 num_root_nodes;
-    bs >> num_root_nodes;
-    {
-        MemDoTempAllocations mem(true, false);
-        Resize(num_root_nodes);
-    }
+
+    short size;
+    bs >> size;
+    MemDoTempAllocations(true, false), Resize(size);
+
     bs >> mLine;
     bs >> mDeprecated;
-    int i = 0;
-    while (i != num_root_nodes) {
-        DataNode& n = mNodes[i];
-        n.Load(bs);
-        if (!DataArrayDefined() && n.Type() < kDataIfdef) {
-            if (n.Type() != kDataIfndef) {
-                num_root_nodes--;
-            }
-        } else {
-            DataArray* da;
-            bool b = n.Type() == kDataSymbol && (da = DataGetMacro(STR_TO_SYM(n.mValue.symbol))) != 0;
-            if (b) {
-                {
-                    num_root_nodes += (da->mSize - 1);
-                    MemDoTempAllocations mem(true, false);
-                    Resize(num_root_nodes);
-                }
+
+    for (int i = 0; i < size;) {
+        DataNode& node = mNodes[i];
+        node.Load(bs);
+        if (!DataArrayDefined() && (node.Type() < kDataIfdef || node.Type() > kDataEndif || node.Type() > kDataIfndef)) {
+            if (node.Type() != kDataIfndef) {
+                size--;
+                continue;
             }
         }
 
+        DataArray* array = nullptr;
+        if (node.Type() == kDataSymbol && (array = DataGetMacro(STR_TO_SYM(node.mValue.symbol))) != 0) {
+            size += array->Size() - 1;
+            MemDoTempAllocations(true, false), Resize(size);
 
-        i++;
+            for (int j = 0; j < array->Size(); j++) {
+                mNodes[i++] = array->Node(j);
+            }
+
+            continue;
+        }
+
+        switch (node.Type()) {
+            case kDataAutorun: {
+                DataNode command;
+                command.Load(bs);
+                command.Command(this)->Execute();
+                size -= 2;
+                break;
+            }
+            case kDataDefine: {
+                DataNode macro;
+                macro.Load(bs);
+                DataSetMacro(STR_TO_SYM(node.mValue.symbol), macro.Array(this));
+                size -= 2;
+                break;
+            }
+            case kDataUndef: {
+                DataSetMacro(STR_TO_SYM(node.mValue.symbol), nullptr);
+                size -= 1;
+                break;
+            }
+
+            case kDataIfdef: {
+                gDataArrayConditional.push_back(DataGetMacro(STR_TO_SYM(node.mValue.symbol)) != nullptr);
+                size -= 1;
+                break;
+            }
+            case kDataIfndef: {
+                gDataArrayConditional.push_back(DataGetMacro(STR_TO_SYM(node.mValue.symbol)) == nullptr);
+                size -= 1;
+                break;
+            }
+            case kDataElse: {
+                gDataArrayConditional.back() = !gDataArrayConditional.back();
+                size -= 1;
+                break;
+            }
+            case kDataEndif: {
+                gDataArrayConditional.pop_back();
+                size -= 1;
+                break;
+            }
+
+            case kDataInclude:
+            case kDataMerge: {
+                const char* path = node.mValue.symbol;
+                bool readFile = false;
+                DataArray* macro = DataGetMacro(path);
+                if (!macro) {
+                    path = FileMakePath(FileGetPath(mFile.Str(), nullptr), path, nullptr);
+                    macro = DataReadFile(path, true);
+                    readFile = true;
+                    if (!macro) {
+                        MILO_FAIL("Couldn't open embedded file: %s (file %s, line %d)", path, mFile.Str(), mLine);
+                    }
+                }
+
+                if (node.Type() == kDataInclude) {
+                    size += macro->Size() - 1;
+                    MemDoTempAllocations(true, false), Resize(size);
+                    for (int j = 0; j < array->Size(); j++) {
+                        mNodes[i++] = array->Node(j);
+                    }
+                } else {
+                    if (macro->Size() == 0) {
+                        MILO_FAIL("Empty merge file (possibly a re-included file): %s", path);
+                    }
+
+                    int remaining = size - i - 1;
+                    MemDoTempAllocations(true, false), Resize(i);
+                    DataMergeTags(this, macro);
+
+                    i = mSize;
+                    size = mSize + remaining;
+                    MemDoTempAllocations(true, false), Resize(size);
+                }
+
+                if (readFile) {
+                    macro->Release();
+                }
+
+                gFile = mFile;
+                break;
+            }
+
+            default:
+                i++;
+                break;
+        }
     }
+
+    Resize(size);
 }
 
 void DataArray::SaveGlob(BinStream &bs, bool b) const {
