@@ -39,41 +39,42 @@ bool strncat_tofit(char* c, int& ri, const char* cc, int i){
     else return false;
 }
 
-#pragma push
-#pragma pool_data off
 void DataAppendStackTrace(char* msg){
-    if(gCallStack > gCallStackPtr){
-        strcat(msg, "\n\nData Stack Trace");
-        bool msg_full = false;
-        int msg_len = strlen(msg);
-        char visualStudioFmt[14] = "\n   %s(%d):%s";
+    if(gCallStackPtr <= gCallStack){
+        return;
+    }
 
-        DataArray** ptr = gCallStackPtr;
-        while(&gCallStack[gPreExecuteLevel + 3U] < ptr - 1){
-            DataArray* a = *ptr;
-            String s;
-            if(0 < a->Size()){
-                a->Node(0).Print(s, true);
-            }
-            if(!msg_full){
-                if(!strncat_tofit(msg, msg_len, MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()), 0x400)){
-                    TheDebug << MakeString("%s", msg);
-                    gCallStackPtr++;
-                    msg_full = true;
-                    strcat(msg, "\n   ... %d omitted stack frames");
-                }
-            }
-            if(msg_full){
-                TheDebug << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
-            }
-            *ptr = a;
+    strcat(msg, "\n\nData Stack Trace");
+
+    bool msg_full = false;
+    int msg_len = strlen(msg);
+
+    for (DataArray **ptr = gCallStackPtr - 1; ptr >= gCallStack; ptr--){
+        DataArray* a = *ptr;
+
+        String s;
+        if(a->Size() > 0){
+            a->Node(0).Print(s, true);
         }
+
+        char visualStudioFmt[] = "\n   %s(%d):%s";
+        if(!msg_full){
+            if(!strncat_tofit(msg, msg_len, MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()), 0x400)){
+                TheDebug << MakeString("%s", msg);
+                msg_full = true;
+                strcat(msg, MakeString("\n   ... %d omitted stack frames", (ptr - gCallStack) + 1));
+            }
+        }
+
         if(msg_full){
-            TheDebug << MakeString("\n");
+            TheDebug << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
         }
     }
+
+    if(msg_full){
+        TheDebug << MakeString("\n");
+    }
 }
-#pragma pop
 
 DataNode& DataArray::Node(int i) const {
     bool allgood = false;
