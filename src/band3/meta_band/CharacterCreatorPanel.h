@@ -15,7 +15,25 @@
 class CharacterCreatorPanel : public TexLoadPanel {
 public:
     enum CharCreatorState {
-        kCharCreatorState_Invalid = 0
+        kCharCreatorState_Invalid = 0,
+        kCharCreatorState_CharacterOptions = 1,
+        kCharCreatorState_ModifyFace = 2,
+        kCharCreatorState_ModifyBody = 3,
+        kCharCreatorState_FaceMakerMenu = 4,
+        kCharCreatorState_FaceMakerChooseCheeks = 5,
+        kCharCreatorState_FaceMakerChooseChin = 6,
+        kCharCreatorState_FaceMakerModifyChin = 7,
+        kCharCreatorState_FaceMakerModifyJaw = 8,
+        kCharCreatorState_FaceMakerChooseEyes = 9,
+        kCharCreatorState_FaceMakerModifyEyes = 10,
+        kCharCreatorState_FaceMakerRotateEyes = 11,
+        kCharCreatorState_FaceMakerChooseBrows = 12,
+        kCharCreatorState_FaceMakerModifyBrows = 13,
+        kCharCreatorState_FaceMakerChooseNose = 14,
+        kCharCreatorState_FaceMakerModifyNose = 15,
+        kCharCreatorState_FaceMakerChooseMouth = 16,
+        kCharCreatorState_FaceMakerModifyMouth = 17,
+        kCharCreatorState_COUNT = 18
     };
 
     CharacterCreatorPanel();

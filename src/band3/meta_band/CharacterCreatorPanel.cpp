@@ -37,11 +37,14 @@
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
-// CharacterCreatorPanel::CharCreatorState CharacterCreatorPanel::sCancelStates[18] = { 0, 0, 1, 1, 2, 4, 4, 6, 4, 4, 9, 0xA, 4, 0xC, 4, 0xE, 4, 16 };
+CharacterCreatorPanel::CharCreatorState CharacterCreatorPanel::sCancelStates[18] = {
+    kCharCreatorState_Invalid, kCharCreatorState_Invalid, kCharCreatorState_CharacterOptions, kCharCreatorState_CharacterOptions,
+    kCharCreatorState_ModifyFace, kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerChooseChin,
+    kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerChooseEyes, kCharCreatorState_FaceMakerModifyEyes,
+    kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerChooseBrows, kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerChooseNose,
+    kCharCreatorState_FaceMakerMenu, kCharCreatorState_FaceMakerChooseMouth
+};
 
 CharacterCreatorPanel::CharacterCreatorPanel() : mCharCreatorState(kCharCreatorState_Invalid), mClosetMgr(0), mCharacter(0), mPreviewDesc(0), mFaceTypeProvider(0), mOutfitProvider(0), mFaceHairProvider(0),
     mFaceOptionsProvider(0), mFaceOptionsGridProvider(0), mEyebrowsProvider(0), mEyebrowsGridProvider(0), mGender(gNullStr), mOutfit(gNullStr), mGenderChanged(0), mWaitingToFinalize(0) {
@@ -89,7 +92,7 @@ void CharacterCreatorPanel::Enter(){
         mClosetMgr->PreviewCharacter(true, false);
         SetProviders();
         if(!mClosetMgr->IsCurrentCharacterFinalized()) HandleGenderChanged();
-        SetCharCreatorState((CharCreatorState)1);
+        SetCharCreatorState(kCharCreatorState_CharacterOptions);
     }
 }
 
@@ -100,7 +103,7 @@ void CharacterCreatorPanel::Poll(){
 
 void CharacterCreatorPanel::Exit(){
     UIPanel::Exit();
-    if(mCharacter) SetCharCreatorState((CharCreatorState)0);
+    if(mCharacter) SetCharCreatorState(kCharCreatorState_Invalid);
 }
 
 DECOMP_FORCEACTIVE(CharacterCreatorPanel, "mClosetMgr", "pUser", "pPreviousCharacter")
@@ -417,19 +420,19 @@ Symbol CharacterCreatorPanel::GetRandomEyebrows(){
 void CharacterCreatorPanel::SetFaceOption(int option){
     BandCharDesc* desc = mPreviewDesc;
     switch(mCharCreatorState){
-        case 5:
+        case kCharCreatorState_FaceMakerChooseCheeks:
             desc->mHead.mShape = option;
             break;
-        case 6:
+        case kCharCreatorState_FaceMakerChooseChin:
             desc->mHead.mChin = option;
             break;
-        case 9:
+        case kCharCreatorState_FaceMakerChooseEyes:
             desc->mHead.mEye = option;
             break;
-        case 14:
+        case kCharCreatorState_FaceMakerChooseNose:
             desc->mHead.mNose = option;
             break;
-        case 16:
+        case kCharCreatorState_FaceMakerChooseMouth:
             desc->mHead.mMouth = option;
             break;
         default:
@@ -540,19 +543,19 @@ void CharacterCreatorPanel::CheckCharacterAssets(){
 void CharacterCreatorPanel::SetCharCreatorState(CharCreatorState state){
     Symbol bodypart = gNullStr;
     switch(state){
-        case 5:
+        case kCharCreatorState_FaceMakerChooseCheeks:
             bodypart = shape;
             break;
-        case 6:
+        case kCharCreatorState_FaceMakerChooseChin:
             bodypart = chin;
             break;
-        case 9:
+        case kCharCreatorState_FaceMakerChooseEyes:
             bodypart = eye;
             break;
-        case 14:
+        case kCharCreatorState_FaceMakerChooseNose:
             bodypart = nose;
             break;
-        case 16:
+        case kCharCreatorState_FaceMakerChooseMouth:
             bodypart = mouth;
             break;
         default:
@@ -588,7 +591,7 @@ UIComponent* CharacterCreatorPanel::GetFocusComponent(){
 DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
     if(mWaitingToFinalize) return 1;
     JoypadAction act = msg.GetAction();
-    if(mCharCreatorState == 7){
+    if(mCharCreatorState == kCharCreatorState_FaceMakerModifyChin){
         switch(act){
             case kAction_Up:
                 ModifyFeature("chin_height", 0.1f);
@@ -606,7 +609,7 @@ DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
                 break;
         }
     }
-    else if(mCharCreatorState == 8){
+    else if(mCharCreatorState == kCharCreatorState_FaceMakerModifyJaw){
         switch(act){
             case kAction_Up:
                 ModifyFeature("jaw_height", 0.1f);
@@ -624,7 +627,7 @@ DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
                 break;
         }
     }
-    else if(mCharCreatorState == 10){
+    else if(mCharCreatorState == kCharCreatorState_FaceMakerModifyEyes){
         switch(act){
             case kAction_Up:
                 ModifyFeature("eye_height", 0.1f);
@@ -642,7 +645,7 @@ DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
                 break;
         }
     }
-    else if(mCharCreatorState == 11){
+    else if(mCharCreatorState == kCharCreatorState_FaceMakerRotateEyes){
         switch(act){
             case kAction_Up:
                 ModifyFeature("eye_rotation", 0.1f);
@@ -654,7 +657,7 @@ DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
                 break;
         }
     }
-    else if(mCharCreatorState == 13){
+    else if(mCharCreatorState == kCharCreatorState_FaceMakerModifyBrows){
         switch(act){
             case kAction_Up:
                 ModifyFeature("brow_height", 0.1f);
@@ -672,7 +675,7 @@ DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
                 break;
         }
     }
-    else if(mCharCreatorState == 15){
+    else if(mCharCreatorState == kCharCreatorState_FaceMakerModifyNose){
         switch(act){
             case kAction_Up:
                 ModifyFeature("nose_height", 0.1f);
@@ -690,7 +693,7 @@ DataNode CharacterCreatorPanel::OnMsg(const ButtonDownMsg& msg){
                 break;
         }
     }
-    else if(mCharCreatorState == 17){
+    else if(mCharCreatorState == kCharCreatorState_FaceMakerModifyMouth){
         switch(act){
             case kAction_Up:
                 ModifyFeature("mouth_height", 0.1f);
