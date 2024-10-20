@@ -761,6 +761,7 @@ void DataArray::LoadGlob(BinStream &bs, bool b) {
         mSize = -(v + 1);
         mNodes = (DataNode*)NodesAlloc(-mSize);
         bs.Read(mNodes, v);
+        ((unsigned char*)mNodes)[v] = 0;
     } else {
         bs >> mSize;
         mNodes = (DataNode*)NodesAlloc(-mSize);
