@@ -91,56 +91,58 @@ DataNode& DataArray::Node(int i) {
 }
 
 void DataArray::Print(TextStream &ts, DataType type, bool b) const {
-    DataNode *lol;
-    DataNode *dn = mNodes;
-    DataNode *dn_end = &mNodes[mSize];
+    DataNode *i = mNodes;
+    DataNode *end = &mNodes[mSize];
     MILO_ASSERT(type & kDataArray, 0xA6);
-    char begin = '\0';
-    char end = '\0';
+    char open = '\0';
+    char close = '\0';
     if (type == kDataArray) {
-        begin = '(';
-        end = ')';
+        open = '(';
+        close = ')';
     } else if (type == kDataCommand) {
-        begin = '{';
-        end = '}';
+        open = '{';
+        close = '}';
     } else if (type == kDataProperty) {
-        begin = '[';
-        end = ']';
+        open = '[';
+        close = ']';
+    } else {
+        MILO_FAIL("Unrecognized array type %d", type);
     }
-    else MILO_FAIL("Unrecognized array type %d", type);
 
-    while (dn < dn_end) {
-        if (dn->Type() & 0x10)
+    i = mNodes;
+    while (i < end) {
+        if (i->Type() & kDataArray)
             break;
-        dn++;
+        i++;
     }
 
-    if ((dn != dn_end) && !b) {
-        ts << begin;
-        lol = mNodes;
-        if (lol->Type() == kDataSymbol) {
-            lol->Print(ts, b);
-            lol++;
+    if ((i != end) && !b) {
+        ts << open;
+        i = mNodes;
+        if (i->Type() == kDataSymbol) {
+            i->Print(ts, b);
+            i++;
         }
         ts << " ";
         gIndent += 3;
-        while (lol < dn_end) {
+        while (i < end) {
             ts.Space(gIndent);
-            lol->Print(ts, b);
+            i->Print(ts, b);
             ts << " ";
-            lol++;
+            i++;
         }
         gIndent -= 3;
         ts.Space(gIndent);
-        ts << end;
+        ts << close;
     } else {
-        ts << begin;
-        for (lol = mNodes; lol < dn_end; lol++) {
-            if (lol != mNodes)
+        ts << open;
+        for (i = mNodes; i < end; i++) {
+            if (i != mNodes) {
                 ts << "\n";
-            lol->Print(ts, b);
+            }
+            i->Print(ts, b);
         }
-        ts << end;
+        ts << close;
     }
 }
 
