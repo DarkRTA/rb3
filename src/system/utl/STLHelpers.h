@@ -36,7 +36,22 @@ inline void ClearAndShrink(std::vector<T>& vec) {
     temp.swap(vec);
 }
 
-// TODO: implement for RndTransformable.cpp
-template <class T> void RemoveSwap(std::vector<T*>&, T*);
+template <class T>
+void RemoveSwap(std::vector<T*>& vec, T* obj) {
+    if (vec.size() == 0) {
+        return;
+    }
+
+    if (vec.back() == obj) {
+        vec.pop_back();
+        return;
+    }
+
+    typename std::vector<T*>::iterator it = std::find(vec.begin(), vec.end(), obj);
+    if (it != vec.end()) {
+        *it = vec.back();
+        vec.pop_back();
+    }
+}
 
 #endif
