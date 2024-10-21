@@ -65,4 +65,26 @@ inline UITransitionCompleteMsg::UITransitionCompleteMsg(UIScreen* s1, UIScreen* 
 inline UIScreenChangeMsg::UIScreenChangeMsg(UIScreen* s1, UIScreen* s2, bool b) :
     Message(Type(), DataNode(s1), DataNode(s2), DataNode(b)){}
 
+class EventDialogStartMsg : public Message {
+public:
+    EventDialogStartMsg(DataArray* a) : Message(a) {}
+    EventDialogStartMsg(DataArray* a1, DataArray* a2) :
+        Message(Type(), DataNode(a1, kDataArray), DataNode(a2, kDataArray)) {}
+    virtual ~EventDialogStartMsg(){}
+    static Symbol Type() {
+        static Symbol t("event_dialog_start");
+        return t;
+    }
+};
+
+class EventDialogDismissMsg : public Message {
+public:
+    EventDialogDismissMsg() : Message(Type()) {}
+    virtual ~EventDialogDismissMsg(){}
+    static Symbol Type() {
+        static Symbol t("event_dialog_dismiss");
+        return t;
+    }
+};
+
 #endif

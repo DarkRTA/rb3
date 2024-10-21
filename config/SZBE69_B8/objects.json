@@ -275,7 +275,7 @@
                 "comment": "bss meme"
             },
             "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",
-            "band3/meta_band/UIEvent.cpp": "MISSING",
+            "band3/meta_band/UIEvent.cpp": "NonMatching",
             "band3/meta_band/UIEventMgr.cpp": "MISSING",
             "band3/meta_band/UIStats.cpp": "MISSING",
             "band3/meta_band/UploadErrorMgr.cpp": "MISSING",
