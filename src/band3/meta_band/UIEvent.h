@@ -18,6 +18,7 @@ public:
 
     void Activate();
     void Dismiss();
+    bool IsActive() const { return mActive; }
 
     DataArray* mEventDef; // 0x4
     DataArrayPtr mEventInit; // 0x8
