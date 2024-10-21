@@ -20,9 +20,9 @@ inline void DeleteAll(Container &container) {
     container.clear();
 }
 
-template <class T1, class T2, class T3>
-void VectorRemove(std::vector<T1,T2>& vec, const T3& obj){
-    for(typename std::vector<T1,T2>::iterator it = vec.begin(); it != vec.end(); ++it){
+template <class T VECTOR_SIZE_PARAM, class T2>
+void VectorRemove(std::vector<T VECTOR_SIZE_ARG>& vec, const T2& obj){
+    for(typename std::vector<T VECTOR_SIZE_ARG>::iterator it = vec.begin(); it != vec.end(); ++it){
         if(*it == obj){
             vec.erase(it);
             return;
