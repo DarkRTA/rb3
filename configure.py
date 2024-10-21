@@ -106,12 +106,16 @@ parser.add_argument(
     action="store_true",
     help="builds equivalent (but non-matching) or modded objects",
 )
+parser.add_argument(
+    "--no-progress",
+    dest="progress",
+    action="store_false",
+    help="disable progress calculation",
+)
 args = parser.parse_args()
 
 config = ProjectConfig()
 config.version = str(args.version)
-
-debug = args.debug
 
 # Apply arguments
 config.build_dir = args.build_dir
@@ -122,6 +126,7 @@ config.compilers_path = args.compilers
 config.generate_map = args.map
 config.non_matching = args.non_matching
 config.sjiswrap_path = args.sjiswrap
+config.progress = args.progress
 if not is_windows():
     config.wrapper = args.wrapper
 # Don't build asm unless we're --non-matching
@@ -131,8 +136,8 @@ if not config.non_matching:
 # Tool versions
 config.binutils_tag = "2.42-1"
 config.compilers_tag = "20240706"
-config.dtk_tag = "v1.1.0"
-config.objdiff_tag = "v2.2.2"
+config.dtk_tag = "v1.1.2"
+config.objdiff_tag = "v2.3.2"
 config.sjiswrap_tag = "v1.1.1"
 config.wibo_tag = "0.6.11"
 
@@ -185,19 +190,19 @@ base_cflags = get_cflags("base")
 base_cflags.append(f"-d VERSION_{config.version}")
 
 # Set conditionally-added flags
-if config.generate_map:
-    # List unused symbols when generating a map file
-    ldflags.append("-mapunused")
-
-if debug:
-    # Debug flags
+# cflags
+if args.debug:
     base_cflags.append("-sym dwarf-2,full")
-    ldflags.append("-gdwarf-2")
     # Causes code generation memes, use only in desperation
     # base_cflags.append("-pragma \"debuginline on\"")
 else:
-    # Non-debug flags
     base_cflags.append("-DNDEBUG=1")
+
+# ldflags
+if args.debug:
+    ldflags.append("-gdwarf-2")
+if config.generate_map:
+    ldflags.extend(["-mapunused", "-listclosure"])
 
 # Apply cflag inheritance
 for key in cflags.keys():
