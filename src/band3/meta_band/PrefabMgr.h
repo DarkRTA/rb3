@@ -51,7 +51,7 @@ public:
     std::vector<CharCreatorPrefab*> mCharCreatorFemalePrefabs; // 0x2c
     std::vector<BandCharDesc*> unk34; // 0x34
     std::vector<PrefabChar*> mDefaultPrefabs; // 0x3c
-    std::set<Symbol> unk44; // 0x64
+    std::set<Symbol> unk44; // 0x44
     BandUserMgr* unk5c; // 0x5c
     bool unk60; // 0x60
     std::vector<PrefabChar*> unk64; // 0x64
