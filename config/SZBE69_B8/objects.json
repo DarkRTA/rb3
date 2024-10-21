@@ -207,7 +207,10 @@
             "band3/meta_band/MusicLibraryNetSetlists.cpp": "MISSING",
             "band3/meta_band/NameGenerator.cpp": "Matching",
             "band3/meta_band/NetSync.cpp": "MISSING",
-            "band3/meta_band/NewAssetProvider.cpp": "NonMatching",
+            "band3/meta_band/NewAssetProvider.cpp": {
+                "status": "Equivalent",
+                "comment": "linking issue regarding stlport __FUNCTION__s"
+            },
             "band3/meta_band/NewAwardPanel.cpp": "MISSING",
             "band3/meta_band/NextSongPanel.cpp": "MISSING",
             "band3/meta_band/OutfitProvider.cpp": "NonMatching",
