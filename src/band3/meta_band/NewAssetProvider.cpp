@@ -13,7 +13,8 @@ NewAssetProvider::~NewAssetProvider() {
 }
 
 void NewAssetProvider::Update() {
-
+    mSymbols.clear();
+    mProfile->mProfileAssets.GetNewAssets(mSymbols, mGender);
 }
 
 void NewAssetProvider::Text(int param_1, int index, UIListLabel* slot, UILabel* label) const {
@@ -47,27 +48,11 @@ void NewAssetProvider::UpdateExtendedText(int i, int i_iData, UILabel* label) co
         MILO_ASSERT(pAssetMgr, 0x5b);
         Asset* pAsset = pAssetMgr->GetAsset(symbol);
         MILO_ASSERT(pAsset, 0x5e);
-
-        const char* name = label->Name();
-        if (strcmp(name, "asset_desc_new.lbl") == 0) {
+        if (strcmp(label->Name(), "asset_desc_new.lbl") == 0) {
             Symbol description = pAsset->GetDescription();
             label->SetTextToken(description);
-        } else if (strcmp(name, "asset_progress_new.lbl") == 0) {
-            int numData = NumData();
-
-            DataNode node0 = customize_asset_progress;
-            DataNode node1 = i_iData + 1;
-            DataNode node2 = numData; 
-
-            DataArray* array = new DataArray(3);
-
-            array->Node(0) = node0;
-            array->Node(1) = node1;
-            array->Node(2) = node2;
-            
-            label->SetTokenFmt(array);
-
-            array->Release();
+        } else if (strcmp(label->Name(), "asset_progress_new.lbl") == 0) {
+            label->SetTokenFmt(customize_asset_progress, i_iData + 1, NumData());
         } else {
             label->SetTextToken(gNullStr);
         }

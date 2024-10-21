@@ -207,7 +207,10 @@
             "band3/meta_band/MusicLibraryNetSetlists.cpp": "MISSING",
             "band3/meta_band/NameGenerator.cpp": "Matching",
             "band3/meta_band/NetSync.cpp": "MISSING",
-            "band3/meta_band/NewAssetProvider.cpp": "NonMatching",
+            "band3/meta_band/NewAssetProvider.cpp": {
+                "status": "Equivalent",
+                "comment": "linking issue regarding stlport __FUNCTION__s"
+            },
             "band3/meta_band/NewAwardPanel.cpp": "MISSING",
             "band3/meta_band/NextSongPanel.cpp": "MISSING",
             "band3/meta_band/OutfitProvider.cpp": "NonMatching",
@@ -237,7 +240,7 @@
             "band3/meta_band/SetlistSortByLength.cpp": "Matching",
             "band3/meta_band/SetlistSortByLocation.cpp": "MISSING",
             "band3/meta_band/SetlistToStorePanel.cpp": "MISSING",
-            "band3/meta_band/ShellInputInterceptor.cpp": "MISSING",
+            "band3/meta_band/ShellInputInterceptor.cpp": "NonMatching",
             "band3/meta_band/SigninScreen.cpp": "MISSING",
             "band3/meta_band/SongRecord.cpp": "MISSING",
             "band3/meta_band/SongSelectPanel.cpp": "MISSING",
@@ -275,9 +278,13 @@
                 "comment": "bss meme"
             },
             "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",
-            "band3/meta_band/UIEvent.cpp": "MISSING",
-            "band3/meta_band/UIEventMgr.cpp": "MISSING",
-            "band3/meta_band/UIStats.cpp": "MISSING",
+            "band3/meta_band/UIEvent.cpp": "NonMatching",
+            "band3/meta_band/UIEventMgr.cpp": {
+                "status": "NonMatching",
+                "comment": "inline meme",
+                "extra_cflags": ["-inline deferred"]
+            },
+            "band3/meta_band/UIStats.cpp": "NonMatching",
             "band3/meta_band/UploadErrorMgr.cpp": "MISSING",
             "band3/meta_band/Utl.cpp": "NonMatching",
             "band3/meta_band/ViewSetting.cpp": "MISSING",
