@@ -1,4 +1,5 @@
 #include "meta_band/CharProvider.h"
+#include "CharProvider.h"
 #include "meta_band/CharData.h"
 #include "meta_band/PrefabMgr.h"
 #include "meta_band/ProfileMgr.h"
@@ -20,20 +21,20 @@ void CharProvider::Reload(LocalBandUser* user){
     unk20 = user;
     Clear();
     if(unk2c){
-        mCharacters.push_back(CharacterEntry(1, char_createnew, 0, 0, false));
+        mCharacters.push_back(CharacterEntry(kCharacterEntryNew, char_createnew, 0, 0, false));
     }
     else {
-        mCharacters.push_back(CharacterEntry(0, none, 0, 0, false));
+        mCharacters.push_back(CharacterEntry(kCharacterEntryNone, none, 0, 0, false));
     }
     BandProfile* userprofile = TheProfileMgr.GetProfileForUser(unk20);
     if(userprofile) AddCharactersFromProfile(userprofile);
-    mCharacters.push_back(CharacterEntry(4, char_prefab, 0, 0, false));
+    mCharacters.push_back(CharacterEntry(kCharacterEntryHeader, char_prefab, 0, 0, false));
 
     CharData* chardata = unk20->GetChar();
     if(chardata && !chardata->IsCustomizable() && !unk2d){
         PrefabChar* pPrefab = dynamic_cast<PrefabChar*>(chardata);
         MILO_ASSERT(pPrefab, 0x54);
-        mCharacters.push_back(CharacterEntry(2, pPrefab->GetPrefabName(), pPrefab, 0, true));
+        mCharacters.push_back(CharacterEntry(kCharacterEntryPrefab, pPrefab->GetPrefabName(), pPrefab, 0, true));
     }
     int numchars = mCharacters.size();
     std::vector<PrefabChar*> prefabs;
@@ -47,7 +48,7 @@ void CharProvider::Reload(LocalBandUser* user){
         if(!userprofile || !unk2d){
             int standinidx = userprofile->GetCharacterStandinIndex(pChar);
             if(standinidx == -1 || standinidx == unk30){
-                mCharacters.push_back(CharacterEntry(2, pChar->GetPrefabName(), pChar, 0, false));
+                mCharacters.push_back(CharacterEntry(kCharacterEntryPrefab, pChar->GetPrefabName(), pChar, 0, false));
             }
         }
     }
@@ -70,17 +71,17 @@ void CharProvider::AddCharactersFromProfile(BandProfile* profile){
     }
     if(chars.empty() || !haschar) return;
     else {
-        mCharacters.push_back(CharacterEntry(4, char_header, 0, profile, false));
+        mCharacters.push_back(CharacterEntry(kCharacterEntryHeader, char_header, 0, profile, false));
         if(haschar && !unk2d){
             MILO_ASSERT(pCurrentChar, 0xA0);
             MILO_ASSERT(pCurrentChar->IsCustomizable(), 0xA1);
-            mCharacters.push_back(CharacterEntry(3, "", pCurrentChar, 0, true));
+            mCharacters.push_back(CharacterEntry(kCharacterEntryCustom, "", pCurrentChar, 0, true));
         }
         int numchars = mCharacters.size();
         for(std::vector<TourCharLocal*>::iterator it = chars.begin(); it != chars.end(); ++it){
             TourCharLocal* pCharacter = *it;
             MILO_ASSERT(pCharacter, 0xAD);
-            mCharacters.push_back(CharacterEntry(3, "", pCharacter, 0, false));
+            mCharacters.push_back(CharacterEntry(kCharacterEntryCustom, "", pCharacter, 0, false));
         }
         std::sort(mCharacters.begin() + numchars, mCharacters.end(), CompareCharacters());
     }
