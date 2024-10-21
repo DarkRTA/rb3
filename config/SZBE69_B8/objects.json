@@ -276,8 +276,12 @@
             },
             "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",
             "band3/meta_band/UIEvent.cpp": "NonMatching",
-            "band3/meta_band/UIEventMgr.cpp": "NonMatching",
-            "band3/meta_band/UIStats.cpp": "MISSING",
+            "band3/meta_band/UIEventMgr.cpp": {
+                "status": "NonMatching",
+                "comment": "inline meme",
+                "extra_cflags": ["-inline deferred"]
+            },
+            "band3/meta_band/UIStats.cpp": "NonMatching",
             "band3/meta_band/UploadErrorMgr.cpp": "MISSING",
             "band3/meta_band/Utl.cpp": "NonMatching",
             "band3/meta_band/ViewSetting.cpp": "MISSING",

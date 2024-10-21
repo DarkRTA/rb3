@@ -40,10 +40,11 @@ void UIEventQueue::DismissEvent(){
 }
 
 void UIEventQueue::TriggerEvent(UIEvent* event){
-    while(!mEventQueue.empty()){
-        UIEvent* cur = mEventQueue.back();
-        if(!cur->AllowsOverride()) break;
-        if(mEventQueue.size() == 1 && cur->IsActive()) DismissEvent();
+    UIEvent* cur;
+    while(!mEventQueue.empty() && (cur = mEventQueue.back())->AllowsOverride()) {
+        if(mEventQueue.size() == 1 && cur->IsActive()) {
+            DismissEvent();
+        }
         else {
             delete cur;
             mEventQueue.pop_back();

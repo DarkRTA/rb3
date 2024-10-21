@@ -5,6 +5,7 @@
 #include "os/Joypad.h"
 
 BEGIN_MESSAGE(JoypadConnectionMsg, joypad_connect, LocalUser*, bool, int);
+    MESSAGE_ARRAY_CTOR(JoypadConnectionMsg)
     LocalUser* GetUser() const;
 END_MESSAGE;
 

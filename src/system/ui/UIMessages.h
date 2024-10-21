@@ -2,6 +2,7 @@
 #define UI_UIMESSAGES_H
 #include "obj/Msg.h"
 #include "ui/UIComponent.h"
+#include "ui/UIScreen.h"
 #include "ui/UITrigger.h"
 
 BEGIN_MESSAGE(UIComponentScrollMsg, component_scroll, UIComponent*, LocalUser*);
@@ -36,6 +37,7 @@ END_MESSAGE;
 
 BEGIN_MESSAGE(UIScreenChangeMsg, screen_change, UIScreen*, UIScreen*, bool);
     MESSAGE_ARRAY_CTOR(UIScreenChangeMsg)
+    UIScreen* GetFromScreen() const { return mData->Obj<UIScreen>(3); }
 END_MESSAGE;
 
 inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
