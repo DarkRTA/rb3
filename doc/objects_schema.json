@@ -25,6 +25,7 @@
                 "cflags": { "$ref": "#/$defs/cflags" },
                 "extra_asflags": { "$ref": "#/$defs/extra_asflags" },
                 "extra_cflags": { "$ref": "#/$defs/extra_cflags" },
+                "extra_clang_flags": { "$ref": "#/$defs/extra_clang_flags" },
                 "comment": { "$ref": "#/$defs/comment" }
               },
               "required": [
@@ -67,6 +68,11 @@
     },
     "extra_cflags": {
       "description": "Additional flags to pass to the compiler.",
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "extra_clang_flags": {
+      "description": "Additional flags to pass to clangd.",
       "type": "array",
       "items": { "type": "string" }
     },
