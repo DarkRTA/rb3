@@ -159,7 +159,7 @@
             "band3/meta_band/CampaignLeaderboards.cpp": "MISSING",
             "band3/meta_band/CampaignLevel.cpp": "MISSING",
             "band3/meta_band/CampaignSongInfoPanel.cpp": "MISSING",
-            "band3/meta_band/CharCache.cpp": "MISSING",
+            "band3/meta_band/CharCache.cpp": "NonMatching",
             "band3/meta_band/CharData.cpp": {
                 "status": "NonMatching",
                 "comment": "inline meme",
