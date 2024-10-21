@@ -160,7 +160,11 @@
             "band3/meta_band/CampaignLevel.cpp": "MISSING",
             "band3/meta_band/CampaignSongInfoPanel.cpp": "MISSING",
             "band3/meta_band/CharCache.cpp": "MISSING",
-            "band3/meta_band/CharData.cpp": "NonMatching",
+            "band3/meta_band/CharData.cpp": {
+                "status": "NonMatching",
+                "comment": "inline meme",
+                "extra_cflags": ["-inline deferred"]
+            },
             "band3/meta_band/CharProvider.cpp": "NonMatching",
             "band3/meta_band/CharSync.cpp": "MISSING",
             "band3/meta_band/CharacterCreatorPanel.cpp": "NonMatching",

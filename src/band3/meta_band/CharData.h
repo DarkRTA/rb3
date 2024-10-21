@@ -39,7 +39,7 @@ public:
     void UnloadPortrait();
 
     BandCharDesc* mBandCharDesc; // 0x18
-    RndTex* mPortraitTex; // 0x1c
-    FileLoader* unk20; // 0x20
+    RndTex* mTexPortrait; // 0x1c
+    FileLoader* mLoader; // 0x20
     String unk24; // 0x24
 };
