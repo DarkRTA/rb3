@@ -162,11 +162,10 @@
             "band3/meta_band/CharCache.cpp": "NonMatching",
             "band3/meta_band/CharData.cpp": {
                 "status": "NonMatching",
-                "comment": "inline meme",
-                "extra_cflags": ["-inline deferred"]
+                "comment": "inline meme - we did try inline auto,deferred, but then CharData's ctor and GetPrefabPortaitPath are being inlined when they shouldn't be"
             },
             "band3/meta_band/CharProvider.cpp": "NonMatching",
-            "band3/meta_band/CharSync.cpp": "MISSING",
+            "band3/meta_band/CharSync.cpp": "NonMatching",
             "band3/meta_band/CharacterCreatorPanel.cpp": "NonMatching",
             "band3/meta_band/ChooseColorPanel.cpp": "MISSING",
             "band3/meta_band/ClosetMgr.cpp": "NonMatching",
