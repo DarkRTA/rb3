@@ -1,23 +1,22 @@
 #ifndef UTL_STLHELPERS_H
 #define UTL_STLHELPERS_H
+#include <algorithm>
 #include <vector>
 #include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
-template <class T>
-inline void DeleteInstance(const int& /* purpose not known yet */, T* t) {
-    delete t;
-}
-
-template <class Iter>
-inline void DeleteRange(Iter begin, Iter end, const int& asdf = int() /* purpose not known yet */) {
-    for (; begin != end; begin++) {
-        DeleteInstance(asdf, *begin);
+struct Delete {
+    // not sure if this template is real, but it's required for
+    // C++ standards compliance (can't delete a void*),
+    // and `Delete` itself has no template based on Dance Central symbols
+    template <typename T>
+    void operator()(T* ptr) {
+        delete ptr;
     }
-}
+};
 
 template <typename Container>
 inline void DeleteAll(Container &container) {
-    DeleteRange(container.begin(), container.end());
+    std::for_each(container.begin(), container.end(), Delete());
     container.clear();
 }
 
