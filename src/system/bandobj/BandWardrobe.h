@@ -9,6 +9,10 @@
 
 class BandWardrobe : public virtual Hmx::Object {
 public:
+    enum TargetEnum {
+        kNumTargets = 4
+    };
+
     class TargetNames {
     public:
         int FindTarget(Symbol) const;

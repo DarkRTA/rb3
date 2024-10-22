@@ -117,7 +117,7 @@ public:
     void CheckWebSetlistStatus();
     void HasSeenHint(Symbol) const;
     void SetHasSeenHint(Symbol);
-    void GetLastCharUsed() const;
+    CharData* GetLastCharUsed() const;
     void SetLastCharUsed(CharData*);
     void SetLastPrefabCharUsed(Symbol);
     void FakeProfileFill();

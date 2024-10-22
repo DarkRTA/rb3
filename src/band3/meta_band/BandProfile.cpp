@@ -262,7 +262,7 @@ void BandProfile::CheckWebLinkStatus() {}
 void BandProfile::CheckWebSetlistStatus() {}
 void BandProfile::HasSeenHint(Symbol) const {}
 void BandProfile::SetHasSeenHint(Symbol) {}
-void BandProfile::GetLastCharUsed() const {}
+// void BandProfile::GetLastCharUsed() const {}
 void BandProfile::SetLastCharUsed(CharData*) {}
 void BandProfile::SetLastPrefabCharUsed(Symbol) {}
 void BandProfile::FakeProfileFill() {}

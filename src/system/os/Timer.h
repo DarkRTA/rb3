@@ -174,7 +174,7 @@ public:
     static Timer* _t = AutoTimer::GetTimer(name); \
     AutoTimer _at(_t, 50.0f, func, context)
 #else
-#define START_AUTO_TIMER_CALLBACK(name) (void)0
+#define START_AUTO_TIMER_CALLBACK(name, func, context) (void)0
 #endif
 
 #define START_AUTO_TIMER(name) \
