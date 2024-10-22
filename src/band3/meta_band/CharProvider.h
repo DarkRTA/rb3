@@ -19,10 +19,10 @@ public:
 
     class CharacterEntry {
     public:
-        CharacterEntry(CharacterEntryType i1, Symbol s, CharData* i2, BandProfile* i3, bool b) : unk0(i1), unk4(i2), unk8(s), unkc(i3), unk10(b) {}
+        CharacterEntry(CharacterEntryType i1, Symbol s, CharData* i2, BandProfile* i3, bool b) : mType(i1), unk4(i2), unk8(s), unkc(i3), unk10(b) {}
         ~CharacterEntry(){}
 
-        CharacterEntryType unk0; // CharEntryType enum?
+        CharacterEntryType mType; // CharEntryType enum?
         CharData* unk4;
         Symbol unk8;
         BandProfile* unkc;
@@ -32,7 +32,7 @@ public:
     struct CompareCharacters {
         bool operator()(const CharacterEntry& e1, const CharacterEntry& e2) const {
 
-            if(e1.unk0 == e2.unk0 && e1.unk0 - 2 <= 1U){
+            if(e1.mType == e2.mType && e1.mType - 2 <= 1U){
                 return strcmp(Localize(e1.unk8, 0), Localize(e2.unk8, 0)) < 0;
             }
             return false;
@@ -52,6 +52,11 @@ public:
     bool IsIndexNewChar(int);
     void Reload(LocalBandUser*);
     void AddCharactersFromProfile(BandProfile*);
+    CharData* GetCharData(int);
+    bool IsIndexNone(int);
+    bool IsIndexCustomChar(int);
+    bool IsIndexPrefab(int);
+    int GetDefaultCharIndex() const;
 
     LocalBandUser* unk20; // 0x20
     std::vector<CharacterEntry> mCharacters; // 0x24

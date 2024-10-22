@@ -1,11 +1,15 @@
 #include "meta_band/CharProvider.h"
 #include "CharProvider.h"
+#include "meta_band/AppLabel.h"
 #include "meta_band/CharData.h"
 #include "meta_band/PrefabMgr.h"
 #include "meta_band/ProfileMgr.h"
 #include "game/BandUser.h"
 #include "os/Debug.h"
 #include "tour/TourCharLocal.h"
+#include "ui/UIListLabel.h"
+#include "ui/UIListMesh.h"
+#include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 
@@ -91,6 +95,39 @@ void CharProvider::Clear(){
     mCharacters.clear();
 }
 
+void CharProvider::Text(int, int data, UIListLabel* slot, UILabel* label) const {
+    const CharacterEntry& entry = mCharacters[data];
+    AppLabel* pLabel = dynamic_cast<AppLabel*>(label);
+    MILO_ASSERT(pLabel, 0xC1);
+    if(slot->Matches("name")){
+        if(entry.mType < 3) pLabel->SetTextToken(entry.unk8);
+        else if(entry.mType == kCharacterEntryCustom) pLabel->SetFromCharacter(entry.unk4);
+        else pLabel->SetTextToken(gNullStr);
+    }
+    else {
+        if(slot->Matches("header_name") && entry.mType == 4){
+            if(entry.unk8 == char_header){
+                pLabel->SetTokenFmt(entry.unk8, entry.unkc->GetName());
+            }
+            else pLabel->SetTextToken(entry.unk8);
+        }
+        else pLabel->SetTextToken(gNullStr);
+    }
+}
+
+RndMat* CharProvider::Mat(int, int data, UIListMesh* slot) const {
+    const CharacterEntry& entry = mCharacters[data];
+    if(entry.unk10 && slot->Matches("currentchar_bg")){
+        return slot->DefaultMat();
+    }
+    else if((entry.mType == kCharacterEntryHeader && slot->Matches("header_bg")) ||
+        (entry.mType != kCharacterEntryHeader && slot->Matches("bg"))
+    ){
+        return slot->DefaultMat();
+    }
+    else return nullptr;
+}
+
 Symbol CharProvider::DataSymbol(int data) const {
     MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x102);
     return mCharacters[data].unk8;
@@ -100,16 +137,61 @@ bool CharProvider::IsActive(int data) const {
     if(mCharacters.empty()) return false;
     else {
         MILO_ASSERT(( 0) <= (data) && (data) < ( mCharacters.size()), 0x117);
-        return mCharacters[data].unk0;
+        CharacterEntry entry = mCharacters[data];
+        return entry.mType != kCharacterEntryHeader;
     }
+}
+
+CharData* CharProvider::GetCharData(int idx){
+    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x11F);
+    CharacterEntry entry = mCharacters[idx];
+    CharData* ret = entry.unk4;
+    if(entry.mType == kCharacterEntryNew || entry.mType == kCharacterEntryHeader) ret = nullptr;
+    return ret;
 }
 
 bool CharProvider::IsIndexNewChar(int idx){
     if(mCharacters.empty()) return false;
     else {
         MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x134);
-        return mCharacters[idx].unk0 == 1;
+        CharacterEntry entry = mCharacters[idx];
+        return entry.mType == kCharacterEntryNew;
     }
+}
+
+bool CharProvider::IsIndexNone(int idx){
+    if(mCharacters.empty()) return false;
+    else {
+    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x141);
+        CharacterEntry entry = mCharacters[idx];
+        return entry.mType == kCharacterEntryNone;
+    }
+}
+
+bool CharProvider::IsIndexCustomChar(int idx){
+    if(mCharacters.empty()) return false;
+    else {
+    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x14E);
+        CharacterEntry entry = mCharacters[idx];
+        return entry.mType == kCharacterEntryCustom;
+    }
+}
+
+bool CharProvider::IsIndexPrefab(int idx){
+    if(mCharacters.empty()) return false;
+    else {
+    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x15B);
+        CharacterEntry entry = mCharacters[idx];
+        return entry.mType == kCharacterEntryPrefab;
+    }
+}
+
+int CharProvider::GetDefaultCharIndex() const {
+    int index = 0;
+    for(int i = 0; i < NumData(); i++, index++){
+        if(!mCharacters[i].unk10) break;
+    }
+    return index;
 }
 
 BEGIN_HANDLERS(CharProvider)
