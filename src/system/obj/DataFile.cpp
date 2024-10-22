@@ -550,7 +550,8 @@ DataArray* ReadCacheStream(BinStream& bs, const char* cc){
 }
 
 DataArray* DataReadString(const char* c) {
-    return DataReadStream(&BufStream((void*)c, strlen(c), true));
+    BufStream stream((void*)c, strlen(c), true);
+    return DataReadStream(&stream);
 }
 
 static const char* CachedDataFile(const char* cc, bool& b){
@@ -603,10 +604,10 @@ void DataLoader::OpenFile() {
     if ((fileobj = NewFile(unk18.c_str(), 2)) && !fileobj->Fail()) {
         unk30 = _MemAlloc((filesize = fileobj->Size()), 0);
         fileobj->ReadAsync(unk30, filesize);
-        ptmf = LoadFile;
+        ptmf = &DataLoader::LoadFile;
     } else {
         if (*unk18.c_str()) MILO_WARN("Could not load: %s", FileLocalize(mFile.c_str(), NULL));
-        ptmf = DoneLoading;
+        ptmf = &DataLoader::DoneLoading;
     }
 }
 
@@ -643,7 +644,7 @@ DataArray* DataLoader::Data() {
 }
 
 bool DataLoader::IsLoaded() const {
-    return ptmf == DoneLoading;
+    return ptmf == &DataLoader::DoneLoading;
 }
 
 void DataLoader::ThreadDone(DataArray* da) {
@@ -657,7 +658,7 @@ void DataLoader::ThreadDone(DataArray* da) {
     }
     delete fileobj;
     fileobj = NULL;
-    ptmf = DoneLoading;
+    ptmf = &DataLoader::DoneLoading;
 }
 
 union __bastard {

@@ -395,7 +395,7 @@ void ObjectKeys::SetFrame(float frame, float blend){
     switch(mPropExceptionID){
         case kDirEvent:
             break;
-        case kHandleInterp:
+        case kHandleInterp: {
             float ref = 0.0f;
             const Key<ObjectStage>* prev;
             const Key<ObjectStage>* next;
@@ -409,13 +409,15 @@ void ObjectKeys::SetFrame(float frame, float blend){
             else sInterpMessage[4] = DataNode(0);
             mTarget->Handle(sInterpMessage, true);
             break;
-        default:
+        }
+        default: {
             Hmx::Object* obj;
             idx = ObjectAt(frame, obj);
             if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
                 mTarget->SetProperty(mProp, DataNode(obj));
             }
             break;
+        }
     }
     mLastKeyFrameIndex = idx;
 }
@@ -532,7 +534,7 @@ void Vector3Keys::SetFrame(float frame, float blend){
     if(!mProp || !mTarget || !size()) return;
     int idx = 0;
     switch(mPropExceptionID){
-        case kTransScale:
+        case kTransScale: {
             if(mTrans != mTarget) mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
             Vector3 v70;
             Hmx::Matrix3 m40;
@@ -545,12 +547,14 @@ void Vector3Keys::SetFrame(float frame, float blend){
             Scale(v7c, m64, m64);
             mTrans->SetLocalRot(m64);
             break;
-        case kTransPos:
+        }
+        case kTransPos: {
             if(mTrans != mTarget) mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
             Vector3 v88;
             idx = Vector3At(frame, v88);
             mTrans->SetLocalPos(v88.x, v88.y, v88.z);
             break;
+        }
         default: break;
     }
     mLastKeyFrameIndex = idx;
@@ -565,7 +569,7 @@ void SymbolKeys::SetFrame(float frame, float blend){
     if(!mProp || !mTarget || !size()) return;
     int idx = 0;
     switch(mPropExceptionID){
-        case kHandleInterp:
+        case kHandleInterp: {
             float ref = 0.0f;
             const Key<Symbol>* prev;
             const Key<Symbol>* next;
@@ -579,24 +583,28 @@ void SymbolKeys::SetFrame(float frame, float blend){
             else sInterpMessage[4] = DataNode(0);
             mTarget->Handle(sInterpMessage, true);
             break;
-        case kMacro:
+        }
+        case kMacro: {
             Symbol s;
             idx = SymbolAt(frame, s);
             if(mInterpolation != kStep || mLastKeyFrameIndex != idx){
                 mTarget->SetProperty(mProp, DataNode(DataGetMacro(s)->Int(0)));
             }
             break;
+        }
         default: break;
     }
     switch(mInterpolation){
-        case kStep:
+        case kStep: {
             // more happens here
             break;
-        case kLinear:
+        }
+        case kLinear: {
             Symbol s;
             idx = SymbolAt(frame, s);
             mTarget->SetProperty(mProp, DataNode(s));
             break;
+        }
         default: break;
     }
     mLastKeyFrameIndex = idx;
@@ -706,7 +714,7 @@ void QuatKeys::SetToCurrentVal(int i){
 
 void Vector3Keys::SetToCurrentVal(int i){
     switch(mPropExceptionID){
-        case kTransScale:
+        case kTransScale: {
             if(mTrans != mTarget){
                 mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
             }
@@ -714,12 +722,14 @@ void Vector3Keys::SetToCurrentVal(int i){
             MakeScale(mTrans->LocalXfm().m, v28);
             (*this)[i].value = v28;
             break;
-        case kTransPos:
+        }
+        case kTransPos: {
             if(mTrans != mTarget){
                 mTrans = dynamic_cast<RndTransformable*>(mTarget.Ptr());
             }
             (*this)[i].value = mTrans->LocalXfm().v;
             break;
+        }
     }
 }
 

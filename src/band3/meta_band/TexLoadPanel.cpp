@@ -88,11 +88,12 @@ void TexLoadPanel::Poll(){
     if(dlc){
         MILO_ASSERT(dlc->mState != DLCTex::kLoaded, 0x93);
         switch(dlc->mState){
-            case 0:
+            case 0: {
                 const char* name = TheSongMgr->ContentName(dlc->unk20, true);
                 dlc->mState = 1;
                 // WiiContentMgr stuff
                 break;
+            }
             case 2:
                 MILO_ASSERT(dlc->mLoader, 0xA4);
                 if(dlc->mLoader->IsLoaded()){

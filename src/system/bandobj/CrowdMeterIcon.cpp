@@ -5,7 +5,7 @@
 
 INIT_REVS(CrowdMeterIcon)
 
-CrowdMeterIcon::CrowdMeterIcon() : mResetTrig(this, 0), mArrowHideTrig(this, 0), mArrowShowTrig(this, 0), mDeployTrig(this, 0), 
+CrowdMeterIcon::CrowdMeterIcon() : mResetTrig(this, 0), mArrowHideTrig(this, 0), mArrowShowTrig(this, 0), mDeployTrig(this, 0),
     mStopDeployTrig(this, 0), mStateFailedTrig(this, 0), mStateFailingTrig(this, 0), mStateNormalTrig(this, 0), mGlowTrig(this, 0),
     mGlowStopTrig(this, 0), mStateQuarantinedTrig(this, 0), mDropInTrig(this, 0), mDropOutTrig(this, 0), mIconLabel(this, 0),
     mIconStateAnim(this, 0), unk240(0), mState(kCrowdMeterNormal), mQuarantined(0) {
@@ -36,16 +36,19 @@ void CrowdMeterIcon::SetState(CrowdMeterState state, bool b){
         mState = state;
         if(!mQuarantined){
             switch(state){
-                case kCrowdMeterNormal:
+                case kCrowdMeterNormal: {
                     mStateNormalTrig->Trigger();
                     break;
-                case kCrowdMeterWarning:
+                }
+                case kCrowdMeterWarning: {
                     float delay = unk240->GetPulseAnimStartDelay(false);
                     mIconStateAnim->Animate(0.0f, false, delay, RndAnimatable::k1_fpb, 0.0f, 1.0f, 0.0f, 1.0f, loop);
                     break;
-                case kCrowdMeterFailed:
+                }
+                case kCrowdMeterFailed: {
                     mStateFailedTrig->Trigger();
                     break;
+                }
                 default:
                     break;
             }

@@ -18,27 +18,30 @@ CharCollide::CharCollide() : mShape(kSphere), mFlags(0), mMesh(this, 0), mMeshYB
 }
 
 CharCollide::~CharCollide(){
-    
+
 }
 
 void CharCollide::Highlight(){
     Hmx::Color black(1.0f, 1.0f, 1.0f);
     Hmx::Color red(1.0f, 0.0f, 0.0f);
     switch(mShape){
-        case kPlane:
+        case kPlane: {
             Plane p(WorldXfm().v, WorldXfm().m.x);
             UtilDrawPlane(p, WorldXfm().v, red, 1, 12.0f);
             break;
+        }
         case kSphere:
-        case kInsideSphere:
+        case kInsideSphere: {
             UtilDrawSphere(WorldXfm().v, mOrigRadius[0], red);
             UtilDrawSphere(WorldXfm().v, mCurRadius[0], black);
             break;
+        }
         case kCigar:
-        case kInsideCigar:
+        case kInsideCigar: {
             UtilDrawCigar(WorldXfm(), mOrigRadius, mOrigLength, red, 8);
             UtilDrawCigar(WorldXfm(), mCurRadius, mCurLength, black, 8);
             break;
+        }
         default: break;
     }
     if(mMesh){

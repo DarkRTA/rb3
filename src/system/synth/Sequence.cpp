@@ -111,19 +111,23 @@ DataNode Sequence::OnPlay(DataArray* arr){
 
 void Sequence::OnTriggerSound(int i){
     switch(i){
-        case 0:
+        case 0: {
             Stop(false);
             break;
-        case 1:
+        }
+        case 1: {
             Play(0.0f, 0.0f, 0.0f);
             break;
-        case 2:
+        }
+        case 2: {
+
             ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin();
             for(; it != mInsts.end(); ++it){
                 if((*it)->IsRunning()) break;
             }
             if(!(it != mInsts.end())) Play(0.0f, 0.0f, 0.0f);
             break;
+        }
         default: break;
     }
 }

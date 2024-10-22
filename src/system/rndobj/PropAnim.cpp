@@ -473,44 +473,52 @@ int RndPropAnim::ValueFromFrame(PropKeys* keys, float frame, DataNode* node){
     if(!keys) return -1;
     else {
         switch(keys->mKeysType){
-            case PropKeys::kFloat:
+            case PropKeys::kFloat: {
                 float fval = 0.0f;
                 ret = keys->FloatAt(frame, fval);
                 *node = DataNode(fval);
                 break;
-            case PropKeys::kColor:
+            }
+            case PropKeys::kColor: {
                 Hmx::Color col;
                 ret = keys->ColorAt(frame, col);
                 *node = DataNode(col.Pack());
                 break;
-            case PropKeys::kObject:
+            }
+            case PropKeys::kObject: {
                 Hmx::Object* obj = 0;
                 ret = keys->ObjectAt(frame, obj);
                 *node = DataNode(obj);
                 break;
-            case PropKeys::kBool:
+            }
+            case PropKeys::kBool: {
                 bool bval = false;
                 ret = keys->BoolAt(frame, bval);
                 *node = DataNode(bval);
                 break;
-            case PropKeys::kQuat:
+            }
+            case PropKeys::kQuat: {
                 Hmx::Quat quatval;
                 ret = keys->QuatAt(frame, quatval);
                 *node = DataNode(DataArrayPtr(DataNode(quatval.x), DataNode(quatval.y), DataNode(quatval.z), DataNode(quatval.w)));
                 break;
-            case PropKeys::kVector3:
+            }
+            case PropKeys::kVector3: {
                 Vector3 vecval;
                 ret = keys->Vector3At(frame, vecval);
                 *node = DataNode(DataArrayPtr(DataNode(vecval.x), DataNode(vecval.y), DataNode(vecval.z)));
                 break;
-            case PropKeys::kSymbol:
+            }
+            case PropKeys::kSymbol: {
                 Symbol symval;
                 ret = keys->SymbolAt(frame, symval);
                 *node = DataNode(symval);
                 break;
-            default:
+            }
+            default: {
                 *node = DataNode(0);
                 break;
+            }
         }
         return ret;
     }
@@ -520,32 +528,40 @@ int RndPropAnim::ValueFromFrame(PropKeys* keys, float frame, DataNode* node){
 bool RndPropAnim::ValueFromIndex(PropKeys* keys, int index, DataNode* node){
     if(index < 0 || index >= keys->NumKeys()) return false;
     switch(keys->mKeysType){
-        case PropKeys::kFloat:
+        case PropKeys::kFloat: {
             *node = DataNode(keys->AsFloatKeys()[index].value);
             break;
-        case PropKeys::kColor:
+        }
+        case PropKeys::kColor: {
             *node = DataNode(keys->AsColorKeys()[index].value.Pack());
             break;
-        case PropKeys::kObject:
+        }
+        case PropKeys::kObject: {
             *node = DataNode(keys->AsObjectKeys()[index].value.Ptr());
             break;
-        case PropKeys::kBool:
+        }
+        case PropKeys::kBool: {
             *node = DataNode(keys->AsBoolKeys()[index].value);
             break;
-        case PropKeys::kQuat:
+        }
+        case PropKeys::kQuat: {
             Hmx::Quat q(keys->AsQuatKeys()[index].value);
             *node = DataNode(DataArrayPtr(DataNode(q.x), DataNode(q.y), DataNode(q.z), DataNode(q.w)));
             break;
-        case PropKeys::kVector3:
+        }
+        case PropKeys::kVector3: {
             Vector3 vec(keys->AsVector3Keys()[index].value);
             *node = DataNode(DataArrayPtr(DataNode(vec.x), DataNode(vec.y), DataNode(vec.z)));
             break;
-        case PropKeys::kSymbol:
+        }
+        case PropKeys::kSymbol: {
             *node = DataNode(keys->AsSymbolKeys()[index].value);
             break;
-        default:
+        }
+        default: {
             *node = DataNode(0);
             break;
+        }
     }
     return true;
 }

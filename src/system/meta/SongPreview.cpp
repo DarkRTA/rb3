@@ -165,13 +165,14 @@ void SongPreview::Poll(){
     switch(mState){
         case kIdle:
             break;
-        case kMountingSong:
+        case kMountingSong: {
             bool b = true;
             if(!mSongContent.Null()){
                 if(!TheContentMgr->IsMounted(mSongContent)) b = false;
             }
             if(b) PreparePreview();
             break;
+        }
         case kPreparingSong:
             if(mStream->IsReady()){
                 mFader->SetVal(-48.0f);
