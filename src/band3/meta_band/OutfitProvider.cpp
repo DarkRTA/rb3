@@ -24,7 +24,7 @@ void OutfitProvider::Text(int, int data, UIListLabel* slot, UILabel* label) cons
 }
 
 Symbol OutfitProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x2C);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x2C);
     return unk20[data];
 }
 

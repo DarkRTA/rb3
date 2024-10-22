@@ -52,7 +52,7 @@ Symbol BandUser::GetDifficultySym() const {
 
 void BandUser::SetDifficulty(Difficulty d){
     MILO_ASSERT(IsLocal(), 0x74);
-    MILO_ASSERT(( 0) <= (d) && (d) < ( kNumDifficulties), 0x75);
+    MILO_ASSERT_RANGE(d, 0, kNumDifficulties, 0x75);
     Difficulty old = mDifficulty;
     unk_0xC = true;
     mDifficulty = d;
@@ -275,7 +275,7 @@ void LocalBandUser::SetOvershellFocus(const char* cc){
 ControllerType LocalBandUser::DebugGetControllerTypeOverride() const { return mControllerTypeOverride; }
 
 void LocalBandUser::DebugSetControllerTypeOverride(ControllerType ct){
-    MILO_ASSERT(( 0) <= (ct) && (ct) <= ( kNumControllerTypes), 0x3B2);
+    MILO_ASSERT_RANGE_EQ(ct, 0, kNumControllerTypes, 0x3B2);
     mControllerTypeOverride = ct;
 }
 

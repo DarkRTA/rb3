@@ -76,7 +76,7 @@ void EndingBonus::Reset(){
 }
 
 void EndingBonus::SetIconText(int slot_index, const char* cc){
-    MILO_ASSERT(( 0) <= (slot_index) && (slot_index) < ( mIconData.size()), 0x81);
+    MILO_ASSERT_RANGE(slot_index, 0, mIconData.size(), 0x81);
     mIconData[slot_index].mIcon->SetIcon(cc);
 }
 
@@ -87,12 +87,12 @@ void EndingBonus::Success(){
 }
 
 void EndingBonus::PlayerSuccess(int slot_index){
-    MILO_ASSERT(( 0) <= (slot_index) && (slot_index) < ( mIconData.size()), 0x90);
+    MILO_ASSERT_RANGE(slot_index, 0, mIconData.size(), 0x90);
     mIconData[slot_index].Succeeded();
 }
 
 void EndingBonus::PlayerFailure(int slot_index){
-    MILO_ASSERT(( 0) <= (slot_index) && (slot_index) < ( mIconData.size()), 0x96);
+    MILO_ASSERT_RANGE(slot_index, 0, mIconData.size(), 0x96);
     mIconData[slot_index].Failed();
 }
 

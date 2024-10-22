@@ -53,7 +53,7 @@ void PrefabMgr::Init(BandUserMgr* mgr){
     else {
         MILO_ASSERT(TheBandUserMgr, 0x4C);
         ThePrefabMgr->unk5c = TheBandUserMgr;
-    }    
+    }
     DataRegisterFunc("prefab_is_customizable", OnPrefabIsCustomizable);
     DataRegisterFunc("prefab_toggle_customizable", OnPrefabToggleCustomizable);
     DataRegisterFunc("prefab_uses_profile_patches", OnPrefabUsesProfilePatches);
@@ -156,7 +156,7 @@ void PrefabMgr::EnableDebugPrefabs(){
 }
 
 PrefabChar* PrefabMgr::GetDefaultPrefab(int slotNum) const {
-    MILO_ASSERT(( 0) <= (slotNum) && (slotNum) < ( mDefaultPrefabs.size()), 0x132);
+    MILO_ASSERT_RANGE(slotNum, 0, mDefaultPrefabs.size(), 0x132);
     return mDefaultPrefabs[slotNum];
 }
 

@@ -809,7 +809,7 @@ int BandCharDesc::FindPatchIndex(BandCharDesc::Patch::Category cat, const char* 
 }
 
 BandCharDesc::Patch* BandCharDesc::GetPatch(int index){
-    MILO_ASSERT(( 0) <= (index) && (index) < ( mPatches.size()), 0x5CD);
+    MILO_ASSERT_RANGE(index, 0, mPatches.size(), 0x5CD);
     return &mPatches[index];
 }
 

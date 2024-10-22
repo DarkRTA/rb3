@@ -367,7 +367,7 @@ bool TourProgress::AreQuestFiltersEmpty() const {
 }
 
 Symbol TourProgress::GetQuestFilter(int i_iIndex) const {
-    MILO_ASSERT(( 0) <= ( i_iIndex) && ( i_iIndex) < ( kTour_NumQuestFilters), 0x2A2);
+    MILO_ASSERT_RANGE( i_iIndex, 0, kTour_NumQuestFilters, 0x2A2);
     return mQuestFilters[i_iIndex];
 }
 
@@ -382,7 +382,7 @@ bool TourProgress::HasQuestFilter(Symbol s) const {
 }
 
 void TourProgress::SetQuestFilter(int i_iIndex, Symbol s){
-    MILO_ASSERT(( 0) <= ( i_iIndex) && ( i_iIndex) < ( kTour_NumQuestFilters), 0x2C2);
+    MILO_ASSERT_RANGE( i_iIndex, 0, kTour_NumQuestFilters, 0x2C2);
     mQuestFilters[i_iIndex] = s;
     HandleDirty(3);
 }
@@ -472,3 +472,4 @@ BEGIN_HANDLERS(TourProgress)
     HANDLE_CHECK(0x373)
 END_HANDLERS
 #pragma pop
+

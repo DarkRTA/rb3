@@ -241,6 +241,6 @@ void MidiInstrument::Pause(bool b){
 }
 
 void MidiInstrument::SetFineTune(float cents){
-    MILO_ASSERT(( -100.f) <= (cents) && (cents) < ( 100.f), 0x1F9);
+    MILO_ASSERT_RANGE(cents, -100.f, 100.f, 0x1F9);
     mFineTuneCents = cents;
 }

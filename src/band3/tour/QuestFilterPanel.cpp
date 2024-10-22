@@ -29,7 +29,7 @@ Symbol QuestFilterPanel::GetSelectedFilter(){
 }
 
 inline Symbol QuestFilterProvider::DataSymbol(int i_iData) const {
-    MILO_ASSERT(( 0) <= ( i_iData) && ( i_iData) < ( NumData()), 0xD0);
+    MILO_ASSERT_RANGE( i_iData, 0, NumData(), 0xD0);
     return unk24[i_iData];
 }
 

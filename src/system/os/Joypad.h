@@ -3,8 +3,10 @@
 #include "utl/Symbol.h"
 #include "obj/Msg.h"
 
-#define kNumJoypads 4
-#define kNumPressureButtons 8
+enum {
+    kNumJoypads = 4,
+    kNumPressureButtons = 8,
+};
 
 enum JoypadAction {
     kAction_None = 0,
@@ -233,7 +235,7 @@ public:
     bool mHasGreenCymbal;
     bool mHasYellowCymbal;
     bool mHasBlueCymbal;
-    bool mHasSecondaryPedal;    
+    bool mHasSecondaryPedal;
     int unk98;
 
     JoypadData();

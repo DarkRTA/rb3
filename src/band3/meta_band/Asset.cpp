@@ -6,7 +6,7 @@
 #include "utl/Symbols3.h"
 #include "AssetTypes.h"
 
-Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType(0), mBoutique(0), mPatchable(false), 
+Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType(0), mBoutique(0), mPatchable(false),
     mHidden(false), mIndex(index) {
     MILO_ASSERT(pConfig, 21);
     Symbol name = pConfig->Sym(0);
@@ -31,7 +31,7 @@ Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType
     DataArray* finishesArray = pConfig->FindArray(finishes, false);
     if (finishesArray != NULL) {
         if (assetType == 10 || (unsigned long)(assetType - 2) <= 1) {
-            for (int i = 1; i < finishesArray->Size(); i++) {  
+            for (int i = 1; i < finishesArray->Size(); i++) {
                 Symbol finish = finishesArray->Str(i);
                 mFinishes.push_back(finish);
             }
@@ -61,7 +61,7 @@ void Asset::GetFinishes(std::vector<Symbol>& v) const {
 }
 
 Symbol Asset::GetFinish(int index) const {
-    MILO_ASSERT(( 0) <= (index) && (index) < ( mFinishes.size()), 100);
+    MILO_ASSERT_RANGE(index, 0, mFinishes.size(), 100);
     return mFinishes[index];
 }
 

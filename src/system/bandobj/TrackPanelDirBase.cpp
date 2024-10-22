@@ -211,7 +211,7 @@ bool TrackPanelDirBase::ReservedVocalPlayerSlot(int i){
 }
 
 BandTrack* TrackPanelDirBase::GetBandTrackInSlot(int slot){
-    MILO_ASSERT(( 0) <= (slot) && (slot) < ( mTracks.size()), 0x180);
+    MILO_ASSERT_RANGE(slot, 0, mTracks.size(), 0x180);
     return mTracks[slot];
 }
 

@@ -35,7 +35,7 @@ bool HxGuid::IsNull() const {
 }
 
 int HxGuid::Chunk32(int i) const {
-    MILO_ASSERT(( 0) <= (i) && (i) < ( 4), 0x4F);
+    MILO_ASSERT_RANGE(i, 0, 4, 0x4F);
     return mData[i];
 }
 

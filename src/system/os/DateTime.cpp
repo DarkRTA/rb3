@@ -91,7 +91,7 @@ DECOMP_FORCEACTIVE(DateTime, "%02d")
 
 namespace {
     Symbol MonthToken(int month){
-        MILO_ASSERT(( 0) <= (month) && (month) <= ( 11), 0xF5);
+        MILO_ASSERT_RANGE_EQ(month, 0, 11, 0xF5);
         static Symbol month_symbols[12] = {
             "month_january", "month_february", "month_march", "month_april",
             "month_may", "month_june", "month_july", "month_august",

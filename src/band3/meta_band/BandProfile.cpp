@@ -128,12 +128,12 @@ void BandProfile::GetPatchIndex(const PatchDir*) const {}
 
 // void BandProfile::GetCharacterStandinIndex(CharData*) const {}
 // StandIn* BandProfile::GetStandIn(int index) const {
-//     MILO_ASSERT(( 0) <= (index) && (index) < mStandIns.size(), 0x14d);
+//     MILO_ASSERT_RANGE(index, 0, mStandIns.size(), 0x14d);
 //     return mStandIns[index];
 // }
 
 // StandIn* BandProfile::AccessStandIn(int index) {
-//     MILO_ASSERT(( 0) <= (index) && (index) < mStandIns.size(), 0x14d);
+//     MILO_ASSERT_RANGE(index, 0, mStandIns.size(), 0x14d);
 //     return mStandIns[index];
 // }
 

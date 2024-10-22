@@ -73,7 +73,7 @@ void MicInputArrow::DrawShowing(){
 void MicInputArrow::SetMicMgr(MicManagerInterface* m){ mMicManagerInterface = m; }
 
 void MicInputArrow::SetMicConnected(bool connected, int arrowNum){
-    MILO_ASSERT(( 0) <= (arrowNum) && (arrowNum) < ( mConnectedFlags.size()), 0x94);
+    MILO_ASSERT_RANGE(arrowNum, 0, mConnectedFlags.size(), 0x94);
     if(connected != mConnectedFlags[arrowNum]){
         mConnectedFlags[arrowNum] = connected;
         if(connected) mConnectedTrigs[arrowNum]->Trigger();
@@ -81,22 +81,24 @@ void MicInputArrow::SetMicConnected(bool connected, int arrowNum){
     }
 }
 
-#define kNumArrows 3
+enum {
+    kNumArrows = 3,
+};
 
 void MicInputArrow::SetMicHidden(int arrowNum){
-    MILO_ASSERT(( 0) <= (arrowNum) && (arrowNum) < ( kNumArrows), 0xA6);
+    MILO_ASSERT_RANGE(arrowNum, 0, kNumArrows, 0xA6);
     mHiddenFlags[arrowNum] = true;
     mHiddenTrigs[arrowNum]->Trigger();
 }
 
 void MicInputArrow::SetMicPreview(int arrowNum){
-    MILO_ASSERT(( 0) <= (arrowNum) && (arrowNum) < ( kNumArrows), 0xAF);
+    MILO_ASSERT_RANGE(arrowNum, 0, kNumArrows, 0xAF);
     mHiddenFlags[arrowNum] = false;
     mPreviewTrigs[arrowNum]->Trigger();
 }
 
 void MicInputArrow::SetMicExtended(int arrowNum){
-    MILO_ASSERT(( 0) <= (arrowNum) && (arrowNum) < ( kNumArrows), 0xB7);
+    MILO_ASSERT_RANGE(arrowNum, 0, kNumArrows, 0xB7);
     mHiddenFlags[arrowNum] = false;
     mExtendedTrigs[arrowNum]->Trigger();
 }

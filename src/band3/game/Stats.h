@@ -55,7 +55,7 @@ public:
 
     Stats();
     Stats(const Stats& s);
-    
+
 
     // Stats::Stats(const Stats& s) : mHitCount(s.mHitCount), mMissCount(s.mMissCount), m0x08(s.m0x08), m0x0c(s.m0x0c), mPersistentStreak(s.mPersistentStreak), mLongestPersistentStreak(s.mLongestPersistentStreak),
     //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), m0x28(s.m0x28), m0x2c(s.m0x2c), m0x30(s.m0x30), m0x34(s.m0x34),
@@ -64,7 +64,7 @@ public:
     //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
     //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
     //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), mFullCombo(s.mFullCombo), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
-        
+
     // }
 
     ~Stats(){}
@@ -138,7 +138,7 @@ public:
     int GetHitCount() const { return mHitCount; }
     float GetNotesHitFraction() const { return mNotesHitFraction; }
     int GetNumberOfSingers() const { return mNumberOfSingers; }
-    float GetVocalPartPercentage(int i) const { return m0x70[i]; }    
+    float GetVocalPartPercentage(int i) const { return m0x70[i]; }
     bool GetFailedDeploy() const { return mFailedDeploy; }
     int GetPlayersSaved() const { return mPlayersSaved; }
     int GetFillHitCount() const { return mFillHitCount; }
@@ -162,23 +162,23 @@ public:
     StreakInfo& AccessCurrentStreakInfo(){ return mCurrentHitStreak; }
     std::vector<int>& AccessBestSolos(){ return mBestSolos; }
     StreakInfo& AccessHitStreak(int index){
-        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mHitStreaks.size()), 0x1C5);
+        MILO_ASSERT_RANGE(index, 0, mHitStreaks.size(), 0x1C5);
         return mHitStreaks[index];
     }
     StreakInfo& AccessMissStreak(int index){
-        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mMissStreaks.size()), 0x1D3);
+        MILO_ASSERT_RANGE(index, 0, mMissStreaks.size(), 0x1D3);
         return mMissStreaks[index];
     }
     MultiplierInfo& AccessBestOverdriveDeployment(int index){
-        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mBestOverdriveDeployments.size()), 0x1E1);
+        MILO_ASSERT_RANGE(index, 0, mBestOverdriveDeployments.size(), 0x1E1);
         return mBestOverdriveDeployments[index];
     }
     MultiplierInfo& AccessBestStreakMultiplier(int index){
-        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mBestStreakMultipliers.size()), 0x1EF);
+        MILO_ASSERT_RANGE(index, 0, mBestStreakMultipliers.size(), 0x1EF);
         return mBestStreakMultipliers[index];
     }
     SingerStats& AccessSingerStats(int index){
-        MILO_ASSERT(( 0) <= ( index) && ( index) < ( mSingerStats.size()), 0xC6);
+        MILO_ASSERT_RANGE(index, 0, mSingerStats.size(), 0xC6);
         return mSingerStats[index];
     }
     void SetTimesSaved(int timesSaved) { mTimesSaved = timesSaved; }
@@ -211,7 +211,7 @@ public:
     void SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) { mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount; }
     void SetTripleHarmonyHit(int tripleHarmonyHit) { mTripleHarmonyHit = tripleHarmonyHit; }
     void SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
-    
+
     template <class T> void SaveHighest(std::vector<T>&, const T&);
 
     int mHitCount;                             // 0x000

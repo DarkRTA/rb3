@@ -30,7 +30,7 @@ int UIGridProvider::NumDataForSublistIndex(int idx) const {
     if(idx < masternum / mWidth) numData = mWidth;
     else numData = masternum % mWidth;
 
-    MILO_ASSERT(( 0) <= (numData) && (numData) <= ( mWidth), 0xB9);
+    MILO_ASSERT_RANGE_EQ(numData, 0, mWidth, 0xB9);
     return numData;
 }
 

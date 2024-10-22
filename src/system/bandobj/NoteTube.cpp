@@ -3,11 +3,11 @@
 #include "os/Debug.h"
 #include "decomp.h"
 
-NoteTube::NoteTube() : mPitched(false), mPart(-1), unk_0x24(false), mGlowLevel(-1), unk_0x2C(0), unk_0x2D(0), 
-    unk_0x30(0), unk_0x34(0), mEndX(0), mBackMat(0), mFrontMat(0), mBackPlate(0), mFrontPlate(0), mBackParent(0), 
+NoteTube::NoteTube() : mPitched(false), mPart(-1), unk_0x24(false), mGlowLevel(-1), unk_0x2C(0), unk_0x2D(0),
+    unk_0x30(0), unk_0x34(0), mEndX(0), mBackMat(0), mFrontMat(0), mBackPlate(0), mFrontPlate(0), mBackParent(0),
     mFrontParent(0), mXPos(0), mAlpha(1) { mPoints.reserve(100); }
 
-void NoteTube::SetNumPoints(int i) { 
+void NoteTube::SetNumPoints(int i) {
     if (i > mPoints.capacity()) MILO_WARN("Reallocating NoteTube point buffer to %d; please alert HUD/Track owner!", i);
     mPoints.resize(i);
 }
@@ -21,7 +21,7 @@ DECOMP_FORCEACTIVE(NoteTube, "point pos query out of bounds\n")
 
 void NoteTube::SetGlowLevel(int i) {
     mGlowLevel = 3 - i;
-    MILO_ASSERT(( 0) <= (mGlowLevel) && (mGlowLevel) < ( NumGlowLevels()), 73);
+    MILO_ASSERT_RANGE(mGlowLevel, 0, NumGlowLevels(), 73);
 }
 
 void NoteTube::BakePlates() {
@@ -129,8 +129,8 @@ void NoteTube::LookupPitchedUVCoordinates(float& f1, float& f2, float& f3, float
     }
 }
 
-TubePlate::TubePlate(int i) : mMesh(Hmx::Object::New<RndMesh>()), mParent(0), mAllocationCount(i), 
-    mBeginX(3.40282346638528859812e38), mWidthX(0), mBaked(0), mActiveMs(3.40282346638528859812e38), 
+TubePlate::TubePlate(int i) : mMesh(Hmx::Object::New<RndMesh>()), mParent(0), mAllocationCount(i),
+    mBeginX(3.40282346638528859812e38), mWidthX(0), mBaked(0), mActiveMs(3.40282346638528859812e38),
     mInvalidateMs(3.40282346638528859812e38), mMatSize(0), mDeploy(0) {
     mMesh->Verts().reserve(mAllocationCount, true);
     mMesh->Faces().reserve(mAllocationCount);

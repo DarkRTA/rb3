@@ -42,7 +42,7 @@ void AssetProvider::Update(AssetType, AssetBoutique) {
         Asset* pAsset = it->second;
         MILO_ASSERT(pAsset, 0x46);
     }
-    
+
     std::sort(symbols.begin(), symbols.end());
 }
 
@@ -62,11 +62,11 @@ void AssetProvider::Text(int, int, UIListLabel* slot, UILabel* label) const {
     MILO_ASSERT(label, 0xc9);
 
     // ProfileAssets* profileAssets = mProfile.mProfileAssets;
-    
+
     // AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
     // MILO_ASSERT(pAssetMgr, 0xd0);
 
-    
+
 }
 
 RndMat* AssetProvider::Mat(int, int, UIListMesh*) const {
@@ -106,7 +106,7 @@ void AssetProvider::UpdateExtendedText(int, int i_iData, UILabel* label) const {
 }
 
 Symbol AssetProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x165);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x165);
     return mAssets[data];
 }
 

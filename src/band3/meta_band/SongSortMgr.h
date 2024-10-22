@@ -27,10 +27,10 @@ public:
         ~SongFilter(){}
 
         void AddFilter(FilterType type, Symbol s){
-            MILO_ASSERT(( 0) <= (type) && (type) < ( kNumFilterTypes), 0x5E);
+            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x5E);
             filters[type].insert(s);
         }
-        
+
         std::vector<std::set<Symbol> > filters; // 0x0
         TrackType requiredTrackType; // 0x8
         std::vector<int> excludedSongs; // 0xc

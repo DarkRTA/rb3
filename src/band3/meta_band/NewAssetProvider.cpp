@@ -35,7 +35,7 @@ void NewAssetProvider::Text(int param_1, int index, UIListLabel* slot, UILabel* 
             label->SetTextToken(customize_new);
         } else {
             label->SetTextToken(gNullStr);
-        } 
+        }
     }
 }
 
@@ -60,7 +60,7 @@ void NewAssetProvider::UpdateExtendedText(int i, int i_iData, UILabel* label) co
 }
 
 Symbol NewAssetProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < (NumData()), 0x75);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x75);
     return mSymbols[data];
 }
 

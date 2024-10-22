@@ -17,7 +17,7 @@ const char* UIListLabel::GetDefaultText() const {
 UILabel* UIListLabel::ElementLabel(int display) const {
     if(mElements.empty()) return 0;
     else {
-        MILO_ASSERT(( 0) <= (display) && (display) < ( mElements.size()), 0x6E);
+        MILO_ASSERT_RANGE(display, 0, mElements.size(), 0x6E);
         UIListLabelElement* le = dynamic_cast<UIListLabelElement*>(mElements[display]);
         MILO_ASSERT(le, 0x71);
         return le->mLabel;

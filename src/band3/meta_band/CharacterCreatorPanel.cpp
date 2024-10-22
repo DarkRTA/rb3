@@ -295,7 +295,7 @@ Symbol CharacterCreatorPanel::GetFaceHair(){
 
 void CharacterCreatorPanel::SetHeight(int height){
     if(mPreviewDesc){
-        MILO_ASSERT(( 0) <= (height) && (height) <= ( 10), 0x268);
+        MILO_ASSERT_RANGE_EQ(height, 0, 10, 0x268);
         mPreviewDesc->SetHeight(height / 10.0f);
         mClosetMgr->PreviewCharacter(true, false);
     }
@@ -305,14 +305,14 @@ int CharacterCreatorPanel::GetHeight(){
     if(!mPreviewDesc) return 0;
     else {
         float fHeight = mPreviewDesc->mHeight;
-        MILO_ASSERT(( 0.0f) <= (fHeight) && (fHeight) <= ( 1.0f), 0x276);
+        MILO_ASSERT_RANGE_EQ(fHeight, 0.0f, 1.0f, 0x276);
         return fHeight * 10.0f;
     }
 }
 
 void CharacterCreatorPanel::SetWeight(int weight){
     if(mPreviewDesc){
-        MILO_ASSERT(( 0) <= (weight) && (weight) <= ( 10), 0x282);
+        MILO_ASSERT_RANGE_EQ(weight, 0, 10, 0x282);
         mPreviewDesc->SetWeight(weight / 10.0f);
         mClosetMgr->PreviewCharacter(true, false);
     }
@@ -322,14 +322,14 @@ int CharacterCreatorPanel::GetWeight(){
     if(!mPreviewDesc) return 0;
     else {
         float fWeight = mPreviewDesc->mWeight;
-        MILO_ASSERT(( 0.0f) <= (fWeight) && (fWeight) <= ( 1.0f), 0x290);
+        MILO_ASSERT_RANGE_EQ(fWeight, 0.0f, 1.0f, 0x290);
         return fWeight * 10.0f;
     }
 }
 
 void CharacterCreatorPanel::SetBuild(int build){
     if(mPreviewDesc){
-        MILO_ASSERT(( 0) <= (build) && (build) <= ( 10), 0x29C);
+        MILO_ASSERT_RANGE_EQ(build, 0, 10, 0x29C);
         mPreviewDesc->SetMuscle(build / 10.0f);
         mClosetMgr->PreviewCharacter(true, false);
     }
@@ -339,7 +339,7 @@ int CharacterCreatorPanel::GetBuild(){
     if(!mPreviewDesc) return 0;
     else {
         float fBuild = mPreviewDesc->mMuscle;
-        MILO_ASSERT(( 0.0f) <= (fBuild) && (fBuild) <= ( 1.0f), 0x2AA);
+        MILO_ASSERT_RANGE_EQ(fBuild, 0.0f, 1.0f, 0x2AA);
         return fBuild * 10.0f;
     }
 }
@@ -801,3 +801,4 @@ inline RndMat* FaceOptionsProvider::Mat(int, int data, UIListMesh* mesh) const {
     }
     return nullptr;
 }
+
