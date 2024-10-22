@@ -18,7 +18,7 @@ void IntPacker::AddBool(bool b){
 
 void IntPacker::AddS(int num, unsigned int bits){
     int max = 1 << bits - 1;
-    MILO_ASSERT(( -max) <= ( num) && ( num) < ( max), 0x21);
+    MILO_ASSERT_RANGE( num, -max, max, 0x21);
     Add(num, bits);
 }
 

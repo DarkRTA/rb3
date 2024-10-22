@@ -39,7 +39,7 @@ void FaceHairProvider::Text(int, int idx, UIListLabel* slot, UILabel* label) con
 }
 
 Symbol FaceHairProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x56);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x56);
     return mFaceHair->at(data);
 }
 

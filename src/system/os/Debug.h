@@ -106,6 +106,19 @@ extern int* gpDbgFrameID;
 #  define MILO_CATCH(msgName) else if (const char* msgName = nullptr)
 #endif
 
+// Bounds checking asserts
+// Use these instead of MILO_ASSERT when you see their associated patterns.
+// The strange whitespace occurs because MWCC doesn't trim whitespace in
+// macro arguments during expansion.
+
+// ( min) <= (value) && (value) < ( max)
+#define MILO_ASSERT_RANGE(value, min, max, line) \
+    MILO_ASSERT((min) <= (value) && (value) < (max), line)
+
+// ( min) <= (value) && (value) <= ( max)
+#define MILO_ASSERT_RANGE_EQ(value, min, max, line) \
+    MILO_ASSERT((min) <= (value) && (value) <= (max), line)
+
 class DebugNotifier {
 public:
     DebugNotifier& operator<<(const char* c){

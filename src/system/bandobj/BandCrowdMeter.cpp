@@ -128,7 +128,7 @@ void BandCrowdMeter::Poll(){
             if(d15 < loc80){
                 float max = std::max(1.0f, loc80 - d15);
                 float min = std::min(loc80, d15 + (max * 0.1f));
-                curgrp->SetFrame(max, 1.0f);              
+                curgrp->SetFrame(max, 1.0f);
             }
             else if(d15 > loc80){
                 float max = std::max(1.0f, d15 - loc80);
@@ -170,7 +170,7 @@ TrackInstrument GetTrackInstrument(Symbol s){
 }
 
 void BandCrowdMeter::SetPlayerValue(int trackIdx, float val){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x13F);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x13F);
     mIconData[trackIdx].SetVal(val);
 }
 
@@ -223,22 +223,22 @@ void BandCrowdMeter::UpdateExcitement(bool b){
 }
 
 void BandCrowdMeter::SetPlayerIconState(int trackIdx, CrowdMeterState cstate){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x193);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x193);
     mIconData[trackIdx].unk0->SetState(cstate, false);
 }
 
 void BandCrowdMeter::SetPlayerQuarantined(int trackIdx, bool b){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x199);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x199);
     mIconData[trackIdx].unk0->SetQuarantined(b);
 }
 
 void BandCrowdMeter::DropInPlayer(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x19F);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x19F);
     mIconData[trackIdx].unk0->DropIn();
 }
 
 void BandCrowdMeter::DropOutPlayer(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1A5);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x1A5);
     mIconData[trackIdx].unk0->DropOut();
 }
 
@@ -248,7 +248,7 @@ void BandCrowdMeter::SetMaxed(bool b){
 }
 
 void BandCrowdMeter::Deploy(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1B2);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x1B2);
     if(!mDisabled){
         if(!Deploying()) mBandEnergyDeployTrig->Trigger();
         mIconData[trackIdx].unk0->Deploy();
@@ -257,7 +257,7 @@ void BandCrowdMeter::Deploy(int trackIdx){
 }
 
 void BandCrowdMeter::StopDeploy(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1C1);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x1C1);
     if(!mDisabled){
         mIconData[trackIdx].unk1a = false;
         if(!Deploying()) mBandEnergyStopTrig->Trigger();
@@ -266,7 +266,7 @@ void BandCrowdMeter::StopDeploy(int trackIdx){
 }
 
 void BandCrowdMeter::EnablePlayer(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1D0);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x1D0);
     if(mIconData[trackIdx].unk18){
         mIconData[trackIdx].unk18 = false;
         if(!Draining()){
@@ -277,7 +277,7 @@ void BandCrowdMeter::EnablePlayer(int trackIdx){
 }
 
 void BandCrowdMeter::DisablePlayer(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1DE);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x1DE);
     if(!mIconData[trackIdx].unk18){
         if(mDisabledStartTrig && !Draining()){
             mDisabledStartTrig->Trigger();
@@ -287,7 +287,7 @@ void BandCrowdMeter::DisablePlayer(int trackIdx){
 }
 
 CrowdMeterIcon* BandCrowdMeter::PlayerIcon(int trackIdx){
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mIconData.size()), 0x1EA);
+    MILO_ASSERT_RANGE(trackIdx, 0, mIconData.size(), 0x1EA);
     return mIconData[trackIdx].unk0;
 }
 
@@ -304,7 +304,7 @@ void BandCrowdMeter::OnShowWorstCase(){
 }
 
 void BandCrowdMeter::SetIconVal(int idx, float f){
-    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mIconData.size()), 0x1FF);
+    MILO_ASSERT_RANGE(idx, 0, mIconData.size(), 0x1FF);
     mIconData[idx].SetVal(f);
 }
 

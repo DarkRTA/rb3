@@ -87,7 +87,7 @@ int TourDesc::GetIndex() const { return mIndex; }
 int TourDesc::GetNumGigs() const { return m_vEntries.size(); }
 
 TourDescEntry* TourDesc::GetTourDescEntryForGigNum(int i_iGigNum) const {
-    MILO_ASSERT(( 0) <= ( i_iGigNum) && ( i_iGigNum) < ( m_vEntries.size()), 0xB0);
+    MILO_ASSERT_RANGE( i_iGigNum, 0, m_vEntries.size(), 0xB0);
     return m_vEntries[i_iGigNum];
 }
 

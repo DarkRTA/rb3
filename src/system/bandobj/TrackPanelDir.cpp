@@ -367,7 +367,7 @@ void TrackPanelDir::CleanUpChordMeshes(){
 }
 
 TrackInstrument TrackPanelDir::GetInstrument(int trackIdx) const {
-    MILO_ASSERT(( 0) <= (trackIdx) && (trackIdx) < ( mInstruments.size()), 0x275);
+    MILO_ASSERT_RANGE(trackIdx, 0, mInstruments.size(), 0x275);
     return mInstruments[trackIdx];
 }
 

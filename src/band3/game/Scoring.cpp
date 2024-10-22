@@ -13,9 +13,9 @@ OverdriveConfig::OverdriveConfig(DataArray* cfg){
     readyLevel = cfg->FindFloat("ready_level");
     multiplier = cfg->FindInt("multiplier");
     crowdBoost = cfg->FindFloat("crowd_boost");
-    MILO_ASSERT(( 0) <= (rechargeRate) && (rechargeRate) <= ( 1), 0x22);
-    MILO_ASSERT(( 0) <= (starPhrase) && (starPhrase) <= ( 1), 0x23);
-    MILO_ASSERT(( 0) <= (readyLevel) && (readyLevel) <= ( 1), 0x24);
+    MILO_ASSERT_RANGE_EQ(rechargeRate, 0, 1, 0x22);
+    MILO_ASSERT_RANGE_EQ(starPhrase, 0, 1, 0x23);
+    MILO_ASSERT_RANGE_EQ(readyLevel, 0, 1, 0x24);
 }
 
 Scoring::Scoring() : unk8c(SystemConfig("scoring")), unk90(unk8c->FindArray("overdrive", true)), unkc0(0) {
@@ -99,7 +99,7 @@ Symbol Scoring::GetStarRating(int numStars) const {
     if(numStars == 0) return gNullStr;
     else {
         DataArray* ratings = unk8c->FindArray("star_ratings", "symbols")->Array(1);
-        MILO_ASSERT(( 1) <= (numStars) && (numStars) <= ( ratings->Size()), 0x1BE);
+        MILO_ASSERT_RANGE_EQ(numStars, 1,  ratings->Size(), 0x1BE);
         return ratings->Sym(numStars - 1);
     }
 }

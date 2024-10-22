@@ -129,21 +129,21 @@ RndMat* CharProvider::Mat(int, int data, UIListMesh* slot) const {
 }
 
 Symbol CharProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x102);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x102);
     return mCharacters[data].unk8;
 }
 
 bool CharProvider::IsActive(int data) const {
     if(mCharacters.empty()) return false;
     else {
-        MILO_ASSERT(( 0) <= (data) && (data) < ( mCharacters.size()), 0x117);
+        MILO_ASSERT_RANGE(data, 0, mCharacters.size(), 0x117);
         CharacterEntry entry = mCharacters[data];
         return entry.mType != kCharacterEntryHeader;
     }
 }
 
 CharData* CharProvider::GetCharData(int idx){
-    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x11F);
+    MILO_ASSERT_RANGE(idx, 0, mCharacters.size(), 0x11F);
     CharacterEntry entry = mCharacters[idx];
     CharData* ret = entry.unk4;
     if(entry.mType == kCharacterEntryNew || entry.mType == kCharacterEntryHeader) ret = nullptr;
@@ -153,7 +153,7 @@ CharData* CharProvider::GetCharData(int idx){
 bool CharProvider::IsIndexNewChar(int idx){
     if(mCharacters.empty()) return false;
     else {
-        MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x134);
+        MILO_ASSERT_RANGE(idx, 0, mCharacters.size(), 0x134);
         CharacterEntry entry = mCharacters[idx];
         return entry.mType == kCharacterEntryNew;
     }
@@ -162,7 +162,7 @@ bool CharProvider::IsIndexNewChar(int idx){
 bool CharProvider::IsIndexNone(int idx){
     if(mCharacters.empty()) return false;
     else {
-    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x141);
+        MILO_ASSERT_RANGE(idx, 0, mCharacters.size(), 0x141);
         CharacterEntry entry = mCharacters[idx];
         return entry.mType == kCharacterEntryNone;
     }
@@ -171,7 +171,7 @@ bool CharProvider::IsIndexNone(int idx){
 bool CharProvider::IsIndexCustomChar(int idx){
     if(mCharacters.empty()) return false;
     else {
-    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x14E);
+        MILO_ASSERT_RANGE(idx, 0, mCharacters.size(), 0x14E);
         CharacterEntry entry = mCharacters[idx];
         return entry.mType == kCharacterEntryCustom;
     }
@@ -180,7 +180,7 @@ bool CharProvider::IsIndexCustomChar(int idx){
 bool CharProvider::IsIndexPrefab(int idx){
     if(mCharacters.empty()) return false;
     else {
-    MILO_ASSERT(( 0) <= (idx) && (idx) < ( mCharacters.size()), 0x15B);
+        MILO_ASSERT_RANGE(idx, 0, mCharacters.size(), 0x15B);
         CharacterEntry entry = mCharacters[idx];
         return entry.mType == kCharacterEntryPrefab;
     }

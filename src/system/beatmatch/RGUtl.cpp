@@ -23,7 +23,7 @@ void RGSetTuning(const std::vector<int>& vec){
     int i5 = 0;
     for(int i = 0; i < vec.size(); i++){
         int note = *stringPtr + i + i5;
-        MILO_ASSERT(( 0) <= (note) && (note) < ( 256), 0x45);
+        MILO_ASSERT_RANGE(note, 0, 256, 0x45);
         *tunedPtr = note;
         stringPtr++;
         tunedPtr++;
@@ -32,7 +32,7 @@ void RGSetTuning(const std::vector<int>& vec){
 }
 
 unsigned char RGGetTuning(int string){
-    MILO_ASSERT(( 0) <= (string) && (string) < ( 6), 0x4C);
+    MILO_ASSERT_RANGE(string, 0, 6, 0x4C);
     return gTunedNotes[string];
 }
 

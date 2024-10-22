@@ -26,7 +26,7 @@ void FaceTypeProvider::Text(int, int idx, UIListLabel* slot, UILabel* label) con
 }
 
 Symbol FaceTypeProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x32);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x32);
     return mFaceTypes[data];
 }
 

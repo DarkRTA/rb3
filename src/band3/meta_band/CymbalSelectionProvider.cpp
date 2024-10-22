@@ -23,18 +23,18 @@ void CymbalSelectionProvider::ReloadData(){
 }
 
 bool CymbalSelectionProvider::IsActive(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x2C);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x2C);
     if(unk20[data] == overshell_cymbals_continue && !mSlot->mCymbalConfiguration) return false;
     else return true;
 }
 
 void CymbalSelectionProvider::Text(int, int data, UIListLabel*, UILabel* label) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x36);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x36);
     label->SetTextToken(unk20[data]);
 }
 
 Symbol CymbalSelectionProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x3D);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x3D);
     return unk20[data];
 }
 

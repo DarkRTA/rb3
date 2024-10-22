@@ -281,7 +281,7 @@ void ObjectDir::PostLoad(BinStream& bs){
     if(gRev > 0x17){
         int revs2 = bs.Cached() ? 0 : PopRev(this);
         int offset = PopRev(this);
-        MILO_ASSERT(( 0) <= (offset) && (offset) <= ( mSubDirs.size()), 0x466);
+        MILO_ASSERT_RANGE_EQ(offset, 0, mSubDirs.size(), 0x466);
         if(revs2 != 2){
             for(int i = mSubDirs.size() - offset - 1; i >= 0; i--){
                 bool bbb = false;

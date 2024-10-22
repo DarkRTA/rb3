@@ -7,7 +7,9 @@
 #include "tour/QuestJournal.h"
 #include "utl/BinStream.h"
 
-#define kTour_NumQuestFilters 3
+enum {
+    kTour_NumQuestFilters = 3,
+};
 
 class TourProgress : public TourSavable, public FixedSizeSaveable {
 public:

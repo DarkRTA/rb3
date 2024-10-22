@@ -177,6 +177,8 @@ WhitespaceSensitiveMacros:
   - assert
   - Assert
   - MILO_ASSERT
+  - MILO_ASSERT_RANGE
+  - MILO_ASSERT_RANGE_EQ
   - _STLP_ASSERT
   - _STLP_VERBOSE_ASSERT
   - DECOMP_FORCEBLOCK

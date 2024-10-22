@@ -173,7 +173,7 @@ int ProfileMgr::GetSliderStepCount() const {
 }
 
 void ProfileMgr::PushAllOptions(){
-    
+
 }
 
 bool ProfileMgr::GetBassBoost() const { return mBassBoost; }
@@ -310,15 +310,16 @@ void ProfileMgr::SetSongToTaskMgrMsRaw(float ms){
         mGlobalOptionsDirty = true;
     }
 }
+
 float ProfileMgr::GetJoypadExtraLag(JoypadType type, LagContext ctx) const {
-    MILO_ASSERT(( 0) <= (type) && (type) < ( kJoypadNumTypes), 0x6DE);
-    MILO_ASSERT(( 0) <= (ctx) && (ctx) < ( kNumLagContexts), 0x6DF);
+    MILO_ASSERT_RANGE(type, 0, kJoypadNumTypes, 0x6DE);
+    MILO_ASSERT_RANGE(ctx, 0, kNumLagContexts, 0x6DF);
     return mJoypadExtraLagOffsets[type][ctx];
 }
 
 void ProfileMgr::SetJoypadExtraLag(JoypadType type, LagContext ctx, float lag){
-    MILO_ASSERT(( 0) <= (type) && (type) < ( kJoypadNumTypes), 0x6E5);
-    MILO_ASSERT(( 0) <= (ctx) && (ctx) < ( kNumLagContexts), 0x6E6);
+    MILO_ASSERT_RANGE(type, 0, kJoypadNumTypes, 0x6E5);
+    MILO_ASSERT_RANGE(ctx, 0, kNumLagContexts, 0x6E6);
     mJoypadExtraLagOffsets[type][ctx] = lag;
 }
 

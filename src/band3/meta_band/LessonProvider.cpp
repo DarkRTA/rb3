@@ -106,6 +106,6 @@ void LessonProvider::Update(Symbol s){
 }
 
 const LessonProvider::LessonEntry& LessonProvider::GetLessonEntry(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0xD0);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0xD0);
     return mLessonEntries[data];
 }

@@ -59,7 +59,7 @@ void OvershellPartSelectProvider::Clear(){
 int OvershellPartSelectProvider::NumData() const { return mPartSelections.size(); }
 
 Symbol OvershellPartSelectProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( mPartSelections.size()), 0xE5);
+    MILO_ASSERT_RANGE(data, 0, mPartSelections.size(), 0xE5);
     return mPartSelections[data].unk0;
 }
 

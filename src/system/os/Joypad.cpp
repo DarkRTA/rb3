@@ -37,7 +37,7 @@ namespace {
 
     static DataNode OnJoypadIsButtonDownPadNum(DataArray* arr){
         int pad = arr->Int(1);
-        MILO_ASSERT(( 0) <= (pad) && (pad) < ( kNumJoypads), 0x80);
+        MILO_ASSERT_RANGE(pad, 0, kNumJoypads, 0x80);
         int ret = gJoypadData[pad].mButtons & 1 << arr->Int(2);
         return DataNode(ret != 0);
     }
@@ -106,7 +106,7 @@ namespace {
 
 }
 
-JoypadData::JoypadData() : mButtons(0), mUser(0), mConnected(false), mVibrateEnabled(true), unk66(false), unk67(false), unk68(false), 
+JoypadData::JoypadData() : mButtons(0), mUser(0), mConnected(false), mVibrateEnabled(true), unk66(false), unk67(false), unk68(false),
     mHasAnalogSticks(false), mTranslateSticks(false), mIgnoreButtonMask(0), mGreenCymbalMask(0), mYellowCymbalMask(0), mBlueCymbalMask(0),
     mSecondaryPedalMask(0), mCymbalMask(0), mIsDrum(false), mType(kJoypadNone), mControllerType(), mHasGreenCymbal(false), mHasYellowCymbal(false),
     mHasBlueCymbal(false), mHasSecondaryPedal(false) {
@@ -251,7 +251,7 @@ void JoypadPushThroughMsg(const Message& msg){
 }
 
 void AssociateUserAndPad(LocalUser* iUser, int iPadNum){
-    MILO_ASSERT(( 0) <= (iPadNum) && (iPadNum) < ( kNumJoypads), 0x61C);
+    MILO_ASSERT_RANGE(iPadNum, 0, kNumJoypads, 0x61C);
     gJoypadData[iPadNum].mUser = iUser;
 }
 
@@ -270,7 +270,7 @@ int GetUsersPadNum(LocalUser* user){
 }
 
 LocalUser* JoypadGetUserFromPadNum(int iPadNum){
-    MILO_ASSERT(( 0) <= (iPadNum) && (iPadNum) < ( kNumJoypads), 0x633);
+    MILO_ASSERT_RANGE(iPadNum, 0, kNumJoypads, 0x633);
     return gJoypadData[iPadNum].mUser;
 }
 

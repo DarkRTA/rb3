@@ -6,7 +6,10 @@
 #include "rndobj/Mat.h"
 #include <algorithm>
 
-#define kNumGemSlotMats 1
+// needs to be an enum for value names to show in asserts
+enum {
+    kNumGemSlotMats = 1
+};
 
 GemRepTemplate::GemRepTemplate(const TrackConfig& tc) : mConfig(SystemConfig("track_graphics", "gem")),
     kTailPulseRate(mConfig->FindArray("tail_pulse_rate", true)->Float(1)),
@@ -100,13 +103,13 @@ float GemRepTemplate::GetTailSectionLength(GemRepTemplate::TailType type) const 
 }
 
 RndMat* GemRepTemplate::GetSlotMat(int matIndex, int slotIndex) const {
-    MILO_ASSERT(( 0) <= (matIndex) && (matIndex) < ( kNumGemSlotMats), 244);
-    MILO_ASSERT(( 0) <= (slotIndex) && (slotIndex) < ( mTrackCfg.GetMaxSlots()), 245);
+    MILO_ASSERT_RANGE(matIndex, 0, kNumGemSlotMats, 244);
+    MILO_ASSERT_RANGE(slotIndex, 0, mTrackCfg.GetMaxSlots(), 245);
     return mSlots[matIndex + slotIndex];
 }
 
 void GemRepTemplate::SetSlotMat(int matIndex, int slotIndex, RndMat* mat) {
-    MILO_ASSERT(( 0) <= (matIndex) && (matIndex) < ( kNumGemSlotMats), 251);
-    MILO_ASSERT(( 0) <= (slotIndex) && (slotIndex) < ( mTrackCfg.GetMaxSlots()), 252);
+    MILO_ASSERT_RANGE(matIndex, 0, kNumGemSlotMats, 251);
+    MILO_ASSERT_RANGE(slotIndex, 0, mTrackCfg.GetMaxSlots(), 252);
     mSlots[matIndex + slotIndex] = mat;
 }

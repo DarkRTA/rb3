@@ -39,6 +39,6 @@ void TrainerProvider::Text(int i1, int i2, UIListLabel* slot, UILabel* label) co
 }
 
 Symbol TrainerProvider::DataSymbol(int data) const {
-    MILO_ASSERT(( 0) <= (data) && (data) < ( NumData()), 0x41);
+    MILO_ASSERT_RANGE(data, 0, NumData(), 0x41);
     return mTrainers[data];
 }
