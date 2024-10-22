@@ -49,24 +49,6 @@
       "problemMatcher": []
     },
     {
-      "label": "ninja report SZBE69",
-      "type": "shell",
-      "command": "ninja",
-      "args": [
-        "build/SZBE69/report.json"
-      ],
-      "problemMatcher": []
-    },
-    {
-      "label": "ninja report SZBE69_B8",
-      "type": "shell",
-      "command": "ninja",
-      "args": [
-        "build/SZBE69_B8/report.json"
-      ],
-      "problemMatcher": []
-    },
-    {
       "label": "all_source",
       "type": "shell",
       "command": "ninja all_source",
