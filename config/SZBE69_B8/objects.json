@@ -167,7 +167,7 @@
             "band3/meta_band/CharProvider.cpp": "NonMatching",
             "band3/meta_band/CharSync.cpp": "NonMatching",
             "band3/meta_band/CharacterCreatorPanel.cpp": "NonMatching",
-            "band3/meta_band/ChooseColorPanel.cpp": "MISSING",
+            "band3/meta_band/ChooseColorPanel.cpp": "NonMatching",
             "band3/meta_band/ClosetMgr.cpp": "NonMatching",
             "band3/meta_band/ClosetPanel.cpp": "NonMatching",
             "band3/meta_band/ContentDeletePanel.cpp": "MISSING",
