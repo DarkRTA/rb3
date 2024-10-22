@@ -193,18 +193,17 @@ int CacheWii::ThreadStart() {
             m0x2c = m0x2c + "/" + m0x2c;
             return ThreadGetDir(m0x2c);
         }
-        break;
         case kOpFileSize:
-        return ThreadGetFileSize();
+            return ThreadGetFileSize();
         case kOpWrite:
-        return ThreadWrite();
+            return ThreadWrite();
         case kOpRead:
-        return ThreadRead();
+            return ThreadRead();
         case kOpDelete:
-        return ThreadDelete();
+            return ThreadDelete();
         default:
-        MILO_ASSERT(false, 0x00);
-        return 0;
+            MILO_ASSERT(false, 0x00);
+            return 0;
     }
 }
 
@@ -212,41 +211,46 @@ void CacheWii::ThreadDone(int param_1) {
     MILO_ASSERT(!IsDone(), 0x00);
 
     switch (mOpCur) {
-        case kOpDirectory:
-        mLastResult = (CacheResult)param_1;
-        s_mThreadStr = gNullStr;
-        m0x5c = 0;
-        m0x60 = 0;
-        break;
-        case kOpFileSize:
-        mLastResult = (CacheResult)param_1;
-        s_mThreadStr = gNullStr;
-        m0x54 = 0;
-        m0x60 = 0;
-        break;
-        case kOpRead:
-        mLastResult = (CacheResult)param_1;
-        s_mThreadStr = gNullStr;
-        m0x54 = 0;
-        m0x58 = 0;
-        m0x60 = 0;
-        break;
-        case kOpWrite:
-        mLastResult = (CacheResult)param_1;
-        s_mThreadStr = gNullStr;
-        m0x54 = 0;
-        m0x58 = 0;
-        if (m0x60 != 0) {
-
+        case kOpDirectory: {
+            mLastResult = (CacheResult)param_1;
+            s_mThreadStr = gNullStr;
+            m0x5c = 0;
+            m0x60 = 0;
+            break;
         }
-        break;
-        case kOpDelete:
-        mLastResult = (CacheResult)param_1;
-        s_mThreadStr = gNullStr;
-        m0x60 = 0;
-        break;
-        default:
-        MILO_ASSERT(false, 0x110);
+        case kOpFileSize: {
+            mLastResult = (CacheResult)param_1;
+            s_mThreadStr = gNullStr;
+            m0x54 = 0;
+            m0x60 = 0;
+            break;
+        }
+        case kOpRead: {
+            mLastResult = (CacheResult)param_1;
+            s_mThreadStr = gNullStr;
+            m0x54 = 0;
+            m0x58 = 0;
+            m0x60 = 0;
+            break;
+        }
+        case kOpWrite: {
+            mLastResult = (CacheResult)param_1;
+            s_mThreadStr = gNullStr;
+            m0x54 = 0;
+            m0x58 = 0;
+            if (m0x60 != 0) {
+            }
+            break;
+        }
+        case kOpDelete: {
+            mLastResult = (CacheResult)param_1;
+            s_mThreadStr = gNullStr;
+            m0x60 = 0;
+            break;
+        }
+        default: {
+            MILO_ASSERT(false, 0x110);
+        }
     }
     mOpCur = kOpNone;
 }
