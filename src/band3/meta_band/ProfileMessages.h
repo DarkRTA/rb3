@@ -1,6 +1,7 @@
 #pragma once
 #include "meta_band/BandProfile.h"
 #include "obj/Msg.h"
+#include "os/User.h"
 
 class PrimaryProfileChangedMsg : public Message {
 public:
@@ -24,3 +25,17 @@ public:
     }
     BandProfile* GetProfile() const { return mData->Obj<BandProfile>(2); }
 };
+
+// turns out this was already implemented in os/ProfileSwappedMsg.h
+// class ProfileSwappedMsg : public Message {
+// public:
+//     ProfileSwappedMsg(LocalUser* u1, LocalUser* u2) : Message(Type(), u1, u2) {}
+//     ProfileSwappedMsg(DataArray *da) : Message(da) {}
+//     virtual ~ProfileSwappedMsg() {}
+//     static Symbol Type() {
+//         static Symbol t("profile_swapped");
+//         return t;
+//     }
+//     LocalUser* GetUser1() const { return mData->Obj<LocalUser>(2); }
+//     LocalUser* GetUser2() const { return mData->Obj<LocalUser>(3); }
+// };

@@ -1,9 +1,10 @@
 #ifndef METABAND_ASSETTYPES_H
 #define METABAND_ASSETTYPES_H
-
 #include "system/obj/Data.h"
 
-enum AssetType {};
+enum AssetType {
+
+};
 
 enum AssetGender {};
 
