@@ -5,11 +5,12 @@
 #include "game/BandUser.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/CharData.h"
-#include "meta_band/ClosetPanel.h"
 #include "os/ProfileSwappedMsg.h"
 #include "obj/MsgSource.h"
 #include "utl/Symbol.h"
 #include "world/CameraShot.h"
+
+class ClosetPanel;
 
 class ClosetMgr : public MsgSource {
 public:
