@@ -82,7 +82,7 @@ public:
     ClosetPanel* mCurrentClosetPanel; // 0x40
     Symbol unk44;
     BandCharDesc::OutfitPiece* mCurrentOutfitPiece; // 0x48
-    OutfitConfig* unk4c;
+    OutfitConfig* mCurrentOutfitConfig; // 0x4c
     int unk50;
     int unk54;
     Symbol mReturnScreen; // 0x58

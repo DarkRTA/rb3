@@ -32,7 +32,7 @@ namespace {
     ClosetMgr* TheClosetMgr;
 }
 
-ClosetMgr::ClosetMgr() : mUser(0), mSlot(-1), mNoUserMode(0), unk28(0), mCurrentCharacter(0), mPreviousCharacter(0), mBandCharacter(0), mBandCharDesc(0), mCurrentClosetPanel(0), unk44(gNullStr), mCurrentOutfitPiece(0), unk4c(0),
+ClosetMgr::ClosetMgr() : mUser(0), mSlot(-1), mNoUserMode(0), unk28(0), mCurrentCharacter(0), mPreviousCharacter(0), mBandCharacter(0), mBandCharDesc(0), mCurrentClosetPanel(0), unk44(gNullStr), mCurrentOutfitPiece(0), mCurrentOutfitConfig(0),
     unk50(0), unk54(0), mGender(gNullStr), mCharacterLoading(0), unk61(0) {
     SetName("closet_mgr", ObjectDir::Main());
     unk3c = dynamic_cast<BandCharDesc*>(BandCharDesc::NewObject());
@@ -112,7 +112,7 @@ void ClosetMgr::ClearUser(){
     mCurrentClosetPanel = 0;
     unk44 = gNullStr;
     mCurrentOutfitPiece = 0;
-    unk4c = 0;
+    mCurrentOutfitConfig = 0;
     mGender = gNullStr;
     mCharacterLoading = 0;
     unk61 = 0;
@@ -227,7 +227,7 @@ void ClosetMgr::ClearCurrentClosetPanel(){ mCurrentClosetPanel = 0; }
 void ClosetMgr::ResetCharacterPreview(){
     unk44 = none;
     mCurrentOutfitPiece = 0;
-    unk4c = 0;
+    mCurrentOutfitConfig = 0;
     unk3c->CopyCharDesc(mBandCharDesc);
     PreviewCharacter(true, false);
 }
@@ -306,7 +306,7 @@ void ClosetMgr::MakeProfileDirty(){
 }
 
 void ClosetMgr::CharacterFinishedLoading(){
-    if(mCurrentOutfitPiece && !unk4c) UpdateCurrentOutfitConfig();
+    if(mCurrentOutfitPiece && !mCurrentOutfitConfig) UpdateCurrentOutfitConfig();
     static CharacterFinishedLoadingMsg msg;
     Export(msg, true);
 }
@@ -373,7 +373,7 @@ void ClosetMgr::SetCurrentOutfitPiece(Symbol s){
     MILO_ASSERT(mCurrentOutfitPiece, 0x245);
     if(IsAlreadyLoaded()) UpdateCurrentOutfitConfig();
     else {
-        unk4c = 0;
+        mCurrentOutfitConfig = 0;
         SetDefaultColors();
     }
 }
@@ -385,11 +385,11 @@ void ClosetMgr::UpdateCurrentOutfitConfig(){
     if(unk44 == guitar || unk44 == bass || unk44 == drum){
         name = pAssetMgr->StripFinish(name);
     }
-    if(!pAssetMgr->HasAsset(name)) unk4c = 0;
+    if(!pAssetMgr->HasAsset(name)) mCurrentOutfitConfig = 0;
     else {
         const char* cfgname = GetConfigNameFromAssetType(pAssetMgr->GetTypeFromName(name));
-        unk4c = mBandCharacter->GetOutfitConfig(cfgname);
-        if(!unk4c) MILO_WARN("Could not find (%s) for this asset.", cfgname);
+        mCurrentOutfitConfig = mBandCharacter->GetOutfitConfig(cfgname);
+        if(!mCurrentOutfitConfig) MILO_WARN("Could not find (%s) for this asset.", cfgname);
     }
 }
 
@@ -468,7 +468,7 @@ void ClosetMgr::ClearInstrument(){
     mBandCharacter->SetInstrumentType(none);
     unk44 = none;
     mCurrentOutfitPiece = 0;
-    unk4c = 0;
+    mCurrentOutfitConfig = 0;
     PreviewCharacter(true, false);
 }
 
