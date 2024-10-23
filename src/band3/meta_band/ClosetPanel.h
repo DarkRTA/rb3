@@ -1,5 +1,6 @@
 #pragma once
 #include "meta/DeJitterPanel.h"
+#include "world/CameraShot.h"
 
 class ClosetPanel : public DeJitterPanel {
 public:
@@ -16,6 +17,12 @@ public:
     virtual void Load();
     virtual void Unload();
     virtual void FinishLoad();
+
+    CamShot* GetCurrentShot();
+    void CycleCamera();
+    void GotoArtMakerShot();
+    void LeaveArtMakerShot();
+    void TakePortrait();
 
     int unk88;
     int unk8c;
