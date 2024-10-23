@@ -1,5 +1,7 @@
 #pragma once
+#include "obj/Data.h"
 #include "synth/Faders.h"
+#include "synth/Stream.h"
 #include "ui/UIPanel.h"
 
 enum TestState {
@@ -33,11 +35,14 @@ public:
     float ReshapeTime(float);
     float HandlePreAndPostTestAnim(float);
     void UpdateProgress(bool);
+    void InitializeVisuals();
+
+    DataNode OnInitializeContent(DataArray*);
     
     static float kAnimPerceptualOffset;
 
     float mCycleTimeMs; // 0x38
-    int unk3c;
+    Stream* mStream; // 0x3c
     Fader* mFader; // 0x40
     bool unk44;
     std::vector<int> unk48;

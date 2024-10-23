@@ -1,24 +1,35 @@
+#include "game/Defines.h"
 #include "meta_band/Calibration.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "rndobj/Group.h"
+#include "rndobj/TransAnim.h"
+#include "synth/Synth.h"
 #include "ui/UILabel.h"
 #include "ui/UIPanel.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 #include <cmath>
 
 float CalibrationPanel::kAnimPerceptualOffset = 0;
 
-CalibrationPanel::CalibrationPanel() : mCycleTimeMs(755.0f), unk3c(0), mFader(0), unk44(0), mHalfOffAnim(0), mEnableVideo(1), mNumHits(32), unk5c(0), mTestState(tsIdle), unk64(0), mHardwareMode(0),
+namespace {
+    ControllerType GetControllerType(){
+
+    }
+}
+
+CalibrationPanel::CalibrationPanel() : mCycleTimeMs(755.0f), mStream(0), mFader(0), unk44(0), mHalfOffAnim(0), mEnableVideo(1), mNumHits(32), unk5c(0), mTestState(tsIdle), unk64(0), mHardwareMode(0),
     mAnimCycleFrames(50.0f), mAnimNumCycles(1), mMaxSlack(100), mRestingFrame(0), unk80(0), mVolDb(-6.0f), unk8c(0.275f), unka0(0), unkcc(0), unkd0(0), unkd4(0), unkd8(0),
     unkdc(0), unke4(0), mTopOutliers(3), mBottomOutliers(3) {
 
 }
 
 CalibrationPanel::~CalibrationPanel(){
-    // RELEASE(unk3c);
-    // RELEASE(mFader);
+    RELEASE(mStream);
+    RELEASE(mFader);
 }
 
 void CalibrationPanel::Poll(){
@@ -193,4 +204,109 @@ void CalibrationPanel::UpdateLabel(){
             else calhwaudgrp->SetShowing(true);
         }
     }
+}
+
+void CalibrationPanel::UpdateProgress(bool b){
+    RndTransAnim* tabanim = mDir->Find<RndTransAnim>("prog_bar_tab.tnm", true);
+    RndTransAnim* boneanim = mDir->Find<RndTransAnim>("bone_prog_bar.tnm", true);
+}
+
+void CalibrationPanel::Draw(){ UIPanel::Draw(); }
+
+void CalibrationPanel::UpdateStream(){
+    if(mStream){
+        if(mStream->IsPlaying() && mTestState == tsIdle){
+            mStream->Stop();
+        }
+        else if(mStream->IsFinished() && mTestState == tsTesting){
+            mStream->Stop();
+            mTestState = tsPostTest;
+        }
+        else if(unk44 && mStream->IsReady()){
+            mStream->Play();
+            unk44 = false;
+        }
+    }
+}
+
+DataNode CalibrationPanel::OnInitializeContent(DataArray* arr){
+    memset(unka4, 0, 0x14);
+    memset(unkb8, 0, 0x14);
+    RndTransAnim* tabanim = mDir->Find<RndTransAnim>("prog_bar_tab.tnm", true);
+    RndTransAnim* boneanim = mDir->Find<RndTransAnim>("bone_prog_bar.tnm", true);
+    tabanim->SetFrame(0, 1);
+    boneanim->SetFrame(0, 1);
+    ControllerType ty = GetControllerType();
+    switch(ty){
+        case kControllerGuitar: {
+            UILabel* green1 = mDir->Find<UILabel>("green1.lbl", true);
+            green1->SetIcon('G');
+            UILabel* green2 = mDir->Find<UILabel>("green02.lbl", true);
+            green2->SetIcon('G');
+            UILabel* vidlbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
+            vidlbl->SetTextToken(cal_video_desc_guitar);
+            UILabel* audlbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
+            audlbl->SetTextToken(cal_audio_desc_guitar);
+        } break;
+        case kControllerDrum: {
+            UILabel* green1 = mDir->Find<UILabel>("green1.lbl", true);
+            green1->SetIcon('1');
+            UILabel* green2 = mDir->Find<UILabel>("green02.lbl", true);
+            green2->SetIcon('1');
+            UILabel* vidlbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
+            vidlbl->SetTextToken(cal_video_desc_drum);
+            UILabel* audlbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
+            audlbl->SetTextToken(cal_audio_desc_drum);
+        } break;
+        default: {
+            UILabel* green1 = mDir->Find<UILabel>("green1.lbl", true);
+            green1->SetIcon('A');
+            UILabel* green2 = mDir->Find<UILabel>("green02.lbl", true);
+            green2->SetIcon('A');
+            UILabel* vidinstslbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
+            vidinstslbl->SetTextToken(cal_video_desc_pad);
+            UILabel* audinstslbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
+            audinstslbl->SetTextToken(cal_audio_desc_pad);
+        } break;
+    }
+    if(mHardwareMode){
+        UILabel* audiolbl = mDir->Find<UILabel>("audio_title.lbl", true);
+        audiolbl->SetTextToken(cal_hw_audio_title);
+        UILabel* videolbl = mDir->Find<UILabel>("video_title.lbl", true);
+        videolbl->SetTextToken(cal_hw_video_title);
+        UILabel* vidinstslbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
+        vidinstslbl->SetTextToken(cal_video_desc_calbert);
+        UILabel* audinstslbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
+        audinstslbl->SetTextToken(cal_audio_desc_calbert);
+        RndGroup* vidgrp = mDir->Find<RndGroup>("cal_hardware_video_illustration.grp", true);
+        vidgrp->SetShowing(mEnableVideo);
+        RndGroup* audgrp = mDir->Find<RndGroup>("cal_hardware_audio_illustration.grp", true);
+        audgrp->SetShowing(!mEnableVideo);
+    }
+    else {
+        UILabel* audiolbl = mDir->Find<UILabel>("audio_title.lbl", true);
+        audiolbl->SetTextToken(cal_audio_title);
+        UILabel* videolbl = mDir->Find<UILabel>("video_title.lbl", true);
+        videolbl->SetTextToken(cal_video_title);
+        RndGroup* vidgrp = mDir->Find<RndGroup>("cal_hardware_video_illustration.grp", true);
+        vidgrp->SetShowing(false);
+        RndGroup* audgrp = mDir->Find<RndGroup>("cal_hardware_audio_illustration.grp", true);
+        audgrp->SetShowing(false);
+    }
+    unka0 = ty == 1 ? 0 : -1;
+    SetTestState(tsIdle);
+    if(mStream) RELEASE(mStream);
+    if(mFader) RELEASE(mFader);
+    const char* sound = "sfx/streams/sync_clap";
+    if(mHardwareMode) sound = "sfx/streams/sync_beep";
+    mFader = Hmx::Object::New<Fader>();
+    mStream = TheSynth->NewStream(sound, 0, 2.0f, false);
+    MILO_ASSERT(mStream, 0x205);
+    if(mStream){
+        mStream->SetVolume(mVolDb);
+        mFader->SetVal(-96.0f);
+        mStream->mFaders->Add(mFader);
+    }
+    InitializeVisuals();
+    return 0;
 }
