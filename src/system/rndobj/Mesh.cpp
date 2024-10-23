@@ -885,7 +885,7 @@ BEGIN_PROPSYNCS(RndMesh)
                     case kDataInt:
                         res = node.Int();
                         break;
-                    case kDataSymbol:
+                    case kDataSymbol: {
                         const char* bitstr = node.Sym().Str();
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
@@ -897,6 +897,7 @@ BEGIN_PROPSYNCS(RndMesh)
                         }
                         res = macro->Int(0);
                         break;
+                    }
                     default:
                         MILO_ASSERT(0, 0xB90);
                         break;

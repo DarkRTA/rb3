@@ -120,7 +120,7 @@ template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& 
         return true;
     }
     else {
-        ObjPtrList<T, class ObjectDir>::iterator it = ptr.begin();
+        typename ObjPtrList<T, class ObjectDir>::iterator it = ptr.begin();
         for(int cnt = prop->Int(i++); cnt > 0; cnt--) it++;
         MILO_ASSERT(i == prop->Size(), 0x150);
         switch(op){
@@ -173,7 +173,7 @@ template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray*
         return true;
     }
     else {
-        std::list<T>::iterator it = pList.begin();
+        typename std::list<T>::iterator it = pList.begin();
         for(int count = prop->Int(i++); count > 0; count--){
             it++;
         }
@@ -204,7 +204,7 @@ bool PropSync(std::vector<T VECTOR_SIZE_ARG>& vec, DataNode& node, DataArray* pr
         return true;
     }
     else {
-        std::vector<T VECTOR_SIZE_ARG>::iterator it = vec.begin() + prop->Int(i++);
+        typename std::vector<T VECTOR_SIZE_ARG>::iterator it = vec.begin() + prop->Int(i++);
         if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
             return PropSync(*it, node, prop, i, op);
         }
@@ -233,7 +233,7 @@ bool PropSync(ObjVector<T VECTOR_SIZE_ARG>& objVec, DataNode& node, DataArray* p
         return true;
     }
     else {
-        ObjVector<T VECTOR_SIZE_ARG>::iterator it = objVec.begin() + prop->Int(i++);
+        typename ObjVector<T VECTOR_SIZE_ARG>::iterator it = objVec.begin() + prop->Int(i++);
         if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
             return PropSync(*it, node, prop, i, op);
         }
@@ -262,7 +262,7 @@ template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray*
     }
     else {
         int count = prop->Int(i++);
-        std::list<T>::iterator it = objList.begin();
+        typename std::list<T>::iterator it = objList.begin();
         for(; count != 0; count--){
             it++;
         }

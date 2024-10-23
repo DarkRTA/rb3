@@ -22,10 +22,11 @@ CharBones::Type CharBones::TypeOf(Symbol s){
                 case 'p': return TYPE_POS;
                 case 's': return TYPE_SCALE;
                 case 'q': return TYPE_QUAT;
-                case 'r':
+                case 'r': {
                     unsigned char next = p[3];
                     if(next + 0x88U <= 2)
                         return (Type)(next - 0x75);
+                }
                 default: break;
             }
         }

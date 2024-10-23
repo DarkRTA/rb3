@@ -313,7 +313,7 @@ void CharHair::SimulateInternal(float f){
                                 }
                                 break;
                             case CharCollide::kCigar: // 3
-                            case CharCollide::kSphere: // 1
+                            case CharCollide::kSphere: { // 1
                                 float v164sq = LengthSquared(v164);
                                 float sumRad = collideRad + maxRad;
                                 if(v164sq < sumRad * sumRad){
@@ -331,8 +331,9 @@ void CharHair::SimulateInternal(float f){
                                     else ScaleAddEq(thisPoint.pos, v164, sumRad * RecipSqrtAccurate(v164sq) - 1.0f);
                                 }
                                 break;
+                            }
                             case CharCollide::kInsideCigar: // 4
-                            case CharCollide::kInsideSphere: // 2
+                            case CharCollide::kInsideSphere: { // 2
                                 float v164sq42 = LengthSquared(v164);
                                 float minusRad = collideRad - maxRad;
                                 if(v164sq42 > minusRad * minusRad){
@@ -350,6 +351,7 @@ void CharHair::SimulateInternal(float f){
                                     else ScaleAddEq(thisPoint.pos, v164, minusRad * RecipSqrtAccurate(v164sq42) - 1.0f);
                                 }
                                 break;
+                            }
                             default: break;
                         }
                     }

@@ -165,7 +165,7 @@ BEGIN_PROPSYNCS(CharInterest)
                     case kDataInt:
                         flags = node.Int();
                         break;
-                    case kDataSymbol:
+                    case kDataSymbol: {
                         const char* str = node.Sym().Str();
                         if(strncmp("BIT_", str, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", str);
@@ -177,6 +177,7 @@ BEGIN_PROPSYNCS(CharInterest)
                         }
                         flags = macro->Int(0);
                         break;
+                    }
                     default:
                         MILO_ASSERT(0, 0x138);
                         break;

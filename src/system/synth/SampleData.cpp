@@ -107,28 +107,36 @@ void SampleData::Reset(){
 
 int SampleData::SizeAs(Format fmt) const {
     switch(fmt){
-        case kPCM:
+        case kPCM: {
             return mNumSamples * 2;
-        case kBigEndPCM:
+        }
+        case kBigEndPCM: {
             return mNumSamples * 2;
-        case kVAG:
+        }
+        case kVAG: {
             int tmp = (mNumSamples + 0x6F) / 0x70 + (mNumSamples + 0x6F >> 0x1F);
             return (tmp - (tmp >> 0x1F)) * 0x40;
-        case kATRAC:
+        }
+        case kATRAC: {
             int tmpa = mNumSamples + 0x3FF;
             return (tmpa >> 10) + (tmpa < 0 && (tmpa & 0x3FF) != 0) * 0xC0;
-        case kMP3:
+        }
+        case kMP3: {
             int tmpm = mNumSamples + 0x3FF;
             return (tmpm >> 10) + (tmpm < 0 && (tmpm & 0x3FF) != 0) * 0xC0;
-        case kXMA:
+        }
+        case kXMA: {
             MILO_WARN("don't know size as XMA");
             int tmpx = mNumSamples / 5 + (mNumSamples >> 0x1F);
             return tmpx - (tmpx >> 0x1F);
-        case kNintendoADPCM:
+        }
+        case kNintendoADPCM: {
             return ((mNumSamples * 2) / 3.4f) + 0x60;
-        default:
+        }
+        default: {
             MILO_ASSERT(0, 0x136);
             return 0;
+        }
     }
 }
 

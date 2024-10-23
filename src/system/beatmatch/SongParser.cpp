@@ -533,7 +533,7 @@ bool SongParser::HandleTrillEnd(int tick, unsigned char pitch){
                         mSink->AddRoll(mTrack, i, (1 << curpair.first) | (1 << curpair.second), mTrillInProgress, tick);
                     else mSink->AddTrill(mTrack, i, curpair.first, curpair.second, mTrillInProgress, tick);
                 }
-            }            
+            }
         }
     }
     mTrillInProgress = -1;
@@ -602,7 +602,7 @@ void SongParser::OnGemEnd(int tick, unsigned char pitch){
                         MILO_WARN("%s (%s): chord gems don't end simultaneously at %s",
                             mFilename, mTrackName, PrintTick(tick));
                     }
-                }        
+                }
             }
         }
     }
@@ -634,11 +634,12 @@ unsigned int SongParser::ComputeSlots(int slot, int t1, int t2, std::vector<GemI
 
 void SongParser::OnMidiMessageVocals(int tick, unsigned char status, unsigned char data1, unsigned char data2){
     switch(MidiGetType(status)){
-        case 0xB0:
+        case 0xB0: {
             if(data1 == 8 && data2 <= 100)
                 HandlePitchOffsetCC(tick, data2);
             break;
-        case 0x90:
+        }
+        case 0x90: {
             int num = data1 - (mPlayerSlot + (mNumDifficulties - 1) * 12 + 60);
             if(0 <= num && num <= 1){
                 mSink->StartVocalPlayerPhrase(tick,num);
@@ -681,7 +682,8 @@ void SongParser::OnMidiMessageVocals(int tick, unsigned char status, unsigned ch
                 }
             }
             break;
-        case 0x80:
+        }
+        case 0x80: {
             int num80 = data1 - (mPlayerSlot + (mNumDifficulties - 1) * 12 + 60);
             if(0 <= num80 && num80 <= 1){
                 MILO_WARN("%s (%s): Vocal phrase %s-%s is past [coda] event at %s",
@@ -702,6 +704,7 @@ void SongParser::OnMidiMessageVocals(int tick, unsigned char status, unsigned ch
                 }
             }
             break;
+        }
         default: break;
     }
 }
@@ -715,7 +718,7 @@ void SongParser::StartVocalNote(int tick, unsigned char data, const char* lyric)
         }
         if(mLyricTextSet && lyric){
             if(mNextLyricTextTick != -1){
-                MILO_WARN("%s (%s): Missing vocal note at %s for lyric '%s'", 
+                MILO_WARN("%s (%s): Missing vocal note at %s for lyric '%s'",
                     mFilename, mTrackName, PrintTick(tick), mNextLyric);
                 mNextLyricTextTick = tick;
                 mNextLyric = lyric;
@@ -1066,7 +1069,7 @@ void SongParser::OnMidiMessageRealGuitarOff(int tick, unsigned char pitch, unsig
                 !HandleRGLeftHandSlideStop(tick, info, uc1))){
                 MILO_WARN("%s (%s): Bad Real Guitar Off Midi Message at tick %s with pitch %d",
                     mFilename, mTrackName, PrintTick(tick), pitch);
-            }            
+            }
         }
     }
 }
@@ -1357,12 +1360,13 @@ bool SongParser::ShouldReadTrack(Symbol s){
         switch(mReadingState){
             case kReadingBeat:
                 return s == "BEAT";
-            case kReadingNonParts:
+            case kReadingNonParts: {
                 bool nottrackname = !isparttrackname;
                 if(nottrackname){
                     return s == "BEAT";
                 }
                 else return nottrackname;
+            }
             case kReadingParts:
                 if(isparttrackname) return false;
                 else return PartNumThatMatchesTrackName(s.Str()) != -1;

@@ -452,7 +452,7 @@ BEGIN_PROPSYNCS(CharEyes)
                     case kDataInt:
                         res = node.Int();
                         break;
-                    case kDataSymbol:
+                    case kDataSymbol: {
                         const char* bitstr = node.Sym().Str();
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
@@ -464,6 +464,7 @@ BEGIN_PROPSYNCS(CharEyes)
                         }
                         res = macro->Int(0);
                         break;
+                    }
                     default:
                         MILO_ASSERT(0, 0x67B);
                         break;
@@ -500,7 +501,7 @@ BEGIN_PROPSYNCS(CharEyes)
                     case kDataInt:
                         res = node.Int();
                         break;
-                    case kDataSymbol:
+                    case kDataSymbol: {
                         const char* bitstr = node.Sym().Str();
                         if(strncmp("BIT_", bitstr, 4) != 0){
                             MILO_FAIL("%s does not begin with BIT_", bitstr);
@@ -512,6 +513,7 @@ BEGIN_PROPSYNCS(CharEyes)
                         }
                         res = macro->Int(0);
                         break;
+                    }
                     default:
                         MILO_ASSERT(0, 0x684);
                         break;

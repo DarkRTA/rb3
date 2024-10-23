@@ -454,7 +454,7 @@ void OvershellSlot::HandleWiiProfileActResult(WiiProfileActResult res){
         case 4:
             ShowEnterWiiProfile();
             break;
-        case 5:
+        case 5: {
             BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
             MILO_ASSERT(pUser->IsLocal(), 0x54C);
             if(mSessionMgr->IsLocal()){
@@ -463,6 +463,7 @@ void OvershellSlot::HandleWiiProfileActResult(WiiProfileActResult res){
             else pUser->SetOvershellSlotState((OvershellSlotStateID)0xce);
             mOvershell->UpdateAll();
             break;
+        }
         case 6:
             ShowWiiProfileFail();
             break;

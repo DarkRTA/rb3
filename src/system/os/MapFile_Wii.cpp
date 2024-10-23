@@ -31,11 +31,11 @@ int GetVarLength(String& str){
 // tabling this for now, see: https://decomp.me/scratch/Ry4am
 void AddParams(String& s1, String& s2, String s3){
     switch(s1[0]){
-        case 'Q': // 0x51
+        case 'Q': { // 0x51
             s1 = s1.substr(1, strlen(s1.c_str()));
             int len = atoi(s1.substr(0, 1).c_str());
             s1 = s1.substr(1, strlen(s1.c_str()));
-            
+
             for(int i = 0; i < len; i++){
                 int outerlen;
                 if(IsAsciiNum(s1[1])){
@@ -124,6 +124,7 @@ void AddParams(String& s1, String& s2, String s3){
             s2 = s2 + s2;
 
             break;
+        }
         case 'P': // 0x50
             s3 = s3 + "*";
             s1 = s1.substr(1, strlen(s1.c_str()));
@@ -164,7 +165,7 @@ void AddParams(String& s1, String& s2, String s3){
             s2 = s2 + "float" + s3 + ",";
             s1 = s1.substr(1, strlen(s1.c_str()));
             break;
-        
+
         case 'l': // 0x6C
             s2 = s2 + "long" + s3 + ",";
             s1 = s1.substr(1, strlen(s1.c_str()));
@@ -173,7 +174,7 @@ void AddParams(String& s1, String& s2, String s3){
             s2 = s2 + "short" + s3 + ",";
             s1 = s1.substr(1, strlen(s1.c_str()));
             break;
-        
+
         case 'D': // 0x44
             break;
         default:

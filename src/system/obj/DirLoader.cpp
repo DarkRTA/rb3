@@ -150,21 +150,21 @@ DirLoader::DirLoader(const FilePath& f, LoaderPos p, Loader::Callback* c, BinStr
             }
         }
     }
-    mState = OpenFile;
+    mState = &DirLoader::OpenFile;
 }
 
 bool DirLoader::IsLoaded() const {
-    return mState == DoneLoading;
+    return mState == &DirLoader::DoneLoading;
 }
 
 const char* DirLoader::StateName() const {
-    if(mState == OpenFile) return "OpenFile";
-    else if(mState == LoadHeader) return "LoadHeader";
-    else if(mState == LoadDir) return "LoadDir";
-    else if(mState == LoadResources) return "LoadResources";
-    else if(mState == CreateObjects) return "CreateObjects";
-    else if(mState == LoadObjs) return "LoadObjs";
-    else if(mState == DoneLoading) return "DoneLoading";
+    if(mState == &DirLoader::OpenFile) return "OpenFile";
+    else if(mState == &DirLoader::LoadHeader) return "LoadHeader";
+    else if(mState == &DirLoader::LoadDir) return "LoadDir";
+    else if(mState == &DirLoader::LoadResources) return "LoadResources";
+    else if(mState == &DirLoader::CreateObjects) return "CreateObjects";
+    else if(mState == &DirLoader::LoadObjs) return "LoadObjs";
+    else if(mState == &DirLoader::DoneLoading) return "DoneLoading";
     else return "INVALID";
 }
 
@@ -278,14 +278,14 @@ void DirLoader::OpenFile() {
             }
         }
     }
-    mState = LoadHeader;
+    mState = &DirLoader::LoadHeader;
 }
 
 bool DirLoader::SetupDir(Symbol sym){
     BeginTrackObjMem(sym.Str(), mFile.c_str());
     if(mDir){
         if(mDir->ClassName() != sym){
-            TheDebugNotifier << MakeString(MakeString("%s: Proxy class %s not %s, converting", mFile.c_str(), 
+            TheDebugNotifier << MakeString(MakeString("%s: Proxy class %s not %s, converting", mFile.c_str(),
                 mDir->ClassName(), sym)); // for some reason
             class ObjectDir* newDir = dynamic_cast<class ObjectDir*>(Hmx::Object::NewObject(sym));
             if(!newDir){
@@ -335,7 +335,7 @@ void DirLoader::LoadHeader() {
     if (mRev < 14) {
         mDir->Reserve(mCounter * 2, mCounter * 25);
     }
-    mState = CreateObjects;
+    mState = &DirLoader::CreateObjects;
 }
 
 void DirLoader::LoadResources(){
@@ -348,8 +348,8 @@ void DirLoader::LoadResources(){
         }
     }
     else {
-        if(mRev > 0xD) mState = LoadDir;
-        else mState = LoadObjs;
+        if(mRev > 0xD) mState = &DirLoader::LoadDir;
+        else mState = &DirLoader::LoadObjs;
     }
 }
 
