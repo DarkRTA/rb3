@@ -1,9 +1,13 @@
 #include "game/Defines.h"
 #include "meta_band/Calibration.h"
+#include "obj/Data.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "os/Joypad.h"
 #include "os/PlatformMgr.h"
+#include "os/User.h"
 #include "rndobj/Group.h"
+#include "rndobj/Mesh.h"
 #include "rndobj/TransAnim.h"
 #include "synth/Synth.h"
 #include "ui/UILabel.h"
@@ -238,60 +242,38 @@ DataNode CalibrationPanel::OnInitializeContent(DataArray* arr){
     boneanim->SetFrame(0, 1);
     ControllerType ty = GetControllerType();
     switch(ty){
-        case kControllerGuitar: {
-            UILabel* green1 = mDir->Find<UILabel>("green1.lbl", true);
-            green1->SetIcon('G');
-            UILabel* green2 = mDir->Find<UILabel>("green02.lbl", true);
-            green2->SetIcon('G');
-            UILabel* vidlbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
-            vidlbl->SetTextToken(cal_video_desc_guitar);
-            UILabel* audlbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
-            audlbl->SetTextToken(cal_audio_desc_guitar);
-        } break;
-        case kControllerDrum: {
-            UILabel* green1 = mDir->Find<UILabel>("green1.lbl", true);
-            green1->SetIcon('1');
-            UILabel* green2 = mDir->Find<UILabel>("green02.lbl", true);
-            green2->SetIcon('1');
-            UILabel* vidlbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
-            vidlbl->SetTextToken(cal_video_desc_drum);
-            UILabel* audlbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
-            audlbl->SetTextToken(cal_audio_desc_drum);
-        } break;
-        default: {
-            UILabel* green1 = mDir->Find<UILabel>("green1.lbl", true);
-            green1->SetIcon('A');
-            UILabel* green2 = mDir->Find<UILabel>("green02.lbl", true);
-            green2->SetIcon('A');
-            UILabel* vidinstslbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
-            vidinstslbl->SetTextToken(cal_video_desc_pad);
-            UILabel* audinstslbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
-            audinstslbl->SetTextToken(cal_audio_desc_pad);
-        } break;
+        case kControllerGuitar:
+            mDir->Find<UILabel>("green1.lbl", true)->SetIcon('G');
+            mDir->Find<UILabel>("green02.lbl", true)->SetIcon('G');
+            mDir->Find<UILabel>("cal_video_instructions.lbl", true)->SetTextToken(cal_video_desc_guitar);
+            mDir->Find<UILabel>("cal_audio_instructions.lbl", true)->SetTextToken(cal_audio_desc_guitar);
+            break;
+        case kControllerDrum:
+            mDir->Find<UILabel>("green1.lbl", true)->SetIcon('1');
+            mDir->Find<UILabel>("green02.lbl", true)->SetIcon('1');
+            mDir->Find<UILabel>("cal_video_instructions.lbl", true)->SetTextToken(cal_video_desc_drum);
+            mDir->Find<UILabel>("cal_audio_instructions.lbl", true)->SetTextToken(cal_audio_desc_drum);
+            break;
+        default:
+            mDir->Find<UILabel>("green1.lbl", true)->SetIcon('A');
+            mDir->Find<UILabel>("green02.lbl", true)->SetIcon('A');
+            mDir->Find<UILabel>("cal_video_instructions.lbl", true)->SetTextToken(cal_video_desc_pad);
+            mDir->Find<UILabel>("cal_audio_instructions.lbl", true)->SetTextToken(cal_audio_desc_pad);
+            break;
     }
     if(mHardwareMode){
-        UILabel* audiolbl = mDir->Find<UILabel>("audio_title.lbl", true);
-        audiolbl->SetTextToken(cal_hw_audio_title);
-        UILabel* videolbl = mDir->Find<UILabel>("video_title.lbl", true);
-        videolbl->SetTextToken(cal_hw_video_title);
-        UILabel* vidinstslbl = mDir->Find<UILabel>("cal_video_instructions.lbl", true);
-        vidinstslbl->SetTextToken(cal_video_desc_calbert);
-        UILabel* audinstslbl = mDir->Find<UILabel>("cal_audio_instructions.lbl", true);
-        audinstslbl->SetTextToken(cal_audio_desc_calbert);
-        RndGroup* vidgrp = mDir->Find<RndGroup>("cal_hardware_video_illustration.grp", true);
-        vidgrp->SetShowing(mEnableVideo);
-        RndGroup* audgrp = mDir->Find<RndGroup>("cal_hardware_audio_illustration.grp", true);
-        audgrp->SetShowing(!mEnableVideo);
+        mDir->Find<UILabel>("audio_title.lbl", true)->SetTextToken(cal_hw_audio_title);
+        mDir->Find<UILabel>("video_title.lbl", true)->SetTextToken(cal_hw_video_title);
+        mDir->Find<UILabel>("cal_video_instructions.lbl", true)->SetTextToken(cal_video_desc_calbert);
+        mDir->Find<UILabel>("cal_audio_instructions.lbl", true)->SetTextToken(cal_audio_desc_calbert);
+        mDir->Find<RndGroup>("cal_hardware_video_illustration.grp", true)->SetShowing(mEnableVideo);
+        mDir->Find<RndGroup>("cal_hardware_audio_illustration.grp", true)->SetShowing(!mEnableVideo);
     }
     else {
-        UILabel* audiolbl = mDir->Find<UILabel>("audio_title.lbl", true);
-        audiolbl->SetTextToken(cal_audio_title);
-        UILabel* videolbl = mDir->Find<UILabel>("video_title.lbl", true);
-        videolbl->SetTextToken(cal_video_title);
-        RndGroup* vidgrp = mDir->Find<RndGroup>("cal_hardware_video_illustration.grp", true);
-        vidgrp->SetShowing(false);
-        RndGroup* audgrp = mDir->Find<RndGroup>("cal_hardware_audio_illustration.grp", true);
-        audgrp->SetShowing(false);
+        mDir->Find<UILabel>("audio_title.lbl", true)->SetTextToken(cal_audio_title);
+        mDir->Find<UILabel>("video_title.lbl", true)->SetTextToken(cal_video_title);
+        mDir->Find<RndGroup>("cal_hardware_video_illustration.grp", true)->SetShowing(false);
+        mDir->Find<RndGroup>("cal_hardware_audio_illustration.grp", true)->SetShowing(false);
     }
     unka0 = ty == 1 ? 0 : -1;
     SetTestState(tsIdle);
@@ -309,4 +291,138 @@ DataNode CalibrationPanel::OnInitializeContent(DataArray* arr){
     }
     InitializeVisuals();
     return 0;
+}
+
+void CalibrationPanel::StartAudio(){
+    mStream->SetVolume(mVolDb);
+    if(mStream->GetFilePos() > 0){
+        mStream->Resync(0);
+    }
+    if(mStream->IsReady()){
+        mStream->Play();
+    }
+    else unk44 = true;
+}
+
+void CalibrationPanel::StopAudio(){
+    unk44 = false;
+    if(mStream){
+        mFader->DoFade(-96.0f, 200.0f);
+    }
+}
+
+DataNode CalibrationPanel::OnStartTest(DataArray* arr){
+    static DataNode& cal_num_hits = DataVariable("cal_num_hits");
+    if(cal_num_hits.Int() != 0) mNumHits = cal_num_hits.Int();
+    static DataNode& cal_num_outliers = DataVariable("cal_num_outliers");
+    if(cal_num_outliers.Int() != 0){
+        int outliers = cal_num_outliers.Int();
+        mBottomOutliers = outliers;
+        mTopOutliers = outliers;
+    }
+    unkd8 = 0;
+    unkdc = 0;
+    unkd4 = 0;
+    unke4 = 0;
+    mPad = arr->Obj<User>(2)->GetLocalUser()->GetPadNum();
+    PrepareHwCalibrationState();
+    StartAudio();
+    unkd0 = -1.0f;
+    unk48.clear();
+    SetTestState(tsPreRoll);
+    int u4 = 10;
+    if(mHardwareMode) u4 = 40;
+    unk90 = u4;
+    unk64 = 0;
+    unk5c = mCycleTimeMs / 2.0f;
+    if(mEnableVideo){
+        mDir->Find<RndGroup>("visuals_anim.grp", true)->Animate(0, false, 0);
+    }
+    if(mEnableAudio){
+        mDir->Find<RndGroup>("audio_anim.grp", true)->Animate(0, false, 0);
+        unke0 = false;
+    }
+    return 0;
+}
+
+void CalibrationPanel::PrepareHwCalibrationState(){
+    if(mHardwareMode){
+        unkcc = true;
+        if(mEnableVideo){
+            JoypadSetCalbertMode(mPad, 1);
+        }
+        else {
+            JoypadSetCalbertMode(mPad, 2);
+        }
+    }
+}
+
+void CalibrationPanel::TerminateHwCalibrationState(){
+    if(unkcc){
+        JoypadSetCalbertMode(mPad, 0);
+        unkcc = false;
+    }
+}
+
+void CalibrationPanel::InitializeVisuals(){
+    mDir->Find<RndGroup>("cal_visuals.grp", true)->SetShowing(mEnableVideo);
+    mDir->Find<RndGroup>("cal_audio.grp", true)->SetShowing(mEnableAudio);
+    mDir->Find<RndGroup>("prog_bar.grp", true)->SetShowing(false);
+    if(mHardwareMode){
+        mDir->Find<RndGroup>("cal_metronome.grp", true)->SetShowing(false);
+        mDir->Find<RndGroup>("visuals_anim.grp", true)->SetShowing(false);
+        mDir->Find<RndGroup>("audio_anim.grp", true)->SetShowing(false);
+        mDir->Find<RndGroup>("cal_hardware.grp", true)->SetShowing(false);
+        unk88 = 0;
+    }
+    else {
+        mDir->Find<RndGroup>("cal_metronome.grp", true)->SetShowing(true);
+        mDir->Find<RndGroup>("cal_hardware.grp", true)->SetShowing(false);
+        mDir->Find<RndGroup>("visuals_anim.grp", true)->SetShowing(false);
+        mDir->Find<RndGroup>("audio_anim.grp", true)->SetShowing(false);
+        if(mEnableVideo){
+            mDir->Find<RndGroup>("visuals_anim.grp", true)->SetShowing(true);
+            mDir->Find<RndGroup>("visuals_anim.grp", true)->StopAnimation();
+            mDir->Find<RndGroup>("visuals_anim.grp", true)->SetFrame(0, 1);
+            mDir->Find<RndMesh>("strum.mesh", true)->SetShowing(false);
+            mDir->Find<RndMesh>("drum_hit.mesh", true)->SetShowing(false);
+            mDir->Find<RndMesh>("button_press_ps3.mesh", true)->SetShowing(false);
+            mDir->Find<RndMesh>("button_press_xbox.mesh", true)->SetShowing(false);
+            switch(GetControllerType()){
+                case kControllerGuitar:
+                    mDir->Find<RndMesh>("strum.mesh", true)->SetShowing(true);
+                    break;
+                case kControllerDrum:
+                    mDir->Find<RndMesh>("drum_hit.mesh", true)->SetShowing(true);
+                    break;
+                default:
+                    mDir->Find<RndMesh>("button_press_ps3.mesh", true)->SetShowing(true);
+                    break;
+            }
+        }
+        if(mEnableAudio){
+            mDir->Find<RndGroup>("audio_anim.grp", true)->SetShowing(true);
+            mDir->Find<RndGroup>("audio_anim.grp", true)->StopAnimation();
+            mDir->Find<RndGroup>("audio_anim.grp", true)->SetFrame(0, 1);
+        }
+        const char* str = "cal_visuals.grp";
+        mDir->Find<RndGroup>(str, true)->SetFrame(mRestingFrame, 1);
+    }
+}
+
+void CalibrationPanel::EndTest(){
+    MILO_LOG("-----------------------------\n");
+    MILO_LOG("Pre Sort Calibration samples:\n");
+    for(int i = 0; i < unk48.size(); i++){
+        MILO_LOG("%f ms\n", unk48[i]);
+    }
+    std::sort(unk48.begin(), unk48.end());
+    MILO_LOG("------------------------------------------\n");
+    MILO_LOG("Sorted Calibration samples, not truncated:\n");
+    for(int i = 0; i < unk48.size(); i++){
+        MILO_LOG("%f ms\n", unk48[i]);
+    }
+    SetTestState(tsPostTest);
+    mFader->DoFade(-96.0f, 1000.0f);
+    unk80 = GetAudioTimeMs();
 }

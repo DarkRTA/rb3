@@ -36,8 +36,13 @@ public:
     float HandlePreAndPostTestAnim(float);
     void UpdateProgress(bool);
     void InitializeVisuals();
+    void StartAudio();
+    void PrepareHwCalibrationState();
+    void TerminateHwCalibrationState();
+    void EndTest();
 
     DataNode OnInitializeContent(DataArray*);
+    DataNode OnStartTest(DataArray*);
     
     static float kAnimPerceptualOffset;
 
@@ -45,7 +50,7 @@ public:
     Stream* mStream; // 0x3c
     Fader* mFader; // 0x40
     bool unk44;
-    std::vector<int> unk48;
+    std::vector<float> unk48;
     bool mHalfOffAnim; // 0x50
     bool mEnableVideo; // 0x51
     int mNumHits; // 0x54
@@ -66,8 +71,8 @@ public:
     int unk90;
     int unk94;
     int unk98;
-    int unk9c;
-    bool unka0;
+    int mPad; // 0x9c
+    bool unka0; // maybe char instead?
     float unka4[5]; // 0xa4
     float unkb8[5]; // 0xb8
     bool unkcc;
@@ -75,7 +80,7 @@ public:
     float unkd4;
     float unkd8;
     int unkdc;
-    int unke0;
+    bool unke0;
     float unke4;
     int mTopOutliers; // 0xe8
     int mBottomOutliers; // 0xec
