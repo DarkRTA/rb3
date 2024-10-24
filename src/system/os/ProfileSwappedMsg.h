@@ -4,6 +4,7 @@
 #include "os/User.h"
 
 BEGIN_MESSAGE(ProfileSwappedMsg, profile_swapped, LocalUser*, LocalUser*);
+    MESSAGE_ARRAY_CTOR(ProfileSwappedMsg);
     LocalUser* GetUser1() const;
     LocalUser* GetUser2() const;
 END_MESSAGE;

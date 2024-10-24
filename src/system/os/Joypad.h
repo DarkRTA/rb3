@@ -262,6 +262,7 @@ extern "C" void ResetAllUsersPads();
 extern "C" int GetUsersPadNum(LocalUser*);
 extern "C" LocalUser* JoypadGetUserFromPadNum(int);
 extern "C" int JoypadGetUsersPadNum(LocalUser*);
+extern "C" void JoypadSetCalbertMode(int, int);
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -275,6 +276,7 @@ int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
 const char* JoypadGetBreedString(int);
+float JoypadGetCalbertValue(int, bool);
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);

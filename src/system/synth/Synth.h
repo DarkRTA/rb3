@@ -82,6 +82,8 @@ public:
     virtual FxSendPitchShift* CreatePitchShift(int, SendChannels);
     virtual void DestroyPitchShift(FxSendPitchShift*);
 
+    void Play(const char*, float, float, float);
+
     std::vector<int> unk20; // mLevelData?
     ByteGrinder mGrinder; // unk28
     int mNumMics; // unk2c

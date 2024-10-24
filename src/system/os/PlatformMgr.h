@@ -96,10 +96,10 @@ public:
     void Poll();
     void InitGQR();
 
-    int mSigninMask;
-    int mSigninChangeMask;
-    bool mGuideShowing;
-    bool mConnected;
+    int mSigninMask; // 0x20
+    int mSigninChangeMask; // 0x24
+    bool mGuideShowing; // 0x28
+    bool mConnected; // 0x29
     bool unk2a;
     bool unk2b;
     PlatformRegion mRegion;
