@@ -54,7 +54,7 @@ public:
     Stream* mStream; // 0x3c
     Fader* mFader; // 0x40
     bool unk44;
-    std::vector<float> unk48;
+    std::vector<float> mSamples; // 0x48
     bool mHalfOffAnim; // 0x50
     bool mEnableVideo; // 0x51
     int mNumHits; // 0x54
@@ -73,7 +73,7 @@ public:
     int unk88;
     float unk8c;
     int unk90;
-    int unk94;
+    float unk94;
     int unk98;
     int mPad; // 0x9c
     bool unka0; // maybe char instead?

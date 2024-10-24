@@ -276,6 +276,7 @@ int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
 const char* JoypadGetBreedString(int);
+float JoypadGetCalbertValue(int, bool);
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);

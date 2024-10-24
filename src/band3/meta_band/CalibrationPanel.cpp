@@ -178,7 +178,7 @@ void CalibrationPanel::UpdateLabel(){
             int i48 = GetAudioTimeMs() / mCycleTimeMs;
             if(i48 - unk7c >= 5){
                 progbargrp->SetShowing(true);
-                repslabel->SetInt(mNumHits - unk48.size(), false);
+                repslabel->SetInt(mNumHits - mSamples.size(), false);
                 repslabel->SetShowing(false);
                 countdownlabel->SetTextToken(gNullStr);
                 UpdateProgress(true);
@@ -329,7 +329,7 @@ DataNode CalibrationPanel::OnStartTest(DataArray* arr){
     PrepareHwCalibrationState();
     StartAudio();
     unkd0 = -1.0f;
-    unk48.clear();
+    mSamples.clear();
     SetTestState(tsPreRoll);
     int u4 = 10;
     if(mHardwareMode) u4 = 40;
@@ -414,14 +414,14 @@ void CalibrationPanel::InitializeVisuals(){
 void CalibrationPanel::EndTest(){
     MILO_LOG("-----------------------------\n");
     MILO_LOG("Pre Sort Calibration samples:\n");
-    for(int i = 0; i < unk48.size(); i++){
-        MILO_LOG("%f ms\n", unk48[i]);
+    for(int i = 0; i < mSamples.size(); i++){
+        MILO_LOG("%f ms\n", mSamples[i]);
     }
-    std::sort(unk48.begin(), unk48.end());
+    std::sort(mSamples.begin(), mSamples.end());
     MILO_LOG("------------------------------------------\n");
     MILO_LOG("Sorted Calibration samples, not truncated:\n");
-    for(int i = 0; i < unk48.size(); i++){
-        MILO_LOG("%f ms\n", unk48[i]);
+    for(int i = 0; i < mSamples.size(); i++){
+        MILO_LOG("%f ms\n", mSamples[i]);
     }
     SetTestState(tsPostTest);
     mFader->DoFade(-96.0f, 1000.0f);
@@ -443,7 +443,7 @@ DataNode CalibrationPanel::OnMsg(const ButtonDownMsg& msg){
     if(mTestState != tsIdle){
         if(msg.GetAction() == kAction_Cancel){
             SetTestState(tsIdle);
-            unk48.clear();
+            mSamples.clear();
             StopAudio();
             return 0;
         }
@@ -475,37 +475,80 @@ DataNode CalibrationPanel::OnMsg(const KeyboardKeyPressedMsg& msg){
     else return DataNode(kDataUnhandled, 0);
 }
 
-// void __thiscall CalibrationPanel::OnMsg(CalibrationPanel *this,KeyboardKeyPressedMsg *param_1)
+void CalibrationPanel::ScanHardwareModeInputs(){
+    static DataNode& trace_sensors = DataVariable("trace_sensors");
+    if(mTestState == tsTesting){
+        float f4 = JoypadGetCalbertValue(mPad, mEnableVideo);
+        float f6 = f4 - unkd4;
+        float f5 = unke4;
+        unkd4 = f6 * 0.05 + unkd4;
+        if(f6 < f5) unke4 = f6 * 0.1 + f5;
+        else unke4 = f5 * 0.9850000143051147f;
+        if(std::fabs(f4 - unk94) > 0.015625f){
+            trace_sensors.Int();
+        }
+        if(mEnableVideo){
+            if(f6 < unke4 * 0.35 && unk94 >= 0.0){
+                TriggerCalibration(mPad);
+                trace_sensors.Int();
+            }
+            unk94 = f6;
+        }
+        else if(mEnableAudio){
+            float f1 = 0.49f;
+            if(JoypadGetPadData(mPad)->mType == kJoypadWiiButtonGuitar) f1 = 0.2f;
+            if(0.71f > f4 && f4 > f1 && (unk94 <= f1 || 0.71f <= unk94)){
+                unkdc++;
+                unkd8 += f4;
+                TriggerCalibration(mPad);
+                trace_sensors.Int();
+            }
+            unk94 = f4;
+        }
+    }
+}
 
-// {
-  
-//   if ((*(int *)(param_1 + 0x60) == 2) &&
-//      (iVar1 = GetTestRep((CalibrationPanel *)param_1), iVar1 > 4)) {
-//     this_01 = *(DataArray **)(in_r5 + 4);
-//     this_00 = (DataNode *)DataArray::Node(this_01,4);
-//     iVar1 = DataNode::Int(this_00,this_01);
-//     TriggerCalibration((CalibrationPanel *)param_1,iVar1);
-//     *(undefined4 *)this = 0;
-//     *(undefined4 *)(this + 4) = 6;
-//   }
-//   else {
-//     *(undefined4 *)(this + 4) = 0;
-//     *(undefined4 *)this = 0;
-//   }
-//   return;
-// }
-
-// void __thiscall CalibrationPanel::OnMsg(CalibrationPanel *this,KeyboardKeyPressedMsg *param_1)
-
-// {
-  
-//   if ((*(int *)(param_1 + 0x60) == 2) && (iVar1 = fn_801E6B88(param_1), iVar1 > 4)) {
-//     uVar2 = ButtonDownMsg::GetAction(in_r5);
-//     fn_801E67F4(param_1,uVar2);
-//     DataNode::DataNode((DataNode *)this,0);
-//   }
-//   else {
-//     DataNode::DataNode((DataNode *)this,0,0);
-//   }
-//   return;
-// }
+void CalibrationPanel::TriggerCalibration(int pad){
+    float f34 = 0;
+    float f9 = mCycleTimeMs / 2.0f;
+    float f8 = std::fmod(f9 + GetAudioTimeMs(), mCycleTimeMs);
+    f34 = f8 - f9;
+    f8 = GetAudioTimeMs();
+    f9 = unkd0;
+    if(f8 > f9 && (f8 - f9) < 210.0f && f9 != -1.0f) return;
+    unkd0 = f8;
+    f8 = TheProfileMgr.GetExcessAudioLagNeutral(pad, true);
+    if(mEnableVideo) f8 = TheProfileMgr.GetExcessVideoLagNeutral(pad, true);
+    if(mHardwareMode){
+        f8 = TheProfileMgr.GetPlatformAudioLatency();
+        if(mEnableVideo) f8 = TheProfileMgr.GetPlatformVideoLatency();
+        f34 -= 16.66667f;
+        if(mEnableVideo){
+            f34 -= 24.0f;
+        }
+        else {
+            f34 -= 20.0f;
+        }
+    }
+    else {
+        f34 += mEnableVideo ? kAnimPerceptualOffset : -6.0f;
+    }
+    switch(JoypadGetPadData(pad)->mType){
+        case kJoypadWiiButtonGuitar:
+            if(mEnableVideo) f34 += 7.0f;
+            else f34 -= 14.0f;
+            break;
+        case kJoypadXboxButtonGuitar:
+        case kJoypadPs3ButtonGuitar:
+            f34 -= mEnableVideo ? 12.0f : 34.0f;
+            break;
+        default:
+            break;
+    }
+    int i7 = 10;
+    f34 -= f8;
+    if(mHardwareMode) i7 = 40;
+    unk90 = GetTestRep() + i7;
+    mSamples.push_back(f34);
+    if(mSamples.size() >= mNumHits) EndTest();
+}
