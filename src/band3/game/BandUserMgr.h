@@ -1,7 +1,9 @@
 #pragma once
+#include "game/Defines.h"
 #include "os/UserMgr.h"
 #include "utl/HxGuid.h"
 #include "game/BandUser.h"
+#include <vector>
 
 class BandUserMgr : public UserMgr {
 public:
@@ -36,11 +38,13 @@ public:
     void GetBandUsers(std::vector<BandUser*>*, int) const;
     void GetLocalBandUsers(std::vector<LocalBandUser*>*, int) const;
     bool IsCharAvailable(const CharData*) const;
+    ControllerType DebugGetControllerTypeOverride(int);
 
     void GetLocalParticipants(std::vector<LocalBandUser*>&) const;
     void GetLocalBandUsersInSession(std::vector<LocalBandUser*>&) const;
     void GetParticipatingBandUsers(std::vector<BandUser*>&) const;
     void GetParticipatingBandUsersInSession(std::vector<BandUser*>&) const;
+    void GetLocalUsersWithAnyController(std::vector<LocalBandUser*>&) const;
 
     static BandUser* GetBandUser(User*);
     static LocalBandUser* GetLocalBandUser(LocalUser*);

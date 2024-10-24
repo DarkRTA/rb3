@@ -1,10 +1,12 @@
 #pragma once
 #include "obj/Msg.h"
+#include "os/User.h"
 
 // move any of these out if they belong better somewhere else
 
-BEGIN_MESSAGE(LocalUserLeftMsg, local_user_left, );
+BEGIN_MESSAGE(LocalUserLeftMsg, local_user_left, LocalUser*);
     MESSAGE_ARRAY_CTOR(LocalUserLeftMsg)
+    LocalUser* GetUser() const { return mData->Obj<LocalUser>(2); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(UserLoginMsg, user_login, );

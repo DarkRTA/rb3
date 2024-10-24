@@ -6,6 +6,8 @@ public:
     NetSync();
     virtual ~NetSync();
     virtual DataNode Handle(DataArray*, bool);
+
+    bool IsBlockingTransition() const;
 };
 
 extern NetSync* TheNetSync;
