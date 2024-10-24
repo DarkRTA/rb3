@@ -28,7 +28,7 @@ float JoypadMidiController::GetCapStrip() const {
 int JoypadMidiController::OnMsg(const KeyboardKeyPressedMsg& msg){
     if(IsDisabled()) return 0;
     if(!IsOurPadNum(msg.GetPadNum())) return 0;
-    JoypadButton btn = MidiNoteToButton(msg.GetNode2());
+    JoypadButton btn = MidiNoteToButton(msg.GetMidiNote());
     if(btn == kPad_Circle){
         mSink->OutOfRangeSwing();
     }
@@ -40,15 +40,15 @@ int JoypadMidiController::OnMsg(const KeyboardKeyPressedMsg& msg){
 
 int JoypadMidiController::OnMsg(const KeyboardKeyReleasedMsg& msg){
     if(IsDisabled()) return 0;
-    if(!IsOurPadNum(msg.GetNode3())) return 0;
-    JoypadButton btn = MidiNoteToButton(msg.GetNode2());
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
+    JoypadButton btn = MidiNoteToButton(msg.GetMidiNote());
     JoypadController::OnMsg(ButtonUpMsg(mLocalUser, btn, kAction_None, mLocalUser->GetPadNum()));
     return 0;
 }
 
 int JoypadMidiController::OnMsg(const KeyboardSustainMsg& msg){
     if(IsDisabled()) return 0;
-    if(!IsOurPadNum(msg.GetNode3())) return 0;
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
     mSink->ForceMercurySwitch(true);
     mSink->ForceMercurySwitch(false);
     return 0;
@@ -56,7 +56,7 @@ int JoypadMidiController::OnMsg(const KeyboardSustainMsg& msg){
 
 int JoypadMidiController::OnMsg(const KeyboardModMsg& msg){
     if(IsDisabled()) return 0;
-    if(!IsOurPadNum(msg.GetNode3())) return 0;
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
     mWhammy = msg.GetNode2() / 127.0f;
     return 0;
 }

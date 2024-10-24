@@ -33,9 +33,9 @@ int KeyboardController::OnMsg(const KeyboardKeyPressedMsg& msg){
     if(mDisabled) return 0;
     if(!IsOurPadNum(msg.GetPadNum())) return 0;
     MILO_ASSERT(mSink, 0x52);
-    RegisterKey(msg.GetNode2());
-    int slot = MidiNoteToSlot(msg.GetNode2());
-    mSink->NoteOn(msg.GetNode2());
+    RegisterKey(msg.GetMidiNote());
+    int slot = MidiNoteToSlot(msg.GetMidiNote());
+    mSink->NoteOn(msg.GetMidiNote());
     if(slot != -1){
         mSink->FretButtonDown(slot, msg.GetNode3());
         mSink->Swing(slot, false, true, false, false, (GemHitFlags)0);
@@ -46,9 +46,9 @@ int KeyboardController::OnMsg(const KeyboardKeyPressedMsg& msg){
 
 int KeyboardController::OnMsg(const KeyboardKeyReleasedMsg& msg){
     if(mDisabled) return 0;
-    if(!IsOurPadNum(msg.GetNode3())) return 0;
-    int slot = MidiNoteToSlot(msg.GetNode2());
-    mSink->NoteOff(msg.GetNode2());
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
+    int slot = MidiNoteToSlot(msg.GetMidiNote());
+    mSink->NoteOff(msg.GetMidiNote());
     if(slot != -1){
         mSink->FretButtonUp(slot);
         mFretButtons &= ~(1 << slot);
@@ -58,7 +58,7 @@ int KeyboardController::OnMsg(const KeyboardKeyReleasedMsg& msg){
 
 int KeyboardController::OnMsg(const KeyboardSustainMsg& msg){
     if(IsDisabled()) return 0;
-    if(!IsOurPadNum(msg.GetNode3())) return 0;
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
     mSink->ForceMercurySwitch(true);
     mSink->ForceMercurySwitch(false);
     return 0;
@@ -66,7 +66,7 @@ int KeyboardController::OnMsg(const KeyboardSustainMsg& msg){
 
 int KeyboardController::OnMsg(const KeyboardModMsg& msg){
     if(IsDisabled()) return 0;
-    if(!IsOurPadNum(msg.GetNode3())) return 0;
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
     mWhammy = msg.GetNode2() / 127.0f;
     return 0;
 }
