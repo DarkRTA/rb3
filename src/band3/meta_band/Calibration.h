@@ -1,8 +1,10 @@
 #pragma once
 #include "obj/Data.h"
 #include "os/UsbMidiKeyboardMsgs.h"
+#include "rndobj/Mesh.h"
 #include "synth/Faders.h"
 #include "synth/Stream.h"
+#include "ui/UIListProvider.h"
 #include "ui/UIPanel.h"
 
 enum TestState {
@@ -91,4 +93,25 @@ public:
     float unke4;
     int mTopOutliers; // 0xe8
     int mBottomOutliers; // 0xec
+};
+
+class CalibrationModesProvider : public UIListProvider, public Hmx::Object {
+public:
+    CalibrationModesProvider();
+    virtual ~CalibrationModesProvider(){}
+    virtual void Text(int, int, UIListLabel*, UILabel*) const;
+    virtual RndMat* Mat(int, int, UIListMesh*) const;
+    virtual int DataIndex(Symbol s) const;
+    virtual int NumData() const;
+    virtual void InitData(RndDir*);
+    virtual DataNode Handle(DataArray*, bool);
+
+    void Cleanup();
+    Symbol GetCalibrationMode(int);
+
+    std::vector<Symbol> mModes; // 0x20
+    RndMat* mAutoCalibrateMat; // 0x28
+    RndMat* mAutoCalibrateDisabledMat; // 0x2c
+    RndMat* mManualCalibrateMat; // 0x30
+    RndMat* mEnterNumbersMat; // 0x34
 };

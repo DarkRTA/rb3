@@ -3,6 +3,7 @@
 #include "meta_band/Calibration.h"
 #include "meta_band/ProfileMgr.h"
 #include "obj/Data.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -17,6 +18,8 @@
 #include "rndobj/TransAnim.h"
 #include "synth/Synth.h"
 #include "ui/UILabel.h"
+#include "ui/UIListLabel.h"
+#include "ui/UIListMesh.h"
 #include "ui/UIPanel.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
@@ -670,3 +673,67 @@ BEGIN_PROPSYNCS(CalibrationPanel)
     SYNC_PROP(max_slack, mMaxSlack)
     SYNC_SUPERCLASS(Hmx::Object)
 END_PROPSYNCS
+
+CalibrationModesProvider::CalibrationModesProvider() : mAutoCalibrateMat(0), mAutoCalibrateDisabledMat(0), mManualCalibrateMat(0), mEnterNumbersMat(0) {
+    SetName("calibration_modes_provider", ObjectDir::Main());
+}
+
+void CalibrationModesProvider::Cleanup(){
+    mModes.clear();
+    mAutoCalibrateMat = 0;
+    mAutoCalibrateDisabledMat = 0;
+    mManualCalibrateMat = 0;
+    mEnterNumbersMat = 0;
+}
+
+Symbol CalibrationModesProvider::GetCalibrationMode(int selectedPos){
+    MILO_ASSERT(( 0) <= (selectedPos) && (selectedPos) < ( mModes.size()), 0x48A);
+    return mModes[selectedPos];
+}
+
+void CalibrationModesProvider::InitData(RndDir* dir){
+    MILO_ASSERT(dir, 0x490);
+    mAutoCalibrateMat = dir->Find<RndMat>("auto_calibrate.mat", true);
+    mAutoCalibrateDisabledMat = dir->Find<RndMat>("auto_calibrate_disabled.mat", true);
+    mManualCalibrateMat = dir->Find<RndMat>("manual_calibrate.mat", true);
+    mEnterNumbersMat = dir->Find<RndMat>("enter_numbers.mat", true);
+    mModes.clear();
+    mModes.push_back(cal_auto);
+    mModes.push_back(cal_manual);
+    mModes.push_back(cal_numbers);
+}
+
+void CalibrationModesProvider::Text(int, int data, UIListLabel* slot, UILabel* label) const {
+    MILO_ASSERT(( 0) <= (data) && (data) < ( mModes.size()), 0x4A3);
+    if(slot->Matches("name")){
+        label->SetTextToken(mModes[data]);
+    }
+}
+
+RndMat* CalibrationModesProvider::Mat(int, int data, UIListMesh* slot) const {
+    MILO_ASSERT(( 0) <= (data) && (data) < ( mModes.size()), 0x4B1);
+    if(slot->Matches("icon")){
+        Symbol mode = mModes[data];
+        if(mode == cal_auto){
+
+        }
+        else if(mode == cal_manual) return mManualCalibrateMat;
+        else if(mode == cal_numbers) return mEnterNumbersMat;
+    }
+    return slot->DefaultMat();
+}
+
+int CalibrationModesProvider::NumData() const { return mModes.size(); }
+
+int CalibrationModesProvider::DataIndex(Symbol s) const {
+    for(int i = 0; i < mModes.size(); i++){
+        if(mModes[i] == s) return i;
+    }
+    return 0;
+}
+
+BEGIN_HANDLERS(CalibrationModesProvider)
+    HANDLE_EXPR(get_calibration_mode, GetCalibrationMode(_msg->Int(2)))
+    HANDLE_ACTION(cleanup, Cleanup())
+    HANDLE_CHECK(0x4D9)
+END_HANDLERS
