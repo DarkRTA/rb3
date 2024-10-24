@@ -171,7 +171,7 @@ const char* DirLoader::StateName() const {
 void DirLoader::PollLoading() {
     while (!IsLoaded()) { // wrong
         (this->*mState)();
-        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.unk18) return;
+        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.mPeriod) return;
         if ((TheLoadMgr.unk20.empty() ? NULL : TheLoadMgr.unk20.front()) != this) return;
     }
 }
@@ -308,7 +308,7 @@ bool DirLoader::SetupDir(Symbol sym){
 void DirLoader::LoadHeader() {
     for (EofType i = NotEof; i != NotEof; i == mStream->Eof()) {
         MILO_ASSERT(i == TempEof, 997);
-        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.unk18) return;
+        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.mPeriod) return;
     }
     *mStream >> mRev;
     ResolveEndianness();

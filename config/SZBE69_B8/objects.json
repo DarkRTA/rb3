@@ -184,7 +184,7 @@
             "band3/meta_band/FaceTypeProvider.cpp": "Matching",
             "band3/meta_band/GameTimePanel.cpp": "NonMatching",
             "band3/meta_band/GameplayOptions.cpp": "Matching",
-            "band3/meta_band/HeaderPerformanceProvider.cpp": "MISSING",
+            "band3/meta_band/HeaderPerformanceProvider.cpp": "NonMatching",
             "band3/meta_band/InputMgr.cpp": "MISSING",
             "band3/meta_band/Instarank.cpp": "MISSING",
             "band3/meta_band/InstrumentFinishProvider.cpp": "MISSING",
