@@ -1,21 +1,28 @@
 #include "game/Defines.h"
+#include "math/MathFuncs.h"
 #include "meta_band/Calibration.h"
 #include "meta_band/ProfileMgr.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
+#include "os/JoypadMsgs.h"
 #include "os/PlatformMgr.h"
+#include "os/UsbMidiKeyboardMsgs.h"
 #include "os/User.h"
 #include "rndobj/Group.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/Rnd.h"
 #include "rndobj/TransAnim.h"
 #include "synth/Synth.h"
 #include "ui/UILabel.h"
 #include "ui/UIPanel.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include <cmath>
 
 float CalibrationPanel::kAnimPerceptualOffset = 0;
@@ -178,7 +185,7 @@ void CalibrationPanel::UpdateLabel(){
             int i48 = GetAudioTimeMs() / mCycleTimeMs;
             if(i48 - unk7c >= 5){
                 progbargrp->SetShowing(true);
-                repslabel->SetInt(mNumHits - mSamples.size(), false);
+                repslabel->SetInt(mNumHits - mTestSamples.size(), false);
                 repslabel->SetShowing(false);
                 countdownlabel->SetTextToken(gNullStr);
                 UpdateProgress(true);
@@ -329,7 +336,7 @@ DataNode CalibrationPanel::OnStartTest(DataArray* arr){
     PrepareHwCalibrationState();
     StartAudio();
     unkd0 = -1.0f;
-    mSamples.clear();
+    mTestSamples.clear();
     SetTestState(tsPreRoll);
     int u4 = 10;
     if(mHardwareMode) u4 = 40;
@@ -414,14 +421,14 @@ void CalibrationPanel::InitializeVisuals(){
 void CalibrationPanel::EndTest(){
     MILO_LOG("-----------------------------\n");
     MILO_LOG("Pre Sort Calibration samples:\n");
-    for(int i = 0; i < mSamples.size(); i++){
-        MILO_LOG("%f ms\n", mSamples[i]);
+    for(int i = 0; i < mTestSamples.size(); i++){
+        MILO_LOG("%f ms\n", mTestSamples[i]);
     }
-    std::sort(mSamples.begin(), mSamples.end());
+    std::sort(mTestSamples.begin(), mTestSamples.end());
     MILO_LOG("------------------------------------------\n");
     MILO_LOG("Sorted Calibration samples, not truncated:\n");
-    for(int i = 0; i < mSamples.size(); i++){
-        MILO_LOG("%f ms\n", mSamples[i]);
+    for(int i = 0; i < mTestSamples.size(); i++){
+        MILO_LOG("%f ms\n", mTestSamples[i]);
     }
     SetTestState(tsPostTest);
     mFader->DoFade(-96.0f, 1000.0f);
@@ -443,7 +450,7 @@ DataNode CalibrationPanel::OnMsg(const ButtonDownMsg& msg){
     if(mTestState != tsIdle){
         if(msg.GetAction() == kAction_Cancel){
             SetTestState(tsIdle);
-            mSamples.clear();
+            mTestSamples.clear();
             StopAudio();
             return 0;
         }
@@ -549,6 +556,117 @@ void CalibrationPanel::TriggerCalibration(int pad){
     f34 -= f8;
     if(mHardwareMode) i7 = 40;
     unk90 = GetTestRep() + i7;
-    mSamples.push_back(f34);
-    if(mSamples.size() >= mNumHits) EndTest();
+    mTestSamples.push_back(f34);
+    if(mTestSamples.size() >= mNumHits) EndTest();
 }
+
+int CalibrationPanel::GetAverageTestTime(){
+    MILO_ASSERT(mTestSamples.size() >= (mNumHits - mBottomOutliers - mTopOutliers), 0x3BB);
+    std::sort(mTestSamples.begin(), mTestSamples.end());
+    MILO_LOG("--------------------\n");
+    MILO_LOG("Calibration samples:\n");
+    float f1 = 0;
+    for(int i = mBottomOutliers; i < mTestSamples.size() - mTopOutliers; i++){
+        f1 += mTestSamples[i];
+        MILO_LOG("%f ms\n", mTestSamples[i]);
+    }
+    float total = (float)(mTestSamples.size() - mTopOutliers - mBottomOutliers);
+    float testresult = f1 / total;
+    MILO_LOG("TestResult: %f ms\n", testresult);
+    MILO_LOG("Sample Spread: %f ms\n", GetSampleSpread());
+    float f2 = 0;
+    if(mHardwareMode) f2 = 14.0f;
+    return std::floor((testresult + 0.5) - f2);
+}
+
+int CalibrationPanel::GetTestRep() const {
+    float cyclems = mCycleTimeMs;
+    float audioms = GetAudioTimeMs();
+    return (int)((cyclems / 2.0f + audioms) / cyclems) - unk7c;
+}
+
+float CalibrationPanel::GetSampleSpread() const {
+    MILO_ASSERT(mTestSamples.size() >= (mNumHits - mTopOutliers - mBottomOutliers), 0x3F4);
+    return mTestSamples[mTestSamples.size() - mTopOutliers - 1] - mTestSamples[mBottomOutliers];
+}
+
+int CalibrationPanel::GetTestQuality() const {
+    if(mTestSamples.size() < mNumHits - mTopOutliers - mBottomOutliers) return 0;
+    else {
+        int ret = GetSampleSpread() < (float)mMaxSlack;
+        if(ret == 0){
+            for(int i = 0; i < mTestSamples.size(); i++){
+                MILO_LOG("%f ms\n", mTestSamples[i]);
+            }
+        }
+        return ret;
+    }
+}
+
+float CalibrationPanel::ReshapeTime(float f){
+    float f1 = f / mCycleTimeMs;
+    if(f1 > 1.0f) f1 = (f1 - 2.0f) * (f1 - 2.0f) + 2.0f;
+    else f1 = f1 * f1;
+    return Interp(f, f1 * mCycleTimeMs, unk8c);
+}
+
+void CalibrationPanel::Enter(){
+    TheRnd->SetGSTiming(true);
+    UIPanel::Enter();
+}
+
+void CalibrationPanel::Exit(){
+    if(mTestState != tsIdle){
+        SetTestState(tsIdle);
+        StopAudio();
+    }
+    RELEASE(mStream);
+    RELEASE(mFader);
+    TheRnd->SetGSTiming(false);
+    TerminateHwCalibrationState();
+    UIPanel::Exit();
+}
+
+#pragma push
+#pragma pool_data off
+void CalibrationPanel::SetTestState(TestState state){
+    mTestState = state;
+    if(state != tsIdle){
+        static Message notIdleMsg("handle_non_idle_state");
+        Handle(notIdleMsg, true);
+    }
+    else {
+        static Message idleMsg("handle_idle_state");
+        Handle(idleMsg, true);
+    }
+}
+#pragma pop
+
+BEGIN_HANDLERS(CalibrationPanel)
+    HANDLE(initialize_content, OnInitializeContent)
+    HANDLE_EXPR(is_processing_input, mTestState != tsIdle)
+    HANDLE_EXPR(get_test_quality, GetTestQuality())
+    HANDLE_EXPR(get_test_result, GetAverageTestTime())
+    HANDLE(start_test, OnStartTest)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(KeyboardKeyPressedMsg)
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x463)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(CalibrationPanel)
+    SYNC_PROP(cycle_time_ms, mCycleTimeMs)
+    SYNC_PROP(hardware_mode, mHardwareMode)
+    SYNC_PROP(audio_enable, mEnableAudio)
+    SYNC_PROP(audio_vol_db, mVolDb)
+    SYNC_PROP(anim_cycle_frames, mAnimCycleFrames)
+    SYNC_PROP(anim_num_cycles, mAnimNumCycles)
+    SYNC_PROP(video_enable, mEnableVideo)
+    SYNC_PROP(anim_half_off, mHalfOffAnim)
+    SYNC_PROP(anim_resting_frame, mRestingFrame)
+    SYNC_PROP(num_hits, mNumHits)
+    SYNC_PROP(bottom_outliers, mBottomOutliers)
+    SYNC_PROP(top_outliers, mTopOutliers)
+    SYNC_PROP(max_slack, mMaxSlack)
+    SYNC_SUPERCLASS(Hmx::Object)
+END_PROPSYNCS

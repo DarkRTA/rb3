@@ -42,6 +42,9 @@ public:
     void TerminateHwCalibrationState();
     void EndTest();
     void TriggerCalibration(int);
+    int GetAverageTestTime();
+    float GetSampleSpread() const;
+    int GetTestQuality() const;
 
     DataNode OnInitializeContent(DataArray*);
     DataNode OnStartTest(DataArray*);
@@ -54,7 +57,7 @@ public:
     Stream* mStream; // 0x3c
     Fader* mFader; // 0x40
     bool unk44;
-    std::vector<float> mSamples; // 0x48
+    std::vector<float> mTestSamples; // 0x48
     bool mHalfOffAnim; // 0x50
     bool mEnableVideo; // 0x51
     int mNumHits; // 0x54
