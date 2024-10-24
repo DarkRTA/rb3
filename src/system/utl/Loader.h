@@ -56,6 +56,12 @@ public:
     bool EditMode(){ return mEditMode; }
     Platform GetPlatform() const { return (Platform)mPlatform; }
     int AsyncUnload() const { return unk58; }
+    float SetLoaderPeriod(float period){
+        float ret = mPeriod;
+        unk1c = period;
+        mPeriod = period;
+        return ret;
+    }
 
     static const char* LoaderPosString(LoaderPos, bool);
 
@@ -64,7 +70,7 @@ public:
     bool mEditMode; // 0xC
     bool mCacheMode; // 0xD
     std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories; // 0x10
-    float unk18; // mPeriod?
+    float mPeriod; // 0x18
     float unk1c;
     std::list<Loader*> unk20; // mLoading?
     Timer mTimer; // 0x28
