@@ -27,7 +27,7 @@ float JoypadMidiController::GetCapStrip() const {
 
 int JoypadMidiController::OnMsg(const KeyboardKeyPressedMsg& msg){
     if(IsDisabled()) return 0;
-    if(!IsOurPadNum(msg.GetNode4())) return 0;
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
     JoypadButton btn = MidiNoteToButton(msg.GetNode2());
     if(btn == kPad_Circle){
         mSink->OutOfRangeSwing();

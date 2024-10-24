@@ -6,7 +6,7 @@ BEGIN_MESSAGE(KeyboardKeyPressedMsg, keyboard_key_pressed, int, int, int);
     MESSAGE_ARRAY_CTOR(KeyboardKeyPressedMsg)
     int GetNode2() const { return mData->Int(2); }
     int GetNode3() const { return mData->Int(3); }
-    int GetNode4() const { return mData->Int(4); }
+    int GetPadNum() const { return mData->Int(4); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(KeyboardKeyReleasedMsg, keyboard_key_released, int, int);

@@ -31,7 +31,7 @@ float KeyboardController::GetCapStrip() const {
 
 int KeyboardController::OnMsg(const KeyboardKeyPressedMsg& msg){
     if(mDisabled) return 0;
-    if(!IsOurPadNum(msg.GetNode4())) return 0;
+    if(!IsOurPadNum(msg.GetPadNum())) return 0;
     MILO_ASSERT(mSink, 0x52);
     RegisterKey(msg.GetNode2());
     int slot = MidiNoteToSlot(msg.GetNode2());

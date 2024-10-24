@@ -1,5 +1,6 @@
 #include "game/Defines.h"
 #include "meta_band/Calibration.h"
+#include "meta_band/ProfileMgr.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -426,3 +427,85 @@ void CalibrationPanel::EndTest(){
     mFader->DoFade(-96.0f, 1000.0f);
     unk80 = GetAudioTimeMs();
 }
+
+float CalibrationPanel::GetAudioTimeMs() const {
+    if(!mStream) return 0;
+    else {
+        float f3 = 0;
+        if(mEnableVideo && mEnableAudio){
+            f3 = TheProfileMgr.GetSongToTaskMgrMsRaw();
+        }
+        return f3 + mStream->GetTime();
+    }
+}
+
+DataNode CalibrationPanel::OnMsg(const ButtonDownMsg& msg){
+    if(mTestState != tsIdle){
+        if(msg.GetAction() == kAction_Cancel){
+            SetTestState(tsIdle);
+            unk48.clear();
+            StopAudio();
+            return 0;
+        }
+        else if(mHardwareMode){
+            return 0;
+        }
+        else {
+            if(mTestState == tsTesting && GetTestRep() >= 5){
+                bool b3 = false;
+                if(msg.GetButton() == kPad_DUp || msg.GetButton() == kPad_DDown || msg.GetAction() == kAction_Confirm){
+                    bool b3 = true;
+                }
+                if(msg.GetButton() == kPad_Xbox_A) b3 = unka0;
+                if(b3){
+                    TriggerCalibration(msg.GetPadNum());
+                }
+            }
+            return 0;
+        }
+    }
+    else return DataNode(kDataUnhandled, 0);
+}
+
+DataNode CalibrationPanel::OnMsg(const KeyboardKeyPressedMsg& msg){
+    if(mTestState == tsTesting && GetTestRep() >= 5){
+        TriggerCalibration(msg.GetPadNum());
+        return 0;
+    }
+    else return DataNode(kDataUnhandled, 0);
+}
+
+// void __thiscall CalibrationPanel::OnMsg(CalibrationPanel *this,KeyboardKeyPressedMsg *param_1)
+
+// {
+  
+//   if ((*(int *)(param_1 + 0x60) == 2) &&
+//      (iVar1 = GetTestRep((CalibrationPanel *)param_1), iVar1 > 4)) {
+//     this_01 = *(DataArray **)(in_r5 + 4);
+//     this_00 = (DataNode *)DataArray::Node(this_01,4);
+//     iVar1 = DataNode::Int(this_00,this_01);
+//     TriggerCalibration((CalibrationPanel *)param_1,iVar1);
+//     *(undefined4 *)this = 0;
+//     *(undefined4 *)(this + 4) = 6;
+//   }
+//   else {
+//     *(undefined4 *)(this + 4) = 0;
+//     *(undefined4 *)this = 0;
+//   }
+//   return;
+// }
+
+// void __thiscall CalibrationPanel::OnMsg(CalibrationPanel *this,KeyboardKeyPressedMsg *param_1)
+
+// {
+  
+//   if ((*(int *)(param_1 + 0x60) == 2) && (iVar1 = fn_801E6B88(param_1), iVar1 > 4)) {
+//     uVar2 = ButtonDownMsg::GetAction(in_r5);
+//     fn_801E67F4(param_1,uVar2);
+//     DataNode::DataNode((DataNode *)this,0);
+//   }
+//   else {
+//     DataNode::DataNode((DataNode *)this,0,0);
+//   }
+//   return;
+// }

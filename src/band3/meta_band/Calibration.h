@@ -1,5 +1,6 @@
 #pragma once
 #include "obj/Data.h"
+#include "os/UsbMidiKeyboardMsgs.h"
 #include "synth/Faders.h"
 #include "synth/Stream.h"
 #include "ui/UIPanel.h"
@@ -40,9 +41,12 @@ public:
     void PrepareHwCalibrationState();
     void TerminateHwCalibrationState();
     void EndTest();
+    void TriggerCalibration(int);
 
     DataNode OnInitializeContent(DataArray*);
     DataNode OnStartTest(DataArray*);
+    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const KeyboardKeyPressedMsg&);
     
     static float kAnimPerceptualOffset;
 
