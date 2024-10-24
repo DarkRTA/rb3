@@ -5,3 +5,4 @@ bool IsLeaderLocal();
 const char* GetFontCharFromTrackType(TrackType, int);
 const char* GetFontCharForProDrums(int);
 const char* GetFontCharForHarmonyMics(int, int);
+const char* GetFontCharFromScoreType(ScoreType, int);
