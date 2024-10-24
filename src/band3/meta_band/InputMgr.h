@@ -12,6 +12,8 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~InputMgr();
 
+    BandUser* GetUser();
+
     static void Init();
     static void Terminate();
 

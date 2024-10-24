@@ -1,6 +1,9 @@
+#include "MetaMessages.h"
+#include "game/BandUser.h"
 #include "game/Defines.h"
 #include "math/MathFuncs.h"
 #include "meta_band/Calibration.h"
+#include "meta_band/InputMgr.h"
 #include "meta_band/ProfileMgr.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
@@ -21,6 +24,7 @@
 #include "ui/UIListLabel.h"
 #include "ui/UIListMesh.h"
 #include "ui/UIPanel.h"
+#include "utl/Messages.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -64,7 +68,12 @@ void CalibrationPanel::Poll(){
     if(mHardwareMode){
         ScanHardwareModeInputs();
     }
-    // InputMgr stuff
+    BandUser* user = TheInputMgr->GetUser();
+    if(user && user->GetLocalBandUser()){
+        if(!user->GetLocalBandUser()->IsJoypadConnected()){
+            SetTestState(tsIdle);
+        }
+    }
     if(ThePlatformMgr.mGuideShowing){
         SetTestState(tsIdle);
     }
@@ -737,4 +746,37 @@ BEGIN_HANDLERS(CalibrationModesProvider)
     HANDLE_EXPR(get_calibration_mode, GetCalibrationMode(_msg->Int(2)))
     HANDLE_ACTION(cleanup, Cleanup())
     HANDLE_CHECK(0x4D9)
+END_HANDLERS
+
+void CalibrationWelcomePanel::Enter(){
+    UIPanel::Enter();
+    MILO_ASSERT(TheInputMgr, 0x4E0);
+    TheInputMgr->AddSink(this, input_status_changed);
+    static InputStatusChangedMsg dummy;
+    OnMsg(dummy);
+}
+
+void CalibrationWelcomePanel::Exit(){
+    UIPanel::Exit();
+    MILO_ASSERT(TheInputMgr, 0x4EB);
+    TheInputMgr->RemoveSink(this);
+}
+
+DataNode CalibrationWelcomePanel::OnMsg(const InputStatusChangedMsg& msg){
+    Handle(controllers_changed_msg, true);
+    return 0;
+}
+
+bool CalibrationWelcomePanel::HaveCalbertConnected(){
+    for(int i = 0; i < 4; i++){
+        if(JoypadIsCalbertGuitar(i)) return true;
+    }
+    return false;
+}
+
+BEGIN_HANDLERS(CalibrationWelcomePanel)
+    HANDLE_MESSAGE(InputStatusChangedMsg)
+    HANDLE_EXPR(have_calbert_connected, HaveCalbertConnected())
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x509)
 END_HANDLERS

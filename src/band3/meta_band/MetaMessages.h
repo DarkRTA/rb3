@@ -22,3 +22,14 @@ public:
         return t;
     }
 };
+
+class InputStatusChangedMsg : public Message {
+public:
+    InputStatusChangedMsg() : Message(Type()) {}
+    InputStatusChangedMsg(DataArray *da) : Message(da) {}
+    virtual ~InputStatusChangedMsg() {}
+    static Symbol Type() {
+        static Symbol t("input_status_changed");
+        return t;
+    }
+};
