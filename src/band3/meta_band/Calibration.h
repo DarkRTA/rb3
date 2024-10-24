@@ -115,3 +115,17 @@ public:
     RndMat* mManualCalibrateMat; // 0x30
     RndMat* mEnterNumbersMat; // 0x34
 };
+
+class CalibrationWelcomePanel : public UIPanel {
+public:
+    CalibrationWelcomePanel(){}
+    OBJ_CLASSNAME(CalibrationWelcomePanel);
+    OBJ_SET_TYPE(CalibrationWelcomePanel);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual ~CalibrationWelcomePanel(){}
+    virtual void Enter();
+    virtual void Exit();
+
+    static bool HaveCalbertConnected();
+
+};

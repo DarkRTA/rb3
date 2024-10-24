@@ -715,7 +715,8 @@ RndMat* CalibrationModesProvider::Mat(int, int data, UIListMesh* slot) const {
     if(slot->Matches("icon")){
         Symbol mode = mModes[data];
         if(mode == cal_auto){
-
+            if(CalibrationWelcomePanel::HaveCalbertConnected()) return mAutoCalibrateMat;
+            else return mAutoCalibrateDisabledMat;
         }
         else if(mode == cal_manual) return mManualCalibrateMat;
         else if(mode == cal_numbers) return mEnterNumbersMat;
