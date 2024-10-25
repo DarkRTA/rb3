@@ -9,4 +9,5 @@ public:
 
     void SetFromCharacter(const CharData*);
     void SetSongName(Symbol, bool);
+    void SetSongNameWithNumber(int, int, const char*);
 };

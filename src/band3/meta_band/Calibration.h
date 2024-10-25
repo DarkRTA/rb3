@@ -1,4 +1,5 @@
 #pragma once
+#include "MetaMessages.h"
 #include "obj/Data.h"
 #include "os/UsbMidiKeyboardMsgs.h"
 #include "rndobj/Mesh.h"
@@ -126,6 +127,9 @@ public:
     virtual void Enter();
     virtual void Exit();
 
+    DataNode OnMsg(const InputStatusChangedMsg&);
+
     static bool HaveCalbertConnected();
 
+    CalibrationModesProvider mModesProvider; // 0x38
 };

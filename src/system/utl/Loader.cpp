@@ -9,7 +9,7 @@
 
 LoadMgr TheLoadMgr;
 
-LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), unk18(10.0f), unk20(), mTimer(), unk58(0), unk5c(0) {
+LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), mPeriod(10.0f), unk20(), mTimer(), unk58(0), unk5c(0) {
 
 }
 
@@ -35,11 +35,7 @@ static DataNode OnSetEditMode(DataArray* da){
 }
 
 static DataNode OnSetLoaderPeriod(DataArray* da){
-    float theFloat = da->Float(1);
-    float ret = TheLoadMgr.unk18;
-    TheLoadMgr.unk1c = theFloat;
-    TheLoadMgr.unk18 = theFloat;
-    return DataNode(ret);
+    return TheLoadMgr.SetLoaderPeriod(da->Float(1));
 }
 
 static DataNode OnSysPlatformSym(DataArray* da){

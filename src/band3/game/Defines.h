@@ -49,6 +49,7 @@ Symbol ControllerTypeToSym(ControllerType);
 ControllerType SymToControllerType(Symbol);
 TrackType ControllerTypeToTrackType(ControllerType, bool);
 ScoreType TrackTypeToScoreType(TrackType, bool, bool);
+ScoreType SymToScoreType(Symbol);
 void CensorString(String &);
 
 #endif // GAME_DEFINES_H

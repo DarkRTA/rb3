@@ -1,6 +1,7 @@
 #ifndef UTL_STLHELPERS_H
 #define UTL_STLHELPERS_H
 #include <algorithm>
+#include <cstdlib>
 #include <vector>
 #include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
@@ -52,6 +53,12 @@ void RemoveSwap(std::vector<T*>& vec, T* obj) {
         *it = vec.back();
         vec.pop_back();
     }
+}
+
+// not sure where else to put this
+inline int atoi_s(char* str){
+    if(str) return atoi(str);
+    else return 0;
 }
 
 #endif
