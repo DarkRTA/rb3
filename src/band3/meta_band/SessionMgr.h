@@ -37,6 +37,9 @@ public:
 
     bool IsLeaderLocal() const;
     void SendMsg(const std::vector<RemoteBandUser*>&, NetMessage&, PacketType);
+    void SendMsg(BandUser*, NetMessage&, PacketType);
+    void SendMsgToAll(NetMessage&, PacketType);
+    BandUser* GetLeaderUser() const;
 
     int unk38;
     int unk3c;

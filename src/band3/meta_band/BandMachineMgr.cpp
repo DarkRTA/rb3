@@ -7,6 +7,7 @@
 #include "meta_band/SessionMgr.h"
 #include "net/NetMessage.h"
 #include "obj/Dir.h"
+#include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/User.h"
 #include "utl/BinStream.h"
@@ -175,4 +176,74 @@ DataNode BandMachineMgr::OnMsg(const NewRemoteUserMsg& msg){
     }
     if(!found) AddRemoteMachine(userID);
     return 1;
+}
+
+void BandMachineMgr::AddRemoteMachine(unsigned int id){
+    RemoteBandMachine* target = nullptr;
+    bool found = false;
+    for(int i = 0; i < mRemoteMachines.size(); i++){
+        if(!mRemoteMachines[i]->IsActive()){
+            mRemoteMachines[i]->Activate(id);
+            found = true;
+            target = mRemoteMachines[i];
+            break;
+        }
+    }
+    MILO_ASSERT(found, 0x107);
+    static NewRemoteMachineMsg msg(target);
+    msg[0] = target;
+    Export(msg, true);
+}
+
+DataNode BandMachineMgr::OnMsg(const RemoteUserLeftMsg& msg){
+    std::vector<BandUser*> bandusers;
+    mUserMgr->GetBandUsersInSession(bandusers);
+    bool remove = true;
+    RemoteUser* target = msg.GetUser();
+    unsigned int targetID = target->mMachineID;
+    for(int i = 0; i < bandusers.size(); i++){
+        if(targetID == bandusers[i]->mMachineID){
+            remove = false;
+            break;
+        }
+    }
+    if(remove){
+        RemoveRemoteMachine(targetID);
+    }
+    return 1;
+}
+
+void BandMachineMgr::RemoveRemoteMachine(unsigned int id){
+    RemoteBandMachine* target = nullptr;
+    for(int i = 0; i < mRemoteMachines.size(); i++){
+        if(mRemoteMachines[i]->IsActive() && mRemoteMachines[i]->GetMachineID() == id){
+            mRemoteMachines[i]->Deactivate();
+            target = mRemoteMachines[i];
+            break;
+        }
+    }
+    if(target){
+        static RemoteMachineLeftMsg msg(target);
+        msg[0] = target;
+        Export(msg, true);
+    }
+}
+
+void BandMachineMgr::SyncLocalMachine(unsigned char mask){
+    if(!mSessionMgr->IsLocal()){
+        std::vector<LocalBandUser*> locals;
+        mUserMgr->GetLocalBandUsersInSession(locals);
+        MILO_ASSERT(!locals.empty(), 0x14B);
+        SyncMachineMsg msg(locals.front()->mMachineID, mask, mLocalMachine);
+        if(mSessionMgr->IsLeaderLocal()){
+            mSessionMgr->SendMsgToAll(msg, (PacketType)1);
+        }
+        else if(mSessionMgr->GetLeaderUser()){
+            mSessionMgr->SendMsg(mSessionMgr->GetLeaderUser(),msg, (PacketType)1);
+        }
+    }
+    LocalBandMachine* machine = mLocalMachine;
+    MILO_ASSERT(machine, 0x15D);
+    static LocalMachineUpdatedMsg msg(machine, mask);
+    Export(msg, true);
 }

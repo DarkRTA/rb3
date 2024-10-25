@@ -9,6 +9,11 @@ BEGIN_MESSAGE(LocalUserLeftMsg, local_user_left, LocalUser*);
     LocalUser* GetUser() const { return mData->Obj<LocalUser>(2); }
 END_MESSAGE;
 
+BEGIN_MESSAGE(RemoteUserLeftMsg, remote_user_left, RemoteUser*);
+    MESSAGE_ARRAY_CTOR(RemoteUserLeftMsg)
+    RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
+END_MESSAGE;
+
 BEGIN_MESSAGE(UserLoginMsg, user_login, );
     MESSAGE_ARRAY_CTOR(UserLoginMsg)
 END_MESSAGE;

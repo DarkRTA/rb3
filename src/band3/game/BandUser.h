@@ -161,4 +161,18 @@ public:
     virtual const char* UserName() const { return ""; }
 };
 
+#include "obj/Msg.h"
+
+class NewRemoteUserMsg : public Message {
+public:
+    NewRemoteUserMsg() : Message(Type()) {}
+    NewRemoteUserMsg(DataArray *da) : Message(da) {}
+    virtual ~NewRemoteUserMsg() {}
+    static Symbol Type() {
+        static Symbol t("new_remote_user");
+        return t;
+    }
+    RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
+};
+
 #endif // GAME_BANDUSER_H

@@ -1,6 +1,7 @@
 #pragma once
 #include "MetaMessages.h"
 #include "game/BandUserMgr.h"
+#include "game/GameMessages.h"
 #include "obj/MsgSource.h"
 
 class BandMachine;
@@ -22,9 +23,11 @@ public:
     RemoteBandMachine* GetRemoteMachine(unsigned int, bool) const;
     BandMachine* GetUserMachine(const User*) const;
     void AddRemoteMachine(unsigned int);
+    void RemoveRemoteMachine(unsigned int);
 
     DataNode OnMsg(const ConnectionStatusChangedMsg&);
     DataNode OnMsg(const NewRemoteUserMsg&);
+    DataNode OnMsg(const RemoteUserLeftMsg&);
 
     static void Init();
 

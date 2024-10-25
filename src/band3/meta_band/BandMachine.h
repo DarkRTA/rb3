@@ -68,6 +68,17 @@ public:
 
 #include "obj/Msg.h"
 
+class LocalMachineUpdatedMsg : public Message {
+public:
+    LocalMachineUpdatedMsg(LocalBandMachine* machine, unsigned char mask) : Message(Type(), machine, mask) {}
+    LocalMachineUpdatedMsg(DataArray *da) : Message(da) {}
+    virtual ~LocalMachineUpdatedMsg() {}
+    static Symbol Type() {
+        static Symbol t("local_machine_updated");
+        return t;
+    }
+};
+
 class RemoteMachineUpdatedMsg : public Message {
 public:
     RemoteMachineUpdatedMsg(RemoteBandMachine* machine, unsigned char mask) : Message(Type(), machine, mask) {}
@@ -75,6 +86,28 @@ public:
     virtual ~RemoteMachineUpdatedMsg() {}
     static Symbol Type() {
         static Symbol t("remote_machine_updated");
+        return t;
+    }
+};
+
+class NewRemoteMachineMsg : public Message {
+public:
+    NewRemoteMachineMsg(RemoteBandMachine* machine) : Message(Type(), machine) {}
+    NewRemoteMachineMsg(DataArray *da) : Message(da) {}
+    virtual ~NewRemoteMachineMsg() {}
+    static Symbol Type() {
+        static Symbol t("new_remote_machine");
+        return t;
+    }
+};
+
+class RemoteMachineLeftMsg : public Message {
+public:
+    RemoteMachineLeftMsg(RemoteBandMachine* machine) : Message(Type(), machine) {}
+    RemoteMachineLeftMsg(DataArray *da) : Message(da) {}
+    virtual ~RemoteMachineLeftMsg() {}
+    static Symbol Type() {
+        static Symbol t("remote_machine_left");
         return t;
     }
 };

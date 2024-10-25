@@ -1,6 +1,5 @@
 #pragma once
 #include "obj/Msg.h"
-#include "os/User.h"
 
 class CharacterFinishedLoadingMsg : public Message {
 public:
@@ -66,16 +65,4 @@ public:
         static Symbol t("connection_status_changed");
         return t;
     }
-};
-
-class NewRemoteUserMsg : public Message {
-public:
-    NewRemoteUserMsg() : Message(Type()) {}
-    NewRemoteUserMsg(DataArray *da) : Message(da) {}
-    virtual ~NewRemoteUserMsg() {}
-    static Symbol Type() {
-        static Symbol t("new_remote_user");
-        return t;
-    }
-    RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
 };
