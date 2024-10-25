@@ -5,6 +5,7 @@
 #include "ui/UILabel.h"
 #include "utl/Locale.h"
 #include "utl/STLHelpers.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 #include <cstdlib>
@@ -81,6 +82,53 @@ void Instarank::UpdateString1Label(UILabel* label){
             break;
         default:
             MILO_ASSERT(false, 0x8C);
+            break;
+    }
+}
+
+void Instarank::UpdateString2Label(UILabel* label){
+    MILO_ASSERT(mIsValid, 0x94);
+    MILO_ASSERT(label, 0x95);
+    char buf[0x100];
+    strncpy(buf, unk28.c_str(), 0xff);
+    const char* tok = strtok(buf, "|");
+    char tokc = *tok;
+    const char* fontc = GetFontCharFromScoreType(unk10, 0);
+    switch(tokc){
+        case 'f':
+            label->SetTextToken(instarank_nofriend_beat);
+            break;
+        case 'g': {
+            const char* tokg = strtok(0, "|");
+            int ig = atoi_s(strtok(0, "|"));
+            String strg;
+            if(ig != 0) strg = MakeString(Localize(band_default_name, 0), tokg);
+            else strg = tokg;
+            label->SetTokenFmt(instarank_friend_beat, strg.c_str(), fontc);
+        }   break;
+        case 'h': {
+            const char* tokh = strtok(0, "|");
+            int ih1 = atoi_s(strtok(0, "|"));
+            int ih2 = atoi_s(strtok(0, "|"));
+            String strh;
+            if(ih2 != 0) strh = MakeString(Localize(band_default_name, 0), tokh);
+            else strh = tokh;
+            label->SetTokenFmt(instarank_friend_beat_and_more, fontc, strh.c_str(), ih1);
+        }   break;
+        case 'i': {
+            int ii1 = atoi_s(strtok(0, "|"));
+            const char* toki = strtok(0, "|");
+            int ii2 = atoi_s(strtok(0, "|"));
+            String stri;
+            if(ii2 != 0) stri = MakeString(Localize(band_default_name, 0), toki);
+            else stri = toki;
+            label->SetTokenFmt(instarank_rival_close, LocalizeSeparatedInt(ii1), stri.c_str(), fontc);
+        }   break;
+        case 'j':
+            label->SetTextToken(instarank_nofriend_beat);
+            break;
+        default:
+            MILO_ASSERT(false, 0xEB);
             break;
     }
 }
