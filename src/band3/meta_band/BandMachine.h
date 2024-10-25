@@ -1,4 +1,5 @@
 #pragma once
+#include "BandMachineMgr.h"
 #include "game/NetGameMsgs.h"
 #include "obj/Object.h"
 #include "utl/Str.h"
@@ -23,10 +24,44 @@ public:
 
     NetUIState mNetUIState; // 0x1c
     int mNetUIStateParam; // 0x20
-    std::set<int> mSongs; // 0x24
-    std::set<int> mSongsWithProStrings; // 0x3c
+    std::set<int> mAvailableSongs; // 0x24
+    std::set<int> mProGuitarOrBassSongs; // 0x3c
     String mCurrentSongPreview; // 0x54
     String mPrimaryBandName; // 0x60
     String mPrimaryProfileName; // 0x6c
     int mPrimaryMetaScore; // 0x78
+};
+
+class LocalBandMachine : public BandMachine {
+public:
+    LocalBandMachine(BandMachineMgr*);
+    virtual ~LocalBandMachine(){}
+    virtual bool IsLocal() const { return true; }
+    virtual String GetPrimaryBandName();
+
+    void SetNetUIState(NetUIState);
+    void SetNetUIStateParam(int);
+    void SetPrimaryBandName(String);
+    void SetPrimaryProfileName(String);
+    void SetPrimaryMetaScore(int);
+    void SetAvailableSongs(const std::set<int>&);
+    void SetProGuitarOrBassSongs(const std::set<int>&);
+    void SetCurrentSongPreview(const char*);
+
+    BandMachineMgr* mMachineMgr; // 0x78
+};
+
+class RemoteBandMachine : public BandMachine {
+public:
+    RemoteBandMachine();
+    virtual ~RemoteBandMachine(){}
+    virtual bool IsLocal() const { return false; }
+
+    void Activate(unsigned int);
+    void Deactivate();
+    bool IsActive() const;
+    unsigned int GetMachineID() const;
+    
+    unsigned int mID; // 0x7c
+    bool mActive; // 0x80
 };

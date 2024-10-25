@@ -5,4 +5,6 @@
 class BandMachineMgr : public MsgSource {
 public:
     void RefreshPrimaryProfileInfo();
+    bool IsLeaderMachineLocal() const;
+    void SyncLocalMachine(unsigned char);
 };
