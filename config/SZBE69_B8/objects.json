@@ -138,7 +138,7 @@
             "band3/meta_band/AssetTypes.cpp": "Matching",
             "band3/meta_band/Award.cpp": "NonMatching",
             "band3/meta_band/BandMachine.cpp": "NonMatching",
-            "band3/meta_band/BandMachineMgr.cpp": "MISSING",
+            "band3/meta_band/BandMachineMgr.cpp": "NonMatching",
             "band3/meta_band/BandMemcardAction_Wii.cpp": "MISSING",
             "band3/meta_band/BandNetGameData.cpp": "MISSING",
             "band3/meta_band/BandPreloadPanel.cpp": "MISSING",
