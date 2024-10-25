@@ -1,7 +1,9 @@
 #pragma once
+#include "MetaMessages.h"
 #include "game/BandUserMgr.h"
 #include "obj/MsgSource.h"
 
+class BandMachine;
 class LocalBandMachine;
 class RemoteBandMachine;
 class SessionMgr;
@@ -15,6 +17,14 @@ public:
     void RefreshPrimaryProfileInfo();
     bool IsLeaderMachineLocal() const;
     void SyncLocalMachine(unsigned char);
+    LocalBandMachine* GetLocalMachine() const;
+    void GetMachines(std::vector<BandMachine*>&) const;
+    RemoteBandMachine* GetRemoteMachine(unsigned int, bool) const;
+    BandMachine* GetUserMachine(const User*) const;
+    void AddRemoteMachine(unsigned int);
+
+    DataNode OnMsg(const ConnectionStatusChangedMsg&);
+    DataNode OnMsg(const NewRemoteUserMsg&);
 
     static void Init();
 

@@ -65,3 +65,16 @@ public:
     unsigned int mID; // 0x7c
     bool mActive; // 0x80
 };
+
+#include "obj/Msg.h"
+
+class RemoteMachineUpdatedMsg : public Message {
+public:
+    RemoteMachineUpdatedMsg(RemoteBandMachine* machine, unsigned char mask) : Message(Type(), machine, mask) {}
+    RemoteMachineUpdatedMsg(DataArray *da) : Message(da) {}
+    virtual ~RemoteMachineUpdatedMsg() {}
+    static Symbol Type() {
+        static Symbol t("remote_machine_updated");
+        return t;
+    }
+};

@@ -1,11 +1,14 @@
 #include "meta_band/BandMachineMgr.h"
 #include "BandMachine.h"
+#include "BandMachineMgr.h"
+#include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/SessionMgr.h"
 #include "net/NetMessage.h"
 #include "obj/Dir.h"
 #include "os/PlatformMgr.h"
+#include "os/User.h"
 #include "utl/BinStream.h"
 #include "utl/MemStream.h"
 #include "utl/TextStream.h"
@@ -75,7 +78,28 @@ namespace {
     }
 
     void SyncMachineMsg::Dispatch(){
-
+        BandMachineMgr* mgr = TheSessionMgr->unk50;
+        RemoteBandMachine* machine = mgr->GetRemoteMachine(mMachineID, false);
+        if(machine){
+            static RemoteMachineUpdatedMsg msg(machine, mDirtyMask);
+            msg[0] = machine;
+            MemStream memstream(false);
+            GetMachineData(memstream);
+            memstream.Seek(0, BinStream::kSeekBegin);
+            machine->SyncLoad(memstream, mDirtyMask);
+            if(TheSessionMgr->IsLeaderLocal()){
+                std::vector<RemoteBandUser*> remoteusers;
+                TheBandUserMgr->GetRemoteBandUsers(&remoteusers, 0x4000);
+                for(std::vector<RemoteBandUser*>::iterator it = remoteusers.begin(); it != remoteusers.end(); it){
+                    if(mMachineID == (*it)->mMachineID){
+                        it = remoteusers.erase(it);
+                    }
+                    else ++it;
+                }
+                TheSessionMgr->SendMsg(remoteusers, *this, (PacketType)1);
+            }
+            mgr->Export(msg, true);
+        }
     }
 
     void SyncMachineMsg::Print(TextStream& ts) const {
@@ -106,4 +130,49 @@ BandMachineMgr::~BandMachineMgr(){
     ThePlatformMgr.RemoveSink(this);
     mSessionMgr->RemoveSink(this);
     RELEASE(mLocalMachine);
+}
+
+LocalBandMachine* BandMachineMgr::GetLocalMachine() const { return mLocalMachine; }
+
+void BandMachineMgr::GetMachines(std::vector<BandMachine*>& machines) const {
+    machines.push_back(mLocalMachine);
+    for(int i = 0; i < mRemoteMachines.size(); i++){
+        if(mRemoteMachines[i]->IsActive()){
+            machines.push_back(mRemoteMachines[i]);
+        }
+    }
+}
+
+RemoteBandMachine* BandMachineMgr::GetRemoteMachine(unsigned int id, bool fail) const {
+    for(int i = 0; i < mRemoteMachines.size(); i++){
+        if(mRemoteMachines[i]->IsActive() && mRemoteMachines[i]->GetMachineID() == id){
+            return mRemoteMachines[i];
+        }
+    }
+    if(fail) MILO_FAIL("No RemoteMachine with ID %i", id);
+    return nullptr;
+}
+
+BandMachine* BandMachineMgr::GetUserMachine(const User* user) const {
+    if(user->IsLocal()) return mLocalMachine;
+    else return GetRemoteMachine(user->mMachineID, true);
+}
+
+DataNode BandMachineMgr::OnMsg(const ConnectionStatusChangedMsg&){
+    RefreshPrimaryProfileInfo();
+    return 1;
+}
+
+DataNode BandMachineMgr::OnMsg(const NewRemoteUserMsg& msg){
+    RemoteUser* msgUser = msg.GetUser();
+    unsigned int userID = msgUser->mMachineID;
+    bool found = false;
+    for(int i = 0; i < mRemoteMachines.size(); i++){
+        if(mRemoteMachines[i]->IsActive() && userID == mRemoteMachines[i]->GetMachineID()){
+            found = true;
+            break;
+        }
+    }
+    if(!found) AddRemoteMachine(userID);
+    return 1;
 }
