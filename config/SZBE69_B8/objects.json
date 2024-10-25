@@ -189,7 +189,7 @@
             "band3/meta_band/Instarank.cpp": "NonMatching",
             "band3/meta_band/InstrumentFinishProvider.cpp": "NonMatching",
             "band3/meta_band/InterstitialMgr.cpp": "Equivalent",
-            "band3/meta_band/InterstitialPanel.cpp": "MISSING",
+            "band3/meta_band/InterstitialPanel.cpp": "NonMatching",
             "band3/meta_band/JoinInvitePanel.cpp": "MISSING",
             "band3/meta_band/Leaderboard.cpp": "MISSING",
             "band3/meta_band/LessonMgr.cpp": "NonMatching",
