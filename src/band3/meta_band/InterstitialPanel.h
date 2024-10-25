@@ -16,7 +16,23 @@ public:
 
     void SetCamshotDone();
     
-    bool unk85; // 0x85
+    bool mCamshotDone; // 0x85
     int unk88; // 0x88
-    bool unk8c; // 0x8c
+    bool mShowing; // 0x8c
+};
+
+class BackdropPanel : public DeJitterPanel {
+public:
+    BackdropPanel();
+    OBJ_CLASSNAME(BackdropPanel);
+    OBJ_SET_TYPE(BackdropPanel);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual ~BackdropPanel(){}
+    virtual void Enter();
+    virtual void Exit(); 
+    virtual bool Exiting() const;
+
+    void SetOutroDone();
+    
+    bool mOutroDone; // 0x85
 };

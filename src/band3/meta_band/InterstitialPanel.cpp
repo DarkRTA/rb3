@@ -4,9 +4,10 @@
 #include "obj/ObjMacros.h"
 #include "ui/PanelDir.h"
 #include "ui/UIPanel.h"
+#include "utl/Messages4.h"
 #include "utl/Symbols.h"
 
-InterstitialPanel::InterstitialPanel() : unk85(0), unk88(0), unk8c(1) {
+InterstitialPanel::InterstitialPanel() : mCamshotDone(0), unk88(0), mShowing(1) {
 
 }
 
@@ -14,12 +15,12 @@ void InterstitialPanel::Load(){ UIPanel::Load(); }
 
 void InterstitialPanel::Enter(){
     DeJitterPanel::Enter();
-    unk85 = 0;
+    mCamshotDone = 0;
     unk88 = 0;
 }
 
 bool InterstitialPanel::Exiting() const {
-    return UIPanel::Exiting() || !unk85 || unk88 < 3;
+    return UIPanel::Exiting() || !mCamshotDone || unk88 < 3;
 }
 
 void InterstitialPanel::Unload(){
@@ -34,15 +35,42 @@ void InterstitialPanel::Unload(){
 }
 
 void InterstitialPanel::Draw(){
-    if(unk85) unk88++;
-    else if(unk8c) UIPanel::Draw();
+    if(mCamshotDone) unk88++;
+    else if(mShowing) UIPanel::Draw();
 }
 
-void InterstitialPanel::SetCamshotDone(){ unk85 = true; }
+void InterstitialPanel::SetCamshotDone(){ mCamshotDone = true; }
 
 BEGIN_HANDLERS(InterstitialPanel)
     HANDLE_ACTION(transition_camshot_done, SetCamshotDone())
-    HANDLE_ACTION(set_showing, unk8c = _msg->Int(2))
+    HANDLE_ACTION(set_showing, mShowing = _msg->Int(2))
     HANDLE_SUPERCLASS(UIPanel)
     HANDLE_CHECK(0x62)
+END_HANDLERS
+
+BackdropPanel::BackdropPanel() : mOutroDone(0) {
+
+}
+
+void BackdropPanel::Enter(){
+    DeJitterPanel::Enter();
+    mOutroDone = true;
+}
+
+void BackdropPanel::Exit(){
+    mOutroDone = false;
+    mDir->Handle(vignette_outro_msg, true);
+    UIPanel::Exit();
+}
+
+bool BackdropPanel::Exiting() const {
+    return UIPanel::Exiting() || !mOutroDone;
+}
+
+void BackdropPanel::SetOutroDone(){ mOutroDone = true; }
+
+BEGIN_HANDLERS(BackdropPanel)
+    HANDLE_ACTION(vignette_outro_done, SetOutroDone())
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x8A)
 END_HANDLERS
