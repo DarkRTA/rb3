@@ -31,4 +31,4 @@ Symbol InstrumentFinishProvider::DataSymbol(int data) const {
     return mFinishes.at(data);
 }
 
-int InstrumentFinishProvider::NumData() const { return mFinishes.size(); }
+int InstrumentFinishProvider::NumData() const { return mFinishes.empty() ? 0 : mFinishes.size(); }

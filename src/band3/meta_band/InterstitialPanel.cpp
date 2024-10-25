@@ -26,9 +26,7 @@ bool InterstitialPanel::Exiting() const {
 void InterstitialPanel::Unload(){
     if(mLoader && mLoader->IsLoaded()){
         mDir = dynamic_cast<PanelDir*>(mLoader->GetDir());
-        if(!mDir){
-            MILO_FAIL("%s not PanelDir", mLoader->mFile);
-        }
+        MILO_ASSERT_FMT(mDir, "%s not PanelDir", mLoader->mFile);
         RELEASE(mLoader);
     }
     UIPanel::Unload();
