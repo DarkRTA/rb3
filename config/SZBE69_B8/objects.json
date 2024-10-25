@@ -187,7 +187,7 @@
             "band3/meta_band/HeaderPerformanceProvider.cpp": "NonMatching",
             "band3/meta_band/InputMgr.cpp": "NonMatching",
             "band3/meta_band/Instarank.cpp": "NonMatching",
-            "band3/meta_band/InstrumentFinishProvider.cpp": "MISSING",
+            "band3/meta_band/InstrumentFinishProvider.cpp": "NonMatching",
             "band3/meta_band/InterstitialMgr.cpp": "MISSING",
             "band3/meta_band/InterstitialPanel.cpp": "MISSING",
             "band3/meta_band/JoinInvitePanel.cpp": "MISSING",
