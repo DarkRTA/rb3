@@ -1,4 +1,5 @@
 #pragma once
+#include "obj/Data.h"
 #include "rndobj/Group.h"
 #include "ui/UIPanel.h"
 
@@ -22,6 +23,12 @@ public:
     int GetMaxScrollPage(int);
     bool CanChangeSongReview(int) const;
     void InitializeSongReviewDisplay(int);
+    void IncrementSongReview(int);
+    void SetReviewDisplayValue(int, int);
+    void UpdateScrollArrows(int, bool);
+    void SetScrollExpandedDetails(int, int);
+    int CountOrCreateExpandedDetails(int, DataArrayPtr&, bool);
+    void SetupDetailLine(DataArray*, int, const char*, float);
 
     float mEnterTime; // 0x38
     std::map<Symbol, int> unk3c; // 0x3c

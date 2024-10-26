@@ -14,13 +14,15 @@
 #include "obj/ObjPtr_p.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
-#include "os/User.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Group.h"
 #include "ui/UIPanel.h"
 #include "utl/MakeString.h"
-#include "utl/Symbols2.h"
+#include "utl/Symbol.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 void NextSongPanel::Enter(){
     unk98 = false;
@@ -140,4 +142,130 @@ void NextSongPanel::InitializeSongReviewDisplay(int i){
             reviewHelp->SetShowing(false);
         }
     }
+}
+
+void NextSongPanel::IncrementSongReview(int i){
+    BandUser* user = TheBandUserMgr->GetUserFromSlot(i);
+    MILO_ASSERT(user, 0x106);
+    LocalBandUser* localUser = user->GetLocalBandUser();
+    MILO_ASSERT(localUser, 0x108);
+    MILO_ASSERT(localUser->CanSaveData(), 0x109);
+    BandProfile* profile = TheProfileMgr.GetProfileForUser(localUser);
+    MILO_ASSERT(profile, 0x10B);
+    MetaPerformer* performer = MetaPerformer::Current();
+    MILO_ASSERT(performer, 0x10F);
+    int songID = TheSongMgr->GetSongIDFromShortName(performer->GetCompletedSong(), true);
+    int review = profile->GetSongReview(songID);
+    review++;
+    if(review > 5) review = 0;
+    profile->SetSongReview(songID, review);
+    SetReviewDisplayValue(i, review);
+}
+
+void NextSongPanel::SetReviewDisplayValue(int slot, int reviewValue){
+    RndDir* dir = mDir->Find<RndDir>(MakeString("slot%i", slot), true);
+    MILO_ASSERT(dir, 0x131);
+    ReviewDisplay* reviewDisplay = dir->Find<ReviewDisplay>("song_review.rvw", true);
+    MILO_ASSERT(reviewDisplay, 0x133);
+    reviewDisplay->SetValues(reviewValue, true);
+}
+
+void NextSongPanel::UpdateScrollArrows(int i, bool b){
+    int i7 = unk70[i];
+    int i4 = GetMaxScrollPage(i);
+    bool n1 = unk80[i];
+    bool n2 = unk84[i];
+    unk84[i] = i7 != i4;
+    unk80[i] = i7;
+
+    if((n1 || b) && !unk80[i]){
+        static Message cMsg("trigger_hide_up_arrow", 0);
+        cMsg[0] = i;
+        Handle(cMsg, true);
+    }
+    else if((!n1 || b) && unk80[i]) {
+        static Message cMsg("trigger_show_up_arrow", 0);
+        cMsg[0] = i;
+        Handle(cMsg, true);
+    }
+
+    if((n2 || b) && !unk84[i]){
+        static Message cMsg("trigger_hide_down_arrow", 0);
+        cMsg[0] = i;
+        Handle(cMsg, true);
+    }
+
+    if((!n2 || b) && unk84[i]){
+        static Message cMsg("trigger_show_down_arrow", 0);
+        cMsg[0] = i;
+        Handle(cMsg, true);
+    }
+}
+
+void NextSongPanel::SetScrollExpandedDetails(int i, int j){
+    unk70[i] = j;
+    UpdateScrollArrows(i, false);
+}
+
+void NextSongPanel::FillExpandedDetails(int slot){
+    DataArrayPtr ptr;
+    int numDetails = CountOrCreateExpandedDetails(slot, ptr, true);
+    ptr->Resize(numDetails);
+    int newNumDetails = CountOrCreateExpandedDetails(slot, ptr, false);
+    MILO_ASSERT(newNumDetails == numDetails, 0x18B);
+    float f1 = 0;
+    const DataArray* t = TypeDef();
+    MILO_ASSERT(t, 0x19A);
+    DataArray* detailTypesArr = t->FindArray(detail_types, true);
+    DataArray* defaultTypeArr = t->FindArray(default_type, true);
+    unk3c.clear();
+    Symbol symb4(gNullStr);
+    int i12 = 0;
+    for(int n = 0; n < ptr->Size(); n++){
+        float fHeight = defaultTypeArr->FindFloat(height);
+        float fMarginTop = defaultTypeArr->FindFloat(margin_top);
+        float fMarginBottom = defaultTypeArr->FindFloat(margin_bottom);
+        float fReqPadOverride = defaultTypeArr->FindFloat(required_padding_override);
+        DataArray* arr = ptr->Array(n);
+        Symbol dataSym = arr->Sym(0);
+        int i9 = f1 / mDetailsPageSize;
+        if(dataSym == page_break){
+            f1 = mDetailsPageSize * (i9 + 1);
+        }
+        else {
+            if(dataSym == header){
+                symb4 = arr->Sym(1);
+                i12 = 1;
+            }
+            DataArray* foundarr = arr->FindArray(dataSym, false);
+            if(foundarr){
+                foundarr->FindData(height, fHeight, false);
+                foundarr->FindData(margin_top, fMarginTop, false);
+                foundarr->FindData(margin_bottom, fMarginBottom, false);
+                foundarr->FindData(required_padding_override, fReqPadOverride, false);
+            }
+            float f2 = fMarginBottom + fMarginTop + fHeight;
+            if(fReqPadOverride > 0) f2 = fReqPadOverride;
+            float f3 = (i9 + 1) * mDetailsPageSize;
+            if(f1 + f2 > f3 - mDetailsFooterSize){
+                i12++;
+                ptr->Insert(numDetails, DataArrayPtr(header_continued, symb4, i12));
+                numDetails--;
+                f1 = f3;
+            }
+            else {
+                f1 += fMarginTop;
+                if(dataSym != pad){
+                    SetupDetailLine(arr, slot, foundarr->FindStr(resource_fmt), -f1);
+                }
+                f1 += fHeight;
+                if(numDetails + 1 < ptr->Size()){
+                    f1 += fMarginBottom;
+                }
+            }
+        }
+    }
+    unk60[slot] = f1;
+    RndDir* rdir = mDir->Find<RndDir>(MakeString("slot%i", slot), true);
+    rdir->SyncObjects();
 }
