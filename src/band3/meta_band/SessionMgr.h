@@ -1,11 +1,16 @@
 #pragma once
 #include "BandMachineMgr.h"
+#include "game/NetGameMsgs.h"
 #include "net/Synchronize.h"
 #include "obj/MsgSource.h"
 #include "game/BandUser.h"
 
 class BandUserMgr;
 class MatchMaker;
+
+enum PacketType {
+
+};
 
 class SessionMgr : public MsgSource, public Synchronizable {
 public:
@@ -29,6 +34,13 @@ public:
     virtual void AddLocalUserImpl(LocalBandUser*);
     virtual void RemoveLocalUserImpl(LocalBandUser*);
     virtual void GetLocalUserListImpl(std::vector<LocalUser*>&) const;
+
+    bool IsLeaderLocal() const;
+    void SendMsg(const std::vector<RemoteBandUser*>&, NetMessage&, PacketType);
+    void SendMsg(BandUser*, NetMessage&, PacketType);
+    void SendMsgToAll(NetMessage&, PacketType);
+    BandUser* GetLeaderUser() const;
+    bool HasLeaderUser() const;
 
     int unk38;
     int unk3c;

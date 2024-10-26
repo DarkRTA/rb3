@@ -1,18 +1,41 @@
 #ifndef GAME_NETGAMEMSGS_H
 #define GAME_NETGAMEMSGS_H
-
+#include "utl/TextStream.h"
 #include <os/User.h>
 #include "Stats.h"
 #include "network/net/NetMessage.h"
 
+enum NetUIState {
+    kNetUI_None = 0,
+    kNetUI_Synchronized = 1,
+    kNetUI_MainMenu = 2,
+    kNetUI_WaitingPartyShuffle = 3,
+    kNetUI_WaitingChooseSong = 4,
+    kNetUI_WaitingChooseSetlist = 5,
+    kNetUI_WaitingQpFindPlayers = 6,
+    kNetUI_WaitingTour = 7,
+    kNetUI_WaitingTourFindPlayers = 8,
+    kNetUI_FindPlayers = 9,
+    kNetUI_MusicStore = 10,
+    kNetUI_Campaign = 11,
+    kNetUI_Customize = 12,
+    kNetUI_MusicLibrary = 13,
+    kNetUI_InGame = 14,
+    kNetUI_MetaLoadingPreSave = 15,
+    kNetUI_MetaLoadingPostSave = 16
+};
+
 class NetMessage {
 public:
+    NetMessage(){}
+    virtual ~NetMessage(){}
     virtual void Save(BinStream &) const = 0;
     virtual void Load(BinStream &) = 0;
     virtual void Dispatch() = 0;
-
-    virtual const char *Name() const = 0;
+    virtual int VoiceData() const { return 0; }
+    virtual void Print(TextStream&) const {}
     virtual int ByteCode() const = 0;
+    virtual const char* Name() const = 0;
 };
 
 class PlayerGameplayMsg : public NetMessage {

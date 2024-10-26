@@ -232,12 +232,12 @@ void BandProfile::SetHardcoreIconLevel(int) {}
 
 void BandProfile::GetTourBand() {}
 
-void BandProfile::GetBandName() const {}
+// void BandProfile::GetBandName() const {}
 
 void BandProfile::HasBandNameBeenSet() const {
 
 }
-void BandProfile::IsBandNameProfanityChecked() const {}
+// void BandProfile::IsBandNameProfanityChecked() const {}
 
 void BandProfile::GetBandLogoTex() {}
 

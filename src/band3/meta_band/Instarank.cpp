@@ -60,9 +60,8 @@ void Instarank::UpdateString1Label(UILabel* label){
     MILO_ASSERT(mIsValid, 0x58);
     MILO_ASSERT(label, 0x59);
     char buf[0x100];
-    strncpy(buf, unk1c.c_str(), 0xff);
-    const char* tok = strtok(buf, "|");
-    char tokc = *tok;
+    strncpy(buf, unk1c.c_str(), sizeof(buf)-1);
+    char tokc = *strtok(buf, "|");
     const char* fontc = GetFontCharFromScoreType(unk10, 0);
     switch(tokc){
         case 'a':
@@ -89,10 +88,9 @@ void Instarank::UpdateString1Label(UILabel* label){
 void Instarank::UpdateString2Label(UILabel* label){
     MILO_ASSERT(mIsValid, 0x94);
     MILO_ASSERT(label, 0x95);
-    char buf[0x100];
-    strncpy(buf, unk28.c_str(), 0xff);
-    const char* tok = strtok(buf, "|");
-    char tokc = *tok;
+    char buf[0xff];
+    strncpy(buf, unk28.c_str(), sizeof(buf));
+    char tokc = *strtok(buf, "|");
     const char* fontc = GetFontCharFromScoreType(unk10, 0);
     switch(tokc){
         case 'f':

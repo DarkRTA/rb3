@@ -37,6 +37,7 @@ public:
     void EndOverrideFlow(OvershellOverrideFlow, bool);
     bool IsFinding() const;
     bool InSong() const;
+    OvershellSlot* GetSlot(int);
 
     std::vector<OvershellSlot*> mSlots; // 0x70
     std::vector<int> unk78; // 0x78

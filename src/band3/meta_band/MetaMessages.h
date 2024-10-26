@@ -55,3 +55,14 @@ public:
         return t;
     }
 };
+
+class ConnectionStatusChangedMsg : public Message {
+public:
+    ConnectionStatusChangedMsg() : Message(Type()) {}
+    ConnectionStatusChangedMsg(DataArray *da) : Message(da) {}
+    virtual ~ConnectionStatusChangedMsg() {}
+    static Symbol Type() {
+        static Symbol t("connection_status_changed");
+        return t;
+    }
+};

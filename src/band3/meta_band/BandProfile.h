@@ -99,9 +99,9 @@ public:
     void GetHardcoreIconLevel() const;
     void SetHardcoreIconLevel(int);
     void GetTourBand();
-    void GetBandName() const;
+    String GetBandName() const;
     void HasBandNameBeenSet() const;
-    void IsBandNameProfanityChecked() const;
+    bool IsBandNameProfanityChecked() const;
     void GetBandLogoTex();
     void SendBandLogo();
     void GrantCampaignKey(Symbol);

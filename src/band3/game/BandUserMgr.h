@@ -37,6 +37,7 @@ public:
     bool AllLocalUsersInSessionAreGuests() const;
     void GetBandUsers(std::vector<BandUser*>*, int) const;
     void GetLocalBandUsers(std::vector<LocalBandUser*>*, int) const;
+    void GetRemoteBandUsers(std::vector<RemoteBandUser*>*, int) const;
     bool IsCharAvailable(const CharData*) const;
     ControllerType DebugGetControllerTypeOverride(int);
 
@@ -45,6 +46,7 @@ public:
     void GetParticipatingBandUsers(std::vector<BandUser*>&) const;
     void GetParticipatingBandUsersInSession(std::vector<BandUser*>&) const;
     void GetLocalUsersWithAnyController(std::vector<LocalBandUser*>&) const;
+    void GetBandUsersInSession(std::vector<BandUser*>&) const;
 
     static BandUser* GetBandUser(User*);
     static LocalBandUser* GetLocalBandUser(LocalUser*);
