@@ -24,10 +24,19 @@ public:
     BandMachine* GetUserMachine(const User*) const;
     void AddRemoteMachine(unsigned int);
     void RemoveRemoteMachine(unsigned int);
+    bool IsSongShared(int) const;
+    bool IsSongAllowedToHavePart(int, Symbol) const;
+    bool AllMachinesHaveSameNetUIState() const;
+    BandMachine* GetLeaderMachine() const;
+    String GetLeaderPrimaryProfileName() const;
+    String GetLeaderPrimaryBandName() const;
+    int GetLeaderPrimaryMetaScore() const;
 
     DataNode OnMsg(const ConnectionStatusChangedMsg&);
     DataNode OnMsg(const NewRemoteUserMsg&);
     DataNode OnMsg(const RemoteUserLeftMsg&);
+    DataNode OnMsg(const ProcessedJoinRequestMsg&);
+    DataNode ForEachMachine(const DataArray*);
 
     static void Init();
 

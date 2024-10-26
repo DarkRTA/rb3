@@ -237,7 +237,7 @@ void BandProfile::GetTourBand() {}
 void BandProfile::HasBandNameBeenSet() const {
 
 }
-void BandProfile::IsBandNameProfanityChecked() const {}
+// void BandProfile::IsBandNameProfanityChecked() const {}
 
 void BandProfile::GetBandLogoTex() {}
 

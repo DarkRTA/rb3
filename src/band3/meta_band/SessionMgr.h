@@ -40,6 +40,7 @@ public:
     void SendMsg(BandUser*, NetMessage&, PacketType);
     void SendMsgToAll(NetMessage&, PacketType);
     BandUser* GetLeaderUser() const;
+    bool HasLeaderUser() const;
 
     int unk38;
     int unk3c;

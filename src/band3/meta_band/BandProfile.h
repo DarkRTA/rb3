@@ -101,7 +101,7 @@ public:
     void GetTourBand();
     String GetBandName() const;
     void HasBandNameBeenSet() const;
-    void IsBandNameProfanityChecked() const;
+    bool IsBandNameProfanityChecked() const;
     void GetBandLogoTex();
     void SendBandLogo();
     void GrantCampaignKey(Symbol);

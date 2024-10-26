@@ -1,17 +1,30 @@
 #include "meta_band/BandMachineMgr.h"
 #include "BandMachine.h"
 #include "BandMachineMgr.h"
+#include "BandProfile.h"
+#include "MetaMessages.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
+#include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
+#include "meta_band/BandSongMetadata.h"
+#include "meta_band/BandSongMgr.h"
+#include "meta_band/Campaign.h"
+#include "meta_band/ProfileMgr.h"
 #include "meta_band/SessionMgr.h"
 #include "net/NetMessage.h"
 #include "obj/Dir.h"
+#include "obj/MsgSource.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/User.h"
 #include "utl/BinStream.h"
 #include "utl/MemStream.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include "utl/TextStream.h"
 
 namespace {
@@ -247,3 +260,129 @@ void BandMachineMgr::SyncLocalMachine(unsigned char mask){
     static LocalMachineUpdatedMsg msg(machine, mask);
     Export(msg, true);
 }
+
+bool BandMachineMgr::IsSongShared(int songid) const {
+    if(mSessionMgr->IsLocal()) return true;
+    else {
+        std::vector<BandMachine*> machines;
+        GetMachines(machines);
+        for(std::vector<BandMachine*>::iterator it = machines.begin(); it != machines.end(); ++it){
+            if(!(*it)->HasSong(songid)) return false;
+        }
+    }
+    return true;
+}
+
+bool BandMachineMgr::IsSongAllowedToHavePart(int songid, Symbol part) const {
+    if(part != real_guitar && part != real_bass) return true;
+    if(mSessionMgr->IsLocal()) return true;
+    BandSongMetadata* data = (BandSongMetadata*)TheSongMgr->Data(songid);
+    if(data && !data->IsDownload()) return true;
+    std::vector<BandMachine*> machines;
+    GetMachines(machines);
+    for(std::vector<BandMachine*>::iterator it = machines.begin(); it != machines.end(); ++it){
+        if(!(*it)->HasProGuitarOrBass(songid)) return false;
+    }
+    return true;
+}
+
+bool BandMachineMgr::AllMachinesHaveSameNetUIState() const {
+    NetUIState target = mLocalMachine->GetNetUIState();
+    std::vector<BandMachine*> machines;
+    GetMachines(machines);
+    for(int i = 0; i < machines.size(); i++){
+        if(machines[i]->GetNetUIState() != target) return false;
+    }
+    return true;
+}
+
+DataNode BandMachineMgr::OnMsg(const ProcessedJoinRequestMsg& msg){
+    if(msg.GetProcessed()){
+        SyncLocalMachine(-1);
+        SyncLocalMachineMsg msg;
+        mSessionMgr->SendMsgToAll(msg, (PacketType)1);
+    }
+    return 1;
+}
+
+DataNode BandMachineMgr::ForEachMachine(const DataArray* arr){
+    DataNode* var = arr->Var(2);
+    DataNode local(*var);
+    std::vector<BandMachine*> machines;
+    GetMachines(machines);
+    for(int i = 0; i < machines.size(); i++){
+        *var = machines[i];
+        for(int j = 3; j < arr->Size(); j++){
+            arr->Command(j)->Execute();
+        }
+    }
+    *var = local;
+    return 0;
+}
+
+bool BandMachineMgr::IsLeaderMachineLocal() const {
+    BandMachine* pLeaderMachine = GetLeaderMachine();
+    MILO_ASSERT(pLeaderMachine, 0x1C9);
+    LocalBandMachine* pLocalMachine = mLocalMachine;
+    MILO_ASSERT(pLocalMachine, 0x1CC);
+    return pLocalMachine == pLeaderMachine;
+}
+
+BandMachine* BandMachineMgr::GetLeaderMachine() const {
+    if(TheSessionMgr->HasLeaderUser()){
+        BandUser* pLeaderUser = TheSessionMgr->GetLeaderUser();
+        MILO_ASSERT(pLeaderUser, 0x1D7);
+        BandMachine* pLeaderMachine = GetUserMachine(pLeaderUser);
+        MILO_ASSERT(pLeaderMachine, 0x1DA);
+        return pLeaderMachine;
+    }
+    else return mLocalMachine;
+}
+
+String BandMachineMgr::GetLeaderPrimaryProfileName() const {
+    BandMachine* pLeaderMachine = GetLeaderMachine();
+    MILO_ASSERT(pLeaderMachine, 0x1E8);
+    return pLeaderMachine->GetPrimaryProfileName();
+}
+
+String BandMachineMgr::GetLeaderPrimaryBandName() const {
+    BandMachine* pLeaderMachine = GetLeaderMachine();
+    MILO_ASSERT(pLeaderMachine, 0x1F0);
+    return pLeaderMachine->GetPrimaryBandName();
+}
+
+int BandMachineMgr::GetLeaderPrimaryMetaScore() const {
+    BandMachine* pLeaderMachine = GetLeaderMachine();
+    MILO_ASSERT(pLeaderMachine, 0x1F8);
+    return pLeaderMachine->mPrimaryMetaScore;
+}
+
+void BandMachineMgr::RefreshPrimaryProfileInfo(){
+    BandProfile* profile = TheProfileMgr.GetPrimaryProfile();
+    if(profile){
+        LocalBandMachine* pLocalMachine = mLocalMachine;
+        MILO_ASSERT(pLocalMachine, 0x203);
+        pLocalMachine->SetPrimaryProfileName(profile->GetName());
+        if(profile->IsBandNameProfanityChecked()){
+            pLocalMachine->SetPrimaryBandName(profile->GetBandName());
+        }
+        else {
+            pLocalMachine->SetPrimaryBandName("");
+        }
+        pLocalMachine->SetPrimaryMetaScore(TheCampaign->GetCampaignMetaScoreForProfile(profile));
+    }
+}
+
+BEGIN_HANDLERS(BandMachineMgr)
+    HANDLE_EXPR(foreach_machine, ForEachMachine(_msg))
+    HANDLE_EXPR(get_user_machine, GetUserMachine(_msg->Obj<User>(2)))
+    HANDLE_EXPR(get_leader_profile_name, GetLeaderPrimaryProfileName())
+    HANDLE_EXPR(all_machines_have_same_net_ui_state, AllMachinesHaveSameNetUIState())
+    HANDLE_MESSAGE(NewRemoteUserMsg)
+    HANDLE_MESSAGE(RemoteUserLeftMsg)
+    HANDLE_MESSAGE(ProcessedJoinRequestMsg)
+    HANDLE_MESSAGE(ConnectionStatusChangedMsg)
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x22D)
+END_HANDLERS

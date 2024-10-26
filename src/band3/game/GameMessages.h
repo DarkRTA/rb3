@@ -26,7 +26,13 @@ BEGIN_MESSAGE(ModeChangedMsg, mode_changed, );
     MESSAGE_ARRAY_CTOR(ModeChangedMsg)
 END_MESSAGE;
 
+BEGIN_MESSAGE(ProcessedJoinRequestMsg, processed_join_request, bool);
+    MESSAGE_ARRAY_CTOR(ProcessedJoinRequestMsg)
+    bool GetProcessed() const { return mData->Int(2); }
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
+inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 
 #include "obj/Object.h"
 
