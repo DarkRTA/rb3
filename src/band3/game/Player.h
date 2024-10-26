@@ -8,4 +8,6 @@ class Player : public Performer, public MsgSource {
 public:
     Player(BandUser*, Band*, int, BeatMaster*);
     virtual DataNode Handle(DataArray*, bool);
+
+    void DeterminePerformanceAwards();
 };

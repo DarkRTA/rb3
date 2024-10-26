@@ -68,7 +68,7 @@ public:
     void UploadDirtyScoreData();
     void UploadDirtyData();
     void SetSongReview(int, int);
-    void GetSongReview(int);
+    int GetSongReview(int);
     SongStatusMgr* GetSongStatusMgr() const;
     void GetSongHighScore(int, ScoreType) const;
     void GetSavedSetlists() const;
