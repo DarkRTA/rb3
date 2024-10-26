@@ -218,7 +218,7 @@
             "band3/meta_band/NextSongPanel.cpp": "MISSING",
             "band3/meta_band/OutfitProvider.cpp": "NonMatching",
             "band3/meta_band/OvershellPanel.cpp": "NonMatching",
-            "band3/meta_band/OvershellPartSelectProvider.cpp": "NonMatching",
+            "band3/meta_band/OvershellPartSelectProvider.cpp": "Matching",
             "band3/meta_band/OvershellProfileProvider_Wii.cpp": "MISSING",
             "band3/meta_band/OvershellSlot.cpp": "NonMatching",
             "band3/meta_band/OvershellSlotState.cpp": "Matching",

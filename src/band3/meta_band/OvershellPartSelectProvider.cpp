@@ -94,12 +94,11 @@ bool OvershellPartSelectProvider::IsActive(int data) const {
 
     if(TheGameMode->InMode("campaign") || TheGameMode->InMode("pro_song_lessons_keyboard") ||
         TheGameMode->InMode("pro_song_lessons_real_guitar") || TheGameMode->InMode("pro_song_lessons_real_bass")){
-
         TrackType reqTrackType = TheCampaign->GetRequiredTrackTypeForCurrentAccomplishment();
         ScoreType reqScoreType = TheCampaign->GetRequiredScoreTypeForCurrentAccomplishment();
-
         if(reqTrackType == kTrackNone) return true;
-        if(!TheCampaign->GetLaunchUser()) return true;
+        BandUser* user = TheCampaign->GetLaunchUser();
+        if (!user) return true;
         if(TheCampaign->GetLaunchUser() == mUser){
             if(entry.unk4 != reqTrackType) return false;
             if(reqScoreType == 6 && entry.unk0 != "overshell_drums_pro") return false;
@@ -108,7 +107,6 @@ bool OvershellPartSelectProvider::IsActive(int data) const {
             if(reqScoreType == 4 && entry.unk0 != "overshell_vocal_harmony") return false;
         }
         else if(RepresentSamePart(entry.unk4, reqTrackType)) return false;
-
     }
     return true;
 }
@@ -128,25 +126,11 @@ void OvershellPartSelectProvider::Text(int, int data, UIListLabel* slot, UILabel
         else if(slot->Matches("no_part_icon")){
             label->SetIcon('N');
             Symbol tracktypeSym = TrackTypeToSym(entry.unk4);
-            bool b3 = true;
-            bool b2 = false;
-            bool b1 = false;
-            if(!performer->IsSetComplete()){
-                if(performer->PartPlaysInSong(tracktypeSym)) b1 = true;
-            }
-            if(b1){
-                b1 = false;
-                if(entry.unk0 == overshell_vocal_harmony && !performer->VocalHarmonyInSong()){
-                    b1 = true;
-                }
-                if(!b1) b2 = true;
-            }
-            if(!b2){
-                b1 = false;
-                if(performer && performer->IsSetComplete()) b1 = true;
-                if(!b1) b3 = false;
-            }
-            if(b3){
+
+            if ( ((!performer->IsSetComplete() && performer->PartPlaysInSong(tracktypeSym)) &&
+                 !(entry.unk0 == overshell_vocal_harmony && !performer->VocalHarmonyInSong())) ||
+                (performer && performer->IsSetComplete()) ) {
+                
                 label->SetIcon('\0');
             }
         }
