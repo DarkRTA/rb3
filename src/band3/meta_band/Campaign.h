@@ -2,6 +2,8 @@
 #define METABAND_CAMPAIGN_H
 
 #include "BandProfile.h"
+#include "beatmatch/TrackType.h"
+#include "game/Defines.h"
 #include "obj/Data.h"
 #include "os/User.h"
 #include "game/BandUser.h"
@@ -21,6 +23,8 @@ public:
     bool HasReachedCampaignLevel(LocalBandUser*, Symbol) const;
     void SetWasLaunchedIntoMusicLibrary(bool);
     TrackType GetRequiredTrackTypeForGoal(Symbol) const;
+    TrackType GetRequiredTrackTypeForCurrentAccomplishment() const;
+    ScoreType GetRequiredScoreTypeForCurrentAccomplishment() const;
 };
 
 extern Campaign* TheCampaign;

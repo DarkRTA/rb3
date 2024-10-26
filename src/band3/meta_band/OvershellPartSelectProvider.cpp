@@ -1,7 +1,16 @@
 #include "meta_band/OvershellPartSelectProvider.h"
+#include "beatmatch/TrackType.h"
+#include "game/BandUser.h"
+#include "game/Defines.h"
+#include "meta_band/Campaign.h"
+#include "meta_band/OvershellSlot.h"
+#include "meta_band/OvershellSlotState.h"
 #include "meta_band/Utl.h"
 #include "game/GameMode.h"
+#include "os/Debug.h"
+#include "os/Joypad.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols4.h"
 
 OvershellPartSelectProvider::OvershellPartSelectProvider(OvershellPanel* panel) : mControllerType(kControllerNone), mUser(0), mOvershell(panel) {
 
@@ -54,6 +63,51 @@ void OvershellPartSelectProvider::Reload(ControllerType ty, BandUser* user){
 
 void OvershellPartSelectProvider::Clear(){
     mPartSelections.clear();
+}
+
+bool OvershellPartSelectProvider::IsActive(int data) const {
+    if(mPartSelections.empty()) return false;
+    if(!mUser->IsParticipating()) return true;
+    MILO_ASSERT_RANGE(data, 0, mPartSelections.size(), 0x6E);
+    const PartSelectEntry& entry = mPartSelections[data];
+    if(mUser->IsLocal() && entry.unk0 == overshell_drums_pro){
+        if(UserHasGHDrums(mUser->GetLocalUser())) return false;
+    }
+    if(mUser->GetTrackType() != kTrackNone && mUser->GetTrackType() != kTrackPending && 
+        mUser->GetTrackType() != kTrackPendingVocals && mUser->GetTrackType() != entry.unk4){
+        return false;
+    }
+
+    for(int i = 0; i < (int)mOvershell->mSlots.size(); i++){
+        OvershellSlot* curslot = mOvershell->GetSlot(i);
+        BandUser* curuser = curslot->GetUser();
+        if(curuser && curuser != mUser){
+            OvershellSlotState* curstate = curslot->GetState();
+            if(!curstate->IsPartUnresolved()){
+                if(RepresentSamePart(entry.unk4, curuser->GetTrackType())) return false;
+            }
+        }
+    }
+
+    if(TheGameMode->InMode("campaign") || TheGameMode->InMode("pro_song_lessons_keyboard") ||
+        TheGameMode->InMode("pro_song_lessons_real_guitar") || TheGameMode->InMode("pro_song_lessons_real_bass")){
+
+        TrackType reqTrackType = TheCampaign->GetRequiredTrackTypeForCurrentAccomplishment();
+        ScoreType reqScoreType = TheCampaign->GetRequiredScoreTypeForCurrentAccomplishment();
+
+        if(reqTrackType == kTrackNone) return true;
+        if(!TheCampaign->GetLaunchUser()) return true;
+        if(TheCampaign->GetLaunchUser() == mUser){
+            if(entry.unk4 != reqTrackType) return false;
+            if(reqScoreType == 6 && entry.unk0 != "overshell_drums_pro") return false;
+            if(reqScoreType == 0 && entry.unk0 != "overshell_drums") return false;
+            if(reqScoreType == 3 && entry.unk0 != "overshell_vocal_solo") return false;
+            if(reqScoreType == 4 && entry.unk0 != "overshell_vocal_harmony") return false;
+        }
+        else if(RepresentSamePart(entry.unk4, reqTrackType)) return false;
+
+    }
+    return true;
 }
 
 int OvershellPartSelectProvider::NumData() const { return mPartSelections.size(); }
