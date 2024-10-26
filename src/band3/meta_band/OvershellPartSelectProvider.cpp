@@ -3,12 +3,15 @@
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "meta_band/Campaign.h"
+#include "meta_band/MetaPerformer.h"
 #include "meta_band/OvershellSlot.h"
 #include "meta_band/OvershellSlotState.h"
 #include "meta_band/Utl.h"
 #include "game/GameMode.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
+#include "ui/UILabel.h"
+#include "ui/UIListLabel.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols4.h"
 
@@ -108,6 +111,46 @@ bool OvershellPartSelectProvider::IsActive(int data) const {
 
     }
     return true;
+}
+
+void OvershellPartSelectProvider::Text(int, int data, UIListLabel* slot, UILabel* label) const {
+    MetaPerformer* performer = MetaPerformer::Current();
+    if(performer){
+        MILO_ASSERT_RANGE(data, 0, mPartSelections.size(), 0xC2);
+        const PartSelectEntry& entry = mPartSelections[data];
+        if(slot->Matches("name")){
+            label->SetTextToken(entry.unk0);
+        }
+        else if(slot->Matches("part_icon")){
+            TrackTypeToSym(entry.unk4);
+            label->SetIcon(entry.unk8);
+        }
+        else if(slot->Matches("no_part_icon")){
+            label->SetIcon('N');
+            Symbol tracktypeSym = TrackTypeToSym(entry.unk4);
+            bool b3 = true;
+            bool b2 = false;
+            bool b1 = false;
+            if(!performer->IsSetComplete()){
+                if(performer->PartPlaysInSong(tracktypeSym)) b1 = true;
+            }
+            if(b1){
+                b1 = false;
+                if(entry.unk0 == overshell_vocal_harmony && !performer->VocalHarmonyInSong()){
+                    b1 = true;
+                }
+                if(!b1) b2 = true;
+            }
+            if(!b2){
+                b1 = false;
+                if(performer && performer->IsSetComplete()) b1 = true;
+                if(!b1) b3 = false;
+            }
+            if(b3){
+                label->SetIcon('\0');
+            }
+        }
+    }
 }
 
 int OvershellPartSelectProvider::NumData() const { return mPartSelections.size(); }
