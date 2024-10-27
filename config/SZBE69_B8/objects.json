@@ -132,7 +132,7 @@
             },
             "band3/meta_band/AppLabel.cpp": "MISSING",
             "band3/meta_band/AppMiniLeaderboardDisplay.cpp": "MISSING",
-            "band3/meta_band/AppScoreDisplay.cpp": "MISSING",
+            "band3/meta_band/AppScoreDisplay.cpp": "Equivalent",
             "band3/meta_band/Asset.cpp": "Matching",
             "band3/meta_band/AssetMgr.cpp": "NonMatching",
             "band3/meta_band/AssetOffer.cpp": "LinkIssues",
