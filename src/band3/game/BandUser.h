@@ -64,6 +64,7 @@ public:
     GameplayOptions* GetGameplayOptions();
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f){ mLastHitFraction = f; }
+    Player* GetPlayer() const { return mPlayer; }
     
     static LocalBandUser* NewLocalBandUser();
     static RemoteBandUser* NewRemoteBandUser();

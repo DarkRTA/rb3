@@ -1,4 +1,5 @@
 #pragma once
+#include "beatmatch/TrackType.h"
 #include "game/Performer.h"
 #include "obj/MsgSource.h"
 
@@ -10,6 +11,8 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     void DeterminePerformanceAwards();
+    TrackType GetTrackType() const { return unk_tracktype; }
 
     int unk_player;
+    TrackType unk_tracktype;
 };
