@@ -32,6 +32,18 @@ BEGIN_MESSAGE(ProcessedJoinRequestMsg, processed_join_request, bool);
     bool GetProcessed() const { return mData->Int(2); }
 END_MESSAGE;
 
+BEGIN_MESSAGE(SessionDisconnectedMsg, session_disconnected, );
+    MESSAGE_ARRAY_CTOR(SessionDisconnectedMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(SessionBusyMsg, session_busy, );
+    MESSAGE_ARRAY_CTOR(SessionBusyMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(JoinResultMsg, join_result, );
+    MESSAGE_ARRAY_CTOR(JoinResultMsg)
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 

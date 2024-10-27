@@ -5,6 +5,8 @@
 #include "game/BandUser.h"
 #include <vector>
 
+class SessionMgr;
+
 class BandUserMgr : public UserMgr {
 public:
     BandUserMgr(int, int);
@@ -57,7 +59,7 @@ public:
     std::vector<RemoteBandUser*> mRemoteUsers; // 0x2c
     NullLocalBandUser* mNullUser; // 0x34
     UserGuid mSlotMap[4]; // 0x38, 0x48, 0x58, 0x68
-    int unk78;
+    SessionMgr* unk78;
 };
 
 void BandUserMgrInit();
