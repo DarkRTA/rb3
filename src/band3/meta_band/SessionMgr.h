@@ -1,5 +1,6 @@
 #pragma once
 #include "BandMachineMgr.h"
+#include "BandNetGameData.h"
 #include "game/NetGameMsgs.h"
 #include "net/Synchronize.h"
 #include "obj/MsgSource.h"
@@ -42,13 +43,20 @@ public:
     BandUser* GetLeaderUser() const;
     bool HasLeaderUser() const;
 
-    int unk38;
-    int unk3c;
-    int unk40;
-    int unk44;
-    int unk48;
-    int unk4c;
-    BandMachineMgr* unk50;
+    int unk38; // 0x38
+    BandUserMgr* mBandUserMgr; // 0x3c
+    int unk40; // 0x40
+    int unk44; // 0x44
+    int unk48; // 0x48
+    MatchMaker* mMatchMaker; // 0x4c
+    BandMachineMgr* mMachineMgr; // 0x50
+    int unk54; // CriticalUserListener*
+    BandNetGameData* mBandNetGameData; // 0x58
+    int unk5c; // 0x5c
+    std::vector<int> unk60; // 0x60
+    bool unk68; // 0x68
+    int mNetRandomSeed; // 0x6c
+    bool unk70; // 0x70
 };
 
 extern SessionMgr* TheSessionMgr;

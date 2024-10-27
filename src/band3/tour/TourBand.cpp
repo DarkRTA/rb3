@@ -19,7 +19,7 @@ void TourBand::SetBandName(const char* cc){
     if(unk20 != cc){
         unk20 = cc;
         SetDirty(true, 7);
-        BandMachineMgr* pMachineMgr = TheSessionMgr->unk50;
+        BandMachineMgr* pMachineMgr = TheSessionMgr->mMachineMgr;
         MILO_ASSERT(pMachineMgr, 0x38);
         pMachineMgr->RefreshPrimaryProfileInfo();
     }

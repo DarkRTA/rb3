@@ -55,7 +55,7 @@ namespace {
         virtual ~SyncLocalMachineMsg(){}
         virtual void Save(BinStream &) const {}
         virtual void Load(BinStream &){}
-        virtual void Dispatch(){ TheSessionMgr->unk50->SyncLocalMachine(-1); }
+        virtual void Dispatch(){ TheSessionMgr->mMachineMgr->SyncLocalMachine(-1); }
         virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncLocalMachineMsg"); }
         virtual const char* Name() const { return MakeString("SyncLocalMachineMsg"); }
 
@@ -92,7 +92,7 @@ namespace {
     }
 
     void SyncMachineMsg::Dispatch(){
-        BandMachineMgr* mgr = TheSessionMgr->unk50;
+        BandMachineMgr* mgr = TheSessionMgr->mMachineMgr;
         RemoteBandMachine* machine = mgr->GetRemoteMachine(mMachineID, false);
         if(machine){
             static RemoteMachineUpdatedMsg msg(machine, mDirtyMask);

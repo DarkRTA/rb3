@@ -176,7 +176,7 @@
             "band3/meta_band/ContentDeletePanel.cpp": "MISSING",
             "band3/meta_band/ContentLoadingPanel.cpp": "MISSING",
             "band3/meta_band/ContextChecker.cpp": "MISSING",
-            "band3/meta_band/CriticalUserListener.cpp": "MISSING",
+            "band3/meta_band/CriticalUserListener.cpp": "Matching",
             "band3/meta_band/CurrentOutfitProvider.cpp": "MISSING",
             "band3/meta_band/CustomizePanel.cpp": "MISSING",
             "band3/meta_band/CymbalSelectionProvider.cpp": "Matching",
@@ -212,7 +212,7 @@
             "band3/meta_band/MusicLibrary.cpp": "MISSING",
             "band3/meta_band/MusicLibraryNetSetlists.cpp": "MISSING",
             "band3/meta_band/NameGenerator.cpp": "Matching",
-            "band3/meta_band/NetSync.cpp": "MISSING",
+            "band3/meta_band/NetSync.cpp": "NonMatching",
             "band3/meta_band/NewAssetProvider.cpp": {
                 "status": "Equivalent",
                 "comment": "linking issue regarding stlport __FUNCTION__s"
@@ -240,7 +240,7 @@
             "band3/meta_band/SaveLoadStatusPanel.cpp": "MISSING",
             "band3/meta_band/SavedSetlist.cpp": "MISSING",
             "band3/meta_band/SelectDifficultyPanel.cpp": "MISSING",
-            "band3/meta_band/SessionMgr.cpp": "MISSING",
+            "band3/meta_band/SessionMgr.cpp": "NonMatching",
             "band3/meta_band/SessionUsersProviders.cpp": "NonMatching",
             "band3/meta_band/SetlistMergePanel.cpp": "MISSING",
             "band3/meta_band/SetlistSortByLength.cpp": "Matching",
