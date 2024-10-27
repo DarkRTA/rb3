@@ -164,7 +164,7 @@ void BandProfile::UploadDirtyAccomplishmentData() {}
 void BandProfile::UploadDirtyScoreData() {}
 void BandProfile::UploadDirtyData() {}
 void BandProfile::SetSongReview(int, int) {}
-void BandProfile::GetSongReview(int) {}
+// void BandProfile::GetSongReview(int) {}
 // void BandProfile::GetSongStatusMgr() const {}
 void BandProfile::GetSongHighScore(int, ScoreType) const {}
 void BandProfile::GetSavedSetlists() const {}

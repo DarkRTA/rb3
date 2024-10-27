@@ -198,7 +198,7 @@ Hmx::Object* CopyObject(Hmx::Object* o1, Hmx::Object* o2, Hmx::Object::CopyType 
     return o2;
 }
 
-void CloneObject(Hmx::Object* from, bool b){
+Hmx::Object* CloneObject(Hmx::Object* from, bool b){
     MILO_ASSERT(from, 0x32D);
     CopyObject(from, Hmx::Object::NewObject(from->ClassName()), (Hmx::Object::CopyType)b, true);
 }

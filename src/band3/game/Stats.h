@@ -211,6 +211,10 @@ public:
     void SetDoubleHarmonyPhraseCount(int doubleHarmonyPhraseCount) { mDoubleHarmonyPhraseCount = doubleHarmonyPhraseCount; }
     void SetTripleHarmonyHit(int tripleHarmonyHit) { mTripleHarmonyHit = tripleHarmonyHit; }
     void SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
+    float GetAverageMultiplier() const { return mAverageMultiplier; }
+    int NumSections() const { return mSections.size(); }
+    bool HasCoda() const { return m0xa8; }
+    bool HasSolos() const { return m0x09; }
 
     template <class T> void SaveHighest(std::vector<T>&, const T&);
 
@@ -296,7 +300,7 @@ public:
     int mSustainGemsHitCompletely; // 0x188
     int mSustainGemsHitPartially; // 0x18c
     int mSustainGemCount; // 0x190
-    float m0x194;
+    float mAverageMultiplier; // 0x194
     int mRollCount; // 0x198
     int mRollsHitCompletely; // 0x19c
     int mTrillCount; // 0x1a0

@@ -8,7 +8,7 @@ Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStr
     mBandContribution(0), mCodaPoints(0), m0xa8(0), m0x09(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0),
     mClosestPlayersSaved(3, 2.0f), mTimesSaved(0), mClosestTimesSaved(3, 2.0f), mBestSolos(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0), m0x14c(0), m0x150(0), mEndGameScore(0),
     mEndGameCrowdLevel(0), mEndGameOverdrive(0), mOverdrivePhrasesCompleted(0), mOverdrivePhraseCount(0), mUnisonPhraseCompleted(0), mUnisonPhraseCount(0), mHopoGemsHopoed(0), mHopoGemsStrummed(0),
-    mHopoGemCount(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0), m0x194(0), mRollCount(0),
+    mHopoGemCount(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0), mAverageMultiplier(0), mRollCount(0),
     mRollsHitCompletely(0), mTrillCount(0), mTrillsHitCompletely(0), mTrillsHitPartially(0), mCymbalGemInfo1(0), mCymbalGemInfo2(0), mCymbalGemInfo3(0), unk1c0(0), unk1c4(0), unk1c8(0) {
 
 }
@@ -122,7 +122,7 @@ void Stats::SaveForEndGame(BinStream& bs) const {
     bs << mPersistentStreak;
     bs << mLongestPersistentStreak;
     bs << mNotesHitFraction;
-    bs << m0x194;
+    bs << mAverageMultiplier;
     bs << mFailedDeploy;
     bs << mPlayersSaved;
     bs << mFillHitCount;
@@ -167,7 +167,7 @@ void Stats::LoadForEndGame(BinStream& bs){
     bs >> mPersistentStreak;
     bs >> mLongestPersistentStreak;
     bs >> mNotesHitFraction;
-    bs >> m0x194;
+    bs >> mAverageMultiplier;
     bs >> mFailedDeploy;
     bs >> mPlayersSaved;
     bs >> mFillHitCount;

@@ -18,8 +18,9 @@ BEGIN_MESSAGE(UserLoginMsg, user_login, );
     MESSAGE_ARRAY_CTOR(UserLoginMsg)
 END_MESSAGE;
 
-BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, );
+BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*);
     MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
+    int GetResult() const { return mData->Int(2); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(ModeChangedMsg, mode_changed, );

@@ -34,7 +34,7 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void UpdateSphere();
+    virtual void UpdateSphere(){ mSphere.Zero(); }
     virtual float GetDistanceToPlane(const Plane&, Vector3&){ return 0.0f; }
     virtual bool MakeWorldSphere(Sphere&, bool){ return 0; }
     virtual RndCam* CamOverride(){ return 0; }

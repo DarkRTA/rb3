@@ -65,7 +65,7 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Highlight();
     virtual void Print();
-    virtual void UpdatedWorldXfm();
+    virtual void UpdatedWorldXfm(){}
 
     void SetWorldXfm(const Transform&);
     void SetWorldPos(const Vector3&);

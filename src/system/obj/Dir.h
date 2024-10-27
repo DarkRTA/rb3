@@ -228,6 +228,8 @@ public:
     bool IsSubDir() const { return mIsSubDir; }
     const char* GetPathName() const { return mPathName; }
     KeylessHash<const char*, Entry>& HashTable(){ return mHashTable; }
+    int HashTableSize() const { return mHashTable.Size(); }
+    int StrTableSize() const { return mStringTable.Size(); }
 
     DataNode OnFind(DataArray*);
 

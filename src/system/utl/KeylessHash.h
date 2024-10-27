@@ -25,6 +25,7 @@ public:
     T2* Insert(const T2& val);
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
+    int Size() const { return mSize; }
 
     void Advance(int& idx){
         idx++;

@@ -1,5 +1,6 @@
 #include "AssetMgr.h"
 
+#include "utl/STLHelpers.h"
 #include <algorithm>
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
@@ -25,7 +26,11 @@ AssetMgr::AssetMgr() {
 }
 
 AssetMgr::~AssetMgr() {
-
+    for(std::map<Symbol, Asset*>::iterator it = mAssets.begin(); it != mAssets.end(); ++it){
+        RELEASE(it->second);
+    }
+    mAssets.clear();
+    mIconPaths.clear();
 }
 
 void AssetMgr::Init() {

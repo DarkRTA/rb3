@@ -46,7 +46,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual void Highlight();
+    virtual void Highlight(){ RndDrawable::Highlight(); }
     virtual ~UIComponent();
     virtual void SetTypeDef(DataArray*);
     virtual void PreLoad(BinStream&);
@@ -54,7 +54,7 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void ResourceCopy(const UIComponent*);
     virtual void SetState(UIComponent::State);
     virtual Symbol StateSym() const;
-    virtual bool Entering() const;
+    virtual bool Entering() const { return false; }
     virtual bool Exiting() const;
     virtual void Enter();
     virtual void Exit();

@@ -32,8 +32,10 @@ public:
     void EquipAssets(LocalBandUser*, const std::vector<Symbol>&);
 
     const std::map<Symbol, Asset*>& GetAssets() const { return mAssets; }
+    const std::map<int, String>& GetIconPaths() const { return mIconPaths; }
 
-    std::map<Symbol, Asset*> mAssets;  
+    std::map<Symbol, Asset*> mAssets; // 0x1c
+    std::map<int, String> mIconPaths; // 0x34
 };
 
 static AssetMgr* TheAssetMgr;
