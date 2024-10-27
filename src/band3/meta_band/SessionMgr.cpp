@@ -7,12 +7,12 @@
 #include "game/GameMode.h"
 #include "math/Rand.h"
 #include "meta_band/CriticalUserListener.h"
+#include "meta_band/Matchmaker.h"
 #include "net/NetSession.h"
 #include "net/Synchronize.h"
 #include "obj/Dir.h"
-#include "os/User.h"
 
-SessionMgr::SessionMgr(BandUserMgr* umgr, MatchMaker* mm) : Synchronizable("session_mgr"), mBandUserMgr(umgr), mMatchMaker(mm), mCritUserListener(0), mBandNetGameData(new BandNetGameData()), unk5c(0), unk70(0) {
+SessionMgr::SessionMgr(BandUserMgr* umgr, Matchmaker* mm) : Synchronizable("session_mgr"), mBandUserMgr(umgr), mMatchMaker(mm), mCritUserListener(0), mBandNetGameData(new BandNetGameData()), unk5c(0), unk70(0) {
     mMachineMgr = new BandMachineMgr(this, mBandUserMgr);
     mCritUserListener = new CriticalUserListener(this);
     unk40 = 0;

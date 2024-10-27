@@ -9,15 +9,16 @@
 #include "game/BandUser.h"
 
 class BandUserMgr;
-class MatchMaker;
+class Matchmaker;
 
 enum PacketType {
-
+    kUnreliable = 0,
+    kReliable = 1
 };
 
 class SessionMgr : public MsgSource, public Synchronizable {
 public:
-    SessionMgr(BandUserMgr*, MatchMaker*);
+    SessionMgr(BandUserMgr*, Matchmaker*);
     virtual DataNode Handle(DataArray*, bool);
     virtual ~SessionMgr();
     virtual void RegisterOnline();
@@ -50,7 +51,7 @@ public:
     int unk40; // 0x40
     int unk44; // 0x44
     int unk48; // 0x48
-    MatchMaker* mMatchMaker; // 0x4c
+    Matchmaker* mMatchMaker; // 0x4c
     BandMachineMgr* mMachineMgr; // 0x50
     CriticalUserListener* mCritUserListener; // 0x54
     BandNetGameData* mBandNetGameData; // 0x58
