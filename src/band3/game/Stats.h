@@ -296,7 +296,7 @@ public:
     int mSustainGemsHitCompletely; // 0x188
     int mSustainGemsHitPartially; // 0x18c
     int mSustainGemCount; // 0x190
-    float m0x194;
+    float mAverageMultiplier;
     int mRollCount; // 0x198
     int mRollsHitCompletely; // 0x19c
     int mTrillCount; // 0x1a0

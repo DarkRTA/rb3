@@ -10,4 +10,6 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     void DeterminePerformanceAwards();
+
+    int unk_player;
 };

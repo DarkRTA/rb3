@@ -35,7 +35,7 @@ public:
     float mDetailsPageSize; // 0x54
     float mDetailsFooterSize; // 0x58
     float mDetailsScrollStep; // 0x5c
-    float unk60[4]; // 0x60
+    float mDetailsHeight[4]; // 0x60
     int unk70[4];
     bool unk80[4];
     bool unk84[4];

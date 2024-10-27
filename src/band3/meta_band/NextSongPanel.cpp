@@ -3,8 +3,10 @@
 #include "bandobj/ReviewDisplay.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
+#include "game/Defines.h"
 #include "game/Game.h"
 #include "game/Player.h"
+#include "meta_band/AccomplishmentManager.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/MetaPerformer.h"
@@ -18,9 +20,11 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Group.h"
 #include "ui/UIPanel.h"
+#include "utl/Locale.h"
 #include "utl/MakeString.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
@@ -79,7 +83,7 @@ void NextSongPanel::FinishLoad(){
 }
 
 int NextSongPanel::GetMaxScrollPage(int i){
-    return unk60[i] / mDetailsPageSize;
+    return mDetailsHeight[i] / mDetailsPageSize;
 }
 
 void NextSongPanel::DeterminePerformanceAwards(int i){
@@ -207,17 +211,19 @@ void NextSongPanel::SetScrollExpandedDetails(int i, int j){
     UpdateScrollArrows(i, false);
 }
 
+
 void NextSongPanel::FillExpandedDetails(int slot){
+    float f1;
     DataArrayPtr ptr;
     int numDetails = CountOrCreateExpandedDetails(slot, ptr, true);
     ptr->Resize(numDetails);
     int newNumDetails = CountOrCreateExpandedDetails(slot, ptr, false);
     MILO_ASSERT(newNumDetails == numDetails, 0x18B);
-    float f1 = 0;
+    f1 = 0;
     const DataArray* t = TypeDef();
     MILO_ASSERT(t, 0x19A);
     DataArray* detailTypesArr = t->FindArray(detail_types, true);
-    DataArray* defaultTypeArr = t->FindArray(default_type, true);
+    DataArray* defaultTypeArr = detailTypesArr->FindArray(default_type, true);
     unk3c.clear();
     Symbol symb4(gNullStr);
     int i12 = 0;
@@ -237,35 +243,312 @@ void NextSongPanel::FillExpandedDetails(int slot){
                 symb4 = arr->Sym(1);
                 i12 = 1;
             }
-            DataArray* foundarr = arr->FindArray(dataSym, false);
+            DataArray* foundarr = detailTypesArr->FindArray(dataSym, false);
             if(foundarr){
                 foundarr->FindData(height, fHeight, false);
                 foundarr->FindData(margin_top, fMarginTop, false);
                 foundarr->FindData(margin_bottom, fMarginBottom, false);
                 foundarr->FindData(required_padding_override, fReqPadOverride, false);
             }
-            float f2 = fMarginBottom + fMarginTop + fHeight;
-            if(fReqPadOverride > 0) f2 = fReqPadOverride;
+            
+            float top = fMarginTop;
+            float f2 = top + fHeight + fMarginBottom;
+            float max = fReqPadOverride;
+            if(max > 0.0f) f2 = max;
+
             float f3 = (i9 + 1) * mDetailsPageSize;
             if(f1 + f2 > f3 - mDetailsFooterSize){
-                i12++;
-                ptr->Insert(numDetails, DataArrayPtr(header_continued, symb4, i12));
-                numDetails--;
                 f1 = f3;
+                ptr->Insert(n, DataArrayPtr(header_continued, symb4, ++i12));
+                n--;
             }
             else {
-                f1 += fMarginTop;
+                f1 += top;
                 if(dataSym != pad){
                     SetupDetailLine(arr, slot, foundarr->FindStr(resource_fmt), -f1);
                 }
                 f1 += fHeight;
-                if(numDetails + 1 < ptr->Size()){
+                if(n + 1 < ptr->Size()){
                     f1 += fMarginBottom;
                 }
             }
         }
     }
-    unk60[slot] = f1;
+    mDetailsHeight[slot] = f1;
     RndDir* rdir = mDir->Find<RndDir>(MakeString("slot%i", slot), true);
     rdir->SyncObjects();
+}
+
+int NextSongPanel::CountOrCreateExpandedDetails(int slot, DataArrayPtr& ptr, bool b){
+    BandUser* user = TheBandUserMgr->GetUserFromSlot(slot);
+    MILO_ASSERT(TheGame->IsActiveUser(user), 0x203);
+    Player* player = user->mPlayer;
+    MILO_ASSERT(player, 0x205);
+    int playerTrackType = player->unk_player;
+    const Stats& stats = player->mStats;
+    MetaPerformer* performer = MetaPerformer::Current();
+    MILO_ASSERT(performer, 0x20A);
+    ScoreType ty = performer->GetScoreTypeForUser(user);
+    if(!b){
+        ptr->Node(0) = DataArrayPtr(header, solo_score);
+        ptr->Node(1) = DataArrayPtr(pad);
+    }
+    int i4;
+    if(!player->GetQuarantined()){
+        if(b) i4 = 5;
+        else {
+            ptr->Node(2) = DataArrayPtr(score, 1 << ty, player->GetIndividualScore());
+            ptr->Node(3) = DataArrayPtr(pad);
+            i4 = 5;
+            ptr->Node(4) = DataArrayPtr(solo_instarank_group, gNullStr);
+        }
+    }
+    else if(b) i4 = 3;
+    else {
+        i4 = 3;
+        ptr->Node(2) = DataArrayPtr(label, songresults_nodata);
+    }
+
+    if(!b){
+        ptr->Node(i4) = DataArrayPtr(page_break);
+    }
+
+    int i13 = i4++;
+    if(player->unk_player == 3){
+        int harm2hit = stats.GetDoubleHarmonyHit();
+        int harm2count = stats.GetDoubleHarmonyPhraseCount();
+        int harm3hit = stats.GetTripleHarmonyHit();
+        int harm3count = stats.GetTripleHarmonyPhraseCount();
+        if(harm2count != 0 || harm3count != 0){
+            if(!b){
+                ptr->Node(i13) = DataArrayPtr(header, instrument_specific);
+            }
+            if(harm2count == 0){
+                if(!b){
+                    ptr->Node(i4 + 2) = DataArrayPtr(pad);
+                }
+            }
+            else if(!b){
+                ptr->Node(i4 + 2) = DataArrayPtr(label, completed_double_harmonies, harm2hit, harm2count);
+            }
+            if(harm3count == 0){
+                if(!b){
+                    ptr->Node(i4 + 3) = DataArrayPtr(pad);
+                }
+            }
+            else if(!b){
+                ptr->Node(i4 + 3) = DataArrayPtr(label, completed_triple_harmonies, harm3hit, harm3count);
+            }
+
+            if((harm2count == 0 || harm2hit != harm2count) && (harm3count == 0 || harm3hit != harm3count)){
+                if(!b){
+                    ptr->Node(i4 + 4) = DataArrayPtr(pad);
+                }
+            }
+            else if(!b){
+                ptr->Node(i4 + 4) = DataArrayPtr(label, perfect_harmony);
+            }
+            if(!b){
+                ptr->Node(i4 + 5) = DataArrayPtr(vocals_grid);
+            }
+            if(b){
+                i13 = i4 + 7;
+            }
+            else {
+                ptr->Node(i4 + 6) = DataArrayPtr(page_break);
+            }
+        }
+    }
+
+    Symbol streakSym = playerTrackType == 3 ? endgame_phrase_streak : endgame_note_streak;
+    if(!b){
+        ptr->Node(i13) = DataArrayPtr(header, performance);
+    }
+    if(!b){
+        ptr->Node(i13 + 1) = DataArrayPtr(label, streakSym, LocalizeSeparatedInt(stats.GetLongestStreak()));
+    }
+    if(!b){
+        ptr->Node(i13 + 2) = DataArrayPtr(label, endgame_hit_count, LocalizeSeparatedInt(stats.GetHitCount()));
+    }
+    if(!b){
+        ptr->Node(i13 + 3) = DataArrayPtr(label, endgame_avg_multiplier, LocalizeFloat("%.02f", stats.mAverageMultiplier));
+    }
+    if(!b){
+        ptr->Node(i13 + 4) = DataArrayPtr(page_break);
+    }
+    Symbol completedSongSym = performer->GetCompletedSong();
+    if(!b){
+        ptr->Node(i13 + 5) = DataArrayPtr(header, achievement_progress);
+    }
+    int i5 = i13 + 6;
+    std::vector<Symbol> songGoals;
+    if(!TheAccomplishmentMgr->InqGoalsAcquiredForSong(user, completedSongSym, songGoals)){
+        if(!b){
+            ptr->Node(i5) = DataArrayPtr(pad);
+        }
+        if(b) i5 = i13 + 8;
+        else {
+            ptr->Node(i13 + 7) = DataArrayPtr(label, songresults_nodata);
+            i5 = i13 + 8;
+        }
+    }
+    else {
+        for(std::vector<Symbol>::iterator it = songGoals.begin(); it != songGoals.end(); ++it){
+            Symbol cur = *it;
+            if(!b){
+                ptr->Node(i5) = DataArrayPtr(label, cur);
+            }
+            i5++;
+        }
+    }
+    if(!b){
+        ptr->Node(i5) = DataArrayPtr(page_break);
+    }
+    if(!b){
+        ptr->Node(i5 + 1) = DataArrayPtr(header, section_breakdown);
+    }
+    i13 = i5 + 2;
+    if(!player->GetQuarantined()){
+        int numsections = stats.mSections.size();
+        for(int i = 0; i < numsections; i++){
+            const Stats::SectionInfo& curinfo = stats.GetSectionInfo(i);
+            if(curinfo.unk0 != gNullStr){
+                if(curinfo.unk4 >= 0){
+                    if(!b){
+                        ptr->Node(i13) = DataArrayPtr(left_label, generic_string, curinfo.unk0);
+                    }
+                    int i6 = i13 + 1;
+                    if(b) i13 += 2;
+                    else {
+                        ptr->Node(i6) = DataArrayPtr(right_label, score_detail_section, Round(curinfo.unk4 * 100.0f));
+                    }
+                }
+                else {
+                    if(!b){
+                        ptr->Node(i13) = DataArrayPtr(left_label, generic_string, curinfo.unk0);
+                    }
+                    int i6 = i13 + 1;
+                    if(b) i13 += 2;
+                    else {
+                        i13 += 2;
+                        ptr->Node(i6) = DataArrayPtr(right_label, any);
+                    }
+                }
+            }
+        }
+    }
+    else {
+        if(!b){
+            ptr->Node(i13) = DataArrayPtr(pad);
+        }
+        if(b) i13 = i5 + 4;
+        else {
+            i13 = i5 + 4;
+            ptr->Node(i5 + 3) = DataArrayPtr(label, songresults_nodata);
+        }
+    }
+    if(!b){
+        ptr->Node(i13) = DataArrayPtr(page_break);
+    }
+    if(!b){
+        ptr->Node(i13 + 1) = DataArrayPtr(header, score_breakdown);
+    }
+
+    int ret;
+    if(!player->GetQuarantined()){
+        if(!b){
+            ptr->Node(i13 + 2) = DataArrayPtr(left_label, score_detail_accuracy);
+        }
+        if(!b){
+            ptr->Node(i13 + 3) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(stats.GetAccuracy()));
+        }
+        if(!b){
+            ptr->Node(i13 + 4) = DataArrayPtr(left_label, score_detail_streak);
+        }
+        if(!b){
+            ptr->Node(i13 + 5) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(Round(stats.GetScoreStreak())));
+        }
+        if(!b){
+            ptr->Node(i13 + 6) = DataArrayPtr(left_label, score_detail_overdrive);
+        }
+        if(!b){
+            ptr->Node(i13 + 7) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(Round(stats.GetOverdrive())));
+        }
+        i4 = i13 + 8;
+        if(stats.m0xa8){
+            if(!b){
+                ptr->Node(i4) = DataArrayPtr(left_label, score_detail_coda);
+            }
+            if(b) i4 = i13 + 10;
+            else {
+                i4 = i13 + 10;
+                ptr->Node(i13 + 9) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(stats.GetCodaPoints()));
+            }
+        }
+
+        if(playerTrackType == 3){
+            if(!b){
+                ptr->Node(i4) = DataArrayPtr(left_label, score_detail_tambourine);
+            }
+            if(!b){
+                ptr->Node(i4 + 1) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(Round(stats.GetTambourine())));
+            }
+            if(!b){
+                ptr->Node(i4 + 2) = DataArrayPtr(left_label, score_detail_harmony);
+            }
+            int i2 = i4 + 3;
+            if(b) i4 += 4;
+            else {
+                i4 += 4;
+                ptr->Node(i2) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(stats.GetHarmony()));
+            }
+        }
+        else {
+            if(stats.m0x09){
+                if(!b){
+                    ptr->Node(i4) = DataArrayPtr(left_label, score_detail_solos);
+                }
+                int i2 = i4 + 1;
+                if(b) i4 += 2;
+                else {
+                    i4 += 2;
+                    ptr->Node(i2) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(stats.GetSolo()));
+                }
+            }
+            if(playerTrackType != 0){
+                if(!b){
+                    ptr->Node(i4) = DataArrayPtr(left_label, score_detail_sustains);
+                }
+                int i2 = i4 + 1;
+                if(b) i4 += 2;
+                else {
+                    i4 += 2;
+                    ptr->Node(i2) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(Round(stats.GetSustain())));
+                }
+            }
+        }
+
+        if(!b){
+            ptr->Node(i4) = DataArrayPtr(pad);
+        }
+        if(!b){
+            ptr->Node(i4 + 1) = DataArrayPtr(left_label, score_detail_band);
+        }
+        if(b) ret = i4 + 3;
+        else {
+            ret = i4 + 3;
+            ptr->Node(i4 + 2) = DataArrayPtr(right_label, generic_string, LocalizeSeparatedInt(Round(stats.GetBandContribution())));
+        }
+    }
+    else {
+        if(!b){
+            ptr->Node(i13 + 2) = DataArrayPtr(pad);
+        }
+        if(b) ret = i13 + 4;
+        else {
+            ret = i13 + 4;
+            ptr->Node(i13 + 3) = DataArrayPtr(label, songresults_nodata);
+        }
+    }
+    return ret;
 }
