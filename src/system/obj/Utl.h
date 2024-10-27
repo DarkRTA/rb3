@@ -34,7 +34,7 @@ bool IsPropPathValid(Hmx::Object*, DataArray*);
 bool PathCompare(DataArray*, DataArray*);
 DataNode* GetPropertyVal(Hmx::Object*, DataArray*, bool);
 Hmx::Object* CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
-void CloneObject(Hmx::Object*, bool);
+Hmx::Object* CloneObject(Hmx::Object*, bool);
 void FileCallbackFullPath(const char*, const char*);
 
 void WalkProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);

@@ -1,27 +1,34 @@
 #include "meta_band/NextSongPanel.h"
 #include "AppInlineHelp.h"
 #include "bandobj/ReviewDisplay.h"
+#include "bandobj/ScoreDisplay.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/Game.h"
 #include "game/Player.h"
 #include "meta_band/AccomplishmentManager.h"
+#include "meta_band/AppLabel.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ProfileMgr.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Task.h"
+#include "obj/Utl.h"
 #include "os/Debug.h"
 #include "rndobj/Dir.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Group.h"
+#include "rndobj/Trans.h"
+#include "ui/UILabel.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
 #include "utl/MakeString.h"
+#include "utl/STLHelpers.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -51,7 +58,7 @@ void NextSongPanel::Enter(){
 
 void NextSongPanel::Exit(){
     UIPanel::Exit();
-    unk9c.clear();
+    DeleteAll(mDetailLabels);
 }
 
 bool NextSongPanel::Exiting() const {
@@ -224,7 +231,7 @@ void NextSongPanel::FillExpandedDetails(int slot){
     MILO_ASSERT(t, 0x19A);
     DataArray* detailTypesArr = t->FindArray(detail_types, true);
     DataArray* defaultTypeArr = detailTypesArr->FindArray(default_type, true);
-    unk3c.clear();
+    mDetailCounts.clear();
     Symbol symb4(gNullStr);
     int i12 = 0;
     for(int n = 0; n < ptr->Size(); n++){
@@ -514,3 +521,83 @@ int NextSongPanel::CountOrCreateExpandedDetails(int slot, DataArrayPtr& ptr, boo
     }
     return count;
 }
+
+void NextSongPanel::SetupDetailLine(DataArray* detail, int slot, const char* cc, float f){
+    Symbol sym = detail->Sym(0);
+    RndDir* rdir = mDir->Find<RndDir>(MakeString("slot%i", slot), true);
+    std::map<Symbol, int>::iterator it = mDetailCounts.find(sym);
+    if(it == mDetailCounts.end()) mDetailCounts[sym] = 1;
+    else mDetailCounts[sym] += 1;
+    const char* intstr = MakeString(cc, mDetailCounts[sym]);
+    RndTransformable* t;
+    RndDrawable* d;
+    if((sym == label || sym == left_label || sym == right_label || sym == header || sym == header_continued) && mDetailCounts[sym] != 1){
+        UILabel* label = rdir->Find<UILabel>(MakeString(cc, 1), true);
+        UILabel* newLabel = dynamic_cast<UILabel*>(CloneObject(label, true));
+        MILO_ASSERT(newLabel, 0x2E9);
+        newLabel->SetName(intstr, rdir);
+        mDetailLabels.push_back(newLabel);
+        t = newLabel;
+        d = newLabel;
+    }
+    else {
+        t = rdir->Find<RndTransformable>(intstr, true);
+        d = rdir->Find<RndDrawable>(intstr, true);
+    }
+    Transform xfm(t->LocalXfm());
+    xfm.v.z = f;
+    t->SetLocalXfm(xfm);
+    d->SetShowing(true);
+    if(sym == score){
+        ScoreDisplay* scoreDisplay = dynamic_cast<ScoreDisplay*>(t);
+        MILO_ASSERT(scoreDisplay, 0x2F8);
+        scoreDisplay->SetValues(detail->Int(1), detail->Int(2), 0, false);
+    }
+    else if(sym == header_continued){
+        AppLabel* label = dynamic_cast<AppLabel*>(t);
+        MILO_ASSERT(label, 0x2FF);
+        MILO_ASSERT(detail->Size() >= 3, 0x300);
+        label->SetTokenFmt(songresults_header_continued, detail->Sym(1), detail->Int(2));
+    }
+    else if(sym == label || sym == left_label || sym == right_label || sym == header){
+        AppLabel* label = dynamic_cast<AppLabel*>(t);
+        MILO_ASSERT(label, 0x309);
+        DataNode& node = detail->Node(1);
+        if(node.Type() == kDataSymbol){
+            if(detail->Size() < 3){
+                label->SetTextToken(node.Sym());
+            }
+            else {
+                detail->Remove(0);
+                static Message msg(set_token_fmt, 0);
+                msg[0] = DataNode(detail, kDataArray);
+                Handle(msg, false);
+            }
+        }
+        else if(node.Type() == kDataString){
+            label->SetTextToken(node.Str());
+        }
+        else MILO_FAIL("bad type for label detail");
+    }
+}
+
+Symbol NextSongPanel::GetPerformanceAward(int i){
+    BandUser* user = TheBandUserMgr->GetUserFromSlot(i);
+    MILO_ASSERT(TheGame->IsActiveUser(user), 0x329);
+    Player* player = user->GetPlayer();
+    MILO_ASSERT(player, 0x32B);
+    std::vector<Symbol>& awards = player->mStats.AccessPerformanceAwards();
+    if(awards.empty()) return gNullStr;
+    else return awards.front();
+}
+
+BEGIN_HANDLERS(NextSongPanel)
+    HANDLE_ACTION(scroll_expanded_details, ScrollExpandedDetails(_msg->Int(2), _msg->Int(3), false))
+    HANDLE_ACTION(set_scroll_expanded_details, SetScrollExpandedDetails(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(increment_song_review, IncrementSongReview(_msg->Int(2)))
+    HANDLE_ACTION(initialize_song_review_display, InitializeSongReviewDisplay(_msg->Int(2)))
+    HANDLE_EXPR(can_change_song_review, CanChangeSongReview(_msg->Int(2)))
+    HANDLE_EXPR(get_performance_award, GetPerformanceAward(_msg->Int(2)))
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x349)
+END_HANDLERS

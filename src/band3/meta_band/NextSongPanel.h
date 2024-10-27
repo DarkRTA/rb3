@@ -1,6 +1,7 @@
 #pragma once
 #include "obj/Data.h"
 #include "rndobj/Group.h"
+#include "ui/UILabel.h"
 #include "ui/UIPanel.h"
 
 class NextSongPanel : public UIPanel {
@@ -9,7 +10,7 @@ public:
     OBJ_CLASSNAME(NextSongPanel);
     OBJ_SET_TYPE(NextSongPanel);
     virtual DataNode Handle(DataArray*, bool);
-    virtual ~NextSongPanel();
+    virtual ~NextSongPanel(){}
     virtual void Enter();
     virtual void Exit();
     virtual bool Exiting() const;
@@ -29,9 +30,10 @@ public:
     void SetScrollExpandedDetails(int, int);
     int CountOrCreateExpandedDetails(int, DataArrayPtr&, bool);
     void SetupDetailLine(DataArray*, int, const char*, float);
+    Symbol GetPerformanceAward(int);
 
     float mEnterTime; // 0x38
-    std::map<Symbol, int> unk3c; // 0x3c
+    std::map<Symbol, int> mDetailCounts; // 0x3c
     float mDetailsPageSize; // 0x54
     float mDetailsFooterSize; // 0x58
     float mDetailsScrollStep; // 0x5c
@@ -41,5 +43,5 @@ public:
     bool unk84[4];
     RndGroup* mScrollGroups[4]; // 0x88
     bool unk98; // 0x98
-    std::vector<int> unk9c; // 0x9c
+    std::vector<UILabel*> mDetailLabels; // 0x9c
 };
