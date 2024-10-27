@@ -101,6 +101,7 @@ public:
     TrackPanelDirBase* MyTrackPanelDir();
     Symbol GetInstrumentSymbol() const;
     void CombineStreakMultipliers(bool);
+    const char* UserName() const;
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }

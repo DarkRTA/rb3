@@ -130,7 +130,7 @@
                 "status": "Equivalent",
                 "comment": "AppInlineHelp dtor ordering"
             },
-            "band3/meta_band/AppLabel.cpp": "MISSING",
+            "band3/meta_band/AppLabel.cpp": "NonMatching",
             "band3/meta_band/AppMiniLeaderboardDisplay.cpp": "MISSING",
             "band3/meta_band/AppScoreDisplay.cpp": "Equivalent",
             "band3/meta_band/Asset.cpp": "Matching",
