@@ -50,6 +50,7 @@ public:
     bool HasUser(const User*) const;
     bool IsBusy() const;
     int NumOpenSlots() const;
+    void GetLocalUserList(std::vector<LocalUser*>&) const;
 
     int unk1c; // session data
     std::vector<int> unk20; // 0x20

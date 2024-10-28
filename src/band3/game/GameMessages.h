@@ -14,6 +14,11 @@ BEGIN_MESSAGE(RemoteUserLeftMsg, remote_user_left, RemoteUser*);
     RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE;
 
+BEGIN_MESSAGE(RemoteLeaderLeftMsg, remote_leader_left_msg, );
+END_MESSAGE;
+
+inline RemoteLeaderLeftMsg::RemoteLeaderLeftMsg() : Message(RemoteLeaderLeftMsg::Type()) {}
+
 BEGIN_MESSAGE(UserLoginMsg, user_login, );
     MESSAGE_ARRAY_CTOR(UserLoginMsg)
 END_MESSAGE;
@@ -23,8 +28,9 @@ BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*)
     int GetResult() const { return mData->Int(2); }
 END_MESSAGE;
 
-BEGIN_MESSAGE(AddUserResultMsg, add_user_result, );
+BEGIN_MESSAGE(AddUserResultMsg, add_user_result, int, User*);
     MESSAGE_ARRAY_CTOR(AddUserResultMsg)
+    int GetResult() const { return mData->Int(2); }
 END_MESSAGE;
 
 BEGIN_MESSAGE(ModeChangedMsg, mode_changed, );
@@ -54,6 +60,8 @@ END_MESSAGE;
 
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
+inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
+inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
 
 #include "obj/Object.h"
 

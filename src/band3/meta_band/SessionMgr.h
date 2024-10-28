@@ -57,6 +57,11 @@ public:
     void UpdateLeader();
     void ClearLeader();
     bool IsLocalToLeader(const BandUser*) const;
+    void UpdateInvitesAllowed();
+    void GetWaitingUsers(std::vector<RemoteBandUser*>&);
+    void ClearWaitingUsers();
+    void SetActiveRoster(bool);
+    void ChangeRandomSeed();
 
     static void Init();
 
@@ -80,10 +85,16 @@ public:
     CriticalUserListener* mCritUserListener; // 0x54
     BandNetGameData* mBandNetGameData; // 0x58
     BandUser* mUserLeader; // 0x5c
-    std::vector<int> unk60; // 0x60
-    bool unk68; // 0x68
+    std::vector<RemoteBandUser*> mWaitingUsers; // 0x60
+    bool mActiveRosterSet; // 0x68
     int mNetRandomSeed; // 0x6c
-    bool unk70; // 0x70
+    bool mInvitesAllowed; // 0x70
 };
 
 extern SessionMgr* TheSessionMgr;
+
+BEGIN_MESSAGE(SessionMgrUpdatedMsg, session_mgr_updated_msg, );
+    MESSAGE_ARRAY_CTOR(SessionMgrUpdatedMsg)
+END_MESSAGE;
+
+inline SessionMgrUpdatedMsg::SessionMgrUpdatedMsg() : Message(SessionMgrUpdatedMsg::Type()) {}

@@ -68,6 +68,8 @@ public:
     virtual void FindPlayersImpl() = 0;
     virtual void CancelFindImpl() = 0;
 
+    void CancelFind();
+
     int unk1c;
     int unk20;
     MatchmakerPoolStats* mPoolStats; // 0x24
