@@ -5,6 +5,12 @@
 #include "net/NetMessage.h"
 #include "utl/Str.h"
 
+class LockData : public virtual Hmx::Object {
+public:
+    LockData(){}
+    virtual ~LockData(){}
+};
+
 class StartLockMsg : public NetMessage {
 public:
     StartLockMsg(){}
@@ -37,6 +43,7 @@ public:
 class LockResponseMsg : public NetMessage {
 public:
     LockResponseMsg(){}
+    LockResponseMsg(bool, LocalBandMachine*, const char*);
     virtual ~LockResponseMsg(){}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
@@ -57,6 +64,7 @@ public:
 class EndLockMsg : public NetMessage {
 public:
     EndLockMsg(){}
+    EndLockMsg(const char*, bool);
     virtual ~EndLockMsg(){}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
