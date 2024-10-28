@@ -42,9 +42,7 @@ SAVE_OBJ(RndCam, 0x8F)
 void RndCam::Load(BinStream& bs) {
     int rev;
     bs >> rev;
-    if (rev > CAM_REV) {
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, CAM_REV);
-    }
+    ASSERT_GLOBAL_REV(rev, CAM_REV)
     if (rev > 10) Hmx::Object::Load(bs);
     RndTransformable::Load(bs);
     if (rev < 10) RndDrawable::DumpLoad(bs);

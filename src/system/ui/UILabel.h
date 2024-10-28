@@ -59,12 +59,12 @@ public:
     static void Register(){
         REGISTER_OBJ_FACTORY(UILabel)
     }
+    static void Terminate();
     static bool sDebugHighlight;
     static bool sDeferUpdate;
 
     const char* GetDefaultText() const;
     int InqMinMaxFromWidthAndHeight(float, float, RndText::Alignment, Vector3&, Vector3&);
-    void Terminate();
     void LabelUpdate(bool, bool);
     void AdjustHeight(bool);
     void SetFloat(const char*, float);

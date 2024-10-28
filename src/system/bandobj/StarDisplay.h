@@ -8,6 +8,7 @@
 #include "ui/UIComponent.h"
 
 class StarDisplay : public UIComponent {
+    public:
     StarDisplay();
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);

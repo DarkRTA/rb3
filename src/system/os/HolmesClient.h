@@ -4,7 +4,6 @@
 #include "os/File.h"
 #include "os/NetworkSocket.h"
 #include "types.h"
-#include "utl/Str.h"
 
 namespace Holmes {
     enum Protocol {
@@ -98,6 +97,7 @@ bool UsingHolmes(int);
 bool PendingRead(File*);
 
 char* HolmesFileShare();
+void HolmesSetFileShare(const char*, const char*);
 
 void HolmesClientPoll();
 bool HolmesClientPollJoypad();

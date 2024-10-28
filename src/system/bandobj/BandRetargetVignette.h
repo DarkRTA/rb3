@@ -24,6 +24,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandRetargetVignette)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandRetargetVignette)
 
     std::list<String> mEffectors; // 0x8
     Symbol mPlayer; // 0x10

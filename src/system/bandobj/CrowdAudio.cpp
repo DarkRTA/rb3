@@ -4,6 +4,7 @@
 #include "obj/MsgSource.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include "synth/BinkClip.h"
 
 INIT_REVS(CrowdAudio);
 

@@ -41,6 +41,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CrowdMeterIcon)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(CrowdMeterIcon)
 
     ObjPtr<EventTrigger, ObjectDir> mResetTrig; // 0x18c
     ObjPtr<EventTrigger, ObjectDir> mArrowHideTrig; // 0x198

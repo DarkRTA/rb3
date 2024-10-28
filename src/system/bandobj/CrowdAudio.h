@@ -2,9 +2,11 @@
 #define BANDOBJ_CROWDAUDIO_H
 #include "obj/Object.h"
 #include "rndobj/Poll.h"
-#include "synth/BinkClip.h"
+// #include "synth/BinkClip.h" // collision in Band.cpp
 #include "synth/Faders.h"
 #include "utl/TimeConversion.h"
+
+class BinkClip;
 
 enum ExcitementLevel {
     kExcitementBoot,

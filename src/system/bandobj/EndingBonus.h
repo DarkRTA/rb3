@@ -26,8 +26,8 @@ public:
     };
 
     EndingBonus();
-    OBJ_CLASSNAME(EndingBonus);
-    OBJ_SET_TYPE(EndingBonus);
+    OBJ_CLASSNAME(EndingBonusDir);
+    OBJ_SET_TYPE(EndingBonusDir);
     virtual DataNode Handle(DataArray*, bool);
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual void Save(BinStream&);
@@ -61,6 +61,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(EndingBonus)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(EndingBonus)
 
     bool mSuppressUnisonDisplay; // 0x18c
     bool mInUnison; // 0x18d

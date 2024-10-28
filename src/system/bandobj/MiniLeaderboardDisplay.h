@@ -6,6 +6,7 @@
 #include "utl/BinStream.h"
 
 class MiniLeaderboardDisplay : public UIComponent {
+    public:
     MiniLeaderboardDisplay();
     virtual ~MiniLeaderboardDisplay();
     OBJ_CLASSNAME(MiniLeaderboardDisplay)

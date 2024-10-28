@@ -40,6 +40,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(PitchArrow)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(PitchArrow)
 
     bool unk18c; // 0x18c
     float mScore; // 0x190

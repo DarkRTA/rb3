@@ -28,6 +28,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(UnisonIcon)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(UnisonIcon)
 
     float mProgress; // 0x18c
     EventTrigger* mStartTrig; // 0x190

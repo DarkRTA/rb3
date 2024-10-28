@@ -343,20 +343,26 @@ void objType::Load(BinStream& bs){
 #endif
 
 // for loading in a version number that isn't a class's gRev/gAltRev
-#define ASSERT_GLOBAL_REV(ver, rev_name) \
-    if (ver > rev_name){ \
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ver, rev_name); \
-    }
+#ifdef VERSION_SZBE69_B8
+    #define ASSERT_GLOBAL_REV(ver, rev_name) \
+        if (ver > rev_name){ \
+            MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), ver, rev_name); \
+        }
 
-#define ASSERT_OLD_REV(ver) \
-    if (gRev < ver) { \
-        MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, ver); \
-    }
+    #define ASSERT_OLD_REV(ver) \
+        if (gRev < ver) { \
+            MILO_FAIL("%s can't load old %s version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gRev, ver); \
+        }
 
-#define ASSERT_OLD_ALTREV(ver) \
-    if (gRev < ver) { \
-        MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, ver); \
-    }
+    #define ASSERT_OLD_ALTREV(ver) \
+        if (gRev < ver) { \
+            MILO_FAIL("%s can't load old %s alt version %d < %d.  Use RB2 Milo to load.", PathName(this), ClassName(), gAltRev, ver); \
+        }
+#else
+    #define ASSERT_GLOBAL_REV(ver, rev_name)
+    #define ASSERT_OLD_REV(ver)
+    #define ASSERT_OLD_ALTREV(ver)
+#endif
 
 #define LOAD_SUPERCLASS(parent) \
     parent::Load(bs);
@@ -387,7 +393,7 @@ void objType::Load(BinStream& bs){
     Hmx::Object::RegisterFactory(objType::StaticClassName(), objType::NewObject);
 
 #define REGISTER_OBJ_FACTORY_FUNC(objType) \
-    void objType::Register() { \
+    static void Register() { \
         REGISTER_OBJ_FACTORY(objType)\
     }
 

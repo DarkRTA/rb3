@@ -1,5 +1,6 @@
 #ifndef RNDOBJ_LINE_H
 #define RNDOBJ_LINE_H
+#include "obj/Data.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 
@@ -34,6 +35,11 @@ public:
     virtual void Print();
 
     void UpdateInternal();
+    void SetNumPoints(int);
+    void SetPointPos(int, const Vector3&);
+    void SetUpdate(bool);
+    void SetMat(RndMat*);
+    DataNode OnSetMat(const DataArray*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

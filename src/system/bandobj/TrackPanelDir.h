@@ -66,6 +66,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(TrackPanelDir)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(TrackPanelDir)
 
     int unk244; // 0x244
     int mTestMultiplier; // 0x248

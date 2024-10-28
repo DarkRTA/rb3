@@ -37,6 +37,7 @@ public:
     void UnlockCache();
     void Poll();
     int HdrSize();
+    bool WriteAsync(int, int, const void*);
     void WriteDone();
     void WriteHdr();
     bool ReadAsync(int, int, void*);
@@ -45,5 +46,7 @@ public:
     FileStream* OpenHeader();
 
 };
+
+extern HDCache TheHDCache;
 
 #endif // OS_HDCACHE_H

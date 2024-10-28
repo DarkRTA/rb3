@@ -60,6 +60,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(SongSectionController)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(SongSectionController)
 
     Symbol mMidiSection; // 0x8
     Symbol mCurPoolCategory; // 0xc

@@ -40,6 +40,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandConfiguration)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandConfiguration)
 
     TargTransforms mXfms[4]; // 0x1c, 0xbc, 0x15c, 0x1fc
     // 0x29c

@@ -27,14 +27,16 @@ public:
     virtual int Send(const void*, unsigned long) = 0;
     virtual int Recv(void*, unsigned long) = 0;
     virtual int SendTo(const void*, unsigned long, unsigned int, unsigned short) = 0;
-    virtual int BroadCastTo(const void*, unsigned long, unsigned short) = 0;
+    virtual int BroadcastTo(const void*, unsigned long, unsigned short) = 0;
     virtual int RecvFrom(void*, unsigned long, unsigned int&, unsigned short&) = 0;
     virtual bool SetNoDelay(bool) = 0;
     virtual NetworkSocket* GetSocket(){ return 0; }
 
+
     static NetworkSocket* Create(bool);
     static String GetHostName();
-    String ResolveHostName(String);
+    static bool ResolveHostName(String);
+    static int IPStringToInt(const String&);
 };
 
 class WiiNetworkSocket : public NetworkSocket {
@@ -55,11 +57,11 @@ public:
     virtual int Send(const void*, unsigned long);
     virtual int Recv(void*, unsigned long);
     virtual int SendTo(const void*, unsigned long, unsigned int, unsigned short);
-    virtual int BroadCastTo(const void*, unsigned long, unsigned short);
+    virtual int BroadcastTo(const void*, unsigned long, unsigned short);
     virtual int RecvFrom(void*, unsigned long, unsigned int&, unsigned short&);
     virtual bool SetNoDelay(bool);
 
-    static void Init();
+    static bool Init();
 
     static bool sInit;
     so_fd_t mSocket;
