@@ -198,7 +198,7 @@
             "band3/meta_band/LessonMgr.cpp": "NonMatching",
             "band3/meta_band/LessonProvider.cpp": "NonMatching",
             "band3/meta_band/LicenseMgr.cpp": "NonMatching",
-            "band3/meta_band/LockStepMgr.cpp": "MISSING",
+            "band3/meta_band/LockStepMgr.cpp": "NonMatching",
             "band3/meta_band/MainHubMessageProvider.cpp": "MISSING",
             "band3/meta_band/MainHubPanel.cpp": "MISSING",
             "band3/meta_band/MakeupProvider.cpp": "MISSING",
