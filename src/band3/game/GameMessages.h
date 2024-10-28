@@ -14,12 +14,22 @@ BEGIN_MESSAGE(RemoteUserLeftMsg, remote_user_left, RemoteUser*);
     RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE;
 
+BEGIN_MESSAGE(RemoteLeaderLeftMsg, remote_leader_left_msg, );
+END_MESSAGE;
+
+inline RemoteLeaderLeftMsg::RemoteLeaderLeftMsg() : Message(RemoteLeaderLeftMsg::Type()) {}
+
 BEGIN_MESSAGE(UserLoginMsg, user_login, );
     MESSAGE_ARRAY_CTOR(UserLoginMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*);
     MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
+    int GetResult() const { return mData->Int(2); }
+END_MESSAGE;
+
+BEGIN_MESSAGE(AddUserResultMsg, add_user_result, int, User*);
+    MESSAGE_ARRAY_CTOR(AddUserResultMsg)
     int GetResult() const { return mData->Int(2); }
 END_MESSAGE;
 
@@ -32,8 +42,26 @@ BEGIN_MESSAGE(ProcessedJoinRequestMsg, processed_join_request, bool);
     bool GetProcessed() const { return mData->Int(2); }
 END_MESSAGE;
 
+BEGIN_MESSAGE(SessionDisconnectedMsg, session_disconnected, );
+    MESSAGE_ARRAY_CTOR(SessionDisconnectedMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(SessionBusyMsg, session_busy, );
+    MESSAGE_ARRAY_CTOR(SessionBusyMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(SessionReadyMsg, session_ready, );
+    MESSAGE_ARRAY_CTOR(SessionReadyMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(JoinResultMsg, join_result, );
+    MESSAGE_ARRAY_CTOR(JoinResultMsg)
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
+inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
+inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
 
 #include "obj/Object.h"
 

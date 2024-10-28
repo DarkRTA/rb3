@@ -113,7 +113,7 @@ LocalBandMachine::LocalBandMachine(BandMachineMgr* mgr) : mMachineMgr(mgr) {
 }
 
 String LocalBandMachine::GetPrimaryBandName(){
-    BandMachineMgr* pMachineMgr = TheSessionMgr->unk50;
+    BandMachineMgr* pMachineMgr = TheSessionMgr->mMachineMgr;
     MILO_ASSERT(pMachineMgr, 0xB7);
     if(pMachineMgr->IsLeaderMachineLocal()){
         BandProfile* pProfile = TheProfileMgr.GetPrimaryProfile();

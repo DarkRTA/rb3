@@ -286,6 +286,8 @@ void NextSongPanel::FillExpandedDetails(int slot){
     rdir->SyncObjects();
 }
 
+#pragma push
+#pragma opt_usedef_mem_limit 300
 // retail scratch: https://decomp.me/scratch/xGtc5
 int NextSongPanel::CountOrCreateExpandedDetails(int slot, DataArrayPtr& ptr, bool b){
     BandUser* user = TheBandUserMgr->GetUserFromSlot(slot); // fn_8010021C
@@ -521,6 +523,7 @@ int NextSongPanel::CountOrCreateExpandedDetails(int slot, DataArrayPtr& ptr, boo
     }
     return count;
 }
+#pragma pop
 
 void NextSongPanel::SetupDetailLine(DataArray* detail, int slot, const char* cc, float f){
     Symbol sym = detail->Sym(0);

@@ -14,5 +14,13 @@ public:
     TrackType GetTrackType() const { return unk_tracktype; }
 
     int unk_player;
+    int unk22c;
+    int unk230;
+    int unk234;
+    int unk238;
+    int unk23c;
+    int unk240;
+    int unk244;
+    int unk248;
     TrackType unk_tracktype;
 };
