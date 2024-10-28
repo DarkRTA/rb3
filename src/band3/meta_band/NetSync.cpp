@@ -95,7 +95,7 @@ void NetSync::Poll(){
         UIScreen* cur = TheUI->CurrentScreen();
         if(!TheUI->TransitionScreen() || TheUI->TransitionScreen()->IsLoaded()){
             if(!cur || !cur->Exiting()){
-                if(mUILockStep->InLock() && !mUILockStep->unk28){
+                if(mUILockStep->InLock() && !mUILockStep->HasResponded()){
                     mUILockStep->RespondToLock(true);
                 }
             }
@@ -116,7 +116,7 @@ void NetSync::SetUIState(NetUIState state){
 }
 
 DataNode NetSync::OnMsg(const UITransitionCompleteMsg&){
-    if(IsEnabled() && mUILockStep->InLock() && !mUILockStep->unk28){
+    if(IsEnabled() && mUILockStep->InLock() && !mUILockStep->HasResponded()){
         mUILockStep->RespondToLock(true);
     }
     return DataNode(kDataUnhandled, 0);

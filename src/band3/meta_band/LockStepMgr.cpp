@@ -13,6 +13,8 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
+#include <cstddef>
+#include <vector>
 
 NetMessage* BasicStartLockMsg::NewNetMessage(){ return new BasicStartLockMsg(); }
 NetMessage* LockResponseMsg::NewNetMessage(){ return new LockResponseMsg(); }
@@ -165,4 +167,92 @@ void StartLockMsg::Dispatch(){
     RemoteBandMachine* machine = TheSessionMgr->mMachineMgr->GetRemoteMachine(mLockMachineID, true);
     LockStepMgr* mgr = ObjectDir::Main()->Find<LockStepMgr>(mLockStepName.c_str(), true);
     mgr->OnStartLockMsg(machine, GetLockData());
+}
+
+LockResponseMsg::LockResponseMsg(bool locked, LocalBandMachine* machine, const char* name){
+    std::vector<LocalBandUser*> users;
+    TheBandUserMgr->GetLocalParticipants(users);
+    if(users.empty()) mResponseMachineID = 0;
+    else mResponseMachineID = users.front()->mMachineID;
+    mLocked = locked;
+    mLockStepName = name;
+}
+
+void LockResponseMsg::Save(BinStream& bs) const {
+    bs << mLocked;
+    bs << mResponseMachineID;
+    bs << mLockStepName;
+}
+
+void LockResponseMsg::Load(BinStream& bs){
+    bs >> mLocked;
+    bs >> mResponseMachineID;
+    bs >> mLockStepName;
+}
+
+void LockResponseMsg::Dispatch(){
+    RemoteBandMachine* machine = TheSessionMgr->mMachineMgr->GetRemoteMachine(mResponseMachineID, true);
+    LockStepMgr* mgr = ObjectDir::Main()->Find<LockStepMgr>(mLockStepName.c_str(), true);
+    mgr->OnLockResponseMsg(mLocked, machine);
+}
+
+EndLockMsg::EndLockMsg(const char* name, bool success) : mLockStepName(name), mSuccess(success) {
+
+}
+
+void EndLockMsg::Save(BinStream& bs) const {
+    bs << mLockStepName;
+    bs << mSuccess;
+}
+
+void EndLockMsg::Load(BinStream& bs){
+    bs >> mLockStepName;
+    bs >> mSuccess;
+}
+
+void EndLockMsg::Dispatch(){
+    LockStepMgr* mgr = ObjectDir::Main()->Find<LockStepMgr>(mLockStepName.c_str(), true);
+    mgr->OnEndLockMsg(mSuccess);
+}
+
+void LockStepMgr::WaitList::AddMachine(BandMachine* machine){
+    WaitingMachine wm(machine);
+    mList.push_back(wm);
+}
+
+void LockStepMgr::WaitList::RemoveMachine(BandMachine* machine){
+    for(std::vector<WaitingMachine>::iterator it = mList.begin(); it != mList.end(); ++it){
+        if(it->mMachine == machine){
+            mList.erase(it);
+            return;
+        }
+    }
+    MILO_FAIL("Machine is not in WaitList");
+}
+
+void LockStepMgr::WaitList::MarkMachineResponded(BandMachine* machine){
+    MILO_ASSERT(GetWaitingMachine(machine) != NULL, 0x168);
+    for(int i = 0; i < mList.size(); i++){
+        if(mList[i].mMachine == machine){
+            mList[i].mResponded = true;
+        }
+    }
+}
+
+void LockStepMgr::WaitList::Clear(){
+    mList.clear();
+}
+
+bool LockStepMgr::WaitList::HaveAllMachinesResponded() const {
+    for(int i = 0; i < mList.size(); i++){
+        if(!mList[i].mResponded) return false;
+    }
+    return true;
+}
+
+const LockStepMgr::WaitList::WaitingMachine* LockStepMgr::WaitList::GetWaitingMachine(BandMachine* machine) const {
+    for(int i = 0; i < mList.size(); i++){
+        if(mList[i].mMachine == machine) return &mList[i];
+    }
+    return nullptr;
 }

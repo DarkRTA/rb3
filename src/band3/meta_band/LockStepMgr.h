@@ -8,6 +8,15 @@ class LockStepMgr : public Hmx::Object {
 public:
     class WaitList {
     public:
+        class WaitingMachine {
+        public:
+            WaitingMachine(){}
+            WaitingMachine(BandMachine* m) : mMachine(m), mResponded(0) {}
+
+            BandMachine* mMachine; // 0x0
+            bool mResponded; // 0x4
+        };
+        
         WaitList(){}
 
         void AddMachine(BandMachine*);
@@ -15,9 +24,9 @@ public:
         bool HaveAllMachinesResponded() const;
         void Clear();
         void RemoveMachine(BandMachine*);
-        int GetWaitingMachine(BandMachine*) const; // fix ret type
+        const WaitingMachine* GetWaitingMachine(BandMachine*) const;
 
-        std::vector<int> mList;
+        std::vector<WaitingMachine> mList;
     };
 
     LockStepMgr(const char*, Hmx::Object*);
