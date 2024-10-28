@@ -25,6 +25,8 @@ public:
     void RespondToLock(bool);
     void OnStartLockMsg(BandMachine*, LockData*);
 
+    static void Init();
+
     BandMachine* mLockMachine; // 0x1c
     WaitList unk20; // 0x20
     bool unk28; // 0x28
