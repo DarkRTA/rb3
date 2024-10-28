@@ -40,7 +40,7 @@ public:
     void SetDisabled(bool);
     void SetTry(bool);
     void AddExitCallback(ExitCallbackFunc* func){
-        mExitCallbacks.push_back(func);
+        mExitCallbacks.push_front(func);
     }
     void RemoveExitCallback(ExitCallbackFunc*);
     void StartLog(const char*, bool);

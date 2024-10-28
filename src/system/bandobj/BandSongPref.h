@@ -17,6 +17,11 @@ public:
     DECLARE_REVS
     NEW_OVERLOAD
     DELETE_OVERLOAD
+    NEW_OBJ(BandSongPref)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandSongPref)
 
     Symbol Part2Inst() const { return mPart2Instrument; }
     Symbol Part3Inst() const { return mPart3Instrument; }

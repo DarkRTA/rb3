@@ -25,6 +25,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandLeadMeter)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandLeadMeter)
 
     ObjPtr<RndAnimatable, ObjectDir> mNeedleAnim; // 0x18c
     ObjPtr<RndAnimatable, ObjectDir> mLogoGlowAnim; // 0x198

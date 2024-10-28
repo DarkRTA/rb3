@@ -1,5 +1,6 @@
 #include "bandobj/BandHighlight.h"
 #include "ui/UI.h"
+#include "utl/Loader.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(BandHighlight);
@@ -53,13 +54,15 @@ void BandHighlight::Exit(){
 
 void BandHighlight::Poll(){
     UIComponent::Poll();
-    SetState(kDisabled);
-    UIScreen* curscreen = TheUI->CurrentScreen();
-    if(curscreen){
-        UIPanel* focuspanel = curscreen->FocusPanel();
-        if(focuspanel){
-            if(focuspanel->GetPanelDir() == Dir()){
-                SetState(kNormal);
+    if (!TheLoadMgr.EditMode()) {
+        SetState(kDisabled);
+        UIScreen* curscreen = TheUI->CurrentScreen();
+        if(curscreen){
+            UIPanel* focuspanel = curscreen->FocusPanel();
+            if(focuspanel){
+                if(focuspanel->GetPanelDir() == Dir()){
+                    SetState(kNormal);
+                }
             }
         }
     }
@@ -90,8 +93,7 @@ void BandHighlight::DrawShowing(){
 
 RndDrawable* BandHighlight::CollideShowing(const Segment& s, float& f, Plane& pl){
     SyncDir();
-    RndDrawable* showing = mResource->Dir()->CollideShowing(s, f, pl);
-    return showing ? showing : 0;
+    return mResource->Dir()->CollideShowing(s, f, pl) ? this : NULL;
 }
 
 int BandHighlight::CollidePlane(const Plane& pl){

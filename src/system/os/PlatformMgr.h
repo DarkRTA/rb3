@@ -65,6 +65,7 @@ public:
     bool IsUserAWiiGuest(const LocalUser*) const;
     int InitNintendoConnection();
     void CloseNintendoConnection(bool, bool);
+    void InitSOLibrary(bool);
     void EnableProfanity(bool);
     int GetLastNHTTPError();
     void SetConnected(bool);

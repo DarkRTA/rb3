@@ -56,6 +56,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(StreakMeter)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(StreakMeter)
 
     int mStreakMultiplier; // 0x18c
     int mBandMultiplier; // 0x190

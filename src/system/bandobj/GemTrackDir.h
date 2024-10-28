@@ -109,6 +109,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(GemTrackDir)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(GemTrackDir)
 
     int mNumTracks; // 0x484
     int unk488; // 0x488

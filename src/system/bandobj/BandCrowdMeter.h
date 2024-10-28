@@ -75,6 +75,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandCrowdMeter)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandCrowdMeter)
 
     std::vector<IconData> mIconData; // 0x18c
     bool mMaxed; // 0x194

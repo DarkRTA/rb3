@@ -1,32 +1,72 @@
 #include "HolmesClient.h"
+#include "obj/DataFunc.h"
+#include "os/AsyncFileHolmes.h"
 #include "os/CritSec.h"
 #include "os/Debug.h"
 #include "os/HolmesKeyboard.h"
 #include "os/NetStream.h"
+#include "os/NetworkSocket.h"
 #include "os/System.h"
 #include "types.h"
 #include "utl/BinStream.h"
+#include "utl/TextFileStream.h"
+#include <cstring>
 #include <list>
 
+#define NETBIOS_NAME_MAX 64
+
 namespace {
+    // get ready for some bullshit
+    struct HolmesProfileData {
+        Timer unk_0x0;
+        Timer unk_0x30;
+        u32 pad1,pad2;
+
+        HolmesProfileData() {}
+    };
+
     uint gRealMaxBufferSize;
+    HolmesProfileData gProfile[20];
     CriticalSection gCrit;
     NetStream* gHolmesStream;
     MemStream* gStreamBuffer;
     std::list<File*> gRequests;
+
+    char gMachineName[NETBIOS_NAME_MAX] = {0};
+    char gShareName[NETBIOS_NAME_MAX] = {0};
+
+    String gServerName;
+
     int gActivePrintCount;
     HolmesInput gInput(NULL);
+    String gHolmesTarget;
     bool gInputPolling;
     Holmes::Protocol gPendingResponse = Holmes::kInvalidOpcode;
     const Holmes::Protocol kAsyncOpcodes[5] = {Holmes::kReadFile, Holmes::kPollKeyboard, Holmes::kPollJoypad,
         Holmes::kPrint, Holmes::kInvalidOpcode};
 
-    void BeginCmd(Holmes::Protocol, bool) {
 
+    void BeginCmd(Holmes::Protocol prot, bool b) {
+        if (b) {
+
+        }
     }
 
     void EndCmd(Holmes::Protocol) {
         MILO_NOTIFY_ONCE("HolmesClient buffer exceeded %d < %d", 0x2000d, gRealMaxBufferSize);
+    }
+
+    u32 CheckReads() {}
+
+    void WaitForResponse(Holmes::Protocol ptcl);
+
+    #pragma optimization_level 3
+    void WaitForReads() {
+        CritSecTracker cst(&gCrit);
+        for (std::list<File*>::iterator it = gRequests.begin(); it != gRequests.end(); it++) {
+            WaitForResponse(Holmes::kReadFile);
+            CheckReads();
+        }
     }
 
     void HolmesFlushStreamBuffer() {
@@ -49,14 +89,54 @@ namespace {
         return gPendingResponse == ptcl;
     }
 
-    void CheckPrints();
-    void WaitForReads();
+    void WaitForAnyResponse(Holmes::Protocol ptcl) {
+        printf(Holmes::ProtocolDebugString(ptcl));
+    }
+
+    void FinishResponse();
+
+    bool CheckPrints() {
+        if (CheckForResponse(Holmes::kPrint) != 0) {
+            BeginCmd(Holmes::kPrint, false);
+            u8 read;
+            *gHolmesStream >> read;
+            gActivePrintCount--;
+
+            FinishResponse();
+            EndCmd(Holmes::kPrint);
+            return true;
+        }
+        return false;
+    }
+
+    void CheckInput() {
+        if (CheckForResponse(Holmes::kPollKeyboard) != 0) {
+            BeginCmd(Holmes::kPollKeyboard, true);
+            gInput.LoadKeyboard(*gHolmesStream);
+            FinishResponse();
+            EndCmd(Holmes::kPollKeyboard);
+        }
+        if (CheckForResponse(Holmes::kPollJoypad) != 0) {
+            BeginCmd(Holmes::kPollJoypad, true);
+            gInput.LoadJoypad(*gHolmesStream);
+            FinishResponse();
+            EndCmd(Holmes::kPollJoypad);
+        }
+    }
 
     void WaitForResponse(Holmes::Protocol ptcl) {
-        while (!CheckForResponse(ptcl));
+        while (!CheckForResponse(ptcl)) {
+            WaitForAnyResponse(ptcl);
+            if (CheckReads() && ptcl == Holmes::kReadFile) return;
+            CheckInput();
+            if (CheckPrints() && ptcl == Holmes::kPrint) return;
+        }
     }
+    void FinishResponse() { gPendingResponse = Holmes::kInvalidOpcode; }
 }
 
+String gLastCachedResource;
+u32 gLastCacheResult;
 extern bool gHostLogging;
 
 bool UsingHolmes(int) {
@@ -85,23 +165,78 @@ bool HolmesClientPollJoypad() {
     }
 }
 
-void HolmesClientInit() {
+void HolmesSetFileShare(const char* machine_name, const char* share_name) {
+    strncpy(gMachineName, machine_name, NETBIOS_NAME_MAX);
+    strncpy(gShareName, share_name, NETBIOS_NAME_MAX);
+}
 
+static DataNode DumpHolmesLog(DataArray*) {
+    TextFileStream* tfs = new TextFileStream("holmes.csv", true);
+    if (!tfs->mFile.Fail()) {
+        u32 read = gHolmesStream->mBytesRead;
+        u32 written = gHolmesStream->mBytesWritten;
+        {
+            String hostname = NetworkSocket::GetHostName();
+            tfs->Print(hostname.c_str());
+            *tfs << ", ";
+        }
+        *tfs << read << ", ";
+        *tfs << written << ", ";
+        
+    }
+}
+
+void HolmesClientInit() {
+    DataRegisterFunc("", DumpHolmesLog);
 }
 
 void HolmesClientReInit() {
-    CriticalSection* cs = &gCrit;
-    if (cs) cs->Enter();
+    CritSecTracker cst(&gCrit);
     if (gHolmesStream == NULL) {
-        if (cs) {
-            cs->Exit();
-        }
+        return;
     } else {
         BeginCmd(Holmes::kVersion, true);
         HolmesClientInitOpcode(true);
         EndCmd(Holmes::kVersion);
-        if (cs) cs->Exit();
     }
+}
+
+void HolmesClientPoll() {
+    CritSecTracker cst(&gCrit);
+    static bool skipIt;
+    skipIt = !skipIt;
+    if (skipIt) {
+        return;
+    }
+    if (gHolmesStream == NULL) {
+        return;
+    }
+    CheckInput();
+    CheckReads();
+    CheckPrints();
+}
+
+u32 HolmesClientSysExec(const char* filename) {
+    CritSecTracker cst(&gCrit);
+    BeginCmd(Holmes::kSysExec, true);
+    
+    MILO_ASSERT(gHolmesStream, 820);
+
+    u8 b = true;
+    BinStream* holmes_strm = gStreamBuffer;
+    *holmes_strm << b;
+    *holmes_strm << filename;
+
+    HolmesFlushStreamBuffer();
+    WaitForResponse(Holmes::kSysExec);
+
+    u32 return_code;
+    *gHolmesStream >> return_code;
+
+    FinishResponse();
+    EndCmd(Holmes::kSysExec);
+
+    return return_code;
 }
 
 bool HolmesClientOpen(const char*, int, uint&, int&) {
@@ -113,6 +248,16 @@ bool PendingRead(File* f) {
         if (*it == f) return true;
     }
     return false;
+}
+
+bool HolmesClientReadDone(File* f) {
+    CritSecTracker cst(&gCrit);
+    u32 ret = PendingRead(f);
+    if (ret) {
+        HolmesClientPoll();
+        ret = PendingRead(f);
+    } 
+    return !ret;
 }
 
 void HolmesClientClose(File* fi, int fd) {

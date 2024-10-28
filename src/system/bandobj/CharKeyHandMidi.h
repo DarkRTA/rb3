@@ -30,6 +30,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharKeyHandMidi)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(CharKeyHandMidi)
 
     ObjPtr<CharIKFingers, ObjectDir> mIKObject; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mFirstSpot; // 0x34

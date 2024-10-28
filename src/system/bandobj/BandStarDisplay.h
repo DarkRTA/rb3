@@ -28,6 +28,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandStarDisplay)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandStarDisplay)
 
     float mNumStars; // 0x18c
     ObjVector<ObjPtr<RndDir, ObjectDir> > mStars; // 0x190

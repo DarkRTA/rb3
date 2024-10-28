@@ -35,6 +35,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandIKEffector)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandIKEffector)
 
     static CharClip* sDeformClip;
     static void SetDeformClip(Hmx::Object*);

@@ -1,4 +1,5 @@
 #pragma once
+#include "obj/ObjMacros.h"
 #include "world/CameraShot.h"
 #include "rndobj/Env.h"
 #include "math/Mtx.h"
@@ -96,6 +97,11 @@ public:
     DELETE_OVERLOAD;
     static std::list<TargetCache> sCache;
     static int sHideAllCharactersHack;
+    NEW_OBJ(BandCamShot)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandCamShot)
 
     ObjVector<Target> mTargets; // 0x124
     int mMinTime; // 0x130

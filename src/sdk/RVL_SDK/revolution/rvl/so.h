@@ -50,6 +50,7 @@ enum so_ret_t {
     SO_EAGAIN = -6,
     SO_EALREADY = -7,
     SO_EBUSY = -10,
+    SO_E15 = -15,
     SO_EINPROGRESS = -26,
     SO_EINVAL = -28,
     SO_EIO = -29,
@@ -57,6 +58,7 @@ enum so_ret_t {
     SO_ENOENT = -45,
     SO_ENOLINK = -48,
     SO_ENOMEM = -49,
+    SO_E56 = -56,
     SO_ETIMEDOUT = -76,
     SO_E112 = -112,
     SO_E121 = -121,
@@ -166,6 +168,8 @@ so_ret_t SOFinish(void);
 static inline so_ret_t SOStartup(void);
 so_ret_t SOStartupEx(int timeout);
 so_ret_t SOCleanup(void);
+
+so_ret_t SOAccept(u32 socket, void*);
 
 /* These methods set errno! Our constants are wrong though, use the so_ret_t
  * SO_E* ones (they're negative!) */

@@ -43,6 +43,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(ChordShapeGenerator)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(ChordShapeGenerator)
 
     ObjPtr<RndMesh, ObjectDir> mFingerSrcMesh; // 0x1c
     ObjPtr<RndMesh, ObjectDir> mChordSrcMesh; // 0x28

@@ -26,6 +26,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandScoreboard)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(BandScoreboard)
 
     int mScore; // 0x18c
     ObjPtr<RndMesh, ObjectDir> mThousandsCommaMesh; // 0x190

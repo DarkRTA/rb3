@@ -25,6 +25,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(OvershellDir)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(OvershellDir)
 
     Symbol mSlotView; // 0x1d8
     bool mInTrackMode; // 0x1dc

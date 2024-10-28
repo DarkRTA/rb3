@@ -32,7 +32,7 @@
             "band3/bandtrack/VocalTrack.cpp": "MISSING",
 
             "band3/game/AccuracyTracker.cpp": "MISSING",
-            "band3/game/Band.cpp": "MISSING",
+            "band3/game/Band.cpp": "NonMatching",
             "band3/game/BandPerformer.cpp": "MISSING",
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/BandUserMgr.cpp": "NonMatching",
@@ -815,7 +815,7 @@
         "cflags": "system",
         "objects": {
             "system/bandobj/ArpeggioShape.cpp": "NonMatching",
-            "system/bandobj/Band.cpp": "MISSING",
+            "system/bandobj/Band.cpp": "Equivalent",
             "system/bandobj/BandButton.cpp": "NonMatching",
             "system/bandobj/BandCamShot.cpp": "NonMatching",
             "system/bandobj/BandCharDesc.cpp": "NonMatching",

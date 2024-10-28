@@ -184,6 +184,9 @@
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "NonMatching",
             "system/obj/DataNode.cpp": "NonMatching",
+            "system/obj/DataUtl.cpp": "NonMatching",
+            "system/obj/DataFlex.c": "NonMatching",
+            "system/obj/Object.cpp": "NonMatching",
             "system/obj/TextFile.cpp": "NonMatching",
             "system/obj/TypeProps.cpp": "NonMatching",
 
@@ -215,6 +218,7 @@
             "system/rndobj/Gen.cpp": "NonMatching",
             "system/rndobj/Graph.cpp": "NonMatching",
             "system/rndobj/HiResScreen.cpp": "NonMatching",
+            "system/rndobj/Line.cpp": "NonMatching",
             "system/rndobj/Lit.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
@@ -291,6 +295,8 @@
             "system/ui/UIGuide.cpp": "NonMatching",
 
             "system/utl/BinStream.cpp": {"status": "LinkIssues", "comment": "operator<<(int) issues"},
+            "system/utl/BufStream.cpp": "NonMatching",
+            "system/utl/Chunks.cpp": "NonMatching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/MemStream.cpp": "NonMatching",
             "system/utl/Messages.cpp": "NonMatching",
@@ -302,6 +308,7 @@
             "system/utl/Symbols3.cpp": "NonMatching",
             "system/utl/Symbols4.cpp": "NonMatching",
             "system/utl/TempoMap.cpp": {"status": "NonMatching", "extra_cflags": ["-ipa function"]},
+            "system/utl/TextStream.cpp": "NonMatching",
 
             "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",

@@ -78,6 +78,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(VocalTrackDir)
+    static void Init() {
+        Register();
+    }
+    REGISTER_OBJ_FACTORY_FUNC(VocalTrackDir)
 
     float mHiddenPartAlpha; // 0x2a0
     bool unk2a4; // 0x2a4
