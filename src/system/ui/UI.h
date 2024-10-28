@@ -133,7 +133,7 @@ public:
     bool OverloadHorizontalNav(JoypadAction, JoypadButton, Symbol) const;
     bool RequireFixedText() const;
     void SetRequireFixedText(bool);
-    void PushDepth() const;
+    int PushDepth() const;
     void ScreenAtDepth(int);
     void ToggleLoadTimes();
     bool InTransition();
