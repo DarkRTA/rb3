@@ -1,6 +1,8 @@
 #pragma once
 #include "BandMachineMgr.h"
 #include "BandNetGameData.h"
+#include "game/Defines.h"
+#include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/CriticalUserListener.h"
 #include "net/NetSession.h"
@@ -11,9 +13,11 @@
 class BandUserMgr;
 class Matchmaker;
 
-enum PacketType {
-    kUnreliable = 0,
-    kReliable = 1
+class SavePlayer {
+public:
+    LocalBandUser* mUser; // 0x0
+    ControllerType mCt; // 0x4
+    int mSlot; // 0x8
 };
 
 class SessionMgr : public MsgSource, public Synchronizable {
@@ -41,16 +45,24 @@ public:
 
     bool IsLeaderLocal() const;
     void SendMsg(const std::vector<RemoteBandUser*>&, NetMessage&, PacketType);
+    void SendMsg(RemoteBandMachine*, NetMessage&, PacketType);
     void SendMsg(BandUser*, NetMessage&, PacketType);
     void SendMsgToAll(NetMessage&, PacketType);
     BandUser* GetLeaderUser() const;
     bool HasLeaderUser() const;
+    void Poll();
+    void AddLocalUser(LocalBandUser*);
+    void SetLeaderUser(BandUser*);
+    void RemoveLocalUser(LocalBandUser*);
+    void UpdateLeader();
+
+    static void Init();
+
+    DataNode OnMsg(const LocalUserLeftMsg&);
 
     NetSession* mSession; // 0x38
     BandUserMgr* mBandUserMgr; // 0x3c
-    int unk40; // 0x40
-    int unk44; // 0x44
-    int unk48; // 0x48
+    SavePlayer mNewPlayer; // 0x40
     Matchmaker* mMatchMaker; // 0x4c
     BandMachineMgr* mMachineMgr; // 0x50
     CriticalUserListener* mCritUserListener; // 0x54

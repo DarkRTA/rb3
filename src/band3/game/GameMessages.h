@@ -23,6 +23,10 @@ BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*)
     int GetResult() const { return mData->Int(2); }
 END_MESSAGE;
 
+BEGIN_MESSAGE(AddUserResultMsg, add_user_result, );
+    MESSAGE_ARRAY_CTOR(AddUserResultMsg)
+END_MESSAGE;
+
 BEGIN_MESSAGE(ModeChangedMsg, mode_changed, );
     MESSAGE_ARRAY_CTOR(ModeChangedMsg)
 END_MESSAGE;
@@ -38,6 +42,10 @@ END_MESSAGE;
 
 BEGIN_MESSAGE(SessionBusyMsg, session_busy, );
     MESSAGE_ARRAY_CTOR(SessionBusyMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(SessionReadyMsg, session_ready, );
+    MESSAGE_ARRAY_CTOR(SessionReadyMsg)
 END_MESSAGE;
 
 BEGIN_MESSAGE(JoinResultMsg, join_result, );

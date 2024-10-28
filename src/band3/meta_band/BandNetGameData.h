@@ -24,5 +24,7 @@ public:
     virtual bool AuthenticateJoin(BinStream&, int&) const;
     virtual DataNode Handle(DataArray*, bool);
 
+    void Poll();
+
     Timer unk20;
 };
