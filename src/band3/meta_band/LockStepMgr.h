@@ -13,6 +13,9 @@ public:
         void AddMachine(BandMachine*);
         void MarkMachineResponded(BandMachine*);
         bool HaveAllMachinesResponded() const;
+        void Clear();
+        void RemoveMachine(BandMachine*);
+        int GetWaitingMachine(BandMachine*) const; // fix ret type
 
         std::vector<int> mList;
     };
@@ -29,14 +32,17 @@ public:
     void OnLockResponseMsg(bool, BandMachine*);
     void CheckAllMachinesResponded();
     void ReleaseLock(bool);
+    void OnEndLockMsg(bool);
     bool HasResponded() const { return mHasResponded; }
+
+    DataNode OnMsg(const RemoteMachineLeftMsg&);
 
     static void Init();
 
     BandMachine* mLockMachine; // 0x1c
     WaitList mWaitList; // 0x20
     bool mHasResponded; // 0x28
-    bool unk29; // 0x29
+    bool mLockSuccess; // 0x29
     Hmx::Object* mCallback; // 0x2c
 };
 
@@ -54,7 +60,7 @@ public:
 
 class LockStepCompleteMsg : public Message {
 public:
-    LockStepCompleteMsg() : Message(Type()) {}
+    LockStepCompleteMsg(bool b) : Message(Type(), b) {}
     LockStepCompleteMsg(DataArray *da) : Message(da) {}
     virtual ~LockStepCompleteMsg() {}
     static Symbol Type() {

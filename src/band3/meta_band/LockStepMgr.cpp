@@ -8,7 +8,11 @@
 #include "meta_band/SessionMgr.h"
 #include "net/NetSession.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols3.h"
 
 NetMessage* BasicStartLockMsg::NewNetMessage(){ return new BasicStartLockMsg(); }
 NetMessage* LockResponseMsg::NewNetMessage(){ return new LockResponseMsg(); }
@@ -45,7 +49,7 @@ void LockStepMgr::StartLock(){
 
 void LockStepMgr::StartLock(StartLockMsg& msg){
     MILO_ASSERT(!mLockMachine, 0x4B);
-    unk29 = true;
+    mLockSuccess = true;
     std::vector<BandMachine*> machines;
     TheSessionMgr->mMachineMgr->GetMachines(machines);
     for(int i = 0; i < machines.size(); i++){
@@ -84,7 +88,7 @@ void LockStepMgr::RespondToLock(bool b){
 void LockStepMgr::OnLockResponseMsg(bool b, BandMachine* machine){
     MILO_ASSERT(mLockMachine, 0x89);
     MILO_ASSERT(mLockMachine->IsLocal(), 0x8A);
-    if(!b) unk29 = false;
+    if(!b) mLockSuccess = false;
     mWaitList.MarkMachineResponded(machine);
     CheckAllMachinesResponded();
 }
@@ -94,13 +98,50 @@ void LockStepMgr::CheckAllMachinesResponded(){
     MILO_ASSERT(mLockMachine->IsLocal(), 0x98);
     if(mWaitList.HaveAllMachinesResponded()){
         static ReleasingLockStepMsg releaseMsg(false);
-        releaseMsg[0] = unk29;
+        releaseMsg[0] = mLockSuccess;
         mCallback->Handle(releaseMsg, false);
-        EndLockMsg msg(Name(), unk29);
+        EndLockMsg msg(Name(), mLockSuccess);
         TheNetSession->SendMsgToAll(msg, kReliable);
-        ReleaseLock(unk29);
+        ReleaseLock(mLockSuccess);
     }
 }
+
+void LockStepMgr::ReleaseLock(bool b){
+    mLockMachine = nullptr;
+    mWaitList.Clear();
+    mHasResponded = false;
+    static LockStepCompleteMsg lsc(false);
+    lsc[0] = b;
+    mCallback->Handle(lsc, true);
+}
+
+void LockStepMgr::OnEndLockMsg(bool b){
+    ReleaseLock(b);
+}
+
+DataNode LockStepMgr::OnMsg(const RemoteMachineLeftMsg& msg){
+    if(mLockMachine){
+        RemoteBandMachine* machine = msg.GetMachine();
+        if(mLockMachine->IsLocal() && mWaitList.GetWaitingMachine(machine)){
+            mWaitList.RemoveMachine(machine);
+            CheckAllMachinesResponded();
+        }
+        else {
+            if(mLockMachine == machine){
+                ReleaseLock(mLockSuccess);
+            }
+        }
+    }
+    return 1;
+}
+
+BEGIN_HANDLERS(LockStepMgr)
+    HANDLE_ACTION(start_lock, StartLock())
+    HANDLE_EXPR(in_lock, mLockMachine != nullptr)
+    HANDLE_MESSAGE(RemoteMachineLeftMsg)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xDB)
+END_HANDLERS
 
 void StartLockMsg::SetLockInfo(LocalBandMachine* machine, const char* name){
     std::vector<LocalBandUser*> users;
