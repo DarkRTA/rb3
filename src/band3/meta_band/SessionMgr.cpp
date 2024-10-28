@@ -24,7 +24,7 @@ void SessionMgr::Init(){
     InitJunkMsg();
 }
 
-SessionMgr::SessionMgr(BandUserMgr* umgr, Matchmaker* mm) : Synchronizable("session_mgr"), mBandUserMgr(umgr), mMatchMaker(mm), mCritUserListener(0), mBandNetGameData(new BandNetGameData()), unk5c(0), unk70(0) {
+SessionMgr::SessionMgr(BandUserMgr* umgr, Matchmaker* mm) : Synchronizable("session_mgr"), mBandUserMgr(umgr), mMatchMaker(mm), mCritUserListener(0), mBandNetGameData(new BandNetGameData()), mUserLeader(0), unk70(0) {
     mMachineMgr = new BandMachineMgr(this, mBandUserMgr);
     mCritUserListener = new CriticalUserListener(this);
     mNewPlayer.mUser = 0;
@@ -168,4 +168,73 @@ void SessionMgr::SendMsg(const std::vector<RemoteBandUser*>& remotebandusers, Ne
 
 void SessionMgr::SendMsgToAll(NetMessage& msg, PacketType ty){
     mSession->SendMsgToAll(msg, ty);
+}
+
+void SessionMgr::UpdateLeader(){
+    if(mUserLeader && HasUser(mUserLeader)) return;
+    LocalBandUser* newleader = nullptr;
+    std::vector<LocalUser*> localusers;
+    GetLocalUserListImpl(localusers);
+    if(!localusers.empty()){
+        newleader = BandUserMgr::GetLocalBandUser(localusers.front());
+    }
+    SetLeaderUser(newleader);
+}
+
+BandUser* SessionMgr::GetLeaderUser() const {
+    if(mSession && mSession->IsJoining()) return nullptr;
+    else return mUserLeader;
+}
+
+bool SessionMgr::HasLeaderUser() const { return mUserLeader; }
+
+void SessionMgr::ClearLeader(){
+    SetLeaderUser(0);
+}
+
+void SessionMgr::SetLeaderUser(BandUser* user){
+    if(mUserLeader != user){
+        mUserLeader = user;
+        if(HasSyncPermission()){
+            SetSyncDirty(-1, false);
+        }
+    }
+}
+
+bool SessionMgr::IsLeaderLocal() const {
+    if(mBandUserMgr->GetNumParticipants() == 0) return true;
+    else if(mSession && mSession->IsJoining()){
+        return false;
+    }
+    else {
+        BandUser* leader = GetLeaderUser();
+        return leader && leader->IsLocal();
+    }
+}
+
+bool SessionMgr::IsLocalToLeader(const BandUser* user) const {
+    BandUser* leader = GetLeaderUser();
+    return leader && (leader->mMachineID == user->mMachineID);
+}
+
+bool SessionMgr::HasUser(const User* user) const {
+    return mSession->HasUser(user);
+}
+
+bool SessionMgr::IsBusy() const {
+    return mSession->IsBusy();
+}
+
+int SessionMgr::NumOpenSlots() const {
+    return mSession->NumOpenSlots();
+}
+
+DataNode SessionMgr::OnMsg(const SessionReadyMsg& msg){
+    mSession->RemoveSink(this, SessionReadyMsg::Type());
+    if(msg->Int(2)){
+        mSession->SetInvitesAllowed(unk70);
+        mMatchMaker->UpdateMatchmakingSettings();
+    }
+    Export(msg, true);
+    return 0;
 }

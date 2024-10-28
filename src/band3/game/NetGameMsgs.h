@@ -1,5 +1,6 @@
 #ifndef GAME_NETGAMEMSGS_H
 #define GAME_NETGAMEMSGS_H
+#include "GameMessages.h"
 #include "utl/TextStream.h"
 #include <os/User.h>
 #include "Stats.h"
@@ -32,7 +33,7 @@ public:
     virtual void Save(BinStream &) const = 0;
     virtual void Load(BinStream &) = 0;
     virtual void Dispatch() = 0;
-    virtual int VoiceData() const { return 0; }
+    virtual bool VoiceData() const { return false; }
     virtual void Print(TextStream&) const {}
     virtual int ByteCode() const = 0;
     virtual const char* Name() const = 0;
@@ -360,6 +361,35 @@ public:
     bool mHasMic1;
     bool mHasMic2;
     bool mHasMic3;
+};
+
+class SessionMsg : public NetMessage {
+public:
+    SessionMsg(){}
+    virtual ~SessionMsg(){}
+    virtual void Dispatch();
+};
+
+class JoinResponseMsg : public SessionMsg {
+public:
+    JoinResponseMsg(){}
+    virtual ~JoinResponseMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Print(TextStream&) const;
+    virtual int ByteCode() const;
+    virtual const char* Name() const;
+};
+
+class VoiceDataMsg : public SessionMsg {
+public:
+    VoiceDataMsg(){}
+    virtual ~VoiceDataMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual bool VoiceData() const { return true; }
+    virtual int ByteCode() const;
+    virtual const char* Name() const;
 };
 
 #endif // GAME_NETGAMEMSGS_H

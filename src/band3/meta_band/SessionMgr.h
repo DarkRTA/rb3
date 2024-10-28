@@ -55,10 +55,22 @@ public:
     void SetLeaderUser(BandUser*);
     void RemoveLocalUser(LocalBandUser*);
     void UpdateLeader();
+    void ClearLeader();
+    bool IsLocalToLeader(const BandUser*) const;
 
     static void Init();
 
     DataNode OnMsg(const LocalUserLeftMsg&);
+    DataNode OnMsg(const SessionReadyMsg&);
+    DataNode OnMsg(const SessionDisconnectedMsg&);
+    DataNode OnMsg(const SessionBusyMsg&);
+    DataNode OnMsg(const AddUserResultMsg&);
+    DataNode OnMsg(const SigninChangedMsg&);
+    DataNode OnMsg(const ModeChangedMsg&);
+    DataNode OnMsg(const NewRemoteUserMsg&);
+    DataNode OnMsg(const RemoteUserLeftMsg&);
+    DataNode OnMsg(const JoinResultMsg&);
+    DataNode OnMsg(const ProcessedJoinRequestMsg&);
 
     NetSession* mSession; // 0x38
     BandUserMgr* mBandUserMgr; // 0x3c
@@ -67,7 +79,7 @@ public:
     BandMachineMgr* mMachineMgr; // 0x50
     CriticalUserListener* mCritUserListener; // 0x54
     BandNetGameData* mBandNetGameData; // 0x58
-    int unk5c; // 0x5c
+    BandUser* mUserLeader; // 0x5c
     std::vector<int> unk60; // 0x60
     bool unk68; // 0x68
     int mNetRandomSeed; // 0x6c
