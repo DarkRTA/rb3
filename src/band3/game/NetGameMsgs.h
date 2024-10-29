@@ -1,6 +1,7 @@
 #ifndef GAME_NETGAMEMSGS_H
 #define GAME_NETGAMEMSGS_H
 #include "GameMessages.h"
+#include "utl/HxGuid.h"
 #include "utl/TextStream.h"
 #include <os/User.h>
 #include "Stats.h"
@@ -64,151 +65,112 @@ class ResumeNoScoreGameMsg : public NetMessage {
 public:
     ResumeNoScoreGameMsg();
     ResumeNoScoreGameMsg(float);
-    ~ResumeNoScoreGameMsg();
+    virtual ~ResumeNoScoreGameMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(ResumeNoScoreGameMsg);
+    NETMSG_NAME(ResumeNoScoreGameMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(ResumeNoScoreGameMsg);
 
-    const char *Name() const {
-        FormatString format("ResumeNoScoreGameMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("ResumeNoScoreGameMsg");
-    }
-
-    float unk_0x4;
+    float mFraction; // 0x4
 };
 
 class PlayerStatsMsg : public NetMessage {
 public:
     PlayerStatsMsg(User *, int, const Stats &);
-    ~PlayerStatsMsg();
+    virtual ~PlayerStatsMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(PlayerStatsMsg);
+    NETMSG_NAME(PlayerStatsMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(PlayerStatsMsg);
 
-    const char *Name() const {
-        FormatString format("PlayerStatsMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("PlayerStatsMsg");
-    }
-
-    HxGuid mGuid;
-    Stats mStats;
+    UserGuid mUserGuid; // 0x4
+    int mScore; // 0x14
+    Stats mStats; // 0x18
 };
 
 class SetUserTrackTypeMsg : public NetMessage {
 public:
-    SetUserTrackTypeMsg(User *, String);
+    SetUserTrackTypeMsg(User*, String);
+    virtual ~SetUserTrackTypeMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(SetUserTrackTypeMsg);
+    NETMSG_NAME(SetUserTrackTypeMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(SetUserTrackTypeMsg);
 
-    const char *Name() const {
-        FormatString format("SetUserTrackTypeMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("SetUserTrackTypeMsg");
-    }
-
-    HxGuid mGuid;
-    String mString;
+    UserGuid mUserGuid; // 0x4
+    String mTrackType; // 0x14
 };
 
 class SetUserDifficultyMsg : public NetMessage {
 public:
-    SetUserDifficultyMsg(User *, String);
+    SetUserDifficultyMsg(User*, String);
+    virtual ~SetUserDifficultyMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(SetUserDifficultyMsg);
+    NETMSG_NAME(SetUserDifficultyMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(SetUserDifficultyMsg);
 
-    const char *Name() const {
-        FormatString format("SetUserDifficultyMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("SetUserDifficultyMsg");
-    }
-
-    HxGuid mGuid;
-    String mString;
+    UserGuid mUserGuid; // 0x4
+    String mDifficulty; // 0x14
 };
 
 class SetlistSubmissionMsg : public NetMessage {
 public:
-    SetlistSubmissionMsg(const std::vector<void *> &, int);
-    ~SetlistSubmissionMsg();
+    SetlistSubmissionMsg(const std::vector<int>&, int);
+    virtual ~SetlistSubmissionMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(SetlistSubmissionMsg);
+    NETMSG_NAME(SetlistSubmissionMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(SetlistSubmissionMsg);
 
-    const char *Name() const {
-        FormatString format("SetlistSubmissionMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("SetlistSubmissionMsg");
-    }
-
-    std::vector<void *> unk_0x4;
-    int unk_0xc;
+    std::vector<int> mSongIDs; // 0x4
+    int mNumUsers; // 0xc
 };
 
 class TourMostStarsMsg : public NetMessage {
 public:
     TourMostStarsMsg(Symbol, int);
-    ~TourMostStarsMsg();
+    virtual ~TourMostStarsMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(TourMostStarsMsg);
+    NETMSG_NAME(TourMostStarsMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(TourMostStarsMsg);
 
-    const char *Name() const {
-        FormatString format("TourMostStarsMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("TourMostStarsMsg");
-    }
-
-    Symbol mSymbol;
-    int unk_0x8;
+    Symbol unk4; // 0x4
+    int unk8; // 0x8
 };
 
 class TourPlayedMsg : public NetMessage {
 public:
     TourPlayedMsg(Symbol);
-    ~TourPlayedMsg();
+    virtual ~TourPlayedMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(TourPlayedMsg);
+    NETMSG_NAME(TourPlayedMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(TourPlayedMsg);
 
-    const char *Name() const {
-        FormatString format("TourPlayedMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("TourPlayedMsg");
-    }
-
-    Symbol mSymbol;
+    Symbol mTourPlayed; // 0x4
 };
 
 class AccomplishmentMsg : public NetMessage {

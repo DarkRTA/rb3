@@ -1,5 +1,8 @@
 #include "NetGameMsgs.h"
+#include "game/BandUser.h"
 #include "game/BandUserMgr.h"
+#include "game/Player.h"
+#include "meta_band/AccomplishmentManager.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Object.h"
@@ -69,100 +72,135 @@ void RestartGameMsg::Dispatch(){
 }
 #pragma pop
 
-ResumeNoScoreGameMsg::ResumeNoScoreGameMsg() : unk_0x4(0) {}
+ResumeNoScoreGameMsg::ResumeNoScoreGameMsg() : mFraction(0) {}
+ResumeNoScoreGameMsg::ResumeNoScoreGameMsg(float f) : mFraction(f) {}
 
-ResumeNoScoreGameMsg::ResumeNoScoreGameMsg(float f) : unk_0x4(f) {}
-
-ResumeNoScoreGameMsg::~ResumeNoScoreGameMsg() {}
-
-void ResumeNoScoreGameMsg::Save(BinStream &binStream) const {
-    float buff[2];
-
-    buff[0] = unk_0x4;
-    binStream.WriteEndian(&buff, 4);
+void ResumeNoScoreGameMsg::Save(BinStream& bs) const {
+    bs << mFraction;
 }
 
-void ResumeNoScoreGameMsg::Load(BinStream &binStream) {
-    binStream.ReadEndian(&unk_0x4, 4);
+void ResumeNoScoreGameMsg::Load(BinStream& bs) {
+    bs >> mFraction;
 }
 
-PlayerStatsMsg::PlayerStatsMsg(User *user, int param1, const Stats &stats) {
-    mGuid = user->mUserGuid;
-    mStats = stats;
+void ResumeNoScoreGameMsg::Dispatch(){
+    static DataArrayPtr restart("game_resume_no_score", 0.0f);
+    restart->Node(1) = mFraction;
+    restart->Execute();
 }
 
-PlayerStatsMsg::~PlayerStatsMsg() {}
-
-void PlayerStatsMsg::Save(BinStream &binStream) const {
-    int loc[4];
-    binStream << mGuid;
-
-    loc[0] = mStats.mHitCount;
-    binStream.WriteEndian(&loc, 4);
-    mStats.SaveForEndGame(binStream);
+PlayerStatsMsg::PlayerStatsMsg(User *user, int score, const Stats &stats) : mUserGuid(user->mUserGuid), mScore(score), mStats(stats) {
+    
 }
 
-void PlayerStatsMsg::Load(BinStream &binStream) {
-    binStream >> mGuid;
-    binStream.ReadEndian(&mStats.mHitCount, 4);
-    mStats.LoadForEndGame(binStream);
+void PlayerStatsMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+    bs << mScore;
+    mStats.SaveForEndGame(bs);
+}
+
+void PlayerStatsMsg::Load(BinStream& bs) {
+    bs >> mUserGuid;
+    bs >> mScore;
+    mStats.LoadForEndGame(bs);
+}
+
+void PlayerStatsMsg::Dispatch(){
+    BandUser* user = TheBandUserMgr->GetBandUser(mUserGuid, true);
+    if(user->mPlayer){
+        user->mPlayer->SetStats(mScore, mStats);
+    }
 }
 
 SetUserTrackTypeMsg::SetUserTrackTypeMsg(User *user, String string)
-    : mGuid(user->mUserGuid), mString(string) {}
+    : mUserGuid(user->mUserGuid), mTrackType(string) {}
 
-void SetUserTrackTypeMsg::Save(BinStream &binStream) const {
-    binStream << mGuid;
-    binStream << mString;
+void SetUserTrackTypeMsg::Save(BinStream &bs) const {
+    bs << mUserGuid;
+    bs << mTrackType;
 }
 
-void SetUserTrackTypeMsg::Load(BinStream &binStream) {
-    binStream >> mGuid;
-    binStream >> mString;
+void SetUserTrackTypeMsg::Load(BinStream &bs) {
+    bs >> mUserGuid;
+    bs >> mTrackType;
+}
+
+void SetUserTrackTypeMsg::Dispatch(){
+    BandUser* pUser = TheBandUserMgr->GetBandUser(mUserGuid, true);
+    MILO_ASSERT(pUser && pUser->IsLocal(), 0xC1);
+    Symbol tracktypesym(mTrackType.c_str());
+    pUser->SetTrackType(tracktypesym);
 }
 
 SetUserDifficultyMsg::SetUserDifficultyMsg(User *user, String string)
-    : mGuid(user->mUserGuid), mString(string) {}
+    : mUserGuid(user->mUserGuid), mDifficulty(string) {}
 
 void SetUserDifficultyMsg::Save(BinStream &binStream) const {
-    binStream << mGuid;
-    binStream << mString;
+    binStream << mUserGuid;
+    binStream << mDifficulty;
 }
 
 void SetUserDifficultyMsg::Load(BinStream &binStream) {
-    binStream >> mGuid;
-    binStream >> mString;
+    binStream >> mUserGuid;
+    binStream >> mDifficulty;
 }
 
-SetlistSubmissionMsg::SetlistSubmissionMsg(const std::vector<void *> &vec, int param2)
-    : unk_0x4(vec), unk_0xc(param2) {}
-
-SetlistSubmissionMsg::~SetlistSubmissionMsg() {}
-
-TourMostStarsMsg::TourMostStarsMsg(Symbol symbol, int cap) {}
-
-TourMostStarsMsg::~TourMostStarsMsg() {}
-
-void TourMostStarsMsg::Save(BinStream &binStream) const {
-    binStream << mSymbol;
-    binStream.WriteEndian(&unk_0x8, 4);
+void SetUserDifficultyMsg::Dispatch(){
+    BandUser* pUser = TheBandUserMgr->GetBandUser(mUserGuid, true);
+    MILO_ASSERT(pUser && pUser->IsLocal(), 0xDD);
+    Symbol diffsym(mDifficulty.c_str());
+    pUser->SetDifficulty(diffsym);
 }
 
-void TourMostStarsMsg::Load(BinStream &binStream) {
-    binStream >> mSymbol;
-    binStream.ReadEndian(&unk_0x8, 4);
+SetlistSubmissionMsg::SetlistSubmissionMsg(const std::vector<int>& ids, int users){
+    mSongIDs = ids;
+    mNumUsers = users;
 }
 
-TourPlayedMsg::TourPlayedMsg(Symbol symbol) : mSymbol(symbol) {}
+void SetlistSubmissionMsg::Save(BinStream& bs) const {
+    bs << mSongIDs;
+    bs << mNumUsers;
+}
 
-TourPlayedMsg::~TourPlayedMsg() {}
+void SetlistSubmissionMsg::Load(BinStream& bs){
+    bs >> mSongIDs;
+    bs >> mNumUsers;
+}
+
+void SetlistSubmissionMsg::Dispatch(){
+    // SetlistMergePanel* panel = ObjectDir::Main()->Find<SetlistMergePanel>("setlist_merge_panel", true);
+    // MILO_ASSERT(panel, 0xF9);
+//   SetlistMergePanel::HandleSetlistSubmission(this_00,(vector<> *)(this + 4),*(int *)(this + 0xc)) ;
+}
+
+TourMostStarsMsg::TourMostStarsMsg(Symbol symbol, int cap) : unk4(symbol), unk8(cap) {}
+
+void TourMostStarsMsg::Save(BinStream &bs) const {
+    bs << unk4;
+    bs << unk8;
+}
+
+void TourMostStarsMsg::Load(BinStream &bs) {
+    bs >> unk4;
+    bs >> unk8;
+}
+
+void TourMostStarsMsg::Dispatch(){
+    TheAccomplishmentMgr->UpdateMostStarsForAllParticipants(unk4, unk8);
+}
+
+TourPlayedMsg::TourPlayedMsg(Symbol symbol) : mTourPlayed(symbol) {}
 
 void TourPlayedMsg::Save(BinStream &binStream) const {
-    binStream << mSymbol;
+    binStream << mTourPlayed;
 }
 
 void TourPlayedMsg::Load(BinStream &binStream) {
-    binStream >> mSymbol;
+    binStream >> mTourPlayed;
+}
+
+void TourPlayedMsg::Dispatch(){
+    TheAccomplishmentMgr->UpdateTourPlayedForAllParticipants(mTourPlayed);
 }
 
 AccomplishmentMsg::AccomplishmentMsg(Symbol symbol) : mSymbol(symbol) {}
