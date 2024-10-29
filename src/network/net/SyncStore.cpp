@@ -2,6 +2,8 @@
 #include "NetMessage.h"
 #include "net/Synchronize.h"
 #include "os/Debug.h"
+#include "os/User.h"
+#include "os/UserMgr.h"
 #include "utl/BinStream.h"
 #include "utl/MakeString.h"
 #include "utl/MemStream.h"
@@ -108,4 +110,27 @@ void SyncObjMsg::Dispatch(){
 
 void SyncObjMsg::Print(TextStream& ts) const {
     ts << MakeString("SyncObj tag = %s, dirtyMask = %x\n", mObjTag, mDirtyMask);
+}
+
+SyncUserMsg::SyncUserMsg(const User* user){
+    mUserGuid = user->mUserGuid;
+}
+
+void SyncUserMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+}
+
+void SyncUserMsg::Load(BinStream& bs){
+    bs >> mUserGuid;
+}
+
+void SyncUserMsg::Dispatch(){
+    User* user = TheUserMgr->GetUser(mUserGuid, true);
+    MILO_ASSERT(user, 0xA8);
+    MILO_ASSERT(!user->IsLocal(), 0xA9);
+    TheSyncStore->SyncUser(user);
+}
+
+void SyncAllMsg::Dispatch(){
+    TheSyncStore->SyncAllUsers();
 }

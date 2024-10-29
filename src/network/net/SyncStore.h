@@ -31,6 +31,7 @@ public:
 class SyncUserMsg : public NetMessage {
 public:
     SyncUserMsg(){}
+    SyncUserMsg(const User*);
     virtual ~SyncUserMsg(){}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
@@ -47,8 +48,8 @@ class SyncAllMsg : public NetMessage {
 public:
     SyncAllMsg(){}
     virtual ~SyncAllMsg(){}
-    virtual void Save(BinStream &) const;
-    virtual void Load(BinStream &);
+    virtual void Save(BinStream &) const {}
+    virtual void Load(BinStream &){}
     virtual void Dispatch();
     NETMSG_BYTECODE(SyncAllMsg);
     NETMSG_NAME(SyncAllMsg);
