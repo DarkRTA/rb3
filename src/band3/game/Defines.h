@@ -46,6 +46,7 @@ TrackType ScoreTypeToTrackType(ScoreType scoreType);
 ControllerType TrackTypeToControllerType(TrackType trackType);
 Symbol TrackTypeToSym(TrackType);
 Symbol ControllerTypeToSym(ControllerType);
+Symbol ScoreTypeToSym(ScoreType);
 ControllerType SymToControllerType(Symbol);
 TrackType ControllerTypeToTrackType(ControllerType, bool);
 ScoreType TrackTypeToScoreType(TrackType, bool, bool);
