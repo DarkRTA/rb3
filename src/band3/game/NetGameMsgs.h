@@ -176,104 +176,74 @@ public:
 class AccomplishmentMsg : public NetMessage {
 public:
     AccomplishmentMsg(Symbol);
-    ~AccomplishmentMsg();
+    virtual ~AccomplishmentMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(AccomplishmentMsg);
+    NETMSG_NAME(AccomplishmentMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(AccomplishmentMsg);
 
-    const char *Name() const {
-        FormatString format("AccomplishmentMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("AccomplishmentMsg");
-    }
-
-    Symbol mSymbol;
+    Symbol mAccomplishment; // 0x4
 };
 
 class AccomplishmentEarnedMsg : public NetMessage {
 public:
     AccomplishmentEarnedMsg(Symbol, const char *, Symbol);
-    ~AccomplishmentEarnedMsg();
+    virtual ~AccomplishmentEarnedMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(AccomplishmentEarnedMsg);
+    NETMSG_NAME(AccomplishmentEarnedMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(AccomplishmentEarnedMsg);
 
-    const char *Name() const {
-        FormatString format("AccomplishmentEarnedMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("AccomplishmentEarnedMsg");
-    }
-
-    Symbol mSymbol1;
-    String mStr;
-    Symbol mSymbol2;
+    Symbol mSymbol1; // 0x4
+    String mStr; // 0x8
+    Symbol mSymbol2; // 0x14
 };
 
 class SetPartyShuffleModeMsg : public NetMessage {
 public:
     SetPartyShuffleModeMsg();
-    ~SetPartyShuffleModeMsg();
+    virtual ~SetPartyShuffleModeMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(SetPartyShuffleModeMsg);
+    NETMSG_NAME(SetPartyShuffleModeMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
-
-    const char *Name() const {
-        FormatString format("SetPartyShuffleModeMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("SetPartyShuffleModeMsg");
-    }
+    NETMSG_NEWNETMSG(SetPartyShuffleModeMsg);
 };
 
 class TourHideShowFiltersMsg : public NetMessage {
 public:
     TourHideShowFiltersMsg(bool);
-    ~TourHideShowFiltersMsg();
+    virtual ~TourHideShowFiltersMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(TourHideShowFiltersMsg);
+    NETMSG_NAME(TourHideShowFiltersMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    NETMSG_NEWNETMSG(TourHideShowFiltersMsg);
 
-    const char *Name() const {
-        FormatString format("TourHideShowFiltersMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("TourHideShowFiltersMsg");
-    }
-
-    bool mShowMode;
+    bool mShowMode; // 0x4
 };
 
 class SongResultsScrollMsg : public NetMessage {
 public:
     SongResultsScrollMsg(int, int);
-    ~SongResultsScrollMsg();
+    virtual ~SongResultsScrollMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(SongResultsScrollMsg);
+    NETMSG_NAME(SongResultsScrollMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
-
-    const char *Name() const {
-        FormatString format("SongResultsScrollMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("SongResultsScrollMsg");
-    }
+    NETMSG_NEWNETMSG(SongResultsScrollMsg);
 
     int unk_0x4;
     int unk_0x8;
@@ -281,20 +251,15 @@ public:
 
 class SetUpMicsMsg : public NetMessage {
 public:
-    ~SetUpMicsMsg();
+    SetUpMicsMsg(){}
+    virtual ~SetUpMicsMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    NETMSG_BYTECODE(SetUpMicsMsg);
+    NETMSG_NAME(SetUpMicsMsg);
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
-
-    const char *Name() const {
-        FormatString format("SetUpMicsMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("SetUpMicsMsg");
-    }
+    NETMSG_NEWNETMSG(SetUpMicsMsg);
 
     bool mHasMic1;
     bool mHasMic2;

@@ -203,24 +203,24 @@ void TourPlayedMsg::Dispatch(){
     TheAccomplishmentMgr->UpdateTourPlayedForAllParticipants(mTourPlayed);
 }
 
-AccomplishmentMsg::AccomplishmentMsg(Symbol symbol) : mSymbol(symbol) {}
-
-AccomplishmentMsg::~AccomplishmentMsg() {}
+AccomplishmentMsg::AccomplishmentMsg(Symbol symbol) : mAccomplishment(symbol) {}
 
 void AccomplishmentMsg::Save(BinStream &binStream) const {
-    binStream << mSymbol;
+    binStream << mAccomplishment;
 }
 
 void AccomplishmentMsg::Load(BinStream &binStream) {
-    binStream >> mSymbol;
+    binStream >> mAccomplishment;
+}
+
+void AccomplishmentMsg::Dispatch(){
+    TheAccomplishmentMgr->EarnAccomplishmentForAllParticipants(mAccomplishment);
 }
 
 AccomplishmentEarnedMsg::AccomplishmentEarnedMsg(
     Symbol symbol1, const char *text, Symbol symbol2
 )
     : mSymbol1(symbol1), mStr(text), mSymbol2(symbol2) {}
-
-AccomplishmentEarnedMsg::~AccomplishmentEarnedMsg() {}
 
 void AccomplishmentEarnedMsg::Save(BinStream &binStream) const {
     binStream << mSymbol1;
@@ -234,81 +234,60 @@ void AccomplishmentEarnedMsg::Load(BinStream &binStream) {
     binStream >> mSymbol2;
 }
 
-SetPartyShuffleModeMsg::SetPartyShuffleModeMsg() {}
+void AccomplishmentEarnedMsg::Dispatch(){
+    TheAccomplishmentMgr->HandleRemoteAccomplishmentEarned(mSymbol1, mStr.c_str(), mSymbol2);
+}
 
-SetPartyShuffleModeMsg::~SetPartyShuffleModeMsg() {}
-
+SetPartyShuffleModeMsg::SetPartyShuffleModeMsg(){}
 void SetPartyShuffleModeMsg::Save(BinStream &) const {}
+void SetPartyShuffleModeMsg::Load(BinStream &){}
 
-void SetPartyShuffleModeMsg::Load(BinStream &) {}
+void SetPartyShuffleModeMsg::Dispatch(){
+    // requires musiclibrary
+}
 
 TourHideShowFiltersMsg::TourHideShowFiltersMsg(bool show) : mShowMode(show) {}
 
-TourHideShowFiltersMsg::~TourHideShowFiltersMsg() {}
-
 void TourHideShowFiltersMsg::Save(BinStream &binStream) const {
-    char buff[8];
-
-    buff[0] = mShowMode;
-    binStream.Write(&buff, 1);
+    binStream << mShowMode;
 }
 
 void TourHideShowFiltersMsg::Load(BinStream &binStream) {
-    char buff[20];
+    binStream >> mShowMode;
+}
 
-    binStream.Read(&buff, 1);
-    mShowMode = buff[0];
+void TourHideShowFiltersMsg::Dispatch(){
+    static Message msg("client_tour_hideshow_filters", 0);
+    msg[0] = mShowMode;
 }
 
 SongResultsScrollMsg::SongResultsScrollMsg(int param1, int param2)
     : unk_0x4(param1), unk_0x8(param2) {}
 
-SongResultsScrollMsg::~SongResultsScrollMsg() {}
-
 void SongResultsScrollMsg::Save(BinStream &binStream) const {
-    int loc;
-    int buff[3];
-
-    buff[0] = unk_0x4;
-    binStream.WriteEndian(&buff, 4);
-
-    loc = unk_0x8;
-    binStream.WriteEndian(&loc, 4);
+    binStream << unk_0x4;
+    binStream << unk_0x8;
 }
 
 void SongResultsScrollMsg::Load(BinStream &binStream) {
-    binStream.ReadEndian(&unk_0x4, 4);
-    binStream.ReadEndian(&unk_0x8, 4);
+    binStream >> unk_0x4;
+    binStream >> unk_0x8;
 }
 
-SetUpMicsMsg::~SetUpMicsMsg() {}
-
-void SetUpMicsMsg::Save(BinStream &binStream) const {
-    bool loc1;
-    bool loc2;
-    bool loc3[14];
-
-    loc3[0] = mHasMic1;
-    binStream.Write(&loc3, 1);
-
-    loc2 = mHasMic2;
-    binStream.Write(&loc2, 1);
-
-    loc1 = mHasMic3;
-    binStream.Write(&loc1, 1);
+void SongResultsScrollMsg::Dispatch(){
+    static Message msg("net_songresults_scroll", 0, 0);
+    msg[0] = unk_0x4;
+    msg[1] = unk_0x8;
 }
 
-void SetUpMicsMsg::Load(BinStream &binStream) {
-    bool loc1;
-    bool loc2;
-    bool loc3[14];
+void SetUpMicsMsg::Save(BinStream &bs) const {
+    bs << mHasMic1;
+    bs << mHasMic2;
+    bs << mHasMic3;
+}
 
-    binStream.Read(&loc3, 1);
-    mHasMic1 = loc3[0];
-
-    binStream.Read(&loc2, 1);
-    mHasMic2 = loc2;
-
-    binStream.Read(&loc1, 1);
-    mHasMic3 = loc1;
+void SetUpMicsMsg::Load(BinStream &bs) {
+    bs >> mHasMic1;
+    bs >> mHasMic2;
+    bs >> mHasMic3;
 }
