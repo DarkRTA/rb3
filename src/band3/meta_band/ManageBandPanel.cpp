@@ -19,13 +19,8 @@
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "ui/UIPanel.h"
-#include "utl/Messages2.h"
-#include "utl/Messages4.h"
-#include "utl/Symbol.h"
+#include "utl/Messages.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 inline void VignetteViewerProvider::Text(int, int iData, UIListLabel*, UILabel* label) const {
     MILO_ASSERT(iData < NumData(), 0x58);
