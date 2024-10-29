@@ -239,7 +239,7 @@ void BandProfile::HasBandNameBeenSet() const {
 }
 // void BandProfile::IsBandNameProfanityChecked() const {}
 
-void BandProfile::GetBandLogoTex() {}
+RndTex* BandProfile::GetBandLogoTex() {}
 
 void BandProfile::SendBandLogo() {}
 
