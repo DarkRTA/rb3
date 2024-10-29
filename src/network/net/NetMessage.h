@@ -38,6 +38,8 @@ public:
 
 extern NetMessageFactory TheNetMessageFactory;
 
+#include "utl/MakeString.h"
+
 #define NETMSG_BYTECODE(name) \
     virtual unsigned char ByteCode() const { return StaticByteCode(); } \
     static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode(#name); }
