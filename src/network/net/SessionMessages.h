@@ -1,6 +1,7 @@
 #pragma once
 #include "game/NetGameMsgs.h"
 #include "utl/BinStream.h"
+#include "utl/HxGuid.h"
 #include "utl/MemStream.h"
 
 class SessionMsg : public NetMessage {
@@ -12,7 +13,6 @@ public:
 
 class JoinRequestMsg : public SessionMsg {
 public:
-    JoinRequestMsg() : mAuthData(false) {}
     JoinRequestMsg(const std::vector<User*>&, int);
     virtual ~JoinRequestMsg(){}
     virtual void Save(BinStream &) const;
@@ -49,7 +49,6 @@ enum JoinResponseError {
 
 class JoinResponseMsg : public SessionMsg {
 public:
-    JoinResponseMsg(){}
     JoinResponseMsg(JoinResponseError, int);
     virtual ~JoinResponseMsg(){}
     virtual void Save(BinStream &) const;
@@ -65,6 +64,71 @@ public:
 
     JoinResponseError mError; // 0x4
     int mCustomError; // 0x8
+};
+
+class NewUserMsg : public SessionMsg {
+public:
+    NewUserMsg(const User*);
+    virtual ~NewUserMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(NewUserMsg);
+    NETMSG_NAME(NewUserMsg);
+
+    NETMSG_NEWNETMSG(NewUserMsg);
+
+    void GetUserData(BinStream&) const;
+
+    UserGuid mUserGuid; // 0x4
+    MemStream mUserData; // 0x14
+};
+
+class UserLeftMsg : public SessionMsg {
+public:
+    UserLeftMsg(User*);
+    virtual ~UserLeftMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(UserLeftMsg);
+    NETMSG_NAME(UserLeftMsg);
+
+    NETMSG_NEWNETMSG(UserLeftMsg);
+
+    UserGuid mUserGuid; // 0x4
+};
+
+class AddUserRequestMsg : public SessionMsg {
+public:
+    AddUserRequestMsg(const User*);
+    virtual ~AddUserRequestMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(AddUserRequestMsg);
+    NETMSG_NAME(AddUserRequestMsg);
+
+    NETMSG_NEWNETMSG(AddUserRequestMsg);
+
+    void GetUserData(BinStream&) const;
+    void GetAuthenticationData(BinStream&) const;
+    
+    UserGuid mUserGuid; // 0x4
+    MemStream mUserData; // 0x14
+    MemStream mAuthData; // 0x34
+};
+
+class AddUserResponseMsg : public SessionMsg {
+public:
+    AddUserResponseMsg(User*);
+    virtual ~AddUserResponseMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(AddUserResponseMsg);
+    NETMSG_NAME(AddUserResponseMsg);
+
+    NETMSG_NEWNETMSG(AddUserResponseMsg);
+
+    bool mSuccess; // 0x4
+    UserGuid mUserGuid; // 0x8
 };
 
 class VoiceDataMsg : public SessionMsg {

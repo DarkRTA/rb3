@@ -85,3 +85,85 @@ void JoinResponseMsg::Print(TextStream& ts) const {
         ts << MakeString("Join Request Rejected, Error=%i, CustomError=%i\n", mError, mCustomError);
     }
 }
+
+NewUserMsg::NewUserMsg(const User* user) : mUserData(false) {
+    mUserGuid = user->mUserGuid;
+    user->SyncSave(mUserData, -1);
+}
+
+void NewUserMsg::GetUserData(BinStream& bs) const {
+    bs.Write(mUserData.Buffer(), mUserData.BufferSize());
+}
+
+void NewUserMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+    bs << mUserData.BufferSize();
+    GetUserData(bs);
+}
+
+void NewUserMsg::Load(BinStream& bs){
+    bs >> mUserGuid;
+    int size;
+    bs >> size;
+    mUserData.Resize(size);
+    bs.Read((void*)mUserData.Buffer(), size);
+}
+
+UserLeftMsg::UserLeftMsg(User* user) : mUserGuid(user->mUserGuid) {
+    
+}
+
+void UserLeftMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+}
+
+void UserLeftMsg::Load(BinStream& bs){
+    bs >> mUserGuid;
+}
+
+AddUserRequestMsg::AddUserRequestMsg(const User* user) : mUserData(false), mAuthData(false) {
+    mUserGuid = user->mUserGuid;
+}
+
+void AddUserRequestMsg::GetUserData(BinStream& bs) const {
+    bs.Write(mUserData.Buffer(), mUserData.BufferSize());
+}
+
+void AddUserRequestMsg::GetAuthenticationData(BinStream& bs) const {
+    bs.Write(mAuthData.Buffer(), mAuthData.BufferSize());
+}
+
+void AddUserRequestMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+    bs << mUserData.BufferSize();
+    GetUserData(bs);
+    bs << mAuthData.BufferSize();
+    GetAuthenticationData(bs);
+}
+
+void AddUserRequestMsg::Load(BinStream& bs){
+    bs >> mUserGuid;
+    int size;
+    bs >> size;
+    mUserData.Resize(size);
+    bs.Read((void*)mUserData.Buffer(), size);
+    bs >> size;
+    mAuthData.Resize(size);
+    bs.Read((void*)mAuthData.Buffer(), size);
+}
+
+AddUserResponseMsg::AddUserResponseMsg(User* user) : mSuccess(user) {
+    if(user){
+        mUserGuid = user->mUserGuid;
+    }
+}
+
+void AddUserResponseMsg::Save(BinStream& bs) const {
+    bs << mSuccess;
+    if(mSuccess) bs << mUserGuid;
+}
+
+void AddUserResponseMsg::Load(BinStream& bs){
+    bs >> mSuccess;
+    if(mSuccess) bs >> mUserGuid;
+}
