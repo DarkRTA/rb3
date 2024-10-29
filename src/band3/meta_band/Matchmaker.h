@@ -1,6 +1,7 @@
 #pragma once
 #include "obj/Msg.h"
 #include "obj/MsgSource.h"
+#include "os/Timer.h"
 #include <algorithm>
 
 enum MatchmakerFindType {
@@ -19,6 +20,8 @@ class MatchmakerPoolStats {
 public:
     MatchmakerPoolStats();
     void ClearStats();
+    SlotRating GetSlotRating(int) const;
+    bool HasCurrentStats() const { return mHasCurrentStats; }
 
     int mRatingThresholds[3]; // 0x0, 0x4, 0x8
     SlotRating mSlotRatings[4]; // 0xc, 0x10, 0x14, 0x18
@@ -98,6 +101,27 @@ public:
     MatchmakerPoolStats* mPoolStats; // 0x24
     QuickFinding* mQuickFindingMode; // 0x28
     BandFinding* mBandFindingMode; // 0x2c
+};
+
+class BandMatchmaker : public Matchmaker {
+public:
+    BandMatchmaker();
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual ~BandMatchmaker();
+    virtual void Poll();
+    virtual bool IsFinding() const;
+    virtual void UpdateMatchmakingSettings();
+    virtual void FindPlayersImpl();
+    virtual void CancelFindImpl();
+
+    bool mSearching; // 0x30
+    bool unk31; // 0x31
+    bool unk32; // 0x32
+    Timer mTime; // 0x38
+    float mSearchingInterval; // 0x68
+    float unk6c; // 0x6c
+    int mDevChannel; // 0x70
 };
 
 class MatchmakerChangedMsg : public Message {
