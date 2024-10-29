@@ -1,5 +1,6 @@
 #ifndef METABAND_BANDPROFILE_H
 #define METABAND_BANDPROFILE_H
+#include "rndobj/Tex.h"
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
 #include "meta_band/GameplayOptions.h"
@@ -102,7 +103,7 @@ public:
     String GetBandName() const;
     void HasBandNameBeenSet() const;
     bool IsBandNameProfanityChecked() const;
-    void GetBandLogoTex();
+    RndTex* GetBandLogoTex();
     void SendBandLogo();
     void GrantCampaignKey(Symbol);
     bool HasCampaignKey(Symbol);

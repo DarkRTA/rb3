@@ -5,6 +5,7 @@
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/CharData.h"
+#include "meta_band/MainHubPanel.h"
 
 class AppLabel : public BandLabel {
 public:
@@ -31,4 +32,7 @@ public:
     void SetArtistName(Symbol);
     void SetArtistName(const BandSongMetadata*);
     void SetArtistName(const char*, bool);
+    void SetMotd(MainHubPanel*);
+    void SetDLCMotd(MainHubPanel*);
+    void SetUnlinkedMotd(const MainHubMessageProvider*);
 };

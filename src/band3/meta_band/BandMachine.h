@@ -110,4 +110,5 @@ public:
         static Symbol t("remote_machine_left");
         return t;
     }
+    RemoteBandMachine* GetMachine() const { return mData->Obj<RemoteBandMachine>(2); }
 };
