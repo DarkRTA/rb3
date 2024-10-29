@@ -1,9 +1,21 @@
 #ifndef NET_NETMESSAGE_H
 #define NET_NETMESSAGE_H
 #include <vector>
-#include "system/utl/Str.h"
+#include "utl/Str.h"
+#include "utl/BinStream.h"
 
-class NetMessage;
+class NetMessage {
+public:
+    NetMessage(){}
+    virtual ~NetMessage(){}
+    virtual void Save(BinStream &) const = 0;
+    virtual void Load(BinStream &) = 0;
+    virtual void Dispatch() = 0;
+    virtual bool VoiceData() const { return false; }
+    virtual void Print(TextStream&) const {}
+    virtual unsigned char ByteCode() const = 0;
+    virtual const char* Name() const = 0;
+};
 
 typedef NetMessage* NetMessageFunc(void);
 

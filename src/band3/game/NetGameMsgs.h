@@ -26,19 +26,6 @@ enum NetUIState {
     kNetUI_MetaLoadingPostSave = 16
 };
 
-class NetMessage {
-public:
-    NetMessage(){}
-    virtual ~NetMessage(){}
-    virtual void Save(BinStream &) const = 0;
-    virtual void Load(BinStream &) = 0;
-    virtual void Dispatch() = 0;
-    virtual bool VoiceData() const { return false; }
-    virtual void Print(TextStream&) const {}
-    virtual int ByteCode() const = 0;
-    virtual const char* Name() const = 0;
-};
-
 class PlayerGameplayMsg : public NetMessage {
 public:
     PlayerGameplayMsg(User *, int, int, int, int);
@@ -53,7 +40,7 @@ public:
         return string.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("PlayerGameplayMsg");
     }
 
@@ -77,7 +64,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("RestartGameMsg");
     }
 
@@ -99,7 +86,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("ResumeNoScoreGameMsg");
     }
 
@@ -120,7 +107,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("PlayerStatsMsg");
     }
 
@@ -141,7 +128,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("SetUserTrackTypeMsg");
     }
 
@@ -162,7 +149,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("SetUserDifficultyMsg");
     }
 
@@ -184,7 +171,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("SetlistSubmissionMsg");
     }
 
@@ -206,7 +193,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("TourMostStarsMsg");
     }
 
@@ -228,7 +215,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("TourPlayedMsg");
     }
 
@@ -249,7 +236,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("AccomplishmentMsg");
     }
 
@@ -270,7 +257,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("AccomplishmentEarnedMsg");
     }
 
@@ -293,7 +280,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("SetPartyShuffleModeMsg");
     }
 };
@@ -312,7 +299,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("TourHideShowFiltersMsg");
     }
 
@@ -333,7 +320,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("SongResultsScrollMsg");
     }
 
@@ -354,7 +341,7 @@ public:
         return format.Str();
     };
 
-    int ByteCode() const {
+    unsigned char ByteCode() const {
         return TheNetMessageFactory.GetNetMessageByteCode("SetUpMicsMsg");
     }
 
@@ -377,7 +364,7 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Print(TextStream&) const;
-    virtual int ByteCode() const;
+    virtual unsigned char ByteCode() const;
     virtual const char* Name() const;
 };
 
@@ -388,7 +375,7 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual bool VoiceData() const { return true; }
-    virtual int ByteCode() const;
+    virtual unsigned char ByteCode() const;
     virtual const char* Name() const;
 };
 

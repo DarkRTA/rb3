@@ -1,5 +1,4 @@
 #include "NetMessage.h"
-#include "game/NetGameMsgs.h"
 #include "os/Debug.h"
 
 NetMessageFactory TheNetMessageFactory;

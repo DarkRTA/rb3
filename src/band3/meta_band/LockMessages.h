@@ -31,7 +31,7 @@ class BasicStartLockMsg : public StartLockMsg {
 public:
     BasicStartLockMsg(){}
     virtual ~BasicStartLockMsg(){}
-    virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
     virtual const char* Name() const { return MakeString("BasicStartLockMsg"); }
     virtual LockData* GetLockData(){ return nullptr; }
 
@@ -50,7 +50,7 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
     virtual const char* Name() const { return MakeString("LockResponseMsg"); }
 
     static const char* StaticByteCode(){ return "LockResponseMsg"; }
@@ -72,7 +72,7 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
     virtual const char* Name() const { return MakeString("EndLockMsg"); }
 
     static const char* StaticByteCode(){ return "EndLockMsg"; }

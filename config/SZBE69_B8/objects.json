@@ -436,7 +436,7 @@
             "network/net/MessageBrokerDDL_Wii.cpp": "MISSING",
             "network/net/Net.cpp": "MISSING",
             "network/net/NetLog.cpp": "Matching",
-            "network/net/NetMessage.cpp": "NonMatching",
+            "network/net/NetMessage.cpp": "Matching",
             "network/net/NetMessenger.cpp": "MISSING",
             "network/net/NetSearchResult.cpp": "MISSING",
             "network/net/NetSession.cpp": "MISSING",
