@@ -28,28 +28,25 @@ enum NetUIState {
 
 class PlayerGameplayMsg : public NetMessage {
 public:
-    PlayerGameplayMsg(User *, int, int, int, int);
-    ~PlayerGameplayMsg();
+    PlayerGameplayMsg(User*, int, int, int, int);
+    ~PlayerGameplayMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual const char* Name() const { return MakeString("PlayerGameplayMsg"); }
 
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
-
-    const char *Name() const {
-        FormatString string("PlayerGameplayMsg");
-        return string.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("PlayerGameplayMsg");
+    static const char* StaticByteCode(){ return "PlayerGameplayMsg"; }
+    static NetMessage* NewNetMessage();
+    static void Register(){
+        TheNetMessageFactory.RegisterNetMessage("PlayerGameplayMsg", NewNetMessage);
     }
 
-    UserGuid mUserGuid;
-
-    int mOpcode;
-    int mArg1;
-    int mArg2;
-    int mArg3;
+    UserGuid mUserGuid; // 0x4
+    int mOpcode; // 0x14
+    int mArg1; // 0x18
+    int mArg2; // 0x1c
+    int mArg3; // 0x20
 };
 
 class RestartGameMsg : public NetMessage {

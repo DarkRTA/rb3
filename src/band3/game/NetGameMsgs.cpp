@@ -1,38 +1,49 @@
 #include "NetGameMsgs.h"
+#include "game/BandUserMgr.h"
+#include "obj/Dir.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
+#include "utl/Symbols.h"
 
 PlayerGameplayMsg::PlayerGameplayMsg(
-    User *user, int opcode, int arg1, int arg2, int arg3
+    User *user, int opCode, int arg1, int arg2, int arg3
 ) {
-    MILO_ASSERT(-1 < opcode && opcode < 0x100, 0x1e);
-
+    MILO_ASSERT_RANGE(opCode, 0, 256, 0x1E);
     mUserGuid = user->mUserGuid;
-    mOpcode = opcode;
+    mOpcode = opCode;
     mArg1 = arg1;
     mArg2 = arg2;
     mArg3 = arg3;
 }
 
-PlayerGameplayMsg::~PlayerGameplayMsg() {}
-
-void PlayerGameplayMsg::Save(BinStream &binStream) const {
-    binStream << mUserGuid;
-    binStream.Write(&mOpcode, 1);
-    binStream.WriteEndian(&mArg1, 4);
-    binStream.WriteEndian(&mArg2, 4);
-    binStream.WriteEndian(&mArg3, 4);
+void PlayerGameplayMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+    bs << (unsigned char)mOpcode;
+    bs << mArg1;
+    bs << mArg2;
+    bs << mArg3;
 }
 
-void PlayerGameplayMsg::Load(BinStream &binStream) {
-    char buff[16];
+void PlayerGameplayMsg::Load(BinStream& bs) {
+    bs >> mUserGuid;
+    unsigned char op;
+    bs >> op;
+    mOpcode = op;
+    bs >> mArg1;
+    bs >> mArg2;
+    bs >> mArg3;
+}
 
-    binStream >> mUserGuid;
-    binStream.Read(buff, 1);
-
-    mOpcode = buff[0];
-
-    binStream.ReadEndian(&mArg1, 4);
-    binStream.ReadEndian(&mArg2, 4);
-    binStream.ReadEndian(&mArg3, 4);
+void PlayerGameplayMsg::Dispatch(){
+    static Message gameplayMsg(incoming_msg, 0, 0, 0, 0, 0);
+    gameplayMsg[0] = mOpcode;
+    gameplayMsg[1] = TheBandUserMgr->GetUser(mUserGuid, true);
+    gameplayMsg[2] = mArg1;
+    gameplayMsg[3] = mArg2;
+    gameplayMsg[4] = mArg3;
+    Hmx::Object* delegator = ObjectDir::Main()->Find<Hmx::Object>("net_gameplay_delegator", true);
+    MILO_ASSERT(delegator, 0x44);
+    delegator->Handle(gameplayMsg, true);
 }
 
 RestartGameMsg::~RestartGameMsg() {}
