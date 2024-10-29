@@ -7,7 +7,7 @@
 
 class MemStream : public BinStream {
 public:
-    MemStream(bool);
+    MemStream(bool = false);
     virtual ~MemStream(){}
     virtual void Flush();
     virtual int Tell();

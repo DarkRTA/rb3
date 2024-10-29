@@ -14,6 +14,7 @@ public:
 
 class JoinRequestMsg : public SessionMsg {
 public:
+    JoinRequestMsg(){}
     JoinRequestMsg(const std::vector<User*>&, int);
     virtual ~JoinRequestMsg(){}
     virtual void Save(BinStream &) const;
@@ -69,6 +70,7 @@ public:
 
 class NewUserMsg : public SessionMsg {
 public:
+    NewUserMsg(){}
     NewUserMsg(const User*);
     virtual ~NewUserMsg(){}
     virtual void Save(BinStream &) const;
@@ -86,6 +88,7 @@ public:
 
 class UserLeftMsg : public SessionMsg {
 public:
+    UserLeftMsg(){}
     UserLeftMsg(User*);
     virtual ~UserLeftMsg(){}
     virtual void Save(BinStream &) const;
@@ -100,6 +103,7 @@ public:
 
 class AddUserRequestMsg : public SessionMsg {
 public:
+    AddUserRequestMsg(){}
     AddUserRequestMsg(const User*);
     virtual ~AddUserRequestMsg(){}
     virtual void Save(BinStream &) const;
@@ -119,6 +123,7 @@ public:
 
 class AddUserResponseMsg : public SessionMsg {
 public:
+    AddUserResponseMsg(){}
     AddUserResponseMsg(User*);
     virtual ~AddUserResponseMsg(){}
     virtual void Save(BinStream &) const;
@@ -134,6 +139,7 @@ public:
 
 class UpdateUserDataMsg : public SessionMsg {
 public:
+    UpdateUserDataMsg() : mUserData(false) {}
     UpdateUserDataMsg(const User*, unsigned int);
     virtual ~UpdateUserDataMsg(){}
     virtual void Save(BinStream &) const;
@@ -148,6 +154,18 @@ public:
     UserGuid mUserGuid; // 0x4
     unsigned int mDirtyMask; // 0x14
     MemStream mUserData; // 0x18
+};
+
+class BeginArbitrationMsg : public SessionMsg {
+public:
+    BeginArbitrationMsg(){}
+    virtual ~BeginArbitrationMsg(){}
+    virtual void Save(BinStream &) const {}
+    virtual void Load(BinStream &){}
+    NETMSG_BYTECODE(BeginArbitrationMsg);
+    NETMSG_NAME(BeginArbitrationMsg);
+
+    NETMSG_NEWNETMSG(BeginArbitrationMsg);
 };
 
 class FinishedArbitrationMsg : public SessionMsg {
@@ -166,6 +184,7 @@ public:
 
 class StartGameOnTimeMsg : public SessionMsg {
 public:
+    StartGameOnTimeMsg(){}
     StartGameOnTimeMsg(unsigned long long);
     virtual ~StartGameOnTimeMsg(){}
     virtual void Save(BinStream &) const;
@@ -180,6 +199,7 @@ public:
 
 class EndGameMsg : public SessionMsg {
 public:
+    EndGameMsg(){}
     EndGameMsg(int, bool, float);
     virtual ~EndGameMsg(){}
     virtual void Save(BinStream &) const;
@@ -196,7 +216,7 @@ public:
 
 class VoiceDataMsg : public SessionMsg {
 public:
-    VoiceDataMsg() : mVoiceData(false) {}
+    VoiceDataMsg(){}
     virtual ~VoiceDataMsg(){}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
@@ -214,6 +234,7 @@ public:
 
 class DataArrayMsg : public NetMessage {
 public:
+    DataArrayMsg(){}
     DataArrayMsg(DataArray*);
     virtual ~DataArrayMsg(){}
     virtual void Save(BinStream &) const;
