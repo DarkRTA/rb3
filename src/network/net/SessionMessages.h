@@ -1,5 +1,6 @@
 #pragma once
 #include "game/NetGameMsgs.h"
+#include "obj/Data.h"
 #include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
@@ -131,13 +132,98 @@ public:
     UserGuid mUserGuid; // 0x8
 };
 
+class UpdateUserDataMsg : public SessionMsg {
+public:
+    UpdateUserDataMsg(const User*, unsigned int);
+    virtual ~UpdateUserDataMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(UpdateUserDataMsg);
+    NETMSG_NAME(UpdateUserDataMsg);
+
+    NETMSG_NEWNETMSG(UpdateUserDataMsg);
+
+    void GetUserData(BinStream&) const;
+
+    UserGuid mUserGuid; // 0x4
+    unsigned int mDirtyMask; // 0x14
+    MemStream mUserData; // 0x18
+};
+
+class FinishedArbitrationMsg : public SessionMsg {
+public:
+    FinishedArbitrationMsg(){}
+    virtual ~FinishedArbitrationMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(FinishedArbitrationMsg);
+    NETMSG_NAME(FinishedArbitrationMsg);
+
+    NETMSG_NEWNETMSG(FinishedArbitrationMsg);
+
+    unsigned int mMachineID; // 0x4
+};
+
+class StartGameOnTimeMsg : public SessionMsg {
+public:
+    StartGameOnTimeMsg(unsigned long long);
+    virtual ~StartGameOnTimeMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(StartGameOnTimeMsg);
+    NETMSG_NAME(StartGameOnTimeMsg);
+
+    NETMSG_NEWNETMSG(StartGameOnTimeMsg);
+
+    unsigned long long mStartTime; // 0x8
+};
+
+class EndGameMsg : public SessionMsg {
+public:
+    EndGameMsg(int, bool, float);
+    virtual ~EndGameMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    NETMSG_BYTECODE(EndGameMsg);
+    NETMSG_NAME(EndGameMsg);
+
+    NETMSG_NEWNETMSG(EndGameMsg);
+
+    int mResultCode; // 0x4
+    bool mReportStats; // 0x8
+    float unkc; // 0xc
+};
+
 class VoiceDataMsg : public SessionMsg {
 public:
-    VoiceDataMsg(){}
+    VoiceDataMsg() : mVoiceData(false) {}
     virtual ~VoiceDataMsg(){}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual bool VoiceData() const { return true; }
-    virtual unsigned char ByteCode() const;
-    virtual const char* Name() const;
+    NETMSG_BYTECODE(VoiceDataMsg);
+    NETMSG_NAME(VoiceDataMsg);
+
+    NETMSG_NEWNETMSG(VoiceDataMsg);
+
+    void GetVoiceData(BinStream&) const;
+
+    UserGuid mUserGuid; // 0x4
+    MemStream mVoiceData; // 0x14
+};
+
+class DataArrayMsg : public NetMessage {
+public:
+    DataArrayMsg(DataArray*);
+    virtual ~DataArrayMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    virtual void Print(TextStream&) const;
+    NETMSG_BYTECODE(DataArrayMsg);
+    NETMSG_NAME(DataArrayMsg);
+
+    NETMSG_NEWNETMSG(DataArrayMsg);
+
+    MemStream mBuffer; // 0x4
 };

@@ -1,5 +1,7 @@
 #include "net/SessionMessages.h"
+#include "obj/Data.h"
 #include "os/Debug.h"
+#include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
 
@@ -166,4 +168,118 @@ void AddUserResponseMsg::Save(BinStream& bs) const {
 void AddUserResponseMsg::Load(BinStream& bs){
     bs >> mSuccess;
     if(mSuccess) bs >> mUserGuid;
+}
+
+UpdateUserDataMsg::UpdateUserDataMsg(const User* user, unsigned int mask) : mDirtyMask(mask), mUserData(false) {
+    mUserGuid = user->mUserGuid;
+    user->SyncSave(mUserData, mDirtyMask);
+}
+
+void UpdateUserDataMsg::GetUserData(BinStream& bs) const {
+    bs.Write(mUserData.Buffer(), mUserData.BufferSize());
+}
+
+void UpdateUserDataMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+    bs << mDirtyMask;
+    bs << mUserData.BufferSize();
+    GetUserData(bs);
+}
+
+void UpdateUserDataMsg::Load(BinStream& bs){
+    bs >> mUserGuid;
+    bs >> mDirtyMask;
+    int size;
+    bs >> size;
+    mUserData.Resize(size);
+    bs.Read((void*)mUserData.Buffer(), size);
+}
+
+void FinishedArbitrationMsg::Save(BinStream& bs) const {
+    bs << mMachineID;
+}
+
+void FinishedArbitrationMsg::Load(BinStream& bs){
+    bs >> mMachineID;
+}
+
+StartGameOnTimeMsg::StartGameOnTimeMsg(unsigned long long ul) : mStartTime(ul) {
+
+}
+
+void StartGameOnTimeMsg::Save(BinStream& bs) const {
+    bs << mStartTime;
+}
+
+void StartGameOnTimeMsg::Load(BinStream& bs){
+    bs >> mStartTime;
+}
+
+EndGameMsg::EndGameMsg(int i, bool b, float f) : mResultCode(i), mReportStats(b), unkc(f) {
+
+}
+
+void EndGameMsg::Save(BinStream& bs) const {
+    bs << mResultCode;
+    bs << mReportStats;
+    bs << unkc;
+}
+
+void EndGameMsg::Load(BinStream& bs){
+    bs >> mResultCode;
+    bs >> mReportStats;
+    bs >> unkc;
+}
+
+void VoiceDataMsg::GetVoiceData(BinStream& bs) const {
+    bs.Write(mVoiceData.Buffer(), mVoiceData.BufferSize());
+}
+
+void VoiceDataMsg::Save(BinStream& bs) const {
+    bs << mUserGuid;
+    bs << mVoiceData.BufferSize();
+    GetVoiceData(bs);
+}
+
+void VoiceDataMsg::Load(BinStream& bs){
+    bs >> mUserGuid;
+    int size;
+    bs >> size;
+    mVoiceData.Resize(size);
+    bs.Read((void*)mVoiceData.Buffer(), size);
+}
+
+DataArrayMsg::DataArrayMsg(DataArray* arr) : mBuffer(false) {
+    mBuffer << arr;
+    mBuffer.Seek(0, BinStream::kSeekBegin);
+}
+
+void DataArrayMsg::Save(BinStream& bs) const {
+    bs << mBuffer.BufferSize();
+    bs.Write(mBuffer.Buffer(), mBuffer.BufferSize());
+}
+
+void DataArrayMsg::Load(BinStream& bs){
+    int size;
+    bs >> size;
+    mBuffer.Resize(size);
+    bs.Read((void*)mBuffer.Buffer(), size);
+}
+
+void DataArrayMsg::Dispatch(){
+    DataArray* arr;
+    mBuffer >> arr;
+    arr->Execute();
+    arr->Release();
+}
+
+void DataArrayMsg::Print(TextStream& ts) const {
+    MemStream stream(false);
+    stream.Write(mBuffer.Buffer(), mBuffer.BufferSize());
+    stream.Seek(0, BinStream::kSeekBegin);
+    DataArray* arr;
+    stream >> arr;
+    ts << arr;
+    arr->Release();
+    ts << '\n';
 }
