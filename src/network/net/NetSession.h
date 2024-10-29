@@ -2,58 +2,9 @@
 #include "game/BandUser.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/BandNetGameData.h"
+#include "net/SessionMessages.h"
 #include "obj/MsgSource.h"
 #include "os/User.h"
-
-class SessionMsg : public NetMessage {
-public:
-    SessionMsg(){}
-    virtual ~SessionMsg(){}
-    virtual void Dispatch();
-};
-
-enum JoinResponseError {
-    kSuccess = 0,
-    kNotHosting = 1,
-    kBusy = 2,
-    kNoRoom = 3,
-    kWrongMode = 4,
-    kTimeout = 5,
-    kNoSelfJoin = 6,
-    kAlreadyHosting = 7,
-    kCannotConnect = 8,
-    kSameGuid = 9,
-    kCustomJoinResponseError = 10
-};
-
-class JoinResponseMsg : public SessionMsg {
-public:
-    JoinResponseMsg(){}
-    JoinResponseMsg(JoinResponseError, int);
-    virtual ~JoinResponseMsg(){}
-    virtual void Save(BinStream &) const;
-    virtual void Load(BinStream &);
-    virtual void Dispatch();
-    virtual void Print(TextStream&) const;
-    NETMSG_BYTECODE(JoinResponseMsg);
-    NETMSG_NAME(JoinResponseMsg);
-
-    NETMSG_NEWNETMSG(JoinResponseMsg);
-
-    JoinResponseError mError; // 0x4
-    int mCustomError; // 0x8
-};
-
-class VoiceDataMsg : public SessionMsg {
-public:
-    VoiceDataMsg(){}
-    virtual ~VoiceDataMsg(){}
-    virtual void Save(BinStream &) const;
-    virtual void Load(BinStream &);
-    virtual bool VoiceData() const { return true; }
-    virtual unsigned char ByteCode() const;
-    virtual const char* Name() const;
-};
 
 enum PacketType {
     kUnreliable = 0,
