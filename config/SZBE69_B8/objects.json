@@ -439,7 +439,7 @@
             "network/net/NetMessage.cpp": "Matching",
             "network/net/NetMessenger.cpp": "MISSING",
             "network/net/NetSearchResult.cpp": "MISSING",
-            "network/net/NetSession.cpp": "MISSING",
+            "network/net/NetSession.cpp": "NonMatching",
             "network/net/NetSession_RV.cpp": "MISSING",
             "network/net/NetworkEmulator.cpp": "MISSING",
             "network/net/QuazalSession.cpp": "MISSING",

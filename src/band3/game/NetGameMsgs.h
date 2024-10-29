@@ -266,33 +266,4 @@ public:
     bool mHasMic3;
 };
 
-class SessionMsg : public NetMessage {
-public:
-    SessionMsg(){}
-    virtual ~SessionMsg(){}
-    virtual void Dispatch();
-};
-
-class JoinResponseMsg : public SessionMsg {
-public:
-    JoinResponseMsg(){}
-    virtual ~JoinResponseMsg(){}
-    virtual void Save(BinStream &) const;
-    virtual void Load(BinStream &);
-    virtual void Print(TextStream&) const;
-    virtual unsigned char ByteCode() const;
-    virtual const char* Name() const;
-};
-
-class VoiceDataMsg : public SessionMsg {
-public:
-    VoiceDataMsg(){}
-    virtual ~VoiceDataMsg(){}
-    virtual void Save(BinStream &) const;
-    virtual void Load(BinStream &);
-    virtual bool VoiceData() const { return true; }
-    virtual unsigned char ByteCode() const;
-    virtual const char* Name() const;
-};
-
 #endif // GAME_NETGAMEMSGS_H
