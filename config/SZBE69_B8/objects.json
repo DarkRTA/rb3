@@ -201,7 +201,7 @@
             "band3/meta_band/LockStepMgr.cpp": "NonMatching",
             "band3/meta_band/MainHubMessageProvider.cpp": "MISSING",
             "band3/meta_band/MainHubPanel.cpp": "MISSING",
-            "band3/meta_band/MakeupProvider.cpp": "MISSING",
+            "band3/meta_band/MakeupProvider.cpp": "NonMatching",
             "band3/meta_band/ManageBandPanel.cpp": "MISSING",
             "band3/meta_band/Matchmaker.cpp": "NonMatching",
             "band3/meta_band/MetaNetMsgs.cpp": "MISSING",
