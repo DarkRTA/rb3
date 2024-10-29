@@ -1,6 +1,8 @@
 #pragma once
 #include "NetMessage.h"
 #include "net/Synchronize.h"
+#include "os/User.h"
+#include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
 #include <vector>
@@ -18,6 +20,8 @@ public:
     NETMSG_NAME(SyncObjMsg);
 
     NETMSG_NEWNETMSG(SyncObjMsg);
+
+    void GetObjData(BinStream&) const;
 
     String mObjTag; // 0x4
     unsigned int mDirtyMask; // 0x10
@@ -56,6 +60,11 @@ class SyncStore {
 public:
     SyncStore();
     void Poll();
+    void AddSyncObj(Synchronizable*, String&);
+    void RemoveSyncObj(String&);
+    Synchronizable* GetSyncObj(String&);
+    void SyncUser(const User*);
+    void SyncAllUsers();
 
     std::vector<Synchronizable*> mSyncObjs; // 0x0
 };

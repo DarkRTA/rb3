@@ -19,11 +19,13 @@ public:
 
     void WriteStream(BinStream&, int);
     void Compact();
+    int BufferSize() const { return mBuffer.size(); }
+    int Resize(int size){ mBuffer.resize(size); }
+    const char* Buffer() const { return mBuffer.begin(); }
 
-
-    bool mFail;
-    int mTell;
-    std::vector<char VECTOR_SIZE_LARGE> mBuffer;
+    bool mFail; // 0xc
+    int mTell; // 0x10
+    std::vector<char VECTOR_SIZE_LARGE> mBuffer; // 0x14
 
 };
 
