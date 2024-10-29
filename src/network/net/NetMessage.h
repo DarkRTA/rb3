@@ -38,4 +38,15 @@ public:
 
 extern NetMessageFactory TheNetMessageFactory;
 
+#define NETMSG_BYTECODE(name) \
+    virtual unsigned char ByteCode() const { return StaticByteCode(); } \
+    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode(#name); }
+
+#define NETMSG_NAME(name) \
+    virtual const char* Name() const { return MakeString(#name); }
+
+#define NETMSG_NEWNETMSG(name) \
+    static NetMessage* NewNetMessage(); \
+    static void Register(){ TheNetMessageFactory.RegisterNetMessage(#name, NewNetMessage); }
+
 #endif // NET_NETMESSAGE_H

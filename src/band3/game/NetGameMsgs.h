@@ -33,14 +33,10 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual unsigned char ByteCode() const { return StaticByteCode(); }
-    virtual const char* Name() const { return MakeString("PlayerGameplayMsg"); }
+    NETMSG_BYTECODE(PlayerGameplayMsg);
+    NETMSG_NAME(PlayerGameplayMsg);
 
-    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("PlayerGameplayMsg"); }
-    static NetMessage* NewNetMessage();
-    static void Register(){
-        TheNetMessageFactory.RegisterNetMessage("PlayerGameplayMsg", NewNetMessage);
-    }
+    NETMSG_NEWNETMSG(PlayerGameplayMsg);
 
     UserGuid mUserGuid; // 0x4
     int mOpcode; // 0x14
@@ -56,14 +52,10 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual unsigned char ByteCode() const { return StaticByteCode(); }
-    virtual const char* Name() const { return MakeString("RestartGameMsg"); }
+    NETMSG_BYTECODE(RestartGameMsg);
+    NETMSG_NAME(RestartGameMsg);
 
-    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("RestartGameMsg"); }
-    static NetMessage* NewNetMessage();
-    static void Register(){
-        TheNetMessageFactory.RegisterNetMessage("RestartGameMsg", NewNetMessage);
-    }
+    NETMSG_NEWNETMSG(RestartGameMsg);
 
     int mFromWin; // 0x4
 };
