@@ -15,10 +15,13 @@ public:
     VignetteViewerProvider() : unk20(0) {}
     virtual ~VignetteViewerProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual int NumData() const;
+    virtual int NumData() const { return mEntries.size(); }
     virtual DataNode Handle(DataArray*, bool);
 
-    DataArray* unk20;
+    bool IsLocked(int);
+    Symbol GetScreen(int);
+
+    DataArray* unk20; // 0x20
     std::vector<Symbol> mEntries; // 0x24
 };
 
@@ -54,6 +57,13 @@ public:
     void UpdateCharacterFromCharList(int);
     void ShowCharacter();
     void HideCharacter();
+    void RefreshStandinList();
+    void SetSelectedStandIn(int);
+    void SetStandIn(int);
+    void QueueRewardVignette(Symbol);
+    BandProfile* GetProfile(){ return mProfile; }
+    int GetSelectedStandIn() const { return mSelectedStandIn; }
+    ManageBandState GetManageBandState(){ return mManageBandState; }
 
     DataNode OnMsg(const SigninChangedMsg&);
     DataNode OnMsg(const ProfileChangedMsg&);
