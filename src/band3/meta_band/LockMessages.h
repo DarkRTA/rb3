@@ -31,11 +31,11 @@ class BasicStartLockMsg : public StartLockMsg {
 public:
     BasicStartLockMsg(){}
     virtual ~BasicStartLockMsg(){}
-    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return StaticByteCode(); }
     virtual const char* Name() const { return MakeString("BasicStartLockMsg"); }
     virtual LockData* GetLockData(){ return nullptr; }
 
-    static const char* StaticByteCode(){ return "BasicStartLockMsg"; }
+    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("BasicStartLockMsg"); }
     static NetMessage* NewNetMessage();
     static void Register(){
         TheNetMessageFactory.RegisterNetMessage("BasicStartLockMsg", NewNetMessage);
@@ -50,10 +50,10 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return StaticByteCode(); }
     virtual const char* Name() const { return MakeString("LockResponseMsg"); }
 
-    static const char* StaticByteCode(){ return "LockResponseMsg"; }
+    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("LockResponseMsg"); }
     static NetMessage* NewNetMessage();
     static void Register(){
         TheNetMessageFactory.RegisterNetMessage("LockResponseMsg", NewNetMessage);
@@ -72,10 +72,10 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return StaticByteCode(); }
     virtual const char* Name() const { return MakeString("EndLockMsg"); }
 
-    static const char* StaticByteCode(){ return "EndLockMsg"; }
+    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("EndLockMsg"); }
     static NetMessage* NewNetMessage();
     static void Register(){
         TheNetMessageFactory.RegisterNetMessage("EndLockMsg", NewNetMessage);

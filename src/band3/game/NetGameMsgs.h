@@ -29,14 +29,14 @@ enum NetUIState {
 class PlayerGameplayMsg : public NetMessage {
 public:
     PlayerGameplayMsg(User*, int, int, int, int);
-    ~PlayerGameplayMsg(){}
+    virtual ~PlayerGameplayMsg(){}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
+    virtual unsigned char ByteCode() const { return StaticByteCode(); }
     virtual const char* Name() const { return MakeString("PlayerGameplayMsg"); }
 
-    static const char* StaticByteCode(){ return "PlayerGameplayMsg"; }
+    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("PlayerGameplayMsg"); }
     static NetMessage* NewNetMessage();
     static void Register(){
         TheNetMessageFactory.RegisterNetMessage("PlayerGameplayMsg", NewNetMessage);
@@ -51,21 +51,21 @@ public:
 
 class RestartGameMsg : public NetMessage {
 public:
-    ~RestartGameMsg();
-    void Save(BinStream &) const;
-    void Load(BinStream &);
-    void Dispatch();
+    RestartGameMsg(){}
+    virtual ~RestartGameMsg(){}
+    virtual void Save(BinStream &) const;
+    virtual void Load(BinStream &);
+    virtual void Dispatch();
+    virtual unsigned char ByteCode() const { return StaticByteCode(); }
+    virtual const char* Name() const { return MakeString("RestartGameMsg"); }
 
-    const char *Name() const {
-        FormatString format("RestartGameMsg");
-        return format.Str();
-    };
-
-    unsigned char ByteCode() const {
-        return TheNetMessageFactory.GetNetMessageByteCode("RestartGameMsg");
+    static unsigned char StaticByteCode(){ return TheNetMessageFactory.GetNetMessageByteCode("RestartGameMsg"); }
+    static NetMessage* NewNetMessage();
+    static void Register(){
+        TheNetMessageFactory.RegisterNetMessage("RestartGameMsg", NewNetMessage);
     }
 
-    int unk_0x4;
+    int mFromWin; // 0x4
 };
 
 class ResumeNoScoreGameMsg : public NetMessage {

@@ -1,13 +1,13 @@
 #include "NetGameMsgs.h"
 #include "game/BandUserMgr.h"
+#include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "os/PlatformMgr.h"
 #include "utl/Symbols.h"
 
-PlayerGameplayMsg::PlayerGameplayMsg(
-    User *user, int opCode, int arg1, int arg2, int arg3
-) {
+PlayerGameplayMsg::PlayerGameplayMsg(User* user, int opCode, int arg1, int arg2, int arg3){
     MILO_ASSERT_RANGE(opCode, 0, 256, 0x1E);
     mUserGuid = user->mUserGuid;
     mOpcode = opCode;
@@ -46,18 +46,28 @@ void PlayerGameplayMsg::Dispatch(){
     delegator->Handle(gameplayMsg, true);
 }
 
-RestartGameMsg::~RestartGameMsg() {}
-
-void RestartGameMsg::Save(BinStream &binStream) const {
-    int buff[2];
-
-    buff[0] = unk_0x4;
-    binStream.WriteEndian(&buff, 4);
+void RestartGameMsg::Save(BinStream& bs) const {
+    bs << mFromWin;
 }
 
-void RestartGameMsg::Load(BinStream &binStream) {
-    binStream.ReadEndian(&unk_0x4, 4);
+void RestartGameMsg::Load(BinStream& bs) {
+    bs >> mFromWin;
 }
+
+#pragma push
+#pragma pool_data off
+void RestartGameMsg::Dispatch(){
+    static DataArrayPtr restart("game_restart");
+    ThePlatformMgr.SetIsRestarting(true);
+    static DataArrayPtr restartFromWin("game_restart_from_win");
+    if(mFromWin){
+        restartFromWin->Execute();
+    }
+    else {
+        restart->Execute();
+    }
+}
+#pragma pop
 
 ResumeNoScoreGameMsg::ResumeNoScoreGameMsg() : unk_0x4(0) {}
 

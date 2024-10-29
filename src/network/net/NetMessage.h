@@ -31,7 +31,7 @@ public:
 
     unsigned char GetNetMessageByteCode(String) const;
     NetMessage* CreateNetMessage(unsigned char);
-    void RegisterNetMessage(String, NetMessage* (*)(void));
+    void RegisterNetMessage(String, NetMessageFunc*);
 
     std::vector<TypeCreatorPair> mFactoryList; // 0x0
 };
