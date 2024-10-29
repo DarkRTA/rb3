@@ -5,15 +5,23 @@
 
 class NetMessage;
 
+typedef NetMessage* NetMessageFunc(void);
+
 class NetMessageFactory {
 public:
-    ~NetMessageFactory();
+    struct TypeCreatorPair {
+        String mType; // 0x0
+        NetMessageFunc* mCreator; // 0x4
+    };
 
-    int GetNetMessageByteCode(String) const;
-    void CreateNetMessage(unsigned char);
+    NetMessageFactory(){}
+    ~NetMessageFactory(){}
+
+    unsigned char GetNetMessageByteCode(String) const;
+    NetMessage* CreateNetMessage(unsigned char);
     void RegisterNetMessage(String, NetMessage* (*)(void));
 
-    std::vector<String> unk_0x0;
+    std::vector<TypeCreatorPair> mFactoryList; // 0x0
 };
 
 extern NetMessageFactory TheNetMessageFactory;
