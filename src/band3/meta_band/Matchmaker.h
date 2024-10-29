@@ -1,5 +1,7 @@
 #pragma once
+#include "obj/Msg.h"
 #include "obj/MsgSource.h"
+#include <algorithm>
 
 enum MatchmakerFindType {
     kMatchmaker_Qp = 0,
@@ -38,9 +40,26 @@ public:
         mQueryTypes.reserve(3);
     }
     virtual ~QuickFinding(){}
-    virtual bool ShouldSearch() const;
-    virtual bool ShouldHost() const;
+    virtual bool ShouldSearch() const { return !mAlwaysHost; }
+    virtual bool ShouldHost() const { return true; }
     virtual int GetNextQueryType();
+
+    void Init(MatchmakerFindType ty){
+        mQueryTypes.clear();
+        mFindType = ty;
+        switch(ty){
+            case 0:
+                mQueryTypes.push_back(2);
+                break;
+            case 1:
+                mQueryTypes.push_back(3);
+                break;
+            default:
+                MILO_FAIL("Unknown MatcmakerFindType");
+                break;
+        }
+        std::random_shuffle(mQueryTypes.begin(), mQueryTypes.end());
+    }
 
     MatchmakerFindType mFindType; // 0x4
     bool mAlwaysHost; // 0x8
@@ -52,9 +71,9 @@ class BandFinding : public MatchmakerMode {
 public:
     BandFinding(){}
     virtual ~BandFinding(){}
-    virtual bool ShouldSearch() const;
-    virtual bool ShouldHost() const;
-    virtual int GetNextQueryType();
+    virtual bool ShouldSearch() const { return true; }
+    virtual bool ShouldHost() const { return false; }
+    virtual int GetNextQueryType() { return 0; }
 };
 
 class Matchmaker : public MsgSource {
@@ -69,10 +88,25 @@ public:
     virtual void CancelFindImpl() = 0;
 
     void CancelFind();
+    void SetQuickFindingMode(MatchmakerFindType);
+    void FindPlayers(MatchmakerFindType);
+    bool IsHostingQp() const;
+    bool IsHostingTour() const;
 
-    int unk1c;
+    MatchmakerMode* mMode; // 0x1c
     int unk20;
     MatchmakerPoolStats* mPoolStats; // 0x24
     QuickFinding* mQuickFindingMode; // 0x28
     BandFinding* mBandFindingMode; // 0x2c
+};
+
+class MatchmakerChangedMsg : public Message {
+public:
+    MatchmakerChangedMsg() : Message(Type()) {}
+    MatchmakerChangedMsg(DataArray *da) : Message(da) {}
+    virtual ~MatchmakerChangedMsg() {}
+    static Symbol Type() {
+        static Symbol t("matchmaker_changed");
+        return t;
+    }
 };
