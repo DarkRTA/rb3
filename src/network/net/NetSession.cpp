@@ -1,10 +1,13 @@
 #include "net/NetSession.h"
+#include "MatchmakingSettings.h"
 #include "NetMessage.h"
 #include "SessionMessages.h"
 #include "game/GameMessages.h"
 #include "obj/Data.h"
+#include "obj/Dir.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
+#include "os/System.h"
 #include "os/User.h"
 #include "os/UserMgr.h"
 #include <vector>
@@ -45,7 +48,12 @@ namespace {
     void DisconnectOnFail(){}
 }
 
-NetSession::NetSession() : unk1c(0), mLocalHost(0), unk2c(0), mJobMgr(this), unk44(-1), mGameState(kInLobby), mRevertingJoinResult(0), unk58(0), mState(kIdle), mOnlineEnabled(0), unk68(0) {
+NetSession::NetSession() : unk1c(0), mLocalHost(0), unk2c(0), mSettings(new SessionSettings()), mJobMgr(this), unk44(-1), mGameState(kInLobby), mRevertingJoinResult(0),
+    unk58(0), mState(kIdle), mOnlineEnabled(0), unk68(0) {
+    SetName("session", ObjectDir::Main());
+    DataArray* cfg = SystemConfig("net", "session");
+    cfg->FindData("game_start_delay", mGameStartDelay, true);
+
     RegisterSessionMessages();
     TheDebug.AddExitCallback(DisconnectOnFail);
     MILO_ASSERT(!TheNetSession, 0x5B);

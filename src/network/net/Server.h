@@ -9,25 +9,61 @@ public:
     virtual DataNode Handle(DataArray*, bool);
     virtual ~Server();
     virtual void Init();
-    virtual void Terminate();
+    virtual void Terminate(){}
     virtual void Poll() = 0;
     virtual void Login() = 0;
     virtual void Logout() = 0;
-    virtual bool IsConnected();
-    virtual bool IsLoggingIn();
+    virtual bool IsConnected(){ return mLoginState == 2; }
+    virtual bool IsLoggingIn(){ return mLoginState == 1; }
     // fix all of these return types
-    virtual int GetPlayerID();
-    virtual int GetFriendsClient();
-    virtual int GetMessagingClient();
-    virtual int GetMatchMakingClient();
-    virtual int GetCustomMatchMakingClient();
-    virtual int GetPersistentStoreClient();
-    virtual int GetCompetitionClient();
-    virtual int GetSecureConnectionClient();
-    virtual int GetAccountManagementClient();
-    virtual int GetMasterProfileID();
-    virtual int CreateProfile(String);
-    virtual int DeleteProfile(OnlineID&);
+    virtual int GetPlayerID(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetFriendsClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetMessagingClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetMatchMakingClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetCustomMatchMakingClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetPersistentStoreClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetCompetitionClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetSecureConnectionClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetAccountManagementClient(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int GetMasterProfileID(){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int CreateProfile(String){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
+    virtual int DeleteProfile(OnlineID&){
+        MILO_FAIL("not implemented for this platform");
+        return 0;
+    }
     virtual int GetCustomAuthData();
 
     CriticalSection mLogoutCritSec; // 0x1c

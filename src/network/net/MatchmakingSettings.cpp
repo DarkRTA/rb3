@@ -81,26 +81,26 @@ void SessionSettings::Clear(){
 }
 
 void SessionSettings::SetPublic(bool pub){
-    bool old = mPublic;
+    bool changed = mPublic != pub;
     mPublic = pub;
-    if(old != pub){
+    if(changed){
         SetSyncDirty(-1, false);
     }
     TheNetSession->OnSetPublic(pub);
 }
 
 void SessionSettings::SetMode(Symbol mode, int filt){
-    Symbol oldmode = mModeName;
+    bool changed = mModeName != mode;
     MatchmakingSettings::SetMode(mode, filt);
-    if(oldmode != mode){
+    if(changed){
         SetSyncDirty(-1, false);
     }
 }
 
 void SessionSettings::SetRanked(bool ranked){
-    bool old = mRanked;
+    bool changed = mRanked != ranked;
     mRanked = ranked;
-    if(old != ranked){
+    if(changed){
         SetSyncDirty(-1, false);
     }
 }
