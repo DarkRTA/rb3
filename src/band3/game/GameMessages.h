@@ -66,6 +66,10 @@ BEGIN_MESSAGE(SettingsChangedMsg, settings_changed, );
     MESSAGE_ARRAY_CTOR(SettingsChangedMsg)
 END_MESSAGE;
 
+BEGIN_MESSAGE(InviteAcceptedMsg, invite_accepted, );
+    MESSAGE_ARRAY_CTOR(InviteAcceptedMsg)
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
