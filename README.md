@@ -18,7 +18,7 @@ Dependencies
 Windows:
 --------
 - Install [Python](https://www.python.org/downloads/) and add it to `%PATH%`.
-  - Also available from the [Windows Store](https://apps.microsoft.com/detail/9ncvdn91xzqp).
+  - Also available from the [Windows Store](https://apps.microsoft.com/detail/9pnrbtzxmb4z).
 - Download [ninja](https://github.com/ninja-build/ninja/releases) and add it to `%PATH%`.
   - Quick install via pip: `pip install ninja`
 - (Optional) Run `Add-Exclusion.ps1` (Right click -> "Run with PowerShell") to avoid degraded performance from Windows Defender scans.
