@@ -46,7 +46,7 @@ enum JoinResponseError {
     kAlreadyHosting = 7,
     kCannotConnect = 8,
     kSameGuid = 9,
-    kCustomJoinResponseError = 10
+    kCustom = 10
 };
 
 class JoinResponseMsg : public SessionMsg {

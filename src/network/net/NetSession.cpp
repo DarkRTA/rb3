@@ -1,8 +1,12 @@
 #include "net/NetSession.h"
 #include "MatchmakingSettings.h"
+#include "Net.h"
 #include "NetMessage.h"
 #include "SessionMessages.h"
 #include "game/GameMessages.h"
+#include "net/NetMessenger.h"
+#include "net/SessionMessages.h"
+#include "net/SyncStore.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "os/Debug.h"
@@ -11,6 +15,7 @@
 #include "os/User.h"
 #include "os/UserMgr.h"
 #include <vector>
+#include <algorithm>
 
 std::vector<LocalUser*> gLocalUsersRemovedThisFrame;
 
@@ -58,6 +63,10 @@ NetSession::NetSession() : mData(0), mLocalHost(0), mJoinData(0), mSettings(new 
     TheDebug.AddExitCallback(DisconnectOnFail);
     MILO_ASSERT(!TheNetSession, 0x5B);
     TheNetSession = this;
+}
+
+NetSession::~NetSession(){
+
 }
 
 void NetSession::AssignLocalOwner(){
@@ -154,6 +163,117 @@ void NetSession::Clear(){
     }
     SetState(kIdle);
     mGameState = kInLobby;
+    mSettings->Clear();
+}
+
+#pragma push
+#pragma pool_data off
+void NetSession::Disconnect(){
+    if(mState == kRequestingNewUser){
+        SetState(kIdle);
+        static AddUserResultMsg failureMsg(0);
+        Handle(failureMsg, false);
+    }
+    if(mState == kRequestingJoin){
+        static JoinResponseMsg response(kCannotConnect, 0);
+        OnMsg(response);
+    }
+    
+    for(int jobID = unk44; jobID != -1; ){
+        unk44 = -1;
+        MILO_ASSERT(mJobMgr.HasJob(jobID), 0x14C);
+        mJobMgr.CancelJob(jobID);
+    }
+
+    // release quazal object at 0x58
+
+    if(mGameState == kInOnlineGame){
+        EndSession(false);
+        mGameState = kInLocalGame;
+    }
+
+    std::vector<LocalUser*> localusers;
+    GetLocalUserList(localusers);
+    for(int i = 0; i < localusers.size(); i++){
+        RemoveLocalFromSession(localusers[i]);
+    }
+    mOnlineEnabled = false;
+    RELEASE(mRevertingJoinResult);
+    mLocalHost = nullptr;
+    unk50.clear();
+    DeleteSession();
+    RELEASE(mJoinData);
+    RELEASE(mData);
+    for(int i = 0; i < localusers.size(); i++){
+        AddLocalToSession(localusers[i]);
+    }
+    for(int i = 0; i < mUsers.size(); i){
+        if(!mUsers[i]->IsLocal()){
+            ProcessUserLeftMsg(UserLeftMsg(mUsers[i]));
+            i = 0;
+        }
+        else i++;
+    }
+    static SessionDisconnectedMsg msg;
+    Handle(msg, false);
+}
+#pragma pop
+
+bool NetSession::IsLocal() const {
+    if(mState - 3U <= 3){
+        return false;
+    }
+    else if(!mOnlineEnabled) return true;
+    else if(!IsHost()) return false;
+    else {
+        for(int i = 0; i < mUsers.size(); i++){
+            if(!mUsers[i]->IsLocal()) return false;
+        }
+        return true;
+    }
+}
+
+bool NetSession::IsOnlineEnabled() const { return mOnlineEnabled; }
+
+namespace {
+    void DenyRequest(unsigned int ui, JoinResponseError err, int custom){
+        MILO_ASSERT(custom == -1 || err == kCustom, 0x1F2);
+        JoinResponseMsg respMsg(err, custom);
+        TheNetMessenger.DeliverMsg(ui, respMsg, kReliable);
+        ProcessedJoinRequestMsg pjReqMsg(false);
+        TheNet->Handle(pjReqMsg, false);
+    }
+}
+
+void NetSession::UpdateSyncStore(const User* user){
+    unsigned int machineID = user->mMachineID;
+    TheSyncStore->SyncUser(user);
+    SyncUserMsg msg(user);
+    SendToAllClientsExcept(msg, kReliable, machineID);
+    SyncAllMsg allmsg;
+    unsigned int ui = machineID;
+    TheNetMessenger.DeliverMsg(ui, allmsg, kReliable);
+}
+
+void NetSession::SendMsg(User* destUser, NetMessage& msg, PacketType ptype){
+    MILO_ASSERT(destUser, 0x4D1);
+    std::vector<RemoteUser*> remoteusers;
+    remoteusers.push_back(destUser->GetRemoteUser());
+    SendMsg(remoteusers, msg, ptype);
+}
+
+void NetSession::SendMsg(const std::vector<RemoteUser*>& users, NetMessage& msg, PacketType ptype){
+    if(mOnlineEnabled && unk68){
+        std::vector<RemoteUser*> rusers;
+        for(int i = 0; i < users.size(); i++){
+            std::vector<RemoteUser*>::const_iterator it = std::find(users.begin(), users.end(), users[i]); // probably wrong lol
+        }
+    }
+}
+
+void NetSession::SendMsgToAll(NetMessage& msg, PacketType ptype){
+    if(!mOnlineEnabled || !unk68) return;
+    SendToAllClientsExcept(msg, ptype, -1);
 }
 
 DataNode NetSession::OnSendMsg(DataArray* a){
@@ -173,6 +293,26 @@ DataNode NetSession::OnSendMsgToAll(DataArray* a){
     return 1;
 }
 
+void NetSession::SendToAllClientsExcept(const NetMessage&, PacketType, unsigned int){
+
+}
+
+void NetSession::AddLocalToSession(LocalUser* user){
+
+}
+
+void NetSession::AddRemoteToSession(RemoteUser* user){
+    mUsers.push_back(user);
+}
+
+void NetSession::RemoveLocalFromSession(LocalUser* user){
+    mUsers.erase(std::find(mUsers.begin(), mUsers.end(), user));
+}
+
+void NetSession::RemoveRemoteFromSession(RemoteUser* user){
+    mUsers.erase(std::find(mUsers.begin(), mUsers.end(), user));
+}
+
 void NetSession::EnterInGameState(){
     MILO_ASSERT(mGameState == kStartingGame, 0x552);
     if(mOnlineEnabled){
@@ -184,4 +324,22 @@ void NetSession::EnterInGameState(){
     }
     static SyncStartGameMsg start;
     Handle(start, false);
+}
+
+void NetSession::RemoveClient(unsigned int ui){
+    TheNetMessenger.FlushClientMessages(ui);
+    if(IsHost()){
+        for(int i = 0; i < mUsers.size(); i){
+            User* cur = mUsers[i];
+            if(ui == cur->mMachineID){
+                UserLeftMsg msg(cur);
+                ProcessUserLeftMsg(msg);
+                i = 0;
+            }
+            else i++;
+        }
+        if(mState == kClientsArbitrating){
+            SetDoneArbitrating(ui);
+        }
+    }
 }

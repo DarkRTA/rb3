@@ -3,6 +3,7 @@
 #include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/BandNetGameData.h"
+#include "net/NetMessage.h"
 #include "net/SessionMessages.h"
 #include "obj/Data.h"
 #include "obj/MsgSource.h"
@@ -77,7 +78,7 @@ public:
     virtual int PrepareRegisterArbitrationJob() = 0;
     virtual void UpdateSettings() = 0;
     virtual void OnSetPublic(bool){}
-    virtual int OnMsg(const VoiceDataMsg&){ return 0; }
+    virtual bool OnMsg(const VoiceDataMsg&){ return false; }
 
     bool IsLocal() const;
     void AddLocalUser(LocalUser*);
@@ -102,8 +103,13 @@ public:
     void Clear();
     void EnterInGameState();
     bool IsHost() const;
+    void ProcessUserLeftMsg(const UserLeftMsg&);
+    void UpdateSyncStore(const User*);
+    void SendToAllClientsExcept(const NetMessage&, PacketType, unsigned int);
+    void RemoveClient(unsigned int);
+    void SetDoneArbitrating(int);
 
-    int OnMsg(const JoinResponseMsg&);
+    bool OnMsg(const JoinResponseMsg&);
 
     DataNode OnSendMsg(DataArray*);
     DataNode OnSendMsgToAll(DataArray*);

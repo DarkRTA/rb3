@@ -30,3 +30,5 @@ public:
     OSThread mThread; // 0x48
     RndOverlay* mNetOverlay; // 0x360
 };
+
+extern Net* TheNet;
