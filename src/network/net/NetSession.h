@@ -7,6 +7,7 @@
 #include "obj/Data.h"
 #include "obj/MsgSource.h"
 #include "os/User.h"
+#include "utl/BinStream.h"
 #include "utl/JobMgr.h"
 
 enum PacketType {
@@ -16,6 +17,19 @@ enum PacketType {
 
 class Friend;
 class SessionSettings;
+class RVSessionData;
+
+class SessionData {
+public:
+    SessionData(){}
+    virtual ~SessionData(){}
+    virtual void CopyInto(const SessionData*) = 0;
+    virtual void Save(BinStream&) const = 0;
+    virtual void Load(BinStream&) = 0;
+    virtual bool Equals(const SessionData*) const  = 0;
+
+    static RVSessionData* New();
+};
 
 class NetSession : public MsgSource {
 public:
@@ -94,10 +108,10 @@ public:
     DataNode OnSendMsg(DataArray*);
     DataNode OnSendMsgToAll(DataArray*);
 
-    int unk1c; // session data
-    std::vector<User*> unk20; // 0x20
+    SessionData* mData; // 0x1c
+    std::vector<User*> mUsers; // 0x20
     LocalUser* mLocalHost; // 0x28
-    int unk2c;
+    SessionData* mJoinData; // 0x2c
     SessionSettings* mSettings; // 0x30
     JobMgr mJobMgr; // 0x34
     int unk44; // 0x44

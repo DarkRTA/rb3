@@ -48,7 +48,7 @@ namespace {
     void DisconnectOnFail(){}
 }
 
-NetSession::NetSession() : unk1c(0), mLocalHost(0), unk2c(0), mSettings(new SessionSettings()), mJobMgr(this), unk44(-1), mGameState(kInLobby), mRevertingJoinResult(0),
+NetSession::NetSession() : mData(0), mLocalHost(0), mJoinData(0), mSettings(new SessionSettings()), mJobMgr(this), unk44(-1), mGameState(kInLobby), mRevertingJoinResult(0),
     unk58(0), mState(kIdle), mOnlineEnabled(0), unk68(0) {
     SetName("session", ObjectDir::Main());
     DataArray* cfg = SystemConfig("net", "session");
@@ -137,7 +137,7 @@ void NetSession::OnConnectSessionJobComplete(bool b){
             }
         }
         SetState(kRequestingJoin);
-        JoinRequestMsg(unk20, 0);
+        JoinRequestMsg(mUsers, 0);
     }
     else {
         static JoinResponseMsg response(kCannotConnect, 0);
