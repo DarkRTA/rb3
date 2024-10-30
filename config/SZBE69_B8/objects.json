@@ -431,7 +431,7 @@
             "network/net/Jobs_RV.cpp": "MISSING",
             "network/net/Jobs_Wii.cpp": "MISSING",
             "network/net/JsonUtils.cpp": "Equivalent",
-            "network/net/MatchmakingSettings.cpp": "MISSING",
+            "network/net/MatchmakingSettings.cpp": "NonMatching",
             "network/net/MessageBroker.cpp": "MISSING",
             "network/net/MessageBrokerDDL_Wii.cpp": "MISSING",
             "network/net/Net.cpp": "MISSING",
