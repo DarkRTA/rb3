@@ -50,7 +50,7 @@ BEGIN_MESSAGE(SessionBusyMsg, session_busy, );
     MESSAGE_ARRAY_CTOR(SessionBusyMsg)
 END_MESSAGE;
 
-BEGIN_MESSAGE(SessionReadyMsg, session_ready, );
+BEGIN_MESSAGE(SessionReadyMsg, session_ready, int);
     MESSAGE_ARRAY_CTOR(SessionReadyMsg)
 END_MESSAGE;
 
@@ -58,10 +58,16 @@ BEGIN_MESSAGE(JoinResultMsg, join_result, );
     MESSAGE_ARRAY_CTOR(JoinResultMsg)
 END_MESSAGE;
 
+BEGIN_MESSAGE(SyncStartGameMsg, sync_start_game, );
+    MESSAGE_ARRAY_CTOR(SyncStartGameMsg)
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
 inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
+inline SessionReadyMsg::SessionReadyMsg(int i) : Message(SessionReadyMsg::Type(), i) {}
+inline SyncStartGameMsg::SyncStartGameMsg() : Message(SyncStartGameMsg::Type()) {}
 
 #include "obj/Object.h"
 
