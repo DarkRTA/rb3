@@ -16,7 +16,7 @@ enum ViewportId {
     kBottom = 4,
     kFront = 5,
     kBack = 6,
-    kCustom = 7,
+    kCustomViewport = 7,
     kNumViewports = 8,
 };
 

@@ -86,7 +86,7 @@ void SessionMgr::Poll(){
 void SessionMgr::AddLocalUser(LocalBandUser* pUser){
     MILO_ASSERT(pUser, 0x76);
     MILO_ASSERT(mNewPlayer.mUser == NULL, 0x77);
-    if((int)mSession->unk20.size() < 1){
+    if((int)mSession->mUsers.size() < 1){
         SetLeaderUser(pUser);
     }
     mNewPlayer.mUser = pUser;

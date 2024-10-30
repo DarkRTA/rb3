@@ -20,7 +20,7 @@ public:
     void AddDirtyUser(const UserGuid&);
     const char* GetUniqueTag() const;
 
-    unsigned int unk4; // 0x4 - flags/mask?
-    std::vector<UserGuid> mUsers; // 0x8
+    unsigned int mDirtyMask; // 0x4
+    std::vector<UserGuid> mDirtyUsers; // 0x8
     String mTag; // 0x10
 };

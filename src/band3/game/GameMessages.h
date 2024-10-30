@@ -14,6 +14,8 @@ BEGIN_MESSAGE(RemoteUserLeftMsg, remote_user_left, RemoteUser*);
     RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE;
 
+inline RemoteUserLeftMsg::RemoteUserLeftMsg(RemoteUser* u) : Message(Type(), u) {}
+
 BEGIN_MESSAGE(RemoteLeaderLeftMsg, remote_leader_left_msg, );
 END_MESSAGE;
 
@@ -29,6 +31,7 @@ BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*)
 END_MESSAGE;
 
 BEGIN_MESSAGE(AddUserResultMsg, add_user_result, int, User*);
+    AddUserResultMsg(int);
     MESSAGE_ARRAY_CTOR(AddUserResultMsg)
     int GetResult() const { return mData->Int(2); }
 END_MESSAGE;
@@ -50,7 +53,7 @@ BEGIN_MESSAGE(SessionBusyMsg, session_busy, );
     MESSAGE_ARRAY_CTOR(SessionBusyMsg)
 END_MESSAGE;
 
-BEGIN_MESSAGE(SessionReadyMsg, session_ready, );
+BEGIN_MESSAGE(SessionReadyMsg, session_ready, int);
     MESSAGE_ARRAY_CTOR(SessionReadyMsg)
 END_MESSAGE;
 
@@ -58,10 +61,27 @@ BEGIN_MESSAGE(JoinResultMsg, join_result, );
     MESSAGE_ARRAY_CTOR(JoinResultMsg)
 END_MESSAGE;
 
+BEGIN_MESSAGE(SyncStartGameMsg, sync_start_game, );
+    MESSAGE_ARRAY_CTOR(SyncStartGameMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(SettingsChangedMsg, settings_changed, );
+    MESSAGE_ARRAY_CTOR(SettingsChangedMsg)
+END_MESSAGE;
+
+BEGIN_MESSAGE(InviteAcceptedMsg, invite_accepted, );
+    MESSAGE_ARRAY_CTOR(InviteAcceptedMsg)
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
+inline AddUserResultMsg::AddUserResultMsg(int i) : Message(Type(), i) {}
 inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
 inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
+inline SessionReadyMsg::SessionReadyMsg(int i) : Message(SessionReadyMsg::Type(), i) {}
+inline SyncStartGameMsg::SyncStartGameMsg() : Message(SyncStartGameMsg::Type()) {}
+inline SettingsChangedMsg::SettingsChangedMsg() : Message(SettingsChangedMsg::Type()) {}
+inline SessionDisconnectedMsg::SessionDisconnectedMsg() : Message(Type()) {}
 
 #include "obj/Object.h"
 

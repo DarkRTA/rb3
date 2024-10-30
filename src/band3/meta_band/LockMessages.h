@@ -31,15 +31,11 @@ class BasicStartLockMsg : public StartLockMsg {
 public:
     BasicStartLockMsg(){}
     virtual ~BasicStartLockMsg(){}
-    virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
-    virtual const char* Name() const { return MakeString("BasicStartLockMsg"); }
+    NETMSG_BYTECODE(BasicStartLockMsg);
+    NETMSG_NAME(BasicStartLockMsg);
     virtual LockData* GetLockData(){ return nullptr; }
 
-    static const char* StaticByteCode(){ return "BasicStartLockMsg"; }
-    static NetMessage* NewNetMessage();
-    static void Register(){
-        TheNetMessageFactory.RegisterNetMessage("BasicStartLockMsg", NewNetMessage);
-    }
+    NETMSG_NEWNETMSG(BasicStartLockMsg);
 };
 
 class LockResponseMsg : public NetMessage {
@@ -50,14 +46,10 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
-    virtual const char* Name() const { return MakeString("LockResponseMsg"); }
+    NETMSG_BYTECODE(LockResponseMsg);
+    NETMSG_NAME(LockResponseMsg);
 
-    static const char* StaticByteCode(){ return "LockResponseMsg"; }
-    static NetMessage* NewNetMessage();
-    static void Register(){
-        TheNetMessageFactory.RegisterNetMessage("LockResponseMsg", NewNetMessage);
-    }
+    NETMSG_NEWNETMSG(LockResponseMsg);
 
     bool mLocked; // 0x4
     unsigned int mResponseMachineID; // 0x8
@@ -72,14 +64,10 @@ public:
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode(StaticByteCode()); }
-    virtual const char* Name() const { return MakeString("EndLockMsg"); }
+    NETMSG_BYTECODE(EndLockMsg);
+    NETMSG_NAME(EndLockMsg);
 
-    static const char* StaticByteCode(){ return "EndLockMsg"; }
-    static NetMessage* NewNetMessage();
-    static void Register(){
-        TheNetMessageFactory.RegisterNetMessage("EndLockMsg", NewNetMessage);
-    }
+    NETMSG_NEWNETMSG(EndLockMsg);
 
     String mLockStepName; // 0x4
     bool mSuccess; // 0x10

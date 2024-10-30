@@ -37,7 +37,7 @@ namespace {
         virtual void Load(BinStream &);
         virtual void Dispatch();
         virtual void Print(TextStream&) const;
-        virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncMachineMsg"); }
+        virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncMachineMsg"); }
         virtual const char* Name() const { return MakeString("SyncMachineMsg"); }
 
         void GetMachineData(BinStream&) const;
@@ -56,7 +56,7 @@ namespace {
         virtual void Save(BinStream &) const {}
         virtual void Load(BinStream &){}
         virtual void Dispatch(){ TheSessionMgr->mMachineMgr->SyncLocalMachine(-1); }
-        virtual int ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncLocalMachineMsg"); }
+        virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncLocalMachineMsg"); }
         virtual const char* Name() const { return MakeString("SyncLocalMachineMsg"); }
 
         static NetMessage* NewNetMessage();
