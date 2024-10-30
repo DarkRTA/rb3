@@ -444,7 +444,7 @@
             "network/net/NetworkEmulator.cpp": "MISSING",
             "network/net/QuazalSession.cpp": "MISSING",
             "network/net/Server_Wii.cpp": "MISSING",
-            "network/net/Server.cpp": "MISSING",
+            "network/net/Server.cpp": "NonMatching",
             "network/net/SessionMessages.cpp": "NonMatching",
             "network/net/SessionSearcher.cpp": "MISSING",
             "network/net/SessionSearcher_RV.cpp": "MISSING",

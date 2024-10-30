@@ -98,7 +98,7 @@ public:
     std::vector<User*> unk20; // 0x20
     LocalUser* mLocalHost; // 0x28
     int unk2c;
-    SessionSettings* unk30; // sessionsettings*
+    SessionSettings* mSettings; // 0x30
     JobMgr mJobMgr; // 0x34
     int unk44; // 0x44
     GameState mGameState; // 0x48
