@@ -166,7 +166,7 @@ public:
 
 class NewRemoteUserMsg : public Message {
 public:
-    NewRemoteUserMsg() : Message(Type()) {}
+    NewRemoteUserMsg(RemoteUser* u) : Message(Type(), u) {}
     NewRemoteUserMsg(DataArray *da) : Message(da) {}
     virtual ~NewRemoteUserMsg() {}
     static Symbol Type() {
@@ -174,6 +174,30 @@ public:
         return t;
     }
     RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
+};
+
+class RemovingRemoteUserMsg : public Message {
+public:
+    RemovingRemoteUserMsg(RemoteUser* u) : Message(Type(), u) {}
+    RemovingRemoteUserMsg(DataArray *da) : Message(da) {}
+    virtual ~RemovingRemoteUserMsg() {}
+    static Symbol Type() {
+        static Symbol t("removing_remote_user");
+        return t;
+    }
+    // RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
+};
+
+class RemoteUserUpdatedMsg : public Message {
+public:
+    RemoteUserUpdatedMsg(RemoteUser* u) : Message(Type(), u) {}
+    RemoteUserUpdatedMsg(DataArray *da) : Message(da) {}
+    virtual ~RemoteUserUpdatedMsg() {}
+    static Symbol Type() {
+        static Symbol t("remote_user_updated");
+        return t;
+    }
+    // RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
 };
 
 #endif // GAME_BANDUSER_H

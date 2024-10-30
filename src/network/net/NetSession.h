@@ -1,4 +1,5 @@
 #pragma once
+#include "Platform/Time.h"
 #include "game/BandUser.h"
 #include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
@@ -9,6 +10,7 @@
 #include "obj/MsgSource.h"
 #include "os/User.h"
 #include "utl/BinStream.h"
+#include "utl/HxGuid.h"
 #include "utl/JobMgr.h"
 
 enum PacketType {
@@ -64,7 +66,7 @@ public:
     virtual void Poll();
     virtual void WriteStats(const std::vector<UserStat>&) = 0;
     virtual void SetInvitesAllowed(bool) = 0;
-    virtual void InviteFriend(Friend*, const char*, const char*);
+    virtual void InviteFriend(Friend*, const char*, const char*){}
     virtual void PrepareRegisterHostSessionJob() = 0;
     virtual void AddLocalToSession(LocalUser*);
     virtual void AddRemoteToSession(RemoteUser*);
@@ -94,7 +96,6 @@ public:
     bool HasUser(const User*) const;
     bool IsBusy() const;
     int NumOpenSlots() const;
-    void GetLocalUserList(std::vector<LocalUser*>&) const;
     void AssignLocalOwner();
     void OnCreateSessionJobComplete(bool);
     void SetState(SessionState);
@@ -109,6 +110,16 @@ public:
     void RemoveClient(unsigned int);
     void SetDoneArbitrating(int);
     void HandleSessionMsg(SessionMsg*);
+    RemoteUser* GetNewRemoteUser();
+    bool CheckJoinable(JoinResponseError&, int&, std::vector<UserGuid>, BinStream&);
+    void StartGame();
+    void StartArbitration();
+    void BeginGameStartCountdown();
+    void EndGame(int, bool, float);
+    void LeaveInGameState(int, bool, float);
+    void GetLocalUserList(std::vector<LocalUser*>&) const;
+    void GetRemoteUserList(std::vector<RemoteUser*>&) const;
+    void GetUserList(std::vector<User*>&) const;
 
     bool OnMsg(const JoinRequestMsg&);
     bool OnMsg(const JoinResponseMsg&);
@@ -134,12 +145,12 @@ public:
     int unk44; // 0x44
     GameState mGameState; // 0x48
     JoinResultMsg* mRevertingJoinResult; // 0x4c
-    std::vector<int> unk50;
-    int unk58;
+    std::vector<int> mStillArbitrating; // 0x50
+    Quazal::Time* mGameStartTime; // 0x58
     int mGameStartDelay; // 0x5c
     SessionState mState; // 0x60
     bool mOnlineEnabled; // 0x64
-    int unk68; // 0x68 - QuazalSession
+    int mQNet; // 0x68 - QuazalSession
 };
 
 extern NetSession* TheNetSession;

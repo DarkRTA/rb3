@@ -2,18 +2,26 @@
 #include "MatchmakingSettings.h"
 #include "Net.h"
 #include "NetMessage.h"
+#include "NetSession.h"
 #include "SessionMessages.h"
+#include "game/BandUser.h"
 #include "game/GameMessages.h"
 #include "net/NetMessenger.h"
 #include "net/SessionMessages.h"
 #include "net/SyncStore.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "os/User.h"
 #include "os/UserMgr.h"
+#include "utl/BinStream.h"
+#include "utl/HxGuid.h"
+#include "utl/MemStream.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols4.h"
 #include <vector>
 #include <algorithm>
 
@@ -54,7 +62,7 @@ namespace {
 }
 
 NetSession::NetSession() : mData(0), mLocalHost(0), mJoinData(0), mSettings(new SessionSettings()), mJobMgr(this), unk44(-1), mGameState(kInLobby), mRevertingJoinResult(0),
-    unk58(0), mState(kIdle), mOnlineEnabled(0), unk68(0) {
+    mGameStartTime(0), mState(kIdle), mOnlineEnabled(0), mQNet(0) {
     SetName("session", ObjectDir::Main());
     DataArray* cfg = SystemConfig("net", "session");
     cfg->FindData("game_start_delay", mGameStartDelay, true);
@@ -200,7 +208,7 @@ void NetSession::Disconnect(){
     mOnlineEnabled = false;
     RELEASE(mRevertingJoinResult);
     mLocalHost = nullptr;
-    unk50.clear();
+    mStillArbitrating.clear();
     DeleteSession();
     RELEASE(mJoinData);
     RELEASE(mData);
@@ -255,6 +263,214 @@ void NetSession::UpdateSyncStore(const User* user){
     TheNetMessenger.DeliverMsg(ui, allmsg, kReliable);
 }
 
+bool NetSession::OnMsg(const AddUserRequestMsg& msg){
+    unsigned int lastsender = TheNetMessenger.mLastSender;
+    int ie4 = -1;
+    JoinResponseError err;
+    MemStream stream(false);
+    msg.GetAuthenticationData(stream);
+    stream.Seek(0, BinStream::kSeekBegin);
+    std::vector<UserGuid> guids;
+    guids.push_back(msg.mUserGuid);
+    if(!CheckJoinable(err, ie4, guids, stream)){
+        AddUserResponseMsg msg(0);
+        TheNetMessenger.DeliverMsg(lastsender, msg, kReliable);
+        return false;
+    }
+    else {
+        RemoteUser* newremote = GetNewRemoteUser();
+        newremote->SetUserGuid(msg.mUserGuid);
+        MemStream ustream(false);
+        msg.GetUserData(ustream);
+        ustream.Seek(0, BinStream::kSeekBegin);
+        newremote->SyncLoad(ustream, -1);
+        newremote->mMachineID = lastsender;
+        AddRemoteToSession(newremote);
+        NewUserMsg umsg(newremote);
+        SendToAllClientsExcept(umsg, kReliable, lastsender);
+        NewRemoteUserMsg rumsg(newremote);
+        Handle(rumsg, false);
+        AddUserResponseMsg respmsg(newremote);
+        TheNetMessenger.DeliverMsg(lastsender, respmsg, kReliable);
+        return true;
+    }
+}
+
+bool NetSession::OnMsg(const AddUserResponseMsg& msg){
+    MILO_ASSERT(mState == kRequestingNewUser, 0x346);
+    if(msg.mSuccess){
+        AddLocalToSession(TheUserMgr->GetLocalUser(msg.mUserGuid, true));
+    }
+    SetState(kIdle);
+    static AddUserResultMsg result(1);
+    result[0] = msg.mSuccess;
+    Handle(result, false);
+    return true;
+}
+
+bool NetSession::OnMsg(const NewUserMsg& msg){
+    MILO_ASSERT(!IsHost(), 0x35A);
+    MILO_ASSERT(mQNet, 0x35B);
+    RemoteUser* newUser = GetNewRemoteUser();
+    newUser->SetUserGuid(msg.mUserGuid);
+    MILO_ASSERT(!HasUser(newUser), 0x35F);
+    MemStream stream(false);
+    msg.GetUserData(stream);
+    stream.Seek(0, BinStream::kSeekBegin);
+    newUser->SyncLoad(stream, -1);
+    AddRemoteToSession(newUser);
+    NewRemoteUserMsg rmsg(newUser);
+    Handle(rmsg, false);
+    return true;
+}
+
+bool NetSession::OnMsg(const UserLeftMsg& msg){
+    ProcessUserLeftMsg(msg);
+    return true;
+}
+
+void NetSession::ProcessUserLeftMsg(const UserLeftMsg& msg){
+    RemoteUser* ruser = TheUserMgr->GetRemoteUser(msg.mUserGuid, true);
+    if(HasUser(ruser)){
+        unsigned int machineID = ruser->GetMachineID();
+        RemovingRemoteUserMsg rmsg(ruser);
+        Handle(rmsg, false);
+        RemoveRemoteFromSession(ruser);
+        if(IsHost()){
+            SendToAllClientsExcept(msg, kReliable, machineID);
+        }
+        RemoteUserLeftMsg rleftmsg(ruser);
+        Handle(rleftmsg, false);
+    }
+}
+
+void NetSession::StartGame(){
+    MILO_ASSERT(IsHost(), 0x3C3);
+    MILO_ASSERT(mState == kIdle, 0x3C4);
+    if(mSettings->mRanked) StartArbitration();
+    else BeginGameStartCountdown();
+}
+
+void NetSession::StartArbitration(){
+    MILO_ASSERT(IsHost(), 0x3D3);
+    SetState(kClientsArbitrating);
+    for(int i = 0; i < mUsers.size(); i++){
+        if(!mUsers[i]->IsLocal()){
+            unsigned int target = mUsers[i]->mMachineID;
+            std::vector<int>::iterator it = std::find(mStillArbitrating.begin(), mStillArbitrating.end(), target);
+            if(it == mStillArbitrating.end()) mStillArbitrating.push_back(target);
+        }
+    }
+    BeginArbitrationMsg amsg;
+    SendToAllClientsExcept(amsg, kReliable, -1);
+}
+
+bool NetSession::OnMsg(const FinishedArbitrationMsg& msg){
+    SetDoneArbitrating(msg.mMachineID);
+    return true;
+}
+
+void NetSession::SetDoneArbitrating(int id){
+    MILO_ASSERT(IsHost(), 0x3F9);
+    MILO_ASSERT(mState == kClientsArbitrating, 0x3FA);
+    std::vector<int>::iterator it = std::find(mStillArbitrating.begin(), mStillArbitrating.end(), id);
+    MILO_ASSERT(it != mStillArbitrating.end(), 0x400);
+    mStillArbitrating.erase(it);
+    if(mStillArbitrating.empty()){
+        SetState(kHostArbitrating);
+    }
+}
+
+void NetSession::BeginGameStartCountdown(){
+    MILO_ASSERT(IsHost(), 0x421);
+    MILO_ASSERT(mState == kIdle || mState == kHostArbitrating, 0x422);
+    MILO_ASSERT(mGameState == kInLobby, 0x423);
+    SetState(kIdle);
+    mGameState = kGameNeedStart;
+    int i2 = IsLocal() ? 0 : mGameStartDelay;
+    MILO_ASSERT(!mGameStartTime, 0x427);
+    if(i2){
+        StartGameOnTimeMsg msg;
+        SendToAllClientsExcept(msg, kReliable, -1);
+    }
+}
+
+bool NetSession::OnMsg(const StartGameOnTimeMsg& msg){
+    MILO_ASSERT(!IsHost(), 0x432);
+    MILO_ASSERT(mState == kIdle || mState == kHostArbitrating, 0x433);
+    MILO_ASSERT(!mGameStartTime, 0x434);
+    MILO_ASSERT(mGameState == kInLobby, 0x435);
+    SetState(kIdle);
+    return true;
+}
+
+bool NetSession::OnMsg(const EndGameMsg& msg){
+    if(mGameState == kInLocalGame || mGameState == kInOnlineGame){
+        if(IsHost()){
+            EndGame(msg.mResultCode, msg.mReportStats, msg.unkc);
+        }
+        else {
+            LeaveInGameState(msg.mResultCode, msg.mReportStats, msg.unkc);
+        }
+    }
+    return true;
+}
+
+bool NetSession::HasUser(const User* user) const {
+    MILO_ASSERT(user, 0x470);
+    return std::find(mUsers.begin(), mUsers.end(), user) != mUsers.end();
+}
+
+void NetSession::GetLocalUserList(std::vector<LocalUser*>& users) const {
+    for(int i = 0; i < mUsers.size(); i++){
+        if(mUsers[i]->IsLocal()){
+            LocalUser* u = mUsers[i]->GetLocalUser();
+            users.push_back(u);
+        }
+    }
+}
+
+void NetSession::GetRemoteUserList(std::vector<RemoteUser*>& users) const {
+    for(int i = 0; i < mUsers.size(); i++){
+        if(!mUsers[i]->IsLocal()){
+            RemoteUser* u = mUsers[i]->GetRemoteUser();
+            users.push_back(u);
+        }
+    }
+}
+
+void NetSession::GetUserList(std::vector<User*>& users) const {
+    for(int i = 0; i < mUsers.size(); i++){
+        users.push_back(mUsers[i]);
+    }
+}
+
+RemoteUser* NetSession::GetNewRemoteUser(){
+    std::vector<RemoteUser*> rusers;
+    TheUserMgr->GetRemoteUsers(rusers);
+    for(int i = 0; i < rusers.size(); i++){
+        if(!HasUser(rusers[i])) return rusers[i];
+    }
+    MILO_FAIL("No more free Remote Users to be assigned!");
+    return nullptr;
+}
+
+bool NetSession::OnMsg(const UpdateUserDataMsg& msg){
+    RemoteUser* ruser = TheUserMgr->GetRemoteUser(msg.mUserGuid, false);
+    if(ruser){
+        MemStream stream(false);
+        msg.GetUserData(stream);
+        stream.Seek(0, BinStream::kSeekBegin);
+        ruser->SyncLoad(stream, msg.mDirtyMask);
+        if(IsHost()){
+            SendToAllClientsExcept(msg, kReliable, ruser->mMachineID);
+        }
+        RemoteUserUpdatedMsg msg(ruser);
+        Handle(msg, false);
+    }
+    return true;
+}
+
 void NetSession::SendMsg(User* destUser, NetMessage& msg, PacketType ptype){
     MILO_ASSERT(destUser, 0x4D1);
     std::vector<RemoteUser*> remoteusers;
@@ -263,7 +479,7 @@ void NetSession::SendMsg(User* destUser, NetMessage& msg, PacketType ptype){
 }
 
 void NetSession::SendMsg(const std::vector<RemoteUser*>& users, NetMessage& msg, PacketType ptype){
-    if(mOnlineEnabled && unk68){
+    if(mOnlineEnabled && mQNet){
         std::vector<RemoteUser*> rusers;
         for(int i = 0; i < users.size(); i++){
             std::vector<RemoteUser*>::const_iterator it = std::find(users.begin(), users.end(), users[i]); // probably wrong lol
@@ -272,7 +488,7 @@ void NetSession::SendMsg(const std::vector<RemoteUser*>& users, NetMessage& msg,
 }
 
 void NetSession::SendMsgToAll(NetMessage& msg, PacketType ptype){
-    if(!mOnlineEnabled || !unk68) return;
+    if(!mOnlineEnabled || !mQNet) return;
     SendToAllClientsExcept(msg, ptype, -1);
 }
 
@@ -383,3 +599,11 @@ void NetSession::HandleSessionMsg(SessionMsg* smsg){
         OnMsg(*dynamic_cast<VoiceDataMsg*>(smsg));
     }
 }
+
+BEGIN_HANDLERS(NetSession)
+    HANDLE_ACTION(disconnect, Disconnect())
+    HANDLE_ACTION(clear, Clear())
+    HANDLE(send_msg, OnSendMsg)
+    HANDLE(send_msg_to_all, OnSendMsgToAll)
+    HANDLE_EXPR(num_users, (int)mUsers.size())
+END_HANDLERS

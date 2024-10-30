@@ -14,6 +14,8 @@ BEGIN_MESSAGE(RemoteUserLeftMsg, remote_user_left, RemoteUser*);
     RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE;
 
+inline RemoteUserLeftMsg::RemoteUserLeftMsg(RemoteUser* u) : Message(Type(), u) {}
+
 BEGIN_MESSAGE(RemoteLeaderLeftMsg, remote_leader_left_msg, );
 END_MESSAGE;
 

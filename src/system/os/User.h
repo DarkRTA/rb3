@@ -24,6 +24,7 @@ public:
     virtual const RemoteUser* GetRemoteUser() const = 0;
     virtual const char* UserName() const = 0;
 
+    unsigned int GetMachineID() const { return mMachineID; }
     void SetUserGuid(const UserGuid&);
     bool ComesBefore(const User* u){
         return (mUserGuid < u->mUserGuid);
