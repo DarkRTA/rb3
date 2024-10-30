@@ -1,4 +1,8 @@
 #include "net/MatchmakingSettings.h"
+#include "MatchmakingSettings.h"
+#include "game/GameMessages.h"
+#include "net/Synchronize.h"
+#include "net/NetSession.h"
 #include "os/Debug.h"
 
 void MatchmakingSettings::SetMode(Symbol mode, int filt){
@@ -64,4 +68,75 @@ void MatchmakingSettings::Load(BinStream& bs){
         mCustomIDs.push_back(id);
         mCustomValues.push_back(value);
     }
+}
+
+SessionSettings::SessionSettings() : Synchronizable("sessionsettings") {
+    Clear();
+}
+
+void SessionSettings::Clear(){
+    mModeFilter = -1;
+    ClearCustomSettings();
+    mPublic = false;
+}
+
+void SessionSettings::SetPublic(bool pub){
+    bool old = mPublic;
+    mPublic = pub;
+    if(old != pub){
+        SetSyncDirty(-1, false);
+    }
+    TheNetSession->OnSetPublic(pub);
+}
+
+void SessionSettings::SetMode(Symbol mode, int filt){
+    Symbol oldmode = mModeName;
+    MatchmakingSettings::SetMode(mode, filt);
+    if(oldmode != mode){
+        SetSyncDirty(-1, false);
+    }
+}
+
+void SessionSettings::SetRanked(bool ranked){
+    bool old = mRanked;
+    mRanked = ranked;
+    if(old != ranked){
+        SetSyncDirty(-1, false);
+    }
+}
+
+void SessionSettings::AddCustomSetting(int i, int j){
+    MatchmakingSettings::AddCustomSetting(i, j);
+    SetSyncDirty(-1, false);
+}
+
+void SessionSettings::SyncSave(BinStream& bs, unsigned int) const {
+    MatchmakingSettings::Save(bs);
+    bs << mPublic;
+}
+
+void SessionSettings::SyncLoad(BinStream& bs, unsigned int){
+    MatchmakingSettings::Load(bs);
+    bs >> mPublic;
+}
+
+bool SessionSettings::HasSyncPermission() const {
+    return TheNetSession->IsLocal() || TheNetSession->IsHost();
+}
+
+void SessionSettings::OnSynchronizing(unsigned int ui){
+    if(TheNetSession->IsOnlineEnabled()){
+        TheNetSession->UpdateSettings();
+    }
+}
+
+void SessionSettings::OnSynchronized(unsigned int ui){
+    static SettingsChangedMsg msg;
+    TheNetSession->Handle(msg, false);
+}
+
+SearchSettings::SearchSettings(int filt, bool ranked, int id){
+    mModeFilter = filt;
+    mRanked = ranked;
+    mQueryID = id;
 }

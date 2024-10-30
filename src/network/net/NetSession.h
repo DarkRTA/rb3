@@ -15,6 +15,7 @@ enum PacketType {
 };
 
 class Friend;
+class SessionSettings;
 
 class NetSession : public MsgSource {
 public:
@@ -86,7 +87,8 @@ public:
     void OnConnectSessionJobComplete(bool);
     void Clear();
     void EnterInGameState();
-    
+    bool IsHost() const;
+
     int OnMsg(const JoinResponseMsg&);
 
     DataNode OnSendMsg(DataArray*);
@@ -96,7 +98,7 @@ public:
     std::vector<User*> unk20; // 0x20
     LocalUser* mLocalHost; // 0x28
     int unk2c;
-    int unk30; // sessionsettings*
+    SessionSettings* unk30; // sessionsettings*
     JobMgr mJobMgr; // 0x34
     int unk44; // 0x44
     GameState mGameState; // 0x48

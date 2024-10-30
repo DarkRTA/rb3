@@ -62,12 +62,17 @@ BEGIN_MESSAGE(SyncStartGameMsg, sync_start_game, );
     MESSAGE_ARRAY_CTOR(SyncStartGameMsg)
 END_MESSAGE;
 
+BEGIN_MESSAGE(SettingsChangedMsg, settings_changed, );
+    MESSAGE_ARRAY_CTOR(SettingsChangedMsg)
+END_MESSAGE;
+
 inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
 inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
 inline SessionReadyMsg::SessionReadyMsg(int i) : Message(SessionReadyMsg::Type(), i) {}
 inline SyncStartGameMsg::SyncStartGameMsg() : Message(SyncStartGameMsg::Type()) {}
+inline SettingsChangedMsg::SettingsChangedMsg() : Message(SettingsChangedMsg::Type()) {}
 
 #include "obj/Object.h"
 

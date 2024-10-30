@@ -1,7 +1,7 @@
 #include "net/Synchronize.h"
 #include "os/Debug.h"
 
-Synchronizable::Synchronizable(const char* cc) : unk4(0) {
+Synchronizable::Synchronizable(const char* cc) : mDirtyMask(0) {
     if(strcmp(cc, "")) Publish(cc);
 }
 
@@ -22,7 +22,7 @@ void Synchronizable::Unpublish(){
 
 void Synchronizable::SetSyncDirty(unsigned int ui, bool b){
     if(HasSyncPermission()){
-        unk4 |= ui;
+        mDirtyMask |= ui;
         if(b) SynchronizeIfDirty();
     }
     else MILO_WARN("Obj %s cannot SetSyncDirty without permission!", mTag);
@@ -31,6 +31,6 @@ void Synchronizable::SetSyncDirty(unsigned int ui, bool b){
 const char* Synchronizable::GetUniqueTag() const { return mTag.c_str(); }
 
 void Synchronizable::AddDirtyUser(const UserGuid& user){
-    mUsers.push_back(user);
+    mDirtyUsers.push_back(user);
     SynchronizeIfDirty();
 }
