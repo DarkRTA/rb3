@@ -343,3 +343,43 @@ void NetSession::RemoveClient(unsigned int ui){
         }
     }
 }
+
+void NetSession::HandleSessionMsg(SessionMsg* smsg){
+    int targetByteCode = smsg->ByteCode();
+    if(targetByteCode == JoinRequestMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<JoinRequestMsg*>(smsg));
+    }
+    else if(targetByteCode == JoinResponseMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<JoinResponseMsg*>(smsg));
+    }
+    else if(targetByteCode == NewUserMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<NewUserMsg*>(smsg));
+    }
+    else if(targetByteCode == AddUserRequestMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<AddUserRequestMsg*>(smsg));
+    }
+    else if(targetByteCode == AddUserResponseMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<AddUserResponseMsg*>(smsg));
+    }
+    else if(targetByteCode == UserLeftMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<UserLeftMsg*>(smsg));
+    }
+    else if(targetByteCode == UpdateUserDataMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<UpdateUserDataMsg*>(smsg));
+    }
+    else if(targetByteCode == BeginArbitrationMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<BeginArbitrationMsg*>(smsg));
+    }
+    else if(targetByteCode == FinishedArbitrationMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<FinishedArbitrationMsg*>(smsg));
+    }
+    else if(targetByteCode == StartGameOnTimeMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<StartGameOnTimeMsg*>(smsg));
+    }
+    else if(targetByteCode == EndGameMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<EndGameMsg*>(smsg));
+    }
+    else if(targetByteCode == VoiceDataMsg::StaticByteCode()){
+        OnMsg(*dynamic_cast<VoiceDataMsg*>(smsg));
+    }
+}

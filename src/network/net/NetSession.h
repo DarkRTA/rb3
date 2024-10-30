@@ -108,8 +108,19 @@ public:
     void SendToAllClientsExcept(const NetMessage&, PacketType, unsigned int);
     void RemoveClient(unsigned int);
     void SetDoneArbitrating(int);
+    void HandleSessionMsg(SessionMsg*);
 
+    bool OnMsg(const JoinRequestMsg&);
     bool OnMsg(const JoinResponseMsg&);
+    bool OnMsg(const NewUserMsg&);
+    bool OnMsg(const AddUserRequestMsg&);
+    bool OnMsg(const AddUserResponseMsg&);
+    bool OnMsg(const UserLeftMsg&);
+    bool OnMsg(const UpdateUserDataMsg&);
+    bool OnMsg(const BeginArbitrationMsg&);
+    bool OnMsg(const FinishedArbitrationMsg&);
+    bool OnMsg(const StartGameOnTimeMsg&);
+    bool OnMsg(const EndGameMsg&);
 
     DataNode OnSendMsg(DataArray*);
     DataNode OnSendMsgToAll(DataArray*);
