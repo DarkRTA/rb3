@@ -9,6 +9,7 @@
 #include "obj/Data.h"
 #include "os/User.h"
 #include "game/BandUser.h"
+#include "ui/UIPicture.h"
 
 class BandProfile;
 
@@ -40,19 +41,53 @@ public:
     void ConfigureCampaignKeyData(DataArray*);
     String GetCampaignLevelIconForUser(LocalBandUser*);
     Symbol GetCampaignLevelForUser(LocalBandUser*) const;
+    bool HasScoreReachedCampaignLevel(int, Symbol) const;
+    int GetCampaignMetaScoreForUser(LocalBandUser*) const;
+    bool HasReachedCampaignLevel(Symbol) const;
+    int GetCampaignFanCountForUser(LocalBandUser*) const;
+    int GetPrimaryCampaignFanCount() const;
+    Symbol GetPrimaryCampaignLevel() const;
+    bool IsUserOnLastCampaignLevel(LocalBandUser*);
+    bool IsPrimaryUserOnLastCampaignLevel();
+    bool IsLastCampaignLevel(Symbol) const;
+    Symbol GetNextCampaignLevel(Symbol) const;
+    String GetCurrentMajorLevelIcon(LocalBandUser*);
+    Symbol GetMajorLevelForMetaScore(int);
+    Symbol GetNextMajorLevelForMetaScore(int);
+    String GetIconArt() const;
+    String GetNextMajorLevelIcon(LocalBandUser*);
+    String GetPrimaryCurrentMajorLevelIcon();
+    String GetPrimaryNextMajorLevelIcon();
+    void UpdatePrimaryCurrentMajorLevelIcon(UIPicture*);
+    void UpdatePrimaryNextMajorLevelIcon(UIPicture*);
+    void UpdateCurrentMajorLevelIcon(LocalBandUser*, UIPicture*);
+    void UpdateNextMajorLevelIcon(LocalBandUser*, UIPicture*);
+    int GetTotalPointsForNextCampaignLevelForUser(LocalBandUser*);
+    int GetCurrentPointsForNextCampaignLevelForUser(LocalBandUser*);
+    int GetTotalPointsForNextMajorCampaignLevelForMetaScore(int);
+    int GetTotalPointsForNextMajorCampaignLevelForPrimary();
+    int GetTotalPointsForNextMajorCampaignLevelForUser(LocalBandUser*);
+    int GetCurrentPointsForNextMajorCampaignLevelForMetaScore(int);
+    int GetCurrentPointsForNextMajorCampaignLevelForPrimary();
+    int GetCurrentPointsForNextMajorCampaignLevelForUser(LocalBandUser*);
+    void ClearCurrentGoal();
+    bool HasCurrentGoal() const;
+    Symbol GetCurrentGoalDescription() const;
+    String GetCurrentGoalIcon() const;
+    Difficulty GetMinimumDifficultyForCurrentAccomplishment() const;
 
     AccomplishmentManager* m_pAccomplishmentMgr; // 0x1c
     Symbol m_symCurrentAccomplishment; // 0x20
-    bool unk24;
-    bool unk25;
-    Symbol unk28;
-    std::vector<Symbol> unk2c;
-    std::map<Symbol, CampaignLevel*> unk34;
-    std::map<Symbol, Symbol> unk4c;
-    std::vector<Symbol> unk64;
-    std::map<Symbol, CampaignKey*> unk6c;
-    int unk84;
-    int unk88;
+    bool m_bWasLaunchedIntoMusicLibrary; // 0x24
+    bool unk25; // 0x25
+    Symbol unk28; // 0x28
+    std::vector<Symbol> m_vCampaignLevels; // 0x2c
+    std::map<Symbol, CampaignLevel*> m_mapCampaignLevels; // 0x34
+    std::map<Symbol, Symbol> unk4c; // 0x4c
+    std::vector<Symbol> unk64; // 0x64
+    std::map<Symbol, CampaignKey*> m_mapCampaignKeys; // 0x6c
+    int unk84; // 0x84
+    int unk88; // 0x88
 };
 
 extern Campaign* TheCampaign;
