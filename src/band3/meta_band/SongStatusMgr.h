@@ -74,6 +74,11 @@ public:
     bool IsProKeyboardSongLessonComplete(int, Difficulty) const;
     int GetCachedTotalScore(ScoreType) const;
     int GetCachedTotalDiscScore(ScoreType) const;
+    int CalculateTotalScore(ScoreType, Symbol) const;
+    int GetTotalSongs(ScoreType, Symbol) const;
+    int GetCompletedSongs(ScoreType, Difficulty, Symbol) const;
+    int GetPossibleStars(ScoreType, Symbol) const;
+    int GetTotalBestStars(ScoreType, Difficulty, Symbol) const;
 };
 
 #endif // METAGAME_SONGSTATUSMGR_H
