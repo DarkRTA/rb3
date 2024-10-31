@@ -101,6 +101,8 @@ public:
     void CheatNextMetaLevel();
     const char* GetCheatMetaLevel();
     void CheatReloadCampaignData();
+    void UpdateEndGameInfoForCurrentCampaignGoal(UILabel*, UILabel*, UIPicture*);
+    void UpdateEndGameInfo(UILabel*, UILabel*, UIPicture*);
 
     DataNode OnMsg(const ProfileSwappedMsg&);
     DataNode OnMsg(const PrimaryProfileChangedMsg&);

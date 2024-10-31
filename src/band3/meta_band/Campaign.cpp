@@ -1,6 +1,7 @@
 #include "Campaign.h"
 #include "BandProfile.h"
 #include "CampaignLevel.h"
+#include "bandobj/MeterDisplay.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
@@ -10,6 +11,7 @@
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentManager.h"
+#include "meta_band/AccomplishmentProgress.h"
 #include "meta_band/BandMachineMgr.h"
 #include "meta_band/CampaignKey.h"
 #include "meta_band/ProfileMessages.h"
@@ -20,6 +22,8 @@
 #include "obj/DataFile.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/ProfileSwappedMsg.h"
@@ -27,8 +31,11 @@
 #include "tour/Tour.h"
 #include "tour/TourDesc.h"
 #include "tour/TourProgress.h"
+#include "ui/UIPicture.h"
+#include "utl/FilePath.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 
 DataArray* s_pReloadedCampaignData;
@@ -654,6 +661,83 @@ bool Campaign::DidUserMakeProgressOnGoal(LocalBandUser* i_pUser, Symbol goal){
     return TheAccomplishmentMgr->DidUserMakeProgressOnGoal(i_pUser, goal);
 }
 
+void Campaign::UpdateEndGameInfoForCurrentCampaignGoal(UILabel* i_pUserLabel, UILabel* i_pStatusLabel, UIPicture* i_pPicture){
+    MILO_ASSERT(i_pUserLabel, 0x53E);
+    MILO_ASSERT(i_pStatusLabel, 0x53F);
+    MILO_ASSERT(i_pPicture, 0x540);
+    LocalBandUser* pUser = GetUser();
+    MILO_ASSERT(pUser, 0x54D);
+    Symbol goal = m_symCurrentAccomplishment;
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(goal);
+    MILO_ASSERT(pAccomplishment, 0x552);
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(pUser);
+    if(!pProfile){
+        i_pPicture->SetTex(FilePath(pAccomplishment->GetIconArt()));
+        i_pUserLabel->SetTokenFmt(campaign_endgame_user_noprogress, pUser->Name());
+        i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_noprogress, goal);
+    }
+    else {
+        MILO_ASSERT(pProfile, 0x560);
+        AccomplishmentProgress* prog = pProfile->GetAccomplishmentProgress();
+        unk28 = goal;
+        if(prog->IsAccomplished(goal)){
+            int othergoals = TheAccomplishmentMgr->GetNumOtherGoalsAcquired(pUser->Name(), goal);
+            i_pPicture->SetTex(FilePath(pAccomplishment->GetIconArt()));
+            i_pUserLabel->SetTokenFmt(campaign_endgame_user_congrats, pUser->Name());
+            if(othergoals == 0){
+                i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_complete, goal);
+            }
+            else if(othergoals == 1){
+                i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_complete_and1more, goal);
+            }
+            else {
+                i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_complete_andmore, goal, othergoals);
+            }
+        }
+        else {
+            if(DidUserMakeProgressOnGoal(pUser, goal)){
+                i_pPicture->SetTex(FilePath(pAccomplishment->GetIconArt()));
+                i_pUserLabel->SetTokenFmt(campaign_endgame_user_progress, pUser->Name());
+                int iCurrent = 0;
+                int iMax = 0;
+                pAccomplishment->InqProgressValues(pProfile, iCurrent, iMax);
+                MILO_ASSERT(iMax > iCurrent, 0x584);
+                int diff = iMax - iCurrent;
+                if(pAccomplishment->HasAward()){
+                    i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_progress_reward, goal, diff, pAccomplishment->GetUnitsToken(diff));
+                }
+                else {
+                    i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_progress, goal, diff, pAccomplishment->GetUnitsToken(diff));
+                }
+            }
+            else {   
+                i_pPicture->SetTex(FilePath(pAccomplishment->GetIconArt()));
+                i_pUserLabel->SetTokenFmt(campaign_endgame_user_noprogress, pUser->Name());
+                i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_noprogress, goal);             
+            }
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(Campaign, "iNumUsersWithGoals > 0", "pSelectedUser")
+
+void Campaign::UpdateEndGameInfo(UILabel* i_pUserLabel, UILabel* i_pStatusLabel, UIPicture* i_pPicture){
+    MILO_ASSERT(i_pUserLabel, 0x61F);
+    MILO_ASSERT(i_pStatusLabel, 0x620);
+    MILO_ASSERT(i_pPicture, 0x621);
+    bool show = true;
+    if(TheGameMode->InMode("campaign") && m_symCurrentAccomplishment != ""){
+        UpdateEndGameInfoForCurrentCampaignGoal(i_pUserLabel, i_pStatusLabel, i_pPicture);
+    }
+    else {
+        i_pUserLabel->SetTextToken(gNullStr);
+        i_pStatusLabel->SetTextToken(gNullStr);
+        show = false;
+        unk28 = gNullStr;
+    }
+    i_pPicture->SetShowing(show);
+}
+
 bool Campaign::HasDisplayGoal(){
     return unk28 != gNullStr;
 }
@@ -729,3 +813,57 @@ void Campaign::CheatReloadCampaignData(){
     Cleanup();
     Init(s_pReloadedCampaignData);
 }
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(Campaign)
+    HANDLE_EXPR(get_fan_count, GetCampaignFanCountForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(get_primary_fan_count, GetPrimaryCampaignFanCount())
+    HANDLE_EXPR(get_campaign_level, GetCampaignLevelForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(get_primary_campaign_level, GetPrimaryCampaignLevel())
+    HANDLE_EXPR(get_next_campaign_level, GetNextCampaignLevel(_msg->Sym(2)))
+    HANDLE_EXPR(is_last_campaign_level, IsLastCampaignLevel(_msg->Sym(2)))
+    HANDLE_EXPR(get_campaign_level_icon, GetCampaignLevelIconForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(get_total_points_for_next_campaign_level, GetTotalPointsForNextCampaignLevelForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(get_current_points_for_next_campaign_level, GetCurrentPointsForNextCampaignLevelForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(get_campaign_level_advertisement, GetCampaignLevelAdvertisement(_msg->Sym(2)))
+    HANDLE_EXPR(is_user_on_last_campaign_level, IsUserOnLastCampaignLevel(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(is_primary_user_on_last_campaign_level, IsPrimaryUserOnLastCampaignLevel())
+    HANDLE_EXPR(has_reached_campaign_level, HasReachedCampaignLevel(_msg->Sym(2)))
+    HANDLE_EXPR(has_score_reached_campaign_level, HasScoreReachedCampaignLevel(_msg->Int(2), _msg->Sym(3)))
+    HANDLE_ACTION(update_current_major_level_icon, UpdateCurrentMajorLevelIcon(_msg->Obj<LocalBandUser>(2), _msg->Obj<UIPicture>(3)))
+    HANDLE_ACTION(update_next_major_level_icon, UpdateNextMajorLevelIcon(_msg->Obj<LocalBandUser>(2), _msg->Obj<UIPicture>(3)))
+    HANDLE_ACTION(update_primary_current_major_level_icon, UpdatePrimaryCurrentMajorLevelIcon(_msg->Obj<UIPicture>(2)))
+    HANDLE_ACTION(update_primary_next_major_level_icon, UpdatePrimaryNextMajorLevelIcon(_msg->Obj<UIPicture>(2)))
+    HANDLE_EXPR(get_current_goal, GetCurrentGoal())
+    HANDLE_EXPR(get_current_goal_description, GetCurrentGoalDescription())
+    HANDLE_EXPR(get_current_goal_icon, GetCurrentGoalIcon())
+    HANDLE_EXPR(has_current_goal, HasCurrentGoal())
+    HANDLE_ACTION(clear_current_goal, ClearCurrentGoal())
+    HANDLE_EXPR(get_user, GetUser())
+    HANDLE_EXPR(get_profile, GetProfile())
+    HANDLE_EXPR(can_skip_songs, CanSkipSongs())
+    HANDLE_EXPR(can_resume_songs, CanResumeSongs())
+    HANDLE_EXPR(can_save_setlists, CanSaveSetlists())
+    HANDLE_EXPR(get_next_hint_to_show, GetNextHintToShow())
+    HANDLE_EXPR(has_hints_to_show, HasHintsToShow())
+    HANDLE_ACTION(update_progress_meter, UpdateProgressMeter(_msg->Obj<MeterDisplay>(2), _msg->Obj<LocalBandUser>(3)))
+    HANDLE_ACTION(update_primary_progress_meter, UpdatePrimaryProgressMeter(_msg->Obj<MeterDisplay>(2)))
+    HANDLE_EXPR(has_valid_user, HasValidUser())
+    HANDLE_EXPR(get_was_launched_into_musiclibrary, GetWasLaunchedIntoMusicLibrary())
+    HANDLE_ACTION(update_endgame_info, UpdateEndGameInfo(_msg->Obj<UILabel>(2), _msg->Obj<UILabel>(3), _msg->Obj<UIPicture>(4)))
+    HANDLE_EXPR(has_display_goal, HasDisplayGoal())
+    HANDLE_EXPR(get_display_goal, GetDisplayGoal())
+    HANDLE_EXPR(get_goal_category, GetGoalCategory(_msg->Sym(2)))
+    HANDLE_EXPR(get_category_group, GetCategoryGroup(_msg->Sym(2)))
+    HANDLE_EXPR(should_return_to_category_screen, ShouldReturnToCategoryScreen())
+    HANDLE_EXPR(get_primary_band_logo_tex, GetPrimaryBandLogoTex())
+    HANDLE_ACTION(cheat_next_campaign_level, CheatNextMetaLevel())
+    HANDLE_EXPR(get_cheat_meta_level, GetCheatMetaLevel())
+    HANDLE_ACTION(cheat_reload_data, CheatReloadCampaignData())
+    HANDLE_MESSAGE(ProfileSwappedMsg)
+    HANDLE_MESSAGE(PrimaryProfileChangedMsg)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x747)
+END_HANDLERS
+#pragma pop
