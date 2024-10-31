@@ -260,7 +260,7 @@ LocalBandUser* BandProfile::GetLocalBandUser() const {
 void BandProfile::GetAssociatedUsers(std::vector<LocalBandUser*>&) const {}
 void BandProfile::CheckWebLinkStatus() {}
 void BandProfile::CheckWebSetlistStatus() {}
-void BandProfile::HasSeenHint(Symbol) const {}
+// void BandProfile::HasSeenHint(Symbol) const {}
 void BandProfile::SetHasSeenHint(Symbol) {}
 // void BandProfile::GetLastCharUsed() const {}
 void BandProfile::SetLastCharUsed(CharData*) {}

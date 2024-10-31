@@ -13,4 +13,5 @@ public:
     Symbol GetAward() const;
     bool IsMajorLevel() const;
     String GetIconArt() const;
+    Symbol GetAdvertisement() const;
 };

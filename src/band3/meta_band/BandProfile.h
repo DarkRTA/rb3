@@ -116,7 +116,7 @@ public:
     void GetAssociatedUsers(std::vector<LocalBandUser*>&) const;
     void CheckWebLinkStatus();
     void CheckWebSetlistStatus();
-    void HasSeenHint(Symbol) const;
+    bool HasSeenHint(Symbol) const;
     void SetHasSeenHint(Symbol);
     CharData* GetLastCharUsed() const;
     void SetLastCharUsed(CharData*);

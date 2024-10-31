@@ -1,27 +1,37 @@
 #include "Campaign.h"
 #include "BandProfile.h"
 #include "CampaignLevel.h"
+#include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
+#include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/GameMode.h"
 #include "meta_band/Accomplishment.h"
+#include "meta_band/AccomplishmentCategory.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/BandMachineMgr.h"
 #include "meta_band/CampaignKey.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SessionMgr.h"
+#include "meta_band/UIEventMgr.h"
 #include "obj/Data.h"
+#include "obj/DataFile.h"
 #include "obj/Dir.h"
+#include "obj/Msg.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/ProfileSwappedMsg.h"
+#include "os/User.h"
 #include "tour/Tour.h"
 #include "tour/TourDesc.h"
 #include "tour/TourProgress.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols3.h"
 
+DataArray* s_pReloadedCampaignData;
 Campaign* TheCampaign;
 
 Campaign::Campaign(DataArray* arr) : m_pAccomplishmentMgr(new AccomplishmentManager()), m_symCurrentAccomplishment(""), m_bWasLaunchedIntoMusicLibrary(0),
@@ -482,4 +492,240 @@ Difficulty Campaign::GetMinimumDifficultyForCurrentAccomplishment() const {
         MILO_ASSERT(pAccomplishment, 0x37A);
         return pAccomplishment->GetRequiredDifficulty();
     }
+}
+
+ScoreType Campaign::GetRequiredScoreTypeForGoal(Symbol s) const {
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
+    MILO_ASSERT(pAccomplishment, 0x383);
+    return pAccomplishment->GetRequiredScoreType();
+}
+
+ScoreType Campaign::GetRequiredScoreTypeForCurrentAccomplishment() const {
+    if(m_symCurrentAccomplishment == "") return kScoreBand;
+    else return GetRequiredScoreTypeForGoal(m_symCurrentAccomplishment);
+}
+
+TrackType Campaign::GetRequiredTrackTypeForGoal(Symbol goal) const {
+    return ScoreTypeToTrackType(GetRequiredScoreTypeForGoal(goal));
+}
+
+TrackType Campaign::GetRequiredTrackTypeForCurrentAccomplishment() const {
+    if(m_symCurrentAccomplishment == "") return kTrackNone;
+    else return GetRequiredTrackTypeForGoal(m_symCurrentAccomplishment);
+}
+
+bool Campaign::HasValidUser() const {
+    LocalBandUser* u = GetUser();
+    if(!u) return false;
+    else return TheProfileMgr.GetProfileForUser(u);
+}
+
+LocalBandUser* Campaign::GetLaunchUser() const {
+    LocalBandUser* u = GetUser();
+    if(u) return u;
+    else return nullptr;
+}
+
+LocalBandUser* Campaign::GetUser() const {
+    return !unk84 ? nullptr : unk84->GetAssociatedLocalBandUser();
+}
+
+BandProfile* Campaign::GetProfile() const { return unk84; }
+
+Symbol Campaign::GetMajorLevelForMetaScore(int score){
+    Symbol key = GetCampaignLevelForMetaScore(score);
+    std::map<Symbol, Symbol>::iterator it = unk4c.find(key);
+    if(it != unk4c.end()) return it->second;
+    else return gNullStr;
+}
+
+Symbol Campaign::GetNextMajorLevelForMetaScore(int score){
+    Symbol symCurrentMajorLevel = GetMajorLevelForMetaScore(score);
+    MILO_ASSERT(!IsLastCampaignLevel( symCurrentMajorLevel ), 0x410);
+    int num = unk64.size();
+    for(int i = 0; i < num; i++){
+        if(unk64[i] == symCurrentMajorLevel){
+            if(i < num - 1){
+                return unk64[i + 1];
+            }
+            else return gNullStr;
+        }
+    }
+    MILO_ASSERT(false, 0x425);
+    return gNullStr;
+}
+
+void Campaign::UpdateProgressMeter(MeterDisplay* i_pMeter, LocalBandUser* i_pUser){
+    MILO_ASSERT(i_pUser, 0x42C);
+    MILO_ASSERT(i_pMeter, 0x42D);
+    int current = GetCurrentPointsForNextMajorCampaignLevelForUser(i_pUser);
+    int total = GetTotalPointsForNextMajorCampaignLevelForUser(i_pUser);
+    i_pMeter->SetValues(current, total);
+}
+
+void Campaign::UpdatePrimaryProgressMeter(MeterDisplay* i_pMeter){
+    MILO_ASSERT(i_pMeter, 0x436);
+    int current = GetCurrentPointsForNextMajorCampaignLevelForPrimary();
+    int total = GetTotalPointsForNextMajorCampaignLevelForPrimary();
+    i_pMeter->SetValues(current, total);
+}
+
+DataNode Campaign::OnMsg(const ProfileSwappedMsg& msg){
+    LocalUser* pUser1 = msg.GetUser1();
+    MILO_ASSERT(pUser1, 0x441);
+    MILO_ASSERT(pUser1->IsLocal(), 0x442);
+    LocalBandUser* pLocalUser1 = BandUserMgr::GetLocalBandUser(pUser1);
+    MILO_ASSERT(pLocalUser1, 0x444);
+    LocalUser* pUser2 = msg.GetUser2();
+    MILO_ASSERT(pUser2, 0x446);
+    MILO_ASSERT(pUser2->IsLocal(), 0x447);
+    LocalBandUser* pLocalUser2 = BandUserMgr::GetLocalBandUser(pUser2);
+    MILO_ASSERT(pLocalUser2, 0x449);
+    LocalBandUser* launchUser = GetLaunchUser();
+    if(launchUser == pLocalUser1 || launchUser == pLocalUser2){
+        ClearCurrentGoal();
+    }
+    return 1;
+}
+
+DataNode Campaign::OnMsg(const PrimaryProfileChangedMsg& msg){
+    BandProfile* profile = TheProfileMgr.GetPrimaryProfile();
+    if(profile) unk84 = profile;
+
+    if(!TheGameMode->InMode(campaign) && !TheGameMode->InMode(qp_career_songinfo)){
+        return 1;
+    }
+    else if(!profile){
+        m_symCurrentAccomplishment = gNullStr;
+        static Message init("init", 0);
+        init[0] = 3;
+        TheUIEventMgr->TriggerEvent(sign_out, init);
+    }
+    return 1;
+}
+
+bool Campaign::CanSkipSongs(){
+    if(m_symCurrentAccomplishment != gNullStr){
+        Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(m_symCurrentAccomplishment);
+        MILO_ASSERT(pAccomplishment, 0x480);
+        if(pAccomplishment->GetType() == kAccomplishmentTypeSetlist) return false;
+    }
+    return true;
+}
+
+bool Campaign::CanResumeSongs(){
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(m_symCurrentAccomplishment);
+    MILO_ASSERT(pAccomplishment, 0x490);
+    if(pAccomplishment->GetType() == kAccomplishmentTypeSetlist) return false;
+    else return true;
+}
+
+bool Campaign::CanSaveSetlists(){
+    return m_symCurrentAccomplishment == acc_createsetlist;
+}
+
+Symbol Campaign::GetNextHintToShow() const {
+    BandProfile* profile = TheProfileMgr.GetPrimaryProfile();
+    if(profile){
+        if(!profile->HasSeenHint(hint_goalcomplete_screen)){
+            if(profile->GetAccomplishmentProgress()->GetNumCompleted() > 0){
+                return hint_goalcomplete_screen;
+            }
+        }
+    }
+    return gNullStr;
+}
+
+bool Campaign::HasHintsToShow() const {
+    Symbol hint = GetNextHintToShow();
+    return hint != gNullStr;
+}
+
+Symbol Campaign::GetCampaignLevelAdvertisement(Symbol level) const {
+    CampaignLevel* pCampaignLevel = GetCampaignLevel(level);
+    MILO_ASSERT(pCampaignLevel, 0x4E2);
+    return pCampaignLevel->GetAdvertisement();
+}
+
+bool Campaign::GetWasLaunchedIntoMusicLibrary() const { return m_bWasLaunchedIntoMusicLibrary; }
+
+bool Campaign::DidUserMakeProgressOnGoal(LocalBandUser* i_pUser, Symbol goal){
+    MILO_ASSERT(i_pUser, 0x4F0);
+    return TheAccomplishmentMgr->DidUserMakeProgressOnGoal(i_pUser, goal);
+}
+
+bool Campaign::HasDisplayGoal(){
+    return unk28 != gNullStr;
+}
+
+Symbol Campaign::GetCategoryGroup(Symbol s){
+    AccomplishmentCategory* pAccomplishmentCategory = TheAccomplishmentMgr->GetAccomplishmentCategory(s);
+    MILO_ASSERT(pAccomplishmentCategory, 0x64D);
+    return pAccomplishmentCategory->GetGroup();
+}
+
+Symbol Campaign::GetGoalCategory(Symbol s){
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
+    MILO_ASSERT(pAccomplishment, 0x656);
+    return pAccomplishment->GetCategory();
+}
+
+Symbol Campaign::GetDisplayGoal(){ return unk28; }
+bool Campaign::ShouldReturnToCategoryScreen(){ return unk25; }
+
+void Campaign::HandleLaunchedGoalComplete(){
+    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(m_symCurrentAccomplishment);
+    MILO_ASSERT(pAccomplishment, 0x66C);
+    LocalBandUser* pUser = GetUser();
+    MILO_ASSERT(pUser, 0x66E);
+    BandProfile* pUserProfile = TheProfileMgr.GetProfileForUser(pUser);
+    MILO_ASSERT(pUserProfile, 0x670);
+    unk25 = TheAccomplishmentMgr->IsCategoryComplete(pUserProfile, pAccomplishment->GetCategory());
+}
+
+RndTex* Campaign::GetPrimaryBandLogoTex(){
+    BandMachineMgr* pMachineMgr = TheSessionMgr->mMachineMgr;
+    MILO_ASSERT(pMachineMgr, 0x67B);
+    if(pMachineMgr->IsLeaderMachineLocal()){
+        BandProfile* pProfile = TheProfileMgr.GetPrimaryProfile();
+        MILO_ASSERT(pProfile, 0x681);
+        return pProfile->GetBandLogoTex();
+    }
+    else return nullptr;
+}
+
+void Campaign::CheatNextMetaLevel(){
+    BandMachineMgr* pMachineMgr = TheSessionMgr->mMachineMgr;
+    MILO_ASSERT(pMachineMgr, 0x68F);
+    if(unk88 == -1){
+        unk88 = 0;
+        pMachineMgr->RefreshPrimaryProfileInfo();
+    }
+    else {
+        Symbol level = GetCampaignLevelForMetaScore(unk88);
+        if(IsLastCampaignLevel(level)){
+            unk88 = -1;
+            pMachineMgr->RefreshPrimaryProfileInfo();
+        }
+        else {
+            Symbol nextlevel = GetNextCampaignLevel(level);
+            CampaignLevel* pNextCampaignLevel = GetCampaignLevel(nextlevel);
+            MILO_ASSERT(pNextCampaignLevel, 0x6A9);
+            unk88 = pNextCampaignLevel->GetValue();
+            pMachineMgr->RefreshPrimaryProfileInfo();
+        }
+    }
+}
+
+const char* Campaign::GetCheatMetaLevel(){
+    if(unk88 == -1) return "Campaign Level Cheat Disabled";
+    else return GetCampaignLevelForMetaScore(unk88).Str();
+}
+
+void Campaign::CheatReloadCampaignData(){
+    if(s_pReloadedCampaignData) s_pReloadedCampaignData->Release();
+    s_pReloadedCampaignData = DataReadFile("config/campaign.dta", true);
+    m_pAccomplishmentMgr->CheatReloadData(s_pReloadedCampaignData);
+    Cleanup();
+    Init(s_pReloadedCampaignData);
 }
