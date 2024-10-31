@@ -68,6 +68,7 @@ public:
     void SyncSharedSongs();
     int GetMaxSongCount() const;
     void CheatToggleMaxSongCount();
+    bool InqAvailableSongSources(std::set<Symbol>&);
 
     static bool GetFakeSongsAllowed();
     static void SetFakeSongsAllowed(bool);
