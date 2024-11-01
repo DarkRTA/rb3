@@ -2,6 +2,7 @@
 #define METAGAME_SONGSTATUSMGR_H
 
 #include "game/Defines.h"
+#include "meta/FixedSizeSaveable.h"
 #include "system/utl/BinStream.h"
 #include "system/meta/FixedSizeSaveableStream.h"
 #include "game/BandUser.h"
@@ -18,25 +19,44 @@ enum SongStatusFlagType {
 };
 
 class SongStatusData {
+public:
     void Clear(ScoreType);
-    void SaveSize(int);
     void SaveToStream(BinStream&, ScoreType) const;
     void LoadFromStream(BinStream&, ScoreType);
+
+    static int SaveSize(int);
 };
 
-class SongStatus {
+class SongStatus : public FixedSizeSaveable {
+public:
     SongStatus();
-    ~SongStatus();
+    virtual ~SongStatus();
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
     void Clear();
-    void SaveSize(int);
-    void SaveFixed(FixedSizeSaveableStream&) const;
-    void LoadFixed(FixedSizeSaveableStream&, int);
-    void SetDirty(ScoreType, Difficulty, bool);
     void SetLastPlayed(int);
-    void GetLastPlayed() const;
+    int GetLastPlayed() const;
     void SetPlayCount(int);
     void SetBitmapLessonComplete(unsigned int&, int, bool);
     void SetProGuitarLessonSectionComplete(Difficulty, int, bool);
+    void SetProBassLessonSectionComplete(Difficulty, int, bool);
+    void SetProKeyboardLessonSectionComplete(Difficulty, int, bool);
+    void SetID(int);
+    int GetID() const;
+    void SetReview(unsigned char);
+    void SetInstrumentMask(unsigned short);
+
+    static int SaveSize(int);
+
+    int mSongID; // 0x8
+    unsigned short mBandScoreInstrumentMask; // 0xc
+    unsigned char mReview; // 0xe
+    int mLastPlayed; // 0x10
+    int mPlayCount; // 0x14
+    unsigned int mProGuitarLessonParts[4]; // 0x18
+    unsigned int mProBassLessonParts[4]; // 0x28
+    unsigned int mProKeyboardLessonParts[4]; // 0x38
 };
 
 class SongStatusLookup {
