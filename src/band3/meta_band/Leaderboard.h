@@ -1,8 +1,11 @@
 #pragma once
 #include "game/BandUser.h"
+#include "game/Defines.h"
 #include "net_band/DataResults.h"
 #include "obj/Object.h"
+#include "os/Debug.h"
 #include "os/OnlineID.h"
+#include "ui/UIColor.h"
 #include "ui/UIListProvider.h"
 
 enum IDType {
@@ -21,6 +24,12 @@ public:
         mType = id.mType;
         mPlayerID = id.mPlayerID;
         mOnlineID = id.mOnlineID;
+        return *this;
+    }
+
+    unsigned int GetPlayerID() const {
+        MILO_ASSERT(kPlayerID == mType, 0x59);
+        return mPlayerID;
     }
 
     IDType mType; // 0x0
@@ -30,18 +39,34 @@ public:
 
 class LeaderboardRow {
 public:
-    String unk0;
-    bool unkc;
-    int unk10;
-    int unk14;
-    bool unk18;
-    bool unk19;
-    bool unk1a;
-    int unk1c;
-    int unk20;
-    int unk24;
-    int unk28;
-    OnlineID unk2c;
+    LeaderboardRow();
+
+    String unk0; // 0x0
+    bool unkc; // 0xc
+    int unk10; // 0x10
+    int unk14; // 0x14
+    bool unk18; // 0x18
+    bool unk19; // 0x19
+    bool unk1a; // 0x1a
+    int unk1c; // 0x1c
+    int unk20; // 0x20
+    int unk24; // 0x24
+    short unk28; // 0x28
+    OnlineID unk2c; // 0x2c
+};
+
+enum EnumState {
+    kEnumInactive = 0,
+    kEnumWaiting = 1,
+    kEnumFailure = 2,
+    kEnumSuccess = 3,
+    kEnumDone = 4
+};
+
+enum LeaderboardMode {
+    kPercentile = 0,
+    kFriends = 1,
+    kRank = 2
 };
 
 class LeaderboardShortcutProvider;
@@ -80,18 +105,24 @@ public:
     virtual bool IsRowSelf(int) const = 0;
     virtual bool ShowsDifficultyAndPct() const;
 
+    int GetSelfRow() const;
+    void ShowData();
+    bool EnumerateHigherRankRange();
+    bool EnumerateLowerRankRange();
+    int GetStartingRow() const;
+
     DataResultList mDataResultList; // 0x20
-    std::vector<int> unk38; // 0x38
+    std::vector<LeaderboardRow> mLeaderboardRows; // 0x38
     int unk40; // 0x40
-    bool unk44; // 0x44
+    bool mHasStats; // 0x44
     int unk48; // 0x48
     EntityID mEntityID; // 0x4c
     HxGuid mNetBandGuid; // 0x5c
     Callback* mCallback; // 0x6c
     LeaderboardShortcutProvider* mShortcutProvider; // 0x70
-    int unk74; // 0x74
-    int unk78; // 0x78
-    int unk7c; // 0x7c
+    EnumState mEnumState; // 0x74
+    UIColor* mSelfColor; // 0x78
+    UIColor* mFriendColor; // 0x7c
     int unk80; // 0x80
 };
 
@@ -102,4 +133,9 @@ public:
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual int NumData() const;
     virtual DataNode Handle(DataArray*, bool);
+
+    void UpdateIndices();
+
+    int unk20; // 0x20
+    std::vector<int> unk24; // 0x24
 };
