@@ -19,6 +19,21 @@ enum SongStatusFlagType {
     kSongStatusFlag_Dirty = 0x80
 };
 
+// i got this from bank 5 don't get mad at me about the union implementation
+// personally i would've rather made this an anonymous union with the SongStatusData class declaration
+union SongStatusInstrumentUnion {
+    struct {
+        unsigned char mHoposPercentage;
+        unsigned char mSoloPercentage;
+    } mGuitarDrums;
+
+    struct {
+        unsigned char mAwesomes;
+        unsigned char mDoubleAwesomes;
+        unsigned char mTripleAwesomes;
+    } mVocals;
+};
+
 class SongStatusData {
 public:
     void Clear(ScoreType);
@@ -27,13 +42,11 @@ public:
 
     static int SaveSize(int);
 
-    unsigned char unk0; // 0x0
-    unsigned char unk1; // 0x1
-    unsigned short unk2; // 0x2
+    unsigned char mStars; // 0x0
+    unsigned char mAccuracy; // 0x1
+    unsigned short mStreak; // 0x2
     unsigned char mFlags; // 0x4
-    unsigned char unk5; // 0x5
-    unsigned char unk6; // 0x6
-    unsigned char unk7; // 0x7
+    SongStatusInstrumentUnion mShared; // 0x5-0x7
 };
 
 class SongStatus : public FixedSizeSaveable {
@@ -83,8 +96,8 @@ public:
     unsigned int mProGuitarLessonParts[4]; // 0x18
     unsigned int mProBassLessonParts[4]; // 0x28
     unsigned int mProKeyboardLessonParts[4]; // 0x38
-    int unk48[11]; // 0x48
-    int unk74[11]; // 0x74
+    int mScores[11]; // 0x48
+    int mScoreDiffs[11]; // 0x74
     SongStatusData mSongData[11][4]; // 0x48
 };
 

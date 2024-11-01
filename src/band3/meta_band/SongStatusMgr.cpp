@@ -5,18 +5,18 @@
 #include "utl/BinStream.h"
 
 void SongStatusData::Clear(ScoreType ty){
-    unk0 = 0;
-    unk1 = 0;
-    unk2 = 0;
+    mStars = 0;
+    mAccuracy = 0;
+    mStreak = 0;
     mFlags = 0;
     if(ty == kScoreVocals || ty == kScoreHarmony){
-        unk5 = 0;
-        unk6 = 0;
-        unk7 = 0;
+        mShared.mVocals.mAwesomes = 0;
+        mShared.mVocals.mDoubleAwesomes = 0;
+        mShared.mVocals.mTripleAwesomes = 0;
     }
     else {
-        unk5 = 0;
-        unk6 = 0;
+        mShared.mGuitarDrums.mHoposPercentage = 0;
+        mShared.mGuitarDrums.mSoloPercentage = 0;
     }
 }
 
@@ -25,30 +25,30 @@ int SongStatusData::SaveSize(int){
 }
 
 void SongStatusData::SaveToStream(BinStream& bs, ScoreType ty) const {
-    bs << unk0;
-    bs << unk1;
-    bs << unk2;
+    bs << mStars;
+    bs << mAccuracy;
+    bs << mStreak;
     bs << mFlags;
     if(ty == kScoreVocals || ty == kScoreHarmony){
-        bs << unk5;
-        bs << unk6;
-        bs << unk7;
+        bs << mShared.mVocals.mAwesomes;
+        bs << mShared.mVocals.mDoubleAwesomes;
+        bs << mShared.mVocals.mTripleAwesomes;
     }
     else {
-        bs << unk5;
-        bs << unk6;
-        bs << unk7;
+        bs << mShared.mGuitarDrums.mHoposPercentage;
+        bs << mShared.mGuitarDrums.mSoloPercentage;
+        bs << mShared.mVocals.mTripleAwesomes;
     }
 }
 
 void SongStatusData::LoadFromStream(BinStream& bs, ScoreType){
-    bs >> unk0;
-    bs >> unk1;
-    bs >> unk2;
+    bs >> mStars;
+    bs >> mAccuracy;
+    bs >> mStreak;
     bs >> mFlags;
-    bs >> unk5;
-    bs >> unk6;
-    bs >> unk7;
+    bs >> mShared.mVocals.mAwesomes;
+    bs >> mShared.mVocals.mDoubleAwesomes;
+    bs >> mShared.mVocals.mTripleAwesomes;
 }
 
 void SongStatus::Clear(){
@@ -63,9 +63,9 @@ void SongStatus::Clear(){
         mProKeyboardLessonParts[i] = 0;
     }
     for(int i = 0; i < 11; i++){
-        unk48[i] = 0;
+        mScores[i] = 0;
         // words at 0x74?
-        unk74[i] = 0;
+        mScoreDiffs[i] = 0;
         for(int j = 0; j < 4; j++){
             mSongData[i][j].Clear((ScoreType)i);
         }
@@ -92,9 +92,9 @@ void SongStatus::SaveFixed(FixedSizeSaveableStream& stream) const {
         stream << mProKeyboardLessonParts[i];
     }
     for(int i = 0; i < 11; i++){
-        stream << unk48[i];
-        // bytes at unk74?
-        stream << (unsigned char)unk74[i];
+        stream << mScores[i];
+        // bytes at mScoreDiffs?
+        stream << (unsigned char)mScoreDiffs[i];
         for(int j = 0; j < 4; j++){
             mSongData[i][j].SaveToStream(stream, (ScoreType)i);
         }
@@ -115,10 +115,10 @@ void SongStatus::LoadFixed(FixedSizeSaveableStream& stream, int rev){
         stream >> mProKeyboardLessonParts[i];
     }
     for(int i = 0; i < 11; i++){
-        stream >> unk48[i];
+        stream >> mScores[i];
         unsigned char uc;
         stream >> uc;
-        unk74[i] = uc;
+        mScoreDiffs[i] = uc;
         for(int j = 0; j < 4; j++){
             mSongData[i][j].LoadFromStream(stream, (ScoreType)i);
         }
@@ -174,57 +174,57 @@ void SongStatus::ClearFlag(SongStatusFlagType flag, ScoreType score, Difficulty 
 
 unsigned char SongStatus::GetSoloPercent(ScoreType scoreType, Difficulty diff) const {
     MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x20D);
-    return mSongData[scoreType][diff].unk6;
+    return mSongData[scoreType][diff].mShared.mGuitarDrums.mSoloPercentage;
 }
 
 unsigned char SongStatus::GetHOPOPercent(ScoreType scoreType, Difficulty diff) const {
     MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x214);
-    return mSongData[scoreType][diff].unk5;
+    return mSongData[scoreType][diff].mShared.mGuitarDrums.mHoposPercentage;
 }
 
 unsigned char SongStatus::GetAwesomes(ScoreType scoreType, Difficulty diff) const {
     MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x21B);
-    return mSongData[scoreType][diff].unk5;
+    return mSongData[scoreType][diff].mShared.mVocals.mAwesomes;
 }
 
 unsigned char SongStatus::GetDoubleAwesomes(ScoreType scoreType, Difficulty diff) const {
     MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x222);
-    return mSongData[scoreType][diff].unk6;
+    return mSongData[scoreType][diff].mShared.mVocals.mDoubleAwesomes;
 }
 
 unsigned char SongStatus::GetTripleAwesomes(ScoreType scoreType, Difficulty diff) const {
     MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x229);
-    return mSongData[scoreType][diff].unk7;
+    return mSongData[scoreType][diff].mShared.mVocals.mTripleAwesomes;
 }
 
 bool SongStatus::UpdateScore(ScoreType ty, Difficulty diff, int score){
-    if(score > unk48[ty]){
-        unk48[ty] = score;
-        unk74[ty] = diff;
+    if(score > mScores[ty]){
+        mScores[ty] = score;
+        mScoreDiffs[ty] = diff;
         return true;
     }
     else return false;
 }
 
 bool SongStatus::UpdateStars(ScoreType ty, Difficulty diff, unsigned char stars){
-    if(stars > mSongData[ty][diff].unk0){
-        mSongData[ty][diff].unk0 = stars;
+    if(stars > mSongData[ty][diff].mStars){
+        mSongData[ty][diff].mStars = stars;
         return true;
     }
     else return false;
 }
 
 bool SongStatus::UpdateAccuracy(ScoreType ty, Difficulty diff, unsigned char acc){
-    if(acc > mSongData[ty][diff].unk1){
-        mSongData[ty][diff].unk1 = acc;
+    if(acc > mSongData[ty][diff].mAccuracy){
+        mSongData[ty][diff].mAccuracy = acc;
         return true;
     }
     else return false;
 }
 
 bool SongStatus::UpdateStreak(ScoreType ty, Difficulty diff, unsigned short streak){
-    if(streak > mSongData[ty][diff].unk2){
-        mSongData[ty][diff].unk2 = streak;
+    if(streak > mSongData[ty][diff].mStreak){
+        mSongData[ty][diff].mStreak = streak;
         return true;
     }
     else return false;
@@ -232,8 +232,8 @@ bool SongStatus::UpdateStreak(ScoreType ty, Difficulty diff, unsigned short stre
 
 bool SongStatus::UpdateSoloPercent(ScoreType scoreType, Difficulty diff, unsigned char solopct){
     MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x25D);
-    if(solopct > mSongData[scoreType][diff].unk6){
-        mSongData[scoreType][diff].unk6 = solopct;
+    if(solopct > mSongData[scoreType][diff].mShared.mGuitarDrums.mSoloPercentage){
+        mSongData[scoreType][diff].mShared.mGuitarDrums.mSoloPercentage = solopct;
         return true;
     }
     else return false;
@@ -241,8 +241,8 @@ bool SongStatus::UpdateSoloPercent(ScoreType scoreType, Difficulty diff, unsigne
 
 bool SongStatus::UpdateHOPOPercent(ScoreType scoreType, Difficulty diff, unsigned char hopopct){
     MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x26A);
-    if(hopopct > mSongData[scoreType][diff].unk5){
-        mSongData[scoreType][diff].unk5 = hopopct;
+    if(hopopct > mSongData[scoreType][diff].mShared.mGuitarDrums.mHoposPercentage){
+        mSongData[scoreType][diff].mShared.mGuitarDrums.mHoposPercentage = hopopct;
         return true;
     }
     else return false;
@@ -250,8 +250,8 @@ bool SongStatus::UpdateHOPOPercent(ScoreType scoreType, Difficulty diff, unsigne
 
 bool SongStatus::UpdateAwesomes(ScoreType scoreType, Difficulty diff, unsigned char awesomes){
     MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x277);
-    if(awesomes > mSongData[scoreType][diff].unk5){
-        mSongData[scoreType][diff].unk5 = awesomes;
+    if(awesomes > mSongData[scoreType][diff].mShared.mVocals.mAwesomes){
+        mSongData[scoreType][diff].mShared.mVocals.mAwesomes = awesomes;
         return true;
     }
     else return false;
@@ -259,8 +259,8 @@ bool SongStatus::UpdateAwesomes(ScoreType scoreType, Difficulty diff, unsigned c
 
 bool SongStatus::UpdateDoubleAwesomes(ScoreType scoreType, Difficulty diff, unsigned char awesomes){
     MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x284);
-    if(awesomes > mSongData[scoreType][diff].unk6){
-        mSongData[scoreType][diff].unk6 = awesomes;
+    if(awesomes > mSongData[scoreType][diff].mShared.mVocals.mDoubleAwesomes){
+        mSongData[scoreType][diff].mShared.mVocals.mDoubleAwesomes = awesomes;
         return true;
     }
     else return false;
@@ -268,8 +268,8 @@ bool SongStatus::UpdateDoubleAwesomes(ScoreType scoreType, Difficulty diff, unsi
 
 bool SongStatus::UpdateTripleAwesomes(ScoreType scoreType, Difficulty diff, unsigned char awesomes){
     MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x291);
-    if(awesomes > mSongData[scoreType][diff].unk7){
-        mSongData[scoreType][diff].unk7 = awesomes;
+    if(awesomes > mSongData[scoreType][diff].mShared.mVocals.mTripleAwesomes){
+        mSongData[scoreType][diff].mShared.mVocals.mTripleAwesomes = awesomes;
         return true;
     }
     else return false;
