@@ -15,7 +15,8 @@ enum SongStatusFlagType {
     kSongStatusFlag_LessonComplete = 8,
     kSongStatusFlag_PerfectDrumRolls = 0x10,
     kSongStatusFlag_AllDoubleAwesomes = 0x20,
-    kSongStatusFlag_AllTripleAwesomes = 0x40
+    kSongStatusFlag_AllTripleAwesomes = 0x40,
+    kSongStatusFlag_Dirty = 0x80
 };
 
 class SongStatusData {
@@ -25,6 +26,14 @@ public:
     void LoadFromStream(BinStream&, ScoreType);
 
     static int SaveSize(int);
+
+    unsigned char unk0;
+    unsigned char unk1;
+    unsigned short unk2;
+    unsigned char unk4;
+    unsigned char unk5;
+    unsigned char unk6;
+    unsigned char unk7;
 };
 
 class SongStatus : public FixedSizeSaveable {
@@ -46,6 +55,9 @@ public:
     int GetID() const;
     void SetReview(unsigned char);
     void SetInstrumentMask(unsigned short);
+    void SetDirty(ScoreType, Difficulty, bool);
+    void SetFlag(SongStatusFlagType, ScoreType, Difficulty);
+    void ClearFlag(SongStatusFlagType, ScoreType, Difficulty);
 
     static int SaveSize(int);
 
