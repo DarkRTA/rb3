@@ -16,7 +16,7 @@ public:
     virtual bool IsConnected(){ return mLoginState == 2; }
     virtual bool IsLoggingIn(){ return mLoginState == 1; }
     // fix all of these return types
-    virtual int GetPlayerID(){
+    virtual int GetPlayerID(int){
         MILO_FAIL("not implemented for this platform");
         return 0;
     }

@@ -31,4 +31,4 @@ public:
     RndOverlay* mNetOverlay; // 0x360
 };
 
-extern Net* TheNet;
+extern Net TheNet;

@@ -11,6 +11,7 @@ public:
     void SetPrincipalID(int);
     int GetPrincipalID() const;
     const char* ToString() const;
+    bool IsInvalid() const { return !mValid; }
     bool operator==(const OnlineID&) const;
 };
 

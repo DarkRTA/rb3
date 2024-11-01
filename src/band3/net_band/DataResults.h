@@ -17,8 +17,10 @@ public:
 
 class DataResult {
 public:
-    DataResult();
-    virtual ~DataResult();
+    DataResult(){}
+    virtual ~DataResult(){}
+
+    bool GetDataResultValue(String, DataNode&) const;
 
     String mUrl; // 0x0
     std::map<String, DataNode> mDataMap; // 0xc
@@ -31,8 +33,12 @@ public:
     virtual void Update(Message*);
     virtual void SetWrapper(ContextWrapper*);
 
-    int unk4;
-    Quazal::String* unk8;
-    std::list<DataResult> unkc;
-    bool unk14;
+    void Clear();
+    DataResult* GetDataResult(int) const;
+    int NumDataResults() const { return mDataResultList.size(); }
+
+    int unk4; // 0x4
+    Quazal::String* mQDataResultString; // 0x8
+    std::list<DataResult> mDataResultList; // 0xc
+    bool mUpdated; // 0x14
 };

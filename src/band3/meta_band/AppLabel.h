@@ -5,6 +5,7 @@
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/CharData.h"
+#include "meta_band/Leaderboard.h"
 #include "meta_band/MainHubPanel.h"
 
 class AppLabel : public BandLabel {
@@ -35,4 +36,6 @@ public:
     void SetMotd(MainHubPanel*);
     void SetDLCMotd(MainHubPanel*);
     void SetUnlinkedMotd(const MainHubMessageProvider*);
+    void SetLeaderboardRankAndName(const LeaderboardRow&);
+    void SetLeaderboardName(const LeaderboardRow&);
 };
