@@ -155,7 +155,7 @@
             "band3/meta_band/BandUI.cpp": "MISSING",
             "band3/meta_band/CalibrationPanel.cpp": "NonMatching",
             "band3/meta_band/Campaign.cpp": "MISSING",
-            "band3/meta_band/CampaignCareerLeaderboardPanel.cpp": "MISSING",
+            "band3/meta_band/CampaignCareerLeaderboardPanel.cpp": "NonMatching",
             "band3/meta_band/CampaignGoalsLeaderboardChoicePanel.cpp": "NonMatching",
             "band3/meta_band/CampaignGoalsLeaderboardPanel.cpp": "NonMatching",
             "band3/meta_band/CampaignKey.cpp": "Matching",
