@@ -159,7 +159,7 @@
             "band3/meta_band/CampaignGoalsLeaderboardChoicePanel.cpp": "NonMatching",
             "band3/meta_band/CampaignGoalsLeaderboardPanel.cpp": "MISSING",
             "band3/meta_band/CampaignKey.cpp": "Matching",
-            "band3/meta_band/CampaignLeaderboards.cpp": "MISSING",
+            "band3/meta_band/CampaignLeaderboards.cpp": "NonMatching",
             "band3/meta_band/CampaignLevel.cpp": "Matching",
             "band3/meta_band/CampaignSongInfoPanel.cpp": "NonMatching",
             "band3/meta_band/CharCache.cpp": "NonMatching",

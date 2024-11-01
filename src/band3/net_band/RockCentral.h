@@ -18,6 +18,9 @@ public:
     void GetBattleLeaderboardByPlayer(std::vector<int>&, int, LeaderboardMode, int, DataResultList&, Hmx::Object*);
     void GetBattleLeaderboardByRankRange(std::vector<int>&, int, int, int, DataResultList&, Hmx::Object*);
     void GetBattleMaxRank(std::vector<int>&, int, DataResultList&, Hmx::Object*);
+    void GetAccLeaderboardByPlayer(std::vector<int>&, Symbol&, LeaderboardMode, int, DataResultList&, Hmx::Object*);
+    void GetAccLeaderboardByRankRange(std::vector<int>&, Symbol&, int, int, DataResultList&, Hmx::Object*);
+    void GetAccMaxRank(std::vector<int>&, Symbol&, DataResultList&, Hmx::Object*);
 };
 
 extern RockCentral TheRockCentral;
