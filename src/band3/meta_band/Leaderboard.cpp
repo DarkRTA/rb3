@@ -18,9 +18,8 @@
 #include "ui/UIListMesh.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
+
+int Leaderboard::sPageSize = 20;
 
 LeaderboardRow::LeaderboardRow(){
     mRank = 0;

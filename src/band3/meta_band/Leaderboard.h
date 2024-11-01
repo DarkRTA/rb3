@@ -73,6 +73,19 @@ enum EnumState {
     kEnumDone = 5
 };
 
+enum LeaderboardType {
+    kSong = 0,
+    kCareer = 1,
+    kCappedCareer = 2,
+    kBand = 3
+};
+
+enum LeaderboardMode {
+    kPercentile = 0,
+    kFriends = 1,
+    kRank = 2
+};
+
 class LeaderboardShortcutProvider;
 
 class Leaderboard : public UIListProvider, public Hmx::Object {
@@ -126,6 +139,9 @@ public:
     void GetPlayerIds(std::vector<int>&);
 
     DataNode OnMsg(const RockCentralOpCompleteMsg&);
+
+    static LeaderboardMode ModeToLeaderboardMode(Mode);
+    static int sPageSize;
 
     DataResultList mDataResultList; // 0x20
     std::vector<LeaderboardRow> mLeaderboardRows; // 0x38
