@@ -58,6 +58,20 @@ public:
     void SetDirty(ScoreType, Difficulty, bool);
     void SetFlag(SongStatusFlagType, ScoreType, Difficulty);
     void ClearFlag(SongStatusFlagType, ScoreType, Difficulty);
+    unsigned char GetSoloPercent(ScoreType, Difficulty) const;
+    unsigned char GetHOPOPercent(ScoreType, Difficulty) const;
+    unsigned char GetAwesomes(ScoreType, Difficulty) const;
+    unsigned char GetDoubleAwesomes(ScoreType, Difficulty) const;
+    unsigned char GetTripleAwesomes(ScoreType, Difficulty) const;
+    bool UpdateScore(ScoreType, Difficulty, int);
+    bool UpdateStars(ScoreType, Difficulty, unsigned char);
+    bool UpdateAccuracy(ScoreType, Difficulty, unsigned char);
+    bool UpdateStreak(ScoreType, Difficulty, unsigned short);
+    bool UpdateSoloPercent(ScoreType, Difficulty, unsigned char);
+    bool UpdateHOPOPercent(ScoreType, Difficulty, unsigned char);
+    bool UpdateAwesomes(ScoreType, Difficulty, unsigned char);
+    bool UpdateDoubleAwesomes(ScoreType, Difficulty, unsigned char);
+    bool UpdateTripleAwesomes(ScoreType, Difficulty, unsigned char);
 
     static int SaveSize(int);
 

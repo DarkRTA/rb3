@@ -1,6 +1,7 @@
 #include "SongStatusMgr.h"
 #include "game/Defines.h"
 #include "meta/FixedSizeSaveable.h"
+#include "os/Debug.h"
 #include "utl/BinStream.h"
 
 void SongStatusData::Clear(ScoreType ty){
@@ -169,6 +170,109 @@ void SongStatus::SetFlag(SongStatusFlagType flag, ScoreType score, Difficulty di
 
 void SongStatus::ClearFlag(SongStatusFlagType flag, ScoreType score, Difficulty diff){
     mSongData[score][diff].mFlags &= ~flag;
+}
+
+unsigned char SongStatus::GetSoloPercent(ScoreType scoreType, Difficulty diff) const {
+    MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x20D);
+    return mSongData[scoreType][diff].unk6;
+}
+
+unsigned char SongStatus::GetHOPOPercent(ScoreType scoreType, Difficulty diff) const {
+    MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x214);
+    return mSongData[scoreType][diff].unk5;
+}
+
+unsigned char SongStatus::GetAwesomes(ScoreType scoreType, Difficulty diff) const {
+    MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x21B);
+    return mSongData[scoreType][diff].unk5;
+}
+
+unsigned char SongStatus::GetDoubleAwesomes(ScoreType scoreType, Difficulty diff) const {
+    MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x222);
+    return mSongData[scoreType][diff].unk6;
+}
+
+unsigned char SongStatus::GetTripleAwesomes(ScoreType scoreType, Difficulty diff) const {
+    MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x229);
+    return mSongData[scoreType][diff].unk7;
+}
+
+bool SongStatus::UpdateScore(ScoreType ty, Difficulty diff, int score){
+    if(score > unk48[ty]){
+        unk48[ty] = score;
+        unk74[ty] = diff;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateStars(ScoreType ty, Difficulty diff, unsigned char stars){
+    if(stars > mSongData[ty][diff].unk0){
+        mSongData[ty][diff].unk0 = stars;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateAccuracy(ScoreType ty, Difficulty diff, unsigned char acc){
+    if(acc > mSongData[ty][diff].unk1){
+        mSongData[ty][diff].unk1 = acc;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateStreak(ScoreType ty, Difficulty diff, unsigned short streak){
+    if(streak > mSongData[ty][diff].unk2){
+        mSongData[ty][diff].unk2 = streak;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateSoloPercent(ScoreType scoreType, Difficulty diff, unsigned char solopct){
+    MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x25D);
+    if(solopct > mSongData[scoreType][diff].unk6){
+        mSongData[scoreType][diff].unk6 = solopct;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateHOPOPercent(ScoreType scoreType, Difficulty diff, unsigned char hopopct){
+    MILO_ASSERT(( scoreType != kScoreHarmony ) && ( scoreType != kScoreVocals ), 0x26A);
+    if(hopopct > mSongData[scoreType][diff].unk5){
+        mSongData[scoreType][diff].unk5 = hopopct;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateAwesomes(ScoreType scoreType, Difficulty diff, unsigned char awesomes){
+    MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x277);
+    if(awesomes > mSongData[scoreType][diff].unk5){
+        mSongData[scoreType][diff].unk5 = awesomes;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateDoubleAwesomes(ScoreType scoreType, Difficulty diff, unsigned char awesomes){
+    MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x284);
+    if(awesomes > mSongData[scoreType][diff].unk6){
+        mSongData[scoreType][diff].unk6 = awesomes;
+        return true;
+    }
+    else return false;
+}
+
+bool SongStatus::UpdateTripleAwesomes(ScoreType scoreType, Difficulty diff, unsigned char awesomes){
+    MILO_ASSERT(( scoreType == kScoreHarmony ) || ( scoreType == kScoreVocals ), 0x291);
+    if(awesomes > mSongData[scoreType][diff].unk7){
+        mSongData[scoreType][diff].unk7 = awesomes;
+        return true;
+    }
+    else return false;
 }
 
 SongStatusCacheMgr::SongStatusCacheMgr(const LocalBandUser** user) : mUser(user), unk1f54(0) {
