@@ -249,7 +249,7 @@ namespace {
         JoinResponseMsg respMsg(err, custom);
         TheNetMessenger.DeliverMsg(ui, respMsg, kReliable);
         ProcessedJoinRequestMsg pjReqMsg(false);
-        TheNet->Handle(pjReqMsg, false);
+        TheNet.Handle(pjReqMsg, false);
     }
 }
 

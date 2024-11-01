@@ -16,9 +16,11 @@ enum IDType {
 
 class EntityID {
 public:
-    EntityID() : mType(kInvalid) {}
-    EntityID(const EntityID& id){
-        *this = id;
+    EntityID(){ mType = kInvalid; }
+    EntityID(const EntityID& id){ *this = id; }
+    EntityID(unsigned int pID){
+        mType = kPlayerID;
+        mPlayerID = pID;
     }
 
     EntityID& operator=(const EntityID& id){
@@ -54,7 +56,7 @@ public:
     int mORank; // 0x14
     bool mIsPercentile; // 0x18
     bool mIsFriend; // 0x19
-    bool mIsEntity; // 0x1a
+    bool mIsSelf; // 0x1a
     Difficulty mDiffID; // 0x1c
     int mNotesPct; // 0x20
     int mScore; // 0x24

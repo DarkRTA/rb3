@@ -231,7 +231,7 @@
             "band3/meta_band/PatchPanel.cpp": "MISSING",
             "band3/meta_band/PatchSelectPanel.cpp": "MISSING",
             "band3/meta_band/PerformanceData.cpp": "NonMatching",
-            "band3/meta_band/PlayerLeaderboards.cpp": "MISSING",
+            "band3/meta_band/PlayerLeaderboards.cpp": "NonMatching",
             "band3/meta_band/PrefabMgr.cpp": "NonMatching",
             "band3/meta_band/ProfileAssets.cpp": "Matching",
             "band3/meta_band/ProfileMgr.cpp": "NonMatching",

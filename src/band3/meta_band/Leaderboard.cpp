@@ -28,7 +28,7 @@ LeaderboardRow::LeaderboardRow(){
     mUnnamedBand = false;
     mIsPercentile = false;
     mIsFriend = false;
-    mIsEntity = false;
+    mIsSelf = false;
     mDiffID = kNumDifficulties;
     mNotesPct = 0;
     mScore = 0;
@@ -226,7 +226,7 @@ void Leaderboard::ShowData(){
             row.mIsFriend = node.Int();
         }
         if(datares->GetDataResultValue("pid", node)){
-            row.mIsEntity = node.Int() == mEntityID.GetPlayerID();
+            row.mIsSelf = node.Int() == mEntityID.GetPlayerID();
         }
         if(datares->GetDataResultValue("diff_id", node)){
             row.mDiffID = (Difficulty)(node.Int() - 1);
