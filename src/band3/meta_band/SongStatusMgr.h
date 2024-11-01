@@ -27,13 +27,13 @@ public:
 
     static int SaveSize(int);
 
-    unsigned char unk0;
-    unsigned char unk1;
-    unsigned short unk2;
-    unsigned char unk4;
-    unsigned char unk5;
-    unsigned char unk6;
-    unsigned char unk7;
+    unsigned char unk0; // 0x0
+    unsigned char unk1; // 0x1
+    unsigned short unk2; // 0x2
+    unsigned char mFlags; // 0x4
+    unsigned char unk5; // 0x5
+    unsigned char unk6; // 0x6
+    unsigned char unk7; // 0x7
 };
 
 class SongStatus : public FixedSizeSaveable {
@@ -69,18 +69,39 @@ public:
     unsigned int mProGuitarLessonParts[4]; // 0x18
     unsigned int mProBassLessonParts[4]; // 0x28
     unsigned int mProKeyboardLessonParts[4]; // 0x38
+    int unk48[11]; // 0x48
+    int unk74[11]; // 0x74
+    SongStatusData mSongData[11][4]; // 0x48
 };
 
 class SongStatusLookup {
+public:
     SongStatusLookup();
     ~SongStatusLookup();
     void Clear();
     void Save(FixedSizeSaveableStream&) const;
     void Load(FixedSizeSaveableStream&, int);
+
+    int unk0;
+    int unk4;
 };
 
-class SongStatusCacheMgr {
+class SongStatusCacheMgr : public FixedSizeSaveable {
+public:
+    SongStatusCacheMgr(const LocalBandUser**);
+    virtual ~SongStatusCacheMgr();
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
+    void Clear();
+
+    static int SaveSize(int);
+
+    SongStatusLookup mLookups[1000];
+    SongStatus* mStatuses; // 0x1f48
+    int unk1f4c; // 0x1f4c
+    const LocalBandUser** mUser; // 0x1f50
+    bool unk1f54; // 0x1f54
 };
 
 class BandSongMgr;

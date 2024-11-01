@@ -1,12 +1,13 @@
 #include "SongStatusMgr.h"
 #include "game/Defines.h"
 #include "meta/FixedSizeSaveable.h"
+#include "utl/BinStream.h"
 
 void SongStatusData::Clear(ScoreType ty){
     unk0 = 0;
     unk1 = 0;
     unk2 = 0;
-    unk4 = 0;
+    mFlags = 0;
     if(ty == kScoreVocals || ty == kScoreHarmony){
         unk5 = 0;
         unk6 = 0;
@@ -26,7 +27,7 @@ void SongStatusData::SaveToStream(BinStream& bs, ScoreType ty) const {
     bs << unk0;
     bs << unk1;
     bs << unk2;
-    bs << unk4;
+    bs << mFlags;
     if(ty == kScoreVocals || ty == kScoreHarmony){
         bs << unk5;
         bs << unk6;
@@ -43,7 +44,7 @@ void SongStatusData::LoadFromStream(BinStream& bs, ScoreType){
     bs >> unk0;
     bs >> unk1;
     bs >> unk2;
-    bs >> unk4;
+    bs >> mFlags;
     bs >> unk5;
     bs >> unk6;
     bs >> unk7;
@@ -54,30 +55,20 @@ void SongStatus::Clear(){
     mBandScoreInstrumentMask = 0;
     mReview = 0;
     mLastPlayed = 0;
-    mLastPlayed = 0;
+    mPlayCount = 0;
     for(int i = 0; i < 4; i++){
         mProGuitarLessonParts[i] = 0;
         mProBassLessonParts[i] = 0;
         mProKeyboardLessonParts[i] = 0;
     }
-    
-//   pSVar3 = this + 0xa0;
-//   SVar2 = 0;
-//   do {
-//     *(undefined4 *)(this + 0x48) = 0;
-//     iVar1 = 0;
-//     *(undefined4 *)(this + 0x74) = 0;
-//     this_00 = pSVar3;
-//     do {
-//       SongStatusData::Clear((SongStatusData *)this_00,SVar2);
-//       iVar1 = iVar1 + 1;
-//       this_00 = (SongStatus *)((SongStatusData *)this_00 + 8);
-//     } while (iVar1 < 4);
-//     SVar2 = SVar2 + 1;
-//     pSVar3 = pSVar3 + 0x20;
-//     this = this + 4;
-//   } while ((int)SVar2 < 0xb);
-//   return;
+    for(int i = 0; i < 11; i++){
+        unk48[i] = 0;
+        // words at 0x74?
+        unk74[i] = 0;
+        for(int j = 0; j < 4; j++){
+            mSongData[i][j].Clear((ScoreType)i);
+        }
+    }
 }
 
 int SongStatus::SaveSize(int i){
@@ -99,26 +90,38 @@ void SongStatus::SaveFixed(FixedSizeSaveableStream& stream) const {
         stream << mProBassLessonParts[i];
         stream << mProKeyboardLessonParts[i];
     }
-    
-//   pSVar2 = this + 0xa0;
-//   SVar1 = 0;
-//   do {
-//     local_34 = *(undefined4 *)(this + 0x48);
-//     BinStream::WriteEndian((BinStream *)param_1,&local_34,4);
-//     local_38 = (undefined)*(undefined4 *)(this + 0x74);
-//     BinStream::Write((BinStream *)param_1,&local_38,1);
-//     iVar3 = 0;
-//     this_00 = pSVar2;
-//     do {
-//       SongStatusData::SaveToStream((SongStatusData *)this_00,(BinStream *)param_1,SVar1);
-//       iVar3 = iVar3 + 1;
-//       this_00 = (SongStatus *)((SongStatusData *)this_00 + 8);
-//     } while (iVar3 < 4);
-//     SVar1 = SVar1 + 1;
-//     pSVar2 = pSVar2 + 0x20;
-//     this = this + 4;
-//   } while ((int)SVar1 < 0xb);
-//   return;
+    for(int i = 0; i < 11; i++){
+        stream << unk48[i];
+        // bytes at unk74?
+        stream << (unsigned char)unk74[i];
+        for(int j = 0; j < 4; j++){
+            mSongData[i][j].SaveToStream(stream, (ScoreType)i);
+        }
+    }
+}
+
+void SongStatus::LoadFixed(FixedSizeSaveableStream& stream, int rev){
+    stream >> mSongID;
+    stream >> mBandScoreInstrumentMask;
+    stream >> mReview;
+    stream >> mLastPlayed;
+    stream >> mPlayCount;
+    for(int i = 0; i < 4; i++){
+        stream >> mProGuitarLessonParts[i];
+        if(rev >= 0x90){
+            stream >> mProBassLessonParts[i];
+        }
+        stream >> mProKeyboardLessonParts[i];
+    }
+    for(int i = 0; i < 11; i++){
+        stream >> unk48[i];
+        unsigned char uc;
+        stream >> uc;
+        unk74[i] = uc;
+        for(int j = 0; j < 4; j++){
+            mSongData[i][j].LoadFromStream(stream, (ScoreType)i);
+        }
+    }
 }
 
 void SongStatus::SetDirty(ScoreType ty, Difficulty diff, bool high){
@@ -159,6 +162,20 @@ void SongStatus::SetID(int id){ mSongID = id; }
 int SongStatus::GetID() const { return mSongID; }
 void SongStatus::SetReview(unsigned char r){ mReview = r; }
 void SongStatus::SetInstrumentMask(unsigned short mask){ mBandScoreInstrumentMask = mask; }
+
+void SongStatus::SetFlag(SongStatusFlagType flag, ScoreType score, Difficulty diff){
+    mSongData[score][diff].mFlags |= flag;
+}
+
+void SongStatus::ClearFlag(SongStatusFlagType flag, ScoreType score, Difficulty diff){
+    mSongData[score][diff].mFlags &= ~flag;
+}
+
+SongStatusCacheMgr::SongStatusCacheMgr(const LocalBandUser** user) : mUser(user), unk1f54(0) {
+    mStatuses = new SongStatus[1000];
+    Clear();
+    mSaveSizeMethod = &SaveSize;
+}
 
 SongStatus::SongStatus(){
     mSaveSizeMethod = &SaveSize;
