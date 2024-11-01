@@ -1,6 +1,7 @@
 #pragma once
 #include "game/BandUser.h"
 #include "game/Defines.h"
+#include "game/GameMessages.h"
 #include "net_band/DataResults.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -32,6 +33,12 @@ public:
         return mPlayerID;
     }
 
+    bool IsInvalid() const {
+        if(mType == kInvalid) return true;
+        else if(mType == kPlayerID && mPlayerID == 0 && mOnlineID.IsInvalid()) return true;
+        else return false;
+    }
+
     IDType mType; // 0x0
     unsigned int mPlayerID; // 0x4
     OnlineID mOnlineID; // 0x8
@@ -41,38 +48,39 @@ class LeaderboardRow {
 public:
     LeaderboardRow();
 
-    String unk0; // 0x0
-    bool unkc; // 0xc
-    int unk10; // 0x10
-    int unk14; // 0x14
-    bool unk18; // 0x18
-    bool unk19; // 0x19
-    bool unk1a; // 0x1a
-    int unk1c; // 0x1c
-    int unk20; // 0x20
-    int unk24; // 0x24
-    short unk28; // 0x28
-    OnlineID unk2c; // 0x2c
+    String mName; // 0x0
+    bool mUnnamedBand; // 0xc
+    int mRank; // 0x10
+    int mORank; // 0x14
+    bool mIsPercentile; // 0x18
+    bool mIsFriend; // 0x19
+    bool mIsEntity; // 0x1a
+    Difficulty mDiffID; // 0x1c
+    int mNotesPct; // 0x20
+    int mScore; // 0x24
+    short mInstMask; // 0x28
+    OnlineID mLBOnlineID; // 0x2c
 };
 
 enum EnumState {
     kEnumInactive = 0,
     kEnumWaiting = 1,
-    kEnumFailure = 2,
-    kEnumSuccess = 3,
-    kEnumDone = 4
-};
-
-enum LeaderboardMode {
-    kPercentile = 0,
-    kFriends = 1,
-    kRank = 2
+    kEnumState2 = 2,
+    kEnumFailure = 3,
+    kEnumSuccess = 4,
+    kEnumDone = 5
 };
 
 class LeaderboardShortcutProvider;
 
 class Leaderboard : public UIListProvider, public Hmx::Object {
 public:
+    enum Mode {
+        kPercentile = 0,
+        kFriends = 1,
+        kRank = 2
+    };
+
     class Callback {
     public:
         Callback(){}
@@ -110,12 +118,18 @@ public:
     bool EnumerateHigherRankRange();
     bool EnumerateLowerRankRange();
     int GetStartingRow() const;
+    Symbol GetModeSymbol();
+    void CycleMode();
+    void SetMode(Mode, bool);
+    void GetPlayerIds(std::vector<int>&);
+
+    DataNode OnMsg(const RockCentralOpCompleteMsg&);
 
     DataResultList mDataResultList; // 0x20
     std::vector<LeaderboardRow> mLeaderboardRows; // 0x38
     int unk40; // 0x40
     bool mHasStats; // 0x44
-    int unk48; // 0x48
+    Mode mMode; // 0x48
     EntityID mEntityID; // 0x4c
     HxGuid mNetBandGuid; // 0x5c
     Callback* mCallback; // 0x6c
@@ -135,7 +149,9 @@ public:
     virtual DataNode Handle(DataArray*, bool);
 
     void UpdateIndices();
+    int LeaderboardIxToIx(int);
+    int IxToLeaderboardIx(int ix) const { return mIndices[ix]; }
 
-    int unk20; // 0x20
-    std::vector<int> unk24; // 0x24
+    const Leaderboard* mLeaderboard; // 0x20
+    std::vector<int> mIndices; // 0x24
 };
