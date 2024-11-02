@@ -23,6 +23,7 @@
             "band3/meta_band/AccomplishmentProgress.cpp": "NonMatching",
             "band3/meta_band/OvershellSlotState.cpp": "NonMatching",
             "band3/meta_band/SongStatusMgr.cpp": "NonMatching",
+            "band3/meta_band/SongUpgradeMgr.cpp": "NonMatching",
             "band3/meta_band/TexLoadPanel.cpp": "NonMatching",
 
             "band3/tour/TourPropertyCollection.cpp": "NonMatching",

@@ -173,8 +173,11 @@ const char* SongUpgradeMgr::ContentDir(){
     return "songs_upgrades";
 }
 
-void SongUpgradeMgr::ContentMounted(const char*, const char*){
-
+void SongUpgradeMgr::ContentMounted(const char* c1, const char* c2){
+    if(unk34.find(c1) == unk34.end()){
+        std::vector<int> vec;
+        unk34[c1] = vec;
+    }
 }
 
 void SongUpgradeMgr::ContentLoaded(Loader* loader, ContentLocT loct, Symbol s){
@@ -273,16 +276,11 @@ void SongUpgradeMgr::AddUpgradeData(DataArray* arr, DataLoader* loader, ContentL
     if(!streq(s.Str(), ".")){
         std::vector<int> songs;
         for(int i = 0; i < arr->Size(); i++){
-            DataArray* curArr = arr->Array(i);
-            int songID = curArr->FindInt(song_id);
+            int songID = arr->Array(i)->FindInt(song_id);
             MILO_ASSERT(songID != kSongID_Invalid, 0x212);
             songs.push_back(songID);
         }
-        std::map<Symbol, std::vector<int> >::iterator it = unk34.find(s);
-        if(it != unk34.end()){
-            // some other vector method occurs here
-            it->second = songs;
-        }
+        unk34[s] = songs;
         mSongCacheNeedsWrite = true;
     }
 }
