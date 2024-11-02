@@ -195,15 +195,17 @@ public:
     int GetAwesomes(int, ScoreType, Difficulty) const;
     int GetDoubleAwesomes(int, ScoreType, Difficulty) const;
     int GetTripleAwesomes(int, ScoreType, Difficulty) const;
+    int GetCachedTotalStars(ScoreType) const;
+    int CalculateTotalStars(ScoreType) const;
 
     static int SaveSize(int);
 
     LocalBandUser* mLocalUser; // 0x24
     BandSongMgr* mSongMgr; // 0x28
     mutable SongStatusCacheMgr mCacheMgr; // 0x2c
-    int unk1f84[11];
-    int unk1fb0[11];
-    int unk1fdc[11];
+    int mCachedTotalScores[11]; // 0x1f84
+    int mCachedTotalDiscScores[11]; // 0x1fb0
+    int mCachedTotalStars[11]; // 0x1fdc
     SongStatus* mUpdatingStatus; // 0x2008
     ScoreType mUpdatingScoreType; // 0x200c
     Difficulty mUpdatingDifficulty; // 0x2010

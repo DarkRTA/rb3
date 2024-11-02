@@ -3,11 +3,14 @@
 #include "game/Defines.h"
 #include "macros.h"
 #include "meta/FixedSizeSaveable.h"
+#include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "net_band/RockCentral.h"
 #include "os/DateTime.h"
 #include "os/Debug.h"
 #include "utl/BinStream.h"
+#include "utl/Symbol.h"
+#include "utl/Symbols.h"
 
 void SongStatusData::Clear(ScoreType ty){
     mStars = 0;
@@ -461,9 +464,9 @@ void SongStatusMgr::Clear(){
     }
     mCacheMgr.Clear();
     for(int i = 0; i < 11; i++){
-        unk1f84[i] = 0;
-        unk1fb0[i] = 0;
-        unk1fdc[i] = 0;
+        mCachedTotalScores[i] = 0;
+        mCachedTotalDiscScores[i] = 0;
+        mCachedTotalStars[i] = 0;
     }
 }
 
@@ -722,4 +725,76 @@ int SongStatusMgr::GetBestTripleAwesomes(int idx, ScoreType ty, Difficulty diff)
         }
     }
     return best;
+}
+
+int SongStatusMgr::GetBestSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty) const {
+
+}
+
+int SongStatusMgr::GetCachedTotalDiscScore(ScoreType ty) const {
+    return mCachedTotalDiscScores[ty];
+}
+
+int SongStatusMgr::GetCachedTotalScore(ScoreType ty) const {
+    return mCachedTotalScores[ty];
+}
+
+int SongStatusMgr::GetCachedTotalStars(ScoreType ty) const {
+    return mCachedTotalStars[ty];
+}
+
+void SongStatusMgr::UpdateCachedTotalDiscScore(ScoreType ty){
+    mCachedTotalDiscScores[ty] = CalculateTotalScore(ty, rb3);
+}
+
+void SongStatusMgr::UpdateCachedTotalScore(ScoreType ty){
+    mCachedTotalScores[ty] = CalculateTotalScore(ty, gNullStr);
+}
+
+void SongStatusMgr::UpdateCachedTotalStars(ScoreType ty){
+    mCachedTotalStars[ty] = CalculateTotalStars(ty);
+}
+
+int SongStatusMgr::CalculateTotalScore(ScoreType ty, Symbol s) const {
+    int ret = 0;
+    for(int i = 0; i < 1000; i++){
+        int songID = mCacheMgr.GetSongID(i);
+        if(songID && mSongMgr->HasSong(songID)){
+            if(s != gNullStr){
+                BandSongMetadata* metaData = (BandSongMetadata*)mSongMgr->Data(songID);
+                MILO_ASSERT(metaData, 0x63E);
+                if(s != metaData->SourceSym()) continue;
+            }
+            SongStatus* status = mCacheMgr.GetSongStatusPtrForIndex(i);
+            if(status){
+                ret += status->mHighScores[ty];
+                if(ret > 2000000000) return 2000000000;
+            }
+        }
+    }
+    return ret;
+}
+
+int SongStatusMgr::GetTotalBestStars(ScoreType ty, Difficulty diff, Symbol s) const {
+    int ret = 0;
+    for(int i = 0; i < 1000; i++){
+        int songID = mCacheMgr.GetSongID(i);
+        if(songID && mSongMgr->HasSong(songID)){
+            if(s != gNullStr){
+                BandSongMetadata* metaData = (BandSongMetadata*)mSongMgr->Data(songID);
+                MILO_ASSERT(metaData, 0x63E);
+                if(s != metaData->SourceSym()) continue;
+            }
+            int beststars = GetBestStars(songID, ty, diff);
+            int count = ret + beststars;
+            if(beststars > 5) count = ret + 5;
+            ret = count;
+            if(count > 5000) return 5000;
+        }
+    }
+    return ret;
+}
+
+int SongStatusMgr::CalculateTotalStars(ScoreType ty) const {
+    
 }
