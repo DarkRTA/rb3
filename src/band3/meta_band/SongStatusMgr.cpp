@@ -1,6 +1,8 @@
 #include "SongStatusMgr.h"
 #include "game/Defines.h"
+#include "macros.h"
 #include "meta/FixedSizeSaveable.h"
+#include "meta_band/BandSongMgr.h"
 #include "os/Debug.h"
 #include "utl/BinStream.h"
 
@@ -275,8 +277,31 @@ bool SongStatus::UpdateTripleAwesomes(ScoreType scoreType, Difficulty diff, unsi
     else return false;
 }
 
+SongStatusLookup::SongStatusLookup(){
+    Clear();
+}
+
+SongStatusLookup::~SongStatusLookup(){
+
+}
+
+void SongStatusLookup::Clear(){
+    mSongID = 0;
+    mLastPlayed = 0;
+}
+
+void SongStatusLookup::Save(FixedSizeSaveableStream& stream) const {
+    stream << mSongID;
+    stream << mLastPlayed;
+}
+
+void SongStatusLookup::Load(FixedSizeSaveableStream& stream, int){
+    stream >> mSongID;
+    stream >> mLastPlayed;
+}
+
 SongStatusCacheMgr::SongStatusCacheMgr(const LocalBandUser** user) : mUser(user), unk1f54(0) {
-    mStatuses = new SongStatus[1000];
+    mpSongStatusFull = new SongStatus[1000];
     Clear();
     mSaveSizeMethod = &SaveSize;
 }
@@ -288,4 +313,134 @@ SongStatus::SongStatus(){
 
 SongStatus::~SongStatus(){
 
+}
+
+SongStatusCacheMgr::~SongStatusCacheMgr(){
+    delete [] mpSongStatusFull;
+    mpSongStatusFull = 0;
+}
+
+void SongStatusCacheMgr::Clear(){
+    MILO_ASSERT(mpSongStatusFull, 0x2F0);
+    for(int i = 0; i < 1000; i++){
+        mLookups[i].Clear();
+        mpSongStatusFull[i].Clear();
+    }
+    mCurrentIndex = -1;
+}
+
+int SongStatusCacheMgr::SaveSize(int){
+    REPORT_SIZE("SongStatusCacheMgr", 8000);
+}
+
+void SongStatusCacheMgr::SaveFixed(FixedSizeSaveableStream& stream) const {
+    for(int i = 0; i < 1000; i++){
+        mLookups[i].Save(stream);
+    }
+}
+
+void SongStatusCacheMgr::LoadFixed(FixedSizeSaveableStream& stream, int rev){
+    for(int i = 0; i < 1000; i++){
+        mLookups[i].Load(stream, rev);
+    }
+}
+
+SongStatus** SongStatusCacheMgr::GetFullCachePtr(){ return &mpSongStatusFull; }
+
+int SongStatusCacheMgr::GetSongID(int idx){
+    if(idx <= 999U){
+        return mLookups[idx].mSongID;
+    }
+    else return 0;
+}
+
+int SongStatusCacheMgr::GetSongStatusIndex(int idx){
+    for(int i = 0; i < 1000; i++){
+        if(idx == mLookups[i].mSongID) return i;
+    }
+    return -1;
+}
+
+SongStatus* SongStatusCacheMgr::GetSongStatusPtrForIndex(int idx){
+    if(idx <= 999U){
+        MILO_ASSERT(mpSongStatusFull, 0x334);
+        mCurrentIndex = idx;
+        return &mpSongStatusFull[idx];
+    }
+    else {
+        mCurrentIndex = -1;
+        return nullptr;
+    }
+}
+
+void SongStatusCacheMgr::SetLastPlayed(int last){
+    if(mCurrentIndex <= 999U){
+        mLookups[mCurrentIndex].mLastPlayed = last;
+    }
+}
+
+bool SongStatusCacheMgr::HasSongStatus(int idx){
+    for(int i = 0; i < 1000; i++){
+        if(idx == mLookups[i].mSongID) return true;
+    }
+    return false;
+}
+
+SongStatus* SongStatusCacheMgr::AccessSongStatus(int idx){
+    MILO_ASSERT(mpSongStatusFull, 0x360);
+    int songidx = GetSongStatusIndex(idx);
+    if(songidx >= 0){
+        mCurrentIndex = songidx;
+        return &mpSongStatusFull[songidx];
+    }
+    else return nullptr;
+}
+
+SongStatus* SongStatusCacheMgr::CreateOrAccessSongStatus(int id){
+    SongStatus* status = AccessSongStatus(id);
+    if(status) return status;
+    else {
+        int i = GetEmptyIndex();
+        MILO_ASSERT(i >= 0, 0x376);
+        mLookups[i].mSongID = id;
+        MILO_ASSERT(mpSongStatusFull, 0x379);
+        mCurrentIndex = i;
+        mpSongStatusFull[i].Clear();
+        mpSongStatusFull[i].SetID(id);
+        return &mpSongStatusFull[i];
+    }
+}
+
+int SongStatusCacheMgr::ClearLeastImportantSongStatusEntry(){
+    int lowestlast = 0x7FFFFFFF; // isn't this just -1?
+    int ret = 0;
+    for(int i = 0; i < 1000; i++){
+        if(!TheSongMgr->HasSong(mLookups[i].mSongID) || mLookups[i].mSongID == 0){
+            ClearIndex(i);
+            return i;
+        }
+        else if(mLookups[i].mLastPlayed < lowestlast){
+            ret = i;
+            lowestlast = mLookups[i].mLastPlayed;
+        }
+    }
+    ClearIndex(ret);
+    return ret;
+}
+
+SongStatus* SongStatusCacheMgr::GetSongStatus(int id){
+    CreateOrAccessSongStatus(id);
+    MILO_ASSERT(mpSongStatusFull, 0x3A5);
+    return &mpSongStatusFull[mCurrentIndex];
+}
+
+int SongStatusCacheMgr::GetEmptyIndex(){
+    for(int i = 0; i < 1000; i++){
+        if(mLookups[i].Empty()) return i;
+    }
+    return ClearLeastImportantSongStatusEntry();
+}
+
+void SongStatusCacheMgr::ClearIndex(int idx){
+    if(idx >= 0) mLookups[idx].Clear();
 }

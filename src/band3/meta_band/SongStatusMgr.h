@@ -108,9 +108,10 @@ public:
     void Clear();
     void Save(FixedSizeSaveableStream&) const;
     void Load(FixedSizeSaveableStream&, int);
+    bool Empty() const { return mSongID == 0; }
 
-    int unk0;
-    int unk4;
+    int mSongID; // 0x0
+    int mLastPlayed; // 0x4
 };
 
 class SongStatusCacheMgr : public FixedSizeSaveable {
@@ -121,12 +122,24 @@ public:
     virtual void LoadFixed(FixedSizeSaveableStream&, int);
 
     void Clear();
+    SongStatus** GetFullCachePtr();
+    int GetSongID(int);
+    int GetSongStatusIndex(int);
+    SongStatus* GetSongStatusPtrForIndex(int);
+    void SetLastPlayed(int);
+    bool HasSongStatus(int);
+    SongStatus* AccessSongStatus(int);
+    SongStatus* CreateOrAccessSongStatus(int);
+    int GetEmptyIndex();
+    int ClearLeastImportantSongStatusEntry();
+    void ClearIndex(int);
+    SongStatus* GetSongStatus(int);
 
     static int SaveSize(int);
 
     SongStatusLookup mLookups[1000];
-    SongStatus* mStatuses; // 0x1f48
-    int unk1f4c; // 0x1f4c
+    SongStatus* mpSongStatusFull; // 0x1f48
+    int mCurrentIndex; // 0x1f4c
     const LocalBandUser** mUser; // 0x1f50
     bool unk1f54; // 0x1f54
 };
