@@ -186,6 +186,15 @@ public:
     unsigned short GetBandInstrumentMask(int) const;
     Difficulty GetHighScoreDifficulty(int, ScoreType) const;
     int GetHighScore(int, ScoreType) const;
+    bool IsSongPlayed(int, ScoreType, Difficulty) const;
+    bool IsSongPlayedAtMinDifficulty(int, ScoreType, Difficulty) const;
+    int GetAccuracy(int, ScoreType, Difficulty) const;
+    int GetStreak(int, ScoreType, Difficulty) const;
+    int GetSoloPercent(int, ScoreType, Difficulty) const;
+    int GetHOPOPercent(int, ScoreType, Difficulty) const;
+    int GetAwesomes(int, ScoreType, Difficulty) const;
+    int GetDoubleAwesomes(int, ScoreType, Difficulty) const;
+    int GetTripleAwesomes(int, ScoreType, Difficulty) const;
 
     static int SaveSize(int);
 

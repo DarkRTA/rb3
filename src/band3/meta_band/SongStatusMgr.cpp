@@ -549,3 +549,177 @@ int SongStatusMgr::GetHighScore(int idx, ScoreType ty) const {
     }
     else return 0;
 }
+
+int SongStatusMgr::GetScore(int idx, ScoreType ty) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        return mCacheMgr.GetSongStatus(idx)->mHighScores[ty];
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetStars(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->mSongData[ty][diff].mStars;
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestStars(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int stars = GetStars(idx, ty, (Difficulty)i);
+        if(stars > best){
+            best = stars;
+        }
+    }
+    return best;
+}
+
+bool SongStatusMgr::IsSongPlayed(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->mSongData[ty][diff].mAccuracy;
+    }
+    else return 0;
+}
+
+bool SongStatusMgr::IsSongPlayedAtMinDifficulty(int idx, ScoreType ty, Difficulty diff) const {
+    for(int i = diff; i < 4; i++){
+        if(IsSongPlayed(idx, ty, (Difficulty)i)) return true;
+    }
+    return false;
+}
+
+int SongStatusMgr::GetAccuracy(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->mSongData[ty][diff].mAccuracy;
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestAccuracy(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetAccuracy(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
+
+int SongStatusMgr::GetStreak(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->mSongData[ty][diff].mStreak;
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestStreak(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetStreak(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
+
+int SongStatusMgr::GetSoloPercent(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->GetSoloPercent(ty, diff);
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestSoloPercent(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetSoloPercent(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
+
+int SongStatusMgr::GetHOPOPercent(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->GetHOPOPercent(ty, diff);
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestHOPOPercent(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetHOPOPercent(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
+
+int SongStatusMgr::GetAwesomes(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->GetAwesomes(ty, diff);
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestAwesomes(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetAwesomes(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
+
+int SongStatusMgr::GetDoubleAwesomes(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->GetDoubleAwesomes(ty, diff);
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestDoubleAwesomes(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetDoubleAwesomes(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
+
+int SongStatusMgr::GetTripleAwesomes(int idx, ScoreType ty, Difficulty diff) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+        return status->GetTripleAwesomes(ty, diff);
+    }
+    else return 0;
+}
+
+int SongStatusMgr::GetBestTripleAwesomes(int idx, ScoreType ty, Difficulty diff) const {
+    int best = 0;
+    for(int i = diff; i < 4; i++){
+        int acc = GetTripleAwesomes(idx, ty, (Difficulty)i);
+        if(acc > best){
+            best = acc;
+        }
+    }
+    return best;
+}
