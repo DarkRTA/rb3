@@ -379,7 +379,7 @@ SongStatus* SongStatusCacheMgr::GetSongStatusPtrForIndex(int idx){
 
 void SongStatusCacheMgr::SetLastPlayed(int last){
     if(mCurrentIndex <= 999U){
-        mLookups[mCurrentIndex].mLastPlayed = last;
+        mLookups[mCurrentIndex].SetLastPlayed(last);
     }
 }
 
@@ -406,7 +406,7 @@ SongStatus* SongStatusCacheMgr::CreateOrAccessSongStatus(int id){
     else {
         int i = GetEmptyIndex();
         MILO_ASSERT(i >= 0, 0x376);
-        mLookups[i].mSongID = id;
+        mLookups[i].SetSongID(id);
         MILO_ASSERT(mpSongStatusFull, 0x379);
         mCurrentIndex = i;
         mpSongStatusFull[i].Clear();
@@ -495,7 +495,7 @@ bool SongStatusMgr::UpdateSong(int songID, const PerformerStatsInfo& stats, bool
     MILO_ASSERT(songID != kSongID_Invalid && songID != kSongID_Any && songID != kSongID_Random, 0x42D);
     ScoreType ty = stats.mScoreType;
     Difficulty diff = stats.mDifficulty;
-    SongStatus* status = mCacheMgr.CreateOrAccessSongStatus(songID);
+    SongStatus* status = CreateOrAccessSongStatus(songID);
     bool updated = status->UpdateScore(ty, diff, stats.mScore);
     if(updated){
         UpdateCachedTotalDiscScore(ty);
@@ -533,37 +533,37 @@ bool SongStatusMgr::UpdateSong(int songID, const PerformerStatsInfo& stats, bool
 }
 
 unsigned short SongStatusMgr::GetBandInstrumentMask(int idx) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        return mCacheMgr.GetSongStatus(idx)->mBandScoreInstrumentMask;
+    if(HasSongStatus(idx)){
+        return GetSongStatus(idx)->GetInstrumentMask();
     }
     else return 0;
 }
 
 Difficulty SongStatusMgr::GetHighScoreDifficulty(int idx, ScoreType ty) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        return mCacheMgr.GetSongStatus(idx)->mHighScoreDiffs[ty];
+    if(HasSongStatus(idx)){
+        return GetSongStatus(idx)->GetHighScoreDifficulty(ty);
     }
     else return kDifficultyEasy;
 }
 
 int SongStatusMgr::GetHighScore(int idx, ScoreType ty) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        return mCacheMgr.GetSongStatus(idx)->mHighScores[ty];
+    if(HasSongStatus(idx)){
+        return GetSongStatus(idx)->GetHighScore(ty);
     }
     else return 0;
 }
 
 int SongStatusMgr::GetScore(int idx, ScoreType ty) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        return mCacheMgr.GetSongStatus(idx)->mHighScores[ty];
+    if(HasSongStatus(idx)){
+        return GetSongStatus(idx)->GetScore(ty);
     }
     else return 0;
 }
 
 int SongStatusMgr::GetStars(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
-        return status->mSongData[ty][diff].mStars;
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->GetStars(ty, diff);
     }
     else return 0;
 }
@@ -580,9 +580,9 @@ int SongStatusMgr::GetBestStars(int idx, ScoreType ty, Difficulty diff) const {
 }
 
 bool SongStatusMgr::IsSongPlayed(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
-        return status->mSongData[ty][diff].mAccuracy;
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->GetAccuracy(ty, diff);
     }
     else return 0;
 }
@@ -595,9 +595,9 @@ bool SongStatusMgr::IsSongPlayedAtMinDifficulty(int idx, ScoreType ty, Difficult
 }
 
 int SongStatusMgr::GetAccuracy(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
-        return status->mSongData[ty][diff].mAccuracy;
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->GetAccuracy(ty, diff);
     }
     else return 0;
 }
@@ -614,9 +614,9 @@ int SongStatusMgr::GetBestAccuracy(int idx, ScoreType ty, Difficulty diff) const
 }
 
 int SongStatusMgr::GetStreak(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
-        return status->mSongData[ty][diff].mStreak;
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->GetStreak(ty, diff);
     }
     else return 0;
 }
@@ -633,8 +633,8 @@ int SongStatusMgr::GetBestStreak(int idx, ScoreType ty, Difficulty diff) const {
 }
 
 int SongStatusMgr::GetSoloPercent(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
         return status->GetSoloPercent(ty, diff);
     }
     else return 0;
@@ -652,8 +652,8 @@ int SongStatusMgr::GetBestSoloPercent(int idx, ScoreType ty, Difficulty diff) co
 }
 
 int SongStatusMgr::GetHOPOPercent(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
         return status->GetHOPOPercent(ty, diff);
     }
     else return 0;
@@ -671,8 +671,8 @@ int SongStatusMgr::GetBestHOPOPercent(int idx, ScoreType ty, Difficulty diff) co
 }
 
 int SongStatusMgr::GetAwesomes(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
         return status->GetAwesomes(ty, diff);
     }
     else return 0;
@@ -690,8 +690,8 @@ int SongStatusMgr::GetBestAwesomes(int idx, ScoreType ty, Difficulty diff) const
 }
 
 int SongStatusMgr::GetDoubleAwesomes(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
         return status->GetDoubleAwesomes(ty, diff);
     }
     else return 0;
@@ -709,8 +709,8 @@ int SongStatusMgr::GetBestDoubleAwesomes(int idx, ScoreType ty, Difficulty diff)
 }
 
 int SongStatusMgr::GetTripleAwesomes(int idx, ScoreType ty, Difficulty diff) const {
-    if(mCacheMgr.HasSongStatus(idx)){
-        SongStatus* status = mCacheMgr.GetSongStatus(idx);
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
         return status->GetTripleAwesomes(ty, diff);
     }
     else return 0;
@@ -797,4 +797,123 @@ int SongStatusMgr::GetTotalBestStars(ScoreType ty, Difficulty diff, Symbol s) co
 
 int SongStatusMgr::CalculateTotalStars(ScoreType ty) const {
     
+}
+
+int SongStatusMgr::GetPossibleStars(ScoreType ty, Symbol s) const {
+    int total = GetTotalSongs(ty, s);
+    int ret = 5000;
+    if(total * 5 <= 5000){
+        ret = total * 5;
+    }
+    return ret;
+}
+
+int SongStatusMgr::GetTotalSongs(ScoreType ty, Symbol s) const {
+    TrackType trackty = ScoreTypeToTrackType(ty);
+    return TheSongMgr->NumRankedSongs(trackty, ty == kScoreHarmony, s);
+}
+
+int SongStatusMgr::GetCompletedSongs(ScoreType, Difficulty, Symbol) const {
+
+}
+
+int SongStatusMgr::GetSongPlayCount(int idx) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->mPlayCount;
+    }
+    else return 0;
+}
+
+void SongStatusMgr::SetSongPlayCount(int idx, int count){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x734);
+    songStatus->SetPlayCount(count);
+}
+
+void SongStatusMgr::SetProGuitarSongLessonComplete(int idx, Difficulty diff){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x73C);
+    songStatus->SetFlag(kSongStatusFlag_LessonComplete, kScoreRealGuitar, diff);
+}
+
+void SongStatusMgr::SetProBassSongLessonComplete(int idx, Difficulty diff){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x744);
+    songStatus->SetFlag(kSongStatusFlag_LessonComplete, kScoreRealBass, diff);
+}
+
+void SongStatusMgr::SetProKeyboardSongLessonComplete(int idx, Difficulty diff){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x74C);
+    songStatus->SetFlag(kSongStatusFlag_LessonComplete, kScoreRealKeys, diff);
+}
+
+bool SongStatusMgr::IsProGuitarSongLessonComplete(int idx, Difficulty diff) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->mSongData[kScoreRealGuitar][diff].mFlags & kSongStatusFlag_LessonComplete;
+    }
+    else return false;
+}
+
+bool SongStatusMgr::IsProBassSongLessonComplete(int idx, Difficulty diff) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->mSongData[kScoreRealBass][diff].mFlags & kSongStatusFlag_LessonComplete;
+    }
+    else return false;
+}
+
+bool SongStatusMgr::IsProKeyboardSongLessonComplete(int idx, Difficulty diff) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->mSongData[kScoreRealKeys][diff].mFlags & kSongStatusFlag_LessonComplete;
+    }
+    else return false;
+}
+
+void SongStatusMgr::SetProGuitarSongLessonSectionComplete(int idx, Difficulty diff, int bit){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x775);
+    songStatus->SetProGuitarLessonSectionComplete(diff, bit, true);
+}
+
+void SongStatusMgr::SetProBassSongLessonSectionComplete(int idx, Difficulty diff, int bit){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x77D);
+    songStatus->SetProBassLessonSectionComplete(diff, bit, true);
+}
+
+void SongStatusMgr::SetProKeyboardSongLessonSectionComplete(int idx, Difficulty diff, int bit){
+    SongStatus* songStatus = CreateOrAccessSongStatus(idx);
+    MILO_ASSERT(songStatus, 0x785);
+    songStatus->SetProKeyboardLessonSectionComplete(diff, bit, true);
+}
+
+bool SongStatusMgr::IsProGuitarSongLessonSectionComplete(int idx, Difficulty diff, int bit) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        unsigned int mask = 1 << bit;
+        return status->mProGuitarLessonParts[diff] & mask;
+    }
+    else return false;
+}
+
+bool SongStatusMgr::IsProBassSongLessonSectionComplete(int idx, Difficulty diff, int bit) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        unsigned int mask = 1 << bit;
+        return status->mProBassLessonParts[diff] & mask;
+    }
+    else return false;
+}
+
+bool SongStatusMgr::IsProKeyboardSongLessonSectionComplete(int idx, Difficulty diff, int bit) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        unsigned int mask = 1 << bit;
+        return status->mProKeyboardLessonParts[diff] & mask;
+    }
+    else return false;
 }

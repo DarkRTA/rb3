@@ -88,6 +88,16 @@ public:
     bool UpdateDoubleAwesomes(ScoreType, Difficulty, unsigned char);
     bool UpdateTripleAwesomes(ScoreType, Difficulty, unsigned char);
 
+    int GetPlayCount() const { return mPlayCount; }
+    int GetScore(ScoreType ty) const { return mHighScores[ty]; }
+    int GetHighScore(ScoreType ty) const { return mHighScores[ty]; }
+    Difficulty GetHighScoreDifficulty(ScoreType ty) const { return mHighScoreDiffs[ty]; }
+    unsigned char GetReview() const { return mReview; }
+    unsigned short GetInstrumentMask() const { return mBandScoreInstrumentMask; }
+    unsigned char GetStars(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mStars; }
+    unsigned char GetAccuracy(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mAccuracy; }
+    unsigned short GetStreak(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mStreak; }
+
     static int SaveSize(int);
 
     int mSongID; // 0x8
@@ -100,7 +110,7 @@ public:
     unsigned int mProKeyboardLessonParts[4]; // 0x38
     int mHighScores[11]; // 0x48
     Difficulty mHighScoreDiffs[11]; // 0x74
-    SongStatusData mSongData[11][4]; // 0x48
+    SongStatusData mSongData[11][4]; // 0xa0
 };
 
 class SongStatusLookup {
@@ -111,6 +121,8 @@ public:
     void Save(FixedSizeSaveableStream&) const;
     void Load(FixedSizeSaveableStream&, int);
     bool Empty() const { return mSongID == 0; }
+    void SetSongID(int id){ mSongID = id; }
+    void SetLastPlayed(int played){ mLastPlayed = played; }
 
     int mSongID; // 0x0
     int mLastPlayed; // 0x4
@@ -197,6 +209,21 @@ public:
     int GetTripleAwesomes(int, ScoreType, Difficulty) const;
     int GetCachedTotalStars(ScoreType) const;
     int CalculateTotalStars(ScoreType) const;
+    int GetSongPlayCount(int) const;
+    void SetSongPlayCount(int, int);
+    void SetProGuitarSongLessonComplete(int, Difficulty);
+    void SetProBassSongLessonComplete(int, Difficulty);
+    void SetProKeyboardSongLessonComplete(int, Difficulty);
+    void SetProGuitarSongLessonSectionComplete(int, Difficulty, int);
+    void SetProBassSongLessonSectionComplete(int, Difficulty, int);
+    void SetProKeyboardSongLessonSectionComplete(int, Difficulty, int);
+    bool IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const;
+    bool IsProBassSongLessonSectionComplete(int, Difficulty, int) const;
+    bool IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const;
+
+    bool HasSongStatus(int songID) const { return mCacheMgr.HasSongStatus(songID); }
+    SongStatus* GetSongStatus(int songID) const { return mCacheMgr.GetSongStatus(songID); }
+    SongStatus* CreateOrAccessSongStatus(int songID) const { return mCacheMgr.CreateOrAccessSongStatus(songID); }
 
     static int SaveSize(int);
 

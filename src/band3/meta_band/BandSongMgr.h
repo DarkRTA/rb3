@@ -1,5 +1,6 @@
 #ifndef META_BAND_BANDSONGMGR_H
 #define META_BAND_BANDSONGMGR_H
+#include "beatmatch/TrackType.h"
 #include "system/meta/SongMgr.h"
 #include "meta_band/SongUpgradeMgr.h"
 #include "meta_band/LicenseMgr.h"
@@ -69,6 +70,7 @@ public:
     int GetMaxSongCount() const;
     void CheatToggleMaxSongCount();
     bool InqAvailableSongSources(std::set<Symbol>&);
+    int NumRankedSongs(TrackType, bool, Symbol) const;
 
     static bool GetFakeSongsAllowed();
     static void SetFakeSongsAllowed(bool);
