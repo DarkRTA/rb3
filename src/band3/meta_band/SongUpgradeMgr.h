@@ -1,5 +1,7 @@
 #pragma once
+#include "obj/DataFile.h"
 #include "os/ContentMgr.h"
+#include "utl/BinStream.h"
 #include <set>
 #include <map>
 #include "utl/Str.h"
@@ -15,6 +17,12 @@ public:
     int RealBassTuning(int) const;
     float Rank(Symbol) const;
     const char* MidiFile() const;
+    void Save(BinStream&);
+    void Load(BinStream&);
+    bool HasPart(Symbol) const;
+    bool CorrectMidiFile(ContentLocT, Symbol);
+
+    static int sSaveVer;
 
     int mUpgradeVersion; // 0x0
     String mMidiFile; // 0x4
@@ -38,10 +46,19 @@ public:
     bool HasUpgrade(int) const;
     const char* ContentName(int) const;
     SongUpgradeData* UpgradeData(int) const;
+    bool SongCacheNeedsWrite() const;
+    void ClearSongCacheNeedsWrite();
+    bool WriteCachedMetadataToStream(BinStream&) const;
+    bool ReadCachedMetadataFromStream(BinStream&, int);
+    void ClearCachedContent();
+    void ClearFromCache(Symbol);
+    void GetUpgradeSongsInContent(Symbol, std::vector<int>&) const;
+    void AddUpgradeData(DataArray*, DataLoader*, ContentLocT, Symbol);
+    void MarkAvailable(int, Symbol);
 
-    std::set<int> unk4; // 0x4
-    std::map<int, SongUpgradeData*> unk1c; // 0x1c
-    std::map<Symbol, std::vector<int> > unk34; // 0x34
+    std::set<int> mAvailableUpgrades; // 0x4
+    std::map<int, SongUpgradeData*> mUpgradeData; // 0x1c
+    std::map<Symbol, std::vector<int> > unk34; // 0x34 - cached
     std::map<int, Symbol> unk4c; // 0x4c
-    bool unk64; // 0x64
+    bool mSongCacheNeedsWrite; // 0x64
 };

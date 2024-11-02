@@ -437,16 +437,16 @@ rb3/panels/setlistmergepanel.cpp:
 	.text       start:0x8027238C end:0x80274308
 
 rb3/unknown/802/unk_802663BC.cpp:
-	.text       start:0x80274308 end:0x802873C4
+	.text       start:0x80274308 end:0x802863A0
 
-rb3/mgrs/songstatusmgr.cpp:
-	.text       start:0x802873C4 end:0x8028974C
+band3/meta_band/SongStatusMgr.cpp:
+	.text       start:0x802863A0 end:0x8028974C
 
-rb3/unknown/802/unk_8028974C.cpp:
-	.text       start:0x8028974C end:0x8028BC68
+band3/meta_band/SongUpgradeMgr.cpp:
+	.text       start:0x8028974C end:0x8028B90C
 
 rb3/providers/standinprovider.cpp:
-	.text       start:0x8028BC68 end:0x8028BE14
+	.text       start:0x8028B90C end:0x8028BE14
 
 rb3/panels/storeinfopanel.cpp:
 	.text       start:0x8028BE14 end:0x8028D7F0
