@@ -9,6 +9,23 @@
 #include "system/meta/FixedSizeSaveableStream.h"
 #include "game/BandUser.h"
 
+class PlayerScore {
+public:
+    PlayerScore(){}
+    virtual ~PlayerScore(){}
+
+    ScoreType mScoreType; // 0x4
+    int mScore; // 0x8
+    int mStars; // 0xc
+    int mPlayerID; // 0x10
+    int unk14;
+    int unk18;
+    Difficulty mDiff; // 0x1c
+    int mTotalScore; // 0x20
+    int mTotalDiscScore; // 0x24
+    int mAccuracy; // 0x28
+};
+
 enum SongStatusFlagType {
     kSongStatusFlagNone = 0,
     kSongStatusFlag_HitBRE = 1,
@@ -97,6 +114,26 @@ public:
     unsigned char GetStars(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mStars; }
     unsigned char GetAccuracy(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mAccuracy; }
     unsigned short GetStreak(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mStreak; }
+
+    bool CheckFlag(SongStatusFlagType flag, ScoreType ty, Difficulty diff) const {
+        return mSongData[ty][diff].mFlags & flag;
+    }
+
+    bool CheckLessonBit(unsigned int part, int bit) const {
+        return part & (1 << bit);
+    }
+
+    bool CheckProGuitarLessonBit(Difficulty diff, int bit) const {
+        return CheckLessonBit(mProGuitarLessonParts[diff], bit);
+    }
+    
+    bool CheckProBassLessonBit(Difficulty diff, int bit) const {
+        return CheckLessonBit(mProBassLessonParts[diff], bit);
+    }
+
+    bool CheckProKeyboardLessonBit(Difficulty diff, int bit) const {
+        return CheckLessonBit(mProKeyboardLessonParts[diff], bit);
+    }
 
     static int SaveSize(int);
 
@@ -220,12 +257,22 @@ public:
     bool IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const;
     bool IsProBassSongLessonSectionComplete(int, Difficulty, int) const;
     bool IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const;
+    unsigned char GetSongReview(int) const;
+    bool SetSongReview(int, unsigned char);
+    void SetSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty);
+    bool GetSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty) const;
+    void PopulatePlayerScore(SongStatus*, ScoreType, Difficulty, PlayerScore&);
+    void UploadDirtyScores();
+    void FakeFill();
 
     bool HasSongStatus(int songID) const { return mCacheMgr.HasSongStatus(songID); }
     SongStatus* GetSongStatus(int songID) const { return mCacheMgr.GetSongStatus(songID); }
     SongStatus* CreateOrAccessSongStatus(int songID) const { return mCacheMgr.CreateOrAccessSongStatus(songID); }
 
+    DataNode OnMsg(const RockCentralOpCompleteMsg&);
+
     static int SaveSize(int);
+    static bool sFakeLeaderboardUploadFailure;
 
     LocalBandUser* mLocalUser; // 0x24
     BandSongMgr* mSongMgr; // 0x28

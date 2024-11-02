@@ -15,6 +15,7 @@ public:
     void Init();
     void Terminate();
     NetGameData* GetGameData();
+    Server* GetServer() const { return mServer; }
 
     NetGameData* mGameData; // 0x1c
     NetSession* mSession; // 0x20

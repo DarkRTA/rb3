@@ -1,16 +1,20 @@
 #include "SongStatusMgr.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
-#include "macros.h"
+#include "game/GameMessages.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
+#include "net/Net.h"
+#include "net/Server.h"
 #include "net_band/RockCentral.h"
+#include "obj/ObjMacros.h"
 #include "os/DateTime.h"
 #include "os/Debug.h"
 #include "utl/BinStream.h"
-#include "utl/Symbol.h"
 #include "utl/Symbols.h"
+
+bool SongStatusMgr::sFakeLeaderboardUploadFailure;
 
 void SongStatusData::Clear(ScoreType ty){
     mStars = 0;
@@ -767,7 +771,7 @@ int SongStatusMgr::CalculateTotalScore(ScoreType ty, Symbol s) const {
             }
             SongStatus* status = mCacheMgr.GetSongStatusPtrForIndex(i);
             if(status){
-                ret += status->mHighScores[ty];
+                ret += status->GetHighScore(ty);
                 if(ret > 2000000000) return 2000000000;
             }
         }
@@ -801,11 +805,7 @@ int SongStatusMgr::CalculateTotalStars(ScoreType ty) const {
 
 int SongStatusMgr::GetPossibleStars(ScoreType ty, Symbol s) const {
     int total = GetTotalSongs(ty, s);
-    int ret = 5000;
-    if(total * 5 <= 5000){
-        ret = total * 5;
-    }
-    return ret;
+    return Min(total * 5, 5000);
 }
 
 int SongStatusMgr::GetTotalSongs(ScoreType ty, Symbol s) const {
@@ -820,7 +820,7 @@ int SongStatusMgr::GetCompletedSongs(ScoreType, Difficulty, Symbol) const {
 int SongStatusMgr::GetSongPlayCount(int idx) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        return status->mPlayCount;
+        return status->GetPlayCount();
     }
     else return 0;
 }
@@ -852,7 +852,7 @@ void SongStatusMgr::SetProKeyboardSongLessonComplete(int idx, Difficulty diff){
 bool SongStatusMgr::IsProGuitarSongLessonComplete(int idx, Difficulty diff) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        return status->mSongData[kScoreRealGuitar][diff].mFlags & kSongStatusFlag_LessonComplete;
+        return status->CheckFlag(kSongStatusFlag_LessonComplete, kScoreRealGuitar, diff);
     }
     else return false;
 }
@@ -860,7 +860,7 @@ bool SongStatusMgr::IsProGuitarSongLessonComplete(int idx, Difficulty diff) cons
 bool SongStatusMgr::IsProBassSongLessonComplete(int idx, Difficulty diff) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        return status->mSongData[kScoreRealBass][diff].mFlags & kSongStatusFlag_LessonComplete;
+        return status->CheckFlag(kSongStatusFlag_LessonComplete, kScoreRealBass, diff);
     }
     else return false;
 }
@@ -868,7 +868,7 @@ bool SongStatusMgr::IsProBassSongLessonComplete(int idx, Difficulty diff) const 
 bool SongStatusMgr::IsProKeyboardSongLessonComplete(int idx, Difficulty diff) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        return status->mSongData[kScoreRealKeys][diff].mFlags & kSongStatusFlag_LessonComplete;
+        return status->CheckFlag(kSongStatusFlag_LessonComplete, kScoreRealKeys, diff);
     }
     else return false;
 }
@@ -894,8 +894,7 @@ void SongStatusMgr::SetProKeyboardSongLessonSectionComplete(int idx, Difficulty 
 bool SongStatusMgr::IsProGuitarSongLessonSectionComplete(int idx, Difficulty diff, int bit) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        unsigned int mask = 1 << bit;
-        return status->mProGuitarLessonParts[diff] & mask;
+        return status->CheckProGuitarLessonBit(diff, bit);
     }
     else return false;
 }
@@ -903,8 +902,7 @@ bool SongStatusMgr::IsProGuitarSongLessonSectionComplete(int idx, Difficulty dif
 bool SongStatusMgr::IsProBassSongLessonSectionComplete(int idx, Difficulty diff, int bit) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        unsigned int mask = 1 << bit;
-        return status->mProBassLessonParts[diff] & mask;
+        return status->CheckProBassLessonBit(diff, bit);
     }
     else return false;
 }
@@ -912,8 +910,123 @@ bool SongStatusMgr::IsProBassSongLessonSectionComplete(int idx, Difficulty diff,
 bool SongStatusMgr::IsProKeyboardSongLessonSectionComplete(int idx, Difficulty diff, int bit) const {
     if(HasSongStatus(idx)){
         SongStatus* status = GetSongStatus(idx);
-        unsigned int mask = 1 << bit;
-        return status->mProKeyboardLessonParts[diff] & mask;
+        return status->CheckProKeyboardLessonBit(diff, bit);
     }
     else return false;
 }
+
+unsigned char SongStatusMgr::GetSongReview(int idx) const {
+    if(HasSongStatus(idx)){
+        SongStatus* status = GetSongStatus(idx);
+        return status->GetReview();
+    }
+    else return 0;
+}
+
+bool SongStatusMgr::SetSongReview(int songID, unsigned char review){
+    MILO_ASSERT(songID != kSongID_Invalid && songID != kSongID_Any && songID != kSongID_Random, 0x7BA);
+    unsigned char cur = GetSongReview(songID);
+    if(review == cur) return false;
+    else {
+        SongStatus* status = CreateOrAccessSongStatus(songID);
+        status->SetReview(review);
+        return true;
+    }
+}
+
+void SongStatusMgr::SetSongStatusFlag(Symbol s, SongStatusFlagType flag, ScoreType ty, Difficulty diff){
+    int songID = mSongMgr->GetSongIDFromShortName(s, true);
+    SongStatus* status = CreateOrAccessSongStatus(songID);
+    status->SetFlag(flag, ty, diff);
+}
+
+bool SongStatusMgr::GetSongStatusFlag(Symbol s, SongStatusFlagType flag, ScoreType ty, Difficulty diff) const {
+    int songID = mSongMgr->GetSongIDFromShortName(s, true);
+    if(HasSongStatus(songID)){
+        SongStatus* status = GetSongStatus(songID);
+        return status->CheckFlag(flag, ty, diff);
+    }
+    else {
+        return false;
+    }
+}
+
+void SongStatusMgr::PopulatePlayerScore(SongStatus* status, ScoreType ty, Difficulty diff, PlayerScore& pscore){
+    int padnum = mLocalUser->GetPadNum();
+    Server* netServer = TheNet.GetServer();
+    MILO_ASSERT(netServer, 0x7E4);
+    pscore.mPlayerID = netServer->GetPlayerID(padnum);
+    pscore.mScoreType = ty;
+    pscore.mDiff = diff;
+    pscore.mTotalScore = mCachedTotalScores[ty];
+    pscore.mTotalDiscScore = mCachedTotalDiscScores[ty];
+    pscore.mAccuracy = status->GetAccuracy(ty, diff);
+    pscore.mScore = status->GetScore(ty);
+    pscore.mStars = status->GetStars(ty, diff);
+}
+
+void SongStatusMgr::UploadDirtyScores(){
+
+}
+
+DataNode SongStatusMgr::OnMsg(const RockCentralOpCompleteMsg& msg){
+    int arg2 = msg->Int(2);
+    bool fail = sFakeLeaderboardUploadFailure;
+    bool upload = !fail && arg2;
+    MILO_ASSERT(mUpdatingStatus, 0x85B);
+    mUpdatingStatus->SetDirty(mUpdatingScoreType, mUpdatingDifficulty, !upload);
+    mUpdatingStatus = 0;
+    if(upload){
+        UploadDirtyScores();
+    }
+    return 1;
+}
+
+int SongStatusMgr::SaveSize(int rev){
+    int size = SongStatusCacheMgr::SaveSize(rev);
+    if(rev >= 0x92) size += 0x58;
+    if(rev >= 0x93) size += 0x2C;
+    REPORT_SIZE("SongStatusMgr", size);
+}
+
+void SongStatusMgr::SaveFixed(FixedSizeSaveableStream& stream) const {
+    mCacheMgr.SaveFixed(stream);
+    for(int i = 0; i < 11; i++){
+        stream << mCachedTotalScores[i];
+        stream << mCachedTotalDiscScores[i];
+        stream << mCachedTotalStars[i];
+    }
+}
+
+void SongStatusMgr::LoadFixed(FixedSizeSaveableStream& stream, int rev){
+    mCacheMgr.LoadFixed(stream, rev);
+    for(int i = 0; i < 11; i++){
+        if(rev >= 0x92){
+            stream >> mCachedTotalScores[i];
+            stream >> mCachedTotalDiscScores[i];
+        }
+        else {
+            UpdateCachedTotalScore((ScoreType)i);
+            UpdateCachedTotalDiscScore((ScoreType)i);
+        }
+        if(rev >= 0x93){
+            stream >> mCachedTotalStars[i];
+        }
+        else {
+            UpdateCachedTotalStars((ScoreType)i);
+        }
+    }
+}
+
+void SongStatusMgr::FakeFill(){
+    for(int i = 0; i < 1005; i++){
+        CreateOrAccessSongStatus(i + 10000);
+    }
+}
+
+BEGIN_HANDLERS(SongStatusMgr)
+    HANDLE_EXPR(get_stars, GetStars(_msg->Int(2), (ScoreType)_msg->Int(3), (Difficulty)_msg->Int(4)))
+    HANDLE_EXPR(get_accuracy, GetAccuracy(_msg->Int(2), (ScoreType)_msg->Int(3), (Difficulty)_msg->Int(4)))
+    HANDLE_MESSAGE(RockCentralOpCompleteMsg)
+    HANDLE_CHECK(0x8EA)
+END_HANDLERS
