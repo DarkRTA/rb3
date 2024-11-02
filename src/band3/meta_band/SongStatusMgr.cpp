@@ -1,8 +1,11 @@
 #include "SongStatusMgr.h"
+#include "game/BandUser.h"
 #include "game/Defines.h"
 #include "macros.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/BandSongMgr.h"
+#include "net_band/RockCentral.h"
+#include "os/DateTime.h"
 #include "os/Debug.h"
 #include "utl/BinStream.h"
 
@@ -65,9 +68,8 @@ void SongStatus::Clear(){
         mProKeyboardLessonParts[i] = 0;
     }
     for(int i = 0; i < 11; i++){
-        mScores[i] = 0;
-        // words at 0x74?
-        mScoreDiffs[i] = 0;
+        mHighScores[i] = 0;
+        mHighScoreDiffs[i] = kDifficultyEasy;
         for(int j = 0; j < 4; j++){
             mSongData[i][j].Clear((ScoreType)i);
         }
@@ -94,9 +96,8 @@ void SongStatus::SaveFixed(FixedSizeSaveableStream& stream) const {
         stream << mProKeyboardLessonParts[i];
     }
     for(int i = 0; i < 11; i++){
-        stream << mScores[i];
-        // bytes at mScoreDiffs?
-        stream << (unsigned char)mScoreDiffs[i];
+        stream << mHighScores[i];
+        stream << (unsigned char)mHighScoreDiffs[i];
         for(int j = 0; j < 4; j++){
             mSongData[i][j].SaveToStream(stream, (ScoreType)i);
         }
@@ -117,10 +118,10 @@ void SongStatus::LoadFixed(FixedSizeSaveableStream& stream, int rev){
         stream >> mProKeyboardLessonParts[i];
     }
     for(int i = 0; i < 11; i++){
-        stream >> mScores[i];
+        stream >> mHighScores[i];
         unsigned char uc;
         stream >> uc;
-        mScoreDiffs[i] = uc;
+        mHighScoreDiffs[i] = (Difficulty)uc;
         for(int j = 0; j < 4; j++){
             mSongData[i][j].LoadFromStream(stream, (ScoreType)i);
         }
@@ -200,9 +201,9 @@ unsigned char SongStatus::GetTripleAwesomes(ScoreType scoreType, Difficulty diff
 }
 
 bool SongStatus::UpdateScore(ScoreType ty, Difficulty diff, int score){
-    if(score > mScores[ty]){
-        mScores[ty] = score;
-        mScoreDiffs[ty] = diff;
+    if(score > mHighScores[ty]){
+        mHighScores[ty] = score;
+        mHighScoreDiffs[ty] = diff;
         return true;
     }
     else return false;
@@ -443,4 +444,108 @@ int SongStatusCacheMgr::GetEmptyIndex(){
 
 void SongStatusCacheMgr::ClearIndex(int idx){
     if(idx >= 0) mLookups[idx].Clear();
+}
+
+SongStatusMgr::SongStatusMgr(LocalBandUser* u, BandSongMgr* mgr) : mLocalUser(u), mSongMgr(mgr), mCacheMgr((const LocalBandUser**)&mLocalUser), mUpdatingStatus(0) {
+    mSaveSizeMethod = &SaveSize;
+}
+
+SongStatusMgr::~SongStatusMgr(){
+    Clear();
+}
+
+void SongStatusMgr::Clear(){
+    if(mUpdatingStatus){
+        TheRockCentral.CancelOutstandingCalls(this);
+        mUpdatingStatus = 0;
+    }
+    mCacheMgr.Clear();
+    for(int i = 0; i < 11; i++){
+        unk1f84[i] = 0;
+        unk1fb0[i] = 0;
+        unk1fdc[i] = 0;
+    }
+}
+
+bool SongStatusMgr::UpdateSongStats(ScoreType ty, Difficulty diff, const PerformerStatsInfo& stats, SongStatus* songStatus){
+    MILO_ASSERT(songStatus, 0x409);
+    bool updated = songStatus->UpdateStars(ty, diff, stats.mStars);
+    if(updated){
+        UpdateCachedTotalStars(ty);
+    }
+    updated |= songStatus->UpdateAccuracy(ty, diff, stats.mAccuracy);
+    updated |= songStatus->UpdateStreak(ty, diff, stats.mStreak);
+    if(ty == kScoreVocals || ty == kScoreHarmony){
+        updated |= songStatus->UpdateAwesomes(ty, diff, stats.mAwesomes);
+        updated |= songStatus->UpdateDoubleAwesomes(ty, diff, stats.mDoubleAwesomes);
+        updated |= songStatus->UpdateTripleAwesomes(ty, diff, stats.mTripleAwesomes);
+        return updated;
+    }
+    else {
+        updated |= songStatus->UpdateSoloPercent(ty, diff, stats.mSoloPercent);
+        updated |= songStatus->UpdateHOPOPercent(ty, diff, stats.mHOPOPercent);
+        return updated;
+    }
+}
+
+bool SongStatusMgr::UpdateSong(int songID, const PerformerStatsInfo& stats, bool b){
+    MILO_ASSERT(songID != kSongID_Invalid && songID != kSongID_Any && songID != kSongID_Random, 0x42D);
+    ScoreType ty = stats.mScoreType;
+    Difficulty diff = stats.mDifficulty;
+    SongStatus* status = mCacheMgr.CreateOrAccessSongStatus(songID);
+    bool updated = status->UpdateScore(ty, diff, stats.mScore);
+    if(updated){
+        UpdateCachedTotalDiscScore(ty);
+        UpdateCachedTotalScore(ty);
+    }
+    updated |= UpdateSongStats(ty, diff, stats, status);
+    if(ty == kScoreBand && updated){
+        status->SetInstrumentMask(stats.mInstrumentMask);
+    }
+    DateTime dt;
+    GetDateAndTime(dt);
+    status->SetLastPlayed(dt.ToCode());
+    mCacheMgr.SetLastPlayed(dt.ToCode());
+    if(mUpdatingStatus){
+        if(songID == mUpdatingStatus->mSongID){
+            if(mUpdatingScoreType == ty){
+                if(mUpdatingDifficulty == diff){
+                    TheRockCentral.CancelOutstandingCalls(this);
+                    mUpdatingStatus = 0;
+                }
+            }
+        }
+    }
+    status->SetDirty(ty, diff, !b && updated);
+    if(ty == kScoreRealDrum){
+        bool updatestats = UpdateSongStats(kScoreDrum, diff, stats, status);
+        if(mUpdatingStatus && (songID == mUpdatingStatus->mSongID) && (mUpdatingScoreType == kScoreDrum) && (mUpdatingDifficulty == diff)){
+            TheRockCentral.CancelOutstandingCalls(this);
+            mUpdatingStatus = 0;
+        }
+        status->SetDirty(kScoreDrum, diff, !b && updated);
+        updated |= updatestats;
+    }
+    return updated;
+}
+
+unsigned short SongStatusMgr::GetBandInstrumentMask(int idx) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        return mCacheMgr.GetSongStatus(idx)->mBandScoreInstrumentMask;
+    }
+    else return 0;
+}
+
+Difficulty SongStatusMgr::GetHighScoreDifficulty(int idx, ScoreType ty) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        return mCacheMgr.GetSongStatus(idx)->mHighScoreDiffs[ty];
+    }
+    else return kDifficultyEasy;
+}
+
+int SongStatusMgr::GetHighScore(int idx, ScoreType ty) const {
+    if(mCacheMgr.HasSongStatus(idx)){
+        return mCacheMgr.GetSongStatus(idx)->mHighScores[ty];
+    }
+    else return 0;
 }

@@ -3,6 +3,8 @@
 
 #include "game/Defines.h"
 #include "meta/FixedSizeSaveable.h"
+#include "meta_band/MetaPerformer.h"
+#include "obj/Object.h"
 #include "system/utl/BinStream.h"
 #include "system/meta/FixedSizeSaveableStream.h"
 #include "game/BandUser.h"
@@ -96,8 +98,8 @@ public:
     unsigned int mProGuitarLessonParts[4]; // 0x18
     unsigned int mProBassLessonParts[4]; // 0x28
     unsigned int mProKeyboardLessonParts[4]; // 0x38
-    int mScores[11]; // 0x48
-    int mScoreDiffs[11]; // 0x74
+    int mHighScores[11]; // 0x48
+    Difficulty mHighScoreDiffs[11]; // 0x74
     SongStatusData mSongData[11][4]; // 0x48
 };
 
@@ -146,10 +148,14 @@ public:
 
 class BandSongMgr;
 
-class SongStatusMgr {
+class SongStatusMgr : public Hmx::Object, public FixedSizeSaveable {
 public:
     SongStatusMgr(LocalBandUser*, BandSongMgr*);
-    ~SongStatusMgr();
+    virtual ~SongStatusMgr();
+    virtual DataNode Handle(DataArray*, bool);
+    virtual void SaveFixed(FixedSizeSaveableStream&) const;
+    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+
     void Clear();
     int GetScore(int, ScoreType) const;
     int GetStars(int, ScoreType, Difficulty) const;
@@ -172,6 +178,26 @@ public:
     int GetCompletedSongs(ScoreType, Difficulty, Symbol) const;
     int GetPossibleStars(ScoreType, Symbol) const;
     int GetTotalBestStars(ScoreType, Difficulty, Symbol) const;
+    bool UpdateSongStats(ScoreType, Difficulty, const PerformerStatsInfo&, SongStatus*);
+    void UpdateCachedTotalStars(ScoreType);
+    bool UpdateSong(int, const PerformerStatsInfo&, bool);
+    void UpdateCachedTotalDiscScore(ScoreType);
+    void UpdateCachedTotalScore(ScoreType);
+    unsigned short GetBandInstrumentMask(int) const;
+    Difficulty GetHighScoreDifficulty(int, ScoreType) const;
+    int GetHighScore(int, ScoreType) const;
+
+    static int SaveSize(int);
+
+    LocalBandUser* mLocalUser; // 0x24
+    BandSongMgr* mSongMgr; // 0x28
+    mutable SongStatusCacheMgr mCacheMgr; // 0x2c
+    int unk1f84[11];
+    int unk1fb0[11];
+    int unk1fdc[11];
+    SongStatus* mUpdatingStatus; // 0x2008
+    ScoreType mUpdatingScoreType; // 0x200c
+    Difficulty mUpdatingDifficulty; // 0x2010
 };
 
 #endif // METAGAME_SONGSTATUSMGR_H
