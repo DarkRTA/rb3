@@ -1,5 +1,6 @@
 #pragma once
 #include "os/ContentMgr.h"
+#include "utl/BinStream.h"
 #include <set>
 #include <map>
 #include "utl/Str.h"
@@ -15,6 +16,12 @@ public:
     int RealBassTuning(int) const;
     float Rank(Symbol) const;
     const char* MidiFile() const;
+    void Save(BinStream&);
+    void Load(BinStream&);
+    bool HasPart(Symbol) const;
+    bool CorrectMidiFile(ContentLocT, Symbol);
+
+    static int sSaveVer;
 
     int mUpgradeVersion; // 0x0
     String mMidiFile; // 0x4
