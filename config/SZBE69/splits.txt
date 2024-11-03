@@ -157,6 +157,9 @@ rb3/panels/fadepanel.cpp:
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
+band3/game/FretHand.cpp:
+	.text		start:0x8010D754 end:0x8010DCD0
+
 rb3/game.cpp:
 	.text       start:0x80110030 end:0x80116E14
 
