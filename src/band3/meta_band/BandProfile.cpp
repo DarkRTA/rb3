@@ -212,7 +212,7 @@ void BandProfile::SetProBassSongLessonSectionComplete(int, Difficulty, int) {}
 void BandProfile::SetProKeyboardSongLessonSectionComplete(int, Difficulty, int) {}
 void BandProfile::IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const {}
 void BandProfile::IsProBassSongLessonSectionComplete(int, Difficulty, int) const {}
-void BandProfile::IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const {}
+bool BandProfile::IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const {}
 
 bool BandProfile::IsLessonComplete(const Symbol& symbol, float) const {
     GetLessonCompleteSpeed(symbol);
