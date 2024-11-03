@@ -13,6 +13,7 @@ class LocalBandUser;
 class RemoteBandUser;
 class NullLocalBandUser;
 class Player;
+class Track;
 
 class BandUser : public virtual User {
 public:
@@ -91,7 +92,7 @@ public:
     bool mAutoplay; // 0x70
     Symbol mPreviousAward; // 0x74
     float mLastHitFraction; // 0x78
-    void *mTrack; // 0x7c
+    Track* mTrack; // 0x7c
     Player* mPlayer; // 0x80
     bool mParticipating; // 0x84
     bool mIsWiiRemoteController; // 0x85

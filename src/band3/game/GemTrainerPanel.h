@@ -1,9 +1,15 @@
 #pragma once
+#include "GemPlayer.h"
+#include "bandtrack/GemManager.h"
 #include "beatmatch/GameGem.h"
 #include "bandtrack/GemTrack.h"
+#include "beatmatch/GameGemList.h"
+#include "game/BandUser.h"
+#include "game/Defines.h"
 #include "game/Metronome.h"
 #include "game/TrainerGemTab.h"
 #include "game/TrainerPanel.h"
+#include "ui/UIPanel.h"
 
 class GemTrainerPanel : public TrainerPanel {
 public:
@@ -29,16 +35,17 @@ public:
     virtual bool ShouldDrawTab() const;
     virtual void PostCopyGems();
 
-    std::vector<GameGem> unk54;
-    int unk5c;
-    int unk60;
-    int unk64;
-    int unk68;
-    int unk6c;
-    GemTrack* unk70;
-    int unk74;
-    int unk78;
-    int unk7c;
+    void AddBeatMask(int);
+    void HandleTrackShifting();
+    int GetLoopTick(int);
+
+    std::vector<GameGem> mPattern; // 0x54
+    GemPlayer* mGemPlayer; // 0x5c
+    GameGemList* unk60[4]; // 0x60
+    GemTrack* mTrack; // 0x70
+    GemManager* mGemManager; // 0x74
+    Difficulty mDifficulty; // 0x78
+    LocalBandUser* mLocalUser; // 0x7c
     int unk80;
     int unk84;
     std::vector<GameGem> unk88[4];
@@ -46,13 +53,24 @@ public:
     bool unka9;
     int unkac;
     int unkb0;
-    TrainerGemTab* unkb4;
-    Metronome* unkb8;
+    TrainerGemTab* mTab; // 0xb4
+    Metronome* mMetronome; // 0xb8
     float unkbc;
     float unkc0;
     int unkc4;
-    bool unkc8;
+    bool mDrawTab; // 0xc8
     bool unkc9;
     int unkcc;
     bool unkd0;
+};
+
+extern GemTrainerPanel* TheGemTrainerPanel;
+
+class GemTrainerLoopPanel : public UIPanel {
+public:
+    GemTrainerLoopPanel(){}
+    OBJ_CLASSNAME(GemTrainerLoopPanel);
+    OBJ_SET_TYPE(GemTrainerLoopPanel);
+    virtual ~GemTrainerLoopPanel();
+    virtual void Poll();
 };

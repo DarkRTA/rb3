@@ -14,6 +14,8 @@ class GemManager {
     TrackWidget *GetWidgetByName(Symbol);
 
     int GetMaxSlots() const;
+    void ClearAllGems();
+    void ClearMissedPhrases();
 
     TrackDir *mTrackDir;
     TrackConfig *mTrackConfig;

@@ -19,5 +19,6 @@ bool RGGetHeldFretRange(const RGState&, int&, int&);
 void RGGetFretLabelInfo(const RGState&, int&, int&);
 const char* RGFretNumberToString(int);
 void RGUnpackChordShapeID(unsigned int, std::vector<int>&, std::vector<bool>*);
+const char* RGGetNoteName(unsigned char, int);
 
 #endif

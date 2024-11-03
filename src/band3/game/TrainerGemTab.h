@@ -23,6 +23,8 @@ public:
     TrainerGemTab();
     ~TrainerGemTab();
     void Init(RndDir*, TrackType);
+    void SetLefty(bool);
+    void Draw(int);
 
     RndDir* mGemTab; // 0x0
     TrackType mTrackType; // 0x4

@@ -60,4 +60,6 @@ public:
     virtual void PopSmasher(int);
     virtual void OnMissPhrase(int);
     virtual void RemovePlayer();
+
+    Symbol GetType() const;
 };

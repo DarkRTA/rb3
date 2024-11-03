@@ -1,4 +1,5 @@
 #pragma once
+#include "GemManager.h"
 #include "Track.h"
 #include "game/BandUser.h"
 
@@ -35,4 +36,6 @@ public:
     virtual void OnMissPhrase(int);
     virtual void RemovePlayer();
     virtual void UpdateLeftyFlip();
+
+    GemManager* GetGemManager();
 };
