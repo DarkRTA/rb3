@@ -16,6 +16,7 @@
             "band3/bandtrack/TrackConfig.cpp": "Equivalent",
 
             "band3/game/FretHand.cpp": "NonMatching",
+            "band3/game/RGTrainerPanel.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentCategory.cpp": "NonMatching",

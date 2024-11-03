@@ -18,8 +18,8 @@ public:
     ~FretHand();
 
     void Reset();
-    void GetFinger(uint id, int&, int&, int&) const;
-    void SetFinger(uint id, int, int, int);
+    void GetFinger(uint finger, int& fret, int& lowstr, int& highstr) const;
+    void SetFinger(uint finger, int fret, int lowstr, int highstr);
     void SetFingers(const GameGem&);
     int GetFret(int) const;
     bool BarAll(const GameGem&);
