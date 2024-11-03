@@ -1,136 +1,98 @@
 #include "game/RGTrainerPanel.h"
+#include "beatmatch/RGUtl.h"
+#include "game/Defines.h"
+#include "game/GameMode.h"
 #include "game/GemTrainerPanel.h"
 #include "game/ProTrainerPanel.h"
+#include "game/TrainerPanel.h"
+#include "meta_band/AppLabel.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/BandSongMgr.h"
+#include "meta_band/MetaPerformer.h"
+#include "meta_band/ProfileMgr.h"
+#include "os/Debug.h"
 
 void ProTrainerPanel::Enter(){
     GemTrainerPanel::Enter();
     if(mGemPlayer){
-        
+        LocalBandUser* localuser = mGemPlayer->unk230->GetLocalBandUser();
+        BandProfile* profile = TheProfileMgr.GetProfileForUser(localuser);
+        if(!profile) return;
+        int songID = TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
+        Difficulty diff = localuser->GetDifficulty();
+        mSpeedCompleted.resize(GetNumSections());
+        for(int i = 0; i < GetNumSections(); i++){
+            if(IsSongSectionComplete(profile, songID, diff, i)){
+                mSpeedCompleted[i] = 1.0f;
+            }
+            else mSpeedCompleted[i] = 0;
+        }
     }
-//       GemTrainerPanel::Enter((GemTrainerPanel *)this);
-//   if (*(int *)(this + 0x5c) != 0) {
-//     pLVar1 = (LocalUser *)
-//              (**(code **)(*(int *)(*(int *)(*(int *)(this + 0x5c) + 0x230) + 4) + 0x28))();
-//     pLVar11 = pLVar1;
-//     if (pLVar1 != (LocalUser *)0x0) {
-//       pLVar11 = *(LocalUser **)(pLVar1 + 4);
-//     }
-//     iVar2 = ProfileMgr::GetProfileForUser((ProfileMgr *)TheProfileMgr,pLVar11);
-//     if (iVar2 == 0) {
-//       return;
-//     }
-//     this_00 = (MetaPerformer *)MetaPerformer::Current();
-//     local_58[0] = MetaPerformer::Song(this_00);
-//     uVar3 = (**(code **)(*(int *)(TheSongMgr + 4) + 0xa8))(TheSongMgr,local_58,1);
-//     uVar4 = BandUser::GetDifficulty(*(BandUser **)pLVar1);
-//     uVar5 = TrainerPanel::GetNumSections((TrainerPanel *)this);
-//     if (uVar5 < *(ushort *)(this + 0xd8)) {
-//       iVar6 = *(int *)(this + 0xd4) + uVar5 * 4;
-//       if (iVar6 != *(int *)(this + 0xd4) + (uint)*(ushort *)(this + 0xd8) * 4) {
-//         uVar5 = iVar6 - *(int *)(this + 0xd4);
-//         uVar13 = ((int)uVar5 >> 2) + (uint)((int)uVar5 < 0 && (uVar5 & 3) != 0);
-//         std_vec_range_assert(uVar13,0xffff,__FUNCTION__$50680);
-//         *(short *)(this + 0xd8) = (short)uVar13;
-//       }
-//     }
-//     else {
-//       stlpmtx_std::_Vector_impl<><>::_M_fill_insert
-//                 ((_Vector_impl<><> *)(this + 0xd4),
-//                  (float *)(*(int *)(this + 0xd4) + (uint)*(ushort *)(this + 0xd8) * 4),
-//                  uVar5 - *(ushort *)(this + 0xd8),(float *)&@50533);
-//     }
-//     iVar14 = 0;
-//     for (iVar6 = 0; iVar7 = TrainerPanel::GetNumSections((TrainerPanel *)this), iVar6 < iVar7;
-//         iVar6 = iVar6 + 1) {
-//       iVar7 = (**(code **)(*(int *)(this + 4) + 0x74))(this,iVar2,uVar3,uVar4,iVar6);
-//       if (iVar7 == 0) {
-//         *(float *)(*(int *)(this + 0xd4) + iVar14) = 0.0;
-//       }
-//       else {
-//         *(float *)(*(int *)(this + 0xd4) + iVar14) = 1.0;
-//       }
-//       iVar14 = iVar14 + 4;
-//     }
-//   }
-//   pOVar12 = *(Object **)(this + 8);
-//   uVar3 = ObjectDir::FindObject((ObjectDir *)pOVar12,::@stringBase0,false);
-//   this_01 = (Object *)__dynamic_cast(uVar3,0,&RndDir::__RTTI,&Hmx::Object::__RTTI,0);
-//   if (this_01 == (Object *)0x0) {
-//     pOVar8 = pOVar12;
-//     if (pOVar12 != (Object *)0x0) {
-//       pOVar8 = (Object *)pOVar12->vptr;
-//     }
-//     iVar2 = PathName(pOVar8);
-//     if (iVar2 == 0) {
-//       pcVar9 = @STRING@Find<6RndDir>__9ObjectDirFPCcb_P6RndDir_80B75F2C;
-//     }
-//     else {
-//       if (pOVar12 != (Object *)0x0) {
-//         pOVar12 = (Object *)pOVar12->vptr;
-//       }
-//       pcVar9 = (char *)PathName(pOVar12);
-//     }
-//     pcVar9 = ::MakeString(kNotObjectMsg,::@stringBase0,pcVar9);
-//     Debug::Fail((Debug *)TheDebug,pcVar9);
-//   }
-//   iVar2 = 1;
-//   do {
-//     pcVar9 = ::MakeString(s_fret_%02d.lbl_80b8182d,iVar2);
-//     uVar3 = ObjectDir::FindObject((ObjectDir *)this_01,pcVar9,false);
-//     this_02 = (UILabel *)__dynamic_cast(uVar3,0,&BandLabel::__RTTI,&Hmx::Object::__RTTI,0);
-//     if (this_02 == (UILabel *)0x0) {
-//       pOVar12 = this_01;
-//       if (this_01 != (Object *)0x0) {
-//         pOVar12 = (Object *)this_01->vptr;
-//       }
-//       iVar6 = PathName(pOVar12);
-//       if (iVar6 == 0) {
-//         pcVar10 = @STRING@Find<9BandLabel>__9ObjectDirFPCcb_P9BandLabel_80B77FE0;
-//       }
-//       else {
-//         pOVar12 = this_01;
-//         if (this_01 != (Object *)0x0) {
-//           pOVar12 = (Object *)this_01->vptr;
-//         }
-//         pcVar10 = (char *)PathName(pOVar12);
-//       }
-//       pcVar9 = ::MakeString(kNotObjectMsg,pcVar9,pcVar10);
-//       Debug::Fail((Debug *)TheDebug,pcVar9);
-//     }
-//     UILabel::SetInt(this_02,iVar2,false);
-//     iVar2 = iVar2 + 1;
-//   } while (iVar2 < 0x17);
-//   iVar2 = 0;
-//   do {
-//     pcVar9 = ::MakeString(s_string_%02d.lbl_80b8183b,iVar2 + 1);
-//     uVar3 = ObjectDir::FindObject((ObjectDir *)this_01,pcVar9,false);
-//     this_03 = (AppLabel *)__dynamic_cast(uVar3,0,&AppLabel::__RTTI,&Hmx::Object::__RTTI,0);
-//     if (this_03 == (AppLabel *)0x0) {
-//       pOVar12 = this_01;
-//       if (this_01 != (Object *)0x0) {
-//         pOVar12 = (Object *)this_01->vptr;
-//       }
-//       iVar6 = PathName(pOVar12);
-//       if (iVar6 == 0) {
-//         pcVar10 = @STRING@Find<8AppLabel>__9ObjectDirFPCcb_P8AppLabel_80B7B12C;
-//       }
-//       else {
-//         pOVar12 = this_01;
-//         if (this_01 != (Object *)0x0) {
-//           pOVar12 = (Object *)this_01->vptr;
-//         }
-//         pcVar10 = (char *)PathName(pOVar12);
-//       }
-//       pcVar9 = ::MakeString(kNotObjectMsg,pcVar9,pcVar10);
-//       Debug::Fail((Debug *)TheDebug,pcVar9);
-//     }
-//     uVar5 = RGGetTuning(iVar2);
-//     AppLabel::SetPitch(this_03,uVar5 & 0xff,0);
-//     iVar2 = iVar2 + 1;
-//   } while (iVar2 < 6);
-//   return;
+    RndDir* legendDir = mDir->Find<RndDir>("chord_legend", true);
+    for(int i = 1; i <= 0x16; i++){
+        const char* labelstr = MakeString("fret_%02d.lbl", i);
+        BandLabel* fretLabel = legendDir->Find<BandLabel>(labelstr, true);
+        fretLabel->SetInt(i, false);
+    }
+    for(int i = 0; i < 6; i++){
+        const char* labelstr = MakeString("string_%02d.lbl", i + 1);
+        AppLabel* appLabel = legendDir->Find<AppLabel>(labelstr, true);
+        appLabel->SetPitch(RGGetTuning(i), 0);
+    }
 }
 
-RGTrainerPanel::RGTrainerPanel(){
+void ProTrainerPanel::SetLessonComplete(int lesson){
+    if(!TheGameMode->Property("song_lessons", true)->Int()){
+        TrainerPanel::SetLessonComplete(lesson);
+    }
+    else {
+        LocalBandUser* localuser = mGemPlayer->unk230->GetLocalBandUser();
+        BandProfile* profile = TheProfileMgr.GetProfileForUser(localuser);
+        if(profile){
+            int songID = TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
+            Difficulty diff = localuser->GetDifficulty();
+            static Message msg("get_speed_modifier", 0);
+            msg[0] = lesson;
+            DataNode handled = Handle(msg, true);
+            mSpeedCompleted[GetCurrSection()] = std::max(mSpeedCompleted[GetCurrSection()], handled.Float());
+            SetSongSectionComplete(profile, songID, diff, GetCurrSection());
+        }
+    }
+}
 
+float ProTrainerPanel::GetLessonCompleteSpeed(int lessonNum) const {
+    if(!TheGameMode->Property("song_lessons", true)->Int()){
+        return GemTrainerPanel::GetLessonCompleteSpeed(lessonNum);
+    }
+    else {
+        MILO_ASSERT(lessonNum < mSpeedCompleted.size(), 0x79);
+        return mSpeedCompleted[lessonNum];
+    }
+}
+
+bool ProTrainerPanel::AllSectionsFinished() const {
+    if(!TheGameMode->Property("song_lessons", true)->Int()){
+        return TrainerPanel::AllSectionsFinished();
+    }
+    else {
+        for(int i = 0; i < mSpeedCompleted.size(); i++){
+            if(mSpeedCompleted[i] < 1.0f) return false;
+        }
+        return true;
+    }
+}
+
+void ProTrainerPanel::NewDifficulty(int i1, int i2){
+    GemTrainerPanel::NewDifficulty(i1, i2);
+    for(int i = 0; i < mSpeedCompleted.size(); i++){
+        mSpeedCompleted[i] = 0;
+    }
+}
+
+RGTrainerPanel::RGTrainerPanel() : unke4(0), unke5(0), unke8(-1), unkec(-1.0f), unkf0(0), unk24c(0) {
+
+}
+
+RGTrainerPanel::~RGTrainerPanel(){
+    
 }

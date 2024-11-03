@@ -7,6 +7,7 @@ class GameGem;
 
 
 class FretHand { // 0x30
+public:
     FretHand();
     ~FretHand();
 

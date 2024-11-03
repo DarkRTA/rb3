@@ -123,7 +123,7 @@ public:
 
     int unk_player;
     int unk22c;
-    int unk230;
+    BandUser* unk230;
     int unk234;
     int unk238;
     int unk23c;
