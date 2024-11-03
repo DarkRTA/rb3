@@ -8,6 +8,7 @@
 #include "game/TrainerProgressMeter.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/ProfileMgr.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
@@ -15,6 +16,8 @@
 #include "ui/UIPanel.h"
 #include "utl/DataPointMgr.h"
 #include "utl/Messages.h"
+#include "utl/Messages3.h"
+#include "utl/Messages4.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -281,3 +284,46 @@ BEGIN_HANDLERS(TrainerPanel)
     HANDLE_MEMBER_PTR(DataDir())
     HANDLE_CHECK(0x237)
 END_HANDLERS
+
+TrainerSection::TrainerSection() : mStartTick(-1), mEndTick(-1), mChallenge(0), mStartEarly(0) {
+
+}
+
+int TrainerSection::GetStartTick() const { return mStartTick; }
+void TrainerSection::SetStartTick(int tick){ mStartTick = tick; }
+int TrainerSection::GetEndTick() const { return mEndTick; }
+void TrainerSection::SetEndTick(int tick){ mEndTick = tick; }
+Symbol TrainerSection::GetName() const { return mName; }
+void TrainerSection::SetName(const Symbol& name){ mName = name; }
+
+void TrainerSection::SetChallengeName(const Symbol& name){
+    mChallengeName = name;
+    if(!name.Null()){
+        mChallenge = ObjectDir::Main()->Find<TrainerChallenge>(mChallengeName.Str(), false);
+        if(!mChallenge){
+            MILO_WARN("Unable to find trainer challenge %s. \n", mChallengeName.Str());
+        }
+    }
+}
+
+void TrainerSection::SetStartEarly(bool early){ mStartEarly = early; }
+
+bool TrainerSection::SanityCheck(){
+    return mStartTick < mEndTick;
+}
+
+void TrainerChallenge::Enter(){
+    Handle(enter_msg, true);
+}
+
+void TrainerChallenge::Exit(){
+    Handle(exit_msg, true);
+}
+
+bool TrainerChallenge::Success(){
+    return Handle(success_msg, true).Int();
+}
+
+Symbol TrainerChallenge::GetRestrictionToken(){
+    return Handle(restriction_token_msg, true).Sym();
+}

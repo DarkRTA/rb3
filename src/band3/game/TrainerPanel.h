@@ -6,6 +6,7 @@
 #include "midi/DataEvent.h"
 #include "obj/Object.h"
 #include "ui/UIPanel.h"
+#include "utl/Symbol.h"
 
 class TrainerChallenge : public Hmx::Object {
 public:
@@ -23,6 +24,15 @@ public:
 class TrainerSection {
 public:
     TrainerSection();
+    int GetStartTick() const;
+    void SetStartTick(int);
+    int GetEndTick() const;
+    void SetEndTick(int);
+    Symbol GetName() const;
+    void SetName(const Symbol&);
+    void SetChallengeName(const Symbol&);
+    void SetStartEarly(bool);
+    bool SanityCheck();
 
     Symbol mName; // 0x0
     int mStartTick; // 0x4
