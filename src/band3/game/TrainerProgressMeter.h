@@ -9,6 +9,10 @@ public:
     TrainerProgressMeter();
     ~TrainerProgressMeter();
     void Init(RndDir*, int);
+    void SetCompleted(int, bool);
+    void SetCurrent(int);
+    void Draw();
+    void Hide();
 
     std::vector<bool> mCompleted; // 0x0
     RndDir* mProgressMeter; // 0x8
