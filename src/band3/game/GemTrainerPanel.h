@@ -1,5 +1,6 @@
 #pragma once
 #include "beatmatch/GameGem.h"
+#include "bandtrack/GemTrack.h"
 #include "game/Metronome.h"
 #include "game/TrainerGemTab.h"
 #include "game/TrainerPanel.h"
@@ -34,7 +35,7 @@ public:
     int unk64;
     int unk68;
     int unk6c;
-    int unk70;
+    GemTrack* unk70;
     int unk74;
     int unk78;
     int unk7c;
