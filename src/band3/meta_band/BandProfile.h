@@ -92,7 +92,7 @@ public:
     void IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const;
     bool IsLessonComplete(const Symbol&, float) const;
     void GetLessonComplete(const Symbol&) const;
-    void GetLessonCompleteSpeed(const Symbol&) const;
+    float GetLessonCompleteSpeed(const Symbol&) const;
     void SetLessonComplete(const Symbol&, float);
     void EarnAccomplishment(Symbol);
     AccomplishmentProgress* GetAccomplishmentProgress() const;

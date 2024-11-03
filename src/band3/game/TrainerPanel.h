@@ -3,6 +3,7 @@
 #include "game/Player.h"
 #include "game/TrainerProgressMeter.h"
 #include "meta_band/BandProfile.h"
+#include "midi/DataEvent.h"
 #include "obj/Object.h"
 #include "ui/UIPanel.h"
 
@@ -51,6 +52,34 @@ public:
     void InitSections();
     void StartSection(int);
     void RestartSection();
+    int GetCurrentStartTick() const;
+    int GetCurrentEndTick() const;
+    int GetLoopTicks(int) const;
+    void ClearSections();
+    void AddSection(const TrainerSection&);
+    TrainerSection& GetSection(int);
+    const TrainerSection& GetSection(int) const;
+    int GetCurrSection() const;
+    int GetNumSections() const;
+    void SetCurrentProgressSection(int);
+    int GetTick() const;
+    int GetSectionTicks(int) const;
+    int GetSectionLoopStart(int) const;
+    int FixupTick(int) const;
+    int GetSectionLoopEnd(int) const;
+    void ResetChallenge();
+    Symbol GetChallengeRestriction(int);
+    void SetProgressMeterShowing(bool);
+    void InternalInitSections(const DataEventList*);
+    void OnSuccess(int);
+    Symbol GetNameForSection(int) const;
+    BandProfile* GetBandProfile() const;
+    int ModSectionNum(int) const;
+    void SetCurrSection(int);
+
+    bool HasChallenge(int idx) const {
+        return mSections[idx].mChallenge;
+    }
 
     TrainerProgressMeter* mProgressMeter; // 0x38
     std::vector<TrainerSection> mSections; // 0x3c

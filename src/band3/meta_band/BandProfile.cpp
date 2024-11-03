@@ -219,7 +219,7 @@ bool BandProfile::IsLessonComplete(const Symbol& symbol, float) const {
 }
 
 void BandProfile::GetLessonComplete(const Symbol&) const {}
-void BandProfile::GetLessonCompleteSpeed(const Symbol&) const {}
+float BandProfile::GetLessonCompleteSpeed(const Symbol&) const {}
 void BandProfile::SetLessonComplete(const Symbol&, float) {}
 void BandProfile::EarnAccomplishment(Symbol) {}
 // void BandProfile::GetAccomplishmentProgress() const {}
