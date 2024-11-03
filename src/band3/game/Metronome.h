@@ -4,6 +4,7 @@
 #include "synth/Sfx.h"
 
 class Metronome {
+public:
     enum OverrideEnabled {
 
     };
