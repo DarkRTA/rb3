@@ -31,13 +31,20 @@ public:
     virtual float GetLessonCompleteSpeed(int) const;
     virtual void HitNotify(int);
     virtual void MissNotify(int);
-    virtual void Looped();
+    virtual void Looped(){}
     virtual bool ShouldDrawTab() const;
     virtual void PostCopyGems();
 
     void AddBeatMask(int);
     void HandleTrackShifting();
     int GetLoopTick(int);
+    void HandleLooping();
+    bool ShouldLoop(int) const;
+    void CopyGems(int);
+    bool GetFretboardView(const GameGem&) const;
+    int GetPatternSize() const;
+    bool IsGemInFutureLoop(int) const;
+    void CopyGems(std::vector<GameGem>&, int, int&, int&);
 
     std::vector<GameGem> mPattern; // 0x54
     GemPlayer* mGemPlayer; // 0x5c

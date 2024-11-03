@@ -14,6 +14,7 @@
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/MetaPerformer.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
 #include "rndobj/Dir.h"
 #include "synth/Sfx.h"
@@ -22,6 +23,7 @@
 #include "utl/DataPointMgr.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include "utl/TimeConversion.h"
 #include <cstddef>
 
 GemTrainerPanel* TheGemTrainerPanel;
@@ -167,5 +169,62 @@ void GemTrainerPanel::Draw(){
     if(mGemPlayer && ShouldDrawTab()){
         TheUI->unk34->Select();
         mTab->Draw(GetLoopTick(GetTick()));
+    }
+}
+
+void GemTrainerPanel::HandleLooping(){
+    if(mGemManager && !TheGame->IsWaiting() && GetCurrSection() >= 0){
+        int tick = GetTick();
+        if(GetCurrSection() >= 0 && ShouldLoop(tick) != 0){
+            Handle(score_msg, true);
+            if(unka8){
+                AddBeatMask(unk80 + GetLoopTicks(GetCurrSection()));
+            }
+            unkc9 = false;
+            unka8 = !unka8;
+            unkcc = -1;
+            int start = GetSectionLoopStart(GetCurrSection());
+            float ticktosec = TickToSeconds(start);
+            float secs = TheTaskMgr.Seconds(TaskMgr::b);
+            if(secs - ticktosec > 900.0f){
+                RestartSection();
+            }
+            else {
+                CopyGems(tick);
+                ResetChallenge();
+                Looped();
+            }
+        }
+    }
+}
+
+bool GemTrainerPanel::GetFretboardView(const GameGem& gem) const {
+    char fret = gem.GetHighestFret();
+    return fret <= 11;
+}
+
+int GemTrainerPanel::GetPatternSize() const { return mPattern.size(); }
+
+bool GemTrainerPanel::IsGemInFutureLoop(int) const {
+
+}
+
+void GemTrainerPanel::HandlePlayerDeleted(Player* player){
+    if(player == mGemPlayer){
+        mGemPlayer = 0;
+    }
+}
+
+void GemTrainerPanel::CopyGems(std::vector<GameGem>& gems, int sectIdx, int& iref1, int& iref2){
+    gems.clear();
+    iref1 = -1;
+    iref2 = -1;
+    Difficulty diff = mLocalUser->GetDifficulty();
+    TrainerSection& sect = GetSection(sectIdx);
+    for(int i = 0; i < unk88[diff].size(); i++){
+        GameGem& curGem = unk88[diff][i];
+        if(sect.GetStartTick() <= curGem.mTick && curGem.mTick + curGem.mDurationTicks <= sect.GetEndTick()){
+            // gems.push_back(curGem);
+        }
     }
 }
