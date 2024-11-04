@@ -45,6 +45,7 @@ public:
     int GetPatternSize() const;
     bool IsGemInFutureLoop(int) const;
     void CopyGems(std::vector<GameGem>&, int, int&, int&);
+    Difficulty GetDifficulty() const;
 
     std::vector<GameGem> mPattern; // 0x54
     GemPlayer* mGemPlayer; // 0x5c

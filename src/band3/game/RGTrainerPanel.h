@@ -47,6 +47,11 @@ public:
     void InitFretSteps(const GameGem&);
     void UpdateStepText(int, FingerStep&);
     Symbol RGStringToken(int, bool);
+    void HandleLegendLefty(bool);
+    bool TestFingers(const GameGem&);
+    void Swing(int);
+    void FretButtonUp(int);
+    int GetFret(int, int) const;
 
     std::vector<FingerStep> mFingerSteps; // 0xdc
     bool mLegendMode; // 0xe4

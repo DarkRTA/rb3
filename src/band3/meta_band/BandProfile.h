@@ -87,8 +87,8 @@ public:
     void SetProGuitarSongLessonSectionComplete(int, Difficulty, int);
     void SetProBassSongLessonSectionComplete(int, Difficulty, int);
     void SetProKeyboardSongLessonSectionComplete(int, Difficulty, int);
-    void IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const;
-    void IsProBassSongLessonSectionComplete(int, Difficulty, int) const;
+    bool IsProGuitarSongLessonSectionComplete(int, Difficulty, int) const;
+    bool IsProBassSongLessonSectionComplete(int, Difficulty, int) const;
     bool IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const;
     bool IsLessonComplete(const Symbol&, float) const;
     void GetLessonComplete(const Symbol&) const;
