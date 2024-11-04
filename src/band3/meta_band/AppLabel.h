@@ -38,4 +38,5 @@ public:
     void SetUnlinkedMotd(const MainHubMessageProvider*);
     void SetLeaderboardRankAndName(const LeaderboardRow&);
     void SetLeaderboardName(const LeaderboardRow&);
+    void SetPitch(int, int);
 };

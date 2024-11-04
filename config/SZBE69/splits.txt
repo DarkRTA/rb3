@@ -157,6 +157,9 @@ rb3/panels/fadepanel.cpp:
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
+band3/game/FretHand.cpp:
+	.text       start:0x8010D754 end:0x8010DCD0
+
 rb3/game.cpp:
 	.text       start:0x80110030 end:0x80116E14
 
@@ -172,8 +175,11 @@ rb3/gamemode.cpp:
 rb3/panels/gamepanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C
 
-rb3/unknown/801/unk_8011AED8.cpp:
-	.text       start:0x8011DD8C end:0x80141EE8
+band3/game/GuitarFx.cpp:
+	.text       start:0x8012E974 end:0x8012F4C4
+
+band3/game/KeysFx.cpp:
+	.text       start:0x8012FAF8 end:0x8013032C
 
 rb3/performer.cpp:
 	.text       start:0x80141EE8 end:0x801444A4
@@ -186,6 +192,9 @@ rb3/panels/practicepanel.cpp:
 
 rb3/providers/practicesectionprovider.cpp:
 	.text       start:0x8014BAA0 end:0x8014CF80
+
+band3/game/RGTrainerPanel.cpp:
+	.text       start:0x8014DA04 end:0x8015143C
 
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84

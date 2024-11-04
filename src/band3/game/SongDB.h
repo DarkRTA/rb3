@@ -58,6 +58,7 @@ public:
     std::vector<RangeSection>& GetRangeSections();
     void ChangeDifficulty(int, Difficulty);
     void SetTrainerGems(int, int);
+    int GetBeatsPerMeasure(int) const;
 
     SongData* GetSongData() { return mSongData; }
 

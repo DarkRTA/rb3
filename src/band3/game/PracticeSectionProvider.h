@@ -2,20 +2,21 @@
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
 
+class PracticeSection {
+public:
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkc;
+    int unk10;
+    int unk14;
+    int unk18;
+    int unk1c;
+    int unk20;
+};
+
 class PracticeSectionProvider : public UIListProvider, public Hmx::Object {
 public:
-    class PracticeSection {
-    public:
-        int unk0;
-        int unk4;
-        int unk8;
-        int unkc;
-        int unk10;
-        int unk14;
-        int unk18;
-        int unk1c;
-        int unk20;
-    };
 
     PracticeSectionProvider();
     virtual ~PracticeSectionProvider(){}
