@@ -1,7 +1,9 @@
 #pragma once
+#include "TrackConfig.h"
 #include "bandobj/BandTrack.h"
 #include "bandobj/TrackInterface.h"
 #include "game/BandUser.h"
+#include "game/Defines.h"
 #include "obj/Object.h"
 #include "rndobj/Dir.h"
 
@@ -22,8 +24,8 @@ public:
     virtual const char* GetPlayerName() const;
     virtual const char* UserName() const;
 
-    virtual int GetUser() const; // fix ret type
-    virtual int GetPlayerDifficulty() const;
+    virtual const User* GetUser() const; // fix ret type
+    virtual Difficulty GetPlayerDifficulty() const;
     virtual Symbol GetPlayerDifficultySym() const;
     virtual bool PlayerDisconnected() const;
     virtual bool PlayerDisconnectedAtStart() const;
@@ -62,4 +64,16 @@ public:
     virtual void RemovePlayer();
 
     Symbol GetType() const;
+    const BandUser* GetBandUser() const;
+    Player* GetPlayer() const;
+
+    TrackConfig mTrackConfig; // 0x1c
+    float unk48; // 0x48
+    int unk4c; // 0x4c
+    bool unk50; // 0x50
+    int unk54; // 0x54
+    int unk58; // 0x58
+    int unk5c; // 0x5c
+    bool unk60; // 0x60
+    float unk64; // 0x64
 };

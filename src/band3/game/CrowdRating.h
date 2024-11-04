@@ -20,6 +20,8 @@ public:
     bool IsInWarning() const;
     float GetRawValue() const { return unk8; }
     void SetDisplayValue(float);
+    float GetDisplayValue() const;
+    bool IsBelowLoseLevel() const;
 
     bool mActive; // 0x4
     float unk8;

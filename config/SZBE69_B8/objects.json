@@ -26,7 +26,7 @@
             "band3/bandtrack/Lyric.cpp": "NonMatching",
             "band3/bandtrack/NowBar.cpp": "NonMatching",
             "band3/bandtrack/Tail.cpp": "MISSING",
-            "band3/bandtrack/Track.cpp": "MISSING",
+            "band3/bandtrack/Track.cpp": "NonMatching",
             "band3/bandtrack/TrackConfig.cpp": "Matching",
             "band3/bandtrack/TrackPanel.cpp": "MISSING",
             "band3/bandtrack/VocalTrack.cpp": "MISSING",
