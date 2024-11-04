@@ -1,5 +1,9 @@
 #pragma once
+#include "CommonPhraseCapturer.h"
+#include "PlayerBehavior.h"
 #include "PracticeSectionProvider.h"
+#include "bandobj/BandTrack.h"
+#include "beatmatch/SongPos.h"
 #include "beatmatch/TrackType.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
@@ -7,13 +11,20 @@
 #include "obj/MsgSource.h"
 
 class BeatMaster;
+class CommonPhraseCapturer;
 
 enum FillLogic {
-
+    kFillsRegular = 0,
+    kFillsDeployGemAndDim = 1,
+    kFillsDeployGemAndInvisible = 2
 };
 
 enum EnabledState {
-
+    kPlayerEnabled = 0,
+    kPlayerDisabled = 1,
+    kPlayerBeingSaved = 2,
+    kPlayerDroppingIn = 3,
+    kPlayerDisconnected = 4
 };
 
 class PersistentPlayerData {
@@ -22,6 +33,23 @@ class PersistentPlayerData {
 
 class Extent {
 
+};
+
+class PlayerParams {
+public:
+    PlayerParams();
+    void SetVocals();
+
+    float mCrowdSaveLevel; // 0x0
+    float mMsToReturnFromBrink; // 0x4
+    float mCrowdLossPerMs; // 0x8
+    float unkc;
+    float unk10;
+    float unk14;
+    float unk18;
+    float unk1c;
+    float unk20;
+    float unk24; // 0x24
 };
 
 class Player : public Performer, public MsgSource {
@@ -63,7 +91,7 @@ public:
     virtual void Jump(float, bool) = 0;
     virtual void SetAutoplay(bool) = 0;
     virtual bool IsAutoplay() const = 0;
-    virtual void SetAutoOn(bool);
+    virtual void SetAutoOn(bool){}
     virtual void HookupTrack() = 0;
     virtual void UnHookTrack() = 0;
     virtual void EnableFills(float, bool) = 0;
@@ -119,16 +147,57 @@ public:
     virtual void ResetController(bool);
 
     void DeterminePerformanceAwards();
-    TrackType GetTrackType() const { return unk_tracktype; }
+    void DisableOverdrivePhrases();
+    BandTrack* GetBandTrack() const;
+    void PollMultiplier();
+    void PollEnabledState(float);
+    void PollTalking(int);
+    void UpdateEnergy(const SongPos&);
+    void StopDeployingBandEnergy(bool);
+    void BroadcastScore();
 
-    int unk_player;
-    int unk22c;
-    BandUser* unk230;
-    int unk234;
-    int unk238;
-    int unk23c;
-    int unk240;
-    int unk244;
-    int unk248;
-    TrackType unk_tracktype;
+    TrackType GetTrackType() const { return mTrackType; }
+    BandUser* GetUser() const { return mUser; }
+
+    PlayerParams* mParams; // 0x228
+    PlayerBehavior* mBehavior; // 0x22c
+    BandUser* mUser; // 0x230
+    CommonPhraseCapturer* mCommonPhraseCapturer; // 0x234
+    bool unk238; // 0x238
+    String unk23c; // 0x23c
+    int unk248; // 0x248
+    TrackType mTrackType; // 0x24c
+    int unk250;
+    int unk254;
+    float unk258;
+    int unk25c;
+    std::vector<int> unk260;
+    bool unk268;
+    float unk26c;
+    bool unk270;
+    int unk274;
+    int unk278;
+    bool unk27c;
+    BeatMaster* unk280;
+    float unk284;
+    bool unk288;
+    int unk28c;
+    bool unk290;
+    int unk294;
+    int unk298;
+    float unk29c;
+    int unk2a0;
+    float unk2a4;
+    bool unk2a8;
+    bool unk2a9;
+    int unk2ac;
+    bool unk2b0;
+    bool unk2b1;
+    bool unk2b2;
+    bool unk2b3;
+    int unk2b4;
+    int unk2b8;
+    int unk2bc;
+    int unk2c0;
+    bool unk2c4;
 };

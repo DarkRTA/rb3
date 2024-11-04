@@ -5,7 +5,7 @@
 Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0), m0x28(0), m0x2c(0),
     m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0), m0x48(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0),
     mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0), mSolo(0), mOverdrive(0), mSustain(0), mScoreStreak(0),
-    mBandContribution(0), mCodaPoints(0), m0xa8(0), m0x09(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0),
+    mBandContribution(0), mCodaPoints(0), mHasCoda(0), mHasSolos(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0),
     mClosestPlayersSaved(3, 2.0f), mTimesSaved(0), mClosestTimesSaved(3, 2.0f), mBestSolos(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0), m0x14c(0), m0x150(0), mEndGameScore(0),
     mEndGameCrowdLevel(0), mEndGameOverdrive(0), mOverdrivePhrasesCompleted(0), mOverdrivePhraseCount(0), mUnisonPhraseCompleted(0), mUnisonPhraseCount(0), mHopoGemsHopoed(0), mHopoGemsStrummed(0),
     mHopoGemCount(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0), mAverageMultiplier(0), mRollCount(0),
@@ -144,8 +144,8 @@ void Stats::SaveForEndGame(BinStream& bs) const {
     bs << mScoreStreak;
     bs << mBandContribution;
     bs << mCodaPoints;
-    bs << m0xa8;
-    bs << m0x09;
+    bs << mHasCoda;
+    bs << mHasSolos;
     bs << mOverdrivePhrasesCompleted;
     bs << mOverdrivePhraseCount;
     bs << mUnisonPhraseCompleted;
@@ -189,8 +189,8 @@ void Stats::LoadForEndGame(BinStream& bs){
     bs >> mScoreStreak;
     bs >> mBandContribution;
     bs >> mCodaPoints;
-    bs >> m0xa8;
-    bs >> m0x09;
+    bs >> mHasCoda;
+    bs >> mHasSolos;
     bs >> mOverdrivePhrasesCompleted;
     bs >> mOverdrivePhraseCount;
     bs >> mUnisonPhraseCompleted;

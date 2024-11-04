@@ -67,7 +67,7 @@
             "band3/game/PerfectOverdriveTracker.cpp": "MISSING",
             "band3/game/PerfectSectionTracker.cpp": "MISSING",
             "band3/game/Performer.cpp": "NonMatching",
-            "band3/game/Player.cpp": "MISSING",
+            "band3/game/Player.cpp": "NonMatching",
             "band3/game/PlayerBehavior.cpp": "MISSING",
             "band3/game/PracticePanel.cpp": "MISSING",
             "band3/game/PracticeSectionProvider.cpp": "NonMatching",

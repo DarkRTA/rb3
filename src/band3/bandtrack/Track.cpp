@@ -65,7 +65,7 @@ const BandUser* Track::GetBandUser() const {
 Difficulty Track::GetPlayerDifficulty() const {
     const BandUser* user = mTrackConfig.GetBandUser();
     if(user->mPlayer){
-        return user->mPlayer->unk230->GetDifficulty();
+        return user->mPlayer->GetUser()->GetDifficulty();
     }
     else return kDifficultyEasy;
 }
@@ -73,7 +73,7 @@ Difficulty Track::GetPlayerDifficulty() const {
 Symbol Track::GetPlayerDifficultySym() const {
     const BandUser* user = mTrackConfig.GetBandUser();
     if(user->mPlayer){
-        return user->mPlayer->unk230->GetDifficultySym();
+        return user->mPlayer->GetUser()->GetDifficultySym();
     }
     else return gNullStr;
 }
@@ -92,7 +92,7 @@ Player* Track::GetPlayer() const {
 
 bool Track::ShouldDisablePopupHelp() const {
     Player* player = mTrackConfig.GetBandUser()->GetPlayer();
-    return player && (player->unk230->GetDifficulty() >= kDifficultyHard || player->IsNet());
+    return player && (player->GetUser()->GetDifficulty() >= kDifficultyHard || player->IsNet());
 }
 
 bool Track::InGame() const {
@@ -111,13 +111,13 @@ const char* Track::GetTrackIcon() const {
 
 const char* Track::GetPlayerName() const {
     const BandUser* user = mTrackConfig.GetBandUser();
-    if(user->GetPlayer()) return user->GetPlayer()->unk230->IntroName();
+    if(user->GetPlayer()) return user->GetPlayer()->GetUser()->IntroName();
     else return "";
 }
 
 const char* Track::UserName() const {
     const BandUser* user = mTrackConfig.GetBandUser();
-    if(user->GetPlayer()) return user->GetPlayer()->unk230->UserName();
+    if(user->GetPlayer()) return user->GetPlayer()->GetUser()->UserName();
     else return "";
 }
 

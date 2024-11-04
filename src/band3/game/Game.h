@@ -16,6 +16,7 @@ class Game : public Hmx::Object {
     bool IsActiveUser(BandUser*) const;
     bool IsWaiting();
     float GetMusicSpeed();
+    int NumActivePlayers() const;
 
     u8 pad[0x4C];
     bool mIsPaused; // 0x68 iunno

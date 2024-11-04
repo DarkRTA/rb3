@@ -35,7 +35,7 @@ RGTrainerPanel* TheRGTrainerPanel;
 void ProTrainerPanel::Enter(){
     GemTrainerPanel::Enter();
     if(mGemPlayer){
-        LocalBandUser* localuser = mGemPlayer->unk230->GetLocalBandUser();
+        LocalBandUser* localuser = mGemPlayer->GetUser()->GetLocalBandUser();
         BandProfile* profile = TheProfileMgr.GetProfileForUser(localuser);
         if(!profile) return;
         int songID = TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
@@ -66,7 +66,7 @@ void ProTrainerPanel::SetLessonComplete(int lesson){
         TrainerPanel::SetLessonComplete(lesson);
     }
     else {
-        LocalBandUser* localuser = mGemPlayer->unk230->GetLocalBandUser();
+        LocalBandUser* localuser = mGemPlayer->GetUser()->GetLocalBandUser();
         BandProfile* profile = TheProfileMgr.GetProfileForUser(localuser);
         if(profile){
             int songID = TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
@@ -122,7 +122,7 @@ void RGTrainerPanel::SetupIsBass(){
         mIsBass = mTrack->GetType() == real_bass;
     }
     else if(mGemPlayer){
-        BandUser* user = mGemPlayer->unk230;
+        BandUser* user = mGemPlayer->GetUser();
         if(user){
             switch(user->GetTrackType()){
                 case kTrackRealGuitar:
@@ -168,10 +168,10 @@ void RGTrainerPanel::Poll(){
 }
 
 void RGTrainerPanel::HandleChordLegend(bool b){
-    if(mLefty != mGemPlayer->unk230->GetGameplayOptions()->GetLefty()){
+    if(mLefty != mGemPlayer->GetUser()->GetGameplayOptions()->GetLefty()){
         HandleLegendLefty(true);
     }
-    GemTrack* track = dynamic_cast<GemTrack*>(mGemPlayer->unk230->mTrack);
+    GemTrack* track = dynamic_cast<GemTrack*>(mGemPlayer->GetUser()->mTrack);
     MILO_ASSERT(track, 0xEF);
     if(mLegendGemID >= 0){
         if(mLegendGemID < unk60[GetDifficulty()]->NumGems()){
@@ -459,7 +459,7 @@ Symbol RGTrainerPanel::RGStringToken(int str, bool abbrev){
 }
 
 void RGTrainerPanel::HandleLegendLefty(bool b){
-    mLefty = mGemPlayer->unk230->GetGameplayOptions()->GetLefty();
+    mLefty = mGemPlayer->GetUser()->GetGameplayOptions()->GetLefty();
     float f2, f12;
     if(mLefty){
         f2 = 0.0f;
@@ -477,7 +477,7 @@ void RGTrainerPanel::HandleLegendLefty(bool b){
     else {
         leftyAnim->SetFrame(f12, f2);
     }
-    GemTrack* track = dynamic_cast<GemTrack*>(mGemPlayer->unk230->mTrack);
+    GemTrack* track = dynamic_cast<GemTrack*>(mGemPlayer->GetUser()->mTrack);
     track->UpdateLeftyFlip();
     EventTrigger* trig;
     if(mLefty){
@@ -562,7 +562,7 @@ void RGTrainerPanel::HitNotify(int i){
 }
 
 void RGTrainerPanel::MissNotify(int i){
-    Difficulty diff = mGemPlayer->unk230->GetLocalBandUser()->GetDifficulty();
+    Difficulty diff = mGemPlayer->GetUser()->GetLocalBandUser()->GetDifficulty();
     mTutor.Miss(i, mPattern[i % mPattern.size()], diff);
 }
 

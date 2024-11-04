@@ -75,6 +75,7 @@ public:
     Band* GetBand() const { return mBand; }
     bool GetQuarantined() const { return mQuarantined; }
     const Stats& GetStats() const { return mStats; }
+    CrowdRating* Crowd() const { return mCrowd; }
 
     float mPollMs; // 0x8
     CrowdRating* mCrowd; // 0xc

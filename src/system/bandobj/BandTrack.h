@@ -102,6 +102,8 @@ public:
     Symbol GetInstrumentSymbol() const;
     void CombineStreakMultipliers(bool);
     const char* UserName() const;
+    void SetQuarantined(bool);
+    void SetNetTalking(bool);
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }
