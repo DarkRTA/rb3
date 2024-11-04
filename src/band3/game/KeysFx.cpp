@@ -37,6 +37,7 @@ void KeysFx::Poll(bool b1, bool b2, float f3, float f4, float f5){
     if(unk20 >= 0x78) b54 = false;
     ObjDirItr<FxSend> it(mFxDir, true);
     float minprod = f5 * 4.0f;
+    float freq = 1.0f - f5;
     for(; it != 0; ++it){
         it->EnableUpdates(false);
         DataNode* tempoprop = it->Property(tempo_sync, false);
@@ -53,18 +54,18 @@ void KeysFx::Poll(bool b1, bool b2, float f3, float f4, float f5){
         }
         if(unk34 != f5){
             float min = Min(1.0f, minprod);
-            float cos6 = std::cos(min * 1.570796f);
-            float log6 = std::log10(cos6 + 0.001f);
-            float cos7 = std::cos((1.0f - min) * 1.570796f);
-            float log7 = std::log10(cos7 + 0.001f);
+            float cos6 = std::cos(min * 1.5707964f);
+            float log6 = std::log10(cos6 + 0.001f) * 20.0f;
+            float cos7 = std::cos((1.0f - min) * 1.5707964f);
+            float log7 = std::log10(cos7 + 0.001f) * 20.0f;
             if(it->Property(frequency, false)){
-                it->SetProperty(frequency, 1.0f - f5);
+                it->SetProperty(frequency, freq);
             }
             if(it->Property(wet_gain, false)){
-                it->SetProperty(wet_gain, log7 * 20.0f);
+                it->SetProperty(wet_gain, log7);
             }
             if(it->Property(dry_gain, false)){
-                it->SetProperty(dry_gain, log6 * 20.0f);
+                it->SetProperty(dry_gain, log6);
             }
         }
         if(it->CanPushParameters()){
