@@ -13,4 +13,6 @@ public:
     int EnergyMultiplier() const;
     int EnergyCrowdBoost() const;
     void ForceStars(int);
+    void UpdateBonusLevel(float);
+    int DeployBandEnergy(BandUser*);
 };

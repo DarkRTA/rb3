@@ -1,11 +1,14 @@
 #include "Stats.h"
 #include "game/Performer.h"
+#include "decomp.h"
 #include "game/GameConfig.h"
 #include "game/BandUser.h"
 #include "game/Band.h"
 #include "game/Game.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+
+DECOMP_FORCEACTIVE(Performer, "points differ by %f", __FILE__, "abs(add_points - (points + individualContribution + overdriveContribution + bandContribution) < 0.01f)")
 
 #pragma push
 #pragma dont_inline on

@@ -9,6 +9,7 @@
 #include "game/Defines.h"
 #include "game/Performer.h"
 #include "obj/MsgSource.h"
+#include "utl/HxGuid.h"
 
 class BeatMaster;
 class CommonPhraseCapturer;
@@ -28,11 +29,17 @@ enum EnabledState {
 };
 
 class PersistentPlayerData {
-
+public:
+    float unk0;
+    float unk4;
+    int unk8;
+    int unkc;
 };
 
 class Extent {
-
+public:
+    int unk0;
+    int unk4;
 };
 
 class PlayerParams {
@@ -96,7 +103,7 @@ public:
     virtual void UnHookTrack() = 0;
     virtual void EnableFills(float, bool) = 0;
     virtual void DisableFills() = 0;
-    virtual void EnableDrumFills(bool);
+    virtual void EnableDrumFills(bool){}
     virtual bool FillsEnabled(int) = 0;
     virtual bool AreFillsForced() const;
     virtual void EnterCoda();
@@ -136,7 +143,7 @@ public:
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection&, int, int) = 0;
     virtual void SetEnabledState(EnabledState, BandUser*, bool);
-    virtual void LocalSetEnabledState(int, EnabledState, BandUser*, bool);
+    virtual void LocalSetEnabledState(EnabledState, int, BandUser*, bool);
     virtual void EnableSwings(bool);
     virtual bool DeployBandEnergyIfPossible(bool);
     virtual int LocalDeployBandEnergy();
@@ -155,6 +162,24 @@ public:
     void UpdateEnergy(const SongPos&);
     void StopDeployingBandEnergy(bool);
     void BroadcastScore();
+    void AddBonusPoints(int);
+    EnabledState GetEnabledStateAt(float) const;
+    void SetEnergy(float);
+    void DelayReturn(bool);
+    bool Saveable() const;
+    void Save(BandUser*, bool);
+    void DisablePlayer(int);
+    const UserGuid& GetUserGuid() const;
+    int GetSlot() const;
+    bool IsDeployingBandEnergy() const;
+    void SetEnergyAutomatically(float);
+    void DisablePhraseBonus();
+    void EnablePhraseBonus();
+    void AddEnergy(float);
+    void PerformDeployBandEnergy(int, bool);
+    void SubtractEnergy(float);
+    void Deploy();
+    void RemoteAlreadySaved(int);
 
     TrackType GetTrackType() const { return mTrackType; }
     BandUser* GetUser() const { return mUser; }
@@ -163,22 +188,22 @@ public:
     PlayerBehavior* mBehavior; // 0x22c
     BandUser* mUser; // 0x230
     CommonPhraseCapturer* mCommonPhraseCapturer; // 0x234
-    bool unk238; // 0x238
+    bool mRemote; // 0x238
     String unk23c; // 0x23c
     int unk248; // 0x248
     TrackType mTrackType; // 0x24c
-    int unk250;
+    EnabledState mEnabledState; // 0x250
     int unk254;
     float unk258;
     int unk25c;
-    std::vector<int> unk260;
+    std::vector<Extent> unk260;
     bool unk268;
     float unk26c;
-    bool unk270;
+    bool mDeployingBandEnergy; // 0x270
     int unk274;
     int unk278;
-    bool unk27c;
-    BeatMaster* unk280;
+    bool mPhraseBonus; // 0x27c
+    BeatMaster* mBeatMaster; // 0x280
     float unk284;
     bool unk288;
     int unk28c;

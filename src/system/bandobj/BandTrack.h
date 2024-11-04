@@ -22,7 +22,7 @@ public:
     virtual void Load(BinStream&);
     virtual void Reset();
     virtual void TrackReset(){}
-    virtual void ResetSmashers(bool);
+    virtual void ResetSmashers(bool){}
     virtual void Retract(bool);
     virtual void Extend(bool){}
     virtual void SpotlightPhraseSuccess();
@@ -104,6 +104,7 @@ public:
     const char* UserName() const;
     void SetQuarantined(bool);
     void SetNetTalking(bool);
+    void SetControllerType(const Symbol&);
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }
