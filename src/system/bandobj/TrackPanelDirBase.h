@@ -37,8 +37,8 @@ public:
     virtual void CodaEnd() = 0;
     virtual void SetCodaScore(int);
     virtual void SoloEnd(BandTrack*, int, Symbol) = 0;
-    virtual void SetTrackPanel(TrackPanelInterface*);
-    virtual void ResetPlayers();
+    virtual void SetTrackPanel(TrackPanelInterface* panel){ mTrackPanel = panel; }
+    virtual void ResetPlayers(){}
     virtual void StartFinale(){}
     virtual void SetMultiplier(int, bool);
     virtual void SetCrowdRating(float);

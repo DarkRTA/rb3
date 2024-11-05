@@ -33,8 +33,8 @@ public:
     virtual ObjectDir* ThisDir(){}
     virtual ObjectDir* ThisDir() const {}
     virtual void SpotlightPhraseSuccess();
-    virtual int AsVocalTrackDir(){}
-    virtual int AsRndDir(){ return AsVocalTrackDir(); }
+    virtual VocalTrackDir* AsVocalTrackDir(){}
+    virtual RndDir* AsRndDir(){ return AsVocalTrackDir(); }
     virtual void Reset();
     virtual void Retract(bool);
     virtual void Extend(bool);

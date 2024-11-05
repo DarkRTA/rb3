@@ -66,8 +66,8 @@ public:
     virtual ObjectDir* ThisDir() const {}
     virtual void RefreshStreakMeter(int, int, int);
     virtual void SpotlightPhraseSuccess();
-    virtual int AsGemTrackDir(){}
-    virtual int AsRndDir(){ return AsGemTrackDir(); }
+    virtual GemTrackDir* AsGemTrackDir(){}
+    virtual RndDir* AsRndDir(){ return AsGemTrackDir(); }
     virtual void SetPerformanceMode(bool);
     virtual void SetInstrument(TrackInstrument);
     virtual void SetupInstrument();

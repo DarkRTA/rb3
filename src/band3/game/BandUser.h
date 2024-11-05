@@ -23,7 +23,7 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual ~BandUser();
     virtual bool IsNullUser();
-    virtual bool IsParticipating();
+    virtual bool IsParticipating() const { return mParticipating; }
     virtual int GetCurrentInstrumentCareerScore() const = 0;
     virtual int GetCurrentHardcoreIconLevel() const = 0;
     virtual int GetCymbalConfiguration() const = 0;

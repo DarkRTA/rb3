@@ -1,7 +1,10 @@
 #pragma once
 #include "bandobj/BandScoreboard.h"
+#include "bandobj/TrackInstruments.h"
+#include "bandobj/TrackPanelDirBase.h"
 #include "bandobj/TrackPanelInterface.h"
 #include "bandtrack/Track.h"
+#include "game/BandUser.h"
 #include "obj/Data.h"
 
 class DepChecker;
@@ -10,9 +13,19 @@ class TrackPanel : public TrackPanelInterface {
 public:
     class TrackSlot {
     public:
-        TrackSlot() : unk0(0), unk4(-1) {}
-        int unk0;
-        int unk4;
+        TrackSlot() : mTrack(0), mInstrument(kInstNone) {}
+
+        Track* mTrack; // 0x0
+        TrackInstrument mInstrument; // 0x4
+    };
+
+    enum TourGoalConfig {
+        kConfigScoreStars = 0,
+        kConfigScoreStarsGoal = 1,
+        kConfigScoreGoal = 2,
+        kConfigStarsGoal = 3,
+        kConfigGoal = 4,
+        kConfigInvalid = 5
     };
 
     TrackPanel();
@@ -42,6 +55,21 @@ public:
     virtual bool AutoVocals() const { return mAutoVocals; }
 
     void CleanUpReloadChecks();
+    Track* GetTrack();
+    Track* GetTrack(Player*, bool);
+    Track* GetTrack(BandUser*, bool);
+    const BandUser* GetUserFromTrackNum(int);
+    void Reload();
+    void CleanUpTracks();
+    void UpdateReservedVocalSlot();
+    void CreateTracks();
+    void Reset();
+    void AssignAndInitTracks();
+    void SetMainGoalConfiguration(TourGoalConfig);
+    void MainGoalReset();
+    void TrackerDisplayReset();
+    void SetSuppressTambourineDisplay(bool);
+    void AssignTrack(int);
 
     DataArray* mConfig; // 0x38
     std::vector<Track*> mTracks; // 0x3c
@@ -58,9 +86,9 @@ public:
     bool mAutoVocals; // 0x63
     std::map<Symbol, DepChecker*> unk64;
     float unk7c;
-    int unk80;
+    TrackPanelDirBase* unk80; // 0x80
     int unk84;
-    int unk88;
+    TourGoalConfig unk88; // 0x88
     float unk8c;
 };
 

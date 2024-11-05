@@ -1,4 +1,5 @@
 #pragma once
+#include "utl/Symbol.h"
 
 enum TrackInstrument {
     kInstGuitar = 0,
@@ -13,3 +14,5 @@ enum TrackInstrument {
     kInstPending = -2,
     kInstNone = -1
 };
+
+TrackInstrument GetTrackInstrument(Symbol);

@@ -80,3 +80,5 @@ public:
     bool unk60; // 0x60
     float unk64; // 0x64
 };
+
+Track* NewTrack(BandUser*);
