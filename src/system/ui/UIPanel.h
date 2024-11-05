@@ -21,7 +21,7 @@ public:
     OBJ_SET_TYPE(UIPanel);
     virtual DataNode Handle(DataArray*, bool);
     virtual ~UIPanel();
-    virtual void Load(BinStream&);
+    virtual void Load(BinStream& bs){ Hmx::Object::Load(bs); }
     virtual void SetTypeDef(DataArray *);
     virtual class ObjectDir* DataDir();
 
@@ -32,7 +32,7 @@ public:
     virtual bool Exiting() const;
     virtual bool Unloading() const;
     virtual void Poll();
-    virtual void SetPaused(bool);
+    virtual void SetPaused(bool paused){ mPaused = paused; }
     virtual void FocusIn(){ }
     virtual void FocusOut(){ }
     virtual void Load();
