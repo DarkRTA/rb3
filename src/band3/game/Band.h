@@ -15,4 +15,5 @@ public:
     void ForceStars(int);
     void UpdateBonusLevel(float);
     int DeployBandEnergy(BandUser*);
+    int GetMultiplier(bool, int&, int&, int&) const;
 };

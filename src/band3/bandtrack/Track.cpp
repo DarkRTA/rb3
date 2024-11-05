@@ -1,11 +1,21 @@
 #include "bandtrack/Track.h"
+#include "bandobj/BandTrack.h"
 #include "decomp.h"
+#include "game/Band.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "game/Game.h"
+#include "game/GameMode.h"
 #include "game/Player.h"
+#include "meta_band/AppLabel.h"
+#include "meta_band/MetaPerformer.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "os/Debug.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 Track::Track(BandUser* user) : mTrackConfig(user), unk48(-1.0f), unk4c(3), unk50(0), unk54(-1), unk58(-1), unk60(0), unk64(-3.4028235E+38f) {
 
@@ -122,5 +132,135 @@ const char* Track::UserName() const {
 }
 
 bool Track::PlayerDisconnected() const {
+    const BandUser* user = mTrackConfig.GetBandUser();
+    if(user->GetPlayer()) return user->GetPlayer()->mEnabledState == kPlayerDisconnected;
+    else return false;
+}
+
+bool Track::PlayerDisconnectedAtStart() const {
+    const BandUser* user = mTrackConfig.GetBandUser();
+    if(user->GetPlayer()) return user->GetPlayer()->unk2a8;
+    else return false;
+}
+
+bool Track::HasLocalPlayer() const {
+    const BandUser* user = mTrackConfig.GetBandUser();
+    if(user->GetPlayer()) return user->GetPlayer()->IsLocal();
+    else return false;
+}
+
+bool Track::PlayerDisabled() const {
+    const BandUser* user = mTrackConfig.GetBandUser();
+    if(user->GetPlayer()) return user->GetPlayer()->mEnabledState != kPlayerEnabled;
+    else return false;
+}
+
+void Track::DTSPopup(bool) const {
 
 }
+
+bool Track::HasNetPlayer() const {
+    Player* player = mTrackConfig.GetBandUser()->GetPlayer();
+    if(player) return player->IsNet() || player->mEnabledState == kPlayerDisconnected;
+    else return false;
+}
+
+bool Track::IsLocal() const {
+    const BandUser* user = mTrackConfig.GetBandUser();
+    if(user && user->IsLocal()) return true;
+    else return false;
+}
+
+int Track::GetBandMultiplier() const {
+    int i1, i2, i3;
+    return mTrackConfig.GetBandUser()->GetPlayer()->GetBand()->GetMultiplier(true, i1, i2, i3);
+}
+
+void Track::PushGameplayOptions(VocalParam, int){
+    unk5c = mTrackConfig.GetBandUser()->GetPlayer()->GetUser()->GetGameplayOptions();
+}
+
+int Track::GetNoBackFromBrink() const {
+    MetaPerformer::Current();
+    return 0;
+}
+
+void Track::RefreshPlayerHUD(){
+    static bool sDump;
+    BandTrack* track = GetBandTrack();
+    Player* player = mTrackConfig.GetBandUser()->GetPlayer();
+    if(track && player){
+        if(sDump){
+            float od = player->unk26c;
+            MILO_LOG("Refreshing HUD for player %d: streak %d, mult %d, od %.2f, ready %d\n",
+                player->GetSlot(), player->mStats.GetCurrentStreak(), player->GetIndividualMultiplier(), od, player->CanDeployOverdrive());
+        }
+        track->RefreshStreakMeter(player->mStats.GetCurrentStreak(), player->GetIndividualMultiplier(), player->GetNotesPerStreak());
+        float od = player->unk26c;
+        track->RefreshOverdrive(od, player->CanDeployOverdrive());
+    }
+}
+
+bool Track::FailedAtStart(){
+    if(mTrackConfig.GetBandUser()->GetPlayer()){
+        return mTrackConfig.GetBandUser()->GetPlayer()->unk2a9;
+    }
+    else return false;
+}
+
+bool Track::IsDeployingOverdrive() const {
+    if(mTrackConfig.GetBandUser()->GetPlayer()){
+        return mTrackConfig.GetBandUser()->GetPlayer()->IsDeployingBandEnergy();
+    }
+    else return false;
+}
+
+bool Track::IsNoFailActive() const {
+    return MetaPerformer::Current()->IsNoFailActive();
+}
+
+void Track::SetUserNameLabel(ObjectDir* dir, const char* labelName){
+    MILO_ASSERT(dir && labelName, 0x177);
+    AppLabel* label = dir->Find<AppLabel>(labelName, false);
+    if(label){
+        if(mTrackConfig.GetBandUser()){
+            label->SetIntroName((BandUser*)mTrackConfig.GetBandUser());
+        }
+        else {
+            label->SetTextToken("<username>");
+        }
+    }
+}
+
+bool Track::InGameMode(Symbol s) const {
+    return TheGameMode->InMode(s);
+}
+
+bool Track::IsScoring() const {
+    if(mTrackConfig.GetBandUser()->GetPlayer()){
+        return !mTrackConfig.GetBandUser()->GetPlayer()->GetQuarantined();
+    }
+    else return false;
+}
+
+void Track::StartPulseAnims(float f){
+    if(GetBandTrack()){
+        GetBandTrack()->StartPulseAnims(f);
+    }
+    else MILO_LOG("no BandTrack found\n");
+}
+
+int Track::GetTrackNum() const {
+    return mTrackConfig.TrackNum();
+}
+
+BEGIN_HANDLERS(Track)
+    HANDLE_EXPR(get_dir, GetDir())
+    HANDLE_EXPR(get_obj, GetObj(_msg->Sym(2)))
+    HANDLE_EXPR(get_player_config, (BandUser*)mTrackConfig.GetBandUser())
+    // get panel
+    HANDLE_EXPR(player, mTrackConfig.GetBandUser()->GetPlayer())
+    HANDLE_ACTION(refresh_hud, RefreshPlayerHUD())
+    HANDLE_ACTION(set_playing_intro, SetPlayingIntro(_msg->Float(2)))
+    HANDLE_SUPERCLASS(Hmx::Object)
+END_HANDLERS
