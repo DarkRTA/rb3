@@ -1,5 +1,6 @@
 #include "bandtrack/Track.h"
 #include "bandobj/BandTrack.h"
+#include "bandtrack/TrackPanel.h"
 #include "decomp.h"
 #include "game/Band.h"
 #include "game/BandUser.h"
@@ -258,9 +259,11 @@ BEGIN_HANDLERS(Track)
     HANDLE_EXPR(get_dir, GetDir())
     HANDLE_EXPR(get_obj, GetObj(_msg->Sym(2)))
     HANDLE_EXPR(get_player_config, (BandUser*)mTrackConfig.GetBandUser())
-    // get panel
+    HANDLE_EXPR(panel, GetTrackPanel())
     HANDLE_EXPR(player, mTrackConfig.GetBandUser()->GetPlayer())
     HANDLE_ACTION(refresh_hud, RefreshPlayerHUD())
     HANDLE_ACTION(set_playing_intro, SetPlayingIntro(_msg->Float(2)))
     HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_MEMBER_PTR(GetDir())
+    HANDLE_CHECK(0x1AF)
 END_HANDLERS

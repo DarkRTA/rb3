@@ -8,6 +8,7 @@
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "game/Performer.h"
+#include "obj/Data.h"
 #include "obj/MsgSource.h"
 #include "utl/HxGuid.h"
 
@@ -116,8 +117,8 @@ public:
     virtual bool AllowWarningState() const;
     virtual bool RebuildPhrases();
     virtual void Rollback(float, float);
-    virtual void EnableController();
-    virtual void DisableController();
+    virtual void EnableController(){}
+    virtual void DisableController(){}
     virtual void ConfigureBehavior();
     virtual bool CanDeployOverdrive() const;
     virtual float GetOverdrive() const;
@@ -127,7 +128,7 @@ public:
     virtual int GetBaseMaxPoints() const = 0;
     virtual int GetBaseMaxStreakPoints() const = 0;
     virtual int GetBaseBonusPoints() const = 0;
-    virtual void SetSyncOffset(float);
+    virtual void SetSyncOffset(float){}
     virtual void SavePersistentData(PersistentPlayerData&) const;
     virtual void LoadPersistentData(const PersistentPlayerData&);
     virtual int GetCodaFreestyleExtents(Extent&) const;
@@ -138,20 +139,20 @@ public:
     virtual void SetCodaEndMs(float);
     virtual bool NeedsToOverrideBasePoints() const;
     virtual bool NeedsToSetCodaEnd() const;
-    virtual void EnterAnnoyingMode();
+    virtual void EnterAnnoyingMode(){}
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection&, int, int) = 0;
     virtual void SetEnabledState(EnabledState, BandUser*, bool);
     virtual void LocalSetEnabledState(EnabledState, int, BandUser*, bool);
-    virtual void EnableSwings(bool);
+    virtual void EnableSwings(bool){}
     virtual bool DeployBandEnergyIfPossible(bool);
     virtual int LocalDeployBandEnergy();
     virtual bool ShouldDrainEnergy() const;
     virtual void IgnoreUntilRollback(float);
-    virtual void UpdateLeftyFlip();
+    virtual void UpdateLeftyFlip(){}
     virtual void UpdateVocalStyle();
-    virtual void ResetController(bool);
+    virtual void ResetController(bool){}
 
     void DeterminePerformanceAwards();
     void DisableOverdrivePhrases();
@@ -180,9 +181,15 @@ public:
     void SubtractEnergy(float);
     void Deploy();
     void RemoteAlreadySaved(int);
+    void SetEnergyFromNet(float, bool);
+    void SetFinishedCoda();
 
     TrackType GetTrackType() const { return mTrackType; }
     BandUser* GetUser() const { return mUser; }
+
+    DataNode OnGetOverdriveMeter(DataArray*);
+    DataNode OnSendNetGameplayMsg(DataArray*);
+    DataNode OnSendNetGameplayMsgToPlayer(DataArray*);
 
     PlayerParams* mParams; // 0x228
     PlayerBehavior* mBehavior; // 0x22c
@@ -219,7 +226,7 @@ public:
     bool unk2b0;
     bool unk2b1;
     bool unk2b2;
-    bool unk2b3;
+    bool mHasBlownCoda; // 0x2b3
     int unk2b4;
     int unk2b8;
     int unk2bc;

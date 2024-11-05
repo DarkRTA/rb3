@@ -1,10 +1,12 @@
 #include "game/Player.h"
 #include "Player.h"
 #include "bandobj/BandDirector.h"
+#include "bandobj/OverdriveMeter.h"
 #include "bandtrack/Track.h"
 #include "Band.h"
 #include "PlayerBehavior.h"
 #include "bandobj/BandTrack.h"
+#include "bandtrack/TrackPanel.h"
 #include "beatmatch/BeatMaster.h"
 #include "beatmatch/SongPos.h"
 #include "beatmatch/TrackType.h"
@@ -13,10 +15,15 @@
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/Game.h"
+#include "game/NetGameMsgs.h"
 #include "game/Performer.h"
 #include "game/SongDB.h"
 #include "meta_band/MetaPerformer.h"
+#include "net/NetSession.h"
 #include "obj/Data.h"
+#include "obj/MsgSource.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/System.h"
@@ -25,7 +32,9 @@
 #include "utl/Messages4.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include "utl/TimeConversion.h"
 
 inline PlayerParams::PlayerParams(){
@@ -52,7 +61,7 @@ inline void PlayerParams::SetVocals(){
 
 Player::Player(BandUser* user, Band* band, int i, BeatMaster* bmaster) : Performer(user, band), mParams(new PlayerParams()), mBehavior(new PlayerBehavior()), mUser(user), mRemote(0),
     unk248(i), mTrackType(kTrackNone), mEnabledState(kPlayerEnabled), unk254(0), unk268(0), unk26c(0), mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1), mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0),
-    unk290(0), unk294(0), unk298(0), unk2a8(0), unk2a9(0), unk2ac(0), unk2b1(0), unk2b2(0), unk2b3(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1), unk2c4(1) {
+    unk290(0), unk294(0), unk298(0), unk2a8(0), unk2a9(0), unk2ac(0), unk2b1(0), unk2b2(0), mHasBlownCoda(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1), unk2c4(1) {
     if(user){
         mRemote = !user->IsLocal();
         unk23c = user->UserName();
@@ -147,7 +156,7 @@ void Player::Restart(bool b){
     }
     unk2ac = 0;
     unk2b2 = 0;
-    unk2b3 = 0;
+    mHasBlownCoda = 0;
     if(mUser){
         Track* track = mUser->GetTrack();
         if(track){
@@ -306,6 +315,8 @@ EnabledState Player::GetEnabledStateAt(float) const {
     
 }
 
+DECOMP_FORCEACTIVE(Player, __FILE__, "causer", "send_already_saved", "", "player_saved", "%s_regen.cue")
+
 void Player::LocalSetEnabledState(EnabledState estate, int i, BandUser* causer, bool b){
     unk298 = 0;
     if(estate == kPlayerBeingSaved && mEnabledState != kPlayerDisabled){
@@ -380,9 +391,10 @@ void Player::DisablePlayer(int i){
         const char* cue = MakeString("%s_died.cue", TrackTypeToSym(mTrackType).Str());
         float f = 0;
         if(TheBandUserMgr->IsMultiplayerGame()){
-
+            if(mUser->GetSlot() == -1) f = -1.0f;
+            else f = 1.0f;
         }
-        // trackpanel dependent
+        GetTrackPanel()->PlaySequence(cue, 0, f, 0);
     }
     if(GetBandTrack()){
         GetBandTrack()->DisablePlayer(i);
@@ -526,6 +538,8 @@ void Player::LoadPersistentData(const PersistentPlayerData& data){
     }
 }
 
+DECOMP_FORCEACTIVE(Player, "Non-local player trying to deploy locally\n", "send_deploy")
+
 int Player::LocalDeployBandEnergy(){
     int energy = mBand->DeployBandEnergy(mUser);
     mStats.mDeployCount++;
@@ -543,6 +557,8 @@ void Player::PerformDeployBandEnergy(int i, bool b){
     }
     else SubtractEnergy(mParams->unk1c);
 }
+
+DECOMP_FORCEACTIVE(Player, "rp_deployed_%s.cue")
 
 void Player::RemoteAlreadySaved(int i){
     unk294--;
@@ -586,3 +602,123 @@ void Player::SetEnergy(float f){
         }
     }
 }
+
+DECOMP_FORCEACTIVE(Player, "rp_captured_%s.cue")
+
+void Player::SetFinishedCoda(){
+    MILO_ASSERT(!mHasBlownCoda, 0x5A8);
+}
+
+void Player::DeterminePerformanceAwards(){
+    DataArray* cfg = SystemConfig(performance_awards);
+    DataNode& playerNode = DataVariable("player");
+    DataNode n30(playerNode);
+    DataNode thisNode(this);
+    playerNode = thisNode;
+    for(int i = 1; i < cfg->Size(); i++){
+        DataArray* arr = cfg->Array(i);
+        if(arr->Int(1)){
+            mStats.mAccessPerformanceAwards.push_back(arr->Sym(0));
+        }
+    }
+    playerNode = n30;
+}
+
+DataNode Player::OnSendNetGameplayMsg(DataArray* arr){
+    int opcode = arr->Int(2);
+    int packet = arr->Int(3) != 0;
+
+    int arg3 = 0;
+    int arg2 = 0;
+    int arg1 = 0;
+
+    if(arr->Size() > 4) arg1 = arr->Int(4);
+    if(arr->Size() > 5) arg2 = arr->Int(5);
+    if(arr->Size() > 6) arg3 = arr->Int(6);
+    
+    PlayerGameplayMsg msg(mUser, opcode, arg1, arg2, arg3);
+    TheNetSession->SendMsgToAll(msg, (PacketType)packet);
+    return 1;
+}
+
+DataNode Player::OnSendNetGameplayMsgToPlayer(DataArray* arr){
+    User* destUser = arr->Obj<User>(2);
+    int opcode = arr->Int(3);
+    int packet = arr->Int(4) != 0;
+
+    int arg3 = 0;
+    int arg2 = 0;
+    int arg1 = 0;
+
+    if(arr->Size() > 5) arg1 = arr->Int(5);
+    if(arr->Size() > 6) arg2 = arr->Int(6);
+    if(arr->Size() > 7) arg3 = arr->Int(7);
+    
+    PlayerGameplayMsg msg(mUser, opcode, arg1, arg2, arg3);
+    TheNetSession->SendMsg(destUser, msg, (PacketType)packet);
+    return 1;
+}
+
+DataNode Player::OnGetOverdriveMeter(DataArray* arr){
+    BandTrack* track = GetBandTrack();
+    return track ? (OverdriveMeter*)track->mStarPowerMeter : NULL_OBJ;
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(Player)
+    HANDLE_EXPR(track, GetUser()->GetTrack())
+    HANDLE_EXPR(get_user, GetUser())
+    HANDLE_EXPR(player_name, unk23c)
+    HANDLE_EXPR(instrument, GetUser()->GetTrackSym())
+    HANDLE_EXPR(difficulty, GetUser()->GetDifficulty())
+    HANDLE_EXPR(is_net, IsNet())
+    HANDLE_EXPR(disconnected_at_start, unk2a8)
+    HANDLE_ACTION(enter_coda, EnterCoda())
+    HANDLE_EXPR(band_energy, unk26c)
+    HANDLE_ACTION(set_band_energy, SetEnergy(_msg->Float(2)))
+    HANDLE_ACTION(fill_band_energy, SetEnergy(1.0f))
+    HANDLE_ACTION(empty_band_energy, SetEnergy(0))
+    HANDLE_EXPR(can_deploy, CanDeployOverdrive())
+    HANDLE_EXPR(is_deploying, IsDeployingBandEnergy())
+    HANDLE_ACTION(deploy_if_possible, DeployBandEnergyIfPossible(false))
+    HANDLE_ACTION_IF(force_deploy, !mDeployingBandEnergy, LocalDeployBandEnergy())
+    HANDLE_EXPR(in_freestyle_section, InFreestyleSection())
+    HANDLE(star_power_meter, OnGetOverdriveMeter)
+    HANDLE_ACTION(fail, SetEnabledState(kPlayerDisabled, GetUser(), false))
+    HANDLE_EXPR(enabled_state, mEnabledState)
+    HANDLE_EXPR(enable_time, unk258)
+    HANDLE_ACTION(enable_swings, EnableSwings(_msg->Int(2)))
+    HANDLE_ACTION(update_lefty_flip, UpdateLeftyFlip())
+    HANDLE_ACTION(update_vocal_style, UpdateVocalStyle())
+    HANDLE_ACTION(reset_controller, ResetController(_msg->Int(2)))
+    HANDLE_ACTION(enable_phrase_bonus, EnablePhraseBonus())
+    HANDLE_ACTION(disable_phrase_bonus, DisablePhraseBonus())
+    HANDLE_ACTION(popup_help, PopupHelp(_msg->Sym(2), _msg->Int(3)))
+    HANDLE(send_net_gameplay_msg, OnSendNetGameplayMsg)
+    HANDLE(send_net_gameplay_msg_to_player, OnSendNetGameplayMsgToPlayer)
+    HANDLE_ACTION(remote_deploy, PerformDeployBandEnergy(_msg->Int(2), false))
+    HANDLE_ACTION(remote_hit_last_unison_gem, mCommonPhraseCapturer->LocalHitLastGem(this, _msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(remote_update_energy, SetEnergyFromNet(_msg->Float(2), _msg->Int(3)))
+    HANDLE_ACTION(remote_fail_unison_phrase, mCommonPhraseCapturer->LocalFail(this, _msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(remote_enabled_state, LocalSetEnabledState((EnabledState)(_msg->Int(2) >> 0x10), _msg->Int(3), TheBandUserMgr->GetUserFromSlot(_msg->Int(4)), (u16)(_msg->Int(2))))
+    HANDLE_ACTION(remote_already_saved, RemoteAlreadySaved(_msg->Int(2)))
+    HANDLE_ACTION(remote_tracker_focus, TheGame->OnRemoteTrackerFocus(this, _msg->Int(2), _msg->Int(3), _msg->Int(4)))
+    HANDLE_ACTION(remote_tracker_player_progress, TheGame->OnRemoteTrackerPlayerProgress(this, _msg->Float(2)))
+    HANDLE_ACTION(remote_tracker_section_complete, TheGame->OnRemoteTrackerSectionComplete(this, _msg->Int(2), _msg->Int(3), _msg->Int(4)))
+    HANDLE_ACTION(remote_tracker_player_display, TheGame->OnRemoteTrackerPlayerDisplay(this, _msg->Int(2), _msg->Int(3), _msg->Int(4)))
+    HANDLE_ACTION(remote_tracker_deploy, TheGame->OnRemoteTrackerDeploy(this))
+    HANDLE_ACTION(remote_tracker_end_deploy_streak, TheGame->OnRemoteTrackerEndDeployStreak(this, _msg->Int(2)))
+    HANDLE_ACTION(remote_tracker_end_streak, TheGame->OnRemoteTrackerEndStreak(this, _msg->Int(2), _msg->Int(3)))
+    HANDLE_EXPR(get_times_failed, unk254)
+    HANDLE_EXPR(get_deploy_failed, mStats.GetFailedDeploy())
+    HANDLE_EXPR(get_saved_count, mStats.GetPlayersSaved())
+    HANDLE_ACTION(set_permanent_overdrive, unk2b1 = _msg->Int(2))
+    HANDLE_ACTION(set_energy_automatically, SetEnergyAutomatically(_msg->Float(2)))
+    HANDLE_ACTION(clear_score_histories, ClearScoreHistories())
+    HANDLE_ACTION(change_difficulty, ChangeDifficulty((Difficulty)_msg->Int(2)))
+    HANDLE_SUPERCLASS(Performer)
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_CHECK(0x6DE)
+END_HANDLERS
+#pragma pop
