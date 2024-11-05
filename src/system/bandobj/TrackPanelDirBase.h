@@ -46,7 +46,7 @@ public:
     virtual void UnisonStart(int){}
     virtual void UnisonEnd();
     virtual void UnisonSucceed();
-    virtual EndingBonus* GetEndingBonus();
+    virtual EndingBonus* GetEndingBonus(){ return nullptr; }
     virtual BandCrowdMeter* GetCrowdMeter(); // ptr
     virtual void SetupApplauseMeter(int, const char*, const char*, RndDir*, RndDir*, bool, Symbol){}
     virtual void DisablePlayer(int, bool);

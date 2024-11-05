@@ -107,6 +107,7 @@ public:
     void SetQuarantined(bool);
     void SetNetTalking(bool);
     void SetControllerType(const Symbol&);
+    void SetPlayerFeedbackShowing(bool) const;
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }

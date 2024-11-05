@@ -5,6 +5,7 @@
 #include "bandobj/TrackPanelInterface.h"
 #include "bandtrack/Track.h"
 #include "game/BandUser.h"
+#include "game/Player.h"
 #include "obj/Data.h"
 
 class DepChecker;
@@ -85,6 +86,17 @@ public:
     void TrackerDisplayReset() const;
     void StartPulseAnims();
     void SetSmasherGlowing(int, bool);
+    void PopSmasher(int);
+    int GetTrackSlot(Player*);
+    void UpdateJoinInProgress(bool, bool);
+    void FailedJoinInProgress();
+    void SetSuppressUnisonDisplay(bool);
+    void UnisonStart(int);
+    void UnisonPlayerSuccess(Player*);
+    void UnisonPlayerFailure(Player*);
+    void SetSuppressPlayerFeedback(bool);
+
+    DataNode ForEachTrack(const DataArray*);
 
     DataArray* mConfig; // 0x38
     std::vector<Track*> mTracks; // 0x3c

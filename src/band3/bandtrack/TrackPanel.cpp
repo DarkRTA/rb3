@@ -2,15 +2,18 @@
 #include "Track.h"
 #include "bandobj/BandScoreboard.h"
 #include "bandobj/BandTrack.h"
+#include "bandobj/EndingBonus.h"
 #include "bandobj/TrackInstruments.h"
 #include "bandobj/TrackPanelDirBase.h"
 #include "bandobj/VocalTrackDir.h"
 #include "decomp.h"
 #include "game/BandUserMgr.h"
+#include "game/Game.h"
 #include "game/Player.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ModifierMgr.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
@@ -24,6 +27,10 @@
 #include "utl/Loader.h"
 #include "utl/Messages.h"
 #include "utl/STLHelpers.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include <cmath>
 
 TrackPanel* TheTrackPanel;
@@ -480,13 +487,179 @@ void TrackPanel::StartPulseAnims(){
     }
 }
 
+DECOMP_FORCEACTIVE(TrackPanel, "hud_track_poll")
+
 void TrackPanel::Draw(){
     START_AUTO_TIMER("hud_track_draw");
     if(unk5c) UIPanel::Draw();
 }
+
+DECOMP_FORCEACTIVE(TrackPanel, "track/tracksystem.milo", "track/vocals.milo", "config/track_graphics.dta", "track/rail_streak.milo")
 
 void TrackPanel::SetSmasherGlowing(int iii, bool b){
     for(int i = 0; i < mTracks.size(); i++){
         mTracks[i]->SetSmasherGlowing(iii, b);
     }
 }
+
+void TrackPanel::PopSmasher(int iii){
+    for(int i = 0; i < mTracks.size(); i++){
+        mTracks[i]->PopSmasher(iii);
+    }
+}
+
+void TrackPanel::CleanUpReloadChecks(){
+    for(std::map<Symbol, DepChecker*>::iterator it = unk64.begin(); it != unk64.end(); ++it){
+        delete it->second;
+    }
+    unk64.clear();
+}
+
+DataNode TrackPanel::ForEachTrack(const DataArray* arr){
+    DataNode* var = arr->Var(2);
+    DataNode node = *var;
+    for(int i = 0; i < mTracks.size(); i++){
+        *var = mTracks[i];
+        for(int j = 3; j < arr->Size(); j++){
+            arr->Command(j)->Execute();
+        }
+    }
+    *var = node;
+    return 0;
+}
+
+void TrackPanel::GetTrackOrder(std::vector<TrackInstrument>* out, bool) const {
+    MILO_ASSERT(out && out->empty(), 0x4E9);
+    for(int i = 0; i < mTrackSlots.size(); i++){
+        out->push_back(mTrackSlots[i].mInstrument);
+    }
+}
+
+int TrackPanel::GetTrackCount() const {
+    return mTrackSlots.size();
+}
+
+int TrackPanel::GetNumPlayers() const {
+    return TheBandUserMgr->GetNumParticipants();
+}
+
+bool TrackPanel::InGame() const {
+    return TheGame;
+}
+
+int TrackPanel::GetTrackSlot(Player* player){
+    for(int i = 0; i < mTrackSlots.size(); i++){
+        if(mTrackSlots[i].mTrack && mTrackSlots[i].mTrack->GetPlayer() == player) return i;
+    }
+    return -1;
+}
+
+void TrackPanel::UpdateJoinInProgress(bool b1, bool b2){
+    mTrackPanelDir->UpdateJoinInProgress(b1, b2);
+}
+
+void TrackPanel::FailedJoinInProgress(){
+    mTrackPanelDir->FailedJoinInProgress();
+}
+
+void TrackPanel::SetSuppressUnisonDisplay(bool b){
+    EndingBonus* bonus = mTrackPanelDir->GetEndingBonus();
+    if(bonus) bonus->SetSuppressUnisonDisplay(b);
+}
+
+void TrackPanel::UnisonStart(int iii){
+    EndingBonus* bonus = mTrackPanelDir->GetEndingBonus();
+    if(bonus){
+        int u3 = 0;
+        for(int i = 0; i < mTracks.size(); i++){
+            int tracknum = mTracks[i]->GetTrackNum();
+            if(iii & (1 << tracknum)){
+                u3 |= (1 << mTracks[i]->unk58);
+            }
+        }
+        bonus->UnisonStart(u3);
+    }
+}
+
+void TrackPanel::UnisonPlayerSuccess(Player* player){
+    if(player){
+        EndingBonus* bonus = mTrackPanelDir->GetEndingBonus();
+        int slot = GetTrackSlot(player);
+        if(bonus && slot != -1){
+            bonus->PlayerSuccess(slot);
+        }
+    }
+}
+
+void TrackPanel::UnisonPlayerFailure(Player* player){
+    if(player){
+        EndingBonus* bonus = mTrackPanelDir->GetEndingBonus();
+        int slot = GetTrackSlot(player);
+        if(bonus && slot != -1){
+            bonus->PlayerFailure(slot);
+        }
+    }
+}
+
+void TrackPanel::SetSuppressTambourineDisplay(bool b){
+    for(int i = 0; i < mTrackSlots.size(); i++){
+        if(mTrackSlots[i].mInstrument == kInstVocals){
+            Track* track = mTrackSlots[i].mTrack;
+            if(track){
+                BandTrack* btrack = track->GetBandTrack();
+                if(btrack){
+                    btrack->SetSuppressSoloDisplay(b);
+                }
+            }
+        }
+    }
+}
+
+void TrackPanel::SetSuppressPlayerFeedback(bool b){
+    for(int i = 0; i < mTrackSlots.size(); i++){
+        Track* track = mTrackSlots[i].mTrack;
+        if(track){
+            BandTrack* btrack = track->GetBandTrack();
+            if(btrack){
+                btrack->SetPlayerFeedbackShowing(!b);
+            }
+        }
+    }
+}
+
+int TrackPanel::GetNoCrowdMeter() const {
+    MetaPerformer::Current();
+    return 0;
+}
+
+DECOMP_FORCEACTIVE(TrackPanel, "initial_display_level")
+
+bool TrackPanel::SlotReservedForVocals(int slot) const {
+    return slot == mReservedVocalSlot;
+}
+
+bool TrackPanel::GameResumedNoScore() const {
+    return TheGame->ResumedNoScore();
+}
+
+BEGIN_HANDLERS(TrackPanel)
+    HANDLE_ACTION(set_smasher_glowing, SetSmasherGlowing(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(pop_smasher, PopSmasher(_msg->Int(2)))
+    HANDLE_ACTION(track_reset, Reset())
+    HANDLE_ACTION(reload, Reload())
+    HANDLE_EXPR(get_first_track, GetTrack())
+    HANDLE(foreach_track, ForEachTrack)
+    HANDLE_EXPR(my_track_panel_dir, mTrackPanelDir)
+    if (sym == get_pause_menu){
+        _msg->Int(2);
+        return NULL_OBJ;
+    }
+    HANDLE_EXPR(get_user_from_track_num, (BandUser*)GetUserFromTrackNum(_msg->Int(2)))
+    HANDLE_ACTION(play_seq, PlaySequence(_msg->Str(2), 0, 0, 0))
+    HANDLE_ACTION(stop_seq, StopSequence(_msg->Str(2), false))
+    HANDLE_ACTION(update_join_in_progress, UpdateJoinInProgress(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(failed_join_in_progress, FailedJoinInProgress())
+    HANDLE_EXPR(get_num_tracks, (int)mTracks.size())
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x5C5)
+END_HANDLERS
