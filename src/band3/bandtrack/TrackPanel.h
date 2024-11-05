@@ -73,6 +73,18 @@ public:
     void HandleAddUser(BandUser*);
     void HandleAddPlayer(Player*);
     void DoHandleAddPlayer(BandUser*);
+    void PostHandleAddPlayer(Player*);
+    void DoPostHandleAddPlayer(BandUser*);
+    void HandleRemoveUser(BandUser*);
+    void PostHandleRemoveUser(BandUser*);
+    void PlaySequence(const char*, float, float, float);
+    void StopSequence(const char*, bool);
+    void ShowMainGoalInfo(bool);
+    void SendTrackerDisplayMessage(const Message&) const;
+    void SendTrackerBroadcastDisplayMessage(const Message&) const;
+    void TrackerDisplayReset() const;
+    void StartPulseAnims();
+    void SetSmasherGlowing(int, bool);
 
     DataArray* mConfig; // 0x38
     std::vector<Track*> mTracks; // 0x3c
@@ -96,5 +108,6 @@ public:
 };
 
 TrackPanel* GetTrackPanel();
+TrackPanelDirBase* GetTrackPanelDir();
 
 extern TrackPanel* TheTrackPanel;

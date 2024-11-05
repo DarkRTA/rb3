@@ -35,13 +35,13 @@ public:
     virtual void HideScore();
     virtual void Coda() = 0;
     virtual void CodaEnd() = 0;
-    virtual void SetCodaScore(int);
+    virtual void SetCodaScore(int){}
     virtual void SoloEnd(BandTrack*, int, Symbol) = 0;
     virtual void SetTrackPanel(TrackPanelInterface* panel){ mTrackPanel = panel; }
     virtual void ResetPlayers(){}
     virtual void StartFinale(){}
-    virtual void SetMultiplier(int, bool);
-    virtual void SetCrowdRating(float);
+    virtual void SetMultiplier(int, bool){}
+    virtual void SetCrowdRating(float){}
     virtual void CodaSuccess();
     virtual void UnisonStart(int){}
     virtual void UnisonEnd();
@@ -52,9 +52,9 @@ public:
     virtual void DisablePlayer(int, bool);
     virtual void EnablePlayer(int);
     virtual void FadeBotbBandNames(bool){}
-    virtual void CleanUpChordMeshes();
+    virtual void CleanUpChordMeshes(){}
     virtual void SetApplauseMeterScale(int, int){}
-    virtual void StartPulseAnims(float);
+    virtual void StartPulseAnims(float){}
     virtual float GetPulseAnimStartDelay(bool) const;
     virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return 0; }
 
