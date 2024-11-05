@@ -70,25 +70,28 @@ public:
     void TrackerDisplayReset();
     void SetSuppressTambourineDisplay(bool);
     void AssignTrack(int);
+    void HandleAddUser(BandUser*);
+    void HandleAddPlayer(Player*);
+    void DoHandleAddPlayer(BandUser*);
 
     DataArray* mConfig; // 0x38
     std::vector<Track*> mTracks; // 0x3c
     std::vector<TrackSlot> mTrackSlots; // 0x44
-    int unk4c; // 0x4c
-    ObjPtr<BandScoreboard, ObjectDir> unk50; // 0x50
-    bool unk5c;
-    bool unk5d;
-    bool unk5e;
-    bool unk5f;
-    bool unk60;
-    bool unk61;
-    bool unk62;
+    int mReservedVocalSlot; // 0x4c
+    ObjPtr<BandScoreboard, ObjectDir> mScoreboard; // 0x50
+    bool unk5c; // 0x5c
+    bool unk5d; // 0x5d
+    bool unk5e; // 0x5e
+    bool unk5f; // 0x5f
+    bool unk60; // 0x60
+    bool unk61; // 0x61
+    bool unk62; // 0x62
     bool mAutoVocals; // 0x63
-    std::map<Symbol, DepChecker*> unk64;
+    std::map<Symbol, DepChecker*> unk64; // 0x64
     float unk7c;
-    TrackPanelDirBase* unk80; // 0x80
+    TrackPanelDirBase* mTrackPanelDir; // 0x80
     int unk84;
-    TourGoalConfig unk88; // 0x88
+    TourGoalConfig mTourGoalConfig; // 0x88
     float unk8c;
 };
 

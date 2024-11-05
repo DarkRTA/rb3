@@ -30,7 +30,7 @@ public:
     virtual void Reset() = 0;
     virtual void ResetAll(){}
     virtual void PlayIntro();
-    virtual bool TracksExtended() const;
+    virtual bool TracksExtended() const { return false; }
     virtual void GameOver();
     virtual void HideScore();
     virtual void Coda() = 0;

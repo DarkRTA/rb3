@@ -3,6 +3,7 @@
 #include "bandobj/BandScoreboard.h"
 #include "bandobj/TrackInstruments.h"
 #include "bandobj/TrackPanelDirBase.h"
+#include "bandobj/VocalTrackDir.h"
 #include "decomp.h"
 #include "game/BandUserMgr.h"
 #include "game/Player.h"
@@ -13,6 +14,7 @@
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/EventTrigger.h"
 #include "ui/UIPanel.h"
 #include "utl/Loader.h"
 #include "utl/Messages3.h"
@@ -24,8 +26,8 @@ TrackPanel* GetTrackPanel(){
     return TheTrackPanel;
 }
 
-TrackPanel::TrackPanel() : mConfig(SystemConfig("track_graphics")), unk4c(2), unk50(this, 0), unk5c(0), unk5d(0), unk5e(0), unk5f(0), unk60(0), unk61(1), unk62(0), mAutoVocals(0),
-    unk7c(0), unk80(0), unk84(0), unk88(kConfigInvalid), unk8c(-1.0f) {
+TrackPanel::TrackPanel() : mConfig(SystemConfig("track_graphics")), mReservedVocalSlot(2), mScoreboard(this, 0), unk5c(0), unk5d(0), unk5e(0), unk5f(0), unk60(0), unk61(1), unk62(0), mAutoVocals(0),
+    unk7c(0), mTrackPanelDir(0), unk84(0), mTourGoalConfig(kConfigInvalid), unk8c(-1.0f) {
     for(int i = 0; i < 5; i++){
         mTrackSlots.push_back(TrackSlot());
     }
@@ -75,10 +77,10 @@ const BandUser* TrackPanel::GetUserFromTrackNum(int index){
 
 void TrackPanel::FinishLoad(){
     UIPanel::FinishLoad();
-    if(mDir && !unk80){
-        unk80 = dynamic_cast<TrackPanelDirBase*>(mDir);
-        unk80->SetTrackPanel(this);
-        unk50 = unk80->Find<BandScoreboard>("scoreboard", false);
+    if(mDir && !mTrackPanelDir){
+        mTrackPanelDir = dynamic_cast<TrackPanelDirBase*>(mDir);
+        mTrackPanelDir->SetTrackPanel(this);
+        mScoreboard = mTrackPanelDir->Find<BandScoreboard>("scoreboard", false);
     }
 }
 
@@ -109,8 +111,8 @@ void TrackPanel::UpdateReservedVocalSlot(){
             u3 = i;
         }
     }
-    if(u3 != -1) unk4c = u3;
-    else unk4c = 4;
+    if(u3 != -1) mReservedVocalSlot = u3;
+    else mReservedVocalSlot = 4;
 }
 
 void TrackPanel::CreateTracks(){
@@ -139,7 +141,7 @@ void TrackPanel::CreateTracks(){
         UpdateReservedVocalSlot();
         BandUser* nulluser = TheBandUserMgr->GetNullUser();
         if(nulluser->GetPlayer()){
-            int idx = unk4c;
+            int idx = mReservedVocalSlot;
             Track* nulltrack = NewTrack(nulluser);
             nulltrack->SetName(MakeString("track%d", idx), ObjectDir::Main());
             nulltrack->unk58 = idx;
@@ -158,13 +160,13 @@ void TrackPanel::Reset(){
     CreateTracks();
     AssignAndInitTracks();
     unk8c = -1.0f;
-    if(unk50) unk50->Reset();
+    if(mScoreboard) mScoreboard->Reset();
     float secs = TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f;
     Hmx::Object::Handle(on_reset_msg, true);
-    unk80->ConfigureTracks(false);
+    mTrackPanelDir->ConfigureTracks(false);
     MetaPerformer::Current();
-    unk80->Reset();
-    SetMainGoalConfiguration(unk88);
+    mTrackPanelDir->Reset();
+    SetMainGoalConfiguration(mTourGoalConfig);
     MainGoalReset();
     TrackerDisplayReset();
     SetSuppressTambourineDisplay(false);
@@ -191,7 +193,7 @@ void TrackPanel::CleanUpTracks(){
         ClearAndShrink(mTracks); // might be something else idk
         if(unk5d){
             for(int i = 0; i < mTrackSlots.size(); i++){
-                unk80->RemoveTrack(i);
+                mTrackPanelDir->RemoveTrack(i);
             }
             unk5d = false;
         }
@@ -207,10 +209,10 @@ void TrackPanel::AssignAndInitTracks(){
 void TrackPanel::AssignTrack(int idx){
     TrackInstrument inst = mTrackSlots[idx].mInstrument;
     if(inst != kInstNone){
-        unk80->AssignTrack(idx, inst, false);
+        mTrackPanelDir->AssignTrack(idx, inst, false);
         if(inst != kInstPending){
             Track* track = mTrackSlots[idx].mTrack;
-            BandTrack* trackDir = unk80->GetBandTrackInSlot(idx);
+            BandTrack* trackDir = mTrackPanelDir->GetBandTrackInSlot(idx);
             MILO_ASSERT(track && trackDir, 0x1C7);
             MILO_ASSERT(inst == trackDir->GetInstrument(), 0x1C8);
             track->SetDir(trackDir->AsRndDir());
@@ -228,9 +230,60 @@ void TrackPanel::Reload(){
         if(!mLoader) Load();
         TheLoadMgr.PollUntilLoaded(mLoader, nullptr);
         CheckIsLoaded();
-        if(!unk80) FinishLoad();
+        if(!mTrackPanelDir) FinishLoad();
     }
     CleanUpTracks();
-    unk80->ResetPlayers();
-    if(unk50) unk50->Reset();
+    mTrackPanelDir->ResetPlayers();
+    if(mScoreboard) mScoreboard->Reset();
+}
+
+void TrackPanel::HandleAddUser(BandUser* user){
+    int userslot = user->GetSlot();
+    TrackSlot& slot = mTrackSlots[userslot];
+    MILO_ASSERT(slot.mTrack == NULL, 0x207);
+    MILO_ASSERT(slot.mInstrument == kInstNone, 0x208);
+    Track* newtrack = NewTrack(user);
+    newtrack->SetName(MakeString("track%d", userslot), ObjectDir::Main());
+
+    bool pushed = false;
+
+    for(int i = 0; i < mTracks.size(); i++){
+        if(mTracks[i]->unk58 > userslot){
+            // mTracks.push_back(newtrack);
+            pushed = true;
+            break;
+        }   
+    }
+    if(!pushed){
+        mTracks.push_back(newtrack);
+    }
+    unk5d = true;
+    newtrack->unk58 = userslot;
+    user->mTrack = newtrack;
+    slot.mTrack = newtrack;
+    slot.mInstrument = GetTrackInstrument(user->GetTrackSym());
+    UpdateReservedVocalSlot();
+    AssignTrack(userslot);
+    mTrackPanelDir->ConfigureTracks(!IsGameOver());
+    if(slot.mInstrument == kInstVocals && mTrackPanelDir->TracksExtended()){
+        BandTrack* vocalTrack = newtrack->GetBandTrack();
+        MILO_ASSERT(vocalTrack, 0x236);
+        RndDir* vocalTrackDir = vocalTrack->AsRndDir();
+        MILO_ASSERT(vocalTrackDir, 0x239);
+        EventTrigger* introTrig = vocalTrackDir->Find<EventTrigger>("play_intro.trig", false);
+        if(introTrig) introTrig->Trigger();
+    }
+}
+
+void TrackPanel::HandleAddPlayer(Player* player){
+    BandUser* user = player->GetUser();
+    MILO_ASSERT(user, 0x248);
+    DoHandleAddPlayer(user);
+}
+
+void TrackPanel::DoHandleAddPlayer(BandUser* user){
+    int slot = user->GetSlot();
+    TrackInstrument inst = GetTrackInstrument(user->GetTrackSym());
+    mTrackSlots[slot].mInstrument = inst;
+    mTrackPanelDir->GetBandTrackInSlot(slot)->SetInstrument(inst);
 }
