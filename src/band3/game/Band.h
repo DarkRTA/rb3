@@ -1,4 +1,5 @@
 #pragma once
+#include "game/Performer.h"
 #include "obj/Object.h"
 
 class BandUser;
@@ -16,4 +17,5 @@ public:
     void UpdateBonusLevel(float);
     int DeployBandEnergy(BandUser*);
     int GetMultiplier(bool, int&, int&, int&) const;
+    Performer* MainPerformer() const;
 };

@@ -15,8 +15,10 @@
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/Game.h"
+#include "game/GameConfig.h"
 #include "game/NetGameMsgs.h"
 #include "game/Performer.h"
+#include "game/Scoring.h"
 #include "game/SongDB.h"
 #include "meta_band/MetaPerformer.h"
 #include "net/NetSession.h"
@@ -60,7 +62,7 @@ inline void PlayerParams::SetVocals(){
 }
 
 Player::Player(BandUser* user, Band* band, int i, BeatMaster* bmaster) : Performer(user, band), mParams(new PlayerParams()), mBehavior(new PlayerBehavior()), mUser(user), mRemote(0),
-    unk248(i), mTrackType(kTrackNone), mEnabledState(kPlayerEnabled), mTimesFailed(0), unk268(0), mBandEnergy(0), mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1), mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0),
+    mTrackNum(i), mTrackType(kTrackNone), mEnabledState(kPlayerEnabled), mTimesFailed(0), unk268(0), mBandEnergy(0), mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1), mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0),
     unk290(0), unk294(0), unk298(0), mDisconnectedAtStart(0), unk2a9(0), unk2ac(0), mPermanentOverdrive(0), unk2b2(0), mHasBlownCoda(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1), unk2c4(1) {
     if(user){
         mRemote = !user->IsLocal();
@@ -79,15 +81,13 @@ Player::Player(BandUser* user, Band* band, int i, BeatMaster* bmaster) : Perform
 
 void Player::DynamicAddBeatmatch(){
     DisableOverdrivePhrases();
-    // mCommonPhraseCapturer->Enabled(this, unk248, MsToTick(PollMs()), false);
-    // TheSongDB->ClearTrackPhrases(unk248);
 }
 
 void Player::PostDynamicAdd(){
     float secs = TheTaskMgr.Seconds(TaskMgr::b);
     mQuarantined = true;
     mPollMs = secs * 1000.0f;
-    SetTrack(unk248);
+    SetTrack(mTrackNum);
     PostLoad(true);
     HookupTrack();
     SetEnabledState((EnabledState)3, mUser, false);
@@ -100,7 +100,7 @@ DECOMP_FORCEFUNC(Player, Player, GetUser())
 #pragma pop
 
 void Player::Leave(){
-    mCommonPhraseCapturer->Enabled(this, unk248, MsToTick(PollMs()), false);
+    mCommonPhraseCapturer->Enabled(this, mTrackNum, MsToTick(PollMs()), false);
     BandTrack* track = GetBandTrack();
     if(track) track->DropOut();
 }
@@ -113,7 +113,7 @@ Player::~Player(){
 bool Player::RebuildPhrases(){
     if(mQuarantined){
         if(mUser != TheBandUserMgr->GetNullUser()){
-            TheSongDB->RebuildPhrases(unk248);
+            TheSongDB->RebuildPhrases(mTrackNum);
             return true;
         }
     }
@@ -218,7 +218,7 @@ void Player::PollEnabledState(float f){
             break;
         case kPlayerBeingSaved:
         case kPlayerDroppingIn:
-            if(f >= mEnableTime){
+            if(f >= mEnableMs){
                 SetEnabledState(kPlayerEnabled, mUser, false);
             }
             break;
@@ -273,7 +273,7 @@ void Player::BroadcastScore(){
 void Player::EnterCoda(){
     if(!unk268){
         if(mEnabledState == kPlayerDisabled || mEnabledState == kPlayerBeingSaved || mEnabledState == kPlayerDroppingIn){
-            mEnableTime = PollMs();
+            mEnableMs = PollMs();
             mUser->GetTrack()->SetGemsEnabledByPlayer();
             SetEnabledState(kPlayerEnabled, mUser, false);
         }
@@ -460,17 +460,17 @@ bool Player::CanDeployOverdrive() const {
 bool Player::IsDeployingBandEnergy() const { return mDeployingBandEnergy; }
 
 void Player::StopDeployingBandEnergy(bool b){
-    int i3 = 0;
-    int i2 = 0;
     int i1 = 0;
+    int i2 = 0;
+    int i3 = 0;
     GetMultiplier(true, i1, i2, i3);
-    mStats.StopDeployingOverdrive(GetSongMs(), i3 * i1);
+    mStats.StopDeployingOverdrive(GetSongMs(), i1 * i3);
     mDeployingBandEnergy = false;
     if(mBand){
         mBand->UpdateBonusLevel(PollMs());
     }
     if(!b){
-        MakeString("rp_depleted_%s.cue", TrackTypeToSym(mTrackType).Str());
+        GetTrackPanel()->PlaySequence(MakeString("rp_depleted_%s.cue", TrackTypeToSym(mTrackType).Str()), 0, 0, 0);
     }
 
     if(GetBandTrack()){
@@ -489,8 +489,8 @@ void Player::DisablePhraseBonus(){ mPhraseBonus = false; }
 void Player::EnablePhraseBonus(){ mPhraseBonus = true; }
 
 void Player::DisableOverdrivePhrases(){
-    mCommonPhraseCapturer->Enabled(this, unk248, MsToTick(PollMs()), false);
-    TheSongDB->ClearTrackPhrases(unk248);
+    mCommonPhraseCapturer->Enabled(this, mTrackNum, MsToTick(PollMs()), false);
+    TheSongDB->ClearTrackPhrases(mTrackNum);
 }
 
 void Player::CompleteCommonPhrase(bool b1, bool b2){
@@ -509,13 +509,27 @@ void Player::CompleteCommonPhrase(bool b1, bool b2){
 int Player::GetIndividualMultiplier() const {
     if(GetMultiplierActive()){
         int streak = mStats.GetCurrentStreak();
-
+        int mult = TheScoring->GetStreakMult(streak, mBehavior->unk8);
+        
+        return mult;
     }
     else return 1;
 }
 
 int Player::GetMaxIndividualMultipler() const {
     return mBehavior->unkc;
+}
+
+int Player::GetNumStars() const {
+    return TheScoring->GetSoloNumStars(mScore, mTrackType);
+}
+
+float Player::GetNumStarsFloat() const {
+    return TheScoring->GetSoloNumStarsFloat(mScore, mTrackType);
+}
+
+int Player::GetScoreForStars(int i) const {
+    return TheScoring->GetSoloScoreForStars(i, mTrackType);
 }
 
 void Player::SavePersistentData(PersistentPlayerData& data) const {
@@ -543,7 +557,9 @@ DECOMP_FORCEACTIVE(Player, "Non-local player trying to deploy locally\n", "send_
 int Player::LocalDeployBandEnergy(){
     int energy = mBand->DeployBandEnergy(mUser);
     mStats.mDeployCount++;
+    mStats.AddToPlayersSaved(energy, mBand->MainPerformer()->Crowd()->GetValue());
     PerformDeployBandEnergy(energy, true);
+    return energy;
 }
 
 void Player::PerformDeployBandEnergy(int i, bool b){
@@ -603,10 +619,74 @@ void Player::SetEnergy(float f){
     }
 }
 
-DECOMP_FORCEACTIVE(Player, "rp_captured_%s.cue")
+void Player::SetEnergyFromNet(float f, bool b){
+    SetEnergyAutomatically(f);
+    if(mDeployingBandEnergy && !b){
+        StopDeployingBandEnergy(false);
+    }
+}
+
+bool Player::ShouldDrainEnergy() const { return true; }
+
+void Player::CheckCrowdFailure(){
+    if(mCrowd->IsBelowLoseLevel() && mEnabledState == kPlayerEnabled){
+        if(!mCrowd->CantFailYet() && mUser->GetDifficulty() != kDifficultyEasy && !mUser->IsNullUser()){
+            if(!MetaPerformer::Current()->IsNoFailActive() && !mQuarantined && !mBand->MainPerformer()->unk204){
+                SetEnabledState(kPlayerDisabled, mUser, false);
+            }
+        }
+        mCrowd->SetDisplayValue(0);
+    }
+}
+
+BandTrack* Player::GetBandTrack() const {
+    if(mUser->GetTrack()){
+        return mUser->GetTrack()->GetBandTrack();
+    }
+    else return nullptr;
+}
+
+void Player::UnisonMiss(int i) const {
+    if(mUser->GetTrack()){
+        mUser->GetTrack()->OnMissPhrase(i);
+    }
+}
+
+void Player::UnisonHit(){
+    BandTrack* track = GetBandTrack();
+    if(track){
+        track->SpotlightPhraseSuccess();
+    }
+    GetTrackPanel()->PlaySequence(MakeString("rp_captured_%s.cue", TrackTypeToSym(mTrackType).Str()), 0, 0, 0);
+}
 
 void Player::SetFinishedCoda(){
     MILO_ASSERT(!mHasBlownCoda, 0x5A8);
+    unk2b2 = true;
+}
+
+void Player::ChangeDifficulty(Difficulty diff){
+    mScore = 0;
+    mStats = Stats();
+    SetEnergy(0);
+    mCrowd->ChangeDifficulty(mUser, diff);
+    mCrowd->SetLoseLevel(mBand->MainPerformer()->Crowd()->GetLoseLevel());
+    SetQuarantined(true);
+    TheGameConfig->ChangeDifficulty(GetUser(), diff);
+    mBand->UpdateBonusLevel(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f);
+}
+
+void Player::SetQuarantined(bool b){
+    mQuarantined = b;
+    if(b && mTrackNum != -1){
+        DisableOverdrivePhrases();
+        TheGame->OnPlayerQuarantined(this);
+    }
+    BandTrack* track = GetBandTrack();
+    if(track){
+        track->SetQuarantined(b);
+        unk2c4 = false;
+    }
 }
 
 void Player::DeterminePerformanceAwards(){
@@ -687,7 +767,7 @@ BEGIN_HANDLERS(Player)
     HANDLE(star_power_meter, OnGetOverdriveMeter)
     HANDLE_ACTION(fail, SetEnabledState(kPlayerDisabled, GetUser(), false))
     HANDLE_EXPR(enabled_state, mEnabledState)
-    HANDLE_EXPR(enable_time, mEnableTime)
+    HANDLE_EXPR(enable_time, mEnableMs)
     HANDLE_ACTION(enable_swings, EnableSwings(_msg->Int(2)))
     HANDLE_ACTION(update_lefty_flip, UpdateLeftyFlip())
     HANDLE_ACTION(update_vocal_style, UpdateVocalStyle())

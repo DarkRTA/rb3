@@ -183,6 +183,9 @@ public:
     void RemoteAlreadySaved(int);
     void SetEnergyFromNet(float, bool);
     void SetFinishedCoda();
+    void CheckCrowdFailure();
+    void UnisonMiss(int) const;
+    void UnisonHit();
 
     TrackType GetTrackType() const { return mTrackType; }
     BandUser* GetUser() const { return mUser; }
@@ -197,12 +200,12 @@ public:
     CommonPhraseCapturer* mCommonPhraseCapturer; // 0x234
     bool mRemote; // 0x238
     String mPlayerName; // 0x23c
-    int unk248; // 0x248
+    int mTrackNum; // 0x248
     TrackType mTrackType; // 0x24c
     EnabledState mEnabledState; // 0x250
     int mTimesFailed; // 0x254
-    float mEnableTime; // 0x258
-    int unk25c;
+    float mEnableMs; // 0x258
+    float unk25c;
     std::vector<Extent> unk260;
     bool unk268;
     float mBandEnergy; // 0x26c
