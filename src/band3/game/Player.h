@@ -196,16 +196,16 @@ public:
     BandUser* mUser; // 0x230
     CommonPhraseCapturer* mCommonPhraseCapturer; // 0x234
     bool mRemote; // 0x238
-    String unk23c; // 0x23c
+    String mPlayerName; // 0x23c
     int unk248; // 0x248
     TrackType mTrackType; // 0x24c
     EnabledState mEnabledState; // 0x250
-    int unk254;
-    float unk258;
+    int mTimesFailed; // 0x254
+    float mEnableTime; // 0x258
     int unk25c;
     std::vector<Extent> unk260;
     bool unk268;
-    float unk26c;
+    float mBandEnergy; // 0x26c
     bool mDeployingBandEnergy; // 0x270
     int unk274;
     int unk278;
@@ -220,11 +220,11 @@ public:
     float unk29c;
     int unk2a0;
     float unk2a4;
-    bool unk2a8;
+    bool mDisconnectedAtStart; // 0x2a8
     bool unk2a9;
     int unk2ac;
     bool unk2b0;
-    bool unk2b1;
+    bool mPermanentOverdrive; // 0x2b1
     bool unk2b2;
     bool mHasBlownCoda; // 0x2b3
     int unk2b4;

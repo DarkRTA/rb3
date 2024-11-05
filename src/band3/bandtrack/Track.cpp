@@ -140,7 +140,7 @@ bool Track::PlayerDisconnected() const {
 
 bool Track::PlayerDisconnectedAtStart() const {
     const BandUser* user = mTrackConfig.GetBandUser();
-    if(user->GetPlayer()) return user->GetPlayer()->unk2a8;
+    if(user->GetPlayer()) return user->GetPlayer()->mDisconnectedAtStart;
     else return false;
 }
 
@@ -192,12 +192,12 @@ void Track::RefreshPlayerHUD(){
     Player* player = mTrackConfig.GetBandUser()->GetPlayer();
     if(track && player){
         if(sDump){
-            float od = player->unk26c;
+            float od = player->mBandEnergy;
             MILO_LOG("Refreshing HUD for player %d: streak %d, mult %d, od %.2f, ready %d\n",
                 player->GetSlot(), player->mStats.GetCurrentStreak(), player->GetIndividualMultiplier(), od, player->CanDeployOverdrive());
         }
         track->RefreshStreakMeter(player->mStats.GetCurrentStreak(), player->GetIndividualMultiplier(), player->GetNotesPerStreak());
-        float od = player->unk26c;
+        float od = player->mBandEnergy;
         track->RefreshOverdrive(od, player->CanDeployOverdrive());
     }
 }

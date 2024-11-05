@@ -60,11 +60,11 @@ inline void PlayerParams::SetVocals(){
 }
 
 Player::Player(BandUser* user, Band* band, int i, BeatMaster* bmaster) : Performer(user, band), mParams(new PlayerParams()), mBehavior(new PlayerBehavior()), mUser(user), mRemote(0),
-    unk248(i), mTrackType(kTrackNone), mEnabledState(kPlayerEnabled), unk254(0), unk268(0), unk26c(0), mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1), mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0),
-    unk290(0), unk294(0), unk298(0), unk2a8(0), unk2a9(0), unk2ac(0), unk2b1(0), unk2b2(0), mHasBlownCoda(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1), unk2c4(1) {
+    unk248(i), mTrackType(kTrackNone), mEnabledState(kPlayerEnabled), mTimesFailed(0), unk268(0), mBandEnergy(0), mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1), mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0),
+    unk290(0), unk294(0), unk298(0), mDisconnectedAtStart(0), unk2a9(0), unk2ac(0), mPermanentOverdrive(0), unk2b2(0), mHasBlownCoda(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1), unk2c4(1) {
     if(user){
         mRemote = !user->IsLocal();
-        unk23c = user->UserName();
+        mPlayerName = user->UserName();
         mTrackType = user->GetTrackType();
         if(mTrackType == kTrackVocals){
             mParams->SetVocals();
@@ -122,7 +122,7 @@ bool Player::RebuildPhrases(){
 
 void Player::Restart(bool b){
     if(mEnabledState == kPlayerDisconnected){
-        unk2a8 = true;
+        mDisconnectedAtStart = true;
         SetEnabledState(kPlayerDisconnected, mUser, false);
         SetAutoplay(true);
         SetAutoOn(true);
@@ -130,9 +130,9 @@ void Player::Restart(bool b){
     else mEnabledState = kPlayerEnabled;
     SetQuarantined(mUser == TheBandUserMgr->GetNullUser());
     unk2c4 = true;
-    unk254 = 0;
+    mTimesFailed = 0;
     unk268 = false;
-    unk26c = 0;
+    mBandEnergy = 0;
     mDeployingBandEnergy = false;
     unk28c = 0;
     unk294 = 0;
@@ -151,7 +151,7 @@ void Player::Restart(bool b){
     if(IsLocal()){
         mStats.SetFinalized(true);
     }
-    if(unk2a8){
+    if(mDisconnectedAtStart){
         mCrowd->SetDisplayValue(0);
     }
     unk2ac = 0;
@@ -204,12 +204,12 @@ void Player::PollEnabledState(float f){
         case kPlayerEnabled:
             break;
         case kPlayerDisabled:
-            if(unk254 < 3){
+            if(mTimesFailed < 3){
                 BandTrack* track = GetBandTrack();
                 if(track) track->PlayerDisabled();
             }
         case kPlayerDisconnected:
-            if(!unk2a8){
+            if(!mDisconnectedAtStart){
                 MetaPerformer::Current();
                 if(GetCrowdMeterActive()){
                     mCrowd->SetDisplayValue(mParams->mCrowdLossPerMs * (TheGame->NumActivePlayers() - 1) * (f - unk25c));
@@ -218,7 +218,7 @@ void Player::PollEnabledState(float f){
             break;
         case kPlayerBeingSaved:
         case kPlayerDroppingIn:
-            if(f >= unk258){
+            if(f >= mEnableTime){
                 SetEnabledState(kPlayerEnabled, mUser, false);
             }
             break;
@@ -273,7 +273,7 @@ void Player::BroadcastScore(){
 void Player::EnterCoda(){
     if(!unk268){
         if(mEnabledState == kPlayerDisabled || mEnabledState == kPlayerBeingSaved || mEnabledState == kPlayerDroppingIn){
-            unk258 = PollMs();
+            mEnableTime = PollMs();
             mUser->GetTrack()->SetGemsEnabledByPlayer();
             SetEnabledState(kPlayerEnabled, mUser, false);
         }
@@ -375,7 +375,7 @@ void Player::LocalSetEnabledState(EnabledState estate, int i, BandUser* causer, 
 
 bool Player::Saveable() const {
     bool ret = false;
-    if(mEnabledState == kPlayerDisabled && unk254 < 3 && !unk298) ret = true;
+    if(mEnabledState == kPlayerDisabled && mTimesFailed < 3 && !unk298) ret = true;
     if(ret) MetaPerformer::Current();
     return ret;
 }
@@ -406,7 +406,7 @@ void Player::DisablePlayer(int i){
     }
 
     static Message disable_player("disable_player", 0);
-    disable_player[0] = unk254;
+    disable_player[0] = mTimesFailed;
     Export(disable_player, true);
 }
 #pragma pop
@@ -454,7 +454,7 @@ void Player::SetMultiplierActive(bool b){
 }
 
 bool Player::CanDeployOverdrive() const {
-    return unk26c >= mParams->unk18 && !mDeployingBandEnergy && unk2b0;
+    return mBandEnergy >= mParams->unk18 && !mDeployingBandEnergy && unk2b0;
 }
 
 bool Player::IsDeployingBandEnergy() const { return mDeployingBandEnergy; }
@@ -476,7 +476,7 @@ void Player::StopDeployingBandEnergy(bool b){
     if(GetBandTrack()){
         GetBandTrack()->StopDeploy();
     }
-    SetEnergyAutomatically(unk26c);
+    SetEnergyAutomatically(mBandEnergy);
     if(CanDeployOverdrive()){
         mUser->GetTrack()->SetCanDeploy(true);
         if(mTrackType == kTrackDrum){
@@ -519,14 +519,14 @@ int Player::GetMaxIndividualMultipler() const {
 }
 
 void Player::SavePersistentData(PersistentPlayerData& data) const {
-    data.unk0 = unk26c;
+    data.unk0 = mBandEnergy;
     data.unk4 = GetCrowdRating();
     data.unk8 = mStats.m0x150;
     data.unkc = mStats.mLongestPersistentStreak;
 }
 
 void Player::LoadPersistentData(const PersistentPlayerData& data){
-    if(!unk2a8){
+    if(!mDisconnectedAtStart){
         SetEnergyAutomatically(data.unk0);
         mCrowd->SetValue(data.unk4);
         mStats.SetPersistentStreak(data.unk8);
@@ -581,7 +581,7 @@ void Player::PopupHelp(Symbol s, bool b){
 
 void Player::AddEnergy(float f){
     TheGame->OnPlayerAddEnergy(this, f);
-    float set = Min(1.0f, unk26c + f);
+    float set = Min(1.0f, mBandEnergy + f);
     SetEnergy(set);
 }
 
@@ -592,11 +592,11 @@ Symbol Player::GetStreakType() const {
 void Player::SetEnergy(float f){
     MetaPerformer::Current();
     if(IsLocal() && unk2b0){
-        float old = unk26c;
+        float old = mBandEnergy;
         SetEnergyAutomatically(f);
-        float newf = unk26c;
+        float newf = mBandEnergy;
         float poll = PollMs();
-        if(old < newf || poll - unk2a4 >= 100.0f || unk26c == 0){
+        if(old < newf || poll - unk2a4 >= 100.0f || mBandEnergy == 0){
             Handle(send_update_energy_msg, true);
             unk2a4 = poll;
         }
@@ -669,13 +669,13 @@ DataNode Player::OnGetOverdriveMeter(DataArray* arr){
 BEGIN_HANDLERS(Player)
     HANDLE_EXPR(track, GetUser()->GetTrack())
     HANDLE_EXPR(get_user, GetUser())
-    HANDLE_EXPR(player_name, unk23c)
+    HANDLE_EXPR(player_name, mPlayerName)
     HANDLE_EXPR(instrument, GetUser()->GetTrackSym())
     HANDLE_EXPR(difficulty, GetUser()->GetDifficulty())
     HANDLE_EXPR(is_net, IsNet())
-    HANDLE_EXPR(disconnected_at_start, unk2a8)
+    HANDLE_EXPR(disconnected_at_start, mDisconnectedAtStart)
     HANDLE_ACTION(enter_coda, EnterCoda())
-    HANDLE_EXPR(band_energy, unk26c)
+    HANDLE_EXPR(band_energy, mBandEnergy)
     HANDLE_ACTION(set_band_energy, SetEnergy(_msg->Float(2)))
     HANDLE_ACTION(fill_band_energy, SetEnergy(1.0f))
     HANDLE_ACTION(empty_band_energy, SetEnergy(0))
@@ -687,7 +687,7 @@ BEGIN_HANDLERS(Player)
     HANDLE(star_power_meter, OnGetOverdriveMeter)
     HANDLE_ACTION(fail, SetEnabledState(kPlayerDisabled, GetUser(), false))
     HANDLE_EXPR(enabled_state, mEnabledState)
-    HANDLE_EXPR(enable_time, unk258)
+    HANDLE_EXPR(enable_time, mEnableTime)
     HANDLE_ACTION(enable_swings, EnableSwings(_msg->Int(2)))
     HANDLE_ACTION(update_lefty_flip, UpdateLeftyFlip())
     HANDLE_ACTION(update_vocal_style, UpdateVocalStyle())
@@ -710,10 +710,10 @@ BEGIN_HANDLERS(Player)
     HANDLE_ACTION(remote_tracker_deploy, TheGame->OnRemoteTrackerDeploy(this))
     HANDLE_ACTION(remote_tracker_end_deploy_streak, TheGame->OnRemoteTrackerEndDeployStreak(this, _msg->Int(2)))
     HANDLE_ACTION(remote_tracker_end_streak, TheGame->OnRemoteTrackerEndStreak(this, _msg->Int(2), _msg->Int(3)))
-    HANDLE_EXPR(get_times_failed, unk254)
+    HANDLE_EXPR(get_times_failed, mTimesFailed)
     HANDLE_EXPR(get_deploy_failed, mStats.GetFailedDeploy())
     HANDLE_EXPR(get_saved_count, mStats.GetPlayersSaved())
-    HANDLE_ACTION(set_permanent_overdrive, unk2b1 = _msg->Int(2))
+    HANDLE_ACTION(set_permanent_overdrive, mPermanentOverdrive = _msg->Int(2))
     HANDLE_ACTION(set_energy_automatically, SetEnergyAutomatically(_msg->Float(2)))
     HANDLE_ACTION(clear_score_histories, ClearScoreHistories())
     HANDLE_ACTION(change_difficulty, ChangeDifficulty((Difficulty)_msg->Int(2)))
