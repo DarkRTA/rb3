@@ -52,3 +52,16 @@ public:
 
     Player* mPlayer; // 0x4
 };
+
+class BandTrackerSource : public TrackerSource {
+public:
+    BandTrackerSource(Band*);
+    virtual ~BandTrackerSource();
+    virtual TrackerPlayerID GetFirstPlayer() const;
+    virtual TrackerPlayerID GetNextPlayer(const TrackerPlayerID&) const;
+    virtual int GetPlayerCount() const;
+    virtual Player* GetPlayer(const TrackerPlayerID&) const;
+    virtual bool IsFinished() const;
+
+    Band* mBand; // 0x4
+};
