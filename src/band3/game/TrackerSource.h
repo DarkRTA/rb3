@@ -31,4 +31,8 @@ public:
     bool HasPlayer(const TrackerPlayerID&) const;
     TrackerPlayerID GetIDFromInstrument(Symbol) const;
     TrackerPlayerID GetIDFromTrackType(TrackType) const;
+    TrackerPlayerID FindPlayerID(const Player*) const;
+    bool IsPlayerLocal(const TrackerPlayerID&) const;
+    bool IsPlayerEligible(const TrackerPlayerID&) const;
+    bool PlayerIsEligible(const Player*) const;
 };
