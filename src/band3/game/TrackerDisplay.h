@@ -8,7 +8,8 @@ enum TrackerChallengeType {
 };
 
 enum TrackerBandDisplayType {
-
+    kTrackerBandDisplay_Graphic = 0,
+    kTrackerBandDisplay_Text = 1
 };
 
 enum TrackerBandDisplayStyle {
