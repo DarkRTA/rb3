@@ -5,6 +5,14 @@
 
 struct TrackerPlayerID {
     TrackerPlayerID(const UserGuid& guid) : mGuid(guid) {}
+
+    TrackerPlayerID& operator=(const TrackerPlayerID& pid){
+        if(&mGuid != &pid.mGuid){
+            mGuid = pid.mGuid;
+        }
+        return *this;
+    }
+
     UserGuid mGuid; // 0x0
 };
 

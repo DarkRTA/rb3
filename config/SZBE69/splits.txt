@@ -199,6 +199,9 @@ band3/game/RGTrainerPanel.cpp:
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
 
+band3/game/TrackerSource.cpp:
+	.text       start:0x8016D468 end:0x801703DC
+
 rb3/panels/trainerpanel.cpp:
 	.text       start:0x80172878 end:0x80176170
 
