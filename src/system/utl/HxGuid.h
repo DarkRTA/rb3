@@ -11,6 +11,10 @@ public:
     bool IsNull() const;
     bool IsNull() { return (mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0); }
     bool operator==(const HxGuid&) const;
+    bool operator!=(const HxGuid& guid) const {
+        return !(*this == guid);
+    }
+
     bool operator<(const HxGuid&) const;
     int Chunk32(int) const;
     const char* ToString() const;
