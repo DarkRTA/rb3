@@ -1,6 +1,7 @@
 #pragma once
 #include "game/Defines.h"
 #include "obj/Object.h"
+#include "os/Debug.h"
 #include "os/User.h"
 
 enum VocalParam {
@@ -77,6 +78,9 @@ public:
     virtual int NumSingers() const { return 0; }
     virtual bool UseVocalHarmony(){ return true; }
     virtual void SetCanDeploy(bool){}
-    virtual int GetNumVocalParts();
+    virtual int GetNumVocalParts(){
+        MILO_NOTIFY_ONCE("calling GetNumVocalParts on non-vocal track");
+        return 0;
+    }
     virtual bool ShowPitchCorrectionNotice() const { return 0; }
 };

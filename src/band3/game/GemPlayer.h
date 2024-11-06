@@ -9,4 +9,5 @@ public:
     GemPlayer(BandUser*, BeatMaster*, Band*, int, BandPerformer*);
 
     int GetRGFret(int) const;
+    int GetMaxSlots() const;
 };

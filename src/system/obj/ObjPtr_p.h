@@ -252,6 +252,14 @@ public:
         return unlinked;
     }
 
+    void DeleteAll(){
+        while(!empty()){
+            T1* cur = front();
+            pop_front();
+            delete cur;
+        }
+    }
+
     // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     // fn_80389E34 in RB3 retail
     Node* unlink(Node* n){

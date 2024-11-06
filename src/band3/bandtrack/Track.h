@@ -46,15 +46,15 @@ public:
     virtual bool InGameMode(Symbol) const;
     virtual bool IsScoring() const;
     
-    virtual void Load();
-    virtual void Unload();
-    virtual bool IsLoaded();
-    virtual void FinishLoad();
-    virtual void Draw();
+    virtual void Load(){}
+    virtual void Unload(){}
+    virtual bool IsLoaded(){ return true; }
+    virtual void FinishLoad(){}
+    virtual void Draw(){}
     virtual void Poll(float);
     virtual void Jump(float){}
-    virtual void SetShowing(bool);
-    virtual bool Showing();
+    virtual void SetShowing(bool){}
+    virtual bool Showing(){ return true; }
     virtual void SetDir(RndDir*){}
     virtual RndDir* GetDir() = 0;
     virtual BandTrack* GetBandTrack() = 0;
