@@ -90,7 +90,7 @@
             "band3/game/TambourineDetector.cpp": "MISSING",
             "band3/game/TambourineManager.cpp": "MISSING",
             "band3/game/Tracker.cpp": "NonMatching",
-            "band3/game/TrackerDisplay.cpp": "MISSING",
+            "band3/game/TrackerDisplay.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/TrackerSource.cpp": "MISSING",
             "band3/game/TrackerUtils.cpp": "MISSING",
