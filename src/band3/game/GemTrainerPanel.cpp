@@ -113,7 +113,7 @@ void GemTrainerPanel::Poll(){
         mGemManager = mTrack->GetGemManager();
         MILO_ASSERT(mGemManager != NULL, 0xC5);
         for(int i = 0; i < 4; i++){
-            unk60[i] = TheSongDB->GetGemListByDiff(mGemPlayer->unk248, i);
+            unk60[i] = TheSongDB->GetGemListByDiff(mGemPlayer->mTrackNum, i);
             // unk88[i] = unk60[i]->mGems;
         }
 

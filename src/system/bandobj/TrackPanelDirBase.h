@@ -30,31 +30,31 @@ public:
     virtual void Reset() = 0;
     virtual void ResetAll(){}
     virtual void PlayIntro();
-    virtual bool TracksExtended() const;
+    virtual bool TracksExtended() const { return false; }
     virtual void GameOver();
     virtual void HideScore();
     virtual void Coda() = 0;
     virtual void CodaEnd() = 0;
-    virtual void SetCodaScore(int);
+    virtual void SetCodaScore(int){}
     virtual void SoloEnd(BandTrack*, int, Symbol) = 0;
-    virtual void SetTrackPanel(TrackPanelInterface*);
-    virtual void ResetPlayers();
+    virtual void SetTrackPanel(TrackPanelInterface* panel){ mTrackPanel = panel; }
+    virtual void ResetPlayers(){}
     virtual void StartFinale(){}
-    virtual void SetMultiplier(int, bool);
-    virtual void SetCrowdRating(float);
+    virtual void SetMultiplier(int, bool){}
+    virtual void SetCrowdRating(float){}
     virtual void CodaSuccess();
     virtual void UnisonStart(int){}
     virtual void UnisonEnd();
     virtual void UnisonSucceed();
-    virtual EndingBonus* GetEndingBonus();
+    virtual EndingBonus* GetEndingBonus(){ return nullptr; }
     virtual BandCrowdMeter* GetCrowdMeter(); // ptr
     virtual void SetupApplauseMeter(int, const char*, const char*, RndDir*, RndDir*, bool, Symbol){}
     virtual void DisablePlayer(int, bool);
     virtual void EnablePlayer(int);
     virtual void FadeBotbBandNames(bool){}
-    virtual void CleanUpChordMeshes();
+    virtual void CleanUpChordMeshes(){}
     virtual void SetApplauseMeterScale(int, int){}
-    virtual void StartPulseAnims(float);
+    virtual void StartPulseAnims(float){}
     virtual float GetPulseAnimStartDelay(bool) const;
     virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return 0; }
 

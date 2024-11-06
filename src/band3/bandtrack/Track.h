@@ -1,7 +1,10 @@
 #pragma once
+#include "TrackConfig.h"
 #include "bandobj/BandTrack.h"
 #include "bandobj/TrackInterface.h"
 #include "game/BandUser.h"
+#include "game/Defines.h"
+#include "meta_band/GameplayOptions.h"
 #include "obj/Object.h"
 #include "rndobj/Dir.h"
 
@@ -22,8 +25,8 @@ public:
     virtual const char* GetPlayerName() const;
     virtual const char* UserName() const;
 
-    virtual int GetUser() const; // fix ret type
-    virtual int GetPlayerDifficulty() const;
+    virtual const User* GetUser() const; // fix ret type
+    virtual Difficulty GetPlayerDifficulty() const;
     virtual Symbol GetPlayerDifficultySym() const;
     virtual bool PlayerDisconnected() const;
     virtual bool PlayerDisconnectedAtStart() const;
@@ -43,23 +46,39 @@ public:
     virtual bool InGameMode(Symbol) const;
     virtual bool IsScoring() const;
     
-    virtual void Load();
-    virtual void Unload();
-    virtual bool IsLoaded();
-    virtual void FinishLoad();
-    virtual void Draw();
+    virtual void Load(){}
+    virtual void Unload(){}
+    virtual bool IsLoaded(){ return true; }
+    virtual void FinishLoad(){}
+    virtual void Draw(){}
     virtual void Poll(float);
-    virtual void Jump(float);
-    virtual void SetShowing(bool);
-    virtual bool Showing();
-    virtual void SetDir(RndDir*);
+    virtual void Jump(float){}
+    virtual void SetShowing(bool){}
+    virtual bool Showing(){ return true; }
+    virtual void SetDir(RndDir*){}
     virtual RndDir* GetDir() = 0;
     virtual BandTrack* GetBandTrack() = 0;
     virtual Hmx::Object* GetObj(Symbol);
-    virtual void SetSmasherGlowing(int, bool);
-    virtual void PopSmasher(int);
-    virtual void OnMissPhrase(int);
-    virtual void RemovePlayer();
+    virtual void SetSmasherGlowing(int, bool){}
+    virtual void PopSmasher(int){}
+    virtual void OnMissPhrase(int){}
+    virtual void RemovePlayer(){}
 
     Symbol GetType() const;
+    const BandUser* GetBandUser() const;
+    Player* GetPlayer() const;
+    void StartPulseAnims(float);
+    int GetTrackNum() const;
+
+    TrackConfig mTrackConfig; // 0x1c
+    float unk48; // 0x48
+    int unk4c; // 0x4c
+    bool unk50; // 0x50
+    int unk54; // 0x54
+    int unk58; // 0x58
+    GameplayOptions* unk5c; // 0x5c
+    bool unk60; // 0x60
+    float unk64; // 0x64
 };
+
+Track* NewTrack(BandUser*);

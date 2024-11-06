@@ -1,5 +1,8 @@
 #pragma once
+#include "game/Defines.h"
 #include "obj/Object.h"
+#include "os/Debug.h"
+#include "os/User.h"
 
 enum VocalParam {
     kVocalParamAny,
@@ -30,8 +33,8 @@ public:
     virtual const char* GetPlayerName() const = 0;
     virtual const char* UserName() const = 0;
 
-    virtual int GetUser() const = 0; // fix ret type
-    virtual int GetPlayerDifficulty() const = 0;
+    virtual const User* GetUser() const = 0; // fix ret type
+    virtual Difficulty GetPlayerDifficulty() const = 0;
     virtual Symbol GetPlayerDifficultySym() const = 0;
     virtual bool PlayerDisconnected() const = 0;
     virtual bool PlayerDisconnectedAtStart() const = 0;
@@ -75,6 +78,9 @@ public:
     virtual int NumSingers() const { return 0; }
     virtual bool UseVocalHarmony(){ return true; }
     virtual void SetCanDeploy(bool){}
-    virtual int GetNumVocalParts();
+    virtual int GetNumVocalParts(){
+        MILO_NOTIFY_ONCE("calling GetNumVocalParts on non-vocal track");
+        return 0;
+    }
     virtual bool ShowPitchCorrectionNotice() const { return 0; }
 };

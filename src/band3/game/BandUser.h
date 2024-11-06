@@ -1,5 +1,6 @@
 #ifndef GAME_BANDUSER_H
 #define GAME_BANDUSER_H
+#include "beatmatch/TrackType.h"
 #include "game/Defines.h"
 #include "meta_band/GameplayOptions.h"
 #include "meta_band/OvershellSlotState.h"
@@ -22,7 +23,7 @@ public:
     virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
     virtual ~BandUser();
     virtual bool IsNullUser();
-    virtual bool IsParticipating();
+    virtual bool IsParticipating() const { return mParticipating; }
     virtual int GetCurrentInstrumentCareerScore() const = 0;
     virtual int GetCurrentHardcoreIconLevel() const = 0;
     virtual int GetCymbalConfiguration() const = 0;
@@ -66,6 +67,7 @@ public:
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f){ mLastHitFraction = f; }
     Player* GetPlayer() const { return mPlayer; }
+    Track* GetTrack() const { return mTrack; }
     
     static LocalBandUser* NewLocalBandUser();
     static RemoteBandUser* NewRemoteBandUser();
@@ -120,6 +122,8 @@ public:
     void SetOvershellFocus(const char*);
     ControllerType DebugGetControllerTypeOverride() const;
     void DebugSetControllerTypeOverride(ControllerType);
+    bool HasShownIntroHelp(TrackType) const;
+    void SetShownIntroHelp(TrackType, bool);
 
     bool unkc; // 0xc
     bool mHasSeenRealGuitarPrompt; // 0xd

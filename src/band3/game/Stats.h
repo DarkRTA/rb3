@@ -63,7 +63,7 @@ public:
     //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
     //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
     //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
-    //     mCodaPoints(s.mCodaPoints), m0xa8(s.m0xa8), m0x09(s.m0x09), mTambourine(s.mTambourine), mHarmony(s.mHarmony), mFullCombo(s.mFullCombo), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
+    //     mCodaPoints(s.mCodaPoints), mHasCoda(s.mHasCoda), mHasSolos(s.mHasSolos), mTambourine(s.mTambourine), mHarmony(s.mHarmony), mFullCombo(s.mFullCombo), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
 
     // }
 
@@ -213,8 +213,8 @@ public:
     void SetTripleHarmonyPhraseCount(int tripleHarmonyPhraseCount) { mTripleHarmonyPhraseCount = tripleHarmonyPhraseCount; }
     float GetAverageMultiplier() const { return mAverageMultiplier; }
     int NumSections() const { return mSections.size(); }
-    bool HasCoda() const { return m0xa8; }
-    bool HasSolos() const { return m0x09; }
+    bool HasCoda() const { return mHasCoda; }
+    bool HasSolos() const { return mHasSolos; }
 
     template <class T> void SaveHighest(std::vector<T>&, const T&);
 
@@ -259,8 +259,8 @@ public:
     float mScoreStreak;       // 0x9c
     float mBandContribution;  // 0xa0
     int mCodaPoints; // 0xa4
-    bool m0xa8;       // 0xa8
-    bool m0x09;        // 0xa9
+    bool mHasCoda;       // 0xa8
+    bool mHasSolos;        // 0xa9
     float mTambourine; // 0xac
     int mHarmony; // 0xb0
     bool mFullCombo; // 0xb4

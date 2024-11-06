@@ -1,27 +1,63 @@
 #pragma once
+#include "CommonPhraseCapturer.h"
+#include "PlayerBehavior.h"
 #include "PracticeSectionProvider.h"
+#include "bandobj/BandTrack.h"
+#include "beatmatch/SongPos.h"
 #include "beatmatch/TrackType.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "game/Performer.h"
+#include "obj/Data.h"
 #include "obj/MsgSource.h"
+#include "utl/HxGuid.h"
 
 class BeatMaster;
+class CommonPhraseCapturer;
 
 enum FillLogic {
-
+    kFillsRegular = 0,
+    kFillsDeployGemAndDim = 1,
+    kFillsDeployGemAndInvisible = 2
 };
 
 enum EnabledState {
-
+    kPlayerEnabled = 0,
+    kPlayerDisabled = 1,
+    kPlayerBeingSaved = 2,
+    kPlayerDroppingIn = 3,
+    kPlayerDisconnected = 4
 };
 
 class PersistentPlayerData {
-
+public:
+    float unk0;
+    float unk4;
+    int unk8;
+    int unkc;
 };
 
 class Extent {
+public:
+    int unk0;
+    int unk4;
+};
 
+class PlayerParams {
+public:
+    PlayerParams();
+    void SetVocals();
+
+    float mCrowdSaveLevel; // 0x0
+    float mMsToReturnFromBrink; // 0x4
+    float mCrowdLossPerMs; // 0x8
+    float unkc;
+    float unk10;
+    float unk14;
+    float unk18;
+    float unk1c;
+    float unk20;
+    float unk24; // 0x24
 };
 
 class Player : public Performer, public MsgSource {
@@ -63,12 +99,12 @@ public:
     virtual void Jump(float, bool) = 0;
     virtual void SetAutoplay(bool) = 0;
     virtual bool IsAutoplay() const = 0;
-    virtual void SetAutoOn(bool);
+    virtual void SetAutoOn(bool){}
     virtual void HookupTrack() = 0;
     virtual void UnHookTrack() = 0;
     virtual void EnableFills(float, bool) = 0;
     virtual void DisableFills() = 0;
-    virtual void EnableDrumFills(bool);
+    virtual void EnableDrumFills(bool){}
     virtual bool FillsEnabled(int) = 0;
     virtual bool AreFillsForced() const;
     virtual void EnterCoda();
@@ -81,8 +117,8 @@ public:
     virtual bool AllowWarningState() const;
     virtual bool RebuildPhrases();
     virtual void Rollback(float, float);
-    virtual void EnableController();
-    virtual void DisableController();
+    virtual void EnableController(){}
+    virtual void DisableController(){}
     virtual void ConfigureBehavior();
     virtual bool CanDeployOverdrive() const;
     virtual float GetOverdrive() const;
@@ -92,7 +128,7 @@ public:
     virtual int GetBaseMaxPoints() const = 0;
     virtual int GetBaseMaxStreakPoints() const = 0;
     virtual int GetBaseBonusPoints() const = 0;
-    virtual void SetSyncOffset(float);
+    virtual void SetSyncOffset(float){}
     virtual void SavePersistentData(PersistentPlayerData&) const;
     virtual void LoadPersistentData(const PersistentPlayerData&);
     virtual int GetCodaFreestyleExtents(Extent&) const;
@@ -103,32 +139,100 @@ public:
     virtual void SetCodaEndMs(float);
     virtual bool NeedsToOverrideBasePoints() const;
     virtual bool NeedsToSetCodaEnd() const;
-    virtual void EnterAnnoyingMode();
+    virtual void EnterAnnoyingMode(){}
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection&, int, int) = 0;
     virtual void SetEnabledState(EnabledState, BandUser*, bool);
-    virtual void LocalSetEnabledState(int, EnabledState, BandUser*, bool);
-    virtual void EnableSwings(bool);
+    virtual void LocalSetEnabledState(EnabledState, int, BandUser*, bool);
+    virtual void EnableSwings(bool){}
     virtual bool DeployBandEnergyIfPossible(bool);
     virtual int LocalDeployBandEnergy();
     virtual bool ShouldDrainEnergy() const;
     virtual void IgnoreUntilRollback(float);
-    virtual void UpdateLeftyFlip();
+    virtual void UpdateLeftyFlip(){}
     virtual void UpdateVocalStyle();
-    virtual void ResetController(bool);
+    virtual void ResetController(bool){}
 
     void DeterminePerformanceAwards();
-    TrackType GetTrackType() const { return unk_tracktype; }
+    void DisableOverdrivePhrases();
+    BandTrack* GetBandTrack() const;
+    void PollMultiplier();
+    void PollEnabledState(float);
+    void PollTalking(int);
+    void UpdateEnergy(const SongPos&);
+    void StopDeployingBandEnergy(bool);
+    void BroadcastScore();
+    void AddBonusPoints(int);
+    EnabledState GetEnabledStateAt(float) const;
+    void SetEnergy(float);
+    void DelayReturn(bool);
+    bool Saveable() const;
+    void Save(BandUser*, bool);
+    void DisablePlayer(int);
+    const UserGuid& GetUserGuid() const;
+    int GetSlot() const;
+    bool IsDeployingBandEnergy() const;
+    void SetEnergyAutomatically(float);
+    void DisablePhraseBonus();
+    void EnablePhraseBonus();
+    void AddEnergy(float);
+    void PerformDeployBandEnergy(int, bool);
+    void SubtractEnergy(float);
+    void Deploy();
+    void RemoteAlreadySaved(int);
+    void SetEnergyFromNet(float, bool);
+    void SetFinishedCoda();
+    void CheckCrowdFailure();
+    void UnisonMiss(int) const;
+    void UnisonHit();
 
-    int unk_player;
-    int unk22c;
-    BandUser* unk230;
-    int unk234;
-    int unk238;
-    int unk23c;
-    int unk240;
-    int unk244;
-    int unk248;
-    TrackType unk_tracktype;
+    TrackType GetTrackType() const { return mTrackType; }
+    BandUser* GetUser() const { return mUser; }
+
+    DataNode OnGetOverdriveMeter(DataArray*);
+    DataNode OnSendNetGameplayMsg(DataArray*);
+    DataNode OnSendNetGameplayMsgToPlayer(DataArray*);
+
+    PlayerParams* mParams; // 0x228
+    PlayerBehavior* mBehavior; // 0x22c
+    BandUser* mUser; // 0x230
+    CommonPhraseCapturer* mCommonPhraseCapturer; // 0x234
+    bool mRemote; // 0x238
+    String mPlayerName; // 0x23c
+    int mTrackNum; // 0x248
+    TrackType mTrackType; // 0x24c
+    EnabledState mEnabledState; // 0x250
+    int mTimesFailed; // 0x254
+    float mEnableMs; // 0x258
+    float unk25c;
+    std::vector<Extent> unk260;
+    bool unk268;
+    float mBandEnergy; // 0x26c
+    bool mDeployingBandEnergy; // 0x270
+    int unk274;
+    int unk278;
+    bool mPhraseBonus; // 0x27c
+    BeatMaster* mBeatMaster; // 0x280
+    float unk284;
+    bool unk288;
+    int unk28c;
+    bool unk290;
+    int unk294;
+    int unk298;
+    float unk29c;
+    int unk2a0;
+    float unk2a4;
+    bool mDisconnectedAtStart; // 0x2a8
+    bool unk2a9;
+    int unk2ac;
+    bool unk2b0;
+    bool mPermanentOverdrive; // 0x2b1
+    bool unk2b2;
+    bool mHasBlownCoda; // 0x2b3
+    int unk2b4;
+    int unk2b8;
+    int unk2bc;
+    int unk2c0;
+    bool unk2c4;
 };

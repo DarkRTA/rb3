@@ -66,6 +66,9 @@ public:
     float GetSoloGemReward(Symbol);
     float GetSoloGemPenalty(Symbol);
     void PrintStarThresholds() const;
+    int GetSoloNumStars(int, TrackType) const;
+    float GetSoloNumStarsFloat(int, TrackType) const;
+    int GetSoloScoreForStars(int, TrackType) const;
 };
 
 extern Scoring* TheScoring;

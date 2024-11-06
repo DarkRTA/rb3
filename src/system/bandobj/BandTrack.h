@@ -9,6 +9,8 @@
 #include "bandobj/TrackInterface.h"
 
 class TrackPanelDirBase;
+class GemTrackDir;
+class VocalTrackDir;
 
 class BandTrack : public virtual Hmx::Object {
 public:
@@ -22,7 +24,7 @@ public:
     virtual void Load(BinStream&);
     virtual void Reset();
     virtual void TrackReset(){}
-    virtual void ResetSmashers(bool);
+    virtual void ResetSmashers(bool){}
     virtual void Retract(bool);
     virtual void Extend(bool){}
     virtual void SpotlightPhraseSuccess();
@@ -40,9 +42,9 @@ public:
     virtual void SetHasTrackerFocus(bool);
     virtual ObjectDir* ThisDir(){ MILO_ASSERT(0, 0x8A); return 0; }
     virtual ObjectDir* ThisDir() const; // fix ptr
-    virtual int AsGemTrackDir(){ return 0; }
-    virtual int AsVocalTrackDir(){ return 0; }
-    virtual int AsRndDir();
+    virtual GemTrackDir* AsGemTrackDir(){ return 0; }
+    virtual VocalTrackDir* AsVocalTrackDir(){ return 0; }
+    virtual RndDir* AsRndDir();
     virtual void RefreshStreakMeter(int, int, int);
     virtual void RefreshOverdrive(float, bool);
     virtual void RefreshCrowdRating(float, CrowdMeterState){}
@@ -102,6 +104,10 @@ public:
     Symbol GetInstrumentSymbol() const;
     void CombineStreakMultipliers(bool);
     const char* UserName() const;
+    void SetQuarantined(bool);
+    void SetNetTalking(bool);
+    void SetControllerType(const Symbol&);
+    void SetPlayerFeedbackShowing(bool) const;
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }
