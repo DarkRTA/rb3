@@ -97,12 +97,12 @@ void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& desc) const {
 
     Symbol cond = condition.mCondition;
     if(cond == upstrum_percent){
-        desc.mType = 0x14;
+        desc.mType = kTrackerType_UpstrumPercent;
         desc.unk18.push_back(condition.mValue);
     }
     else if(cond == stars) desc.unkc = 0;
     else if(cond == unison_phrases){
-        desc.mType = 0x12;
+        desc.mType = kTrackerType_UnisonCount;
         desc.unk18.push_back(condition.mValue);
     }
 }

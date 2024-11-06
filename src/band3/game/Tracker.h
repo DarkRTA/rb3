@@ -8,15 +8,47 @@
 #include "game/BandUser.h"
 #include "obj/Data.h"
 #include "types.h"
+#include "utl/Symbol.h"
 
-struct TrackerDesc {
-    int mType; // 0x0 - enum TrackerType
-    LocalBandUser* mUser;  // 0x04 - LocalBandUser*
-    Symbol symbol3;  // 0x08
-    int unkc;        // 0x0c
-    int unk10;
-    float unk14;
-    std::vector<float> unk18;
+enum TrackerType {
+    kTrackerType_Undef = 0,
+    kTrackerType_Accuracy = 1,
+    kTrackerType_DeployCount = 2,
+    kTrackerType_CareerFills = 4,
+    kTrackerType_HopoCount = 5,
+    kTrackerType_HopoPercent = 6,
+    kTrackerType_MaxMultiplierFocus = 5,
+    kTrackerType_OverdriveDeployCount = 8,
+    kTrackerType_OverdriveFocus = 7,
+    kTrackerType_OverdriveGainFocus = 8,
+    kTrackerType_OverdriveTime = 9,
+    kTrackerType_PerfectOverdrive = 10,
+    kTrackerType_PerfectSection = 11,
+    kTrackerType_Score = 12,
+    kTrackerType_SoloButtonedSoloPercentage = 13,
+    kTrackerType_Streak = 15,
+    kTrackerType_StreakCount = 15,
+    kTrackerType_StreakFocus = 16,
+    kTrackerType_UnisonCount = 18,
+    kTrackerType_UpstrumCount = 19,
+    kTrackerType_UpstrumPercent = 20
+};
+
+class TrackerDesc {
+public:
+    TrackerDesc() : mType(kTrackerType_Undef), mUser(0), symbol3(gNullStr), unkc(1), unk10(0), unk11(0), unk12(0), unk14(0), unk20(0), unk24(0) {}
+
+    TrackerType mType; // 0x0
+    LocalBandUser* mUser; // 0x4
+    Symbol symbol3;  // 0x08 - name?
+    int unkc; // 0x0c
+    bool unk10; // 0x10
+    bool unk11; // 0x11
+    bool unk12; // 0x12
+    float unk14; // 0x14
+    std::vector<float> unk18; // 0x18
+    bool unk20; // 0x20
+    DataArray* unk24; // 0x24
 };
 
 class Tracker {
@@ -39,7 +71,7 @@ public:
     virtual void TargetSuccess(int) const;
     virtual DataArrayPtr GetBroadcastDescription() const;
     virtual DataArrayPtr GetTargetDescription(int) const = 0;
-    virtual int GetChallengeType() const;
+    virtual TrackerChallengeType GetChallengeType() const;
     virtual float GetCurrentValue() const = 0;
     virtual void SavePlayerStats() const = 0;
 
@@ -56,22 +88,23 @@ public:
     void ReachedTargetLevel(int);
     void SetupDisplays();
     void Configure(const TrackerDesc&);
+    void ReconcileStats();
+    int GetTargetSuccessLevel() const;
+    bool HasPlayerForInstrument(Symbol) const;
+    bool ReachedAnyTarget() const;
+    const TrackerPlayerDisplay& GetPlayerDisplay(const TrackerPlayerID&) const;
+    void SetPlayerProgress(const TrackerPlayerID&, float);
+    void LocalSetPlayerProgress(const TrackerPlayerID&, float);
+    void RemoteSetPlayerProgress(Player*, float);
+    void RemoteTrackerPlayerDisplay(Player*, int, int, int);
+    void RemoteEndStreak(Player*, int, int);
+    void SendEndStreak(Player*, float, int);
 
     bool mFirstPoll; // 0x4
     TrackerBandDisplay& mBandDisplay; // 0x8
     TrackerBroadcastDisplay& mBroadcastDisplay; // 0xc
     std::vector<TrackerPlayerDisplay> mPlayerDisplays; // 0x10
-    int unk18;
-    int unk1c;
-    Symbol unk20;
-    int unk24;
-    bool unk28;
-    bool unk29;
-    bool unk2a;
-    float unk2c;
-    std::vector<float> unk30;
-    bool unk38;
-    int unk3c;
+    TrackerDesc mDesc; // 0x18
     TrackerSource* mSource; // 0x40
     float unk44;
     Symbol unk48;

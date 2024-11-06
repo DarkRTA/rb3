@@ -18,4 +18,5 @@ public:
     int DeployBandEnergy(BandUser*);
     int GetMultiplier(bool, int&, int&, int&) const;
     Performer* MainPerformer() const;
+    Performer* GetBand() const;
 };

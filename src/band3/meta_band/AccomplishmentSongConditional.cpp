@@ -202,19 +202,19 @@ void AccomplishmentSongConditional::InitializeTrackerDesc(TrackerDesc& desc) con
     const AccomplishmentCondition& condition = m_lConditions[0];
     Symbol cond = condition.mCondition;
     if(cond == streak){
-        desc.mType = 0xF;
+        desc.mType = kTrackerType_Streak;
         desc.unk18.push_back(condition.mValue);
     }
     else if(cond == accuracy){
-        desc.mType = 1;
+        desc.mType = kTrackerType_Accuracy;
         desc.unk18.push_back(condition.mValue * 0.01f);
     }
     else if(cond == unison_phrases){
-        desc.mType = 0x12;
+        desc.mType = kTrackerType_UnisonCount;
         desc.unk18.push_back(condition.mValue);
     }
     else if(cond == hopos_percent){
-        desc.mType = 6;
+        desc.mType = kTrackerType_HopoPercent;
         desc.unk18.push_back(condition.mValue * 0.01f);
     }
     else if(cond == stars){
