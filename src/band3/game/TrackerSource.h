@@ -13,6 +13,8 @@ struct TrackerPlayerID {
         return *this;
     }
 
+    const UserGuid& GetGuid() const { return mGuid; }
+
     UserGuid mGuid; // 0x0
 };
 
@@ -24,8 +26,8 @@ public:
     virtual void HandleRemovePlayer(Player*){}
     virtual TrackerPlayerID GetFirstPlayer() const = 0;
     virtual TrackerPlayerID GetNextPlayer(const TrackerPlayerID&) const = 0;
-    virtual bool GetPlayerCount() const = 0;
-    virtual Player* GetPlayer(const TrackerPlayerID&) const  = 0;
+    virtual int GetPlayerCount() const = 0;
+    virtual Player* GetPlayer(const TrackerPlayerID&) const = 0;
     virtual bool IsFinished() const = 0;
 
     bool HasPlayer(const TrackerPlayerID&) const;
@@ -35,4 +37,18 @@ public:
     bool IsPlayerLocal(const TrackerPlayerID&) const;
     bool IsPlayerEligible(const TrackerPlayerID&) const;
     bool PlayerIsEligible(const Player*) const;
+};
+
+class PlayerTrackerSource : public TrackerSource {
+public:
+    PlayerTrackerSource(Player*);
+    virtual ~PlayerTrackerSource();
+    virtual void HandleRemovePlayer(Player*);
+    virtual TrackerPlayerID GetFirstPlayer() const;
+    virtual TrackerPlayerID GetNextPlayer(const TrackerPlayerID&) const;
+    virtual int GetPlayerCount() const;
+    virtual Player* GetPlayer(const TrackerPlayerID&) const;
+    virtual bool IsFinished() const;
+
+    Player* mPlayer; // 0x4
 };

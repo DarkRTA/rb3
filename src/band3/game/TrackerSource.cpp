@@ -1,5 +1,6 @@
 #include "game/TrackerSource.h"
 #include "beatmatch/TrackType.h"
+#include "game/Player.h"
 #include "meta_band/MetaPerformer.h"
 #include "os/Debug.h"
 #include "utl/HxGuid.h"
@@ -75,4 +76,45 @@ bool TrackerSource::PlayerIsEligible(const Player* iPlayer) const {
         }
         return true;
     }
+}
+
+PlayerTrackerSource::PlayerTrackerSource(Player* p) : mPlayer(p) {
+    if(!PlayerIsEligible(p)) mPlayer = nullptr;
+}
+
+PlayerTrackerSource::~PlayerTrackerSource(){
+
+}
+
+void PlayerTrackerSource::HandleRemovePlayer(Player* p){
+    if(p == mPlayer) mPlayer = nullptr;
+}
+
+TrackerPlayerID PlayerTrackerSource::GetFirstPlayer() const {
+    if(!mPlayer){
+        return TrackerPlayerID(gNullUserGuid);
+    }
+    else {
+        return TrackerPlayerID(mPlayer->GetUserGuid());
+    }
+}
+
+TrackerPlayerID PlayerTrackerSource::GetNextPlayer(const TrackerPlayerID&) const {
+    return TrackerPlayerID(gNullUserGuid);
+}
+
+int PlayerTrackerSource::GetPlayerCount() const {
+    return !mPlayer ? 0 : PlayerIsEligible(mPlayer);
+}
+
+Player* PlayerTrackerSource::GetPlayer(const TrackerPlayerID& iID) const {
+    if(!mPlayer) return nullptr;
+    else {
+        MILO_ASSERT(mPlayer->GetUserGuid() == iID.GetGuid(), 0xE2);
+        return mPlayer;
+    }
+}
+
+bool PlayerTrackerSource::IsFinished() const {
+    return !mPlayer ? true : mPlayer->unk204;
 }
