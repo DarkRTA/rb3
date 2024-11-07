@@ -1,4 +1,5 @@
 #include "Accomplishment.h"
+#include "bandtrack/TrackPanel.h"
 #include "obj/Data.h"
 #include "system/utl/MakeString.h"
 #include "system/utl/Symbols.h"
@@ -402,7 +403,7 @@ void Accomplishment::InitializeTrackerDesc(TrackerDesc& trackerDesc) const {
 
     trackerDesc.mUser = TheCampaign->GetLaunchUser();
     trackerDesc.symbol3 = mName;
-    trackerDesc.unkc = 2;
+    trackerDesc.unkc = TrackPanel::kConfigScoreGoal;
 }
 
 bool Accomplishment::CanBeEarnedWithNoFail() const {

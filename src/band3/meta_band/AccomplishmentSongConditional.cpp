@@ -1,6 +1,7 @@
 #include "AccomplishmentSongConditional.h"
 #include "AccomplishmentConditional.h"
 #include "SongStatusMgr.h"
+#include "bandtrack/TrackPanel.h"
 #include "game/Defines.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AppLabel.h"
@@ -202,7 +203,7 @@ void AccomplishmentSongConditional::InitializeTrackerDesc(TrackerDesc& desc) con
     const AccomplishmentCondition& condition = m_lConditions[0];
     Symbol cond = condition.mCondition;
     if(cond == streak){
-        desc.mType = kTrackerType_Streak;
+        desc.mType = kTrackerType_StreakCount;
         desc.unk18.push_back(condition.mValue);
     }
     else if(cond == accuracy){
@@ -218,6 +219,6 @@ void AccomplishmentSongConditional::InitializeTrackerDesc(TrackerDesc& desc) con
         desc.unk18.push_back(condition.mValue * 0.01f);
     }
     else if(cond == stars){
-        desc.unkc = 0;
+        desc.unkc = TrackPanel::kConfigScoreStars;
     }
 }

@@ -1,6 +1,7 @@
 #include "AccomplishmentOneShot.h"
 
 #include "AccomplishmentConditional.h"
+#include "bandtrack/TrackPanel.h"
 #include "game/Performer.h"
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
@@ -100,7 +101,7 @@ void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& desc) const {
         desc.mType = kTrackerType_UpstrumPercent;
         desc.unk18.push_back(condition.mValue);
     }
-    else if(cond == stars) desc.unkc = 0;
+    else if(cond == stars) desc.unkc = TrackPanel::kConfigScoreStars;
     else if(cond == unison_phrases){
         desc.mType = kTrackerType_UnisonCount;
         desc.unk18.push_back(condition.mValue);

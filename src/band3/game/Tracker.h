@@ -1,6 +1,7 @@
 #ifndef GAME_TRACKER_H
 #define GAME_TRACKER_H
 
+#include "bandtrack/TrackPanel.h"
 #include "game/Defines.h"
 #include "game/TrackerDisplay.h"
 #include "game/TrackerSource.h"
@@ -13,22 +14,22 @@
 enum TrackerType {
     kTrackerType_Undef = 0,
     kTrackerType_Accuracy = 1,
-    kTrackerType_DeployCount = 2,
+    kTrackerType_AccuracyFocus = 2,
+    kTrackerType_CareerDeployCount = 3,
     kTrackerType_CareerFills = 4,
     kTrackerType_HopoCount = 5,
     kTrackerType_HopoPercent = 6,
-    kTrackerType_MaxMultiplierFocus = 5,
+    kTrackerType_Overdrive = 7,
     kTrackerType_OverdriveDeployCount = 8,
-    kTrackerType_OverdriveFocus = 7,
-    kTrackerType_OverdriveGainFocus = 8,
     kTrackerType_OverdriveTime = 9,
     kTrackerType_PerfectOverdrive = 10,
     kTrackerType_PerfectSection = 11,
     kTrackerType_Score = 12,
     kTrackerType_SoloButtonedSoloPercentage = 13,
-    kTrackerType_Streak = 15,
+    kTrackerType_Streak = 14,
     kTrackerType_StreakCount = 15,
     kTrackerType_StreakFocus = 16,
+    kTrackerType_DeployCount = 17,
     kTrackerType_UnisonCount = 18,
     kTrackerType_UpstrumCount = 19,
     kTrackerType_UpstrumPercent = 20
@@ -36,19 +37,19 @@ enum TrackerType {
 
 class TrackerDesc {
 public:
-    TrackerDesc() : mType(kTrackerType_Undef), mUser(0), symbol3(gNullStr), unkc(1), unk10(0), unk11(0), unk12(0), unk14(0), unk20(0), unk24(0) {}
+    TrackerDesc() : mType(kTrackerType_Undef), mUser(0), symbol3(gNullStr), unkc(TrackPanel::kConfigScoreStarsGoal), unk10(0), unk11(0), unk12(0), unk14(0), unk20(0), unk24(0) {}
 
     TrackerType mType; // 0x0
     LocalBandUser* mUser; // 0x4
     Symbol symbol3;  // 0x08 - name?
-    int unkc; // 0x0c
+    TrackPanel::TourGoalConfig unkc; // 0x0c
     bool unk10; // 0x10
     bool unk11; // 0x11
     bool unk12; // 0x12
     float unk14; // 0x14
     std::vector<float> unk18; // 0x18
     bool unk20; // 0x20
-    DataArray* unk24; // 0x24
+    const DataArray* unk24; // 0x24
 };
 
 class Tracker {

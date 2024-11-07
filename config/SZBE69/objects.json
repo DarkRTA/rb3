@@ -20,6 +20,7 @@
             "band3/game/KeysFx.cpp": "NonMatching",
             "band3/game/RGTrainerPanel.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
+            "band3/game/TrackerManager.cpp": "NonMatching",
             "band3/game/TrackerSource.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",

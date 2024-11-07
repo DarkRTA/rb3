@@ -1,6 +1,7 @@
 #include "meta_band/AccomplishmentPlayerConditional.h"
 #include "AccomplishmentConditional.h"
 #include "Campaign.h"
+#include "bandtrack/TrackPanel.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "meta_band/Accomplishment.h"
@@ -270,6 +271,6 @@ void AccomplishmentPlayerConditional::InitializeTrackerDesc(TrackerDesc& desc) c
         desc.unk18.push_back(i38);
     }
     else if(key == stars){
-        desc.unkc = 0;
+        desc.unkc = TrackPanel::kConfigScoreStars;
     }
 }

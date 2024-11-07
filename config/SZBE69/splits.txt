@@ -202,6 +202,9 @@ rb3/mgrs/tambourinemanager.cpp:
 band3/game/Tracker.cpp:
 	.text       start:0x80167A84 end:0x80169884
 
+band3/game/TrackerManager.cpp:
+	.text       start:0x8016BB2C end:0x8016D468
+
 band3/game/TrackerSource.cpp:
 	.text       start:0x8016D468 end:0x801703DC
 

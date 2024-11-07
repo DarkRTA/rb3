@@ -28,6 +28,6 @@ void TourGameRules::Init(const DataArray* i_pConfig) {
 }
 
 TourGameType TourGameRules::GetGameType() const { return mGameType; }
-u16 TourGameRules::GetNumTargets() const { return m_vTargets.size(); }
+int TourGameRules::GetNumTargets() const { return m_vTargets.size(); }
 float TourGameRules::GetTarget(int i_iIndex) const { MILO_ASSERT(i_iIndex < m_vTargets.size(), 90); return m_vTargets[i_iIndex]; }
 const DataArray* TourGameRules::GetChallengeSpecificData() const { return mChallengeData; }
