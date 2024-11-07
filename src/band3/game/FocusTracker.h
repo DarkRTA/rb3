@@ -27,11 +27,11 @@ public:
     virtual void SavePlayerStats() const;
     virtual void PlayerAddEnergy(Player*, float);
     virtual TrackerPlayerID GetNextFocusPlayer(const TrackerPlayerID&, float, bool&) const;
-    virtual bool PlayerWantsFocus(const TrackerPlayerID&, float) const;
+    virtual bool PlayerWantsFocus(const TrackerPlayerID&, float) const { return true; }
     virtual void CheckCondition(float, bool, bool&, bool&) = 0;
-    virtual void FocusLeaving(FocusFlags);
-    virtual void HandleFocusSwitch(float);
-    virtual void BroadcastFocusSuccess() const;
+    virtual void FocusLeaving(FocusFlags){}
+    virtual void HandleFocusSwitch(float){}
+    virtual void BroadcastFocusSuccess() const {}
     virtual void BroadcastSuccess(int) const;
     virtual Symbol GetContributionToken(int) const;
 
@@ -40,19 +40,21 @@ public:
     TrackerPlayerID GetFirstFocusPlayer(bool&) const;
     bool PlayerCanHaveFocus(const TrackerPlayerID&) const;
     void ActivateFocus(float);
+    void LocalSetFocusPlayer(const TrackerPlayerID&, float, int, float, FocusFlags);
+    void SetTrackFocus(const TrackerPlayerID&, bool, FocusFlags);
 
     float mFocusDelayMs; // 0x58
     bool unk5c;
-    int unk60;
+    FocusFlags unk60; // 0x60
     TrackerPlayerID mFocusPlayer; // 0x64
     bool unk74;
     float unk78;
     float unk7c;
     float unk80;
-    float unk84;
+    float unk84; // 0x84
     int unk88;
     int unk8c;
-    std::map<TrackerPlayerID, int> unk90; // 0x90
+    std::map<TrackerPlayerID, int> mFocusCountMap; // 0x90
     TrackerMultiplierMap unka8; // 0xa8
     int unkc4;
     bool unkc8;

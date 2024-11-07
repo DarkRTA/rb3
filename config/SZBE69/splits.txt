@@ -154,6 +154,9 @@ rb3/panels/chordbookpanel.cpp:
 rb3/panels/fadepanel.cpp:
 	.text       start:0x80108E3C end:0x801096AC
 
+band3/game/FocusTracker.cpp:
+	.text       start:0x801096AC end:0x8010C65C
+
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
