@@ -5,6 +5,7 @@
 #include "game/SongDB.h"
 #include "game/TrackerDisplay.h"
 #include "game/TrackerSource.h"
+#include "meta_band/Utl.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/HxGuid.h"
@@ -12,6 +13,8 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols4.h"
+#include "utl/TimeConversion.h"
 
 FocusTracker::FocusTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : Tracker(src, banddisp, bcdisp),
     mFocusDelayMs(5000.0f), mInFocusDelay(0), mFocusFlags((FocusFlags)0), unk74(0), unk78(0), unk7c(0), unk80(0), unk84(0), unk88(0), unk8c(0), unkc8(0) {
@@ -407,3 +410,96 @@ void StreakFocusTracker::BroadcastFocusSuccess() const {
     mBroadcastDisplay.ShowBriefBandMessage(DataArrayPtr(toUse, unk88));
 }
 void StreakFocusTracker::BroadcastSuccess(int) const {}
+
+AccuracyFocusTracker::AccuracyFocusTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : FocusTracker(src, banddisp, bcdisp),
+    unkcc(-1), mRequiredAccuracy(0) {
+
+}
+
+void AccuracyFocusTracker::CheckCondition(float ms, bool b1, bool& bref1, bool& bref2){
+    bref1 = false;
+    bref2 = false;
+    if(mSource->IsPlayerLocal(mFocusPlayer)){
+        int mstick = MsToTick(ms);
+        Player* pPlayer = mSource->GetPlayer(mFocusPlayer);
+        int i44 = 0;
+        int i48 = 0;
+        if(mSectionManager.TickAfterSection(mstick, unkcc) != 0 || b1){
+            mSectionManager.GetGemStatsInRange(pPlayer, mSectionManager.GetSectionEndTick(unkcc), mstick, i44, i48);
+        }
+        int i5 = unke0 - (pPlayer->mStats.m0x0c - i48) - unkdc;
+        float f1 = 0;
+        float f2 = i5;
+        i5 = (pPlayer->mStats.mHitCount - i44) - unkd4;
+        if(f2 > 0){
+            f1 = (float)i5 / f2;
+        }
+        if(f1 != unke4){
+            SetPlayerProgress(mFocusPlayer, f1);
+            if(f1 >= mRequiredAccuracy && !unke8){
+                GetPlayerDisplay(mFocusPlayer).SetSuccessState(true);
+                unke8 = true;
+            }
+            unke4 = f1;
+        }
+        if(mSectionManager.TickAfterSection(mstick, unkcc) || b1){
+            bref1 = true;
+            bref2 = f1 >= mRequiredAccuracy;
+        }
+    }
+}
+
+void AccuracyFocusTracker::HandleFocusSwitch(float f){
+    unkcc = mSectionManager.FindSectionContainingTick(MsToTick(f));
+    if(unkcc != -1){
+        Player* pPlayer = mSource->GetPlayer(mFocusPlayer);
+        int i34 = 0;
+        int i38 = 0;
+        if(unkcc > 0){
+            int tick = mSectionManager.GetSectionEndTick(unkcc - 1);
+            mSectionManager.GetGemStatsInRange(pPlayer, tick, MsToTick(f), i34, i38);
+        }
+        unkd4 = pPlayer->mStats.mHitCount - i34;
+        unkdc = pPlayer->mStats.m0x0c - i38;
+        unkd8 = pPlayer->mStats.mMissCount;
+        unke0 = mSectionManager.CountGemsInSection(pPlayer, unkcc);
+        unke4 = -1.0f;
+        unke8 = false;
+    }
+}
+
+DataArrayPtr AccuracyFocusTracker::GetBroadcastDescription() const {
+    return DataArrayPtr(accuracy_focus_tracker_explanation);
+}
+
+void AccuracyFocusTracker::ConfigureTrackerSpecificData(const DataArray* arr){
+    FocusTracker::ConfigureTrackerSpecificData(arr);
+    if(mFocusDelayMs != 0){
+        MILO_WARN("AccuracyFocusTracker needs to have focus_delay_ms set to 0.0 in quests.dta!");
+        mFocusDelayMs = 0;
+    }
+    mSectionManager.Init();
+    arr->FindData(required_accuracy, mRequiredAccuracy, true);
+}
+
+void AccuracyFocusTracker::TranslateRelativeTargets(){
+    int sections = mSectionManager.CountNonEmptySections(mSource, false);
+    for(int i = 0; i < unk50.size(); i++){
+        unk50[i] = std::floor((float)sections * unk50[i]);
+    }
+}
+
+bool AccuracyFocusTracker::PlayerWantsFocus(const TrackerPlayerID& pid, float ms) const {
+    return mSectionManager.CountGemsInSection(mSource->GetPlayer(pid), mSectionManager.FindSectionContainingTick(MsToTick(ms))) > 0;
+}
+
+void AccuracyFocusTracker::FocusLeaving(FocusFlags flags){
+    if(!(flags & 2)) unk8c = 0;
+}
+
+void AccuracyFocusTracker::BroadcastFocusSuccess() const {
+    Player* pPlayer = mSource->GetPlayer(mFocusPlayer);
+    MILO_ASSERT(pPlayer, 0x43B);
+    const char* fontchar = GetFontCharFromTrackType(pPlayer->GetTrackType(), 0);
+    mBroadcastDisplay.ShowBriefBandMessage(DataArrayPtr(accuracy_focus_tracker_progress, fontchar));
+}

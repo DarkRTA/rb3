@@ -28,3 +28,11 @@ float TrackerMultiplierMap::GetPercentOfMaxMultiplier(float f) const {
 const TrackerMultiplierMap::MultiplierEntry& TrackerMultiplierMap::FindEntry(float f) const {
     return unk4.find(f)->second;
 }
+
+TrackerSectionManager::TrackerSectionManager(){
+
+}
+
+TrackerSectionManager::~TrackerSectionManager(){
+    
+}

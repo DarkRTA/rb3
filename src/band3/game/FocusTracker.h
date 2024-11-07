@@ -89,3 +89,28 @@ public:
     bool unke4;
     std::map<TrackerPlayerID, int> unke8;
 };
+
+class AccuracyFocusTracker : public FocusTracker {
+public:
+    AccuracyFocusTracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
+    virtual ~AccuracyFocusTracker(){}
+    virtual void TranslateRelativeTargets();
+    virtual void ConfigureTrackerSpecificData(const DataArray*);
+    virtual DataArrayPtr GetBroadcastDescription() const;
+    virtual TrackerChallengeType GetChallengeType() const { return (TrackerChallengeType)1; }
+    virtual bool PlayerWantsFocus(const TrackerPlayerID&, float) const;
+    virtual void CheckCondition(float, bool, bool&, bool&);
+    virtual void FocusLeaving(FocusFlags);
+    virtual void HandleFocusSwitch(float);
+    virtual void BroadcastFocusSuccess() const;
+
+    int unkcc;
+    float mRequiredAccuracy; // 0xd0
+    int unkd4;
+    int unkd8;
+    int unkdc;
+    int unke0;
+    float unke4;
+    bool unke8;
+    TrackerSectionManager mSectionManager; // 0xec
+};
