@@ -1,4 +1,5 @@
 #pragma once
+#include "beatmatch/TrackType.h"
 #include "obj/Data.h"
 #include <map>
 
@@ -21,4 +22,11 @@ public:
 
     float unk0; // 0x0
     std::map<float, MultiplierEntry> unk4; // 0x4
+};
+
+class TrackerUtils {
+public:
+
+    static int CountGemsInSong(int, TrackType);
+    static float GetNextNoteMs(int, TrackType, float);
 };

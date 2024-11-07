@@ -1,5 +1,8 @@
 #include "game/FocusTracker.h"
 #include "Player.h"
+#include "TrackerUtils.h"
+#include "beatmatch/TrackType.h"
+#include "game/SongDB.h"
 #include "game/TrackerDisplay.h"
 #include "game/TrackerSource.h"
 #include "obj/Data.h"
@@ -11,7 +14,7 @@
 #include "utl/Symbols2.h"
 
 FocusTracker::FocusTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : Tracker(src, banddisp, bcdisp),
-    mFocusDelayMs(5000.0f), unk5c(0), unk60((FocusFlags)0), unk74(0), unk78(0), unk7c(0), unk80(0), unk84(0), unk88(0), unk8c(0), unkc8(0) {
+    mFocusDelayMs(5000.0f), mInFocusDelay(0), mFocusFlags((FocusFlags)0), unk74(0), unk78(0), unk7c(0), unk80(0), unk84(0), unk88(0), unk8c(0), unkc8(0) {
 
 }
 
@@ -96,7 +99,7 @@ void FocusTracker::Poll_(float f){
             if(b75) flags |= 8;
             SetFocusPlayer(next, f, (FocusFlags)flags);
         }
-        if(unk5c){
+        if(mInFocusDelay){
             if(f > unk78) ActivateFocus(f);
             else return;
         }
@@ -231,8 +234,8 @@ void FocusTracker::LocalSetFocusPlayer(const TrackerPlayerID& pid, float f1, int
     unk78 = f1 + ff;
     unk88 = i;
     mBandDisplay.HandleIncrement();
-    unk60 = flags;
-    unk5c = true;
+    mFocusFlags = flags;
+    mInFocusDelay = true;
     if(flags & 2){
         BroadcastFocusSuccess();
     }
@@ -241,8 +244,8 @@ void FocusTracker::LocalSetFocusPlayer(const TrackerPlayerID& pid, float f1, int
 
 void FocusTracker::ActivateFocus(float f){
     HandleFocusSwitch(f);
-    SetTrackFocus(mFocusPlayer, true, unk60);
-    unk5c = false;
+    SetTrackFocus(mFocusPlayer, true, mFocusFlags);
+    mInFocusDelay = false;
 }
 
 void FocusTracker::RemoteSetFocusPlayer(Player* p, int i1, int i2, FocusFlags flags){
@@ -279,3 +282,128 @@ void FocusTracker::SetTrackFocus(const TrackerPlayerID& pid, bool b, FocusFlags 
         }
     }
 }
+
+StreakFocusTracker::StreakFocusTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : FocusTracker(src, banddisp, bcdisp),
+    unkcc(0), unkd0(-1), unkd4(10000.0f), unke0(0), unke4(0) {
+
+}
+
+void StreakFocusTracker::ConfigureTrackerSpecificData(const DataArray* arr){
+    FocusTracker::ConfigureTrackerSpecificData(arr);
+    arr->FindData(focus_streak_length_multiplier, unkcc, true);
+    arr->FindData(focus_streak_max_note_gap_ms, unkd4, false);
+}
+
+void StreakFocusTracker::TranslateRelativeTargets(){
+    unke8.clear();
+    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
+        Player* pPlayer = mSource->GetPlayer(id);
+        MILO_ASSERT(pPlayer, 0x29A);
+        int count;
+        if(pPlayer->GetTrackType() == kTrackVocals){
+            count = 0; // accesses songdb
+        }
+        else {
+            count = TrackerUtils::CountGemsInSong(pPlayer->GetTrackNum(), pPlayer->GetTrackType());
+        }
+        int value = (float)count * unkcc;
+        unke8[id] = Max(1, value);
+    }
+
+    float fcc = unkcc;
+    for(int i = 0; i < unk50.size(); i++){
+        unk50[i] = std::floor((1.0f / fcc) * unk50[i]);
+    }
+}
+
+bool StreakFocusTracker::PlayerWantsFocus(const TrackerPlayerID& pid, float f) const {
+    Player* pPlayer = mSource->GetPlayer(pid);
+    MILO_ASSERT(pPlayer, 0x2C6);
+    return TrackerUtils::GetNextNoteMs(pPlayer->GetTrackNum(), pPlayer->GetTrackType(), f) <= unkd4;
+}
+
+TrackerPlayerID StreakFocusTracker::GetNextFocusPlayer(const TrackerPlayerID& pid, float f, bool& b) const {
+    b = false;
+    TrackerPlayerID ret;
+    float f5 = 8.999999E+9f;
+    TrackerPlayerID iterid(pid);
+    do {
+        iterid = mSource->GetNextPlayer(iterid);
+        if(iterid.mGuid == gNullUserGuid){
+            iterid = mSource->GetFirstPlayer();
+        }
+        if(ret.NotNull() && ret.mGuid == iterid.mGuid) break;
+        if(PlayerCanHaveFocus(iterid)){
+            Player* pPlayer = mSource->GetPlayer(iterid);
+            MILO_ASSERT(pPlayer, 0x2F5);
+            int num = pPlayer->GetTrackNum();
+            TrackType ty = pPlayer->GetTrackType();
+            float nextnotems = TrackerUtils::GetNextNoteMs(num, ty, f);
+            if(nextnotems - f < unkd4){
+                ret = iterid;
+                break;
+            }
+            if(ret.mGuid == gNullUserGuid || nextnotems < f5){
+                ret = iterid;
+                f5 = nextnotems;
+            }
+        }
+    } while(!(iterid.mGuid == pid.mGuid));
+    if(ret.mGuid == gNullUserGuid){
+        ret = iterid;
+    }
+    return ret;
+}
+
+void StreakFocusTracker::CheckCondition(float f1, bool b1, bool& bref1, bool& bref2){
+    bref1 = false;
+    bref2 = false;
+    Player* pPlayer = mSource->GetPlayer(mFocusPlayer);
+    int hitcount = pPlayer->mStats.mHitCount;
+    int curstreak = pPlayer->mStats.GetCurrentStreak();
+    if(curstreak >= 1 && !unke4){
+        unkd8 = hitcount - 1;
+        unke4 = true;
+    }
+    else if(curstreak == 0){
+        if(unke4 && mSource->IsPlayerLocal(mFocusPlayer)){
+            GetPlayerDisplay(mFocusPlayer).Pulse(false);
+        }
+        unke4 = false;
+        unk8c = 0;
+    }
+    int i2 = 0;
+    if(unke4){
+        i2 = hitcount - unkd8;
+        if(i2 >= unkd0){
+            bref1 = true;
+            bref2 = true;
+            int val = unk88 + 1;
+            Symbol toUse = val == 1 ? streak_focus_tracker_progress_1 : streak_focus_tracker_progress;
+            mBroadcastDisplay.ShowBriefBandMessage(DataArrayPtr(toUse, val));
+        }
+    }
+
+    if(unke0 != i2){
+        SetPlayerProgress(mFocusPlayer, (float)i2 / (float)unkd0);
+        unke0 = i2;
+    }
+}
+
+void StreakFocusTracker::HandleFocusSwitch(float f){
+    Player* pPlayer = mSource->GetPlayer(mFocusPlayer);
+    unke4 = pPlayer->mStats.GetCurrentStreak();
+    unkd8 = pPlayer->mStats.mHitCount;
+    unkdc = pPlayer->mStats.mMissCount;
+    unkd0 = unke8[mFocusPlayer];
+}
+
+DataArrayPtr StreakFocusTracker::GetBroadcastDescription() const {
+    return DataArrayPtr(streak_focus_tracker_explanation);
+}
+
+void StreakFocusTracker::BroadcastFocusSuccess() const {
+    Symbol toUse = unk88 == 1 ? streak_focus_tracker_progress_1 : streak_focus_tracker_progress;
+    mBroadcastDisplay.ShowBriefBandMessage(DataArrayPtr(toUse, unk88));
+}
+void StreakFocusTracker::BroadcastSuccess(int) const {}
