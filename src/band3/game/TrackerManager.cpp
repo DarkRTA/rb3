@@ -1,4 +1,5 @@
 #include "game/TrackerManager.h"
+#include "FocusTracker.h"
 #include "Tracker.h"
 #include "TrackerDisplay.h"
 #include "bandtrack/TrackPanel.h"
@@ -196,7 +197,8 @@ void TrackerManager::OnStatsSynced(){
 
 void TrackerManager::OnPlayerAddEnergy(Player* p, float f){
     if(mTracker){
-        // dynamic cast mtracker to focustracker
+        FocusTracker* ft = dynamic_cast<FocusTracker*>(mTracker);
+        if(ft) ft->PlayerAddEnergy(p, f);
     }
 }
 
@@ -208,8 +210,12 @@ void TrackerManager::OnPlayerQuarantined(Player* p){
     HandleRemovePlayer(p);
 }
 
-void TrackerManager::OnRemoteTrackerFocus(Player*, int, int, int){
-
+void TrackerManager::OnRemoteTrackerFocus(Player* p, int i1, int i2, int i3){
+    if(mTracker){
+        FocusTracker* ft = dynamic_cast<FocusTracker*>(mTracker);
+        if(!ft) MILO_FAIL("Non-focus tracker sent focus related net message!");
+        ft->RemoteSetFocusPlayer(p, i1, i2, (FocusTracker::FocusFlags)i3);
+    }
 }
 
 void TrackerManager::OnRemoteTrackerPlayerProgress(Player* p, float f){

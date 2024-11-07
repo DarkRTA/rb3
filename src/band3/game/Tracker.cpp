@@ -29,7 +29,7 @@ void Tracker::Restart(){
     mPlayerDisplays.resize(5);
 
     int idx = 0;
-    for(TrackerPlayerID id = mSource->GetFirstPlayer(); !id.mGuid.Null(); id = mSource->GetNextPlayer(id)){
+    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
         Player* p = mSource->GetPlayer(id);
         mPlayerDisplays[idx++].mPlayer = p;
     }
@@ -37,7 +37,7 @@ void Tracker::Restart(){
     unk50 = mDesc.unk18;
     if(mDesc.unk20) TranslateRelativeTargets();
 
-    for(TrackerPlayerID id = mSource->GetFirstPlayer(); !id.mGuid.Null(); id = mSource->GetNextPlayer(id)){
+    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
         GetPlayerDisplay(id).Disable();
     }
     Restart_();
@@ -72,7 +72,7 @@ void Tracker::HandleRemovePlayer(Player* player){
 
 void Tracker::HandlePlayerSaved(Player* player){
     TrackerPlayerID pid = mSource->FindPlayerID(player);
-    if(!pid.mGuid.Null() && mSource->IsPlayerEligible(pid)){
+    if(pid.NotNull() && mSource->IsPlayerEligible(pid)){
         HandlePlayerSaved_(pid);
     }
 }
@@ -82,7 +82,7 @@ void Tracker::HandleGameOver(float f){
     mBroadcastDisplay.Hide();
     SavePlayerStats();
     float pct = CalcProgressPercentage();
-    for(TrackerPlayerID id = mSource->GetFirstPlayer(); !id.mGuid.Null(); id = mSource->GetNextPlayer(id)){
+    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
         if(mSource->IsPlayerLocal(id)){
             Player* pPlayer = mSource->GetPlayer(id);
             MILO_ASSERT(pPlayer, 0xAD);
@@ -126,7 +126,7 @@ void Tracker::Configure(const TrackerDesc& desc){
 
 void Tracker::ReconcileStats(){
     float f1 = 0;
-    for(TrackerPlayerID id = mSource->GetFirstPlayer(); !id.mGuid.Null(); id = mSource->GetNextPlayer(id)){
+    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
         Player* pPlayer = mSource->GetPlayer(id);
         MILO_ASSERT(pPlayer, 0xFF);
         if(f1 < pPlayer->mStats.unk1c4){
@@ -185,7 +185,7 @@ void Tracker::UpdateCurrentValueLabel(UILabel&) const {}
 String Tracker::GetPlayerContributionString(Symbol) const { return ""; }
 
 bool Tracker::HasPlayerForInstrument(Symbol s) const {
-    return mSource->GetIDFromInstrument(s).GetGuid().NotNull();
+    return mSource->GetIDFromInstrument(s).NotNull();
 }
 
 bool Tracker::ReachedAnyTarget() const {
@@ -228,21 +228,21 @@ void Tracker::SetPlayerProgress(const TrackerPlayerID& pid, float f){
 }
 
 void Tracker::LocalSetPlayerProgress(const TrackerPlayerID& pid, float f){
-    if(!pid.GetGuid().Null()){
+    if(pid.NotNull()){
         GetPlayerDisplay(pid).SetProgressPercentage(f, true);
     }
 }
 
 void Tracker::RemoteSetPlayerProgress(Player* p, float f){
     TrackerPlayerID pid = mSource->FindPlayerID(p);
-    if(!pid.GetGuid().Null()){
+    if(pid.NotNull()){
         LocalSetPlayerProgress(pid, f);
     }
 }
 
 void Tracker::RemoteTrackerPlayerDisplay(Player* p, int i1, int i2, int i3){
     TrackerPlayerID pid = mSource->FindPlayerID(p);
-    if(!pid.GetGuid().Null()){
+    if(pid.NotNull()){
         GetPlayerDisplay(pid).RemotePlayerDisplayMsg(i1, i2, i3);
     }
 }

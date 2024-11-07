@@ -4,6 +4,7 @@
 #include "utl/HxGuid.h"
 
 struct TrackerPlayerID {
+    TrackerPlayerID() : mGuid(gNullUserGuid) {}
     TrackerPlayerID(const UserGuid& guid) : mGuid(guid) {}
 
     TrackerPlayerID& operator=(const TrackerPlayerID& pid){
@@ -11,6 +12,14 @@ struct TrackerPlayerID {
             mGuid = pid.mGuid;
         }
         return *this;
+    }
+
+    bool operator<(const TrackerPlayerID& pid) const {
+        return mGuid < pid.mGuid;
+    }
+
+    bool NotNull() const {
+        return !mGuid.Null();
     }
 
     const UserGuid& GetGuid() const { return mGuid; }

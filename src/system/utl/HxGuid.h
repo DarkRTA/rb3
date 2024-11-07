@@ -25,8 +25,6 @@ public:
     //     return *this;
     // }
 
-    bool NotNull() const;
-
     bool operator<(const HxGuid&) const;
     int Chunk32(int) const;
     const char* ToString() const;
@@ -53,10 +51,6 @@ public:
 };
 
 extern UserGuid gNullUserGuid;
-
-inline bool HxGuid::NotNull() const {
-    return !(*this == gNullUserGuid);
-}
 
 inline bool UserGuid::Null() const {
     return *this == gNullUserGuid;

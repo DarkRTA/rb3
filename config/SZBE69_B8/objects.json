@@ -44,7 +44,7 @@
             "band3/game/DeployCountTracker.cpp": "MISSING",
             "band3/game/DirectInstrument.cpp": "MISSING",
             "band3/game/FadePanel.cpp": "MISSING",
-            "band3/game/FocusTracker.cpp": "MISSING",
+            "band3/game/FocusTracker.cpp": "NonMatching",
             "band3/game/FreestylePanel.cpp": "MISSING",
             "band3/game/FretHand.cpp": "NonMatching",
             "band3/game/Game.cpp": "MISSING",
