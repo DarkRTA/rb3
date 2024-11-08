@@ -34,6 +34,7 @@ public:
     void HandleTargetPass(int, DataArrayPtr&) const;
     void LastTargetPass() const;
 
+    static float kMissingPercentage;
     static void MsToMinutesSeconds(float, int&, int&);
     static DataArrayPtr MakeIntegerTargetDescription(int);
     static DataArrayPtr MakePercentTargetDescription(float);

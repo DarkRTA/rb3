@@ -5,11 +5,9 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/Messages.h"
-#include "utl/Messages2.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
+
+float TrackerDisplay::kMissingPercentage = -1.0f;
 
 TrackerDisplay::TrackerDisplay(){
 

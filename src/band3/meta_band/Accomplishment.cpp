@@ -402,7 +402,7 @@ void Accomplishment::InitializeTrackerDesc(TrackerDesc& trackerDesc) const {
     MILO_ASSERT(TheCampaign, 0x2b8);
 
     trackerDesc.mUser = TheCampaign->GetLaunchUser();
-    trackerDesc.symbol3 = mName;
+    trackerDesc.mName = mName;
     trackerDesc.unkc = TrackPanel::kConfigScoreGoal;
 }
 

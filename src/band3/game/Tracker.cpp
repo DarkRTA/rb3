@@ -34,7 +34,7 @@ void Tracker::Restart(){
         mPlayerDisplays[idx++].mPlayer = p;
     }
     mFirstPoll = true;
-    unk50 = mDesc.unk18;
+    mTargets = mDesc.unk18;
     if(mDesc.unk20) TranslateRelativeTargets();
 
     for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
@@ -118,7 +118,7 @@ void Tracker::Poll(float f){
 void Tracker::Configure(const TrackerDesc& desc){
     mDesc = desc;
     unk44 = desc.unk14;
-    unk50 = desc.unk18;
+    mTargets = desc.unk18;
     if(desc.unk24){
         ConfigureTrackerSpecificData(desc.unk24);
     }
@@ -142,7 +142,7 @@ void Tracker::ReconcileStats(){
 
 float Tracker::CalcProgressPercentage() const {
     float val = GetCurrentValue();
-    float last = unk50.back();
+    float last = mTargets.back();
     float ret = 0;
     if(last > 0){
         ret = Clamp(0.0f, 1.0f, val / last);
@@ -153,8 +153,8 @@ float Tracker::CalcProgressPercentage() const {
 int Tracker::GetTargetSuccessLevel() const {
     float val = GetCurrentValue();
     int level = -1;
-    for(int i = 0; i < unk50.size(); i++){
-        if(val < unk50[i]) break;
+    for(int i = 0; i < mTargets.size(); i++){
+        if(val < mTargets[i]) break;
         else level++;
     }
     return level;
@@ -164,7 +164,7 @@ void Tracker::ReachedTargetLevel(int level){
     if(level != -1){
         TargetSuccess(level);
     }
-    if(level < (int)unk50.size() - 1){
+    if(level < (int)mTargets.size() - 1){
         DataArrayPtr desc = GetTargetDescription(level + 1);
         if(level != -1){
             mBandDisplay.HandleTargetPass(level, desc);

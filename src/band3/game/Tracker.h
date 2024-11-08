@@ -37,11 +37,11 @@ enum TrackerType {
 
 class TrackerDesc {
 public:
-    TrackerDesc() : mType(kTrackerType_Undef), mUser(0), symbol3(gNullStr), unkc(TrackPanel::kConfigScoreStarsGoal), unk10(0), unk11(0), unk12(0), unk14(0), unk20(0), unk24(0) {}
+    TrackerDesc() : mType(kTrackerType_Undef), mUser(0), mName(gNullStr), unkc(TrackPanel::kConfigScoreStarsGoal), unk10(0), unk11(0), unk12(0), unk14(0), unk20(0), unk24(0) {}
 
     TrackerType mType; // 0x0
     LocalBandUser* mUser; // 0x4
-    Symbol symbol3;  // 0x08 - name?
+    Symbol mName;  // 0x08
     TrackPanel::TourGoalConfig unkc; // 0x0c
     bool unk10; // 0x10
     bool unk11; // 0x11
@@ -56,23 +56,23 @@ class Tracker {
 public:
     Tracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
     virtual ~Tracker();
-    virtual void TranslateRelativeTargets();
+    virtual void TranslateRelativeTargets(){}
     virtual void UpdateGoalValueLabel(UILabel&) const;
     virtual void UpdateCurrentValueLabel(UILabel&) const;
     virtual String GetPlayerContributionString(Symbol) const;
-    virtual void RemoteEndStreak_(Player*, float, int);
-    virtual void ConfigureTrackerSpecificData(const DataArray*);
-    virtual void HandleAddPlayer_(Player*);
-    virtual void HandleRemovePlayer_(Player*);
-    virtual void HandlePlayerSaved_(const TrackerPlayerID&);
-    virtual void HandleGameOver_(float);
-    virtual void Restart_();
+    virtual void RemoteEndStreak_(Player*, float, int){}
+    virtual void ConfigureTrackerSpecificData(const DataArray*){}
+    virtual void HandleAddPlayer_(Player*){}
+    virtual void HandleRemovePlayer_(Player*){}
+    virtual void HandlePlayerSaved_(const TrackerPlayerID&){}
+    virtual void HandleGameOver_(float){}
+    virtual void Restart_(){}
     virtual void FirstFrame_(float){}
     virtual void Poll_(float){}
-    virtual void TargetSuccess(int) const;
-    virtual DataArrayPtr GetBroadcastDescription() const;
+    virtual void TargetSuccess(int) const {}
+    virtual DataArrayPtr GetBroadcastDescription() const { return DataArrayPtr(); }
     virtual DataArrayPtr GetTargetDescription(int) const = 0;
-    virtual TrackerChallengeType GetChallengeType() const;
+    virtual TrackerChallengeType GetChallengeType() const { return (TrackerChallengeType)0; }
     virtual float GetCurrentValue() const = 0;
     virtual void SavePlayerStats() const = 0;
 
@@ -110,7 +110,7 @@ public:
     float unk44;
     Symbol unk48;
     Symbol unk4c;
-    std::vector<float> unk50;
+    std::vector<float> mTargets; // 0x50
 };
 
 #endif // GAME_TRACKER_H

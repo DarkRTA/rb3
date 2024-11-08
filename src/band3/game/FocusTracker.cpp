@@ -146,11 +146,11 @@ void FocusTracker::Poll_(float f){
 void FocusTracker::TargetSuccess(int) const {}
 
 DataArrayPtr FocusTracker::GetTargetDescription(int i) const {
-    return TrackerDisplay::MakeIntegerTargetDescription(unk50[i]);
+    return TrackerDisplay::MakeIntegerTargetDescription(mTargets[i]);
 }
 
 void FocusTracker::UpdateGoalValueLabel(UILabel& label) const {
-    label.SetTokenFmt(tour_goal_focus_goal_format, (int)unk50.front());
+    label.SetTokenFmt(tour_goal_focus_goal_format, (int)mTargets.front());
 }
 
 void FocusTracker::UpdateCurrentValueLabel(UILabel& label) const {
@@ -314,8 +314,8 @@ void StreakFocusTracker::TranslateRelativeTargets(){
     }
 
     float fcc = unkcc;
-    for(int i = 0; i < unk50.size(); i++){
-        unk50[i] = std::floor((1.0f / fcc) * unk50[i]);
+    for(int i = 0; i < mTargets.size(); i++){
+        mTargets[i] = std::floor((1.0f / fcc) * mTargets[i]);
     }
 }
 
@@ -484,8 +484,8 @@ void AccuracyFocusTracker::ConfigureTrackerSpecificData(const DataArray* arr){
 
 void AccuracyFocusTracker::TranslateRelativeTargets(){
     int sections = mSectionManager.CountNonEmptySections(mSource, false);
-    for(int i = 0; i < unk50.size(); i++){
-        unk50[i] = std::floor((float)sections * unk50[i]);
+    for(int i = 0; i < mTargets.size(); i++){
+        mTargets[i] = std::floor((float)sections * mTargets[i]);
     }
 }
 
