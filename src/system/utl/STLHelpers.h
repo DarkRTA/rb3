@@ -55,6 +55,13 @@ void RemoveSwap(std::vector<T*>& vec, T* obj) {
     }
 }
 
+template <class T>
+inline void SetRange(std::vector<T>::iterator start, std::vector<T>::iterator finish, const T& value){
+    for(; start != finish; ++start){
+        *start = value;
+    }
+}
+
 // not sure where else to put this
 inline int atoi_s(char* str){
     if(str) return atoi(str);
