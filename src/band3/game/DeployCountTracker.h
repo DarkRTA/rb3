@@ -7,7 +7,6 @@ class DeployCountTracker : public Tracker {
 public:
     class PlayerDeployData {
     public:
-        // PlayerDeployData() : unk0(0), unk1(0), unk2(0), unk3(0), unk4(0) {}
         bool unk0;
         bool unk1;
         bool unk2;

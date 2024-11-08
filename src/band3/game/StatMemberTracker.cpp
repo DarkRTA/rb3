@@ -5,7 +5,7 @@
 #include "obj/Data.h"
 #include "utl/Locale.h"
 
-StatMemberTracker::StatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : Tracker(src, banddisp, bcdisp), unk58(-2.0f) {
+StatMemberTracker::StatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : Tracker(src, banddisp, bcdisp), mLastValue(-2.0f) {
 
 }
 
@@ -15,7 +15,7 @@ StatMemberTracker::~StatMemberTracker(){
 
 void StatMemberTracker::FirstFrame_(float){
     mBandDisplay.Initialize(mDesc.mName);
-    unk58 = -2.0f;
+    mLastValue = -2.0f;
     if(IsPercentageStat()){
         mBandDisplay.SetPercentageProgress(0);
     }
@@ -27,14 +27,14 @@ void StatMemberTracker::FirstFrame_(float){
 void StatMemberTracker::Poll_(float f){
     if(!mSource->IsFinished()){
         float f = unk44 + CalcCurrentStat();
-        if(f != unk58){
+        if(f != mLastValue){
             if(IsPercentageStat()){
                 mBandDisplay.SetPercentageProgress(f * 0.01f);
             }
             else {
                 mBandDisplay.SetIntegerProgress(f);
             }
-            unk58 = f;
+            mLastValue = f;
         }
     }
 }

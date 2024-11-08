@@ -85,7 +85,7 @@
             "band3/game/StatCollector.cpp": "MISSING",
             "band3/game/StatMemberTracker.cpp": "NonMatching",
             "band3/game/Stats.cpp": "NonMatching",
-            "band3/game/StreakTracker.cpp": "MISSING",
+            "band3/game/StreakTracker.cpp": "NonMatching",
             "band3/game/SyncGameStartPanel.cpp": "MISSING",
             "band3/game/TambourineDetector.cpp": "MISSING",
             "band3/game/TambourineManager.cpp": "MISSING",

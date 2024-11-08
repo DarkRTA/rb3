@@ -54,4 +54,5 @@ public:
 
     static int CountGemsInSong(int, TrackType);
     static float GetNextNoteMs(int, TrackType, float);
+    static int CountVocalPhrasesInSong(int);
 };

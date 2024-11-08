@@ -11,7 +11,7 @@ public:
     virtual void FirstFrame_(float);
     virtual void Poll_(float);
     virtual DataArrayPtr GetTargetDescription(int) const;
-    virtual float GetCurrentValue() const { return unk58; }
+    virtual float GetCurrentValue() const { return mLastValue; }
     virtual void SavePlayerStats() const;
     virtual bool IsBandWideCummulative() const = 0;
     virtual bool IsPercentageStat() const { return false; }
@@ -23,7 +23,7 @@ public:
 
     float CalcCurrentStat() const;
 
-    float unk58; // 0x58
+    float mLastValue; // 0x58
 };
 
 #include "utl/Symbols.h"

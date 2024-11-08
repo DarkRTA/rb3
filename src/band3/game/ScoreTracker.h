@@ -10,8 +10,8 @@ public:
     virtual void FirstFrame_(float);
     virtual void Poll_(float);
     virtual DataArrayPtr GetTargetDescription(int) const;
-    virtual float GetCurrentValue() const { return unk58; }
+    virtual float GetCurrentValue() const { return mScoreTotal; }
     virtual void SavePlayerStats() const;
 
-    int unk58; // 0x58
+    int mScoreTotal; // 0x58
 };

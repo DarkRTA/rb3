@@ -1,7 +1,7 @@
 #include "game/HitTracker.h"
 #include "beatmatch/HitSink.h"
 #include "os/Debug.h"
-#include "utl/STLHelpers.h"
+#include <algorithm>
 
 const char* sHitTypeNames[] = {
     "Green pad", "Red pad", "Yellow pad", "Blue pad",
@@ -18,7 +18,7 @@ HitTracker::HitTracker(){
 }
 
 void HitTracker::Reset(){
-    SetRange(mHits.begin(), mHits.end(), 0);
+    std::fill(mHits.begin(), mHits.end(), 0);
     for(int i = 0; i < 128; i++) mKeys[i] = 0;
     for(int i = 0; i < 6; i++){
         mRGStrums[i] = 0;
