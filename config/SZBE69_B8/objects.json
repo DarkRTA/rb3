@@ -76,7 +76,7 @@
             "band3/game/RGTrainerPanel.cpp": "NonMatching",
             "band3/game/RGTutor.cpp": "Matching",
             "band3/game/RKTrainerPanel.cpp": "Matching",
-            "band3/game/ScoreTracker.cpp": "MISSING",
+            "band3/game/ScoreTracker.cpp": "Matching",
             "band3/game/ScoreUtl.cpp": "MISSING",
             "band3/game/Scoring.cpp": "MISSING",
             "band3/game/Shuttle.cpp": "NonMatching",
