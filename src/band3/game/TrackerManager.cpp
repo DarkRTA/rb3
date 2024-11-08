@@ -3,6 +3,7 @@
 #include "Tracker.h"
 #include "TrackerDisplay.h"
 #include "bandtrack/TrackPanel.h"
+#include "game/AccuracyTracker.h"
 #include "game/BandUser.h"
 #include "game/TrackerSource.h"
 #include "meta_band/AccomplishmentManager.h"
@@ -275,7 +276,32 @@ void TrackerManager::SetTracker(const TrackerDesc& desc){
 }
 
 Tracker* TrackerManager::MakeTracker(TrackerType ty, TrackerSource* src){
-
+    switch(ty){
+        case kTrackerType_Accuracy:
+            return new AccuracyTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_AccuracyFocus:
+            return new AccuracyFocusTracker(src, mBandDisplay, mBroadcastDisplay);
+        default:
+            return nullptr;
+    // kTrackerType_CareerDeployCount = 3,
+    // kTrackerType_CareerFills = 4,
+    // kTrackerType_HopoCount = 5,
+    // kTrackerType_HopoPercent = 6,
+    // kTrackerType_Overdrive = 7,
+    // kTrackerType_OverdriveDeployCount = 8,
+    // kTrackerType_OverdriveTime = 9,
+    // kTrackerType_PerfectOverdrive = 10,
+    // kTrackerType_PerfectSection = 11,
+    // kTrackerType_Score = 12,
+    // kTrackerType_SoloButtonedSoloPercentage = 13,
+    // kTrackerType_Streak = 14,
+    // kTrackerType_StreakCount = 15,
+    // kTrackerType_StreakFocus = 16,
+    // kTrackerType_DeployCount = 17,
+    // kTrackerType_UnisonCount = 18,
+    // kTrackerType_UpstrumCount = 19,
+    // kTrackerType_UpstrumPercent = 20
+    }
 }
 
 TrackerType TrackerManager::GetTrackerTypeFromGameType(TourGameType ty) const {

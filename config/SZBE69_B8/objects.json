@@ -83,7 +83,7 @@
             "band3/game/Singer.cpp": "MISSING",
             "band3/game/SongDB.cpp": "NonMatching",
             "band3/game/StatCollector.cpp": "MISSING",
-            "band3/game/StatMemberTracker.cpp": "MISSING",
+            "band3/game/StatMemberTracker.cpp": "NonMatching",
             "band3/game/Stats.cpp": "NonMatching",
             "band3/game/StreakTracker.cpp": "MISSING",
             "band3/game/SyncGameStartPanel.cpp": "MISSING",
