@@ -64,7 +64,7 @@
             "band3/game/NetGameMsgs.cpp": "NonMatching",
             "band3/game/OverdriveTimeTracker.cpp": "NonMatching",
             "band3/game/OverdriveTracker.cpp": "NonMatching",
-            "band3/game/PerfectOverdriveTracker.cpp": "MISSING",
+            "band3/game/PerfectOverdriveTracker.cpp": "NonMatching",
             "band3/game/PerfectSectionTracker.cpp": "MISSING",
             "band3/game/Performer.cpp": "NonMatching",
             "band3/game/Player.cpp": "NonMatching",
