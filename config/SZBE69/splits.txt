@@ -199,6 +199,9 @@ rb3/providers/practicesectionprovider.cpp:
 band3/game/RGTrainerPanel.cpp:
 	.text       start:0x8014DA04 end:0x8015143C
 
+band3/game/StatMemberTracker.cpp:
+	.text       start:0x8015EA58 end:0x8015F1A8
+
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
 

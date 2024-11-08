@@ -1,4 +1,5 @@
 #include "game/StatMemberTracker.h"
+#include "bandtrack/TrackPanel.h"
 #include "game/TrackerDisplay.h"
 #include "game/TrackerSource.h"
 #include "obj/Data.h"
@@ -56,13 +57,11 @@ float StatMemberTracker::CalcCurrentStat() const {
 }
 
 void StatMemberTracker::UpdateGoalValueLabel(UILabel& label) const {
-    int val = mTargets.front();
-    label.SetTokenFmt(DataArrayPtr(GetGoalValueSymbol(), val));
+    label.SetTokenFmt(GetGoalValueSymbol(), (int)mTargets.front());
 }
 
 void StatMemberTracker::UpdateCurrentValueLabel(UILabel& label) const {
-    int val = CalcCurrentStat();
-    label.SetTokenFmt(DataArrayPtr(GetCurrentValueSymbol(), val));
+    label.SetTokenFmt(GetCurrentValueSymbol(), (int)CalcCurrentStat());
 }
 
 void StatMemberTracker::SavePlayerStats() const {}
@@ -83,3 +82,15 @@ String StatMemberTracker::GetPlayerContributionString(Symbol s) const {
 }
 
 Symbol StatMemberTracker::GetSingularContributionSymbol() const { return GetContributionSymbol(); }
+
+void UnisonStatMemberTracker::TranslateRelativeTargets(){
+    for(int i = 0; i < mTargets.size(); i++){
+        // mTargets[i];
+        mTargets[i] = Clamp(0.0f, 1.0f, std::ceil(0.0f));
+    }
+}
+
+void UnisonStatMemberTracker::FirstFrame_(float f){
+    StatMemberTracker::FirstFrame_(f);
+    GetTrackPanel()->SetSuppressUnisonDisplay(false);
+}
