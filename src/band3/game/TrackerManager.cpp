@@ -296,46 +296,72 @@ void TrackerManager::SetTracker(const TrackerDesc& desc){
 }
 
 Tracker* TrackerManager::MakeTracker(TrackerType ty, TrackerSource* src){
+    Tracker* tracker = nullptr;
     switch(ty){
         case kTrackerType_Accuracy:
-            return new AccuracyTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new AccuracyTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_AccuracyFocus:
-            return new AccuracyFocusTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new AccuracyFocusTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_CareerDeployCount:
-            return new DeployStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new DeployStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_CareerFills:
-            return new FillsHitStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new FillsHitStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_HopoCount:
-            return new HopoStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new HopoStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_HopoPercent:
-            return new HopoPercentStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new HopoPercentStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_Overdrive:
-            return new OverdriveTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new OverdriveTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_OverdriveDeployCount:
-            return new DeployStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new DeployStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_OverdriveTime:
-            return new OverdriveTimeTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new OverdriveTimeTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_PerfectOverdrive:
-            return new PerfectOverdriveTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new PerfectOverdriveTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_PerfectSection:
-            return new PerfectSectionTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new PerfectSectionTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_Score:
-            return new ScoreTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new ScoreTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_SoloButtonedSoloPercentage:
-            return new SoloButtonedSoloStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new SoloButtonedSoloStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_Streak:
-            return new StreakTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new StreakTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         case kTrackerType_StreakCount:
-            return new StreakCountStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            tracker = new StreakCountStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
+        case kTrackerType_StreakFocus:
+            tracker = new StreakFocusTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
+        case kTrackerType_DeployCount:
+            tracker = new DeployCountTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
+        case kTrackerType_UnisonCount:
+            tracker = new UnisonStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
+        case kTrackerType_UpstrumCount:
+            tracker = new UpstrumStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
+        case kTrackerType_UpstrumPercent:
+            tracker = new UpstrumPercentStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+            break;
         default:
-            return nullptr;
-
-    // kTrackerType_StreakFocus = 16,
-    // kTrackerType_DeployCount = 17,
-    // kTrackerType_UnisonCount = 18,
-    // kTrackerType_UpstrumCount = 19,
-    // kTrackerType_UpstrumPercent = 20
+            break;
     }
+    return tracker;
 }
 
 TrackerType TrackerManager::GetTrackerTypeFromGameType(TourGameType ty) const {

@@ -2,7 +2,7 @@
 #include "math/MathFuncs.h"
 #include "os/Debug.h"
 
-Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0), m0x28(0), m0x2c(0),
+Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0), mUpstrumCount(0), mDownstrumCount(0),
     m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0), m0x48(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0),
     mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0), mSolo(0), mOverdrive(0), mSustain(0), mScoreStreak(0),
     mBandContribution(0), mCodaPoints(0), mHasCoda(0), mHasSolos(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0),
@@ -126,8 +126,8 @@ void Stats::SaveForEndGame(BinStream& bs) const {
     bs << mFailedDeploy;
     bs << mPlayersSaved;
     bs << mFillHitCount;
-    bs << m0x2c;
-    bs << m0x28;
+    bs << mDownstrumCount;
+    bs << mUpstrumCount;
     bs << mDeployCount;
     bs << mSoloPercentage;
     bs << mDoubleHarmonyHit;
@@ -171,8 +171,8 @@ void Stats::LoadForEndGame(BinStream& bs){
     bs >> mFailedDeploy;
     bs >> mPlayersSaved;
     bs >> mFillHitCount;
-    bs >> m0x2c;
-    bs >> m0x28;
+    bs >> mDownstrumCount;
+    bs >> mUpstrumCount;
     bs >> mDeployCount;
     bs >> mSoloPercentage;
     bs >> mDoubleHarmonyHit;

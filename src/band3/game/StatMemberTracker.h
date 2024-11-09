@@ -77,6 +77,34 @@ public:
     virtual Symbol GetSingularContributionSymbol() const { return deploy_stat_tracker_contribution_1; }
 };
 
+class UpstrumStatMemberTracker : public StatMemberTracker {
+public:
+    UpstrumStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~UpstrumStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return true; }
+    virtual float GetStatValue(const Stats& stats) const { return stats.mUpstrumCount; }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return upstrum_stat_tracker_contribution; }
+};
+
+class UpstrumPercentStatMemberTracker : public StatMemberTracker {
+public:
+    UpstrumPercentStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~UpstrumPercentStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return false; }
+    virtual bool IsPercentageStat() const { return true; }
+    virtual float GetStatValue(const Stats& stats) const {
+        if(stats.mHitCount + stats.m0x08 > 0){
+            return stats.GetUpstrumPercent();
+        }
+        else return -1.0f;
+    }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return upstrum_percent_stat_tracker_contribution; }
+};
+
 class StreakCountStatMemberTracker : public StatMemberTracker {
 public:
     StreakCountStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
