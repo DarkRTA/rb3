@@ -443,7 +443,7 @@
             "network/net/NetSession_RV.cpp": "MISSING",
             "network/net/NetworkEmulator.cpp": "MISSING",
             "network/net/QuazalSession.cpp": "MISSING",
-            "network/net/Server_Wii.cpp": "MISSING",
+            "network/net/Server_Wii.cpp": "NonMatching",
             "network/net/Server.cpp": "NonMatching",
             "network/net/SessionMessages.cpp": "NonMatching",
             "network/net/SessionSearcher.cpp": "NonMatching",

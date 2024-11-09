@@ -55,7 +55,7 @@ public:
     bool IsHidden() const;
     bool IsLeavingOptions() const;
     Symbol GetCurrentView() const;
-    bool InOverrideFlow(OvershellOverrideFlow) const;
+    OvershellOverrideFlow InOverrideFlow(OvershellOverrideFlow) const;
     void ClearPotentialUsers();
     void AddPotentialUser(PotentialUserEntry);
     int NumPotentialUsers() const;
