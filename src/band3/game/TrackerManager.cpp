@@ -8,7 +8,11 @@
 #include "game/AccuracyTracker.h"
 #include "game/BandUser.h"
 #include "game/DeployCountTracker.h"
+#include "game/OverdriveTimeTracker.h"
 #include "game/OverdriveTracker.h"
+#include "game/PerfectOverdriveTracker.h"
+#include "game/ScoreTracker.h"
+#include "game/StreakTracker.h"
 #include "game/TrackerSource.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/BandProfile.h"
@@ -303,19 +307,29 @@ Tracker* TrackerManager::MakeTracker(TrackerType ty, TrackerSource* src){
             return new FillsHitStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
         case kTrackerType_HopoCount:
             return new HopoStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_HopoPercent:
+            return new HopoPercentStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_Overdrive:
+            return new OverdriveTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_OverdriveDeployCount:
+            return new DeployStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_OverdriveTime:
+            return new OverdriveTimeTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_PerfectOverdrive:
+            return new PerfectOverdriveTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_PerfectSection:
+            return new PerfectSectionTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_Score:
+            return new ScoreTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_SoloButtonedSoloPercentage:
+            return new SoloButtonedSoloStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_Streak:
+            return new StreakTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_StreakCount:
+            return new StreakCountStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
         default:
             return nullptr;
-            
-    // kTrackerType_HopoPercent = 6,
-    // kTrackerType_Overdrive = 7,
-    // kTrackerType_OverdriveDeployCount = 8,
-    // kTrackerType_OverdriveTime = 9,
-    // kTrackerType_PerfectOverdrive = 10,
-    // kTrackerType_PerfectSection = 11,
-    // kTrackerType_Score = 12,
-    // kTrackerType_SoloButtonedSoloPercentage = 13,
-    // kTrackerType_Streak = 14,
-    // kTrackerType_StreakCount = 15,
+
     // kTrackerType_StreakFocus = 16,
     // kTrackerType_DeployCount = 17,
     // kTrackerType_UnisonCount = 18,

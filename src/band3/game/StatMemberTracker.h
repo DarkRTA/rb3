@@ -1,4 +1,5 @@
 #pragma once
+#include "Player.h"
 #include "Tracker.h"
 
 class StatMemberTracker : public Tracker {
@@ -52,6 +53,18 @@ public:
     virtual Symbol GetContributionSymbol() const { return hopo_stat_tracker_contribution; }
 };
 
+class HopoPercentStatMemberTracker : public StatMemberTracker {
+public:
+    HopoPercentStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~HopoPercentStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return false; }
+    virtual bool IsPercentageStat() const { return true; }
+    virtual float GetStatValue(const Stats& stats) const { return stats.mHopoGemCount > 0 ? (int)(((float)stats.mHopoGemsHopoed / (float)stats.mHopoGemCount) * 100.0f) : -1.0f; }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return hopo_percent_stat_tracker_contribution; }
+};
+
 class DeployStatMemberTracker : public StatMemberTracker {
 public:
     DeployStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
@@ -62,6 +75,35 @@ public:
     virtual Symbol GetCurrentValueSymbol() const { return ""; }
     virtual Symbol GetContributionSymbol() const { return deploy_stat_tracker_contribution; }
     virtual Symbol GetSingularContributionSymbol() const { return deploy_stat_tracker_contribution_1; }
+};
+
+class StreakCountStatMemberTracker : public StatMemberTracker {
+public:
+    StreakCountStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~StreakCountStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return false; }
+    virtual float GetStatValue(const Stats& stats) const {
+        float streak = stats.GetLongestStreak();
+        if(streak >= mTargets.front()){
+            return Max<float>(streak, stats.GetCurrentStreak());
+        }
+        else return stats.GetCurrentStreak();
+    }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return streak_count_stat_tracker_contribution; }
+};
+
+class SoloButtonedSoloStatMemberTracker : public StatMemberTracker {
+public:
+    SoloButtonedSoloStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~SoloButtonedSoloStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return false; }
+    virtual bool IsPercentageStat() const { return true; }
+    virtual float GetStatValue(const Stats& stats) const { return stats.mSoloButtonedSoloPercentage; }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return solo_buttoned_solo_stat_tracker_contribution; }
 };
 
 class FillsHitStatMemberTracker : public StatMemberTracker {
