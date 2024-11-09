@@ -1,6 +1,7 @@
 #include "AccomplishmentOneShot.h"
 
 #include "AccomplishmentConditional.h"
+#include "bandtrack/TrackPanel.h"
 #include "game/Performer.h"
 #include "system/utl/Symbols.h"
 #include "system/utl/Symbols4.h"
@@ -47,7 +48,7 @@ bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty 
             else if(sym == upstrum_percent){
                 if(it->mScoreType == score){
                     int i4 = stats.mHitCount + stats.m0x08;
-                    if(i4 > 0) i4 = (float)stats.m0x28 * 100.0f / (float)i4;
+                    if(i4 > 0) i4 = (float)stats.mUpstrumCount * 100.0f / (float)i4;
                     else i4 = 0;
                     if(i4 >= iii) return true;
                 }
@@ -97,12 +98,12 @@ void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& desc) const {
 
     Symbol cond = condition.mCondition;
     if(cond == upstrum_percent){
-        desc.mType = 0x14;
+        desc.mType = kTrackerType_UpstrumPercent;
         desc.unk18.push_back(condition.mValue);
     }
-    else if(cond == stars) desc.unkc = 0;
+    else if(cond == stars) desc.unkc = TrackPanel::kConfigScoreStars;
     else if(cond == unison_phrases){
-        desc.mType = 0x12;
+        desc.mType = kTrackerType_UnisonCount;
         desc.unk18.push_back(condition.mValue);
     }
 }

@@ -58,7 +58,7 @@ public:
 
 
     // Stats::Stats(const Stats& s) : mHitCount(s.mHitCount), mMissCount(s.mMissCount), m0x08(s.m0x08), m0x0c(s.m0x0c), mPersistentStreak(s.mPersistentStreak), mLongestPersistentStreak(s.mLongestPersistentStreak),
-    //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), m0x28(s.m0x28), m0x2c(s.m0x2c), m0x30(s.m0x30), m0x34(s.m0x34),
+    //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), mUpstrumCount(s.mUpstrumCount), mDownstrumCount(s.mDownstrumCount), m0x30(s.m0x30), m0x34(s.m0x34),
     //     mFinalized(s.mFinalized), mSoloPercentage(s.mSoloPercentage), mSoloButtonedSoloPercentage(s.mSoloButtonedSoloPercentage), mPerfectSoloWithSoloButtons(s.mPerfectSoloWithSoloButtons), m0x41(s.m0x41),
     //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
     //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
@@ -142,8 +142,8 @@ public:
     bool GetFailedDeploy() const { return mFailedDeploy; }
     int GetPlayersSaved() const { return mPlayersSaved; }
     int GetFillHitCount() const { return mFillHitCount; }
-    bool GetStrummedDown() const { return m0x2c > 0; }
-    bool GetStrummedUp() const { return m0x28 > 0; }
+    bool GetStrummedDown() const { return mDownstrumCount > 0; }
+    bool GetStrummedUp() const { return mUpstrumCount > 0; }
     int GetDeployCount() const { return mDeployCount; }
     int GetSoloPercentage() const { return mSoloPercentage; }
     bool GetPerfectSoloWithSoloButtons() const { return mPerfectSoloWithSoloButtons; }
@@ -216,6 +216,12 @@ public:
     bool HasCoda() const { return mHasCoda; }
     bool HasSolos() const { return mHasSolos; }
 
+    int GetUpstrumPercent() const {
+        int count = mHitCount + m0x08;
+        if(count > 0) return (mUpstrumCount * 100.0f) / (float)count;
+        else return 0;
+    }
+
     template <class T> void SaveHighest(std::vector<T>&, const T&);
 
     int mHitCount;                             // 0x000
@@ -228,8 +234,8 @@ public:
     bool mFailedDeploy;                        // 0x01c
     int mDeployCount;                          // 0x020
     int mFillHitCount;                         // 0x024
-    int m0x28;                                 // 0x028
-    int m0x2c;                                 // 0x02c
+    int mUpstrumCount;                         // 0x028
+    int mDownstrumCount;                       // 0x02c
     int m0x30;                                 // 0x030
     bool m0x34;                                // 0x034
     bool mFinalized;                           // 0x035

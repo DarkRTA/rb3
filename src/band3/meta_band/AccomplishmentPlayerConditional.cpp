@@ -1,6 +1,7 @@
 #include "meta_band/AccomplishmentPlayerConditional.h"
 #include "AccomplishmentConditional.h"
 #include "Campaign.h"
+#include "bandtrack/TrackPanel.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "meta_band/Accomplishment.h"
@@ -214,62 +215,62 @@ void AccomplishmentPlayerConditional::InitializeTrackerDesc(TrackerDesc& desc) c
     InqConditionProgress(pProfile, condition, i34, i38);
     Symbol key = condition.mCondition;
     if(key == best_streak){
-        desc.mType = 0xF;
+        desc.mType = kTrackerType_Streak;
         desc.unk18.push_back(i38);
     }
     else if(key == most_overdrive_time){
         desc.mUser = 0;
-        desc.mType = 9;
+        desc.mType = kTrackerType_OverdriveTime;
         desc.unk18.push_back(i38 * 1000.0f);
     }
     else if(key == most_overdrive_deploys){
-        desc.mType = 8;
+        desc.mType = kTrackerType_OverdriveDeployCount;
         desc.unk18.push_back(i38);
     }
     else if(key == total_overdrive_time){
 
     }
     else if(key == total_hopos){
-        desc.mType = 5;
+        desc.mType = kTrackerType_HopoCount;
         desc.unk14 = i34;
         desc.unk18.push_back(i38);
     }
     else if(key == best_hopos_percent){
-        desc.mType = 6;
+        desc.mType = kTrackerType_HopoPercent;
         desc.unk18.push_back(i38);
     }
     else if(key == hopos_percent){
-        desc.mType = 6;
+        desc.mType = kTrackerType_HopoPercent;
         desc.unk18.push_back(i38 * 0.01f);
     }
     else if(key == best_accuracy){
-        desc.mType = 1;
+        desc.mType = kTrackerType_Accuracy;
         desc.unk18.push_back(i38 * 0.01f);
     }
     else if(key == total_unison_phrases){
-        desc.mType = 0x12;
+        desc.mType = kTrackerType_UnisonCount;
         desc.unk14 = i34;
         desc.unk18.push_back(i38);
     }
     else if(key == solo_button_percent){
-        desc.mType = 0xD;
+        desc.mType = kTrackerType_SoloButtonedSoloPercentage;
         desc.unk18.push_back(i38);
     }
     else if(key == best_band_score){
         desc.mUser = 0;
-        desc.mType = 0xC;
+        desc.mType = kTrackerType_Score;
         desc.unk18.push_back(i38);
     }
     else if(key == best_score){
-        desc.mType = 0xC;
+        desc.mType = kTrackerType_Score;
         desc.unk18.push_back(i38);
     }
     else if(key == career_fills){
-        desc.mType = 4;
+        desc.mType = kTrackerType_CareerFills;
         desc.unk14 = i34;
         desc.unk18.push_back(i38);
     }
     else if(key == stars){
-        desc.unkc = 0;
+        desc.unkc = TrackPanel::kConfigScoreStars;
     }
 }

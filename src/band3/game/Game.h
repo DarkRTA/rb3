@@ -28,6 +28,7 @@ class Game : public Hmx::Object {
     void OnRemoteTrackerEndDeployStreak(Player*, int);
     void OnRemoteTrackerEndStreak(Player*, int, int);
     void OnPlayerQuarantined(Player*);
+    Band* GetBand();
 
     u8 pad[0x4C];
     bool mIsPaused; // 0x68 iunno

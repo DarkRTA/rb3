@@ -15,10 +15,16 @@
         "objects": {
             "band3/bandtrack/TrackConfig.cpp": "Equivalent",
 
+            "band3/game/DeployCountTracker.cpp": "NonMatching",
+            "band3/game/FocusTracker.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
             "band3/game/GuitarFx.cpp": "NonMatching",
             "band3/game/KeysFx.cpp": "NonMatching",
             "band3/game/RGTrainerPanel.cpp": "NonMatching",
+            "band3/game/StatMemberTracker.cpp": "NonMatching",
+            "band3/game/Tracker.cpp": "NonMatching",
+            "band3/game/TrackerManager.cpp": "NonMatching",
+            "band3/game/TrackerSource.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentCategory.cpp": "NonMatching",

@@ -16,7 +16,7 @@ public:
     virtual void Init(const DataArray*);
 
     TourGameType mGameType; TourGameType GetGameType() const;
-    std::vector<float> m_vTargets; u16 GetNumTargets() const; float GetTarget(int) const;
+    std::vector<float> m_vTargets; int GetNumTargets() const; float GetTarget(int) const;
     DataArray* mChallengeData; const DataArray* GetChallengeSpecificData() const;
 };
 

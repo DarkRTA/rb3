@@ -151,8 +151,14 @@ rb3/mgrs/bandusermgr.cpp:
 rb3/panels/chordbookpanel.cpp:
 	.text       start:0x80101808 end:0x8010417C
 
+band3/game/DeployCountTracker.cpp:
+	.text       start:0x8010765C end:0x80108E3C
+
 rb3/panels/fadepanel.cpp:
 	.text       start:0x80108E3C end:0x801096AC
+
+band3/game/FocusTracker.cpp:
+	.text       start:0x801096AC end:0x8010C65C
 
 rb3/panels/freestylepanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
@@ -196,8 +202,20 @@ rb3/providers/practicesectionprovider.cpp:
 band3/game/RGTrainerPanel.cpp:
 	.text       start:0x8014DA04 end:0x8015143C
 
+band3/game/StatMemberTracker.cpp:
+	.text       start:0x8015EA58 end:0x8015F1A8
+
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
+
+band3/game/Tracker.cpp:
+	.text       start:0x80167A84 end:0x80169884
+
+band3/game/TrackerManager.cpp:
+	.text       start:0x8016BB2C end:0x8016D468
+
+band3/game/TrackerSource.cpp:
+	.text       start:0x8016D468 end:0x801703DC
 
 rb3/panels/trainerpanel.cpp:
 	.text       start:0x80172878 end:0x80176170

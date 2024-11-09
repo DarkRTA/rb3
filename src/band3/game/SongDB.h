@@ -59,6 +59,8 @@ public:
     void ChangeDifficulty(int, Difficulty);
     void SetTrainerGems(int, int);
     int GetBeatsPerMeasure(int) const;
+    int NumCommonPhrases() const;
+    int GetCommonPhraseTracks(int) const;
 
     SongData* GetSongData() { return mSongData; }
 

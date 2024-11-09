@@ -187,8 +187,10 @@ public:
     void UnisonMiss(int) const;
     void UnisonHit();
 
+    int GetTrackNum() const { return mTrackNum; }
     TrackType GetTrackType() const { return mTrackType; }
     BandUser* GetUser() const { return mUser; }
+    float GetBandEnergy() const { return mBandEnergy; }
 
     DataNode OnGetOverdriveMeter(DataArray*);
     DataNode OnSendNetGameplayMsg(DataArray*);
