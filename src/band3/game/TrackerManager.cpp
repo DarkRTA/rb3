@@ -1,10 +1,14 @@
 #include "game/TrackerManager.h"
 #include "FocusTracker.h"
+#include "PerfectSectionTracker.h"
+#include "StatMemberTracker.h"
 #include "Tracker.h"
 #include "TrackerDisplay.h"
 #include "bandtrack/TrackPanel.h"
 #include "game/AccuracyTracker.h"
 #include "game/BandUser.h"
+#include "game/DeployCountTracker.h"
+#include "game/OverdriveTracker.h"
 #include "game/TrackerSource.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/BandProfile.h"
@@ -223,20 +227,32 @@ void TrackerManager::OnRemoteTrackerPlayerProgress(Player* p, float f){
     if(mTracker) mTracker->RemoteSetPlayerProgress(p, f);
 }
 
-void TrackerManager::OnRemoteTrackerSectionComplete(Player*, int, int, int){
-
+void TrackerManager::OnRemoteTrackerSectionComplete(Player* p, int i1, int i2, int i3){
+    if(mTracker){
+        PerfectSectionTracker* pst = dynamic_cast<PerfectSectionTracker*>(mTracker);
+        if(!pst) MILO_FAIL("Non-perfect-section tracker sent perfect-section related net message!");
+        pst->RemoteSectionComplete(p, i1, i2, i3);
+    }
 }
 
 void TrackerManager::OnRemoteTrackerPlayerDisplay(Player* p, int i1, int i2, int i3){
     if(mTracker) mTracker->RemoteTrackerPlayerDisplay(p, i1, i2, i3);
 }
 
-void TrackerManager::OnRemoteTrackerDeploy(Player*){
-
+void TrackerManager::OnRemoteTrackerDeploy(Player* p){
+    if(mTracker){
+        DeployCountTracker* dct = dynamic_cast<DeployCountTracker*>(mTracker);
+        if(!dct) MILO_FAIL("Non-deploy tracker sent deploy related net message!");
+        dct->RemoteDeploy(p);
+    }
 }
 
-void TrackerManager::OnRemoteTrackerEndDeployStreak(Player*, int){
-
+void TrackerManager::OnRemoteTrackerEndDeployStreak(Player* p, int i){
+    if(mTracker){
+        OverdriveTracker* ot = dynamic_cast<OverdriveTracker*>(mTracker);
+        if(!ot) MILO_FAIL("Non-overdrive tracker sent overdrive related net message!");
+        ot->RemoteEndDeployStreak(p, i);
+    }
 }
 
 void TrackerManager::OnRemoteTrackerEndStreak(Player* p, int i1, int i2){
@@ -281,11 +297,15 @@ Tracker* TrackerManager::MakeTracker(TrackerType ty, TrackerSource* src){
             return new AccuracyTracker(src, mBandDisplay, mBroadcastDisplay);
         case kTrackerType_AccuracyFocus:
             return new AccuracyFocusTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_CareerDeployCount:
+            return new DeployStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_CareerFills:
+            return new FillsHitStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
+        case kTrackerType_HopoCount:
+            return new HopoStatMemberTracker(src, mBandDisplay, mBroadcastDisplay);
         default:
             return nullptr;
-    // kTrackerType_CareerDeployCount = 3,
-    // kTrackerType_CareerFills = 4,
-    // kTrackerType_HopoCount = 5,
+            
     // kTrackerType_HopoPercent = 6,
     // kTrackerType_Overdrive = 7,
     // kTrackerType_OverdriveDeployCount = 8,

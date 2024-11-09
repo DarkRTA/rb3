@@ -40,3 +40,37 @@ public:
     virtual Symbol GetCurrentValueSymbol() const { return ""; }
     virtual Symbol GetContributionSymbol() const { return unison_stat_tracker_contribution; }
 };
+
+class HopoStatMemberTracker : public StatMemberTracker {
+public:
+    HopoStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~HopoStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return true; }
+    virtual float GetStatValue(const Stats& stats) const { return stats.mHopoGemsHopoed; }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return hopo_stat_tracker_contribution; }
+};
+
+class DeployStatMemberTracker : public StatMemberTracker {
+public:
+    DeployStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~DeployStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return true; }
+    virtual float GetStatValue(const Stats& stats) const { return stats.mDeployCount; }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return deploy_stat_tracker_contribution; }
+    virtual Symbol GetSingularContributionSymbol() const { return deploy_stat_tracker_contribution_1; }
+};
+
+class FillsHitStatMemberTracker : public StatMemberTracker {
+public:
+    FillsHitStatMemberTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : StatMemberTracker(src, banddisp, bcdisp) {}
+    virtual ~FillsHitStatMemberTracker(){}
+    virtual bool IsBandWideCummulative() const { return false; }
+    virtual float GetStatValue(const Stats& stats) const { return stats.mFillHitCount; }
+    virtual Symbol GetGoalValueSymbol() const { return ""; }
+    virtual Symbol GetCurrentValueSymbol() const { return ""; }
+    virtual Symbol GetContributionSymbol() const { return ""; }
+};
