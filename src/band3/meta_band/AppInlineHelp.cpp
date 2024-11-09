@@ -11,7 +11,6 @@
 #include "ui/UI.h"
 #include "ui/UIComponent.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
 
 AppInlineHelp::AppInlineHelp() : mOverrideUser(0) {
 
@@ -136,7 +135,7 @@ DataNode AppInlineHelp::OnMsg(const LocalUserLeftMsg&){
 }
 
 DataNode AppInlineHelp::OnMsg(const AddLocalUserResultMsg& msg){
-    int result = msg.GetResult();
+    int result = msg.Success();
     if(result){
         if(TheUI->GetTransitionState() == kTransitionNone || TheUI->GetTransitionState() == kTransitionFrom){
             UpdateIconTypes(true);

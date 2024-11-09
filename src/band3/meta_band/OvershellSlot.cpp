@@ -1,5 +1,16 @@
 #include "meta_band/OvershellSlot.h"
+#include "BandProfile.h"
+#include "beatmatch/TrackType.h"
+#include "game/BandUser.h"
+#include "game/BandUserMgr.h"
+#include "game/Defines.h"
+#include "game/GameMessages.h"
+#include "meta/WiiProfileMgr.h"
+#include "meta_band/CharData.h"
+#include "meta_band/MetaPerformer.h"
+#include "meta_band/NetSync.h"
 #include "meta_band/OvershellPanel.h"
+#include "meta_band/OvershellSlotState.h"
 #include "meta_band/PassiveMessage.h"
 #include "meta_band/SessionUsersProviders.h"
 #include "meta_band/CharProvider.h"
@@ -8,8 +19,15 @@
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/ProfileMgr.h"
 #include "game/GameMode.h"
+#include "net/Server.h"
+#include "os/Debug.h"
+#include "os/Joypad.h"
+#include "os/Joypad_Wii.h"
+#include "tour/TourCharLocal.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include "utl/Symbols4.h"
+#include <cstddef>
 
 OvershellSlot::OvershellSlot(int i, OvershellPanel* panel, OvershellDir* dir, BandUserMgr* umgr, SessionMgr* smgr) : mStateMgr(new OvershellSlotStateMgr()), mState(0),
     mOverrideFlowReturnState(kState_JoinedDefault), unk28(0x82),
@@ -35,10 +53,12 @@ OvershellSlot::OvershellSlot(int i, OvershellPanel* panel, OvershellDir* dir, Ba
     mOvershellDir->HandleType(setupProviders);
     mUserNameLabel = mOvershellDir->Find<BandLabel>("user_name.lbl", true);
     MILO_ASSERT(mUserNameLabel, 0xF1);
+    TheServer->AddSink(this, UserLoginMsg::Type());
 }
 
 OvershellSlot::~OvershellSlot(){
     mSessionMgr->RemoveSink(this, LocalUserLeftMsg::Type());
+    TheServer->RemoveSink(this, UserLoginMsg::Type());
     RELEASE(mSwappableProfilesProvider);
     RELEASE(mCharProvider);
     RELEASE(mMuteUsersProvider);
@@ -160,6 +180,20 @@ void OvershellSlot::RemoveUser(){
     MILO_ASSERT(pLocUser, 0x1E7);
 }
 
+DataNode OvershellSlot::OnMsg(const LocalUserLeftMsg& msg){
+    BandUser* user = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    if(user && user->IsLocal()){
+        if(user->GetLocalBandUser() ==  msg.GetUser()){
+            mSongOptionsRequired = false;
+            mBandUserMgr->ClearSlot(user);
+            SetOverrideType(kOverrideFlow_None, false);
+            JoypadWiiOnUserLeft(user->GetLocalBandUser()->GetPadNum(), false);
+            mOvershell->UpdateAll();
+        }
+    }
+    return 1;
+}
+
 void OvershellSlot::ShowState(OvershellSlotStateID id){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x21B);
@@ -168,6 +202,39 @@ void OvershellSlot::ShowState(OvershellSlotStateID id){
         if(lbl){
             static Symbol overshell_reconnect_controller("overshell_reconnect_controller");
             static Symbol wii_error_remote_extension_x("wii_error_remote_extension_x");
+            int padnum = pUser->GetLocalBandUser()->GetPadNum();
+            JoypadType j0 = kJoypadNone;
+            JoypadType j1 = kJoypadNone;
+            ControllerType cty = pUser->GetControllerType();
+            Symbol capsmodesym = overshell_reconnect_controller;
+            switch(GetWiiJoypadDisconnectType(padnum, &j0, &j1)){
+                case 1:
+                    break;
+                case 2:
+                    if(cty == 2)
+                    capsmodesym = wii_error_remote_extension_x;
+                    // break;
+                default:
+                    if(capsmodesym == overshell_reconnect_controller){
+                        lbl->SetCapsMode(RndText::kForceUpper);
+                    }
+                    else {
+                        lbl->SetCapsMode(RndText::kCapsModeNone);
+                    }
+                    break;
+            }
+            if(capsmodesym == overshell_reconnect_controller){
+                lbl->SetTextToken(capsmodesym);
+            }
+            else {
+                Symbol ctysym = ControllerTypeToSym(cty);
+                if(!ctysym.Null()){
+                    lbl->SetTokenFmt(capsmodesym, ctysym);
+                }
+                else {
+                    lbl->SetTextToken(overshell_reconnect_controller);
+                }
+            }
         }
     }
     pUser->SetOvershellSlotState(id);
@@ -179,10 +246,40 @@ void OvershellSlot::LeaveOptions(){
     mIsLeavingOptions = true;
 }
 
+void OvershellSlot::ShowProfiles(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0x2A8);
+    pUser->SetOvershellSlotState((OvershellSlotStateID)0x1F);
+    mOvershell->UpdateAll();
+}
+
+void OvershellSlot::AttemptRegisterOnline(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0x2B0);
+    if(TheModifierMgr && TheModifierMgr->IsModifierActive(mod_auto_vocals)){
+        pUser->SetOvershellSlotState((OvershellSlotStateID)0x24);
+        mOvershell->UpdateAll();
+    }
+    else {
+        if(mOvershell->mPanelOverrideFlow != 0){
+            mOvershell->UpdateAll();
+        }
+        else mOvershell->BeginOverrideFlow((OvershellOverrideFlow)2);
+    }
+}
+
+void OvershellSlot::ShowOnlineOptions(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0x2CA);
+    pUser->SetOvershellSlotState((OvershellSlotStateID)8);
+    if(mSessionMgr->IsOnlineEnabled()) mOvershell->UpdateAll();
+    else AttemptRegisterOnline();
+}
+
 void OvershellSlot::ShowSongOptions(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x2DA);
-    BandUser* user = mSessionMgr->GetLocalHost(); // wrong
+    BandUser* user = mSessionMgr->mCritUserListener->mCriticalUser;
     if(mInGame && !mSongOptionsRequired){
         pUser->SetOvershellSlotState(kState_ChooseDiff);
     }
@@ -225,6 +322,83 @@ void OvershellSlot::SelectDrumPart(bool b){
 void OvershellSlot::SelectPartImpl(TrackType track, bool harmony, bool proDrums){
     MILO_ASSERT(track == kTrackVocals || !harmony, 0x30E);
     MILO_ASSERT(track == kTrackDrum || !proDrums, 0x30F);
+    bool b3 = false;
+    bool b1 = false;
+    bool b2 = false;
+    MetaPerformer* perf = MetaPerformer::Current();
+    if(perf){
+        b3 = true;
+        if(!perf->SetHasMissingPart(TrackTypeToSym(track))){
+            b1 = false;
+            if(harmony && perf->SetHasMissingVocalHarmony()) b1 = true;
+            if(!b1) b3 = false;
+        }
+        b1 = true;
+        if(perf->PartPlaysInSet(TrackTypeToSym(track))){
+            b2 = false;
+            if(harmony && !perf->SetlistHasVocalHarmony()){
+                b2 = true;
+            }
+            if(!b2) b1 = false;
+        }
+        ScoreType s5 = TrackTypeToScoreType(track, harmony, proDrums);
+        b2 = false;
+        if(perf->HasBattle() && perf->GetBattleInstrument() != kScoreBand && s5 != perf->GetBattleInstrument()){
+            b2 = true;
+        }
+    }
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser, 0x325);
+    MILO_ASSERT(pUser->IsLocal(), 0x326);
+    if(mSessionMgr->mCritUserListener->mCriticalUser == pUser && b3){
+        pUser->SetOvershellSlotState((OvershellSlotStateID)0x44);
+    }
+    else if(b1){
+        pUser->SetOvershellSlotState((OvershellSlotStateID)0x44);
+    }
+    else {
+        pUser->SetTrackType(track);
+        if(harmony){
+            pUser->SetPreferredScoreType(kScoreHarmony);
+        }
+        else if(track == kTrackVocals){
+            pUser->SetPreferredScoreType(kScoreVocals);
+        }
+        if(proDrums){
+            pUser->SetPreferredScoreType(kScoreRealDrum);
+        }
+        else if(track == kTrackDrum){
+            pUser->SetPreferredScoreType(kScoreDrum);
+        }
+        if(b2){
+            pUser->SetOvershellSlotState((OvershellSlotStateID)0x50);
+        }
+        else if(b3){
+            pUser->SetOvershellSlotState((OvershellSlotStateID)0x4e);
+        }
+        else ShowChoosePartWait();
+    }
+    mOvershell->UpdateAll();
+}
+
+void OvershellSlot::ShowChoosePartWait(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser, 0x367);
+    MILO_ASSERT(pUser->IsLocal(), 0x368);
+    bool b1 = pUser->GetTrackType() == kTrackDrum && pUser->GetPreferredScoreType() == kScoreRealDrum;
+    unsigned int cymbals = TheProfileMgr.GetCymbalConfiguration();
+    if(b1 && cymbals == 0){
+        mCymbalConfiguration = cymbals;
+        pUser->SetOvershellSlotState((OvershellSlotStateID)0x25);
+    }
+    else {
+        pUser->SetOvershellSlotState((OvershellSlotStateID)0xB);
+    }
+    mOvershell->UpdateAll();
+}
+
+void OvershellSlot::ToggleHiHatPedal(){
+    TheProfileMgr.SetSecondPedalHiHat(TheProfileMgr.GetSecondPedalHiHat() == 0);
 }
 
 void OvershellSlot::ToggleCymbal(Symbol s){
@@ -247,12 +421,12 @@ void OvershellSlot::FinishCymbalSelect(bool b){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x3A8);
     if(b){
-        if(InOverrideFlow(kOverrideFlow_SongSettings))
+        if(InOverrideFlow(kOverrideFlow_SongSettings) == 1U)
             pUser->SetOvershellSlotState(kState_ChoosePart);
     }
     else {
         TheProfileMgr.SetCymbalConfiguration(mCymbalConfiguration);
-        if(InOverrideFlow(kOverrideFlow_SongSettings))
+        if(InOverrideFlow(kOverrideFlow_SongSettings) == 1U)
             pUser->SetOvershellSlotState(kState_OptionsDrumMessage);
     }
     if(!InOverrideFlow(kOverrideFlow_SongSettings))
@@ -304,6 +478,14 @@ lol:
     mOvershell->UpdateAll();
 }
 
+void OvershellSlot::ConfirmChooseDiff(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0x3F8);
+    pUser->SetDifficulty((Difficulty)mState->Property("difficulty", true)->Int());
+    EndOverrideFlow((OvershellOverrideFlow)1, true);
+    mOvershell->UpdateAll();
+}
+
 void OvershellSlot::LeaveDifficultyConfirmation(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x403);
@@ -338,22 +520,34 @@ void OvershellSlot::LeaveChooseDifficulty(){
 void OvershellSlot::CancelSongSettings(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x42E);
-    if(!mOvershell->mSongOptionsRequired){
-        if(mBandUserMgr->GetNumParticipants() < 2){
+    if(mOvershell->mSongOptionsRequired){
+        if(mSongOptionsRequired){
+            AttemptRemoveUser();
+        }
+        else {
+            SetOverrideFlowReturnState(kState_Options);
+            EndOverrideFlow(kOverrideFlow_SongSettings, true);
+        }
+    }
+    else {
+        if(mBandUserMgr->GetNumParticipants() <= 1){
             mOvershell->EndOverrideFlow(kOverrideFlow_SongSettings, true);
         }
         else ShowState(kState_SongOptionsCancel);
     }
-    else if(!mSongOptionsRequired){
-        SetOverrideFlowReturnState(kState_Options);
-        EndOverrideFlow(kOverrideFlow_SongSettings, true);
-    }
-    else AttemptRemoveUser();
 }
 
 void OvershellSlot::LeaveReadyToPlay(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x44C);
+    BandUser* critUser = mSessionMgr->mCritUserListener->mCriticalUser;
+    if(critUser && critUser != pUser){
+        CancelSongSettings();
+    }
+    else {
+        pUser->SetOvershellSlotState((OvershellSlotStateID)0xc);
+        mOvershell->UpdateAll();
+    }
 }
 
 void OvershellSlot::LeaveSignInWait(){
@@ -390,6 +584,10 @@ void OvershellSlot::AttemptDisconnect(){
         pUser->SetOvershellSlotState(kState_DisconnectConfirm);
         mOvershell->UpdateAll();
     }
+}
+
+void OvershellSlot::AttemptRemoveUser(){
+
 }
 
 void OvershellSlot::ShowChordBook(){
@@ -618,7 +816,31 @@ void OvershellSlot::CancelWiiProfileSelector(){
 }
 
 void OvershellSlot::AttemptSwapUserProfile(int i){
-    mStateMgr->GetSlotState(kState_ChooseProfileConfirm)->SetProperty("swap_user", 0);
+    int pad = TheWiiProfileMgr.GetPadForIndex(i);
+    if(pad >= 0){
+        LocalBandUser* user = mBandUserMgr->GetUserFromPad(pad);
+        OvershellSlotState* state = mStateMgr->GetSlotState(kState_ChooseProfileConfirm);
+        state->SetProperty("swap_user", user);
+        ShowState((OvershellSlotStateID)0x20);
+    }
+}
+
+bool OvershellSlot::ConfirmSwapUserProfile(){
+    OvershellSlotState* state = mStateMgr->GetSlotState((OvershellSlotStateID)0x20);
+    return SwapUserProfile(state->Property("swap_user", true)->Obj<LocalBandUser>());
+}
+
+bool OvershellSlot::SwapUserProfile(LocalBandUser*){
+    ShowWiiProfileFail();
+    return false;
+}
+
+void OvershellSlot::ShowOptionsDrum(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0x70A);
+    mCymbalConfiguration = TheProfileMgr.GetCymbalConfiguration();
+    pUser->SetOvershellSlotState((OvershellSlotStateID)0x27);
+    mOvershell->UpdateAll();
 }
 
 void OvershellSlot::FetchLinkingCode(){
@@ -629,6 +851,14 @@ void OvershellSlot::FetchLinkingCode(){
 }
 
 DECOMP_FORCEACTIVE(OvershellSlot, "code")
+
+void OvershellSlot::AddValidController(ControllerType cty){
+    unk40.push_back(cty);
+}
+
+void OvershellSlot::AddAutoVocalsValidController(ControllerType cty){
+    unk48.push_back(cty);
+}
 
 void OvershellSlot::ToggleVocalStyle(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
@@ -739,6 +969,91 @@ void OvershellSlot::CheckViewOverride(Symbol s, bool b, Symbol& sref){
     if(b) sref = s;
     else if(mCurrentView == s){
         sref = mState->GetView();
+    }
+}
+
+DataNode OvershellSlot::OnMsg(const AddLocalUserResultMsg& msg){
+    mSessionMgr->RemoveSink(this, AddLocalUserResultMsg::Type());
+    if(!msg.Success()) return 0;
+    else {
+        LocalBandUser* pUser = msg.GetBandUser()->GetLocalBandUser();
+        MILO_ASSERT(pUser, 0xAB1);
+        mBandUserMgr->SetSlot(pUser, mSlotNum);
+        ClearPotentialUsers();
+        mSongOptionsRequired = false;
+        BandProfile* pf = TheProfileMgr.GetProfileForUser(pUser);
+        if(pf) pf->DeleteAll();
+        TheWiiProfileMgr.SetPadToGuest(pUser->GetPadNum());
+        BandProfile* cpf = TheProfileMgr.GetProfileForUser(pUser);
+        CharData* cdata = nullptr;
+        if(cpf) cdata = cpf->GetLastCharUsed();
+        if(cdata && mBandUserMgr->IsCharAvailable(cdata)){
+            pUser->SetChar(cdata);
+        }
+        else pUser->SetLoadedPrefabChar(mSlotNum);
+
+        if(mOvershell->mSongOptionsRequired){
+            if(pUser->GetControllerType() == 2){
+                pUser->SetTrackType(kTrackPendingVocals);
+            }
+            else {
+                pUser->SetTrackType(kTrackPending);
+            }
+            mSongOptionsRequired = true;
+            BeginOverrideFlow((OvershellOverrideFlow)1, true);
+        }
+        else {
+            MILO_ASSERT(!InGame(), 0xAF4);
+            pUser->SetOvershellSlotState((OvershellSlotStateID)0x1F);
+        }
+        mOvershell->UpdateAll();
+        // some more
+        return 0;
+    }
+}
+
+DataNode OvershellSlot::OnMsg(const VirtualKeyboardResultMsg& msg){
+    return mState->HandleMsg(msg);
+}
+
+void OvershellSlot::ShowCharEdit(int i){
+    if(TheNetSync->GetUIState() == 0xF){
+        ShowState((OvershellSlotStateID)0x49);
+    }
+    else {
+        mCharForEdit = dynamic_cast<TourCharLocal*>(mCharProvider->GetCharData(i));
+        MILO_ASSERT(mCharForEdit != NULL, 0xB23);
+        ShowState((OvershellSlotStateID)0x35);
+    }
+}
+
+bool OvershellSlot::CanEditCharacter(int idx) const {
+    if(mCharProvider->IsIndexCustomChar(idx)){
+        TourCharLocal* tcloc = dynamic_cast<TourCharLocal*>(mCharProvider->GetCharData(idx));
+        BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+        MILO_ASSERT(pUser->IsLocal(), 0xB2E);
+        BandProfile* profile = TheProfileMgr.GetProfileForUser(pUser->GetLocalBandUser());
+        if(profile && profile->HasChar(tcloc) && !mOvershell->IsAnySlotEditingChar(tcloc)) return true;
+    }
+    return false;
+}
+
+void OvershellSlot::DeleteCharacter(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0xB40);
+    LocalBandUser* localUser = pUser->GetLocalBandUser();
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(localUser);
+    if(TheNetSync->GetUIState() == 0xF){
+        ShowState((OvershellSlotStateID)0x42);
+    }
+    else if(!pProfile){
+        MILO_WARN("illegal attempt made to delete guest character\n");
+    }
+    else {
+        MILO_ASSERT(pProfile, 0xB53);
+        pProfile->DeleteChar(mCharForEdit);
+        mCharForEdit = 0;
+        mCharProvider->Reload(localUser);
     }
 }
 

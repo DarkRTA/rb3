@@ -25,11 +25,6 @@ BEGIN_MESSAGE(UserLoginMsg, user_login, );
     MESSAGE_ARRAY_CTOR(UserLoginMsg)
 END_MESSAGE;
 
-BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*);
-    MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
-    int GetResult() const { return mData->Int(2); }
-END_MESSAGE;
-
 BEGIN_MESSAGE(AddUserResultMsg, add_user_result, int, User*);
     AddUserResultMsg(int);
     MESSAGE_ARRAY_CTOR(AddUserResultMsg)
@@ -77,7 +72,6 @@ inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 inline AddUserResultMsg::AddUserResultMsg(int i) : Message(Type(), i) {}
 inline AddUserResultMsg::AddUserResultMsg(int i, User* u) : Message(Type(), i, u) {}
-inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
 inline SessionReadyMsg::SessionReadyMsg(int i) : Message(SessionReadyMsg::Type(), i) {}
 inline SyncStartGameMsg::SyncStartGameMsg() : Message(SyncStartGameMsg::Type()) {}
 inline SettingsChangedMsg::SettingsChangedMsg() : Message(SettingsChangedMsg::Type()) {}

@@ -75,3 +75,5 @@ public:
     unsigned int mPlayerIDLoggingIn; // 0x54
     unsigned int mPlayerIDs[4]; // 0x58
 };
+
+extern Server* TheServer;

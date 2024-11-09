@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/CharData.h"
 #include "ui/UIPanel.h"
 #include "net/Synchronize.h"
 #include "obj/MsgSource.h"
@@ -38,6 +39,8 @@ public:
     bool IsFinding() const;
     bool InSong() const;
     OvershellSlot* GetSlot(int);
+    void BeginOverrideFlow(OvershellOverrideFlow);
+    bool IsAnySlotEditingChar(CharData*) const;
 
     std::vector<OvershellSlot*> mSlots; // 0x70
     std::vector<int> unk78; // 0x78

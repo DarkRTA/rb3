@@ -64,6 +64,7 @@ public:
     const char* GetTrackIcon() const;
     void SetOvershellSlotState(OvershellSlotStateID);
     GameplayOptions* GetGameplayOptions();
+    void SetLoadedPrefabChar(int);
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f){ mLastHitFraction = f; }
     Player* GetPlayer() const { return mPlayer; }

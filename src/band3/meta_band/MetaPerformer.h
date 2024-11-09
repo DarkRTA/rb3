@@ -130,6 +130,8 @@ public:
     void SetSetlist(Symbol);
     void SelectRandomVenue();
     void SetVenue(Symbol);
+    bool HasBattle() const;
+    ScoreType GetBattleInstrument() const;
 
     static void Init();
     static MetaPerformer* Current();

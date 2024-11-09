@@ -9,6 +9,7 @@
 #include "net/Synchronize.h"
 #include "obj/MsgSource.h"
 #include "game/BandUser.h"
+#include "os/Debug.h"
 
 class BandUserMgr;
 class Matchmaker;
@@ -96,5 +97,16 @@ extern SessionMgr* TheSessionMgr;
 BEGIN_MESSAGE(SessionMgrUpdatedMsg, session_mgr_updated_msg, );
     MESSAGE_ARRAY_CTOR(SessionMgrUpdatedMsg)
 END_MESSAGE;
+
+BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*);
+    MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
+    bool Success() const { return mData->Int(2); }
+    BandUser* GetBandUser() const {
+        MILO_ASSERT(Success(), 0x33);
+        return mData->Obj<BandUser>(3);
+    }
+END_MESSAGE;
+
+inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
 
 inline SessionMgrUpdatedMsg::SessionMgrUpdatedMsg() : Message(SessionMgrUpdatedMsg::Type()) {}
