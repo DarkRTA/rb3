@@ -31,14 +31,14 @@ class TrackerSectionManager {
 public:
     class Section {
     public:
-        int unk0;
-        int unk4;
+        int mStartTick; // 0x0
+        int mEndTick; // 0x4
         int unk8;
     };
 
     TrackerSectionManager();
     ~TrackerSectionManager();
-    int TickAfterSection(int, int) const;
+    bool TickAfterSection(int, int) const;
     int GetSectionEndTick(int) const;
     void GetGemStatsInRange(const Player*, int, int, int&, int&) const;
     int FindSectionContainingTick(int) const;
@@ -46,8 +46,11 @@ public:
     int CountNonEmptySections(const TrackerSource*, bool) const;
     int GetSectionCount() const;
     void Init();
+    void GatherSections();
+    int GetSectionStartTick(int) const;
+    bool TickInSection(int, int) const;
 
-    std::vector<Section> unk0; // 0x0
+    std::vector<Section> mSections; // 0x0
 };
 
 class TrackerUtils {
