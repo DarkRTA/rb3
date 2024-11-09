@@ -1,10 +1,14 @@
 #include "meta_band/OvershellSlot.h"
+#include "BandProfile.h"
 #include "beatmatch/TrackType.h"
 #include "game/BandUser.h"
+#include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/GameMessages.h"
 #include "meta/WiiProfileMgr.h"
+#include "meta_band/CharData.h"
 #include "meta_band/MetaPerformer.h"
+#include "meta_band/NetSync.h"
 #include "meta_band/OvershellPanel.h"
 #include "meta_band/OvershellSlotState.h"
 #include "meta_band/PassiveMessage.h"
@@ -19,9 +23,11 @@
 #include "os/Debug.h"
 #include "os/Joypad.h"
 #include "os/Joypad_Wii.h"
+#include "tour/TourCharLocal.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 #include "utl/Symbols4.h"
+#include <cstddef>
 
 OvershellSlot::OvershellSlot(int i, OvershellPanel* panel, OvershellDir* dir, BandUserMgr* umgr, SessionMgr* smgr) : mStateMgr(new OvershellSlotStateMgr()), mState(0),
     mOverrideFlowReturnState(kState_JoinedDefault), unk28(0x82),
@@ -963,6 +969,91 @@ void OvershellSlot::CheckViewOverride(Symbol s, bool b, Symbol& sref){
     if(b) sref = s;
     else if(mCurrentView == s){
         sref = mState->GetView();
+    }
+}
+
+DataNode OvershellSlot::OnMsg(const AddLocalUserResultMsg& msg){
+    mSessionMgr->RemoveSink(this, AddLocalUserResultMsg::Type());
+    if(!msg.Success()) return 0;
+    else {
+        LocalBandUser* pUser = msg.GetBandUser()->GetLocalBandUser();
+        MILO_ASSERT(pUser, 0xAB1);
+        mBandUserMgr->SetSlot(pUser, mSlotNum);
+        ClearPotentialUsers();
+        mSongOptionsRequired = false;
+        BandProfile* pf = TheProfileMgr.GetProfileForUser(pUser);
+        if(pf) pf->DeleteAll();
+        TheWiiProfileMgr.SetPadToGuest(pUser->GetPadNum());
+        BandProfile* cpf = TheProfileMgr.GetProfileForUser(pUser);
+        CharData* cdata = nullptr;
+        if(cpf) cdata = cpf->GetLastCharUsed();
+        if(cdata && mBandUserMgr->IsCharAvailable(cdata)){
+            pUser->SetChar(cdata);
+        }
+        else pUser->SetLoadedPrefabChar(mSlotNum);
+
+        if(mOvershell->mSongOptionsRequired){
+            if(pUser->GetControllerType() == 2){
+                pUser->SetTrackType(kTrackPendingVocals);
+            }
+            else {
+                pUser->SetTrackType(kTrackPending);
+            }
+            mSongOptionsRequired = true;
+            BeginOverrideFlow((OvershellOverrideFlow)1, true);
+        }
+        else {
+            MILO_ASSERT(!InGame(), 0xAF4);
+            pUser->SetOvershellSlotState((OvershellSlotStateID)0x1F);
+        }
+        mOvershell->UpdateAll();
+        // some more
+        return 0;
+    }
+}
+
+DataNode OvershellSlot::OnMsg(const VirtualKeyboardResultMsg& msg){
+    return mState->HandleMsg(msg);
+}
+
+void OvershellSlot::ShowCharEdit(int i){
+    if(TheNetSync->GetUIState() == 0xF){
+        ShowState((OvershellSlotStateID)0x49);
+    }
+    else {
+        mCharForEdit = dynamic_cast<TourCharLocal*>(mCharProvider->GetCharData(i));
+        MILO_ASSERT(mCharForEdit != NULL, 0xB23);
+        ShowState((OvershellSlotStateID)0x35);
+    }
+}
+
+bool OvershellSlot::CanEditCharacter(int idx) const {
+    if(mCharProvider->IsIndexCustomChar(idx)){
+        TourCharLocal* tcloc = dynamic_cast<TourCharLocal*>(mCharProvider->GetCharData(idx));
+        BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+        MILO_ASSERT(pUser->IsLocal(), 0xB2E);
+        BandProfile* profile = TheProfileMgr.GetProfileForUser(pUser->GetLocalBandUser());
+        if(profile && profile->HasChar(tcloc) && !mOvershell->IsAnySlotEditingChar(tcloc)) return true;
+    }
+    return false;
+}
+
+void OvershellSlot::DeleteCharacter(){
+    BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
+    MILO_ASSERT(pUser->IsLocal(), 0xB40);
+    LocalBandUser* localUser = pUser->GetLocalBandUser();
+    BandProfile* pProfile = TheProfileMgr.GetProfileForUser(localUser);
+    if(TheNetSync->GetUIState() == 0xF){
+        ShowState((OvershellSlotStateID)0x42);
+    }
+    else if(!pProfile){
+        MILO_WARN("illegal attempt made to delete guest character\n");
+    }
+    else {
+        MILO_ASSERT(pProfile, 0xB53);
+        pProfile->DeleteChar(mCharForEdit);
+        mCharForEdit = 0;
+        mCharProvider->Reload(localUser);
     }
 }
 

@@ -44,6 +44,7 @@ public:
     bool IsIndexValid(int) const;
     int GetIndexForPad(int) const;
     int GetPadForIndex(int) const;
+    void SetPadToGuest(int);
 
     static int sSaveVersion;
     static int sSaveVersionWii;
