@@ -43,6 +43,7 @@ public:
     int GetIdForIndex(int) const;
     bool IsIndexValid(int) const;
     int GetIndexForPad(int) const;
+    int GetPadForIndex(int) const;
 
     static int sSaveVersion;
     static int sSaveVersionWii;

@@ -164,6 +164,9 @@ public:
     bool IsWiiProfileFull() const;
     bool IsWiiProfileDeleteQueueFull() const;
     const char* GetWiiProfileListSelectedName() const;
+    bool SwapUserProfile(LocalBandUser*);
+    void AddValidController(ControllerType);
+    void AddAutoVocalsValidController(ControllerType);
     void ToggleWiiSpeak();
     Hmx::Object* GetUserWiiProfile(); // TODO: change the return type once this is implemented
 
