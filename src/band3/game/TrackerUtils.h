@@ -44,6 +44,7 @@ public:
     int FindSectionContainingTick(int) const;
     int CountGemsInSection(const Player*, int) const;
     int CountNonEmptySections(const TrackerSource*, bool) const;
+    int GetSectionCount() const;
     void Init();
 
     std::vector<Section> unk0; // 0x0
