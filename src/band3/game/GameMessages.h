@@ -15,20 +15,6 @@ BEGIN_MESSAGE(ProcessedJoinRequestMsg, processed_join_request, bool);
 END_MESSAGE;
 inline ProcessedJoinRequestMsg::ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 
-BEGIN_MESSAGE(SessionDisconnectedMsg, session_disconnected, );
-    MESSAGE_ARRAY_CTOR(SessionDisconnectedMsg)
-END_MESSAGE;
-inline SessionDisconnectedMsg::SessionDisconnectedMsg() : Message(Type()) {}
-
-BEGIN_MESSAGE(SessionBusyMsg, session_busy, );
-    MESSAGE_ARRAY_CTOR(SessionBusyMsg)
-END_MESSAGE;
-
-BEGIN_MESSAGE(SessionReadyMsg, session_ready, int);
-    MESSAGE_ARRAY_CTOR(SessionReadyMsg)
-END_MESSAGE;
-inline SessionReadyMsg::SessionReadyMsg(int i) : Message(SessionReadyMsg::Type(), i) {}
-
 BEGIN_MESSAGE(JoinResultMsg, join_result, );
     MESSAGE_ARRAY_CTOR(JoinResultMsg)
 END_MESSAGE;

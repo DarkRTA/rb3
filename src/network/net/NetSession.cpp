@@ -1,4 +1,5 @@
 #include "net/NetSession.h"
+#include "meta_band/SessionMgr.h"
 #include "MatchmakingSettings.h"
 #include "Net.h"
 #include "NetMessage.h"

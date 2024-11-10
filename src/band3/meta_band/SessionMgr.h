@@ -14,6 +14,31 @@
 class BandUserMgr;
 class Matchmaker;
 
+DECLARE_MESSAGE(SessionMgrUpdatedMsg, "session_mgr_updated_msg")
+    SessionMgrUpdatedMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(AddLocalUserResultMsg, "add_local_user_result_msg")
+    AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
+    bool Success() const { return mData->Int(2); }
+    BandUser* GetBandUser() const {
+        MILO_ASSERT(Success(), 0x33);
+        return mData->Obj<BandUser>(3);
+    }
+END_MESSAGE;
+
+DECLARE_MESSAGE(SessionDisconnectedMsg, "session_disconnected")
+    SessionDisconnectedMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(SessionBusyMsg, "session_busy")
+    SessionBusyMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(SessionReadyMsg, "session_ready")
+    SessionReadyMsg(int i) : Message(Type(), i) {}
+END_MESSAGE;
+
 class SavePlayer {
 public:
     LocalBandUser* mUser; // 0x0
@@ -93,20 +118,3 @@ public:
 };
 
 extern SessionMgr* TheSessionMgr;
-
-BEGIN_MESSAGE(SessionMgrUpdatedMsg, session_mgr_updated_msg, );
-    MESSAGE_ARRAY_CTOR(SessionMgrUpdatedMsg)
-END_MESSAGE;
-
-BEGIN_MESSAGE(AddLocalUserResultMsg, add_local_user_result_msg, int, LocalUser*);
-    MESSAGE_ARRAY_CTOR(AddLocalUserResultMsg)
-    bool Success() const { return mData->Int(2); }
-    BandUser* GetBandUser() const {
-        MILO_ASSERT(Success(), 0x33);
-        return mData->Obj<BandUser>(3);
-    }
-END_MESSAGE;
-
-inline AddLocalUserResultMsg::AddLocalUserResultMsg(int i, LocalUser* u) : Message(Type(), i, u) {}
-
-inline SessionMgrUpdatedMsg::SessionMgrUpdatedMsg() : Message(SessionMgrUpdatedMsg::Type()) {}
