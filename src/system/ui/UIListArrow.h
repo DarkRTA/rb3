@@ -1,5 +1,4 @@
-#ifndef UI_UILISTARROW_H
-#define UI_UILISTARROW_H
+#pragma once
 #include "obj/Object.h"
 #include "ui/UIColor.h"
 #include "ui/UIListWidget.h"
@@ -13,6 +12,11 @@ enum UIListArrowPosition {
     kUIListArrowNext
 };
 
+/**
+ * @brief Selector icon for UIList.
+ * Original _objects description:
+ * "Arrow widget for use with UIList"
+ */
 class UIListArrow : public UIListWidget {
 public:
     UIListArrow();
@@ -27,10 +31,19 @@ public:
     virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
     void StartScroll(int, bool);
 
+    /** "arrow mesh to draw/transform" */
     ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x40
+
+    /** "animation to play on scroll" */
     ObjPtr<RndAnimatable, class ObjectDir> mScrollAnim; // 0x4c
+
+    /** "whether to position relative to first or last element" */
     UIListArrowPosition mPosition; // 0x58
+
+    /** "show only when list is scrollable" */
     bool mShowOnlyScroll; // 0x5c
+
+    /** "position arrow relative to higlight" */
     bool mOnHighlight; // 0x5d
 
     DECLARE_REVS
@@ -41,6 +54,3 @@ public:
         REGISTER_OBJ_FACTORY(UIListArrow)
     }
 };
-
-
-#endif

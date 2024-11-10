@@ -1,5 +1,4 @@
-#ifndef WORLD_INSTANCE_H
-#define WORLD_INSTANCE_H
+#pragma once
 #include "rndobj/Dir.h"
 #include "obj/Dir.h"
 #include <list>
@@ -7,6 +6,11 @@
 class RndGroup;
 class SharedGroup;
 
+/**
+ * @brief A shared RndDir for everything to parent to.
+ * Original _objects description:
+ * "Shared instance of a RndDir"
+ */
 class WorldInstance : public RndDir {
 public:
     WorldInstance();
@@ -36,7 +40,10 @@ public:
     void LoadPersistentObjects(BinStream*);
     void DeleteTransientObjects();
 
+    /** "Which file we instance, only set in instances" */
     ObjDirPtr<WorldInstance> mDir; // 0x18c
+
+    /** "Pointer to shared group, if any" */
     SharedGroup* mSharedGroup; // 0x198
     SharedGroup* mSharedGroup2; // 0x19c
 
@@ -67,5 +74,3 @@ public:
     ObjPtr<WorldInstance, ObjectDir> mPollMaster; // 0xc
     std::list<RndPollable*> mPolls; // 0x18
 };
-
-#endif

@@ -6,6 +6,20 @@
 #include "rndobj/Mat.h"
 #include "math/Mtx.h"
 
+
+/**
+ * @brief Class for all types of position-depends lighting flares.
+ * Original _objects description:
+ * "Flare objects are particles that are rendered based on
+ * the visibility of their center.
+ * Use them to implement sun flare peeking through tree leaves and
+ * around buildings, flares on lamps and stage lights that get
+ * occluded by characters, etc.  Flares should be drawn last in a
+ * frame, and since they depend on the z-buffer for visibility
+ * testing, previously drawn translucent or cutout objects must
+ * properly use translucent or SrcAlphaCutout materials."
+ */
+
 class RndFlare : public RndTransformable, public RndDrawable {
 public:
     RndFlare();
