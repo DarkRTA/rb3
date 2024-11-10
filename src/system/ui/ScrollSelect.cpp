@@ -3,7 +3,6 @@
 #include "os/User.h"
 #include "ui/Utl.h"
 #include "ui/UI.h"
-#include "ui/UIMessages.h"
 #include "utl/Symbols.h"
 
 ScrollSelect::ScrollSelect() : unk_0x4(0) { Reset(); }

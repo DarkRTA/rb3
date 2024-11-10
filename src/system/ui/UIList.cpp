@@ -17,7 +17,6 @@
 #include "ui/UIListSlot.h"
 #include "ui/UIListSubList.h"
 #include "utl/STLHelpers.h"
-#include "ui/UIMessages.h"
 #include "ui/Utl.h"
 #include <cstddef>
 #include "decomp.h"

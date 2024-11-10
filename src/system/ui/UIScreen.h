@@ -78,4 +78,44 @@ public:
     int mScreenId;
 };
 
+#include "obj/Msg.h"
+
+BEGIN_MESSAGE(UITransitionCompleteMsg, transition_complete, UIScreen*, UIScreen*);
+    MESSAGE_ARRAY_CTOR(UITransitionCompleteMsg)
+    UIScreen* GetScreen1() const { return mData->Obj<UIScreen>(2); }
+END_MESSAGE;
+
+BEGIN_MESSAGE(UIScreenChangeMsg, screen_change, UIScreen*, UIScreen*, bool);
+    MESSAGE_ARRAY_CTOR(UIScreenChangeMsg)
+    UIScreen* GetFromScreen() const { return mData->Obj<UIScreen>(3); }
+END_MESSAGE;
+
+inline UITransitionCompleteMsg::UITransitionCompleteMsg(UIScreen* s1, UIScreen* s2) :
+    Message(Type(), DataNode(s1), DataNode(s2)){}
+
+inline UIScreenChangeMsg::UIScreenChangeMsg(UIScreen* s1, UIScreen* s2, bool b) :
+    Message(Type(), DataNode(s1), DataNode(s2), DataNode(b)){}
+
+class EventDialogStartMsg : public Message {
+public:
+    EventDialogStartMsg(DataArray* a) : Message(a) {}
+    EventDialogStartMsg(DataArray* a1, DataArray* a2) :
+        Message(Type(), DataNode(a1, kDataArray), DataNode(a2, kDataArray)) {}
+    virtual ~EventDialogStartMsg(){}
+    static Symbol Type() {
+        static Symbol t("event_dialog_start");
+        return t;
+    }
+};
+
+class EventDialogDismissMsg : public Message {
+public:
+    EventDialogDismissMsg() : Message(Type()) {}
+    virtual ~EventDialogDismissMsg(){}
+    static Symbol Type() {
+        static Symbol t("event_dialog_dismiss");
+        return t;
+    }
+};
+
 #endif

@@ -5,7 +5,8 @@
 #include "os/Joypad.h"
 #include "os/Timer.h"
 #include "rndobj/Cam.h"
-#include "ui/UIMessages.h"
+#include "ui/UIComponent.h"
+#include "ui/UIScreen.h"
 #include "os/JoypadMsgs.h"
 #include <vector>
 
