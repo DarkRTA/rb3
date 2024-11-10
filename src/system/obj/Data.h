@@ -18,16 +18,6 @@ namespace Hmx {
 
 typedef DataNode DataFunc(DataArray *);
 
-union DataNodeValue {
-    const char* symbol;
-    int integer;
-    float real;
-    DataArray* array;
-    DataNode* var;
-    DataFunc* func;
-    Hmx::Object* object;
-};
-
 enum DataType {
     kDataUnhandled = 0,
     kDataFloat = 1,
@@ -54,10 +44,16 @@ enum DataType {
 
 class DataNode {
 public:
-    DataNodeValue mValue;
-    DataType mType;
-
-    friend class DataArray;
+    union DataNodeValue {
+        const char* symbol;
+        int integer;
+        float real;
+        DataArray* array;
+        DataNode* var;
+        DataFunc* func;
+        Hmx::Object* object;
+    } mValue; // 0x0
+    DataType mType; // 0x4
 
     DataNode(){
         mValue.integer = 0;
@@ -119,9 +115,15 @@ public:
     ~DataNode();
 
     DataType Type() const { return mType; }
-    DataNodeValue RawVal() { return mValue; }
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
+
+    // these were implemented to match up in retail
+    // please do not use these in regular code
+    int FastInt() const { return mValue.integer; }
+    const char* FastStr() const { return mValue.symbol; }
+    Hmx::Object* FastObj() const { return mValue.object; }
+    DataArray* FastArray() const { return mValue.array; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -178,6 +180,8 @@ public:
     int Size() const { return mSize; }
     int Line() const { return mLine; }
 
+    DataArray* FastArray(int i) const { return Node(i).FastArray(); }
+
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
@@ -195,7 +199,6 @@ public:
 
     void AddRef(){ mRefs++; }
     void Release(){ if (--mRefs == 0) delete this; }
-    // void* operator new(unsigned long); make the param size_t?
 
     // these two are actually strong symbols
     DataNode& Node(int i);
