@@ -37,10 +37,9 @@ public:
 
 #include "obj/Msg.h"
 
-BEGIN_MESSAGE(UITriggerCompleteMsg, ui_trigger_complete, UITrigger*);
+DECLARE_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete");
+    UITriggerCompleteMsg(UITrigger* trig) : 
+        Message(Type(), trig){}
 END_MESSAGE;
-
-inline UITriggerCompleteMsg::UITriggerCompleteMsg(UITrigger* trig) : 
-    Message(Type(), DataNode(trig)){}
 
 #endif
