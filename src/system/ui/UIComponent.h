@@ -108,44 +108,35 @@ UIComponent::State SymToUIComponentState(Symbol);
 
 #include "obj/Msg.h"
 
-BEGIN_MESSAGE(UIComponentScrollMsg, component_scroll, UIComponent*, LocalUser*);
-    MESSAGE_ARRAY_CTOR(UIComponentScrollMsg)
+DECLARE_MESSAGE(UIComponentScrollMsg, "component_scroll");
+    UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
+        Message(Type(), comp, user){}
     UIComponent* GetUIComponent() const { return mData->Obj<UIComponent>(2); }
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentSelectMsg, component_select, UIComponent*, LocalUser*);
-    MESSAGE_ARRAY_CTOR(UIComponentSelectMsg)
+DECLARE_MESSAGE(UIComponentSelectMsg, "component_select");
+    UIComponentSelectMsg(UIComponent* comp, LocalUser* user) : 
+        Message(Type(), comp, user){}
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentSelectDoneMsg, component_select_done, UIComponent*, LocalUser*);
+DECLARE_MESSAGE(UIComponentSelectDoneMsg, "component_select_done");
+    UIComponentSelectDoneMsg(UIComponent* comp, LocalUser* user) : 
+        Message(Type(), comp, user){}
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentScrollSelectMsg, component_scroll_select, UIComponent*, LocalUser*, bool);
+DECLARE_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select");
+    UIComponentScrollSelectMsg(UIComponent* comp, LocalUser* user, bool b) : 
+        Message(Type(), comp, user, b){}
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentFocusChangeMsg, component_focus, UIComponent*, UIComponent*, PanelDir*, Symbol);
-    MESSAGE_ARRAY_CTOR(UIComponentFocusChangeMsg)
+DECLARE_MESSAGE(UIComponentFocusChangeMsg, "component_focus");
+    UIComponentFocusChangeMsg(UIComponent* comp1, UIComponent* comp2, PanelDir* dir, Symbol s) : 
+        Message(Type(), comp1, comp2, dir, s){}
 END_MESSAGE;
 
-BEGIN_MESSAGE(UIComponentScrollStartMsg, component_scroll_start, UIComponent*, LocalUser*);
+DECLARE_MESSAGE(UIComponentScrollStartMsg, "component_scroll_start");
+    UIComponentScrollStartMsg(UIComponent* comp, LocalUser* user) :
+        Message(Type(), DataNode(comp), DataNode(user)){}
 END_MESSAGE;
-
-inline UIComponentScrollMsg::UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
-    Message(Type(), DataNode(comp), DataNode(user)){}
-
-inline UIComponentSelectMsg::UIComponentSelectMsg(UIComponent* comp, LocalUser* user) : 
-    Message(Type(), DataNode(comp), DataNode(user)){}
-
-inline UIComponentSelectDoneMsg::UIComponentSelectDoneMsg(UIComponent* comp, LocalUser* user) : 
-    Message(Type(), DataNode(comp), DataNode(user)){}
-
-inline UIComponentScrollSelectMsg::UIComponentScrollSelectMsg(UIComponent* comp, LocalUser* user, bool b) : 
-    Message(Type(), DataNode(comp), DataNode(user), DataNode(b)){}
-
-inline UIComponentFocusChangeMsg::UIComponentFocusChangeMsg(UIComponent* comp1, UIComponent* comp2, PanelDir* dir, Symbol s) : 
-    Message(Type(), DataNode(comp1), DataNode(comp2), DataNode(dir), DataNode(s)){}
-
-inline UIComponentScrollStartMsg::UIComponentScrollStartMsg(UIComponent* comp, LocalUser* user) :
-    Message(Type(), DataNode(comp), DataNode(user)){}
 
 #endif // UI_UICOMPONENT_H
