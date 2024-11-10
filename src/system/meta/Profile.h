@@ -2,6 +2,7 @@
 #define META_PROFILE_H
 #include "meta/FixedSizeSaveable.h"
 #include "obj/Object.h"
+#include "os/User.h"
 #include "os/UserMgr.h"
 
 enum ProfileSaveState {
@@ -53,5 +54,13 @@ public:
     mutable int mPadNum; // 0x10
     ProfileSaveState mState; // 0x14
 };
+
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(ProfileSwappedMsg, "profile_swapped")
+    ProfileSwappedMsg(LocalUser* u1, LocalUser* u2) : Message(Type(), u1, u2) {}
+    LocalUser* GetUser1() const;
+    LocalUser* GetUser2() const;
+END_MESSAGE;
 
 #endif

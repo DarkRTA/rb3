@@ -17,7 +17,6 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
-#include "os/ProfileSwappedMsg.h"
 #include "os/User.h"
 #include "synth/Synth.h"
 #include "tour/TourCharLocal.h"

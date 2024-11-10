@@ -9,7 +9,6 @@
 #include "meta_band/CampaignKey.h"
 #include "meta_band/ProfileMessages.h"
 #include "obj/Data.h"
-#include "os/ProfileSwappedMsg.h"
 #include "os/User.h"
 #include "game/BandUser.h"
 #include "ui/UIPicture.h"

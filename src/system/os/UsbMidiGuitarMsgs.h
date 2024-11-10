@@ -2,56 +2,61 @@
 #define OS_USBMIDIGUITARMSGS_H
 #include "obj/Msg.h"
 
-BEGIN_MESSAGE(StringStrummedMsg, string_strummed, int, int, int, int);
+DECLARE_MESSAGE(StringStrummedMsg, "string_strummed")
+    StringStrummedMsg(int, int, int, int);
     int GetStringNum() const { return mData->Int(2); }
     int GetFretNum() const { return mData->Int(3); }
     int GetVelocity() const { return mData->Int(4); }
     int GetPadNum() const { return mData->Int(5); }
-    MESSAGE_ARRAY_CTOR(StringStrummedMsg)
 END_MESSAGE;
 
-BEGIN_MESSAGE(StringStoppedMsg, string_stopped, int, int, int, int);
-    MESSAGE_ARRAY_CTOR(StringStoppedMsg)
+DECLARE_MESSAGE(StringStoppedMsg, "string_stopped")
+    StringStoppedMsg(int, int, int, int);
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGAccelerometerMsg, rg_accelerometer, int, int, int, int);
-    MESSAGE_ARRAY_CTOR(RGAccelerometerMsg)
+DECLARE_MESSAGE(RGAccelerometerMsg, "rg_accelerometer")
+    RGAccelerometerMsg(int, int, int, int);
     int GetNode2() const { return mData->Int(2); }
     int GetNode3() const { return mData->Int(3); }
     int GetNode4() const { return mData->Int(4); }
     int GetPadNum() const { return mData->Int(5); }
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGConnectedAccessoriesMsg, rg_connected_accessories, int, int);
+DECLARE_MESSAGE(RGConnectedAccessoriesMsg, "rg_connected_accessories")
+    RGConnectedAccessoriesMsg(int, int);
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGPitchBendMsg, rg_pitch_bend, int, int);
+DECLARE_MESSAGE(RGPitchBendMsg, "rg_pitch_bend")
+    RGPitchBendMsg(int, int);
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGMutingMsg, rg_muting, int, int);
+DECLARE_MESSAGE(RGMutingMsg, "rg_muting")
+    RGMutingMsg(int, int);
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGStompBoxMsg, rg_stomp_box, bool, int);
+DECLARE_MESSAGE(RGStompBoxMsg, "rg_stomp_box")
+    RGStompBoxMsg(bool, int);
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGProgramChangeMsg, rg_program_change, int, int);
+DECLARE_MESSAGE(RGProgramChangeMsg, "rg_program_change")
+    RGProgramChangeMsg(int, int);
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGSwingMsg, rg_swing, int, int);
-    MESSAGE_ARRAY_CTOR(RGSwingMsg)
+DECLARE_MESSAGE(RGSwingMsg, "rg_swing")
+    RGSwingMsg(int, int);
     int GetNode2() const { return mData->Int(2); }
     int GetPadNum() const { return mData->Int(3); }
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGFretButtonDownMsg, rg_fret_button_down, int, int, bool);
-    MESSAGE_ARRAY_CTOR(RGFretButtonDownMsg)
+DECLARE_MESSAGE(RGFretButtonDownMsg, "rg_fret_button_down")
+    RGFretButtonDownMsg(int, int, bool);
     int GetNode2() const { return mData->Int(2); }
     int GetPadNum() const { return mData->Int(3); }
     int GetShifted() const { return mData->Int(4); }
 END_MESSAGE;
 
-BEGIN_MESSAGE(RGFretButtonUpMsg, rg_fret_button_up, int, int, bool);
-    MESSAGE_ARRAY_CTOR(RGFretButtonUpMsg)
+DECLARE_MESSAGE(RGFretButtonUpMsg, "rg_fret_button_up")
+    RGFretButtonUpMsg(int, int, bool);
     int GetNode2() const { return mData->Int(2); }
     int GetPadNum() const { return mData->Int(3); }
     int GetShifted() const { return mData->Int(4); }
