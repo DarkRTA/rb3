@@ -18,12 +18,8 @@ void KeyboardSendMsg(int, bool, bool, bool);
 
 extern ObjPtr<Hmx::Object, ObjectDir> gObjOverride;
 
-BEGIN_MESSAGE(KeyboardKeyMsg, key, int, bool, bool, bool);
-    MESSAGE_ARRAY_CTOR(KeyboardKeyMsg)
+DECLARE_MESSAGE(KeyboardKeyMsg, "key")
+    KeyboardKeyMsg(int i, bool b1, bool b2, bool b3) : Message(Type(), i, b1, b2, b3) {}
 END_MESSAGE;
-
-inline KeyboardKeyMsg::KeyboardKeyMsg(int i, bool b1, bool b2, bool b3)
-    : Message(Type(), DataNode(i), DataNode(b1), DataNode(b2), DataNode(b3)) {
-}
 
 #endif
