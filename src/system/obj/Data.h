@@ -16,6 +16,7 @@ namespace Hmx {
     class Object;
 }
 
+/** A pointer to a function that takes in a DataArray (via pointer) and returns a DataNode. */
 typedef DataNode DataFunc(DataArray *);
 
 enum DataType {
@@ -42,9 +43,13 @@ enum DataType {
     kDataUndef = 37,
 };
 
+/** One of the core classes that make up HMX's in-house "dta" scripting language, a DataNode is a node that can contain several different types of data. */
 class DataNode {
 public:
-    union DataNodeValue {
+    /** The list of possible data types that a DataNode can have. 
+        Every possible data type takes up 4 bytes, making the DataNode a very versatile container.
+    */
+    union {
         const char* symbol;
         int integer;
         float real;
@@ -53,6 +58,7 @@ public:
         DataFunc* func;
         Hmx::Object* object;
     } mValue; // 0x0
+    /** The type of this DataNode. Used to verify which member of the union is currently being stored in this DataNode. */
     DataType mType; // 0x4
 
     DataNode(){
@@ -162,6 +168,7 @@ public:
     void Load(BinStream& d);
 };
 
+/** One of the other core classes that make up HMX's in-house "dta" scripting language, a DataArray is an array of DataNodes. */
 class DataArray {
 public:
     DataNode* mNodes;   // 0x0
