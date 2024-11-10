@@ -170,40 +170,42 @@ public:
 
 #include "obj/Msg.h"
 
-class NewRemoteUserMsg : public Message {
-public:
+DECLARE_MESSAGE(NewRemoteUserMsg, "new_remote_user")
     NewRemoteUserMsg(RemoteUser* u) : Message(Type(), u) {}
-    NewRemoteUserMsg(DataArray *da) : Message(da) {}
-    virtual ~NewRemoteUserMsg() {}
-    static Symbol Type() {
-        static Symbol t("new_remote_user");
-        return t;
-    }
     RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
-};
+END_MESSAGE;
 
-class RemovingRemoteUserMsg : public Message {
-public:
+DECLARE_MESSAGE(RemovingRemoteUserMsg, "removing_remote_user")
     RemovingRemoteUserMsg(RemoteUser* u) : Message(Type(), u) {}
-    RemovingRemoteUserMsg(DataArray *da) : Message(da) {}
-    virtual ~RemovingRemoteUserMsg() {}
-    static Symbol Type() {
-        static Symbol t("removing_remote_user");
-        return t;
-    }
-    // RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
-};
+    RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
+END_MESSAGE;
 
-class RemoteUserUpdatedMsg : public Message {
-public:
+DECLARE_MESSAGE(RemoteUserUpdatedMsg, "remote_user_updated")
     RemoteUserUpdatedMsg(RemoteUser* u) : Message(Type(), u) {}
-    RemoteUserUpdatedMsg(DataArray *da) : Message(da) {}
-    virtual ~RemoteUserUpdatedMsg() {}
-    static Symbol Type() {
-        static Symbol t("remote_user_updated");
-        return t;
-    }
-    // RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
-};
+END_MESSAGE;
+
+DECLARE_MESSAGE(LocalUserLeftMsg, "local_user_left")
+    LocalUserLeftMsg(LocalUser* u) : Message(Type(), u) {}
+    LocalUser* GetUser() const { return mData->Obj<LocalUser>(2); }
+END_MESSAGE;
+
+DECLARE_MESSAGE(RemoteUserLeftMsg, "remote_user_left")
+    RemoteUserLeftMsg(RemoteUser* u) : Message(Type(), u) {}
+    RemoteUser* GetUser() const { return mData->Obj<RemoteUser>(2); }
+END_MESSAGE;
+
+DECLARE_MESSAGE(RemoteLeaderLeftMsg, "remote_leader_left_msg")
+    RemoteLeaderLeftMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(UserLoginMsg, "user_login")
+    UserLoginMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(AddUserResultMsg, "add_user_result")
+    AddUserResultMsg(int i) : Message(Type(), i) {}
+    AddUserResultMsg(int i, User* u): Message(Type(), i, u) {}
+    int GetResult() const { return mData->Int(2); }
+END_MESSAGE;
 
 #endif // GAME_BANDUSER_H
