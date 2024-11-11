@@ -4,6 +4,7 @@
 #include "game/Defines.h"
 #include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
+#include "game/GameMode.h"
 #include "meta_band/CriticalUserListener.h"
 #include "net/NetSession.h"
 #include "net/Synchronize.h"

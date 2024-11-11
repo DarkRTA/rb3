@@ -4,11 +4,6 @@
 
 // move any of these out if they belong better somewhere else
 
-BEGIN_MESSAGE(ModeChangedMsg, mode_changed, );
-    MESSAGE_ARRAY_CTOR(ModeChangedMsg)
-END_MESSAGE;
-inline ModeChangedMsg::ModeChangedMsg() : Message(ModeChangedMsg::Type()) {}
-
 BEGIN_MESSAGE(ProcessedJoinRequestMsg, processed_join_request, bool);
     MESSAGE_ARRAY_CTOR(ProcessedJoinRequestMsg)
     bool GetProcessed() const { return mData->Int(2); }

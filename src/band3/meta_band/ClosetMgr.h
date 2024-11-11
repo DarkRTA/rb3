@@ -89,3 +89,13 @@ public:
     bool mCharacterLoading; // 0x60
     bool unk61;
 };
+
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(CharacterFinishedLoadingMsg, "character_finished_loading_msg")
+    CharacterFinishedLoadingMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(FinalizedColorsMsg, "finalized_colors_msg")
+    FinalizedColorsMsg() : Message(Type()) {}
+END_MESSAGE;

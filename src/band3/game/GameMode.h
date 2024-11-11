@@ -38,3 +38,9 @@ public:
 void GameModeInit();
 
 extern GameMode* TheGameMode;
+
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(ModeChangedMsg, "mode_changed")
+    ModeChangedMsg() : Message(Type()) {}
+END_MESSAGE;
