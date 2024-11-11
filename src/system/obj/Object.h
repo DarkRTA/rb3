@@ -75,11 +75,12 @@ public:
 typedef Hmx::Object* ObjectFunc(void);
 
 namespace Hmx {
-
-    /** @brief: The base class from which all major Objects used in-game build upon.
+    /**
+    * @brief: The base class from which all major Objects used in-game build upon.
     * Original _objects description:
     * "The Object class is the root of the class hierarchy. Every
-        class has Object as a superclass." */
+    * class has Object as a superclass."
+    */
     class Object : public ObjRef {
     public:
         /** An array of properties this Objects can have. */
