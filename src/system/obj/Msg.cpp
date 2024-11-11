@@ -1,4 +1,4 @@
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/Object.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"

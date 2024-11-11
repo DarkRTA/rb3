@@ -1,5 +1,5 @@
 #pragma once
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "os/CritSec.h"
 #include "os/OnlineID.h"
 

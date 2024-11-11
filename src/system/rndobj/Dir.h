@@ -1,6 +1,6 @@
 #ifndef RNDOBJ_DIR_H
 #define RNDOBJ_DIR_H
-#include "obj/MsgSource.h" // MsgSource : public virtual Object
+#include "obj/Msg.h" // MsgSource : public virtual Object
 #include "rndobj/Poll.h" // RndPollable : public virtual Object
 #include "rndobj/Trans.h" // RndTransformable : public virtual RndHighlightable
 #include "rndobj/Anim.h" // RndAnimatable : public virtual Object

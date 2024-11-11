@@ -11,7 +11,7 @@
 #include "meta_band/ClosetPanel.h"
 #include "meta_band/ProfileMgr.h"
 #include "obj/Dir.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"

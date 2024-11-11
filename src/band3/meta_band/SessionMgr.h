@@ -7,7 +7,7 @@
 #include "meta_band/CriticalUserListener.h"
 #include "net/NetSession.h"
 #include "net/Synchronize.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "game/BandUser.h"
 #include "os/Debug.h"
 

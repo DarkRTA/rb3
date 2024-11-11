@@ -1,7 +1,7 @@
 #include "obj/Dir.h"
 #include "obj/DirUnloader.h"
 #include "obj/MessageTimer.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
 #include "obj/ObjVersion.h"

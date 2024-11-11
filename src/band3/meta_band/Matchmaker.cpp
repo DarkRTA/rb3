@@ -4,7 +4,7 @@
 #include "net/NetSession.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/System.h"

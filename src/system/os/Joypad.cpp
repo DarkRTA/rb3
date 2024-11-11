@@ -2,7 +2,7 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 #include "math/MathFuncs.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/DataFunc.h"
 
 namespace {
