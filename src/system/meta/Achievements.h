@@ -1,3 +1,8 @@
+/**
+ * @file Achievements.h
+ * @brief Handles Achievements/Trophies, however since the Wii
+ * lacks such a feature, it is mostly stubbed out.
+ */
 #ifndef META_ACHIEVEMENTS_H
 #define META_ACHIEVEMENTS_H
 
