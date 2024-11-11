@@ -1,11 +1,9 @@
-#ifndef OBJ_DATA_H
-#define OBJ_DATA_H
+#pragma once
 #include "utl/BinStream.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
-//#include "math/Vec.h"
 #include "math/Color.h"
 
 // forward declarations
@@ -16,7 +14,7 @@ namespace Hmx {
     class Object;
 }
 
-/** A pointer to a function that takes in a DataArray (via pointer) and returns a DataNode. */
+/** A function which can be called by a script/command. */
 typedef DataNode DataFunc(DataArray *);
 
 enum DataType {
@@ -43,12 +41,10 @@ enum DataType {
     kDataUndef = 37,
 };
 
-/** One of the core classes that make up HMX's in-house "dta" scripting language, a DataNode is a node that can contain several different types of data. */
+/** A value which can be configured and accessed by scripts. */
 class DataNode {
 public:
-    /** The list of possible data types that a DataNode can have. 
-        Every possible data type takes up 4 bytes, making the DataNode a very versatile container.
-    */
+    /** The possible data types that a DataNode can have. */
     union {
         const char* symbol;
         int integer;
@@ -58,7 +54,7 @@ public:
         DataFunc* func;
         Hmx::Object* object;
     } mValue; // 0x0
-    /** The type of this DataNode. Used to verify which member of the union is currently being stored in this DataNode. */
+    /** The type of this DataNode. Used to verify which member of the union is currently being stored. */
     DataType mType; // 0x4
 
     DataNode(){
@@ -168,7 +164,7 @@ public:
     void Load(BinStream& d);
 };
 
-/** One of the other core classes that make up HMX's in-house "dta" scripting language, a DataArray is an array of DataNodes. */
+/** An array of DataNodes. */
 class DataArray {
 public:
     DataNode* mNodes;   // 0x0
@@ -287,6 +283,7 @@ const char* DataVarName(const DataNode*);
 #define CONST_ARRAY(array) ((const DataArray*)(array))
 #define UNCONST_ARRAY(array) ((DataArray*)(array))
 
+/** A smart pointer that manages the lifetime of a DataArray. */
 class DataArrayPtr {
 public:
 
@@ -345,5 +342,3 @@ public:
 };
 
 inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
-
-#endif

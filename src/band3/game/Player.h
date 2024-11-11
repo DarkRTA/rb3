@@ -9,7 +9,7 @@
 #include "game/Defines.h"
 #include "game/Performer.h"
 #include "obj/Data.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "utl/HxGuid.h"
 
 class BeatMaster;

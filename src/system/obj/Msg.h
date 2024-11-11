@@ -1,14 +1,11 @@
-#ifndef UTL_MESSAGE_H
-#define UTL_MESSAGE_H
-#include "utl/PoolAlloc.h"
+#pragma once
 #include "obj/Data.h"
 #include "utl/Symbol.h"
-#include <new>
 
-// every method in here is weak
+/** A DataArray container to send to other objects for handling. */
 class Message {
 public:
-    Message(); // fn_8000FFE0
+    // Message(); // if there IS a void ctor for Msg i can't find it
 
     Message(Symbol type){
         mData = new DataArray(2);
@@ -113,7 +110,8 @@ public:
 
     virtual ~Message(){ mData->Release(); }
 
-    DataArray* mData;
+    DataArray* mData; // 0x0
+
     operator DataArray*() const { return mData; }
     DataArray* operator->() const { return mData; }
 
@@ -141,4 +139,79 @@ public:
 
 #define END_MESSAGE };
 
-#endif
+#include "obj/Object.h"
+#include <list>
+
+/** "Exports messages to other objects called sinks" */
+class MsgSource : public virtual Hmx::Object {
+public:
+    enum SinkMode {
+        /** "does a Handle to the sink, this gets all c handlers, type handling, and exporting." */
+        kHandle = 0,
+        /** "just Exports to the sink, so no c or type handling" */
+        kExport = 1,
+        /** "just calls HandleType, good if know that particular thing is only ever type handled." */
+        kType = 2,
+        /** "do type handling and exporting using Export, no C handling" */
+        kExportType = 3,
+    };
+
+    struct Sink {
+        Sink(){}
+        Sink(Hmx::Object* o, SinkMode m) : obj(o), mode(m) {}
+
+        /** "Object to sink to" */
+        Hmx::Object* obj; // 0x0
+        /** "the mode" */
+        SinkMode mode; // 0x4
+        void Export(DataArray*);
+    };
+
+    struct EventSinkElem : public Sink {
+        EventSinkElem(){}
+        EventSinkElem(Hmx::Object* o, SinkMode m, Symbol s) : Sink(o, m), handler(s) {}
+        /** "Name of the handler to use" */
+        Symbol handler; // 0x8
+    };
+
+    struct EventSink {
+        EventSink(){}
+        EventSink(Symbol s) : ev(s) {}
+
+        /** "the event to send down" */
+        Symbol ev; // 0x0
+        /** "the objects, with modes and handlers to send this event to" */
+        std::list<EventSinkElem> sinks; // 0x4
+
+        void Add(Hmx::Object*, SinkMode, Symbol, bool);
+        void Remove(Hmx::Object*, MsgSource*, bool);
+    };
+    
+    MsgSource();
+    OBJ_CLASSNAME(MsgSource);
+    OBJ_SET_TYPE(MsgSource);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual ~MsgSource();
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Export(DataArray*, bool);
+
+    void ChainSource(MsgSource*, MsgSource*);
+    void AddSink(Hmx::Object*, Symbol = Symbol(), Symbol = Symbol(), SinkMode = kHandle);
+    void RemoveSink(Hmx::Object*, Symbol = Symbol());
+    void MergeSinks(MsgSource*);
+    DataNode OnAddSink(DataArray*);
+    DataNode OnRemoveSink(DataArray*);
+
+    NEW_OBJ(MsgSource)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(MsgSource)
+    }
+
+    /** "Global sinks, all messages sent to these guys" */
+    std::list<Sink> mSinks; // 0x8
+    /** "Event specific sinks, each particular event is sent to these guys" */
+    std::list<EventSink> mEventSinks; // 0x10
+    /** The number of messages that are exporting. */
+    int mExporting; // 0x18
+};

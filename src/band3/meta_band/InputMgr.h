@@ -5,7 +5,7 @@
 #include "meta_band/NetSync.h"
 #include "meta_band/SessionMgr.h"
 #include "meta_band/UIEventMgr.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 
 class InputMgr : public MsgSource {
 public:

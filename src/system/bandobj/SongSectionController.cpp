@@ -1,6 +1,6 @@
 #include "bandobj/SongSectionController.h"
 #include "obj/Msg.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(SongSectionController)

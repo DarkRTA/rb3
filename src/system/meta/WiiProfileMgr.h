@@ -2,7 +2,7 @@
 #define META_WIIPROFILEMGR_H
 
 #include "meta/FixedSizeSaveable.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 
 class LocalUser; // forward dec
 

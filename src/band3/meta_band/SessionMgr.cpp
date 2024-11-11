@@ -16,7 +16,7 @@
 #include "net/Synchronize.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"

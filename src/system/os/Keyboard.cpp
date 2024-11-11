@@ -1,6 +1,6 @@
 #include "os/Keyboard.h"
 #include "obj/Object.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 
 #include "decomp.h"
 

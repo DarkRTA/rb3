@@ -1,6 +1,6 @@
 #pragma once
 #include "net/Synchronize.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "meta_band/BandSongMgr.h"
 #include "game/Defines.h"
 #include "game/Performer.h"

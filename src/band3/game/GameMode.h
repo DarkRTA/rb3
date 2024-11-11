@@ -1,5 +1,5 @@
 #pragma once
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 
 class GameMode : public MsgSource {
 public:

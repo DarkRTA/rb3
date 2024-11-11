@@ -1,6 +1,6 @@
 #ifndef OS_PLATFORMMGR_H
 #define OS_PLATFORMMGR_H
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "os/ContentMgr.h"
 #include "os/JoypadMsgs.h"
 #include "os/HomeMenu_Wii.h"
