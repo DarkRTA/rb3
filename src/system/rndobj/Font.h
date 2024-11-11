@@ -71,8 +71,8 @@ public:
     }
     DECLARE_REVS
 
-    ObjPtr<RndMat, ObjectDir> mMat; // 0x1c
-    ObjOwnerPtr<RndFont, ObjectDir> mTextureOwner; // 0x28
+    ObjPtr<RndMat> mMat; // 0x1c
+    ObjOwnerPtr<RndFont> mTextureOwner; // 0x28
     std::map<char, MatChar> unk34; // 0x34
     int unk4c; // 0x4c
     float mBaseKerning; // 0x50
@@ -82,7 +82,7 @@ public:
     bool mMonospace; // 0x68
     Vector2 unk6c; // 0x6c
     bool mPacked; // 0x74
-    ObjPtr<RndFont, ObjectDir> unk78; // 0x78
+    ObjPtr<RndFont> unk78; // 0x78
 }; 
 
 class BitmapLocker {
