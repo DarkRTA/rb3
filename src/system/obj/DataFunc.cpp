@@ -121,6 +121,7 @@ DEF_DATA_FUNC(DataUnless){
     return 0;
 }
 
+/** Verifies if two DataNodes are equivalent. */
 DEF_DATA_FUNC(DataEq) {
     DataNode *dn1 = &array->Evaluate(1);
     DataNode *dn2 = &array->Evaluate(2);
@@ -144,6 +145,7 @@ DEF_DATA_FUNC(DataFindElem) {
     return 0;
 }
 
+/** Verifies if two DataNodes are NOT equivalent. */
 DEF_DATA_FUNC(DataNe){
     return DataEq(array).UncheckedInt() == 0;
 }

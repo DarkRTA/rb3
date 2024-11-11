@@ -4,17 +4,14 @@
 #include "utl/MakeString.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
+#include "obj/DataUtl.h"
+#include "obj/DataFunc.h"
 #include <map>
-
 #include "decomp.h"
 
 std::map<Symbol, DataNode> gDataVars;
 DataNode gEvalNode[8];
 int gEvalIndex;
-
-extern const char* kNotObjectMsg;
-extern ObjectDir* gDataDir;
-extern Hmx::Object *gDataThis;
 
 DataNode& DataVariable(Symbol s){
     return gDataVars[s];
@@ -407,8 +404,6 @@ inline bool HasSpace(const char *str) {
     return false;
 }
 
-extern Symbol DataFuncName(DataFunc *);
-
 void DataNode::Print(TextStream& ts, bool b) const {
     switch(mType){
         case kDataUnhandled:
@@ -549,8 +544,6 @@ void DataNode::Save(BinStream& d) const {
             break;
     }
 }
-
-extern std::map<Symbol, DataFunc*> gDataFuncs;
 
 inline BinStream& operator>>(BinStream& bs, DataType& ty){
     bs.ReadEndian(&ty, sizeof(ty));

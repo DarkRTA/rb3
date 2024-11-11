@@ -1,11 +1,9 @@
-#ifndef OBJ_DATA_H
-#define OBJ_DATA_H
+#pragma once
 #include "utl/BinStream.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
-//#include "math/Vec.h"
 #include "math/Color.h"
 
 // forward declarations
@@ -344,5 +342,3 @@ public:
 };
 
 inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
-
-#endif
