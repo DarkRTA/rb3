@@ -129,21 +129,6 @@ public:
 
 };
 
-#define BEGIN_MESSAGE(classname, type, ...) \
-    class classname : public Message { \
-    public: \
-        classname(__VA_ARGS__); \
-        virtual ~classname(){} \
-        static Symbol Type(){ \
-            static Symbol t(#type); \
-            return t; \
-        } \
-
-#define MESSAGE_ARRAY_CTOR(classname) \
-        classname(DataArray* da) : Message(da) {}
-
-        // custom methods, additional members go here
-
 #define DECLARE_MESSAGE(classname, type) \
     class classname : public Message { \
     public: \
