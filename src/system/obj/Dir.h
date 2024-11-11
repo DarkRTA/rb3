@@ -148,7 +148,7 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
 * Original _objects description:
 * "An ObjectDir keeps track of a set of Objects.  
 * It can subdir or proxy in other ObjectDirs.  
-* To rename subdir or proxy files search for remap_objectdirs in system/run/config/objects.dta") 
+* To rename subdir or proxy files search for remap_objectdirs in system/run/config/objects.dta"
 */
 class ObjectDir : public virtual Hmx::Object {
 public:
