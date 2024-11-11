@@ -1,5 +1,13 @@
-#ifndef OS_HOLMESCLIENT_H
-#define OS_HOLMESCLIENT_H
+/**
+ * @file HolmesClient.h
+ * @brief Provides data and functions necessary for receiving data from Holmes.
+ * As Holmes never leaked, there's no reference implementation, but it is
+ * reasonable to assume that it was used for loading rawfiles from a dev's
+ * work machine instead of having to make a new image. Additionally, things
+ * like Holmes::Protocol::kStackTrace imply Holmes was able to debug the app
+ * remotely.
+ */
+#pragma once
 
 #include "os/File.h"
 #include "os/NetworkSocket.h"
@@ -104,4 +112,3 @@ bool HolmesClientPollJoypad();
 void HolmesClientPollKeyboard();
 
 NetAddress HolmesResolveIP();
-#endif

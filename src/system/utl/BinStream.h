@@ -35,12 +35,8 @@ enum EofType {
 
 class BinStream {
 public:
-    /** The three seek types for BinStream::Seek
-     *
-     * The three seek types used by BinStream::Seek. Presumably,
-     * they are "start from beginning", "start from current
-     * position", and "start from end".
-     *
+    /** 
+     * @brief The three seek types for BinStream::Seek.
      * @see Seek()
      */
     enum SeekType {
@@ -84,7 +80,7 @@ public:
     BinStream &operator>>(class String &);
 
     /** Enables read encryption for e.g. archives.
-     * Enables read encryption, used for things such as archives.
+     * Enables read encryption using Rand2, used in .dtb and .ark files.
      */
     void EnableReadEncryption();
 

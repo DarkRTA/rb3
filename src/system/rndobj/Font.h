@@ -14,6 +14,13 @@ struct MatChar {
     float height;
 };
 
+/**
+ * @brief Implements fonts for use with RndText objects.
+ *  Additionally, RndFont can dynamically update the font atlas, cell sizes, and similar.
+ *  Original _objects description:
+ *   "Font objects determine the appearance for Text objects."
+ */
+
 class RndFont : public Hmx::Object {
 public:
 

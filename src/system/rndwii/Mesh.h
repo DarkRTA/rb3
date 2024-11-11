@@ -28,6 +28,12 @@ public:
     static void* sCurr;
 };
 
+
+/**
+ * @brief Platform implementation of RndMesh.
+ * WiiMesh uses DisplayList to drastically improve CPU-side draw timings,
+ * as well as set things like reflections, buffers, and etc.
+ */
 class WiiMesh : public RndMesh { // 0x198
     WiiMesh();
     ~WiiMesh();

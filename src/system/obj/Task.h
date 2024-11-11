@@ -12,6 +12,10 @@ enum TaskUnits {
     kTaskNumUnits
 };
 
+/**
+ * @brief Generic task type for simplistic multithreading.
+ * Usually used for non-realtime tasks, such as scripting, message passing, etc
+ */
 class Task : public Hmx::Object {
 public:
     Task(){}

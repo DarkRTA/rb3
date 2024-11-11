@@ -3,6 +3,10 @@
 #include "utl/BinStream.h"
 #include "os/NetworkSocket.h"
 
+/**
+ * @brief BinStream implementation that handles networking.
+ * Useful for loading rawfiles from a network or similar.
+ */
 class NetStream : public BinStream {
 public:
     NetStream();

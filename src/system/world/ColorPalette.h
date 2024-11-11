@@ -1,5 +1,4 @@
-#ifndef WORLD_COLORPALETTE_H
-#define WORLD_COLORPALETTE_H
+#pragma once
 #include "obj/Object.h"
 #include "math/Color.h"
 #include "utl/MemMgr.h"
@@ -11,6 +10,11 @@ public:
     Hmx::Color mSecondary;
 };
 
+/**
+ * @brief Contains a set of colors.
+ * Original _objects description:
+ * "List of primary/secondary colors for OutfitConfig"
+ */
 class ColorPalette : public Hmx::Object {
     public:
     ColorPalette();
@@ -36,9 +40,8 @@ class ColorPalette : public Hmx::Object {
         REGISTER_OBJ_FACTORY(ColorPalette)
     }
 
+    /** "Color for materials" */
     std::vector<Hmx::Color> mColors; // 0x1C
 };
 
 BinStream& operator>>(BinStream&, ColorSet&);
-
-#endif

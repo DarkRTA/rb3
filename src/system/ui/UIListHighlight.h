@@ -3,6 +3,11 @@
 #include "ui/UIListWidget.h"
 #include "obj/ObjPtr_p.h"
 
+/**
+ * @brief Highlighter object for UILists.
+ * Original _objects description:
+ * "Highlight widget for use with UIList"
+ */
 class UIListHighlight : public UIListWidget {
 public:
     UIListHighlight();
@@ -24,6 +29,7 @@ public:
         REGISTER_OBJ_FACTORY(UIListHighlight)
     }
 
+    /** "arrow mesh to draw/transform" */
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x40
 };
 
