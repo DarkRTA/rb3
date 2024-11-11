@@ -145,7 +145,7 @@ DEF_DATA_FUNC(DataFindElem) {
 }
 
 DEF_DATA_FUNC(DataNe){
-    return DataEq(array).UnsafeInt() == 0;
+    return DataEq(array).UncheckedInt() == 0;
 }
 
 DEF_DATA_FUNC(DataLe) {
@@ -373,7 +373,7 @@ DEF_DATA_FUNC(DataAdd) {
             sum_f = sum_int + n.LiteralFloat(array);
             break;
         }
-        sum_int += n.UnsafeInt();
+        sum_int += n.UncheckedInt();
     }
     if (i == cnt)
         return sum_int;
@@ -387,7 +387,7 @@ DEF_DATA_FUNC(DataAddEq){
     DataNode ret = DataAdd(array);
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x223);
-        gDataThis->SetProperty(array->UnsafeArray(1), ret);
+        gDataThis->SetProperty(array->UncheckedArray(1), ret);
     }
     else *array->Var(1) = ret;
     return ret;
@@ -433,7 +433,7 @@ DEF_DATA_FUNC(DataSubEq){
     DataNode ret = DataSub(array);
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x259);
-        gDataThis->SetProperty(array->UnsafeArray(1), ret);
+        gDataThis->SetProperty(array->UncheckedArray(1), ret);
     }
     else *array->Var(1) = ret;
     return ret;
@@ -443,7 +443,7 @@ DEF_DATA_FUNC(DataClampEq){
     DataNode ret = DataClamp(array);
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x260);
-        gDataThis->SetProperty(array->UnsafeArray(1), ret);
+        gDataThis->SetProperty(array->UncheckedArray(1), ret);
     }
     else *array->Var(1) = ret;
     return ret;
@@ -462,7 +462,7 @@ DEF_DATA_FUNC(DataMultiplyEq){
     DataNode ret = DataMultiply(array);
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x272);
-        gDataThis->SetProperty(array->UnsafeArray(1), ret);
+        gDataThis->SetProperty(array->UncheckedArray(1), ret);
     }
     else *array->Var(1) = ret;
     return ret;
@@ -476,7 +476,7 @@ DEF_DATA_FUNC(DataDivideEq){
     DataNode ret = DataDivide(array);
     if(array->Type(1) == kDataProperty){
         MILO_ASSERT(gDataThis, 0x27E);
-        gDataThis->SetProperty(array->UnsafeArray(1), ret);
+        gDataThis->SetProperty(array->UncheckedArray(1), ret);
     }
     else *array->Var(1) = ret;
     return ret;
@@ -519,9 +519,9 @@ DEF_DATA_FUNC(DataChar){
 DEF_DATA_FUNC(DataInt){
     DataNode& n = array->Evaluate(1);
     if(n.Type() == kDataSymbol)
-        return atoi(n.UnsafeStr());
+        return atoi(n.UncheckedStr());
     else if(n.Type() == kDataObject || n.Type() == kDataInt)
-        return n.UnsafeInt();
+        return n.UncheckedInt();
     else return (int)n.LiteralFloat(array);
 }
 
@@ -592,7 +592,7 @@ DEF_DATA_FUNC(DataForEachInt) {
         for (int cnt = 4; cnt < array->Size(); cnt++) {
             array->Command(cnt)->Execute();
         }
-        i2 = var->UnsafeInt() + r31;
+        i2 = var->UncheckedInt() + r31;
     }
     *var = idk;
     return 0;
@@ -853,7 +853,7 @@ DEF_DATA_FUNC(DataPrintArray) {
 DEF_DATA_FUNC(DataSize) {
     if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 1213); // dammit hmx why couldn't it've been 1312
-        return gDataThis->PropertySize(array->UnsafeArray(1)); // TODO figure out what this actually is
+        return gDataThis->PropertySize(array->UncheckedArray(1)); // TODO figure out what this actually is
     }
     return array->Array(1)->Size();
 }
@@ -953,7 +953,7 @@ DEF_DATA_FUNC(DataHandleType) {
         DataArray* a = array->Array(i);
         Hmx::Object* o;
         DataNode& n = a->Evaluate(0);
-        if (n.Type() == kDataObject) o = n.UnsafeObj();
+        if (n.Type() == kDataObject) o = n.UncheckedObj();
         else o = gDataDir->FindObject(n.LiteralStr(array), true);
         if (o) o->HandleType(a);
     }
@@ -964,7 +964,7 @@ DEF_DATA_FUNC(DataHandleTypeRet) {
     DataArray* a = array->Array(1);
     Hmx::Object* o;
     DataNode& n = a->Evaluate(0);
-    if (n.Type() == kDataObject) o = n.UnsafeObj();
+    if (n.Type() == kDataObject) o = n.UncheckedObj();
     else o = gDataDir->FindObject(n.LiteralStr(array), true);
 #ifdef MILO_DEBUG
     if (!o) {
@@ -981,7 +981,7 @@ DEF_DATA_FUNC(DataExport) {
     bool i = array->Int(2);
     DataNode& n = a->Evaluate(0);
     Hmx::Object* obj;
-    if (n.Type() == kDataObject) obj = n.UnsafeObj();
+    if (n.Type() == kDataObject) obj = n.UncheckedObj();
     else obj = gDataDir->FindObject(n.LiteralStr(array), true);
     if (obj) obj->Export(a, i);
     return 0;
@@ -992,7 +992,7 @@ DEF_DATA_FUNC(DataHandle) {
         DataArray* handlo = array->Array(i);
         DataNode& n = handlo->Evaluate(0);
         Hmx::Object* obj;
-        if (n.Type() == kDataObject) obj = n.UnsafeObj();
+        if (n.Type() == kDataObject) obj = n.UncheckedObj();
         else if (n.Type() == kDataInt) obj = NULL;
         else obj = gDataDir->FindObject(n.LiteralStr(array), true);
         if (obj) obj->Handle(handlo, false);
@@ -1005,7 +1005,7 @@ DEF_DATA_FUNC(DataHandleRet) {
     DataArray *a = array->Array(1);
     Hmx ::Object *o;
     DataNode &n = a->Evaluate(0);
-    if (n.Type() == kDataObject) o = n.UnsafeObj();
+    if (n.Type() == kDataObject) o = n.UncheckedObj();
     else o = gDataDir->FindObject(n.LiteralStr(array), true);
 #ifdef MILO_DEBUG
     if (!o) {
@@ -1061,7 +1061,7 @@ DEF_DATA_FUNC(DataExit) {
 DEF_DATA_FUNC(DataContains) {
     DataArray* w = array->Array(1);
     DataNode& n = array->Evaluate(2);
-    bool b = !w->Contains(n.UnsafeInt());
+    bool b = !w->Contains(n.UncheckedInt());
     if (b) return DataNode(kDataUnhandled, 0);
     else return 1;
 }
@@ -1293,9 +1293,9 @@ DataNode Quasiquote(const DataNode& node) {
     static Symbol unquoteAbbrev(",");
     DataType nodeType = node.Type();
     if(nodeType - 0x10 <= 1U){
-        DataArray* nodeArr = node.UnsafeArray();
+        DataArray* nodeArr = node.UncheckedArray();
         if(nodeType == kDataCommand && nodeArr->Type(0) == kDataSymbol){
-            char* str = (char*)nodeArr->Node(0).UnsafeStr();
+            char* str = (char*)nodeArr->Node(0).UncheckedStr();
             Symbol sym = STR_TO_SYM(str);
             if(sym == unquote || sym == unquoteAbbrev){
                 return nodeArr->Evaluate(1);

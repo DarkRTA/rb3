@@ -126,10 +126,10 @@ public:
 
     // these were implemented to match up in retail
     // please do not use these in regular code
-    int UnsafeInt() const { return mValue.integer; }
-    const char* UnsafeStr() const { return mValue.symbol; }
-    Hmx::Object* UnsafeObj() const { return mValue.object; }
-    DataArray* UnsafeArray() const { return mValue.array; }
+    int UncheckedInt() const { return mValue.integer; }
+    const char* UncheckedStr() const { return mValue.symbol; }
+    Hmx::Object* UncheckedObj() const { return mValue.object; }
+    DataArray* UncheckedArray() const { return mValue.array; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -187,7 +187,7 @@ public:
     int Size() const { return mSize; }
     int Line() const { return mLine; }
 
-    DataArray* UnsafeArray(int i) const { return Node(i).UnsafeArray(); }
+    DataArray* UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
