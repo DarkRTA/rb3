@@ -10,6 +10,14 @@
 #include <list>
 #include <utility>
 
+
+/**
+ * @brief An object that instances \ref RndMesh "RndMeshes".
+ * Original _objects description:
+ * "A MultiMesh object draws a simple Mesh in many places
+ * quickly. Create a multimesh by instancing the base mesh lots of
+ * times in Max, then using the multiobject wizard."
+ */
 class RndMultiMesh : public RndDrawable {
 public:
     struct Instance {

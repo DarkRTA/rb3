@@ -37,6 +37,12 @@ public:
     unsigned int mFlags; // maybe not a field for flags - perhaps cache id/key/tag?
 };
 
+/**
+ * @brief An object controlling position, rotation, etc. for any derivatives.
+ * Original _objects description:
+ * "Base class for transformable objects. Trans objects have
+ * a 3D position, rotation, and scale."
+ */
 class RndTransformable : public virtual RndHighlightable {
 public:
 
@@ -168,13 +174,22 @@ public:
         REGISTER_OBJ_FACTORY(RndTransformable)
     }
 
+    /** "Object this is linked to." */
     ObjOwnerPtr<RndTransformable, class ObjectDir> mParent; // 0x8
+
+    /** Any children that should follow this object. */
     std::vector<RndTransformable*> mChildren; // 0x14
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c
+
+    /** "Trans constraint for the object." */
     u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; } // 0x80
+
+    /** "Preserve scale if applying dynamic constraint." */
     bool mPreserveScale; // 0x82
+
+    /** "Target according to the constraint." */
     ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x84
 
     static ushort gRev;

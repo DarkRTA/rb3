@@ -7,6 +7,13 @@
 #include "utl/FilePath.h"
 #include "utl/Loader.h"
 
+
+/**
+ * @brief A texture.
+ * Original _objects description:
+ * "Tex objects represent bitmaps used by materials. These
+ * can be created automatically with 'import tex' on the file menu."
+ */
 class RndTex : public Hmx::Object {
 public:
     enum Type {
