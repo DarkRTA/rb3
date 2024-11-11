@@ -10,7 +10,7 @@
 #include "rndobj/Tex.h"
 
 /**
- * @brief 
+ * @brief A camera that renders the scene.
  * Original _objects description:
  * "A Camera object is drawable and transformable. When drawn
  * it sets up projection and clipping parameters for
