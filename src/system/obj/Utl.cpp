@@ -97,10 +97,10 @@ MergeFilter::Action MergeFilter::DefaultSubdirAction(ObjectDir* dir, Subdirs sub
         case kAllSubdirs: return kMerge;
         case kSubdir3: return kReplace;
         case kInlineSubdirs:
-            if(dir->InlineSubDirType() == kInlineNever || dir->InlineSubDirType() == kInline3)
+            if(dir->InlineSubDirType() == kInlineNever || dir->InlineSubDirType() == kInlineCachedShared)
                 return kKeep;
         case kSubdir4:
-            if(dir->InlineSubDirType() == kInlineNever || dir->InlineSubDirType() == kInline3)
+            if(dir->InlineSubDirType() == kInlineNever || dir->InlineSubDirType() == kInlineCachedShared)
                 return kReplace;
         default: break;
     }

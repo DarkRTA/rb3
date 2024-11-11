@@ -233,7 +233,7 @@ void WorldInstance::PreLoad(BinStream& bs){
     if(gRev != 0){
         FilePath fp;
         bs >> fp;
-        PreLoadInlined(fp, true, kInline3);
+        PreLoadInlined(fp, true, kInlineCachedShared);
     }
     else bs >> mDir;
     PushRev(packRevs(gAltRev, gRev), this);

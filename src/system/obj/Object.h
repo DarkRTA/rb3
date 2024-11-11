@@ -53,26 +53,47 @@ public:
     DataNode& Value(int) const;
 };
 
+/** A reference to an Object type. */
 class ObjRef {
 public:
     ObjRef(){}
     virtual ~ObjRef(){}
+
+    /** Get the owner of this Hmx::Object reference. */
     virtual Hmx::Object* RefOwner() = 0;
-    virtual void Replace(Hmx::Object*, Hmx::Object*) = 0;
-    virtual bool IsDirPtr(){ return 0; }
+
+    /** Removes the properties from the first Hmx::Object, and moves them to the second.
+     * @param [in] from The Hmx::Object from which to remove properties.
+     * @param [in] to The Hmx::Object to which to add the removed properties.
+    */
+    virtual void Replace(Hmx::Object* from, Hmx::Object* to) = 0;
+
+    /** Returns whether or not this object is an ObjDirPtr. */
+    virtual bool IsDirPtr(){ return false; }
 };
 
 typedef Hmx::Object* ObjectFunc(void);
 
 namespace Hmx {
+    /**
+    * @brief: The base class from which all major Objects used in-game build upon.
+    * Original _objects description:
+    * "The Object class is the root of the class hierarchy. Every
+    * class has Object as a superclass."
+    */
     class Object : public ObjRef {
     public:
-        TypeProps mTypeProps;
-        DataArray* mTypeDef;
-        const char* mName;
-        class ObjectDir* mDir;
-        std::vector<ObjRef*> mRefs;
+        /** An array of properties this Objects can have. */
+        TypeProps mTypeProps; // 0x4
+        DataArray* mTypeDef; // 0x8
+        /** This Object's name. */
+        const char* mName; // 0xc
+        /** The ObjectDir in which this Object resides. */
+        class ObjectDir* mDir; // 0x10
+        /** A collection of object instances which reference this Object. */
+        std::vector<ObjRef*> mRefs; // 0x14
 
+        /** A collection of Object class names and their corresponding instantiators. */
         static std::map<Symbol, ObjectFunc*> sFactories;
         static Object* sDeleting;
 
@@ -86,31 +107,64 @@ namespace Hmx {
         Object();
         Object(const Object&);
         virtual Hmx::Object* RefOwner(){ return this; }
+
+        /** This Object's class name. */
         OBJ_CLASSNAME(Object);
         OBJ_SET_TYPE(Object);
-        virtual DataNode Handle(DataArray*, bool);
-        virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+
+        /** Execute code based on the contents of a received message.
+        * @param [out] out The return value of whatever code was executed.
+        * @param [in] _msg The received message.
+        * @param [in] _warn Whether or not to print the unhandled message to the debug console.
+        */
+        virtual DataNode Handle(DataArray* _msg, bool _warn);
+
+        /** Syncs an Object's property to or from a supplied DataNode.
+        * @param [out] out Returns true if a property was synced, or if the desired index == the prop array size.
+        * @param [in] _val A DataNode to either place the property val into, or set the property val with.
+        * @param [in] _prop The DataArray containing the symbol representing the property to sync.
+        * @param [in] _i The index in _prop containing the symbol of the property to sync.
+        * @param [in] _op The operation to be performed with the property.
+        */
+        virtual bool SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op);
         virtual ~Object();
+
+        /** Saves this Object into a BinStream. */
         virtual void Save(BinStream&);
-        virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+
+        /** Copy the contents of another Object into this Object based on the CopyType.
+        * @param [in] o The other Object to copy from.
+        * @param [in] ty The copy type.
+        */
+        virtual void Copy(const Hmx::Object* o, Hmx::Object::CopyType ty);
+        
+        /** Loads this Object from a BinStream. */
         virtual void Load(BinStream&);
+
+        /** Any routines to write relevant data to a BinStream before the main Save method executes. */
         virtual void PreSave(BinStream&){}
+        /** Any routines to write relevant data to a BinStream after the main Save method executes. */
         virtual void PostSave(BinStream&){}
+        /** Prints relevant info about this Object to the debug console. */
         virtual void Print(){}
         virtual void Export(DataArray*, bool){}
-        virtual void SetTypeDef(DataArray *);
+        virtual void SetTypeDef(DataArray*);
         virtual void SetName(const char*, class ObjectDir*);
         virtual class ObjectDir* DataDir();
+        /** Any routines to read relevant data from a BinStream before the main Load method executes. */
         virtual void PreLoad(BinStream&);
+        /** Any routines to read relevant data from a BinStream after the main Load method executes. */
         virtual void PostLoad(BinStream&){}
+        /** Get this Object's path name. */
         virtual const char* FindPathName();
         virtual void Replace(Hmx::Object*, Hmx::Object*);
 
         const char* Name() const { return mName; }
 
+        /** Create a new Object derivative based on its entry in the factory list. */
         template <class T> static T* New(){
             T* obj = dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
-        #ifdef VERSION_SZBE69_B8
+        #ifdef MILO_DEBUG
             if(!obj) MILO_FAIL("Couldn't instantiate class %s", T::StaticClassName());
         #endif
             return obj;
@@ -130,26 +184,39 @@ namespace Hmx {
             REGISTER_OBJ_FACTORY(Object)
         }
 
+        /** Add a new Object derivative to the factory list. */
         static void RegisterFactory(Symbol, ObjectFunc*);
+        /** Check if an Object derivative has an entry in the factory list. */
         static bool RegisteredFactory(Symbol);
         Object& operator=(const Object&);
         void RemoveFromDir();
 
-        DataNode* Property(DataArray *, bool) const;
+        DataNode* Property(DataArray*, bool) const;
         DataNode* Property(Symbol, bool) const;
-        void SetProperty(DataArray *, const DataNode &);
+        void SetProperty(DataArray*, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
-        int PropertySize(DataArray *);
+        int PropertySize(DataArray*);
         DataNode OnPropertyAppend(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
         void PropertyClear(DataArray*);
-        void AddRef(ObjRef*);
-        void Release(ObjRef*);
+
+        /** Add this Object reference into mRefs.
+        * @param [in] ref The reference to add.
+        */
+        void AddRef(ObjRef* ref);
+
+        /** Remove this Object reference from mRefs.
+        * @param [in] ref The reference to remove.
+        */
+        void Release(ObjRef* ref);
+        
         DataNode HandleProperty(DataArray*, DataArray*, bool);
         static Object* NewObject(Symbol);
 
+        /** Write's this Object's rev values and its Type Symbol to the BinStream. */
         void SaveType(BinStream&);
+        /** Write's this Object's TypeProps to the BinStream. */
         void SaveRest(BinStream&);
         void LoadType(BinStream&);
         void LoadRest(BinStream&);

@@ -2,11 +2,9 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
-#include "utl/PoolAlloc.h"
 #include "utl/Loader.h"
 #include "obj/DataUtl.h"
 #include "obj/Dir.h"
-#include <new>
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);
@@ -123,7 +121,7 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
 
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
-    // begin debug exclusive
+#ifdef MILO_DEBUG
     if(mMap){
         if(TheLoadMgr.EditMode()){
             const DataArray* def = ref->TypeDef();
@@ -146,7 +144,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
             }
         }
     }
-    // end debug exclusive
+#endif
     if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;

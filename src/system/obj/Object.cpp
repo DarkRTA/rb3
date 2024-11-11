@@ -272,7 +272,7 @@ void Hmx::Object::Save(BinStream& bs){
 }
 
 void Hmx::Object::SaveType(BinStream& bs){
-    bs << 2;
+    bs << packRevs(0, 2);
     bs << Type();
 }
 
