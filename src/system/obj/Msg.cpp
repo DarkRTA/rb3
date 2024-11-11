@@ -74,10 +74,6 @@ void MsgSource::EventSink::Add(Hmx::Object* o, MsgSource::SinkMode mode, Symbol 
     else sinks.push_back(s);
 }
 
-// std::list<Sink> mSinks; // 0x8
-// std::list<EventSink> mEventSinks; // 0x10
-// int mExporting; // 0x18
-
 void MsgSource::EventSink::Remove(Hmx::Object* o, MsgSource* src, bool exporting){
     for(std::list<EventSinkElem>::iterator it = sinks.begin(); it != sinks.end(); ++it){
         if(it->obj == o){
