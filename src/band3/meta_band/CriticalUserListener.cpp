@@ -1,5 +1,4 @@
 #include "meta_band/CriticalUserListener.h"
-#include "MetaMessages.h"
 #include "SessionMgr.h"
 #include "game/BandUser.h"
 #include "game/GameMessages.h"

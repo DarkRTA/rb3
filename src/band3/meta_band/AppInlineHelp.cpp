@@ -5,7 +5,6 @@
 #include "game/Defines.h"
 #include "game/GameMessages.h"
 #include "meta_band/InputMgr.h"
-#include "meta_band/MetaMessages.h"
 #include "meta_band/SessionMgr.h"
 #include "obj/ObjMacros.h"
 #include "ui/UI.h"

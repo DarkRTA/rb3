@@ -9,7 +9,6 @@
 #include "meta_band/CharData.h"
 #include "meta_band/CharSync.h"
 #include "meta_band/ClosetPanel.h"
-#include "meta_band/MetaMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "obj/Dir.h"
 #include "obj/MsgSource.h"

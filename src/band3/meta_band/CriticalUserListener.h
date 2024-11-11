@@ -1,5 +1,5 @@
 #pragma once
-#include "MetaMessages.h"
+#include "BandProfile.h"
 #include "game/BandUser.h"
 #include "game/GameMessages.h"
 #include "obj/Object.h"

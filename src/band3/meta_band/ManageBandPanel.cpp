@@ -1,6 +1,5 @@
 #include "meta_band/ManageBandPanel.h"
 #include "BandProfile.h"
-#include "MetaMessages.h"
 #include "bandobj/BandCharDesc.h"
 #include "game/BandUser.h"
 #include "meta_band/AccomplishmentManager.h"

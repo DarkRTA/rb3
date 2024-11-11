@@ -2,7 +2,6 @@
 #include "BandMachine.h"
 #include "BandMachineMgr.h"
 #include "BandProfile.h"
-#include "MetaMessages.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/GameMessages.h"

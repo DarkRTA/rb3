@@ -154,6 +154,6 @@ public:
             return t; \
         } \
 
-#define END_MESSAGE }
+#define END_MESSAGE };
 
 #endif

@@ -1,5 +1,4 @@
 #include "meta_band/InputMgr.h"
-#include "MetaMessages.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"

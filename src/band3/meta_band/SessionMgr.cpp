@@ -1,7 +1,6 @@
 #include "meta_band/SessionMgr.h"
 #include "BandMachineMgr.h"
 #include "BandNetGameData.h"
-#include "MetaMessages.h"
 #include "MetaNetMsgs.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
