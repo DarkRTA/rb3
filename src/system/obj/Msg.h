@@ -1,14 +1,11 @@
-#ifndef UTL_MESSAGE_H
-#define UTL_MESSAGE_H
-#include "utl/PoolAlloc.h"
+#pragma once
 #include "obj/Data.h"
 #include "utl/Symbol.h"
-#include <new>
 
 // every method in here is weak
 class Message {
 public:
-    Message(); // fn_8000FFE0
+    // Message(); // if there IS a void ctor for Msg i can't find it
 
     Message(Symbol type){
         mData = new DataArray(2);
@@ -140,5 +137,3 @@ public:
         } \
 
 #define END_MESSAGE };
-
-#endif
