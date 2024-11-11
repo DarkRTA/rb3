@@ -1,5 +1,5 @@
 #pragma once
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "ui/UI.h"
 
 class BandUI : public UIManager, public MsgSource {

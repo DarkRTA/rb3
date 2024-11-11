@@ -4,7 +4,7 @@
 #include "net/NetMessage.h"
 #include "net/SessionMessages.h"
 #include "obj/Data.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "os/User.h"
 #include "utl/BinStream.h"
 #include "utl/HxGuid.h"

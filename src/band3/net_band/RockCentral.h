@@ -2,7 +2,7 @@
 #include "game/Defines.h"
 #include "meta_band/Leaderboard.h"
 #include "net_band/DataResults.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/Object.h"
 
 class RockCentral : public MsgSource {

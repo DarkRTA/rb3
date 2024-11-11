@@ -23,7 +23,7 @@
 #include "meta_band/MetaPerformer.h"
 #include "net/NetSession.h"
 #include "obj/Data.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/Task.h"

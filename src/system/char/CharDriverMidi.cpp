@@ -1,5 +1,5 @@
 #include "char/CharDriverMidi.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "char/CharClip.h"
 #include "char/CharClipGroup.h"
 #include "char/CharClipDriver.h"

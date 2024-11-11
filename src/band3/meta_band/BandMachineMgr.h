@@ -1,7 +1,7 @@
 #pragma once
 #include "game/BandUserMgr.h"
 #include "meta/ConnectionStatusPanel.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "network/net/NetSession.h"
 
 class BandMachine;

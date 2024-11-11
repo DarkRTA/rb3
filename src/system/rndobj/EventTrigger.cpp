@@ -4,7 +4,7 @@
 #include "rndobj/PartLauncher.h"
 #include "rndobj/AnimFilter.h"
 #include "obj/DataFunc.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(EventTrigger)
