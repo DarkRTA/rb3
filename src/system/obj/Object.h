@@ -84,10 +84,12 @@ namespace Hmx {
         DataArray* mTypeDef; // 0x8
         /** This Object's name. */
         const char* mName; // 0xc
+        /** The ObjectDir in which this Object resides. */
         class ObjectDir* mDir; // 0x10
         /** A collection of object types which reference this Object. */
         std::vector<ObjRef*> mRefs; // 0x14
 
+        /** A collection of Object class names and their corresponding instantiators. */
         static std::map<Symbol, ObjectFunc*> sFactories;
         static Object* sDeleting;
 
@@ -145,13 +147,17 @@ namespace Hmx {
         virtual void SetTypeDef(DataArray*);
         virtual void SetName(const char*, class ObjectDir*);
         virtual class ObjectDir* DataDir();
+        /** Any routines to read relevant data from a BinStream before the main Load method executes. */
         virtual void PreLoad(BinStream&);
+        /** Any routines to read relevant data from a BinStream after the main Load method executes. */
         virtual void PostLoad(BinStream&){}
+        /** Get this Object's path name. */
         virtual const char* FindPathName();
         virtual void Replace(Hmx::Object*, Hmx::Object*);
 
         const char* Name() const { return mName; }
 
+        /** Create a new Object derivative based on its entry in the factory list. */
         template <class T> static T* New(){
             T* obj = dynamic_cast<T*>(Hmx::Object::NewObject(T::StaticClassName()));
         #ifdef MILO_DEBUG
@@ -174,22 +180,33 @@ namespace Hmx {
             REGISTER_OBJ_FACTORY(Object)
         }
 
+        /** Add a new Object derivative to the factory list. */
         static void RegisterFactory(Symbol, ObjectFunc*);
+        /** Check if an Object derivative has an entry in the factory list. */
         static bool RegisteredFactory(Symbol);
         Object& operator=(const Object&);
         void RemoveFromDir();
 
-        DataNode* Property(DataArray *, bool) const;
+        DataNode* Property(DataArray*, bool) const;
         DataNode* Property(Symbol, bool) const;
-        void SetProperty(DataArray *, const DataNode &);
+        void SetProperty(DataArray*, const DataNode &);
         void SetProperty(Symbol, const DataNode &);
-        int PropertySize(DataArray *);
+        int PropertySize(DataArray*);
         DataNode OnPropertyAppend(const DataArray*);
         void InsertProperty(DataArray*, const DataNode&);
         void RemoveProperty(DataArray*);
         void PropertyClear(DataArray*);
-        void AddRef(ObjRef*);
-        void Release(ObjRef*);
+
+        /** Add this Object reference into mRefs.
+        * @param [in] ref The reference to add.
+        */
+        void AddRef(ObjRef* ref);
+
+        /** Remove this Object reference from mRefs.
+        * @param [in] ref The reference to remove.
+        */
+        void Release(ObjRef* ref);
+        
         DataNode HandleProperty(DataArray*, DataArray*, bool);
         static Object* NewObject(Symbol);
 

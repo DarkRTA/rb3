@@ -123,7 +123,7 @@ void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
 
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
-    // begin debug exclusive
+#ifdef MILO_DEBUG
     if(mMap){
         if(TheLoadMgr.EditMode()){
             const DataArray* def = ref->TypeDef();
@@ -146,7 +146,7 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
             }
         }
     }
-    // end debug exclusive
+#endif
     if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;
