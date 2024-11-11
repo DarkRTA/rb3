@@ -1,8 +1,3 @@
-/**
- * @file Achievements.h
- * @brief Handles Achievements/Trophies, however since the Wii
- * lacks such a feature, it is mostly stubbed out.
- */
 #ifndef META_ACHIEVEMENTS_H
 #define META_ACHIEVEMENTS_H
 
@@ -10,6 +5,9 @@
 
 class LocalUser;
 
+/**
+ * @brief Handles Achievements/Trophies.
+ */
 class Achievements : public Hmx::Object {
 public:
     int unk_1c; // if i had to guess, this would be a LocalUser*
