@@ -3,7 +3,6 @@
 #include "bandobj/ScoreDisplay.h"
 #include "decomp.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta_band/AppLabel.h"
 #include "net_band/DataResults.h"
 #include "obj/ObjMacros.h"

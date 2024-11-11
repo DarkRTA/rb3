@@ -34,11 +34,8 @@ public:
     Hmx::Object* mCallback;
 };
 
-BEGIN_MESSAGE(ProfilePictureFetchedMsg, profile_picture_fetched_msg, int);
-    // MESSAGE_ARRAY_CTOR(ProfilePictureFetchedMsg)
+DECLARE_MESSAGE(ProfilePictureFetchedMsg, "profile_picture_fetched_msg")
+    ProfilePictureFetchedMsg(int i) : Message(Type(), i) {}
 END_MESSAGE;
-
-inline ProfilePictureFetchedMsg::ProfilePictureFetchedMsg(int i) :
-    Message(Type(), DataNode(i)) {}
 
 #endif

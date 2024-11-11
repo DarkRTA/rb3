@@ -35,7 +35,6 @@
 #include "ui/UIListLabel.h"
 #include "ui/UIListMesh.h"
 #include "ui/UIListProvider.h"
-#include "ui/UIMessages.h"
 #include "ui/UIPanel.h"
 #include "utl/Locale.h"
 #include "utl/Messages.h"

@@ -1,5 +1,4 @@
-#ifndef METABAND_BANDPROFILE_H
-#define METABAND_BANDPROFILE_H
+#pragma once
 #include "rndobj/Tex.h"
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
@@ -163,4 +162,6 @@ public:
     TourBand* unk6fc0; // TourBand*
 };
 
-#endif // METABAND_BANDPROFILE_H
+DECLARE_MESSAGE(SigninChangedMsg, "signin_changed")
+    SigninChangedMsg() : Message(Type()) {}
+END_MESSAGE;

@@ -41,13 +41,10 @@ public:
     DataNode ShowKeyboardUI(const LocalUser*, int, class String, class String, class String, int, int);
 };
 
-BEGIN_MESSAGE(VirtualKeyboardResultMsg, virtual_keyboard_result_msg, int, const char*);
-    MESSAGE_ARRAY_CTOR(VirtualKeyboardResultMsg)
+DECLARE_MESSAGE(VirtualKeyboardResultMsg, "virtual_keyboard_result_msg");
+    VirtualKeyboardResultMsg(int i, const char* c) :
+        Message(Type(), DataNode(i), DataNode(c ? c : gNullStr)){}
 END_MESSAGE;
-
-inline VirtualKeyboardResultMsg::VirtualKeyboardResultMsg(int i, const char* c)
-    : Message(Type(), DataNode(i), DataNode(c ? c : gNullStr)) {
-}
 
 extern VirtualKeyboard TheVirtualKeyboard;
 

@@ -4,6 +4,7 @@
 #include "net/Server.h"
 #include "net/SyncStore.h"
 #include "obj/Object.h"
+#include "rndobj/Overlay.h"
 #include "revolution/os/OSThread.h"
 
 class Net : public Hmx::Object {

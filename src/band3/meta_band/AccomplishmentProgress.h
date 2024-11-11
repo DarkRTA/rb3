@@ -3,7 +3,7 @@
 #include "meta/FixedSizeSaveable.h"
 #include "tour/TourGameRules.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
+#include "net_band/RockCentralMsgs.h"
 
 class BandProfile;
 

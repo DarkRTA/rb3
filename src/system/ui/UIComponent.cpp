@@ -5,7 +5,6 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
-#include "ui/UIMessages.h"
 #include "obj/Utl.h"
 #include "os/File.h"
 #include "ui/UI.h"

@@ -4,7 +4,7 @@
 #include "os/UserMgr.h"
 #include "utl/Option.h"
 #include "obj/DataUtl.h"
-#include "os/ProfileSwappedMsg.h"
+#include "meta/Profile.h"
 #include "utl/UTF8.h"
 #include "utl/Symbols.h"
 

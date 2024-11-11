@@ -10,7 +10,6 @@
 #include "ui/Utl.h"
 #include "ui/UITrigger.h"
 #include "ui/UI.h"
-#include "ui/UIMessages.h"
 #include "obj/DirLoader.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"

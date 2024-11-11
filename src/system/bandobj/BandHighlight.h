@@ -1,7 +1,6 @@
 #pragma once
 #include "bandobj/BandLabel.h"
 #include "ui/UIComponent.h"
-#include "ui/UIMessages.h"
 
 class BandHighlight : public UIComponent {
 public:

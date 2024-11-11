@@ -5,7 +5,6 @@
 #include "obj/Msg.h"
 #include "os/Debug.h"
 #include "ui/UI.h"
-#include "ui/UIMessages.h"
 #include "ui/UIScreen.h"
 #include "utl/Messages2.h"
 #include "utl/Symbols4.h"

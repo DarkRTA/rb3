@@ -3,7 +3,6 @@
 #include "game/NetGameMsgs.h"
 #include "obj/Object.h"
 #include "ui/UIComponent.h"
-#include "ui/UIMessages.h"
 #include "ui/UIScreen.h"
 
 class NetSync : public Hmx::Object {

@@ -1,5 +1,4 @@
 #pragma once
-#include "MetaMessages.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/CharProvider.h"
 #include "meta_band/ProfileMessages.h"

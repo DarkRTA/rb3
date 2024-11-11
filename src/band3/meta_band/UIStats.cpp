@@ -4,7 +4,6 @@
 #include "os/Debug.h"
 #include "os/JoypadMsgs.h"
 #include "os/System.h"
-#include "ui/UIMessages.h"
 #include "utl/MemMgr.h"
 
 UIStats gUIStats;

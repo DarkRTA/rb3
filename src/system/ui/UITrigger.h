@@ -35,4 +35,11 @@ public:
     bool mBlockTransition; // 0xfd
 };
 
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete");
+    UITriggerCompleteMsg(UITrigger* trig) : 
+        Message(Type(), trig){}
+END_MESSAGE;
+
 #endif

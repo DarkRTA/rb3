@@ -1,5 +1,4 @@
 #include "net/SessionSearcher.h"
-#include "game/GameMessages.h"
 #include "net/NetSearchResult.h"
 #include "obj/Dir.h"
 #include "obj/MsgSource.h"

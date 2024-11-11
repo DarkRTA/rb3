@@ -3,7 +3,6 @@
 #include "Campaign.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentCategory.h"
@@ -14,10 +13,7 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "stl/_pair.h"
-#include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
 
 GamerAwardStatus::GamerAwardStatus() : unk8(-1), unkc(0), unk10(0) {
     mSaveSizeMethod = &SaveSize;

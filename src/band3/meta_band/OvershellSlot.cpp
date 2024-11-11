@@ -4,7 +4,6 @@
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta/WiiProfileMgr.h"
 #include "meta_band/CharData.h"
 #include "meta_band/MetaPerformer.h"

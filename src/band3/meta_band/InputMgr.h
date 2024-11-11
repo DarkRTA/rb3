@@ -1,9 +1,7 @@
 #pragma once
-#include "MetaMessages.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta_band/NetSync.h"
 #include "meta_band/SessionMgr.h"
 #include "meta_band/UIEventMgr.h"
@@ -48,3 +46,13 @@ public:
 };
 
 extern InputMgr* TheInputMgr;
+
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(InputStatusChangedMsg, "input_status_changed")
+    InputStatusChangedMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(InputUserLeftMsg, "input_user_left")
+    InputUserLeftMsg() : Message(Type()) {}
+END_MESSAGE;

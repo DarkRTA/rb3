@@ -1,7 +1,6 @@
 #include "BandProfile.h"
 #include "ProfileMgr.h"
 #include "AccomplishmentManager.h"
-#include "game/GameMessages.h"
 #include "meta_band/SongStatusMgr.h"
 #include "meta_band/BandSongMgr.h"
 #include "game/BandUserMgr.h"

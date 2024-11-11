@@ -16,17 +16,8 @@ namespace Hmx {
     class Object;
 }
 
+/** A pointer to a function that takes in a DataArray (via pointer) and returns a DataNode. */
 typedef DataNode DataFunc(DataArray *);
-
-union DataNodeValue {
-    const char* symbol;
-    int integer;
-    float real;
-    DataArray* array;
-    DataNode* var;
-    DataFunc* func;
-    Hmx::Object* object;
-};
 
 enum DataType {
     kDataUnhandled = 0,
@@ -52,12 +43,23 @@ enum DataType {
     kDataUndef = 37,
 };
 
+/** One of the core classes that make up HMX's in-house "dta" scripting language, a DataNode is a node that can contain several different types of data. */
 class DataNode {
 public:
-    DataNodeValue mValue;
-    DataType mType;
-
-    friend class DataArray;
+    /** The list of possible data types that a DataNode can have. 
+        Every possible data type takes up 4 bytes, making the DataNode a very versatile container.
+    */
+    union {
+        const char* symbol;
+        int integer;
+        float real;
+        DataArray* array;
+        DataNode* var;
+        DataFunc* func;
+        Hmx::Object* object;
+    } mValue; // 0x0
+    /** The type of this DataNode. Used to verify which member of the union is currently being stored in this DataNode. */
+    DataType mType; // 0x4
 
     DataNode(){
         mValue.integer = 0;
@@ -119,9 +121,15 @@ public:
     ~DataNode();
 
     DataType Type() const { return mType; }
-    DataNodeValue RawVal() { return mValue; }
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
+
+    // these were implemented to match up in retail
+    // please do not use these in regular code
+    int UncheckedInt() const { return mValue.integer; }
+    const char* UncheckedStr() const { return mValue.symbol; }
+    Hmx::Object* UncheckedObj() const { return mValue.object; }
+    DataArray* UncheckedArray() const { return mValue.array; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -160,6 +168,7 @@ public:
     void Load(BinStream& d);
 };
 
+/** One of the other core classes that make up HMX's in-house "dta" scripting language, a DataArray is an array of DataNodes. */
 class DataArray {
 public:
     DataNode* mNodes;   // 0x0
@@ -178,6 +187,8 @@ public:
     int Size() const { return mSize; }
     int Line() const { return mLine; }
 
+    DataArray* UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
+
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
@@ -195,7 +206,6 @@ public:
 
     void AddRef(){ mRefs++; }
     void Release(){ if (--mRefs == 0) delete this; }
-    // void* operator new(unsigned long); make the param size_t?
 
     // these two are actually strong symbols
     DataNode& Node(int i);

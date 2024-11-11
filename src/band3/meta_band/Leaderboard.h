@@ -1,13 +1,13 @@
 #pragma once
 #include "game/BandUser.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "net_band/DataResults.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/OnlineID.h"
 #include "ui/UIColor.h"
 #include "ui/UIListProvider.h"
+#include "net_band/RockCentralMsgs.h"
 
 enum IDType {
     kInvalid = 0,
