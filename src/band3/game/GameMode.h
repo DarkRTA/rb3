@@ -1,5 +1,5 @@
 #pragma once
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 
 class GameMode : public MsgSource {
 public:
@@ -38,3 +38,9 @@ public:
 void GameModeInit();
 
 extern GameMode* TheGameMode;
+
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(ModeChangedMsg, "mode_changed")
+    ModeChangedMsg() : Message(Type()) {}
+END_MESSAGE;

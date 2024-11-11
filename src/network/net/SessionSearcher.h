@@ -1,8 +1,7 @@
 #pragma once
 #include "MatchmakingSettings.h"
-#include "game/GameMessages.h"
 #include "net/NetSearchResult.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "os/User.h"
 
 class SessionSearcher : public MsgSource {

@@ -1,7 +1,7 @@
 #include "bandobj/CrowdAudio.h"
 #include "obj/Task.h"
 #include "synth/Sequence.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 #include "synth/BinkClip.h"

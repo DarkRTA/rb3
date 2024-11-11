@@ -1,6 +1,6 @@
 #ifndef METABAND_PROFILEMGR_H
 #define METABAND_PROFILEMGR_H
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "os/Joypad.h"
 #include "meta/Profile.h"
 #include "meta_band/BandProfile.h"

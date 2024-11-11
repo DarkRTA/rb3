@@ -2,7 +2,7 @@
 #include "meta_band/CharData.h"
 #include "ui/UIPanel.h"
 #include "net/Synchronize.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "math/Rand.h"
 #include "meta_band/OvershellSlot.h"
 

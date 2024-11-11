@@ -5,6 +5,9 @@
 
 class LocalUser;
 
+/**
+ * @brief Handles Achievements/Trophies.
+ */
 class Achievements : public Hmx::Object {
 public:
     int unk_1c; // if i had to guess, this would be a LocalUser*

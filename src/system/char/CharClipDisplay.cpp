@@ -1,6 +1,6 @@
 #include "char/CharClipDisplay.h"
 #include "rndobj/Rnd.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 
 float CharClipDisplay::sEm;
 ObjectDir* CharClipDisplay::sDir;

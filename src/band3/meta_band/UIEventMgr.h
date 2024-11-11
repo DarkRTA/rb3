@@ -1,7 +1,7 @@
 #pragma once
 #include "meta_band/UIEvent.h"
 #include "obj/Data.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include <vector>
 
 class UIEventQueue {

@@ -1,5 +1,5 @@
 #pragma once
-#include "MetaMessages.h"
+#include "meta_band/InputMgr.h"
 #include "obj/Data.h"
 #include "os/UsbMidiKeyboardMsgs.h"
 #include "rndobj/Mesh.h"

@@ -1,4 +1,3 @@
-#include "MetaMessages.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
 #include "math/MathFuncs.h"

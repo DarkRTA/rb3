@@ -4,8 +4,8 @@
 #include "ui/UIPanel.h"
 #include "obj/Msg.h"
 
-BEGIN_MESSAGE(ConnectionStatusChangedMsg, connection_status_changed, int);
-    MESSAGE_ARRAY_CTOR(ConnectionStatusChangedMsg)
+DECLARE_MESSAGE(ConnectionStatusChangedMsg, "connection_status_changed")
+    ConnectionStatusChangedMsg(int);
 END_MESSAGE;
 
 class ConnectionStatusPanel : public UIPanel {

@@ -12,7 +12,6 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "ui/UI.h"
-#include "ui/UIMessages.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
 #include "utl/Symbol.h"

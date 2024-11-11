@@ -1,11 +1,9 @@
-#ifndef OBJ_DATA_H
-#define OBJ_DATA_H
+#pragma once
 #include "utl/BinStream.h"
 #include "utl/PoolAlloc.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include "utl/TextStream.h"
-//#include "math/Vec.h"
 #include "math/Color.h"
 
 // forward declarations
@@ -16,17 +14,8 @@ namespace Hmx {
     class Object;
 }
 
+/** A function which can be called by a script/command. */
 typedef DataNode DataFunc(DataArray *);
-
-union DataNodeValue {
-    const char* symbol;
-    int integer;
-    float real;
-    DataArray* array;
-    DataNode* var;
-    DataFunc* func;
-    Hmx::Object* object;
-};
 
 enum DataType {
     kDataUnhandled = 0,
@@ -52,12 +41,21 @@ enum DataType {
     kDataUndef = 37,
 };
 
+/** A value which can be configured and accessed by scripts. */
 class DataNode {
 public:
-    DataNodeValue mValue;
-    DataType mType;
-
-    friend class DataArray;
+    /** The possible data types that a DataNode can have. */
+    union {
+        const char* symbol;
+        int integer;
+        float real;
+        DataArray* array;
+        DataNode* var;
+        DataFunc* func;
+        Hmx::Object* object;
+    } mValue; // 0x0
+    /** The type of this DataNode. Used to verify which member of the union is currently being stored. */
+    DataType mType; // 0x4
 
     DataNode(){
         mValue.integer = 0;
@@ -119,9 +117,15 @@ public:
     ~DataNode();
 
     DataType Type() const { return mType; }
-    DataNodeValue RawVal() { return mValue; }
     bool CompatibleType(DataType) const;
     DataNode& Evaluate() const;
+
+    // these were implemented to match up in retail
+    // please do not use these in regular code
+    int UncheckedInt() const { return mValue.integer; }
+    const char* UncheckedStr() const { return mValue.symbol; }
+    Hmx::Object* UncheckedObj() const { return mValue.object; }
+    DataArray* UncheckedArray() const { return mValue.array; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -160,6 +164,7 @@ public:
     void Load(BinStream& d);
 };
 
+/** An array of DataNodes. */
 class DataArray {
 public:
     DataNode* mNodes;   // 0x0
@@ -178,6 +183,8 @@ public:
     int Size() const { return mSize; }
     int Line() const { return mLine; }
 
+    DataArray* UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
+
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
     Symbol Sym(int i) const { return Node(i).Sym(this); }
@@ -195,7 +202,6 @@ public:
 
     void AddRef(){ mRefs++; }
     void Release(){ if (--mRefs == 0) delete this; }
-    // void* operator new(unsigned long); make the param size_t?
 
     // these two are actually strong symbols
     DataNode& Node(int i);
@@ -277,6 +283,7 @@ const char* DataVarName(const DataNode*);
 #define CONST_ARRAY(array) ((const DataArray*)(array))
 #define UNCONST_ARRAY(array) ((DataArray*)(array))
 
+/** A smart pointer that manages the lifetime of a DataArray. */
 class DataArrayPtr {
 public:
 
@@ -335,5 +342,3 @@ public:
 };
 
 inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
-
-#endif

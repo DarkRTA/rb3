@@ -11,7 +11,6 @@
 #include "ui/UILabel.h"
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
-#include "ui/UIMessages.h"
 
 class AccomplishmentGroupCmp {
 public:

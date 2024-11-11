@@ -1,6 +1,6 @@
 #ifndef METABAND_SONGMGR_H
 #define METABAND_SONGMGR_H
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "os/ContentMgr.h"
 #include "meta/SongMetadata.h"
 #include "utl/CacheMgr.h"

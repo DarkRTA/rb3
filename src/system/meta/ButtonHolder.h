@@ -7,8 +7,8 @@
 #include "os/JoypadMsgs.h"
 #include <vector>
 
-BEGIN_MESSAGE(ProcessedButtonDownMsg, processed_button_down, LocalUser*, JoypadButton, JoypadAction, int, bool);
-    MESSAGE_ARRAY_CTOR(ProcessedButtonDownMsg)
+DECLARE_MESSAGE(ProcessedButtonDownMsg, "processed_button_down")
+    ProcessedButtonDownMsg(LocalUser*, JoypadButton, JoypadAction, int, bool);
     LocalUser* GetUser() const;
     JoypadButton GetButton() const { return (JoypadButton)mData->Int(3); }
     JoypadAction GetAction() const { return (JoypadAction)mData->Int(4); }

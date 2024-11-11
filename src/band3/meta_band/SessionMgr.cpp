@@ -1,12 +1,10 @@
 #include "meta_band/SessionMgr.h"
 #include "BandMachineMgr.h"
 #include "BandNetGameData.h"
-#include "MetaMessages.h"
 #include "MetaNetMsgs.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "game/GameMode.h"
 #include "math/Rand.h"
 #include "meta_band/BandMachine.h"
@@ -18,7 +16,7 @@
 #include "net/Synchronize.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -26,9 +24,6 @@
 #include "os/User.h"
 #include "utl/HxGuid.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 #include <vector>
 
 void SessionMgr::Init(){

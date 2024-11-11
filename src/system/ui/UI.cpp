@@ -2,7 +2,7 @@
 #include "os/JoypadClient.h"
 #include "ui/UIScreen.h"
 #include "rndobj/Overlay.h"
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "obj/DataFile.h"
 #include "utl/Symbols.h"
 

@@ -1,6 +1,6 @@
 #ifndef MIDI_MIDIPARSER_H
 #define MIDI_MIDIPARSER_H
-#include "obj/MsgSource.h"
+#include "obj/Msg.h"
 #include "midi/DataEvent.h"
 #include "utl/VectorSizeDefs.h"
 #include <vector>

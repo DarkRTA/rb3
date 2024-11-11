@@ -1,8 +1,6 @@
 #ifndef GAME_NETGAMEMSGS_H
 #define GAME_NETGAMEMSGS_H
-#include "GameMessages.h"
 #include "utl/HxGuid.h"
-#include "utl/TextStream.h"
 #include <os/User.h>
 #include "Stats.h"
 #include "network/net/NetMessage.h"
