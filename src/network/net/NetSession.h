@@ -1,6 +1,5 @@
 #pragma once
 #include "Platform/Time.h"
-#include "game/BandUser.h"
 #include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/BandNetGameData.h"
@@ -12,6 +11,16 @@
 #include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/JobMgr.h"
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(ProcessedJoinRequestMsg, "processed_join_request")
+    ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
+    bool GetProcessed() const { return mData->Int(2); }
+END_MESSAGE;
+
+DECLARE_MESSAGE(JoinResultMsg, "join_result")
+    JoinResultMsg() : Message(Type()) {}
+END_MESSAGE;
 
 enum PacketType {
     kUnreliable = 0,
