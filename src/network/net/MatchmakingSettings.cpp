@@ -1,6 +1,5 @@
 #include "net/MatchmakingSettings.h"
 #include "MatchmakingSettings.h"
-#include "game/GameMessages.h"
 #include "net/Synchronize.h"
 #include "net/NetSession.h"
 #include "os/Debug.h"

@@ -1,7 +1,6 @@
 #include "SongStatusMgr.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"

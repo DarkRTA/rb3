@@ -4,7 +4,6 @@
 #include "BandProfile.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
-#include "game/GameMessages.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"

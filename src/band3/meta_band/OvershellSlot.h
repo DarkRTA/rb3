@@ -7,7 +7,6 @@
 #include "meta_band/SessionMgr.h"
 #include "bandobj/BandLabel.h"
 #include "meta_band/OvershellProfileProvider.h"
-#include "game/GameMessages.h"
 #include "os/JoypadMsgs.h"
 #include "os/VirtualKeyboard.h"
 #include "tour/TourCharLocal.h"

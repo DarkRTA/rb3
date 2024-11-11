@@ -6,7 +6,6 @@
 #include "NetSession.h"
 #include "SessionMessages.h"
 #include "game/BandUser.h"
-#include "game/GameMessages.h"
 #include "net/NetMessenger.h"
 #include "net/SessionMessages.h"
 #include "net/SyncStore.h"

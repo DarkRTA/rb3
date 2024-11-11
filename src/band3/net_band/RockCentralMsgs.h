@@ -1,3 +1,4 @@
+#pragma once
 #include "obj/Msg.h"
 #include "obj/Object.h"
 

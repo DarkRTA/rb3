@@ -2,7 +2,6 @@
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/NetSync.h"
 #include "meta_band/SessionMgr.h"

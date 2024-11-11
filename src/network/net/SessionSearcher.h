@@ -1,6 +1,5 @@
 #pragma once
 #include "MatchmakingSettings.h"
-#include "game/GameMessages.h"
 #include "net/NetSearchResult.h"
 #include "obj/MsgSource.h"
 #include "os/User.h"

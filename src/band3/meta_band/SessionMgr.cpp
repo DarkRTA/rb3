@@ -5,7 +5,6 @@
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "game/GameMode.h"
 #include "math/Rand.h"
 #include "meta_band/BandMachine.h"
@@ -25,9 +24,6 @@
 #include "os/User.h"
 #include "utl/HxGuid.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 #include <vector>
 
 void SessionMgr::Init(){

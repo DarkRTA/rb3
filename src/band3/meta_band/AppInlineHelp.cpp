@@ -3,7 +3,6 @@
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
-#include "game/GameMessages.h"
 #include "meta_band/InputMgr.h"
 #include "meta_band/SessionMgr.h"
 #include "obj/ObjMacros.h"
