@@ -2,11 +2,9 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
-#include "utl/PoolAlloc.h"
 #include "utl/Loader.h"
 #include "obj/DataUtl.h"
 #include "obj/Dir.h"
-#include <new>
 
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);

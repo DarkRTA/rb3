@@ -210,7 +210,9 @@ namespace Hmx {
         DataNode HandleProperty(DataArray*, DataArray*, bool);
         static Object* NewObject(Symbol);
 
+        /** Write's this Object's rev values and its Type Symbol to the BinStream. */
         void SaveType(BinStream&);
+        /** Write's this Object's TypeProps to the BinStream. */
         void SaveRest(BinStream&);
         void LoadType(BinStream&);
         void LoadRest(BinStream&);

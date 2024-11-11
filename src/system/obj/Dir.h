@@ -24,7 +24,7 @@ enum InlineDirType {
     kInlineNever = 0,
     kInlineCached = 1,
     kInlineAlways = 2,
-    kInline3 = 3
+    kInlineCachedShared = 3
 };
 
 template <class T> class ObjDirPtr : public ObjRef {
@@ -142,6 +142,9 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
     return bs;
 }
 
+/** "An ObjectDir keeps track of a set of Objects.  \n
+      It can subdir or proxy in other ObjectDirs.  \n
+      To rename subdir or proxy files search for remap_objectdirs in system/run/config/objects.dta") */
 class ObjectDir : public virtual Hmx::Object {
 public:
     struct Entry {
@@ -263,11 +266,15 @@ public:
     StringTable mStringTable; // 0x28
     FilePath mProxyFile; // 0x38
     bool mProxyOverride; // 0x44
+    /** "Can this proxy be inlined?" */
     bool mInlineProxy; // 0x45
     DirLoader* mLoader; // 0x48
+    /** "Subdirectories of objects" */
     std::vector<ObjDirPtr<ObjectDir> > mSubDirs; // 0x4c
     bool mIsSubDir; // 0x54
+    /** "How is this inlined as a subdir?  Note that when you change this, you must resave everything subdiring this file for it to take effect" */
     InlineDirType mInlineSubDirType; // 0x58
+    /** "where this came from" */
     const char* mPathName; // 0x5c
     FilePath mStoredFile; // 0x60
     std::vector<InlinedDir> mInlinedDirs; // 0x6c
@@ -282,6 +289,7 @@ void PreloadSharedSubdirs(class Symbol);
 extern bool gLoadingProxyFromDisk;
 extern const char* kNotObjectMsg;
 
+/** Iterates through each Object in an ObjectDir that is of type T. */
 template <class T> class ObjDirItr {
 public:
     // https://decomp.me/scratch/Qfa92
