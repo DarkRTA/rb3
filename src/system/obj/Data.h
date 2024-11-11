@@ -126,10 +126,10 @@ public:
 
     // these were implemented to match up in retail
     // please do not use these in regular code
-    int FastInt() const { return mValue.integer; }
-    const char* FastStr() const { return mValue.symbol; }
-    Hmx::Object* FastObj() const { return mValue.object; }
-    DataArray* FastArray() const { return mValue.array; }
+    int UnsafeInt() const { return mValue.integer; }
+    const char* UnsafeStr() const { return mValue.symbol; }
+    Hmx::Object* UnsafeObj() const { return mValue.object; }
+    DataArray* UnsafeArray() const { return mValue.array; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -187,7 +187,7 @@ public:
     int Size() const { return mSize; }
     int Line() const { return mLine; }
 
-    DataArray* FastArray(int i) const { return Node(i).FastArray(); }
+    DataArray* UnsafeArray(int i) const { return Node(i).UnsafeArray(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
