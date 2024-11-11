@@ -3,8 +3,14 @@
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
 
+/**
+ * @brief Handles data for the debug cheat menu.
+ */
 class CheatProvider : public UIListProvider, public Hmx::Object {
 public:
+    /**
+    * @brief Handles individual entries in cheats.lst
+    */
     class Cheat {
     public:
         Cheat(const char* desc) : mKey(), mDesc(desc), mScript(0) {}
