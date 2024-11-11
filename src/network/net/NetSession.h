@@ -1,7 +1,5 @@
 #pragma once
 #include "Platform/Time.h"
-#include "game/GameMessages.h"
-#include "game/NetGameMsgs.h"
 #include "meta_band/BandNetGameData.h"
 #include "net/NetMessage.h"
 #include "net/SessionMessages.h"
@@ -20,6 +18,18 @@ END_MESSAGE;
 
 DECLARE_MESSAGE(JoinResultMsg, "join_result")
     JoinResultMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(SyncStartGameMsg, "sync_start_game")
+    SyncStartGameMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(SettingsChangedMsg, "settings_changed")
+    SettingsChangedMsg() : Message(Type()) {}
+END_MESSAGE;
+
+DECLARE_MESSAGE(InviteAcceptedMsg, "invite_accepted")
+    InviteAcceptedMsg() : Message(Type()) {}
 END_MESSAGE;
 
 enum PacketType {
