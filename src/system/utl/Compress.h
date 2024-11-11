@@ -1,3 +1,7 @@
+/**
+ * @file Compress.h
+ * @brief Wrapper functions around zlib.
+ */
 #ifndef UTL_COMPRESS_H
 #define UTL_COMPRESS_H
 

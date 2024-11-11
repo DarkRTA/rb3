@@ -1,10 +1,7 @@
 #ifndef UTL_BINK_H
 #define UTL_BINK_H
 
-// TODO: implement this in an SDK header somewhere
-struct _GXTexObj {
-    unsigned long dummy[8];
-};
+#include <revolution/GX.h>
 
 struct BINKRECT {
     // total size: 0x10

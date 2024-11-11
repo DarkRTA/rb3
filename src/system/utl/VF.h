@@ -1,3 +1,7 @@
+/**
+ * @file VF.h
+ * @brief Wrapper functions for the Revolution SDK Virtual Filesystem functions.
+ */
 #ifndef UTL_VF_H
 #define UTL_VF_H
 

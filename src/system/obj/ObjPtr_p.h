@@ -6,6 +6,12 @@
 
 // BEGIN OBJPTR TEMPLATE -------------------------------------------------------------------------------
 
+/**
+ * @brief Basic ref-counting pointer to an Hmx::Object.
+ * 
+ * @tparam T1 Hmx::Object derivative
+ * @tparam T2 ObjectDir type (?)
+ */
 template <class T1, class T2> class ObjPtr : public ObjRef {
 public:
     ObjPtr(Hmx::Object* obj, T1* cls = 0) : mOwner(obj), mPtr(cls) {
@@ -58,6 +64,12 @@ DONT_INLINE BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& pt
 
 // BEGIN OBJOWNERPTR TEMPLATE --------------------------------------------------------------------------
 
+/**
+ * @brief Ref-counting pointer similar to ObjPtr that takes "ownership" of the object.
+ * 
+ * @tparam T1 
+ * @tparam T2 
+ */
 template <class T1, class T2> class ObjOwnerPtr : public ObjRef {
 public:
     ObjOwnerPtr(Hmx::Object* obj, T1* cls = nullptr): mOwner(obj), mPtr(cls) {

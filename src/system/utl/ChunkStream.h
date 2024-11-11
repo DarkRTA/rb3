@@ -1,5 +1,4 @@
-#ifndef UTL_CHUNKSTREAM_H
-#define UTL_CHUNKSTREAM_H
+#pragma once
 
 #include "obj/Object.h"
 #include "os/File.h"
@@ -34,6 +33,9 @@ struct DecompressTask {
     const char* mFilename;
 };
 
+/**
+ * @brief BinStream derivative used to read RIFF files, compressed .milos, etc
+ */
 class ChunkStream : public BinStream {
 public:
     class ChunkInfo {
@@ -92,7 +94,7 @@ public:
     bool mChunkInfoPending;
     int* mCurChunk;
     int* mChunkEnd;
-    int mTell; // which is different from mCurBufOffset... why?
+    int mTell;
 
     void* operator new(size_t t) {
         return _MemAllocTemp(t, 0);
@@ -101,5 +103,3 @@ public:
 };
 
 void DecompressMemHelper(const void*, int, void*, int&, const char*);
-
-#endif // UTL_CHUNKSTREAM_H
