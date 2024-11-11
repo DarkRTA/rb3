@@ -12,6 +12,11 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Env.h"
 
+/**
+ * @brief An ObjectDir dedicated to holding Rnd* objects.
+ * Original _objects description:
+ * "A RndDir specially tracks drawable and animatable objects."
+ */
 class RndDir : public ObjectDir, public RndDrawable, public RndAnimatable, public RndTransformable, public RndPollable, public MsgSource {
 public:
     RndDir();
@@ -59,10 +64,19 @@ public:
 
     DECLARE_REVS
     
+    /** "List of all the draws" */
     std::vector<RndDrawable*> mDraws; // 0x164
+
+    /** Animations for this dir. */
     std::vector<RndAnimatable*> mAnims; // 0x16c
+
+    /** "List of all the polls" */
     std::vector<RndPollable*> mPolls; // 0x174
+
+    /** The dedicated RndEnviron for this dir. */
     ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x17c
+
+    /** "Test event" */
     Symbol mTestEvent; // 0x188
 
     NEW_OVERLOAD;

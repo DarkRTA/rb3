@@ -3,6 +3,9 @@
 #include "rndobj/Tex.h"
 #include "utl/PoolAlloc.h"
 
+/**
+ * @brief Platform implementation of RndTex.
+ */
 class WiiTex : public RndTex {
 public:
     WiiTex();

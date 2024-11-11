@@ -5,6 +5,13 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Tex.h"
 
+
+/**
+ * @brief An object that plays a video file.
+ * Original _objects description:
+ * "A Movie object animates a compressed video through a
+ * texture. It works on Xbox and PS2 now, soon GC."
+ */
 class RndMovie : public RndAnimatable {
 public:
     RndMovie();
@@ -31,9 +38,16 @@ public:
         REGISTER_OBJ_FACTORY(RndMovie)
     }
 
+    /** "File - extension is automatically converted to platform" */
     FilePath mFile;
+
+    /** "Stream the file for this movie?" */
     bool mStream;
+
+    /** "Loop this movie?" */
     bool mLoop;
+
+    /** "Texture to animate." */
     ObjOwnerPtr<RndTex, class ObjectDir> mTex;
     
 };

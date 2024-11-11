@@ -4,6 +4,7 @@
 #include <vector>
 #include "obj/Dir.h"
 
+/** Controls sample playback for freestyle drums. */
 class DrumPlayer {
 public:
     DrumPlayer(SongInfo&);
