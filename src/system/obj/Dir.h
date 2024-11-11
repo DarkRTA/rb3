@@ -142,9 +142,11 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
     return bs;
 }
 
-/** "An ObjectDir keeps track of a set of Objects.  \n
-      It can subdir or proxy in other ObjectDirs.  \n
-      To rename subdir or proxy files search for remap_objectdirs in system/run/config/objects.dta") */
+/** @brief: A directory of Objects.
+    * Original _objects description:
+    *  "An ObjectDir keeps track of a set of Objects.  \n
+        It can subdir or proxy in other ObjectDirs.  \n
+        To rename subdir or proxy files search for remap_objectdirs in system/run/config/objects.dta") */
 class ObjectDir : public virtual Hmx::Object {
 public:
     struct Entry {
@@ -266,7 +268,7 @@ public:
     StringTable mStringTable; // 0x28
     FilePath mProxyFile; // 0x38
     bool mProxyOverride; // 0x44
-    /** "Can this proxy be inlined?" */
+    /** Whether or not this proxy can be inlined. */
     bool mInlineProxy; // 0x45
     DirLoader* mLoader; // 0x48
     /** "Subdirectories of objects" */
@@ -274,7 +276,7 @@ public:
     bool mIsSubDir; // 0x54
     /** "How is this inlined as a subdir?  Note that when you change this, you must resave everything subdiring this file for it to take effect" */
     InlineDirType mInlineSubDirType; // 0x58
-    /** "where this came from" */
+    /** The path this ObjectDir was loaded from. */
     const char* mPathName; // 0x5c
     FilePath mStoredFile; // 0x60
     std::vector<InlinedDir> mInlinedDirs; // 0x6c

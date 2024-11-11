@@ -75,8 +75,11 @@ public:
 typedef Hmx::Object* ObjectFunc(void);
 
 namespace Hmx {
-    /** "The Object class is the root of the class hierarchy. Every
-            class has Object as a superclass." */
+
+    /** @brief: The base class from which all major Objects used in-game build upon.
+    * Original _objects description:
+    * "The Object class is the root of the class hierarchy. Every
+        class has Object as a superclass." */
     class Object : public ObjRef {
     public:
         /** An array of properties this Objects can have. */
@@ -86,7 +89,7 @@ namespace Hmx {
         const char* mName; // 0xc
         /** The ObjectDir in which this Object resides. */
         class ObjectDir* mDir; // 0x10
-        /** A collection of object types which reference this Object. */
+        /** A collection of object instances which reference this Object. */
         std::vector<ObjRef*> mRefs; // 0x14
 
         /** A collection of Object class names and their corresponding instantiators. */
