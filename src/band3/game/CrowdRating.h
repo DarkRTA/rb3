@@ -24,6 +24,8 @@ public:
     bool IsBelowLoseLevel() const;
     bool CantFailYet() const;
     void ChangeDifficulty(BandUser *, Difficulty);
+    float GetLoseLevel() const { return unk18; }
+    void SetLoseLevel(float level) { unk18 = level; }
 
     bool mActive; // 0x4
     float unk8;
