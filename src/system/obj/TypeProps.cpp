@@ -228,27 +228,27 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
 }
 
 void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
-    Hmx::Object* o = n.mValue.object;
+    Hmx::Object* o = n.UncheckedObj();
     if(o == from){
         o->Release(ref);
-        n = DataNode(to);
-        if(to != 0) to->AddRef(ref);
+        n = to;
+        if(to) to->AddRef(ref);
     }
 }
 
 void TypeProps::Replace(Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-            DataNode* node = &mMap->Node(cnt);
-            if(node->Type() == kDataObject){
-                ReplaceObject(*node, from, to, ref);
+            DataNode& curVal = mMap->Node(cnt);
+            if(curVal.Type() == kDataObject){
+                ReplaceObject(curVal, from, to, ref);
             }
-            else if(node->Type() == kDataArray){
-                DataArray* innerArr = node->mValue.array;
-                for(int cnt2 = innerArr->Size() - 1; cnt2 >= 0; cnt2--){
-                    DataNode* innerNode = &innerArr->Node(cnt2);
-                    if(innerNode->Type() == kDataObject){
-                        ReplaceObject(*innerNode, from, to, ref);
+            else if(curVal.Type() == kDataArray){
+                DataArray* valArr = curVal.mValue.array;
+                for(int cnt2 = valArr->Size() - 1; cnt2 >= 0; cnt2--){
+                    DataNode& innerNode = valArr->Node(cnt2);
+                    if(innerNode.Type() == kDataObject){
+                        ReplaceObject(innerNode, from, to, ref);
                     }
                 }
             }
@@ -257,25 +257,25 @@ void TypeProps::Replace(Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
 }
 
 int TypeProps::Size() const {
-    if(mMap != 0) return mMap->Size() / 2;
+    if(mMap) return mMap->Size() / 2;
     else return 0;
 }
 
 void TypeProps::ReleaseObjects(Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-            DataNode* node = &mMap->Node(cnt);
-            if(node->Type() == kDataObject){
-                Hmx::Object* obj = node->mValue.object;
-                if(obj != 0) obj->Release(ref);
+            DataNode& curVal = mMap->Node(cnt);
+            if(curVal.Type() == kDataObject){
+                Hmx::Object* objVal = curVal.UncheckedObj();
+                if(objVal) objVal->Release(ref);
             }
-            else if(node->Type() == kDataArray){
-                DataArray* innerArr = node->mValue.array;
-                for(int cnt2 = innerArr->Size() - 1; cnt2 >= 0; cnt2--){
-                    DataNode* innerNode = &innerArr->Node(cnt2);
-                    if(innerNode->Type() == kDataObject){
-                        Hmx::Object* obj = innerNode->mValue.object;
-                        if(obj != 0) obj->Release(ref);
+            else if(curVal.Type() == kDataArray){
+                DataArray* valArr = curVal.mValue.array;
+                for(int cnt2 = valArr->Size() - 1; cnt2 >= 0; cnt2--){
+                    DataNode& innerNode = valArr->Node(cnt2);
+                    if(innerNode.Type() == kDataObject){
+                        Hmx::Object* obj = innerNode.UncheckedObj();
+                        if(obj) obj->Release(ref);
                     }
                 }
             }
@@ -283,22 +283,21 @@ void TypeProps::ReleaseObjects(Hmx::Object* ref){
     }
 }
 
-
 void TypeProps::AddRefObjects(Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-            DataNode* node = &mMap->Node(cnt);
-            if(node->Type() == kDataObject){
-                Hmx::Object* obj = node->mValue.object;
-                if(obj != 0) obj->AddRef(ref);
+            DataNode& curVal = mMap->Node(cnt);
+            if(curVal.Type() == kDataObject){
+                Hmx::Object* objVal = curVal.UncheckedObj();
+                if(objVal) objVal->AddRef(ref);
             }
-            else if(node->Type() == kDataArray){
-                DataArray* innerArr = node->mValue.array;
-                for(int cnt2 = innerArr->Size() - 1; cnt2 >= 0; cnt2--){
-                    DataNode* innerNode = &innerArr->Node(cnt2);
-                    if(innerNode->Type() == kDataObject){
-                        Hmx::Object* obj = innerNode->mValue.object;
-                        if(obj != 0) obj->AddRef(ref);
+            else if(curVal.Type() == kDataArray){
+                DataArray* valArr = curVal.mValue.array;
+                for(int cnt2 = valArr->Size() - 1; cnt2 >= 0; cnt2--){
+                    DataNode& innerNode = valArr->Node(cnt2);
+                    if(innerNode.Type() == kDataObject){
+                        Hmx::Object* obj = innerNode.UncheckedObj();
+                        if(obj) obj->AddRef(ref);
                     }
                 }
             }

@@ -36,17 +36,44 @@ public:
     void Load(BinStream &, bool, Hmx::Object *);
 
     void ClearKeyValue(Symbol, Hmx::Object*);
-    void ClearAll(Hmx::Object*);
-    void ReleaseObjects(Hmx::Object*);
-    void AddRefObjects(Hmx::Object*);
+
+    /** Completely clear the dictionary.
+     * @param [in] ref The Hmx::Object that any objects will release from.
+    */
+    void ClearAll(Hmx::Object* ref);
+
+    /** Releases all Object values currently in the dictionary.
+     * @param [in] ref The Hmx::Object to release from.
+    */
+    void ReleaseObjects(Hmx::Object* ref);
+
+    /** Adds references to all Object values currently in the dictionary.
+     * @param [in] ref The Hmx::Object to add refs to.
+    */
+    void AddRefObjects(Hmx::Object* ref);
     void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, Hmx::Object*);
     void SetArrayValue(Symbol, int, const DataNode&, DataArray*, Hmx::Object*);
     void RemoveArrayValue(Symbol, int, DataArray*, Hmx::Object*);
     DataNode* KeyValue(Symbol, bool) const;
     DataArray* GetArray(Symbol, DataArray*, Hmx::Object*);
     void SetKeyValue(Symbol, const DataNode&, bool, Hmx::Object*);
-    void ReplaceObject(DataNode&, Hmx::Object*, Hmx::Object*, Hmx::Object*);
-    void Replace(Hmx::Object*, Hmx::Object*, Hmx::Object*);
+
+    /** If the DataNode n contains from, replaces it with to.
+     * @param [in] n The DataNode containing a Hmx::Object.
+     * @param [in] from The Hmx::Object to be replaced.
+     * @param [in] to The Hmx::Object serving as the replacement.
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    void ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref);
+    
+    /** Replaces all instances of from in the dictionary with to.
+     * @param [in] from The Hmx::Object to be replaced.
+     * @param [in] to The Hmx::Object serving as the replacement.
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    void Replace(Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref);
+
+    /** Get the number of properties currently in the dictionary. */
     int Size() const;
     void Copy(const TypeProps&, Hmx::Object*);
     Symbol Key(int) const;
