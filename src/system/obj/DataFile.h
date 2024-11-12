@@ -32,8 +32,8 @@ public:
 
 class DataLoaderThreadObj : public ThreadCallback {
     public:
-    DataLoaderThreadObj(DataLoader* dl, DataArray* da, File* fi, int sz, const char* s, void* _mem, bool b) : unk4(dl),
-        unk8(da), unkc(fi), mem(_mem), fsize(sz), unk18(s), unk1c(b) {}
+    DataLoaderThreadObj(DataLoader* dl, File* fi, void* _mem, int sz, bool b, const char* s) : unk4(dl),
+        unk8(0), unkc(fi), mem(_mem), fsize(sz), unk18(s), unk1c(b) {}
     virtual ~DataLoaderThreadObj();
     virtual void ThreadStart();
     virtual void ThreadDone(int);
@@ -41,10 +41,10 @@ class DataLoaderThreadObj : public ThreadCallback {
     DataLoader* unk4; // 0x4
     DataArray* unk8; // 0x8
     File* unkc; // 0xC
-    void* mem; // 0x10
-    int fsize; // 0x14
-    const char* unk18;
-    bool unk1c;
+    int fsize; // 0x10
+    void* mem; // 0x14
+    const char* unk18; // 0x18
+    bool unk1c; // 0x1c
 };
 
 DataArray* ReadCacheStream(BinStream&, const char*);

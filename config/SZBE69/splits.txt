@@ -768,23 +768,23 @@ system/os/UsbMidiKeyboardMsgs.cpp:
 	.text       start:0x80315298 end:0x80315A70
 
 system/obj/DataArray.cpp:
-	.text       start:0x80315A70 end:0x803185F0
+	.text       start:0x80315A70 end:0x80318880
 	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
 system/obj/DataFile.cpp:
-	.text       start:0x803185F0 end:0x8031B2B8
+	.text       start:0x80318880 end:0x8031B2B8
 	.ctors      start:0x807EFF08 end:0x807EFF0C
 
 system/obj/DataFunc.cpp:
-	.text       start:0x8031B2B8 end:0x80322958
+	.text       start:0x8031B2B8 end:0x803229AC
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
 	.sbss       start:0x808E4478 end:0x808E447C
 	.bss        start:0x8091A518 end:0x8091A588
 
 system/obj/DataNode.cpp:
-	.text       start:0x80322958 end:0x80324278
+	.text       start:0x803229AC end:0x80324278
 	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
 	.bss        start:0x8091A598 end:0x8091A608
@@ -803,7 +803,7 @@ system/obj/DataFlex.c:
 	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
-system/obj/ObjectDir.cpp:
+system/obj/Dir.cpp:
 	.text       start:0x8032553C end:0x8032DA70
 	.ctors      start:0x807EFF18 end:0x807EFF1C
 
@@ -814,7 +814,7 @@ system/obj/DirLoader.cpp:
 system/obj/DirUnloader.cpp:
 	.text       start:0x8033106C end:0x80331D40
 
-rb3/msgsource.cpp:
+system/obj/Msg.cpp:
 	.text       start:0x80331D40 end:0x803351D0
 
 system/obj/Object.cpp:

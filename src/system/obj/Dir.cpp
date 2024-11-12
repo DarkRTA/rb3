@@ -44,7 +44,7 @@ BinStream& operator>>(BinStream& bs, InlineDirType& ty){
 }
 
 void ObjectDir::Reserve(int i, int j){
-    if(mHashTable.mSize < i)
+    if(mHashTable.Size() < i)
         mHashTable.Resize(i, 0);
     mStringTable.Reserve(j);
 }
@@ -542,21 +542,21 @@ void ObjectDir::RemoveSubDir(const ObjDirPtr<ObjectDir>& dPtr){
 }
 
 static DataNode OnLoadObjects(DataArray* da){
-    return DataNode(DirLoader::LoadObjects(FilePath(da->Str(1)), 0, 0));
+    return DirLoader::LoadObjects(FilePath(da->Str(1)), 0, 0);
 }
 
 static DataNode OnPathName(DataArray* da){
-    return DataNode(PathName(da->GetObj(1)));
+    return PathName(da->Obj<Hmx::Object>(1));
 }
 
 static DataNode OnReserveToFit(DataArray* da){
     ReserveToFit(da->Obj<ObjectDir>(1), da->Obj<ObjectDir>(2), da->Int(3));
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode OnInitObject(DataArray* da){
-    InitObject(da->GetObj(1));
-    return DataNode(0);
+    InitObject(da->Obj<Hmx::Object>(1));
+    return 0;
 }
 
 void CheckForDuplicates(){
