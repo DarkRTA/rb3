@@ -666,50 +666,105 @@ system/os/HDCache.cpp:
 	.text       start:0x802FDAE0 end:0x802FF088
 	.ctors      start:0x807EFED4 end:0x807EFED8
 
+system/os/HomeMenu_Wii.cpp:
+	.text       start:0x802FF088 end:0x803008FC
+
+system/os/DiscErrorMgr_Wii.cpp:
+	.text       start:0x803008FC end:0x80300F98
+
 system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
+system/os/Joypad_Wii.cpp:
+	.text       start:0x80303E44 end:0x80305F5C
+	.ctors      start:0x807EFEDC end:0x807EFEE0
+
+system/os/JoypadClient.cpp:
+	.text       start:0x80305F5C end:0x80306CE8
+	.ctors      start:0x807EFEE0 end:0x807EFEE4
+
+system/os/JoypadMsgs.cpp:
+	.text       start:0x80306CE8 end:0x80306F74
+
+system/os/Keyboard.cpp:
+	.text       start:0x80306F74 end:0x80307410
+	.ctors      start:0x807EFEE4 end:0x807EFEE8
+
+system/os/Keyboard_Wii.cpp:
+	.text       start:0x80307410 end:0x803076BC
+
+system/os/Memcard.cpp:
+	.text       start:0x803076BC end:0x803078AC
+
+system/os/Memcard_Wii.cpp:
+	.text       start:0x803078AC end:0x80308638
+	.ctors      start:0x807EFEE8 end:0x807EFEEC
+
 system/os/NetStream.cpp:
 	.text       start:0x80308638 end:0x80308ACC
 
-rb3/wiinetworksocket.cpp:
-	.text       start:0x80308CC0 end:0x80308DB4
+system/os/NetworkSocket_Wii.cpp:
+	.text       start:0x80308ACC end:0x803092C0
 
-rb3/unknown/803/unk_8030A494.cpp:
-	.text       start:0x8030A494 end:0x8030DBF8
+system/os/OnlineID.cpp:
+	.text       start:0x803092C0 end:0x803093D0
+
+system/os/PlatformMgr.cpp:
+	.text       start:0x803093D0 end:0x8030A55C
+	.ctors      start:0x807EFEEC end:0x807EFEF0
+
+system/os/PlatformMgr_Wii.cpp:
+	.text       start:0x8030A55C end:0x8030DC60
+	.ctors      start:0x807EFEF0 end:0x807EFEF4
+
+system/os/ProfilePicture.cpp:
+	.text       start:0x8030DC60 end:0x8030DE8C
+
+system/os/ProfilePicture_Wii.cpp:
+	.text       start:0x8030DE8C end:0x8030DEFC
 
 system/os/System.cpp:
-	.text       start:0x8030DC60 end:0x8030F4F0
+	.text       start:0x8030DEFC end:0x8030F4F0
 	.ctors      start:0x807EFEF4 end:0x807EFEF8
 
-rb3/unknown/803/unk_8030F4F0.cpp:
-	.text       start:0x8030F4F0 end:0x80311394
+system/os/System_Wii.cpp:
+	.text       start:0x8030F4F0 end:0x8030F69C
+
+system/os/ThreadCall_Wii.cpp:
+	.text       start:0x8030F69C end:0x8030F9EC
+
+system/os/Timer.cpp:
+	.text       start:0x8030F9EC end:0x80311700
+	.ctors      start:0x807EFEF8 end:0x807EFEFC
 
 system/os/User.cpp:
 	.text       start:0x80311700 end:0x803120A0
 
-rb3/mgrs/usermgr.cpp:
+system/os/UserMgr.cpp:
 	.text       start:0x803120A0 end:0x803123EC
 
-rb3/synchronizationevent.cpp:
+system/os/SynchronizationEvent.cpp:
 	.text       start:0x803123EC end:0x80312524
 
-rb3/virtualkeyboard.cpp:
+system/os/VirtualKeyboard.cpp:
 	.text       start:0x80312524 end:0x80312AC0
 	.ctors      start:0x807EFEFC end:0x807EFF00
 
-rb3/messages/stringstrummedmsg.cpp:
-	.text       start:0x80313E98 end:0x80313FB0
-	.data       start:0x808549F8 end:0x80854A08
+system/os/VirtualKeyboard_Wii.cpp:
+	.text       start:0x80312AC0 end:0x80313368
 
-rb3/messages/stringstoppedmsg.cpp:
-	.text       start:0x80313FB0 end:0x80313FFC
+system/os/UsbMidiGuitar.cpp:
+	.text       start:0x80313368 end:0x80313E98
+	.ctors      start:0x807EFF00 end:0x807EFF04
 
-rb3/messages/rg_messages.cpp:
-	.text       start:0x80313FFC end:0x80314814
+system/os/UsbMidiGuitarMsgs.cpp:
+	.text       start:0x80313E98 end:0x80314814
 
-rb3/messages/key_messages.cpp:
+system/os/UsbMidiKeyboard.cpp:
+	.text       start:0x80314814 end:0x80315298
+
+system/os/UsbMidiKeyboardMsgs.cpp:
 	.text       start:0x80315298 end:0x80315A70
 
 system/obj/DataArray.cpp:
