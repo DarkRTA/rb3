@@ -9,63 +9,55 @@
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);
     DataArray* ret;
-    if(n == 0){
+    if(n == nullptr){
         MILO_ASSERT(typeDef, 0x16);
-        DataArray* yuh = typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
-        SetKeyValue(prop, DataNode(yuh, kDataArray), true, ref);
-        yuh->Release();
-        ret = yuh;
+        DataArray* clonedPropArr = typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
+        SetKeyValue(prop, DataNode(clonedPropArr, kDataArray), true, ref);
+        clonedPropArr->Release();
+        ret = clonedPropArr;
     }
     else {
         MILO_ASSERT(n->Type() == kDataArray, 0x1D);
-        ret = n->mValue.array;
+        ret = n->UncheckedArray();
     }
     return ret;
 }
 
-void TypeProps::SetArrayValue(Symbol prop, int i, const DataNode& val, DataArray* da, Hmx::Object* ref){
-    DataNode* node = &(GetArray(prop, da, ref)->Node(i));
-    if(node->Type() == kDataObject){
-        Hmx::Object* obj = node->mValue.object;
-        if(obj != 0){
-            obj->Release(ref);
-        }
+void TypeProps::SetArrayValue(Symbol prop, int idx, const DataNode& val, DataArray* tdef, Hmx::Object* ref){
+    DataNode& node = GetArray(prop, tdef, ref)->Node(idx);
+    if(node.Type() == kDataObject){
+        Hmx::Object* obj = node.UncheckedObj();
+        if(obj) obj->Release(ref);
     }
-    *node = val;
-    if(node->Type() == kDataObject){
-        Hmx::Object* obj = node->mValue.object;
-        if(obj != 0){
-            obj->AddRef(ref);
-        }
+    node = val;
+    if(node.Type() == kDataObject){
+        Hmx::Object* obj = node.UncheckedObj();
+        if(obj) obj->AddRef(ref);
     }
 }
 
-void TypeProps::RemoveArrayValue(Symbol prop, int i, DataArray* da, Hmx::Object* ref){
-    DataArray* arr = GetArray(prop, da, ref);
-    DataNode* node = &(arr->Node(i));
-    if(node->Type() == kDataObject){
-        Hmx::Object* obj = node->mValue.object;
-        if(obj != 0){
-            obj->Release(ref);
-        }
+void TypeProps::RemoveArrayValue(Symbol prop, int idx, DataArray* tdef, Hmx::Object* ref){
+    DataArray* arr = GetArray(prop, tdef, ref);
+    DataNode& node = arr->Node(idx);
+    if(node.Type() == kDataObject){
+        Hmx::Object* obj = node.UncheckedObj();
+        if(obj) obj->Release(ref);
     }
-    arr->Remove(i);
+    arr->Remove(idx);
 }
 
-void TypeProps::InsertArrayValue(Symbol prop, int i, const DataNode& val, DataArray* arr, Hmx::Object* ref){
-    DataArray* asdf = GetArray(prop, arr, ref);
-    asdf->Insert(i, val);
+void TypeProps::InsertArrayValue(Symbol prop, int idx, const DataNode& val, DataArray* arr, Hmx::Object* ref){
+    DataArray* propArr = GetArray(prop, arr, ref);
+    propArr->Insert(idx, val);
     if(val.Type() == kDataObject){
-        Hmx::Object* obj = val.mValue.object;
-        if(obj != 0){
-            obj->AddRef(ref);
-        }
+        Hmx::Object* obj = val.UncheckedObj();
+        if(obj) obj->AddRef(ref);
     }
 }
 
 void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Object* ref){
     if(b && value.Type() == kDataObject){
-        Hmx::Object* o = value.mValue.object;
+        Hmx::Object* o = value.UncheckedObj();
         if(o) o->AddRef(ref);
     }
     if(!mMap){
@@ -79,18 +71,17 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
             int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
-                DataNode& n = mMap->Node(cnt + 1);
-                if(n.Type() == kDataObject){
-                    Hmx::Object* o = n.mValue.object;
+                DataNode& valNode = mMap->Node(cnt + 1);
+                if(valNode.Type() == kDataObject){
+                    Hmx::Object* o = valNode.UncheckedObj();
                     if(o) o->Release(ref);
                 }
-                n = value;
+                valNode = value;
                 return;
             }
         }
-
         mMap->Resize(nodeCnt + 2);
-        mMap->Node(nodeCnt) = DataNode(key);
+        mMap->Node(nodeCnt) = key;
         mMap->Node(nodeCnt + 1) = value;
     }
 }

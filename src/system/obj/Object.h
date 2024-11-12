@@ -21,11 +21,12 @@ namespace Hmx {
 class TypeProps {
 private:
     /** The DataArray structure representing the property dictionary.
-        Rather than an std::map or a dictionary from a language like Python,
-        the dictionary is laid out in one continuous DataArray, in the style of:
-        (key1 value1 key2 value2 key3 value3).
-        Each key is a DataNode of type Symbol, while each value is a DataNode of some other compatible node type (int/float/const char*). */
-    DataArray* mMap;
+      * Rather than an std::map or a dictionary from a language like Python,
+      * the dictionary is laid out in one continuous DataArray, in the style of:
+      * (key1 value1 key2 value2 key3 value3).
+      * Each key is a DataNode of type Symbol,
+      * while each value is a DataNode of some other compatible node type (int/float/const char*). */
+    DataArray* mMap; // 0x0
 
     /** If the DataNode n contains from, replaces it with to.
      * @param [in] n The DataNode containing a Hmx::Object.
@@ -74,9 +75,32 @@ public:
      * @param [in] ref The Hmx::Object that any objects will release from.
     */
     void ClearAll(Hmx::Object* ref);
-    void InsertArrayValue(Symbol, int, const DataNode&, DataArray*, Hmx::Object*);
-    void SetArrayValue(Symbol, int, const DataNode&, DataArray*, Hmx::Object*);
-    void RemoveArrayValue(Symbol, int, DataArray*, Hmx::Object*);
+
+    /** Search for a key in the dictionary, and insert arrVal into the resulting DataArray value at index idx.
+     * @param [in] key The key to search for.
+     * @param [in] idx The index of the resulting DataArray value in which to insert arrVal.
+     * @param [in] arrVal The value to insert into the key's resulting DataArray value.
+     * @param [in] tdef The type def DataArray to search in, if the key isn't in the dictionary.
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    void InsertArrayValue(Symbol key, int idx, const DataNode& arrVal, DataArray* tdef, Hmx::Object* ref);
+
+    /** Search for a key in the dictionary, and assign arrVal to the resulting DataArray value at index idx.
+     * @param [in] key The key to search for.
+     * @param [in] idx The index of the resulting DataArray value in which to insert arrVal.
+     * @param [in] arrVal The value to insert into the key's resulting DataArray value.
+     * @param [in] tdef The type def DataArray to search in, if the key isn't in the dictionary.
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    void SetArrayValue(Symbol key, int idx, const DataNode& arrVal, DataArray* tdef, Hmx::Object* ref);
+
+    /** Search for a key in the dictionary, and remove the DataNode of the resulting DataArray value at index idx.
+     * @param [in] key The key to search for.
+     * @param [in] idx The index of the resulting DataArray value in which to insert arrVal.
+     * @param [in] tdef The type def DataArray to search in, if the key isn't in the dictionary.
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    void RemoveArrayValue(Symbol key, int idx, DataArray* tdef, Hmx::Object* ref);
 
     /** Search for a key in the dictionary, and return the value DataNode.
      * @param [out] out A DataNode containing the key's corresponding value.
@@ -84,8 +108,22 @@ public:
      * @param [in] fail Whether or not to fail the program if the key cannot be found.
     */
     DataNode* KeyValue(Symbol key, bool fail) const;
-    DataArray* GetArray(Symbol, DataArray*, Hmx::Object*);
-    void SetKeyValue(Symbol, const DataNode&, bool, Hmx::Object*);
+
+    /** Search for a key in the dictionary, and return the DataArray value.
+     * @param [out] out The key's corresponding value, of type DataArray.
+     * @param [in] key The key to search for.
+     * @param [in] typeDef The type def DataArray to search in, if the key isn't in the dictionary.
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    DataArray* GetArray(Symbol key, DataArray* typeDef, Hmx::Object* ref);
+
+    /** Either adds or updates the key/value pair in the dictionary.
+     * @param [in] key The key to either add or update
+     * @param [in] value The corresponding value associated with the key.
+     * @param [in] b TODO: currently unknown
+     * @param [in] ref The Hmx::Object to update refs for.
+    */
+    void SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Object* ref);
     
     /** Replaces all instances of from in the dictionary with to.
      * @param [in] from The Hmx::Object to be replaced.
