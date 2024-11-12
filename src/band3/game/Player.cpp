@@ -509,16 +509,14 @@ void Player::CompleteCommonPhrase(bool b1, bool b2){
 int Player::GetIndividualMultiplier() const {
     if(GetMultiplierActive()){
         int streak = mStats.GetCurrentStreak();
-        int mult = TheScoring->GetStreakMult(streak, mBehavior->unk8);
-        
+        int mult = TheScoring->GetStreakMult(streak, mBehavior->mStreakType);
+
         return mult;
     }
     else return 1;
 }
 
-int Player::GetMaxIndividualMultipler() const {
-    return mBehavior->unkc;
-}
+int Player::GetMaxIndividualMultipler() const { return mBehavior->mMaxMultiplier; }
 
 int Player::GetNumStars() const {
     return TheScoring->GetSoloNumStars(mScore, mTrackType);
@@ -601,9 +599,7 @@ void Player::AddEnergy(float f){
     SetEnergy(set);
 }
 
-Symbol Player::GetStreakType() const {
-    return mBehavior->unk8;
-}
+Symbol Player::GetStreakType() const { return mBehavior->mStreakType; }
 
 void Player::SetEnergy(float f){
     MetaPerformer::Current();
