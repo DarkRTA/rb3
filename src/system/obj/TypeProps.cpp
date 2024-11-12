@@ -9,63 +9,55 @@
 DataArray* TypeProps::GetArray(Symbol prop, DataArray* typeDef, Hmx::Object* ref){
     DataNode* n = KeyValue(prop, false);
     DataArray* ret;
-    if(n == 0){
+    if(n == nullptr){
         MILO_ASSERT(typeDef, 0x16);
-        DataArray* yuh = typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
-        SetKeyValue(prop, DataNode(yuh, kDataArray), true, ref);
-        yuh->Release();
-        ret = yuh;
+        DataArray* clonedPropArr = typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
+        SetKeyValue(prop, DataNode(clonedPropArr, kDataArray), true, ref);
+        clonedPropArr->Release();
+        ret = clonedPropArr;
     }
     else {
         MILO_ASSERT(n->Type() == kDataArray, 0x1D);
-        ret = n->mValue.array;
+        ret = n->UncheckedArray();
     }
     return ret;
 }
 
-void TypeProps::SetArrayValue(Symbol prop, int i, const DataNode& val, DataArray* da, Hmx::Object* ref){
-    DataNode* node = &(GetArray(prop, da, ref)->Node(i));
-    if(node->Type() == kDataObject){
-        Hmx::Object* obj = node->mValue.object;
-        if(obj != 0){
-            obj->Release(ref);
-        }
+void TypeProps::SetArrayValue(Symbol prop, int idx, const DataNode& val, DataArray* tdef, Hmx::Object* ref){
+    DataNode& node = GetArray(prop, tdef, ref)->Node(idx);
+    if(node.Type() == kDataObject){
+        Hmx::Object* obj = node.UncheckedObj();
+        if(obj) obj->Release(ref);
     }
-    *node = val;
-    if(node->Type() == kDataObject){
-        Hmx::Object* obj = node->mValue.object;
-        if(obj != 0){
-            obj->AddRef(ref);
-        }
+    node = val;
+    if(node.Type() == kDataObject){
+        Hmx::Object* obj = node.UncheckedObj();
+        if(obj) obj->AddRef(ref);
     }
 }
 
-void TypeProps::RemoveArrayValue(Symbol prop, int i, DataArray* da, Hmx::Object* ref){
-    DataArray* arr = GetArray(prop, da, ref);
-    DataNode* node = &(arr->Node(i));
-    if(node->Type() == kDataObject){
-        Hmx::Object* obj = node->mValue.object;
-        if(obj != 0){
-            obj->Release(ref);
-        }
+void TypeProps::RemoveArrayValue(Symbol prop, int idx, DataArray* tdef, Hmx::Object* ref){
+    DataArray* arr = GetArray(prop, tdef, ref);
+    DataNode& node = arr->Node(idx);
+    if(node.Type() == kDataObject){
+        Hmx::Object* obj = node.UncheckedObj();
+        if(obj) obj->Release(ref);
     }
-    arr->Remove(i);
+    arr->Remove(idx);
 }
 
-void TypeProps::InsertArrayValue(Symbol prop, int i, const DataNode& val, DataArray* arr, Hmx::Object* ref){
-    DataArray* asdf = GetArray(prop, arr, ref);
-    asdf->Insert(i, val);
+void TypeProps::InsertArrayValue(Symbol prop, int idx, const DataNode& val, DataArray* arr, Hmx::Object* ref){
+    DataArray* propArr = GetArray(prop, arr, ref);
+    propArr->Insert(idx, val);
     if(val.Type() == kDataObject){
-        Hmx::Object* obj = val.mValue.object;
-        if(obj != 0){
-            obj->AddRef(ref);
-        }
+        Hmx::Object* obj = val.UncheckedObj();
+        if(obj) obj->AddRef(ref);
     }
 }
 
 void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Object* ref){
     if(b && value.Type() == kDataObject){
-        Hmx::Object* o = value.mValue.object;
+        Hmx::Object* o = value.UncheckedObj();
         if(o) o->AddRef(ref);
     }
     if(!mMap){
@@ -79,24 +71,23 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
             int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
             int keystr = (int)key.Str();
             if(symstr == keystr){
-                DataNode& n = mMap->Node(cnt + 1);
-                if(n.Type() == kDataObject){
-                    Hmx::Object* o = n.mValue.object;
+                DataNode& valNode = mMap->Node(cnt + 1);
+                if(valNode.Type() == kDataObject){
+                    Hmx::Object* o = valNode.UncheckedObj();
                     if(o) o->Release(ref);
                 }
-                n = value;
+                valNode = value;
                 return;
             }
         }
-
         mMap->Resize(nodeCnt + 2);
-        mMap->Node(nodeCnt) = DataNode(key);
+        mMap->Node(nodeCnt) = key;
         mMap->Node(nodeCnt + 1) = value;
     }
 }
 
 DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
-    if(mMap != 0){
+    if(mMap){
         for(int i = mMap->Size() - 2; i >= 0; i -= 2){
             int symstr = (int)CONST_ARRAY(mMap)->Node(i).mValue.symbol;
             int keystr = (int)key.Str();
@@ -109,8 +100,8 @@ DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
     return 0;
 }
 
-void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
-    if(arr != 0){
+static void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
+    if(arr){
         for(int i = 2; i < arr->Size(); i++){
             if(arr->Sym(i) == proxy_save) proxy = true;
             else if(arr->Sym(i) == no_save) none = true;
@@ -145,70 +136,70 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
         }
     }
 #endif
-    if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
+    if(!mMap || (ref->DataDir() != ref) || ref == ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;
     }
     const DataArray* theTypeDef = ref->TypeDef();
     if(!theTypeDef){
         MILO_WARN("%s: Removing type properties without type definition", ref->Name());
-        d << (DataArray*)0;
+        d << (DataArray*)nullptr;
         return;
     }
-    DataArray* potentialArr = 0;
+    DataArray* arrToWrite = nullptr;
     int keyIdx = 0;
     for(int i = 0; i < mMap->Size(); i += 2){
-        Symbol sym = mMap->Sym(i);
-        DataArray* found = theTypeDef->FindArray(sym, false);
-        if(found){
-            bool b1 = false;
-            bool b2 = false;
-            GetSaveFlags(found, b1, b2);
-            if(!b2 && b1 != gLoadingProxyFromDisk){
-                if(!potentialArr){
-                    potentialArr = new DataArray(mMap->Size());
+        Symbol key = mMap->Sym(i);
+        DataArray* keyArr = theTypeDef->FindArray(key, false);
+        if(keyArr){
+            bool saveProxy = false;
+            bool saveNone = false;
+            GetSaveFlags(keyArr, saveProxy, saveNone);
+            if(!saveNone && saveProxy != gLoadingProxyFromDisk){
+                if(!arrToWrite){
+                    arrToWrite = new DataArray(mMap->Size());
                 }
-                potentialArr->Node(keyIdx) = DataNode(sym);
-                potentialArr->Node(keyIdx + 1) = mMap->Node(i + 1);
+                arrToWrite->Node(keyIdx) = key;
+                arrToWrite->Node(keyIdx + 1) = mMap->Node(i + 1);
                 keyIdx += 2;
             }
         }
     }
-    if(potentialArr){
-        potentialArr->Resize(keyIdx);
-        d << potentialArr;
-        potentialArr->Release();
-        return;
+    if(arrToWrite){
+        // resize arrToWrite to however many properties were actually inserted
+        arrToWrite->Resize(keyIdx);
+        d << arrToWrite;
+        arrToWrite->Release();
     }
-    d << potentialArr;
-
+    else d << arrToWrite;
 }
 
 void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     ReleaseObjects(ref);
     const DataArray* def = ref->TypeDef();
-    Hmx::Object* theThis = 0;
+    Hmx::Object* theThis = nullptr;
     if(def) theThis = DataSetThis(ref);
+    // if there are existing entries in mMap, set their key/vals now
     if(mMap && gLoadingProxyFromDisk && def){
         DataArray* arr = mMap;
         d >> mMap;
         int mapsize = arr->Size();
         for(int i = 0; i < mapsize; i += 2){
-            Symbol sym = arr->Sym(i);
+            Symbol key = arr->Sym(i);
             if(old_proxy){
-                bool b1 = false;
-                bool b2 = false;
-                GetSaveFlags(def->FindArray(sym, false), b1, b2);
-                if(b1 || b2) continue;
+                bool saveProxy = false;
+                bool saveNone = false;
+                GetSaveFlags(def->FindArray(key, false), saveProxy, saveNone);
+                if(saveProxy || saveNone) continue;
             }
-                SetKeyValue(sym, arr->Node(i + 1), false, ref);
+            SetKeyValue(key, arr->Node(i + 1), false, ref);
         }
         arr->Release();
     }
     else {
         if(mMap){
             mMap->Release();
-            mMap = 0;
+            mMap = nullptr;
         }
         d >> mMap;
     }
@@ -216,9 +207,9 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     if(def){
         if(mMap && TheLoadMgr.EditMode()){
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
-                DataArray* found = def->FindArray(mMap->Sym(i), false);
-                if(!found || (CONST_ARRAY(found)->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
-                    TheDebug << MakeString("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
+                DataArray* keyArr = def->FindArray(mMap->Sym(i), false);
+                if(!keyArr || (CONST_ARRAY(keyArr)->Node(1).Type() != kDataCommand) && !keyArr->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
+                    MILO_LOG("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
                 }
             }
         }
@@ -228,27 +219,27 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
 }
 
 void TypeProps::ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
-    Hmx::Object* o = n.mValue.object;
+    Hmx::Object* o = n.UncheckedObj();
     if(o == from){
         o->Release(ref);
-        n = DataNode(to);
-        if(to != 0) to->AddRef(ref);
+        n = to;
+        if(to) to->AddRef(ref);
     }
 }
 
 void TypeProps::Replace(Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-            DataNode* node = &mMap->Node(cnt);
-            if(node->Type() == kDataObject){
-                ReplaceObject(*node, from, to, ref);
+            DataNode& curVal = mMap->Node(cnt);
+            if(curVal.Type() == kDataObject){
+                ReplaceObject(curVal, from, to, ref);
             }
-            else if(node->Type() == kDataArray){
-                DataArray* innerArr = node->mValue.array;
-                for(int cnt2 = innerArr->Size() - 1; cnt2 >= 0; cnt2--){
-                    DataNode* innerNode = &innerArr->Node(cnt2);
-                    if(innerNode->Type() == kDataObject){
-                        ReplaceObject(*innerNode, from, to, ref);
+            else if(curVal.Type() == kDataArray){
+                DataArray* valArr = curVal.mValue.array;
+                for(int cnt2 = valArr->Size() - 1; cnt2 >= 0; cnt2--){
+                    DataNode& innerNode = valArr->Node(cnt2);
+                    if(innerNode.Type() == kDataObject){
+                        ReplaceObject(innerNode, from, to, ref);
                     }
                 }
             }
@@ -257,25 +248,25 @@ void TypeProps::Replace(Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref){
 }
 
 int TypeProps::Size() const {
-    if(mMap != 0) return mMap->Size() / 2;
+    if(mMap) return mMap->Size() / 2;
     else return 0;
 }
 
 void TypeProps::ReleaseObjects(Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-            DataNode* node = &mMap->Node(cnt);
-            if(node->Type() == kDataObject){
-                Hmx::Object* obj = node->mValue.object;
-                if(obj != 0) obj->Release(ref);
+            DataNode& curVal = mMap->Node(cnt);
+            if(curVal.Type() == kDataObject){
+                Hmx::Object* objVal = curVal.UncheckedObj();
+                if(objVal) objVal->Release(ref);
             }
-            else if(node->Type() == kDataArray){
-                DataArray* innerArr = node->mValue.array;
-                for(int cnt2 = innerArr->Size() - 1; cnt2 >= 0; cnt2--){
-                    DataNode* innerNode = &innerArr->Node(cnt2);
-                    if(innerNode->Type() == kDataObject){
-                        Hmx::Object* obj = innerNode->mValue.object;
-                        if(obj != 0) obj->Release(ref);
+            else if(curVal.Type() == kDataArray){
+                DataArray* valArr = curVal.mValue.array;
+                for(int cnt2 = valArr->Size() - 1; cnt2 >= 0; cnt2--){
+                    DataNode& innerNode = valArr->Node(cnt2);
+                    if(innerNode.Type() == kDataObject){
+                        Hmx::Object* obj = innerNode.UncheckedObj();
+                        if(obj) obj->Release(ref);
                     }
                 }
             }
@@ -283,22 +274,21 @@ void TypeProps::ReleaseObjects(Hmx::Object* ref){
     }
 }
 
-
 void TypeProps::AddRefObjects(Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         for(int cnt = mMap->Size() - 1; cnt > 0; cnt -= 2){
-            DataNode* node = &mMap->Node(cnt);
-            if(node->Type() == kDataObject){
-                Hmx::Object* obj = node->mValue.object;
-                if(obj != 0) obj->AddRef(ref);
+            DataNode& curVal = mMap->Node(cnt);
+            if(curVal.Type() == kDataObject){
+                Hmx::Object* objVal = curVal.UncheckedObj();
+                if(objVal) objVal->AddRef(ref);
             }
-            else if(node->Type() == kDataArray){
-                DataArray* innerArr = node->mValue.array;
-                for(int cnt2 = innerArr->Size() - 1; cnt2 >= 0; cnt2--){
-                    DataNode* innerNode = &innerArr->Node(cnt2);
-                    if(innerNode->Type() == kDataObject){
-                        Hmx::Object* obj = innerNode->mValue.object;
-                        if(obj != 0) obj->AddRef(ref);
+            else if(curVal.Type() == kDataArray){
+                DataArray* valArr = curVal.mValue.array;
+                for(int cnt2 = valArr->Size() - 1; cnt2 >= 0; cnt2--){
+                    DataNode& innerNode = valArr->Node(cnt2);
+                    if(innerNode.Type() == kDataObject){
+                        Hmx::Object* obj = innerNode.UncheckedObj();
+                        if(obj) obj->AddRef(ref);
                     }
                 }
             }
@@ -325,7 +315,7 @@ DataNode& TypeProps::Value(int i) const {
 }
 
 void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         int cnt = mMap->Size() - 2;
         while(cnt >= 0){
             int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
@@ -333,14 +323,14 @@ void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
             if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
                 if(n.Type() == kDataObject){
-                    Hmx::Object* obj = n.mValue.object;
+                    Hmx::Object* obj = n.UncheckedObj();
                     if(obj) obj->Release(ref);
                 }
                 mMap->Remove(cnt);
                 mMap->Remove(cnt);
                 if(mMap->Size() == 0 && mMap){
                     mMap->Release();
-                    mMap = 0;
+                    mMap = nullptr;
                 }
                 return;
             }
