@@ -534,8 +534,18 @@ band3/tour/TourReward.cpp:
 	.sbss       start:0x808E4370 end:0x808E4378
 	.bss        start:0x80900740 end:0x80900758
 
-rb3/unknown/802/unk_802D4B74.cpp:
-	.text       start:0x802D4B74 end:0x802DCE58
+system/math/SHA1.cpp:
+	.text       start:0x802D5518 end:0x802D7088
+
+system/math/Sort.cpp:
+	.text       start:0x802D7088 end:0x802D70BC
+
+system/math/Geo.cpp:
+	.text       start:0x802D70BC end:0x802DCAB4
+
+system/math/Color.cpp:
+	.text       start:0x802DCAB4 end:0x802DCEDC
+	.ctors      start:0x807EFEA0 end:0x807EFEA4
 
 system/math/Interp.cpp:
 	.text       start:0x802DCEDC end:0x802DD9A4
@@ -549,11 +559,8 @@ system/math/Rand.cpp:
 system/math/Rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
-rb3/unknown/802/unk_802DDEA0.cpp:
-	.text       start:0x802DDEA0 end:0x802DE3D0
-
 system/math/Rot.cpp:
-	.text       start:0x802DE3D0 end:0x802DFE60
+	.text       start:0x802DDEA0 end:0x802DFE60
 
 system/math/strips/Adjacency.cpp:
 	.text       start:0x802DFE60 end:0x802E067C
@@ -581,16 +588,17 @@ system/math/StreamChecksum.cpp:
 system/math/strips/Striper.cpp:
 	.text       start:0x802E1DDC end:0x802E2D24
 
-rb3/unknown/802/unk_802E0CA0.cpp:
-	.text       start:0x802E2D24 end:0x802E2E28
-
 system/math/Trig.cpp:
-	.text       start:0x802E2E28 end:0x802E33CC
+	.text       start:0x802E2D24 end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
 	.bss        start:0x80901900 end:0x80902100
 
 system/math/Key.cpp:
 	.text       start:0x802E33CC end:0x802E40D0
+
+system/math/Vec.cpp:
+	.text       start:0x802E40D0 end:0x802E44FC
+	.ctors      start:0x807EFEAC end:0x807EFEB4
 
 system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
