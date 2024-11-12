@@ -622,37 +622,49 @@ system/os/AsyncFileCNT.cpp:
 system/os/AsyncFile_Wii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
-rb3/unknown/802/unk_802E9040.cpp:
-	.text       start:0x802E9040 end:0x802EAC5C
+system/os/AsyncTask.cpp:
+	.text       start:0x802E9040 end:0x802E911C
 
-rb3/wiicommercemgr.cpp:
-	.text       start:0x802EC338 end:0x802F0378
+system/os/BlockMgr.cpp:
+	.text       start:0x802E911C end:0x802EB004
+	.ctors      start:0x807EFEB8 end:0x807EFEBC
+
+system/os/CDReader.cpp:
+	.text       start:0x802EB004 end:0x802EC1CC
+	.ctors      start:0x807EFEBC end:0x807EFEC0
+
+system/os/CommerceMgr_Wii.cpp:
+	.text       start:0x802EC1CC end:0x802F0378
 	.ctors      start:0x807EFEC0 end:0x807EFEC4
 
-rb3/unknown/802/unk_802F02EC.cpp:
-	.text       start:0x802F0378 end:0x802F83C0
+system/os/ContentMgr.cpp:
+	.text       start:0x802F0378 end:0x802F86F4
+	.ctors      start:0x807EFEC4 end:0x807EFEC8
 
-rb3/unknown/802/unk_802F844C.cpp:
-	.text       start:0x802F844C end:0x802F8818
+system/os/CritSec.cpp:
+	.text       start:0x802F86F4 end:0x802F8818
 
 system/os/DateTime.cpp:
 	.text       start:0x802F8818 end:0x802F906C
 
 system/os/Debug.cpp:
-	.text       start:0x802F906C end:0x802F9860
+	.text       start:0x802F906C end:0x802F98DC
+	.ctors      start:0x807EFEC8 end:0x807EFECC
 
-rb3/unknown/802/unk_802F98DC.cpp:
-	.text       start:0x802F98DC end:0x802FA848
+system/os/File.cpp:
+	.text       start:0x802F98DC end:0x802FB548
+	.ctors      start:0x807EFECC end:0x807EFED0
 
-rb3/file_ops.cpp:
-	.text       start:0x802FA848 end:0x802FAB40
-	.bss        start:0x809071C8 end:0x809075C8
+system/os/File_Wii.cpp:
+	.text       start:0x802FB548 end:0x802FB6C4
 
-rb3/unknown/802/unk_802FA994.cpp:
-	.text       start:0x802FAB40 end:0x802FB4AC
+system/os/FileCache.cpp:
+	.text       start:0x802FB6C4 end:0x802FDAE0
+	.ctors      start:0x807EFED0 end:0x807EFED4
 
-rb3/unknown/802/unk_802FB548.cpp:
-	.text       start:0x802FB548 end:0x802FDA80
+system/os/HDCache.cpp:
+	.text       start:0x802FDAE0 end:0x802FF088
+	.ctors      start:0x807EFED4 end:0x807EFED8
 
 system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
