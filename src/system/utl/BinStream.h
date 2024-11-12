@@ -58,7 +58,7 @@ public:
     virtual void WriteImpl(const void*, int) = 0;
     virtual void SeekImpl(int, SeekType) = 0;
 
-    /** Endianness flags, denotes whether to swap from native. */
+    /** Whether or not the stream uses little endian. */
     bool mLittleEndian;
     /** PRNG source, used for encryption */
     Rand2 *mCrypto;
