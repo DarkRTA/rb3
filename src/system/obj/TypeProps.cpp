@@ -96,7 +96,7 @@ void TypeProps::SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Obje
 }
 
 DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
-    if(mMap != 0){
+    if(mMap){
         for(int i = mMap->Size() - 2; i >= 0; i -= 2){
             int symstr = (int)CONST_ARRAY(mMap)->Node(i).mValue.symbol;
             int keystr = (int)key.Str();
@@ -109,8 +109,8 @@ DataNode* TypeProps::KeyValue(Symbol key, bool fail) const {
     return 0;
 }
 
-void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
-    if(arr != 0){
+static void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
+    if(arr){
         for(int i = 2; i < arr->Size(); i++){
             if(arr->Sym(i) == proxy_save) proxy = true;
             else if(arr->Sym(i) == no_save) none = true;
@@ -145,70 +145,70 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
         }
     }
 #endif
-    if(!mMap || ((Hmx::Object*)ref->DataDir() != ref) || ref == (Hmx::Object*)ref->Dir() && !gLoadingProxyFromDisk){
+    if(!mMap || (ref->DataDir() != ref) || ref == ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;
     }
     const DataArray* theTypeDef = ref->TypeDef();
     if(!theTypeDef){
         MILO_WARN("%s: Removing type properties without type definition", ref->Name());
-        d << (DataArray*)0;
+        d << (DataArray*)nullptr;
         return;
     }
-    DataArray* potentialArr = 0;
+    DataArray* arrToWrite = nullptr;
     int keyIdx = 0;
     for(int i = 0; i < mMap->Size(); i += 2){
-        Symbol sym = mMap->Sym(i);
-        DataArray* found = theTypeDef->FindArray(sym, false);
-        if(found){
-            bool b1 = false;
-            bool b2 = false;
-            GetSaveFlags(found, b1, b2);
-            if(!b2 && b1 != gLoadingProxyFromDisk){
-                if(!potentialArr){
-                    potentialArr = new DataArray(mMap->Size());
+        Symbol key = mMap->Sym(i);
+        DataArray* keyArr = theTypeDef->FindArray(key, false);
+        if(keyArr){
+            bool saveProxy = false;
+            bool saveNone = false;
+            GetSaveFlags(keyArr, saveProxy, saveNone);
+            if(!saveNone && saveProxy != gLoadingProxyFromDisk){
+                if(!arrToWrite){
+                    arrToWrite = new DataArray(mMap->Size());
                 }
-                potentialArr->Node(keyIdx) = DataNode(sym);
-                potentialArr->Node(keyIdx + 1) = mMap->Node(i + 1);
+                arrToWrite->Node(keyIdx) = key;
+                arrToWrite->Node(keyIdx + 1) = mMap->Node(i + 1);
                 keyIdx += 2;
             }
         }
     }
-    if(potentialArr){
-        potentialArr->Resize(keyIdx);
-        d << potentialArr;
-        potentialArr->Release();
-        return;
+    if(arrToWrite){
+        // resize arrToWrite to however many properties were actually inserted
+        arrToWrite->Resize(keyIdx);
+        d << arrToWrite;
+        arrToWrite->Release();
     }
-    d << potentialArr;
-
+    else d << arrToWrite;
 }
 
 void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     ReleaseObjects(ref);
     const DataArray* def = ref->TypeDef();
-    Hmx::Object* theThis = 0;
+    Hmx::Object* theThis = nullptr;
     if(def) theThis = DataSetThis(ref);
+    // if there are existing entries in mMap, set their key/vals now
     if(mMap && gLoadingProxyFromDisk && def){
         DataArray* arr = mMap;
         d >> mMap;
         int mapsize = arr->Size();
         for(int i = 0; i < mapsize; i += 2){
-            Symbol sym = arr->Sym(i);
+            Symbol key = arr->Sym(i);
             if(old_proxy){
-                bool b1 = false;
-                bool b2 = false;
-                GetSaveFlags(def->FindArray(sym, false), b1, b2);
-                if(b1 || b2) continue;
+                bool saveProxy = false;
+                bool saveNone = false;
+                GetSaveFlags(def->FindArray(key, false), saveProxy, saveNone);
+                if(saveProxy || saveNone) continue;
             }
-                SetKeyValue(sym, arr->Node(i + 1), false, ref);
+            SetKeyValue(key, arr->Node(i + 1), false, ref);
         }
         arr->Release();
     }
     else {
         if(mMap){
             mMap->Release();
-            mMap = 0;
+            mMap = nullptr;
         }
         d >> mMap;
     }
@@ -216,9 +216,9 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     if(def){
         if(mMap && TheLoadMgr.EditMode()){
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
-                DataArray* found = def->FindArray(mMap->Sym(i), false);
-                if(!found || (CONST_ARRAY(found)->Node(1).Type() != kDataCommand) && !found->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
-                    TheDebug << MakeString("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
+                DataArray* keyArr = def->FindArray(mMap->Sym(i), false);
+                if(!keyArr || (CONST_ARRAY(keyArr)->Node(1).Type() != kDataCommand) && !keyArr->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {
+                    MILO_LOG("%s: type based property \"%s\" is outdated, will clear on save\n", PathName(ref), mMap->Sym(i));
                 }
             }
         }
@@ -324,7 +324,7 @@ DataNode& TypeProps::Value(int i) const {
 }
 
 void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
-    if(mMap != 0){
+    if(mMap){
         int cnt = mMap->Size() - 2;
         while(cnt >= 0){
             int symstr = (int)CONST_ARRAY(mMap)->Node(cnt).mValue.symbol;
@@ -332,14 +332,14 @@ void TypeProps::ClearKeyValue(Symbol key, Hmx::Object* ref){
             if(symstr == keystr){
                 DataNode& n = mMap->Node(cnt + 1);
                 if(n.Type() == kDataObject){
-                    Hmx::Object* obj = n.mValue.object;
+                    Hmx::Object* obj = n.UncheckedObj();
                     if(obj) obj->Release(ref);
                 }
                 mMap->Remove(cnt);
                 mMap->Remove(cnt);
                 if(mMap->Size() == 0 && mMap){
                     mMap->Release();
-                    mMap = 0;
+                    mMap = nullptr;
                 }
                 return;
             }
