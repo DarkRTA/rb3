@@ -4,12 +4,8 @@
 float DeJitter::sTimeScale = 1;
 
 DeJitter::DeJitter() { 
-    Reset(); 
-    if (unk_0x0.size() > 32) {
-        unk_0x0.clear();
-    } else {
-        unk_0x0.insert(unk_0x0.begin(), unk_0x0.size(), 0);
-    }
+    Reset();
+    unk_0x0.resize(32);
 }
 
 void DeJitter::Apply(float, float&) {

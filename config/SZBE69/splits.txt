@@ -858,10 +858,10 @@ system/utl/BufStream.cpp:
 	.text       start:0x803431F4 end:0x80343728
 
 system/utl/BufStreamNAND.cpp:
-	.text       start:0x80343728 end:0x80344240
+	.text       start:0x80343728 end:0x80344238
 
 system/utl/Cache.cpp:
-	.text       start:0x80344240 end:0x803442FC
+	.text       start:0x80344238 end:0x803442FC
 
 system/utl/Cache_Wii.cpp:
 	.text       start:0x803442FC end:0x80345CD0
@@ -884,11 +884,25 @@ system/utl/ChunkIDs.cpp:
 	.data       start:0x80856CC8 end:0x80856D18
 	.bss        start:0x8097BA98 end:0x8097BAD8
 
-rb3/unknown/803/unk_8034C91C.cpp:
+system/utl/ChunkStream.cpp:
+	.text       start:0x8034A900 end:0x8034C010
+	.ctors      start:0x807EFF34 end:0x807EFF38
+
+system/utl/Compress.cpp:
+	.text       start:0x8034C010 end:0x8034C158
+
+system/utl/DataPointMgr.cpp:
+	.text       start:0x8034C158 end:0x8034C444
+	.ctors      start:0x807EFF38 end:0x807EFF3C
+
+system/utl/DeJitter.cpp:
 	.text       start:0x8034C444 end:0x8034C664
 
 system/utl/EncryptXTEA.cpp:
 	.text       start:0x8034C664 end:0x8034C7D4
+
+system/utl/FakeSongMgr.cpp:
+	.text       start:0x8034C7D4 end:0x8034C91C
 
 system/utl/FilePath.cpp:
 	.text       start:0x8034C91C end:0x8034C9F8
@@ -898,6 +912,18 @@ system/utl/FilePath.cpp:
 
 system/utl/FileStream.cpp:
 	.text       start:0x8034C9F8 end:0x8034CEC0
+
+system/utl/GlitchFinder.cpp:
+	.text       start:0x8034CEC0 end:0x8034D0E4
+	.ctors      start:0x807EFF40 end:0x807EFF44
+
+system/utl/HangBlock_Wii.cpp:
+	.text       start:0x8034D0E4 end:0x8034D138
+	.ctors      start:0x807EFF44 end:0x807EFF48
+
+system/utl/HttpWii.cpp:
+	.text       start:0x8034D138 end:0x8034DAAC
+	.ctors      start:0x807EFF48 end:0x807EFF4C
 
 system/utl/HxGuid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50
