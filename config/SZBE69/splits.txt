@@ -1388,6 +1388,99 @@ system/beatmatch/GameGemDB.cpp:
 system/beatmatch/GameGemList.cpp:
 	.text       start:0x804614B0 end:0x80463810
 
+system/beatmatch/GuitarController.cpp:
+	.text       start:0x80463810 end:0x80464908
+
+system/beatmatch/GuitarTrackWatcherImpl.cpp:
+	.text       start:0x80464908 end:0x80464E84
+
+system/beatmatch/JoypadController.cpp:
+	.text       start:0x80464E84 end:0x8046612C
+
+system/beatmatch/JoypadGuitarController.cpp:
+	.text       start:0x8046612C end:0x804667F4
+
+system/beatmatch/JoypadMidiController.cpp:
+	.text       start:0x804667F4 end:0x804671FC
+
+system/beatmatch/JoypadTrackWatcherImpl.cpp:
+	.text       start:0x804671FC end:0x80467920
+
+system/beatmatch/KeyboardController.cpp:
+	.text       start:0x80467920 end:0x804681EC
+
+system/beatmatch/KeyboardTrackWatcherImpl.cpp:
+	.text       start:0x804681EC end:0x80469A88
+
+system/beatmatch/MasterAudio.cpp:
+	.text       start:0x80469A88 end:0x8046E95C
+
+system/beatmatch/MercurySwitchFilter.cpp:
+	.text       start:0x8046E95C end:0x8046EDCC
+
+system/beatmatch/Output.cpp:
+	.text       start:0x8046EDCC end:0x8046EE1C
+	.ctors      start:0x807EFF9C end:0x807EFFA0
+
+system/beatmatch/PhraseAnalyzer.cpp:
+	.text       start:0x8046EE1C end:0x80470CF8
+
+system/beatmatch/PhraseDB.cpp:
+	.text       start:0x80470CF8 end:0x80470F98
+
+system/beatmatch/PhraseList.cpp:
+	.text       start:0x80470F98 end:0x80471E74
+
+system/beatmatch/Playback.cpp:
+	.text       start:0x80471E74 end:0x80472568
+	.ctors      start:0x807EFFA0 end:0x807EFFA4
+
+system/beatmatch/PlayerTrackConfigList.cpp:
+	.text       start:0x80472568 end:0x80473F18
+
+system/beatmatch/RealGuitarController.cpp:
+	.text       start:0x80473F18 end:0x8047488C
+
+system/beatmatch/RealGuitarTrackWatcherImpl.cpp:
+	.text       start:0x8047488C end:0x80475750
+
+system/beatmatch/RGGemMatcher.cpp:
+	.text       start:0x80475750 end:0x8047607C
+
+system/beatmatch/RGState.cpp:
+	.text       start:0x8047607C end:0x80476174
+
+system/beatmatch/RGUtl.cpp:
+	.text       start:0x80476174 end:0x804780B0
+
+system/beatmatch/SlotChannelMapping.cpp:
+	.text       start:0x804780B0 end:0x80479968
+
+system/beatmatch/SongData.cpp:
+	.text       start:0x80479968 end:0x80488788
+
+system/beatmatch/SongParser.cpp:
+	.text       start:0x80488788 end:0x80492494
+	.ctors      start:0x807EFFA4 end:0x807EFFA8
+
+system/beatmatch/Submix.cpp:
+	.text       start:0x80492494 end:0x80492988
+
+system/beatmatch/TimeSpanVector.cpp:
+	.text       start:0x80492988 end:0x80492A78
+
+system/beatmatch/TrackType.cpp:
+	.text       start:0x80492A78 end:0x80492B28
+
+system/beatmatch/TrackWatcher.cpp:
+	.text       start:0x80492B28 end:0x804936F0
+
+system/beatmatch/TrackWatcherImpl.cpp:
+	.text       start:0x804936F0 end:0x8049744C
+
+system/beatmatch/VocalPhrase.cpp:
+	.text       start:0x8049744C end:0x80499BAC
+
 system/char/Char.cpp:
 	.text       start:0x80499BAC end:0x8049C168
 
