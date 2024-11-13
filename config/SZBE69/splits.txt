@@ -1703,38 +1703,95 @@ system/dsp/VibratoDetector.cpp:
 system/meta/Achievements.cpp:
 	.text       start:0x80509548 end:0x80509750
 
-rb3/panels/dejitterpanel.cpp:
+system/meta/ButtonHolder.cpp:
+	.text       start:0x80509750 end:0x8050C02C
+
+system/meta/CreditsPanel.cpp:
+	.text       start:0x8050C02C end:0x8050CC84
+
+system/meta/ConnectionStatusPanel.cpp:
+	.text       start:0x8050CC84 end:0x8050D21C
+
+system/meta/DataArraySongInfo.cpp:
+	.text       start:0x8050D21C end:0x8050EA88
+
+system/meta/DeJitterPanel.cpp:
 	.text       start:0x8050EA88 end:0x8050EF80
 
-rb3/fixedsizesaveable.cpp:
+system/meta/FixedSizeSaveable.cpp:
 	.text       start:0x8050EF80 end:0x8050FA30
 
-rb3/fixedsizesaveablestream.cpp:
+system/meta/FixedSizeSaveableStream.cpp:
 	.text       start:0x8050FA30 end:0x8050FEF4
 
-rb3/panels/heldbuttonpanel.cpp:
+system/meta/HeldButtonPanel.cpp:
 	.text       start:0x8050FEF4 end:0x80510944
 
-rb3/panels/preloadpanel.cpp:
+system/meta/MemcardAction.cpp:
+	.text       start:0x80510944 end:0x8051098C
+
+system/meta/Meta.cpp:
+	.text       start:0x8051098C end:0x80510B7C
+
+system/meta/MetaMusicScene.cpp:
+	.text       start:0x80510B7C end:0x80510D44
+
+system/meta/MetaMusicManager.cpp:
+	.text       start:0x80510D44 end:0x80512068
+
+system/meta/MoviePanel.cpp:
+	.text       start:0x80512068 end:0x805133E4
+
+system/meta/PreloadPanel.cpp:
 	.text       start:0x805133E4 end:0x805143A0
 
-rb3/profile.cpp:
+system/meta/Profile.cpp:
 	.text       start:0x805143A0 end:0x805147A4
 
-rb3/unknown/805/unk_80510944.cpp:
-	.text       start:0x805147A4 end:0x805188D0
+system/meta/SongMetadata.cpp:
+	.text       start:0x805147A4 end:0x8051513C
 
-rb3/panels/storeartloaderpanel.cpp:
+system/meta/SongMgr.cpp:
+	.text       start:0x8051513C end:0x80516EE4
+
+system/meta/SongPreview.cpp:
+	.text       start:0x80516EE4 end:0x805182D0
+
+system/meta/Sorting.cpp:
+	.text       start:0x805182D0 end:0x80518608
+
+system/meta/StoreEnumeration.cpp:
+	.text       start:0x80518608 end:0x805188D0
+
+system/meta/StoreArtLoaderPanel.cpp:
 	.text       start:0x805188D0 end:0x80519AB8
 
-rb3/storeoffer.cpp:
-	.text       start:0x80519D10 end:0x8051CBE4
+system/meta/StoreOffer.cpp:
+	.text       start:0x80519D10 end:0x8051C3AC
 
-rb3/panels/storepanel.cpp:
+system/meta/StorePackedMetadata.cpp:
+	.text       start:0x8051C3AC end:0x80522CAC
+	.ctors      start:0x807EFFB0 end:0x807EFFB4
+
+system/meta/StorePreviewMgr.cpp:
+	.text       start:0x80522CAC end:0x80523A2C
+
+system/meta/StreamPlayer.cpp:
+	.text       start:0x80523A2C end:0x80523EB8
+
+system/meta/MemcardMgr_Wii.cpp:
+	.text       start:0x80523EB8 end:0x80525830
+	.ctors      start:0x807EFFB4 end:0x807EFFB8
+
+system/meta/StorePanel.cpp:
 	.text       start:0x80525830 end:0x8052901C
 
+system/meta/WiiProfileMgr.cpp:
+	.text       start:0x8052901C end:0x8052A4E0
+	.ctors      start:0x807EFFB8 end:0x807EFFBC
+
 system/midi/DataEventList.cpp:
-	.text       start:0x8052A508 end:0x8052CD54
+	.text       start:0x8052A4E0 end:0x8052CD54
 
 system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
