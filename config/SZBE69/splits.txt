@@ -1340,6 +1340,54 @@ system/bandobj/SongSectionController.cpp:
 system/bandobj/OvershellDir.cpp:
 	.text       start:0x8045593C end:0x804567C8
 
+system/beatmatch/BaseGuitarTrackWatcherImpl.cpp:
+	.text       start:0x804567C8 end:0x80457858
+
+system/beatmatch/BeatMaster.cpp:
+	.text       start:0x80457858 end:0x80458F50
+
+system/beatmatch/BeatMatch.cpp:
+	.text       start:0x80458F50 end:0x80458F54
+
+system/beatmatch/BeatMatchController.cpp:
+	.text       start:0x80458F54 end:0x8045958C
+
+system/beatmatch/BeatMatchUtl.cpp:
+	.text       start:0x8045958C end:0x80459898
+
+system/beatmatch/BeatMatcher.cpp:
+	.text       start:0x80459898 end:0x8045B3B8
+
+system/beatmatch/ButtonGuitarController.cpp:
+	.text       start:0x8045B3B8 end:0x8045C11C
+
+system/beatmatch/DrumFillTrackWatcherImpl.cpp:
+	.text       start:0x8045C11C end:0x8045C4E0
+
+system/beatmatch/DrumMap.cpp:
+	.text       start:0x8045C4E0 end:0x8045D49C
+
+system/beatmatch/DrumMixDB.cpp:
+	.text       start:0x8045D49C end:0x8045EA14
+
+system/beatmatch/DrumPlayer.cpp:
+	.text       start:0x8045EA14 end:0x8045EC70
+
+system/beatmatch/DrumTrackWatcherImpl.cpp:
+	.text       start:0x8045EC70 end:0x8045F49C
+
+system/beatmatch/FillInfo.cpp:
+	.text       start:0x8045F49C end:0x8046027C
+
+system/beatmatch/GameGem.cpp:
+	.text       start:0x8046027C end:0x80460F64
+
+system/beatmatch/GameGemDB.cpp:
+	.text       start:0x80460F64 end:0x804614B0
+
+system/beatmatch/GameGemList.cpp:
+	.text       start:0x804614B0 end:0x80463810
+
 system/char/Char.cpp:
 	.text       start:0x80499BAC end:0x8049C168
 
