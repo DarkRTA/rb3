@@ -932,7 +932,7 @@ system/utl/HxGuid.cpp:
 system/utl/IntPacker.cpp:
 	.text       start:0x8034DE50 end:0x8034DFC8
 
-rb3/unknown/803/unk_8034DE50.cpp:
+system/utl/JobMgr.cpp:
 	.text       start:0x8034DFC8 end:0x8034E7D4
 
 system/utl/Loader.cpp:
@@ -953,11 +953,24 @@ system/utl/LogFile.cpp:
 system/utl/MakeString.cpp:
 	.text       start:0x803511B0 end:0x80351AD0
 
-sdk/MSL_C++/src/new.cpp:
-	.text       start:0x80354830 end:0x803548E8
+system/utl/MBT.cpp:
+	.text       start:0x80351AD0 end:0x80351C18
 
-rb3/unknown/803/unk_80354A30.cpp:
-	.text       start:0x80354A30 end:0x80354E6C
+system/utl/MeasureMap.cpp:
+	.text       start:0x80351C18 end:0x80352830
+
+system/utl/MemMgr.cpp:
+	.text       start:0x80352830 end:0x80354A30
+	.ctors      start:0x807EFF58 end:0x807EFF5C
+
+system/utl/Mem_Wii.cpp:
+	.text       start:0x80354A30 end:0x80354CA0
+
+system/utl/MemPoint.cpp:
+	.text       start:0x80354CA0 end:0x80354E04
+
+system/utl/MemTracker.cpp:
+	.text       start:0x80354E04 end:0x80354E6C
 
 system/utl/MemStream.cpp:
 	.text       start:0x80354E6C end:0x80355190
@@ -993,25 +1006,58 @@ system/utl/Messages4.cpp:
 system/utl/MultiTempoTempoMap.cpp:
 	.text       start:0x80357E10 end:0x8035928C
 
-rb3/unknown/803/unk_80357E10.cpp:
-	.text       start:0x8035928C end:0x8035C6AC
+system/utl/NetLoader.cpp:
+	.text       start:0x8035928C end:0x80359A78
+
+system/utl/NetLoader_Wii.cpp:
+	.text       start:0x80359A78 end:0x8035A08C
+
+system/utl/NetCacheLoader.cpp:
+	.text       start:0x8035A08C end:0x8035A61C
+
+system/utl/NetCacheMgr.cpp:
+	.text       start:0x8035A61C end:0x8035C6AC
 
 system/utl/Option.cpp:
-	.text       start:0x8035C6AC end:0x8035C8B4
+	.text       start:0x8035C6AC end:0x8035CA1C
 	.data       start:0x80858800 end:0x80858828
 
-system/utl/OptionTheRestLol.cpp:
-	.text       start:0x8035C8B4 end:0x8035CA1C
+system/utl/PolygonsPerhaps.cpp:
+	.text       start:0x8035CA1C end:0x8035CB54
+
+system/utl/PoolAlloc.cpp:
+	.text       start:0x8035CB54 end:0x8035D318
+
+system/utl/Profiler.cpp:
+	.text       start:0x8035D318 end:0x8035D48C
+
+system/utl/Rso_Utl.cpp:
+	.text       start:0x8035D48C end:0x8035DC74
+
+system/utl/Song.cpp:
+	.text       start:0x8035DC74 end:0x80360638
+
+system/utl/SongInfoAudioType.cpp:
+	.text       start:0x80360638 end:0x8036071C
+
+system/utl/SongInfoCopy.cpp:
+	.text       start:0x8036071C end:0x80361B08
+
+system/utl/Spew.cpp:
+	.text       start:0x80361B08 end:0x80361B10
 
 system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
 	.data       start:0x80858C90 end:0x80858CA0
 
 system/utl/StringTable.cpp:
-	.text       start:0x80362B4C end:0x80363F60
+	.text       start:0x80362B4C end:0x803638E0
+
+system/utl/SuperFormatString.cpp:
+	.text       start:0x803638E0 end:0x80363F0C
 
 system/utl/Symbol.cpp:
-	.text       start:0x80363F60 end:0x803651B0
+	.text       start:0x80363F0C end:0x803651B0
 
 system/utl/Symbols.cpp:
 	.text       start:0x803651B0 end:0x8036B5A0
@@ -1041,11 +1087,8 @@ system/utl/Symbols4.cpp:
 	.sbss       start:0x808E4580 end:0x808E4588
 	.bss        start:0x80983EB8 end:0x80985918
 
-rb3/unknown/803/unk_8037A3D8.cpp:
-	.text       start:0x8037A3D8 end:0x8037A410
-
 system/utl/TempoMap.cpp:
-	.text       start:0x8037A410 end:0x8037A58C
+	.text       start:0x8037A3D8 end:0x8037A58C
 	.ctors      start:0x807EFF7C end:0x807EFF80
 	.data       start:0x80874468 end:0x808744D8
 	.bss        start:0x80985918 end:0x80985920
@@ -1058,11 +1101,24 @@ system/utl/TextStream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
 
+system/utl/TimeConversion.cpp:
+	.text       start:0x8037AA74 end:0x8037AD34
+
+system/utl/UserGuid.cpp:
+	.text       start:0x8037AD34 end:0x8037AD40
+	.ctors      start:0x807EFF80 end:0x807EFF84
+
 system/utl/UTF8.cpp:
 	.text       start:0x8037AD40 end:0x8037BE50
 
-rb3/unknown/803/unk_8037AD40.cpp:
-	.text       start:0x8037BE50 end:0x8037EB94
+system/utl/VarTimer.cpp:
+	.text       start:0x8037BE50 end:0x8037C048
+
+system/utl/Wav.cpp:
+	.text       start:0x8037C048 end:0x8037C27C
+
+system/utl/WaveFile.cpp:
+	.text       start:0x8037C27C end:0x8037EB94
 
 system/zlib/adler32.c:
 	.text       start:0x8037EB94 end:0x8037ED1C
