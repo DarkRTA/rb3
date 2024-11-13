@@ -300,8 +300,18 @@
             "system/meta/WiiProfileMgr.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
+            "system/midi/DisplayEvents.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": "NonMatching",
             "system/midi/MidiParserMgr.cpp": "NonMatching",
+            "system/midi/MidiReader.cpp": "NonMatching",
+            "system/midi/MidiReceiver.cpp": "NonMatching",
+            "system/midi/MidiVarLen.cpp": "NonMatching",
+
+            "system/movie/CustomSplash_Wii.cpp": "NonMatching",
+            "system/movie/Movie_Wii.cpp": "NonMatching",
+            "system/movie/Movie.cpp": "NonMatching",
+            "system/movie/Splash.cpp": "NonMatching",
+            "system/movie/TexMovie.cpp": "NonMatching",
 
             "system/obj/DataArray.cpp": "NonMatching",
             "system/obj/DataFile.cpp": "NonMatching",

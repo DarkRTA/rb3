@@ -1793,12 +1793,41 @@ system/meta/WiiProfileMgr.cpp:
 system/midi/DataEventList.cpp:
 	.text       start:0x8052A4E0 end:0x8052CD54
 
+system/midi/DisplayEvents.cpp:
+	.text       start:0x8052CD54 end:0x8052D22C
+
 system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
 	.ctors      start:0x807EFFBC end:0x807EFFC0
 
 system/midi/MidiParserMgr.cpp:
 	.text       start:0x80531574 end:0x80533670
+
+system/midi/MidiReader.cpp:
+	.text       start:0x80533670 end:0x80535C60
+	.ctors      start:0x807EFFC0 end:0x807EFFC4
+
+system/midi/MidiReceiver.cpp:
+	.text       start:0x80535C60 end:0x80535CFC
+
+system/midi/MidiVarLen.cpp:
+	.text       start:0x80535CFC end:0x80535D9C
+
+system/movie/Movie.cpp:
+	.text       start:0x80535D9C end:0x80538D74
+	.ctors      start:0x807EFFC4 end:0x807EFFC8
+
+system/movie/Splash.cpp:
+	.text       start:0x80538D74 end:0x8053ACE0
+
+system/movie/TexMovie.cpp:
+	.text       start:0x8053ACE0 end:0x8053C090
+
+system/movie/Movie_Wii.cpp:
+	.text       start:0x8053C090 end:0x8053D604
+
+system/movie/CustomSplash_Wii.cpp:
+	.text       start:0x8053D604 end:0x8053E0F4
 
 system/track/Track.cpp:
 	.text       start:0x8053E0F4 end:0x8053E2A4
