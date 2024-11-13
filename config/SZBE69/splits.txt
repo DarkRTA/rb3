@@ -1157,6 +1157,9 @@ system/zlib/inffast.c:
 system/bandobj/ArpeggioShape.cpp:
 	.text       start:0x80384BA8 end:0x803869D8
 
+system/bandobj/Band.cpp:
+	.text       start:0x803869D8 end:0x80387FF4
+
 system/bandobj/BandButton.cpp:
 	.text       start:0x80387FF4 end:0x80389678
 
@@ -1179,8 +1182,14 @@ system/bandobj/BandHighlight.cpp:
 system/bandobj/BandFaceDeform.cpp:
 	.text       start:0x803A9C80 end:0x803ABC68
 
+system/bandobj/BandIKEffector.cpp:
+	.text       start:0x803ABC68 end:0x803B0390
+
 system/bandobj/BandLabel.cpp:
 	.text       start:0x803B0390 end:0x803B1FA8
+
+system/bandobj/BandLeadMeter.cpp:
+	.text       start:0x803B1FA8 end:0x803B364C
 
 system/bandobj/BandList.cpp:
 	.text       start:0x803B364C end:0x803BA73C
@@ -1214,18 +1223,33 @@ system/bandobj/BandHeadShaper.cpp:
 system/bandobj/BandRetargetVignette.cpp:
 	.text       start:0x803E0EB0 end:0x803E2710
 
+system/bandobj/BandSongPref.cpp:
+	.text       start:0x803E2710 end:0x803E2C74
+
 system/bandobj/BandWardrobe.cpp:
 	.text       start:0x803E2C74 end:0x803EA774
+
+system/bandobj/CharDeform.cpp:
+	.text       start:0x803EA774 end:0x803EA8A0
+
+system/bandobj/CharKeyHandMidi.cpp:
+	.text       start:0x803EA8A0 end:0x803EEDD4
 
 system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94
+
+system/bandobj/DialogDisplay.cpp:
+	.text       start:0x803F4E74 end:0x803F5BE8
 
 system/bandobj/EndingBonus.cpp:
 	.text       start:0x803F5BE8 end:0x803F83A0
 
 system/bandobj/FingerShape.cpp:
 	.text       start:0x803F83A0 end:0x803F8E50
+
+system/bandobj/LayerDir.cpp:
+	.text       start:0x803F8E50 end:0x803FC0A8
 
 system/bandobj/NoteTube.cpp:
 	.text       start:0x803FC0A8 end:0x803FD9E8
@@ -1237,23 +1261,47 @@ system/bandobj/PatchDir.cpp:
 	.text       start:0x8040EB9C end:0x8041419C
 	.ctors      start:0x807EFF94 end:0x807EFF98
 
+system/bandobj/PatchRenderer.cpp:
+	.text       start:0x8041419C end:0x80414E84
+
+system/bandobj/PitchArrow.cpp:
+	.text       start:0x80414E84 end:0x80417698
+
+system/bandobj/PlayerDiffIcon.cpp:
+	.text       start:0x80417698 end:0x80418740
+
+system/bandobj/InstrumentDifficultyDisplay.cpp:
+	.text       start:0x80418740 end:0x80419BC4
+
 system/bandobj/ScrollbarDisplay.cpp:
 	.text       start:0x80419BC4 end:0x8041B308
+
+system/bandobj/CheckboxDisplay.cpp:
+	.text       start:0x8041B308 end:0x8041BC8C
+
+system/bandobj/ScoreDisplay.cpp:
+	.text       start:0x8041BC8C end:0x8041C9E8
+
+system/bandobj/ReviewDisplay.cpp:
+	.text       start:0x8041C9E8 end:0x8041D674
 
 system/bandobj/StarDisplay.cpp:
 	.text       start:0x8041D674 end:0x8041ED7C
 
-rb3/micinputarrow.cpp:
+system/bandobj/MeterDisplay.cpp:
+	.text       start:0x8041ED7C end:0x80420108
+
+system/bandobj/MicInputArrow.cpp:
 	.text       start:0x80420108 end:0x804213CC
 	.ctors      start:0x807EFF98 end:0x807EFF9C
 
-rb3/minileaderboarddisplay.cpp:
+system/bandobj/MiniLeaderboardDisplay.cpp:
 	.text       start:0x804213CC end:0x80421CA4
 
-rb3/streakmeter.cpp:
+system/bandobj/StreakMeter.cpp:
 	.text       start:0x80421CA4 end:0x804260A4
 
-rb3/overdrivemeter.cpp:
+system/bandobj/OverdriveMeter.cpp:
 	.text       start:0x804260A4 end:0x80426FDC
 
 system/bandobj/GemTrackDir.cpp:
@@ -1264,6 +1312,9 @@ system/bandobj/GemTrackResourceManager.cpp:
 
 system/bandobj/VocalTrackDir.cpp:
 	.text       start:0x80431DC8 end:0x8043B9C0
+
+system/bandobj/BandTrack.cpp:
+	.text       start:0x8043B9C0 end:0x80440C44
 
 system/bandobj/TrackPanelDirBase.cpp:
 	.text       start:0x80440C44 end:0x804431F4
