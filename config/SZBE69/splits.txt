@@ -2374,8 +2374,93 @@ system/synth/FxSendWah.cpp:
 system/synth/MetaMusic.cpp:
 	.text       start:0x806786F0 end:0x80679F0C
 
-rb3/unknown/806/unk_80671DCC.cpp:
-	.text       start:0x80679F0C end:0x8067BA7C
+system/synth/Mic.cpp:
+	.text       start:0x80679F0C end:0x8067A02C
+
+system/synth/MicClientMapper.cpp:
+	.text       start:0x8067A02C end:0x8067BA90
+	.ctors      start:0x807F0028 end:0x807F002C
+
+system/synth/MidiInstrumentMgr.cpp:
+	.text       start:0x8067BA90 end:0x8067BD24
+
+system/synth/MidiInstrument.cpp:
+	.text       start:0x8067BD24 end:0x8067F374
+
+system/synth/MicNull.cpp:
+	.text       start:0x8067F374 end:0x8067F5A0
+	.ctors      start:0x807F002C end:0x807F0030
+
+system/synth/MidiChannel.cpp:
+	.text       start:0x8067F5A0 end:0x8067FAD4
+
+system/synth/MidiSynth.cpp:
+	.text       start:0x8067FAD4 end:0x80680FBC
+
+system/synth/MoggClip.cpp:
+	.text       start:0x80680FBC end:0x806829C8
+
+system/synth/MoggClipMap.cpp:
+	.text       start:0x806829C8 end:0x80682DE8
+
+system/synth/OggMap.cpp:
+	.text       start:0x80682DE8 end:0x80682FC8
+
+system/synth/Pollable.cpp:
+	.text       start:0x80682FC8 end:0x806833B0
+	.ctors      start:0x807F0030 end:0x807F0034
+
+system/synth/SampleData.cpp:
+	.text       start:0x806833B0 end:0x80684630
+
+system/synth/SampleInst.cpp:
+	.text       start:0x80684630 end:0x80684930
+
+system/synth/SampleZone.cpp:
+	.text       start:0x80684930 end:0x80684C8C
+
+system/synth/Sequence.cpp:
+	.text       start:0x80684C8C end:0x8068B174
+
+system/synth/Sfx.cpp:
+	.text       start:0x8068B174 end:0x8068FC28
+
+system/synth/SfxMap.cpp:
+	.text       start:0x8068FC28 end:0x8068FD58
+
+system/synth/SlipTrack.cpp:
+	.text       start:0x8068FD58 end:0x80690124
+
+system/synth/StandardStream.cpp:
+	.text       start:0x80690124 end:0x80693A40
+
+system/synth/Stream.cpp:
+	.text       start:0x80693A40 end:0x80693B98
+
+system/synth/StreamNull.cpp:
+	.text       start:0x80693B98 end:0x80693EA8
+
+system/synth/StreamReceiver.cpp:
+	.text       start:0x80693EA8 end:0x806947F8
+
+system/synth/Synth.cpp:
+	.text       start:0x806947F8 end:0x80698274
+	.ctors      start:0x807F0034 end:0x807F0038
+
+system/synth/SynthSample.cpp:
+	.text       start:0x80698274 end:0x8069927C
+
+system/synth/Utl.cpp:
+	.text       start:0x8069927C end:0x80699384
+
+system/synth/VoiceBeat.cpp:
+	.text       start:0x80699384 end:0x8069A7E4
+
+system/synth/VorbisReader.cpp:
+	.text       start:0x8069A7E4 end:0x8069BF6C
+
+system/synth/WavReader.cpp:
+	.text       start:0x8069BF6C end:0x8069C3FC
 
 libs/libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54
