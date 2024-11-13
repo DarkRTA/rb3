@@ -827,7 +827,7 @@ system/obj/PropSync.cpp:
 	.sbss       start:0x808E44C8 end:0x808E44D0
 	.bss        start:0x8091B8A8 end:0x8091B8C8
 
-rb3/tasks.cpp:
+system/obj/Task.cpp:
 	.text       start:0x803395AC end:0x8033C93C
 	.ctors      start:0x807EFF24 end:0x807EFF28
 
@@ -840,10 +840,8 @@ system/obj/TypeProps.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
 
 system/obj/Utl.cpp:
-	.text       start:0x8033DE38 end:0x8033FF44
-
-rb3/unknown/803/unk_8033C8F0.cpp:
-	.text       start:0x8033FF44 end:0x80340E40
+	.text       start:0x8033DE38 end:0x80340ED8
+	.ctors      start:0x807EFF28 end:0x807EFF2C
 
 system/utl/BeatMap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
