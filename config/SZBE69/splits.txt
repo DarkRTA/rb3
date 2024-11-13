@@ -1518,8 +1518,11 @@ system/char/CharBoneTwist.cpp:
 	.text       start:0x804B4208 end:0x804B4B68
 
 system/char/CharClip.cpp:
-	.text       start:0x804B4B68 end:0x804BCCD8
+	.text       start:0x804B4B68 end:0x804BBA84
 	.ctors      start:0x807EFFA8 end:0x807EFFAC
+
+system/char/CharClipDriver.cpp:
+	.text       start:0x804BBA84 end:0x804BCCD8
 
 system/char/CharClipGroup.cpp:
 	.text       start:0x804BCCD8 end:0x804C0210
@@ -1673,7 +1676,7 @@ system/char/CharWeightSetter.cpp:
 	.text       start:0x804FCD7C end:0x804FEA7C
 
 system/char/FileMerger.cpp:
-	.text       start:0x804FF03C end:0x80502984
+	.text       start:0x804FEA7C end:0x80502984
 
 system/char/FileMergerOrganizer.cpp:
 	.text       start:0x80502984 end:0x80504A84
@@ -1685,8 +1688,20 @@ system/char/Waypoint.cpp:
 system/char/CharGuitarString.cpp:
 	.text       start:0x80507560 end:0x80507E74
 
-rb3/unknown/805/unk_8050FA30.cpp:
-	.text       start:0x80507E74 end:0x8050EA88
+system/dsp/IIRFilter.cpp:
+	.text       start:0x80507E74 end:0x80507F98
+
+system/dsp/SndAnalysis.cpp:
+	.text       start:0x80507F98 end:0x805086F0
+
+system/dsp/PitchDetector.cpp:
+	.text       start:0x805086F0 end:0x80509130
+
+system/dsp/VibratoDetector.cpp:
+	.text       start:0x80509130 end:0x80509548
+
+system/meta/Achievements.cpp:
+	.text       start:0x80509548 end:0x80509750
 
 rb3/panels/dejitterpanel.cpp:
 	.text       start:0x8050EA88 end:0x8050EF80

@@ -245,6 +245,11 @@
             "system/char/CharWeightSetter.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
 
+            "system/dsp/IIRFilter.cpp": "NonMatching",
+            "system/dsp/PitchDetector.cpp": "NonMatching",
+            "system/dsp/SndAnalysis.cpp": "NonMatching",
+            "system/dsp/VibratoDetector.cpp": "NonMatching",
+
             "system/math/Color.cpp": "NonMatching",
             "system/math/Decibels.cpp": "NonMatching",
             "system/math/FileChecksum.cpp": "NonMatching",
@@ -263,6 +268,8 @@
             "system/math/StreamChecksum.cpp": "NonMatching",
             "system/math/Trig.cpp": "NonMatching",
             "system/math/Key.cpp": "NonMatching",
+
+            "system/meta/Achievements.cpp": "NonMatching",
 
             "system/midi/DataEventList.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": "NonMatching",
