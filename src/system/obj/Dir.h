@@ -211,7 +211,7 @@ public:
     virtual void OldLoadProxies(BinStream&, int);
 
     void Reserve(int, int);
-    bool IsProxy() const { return this != mDir; }
+    bool IsProxy() const { return this != Dir(); }
     bool HasSubDir(ObjectDir*);
     bool HasDirPtrs() const;
     Entry* FindEntry(const char*, bool);

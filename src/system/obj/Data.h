@@ -183,6 +183,7 @@ public:
     int Size() const { return mSize; }
     int Line() const { return mLine; }
 
+    int UncheckedInt(int i) const { return Node(i).UncheckedInt(); }
     DataArray* UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
@@ -263,6 +264,11 @@ public:
 
 inline BinStream& operator<<(BinStream &bs, const DataNode& node) {
     node.Save(bs);
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, DataNode& node){
+    node.Load(bs);
     return bs;
 }
 

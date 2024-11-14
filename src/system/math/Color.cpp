@@ -12,13 +12,10 @@ DECOMP_FORCEACTIVE(Color, __FILE__,
     "( 0.f) <= (val) && (val) <= ( 1.f)");
 
 void MakeHSL(const Hmx::Color& color, float& f1, float& f2, float& f3){
-    float b = color.blue;
-    float g = color.green;
-    float r = color.red;
-    float maxCol = Max(r, g, b);
-    float minCol = Min(r, g, b);
-    f3 = (minCol + maxCol) / 2.0f;
-    if(minCol == maxCol){
+    float maxCol = Max(color.red, color.green, color.blue);
+    float minCol = Min(color.red, color.green, color.blue);
+    f3 = (maxCol + minCol) / 2.0f;
+    if(maxCol == minCol){
         f1 = 0; f2 = 0;
     }
     else {

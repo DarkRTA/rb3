@@ -12,12 +12,12 @@ bool FileIsLocal(const char* file){
 }
 
 bool FileIsDLC(const char* file){
-    bool nand = !strncmp(file, "nand/", 5);
+    bool nand = strneq(file, "nand/", 5);
     if(nand){
         MILO_WARN("File accessed via nand/ path %s", file);
         return true;
     }
-    else return !strncmp(file, "dlc/", 4);
+    else return strneq(file, "dlc/", 4);
 }
 
 int FileGetStat(const char* iFilename, FileStat* iBuffer) {

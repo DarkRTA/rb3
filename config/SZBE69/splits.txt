@@ -534,8 +534,18 @@ band3/tour/TourReward.cpp:
 	.sbss       start:0x808E4370 end:0x808E4378
 	.bss        start:0x80900740 end:0x80900758
 
-rb3/unknown/802/unk_802D4B74.cpp:
-	.text       start:0x802D4B74 end:0x802DCE58
+system/math/SHA1.cpp:
+	.text       start:0x802D5518 end:0x802D7088
+
+system/math/Sort.cpp:
+	.text       start:0x802D7088 end:0x802D70BC
+
+system/math/Geo.cpp:
+	.text       start:0x802D70BC end:0x802DCAB4
+
+system/math/Color.cpp:
+	.text       start:0x802DCAB4 end:0x802DCEDC
+	.ctors      start:0x807EFEA0 end:0x807EFEA4
 
 system/math/Interp.cpp:
 	.text       start:0x802DCEDC end:0x802DD9A4
@@ -549,11 +559,8 @@ system/math/Rand.cpp:
 system/math/Rand2.cpp:
 	.text       start:0x802DDE34 end:0x802DDEA0
 
-rb3/unknown/802/unk_802DDEA0.cpp:
-	.text       start:0x802DDEA0 end:0x802DE3D0
-
 system/math/Rot.cpp:
-	.text       start:0x802DE3D0 end:0x802DFE60
+	.text       start:0x802DDEA0 end:0x802DFE60
 
 system/math/strips/Adjacency.cpp:
 	.text       start:0x802DFE60 end:0x802E067C
@@ -581,16 +588,17 @@ system/math/StreamChecksum.cpp:
 system/math/strips/Striper.cpp:
 	.text       start:0x802E1DDC end:0x802E2D24
 
-rb3/unknown/802/unk_802E0CA0.cpp:
-	.text       start:0x802E2D24 end:0x802E2E28
-
 system/math/Trig.cpp:
-	.text       start:0x802E2E28 end:0x802E33CC
+	.text       start:0x802E2D24 end:0x802E33CC
 	.data       start:0x80851600 end:0x80851620
 	.bss        start:0x80901900 end:0x80902100
 
 system/math/Key.cpp:
 	.text       start:0x802E33CC end:0x802E40D0
+
+system/math/Vec.cpp:
+	.text       start:0x802E40D0 end:0x802E44FC
+	.ctors      start:0x807EFEAC end:0x807EFEB4
 
 system/os/AppChild.cpp:
 	.text       start:0x802E44FC end:0x802E4984
@@ -614,102 +622,169 @@ system/os/AsyncFileCNT.cpp:
 system/os/AsyncFile_Wii.cpp:
 	.text       start:0x802E8B7C end:0x802E9034
 
-rb3/unknown/802/unk_802E9040.cpp:
-	.text       start:0x802E9040 end:0x802EAC5C
+system/os/AsyncTask.cpp:
+	.text       start:0x802E9040 end:0x802E911C
 
-rb3/wiicommercemgr.cpp:
-	.text       start:0x802EC338 end:0x802F0378
+system/os/BlockMgr.cpp:
+	.text       start:0x802E911C end:0x802EB004
+	.ctors      start:0x807EFEB8 end:0x807EFEBC
+
+system/os/CDReader.cpp:
+	.text       start:0x802EB004 end:0x802EC1CC
+	.ctors      start:0x807EFEBC end:0x807EFEC0
+
+system/os/CommerceMgr_Wii.cpp:
+	.text       start:0x802EC1CC end:0x802F0378
 	.ctors      start:0x807EFEC0 end:0x807EFEC4
 
-rb3/unknown/802/unk_802F02EC.cpp:
-	.text       start:0x802F0378 end:0x802F83C0
+system/os/ContentMgr.cpp:
+	.text       start:0x802F0378 end:0x802F86F4
+	.ctors      start:0x807EFEC4 end:0x807EFEC8
 
-rb3/unknown/802/unk_802F844C.cpp:
-	.text       start:0x802F844C end:0x802F8818
+system/os/CritSec.cpp:
+	.text       start:0x802F86F4 end:0x802F8818
 
 system/os/DateTime.cpp:
 	.text       start:0x802F8818 end:0x802F906C
 
 system/os/Debug.cpp:
-	.text       start:0x802F906C end:0x802F9860
+	.text       start:0x802F906C end:0x802F98DC
+	.ctors      start:0x807EFEC8 end:0x807EFECC
 
-rb3/unknown/802/unk_802F98DC.cpp:
-	.text       start:0x802F98DC end:0x802FA848
+system/os/File.cpp:
+	.text       start:0x802F98DC end:0x802FB548
+	.ctors      start:0x807EFECC end:0x807EFED0
 
-rb3/file_ops.cpp:
-	.text       start:0x802FA848 end:0x802FAB40
-	.bss        start:0x809071C8 end:0x809075C8
+system/os/File_Wii.cpp:
+	.text       start:0x802FB548 end:0x802FB6C4
 
-rb3/unknown/802/unk_802FA994.cpp:
-	.text       start:0x802FAB40 end:0x802FB4AC
+system/os/FileCache.cpp:
+	.text       start:0x802FB6C4 end:0x802FDAE0
+	.ctors      start:0x807EFED0 end:0x807EFED4
 
-rb3/unknown/802/unk_802FB548.cpp:
-	.text       start:0x802FB548 end:0x802FDA80
+system/os/HDCache.cpp:
+	.text       start:0x802FDAE0 end:0x802FF088
+	.ctors      start:0x807EFED4 end:0x807EFED8
+
+system/os/HomeMenu_Wii.cpp:
+	.text       start:0x802FF088 end:0x803008FC
+
+system/os/DiscErrorMgr_Wii.cpp:
+	.text       start:0x803008FC end:0x80300F98
 
 system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
 
+system/os/Joypad_Wii.cpp:
+	.text       start:0x80303E44 end:0x80305F5C
+	.ctors      start:0x807EFEDC end:0x807EFEE0
+
+system/os/JoypadClient.cpp:
+	.text       start:0x80305F5C end:0x80306CE8
+	.ctors      start:0x807EFEE0 end:0x807EFEE4
+
+system/os/JoypadMsgs.cpp:
+	.text       start:0x80306CE8 end:0x80306F74
+
+system/os/Keyboard.cpp:
+	.text       start:0x80306F74 end:0x80307410
+	.ctors      start:0x807EFEE4 end:0x807EFEE8
+
+system/os/Keyboard_Wii.cpp:
+	.text       start:0x80307410 end:0x803076BC
+
+system/os/Memcard.cpp:
+	.text       start:0x803076BC end:0x803078AC
+
+system/os/Memcard_Wii.cpp:
+	.text       start:0x803078AC end:0x80308638
+	.ctors      start:0x807EFEE8 end:0x807EFEEC
+
 system/os/NetStream.cpp:
 	.text       start:0x80308638 end:0x80308ACC
 
-rb3/wiinetworksocket.cpp:
-	.text       start:0x80308CC0 end:0x80308DB4
+system/os/NetworkSocket_Wii.cpp:
+	.text       start:0x80308ACC end:0x803092C0
 
-rb3/unknown/803/unk_8030A494.cpp:
-	.text       start:0x8030A494 end:0x8030DBF8
+system/os/OnlineID.cpp:
+	.text       start:0x803092C0 end:0x803093D0
+
+system/os/PlatformMgr.cpp:
+	.text       start:0x803093D0 end:0x8030A55C
+	.ctors      start:0x807EFEEC end:0x807EFEF0
+
+system/os/PlatformMgr_Wii.cpp:
+	.text       start:0x8030A55C end:0x8030DC60
+	.ctors      start:0x807EFEF0 end:0x807EFEF4
+
+system/os/ProfilePicture.cpp:
+	.text       start:0x8030DC60 end:0x8030DE8C
+
+system/os/ProfilePicture_Wii.cpp:
+	.text       start:0x8030DE8C end:0x8030DEFC
 
 system/os/System.cpp:
-	.text       start:0x8030DC60 end:0x8030F4F0
+	.text       start:0x8030DEFC end:0x8030F4F0
 	.ctors      start:0x807EFEF4 end:0x807EFEF8
 
-rb3/unknown/803/unk_8030F4F0.cpp:
-	.text       start:0x8030F4F0 end:0x80311394
+system/os/System_Wii.cpp:
+	.text       start:0x8030F4F0 end:0x8030F69C
+
+system/os/ThreadCall_Wii.cpp:
+	.text       start:0x8030F69C end:0x8030F9EC
+
+system/os/Timer.cpp:
+	.text       start:0x8030F9EC end:0x80311700
+	.ctors      start:0x807EFEF8 end:0x807EFEFC
 
 system/os/User.cpp:
 	.text       start:0x80311700 end:0x803120A0
 
-rb3/mgrs/usermgr.cpp:
+system/os/UserMgr.cpp:
 	.text       start:0x803120A0 end:0x803123EC
 
-rb3/synchronizationevent.cpp:
+system/os/SynchronizationEvent.cpp:
 	.text       start:0x803123EC end:0x80312524
 
-rb3/virtualkeyboard.cpp:
+system/os/VirtualKeyboard.cpp:
 	.text       start:0x80312524 end:0x80312AC0
 	.ctors      start:0x807EFEFC end:0x807EFF00
 
-rb3/messages/stringstrummedmsg.cpp:
-	.text       start:0x80313E98 end:0x80313FB0
-	.data       start:0x808549F8 end:0x80854A08
+system/os/VirtualKeyboard_Wii.cpp:
+	.text       start:0x80312AC0 end:0x80313368
 
-rb3/messages/stringstoppedmsg.cpp:
-	.text       start:0x80313FB0 end:0x80313FFC
+system/os/UsbMidiGuitar.cpp:
+	.text       start:0x80313368 end:0x80313E98
+	.ctors      start:0x807EFF00 end:0x807EFF04
 
-rb3/messages/rg_messages.cpp:
-	.text       start:0x80313FFC end:0x80314814
+system/os/UsbMidiGuitarMsgs.cpp:
+	.text       start:0x80313E98 end:0x80314814
 
-rb3/messages/key_messages.cpp:
+system/os/UsbMidiKeyboard.cpp:
+	.text       start:0x80314814 end:0x80315298
+
+system/os/UsbMidiKeyboardMsgs.cpp:
 	.text       start:0x80315298 end:0x80315A70
 
 system/obj/DataArray.cpp:
-	.text       start:0x80315A70 end:0x803185F0
+	.text       start:0x80315A70 end:0x80318880
 	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
 
 system/obj/DataFile.cpp:
-	.text       start:0x803185F0 end:0x8031B2B8
+	.text       start:0x80318880 end:0x8031B2B8
 	.ctors      start:0x807EFF08 end:0x807EFF0C
 
 system/obj/DataFunc.cpp:
-	.text       start:0x8031B2B8 end:0x80322958
+	.text       start:0x8031B2B8 end:0x803229AC
 	.ctors      start:0x807EFF0C end:0x807EFF10
 	.data       start:0x80854FA8 end:0x80855448
 	.sbss       start:0x808E4478 end:0x808E447C
 	.bss        start:0x8091A518 end:0x8091A588
 
 system/obj/DataNode.cpp:
-	.text       start:0x80322958 end:0x80324278
+	.text       start:0x803229AC end:0x80324278
 	.ctors      start:0x807EFF10 end:0x807EFF14
 	.data       start:0x80855448 end:0x80855698
 	.bss        start:0x8091A598 end:0x8091A608
@@ -728,7 +803,7 @@ system/obj/DataFlex.c:
 	.sbss       start:0x808E4488 end:0x808E4490
 	.bss        start:0x8091ABA8 end:0x8091ABD8
 
-system/obj/ObjectDir.cpp:
+system/obj/Dir.cpp:
 	.text       start:0x8032553C end:0x8032DA70
 	.ctors      start:0x807EFF18 end:0x807EFF1C
 
@@ -739,7 +814,7 @@ system/obj/DirLoader.cpp:
 system/obj/DirUnloader.cpp:
 	.text       start:0x8033106C end:0x80331D40
 
-rb3/msgsource.cpp:
+system/obj/Msg.cpp:
 	.text       start:0x80331D40 end:0x803351D0
 
 system/obj/Object.cpp:
@@ -752,7 +827,7 @@ system/obj/PropSync.cpp:
 	.sbss       start:0x808E44C8 end:0x808E44D0
 	.bss        start:0x8091B8A8 end:0x8091B8C8
 
-rb3/tasks.cpp:
+system/obj/Task.cpp:
 	.text       start:0x803395AC end:0x8033C93C
 	.ctors      start:0x807EFF24 end:0x807EFF28
 
@@ -765,10 +840,8 @@ system/obj/TypeProps.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
 
 system/obj/Utl.cpp:
-	.text       start:0x8033DE38 end:0x8033FF44
-
-rb3/unknown/803/unk_8033C8F0.cpp:
-	.text       start:0x8033FF44 end:0x80340E40
+	.text       start:0x8033DE38 end:0x80340ED8
+	.ctors      start:0x807EFF28 end:0x807EFF2C
 
 system/utl/BeatMap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
@@ -785,10 +858,10 @@ system/utl/BufStream.cpp:
 	.text       start:0x803431F4 end:0x80343728
 
 system/utl/BufStreamNAND.cpp:
-	.text       start:0x80343728 end:0x80344240
+	.text       start:0x80343728 end:0x80344238
 
 system/utl/Cache.cpp:
-	.text       start:0x80344240 end:0x803442FC
+	.text       start:0x80344238 end:0x803442FC
 
 system/utl/Cache_Wii.cpp:
 	.text       start:0x803442FC end:0x80345CD0
@@ -811,11 +884,25 @@ system/utl/ChunkIDs.cpp:
 	.data       start:0x80856CC8 end:0x80856D18
 	.bss        start:0x8097BA98 end:0x8097BAD8
 
-rb3/unknown/803/unk_8034C91C.cpp:
+system/utl/ChunkStream.cpp:
+	.text       start:0x8034A900 end:0x8034C010
+	.ctors      start:0x807EFF34 end:0x807EFF38
+
+system/utl/Compress.cpp:
+	.text       start:0x8034C010 end:0x8034C158
+
+system/utl/DataPointMgr.cpp:
+	.text       start:0x8034C158 end:0x8034C444
+	.ctors      start:0x807EFF38 end:0x807EFF3C
+
+system/utl/DeJitter.cpp:
 	.text       start:0x8034C444 end:0x8034C664
 
 system/utl/EncryptXTEA.cpp:
 	.text       start:0x8034C664 end:0x8034C7D4
+
+system/utl/FakeSongMgr.cpp:
+	.text       start:0x8034C7D4 end:0x8034C91C
 
 system/utl/FilePath.cpp:
 	.text       start:0x8034C91C end:0x8034C9F8
@@ -826,6 +913,18 @@ system/utl/FilePath.cpp:
 system/utl/FileStream.cpp:
 	.text       start:0x8034C9F8 end:0x8034CEC0
 
+system/utl/GlitchFinder.cpp:
+	.text       start:0x8034CEC0 end:0x8034D0E4
+	.ctors      start:0x807EFF40 end:0x807EFF44
+
+system/utl/HangBlock_Wii.cpp:
+	.text       start:0x8034D0E4 end:0x8034D138
+	.ctors      start:0x807EFF44 end:0x807EFF48
+
+system/utl/HttpWii.cpp:
+	.text       start:0x8034D138 end:0x8034DAAC
+	.ctors      start:0x807EFF48 end:0x807EFF4C
+
 system/utl/HxGuid.cpp:
 	.text       start:0x8034DAAC end:0x8034DE50
 	.ctors      start:0x807EFF4C end:0x807EFF50
@@ -833,7 +932,7 @@ system/utl/HxGuid.cpp:
 system/utl/IntPacker.cpp:
 	.text       start:0x8034DE50 end:0x8034DFC8
 
-rb3/unknown/803/unk_8034DE50.cpp:
+system/utl/JobMgr.cpp:
 	.text       start:0x8034DFC8 end:0x8034E7D4
 
 system/utl/Loader.cpp:
@@ -854,11 +953,24 @@ system/utl/LogFile.cpp:
 system/utl/MakeString.cpp:
 	.text       start:0x803511B0 end:0x80351AD0
 
-sdk/MSL_C++/src/new.cpp:
-	.text       start:0x80354830 end:0x803548E8
+system/utl/MBT.cpp:
+	.text       start:0x80351AD0 end:0x80351C18
 
-rb3/unknown/803/unk_80354A30.cpp:
-	.text       start:0x80354A30 end:0x80354E6C
+system/utl/MeasureMap.cpp:
+	.text       start:0x80351C18 end:0x80352830
+
+system/utl/MemMgr.cpp:
+	.text       start:0x80352830 end:0x80354A30
+	.ctors      start:0x807EFF58 end:0x807EFF5C
+
+system/utl/Mem_Wii.cpp:
+	.text       start:0x80354A30 end:0x80354CA0
+
+system/utl/MemPoint.cpp:
+	.text       start:0x80354CA0 end:0x80354E04
+
+system/utl/MemTracker.cpp:
+	.text       start:0x80354E04 end:0x80354E6C
 
 system/utl/MemStream.cpp:
 	.text       start:0x80354E6C end:0x80355190
@@ -894,25 +1006,58 @@ system/utl/Messages4.cpp:
 system/utl/MultiTempoTempoMap.cpp:
 	.text       start:0x80357E10 end:0x8035928C
 
-rb3/unknown/803/unk_80357E10.cpp:
-	.text       start:0x8035928C end:0x8035C6AC
+system/utl/NetLoader.cpp:
+	.text       start:0x8035928C end:0x80359A78
+
+system/utl/NetLoader_Wii.cpp:
+	.text       start:0x80359A78 end:0x8035A08C
+
+system/utl/NetCacheLoader.cpp:
+	.text       start:0x8035A08C end:0x8035A61C
+
+system/utl/NetCacheMgr.cpp:
+	.text       start:0x8035A61C end:0x8035C6AC
 
 system/utl/Option.cpp:
-	.text       start:0x8035C6AC end:0x8035C8B4
+	.text       start:0x8035C6AC end:0x8035CA1C
 	.data       start:0x80858800 end:0x80858828
 
-system/utl/OptionTheRestLol.cpp:
-	.text       start:0x8035C8B4 end:0x8035CA1C
+system/utl/PolygonsPerhaps.cpp:
+	.text       start:0x8035CA1C end:0x8035CB54
+
+system/utl/PoolAlloc.cpp:
+	.text       start:0x8035CB54 end:0x8035D318
+
+system/utl/Profiler.cpp:
+	.text       start:0x8035D318 end:0x8035D48C
+
+system/utl/Rso_Utl.cpp:
+	.text       start:0x8035D48C end:0x8035DC74
+
+system/utl/Song.cpp:
+	.text       start:0x8035DC74 end:0x80360638
+
+system/utl/SongInfoAudioType.cpp:
+	.text       start:0x80360638 end:0x8036071C
+
+system/utl/SongInfoCopy.cpp:
+	.text       start:0x8036071C end:0x80361B08
+
+system/utl/Spew.cpp:
+	.text       start:0x80361B08 end:0x80361B10
 
 system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
 	.data       start:0x80858C90 end:0x80858CA0
 
 system/utl/StringTable.cpp:
-	.text       start:0x80362B4C end:0x80363F60
+	.text       start:0x80362B4C end:0x803638E0
+
+system/utl/SuperFormatString.cpp:
+	.text       start:0x803638E0 end:0x80363F0C
 
 system/utl/Symbol.cpp:
-	.text       start:0x80363F60 end:0x803651B0
+	.text       start:0x80363F0C end:0x803651B0
 
 system/utl/Symbols.cpp:
 	.text       start:0x803651B0 end:0x8036B5A0
@@ -942,11 +1087,8 @@ system/utl/Symbols4.cpp:
 	.sbss       start:0x808E4580 end:0x808E4588
 	.bss        start:0x80983EB8 end:0x80985918
 
-rb3/unknown/803/unk_8037A3D8.cpp:
-	.text       start:0x8037A3D8 end:0x8037A410
-
 system/utl/TempoMap.cpp:
-	.text       start:0x8037A410 end:0x8037A58C
+	.text       start:0x8037A3D8 end:0x8037A58C
 	.ctors      start:0x807EFF7C end:0x807EFF80
 	.data       start:0x80874468 end:0x808744D8
 	.bss        start:0x80985918 end:0x80985920
@@ -959,11 +1101,24 @@ system/utl/TextStream.cpp:
 	.text       start:0x8037A67C end:0x8037AA74
 	.data       start:0x80874510 end:0x80874550
 
+system/utl/TimeConversion.cpp:
+	.text       start:0x8037AA74 end:0x8037AD34
+
+system/utl/UserGuid.cpp:
+	.text       start:0x8037AD34 end:0x8037AD40
+	.ctors      start:0x807EFF80 end:0x807EFF84
+
 system/utl/UTF8.cpp:
 	.text       start:0x8037AD40 end:0x8037BE50
 
-rb3/unknown/803/unk_8037AD40.cpp:
-	.text       start:0x8037BE50 end:0x8037EB94
+system/utl/VarTimer.cpp:
+	.text       start:0x8037BE50 end:0x8037C048
+
+system/utl/Wav.cpp:
+	.text       start:0x8037C048 end:0x8037C27C
+
+system/utl/WaveFile.cpp:
+	.text       start:0x8037C27C end:0x8037EB94
 
 system/zlib/adler32.c:
 	.text       start:0x8037EB94 end:0x8037ED1C
@@ -1002,6 +1157,9 @@ system/zlib/inffast.c:
 system/bandobj/ArpeggioShape.cpp:
 	.text       start:0x80384BA8 end:0x803869D8
 
+system/bandobj/Band.cpp:
+	.text       start:0x803869D8 end:0x80387FF4
+
 system/bandobj/BandButton.cpp:
 	.text       start:0x80387FF4 end:0x80389678
 
@@ -1024,8 +1182,14 @@ system/bandobj/BandHighlight.cpp:
 system/bandobj/BandFaceDeform.cpp:
 	.text       start:0x803A9C80 end:0x803ABC68
 
+system/bandobj/BandIKEffector.cpp:
+	.text       start:0x803ABC68 end:0x803B0390
+
 system/bandobj/BandLabel.cpp:
 	.text       start:0x803B0390 end:0x803B1FA8
+
+system/bandobj/BandLeadMeter.cpp:
+	.text       start:0x803B1FA8 end:0x803B364C
 
 system/bandobj/BandList.cpp:
 	.text       start:0x803B364C end:0x803BA73C
@@ -1059,18 +1223,33 @@ system/bandobj/BandHeadShaper.cpp:
 system/bandobj/BandRetargetVignette.cpp:
 	.text       start:0x803E0EB0 end:0x803E2710
 
+system/bandobj/BandSongPref.cpp:
+	.text       start:0x803E2710 end:0x803E2C74
+
 system/bandobj/BandWardrobe.cpp:
 	.text       start:0x803E2C74 end:0x803EA774
+
+system/bandobj/CharDeform.cpp:
+	.text       start:0x803EA774 end:0x803EA8A0
+
+system/bandobj/CharKeyHandMidi.cpp:
+	.text       start:0x803EA8A0 end:0x803EEDD4
 
 system/bandobj/ChordShapeGenerator.cpp:
 	.text       start:0x803EEDD4 end:0x803F4E74
 	.ctors      start:0x807EFF90 end:0x807EFF94
+
+system/bandobj/DialogDisplay.cpp:
+	.text       start:0x803F4E74 end:0x803F5BE8
 
 system/bandobj/EndingBonus.cpp:
 	.text       start:0x803F5BE8 end:0x803F83A0
 
 system/bandobj/FingerShape.cpp:
 	.text       start:0x803F83A0 end:0x803F8E50
+
+system/bandobj/LayerDir.cpp:
+	.text       start:0x803F8E50 end:0x803FC0A8
 
 system/bandobj/NoteTube.cpp:
 	.text       start:0x803FC0A8 end:0x803FD9E8
@@ -1082,23 +1261,47 @@ system/bandobj/PatchDir.cpp:
 	.text       start:0x8040EB9C end:0x8041419C
 	.ctors      start:0x807EFF94 end:0x807EFF98
 
+system/bandobj/PatchRenderer.cpp:
+	.text       start:0x8041419C end:0x80414E84
+
+system/bandobj/PitchArrow.cpp:
+	.text       start:0x80414E84 end:0x80417698
+
+system/bandobj/PlayerDiffIcon.cpp:
+	.text       start:0x80417698 end:0x80418740
+
+system/bandobj/InstrumentDifficultyDisplay.cpp:
+	.text       start:0x80418740 end:0x80419BC4
+
 system/bandobj/ScrollbarDisplay.cpp:
 	.text       start:0x80419BC4 end:0x8041B308
+
+system/bandobj/CheckboxDisplay.cpp:
+	.text       start:0x8041B308 end:0x8041BC8C
+
+system/bandobj/ScoreDisplay.cpp:
+	.text       start:0x8041BC8C end:0x8041C9E8
+
+system/bandobj/ReviewDisplay.cpp:
+	.text       start:0x8041C9E8 end:0x8041D674
 
 system/bandobj/StarDisplay.cpp:
 	.text       start:0x8041D674 end:0x8041ED7C
 
-rb3/micinputarrow.cpp:
+system/bandobj/MeterDisplay.cpp:
+	.text       start:0x8041ED7C end:0x80420108
+
+system/bandobj/MicInputArrow.cpp:
 	.text       start:0x80420108 end:0x804213CC
 	.ctors      start:0x807EFF98 end:0x807EFF9C
 
-rb3/minileaderboarddisplay.cpp:
+system/bandobj/MiniLeaderboardDisplay.cpp:
 	.text       start:0x804213CC end:0x80421CA4
 
-rb3/streakmeter.cpp:
+system/bandobj/StreakMeter.cpp:
 	.text       start:0x80421CA4 end:0x804260A4
 
-rb3/overdrivemeter.cpp:
+system/bandobj/OverdriveMeter.cpp:
 	.text       start:0x804260A4 end:0x80426FDC
 
 system/bandobj/GemTrackDir.cpp:
@@ -1109,6 +1312,9 @@ system/bandobj/GemTrackResourceManager.cpp:
 
 system/bandobj/VocalTrackDir.cpp:
 	.text       start:0x80431DC8 end:0x8043B9C0
+
+system/bandobj/BandTrack.cpp:
+	.text       start:0x8043B9C0 end:0x80440C44
 
 system/bandobj/TrackPanelDirBase.cpp:
 	.text       start:0x80440C44 end:0x804431F4
@@ -1133,6 +1339,147 @@ system/bandobj/SongSectionController.cpp:
 
 system/bandobj/OvershellDir.cpp:
 	.text       start:0x8045593C end:0x804567C8
+
+system/beatmatch/BaseGuitarTrackWatcherImpl.cpp:
+	.text       start:0x804567C8 end:0x80457858
+
+system/beatmatch/BeatMaster.cpp:
+	.text       start:0x80457858 end:0x80458F50
+
+system/beatmatch/BeatMatch.cpp:
+	.text       start:0x80458F50 end:0x80458F54
+
+system/beatmatch/BeatMatchController.cpp:
+	.text       start:0x80458F54 end:0x8045958C
+
+system/beatmatch/BeatMatchUtl.cpp:
+	.text       start:0x8045958C end:0x80459898
+
+system/beatmatch/BeatMatcher.cpp:
+	.text       start:0x80459898 end:0x8045B3B8
+
+system/beatmatch/ButtonGuitarController.cpp:
+	.text       start:0x8045B3B8 end:0x8045C11C
+
+system/beatmatch/DrumFillTrackWatcherImpl.cpp:
+	.text       start:0x8045C11C end:0x8045C4E0
+
+system/beatmatch/DrumMap.cpp:
+	.text       start:0x8045C4E0 end:0x8045D49C
+
+system/beatmatch/DrumMixDB.cpp:
+	.text       start:0x8045D49C end:0x8045EA14
+
+system/beatmatch/DrumPlayer.cpp:
+	.text       start:0x8045EA14 end:0x8045EC70
+
+system/beatmatch/DrumTrackWatcherImpl.cpp:
+	.text       start:0x8045EC70 end:0x8045F49C
+
+system/beatmatch/FillInfo.cpp:
+	.text       start:0x8045F49C end:0x8046027C
+
+system/beatmatch/GameGem.cpp:
+	.text       start:0x8046027C end:0x80460F64
+
+system/beatmatch/GameGemDB.cpp:
+	.text       start:0x80460F64 end:0x804614B0
+
+system/beatmatch/GameGemList.cpp:
+	.text       start:0x804614B0 end:0x80463810
+
+system/beatmatch/GuitarController.cpp:
+	.text       start:0x80463810 end:0x80464908
+
+system/beatmatch/GuitarTrackWatcherImpl.cpp:
+	.text       start:0x80464908 end:0x80464E84
+
+system/beatmatch/JoypadController.cpp:
+	.text       start:0x80464E84 end:0x8046612C
+
+system/beatmatch/JoypadGuitarController.cpp:
+	.text       start:0x8046612C end:0x804667F4
+
+system/beatmatch/JoypadMidiController.cpp:
+	.text       start:0x804667F4 end:0x804671FC
+
+system/beatmatch/JoypadTrackWatcherImpl.cpp:
+	.text       start:0x804671FC end:0x80467920
+
+system/beatmatch/KeyboardController.cpp:
+	.text       start:0x80467920 end:0x804681EC
+
+system/beatmatch/KeyboardTrackWatcherImpl.cpp:
+	.text       start:0x804681EC end:0x80469A88
+
+system/beatmatch/MasterAudio.cpp:
+	.text       start:0x80469A88 end:0x8046E95C
+
+system/beatmatch/MercurySwitchFilter.cpp:
+	.text       start:0x8046E95C end:0x8046EDCC
+
+system/beatmatch/Output.cpp:
+	.text       start:0x8046EDCC end:0x8046EE1C
+	.ctors      start:0x807EFF9C end:0x807EFFA0
+
+system/beatmatch/PhraseAnalyzer.cpp:
+	.text       start:0x8046EE1C end:0x80470CF8
+
+system/beatmatch/PhraseDB.cpp:
+	.text       start:0x80470CF8 end:0x80470F98
+
+system/beatmatch/PhraseList.cpp:
+	.text       start:0x80470F98 end:0x80471E74
+
+system/beatmatch/Playback.cpp:
+	.text       start:0x80471E74 end:0x80472568
+	.ctors      start:0x807EFFA0 end:0x807EFFA4
+
+system/beatmatch/PlayerTrackConfigList.cpp:
+	.text       start:0x80472568 end:0x80473F18
+
+system/beatmatch/RealGuitarController.cpp:
+	.text       start:0x80473F18 end:0x8047488C
+
+system/beatmatch/RealGuitarTrackWatcherImpl.cpp:
+	.text       start:0x8047488C end:0x80475750
+
+system/beatmatch/RGGemMatcher.cpp:
+	.text       start:0x80475750 end:0x8047607C
+
+system/beatmatch/RGState.cpp:
+	.text       start:0x8047607C end:0x80476174
+
+system/beatmatch/RGUtl.cpp:
+	.text       start:0x80476174 end:0x804780B0
+
+system/beatmatch/SlotChannelMapping.cpp:
+	.text       start:0x804780B0 end:0x80479968
+
+system/beatmatch/SongData.cpp:
+	.text       start:0x80479968 end:0x80488788
+
+system/beatmatch/SongParser.cpp:
+	.text       start:0x80488788 end:0x80492494
+	.ctors      start:0x807EFFA4 end:0x807EFFA8
+
+system/beatmatch/Submix.cpp:
+	.text       start:0x80492494 end:0x80492988
+
+system/beatmatch/TimeSpanVector.cpp:
+	.text       start:0x80492988 end:0x80492A78
+
+system/beatmatch/TrackType.cpp:
+	.text       start:0x80492A78 end:0x80492B28
+
+system/beatmatch/TrackWatcher.cpp:
+	.text       start:0x80492B28 end:0x804936F0
+
+system/beatmatch/TrackWatcherImpl.cpp:
+	.text       start:0x804936F0 end:0x8049744C
+
+system/beatmatch/VocalPhrase.cpp:
+	.text       start:0x8049744C end:0x80499BAC
 
 system/char/Char.cpp:
 	.text       start:0x80499BAC end:0x8049C168
@@ -1171,8 +1518,11 @@ system/char/CharBoneTwist.cpp:
 	.text       start:0x804B4208 end:0x804B4B68
 
 system/char/CharClip.cpp:
-	.text       start:0x804B4B68 end:0x804BCCD8
+	.text       start:0x804B4B68 end:0x804BBA84
 	.ctors      start:0x807EFFA8 end:0x807EFFAC
+
+system/char/CharClipDriver.cpp:
+	.text       start:0x804BBA84 end:0x804BCCD8
 
 system/char/CharClipGroup.cpp:
 	.text       start:0x804BCCD8 end:0x804C0210
@@ -1326,7 +1676,7 @@ system/char/CharWeightSetter.cpp:
 	.text       start:0x804FCD7C end:0x804FEA7C
 
 system/char/FileMerger.cpp:
-	.text       start:0x804FF03C end:0x80502984
+	.text       start:0x804FEA7C end:0x80502984
 
 system/char/FileMergerOrganizer.cpp:
 	.text       start:0x80502984 end:0x80504A84
@@ -1338,41 +1688,113 @@ system/char/Waypoint.cpp:
 system/char/CharGuitarString.cpp:
 	.text       start:0x80507560 end:0x80507E74
 
-rb3/unknown/805/unk_8050FA30.cpp:
-	.text       start:0x80507E74 end:0x8050EA88
+system/dsp/IIRFilter.cpp:
+	.text       start:0x80507E74 end:0x80507F98
 
-rb3/panels/dejitterpanel.cpp:
+system/dsp/SndAnalysis.cpp:
+	.text       start:0x80507F98 end:0x805086F0
+
+system/dsp/PitchDetector.cpp:
+	.text       start:0x805086F0 end:0x80509130
+
+system/dsp/VibratoDetector.cpp:
+	.text       start:0x80509130 end:0x80509548
+
+system/meta/Achievements.cpp:
+	.text       start:0x80509548 end:0x80509750
+
+system/meta/ButtonHolder.cpp:
+	.text       start:0x80509750 end:0x8050C02C
+
+system/meta/CreditsPanel.cpp:
+	.text       start:0x8050C02C end:0x8050CC84
+
+system/meta/ConnectionStatusPanel.cpp:
+	.text       start:0x8050CC84 end:0x8050D21C
+
+system/meta/DataArraySongInfo.cpp:
+	.text       start:0x8050D21C end:0x8050EA88
+
+system/meta/DeJitterPanel.cpp:
 	.text       start:0x8050EA88 end:0x8050EF80
 
-rb3/fixedsizesaveable.cpp:
+system/meta/FixedSizeSaveable.cpp:
 	.text       start:0x8050EF80 end:0x8050FA30
 
-rb3/fixedsizesaveablestream.cpp:
+system/meta/FixedSizeSaveableStream.cpp:
 	.text       start:0x8050FA30 end:0x8050FEF4
 
-rb3/panels/heldbuttonpanel.cpp:
+system/meta/HeldButtonPanel.cpp:
 	.text       start:0x8050FEF4 end:0x80510944
 
-rb3/panels/preloadpanel.cpp:
+system/meta/MemcardAction.cpp:
+	.text       start:0x80510944 end:0x8051098C
+
+system/meta/Meta.cpp:
+	.text       start:0x8051098C end:0x80510B7C
+
+system/meta/MetaMusicScene.cpp:
+	.text       start:0x80510B7C end:0x80510D44
+
+system/meta/MetaMusicManager.cpp:
+	.text       start:0x80510D44 end:0x80512068
+
+system/meta/MoviePanel.cpp:
+	.text       start:0x80512068 end:0x805133E4
+
+system/meta/PreloadPanel.cpp:
 	.text       start:0x805133E4 end:0x805143A0
 
-rb3/profile.cpp:
+system/meta/Profile.cpp:
 	.text       start:0x805143A0 end:0x805147A4
 
-rb3/unknown/805/unk_80510944.cpp:
-	.text       start:0x805147A4 end:0x805188D0
+system/meta/SongMetadata.cpp:
+	.text       start:0x805147A4 end:0x8051513C
 
-rb3/panels/storeartloaderpanel.cpp:
+system/meta/SongMgr.cpp:
+	.text       start:0x8051513C end:0x80516EE4
+
+system/meta/SongPreview.cpp:
+	.text       start:0x80516EE4 end:0x805182D0
+
+system/meta/Sorting.cpp:
+	.text       start:0x805182D0 end:0x80518608
+
+system/meta/StoreEnumeration.cpp:
+	.text       start:0x80518608 end:0x805188D0
+
+system/meta/StoreArtLoaderPanel.cpp:
 	.text       start:0x805188D0 end:0x80519AB8
 
-rb3/storeoffer.cpp:
-	.text       start:0x80519D10 end:0x8051CBE4
+system/meta/StoreOffer.cpp:
+	.text       start:0x80519D10 end:0x8051C3AC
 
-rb3/panels/storepanel.cpp:
+system/meta/StorePackedMetadata.cpp:
+	.text       start:0x8051C3AC end:0x80522CAC
+	.ctors      start:0x807EFFB0 end:0x807EFFB4
+
+system/meta/StorePreviewMgr.cpp:
+	.text       start:0x80522CAC end:0x80523A2C
+
+system/meta/StreamPlayer.cpp:
+	.text       start:0x80523A2C end:0x80523EB8
+
+system/meta/MemcardMgr_Wii.cpp:
+	.text       start:0x80523EB8 end:0x80525830
+	.ctors      start:0x807EFFB4 end:0x807EFFB8
+
+system/meta/StorePanel.cpp:
 	.text       start:0x80525830 end:0x8052901C
 
+system/meta/WiiProfileMgr.cpp:
+	.text       start:0x8052901C end:0x8052A4E0
+	.ctors      start:0x807EFFB8 end:0x807EFFBC
+
 system/midi/DataEventList.cpp:
-	.text       start:0x8052A508 end:0x8052CD54
+	.text       start:0x8052A4E0 end:0x8052CD54
+
+system/midi/DisplayEvents.cpp:
+	.text       start:0x8052CD54 end:0x8052D22C
 
 system/midi/MidiParser.cpp:
 	.text       start:0x8052D22C end:0x80531574
@@ -1380,6 +1802,32 @@ system/midi/MidiParser.cpp:
 
 system/midi/MidiParserMgr.cpp:
 	.text       start:0x80531574 end:0x80533670
+
+system/midi/MidiReader.cpp:
+	.text       start:0x80533670 end:0x80535C60
+	.ctors      start:0x807EFFC0 end:0x807EFFC4
+
+system/midi/MidiReceiver.cpp:
+	.text       start:0x80535C60 end:0x80535CFC
+
+system/midi/MidiVarLen.cpp:
+	.text       start:0x80535CFC end:0x80535D9C
+
+system/movie/Movie.cpp:
+	.text       start:0x80535D9C end:0x80538D74
+	.ctors      start:0x807EFFC4 end:0x807EFFC8
+
+system/movie/Splash.cpp:
+	.text       start:0x80538D74 end:0x8053ACE0
+
+system/movie/TexMovie.cpp:
+	.text       start:0x8053ACE0 end:0x8053C090
+
+system/movie/Movie_Wii.cpp:
+	.text       start:0x8053C090 end:0x8053D604
+
+system/movie/CustomSplash_Wii.cpp:
+	.text       start:0x8053D604 end:0x8053E0F4
 
 system/track/Track.cpp:
 	.text       start:0x8053E0F4 end:0x8053E2A4
@@ -1814,8 +2262,57 @@ system/rndobj/AmbientOcclusion.cpp:
 	.data       start:0x8089ACF8 end:0x8089AD98
 	.sbss       start:0x808E4D70 end:0x808E4D78
 
-rb3/unknown/806/unk_80660D18.cpp:
-	.text       start:0x80660D18 end:0x80668D18
+system/rndobj/DOFProc_Wii.cpp:
+	.text       start:0x8065E1A4 end:0x8065E490
+
+system/rndobj/Dxt1Compress.cpp:
+	.text       start:0x8065E490 end:0x80660180
+
+system/synthwii/EnvelopeWii.cpp:
+	.text       start:0x80660180 end:0x806603F4
+
+system/synthwii/FxWii.cpp:
+	.text       start:0x806603F4 end:0x80660D18
+	.ctors      start:0x807F0020 end:0x807F0024
+
+system/synthwii/Mic_Wii.cpp:
+	.text       start:0x80660D18 end:0x80661CF0
+
+system/synthwii/PitchShiftEffect.cpp:
+	.text       start:0x80661CF0 end:0x80661FC4
+
+system/synthwii/Synth_Wii.cpp:
+	.text       start:0x80661FC4 end:0x80663B2C
+
+system/synthwii/SampleInst.cpp:
+	.text       start:0x80663B2C end:0x80663F38
+
+system/synthwii/SynthSample.cpp:
+	.text       start:0x80663F38 end:0x806642DC
+
+system/synthwii/VoiceWii.cpp:
+	.text       start:0x806642DC end:0x80665420
+
+system/synthwii/StreamReceiver.cpp:
+	.text       start:0x80665420 end:0x806660F4
+
+system/synthwii/soundtouch/source/SoundTouch/AAFilter.cpp:
+	.text       start:0x806660F4 end:0x806663D8
+
+system/synthwii/soundtouch/source/SoundTouch/FIFOSampleBuffer.cpp:
+	.text       start:0x806663D8 end:0x8066686C
+
+system/synthwii/soundtouch/source/SoundTouch/FIRFilter.cpp:
+	.text       start:0x8066686C end:0x80666C64
+
+system/synthwii/soundtouch/source/SoundTouch/RateTransposer.cpp:
+	.text       start:0x80666C64 end:0x80667810
+
+system/synthwii/soundtouch/source/SoundTouch/SoundTouch.cpp:
+	.text       start:0x80667810 end:0x80667E68
+
+system/synthwii/soundtouch/source/SoundTouch/TDStretch.cpp:
+	.text       start:0x80667E68 end:0x80668D18
 
 system/synth/ADSR.cpp:
 	.text       start:0x80668D18 end:0x80669340
@@ -1877,125 +2374,252 @@ system/synth/FxSendWah.cpp:
 system/synth/MetaMusic.cpp:
 	.text       start:0x806786F0 end:0x80679F0C
 
-rb3/unknown/806/unk_80671DCC.cpp:
-	.text       start:0x80679F0C end:0x8067BA7C
+system/synth/Mic.cpp:
+	.text       start:0x80679F0C end:0x8067A02C
 
-libs/libtomcrypt/aes.c:
+system/synth/MicClientMapper.cpp:
+	.text       start:0x8067A02C end:0x8067BA90
+	.ctors      start:0x807F0028 end:0x807F002C
+
+system/synth/MidiInstrumentMgr.cpp:
+	.text       start:0x8067BA90 end:0x8067BD24
+
+system/synth/MidiInstrument.cpp:
+	.text       start:0x8067BD24 end:0x8067F374
+
+system/synth/MicNull.cpp:
+	.text       start:0x8067F374 end:0x8067F5A0
+	.ctors      start:0x807F002C end:0x807F0030
+
+system/synth/MidiChannel.cpp:
+	.text       start:0x8067F5A0 end:0x8067FAD4
+
+system/synth/MidiSynth.cpp:
+	.text       start:0x8067FAD4 end:0x80680FBC
+
+system/synth/MoggClip.cpp:
+	.text       start:0x80680FBC end:0x806829C8
+
+system/synth/MoggClipMap.cpp:
+	.text       start:0x806829C8 end:0x80682DE8
+
+system/synth/OggMap.cpp:
+	.text       start:0x80682DE8 end:0x80682FC8
+
+system/synth/Pollable.cpp:
+	.text       start:0x80682FC8 end:0x806833B0
+	.ctors      start:0x807F0030 end:0x807F0034
+
+system/synth/SampleData.cpp:
+	.text       start:0x806833B0 end:0x80684630
+
+system/synth/SampleInst.cpp:
+	.text       start:0x80684630 end:0x80684930
+
+system/synth/SampleZone.cpp:
+	.text       start:0x80684930 end:0x80684C8C
+
+system/synth/Sequence.cpp:
+	.text       start:0x80684C8C end:0x8068B174
+
+system/synth/Sfx.cpp:
+	.text       start:0x8068B174 end:0x8068FC28
+
+system/synth/SfxMap.cpp:
+	.text       start:0x8068FC28 end:0x8068FD58
+
+system/synth/SlipTrack.cpp:
+	.text       start:0x8068FD58 end:0x80690124
+
+system/synth/StandardStream.cpp:
+	.text       start:0x80690124 end:0x80693A40
+
+system/synth/Stream.cpp:
+	.text       start:0x80693A40 end:0x80693B98
+
+system/synth/StreamNull.cpp:
+	.text       start:0x80693B98 end:0x80693EA8
+
+system/synth/StreamReceiver.cpp:
+	.text       start:0x80693EA8 end:0x806947F8
+
+system/synth/Synth.cpp:
+	.text       start:0x806947F8 end:0x80698274
+	.ctors      start:0x807F0034 end:0x807F0038
+
+system/synth/SynthSample.cpp:
+	.text       start:0x80698274 end:0x8069927C
+
+system/synth/Utl.cpp:
+	.text       start:0x8069927C end:0x80699384
+
+system/synth/VoiceBeat.cpp:
+	.text       start:0x80699384 end:0x8069A7E4
+
+system/synth/VorbisReader.cpp:
+	.text       start:0x8069A7E4 end:0x8069BF6C
+
+system/synth/WavReader.cpp:
+	.text       start:0x8069BF6C end:0x8069C3FC
+
+system/synth/libtomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54
 	.rodata     start:0x807F4BE8 end:0x807F8CC8
 	.data       start:0x8089F260 end:0x8089F3A8
 
-libs/libtomcrypt/crypt.c:
+system/synth/libtomcrypt/crypt.c:
 	.text       start:0x8069EA54 end:0x8069EB64
 	.data       start:0x8089F3A8 end:0x8089F5E8
 	.bss        start:0x80991198 end:0x80991720
 
-libs/libtomcrypt/ctr.c:
+system/synth/libtomcrypt/ctr.c:
 	.text       start:0x8069EB64 end:0x8069EF40
 
-libs/speex/libspeex/bits.c:
+system/speex/libspeex/bits.c:
 	.text       start:0x8069EF40 end:0x8069F458
 	.data       start:0x8089F5E8 end:0x8089F738
 
-libs/speex/libspeex/cb_search.c:
+system/speex/libspeex/cb_search.c:
 	.text       start:0x8069F458 end:0x806A0660
 
-libs/speex/libspeex/filters.c:
+system/speex/libspeex/filters.c:
 	.text       start:0x806A0660 end:0x806A12F4
 	.rodata     start:0x807F9B88 end:0x807F9C58
 
-libs/speex/libspeex/lpc.c:
+system/speex/libspeex/lpc.c:
 	.text       start:0x806A12F4 end:0x806A1488
 
-libs/speex/libspeex/lsp.c:
+system/speex/libspeex/lsp.c:
 	.text       start:0x806A1488 end:0x806A1C28
 
-libs/speex/libspeex/ltp.c:
+system/speex/libspeex/ltp.c:
 	.text       start:0x806A1C28 end:0x806A30BC
 
-libs/speex/libspeex/nb_celp.c:
+system/speex/libspeex/nb_celp.c:
 	.text       start:0x806A30BC end:0x806A6CC0
 	.data       start:0x8089F748 end:0x8089FC60
 
-libs/speex/libspeex/quant_lsp.c:
+system/speex/libspeex/quant_lsp.c:
 	.text       start:0x806A6CC0 end:0x806A7884
 
-libs/speex/libspeex/speex.c:
+system/speex/libspeex/speex.c:
 	.text       start:0x806A7884 end:0x806A79AC
 	.data       start:0x8089FC60 end:0x8089FCB8
 
-libs/speex/libspeex/speex_callbacks.c:
+system/speex/libspeex/speex_callbacks.c:
 	.text       start:0x806A79AC end:0x806A7AC8
 
-libs/speex/libspeex/vbr.c:
+system/speex/libspeex/vbr.c:
 	.text       start:0x806A7AC8 end:0x806A82E8
 
-libs/speex/libspeex/vq.c:
+system/speex/libspeex/vq.c:
 	.text       start:0x806A82E8 end:0x806A8550
 
+system/rndwii/Cam.cpp:
+	.text       start:0x806A8550 end:0x806A8DEC
+	.ctors      start:0x807F0038 end:0x807F003C
+
+system/rndwii/Env.cpp:
+	.text       start:0x806A8DEC end:0x806A9784
+	.ctors      start:0x807F003C end:0x807F0040
+
+system/rndwii/Lit.cpp:
+	.text       start:0x806A9784 end:0x806A9AF0
+
+system/rndwii/Mat.cpp:
+	.text       start:0x806A9AF0 end:0x806ABEDC
+
+system/rndwii/Mesh.cpp:
+	.text       start:0x806ABEDC end:0x806B144C
+
+system/rndwii/Movie.cpp:
+	.text       start:0x806B144C end:0x806B1F80
+
+system/rndwii/MultiMesh.cpp:
+	.text       start:0x806B1F80 end:0x806B2AC0
+
+system/rndwii/Part.cpp:
+	.text       start:0x806B2AC0 end:0x806B3D48
+
+system/rndwii/PostProc.cpp:
+	.text       start:0x806B3D48 end:0x806B7718
+
 system/rndwii/Rnd.cpp:
-	.text       start:0x806B8438 end:0x806BDD84
+	.text       start:0x806B7718 end:0x806BDF60
 	.ctors      start:0x807F0040 end:0x807F0044
 	.sbss       start:0x808E4E70 end:0x808E4E74
 
-libs/vorbis/bitrate.c:
+system/rndwii/SplitPostProc.cpp:
+	.text       start:0x806BDF60 end:0x806BE9E0
+
+system/rndwii/Tex.cpp:
+	.text       start:0x806BE9E0 end:0x806C0D88
+	.ctors      start:0x807F0044 end:0x807F0048
+
+system/rndwii/TexRenderer.cpp:
+	.text       start:0x806C0D88 end:0x806C115C
+
+system/rndwii/UsbWii.cpp:
+	.text       start:0x806C115C end:0x806C25F0
+
+system/oggvorbis/bitrate.c:
 	.text       start:0x806C25F0 end:0x806C2714
 
-libs/libogg/src/bitwise.c:
+system/oggvorbis/bitwise.c:
 	.text       start:0x806C2714 end:0x806C2B6C
 	.data       start:0x808A1530 end:0x808A15B8
 
-libs/vorbis/block.c:
+system/oggvorbis/block.c:
 	.text       start:0x806C2B6C end:0x806C3C94
 
-libs/vorbis/codebook.c:
+system/oggvorbis/codebook.c:
 	.text       start:0x806C3C94 end:0x806C4724
 	.data       start:0x808A15B8 end:0x808A15E0
 
-libs/vorbis/envelope.c:
+system/oggvorbis/envelope.c:
 	.text       start:0x806C4724 end:0x806C47A8
 
-libs/vorbis/floor0.c:
+system/oggvorbis/floor0.c:
 	.text       start:0x806C47A8 end:0x806C504C
 
-libs/vorbis/floor1.c:
+system/oggvorbis/floor1.c:
 	.text       start:0x806C504C end:0x806C6ED4
 
-libs/libogg/src/framing.c:
+system/oggvorbis/framing.c:
 	.text       start:0x806C6ED4 end:0x806C7B44
 	.data       start:0x808A1A20 end:0x808A1E28
 
-libs/vorbis/info.c:
+system/oggvorbis/info.c:
 	.text       start:0x806C7B44 end:0x806C85A4
 	.data       start:0x808A1E28 end:0x808A1E38
 
-libs/vorbis/lsp.c:
+system/oggvorbis/lsp.c:
 	.text       start:0x806C85A4 end:0x806C896C
 	.data       start:0x808A1E38 end:0x808A22D0
 
-libs/vorbis/mapping0.c:
+system/oggvorbis/mapping0.c:
 	.text       start:0x806C896C end:0x806CA094
 
-libs/vorbis/mdct.c:
+system/oggvorbis/mdct.c:
 	.text       start:0x806CA094 end:0x806CB4D0
 
-libs/vorbis/psy.c:
+system/oggvorbis/psy.c:
 	.text       start:0x806CB4D0 end:0x806CE3C0
 
-libs/vorbis/res0.c:
+system/oggvorbis/res0.c:
 	.text       start:0x806CE3C0 end:0x806CFA70
 
-libs/vorbis/sharedbook.c:
+system/oggvorbis/sharedbook.c:
 	.text       start:0x806CFA70 end:0x806D07C4
 
-libs/vorbis/smallft.c:
+system/oggvorbis/smallft.c:
 	.text       start:0x806D07C4 end:0x806D1B60
 	.data       start:0x808A82E0 end:0x808A8300
 
-system/synth/oggvorbis/VorbisMem.cpp:
+system/oggvorbis/VorbisMem.cpp:
 	.text       start:0x806D1B60 end:0x806D1BC4
 
-libs/vorbis/window.c:
+system/oggvorbis/window.c:
 	.text       start:0x806D1BC4 end:0x806D1F30
 
 sdk/MSL_C/text_1.c:

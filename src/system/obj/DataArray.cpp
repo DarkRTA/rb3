@@ -327,7 +327,7 @@ DataArray* DataArray::FindArray(int tag, bool fail) const {
     for(dn = mNodes; dn < dn_end; dn++){
         if(dn->Type() == kDataArray){
             const DataArray* arr = dn->mValue.array;
-            if(arr->Node(0).mValue.integer == tag){
+            if(arr->UncheckedInt(0) == tag){
                 return (DataArray*)arr;
             }
         }

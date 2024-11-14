@@ -622,7 +622,7 @@ void DataLoader::LoadFile() {
                 ThreadDone(NULL);
                 return;
             }
-        unk38 = new DataLoaderThreadObj(this, NULL, fileobj, filesize, unk18.c_str(), unk30, unk34);
+        unk38 = new DataLoaderThreadObj(this, fileobj, unk30, filesize, unk34, unk18.c_str());
         ThreadCall(unk38);
         }
     }
