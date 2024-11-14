@@ -8,10 +8,11 @@
 #include "math/MathFuncs.h"
 #include "os/File.h"
 #include "os/Endian.h"
-
 #include "decomp.h"
 
-namespace {std::list<DecompressTask> gDecompressionQueue;}
+namespace {
+    std::list<DecompressTask> gDecompressionQueue;
+}
 
 BinStream& MarkChunk(BinStream& bs) {
     ChunkStream* cs = dynamic_cast<ChunkStream*>(&bs);
@@ -187,7 +188,6 @@ EofType ChunkStream::Eof() {
 
         if (strstr(mFilename.c_str(), ".milo_")) {
             mIsCached = true;
-            // const char* miloStr = mFilename.c_str();
             if(strstr(mFilename.c_str(), ".milo_xbox")) SetPlatform(kPlatformXBox);
             else if(strstr(mFilename.c_str(), ".milo_ps3")) SetPlatform(kPlatformPS3);
             else if(strstr(mFilename.c_str(), ".milo_wii")) SetPlatform(kPlatformWii);
@@ -203,10 +203,10 @@ EofType ChunkStream::Eof() {
         int cap = Min(2, mChunkInfo.mNumChunks);
         for(int i = 0; i < cap; i++){
             mBuffers[i] = (char*)_MemAllocTemp(mBufSize, 0);
-        }
-
-        mChunkEnd = &mChunkInfo.mChunks[mChunkInfo.mNumChunks];
-        mCurChunk = &mChunkInfo.mMaxChunkSize;
+        }        
+        int* chunks = mChunkInfo.mChunks;
+        mChunkEnd = chunks + mChunkInfo.mNumChunks;
+        mCurChunk = chunks - 1;
         mCurBufOffset = mChunkInfo.mMaxChunkSize & kChunkSizeMask;
         mCurBufferIdx = 1;
         mFile->Seek(mChunkInfo.mChunkInfoSize, 0);
@@ -229,7 +229,7 @@ EofType ChunkStream::Eof() {
                 ReadChunkAsync();
                 PollDecompressionWorker();
             }
-            int idx = (mCurBufferIdx + 1) >= 0;
+            int idx = (mCurBufferIdx + 1) % 2;
             if(mBuffersState[idx] != kReady) return TempEof;
             else {
                 mCurBufferIdx = idx;
@@ -251,9 +251,9 @@ DECOMP_FORCEACTIVE(ChunkStream,
 void ChunkStream::MaybeWriteChunk(bool b) {
     if (mChunkInfo.mNumChunks < 2 && 0x2000 <= mCurBufOffset) b = true;
     if(mCurBufOffset >= mRecommendedChunkSize || b){
-        bool idk = mChunkInfo.mNumChunks & 0x1FF;
-        if(!b && idk) return;
-        if((mCurBufOffset >= mRecommendedChunkSize + 0x2000) && (0x2000 <= mLastWriteMarker) && !idk){
+        bool maxchunks = mChunkInfo.mNumChunks == 511;
+        if(!b && maxchunks) return;
+        if((mCurBufOffset >= mRecommendedChunkSize + 0x2000) && (0x2000 <= mLastWriteMarker) && !maxchunks){
             int __n = mCurBufOffset - mLastWriteMarker;
             void* __dest = _MemAllocTemp(__n, 0);
             memcpy(__dest, mBuffers[0] + mLastWriteMarker, __n);
@@ -265,43 +265,41 @@ void ChunkStream::MaybeWriteChunk(bool b) {
             _MemFree(__dest);
             if(!b) return;
         }
-        if (mChunkInfo.mNumChunks >= 0x200) MILO_FAIL("%s has %d chunks, max is %d", mFilename, mChunkInfo.mNumChunks, 0x200);
+        MILO_ASSERT_FMT(mChunkInfo.mNumChunks < 512, "%s has %d chunks, max is %d", mFilename, mChunkInfo.mNumChunks, 512);
         unsigned int wrote = WriteChunk();
+        int mask = wrote & kChunkSizeMask;
         mChunkInfo.mChunks[mChunkInfo.mNumChunks++] = wrote;
-        mChunkInfo.mMaxChunkSize = Max<int>(wrote & kChunkSizeMask, mCurBufOffset, mChunkInfo.mMaxChunkSize);
+        mChunkInfo.mMaxChunkSize = Max<int>(mask, mCurBufOffset, mChunkInfo.mMaxChunkSize);
         mCurBufOffset = 0;
     }
     mLastWriteMarker = mCurBufOffset;
 }
 
-uint ChunkStream::WriteChunk() {
+int ChunkStream::WriteChunk() {
     MILO_ASSERT(mCurBufOffset < kChunkSizeMask, 778);
-    int result = mCurBufOffset;
-    char* test = mBuffers[0];
-    int size;
-    int flags; // ?
-    int sagasasdgg = 0;
-    if (mChunkInfo.mID == 0xCDBEDEAF) {
-        int dingus = mBufSize - 4;
-        int dongus = (int)mBuffers[1];
-        dongus = result;
-        EndianSwapEq(dongus);
-        CompressMem(mBuffers[0], result, (void*)(dongus + 1), dingus,NULL);
-        // float x, y = x = 176.0f;
-        if (/*x / y <= 1.1*/ false) {
-            sagasasdgg = 0x1000000;
-        } else {
-            result = dingus + 4;
-            test = (char*)dongus;
+    int size = mCurBufOffset;
+    int flags = 0;
+    int* firstbuf = (int*)mBuffers[0];
+    if(mChunkInfo.mID == 0xCDBEDEAF){
+        int l38 = mBufSize - 4;
+        int* secondbuf = (int*)mBuffers[1];
+        *secondbuf = size;
+        EndianSwapEq(*secondbuf);
+        CompressMem(mBuffers[0], size, secondbuf + 1, l38, 0);
+        if(((float)mCurBufOffset / (float)l38) > 1.1f && mChunkInfo.mNumChunks != 0){
+            size = l38 + 4;
+            firstbuf = secondbuf;
         }
+        else flags |= 0x1000000;
     }
-    if (result != mFile->Write(test, result)) {
+    if(size != mFile->Write(firstbuf, size)){
         mFail = true;
     }
     MILO_ASSERT((size & ~kChunkSizeMask) == 0, 820);
     MILO_ASSERT((flags & (kChunkSizeMask|kChunkUnusedMask)) == 0, 822);
+    int result = size | flags;
     MILO_ASSERT((result & kChunkUnusedMask) == 0, 827);
-    return result | sagasasdgg;
+    return result;
 }
 
 void DecompressMemHelper(const void* a, int b, void* c, int& dstLen, const char* fname) {

@@ -70,7 +70,7 @@ public:
     static void DecompressChunk(DecompressTask&);
     void MaybeWriteChunk(bool);
     void ReadChunkAsync();
-    uint WriteChunk();
+    int WriteChunk();
     void DecompressChunkAsync();
     
     static bool PollDecompressionWorker();
