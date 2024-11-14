@@ -1,5 +1,6 @@
 #include "DirLoader.h"
 #include "obj/Data.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "os/System.h"
@@ -11,13 +12,19 @@
 #include "utl/MakeString.h"
 #include "os/Archive.h"
 #include "obj/Utl.h"
+#include "utl/MemPoint.h"
 #include "utl/Symbols.h"
 #include "utl/ClassSymbols.h"
-
 #include "decomp.h"
 
 bool gHostCached;
 bool DirLoader::sCacheMode = false;
+
+namespace {
+    std::map<Hmx::Object*, TrackObjMem*> gvTrackObjMem;
+    MemPoint gTrackMemStack[16];
+    MemPoint* gTrackMemStackPtr = gTrackMemStack;
+}
 
 void BeginTrackObjMem(const char* cc1, const char* cc2){
 
@@ -169,10 +176,8 @@ const char* DirLoader::StateName() const {
 }
 
 void DirLoader::PollLoading() {
-    while (!IsLoaded()) { // wrong
+    while(!TheLoadMgr.CheckSplit() && TheLoadMgr.GetFirstLoading() == this && !IsLoaded()){
         (this->*mState)();
-        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.mPeriod) return;
-        if ((TheLoadMgr.mLoading.empty() ? NULL : TheLoadMgr.mLoading.front()) != this) return;
     }
 }
 

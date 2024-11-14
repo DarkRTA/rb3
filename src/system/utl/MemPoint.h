@@ -15,7 +15,7 @@ public:
         kInitType1
     };
 
-    MemPoint(eInitType);
+    MemPoint(eInitType = kInitType1);
     int operator-(const MemPoint&) const;
 
     int unk_0x0;

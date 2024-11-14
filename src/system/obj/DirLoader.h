@@ -68,3 +68,11 @@ public:
 
     static bool sCacheMode;
 };
+
+class TrackObjMem {
+public:
+    int unk0;
+    int unk4;
+    int unk8;
+    int unkc;
+};
