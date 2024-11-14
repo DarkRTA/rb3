@@ -647,6 +647,26 @@ bool DataLoader::IsLoaded() const {
     return ptmf == &DataLoader::DoneLoading;
 }
 
+void DataLoader::PollLoading(){
+    while(!TheLoadMgr.CheckSplit() && TheLoadMgr.GetLoader() == this && !IsLoaded()){
+        // ptmf scall
+    }
+}
+
+// void __thiscall DataLoader::PollLoading(DataLoader *this)
+
+// {
+//   int iVar1;
+//   DataLoader *pDVar2;
+  
+//   while (((iVar1 = fn_8031A7A0(TheLoadMgr), iVar1 == 0 && checksplit
+//           (pDVar2 = fn_8031A6E8(TheLoadMgr), pDVar2 == this)) && getloader
+//          (iVar1 = (**(*this + 0x10))(this), iVar1 == 0))) {
+//     __ptmf_scall(this);
+//   }
+//   return;
+// }
+
 void DataLoader::ThreadDone(DataArray* da) {
     MILO_ASSERT(MainThread(), 1001);
     unk24 = da;

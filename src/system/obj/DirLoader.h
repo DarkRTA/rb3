@@ -1,5 +1,4 @@
-#ifndef OBJ_DIRLOADER_H
-#define OBJ_DIRLOADER_H
+#pragma once
 #include "os/Timer.h"
 #include "utl/Loader.h"
 #include "obj/Object.h"
@@ -49,7 +48,6 @@ public:
     static const char* CachedPath(const char*, bool);
     static Loader* New(const FilePath& f, LoaderPos l) {return new DirLoader(f, l, NULL, NULL, NULL, false);}
 
-
     DirLoaderStateFunc mState; // 0x1c
     class String mRoot; // 0x28
     bool mOwnStream; // 0x34
@@ -70,5 +68,3 @@ public:
 
     static bool sCacheMode;
 };
-
-#endif
