@@ -67,32 +67,14 @@ public:
         return mTimer.SplitMs() > unk1c;
     }
 
-    Loader* GetLoader(){
-        if(mFactories.empty()){
+    Loader* GetFirstLoading(){
+        if(mLoading.empty()){
             return nullptr;
         }
         else {
-            return mFactories.front().second(FilePath(), kLoadFront);
+            return mLoading.front();
         }
     }
-
-    //     undefined4 fn_8031A6E8(int param_1)
-
-    // {
-    //   int iVar1;
-    //   undefined4 uVar2;
-    //   undefined4 *puVar3;
-    
-    //   iVar1 = stlpmtx_std::list<>::empty(param_1 + 0x18);
-    //   if (iVar1 == 0) {
-    //     puVar3 = fn_8031A734(param_1 + 0x18);
-    //     uVar2 = *puVar3;
-    //   }
-    //   else {
-    //     uVar2 = 0;
-    //   }
-    //   return uVar2;
-    // }
 
     static const char* LoaderPosString(LoaderPos, bool);
 
@@ -103,7 +85,7 @@ public:
     std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories; // 0x10
     float mPeriod; // 0x18
     float unk1c;
-    std::list<Loader*> unk20; // mLoading?
+    std::list<Loader*> mLoading; // 0x20
     Timer mTimer; // 0x28
     int unk58;
     int unk5c;

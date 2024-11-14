@@ -172,7 +172,7 @@ void DirLoader::PollLoading() {
     while (!IsLoaded()) { // wrong
         (this->*mState)();
         if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.mPeriod) return;
-        if ((TheLoadMgr.unk20.empty() ? NULL : TheLoadMgr.unk20.front()) != this) return;
+        if ((TheLoadMgr.mLoading.empty() ? NULL : TheLoadMgr.mLoading.front()) != this) return;
     }
 }
 
