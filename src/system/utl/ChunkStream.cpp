@@ -362,7 +362,7 @@ void ChunkStream::DecompressChunk(DecompressTask& task) {
 }
 
 ChunkStream::ChunkInfo::ChunkInfo(bool isCompressed) {
-    uint id = 0xCABEDEAF;
+    int id = 0xCABEDEAF;
     if (isCompressed) id = 0xCDBEDEAF;
     mID = id;
     mChunkInfoSize = 0x810;
