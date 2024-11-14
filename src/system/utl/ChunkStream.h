@@ -25,11 +25,13 @@ enum BufferState {
 };
 
 struct DecompressTask {
+    DecompressTask(int* size, char* data, BufferState* state, int out, int id, const char* name) : 
+        mChunkSize(size), out_data(data), mState(state), mOutLen(out), mID(id), mFilename(name) {}
     int* mChunkSize;
-    int out_data;
-    int* mState;
+    char* out_data;
+    BufferState* mState;
     int mOutLen;
-    uint mID;
+    int mID;
     const char* mFilename;
 };
 

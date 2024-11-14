@@ -302,6 +302,37 @@ int ChunkStream::WriteChunk() {
     return result;
 }
 
+void ChunkStream::DecompressChunkAsync(){
+    int bufIdx = 1;
+    int idx;
+    for(; bufIdx <= 2; bufIdx++){
+        idx = (mCurBufferIdx + bufIdx) % 2;
+        if(mBuffersState[idx] == kReading) break;
+    }
+    BufferState* state = &mBuffersState[idx];
+    if(*state == kReading){
+        bool maskexists = (mCurChunk[bufIdx] >> 24) & 1;
+        if(mChunkInfo.mID != 0xCABEDEAF && !maskexists){
+            *state = kDecompressing;
+            DecompressTask dtask(&mCurChunk[bufIdx], mBuffers[idx], state, mBufSize, mChunkInfo.mID, mFilename.c_str());
+            gDecompressionQueue.push_back(dtask);
+        }
+        else {
+            *state = kReady;
+        }
+    }
+}
+
+bool ChunkStream::PollDecompressionWorker(){
+    if(gDecompressionQueue.size() != 0){
+        DecompressTask task = gDecompressionQueue.front();
+        gDecompressionQueue.pop_front();
+        DecompressChunk(task);
+        return true;
+    }
+    return false;
+}
+
 void DecompressMemHelper(const void* a, int b, void* c, int& dstLen, const char* fname) {
     int expectedDstLen = *((int*)a);
     EndianSwapEq(expectedDstLen);
@@ -324,7 +355,7 @@ void ChunkStream::DecompressChunk(DecompressTask& task) {
         DecompressMem((void *)(task.out_data + (task.mOutLen - data)), data, (void*)task.out_data, out_len, false, task.mFilename);
     }
     *task.mChunkSize = out_len;
-    *task.mState = 3;
+    *task.mState = kReady;
 }
 
 ChunkStream::ChunkInfo::ChunkInfo(bool isCompressed) {
