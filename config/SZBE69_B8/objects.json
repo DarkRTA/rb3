@@ -1371,7 +1371,10 @@
             "system/utl/CacheMgr_Wii.cpp": "NonMatching",
             "system/utl/Cheats.cpp": "MISSING",
             "system/utl/ChunkIDs.cpp": "Matching",
-            "system/utl/ChunkStream.cpp": "NonMatching",
+            "system/utl/ChunkStream.cpp": {
+                "status": "Equivalent",
+                "comment": "regswaps and instruction ordering mismatches galore"
+            },
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/Compress.cpp": "Matching",
             "system/utl/DataPointMgr.cpp": "Matching",

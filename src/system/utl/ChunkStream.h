@@ -25,11 +25,13 @@ enum BufferState {
 };
 
 struct DecompressTask {
+    DecompressTask(int* size, char* data, BufferState* state, int out, int id, const char* name) : 
+        mChunkSize(size), out_data(data), mState(state), mOutLen(out), mID(id), mFilename(name) {}
     int* mChunkSize;
-    int out_data;
-    int* mState;
+    char* out_data;
+    BufferState* mState;
     int mOutLen;
-    uint mID;
+    int mID;
     const char* mFilename;
 };
 
@@ -70,31 +72,32 @@ public:
     static void DecompressChunk(DecompressTask&);
     void MaybeWriteChunk(bool);
     void ReadChunkAsync();
-    uint WriteChunk();
+    int WriteChunk();
     void DecompressChunkAsync();
-    void PollDecompressionWorker();
+    
+    static bool PollDecompressionWorker();
 
-    File* mFile;
-    String mFilename;
-    bool mFail;
-    FileType mType;
-    ChunkInfo mChunkInfo;
-    bool mIsCached;
-    Platform mPlatform;
-    int mBufSize;
-    char* mBuffers[2];
-    char* mCurReadBuffer;
-    Timer mStartTime;
-    int mRecommendedChunkSize;
-    int mLastWriteMarker;
-    int mCurBufferIdx;
-    BufferState mBuffersState[2];
-    int* mBuffersOffset[2];
-    int mCurBufOffset;
-    bool mChunkInfoPending;
-    int* mCurChunk;
-    int* mChunkEnd;
-    int mTell;
+    File* mFile; // 0xc
+    String mFilename; // 0x10
+    bool mFail; // 0x1c
+    FileType mType; // 0x20
+    ChunkInfo mChunkInfo; // 0x24
+    bool mIsCached; // 0x834
+    Platform mPlatform; // 0x838
+    int mBufSize; // 0x83c
+    char* mBuffers[2]; // 0x840, 0x844
+    char* mCurReadBuffer; // 0x848
+    Timer mStartTime; // 0x84c
+    int mRecommendedChunkSize; // 0x880
+    int mLastWriteMarker; // 0x884
+    int mCurBufferIdx; // 0x888
+    BufferState mBuffersState[2]; // 0x88c, 0x890
+    int* mBuffersOffset[2]; // 0x894, 0x898
+    int mCurBufOffset; // 0x89c
+    bool mChunkInfoPending; // 0x8a0
+    int* mCurChunk; // 0x8a4
+    int* mChunkEnd; // 0x8a8
+    int mTell; // 0x8ac
 
     void* operator new(size_t t) {
         return _MemAllocTemp(t, 0);
