@@ -20,6 +20,7 @@
 
 class ObjectDir* DirLoader::sTopSaveDir;
 bool gHostCached;
+bool DirLoader::sPrintTimes = false;
 bool DirLoader::sCacheMode = false;
 
 namespace {
@@ -36,6 +37,10 @@ void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
 
 }
 
+TrackObjMem::TrackObjMem() : unk0(0), unk4(0), unk8(0), unkc(0) {
+
+}
+
 #ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(DirLoader,
     "MemPoint Overflow",
@@ -46,19 +51,19 @@ DECOMP_FORCEACTIVE(DirLoader,
 DirLoader* DirLoader::Find(const FilePath& fp){
     if(fp.empty()) return 0;
     const std::list<Loader*>& refs = TheLoadMgr.mLoaders;
-    for(std::list<Loader*>::const_iterator it = refs.begin(); it != refs.end(); it++){
+    for(std::list<Loader*>::const_iterator it = refs.begin(); it != refs.end(); ++it){
         if((*it)->mFile == fp){
             DirLoader* dl = dynamic_cast<DirLoader*>(*it);
             if(dl) return dl;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 DirLoader* DirLoader::FindLast(const FilePath& fp){
     if(fp.empty()) return 0;
     const std::list<Loader*>& refs = TheLoadMgr.mLoaders;
-    for(std::list<Loader*>::const_reverse_iterator it = refs.rbegin(); it != refs.rend(); it++){
+    for(std::list<Loader*>::const_reverse_iterator it = refs.rbegin(); it != refs.rend(); ++it){
         if((*it)->mFile == fp){
             DirLoader* dl = dynamic_cast<DirLoader*>(*it);
             if(dl) return dl;
@@ -75,7 +80,7 @@ void DirLoader::PrintLoaded(const char* text) {
         cout = log;
     }
     const std::list<Loader*>& refs = TheLoadMgr.mLoaders;
-    for(std::list<Loader*>::const_iterator it = refs.begin(); it != refs.end(); it++){
+    for(std::list<Loader*>::const_iterator it = refs.begin(); it != refs.end(); ++it){
         Loader* cur = *it;
         if(cur && cur->IsLoaded()){
             const char* text2 = cur->mFile.c_str();
@@ -249,15 +254,14 @@ void DirLoader::OpenFile() {
         strcpy(buf, FileGetPath(fileStr, NULL));
         int len = strlen(buf);
         if(len - 4 > 0){
-            bool isGen = strcmp("/gen", buf + len) == 0;
-            if(isGen) buf[len] = 0;
+            if(streq("/gen", buf + len)) buf[len] = 0;
         }
         mRoot = FileMakePath(FileRoot(), buf, NULL);
     }
     if (mStream == 0) {
         Archive* theArchive = TheArchive;
-        bool cache_mode = sCacheMode;
         bool using_cd = UsingCD();
+        bool cache_mode = sCacheMode;
 
         bool matches = false;
         if(gHostFile){
@@ -266,7 +270,7 @@ void DirLoader::OpenFile() {
         if(matches){
             SetCacheMode(gHostCached);
             SetUsingCD(false);
-            TheArchive = 0;
+            TheArchive = nullptr;
         }
 
         const char* path = CachedPath(fileStr, false);

@@ -37,6 +37,7 @@ public:
     NEW_POOL_OVERLOAD(DirLoader);
     DELETE_POOL_OVERLOAD(DirLoader);
 
+    static bool sCacheMode;
     static bool sPrintTimes;
     static class ObjectDir* sTopSaveDir;
     static DirLoader* Find(const FilePath&);
@@ -65,12 +66,11 @@ public:
     Timer mTimer; // 0x68
     bool mAccessed; // 0x98
     bool unk99; // 0x99
-
-    static bool sCacheMode;
 };
 
 class TrackObjMem {
 public:
+    TrackObjMem();
     int unk0;
     int unk4;
     int unk8;

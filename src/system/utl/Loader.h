@@ -76,10 +76,6 @@ public:
         }
     }
 
-    std::list<Loader*>::const_iterator Begin() const { return mLoaders.begin(); }
-    std::list<Loader*>::const_iterator End() const { return mLoaders.end(); }
-    const std::list<Loader*>& Loaders() const { return mLoaders; }
-
     static const char* LoaderPosString(LoaderPos, bool);
 
     std::list<Loader*> mLoaders; // 0x0
