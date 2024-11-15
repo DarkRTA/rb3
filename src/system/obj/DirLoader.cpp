@@ -385,6 +385,45 @@ void DirLoader::LoadHeader() {
     mState = &DirLoader::CreateObjects;
 }
 
+void DirLoader::CreateObjects(){
+    while(mCounter-- != 0){
+        Symbol classSym;
+        *mStream >> classSym;
+        classSym = FixClassName(classSym);
+        char buf[0x80];
+        mStream->ReadString(buf, 0x80);
+        bool b8;
+        if(mRev - 1U <= 6){
+            *mStream >> b8;
+        }
+        Hmx::Object* obj;
+        if(!Hmx::Object::RegisteredFactory(classSym)){
+            MILO_WARN("%s: Can't make %s", mFile.c_str(), classSym);
+            obj = nullptr;
+        }
+        else {
+            BeginTrackObjMem(classSym.mStr, buf);
+            obj = Hmx::Object::NewObject(classSym);
+            if(mRev == 0x16 && dynamic_cast<class ObjectDir*>(obj)){
+                RELEASE(obj);
+            }
+            else {
+                obj->SetName(buf, mDir);
+                EndTrackObjMem(obj, mProxyName, buf);
+            }
+        }
+        mObjects.push_back(obj);
+        if(TheLoadMgr.CheckSplit()) return;
+    }
+    if(mRev > 16){
+        mState = &DirLoader::LoadDir;
+    }
+    else {
+        *mStream >> mCounter;
+        mState = &DirLoader::LoadResources;
+    }
+}
+
 void DirLoader::LoadResources(){
     if(mCounter-- != 0){
         FilePathTracker fpt(mRoot.c_str());
