@@ -488,7 +488,47 @@ void DirLoader::LoadDir(){
     mState = &DirLoader::LoadObjs;
 }
 
-void DirLoader::DoneLoading() { }
+void DirLoader::LoadObjs(){
+    FilePathTracker tracker(mRoot.c_str());
+    EofType t;
+    while(!mObjects.empty()){
+        t = mStream->Eof();
+        if(t != NotEof){
+            MILO_ASSERT(t == TempEof, 0x514);
+        }
+        else {
+            Hmx::Object* obj = mObjects.front();
+            if(obj){
+                if(!mPostLoad){
+                    BeginTrackObjMem(obj->ClassName().mStr, obj->Name());
+                    obj->PreLoad(*mStream);
+                    mPostLoad = true;
+                    EndTrackObjMem(obj, mProxyName, obj->Name());
+                }
+                if(TheLoadMgr.GetFirstLoading() != this) return;
+                BeginTrackObjMem(obj->ClassName().mStr, obj->Name());
+                obj->PostLoad(*mStream);
+                EndTrackObjMem(obj, mProxyName, obj->Name());
+                mPostLoad = false;
+                if(mRev > 1){
+                    ReadDead(*mStream);
+                }
+            }
+            else {
+                MILO_ASSERT(mRev > 1, 0x54D);
+                ReadDead(*mStream);
+            }
+            mObjects.pop_front();
+        }
+        if(TheLoadMgr.CheckSplit() || TheLoadMgr.GetFirstLoading() != this) return;
+    }
+    mState = &DirLoader::DoneLoading;
+    Cleanup(0);
+    if(TheLoadMgr.GetFirstLoading() != this) return;
+    if(mCallback) mCallback->FinishLoading(this);
+}
+
+void DirLoader::DoneLoading(){}
 
 void DirLoader::Replace(Hmx::Object* from, Hmx::Object* to) {
     MILO_ASSERT(from == mProxyDir && !to, 1393);
@@ -500,22 +540,33 @@ void DirLoader::Replace(Hmx::Object* from, Hmx::Object* to) {
 void DirLoader::Cleanup(const char* s) {
     if (s) MILO_WARN(s);
     mObjects.clear();
-    if (mOwnStream) {
-        delete mStream;
-        mStream = NULL;
-    }
+    if(mOwnStream) RELEASE(mStream);
     if (mDir) {
         if (!IsLoaded()) {
             mDir->mLoader = NULL;
             if (mProxyName == NULL) {
-                if (mDir) delete mDir;
-                mDir = NULL;
-            }
-            if (mProxyName != NULL) {
-                if (mDir->IsProxy()) mDir->ResetEditorState();
+                RELEASE(mDir);
             }
         }
+        if (mProxyName != NULL) {
+            if (mDir->Dir() == mDir){
+                mDir->SetName(mProxyName, mProxyDir);
+            }
+        }
+        if(IsLoaded() && mDir){
+            mDir->SyncObjects();
+        }
     }
+    mState = &DirLoader::DoneLoading;
+    mTimer.Stop();
+    if(sPrintTimes){
+        MILO_LOG("%s: %f ms\n", mFile, mTimer.Ms());
+    }
+    if(mCallback && (s || unk99)){
+        mCallback->FailedLoading(this);
+        mCallback = nullptr;
+    }
+    if(mDeleteSelf) delete this;
 }
 
 DirLoader::~DirLoader() {
@@ -526,8 +577,7 @@ DirLoader::~DirLoader() {
     else if(mDir){
         mDir->mLoader = 0;
         if(!mAccessed && !mProxyName){
-            delete mDir;
-            mDir = 0;
+            RELEASE(mDir);
         }
     }
     if(mProxyDir) mProxyDir->Release(this);
