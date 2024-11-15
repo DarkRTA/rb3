@@ -1,4 +1,5 @@
 #include "DirLoader.h"
+#include "char/CharClip.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
@@ -226,56 +227,57 @@ void DirLoader::PollLoading() {
     }
 }
 
-// this matches, but dear god i hope this isn't what HMX actually wrote
+// this is...better than before? i guess?
 Symbol DirLoader::FixClassName(Symbol sym){
-    if(mRev < 0x1C){
-        if(sym == CharClipSamples) sym = CharClip;
-        if(mRev < 0x1B){
-            if(sym == BandMeshLauncher) sym = PartLauncher;
-            if(mRev < 0x1A){
-                if(sym == P9TransDraw) sym = CharTransDraw;
-                if(mRev < 0x19){
-                    if(sym == RenderedTex) sym = TexRenderer;
-                    else if(sym == CompositeTexture) sym = LayerDir;
-                    if(mRev < 0x18){
-                        if(sym == BandFx) return WorldFx;
-                        if(mRev < 0x16){
-                            if(sym == Slider) return BandSlider;
-                            if(mRev < 0x15){
-                                if(sym == TextEntry) return BandTextEntry;
-                                if(mRev < 0x14){
-                                    if(sym == Placer) return BandPlacer;
-                                    if(mRev < 0x13){
-                                        if(sym == ButtonEx) return BandButton;
-                                        else if(sym == LabelEx) return BandLabel;
-                                        else if(sym == PictureEx) return BandPicture;
-                                        if(mRev < 0x12){
-                                            if(sym == UIPanel) return PanelDir;
-                                            if(mRev < 0x10){
-                                                if(sym == WorldInstance) return WorldObject;
-                                                if(mRev < 0xF){
-                                                    if(sym == View) return Group;
-                                                    if(mRev < 7){
-                                                        if(sym == String) return Line;
-                                                        if(mRev < 6){
-                                                            if(sym == MeshGenerator) return Generator;
-                                                            if(mRev < 5){
-                                                                if(sym == TexMovie) return Movie;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    if(mRev >= 0x1C) goto ret;
+    if(sym == CharClipSamples) sym = CharClip;
+
+    if(mRev >= 0x1B) goto ret;
+    if(sym == BandMeshLauncher) sym = PartLauncher;
+
+    if(mRev >= 0x1A) goto ret;
+    if(sym == P9TransDraw) sym = CharTransDraw;
+
+    if(mRev >= 0x19) goto ret;
+    if(sym == RenderedTex) sym = TexRenderer;
+    else if(sym == CompositeTexture) sym = LayerDir;
+
+    if(mRev >= 0x18) goto ret;
+    if(sym == BandFx) return WorldFx;
+
+    if(mRev >= 0x16) goto ret;
+    if(sym == Slider) return BandSlider;
+
+    if(mRev >= 0x15) goto ret;
+    if(sym == TextEntry) return BandTextEntry;
+
+    if(mRev >= 0x14) goto ret;
+    if(sym == Placer) return BandPlacer;
+
+    if(mRev >= 0x13) goto ret;
+    if(sym == ButtonEx) return BandButton;
+    else if(sym == LabelEx) return BandLabel;
+    else if(sym == PictureEx) return BandPicture;
+
+    if(mRev >= 0x12) goto ret;
+    if(sym == UIPanel) return PanelDir;
+
+    if(mRev >= 0x10) goto ret;
+    if(sym == WorldInstance) return WorldObject;
+
+    if(mRev >= 0xF) goto ret;
+    if(sym == View) return Group;
+
+    if(mRev >= 7) goto ret;
+    if(sym == String) return Line;
+
+    if(mRev >= 6) goto ret;
+    if(sym == MeshGenerator) return Generator;
+
+    if(mRev >= 5) goto ret;
+    if(sym == TexMovie) return Movie;
+
+ret:
     return sym;
 }
 
