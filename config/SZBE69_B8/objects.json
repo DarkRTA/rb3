@@ -1399,7 +1399,7 @@
             "system/utl/MeasureMap.cpp": "NonMatching",
             "system/utl/Mem_Wii.cpp": "MISSING",
             "system/utl/MemMgr.cpp": "MISSING",
-            "system/utl/MemPoint.cpp": "NonMatching",
+            "system/utl/MemPoint.cpp": "Matching",
             "system/utl/MemStream.cpp": { "status": "Matching", "extra_cflags": ["-ipa function"] },
             "system/utl/MemTracker.cpp": "Matching",
             "system/utl/MemcardBufStream.cpp": "Matching",

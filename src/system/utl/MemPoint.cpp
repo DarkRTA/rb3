@@ -20,8 +20,9 @@ MemPoint::MemPoint(eInitType t) {
     if (t == kInitType1) {
         for (int i = 0; i < MemNumHeaps(); i++) {
             int a,b,c;
-            MemFreeBlockStats(i, a, b, (int&)*this, c);
+            MemFreeBlockStats(i, a, b, unk0[i], c);
         }
+        unk40 = 0;
     } else {
         memset(unk0, 0, 0x44);
     }

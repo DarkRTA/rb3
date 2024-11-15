@@ -159,6 +159,10 @@ DECOMP_FORCEACTIVE(DirLoader,
     "0"
 )
 
+void DirLoaderSortDefCtorSpawner(std::list<void*>& listmaybe){
+    listmaybe.sort();
+}
+
 void DirLoader::SetCacheMode(bool b){
     sCacheMode = b;
 }
