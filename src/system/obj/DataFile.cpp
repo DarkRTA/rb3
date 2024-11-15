@@ -606,7 +606,7 @@ void DataLoader::OpenFile() {
         fileobj->ReadAsync(unk30, filesize);
         ptmf = &DataLoader::LoadFile;
     } else {
-        if (*unk18.c_str()) MILO_WARN("Could not load: %s", FileLocalize(mFile.c_str(), NULL));
+        if (!unk18.empty()) MILO_WARN("Could not load: %s", FileLocalize(mFile.c_str(), NULL));
         ptmf = &DataLoader::DoneLoading;
     }
 }
@@ -645,6 +645,12 @@ DataArray* DataLoader::Data() {
 
 bool DataLoader::IsLoaded() const {
     return ptmf == &DataLoader::DoneLoading;
+}
+
+void DataLoader::PollLoading(){
+    while(!TheLoadMgr.CheckSplit() && TheLoadMgr.GetFirstLoading() == this && !IsLoaded()){
+        (this->*ptmf)();
+    }
 }
 
 void DataLoader::ThreadDone(DataArray* da) {

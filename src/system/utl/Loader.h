@@ -63,6 +63,19 @@ public:
         return ret;
     }
 
+    bool CheckSplit(){
+        return mTimer.SplitMs() > unk1c ? true : false;
+    }
+
+    Loader* GetFirstLoading(){
+        if(mLoading.empty()){
+            return nullptr;
+        }
+        else {
+            return mLoading.front();
+        }
+    }
+
     static const char* LoaderPosString(LoaderPos, bool);
 
     std::list<Loader*> mLoaders; // 0x0
@@ -72,7 +85,7 @@ public:
     std::list<std::pair<class String, LoaderFactoryFunc*> > mFactories; // 0x10
     float mPeriod; // 0x18
     float unk1c;
-    std::list<Loader*> unk20; // mLoading?
+    std::list<Loader*> mLoading; // 0x20
     Timer mTimer; // 0x28
     int unk58;
     int unk5c;

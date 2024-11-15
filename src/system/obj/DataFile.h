@@ -5,7 +5,8 @@
 #include "os/ThreadCall.h"
 #include "utl/Loader.h"
 
-#include "obj/DataFile_Flex.h"
+class DataLoader;
+typedef void(DataLoader::*DataLoaderStateFunc)(void);
 
 class DataLoader : public Loader {
 public:
@@ -27,7 +28,7 @@ public:
     void* unk30;
     bool unk34;
     class DataLoaderThreadObj* unk38;
-    void (DataLoader::*ptmf)(void); // 0x3C
+    DataLoaderStateFunc ptmf; // 0x3C
 };
 
 class DataLoaderThreadObj : public ThreadCallback {

@@ -1,8 +1,8 @@
-#ifndef OBJ_DIRLOADER_H
-#define OBJ_DIRLOADER_H
+#pragma once
 #include "os/Timer.h"
 #include "utl/Loader.h"
 #include "obj/Object.h"
+#include "utl/MemPoint.h"
 #include "utl/PoolAlloc.h"
 #include "obj/ObjPtr_p.h"
 
@@ -38,8 +38,11 @@ public:
     NEW_POOL_OVERLOAD(DirLoader);
     DELETE_POOL_OVERLOAD(DirLoader);
 
+    static bool sCacheMode;
     static bool sPrintTimes;
     static class ObjectDir* sTopSaveDir;
+    static int mbTrackObjMem;
+
     static DirLoader* Find(const FilePath&);
     static DirLoader* FindLast(const FilePath&);
     static void PrintLoaded(const char*);
@@ -48,7 +51,6 @@ public:
     static Symbol GetDirClass(const char*);
     static const char* CachedPath(const char*, bool);
     static Loader* New(const FilePath& f, LoaderPos l) {return new DirLoader(f, l, NULL, NULL, NULL, false);}
-
 
     DirLoaderStateFunc mState; // 0x1c
     class String mRoot; // 0x28
@@ -67,8 +69,13 @@ public:
     Timer mTimer; // 0x68
     bool mAccessed; // 0x98
     bool unk99; // 0x99
-
-    static bool sCacheMode;
 };
 
-#endif
+class TrackObjMem {
+public:
+    TrackObjMem();
+    char* unk0; // 0x0
+    char* unk4; // 0x4
+    char* unk8;
+    MemPointDelta* unkc;
+};

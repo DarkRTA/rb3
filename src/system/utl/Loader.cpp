@@ -9,7 +9,7 @@
 
 LoadMgr TheLoadMgr;
 
-LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), mPeriod(10.0f), unk20(), mTimer(), unk58(0), unk5c(0) {
+LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), mPeriod(10.0f), mLoading(), mTimer(), unk58(0), unk5c(0) {
 
 }
 
@@ -107,7 +107,7 @@ void LoadMgr::PollUntilEmpty() {
 }
 
 void LoadMgr::Print() {
-    for (std::list<Loader*>::iterator it = unk20.begin(); it != unk20.end(); it++) {
+    for (std::list<Loader*>::iterator it = mLoading.begin(); it != mLoading.end(); it++) {
         TheDebug << (*it)->mFile.c_str() << " " << LoaderPosString((*it)->mPos, 0)<< "\n";
     }
 }

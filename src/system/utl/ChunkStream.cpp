@@ -342,20 +342,21 @@ void DecompressMemHelper(const void* srcData, int srcLen, void* dstData, int& ds
 
 void ChunkStream::DecompressChunk(DecompressTask& task) {
     MILO_ASSERT(*task.mState == kDecompressing, 955);
-    int data = *task.mChunkSize & kChunkSizeMask;
+    int data = *task.mChunkSize;
+    int dataMsk = data & 0x00ffffff;
     MILO_ASSERT((data & ~kChunkSizeMask) == 0, 959);
-    int id = task.mID;
     int out_len = task.mOutLen;
+    int id = task.mID;
     if (id == 0xCDBEDEAF) {
-        char* dataOffset = &task.out_data[task.mOutLen] - data;
-        DecompressMemHelper(dataOffset, data, task.out_data, out_len, task.mFilename);
+        char* dataOffset = &task.out_data[task.mOutLen] - dataMsk;
+        DecompressMemHelper(dataOffset, dataMsk, task.out_data, out_len, task.mFilename);
     } else if (id == 0xCCBEDEAF) {
-        char* dataOffset = &task.out_data[task.mOutLen] - data;
-        DecompressMem(dataOffset + 10, data - 0x12, task.out_data, out_len, false, task.mFilename);
+        char* dataOffset = &task.out_data[task.mOutLen] - dataMsk;
+        DecompressMem(dataOffset + 10, dataMsk - 0x12, task.out_data, out_len, false, task.mFilename);
     } else {
         MILO_ASSERT(task.mID == CHUNKSTREAM_Z_ID, 977);
         char* dataOffset = &task.out_data[task.mOutLen];
-        DecompressMem(dataOffset - data, data, task.out_data, out_len, false, task.mFilename);
+        DecompressMem(dataOffset - dataMsk, dataMsk, task.out_data, out_len, false, task.mFilename);
     }
     *task.mChunkSize = out_len;
     *task.mState = kReady;
