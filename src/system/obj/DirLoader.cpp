@@ -1,6 +1,7 @@
 #include "DirLoader.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
+#include "obj/Dir.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "os/System.h"
@@ -17,6 +18,7 @@
 #include "utl/ClassSymbols.h"
 #include "decomp.h"
 
+class ObjectDir* DirLoader::sTopSaveDir;
 bool gHostCached;
 bool DirLoader::sCacheMode = false;
 
@@ -34,15 +36,17 @@ void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
 
 }
 
+#ifdef MILO_DEBUG
 DECOMP_FORCEACTIVE(DirLoader,
     "MemPoint Overflow",
     "MemPoint Underflow"
 )
+#endif
 
 DirLoader* DirLoader::Find(const FilePath& fp){
     if(fp.empty()) return 0;
-    std::list<Loader*>& refs = TheLoadMgr.mLoaders;
-    for(std::list<Loader*>::iterator it = refs.begin(); it != refs.end(); it++){
+    const std::list<Loader*>& refs = TheLoadMgr.mLoaders;
+    for(std::list<Loader*>::const_iterator it = refs.begin(); it != refs.end(); it++){
         if((*it)->mFile == fp){
             DirLoader* dl = dynamic_cast<DirLoader*>(*it);
             if(dl) return dl;
@@ -53,31 +57,32 @@ DirLoader* DirLoader::Find(const FilePath& fp){
 
 DirLoader* DirLoader::FindLast(const FilePath& fp){
     if(fp.empty()) return 0;
-    std::list<Loader*>& refs = TheLoadMgr.mLoaders;
-    for(std::list<Loader*>::reverse_iterator it = refs.rbegin(); it != refs.rend(); it++){
+    const std::list<Loader*>& refs = TheLoadMgr.mLoaders;
+    for(std::list<Loader*>::const_reverse_iterator it = refs.rbegin(); it != refs.rend(); it++){
         if((*it)->mFile == fp){
             DirLoader* dl = dynamic_cast<DirLoader*>(*it);
             if(dl) return dl;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void DirLoader::PrintLoaded(const char* text) {
     TextStream* cout = &TheDebug;
+    LogFile* log = nullptr;
     if (text) {
-        cout = new LogFile(text);
+        log = new LogFile(text);
+        cout = log;
     }
-    std::list<Loader*>& refs = TheLoadMgr.mLoaders;
-    for(std::list<Loader*>::iterator it = refs.begin(); it != refs.end(); it++){
-        if(*it && (*it)->IsLoaded()){
-            FilePath& itFile = (*it)->mFile;
-            const char* text2 = itFile.c_str();
-            if(itFile.empty()) text2 = "unknown_dir";
-            cout->Print(MakeString("%s\n", text2));
+    const std::list<Loader*>& refs = TheLoadMgr.mLoaders;
+    for(std::list<Loader*>::const_iterator it = refs.begin(); it != refs.end(); it++){
+        Loader* cur = *it;
+        if(cur && cur->IsLoaded()){
+            const char* text2 = cur->mFile.c_str();
+            cout->Print(MakeString("%s\n", *text2 == '\0' ? "unknown_dir" : text2));
         }
     }
-    if (cout) delete cout;
+    if (log) delete log;
 }
 
 class ObjectDir* DirLoader::GetDir() {
