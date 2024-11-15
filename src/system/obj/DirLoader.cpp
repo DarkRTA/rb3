@@ -24,31 +24,60 @@ class ObjectDir* DirLoader::sTopSaveDir;
 bool gHostCached;
 bool DirLoader::sPrintTimes = false;
 bool DirLoader::sCacheMode = false;
+int DirLoader::mbTrackObjMem;
 
 namespace {
     std::map<Hmx::Object*, TrackObjMem*> gvTrackObjMem;
     MemPoint gTrackMemStack[16];
     MemPoint* gTrackMemStackPtr = gTrackMemStack;
+    int gMalloced = 0;
 }
 
 void BeginTrackObjMem(const char* cc1, const char* cc2){
-
+    if(DirLoader::mbTrackObjMem){
+        *gTrackMemStackPtr = MemPoint();
+        gTrackMemStackPtr++;
+    }
+    if(gTrackMemStackPtr >= &gTrackMemStack[16]){
+        MILO_FAIL("MemPoint Overflow");
+    }
 }
 
 void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
-
+    if(DirLoader::mbTrackObjMem){
+        gTrackMemStackPtr--;
+        if(gTrackMemStackPtr < &gTrackMemStack[0]){
+            MILO_FAIL("MemPoint Underflow");
+        }
+        else {
+            MemPointDelta delta = MemPoint() - *gTrackMemStackPtr;
+            if(DirLoader::mbTrackObjMem > 1 && gTrackMemStackPtr == gTrackMemStack){
+                if(!gvTrackObjMem[obj]){
+                    TrackObjMem* mem = new TrackObjMem();
+                    mem->unk0 = (char*)malloc(strlen(obj->ClassName().mStr) + 1);
+                    gMalloced += strlen(obj->ClassName().mStr) + 1;
+                    strcpy(mem->unk0, obj->ClassName().mStr);
+                    mem->unk4 = (char*)malloc(strlen(obj->Name()) + 1);
+                    gMalloced += strlen(obj->Name()) + 1;
+                    strcpy(mem->unk4, obj->Name());
+                    if(cc1){
+                        mem->unk8 = (char*)malloc(strlen(cc1) + 1);
+                        gMalloced += strlen(cc1) + 1;
+                        strcpy(mem->unk8, cc1);
+                    }
+                    mem->unkc = new MemPoint(delta);
+                    gvTrackObjMem[obj] = mem;
+                }
+                else {
+                    TrackObjMem* mem = gvTrackObjMem[obj];
+                    *mem->unkc += MemPoint() - *gTrackMemStackPtr;
+                }
+            }
+        }
+    }
 }
 
-TrackObjMem::TrackObjMem() : unk0(0), unk4(0), unk8(0), unkc(0) {
-
-}
-
-#ifdef MILO_DEBUG
-DECOMP_FORCEACTIVE(DirLoader,
-    "MemPoint Overflow",
-    "MemPoint Underflow"
-)
-#endif
+TrackObjMem::TrackObjMem() : unk0(0), unk4(0), unk8(0), unkc(0) {}
 
 DirLoader* DirLoader::Find(const FilePath& fp){
     if(fp.empty()) return 0;

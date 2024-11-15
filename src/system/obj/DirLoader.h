@@ -2,6 +2,7 @@
 #include "os/Timer.h"
 #include "utl/Loader.h"
 #include "obj/Object.h"
+#include "utl/MemPoint.h"
 #include "utl/PoolAlloc.h"
 #include "obj/ObjPtr_p.h"
 
@@ -40,6 +41,8 @@ public:
     static bool sCacheMode;
     static bool sPrintTimes;
     static class ObjectDir* sTopSaveDir;
+    static int mbTrackObjMem;
+
     static DirLoader* Find(const FilePath&);
     static DirLoader* FindLast(const FilePath&);
     static void PrintLoaded(const char*);
@@ -71,8 +74,8 @@ public:
 class TrackObjMem {
 public:
     TrackObjMem();
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkc;
+    char* unk0;
+    char* unk4;
+    char* unk8;
+    MemPoint* unkc;
 };
