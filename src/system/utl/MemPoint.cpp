@@ -23,7 +23,7 @@ MemPoint::MemPoint(eInitType t) {
             MemFreeBlockStats(i, a, b, (int&)*this, c);
         }
     } else {
-        memset(this, 0, 0x44);
+        memset(unk0, 0, 0x44);
     }
 #else
     memset(unk0, 0, 0x44);

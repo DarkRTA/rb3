@@ -5,7 +5,8 @@ class MemPointDelta {
 public:
     MemPointDelta();
     MemPointDelta& operator+=(const MemPointDelta&);
-    u32 unk_0x0[0x10];
+
+    int unk_0x0[16];
     int unk40;
 };
 
@@ -16,9 +17,7 @@ public:
         kInitType1
     };
 
-    MemPoint(const MemPointDelta&);
     MemPoint(eInitType = kInitType1);
-    MemPoint& operator+=(const MemPointDelta&);
 
     MemPointDelta operator-(const MemPoint&) const;
     MemPoint& operator=(const MemPoint& mp){

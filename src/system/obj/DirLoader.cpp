@@ -35,8 +35,7 @@ namespace {
 
 void BeginTrackObjMem(const char* cc1, const char* cc2){
     if(DirLoader::mbTrackObjMem){
-        *gTrackMemStackPtr = MemPoint();
-        gTrackMemStackPtr++;
+        *gTrackMemStackPtr++ = MemPoint();
     }
     if(gTrackMemStackPtr >= &gTrackMemStack[16]){
         MILO_FAIL("MemPoint Overflow");
@@ -45,8 +44,7 @@ void BeginTrackObjMem(const char* cc1, const char* cc2){
 
 void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
     if(DirLoader::mbTrackObjMem){
-        gTrackMemStackPtr--;
-        if(gTrackMemStackPtr < &gTrackMemStack[0]){
+        if(--gTrackMemStackPtr < &gTrackMemStack[0]){
             MILO_FAIL("MemPoint Underflow");
         }
         else {
@@ -65,7 +63,7 @@ void EndTrackObjMem(Hmx::Object* obj, const char* cc1, const char* cc2){
                         gMalloced += strlen(cc1) + 1;
                         strcpy(mem->unk8, cc1);
                     }
-                    mem->unkc = new MemPoint(delta);
+                    mem->unkc = new MemPointDelta(delta);
                     gvTrackObjMem[obj] = mem;
                 }
                 else {
@@ -103,6 +101,8 @@ DirLoader* DirLoader::FindLast(const FilePath& fp){
     return nullptr;
 }
 
+DECOMP_FORCEACTIVE(DirLoader, "unknown_dir", "%s\n");
+
 void DirLoader::PrintLoaded(const char* text) {
     TextStream* cout = &TheDebug;
     LogFile* log = nullptr;
@@ -115,7 +115,8 @@ void DirLoader::PrintLoaded(const char* text) {
         Loader* cur = *it;
         if(cur && cur->IsLoaded()){
             const char* text2 = cur->mFile.c_str();
-            cout->Print(MakeString("%s\n", *text2 == '\0' ? "unknown_dir" : text2));
+            if(*text2 == '\0') text2 = "unknown_dir";
+            cout->Print(MakeString("%s\n",text2));
         }
     }
     if (log) delete log;

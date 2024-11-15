@@ -74,8 +74,8 @@ public:
 class TrackObjMem {
 public:
     TrackObjMem();
-    char* unk0;
-    char* unk4;
+    char* unk0; // 0x0
+    char* unk4; // 0x4
     char* unk8;
-    MemPoint* unkc;
+    MemPointDelta* unkc;
 };
