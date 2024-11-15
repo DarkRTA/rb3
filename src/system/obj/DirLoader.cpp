@@ -12,6 +12,7 @@
 #include "utl/LogFile.h"
 #include "utl/MakeString.h"
 #include "os/Archive.h"
+#include "os/Endian.h"
 #include "obj/Utl.h"
 #include "utl/MemPoint.h"
 #include "utl/Symbols.h"
@@ -247,20 +248,24 @@ Symbol DirLoader::FixClassName(Symbol sym){
 void DirLoader::OpenFile() {
     mTimer.Start();
     const char* fileStr = mFile.c_str();
-    if (mFile.empty()) {
+    if (*fileStr == '\0') {
         mRoot = FilePath::sRoot;
     } else {
         char buf[0x100];
         strcpy(buf, FileGetPath(fileStr, NULL));
-        int len = strlen(buf);
-        if(len - 4 > 0){
-            if(streq("/gen", buf + len)) buf[len] = 0;
+        int len = strlen(buf) - 4;
+        if(len > 0 && streq("/gen", buf + len)){
+            buf[len] = 0;
         }
         mRoot = FileMakePath(FileRoot(), buf, NULL);
     }
-    if (mStream == 0) {
+    if (mStream == nullptr) {
         Archive* theArchive = TheArchive;
+#ifdef MILO_DEBUG
         bool using_cd = UsingCD();
+#else
+        bool using_cd = true;
+#endif
         bool cache_mode = sCacheMode;
 
         bool matches = false;
@@ -319,8 +324,16 @@ bool DirLoader::SetupDir(Symbol sym){
     return true;
 }
 
+void DirLoader::ResolveEndianness(){
+    int curRev = mRev;
+    if(EndianSwap((unsigned int)curRev) < curRev){
+        mRev = EndianSwap((unsigned int)mRev);
+        mStream->UseLittleEndian(true);
+    }
+}
+
 void DirLoader::LoadHeader() {
-    for (EofType i = NotEof; i != NotEof; i == mStream->Eof()) {
+    for (EofType i = NotEof; i != NotEof; i = mStream->Eof()) {
         MILO_ASSERT(i == TempEof, 997);
         if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.mPeriod) return;
     }
