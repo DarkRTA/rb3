@@ -8,6 +8,7 @@
 #include "types.h"
 #include "utl/BinStream.h"
 #include "utl/ChunkStream.h"
+#include "utl/FilePath.h"
 #include "utl/Loader.h"
 #include "utl/LogFile.h"
 #include "utl/MakeString.h"
@@ -428,7 +429,7 @@ void DirLoader::LoadResources(){
     if(mCounter-- != 0){
         FilePathTracker fpt(mRoot.c_str());
         FilePath fp2;
-        *mStream >> fpt.mOldRoot;
+        *mStream >> fp2;
         if(!fp2.empty()){
             TheLoadMgr.AddLoader(fp2, kLoadFront);
         }
@@ -458,6 +459,33 @@ void ReadDead(BinStream& bs) {
             bs >> buf;
         }
     }
+}
+
+void DirLoader::LoadDir(){
+    if(mLoadDir){
+        FilePathTracker tracker(mRoot.c_str());
+        bool oldproxy = gLoadingProxyFromDisk;
+        gLoadingProxyFromDisk = mProxyName;
+        if(!mPostLoad){
+            BeginTrackObjMem(mDir->ClassName().mStr, mDir->Name());
+            mDir->PreLoad(*mStream);
+            mPostLoad = true;
+            EndTrackObjMem(mDir, 0, mDir->Name());
+        }
+        EofType t = TempEof;
+        if(TheLoadMgr.GetFirstLoading() != this || (t = mStream->Eof(), t != NotEof)){
+            MILO_ASSERT(t == TempEof, 0x4E4);
+            gLoadingProxyFromDisk = oldproxy;
+            return;
+        }
+        BeginTrackObjMem(mDir->ClassName().mStr, mDir->Name());
+        mDir->PostLoad(*mStream);
+        gLoadingProxyFromDisk = oldproxy;
+        mPostLoad = false;
+        EndTrackObjMem(mDir, 0, mDir->Name());
+    }
+    ReadDead(*mStream);
+    mState = &DirLoader::LoadObjs;
 }
 
 void DirLoader::DoneLoading() { }
