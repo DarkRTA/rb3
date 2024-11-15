@@ -238,6 +238,8 @@ public:
     KeylessHash<const char*, Entry>& HashTable(){ return mHashTable; }
     int HashTableSize() const { return mHashTable.Size(); }
     int StrTableSize() const { return mStringTable.Size(); }
+    int HashTableUsedSize() const { return mHashTable.UsedSize(); }
+    int StrTableUsedSize() const { return mStringTable.UsedSize(); }
 
     DataNode OnFind(DataArray*);
 

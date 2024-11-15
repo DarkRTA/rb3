@@ -135,8 +135,7 @@ void DirLoader::SetCacheMode(bool b){
 const char* DirLoader::CachedPath(const char* cc, bool b){
     const char* ext = FileGetExt(cc);
     if((sCacheMode || b) && ext){
-        bool isMilo = strcmp(ext, "milo") == 0;
-        if(isMilo){
+        if(streq(ext, "milo")){
             return MakeString("%s/gen/%s.milo_%s", FileGetPath(cc, 0), FileGetBase(cc, 0), PlatformSymbol(TheLoadMgr.GetPlatform()));
         }
     }
@@ -333,33 +332,54 @@ void DirLoader::ResolveEndianness(){
 }
 
 void DirLoader::LoadHeader() {
-    for (EofType i = NotEof; i != NotEof; i = mStream->Eof()) {
-        MILO_ASSERT(i == TempEof, 997);
-        if (TheLoadMgr.mTimer.SplitMs() > TheLoadMgr.mPeriod) return;
+    EofType t;
+    while(t = mStream->Eof(), t != NotEof){
+        MILO_ASSERT(t == TempEof, 0x3E5);
+        if(TheLoadMgr.CheckSplit()) return;
     }
     *mStream >> mRev;
     ResolveEndianness();
-    if (mRev < 7) {
+    if(mRev < 7){
         Cleanup(MakeString("Can't load old ObjectDir %s", mFile));
         return;
     }
-    Symbol s;
-    if (!Hmx::Object::RegisteredFactory("RndDir")) {
-        s = Symbol("ObjectDir");
+    Symbol dirSym("RndDir");
+    if(!Hmx::Object::RegisteredFactory(dirSym)){
+        dirSym = "ObjectDir";
     }
-    Symbol s2;
-    if (mRev > 13) *mStream >> s2;
-    FixClassName(s2);
-    char test[0x80];
-    mStream->ReadString(test, 0x80);
-
-
-    {
-        if (SetupDir(s2) != 0) mDir->SetName(FileGetBase(mFile.c_str(), NULL), mDir);
+    if(mRev > 0xD){
+        Symbol symRead;
+        *mStream >> symRead;
+        symRead = FixClassName(symRead);
+        char buf[0x80];
+        mStream->ReadString(buf, 0x80);
+        if(!Hmx::Object::RegisteredFactory(symRead)){
+            MILO_WARN("%s: %s not registered, defaulting to %s", mFile.c_str(), symRead, dirSym);
+            symRead = dirSym;
+            mLoadDir = false;
+        }
+        if(!SetupDir(symRead)) return;
+        int size1, size2;
+        *mStream >> size1 >> size2;
+        size1 += mDir->HashTableUsedSize() + 0x10;
+        size2 += mDir->StrTableUsedSize() + 0x98;
+        mDir->Reserve(size1, size2);
+        mDir->SetName(buf, mDir);
+    }
+    else if(mRev > 0xC) {
+        Symbol sa8;
+        *mStream >> sa8;
+        if(!SetupDir("ObjectDir")) return;
+        mDir->SetName(FileGetBase(mFile.c_str(), 0), mDir);
+        mDir->ObjectDir::Load(*mStream);
+    }
+    else {
+        if(!SetupDir(dirSym)) return;
+        mDir->SetName(FileGetBase(mFile.c_str(), 0), mDir);
     }
     mDir->mLoader = this;
     *mStream >> mCounter;
-    if (mRev < 14) {
+    if(mRev < 0xE){
         mDir->Reserve(mCounter * 2, mCounter * 25);
     }
     mState = &DirLoader::CreateObjects;

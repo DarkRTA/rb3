@@ -64,7 +64,7 @@ public:
     }
 
     bool CheckSplit(){
-        return mTimer.SplitMs() > unk1c;
+        return mTimer.SplitMs() > unk1c ? true : false;
     }
 
     Loader* GetFirstLoading(){

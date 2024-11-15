@@ -26,6 +26,7 @@ public:
     void Resize(int, T2*);
     T2* FirstFrom(T2* entry);
     int Size() const { return mSize; }
+    int UsedSize() const { return mNumEntries; }
 
     void Advance(int& idx){
         idx++;
