@@ -1,5 +1,5 @@
 #include "char/CharInterest.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "math/Rand.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"

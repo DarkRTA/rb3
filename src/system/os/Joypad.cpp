@@ -1,7 +1,7 @@
 #include "os/Joypad.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "obj/Msg.h"
 #include "obj/DataFunc.h"
 

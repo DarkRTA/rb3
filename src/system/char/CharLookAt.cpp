@@ -1,5 +1,5 @@
 #include "char/CharLookAt.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "math/Rot.h"
 #include "math/Rand.h"
 #include "obj/Task.h"

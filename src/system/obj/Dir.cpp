@@ -1,4 +1,5 @@
 #include "obj/Dir.h"
+#include "obj/Data.h"
 #include "obj/DirUnloader.h"
 #include "obj/MessageTimer.h"
 #include "obj/Msg.h"
@@ -7,11 +8,15 @@
 #include "obj/ObjVersion.h"
 #include "obj/Utl.h"
 #include "decomp.h"
+#include "os/Debug.h"
 #include "rndwii/Rnd.h"
 #include "utl/Loader.h"
 #include "utl/Option.h"
 #include "utl/Messages.h"
+#include "utl/Std.h"
+#include "utl/Symbol.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols3.h"
 
 DECOMP_FORCEACTIVE(Dir, "%s: subdir %s included more than once", "uniq%x", __FILE__)
 
@@ -23,8 +28,7 @@ namespace {
 
     void DeleteShared(){
         for(; gPreloadIdx > 0; gPreloadIdx--){
-            delete gPreloaded[gPreloadIdx];
-            gPreloaded[gPreloadIdx] = 0;
+            gPreloaded[gPreloadIdx - 1] = 0;
         }
     }
 }
@@ -34,6 +38,7 @@ ObjectDir* gDir;
 
 INIT_REVS(ObjectDir);
 
+inline ObjectDir::InlinedDir::InlinedDir(){}
 inline ObjectDir::InlinedDir::InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty) : dir(d) { file = fp; shared = b; inlineDirType = ty; }
 
 BinStream& operator>>(BinStream& bs, InlineDirType& ty){
@@ -50,6 +55,22 @@ void ObjectDir::Reserve(int i, int j){
 }
 
 void ObjectDir::SyncObjects(){
+#ifdef MILO_DEBUG
+    std::vector<ObjectDir*> dirs;
+    int which = 0;
+    ObjectDir* dir;
+    while(true){
+        int next = which++;
+        dir = NextSubDir(next);
+        if(!dir) break;
+        if(std::find(dirs.begin(), dirs.end(), dir) != dirs.end()){
+            MILO_WARN("%s: subdir %s included more than once", PathName(this), PathName(dir));
+        }
+        else {
+            dirs.push_back(dir);
+        }
+    }
+#endif
     HandleType(sync_objects_msg);
 }
 
@@ -107,15 +128,30 @@ void ObjectDir::PostSave(BinStream& bs){
     SyncObjects();
 }
 
-void ObjectDir::PreLoadInlined(const FilePath& fp, bool b, InlineDirType type){
+void ObjectDir::PreLoadInlined(const FilePath& fp, bool shared, InlineDirType type){
     MILO_ASSERT(type != kInlineNever, 0x285);
-    if(type == kInlineAlways && b) MILO_WARN("Can't share kInlineAlways Dirs");
-    mInlinedDirs.push_back(InlinedDir(0, fp, b, type));
+    if(type == kInlineAlways && shared){
+        MILO_WARN("Can't share kInlineAlways Dirs");
+        shared = false;
+    }
+    InlinedDir iDir;
+    iDir.file = fp;
+    iDir.shared = shared;
+    iDir.inlineDirType = type;
+    mInlinedDirs.push_back(iDir);
 }
 
 ObjDirPtr<ObjectDir> ObjectDir::PostLoadInlined(){
     MILO_ASSERT(mInlinedDirs.size() > 0, 0x296);
-    MILO_WARN("Couldn't load shared inlined file %s\n");
+    InlinedDir iDir = mInlinedDirs.back();
+    mInlinedDirs.pop_back();
+    if(mInlinedDirs.size() == 0){
+        ClearAndShrink(mInlinedDirs);
+    }
+    if(iDir.shared && iDir.file.length() != 0 && !iDir.dir){
+        MILO_WARN("Couldn't load shared inlined file %s\n", iDir.file);
+    }
+    return iDir.dir;
 }
 
 void ObjectDir::Load(BinStream& bs){
@@ -143,12 +179,13 @@ BinStream& operator>>(BinStream& bs, ObjectDir::Viewport& vp){
 }
 
 #pragma push
+#pragma pool_data off
 #pragma dont_inline on
 void ObjectDir::PreLoad(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(0x1B, 0);
     if(gRev > 0x15) Hmx::Object::LoadType(bs);
-    else if(gRev - 2U <= 0xE) Hmx::Object::Load(bs);
+    else if(gRev >= 2 && gRev <= 16) Hmx::Object::Load(bs);
     if(gRev < 3){
         int i, j;
         bs >> i >> j;
@@ -164,10 +201,11 @@ void ObjectDir::PreLoad(BinStream& bs){
         int toAlloc;
         bs >> toAlloc;
         if(toAlloc){
-            void* v = _MemOrPoolAlloc(toAlloc + 1, FastPool);
-            mAlwaysInlineHash = (char*)v;
+            char* v = (char*)_MemOrPoolAlloc(toAlloc + 1, FastPool);
+            mAlwaysInlineHash = v;
             bs.Read(v, toAlloc);
-            ((char*)v)[toAlloc] = 0;
+            char* ptr = (char*)mAlwaysInlineHash;
+            ptr[toAlloc] = 0;
         }
     }
     if(gRev > 1){
@@ -204,13 +242,14 @@ void ObjectDir::PreLoad(BinStream& bs){
             }
         }
     }
-    if(gRev - 2 < 9){
+    if(gRev >= 2 && gRev <= 10){
         char buf[0x80];
         bs.ReadString(buf, 0x80);
     }
-    if(gRev - 4 < 7){
+    if(gRev >= 4 && gRev <= 10){
         char buf[0x80];
         bs.ReadString(buf, 0x80);
+        mCurCam = FindObject(buf, false);
     }
     if(gRev == 5){
         char buf[0x80];
@@ -223,27 +262,116 @@ void ObjectDir::PreLoad(BinStream& bs){
         bs >> notInlinedSubDirs;
         std::vector<int> intVec;
         if(gRev == 0x17) bs >> intVec;
-        if(gRev < 0x15) inlinedSubDirs.clear();
-        else {
+        if(gRev > 0x14){
             bs >> mInlineSubDirType;
             bs >> inlinedSubDirs;
         }
-        bool dirsSaved = SaveSubdirs();
+        else inlinedSubDirs.clear();
+        
+        int i20 = 0;
+        if(SaveSubdirs() || inlinedSubDirs.size() != 0 || notInlinedSubDirs.size() != 0){
+            for(int i = 0; i < mSubDirs.size(); i++){
+                RemovingSubDir(mSubDirs[i]);
+            }
+            if(!bs.Cached() && mSubDirs.size() == notInlinedSubDirs.size() + inlinedSubDirs.size()){
+                i20 = 1;
+            }
+            else {
+                mSubDirs.reserve(notInlinedSubDirs.size() + inlinedSubDirs.size());
+                mSubDirs.resize(notInlinedSubDirs.size() + inlinedSubDirs.size());
+            }
+        }
+        else i20 = 2;
+
+        for(int i = 0; i != notInlinedSubDirs.size(); i++){
+            bool filesneq = mSubDirs[i].GetFile() != notInlinedSubDirs[i];
+            if(i20 == 0 || filesneq){
+                bool b17 = false;
+                if(intVec.size() != 0){
+                    b17 = intVec[i] != 0;
+                }
+                LoadSubDir(i, notInlinedSubDirs[i], bs, !b17);
+            }
+        }
+
+        if(gRev > 0x17){
+            int numNotInlined = notInlinedSubDirs.size();
+            for(int i = 0; i < inlinedSubDirs.size(); i++){
+                bool getfileres = mSubDirs[i + numNotInlined].GetFile() != inlinedSubDirs[i];
+                InlineDirType dType;
+                if(gRev > 0x18) {
+                    unsigned char b;
+                    bs >> b;
+                    MILO_ASSERT_RANGE_EQ(b, kInlineCached, kInlineCachedShared, 0x3C3);
+                    dType = (InlineDirType)b;
+                }
+                else dType = kInlineCached;
+                inlinedSubDirs[i] = GetSubDirPath(inlinedSubDirs[i], bs);
+                PreLoadInlined(inlinedSubDirs[i], false, dType);
+                if(i20 == 1){
+                    PushRev(getfileres, this);
+                }
+            }
+            PushRev(numNotInlined, this);
+            if(!bs.Cached()){
+                PushRev(i20, this);
+            }
+        }
     }
-    if(gRev - 0xC < 2){
+    if(gRev == 12 || gRev == 13){
         OldLoadProxies(bs, gRev);
     }
     if(gRev < 0x13){
+        if(gRev > 0xF){
+            int inlineProxy;
+            bs >> inlineProxy;
+            MILO_ASSERT(inlineProxy != 1, 0x3E1);
+        }
+        else if(gRev > 0xE){
+            bool inlineProxy;
+            bs >> inlineProxy;
+            MILO_ASSERT(!inlineProxy, 0x3E6);
+        }
+    }
 
+    std::vector<bool> boolvec;
+    boolvec.resize(mInlinedDirs.size());
+    for(int i = 0; i < mInlinedDirs.size(); i++){
+        if(gRev < 0x19 && !bs.Cached()){
+            boolvec[i] = true;
+        }
+        else {
+            bool b;
+            bs >> b;
+            boolvec[i] = b;
+        }
+    }
+    for(int i = 0; i < mInlinedDirs.size(); i++){
+        InlinedDir& curIDir = mInlinedDirs[i];
+        FilePath fpath(curIDir.file);
+        if(!bs.Cached() || !boolvec[i]){
+            if(!boolvec[i] && (curIDir.inlineDirType == kInlineAlways || bs.Cached())){
+                curIDir.dir.LoadInlinedFile(fpath, &bs);
+            }
+            else if(IsProxy() && !mProxyFile.empty()){
+                curIDir.dir = nullptr;
+            }
+            else {
+                curIDir.dir.LoadFile(fpath, true, curIDir.shared, kLoadFront, true);
+            }
+        }
+    }
+    if(gRev >= 21 && gRev <= 23){
+        int offset = notInlinedSubDirs.size();
+        MILO_ASSERT(mSubDirs.capacity() >= offset + inlinedSubDirs.size(), 0x41A);
+        for(int i = 0; i < inlinedSubDirs.size(); i++){
+            mSubDirs[i + offset].LoadInlinedFile(inlinedSubDirs[i], &bs);
+        }
     }
     mIsSubDir = false;
     PushRev(packRevs(gAltRev, gRev), this);
 }
 #pragma pop
-
-// TODO: put these in their proper places in PreLoad
-DECOMP_FORCEACTIVE(Dir, "( kInlineCached) <= (b) && (b) <= ( kInlineCachedShared)",
-    "inlineProxy != 1", "!inlineProxy", "mSubDirs.capacity() >= offset + inlinedSubDirs.size()")
 
 #pragma push
 #pragma dont_inline on
@@ -350,7 +478,7 @@ void ObjectDir::TransferLoaderState(ObjectDir* otherDir){
 }
 
 void ObjectDir::SetProxyFile(const FilePath& fp, bool b){
-    if(this == mDir){
+    if(!IsProxy()){
         MILO_WARN("Can't set proxy file if own dir");
     }
     else {
@@ -371,7 +499,7 @@ BEGIN_COPYS(ObjectDir)
     if(ty != kCopyFromMax){
         CREATE_COPY(ObjectDir)
         BEGIN_COPYING_MEMBERS
-            if(this == Dir()){
+            if(!IsProxy()){
                 for(int i = 0; i < mSubDirs.size(); i++){
                     RemovingSubDir(mSubDirs[i]);
                 }
@@ -401,9 +529,8 @@ Hmx::Object* ObjectDir::FindObject(const char* name, bool parentDirs){
         }
     }
     if(parentDirs){
-        ObjectDir* thisDir = Dir();
-        if(thisDir && thisDir != this){
-            return thisDir->FindObject(name, parentDirs);
+        if(Dir() && Dir() != this){
+            return  Dir()->FindObject(name, parentDirs);
         }
         if(this != sMainDir){
             return sMainDir->FindObject(name, false);
@@ -414,7 +541,7 @@ Hmx::Object* ObjectDir::FindObject(const char* name, bool parentDirs){
 
 void ObjectDir::RemovingObject(Hmx::Object* obj){
     if(obj != mCurCam) return;
-    else mCurCam = 0;
+    else mCurCam = nullptr;
 }
 
 void ObjectDir::AddedSubDir(ObjDirPtr<ObjectDir>& dirPtr){
@@ -481,7 +608,7 @@ ObjectDir::~ObjectDir(){
         DeleteObjects();
         DeleteSubDirs();
     }
-    if(this == Dir()){
+    if(!IsProxy()){
         SetName(0, 0);
     }
     if(mPathName != gNullStr){
@@ -533,11 +660,12 @@ void ObjectDir::AppendSubDir(const ObjDirPtr<ObjectDir>& dPtr){
 void ObjectDir::RemoveSubDir(const ObjDirPtr<ObjectDir>& dPtr){
     std::vector<ObjDirPtr<ObjectDir> >::iterator it = mSubDirs.begin();
     while(it != mSubDirs.end()){
-        if((*it).Ptr() == dPtr.Ptr()){
+        if((*it) == dPtr){
             RemovingSubDir(*it);
             it = mSubDirs.erase(it);
+            if(it == mSubDirs.end()) break;
         }
-        if(it == mSubDirs.end()) break;
+        ++it;
     }
 }
 
@@ -561,8 +689,22 @@ static DataNode OnInitObject(DataArray* da){
 
 void CheckForDuplicates(){
     DataArray* cfg = SystemConfig("objects");
-    MILO_WARN("Duplicate object %s in config");
-    MILO_FAIL("duplicate objects found in configs, bailing");
+    std::list<Symbol> syms;
+    for(int i = 1; i < cfg->Size(); i++){
+        syms.push_back(cfg->Array(i)->Sym(0));
+    }
+    syms.sort();
+    Symbol previous;
+    bool fail = false;
+    for(std::list<Symbol>::iterator it = syms.begin(); it != syms.end(); previous = *it, ++it){
+        Symbol cur = *it;
+        if(cur == previous){
+            MILO_WARN("Duplicate object %s in config", cur);
+            fail = true;
+        }
+    }
+    if(fail) MILO_FAIL("duplicate objects found in configs, bailing");
+    syms.unique();
 }
 
 void ObjectDir::PreInit(int i, int j){
@@ -604,16 +746,22 @@ void ObjectDir::Iterate(DataArray* da, bool b){
     Symbol sym1;
     Symbol sym2;
     if(eval.Type() == kDataSymbol){
-        sym1 = STR_TO_SYM(eval.mValue.symbol);
+        const char* inNode = eval.mValue.symbol;
+        sym1 = STR_TO_SYM(inNode);
     }
     else {
-        sym1 = da->Sym(0);
-        sym2 = da->Sym(1);
+        DataArray* arr = eval.mValue.array;
+        sym1 = arr->Sym(0);
+        sym2 = arr->Sym(1);
     }
+#ifdef MILO_DEBUG
     static DataArray* objects = SystemConfig("objects");
     objects->FindArray(sym1, true);
+#endif
     DataNode* var = da->Var(3);
     DataNode node(*var);
+// i really hate debug sometimes
+#ifdef MILO_DEBUG
     bool b1 = false;
     for(ObjDirItr<Hmx::Object> it(this, b); it != 0; ++it){
         bool b2 = false;
@@ -633,6 +781,16 @@ void ObjectDir::Iterate(DataArray* da, bool b){
             }
         }
     }
+#else
+    for(ObjDirItr<Hmx::Object> it(this, b); it != 0; ++it){
+        if(IsASubclass(it->ClassName(), sym1) && (sym2.Null() || it->Type() == sym2)){
+            *var = DataNode(it);
+            for(int i = 4; i < da->Size(); i++){
+                da->Command(i)->Execute();
+            }
+        }
+    }
+#endif
     *var = node;
 }
 

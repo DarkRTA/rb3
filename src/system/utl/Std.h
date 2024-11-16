@@ -1,8 +1,8 @@
-#ifndef UTL_STLHELPERS_H
-#define UTL_STLHELPERS_H
+#pragma once
 #include <algorithm>
 #include <cstdlib>
 #include <vector>
+#include <list>
 #include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
 struct Delete {
@@ -55,10 +55,13 @@ void RemoveSwap(std::vector<T*>& vec, T* obj) {
     }
 }
 
+template <class T>
+inline bool ListFind(const std::list<T>& list, const T& key){
+    return std::find(list.begin(), list.end(), key) != list.end();
+}
+
 // not sure where else to put this
 inline int atoi_s(char* str){
     if(str) return atoi(str);
     else return 0;
 }
-
-#endif

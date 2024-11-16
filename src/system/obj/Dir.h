@@ -1,6 +1,7 @@
 #ifndef OBJ_DIR_H
 #define OBJ_DIR_H
 #include "obj/Object.h"
+#include "utl/BinStream.h"
 #include "utl/FilePath.h"
 #include "utl/StringTable.h"
 #include "utl/KeylessHash.h"
@@ -62,10 +63,9 @@ public:
             }
         }
         if(!d){
-            if(TheLoadMgr.unk5c != 3 && TheLoadMgr.unk5c != 2){
-            
+            if(TheLoadMgr.GetLoaderPos() == kLoadStayBack || TheLoadMgr.GetLoaderPos() == kLoadFrontStayBack){
+                pos = kLoadFrontStayBack;   
             }
-            else pos = kLoadFrontStayBack;
             if(!p.empty()) d = new DirLoader(p, pos, 0, 0, 0, b3);
         }
         mLoader = d;
@@ -75,7 +75,19 @@ public:
         else if(!p.empty()) MILO_WARN("Couldn't load %s", p);
     }
 
+    bool operator==(const ObjDirPtr<T>& dPtr) const {
+        return mDir == dPtr.mDir;
+    }
+
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
+    void LoadInlinedFile(const FilePath& fp, BinStream* bs){
+        *this = 0;
+        LoaderPos loaderpos = kLoadFront;
+        if(TheLoadMgr.GetLoaderPos() == kLoadStayBack || TheLoadMgr.GetLoaderPos() == kLoadFrontStayBack){
+            loaderpos = kLoadFrontStayBack;   
+        }
+        mLoader = new DirLoader(fp, loaderpos, 0, bs, 0, false);
+    }
 
     T* operator->() const {
         MILO_ASSERT(mDir, 0x4D);
@@ -110,15 +122,14 @@ public:
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){
-            delete mLoader;
-            mLoader = 0;
+            RELEASE(mLoader);
             if(mDir){
                 mDir->Release(this);
                 if(!mDir->HasDirPtrs()){
                     delete mDir;
                 }
             }
-            if(mDir = dir) mDir->AddRef(this);
+            if(mDir = dir) dir->AddRef(this);
         }
         return *this;
     }
@@ -168,6 +179,7 @@ public:
     };
 
     struct InlinedDir {
+        InlinedDir();
         InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty);
         // Note: names are fabricated, no DWARF info
         ObjDirPtr<ObjectDir> dir; // 0x0

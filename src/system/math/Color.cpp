@@ -1,5 +1,5 @@
 #include "math/Color.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "utl/TextStream.h"
 
 Hmx::Color Hmx::Color::kWhite(1.0f, 1.0f, 1.0f, 1.0f);

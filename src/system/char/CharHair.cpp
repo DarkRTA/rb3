@@ -4,7 +4,7 @@
 #include "rndobj/Wind.h"
 #include "rndobj/PostProc.h"
 #include "char/Character.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "math/Rot.h"
 #include "world/Dir.h"
 #include <cmath>

@@ -1,7 +1,7 @@
 #include "game/DeployCountTracker.h"
 #include "game/SongDB.h"
 #include "game/TrackerSource.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/Locale.h"

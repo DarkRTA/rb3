@@ -3,7 +3,7 @@
 #include "obj/Data.h"
 #include "rndobj/Overlay.h"
 #include "os/Debug.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 
 namespace {
     RndOverlay* gGuitarOverlay;

@@ -1,5 +1,4 @@
-#ifndef MATH_MATHFUNCS_H
-#define MATH_MATHFUNCS_H
+#pragma once
 #include <math.h>
 #include <cmath>
 
@@ -157,5 +156,3 @@ inline bool PowerOf2(int num){
     else if(num == 0) return true;
     else return (num & num - 1) == 0;
 }
-
-#endif

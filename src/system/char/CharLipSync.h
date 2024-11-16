@@ -3,7 +3,7 @@
 #include "obj/Object.h"
 #include "rndobj/PropAnim.h"
 #include "obj/ObjPtr_p.h"
-#include "utl/STLHelpers.h"
+#include "utl/Std.h"
 
 class CharLipSync : public Hmx::Object {
 public:

@@ -1,6 +1,6 @@
 #include "utl/MultiTempoTempoMap.h"
 #include "os/Debug.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "utl/MemMgr.h"
 #include <algorithm>
 

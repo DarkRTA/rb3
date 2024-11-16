@@ -2,7 +2,7 @@
 #include "ui/UILabel.h"
 #include "ui/UI.h"
 #include "utl/Locale.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(LabelNumberTicker)

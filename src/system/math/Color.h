@@ -3,7 +3,7 @@
 #include "types.h"
 #include "utl/TextStream.h"
 #include "utl/BinStream.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "decomp.h"
 
 namespace Hmx {

@@ -1,6 +1,6 @@
 #include "ui/UIListState.h"
 #include "ui/UIListProvider.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 
 UIListState::UIListState(UIListProvider* provider, UIListStateCallback* callback) : mCircular(0), mNumDisplay(5), mGridSpan(1), mSpeed(0.25f), 
     mMinDisplay(0), mScrollPastMinDisplay(0), mMaxDisplay(-1), mScrollPastMaxDisplay(1), mProvider(provider), mHiddenData(), 

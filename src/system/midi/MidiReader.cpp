@@ -1,6 +1,6 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"

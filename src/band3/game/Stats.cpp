@@ -1,5 +1,5 @@
 #include "Stats.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "os/Debug.h"
 
 Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0), mUpstrumCount(0), mDownstrumCount(0),
