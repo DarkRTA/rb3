@@ -120,10 +120,6 @@ void LoadMgr::PollUntilLoaded(Loader* ldr1, Loader* ldr2){
     SetGPHangDetectEnabled(true, "PollUntilLoaded");
 }
 
-DECOMP_FORCEACTIVE(Loader,
-    "PollUntilLoaded circular dependency %s on %s"
-)
-
 void LoadMgr::PollUntilEmpty() {
     
 }
@@ -144,6 +140,25 @@ const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
 
 void LoadMgr::StartAsyncUnload() { mAsyncUnload++; }
 void LoadMgr::FinishAsyncUnload() { mAsyncUnload--; }
+
+void LoadMgr::Poll(){
+    if(mPeriod <= 0) return;
+    mTimer.Restart();
+    unk1c = mPeriod;
+    while(!mLoading.empty()){
+        PollFrontLoader();
+        if(!mLoading.empty()){
+            if(mLoading.front()->IsLoaded()){
+                mLoading.pop_front();
+            }
+        }
+        if(CheckSplit()) return;
+    }
+}
+
+void LoadMgr::PollFrontLoader(){
+    
+}
 
 void LoadMgr::RegisterFactory(const char* cc, LoaderFactoryFunc* func){
     for(std::list<std::pair<String, LoaderFactoryFunc*> >::iterator it = mFactories.begin(); it != mFactories.end(); it++){
