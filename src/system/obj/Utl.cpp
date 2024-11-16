@@ -2,7 +2,9 @@
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
+#include "os/File.h"
 #include "os/System.h"
+#include "utl/MakeString.h"
 #include "utl/Symbols.h"
 #include "decomp.h"
 #include <algorithm>
@@ -10,6 +12,7 @@
 int gCopyMax;
 std::list<String> sFilePaths;
 std::list<Symbol> sFiles;
+FileCallbackFunc* sCBack;
 
 DECOMP_FORCEACTIVE(Utl,
     "mem_copy",
@@ -456,5 +459,42 @@ DataNode MakeFileListFullPath(const char* cc){
         idx++;
     }
     sFilePaths.clear();
+    return ptr;
+}
+
+void FileCallback(const char* cc1, const char* cc2){
+    if(!sCBack){
+        sFiles.push_back(FileGetBase(cc2, 0));
+    }
+    else {
+        char buf[256];
+        strcpy(buf, MakeString("%s/%s", cc1, cc2));
+        if((*sCBack)(buf)){
+            sFiles.push_back(FileGetBase(buf, 0));
+        }
+    }
+}
+
+struct SymbolSort {
+    bool operator()(Symbol s1, Symbol s2){ return strcmp(s1.mStr, s2.mStr) < 0; }
+};
+
+DataNode MakeFileList(const char* cc, bool b, FileCallbackFunc* cbfunc){
+    char buf[256];
+    strcpy(buf, cc);
+    sCBack = cbfunc;
+    sFiles.clear();
+    FileRecursePattern(buf, &FileCallback, true);
+    sCBack = nullptr;
+    if(b) sFiles.push_back(Symbol());
+    sFiles.sort(SymbolSort()); // uses a struct SymbolSort
+    sFiles.unique();
+    DataArrayPtr ptr(new DataArray(sFiles.size()));
+    int idx = 0;
+    for(std::list<Symbol>::iterator it = sFiles.begin(); it != sFiles.end(); ++it){
+        ptr->Node(idx) = *it;
+        idx++;
+    }
+    sFiles.clear();
     return ptr;
 }
