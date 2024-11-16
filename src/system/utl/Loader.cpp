@@ -1,15 +1,18 @@
 #include "utl/Loader.h"
+#include "STLHelpers.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "utl/MemMgr.h"
 #include "utl/Option.h"
 #include "obj/DataFunc.h"
+#include "rndwii/Rnd.h"
 
 #include "decomp.h"
 
 LoadMgr TheLoadMgr;
+void (*LoadMgr::sFileOpenCallback)(const char*);
 
-LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), mPeriod(10.0f), mLoading(), mTimer(), unk58(0), unk5c(0) {
+LoadMgr::LoadMgr() : mLoaders(), mPlatform(kPlatformWii), mEditMode(0), mCacheMode(0), mFactories(), mPeriod(10.0f), mLoading(), mTimer(), mAsyncUnload(0), mLoaderPos(kLoadFront) {
 
 }
 
@@ -74,7 +77,7 @@ Loader* LoadMgr::GetLoader(const FilePath& fp) const {
     if(fp.empty()) return 0;
     else {
         Loader* theLoader = 0;
-        for(std::list<Loader*>::const_iterator it = mLoaders.begin(); it != mLoaders.end(); it++){
+        for(std::list<Loader*>::const_iterator it = mLoaders.begin(); it != mLoaders.end(); ++it){
             if((*it)->mFile == fp){
                 theLoader = *it;
                 break;
@@ -87,15 +90,34 @@ Loader* LoadMgr::GetLoader(const FilePath& fp) const {
 Loader* LoadMgr::AddLoader(const FilePath& file, LoaderPos pos) {
     if (file.empty()) return NULL;
     if (sFileOpenCallback != NULL) {
-        sFileOpenCallback(file);
+        sFileOpenCallback(file.c_str());
     }
     const char* ext = FileGetExt(file.c_str());
-    for (std::list<Loader*>::iterator it = mLoaders.begin(); it != mLoaders.end(); it++) {
-        if ((*it)->mFile == ext) {
-            (*it)->StateName();
+    for(std::list<std::pair<String, LoaderFactoryFunc*> >::iterator it = mFactories.begin(); it != mFactories.end(); ++it){
+        if(it->first == ext){
+            return (it->second)(file, pos);
         }
     }
     return new FileLoader(file, file.c_str(), pos, 0, false, true, NULL);
+}
+
+void LoadMgr::PollUntilLoaded(Loader* ldr1, Loader* ldr2){
+    SetGPHangDetectEnabled(false, "PollUntilLoaded");
+    Loader* theLdr = ldr1;
+    while(!theLdr->IsLoaded()){
+        unk1c = 1e+30f;
+        if(ldr2 && ldr2 == mLoading.front()){
+#ifdef MILO_DEBUG
+            MILO_FAIL("PollUntilLoaded circular dependency %s on %s", ldr2->DebugText(), ldr1->DebugText());
+#endif
+        }
+        PollFrontLoader();
+        if(!ListFind(mLoading, theLdr)) break;
+        if(mLoading.front()->IsLoaded()){
+            mLoading.pop_front();
+        }
+    }
+    SetGPHangDetectEnabled(true, "PollUntilLoaded");
 }
 
 DECOMP_FORCEACTIVE(Loader,
@@ -120,8 +142,8 @@ const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
     else return names[pos];
 }
 
-void LoadMgr::StartAsyncUnload() { unk58++; }
-void LoadMgr::FinishAsyncUnload() { unk58--; }
+void LoadMgr::StartAsyncUnload() { mAsyncUnload++; }
+void LoadMgr::FinishAsyncUnload() { mAsyncUnload--; }
 
 void LoadMgr::RegisterFactory(const char* cc, LoaderFactoryFunc* func){
     for(std::list<std::pair<String, LoaderFactoryFunc*> >::iterator it = mFactories.begin(); it != mFactories.end(); it++){

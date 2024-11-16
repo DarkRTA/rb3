@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <vector>
+#include <list>
 #include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
 struct Delete {
@@ -53,6 +54,11 @@ void RemoveSwap(std::vector<T*>& vec, T* obj) {
         *it = vec.back();
         vec.pop_back();
     }
+}
+
+template <class T>
+inline bool ListFind(const std::list<T>& list, const T& key){
+    return std::find(list.begin(), list.end(), key) != list.end();
 }
 
 // not sure where else to put this

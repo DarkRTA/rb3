@@ -39,6 +39,7 @@ public:
     static void* GetCurrXFB();
 };
 
+void SetGPHangDetectEnabled(bool, const char*);
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);
 void RndGXEnd();
 void RndGxDrawDone();

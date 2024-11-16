@@ -53,9 +53,12 @@ public:
     void SetEditMode(bool);
     void Init();
     Loader* ForceGetLoader(const FilePath&);
+    void PollFrontLoader();
+
     bool EditMode(){ return mEditMode; }
     Platform GetPlatform() const { return (Platform)mPlatform; }
-    int AsyncUnload() const { return unk58; }
+    int AsyncUnload() const { return mAsyncUnload; }
+    LoaderPos GetLoaderPos() const { return mLoaderPos; }
     float SetLoaderPeriod(float period){
         float ret = mPeriod;
         unk1c = period;
@@ -87,10 +90,10 @@ public:
     float unk1c;
     std::list<Loader*> mLoading; // 0x20
     Timer mTimer; // 0x28
-    int unk58;
-    int unk5c;
+    int mAsyncUnload; // 0x58
+    LoaderPos mLoaderPos; // 0x5c
 
-    static void (*sFileOpenCallback)(const FilePath&);
+    static void (*sFileOpenCallback)(const char*);
 };
 
 extern LoadMgr TheLoadMgr;

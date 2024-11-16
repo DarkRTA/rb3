@@ -63,10 +63,9 @@ public:
             }
         }
         if(!d){
-            if(TheLoadMgr.unk5c != 3 && TheLoadMgr.unk5c != 2){
-            
+            if(TheLoadMgr.GetLoaderPos() == kLoadStayBack || TheLoadMgr.GetLoaderPos() == kLoadFrontStayBack){
+                pos = kLoadFrontStayBack;   
             }
-            else pos = kLoadFrontStayBack;
             if(!p.empty()) d = new DirLoader(p, pos, 0, 0, 0, b3);
         }
         mLoader = d;
@@ -84,7 +83,7 @@ public:
     void LoadInlinedFile(const FilePath& fp, BinStream* bs){
         *this = 0;
         LoaderPos loaderpos = kLoadFront;
-        if(TheLoadMgr.unk5c == 3 || TheLoadMgr.unk5c == 2){
+        if(TheLoadMgr.GetLoaderPos() == kLoadStayBack || TheLoadMgr.GetLoaderPos() == kLoadFrontStayBack){
             loaderpos = kLoadFrontStayBack;   
         }
         mLoader = new DirLoader(fp, loaderpos, 0, bs, 0, false);
