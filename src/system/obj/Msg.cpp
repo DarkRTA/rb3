@@ -36,7 +36,7 @@ void MsgSource::ChainSource(MsgSource* source, MsgSource* othersource){
         source->AddSink(this);
     }
     else {
-        for(std::list<EventSink>::iterator it = othersource->mEventSinks.begin(); it != othersource->mEventSinks.end(); it++){
+        for(std::list<EventSink>::iterator it = othersource->mEventSinks.begin(); it != othersource->mEventSinks.end(); ++it){
             source->AddSink(this, it->ev);
         }
     }
