@@ -1,5 +1,4 @@
-#ifndef UTL_STLHELPERS_H
-#define UTL_STLHELPERS_H
+#pragma once
 #include <algorithm>
 #include <cstdlib>
 #include <vector>
@@ -66,5 +65,3 @@ inline int atoi_s(char* str){
     if(str) return atoi(str);
     else return 0;
 }
-
-#endif
