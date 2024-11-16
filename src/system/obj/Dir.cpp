@@ -201,10 +201,11 @@ void ObjectDir::PreLoad(BinStream& bs){
         int toAlloc;
         bs >> toAlloc;
         if(toAlloc){
-            void* v = _MemOrPoolAlloc(toAlloc + 1, FastPool);
-            mAlwaysInlineHash = (char*)v;
+            char* v = (char*)_MemOrPoolAlloc(toAlloc + 1, FastPool);
+            mAlwaysInlineHash = v;
             bs.Read(v, toAlloc);
-            ((char*)v)[toAlloc] = 0;
+            char* ptr = (char*)mAlwaysInlineHash;
+            ptr[toAlloc] = 0;
         }
     }
     if(gRev > 1){
@@ -282,8 +283,9 @@ void ObjectDir::PreLoad(BinStream& bs){
         }
         else i20 = 2;
 
-        for(int i = 0; i < notInlinedSubDirs.size(); i++){
-            if(mSubDirs[i].GetFile() != notInlinedSubDirs[i] || i20 == 0){
+        for(int i = 0; i != notInlinedSubDirs.size(); i++){
+            bool filesneq = mSubDirs[i].GetFile() != notInlinedSubDirs[i];
+            if(i20 == 0 || filesneq){
                 bool b17 = false;
                 if(intVec.size() != 0){
                     b17 = intVec[i] != 0;
@@ -335,18 +337,20 @@ void ObjectDir::PreLoad(BinStream& bs){
     std::vector<bool> boolvec;
     boolvec.resize(mInlinedDirs.size());
     for(int i = 0; i < mInlinedDirs.size(); i++){
-        if(gRev >= 0x19 || bs.Cached()){
+        if(gRev < 0x19 && !bs.Cached()){
+            boolvec[i] = true;
+        }
+        else {
             bool b;
             bs >> b;
             boolvec[i] = b;
         }
-        else boolvec[i] = true;
     }
     for(int i = 0; i < mInlinedDirs.size(); i++){
         InlinedDir& curIDir = mInlinedDirs[i];
         FilePath fpath(curIDir.file);
         if(!bs.Cached() || !boolvec[i]){
-            if((!boolvec[i] && curIDir.inlineDirType == kInlineAlways) || bs.Cached()){
+            if(!boolvec[i] && (curIDir.inlineDirType == kInlineAlways || bs.Cached())){
                 curIDir.dir.LoadInlinedFile(fpath, &bs);
             }
             else if(IsProxy() && !mProxyFile.empty()){
