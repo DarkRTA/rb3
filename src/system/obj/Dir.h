@@ -1,6 +1,7 @@
 #ifndef OBJ_DIR_H
 #define OBJ_DIR_H
 #include "obj/Object.h"
+#include "utl/BinStream.h"
 #include "utl/FilePath.h"
 #include "utl/StringTable.h"
 #include "utl/KeylessHash.h"
@@ -40,6 +41,8 @@ public:
     }
     virtual bool IsDirPtr(){ return true; }
 
+    void LoadInlinedFile(const FilePath&, BinStream*);
+
     // GetFile__21ObjDirPtr<9ObjectDir>CFv
     FilePath& GetFile() const {
         if(mDir && mDir->mLoader){
@@ -73,6 +76,10 @@ public:
             if(!async || mLoader->IsLoaded()) PostLoad(0);
         }
         else if(!p.empty()) MILO_WARN("Couldn't load %s", p);
+    }
+
+    bool operator==(const ObjDirPtr<T>& dPtr) const {
+        return mDir == dPtr.mDir;
     }
 
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
@@ -110,15 +117,14 @@ public:
     ObjDirPtr& operator=(T* dir){
         if(mLoader && mLoader->IsLoaded()) PostLoad(0);
         if((dir != mDir) || !dir){
-            delete mLoader;
-            mLoader = 0;
+            RELEASE(mLoader);
             if(mDir){
                 mDir->Release(this);
                 if(!mDir->HasDirPtrs()){
                     delete mDir;
                 }
             }
-            if(mDir = dir) mDir->AddRef(this);
+            if(mDir = dir) dir->AddRef(this);
         }
         return *this;
     }
@@ -168,6 +174,7 @@ public:
     };
 
     struct InlinedDir {
+        InlinedDir();
         InlinedDir(ObjectDir* d, const FilePath& fp, bool b, InlineDirType ty);
         // Note: names are fabricated, no DWARF info
         ObjDirPtr<ObjectDir> dir; // 0x0
