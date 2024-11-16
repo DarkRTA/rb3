@@ -351,6 +351,8 @@ void EditorBlockProps(DataArray* editDefn, std::list<Symbol>& props, std::list<S
     if(ed) WalkProps(ed, props, arrayProps);
 }
 
+DECOMP_FORCEACTIVE(Utl, "Character")
+
 void ListProperties(std::list<Symbol>& props, Symbol classnm, Symbol type, std::list<Symbol>* arrayProps){
     DataArray* cfg = SystemConfig(objects, classnm);
     if(type != gNullStr){
@@ -376,10 +378,10 @@ int GetPropSize(Hmx::Object* o, DataArray* arr, int size){
     return ret;
 }
 
-bool IsPropPathValid(Hmx::Object* o, DataArray* arr){
-    for(int i = 0; i < arr->Size(); i++){
-        if(arr->Type(i) == kDataInt){
-            if(arr->Int(i) + 1 > GetPropSize(o, arr, i))
+bool IsPropPathValid(Hmx::Object* o, DataArray* prop){
+    for(int i = 0; i < prop->Size(); i++){
+        if(prop->Type(i) == kDataInt){
+            if(prop->Int(i) + 1 > GetPropSize(o, prop, i))
                 return false;
         }
     }
@@ -408,28 +410,30 @@ bool PathCompare(DataArray* arr1, DataArray* arr2){
     return true;
 }
 
-DataNode* GetPropertyVal(Hmx::Object* o, DataArray* arr, bool b){
-    if(IsPropPathValid(o, arr)){
-        return o->Property(arr, b);
+DataNode* GetPropertyVal(Hmx::Object* o, DataArray* prop, bool fail){
+    if(IsPropPathValid(o, prop)){
+        return o->Property(prop, fail);
     }
     else return 0;
 }
 
 DataNode ObjectList(ObjectDir* dir, Symbol s, bool b){
     std::list<const char*> sList;
-    for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
-        if(IsASubclass(it->ClassName(), s)){
-            sList.push_back(it->Name());
+    if(dir){
+        for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
+            if(IsASubclass(it->ClassName(), s)){
+                sList.push_back(it->Name());
+            }
         }
     }
-    DataArrayPtr ptr(new DataArray(1));
-    if(b) ptr->Node(0) = DataNode("");
-    int i = b;
+    DataArrayPtr ptr(new DataArray(b + sList.size()));
+    int idx = 0;
+    if(b) ptr->Node(idx++) = "";
     for(std::list<const char*>::iterator it = sList.begin(); it != sList.end(); ++it){
-        ptr->Node(i++) = DataNode(*it);
+        ptr->Node(idx++) = *it;
     }
     ptr->SortNodes();
-    return DataNode(ptr);
+    return ptr;
 }
 
 void FileCallbackFullPath(const char* cc1, const char* cc2){
@@ -443,5 +447,14 @@ DataNode MakeFileListFullPath(const char* cc){
     strcpy(buf, cc);
     sFilePaths.clear();
     FileRecursePattern(buf, &FileCallbackFullPath, true);
-    // std::stable_sort()
+    sFilePaths.sort();
+    sFilePaths.unique();
+    DataArrayPtr ptr(new DataArray(sFilePaths.size()));
+    int idx = 0;
+    for(std::list<String>::iterator it = sFilePaths.begin(); it != sFilePaths.end(); ++it){
+        ptr->Node(idx) = *it;
+        idx++;
+    }
+    sFilePaths.clear();
+    return ptr;
 }
