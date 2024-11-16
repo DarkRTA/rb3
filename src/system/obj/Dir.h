@@ -41,8 +41,6 @@ public:
     }
     virtual bool IsDirPtr(){ return true; }
 
-    void LoadInlinedFile(const FilePath&, BinStream*);
-
     // GetFile__21ObjDirPtr<9ObjectDir>CFv
     FilePath& GetFile() const {
         if(mDir && mDir->mLoader){
@@ -83,6 +81,14 @@ public:
     }
 
     // LoadInlinedFile__21ObjDirPtr<9ObjectDir>FRC8FilePathP9BinStream
+    void LoadInlinedFile(const FilePath& fp, BinStream* bs){
+        *this = 0;
+        LoaderPos loaderpos = kLoadFront;
+        if(TheLoadMgr.unk5c == 3 || TheLoadMgr.unk5c == 2){
+            loaderpos = kLoadFrontStayBack;   
+        }
+        mLoader = new DirLoader(fp, loaderpos, 0, bs, 0, false);
+    }
 
     T* operator->() const {
         MILO_ASSERT(mDir, 0x4D);
