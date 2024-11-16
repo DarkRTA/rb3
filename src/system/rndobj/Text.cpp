@@ -1,5 +1,5 @@
 #include "Text.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"

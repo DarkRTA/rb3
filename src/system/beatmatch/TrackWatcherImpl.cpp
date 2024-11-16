@@ -4,7 +4,7 @@
 #include "math/Rand.h"
 #include "beatmatch/SongData.h"
 #include "utl/TempoMap.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 
 TrackWatcherImpl::TrackWatcherImpl(int track, const UserGuid& u, int slot, SongData* data, GameGemList* gemlist, TrackWatcherParent* parent, DataArray* cfg, int gemsize) :
     mTrack(track), mUserGuid(u), mPlayerSlot(slot), mGemList(gemlist), mParent(parent), mSlop(100.0f), mLastGemHit(-1), mIsCurrentTrack(false), mGemsInProgress(),

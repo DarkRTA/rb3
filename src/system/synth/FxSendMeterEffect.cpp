@@ -1,7 +1,7 @@
 #include "synth/FxSendMeterEffect.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 
 unsigned short FxSendMeterEffect::gRev = 0;
 unsigned short FxSendMeterEffect::gAltRev = 0;

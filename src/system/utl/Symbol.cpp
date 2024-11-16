@@ -6,7 +6,7 @@
 #include "utl/PoolAlloc.h"
 #include "utl/DataPointMgr.h"
 #include "obj/DataFunc.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include <algorithm>
 #include <new>
 

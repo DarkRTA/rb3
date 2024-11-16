@@ -1,5 +1,5 @@
 #include "rndobj/EnvAnim.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "decomp.h"
 
 int ENVANIM_REV = 4;

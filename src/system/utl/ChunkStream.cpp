@@ -5,7 +5,7 @@
 #include "utl/MemMgr.h"
 #include <list>
 #include <string.h>
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "os/File.h"
 #include "os/Endian.h"
 #include "decomp.h"

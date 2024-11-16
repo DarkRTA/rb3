@@ -2,7 +2,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Tex.h"
 #include "rndobj/Trans.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "obj/PropSync_p.h"
 #include "utl/Symbols.h"
 

@@ -1,7 +1,7 @@
 #include "utl/StringTable.h"
 #include "os/Debug.h"
 #include "utl/Loader.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include <revolution/OS.h>
 
 StringTable::StringTable(int i) : mCurChar(0), mCurBuf(-1) {

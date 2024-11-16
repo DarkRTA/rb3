@@ -10,7 +10,7 @@
 #include "utl/MakeString.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "obj/DataUtl.h"
 #include "utl/Locale.h"
 #include "os/DateTime.h"

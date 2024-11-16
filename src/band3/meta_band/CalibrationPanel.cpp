@@ -1,6 +1,6 @@
 #include "game/BandUser.h"
 #include "game/Defines.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "meta_band/Calibration.h"
 #include "meta_band/InputMgr.h"
 #include "meta_band/ProfileMgr.h"

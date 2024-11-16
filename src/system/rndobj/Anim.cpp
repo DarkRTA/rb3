@@ -4,7 +4,7 @@
 #include "rndobj/Group.h"
 #include "obj/DataUtl.h"
 #include "obj/PropSync_p.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndAnimatable)

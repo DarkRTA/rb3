@@ -4,7 +4,7 @@
 #include "os/Debug.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/HiResScreen.h"
-#include "math/MathFuncs.h"
+#include "math/Utl.h"
 #include "math/Rand.h"
 #include "obj/Task.h"
 #include "utl/Messages.h"
