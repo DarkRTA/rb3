@@ -273,7 +273,7 @@ int SubDirStringUsed(ObjectDir* dir){
 int SubDirHashUsed(ObjectDir* dir){
     if(!dir) return 0;
     else {
-        int size = dir->mHashTable.mNumEntries;
+        int size = dir->mHashTable.UsedSize();
         for(std::vector<ObjDirPtr<ObjectDir> >::iterator it = dir->mSubDirs.begin(); it != dir->mSubDirs.end(); ++it){
             size += SubDirHashUsed(*it);
         }
@@ -296,7 +296,7 @@ Hmx::Object* CopyObject(Hmx::Object* from, Hmx::Object* to, Hmx::Object::CopyTyp
 
 Hmx::Object* CloneObject(Hmx::Object* from, bool instance){
     MILO_ASSERT(from, 0x32D);
-    CopyObject(from, Hmx::Object::NewObject(from->ClassName()), instance ? Hmx::Object::kCopyShallow : Hmx::Object::kCopyDeep, true);
+    return CopyObject(from, Hmx::Object::NewObject(from->ClassName()), instance ? Hmx::Object::kCopyShallow : Hmx::Object::kCopyDeep, true);
 }
 
 const char* NextName(const char* old_name, ObjectDir* dir){
@@ -420,11 +420,11 @@ DataNode* GetPropertyVal(Hmx::Object* o, DataArray* prop, bool fail){
     else return 0;
 }
 
-DataNode ObjectList(ObjectDir* dir, Symbol s, bool b){
+DataNode ObjectList(ObjectDir* dir, Symbol parentSym, bool b){
     std::list<const char*> sList;
     if(dir){
         for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
-            if(IsASubclass(it->ClassName(), s)){
+            if(IsASubclass(it->ClassName(), parentSym)){
                 sList.push_back(it->Name());
             }
         }

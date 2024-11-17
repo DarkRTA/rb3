@@ -214,18 +214,18 @@ namespace Hmx {
         OBJ_SET_TYPE(Object);
 
         /** Execute code based on the contents of a received message.
-        * @param [out] out The return value of whatever code was executed.
         * @param [in] _msg The received message.
         * @param [in] _warn Whether or not to print the unhandled message to the debug console.
+        * @returns The return value of whatever code was executed.
         */
         virtual DataNode Handle(DataArray* _msg, bool _warn);
 
         /** Syncs an Object's property to or from a supplied DataNode.
-        * @param [out] out Returns true if a property was synced, or if the desired index == the prop array size.
-        * @param [in] _val A DataNode to either place the property val into, or set the property val with.
+        * @param [out] _val A DataNode to either place the property val into, or set the property val with.
         * @param [in] _prop The DataArray containing the symbol representing the property to sync.
         * @param [in] _i The index in _prop containing the symbol of the property to sync.
         * @param [in] _op The operation to be performed with the property.
+        * @returns Returns true if a property was synced, or if the desired index == the prop array size.
         */
         virtual bool SyncProperty(DataNode& _val, DataArray* _prop, int _i, PropOp _op);
         virtual ~Object();

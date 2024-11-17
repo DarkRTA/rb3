@@ -16,7 +16,15 @@ void InitObject(Hmx::Object*);
 */
 const char* SafeName(Hmx::Object* obj);
 
-DataNode ObjectList(class ObjectDir*, Symbol, bool);
+/** Gets a list of every Object inside ObjectDir dir that is a subclass of class with name parentSym.
+ * The list is in DataArray form, with each node containing the qualifying Object's names.
+ * @param [in] dir The ObjectDir to search for Objects in.
+ * @param [in] parentSym The parent class in Symbol form to search for subclasses of.
+ * @param [in] b TODO: currently unknown
+ * @returns A DataNode housing the aforementioned DataArray.
+*/
+DataNode ObjectList(class ObjectDir* dir, Symbol parentSym, bool b);
+
 DataNode MakeFileList(const char*, bool, FileCallbackFunc*);
 DataNode MakeFileListFullPath(const char*);
 
@@ -50,24 +58,61 @@ bool IsASubclass(Symbol child, Symbol parent);
  * @param [in] from The Object to be replaced.
  * @param [in] to The Object serving as the replacement.
  * @param [in] copyDeep If true, the full Object will be copied over rather than just its references.
+ * @param [in] deleteFrom If true, delete from after the replacement has occurred.
+ * @param [in] setProxyFile If true, set to's proxy file to from's - only used if copyDeep is true!
 */
 void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool copyDeep, bool deleteFrom, bool setProxyFile);
 
-void CopyTypeProperties(Hmx::Object*, Hmx::Object*);
-void ReserveToFit(class ObjectDir*, class ObjectDir*, int);
-int SubDirStringUsed(class ObjectDir*);
-int SubDirHashUsed(class ObjectDir*);
+/** Copy the type properties (TypeProps) from Object from into Object to.
+ * @param [in] from The Object to copy type props from.
+ * @param [in] to The Object to copy type props into.
+*/
+void CopyTypeProperties(Hmx::Object* from, Hmx::Object* to);
+
+/** Reserve enough entries in dst's hash and string tables to fit src's entries, plus any extras.
+ * @param [in] src The ObjectDir to determine how much space to reserve with. 
+ * @param [in] dst The ObjectDir to reserve entries in.
+ * @param [in] extraObjects The number of extra objects to allocate space for in dst, in addition to src's entries.
+*/
+void ReserveToFit(class ObjectDir* src, class ObjectDir* dst, int extraObjects);
+
+/** Get the number of used string table entries across and ObjectDir and all of its subdirs.
+ * @param [in] dir The ObjectDir to count string table entries from.
+ * @returns The number of used string table entries across dir and all of its subdirs.
+*/
+int SubDirStringUsed(class ObjectDir* dir);
+
+/** Get the number of used hash table entries across and ObjectDir and all of its subdirs.
+ * @param [in] dir The ObjectDir to count hash table entries from.
+ * @returns The number of used hash table entries across dir and all of its subdirs.
+*/
+int SubDirHashUsed(class ObjectDir* dir);
+
 const char* NextName(const char*, class ObjectDir*);
 bool StringMatchesFilter(const char*, const char*);
 int GetPropSize(Hmx::Object*, DataArray*, int);
 bool IsPropPathValid(Hmx::Object*, DataArray*);
 bool PathCompare(DataArray*, DataArray*);
 DataNode* GetPropertyVal(Hmx::Object*, DataArray*, bool);
-Hmx::Object* CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
-Hmx::Object* CloneObject(Hmx::Object*, bool);
+
+/** Copy Object from into Object to.
+ * @param [in] from The Object to copy from.
+ * @param [in] to The Object to copy into.
+ * @param [in] ty The copy type.
+ * @param [in] setProxyFile If true, set to's proxy file to from's. If false, copy from's type properties into to's.
+ * @returns The newly copied Object.
+*/
+Hmx::Object* CopyObject(Hmx::Object* from, Hmx::Object* to, Hmx::Object::CopyType ty, bool setProxyFile);
+
+/** Create a clone of an Object.
+ * @param [in] from The Object to clone.
+ * @param [in] instance If true, create a shallow copy. If false, create a deep copy.
+ * @returns The newly cloned Object.
+*/
+Hmx::Object* CloneObject(Hmx::Object* from, bool instance);
+
 void FileCallbackFullPath(const char*, const char*);
 void FileCallback(const char*, const char*);
-
 void WalkProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);
 void EditorBlockProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);
 void ListProperties(std::list<Symbol>&, Symbol, Symbol, std::list<Symbol>*);
