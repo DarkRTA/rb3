@@ -140,6 +140,7 @@ const char* LoadMgr::LoaderPosString(LoaderPos pos, bool abbrev){
     else return names[pos];
 }
 
+int LoadMgr::AsyncUnload() const { return mAsyncUnload; }
 void LoadMgr::StartAsyncUnload() { mAsyncUnload++; }
 void LoadMgr::FinishAsyncUnload() { mAsyncUnload--; }
 

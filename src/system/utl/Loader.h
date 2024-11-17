@@ -56,10 +56,10 @@ public:
     void Init();
     Loader* ForceGetLoader(const FilePath&);
     void PollFrontLoader();
+    int AsyncUnload() const;
 
     bool EditMode(){ return mEditMode; }
     Platform GetPlatform() const { return (Platform)mPlatform; }
-    int AsyncUnload() const { return mAsyncUnload; }
     LoaderPos GetLoaderPos() const { return mLoaderPos; }
     float SetLoaderPeriod(float period){
         float ret = mPeriod;
