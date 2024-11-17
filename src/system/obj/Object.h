@@ -30,19 +30,19 @@ private:
 
     /** If the DataNode n contains from, replaces it with to.
      * @param [in] n The DataNode containing a Hmx::Object.
-     * @param [in] from The Hmx::Object to be replaced.
-     * @param [in] to The Hmx::Object serving as the replacement.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] from The Object to be replaced.
+     * @param [in] to The Object serving as the replacement.
+     * @param [in] ref The Object to update refs for.
     */
     void ReplaceObject(DataNode& n, Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref); // likely a private method
 
     /** Releases all Object values currently in the dictionary.
-     * @param [in] ref The Hmx::Object to release from.
+     * @param [in] ref The Object to release from.
     */
     void ReleaseObjects(Hmx::Object* ref);
 
     /** Adds references to all Object values currently in the dictionary.
-     * @param [in] ref The Hmx::Object to add refs to.
+     * @param [in] ref The Object to add refs to.
     */
     void AddRefObjects(Hmx::Object* ref);
 
@@ -54,25 +54,25 @@ public:
 
     /** Saves the dictionary to a BinStream, using ref's TypeDef to determine which props to write.
      * @param [in] bs The BinStream to write to.
-     * @param [in] ref The Hmx::Object to reference from.
+     * @param [in] ref The Object to reference from.
     */
     void Save(BinStream& bs, Hmx::Object* ref);
 
     /** Loads the dictionary from a BinStream.
      * @param [in] bs The BinStream to read from
      * @param [in] old_proxy TODO: currently unknown
-     * @param [in] ref The Hmx::Object to add any Object refs to.
+     * @param [in] ref The Object to add any Object refs to.
     */
     void Load(BinStream& bs, bool old_proxy, Hmx::Object* ref);
 
     /** Search for a key in the dictionary, and remove its key/value pair.
      * @param [in] key The key to search for.
-     * @param [in] ref The Hmx::Object to release from, if the value is an Object.
+     * @param [in] ref The Object to release from, if the value is an Object.
     */
     void ClearKeyValue(Symbol key, Hmx::Object* ref);
 
     /** Completely clear the dictionary.
-     * @param [in] ref The Hmx::Object that any objects will release from.
+     * @param [in] ref The Object that any objects will release from.
     */
     void ClearAll(Hmx::Object* ref);
 
@@ -81,7 +81,7 @@ public:
      * @param [in] idx The index of the resulting DataArray value in which to insert arrVal.
      * @param [in] arrVal The value to insert into the key's resulting DataArray value.
      * @param [in] tdef The type def DataArray to search in, if the key isn't in the dictionary.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] ref The Object to update refs for.
     */
     void InsertArrayValue(Symbol key, int idx, const DataNode& arrVal, DataArray* tdef, Hmx::Object* ref);
 
@@ -90,7 +90,7 @@ public:
      * @param [in] idx The index of the resulting DataArray value in which to insert arrVal.
      * @param [in] arrVal The value to insert into the key's resulting DataArray value.
      * @param [in] tdef The type def DataArray to search in, if the key isn't in the dictionary.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] ref The Object to update refs for.
     */
     void SetArrayValue(Symbol key, int idx, const DataNode& arrVal, DataArray* tdef, Hmx::Object* ref);
 
@@ -98,22 +98,22 @@ public:
      * @param [in] key The key to search for.
      * @param [in] idx The index of the resulting DataArray value in which to insert arrVal.
      * @param [in] tdef The type def DataArray to search in, if the key isn't in the dictionary.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] ref The Object to update refs for.
     */
     void RemoveArrayValue(Symbol key, int idx, DataArray* tdef, Hmx::Object* ref);
 
     /** Search for a key in the dictionary, and return the value DataNode.
-     * @param [out] out A DataNode containing the key's corresponding value.
      * @param [in] key The key to search for.
      * @param [in] fail Whether or not to fail the program if the key cannot be found.
+     * @returns A DataNode containing the key's corresponding value.
     */
     DataNode* KeyValue(Symbol key, bool fail) const;
 
     /** Search for a key in the dictionary, and return the DataArray value.
-     * @param [out] out The key's corresponding value, of type DataArray.
      * @param [in] key The key to search for.
      * @param [in] typeDef The type def DataArray to search in, if the key isn't in the dictionary.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] ref The Object to update refs for.
+     * @returns The key's corresponding value, of type DataArray.
     */
     DataArray* GetArray(Symbol key, DataArray* typeDef, Hmx::Object* ref);
 
@@ -121,14 +121,14 @@ public:
      * @param [in] key The key to either add or update
      * @param [in] value The corresponding value associated with the key.
      * @param [in] b TODO: currently unknown
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] ref The Object to update refs for.
     */
     void SetKeyValue(Symbol key, const DataNode& value, bool b, Hmx::Object* ref);
     
     /** Replaces all instances of from in the dictionary with to.
-     * @param [in] from The Hmx::Object to be replaced.
-     * @param [in] to The Hmx::Object serving as the replacement.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] from The Object to be replaced.
+     * @param [in] to The Object serving as the replacement.
+     * @param [in] ref The Object to update refs for.
     */
     void Replace(Hmx::Object* from, Hmx::Object* to, Hmx::Object* ref);
 
@@ -137,19 +137,19 @@ public:
 
     /** Copy props' dictionary into this dictionary.
      * @param [in] props The TypeProps to copy from.
-     * @param [in] ref The Hmx::Object to update refs for.
+     * @param [in] ref The Object to update refs for.
     */
     void Copy(const TypeProps& props, Hmx::Object* ref);
 
     /** Retrieve key number idx from the dictionary.
-     * @param [out] out The desired key.
      * @param [in] idx The number key in the dictionary to grab.
+     * @returns The desired key.
     */
     Symbol Key(int idx) const;
 
     /** Retrieve value number idx from the dictionary.
-     * @param [out] out The desired value.
      * @param [in] idx The number value in the dictionary to grab.
+     * @returns The desired value.
     */
     DataNode& Value(int idx) const;
 };
@@ -164,8 +164,8 @@ public:
     virtual Hmx::Object* RefOwner() = 0;
 
     /** Removes the properties from the first Hmx::Object, and moves them to the second.
-     * @param [in] from The Hmx::Object from which to remove properties.
-     * @param [in] to The Hmx::Object to which to add the removed properties.
+     * @param [in] from The Object from which to remove properties.
+     * @param [in] to The Object to which to add the removed properties.
     */
     virtual void Replace(Hmx::Object* from, Hmx::Object* to) = 0;
 

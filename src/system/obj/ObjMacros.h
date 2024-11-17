@@ -7,7 +7,11 @@
 #include "obj/PropSync_p.h" /* IWYU pragma: keep */
 #include "obj/MessageTimer.h" /* IWYU pragma: keep */
 
-const char* PathName(const class Hmx::Object*);
+/** Get this Object's path name.
+ * @param [in] obj The Object.
+ * @returns The Object's path name, or "NULL Object" if it doesn't exist.
+*/
+const char* PathName(const class Hmx::Object* obj);
 
 // BEGIN CLASSNAME MACRO -------------------------------------------------------------------------------
 
