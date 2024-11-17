@@ -1230,11 +1230,9 @@ DEF_DATA_FUNC(DataWith) {
 }
 
 DEF_DATA_FUNC(OnSetThis) {
-    // Hmx::Object* new_this;
-    // new_this = array->GetObj(1);
-    // // gDataThisPtr.Replace(gDataThis, new_this);
-    // DataSetThis(new_this);
-    gDataThisPtr.Replace(gDataThis, array->GetObj(1));
+    Hmx::Object* new_this = array->Obj<Hmx::Object>(1);
+    gDataThisPtr = new_this;
+    DataSetThis(new_this);
     return 0;
 }
 

@@ -5,7 +5,7 @@ class ThreadCallback {
     public:
     ThreadCallback() {}
     virtual ~ThreadCallback() {}
-    virtual void ThreadStart() = 0;
+    virtual int ThreadStart() = 0;
     virtual void ThreadDone(int) = 0;
 };
 

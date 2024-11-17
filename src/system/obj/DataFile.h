@@ -13,10 +13,11 @@ public:
     DataLoader(const FilePath&, LoaderPos, bool);
     virtual ~DataLoader();
     virtual bool IsLoaded() const;
+    virtual const char* StateName() const { return "DataLoader"; }
     virtual void PollLoading();
+    virtual void OpenFile();
 
     DataArray* Data();
-    void OpenFile();
     void LoadFile();
     void DoneLoading();
     void ThreadDone(DataArray*);
@@ -35,8 +36,8 @@ class DataLoaderThreadObj : public ThreadCallback {
     public:
     DataLoaderThreadObj(DataLoader* dl, File* fi, void* _mem, int sz, bool b, const char* s) : unk4(dl),
         unk8(0), unkc(fi), mem(_mem), fsize(sz), unk18(s), unk1c(b) {}
-    virtual ~DataLoaderThreadObj();
-    virtual void ThreadStart();
+    virtual ~DataLoaderThreadObj(){}
+    virtual int ThreadStart();
     virtual void ThreadDone(int);
 
     DataLoader* unk4; // 0x4
@@ -54,7 +55,7 @@ DataArray* DataReadFile(const char*, bool);
 DataArray* DataReadStream(BinStream*);
 DataArray* ParseArray();
 void DataWriteFile(const char*, const DataArray*, int);
-void* LoadDtz(const char*, int);
+DataArray* LoadDtz(const char*, int);
 
 void BeginDataRead();
 void FinishDataRead();

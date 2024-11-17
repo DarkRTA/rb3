@@ -39,6 +39,9 @@ public:
         ObjPtr<Hmx::Object, class ObjectDir>::operator=(to);
         if(gDataThis == from) DataSetThis(to);
     }
+    void operator=(Hmx::Object* obj){
+        ObjPtr<Hmx::Object, class ObjectDir>::operator=(obj);
+    }
 };
 
 #define DEF_DATA_FUNC(name) \

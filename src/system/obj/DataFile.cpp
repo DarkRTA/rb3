@@ -1,5 +1,7 @@
 #include "DataFile.h"
+#include "decomp.h"
 #include "macros.h"
+#include "math/FileChecksum.h"
 #include "obj/Data.h"
 #include "obj/DataFlex.h"
 #include "os/CritSec.h"
@@ -10,6 +12,7 @@
 #include "utl/BufStream.h"
 #include "utl/ChunkStream.h"
 #include "utl/Compress.h"
+#include "utl/FileStream.h"
 #include "utl/Loader.h"
 #include "utl/MemMgr.h"
 #include "utl/TextFileStream.h"
@@ -27,18 +30,19 @@ struct ConditionalInfo {
     int line;
 };
 
-static CriticalSection gDataReadCrit; // yes these are the bss offsets. this tu sucks
-static DataArray* gArray; // 0x28
-static int gNode; // 0x2c
-static Symbol gFile; // 0x30
-static BinStream* gBinStream; // 0x34
-static int gOpenArray = kDataTokenFinished; // 0x38 ?
-static std::list<ConditionalInfo> gConditional; // 0x48 - actually a list of ConditionalInfo structs
+CriticalSection gDataReadCrit; // yes these are the bss offsets. this tu sucks
+DataArray* gArray; // 0x28
+int gNode; // 0x2c
+Symbol gFile; // 0x30
+BinStream* gBinStream; // 0x34
+int gOpenArray = kDataTokenFinished; // 0x38 ?
+std::list<ConditionalInfo> gConditional; // 0x48 - actually a list of ConditionalInfo structs
 int gDataLine; // 0x50
-static std::map<String, DataNode> gReadFiles; // 0x60
+std::map<String, DataNode> gReadFiles; // 0x60
 
-static bool gCachingFile;
-static bool gReadingFile;
+bool gCompressCached;
+bool gCachingFile;
+bool gReadingFile;
 
 void DataFail(const char* x) {
     MILO_FAIL("%s (file %s, line %d)", x, gFile, gDataLine);
@@ -58,8 +62,9 @@ DataArray* ReadEmbeddedFile(const char* c, bool b) {
 
     yyrestart(NULL);
     ret = DataReadFile(x, b);
+#ifdef MILO_DEBUG
     if (b && !ret) MILO_FAIL("Couldn't open embedded file: %s (file %s, line %d)", x, f->File(), f->Line());
-
+#endif
     gNode = a;
     gBinStream = bs;
     gDataLine = d;
@@ -574,6 +579,67 @@ void BeginDataRead() {
     gReadingFile = true;
 }
 
+void FinishDataRead(){
+    gReadingFile = 0;
+    std::map<String, DataNode> toSwap;
+    gReadFiles.swap(toSwap);
+}
+
+DataArray* DataReadFile(const char* file, bool warn){
+    char buf[256];
+    strcpy(buf, file);
+    bool b;
+    const char* cached = CachedDataFile(buf, b);
+    DataNode* node;
+    if(gReadingFile){
+        node = &gReadFiles[cached];
+        if(node->Type() == kDataArray){
+            DataArray* arr = node->LiteralArray();
+            arr->AddRef();
+            return arr;
+        }
+    }
+    else {
+        node = nullptr;
+        BeginDataRead();
+    }
+
+    FileStream fs(cached, FileStream::kRead, true);
+    if(fs.Fail()){
+        if(warn) MILO_WARN("DataReadFile: Can't open %s", buf);
+        return nullptr;
+    }
+    else {
+        DataArray* ret;
+        if(b){
+            if(gCompressCached == false){
+                if(HasFileChecksumData()){
+                    fs.StartChecksum();
+                }
+                ret = ReadCacheStream(fs, buf);
+                if(HasFileChecksumData()){
+                    fs.ValidateChecksum();
+                }
+            }
+            else {
+                int fsSize = fs.Size();
+                void* mem = _MemAlloc(fsSize, 0);
+                fs.Read(mem, fsSize);
+                DataArray::SetFile(buf);
+                ret = LoadDtz((const char*)mem, fsSize);
+                _MemFree(mem);
+            }
+        }
+        else ret = DataReadStream(&fs);
+
+        if(node){
+            *node = DataNode(ret, kDataArray);
+        }
+        else FinishDataRead();
+        return ret;
+    }
+}
+
 DataArray* DataReadStream(BinStream* bs) {
     CritSecTracker cst(&gDataReadCrit);
     gBinStream = bs;
@@ -583,17 +649,20 @@ DataArray* DataReadStream(BinStream* bs) {
     int old_cond_size = gConditional.size();
     DataArray* ret = ParseArray();
 
-    if (gConditional.size() != old_cond_size) MILO_FAIL("DataReadFile: conditional block not closed (file %s (%s:%d)", gFile, "", gDataLine);
+    if (gConditional.size() != old_cond_size){
+        MILO_FAIL("DataReadFile: conditional block not closed (file %s (%s:%d)", gFile, gConditional.back().file.mStr, gConditional.back().line);
+    }
     return ret;
 }
 
 DataLoader::DataLoader(const FilePath& fp, LoaderPos pos, bool b) : Loader(fp, pos), unk18(""), unk24(NULL),
     fileobj(NULL), filesize(0), unk30(0), unk34(b), unk38(0) {
     const char* new_str = fp.c_str();
-    if (!fp.contains("dlc/")) {
-        if (fp.contains("nand/")) {
-            unk34 = false;
-        }
+    if(fp.contains("dlc/") || fp.contains("nand/")){
+        unk34 = false;
+        b = false;
+    }
+    if(b){
         new_str = CachedDataFile(new_str, unk34);
     }
     unk18 = new_str;
@@ -667,31 +736,30 @@ void DataLoader::ThreadDone(DataArray* da) {
     ptmf = &DataLoader::DoneLoading;
 }
 
-union __bastard {
-    int big;
-    struct {
-        u8 s1, s2, s3, s4;
-    };
-};
+DECOMP_FORCEACTIVE(DataFile, "/gen", "%s/%s.dtb", "Caching %s\n", "!stream.Fail()", "FAIL: %s\n", "!fileStream.Fail()")
 
-void* LoadDtz(const char* c, int i) {
-    char* cc = const_cast<char*>(c + i);
-    __bastard evil; evil.big = 0;
-    evil.s1 = cc[-1];
-    evil.s2 = cc[-2];
-    evil.s3 = cc[-3];
-    evil.s4 = cc[-4];
-    int decompSize = evil.big;
+#define READ_LITTLE_ENDIAN(dest, src, idx) \
+    ((u8*)&dest)[0] = src[idx - 1]; \
+    ((u8*)&dest)[1] = src[idx - 2]; \
+    ((u8*)&dest)[2] = src[idx - 3]; \
+    ((u8*)&dest)[3] = src[idx - 4]
+
+DataArray* LoadDtz(const char* c, int i) {
+    int decompSize = 0;
+    READ_LITTLE_ENDIAN(decompSize, c, i);
+
     MILO_ASSERT(decompSize > 0, 1176);
+
     void* pDecompBuf = _MemAlloc(decompSize, 0);
     MILO_ASSERT(pDecompBuf, 1190);
-    DecompressMem(c, i - 4, pDecompBuf, decompSize, false, NULL);
+
+    DecompressMem(c, i - 4, pDecompBuf, decompSize, false, 0);
     BufStream bfs(pDecompBuf, decompSize, true);
-    DataArray* da = NULL;
+    DataArray* da = 0;
     bfs >> da;
     if (pDecompBuf) _MemFree(pDecompBuf);
-    pDecompBuf = (void*)da;
-    return pDecompBuf;
+
+    return da;
 }
 
 void DataWriteFile(const char* c, const DataArray* da, int i) {
@@ -703,4 +771,35 @@ void DataWriteFile(const char* c, const DataArray* da, int i) {
         *ts << "\n";
     }
     delete ts;
+}
+
+
+void DataLoaderThreadObj::ThreadDone(int){
+    unk4->ThreadDone(unk8);
+}
+
+int DataLoaderThreadObj::ThreadStart(){
+    BufStream bs(mem, fsize, true);
+    bs.SetName(FileLocalize(unk4->Loader::mFile.c_str(), 0));
+    if(unk1c){
+        if(!gCompressCached){
+            bool b1 = false;
+            if(HasFileChecksumData() && !FileIsLocal(unk18)) b1 = true;
+            if(b1){
+                bs.StartChecksum(unk18);
+            }
+            unk8 = ReadCacheStream(bs, unk4->Loader::mFile.c_str());
+            if(b1){
+                bs.ValidateChecksum();
+            }
+        }
+        else {
+            DataArray::SetFile(unk4->Loader::mFile.c_str());
+            unk8 = LoadDtz((const char*)mem, fsize);
+        }
+    }
+    else {
+        unk8 = DataReadStream(&bs);
+    }
+    return 0;
 }
