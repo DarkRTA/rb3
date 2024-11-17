@@ -184,8 +184,14 @@ namespace Hmx {
     */
     class Object : public ObjRef {
     public:
-        /** An array of properties this Objects can have. */
+        /** An array of properties this Object can have. */
         TypeProps mTypeProps; // 0x4
+        /** A collection of handler methods this Object can have.
+         *  More specifically, this is an array of arrays, with each array
+         *  housing a name, followed by a handler script.
+         *  Formatted in the style of:
+         *  ( (name1 {handler1}) (name2 {handler2}) (name3 {handler3}) )
+         */
         DataArray* mTypeDef; // 0x8
         /** This Object's name. */
         const char* mName; // 0xc
@@ -196,6 +202,7 @@ namespace Hmx {
 
         /** A collection of Object class names and their corresponding instantiators. */
         static std::map<Symbol, ObjectFunc*> sFactories;
+        /** An Object in the process of being deleted. */
         static Object* sDeleting;
 
         // o7 farts, you will be missed
@@ -211,6 +218,7 @@ namespace Hmx {
 
         /** This Object's class name. */
         OBJ_CLASSNAME(Object);
+        /** Set this Object's mTypeDef array based this Object's types entry in SystemConfig. */
         OBJ_SET_TYPE(Object);
 
         /** Execute code based on the contents of a received message.
@@ -249,8 +257,15 @@ namespace Hmx {
         /** Prints relevant info about this Object to the debug console. */
         virtual void Print(){}
         virtual void Export(DataArray*, bool){}
-        virtual void SetTypeDef(DataArray*);
-        virtual void SetName(const char*, class ObjectDir*);
+        /** Set this Object's mTypeDef array.
+         * @param [in] a The array to set.
+         */
+        virtual void SetTypeDef(DataArray* a);
+        /** Sets this Object's name and updates the ObjectDir this Object resides in.
+         * @param [in] name The name to give this Object.
+         * @param [in] dir The ObjectDir to place this Object in. If name is null, this Object won't have a set ObjectDir.
+         */
+        virtual void SetName(const char* name, class ObjectDir* dir);
         virtual class ObjectDir* DataDir();
         /** Any routines to read relevant data from a BinStream before the main Load method executes. */
         virtual void PreLoad(BinStream&);
@@ -290,7 +305,8 @@ namespace Hmx {
         /** Check if an Object derivative has an entry in the factory list. */
         static bool RegisteredFactory(Symbol);
         Object& operator=(const Object&);
-        void RemoveFromDir();
+        /** Remove this Object from its associated ObjectDir. */
+        void RemoveFromDir(); // probably private
 
         DataNode* Property(DataArray*, bool) const;
         DataNode* Property(Symbol, bool) const;

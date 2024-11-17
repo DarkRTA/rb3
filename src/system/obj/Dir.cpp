@@ -48,10 +48,10 @@ BinStream& operator>>(BinStream& bs, InlineDirType& ty){
     return bs;
 }
 
-void ObjectDir::Reserve(int i, int j){
-    if(mHashTable.Size() < i)
-        mHashTable.Resize(i, 0);
-    mStringTable.Reserve(j);
+void ObjectDir::Reserve(int hashSize, int stringSize){
+    if(mHashTable.Size() < hashSize)
+        mHashTable.Resize(hashSize, 0);
+    mStringTable.Reserve(stringSize);
 }
 
 void ObjectDir::SyncObjects(){
@@ -530,13 +530,13 @@ Hmx::Object* ObjectDir::FindObject(const char* name, bool parentDirs){
     }
     if(parentDirs){
         if(Dir() && Dir() != this){
-            return  Dir()->FindObject(name, parentDirs);
+            return Dir()->FindObject(name, parentDirs);
         }
         if(this != sMainDir){
             return sMainDir->FindObject(name, false);
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void ObjectDir::RemovingObject(Hmx::Object* obj){
@@ -641,7 +641,7 @@ ObjectDir* ObjectDir::NextSubDir(int& which){
     if(which == 0) return ret;
     else {
         which--;
-        ret = 0;
+        ret = nullptr;
         for(int i = 0; i < mSubDirs.size(); i++){
             if(mSubDirs[i]){
                 ret = mSubDirs[i]->NextSubDir(which);
@@ -938,13 +938,13 @@ bool PropSyncSubDirs(std::vector<ObjDirPtr<ObjectDir> >& vec, DataNode& val, Dat
     return true;
 }
 
-void ObjectDir::SetPathName(const char* cc){
+void ObjectDir::SetPathName(const char* path){
     if(mPathName != gNullStr){
         _MemOrPoolFree(strlen(mPathName) + 1, FastPool, (void*)mPathName);
     }
-    if(cc != 0 && *cc != '\0'){
-        mPathName = (char*)_MemOrPoolAlloc(strlen(cc) + 1, FastPool);
-        strcpy((char*)mPathName, cc);
+    if(path != 0 && *path != '\0'){
+        mPathName = (char*)_MemOrPoolAlloc(strlen(path) + 1, FastPool);
+        strcpy((char*)mPathName, path);
         mStoredFile.SetRoot(mPathName);
     }
     else mPathName = gNullStr;

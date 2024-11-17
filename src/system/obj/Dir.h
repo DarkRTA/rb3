@@ -163,6 +163,7 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjDirPtr<T1>& ptr){
 */
 class ObjectDir : public virtual Hmx::Object {
 public:
+    /** An Entry of an Object in an ObjectDir, noted by the Object's name and pointer. */
     struct Entry {
         Entry() : name(0), obj(0) {}
         Entry& operator=(const Entry& entry){
@@ -211,6 +212,7 @@ public:
     virtual void SetProxyFile(const FilePath&, bool);
     virtual FilePath& ProxyFile(){ return mProxyFile; }
     virtual void PostSave(BinStream&);
+    /** Set whether or not this ObjectDir is a subdir. */
     virtual void SetSubDir(bool);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
@@ -218,31 +220,57 @@ public:
     virtual void ResetEditorState();
     virtual bool AllowsInlineProxy(){ return mInlineProxy; }
     virtual InlineDirType InlineSubDirType();
+    /** Routine to perform when an Object has been added to this ObjectDir. */
     virtual void AddedObject(Hmx::Object*){}
+    /** Routine to perform when an Object is being removed from this ObjectDir. */
     virtual void RemovingObject(Hmx::Object*);
     virtual void OldLoadProxies(BinStream&, int);
 
-    void Reserve(int, int);
+    /** Allocate space in this ObjectDir's hashtable and stringtable respectively.
+     * @param [in] hashSize The desired size of the hash table.
+     * @param [in] stringSize The desired size of the string table.
+     */  
+    void Reserve(int hashSize, int stringSize);
     bool IsProxy() const { return this != Dir(); }
     bool HasSubDir(ObjectDir*);
     bool HasDirPtrs() const;
-    Entry* FindEntry(const char*, bool);
+    /** Search for an Object's Entry in this ObjectDir using its name as the key.
+     * @param [in] name The name of the Object to search for.
+     * @param [in] add If true, and there isn't an Entry for this Object in this Dir, add it.
+     * @returns This Object's Entry in this ObjectDir, if it exists.
+     */
+    Entry* FindEntry(const char* name, bool add);
     bool SaveSubdirs();
-    void SetPathName(const char*);
+    /** Set this ObjectDir's path name.
+     * @param [in] path The path name to set.
+     */
+    void SetPathName(const char* path);
     void TransferLoaderState(ObjectDir*);
+    /** Delete all Objects in this ObjectDir. */
     void DeleteObjects();
+    /** Delete all subdirs of this ObjectDir. */
     void DeleteSubDirs();
     bool InlineProxy(BinStream&);
+    /** Routine to perform when a subdir has been added to the ObjectDir's subdir list. */
     void AddedSubDir(ObjDirPtr<ObjectDir>&);
+    /** Routine to perform when a subdir is being removed from the ObjectDir's subdir list. */
     void RemovingSubDir(ObjDirPtr<ObjectDir>&);
     void PreLoadInlined(const FilePath&, bool, InlineDirType);
     ObjDirPtr<ObjectDir> PostLoadInlined();
     ObjectDir* NextSubDir(int&);
     void Iterate(DataArray*, bool);
-    void AppendSubDir(const ObjDirPtr<ObjectDir>&);
-    void RemoveSubDir(const ObjDirPtr<ObjectDir>&);
+    /** Append a subdir to this ObjectDir's list of subdirs.
+     * @param [in] subdir The subdir to append.
+     */
+    void AppendSubDir(const ObjDirPtr<ObjectDir>& subdir);
+    /** Remove a subdir from this ObjectDir's list of subdirs.
+     * @param [in] subdir The subdir to remove.
+     */
+    void RemoveSubDir(const ObjDirPtr<ObjectDir>& subdir);
     FilePath GetSubDirPath(const FilePath&, const BinStream&);
     void LoadSubDir(int, const FilePath&, BinStream&, bool);
+
+    // weak funcs/getters
     DirLoader* Loader() const { return mLoader; }
     Hmx::Object* CurCam(){ return mCurCam; }
     bool IsSubDir() const { return mIsSubDir; }
@@ -255,7 +283,13 @@ public:
 
     DataNode OnFind(DataArray*);
 
-    Hmx::Object* FindObject(const char*, bool);
+    /** Search for an Object in this ObjectDir using its name as the key.
+     * @param [in] name The name of the Object to search for.
+     * @param [in] parentDirs If true, search this ObjectDir's parent Dirs.
+     * @returns The Object found in this ObjectDir, if it exists.
+     */
+    Hmx::Object* FindObject(const char* name, bool parentDirs);
+
     template <class T> T* Find(const char* name, bool parentDirs) {
         T* castedObj = dynamic_cast<T*>(FindObject(name, false));
         if(!castedObj && parentDirs){
