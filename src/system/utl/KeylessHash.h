@@ -6,13 +6,25 @@
 #include "os/Debug.h"
 #include <string.h>
 
+/**
+ * @brief A keyless hash table.
+ * 
+ * @tparam T1 const char* type (?)
+ * @tparam T2 the type to store into the hash table.
+ */
 template <class T1, class T2> class KeylessHash {
 public:
+    /** The collection of entries in the hash table. */
     T2* mEntries; // 0x0
+    /** The hash table's size. */
     int mSize; // 0x4
+    /** Whether or not this table owns its entries. */
     bool mOwnEntries; // 0x8
+    /** The number of currently allocated entries in the table. */
     int mNumEntries; // 0xc
+    /** The type T2 representing an empty hash table entry. */
     T2 mEmpty; // 0x10
+    /** The type T2 representing a removed hash table entry. */
     T2 mRemoved;
 
     NEW_OVERLOAD;
@@ -21,20 +33,48 @@ public:
     KeylessHash(int, const T2&, const T2&, T2*);
     ~KeylessHash();
 
+    /** Get the entry in the hash table corresponding with the supplied key.
+     * @param [in] key The key to search with.
+     * @returns The corresponding entry, if it exists.
+     */
     T2* Find(const char* const& key);
+
+    /** Insert this value into the hash table.
+     * @param [in] val The val to insert.
+     * @returns The entry in the hash table containing the value.
+     */
     T2* Insert(const T2& val);
-    void Resize(int, T2*);
+
+    /** Resize the hash table.
+     * @param [in] size The new desired size of the table.
+     * @param [in] entries Where the newly resized hash table entries will be written. If this is NOT null, then this table does not own its entries.
+     */
+    void Resize(int size, T2* entries);
+
+    /** Get the first valid entry in the table from the supplied entry.
+     * @param [in] entry The indexed entry in the table to begin searching from.
+     * @returns The first valid entry from the supplied entry, if it exists.
+     */
     T2* FirstFrom(T2* entry);
+
+    // getters
     int Size() const { return mSize; }
     int UsedSize() const { return mNumEntries; }
 
+    /** Advance the index to search the supplied hash table with.
+     * The hash table implementation is a circular buffer,
+     * so if the end is reached, loop back to index zero.
+     */
     void Advance(int& idx){
         idx++;
         if(idx == mSize) idx = 0;
     }
 
-    // keep these in here so that they're inlined - needed for ObjDirItr    
+    // keep these in here so that they're inlined - needed for ObjDirItr
+
+    /** Get the very first valid entry in the table. */
     T2* Begin(){ return FirstFrom(mEntries); }
+    /** Get the next valid entry in the table from the supplied entry. */
     T2* Next(T2* entry){ return FirstFrom(&entry[1]); }
 };
 
@@ -73,7 +113,7 @@ KeylessHash<T1, T2>::~KeylessHash(){
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){
     for(; entry < mEntries + mSize && (*entry == mEmpty || *entry == mRemoved); entry++);
-    if(entry == mEntries + mSize) return 0;
+    if(entry == mEntries + mSize) return nullptr;
     else return entry;
 }
 
@@ -126,31 +166,31 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
 }
 
 template <class T1, class T2>
-void KeylessHash<T1, T2>::Resize(int size, T2* val){
+void KeylessHash<T1, T2>::Resize(int size, T2* entries){
     MILO_ASSERT(size > mNumEntries * 2, 0xF3);
     bool owned;
-    if(val) owned = false;
+    if(entries) owned = false;
     else {
         size = NextHashPrime(size);
-        val = new T2[size];
+        entries = new T2[size];
         owned = true;
     }
     for(int i = 0; i < size; i++){
-        val[i] = mEmpty;
+        entries[i] = mEmpty;
     }
     mNumEntries = 0;
     for(T2* it = Begin(); it != 0; it = Next(it)){
         int i = HashString(*it, size);
         MILO_ASSERT(i >= 0, 0x108);
-        while(val[i] != mEmpty){
+        while(entries[i] != mEmpty){
             i++;
             if(i == size) i = 0;
         }
         mNumEntries++;
-        val[i] = *it;
+        entries[i] = *it;
     }
     if(mOwnEntries) delete [] mEntries;
-    mEntries = val;
+    mEntries = entries;
     mSize = size;
     mOwnEntries = owned;
 }

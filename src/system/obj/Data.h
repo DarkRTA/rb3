@@ -153,24 +153,35 @@ public:
     bool operator==(const DataNode& n) const;
     bool operator!=(const DataNode& n) const;
     bool NotNull() const;
-    bool operator!(void) const {
+    bool operator!() const {
         return !NotNull();
     }
     DataNode& operator=(const DataNode& n);
 
+    /** Print the DataNode's contents to the TextStream.
+     * @param [in] s The TextStream to print to.
+     * @param [in] b TODO: currently unknown
+     */
     void Print(TextStream& s, bool) const;
     bool PrintUnused(TextStream&, bool) const;
+    /** Saves this DataNode into a BinStream. */
     void Save(BinStream& d) const;
+    /** Loads this DataNode from a BinStream. */
     void Load(BinStream& d);
 };
 
 /** An array of DataNodes. */
 class DataArray {
 public:
+    /** The collection of DataNodes in this DataArray. */
     DataNode* mNodes;   // 0x0
+    /** The file this DataArray is in. */
     Symbol mFile;       // 0x4
+    /** The number of nodes in this DataArray. */
     short mSize;        // 0x8
+    /** The number of references to this DataArray. */
     short mRefs;        // 0xA
+    /** The line of the file this DataArray is in. */
     short mLine;        // 0xC
     short mDeprecated;  // 0xE
     static Symbol gFile;
@@ -239,17 +250,26 @@ public:
     Symbol FindSym(Symbol tag) const { return FindArray(tag, true)->Sym(1); }
     const char* FindStr(Symbol tag) const { return FindArray(tag, true)->Str(1); }
 
-    DataArray* Clone(bool deep, bool eval, int);
+    /** Clone this DataArray.
+     * @param [in] deep If true, perform a deep copy on this DataArray.
+     * @param [in] eval If true, evaluate each DataNode before cloning it.
+     * @param [in] extra The number of extra DataNode slots to allocate for the clone.
+     * @returns The newly created DataArray clone.
+     */
+    DataArray* Clone(bool deep, bool eval, int extra);
 
     DataArray(int size);
     DataArray(const void* glob, int size);
     ~DataArray();
 
     void SetFileLine(Symbol, int);
+    /** Sort the nodes in this DataArray. */
     void SortNodes();
     DataNode Execute();
     DataNode ExecuteBlock(int);
+    /** Saves this DataArray into a BinStream. */
     void Save(BinStream& d) const;
+    /** Loads this DataArray from a BinStream. */
     void Load(BinStream& d);
     void SaveGlob(BinStream& d, bool str) const;
     void LoadGlob(BinStream& d, bool str);

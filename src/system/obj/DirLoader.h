@@ -58,7 +58,7 @@ public:
     BinStream* mStream; // 0x38
     int mRev; // 0x3c
     int mCounter; // 0x40
-    ObjPtrList<Hmx::Object, class ObjectDir> mObjects; // 0x44
+    ObjPtrList<Hmx::Object> mObjects; // 0x44
     Callback* mCallback; // 0x54
     class ObjectDir* mDir; // 0x58
     bool mPostLoad; // 0x5c

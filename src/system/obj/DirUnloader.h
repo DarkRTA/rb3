@@ -12,7 +12,7 @@ public:
     virtual bool IsLoaded() const;
     virtual void PollLoading();
 
-    std::vector<ObjPtr<Hmx::Object, ObjectDir> > mObjects; // 0x34
+    std::vector<ObjPtr<Hmx::Object> > mObjects; // 0x34
 };
 
 #endif
