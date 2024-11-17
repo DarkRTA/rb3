@@ -5,17 +5,13 @@
 #include "obj/Object.h"
 #include <vector>
 
-// forward declarations
-namespace Hmx {
-    class Object;
-}
-class ObjectDir;
+typedef bool FileCallbackFunc(char*);
 
 void InitObject(Hmx::Object*);
 // const char* PathName(const Hmx::Object*); // declared in ObjMacros.h instead, which you can just include obj/Object.h for anyway
 const char* SafeName(Hmx::Object*);
-DataNode ObjectList(class ObjectDir*, Symbol, bool); // i think???
-DataNode MakeFileList(const char*, bool, bool (*)(char*));
+DataNode ObjectList(class ObjectDir*, Symbol, bool);
+DataNode MakeFileList(const char*, bool, FileCallbackFunc*);
 DataNode MakeFileListFullPath(const char*);
 
 void ListSuperClasses(Symbol, std::vector<Symbol>&);
@@ -36,6 +32,7 @@ DataNode* GetPropertyVal(Hmx::Object*, DataArray*, bool);
 Hmx::Object* CopyObject(Hmx::Object*, Hmx::Object*, Hmx::Object::CopyType, bool);
 Hmx::Object* CloneObject(Hmx::Object*, bool);
 void FileCallbackFullPath(const char*, const char*);
+void FileCallback(const char*, const char*);
 
 void WalkProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);
 void EditorBlockProps(DataArray*, std::list<Symbol>&, std::list<Symbol>*);

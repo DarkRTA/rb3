@@ -31,6 +31,8 @@ public:
     virtual const char* StateName() const { return "Unknown"; }
     virtual void PollLoading() = 0;
 
+    LoaderPos GetPos() const { return mPos; }
+
     LoaderPos mPos; // 0x4
     FilePath mFile; // 0x8
     int mHeap; // 0x14
@@ -54,10 +56,10 @@ public:
     void Init();
     Loader* ForceGetLoader(const FilePath&);
     void PollFrontLoader();
+    int AsyncUnload() const;
 
     bool EditMode(){ return mEditMode; }
     Platform GetPlatform() const { return (Platform)mPlatform; }
-    int AsyncUnload() const { return mAsyncUnload; }
     LoaderPos GetLoaderPos() const { return mLoaderPos; }
     float SetLoaderPeriod(float period){
         float ret = mPeriod;
@@ -98,6 +100,9 @@ public:
 
 extern LoadMgr TheLoadMgr;
 
+class FileLoader;
+typedef void(FileLoader::*FileLoaderStateFunc)(void);
+
 class FileLoader : public Loader {
 public:
     FileLoader(const FilePath&, const char*, LoaderPos, int, bool, bool, BinStream*);
@@ -109,19 +114,25 @@ public:
     const char* GetBuffer(int*);
     int GetSize();
 
-    File* mFile;
-    BinStream* mStream;
-    const char* mBuffer;
-    int mBufLen;
-    bool mAccessed;
-    bool mTemp;
-    bool mWarn;
-    int mFlags;
-    class String mFilename;
+    void AllocBuffer();
+    void OpenFile();
+    void LoadFile();
+    void DoneLoading();
+    void LoadStream();
 
-    int unk1;
-    int unk2;
-    void (FileLoader::*mState)();
+    File* mFile; // 0x18
+    BinStream* mStream; // 0x1c
+    const char* mBuffer; // 0x20
+    int mBufLen; // 0x24
+    bool mAccessed; // 0x28
+    bool mTemp; // 0x29
+    bool mWarn; // 0x2a
+    int mFlags; // 0x2c
+    class String mFilename; // 0x30
+
+    int unk3c; // 0x3c
+    int unk40; // 0x40
+    FileLoaderStateFunc mState; // 0x44
 };
 
 #endif

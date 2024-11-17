@@ -408,8 +408,8 @@ DataNode Hmx::Object::HandleType(DataArray* msg){
 DataNode Hmx::Object::OnIterateRefs(const DataArray* da){
     DataNode* var = da->Var(2);
     DataNode node(*var);
-    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); it++){
-        *var = DataNode((*it)->RefOwner());
+    for(std::vector<ObjRef*>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend(); ++it){
+        *var = (*it)->RefOwner();
         for(int i = 3; i < da->Size(); i++){
             da->Command(i)->Execute();
         }

@@ -4,6 +4,7 @@
 #include "os/Debug.h"
 #include "utl/Symbol.h"
 #include "utl/Std.h"
+#include <algorithm>
 
 class ObjEntry {
 public:
@@ -30,10 +31,14 @@ public:
 
     void Dump(){
         float total = 0.0f;
-        for(int i = 0; i < objs.size(); i++){
+        int i;
+        for(i = 0; i < objs.size(); i++){
             MaxEq(total, objs[i]->maxMs);
         }
         MILO_LOG("%g %s\n", total, msgs.Str());
+        for(i = 0; i < objs.size(); i++){
+            objs[i]->Dump();
+        }
     }
 };
 

@@ -1,6 +1,10 @@
 #include "obj/Utl.h"
+#include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
+#include "os/File.h"
+#include "os/System.h"
+#include "utl/MakeString.h"
 #include "utl/Symbols.h"
 #include "decomp.h"
 #include <algorithm>
@@ -8,6 +12,7 @@
 int gCopyMax;
 std::list<String> sFilePaths;
 std::list<Symbol> sFiles;
+FileCallbackFunc* sCBack;
 
 DECOMP_FORCEACTIVE(Utl,
     "mem_copy",
@@ -34,13 +39,14 @@ const char* SafeName(Hmx::Object* obj){
 }
 
 void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
-    DataArray* found = SystemConfig("objects", sym)->FindArray("superclasses", false);
+    DataArray* cfg = SystemConfig("objects", sym);
+    DataArray* found = cfg->FindArray("superclasses", false);
     if(found){
         for(int i = 1; i < found->Size(); i++){
             Symbol foundSym = found->Sym(i);
-            // if some currently unknown condition is met, THEN push back
-            // update: condition appears to be std::find
-            classes.push_back(foundSym);
+            if(classes.end() == std::find(classes.begin(), classes.end(), foundSym)){
+                classes.push_back(foundSym);
+            }
             RecurseSuperClasses(foundSym, classes);
         }
     }
@@ -76,19 +82,96 @@ bool IsASubclass(Symbol child, Symbol parent){
     else return RecurseSuperClassesSearch(child, parent);
 }
 
-void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool b2, bool b3){
+void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool deleteFrom, bool b3){
     const char* name = from->Name();
     ObjectDir* dir = from->Dir();
     from->SetName(0, 0);
     to->SetName(name, dir);
     if(b1) CopyObject(from, to, Hmx::Object::kCopyDeep, b3);
-    // for(std::vector<ObjRef*>::iterator it = from->Refs().begin(); it != from->Refs().end(); it++){
-    //     (*it)->Replace(from, to);
-    // }
-    while(!from->Refs().empty()){
-        from->Refs().back()->Replace(from, to);
+    const std::vector<ObjRef*>& refs = from->Refs();
+    while(!refs.empty()){
+        ObjRef* cur = refs.back();
+        cur->Replace(from, to);
     }
-    if(b2) delete from;
+    if(deleteFrom) delete from;
+}
+
+void CopyTypeProperties(Hmx::Object* from, Hmx::Object* to){
+    bool bbb = false;
+    if(from->ClassName() != to->ClassName()){
+        if(!from->Type().Null()) bbb = true;
+    }
+    if(bbb){
+        std::list<Symbol> fromProps;
+        std::list<Symbol> toProps;
+        std::list<Symbol> fromArrayProps;
+        std::list<Symbol> toArrayProps;
+        DataArray* fromTypeArr = SystemConfig(objects, from->ClassName())->FindArray(types, from->Type());
+        DataArray* fromTypeEditor = fromTypeArr->FindArray(editor, false);
+        if(fromTypeEditor){
+            WalkProps(fromTypeEditor, fromProps, &fromArrayProps);
+        }
+        ListProperties(toProps, to->ClassName(), to->Type(), &toArrayProps);
+
+        fromProps.sort();
+        toProps.sort();
+        fromArrayProps.sort();
+        toArrayProps.sort();
+
+        for(std::list<Symbol>::iterator fromIt = fromProps.begin(), toIt = toProps.begin(); fromIt != fromProps.end() && toIt != toProps.end(); ++fromIt){
+            Symbol prop = *fromIt;
+            DataArray* fromValArr = fromTypeArr->FindArray(prop, false);
+            if(fromValArr){
+                for(; toIt != toProps.end() && *toIt < prop; ++toIt);
+                if(toIt != toProps.end()){
+                    if(*toIt == prop){
+                        DataNode* fromVal = from->Property(prop, true);
+                        DataType fromType = fromVal->Type();
+                        DataType toType = to->Property(prop, true)->Type();
+                        if(fromType == toType){
+                            to->SetProperty(prop, *fromVal);
+                        }
+                        else if(fromType == kDataSymbol && toType == kDataObject){
+                            if(!fromVal->Sym().Null()){
+                                Hmx::Object* objProp = from->Dir()->FindObject(fromVal->Sym().mStr, false);
+                                if(objProp){
+                                    to->SetProperty(prop, objProp);
+                                }
+                                else {
+                                    MILO_WARN("Trying to convert Symbol prop to Object prop, but cannot find Object '%s'", fromVal->Sym().mStr);
+                                }
+                            }
+                        }
+                        else {
+                            MILO_LOG("mismatched property %s, from: %d, to: %d\n", prop.mStr, fromType, toType);
+                        }
+                    }
+                }
+            }
+        }
+
+        for(std::list<Symbol>::iterator fromIt = fromArrayProps.begin(), toIt = toArrayProps.begin(); fromIt != fromArrayProps.end() && toIt != toArrayProps.end(); ++fromIt){
+            Symbol prop = *fromIt;
+            DataArray* fromValArr = fromTypeArr->FindArray(prop, false);
+            if(fromValArr){
+                for(; toIt != toArrayProps.end() && *toIt < prop; ++toIt);
+                if(toIt != toArrayProps.end()){
+                    if(*toIt == prop){
+                        DataArray* fromPropArr = from->Property(prop, true)->Array();
+                        DataArrayPtr propIdx(prop, 0);
+                        DataArrayPtr propTag(prop);
+                        while(to->PropertySize(propTag) != 0){
+                            to->RemoveProperty(propIdx);
+                        }
+                        for(int i = 0; i < fromPropArr->Size(); i++){
+                            propIdx->Node(1) = i;
+                            to->InsertProperty(propIdx, *from->Property(propIdx, true));
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 MergeFilter::Action MergeFilter::DefaultSubdirAction(ObjectDir* dir, Subdirs subdirs){
@@ -110,8 +193,9 @@ MergeFilter::Action MergeFilter::DefaultSubdirAction(ObjectDir* dir, Subdirs sub
 void MergeObject(Hmx::Object* o1, Hmx::Object* o2, ObjectDir* dir, MergeFilter::Action act){
     if(o1 == o2 || act == MergeFilter::kIgnore) return;
     if(o2){
-        for(std::vector<ObjRef*>::const_reverse_iterator it = o1->Refs().rbegin(); it != o1->Refs().rend(); it++){
-            (*it)->Replace(o1, o2);
+        const std::vector<ObjRef*>& refs = o1->Refs();
+        while(!refs.empty()){
+            refs.back()->Replace(o1, o2);
         }
         if(act == MergeFilter::kMerge) o2->Copy(o1, Hmx::Object::kCopyFromMax);
         else if(act == MergeFilter::kReplace) o2->Copy(o1, Hmx::Object::kCopyDeep);
@@ -135,16 +219,26 @@ void MergeObjectsRecurse(ObjectDir* fromDir, ObjectDir* toDir, MergeFilter& filt
             case MergeFilter::kKeep: return;
             default: break;
         }
-        for(std::vector<ObjRef*>::const_reverse_iterator it = fromDir->Refs().rbegin(); it != fromDir->Refs().rend(); ++it){
-            Hmx::Object* owner = (*it)->RefOwner();
+        std::vector<ObjRef*>::reverse_iterator itStart = fromDir->mRefs.rbegin();
+        std::vector<ObjRef*>::reverse_iterator itEnd = fromDir->mRefs.rend();
+        while(itStart != itEnd){
+            Hmx::Object* owner = (*itStart)->RefOwner();
             if(owner && owner->Dir() == fromDir){
-                (*it)->Replace(fromDir, toDir);
+                (*itStart)->Replace(fromDir, toDir);
+                itStart = fromDir->mRefs.rbegin();
+                itEnd = fromDir->mRefs.rend();
+            }
+            else {
+                ++itStart;
             }
         }
     }
     for(ObjectDir::Entry* entry = fromDir->mHashTable.Begin(); entry != 0; entry = fromDir->mHashTable.Next(entry)){
         Hmx::Object* curObj = entry->obj;
-        if(curObj) MergeObject(curObj, toDir->FindObject(curObj->Name(), false), toDir, filt);
+        if(curObj){
+            Hmx::Object* foundObj = toDir->FindObject(curObj->Name(), false);
+            MergeObject(curObj, foundObj, toDir, filt);
+        }
     }
     for(int i = 0; i < fromDir->mSubDirs.size(); i++){
         ObjDirPtr<ObjectDir>& oPtr = fromDir->mSubDirs[i];
@@ -159,8 +253,10 @@ void MergeDirs(ObjectDir* fromDir, ObjectDir* toDir, MergeFilter& filt){
     MergeObjectsRecurse(fromDir, toDir, filt, true);
 }
 
-void ReserveToFit(ObjectDir* dir1, ObjectDir* dir2, int i){
-    dir2->Reserve((SubDirHashUsed(dir1) + i + dir2->mHashTable.mNumEntries) * 2, i * 10 + dir2->mStringTable.UsedSize() + SubDirStringUsed(dir1));
+void ReserveToFit(ObjectDir* src, ObjectDir* dst, int extraObjects){
+    int stringSize = dst->StrTableUsedSize() + SubDirStringUsed(src) + extraObjects * 10;
+    int hashSize = (dst->HashTableUsedSize() + SubDirHashUsed(src) + extraObjects) * 2;
+    dst->Reserve(hashSize, stringSize);
 }
 
 int SubDirStringUsed(ObjectDir* dir){
@@ -185,31 +281,45 @@ int SubDirHashUsed(ObjectDir* dir){
     }
 }
 
-Hmx::Object* CopyObject(Hmx::Object* o1, Hmx::Object* o2, Hmx::Object::CopyType ty, bool b){
-    o2->Copy(o1, ty);
-    if(b){
-        ObjectDir* dir2 = dynamic_cast<ObjectDir*>(o2);
+Hmx::Object* CopyObject(Hmx::Object* from, Hmx::Object* to, Hmx::Object::CopyType ty, bool setProxyFile){
+    to->Copy(from, ty);
+    if(setProxyFile){
+        ObjectDir* dir2 = dynamic_cast<ObjectDir*>(to);
         if(dir2){
-            ObjectDir* dir1 = dynamic_cast<ObjectDir*>(o1);
+            ObjectDir* dir1 = dynamic_cast<ObjectDir*>(from);
             dir2->SetProxyFile(dir1->ProxyFile(), false);
         }
     }
-    else CopyTypeProperties(o1, o2);
-    return o2;
+    else CopyTypeProperties(from, to);
+    return to;
 }
 
-Hmx::Object* CloneObject(Hmx::Object* from, bool b){
+Hmx::Object* CloneObject(Hmx::Object* from, bool instance){
     MILO_ASSERT(from, 0x32D);
-    CopyObject(from, Hmx::Object::NewObject(from->ClassName()), (Hmx::Object::CopyType)b, true);
+    CopyObject(from, Hmx::Object::NewObject(from->ClassName()), instance ? Hmx::Object::kCopyShallow : Hmx::Object::kCopyDeep, true);
 }
 
-const char* NextName(const char* name, ObjectDir* dir){
-    if(dir->FindObject(name, false)){
-        const char* base = FileGetBase(name, 0);
-        const char* ext = FileGetExt(name);
-        // for(char* p = strlen(base); )
-    }
-    else return name;
+const char* NextName(const char* old_name, ObjectDir* dir){
+    if(!dir->FindObject(old_name, false)) return old_name;
+    const char* base = FileGetBase(old_name, 0);
+    const char* ext = FileGetExt(old_name);
+    char* ptr;
+    for(ptr = (char*)base + strlen(base); (base < ptr && (ptr[-1] - 0x30U <= 9)); ptr--);
+    int atoied = 0;
+    if(*ptr != '\0') atoied = atoi(ptr);
+    char buf[128];
+    do {
+        atoied++;
+        sprintf(ptr, "%02d", atoied);
+        if(*ext != '\0'){
+            sprintf(buf, "%s.%s", ptr, ext);
+        }
+        else {
+            strcpy(buf, ptr);
+        }
+    } while(dir->FindObject(buf, false));
+
+    return MakeString(buf);
 }
 
 bool StringMatchesFilter(const char* c1, const char* c2){
@@ -221,16 +331,18 @@ bool StringMatchesFilter(const char* c1, const char* c2){
     else return lower1.contains(lower2.c_str());
 }
 
+DECOMP_FORCEACTIVE(Utl, "types")
+
 void WalkProps(DataArray* ed, std::list<Symbol>& props, std::list<Symbol>* arrayProps){
-    for(int i = 0; i < ed->Size(); i++){
+    for(int i = 1; i < ed->Size(); i++){
         DataArray* arr = ed->Array(i);
-        bool canpush = (arr->Type(1) == kDataSymbol) || arr->Sym(1) != "script";
+        bool canpush = (arr->Type(1) == kDataSymbol) && arr->Sym(1) != "script";
         if(canpush) props.push_back(arr->Sym(0));
         else if(arr->Type(1) == kDataArray) {
             if(arr->Array(1)->Sym(0) == "indent"){
                 WalkProps(arr->Array(1), props, arrayProps);
             }
-            else if(arrayProps || arr->Array(1)->Sym(0) == "array"){
+            else if(arrayProps && arr->Array(1)->Sym(0) == "array"){
                 arrayProps->push_back(arr->Sym(0));
             }
         }
@@ -241,6 +353,8 @@ void EditorBlockProps(DataArray* editDefn, std::list<Symbol>& props, std::list<S
     DataArray* ed = editDefn->FindArray("editor", false);
     if(ed) WalkProps(ed, props, arrayProps);
 }
+
+DECOMP_FORCEACTIVE(Utl, "Character")
 
 void ListProperties(std::list<Symbol>& props, Symbol classnm, Symbol type, std::list<Symbol>* arrayProps){
     DataArray* cfg = SystemConfig(objects, classnm);
@@ -263,13 +377,14 @@ int GetPropSize(Hmx::Object* o, DataArray* arr, int size){
     for(int x = 0; x < size; x++){
         ptr->Node(x) = arr->Node(x);
     }
-    return o->PropertySize(ptr);
+    int ret = o->PropertySize(ptr);
+    return ret;
 }
 
-bool IsPropPathValid(Hmx::Object* o, DataArray* arr){
-    for(int i = 0; i < arr->Size(); i++){
-        if(arr->Type(i) == kDataInt){
-            if(arr->Int(i) + 1 > GetPropSize(o, arr, i))
+bool IsPropPathValid(Hmx::Object* o, DataArray* prop){
+    for(int i = 0; i < prop->Size(); i++){
+        if(prop->Type(i) == kDataInt){
+            if(prop->Int(i) + 1 > GetPropSize(o, prop, i))
                 return false;
         }
     }
@@ -298,28 +413,30 @@ bool PathCompare(DataArray* arr1, DataArray* arr2){
     return true;
 }
 
-DataNode* GetPropertyVal(Hmx::Object* o, DataArray* arr, bool b){
-    if(IsPropPathValid(o, arr)){
-        return o->Property(arr, b);
+DataNode* GetPropertyVal(Hmx::Object* o, DataArray* prop, bool fail){
+    if(IsPropPathValid(o, prop)){
+        return o->Property(prop, fail);
     }
     else return 0;
 }
 
 DataNode ObjectList(ObjectDir* dir, Symbol s, bool b){
     std::list<const char*> sList;
-    for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
-        if(IsASubclass(it->ClassName(), s)){
-            sList.push_back(it->Name());
+    if(dir){
+        for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
+            if(IsASubclass(it->ClassName(), s)){
+                sList.push_back(it->Name());
+            }
         }
     }
-    DataArrayPtr ptr(new DataArray(1));
-    if(b) ptr->Node(0) = DataNode("");
-    int i = b;
+    DataArrayPtr ptr(new DataArray(b + sList.size()));
+    int idx = 0;
+    if(b) ptr->Node(idx++) = "";
     for(std::list<const char*>::iterator it = sList.begin(); it != sList.end(); ++it){
-        ptr->Node(i++) = DataNode(*it);
+        ptr->Node(idx++) = *it;
     }
     ptr->SortNodes();
-    return DataNode(ptr);
+    return ptr;
 }
 
 void FileCallbackFullPath(const char* cc1, const char* cc2){
@@ -333,5 +450,51 @@ DataNode MakeFileListFullPath(const char* cc){
     strcpy(buf, cc);
     sFilePaths.clear();
     FileRecursePattern(buf, &FileCallbackFullPath, true);
-    // std::stable_sort()
+    sFilePaths.sort();
+    sFilePaths.unique();
+    DataArrayPtr ptr(new DataArray(sFilePaths.size()));
+    int idx = 0;
+    for(std::list<String>::iterator it = sFilePaths.begin(); it != sFilePaths.end(); ++it){
+        ptr->Node(idx) = *it;
+        idx++;
+    }
+    sFilePaths.clear();
+    return ptr;
+}
+
+void FileCallback(const char* cc1, const char* cc2){
+    if(!sCBack){
+        sFiles.push_back(FileGetBase(cc2, 0));
+    }
+    else {
+        char buf[256];
+        strcpy(buf, MakeString("%s/%s", cc1, cc2));
+        if((*sCBack)(buf)){
+            sFiles.push_back(FileGetBase(buf, 0));
+        }
+    }
+}
+
+struct SymbolSort {
+    bool operator()(Symbol s1, Symbol s2){ return strcmp(s1.mStr, s2.mStr) < 0; }
+};
+
+DataNode MakeFileList(const char* cc, bool b, FileCallbackFunc* callback){
+    char buf[256];
+    strcpy(buf, cc);
+    sCBack = callback;
+    sFiles.clear();
+    FileRecursePattern(buf, &FileCallback, true);
+    sCBack = nullptr;
+    if(b) sFiles.push_back(Symbol());
+    sFiles.sort(SymbolSort());
+    sFiles.unique();
+    DataArrayPtr ptr(new DataArray(sFiles.size()));
+    int idx = 0;
+    for(std::list<Symbol>::iterator it = sFiles.begin(); it != sFiles.end(); ++it){
+        ptr->Node(idx) = *it;
+        idx++;
+    }
+    sFiles.clear();
+    return ptr;
 }

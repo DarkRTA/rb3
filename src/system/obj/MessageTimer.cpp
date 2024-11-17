@@ -44,7 +44,7 @@ struct MaxSort {
 };
 
 struct ObjSort {
-    bool operator()(ObjEntry* e1, ObjEntry* e2){ return e1->maxMs < e2->maxMs; }
+    bool operator()(ObjEntry* e1, ObjEntry* e2){ return e1->maxMs > e2->maxMs ? true : false; }
 };
 
 void MessageTimer::Dump(){
@@ -54,8 +54,5 @@ void MessageTimer::Dump(){
         EventEntry* e = gEntries[i];
         std::sort(e->objs.begin(), e->objs.end(), ObjSort());
         e->Dump();
-        for(int j = 0; j < e->objs.size(); j++){
-            e->objs[j]->Dump();
-        }
     }
 }
