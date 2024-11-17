@@ -479,15 +479,15 @@ struct SymbolSort {
     bool operator()(Symbol s1, Symbol s2){ return strcmp(s1.mStr, s2.mStr) < 0; }
 };
 
-DataNode MakeFileList(const char* cc, bool b, FileCallbackFunc* cbfunc){
+DataNode MakeFileList(const char* cc, bool b, FileCallbackFunc* callback){
     char buf[256];
     strcpy(buf, cc);
-    sCBack = cbfunc;
+    sCBack = callback;
     sFiles.clear();
     FileRecursePattern(buf, &FileCallback, true);
     sCBack = nullptr;
     if(b) sFiles.push_back(Symbol());
-    sFiles.sort(SymbolSort()); // uses a struct SymbolSort
+    sFiles.sort(SymbolSort());
     sFiles.unique();
     DataArrayPtr ptr(new DataArray(sFiles.size()));
     int idx = 0;

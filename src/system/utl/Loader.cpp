@@ -1,11 +1,13 @@
 #include "utl/Loader.h"
 #include "Std.h"
+#include "os/Archive.h"
 #include "os/Debug.h"
 #include "os/File.h"
+#include "os/System.h"
+#include "utl/BinStream.h"
 #include "utl/MemMgr.h"
 #include "utl/Option.h"
 #include "obj/DataFunc.h"
-#include "rndwii/Rnd.h"
 
 #include "decomp.h"
 
@@ -102,7 +104,7 @@ Loader* LoadMgr::AddLoader(const FilePath& file, LoaderPos pos) {
 }
 
 void LoadMgr::PollUntilLoaded(Loader* ldr1, Loader* ldr2){
-    SetGPHangDetectEnabled(false, "PollUntilLoaded");
+    // SetGPHangDetectEnabled(false, "PollUntilLoaded"); this is a __FUNCTION__
     Loader* theLdr = ldr1;
     while(!theLdr->IsLoaded()){
         unk1c = 1e+30f;
@@ -117,7 +119,7 @@ void LoadMgr::PollUntilLoaded(Loader* ldr1, Loader* ldr2){
             mLoading.pop_front();
         }
     }
-    SetGPHangDetectEnabled(true, "PollUntilLoaded");
+    // SetGPHangDetectEnabled(true, "PollUntilLoaded");
 }
 
 void LoadMgr::PollUntilEmpty() {
@@ -157,7 +159,7 @@ void LoadMgr::Poll(){
 }
 
 void LoadMgr::PollFrontLoader(){
-    
+    MILO_WARN("deleted");
 }
 
 void LoadMgr::RegisterFactory(const char* cc, LoaderFactoryFunc* func){
@@ -173,13 +175,154 @@ Loader::Loader(const FilePath& fp, LoaderPos pos) : mPos(pos), mFile(fp) {
     mHeap = GetCurrentHeapNum();
     MILO_ASSERT(MemNumHeaps() == 0 || (mHeap != kNoHeap && mHeap != kSystemHeap), 446);
     MILO_ASSERT(!streq(MemHeapName(mHeap), "fast"), 448);
+    TheLoadMgr.mLoaders.push_front(this);
+    if(mPos == kLoadFront){
+        TheLoadMgr.mLoading.push_front(this);
+    }
+    else if(mPos == kLoadStayBack){
+        TheLoadMgr.mLoading.push_back(this);
+    }
+    else {
+        std::list<Loader*>::iterator it = TheLoadMgr.mLoading.begin();
+        for(; it != TheLoadMgr.mLoading.end();){
+            if((*it)->GetPos() <= 1){
+                ++it;
+                break;
+            }
+        }
+        TheLoadMgr.mLoading.insert(it, this);
+    }
 }
 
 Loader::~Loader() {
-
+    TheLoadMgr.mLoading.remove(this);
+    TheLoadMgr.mLoaders.remove(this);
 }
 
-FileLoader::FileLoader(const FilePath& fp, const char*, LoaderPos pos, int, bool, bool, BinStream* bs) : 
-    Loader(fp, pos), mFile(NULL), mStream(bs), mBuffer(NULL), mBufLen(0) {
+FileLoader::FileLoader(const FilePath& loaderFile, const char* file, LoaderPos pos, int flags, bool temp, bool warn, BinStream* bs) : 
+    Loader(loaderFile, pos), mFile(NULL), mStream(bs), mBuffer(NULL), mBufLen(0), mAccessed(0), mTemp(temp), mWarn(warn), mFlags(flags), mFilename(file),
+    unk3c(0), unk40(-1), mState(0) {
+    if(mStream){
+        mState = &FileLoader::LoadStream;
+    }
+    else {
+        mState = &FileLoader::OpenFile;
+    }
+}
 
+void FileLoader::AllocBuffer(){
+    if(mTemp){
+        mBuffer = (char*)_MemAllocTemp(mBufLen, 0);
+    }
+    else {
+        mBuffer = (char*)_MemAlloc(mBufLen, 32);
+    }
+}
+
+void FileLoader::OpenFile(){
+    Archive* old = TheArchive;
+    const char* fname = mFilename.c_str();
+    bool oldusingcd = UsingCD();
+    bool b1 = gHostFile && FileMatch(fname, gHostFile);
+    if(b1){
+        SetUsingCD(false);
+        TheArchive = nullptr;
+    }
+    {
+        MemDoTempAllocations mem(true, false);
+        mFile = NewFile(fname, mFlags | 2);
+    }
+    if(b1){
+        SetUsingCD(oldusingcd);
+        TheArchive = old;
+    }
+
+    if(!mFile && *fname != '\0' && mWarn){
+        MILO_WARN("Could not load: %s (actually %s)", FileLocalize(Loader::mFile.c_str(), 0), fname);
+    }
+    if(mFile && !mFile->Fail()){
+        mBufLen = mFile->Size();
+        AllocBuffer();
+        mFile->ReadAsync((void*)mBuffer, mBufLen);
+        mState = &FileLoader::LoadFile;
+    }
+    else {
+        mState = &FileLoader::DoneLoading;
+    }
+}
+
+const char* FileLoader::DebugText(){
+    return MakeString("FileLoader: %s", Loader::mFile.c_str());
+}
+
+void FileLoader::LoadFile(){
+    int asdf;
+    if(mFile->ReadDone(asdf)){
+        if(mFile->Fail()){
+            mBufLen = 0;
+            _MemFree((void*)mBuffer);
+            mBuffer = nullptr;
+        }
+        RELEASE(mFile);
+        mState = &FileLoader::DoneLoading;
+    }
+}
+
+void FileLoader::DoneLoading(){}
+
+FileLoader::~FileLoader(){
+    if(!mAccessed){
+        _MemFree((void*)mBuffer);
+        delete mFile;
+    }
+}
+
+int FileLoader::GetSize(){ return mBufLen; }
+
+const char* FileLoader::GetBuffer(int* size){
+    MILO_ASSERT(IsLoaded(), 0x287);
+    if(size) *size = mBufLen;
+    mAccessed = true;
+    return (const char*)mBuffer;
+}
+
+bool FileLoader::IsLoaded() const { return mState == &FileLoader::DoneLoading; }
+
+void FileLoader::PollLoading(){
+    while(!TheLoadMgr.CheckSplit() && TheLoadMgr.GetFirstLoading() == this && !IsLoaded()){
+        (this->*mState)();
+    }
+}
+
+void FileLoader::LoadStream(){
+    EofType t;
+    while(t = mStream->Eof(), t != NotEof){
+        MILO_ASSERT(t == TempEof, 0x2A8);
+        if(TheLoadMgr.CheckSplit()) return;
+    }
+    if(!mBuffer){
+        int size;
+        *mStream >> size;
+        if(size == -1){
+            *mStream >> unk40;
+            *mStream >> mBufLen;
+        }
+        else {
+            unk40 = 0;
+            mBufLen = size;
+        }
+        AllocBuffer();
+    }
+    int i2 = unk40 > 0 ? 0x10000 : mBufLen;
+    while(true){
+        int i3 = Min(mBufLen - unk3c, i2);
+        while(t = mStream->Eof(), t != NotEof){
+            MILO_ASSERT(t == TempEof, 0x2C9);
+            if(TheLoadMgr.CheckSplit()) return;
+        }
+        if(i3 == 0) break;
+        mStream->Read((void*)(mBuffer + unk3c), i3);
+        unk3c += i3;
+    }
+    mState = &FileLoader::DoneLoading;
 }
