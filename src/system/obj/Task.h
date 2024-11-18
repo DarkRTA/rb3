@@ -36,11 +36,18 @@ public:
 
 class ScriptTask : public Task {
 public:
-
     struct Var {
         Var(DataNode* np, const DataNode& n) : var(np), value(n) {}
-        DataNode* var;
-        DataNode value;
+        Var(DataNode* np) : var(np), value(*np) {}
+
+        void Swap(){
+            DataNode tmp = value;
+            value = *var;
+            *var = tmp;
+        }
+
+        DataNode* var; // 0x0
+        DataNode value; // 0x4
     };
 
     ScriptTask(DataArray*, bool, DataArray*);
@@ -49,12 +56,13 @@ public:
     virtual void Poll(float);
 
     void UpdateVarsObjects(DataArray*);
+    void SwapVars();
 
-    std::list<Var> mVars;
-    std::list<Hmx::Object*> mObjects;
-    ObjOwnerPtr<Hmx::Object, class ObjectDir> mThis;
-    DataArray* mScript;
-    bool mOnce;
+    std::list<Var> mVars; // 0x1c
+    std::list<Hmx::Object*> mObjects; // 0x24
+    ObjOwnerPtr<Hmx::Object> mThis; // 0x2c
+    DataArray* mScript; // 0x38
+    bool mOnce; // 0x3c
 };
 
 class TaskMgr : public Hmx::Object {

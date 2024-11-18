@@ -126,6 +126,7 @@ public:
     const char* UncheckedStr() const { return mValue.symbol; }
     Hmx::Object* UncheckedObj() const { return mValue.object; }
     DataArray* UncheckedArray() const { return mValue.array; }
+    DataNode* UncheckedVar() const { return mValue.var; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -195,6 +196,8 @@ public:
     int Line() const { return mLine; }
 
     int UncheckedInt(int i) const { return Node(i).UncheckedInt(); }
+    Hmx::Object* UncheckedObj(int i) const { return Node(i).UncheckedObj(); }
+    DataNode* UncheckedVar(int i) const { return Node(i).UncheckedVar(); }
     DataArray* UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
@@ -203,6 +206,7 @@ public:
     Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
     Symbol ForceSym(int i) const { return Node(i).ForceSym(this); }
     const char* Str(int i) const { return Node(i).Str(this); }
+    const char* LiteralStr(int i) const { return Node(i).LiteralStr(this); }
     float Float(int i) const { return Node(i).Float(this); }
     Hmx::Object* GetObj(int i) const { return Node(i).GetObj(this); }
     DataArray* Array(int i) const { return Node(i).Array(this); }
