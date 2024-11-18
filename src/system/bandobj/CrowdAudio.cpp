@@ -72,7 +72,7 @@ void CrowdAudio::Poll(){
     else mOverrideExcitementLevel = (ExcitementLevel)-1;
     mOverrideExcitementLevelPrev = mOverrideExcitementLevel;
     if(mEnabled){
-        float secs = TheTaskMgr.Seconds(TaskMgr::a);
+        float secs = TheTaskMgr.Seconds(TaskMgr::kDelayedTime);
         float othersecs = secs * 1000.0f;
         if(secs > mLoopChangeTime) PlayExcitementLoop();
         if(mOldMogg && mReleaseFader->mVal == -96.0f){
@@ -129,7 +129,7 @@ void CrowdAudio::SetExcitement(ExcitementLevel level){
         PlaySequence(((level > mLevel) ? upSfx : downSfx)[level]);
 
         mLevel = level;
-        mLoopChangeTime = TheTaskMgr.Seconds(TaskMgr::a) + 1.0f;
+        mLoopChangeTime = TheTaskMgr.Seconds(TaskMgr::kDelayedTime) + 1.0f;
     }
 }
 

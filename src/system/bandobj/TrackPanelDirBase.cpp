@@ -31,7 +31,7 @@ TrackPanelDirBase::TrackPanelDirBase() : mViewTimeEasy(0), mViewTimeExpert(0), m
 SAVE_OBJ(TrackPanelDirBase, 0x3F)
 
 float TrackPanelDirBase::GetPulseAnimStartDelay(bool b) const {
-    float beat = MsToBeat(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f + 16.70000076293945f);
+    float beat = MsToBeat(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f + 16.70000076293945f);
     if(b) beat = beat + mPulseOffset;
     return std::floor(beat) + 1.0f - beat;
 }

@@ -178,7 +178,7 @@ void TrackPanel::Reset(){
     AssignAndInitTracks();
     unk8c = -1.0f;
     if(mScoreboard) mScoreboard->Reset();
-    float secs = TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f;
+    float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f;
     Hmx::Object::Handle(on_reset_msg, true);
     mTrackPanelDir->ConfigureTracks(false);
     MetaPerformer::Current();

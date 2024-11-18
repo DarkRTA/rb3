@@ -200,7 +200,7 @@ void UIListDir::Poll(){
     if(TheLoadMgr.EditMode()){
         RndDir::Poll();
         if(mTestMode){
-            mTestState.Poll(TheTaskMgr.Seconds(TaskMgr::b));
+            mTestState.Poll(TheTaskMgr.Seconds(TaskMgr::kRealTime));
             PollWidgets(unk1fc);
         }
     }

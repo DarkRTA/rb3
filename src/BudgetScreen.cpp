@@ -228,7 +228,7 @@ void BudgetScreen::Poll() {
     if (timerScript)
         timerScript->ExecuteScript(1, nullptr, nullptr, 1);
 
-    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f);
+    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f);
 
     // needs to be used as a local variable
     Timer* slowFrameTimer = &Timer::sSlowFrameTimer;

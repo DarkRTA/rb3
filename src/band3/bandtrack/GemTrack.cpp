@@ -90,7 +90,7 @@ void GemTrack::ResetFills(bool reset){
 
 void GemTrack::RebuildBeats(){
     mTrackDir->ClearAllWidgets();
-    float secs = MsToTick((TheTaskMgr.Seconds(TaskMgr::b) + mTrackDir->BottomSeconds()) * 1000.0f);
+    float secs = MsToTick((TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->BottomSeconds()) * 1000.0f);
     unk7c = unk78 = secs;
 }
 
@@ -165,7 +165,7 @@ void GemTrack::ChangeDifficulty(Difficulty diff, int iii){
     mGemManager->SetupGems(iii);
     UpdateShiftsToTick(iii);
     mTrackDir->ClearAllWidgets();
-    float secs = MsToTick((TheTaskMgr.Seconds(TaskMgr::b) + mTrackDir->TopSeconds()) * 1000.0f);
+    float secs = MsToTick((TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->TopSeconds()) * 1000.0f);
     unk7c = unk78 = secs;
 }
 
@@ -270,7 +270,7 @@ BandTrack* GemTrack::GetBandTrack(){ return mTrackDir; }
 
 float GemTrack::NextKickNoteMs() const {
     if(mTrackConfig.IsDrumTrack()){
-        float secs = TheTaskMgr.Seconds(TaskMgr::b);
+        float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
         BandUser* pUser = (BandUser*)mTrackConfig.GetBandUser();
         MILO_ASSERT(pUser, 0x4D1);
 

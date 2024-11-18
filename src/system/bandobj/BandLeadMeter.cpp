@@ -42,10 +42,10 @@ void BandLeadMeter::Enter(){
 
 void BandLeadMeter::Poll(){
     if(mScoreDiff > unk204 && mPeggedAnim1){
-        mPeggedAnim1->SetFrame(TheTaskMgr.Seconds(TaskMgr::b) * 30.0f, 1.0f);
+        mPeggedAnim1->SetFrame(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 30.0f, 1.0f);
     }
     else if(mScoreDiff < -unk204 && mPeggedAnim2){
-        mPeggedAnim2->SetFrame(TheTaskMgr.Seconds(TaskMgr::b) * 30.0f, 1.0f);
+        mPeggedAnim2->SetFrame(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 30.0f, 1.0f);
     }
 }
 

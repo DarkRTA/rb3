@@ -116,7 +116,7 @@ bool RndPostProc::HallOfTime() const {
 
 // fn_80624B04
 void RndPostProc::UpdateTimeDelta() {
-    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     float val150 = secs - mLastRender;
     mDeltaSecs = val150;
     mDeltaSecs = Clamp(0.0f, 1.0f, val150);

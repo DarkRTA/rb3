@@ -10,7 +10,7 @@ void DeJitterPanel::Enter() {
     float f[2];
     unk_0x68.Reset();
     unk_0x84 = true;
-    f[0] = TheTaskMgr.Seconds(TaskMgr::b);
+    f[0] = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     f[1] = TheTaskMgr.DeltaSeconds();
     TheTaskMgr.SetTimeAndDelta(kTaskSeconds, 0, 0);
     UIPanel::Enter();
@@ -25,7 +25,7 @@ void DeJitterPanel::Poll() {
     }
     Timer* t = unk_0x84 ? &unk_0x38 : NULL;
     float f[2];
-    f[0] = TheTaskMgr.Seconds(TaskMgr::b);
+    f[0] = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     f[1] = TheTaskMgr.DeltaSeconds();
     if (t != NULL) {
 

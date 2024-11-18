@@ -185,7 +185,7 @@ void GemTrainerPanel::HandleLooping(){
             unkcc = -1;
             int start = GetSectionLoopStart(GetCurrSection());
             float ticktosec = TickToSeconds(start);
-            float secs = TheTaskMgr.Seconds(TaskMgr::b);
+            float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
             if(secs - ticktosec > 900.0f){
                 RestartSection();
             }
