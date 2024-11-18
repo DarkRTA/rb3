@@ -6,8 +6,13 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "os/Timer.h"
+#include "utl/BeatMap.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols4.h"
+#include "utl/TempoMap.h"
 
 TaskMgr TheTaskMgr;
 
@@ -257,9 +262,128 @@ DataNode ThreadTask::OnExit(DataArray* arr){
 
 void TaskMgr::Init(){
     SetName("taskmgr", ObjectDir::Main());
-    unk38.Restart();
-    mTimelines = new TaskTimeline[4];
-    unk34 = true;
+    mTime.Restart();
+    mTimelines = new TaskTimeline[kTaskNumUnits];
+    mAutoSecondsBeats = true;
     DataRegisterFunc("script_task", OnScriptTask);
     DataRegisterFunc("thread_task", OnThreadTask);
+}
+
+TaskTimeline::TaskTimeline() : mTime(0), mLastTime(0), mPollingTask(0) {
+
+}
+
+TaskTimeline::~TaskTimeline(){
+
+}
+
+void TaskMgr::Terminate(){
+    SetName(0, 0);
+    delete [] mTimelines;
+    mTimelines = nullptr;
+}
+
+void TaskMgr::SetUISeconds(float f, bool b){
+    mTimelines[kTaskUISeconds].SetTime(f, b);
+}
+
+float TaskMgr::UISeconds() const { return mTimelines[kTaskUISeconds].GetTime(); }
+float TaskMgr::DeltaUISeconds() const { return mTimelines[kTaskUISeconds].DeltaTime(); }
+float TaskMgr::DeltaTime(TaskUnits u) const { return mTimelines[u].DeltaTime(); }
+
+void TaskMgr::SetDeltaTime(TaskUnits u, float delta){
+    TaskTimeline& timeline = mTimelines[u];
+    timeline.mLastTime = timeline.mTime - delta;
+}
+
+void TaskMgr::SetTimeAndDelta(TaskUnits u, float time, float delta){
+    TaskTimeline& timeline = mTimelines[u];
+    timeline.mTime = time;
+    timeline.mLastTime = time - delta;
+}
+
+void TaskMgr::SetSecondsAndBeat(float f1, float f2, bool b){
+    mAutoSecondsBeats = false;
+    mTimelines[kTaskSeconds].SetTime(f1, b);
+    mTimelines[kTaskBeats].SetTime(f2, b);
+}
+
+void TaskMgr::SetSeconds(float f, bool b){
+    mAutoSecondsBeats = false;
+    mTimelines[kTaskSeconds].SetTime(f, b);
+    mTimelines[kTaskBeats].SetTime(TheBeatMap->Beat(TheTempoMap->TimeToTick(f * 1000.0f)), b);
+}
+
+float TaskMgr::Time(TaskUnits u) const {
+    return mTimelines[u].GetTime();
+}
+
+void TaskMgr::SetAVOffset(float offset){ mAVOffset = offset; }
+
+float TaskMgr::Seconds(TimeReference ref) const {
+    float time = mTimelines[kTaskSeconds].GetTime();
+    if(ref == 0){
+        time -= mAVOffset;
+    }
+    return time;
+}
+
+float TaskMgr::DeltaSeconds() const { return mTimelines[kTaskSeconds].DeltaTime(); }
+float TaskMgr::Beat() const { return mTimelines[kTaskBeats].GetTime(); }
+float TaskMgr::DeltaBeat() const { return mTimelines[kTaskBeats].DeltaTime(); }
+float TaskMgr::TutorialSeconds() const { return mTimelines[kTaskTutorialSeconds].GetTime(); }
+float TaskMgr::DeltaTutorialSeconds() const { return mTimelines[kTaskTutorialSeconds].DeltaTime(); }
+
+void TaskMgr::Poll(){
+    START_AUTO_TIMER("anim");
+    mTime.Split();
+    TaskTimeline::TaskInfo* info;
+    if(mAutoSecondsBeats){
+        float secs = mTime.Ms() / 1000.0f;
+        mTimelines[kTaskSeconds].SetTime(secs, false);
+        mTimelines[kTaskBeats].SetTime(secs * 2.0f, false);
+    }
+    for(int i = 0; i < kTaskNumUnits; i++){
+        mTimelines[i].Poll();
+    }
+}
+
+void TaskMgr::ClearTasks(){
+    for(int i = 0; i < kTaskNumUnits; i++){
+        mTimelines[i].ClearTasks();
+    }
+}
+
+void TaskMgr::ClearTimelineTasks(TaskUnits u){
+    mTimelines[u].ClearTasks();
+}
+
+void TaskMgr::Start(Task*, TaskUnits, float){
+
+}
+
+const char* TaskMgr::GetMBT(){
+    return MakeString("%d:%d:%03d", mSongPos.GetMeasure(), mSongPos.GetBeat(), mSongPos.GetTick());
+}
+
+BEGIN_HANDLERS(TaskMgr)
+    HANDLE_ACTION(clear_tasks, ClearTasks())
+    HANDLE_EXPR(seconds, Seconds((TimeReference)1))
+    HANDLE_EXPR(ms, Seconds((TimeReference)1) * 1000.0f)
+    HANDLE_EXPR(delta_seconds, mTimelines[kTaskSeconds].DeltaTime())
+    HANDLE_EXPR(beat, mTimelines[kTaskBeats].GetTime())
+    HANDLE_EXPR(delta_beat, mTimelines[kTaskBeats].DeltaTime())
+    HANDLE_EXPR(ui_seconds, mTimelines[kTaskUISeconds].GetTime())
+    HANDLE_EXPR(ui_delta_seconds, mTimelines[kTaskUISeconds].DeltaTime())
+    HANDLE_EXPR(tutorial_seconds, mTimelines[kTaskTutorialSeconds].GetTime())
+    HANDLE_EXPR(delta_tutorial_seconds, mTimelines[kTaskTutorialSeconds].DeltaTime())
+    HANDLE_EXPR(mbt, MakeString("%d:%d:%03d", mSongPos.mMeasure, mSongPos.mBeat, mSongPos.mTick))
+    HANDLE_EXPR(total_tick, mSongPos.GetTotalTick())
+    HANDLE(time_til_next, OnTimeTilNext)
+    HANDLE_ACTION(set_seconds, SetSeconds(_msg->Float(2), _msg->Int(3)))
+    HANDLE_CHECK(0x2D9)
+END_HANDLERS
+
+DataNode TaskMgr::OnTimeTilNext(DataArray* arr){
+
 }

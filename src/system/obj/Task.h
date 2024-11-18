@@ -4,15 +4,16 @@
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "utl/MemMgr.h"
+#include "utl/PoolAlloc.h"
 #include "utl/SongPos.h"
 #include <list>
 
 enum TaskUnits {
-    kTaskSeconds,
-    kTaskBeats,
-    kTaskUISeconds,
-    kTaskTutorialSeconds,
-    kTaskNumUnits
+    kTaskSeconds = 0,
+    kTaskBeats = 1,
+    kTaskUISeconds = 2,
+    kTaskTutorialSeconds = 3,
+    kTaskNumUnits = 4
 };
 
 /**
@@ -93,11 +94,62 @@ public:
 
 class TaskTimeline {
 public:
+    class TaskInfo {
+    public:
+        TaskInfo() : unk0(0) {}
+        ObjPtr<Task> unk0;
+        float unkc;
+    };
     TaskTimeline();
     ~TaskTimeline();
 
-    NEW_OVERLOAD;
-    DELETE_OVERLOAD;
+    NEW_POOL_OVERLOAD(TaskTimeline);
+    DELETE_POOL_OVERLOAD(TaskTimeline);
+    void* operator new[](size_t t) { return _MemAlloc(t, 0); }
+    void operator delete[](void *v) { _MemFree(v); }
+
+    void SetTime(float f, bool b){
+        mLastTime = b ? f : mTime;
+        mTime = f;
+    }
+    
+    float GetTime() const { return mTime; }
+    float DeltaTime() const { return mTime - mLastTime; }
+    void Poll(){
+        for(std::list<TaskInfo>::iterator it = mTasks.begin(); it != mTasks.end(); ){
+            if((*it).unkc > mTime) break;
+            float f1 = (*it).unkc;
+            float f2 = mTime;
+            float diff = f2 - f1;
+            if((*it).unk0){
+                mPollingTask = (*it).unk0;
+                (*it).unk0->Poll(diff);
+                ++it;
+            }
+            else {
+                it = mTasks.erase(it);
+            }
+        }
+        mPollingTask = nullptr;
+        for(std::list<TaskInfo>::iterator it = mAddedTasks.begin(); it != mAddedTasks.end(); ++it){
+            mTasks.push_back(*it);
+        }
+        mAddedTasks.clear();
+    }
+
+    void ClearTasks(){
+        for(std::list<TaskInfo>::iterator it = mTasks.begin(); it != mTasks.end(); ++it){
+            if((*it).unk0 != mPollingTask){
+                delete (*it).unk0;
+            }
+        }
+    }
+
+    std::list<TaskInfo> mTasks; // 0x0
+    std::list<TaskInfo> mAddedTasks; // 0x8
+    float mTime; // 0x10
+    float mLastTime; // 0x14
+    Task* mPollingTask; // 0x18
 };
 
 class TaskMgr : public Hmx::Object {
@@ -108,12 +160,13 @@ public:
     };
 
     TaskMgr(){}
-    virtual ~TaskMgr();
+    virtual ~TaskMgr(){}
     virtual DataNode Handle(DataArray*, bool);
 
     float UISeconds() const;
     float DeltaSeconds() const;
     float DeltaBeat() const;
+    float DeltaUISeconds() const;
     float Beat() const;
     float Seconds(TimeReference) const;
     float TutorialSeconds() const;
@@ -121,17 +174,26 @@ public:
     void Start(Task*, TaskUnits, float);
     float Time(TaskUnits) const;
     const char* GetMBT();
-    void Init();
     void ClearTasks();
     void SetSeconds(float, bool);
     void SetDeltaTime(TaskUnits, float);
     void SetTimeAndDelta(TaskUnits, float, float);
     void Poll();
+    void Init();
+    void Terminate();
+    void SetUISeconds(float, bool);
+    void SetSecondsAndBeat(float, float, bool);
+    void SetAVOffset(float);
+    float DeltaTutorialSeconds() const;
+    void ClearTimelineTasks(TaskUnits);
+
+    DataNode OnTimeTilNext(DataArray*);
 
     TaskTimeline* mTimelines; // 0x1c
     SongPos mSongPos; // 0x20
-    bool unk34;
-    Timer unk38;
+    bool mAutoSecondsBeats; // 0x34
+    Timer mTime; // 0x38
+    float mAVOffset; // 0x68
 };
 
 extern TaskMgr TheTaskMgr;
