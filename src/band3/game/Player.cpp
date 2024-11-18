@@ -8,7 +8,7 @@
 #include "bandobj/BandTrack.h"
 #include "bandtrack/TrackPanel.h"
 #include "beatmatch/BeatMaster.h"
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"

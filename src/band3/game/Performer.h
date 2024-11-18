@@ -1,6 +1,6 @@
 #pragma once
 #include "obj/Object.h"
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 #include "game/CrowdRating.h"
 #include "game/Stats.h"
 

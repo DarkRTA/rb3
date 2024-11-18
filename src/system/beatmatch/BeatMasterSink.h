@@ -1,6 +1,6 @@
 #ifndef BEATMATCH_BEATMASTERSINK_H
 #define BEATMATCH_BEATMASTERSINK_H
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 
 class BeatMasterSink {
 public:

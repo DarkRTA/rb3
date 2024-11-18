@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_SONGPOS_H
-#define BEATMATCH_SONGPOS_H
+#pragma once
 
 class SongPos {
 public:
@@ -12,5 +11,3 @@ public:
     int mBeat; // 0xc
     int mTick; // 0x10
 };
-
-#endif

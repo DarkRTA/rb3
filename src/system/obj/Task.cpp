@@ -1,5 +1,6 @@
 #include "obj/Task.h"
 #include "obj/Data.h"
+#include "obj/DataFunc.h"
 #include "obj/DataUtl.h"
 #include "obj/Dir.h"
 #include "obj/ObjMacros.h"
@@ -7,7 +8,8 @@
 #include "os/Debug.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
+
+TaskMgr TheTaskMgr;
 
 MessageTask::MessageTask(Hmx::Object* o, DataArray* msg) : mObj(this, o), mMsg(msg) {
     MILO_ASSERT(msg, 0x1D);
@@ -251,4 +253,13 @@ DataNode ThreadTask::OnExit(DataArray* arr){
     mWait = true;
     mCurrent = mScript->Size();
     return 0;
+}
+
+void TaskMgr::Init(){
+    SetName("taskmgr", ObjectDir::Main());
+    unk38.Restart();
+    mTimelines = new TaskTimeline[4];
+    unk34 = true;
+    DataRegisterFunc("script_task", OnScriptTask);
+    DataRegisterFunc("thread_task", OnThreadTask);
 }

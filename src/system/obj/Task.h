@@ -3,6 +3,8 @@
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
+#include "utl/MemMgr.h"
+#include "utl/SongPos.h"
 #include <list>
 
 enum TaskUnits {
@@ -89,6 +91,15 @@ public:
     float mTimeout; // 0x4c
 };
 
+class TaskTimeline {
+public:
+    TaskTimeline();
+    ~TaskTimeline();
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+};
+
 class TaskMgr : public Hmx::Object {
 public:
 
@@ -110,12 +121,17 @@ public:
     void Start(Task*, TaskUnits, float);
     float Time(TaskUnits) const;
     const char* GetMBT();
-
+    void Init();
     void ClearTasks();
     void SetSeconds(float, bool);
     void SetDeltaTime(TaskUnits, float);
     void SetTimeAndDelta(TaskUnits, float, float);
     void Poll();
+
+    TaskTimeline* mTimelines; // 0x1c
+    SongPos mSongPos; // 0x20
+    bool unk34;
+    Timer unk38;
 };
 
 extern TaskMgr TheTaskMgr;
