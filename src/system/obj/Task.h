@@ -1,5 +1,6 @@
 #ifndef OBJ_TASK_H
 #define OBJ_TASK_H
+#include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include <list>
@@ -63,6 +64,29 @@ public:
     ObjOwnerPtr<Hmx::Object> mThis; // 0x2c
     DataArray* mScript; // 0x38
     bool mOnce; // 0x3c
+};
+
+class ThreadTask : public ScriptTask {
+public:
+    ThreadTask(DataArray*, DataArray*);
+    virtual ~ThreadTask(){}
+    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual DataNode Handle(DataArray*, bool);
+    virtual void Poll(float);
+
+    DataNode OnWait(DataArray*);
+    DataNode OnWaitTimeout(DataArray*);
+    DataNode OnSleep(DataArray*);
+    DataNode OnLoop(DataArray*);
+    DataNode OnExit(DataArray*);
+    DataNode OnCurrent(DataArray*);
+    DataNode OnSetCurrent(DataArray*);
+
+    bool mWait; // 0x3d
+    int mCurrent; // 0x40
+    float mTime; // 0x44
+    bool mExecuting; // 0x48
+    float mTimeout; // 0x4c
 };
 
 class TaskMgr : public Hmx::Object {
