@@ -358,8 +358,8 @@ void TaskMgr::ClearTimelineTasks(TaskUnits u){
     mTimelines[u].ClearTasks();
 }
 
-void TaskMgr::Start(Task*, TaskUnits, float){
-
+void TaskMgr::Start(Task* t, TaskUnits u, float f){
+    mTimelines[u].AddTask(t, f);
 }
 
 const char* TaskMgr::GetMBT(){
@@ -385,5 +385,13 @@ BEGIN_HANDLERS(TaskMgr)
 END_HANDLERS
 
 DataNode TaskMgr::OnTimeTilNext(DataArray* arr){
-
+    float f2 = arr->Float(2);
+    float f3 = arr->Float(3);
+    float beat = Beat();
+    float floored = floor(beat / f2);
+    float f1 = f3 * (1.0f - (beat / f2 - floored));
+    if(f3 >= f2 - f1){
+        return 0.0f;
+    }
+    else return f1;
 }

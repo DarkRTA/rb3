@@ -96,7 +96,7 @@ class TaskTimeline {
 public:
     class TaskInfo {
     public:
-        TaskInfo() : unk0(0) {}
+        TaskInfo(Task* t, float f) : unk0(0, t), unkc(f) {}
         ObjPtr<Task> unk0;
         float unkc;
     };
@@ -132,7 +132,7 @@ public:
         }
         mPollingTask = nullptr;
         for(std::list<TaskInfo>::iterator it = mAddedTasks.begin(); it != mAddedTasks.end(); ++it){
-            mTasks.push_back(*it);
+            AddTask(*it);
         }
         mAddedTasks.clear();
     }
@@ -141,6 +141,28 @@ public:
         for(std::list<TaskInfo>::iterator it = mTasks.begin(); it != mTasks.end(); ++it){
             if((*it).unk0 != mPollingTask){
                 delete (*it).unk0;
+            }
+        }
+    }
+
+    void AddTask(Task* t, float f){
+        AddTask(TaskInfo(t, mTime + f));
+    }
+
+    void AddTask(const TaskInfo& info){
+        if(!&info) MILO_FAIL("Null TaskInfo");
+        else {
+            if(mPollingTask){
+                mAddedTasks.push_back(info);
+            }
+            else {
+                for(std::list<TaskInfo>::iterator it = mTasks.begin(); it != mTasks.end(); ++it){
+                    if(info.unkc < (*it).unkc){
+                        mTasks.insert(it, info);
+                        return;
+                    }
+                }
+                mTasks.push_back(info);
             }
         }
     }
