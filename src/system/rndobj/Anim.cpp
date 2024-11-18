@@ -198,30 +198,29 @@ BEGIN_HANDLERS(RndAnimatable);
     HANDLE_CHECK(0x16C);
 END_HANDLERS;
 
+// this matches in retail
+// source: https://decomp.me/scratch/2WRuK
 DataNode RndAnimatable::OnAnimate(DataArray* arr){
     float local_blend = 0.0f;
     float animTaskStart = StartFrame();
     float animTaskEnd = EndFrame();
     bool animTaskLoop = Loop();
-    TaskUnits local_units = Units();
     float p = FramesPerUnit();
+    TaskUnits local_units = Units();
     float local_delay = 0.0f;
     const char* local_name = 0;
     bool local_wait = false;
-
     arr->FindData(blend, local_blend, false);
     arr->FindData(delay, local_delay, false);
     arr->FindData(units, (int&)local_units, false);
     arr->FindData(name, local_name, false);
     arr->FindData(wait, local_wait, false);
-
     DataArray* rangeArr = arr->FindArray(range, false);
     if(rangeArr){
         animTaskStart = rangeArr->Float(1);
         animTaskEnd = rangeArr->Float(2);
         animTaskLoop = false;
     }
-
     DataArray* loopArr = arr->FindArray(loop, false);
     if(loopArr){
         if(loopArr->Size() > 1) animTaskStart = loopArr->Float(1);
@@ -230,31 +229,29 @@ DataNode RndAnimatable::OnAnimate(DataArray* arr){
         else animTaskEnd = EndFrame();
         animTaskLoop = true;
     }
-
     DataArray* destArr = arr->FindArray(dest, false);
     if(destArr){
-        animTaskStart = mFrame;
+        animTaskStart = GetFrame();
         animTaskEnd = destArr->Float(1);
         animTaskLoop = false;
     }
-
     DataArray* periodArr = arr->FindArray(period, false);
     if(periodArr){
         p = periodArr->Float(1);
         MILO_ASSERT(p, 0x1A9);
         p = std::fabs(animTaskEnd - animTaskStart) / p;
     }
-
     AnimTask* theTask = new AnimTask(this, animTaskStart, animTaskEnd, p, animTaskLoop, local_blend);
     if(local_name){
         MILO_ASSERT(DataThis(), 0x1B1);
         theTask->SetName(local_name, DataThis()->DataDir());
     }
     if(local_wait){
-        AnimTask* blendtask = theTask->BlendTask();
-        if(blendtask){
-            if(mRate != blendtask->Anim()->GetRate()) MILO_WARN("%s: need same rate to wait", Name());
-            else local_delay = blendtask->TimeUntilEnd();
+        if(theTask->BlendTask()){
+            if(theTask->BlendTask()->Anim()->GetRate() != GetRate()){
+                MILO_WARN("%s: need same rate to wait", Name());
+            }
+            else local_delay = theTask->BlendTask()->TimeUntilEnd();
         }
     }
     TheTaskMgr.Start(theTask, local_units, local_delay);
@@ -337,7 +334,8 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
-// https://decomp.me/scratch/KmGP0
+// debug: https://decomp.me/scratch/KmGP0
+// retail: https://decomp.me/scratch/k4A5l
 void AnimTask::Poll(float time){
     float frame;
     float blend = 1.0f;
