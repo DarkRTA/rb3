@@ -76,17 +76,17 @@ Hmx::Object::~Object(){
     if(gDataThis == this) gDataThis = 0;
 }
 
-void Hmx::Object::SetName(const char* cc, class ObjectDir* dir){
+void Hmx::Object::SetName(const char* name, class ObjectDir* dir){
     RemoveFromDir();
-    if(cc == 0 || *cc == '\0'){
+    if(name == 0 || *name == '\0'){
         mName = gNullStr;
         mDir = 0;
     }
     else {
         MILO_ASSERT(dir, 0xE0);
         mDir = dir;
-        ObjectDir::Entry* entry = dir->FindEntry(cc, true);
-        if(entry->obj) MILO_FAIL("%s already exists", cc);
+        ObjectDir::Entry* entry = dir->FindEntry(name, true);
+        if(entry->obj) MILO_FAIL("%s already exists", name);
         entry->obj = this;
         mName = entry->name;
         dir->AddedObject(this);
@@ -94,17 +94,15 @@ void Hmx::Object::SetName(const char* cc, class ObjectDir* dir){
 }
 
 void Hmx::Object::RemoveFromDir(){
-    if(mDir){
-        if(mDir != sDeleting){
-            mDir->RemovingObject(this);
-            ObjectDir::Entry* entry = mDir->FindEntry(mName, false);
-            bool b = false;
-            if(entry && entry->obj == this) b = true;
-            if(!b){
-                MILO_FAIL("No entry for %s in %s", PathName(this), PathName(mDir));
-            }
-            entry->obj = 0;
+    if(mDir && mDir != sDeleting){
+        mDir->RemovingObject(this);
+        ObjectDir::Entry* entry = mDir->FindEntry(mName, false);
+        bool entryExists = false;
+        if(entry && entry->obj == this) entryExists = true;
+        if(!entryExists){
+            MILO_FAIL("No entry for %s in %s", PathName(this), PathName(mDir));
         }
+        entry->obj = 0;
     }
 }
 

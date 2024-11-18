@@ -126,7 +126,7 @@ enum ObjListMode {
     kObjListOwnerControl
 };
 
-template <class T1, class T2> class ObjPtrList : public ObjRef {
+template <class T1, class T2 = class ObjectDir> class ObjPtrList : public ObjRef {
 public:
     struct Node {
         T1* obj;

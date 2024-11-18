@@ -26,7 +26,7 @@ public:
 
     Loader(const FilePath&, LoaderPos);
     virtual ~Loader();
-    virtual const char* DebugText();
+    virtual const char* DebugText(){ return mFile.c_str(); }
     virtual bool IsLoaded() const = 0;
     virtual const char* StateName() const { return "Unknown"; }
     virtual void PollLoading() = 0;

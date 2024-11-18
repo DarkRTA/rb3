@@ -12,7 +12,7 @@ DirUnloader::DirUnloader(ObjectDir* dir) : Loader(FilePath(dir->GetPathName()), 
         Hmx::Object* cur = it;
         if(cur != dir){
             cur->SetName(0, 0);
-            mObjects.push_back(ObjPtr<Hmx::Object, ObjectDir>(this, cur));
+            mObjects.push_back(ObjPtr<Hmx::Object>(this, cur));
         }
     }
 }

@@ -1,5 +1,4 @@
 #include "DirLoader.h"
-#include "char/CharClip.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
@@ -340,8 +339,8 @@ bool DirLoader::SetupDir(Symbol sym){
     BeginTrackObjMem(sym.Str(), mFile.c_str());
     if(mDir){
         if(mDir->ClassName() != sym){
-            TheDebugNotifier << MakeString(MakeString("%s: Proxy class %s not %s, converting", mFile.c_str(),
-                mDir->ClassName(), sym)); // for some reason
+            MILO_WARN(MakeString("%s: Proxy class %s not %s, converting", mFile.c_str(),
+                mDir->ClassName(), sym)); // double MakeString...for some reason
             class ObjectDir* newDir = dynamic_cast<class ObjectDir*>(Hmx::Object::NewObject(sym));
             if(!newDir){
                 Cleanup(MakeString("%s: Trying to make non ObjectDir proxy class %s s", mFile.c_str(), mDir->ClassName(), sym));

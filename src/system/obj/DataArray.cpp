@@ -456,13 +456,13 @@ bool DataArray::FindData(Symbol s, Hmx::Color &ret, bool b) const {
     }
 }
 
-DataArray* DataArray::Clone(bool b1, bool b2, int i){
-    DataArray* da = new DataArray(mSize + i);
+DataArray* DataArray::Clone(bool deep, bool eval, int extra){
+    DataArray* da = new DataArray(mSize + extra);
     for(int i = 0; i < mSize; i++){
-        da->mNodes[i] = (b2) ? mNodes[i].Evaluate() : mNodes[i];
-        if(b1){
+        da->mNodes[i] = (eval) ? mNodes[i].Evaluate() : mNodes[i];
+        if(deep){
             if(da->mNodes[i].Type() == kDataArray){
-                DataArray* cloned = da->mNodes[i].LiteralArray()->Clone(true, b2, 0);
+                DataArray* cloned = da->mNodes[i].LiteralArray()->Clone(true, eval, 0);
                 da->mNodes[i] = DataNode(cloned, kDataArray);
                 cloned->Release();
             }

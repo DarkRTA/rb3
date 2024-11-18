@@ -38,8 +38,8 @@ const char* SafeName(Hmx::Object* obj){
     else return "NULL";
 }
 
-void RecurseSuperClasses(Symbol sym, std::vector<Symbol>& classes){
-    DataArray* cfg = SystemConfig("objects", sym);
+void RecurseSuperClasses(Symbol classSym, std::vector<Symbol>& classes){
+    DataArray* cfg = SystemConfig("objects", classSym);
     DataArray* found = cfg->FindArray("superclasses", false);
     if(found){
         for(int i = 1; i < found->Size(); i++){
@@ -58,20 +58,20 @@ DECOMP_FORCEACTIVE(Utl,
     "."
 )
 
-void ListSuperClasses(Symbol sym, std::vector<Symbol>& classes){
-    RecurseSuperClasses(sym, classes);
+void ListSuperClasses(Symbol classSym, std::vector<Symbol>& classes){
+    RecurseSuperClasses(classSym, classes);
     classes.push_back(Symbol("Object"));
 }
 
-bool RecurseSuperClassesSearch(Symbol s1, Symbol s2){
-    DataArray* found = SystemConfig("objects")->FindArray(s1, false);
-    if(!found) return false;
-    DataArray* foundAgain = found->FindArray("superclasses", false);
-    if(foundAgain){
-        for(int i = 1; i < foundAgain->Size(); i++){
-            Symbol foundSym = foundAgain->Sym(i);
-            if(s2 == foundSym) return true;
-            if(RecurseSuperClassesSearch(foundSym, s2)) return true;
+bool RecurseSuperClassesSearch(Symbol classSym, Symbol searchClass){
+    DataArray* classCfg = SystemConfig("objects")->FindArray(classSym, false);
+    if(!classCfg) return false;
+    DataArray* parents = classCfg->FindArray("superclasses", false);
+    if(parents){
+        for(int i = 1; i < parents->Size(); i++){
+            Symbol curParent = parents->Sym(i);
+            if(searchClass == curParent) return true;
+            if(RecurseSuperClassesSearch(curParent, searchClass)) return true;
         }
     }
     return false;
@@ -82,12 +82,12 @@ bool IsASubclass(Symbol child, Symbol parent){
     else return RecurseSuperClassesSearch(child, parent);
 }
 
-void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool b1, bool deleteFrom, bool b3){
+void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool copyDeep, bool deleteFrom, bool setProxyFile){
     const char* name = from->Name();
     ObjectDir* dir = from->Dir();
-    from->SetName(0, 0);
+    from->SetName(nullptr, nullptr);
     to->SetName(name, dir);
-    if(b1) CopyObject(from, to, Hmx::Object::kCopyDeep, b3);
+    if(copyDeep) CopyObject(from, to, Hmx::Object::kCopyDeep, setProxyFile);
     const std::vector<ObjRef*>& refs = from->Refs();
     while(!refs.empty()){
         ObjRef* cur = refs.back();
@@ -273,7 +273,7 @@ int SubDirStringUsed(ObjectDir* dir){
 int SubDirHashUsed(ObjectDir* dir){
     if(!dir) return 0;
     else {
-        int size = dir->mHashTable.mNumEntries;
+        int size = dir->mHashTable.UsedSize();
         for(std::vector<ObjDirPtr<ObjectDir> >::iterator it = dir->mSubDirs.begin(); it != dir->mSubDirs.end(); ++it){
             size += SubDirHashUsed(*it);
         }
@@ -296,7 +296,7 @@ Hmx::Object* CopyObject(Hmx::Object* from, Hmx::Object* to, Hmx::Object::CopyTyp
 
 Hmx::Object* CloneObject(Hmx::Object* from, bool instance){
     MILO_ASSERT(from, 0x32D);
-    CopyObject(from, Hmx::Object::NewObject(from->ClassName()), instance ? Hmx::Object::kCopyShallow : Hmx::Object::kCopyDeep, true);
+    return CopyObject(from, Hmx::Object::NewObject(from->ClassName()), instance ? Hmx::Object::kCopyShallow : Hmx::Object::kCopyDeep, true);
 }
 
 const char* NextName(const char* old_name, ObjectDir* dir){
@@ -420,11 +420,11 @@ DataNode* GetPropertyVal(Hmx::Object* o, DataArray* prop, bool fail){
     else return 0;
 }
 
-DataNode ObjectList(ObjectDir* dir, Symbol s, bool b){
+DataNode ObjectList(ObjectDir* dir, Symbol parentSym, bool b){
     std::list<const char*> sList;
     if(dir){
         for(ObjDirItr<Hmx::Object> it(dir, true); it != 0; ++it){
-            if(IsASubclass(it->ClassName(), s)){
+            if(IsASubclass(it->ClassName(), parentSym)){
                 sList.push_back(it->Name());
             }
         }
