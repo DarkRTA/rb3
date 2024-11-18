@@ -368,8 +368,8 @@ const char* TaskMgr::GetMBT(){
 
 BEGIN_HANDLERS(TaskMgr)
     HANDLE_ACTION(clear_tasks, ClearTasks())
-    HANDLE_EXPR(seconds, Seconds((TimeReference)1))
-    HANDLE_EXPR(ms, Seconds((TimeReference)1) * 1000.0f)
+    HANDLE_EXPR(seconds, Seconds(kRealTime))
+    HANDLE_EXPR(ms, Seconds(kRealTime) * 1000.0f)
     HANDLE_EXPR(delta_seconds, mTimelines[kTaskSeconds].DeltaTime())
     HANDLE_EXPR(beat, mTimelines[kTaskBeats].GetTime())
     HANDLE_EXPR(delta_beat, mTimelines[kTaskBeats].DeltaTime())
