@@ -1,3 +1,4 @@
+#include "decomp.h"
 #include "obj/Data.h"
 #include <stdlib.h>
 #include <string.h>
@@ -347,22 +348,23 @@ DECOMP_FORCEACTIVE(DataArray,
     "AddrIsInLinearMem!\n"
 )
 
-DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
+#pragma push
+#pragma force_active on
+static DataArray* FindArrayTwoSyms(DataArray* a, Symbol s1, Symbol s2){
+    return a->FindArray(s1, s2);
+}
+
+inline DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
     return FindArray(s1, true)->FindArray(s2, true);
 }
+#pragma pop
 
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
     return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
 }
 
-// FindArray(Symbol, Symbol) isn't being inlined below, so this will have to do
-inline DataArray *FindArray_Fake(const DataArray* const ths, Symbol s1, Symbol s2) {
-    return ths->FindArray(s1, true)->FindArray(s2, true);
-}
-
 DataArray *DataArray::FindArray(Symbol s, const char *c) const {
-    // return FindArray(this, s, Symbol(c));
-    return FindArray_Fake(this, s, Symbol(c));
+    return FindArray(s, Symbol(c));
 }
 
 bool DataArray::FindData(Symbol s, const char *&ret, bool b) const {
