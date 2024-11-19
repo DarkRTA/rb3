@@ -1,4 +1,8 @@
 #include "rndobj/AnimFilter.h"
+#include "math/Rand.h"
+#include "math/Utl.h"
+#include "obj/Object.h"
+#include "rndobj/Anim.h"
 #include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
@@ -74,8 +78,43 @@ float RndAnimFilter::Scale(){
     return ret;
 }
 
-void RndAnimFilter::SetFrame(float f1, float f2){
-
+void RndAnimFilter::SetFrame(float frame, float blend){
+    RndAnimatable::SetFrame(frame, blend);
+    if(mAnim){
+        float offset = FrameOffset();
+        frame = frame * Scale() + offset;
+        if(mSnap){
+            frame = mSnap * (int)(frame / mSnap + 0.5f);
+        }
+        if(mJitter && frame != mJitterFrame){
+            mJitterFrame = frame;
+            frame += RandomFloat(-mJitter, mJitter);
+        }
+        float start, end;
+        if(mEnd >= mStart){
+            start = mStart;
+            end = mEnd;
+        }
+        else {
+            start = mEnd;
+            end = mStart;
+        }
+        Type ty = mType;
+        if(ty == 1){
+            frame = ModRange(start, end, frame);
+        }
+        else if(ty == 0){
+            frame = Clamp(start, end, frame);
+        }
+        else if(ty == 2){
+            int iref;
+            float limit = Limit(start, end, frame, iref);
+            if(iref & 1){
+                frame = mEnd - limit - mStart;
+            }
+        }
+        mAnim->SetFrame(frame, blend);
+    }
 }
 
 float RndAnimFilter::StartFrame(){
@@ -119,11 +158,11 @@ DataNode RndAnimFilter::OnSafeAnims(DataArray* da){
     containsCount = 0;
     for(ObjDirItr<RndAnimatable> it(dir, true); it != 0; ++it){
         if(!AnimContains(it, this)){
-            ptr.Node(containsCount++) = DataNode(it);
+            ptr->Node(containsCount++) = DataNode(it);
         }
     }
-    ptr.Node(containsCount) = DataNode((Hmx::Object*)0);
-    return DataNode(ptr);
+    ptr->Node(containsCount) = NULL_OBJ;
+    return ptr;
 }
 
 BEGIN_PROPSYNCS(RndAnimFilter)

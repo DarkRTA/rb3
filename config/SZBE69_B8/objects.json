@@ -1172,7 +1172,10 @@
                 "status": "Equivalent",
                 "comment": "Retail matches fine, debug and its inlining just sucks"
             },
-            "system/rndobj/AnimFilter.cpp": "NonMatching",
+            "system/rndobj/AnimFilter.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/BoxMap.cpp": "MISSING",
             "system/rndobj/Cam.cpp": "NonMatching",
