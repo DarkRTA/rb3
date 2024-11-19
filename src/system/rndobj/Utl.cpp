@@ -218,7 +218,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
         if(anim->TransKeys().size() > 2){
             Keys<Vector3, Vector3> vecKeys;
             anim->TransKeys().FindBounds(f5, f6, firstFrameIdx, lastFrameIdx);
-            for(int i = firstFrameIdx + 1; i < lastFrameIdx - vecKeys.size(); i++){
+            for(int i = firstFrameIdx + 1; i < lastFrameIdx - vecKeys.size();){
                 vecKeys.push_back(anim->TransKeys()[i]);
                 anim->TransKeys().Remove(i);
                 for(int j = 0; j < vecKeys.size(); j++){
@@ -228,6 +228,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
                     if(Length(vec) > f2){
                         anim->TransKeys().insert(anim->TransKeys().begin() + i, vecKeys.back());
                         vecKeys.pop_back();
+                        i++;
                         break;
                     }
                 }
@@ -238,7 +239,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
         if(anim->RotKeys().size() > 2){
             Keys<Hmx::Quat, Hmx::Quat> quatKeys;
             anim->RotKeys().FindBounds(f5, f6, firstFrameIdx, lastFrameIdx);
-            for(int i = firstFrameIdx + 1; i < lastFrameIdx - quatKeys.size(); i++){
+            for(int i = firstFrameIdx + 1; i < lastFrameIdx - quatKeys.size();){
                 quatKeys.push_back(anim->RotKeys()[i]);
                 anim->RotKeys().Remove(i);
                 for(int j = 0; j < quatKeys.size(); j++){
@@ -247,6 +248,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
                     if(AngleBetween(q, quatKeys[j].value) > f3){
                         anim->RotKeys().insert(anim->RotKeys().begin() + i, quatKeys.back());
                         quatKeys.pop_back();
+                        i++;
                         break;
                     }
                 }
@@ -257,7 +259,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
         if(anim->ScaleKeys().size() > 2){
             Keys<Vector3, Vector3> vecKeys;
             anim->ScaleKeys().FindBounds(f5, f6, firstFrameIdx, lastFrameIdx);
-            for(int i = firstFrameIdx + 1; i < lastFrameIdx - vecKeys.size(); i++){
+            for(int i = firstFrameIdx + 1; i < lastFrameIdx - vecKeys.size();){
                 vecKeys.push_back(anim->ScaleKeys()[i]);
                 anim->ScaleKeys().Remove(i);
                 for(int j = 0; j < vecKeys.size(); j++){
@@ -267,6 +269,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
                     if(Length(vec) > f4){
                         anim->ScaleKeys().insert(anim->ScaleKeys().begin() + i, vecKeys.back());
                         vecKeys.pop_back();
+                        i++;
                         break;
                     }
                 }
