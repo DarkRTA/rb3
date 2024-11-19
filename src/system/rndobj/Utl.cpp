@@ -34,7 +34,7 @@ DECOMP_FORCEACTIVE(Utl, __FILE__, "i->from->Dir()")
 RndGroup* GroupOwner(Hmx::Object* o) {
     std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin();
     std::vector<ObjRef*>::const_reverse_iterator ritEnd = o->Refs().rend();
-    for(; rit != ritEnd; rit++){
+    for(; rit != ritEnd; ++rit){
         RndGroup* grp = dynamic_cast<RndGroup*>((*rit)->RefOwner());
         if(grp){
             if(grp->mObjects.find(o) != grp->mObjects.end()) return grp;
@@ -44,7 +44,7 @@ RndGroup* GroupOwner(Hmx::Object* o) {
 }
 
 static DataNode OnGroupOwner(DataArray* da) {
-    return DataNode(GroupOwner(da->GetObj(1)));
+    return DataNode(GroupOwner(da->Obj<Hmx::Object>(1)));
 }
 
 bool GroupedUnder(RndGroup* grp, Hmx::Object* o){
