@@ -6,8 +6,10 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Anim.h"
 #include "rndobj/Cam.h"
 #include "rndobj/CamAnim.h"
+#include "rndobj/Dir.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Env.h"
 #include "rndobj/EnvAnim.h"
@@ -20,13 +22,16 @@
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/Text.h"
+#include "rndobj/Trans.h"
 #include "rndobj/TransAnim.h"
 #include "utl/Loader.h"
 #include "math/Key.h"
+#include "utl/Std.h"
+#include "utl/ClassSymbols.h"
 #include <cmath>
 
 float gLimitUVRange;
-ObjectDir* sSphereDir;
+class ObjectDir* sSphereDir;
 RndMesh* sSphereMesh;
 
 DECOMP_FORCEACTIVE(Utl, __FILE__, "i->from->Dir()")
@@ -56,8 +61,27 @@ bool GroupedUnder(RndGroup* grp, Hmx::Object* o){
     return false;
 }
 
-RndEnviron* FindEnviron(RndDrawable*) {
-
+RndEnviron* FindEnviron(RndDrawable* d) {
+    RndGroup* owner = GroupOwner(d);
+    if(owner){
+        RndEnviron* env = owner->GetEnv();
+        if(env){
+            return FindEnviron(owner);
+        }
+        else return env;
+    }
+    else {
+        RndDir* rdir = dynamic_cast<RndDir*>(d->Dir());
+        if(rdir){
+            std::list<RndDrawable*> children;
+            rdir->ListDrawChildren(children);
+            if(ListFind(children, d)){
+                return rdir->GetEnv();
+            }
+        }
+        MILO_WARN("Need to find environment of draw parent");
+    }
+    return nullptr;
 }
 
 bool AnimContains(const RndAnimatable* anim1, const RndAnimatable* anim2){
@@ -75,7 +99,7 @@ bool AnimContains(const RndAnimatable* anim1, const RndAnimatable* anim2){
 RndAnimatable* AnimController(Hmx::Object* o){
     std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin();
     std::vector<ObjRef*>::const_reverse_iterator ritEnd = o->Refs().rend();
-    for(; rit != ritEnd; rit++){
+    for(; rit != ritEnd; ++rit){
         RndAnimatable* a = dynamic_cast<RndAnimatable*>((*rit)->RefOwner());
         if(a && a->AnimTarget() == o) return a;
     }
@@ -92,28 +116,83 @@ RndMat* GetMat(RndDrawable* draw){
 }
 
 bool SortDraws(RndDrawable* draw1, RndDrawable* draw2){
-    if(draw1->mOrder != draw2->mOrder)
-        return draw1->mOrder < draw2->mOrder;
+    if(draw1->GetOrder() != draw2->GetOrder())
+        return draw1->GetOrder() < draw2->GetOrder();
     else {
         RndMat* mat1 = GetMat(draw1);
         RndMat* mat2 = GetMat(draw2);
         if(mat1 != mat2){
-            return mat1 == mat2;
+            return mat1 < mat2;
         }
-        else return strcmp(draw1->Name(), draw2->Name()) == 0;
+        else return strcmp(draw1->Name(), draw2->Name()) < 0;
     }
 }
 
+bool SortPolls(const RndPollable* p1, const RndPollable* p2){
+    float f1 = p1->ClassName() == CharTransCopy ? 0 : 1.0f;
+    float f2 = p2->ClassName() == CharTransCopy ? 0 : 1.0f;
+    if(f1 != f2) return f1 < f2;
+    else return strcmp(p1->Name(), p2->Name()) < 0;
+}
+
+// matches in retail with the right inline settings: https://decomp.me/scratch/9OmqG
 void CalcBox(RndMesh* m, Box& b) {
-    m->mGeomOwner->mGeomOwner;
-    m->mGeomOwner->mGeomOwner;
-    m->mGeomOwner->mGeomOwner;
+    for(RndMesh::Vert* it = m->Verts().begin(); it != m->Verts().end(); ++it){
+        Vector3 vec;
+        Multiply(it->pos, m->WorldXfm(), vec);
+        b.GrowToContain(vec, it == m->Verts().begin());
+    }
+}
+
+// matches in retail with the right inline settings: https://decomp.me/scratch/717x7
+void CalcSphere(RndTransAnim* a, Sphere& s){
+    s.Zero();
+    if(!a->TransKeys().empty()){
+        RndTransformable* trans = a->Trans() ? a->Trans()->TransParent() : nullptr;
+        Box box;
+        Vector3 vec;
+        for(Keys<Vector3, Vector3>::iterator it = a->TransKeys().begin(); it != a->TransKeys().end(); ++it){
+            if(trans){
+                Multiply(it->value, trans->WorldXfm(), vec);
+            }
+            else vec = it->value;
+            box.GrowToContain(vec, it == a->TransKeys().begin());
+        }
+        Vector3 vres;
+        CalcBoxCenter(vres, box);
+        Subtract(box.mMax, vres, vec);
+        Vector3 vsphere;
+        float fmax = Max(vec.x, vec.y, vec.z);
+        CalcBoxCenter(vsphere, box);
+        s.Set(vsphere, fmax);
+    }
+}
+
+// matches in retail
+void AddMotionSphere(RndTransformable* t, Sphere& s){
+    RndTransAnim* anim = dynamic_cast<RndTransAnim*>(AnimController(t));
+    if(anim){
+        Sphere s_loc;
+        CalcSphere(anim, s_loc);
+        if(s_loc.GetRadius()){
+            if(s.GetRadius()){
+                s.radius += s_loc.GetRadius();
+                Subtract(s.center, t->WorldXfm().v, s.center);
+                Add(s_loc.center, s.center, s.center);
+            }
+            else s = s_loc;
+        }
+    }
+    RndTransformable* parent = t->TransParent();
+    if(parent) AddMotionSphere(parent, s);
 }
 
 int GenerationCount(RndTransformable* t1, RndTransformable* t2) {
-    if (t1 == NULL || t2 == NULL) return 0; else for (int i = 0; t2 != NULL; i++) {
-        if (t2 == t1) return i;
-        t2 = t2->mParent.mPtr;
+    if(!t1 || !t2) return 0;
+    int count = 0;
+    for(; t2; t2 = t2->TransParent()){
+        if(t2 == t1) return count;
+        count++;
     }
     return 0;
 }
@@ -364,7 +443,7 @@ float ConvertFov(float a, float b) {
 }
 
 // fn_806598F4
-void ListDrawGroups(RndDrawable* draw, ObjectDir* dir, std::list<RndGroup*>& gList){
+void ListDrawGroups(RndDrawable* draw, class ObjectDir* dir, std::list<RndGroup*>& gList){
     for(ObjDirItr<RndGroup> it(dir, true); it != 0; ++it){
         std::vector<RndDrawable*>& drawVec = it->mDraws;
         std::vector<RndDrawable*>::iterator draw_it = std::find(drawVec.begin(), drawVec.end(), draw); // wonder if this is inlined?
@@ -377,7 +456,7 @@ void ListDrawGroups(RndDrawable* draw, ObjectDir* dir, std::list<RndGroup*>& gLi
 // fn_806599A4
 DataNode OnTestDrawGroups(DataArray* da){
     DataArray* arr = 0;
-    ObjectDir* dir = da->Obj<ObjectDir>(2);
+    class ObjectDir* dir = da->Obj<class ObjectDir>(2);
     if(da->Size() > 3) arr = da->Array(3);
     for(ObjDirItr<RndDrawable> it(dir, true); it != 0; ++it){
         std::list<RndGroup*> gList;
@@ -401,7 +480,7 @@ DataNode OnTestDrawGroups(DataArray* da){
         if(listcount > 1){
             unsigned long listcountfr = 0;
             for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++) listcountfr++;
-            String str(MakeString("%s is in %d groups:", PathName(it), listcountfr));
+            class String str(MakeString("%s is in %d groups:", PathName(it), listcountfr));
             for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++){
                 str << " " << PathName(*gListIt);
             }
@@ -412,7 +491,7 @@ DataNode OnTestDrawGroups(DataArray* da){
 }
 
 // fn_80659D74
-void TestTextureSize(ObjectDir* dir, int iType, int i3, int i4, int i5, int maxBpp){
+void TestTextureSize(class ObjectDir* dir, int iType, int i3, int i4, int i5, int maxBpp){
     bool rendered = false;
     if(iType == RndTex::kRendered || iType == RndTex::kRenderedNoZ) rendered = true;
     bool b2 = false;
@@ -435,13 +514,13 @@ void TestTextureSize(ObjectDir* dir, int iType, int i3, int i4, int i5, int maxB
 }
 
 // fn_80659E6C
-void TestTexturePaths(ObjectDir* dir){
-    String str(FileRoot());
+void TestTexturePaths(class ObjectDir* dir){
+    class String str(FileRoot());
     FileNormalizePath(str.c_str());
     for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
         FilePath fp(it->mFilepath);
         if(fp.empty()) continue;
-        String relative(FileRelativePath(FileRoot(), fp.c_str()));
+        class String relative(FileRelativePath(FileRoot(), fp.c_str()));
         FileNormalizePath(relative.c_str());
         if(strstr(relative.c_str(), "..") == relative.c_str()){
             if(strstr(relative.c_str(), "../../system/run") != relative.c_str()){
@@ -467,7 +546,7 @@ void TestTexturePaths(ObjectDir* dir){
     }
 }
 
-void TestMaterialTextures(ObjectDir*){}
+void TestMaterialTextures(class ObjectDir*){}
 
 void PreMultiplyAlpha(Hmx::Color& c) {
     c.red *= c.alpha;

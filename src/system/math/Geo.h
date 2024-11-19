@@ -75,4 +75,9 @@ bool Intersect(const Segment&, const class BSPNode*, float&, Plane&);
 bool Intersect(const Segment&, const Triangle&, bool, float&);
 void Multiply(const Box&, float, Box&);
 
+inline void CalcBoxCenter(Vector3& center, const Box& box){
+    Add(box.mMin, box.mMax, center);
+    Scale(center, 0.5f, center);
+}
+
 #endif
