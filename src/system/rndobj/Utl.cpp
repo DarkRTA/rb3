@@ -37,9 +37,7 @@ RndGroup* GroupOwner(Hmx::Object* o) {
     for(; rit != ritEnd; rit++){
         RndGroup* grp = dynamic_cast<RndGroup*>((*rit)->RefOwner());
         if(grp){
-            for(ObjPtrList<Hmx::Object, class ObjectDir>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){
-                if(*pit == o) return grp;
-            }
+            if(grp->mObjects.find(o) != grp->mObjects.end()) return grp;
         }
     }
     return 0;
@@ -50,7 +48,7 @@ static DataNode OnGroupOwner(DataArray* da) {
 }
 
 bool GroupedUnder(RndGroup* grp, Hmx::Object* o){
-    for(ObjPtrList<Hmx::Object, class ObjectDir>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){
+    for(ObjPtrList<Hmx::Object>::iterator pit = grp->mObjects.begin(); pit != grp->mObjects.end(); ++pit){
         if(*pit == o) return true;
         RndGroup* casted = dynamic_cast<RndGroup*>(*pit);
         if(casted && GroupedUnder(casted, o)) return true;
@@ -215,14 +213,12 @@ void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
 
 // fn_806571C0
 void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, float f6){
-    int int1, int2;
-    float bound2 = f5;
-    float bound1 = f6;
+    int firstFrameIdx, lastFrameIdx;
     if(f2){
         if(anim->TransKeys().size() > 2){
             Keys<Vector3, Vector3> vecKeys;
-            anim->TransKeys().FindBounds(bound1, bound2, int1, int2);
-            for(int i = 1; i < int2 - vecKeys.size(); i++){
+            anim->TransKeys().FindBounds(f5, f6, firstFrameIdx, lastFrameIdx);
+            for(int i = firstFrameIdx + 1; i < lastFrameIdx - vecKeys.size(); i++){
                 vecKeys.push_back(anim->TransKeys()[i]);
                 anim->TransKeys().Remove(i);
                 for(int j = 0; j < vecKeys.size(); j++){
@@ -232,6 +228,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
                     if(Length(vec) > f2){
                         anim->TransKeys().insert(anim->TransKeys().begin() + i, vecKeys.back());
                         vecKeys.pop_back();
+                        break;
                     }
                 }
             }
@@ -240,8 +237,8 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
     if(f3){
         if(anim->RotKeys().size() > 2){
             Keys<Hmx::Quat, Hmx::Quat> quatKeys;
-            anim->RotKeys().FindBounds(bound1, bound2, int1, int2);
-            for(int i = 1; i < int2 - quatKeys.size(); i++){
+            anim->RotKeys().FindBounds(f5, f6, firstFrameIdx, lastFrameIdx);
+            for(int i = firstFrameIdx + 1; i < lastFrameIdx - quatKeys.size(); i++){
                 quatKeys.push_back(anim->RotKeys()[i]);
                 anim->RotKeys().Remove(i);
                 for(int j = 0; j < quatKeys.size(); j++){
@@ -250,6 +247,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
                     if(AngleBetween(q, quatKeys[j].value) > f3){
                         anim->RotKeys().insert(anim->RotKeys().begin() + i, quatKeys.back());
                         quatKeys.pop_back();
+                        break;
                     }
                 }
             }
@@ -258,8 +256,8 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
     if(f4){
         if(anim->ScaleKeys().size() > 2){
             Keys<Vector3, Vector3> vecKeys;
-            anim->ScaleKeys().FindBounds(bound1, bound2, int1, int2);
-            for(int i = 1; i < int2 - vecKeys.size(); i++){
+            anim->ScaleKeys().FindBounds(f5, f6, firstFrameIdx, lastFrameIdx);
+            for(int i = firstFrameIdx + 1; i < lastFrameIdx - vecKeys.size(); i++){
                 vecKeys.push_back(anim->ScaleKeys()[i]);
                 anim->ScaleKeys().Remove(i);
                 for(int j = 0; j < vecKeys.size(); j++){
@@ -269,6 +267,7 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
                     if(Length(vec) > f4){
                         anim->ScaleKeys().insert(anim->ScaleKeys().begin() + i, vecKeys.back());
                         vecKeys.pop_back();
+                        break;
                     }
                 }
             }
