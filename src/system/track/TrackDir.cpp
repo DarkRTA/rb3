@@ -152,7 +152,7 @@ void TrackDir::Poll(){
     }
     if(b){
         RndDir::Poll();
-        float secs = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::b);
+        float secs = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::kRealTime);
         if(mAnimGroup && mRunning){
             mAnimGroup->SetFrame(secs, 1.0f);
         }
@@ -203,7 +203,7 @@ float TrackDir::CutOffY() const {
     if(TheLoadMgr.EditMode()){
         return mBottomY;
     } else {
-        float secs = TheTaskMgr.Seconds(TaskMgr::b);
+        float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
         float bias = secs * mYPerSecond;
         return mBottomY + bias;
     }
@@ -288,7 +288,7 @@ void TrackDir::AddTestWidget(TrackWidget* widget, int i){
     else if(i >= mSlots.size()) MILO_WARN("Can't add widget on slot %i, only %i slots", i, mSlots.size());
     else {
         Transform tf;
-        MakeWidgetXfm(i, TheTaskMgr.Seconds(TaskMgr::b), tf);
+        MakeWidgetXfm(i, TheTaskMgr.Seconds(TaskMgr::kRealTime), tf);
         tf.v.y += mTopY;
         widget->AddInstance(tf, 0.0f);
     }

@@ -35,7 +35,7 @@ inline float RndAnimatable::FramesPerUnit() {
 
 bool RndAnimatable::ConvertFrames(float& f){
     f /= FramesPerUnit();
-    return (Units() != 1);
+    return (Units() != kTaskBeats);
 }
 
 RndAnimatable::RndAnimatable() : mFrame(0.0f), mRate(k30_fps) {
@@ -92,17 +92,17 @@ BEGIN_LOADS(RndAnimatable)
         if(theScale != 1.0f || theOffset != 0.0f || (theMin != theMax)){
             const char* filt = MakeString("%s.filt", FileGetBase(Name(), 0));
             RndAnimFilter* filtObj = Dir()->New<RndAnimFilter>(filt);
-            filtObj->SetProperty("anim", DataNode(this));
-            filtObj->SetProperty("scale", DataNode(theScale));
-            filtObj->SetProperty("offset", DataNode(theOffset));
-            filtObj->SetProperty("min", DataNode(theMin));
-            filtObj->SetProperty("max", DataNode(theMax));
-            filtObj->SetProperty("loop", DataNode(theLoop));
+            filtObj->SetProperty("anim", this);
+            filtObj->SetProperty("scale", theScale);
+            filtObj->SetProperty("offset", theOffset);
+            filtObj->SetProperty("min", theMin);
+            filtObj->SetProperty("max", theMax);
+            filtObj->SetProperty("loop", theLoop);
         }
-        ObjPtrList<RndAnimatable, class ObjectDir> animList(this, kObjListNoNull);
+        ObjPtrList<RndAnimatable> animList(this, kObjListNoNull);
         bs >> animList;
         RndGroup* theGroup = dynamic_cast<RndGroup*>(this);
-        for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = animList.begin(); it != animList.end(); ++it){
+        for(ObjPtrList<RndAnimatable>::iterator it = animList.begin(); it != animList.end(); ++it){
             if(theGroup) theGroup->AddObject(*it, 0);
             else MILO_WARN("%s not in group", (*it)->Name());
         }
@@ -255,14 +255,14 @@ DataNode RndAnimatable::OnAnimate(DataArray* arr){
         }
     }
     TheTaskMgr.Start(theTask, local_units, local_delay);
-    return DataNode(theTask);
+    return theTask;
 }
 
 DataNode RndAnimatable::OnConvertFrames(DataArray* arr){
     float f = arr->Float(2);
     bool conv = ConvertFrames(f);
-    *arr->Var(2) = DataNode(f);
-    return DataNode(conv);
+    *arr->Var(2) = f;
+    return conv;
 }
 
 BEGIN_PROPSYNCS(RndAnimatable);
@@ -271,7 +271,7 @@ BEGIN_PROPSYNCS(RndAnimatable);
 END_PROPSYNCS;
 
 AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend) :
-    mAnim(this, 0), mAnimTarget(this, 0), mBlendTask(this, 0), mBlending(0), mBlendTime(0.0f), mBlendPeriod(blend), mLoop(loop) {
+    mAnim(this), mAnimTarget(this), mBlendTask(this), mBlending(0), mBlendTime(0), mBlendPeriod(blend), mLoop(loop) {
     MILO_ASSERT(anim, 0x1DF);
     mMin = Min(start, end);
     mMax = Max(start, end);
@@ -334,41 +334,37 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
+// this matches in retail, debug sucks
 // debug: https://decomp.me/scratch/KmGP0
 // retail: https://decomp.me/scratch/k4A5l
 void AnimTask::Poll(float time){
     float frame;
     float blend = 1.0f;
-    float t = time;
     if(mBlendPeriod){
-        blend = t / mBlendPeriod;
+        blend = time / mBlendPeriod;
         if(blend >= 1.0f){
             blend = 1.0f;
-            AnimTask* blendtask = mBlendTask;
-            delete blendtask;
+            delete mBlendTask;
             mBlendPeriod = 0.0f;
         }
-        else {
-            if(!mBlendTask){
-                float oldtime = mBlendTime;
-                mBlendTime = t;
-                blend = (t - oldtime) / (mBlendPeriod - oldtime);
-            }
+        else if(!mBlendTask){
+            float oldtime = mBlendTime;
+            mBlendTime = time;
+            blend = (time - oldtime) / (mBlendPeriod - oldtime);
         }
     }
     else {
-        AnimTask* blendtask = mBlendTask;
-        if(blendtask) delete blendtask;
+        if(mBlendTask) delete mBlendTask;
     }
-    t = t * mScale + mOffset;
+    time = time * mScale + mOffset;
     if(mLoop){
-        frame = ModRange(mMin, mMax, t);
+        frame = ModRange(mMin, mMax, time);
     }
     else {
-        frame = Clamp<float>(mMin, mMax, t);
+        frame = Clamp<float>(mMin, mMax, time);
     }
     mAnim->SetFrame(frame, blend);
-    if(!mAnimTarget || !mLoop && !mBlending && mBlendPeriod == 0.0f && t > mMax || t < mMin || !mScale){
+    if(!mAnimTarget || (!mLoop && !mBlending && !mBlendPeriod) && ((time > mMax || time < mMin) || (mScale == 0))){
         delete this;
     }
 }

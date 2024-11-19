@@ -571,7 +571,7 @@ void GemTrackDir::EnterCoda(){
     if(BandTrack::mParent){
         DataNode* prop = FindObject("gamemode", true)->Property("is_practice", true);
         if(!prop){
-            BandTrack::mParent->SetGemsEnabled(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f);
+            BandTrack::mParent->SetGemsEnabled(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f);
         }
     }
 }

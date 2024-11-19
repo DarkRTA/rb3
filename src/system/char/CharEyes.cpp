@@ -50,13 +50,13 @@ CharEyes::CharInterestState& CharEyes::CharInterestState::operator=(const CharEy
 }
 
 void CharEyes::CharInterestState::BeginRefractoryPeriod(){
-    unkc = TheTaskMgr.Seconds(TaskMgr::b);
+    unkc = TheTaskMgr.Seconds(TaskMgr::kRealTime);
 }
 
 bool CharEyes::CharInterestState::IsInRefractoryPeriod(){
     if(!mInterest || unkc < 0.0) return false;
     else {
-        float secs = TheTaskMgr.Seconds(TaskMgr::b) - unkc;
+        float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime) - unkc;
         if(secs < mInterest->mRefractoryPeriod) return true;
         else return false;
     }
@@ -65,7 +65,7 @@ bool CharEyes::CharInterestState::IsInRefractoryPeriod(){
 float CharEyes::CharInterestState::RefractoryTimeRemaining(){
     if(!mInterest || unkc < 0.0) return 0.0f;
     else {
-        float secs = TheTaskMgr.Seconds(TaskMgr::b) - unkc;
+        float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime) - unkc;
         if(secs < mInterest->mRefractoryPeriod) return mInterest->mRefractoryPeriod - secs;
         else return 0.0f;
     }
@@ -271,7 +271,7 @@ CharInterest* CharEyes::GetCurrentInterest(){
 
 void CharEyes::ForceBlink(){
     unk13c = true;
-    unk140 = TheTaskMgr.Seconds(TaskMgr::b);
+    unk140 = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     unk144++;
 }
 

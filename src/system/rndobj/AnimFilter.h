@@ -3,8 +3,11 @@
 #include "rndobj/Anim.h"
 #include "obj/ObjPtr_p.h"
 
-
-
+/**
+* @brief: A filter for an animatable object.
+* Original _objects description:
+* "An AnimFilter object modifies the playing of another animatable object"
+*/
 class RndAnimFilter : public RndAnimatable {
 public:
     enum Type {
@@ -31,6 +34,7 @@ public:
     float Scale();
     void SetAnim(RndAnimatable*);
     DataNode OnSafeAnims(DataArray*);
+    
     Type GetType(){ return mType; }
     RndAnimatable* Anim(){ return mAnim; }
     float Start(){ return mStart; }
@@ -46,21 +50,29 @@ public:
     NEW_OVERLOAD;
     DECLARE_REVS;
     NEW_OBJ(RndAnimFilter);
-
     static void Init(){
         REGISTER_OBJ_FACTORY(RndAnimFilter)
     }
 
-    ObjPtr<RndAnimatable, class ObjectDir> mAnim; // offset 0x10, size 0xC
-    float mPeriod; // offset 0x1C, size 0x4
-    float mStart; // offset 0x20, size 0x4
-    float mEnd; // offset 0x24, size 0x4
-    float mScale; // offset 0x28, size 0x4
-    float mOffset; // offset 0x2C, size 0x4
-    float mSnap; // offset 0x30, size 0x4
-    float mJitter; // offset 0x34, size 0x4
-    float mJitterFrame; // offset 0x38, size 0x4
-    enum Type mType; // offset 0x3C, size 0x4
+    /** "Animatable object that receives filtered frame" */
+    ObjPtr<RndAnimatable> mAnim; // 0x10
+    /** "Alternative to scale, overriden period of animation" */
+    float mPeriod; // 0x1C
+    /** "Overriden start frame of animation" */
+    float mStart; // 0x20
+    /** "Overriden end frame of animation" */
+    float mEnd; // 0x24
+    /** "Multiplier to speed of animation" */
+    float mScale; // 0x28
+    /** "Amount to offset frame for animation" */
+    float mOffset; // 0x2C
+    /** "Snap frame to nearest multiple" */
+    float mSnap; // 0x30
+    /** "Jitter frame randomly up to this amount" */
+    float mJitter; // 0x34
+    float mJitterFrame; // 0x38
+    /** "How to treat the frame outside of start and end" */
+    Type mType; // 0x3C
 };
 
 #endif

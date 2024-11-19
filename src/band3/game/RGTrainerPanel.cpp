@@ -177,7 +177,7 @@ void RGTrainerPanel::HandleChordLegend(bool b){
         if(mLegendGemID < unk60[GetDifficulty()]->NumGems()){
             GameGem& gem = unk60[GetDifficulty()]->GetGem(mLegendGemID);
             if(b){
-                float secs = TheTaskMgr.Seconds(TaskMgr::b);
+                float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
         //         dVar19 = (double)TaskMgr::Seconds((TaskMgr *)&TheTaskMgr,1);
         //         fVar2 = *(float *)this_01;
         //         if (fVar2 < (float)(dVar19 * 1000.0)) {

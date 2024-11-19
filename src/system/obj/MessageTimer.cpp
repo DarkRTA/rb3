@@ -39,20 +39,38 @@ void MessageTimer::Start(){
 
 void MessageTimer::Stop(){ sActive = false; }
 
-struct MaxSort {
-    bool operator()(EventEntry* e1, EventEntry* e2){ return e1->msgs < e2->msgs; }
-};
-
-struct ObjSort {
-    bool operator()(ObjEntry* e1, ObjEntry* e2){ return e1->maxMs > e2->maxMs ? true : false; }
-};
-
 void MessageTimer::Dump(){
     MILO_LOG("Message Tracker Dump!\n");
     std::sort(gEntries.begin(), gEntries.end(), MaxSort());
     for(int i = 0; i < gEntries.size(); i++){
-        EventEntry* e = gEntries[i];
-        std::sort(e->objs.begin(), e->objs.end(), ObjSort());
-        e->Dump();
+        gEntries[i]->Dump();
     }
+}
+
+void MessageTimer::AddTime(Hmx::Object* o, Symbol msg, float ms){
+    if(sActive){
+        for(int i = 0; i < gEntries.size(); i++){
+            if(gEntries[i]->msgs == msg){
+                gEntries[i]->Add(o, ms);
+                return;
+            }
+        }
+        gEntries.push_back(new EventEntry(msg, o, ms));
+    }
+}
+
+inline void EventEntry::Add(Hmx::Object* o, float ms){
+    Symbol sym = o ? MakeString("%s 0x%x", o->Name(), (int)o) : MakeString("0x%x", (int)o);
+    for(int i = 0; i < objs.size(); i++){
+        if(objs[i]->name == sym){
+            ObjEntry* cur = objs[i];
+            if(cur->maxMs < ms){
+                cur->maxMs = ms;
+            }
+            cur->num++;
+            cur->totalMs += ms;
+            return;
+        }
+    }
+    objs.push_back(new ObjEntry(sym, ms, 1));
 }

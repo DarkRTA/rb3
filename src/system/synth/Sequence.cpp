@@ -391,7 +391,7 @@ WaitSeqInst::WaitSeqInst(WaitSeq* seq) : SeqInst(seq), mEndTime(-1.0f) {
 }
 
 void WaitSeqInst::StartImpl(){
-    mEndTime = TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f + mWaitMs;
+    mEndTime = TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f + mWaitMs;
 }
 
 void WaitSeqInst::Stop(){
@@ -399,7 +399,7 @@ void WaitSeqInst::Stop(){
 }
 
 bool WaitSeqInst::IsRunning(){
-    return TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f < mEndTime;
+    return TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f < mEndTime;
 }
 
 GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {

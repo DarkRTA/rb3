@@ -8,7 +8,7 @@
 #include "bandobj/BandTrack.h"
 #include "bandtrack/TrackPanel.h"
 #include "beatmatch/BeatMaster.h"
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
@@ -84,7 +84,7 @@ void Player::DynamicAddBeatmatch(){
 }
 
 void Player::PostDynamicAdd(){
-    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     mQuarantined = true;
     mPollMs = secs * 1000.0f;
     SetTrack(mTrackNum);
@@ -669,7 +669,7 @@ void Player::ChangeDifficulty(Difficulty diff){
     mCrowd->SetLoseLevel(mBand->MainPerformer()->Crowd()->GetLoseLevel());
     SetQuarantined(true);
     TheGameConfig->ChangeDifficulty(GetUser(), diff);
-    mBand->UpdateBonusLevel(TheTaskMgr.Seconds(TaskMgr::b) * 1000.0f);
+    mBand->UpdateBonusLevel(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f);
 }
 
 void Player::SetQuarantined(bool b){

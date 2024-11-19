@@ -3,7 +3,7 @@
 #include "beatmatch/BeatMasterSink.h"
 #include "beatmatch/SongParserSink.h"
 #include "beatmatch/HxMaster.h"
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 #include "beatmatch/SongData.h"
 #include "beatmatch/MasterAudio.h"
 #include "utl/Loader.h"

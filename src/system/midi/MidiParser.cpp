@@ -464,7 +464,7 @@ DataNode MidiParser::OnDebugDraw(DataArray* arr){
 
 DataNode MidiParser::OnBeatToSecLength(DataArray* arr){
     float f2 = arr->Float(2);
-    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     float bts = BeatToSeconds(TheTaskMgr.Beat() + f2);
     return DataNode(bts - secs);
 }

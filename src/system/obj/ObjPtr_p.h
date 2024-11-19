@@ -14,13 +14,13 @@
  */
 template <class T1, class T2 = class ObjectDir> class ObjPtr : public ObjRef {
 public:
-    ObjPtr(Hmx::Object* obj, T1* cls = 0) : mOwner(obj), mPtr(cls) {
-        if(mPtr != 0) mPtr->AddRef(this);
+    ObjPtr(Hmx::Object* owner, T1* ptr = nullptr) : mOwner(owner), mPtr(ptr) {
+        if(mPtr != nullptr) mPtr->AddRef(this);
     }
     ObjPtr(const ObjPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
-        if(mPtr != 0) mPtr->AddRef(this);
+        if(mPtr != nullptr) mPtr->AddRef(this);
     }
-    virtual ~ObjPtr(){ if(mPtr != 0) mPtr->Release(this); }
+    virtual ~ObjPtr(){ if(mPtr != nullptr) mPtr->Release(this); }
     virtual Hmx::Object* RefOwner(){ return mOwner; }
     virtual void Replace(Hmx::Object* o1, Hmx::Object* o2){
         if (mPtr == o1) *this = dynamic_cast<T1*>(o2);
@@ -72,16 +72,16 @@ DONT_INLINE BinStream& operator>>(BinStream& bs, ObjPtr<T1, class ObjectDir>& pt
  */
 template <class T1, class T2 = class ObjectDir> class ObjOwnerPtr : public ObjRef {
 public:
-    ObjOwnerPtr(Hmx::Object* obj, T1* cls = nullptr): mOwner(obj), mPtr(cls) {
-        if(mPtr != 0) mPtr->AddRef(mOwner);
+    ObjOwnerPtr(Hmx::Object* owner, T1* ptr = nullptr): mOwner(owner), mPtr(ptr) {
+        if(mPtr != nullptr) mPtr->AddRef(mOwner);
     }
 
     ObjOwnerPtr(const ObjOwnerPtr& oPtr) : mOwner(oPtr.mOwner), mPtr(oPtr.mPtr) {
-        if(mPtr != 0) mPtr->AddRef(mOwner);
+        if(mPtr != nullptr) mPtr->AddRef(mOwner);
     }
 
     virtual ~ObjOwnerPtr(){
-        if(mPtr != 0) mPtr->Release(mOwner);
+        if(mPtr != nullptr) mPtr->Release(mOwner);
     }
 
     virtual Hmx::Object* RefOwner(){ return mOwner; }
@@ -98,9 +98,9 @@ public:
 
     void operator=(T1* t){
         if(t != mPtr){
-            if(mPtr != 0) mPtr->Release(mOwner);
+            if(mPtr != nullptr) mPtr->Release(mOwner);
             mPtr = t;
-            if(mPtr != 0) t->AddRef(mOwner);
+            if(mPtr != nullptr) t->AddRef(mOwner);
         }
     }
 

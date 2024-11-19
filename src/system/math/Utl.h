@@ -156,3 +156,10 @@ inline bool PowerOf2(int num){
     else if(num == 0) return true;
     else return (num & num - 1) == 0;
 }
+
+inline float Limit(float f1, float f2, float f3, int& i){
+    float fsub = f2 - f1;
+    int floored = floor((f3 - f1) / fsub);
+    i = floored;
+    return -(floored * fsub - f3);
+}

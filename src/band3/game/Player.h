@@ -3,7 +3,7 @@
 #include "PlayerBehavior.h"
 #include "PracticeSectionProvider.h"
 #include "bandobj/BandTrack.h"
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 #include "beatmatch/TrackType.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"

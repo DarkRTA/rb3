@@ -367,11 +367,11 @@ void BandDirector::PlayNextShot(){
             bool ret = oldnextshot->ConvertFrames(oldmin);
             MILO_ASSERT(ret, 0x2A1);
             MaxEq(oldmin, 0.25f);
-            unke0 = oldmin + oldz + TheTaskMgr.Seconds(TaskMgr::b);
+            unke0 = oldmin + oldz + TheTaskMgr.Seconds(TaskMgr::kRealTime);
         }
         else {
             if(oldnextshot && BFTB(oldnextshot->Category())){
-                unke0 = TheTaskMgr.Seconds(TaskMgr::b) + oldnextshot->GetTotalDurationSeconds();
+                unke0 = TheTaskMgr.Seconds(TaskMgr::kRealTime) + oldnextshot->GetTotalDurationSeconds();
             }
             else {
                 bool b2 = false;
@@ -384,7 +384,7 @@ void BandDirector::PlayNextShot(){
                     }
                     if(b1) b2 = true;
                 }
-                if(b2) unke0 = TheTaskMgr.Seconds(TaskMgr::b) + 1.0f;
+                if(b2) unke0 = TheTaskMgr.Seconds(TaskMgr::kRealTime) + 1.0f;
                 else unke0 = -1.0E+30f;
             }
         }
@@ -1112,7 +1112,7 @@ DataNode BandDirector::OnMidiAddPreset(DataArray* da){
 }
 
 BandCamShot* BandDirector::FindNextDircut(){
-    float secs = TheTaskMgr.Seconds(TaskMgr::b);
+    float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
     float delta = secs - TheTaskMgr.DeltaSeconds();
     Key<BandCamShot*>* key = mDircuts.GetFirstInRange(secs, delta);
     if(!key) return 0;
@@ -1285,7 +1285,7 @@ void BandDirector::FindNextPstKeyframe(float f1, float f2, Symbol s){
         DataArrayPtr ptr(DataNode(Symbol("lightpreset_keyframe")));
         SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
         if(skeys){
-            int idx = skeys->FindFirstAfter(f1);
+            int idx = skeys->KeyGreaterEq(f1);
             Keys<Symbol, Symbol>& keys = skeys->AsSymbolKeys();
             for(; idx < keys.size(); idx++){
                 unk108 = keys[idx].frame;
@@ -1307,7 +1307,7 @@ DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray* da){
             DataArrayPtr ptr(DataNode(Symbol("lightpreset_keyframe")));
             SymbolKeys* skeys = dynamic_cast<SymbolKeys*>(mPropAnim->GetKeys(this, ptr));
             if(skeys){
-                int idx = skeys->FindLastBefore(unk108);
+                int idx = skeys->KeyLessEq(unk108);
                 Keys<Symbol, Symbol>& keys = skeys->AsSymbolKeys();
                 if(idx > 0) s58 = keys[idx].value;
             }
@@ -1497,7 +1497,7 @@ DataNode BandDirector::OnFirstShotOK(DataArray* da){
         }
         if(b2) f10 += 30.0f;
 
-        int idxafter = skeys.FindFirstAfter(f10);
+        int idxafter = skeys.KeyGreaterEq(f10);
         if(idxafter < skeys.size()){
             f3c = skeys[idxafter].frame;
             if(f3c == f10){
@@ -1510,7 +1510,7 @@ DataNode BandDirector::OnFirstShotOK(DataArray* da){
         }
         if(f3c == 1e+30f) f3c = mEndOfSongSec * 30.0f;
 
-        int dircutidxafter = mDircuts.FindFirstAfter(TheTaskMgr.Seconds(TaskMgr::b));
+        int dircutidxafter = mDircuts.KeyGreaterEq(TheTaskMgr.Seconds(TaskMgr::kRealTime));
         if(dircutidxafter < mDircuts.size() && mDircuts[dircutidxafter].value){
             MinEq(f3c, mDircuts[dircutidxafter].frame * 30.0f);
         }

@@ -1,6 +1,6 @@
 #ifndef BEATMATCH_HXSONGDATA_H
 #define BEATMATCH_HXSONGDATA_H
-#include "beatmatch/SongPos.h"
+#include "utl/SongPos.h"
 
 // forward decs
 class TempoMap;

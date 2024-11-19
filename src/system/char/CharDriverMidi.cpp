@@ -84,7 +84,7 @@ DataNode CharDriverMidi::OnMidiParser(DataArray* da){
     if(clip || clip != FirstClip()){
         float somefloat = da->Float(3);
         if(clip->mPlayFlags & 0x200){
-            float secs = TheTaskMgr.Seconds(TaskMgr::b);
+            float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
             float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat()) - secs;
             somefloat = bts * clip->AverageBeatsPerSecond();
         }
