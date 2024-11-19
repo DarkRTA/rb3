@@ -313,17 +313,23 @@ DataArray* SystemConfig(){
     return gSystemConfig;
 }
 
-DataArray* SystemConfig(Symbol s){
+static DataArray* GetSystemConfigWith3Syms(Symbol s1, Symbol s2, Symbol s3){
+    return SystemConfig(s1, s2, s3);
+}
+
+#pragma push
+#pragma force_active on
+inline DataArray* SystemConfig(Symbol s){
     return gSystemConfig->FindArray(s, true);
 }
 
-DataArray* SystemConfig(Symbol s1, Symbol s2){
+inline DataArray* SystemConfig(Symbol s1, Symbol s2){
     return gSystemConfig->FindArray(s1, true)->FindArray(s2, true);
 }
-
-DataArray* SystemConfig(Symbol s1, Symbol s2, Symbol s3){
+inline DataArray* SystemConfig(Symbol s1, Symbol s2, Symbol s3){
     return gSystemConfig->FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
 }
+#pragma pop
 
 DataArray* SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4){
     return gSystemConfig->FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true)->FindArray(s4, true);
