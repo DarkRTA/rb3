@@ -334,41 +334,37 @@ void AnimTask::Replace(Hmx::Object* from, Hmx::Object* to){
     }
 }
 
+// this matches in retail, debug sucks
 // debug: https://decomp.me/scratch/KmGP0
 // retail: https://decomp.me/scratch/k4A5l
 void AnimTask::Poll(float time){
     float frame;
     float blend = 1.0f;
-    float t = time;
     if(mBlendPeriod){
-        blend = t / mBlendPeriod;
+        blend = time / mBlendPeriod;
         if(blend >= 1.0f){
             blend = 1.0f;
-            AnimTask* blendtask = mBlendTask;
-            delete blendtask;
+            delete mBlendTask;
             mBlendPeriod = 0.0f;
         }
-        else {
-            if(!mBlendTask){
-                float oldtime = mBlendTime;
-                mBlendTime = t;
-                blend = (t - oldtime) / (mBlendPeriod - oldtime);
-            }
+        else if(!mBlendTask){
+            float oldtime = mBlendTime;
+            mBlendTime = time;
+            blend = (time - oldtime) / (mBlendPeriod - oldtime);
         }
     }
     else {
-        AnimTask* blendtask = mBlendTask;
-        if(blendtask) delete blendtask;
+        if(mBlendTask) delete mBlendTask;
     }
-    t = t * mScale + mOffset;
+    time = time * mScale + mOffset;
     if(mLoop){
-        frame = ModRange(mMin, mMax, t);
+        frame = ModRange(mMin, mMax, time);
     }
     else {
-        frame = Clamp<float>(mMin, mMax, t);
+        frame = Clamp<float>(mMin, mMax, time);
     }
     mAnim->SetFrame(frame, blend);
-    if(!mAnimTarget || !mLoop && !mBlending && mBlendPeriod == 0.0f && t > mMax || t < mMin || !mScale){
+    if(!mAnimTarget || (!mLoop && !mBlending && !mBlendPeriod) && ((time > mMax || time < mMin) || (mScale == 0))){
         delete this;
     }
 }

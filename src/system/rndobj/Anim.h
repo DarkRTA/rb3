@@ -26,12 +26,12 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~RndAnimatable(){}
-    virtual bool Loop(){ return 0; }
+    virtual bool Loop(){ return false; }
     virtual void StartAnim(){}
     virtual void EndAnim(){}
     virtual void SetFrame(float frame, float blend){ mFrame = frame; }
-    virtual float StartFrame(){ return 0.0f; }
-    virtual float EndFrame(){ return 0.0f; }
+    virtual float StartFrame(){ return 0; }
+    virtual float EndFrame(){ return 0; }
     virtual Hmx::Object* AnimTarget(){ return this; }
     virtual void SetKey(float){}
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
@@ -75,9 +75,9 @@ public:
     NEW_POOL_OVERLOAD(AnimTask);
     DELETE_POOL_OVERLOAD(AnimTask);
 
-    ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim; // 0x1c
-    ObjPtr<Hmx::Object, class ObjectDir> mAnimTarget; // 0x28
-    ObjPtr<AnimTask, class ObjectDir> mBlendTask; // 0x34
+    ObjOwnerPtr<RndAnimatable> mAnim; // 0x1c
+    ObjPtr<Hmx::Object> mAnimTarget; // 0x28
+    ObjPtr<AnimTask> mBlendTask; // 0x34
     bool mBlending; // 0x40
     float mBlendTime; // 0x44
     float mBlendPeriod; // 0x48
