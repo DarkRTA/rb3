@@ -1168,7 +1168,10 @@
             "system/os/VirtualKeyboard_Wii.cpp": "NonMatching",
 
             "system/rndobj/AmbientOcclusion.cpp": "Matching",
-            "system/rndobj/Anim.cpp": "NonMatching",
+            "system/rndobj/Anim.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/AnimFilter.cpp": "NonMatching",
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/BoxMap.cpp": "MISSING",

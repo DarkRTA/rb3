@@ -3,8 +3,6 @@
 #include "rndobj/Anim.h"
 #include "obj/ObjPtr_p.h"
 
-
-
 class RndAnimFilter : public RndAnimatable {
 public:
     enum Type {

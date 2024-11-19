@@ -7,6 +7,12 @@
 
 class AnimTask;
 
+/**
+* @brief: An object that can be animated.
+* Original _objects description:
+* "Base class for animatable objects. Anim objects change
+* their state or other objects."
+*/
 class RndAnimatable : public virtual Hmx::Object {
 public:
     enum Rate {
@@ -26,43 +32,53 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     virtual ~RndAnimatable(){}
+    /** Determine whether or not this animation should loop. */
     virtual bool Loop(){ return false; }
+    /** Start the animation. */
     virtual void StartAnim(){}
+    /** End the animation. */
     virtual void EndAnim(){}
     virtual void SetFrame(float frame, float blend){ mFrame = frame; }
+    /** Get this animatable's first frame. */
     virtual float StartFrame(){ return 0; }
+    /** Get this animatable's last frame. */
     virtual float EndFrame(){ return 0; }
     virtual Hmx::Object* AnimTarget(){ return this; }
-    virtual void SetKey(float){}
+    virtual void SetKey(float frame){}
+    /** Get the list of this Object's children that are animatable. */
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
 
-    DataNode OnAnimate(DataArray*);
     void StopAnimation();
     bool IsAnimating();
+    Task* Animate(float blend, bool wait, float delay);
+    Task* Animate(float blend, bool wait, float delay, Rate rate, float start, float end, float period, float scale, Symbol type);
+    Task* Animate(float start, float end, TaskUnits units, float period, float blend);
+    TaskUnits Units() const;
+    float FramesPerUnit();
+    bool ConvertFrames(float& frames);
+
+    DataNode OnAnimate(DataArray*);
+    DataNode OnConvertFrames(DataArray*);
+
+    // weak getters and setters
     Rate GetRate(){ return mRate; }
     void SetRate(Rate r){ mRate = r; }
     float GetFrame() const { return mFrame; }
-    DataNode OnConvertFrames(DataArray*);
-
-    Task* Animate(float, bool, float);
-    Task* Animate(float, bool, float, Rate, float, float, float, float, Symbol);
-    Task* Animate(float, float, TaskUnits, float, float);
 
     static TaskUnits RateToTaskUnits(Rate);
-    TaskUnits Units() const;
-    float FramesPerUnit();
-    bool ConvertFrames(float&);
 
+    /** "Frame of animation". It ranges from 0 to what EndFrame() returns. */
     float mFrame; // 0x8
+    /** "Rate to animate" */
     Rate mRate; // 0xc
 };
 
 class AnimTask : public Task {
 public:
-    AnimTask(RndAnimatable*, float, float, float, bool, float);
+    AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend);
     virtual ~AnimTask();
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     OBJ_CLASSNAME(AnimTask);
