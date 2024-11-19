@@ -57,9 +57,9 @@ void RndAnimFilter::Load(BinStream& bs){
         bs >> mPeriod;
     }
     else {
-        unsigned char c;
-        bs >> c;
-        mType = (RndAnimFilter::Type)(c != 0);
+        bool b;
+        bs >> b;
+        mType = (RndAnimFilter::Type)(b);
     }
     if(gRev > 1){
         bs >> mSnap >> mJitter;

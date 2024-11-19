@@ -60,8 +60,8 @@ public:
         }
         else {
             // these functions for Vector3, respectively: fn_802E3AE8 and fn_805FC2C4
-            istart = FindLastBefore(Max(fstart, front().frame));
-            iend = FindFirstAfter(Min(fend, back().frame));
+            istart = KeyLessEq(Max(fstart, front().frame));
+            iend = KeyGreaterEq(Min(fend, back().frame));
         }
     }
 
@@ -90,7 +90,7 @@ public:
 
     // fn_805FC18C for Vector3
     int Add(const T1& val, float f, bool unique){
-        int bound = FindFirstAfter(f);
+        int bound = KeyGreaterEq(f);
         if(unique && bound != size() && f == (*this)[bound].frame){
             (*this)[bound].value = val;
         }
@@ -105,8 +105,8 @@ public:
 
     // fn_80653DE0 for Vector3 and fn_80653CE4 for Hmx::Quat
     int Remove(float fstart, float fend){
-        int bound1 = FindFirstAfter(fstart);
-        int bound2 = FindFirstAfter(fend);
+        int bound1 = KeyGreaterEq(fstart);
+        int bound2 = KeyGreaterEq(fend);
         erase(&(*this)[bound1], &(*this)[bound2]);
         return bound1;
     }
@@ -153,7 +153,7 @@ public:
                 return size() - 1;
             }
             else {
-                int frameIdx = FindLastBefore(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
+                int frameIdx = KeyLessEq(frame); // fn_805FBF50 in retail for T1, T2 = TexPtr, RndTex*
                 prev = &(*this)[frameIdx];
                 next = &(*this)[frameIdx + 1];
                 float den = next->frame - prev->frame;
@@ -164,9 +164,8 @@ public:
         }
     }
 
-    // TODO: rename function to FindLastBefore
     // finds the last possible index in which the corresponding frame <= ff
-    int FindLastBefore(float ff) const {
+    int KeyLessEq(float ff) const {
         if(empty() || (ff < front().frame)) return -1;
         else {
             int cnt = 0;
@@ -181,9 +180,8 @@ public:
         }
     }
 
-    // TODO: rename function to FindFirstAfter
     // finds the first possible index in which the corresponding frame > ff
-    int FindFirstAfter(float ff) const {
+    int KeyGreaterEq(float ff) const {
         if(empty() || (ff <= front().frame)) return 0;
         else {
             const Key<T1>& backKey = back();
@@ -206,7 +204,7 @@ public:
 
     // returns the first Key that fits in the range of frames f1 to f2
     Key<T1>* GetFirstInRange(float f1, float f2){
-        int idx = FindLastBefore(f1);
+        int idx = KeyLessEq(f1);
         if(idx == -1) return 0;
         else {
             if(f2 >= (*this)[idx].frame) return 0;
