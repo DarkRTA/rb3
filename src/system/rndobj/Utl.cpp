@@ -1,6 +1,8 @@
 #include "rndobj/Utl.h"
+#include "decomp.h"
 #include "math/Color.h"
 #include "math/Geo.h"
+#include "math/Mtx.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
 #include "obj/Object.h"
@@ -83,6 +85,8 @@ RndEnviron* FindEnviron(RndDrawable* d) {
     }
     return nullptr;
 }
+
+DECOMP_FORCEACTIVE(Utl, "m")
 
 bool AnimContains(const RndAnimatable* anim1, const RndAnimatable* anim2){
     if(anim1 == anim2) return true;
@@ -195,6 +199,34 @@ int GenerationCount(RndTransformable* t1, RndTransformable* t2) {
         count++;
     }
     return 0;
+}
+
+void AttachMesh(RndMesh* main, RndMesh* attach){
+    MILO_ASSERT(main && attach, 0x536);
+    int nummainfaces = main->Faces().size();
+    int numattachfaces = attach->Faces().size();
+    main->Faces().resize(nummainfaces + numattachfaces);
+    int numverts = main->Verts().size();
+    for(int i = 0; i < numattachfaces; i++){
+        RndMesh::Face& curattachface = attach->FaceAt(i);
+        RndMesh::Face& mainface = main->FaceAt(i + nummainfaces);
+        mainface.Set(curattachface.idx0 + numverts, curattachface.idx1 + numverts, curattachface.idx2 + numverts);
+    }
+    Transform tf50;
+    FastInvert(main->WorldXfm(), tf50);
+    Multiply(attach->WorldXfm(), tf50, tf50);
+    int numattachverts = attach->Verts().size();
+    main->Verts().resize(numverts + numattachverts, true);
+    for(int i = 0; i < numattachverts; i++){
+        RndMesh::Vert& mainvert = main->VertAt(i + numverts);
+        RndMesh::Vert& attachvert = attach->VertAt(i);
+        Multiply(attachvert.pos, tf50, mainvert.pos);
+        mainvert.color = attachvert.color;
+        mainvert.boneWeights = attachvert.boneWeights;
+        mainvert.norm = attachvert.norm;
+        mainvert.uv = attachvert.uv;
+    }
+    main->Sync(0x3F);
 }
 
 void UtilDrawString(const char* c, const Vector3& v, const Hmx::Color& col) {
