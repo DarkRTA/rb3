@@ -27,7 +27,11 @@
 #include "rndobj/LitAnim.h"
 #include "rndobj/MatAnim.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/MeshAnim.h"
+#include "rndobj/Morph.h"
 #include "rndobj/MultiMesh.h"
+#include "rndobj/Part.h"
+#include "rndobj/PartAnim.h"
 #include "rndobj/Rnd.h"
 #include "rndobj/Text.h"
 #include "rndobj/Trans.h"
@@ -651,10 +655,94 @@ void RndScaleObject(Hmx::Object* o, float f1, float f2){
             ScaleFrame(matanim->ScaleKeys(), f2);
             ScaleFrame(matanim->RotKeys(), f2);
         }
+        return;
     }
     RndMesh* mesh = dynamic_cast<RndMesh*>(o);
     if(mesh){
-        
+        if(mesh->GeometryOwner() == mesh){
+            for(RndMesh::Vert* it = mesh->Verts().begin(); it != mesh->Verts().end(); ++it){
+                it->pos *= f1;
+            }
+            mesh->Sync(0x1F);
+            Transform tf78;
+            tf78.m.Set(f1, 0, 0, 0, f1, 0, 0, 0, f1);
+            tf78.v.Zero();
+            MultiplyEq(mesh->GetBSPTree(), tf78);
+        }
+        mesh->ScaleBones(f1);
+        return;
+    }
+    RndMeshAnim* meshanim = dynamic_cast<RndMeshAnim*>(o);
+    if(meshanim){
+        if(meshanim->KeysOwner() == meshanim){
+            for(Keys<std::vector<Vector3>, std::vector<Vector3> >::iterator it = meshanim->VertPointsKeys().begin(); it != meshanim->VertPointsKeys().end(); ++it){
+                for(std::vector<Vector3>::iterator vit = it->value.begin(); vit != it->value.end(); ++vit){
+                    *vit *= f1;
+                }
+            }
+            ScaleFrame(meshanim->VertNormalsKeys(), f2);
+            ScaleFrame(meshanim->VertPointsKeys(), f2);
+            ScaleFrame(meshanim->VertTexsKeys(), f2);
+            ScaleFrame(meshanim->VertColorsKeys(), f2);
+        }
+        return;
+    }
+    RndMorph* morph = dynamic_cast<RndMorph*>(o);
+    if(morph){
+        for(int i = 0; i < morph->NumPoses(); i++){
+            morph->PoseAt(i);
+            // scaleframe
+        }
+        return;
+    }
+    RndMultiMesh* multimesh = dynamic_cast<RndMultiMesh*>(o);
+    if(multimesh){
+        for(std::list<RndMultiMesh::Instance>::iterator it = multimesh->mInstances.begin(); it != multimesh->mInstances.end(); ++it){
+            (*it).mXfm.v *= f1;
+        }
+        return;
+    }
+    RndParticleSys* partsys = dynamic_cast<RndParticleSys*>(o);
+    if(partsys){
+        partsys->SetBubbleSize(partsys->mBubbleSize.x * f1, partsys->mBubbleSize.y * f1);
+        partsys->SetBubblePeriod(partsys->mBubblePeriod.x * f1, partsys->mBubblePeriod.y * f1);
+        partsys->SetLife(partsys->mLife.x * f1, partsys->mLife.y * f1);
+        partsys->SetEmitRate(partsys->mEmitRate.x / f1, partsys->mEmitRate.y / f1);
+        Vector3 vb0 = partsys->mForceDir;
+        vb0 *= (f1 / f2) / f2;
+        partsys->SetForceDir(vb0);
+        Vector3 box1, box2;
+        Scale(partsys->mBoxExtent1, f1, box1);
+        Scale(partsys->mBoxExtent2, f1, box2);
+        partsys->SetBoxExtent(box1, box2);
+        partsys->SetSpeed((partsys->mSpeed.x * f1) / f2, (partsys->mSpeed.y * f1) / f2);
+        partsys->SetStartSize(partsys->mStartSize.x * f1, partsys->mStartSize.y * f1);
+        partsys->SetDeltaSize(partsys->mDeltaSize.x * f1, partsys->mDeltaSize.y * f1);
+        return;
+    }
+    RndParticleSysAnim* partsysanim = dynamic_cast<RndParticleSysAnim*>(o);
+    if(partsysanim){
+        if(partsysanim->KeysOwner() == partsysanim){
+            ScaleFrame(partsysanim->StartColorKeys(), f2);
+            ScaleFrame(partsysanim->EndColorKeys(), f2);
+            ScaleFrame(partsysanim->EmitRateKeys(), f2);
+            ScaleFrame(partsysanim->SpeedKeys(), f2);
+            ScaleFrame(partsysanim->LifeKeys(), f2);
+            ScaleFrame(partsysanim->StartSizeKeys(), f2);
+        }
+        return;
+    }
+    RndTransAnim* transanim = dynamic_cast<RndTransAnim*>(o);
+    if(transanim){
+        if(transanim->KeysOwner() == transanim){
+            for(Keys<Vector3, Vector3>::iterator it = transanim->TransKeys().begin(); it != transanim->TransKeys().end(); ++it){
+                it->value *= f1;
+            }
+            ScaleFrame(transanim->TransKeys(), f2);
+            ScaleFrame(transanim->RotKeys(), f2);
+            ScaleFrame(transanim->ScaleKeys(), f2);
+        }
+        return;    
     }
 }
 

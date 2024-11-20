@@ -25,7 +25,8 @@ public:
         Instance(Transform t) : mXfm(t) {}
         void LoadRev(BinStream&, int);
         void Load(BinStream&);
-        Transform mXfm;
+
+        Transform mXfm; // 0x0
     };
     RndMultiMesh();
     OBJ_CLASSNAME(MultiMesh);

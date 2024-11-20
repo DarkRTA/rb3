@@ -74,6 +74,7 @@ bool Intersect(const Transform&, const Hmx::Polygon&, const class BSPNode*);
 bool Intersect(const Segment&, const class BSPNode*, float&, Plane&);
 bool Intersect(const Segment&, const Triangle&, bool, float&);
 void Multiply(const Box&, float, Box&);
+void MultiplyEq(BSPNode*, const Transform&);
 
 inline void CalcBoxCenter(Vector3& center, const Box& box){
     Add(box.mMin, box.mMax, center);
