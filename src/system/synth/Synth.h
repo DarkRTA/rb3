@@ -6,6 +6,7 @@
 #include "synth/FxSendPitchShift.h"
 #include "synth/Mic.h"
 #include "synth/ByteGrinder.h"
+#include "synth/MidiInstrumentMgr.h"
 
 enum FXMode {
     kFXModeOff,
@@ -83,6 +84,8 @@ public:
     virtual void DestroyPitchShift(FxSendPitchShift*);
 
     void StopAllSfx(bool);
+    float GetMasterVolume();
+    void SetMasterVolume(float);
 
     void Play(const char*, float, float, float);
 
@@ -96,6 +99,8 @@ public:
     Fader* unk4c;
     Fader* unk50;
     Fader* unk54;
+    int unk58;
+    MidiInstrumentMgr* mInstrumentMgr;
 };
 
 extern Synth* TheSynth;

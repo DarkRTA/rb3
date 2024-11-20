@@ -2,6 +2,7 @@
 #define BEATMATCH_BEATMATCHER_H
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "beatmatch/TrackWatcherParent.h"
+#include "game/Player.h"
 #include "utl/HxGuid.h"
 #include "utl/Symbol.h"
 #include "utl/SongInfoCopy.h"
@@ -49,6 +50,10 @@ public:
 
     virtual void SetTrack(int);
     virtual float GetCapStrip() const;
+
+    void SetFillLogic(FillLogic);
+    bool IsAutoplay();
+    void SetAutoplay(bool);
 
     int dummy;
 };

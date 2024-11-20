@@ -1,8 +1,10 @@
 #ifndef RNDOBJ_MESHDEFORM_H
 #define RNDOBJ_MESHDEFORM_H
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
+#include "utl/MemMgr.h"
 
 class RndMesh;
 class SyncMeshCB;
@@ -14,7 +16,13 @@ public:
         VertArray(RndMeshDeform*);
         ~VertArray();
         void Clear();
+        int NumVerts();
+        void* FindVert(int);
+        void CopyVert(int, int, VertArray&);
+        void AppendWeights(int, int*, float*);
         void SetSize(int);
+        void Copy(const VertArray&);
+        void Load(BinStream&);
 
         int mSize;
         void* mData;
@@ -24,6 +32,7 @@ public:
     // size 0x6c
     class BoneDesc {
     public:
+        u8 pad[0x6c];
     };
 
     RndMeshDeform();
@@ -40,20 +49,23 @@ public:
 
     void CopyWeights(int, int, RndMeshDeform*);
     void Reskin(SyncMeshCB*, bool);
+    void SetNumBones(int);
     void SetMesh(RndMesh*);
     RndMesh* Mesh() const { return mMesh; }
 
     NEW_OVERLOAD
+    DELETE_OVERLOAD
     NEW_OBJ(RndMeshDeform)
+    DECLARE_REVS
     static void Init(){
         REGISTER_OBJ_FACTORY(RndMeshDeform)
     }
     static RndMeshDeform* FindDeform(RndMesh*);
 
-    ObjPtr<RndMesh, ObjectDir> mMesh;
-    Transform mMeshInverse;
-    ObjVector<BoneDesc> mBones;
-    VertArray mVerts;
+    ObjPtr<RndMesh, ObjectDir> mMesh; // 0x1c
+    Transform mMeshInverse; // 0x28
+    ObjVector<BoneDesc> mBones; // 0x58
+    VertArray mVerts; // 0x68
     bool mSkipInverse;
     bool mDeformed;
 

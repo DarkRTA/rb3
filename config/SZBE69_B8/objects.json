@@ -42,8 +42,8 @@
             "band3/game/CrowdRating.cpp": "NonMatching",
             "band3/game/Defines.cpp": "MISSING",
             "band3/game/DeployCountTracker.cpp": "NonMatching",
-            "band3/game/DirectInstrument.cpp": "MISSING",
-            "band3/game/FadePanel.cpp": "MISSING",
+            "band3/game/DirectInstrument.cpp": "NonMatching",
+            "band3/game/FadePanel.cpp": "NonMatching",
             "band3/game/FocusTracker.cpp": "NonMatching",
             "band3/game/FreestylePanel.cpp": "MISSING",
             "band3/game/FretHand.cpp": "NonMatching",
@@ -53,7 +53,7 @@
             "band3/game/GameMicManager.cpp": "MISSING",
             "band3/game/GameMode.cpp": "LinkIssues",
             "band3/game/GamePanel.cpp": "MISSING",
-            "band3/game/GemPlayer.cpp": "MISSING",
+            "band3/game/GemPlayer.cpp": "NonMatching",
             "band3/game/GemTrainerPanel.cpp": "NonMatching",
             "band3/game/GuitarFx.cpp": "Matching",
             "band3/game/HeldNote.cpp": "NonMatching",
@@ -1379,7 +1379,7 @@
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": {
                 "status": "Equivalent",
-                "comment": "regswaps and instruction ordering mismatches galore"
+                "comment": "regswaps galore"
             },
             "system/utl/Chunks.cpp": "Matching",
             "system/utl/Compress.cpp": "Matching",

@@ -218,7 +218,7 @@ void FocusTracker::SetFocusPlayer(const TrackerPlayerID& pid, float f, FocusFlag
     MILO_ASSERT(pPlayer, 0x1D6);
     static Message focusMsg("send_tracker_focus", 0, 0, 0);
     focusMsg[0] = unk88;
-    focusMsg[1] = (int)(unk84 * 1000.0f);
+    focusMsg[1] = (int)(unk84 * 10000.0f);
     focusMsg[2] = flags;
     pPlayer->HandleType(focusMsg);
 }

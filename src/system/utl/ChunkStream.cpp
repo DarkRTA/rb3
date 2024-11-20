@@ -54,9 +54,7 @@ ChunkStream::ChunkStream(const char* file, FileType type, int chunkSize, bool co
         mBuffers[bufCnt] = 0;
     }
     mCurReadBuffer = 0;
-    int size = 0xA04;
-    if (type == kRead) size = 2;
-    mFile = NewFile(file, size);
+    mFile = NewFile(file, type == kRead ? 2 : 2564); // don't ask about the magic number
     mFail = !mFile;
     if (!mFail) {
         if (type == kWrite) {
@@ -324,13 +322,13 @@ void ChunkStream::DecompressChunkAsync(){
 }
 
 bool ChunkStream::PollDecompressionWorker(){
+    DecompressTask task;
     if(gDecompressionQueue.size() != 0){
-        DecompressTask task = gDecompressionQueue.front();
+        task = gDecompressionQueue.front();
         gDecompressionQueue.pop_front();
+    } else return false;
         DecompressChunk(task);
         return true;
-    }
-    return false;
 }
 
 void DecompressMemHelper(const void* srcData, int srcLen, void* dstData, int& dstLen, const char* fname) {
