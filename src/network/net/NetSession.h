@@ -125,6 +125,7 @@ public:
     bool IsHost() const;
     void ProcessUserLeftMsg(const UserLeftMsg&);
     void UpdateSyncStore(const User*);
+    void UpdateUserData(User*, unsigned int);
     void SendToAllClientsExcept(const NetMessage&, PacketType, unsigned int);
     void RemoveClient(unsigned int);
     void SetDoneArbitrating(int);

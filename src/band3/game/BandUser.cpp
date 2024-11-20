@@ -2,6 +2,8 @@
 #include "game/Defines.h"
 #include "beatmatch/TrackType.h"
 #include "game/Player.h"
+#include "net/NetSession.h"
+#include "tour/TourCharRemote.h"
 #include "utl/Symbols.h"
 
 BandUser::BandUser()
@@ -56,9 +58,10 @@ void BandUser::SetDifficulty(Difficulty d){
     Difficulty old = mDifficulty;
     unk_0xC = true;
     mDifficulty = d;
-    if(old != d && mPlayer){
-
+    if(old != d && mPlayer != nullptr) {
+        mPlayer->ChangeDifficulty(d);
     }
+    UpdateData(1);
 }
 
 bool BandUser::IsFullyInGame() const {
@@ -139,7 +142,14 @@ void BandUser::BandUser::SetHas22FretGuitar(bool b){
 }
 
 bool BandUser::HasChar(){ return mChar; }
+
 CharData* BandUser::GetChar(){ return mChar; }
+
+void BandUser::UpdateData(unsigned int data) {
+    if (TheNetSession->HasUser(this)) {
+        TheNetSession->UpdateUserData(this, data);
+    }
+}
 
 DataNode BandUser::OnSetDifficulty(DataArray* da){
     DataNode& eval = da->Node(2).Evaluate();
@@ -291,8 +301,8 @@ BEGIN_HANDLERS(LocalBandUser)
     HANDLE_CHECK(0x3CC)
 END_HANDLERS
 
-RemoteBandUser::RemoteBandUser(){
-
+RemoteBandUser::RemoteBandUser() : unk19(), unk1a(), unk1c(), unk20(), unk24() {
+    mRemoteChar = new TourCharRemote;
 }
 
 RemoteBandUser::~RemoteBandUser(){

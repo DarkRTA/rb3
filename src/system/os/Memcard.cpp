@@ -1,5 +1,6 @@
 #include "Memcard.h"
 #include "Debug.h"
+#include "decomp.h"
 
 void Memcard::Init() {
     this->SetName("memcard", ObjectDir::sMainDir);
@@ -9,22 +10,32 @@ void Memcard::Poll() {
     return;
 }
 
+void Memcard::ShowDeviceSelector(const ContainerId&, bool, Hmx::Object*, int) {
+
+}
+
+bool Memcard::IsDeviceValid(const ContainerId&) { return true; }
+
 void Memcard::DestroyContainer(MCContainer *pContainer) {
     MILO_ASSERT(pContainer, 0x34);
-    MILO_ASSERT(!pContainer->mIsMounted, 0x35);
-    if (pContainer != nullptr) {
-        delete pContainer;
-    }
+    MILO_ASSERT(!pContainer->IsMounted(), 0x35);
+    delete pContainer;
 }
 
-void Memcard::SetContainerDisplayName(const wchar_t *pName) {
-    return;
+MCContainer::~MCContainer() {}
+
+void MCContainer::DestroyMCFile(MCFile* pFile) {
+    MILO_ASSERT(pFile, 69);
+    if (pFile->IsOpen()) pFile->Close();
+    delete pFile;
 }
 
-void Memcard::SetContainerName(const char *pName) {
-    return;
+String MCContainer::BuildPath(const char* pPath) {
+    return pPath;
 }
 
-MCContainer::~MCContainer() {
-    return;
-}
+
+DECOMP_FORCEFUNC(Memcard, Memcard, GetDisplayName())
+DECOMP_FORCEFUNC(Memcard, Memcard, GetContainerName())
+DECOMP_FORCEFUNC(Memcard, Memcard, SetContainerDisplayName(L""))
+DECOMP_FORCEFUNC(Memcard, Memcard, SetContainerName(""))

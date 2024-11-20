@@ -6,6 +6,7 @@
 #include "meta_band/OvershellSlotState.h"
 #include "meta_band/CharData.h"
 #include "os/User.h"
+#include "tour/TourCharRemote.h"
 #include "types.h"
 #include "system/bandobj/BandCharacter.h"
 
@@ -148,7 +149,7 @@ public:
     virtual void Reset();
     virtual void SyncLoad(BinStream&, unsigned int);
 
-    int unkc; // TourCharRemote*
+    TourCharRemote* mRemoteChar; // TourCharRemote*
     std::vector<int> unk10; // 0x10
     bool unk18;
     bool unk19;

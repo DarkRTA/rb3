@@ -29,7 +29,7 @@ void OverdriveTimeTracker::FirstFrame_(float){
 
 void OverdriveTimeTracker::Poll_(float f){
     MILO_ASSERT(TheGame, 0x3E);
-    if(!mSource->IsFinished()){
+    if(TheGame->unk_0xdc != -1 || mSource->IsFinished()) return; else {
         bool o2 = false;
         for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
             Player* player = mSource->GetPlayer(id);

@@ -32,6 +32,8 @@ class Game : public Hmx::Object {
 
     u8 pad[0x4C];
     bool mIsPaused; // 0x68 iunno
+    u8 pad2[115];
+    float unk_0xdc;
 };
 
 extern Game* /*you just lost*/ TheGame;
