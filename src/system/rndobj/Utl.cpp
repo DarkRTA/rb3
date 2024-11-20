@@ -12,6 +12,7 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "os/File.h"
 #include "os/System.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Cam.h"
@@ -285,7 +286,10 @@ void RandomPointOnMesh(RndMesh* m, Vector3& v1, Vector3& v2){
 }
 
 void UtilDrawSphere(const Vector3& v, float f, const Hmx::Color& col){
-    if(sSphereMesh){
+    if(!sSphereMesh){
+        MILO_NOTIFY_ONCE("Sphere mesh is not loaded");
+    }
+    else {
         Transform tf58;
         tf58.Reset();
         tf58.v = v;
@@ -476,6 +480,8 @@ void SpliceKeys(RndTransAnim* anim1, RndTransAnim* anim2, float f1, float f2){
         anim2->ScaleKeys().insert(anim2->ScaleKeys().begin() + scaleRemoved, anim1->ScaleKeys().begin(), anim1->ScaleKeys().end());
     }
 }
+
+DECOMP_FORCEACTIVE(Utl, "start <= end", "ni == numKeys")
 
 // fn_806571C0
 void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, float f6){
@@ -754,11 +760,45 @@ void RandomXfms(RndMultiMesh*) {
     MILO_ASSERT(0, 3173);
 }
 
-void MoveXfms(RndMultiMesh* mm, const Vector3& v) {
-    for (std::list<RndMultiMesh::Instance>::iterator i = mm->mInstances.begin(); i != mm->mInstances.end(); i++) {
-        i->mXfm.v += v;
-    }
+DECOMP_FORCEACTIVE(Utl, "\\og\\", "/og/", "\\ng\\", "/ng/", "system", "ng")
 
+void ScrambleXfms(RndMultiMesh* mm){
+    for(std::list<RndMultiMesh::Instance>::iterator it = mm->mInstances.begin(); it != mm->mInstances.end(); ++it){
+        Vector3 v48(RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f), RandomFloat(-1.0f, 1.0f));
+        Normalize(v48, v48);
+        MakeRotMatrix(Hmx::Quat(v48, RandomFloat(0, 6.283f)), it->mXfm.m);
+    }
+}
+
+void DistributeXfms(RndMultiMesh* mm, int i, float f){
+    int idx = 0;
+    for(std::list<RndMultiMesh::Instance>::iterator it = mm->mInstances.begin(); it != mm->mInstances.end(); ++it){
+        Vector3 v5c((float)(idx % i) * f, (float)(idx / i) * f, 0);
+        Add(it->mXfm.v, v5c, it->mXfm.v);
+        ++idx;
+    }
+}
+
+void MoveXfms(RndMultiMesh* mm, const Vector3& v) {
+    for (std::list<RndMultiMesh::Instance>::iterator i = mm->mInstances.begin(); i != mm->mInstances.end(); ++i) {
+        Add(i->mXfm.v, v, i->mXfm.v);
+    }
+}
+
+void ScaleXfms(RndMultiMesh* mm, const Vector3& v){
+    for (std::list<RndMultiMesh::Instance>::iterator i = mm->mInstances.begin(); i != mm->mInstances.end(); ++i) {
+        Scale(v, i->mXfm.m, i->mXfm.m);
+    }
+}
+
+const char* MovieExtension(const char* cc, Platform plat){
+    if(stricmp(cc, "xbv") == 0){
+        if(plat - 2U <= 3){
+            return "xbv";
+        }
+        return cc;
+    }
+    else return nullptr;
 }
 
 Loader* ResourceFactory(const FilePath& f, LoaderPos p) {
@@ -790,8 +830,42 @@ const char* CacheResource(const char* cc, Hmx::Object* o){
     }
 }
 
+const char* CacheResource(const char* cc, CacheResourceResult& res){
+    Platform thisPlatform = TheLoadMgr.GetPlatform();
+    res = kCacheUnnecessary;
+    char buf[256];
+    const char* localized = FileLocalize(cc, buf);
+    bool islocal = FileIsLocal(localized);
+    const char* ext = FileGetExt(localized);
+    if(stricmp(ext, "bmp") != 0 && stricmp(ext, "png") != 0){
+        const char* movieExt = MovieExtension(ext, thisPlatform);
+        if(movieExt){
+            return MakeString("%s/%s.%s", FileGetPath(localized, 0), FileGetBase(localized, 0), movieExt);
+        }
+        else {
+            res = kCacheUnknownExtension;
+            return nullptr;
+        }
+    }
+    else {
+        if(TheLoadMgr.GetPlatform() == kPlatformPS3){
+            const char* xboxStr = strstr(localized, "_xbox");
+            if(xboxStr){
+                static char* ps3File;
+                strcpy(ps3File, localized);
+                int ps3Idx = xboxStr - localized;
+                strcpy(ps3File + ps3Idx, "_ps3");
+                strcpy(ps3File + ps3Idx + 4, xboxStr + 5);
+            }
+        }
+        static char* cacheFile;
+        strcpy(cacheFile, MakeString("%s/gen/%s.%s_%s", FileGetPath(localized, 0), FileGetBase(localized, 0), FileGetExt(localized), PlatformSymbol(thisPlatform)));
+        // the rest relies on AsyncFileWii and Holmes
+    }
+}
+
 DataNode DataFindEnviron(DataArray* da) {
-    return DataNode(FindEnviron(da->Obj<RndDrawable>(1)));
+    return FindEnviron(da->Obj<RndDrawable>(1));
 }
 
 void RndUtlPreInit() {
@@ -817,6 +891,9 @@ void RndUtlInit(){
         sSphereMesh = sSphereDir->Find<RndMesh>("sphere.mesh", true);
     }
 }
+
+DECOMP_FORCEACTIVE(Utl, "%d animated meshes reset", "%d tex xfms collapsed", "%d rendered textures reset", "%d items deleted from unused buffers",
+    "%d materials converted to Src\n%d materials converted to Add", "%d objects reordered", "Camera Y Field of View is 0")
 
 void RndUtlTerminate(){
     delete sSphereDir;
@@ -847,7 +924,7 @@ DataNode OnTestDrawGroups(DataArray* da){
     DataArray* arr = 0;
     class ObjectDir* dir = da->Obj<class ObjectDir>(2);
     if(da->Size() > 3) arr = da->Array(3);
-    for(ObjDirItr<RndDrawable> it(dir, true); it != 0; ++it){
+    for(ObjDirItr<RndDrawable> it(dir, true); it; ++it){
         std::list<RndGroup*> gList;
         ListDrawGroups(it, dir, gList);
         if(arr){
