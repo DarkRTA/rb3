@@ -9,6 +9,7 @@
 #include "math/Vec.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -37,6 +38,7 @@
 #include "rndobj/Part.h"
 #include "rndobj/PartAnim.h"
 #include "rndobj/Rnd.h"
+#include "rndobj/Tex.h"
 #include "rndobj/Text.h"
 #include "rndobj/Trans.h"
 #include "rndobj/TransAnim.h"
@@ -1068,6 +1070,55 @@ MatShaderOptions GetDefaultMatShaderOpts(const Hmx::Object* o, RndMat* mat){
     }
 ret:
     return opts;
+}
+
+DataNode GetNormalMapTextures(class ObjectDir* dir){
+    DataArrayPtr ptr(new DataArray(0x100));
+    int idx = 0;
+    ptr->Node(idx++) = NULL_OBJ;
+    for(ObjDirItr<RndTex> it(dir, true); it; ++it){
+        bool b1 = false;
+        FilePath fp(it->File());
+        if(strstr(FileGetBase(fp.c_str(), 0), "_norm")){
+            b1 = true;
+        }
+        else {
+            if(fp.empty()){
+                if(it->IsRendered()) b1 = true;
+            }
+        }
+        if(b1){
+            ptr->Node(idx++) = DataNode(it);
+        }
+    }
+    ptr->Resize(idx);
+    return ptr;
+}
+
+DataNode GetTexturesOfType(class ObjectDir* dir, RndTex::Type texType){
+    int num = 0;
+    for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
+        if(texType == (texType & it->GetType())){
+            num++;
+        }
+    }
+    DataArrayPtr ptr(new DataArray(num + 1));
+    num = 0;
+    for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
+        if(texType == (texType & it->GetType())){
+            ptr->Node(num++) = DataNode(it);
+        }
+    }
+    ptr->Node(num) = NULL_OBJ;
+    return ptr;
+}
+
+DataNode GetRenderTextures(class ObjectDir* dir){
+    return GetTexturesOfType(dir, RndTex::kRendered);
+}
+
+DataNode GetRenderTexturesNoZ(class ObjectDir* dir){
+    return GetTexturesOfType(dir, RndTex::kRenderedNoZ);
 }
 
 void ResetColors(std::vector<Hmx::Color>& colors, int newNumColors){

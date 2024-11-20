@@ -89,7 +89,8 @@ struct MatShaderOptions {
         bf billboard;
         bf skinned;
         bf useAO;
-    };
+    }; // 0x0
+    bool mTempMat; // 0x4
 
     // TODO: rename this once you have a better idea of what it does
     void SetLast5(int mask){
@@ -105,8 +106,6 @@ struct MatShaderOptions {
         shader_struct.mHasAOCalc = 0;
         shader_struct.mHasAOCalc = calc;
     }
-
-    bool mTempMat;
 };
 
 class RndMat : public Hmx::Object {
