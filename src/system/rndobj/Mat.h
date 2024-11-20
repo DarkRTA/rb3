@@ -155,6 +155,10 @@ public:
         mAlphaCut = cut;
         mDirty |= 2;
     }
+    void SetCull(bool cull){
+        mCull = cull;
+        mDirty |= 2;
+    }
     void SetAlphaThreshold(int thresh){
         mAlphaThresh = thresh;
     }

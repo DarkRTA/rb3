@@ -3,8 +3,13 @@
 #include "math/Color.h"
 #include "math/Geo.h"
 #include "math/Mtx.h"
+#include "math/Rand.h"
+#include "math/Rot.h"
+#include "math/Utl.h"
+#include "math/Vec.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/System.h"
@@ -229,6 +234,66 @@ void AttachMesh(RndMesh* main, RndMesh* attach){
     main->Sync(0x3F);
 }
 
+void RandomPointOnMesh(RndMesh* m, Vector3& v1, Vector3& v2){
+    RndMesh::Face& face = m->Faces()[RandomInt(0, m->Faces().size())];
+    int numverts = m->Verts().size();
+    if(face.idx0 >= numverts || face.idx1 >= numverts || face.idx2 >= numverts){
+        MILO_NOTIFY_ONCE("%s: %s random face contains unknown vert indices!", PathName(m), m->Name());
+        v1.Zero();
+        v2.Zero();
+    }
+    else {
+        Vector3 v58, v64, v70;
+        Vector3 v7c, v88, v94;
+        if(m->NumBones() > 0){
+            v58 = m->SkinVertex(m->Verts()[face.idx0], &v7c);
+            v64 = m->SkinVertex(m->Verts()[face.idx1], &v88);
+            v70 = m->SkinVertex(m->Verts()[face.idx2], &v94);
+        }
+        else {
+            v58 = m->Verts()[face.idx0].pos;
+            v64 = m->Verts()[face.idx1].pos;
+            v70 = m->Verts()[face.idx2].pos;
+            v7c = m->Verts()[face.idx0].norm;
+            v88 = m->Verts()[face.idx1].norm;
+            v94 = m->Verts()[face.idx2].norm;
+        }
+        float f8 = RandomFloat();
+        float f9 = RandomFloat();
+        if(f8 + f9 > 1.0f){
+            f8 = 1.0f - f8;
+            f9 = 1.0f - f9;
+        }
+        float f1 = (1.0f - f8) - f9;
+        v58 *= f8;
+        v64 *= f9;
+        v70 *= f1;
+        Add(v58, v64, v1);
+        Add(v1, v70, v1);
+        v7c *= f8;
+        v88 *= f9;
+        v94 *= f1;
+        Add(v7c, v88, v2);
+        Add(v2, v94, v2);
+        Normalize(v2, v2);
+    }
+}
+
+void UtilDrawSphere(const Vector3& v, float f, const Hmx::Color& col){
+    if(sSphereMesh){
+        Transform tf58;
+        tf58.Reset();
+        tf58.v = v;
+        Scale(Vector3(f, f, f), tf58.m, tf58.m);
+        sSphereMesh->Mat()->SetColor(col);
+        sSphereMesh->Mat()->SetAlpha(0.2f);
+        sSphereMesh->Mat()->SetCull(false);
+        sSphereMesh->SetLocalXfm(tf58);
+        sSphereMesh->SetSphere(Sphere(Vector3(0,0,0), f));
+        sSphereMesh->Draw();
+    }
+}
+
 void UtilDrawString(const char* c, const Vector3& v, const Hmx::Color& col) {
     Vector2 v2;
     if (RndCam::sCurrent->WorldToScreen(v, v2) > 0) {
@@ -236,6 +301,91 @@ void UtilDrawString(const char* c, const Vector3& v, const Hmx::Color& col) {
         v2.y *= (float)TheRnd->mHeight;
         TheRnd->DrawString(c, v2, col, true);
     }
+}
+
+void UtilDrawBox(const Transform& tf, const Box& box, const Hmx::Color& col, bool b4){
+    Vector3 vecs[8] = {
+        Vector3(box.mMin.x, box.mMin.y, box.mMin.z),
+        Vector3(box.mMin.x, box.mMax.y, box.mMin.z),
+        Vector3(box.mMax.x, box.mMax.y, box.mMin.z),
+        Vector3(box.mMax.x, box.mMin.y, box.mMin.z),
+        Vector3(box.mMin.x, box.mMin.y, box.mMax.z),
+        Vector3(box.mMin.x, box.mMax.y, box.mMax.z),
+        Vector3(box.mMax.x, box.mMax.y, box.mMax.z),
+        Vector3(box.mMax.x, box.mMin.y, box.mMax.z)
+    };
+    for(int i = 0; i < 8; i++){
+        Multiply(vecs[i], tf, vecs[i]);
+    }
+    TheRnd->DrawLine(vecs[0], vecs[1], col, b4);
+    TheRnd->DrawLine(vecs[1], vecs[2], col, b4);
+    TheRnd->DrawLine(vecs[2], vecs[3], col, b4);
+    TheRnd->DrawLine(vecs[3], vecs[0], col, b4);
+    
+    TheRnd->DrawLine(vecs[0], vecs[4], col, b4);
+    TheRnd->DrawLine(vecs[1], vecs[5], col, b4);
+    TheRnd->DrawLine(vecs[2], vecs[6], col, b4);
+    TheRnd->DrawLine(vecs[3], vecs[7], col, b4);
+    
+    TheRnd->DrawLine(vecs[4], vecs[5], col, b4);
+    TheRnd->DrawLine(vecs[5], vecs[6], col, b4);
+    TheRnd->DrawLine(vecs[6], vecs[7], col, b4);
+    TheRnd->DrawLine(vecs[7], vecs[4], col, b4);
+}
+
+void UtilDrawPlane(const Plane& p, const Vector3& v, const Hmx::Color& c, int i4, float f){
+    Transform tf88;
+    ScaleAdd(v, *reinterpret_cast<const Vector3*>(&p), -p.Dot(v), tf88.v); // lol wut
+    tf88.m.y = *reinterpret_cast<const Vector3*>(&p);
+    Hmx::Matrix3 mb0;
+    mb0.Identity();
+    int idx = 0;
+    int minIdx = 0;
+    float ref = 10000.0f;
+    for(; idx < 3; idx++){
+        if(MinEq(ref, Dot(mb0[idx], tf88.m.y))){
+            minIdx = idx;
+        }
+    }
+    Cross(tf88.m.y, mb0[minIdx], tf88.m.z);
+    Normalize(tf88.m.z, tf88.m.z);
+    Cross(tf88.m.y, tf88.m.z, tf88.m.x);
+    for(int i = 0; i < i4; i++){
+        Vector3 vecbc, vecc8, vecd4, vece0;
+        float scalar = (float)(i + 1) * f;
+        ScaleAdd(tf88.v, tf88.m.x, scalar, vece0);
+        ScaleAdd(tf88.v, tf88.m.z, scalar, vecd4);
+        float negscalar = -scalar;
+        ScaleAdd(tf88.v, tf88.m.x, negscalar, vecc8);
+        ScaleAdd(tf88.v, tf88.m.z, negscalar, vecbc);
+        TheRnd->DrawLine(vece0, vecd4, c, false);
+        TheRnd->DrawLine(vecd4, vecc8, c, false);
+        TheRnd->DrawLine(vecc8, vecbc, c, false);
+        TheRnd->DrawLine(vecbc, vece0, c, false);
+    }
+}
+
+void UtilDrawAxes(const Transform& tf, float f, const Hmx::Color& c){
+    Vector3 vec38;
+    Hmx::Color c48;
+    ScaleAdd(tf.v, tf.m.x, f, vec38);
+    Interp(c, Hmx::Color(1,0,0), 0.8f, c48);
+    TheRnd->DrawLine(tf.v, vec38, c48, false);
+
+    ScaleAdd(tf.v, tf.m.y, f, vec38);
+    Interp(c, Hmx::Color(0,1,0), 0.8f, c48);
+    TheRnd->DrawLine(tf.v, vec38, c48, false);
+
+    ScaleAdd(tf.v, tf.m.z, f, vec38);
+    Interp(c, Hmx::Color(0, 0, 1), 0.8f, c48);
+    TheRnd->DrawLine(tf.v, vec38, c48, false);
+}
+
+void SetLocalScale(RndTransformable* t, const Vector3& vec){
+    Hmx::Matrix3 m;
+    Normalize(t->mLocalXfm.m, m);
+    Scale(vec, m, m);
+    t->SetLocalRot(m);
 }
 
 #pragma push
@@ -389,6 +539,33 @@ void LinearizeKeys(RndTransAnim* anim, float f2, float f3, float f4, float f5, f
     }
 }
 #pragma pop
+
+float AngleBetween(const Hmx::Quat& q1, const Hmx::Quat& q2){
+    Hmx::Quat q18;
+    Negate(q1, q18);
+    Multiply(q2, q18, q18);
+    if(q18.w > 1.0f) return 0;
+    else return acosf(q18.w) * 2.0f;
+}
+
+void TransformKeys(RndTransAnim* tanim, const Transform& tf){
+    Vector3 v48;
+    MakeScale(tf.m, v48);
+    Hmx::Matrix3 m3c;
+    Scale(tf.m.x, 1.0f / v48.x, m3c.x);
+    Scale(tf.m.y, 1.0f / v48.y, m3c.y);
+    Scale(tf.m.z, 1.0f / v48.z, m3c.z);
+    Hmx::Quat q58(m3c);
+    for(Keys<Vector3, Vector3>::iterator it = tanim->TransKeys().begin(); it != tanim->TransKeys().end(); ++it){
+        Multiply(it->value, tf, it->value);
+    }
+    for(Keys<Vector3, Vector3>::iterator it = tanim->ScaleKeys().begin(); it != tanim->ScaleKeys().end(); ++it){
+        Scale(it->value, v48.x, it->value);
+    }
+    for(Keys<Hmx::Quat, Hmx::Quat>::iterator it = tanim->RotKeys().begin(); it != tanim->RotKeys().end(); ++it){
+        Multiply(q58, it->value, it->value);
+    }
+}
 
 void SortXfms(RndMultiMesh*, const Vector3&) {
     MILO_ASSERT(0, 3150);

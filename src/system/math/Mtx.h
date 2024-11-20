@@ -279,6 +279,10 @@ inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res
     Scale(mtx.z, vec.z, res.z);
 }
 
+inline void Negate(const Hmx::Quat& q, Hmx::Quat& qres){
+    qres.Set(-q.x, -q.y, -q.z, q.w);
+}
+
 float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
 void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
 void Normalize(const Hmx::Quat&, Hmx::Quat&);
