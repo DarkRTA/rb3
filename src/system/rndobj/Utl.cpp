@@ -12,6 +12,7 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "os/Endian.h"
 #include "os/File.h"
 #include "os/System.h"
 #include "rndobj/Anim.h"
@@ -21,11 +22,13 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Env.h"
 #include "rndobj/EnvAnim.h"
+#include "rndobj/Flare.h"
 #include "rndobj/Gen.h"
 #include "rndobj/Group.h"
 #include "rndobj/Line.h"
 #include "rndobj/Lit.h"
 #include "rndobj/LitAnim.h"
+#include "rndobj/Mat.h"
 #include "rndobj/MatAnim.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/MeshAnim.h"
@@ -982,19 +985,21 @@ void TestTexturePaths(class ObjectDir* dir){
         FilePath fp(it->mFilepath);
         if(fp.empty()) continue;
         class String relative(FileRelativePath(FileRoot(), fp.c_str()));
-        FileNormalizePath(relative.c_str());
+        FileNormalizePath(str.c_str());
+        const char* normalized = relative.c_str();
         if(strstr(relative.c_str(), "..") == relative.c_str()){
-            if(strstr(relative.c_str(), "../../system/run") != relative.c_str()){
+            if(strstr(relative.c_str(), "../../system/run") != normalized){
                 MILO_WARN("%s: %s is outside project path", PathName(it), relative);
             }
         }
-        if(relative.length() > 2 && str.c_str()[1] == ':'){
+        const char* normalized2 = relative.c_str();
+        if(strlen(normalized2) > 2 && normalized2[1] == ':'){
             MILO_WARN("%s: %s is outside project path", PathName(it), relative);
         }
     }
     if(dir->Loader()){
         const char* fpstr = dir->Loader()->mFile.c_str();
-        const char* ng = strstr(fpstr, "/ng/");
+        const char* ng = strstr(fpstr, "/ng/"); // something's up with this part here
         for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
             const char* texStr = it->mFilepath.c_str();
             if(ng == 0 && strstr(texStr, "/ng/") != 0){
@@ -1009,10 +1014,60 @@ void TestTexturePaths(class ObjectDir* dir){
 
 void TestMaterialTextures(class ObjectDir*){}
 
+void SwapDxtEndianness(RndBitmap* bmap){
+    u16* pixels = bmap->Pixels();
+    u16* end = (u16*)((u8*)pixels + bmap->PixelBytes());
+    for(; pixels < end; pixels++){
+        *pixels = EndianSwap(*pixels);
+    }
+}
+
 void PreMultiplyAlpha(Hmx::Color& c) {
     c.red *= c.alpha;
     c.green *= c.alpha;
     c.blue *= c.alpha;
+}
+
+MatShaderOptions GetDefaultMatShaderOpts(const Hmx::Object* o, RndMat* mat){
+    MatShaderOptions opts;
+    const RndMesh* mesh = dynamic_cast<const RndMesh*>(o);
+    if(mesh){
+        if(mesh->Mat() == mat){
+            opts.SetLast5(0x12);
+            opts.SetHasBones(mesh->NumBones() != 0);
+            opts.SetHasAOCalc(mesh->HasAOCalc());
+        }
+        goto ret;
+    }
+    const RndMultiMesh* multimesh = dynamic_cast<const RndMultiMesh*>(o);
+    if(multimesh){
+        RndMesh* gotmesh = multimesh->GetMesh();
+        if(gotmesh && gotmesh->Mat()){
+            if(gotmesh->Mat() == mat){
+                int mask = gotmesh->TransConstraint() == RndTransformable::kFastBillboardXYZ ? 0xD : 0xC;
+                opts.SetLast5(mask);
+                opts.SetHasBones(false);
+                opts.SetHasAOCalc(gotmesh->HasAOCalc());
+            }
+        }
+        goto ret;
+    }
+    const RndParticleSys* partsys = dynamic_cast<const RndParticleSys*>(o);
+    if(partsys){
+        if(partsys->GetMat() == mat){
+            opts.SetLast5(0xE);
+        }
+        goto ret;
+    }
+    const RndFlare* flare = dynamic_cast<const RndFlare*>(o);
+    if(flare){
+        if(flare->GetMat() == mat){
+            opts.SetLast5(6);
+        }
+        goto ret;
+    }
+ret:
+    return opts;
 }
 
 void ResetColors(std::vector<Hmx::Color>& colors, int newNumColors){

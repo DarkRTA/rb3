@@ -45,7 +45,7 @@ public:
     u16 mRowBytes; // 0x4
     u8 mBpp; // 0x6
     u32 mOrder; // 0x8
-    u8* mPixels; // 0xc
+    u16* mPixels; // 0xc
     u8* mPalette; // 0x10
     u8* mBuffer; // 0x14
     RndBitmap* mMip; // 0x18
@@ -88,11 +88,12 @@ public:
     void Save(BinStream&) const;
     void Load(BinStream&);
 
-    inline u16 Width() const { return mWidth; }
-    inline u16 Height() const { return mHeight; }
-    inline u32 Order() const { return mOrder; }
-    inline u8 Bpp() const { return mBpp; }
-    inline u8* Palette() const { return mPalette; }
+    u16 Width() const { return mWidth; }
+    u16 Height() const { return mHeight; }
+    u32 Order() const { return mOrder; }
+    u8 Bpp() const { return mBpp; }
+    u8* Palette() const { return mPalette; }
+    u16* Pixels() const { return mPixels; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD

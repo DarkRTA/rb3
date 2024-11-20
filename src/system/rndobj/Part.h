@@ -204,6 +204,7 @@ public:
     void SetStretchScale(float f){ mStretchScale = f; }
     RndMesh* GetMesh() const { return mMesh; }
     Type GetType() const { return mType; }
+    RndMat* GetMat() const { return mMat; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

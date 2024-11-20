@@ -72,8 +72,8 @@ struct MatShaderOptions {
     union {
         struct {
             int itop : 24;
-            int i7 : 1;
-            int i6 : 1;
+            int mHasAOCalc : 1;
+            int mHasBones : 1;
             int i5 : 1;
             int i4 : 1;
             int i3 : 1;
@@ -90,6 +90,21 @@ struct MatShaderOptions {
         bf skinned;
         bf useAO;
     };
+
+    // TODO: rename this once you have a better idea of what it does
+    void SetLast5(int mask){
+        pack = (pack & ~0x1f) | (mask & 0x1f);
+    }
+
+    void SetHasBones(bool bones){    
+        shader_struct.mHasBones = 0;
+        shader_struct.mHasBones = bones;
+    }
+
+    void SetHasAOCalc(bool calc){
+        shader_struct.mHasAOCalc = 0;
+        shader_struct.mHasAOCalc = calc;
+    }
 
     bool mTempMat;
 };
