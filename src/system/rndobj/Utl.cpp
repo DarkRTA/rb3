@@ -25,6 +25,7 @@
 #include "rndobj/Line.h"
 #include "rndobj/Lit.h"
 #include "rndobj/LitAnim.h"
+#include "rndobj/MatAnim.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Rnd.h"
@@ -567,6 +568,96 @@ void TransformKeys(RndTransAnim* tanim, const Transform& tf){
     }
 }
 
+// fn_80657B28
+void RndScaleObject(Hmx::Object* o, float f1, float f2){
+    RndDrawable* draw = dynamic_cast<RndDrawable*>(o);
+    if(draw){
+        Sphere s = draw->mSphere;
+        s.center *= f1;
+        s.radius *= f1;
+        draw->SetSphere(s);
+    }
+    RndTransformable* trans = dynamic_cast<RndTransformable*>(o);
+    if(trans){
+        Vector3 vec;
+        Scale(trans->mLocalXfm.v, f1, vec);
+        trans->SetLocalPos(vec);
+    }
+    RndCam* cam = dynamic_cast<RndCam*>(o);
+    if(cam){
+        cam->SetFrustum(cam->NearPlane() * f1, cam->FarPlane() * f1, cam->YFov(), 1.0f);
+        return;
+    }
+    RndCamAnim* camanim = dynamic_cast<RndCamAnim*>(o);
+    if(camanim){
+        if(camanim->KeysOwner() == camanim){
+            ScaleFrame(camanim->FovKeys(), f2);
+        }        
+        return;
+    }
+    RndEnviron* env = dynamic_cast<RndEnviron*>(o);
+    if(env){
+        env->SetFogRange(env->GetFogStart() * f1, env->GetFogEnd() * f1);
+        return;
+    }
+    RndEnvAnim* envanim = dynamic_cast<RndEnvAnim*>(o);
+    if(envanim){
+        if(envanim->KeysOwner() == envanim){
+            ScaleFrame(envanim->FogColorKeys(), f2);
+            ScaleFrame(envanim->AmbientColorKeys(), f2);
+        }
+        return;
+    }
+    RndText* text = dynamic_cast<RndText*>(o);
+    if(text){
+        text->SetSize(text->Size() * f1);
+        return;
+    }
+    RndGenerator* gen = dynamic_cast<RndGenerator*>(o);
+    if(gen){
+        float lo, hi;
+        gen->GetRateVar(lo, hi);
+        gen->SetRateVar(lo * f1, hi * f1);
+        return;
+    }
+    RndLight* lit = dynamic_cast<RndLight*>(o);
+    if(lit){
+        lit->SetRange(lit->Range() * f1);
+        return;
+    }
+    RndLightAnim* litanim = dynamic_cast<RndLightAnim*>(o);
+    if(litanim){
+        if(litanim->KeysOwner() == litanim){
+            ScaleFrame(litanim->ColorKeys(), f2);
+        }
+        return;
+    }
+    RndLine* line = dynamic_cast<RndLine*>(o);
+    if(line){
+        line->SetWidth(line->GetWidth() * f1);
+        for(int i = 0; i < line->NumPoints(); i++){
+            Vector3 vec;
+            Scale(line->PointAt(i).v, f2, vec);
+            line->SetPointPos(i, vec);
+        }
+        return;
+    }
+    RndMatAnim* matanim = dynamic_cast<RndMatAnim*>(o);
+    if(matanim){
+        if(matanim->KeysOwner() == matanim){
+            ScaleFrame(matanim->ColorKeys(), f2);
+            ScaleFrame(matanim->AlphaKeys(), f2);
+            ScaleFrame(matanim->TransKeys(), f2);
+            ScaleFrame(matanim->ScaleKeys(), f2);
+            ScaleFrame(matanim->RotKeys(), f2);
+        }
+    }
+    RndMesh* mesh = dynamic_cast<RndMesh*>(o);
+    if(mesh){
+        
+    }
+}
+
 void SortXfms(RndMultiMesh*, const Vector3&) {
     MILO_ASSERT(0, 3150);
 }
@@ -647,16 +738,17 @@ void RndUtlTerminate(){
 
 // fn_806598A0
 float ConvertFov(float a, float b) {
-    float x = std::tan(0.5f * a);
-    return std::atan(b * x) * 2;
+    float x = tanf(0.5f * a);
+    return atanf(b * x) * 2;
 }
 
 // fn_806598F4
 void ListDrawGroups(RndDrawable* draw, class ObjectDir* dir, std::list<RndGroup*>& gList){
     for(ObjDirItr<RndGroup> it(dir, true); it != 0; ++it){
-        std::vector<RndDrawable*>& drawVec = it->mDraws;
-        std::vector<RndDrawable*>::iterator draw_it = std::find(drawVec.begin(), drawVec.end(), draw); // wonder if this is inlined?
-        if(draw_it != drawVec.end()){
+        std::vector<RndDrawable *>& draws = it->mDraws;
+        if(std::find(draws.begin(), draws.end(), draw) != draws.end())
+        // if(VectorFind(it->mDraws, draw))
+        {
             gList.push_back(it);
         }
     }
@@ -674,29 +766,24 @@ DataNode OnTestDrawGroups(DataArray* da){
             for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt){
                 bool canerase = false;
                 for(int i = 0; i < arr->Size(); i++){
-                    bool namesmatch = strcmp((*gListIt)->Name(), arr->Str(i)) == 0;
-                    if(namesmatch){
+                    if(streq((*gListIt)->Name(), arr->Str(i))){
                         canerase = true;
                         break;
                     }
                 }
                 if(canerase) gListIt = gList.erase(gListIt);
-                else gListIt++;
+                else ++gListIt;
             }
         }
-        unsigned long listcount = 0;
-        for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++) listcount++;
-        if(listcount > 1){
-            unsigned long listcountfr = 0;
-            for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++) listcountfr++;
-            class String str(MakeString("%s is in %d groups:", PathName(it), listcountfr));
-            for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); gListIt++){
+        if(gList.size() > 1){
+            class String str(MakeString("%s is in %d groups:", PathName(it), gList.size()));
+            for(std::list<RndGroup*>::iterator gListIt = gList.begin(); gListIt != gList.end(); ++gListIt){
                 str << " " << PathName(*gListIt);
             }
             MILO_WARN(str.c_str());
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 // fn_80659D74
@@ -763,65 +850,9 @@ void PreMultiplyAlpha(Hmx::Color& c) {
     c.blue *= c.alpha;
 }
 
-// fn_80657B28
-void RndScaleObject(Hmx::Object* o, float f1, float f2){
-    RndDrawable* draw = dynamic_cast<RndDrawable*>(o);
-    if(draw){
-        draw->mSphere.center *= f1;
-        draw->mSphere.radius *= f1;
-    }
-    RndTransformable* trans = dynamic_cast<RndTransformable*>(o);
-    if(trans){
-        Vector3 vec;
-        Scale(trans->mLocalXfm.v, f1, vec);
-        trans->SetLocalPos(vec.x, vec.y, vec.z);
-    }
-    RndCam* cam = dynamic_cast<RndCam*>(o);
-    if(cam){
-        cam->SetFrustum(cam->mNearPlane, cam->mFarPlane, cam->mYFov, 1.0f);
-        return;
-    }
-    RndCamAnim* camanim = dynamic_cast<RndCamAnim*>(o);
-    if(camanim){
-        ScaleFrame(camanim->mKeysOwner->mFovKeys, f2);
-        return;
-    }
-    RndEnviron* env = dynamic_cast<RndEnviron*>(o);
-    if(env){
-        env->mAmbientFogOwner->mFogStart *= f1;
-        env->mAmbientFogOwner->mFogEnd *= f1;
-        return;
-    }
-    RndEnvAnim* envanim = dynamic_cast<RndEnvAnim*>(o);
-    if(envanim){
-        ScaleFrame(envanim->mKeysOwner->mFogColorKeys, f2);
-        ScaleFrame(envanim->mKeysOwner->mAmbientColorKeys, f2);
-        return;
-    }
-    RndText* text = dynamic_cast<RndText*>(o);
-    if(text){
-        text->SetSize(text->Size() * f1);
-        return;
-    }
-    RndGenerator* gen = dynamic_cast<RndGenerator*>(o);
-    if(gen){
-        float lo, hi;
-        gen->GetRateVar(lo, hi);
-        gen->SetRateVar(lo * f1, hi * f1);
-        return;
-    }
-    RndLight* lit = dynamic_cast<RndLight*>(o);
-    if(lit){
-        lit->SetRange(lit->Range() * f1);
-        return;
-    }
-    RndLightAnim* litanim = dynamic_cast<RndLightAnim*>(o);
-    if(litanim){
-        ScaleFrame(litanim->mKeysOwner->mColorKeys, f2);
-        return;
-    }
-    RndLine* line = dynamic_cast<RndLine*>(o);
-    if(line){
-
+void ResetColors(std::vector<Hmx::Color>& colors, int newNumColors){
+    colors.resize(newNumColors);
+    for(int i = 0; i < newNumColors; i++){
+        colors[i].Reset();
     }
 }

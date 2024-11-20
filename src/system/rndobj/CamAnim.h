@@ -24,6 +24,7 @@ public:
     virtual void Print();
 
     Keys<float, float>& FovKeys() { return mKeysOwner->mFovKeys; }
+    RndCamAnim* KeysOwner() const { return mKeysOwner; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

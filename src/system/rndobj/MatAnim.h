@@ -46,6 +46,7 @@ public:
     Keys<Vector3, Vector3>& RotKeys(){ return mKeysOwner->mRotKeys; }
     Keys<float, float>& AlphaKeys(){ return mKeysOwner->mAlphaKeys; }
     Keys<Hmx::Color, Hmx::Color>& ColorKeys(){ return mKeysOwner->mColorKeys; }
+    RndMatAnim* KeysOwner() const { return mKeysOwner; }
 
     DECLARE_REVS
     NEW_OVERLOAD;

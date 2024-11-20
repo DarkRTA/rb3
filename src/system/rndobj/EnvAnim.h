@@ -26,6 +26,7 @@ public:
     Keys<Hmx::Color, Hmx::Color>& AmbientColorKeys(){ return mKeysOwner->mAmbientColorKeys; }
     Keys<Hmx::Color, Hmx::Color>& FogColorKeys(){ return mKeysOwner->mFogColorKeys; }
     Keys<Vector2, Vector2>& FogRangeKeys(){ return mKeysOwner->mFogRangeKeys; }
+    RndEnvAnim* KeysOwner() const { return mKeysOwner; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
