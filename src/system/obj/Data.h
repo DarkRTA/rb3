@@ -184,6 +184,7 @@ public:
     short mRefs;        // 0xA
     /** The line of the file this DataArray is in. */
     short mLine;        // 0xC
+    /** unused */
     short mDeprecated;  // 0xE
     static Symbol gFile;
     static DataFunc* sDefaultHandler;

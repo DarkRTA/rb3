@@ -221,6 +221,10 @@ public:
 
     void clear(){ while(mSize != 0) pop_back(); }
 
+    void push_front(T1* obj){
+        insert(begin(), obj);
+    }
+
     // https://decomp.me/scratch/ESkuY
     // push_back__36ObjPtrList<11RndDrawable,9ObjectDir>FP11RndDrawable
     // fn_8049C424 - push_back
