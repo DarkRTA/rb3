@@ -31,7 +31,9 @@ public:
     virtual Hmx::Object* AnimTarget(){ return mAnim; }
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
 
+    /** Get this animatable's filtered scale value. */
     float Scale();
+    /** Set the animatable object to receive this filter. */
     void SetAnim(RndAnimatable*);
     DataNode OnSafeAnims(DataArray*);
     
@@ -71,7 +73,7 @@ public:
     /** "Jitter frame randomly up to this amount" */
     float mJitter; // 0x34
     float mJitterFrame; // 0x38
-    /** "How to treat the frame outside of start and end" */
+    /** "How to treat the frame outside of start and end" (range, loop or shuttle) */
     Type mType; // 0x3C
 };
 

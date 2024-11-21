@@ -308,14 +308,48 @@ namespace Hmx {
         /** Remove this Object from its associated ObjectDir. */
         void RemoveFromDir(); // probably private
 
-        DataNode* Property(DataArray*, bool) const;
-        DataNode* Property(Symbol, bool) const;
-        void SetProperty(DataArray*, const DataNode &);
-        void SetProperty(Symbol, const DataNode &);
-        int PropertySize(DataArray*);
-        DataNode OnPropertyAppend(const DataArray*);
-        void InsertProperty(DataArray*, const DataNode&);
-        void RemoveProperty(DataArray*);
+        /** Search for a key in this Object's properties, and return the corresponding value.
+         * @param [in] prop: The property to search for, in Symbol form.
+         * @param [in] fail: If true, print a message to the console if no property value was found.
+         * @returns The corresponding property's value as a DataNode pointer.
+         */
+        DataNode* Property(Symbol prop, bool fail) const;
+
+        /** Search for a key in this Object's properties, and return the corresponding value.
+         * @param [in] prop: The property to search for, in DataArray form. The first node must be a Symbol.
+         * @param [in] fail: If true, print a message to the console if no property value was found.
+         * @returns The corresponding property's value as a DataNode pointer.
+         */
+        DataNode* Property(DataArray* prop, bool fail) const;        
+
+        /** Either adds or updates the key/value pair in the properties.
+        * @param [in] prop The key to either add or update
+        * @param [in] val The corresponding value associated with the key.
+        */
+        void SetProperty(Symbol prop, const DataNode& val);
+
+        /** Either adds or updates the key/value pair in the properties.
+        * @param [in] prop The key to either add or update. The first node must be a Symbol.
+        * @param [in] val The corresponding value associated with the key.
+        */
+        void SetProperty(DataArray* prop, const DataNode& val);
+
+        /** Get the size of a property value.
+         * @param [in] prop The key to find the property with. The first node must be a Symbol.
+         * @returns If the property is an integer, returns the integer. If the property is a DataArray, returns the DataArray's size.
+         */
+        int PropertySize(DataArray* prop);
+
+        /** Insert the key/value pair in the properties.
+        * @param [in] prop The key to insert. The first node must be a Symbol.
+        * @param [in] val The corresponding value associated with the key.
+        */
+        void InsertProperty(DataArray* prop, const DataNode& val);
+
+        /** Remove this property from this Object.
+        * @param [in] prop The key to remove. The first node must be a Symbol.
+        */
+        void RemoveProperty(DataArray* prop);
         void PropertyClear(DataArray*);
 
         /** Add this Object reference into mRefs.
@@ -328,7 +362,6 @@ namespace Hmx {
         */
         void Release(ObjRef* ref);
         
-        DataNode HandleProperty(DataArray*, DataArray*, bool);
         static Object* NewObject(Symbol);
 
         /** Write's this Object's rev values and its Type Symbol to the BinStream. */
@@ -343,6 +376,9 @@ namespace Hmx {
         DataNode OnIterateRefs(const DataArray*);
         DataNode HandleType(DataArray*);
         DataNode PropertyArray(Symbol);
+        DataNode OnPropertyAppend(const DataArray*);
+        DataNode HandleProperty(DataArray*, DataArray*, bool);
+
         const char* AllocHeapName();
 
         static unsigned short gRev;

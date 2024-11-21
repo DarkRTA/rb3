@@ -153,7 +153,7 @@ void RndDrawable::DumpLoad(BinStream& bs){
         }
     }
     if(rev > 0){
-    #ifdef VERSION_SZBE69_B8
+    #ifdef MILO_DEBUG
         bs >> w >> x >> y >> z;
     #else
         Sphere s;
@@ -164,7 +164,7 @@ void RndDrawable::DumpLoad(BinStream& bs){
         bs >> j;
     }
     if(rev > 3){
-        ObjPtr<RndDrawable, class ObjectDir> ptr(0, 0);
+        ObjPtr<RndDrawable> ptr(nullptr);
         bs >> ptr;
     }
 }
@@ -180,7 +180,7 @@ bool RndDrawable::CollideSphere(const Segment& seg){
 
 RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
     START_AUTO_TIMER("collide");
-    if(!CollideSphere(seg)) return false;
+    if(!CollideSphere(seg)) return nullptr;
     else return CollideShowing(seg, f, plane);
 }
 
@@ -228,29 +228,29 @@ END_HANDLERS
 DataNode RndDrawable::OnCopySphere(const DataArray* da){
     RndDrawable* draw = da->Obj<RndDrawable>(2);
     if(draw) mSphere = draw->mSphere;
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndDrawable::OnGetSphere(const DataArray* da){
-    *da->Var(2) = DataNode(mSphere.center.X());
-    *da->Var(3) = DataNode(mSphere.center.Y());
-    *da->Var(4) = DataNode(mSphere.center.Z());
-    *da->Var(5) = DataNode(mSphere.GetRadius());
-    return DataNode(0);
+    *da->Var(2) = mSphere.center.X();
+    *da->Var(3) = mSphere.center.Y();
+    *da->Var(4) = mSphere.center.Z();
+    *da->Var(5) = mSphere.GetRadius();
+    return 0;
 }
 
 DataNode RndDrawable::OnSetShowing(const DataArray* da){
     SetShowing(da->Int(2));
-    return DataNode(0);
+    return 0;
 }
 
-DataNode RndDrawable::OnShowing(const DataArray* da){
-    return DataNode(mShowing);
+DataNode RndDrawable::OnShowing(const DataArray*){
+    return mShowing;
 }
 
-DataNode RndDrawable::OnZeroSphere(const DataArray* da){
+DataNode RndDrawable::OnZeroSphere(const DataArray*){
     mSphere.Zero();
-    return DataNode(0);
+    return 0;
 }
 
 BEGIN_PROPSYNCS(RndDrawable)
@@ -258,10 +258,10 @@ BEGIN_PROPSYNCS(RndDrawable)
     static Symbol _s("showing");
     if(sym == _s){
         if(_op == kPropSet){
-            mShowing = _val.Int() != 0;
+            mShowing = _val.Int();
         }
         else {
-            _val = DataNode(mShowing);
+            _val = mShowing;
         }
         return true;
     }

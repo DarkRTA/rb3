@@ -59,7 +59,18 @@ public:
     void SetEnv(RndEnviron* env){ mEnv = env; }
     RndEnviron* GetEnv() const { return mEnv; }
 
-    DataNode OnShowObjects(DataArray*);
+    /** Handler to show (or hide) all objects in the supplied DataArray.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: a DataArray of all the objects to show/hide.
+     *     Node 3: if 0, hide everything; else show everything.
+     * Example usage: {$this show_objects (your_objects) TRUE}
+     */
+    DataNode OnShowObjects(DataArray* arr);
+    /** Get a DataArray of all supported EventTrigger events in this RndDir.
+     * @returns A DataNode housing the aforementioned DataArray.
+     * Example usage: {$this supported_events}
+     */
     DataNode OnSupportedEvents(DataArray*);
 
     DECLARE_REVS
@@ -74,7 +85,7 @@ public:
     std::vector<RndPollable*> mPolls; // 0x174
 
     /** The dedicated RndEnviron for this dir. */
-    ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x17c
+    ObjPtr<RndEnviron> mEnv; // 0x17c
 
     /** "Test event" */
     Symbol mTestEvent; // 0x188

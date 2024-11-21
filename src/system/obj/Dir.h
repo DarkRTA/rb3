@@ -281,6 +281,14 @@ public:
     int HashTableUsedSize() const { return mHashTable.UsedSize(); }
     int StrTableUsedSize() const { return mStringTable.UsedSize(); }
 
+    /** Handler to search for an Object in this ObjectDir.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: The name of the object to search for, in string form.
+     *     Node 3: if true, fail if the desired object was not found.
+     * @returns A DataNode housing the found Object.
+     * Example usage: {$this find "your_object.ext" TRUE}
+     */
     DataNode OnFind(DataArray*);
 
     /** Search for an Object in this ObjectDir using its name as the key.

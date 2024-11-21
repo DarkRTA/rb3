@@ -39,6 +39,7 @@ bool SortPolls(const RndPollable*, const RndPollable*);
 void SetRndSplasherCallback(void (*)(void), void (*)(void), void (*)(void));
 void ConvertBonesToTranses(ObjectDir*, bool);
 int GenerationCount(RndTransformable*, RndTransformable*);
+void AddMotionSphere(RndTransformable* t, Sphere& s);
 
 void RndUtlPreInit();
 void RndUtlInit();
