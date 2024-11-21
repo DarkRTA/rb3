@@ -13,7 +13,9 @@ bool RndSet::AllowedObject(Hmx::Object* o){
     if(!o || o == this) return false;
     else {
         for(int i = 0; i < mProps.size(); i++){
-            if(o->Property(mProps[i], false) == 0) return false;
+            if(o->Property(mProps[i], false) == nullptr){
+                return false;
+            }
         }
         return true;
     }
@@ -66,13 +68,13 @@ END_COPYS
 BEGIN_HANDLERS(RndSet)
     HANDLE(allowed_objects, OnAllowedObjects)
     HANDLE_SUPERCLASS(Hmx::Object)
-    for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
+    for(ObjPtrList<Hmx::Object>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
         (*it)->Handle(_msg, true);
     }
     HANDLE_CHECK(0x8C)
 END_HANDLERS
 
-DataNode RndSet::OnAllowedObjects(DataArray* da){
+DataNode RndSet::OnAllowedObjects(DataArray*){
     std::list<Hmx::Object*> objList;
     for(ObjDirItr<Hmx::Object> it(Dir(), true); it != 0; ++it){
         if(AllowedObject(it)) objList.push_back(it);
@@ -80,9 +82,9 @@ DataNode RndSet::OnAllowedObjects(DataArray* da){
     DataArrayPtr ptr(new DataArray(objList.size()));
     int count = 0;
     for(std::list<Hmx::Object*>::iterator it = objList.begin(); it != objList.end(); it++){
-        ptr.Node(count++) = DataNode(*it);
+        ptr.Node(count++) = *it;
     }
-    return DataNode(ptr);
+    return ptr;
 }
 
 #pragma push
@@ -93,8 +95,8 @@ BEGIN_PROPSYNCS(RndSet)
         static Hmx::Object* milo = ObjectDir::Main()->FindObject("milo", false);
         for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
             if(milo){
-                static Message msg("record", DataNode(0), DataNode(Symbol("Change from set")));
-                UNCONST_ARRAY(msg)->Node(2) = DataNode(*it);
+                static Message msg("record", 0, Symbol("Change from set"));
+                msg[0] = *it;
                 milo->Handle(msg, true);
             }
             (*it)->SetProperty(_prop, _val);

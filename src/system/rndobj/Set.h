@@ -1,10 +1,13 @@
-#ifndef RNDOBJ_SET_H
-#define RNDOBJ_SET_H
-
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include <vector>
 
+/**
+* @brief: A group of Rnd objects that send messages.
+* Original _objects description:
+* "A group of objects to propagate animation and messages"
+*/
 class RndSet : public Hmx::Object {
 public:
     RndSet();
@@ -18,7 +21,11 @@ public:
     virtual void Load(BinStream&);
     virtual void SetTypeDef(DataArray*);
 
-    bool AllowedObject(Hmx::Object*);
+    /** Determine whether or not the supplied object is allowed to be part of this RndSet. */
+    bool AllowedObject(Hmx::Object* o); // protected per DC3
+    /** Get a DataArray of all allowed Objects in this RndSet's dir.
+    * @returns A DataNode housing the aforementioned DataArray.
+    */
     DataNode OnAllowedObjects(DataArray*);
     
     NEW_OVERLOAD;
@@ -30,8 +37,8 @@ public:
         REGISTER_OBJ_FACTORY(RndSet)
     }
 
-    ObjPtrList<Hmx::Object, ObjectDir> mObjects; // 0x1c
+    /** The list of allowed objects. */
+    ObjPtrList<Hmx::Object> mObjects; // 0x1c
+    /** The collection of properties that allowed objects must have. */
     std::vector<Symbol> mProps; // 0x2c
 };
-
-#endif // RNDOBJ_SET_H
