@@ -94,6 +94,7 @@ public:
      * @param [in] arr The supplied DataArray.
      * Expected DataArray contents: 
      *     Nodes 2-5: vars to house this sphere's center X/Y/Z coordinates and radius.
+     * Example usage: {$this get_sphere $x $y $z $radius}
      */
     DataNode OnGetSphere(const DataArray* arr);
     /** Handler to set whether or not this RndDrawable is showing.

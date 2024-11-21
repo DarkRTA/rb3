@@ -88,9 +88,18 @@ public:
     bool ConvertFrames(float& frames);
 
     /** Create a new AnimTask using the configuration in the supplied DataArray.
+     * @param [in] arr The supplied DataArray.
      * @returns A DataNode housing the newly created task.
+     * Expected DataArray contents: 
+     *     No specific node ordering, but the DataArray can optionally have:
+     *     - data for symbols: blend, delay, units, name, wait
+     *     - a DataArray for symbol range with floats at nodes 1 and 2
+     *     - a DataArray for symbol loop with floats at nodes 1 and 2
+     *     - a DataArray for symbol dest with a float at node 1
+     *     - a DataArray for symbol period with a float at node 1
+     * Example usage: {$this on_animate}
      */
-    DataNode OnAnimate(DataArray*);
+    DataNode OnAnimate(DataArray* arr);
     DataNode OnConvertFrames(DataArray*);
 
     // weak getters and setters
