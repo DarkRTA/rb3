@@ -1,4 +1,5 @@
 #include "rndobj/Utl.h"
+#include "MSL_Common/extras.h"
 #include "decomp.h"
 #include "math/Color.h"
 #include "math/Geo.h"
@@ -12,6 +13,7 @@
 #include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "obj/Utl.h"
 #include "os/Debug.h"
 #include "os/Endian.h"
 #include "os/File.h"
@@ -48,9 +50,14 @@
 #include "utl/ClassSymbols.h"
 #include <cmath>
 
+typedef void (*SplashFunc)(void);
+
 float gLimitUVRange;
 class ObjectDir* sSphereDir;
 RndMesh* sSphereMesh;
+SplashFunc gSplashPoll;
+SplashFunc gSplashSuspend;
+SplashFunc gSplashResume;
 
 DECOMP_FORCEACTIVE(Utl, __FILE__, "i->from->Dir()")
 
@@ -1095,6 +1102,8 @@ DataNode GetNormalMapTextures(class ObjectDir* dir){
     return ptr;
 }
 
+DECOMP_FORCEACTIVE(Utl, "from < DIM(xRatio) && to < DIM(xRatio)")
+
 DataNode GetTexturesOfType(class ObjectDir* dir, RndTex::Type texType){
     int num = 0;
     for(ObjDirItr<RndTex> it(dir, true); it != 0; ++it){
@@ -1121,9 +1130,72 @@ DataNode GetRenderTexturesNoZ(class ObjectDir* dir){
     return GetTexturesOfType(dir, RndTex::kRenderedNoZ);
 }
 
+void SetRndSplasherCallback(SplashFunc func1, SplashFunc func2, SplashFunc func3){
+    gSplashPoll = func1;
+    gSplashSuspend = func2;
+    gSplashResume = func3;
+}
+
+void RndSplasherSuspend(){
+    if(gSplashSuspend) gSplashSuspend();
+}
+
+void RndSplasherResume(){
+    if(gSplashResume) gSplashResume();
+}
+
 void ResetColors(std::vector<Hmx::Color>& colors, int newNumColors){
     colors.resize(newNumColors);
     for(int i = 0; i < newNumColors; i++){
         colors[i].Reset();
+    }
+}
+
+bool ShouldStrip(RndTransformable* trans){
+    if(!trans) return false;
+    else {
+        const char* name = trans->Name();
+        if(name){
+            return strnicmp("bone_", name, 5) == 0 || strnicmp("exo_", name, 4) == 0 || strncmp("spot_", name, 5) == 0;
+        }
+        else return false;
+    }
+}
+
+void ConvertBonesToTranses(class ObjectDir* dir, bool b){
+    std::list<RndMesh*> meshes;
+    for(ObjDirItr<RndMesh> it(dir, true); it != 0; ++it){
+        RndTransformable* itTrans = it;
+        if(ShouldStrip(itTrans)){
+            meshes.push_back(it);
+        }
+        else {
+            if(b){
+                bool b1 = false;
+                std::vector<ObjRef*>::reverse_iterator rit = it->mRefs.rbegin();
+                std::vector<ObjRef*>::reverse_iterator ritEnd = it->mRefs.rend();
+                for(; !b1 && rit != ritEnd; ++rit){
+                    RndMesh* curRefOwner = dynamic_cast<RndMesh*>((*rit)->RefOwner());
+                    if(curRefOwner){
+                        for(int i = 0; i < curRefOwner->NumBones(); i++){
+                            if(curRefOwner->BoneTransAt(i) == itTrans){
+                                meshes.push_back(it);
+                                b1 = true;
+                                break;
+                            }   
+                        }
+                    }
+                }
+            }
+        }
+    }
+    while(!meshes.empty()){
+        ReplaceObject(meshes.front(), Hmx::Object::New<RndTransformable>(), true, true, true);
+        meshes.pop_front();
+    }
+    for(ObjDirItr<RndTransformable> it(dir, true); it != 0; ++it){
+        if(strncmp("spot_", it->Name(), 5) == 0){
+            Normalize(it->mLocalXfm.m, it->DirtyLocalXfm().m);
+        }
     }
 }

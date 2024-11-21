@@ -176,6 +176,7 @@ public:
     void SetMutable(int m){ mGeomOwner->mMutable = m; }
     bool HasAOCalc() const { return mHasAOCalc; }
     void SetHasAOCalc(bool b){ mHasAOCalc = b; }
+    RndTransformable* BoneTransAt(int idx){ return mBones[idx].mBone; }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
