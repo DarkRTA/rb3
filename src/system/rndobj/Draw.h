@@ -87,6 +87,7 @@ public:
      * @param [in] arr The supplied DataArray.
      * Expected DataArray contents: 
      *     Node 2: the other RndDrawable.
+     * Example usage: {$this copy_sphere other_obj}
      */
     DataNode OnCopySphere(const DataArray* arr);
     /** Handler to retrieve this RndDrawable's sphere properties.
@@ -99,13 +100,17 @@ public:
      * @param [in] arr The supplied DataArray.
      * Expected DataArray contents: 
      *     Node 2: a boolean for showing or hiding.
+     * Example usage: {$this set_showing TRUE}
      */
     DataNode OnSetShowing(const DataArray* arr);
     /** Handler to get whether or not this RndDrawable is showing.
      * @returns True if showing, false if not.
+     * Example usage: {$this showing}
      */
     DataNode OnShowing(const DataArray*);
-    /** Handler to zero this RndDrawable's sphere. */
+    /** Handler to zero this RndDrawable's sphere.
+     * Example usage: {$this zero_sphere}
+     */
     DataNode OnZeroSphere(const DataArray*);
     
     /** "Whether the object and its Draw children are drawn or collided with." */

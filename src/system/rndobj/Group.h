@@ -69,6 +69,7 @@ public:
 
     /** Handler to get all RndDrawables in this RndGroup.
      * @returns A DataNode housing a DataArray of each RndDrawable.
+     * Example usage: {$this get_draws}
      */
     DataNode OnGetDraws(DataArray*);
 

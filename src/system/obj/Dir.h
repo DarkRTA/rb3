@@ -287,6 +287,7 @@ public:
      *     Node 2: The name of the object to search for, in string form.
      *     Node 3: if true, fail if the desired object was not found.
      * @returns A DataNode housing the found Object.
+     * Example usage: {$this find "your_object.ext" TRUE}
      */
     DataNode OnFind(DataArray*);
 

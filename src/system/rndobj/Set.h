@@ -24,8 +24,9 @@ public:
     /** Determine whether or not the supplied object is allowed to be part of this RndSet. */
     bool AllowedObject(Hmx::Object* o); // protected per DC3
     /** Get a DataArray of all allowed Objects in this RndSet's dir.
-    * @returns A DataNode housing the aforementioned DataArray.
-    */
+     * @returns A DataNode housing the aforementioned DataArray.
+     * Example usage: {$this allowed_objects}
+     */
     DataNode OnAllowedObjects(DataArray*);
     
     NEW_OVERLOAD;
