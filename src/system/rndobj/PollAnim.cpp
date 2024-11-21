@@ -1,4 +1,6 @@
 #include "rndobj/PollAnim.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Poll.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndPollAnim)
@@ -13,7 +15,7 @@ void RndPollAnim::SetFrame(float, float){}
 
 float RndPollAnim::EndFrame(){
     float frame = 0.0f;
-    for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         float thisendframe = (*it)->EndFrame();
         if(frame < thisendframe) frame = thisendframe;
     }
@@ -21,21 +23,21 @@ float RndPollAnim::EndFrame(){
 }
 
 void RndPollAnim::ListAnimChildren(std::list<RndAnimatable*>& children) const {
-    ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin();
-    ObjPtrList<RndAnimatable, class ObjectDir>::iterator itEnd = mAnims.end();
+    ObjPtrList<RndAnimatable>::iterator it = mAnims.begin();
+    ObjPtrList<RndAnimatable>::iterator itEnd = mAnims.end();
     for(; it != itEnd; ++it){
         children.push_back(*it);
     }
 }
 
 void RndPollAnim::Enter(){
-    for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         (*it)->StartAnim();
     }
 }
 
 void RndPollAnim::Poll(){
-    for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         RndAnimatable* thisAnim = *it;
         float foureighty = 480.0f;
         float f = 0.0f;
@@ -62,7 +64,7 @@ void RndPollAnim::Poll(){
 }
 
 void RndPollAnim::Exit(){
-    for(ObjPtrList<RndAnimatable, class ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         (*it)->EndAnim();
     }
 }
@@ -97,7 +99,6 @@ END_HANDLERS
 
 BEGIN_PROPSYNCS(RndPollAnim)
     SYNC_PROP(anims, mAnims)
-    bool super = RndAnimatable::SyncProperty(_val, _prop, _i, _op);
-    if(super) return true;
-    else return RndPollable::SyncProperty(_val, _prop, _i, _op);
+    SYNC_SUPERCLASS(RndAnimatable)
+    SYNC_SUPERCLASS(RndPollable)
 END_PROPSYNCS

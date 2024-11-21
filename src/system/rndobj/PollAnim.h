@@ -4,6 +4,11 @@
 #include "rndobj/Poll.h"
 #include "obj/ObjPtr_p.h"
 
+/**
+* @brief: An object that polls animatables at a set time.
+* Original _objects description:
+* "Class that drives Anims with time based on their rate."
+*/
 class RndPollAnim : public virtual RndAnimatable, public virtual RndPollable, public virtual Hmx::Object {
 public:
     RndPollAnim();
@@ -32,7 +37,8 @@ public:
         REGISTER_OBJ_FACTORY(RndPollAnim)
     }
 
-    ObjPtrList<RndAnimatable, ObjectDir> mAnims;
+    /** The list of animatables to poll. */
+    ObjPtrList<RndAnimatable> mAnims; // 0x10
 };
 
 #endif
