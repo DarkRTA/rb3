@@ -26,10 +26,11 @@ public:
     void ShrinkVerts(int);
     void ShrinkKeys(int);
 
-    Keys<std::vector<Vector3>, std::vector<Vector3> >& VertPointsKeys(){ return mKeysOwner->mVertPointsKeys; }
-    Keys<std::vector<Vector3>, std::vector<Vector3> >& VertNormalsKeys(){ return mKeysOwner->mVertNormalsKeys; }
-    Keys<std::vector<Vector2>, std::vector<Vector2> >& VertTexsKeys(){ return mKeysOwner->mVertTexsKeys; }
-    Keys<std::vector<Hmx::Color32>, std::vector<Hmx::Color32> >& VertColorsKeys(){ return mKeysOwner->mVertColorsKeys; }
+    Keys<std::vector<Vector3>, std::vector<RndMesh::Vert> >& VertPointsKeys(){ return mKeysOwner->mVertPointsKeys; }
+    Keys<std::vector<Vector3>, std::vector<RndMesh::Vert> >& VertNormalsKeys(){ return mKeysOwner->mVertNormalsKeys; }
+    Keys<std::vector<Vector2>, std::vector<RndMesh::Vert> >& VertTexsKeys(){ return mKeysOwner->mVertTexsKeys; }
+    Keys<std::vector<Hmx::Color32>, std::vector<RndMesh::Vert> >& VertColorsKeys(){ return mKeysOwner->mVertColorsKeys; }
+    RndMeshAnim* KeysOwner() const { return mKeysOwner; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -38,10 +39,10 @@ public:
     static void Init(){ REGISTER_OBJ_FACTORY(RndMeshAnim) }
 
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x10
-    Keys<std::vector<Vector3>, std::vector<Vector3> > mVertPointsKeys; // 0x1c
-    Keys<std::vector<Vector3>, std::vector<Vector3> > mVertNormalsKeys; // 0x24
-    Keys<std::vector<Vector2>, std::vector<Vector2> > mVertTexsKeys; // 0x2c
-    Keys<std::vector<Hmx::Color32>, std::vector<Hmx::Color32> > mVertColorsKeys; // 0x34
+    Keys<std::vector<Vector3>, std::vector<RndMesh::Vert> > mVertPointsKeys; // 0x1c
+    Keys<std::vector<Vector3>, std::vector<RndMesh::Vert> > mVertNormalsKeys; // 0x24
+    Keys<std::vector<Vector2>, std::vector<RndMesh::Vert> > mVertTexsKeys; // 0x2c
+    Keys<std::vector<Hmx::Color32>, std::vector<RndMesh::Vert> > mVertColorsKeys; // 0x34
     ObjOwnerPtr<RndMeshAnim, ObjectDir> mKeysOwner; // 0x3c
 };
 

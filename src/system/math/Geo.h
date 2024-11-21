@@ -1,5 +1,6 @@
 #ifndef MATH_GEO_H
 #define MATH_GEO_H
+#include "math/Mtx.h"
 #include "math/Vec.h"
 #include "math/Sphere.h"
 #include "utl/BinStream.h"
@@ -67,6 +68,12 @@ inline BinStream& operator>>(BinStream& bs, Box& box){
     return bs;
 }
 
+class BuildPoly {
+public:
+    Hmx::Polygon p; // 0x0
+    Transform t; // 0x8
+};
+
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3);
 bool Intersect(const Vector3&, const class BSPNode*);
 bool Intersect(const Segment&, const Sphere&);
@@ -74,5 +81,11 @@ bool Intersect(const Transform&, const Hmx::Polygon&, const class BSPNode*);
 bool Intersect(const Segment&, const class BSPNode*, float&, Plane&);
 bool Intersect(const Segment&, const Triangle&, bool, float&);
 void Multiply(const Box&, float, Box&);
+void MultiplyEq(BSPNode*, const Transform&);
+
+inline void CalcBoxCenter(Vector3& center, const Box& box){
+    Add(box.mMin, box.mMax, center);
+    Scale(center, 0.5f, center);
+}
 
 #endif

@@ -29,6 +29,7 @@ public:
     Keys<Vector2, Vector2>& SpeedKeys(){ return mKeysOwner->mSpeedKeys; }
     Keys<Vector2, Vector2>& LifeKeys(){ return mKeysOwner->mLifeKeys; }
     Keys<Vector2, Vector2>& StartSizeKeys(){ return mKeysOwner->mStartSizeKeys; }
+    RndParticleSysAnim* KeysOwner() const { return mKeysOwner; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

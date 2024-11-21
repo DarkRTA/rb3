@@ -182,6 +182,11 @@ public:
         mBoxExtent1 = v1; mBoxExtent2 = v2;
     }
 
+    void SetBubbleSize(float x, float y){ mBubbleSize.x = x; mBubbleSize.y = y; }
+    void SetBubblePeriod(float x, float y){ mBubblePeriod.x = x; mBubblePeriod.y = y; }
+    void SetForceDir(const Vector3& v){ mForceDir = v; }
+    void SetDeltaSize(float x, float y){ mDeltaSize.x = x; mDeltaSize.y = y; }
+
     void SetSpin(bool b){ mSpin = b; }
     void SetVelocityAlign(bool b){ mVelocityAlign = b; }
     void SetStretchWithVelocity(bool b){ mStretchWithVelocity = b; }
@@ -199,6 +204,7 @@ public:
     void SetStretchScale(float f){ mStretchScale = f; }
     RndMesh* GetMesh() const { return mMesh; }
     Type GetType() const { return mType; }
+    RndMat* GetMat() const { return mMat; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

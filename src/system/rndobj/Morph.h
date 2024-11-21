@@ -36,6 +36,9 @@ public:
     virtual float EndFrame();
     virtual void Print();
 
+    int NumPoses() const { return mPoses.size(); }
+    Pose& PoseAt(int idx){ return mPoses[idx]; }
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndMorph)

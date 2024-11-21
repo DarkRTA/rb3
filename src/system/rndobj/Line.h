@@ -41,6 +41,11 @@ public:
     void SetMat(RndMat*);
     DataNode OnSetMat(const DataArray*);
 
+    int NumPoints() const { return mPoints.size(); }
+    Point& PointAt(int idx){ return mPoints[idx]; }
+    float GetWidth() const { return mWidth; }
+    void SetWidth(float w){ mWidth = w; }
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndLine)

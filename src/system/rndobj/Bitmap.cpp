@@ -124,7 +124,7 @@ void RndBitmap::AllocateBuffer() {
     int test = mRowBytes * mHeight + paletteBytes;
     if (mPalette) mBuffer = (u8*)_MemAlloc(test, 0x20);
     if (paletteBytes) mPalette = mBuffer;
-    mPixels = mBuffer + paletteBytes;
+    // mPixels = mBuffer + paletteBytes;
     MILO_ASSERT(!paletteBytes, 439);
     MILO_ASSERT(!((int)mPixels & 31), 441);
 }
@@ -137,7 +137,7 @@ void RndBitmap::Create(int width, int height, int rowlen, int bpp, int order, vo
     mRowBytes = rowlen;
     mBpp = bpp;
     mOrder = order;
-    mPixels = (u8*)pixels;
+    // mPixels = (u8*)pixels;
     MILO_ASSERT(!((int)mPixels & 31), 465);
     mPalette = (u8*)palette;
     delete mMip;

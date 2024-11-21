@@ -87,6 +87,7 @@ namespace Hmx {
         Quat(float f1, float f2, float f3, float f4) : x(f1), y(f2), z(f3), w(f4) {}
         Quat(const Matrix3& m){ Set(m); }
         Quat(const Vector3& v){ Set(v); }
+        Quat(const Vector3&, float);
 
         void Reset(){ x = y = z = 0.0f; w = 1.0f; }
         void Zero(){ w = x = y = z = 0.0f; }
@@ -279,7 +280,10 @@ inline void Scale(const Vector3& vec, const Hmx::Matrix3& mtx, Hmx::Matrix3& res
     Scale(mtx.z, vec.z, res.z);
 }
 
-float AngleBetween(const Hmx::Quat&, const Hmx::Quat&);
+inline void Negate(const Hmx::Quat& q, Hmx::Quat& qres){
+    qres.Set(-q.x, -q.y, -q.z, q.w);
+}
+
 void ScaleAddEq(Hmx::Quat&, const Hmx::Quat&, float);
 void Normalize(const Hmx::Quat&, Hmx::Quat&);
 void Multiply(const Hmx::Quat&, const Hmx::Quat&, Hmx::Quat&);
@@ -294,6 +298,14 @@ void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
 void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Plane&, const Transform&, Plane&);
 void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
+
+inline float AngleBetween(const Hmx::Quat& q1, const Hmx::Quat& q2){
+    Hmx::Quat q18;
+    Negate(q1, q18);
+    Multiply(q2, q18, q18);
+    if(q18.w > 1.0f) return 0;
+    else return acosf(q18.w) * 2.0f;
+}
 
 inline void Transpose(const Hmx::Matrix3& min, Hmx::Matrix3& mout){
     mout.Set(

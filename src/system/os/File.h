@@ -89,6 +89,7 @@ extern "C" {
     int FileMkDir();
 
     void FileDiscSpinUp();
+    void FileNormalizePath(const char*);
 
     bool FileMatch(const char*, const char*);
     void FileEnumerate(const char*, void(*)(const char*, const char*), bool, const char*, bool);
@@ -102,7 +103,6 @@ const char* FileRoot();
 const char* FileExecRoot();
 const char* FileSystemRoot();
 
-void FileNormalizePath(const char*);
 void FileQualifiedFilename(String&, const char*);
 void FileQualifiedFilename(char*, int, const char*);
 const char* FileLocalize(const char* iFilename, char* buffer);

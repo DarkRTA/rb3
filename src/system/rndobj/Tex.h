@@ -72,6 +72,7 @@ public:
     int Height() const { return mHeight; }
     Type GetType() const { return mType; }
     const FilePath& File() const { return mFilepath; }
+    bool IsRendered() const { return mType & kRendered; }
 
     NEW_OVERLOAD
     NEW_OBJ(RndTex)

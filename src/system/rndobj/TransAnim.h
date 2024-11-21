@@ -37,6 +37,7 @@ public:
     void SetTransSpline(bool b){ mKeysOwner->mTransSpline = b; }
     void SetScaleSpline(bool b){ mKeysOwner->mScaleSpline = b; }
     void SetRotSlerp(bool b){ mKeysOwner->mRotSlerp = b; }
+    RndTransAnim* KeysOwner() const { return mKeysOwner; }
 
     DataNode OnSetTransSpline(const DataArray*);
     DataNode OnSetScaleSpline(const DataArray*);
