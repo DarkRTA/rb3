@@ -79,6 +79,9 @@ public:
     DataNode OnZeroSphere(const DataArray*);
     
     bool mShowing : 1;
+    /** "Sort by distance to current camera per frame.
+     * This has a CPU cost if there are many objects."
+     */
     bool mSortInWorld : 1; // used in RndGroup
     bool mSynthEmitterEnabled : 1; // used in SynthEmitter
     bool mTestDone : 1; // used in RndFlare

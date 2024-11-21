@@ -35,7 +35,7 @@ void RndSet::SetTypeDef(DataArray* arr){
                 }
                 mProps[i - 1] = thisArr->Sym(0);
             }
-            ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin();
+            ObjPtrList<Hmx::Object>::iterator it = mObjects.begin();
             while(it != mObjects.end()){
                 if(!AllowedObject(*it)){
                     MILO_WARN("%s not allowed in set", (*it)->Name());
@@ -93,7 +93,7 @@ BEGIN_PROPSYNCS(RndSet)
     SYNC_PROP(objects, mObjects)
     else if(_op == kPropSet){
         static Hmx::Object* milo = ObjectDir::Main()->FindObject("milo", false);
-        for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
+        for(ObjPtrList<Hmx::Object>::iterator it = mObjects.begin(); it != mObjects.end(); ++it){
             if(milo){
                 static Message msg("record", 0, Symbol("Change from set"));
                 msg[0] = *it;

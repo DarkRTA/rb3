@@ -4,7 +4,7 @@
 #include <vector>
 
 /**
-* @brief: A group of Rnd objects that send messages.
+* @brief: A group of objects that send messages.
 * Original _objects description:
 * "A group of objects to propagate animation and messages"
 */

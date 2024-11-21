@@ -1,10 +1,12 @@
 #include "rndobj/Group.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Draw.h"
 #include "utl/Symbols.h"
 
 int GROUP_REV = 14;
 bool gInReplace;
 
-RndGroup::RndGroup() : mObjects(this, kObjListOwnerControl), mEnv(this, 0), mDrawOnly(this, 0), mLod(this, 0), mLodScreenSize(0.0f), unkf8(0) {
+RndGroup::RndGroup() : mObjects(this, kObjListOwnerControl), mEnv(this), mDrawOnly(this), mLod(this), mLodScreenSize(0), unkf8(0) {
     mSortInWorld = 0;
 }
 
@@ -53,9 +55,28 @@ BEGIN_COPYS(RndGroup)
     Update();
 END_COPYS
 
+void RndGroup::AddObject(Hmx::Object* o1, Hmx::Object* o2){
+    if(!o1 || o1 == this) return;
+    if(mObjects.find(o1) != mObjects.end()) return;
+    else {
+        if(o2){
+            mObjects.insert(mObjects.find(o2), o1);
+            Update();
+        }
+        else {
+            mObjects.push_back(o1);
+            RndAnimatable* anim = dynamic_cast<RndAnimatable*>(o1);
+            if(anim) mAnims.push_back(anim);
+            RndDrawable* draw = dynamic_cast<RndDrawable*>(o1);
+            if(draw) mDraws.push_back(draw);
+            mDrawItr = mDraws.begin();
+        }
+    }
+}
+
 void RndGroup::Replace(Hmx::Object* from, Hmx::Object* to){
     RndTransformable::Replace(from, to);
-    ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mObjects.begin();
+    ObjPtrList<Hmx::Object>::iterator it = mObjects.begin();
     for(; it != mObjects.end(); ++it){
         if(*it == from) break;
     }

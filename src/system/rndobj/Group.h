@@ -7,6 +7,12 @@
 #include "rndobj/Env.h"
 #include <vector>
 
+/**
+* @brief: A group of objects that receive messages.
+* Original _objects description:
+* "Represents a group of objects to which to propogate
+* animation and messages."
+*/
 class RndGroup : public RndAnimatable, public RndDrawable, public RndTransformable {
 public:
     RndGroup();
@@ -41,11 +47,13 @@ public:
     void RemoveObject(Hmx::Object*);
     void AddObject(Hmx::Object*, Hmx::Object*);
     void ClearObjects();
+    /** "Sort objects by draw_order and material" */
     void SortDraws();
     void AddObjectAtFront(Hmx::Object*);
-    DataNode OnGetDraws(DataArray*);
     RndEnviron* GetEnv() const { return mEnv; }
     void SetEnv(RndEnviron* env){ mEnv = env; }
+
+    DataNode OnGetDraws(DataArray*);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -54,10 +62,13 @@ public:
         REGISTER_OBJ_FACTORY(RndGroup)
     }
 
-    ObjPtrList<Hmx::Object, ObjectDir> mObjects; // 0xc0
-    ObjPtr<RndEnviron, ObjectDir> mEnv; // 0xd0
-    ObjPtr<RndDrawable, ObjectDir> mDrawOnly; // 0xdc
-    ObjPtr<RndDrawable, ObjectDir> mLod; // 0xe8
+    ObjPtrList<Hmx::Object> mObjects; // 0xc0
+    ObjPtr<RndEnviron> mEnv; // 0xd0
+    /** "if set, only draws this member of the group" */
+    ObjPtr<RndDrawable> mDrawOnly; // 0xdc
+    /** "Object to draw instead below lod_screen_size" */
+    ObjPtr<RndDrawable> mLod; // 0xe8
+    /** "Ratio of screen height for lod" */
     float mLodScreenSize; // 0xf4
     bool unkf8; // 0xf8
     std::vector<RndAnimatable*> mAnims; // 0xfc
