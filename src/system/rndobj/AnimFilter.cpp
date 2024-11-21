@@ -10,7 +10,7 @@ INIT_REVS(RndAnimFilter);
 
 void RndAnimFilter::SetAnim(RndAnimatable* anim){
     mAnim = anim;
-    if(mAnim.operator->()){
+    if(mAnim){
         SetRate(mAnim->GetRate());
         mStart = mAnim->StartFrame();
         mEnd = mAnim->EndFrame();
@@ -40,7 +40,7 @@ BEGIN_COPYS(RndAnimFilter)
     END_COPYING_MEMBERS
 END_COPYS
 
-RndAnimFilter::RndAnimFilter() : mAnim(this, 0), mPeriod(0.0f), mStart(0.0f), mEnd(0.0f), mScale(1.0f), mOffset(0.0f), mSnap(0.0f), mJitter(0.0f), mJitterFrame(0.0f), mType(kRange) {
+RndAnimFilter::RndAnimFilter() : mAnim(this), mPeriod(0.0f), mStart(0.0f), mEnd(0.0f), mScale(1.0f), mOffset(0.0f), mSnap(0.0f), mJitter(0.0f), mJitterFrame(0.0f), mType(kRange) {
 
 }
 
