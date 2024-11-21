@@ -67,6 +67,9 @@ public:
     RndEnviron* GetEnv() const { return mEnv; }
     void SetEnv(RndEnviron* env){ mEnv = env; }
 
+    /** Handler to get all RndDrawables in this RndGroup.
+     * @returns A DataNode housing a DataArray of each RndDrawable.
+     */
     DataNode OnGetDraws(DataArray*);
 
     NEW_OVERLOAD;

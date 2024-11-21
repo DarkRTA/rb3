@@ -1,5 +1,7 @@
 #include "rndobj/Dir.h"
 #include "obj/Object.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Draw.h"
 #include "rndobj/Trans.h"
 #include "utl/FilePath.h"
 #include "obj/ObjVersion.h"
@@ -106,12 +108,12 @@ void RndDir::Poll(){
 }
 
 void RndDir::Enter(){
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     if(TheLoadMgr.EditMode()){
         DataNode events = OnSupportedEvents(0);
         DataArray* arr = events.Array();
-        if(!arr->Contains(DataNode(mTestEvent))){
-            mTestEvent = Symbol("");
+        if(!arr->Contains(mTestEvent)){
+            mTestEvent = "";
         }
     }
 #endif
@@ -134,8 +136,14 @@ void RndDir::Exit(){
 
 // fn_805D3C1C
 void RndDir::ListPollChildren(std::list<RndPollable*>& children) const {
-    if(IsProxy()){
-        children.insert(children.begin(), mPolls.begin(), mPolls.end());
+    if(!IsProxy()){
+        children.insert(children.end(), mPolls.begin(), mPolls.end());
+    }
+}
+
+void RndDir::ListDrawChildren(std::list<RndDrawable*>& children){
+    if(!IsProxy()){
+        children.insert(children.end(), mDraws.begin(), mDraws.end());
     }
 }
 
@@ -179,6 +187,12 @@ float RndDir::EndFrame(){
         if(frame < end) frame = end;
     }
     return frame;
+}
+
+void RndDir::ListAnimChildren(std::list<RndAnimatable*>& children) const {
+    if(!IsProxy()){
+        children.insert(children.end(), mAnims.begin(), mAnims.end());
+    }
 }
 
 // fn_805D4A9C
@@ -276,11 +290,11 @@ void RndDir::PostLoad(BinStream& bs){
         else bs >> mEnv;
     }
     if(gRev > 2 && gRev != 9) bs >> mTestEvent;
-    if(gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8){
+    if(gRev >= 4 && gRev <= 8){
         Symbol s;
         bs >> s >> s;
     }
-    if(gRev == 5 || gRev == 6 || gRev == 7){
+    if(gRev >= 5 && gRev <= 7){
         RndPostProc* rpp = Hmx::Object::New<RndPostProc>();
         rpp->LoadRev(bs, gRev);
         delete rpp;
@@ -306,25 +320,25 @@ DataNode RndDir::OnShowObjects(DataArray* da) {
         RndDrawable* d = array->Obj<RndDrawable>(i);
         if (d) d->SetShowing(show);
     }
-    return DataNode();
+    return 0;
 }
 
-DataNode RndDir::OnSupportedEvents(DataArray* da) {
+DataNode RndDir::OnSupportedEvents(DataArray*) {
     DataArrayPtr ptr(new DataArray(0x400));
     std::list<DataArray*> oList;
-    ptr.Node(0) = DataNode(Symbol());
-    int idx = 1;
-    for(ObjDirItr<EventTrigger> it(this, true); it != 0; ++it){
+    int idx = 0;
+    ptr->Node(idx++) = Symbol();
+    for(ObjDirItr<EventTrigger> it(this, true); it; ++it){
         DataArray* events = it->SupportedEvents();
-        if(events){
+        if(!ListFind(oList, events)){
             oList.push_back(events);
             for(int i = 0; i < events->Size(); i++){
                 ptr.Node(idx++) = events->Node(i);
             }
         }
     }
-    ((DataArray*)ptr)->Resize(idx);
-    return DataNode(ptr);
+    ptr->Resize(idx);
+    return ptr;
 }
 
 BEGIN_PROPSYNCS(RndDir)

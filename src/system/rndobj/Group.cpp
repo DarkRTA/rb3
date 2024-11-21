@@ -312,7 +312,7 @@ BEGIN_HANDLERS(RndGroup)
     HANDLE_CHECK(0x29B)
 END_HANDLERS
 
-DataNode RndGroup::OnGetDraws(DataArray* arr){
+DataNode RndGroup::OnGetDraws(DataArray*){
     DataArray* ret = new DataArray(mDraws.size() + 1);
     ret->Node(0) = NULL_OBJ;
     int idx = 0;
