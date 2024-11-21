@@ -2,6 +2,7 @@
 #include "math/Mtx.h"
 #include "math/Utl.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "rndobj/Anim.h"
@@ -14,7 +15,7 @@
 int GROUP_REV = 14;
 bool gInReplace;
 
-RndGroup::RndGroup() : mObjects(this, kObjListOwnerControl), mEnv(this), mDrawOnly(this), mLod(this), mLodScreenSize(0), unkf8(0) {
+RndGroup::RndGroup() : mObjects(this, kObjListOwnerControl), mEnv(this), mDrawOnly(this), mLod(this), mLodScreenSize(0), mDrawLod(0) {
     mSortInWorld = 0;
 }
 
@@ -24,23 +25,21 @@ void RndGroup::Load(BinStream& bs){
     int rev;
     bs >> rev;
     ASSERT_GLOBAL_REV(rev, GROUP_REV);
-    if(rev > 7) Hmx::Object::Load(bs);
-    RndAnimatable::Load(bs);
-    RndTransformable::Load(bs);
-    RndDrawable::Load(bs);
+    if(rev > 7) LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndAnimatable)
+    LOAD_SUPERCLASS(RndTransformable)
+    LOAD_SUPERCLASS(RndDrawable)
     if(rev > 10){
         bs >> mObjects >> mEnv;
         if(rev > 12) bs >> mDrawOnly;
-        else mDrawOnly = 0;
+        else mDrawOnly = nullptr;
         Update();
     }
     if(rev > 11){
         bs >> mLod >> mLodScreenSize;
     }
     if(rev > 13){
-        bool read_in;
-        bs >> read_in;
-        mSortInWorld = read_in;
+        LOAD_BITFIELD(bool, mSortInWorld)
     }
     UpdateLODState();
 }
@@ -114,7 +113,7 @@ void RndGroup::AddObjectAtFront(Hmx::Object* o){
 void RndGroup::Merge(const RndGroup* group){
     if(group){
         for(ObjPtrList<Hmx::Object>::iterator it = group->mObjects.begin(); it != group->mObjects.end(); ++it){
-            AddObject(*it, nullptr);
+            AddObject(*it);
         }
     }
 }
@@ -137,9 +136,9 @@ void RndGroup::Update(){
 
 void RndGroup::UpdateLODState(){
     if(mLod && mLodScreenSize > 0){
-        unkf8 = true;
+        mDrawLod = true;
     }
-    else unkf8 = false;
+    else mDrawLod = false;
 }
 
 void RndGroup::SortDraws(){
@@ -301,7 +300,7 @@ bool RndGroup::MakeWorldSphere(Sphere& s, bool b){
 
 BEGIN_HANDLERS(RndGroup)
     HANDLE_ACTION(sort_draws, SortDraws())
-    HANDLE_ACTION(add_object, AddObject(_msg->Obj<Hmx::Object>(2), 0))
+    HANDLE_ACTION(add_object, AddObject(_msg->Obj<Hmx::Object>(2)))
     HANDLE_ACTION(remove_object, RemoveObject(_msg->Obj<Hmx::Object>(2)))
     HANDLE_ACTION(clear_objects, ClearObjects())
     HANDLE(get_draws, OnGetDraws)
