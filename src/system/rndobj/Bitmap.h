@@ -85,16 +85,22 @@ public:
     void SetMip(RndBitmap*);
     int ColumnNonTransparent(int, int, int, int*);
     bool LoadSafely(BinStream&, int, int);
-    void LoadBmp(const char*, bool, bool);
     void Blt(const RndBitmap&, int, int, int, int, int, int);
     bool SamePixelFormat(const RndBitmap&) const;
     bool SamePaletteColors(const RndBitmap&) const;
-    void SaveBmp(BinStream*) const;
     bool IsTranslucent() const;
     void Create(const RndBitmap&, unsigned char, BitmapEncoding, void*);
     void SetPaletteColor(int, unsigned char, unsigned char, unsigned char, unsigned char);
     void SetPixelColor(int, int, unsigned char, unsigned char, unsigned char, unsigned char);
     RndBitmap* nextMip() const;
+    bool LoadBmp(BinStream*);
+    bool LoadDIB(BinStream*, unsigned int);
+    bool LoadBmp(const char*, bool, bool);
+    bool ProcessFlags(const char*, bool);
+    bool SaveBmp(const char*) const;
+    bool SaveBmp(BinStream*) const;
+    void SaveBmpHeader(BinStream*) const;
+    void SaveBmpPixels(BinStream*) const;
 
     void Save(BinStream&) const;
     void Load(BinStream&);

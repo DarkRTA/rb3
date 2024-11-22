@@ -6,7 +6,7 @@ WavReader::WavReader(File *file, bool enableReads, StandardStream *stream) {
     mOutStream = stream;
     MILO_ASSERT(mInFile, 0x1a);
 
-    mInFileStream = new (_MemAlloc(sizeof(FileStream), 0)) FileStream(file, true);
+    mInFileStream = new FileStream(file, true);
 
     mInWaveFile = new WaveFile(*mInFileStream);
 

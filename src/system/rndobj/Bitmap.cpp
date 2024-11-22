@@ -5,6 +5,7 @@
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
 #include "utl/ChunkStream.h"
+#include "utl/FileStream.h"
 #include "utl/MemMgr.h"
 #include "utl/Symbols4.h"
 
@@ -565,6 +566,158 @@ void RndBitmap::SetMip(RndBitmap* bm) {
         MILO_ASSERT(mOrder == bm->Order(), 1103);
         MILO_ASSERT(mBpp == bm->Bpp(), 1104);
         mMip = bm;
+    }
+}
+
+bool RndBitmap::LoadBmp(BinStream* bs){
+    unsigned short us;
+    *bs >> us;
+    if(us != 0x4D42){
+        MILO_WARN("%s not BMP format", bs->Name());
+        return false;
+    }
+    else {
+        tagBITMAPFILEHEADER header;
+        *bs >> header;
+        return LoadDIB(bs, header.bfOffBits);
+    }
+}
+
+bool RndBitmap::LoadDIB(BinStream* bs, unsigned int offbits){
+    tagBITMAPINFOHEADER infoheader;
+    *bs >> infoheader;
+    if(infoheader.biBitCount < 4){
+        MILO_WARN("%s: Unsupported bit depth %d", bs->Name(), infoheader.biBitCount);
+        return false;
+    }
+    if(infoheader.biCompression != 0){
+        MILO_WARN("%s: Unsupported compression %d", bs->Name(), infoheader.biCompression);
+        return false;
+    }
+    // more...
+    return true;
+}
+
+bool RndBitmap::LoadBmp(const char* filename, bool b1, bool b2){
+    FileStream* stream = new FileStream(filename, FileStream::kRead, true);
+    if(stream->Fail()){
+        delete stream;
+        return false;
+    }
+    else {
+        if(!LoadBmp(stream)){
+            delete stream;
+            return false;
+        }
+        else {
+            delete stream;
+            if(!b2){
+                ProcessFlags(filename, b1);
+            }
+            return true;
+        }
+    }
+}
+
+bool RndBitmap::ProcessFlags(const char* filename, bool bbb){
+    bool contains_flag = false;
+    if(strstr(filename, MakeString("%s.", "_tb")) || strstr(filename, MakeString("%s_", "_tb"))) contains_flag = true;
+    if(contains_flag){
+        SetAlpha(kTransparentBlack);
+    }
+    else {
+        contains_flag = false;
+        if(strstr(filename, MakeString("%s.", "_gw")) || strstr(filename, MakeString("%s_", "_gw"))) contains_flag = true;
+        if(contains_flag) SetAlpha(kGrayscaleWhite);
+        else {
+            contains_flag = false;
+            if(strstr(filename, MakeString("%s.", "_ga")) || strstr(filename, MakeString("%s_", "_ga"))) contains_flag = true;
+            if(contains_flag) SetAlpha(kGrayscaleAlpha);
+
+        }
+    }
+    
+    if(strstr(filename, MakeString("%s.", "_pma")) || strstr(filename, MakeString("%s_", "_pma"))){
+        SetPreMultipliedAlpha();
+    }
+    if(strstr(filename, MakeString("%s.", "_selfmip")) || strstr(filename, MakeString("%s_", "_selfmip"))){
+        SelfMip();
+    }
+    if(bbb){
+        if(strstr(filename, MakeString("%s.", "_nomip")) || strstr(filename, MakeString("%s_", "_nomip"))){
+            GenerateMips();
+        }
+        else if(strstr(filename, MakeString("%s.", "_mip")) || strstr(filename, MakeString("%s_", "_mip"))){
+            GenerateMips();
+        }
+    }
+    return true;
+}
+
+bool RndBitmap::SaveBmp(const char*) const {
+    MILO_ASSERT(0, 0x610);
+    return false;
+}
+
+bool RndBitmap::SaveBmp(BinStream* file) const {
+    MILO_ASSERT(file, 0x626);
+    if(file->Fail()){
+        return false;
+    }
+    else if(mOrder & 1){
+        MILO_WARN("Order isn't kARGB");
+        return false;
+    }
+    else {
+        SaveBmpHeader(file);
+        SaveBmpPixels(file);
+        return true;
+    }
+}
+
+void RndBitmap::SaveBmpHeader(BinStream* file) const {
+    tagBITMAPFILEHEADER fileheader;
+    tagBITMAPINFOHEADER infoheader;
+
+    MILO_ASSERT(file, 0x63F);
+    unsigned short us = 0x4D42;
+    *file << us;
+    fileheader.bfOffBits = PaletteBytes() + 0x36;
+    fileheader.bfSize = fileheader.bfOffBits + PixelBytes();
+    fileheader.bfReserved1 = 0;
+    fileheader.bfReserved2 = 0;
+    *file << fileheader;
+
+    infoheader.biSize = 0x28;
+    infoheader.biWidth = mWidth;
+    infoheader.biHeight = mHeight;
+    infoheader.biPlanes = 1;
+    infoheader.biBitCount = mBpp;
+    infoheader.biCompression = 0;
+    infoheader.biSizeImage = 0;
+    infoheader.biXPelsPerMeter = 0xb11;
+    infoheader.biYPelsPerMeter = 0xb11;
+    infoheader.biClrUsed = 0;
+    infoheader.biClrImportant = 0;
+    *file << infoheader;
+    if(mPalette){
+        file->Write(mPalette, (1 << mBpp) << 2);
+    }
+}
+
+void RndBitmap::SaveBmpPixels(BinStream* file) const {
+    for(int i = mHeight - 1; i >= 0; i--){
+        u8* pixels = mPixels + mRowBytes * i;
+        if(mBpp == 4){
+            u8* pixelIt = pixels;
+            for(; pixelIt != pixels + mRowBytes; pixelIt++){
+                unsigned char pix = *pixelIt >> 4 | *pixelIt << 4;
+                *file << pix;
+            }
+        }
+        else {
+            file->Write(pixels, mRowBytes);
+        }
     }
 }
 
