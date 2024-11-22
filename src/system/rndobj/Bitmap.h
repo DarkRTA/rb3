@@ -1,33 +1,49 @@
-#ifndef RNDOBJ_BITMAP_H
-#define RNDOBJ_BITMAP_H
+#pragma once
 #include "utl/BinStream.h"
 #include "obj/Object.h"
 #include "utl/MemMgr.h"
 #include "milo_types.h"
 #include "types.h"
 
+/** Info at the very start of a .bmp. */
 struct tagBITMAPFILEHEADER {
-    uint bfSize;
-    ushort bfReserved1;
-    ushort bfReserved2;
-    uint bfOffBits;
+    /** The .bmp file size in bytes */
+    uint bfSize; // 0x0
+    /** Reserved, if writing set this to 0 */
+    ushort bfReserved1; // 0x4
+    /** Reserved, if writing set this to 0 */
+    ushort bfReserved2; // 0x6
+    /** The start address of the byte where the bitmap image data is found. */
+    uint bfOffBits; // 0x8
 };
 
 BinStream& operator>>(BinStream&, tagBITMAPFILEHEADER&);
 BinStream& operator<<(BinStream&, const tagBITMAPFILEHEADER&);
 
+/** Info about the bitmap's pixel array, comes after the file header. */
 struct tagBITMAPINFOHEADER {
-    uint biSize;
-    int biWidth;
-    int biHeight;
-    ushort biPlanes;
-    ushort biBitCount;
-    uint biCompression;
-    uint biSizeImage;
-    int biXPelsPerMeter;
-    int biYPelsPerMeter;
-    uint biClrUsed;
-    uint biClrImportant;
+    /** This header's size in bytes (should be 40) */
+    uint biSize; // 0x0
+    /** The bitmap's width in pixels */
+    int biWidth; // 0x4
+    /** The bitmap's height in pixels */
+    int biHeight; // 0x8
+    /** The number of color planes (must be 1. why? idk lol) */
+    ushort biPlanes; // 0xc
+    /** The number of bits per pixel, aka the image's color depth. */
+    ushort biBitCount; // 0xe
+    /** The compression method being used. (usually 0) */
+    uint biCompression; // 0x10
+    /** The image size, aka the number of chars in the bitmap's pixel array. */
+    uint biSizeImage; // 0x14
+    /** The image's horizontal resolution (pixels per meter) */
+    int biXPelsPerMeter; // 0x18
+    /** The image's vertical resolution (pixels per meter) */
+    int biYPelsPerMeter; // 0x1c
+    /** The number of colors in the color palette */
+    uint biClrUsed; // 0x20
+    /** The number of important colors being used */
+    uint biClrImportant; // 0x24
 };
 
 BinStream& operator>>(BinStream&, tagBITMAPINFOHEADER&);
@@ -41,13 +57,12 @@ public:
         kTransparentBlack = 2,
     };
 
-    enum BitmapEncoding {
-
-    };
-
+    /** The bitmap's width in pixels. */
     u16 mWidth; // 0x0
+    /** The bitmap's height in pixels. */
     u16 mHeight; // 0x2
     u16 mRowBytes; // 0x4
+    /** The number of bits per pixel, aka color depth. */
     u8 mBpp; // 0x6
     u32 mOrder; // 0x8
     u8* mPixels; // 0xc
@@ -74,7 +89,7 @@ public:
     void PixelColor(int x, int y, u8& r, u8& g, u8& b, u8& a) const;
     void PaletteColor(int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const;
     int PixelOffset(int, int, bool&) const;
-    int PixelIndex(int, int) const;
+    unsigned char PixelIndex(int, int) const;
     void SetPixelIndex(int, int, unsigned char);
     void ConvertToAlpha();
     void SetAlpha(AlphaFlag);
@@ -83,16 +98,14 @@ public:
     void GenerateMips();
     RndBitmap* DetachMip();
     void SetMip(RndBitmap*);
-    int ColumnNonTransparent(int, int, int, int*);
+    unsigned char ColumnNonTransparent(int, int, int, int*);
     bool LoadSafely(BinStream&, int, int);
     void Blt(const RndBitmap&, int, int, int, int, int, int);
     bool SamePixelFormat(const RndBitmap&) const;
     bool SamePaletteColors(const RndBitmap&) const;
     bool IsTranslucent() const;
-    void Create(const RndBitmap&, unsigned char, BitmapEncoding, void*);
     void SetPaletteColor(int, unsigned char, unsigned char, unsigned char, unsigned char);
     void SetPixelColor(int, int, unsigned char, unsigned char, unsigned char, unsigned char);
-    RndBitmap* nextMip() const;
     bool LoadBmp(BinStream*);
     bool LoadDIB(BinStream*, unsigned int);
     bool LoadBmp(const char*, bool, bool);
@@ -101,6 +114,9 @@ public:
     bool SaveBmp(BinStream*) const;
     void SaveBmpHeader(BinStream*) const;
     void SaveBmpPixels(BinStream*) const;
+    void DxtColor(int, int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const;
+    int PaletteOffset(int) const;
+    unsigned char RowNonTransparent(int, int, int, int*);
 
     void Save(BinStream&) const;
     void Load(BinStream&);
@@ -111,9 +127,8 @@ public:
     int Bpp() const { return mBpp; }
     u8* Palette() const { return mPalette; }
     u8* Pixels() const { return mPixels; }
+    RndBitmap* nextMip() const { return mMip; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 };
-
-#endif // RNDOBJ_BITMAP_H
