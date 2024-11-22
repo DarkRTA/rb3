@@ -92,13 +92,12 @@ int RndBitmap::PaletteBytes() const {
 }
 
 unsigned char RndBitmap::NearestColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) const {
-    int i = 1 << mBpp;
-    int i3 = 0x40000;
     int u4 = -1;
+    int i3 = 0x40000;
     unsigned char pr, pg, pb, pa;
-    while(--i >= 0){
+    for(int i = (1 << mBpp) - 1; i >= 0; i--){
         PaletteColor(i, pr, pg, pb, pa);
-        int diff = (pr - r) * (pr - r) + (pg - g) * (pg - g) +  (pb - b) * (pb - b) + (pa - a) * (pa - a);
+        int diff = (pr - r) * (pr - r) + (pg - g) * (pg - g) + (pb - b) * (pb - b) + (pa - a) * (pa - a);
         if(diff < i3){
             i3 = diff;
             u4 = i;
@@ -383,21 +382,26 @@ void RndBitmap::ConvertToAlpha(){
 void RndBitmap::SetAlpha(AlphaFlag flag){
     ConvertToAlpha();
     if(mBpp <= 8){
-        int i = mPalette ? (1 << mBpp) : 0;
-        while(--i >= 0){
+        int start;
+        if(mPalette) start = 1 << mBpp;
+        else start = 0;
+        start--;
+        int max = 255;
+        int min = 0;
+        for(int i = start; i >= 0; i--){
             unsigned char r, g, b, a;
             PaletteColor(i, r, g, b, a);
             switch(flag){
                 case kTransparentBlack:
                     if(b == 0 && r == 0 && g == 0){
-                        a = 0;
+                        a = min;
                     }
                     break;
                 case kGrayscaleWhite:
                     a = r;
-                    b = 255;
-                    g = 255;
-                    r = 255;
+                    b = max;
+                    g = max;
+                    r = max;
                     break;
                 case kGrayscaleAlpha:
                     a = r;
@@ -435,33 +439,6 @@ void RndBitmap::SetAlpha(AlphaFlag flag){
             }
         }
     }
-
-//   ConvertToAlpha(this);
-//   if (this->mBpp < 9) {
-//   }
-//   else {
-//     for (iVar1 = 0; iVar1 < this->mHeight; iVar1 = iVar1 + 1) {
-//       for (iVar2 = 0; iVar2 < this->mWidth; iVar2 = iVar2 + 1) {
-//         PixelColor(this,iVar2,iVar1,&local_25,&local_26,&local_27,&local_28);
-//         if (param_1 == 2) {
-//           if (((local_27 == '\0') && (local_25 == '\0')) && (local_26 == '\0')) {
-//             local_28 = '\0';
-//           }
-//         }
-//         else if (param_1 == 1) {
-//           local_28 = local_25;
-//           local_27 = 0xff;
-//           local_26 = 0xff;
-//           local_25 = 0xff;
-//         }
-//         else if (param_1 == 0) {
-//           local_28 = local_25;
-//         }
-//         SetPixelColor(this,iVar2,iVar1,local_25,local_26,local_27,local_28);
-//       }
-//     }
-//   }
-//   return;
 }
 
 void PreMultiplyAlpha(u8& r, u8& g, u8& b, u8 a) {
@@ -469,6 +446,107 @@ void PreMultiplyAlpha(u8& r, u8& g, u8& b, u8 a) {
     r *= new_alpha;
     g *= new_alpha;
     b *= new_alpha;
+}
+
+void RndBitmap::SetPreMultipliedAlpha(){
+    ConvertToAlpha();
+    if(mBpp <= 8){
+        int start;
+        if(mPalette) start = 1 << mBpp;
+        else start = 0;
+        start--;
+        int max = 255;
+        int min = 0;
+        for(int i = start; i >= 0; i--){
+            unsigned char r, g, b, a;
+            PaletteColor(i, r, g, b, a);
+            if(a != 255){
+                PreMultiplyAlpha(r, g, b, a);
+                SetPaletteColor(i, r, g, b, a);
+            }
+        }
+    }
+    else {
+        for(int i = 0; i < mHeight; i++){
+            for(int j = 0; j < mWidth; j++){
+                unsigned char r, g, b, a;
+                PixelColor(j, i, r, g, b, a);
+                if(a != 255){
+                    PreMultiplyAlpha(r, g, b, a);
+                    SetPixelColor(j, i, r, g, b, a);
+                }
+            }
+        }
+    }
+}
+
+void RndBitmap::SelfMip(){
+    int pixelBytes = PixelBytes();
+    mWidth >>= 1;
+    int rowOffset = mRowBytes >> 1;
+    int dim = Min(mWidth, mHeight);
+
+    int i4 = 0;
+    int i3 = 0;
+    while(dim > 1){
+        if(dim & 1){
+            i3 = 1;
+        }
+        dim >>= 1;
+        i4++;
+    }
+    int count = i4 + i3 - 3;
+    RELEASE(mMip);
+    RndBitmap* cur = this;
+    for(int i = 0; i < count; i++){
+        cur->mMip = new RndBitmap();
+        cur->mMip->Create(cur->mWidth >> 1, cur->mHeight >> 1, mRowBytes, mBpp, mOrder, mPalette, mPixels + rowOffset, 0);
+        pixelBytes >>= 1;
+        cur = cur->mMip;
+        rowOffset += pixelBytes;
+    }
+}
+
+void RndBitmap::GenerateMips(){
+    int dim = Min(mWidth, mHeight);
+    if(dim > 0x10U){
+        RELEASE(mMip);
+        mMip = new RndBitmap();
+        mMip->Create(mWidth >> 1, mHeight >> 1, 0, mBpp, mOrder, mPalette, 0, 0);
+        int i18 = 0;
+        for(int i = 0; i < mMip->mHeight; i++){
+            int i181 = i18 + 1;
+            int i17 = 0;
+            for(int j = 0; j < mMip->mWidth; j++){
+                int i171 = i17 + 1;
+                unsigned char r, g, b, a;
+                PixelColor(i17, i18, r, g, b, a);
+                unsigned short rsum = r;
+                unsigned short gsum = g;
+                unsigned short bsum = b;
+                unsigned short asum = a;
+                PixelColor(i171, i18, r, g, b, a);
+                rsum += r;
+                gsum += g;
+                bsum += b;
+                asum += a;
+                PixelColor(i17, i181, r, g, b, a);
+                rsum += r;
+                gsum += g;
+                bsum += b;
+                asum += a;
+                PixelColor(i171, i181, r, g, b, a);
+                rsum += r;
+                gsum += g;
+                bsum += b;
+                asum += a;
+                mMip->SetPixelColor(j, i, rsum >> 2, gsum >> 2, bsum >> 2, asum >> 2);
+                i17 += 2;
+            }
+            i18 += 2;
+        }
+        mMip->GenerateMips();
+    }
 }
 
 RndBitmap* RndBitmap::DetachMip() {
