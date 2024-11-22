@@ -26,6 +26,9 @@ inline unsigned int EndianSwap(unsigned int i){
     return ui >> 0x18 | ui << 0x18 | ui >> 8 & 0xFF00 | (ui & 0xFF00) << 8;
 }
 
+inline unsigned short SwapBytes(unsigned short bytes){
+    return EndianSwap(bytes);
+}
 
 // the asm for this is inlined, it's in BinStream::ReadEndian and WriteEndian
 // could also find the standalone function asm in RB3 retail

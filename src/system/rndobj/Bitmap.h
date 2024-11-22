@@ -40,12 +40,13 @@ public:
         kGrayscaleWhite = 1,
         kTransparentBlack = 2,
     };
+
     u16 mWidth; // 0x0
     u16 mHeight; // 0x2
     u16 mRowBytes; // 0x4
     u8 mBpp; // 0x6
     u32 mOrder; // 0x8
-    u16* mPixels; // 0xc
+    u8* mPixels; // 0xc
     u8* mPalette; // 0x10
     u8* mBuffer; // 0x14
     RndBitmap* mMip; // 0x18
@@ -57,15 +58,16 @@ public:
     int NumMips() const;
     int PixelBytes() const;
     int PaletteBytes() const;
-    int NearestColor(u8, u8, u8, u8) const;
-    int ConvertColor(const u8*, u8&, u8&, u8&, u8&) const;
-    int ConvertColor(u8, u8, u8, u8, u8*) const;
+    u8 NearestColor(u8, u8, u8, u8) const;
+    void ConvertColor(const u8*, u8&, u8&, u8&, u8&) const;
+    void ConvertColor(u8, u8, u8, u8, u8*) const;
     void Reset();
     void Create(const RndBitmap&, int, int, void*);
     void AllocateBuffer();
     void Create(int, int, int, int, int, void*, void*, void*);
     void Create(void*); 
     void PixelColor(int x, int y, u8& r, u8& g, u8& b, u8& a) const;
+    void PaletteColor(int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const;
     int PixelOffset(int, int, bool&) const;
     int PixelIndex(int, int) const;
     void SetPixelIndex(int, int, unsigned char);
@@ -93,7 +95,7 @@ public:
     u32 Order() const { return mOrder; }
     u8 Bpp() const { return mBpp; }
     u8* Palette() const { return mPalette; }
-    u16* Pixels() const { return mPixels; }
+    u8* Pixels() const { return mPixels; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
