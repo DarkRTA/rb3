@@ -1,7 +1,9 @@
 #include "Bitmap.h"
+#include "decomp.h"
 #include "os/Debug.h"
 #include "os/Endian.h"
 #include "utl/BinStream.h"
+#include "utl/BufStream.h"
 #include "utl/ChunkStream.h"
 #include "utl/MemMgr.h"
 #include "utl/Symbols4.h"
@@ -73,7 +75,12 @@ int RndBitmap::NumMips() const {
     return i;
 }
 
-int RndBitmap::PixelBytes() const {return mRowBytes * mHeight;}
+DECOMP_FORCEFUNC(Bitmap, RndBitmap, PixelBytes())
+
+#pragma push
+#pragma force_active on
+inline int RndBitmap::PixelBytes() const { return mRowBytes * mHeight; }
+#pragma pop
 
 int RndBitmap::PaletteBytes() const {
     if (mBpp <= 8) {
@@ -229,13 +236,44 @@ void RndBitmap::Reset() {
     RELEASE(mMip);
 }
 
-void RndBitmap::Create(const RndBitmap& bm, int a, int b, void* c) {
+void RndBitmap::Create(const RndBitmap& bm, int bpp, int order, void* palette) {
     int test = 0;
-    Create(bm.mWidth, bm.mHeight, 0, a, b, c, NULL, NULL);
-    if (!mPalette || !c) {
+    Create(bm.mWidth, bm.mHeight, 0, bpp, order, palette, NULL, NULL);
+    if (mPalette && !palette) {
         MILO_ASSERT(bm.Palette(), 392);
-
+        for(int i = 0; i < (bm.Palette() ? 1 << bm.Bpp() : 0); i++){
+            unsigned char r, g, b, a;
+            bm.PaletteColor(i, r, g, b, a);
+            SetPaletteColor(i, r, g, b, a);
+        }
     }
+    Blt(bm, 0, 0, 0, 0, mWidth, mHeight);
+    if(bm.mMip){
+        mMip = new RndBitmap();
+        mMip->Create(*bm.mMip, bpp, order, mPalette);
+    }
+}
+
+void RndBitmap::Create(const RndBitmap& bmap, unsigned char uc, RndBitmap::BitmapEncoding enc, void* v){
+    Create(bmap.Width(), bmap.Height(), 0, uc, (int)enc, v, 0, 0);
+    if(mPalette && !v){
+        bmap.Palette();
+        for(int i = 0; i < bmap.NumPaletteColors(); i++){
+            unsigned char r, g, b, a;
+            bmap.PaletteColor(i, r, g, b, a);
+            SetPaletteColor(i, r, g, b, a);
+        }
+    }
+    Blt(bmap, 0, 0, 0, 0, mWidth, mHeight);
+    if(bmap.nextMip()){
+        mMip = new RndBitmap();
+        mMip->Create(*bmap.nextMip(), uc, enc, mPalette);
+    }
+}
+
+int RndBitmap::NumPaletteColors() const {
+    if(mPalette) return 1 << mBpp;
+    else return 0;
 }
 
 void RndBitmap::AllocateBuffer() {
@@ -261,19 +299,176 @@ void RndBitmap::Create(int width, int height, int rowlen, int bpp, int order, vo
     mPixels = (u8*)pixels;
     MILO_ASSERT(!((int)mPixels & 31), 465);
     mPalette = (u8*)palette;
-    delete mMip;
-    mMip = 0;
-    if (mRowBytes) {}
-    // TODO bpp magic, someone else pls do it
-    if (mPalette) {
-        _MemFree(mPalette);
-        mPalette = 0;
+    RELEASE(mMip);
+    if(mRowBytes == 0){
+        if(mBpp == 4){
+            if(mWidth & 1){
+                mRowBytes = (mWidth + 1) * 4 >> 3;
+                goto ok;
+            }
+        }
+        mRowBytes = mWidth * mBpp >> 3;
     }
-    else if (!buf) AllocateBuffer();
+ok:
+    if(mOrder & 4){
+        unsigned char theBpp = mBpp;
+        if((theBpp == 8 && (mWidth < 0x10 || mHeight < 0x10)) || (theBpp == 4 && (mWidth < 0x20 || mHeight < 0x10)) || theBpp > 8){
+            mOrder &= 0xfffffffb;
+        }
+    }
+    if(mBuffer){
+        _MemFree(mBuffer);
+        mBuffer = nullptr;
+    }
+    if(buf) mBuffer = (u8*)buf;
+    else if(!pixels) AllocateBuffer();
 }
 
-void PreMultiplyAlpha(u8&, u8&, u8&, u8) {
+void RndBitmap::Create(void* buffer){
+    if(!buffer) MILO_WARN("Load buffer is empty");
+    else {
+        BufStream bs(buffer, 32, true);
+        unsigned char buf;
+        LoadHeader(bs, buf);
+        if(mBuffer){
+            _MemFree(mBuffer);
+            mBuffer = nullptr;
+        }
+        mBuffer = (u8*)buffer;
+        u8* i5 = mBuffer + bs.Tell();
 
+        int pbytes = PaletteBytes();
+        mPalette = pbytes ? i5 : 0;
+
+        int pixbytes = PixelBytes();
+        mPixels = i5 + pbytes;
+        MILO_ASSERT(!((int)mPixels & 31), 0x21A);
+        u8* pixels = i5 + pbytes + pixbytes;
+        RELEASE(mMip);
+        int width = mWidth;
+        int height = mHeight;
+        RndBitmap* cur = this;
+        while(buf-- != 0){
+            cur->mMip = new RndBitmap();
+            cur = cur->mMip;
+            width >>= 1;
+            height >>= 1;
+            pixbytes >>= 2;
+            cur->Create(width, height, 0, mBpp, mOrder, mPalette, pixels, 0);
+            pixels += pixbytes;
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(Bitmap, "mBpp == 4", "alpha pair doesn't match size or palettization", "alpha combination has too many colors")
+
+void RndBitmap::ConvertToAlpha(){
+    if(mBpp == 0x18){
+        RndBitmap bmap;
+        bmap.Create(*this, 32, mOrder, 0);
+        if(mBuffer){
+            _MemFree(mBuffer);
+            mBuffer = nullptr;
+        }
+        mPalette = bmap.mPalette;
+        mPixels = bmap.mPixels;
+        MILO_ASSERT(!((int)mPixels & 31), 0x342);
+        mBuffer = bmap.mBuffer;
+        mBpp = bmap.mBpp;
+        mRowBytes = bmap.mRowBytes;
+        bmap.mBuffer = nullptr;
+    }
+}
+
+void RndBitmap::SetAlpha(AlphaFlag flag){
+    ConvertToAlpha();
+    if(mBpp <= 8){
+        int i = mPalette ? (1 << mBpp) : 0;
+        while(--i >= 0){
+            unsigned char r, g, b, a;
+            PaletteColor(i, r, g, b, a);
+            switch(flag){
+                case kTransparentBlack:
+                    if(b == 0 && r == 0 && g == 0){
+                        a = 0;
+                    }
+                    break;
+                case kGrayscaleWhite:
+                    a = r;
+                    b = 255;
+                    g = 255;
+                    r = 255;
+                    break;
+                case kGrayscaleAlpha:
+                    a = r;
+                    break;
+                default:
+                    break;
+            }
+            SetPaletteColor(i, r, g, b, a);
+        }
+    }
+    else {
+        for(int i = 0; i < mHeight; i++){
+            for(int j = 0; j < mWidth; j++){
+                unsigned char r, g, b, a;
+                PixelColor(j, i, r, g, b, a);
+                switch(flag){
+                    case kTransparentBlack:
+                        if(b == 0 && r == 0 && g == 0){
+                            a = 0;
+                        }
+                        break;
+                    case kGrayscaleWhite:
+                        a = r;
+                        b = 255;
+                        g = 255;
+                        r = 255;
+                        break;
+                    case kGrayscaleAlpha:
+                        a = r;
+                        break;
+                    default:
+                        break;
+                }
+                SetPixelColor(j, i, r, g, b, a);
+            }
+        }
+    }
+
+//   ConvertToAlpha(this);
+//   if (this->mBpp < 9) {
+//   }
+//   else {
+//     for (iVar1 = 0; iVar1 < this->mHeight; iVar1 = iVar1 + 1) {
+//       for (iVar2 = 0; iVar2 < this->mWidth; iVar2 = iVar2 + 1) {
+//         PixelColor(this,iVar2,iVar1,&local_25,&local_26,&local_27,&local_28);
+//         if (param_1 == 2) {
+//           if (((local_27 == '\0') && (local_25 == '\0')) && (local_26 == '\0')) {
+//             local_28 = '\0';
+//           }
+//         }
+//         else if (param_1 == 1) {
+//           local_28 = local_25;
+//           local_27 = 0xff;
+//           local_26 = 0xff;
+//           local_25 = 0xff;
+//         }
+//         else if (param_1 == 0) {
+//           local_28 = local_25;
+//         }
+//         SetPixelColor(this,iVar2,iVar1,local_25,local_26,local_27,local_28);
+//       }
+//     }
+//   }
+//   return;
+}
+
+void PreMultiplyAlpha(u8& r, u8& g, u8& b, u8 a) {
+    float new_alpha = (float)a / 255.0f;
+    r *= new_alpha;
+    g *= new_alpha;
+    b *= new_alpha;
 }
 
 RndBitmap* RndBitmap::DetachMip() {

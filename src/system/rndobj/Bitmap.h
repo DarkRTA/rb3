@@ -41,6 +41,10 @@ public:
         kTransparentBlack = 2,
     };
 
+    enum BitmapEncoding {
+
+    };
+
     u16 mWidth; // 0x0
     u16 mHeight; // 0x2
     u16 mRowBytes; // 0x4
@@ -55,6 +59,7 @@ public:
     ~RndBitmap() {Reset();}
     BinStream& LoadHeader(BinStream&, u8&);
     BinStream& SaveHeader(BinStream&) const;
+    int NumPaletteColors() const;
     int NumMips() const;
     int PixelBytes() const;
     int PaletteBytes() const;
@@ -86,14 +91,18 @@ public:
     bool SamePaletteColors(const RndBitmap&) const;
     void SaveBmp(BinStream*) const;
     bool IsTranslucent() const;
+    void Create(const RndBitmap&, unsigned char, BitmapEncoding, void*);
+    void SetPaletteColor(int, unsigned char, unsigned char, unsigned char, unsigned char);
+    void SetPixelColor(int, int, unsigned char, unsigned char, unsigned char, unsigned char);
+    RndBitmap* nextMip() const;
 
     void Save(BinStream&) const;
     void Load(BinStream&);
 
-    u16 Width() const { return mWidth; }
-    u16 Height() const { return mHeight; }
+    int Width() const { return mWidth; }
+    int Height() const { return mHeight; }
     u32 Order() const { return mOrder; }
-    u8 Bpp() const { return mBpp; }
+    int Bpp() const { return mBpp; }
     u8* Palette() const { return mPalette; }
     u8* Pixels() const { return mPixels; }
 
