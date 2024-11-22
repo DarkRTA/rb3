@@ -1087,7 +1087,7 @@ DataNode GetNormalMapTextures(class ObjectDir* dir){
         }
         else {
             if(fp.empty()){
-                if(it->IsRendered()) b1 = true;
+                if(it->IsRenderTarget()) b1 = true;
             }
         }
         if(b1){
