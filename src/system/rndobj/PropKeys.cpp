@@ -695,7 +695,7 @@ int QuatKeys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {
         int retVal = PropKeys::SetKey(frame);
-        if(retVal < 0) retVal = Add(Hmx::Quat(), frame, false);
+        if(retVal < 0) retVal = Add(Hmx::Quat(0,0,0,0), frame, false);
         SetToCurrentVal(retVal);
         return retVal;
     }
@@ -705,7 +705,7 @@ int Vector3Keys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {
         int retVal = PropKeys::SetKey(frame);
-        if(retVal < 0) retVal = Add(Vector3(), frame, false);
+        if(retVal < 0) retVal = Add(Vector3(0,0,0), frame, false);
         SetToCurrentVal(retVal);
         return retVal;
     }
@@ -726,7 +726,8 @@ void FloatKeys::SetToCurrentVal(int i){
 }
 
 void ColorKeys::SetToCurrentVal(int i){
-    (*this)[i].value = Hmx::Color(mTarget->Property(mProp, true)->Int());
+    Key<Hmx::Color>& cur = (*this)[i];
+    cur.value = Hmx::Color(mTarget->Property(mProp, true)->Int());
 }
 
 void ObjectKeys::SetToCurrentVal(int i){
