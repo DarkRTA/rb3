@@ -33,7 +33,7 @@ RndTex::~RndTex() {
     RELEASE(mLoader);
 }
 
-void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlpha){
+void RndTex::PlatformBppOrder(const char* path, int& bpp, int& order, bool hasAlpha){
     Platform plat = TheLoadMgr.GetPlatform();
     bool bbb;
 
@@ -54,7 +54,7 @@ void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlph
         case kPlatformXBox:
         case kPlatformPC:
         case kPlatformPS3:
-            bbb = cc && strstr(cc, "_norm");
+            bbb = path && strstr(path, "_norm");
             
             if(bbb){
                 if(plat == kPlatformXBox) order = 0x20;
@@ -101,8 +101,8 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
         }
     }
     else {
-        const char* sizeStr = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
-        if(sizeStr) MILO_WARN(sizeStr, Name());
+        const char* err = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
+        if(err) MILO_WARN(err, Name());
         else {
             if(!(mType & 0x204U)){
                 int x = mBpp;
@@ -123,7 +123,7 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
 inline void RndTex::PresyncBitmap() {}
 inline void RndTex::SyncBitmap() {}
 
-void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
+void RndTex::SetBitmap(const RndBitmap& bmap, const char* path, bool b){
     PresyncBitmap();
     mWidth = bmap.Width();
     mHeight = bmap.Height();
@@ -133,16 +133,16 @@ void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
     mFilepath.SetRoot("");
     mNumMips = bmap.NumMips();
     MILO_ASSERT(!mNumMips, 0x111);
-    const char* sizeStr = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
-    if(sizeStr){
-        MILO_WARN(sizeStr, Name());
+    const char* err = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
+    if(err){
+        MILO_WARN(err, Name());
         mBitmap.Reset();
     }
     else {
         int i = bmap.Bpp();
         int j = bmap.Order();
         if(!b){
-            PlatformBppOrder(cc, i, j, bmap.IsTranslucent());
+            PlatformBppOrder(path, i, j, bmap.IsTranslucent());
         }
         mBitmap.Create(bmap, i, j, 0);
     }
@@ -154,7 +154,7 @@ void RndTex::SetBitmap(FileLoader* fl){
     mType = kRegular;
     void* buffer;
     if(fl){
-        mFilepath = ((Loader*)fl)->mFile;
+        mFilepath = fl->Loader::mFile;
         TheLoadMgr.PollUntilLoaded(fl, 0);
         int i = 0;
         buffer = (void*)fl->GetBuffer(&i);
@@ -202,7 +202,7 @@ void RndTex::SetBitmap(const FilePath& fp){
     SetBitmap(dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(fp)));
 }
 
-const char* CheckDim(int dim, RndTex::Type ty, bool b){
+static const char* CheckDim(int dim, RndTex::Type ty, bool b){
     const char* ret = 0;
     if(dim == 0) return ret;
     else {
@@ -233,7 +233,7 @@ const char* RndTex::CheckSize(int width, int height, int bpp, int numMips, Type 
     else {
         ret = CheckDim(width, ty, file);
         if(!ret) ret = CheckDim(height, ty, file);
-        if(!ret && bpp != 4 && bpp != 8 && bpp != 0x10 && bpp != 0x18 && bpp != 0x20){
+        if(!ret && bpp != 4 && bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32){
             ret = "%s: invalid bpp";
         }
         int u3 = (width * height * bpp) >> 3;
@@ -370,15 +370,15 @@ void RndTex::PostLoad(BinStream& bs){
         if(mLoader){
             buffer = (void*)mLoader->GetBuffer(0);
             size = mLoader->GetSize();
-            delete mLoader;
-            mLoader = 0;
+            RELEASE(mLoader);
         }
         BufStream bufs(buffer, size, true);
         if(buffer) &bs = &bufs;
         PresyncBitmap();
         if(UseBottomMip()){
             RndBitmap someotherbmap;
-            someotherbmap.Load(bs);
+            bs >> someotherbmap;
+            // someotherbmap.Load(bs);
             CopyBottomMip(mBitmap, someotherbmap);
         }
         else mBitmap.Load(bs);
@@ -394,11 +394,10 @@ void RndTex::PostLoad(BinStream& bs){
     else if(TheLoadMgr.GetPlatform() != kPlatformNone){
         MILO_ASSERT(!mNumMips, 0x3C7);
         SetBitmap(mLoader);
-        mLoader = 0;
+        mLoader = nullptr;
     }
     else {
-        delete mLoader;
-        mLoader = 0;
+        RELEASE(mLoader);
     }
 }
 

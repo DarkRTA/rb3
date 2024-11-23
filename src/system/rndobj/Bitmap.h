@@ -57,6 +57,15 @@ public:
         kTransparentBlack = 2,
     };
 
+    // mOrder notes:
+    // mOrder & 0x38 indicates DXT usage
+    // mOrder & 1 would indicate RGBA, as opposed to BGRA
+    // mOrder being 0 also seems to be RGBA?
+    // mOrder & 0x40 or mOrder & 0x80 would mean white (R=G=B=255)
+    enum Order {
+        kDXT1 = 8
+    };
+
     /** The bitmap's width in pixels. */
     u16 mWidth; // 0x0
     /** The bitmap's height in pixels. */
@@ -75,12 +84,6 @@ public:
     u8* mBuffer; // 0x14
     /** The next mip after this one, used to create a mipmap. */
     RndBitmap* mMip; // 0x18
-
-    // mOrder notes:
-    // mOrder & 0x38 indicates DXT usage
-    // mOrder & 1 would indicate RGBA, as opposed to BGRA
-    // mOrder being 0 also seems to be RGBA?
-    // mOrder & 0x40 or mOrder & 0x80 would mean white (R=G=B=255)
 
     RndBitmap() : mBuffer(0), mMip(0) { Reset(); }
     ~RndBitmap() { Reset(); }
@@ -255,3 +258,8 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
 };
+
+inline BinStream& operator>>(BinStream& bs, RndBitmap& bm){
+    bm.Load(bs);
+    return bs;
+}
