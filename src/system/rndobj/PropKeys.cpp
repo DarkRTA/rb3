@@ -299,7 +299,23 @@ int FloatKeys::FloatAt(float frame, float& fl){
                 Interp(prev->value, next->value, ref, fl);
             }
             else {
-                // more stuff happens here
+                float points[4];
+                points[1] = prev->value;
+                points[2] = next->value;
+                int idx = prev->value == begin()->value;
+                if(idx == 0){
+                    points[0] = prev->value;
+                }
+                else {
+                    points[0] = this->at(idx - 1).value;
+                }
+                if(idx == size() - 1){
+                    points[3] = next->value;
+                }
+                else {
+                    points[3] = this->at(idx + 1).value;
+                }
+                fl = CalcSpline(ref, points);
             }
             break;
         case kHermite:
@@ -309,6 +325,7 @@ int FloatKeys::FloatAt(float frame, float& fl){
             Interp(prev->value, next->value, ref * ref * ref, fl);
             break;
         case kInterp6:
+            ref = 1.0f - ref;
             Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), fl);
             break;
     }
@@ -344,23 +361,29 @@ int ColorKeys::ColorAt(float frame, Hmx::Color& color){
     MILO_ASSERT(size(), 0x1E8);
     color.Set(0,0,0);
     int at = 0;
-    const Key<Hmx::Color>* prev;
-    const Key<Hmx::Color>* next;
-    float ref;
     switch(mInterpolation){
         case kStep:
-            at = AtFrame(frame, prev, next, ref);
-            color = prev->value;
+            const Key<Hmx::Color>* prevstep;
+            const Key<Hmx::Color>* nextstep;
+            float refstep;
+            at = AtFrame(frame, prevstep, nextstep, refstep);
+            color = prevstep->value;
             break;
         case kLinear:
             at = AtFrame(frame, color);
             break;
         case kInterp5:
-            at = AtFrame(frame, prev, next, ref);
-            if(prev) Interp(prev->value, next->value, ref * ref * ref, color);
+            const Key<Hmx::Color>* prev5;
+            const Key<Hmx::Color>* next5;
+            float ref5;
+            AtFrame(frame, prev5, next5, ref5);
+            if(prev5) Interp(prev5->value, next5->value, ref5 * ref5 * ref5, color);
             break;
         case kInterp6:
-            at = AtFrame(frame, prev, next, ref);
+            const Key<Hmx::Color>* prev;
+            const Key<Hmx::Color>* next;
+            float ref;
+            AtFrame(frame, prev, next, ref);
             ref = 1.0f - ref;
             if(prev) Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), color);
             break;
@@ -389,9 +412,9 @@ void ObjectKeys::SetFrame(float frame, float blend){
         case kDirEvent:
             break;
         case kHandleInterp: {
-            float ref = 0.0f;
             const Key<ObjectStage>* prev;
             const Key<ObjectStage>* next;
+            float ref = 0.0f;
             idx = AtFrame(frame, prev, next, ref);
             sInterpMessage.SetType(mInterpHandler);
             sInterpMessage[0] = DataNode(prev->value.Ptr());
@@ -445,9 +468,9 @@ void BoolKeys::SetFrame(float frame, float blend){
 
 int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
     MILO_ASSERT(size(), 0x281);
-    float ref = 0.0f;
     const Key<Hmx::Quat>* prev;
     const Key<Hmx::Quat>* next;
+    float ref = 0.0f;
     int at = AtFrame(frame, prev, next, ref);
     if(mInterpolation == kSpline) QuatSpline(*this, prev, next, ref, quat);
     else switch(mInterpolation){
@@ -464,6 +487,7 @@ int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
             FastInterp(prev->value, next->value, ref * ref * ref, quat);
             break;
         case kInterp6:
+            ref = 1.0f - ref;
             FastInterp(prev->value, next->value, -(ref * ref * ref - 1.0f), quat);
             break;
     }
