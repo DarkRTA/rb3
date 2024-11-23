@@ -280,6 +280,7 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
+// retail scratch work: https://decomp.me/scratch/a1wwv
 int FloatKeys::FloatAt(float frame, float& fl){
     MILO_ASSERT(size(), 0x188);
     fl = 0.0f;
@@ -319,7 +320,7 @@ int FloatKeys::FloatAt(float frame, float& fl){
             }
             break;
         case kHermite:
-            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, fl);
+            Interp(prev->value, next->value, ref * ref * (ref * -2.0f + 3.0f), fl);
             break;
         case kInterp5:
             Interp(prev->value, next->value, ref * ref * ref, fl);
@@ -494,6 +495,10 @@ int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
     return at;
 }
 
+inline bool CheckVectorDiff(const Vector3& v1, const Vector3& v2, float f){
+    return std::fabs(v1.x - v2.x) < f && std::fabs(v1.y - v2.y) < f && std::fabs(v1.z - v2.z) < f;
+}
+
 void QuatKeys::SetFrame(float frame, float blend){
     if(!mProp || !mTarget || !size()) return;
     int idx = 0;
@@ -503,10 +508,10 @@ void QuatKeys::SetFrame(float frame, float blend){
         }
         Vector3 v48;
         MakeScale(mTrans->LocalXfm().m, v48);
-        if(v48.x){ // FIXME: this condition is wrong
-            mVec = v48;
+        if(CheckVectorDiff(mVec, v48, 0.001f)){
+            v48 = mVec;
         }
-        else v48 = mVec;
+        else mVec = v48;
         Hmx::Quat quat;
         Hmx::Matrix3 mtx;
         idx = QuatAt(frame, quat);
@@ -534,7 +539,7 @@ int Vector3Keys::Vector3At(float frame, Vector3& vec){
             InterpVector(*this, prev, next, ref, true, vec, 0);
             break;
         case kDirEvent:
-            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, vec);
+            Interp(prev->value, next->value, ref * ref * (ref * -2.0f + 3.0f), vec);
             break;
         case kHandleInterp:
             Interp(prev->value, next->value, ref * ref * ref, vec);
@@ -587,17 +592,17 @@ void SymbolKeys::SetFrame(float frame, float blend){
     int idx = 0;
     switch(mPropExceptionID){
         case kHandleInterp: {
-            float ref = 0.0f;
             const Key<Symbol>* prev;
             const Key<Symbol>* next;
+            float ref = 0.0f;
             idx = AtFrame(frame, prev, next, ref);
             sInterpMessage.SetType(mInterpHandler);
-            sInterpMessage[0] = DataNode(prev->value);
-            sInterpMessage[1] = DataNode(next->value);
-            sInterpMessage[2] = DataNode(ref);
-            sInterpMessage[3] = DataNode(next->frame);
-            if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
-            else sInterpMessage[4] = DataNode(0);
+            sInterpMessage[0] = prev->value;
+            sInterpMessage[1] = next->value;
+            sInterpMessage[2] = ref;
+            sInterpMessage[3] = next->frame;
+            if(idx >= 1) sInterpMessage[4] = (*this)[idx - 1].value;
+            else sInterpMessage[4] = 0;
             mTarget->Handle(sInterpMessage, true);
             break;
         }
@@ -609,11 +614,30 @@ void SymbolKeys::SetFrame(float frame, float blend){
             }
             break;
         }
-        default: break;
+        default:
+            break;
     }
     switch(mInterpolation){
         case kStep: {
-            // more happens here
+            int loc8c = -1;
+            int loc90 = -1;
+            std::vector<Symbol> vec;
+            KeysLessEq(frame, loc8c, loc90);
+            if(loc8c != -1){
+                int i = loc8c;
+                if(unk30){
+                    MinEq(loc8c, unk2c + 1);
+                    i = loc8c;
+                }
+                for(; i <= loc90; i++){
+                    Key<Symbol>& cur = (*this)[i];
+                    if(i < unk28 || i > unk2c){
+                        mTarget->SetProperty(mProp, cur.value);
+                    }
+                }
+            }
+            unk28 = loc8c;
+            unk2c = loc90;
             break;
         }
         case kLinear: {

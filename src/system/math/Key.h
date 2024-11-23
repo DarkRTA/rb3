@@ -212,6 +212,30 @@ public:
             else return &(*this)[idx];
         }
     }
+
+    void KeysLessEq(float f, int& iref1, int& iref2) const {
+        iref2 = -1;
+        iref1 = -1;
+        if(empty() || f < front().frame) return;
+        int i1 = 0;
+        int i2 = size();
+        while(i2 > i1 + 1){
+            int i5 = i1 + i2 >> 1;
+            const Key<T1>& cur = (*this)[i5];
+            if(f < cur.frame)  i2 = i5;
+            if(!(f < cur.frame)) i1 = i5;
+        }
+        iref2 = i1;
+        iref1 = i1;
+        while(i1 - 1 >= 0 && (*this)[i1-1].SameFrame((*this)[i1])){
+            i1--;
+            iref1 = i1;
+        }
+        while(i1 + 1 < size() && (*this)[i1+1].SameFrame((*this)[i1])){
+            i1++;
+            iref2 = i1;
+        }
+    }
 };
 
 template <class T1, class T2> void ScaleFrame(Keys<T1, T2>& keys, float scale){
