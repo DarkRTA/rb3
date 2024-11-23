@@ -65,14 +65,15 @@ public:
         }
     }
 
+    // matches in retail with the right inline settings: https://decomp.me/scratch/hWbQQ
     void Sort(){
         int vecSize = size();
         for(int i = 1; i < vecSize; i++){
             Key<T1> key = (*this)[i];
-            int j = i;
-            while(0 < j && (*this)[j-1].frame < key.frame){
+            
+            int j;
+            for(j = i; 0 < j && key.frame < (*this)[j-1].frame; j--){
                 (*this)[j] = (*this)[j-1];
-                j--;
             }
             if(j != i) (*this)[j] = key;
         }

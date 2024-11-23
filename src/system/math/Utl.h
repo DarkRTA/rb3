@@ -124,6 +124,10 @@ inline bool IsFloatOne(float f){
     return std::abs(f - 1.0f) < 0.000099999997f;
 }
 
+inline bool IsFabsZero(float f){
+    return std::fabs(f) < 0.000099999997f ? true : false;
+}
+
 inline float Modulo(float f1, float f2) {
     if (f2 == 0.0f)
         return 0.0f;

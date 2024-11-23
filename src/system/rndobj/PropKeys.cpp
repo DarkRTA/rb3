@@ -1,21 +1,23 @@
 #include "rndobj/PropKeys.h"
+#include "math/Utl.h"
 #include "obj/ObjectStage.h"
 #include "obj/Utl.h"
 #include "obj/DataUtl.h"
 #include "math/Rot.h"
+#include "os/System.h"
 
 unsigned short PropKeys::gRev = 0;
 Hmx::Object* ObjectStage::sOwner = 0;
-Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
+Message PropKeys::sInterpMessage(gNullStr, 0, 0, 0, 0, 0);
 
 void SetPropKeysRev(int rev){
     PropKeys::gRev = rev;
 }
 
 BinStream& operator>>(BinStream& bs, ObjectStage& stage){
-    ObjectDir* dir = 0;
+    ObjectDir* dir = nullptr;
     if(PropKeys::gRev > 8){
-        ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), 0);
+        ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), nullptr);
         dirPtr.Load(bs, true, dir);
         dir = dirPtr.Ptr();
     }
@@ -24,7 +26,7 @@ BinStream& operator>>(BinStream& bs, ObjectStage& stage){
 }
 
 BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
-    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : 0);
+    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : nullptr);
     bs << dirPtr;
     bs << ObjPtr<Hmx::Object, ObjectDir>(stage.Owner(), stage.Ptr());
     return bs;
@@ -60,8 +62,7 @@ int PropKeys::SetKey(float frame){
     float f = 0.0f;
     for(int i = 0; i < NumKeys(); i++){
         if(FrameFromIndex(i, f)){
-            float fabsFloat = std::fabs(frame - f);
-            if(fabsFloat < 0.000099999997f)
+            if(IsFabsZero(frame - f))
                 return i;
         }
     }
@@ -215,25 +216,25 @@ void PropKeys::Print(){
         ts << "      " << frame << " -> ";
         switch(mKeysType){
             case kFloat:
-                ts << (AsFloatKeys())[i].value;
+                ts << AsFloatKeys()[i].value;
                 break;
             case kColor:
-                ts << (AsColorKeys())[i].value;
+                ts << AsColorKeys()[i].value;
                 break;
             case kObject:
-                ts << (Hmx::Object*)((AsObjectKeys())[i].value);
+                ts << AsObjectKeys()[i].value;
                 break;
             case kBool:
-                ts << (AsBoolKeys())[i].value;
+                ts << AsBoolKeys()[i].value;
                 break;
             case kQuat:
-                ts << (AsQuatKeys())[i].value;
+                ts << AsQuatKeys()[i].value;
                 break;
             case kVector3:
-                ts << (AsVector3Keys())[i].value;
+                ts << AsVector3Keys()[i].value;
                 break;
             case kSymbol:
-                ts << (AsSymbolKeys())[i].value;
+                ts << AsSymbolKeys()[i].value;
                 break;
         }
         ts << "\n";
@@ -244,26 +245,18 @@ unsigned int PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
     if(!o || !arr) return kNoException;
     String propString;
     arr->Print(propString, kDataArray, true);
-    propString = propString.substr(1, strlen(propString.c_str()) - 2);
-    bool b1 = false;
-    if(propString == "rotation"){
-        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
-        if(b1) return kTransQuat;
+    propString = propString.substr(1, propString.length() - 2);
+    if(propString == "rotation" && IsASubclass(o->ClassName(), "Trans")){
+        return kTransQuat;
     }
-    b1 = false;
-    if(propString == "scale"){
-        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
-        if(b1) return kTransScale;
+    if(propString == "scale" && IsASubclass(o->ClassName(), "Trans")){
+        return kTransScale;
     }
-    b1 = false;
-    if(propString == "position"){
-        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
-        if(b1) return kTransPos;
+    if(propString == "position" && IsASubclass(o->ClassName(), "Trans")){
+        return kTransPos;
     }
-    b1 = false;
-    if(propString == "event"){
-        if(IsASubclass(o->ClassName(), "ObjectDir")) b1 = true;
-        if(b1) return kDirEvent;
+    if(propString == "event" && IsASubclass(o->ClassName(), "ObjectDir")){
+        return kDirEvent;
     }
     return kNoException;
 }
@@ -326,17 +319,17 @@ void FloatKeys::SetFrame(float frame, float blend){
     if(!mProp || !mTarget || !size()) return;
     int idx;
     if(mPropExceptionID == kHandleInterp){
-        float ref = 0.0f;
         const Key<float>* prev;
         const Key<float>* next;
+        float ref = 0.0f;
         idx = AtFrame(frame, prev, next, ref);
         sInterpMessage.SetType(mInterpHandler);
-        sInterpMessage[0] = DataNode(prev->value);
-        sInterpMessage[1] = DataNode(next->value);
-        sInterpMessage[2] = DataNode(ref);
-        sInterpMessage[3] = DataNode(next->frame);
-        if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
-        else sInterpMessage[4] = DataNode(0);
+        sInterpMessage[0] = prev->value;
+        sInterpMessage[1] = next->value;
+        sInterpMessage[2] = ref;
+        sInterpMessage[3] = next->frame;
+        if(idx >= 1) sInterpMessage[4] = (*this)[idx - 1].value;
+        else sInterpMessage[4] = 0;
         mTarget->Handle(sInterpMessage, true);
     }
     else {
