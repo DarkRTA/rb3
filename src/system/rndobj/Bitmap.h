@@ -76,6 +76,11 @@ public:
     /** The next mip after this one, used to create a mipmap. */
     RndBitmap* mMip; // 0x18
 
+    // mOrder notes:
+    // mOrder & 0x38 indicates DXT usage
+    // mOrder & 1 would indicate RGBA, as opposed to BGRA
+    // mOrder & 0x40 or mOrder & 0x80 would mean white (R=G=B=255)
+
     RndBitmap() : mBuffer(0), mMip(0) {Reset();}
     ~RndBitmap() {Reset();}
     BinStream& LoadHeader(BinStream&, u8&);

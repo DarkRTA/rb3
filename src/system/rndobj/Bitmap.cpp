@@ -6,6 +6,7 @@
 #include "utl/BufStream.h"
 #include "utl/ChunkStream.h"
 #include "utl/FileStream.h"
+#include "utl/MakeString.h"
 #include "utl/MemMgr.h"
 #include "utl/Symbols.h"
 #include <string.h>
@@ -308,8 +309,8 @@ void RndBitmap::Create(int width, int height, int rowlen, int bpp, int order, vo
 ok:
     if(mOrder & 4){
         unsigned char theBpp = mBpp;
-        if((theBpp == 8 && (mWidth < 0x10 || mHeight < 0x10)) || (theBpp == 4 && (mWidth < 0x20 || mHeight < 0x10)) || theBpp > 8){
-            mOrder &= 0xfffffffb;
+        if((theBpp == 8 && (mWidth < 16 || mHeight < 16)) || (theBpp == 4 && (mWidth < 32 || mHeight < 16)) || theBpp > 8){
+            mOrder &= ~0x4;
         }
     }
     if(mBuffer){
@@ -666,39 +667,34 @@ bool RndBitmap::LoadBmp(const char* filename, bool b1, bool b2){
     }
 }
 
-DECOMP_FORCEACTIVE(Bitmap, "_tb", "%s.")
+static inline bool FileContains(const char* filename, const char* key){
+    return strstr(filename, MakeString("%s.", key)) || strstr(filename, MakeString("%s_", key));
+}
 
 bool RndBitmap::ProcessFlags(const char* filename, bool bbb){
-    bool contains_flag = false;
-    if(strstr(filename, MakeString("%s.", "_tb")) || strstr(filename, MakeString("%s_", "_tb"))) contains_flag = true;
-    if(contains_flag){
+    if(FileContains(filename, "_tb")){
         SetAlpha(kTransparentBlack);
     }
-    else {
-        contains_flag = false;
-        if(strstr(filename, MakeString("%s.", "_gw")) || strstr(filename, MakeString("%s_", "_gw"))) contains_flag = true;
-        if(contains_flag) SetAlpha(kGrayscaleWhite);
-        else {
-            contains_flag = false;
-            if(strstr(filename, MakeString("%s.", "_ga")) || strstr(filename, MakeString("%s_", "_ga"))) contains_flag = true;
-            if(contains_flag) SetAlpha(kGrayscaleAlpha);
-
-        }
+    else if(FileContains(filename, "_gw")){
+        SetAlpha(kGrayscaleWhite);
+    }
+    else if(FileContains(filename, "_ga")){
+        SetAlpha(kGrayscaleAlpha);
     }
     
-    if(strstr(filename, MakeString("%s.", "_pma")) || strstr(filename, MakeString("%s_", "_pma"))){
+    if(FileContains(filename, "_pma")){
         SetPreMultipliedAlpha();
     }
-    if(strstr(filename, MakeString("%s.", "_selfmip")) || strstr(filename, MakeString("%s_", "_selfmip"))){
+    if(FileContains(filename, "_selfmip")){
         SelfMip();
     }
-    if(bbb){
-        if(strstr(filename, MakeString("%s.", "_nomip")) || strstr(filename, MakeString("%s_", "_nomip"))){
+    else if(bbb){
+        if(!FileContains(filename, "_nomip")){
             GenerateMips();
         }
-        else if(strstr(filename, MakeString("%s.", "_mip")) || strstr(filename, MakeString("%s_", "_mip"))){
-            GenerateMips();
-        }
+    }
+    else if(FileContains(filename, "_mip")){
+        GenerateMips();
     }
     return true;
 }
@@ -881,11 +877,10 @@ void RndBitmap::DxtColor(int, int, unsigned char&, unsigned char&, unsigned char
 
 int RndBitmap::PaletteOffset(int i) const {
     if((mOrder & 2) && mBpp == 8){
-        int mask = i & 18U;
-        if(mask == 8){
+        if((i & 0x18) == 8){
             i += 8;
         }
-        else if(mask == 0x10){
+        else if((i & 0x18) == 0x10){
             i -= 8;
         }
     }
