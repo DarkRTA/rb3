@@ -1019,10 +1019,11 @@ void TestTexturePaths(class ObjectDir* dir){
 void TestMaterialTextures(class ObjectDir*){}
 
 void SwapDxtEndianness(RndBitmap* bmap){
-    u16* pixels = bmap->Pixels();
-    u16* end = (u16*)((u8*)pixels + bmap->PixelBytes());
-    for(; pixels < end; pixels++){
-        *pixels = EndianSwap(*pixels);
+    u8* pixels = bmap->Pixels();
+    u8* end = pixels + bmap->PixelBytes();
+    for(; pixels < end; pixels += 2){
+        u16* twopixels = (u16*)pixels;
+        *twopixels = EndianSwap(*twopixels);
     }
 }
 
@@ -1086,7 +1087,7 @@ DataNode GetNormalMapTextures(class ObjectDir* dir){
         }
         else {
             if(fp.empty()){
-                if(it->IsRendered()) b1 = true;
+                if(it->IsRenderTarget()) b1 = true;
             }
         }
         if(b1){

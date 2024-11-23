@@ -1,7 +1,7 @@
 #include "rndobj/Tex.h"
+#include "math/Utl.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
-#include "os/File.h"
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
 #include "os/System.h"
@@ -30,11 +30,10 @@ RndTex::RndTex() : mMipMapK(-8.0f), mType(kRegular), mWidth(0), mHeight(0), mBpp
 }
 
 RndTex::~RndTex() {
-    delete mLoader;
-    mLoader = NULL;
+    RELEASE(mLoader);
 }
 
-void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlpha){
+void RndTex::PlatformBppOrder(const char* path, int& bpp, int& order, bool hasAlpha){
     Platform plat = TheLoadMgr.GetPlatform();
     bool bbb;
 
@@ -55,7 +54,7 @@ void RndTex::PlatformBppOrder(const char* cc, int& bpp, int& order, bool hasAlph
         case kPlatformXBox:
         case kPlatformPC:
         case kPlatformPS3:
-            bbb = cc && strstr(cc, "_norm");
+            bbb = path && strstr(path, "_norm");
             
             if(bbb){
                 if(plat == kPlatformXBox) order = 0x20;
@@ -89,10 +88,10 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
     mNumMips = 0;
     mBitmap.Reset();
     if(mType & kBackBuffer){
-        mWidth = TheRnd->mWidth;
-        mHeight = TheRnd->mHeight;
+        mWidth = TheRnd->Width();
+        mHeight = TheRnd->Height();
         SetPowerOf2();
-        mBpp = TheRnd->mScreenBpp;
+        mBpp = TheRnd->ScreenBpp();
     }
     else if(mType & kRendered){
         if(useMips){
@@ -102,8 +101,8 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
         }
     }
     else {
-        const char* sizeStr = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
-        if(sizeStr) MILO_WARN(sizeStr, Name());
+        const char* err = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
+        if(err) MILO_WARN(err, Name());
         else {
             if(!(mType & 0x204U)){
                 int x = mBpp;
@@ -124,7 +123,7 @@ void RndTex::SetBitmap(int w, int h, int bpp, Type ty, bool useMips, const char*
 inline void RndTex::PresyncBitmap() {}
 inline void RndTex::SyncBitmap() {}
 
-void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
+void RndTex::SetBitmap(const RndBitmap& bmap, const char* path, bool b){
     PresyncBitmap();
     mWidth = bmap.Width();
     mHeight = bmap.Height();
@@ -134,16 +133,16 @@ void RndTex::SetBitmap(const RndBitmap& bmap, const char* cc, bool b){
     mFilepath.SetRoot("");
     mNumMips = bmap.NumMips();
     MILO_ASSERT(!mNumMips, 0x111);
-    const char* sizeStr = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
-    if(sizeStr){
-        MILO_WARN(sizeStr, Name());
+    const char* err = CheckSize(mWidth, mHeight, mBpp, mNumMips, mType, false);
+    if(err){
+        MILO_WARN(err, Name());
         mBitmap.Reset();
     }
     else {
         int i = bmap.Bpp();
         int j = bmap.Order();
         if(!b){
-            PlatformBppOrder(cc, i, j, bmap.IsTranslucent());
+            PlatformBppOrder(path, i, j, bmap.IsTranslucent());
         }
         mBitmap.Create(bmap, i, j, 0);
     }
@@ -155,7 +154,7 @@ void RndTex::SetBitmap(FileLoader* fl){
     mType = kRegular;
     void* buffer;
     if(fl){
-        mFilepath = ((Loader*)fl)->mFile;
+        mFilepath = fl->Loader::mFile;
         TheLoadMgr.PollUntilLoaded(fl, 0);
         int i = 0;
         buffer = (void*)fl->GetBuffer(&i);
@@ -203,7 +202,7 @@ void RndTex::SetBitmap(const FilePath& fp){
     SetBitmap(dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(fp)));
 }
 
-const char* CheckDim(int dim, RndTex::Type ty, bool b){
+static const char* CheckDim(int dim, RndTex::Type ty, bool b){
     const char* ret = 0;
     if(dim == 0) return ret;
     else {
@@ -222,11 +221,7 @@ const char* CheckDim(int dim, RndTex::Type ty, bool b){
             }
         }
         if(b){
-            bool bbb;
-            if(dim < 0) bbb = false;
-            else if(dim == 0) bbb = true;
-            else bbb = (dim & (dim - 1)) == 0;
-            if(!bbb) ret = "%s: dimensions are not power-of-2";
+            if(!PowerOf2(dim)) ret = "%s: dimensions are not power-of-2";
         }
     }
     return ret;
@@ -238,7 +233,7 @@ const char* RndTex::CheckSize(int width, int height, int bpp, int numMips, Type 
     else {
         ret = CheckDim(width, ty, file);
         if(!ret) ret = CheckDim(height, ty, file);
-        if(!ret && bpp != 4 && bpp != 8 && bpp != 0x10 && bpp != 0x18 && bpp != 0x20){
+        if(!ret && bpp != 4 && bpp != 8 && bpp != 16 && bpp != 24 && bpp != 32){
             ret = "%s: invalid bpp";
         }
         int u3 = (width * height * bpp) >> 3;
@@ -258,31 +253,24 @@ const char* RndTex::CheckSize(int width, int height, int bpp, int numMips, Type 
 }
 
 void RndTex::SetPowerOf2(){
-    bool set;
-    if(mWidth < 0) set = false;
-    else if(mWidth == 0) set = true;
-    else set = (mWidth & (mWidth - 1)) == 0;
-
-    if(set){
-        if(mHeight < 0) set = false;
-        else if(mHeight == 0) set = true;
-        else set = (mHeight & (mHeight - 1)) == 0;
-    }
-    mIsPowerOf2 = set;
+    mIsPowerOf2 = PowerOf2(mWidth) && PowerOf2(mHeight);
 }
 
 void RndTex::LockBitmap(RndBitmap& bmap, int i){
-    if(mBitmap.mOrder & 0x38){
+    if(mBitmap.Order() & 0x38){
         bmap.Create(mBitmap, 0x20, 0, 0);
     }
     else {
-        bmap.Create(mBitmap.mWidth, mBitmap.mHeight, mBitmap.mRowBytes, mBitmap.mBpp, mBitmap.mOrder, mBitmap.mPalette, mBitmap.mPixels, 0);
+        bmap.Create(mBitmap.Width(), mBitmap.Height(), mBitmap.RowBytes(), mBitmap.Bpp(), mBitmap.Order(), mBitmap.Palette(), mBitmap.Pixels(), 0);
     }
 }
 
 SAVE_OBJ(RndTex, 744)
 
-void RndTex::Load(BinStream& bs) { PreLoad(bs); PostLoad(bs); }
+void RndTex::Load(BinStream& bs) {
+    PreLoad(bs);
+    PostLoad(bs);
+}
 
 void RndTex::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
@@ -382,15 +370,15 @@ void RndTex::PostLoad(BinStream& bs){
         if(mLoader){
             buffer = (void*)mLoader->GetBuffer(0);
             size = mLoader->GetSize();
-            delete mLoader;
-            mLoader = 0;
+            RELEASE(mLoader);
         }
         BufStream bufs(buffer, size, true);
         if(buffer) &bs = &bufs;
         PresyncBitmap();
         if(UseBottomMip()){
             RndBitmap someotherbmap;
-            someotherbmap.Load(bs);
+            bs >> someotherbmap;
+            // someotherbmap.Load(bs);
             CopyBottomMip(mBitmap, someotherbmap);
         }
         else mBitmap.Load(bs);
@@ -406,11 +394,10 @@ void RndTex::PostLoad(BinStream& bs){
     else if(TheLoadMgr.GetPlatform() != kPlatformNone){
         MILO_ASSERT(!mNumMips, 0x3C7);
         SetBitmap(mLoader);
-        mLoader = 0;
+        mLoader = nullptr;
     }
     else {
-        delete mLoader;
-        mLoader = 0;
+        RELEASE(mLoader);
     }
 }
 
@@ -432,7 +419,7 @@ BEGIN_COPYS(RndTex)
         COPY_MEMBER(mNumMips)
         MILO_ASSERT(!mNumMips, 1000);
         COPY_MEMBER(mOptimizeForPS3)
-        mBitmap.Create(c->mBitmap, c->mBitmap.mBpp, c->mBitmap.mOrder, 0);
+        mBitmap.Create(c->mBitmap, c->mBitmap.Bpp(), c->mBitmap.Order(), 0);
         SyncBitmap();
     END_COPYING_MEMBERS
 END_COPYS
@@ -498,8 +485,8 @@ BEGIN_HANDLERS(RndTex)
     HANDLE(set_bitmap, OnSetBitmap)
     HANDLE(set_rendered, OnSetRendered)
     HANDLE_EXPR(file_path, mFilepath.c_str())
-    HANDLE_ACTION(set_file_path, mFilepath.Set(FilePath::sRoot.c_str(), _msg->Str(2)))
-    HANDLE_EXPR(size_kb, (int)((mWidth * mHeight * mBpp) / 8 / 1024)) // i don't like this expression. someone pls make it go away kthxbai
+    HANDLE_ACTION(set_file_path, mFilepath.SetRoot( _msg->Str(2)))
+    HANDLE_EXPR(size_kb, SizeKb())
     HANDLE_EXPR(tex_type, mType)
     HANDLE_ACTION(save_bmp, SaveBitmap(_msg->Str(2)))
     HANDLE_SUPERCLASS(Hmx::Object)
@@ -508,20 +495,18 @@ END_HANDLERS
 
 DataNode RndTex::OnSetBitmap(const DataArray* da) {
     if (da->Size() == 3) {
-        const char* s = da->Str(2);
-        FilePath p;
-        p.Set(FilePath::sRoot.c_str(), s);
+        FilePath p(da->Str(2));
         SetBitmap(p);
     } else {
         SetBitmap(da->Int(2), da->Int(3), da->Int(4), (RndTex::Type)da->Int(5), (bool)da->Int(6), NULL);
     }
-    return DataNode();
+    return 0;
 }
 
 DataNode RndTex::OnSetRendered(const DataArray*) {
     MILO_ASSERT(IsRenderTarget(), 1101);
-    SetBitmap(mWidth, mHeight, mBpp, mType, mNumMips > 0, NULL);
-    return DataNode();
+    SetBitmap(Width(), Height(), Bpp(), mType, NumMips() > 0, NULL);
+    return 0;
 }
 
 #pragma push

@@ -35,9 +35,8 @@ public:
         return (mFile) ? mFile->Size() : 0;
     }
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     File* mFile;
     class String mFilename;

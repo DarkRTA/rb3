@@ -1,4 +1,5 @@
 #include "WavReader.h"
+#include "os/Debug.h"
 #include "utl/FileStream.h"
 
 WavReader::WavReader(File *file, bool enableReads, StandardStream *stream) {
@@ -6,28 +7,14 @@ WavReader::WavReader(File *file, bool enableReads, StandardStream *stream) {
     mOutStream = stream;
     MILO_ASSERT(mInFile, 0x1a);
 
-    mInFileStream = new (_MemAlloc(sizeof(FileStream), 0)) FileStream(file, true);
+    mInFileStream = new FileStream(file, true);
 
     mInWaveFile = new WaveFile(*mInFileStream);
 
     // this only likes 44100khz, 16-bit, stereo files
     MILO_ASSERT(mInWaveFile->SamplesPerSec() == 44100, 33);
-    ((mInWaveFile->BitsPerSample() == (s16)16)
-     || (TheDebugFailer << (MakeString(
-             kAssertStr,
-             "WavReader.cpp",
-             34,
-             "mInWaveFile->BitsPerSample() == 16"
-         )),
-         0));
-    ((mInWaveFile->NumChannels() <= (s16)2)
-     || (TheDebugFailer << (MakeString(
-             kAssertStr,
-             "WavReader.cpp",
-             35,
-             "mInWaveFile->NumChannels() <= 2"
-         )),
-         0));
+    MILO_ASSERT(mInWaveFile->BitsPerSample() == 16, 34);
+    MILO_ASSERT(mInWaveFile->NumChannels() <= 2, 35);
 
     mNumChannels = mInWaveFile->mNumChannels;
     mSampleRate = mInWaveFile->mSamplesPerSec;
