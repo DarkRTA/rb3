@@ -412,6 +412,38 @@ int RndBitmap::PixelOffset(int, int, bool&) const {
     };
 }
 
+unsigned char RndBitmap::PixelIndex(int i1, int i2) const {
+    bool bb;
+    int offset = PixelOffset(i1, i2, bb);
+    u8* pixels = mPixels;
+    unsigned char ret;
+    if(mBpp == 8){
+        ret = *(pixels + offset);
+    }
+    else if(bb){
+        ret = *(pixels + offset) & 0xF;
+    }
+    else {
+        ret = *(pixels + offset) >> 4;
+    }
+    return ret;
+}
+
+void RndBitmap::SetPixelIndex(int i1, int i2, unsigned char uc){
+    bool bb;
+    int offset = PixelOffset(i1, i2, bb);
+    u8* pixels = mPixels;
+    if(mBpp == 8){
+        *(pixels + offset) = uc;
+    }
+    else if(bb){
+        *(pixels + offset) = uc << 4 | *(pixels + offset) & 0xF;
+    }
+    else {
+        *(pixels + offset) = *(pixels + offset) & 0xF0 | uc;
+    }
+}
+
 DECOMP_FORCEACTIVE(Bitmap, "mBpp == 4", "alpha pair doesn't match size or palettization", "alpha combination has too many colors")
 
 void RndBitmap::ConvertToAlpha(){
@@ -527,12 +559,12 @@ void RndBitmap::SetPreMultipliedAlpha(){
 
 void RndBitmap::SelfMip(){
     int pixelBytes = PixelBytes();
-    mWidth >>= 1;
-    int rowOffset = mRowBytes >> 1;
-    int dim = Min(mWidth, mHeight);
+    int rowOffset = mRowBytes / 2;
+    mWidth /= 2;
+    int dim = Min<unsigned short>(Width(), Height());
 
-    int i4 = 0;
     int i3 = 0;
+    int i4 = 0;
     while(dim > 1){
         if(dim & 1){
             i3 = 1;
@@ -541,8 +573,8 @@ void RndBitmap::SelfMip(){
         i4++;
     }
     int count = i4 + i3 - 3;
-    RELEASE(mMip);
     RndBitmap* cur = this;
+    RELEASE(mMip);
     for(int i = 0; i < count; i++){
         cur->mMip = new RndBitmap();
         cur->mMip->Create(cur->mWidth >> 1, cur->mHeight >> 1, mRowBytes, mBpp, mOrder, mPalette, mPixels + rowOffset, 0);
@@ -809,10 +841,13 @@ void RndBitmap::Blt(const RndBitmap& bm, int dX, int dY, int sX, int sY, int wid
     MILO_ASSERT(sY + height <= bm.Height(), 1731);
     if (SamePixelFormat(bm)) {
         if(mOrder & 0x38){
-            MILO_ASSERT(!((dX | dY | sX | sY | width | height) & 0x3), 0x636);
+            MILO_ASSERT(!((dX | dY | sX | sY | width | height) & 0x3), 0x6CC);
         }
+        int count = width * mBpp >> 3;
         for(; height > 0; height--, dY++, sY++){
-            memcpy(mPixels + (dX * mBpp >> 3) + (dY * mRowBytes), bm.mPixels + (sX * bm.mBpp >> 3) + (sY * bm.mRowBytes), width * mBpp >> 3);
+            void* dst = mPixels + (dY * mRowBytes) + (dX * mBpp >> 3);
+            void* src = bm.mPixels + (sY * bm.RowBytes()) + (sX * bm.Bpp() >> 3);
+            memcpy(dst, src, count);
         }
     }
     else {
@@ -822,11 +857,12 @@ void RndBitmap::Blt(const RndBitmap& bm, int dX, int dY, int sX, int sY, int wid
         }
         if(mPalette && bm.Palette()){
             unsigned char colorBuffer[256];
-            int i = bm.NumPaletteColors();
-            unsigned char* idx;
-            for(i = i - 1, idx = colorBuffer + i; i >= 0; i--, idx--){
-                bm.PaletteColor(i, idx[0], idx[1], idx[2], idx[3]);
-                *idx = NearestColor(idx[0], idx[1], idx[2], idx[3]);
+            int i = bm.NumPaletteColors() - 1;
+            unsigned char* idx = colorBuffer + i;
+            for(; i >= 0; i--, idx--){
+                unsigned char r, g, b, a;
+                bm.PaletteColor(i, r, g, b, a);
+                *idx = NearestColor(r, g, b, a);
             }
             for(int h = height, dy = dY, sy = sY; h > 0; h--, dy++, sy++){
                 for(int w = width, sx = sX, dx = dX; w > 0; w--, sx++, dx++){
@@ -871,9 +907,44 @@ void RndBitmap::SetPixelColor(int x, int y, unsigned char r, unsigned char g, un
     }
 }
 
-void RndBitmap::DxtColor(int, int, unsigned char&, unsigned char&, unsigned char&, unsigned char&) const {
+void DecodeDxtColor(unsigned char*, int, int, bool, unsigned char&, unsigned char&, unsigned char&, unsigned char&){
+
+}
+
+void DecodeDxt3Alpha(unsigned char* uc, int i, int j, unsigned char& alpha){
+    unsigned short* bytepair = (unsigned short*)uc;
+    int i1 = bytepair[j] >> (i << 2);
+    alpha = ((i1 << 4) & 0xF0) | (i1 & 0xF);
+}
+
+void DecodeDxt5Alpha(unsigned char*, int, int, unsigned char&){
+
+}
+
+void RndBitmap::DxtColor(int x, int y, unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) const {
     int dxt = mOrder & 0x38;
     MILO_ASSERT(dxt != 0, 0x7EE);
+
+    int tmpx = (x / 4) + (x < 0 && (x & 3U) != 0);
+    int tmpy = (y / 4) + (y < 0 && (y & 3U) != 0);
+    int i5 = x + tmpx * -4;
+    int i6 = y + tmpy * -4;
+    int i2 = tmpx + (mWidth / 4) * tmpy;
+    
+    if(dxt == 8){
+        DecodeDxtColor(mPixels + i2 * 8, i5, i6, true, r, g, b, a);
+    }
+    else {
+        u8* newpixels = mPixels + i2 * 0x10;
+        unsigned char throwaway;
+        DecodeDxtColor(newpixels + 8, i5, i6, false, r, g, b, throwaway);
+        if(dxt == 0x10){
+            DecodeDxt3Alpha(newpixels, i5, i6, a);
+        }
+        else {
+            DecodeDxt5Alpha(newpixels, i5, i6, a);
+        }
+    }
 }
 
 int RndBitmap::PaletteOffset(int i) const {
@@ -955,10 +1026,10 @@ void RndBitmap::Load(BinStream& bs) {
     }
 }
 
-bool RndBitmap::LoadSafely(BinStream& bs, int a, int b) {
-    u8 test;
-    int mips; LoadHeader(bs, test);
-    if (mWidth > a || mHeight > b) {
+bool RndBitmap::LoadSafely(BinStream& bs, int w, int h) {
+    u8 mips;
+    LoadHeader(bs, mips);
+    if (mWidth > w || mHeight > h) {
         MILO_WARN("Something is wrong with the bitmap you're loading from %s, w = %d, h = %d", bs.Name(), mWidth, mHeight);
         Create(8,8,0,0x20,0,NULL,NULL,NULL);
         return false;
@@ -967,25 +1038,25 @@ bool RndBitmap::LoadSafely(BinStream& bs, int a, int b) {
         Create(8,8,0,0x20,0,NULL,NULL,NULL);
         return false;
     }
-    if (mBuffer) {_MemFree(mBuffer); mBuffer = NULL;}
+    if (mBuffer) {
+        _MemFree(mBuffer);
+        mBuffer = NULL;
+    }
     mPalette = NULL;
     AllocateBuffer();
     if (mPalette) bs.Read(mPalette, PaletteBytes());
-    ReadChunks(bs, mPixels, mRowBytes * mHeight, 0x8000);
-    if (mBuffer) {
-        Reset();
-        _MemFree(mBuffer);
-    }
-    mBuffer = NULL;
-    u16 lw = mWidth, lh = mHeight;
-    RndBitmap* mp, *prev_mip = this;
-    while (mips-- != 0) {
-        mp = new RndBitmap;
-        prev_mip->mMip = mp;
-        lw /= 2;
-        lh /= 2;
-        mp->Create(lw, lh, 0, mBpp, mOrder, mPalette, NULL, NULL);
-        ReadChunks(bs, mp->mPixels, mp->mRowBytes * mp->mHeight, 0x8000);
+    ReadChunks(bs, mPixels, PixelBytes(), 0x8000);
+    RELEASE(mMip);
+    int lw = mWidth;
+    RndBitmap* cur = this;
+    int lh = mHeight;
+    while(mips-- != 0){
+        cur->mMip = new RndBitmap();
+        cur = cur->mMip;
+        lw >>= 1;
+        lh >>= 1;
+        cur->Create(lw, lh, 0, mBpp, mOrder, mPalette, NULL, NULL);
+        ReadChunks(bs, cur->Pixels(), cur->PixelBytes(), 0x8000);
     }
     return true;
 }

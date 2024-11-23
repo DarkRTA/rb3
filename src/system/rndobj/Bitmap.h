@@ -136,6 +136,7 @@ public:
     int Width() const { return mWidth; }
     int Height() const { return mHeight; }
     u32 Order() const { return mOrder; }
+    int RowBytes() const { return mRowBytes; }
     int Bpp() const { return mBpp; }
     u8* Palette() const { return mPalette; }
     u8* Pixels() const { return mPixels; }
