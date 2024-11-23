@@ -61,13 +61,19 @@ public:
     u16 mWidth; // 0x0
     /** The bitmap's height in pixels. */
     u16 mHeight; // 0x2
+    /** The number of bytes in memory that make up one row of the image. */
     u16 mRowBytes; // 0x4
     /** The number of bits per pixel, aka color depth. */
     u8 mBpp; // 0x6
+    /** The ordering of the color bytes in this bitmap (e.g. RGBA, BGRA) - determined with masking */
     u32 mOrder; // 0x8
+    /** The pixels that makes up this image. */
     u8* mPixels; // 0xc
+    /** The colors of this image's color palette. */
     u8* mPalette; // 0x10
+    /** The contiguous series of bytes that make up the bitmap's palette and pixels */
     u8* mBuffer; // 0x14
+    /** The next mip after this one, used to create a mipmap. */
     RndBitmap* mMip; // 0x18
 
     RndBitmap() : mBuffer(0), mMip(0) {Reset();}

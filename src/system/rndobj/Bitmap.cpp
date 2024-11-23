@@ -205,11 +205,11 @@ void RndBitmap::ConvertColor(unsigned char r, unsigned char g, unsigned char b, 
     if(mBpp == 0x10){
         unsigned short* twobytes = (unsigned short*)uc;
         if(mOrder & 1){
-            *twobytes = r >> 3 | (g & 0xF8) << 2 | (a & 0x80) << 8 | (b & 0xF8) << 7;
+            *twobytes = (a & 0x80) << 8 | (b & 0xF8) << 7 | (g & 0xF8) << 2 | r >> 3;
         }
         else {
-            *twobytes = b >> 3 | (g & 0xF8) << 2 | (a & 0x80) << 8 | (r & 0xF8) << 7;
-        }        
+            *twobytes = (a & 0x80) << 8 | (r & 0xF8) << 7 | (g & 0xF8) << 2 | b >> 3;
+        }       
         *twobytes = EndianSwap(*twobytes);
         return;
     }
@@ -277,7 +277,7 @@ void RndBitmap::AllocateBuffer() {
     if (mPalette) paletteBytes = 0;
     else paletteBytes = PaletteBytes();
     int sum = paletteBytes + PixelBytes();
-    if (sum) mBuffer = (u8*)_MemAlloc(sum, 0x20);
+    if (sum) mBuffer = (u8*)_MemAlloc(sum, 32);
     if (paletteBytes) mPalette = mBuffer;
     mPixels = mBuffer + paletteBytes;
     MILO_ASSERT(!paletteBytes, 439);
@@ -858,7 +858,8 @@ void RndBitmap::PixelColor(int x, int y, unsigned char& r, unsigned char& g, uns
     }
     else {
         bool boolbool;
-        ConvertColor(mPixels + PixelOffset(x, y, boolbool), r, g, b, a);
+        const unsigned char* p = mPixels + PixelOffset(x, y, boolbool);
+        ConvertColor(p, r, g, b, a);
     }
 }
 
@@ -868,7 +869,8 @@ void RndBitmap::SetPixelColor(int x, int y, unsigned char r, unsigned char g, un
     }
     else {
         bool boolbool;
-        ConvertColor(r, g, b, a, mPixels + PixelOffset(x, y, boolbool));
+        unsigned char* p = mPixels + PixelOffset(x, y, boolbool);
+        ConvertColor(r, g, b, a, p);
     }
 }
 
@@ -878,11 +880,12 @@ void RndBitmap::DxtColor(int, int, unsigned char&, unsigned char&, unsigned char
 }
 
 int RndBitmap::PaletteOffset(int i) const {
-    if(mOrder && mBpp == 8){
-        if((i & 18U) == 8){
+    if((mOrder & 2) && mBpp == 8){
+        int mask = i & 18U;
+        if(mask == 8){
             i += 8;
         }
-        else if((i & 0x18U) == 0x10){
+        else if(mask == 0x10){
             i -= 8;
         }
     }
