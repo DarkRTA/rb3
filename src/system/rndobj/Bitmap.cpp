@@ -298,15 +298,11 @@ void RndBitmap::Create(int width, int height, int rowlen, int bpp, int order, vo
     mPalette = (u8*)palette;
     RELEASE(mMip);
     if(mRowBytes == 0){
-        if(mBpp == 4){
-            if(mWidth & 1){
-                mRowBytes = (mWidth + 1) * 4 >> 3;
-                goto ok;
-            }
+        if(mBpp == 4 && mWidth & 1){
+            mRowBytes = (mWidth + 1) * mBpp >> 3;
         }
-        mRowBytes = mWidth * mBpp >> 3;
+        else mRowBytes = mWidth * mBpp >> 3;
     }
-ok:
     if(mOrder & 4){
         unsigned char theBpp = mBpp;
         if((theBpp == 8 && (mWidth < 16 || mHeight < 16)) || (theBpp == 4 && (mWidth < 32 || mHeight < 16)) || theBpp > 8){
@@ -756,7 +752,7 @@ void RndBitmap::SaveBmpPixels(BinStream* file) const {
         if(mBpp == 4){
             u8* pixelIt = pixels;
             for(; pixelIt != pixels + mRowBytes; pixelIt++){
-                unsigned char pix = *pixelIt >> 4 | *pixelIt << 4;
+                unsigned char pix = ((*pixelIt & 0xF0) >> 4) | ((*pixelIt & 0x0F) << 4);
                 *file << pix;
             }
         }
@@ -778,15 +774,22 @@ bool RndBitmap::IsTranslucent() const {
     return false;
 }
 
+struct ColorRgba {
+    u8 r, g, b, a;
+};
+
 bool RndBitmap::SamePaletteColors(const RndBitmap& bmap) const {
     if(mPalette == bmap.Palette()) return true;
     else {
         for(int i = (1 << mBpp) - 1; i >= 0; i--){
-            unsigned char* myColors;
-            unsigned char* otherColors;
-            PaletteColor(i, myColors[0], myColors[1], myColors[2], myColors[3]);
-            bmap.PaletteColor(i, otherColors[0], otherColors[1], otherColors[2], otherColors[3]);
-            if(&myColors != &otherColors) return false;
+            uint myColors;
+            uint otherColors;
+            ColorRgba* myC = (ColorRgba*)&myColors;
+            ColorRgba* otherC = (ColorRgba*)&otherColors;
+            
+            PaletteColor(i, myC->r, myC->g, myC->b, myC->a);
+            bmap.PaletteColor(i, otherC->r, otherC->g, otherC->b, otherC->a);
+            if(myColors != otherColors) return false;
         }
         return true;
     }
@@ -808,10 +811,8 @@ void RndBitmap::Blt(const RndBitmap& bm, int dX, int dY, int sX, int sY, int wid
         if(mOrder & 0x38){
             MILO_ASSERT(!((dX | dY | sX | sY | width | height) & 0x3), 0x636);
         }
-        for(; height > 0; height--){
+        for(; height > 0; height--, dY++, sY++){
             memcpy(mPixels + (dX * mBpp >> 3) + (dY * mRowBytes), bm.mPixels + (sX * bm.mBpp >> 3) + (sY * bm.mRowBytes), width * mBpp >> 3);
-            dY++;
-            sY++;
         }
     }
     else {
@@ -829,7 +830,7 @@ void RndBitmap::Blt(const RndBitmap& bm, int dX, int dY, int sX, int sY, int wid
             }
             for(int h = height, dy = dY, sy = sY; h > 0; h--, dy++, sy++){
                 for(int w = width, sx = sX, dx = dX; w > 0; w--, sx++, dx++){
-                    SetPixelIndex(dx, dy, colorBuffer[bm.PixelIndex(sx, sy) + 1]);
+                    SetPixelIndex(dx, dy, colorBuffer[bm.PixelIndex(sx, sy)]);
                 }
             }
         }
