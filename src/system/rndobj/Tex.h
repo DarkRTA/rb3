@@ -67,11 +67,14 @@ public:
 
     static const char* CheckSize(int, int, int, int, RndTex::Type, bool);
     static void PlatformBppOrder(const char*, int&, int&, bool);
+    int SizeKb() const { return ((mWidth * mHeight * mBpp) / 8 / 1024); }
     bool IsRenderTarget() const { return mType & kRendered; }
     int Width() const { return mWidth; }
     int Height() const { return mHeight; }
     Type GetType() const { return mType; }
     const FilePath& File() const { return mFilepath; }
+    int NumMips() const { return mNumMips; }
+    int Bpp() const { return mBpp; }
 
     NEW_OVERLOAD
     NEW_OBJ(RndTex)

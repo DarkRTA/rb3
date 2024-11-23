@@ -98,8 +98,8 @@ int RndBitmap::PaletteBytes() const {
 }
 
 unsigned char RndBitmap::NearestColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) const {
-    int u4 = -1;
-    int i3 = 0x40000;
+    int paletteColorIdx = -1;
+    int minDiff = 0x40000;
     unsigned char pr, pg, pb, pa;
     for(int i = (1 << mBpp) - 1; i >= 0; i--){
         PaletteColor(i, pr, pg, pb, pa);
@@ -108,12 +108,12 @@ unsigned char RndBitmap::NearestColor(unsigned char r, unsigned char g, unsigned
         int db = pb - b;
         int da = pa - a;
         int diff = dr * dr + dg * dg + db * db + da * da;
-        if(diff < i3){
-            i3 = diff;
-            u4 = i;
+        if(diff < minDiff){
+            minDiff = diff;
+            paletteColorIdx = i;
         }
     }
-    return u4;
+    return paletteColorIdx;
 }
 
 void RndBitmap::ConvertColor(const unsigned char* uc, unsigned char& r, unsigned char& g, unsigned char& b, unsigned char& a) const {
@@ -246,7 +246,6 @@ void RndBitmap::Reset() {
 }
 
 void RndBitmap::Create(const RndBitmap& bm, int bpp, int order, void* palette) {
-    int test = 0;
     Create(bm.Width(), bm.Height(), 0, bpp, order, palette, NULL, NULL);
     if (mPalette && !palette) {
         MILO_ASSERT(bm.Palette(), 392);
@@ -447,7 +446,7 @@ void RndBitmap::SetPixelIndex(int i1, int i2, unsigned char uc){
 DECOMP_FORCEACTIVE(Bitmap, "mBpp == 4", "alpha pair doesn't match size or palettization", "alpha combination has too many colors")
 
 void RndBitmap::ConvertToAlpha(){
-    if(mBpp == 0x18){
+    if(mBpp == 24){
         RndBitmap bmap;
         bmap.Create(*this, 32, mOrder, 0);
         if(mBuffer){
@@ -586,7 +585,7 @@ void RndBitmap::SelfMip(){
 
 void RndBitmap::GenerateMips(){
     int dim = Min(mWidth, mHeight);
-    if(dim > 0x10U){
+    if(dim > 16U){
         RELEASE(mMip);
         mMip = new RndBitmap();
         mMip->Create(mWidth >> 1, mHeight >> 1, 0, mBpp, mOrder, mPalette, 0, 0);
@@ -674,7 +673,7 @@ bool RndBitmap::LoadDIB(BinStream* bs, unsigned int offbits){
     return true;
 }
 
-bool RndBitmap::LoadBmp(const char* filename, bool b1, bool b2){
+bool RndBitmap::LoadBmp(const char* filename, bool wantMips, bool noAlpha){
     FileStream* stream = new FileStream(filename, FileStream::kRead, true);
     if(stream->Fail()){
         delete stream;
@@ -687,8 +686,8 @@ bool RndBitmap::LoadBmp(const char* filename, bool b1, bool b2){
         }
         else {
             delete stream;
-            if(!b2){
-                ProcessFlags(filename, b1);
+            if(!noAlpha){
+                ProcessFlags(filename, wantMips);
             }
             return true;
         }
@@ -699,7 +698,7 @@ static inline bool FileContains(const char* filename, const char* key){
     return strstr(filename, MakeString("%s.", key)) || strstr(filename, MakeString("%s_", key));
 }
 
-bool RndBitmap::ProcessFlags(const char* filename, bool bbb){
+bool RndBitmap::ProcessFlags(const char* filename, bool wantMips){
     if(FileContains(filename, "_tb")){
         SetAlpha(kTransparentBlack);
     }
@@ -716,7 +715,7 @@ bool RndBitmap::ProcessFlags(const char* filename, bool bbb){
     if(FileContains(filename, "_selfmip")){
         SelfMip();
     }
-    else if(bbb){
+    else if(wantMips){
         if(!FileContains(filename, "_nomip")){
             GenerateMips();
         }
@@ -800,7 +799,7 @@ bool RndBitmap::IsTranslucent() const {
         for(int j = 0; j < mWidth; j++){
             unsigned char r, g, b, a;
             PixelColor(j, i, r, g, b, a);
-            if(a < 0xFD) return true;
+            if(a < 253) return true;
         }
     }
     return false;
@@ -963,8 +962,8 @@ void RndBitmap::PaletteColor(int i, unsigned char& r, unsigned char& g, unsigned
     ConvertColor(mPalette + PaletteOffset(i) * 4, r, g, b, a);
 }
 
-void RndBitmap::SetPaletteColor(int i, unsigned char r, unsigned char g, unsigned char b, unsigned char a){
-    ConvertColor(r, g, b, a, mPalette + PaletteOffset(i) * 4);
+void RndBitmap::SetPaletteColor(int idx, unsigned char r, unsigned char g, unsigned char b, unsigned char a){
+    ConvertColor(r, g, b, a, mPalette + PaletteOffset(idx) * 4);
 }
 
 unsigned char RndBitmap::RowNonTransparent(int x, int y, int z, int* iptr){
@@ -1006,7 +1005,10 @@ void RndBitmap::Save(BinStream& bs) const {
 void RndBitmap::Load(BinStream& bs) {
     u8 mipCt;
     LoadHeader(bs, mipCt);
-    if (mBuffer) {_MemFree(mBuffer); mBuffer = 0;}
+    if (mBuffer) {
+        _MemFree(mBuffer);
+        mBuffer = 0;
+    }
     mPalette = 0;
     AllocateBuffer();
     if (mPalette) bs.Read(mPalette, PaletteBytes());
@@ -1047,8 +1049,8 @@ bool RndBitmap::LoadSafely(BinStream& bs, int w, int h) {
     if (mPalette) bs.Read(mPalette, PaletteBytes());
     ReadChunks(bs, mPixels, PixelBytes(), 0x8000);
     RELEASE(mMip);
-    int lw = mWidth;
     RndBitmap* cur = this;
+    int lw = mWidth;
     int lh = mHeight;
     while(mips-- != 0){
         cur->mMip = new RndBitmap();
