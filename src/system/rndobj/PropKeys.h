@@ -206,9 +206,10 @@ public:
     unsigned int unk18lastbit : 1;
 };
 
+/** A collection of float keys to animate on its target object's properties. */
 class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
-    FloatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) { mKeysType = kFloat; }
+    FloatKeys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target) { mKeysType = kFloat; }
     virtual ~FloatKeys(){}
     virtual Keys<float, float>& AsFloatKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -247,9 +248,10 @@ public:
     DELETE_OVERLOAD;
 };
 
+/** A collection of color keys to animate on its target object's properties. */
 class ColorKeys : public PropKeys, public Keys<Hmx::Color, Hmx::Color> {
 public:
-    ColorKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) { mKeysType = kColor; }
+    ColorKeys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target) { mKeysType = kColor; }
     virtual ~ColorKeys(){}
     virtual Keys<Hmx::Color, Hmx::Color>& AsColorKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -288,9 +290,10 @@ public:
     DELETE_OVERLOAD;
 };
 
+/** A collection of Object keys to animate on its target object's properties. */
 class ObjectKeys : public PropKeys, public ObjKeys {
 public:
-    ObjectKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), ObjKeys(o1) {
+    ObjectKeys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target), ObjKeys(targetOwner) {
         mKeysType = kObject; mInterpolation = kStep;
     }
     virtual ~ObjectKeys(){}
@@ -335,9 +338,10 @@ public:
     DELETE_OVERLOAD;
 };
 
+/** A collection of bool keys to animate on its target object's properties. */
 class BoolKeys : public PropKeys, public Keys<bool, bool> {
 public:
-    BoolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {
+    BoolKeys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target) {
         mKeysType = kBool; mInterpolation = kStep;
     }
     virtual ~BoolKeys(){}
@@ -378,9 +382,10 @@ public:
     DELETE_OVERLOAD;
 };
 
+/** A collection of quat keys to animate on its target object's properties. */
 class QuatKeys : public PropKeys, public Keys<Hmx::Quat, Hmx::Quat> {
 public:
-    QuatKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2), mVec(Vector3::sZero) { mKeysType = kQuat; }
+    QuatKeys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target), mVec(Vector3::sZero) { mKeysType = kQuat; }
     virtual ~QuatKeys(){}
     virtual Keys<Hmx::Quat, Hmx::Quat>& AsQuatKeys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -421,9 +426,10 @@ public:
     Vector3 mVec; // 0x28
 };
 
+/** A collection of Vector3 keys to animate on its target object's properties. */
 class Vector3Keys : public PropKeys, public Keys<Vector3, Vector3> {
 public:
-    Vector3Keys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) { mKeysType = kVector3; }
+    Vector3Keys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target) { mKeysType = kVector3; }
     virtual ~Vector3Keys(){}
     virtual Keys<Vector3, Vector3>& AsVector3Keys(){ if(this) return *this; }
     virtual float StartFrame(){ return FirstFrame(); }
@@ -462,9 +468,10 @@ public:
     DELETE_OVERLOAD;
 };
 
+/** A collection of Symbol keys to animate on its target object's properties. */
 class SymbolKeys : public PropKeys, public Keys<Symbol, Symbol> {
 public:
-    SymbolKeys(Hmx::Object* o1, Hmx::Object* o2) : PropKeys(o1, o2) {
+    SymbolKeys(Hmx::Object* targetOwner, Hmx::Object* target) : PropKeys(targetOwner, target) {
         mKeysType = kSymbol; mInterpolation = kStep; unk28 = -1; unk2c = -1; unk30 = 0;
     }
     virtual ~SymbolKeys(){}
