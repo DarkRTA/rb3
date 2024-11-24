@@ -36,7 +36,7 @@ BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
     return bs;
 }
 
-PropKeys::PropKeys(Hmx::Object* o1, Hmx::Object* o2) : mTarget(o1, o2), mProp(0), mTrans(0), mInterpHandler(),
+PropKeys::PropKeys(Hmx::Object* owner, Hmx::Object* ptr) : mTarget(owner, ptr), mProp(0), mTrans(0), mInterpHandler(),
     mLastKeyFrameIndex(-2), mKeysType(kFloat), mInterpolation(kLinear), mPropExceptionID(kNoException), unk18lastbit(0) {
 
 }

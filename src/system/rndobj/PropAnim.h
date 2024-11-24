@@ -5,6 +5,11 @@
 #include <vector>
 #include "rndobj/PropKeys.h"
 
+/**
+* @brief: A property animator.
+* Original _objects description:
+* "Animate any properties on target object"
+*/
 class RndPropAnim : public RndAnimatable {
 public:
     RndPropAnim();

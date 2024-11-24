@@ -116,7 +116,7 @@ public:
     static unsigned short gRev;
     static Message sInterpMessage;
 
-    ObjOwnerPtr<Hmx::Object, ObjectDir> mTarget; // 0x4
+    ObjOwnerPtr<Hmx::Object> mTarget; // 0x4
     DataArray* mProp; // 0x10
     RndTransformable* mTrans; // 0x14
     Symbol mInterpHandler; // 0x18

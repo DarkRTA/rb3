@@ -1,10 +1,14 @@
-#ifndef UTL_KEY_H
-#define UTL_KEY_H
+#pragma once
 #include <vector>
 #include "math/Utl.h"
 #include "math/Rot.h" // so that Vector2 is textstream-able
 
 // thank god for the RB2 dump
+/**
+ * @brief A keyframe.
+ * 
+ * @tparam T The value of this keyframe.
+ */
 template <class T> class Key {
 public:
     Key() : value(T()), frame(0.0f) {}
@@ -16,9 +20,6 @@ public:
         if(frame == other.frame) return true;
         else return false;
     }
-
-    // I found a weak copy ctor and weak operator=(const Key<T>&)
-    // not sure if we need to explicitly write these or not
 };
 
 template <class T> TextStream& operator<<(TextStream& ts, const Key<T>& key){
@@ -39,17 +40,34 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 // Keys is a vector<Key<T>>
 // would make sense for determining what value is at what frame,
 // not sure how the second template gets incorporated yet
+/**
+ * @brief A specialized vector for keyframes.
+ * 
+ * @tparam T1 The keyframe value type.
+ * @tparam T2 TODO: currently unknown
+ */
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
-
+    /** Get the number of keyframes in this collection. */
     int NumKeys() const { return size(); }
 
     // used in RemoveKey
+    /** Remove the key at the given index.
+     * @param [in] The index in the vector to remove.
+     */
     void Remove(int idx){
         erase(begin() + idx);
     }
 
     // fn_806570E8 for Vector3, fn_8065783C for Quat
+    /** Given a start and end frame, get the closest start and end indices of this vector.
+     * NOTE: if both the start and end frame are 0, they will be overwritten to the first and last frame,
+     * istart will become 0, and iend will become the last index of the vector.
+     * @param [in] fstart The start frame.
+     * @param [in] fend The end frame.
+     * @param [out] istart The index of the last key whose frame <= the start frame.
+     * @param [out] iend The index of the first key whose frame >= the end frame.
+     */
     void FindBounds(float& fstart, float& fend, int& istart, int& iend){
         MILO_ASSERT(size(), 0x199);
         if(!fstart && !fend){
@@ -66,6 +84,7 @@ public:
     }
 
     // matches in retail with the right inline settings: https://decomp.me/scratch/hWbQQ
+    /** Sort the keys by their frames. */
     void Sort(){
         int vecSize = size();
         for(int i = 1; i < vecSize; i++){
@@ -79,32 +98,44 @@ public:
         }
     }
 
+    /** Get the first frame of the keys. */
     float FirstFrame() const {
         if(size() != 0) return front().frame;
         else return 0.0f;
     }
 
+    /** Get the last frame of the keys. */
     float LastFrame() const {
         if(size() != 0) return back().frame;
         else return 0.0f;
     }
 
     // fn_805FC18C for Vector3
-    int Add(const T1& val, float f, bool unique){
-        int bound = KeyGreaterEq(f);
-        if(unique && bound != size() && f == (*this)[bound].frame){
+    /** Add a value to the keys at a given frame.
+     * @param [in] val The value to add.
+     * @param [in] frame The frame at which this value will be.
+     * @param [in] unique If true, overwrite the existing value at this frame. Otherwise, create a new keyframe.
+     * @returns The index in the vector corresponding to this new keyframe.
+     */
+    int Add(const T1& val, float frame, bool unique){
+        int bound = KeyGreaterEq(frame);
+        if(unique && bound != size() && frame == (*this)[bound].frame){
             (*this)[bound].value = val;
         }
         else {
-            while(bound < size() && f == (*this)[bound].frame){
+            while(bound < size() && frame == (*this)[bound].frame){
                 bound++;
             }
-            insert(&(*this)[bound], Key<T1>(val, f));
+            insert(&(*this)[bound], Key<T1>(val, frame));
         }
         return bound;
     }
 
     // fn_80653DE0 for Vector3 and fn_80653CE4 for Hmx::Quat
+    /** Remove a range of keyframes.
+     * @param [in] fstart The start frame of the range to remove.
+     * @param [in] fend The end frame of the range to remove.
+     */
     int Remove(float fstart, float fend){
         int bound1 = KeyGreaterEq(fstart);
         int bound2 = KeyGreaterEq(fend);
@@ -113,6 +144,11 @@ public:
     }
 
     // full method scratch (debug): https://decomp.me/scratch/IXqzR
+    /** Get the value associated with the supplied frame.
+     * @param [in] frame The keyframe to get a value from.
+     * @param [out] val The retrieved value.
+     * @returns The index in the vector where this keyframe resides.
+     */
     int AtFrame(float frame, T2& val) const {
         const Key<T1>* prev;
         const Key<T1>* next;
@@ -131,6 +167,13 @@ public:
     // scratch for T1 = float: https://decomp.me/scratch/GXfNX
     // inside this function contains another function, scratch here: https://decomp.me/scratch/cPad6
     // fn_805FBE14 in retail for T1, T2 = TexPtr, RndTex*
+    /** Get the value associated with the supplied frame.
+     * @param [in] frame The keyframe to get a value from.
+     * @param [out] prev The previous key relative to the keyframe we want.
+     * @param [out] next The next key relative to the keyframe we want.
+     * @param [out] ref TODO: unknown
+     * @returns The index in the vector where this keyframe resides.
+     */
     int AtFrame(float frame, const Key<T1>*& prev, const Key<T1>*& next, float& ref) const {
         if(empty()){
             next = 0;
@@ -250,5 +293,3 @@ void InterpTangent(const Vector3&, const Vector3&, const Vector3&, const Vector3
 void InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*);
 void InterpVector(const Keys<Vector3, Vector3>&, bool, float, Vector3&, Vector3*);
 void QuatSpline(const Keys<Hmx::Quat, Hmx::Quat>&, const Key<Hmx::Quat>*, const Key<Hmx::Quat>*, float, Hmx::Quat&);
-
-#endif
