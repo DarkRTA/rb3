@@ -14,6 +14,10 @@ void SetPropKeysRev(int rev){
     PropKeys::gRev = rev;
 }
 
+float CalcSpline(float, float*){
+    
+}
+
 BinStream& operator>>(BinStream& bs, ObjectStage& stage){
     ObjectDir* dir = nullptr;
     if(PropKeys::gRev > 8){
@@ -322,10 +326,10 @@ int FloatKeys::FloatAt(float frame, float& fl){
         case kHermite:
             Interp(prev->value, next->value, ref * ref * (ref * -2.0f + 3.0f), fl);
             break;
-        case kInterp5:
+        case kEaseIn:
             Interp(prev->value, next->value, ref * ref * ref, fl);
             break;
-        case kInterp6:
+        case kEaseOut:
             ref = 1.0f - ref;
             Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), fl);
             break;
@@ -373,14 +377,14 @@ int ColorKeys::ColorAt(float frame, Hmx::Color& color){
         case kLinear:
             at = AtFrame(frame, color);
             break;
-        case kInterp5:
+        case kEaseIn:
             const Key<Hmx::Color>* prev5;
             const Key<Hmx::Color>* next5;
             float ref5;
             AtFrame(frame, prev5, next5, ref5);
             if(prev5) Interp(prev5->value, next5->value, ref5 * ref5 * ref5, color);
             break;
-        case kInterp6:
+        case kEaseOut:
             const Key<Hmx::Color>* prev;
             const Key<Hmx::Color>* next;
             float ref;
@@ -484,10 +488,10 @@ int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
         case kSlerp:
             Interp(prev->value, next->value, ref, quat);
             break;
-        case kInterp5:
+        case kEaseIn:
             FastInterp(prev->value, next->value, ref * ref * ref, quat);
             break;
-        case kInterp6:
+        case kEaseOut:
             ref = 1.0f - ref;
             FastInterp(prev->value, next->value, -(ref * ref * ref - 1.0f), quat);
             break;

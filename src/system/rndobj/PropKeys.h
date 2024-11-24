@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_PROPKEYS_H
-#define RNDOBJ_PROPKEYS_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
@@ -9,6 +8,8 @@
 #include "obj/ObjectStage.h"
 #include "math/Key.h"
 #include "obj/Msg.h"
+
+void SetPropKeysRev(int rev);
 
 class ObjKeys : public Keys<ObjectStage, Hmx::Object*> {
 public:
@@ -55,8 +56,8 @@ public:
         kSpline,
         kSlerp,
         kHermite,
-        kInterp5,
-        kInterp6
+        kEaseIn,
+        kEaseOut
     };
 
     enum ExceptionID {
@@ -131,9 +132,6 @@ public:
     unsigned int mPropExceptionID : 3; // represents the enum ExceptionID
     unsigned int unk18lastbit : 1;
 };
-
-void SetPropKeysRev(int);
-float CalcSpline(float, float*); // putting this here for now, maybe it's better off in Key.h?
 
 class FloatKeys : public PropKeys, public Keys<float, float> {
 public:
@@ -437,5 +435,3 @@ public:
     int unk2c; // 0x2c
     bool unk30; // 0x30
 };
-
-#endif

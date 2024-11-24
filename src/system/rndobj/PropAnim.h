@@ -1,5 +1,5 @@
-#ifndef RNDOBJ_PROPANIM_H
-#define RNDOBJ_PROPANIM_H
+#pragma once
+#include "obj/Data.h"
 #include "rndobj/Anim.h"
 #include "obj/Object.h"
 #include <vector>
@@ -34,7 +34,7 @@ public:
     bool ChangePropPath(Hmx::Object*, DataArray*, DataArray*);
     bool RemoveKeys(Hmx::Object*, DataArray*);
     bool HasKeys(Hmx::Object*, DataArray*);
-    PropKeys** FindKeys(Hmx::Object*, DataArray*);
+    std::vector<PropKeys*>::iterator FindKeys(Hmx::Object*, DataArray*);
     void SetKey(Hmx::Object*, DataArray*, float);
     void SetKeyVal(Hmx::Object*, DataArray*, float, const DataNode&, bool);
     PropKeys::AnimKeysType AnimKeysType(Hmx::Object*, DataArray*);
@@ -70,4 +70,10 @@ public:
     bool mLoop; // 0x1d
 };
 
-#endif
+struct ForAllKeyframesSorter {
+    bool operator()(const DataArrayPtr& ptr1, const DataArrayPtr& ptr2) const {
+        DataArray* arr2 = ptr2;
+        DataArray* arr1 = ptr1;
+        return arr1->Float(2) < arr2->Float(2) ? true : false;
+    }
+};
