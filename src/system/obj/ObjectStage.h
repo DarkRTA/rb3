@@ -1,5 +1,4 @@
-#ifndef OBJ_OBJECTSTAGE_H
-#define OBJ_OBJECTSTAGE_H
+#pragma once
 #include "obj/ObjPtr_p.h"
 #include "utl/BinStream.h"
 
@@ -17,5 +16,3 @@ public:
 void Interp(const ObjectStage&, const ObjectStage&, float, Hmx::Object*&);
 BinStream& operator<<(BinStream&, const ObjectStage&);
 BinStream& operator>>(BinStream&, ObjectStage&);
-
-#endif

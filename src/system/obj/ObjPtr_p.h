@@ -42,7 +42,9 @@ public:
     void operator=(const ObjPtr<T1, T2>& oPtr){ *this = oPtr.mPtr; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
+    /** The owner of this Object. */
     Hmx::Object* mOwner;
+    /** The pointer to this Object. */
     T1* mPtr;
 };
 
@@ -107,7 +109,9 @@ public:
     void operator=(const ObjOwnerPtr<T1, T2>& oPtr){ *this = oPtr.mPtr; }
     bool Load(BinStream& bs, bool b, class ObjectDir* dir);
 
+    /** The owner of this Object. */
     Hmx::Object* mOwner;
+    /** The pointer to this Object. */
     T1* mPtr;
 };
 
@@ -126,6 +130,12 @@ enum ObjListMode {
     kObjListOwnerControl
 };
 
+/**
+ * @brief Doubly-linked list of ref-counting pointers to Objects.
+ * 
+ * @tparam T1 Hmx::Object derivative
+ * @tparam T2 ObjectDir type (?)
+ */
 template <class T1, class T2 = class ObjectDir> class ObjPtrList : public ObjRef {
 public:
     struct Node {
@@ -172,9 +182,13 @@ public:
         struct Node* mNode;
     };
 
+    /** The collection of Objects. */
     Node* mNodes;
+    /** The owner of all of these Objects. */
     Hmx::Object* mOwner;
+    /** The number of Objects in this list. */
     int mSize : 24;
+    /** The mode of this ObjPtrList. */
     ObjListMode mMode : 8;
 
     ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {

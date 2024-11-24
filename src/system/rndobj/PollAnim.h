@@ -37,7 +37,9 @@ public:
         REGISTER_OBJ_FACTORY(RndPollAnim)
     }
 
-    /** The list of animatables to poll. */
+    /** The list of animatables to poll.
+     * "List of anims that will have SetFrame called on them according to their rate and the TheTaskMgr.Seconds or Beat"
+     */
     ObjPtrList<RndAnimatable> mAnims; // 0x10
 };
 

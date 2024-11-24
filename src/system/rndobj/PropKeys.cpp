@@ -1,21 +1,27 @@
 #include "rndobj/PropKeys.h"
+#include "math/Utl.h"
 #include "obj/ObjectStage.h"
 #include "obj/Utl.h"
 #include "obj/DataUtl.h"
 #include "math/Rot.h"
+#include "os/System.h"
 
 unsigned short PropKeys::gRev = 0;
 Hmx::Object* ObjectStage::sOwner = 0;
-Message PropKeys::sInterpMessage(Symbol(), DataNode(0), DataNode(0), DataNode(0), DataNode(0), DataNode(0));
+Message PropKeys::sInterpMessage(gNullStr, 0, 0, 0, 0, 0);
 
 void SetPropKeysRev(int rev){
     PropKeys::gRev = rev;
 }
 
+float CalcSpline(float, float*){
+    
+}
+
 BinStream& operator>>(BinStream& bs, ObjectStage& stage){
-    ObjectDir* dir = 0;
+    ObjectDir* dir = nullptr;
     if(PropKeys::gRev > 8){
-        ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), 0);
+        ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), nullptr);
         dirPtr.Load(bs, true, dir);
         dir = dirPtr.Ptr();
     }
@@ -24,13 +30,13 @@ BinStream& operator>>(BinStream& bs, ObjectStage& stage){
 }
 
 BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
-    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : 0);
+    ObjPtr<ObjectDir, ObjectDir> dirPtr(stage.Owner(), (stage.Ptr()) ? stage.Ptr()->Dir() : nullptr);
     bs << dirPtr;
     bs << ObjPtr<Hmx::Object, ObjectDir>(stage.Owner(), stage.Ptr());
     return bs;
 }
 
-PropKeys::PropKeys(Hmx::Object* o1, Hmx::Object* o2) : mTarget(o1, o2), mProp(0), mTrans(0), mInterpHandler(),
+PropKeys::PropKeys(Hmx::Object* targetOwner, Hmx::Object* target) : mTarget(targetOwner, target), mProp(0), mTrans(0), mInterpHandler(),
     mLastKeyFrameIndex(-2), mKeysType(kFloat), mInterpolation(kLinear), mPropExceptionID(kNoException), unk18lastbit(0) {
 
 }
@@ -60,8 +66,7 @@ int PropKeys::SetKey(float frame){
     float f = 0.0f;
     for(int i = 0; i < NumKeys(); i++){
         if(FrameFromIndex(i, f)){
-            float fabsFloat = std::fabs(frame - f);
-            if(fabsFloat < 0.000099999997f)
+            if(IsFabsZero(frame - f))
                 return i;
         }
     }
@@ -85,34 +90,34 @@ void PropKeys::SetTarget(Hmx::Object* o){
     }
 }
 
-void PropKeys::ChangeFrame(int i, float f, bool b){
+void PropKeys::ChangeFrame(int idx, float new_frame, bool sort){
     switch(mKeysType){
         case kFloat:
-            (AsFloatKeys())[i].frame = f;
+            AsFloatKeys()[idx].frame = new_frame;
             break;
         case kColor:
-            (AsColorKeys())[i].frame = f;
+            AsColorKeys()[idx].frame = new_frame;
             break;
         case kObject:
-            (AsObjectKeys())[i].frame = f;
+            AsObjectKeys()[idx].frame = new_frame;
             break;
         case kBool:
-            (AsBoolKeys())[i].frame = f;
+            AsBoolKeys()[idx].frame = new_frame;
             break;
         case kSymbol:
-            (AsSymbolKeys())[i].frame = f;
+            AsSymbolKeys()[idx].frame = new_frame;
             break;
         case kVector3:
-            (AsVector3Keys())[i].frame = f;
+            AsVector3Keys()[idx].frame = new_frame;
             break;
         case kQuat:
-            (AsQuatKeys())[i].frame = f;
+            AsQuatKeys()[idx].frame = new_frame;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
             break;
     }
-    if(b) ReSort();
+    if(sort) ReSort();
 }
 
 // 80627a64 in retail
@@ -215,25 +220,25 @@ void PropKeys::Print(){
         ts << "      " << frame << " -> ";
         switch(mKeysType){
             case kFloat:
-                ts << (AsFloatKeys())[i].value;
+                ts << AsFloatKeys()[i].value;
                 break;
             case kColor:
-                ts << (AsColorKeys())[i].value;
+                ts << AsColorKeys()[i].value;
                 break;
             case kObject:
-                ts << (Hmx::Object*)((AsObjectKeys())[i].value);
+                ts << AsObjectKeys()[i].value;
                 break;
             case kBool:
-                ts << (AsBoolKeys())[i].value;
+                ts << AsBoolKeys()[i].value;
                 break;
             case kQuat:
-                ts << (AsQuatKeys())[i].value;
+                ts << AsQuatKeys()[i].value;
                 break;
             case kVector3:
-                ts << (AsVector3Keys())[i].value;
+                ts << AsVector3Keys()[i].value;
                 break;
             case kSymbol:
-                ts << (AsSymbolKeys())[i].value;
+                ts << AsSymbolKeys()[i].value;
                 break;
         }
         ts << "\n";
@@ -244,26 +249,18 @@ unsigned int PropKeys::PropExceptionID(Hmx::Object* o, DataArray* arr){
     if(!o || !arr) return kNoException;
     String propString;
     arr->Print(propString, kDataArray, true);
-    propString = propString.substr(1, strlen(propString.c_str()) - 2);
-    bool b1 = false;
-    if(propString == "rotation"){
-        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
-        if(b1) return kTransQuat;
+    propString = propString.substr(1, propString.length() - 2);
+    if(propString == "rotation" && IsASubclass(o->ClassName(), "Trans")){
+        return kTransQuat;
     }
-    b1 = false;
-    if(propString == "scale"){
-        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
-        if(b1) return kTransScale;
+    if(propString == "scale" && IsASubclass(o->ClassName(), "Trans")){
+        return kTransScale;
     }
-    b1 = false;
-    if(propString == "position"){
-        if(IsASubclass(o->ClassName(), "Trans")) b1 = true;
-        if(b1) return kTransPos;
+    if(propString == "position" && IsASubclass(o->ClassName(), "Trans")){
+        return kTransPos;
     }
-    b1 = false;
-    if(propString == "event"){
-        if(IsASubclass(o->ClassName(), "ObjectDir")) b1 = true;
-        if(b1) return kDirEvent;
+    if(propString == "event" && IsASubclass(o->ClassName(), "ObjectDir")){
+        return kDirEvent;
     }
     return kNoException;
 }
@@ -287,6 +284,7 @@ void PropKeys::SetInterpHandler(Symbol sym){
     SetPropExceptionID();
 }
 
+// retail scratch work: https://decomp.me/scratch/a1wwv
 int FloatKeys::FloatAt(float frame, float& fl){
     MILO_ASSERT(size(), 0x188);
     fl = 0.0f;
@@ -306,16 +304,33 @@ int FloatKeys::FloatAt(float frame, float& fl){
                 Interp(prev->value, next->value, ref, fl);
             }
             else {
-                // more stuff happens here
+                float points[4];
+                points[1] = prev->value;
+                points[2] = next->value;
+                int idx = prev->value == begin()->value;
+                if(idx == 0){
+                    points[0] = prev->value;
+                }
+                else {
+                    points[0] = this->at(idx - 1).value;
+                }
+                if(idx == size() - 1){
+                    points[3] = next->value;
+                }
+                else {
+                    points[3] = this->at(idx + 1).value;
+                }
+                fl = CalcSpline(ref, points);
             }
             break;
         case kHermite:
-            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, fl);
+            Interp(prev->value, next->value, ref * ref * (ref * -2.0f + 3.0f), fl);
             break;
-        case kInterp5:
+        case kEaseIn:
             Interp(prev->value, next->value, ref * ref * ref, fl);
             break;
-        case kInterp6:
+        case kEaseOut:
+            ref = 1.0f - ref;
             Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), fl);
             break;
     }
@@ -326,17 +341,17 @@ void FloatKeys::SetFrame(float frame, float blend){
     if(!mProp || !mTarget || !size()) return;
     int idx;
     if(mPropExceptionID == kHandleInterp){
-        float ref = 0.0f;
         const Key<float>* prev;
         const Key<float>* next;
+        float ref = 0.0f;
         idx = AtFrame(frame, prev, next, ref);
         sInterpMessage.SetType(mInterpHandler);
-        sInterpMessage[0] = DataNode(prev->value);
-        sInterpMessage[1] = DataNode(next->value);
-        sInterpMessage[2] = DataNode(ref);
-        sInterpMessage[3] = DataNode(next->frame);
-        if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
-        else sInterpMessage[4] = DataNode(0);
+        sInterpMessage[0] = prev->value;
+        sInterpMessage[1] = next->value;
+        sInterpMessage[2] = ref;
+        sInterpMessage[3] = next->frame;
+        if(idx >= 1) sInterpMessage[4] = (*this)[idx - 1].value;
+        else sInterpMessage[4] = 0;
         mTarget->Handle(sInterpMessage, true);
     }
     else {
@@ -351,23 +366,29 @@ int ColorKeys::ColorAt(float frame, Hmx::Color& color){
     MILO_ASSERT(size(), 0x1E8);
     color.Set(0,0,0);
     int at = 0;
-    const Key<Hmx::Color>* prev;
-    const Key<Hmx::Color>* next;
-    float ref;
     switch(mInterpolation){
         case kStep:
-            at = AtFrame(frame, prev, next, ref);
-            color = prev->value;
+            const Key<Hmx::Color>* prevstep;
+            const Key<Hmx::Color>* nextstep;
+            float refstep;
+            at = AtFrame(frame, prevstep, nextstep, refstep);
+            color = prevstep->value;
             break;
         case kLinear:
             at = AtFrame(frame, color);
             break;
-        case kInterp5:
-            at = AtFrame(frame, prev, next, ref);
-            if(prev) Interp(prev->value, next->value, ref * ref * ref, color);
+        case kEaseIn:
+            const Key<Hmx::Color>* prev5;
+            const Key<Hmx::Color>* next5;
+            float ref5;
+            AtFrame(frame, prev5, next5, ref5);
+            if(prev5) Interp(prev5->value, next5->value, ref5 * ref5 * ref5, color);
             break;
-        case kInterp6:
-            at = AtFrame(frame, prev, next, ref);
+        case kEaseOut:
+            const Key<Hmx::Color>* prev;
+            const Key<Hmx::Color>* next;
+            float ref;
+            AtFrame(frame, prev, next, ref);
             ref = 1.0f - ref;
             if(prev) Interp(prev->value, next->value, -(ref * ref * ref - 1.0f), color);
             break;
@@ -396,9 +417,9 @@ void ObjectKeys::SetFrame(float frame, float blend){
         case kDirEvent:
             break;
         case kHandleInterp: {
-            float ref = 0.0f;
             const Key<ObjectStage>* prev;
             const Key<ObjectStage>* next;
+            float ref = 0.0f;
             idx = AtFrame(frame, prev, next, ref);
             sInterpMessage.SetType(mInterpHandler);
             sInterpMessage[0] = DataNode(prev->value.Ptr());
@@ -452,9 +473,9 @@ void BoolKeys::SetFrame(float frame, float blend){
 
 int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
     MILO_ASSERT(size(), 0x281);
-    float ref = 0.0f;
     const Key<Hmx::Quat>* prev;
     const Key<Hmx::Quat>* next;
+    float ref = 0.0f;
     int at = AtFrame(frame, prev, next, ref);
     if(mInterpolation == kSpline) QuatSpline(*this, prev, next, ref, quat);
     else switch(mInterpolation){
@@ -467,14 +488,19 @@ int QuatKeys::QuatAt(float frame, Hmx::Quat& quat){
         case kSlerp:
             Interp(prev->value, next->value, ref, quat);
             break;
-        case kInterp5:
+        case kEaseIn:
             FastInterp(prev->value, next->value, ref * ref * ref, quat);
             break;
-        case kInterp6:
+        case kEaseOut:
+            ref = 1.0f - ref;
             FastInterp(prev->value, next->value, -(ref * ref * ref - 1.0f), quat);
             break;
     }
     return at;
+}
+
+inline bool CheckVectorDiff(const Vector3& v1, const Vector3& v2, float f){
+    return std::fabs(v1.x - v2.x) < f && std::fabs(v1.y - v2.y) < f && std::fabs(v1.z - v2.z) < f;
 }
 
 void QuatKeys::SetFrame(float frame, float blend){
@@ -486,10 +512,10 @@ void QuatKeys::SetFrame(float frame, float blend){
         }
         Vector3 v48;
         MakeScale(mTrans->LocalXfm().m, v48);
-        if(v48.x){ // FIXME: this condition is wrong
-            mVec = v48;
+        if(CheckVectorDiff(mVec, v48, 0.001f)){
+            v48 = mVec;
         }
-        else v48 = mVec;
+        else mVec = v48;
         Hmx::Quat quat;
         Hmx::Matrix3 mtx;
         idx = QuatAt(frame, quat);
@@ -517,7 +543,7 @@ int Vector3Keys::Vector3At(float frame, Vector3& vec){
             InterpVector(*this, prev, next, ref, true, vec, 0);
             break;
         case kDirEvent:
-            Interp(prev->value, next->value, (ref * -2.0f + 3.0f) * ref * ref, vec);
+            Interp(prev->value, next->value, ref * ref * (ref * -2.0f + 3.0f), vec);
             break;
         case kHandleInterp:
             Interp(prev->value, next->value, ref * ref * ref, vec);
@@ -570,17 +596,17 @@ void SymbolKeys::SetFrame(float frame, float blend){
     int idx = 0;
     switch(mPropExceptionID){
         case kHandleInterp: {
-            float ref = 0.0f;
             const Key<Symbol>* prev;
             const Key<Symbol>* next;
+            float ref = 0.0f;
             idx = AtFrame(frame, prev, next, ref);
             sInterpMessage.SetType(mInterpHandler);
-            sInterpMessage[0] = DataNode(prev->value);
-            sInterpMessage[1] = DataNode(next->value);
-            sInterpMessage[2] = DataNode(ref);
-            sInterpMessage[3] = DataNode(next->frame);
-            if(idx >= 1) sInterpMessage[4] = DataNode((*this)[idx - 1].value);
-            else sInterpMessage[4] = DataNode(0);
+            sInterpMessage[0] = prev->value;
+            sInterpMessage[1] = next->value;
+            sInterpMessage[2] = ref;
+            sInterpMessage[3] = next->frame;
+            if(idx >= 1) sInterpMessage[4] = (*this)[idx - 1].value;
+            else sInterpMessage[4] = 0;
             mTarget->Handle(sInterpMessage, true);
             break;
         }
@@ -592,11 +618,30 @@ void SymbolKeys::SetFrame(float frame, float blend){
             }
             break;
         }
-        default: break;
+        default:
+            break;
     }
     switch(mInterpolation){
         case kStep: {
-            // more happens here
+            int loc8c = -1;
+            int loc90 = -1;
+            std::vector<Symbol> vec;
+            KeysLessEq(frame, loc8c, loc90);
+            if(loc8c != -1){
+                int i = loc8c;
+                if(unk30){
+                    MinEq(loc8c, unk2c + 1);
+                    i = loc8c;
+                }
+                for(; i <= loc90; i++){
+                    Key<Symbol>& cur = (*this)[i];
+                    if(i < unk28 || i > unk2c){
+                        mTarget->SetProperty(mProp, cur.value);
+                    }
+                }
+            }
+            unk28 = loc8c;
+            unk2c = loc90;
             break;
         }
         case kLinear: {
@@ -654,7 +699,7 @@ int QuatKeys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {
         int retVal = PropKeys::SetKey(frame);
-        if(retVal < 0) retVal = Add(Hmx::Quat(), frame, false);
+        if(retVal < 0) retVal = Add(Hmx::Quat(0,0,0,0), frame, false);
         SetToCurrentVal(retVal);
         return retVal;
     }
@@ -664,7 +709,7 @@ int Vector3Keys::SetKey(float frame){
     if(!mProp || !mTarget.Ptr()) return -1;
     else {
         int retVal = PropKeys::SetKey(frame);
-        if(retVal < 0) retVal = Add(Vector3(), frame, false);
+        if(retVal < 0) retVal = Add(Vector3(0,0,0), frame, false);
         SetToCurrentVal(retVal);
         return retVal;
     }
@@ -685,7 +730,8 @@ void FloatKeys::SetToCurrentVal(int i){
 }
 
 void ColorKeys::SetToCurrentVal(int i){
-    (*this)[i].value = Hmx::Color(mTarget->Property(mProp, true)->Int());
+    Key<Hmx::Color>& cur = (*this)[i];
+    cur.value = Hmx::Color(mTarget->Property(mProp, true)->Int());
 }
 
 void ObjectKeys::SetToCurrentVal(int i){
