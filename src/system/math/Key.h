@@ -38,13 +38,11 @@ template <class T> BinStream& operator<<(BinStream& bs, const Key<T>& key){
 }
 
 // Keys is a vector<Key<T>>
-// would make sense for determining what value is at what frame,
-// not sure how the second template gets incorporated yet
 /**
  * @brief A specialized vector for keyframes.
  * 
- * @tparam T1 The keyframe value type.
- * @tparam T2 TODO: currently unknown
+ * @tparam T1 The value type stored inside each keyframe.
+ * @tparam T2 The interpolated value type (see AtFrame).
  */
 template <class T1, class T2> class Keys : public std::vector<Key<T1> > {
 public:
@@ -208,28 +206,34 @@ public:
         }
     }
 
-    // finds the last possible index in which the corresponding frame <= ff
-    int KeyLessEq(float ff) const {
-        if(empty() || (ff < front().frame)) return -1;
+    /** Get the index of the last possible keyframe KF, such that KF's frame <= the supplied frame.
+     * @param [in] frame The supplied frame.
+     * @returns The index of the keyframe that satisfies the condition above.
+     */
+    int KeyLessEq(float frame) const {
+        if(empty() || (frame < front().frame)) return -1;
         else {
             int cnt = 0;
             int threshold = size();
             while(threshold > cnt + 1){
                 int newCnt = (cnt + threshold) >> 1;
-                if(ff < (*this)[newCnt].frame) threshold = newCnt;
-                if(!(ff < (*this)[(int)newCnt].frame)) cnt = newCnt;
+                if(frame < (*this)[newCnt].frame) threshold = newCnt;
+                if(!(frame < (*this)[(int)newCnt].frame)) cnt = newCnt;
             }
             while (cnt + 1 < size() && (*this)[cnt + 1].SameFrame((*this)[cnt])) cnt++;
             return cnt;
         }
     }
 
-    // finds the first possible index in which the corresponding frame > ff
-    int KeyGreaterEq(float ff) const {
-        if(empty() || (ff <= front().frame)) return 0;
+    /** Get the index of the first possible keyframe KF, such that KF's frame >= the supplied frame.
+     * @param [in] frame The supplied frame.
+     * @returns The index of the keyframe that satisfies the condition above.
+     */
+    int KeyGreaterEq(float frame) const {
+        if(empty() || (frame <= front().frame)) return 0;
         else {
             const Key<T1>& backKey = back();
-            if(ff > backKey.frame){
+            if(frame > backKey.frame){
                 return size();
             }
             else {
@@ -237,8 +241,8 @@ public:
                 int threshold = size() - 1;
                 while(threshold > cnt + 1){
                     int newCnt = (cnt + threshold) >> 1;
-                    if(ff > (*this)[newCnt].frame) cnt = newCnt;
-                    if(!(ff > (*this)[(int)newCnt].frame)) threshold = newCnt;
+                    if(frame > (*this)[newCnt].frame) cnt = newCnt;
+                    if(!(frame > (*this)[(int)newCnt].frame)) threshold = newCnt;
                 }
                 while (threshold > 1 && (*this)[threshold - 1].SameFrame((*this)[threshold])) threshold--;
                 return threshold;
@@ -281,6 +285,10 @@ public:
     }
 };
 
+/** Scale keyframes by a supplied multiplier.
+ * @param [in] keys The collection of keys to multiply the frames of.
+ * @param [in] scale The multiplier value.
+ */
 template <class T1, class T2> void ScaleFrame(Keys<T1, T2>& keys, float scale){
     for(Keys<T1,T2>::iterator it = keys.begin(); it != keys.end(); ++it){
         (*it).frame *= scale;

@@ -36,7 +36,7 @@ BinStream& operator<<(BinStream& bs, const ObjectStage& stage){
     return bs;
 }
 
-PropKeys::PropKeys(Hmx::Object* owner, Hmx::Object* ptr) : mTarget(owner, ptr), mProp(0), mTrans(0), mInterpHandler(),
+PropKeys::PropKeys(Hmx::Object* targetOwner, Hmx::Object* target) : mTarget(targetOwner, target), mProp(0), mTrans(0), mInterpHandler(),
     mLastKeyFrameIndex(-2), mKeysType(kFloat), mInterpolation(kLinear), mPropExceptionID(kNoException), unk18lastbit(0) {
 
 }
@@ -90,34 +90,34 @@ void PropKeys::SetTarget(Hmx::Object* o){
     }
 }
 
-void PropKeys::ChangeFrame(int i, float f, bool b){
+void PropKeys::ChangeFrame(int idx, float new_frame, bool sort){
     switch(mKeysType){
         case kFloat:
-            (AsFloatKeys())[i].frame = f;
+            AsFloatKeys()[idx].frame = new_frame;
             break;
         case kColor:
-            (AsColorKeys())[i].frame = f;
+            AsColorKeys()[idx].frame = new_frame;
             break;
         case kObject:
-            (AsObjectKeys())[i].frame = f;
+            AsObjectKeys()[idx].frame = new_frame;
             break;
         case kBool:
-            (AsBoolKeys())[i].frame = f;
+            AsBoolKeys()[idx].frame = new_frame;
             break;
         case kSymbol:
-            (AsSymbolKeys())[i].frame = f;
+            AsSymbolKeys()[idx].frame = new_frame;
             break;
         case kVector3:
-            (AsVector3Keys())[i].frame = f;
+            AsVector3Keys()[idx].frame = new_frame;
             break;
         case kQuat:
-            (AsQuatKeys())[i].frame = f;
+            AsQuatKeys()[idx].frame = new_frame;
             break;
         default:
             MILO_WARN("can not replace frame, unknown type");
             break;
     }
-    if(b) ReSort();
+    if(sort) ReSort();
 }
 
 // 80627a64 in retail
