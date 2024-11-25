@@ -60,10 +60,12 @@ public:
     void BleedTest();
     int NonTransparentColumn(RndBitmap&, int, int, int, int);
     RndMat* GetMat() const { return mMat; }
+    void SetNextFont(RndFont* font){ unk78 = font; }
     RndFont* NextFont() const { return unk78; }
+    float CellDiff() const { return mCellSize.y / mCellSize.x; }
     bool HasChar(char c) const { // fak
 
-    } 
+    }
 
     NEW_OVERLOAD
     NEW_OBJ(RndFont)

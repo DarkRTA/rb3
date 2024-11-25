@@ -35,20 +35,52 @@ void RndText::Mats(std::list<class RndMat*>& matList, bool b){
     }
 }
 
+RndDrawable* RndText::CollideShowing(const Segment& s, float& f, Plane& p){
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        RndMesh* mesh = it->second.unk0;
+        if(mesh && mesh->CollideShowing(s, f, p)) return this;
+    }
+    return nullptr;
+}
+
+int RndText::CollidePlane(const Plane& p){
+    int ret = 0;
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        RndMesh* mesh = it->second.unk0;
+        if(mesh){
+            int meshCol = mesh->CollidePlane(p);
+            if(meshCol == 0) return 0;
+            if(meshCol < 1){
+                if(ret > 0) return 0;
+            }
+            else if(ret < 0) return 0;
+            ret = meshCol;
+        }
+    }
+    return ret;
+}
+
 void RndText::Replace(Hmx::Object* from, Hmx::Object* to){
     RndTransformable::Replace(from, to);
-    RndFont* font = 0;
-    if(font){
-
-    }
-    else {
-
+    RndFont* target = nullptr;
+    for(RndFont* font = mFont; font != nullptr; font = font->NextFont()){
+        target = font;
+        if(font == from){
+            if(target){
+                target->SetNextFont(dynamic_cast<RndFont*>(to));
+            }
+            else {
+                mFont = dynamic_cast<RndFont*>(to);
+            }
+            UpdateText(true);
+            return;
+        }
     }
 }
 
 const char* RndText::FindPathName(){
-    if(Name() && !*Name() && !Dir() && mParent){
-        return MakeString("%s inside %s", ClassName().Str());
+    if(Name() && !*Name() && !Dir() && TransParent()){
+        return MakeString("%s inside %s", ClassName().Str(), TransParent()->FindPathName());
     }
     else return Hmx::Object::FindPathName();
 }
@@ -180,10 +212,48 @@ void RndText::ResolveUpdateText(){
     }
 }
 
-void RndText::UpdateText(bool) {
-    if (mDeferUpdate) {
-        unk9p2 = true;
-        return;
+void RndText::CollectGarbage(){
+    for(std::set<RndText*>::iterator it = mTextMeshSet.begin(); it != mTextMeshSet.end(); it){
+        RndText* cur = *it++;
+        cur->unk124b4++;
+        if(!cur->unkbp7 && cur->unk124b4 > 4){
+            if(cur->mMeshMap.size() != 0){
+                cur->unkbp5 = true;
+                for(std::map<unsigned int, MeshInfo>::iterator mit = cur->mMeshMap.begin(); mit != cur->mMeshMap.end(); ++mit){
+                    RndMesh* mesh = mit->second.unk0;
+                    delete mesh;
+                }
+            }
+            mTextMeshSet.erase(it);
+        }
+    }
+}
+
+void RndText::UpdateText(bool b) {
+    if (mDeferUpdate > 0) {
+        unkbp5 = true;
+    }
+    else {
+        for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+            RndMesh* mesh = it->second.unk0;
+            delete mesh;
+        }
+        mMeshMap.clear();
+        std::set<RndText*>::iterator it = mTextMeshSet.find(this);
+        if(it != mTextMeshSet.end()){
+            mTextMeshSet.erase(it);
+        }
+        mStyle.font = mFont;
+        WrapText(mText.c_str(), mStyle, mLines);
+        unkbp6 = true;
+        unk130 = 0;
+        for(std::vector<Line>::iterator it = mLines.begin(); it != mLines.end(); ++it){
+            MaxEq(unk130, it->unk58);
+        }
+        unk12c = mLines.front().unk28.v.z - mLines.back().unk28.v.z;
+        if(mFont){
+            unk12c = mLeading * mStyle.size * mFont->CellDiff() + unk12c;
+        }
     }
 }
 
@@ -338,6 +408,14 @@ RndText::RndText() : mFont(this), mWrapWidth(0.0f), mLeading(1.0f), mStyle(mFont
 
 RndText::~RndText() {
     MILO_ASSERT(mDeferUpdate == 0, 723);
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        RndMesh* mesh = it->second.unk0;
+        delete mesh;
+    }
+    std::set<RndText*>::iterator it = mTextMeshSet.find(this);
+    if(it != mTextMeshSet.end()){
+        mTextMeshSet.erase(it);
+    }
 }
 
 void RndText::SetFont(RndFont* f) {
@@ -398,7 +476,7 @@ BEGIN_HANDLERS(RndText)
     HANDLE(set_size, OnSetSize)
     HANDLE(set_wrap_width, OnSetWrapWidth)
     HANDLE(set_color, OnSetColor)
-    HANDLE_EXPR(get_text_size, Max(mFixedLength, (int)mText.length()))
+    HANDLE_EXPR(get_text_size, Max<int>(mFixedLength, (int)mText.length()))
     HANDLE_EXPR(get_string_width, GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
 
     HANDLE_SUPERCLASS(RndDrawable)

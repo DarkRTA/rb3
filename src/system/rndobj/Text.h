@@ -9,8 +9,6 @@
 #include <float.h>
 #include <set>
 
-class TrackWidget;
-
 class RndText : public RndDrawable, public RndTransformable {
 public:
     class Style {
@@ -28,15 +26,15 @@ public:
     };
 
     enum Alignment {
-        kTopLeft = 0x11,
-        kTopCenter = 0x12,
-        kTopRight = 0x14,
-        kMiddleLeft = 0x21,
+        kTopLeft =      0x11,
+        kTopCenter =    0x12,
+        kTopRight =     0x14,
+        kMiddleLeft =   0x21,
         kMiddleCenter = 0x22,
-        kMiddleRight = 0x24,
-        kBottomLeft = 0x41,
+        kMiddleRight =  0x24,
+        kBottomLeft =   0x41,
         kBottomCenter = 0x42,
-        kBottomRight = 0x44,
+        kBottomRight =  0x44
     };
 
     enum CapsMode {
@@ -59,8 +57,9 @@ public:
         int unk1c;
         int unk20;
         int unk24;
-        Hmx::Color unk28;
-        Hmx::Color unk38;
+        Transform unk28;
+        float unk58;
+        int unk5c;
     };
 
     class MeshInfo {
@@ -122,6 +121,7 @@ public:
     void SetMeshForceNoUpdate();
     void SetData(Alignment, const char*, RndFont*, float, float, float, float, const Hmx::Color32&, bool, CapsMode, int);
     void SetAltStyle(RndFont*, float, const Hmx::Color32*, float, float, bool);
+    void WrapText(const char*, const Style&, std::vector<Line>&);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -150,6 +150,7 @@ public:
 
     static void Init();
     static void Register(){ REGISTER_OBJ_FACTORY(RndText); }
+    static void CollectGarbage();
     static std::set<RndText*> mTextMeshSet;
 
     DECLARE_REVS
