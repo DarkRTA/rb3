@@ -64,6 +64,7 @@ public:
 
     class MeshInfo {
     public:
+        MeshInfo() : unk0(0), unk4(0), unk8(0) {}
         RndMesh* unk0;
         int unk4;
         int unk8;

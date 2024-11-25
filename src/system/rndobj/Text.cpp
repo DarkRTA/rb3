@@ -10,6 +10,7 @@
 #include "rndobj/Mat.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
+#include "stl/_pair.h"
 #include "utl/Symbols2.h"
 #include "utl/TextStream.h"
 #include "utl/UTF8.h"
@@ -419,8 +420,22 @@ RndText::~RndText() {
 }
 
 void RndText::SetFont(RndFont* f) {
-    mFont = f;
-    UpdateText(true);
+    if(mFont != f){
+        mFont = f;
+        for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+            RELEASE(it->second.unk0);
+        }
+        mMeshMap.clear();
+        std::set<RndText*>::iterator it = mTextMeshSet.find(this);
+        if(it != mTextMeshSet.end()){
+            mTextMeshSet.erase(it);
+        }
+        unsigned int fontasInt = (unsigned int)f;
+        mMeshMap.insert(std::make_pair(fontasInt, MeshInfo()));
+        mMeshMap[fontasInt].unk8 = 0;
+        mMeshMap[fontasInt].unk4 = 0;
+        UpdateText(true);
+    }
 }
 
 void RndText::SetAlignment(Alignment a){
