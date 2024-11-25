@@ -1,7 +1,10 @@
 #include "rndobj/Dir.h"
+#include "math/Mtx.h"
+#include "math/Utl.h"
 #include "obj/Object.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Env.h"
 #include "rndobj/Trans.h"
 #include "utl/FilePath.h"
 #include "obj/ObjVersion.h"
@@ -98,6 +101,56 @@ void RndDir::SyncDrawables(){
 }
 
 // fn_805D37CC - update sphere
+void RndDir::UpdateSphere(){
+    Sphere s;
+    MakeWorldSphere(s, true);
+    Transform tf;
+    FastInvert(WorldXfm(), tf);
+    Multiply(s, tf, s);
+    SetSphere(s);
+}
+
+float RndDir::GetDistanceToPlane(const Plane& plane, Vector3& vec){
+    if(mDraws.empty()) return 0;
+    else {
+        float f5 = 0;
+        bool first = true;
+        for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+            Vector3 drawvec;
+            float f6 = (*it)->GetDistanceToPlane(plane, drawvec);
+            if(first || std::fabs(f6) < std::fabs(f5)){
+                first = false;
+                f5 = f6;
+                vec = drawvec;
+            }
+        }
+        return f5;
+    }
+}
+
+bool RndDir::MakeWorldSphere(Sphere& s, bool b){
+    if(b){
+        s.Zero();
+        for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+            Sphere locSphere;
+            (*it)->MakeWorldSphere(locSphere, true);
+            RndTransformable* trans = dynamic_cast<RndTransformable*>(*it);
+            if(trans){
+                AddMotionSphere(trans, locSphere);
+            }
+            s.GrowToContain(locSphere);
+        }
+        return true;
+    }
+    else {
+        Sphere& mySphere = mSphere;
+        if(mySphere.GetRadius()){
+            Multiply(mySphere, WorldXfm(), s);
+            return true;
+        }
+        else return false;
+    }
+}
 
 void RndDir::Poll(){
     if(Showing()){
@@ -147,11 +200,40 @@ void RndDir::ListDrawChildren(std::list<RndDrawable*>& children){
     }
 }
 
+void RndDir::DrawShowing(){
+    if(!mDraws.empty()){
+        RndEnvironTracker tracker(mEnv, &WorldXfm().v);
+        for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+            (*it)->Draw();
+        }
+    }
+}
+
 int RndDir::CollidePlane(const Plane& pl){
     int ret = -1;
     for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
         if(it == mDraws.begin()) ret = (*it)->CollidePlane(pl);
         else if(ret != (*it)->CollidePlane(pl)) return 0;
+    }
+    return ret;
+}
+
+RndDrawable* RndDir::CollideShowing(const Segment& s, float& fl, Plane& pl){
+    RndDrawable* ret = nullptr;
+    Segment seg(s);
+    fl = 1.0f;
+    for(std::vector<RndDrawable*>::iterator it = mDraws.begin(); it != mDraws.end(); ++it){
+        float locf;
+        RndDrawable* curCollide = (*it)->Collide(seg, locf, pl);
+        if(curCollide){
+            if(IsProxy()){
+                fl = locf;
+                return this;
+            }
+            ret = curCollide;
+            Interp(seg.start, seg.end, locf, seg.end);
+            fl *= locf;
+        }
     }
     return ret;
 }
@@ -183,8 +265,7 @@ void RndDir::SetFrame(float frame, float blend){
 float RndDir::EndFrame(){
     float frame = 0.0f;
     for(std::vector<RndAnimatable*>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
-        float end = (*it)->EndFrame();
-        if(frame < end) frame = end;
+        MaxEq(frame, (*it)->EndFrame());
     }
     return frame;
 }
@@ -260,7 +341,7 @@ void RndDir::OldLoadProxies(BinStream& bs, int rev) {
         loadedDir->SetOrder(f94);
         loadedDir->SetShowing(b98);
         loadedDir->SetEnv(Find<RndEnviron>(s8c.c_str(), false));
-        SetProxyFile(fp68, true);
+        loadedDir->SetProxyFile(fp68, true);
     }
 }
 

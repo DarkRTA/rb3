@@ -1,5 +1,3 @@
-/*#ifndef RNDOBJ_TRANS_H
-#define RNDOBJ_TRANS_H*/
 #pragma once
 #include "milo_types.h"
 #include "math/Mtx.h"
@@ -200,4 +198,9 @@ public:
     DELETE_OVERLOAD
 };
 
-/*#endif*/
+class RndTransformableRemover : public RndTransformable {
+public:
+    RndTransformableRemover(){}
+    virtual Symbol ClassName() const { return ""; }
+    virtual ~RndTransformableRemover(){}
+};

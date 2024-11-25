@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_ENV_H
-#define RNDOBJ_ENV_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "types.h"
 #include "obj/Object.h"
@@ -108,6 +107,46 @@ public:
     static bool sCurrentPosSet;
     // static BoxMapLighting sGlobalLighting;
     DECLARE_REVS
+
+    static Vector3* CurrentPos(){
+        if(sCurrentPosSet) return &sCurrentPos;
+        else return nullptr;
+    }
+
 };
 
-#endif
+class RndEnvironTracker {
+public:
+    RndEnvironTracker(RndEnviron* env, const Vector3* v3) : mOld(RndEnviron::sCurrent), mOldPosSet(RndEnviron::CurrentPos()) {
+        if(mOldPosSet){
+            mOldPos = *RndEnviron::CurrentPos();
+        }
+        else {
+            mOldPos.Zero();
+        }
+        if(env){
+            if(env != RndEnviron::sCurrent || !VecEqual(v3, RndEnviron::CurrentPos())){
+                env->Select(v3);
+            }
+        }
+    }
+    ~RndEnvironTracker(){
+        Vector3* vptr = mOldPosSet ? &mOldPos : nullptr;
+        if(mOld){
+            if(mOld != RndEnviron::sCurrent || !VecEqual(vptr, RndEnviron::CurrentPos())){
+                mOld->Select(vptr);
+            }
+        }
+    }
+
+    bool VecEqual(const Vector3* v1, const Vector3* v2) const {
+        if(v1 && v2){
+            return *v1 == *v2;
+        }
+        else return v1 == v2;
+    }
+
+    RndEnviron* mOld; // 0x0
+    Vector3 mOldPos; // 0x4
+    bool mOldPosSet; // 0x10
+};
