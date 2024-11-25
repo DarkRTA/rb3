@@ -58,7 +58,7 @@ void RndDir::SyncObjects(){
                 it->ListAnimChildren(animchildren);
             }
         }
-        for(std::list<RndAnimatable*>::iterator it = animchildren.begin(); it != animchildren.end(); ++it){
+        for(std::list<RndAnimatable*>::const_iterator it = animchildren.begin(); it != animchildren.end(); ++it){
             VectorRemove(mAnims, *it);
         }
         std::list<RndPollable*> pollchildren;
@@ -68,12 +68,12 @@ void RndDir::SyncObjects(){
                 it->ListPollChildren(pollchildren);
             }
         }
-        for(std::list<RndPollable*>::iterator it = pollchildren.begin(); it != pollchildren.end(); ++it){
+        for(std::list<RndPollable*>::const_iterator it = pollchildren.begin(); it != pollchildren.end(); ++it){
             VectorRemove(mPolls, *it);
         }
         std::sort(mPolls.begin(), mPolls.end(), SortPolls);
-        if(this != mDir){
-            MsgSource* src = dynamic_cast<MsgSource*>(mDir);
+        if(IsProxy()){
+            MsgSource* src = dynamic_cast<MsgSource*>(Dir());
             if(src) ChainSourceSubdir(src, this);
         }
         ObjectDir::SyncObjects();
@@ -93,7 +93,7 @@ void RndDir::SyncDrawables(){
             }
         }
         UpdatePreClearState();
-        for(std::list<RndDrawable*>::iterator it = drawchildren.begin(); it != drawchildren.end(); ++it){
+        for(std::list<RndDrawable*>::const_iterator it = drawchildren.begin(); it != drawchildren.end(); ++it){
             VectorRemove(mDraws, *it);
         }
         std::sort(mDraws.begin(), mDraws.end(), SortDraws);
