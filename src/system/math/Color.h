@@ -102,6 +102,8 @@ namespace Hmx {
             color = other.color;
             return *this;
         }
+        bool operator==(const Color32& other) const { return color == other.color; }
+        bool operator!=(const Color32& other) const { return color != other.color; }
         void SetAlpha(float f){ a = f * 255.0f; }
         int FullColor() const { return color; }
         int Opaque() const { return color | 0xFF000000; }

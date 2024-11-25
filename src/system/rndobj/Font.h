@@ -60,6 +60,7 @@ public:
     void BleedTest();
     int NonTransparentColumn(RndBitmap&, int, int, int, int);
     RndMat* GetMat() const { return mMat; }
+    RndFont* NextFont() const { return unk78; }
     bool HasChar(char c) const { // fak
 
     } 

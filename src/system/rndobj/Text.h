@@ -1,6 +1,5 @@
-#ifndef RNDOBJ_TEXT_H
-#define RNDOBJ_TEXT_H
-
+#pragma once
+#include "math/Color.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "rndobj/Draw.h"
@@ -16,38 +15,28 @@ class RndText : public RndDrawable, public RndTransformable {
 public:
     class Style {
     public:
-        Style()
-            : font(0), size(0.0), italics(-1), unk_c(true), unk_d(false),
-              color(0, 0, 0, 0), unk_28(0), unk_2c(FLT_MAX), brk(true), pre(true) {}
+        Style(RndFont* f, float sz, float ital, const Hmx::Color32& col, float z) : 
+            font(f), size(sz), italics(ital), color(col), brk(true), pre(false), zOffset(z) {}
 
-        TrackWidget *font;
-        float size;
-        float italics;
-
-        bool unk_c;
-        bool unk_d;
-
-        Hmx::Color color;
-
-        bool brk;
-        bool pre;
-
-        float zOffset;
-
-        float unk_28;
-        float unk_2c;
+        RndFont* font; // 0x0
+        float size; // 0x4
+        float italics; // 0x8
+        Hmx::Color32 color; // 0xc
+        bool brk; // 0x10
+        bool pre; // 0x11
+        float zOffset; // 0x14
     };
 
     enum Alignment {
-        kTopLeft = 17,
-        kTopCenter = 18,
-        kTopRight = 20,
-        kMiddleLeft = 33,
-        kMiddleCenter = 34,
-        kMiddleRight = 36,
-        kBottomLeft = 65,
-        kBottomCenter = 66,
-        kBottomRight = 68,
+        kTopLeft = 0x11,
+        kTopCenter = 0x12,
+        kTopRight = 0x14,
+        kMiddleLeft = 0x21,
+        kMiddleCenter = 0x22,
+        kMiddleRight = 0x24,
+        kBottomLeft = 0x41,
+        kBottomCenter = 0x42,
+        kBottomRight = 0x44,
     };
 
     enum CapsMode {
@@ -56,12 +45,29 @@ public:
         kForceUpper = 2,
     };
 
+    // size 0x60
     class Line {
-
+    public:
+        int unk0;
+        float unk4;
+        float unk8;
+        int unkc;
+        bool unk10;
+        bool unk11;
+        float unk14;
+        int unk18;
+        int unk1c;
+        int unk20;
+        int unk24;
+        Hmx::Color unk28;
+        Hmx::Color unk38;
     };
 
     class MeshInfo {
-
+    public:
+        RndMesh* unk0;
+        int unk4;
+        int unk8;
     };
 
     RndText();
@@ -94,7 +100,7 @@ public:
     void UpdateText(bool);
     void SetFont(RndFont*);
     String TextASCII() const; void SetTextASCII(const char*);
-    float Size() const { return mSize; } void SetSize(float);
+    float Size() const { return mStyle.size; } void SetSize(float);
     void GetMeshes(std::vector<RndMesh*>&);
     void SetFixedLength(int);
     void GetCurrentStringDimensions(float&, float&);
@@ -112,6 +118,10 @@ public:
     void SetAlignment(Alignment);
     void SetLeading(float);
     void SetColor(const Hmx::Color32&);
+    void SetMeshForceNoQuantize();
+    void SetMeshForceNoUpdate();
+    void SetData(Alignment, const char*, RndFont*, float, float, float, float, const Hmx::Color32&, bool, CapsMode, int);
+    void SetAltStyle(RndFont*, float, const Hmx::Color32*, float, float, bool);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -125,30 +135,18 @@ public:
     ObjOwnerPtr<RndFont, ObjectDir> mFont; // 0xb8
     float mWrapWidth; // 0xc4
     float mLeading; // 0xc8
-    String unk_cc; // 0xcc - either ASCII or UTF8 text
-    RndFont* unkd8; // 0xd8
-    float mSize; // 0xdc
-    float mItalicStrength; // 0xe0
-    Hmx::Color32 mColor; // 0xe4
-    bool unke8;
-    bool unke9;
-    float mZOffset;
-    RndFont* unkf0;
-    float mAltSize;
-    float mAltItalicStrength;
-    Hmx::Color32 mAltColor;
-    bool unk100;
-    bool unk101;
-    float mAltZOffset;
-    std::map<unsigned int, MeshInfo> unk108;
+    String mText; // 0xcc - either ASCII or UTF8 text
+    Style mStyle; // 0xd8
+    Style mAltStyle; // 0xf0
+    std::map<unsigned int, MeshInfo> mMeshMap; // 0x108
     unsigned char mAlign; // 0x120
     unsigned char mCapsMode; // 0x121
     int mFixedLength : 16; // 0x122
     int mDeferUpdate : 4; // 0x124
     int unk124b4 : 4;
-    int unk128;
-    float unk12c;
-    float unk130;
+    int unk128; // 0x128
+    float unk12c; // 0x12c
+    float unk130; // 0x130
 
     static void Init();
     static void Register(){ REGISTER_OBJ_FACTORY(RndText); }
@@ -157,4 +155,14 @@ public:
     DECLARE_REVS
 };
 
-#endif // RNDOBJ_TEXT_H
+class RndTextUpdateDeferrer {
+public:
+    RndTextUpdateDeferrer(RndText* text) : mText(text) {
+        text->DeferUpdateText();
+    }
+    ~RndTextUpdateDeferrer(){
+        mText->ResolveUpdateText();
+    }
+
+    RndText* mText; // 0x0
+};

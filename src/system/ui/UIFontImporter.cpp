@@ -137,7 +137,7 @@ void UIFontImporter::FontImporterSyncObjects(){
                 if(text){
                     class String textname = name + ".txt";
                     text->SetName(textname.c_str(), Dir());
-                    class String textstr(text->unk_cc.c_str());
+                    class String textstr(text->mText.c_str());
                     if(textstr.find("_default") != String::npos){
                         textstr = textstr.substr(0, textstr.find("_default"));
                         text->SetText(textstr.c_str());
