@@ -744,6 +744,191 @@ void RndText::CreateLines(RndFont* font){
     }
 }
 
+int RndText::NumCharsInBytes(const String& str, const RndText::Style& style, float& fref, int i4){
+    int len = strlen(str.c_str());
+    str.c_str();
+    int i5 = 0;
+    float f8 = 0;
+    int s4 = 0;
+    while(s4 < len){
+        unsigned short us;
+        int decoded = DecodeUTF8(us, str.c_str() + s4);
+        if(i4 > -1 && i4 < s4 + decoded) break;
+        RndFont* support = SupportChar(us, mFont);
+        if((us == 0x20 || us == 9 || us == 10) && len > 0){
+            i5++;
+            if(support){
+                f8 += style.size * support->CharAdvance(us);
+            }
+        }
+        else {
+            i5 = 0;
+            f8 = 0;
+        }
+    }
+    fref += f8;
+    return s4 - i5;
+}
+
+void RndText::ApplyLineText(const String& str, const RndText::Style& style, float& fref, RndText::Line& line, int i5, int i6, bool* b7){
+    if(!mMeshMap.empty()){
+        if(mText.length() < line.unk24){
+            mText.resize(line.unk24);
+        }
+        str.length();
+        const char* theStrstr = str.c_str();
+        const char* ptr = theStrstr;
+        for(int i = 0; i < i5; i++){
+            char ptrChar = *ptr;
+            mText[line.unk20 + i] = ptrChar;
+            ptr++;
+        }
+        for(int i = i5; i < i6; i++){
+            mText[line.unk20 + i] = 0x20;
+        }
+        float f28 = 0;
+        unsigned short i23 = 0;
+        int i7 = 0;
+        RndFont* key = (RndFont*)mMeshMap.begin()->first;
+        Style localStyle(style);
+        while(*theStrstr != '\0'){
+            while((*theStrstr == '<' && mTextMarkup)){
+                theStrstr = ParseMarkup(theStrstr, &localStyle, style.size, style.zOffset);
+            }
+            if(*theStrstr != '\0'){
+                unsigned short use6;
+                int decoded = DecodeUTF8(use6, theStrstr);
+                if(i7 < i6){
+                    RndFont* defining = GetDefiningFont(use6, key);
+                    if(defining){
+                        f28 += localStyle.size * defining->CharAdvance(use6) + localStyle.size * defining->Kerning(i23, use6);
+                    }
+                    i7++;
+                    i23 = use6;
+                }
+                theStrstr += decoded;
+            }
+        }
+        line.unk58 = f28;
+
+        float f3 = line.unk28.v.x;
+        float f4 = line.unk28.v.y;
+        Alignment align = GetAlignment();
+        float f26 = GetHorizontalAlignOffset(line, align);
+        i7 = 0;
+        i23 = 0;
+        for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+            Style mapStyle(style);
+            RndFont* curFontKey = (RndFont*)it->first;
+            MeshInfo& meshInfo = it->second;
+            RndMesh* curMesh = meshInfo.unk0;
+            int uvar8 = 0;
+            float fd4 = f3 + f26;
+            if(curMesh){
+                if(!(curMesh->GetMutable() & 0x1F) || mFixedLength * 4 != curMesh->Verts().size()){
+                    curMesh->SetMutable(0x1F);
+                    ResetFaces(curMesh, mFixedLength * 2);
+                    curMesh->Verts().resize(mFixedLength * 4, true);
+                    uvar8 |= 0xBF;
+                }
+                curMesh->SetMat(curFontKey->GetMat());
+            }
+            RndMesh::Vert* theVert = curMesh->Verts().begin() + line.unk20 * 0xD0;
+            RndMesh::Vert* vertd8 = theVert;
+            const char* curStrStr = str.c_str();
+            while(*curStrStr != '\0'){
+                while(*curStrStr == '<' && mTextMarkup){
+                    curStrStr = ParseMarkup(curStrStr, &mapStyle, style.size, style.zOffset);
+                }
+                if(*curStrStr != '\0'){
+                    float f6 = mapStyle.italics * mapStyle.size;
+                    unsigned short use8;
+                    int decoded = DecodeUTF8(use8, curStrStr);
+                    if(i7 < i6){
+                        RndFont* defining = GetDefiningFont(use8, curFontKey);
+                        if(defining){
+                            if(defining == curFontKey){
+                                defining->Kerning(i23, use8);
+                                defining->CharAdvance(use8);
+                                float diff = defining->CellDiff();
+                                float f5 = line.unk28.v.z;
+                                float f1 = mapStyle.size * diff;
+                                if(mAlign & 0x20){
+                                    f5 += f1 / 2.0f;
+                                }
+                                else if(mAlign & 0x40){
+                                    f5 += f1;
+                                }
+                                SetupCharVerts(use8, theVert, fd4, f4, f5 + mapStyle.zOffset, f1, f6, mapStyle, defining, i23, false);
+                                uvar8 |= 0x1F;
+                            }
+                            else {
+                                fd4 += style.size * defining->Kerning(i23, use8);
+                                fd4 += style.size * defining->CharAdvance(use8);
+                            }
+                            uvar8 |= 0x1F;
+                        }
+                        i7++;
+                        i23 = use8;
+                    }
+                    curStrStr += decoded;
+                }
+            }
+            RotateLineVerts(line, theVert, vertd8);
+            meshInfo.unk4 |= uvar8;
+        }
+        if(b7) *b7 = true;
+        else SyncMeshes();
+        fref += f28;
+    }
+}
+
+int RndText::AddLineUTF8(const String& str, const Transform& tf, const RndText::Style& style, float* fp, bool* bp, int i6){
+    unkbp7 = true;
+    float f98 = 0;
+    if(!fp) fp = &f98;
+
+    if(str.length() + mText.length() > mFixedLength){
+        str.c_str();
+        mText.c_str();
+        return -1;
+    }
+    else {
+        int numchars = NumCharsInBytes(str, style, *fp, i6);
+        if(numchars != 0 || i6 != 0){
+            str.length();
+            int lineIdx;
+            for(lineIdx = mLines.size(); lineIdx > 0 && (mLines[lineIdx - 1].unk24 && mLines[lineIdx - 1].unk20 == mLines[lineIdx - 1].unk24); lineIdx--);
+            if(lineIdx == mLines.size()){
+                if(mLines.size() == mLines.capacity()){
+                    mLines.capacity();
+                }
+                Line linetopush;
+                mLines.push_back(linetopush);
+            }
+            Line& curLine = mLines[lineIdx];
+            curLine.unk28 = tf;
+            curLine.mLineStyle = style;
+            curLine.unk20 = 0;
+            if(lineIdx != 0){
+                curLine.unk20 = mLines[lineIdx - 1].unk24;
+            }
+            if(i6 > -1){
+                curLine.unk24 = curLine.unk20 + i6;
+            }
+            else {
+                curLine.unk24 = curLine.unk20 + numchars;
+                i6 = numchars;
+            }
+            curLine.unk18 = mText.c_str() + curLine.unk20;
+            curLine.unk1c = mText.c_str() + curLine.unk24;
+            ApplyLineText(str, style, *fp, curLine, numchars, i6, bp);
+            return lineIdx;
+        }
+        else return -1;
+    }
+}
+
 void RndText::SyncMeshes(){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
         MeshInfo& info = it->second;

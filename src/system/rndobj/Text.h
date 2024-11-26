@@ -46,6 +46,7 @@ public:
     // size 0x60
     class Line {
     public:
+        Line();
         Style mLineStyle; // 0x0
         const char* unk18;
         const char* unk1c;
@@ -53,7 +54,7 @@ public:
         int unk24;
         Transform unk28;
         float unk58;
-        int unk5c;
+        Hmx::Color32 unk5c;
     };
 
     class MeshInfo {
@@ -127,6 +128,10 @@ public:
     RndFont* GetDefiningFont(unsigned short&, RndFont*) const;
     void UpdateMesh(RndFont*);
     void CreateLines(RndFont*);
+    int NumCharsInBytes(const String&, const RndText::Style&, float&, int);
+    RndFont* SupportChar(unsigned short, RndFont*);
+    void ApplyLineText(const String&, const RndText::Style&, float&, RndText::Line&, int, int, bool*);
+    int AddLineUTF8(const String&, const Transform&, const RndText::Style&, float*, bool*, int);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
