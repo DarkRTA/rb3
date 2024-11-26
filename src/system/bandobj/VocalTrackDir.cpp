@@ -666,19 +666,19 @@ void VocalTrackDir::ApplyFontStyle(Hmx::Object* o){
 
     if(mLeadText){
         mLeadText->SetShowing(false);
-        c20 = mLeadText->mColor;
+        c20 = mLeadText->mStyle.color;
     }
     if(mHarmText){
         mHarmText->SetShowing(false);
-        c30 = mHarmText->mColor;
+        c30 = mHarmText->mStyle.color;
     }
     if(mLeadPhonemeText){
         mLeadPhonemeText->SetShowing(false);
-        c40 = mLeadPhonemeText->mColor;
+        c40 = mLeadPhonemeText->mStyle.color;
     }
     if(mHarmPhonemeText){
         mHarmPhonemeText->SetShowing(false);
-        c50 = mHarmPhonemeText->mColor;
+        c50 = mHarmPhonemeText->mStyle.color;
     }
 
     if(o && o->Type() == font_style){

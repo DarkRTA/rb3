@@ -10,6 +10,7 @@
 #include "char/CharUtl.h"
 #include "math/Rand.h"
 #include "obj/Utl.h"
+#include "rndobj/Env.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
@@ -569,6 +570,18 @@ void BandCharacter::DrawLodOrShadowMode(int i, DrawMode mode){
     else {
         if(!unk574) mInstDir->DrawLodOrShadow(i, mode);
         mOutfitDir->DrawLodOrShadow(i, mode);
+    }
+}
+
+void BandCharacter::DrawLodOrShadow(int i, Character::DrawMode mode){
+    RndEnvironTracker tracker(mEnv, &WorldXfm().v);
+    mInstDir->SetEnv(nullptr);
+    mOutfitDir->SetEnv(nullptr);
+    if(mode & 5){
+        DrawLodOrShadowMode(i, (DrawMode)(mode & 0xfffffffd));
+    }
+    if(mode & 2){
+        DrawLodOrShadowMode(i, (DrawMode)2);
     }
 }
 

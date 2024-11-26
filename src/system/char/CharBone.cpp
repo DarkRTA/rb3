@@ -1,7 +1,7 @@
 #include "char/CharBone.h"
 #include "char/CharBones.h"
 #include "char/CharBoneDir.h"
-#include "rndobj/TransRemover.h"
+#include "rndobj/Trans.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharBone);

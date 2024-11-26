@@ -143,7 +143,7 @@ void BandHighlight::UpdateTargetEdge(RndTransformable* t){
             RndText* txt = lbl->TextObj();
             float f4;
             if(txt){
-                f4 = txt->GetStringWidthUTF8(txt->unk_cc.c_str(), 0, false, 0);
+                f4 = txt->GetStringWidthUTF8(txt->mText.c_str(), 0, false, 0);
             }
             else f4 = 0;
             unk13c = unk130 = unk148->mLocalXfm.v;

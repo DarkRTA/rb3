@@ -40,6 +40,7 @@ public:
     static const unsigned int npos;
 
     unsigned int length() const { return strlen(mStr); }
+    unsigned int capacity() const { return mCap; }
     const char* c_str() const { return mStr; }
     bool empty() const { return *mStr == '\0'; }
 

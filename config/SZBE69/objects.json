@@ -428,6 +428,7 @@
             "system/rndobj/TexBlendController.cpp": "NonMatching",
             "system/rndobj/TexBlender.cpp": "NonMatching",
             "system/rndobj/TexRenderer.cpp": "NonMatching",
+            "system/rndobj/Text.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
             "system/rndobj/TransAnim.cpp": "NonMatching",
             "system/rndobj/TransProxy.cpp": "NonMatching",

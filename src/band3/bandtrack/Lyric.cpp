@@ -8,7 +8,7 @@ int kMaxLyricPlateLines = 0x1E;
 LyricPlate::LyricPlate(RndText *param1, const RndText *param2, const RndText *param3)
     : mWidthX(0), mNumCharsUsed(0), mText(param1), mSyllables(), mPreviewColor(),
       mActiveColor(), mNowColor(), mPastColor(), mPreviewPhonemeColor(),
-      mActivePhonemeColor(), mNowPhonemeColor(), mPastPhonemeColor(), mPitchedStyle() {
+      mActivePhonemeColor(), mNowPhonemeColor(), mPastPhonemeColor(), mPitchedStyle(0, 0, 0, 0, 0), mUnpitchedStyle(0, 0, 0, 0, 0) {
     // param1->SetFixedLength(kMaxLyricPlateLines);
     param1->ReserveLines(kMaxLyricPlateLines);
 }
@@ -42,7 +42,7 @@ void LyricPlate::Reset() {
     mText->SetText(0);
     mWidthX = 0;
     mNumCharsUsed = 0;
-    mPitchedStyle.unk_2c = FLT_MAX;
+    mPitchedStyle.zOffset = FLT_MAX;
     mUnpitchedStyle.font = 0;
 
     mSyllables.clear();
@@ -68,13 +68,13 @@ void LyricPlate::AddLyric(Lyric *lyric) {
 
     float end100 = lyric->mEndMs + 100;
 
-    if (mPitchedStyle.unk_2c < end100) {
+    if (mPitchedStyle.zOffset < end100) {
         end = &end100;
     } else {
-        end = &mPitchedStyle.unk_2c;
+        end = &mPitchedStyle.zOffset;
     }
 
-    mPitchedStyle.unk_2c = *end;
+    mPitchedStyle.zOffset = *end;
 }
 
 void LyricPlate::EstimateLyricWidth(const Lyric *lyric) {
@@ -86,7 +86,7 @@ void LyricPlate::EstimateLyricWidth(const Lyric *lyric) {
         style = &mPitchedStyle;
     }
 
-    mText->GetStringWidthUTF8(mText->unk_cc.mStr, 0, false, style);
+    mText->GetStringWidthUTF8(mText->mText.c_str(), 0, false, style);
 }
 
 void LyricPlate::HookUpParents(RndGroup *group, RndTransformable *trans) {
