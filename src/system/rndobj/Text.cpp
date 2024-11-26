@@ -1,5 +1,7 @@
 #include "Text.h"
+#include "decomp.h"
 #include "math/Utl.h"
+#include "milo_types.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
@@ -11,6 +13,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Trans.h"
 #include "stl/_pair.h"
+#include "utl/Str.h"
 #include "utl/Symbols2.h"
 #include "utl/TextStream.h"
 #include "utl/UTF8.h"
@@ -51,10 +54,10 @@ int RndText::CollidePlane(const Plane& p){
         if(mesh){
             int meshCol = mesh->CollidePlane(p);
             if(meshCol == 0) return 0;
-            if(meshCol < 1){
-                if(ret > 0) return 0;
+            if(meshCol > 0){
+                if(ret < 0) return 0;
             }
-            else if(ret < 0) return 0;
+            else if(ret > 0) return 0;
             ret = meshCol;
         }
     }
@@ -224,6 +227,7 @@ void RndText::CollectGarbage(){
                     RndMesh* mesh = mit->second.unk0;
                     delete mesh;
                 }
+                cur->mMeshMap.clear();
             }
             mTextMeshSet.erase(it);
         }
@@ -253,7 +257,8 @@ void RndText::UpdateText(bool b) {
         }
         unk12c = mLines.front().unk28.v.z - mLines.back().unk28.v.z;
         if(mFont){
-            unk12c = mLeading * mStyle.size * mFont->CellDiff() + unk12c;
+            float diff = mFont->CellDiff();
+            unk12c += mStyle.size * diff * mLeading;
         }
     }
 }
@@ -399,7 +404,7 @@ void RndText::Print() {
 
 RndText::RndText() : mFont(this), mWrapWidth(0.0f), mLeading(1.0f), mStyle(mFont, 1, 0, -1, 0),
     mAltStyle(nullptr, 1, 0, -1, 0), mAlign(kTopLeft), mCapsMode(kCapsModeNone),
-    mFixedLength(0), mDeferUpdate(0), unk124b4(0), unk128(0), unk12c(0.0f), unk130(0.0f) {
+    mFixedLength(0), mDeferUpdate(0), unk124b4(0), unk124b4p1(0), unk128(0), unk12c(0.0f), unk130(0.0f) {
     mTextMarkup = false;
     unkbp4 = false;
     unkbp5 = false;
@@ -431,8 +436,8 @@ void RndText::SetFont(RndFont* f) {
             mTextMeshSet.erase(it);
         }
         unsigned int fontasInt = (unsigned int)f;
-        mMeshMap.insert(std::make_pair(fontasInt, MeshInfo()));
-        mMeshMap[fontasInt].unk8 = 0;
+        mMeshMap.insert(std::pair<unsigned int, MeshInfo>(fontasInt, MeshInfo()));
+        mMeshMap[fontasInt].displayableChars = 0;
         mMeshMap[fontasInt].unk4 = 0;
         UpdateText(true);
     }
@@ -450,10 +455,310 @@ void RndText::SetLeading(float f){
     UpdateText(true);
 }
 
+const char* RndText::ParseMarkup(const char* cc, RndText::Style* style, float f3, float f4) const {
+    bool b1 = cc[1] == '/';
+    const char* ptr = cc + 1;
+    if(b1) ptr++;
+    if(strnicmp(ptr, "sup", 3) == 0){
+        if(!b1){
+            f3 *= gSuperscriptScale;
+        }
+        style->size = f3;
+        ptr += 3;
+    }
+    else if(strnicmp(ptr, "gtr", 3) == 0){
+        if(!b1){
+            f3 *= gGuitarScale;
+        }
+        style->size = f3;
+        style->zOffset = b1 ? f4 : gGuitarZOffset;
+        ptr += 3;
+    }
+    else if(strnicmp(ptr, "it", 2) == 0){
+        style->italics = b1 ? 0 : 0.1f;
+    }
+    else if(strnicmp(ptr, "pre", 3) == 0){
+        style->pre = !b1;
+    }
+    else if(strnicmp(ptr, "color", 5) == 0){
+        if(b1){
+            ptr += 5;
+            style->color = mStyle.color;
+        }
+        else {
+            int colorVals[4] = {0};
+            sscanf(ptr, "%d %d %d %d", colorVals[0], colorVals[1], colorVals[2], colorVals[3]);
+            style->color.Set(colorVals[0] / 255.0f, colorVals[1] / 255.0f, colorVals[2] / 255.0f, colorVals[3] / 255.0f);
+        }
+    }
+    else if(strnicmp(ptr, "nobreak", 7) == 0){
+        if(b1) style->brk = mStyle.brk;
+        else style->brk = false;
+    }
+    else if(strnicmp(ptr, "alt", 3) == 0){
+        if(b1 || !unkbp5){
+            style->color = mStyle.color;
+            style->size = f3;
+            style->font = mFont;
+            style->zOffset = 0;
+            style->italics = mStyle.italics;
+        }
+        else {
+            style->color = mAltStyle.color;
+            style->size = mAltStyle.size;
+            style->font = mAltStyle.font;
+            style->zOffset = mAltStyle.zOffset;
+            style->italics = mAltStyle.italics;
+        }
+    }
+    while(*ptr++ != '\0'){
+        if(*ptr == '>') return ptr + 1;
+    }
+    return ptr;
+}
+
+bool canBreak(const char* cc, int i){
+    if(i < 0) return false;
+    if(cc[i] == ' ') return true;
+    return cc[i] == '\t';
+}
+
+DECOMP_FORCEACTIVE(Text, "lineLen >= bestLineLen", "bestWp != -1", "curStyle.brk == false")
+
+void RndText::SetText(const char* text){
+    String tmp;
+    tmp.reserve(mText.capacity());
+    mText.swap(tmp);
+    if(mFixedLength != 0){
+        MILO_ASSERT(tmp.capacity() >= mFixedLength, 0x5D6);
+        int len = UTF8StrLen(text);
+        int textLen;
+        if(len > mFixedLength){
+            char* ptr = (char*)text;
+            for(int i = 0; i < mFixedLength; i++){
+                unsigned short us;
+                ptr += DecodeUTF8(us, ptr);
+            }
+            textLen = ptr - text;
+        }
+        else textLen = strlen(text);
+        if(mText.capacity() < textLen){
+            mText.resize(textLen);
+        }
+        strncpy((char*)mText.c_str(), text, textLen);
+        ((char*)mText.c_str())[textLen] = '\0';
+    }
+    else {
+        mText = text;
+    }
+    if(!mText.empty()){
+        if(mCapsMode == kForceLower || mCapsMode == kForceUpper){
+            int i2 = 0;
+            const char* casestr = "[noforcecase]";
+            for(int i = 0; i < mText.length(); ){
+                unsigned short us;
+                unsigned int ui = DecodeUTF8(us, &mText[i]);
+                if(us != (unsigned short)*casestr) break;
+                if(i2 == 0xC){
+                    mCapsMode = kCapsModeNone;
+                    mText = mText.replace(0, 0xD, "");
+                    break;
+                }
+                i2++;
+                casestr++;
+                i += ui;
+            }
+        }
+        if(mCapsMode == kForceUpper){
+            for(int i = 0; i < mText.length(); i){
+                unsigned short us;
+                unsigned int ui = DecodeUTF8(us, &mText[i]);
+                UTF8ToUpper(us, &mText[i]);
+                i += ui;
+            }
+            const char* search = "\xC3\x9F";
+            unsigned int ui = 0;
+            while(true){
+                ui = mText.find(search, ui);
+                if(ui == String::npos) break;
+                mText.replace(ui, 2, "SS");
+            }
+        }
+        else if(mCapsMode == kForceLower){
+            for(int i = 0; i < mText.length(); ){
+                unsigned short us;
+                unsigned int len = DecodeUTF8(us, &mText[i]);
+                UTF8ToLower(us, &mText[i]);
+                i += len;
+            }
+        }
+    }
+    if(mText != tmp){
+        UpdateText(true);
+    }
+}
+
+float RndText::GetStringWidthUTF8(const char* cc1, const char* cc2, bool bbb, RndText::Style* style) const {
+    unsigned short us8 = 0;
+    float ret = 0;
+    if(!cc2){
+        cc2 = cc1 + strlen(cc1);
+    }
+    if(!style){
+        Style myStyle = mStyle;
+        style = &myStyle;
+    }
+    if(!style->font){
+        style->font = mFont;
+    }
+    float size = style->size;
+    float zoff = style->zOffset;
+    const char* ccIt = cc1;
+    while(ccIt != cc2){
+        if(ccIt > cc2){
+            MILO_WARN("bad utf8 string in RndText::GetStringWidth \"%s\"", cc1);
+            ccIt = cc2;
+            break;
+        }
+        unsigned short us;
+        int decoded = DecodeUTF8(us, ccIt);
+        if(us == 0x3C && mTextMarkup){
+            ccIt = ParseMarkup(ccIt, style, size, zoff);
+        }
+        else {
+            RndFont* font = GetDefiningFont(us, style->font);
+            if(font){
+                ret += style->size * font->CharAdvance(us8, us);
+            }
+            us8 = us;
+            ccIt += decoded;
+        }
+    }
+    if(bbb){
+        unsigned short us;
+        DecodeUTF8(us, ccIt);
+        RndFont* font = GetDefiningFont(us, style->font);
+        if(font){
+            ret += style->size * font->Kerning(us8, us);
+        }
+    }
+    return ret;
+}
+
+void RndText::ResetFaces(RndMesh* mesh, int new_size){
+    MILO_ASSERT(mesh, 0x689);
+    mesh->Faces().resize(new_size);
+    std::vector<RndMesh::Face>::iterator it = mesh->Faces().begin();
+    std::vector<RndMesh::Face>::iterator itEnd = mesh->Faces().end();
+    int num = 0;
+    for(; it != itEnd; it += 2, num += 4){
+        RndMesh::Face* face = it;
+        face->Set(num, num+1, num+2);
+        face[1].Set(num, num+2, num+3);
+    }
+}
+
+void RndText::UpdateMesh(RndFont* font){
+    unsigned int fontAsInt = (unsigned int)font;
+    MeshInfo* meshInfo = &mMeshMap[fontAsInt];
+    RndMesh* mesh = meshInfo->unk0;
+    MILO_ASSERT(mesh, 0x6A6);
+    if(!font){
+        mesh->SetShowing(false);
+        return;
+    }
+    mesh->SetShowing(true);
+    int i8 = 0x1F;
+    if(mFixedLength == 0){
+        int i1 = meshInfo->displayableChars * 2;
+        ResetFaces(mesh, i1);
+        i8 |= 0xA0;
+        mesh->Verts().resize(i1 * 2, true);
+    }
+    else if(!(mesh->GetMutable() & 0x1F) || mFixedLength * 4 != mesh->Verts().size()){
+        mesh->SetMutable(0x1F);
+        ResetFaces(mesh, mFixedLength * 2);
+        i8 |= 0xA0;
+        mesh->Verts().resize(mFixedLength * 4, true);
+    }
+    int len = mFixedLength;
+    if(len && meshInfo->displayableChars > len){
+        ResizeText(len * 2 - meshInfo->displayableChars);
+        meshInfo->displayableChars = mFixedLength;
+    }
+    MILO_ASSERT(mesh->Verts().size() >= meshInfo->displayableChars * 4, 0x6CF);
+    mesh->SetMat(font->GetMat());
+    CreateLines(font);
+//   if (piVar7 != 0x0) {
+//     (**(*piVar7 + 0xc))(piVar7,this_00);
+//   }
+    mesh->Sync(i8);
+    meshInfo->unk4 = 0;
+}
+
+void SetupCharVerts(unsigned short, RndMesh::Vert*&, float&, float, float, float, float, const RndText::Style&, RndFont*, unsigned short, bool){
+
+}
+
+void RndText::CreateLines(RndFont* font){
+    RndMesh* mesh = mMeshMap[(unsigned int)font].unk0;
+    MILO_ASSERT(mesh, 0x709);
+    RndMesh::Vert* vertIt = mesh->Verts().begin();
+    Style style = mLines[0].mLineStyle;
+    float f4 = style.italics * style.size;
+    font->CellDiff();
+    float f1 = mStyle.size;
+    float f2 = mStyle.zOffset;
+    for(int i = 0; i < mLines.size(); i++){
+        Line& curLine = mLines[i];
+        RndMesh::Vert* vert = vertIt;
+        float f3 = curLine.unk28.v.z;
+        float f90 = curLine.unk28.v.x;
+        const char* cc13 = curLine.unk18;
+        unsigned short i14 = 0;
+        while(cc13 != curLine.unk1c){
+            unsigned short us98;
+            unsigned int ui = DecodeUTF8(us98, cc13);
+            if(us98 == 0x3C && mTextMarkup){
+                cc13 = ParseMarkup(cc13, &style, f1, f2);
+                f4 = style.italics * style.size;
+            }
+            else {
+                RndFont* definingFont = GetDefiningFont(us98, style.font);
+                if(definingFont){
+                    if(font == definingFont){
+                        SetupCharVerts(us98, vertIt, f90, curLine.unk28.v.y, f3 + style.zOffset, style.size * definingFont->CellDiff(), f4, style, definingFont, i14, false);
+                    }
+                    else {
+                        f90 += style.size * definingFont->CharAdvance(i14, us98);
+                    }
+                }
+                i14 = us98;
+                cc13 += ui;
+            }
+        }
+        RotateLineVerts(curLine, vert, vertIt);
+    }
+    while(vertIt != mesh->Verts().end()){
+        vertIt++->pos.Set(0, 0, 0);
+    }
+}
+
+void RndText::SyncMeshes(){
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        MeshInfo& info = it->second;
+        if(info.unk4){
+            info.unk0->Sync(info.unk4);
+            info.unk4 = 0;
+        }
+    }
+}
+
 void RndText::SetMeshForceNoQuantize(){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-        if(it->second.unk4){
-            it->second.unk0->mForceNoQuantize = true;
+        MeshInfo& info = it->second;
+        if(info.unk4){
+            info.unk0->SetForceNoQuantize(true);
         }
     }
 }
@@ -466,6 +771,72 @@ void RndText::SetMeshForceNoUpdate(){
 }
 
 void RndText::ReserveLines(int i) { mLines.reserve(i); }
+
+void RndText::GetVerticalBounds(float& f1, float& f2) const {
+    if(!mFont){
+        f1 = 0;
+        f2 = 0;
+    }
+    else {
+        f1 = mLines.front().unk28.v.z;
+        f2 = -(mLeading * mStyle.size - mLines.back().unk28.v.z);
+    }
+}
+
+float RndText::MaxLineWidth() const {
+    float width = 0;
+    for(int i = 0; i < mLines.size(); i++){
+        MaxEq(width, mLines[i].unk58);
+    }
+    return width;
+}
+
+void RndText::GetMeshes(std::vector<RndMesh*>& meshes){
+    meshes.clear();
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        meshes.push_back(it->second.unk0);
+    }
+}
+
+void RndText::GetStringDimensions(float& f1, float& f2, std::vector<Line>& lines, const char* cc, float size){
+    lines.clear();
+    Style theStyle = mStyle;
+    theStyle.size = size;
+    theStyle.font = mFont;
+    WrapText(cc, theStyle, lines);
+    f1 = 0;
+    for(std::vector<Line>::iterator it = lines.begin(); it != lines.end(); ++it){
+        MaxEq(f1, (*it).unk58);
+    }
+    f2 = lines.front().unk28.v.z - lines.back().unk28.v.z;
+    if(mFont){
+        float diff = mFont->CellDiff();
+        f2 += theStyle.size * diff * mLeading;
+    }
+}
+
+void RndText::GetCurrentStringDimensions(float& f1, float& f2){
+    f1 = unk130;
+    f2 = unk12c;
+}
+
+void RndText::ResizeText(int size){
+    int len = UTF8StrLen(mText.c_str());
+    if(len > size){
+        char* ptr = &mText[0];
+        for(int i = 0; i < size; i++){
+            unsigned short us;
+            ptr += DecodeUTF8(us, ptr);
+        }
+        mText.resize(ptr - &mText[0]);
+    }
+    else if(len == 0){
+        mText.resize(size);
+    }
+    else {
+        mText.resize((size - len) + strlen(mText.c_str()));
+    }
+}
 
 class String RndText::TextASCII() const {
     class String s;
@@ -480,7 +851,32 @@ void RndText::SetTextASCII(const char* cc) {
     ASCIItoWideVector(vec, cc);
     WideVectorToUTF8(vec, s);
     SetText(s.c_str());
+}
 
+float RndText::GetHorizontalAlignOffset(const Line& line, Alignment align) const {
+    float ret = 0;
+    if(align & 2){
+        return -(line.unk58 / 2.0f - ret);
+    }
+    if(!(align & 4)) return ret;
+    return ret - line.unk58;
+}
+
+void RndText::RotateLineVerts(const RndText::Line& line, RndMesh::Vert* vert1, RndMesh::Vert* vert2){
+    if(unk124b4p1){
+        const Transform& linexfm = line.unk28;
+        Transform tf48;
+        Invert(linexfm, tf48);
+        for(RndMesh::Vert* it = vert1; it != vert2; ++it){
+            Vector3 v58(it->pos.x, it->pos.y, it->pos.z);
+            Multiply(v58, tf48, v58);
+            Multiply(v58, linexfm.m, v58);
+            Multiply(v58, linexfm, v58);
+            it->pos.x = v58.x;
+            it->pos.y = v58.y;
+            it->pos.z = v58.z;
+        }
+    }
 }
 
 BEGIN_HANDLERS(RndText)
@@ -502,32 +898,37 @@ END_HANDLERS
 
 DataNode RndText::OnSetFixedLength(DataArray* da){
     SetFixedLength(da->Int(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndText::OnSetFont(DataArray* da){
     SetFont(da->Obj<RndFont>(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndText::OnSetAlign(DataArray* da){
     SetAlignment((Alignment)da->Int(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndText::OnSetText(DataArray* da){
     SetText(da->Str(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndText::OnSetWrapWidth(DataArray* da){
     SetWrapWidth(da->Float(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndText::OnSetSize(DataArray* da){
     SetSize(da->Float(2));
-    return DataNode(0);
+    return 0;
+}
+
+DataNode RndText::OnSetColor(DataArray* da){
+    SetColor(Hmx::Color32(da->Float(2), da->Float(3), da->Float(4), da->Float(5)));
+    return 0;
 }
 
 BEGIN_PROPSYNCS(RndText)

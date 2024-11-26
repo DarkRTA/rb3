@@ -94,10 +94,12 @@ namespace Hmx {
             color = other.color;
         }
         Color32(const Hmx::Color& col){ color = col.PackAlpha(); }
+        Color32(float r, float g, float b, float a);
         void Clear() { color = -1; }
         void Set(Hmx::Color& col){
             color = col.PackAlpha();
         }
+        void Set(float r, float g, float b, float a);
         Color32& operator=(const Color32& other) {
             color = other.color;
             return *this;

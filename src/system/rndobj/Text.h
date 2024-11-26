@@ -46,15 +46,9 @@ public:
     // size 0x60
     class Line {
     public:
-        int unk0;
-        float unk4;
-        float unk8;
-        int unkc;
-        bool unk10;
-        bool unk11;
-        float unk14;
-        int unk18;
-        int unk1c;
+        Style mLineStyle; // 0x0
+        const char* unk18;
+        const char* unk1c;
         int unk20;
         int unk24;
         Transform unk28;
@@ -64,10 +58,10 @@ public:
 
     class MeshInfo {
     public:
-        MeshInfo() : unk0(0), unk4(0), unk8(0) {}
+        MeshInfo() : unk0(0), unk4(0), displayableChars(0) {}
         RndMesh* unk0;
         int unk4;
-        int unk8;
+        int displayableChars; // 0x8
     };
 
     RndText();
@@ -99,8 +93,10 @@ public:
     void ReserveLines(int);
     void UpdateText(bool);
     void SetFont(RndFont*);
-    String TextASCII() const; void SetTextASCII(const char*);
-    float Size() const { return mStyle.size; } void SetSize(float);
+    String TextASCII() const;
+    void SetTextASCII(const char*);
+    float Size() const { return mStyle.size; }
+    void SetSize(float);
     void GetMeshes(std::vector<RndMesh*>&);
     void SetFixedLength(int);
     void GetCurrentStringDimensions(float&, float&);
@@ -123,6 +119,14 @@ public:
     void SetData(Alignment, const char*, RndFont*, float, float, float, float, const Hmx::Color32&, bool, CapsMode, int);
     void SetAltStyle(RndFont*, float, const Hmx::Color32*, float, float, bool);
     void WrapText(const char*, const Style&, std::vector<Line>&);
+    void GetVerticalBounds(float&, float&) const;
+    void GetStringDimensions(float&, float&, std::vector<Line>&, const char*, float);
+    const char* ParseMarkup(const char*, RndText::Style*, float, float) const;
+    float GetHorizontalAlignOffset(const RndText::Line&, RndText::Alignment) const;
+    void RotateLineVerts(const RndText::Line&, RndMesh::Vert*, RndMesh::Vert*);
+    RndFont* GetDefiningFont(unsigned short&, RndFont*) const;
+    void UpdateMesh(RndFont*);
+    void CreateLines(RndFont*);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -144,14 +148,16 @@ public:
     unsigned char mCapsMode; // 0x121
     int mFixedLength : 16; // 0x122
     int mDeferUpdate : 4; // 0x124
-    int unk124b4 : 4;
-    int unk128; // 0x128
+    int unk124b4 : 3;
+    int unk124b4p1 : 1; // ???
+    int unk128; // 0x128 - actually a ptr to some class
     float unk12c; // 0x12c
     float unk130; // 0x130
 
     static void Init();
     static void Register(){ REGISTER_OBJ_FACTORY(RndText); }
     static void CollectGarbage();
+    static void ResetFaces(RndMesh*, int);
     static std::set<RndText*> mTextMeshSet;
 
     DECLARE_REVS

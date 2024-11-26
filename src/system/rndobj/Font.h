@@ -59,6 +59,9 @@ public:
     void UpdateChars();
     void BleedTest();
     int NonTransparentColumn(RndBitmap&, int, int, int, int);
+    float CharAdvance(unsigned short, unsigned short) const;
+    float Kerning(unsigned short, unsigned short) const;
+
     RndMat* GetMat() const { return mMat; }
     void SetNextFont(RndFont* font){ unk78 = font; }
     RndFont* NextFont() const { return unk78; }
