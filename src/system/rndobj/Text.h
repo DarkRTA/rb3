@@ -13,6 +13,7 @@ class RndText : public RndDrawable, public RndTransformable {
 public:
     class Style {
     public:
+        Style() : font(0), size(0), italics(0), color(-1), brk(true), pre(false), zOffset(0) {}
         Style(RndFont* f, float sz, float ital, const Hmx::Color32& col, float z) : 
             font(f), size(sz), italics(ital), color(col), brk(true), pre(false), zOffset(z) {}
 
@@ -46,21 +47,21 @@ public:
     // size 0x60
     class Line {
     public:
-        Line();
-        Style mLineStyle; // 0x0
+        Line() : lineStyle(), unk18(0), unk1c(0), startIdx(0), endIdx(0), unk58(0), color(0) { unk28.Reset(); }
+        Style lineStyle; // 0x0
         const char* unk18;
         const char* unk1c;
-        int unk20;
-        int unk24;
+        int startIdx; // 0x20
+        int endIdx; // 0x24
         Transform unk28;
         float unk58;
-        Hmx::Color32 unk5c;
+        Hmx::Color32 color; // 0x5c
     };
 
     class MeshInfo {
     public:
-        MeshInfo() : unk0(0), unk4(0), displayableChars(0) {}
-        RndMesh* unk0;
+        MeshInfo() : mesh(0), unk4(0), displayableChars(0) {}
+        RndMesh* mesh; // 0x0
         int unk4;
         int displayableChars; // 0x8
     };

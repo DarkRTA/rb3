@@ -41,7 +41,7 @@ void RndText::Mats(std::list<class RndMat*>& matList, bool b){
 
 RndDrawable* RndText::CollideShowing(const Segment& s, float& f, Plane& p){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-        RndMesh* mesh = it->second.unk0;
+        RndMesh* mesh = it->second.mesh;
         if(mesh && mesh->CollideShowing(s, f, p)) return this;
     }
     return nullptr;
@@ -50,7 +50,7 @@ RndDrawable* RndText::CollideShowing(const Segment& s, float& f, Plane& p){
 int RndText::CollidePlane(const Plane& p){
     int ret = 0;
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-        RndMesh* mesh = it->second.unk0;
+        RndMesh* mesh = it->second.mesh;
         if(mesh){
             int meshCol = mesh->CollidePlane(p);
             if(meshCol == 0) return 0;
@@ -224,7 +224,7 @@ void RndText::CollectGarbage(){
             if(cur->mMeshMap.size() != 0){
                 cur->unkbp5 = true;
                 for(std::map<unsigned int, MeshInfo>::iterator mit = cur->mMeshMap.begin(); mit != cur->mMeshMap.end(); ++mit){
-                    RndMesh* mesh = mit->second.unk0;
+                    RndMesh* mesh = mit->second.mesh;
                     delete mesh;
                 }
                 cur->mMeshMap.clear();
@@ -240,7 +240,7 @@ void RndText::UpdateText(bool b) {
     }
     else {
         for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-            RndMesh* mesh = it->second.unk0;
+            RndMesh* mesh = it->second.mesh;
             delete mesh;
         }
         mMeshMap.clear();
@@ -297,7 +297,7 @@ void RndText::SetColor(const Hmx::Color32& col){
         bool b1 = false;
         if(!mTextMarkup){
             for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-                RndMesh* mesh = it->second.unk0;
+                RndMesh* mesh = it->second.mesh;
                 if(mesh && mesh->GetMutable()){
                     RndMesh::VertVector& verts = mesh->Verts();
                     for(RndMesh::Vert* it = verts.begin(); it != verts.end(); ++it){
@@ -415,7 +415,7 @@ RndText::RndText() : mFont(this), mWrapWidth(0.0f), mLeading(1.0f), mStyle(mFont
 RndText::~RndText() {
     MILO_ASSERT(mDeferUpdate == 0, 723);
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-        RndMesh* mesh = it->second.unk0;
+        RndMesh* mesh = it->second.mesh;
         delete mesh;
     }
     std::set<RndText*>::iterator it = mTextMeshSet.find(this);
@@ -428,7 +428,7 @@ void RndText::SetFont(RndFont* f) {
     if(mFont != f){
         mFont = f;
         for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-            RELEASE(it->second.unk0);
+            RELEASE(it->second.mesh);
         }
         mMeshMap.clear();
         std::set<RndText*>::iterator it = mTextMeshSet.find(this);
@@ -661,7 +661,7 @@ void RndText::ResetFaces(RndMesh* mesh, int new_size){
 void RndText::UpdateMesh(RndFont* font){
     unsigned int fontAsInt = (unsigned int)font;
     MeshInfo* meshInfo = &mMeshMap[fontAsInt];
-    RndMesh* mesh = meshInfo->unk0;
+    RndMesh* mesh = meshInfo->mesh;
     MILO_ASSERT(mesh, 0x6A6);
     if(!font){
         mesh->SetShowing(false);
@@ -701,10 +701,10 @@ void SetupCharVerts(unsigned short, RndMesh::Vert*&, float&, float, float, float
 }
 
 void RndText::CreateLines(RndFont* font){
-    RndMesh* mesh = mMeshMap[(unsigned int)font].unk0;
+    RndMesh* mesh = mMeshMap[(unsigned int)font].mesh;
     MILO_ASSERT(mesh, 0x709);
     RndMesh::Vert* vertIt = mesh->Verts().begin();
-    Style style = mLines[0].mLineStyle;
+    Style style = mLines[0].lineStyle;
     float f4 = style.italics * style.size;
     font->CellDiff();
     float f1 = mStyle.size;
@@ -770,21 +770,21 @@ int RndText::NumCharsInBytes(const String& str, const RndText::Style& style, flo
     return s4 - i5;
 }
 
-void RndText::ApplyLineText(const String& str, const RndText::Style& style, float& fref, RndText::Line& line, int i5, int i6, bool* b7){
+void RndText::ApplyLineText(const String& utf8, const RndText::Style& style, float& fref, RndText::Line& line, int i5, int i6, bool* b7){
     if(!mMeshMap.empty()){
-        if(mText.length() < line.unk24){
-            mText.resize(line.unk24);
+        if(mText.length() < line.endIdx){
+            mText.resize(line.endIdx);
         }
-        str.length();
-        const char* theStrstr = str.c_str();
+        MILO_ASSERT((line.startIdx + utf8.length()) <= mFixedLength, 0x791);
+        const char* theStrstr = utf8.c_str();
         const char* ptr = theStrstr;
         for(int i = 0; i < i5; i++){
             char ptrChar = *ptr;
-            mText[line.unk20 + i] = ptrChar;
+            mText[line.startIdx + i] = ptrChar;
             ptr++;
         }
         for(int i = i5; i < i6; i++){
-            mText[line.unk20 + i] = 0x20;
+            mText[line.startIdx + i] = 0x20;
         }
         float f28 = 0;
         unsigned short i23 = 0;
@@ -821,7 +821,7 @@ void RndText::ApplyLineText(const String& str, const RndText::Style& style, floa
             Style mapStyle(style);
             RndFont* curFontKey = (RndFont*)it->first;
             MeshInfo& meshInfo = it->second;
-            RndMesh* curMesh = meshInfo.unk0;
+            RndMesh* curMesh = meshInfo.mesh;
             int uvar8 = 0;
             float fd4 = f3 + f26;
             if(curMesh){
@@ -833,9 +833,9 @@ void RndText::ApplyLineText(const String& str, const RndText::Style& style, floa
                 }
                 curMesh->SetMat(curFontKey->GetMat());
             }
-            RndMesh::Vert* theVert = curMesh->Verts().begin() + line.unk20 * 0xD0;
+            RndMesh::Vert* theVert = curMesh->Verts().begin() + line.startIdx * 0xD0;
             RndMesh::Vert* vertd8 = theVert;
-            const char* curStrStr = str.c_str();
+            const char* curStrStr = utf8.c_str();
             while(*curStrStr != '\0'){
                 while(*curStrStr == '<' && mTextMarkup){
                     curStrStr = ParseMarkup(curStrStr, &mapStyle, style.size, style.zOffset);
@@ -883,46 +883,46 @@ void RndText::ApplyLineText(const String& str, const RndText::Style& style, floa
     }
 }
 
-int RndText::AddLineUTF8(const String& str, const Transform& tf, const RndText::Style& style, float* fp, bool* bp, int i6){
+int RndText::AddLineUTF8(const String& utf8, const Transform& tf, const RndText::Style& style, float* fp, bool* bp, int i6){
     unkbp7 = true;
     float f98 = 0;
     if(!fp) fp = &f98;
 
-    if(str.length() + mText.length() > mFixedLength){
-        str.c_str();
-        mText.c_str();
+    if(utf8.length() + mText.length() > mFixedLength){
+        MILO_WARN("Text %s%s exceeds fixed length of %d, truncating", utf8.c_str(), mText.c_str(), mFixedLength);
         return -1;
     }
     else {
-        int numchars = NumCharsInBytes(str, style, *fp, i6);
-        if(numchars != 0 || i6 != 0){
-            str.length();
+        int newCharsInBytes = NumCharsInBytes(utf8, style, *fp, i6);
+        if(newCharsInBytes != 0 || i6 != 0){
+            MILO_ASSERT(newCharsInBytes <= utf8.length(), 0x850);
             int lineIdx;
-            for(lineIdx = mLines.size(); lineIdx > 0 && (mLines[lineIdx - 1].unk24 && mLines[lineIdx - 1].unk20 == mLines[lineIdx - 1].unk24); lineIdx--);
+            for(lineIdx = mLines.size(); lineIdx > 0 && (mLines[lineIdx - 1].endIdx && mLines[lineIdx - 1].startIdx == mLines[lineIdx - 1].endIdx); lineIdx--);
             if(lineIdx == mLines.size()){
                 if(mLines.size() == mLines.capacity()){
-                    mLines.capacity();
+                    MILO_WARN("RndText::AddLineUTF8() - reserve_lines %d is too low; reallocating", mLines.capacity());
                 }
                 Line linetopush;
                 mLines.push_back(linetopush);
             }
-            Line& curLine = mLines[lineIdx];
-            curLine.unk28 = tf;
-            curLine.mLineStyle = style;
-            curLine.unk20 = 0;
+            Line& line = mLines[lineIdx];
+            line.unk28 = tf;
+            line.lineStyle = style;
+            line.startIdx = 0;
             if(lineIdx != 0){
-                curLine.unk20 = mLines[lineIdx - 1].unk24;
+                line.startIdx = mLines[lineIdx - 1].endIdx;
             }
             if(i6 > -1){
-                curLine.unk24 = curLine.unk20 + i6;
+                line.endIdx = line.startIdx + i6;
             }
             else {
-                curLine.unk24 = curLine.unk20 + numchars;
-                i6 = numchars;
+                line.endIdx = line.startIdx + newCharsInBytes;
+                i6 = newCharsInBytes;
             }
-            curLine.unk18 = mText.c_str() + curLine.unk20;
-            curLine.unk1c = mText.c_str() + curLine.unk24;
-            ApplyLineText(str, style, *fp, curLine, numchars, i6, bp);
+            MILO_ASSERT(line.endIdx <= mFixedLength, 0x874);
+            line.unk18 = mText.c_str() + line.startIdx;
+            line.unk1c = mText.c_str() + line.endIdx;
+            ApplyLineText(utf8, style, *fp, line, newCharsInBytes, i6, bp);
             return lineIdx;
         }
         else return -1;
@@ -933,7 +933,7 @@ void RndText::SyncMeshes(){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
         MeshInfo& info = it->second;
         if(info.unk4){
-            info.unk0->Sync(info.unk4);
+            info.mesh->Sync(info.unk4);
             info.unk4 = 0;
         }
     }
@@ -943,7 +943,7 @@ void RndText::SetMeshForceNoQuantize(){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
         MeshInfo& info = it->second;
         if(info.unk4){
-            info.unk0->SetForceNoQuantize(true);
+            info.mesh->SetForceNoQuantize(true);
         }
     }
 }
@@ -979,7 +979,7 @@ float RndText::MaxLineWidth() const {
 void RndText::GetMeshes(std::vector<RndMesh*>& meshes){
     meshes.clear();
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
-        meshes.push_back(it->second.unk0);
+        meshes.push_back(it->second.mesh);
     }
 }
 
