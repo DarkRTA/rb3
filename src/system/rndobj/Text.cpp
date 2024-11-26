@@ -438,7 +438,7 @@ void RndText::SetFont(RndFont* f) {
         unsigned int fontasInt = (unsigned int)f;
         mMeshMap.insert(std::pair<unsigned int, MeshInfo>(fontasInt, MeshInfo()));
         mMeshMap[fontasInt].displayableChars = 0;
-        mMeshMap[fontasInt].unk4 = 0;
+        mMeshMap[fontasInt].syncFlags = 0;
         UpdateText(true);
     }
 }
@@ -693,11 +693,34 @@ void RndText::UpdateMesh(RndFont* font){
 //     (**(*piVar7 + 0xc))(piVar7,this_00);
 //   }
     mesh->Sync(i8);
-    meshInfo->unk4 = 0;
+    meshInfo->syncFlags = 0;
 }
 
-void SetupCharVerts(unsigned short, RndMesh::Vert*&, float&, float, float, float, float, const RndText::Style&, RndFont*, unsigned short, bool){
-
+void SetupCharVerts(unsigned short us1, RndMesh::Vert*& vert, float& fref, float f4, float f5, float f6, float f7, const RndText::Style& style, RndFont* font, unsigned short us10, bool b11){
+    if(!b11){
+        fref += style.size * font->Kerning(us10, us1);
+    }
+    float f1 = style.size * font->CharWidth(us1);
+    if(f1 <= 0){
+        f1 = style.size * font->CharAdvance(us1);
+    }
+    if(f1 <= 0) return;
+    else {
+        font->GetTexCoords(us1, vert[0].uv, vert[2].uv);
+        vert[1].uv.Set(vert[0].uv.x, vert[2].uv.y);
+        vert[3].uv.Set(vert[2].uv.x, vert[0].uv.y);
+        vert[0].pos.Set(fref + f7, f4, f5);
+        vert[1].pos.Set(fref - f7, f4, f5 - f6);
+        vert[2].pos.Set(f1 + (fref - f7), f4, f5 - f6);
+        vert[3].pos.Set(f1 + fref + f7, f4, f5);
+        vert[0].norm.Set(0, -1, 0);
+        vert[1].norm = vert[2].norm = vert[3].norm = vert[0].norm;
+        vert[0].color = vert[1].color = vert[2].color = vert[3].color = style.color;
+        vert += 4;
+        if(!b11){
+            fref += style.size * font->CharAdvance(us1);
+        }
+    }
 }
 
 void RndText::CreateLines(RndFont* font){
@@ -875,7 +898,7 @@ void RndText::ApplyLineText(const String& utf8, const RndText::Style& style, flo
                 }
             }
             RotateLineVerts(line, theVert, vertd8);
-            meshInfo.unk4 |= uvar8;
+            meshInfo.syncFlags |= uvar8;
         }
         if(b7) *b7 = true;
         else SyncMeshes();
@@ -929,12 +952,66 @@ int RndText::AddLineUTF8(const String& utf8, const Transform& tf, const RndText:
     }
 }
 
+void RndText::UpdateLineColor(unsigned int idx, const Hmx::Color32& col, bool* bptr){
+    MILO_ASSERT(idx < mLines.size(), 0x883);
+    Line& curLine = mLines[idx];
+    MILO_ASSERT(mMeshMap.size() < 10, 0x887);
+    if(curLine.color == col) return;
+    curLine.color = col;
+    int mapInts[10];
+    std::map<unsigned int, MeshInfo>::iterator it;
+    for(int i = 0; i < mMeshMap.size(); i++){
+        mapInts[i] = 0;
+    }
+    
+    it = mMeshMap.begin();
+    for(int i = 0; i < mMeshMap.size(); i++){
+        RndFont* curFont = (RndFont*)it->first;
+        for(int j = 0; j < curLine.startIdx; ){
+            unsigned short us86;
+            int decoded = DecodeUTF8(us86, mText.c_str() + j);
+            if(GetDefiningFont(us86, curLine.lineStyle.font) == curFont){
+                mapInts[i]++;
+            }
+            j += decoded;
+        }
+        ++it;
+    }
+
+    it = mMeshMap.begin();
+    for(int i = 0; i < mMeshMap.size(); i++){
+        RndFont* curFont = (RndFont*)it->first;
+        int idx = curLine.startIdx;
+        int min = std::min(curLine.endIdx, (int)mFixedLength);
+        int i11 = mapInts[i] * 4;
+        for(; idx < min; ){
+            unsigned short us88;
+            int decoded = DecodeUTF8(us88, mText.c_str() + idx);
+            RndFont* defining = GetDefiningFont(us88, curLine.lineStyle.font);
+            if(defining == curFont){
+                unsigned int definingFontAsInt = (unsigned int)defining;
+                MeshInfo& curMeshInfo = mMeshMap[definingFontAsInt];
+                RndMesh::Vert* vert10 = curMeshInfo.mesh->Verts().begin() + i11;
+                vert10->color = col;
+                i11 += 4;
+                curMeshInfo.syncFlags |= 0x1F;
+            }
+            idx += decoded;
+        }
+        ++it;
+    }
+
+    curLine.lineStyle.color = col;
+    if(bptr) *bptr = true;
+    else SyncMeshes();
+}
+
 void RndText::SyncMeshes(){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
         MeshInfo& info = it->second;
-        if(info.unk4){
-            info.mesh->Sync(info.unk4);
-            info.unk4 = 0;
+        if(info.syncFlags){
+            info.mesh->Sync(info.syncFlags);
+            info.syncFlags = 0;
         }
     }
 }
@@ -942,7 +1019,7 @@ void RndText::SyncMeshes(){
 void RndText::SetMeshForceNoQuantize(){
     for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
         MeshInfo& info = it->second;
-        if(info.unk4){
+        if(info.syncFlags){
             info.mesh->SetForceNoQuantize(true);
         }
     }
@@ -1003,6 +1080,125 @@ void RndText::GetStringDimensions(float& f1, float& f2, std::vector<Line>& lines
 void RndText::GetCurrentStringDimensions(float& f1, float& f2){
     f1 = unk130;
     f2 = unk12c;
+}
+
+void RndText::Draw(){
+    RndDrawable::Draw();
+    if(!mShowing && !unkbp7){
+        if(mMeshMap.size() != 0){
+            unkbp5 = true;
+            for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+                RndMesh* mesh = it->second.mesh;
+                delete mesh;
+            }
+            mMeshMap.clear();
+            std::set<RndText*>::iterator it = mTextMeshSet.find(this);
+            if(it != mTextMeshSet.end()){
+                mTextMeshSet.erase(it);
+            }
+        }
+    }
+}
+
+void RndText::DrawShowing(){
+    unk124b4 = 0;
+    if(unkbp5){
+        unkbp5 = false;
+        UpdateText(true);
+    }
+    if(unkbp6){
+        mTextMeshSet.insert(this);
+        unkbp6 = false;
+        for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+            if(it->second.mesh){
+                UpdateMesh((RndFont*)it->first);
+            }
+        }
+    }
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        MeshInfo& meshInfo = it->second;
+        if(meshInfo.mesh){
+            meshInfo.mesh->DrawShowing();
+        }
+    }
+}
+
+float RndText::GetDistanceToPlane(const Plane& p, Vector3& v){
+    if(mMeshMap.empty()) return 0;
+    else {
+        float ret = 0;
+        for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+            RndMesh* mesh = it->second.mesh;
+            if(mesh){
+                Vector3 vec;
+                ret = mesh->GetDistanceToPlane(p, vec);
+                v = vec;
+            }
+        }
+        return ret;
+    }
+}
+
+bool RndText::MakeWorldSphere(Sphere& s, bool b){
+    s.Zero();
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        RndMesh* mesh = it->second.mesh;
+        if(mesh){
+            Sphere localS;
+            if(b){
+                mesh->MakeWorldSphere(localS, true);
+            }
+            else if(mSphere.GetRadius()){
+                Multiply(mSphere, WorldXfm(), localS);
+            }
+            s.GrowToContain(localS);
+        }
+    }
+    return s.GetRadius();
+}
+
+void RndText::UpdateSphere(){
+    Sphere s;
+    s.Zero();
+    for(std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.begin(); it != mMeshMap.end(); ++it){
+        RndMesh* mesh = it->second.mesh;
+        if(mesh){
+            mesh->UpdateSphere();
+            s.GrowToContain(mesh->mSphere);
+        }
+    }
+    SetSphere(s);
+}
+
+RndFont* RndText::SupportChar(unsigned short us, RndFont* font){
+    RndFont* defining = GetDefiningFont(us, font);
+    if(defining){
+        std::map<unsigned int, MeshInfo>::iterator it = mMeshMap.find((unsigned int)defining);
+        if(it == mMeshMap.end()){
+            mMeshMap.insert(std::pair<unsigned int, MeshInfo>((unsigned int)defining, MeshInfo()));
+            // set the iterator to the newly inserted pair here
+        }
+        MeshInfo& meshInfo = it->second;
+        if(!meshInfo.mesh){
+            meshInfo.mesh = Hmx::Object::New<RndMesh>();
+            meshInfo.mesh->SetTransParent(this, false);
+            meshInfo.mesh->SetTransConstraint((Constraint)2, nullptr, false);
+            meshInfo.syncFlags = 0;
+            meshInfo.displayableChars = 0;
+        }
+    }
+    return defining;
+}
+
+RndFont* RndText::GetDefiningFont(unsigned short& us, RndFont* font) const {
+    if(us != 10){
+        for(RndFont* it = font; it != nullptr; it = it->NextFont()){
+            if(it->CharDefined(us)){
+                return it;
+            }
+        }
+    }
+    return nullptr;
 }
 
 void RndText::ResizeText(int size){

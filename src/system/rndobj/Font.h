@@ -62,6 +62,8 @@ public:
     float CharAdvance(unsigned short, unsigned short) const;
     float CharAdvance(unsigned short) const;
     float Kerning(unsigned short, unsigned short) const;
+    float CharWidth(unsigned short) const;
+    bool CharDefined(unsigned short) const;
 
     RndMat* GetMat() const { return mMat; }
     void SetNextFont(RndFont* font){ unk78 = font; }

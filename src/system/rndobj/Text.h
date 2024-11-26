@@ -60,9 +60,9 @@ public:
 
     class MeshInfo {
     public:
-        MeshInfo() : mesh(0), unk4(0), displayableChars(0) {}
+        MeshInfo() : mesh(0), syncFlags(0), displayableChars(0) {}
         RndMesh* mesh; // 0x0
-        int unk4;
+        int syncFlags; // 0x4
         int displayableChars; // 0x8
     };
 
@@ -133,6 +133,7 @@ public:
     RndFont* SupportChar(unsigned short, RndFont*);
     void ApplyLineText(const String&, const RndText::Style&, float&, RndText::Line&, int, int, bool*);
     int AddLineUTF8(const String&, const Transform&, const RndText::Style&, float*, bool*, int);
+    void UpdateLineColor(unsigned int, const Hmx::Color32&, bool*);
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);
@@ -153,9 +154,10 @@ public:
     unsigned char mAlign; // 0x120
     unsigned char mCapsMode; // 0x121
     int mFixedLength : 16; // 0x122
+    // 0x124
     int mDeferUpdate : 4; // 0x124
-    int unk124b4 : 3;
-    int unk124b4p1 : 1; // ???
+    int unk124b4 : 3; // bits 24-27
+    int unk124b4p1 : 1; // ??? bits 23-24
     int unk128; // 0x128 - actually a ptr to some class
     float unk12c; // 0x12c
     float unk130; // 0x130
