@@ -9,6 +9,7 @@
 #include <map>  
 
 class RndMat;
+class KerningTable;
 
 struct MatChar {
     float width;
@@ -32,10 +33,10 @@ public:
         float unkc;
     };
 
-    struct KernInfo { public:
-        short unk0;
-        short unk2;
-        int unk4;
+    struct KernInfo {
+        unsigned short unk0;
+        unsigned short unk2;
+        float unk4;
     };
 
     RndFont();
@@ -88,7 +89,7 @@ public:
     ObjPtr<RndMat> mMat; // 0x1c
     ObjOwnerPtr<RndFont> mTextureOwner; // 0x28
     std::map<unsigned short, CharInfo> unk34; // 0x34
-    int unk4c; // 0x4c
+    KerningTable* mKerningTable; // 0x4c
     float mBaseKerning; // 0x50
     Vector2 mCellSize; // 0x54 - cell width, cell height
     float mDeprecatedSize; // 0x5c
@@ -97,7 +98,42 @@ public:
     Vector2 unk6c; // 0x6c
     bool mPacked; // 0x74
     ObjPtr<RndFont> unk78; // 0x78
-}; 
+};
+
+class KerningTable {
+public:
+    struct Entry {
+        Entry* next; // 0x0
+        int key; // 0x4
+        float kerning; // 0x8
+    };
+
+    KerningTable() : mNumEntries(0), mEntries(0) {
+        memset(mTable, 0, 0x80);
+    }
+
+    ~KerningTable(){
+        delete mEntries;
+    }
+
+    void GetKerning(std::vector<RndFont::KernInfo>& info) const {
+        info.resize(mNumEntries);
+        for(int i = 0; i < mNumEntries; i++){
+            unsigned short& info0 = info[i].unk0;
+            info0 = mEntries[i].key;
+            unsigned short& info2 = info[i].unk2;
+            info2 = mEntries[i].key >> 16;
+            float& info4 = info[i].unk4;
+            info4 = mEntries[i].kerning;
+        }
+    }
+
+    void SetKerning(const std::vector<RndFont::KernInfo>&, RndFont*);
+
+    int mNumEntries; // 0x0
+    Entry* mEntries; // 0x4
+    Entry* mTable[32]; // 0x8
+};
 
 class BitmapLocker {
 public:

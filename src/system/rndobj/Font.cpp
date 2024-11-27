@@ -6,6 +6,7 @@
 #include "math/Rot.h"
 #include "types.h"
 #include "utl/BinStream.h"
+#include "utl/MakeString.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 #include "utl/Symbols4.h"
@@ -15,7 +16,8 @@ INIT_REVS(RndFont)
 
 BinStream& operator>>(BinStream& bs, RndFont::KernInfo& ki) {
     if (RndFont::gRev < 17) {
-        char x; bs >> x; ki.unk0 = x;
+        char x;
+        bs >> x; ki.unk0 = x;
         bs >> x; ki.unk2 = x;
     } else {
         bs >> ki.unk0;
@@ -181,6 +183,100 @@ void RndFont::UpdateChars() {
     }
 }
 
+void RndFont::BleedTest(){
+    BitmapLocker locker(this);
+    RndBitmap* bmap = locker.PtrToBitmap();
+    if(bmap){
+        bool haswrap = mMat->GetTexWrap() == kClamp;
+        String errStr;
+        for(int i = 0; i < mChars.size(); i++){
+            unsigned short curChar = mChars[i];
+            CharInfo& curInfo = unk34[curChar];
+            int i2 = Round(curInfo.unk4 * bmap->Height());
+            int i5 = Round(curInfo.unk0 * bmap->Width());
+            int i6 = Round(curInfo.charWidth * mCellSize.x) + i5;
+            int iptr;
+            if((i2 != 0) || !haswrap){
+                unsigned char row = bmap->RowNonTransparent(i5, i6, i2, &iptr);
+                if(row){
+                    errStr += MakeString("Top bleeding in 0x%04x, alpha %d, pixel %d,%d\n", curChar, row, iptr, i2);
+                }
+            }
+            i2 += (int)mCellSize.y - 1;
+            if(!haswrap && i2 >= bmap->Height() - 1){
+                unsigned char row = bmap->RowNonTransparent(i5, i6, i2, &iptr);
+                if(row){
+                    errStr += MakeString("Bottom bleeding in 0x%04x, alpha %d, pixel %d,%d\n", curChar, row, iptr, i2);
+                }
+            }
+            i2 = Round(curInfo.unk4 * bmap->Height());
+            int ia0 = i5 - 1;
+            if(i5 != 0 || (!haswrap && ia0 <= 0)){
+                MaxEq(ia0, 0);
+                unsigned char row = bmap->ColumnNonTransparent(ia0, i2, i2 + (int)mCellSize.y, &iptr);
+                if(row){
+                    errStr += MakeString("Left bleeding in 0x%04x, alpha %d, pixel %d,%d\n", curChar, row, ia0, iptr);
+                }
+            }
+
+            ia0 = i6;
+            if(!haswrap && ia0 >= bmap->Width() - 1){
+                MinEq(ia0, bmap->Width() - 1);
+                unsigned char row = bmap->ColumnNonTransparent(ia0, i2, i2 + (int)mCellSize.y, &iptr);
+                if(row){
+                    errStr += MakeString("Right bleeding in 0x%04x, alpha %d, pixel %d,%d\n", curChar, row, ia0, iptr);
+                }
+            }
+        }
+        if(errStr.length() != 0){
+            MakeString("Bleeding in %s:\n\n%s", Name(), errStr);
+        }
+    }
+}
+
+void RndFont::GetKerning(std::vector<KernInfo>& info) const {
+    if(mKerningTable) mKerningTable->GetKerning(info);
+    else info.clear();
+    return;
+    if(!mKerningTable) info.clear();
+    else mKerningTable->GetKerning(info);
+}
+
+void RndFont::SetKerning(const std::vector<KernInfo>& info){
+    if(info.empty()){
+        RELEASE(mKerningTable);
+    }
+    else {
+        if(!mKerningTable){
+            mKerningTable = new KerningTable();
+        }
+        mKerningTable->SetKerning(info, this);        
+    }
+}
+
+// void __thiscall RndFont::SetKerning(RndFont *this,vector<> *param_1)
+
+// {
+//   int iVar1;
+  
+//   iVar1 = stlpmtx_std::vector<><>::empty(param_1);
+//   if (iVar1 == 0) {
+//     if (*(this + 0x4c) == 0) {
+//       iVar1 = operator_new(0x88);
+//       if (iVar1 != 0) {
+//         iVar1 = fn_805E8B58();
+//       }
+//       *(this + 0x4c) = iVar1;
+//     }
+//     fn_805E899C(*(this + 0x4c),param_1,this); // set kerning
+//   }
+//   else {
+//     fn_805E8BA0(*(this + 0x4c),1); delete kerningtable
+//     *(this + 0x4c) = 0;
+//   }
+//   return;
+// }
+
 BinStream& operator>>(BinStream& bs, MatChar& mc) {
     char x[0x80]; bs.ReadString(x, 0x80);
     bs >> mc.width; bs >> mc.height;
@@ -226,7 +322,8 @@ void RndFont::Print() {
     ts << "   kerning: TODO\n";
 }
 
-RndFont::RndFont() : mMat(this, 0), mTextureOwner(this, this), unk4c(0), mBaseKerning(0.0f), mCellSize(1.0f, 1.0f), mDeprecatedSize(0.0f), mMonospace(0), unk6c(0.0f, 0.0f), mPacked(0), unk78(this, 0) {
+RndFont::RndFont() : mMat(this), mTextureOwner(this, this), mKerningTable(0), mBaseKerning(0.0f), mCellSize(1.0f, 1.0f),
+    mDeprecatedSize(0.0f), mMonospace(0), unk6c(0.0f, 0.0f), mPacked(0), unk78(this) {
 
 }
 
