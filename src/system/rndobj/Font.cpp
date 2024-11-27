@@ -1,6 +1,7 @@
 #include "rndobj/Font.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
+#include "rndobj/Bitmap.h"
 #include "rndobj/Mat.h"
 #include "math/Rot.h"
 #include "types.h"
@@ -77,28 +78,106 @@ void RndFont::SetCellSize(float x, float y) {
     UpdateChars();
 }
 
+void RndFont::SetCharInfo(RndFont::CharInfo* info, RndBitmap& bmap, const Vector2& vec2){
+    if(mMonospace){
+        info->unk0 = vec2.x / (float)bmap.Width();
+        info->charWidth = 1.0f;
+        info->unkc = 1.0f;
+    }
+    else {
+        int i5 = vec2.x;
+        int i1 = vec2.y;
+        int i2 = vec2.x + mCellSize.x;
+        int i3 = vec2.y + mCellSize.y;
+        float i6 = NonTransparentColumn(bmap, i5, i2, i1, i3);
+        float i7 = NonTransparentColumn(bmap, i2 - 1, i5 - 1, i1, i3);
+        float f4 = (i7 + 1.0f) - i6;
+        if(f4 <= 0){
+            int w = bmap.Width();
+            info->unk0 = vec2.x / w;
+            info->charWidth = 0.25f;
+            info->unkc = 0.25f;
+        }
+        else {
+            info->unk0 = i6 / bmap.Width();
+            f4 = f4 / mCellSize.x;
+            info->charWidth = f4;
+            info->unkc = f4;
+        }
+    }
+    info->unk4 = vec2.y / bmap.Height();
+    MILO_ASSERT(info->charWidth >= 0, 0x168);
+}
+
+float RndFont::Kerning(unsigned short, unsigned short) const {
+
+}
+
+float RndFont::CharAdvance(unsigned short us1, unsigned short us2) const {
+    return Kerning(us1, us2) + CharAdvance(us2);
+}
+
+bool RndFont::CharDefined(unsigned short c) const {
+    if(HasChar(c)){
+        std::map<unsigned short, CharInfo>::const_iterator it = unk34.find(c);
+        const CharInfo& info = it->second;
+        return info.unk0 != 0 || info.unk4 != 0 || info.unkc != 0;
+    }
+    else return false;
+}
+
 RndTex* RndFont::ValidTexture() const {
-    if (mMat != NULL) return mMat->mDiffuseTex;
+    if (mMat != NULL) return mMat->GetDiffuseTex();
     else return NULL;
 }
 
 void RndFont::SetBitmapSize(const Vector2& cs, unsigned int i1, unsigned int i2) {
     mCellSize = cs;
-    unk6c.x = cs.x / i1;
-    unk6c.y = cs.y / i2;
+    unk6c.x = mCellSize.x / i1;
+    unk6c.y = mCellSize.y / i2;
 }
 
 void RndFont::UpdateChars() {
-    if (mPacked) {
+    if (IsPacked()) {
         RndTex* t = ValidTexture();
         if (t) SetBitmapSize(mCellSize, t->Width(), t->Height());
-    } else {
-        if (mChars.size() != 0 && mChars[0] == 160) {
+    }
+    else {
+        if (!mChars.empty() && mChars[0] == 160) {
             MILO_WARN("%s: first character is ascii 160, converting to the space character.\n", Name());
-            mChars[0] = L' ';
+            unsigned short& firstChar = mChars[0];
+            firstChar = ' ';
         }
         unk34.clear();
         BitmapLocker l(this);
+        RndBitmap* lockedBmap = l.PtrToBitmap();
+        if(lockedBmap){
+            unk6c.x = mCellSize.x / lockedBmap->Width();
+            unk6c.y = mCellSize.y / lockedBmap->Height();
+            Vector2 v80(0,0);
+            for(int i = 0; i < mChars.size(); i++){
+                unsigned short curChar = mChars[i];
+                if(v80.x + mCellSize.x > lockedBmap->Width()){
+                    v80.x = 0;
+                    v80.y += mCellSize.y;
+                }
+                if(v80.y + mCellSize.y > lockedBmap->Height()){
+                    MILO_WARN("%s: too many characters for bitmap, truncating.\n", Name());
+                    mChars.resize(i);
+                    break;
+                }
+                SetCharInfo(&unk34[curChar], *lockedBmap, v80);
+                v80.x += mCellSize.x;
+                if(curChar == 0x20){
+                    unk34[curChar].charWidth = 0;
+                }
+                else if(curChar == 9){
+                    MILO_ASSERT(HasChar(L' ' ), 0x205);
+                    unk34[curChar] = unk34[0x20];
+                    unk34[curChar].unkc *= 3.0f;
+                }
+            }
+        }
     }
 }
 

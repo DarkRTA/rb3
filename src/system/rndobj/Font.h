@@ -2,6 +2,8 @@
 #include "obj/Object.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
+#include "os/System.h"
+#include "rndobj/Bitmap.h"
 #include "utl/MemMgr.h"
 #include <string.h>
 #include <map>  
@@ -63,11 +65,13 @@ public:
     float Kerning(unsigned short, unsigned short) const;
     float CharWidth(unsigned short) const;
     bool CharDefined(unsigned short) const;
+    void SetCharInfo(RndFont::CharInfo*, RndBitmap&, const Vector2&);
 
     RndMat* GetMat() const { return mMat; }
     void SetNextFont(RndFont* font){ unk78 = font; }
     RndFont* NextFont() const { return unk78; }
     bool IsMonospace() const { return mMonospace; }
+    bool IsPacked() const { return mPacked; }
     float CellDiff() const { return mCellSize.y / mCellSize.x; }
     bool HasChar(unsigned short c) const {
         return unk34.count(c) != 0;
@@ -97,18 +101,40 @@ public:
 
 class BitmapLocker {
 public:
-    BitmapLocker(RndFont* f) {
-        RndBitmap bmp;
-        RndTex* t = f->ValidTexture();
-        if (t) {
-            const char* c = t->File().c_str();
-            int len = strlen(c);
-            if (len >= 4 && UsingCD() && stricmp(c + len - 4, ".bmp")) {
-                t->LockBitmap(bmp, 3);
+    BitmapLocker(RndFont* f) : mTexture(0), mPbm(0) {
+        mTexture = f->ValidTexture();
+        if(mTexture){
+            const char* filestr = mTexture->mFilepath.c_str();
+            int fplen = strlen(filestr);
+#ifdef MILO_DEBUG
+            if(UsingCD() || fplen < 4 || stricmp(filestr + fplen - 4, ".bmp") != 0){
+#endif
+                mTexture->LockBitmap(mBm, 3);
+                if(mBm.Pixels()){
+                    mPbm = &mBm;
+                }
+#ifdef MILO_DEBUG
             }
-            bmp.LoadBmp("", false, false);
+            else {
+                mBm.LoadBmp(filestr, false, false);
+                if(mBm.Pixels()){
+                    mPbm = &mBm;
+                }
+                mTexture = nullptr;
+            }
+#endif
         }
     }
+
+    ~BitmapLocker(){
+        if(mTexture) mTexture->UnlockBitmap();
+    }
+
+    RndBitmap* PtrToBitmap() const { return mPbm; }
+
+    RndTex* mTexture; // 0x0
+    RndBitmap* mPbm; // 0x4
+    RndBitmap mBm; // 0x8
 };
 
 BinStream& operator>>(BinStream&, MatChar&);
