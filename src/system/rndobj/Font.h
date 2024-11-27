@@ -4,6 +4,7 @@
 #include "obj/ObjPtr_p.h"
 #include "os/System.h"
 #include "rndobj/Bitmap.h"
+#include "utl/BinStream.h"
 #include "utl/MemMgr.h"
 #include <string.h>
 #include <map>  
@@ -122,7 +123,7 @@ public:
             unsigned short& info0 = info[i].unk0;
             info0 = mEntries[i].key;
             unsigned short& info2 = info[i].unk2;
-            info2 = (unsigned)(mEntries[i].key) >> 16;
+            info2 = (unsigned int)(mEntries[i].key) >> 16;
             float& info4 = info[i].unk4;
             info4 = mEntries[i].kerning;
         }
@@ -164,6 +165,44 @@ public:
 
     int TableIndex(unsigned short us0, unsigned short us2){
         return (us0 ^ us2) & 0x1F;
+    }
+
+    int Size() const { return mNumEntries * 0xC + 0x88; }
+    
+    void Load(BinStream& bs, RndFont* font){
+        if(RndFont::gRev < 7){
+            std::vector<RndFont::KernInfo> kernInfos;
+            bs >> kernInfos;
+            SetKerning(kernInfos, font);
+        }
+        else {
+            int size;
+            bs >> size;
+            if(size != mNumEntries){
+                mNumEntries = size;
+                delete [] mEntries;
+                mEntries = new Entry[mNumEntries];
+            }
+            memset(mTable, 0, 0x80);
+            for(int i = 0; i < mNumEntries; i++){
+                Entry& curEntry = mEntries[i];
+                bs >> curEntry.key;
+                bs >> curEntry.kerning;
+                unsigned short us4, us3;
+                if(RndFont::gRev < 0x11){
+                    us4 = curEntry.key & 0xFF;
+                    us3 = curEntry.key >> 8 & 0xFF;
+                    curEntry.key = Key(us4, us3);
+                }
+                else {
+                    us4 = curEntry.key;
+                    us3 = curEntry.key >> 16;
+                }
+                int idx = TableIndex(us4, us3);
+                curEntry.next = mTable[idx];
+                mTable[idx] = &curEntry;
+            }
+        }
     }
 
     int mNumEntries; // 0x0

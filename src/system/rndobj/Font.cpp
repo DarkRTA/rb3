@@ -1,18 +1,20 @@
 #include "rndobj/Font.h"
 #include "decomp.h"
 #include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Bitmap.h"
 #include "rndobj/Mat.h"
 #include "math/Rot.h"
+#include "rndobj/Tex.h"
 #include "types.h"
 #include "utl/BinStream.h"
 #include "utl/MakeString.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols4.h"
+#include "utl/UTF8.h"
 #include <map>
 
+int gTotalFontSize;
 INIT_REVS(RndFont)
 
 BinStream& operator>>(BinStream& bs, RndFont::KernInfo& ki) {
@@ -266,24 +268,149 @@ SAVE_OBJ(RndFont, 695)
 
 DECOMP_FORCEACTIVE(Font, "ObjPtr_p.h", "f.Owner()", "")
 
+const char theChars[96] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
 BEGIN_LOADS(RndFont)
     LOAD_REVS(bs)
-    if (gRev < 7) Hmx::Object::Load(bs);
-
-    if (gRev < 3) {
-        String s;
-        int a,b,c,d;
-        char x;
-        bs >> a; bs >> b; bs >> c; bs >> x; bs >> d;
-        bs >> s;
+    ASSERT_REVS(0x11, 0)
+    if(gRev > 7) LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev < 3){
+        String str;
+        int a, b, c, d;
+        bool e;
+        bs >> a >> b >> c >> e >> d >> str;
     }
-
-    if (gRev < 1) {
-        std::map<char, MatChar> x;
-        bs >> x;
-    } else {
+    if(gRev < 1){
+        std::map<char, MatChar> charMap;
+        bs >> charMap;
+    }
+    else {
         bs >> mMat;
+        if(gRev == 10 || gRev == 11){
+            char buf[0x80];
+            bs.ReadString(buf, 0x80);
+            if(!mMat && buf[0] != '\0'){
+                mMat = LookupOrCreateMat(buf, Dir());
+            }
+        }
+        if(gRev < 4){
+            float w, h;
+            if(gRev < 2){
+                int wi, hi;
+                bs >> wi >> hi;
+                w = wi;
+                h = hi;
+            }
+            else {
+                bs >> w >> h;
+            }
+            RndTex* valid = ValidTexture();
+            if(valid){
+                RndBitmap bmap;
+                valid->LockBitmap(bmap, 3);
+                mCellSize.x = std::floor((float)bmap.Width() / w + 0.5f);
+                mCellSize.y = std::floor((float)bmap.Height() / h + 0.5f);
+                valid->UnlockBitmap();
+            }
+        }
+        else bs >> mCellSize;
+        bs >> mDeprecatedSize >> mBaseKerning;
+        if(gRev < 4){
+            mBaseKerning /= mDeprecatedSize;
+        }
     }
+    if(gRev > 1){
+        if(gRev <= 0x10){
+            String str;
+            bs >> str;
+            ASCIItoWideVector(mChars, str.c_str());
+        }
+        else bs >> mChars;
+    }
+    else {
+        for(const char* ptr = theChars; *ptr != '\0'; ptr++){
+            mChars.push_back(*ptr);
+        }
+    }
+    if(gRev > 4){
+        bool b4;
+        bs >> b4;
+        if(b4){
+            mKerningTable = new KerningTable();
+            mKerningTable->Load(bs, this);
+        }
+    }
+    if(gRev > 8) bs >> mTextureOwner;
+    if(!mTextureOwner) mTextureOwner = this;
+    if(gRev > 10) bs >> mMonospace;
+    if(gRev > 0xE) bs >> mPacked;
+    if(gRev > 0xC){
+        int bw, bh;
+        bs >> bw >> bh;
+        RndTex* valid = ValidTexture();
+        if(valid){
+            if(bw && valid->Width()){
+                mCellSize.x *= valid->Width();
+            }
+            if(bh && valid->Height()){
+                mCellSize.y *= valid->Height();
+            }
+        }
+    }
+    if(gRev > 0xD){
+        bs >> unk6c;
+        if(gRev < 0x11){
+            for(int i = 0; i < 0x100; i++){
+                CharInfo& info = unk34[i];
+                bs >> info.unk0;
+                bs >> info.unk4;
+                bs >> info.charWidth;
+                if(info.charWidth < 0){
+                    info.charWidth = 0;
+                }
+                if(gRev > 0xE) bs >> info.unkc;
+                else info.unkc = info.charWidth;
+                if(info.unkc < 0){
+                    info.unkc = 0;
+                }
+            }
+        }
+        else {
+            unsigned int count;
+            bs >> count;
+            for(int i = 0; i < count; i++){
+                unsigned short keyChar;
+                bs >> keyChar;
+                CharInfo& info = unk34[keyChar];
+                bs >> info.unk0;
+                bs >> info.unk4;
+                bs >> info.charWidth;
+                bs >> info.unkc;
+            }
+        }
+    }
+    else {
+        MILO_LOG("NOTIFY: %s is old version, please resave\n", PathName(this));
+        UpdateChars();
+    }
+    unk34[0x20];
+    unk34[0xA0];
+    unk34[0xA0] = unk34[0x20];
+    if(gRev < 0x10){
+        std::vector<KernInfo> kernInfos;
+        GetKerning(kernInfos);
+        SetKerning(kernInfos);
+        MILO_LOG("NOTIFY: %s is old version, resave file\n", PathName(this));
+    }
+    if(gRev > 0x10) bs >> unk78;
+    int i10 = 0;
+    RndTex* valid = ValidTexture();
+    if(valid) i10 = valid->SizeKb();
+    i10 = i10 * 0x400 + unk34.size() * 0x10 + 0x84;
+    if(mKerningTable){
+        i10 += mKerningTable->Size();
+    }
+    gTotalFontSize += i10;
 END_LOADS
 
 BEGIN_COPYS(RndFont)
