@@ -544,6 +544,7 @@ DataNode RndPropAnim::ForeachFrame(const DataArray* da){
 }
 
 DataNode RndPropAnim::ForAllKeyframes(const DataArray* da){
+    // TODO: maybe there's a custom alloc func for DataArrayPtr that adds a ref?
     std::vector<DataArrayPtr> ptrs;
     for(std::vector<PropKeys*>::iterator it = mPropKeys.begin(); it != mPropKeys.end(); ++it){
         PropKeys* cur = *it;

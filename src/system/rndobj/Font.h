@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_FONT_H
-#define RNDOBJ_FONT_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
@@ -68,12 +67,14 @@ public:
     RndMat* GetMat() const { return mMat; }
     void SetNextFont(RndFont* font){ unk78 = font; }
     RndFont* NextFont() const { return unk78; }
+    bool IsMonospace() const { return mMonospace; }
     float CellDiff() const { return mCellSize.y / mCellSize.x; }
-    bool HasChar(char c) const { // fak
-
+    bool HasChar(unsigned short c) const {
+        return unk34.count(c) != 0;
     }
 
     NEW_OVERLOAD
+    DELETE_OVERLOAD
     NEW_OBJ(RndFont)
     static void Init(){
         REGISTER_OBJ_FACTORY(RndFont)
@@ -82,7 +83,7 @@ public:
 
     ObjPtr<RndMat> mMat; // 0x1c
     ObjOwnerPtr<RndFont> mTextureOwner; // 0x28
-    std::map<char, MatChar> unk34; // 0x34
+    std::map<unsigned short, CharInfo> unk34; // 0x34
     int unk4c; // 0x4c
     float mBaseKerning; // 0x50
     Vector2 mCellSize; // 0x54 - cell width, cell height
@@ -112,5 +113,3 @@ public:
 
 BinStream& operator>>(BinStream&, MatChar&);
 BinStream& operator>>(BinStream&, RndFont::KernInfo&);
-
-#endif // RNDOBJ_FONT_H

@@ -39,22 +39,41 @@ int NonTransparentColumn(RndBitmap& bmp, int min, int max, int i3, int i4 ) {
     return i;
 }
 
-void RndFont::GetTexCoords(unsigned short us, Vector2& tl, Vector2& br) const {
+void RndFont::GetTexCoords(unsigned short c, Vector2& tl, Vector2& br) const {
     if (mTextureOwner != this) {
-        mTextureOwner->GetTexCoords(us, tl, br);
+        mTextureOwner->GetTexCoords(c, tl, br);
     } else {
-        char c;
         MILO_ASSERT(HasChar(c), 290);
-        float* r4; // TODO i have no damn clue what class this is. matchar???
-        tl.x = r4[5];
-        br.x = (r4[7] * unk6c.x) + r4[5];
-        tl.y = r4[6];
-        br.y = r4[6] + unk6c.y;
+        std::map<unsigned short, CharInfo>::const_iterator it = unk34.find(c);
+        const CharInfo& info = it->second;
+        tl.x = info.unk0;
+        br.x = info.charWidth * unk6c.x + info.unk0;
+        tl.y = info.unk4;
+        br.y = info.unk4 + unk6c.y;
     }
 }
 
+float RndFont::CharWidth(unsigned short c) const {
+    MILO_ASSERT(HasChar(c), 0x12E);
+    CharInfo& info = mTextureOwner->unk34[c];
+    float w = info.charWidth;
+    MILO_ASSERT(w >= 0, 0x131);
+    return w;
+}
+
+float RndFont::CharAdvance(unsigned short c) const {
+    MILO_ASSERT(HasChar(c), 0x137);
+    if(IsMonospace()) return 1.0f;
+    else {
+        CharInfo& info = mTextureOwner->unk34[c];
+        return info.unkc;
+    }
+}
+
+void RndFont::SetBaseKerning(float k){ mBaseKerning = k; }
+
 void RndFont::SetCellSize(float x, float y) {
-    mCellSize.x = x; mCellSize.y = y;
+    mCellSize.Set(x, y);
     UpdateChars();
 }
 
@@ -147,7 +166,7 @@ RndFont::~RndFont(){
 }
 
 BEGIN_HANDLERS(RndFont)
-    HANDLE_EXPR(mat, mMat.Ptr())
+    HANDLE_EXPR(mat, GetMat())
     HANDLE_EXPR(texture_owner, mTextureOwner.Ptr())
     HANDLE_ACTION(bleed_test, BleedTest())
     HANDLE_SUPERCLASS(Hmx::Object)
