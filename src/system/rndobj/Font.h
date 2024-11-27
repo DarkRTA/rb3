@@ -122,13 +122,49 @@ public:
             unsigned short& info0 = info[i].unk0;
             info0 = mEntries[i].key;
             unsigned short& info2 = info[i].unk2;
-            info2 = mEntries[i].key >> 16;
+            info2 = (unsigned)(mEntries[i].key) >> 16;
             float& info4 = info[i].unk4;
             info4 = mEntries[i].kerning;
         }
     }
 
-    void SetKerning(const std::vector<RndFont::KernInfo>&, RndFont*);
+    void SetKerning(const std::vector<RndFont::KernInfo>& info, RndFont* font){
+        int validcount = 0;
+        for(int i = 0; i < info.size(); i++){
+            if(Valid(info[i], font)){
+                validcount++;
+            }
+        }
+        if(validcount != mNumEntries){
+            mNumEntries = validcount;
+            delete [] mEntries;
+            mEntries = new Entry[mNumEntries];
+        }
+        memset(mTable, 0, 0x80);
+        for(int i = 0; i < info.size(); i++){
+            const RndFont::KernInfo& curInfo = info[i];
+            if(Valid(curInfo, font)){
+                Entry& curEntry = mEntries[i];
+                curEntry.key = Key(curInfo.unk0, curInfo.unk2);
+                curEntry.kerning = curInfo.unk4;
+                int index = TableIndex(curInfo.unk0, curInfo.unk2);
+                curEntry.next = mTable[index];
+                mTable[index] = &curEntry;
+            }
+        }
+    }
+
+    bool Valid(const RndFont::KernInfo& info, RndFont* font){
+        return !font || (font->CharDefined(info.unk0) && font->CharDefined(info.unk2));
+    }
+
+    int Key(unsigned short us0, unsigned short us2){
+        return (us0 & 0xFFFF) | ((us2 << 0x10) & 0xFFFF0000);
+    }
+
+    int TableIndex(unsigned short us0, unsigned short us2){
+        return (us0 ^ us2) & 0x1F;
+    }
 
     int mNumEntries; // 0x0
     Entry* mEntries; // 0x4

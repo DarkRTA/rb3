@@ -1,4 +1,5 @@
 #include "rndobj/Font.h"
+#include "decomp.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "rndobj/Bitmap.h"
@@ -229,8 +230,9 @@ void RndFont::BleedTest(){
             }
         }
         if(errStr.length() != 0){
-            MakeString("Bleeding in %s:\n\n%s", Name(), errStr);
+            MILO_WARN("Bleeding in %s:\n\n%s", Name(), errStr);
         }
+        else MILO_WARN("No bleeding over found.  \n");
     }
 }
 
@@ -254,29 +256,6 @@ void RndFont::SetKerning(const std::vector<KernInfo>& info){
     }
 }
 
-// void __thiscall RndFont::SetKerning(RndFont *this,vector<> *param_1)
-
-// {
-//   int iVar1;
-  
-//   iVar1 = stlpmtx_std::vector<><>::empty(param_1);
-//   if (iVar1 == 0) {
-//     if (*(this + 0x4c) == 0) {
-//       iVar1 = operator_new(0x88);
-//       if (iVar1 != 0) {
-//         iVar1 = fn_805E8B58();
-//       }
-//       *(this + 0x4c) = iVar1;
-//     }
-//     fn_805E899C(*(this + 0x4c),param_1,this); // set kerning
-//   }
-//   else {
-//     fn_805E8BA0(*(this + 0x4c),1); delete kerningtable
-//     *(this + 0x4c) = 0;
-//   }
-//   return;
-// }
-
 BinStream& operator>>(BinStream& bs, MatChar& mc) {
     char x[0x80]; bs.ReadString(x, 0x80);
     bs >> mc.width; bs >> mc.height;
@@ -284,6 +263,8 @@ BinStream& operator>>(BinStream& bs, MatChar& mc) {
 }
 
 SAVE_OBJ(RndFont, 695)
+
+DECOMP_FORCEACTIVE(Font, "ObjPtr_p.h", "f.Owner()", "")
 
 BEGIN_LOADS(RndFont)
     LOAD_REVS(bs)
