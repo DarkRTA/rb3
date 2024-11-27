@@ -11,6 +11,7 @@
 #include "utl/BinStream.h"
 #include "utl/MakeString.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
 #include "utl/UTF8.h"
 #include <map>
 
@@ -117,8 +118,17 @@ void RndFont::SetCharInfo(RndFont::CharInfo* info, RndBitmap& bmap, const Vector
     MILO_ASSERT(info->charWidth >= 0, 0x168);
 }
 
-float RndFont::Kerning(unsigned short, unsigned short) const {
-
+float RndFont::Kerning(unsigned short us1, unsigned short us2) const {
+    if(mTextureOwner != this){
+        return mTextureOwner->Kerning(us1, us2);
+    }
+    else if(us1 == 0 || us2 == 0) return 0;
+    else {
+        if(!IsMonospace() && mKerningTable){
+            return mBaseKerning + mKerningTable->Kerning(us1, us2);
+        }
+        else return mBaseKerning;
+    }
 }
 
 float RndFont::CharAdvance(unsigned short us1, unsigned short us2) const {
@@ -502,6 +512,8 @@ BEGIN_PROPSYNCS(RndFont)
     SYNC_PROP_MODIFY_ALT(mat, mMat, UpdateChars())
     SYNC_PROP_MODIFY_ALT(monospace, mMonospace, UpdateChars())
     SYNC_PROP_MODIFY_ALT(packed, mPacked, UpdateChars())
-
-    SYNC_PROP_MODIFY_ALT(base_kerning, mBaseKerning     , UpdateChars())
+    SYNC_PROP_SET(cell_width, (int)mCellSize.x, SetCellSize(_val.Int(), mCellSize.y))
+    SYNC_PROP_SET(cell_height, (int)mCellSize.y, SetCellSize(mCellSize.x, _val.Int()))
+    SYNC_PROP_SET(chars_in_map, GetASCIIChars(), SetASCIIChars(_val.Str()))
+    SYNC_PROP_MODIFY_ALT(base_kerning, mBaseKerning, UpdateChars())
 END_PROPSYNCS

@@ -119,6 +119,22 @@ public:
         delete mEntries;
     }
 
+    Entry* Find(unsigned short us1, unsigned short us2){
+        if(mNumEntries == 0) return nullptr;
+        else {
+            Entry* entry = mTable[TableIndex(us1, us2)];
+            int key = Key(us1, us2);
+            for(; entry != nullptr && key != entry->key; entry = entry->next);
+            return entry;
+        }
+    }
+
+    float Kerning(unsigned short us1, unsigned short us2){
+        Entry* kerningEntry = Find(us1, us2);
+        if(kerningEntry) return kerningEntry->kerning;
+        else return 0;
+    }
+
     void GetKerning(std::vector<RndFont::KernInfo>& info) const {
         info.resize(mNumEntries);
         for(int i = 0; i < mNumEntries; i++){
