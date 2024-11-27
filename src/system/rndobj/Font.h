@@ -68,6 +68,8 @@ public:
     float CharWidth(unsigned short) const;
     bool CharDefined(unsigned short) const;
     void SetCharInfo(RndFont::CharInfo*, RndBitmap&, const Vector2&);
+    String GetASCIIChars();
+    void SetASCIIChars(String);
 
     RndMat* GetMat() const { return mMat; }
     void SetNextFont(RndFont* font){ unk78 = font; }
@@ -76,7 +78,7 @@ public:
     bool IsPacked() const { return mPacked; }
     float CellDiff() const { return mCellSize.y / mCellSize.x; }
     bool HasChar(unsigned short c) const {
-        return unk34.count(c) != 0;
+        return mCharInfoMap.count(c) != 0;
     }
 
     NEW_OVERLOAD
@@ -89,7 +91,7 @@ public:
 
     ObjPtr<RndMat> mMat; // 0x1c
     ObjOwnerPtr<RndFont> mTextureOwner; // 0x28
-    std::map<unsigned short, CharInfo> unk34; // 0x34
+    std::map<unsigned short, CharInfo> mCharInfoMap; // 0x34
     KerningTable* mKerningTable; // 0x4c
     float mBaseKerning; // 0x50
     Vector2 mCellSize; // 0x54 - cell width, cell height

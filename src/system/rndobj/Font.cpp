@@ -16,6 +16,9 @@
 
 int gTotalFontSize;
 INIT_REVS(RndFont)
+const char theChars[96] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
+DECOMP_FORCEACTIVE(Font, __FILE__, "textureOwner")
 
 BinStream& operator>>(BinStream& bs, RndFont::KernInfo& ki) {
     if (RndFont::gRev < 17) {
@@ -50,7 +53,7 @@ void RndFont::GetTexCoords(unsigned short c, Vector2& tl, Vector2& br) const {
         mTextureOwner->GetTexCoords(c, tl, br);
     } else {
         MILO_ASSERT(HasChar(c), 290);
-        std::map<unsigned short, CharInfo>::const_iterator it = unk34.find(c);
+        std::map<unsigned short, CharInfo>::const_iterator it = mCharInfoMap.find(c);
         const CharInfo& info = it->second;
         tl.x = info.unk0;
         br.x = info.charWidth * unk6c.x + info.unk0;
@@ -61,7 +64,7 @@ void RndFont::GetTexCoords(unsigned short c, Vector2& tl, Vector2& br) const {
 
 float RndFont::CharWidth(unsigned short c) const {
     MILO_ASSERT(HasChar(c), 0x12E);
-    CharInfo& info = mTextureOwner->unk34[c];
+    CharInfo& info = mTextureOwner->mCharInfoMap[c];
     float w = info.charWidth;
     MILO_ASSERT(w >= 0, 0x131);
     return w;
@@ -71,7 +74,7 @@ float RndFont::CharAdvance(unsigned short c) const {
     MILO_ASSERT(HasChar(c), 0x137);
     if(IsMonospace()) return 1.0f;
     else {
-        CharInfo& info = mTextureOwner->unk34[c];
+        CharInfo& info = mTextureOwner->mCharInfoMap[c];
         return info.unkc;
     }
 }
@@ -124,7 +127,7 @@ float RndFont::CharAdvance(unsigned short us1, unsigned short us2) const {
 
 bool RndFont::CharDefined(unsigned short c) const {
     if(HasChar(c)){
-        std::map<unsigned short, CharInfo>::const_iterator it = unk34.find(c);
+        std::map<unsigned short, CharInfo>::const_iterator it = mCharInfoMap.find(c);
         const CharInfo& info = it->second;
         return info.unk0 != 0 || info.unk4 != 0 || info.unkc != 0;
     }
@@ -153,7 +156,7 @@ void RndFont::UpdateChars() {
             unsigned short& firstChar = mChars[0];
             firstChar = ' ';
         }
-        unk34.clear();
+        mCharInfoMap.clear();
         BitmapLocker l(this);
         RndBitmap* lockedBmap = l.PtrToBitmap();
         if(lockedBmap){
@@ -171,15 +174,15 @@ void RndFont::UpdateChars() {
                     mChars.resize(i);
                     break;
                 }
-                SetCharInfo(&unk34[curChar], *lockedBmap, v80);
+                SetCharInfo(&mCharInfoMap[curChar], *lockedBmap, v80);
                 v80.x += mCellSize.x;
                 if(curChar == 0x20){
-                    unk34[curChar].charWidth = 0;
+                    mCharInfoMap[curChar].charWidth = 0;
                 }
                 else if(curChar == 9){
                     MILO_ASSERT(HasChar(L' ' ), 0x205);
-                    unk34[curChar] = unk34[0x20];
-                    unk34[curChar].unkc *= 3.0f;
+                    mCharInfoMap[curChar] = mCharInfoMap[0x20];
+                    mCharInfoMap[curChar].unkc *= 3.0f;
                 }
             }
         }
@@ -194,7 +197,7 @@ void RndFont::BleedTest(){
         String errStr;
         for(int i = 0; i < mChars.size(); i++){
             unsigned short curChar = mChars[i];
-            CharInfo& curInfo = unk34[curChar];
+            CharInfo& curInfo = mCharInfoMap[curChar];
             int i2 = Round(curInfo.unk4 * bmap->Height());
             int i5 = Round(curInfo.unk0 * bmap->Width());
             int i6 = Round(curInfo.charWidth * mCellSize.x) + i5;
@@ -267,8 +270,6 @@ BinStream& operator>>(BinStream& bs, MatChar& mc) {
 SAVE_OBJ(RndFont, 695)
 
 DECOMP_FORCEACTIVE(Font, "ObjPtr_p.h", "f.Owner()", "")
-
-const char theChars[96] = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
 BEGIN_LOADS(RndFont)
     LOAD_REVS(bs)
@@ -361,7 +362,7 @@ BEGIN_LOADS(RndFont)
         bs >> unk6c;
         if(gRev < 0x11){
             for(int i = 0; i < 0x100; i++){
-                CharInfo& info = unk34[i];
+                CharInfo& info = mCharInfoMap[i];
                 bs >> info.unk0;
                 bs >> info.unk4;
                 bs >> info.charWidth;
@@ -381,7 +382,7 @@ BEGIN_LOADS(RndFont)
             for(int i = 0; i < count; i++){
                 unsigned short keyChar;
                 bs >> keyChar;
-                CharInfo& info = unk34[keyChar];
+                CharInfo& info = mCharInfoMap[keyChar];
                 bs >> info.unk0;
                 bs >> info.unk4;
                 bs >> info.charWidth;
@@ -393,9 +394,9 @@ BEGIN_LOADS(RndFont)
         MILO_LOG("NOTIFY: %s is old version, please resave\n", PathName(this));
         UpdateChars();
     }
-    unk34[0x20];
-    unk34[0xA0];
-    unk34[0xA0] = unk34[0x20];
+    mCharInfoMap[0x20];
+    mCharInfoMap[0xA0];
+    mCharInfoMap[0xA0] = mCharInfoMap[0x20];
     if(gRev < 0x10){
         std::vector<KernInfo> kernInfos;
         GetKerning(kernInfos);
@@ -406,7 +407,7 @@ BEGIN_LOADS(RndFont)
     int i10 = 0;
     RndTex* valid = ValidTexture();
     if(valid) i10 = valid->SizeKb();
-    i10 = i10 * 0x400 + unk34.size() * 0x10 + 0x84;
+    i10 = i10 * 0x400 + mCharInfoMap.size() * 0x10 + 0x84;
     if(mKerningTable){
         i10 += mKerningTable->Size();
     }
@@ -416,7 +417,25 @@ END_LOADS
 BEGIN_COPYS(RndFont)
     CREATE_COPY_AS(RndFont, f)
     MILO_ASSERT(f, 996);
-    COPY_SUPERCLASS_FROM(Hmx::Object, f)
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_MEMBER_FROM(f, mMat)
+    COPY_MEMBER_FROM(f, mCellSize)
+    COPY_MEMBER_FROM(f, unk6c)
+    COPY_MEMBER_FROM(f, mDeprecatedSize)
+    COPY_MEMBER_FROM(f, mChars)
+    COPY_MEMBER_FROM(f, mMonospace)
+    COPY_MEMBER_FROM(f, mPacked)
+    COPY_MEMBER_FROM(f, mCharInfoMap)
+    if(ty == kCopyShallow || (ty == kCopyFromMax && f->mTextureOwner != f)){
+        COPY_MEMBER_FROM(f, mTextureOwner)
+    }
+    else {
+        mTextureOwner = this;
+        mBaseKerning = f->mTextureOwner->mBaseKerning;
+        std::vector<KernInfo> kernInfos;
+        f->mTextureOwner->GetKerning(kernInfos);
+        SetKerning(kernInfos);
+    }
 END_COPYS
 
 void RndFont::Print() {
@@ -424,8 +443,12 @@ void RndFont::Print() {
     ts << "   mat: " << mMat << "\n";
     ts << "   cellSize: " << mCellSize << "\n";
     ts << "   deprecated size: " << mDeprecatedSize << "\n";
-    ts << "   space: " << mBaseKerning   << "\n";
-
+    ts << "   space: " << mBaseKerning << "\n";
+    ts << "   chars: ";
+    for(int i = 0; i < mChars.size(); i++){
+        unsigned short us = mChars[i];
+        ts << WideCharToChar(&us);
+    }
     ts << "\n";
     ts << "   kerning: TODO\n";
 }
@@ -446,7 +469,24 @@ void RndFont::Replace(Hmx::Object* from, Hmx::Object* to){
 }
 
 RndFont::~RndFont(){
+    int size = 0;
+    RndTex* valid = ValidTexture();
+    if(valid) size = valid->SizeKb();
+    size = size * 0x400 + mCharInfoMap.size() * 0x10 + 0x84;
+    if(mKerningTable){
+        size += mKerningTable->Size();
+    }
+    gTotalFontSize -= size;
+    RELEASE(mKerningTable);
+}
 
+String RndFont::GetASCIIChars(){
+    return WideVectorToASCII(mChars);
+}
+
+void RndFont::SetASCIIChars(String s){
+    ASCIItoWideVector(mChars, s.c_str());
+    UpdateChars();
 }
 
 BEGIN_HANDLERS(RndFont)
