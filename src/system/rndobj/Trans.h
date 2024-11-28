@@ -173,7 +173,7 @@ public:
     }
 
     /** "Object this is linked to." */
-    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent; // 0x8
+    ObjOwnerPtr<RndTransformable> mParent; // 0x8
 
     /** Any children that should follow this object. */
     std::vector<RndTransformable*> mChildren; // 0x14
@@ -188,7 +188,7 @@ public:
     bool mPreserveScale; // 0x82
 
     /** "Target according to the constraint." */
-    ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x84
+    ObjPtr<RndTransformable> mTarget; // 0x84
 
     static ushort gRev;
     static ushort gAltRev;

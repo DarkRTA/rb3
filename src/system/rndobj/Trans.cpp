@@ -148,7 +148,12 @@ void RndTransformable::ApplyDynamicConstraint(){
         Multiply(mWorldXfm, tf40, mWorldXfm);
         Plane pl50;
         Multiply(sShadowPlane, tf40, pl50);
-        tf40.m.Set(1.0f, 0,0,0,0,0,0,0,0);
+        float planeB = pl50.b;
+        tf40.m.Set(
+            1, -pl50.a / planeB, 0,
+            0, 0, 0,
+            0, -pl50.c / planeB, 1
+        );
         tf40.v.Set(0, -pl50.d / pl50.b, 0);
         Multiply(mWorldXfm, tf40, mWorldXfm);
         Multiply(mWorldXfm, mTarget->WorldXfm(), mWorldXfm);
@@ -219,12 +224,17 @@ void RndTransformable::DistributeChildren(bool b, float f){
     if(count < 2) return;
     else {
         if(b) std::sort(vec.begin(), vec.end(), HorizontalCmp);
-        else std::sort(vec.begin(), vec.end(), VerticalCmp);
+        else {
+            std::sort(vec.begin(), vec.end(), VerticalCmp);
+            f *= -1.0f;
+        }
     }
-    float at = vec[0]->LocalXfm().v[~-b & 2];
+    int idx = b ? 0 : 2;
+    float at = vec[0]->mLocalXfm.v[idx];
+    
     for(int i = 1; i < count; i++){
-        Transform t = vec[i]->LocalXfm();
-        t.v[~-b & 2] = f * i + at;
+        Transform t = vec[i]->mLocalXfm;
+        t.v[idx] = f * i + at;
         vec[i]->SetLocalXfm(t);
     }
 }
@@ -262,7 +272,7 @@ void RndTransformable::Highlight(){
 
 SAVE_OBJ(RndTransformable, 586)
 
-// retail: https://decomp.me/scratch/gAIGj
+// retail: https://decomp.me/scratch/PrWG3
 BEGIN_LOADS(RndTransformable)
     LOAD_REVS(bs)
     ASSERT_REVS(9, 0)
@@ -283,10 +293,75 @@ BEGIN_LOADS(RndTransformable)
     }
     if(gRev == 6){
         bs >> (int&)mConstraint;
-        mPreserveScale = mConstraint == kTargetWorld;
-        // what else is happening here?
+        int uvar3 = mConstraint;
+        int uvar8 = uvar3;
+        mPreserveScale = uvar8 == kTargetWorld;
+        if(uvar8 >= 10){
+            mConstraint = uvar3 - 5;
+        }
+        else if(uvar8 < 3){
+            mConstraint = uvar3 - 1;
+        }
+        else if(uvar8 == 2){
+            mConstraint = 2;
+        }
     }
+    else if(gRev > 5){
+        if(gRev < 9){
+            bs >> (int&)mConstraint;
+            int svar2 = mConstraint;
+            if(svar2 == 4){
+                mConstraint = 0;
+            }
+            else if(svar2 - 2U < 3){
+                mConstraint = svar2 + 1;
+            }
+        }
+        else {
+            bs >> (int&)mConstraint;
+        }
+    }
+    else if(gRev >= 3){
+        int unkb0;
+        bs >> unkb0;
+        mPreserveScale = unkb0 >> 7 & 1;
 
+        switch(unkb0){
+            case 0x4:
+            case 0x84:
+                mConstraint = 5;
+                break;
+            case 0x8:
+            case 0x88:
+                mConstraint = 6;
+                break;
+            case 0x10:
+            case 0x90:
+                mConstraint = 7;
+                break;
+            case 0x20:
+            case 0xA0:
+                mConstraint = 8;
+                break;
+            case 0x40:
+                mConstraint = 1;
+                break;
+            default:
+                mConstraint = 0;
+                break;
+        }
+    }
+    else if(gRev != 0){
+        int numb4;
+        bs >> numb4;
+        for(int i = 0; i < 3; i++){
+            // what on earth is going on here
+        }
+        if(numb4 < 0x18){
+            mConstraint = numb4;
+        }
+        else mConstraint = 0;
+    }
     if(gRev != 0 && gRev < 7){
         Vector3 v;
         bs >> v;
@@ -306,14 +381,14 @@ BEGIN_LOADS(RndTransformable)
     }
     if(gRev > 5){
         if(gLoadingProxyFromDisk){
-            ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+            ObjPtr<RndTransformable> tPtr(this, 0);
             tPtr.Load(bs, false, 0);
         }
         else bs >> mTarget;
     }
     if(gRev > 6) bs >> mPreserveScale;
     if(gRev > 8){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this, 0);
         if(!gLoadingProxyFromDisk){
             bs >> tPtr;
             SetTransParent(tPtr, false);
@@ -321,7 +396,7 @@ BEGIN_LOADS(RndTransformable)
         else tPtr.Load(bs, false, 0);
     }
     else if(gRev > 6){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this, 0);
         bs >> tPtr;
         if(tPtr != this){
             SetTransParent(tPtr, false);
