@@ -1,10 +1,17 @@
 #include "rndobj/EventTrigger.h"
+#include "decomp.h"
+#include "obj/ObjMacros.h"
+#include "obj/ObjPtr_p.h"
+#include "obj/Utl.h"
+#include "os/File.h"
+#include "rndobj/Anim.h"
 #include "rndobj/Draw.h"
 #include "synth/Sequence.h"
 #include "rndobj/PartLauncher.h"
 #include "rndobj/AnimFilter.h"
 #include "obj/DataFunc.h"
 #include "obj/Msg.h"
+#include "utl/Loader.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(EventTrigger)
@@ -152,8 +159,8 @@ EventTrigger::ProxyCall::ProxyCall(Hmx::Object* o) : mProxy(o, 0), mEvent(o, 0) 
 }
 
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
-    mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this, 0), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
-    unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1) {
+    mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
+    unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1), unkdf5thru2(0) {
     RegisterEvents();
 }
 
@@ -176,7 +183,7 @@ void EventTrigger::RegisterEvents(){
         for(std::vector<Symbol>::iterator it = mWaitForEvents.begin(); it != mWaitForEvents.end(); ++it){
             src->AddSink(this, *it, wait_for, MsgSource::kHandle);
         }
-        mEnabledAtStart = false;
+        mEnabled = mEnabledAtStart;
     }
 }
 
@@ -218,7 +225,7 @@ BEGIN_COPYS(EventTrigger)
         COPY_MEMBER(mNextLink)
         COPY_MEMBER(mTriggerOrder)
         COPY_MEMBER(mResetTriggers)
-        COPY_MEMBER(unkdf)
+        COPY_MEMBER(mEnabledAtStart)
         COPY_MEMBER(mAnimTrigger)
         COPY_MEMBER(mAnimFrame)
         COPY_MEMBER(mPartLaunchers)
@@ -237,7 +244,119 @@ void RemoveNullEvents(std::vector<Symbol>& vec){
     }
 }
 
+DECOMP_FORCEACTIVE(EventTrigger, "ObjPtr_p.h", "f.Owner()", "")
+
 SAVE_OBJ(EventTrigger, 406)
+
+void EventTrigger::LoadOldAnim(BinStream& bs, RndAnimatable* anim){
+    Anim eventAnim(this);
+    bs >> (int&)eventAnim.mRate;
+    int i48;
+    bs >> i48;
+    bs >> eventAnim.mStart;
+    bs >> eventAnim.mEnd;
+    bs >> eventAnim.mPeriod;
+    bs >> eventAnim.mBlend;
+    bool b88;
+    bs >> b88;
+    bs >> eventAnim.mDelay;
+    if(i48 == 0){
+        eventAnim.mType = "range";
+    }
+    else if(b88){
+        eventAnim.mType = "dest";
+    }
+    else {
+        eventAnim.mType = "loop";
+    }
+    if(anim){
+        eventAnim.mAnim = anim;
+        mAnims.push_back(eventAnim);
+    }
+}
+
+void EventTrigger::LoadOldEvent(BinStream& bs, Hmx::Object* obj, const char* trigName, ObjectDir* dir){
+    mTriggerEvents.clear();
+    Symbol s;
+    bs >> s;
+    if(!s.Null()){
+        mTriggerEvents.push_back(s);
+    }
+    if(trigName){
+        SetName(NextName(MakeString("%s_%s.trig", trigName, s), dir), dir);
+    }
+    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(obj);
+    if(gRev < 5){
+        bool b58;
+        bs >> b58;
+        LoadOldAnim(bs, b58 ? anim : nullptr);
+    }
+    else {
+        unsigned int count;
+        bs >> count;
+        EventTrigger* curTrig = this;
+        while(count-- != 0){
+            LoadOldAnim(bs, anim);
+            if(count != 0){
+                EventTrigger* newTrig = new EventTrigger();
+                mNextLink = newTrig;
+                curTrig = mNextLink;
+                curTrig->SetName(MakeString("%s_%d.trig", FileGetBase(Name(), 0), count), dir);
+            }
+        }
+    }
+    int whichVec;
+    bs >> whichVec;
+    if(whichVec == 1){
+        RndDrawable* draw = dynamic_cast<RndDrawable*>(obj);
+        if(draw) mShows.push_back(draw);
+    }
+    else if(whichVec == 2){
+        RndDrawable* draw = dynamic_cast<RndDrawable*>(obj);
+        if(draw){
+            mHideDelays.push_back();
+            mHideDelays.back().mHide = draw;
+        }
+    }
+    else if(whichVec == 3){
+        MILO_WARN("%s: can't enable %s", Name(), obj ? obj->Name() : "''");
+    }
+    else if(whichVec == 4){
+        MILO_WARN("%s: can't disable %s", Name(), obj ? obj->Name() : "''");
+    }
+    if(gRev > 1){
+        float f50;
+        bs >> f50;
+        if(f50 != 0){
+            for(ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+                if(it->mAnim->Units() == 0){
+                    it->mDelay += f50;
+                }
+                else {
+                    MILO_WARN("%s: anim delay not in seconds");
+                }
+            }
+        }
+    }
+    if(gRev > 3){
+        String str;
+        bs >> str;
+        if(!str.empty()){
+            MILO_WARN("%s: %s", Name(), str);
+        }
+    }
+}
+
+void EventTrigger::CleanupEventCase(std::vector<Symbol>& syms){
+    for(std::vector<Symbol>::iterator it = syms.begin(); it != syms.end(); ++it){
+        const char* lightStr = strstr(it->mStr, "lighting_");
+        if(lightStr){
+            String str(*it);
+            str.ToLower();
+            *it = str.c_str();
+        }
+    }
+}
 
 BEGIN_LOADS(EventTrigger)
     LOAD_REVS(bs)
@@ -245,6 +364,7 @@ BEGIN_LOADS(EventTrigger)
     LOAD_SUPERCLASS(Hmx::Object)
     if(gRev > 0xF) LOAD_SUPERCLASS(RndAnimatable)
     UnregisterEvents();
+    std::list<EventTrigger*> triggers;
     if(gRev > 9) bs >> mTriggerEvents;
     else if(gRev > 6){
         mTriggerEvents.clear();
@@ -253,11 +373,48 @@ BEGIN_LOADS(EventTrigger)
         if(!sym.Null()) mTriggerEvents.push_back(sym);
     }
     if(gRev > 6) bs >> mAnims >> mSounds >> mShows;
+
     if(gRev > 0xC) bs >> mHideDelays;
-    else {
-        // gross
+    else if(gRev > 8) {
+        mHideDelays.clear();
+        int count;
+        bs >> count;
+        mHideDelays.resize(count);
+        for(ObjVector<HideDelay>::iterator it = mHideDelays.begin(); it != mHideDelays.end(); ++it){
+            bs >> it->mHide;
+            bs >> it->mDelay;
+        }
     }
-    if(gRev > 2) bs >> mEnableEvents >> mDisableEvents;
+    else if(gRev > 6){
+        ObjPtrList<RndDrawable> drawList(this, kObjListNoNull);
+        bs >> drawList;
+        mHideDelays.clear();
+        for(ObjPtrList<RndDrawable>::iterator it = drawList.begin(); it != drawList.end(); ++it){
+            mHideDelays.push_back();
+            mHideDelays.back().mHide = *it;
+        }
+    }
+    else {
+        ObjPtr<Hmx::Object> objPtr(this);
+        bs >> objPtr;
+        unsigned int count;
+        bs >> count;
+        String str(FileGetBase(Name(), 0));
+        TheLoadMgr.SetEditMode(true);
+        EventTrigger* curTrig = this;
+        while(count-- != 0){
+            curTrig->LoadOldEvent(bs, objPtr, count != 0 || curTrig != this ? str.c_str() : 0, Dir());
+            if(count != 0){
+                curTrig = new EventTrigger();
+                triggers.push_back(curTrig);
+            }
+        }
+        TheLoadMgr.SetEditMode(false);
+    }
+    if(gRev > 2){
+        bs >> mEnableEvents;
+        bs >> mDisableEvents;
+    }
     if(gRev > 5) bs >> mWaitForEvents;
     if(gRev > 6) bs >> mNextLink;
     if(gRev < 10){
@@ -266,7 +423,11 @@ BEGIN_LOADS(EventTrigger)
         RemoveNullEvents(mWaitForEvents);
     }
     if(gRev < 7){
-        // iterator jank
+        for(std::list<EventTrigger*>::const_iterator it = triggers.begin(); it != triggers.end(); ++it){
+            (*it)->mEnableEvents = mEnableEvents;
+            (*it)->mDisableEvents = mDisableEvents;
+            (*it)->mWaitForEvents = mWaitForEvents;
+        }
     }
     if(gRev > 7) bs >> mProxyCalls;
     if(gRev > 0xB){
@@ -275,7 +436,7 @@ BEGIN_LOADS(EventTrigger)
         mTriggerOrder = i;
     }
     if(gRev > 0xD) bs >> mResetTriggers;
-    if(gRev > 0xE) LOAD_BITFIELD(bool, unkdf)
+    if(gRev > 0xE) LOAD_BITFIELD(bool, mEnabledAtStart)
     if(gRev > 0xF){
         int i;
         bs >> i;

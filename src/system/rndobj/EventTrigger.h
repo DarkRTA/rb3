@@ -79,6 +79,8 @@ public:
     void CleanupEventCase(std::vector<Symbol>&);
     void ConvertParticleTriggerType();
     void SetNextLink(EventTrigger*);
+    void LoadOldAnim(BinStream&, RndAnimatable*);
+    void LoadOldEvent(BinStream&, Hmx::Object*, const char*, ObjectDir*);
 
     DataNode OnTrigger(DataArray*);
     static DataNode Cleanup(DataArray*);
@@ -107,6 +109,7 @@ public:
     bool unkdf : 1; // 0xdf >> 7 & 1
     bool mEnabled : 1; // 0xdf >> 6 & 1
     bool mEnabledAtStart : 1; // 0xdf >> 5 & 1
+    unsigned char unkdf5thru2 : 2;
 };
 
 BinStream& operator>>(BinStream&, EventTrigger::Anim&);
