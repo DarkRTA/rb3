@@ -56,33 +56,47 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
             }
         }
     }
-    // after all the ObjDirs have been Itr'd through
-    for(std::list<EventTrigger*>::iterator iter = trigList.begin(); iter != trigList.end(); iter++){
-        std::list<EventTrigger*>::iterator iter2 = iter;
-        EventTrigger* t1 = *iter;
-        EventTrigger* t2 = *iter2;
-        if(t1 == t2){
-            if(t1->mTriggerEvents == t2->mTriggerEvents &&
-                t1->mEnableEvents == t2->mEnableEvents &&
-                t1->mDisableEvents == t2->mDisableEvents &&
-                t1->mWaitForEvents == t2->mWaitForEvents){
-                MILO_WARN("Combining %s with %s", t1->Name(), t2->Name());
-                while(!t1->mAnims.empty()){
-                    t2->mAnims.push_back(t1->mAnims.back());
-                    t1->mAnims.pop_back();
+    for(std::list<EventTrigger*>::iterator iter = trigList.begin(); iter != trigList.end(); ++iter){
+        EventTrigger* curTrig = *iter;
+        for(std::list<EventTrigger*>::iterator iter2 = iter; iter2 != trigList.end(); ){
+            EventTrigger* curTrig2 = *iter2;
+            if(curTrig != curTrig2 &&
+                curTrig2->mTriggerEvents == curTrig->mTriggerEvents &&
+                curTrig2->mEnableEvents == curTrig->mEnableEvents &&
+                curTrig2->mDisableEvents == curTrig->mDisableEvents &&
+                curTrig2->mWaitForEvents == curTrig->mWaitForEvents){
+                MILO_WARN("Combining %s with %s", curTrig2->Name(), curTrig->Name());
+                while(!curTrig2->mAnims.empty()){
+                    curTrig->mAnims.push_back(curTrig2->mAnims.back());
+                    curTrig2->mAnims.pop_back();
                 }
-                while(!t1->mSounds.empty()){
-                    t2->mSounds.push_back(t1->mSounds.back());
-                    t1->mSounds.pop_back();
+                while(!curTrig2->mSounds.empty()){
+                    curTrig->mSounds.push_back(curTrig2->mSounds.back());
+                    curTrig2->mSounds.pop_back();
                 }
-                while(!t1->mShows.empty()){
-                    t2->mShows.push_back(t1->mShows.back());
-                    t2->mShows.pop_back();
+                while(!curTrig2->mShows.empty()){
+                    curTrig->mShows.push_back(curTrig2->mShows.back());
+                    curTrig2->mShows.pop_back();
                 }
+                while(!curTrig2->mHideDelays.empty()){
+                    curTrig->mHideDelays.push_back(curTrig2->mHideDelays.back());
+                    curTrig2->mHideDelays.pop_back();
+                }
+                while(!curTrig2->mProxyCalls.empty()){
+                    curTrig->mProxyCalls.push_back(curTrig2->mProxyCalls.back());
+                    curTrig2->mProxyCalls.pop_back();
+                }
+                const std::vector<ObjRef*>& refs = curTrig2->Refs();
+                while(!refs.empty()){
+                    refs.back()->Replace(curTrig2, curTrig);
+                }
+                delete curTrig2;
+                iter2 = trigList.erase(iter2);
             }
+            else ++iter2;
         }
     }
-    return DataNode(0);
+    return 0;
 }
 #pragma pop
 

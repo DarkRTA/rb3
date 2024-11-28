@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_EVENTTRIGGER_H
-#define RNDOBJ_EVENTTRIGGER_H
+#pragma once
 #include "rndobj/Anim.h"
 #include "rndobj/Draw.h"
 #include "rndobj/PartLauncher.h"
@@ -13,7 +12,7 @@ public:
     public:
         Anim(Hmx::Object*);
 
-        ObjOwnerPtr<RndAnimatable, class ObjectDir> mAnim; // 0x0
+        ObjOwnerPtr<RndAnimatable> mAnim; // 0x0
         float mBlend; // 0xc
         float mDelay; // 0x10
         bool mWait; // 0x14
@@ -30,16 +29,16 @@ public:
     public:
         ProxyCall(Hmx::Object*);
 
-        ObjOwnerPtr<class ObjectDir, class ObjectDir> mProxy; // 0x0
+        ObjOwnerPtr<class ObjectDir> mProxy; // 0x0
         Symbol mCall; // 0xc
-        ObjOwnerPtr<EventTrigger, class ObjectDir> mEvent; // 0x10
+        ObjOwnerPtr<EventTrigger> mEvent; // 0x10
     };
 
     class HideDelay {
     public:
         HideDelay(Hmx::Object*);
 
-        ObjOwnerPtr<RndDrawable, class ObjectDir> mHide; // 0x0
+        ObjOwnerPtr<RndDrawable> mHide; // 0x0
         float mDelay; // 0xc
         int mRate; // 0x10
     };
@@ -57,7 +56,7 @@ public:
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual void SetName(const char*, ObjectDir*);
     virtual void Trigger(); // 0x50
     virtual void BasicReset();
     virtual DataArray* SupportedEvents();
@@ -86,22 +85,22 @@ public:
     DataNode OnProxyCalls(DataArray*);
 
     ObjVector<Anim> mAnims; // 0x14
-    ObjPtrList<Task, class ObjectDir> mSpawnedTasks; // 0x20
+    ObjPtrList<Task> mSpawnedTasks; // 0x20
     ObjVector<ProxyCall> mProxyCalls; // 0x30
-    ObjPtrList<Sequence, class ObjectDir> mSounds; // 0x3c
-    ObjPtrList<RndDrawable, class ObjectDir> mShows; // 0x4c
-    ObjPtrList<EventTrigger, class ObjectDir> mResetTriggers; // 0x5c
+    ObjPtrList<Sequence> mSounds; // 0x3c
+    ObjPtrList<RndDrawable> mShows; // 0x4c
+    ObjPtrList<EventTrigger> mResetTriggers; // 0x5c
     ObjVector<HideDelay> mHideDelays; // 0x6c
     std::vector<Symbol> mTriggerEvents; // 0x78
     std::vector<Symbol> mEnableEvents; // 0x80
     std::vector<Symbol> mDisableEvents; // 0x88
     std::vector<Symbol> mWaitForEvents; // 0x90
-    ObjPtr<EventTrigger, class ObjectDir> mNextLink; // 0x98
+    ObjPtr<EventTrigger> mNextLink; // 0x98
     Symbol unka4;
-    ObjPtrList<RndPartLauncher, class ObjectDir> mPartLaunchers; // 0xa8
+    ObjPtrList<RndPartLauncher> mPartLaunchers; // 0xa8
     float mAnimFrame; // 0xb8
-    ObjPtrList<RndDrawable, class ObjectDir> unkbc;
-    ObjPtrList<RndDrawable, class ObjectDir> unkcc;
+    ObjPtrList<RndDrawable> unkbc;
+    ObjPtrList<RndDrawable> unkcc;
     unsigned char mTriggerOrder; // 0xdc
     unsigned char mAnimTrigger; // 0xdd
     unsigned char unkde; // 0xde
@@ -116,5 +115,3 @@ inline BinStream& operator>>(BinStream& bs, EventTrigger::HideDelay& hd){
     bs >> hd.mHide >> hd.mDelay >> hd.mRate;
     return bs;
 }
-
-#endif // RNDOBJ_EVENTTRIGGER_H

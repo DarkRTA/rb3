@@ -31,7 +31,7 @@ BEGIN_COPYS(CharWeightable)
     CREATE_COPY(CharWeightable)
     BEGIN_COPYING_MEMBERS
         if(ty == kCopyShallow){
-            SetWeightOwner(c->mWeightOwner.Ptr());
+            SetWeightOwner(c->mWeightOwner);
         }
         else {
             SetWeightOwner(this);
