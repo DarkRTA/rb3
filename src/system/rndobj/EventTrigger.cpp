@@ -88,7 +88,7 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
 
 void EventTrigger::Init(){
     Register();
-    // DataRegisterFunc("cleanup_triggers", Cleanup);
+    DataRegisterFunc("cleanup_triggers", Cleanup);
 }
 
 void EventTrigger::SetName(const char* cc, class ObjectDir* dir){

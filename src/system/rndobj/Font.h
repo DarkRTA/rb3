@@ -37,7 +37,7 @@ public:
     struct KernInfo {
         unsigned short unk0;
         unsigned short unk2;
-        float unk4;
+        float kerning; // 0x4
     };
 
     RndFont();
@@ -72,8 +72,8 @@ public:
     void SetASCIIChars(String);
 
     RndMat* GetMat() const { return mMat; }
-    void SetNextFont(RndFont* font){ unk78 = font; }
-    RndFont* NextFont() const { return unk78; }
+    void SetNextFont(RndFont* font){ mNextFont = font; }
+    RndFont* NextFont() const { return mNextFont; }
     bool IsMonospace() const { return mMonospace; }
     bool IsPacked() const { return mPacked; }
     float CellDiff() const { return mCellSize.y / mCellSize.x; }
@@ -98,9 +98,9 @@ public:
     float mDeprecatedSize; // 0x5c
     std::vector<unsigned short> mChars; // 0x60
     bool mMonospace; // 0x68
-    Vector2 unk6c; // 0x6c
+    Vector2 mTexCellSize; // 0x6c
     bool mPacked; // 0x74
-    ObjPtr<RndFont> unk78; // 0x78
+    ObjPtr<RndFont> mNextFont; // 0x78
 };
 
 class KerningTable {
@@ -142,7 +142,7 @@ public:
             info0 = mEntries[i].key;
             unsigned short& info2 = info[i].unk2;
             info2 = (unsigned int)(mEntries[i].key) >> 16;
-            float& info4 = info[i].unk4;
+            float& info4 = info[i].kerning;
             info4 = mEntries[i].kerning;
         }
     }
@@ -165,7 +165,7 @@ public:
             if(Valid(curInfo, font)){
                 Entry& curEntry = mEntries[i];
                 curEntry.key = Key(curInfo.unk0, curInfo.unk2);
-                curEntry.kerning = curInfo.unk4;
+                curEntry.kerning = curInfo.kerning;
                 int index = TableIndex(curInfo.unk0, curInfo.unk2);
                 curEntry.next = mTable[index];
                 mTable[index] = &curEntry;

@@ -33,7 +33,7 @@ BinStream& operator>>(BinStream& bs, RndFont::KernInfo& ki) {
     if (RndFont::gRev < 6) {
         u8 x; bs >> x; bs >> x;
     }
-    bs >> ki.unk4;
+    bs >> ki.kerning;
     return bs;
 }
 
@@ -57,9 +57,9 @@ void RndFont::GetTexCoords(unsigned short c, Vector2& tl, Vector2& br) const {
         std::map<unsigned short, CharInfo>::const_iterator it = mCharInfoMap.find(c);
         const CharInfo& info = it->second;
         tl.x = info.unk0;
-        br.x = info.charWidth * unk6c.x + info.unk0;
+        br.x = info.charWidth * mTexCellSize.x + info.unk0;
         tl.y = info.unk4;
-        br.y = info.unk4 + unk6c.y;
+        br.y = info.unk4 + mTexCellSize.y;
     }
 }
 
@@ -151,8 +151,8 @@ RndTex* RndFont::ValidTexture() const {
 
 void RndFont::SetBitmapSize(const Vector2& cs, unsigned int i1, unsigned int i2) {
     mCellSize = cs;
-    unk6c.x = mCellSize.x / i1;
-    unk6c.y = mCellSize.y / i2;
+    mTexCellSize.x = mCellSize.x / i1;
+    mTexCellSize.y = mCellSize.y / i2;
 }
 
 void RndFont::UpdateChars() {
@@ -170,8 +170,8 @@ void RndFont::UpdateChars() {
         BitmapLocker l(this);
         RndBitmap* lockedBmap = l.PtrToBitmap();
         if(lockedBmap){
-            unk6c.x = mCellSize.x / lockedBmap->Width();
-            unk6c.y = mCellSize.y / lockedBmap->Height();
+            mTexCellSize.x = mCellSize.x / lockedBmap->Width();
+            mTexCellSize.y = mCellSize.y / lockedBmap->Height();
             Vector2 v80(0,0);
             for(int i = 0; i < mChars.size(); i++){
                 unsigned short curChar = mChars[i];
@@ -369,7 +369,7 @@ BEGIN_LOADS(RndFont)
         }
     }
     if(gRev > 0xD){
-        bs >> unk6c;
+        bs >> mTexCellSize;
         if(gRev < 0x11){
             for(int i = 0; i < 0x100; i++){
                 CharInfo& info = mCharInfoMap[i];
@@ -413,7 +413,7 @@ BEGIN_LOADS(RndFont)
         SetKerning(kernInfos);
         MILO_LOG("NOTIFY: %s is old version, resave file\n", PathName(this));
     }
-    if(gRev > 0x10) bs >> unk78;
+    if(gRev > 0x10) bs >> mNextFont;
     int i10 = 0;
     RndTex* valid = ValidTexture();
     if(valid) i10 = valid->SizeKb();
@@ -430,7 +430,7 @@ BEGIN_COPYS(RndFont)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_MEMBER_FROM(f, mMat)
     COPY_MEMBER_FROM(f, mCellSize)
-    COPY_MEMBER_FROM(f, unk6c)
+    COPY_MEMBER_FROM(f, mTexCellSize)
     COPY_MEMBER_FROM(f, mDeprecatedSize)
     COPY_MEMBER_FROM(f, mChars)
     COPY_MEMBER_FROM(f, mMonospace)
@@ -464,7 +464,7 @@ void RndFont::Print() {
 }
 
 RndFont::RndFont() : mMat(this), mTextureOwner(this, this), mKerningTable(0), mBaseKerning(0.0f), mCellSize(1.0f, 1.0f),
-    mDeprecatedSize(0.0f), mMonospace(0), unk6c(0.0f, 0.0f), mPacked(0), unk78(this) {
+    mDeprecatedSize(0.0f), mMonospace(0), mTexCellSize(0.0f, 0.0f), mPacked(0), mNextFont(this) {
 
 }
 

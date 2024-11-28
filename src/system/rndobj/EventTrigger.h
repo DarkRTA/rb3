@@ -82,7 +82,7 @@ public:
     void SetNextLink(EventTrigger*);
 
     DataNode OnTrigger(DataArray*);
-    DataNode Cleanup(DataArray*);
+    static DataNode Cleanup(DataArray*);
     DataNode OnProxyCalls(DataArray*);
 
     ObjVector<Anim> mAnims; // 0x14
