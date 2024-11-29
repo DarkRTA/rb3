@@ -1,5 +1,4 @@
 #pragma once
-
 #include <vector>
 #include "math/Color.h"
 #include "math/Mtx.h"
@@ -8,13 +7,21 @@
 #include "rndobj/Tex.h"
 
 enum Blend {
-    kDest = 0,
-    kSrc = 1,
-    kAdd = 2,
-    kSrcAlpha = 3,
-    kSrcAlphaAdd = 4,
-    kSubtract = 5,
-    kMultiply = 6,
+    /** "Don't show this material at all; just show the frame buffer" */
+    kBlendDest = 0,
+    /** "Don't blend this material at all" */
+    kBlendSrc = 1,
+    /** "Output is material + frame buffer" */
+    kBlendAdd = 2,
+    /** "Output is (material x mat alpha) + (frame buffer x (1 - mat alpha))" */
+    kBlendSrcAlpha = 3,
+    /** "Output is (material x mat alpha) + frame buffer" */
+    kBlendSrcAlphaAdd = 4,
+    /** "Output is frame buffer - material" */
+    kBlendSubtract = 5,
+    /** "Output is frame buffer x material" */
+    kBlendMultiply = 6,
+    /** "Output is material + (frame buffer x (1 - mat alpha)" */
     kPreMultAlpha = 7,
 };
 enum ZMode {
@@ -48,10 +55,19 @@ enum ShaderVariation {
     kShaderVariation_Skin,
     kShaderVariation_Hair
 };
+enum ColorModFlags {
+    kColorModNone = 0,
+    kColorModAlphaPack = 1,
+    kColorModAlphaUnpackModulate = 2,
+    kColorModModulate = 3
+};
 
 struct MatPerfSettings {
     MatPerfSettings();
     void Load(BinStream&);
+    void SetPS3ForceTrilinear(bool set){
+        mPS3ForceTrilinear = set;
+    }
     
     bool mRecvProjLights : 1;
     bool mRecvPointCubeTex : 1;
@@ -108,6 +124,12 @@ struct MatShaderOptions {
     }
 };
 
+/**
+ * @brief A class for material.
+ * Original _objects description:
+ * "Material objects determine texturing, blending, and the
+ * effect of lighting on drawn polys."
+ */
 class RndMat : public Hmx::Object {
 public:
     RndMat();
@@ -200,99 +222,69 @@ public:
 
     /** "Base material color" */
     Hmx::Color mColor; // 0x1c
-
     /** "Transform for coordinate generation" */
     Transform mTexXfm; // 0x2c
-
     /** "Base texture map, modulated with color and alpha" */
-    ObjPtr<RndTex, class ObjectDir> mDiffuseTex; // 0x5c
-
+    ObjPtr<RndTex> mDiffuseTex; // 0x5c
     /** "Alpha level below which gets cut" */
     int mAlphaThresh; // 0x68
-
     /** "Next material for object" */
-    ObjPtr<RndMat, class ObjectDir> mNextPass; // 0x6c
-
+    ObjPtr<RndMat> mNextPass; // 0x6c
     /** "Multiplier to apply to emission" */
     float mEmissiveMultiplier; // 0x78
-
     /** "Map for self illumination" */
-    ObjPtr<RndTex, class ObjectDir> mEmissiveMap; // 0x7c
-
+    ObjPtr<RndTex> mEmissiveMap; // 0x7c
     /** "The scale of the refraction of the screen under the material." */
     float mRefractStrength; // 0x88
-
     /** "This is a normal map used to distort the screen under the material. If none is specified, the regular normal map will be used." */
-    ObjPtr<RndTex, class ObjectDir> mRefractNormalMap; // 0x8c
-
+    ObjPtr<RndTex> mRefractNormalMap; // 0x8c
     std::vector<Hmx::Color> mColorMod; // 0x98
     MatPerfSettings mPerfSettings; // 0xa0
     MatShaderOptions mShaderOptions; // 0xa4
-
     // 0xac
     /** "Double the intensity of base map" */
     bool mIntensify : 1;
-
     /** "Modulate with environment ambient and lights" */
     bool mUseEnviron : 1;
-
     /** "Use vertex color and alpha for base or ambient" */
     bool mPreLit : 1;
-
     /** "Cut zero alpha pixels from z-buffer" */
     bool mAlphaCut : 1;
-
     /** "Write pixel alpha to screen" */
     bool mAlphaWrite : 1;
-
     /** "Cull backface polygons" */
     bool mCull : 1;
-
     /** "Use per-pixel lighting" */
     bool mPerPixelLit : 1;
-
     /** "Projected material from camera's POV" */
     bool mScreenAligned : 1;
-
     // 0xad
     /** "When enabled, this material will refract the screen under the material" */
     bool mRefractEnabled : 1;
-
     /** "Is the Mat lit with point lights?" */
     bool mPointLights : 1;
-
     /** "Is the Mat affected by fog?" */
     bool mFog : 1;
-
     /** "Is the Mat affected its Environment's fade_out?" */
     bool mFadeout : 1;
-
     /** "Is the Mat affected its Environment's color adjust?" */
     bool mColorAdjust : 1;
-
     unsigned char unkbool : 3;
-    
     // 0xb0
     /** "How to blend poly into screen" */
     Blend mBlend : 8;
-
     /** "How to generate texture coordinates" */
     TexGen mTexGen : 8;
-
     /** "Texture mapping mode" */
     TexWrap mTexWrap : 8;
-
     /** "How to read and write z-buffer" */
-    ZMode mZMode : 8;
-    
+    ZMode mZMode : 8;    
     // 0xb4
     /** "How to read and write the stencil buffer" */
     StencilMode mStencilMode : 8;
-
     /** "Select a variation on the shader to enable a new range of rendering features." */
     ShaderVariation mShaderVariation : 8;
-
-    int unkb0p2 : 8;
+    ColorModFlags mColorModFlags : 8;
     int mDirty : 8;
 };
 
