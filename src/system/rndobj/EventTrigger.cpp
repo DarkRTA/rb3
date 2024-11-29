@@ -168,7 +168,7 @@ EventTrigger::ProxyCall::ProxyCall(Hmx::Object* o) : mProxy(o, 0), mEvent(o, 0) 
 
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
     mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
-    mHidden(this, kObjListNoNull), mShown(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), mLastTriggerIndex(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1), mWaiting(0), mTriggered(0) {
+    mHidden(this, kObjListNoNull), mShown(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(kTriggerAnimNone), mLastTriggerIndex(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1), mWaiting(0), mTriggered(0) {
     RegisterEvents();
 }
 
@@ -589,17 +589,17 @@ void EventTrigger::BasicReset(){
 
 void EventTrigger::StartAnim(){
     mFrame = kHugeFloat;
-    if(mAnimTrigger == 1){
+    if(mAnimTrigger == kTriggerAnimStart){
         Trigger();
     }
 }
 
 void EventTrigger::EndAnim(){
     mFrame = kHugeFloat;
-    if(mAnimTrigger == 2){
+    if(mAnimTrigger == kTriggerAnimEnd){
         Trigger();
     }
-    else if(mAnimTrigger == 1){
+    else if(mAnimTrigger == kTriggerAnimStart){
         BasicReset();
     }
 }
@@ -607,7 +607,7 @@ void EventTrigger::EndAnim(){
 void EventTrigger::SetFrame(float frame, float blend){
     float oldframe = mFrame;
     RndAnimatable::SetFrame(frame, blend);
-    if(mAnimTrigger == 3 && oldframe < mAnimFrame && mFrame >= mAnimFrame){
+    if(mAnimTrigger == kTriggerAnimFrame && oldframe < mAnimFrame && mFrame >= mAnimFrame){
         Trigger();
     }
 }
