@@ -1208,7 +1208,10 @@
             "system/rndobj/Lit.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
             "system/rndobj/Mat.cpp": "NonMatching",
-            "system/rndobj/MatAnim.cpp": "NonMatching",
+            "system/rndobj/MatAnim.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/Mesh.cpp": "NonMatching",
             "system/rndobj/MeshAnim.cpp": "NonMatching",
             "system/rndobj/MeshDeform.cpp": "NonMatching",
