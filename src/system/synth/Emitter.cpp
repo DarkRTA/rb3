@@ -46,7 +46,7 @@ BEGIN_LOADS(SynthEmitter)
 END_LOADS
 
 void SynthEmitter::DrawShowing(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         CheckLoadResources();
         Transform& xfm = WorldXfm();
         gIconDir->SetLocalXfm(xfm);
@@ -55,7 +55,7 @@ void SynthEmitter::DrawShowing(){
 }
 
 RndDrawable* SynthEmitter::CollideShowing(const Segment& s, float& dist, Plane& plane){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         CheckLoadResources();
         RndDrawable* dirDraw = gIconDir->CollideShowing(s, dist, plane);
         if(dirDraw){
@@ -66,7 +66,7 @@ RndDrawable* SynthEmitter::CollideShowing(const Segment& s, float& dist, Plane& 
 }
 
 int SynthEmitter::CollidePlane(const Plane& plane){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         CheckLoadResources();
         return gIconDir->CollidePlane(plane);
     }

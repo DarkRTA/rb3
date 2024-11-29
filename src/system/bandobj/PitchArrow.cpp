@@ -64,7 +64,7 @@ void PitchArrow::Reset(RndGroup* grp){
         mGhostGrp->SetLocalXfm(LocalXfm());
     }
     SetArrowStyle(mArrowStyle);
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         SetColor(GetVocalHUDColor(mTestColor));
         if(mColorFadeAnim) mColorFadeAnim->SetFrame(mColorFade, 1.0f);
     }

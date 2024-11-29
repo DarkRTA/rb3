@@ -10,7 +10,7 @@ void BandSwatch::Init(){
     TheUI->InitResources("BandSwatch");
     Register();
     sDummyPalette = Hmx::Object::New<ColorPalette>();
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         for(int i = 0; i < 10; i++){
             sDummyPalette->mColors.push_back(Hmx::Color(RandomFloat(), RandomFloat(), RandomFloat()));
         }

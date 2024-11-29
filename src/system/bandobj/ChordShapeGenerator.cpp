@@ -166,7 +166,7 @@ RndMesh* ChordShapeGenerator::MakeInvertedMesh(const RndMesh* mesh){
         curface.idx1 = curface.idx2;
         curface.idx2 = temp;
     }
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         ret->Sync(0x3F);
         ret->SetMutable(0);
     }

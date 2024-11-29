@@ -47,7 +47,7 @@ UIListSlotElement* UIListSubList::CreateElement(UIList* parent){
     l->SetParent(parent);
     l->SetType(mList->Type());
     l->Copy(mList, kCopyDeep);
-    if(!TheLoadMgr.EditMode()) MILO_ASSERT(parent, 0x94);
+    if(!LOADMGR_EDITMODE) MILO_ASSERT(parent, 0x94);
     if(parent){
         l->SetInAnim(parent->GetInAnim());
         l->SetOutAnim(parent->GetOutAnim());
@@ -96,7 +96,7 @@ inline void UIListSubListElement::Draw(const Transform& tf, float f, UIColor* co
 
 inline void UIListSubListElement::Fill(const UIListProvider& prov, int i, int j){
     UIListProvider* theProvider;
-    if(TheLoadMgr.EditMode()) theProvider = mList;
+    if(LOADMGR_EDITMODE) theProvider = mList;
     else theProvider = prov.Provider(i, j, mSlot);
     if(theProvider){
         mList->SetProvider(theProvider);

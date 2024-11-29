@@ -725,7 +725,7 @@ void BandCharacter::SetDeformation(){
         clip->ScaleDown(meshes, 0);
         clip->ScaleAdd(meshes, 1, 0, 0);
         meshes.PoseMeshes();
-        if(TheLoadMgr.EditMode() && BoneServo()){
+        if(LOADMGR_EDITMODE && BoneServo()){
             BoneServo()->AcquirePose();
         }
         for(ObjPtrList<CharIKScale, ObjectDir>::iterator it = unk5c0.begin(); it != unk5c0.end(); ++it){
@@ -954,7 +954,7 @@ RndTex* BandCharacter::GetPatchTex(Patch& patch){
         if(!mPrefab.Null()){
             return Find<RndTex>(MakeString("prefab_art%02d.tex", patch.mTexture), false);
         }
-        else if(TheLoadMgr.EditMode()) return Find<RndTex>("patchtest.tex", false);
+        else if(LOADMGR_EDITMODE) return Find<RndTex>("patchtest.tex", false);
         else return 0;
     }
     return handled.Obj<RndTex>();
@@ -969,7 +969,7 @@ RndMesh* BandCharacter::GetPatchMesh(Patch& patch){
 }
 
 RndTex* BandCharacter::GetBandLogo(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         return TheRnd->GetNullTexture();
     }
     else {
@@ -1320,7 +1320,7 @@ DataNode BandCharacter::OnSetFileMerger(DataArray* da){
         mFileMerger->Select("tour_ending_clips", fp10c, false);
     }
     else {
-        if(TheLoadMgr.EditMode() && !mTestTourEndingVenue.Null()){
+        if(LOADMGR_EDITMODE && !mTestTourEndingVenue.Null()){
             FilePath fp118(MakeString("char/main/anim/%s/finale/%s/%s/tour_endings.milo", animinst, mGender, mTestTourEndingVenue));
             mFileMerger->Select("tour_ending_clips", fp118, false);
         }

@@ -61,7 +61,7 @@ BandDirector::BandDirector() : mPropAnim(this, 0), mMerger(this, 0), mCurWorld(t
     unk110(0), mSongPref(0) {
     static DataNode& banddirector = DataVariable("banddirector");
     banddirector = DataNode(this);
-    mAsyncLoad = !TheLoadMgr.EditMode();
+    mAsyncLoad = !LOADMGR_EDITMODE;
     if(TheBandDirector){
         MILO_WARN("Trying to make > 1 BandDirector, which should be single");
     }
@@ -409,7 +409,7 @@ void BandDirector::EnterVenue(){
                 if(mCurWorld){
                     if(TheCrowdAudio) TheCrowdAudio->SetBank(mCurWorld);
 #ifdef MILO_DEBUG
-                    if(TheLoadMgr.EditMode()){
+                    if(LOADMGR_EDITMODE){
                         GetWorld()->mSphere = mCurWorld->mSphere;
                     }
 #endif
@@ -1316,7 +1316,7 @@ DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray* da){
             }
             b10 = true;
         }
-        if(b10 || TheLoadMgr.EditMode()){
+        if(b10 || LOADMGR_EDITMODE){
             float f5 = da->Float(5);
             Symbol s60 = da->Sym(3);
             float f108 = unk108;

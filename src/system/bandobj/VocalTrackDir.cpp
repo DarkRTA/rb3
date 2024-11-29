@@ -240,7 +240,7 @@ void VocalTrackDir::PostLoad(BinStream& bs){
         else {
             bs >> mConfigurableObjects;
             bs >> mVoxCfg;
-            if(!TheLoadMgr.EditMode()) mVoxCfg = 0;
+            if(!LOADMGR_EDITMODE) mVoxCfg = 0;
             bs >> unk2f0;
             bs >> mMinPitchRange;
             bs >> mArrowSmoothing;

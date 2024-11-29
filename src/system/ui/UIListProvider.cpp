@@ -7,7 +7,7 @@
 
 void UIListProvider::Text(int, int, UIListLabel* listlabel, UILabel* label) const {
 #ifdef VERSION_SZBE69_B8
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         label->SetEditText(listlabel->GetDefaultText());
     }
     else
@@ -21,7 +21,7 @@ RndMat* UIListProvider::Mat(int, int, UIListMesh* mesh) const {
 
 void UIListProvider::UpdateExtendedText(int, int, UILabel* label) const {
 #ifdef VERSION_SZBE69_B8
-    if(!TheLoadMgr.EditMode()){
+    if(!LOADMGR_EDITMODE){
 #endif
         MILO_WARN("Trying to update extended text without an override provider method. Label = %s", label->Name());
         label->SetTextToken(gNullStr);
@@ -32,7 +32,7 @@ void UIListProvider::UpdateExtendedText(int, int, UILabel* label) const {
 
 void UIListProvider::UpdateExtendedMesh(int, int, RndMesh* mesh) const {
 #ifdef VERSION_SZBE69_B8
-    if(!TheLoadMgr.EditMode()){
+    if(!LOADMGR_EDITMODE){
 #endif
         MILO_WARN("Trying to update extended mesh without an override provider method. Mesh = %s", mesh->Name());
         mesh->SetMat(0);
@@ -43,7 +43,7 @@ void UIListProvider::UpdateExtendedMesh(int, int, RndMesh* mesh) const {
 
 void UIListProvider::UpdateExtendedCustom(int, int, Hmx::Object* obj) const {
 #ifdef VERSION_SZBE69_B8
-    if(!TheLoadMgr.EditMode())
+    if(!LOADMGR_EDITMODE)
 #endif
         MILO_WARN("Trying to update extended custom object without an override provider method. object = %s", obj->Name());
 }
@@ -51,18 +51,18 @@ void UIListProvider::UpdateExtendedCustom(int, int, Hmx::Object* obj) const {
 void DataProvider::Text(int i, int j, UIListLabel* listlabel, UILabel* label) const {
     DataNode& node = mData->Node(j + mOffset);
     if(node.Type() == kDataArray){
-        if(!TheLoadMgr.EditMode() && unkd){
+        if(!LOADMGR_EDITMODE && unkd){
             Message msg("set_token_fmt", node);
             label->Handle(msg, false);
         }
-        else if(TheLoadMgr.EditMode()){
+        else if(LOADMGR_EDITMODE){
             label->SetEditText(Localize(node.Array()->Sym(0), 0));
         }
         else {
             label->SetTextToken(node.Array()->Sym(0));
         }
     }
-    else if(TheLoadMgr.EditMode()){
+    else if(LOADMGR_EDITMODE){
         label->SetEditText(Localize(node.ForceSym(), 0));
     }
     else {

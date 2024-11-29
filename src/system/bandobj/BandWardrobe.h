@@ -72,7 +72,7 @@ public:
     void SelectExtra(FileMerger::Merger&);
     BandCharDesc* GetPrefab(int, int);
     bool DemandLoad() const {
-        return TheLoadMgr.EditMode() || !TheBandDirector || !mDemandLoad.Null();
+        return LOADMGR_EDITMODE || !TheBandDirector || !mDemandLoad.Null();
     }
     bool DemandLoadSym() const { return !mDemandLoad.Null(); }
     bool PlayShot5() const { return mPlayShot5; }

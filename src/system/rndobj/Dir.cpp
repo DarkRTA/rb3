@@ -162,7 +162,7 @@ void RndDir::Poll(){
 
 void RndDir::Enter(){
 #ifdef MILO_DEBUG
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         DataNode events = OnSupportedEvents(0);
         DataArray* arr = events.Array();
         if(!arr->Contains(mTestEvent)){

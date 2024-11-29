@@ -271,8 +271,8 @@ void UILabel::SetFloat(const char* cc, float f){
 
 void UILabel::SetIcon(char c){
     mIcon = MakeString("%c", c);
-    if(!mIcon.empty() || !TheLoadMgr.EditMode()){
-        SetDisplayText(mIcon.c_str(), !TheLoadMgr.EditMode());
+    if(!mIcon.empty() || !LOADMGR_EDITMODE){
+        SetDisplayText(mIcon.c_str(), !LOADMGR_EDITMODE);
     }
 }
 
@@ -454,7 +454,7 @@ void UILabel::CenterWithLabel(UILabel* label, bool b, float f){
 }
 
 float GetTextSizeFromPctHeight(float f){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         float transnum = -TheUI->unk34->mLocalXfm.v.Y();
         Vector2 vec2_1(0.0f, 0.0f);
         Vector3 vec3_1;
@@ -468,7 +468,7 @@ float GetTextSizeFromPctHeight(float f){
 }
 
 float GetPctHeightFromTextSize(float f){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         Vector3 vec3_1(0.0f, 0.0f, 0.0f);
         Vector2 vec2_1;
         TheUI->unk34->WorldToScreen(vec3_1, vec2_1);

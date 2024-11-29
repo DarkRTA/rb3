@@ -109,7 +109,7 @@ bool TrackPanelDirBase::ModifierActive(Symbol s){
 
 void TrackPanelDirBase::Enter(){
     PanelDir::Enter();
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         if(Find<EventTrigger>("reset_all.trig", false)){
             ConfigureTracks(true);
             Reset();

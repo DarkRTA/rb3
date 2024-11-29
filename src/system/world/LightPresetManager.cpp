@@ -235,7 +235,7 @@ void LightPresetManager::SelectPreset(LightPreset* p, bool b){
     if(p) StartPreset(p, b);
     else {
         ReportError();
-        if(TheLoadMgr.EditMode()){
+        if(LOADMGR_EDITMODE){
             if(b) mPresetNew = 0;
             else mPresetPrev = 0;
         }

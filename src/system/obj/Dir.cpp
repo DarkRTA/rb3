@@ -455,7 +455,7 @@ void ObjectDir::PostLoad(BinStream& bs){
     if(mProxyOverride){
         bool overridden = false;
         mProxyOverride = false;
-        if(TheLoadMgr.EditMode() || (IsProxy() && !AllowsInlineProxy())){
+        if(LOADMGR_EDITMODE || (IsProxy() && !AllowsInlineProxy())){
             overridden = true;
         }
         if(!overridden) MILO_FAIL("You cannot override an inlined proxy!");

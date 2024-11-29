@@ -22,7 +22,7 @@ void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState&
         float somefloat = 1.0f;
         RndMat* themat = 0;
 #ifdef VERSION_SZBE69_B8
-        if(TheLoadMgr.EditMode()){
+        if(LOADMGR_EDITMODE){
             themat = mMesh->mMat;
             if(themat) somefloat = themat->mColor.alpha;
         }
@@ -31,7 +31,7 @@ void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState&
         UIListSlot::Draw(drawstate, liststate, tf, compstate, box, cmd);
         mMesh->SetLocalXfm(xfm1);
 #ifdef VERSION_SZBE69_B8
-        if(TheLoadMgr.EditMode()){
+        if(LOADMGR_EDITMODE){
             mMesh->SetMat(themat);
             if(themat){
                 themat->mColor.alpha = somefloat;

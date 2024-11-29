@@ -271,7 +271,7 @@ void GemTrackDir::Poll(){
 }
 
 void GemTrackDir::SetPitch(float pitch){
-    if(TheLoadMgr.EditMode() || mTrackPitch != pitch){
+    if(LOADMGR_EDITMODE || mTrackPitch != pitch){
         mTrackPitch = pitch;
         Hmx::Matrix3 mtx;
         Vector3 v;
@@ -380,7 +380,7 @@ void GemTrackDir::SetupSmasherPlate(){
             RndGroup* keygrp = Find<RndGroup>("key_shift_stationary_middle.grp", true);
             if(mTrackInstrument == kInstRealKeys) keygrp->AddObject(mSmasherPlate, 0);
             else smashergrp->AddObject(mSmasherPlate, 0);
-            if(!TheLoadMgr.EditMode() || IsProxy()){
+            if(!LOADMGR_EDITMODE || IsProxy()){
                 RndGroup* grptoadd = mTrackInstrument == kInstRealKeys ? Find<RndGroup>("key_shift_stationary_front.grp", true) : Find<RndGroup>("smasher_fx.grp", true);
                 RndGroup* after = mSmasherPlate->Find<RndGroup>("after_gems.grp", false);
                 if(after) after->AddObject(grptoadd, 0);
@@ -416,7 +416,7 @@ void GemTrackDir::ReleaseSmasherPlate(){
         else {
             RndGroup* smashergrp = Find<RndGroup>("smashers.grp", true);
             RndGroup* keygrp = Find<RndGroup>("key_shift_stationary_middle.grp", true);
-            if(!TheLoadMgr.EditMode() || IsProxy()){
+            if(!LOADMGR_EDITMODE || IsProxy()){
                 RndGroup* smashgrp = Find<RndGroup>("smasher_fx.grp", true);
                 RndGroup* keyfrontgrp = Find<RndGroup>("key_shift_stationary_front.grp", true);
                 RndGroup* after = mSmasherPlate->Find<RndGroup>("after_gems.grp", false);
@@ -449,7 +449,7 @@ void GemTrackDir::ResetSmashers(bool b){
 void GemTrackDir::ResetEffectSelector(){
     if(mEffectSelector){
         mEffectSelector->SetShowing(false);
-        if(!TheLoadMgr.EditMode()){
+        if(!LOADMGR_EDITMODE){
             DataArray* cfg = SystemConfig("track_graphics", "effects");
             DataArray* instarr = cfg->FindArray(mInstrument, false);
             if(instarr){

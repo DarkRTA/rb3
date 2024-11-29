@@ -32,7 +32,7 @@ void Screenshot::Load(BinStream& bs){
 }
 
 void Screenshot::Sync(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         delete mTex;
         delete mMat;
         mTex = Hmx::Object::New<RndTex>();
@@ -44,7 +44,7 @@ void Screenshot::Sync(){
 }
 
 void Screenshot::DrawShowing() {
-    if (!TheRnd->UnkE4() && TheLoadMgr.EditMode() && mMat) {
+    if (!TheRnd->UnkE4() && LOADMGR_EDITMODE && mMat) {
         TheRnd->DrawRect(Hmx::Rect(0, 0, TheRnd->Width(), TheRnd->Height()), Hmx::Color(0, 0, 0), mMat, 0, 0);
     }
 }

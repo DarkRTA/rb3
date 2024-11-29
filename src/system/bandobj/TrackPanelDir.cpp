@@ -198,7 +198,7 @@ void TrackPanelDir::ConfigureTracks(bool b){
     if(modeobj){
         if(modeobj->Property("is_practice", true)->Int()) b18 = true;
     }
-    if(TheLoadMgr.EditMode()) AssignTracks();
+    if(LOADMGR_EDITMODE) AssignTracks();
     for(int i = 0; i < mGemTracks.size(); i++){
         ConfigureTrack(i);
     }
@@ -267,7 +267,7 @@ void TrackPanelDir::ConfigureCrowdMeter(){
     }
     mCrowdMeter->UpdatePlayers(mInstruments);
     mCrowdMeter->Enable();
-    bool show = modeobj && modeobj->Property("show_crowd_meter", true)->Int() || TheLoadMgr.EditMode();
+    bool show = modeobj && modeobj->Property("show_crowd_meter", true)->Int() || LOADMGR_EDITMODE;
     mCrowdMeter->SetShowing(show);
 }
 
@@ -445,7 +445,7 @@ void TrackPanelDir::Reset(){
     }
     SetShowing(false);
     mTracksExtended = false;
-    if(TheLoadMgr.EditMode()) PlayIntro();
+    if(LOADMGR_EDITMODE) PlayIntro();
 }
 
 void TrackPanelDir::ResetAll(){
@@ -548,7 +548,7 @@ void TrackPanelDir::Coda(){
         if(modeobj){
             if(!modeobj->Property("enable_coda", true)->Int()) return;
         }
-        if((TheLoadMgr.EditMode() || (mTrackPanel && !mTrackPanel->IsGameOver())) && unk24c){
+        if((LOADMGR_EDITMODE || (mTrackPanel && !mTrackPanel->IsGameOver())) && unk24c){
             Find<EventTrigger>("bre_start.trig", true)->Trigger();
             mEndingBonus->Start(!mTrackPanel->AutoVocals());
             for(int i = 0; i < mTracks.size(); i++){
