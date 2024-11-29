@@ -1,8 +1,15 @@
 #include "rndobj/EventTrigger.h"
 #include "decomp.h"
+#include "math/Rand.h"
+#include "math/Utl.h"
+#include "obj/Data.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
+#include "obj/Object.h"
+#include "obj/Task.h"
 #include "obj/Utl.h"
+#include "os/Debug.h"
 #include "os/File.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Draw.h"
@@ -12,6 +19,7 @@
 #include "obj/DataFunc.h"
 #include "obj/Msg.h"
 #include "utl/Loader.h"
+#include "utl/Messages.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(EventTrigger)
@@ -160,7 +168,7 @@ EventTrigger::ProxyCall::ProxyCall(Hmx::Object* o) : mProxy(o, 0), mEvent(o, 0) 
 
 EventTrigger::EventTrigger() : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this), mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
     mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this), mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
-    unkbc(this, kObjListNoNull), unkcc(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), unkde(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1), unkdf5thru2(0) {
+    mHidden(this, kObjListNoNull), mShown(this, kObjListNoNull), mTriggerOrder(0), mAnimTrigger(0), mLastTriggerIndex(-1), unkdf(0), mEnabled(1), mEnabledAtStart(1), mWaiting(0), mTriggered(0) {
     RegisterEvents();
 }
 
@@ -453,6 +461,157 @@ BEGIN_LOADS(EventTrigger)
     ConvertParticleTriggerType();
 END_LOADS
 
+void EventTrigger::Trigger(){
+    mWaiting = 0;
+    if(!mNextLink) TriggerSelf();
+    else {
+        EventTrigger* it = this;
+        int num = 1;
+        while((it = it->mNextLink) != nullptr){
+            num++;
+        }
+        MILO_ASSERT(num < 256, 0x2D6);
+        switch(mTriggerOrder){
+            case 0:
+                num = RandomInt(0, num);
+                break;
+            case 1:
+                num = (mLastTriggerIndex + 1) % num;
+                break;
+            default:
+                MILO_WARN("Unknown trigger order for %s", Name());
+                break;
+        }
+        mLastTriggerIndex = num;
+        it = this;
+        while(num-- != 0){
+            it = it->mNextLink;
+        }
+        it->TriggerSelf();
+    }
+}
+
+#pragma push
+#pragma pool_data off
+void EventTrigger::TriggerSelf(){
+    for(ObjPtrList<EventTrigger>::iterator it = mResetTriggers.begin(); it != mResetTriggers.end(); ++it){
+        (*it)->BasicReset();
+    }
+    for(ObjVector<ProxyCall>::iterator it = mProxyCalls.begin(); it != mProxyCalls.end(); ++it){
+        if(it->mProxy){
+            if(!it->mCall.Null()){
+                static Message msg(0);
+                msg.SetType(it->mCall);
+                it->mProxy->Handle(msg, true);
+            }
+            if(it->mEvent){
+                it->mEvent->Trigger();
+            }
+        }
+    }
+    for(ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        if(it->mAnim){
+            if(it->mEnable){
+                mSpawnedTasks.push_back(
+                    it->mAnim->Animate(it->mBlend, it->mWait, it->mDelay, (RndAnimatable::Rate)it->mRate,
+                    it->mStart, it->mEnd, it->mPeriod, it->mScale, it->mType)
+                );
+            }
+            else {
+                mSpawnedTasks.push_back(
+                    it->mAnim->Animate(it->mBlend, it->mWait, it->mDelay)
+                );
+            }
+        }
+    }
+    for(ObjPtrList<Sequence>::iterator it = mSounds.begin(); it != mSounds.end(); ++it){
+        (*it)->Play(0, 0, 0);
+    }
+    for(ObjPtrList<RndDrawable>::iterator it = mShows.begin(); it != mShows.end(); ++it){
+        if(!(*it)->Showing()){
+            if(!mTriggered){
+                mShown.push_back(*it);
+            }
+            (*it)->SetShowing(true);
+        }
+    }
+    for(ObjVector<HideDelay>::iterator it = mHideDelays.begin(); it != mHideDelays.end(); ++it){
+        if(it->mHide){
+            if(it->mHide->Showing()){
+                if(!mTriggered){
+                    mHidden.push_back(it->mHide);
+                }
+                if(it->mDelay){
+                    static Message msg("set_showing", 0);
+                    MessageTask* msgtask = new MessageTask(it->mHide, msg);
+                    TheTaskMgr.Start(msgtask, RndAnimatable::RateToTaskUnits((RndAnimatable::Rate)it->mRate), it->mDelay);
+                    mSpawnedTasks.push_back(msgtask);
+                }
+                else {
+                    it->mHide->SetShowing(false);
+                }
+            }
+        }
+    }
+
+    for(ObjPtrList<RndPartLauncher>::iterator it = mPartLaunchers.begin(); it != mPartLaunchers.end(); ++it){
+        (*it)->LaunchParticles();
+    }
+    if(TypeDef()){
+        HandleType(trigger_msg);
+    }
+    mTriggered = true;
+}
+#pragma pop
+
+void EventTrigger::BasicReset(){
+    mSpawnedTasks.DeleteAll();
+    for(ObjPtrList<RndDrawable>::iterator it = mShown.begin(); it != mShown.end(); ++it){
+        (*it)->SetShowing(false);
+    }
+    for(ObjPtrList<RndDrawable>::iterator it = mHidden.begin(); it != mHidden.end(); ++it){
+        (*it)->SetShowing(true);
+    }
+    CleanupHideShow();
+    for(ObjVector<ProxyCall>::iterator it = mProxyCalls.begin(); it != mProxyCalls.end(); ++it){
+        if(it->mProxy && it->mEvent){
+            it->mEvent->BasicReset();
+        }
+    }
+    for(ObjPtrList<Sequence>::iterator it = mSounds.begin(); it != mSounds.end(); ++it){
+        (*it)->Stop(false);
+    }
+    if(TypeDef()){
+        Hmx::Object::Handle(reset_msg, false);
+    }
+    if(mNextLink) mNextLink->BasicReset();
+}
+
+void EventTrigger::StartAnim(){
+    mFrame = kHugeFloat;
+    if(mAnimTrigger == 1){
+        Trigger();
+    }
+}
+
+void EventTrigger::EndAnim(){
+    mFrame = kHugeFloat;
+    if(mAnimTrigger == 2){
+        Trigger();
+    }
+    else if(mAnimTrigger == 1){
+        BasicReset();
+    }
+}
+
+void EventTrigger::SetFrame(float frame, float blend){
+    float oldframe = mFrame;
+    RndAnimatable::SetFrame(frame, blend);
+    if(mAnimTrigger == 3 && oldframe < mAnimFrame && mFrame >= mAnimFrame){
+        Trigger();
+    }
+}
+
 BEGIN_HANDLERS(EventTrigger)
     HANDLE(trigger, OnTrigger)
     HANDLE_ACTION(enable, unkdf = true)
@@ -465,6 +624,118 @@ BEGIN_HANDLERS(EventTrigger)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x3AF)
 END_HANDLERS
+
+DataNode EventTrigger::OnTrigger(DataArray*){
+    if(mEnabled){
+        if(!mWaitForEvents.empty()){
+            mWaiting = true;
+        }
+        else Trigger();
+    }
+    return 0;
+}
+
+DataNode EventTrigger::OnProxyCalls(DataArray*){
+    DataNode& var = DataVariable("milo_prop_path");
+    DataArray* miloArr = var.Array();
+    DataNode node2 = miloArr->Node(2);
+    miloArr->Node(2) = Symbol("proxy");
+    Hmx::Object* propDir = Property(miloArr, true)->Obj<ObjectDir>();
+    miloArr->Node(2) = node2;
+    
+    DataArrayPtr ptr(new DataArray(0x200));
+    int idx = 0;
+    ptr.Node(idx++) = Symbol();
+    if(propDir){
+        const DataArray* tdef = propDir->TypeDef();
+        if(tdef){
+            for(int i = 1; i < tdef->Size(); i++){
+                DataArray* curArr = tdef->Array(i);
+                if(curArr->Size() > 1 && curArr->Type(1) == kDataCommand){
+                    ptr.Node(idx++) = curArr->Sym(0);
+                }
+            }
+        }
+    }
+    ptr->Resize(idx);
+    return ptr;
+}
+
+void EventTrigger::SetNextLink(EventTrigger* trig){
+    for(EventTrigger* it = trig; it != nullptr; it = it->mNextLink){
+        if(it == this){
+            MILO_WARN("Setting next link causes infinite loop, setting next_link to NULL");
+            mNextLink = nullptr;
+            return;
+        }
+    }
+    mNextLink = trig;
+}
+
+void EventTrigger::Replace(Hmx::Object* from, Hmx::Object* to){
+    Hmx::Object::Replace(from, to);
+    for(ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ){
+        it->mAnim;
+        if(from == it->mAnim){
+            if(!to){
+                it = mAnims.erase(it);
+            }
+            else {
+                it->mAnim = dynamic_cast<RndAnimatable*>(to);
+                ++it;
+            }
+        }
+        else ++it;
+    }
+    for(ObjVector<HideDelay>::iterator it = mHideDelays.begin(); it != mHideDelays.end(); ){
+        if(from == it->mHide){
+            if(!to){
+                it = mHideDelays.erase(it);
+            }
+            else {
+                it->mHide = dynamic_cast<RndDrawable*>(to);
+                ++it;
+            }
+        }
+        else ++it;
+    }
+    for(ObjVector<ProxyCall>::iterator it = mProxyCalls.begin(); it != mProxyCalls.end(); ){
+        if(from == it->mEvent || from == it->mProxy){
+            if(!to){
+                it = mProxyCalls.erase(it);
+            }
+            else {
+                if(from == it->mEvent){
+                    it->mEvent = dynamic_cast<EventTrigger*>(to);
+                }
+                else {
+                    it->mProxy = dynamic_cast<ObjectDir*>(to);
+                }
+                ++it;
+            }
+        }
+        else ++it;
+    }
+}
+
+void EventTrigger::CleanupHideShow(){
+    mTriggered = false;
+    mShown.clear();
+    mHidden.clear();
+}
+
+void EventTrigger::ConvertParticleTriggerType(){
+    if(!unkdf && Type() == "particle_trigger"){
+        MILO_WARN("Converting particle trigger %s to standard EventTrigger; should re-save %s", Name(), Dir()->GetPathName());
+        DataArray* systemsArr = Property("systems", true)->Array();
+        for(int i = 0; i < systemsArr->Size(); i++){
+            RndPartLauncher* launcher = systemsArr->Obj<RndPartLauncher>(i);
+            if(launcher) mPartLaunchers.push_back(launcher);
+        }
+        SetTypeDef(nullptr);
+    }
+    unkdf = true;
+}
 
 BEGIN_CUSTOM_PROPSYNC(EventTrigger::Anim)
     SYNC_PROP_MODIFY_ALT(anim, o.mAnim, ResetAnim(o))

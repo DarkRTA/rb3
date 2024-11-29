@@ -291,76 +291,81 @@ BEGIN_LOADS(RndTransformable)
             (*it)->SetTransParent(this, false);
         }
     }
-    if(gRev == 6){
-        bs >> (int&)mConstraint;
-        int uvar3 = mConstraint;
-        int uvar8 = uvar3;
-        mPreserveScale = uvar8 == kTargetWorld;
-        if(uvar8 >= 10){
-            mConstraint = uvar3 - 5;
-        }
-        else if(uvar8 < 3){
-            mConstraint = uvar3 - 1;
-        }
-        else if(uvar8 == 2){
-            mConstraint = 2;
-        }
-    }
-    else if(gRev > 5){
-        if(gRev < 9){
+    switch(gRev){
+        default:
             bs >> (int&)mConstraint;
-            int svar2 = mConstraint;
-            if(svar2 == 4){
+            break;
+        case 7:
+        case 8:
+            bs >> (int&)mConstraint;
+            unsigned short svar2 = mConstraint;
+            if(mConstraint == 4){
                 mConstraint = 0;
             }
-            else if(svar2 - 2U < 3){
-                mConstraint = svar2 + 1;
+            else if(mConstraint == 2 || mConstraint == 3 || svar2 == 4){
+                mConstraint += 1;
             }
-        }
-        else {
+            break;
+        case 6:
             bs >> (int&)mConstraint;
-        }
-    }
-    else if(gRev >= 3){
-        int unkb0;
-        bs >> unkb0;
-        mPreserveScale = unkb0 >> 7 & 1;
-
-        switch(unkb0){
-            case 0x4:
-            case 0x84:
-                mConstraint = 5;
-                break;
-            case 0x8:
-            case 0x88:
-                mConstraint = 6;
-                break;
-            case 0x10:
-            case 0x90:
-                mConstraint = 7;
-                break;
-            case 0x20:
-            case 0xA0:
-                mConstraint = 8;
-                break;
-            case 0x40:
-                mConstraint = 1;
-                break;
-            default:
+            mPreserveScale = mConstraint > kTargetWorld;
+            if(mConstraint > 9){
+                mConstraint -= 5;
+            }
+            else if(mConstraint > 2){
+                mConstraint -= 1;
+            }
+            else if(mConstraint == 2){
+                mConstraint = 2;
+            }
+            break;
+        case 3:
+        case 4:
+        case 5:
+            int unkb0;
+            bs >> unkb0;
+            mPreserveScale = unkb0 >> 7 & 1;
+    
+            switch(unkb0){
+                case 0x4:
+                case 0x84:
+                    mConstraint = 5;
+                    break;
+                case 0x8:
+                case 0x88:
+                    mConstraint = 6;
+                    break;
+                case 0x10:
+                case 0x90:
+                    mConstraint = 7;
+                    break;
+                case 0x20:
+                case 0xA0:
+                    mConstraint = 8;
+                    break;
+                case 0x40:
+                    mConstraint = 1;
+                    break;
+                default:
+                    mConstraint = 0;
+                    break;
+            }
+            break;
+        case 1:
+        case 2: 
+            uint numb4;
+            bs >> numb4;
+            int sp80[6] = {
+                0, 0, 0, 5, 6, 7
+            };
+            if(numb4 >= 0x18){
                 mConstraint = 0;
-                break;
-        }
-    }
-    else if(gRev != 0){
-        int numb4;
-        bs >> numb4;
-        for(int i = 0; i < 3; i++){
-            // what on earth is going on here
-        }
-        if(numb4 < 0x18){
-            mConstraint = numb4;
-        }
-        else mConstraint = 0;
+            } else {
+                mConstraint = sp80[numb4];
+            }
+            break;
+        case 0:
+            break;
     }
     if(gRev != 0 && gRev < 7){
         Vector3 v;
