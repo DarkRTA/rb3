@@ -17,11 +17,11 @@ WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), unk
         gImpostorMat = Hmx::Object::New<RndMat>();
         gImpostorMat->SetUseEnv(true);
         gImpostorMat->SetPreLit(false);
-        gImpostorMat->SetBlend(kSrc);
-        gImpostorMat->SetZMode(kNormal);
+        gImpostorMat->SetBlend(kBlendSrc);
+        gImpostorMat->SetZMode(kZModeNormal);
         gImpostorMat->SetAlphaCut(true);
         gImpostorMat->SetAlphaThreshold(0x80);
-        gImpostorMat->SetTexWrap(kClamp);
+        gImpostorMat->SetTexWrap(kTexWrapClamp);
         gImpostorMat->SetPerPixelLit(false);
         gImpostorMat->SetPointLights(true);
         gImpostorCamera = Hmx::Object::New<RndCam>();

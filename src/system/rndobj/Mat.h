@@ -25,35 +25,52 @@ enum Blend {
     kPreMultAlpha = 7,
 };
 enum ZMode {
-    kDisable = 0,
-    kNormal = 1,
-    kTransparent = 2,
-    kForce = 3,
-    kDecal = 4,
+    /** "always draw but don't update z-buffer" */
+    kZModeDisable = 0,
+    /** "draw and update z-buffer if closer than z-buffer" */
+    kZModeNormal = 1,
+    /** "draw if closer than or equal z-buffer but don't update z-buffer. Often used with SrcAlpha or Add blending so those objects don't occlude other similar objects" */
+    kZModeTransparent = 2,
+    /** "always draw and update z-buffer" */
+    kZModeForce = 3,
+    /** "draw and update z-buffer if closer than or equal to z-buffer" */
+    kZModeDecal = 4,
 };
 enum StencilMode {
-    kIgnore = 0,
-    kWrite = 1,
-    kTest = 2,
+    kStencilIgnore = 0,
+    kStencilWrite = 1,
+    kStencilTest = 2,
 };
 enum TexGen {
-    kTexGenNone,
-    kXfm,
-    kSphere,
-    kProjected,
-    kXfmOrigin,
-    kEnviron,
+    /** "use vertex UV unchanged" */
+    kTexGenNone = 0,
+    /** "transform vertex UV about center with stage xfm" */
+    kTexGenXfm = 1,
+    /** "sphere map that rotates around object with camera, xfm is direction of map, fast on gs slow on cpu, flips at poles" */
+    kTexGenSphere = 2,
+    /** "project from direction of stage xfm in world coords" */
+    kTexGenProjected = 3,
+    /** "like Xfm but about origin rather than center" */
+    kTexGenXfmOrigin = 4,
+    /** "reflection map, like sphere map but perspective correct and does not flip, fast on cpu but slow on gs" */
+    kTexGenEnviron = 5,
 };
 enum TexWrap {
-    kClamp = 0,
-    kRepeat = 1,
-    kBorderBlack = 2,
-    kBorderWhite = 3,
+    /** "UVs outside the range [0,1] are clamped" */
+    kTexWrapClamp = 0,
+    /** "The image repeats itself across the surface" */
+    kTexWrapRepeat = 1,
+    /** "texels outside the UV range [0,1] are black" */
+    kTexBorderBlack = 2,
+    /** "texels outside the UV range [0,1] are white" */
+    kTexBorderWhite = 3,
+    /** "The image repeats itself, but is flipped every other repetition" */
+    kTexWrapMirror = 4
 };
 enum ShaderVariation {
-    kShaderVariation_None,
-    kShaderVariation_Skin,
-    kShaderVariation_Hair
+    kShaderVariationNone = 0,
+    kShaderVariationSkin = 1,
+    kShaderVariationHair = 2
 };
 enum ColorModFlags {
     kColorModNone = 0,
@@ -62,6 +79,7 @@ enum ColorModFlags {
     kColorModModulate = 3
 };
 
+/** Toggles pertaining to RndMat performance. */
 struct MatPerfSettings {
     MatPerfSettings();
     void Load(BinStream&);
@@ -69,8 +87,11 @@ struct MatPerfSettings {
         mPS3ForceTrilinear = set;
     }
     
+    /** "Check this option to allow the material to receive projected lighting" */
     bool mRecvProjLights : 1;
+    /** "Check this option to allow the material to receive projected cube maps from a point light" */
     bool mRecvPointCubeTex : 1;
+    /** "Force trilinear filtering of diffuse map (PS3 only)" */
     bool mPS3ForceTrilinear : 1;
     // bool b3 : 1;
     // bool b4 : 1;
@@ -142,8 +163,16 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    bool IsNextPass(RndMat*);
-    void SetColorMod(const Hmx::Color&, int);
+    /** Determine whether the supplied Mat is in the collection of Mats pertaining to this Object.
+     * @param [in] mat The Mat to search for.
+     */
+    bool IsNextPass(RndMat* mat);
+    /** Set the color mod at the supplied index.
+     * @param [in] col The color to apply.
+     * @param [in] idx The index of the color mod.
+     */
+    void SetColorMod(const Hmx::Color& col, int idx);
+    // getters and setters
     bool GetRefractEnabled(bool);
     RndTex* GetRefractNormalMap();
     float GetRefractStrength();
@@ -210,6 +239,10 @@ public:
         mPointLights = lit;
     }
 
+    /** Handler to get all Mats in this Object's Dir that are NOT part of the material list.
+     * @returns a DataArray of all Mats that satisfy the above condition.
+     * Example usage: {$this allowed_next_pass}
+     */
     DataNode OnAllowedNextPass(const DataArray*);
     DataNode OnAllowedNormalMap(const DataArray*);
 
@@ -226,19 +259,29 @@ public:
     Transform mTexXfm; // 0x2c
     /** "Base texture map, modulated with color and alpha" */
     ObjPtr<RndTex> mDiffuseTex; // 0x5c
-    /** "Alpha level below which gets cut" */
+    /** "Alpha level below which gets cut". Ranges from 0 to 255. */
     int mAlphaThresh; // 0x68
     /** "Next material for object" */
     ObjPtr<RndMat> mNextPass; // 0x6c
     /** "Multiplier to apply to emission" */
+    /* ------------------------------------------------------------------------ */
+    /* Emissive Settings:
+     * "Settings for manipulating the emissive properties of the material"
+     */
     float mEmissiveMultiplier; // 0x78
     /** "Map for self illumination" */
     ObjPtr<RndTex> mEmissiveMap; // 0x7c
-    /** "The scale of the refraction of the screen under the material." */
+    /* ------------------------------------------------------------------------ */
+    /* Refraction Settings:
+     * "Settings for applying refraction to the material"
+     */
+    /** "The scale of the refraction of the screen under the material." Ranges from 0 to 100. */
     float mRefractStrength; // 0x88
     /** "This is a normal map used to distort the screen under the material. If none is specified, the regular normal map will be used." */
     ObjPtr<RndTex> mRefractNormalMap; // 0x8c
+    /* ------------------------------------------------------------------------ */
     std::vector<Hmx::Color> mColorMod; // 0x98
+    /** "Performance options for this material" */
     MatPerfSettings mPerfSettings; // 0xa0
     MatShaderOptions mShaderOptions; // 0xa4
     // 0xac
@@ -261,6 +304,10 @@ public:
     // 0xad
     /** "When enabled, this material will refract the screen under the material" */
     bool mRefractEnabled : 1;
+    /* ------------------------------------------------------------------------ */
+    /* Shader Capabilities:
+     * "Defines the capabilities of the shader generated using this material"
+     */
     /** "Is the Mat lit with point lights?" */
     bool mPointLights : 1;
     /** "Is the Mat affected by fog?" */
@@ -269,6 +316,7 @@ public:
     bool mFadeout : 1;
     /** "Is the Mat affected its Environment's color adjust?" */
     bool mColorAdjust : 1;
+    /* ------------------------------------------------------------------------ */
     unsigned char unkbool : 3;
     // 0xb0
     /** "How to blend poly into screen" */

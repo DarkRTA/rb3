@@ -203,7 +203,7 @@ void RndFont::BleedTest(){
     BitmapLocker locker(this);
     RndBitmap* bmap = locker.PtrToBitmap();
     if(bmap){
-        bool haswrap = mMat->GetTexWrap() == kClamp;
+        bool haswrap = mMat->GetTexWrap() == kTexWrapClamp;
         String errStr;
         for(int i = 0; i < mChars.size(); i++){
             unsigned short curChar = mChars[i];

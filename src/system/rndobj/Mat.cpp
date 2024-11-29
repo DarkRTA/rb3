@@ -33,13 +33,13 @@ MatPerfSettings::MatPerfSettings() : mRecvProjLights(0), mRecvPointCubeTex(0), m
 void MatPerfSettings::Load(BinStream& bs){
     LOAD_BITFIELD(bool, mRecvProjLights)
     LOAD_BITFIELD(bool, mPS3ForceTrilinear)
-    if(RndMat::gRev > 0x41) LOAD_BITFIELD(bool, mRecvPointCubeTex)
+    if(RndMat::gRev > 65) LOAD_BITFIELD(bool, mRecvPointCubeTex)
 }
 
 RndMat::RndMat() : mColor(1.0f,1.0f,1.0f,1.0f), mDiffuseTex(this), mAlphaThresh(0), mNextPass(this), mEmissiveMap(this), mRefractStrength(0.0f), 
     mRefractNormalMap(this), mIntensify(0), mUseEnviron(1), mPreLit(0), mAlphaCut(0), mAlphaWrite(0), mCull(1), mPerPixelLit(0), mScreenAligned(0),
-    mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kBlendSrc), mTexGen(kTexGenNone), mTexWrap(kRepeat),
-    mZMode(kNormal), mStencilMode(kIgnore), mShaderVariation(kShaderVariation_None), mColorModFlags(kColorModNone), mDirty(3) {
+    mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kBlendSrc), mTexGen(kTexGenNone), mTexWrap(kTexWrapRepeat),
+    mZMode(kZModeNormal), mStencilMode(kStencilIgnore), mShaderVariation(kShaderVariationNone), mColorModFlags(kColorModNone), mDirty(3) {
     mEmissiveMultiplier = 1.0f;
     mTexXfm.Reset();
     ResetColors(mColorMod, 3);
@@ -48,10 +48,8 @@ RndMat::RndMat() : mColor(1.0f,1.0f,1.0f,1.0f), mDiffuseTex(this), mAlphaThresh(
 SAVE_OBJ(RndMat, 159)
 
 bool RndMat::IsNextPass(RndMat* m) {
-    RndMat* m2;
-    while (m2 != NULL){
-        if (m2 == m) return true;
-        m2 = m2->NextPass();
+    for(RndMat* it = this; it != nullptr; it = it->NextPass()){
+        if(it == m) return true;
     }
     return false;
 }
@@ -211,7 +209,7 @@ BEGIN_LOADS(RndMat)
         bool uc;
         bs >> uc;
         if(uc){
-            mShaderVariation = kShaderVariation_Skin;
+            mShaderVariation = kShaderVariationSkin;
         }
     }
     if(gRev > 0x32){

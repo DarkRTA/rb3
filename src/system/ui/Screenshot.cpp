@@ -38,7 +38,7 @@ void Screenshot::Sync(){
         mTex = Hmx::Object::New<RndTex>();
         mTex->SetBitmap(mTexPath);
         mMat = Hmx::Object::New<RndMat>();
-        mMat->SetZMode(kDisable);
+        mMat->SetZMode(kZModeDisable);
         mMat->SetDiffuseTex(mTex);
     }
 }
