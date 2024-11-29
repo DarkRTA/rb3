@@ -1,4 +1,5 @@
 #include "rndobj/Overlay.h"
+#include "decomp.h"
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Rnd.h"
@@ -25,21 +26,25 @@ RndOverlay::~RndOverlay(){
 
 }
 
+static float DrawOverlayLine(RndOverlay* o);
+
 void RndOverlay::DrawAll(bool b){
-    float toUse = sTopAligned ? 0.0212f : 0.9788;
-    for(std::list<RndOverlay*>::iterator it = sOverlays.begin(); it != sOverlays.end(); it++){
-        RndOverlay* cur = (*it);
+    float toUse = sTopAligned ? 0.0212f : 0.9788f;
+    for(std::list<RndOverlay*>::const_iterator it = sOverlays.begin(); it != sOverlays.end(); ++it){
+        RndOverlay* cur = *it;
         if(!b || cur->mModal){
-            if(sTopAligned) cur->Draw(toUse);
-            else {
-                int numstrings = 0;
-                for(std::list<String>::iterator lit = cur->mLines.begin(); lit != cur->mLines.end(); lit++){
-                    numstrings++;
-                }
-                float drawn = TheRnd->DrawStringScreen("", Vector2(0,0), cur->mTextColor, true);
+            if(sTopAligned) toUse = cur->Draw(toUse);
+            else if(cur->Showing()){
+                toUse -= DrawOverlayLine(cur);
+                cur->Draw(toUse);
             }
         }
     }
+}
+
+static inline float DrawOverlayLine(RndOverlay* o){
+    unsigned int numlines = o->mLines.size();
+    return TheRnd->DrawStringScreen("", Vector2(0,0), o->mTextColor, true).y * numlines + 0.0268f;
 }
 
 void RndOverlay::TogglePosition(){
@@ -68,9 +73,7 @@ RndOverlay::RndOverlay(const DataArray* da) : mShowing(0), mLines(), mLine(), mB
 
 void RndOverlay::SetLines(int lines) {
     MILO_ASSERT(lines >= 1, 117);
-    unsigned int linesize = 0;
-    for(std::list<String>::iterator it = mLines.begin(); it != mLines.end(); it++) linesize++;
-    if(lines != linesize){
+    if(lines != mLines.size()){
         mLines.resize(lines);
         mLine = mLines.begin();
     }
@@ -83,17 +86,38 @@ void RndOverlay::SetTimeout(float f){
 String& RndOverlay::CurrentLine(){
     if(mLine == mLines.begin()){
         String newstr;
-        mLine = mLines.erase(mLine);
-        mLines.insert(mLine, newstr);
-        (*mLine).reserve(0x7F);
+        mLine = mLines.insert(mLines.erase(mLine), newstr);
+        mLine->reserve(0x7F);
     }
     return *mLine;
 }
 
 void RndOverlay::Clear(){
-    for(std::list<String>::iterator it = mLines.begin(); it != mLines.end(); it++){
+    for(std::list<String>::iterator it = mLines.begin(); it != mLines.end(); ++it){
         (*it).erase();
     }
     mLine = mLines.begin();
     mCursorChar = -1;
+}
+
+float RndOverlay::Draw(float){
+    if(mTimeout > 0 && mShowing){
+        if(SystemMs() > mTimeout){
+            mShowing = false;
+            mTimeout = 0;
+        }
+    }
+}
+
+void RndOverlay::Print(const char* cc){
+    for(const char* p = cc; *p != '\0'; p++){
+        if(mLine == mLines.begin()){
+            String str;
+        }
+        char curChar = *p;
+        if(curChar == '\n'){
+            ++mLine;
+        }
+        else *mLine += curChar;
+    }
 }

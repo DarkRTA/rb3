@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_OVERLAY_H
-#define RNDOBJ_OVERLAY_H
+#pragma once
 #include "utl/TextStream.h"
 #include "obj/Data.h"
 #include "utl/Str.h"
@@ -33,7 +32,7 @@ public:
     void SetLines(int);
     void Clear();
     String& CurrentLine();
-    void Draw(float);
+    float Draw(float);
 
     static void Init();
     static void Terminate();
@@ -57,5 +56,3 @@ public:
     bool mModal; // 0x74
     int mDumpCount; // 0x78
 };
-
-#endif
