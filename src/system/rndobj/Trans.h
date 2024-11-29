@@ -144,7 +144,8 @@ public:
         return mLocalXfm;
     }
 
-    // here be the handlers. there is no fame, no honor to be wrought here. turn back now, lest you suffer the same fate of others
+    Constraint TransConstraint() { return (Constraint) mConstraint; } 
+
     DataNode OnCopyLocalTo(const DataArray*);
     DataNode OnGetLocalPos(const DataArray*);
     DataNode OnGetLocalPosIndex(const DataArray*);
@@ -173,22 +174,18 @@ public:
     }
 
     /** "Object this is linked to." */
-    ObjOwnerPtr<RndTransformable, class ObjectDir> mParent; // 0x8
-
+    ObjOwnerPtr<RndTransformable> mParent; // 0x8
     /** Any children that should follow this object. */
     std::vector<RndTransformable*> mChildren; // 0x14
     Transform mLocalXfm; // 0x1c
     Transform mWorldXfm; // 0x4c
     DirtyCache* mCache; // 0x7c
-
     /** "Trans constraint for the object." */
-    u16 mConstraint; Constraint TransConstraint() { return (Constraint) mConstraint; } // 0x80
-
+    u16 mConstraint; // 0x80
     /** "Preserve scale if applying dynamic constraint." */
     bool mPreserveScale; // 0x82
-
     /** "Target according to the constraint." */
-    ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x84
+    ObjPtr<RndTransformable> mTarget; // 0x84
 
     static ushort gRev;
     static ushort gAltRev;

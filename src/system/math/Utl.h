@@ -2,6 +2,8 @@
 #include <math.h>
 #include <cmath>
 
+#define kHugeFloat 1.0e30f
+
 inline int CountBits(int num) {
     int temp_r0;
     int var_r3;
