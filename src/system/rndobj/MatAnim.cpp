@@ -59,12 +59,7 @@ void RndMatAnim::LoadStages(BinStream& bs){
     uint rev;
     bs >> rev;
     if(rev != 0){
-        bool oldeditmode = 
-#ifdef MILO_DEBUG
-            TheLoadMgr.EditMode();
-#else
-            false;
-#endif
+        bool oldeditmode = LOADMGR_EDITMODE;
         TheLoadMgr.SetEditMode(true);
         RndMatAnim* it = this;
         int i = 1;

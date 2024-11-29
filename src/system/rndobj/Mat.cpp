@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "rndobj/Utl.h"
 #include "rndobj/Rnd.h"
+#include "utl/Loader.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndMat)
@@ -17,7 +18,7 @@ RndMat* LookupOrCreateMat(const char* shader, ObjectDir* dir){
     if(!mat){
         mat = dir->Find<RndMat>(FileGetBase(shader, 0), false);
         if(!mat){
-            bool editmode = TheLoadMgr.EditMode();
+            bool editmode = LOADMGR_EDITMODE;
             TheLoadMgr.SetEditMode(true);
             mat = dir->New<RndMat>(c);
             TheLoadMgr.SetEditMode(editmode);
