@@ -112,9 +112,8 @@ static void GetSaveFlags(DataArray* arr, bool& proxy, bool& none){
 
 // https://decomp.me/scratch/igDEo
 void TypeProps::Save(BinStream& d, Hmx::Object* ref){
-#ifdef MILO_DEBUG
     if(mMap){
-        if(TheLoadMgr.EditMode()){
+        if(LOADMGR_EDITMODE){
             const DataArray* def = ref->TypeDef();
             if(def){
                 int i = 0;
@@ -135,7 +134,6 @@ void TypeProps::Save(BinStream& d, Hmx::Object* ref){
             }
         }
     }
-#endif
     if(!mMap || (ref->DataDir() != ref) || ref == ref->Dir() && !gLoadingProxyFromDisk){
         d << mMap;
         return;
@@ -205,7 +203,7 @@ void TypeProps::Load(BinStream& d, bool old_proxy, Hmx::Object* ref){
     }
 
     if(def){
-        if(mMap && TheLoadMgr.EditMode()){
+        if(mMap && LOADMGR_EDITMODE){
             for(int i = 0; mMap && i < mMap->Size(); i += 2){
                 DataArray* keyArr = def->FindArray(mMap->Sym(i), false);
                 if(!keyArr || (CONST_ARRAY(keyArr)->Node(1).Type() != kDataCommand) && !keyArr->Node(1).CompatibleType(CONST_ARRAY(mMap)->Node(i + 1).Type())) {

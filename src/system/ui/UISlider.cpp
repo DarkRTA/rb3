@@ -70,9 +70,12 @@ int UISlider::CollidePlane(const Plane& pl){
     return dir->CollidePlane(pl);
 }
 
-#ifdef VERSION_SZBE69_B8
-int UISlider::Current() const { return mCurrent; }
-#endif
+DECOMP_FORCEFUNC(UISlider, UISlider, Current())
+
+#pragma push
+#pragma force_active on
+inline int UISlider::Current() const { return mCurrent; }
+#pragma pop
 
 float UISlider::Frame() const {
     if(mNumSteps == 1) return 0.0f;
@@ -107,11 +110,7 @@ void UISlider::SetFrame(float frame){
 }
 
 int UISlider::SelectedAux() const {
-#ifdef VERSION_SZBE69_B8
-    return mCurrent;
-#else
     return Current();
-#endif
 }
 void UISlider::SetSelectedAux(int i){
     SetCurrent(i);

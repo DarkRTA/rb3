@@ -16,13 +16,20 @@ int RndMatAnim::TexKeys::Add(RndTex* tex, float frame, bool b){
     return Keys<TexPtr, RndTex*>::Add(TexPtr(tex), frame, b);
 }
 
+// matches in retail with the right inlining settings
 RndMatAnim::TexKeys& RndMatAnim::TexKeys::operator=(const RndMatAnim::TexKeys& keys){
     if(this != &keys){
         sOwner = mOwner;
+        resize(keys.size());
+        TexKeys::iterator it = begin();
+        TexKeys::const_iterator otherIt = keys.begin();
+        for(; it != end(); ++it, ++otherIt){
+            *it = *otherIt;
+        }
     }
 }
 
-RndMatAnim::RndMatAnim() : mMat(this, 0), mKeysOwner(this, this), mTexKeys(this) {
+RndMatAnim::RndMatAnim() : mMat(this), mKeysOwner(this, this), mTexKeys(this) {
 
 }
 
@@ -49,19 +56,23 @@ void RndMatAnim::LoadStage(BinStream& bs){
 }
 
 void RndMatAnim::LoadStages(BinStream& bs){
-    int rev;
+    uint rev;
     bs >> rev;
-    bool oldeditmode = TheLoadMgr.EditMode();
     if(rev != 0){
+        bool oldeditmode = LOADMGR_EDITMODE;
         TheLoadMgr.SetEditMode(true);
-        float f = 0.0f;
-        for(int i = 1; LoadStage(bs), i != rev; i++){
-            if(EndFrame() != f){
+        RndMatAnim* it = this;
+        int i = 1;
+        while(true){
+            it->LoadStage(bs);
+            if(i == rev) break;
+            else if(EndFrame()){
                 const char* mnm = MakeString("%s_%d.mnm", FileGetBase(Name(), 0), i);
                 MILO_WARN("Splitting out %s from %s", mnm, PathName(this));
-                RndMatAnim* mAnim = Dir()->New<RndMatAnim>(mnm);
-                mAnim->SetMat(LookupOrCreateMat(MakeString("%s_%d", FileGetBase(mMat->Name(), 0), i), Dir()));
+                it = Dir()->New<RndMatAnim>(mnm);
+                it->SetMat(LookupOrCreateMat(MakeString("%s_%d", FileGetBase(mMat->Name(), 0), i), Dir()));
             }
+            i++;
         }
         TheLoadMgr.SetEditMode(oldeditmode);
     }
@@ -127,7 +138,7 @@ void RndMatAnim::Print(){
     ts << "   alphaKeys: " << mAlphaKeys << "\n";
 }
 
-// fn_805FB82C
+// fn_805FB82C - matches in retail
 float RndMatAnim::EndFrame(){
     float end = Max(TransKeys().LastFrame(), ScaleKeys().LastFrame());
     end = Max(end, GetTexKeys().LastFrame(), RotKeys().LastFrame());

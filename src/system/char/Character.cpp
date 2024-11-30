@@ -122,7 +122,7 @@ void Character::Poll(){
     START_AUTO_TIMER("char_poll");
     if(!mFrozen){
 #ifdef VERSION_SZBE69_B8
-        if(TheLoadMgr.EditMode()) mTest->Poll();
+        if(LOADMGR_EDITMODE) mTest->Poll();
 #endif
         RndDir::Poll();
         mTeleported = false;

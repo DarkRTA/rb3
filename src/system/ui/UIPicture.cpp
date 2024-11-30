@@ -54,7 +54,7 @@ void UIPicture::PreLoad(BinStream& bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(2, 0)
     if(gRev != 0){
-        if(TheLoadMgr.EditMode()){
+        if(LOADMGR_EDITMODE){
             char buf[256];
             FilePath fp;
             bs.ReadString(buf, 0x100);
@@ -75,7 +75,7 @@ void UIPicture::PreLoad(BinStream& bs) {
 void UIPicture::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
     CancelLoading();
-    if(!TheLoadMgr.EditMode() && mMesh){
+    if(!LOADMGR_EDITMODE && mMesh){
         mMesh->mShowing = false;
     }
 }
@@ -108,7 +108,7 @@ void UIPicture::FinishValueChange() {
 
 void UIPicture::SetTex(const FilePath& p) {
     if (HasTransitions() || (!(p == mLoadedFile) || !(p == mTexFile))) {
-        if (TheLoadMgr.EditMode()) {
+        if (LOADMGR_EDITMODE) {
             mDelayedTexFile = p;
         } else UpdateTexture(p);
     }
@@ -154,7 +154,7 @@ void UIPicture::HookupMesh() {
             }
         }
         else {
-            if(mLoader || TheLoadMgr.EditMode()){
+            if(mLoader || LOADMGR_EDITMODE){
                 MILO_WARN("%s does not have material", mMesh->Name());
             }
         }

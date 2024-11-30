@@ -19,7 +19,7 @@ void UIProxy::SetTypeDef(DataArray* da){
         if(da){
             da->FindData("sync_on_move", mSyncOnMove, false);
             DataArray* fileArr = da->FindArray("file", false);
-            if(TheLoadMgr.EditMode() || fileArr->Size() != 3 || fileArr->Int(2) != 0){
+            if(LOADMGR_EDITMODE || fileArr->Size() != 3 || fileArr->Int(2) != 0){
                 bool shared = true;
                 da->FindData("share", shared, false);
                 FilePath fp(FileGetPath(da->File(), 0), fileArr->Str(1));
@@ -127,7 +127,7 @@ void UIProxy::SetProxyDir(RndDir* dir){
 // fn_80575E54
 void UIProxy::SyncDir(){
     const Transform& world = WorldXfm();
-    if(mSyncOnMove && !TheLoadMgr.EditMode()){
+    if(mSyncOnMove && !LOADMGR_EDITMODE){
         if(world == mOldXfm) return;
         mOldXfm = world;
     }

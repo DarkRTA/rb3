@@ -174,7 +174,7 @@ bool PatchLayer::AllowColor(){
 }
 
 void PatchLayer::Draw(){
-    PatchSticker* sticker = GetSticker(TheLoadMgr.EditMode());
+    PatchSticker* sticker = GetSticker(LOADMGR_EDITMODE);
     if(sticker){
         sticker->SetOnMat(sMat);
         sMat->SetColor(sColorPalette->GetColor(mColorIdx));
@@ -256,7 +256,7 @@ PatchDir::PatchDir() : unk1c0(0) {
     mLayers.resize(50);
     mTex = Hmx::Object::New<RndTex>();
     mTex->SetMipMapK(666.0f);
-    if(TheLoadMgr.EditMode()) LoadStickerData();
+    if(LOADMGR_EDITMODE) LoadStickerData();
 }
 
 PatchDir::~PatchDir(){

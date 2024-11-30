@@ -321,7 +321,7 @@ void UIList::Update() {
         MILO_ASSERT(mListDir, 0x248);
         mListDir->CreateElements(this, mWidgets, mListState.mNumDisplay);
 
-        if (TheLoadMgr.EditMode()) Refresh(false);
+        if (LOADMGR_EDITMODE) Refresh(false);
     }
 }
 

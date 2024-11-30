@@ -136,7 +136,7 @@ void SongSectionController::Poll(){
 #pragma pool_data off
 void SongSectionController::UpdateOverlay(){
     if(mOverlay){
-        if(!TheLoadMgr.EditMode()){
+        if(!LOADMGR_EDITMODE){
             static DataNode& disable = DataVariable("cheat.song_section_ctrl");
             mOverlay->SetOverlay(disable.Int());
         }

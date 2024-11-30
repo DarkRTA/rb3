@@ -209,7 +209,7 @@ void BandWardrobe::SetPlayMode(Symbol s, BandCamShot* shot){
     static DataNode& pm = DataVariable("band.play_mode");
     pm = DataNode(s);
     bool b1 = false;
-    if(TheLoadMgr.EditMode() || !TheBandDirector || !mDemandLoad.Null()){
+    if(LOADMGR_EDITMODE || !TheBandDirector || !mDemandLoad.Null()){
         b1 = true;
     }
     if(b1 && !unk78.Null()){
@@ -524,7 +524,7 @@ void BandWardrobe::SelectExtra(FileMerger::Merger& merger){
 }
 
 void BandWardrobe::LoadPrefabPrefs(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         for(int i = 0; i < 4; i++){
             BandCharDesc* desc = 0;
             for(int j = 0; j < 2 && !desc; j++){
@@ -625,7 +625,7 @@ END_HANDLERS
 #pragma pop
 
 DataNode BandWardrobe::OnFindTarget(DataArray* da){
-    if(TheLoadMgr.EditMode() && da->Size() > 3){
+    if(LOADMGR_EDITMODE && da->Size() > 3){
         StartVenueShot(da->Obj<BandCamShot>(3));
     }
     return DataNode(FindTarget(da->Sym(2), *mCurNames));

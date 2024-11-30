@@ -125,7 +125,7 @@ BEGIN_LOADS(TrackWidget)
 END_LOADS
 
 void TrackWidget::CheckValid() const {
-    if(TheLoadMgr.EditMode() && mImp) mImp->CheckValid(mName);
+    if(LOADMGR_EDITMODE && mImp) mImp->CheckValid(mName);
 }
 
 void TrackWidget::Init(){ mImp->Init(); }
@@ -223,7 +223,7 @@ void TrackWidget::SyncImp(){
             break;
     }
     CheckValid();
-    if(TheLoadMgr.EditMode()) Init();
+    if(LOADMGR_EDITMODE) Init();
 }
 
 void TrackWidget::SetScale(float f){ mImp->SetScale(f); }

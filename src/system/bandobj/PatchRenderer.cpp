@@ -9,7 +9,7 @@ RndDir* PatchRenderer::sTestPatch;
 void PatchRenderer::Init(){
     DataArray* cfg = SystemConfig("objects", "PatchRenderer");
     sBlankPatch = Hmx::Object::New<RndDir>();
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         DataArray* patchArr = cfg->FindArray("test_patch", false);
         if(patchArr){
             ObjectDir* loaded = DirLoader::LoadObjects(FilePath(FileGetPath(patchArr->File(), 0), patchArr->Str(1)), 0, 0);
@@ -71,7 +71,7 @@ void PatchRenderer::DrawAfter(){
 }
 
 void PatchRenderer::DrawShowing(){
-    if(TheLoadMgr.EditMode() && !mDraw){
+    if(LOADMGR_EDITMODE && !mDraw){
         mDraw = mTestMode == "test" ? sTestPatch : sBlankPatch;
     }
     RndTexRenderer::DrawShowing();

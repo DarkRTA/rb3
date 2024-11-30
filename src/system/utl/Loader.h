@@ -3,6 +3,7 @@
 #include "utl/FilePath.h"
 #include "os/System.h"
 #include "os/File.h"
+#include "utl/Loader.h"
 #include "utl/Str.h"
 #include "os/Timer.h"
 #include <list>
@@ -99,6 +100,12 @@ public:
 };
 
 extern LoadMgr TheLoadMgr;
+
+#ifdef MILO_DEBUG
+    #define LOADMGR_EDITMODE TheLoadMgr.EditMode()
+#else
+    #define LOADMGR_EDITMODE false
+#endif
 
 class FileLoader;
 typedef void(FileLoader::*FileLoaderStateFunc)(void);

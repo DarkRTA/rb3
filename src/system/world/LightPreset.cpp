@@ -33,7 +33,7 @@ LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(0), mSelectTriggers
 }
 
 bool LightPreset::PlatformOk() const {
-    if(TheLoadMgr.EditMode() || !mPlatformOnly || TheLoadMgr.GetPlatform() == kPlatformNone){
+    if(LOADMGR_EDITMODE || !mPlatformOnly || TheLoadMgr.GetPlatform() == kPlatformNone){
         return true;
     }
     else {

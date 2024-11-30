@@ -117,8 +117,6 @@ T2* KeylessHash<T1, T2>::FirstFrom(T2* entry){
     else return entry;
 }
 
-inline bool KeysMatch(const char* k1, const char* k2){ return strcmp(k1, k2) == 0; }
-
 template <class T1, class T2>
 T2* KeylessHash<T1, T2>::Find(const char* const& key){
     if(mEntries){
@@ -127,7 +125,7 @@ T2* KeylessHash<T1, T2>::Find(const char* const& key){
 
         for(; mEntries[i] != mEmpty; Advance(i)){
             if(mEntries[i] != mRemoved){
-                if(KeysMatch((const char *)mEntries[i], key)) return &mEntries[i];
+                if(streq((const char *)mEntries[i], key)) return &mEntries[i];
             }
         }
     }
@@ -144,7 +142,7 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
     const char* valStr = (const char*)val;
     int i = HashString(valStr, mSize);
     MILO_ASSERT(i >= 0, 0xA4);
-    while(mEntries[i] != mEmpty && mEntries[i] != mRemoved && !KeysMatch((const char*)mEntries[i], valStr)){
+    while(mEntries[i] != mEmpty && mEntries[i] != mRemoved && !streq((const char*)mEntries[i], valStr)){
         Advance(i);
     }
     if(mEntries[i] == mEmpty){
@@ -152,7 +150,7 @@ T2* KeylessHash<T1, T2>::Insert(const T2& val){
         if(mNumEntries > mSize / 2 && mOwnEntries){
             MILO_ASSERT(mSize, 0xB5);
             Resize(mSize * 2, 0);
-            if(!TheLoadMgr.EditMode() && MakeStringInitted()){
+            if(!LOADMGR_EDITMODE && MakeStringInitted()){
                 MILO_WARN("Resizing hash table (%d)", mSize);
             }
             return Insert(val);

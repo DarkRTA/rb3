@@ -3,6 +3,7 @@
 #include "obj/Object.h"
 #include "rndobj/Utl.h"
 #include "rndobj/Rnd.h"
+#include "utl/Loader.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(RndMat)
@@ -17,7 +18,7 @@ RndMat* LookupOrCreateMat(const char* shader, ObjectDir* dir){
     if(!mat){
         mat = dir->Find<RndMat>(FileGetBase(shader, 0), false);
         if(!mat){
-            bool editmode = TheLoadMgr.EditMode();
+            bool editmode = LOADMGR_EDITMODE;
             TheLoadMgr.SetEditMode(true);
             mat = dir->New<RndMat>(c);
             TheLoadMgr.SetEditMode(editmode);
@@ -33,13 +34,13 @@ MatPerfSettings::MatPerfSettings() : mRecvProjLights(0), mRecvPointCubeTex(0), m
 void MatPerfSettings::Load(BinStream& bs){
     LOAD_BITFIELD(bool, mRecvProjLights)
     LOAD_BITFIELD(bool, mPS3ForceTrilinear)
-    if(RndMat::gRev > 0x41) LOAD_BITFIELD(bool, mRecvPointCubeTex)
+    if(RndMat::gRev > 65) LOAD_BITFIELD(bool, mRecvPointCubeTex)
 }
 
-RndMat::RndMat() : mColor(1.0f,1.0f,1.0f,1.0f), mDiffuseTex(this, 0), mAlphaThresh(0), mNextPass(this, 0), mEmissiveMap(this, 0), mRefractStrength(0.0f), mRefractNormalMap(this, 0),
-    mIntensify(0), mUseEnviron(1), mPreLit(0), mAlphaCut(0), mAlphaWrite(0), mCull(1), mPerPixelLit(0), mScreenAligned(0),
-    mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kSrc), mTexGen(kTexGenNone), mTexWrap(kRepeat),
-    mZMode(kNormal), mStencilMode(kIgnore), mShaderVariation(kShaderVariation_None), unkb0p2(0), mDirty(3) {
+RndMat::RndMat() : mColor(1.0f,1.0f,1.0f,1.0f), mDiffuseTex(this), mAlphaThresh(0), mNextPass(this), mEmissiveMap(this), mRefractStrength(0.0f), 
+    mRefractNormalMap(this), mIntensify(0), mUseEnviron(1), mPreLit(0), mAlphaCut(0), mAlphaWrite(0), mCull(1), mPerPixelLit(0), mScreenAligned(0),
+    mRefractEnabled(0), mPointLights(0), mFog(0), mFadeout(0), mColorAdjust(0), mBlend(kBlendSrc), mTexGen(kTexGenNone), mTexWrap(kTexWrapRepeat),
+    mZMode(kZModeNormal), mStencilMode(kStencilIgnore), mShaderVariation(kShaderVariationNone), mColorModFlags(kColorModNone), mDirty(3) {
     mEmissiveMultiplier = 1.0f;
     mTexXfm.Reset();
     ResetColors(mColorMod, 3);
@@ -48,14 +49,13 @@ RndMat::RndMat() : mColor(1.0f,1.0f,1.0f,1.0f), mDiffuseTex(this, 0), mAlphaThre
 SAVE_OBJ(RndMat, 159)
 
 bool RndMat::IsNextPass(RndMat* m) {
-    RndMat* m2;
-    while (m2 != NULL){
-        if (m2 == m) return true;
-        m2 = m2->NextPass();
+    for(RndMat* it = this; it != nullptr; it = it->NextPass()){
+        if(it == m) return true;
     }
     return false;
 }
 
+// retail work: https://decomp.me/scratch/WpG47
 BEGIN_LOADS(RndMat)
     LOAD_REVS(bs)
     ASSERT_REVS(68, 0)
@@ -71,34 +71,31 @@ BEGIN_LOADS(RndMat)
     LOAD_BITFIELD(bool, mAlphaWrite)
     LOAD_BITFIELD_ENUM(int, mTexGen, TexGen)
     LOAD_BITFIELD_ENUM(int, mTexWrap, TexWrap)
-    bs >> mTexXfm;
-    bs >> mDiffuseTex;
+    bs >> mTexXfm >> mDiffuseTex;
     bs >> mNextPass;
     LOAD_BITFIELD(bool, mIntensify)
     mDirty = 3;
-
     Hmx::Color loc_color;
     LOAD_BITFIELD(bool, mCull)
-    bs >> mEmissiveMultiplier;
-    bs >> loc_color;
+    bs >> mEmissiveMultiplier >> loc_color;
     {
         MemDoTempAllocations tmp(true, false);
-        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        ObjPtr<RndTex> texPtr(this);
         bs >> texPtr;
     }
     bs >> mEmissiveMap;
     {
         MemDoTempAllocations tmp(true, false);
-        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        ObjPtr<RndTex> texPtr(this);
         bs >> texPtr;
     }
     if(gRev < 0x33){
-        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        ObjPtr<RndTex> texPtr(this);
         bs >> texPtr;
     }
     {
         MemDoTempAllocations tmp(true, false);
-        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        ObjPtr<RndTex> texPtr(this);
         bs >> texPtr;
     }
     if(gRev > 0x3C){
@@ -113,37 +110,38 @@ BEGIN_LOADS(RndMat)
         bool b;
         bs >> b;
         mPerPixelLit = b;
-        mScreenAligned = b;
+        mPerPixelLit = 0;
     }
-    if((unsigned short)(gRev - 0x1B) <= 0x16U){
+    if(gRev >= 27 && gRev <= 49){
         bool b;
         bs >> b;
     }
     if(gRev > 0x1B){
         LOAD_BITFIELD_ENUM(int, mStencilMode, StencilMode)
     }
-    if((u16)(gRev - 0x1D) <= 0xB){
+    if(gRev >= 29 && gRev <= 40){
         Symbol sym;
         bs >> sym;
     }
     {
         MemDoTempAllocations tmp(true, false);
-        ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+        ObjPtr<RndTex> texPtr(this);
         bs >> texPtr;
     }
-    if((u16)(gRev - 0x22) <= 0xE){
+    if(gRev >= 34 && gRev <= 48){
         Hmx::Color color2;
         bool b;
         bs >> b >> color2;
         if(gRev > 0x22){
             MemDoTempAllocations tmp(true, false);
-            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            ObjPtr<RndTex> texPtr(this);
             bs >> texPtr;
         }
     }
     if(gRev > 0x23){
         int i;
-        bs >> i >> i;
+        bs >> i;
+        bs >> i;
     }
     if(gRev > 0x26){
         if(gRev < 0x2A){
@@ -159,11 +157,11 @@ BEGIN_LOADS(RndMat)
         }
         {
             MemDoTempAllocations tmp(true, false);
-            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            ObjPtr<RndTex> texPtr(this);
             bs >> texPtr;
         }
         if(gRev < 0x2A){
-            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            ObjPtr<RndTex> texPtr(this);
             bs >> texPtr;
         }
     }
@@ -174,14 +172,14 @@ BEGIN_LOADS(RndMat)
         else {
             int i;
             bs >> i;
-            mPointLights = i;
+            mPointLights = i > 1;
         }
         if(gRev < 0x3F){
             bool b; bs >> b;
         }
         LOAD_BITFIELD(bool, mFog)
         LOAD_BITFIELD(bool, mFadeout)
-        if((u16)(gRev - 0x2C) <= 1){
+        if(gRev == 44 || gRev == 45){
             bool b; bs >> b;
         }
         if(gRev > 0x2E){
@@ -192,7 +190,7 @@ BEGIN_LOADS(RndMat)
         {
             MemDoTempAllocations tmp(true, false);
             Hmx::Color color2f;
-            ObjPtr<RndTex, ObjectDir> texPtr(this, 0);
+            ObjPtr<RndTex> texPtr(this);
             bs >> color2f;
             bs >> texPtr;
             if(gRev > 0x39){
@@ -212,7 +210,7 @@ BEGIN_LOADS(RndMat)
         bool uc;
         bs >> uc;
         if(uc){
-            mShaderVariation = kShaderVariation_Skin;
+            mShaderVariation = kShaderVariationSkin;
         }
     }
     if(gRev > 0x32){
@@ -221,7 +219,7 @@ BEGIN_LOADS(RndMat)
         bs >> col32;
     }
     ResetColors(mColorMod, 3);
-    if((u16)(gRev - 0x34) <= 0xF){
+    if(gRev >= 52 && gRev <= 67){
         std::vector<Hmx::Color> vec;
         Hmx::Color col34;
         if(gRev < 0x35){
@@ -232,7 +230,7 @@ BEGIN_LOADS(RndMat)
             int i;
             bs >> i;
         }
-        if((u16)(gRev - 0x35) <= 6){
+        if(gRev >= 53 && gRev <= 59){
             bs >> col34;
         }
         if(gRev >= 0x3C){
@@ -240,18 +238,19 @@ BEGIN_LOADS(RndMat)
             bs >> vec;
         }
     }
-    if((u16)(gRev - 0x36) <= 7){
-        ObjPtr<Hmx::Object, ObjectDir> objPtr(this, 0);
+    if(gRev >= 54 && gRev <= 61){
+        ObjPtr<Hmx::Object> objPtr(this);
         bs >> objPtr;
     }
-    if((u16)(gRev - 0x37) <= 7){
+    if(gRev >= 55 && gRev <= 62){
         bool b;
         bs >> b;
-        mPerfSettings.mPS3ForceTrilinear = b;
+        mPerfSettings.SetPS3ForceTrilinear(b);
     }
     if(gRev == 0x38){
         int i, j;
-        bs >> i >> j;
+        bs >> i;
+        bs >> j;
     }
     if(gRev > 0x3E){
         mPerfSettings.Load(bs);
@@ -272,10 +271,43 @@ BEGIN_COPYS(RndMat)
     MILO_ASSERT(m, 0x287);
     COPY_SUPERCLASS(Hmx::Object)
     if(ty == kCopyFromMax){
-        COPY_MEMBER_FROM(m, mDiffuseTex)
+        if(!mDiffuseTex != !m->mDiffuseTex){
+            COPY_MEMBER_FROM(m, mDiffuseTex)
+        }
     }
     else {
-
+        COPY_MEMBER_FROM(m, mZMode)
+        COPY_MEMBER_FROM(m, mStencilMode)
+        COPY_MEMBER_FROM(m, mBlend)
+        COPY_MEMBER_FROM(m, mColor)
+        COPY_MEMBER_FROM(m, mPreLit)
+        COPY_MEMBER_FROM(m, mUseEnviron)
+        COPY_MEMBER_FROM(m, mAlphaCut)
+        COPY_MEMBER_FROM(m, mAlphaThresh)
+        COPY_MEMBER_FROM(m, mAlphaWrite)
+        COPY_MEMBER_FROM(m, mTexGen)
+        COPY_MEMBER_FROM(m, mTexWrap)
+        COPY_MEMBER_FROM(m, mTexXfm)
+        COPY_MEMBER_FROM(m, mDiffuseTex)
+        COPY_MEMBER_FROM(m, mNextPass)
+        COPY_MEMBER_FROM(m, mCull)
+        COPY_MEMBER_FROM(m, mEmissiveMultiplier)
+        COPY_MEMBER_FROM(m, mEmissiveMap)
+        COPY_MEMBER_FROM(m, mIntensify)
+        COPY_MEMBER_FROM(m, mPerPixelLit)
+        COPY_MEMBER_FROM(m, mPointLights)
+        COPY_MEMBER_FROM(m, mFog)
+        COPY_MEMBER_FROM(m, mFadeout)
+        COPY_MEMBER_FROM(m, mColorAdjust)
+        COPY_MEMBER_FROM(m, mScreenAligned)
+        COPY_MEMBER_FROM(m, mShaderVariation)
+        COPY_MEMBER_FROM(m, mShaderOptions)
+        COPY_MEMBER_FROM(m, mColorModFlags) // color mod flags
+        COPY_MEMBER_FROM(m, mColorMod)
+        COPY_MEMBER_FROM(m, mPerfSettings)
+        COPY_MEMBER_FROM(m, mRefractEnabled)
+        COPY_MEMBER_FROM(m, mRefractStrength)
+        COPY_MEMBER_FROM(m, mRefractNormalMap)
     }
     mDirty = 3;
 END_COPYS
@@ -308,28 +340,27 @@ BEGIN_HANDLERS(RndMat)
     HANDLE_CHECK(0x305)
 END_HANDLERS
 
-DataNode RndMat::OnAllowedNextPass(const DataArray* da){
+DataNode RndMat::OnAllowedNextPass(const DataArray*){
     int matcount = 0;
     for(ObjDirItr<RndMat> it(Dir(), true); it != 0; ++it){
         matcount++;
     }
     DataArrayPtr ptr(new DataArray(matcount + 2));
-    int thiscount = 1;
-    ptr.Node(0) = DataNode((Hmx::Object*)0);
+    int idx = 0;
+    ptr->Node(idx++) = NULL_OBJ;
     if(NextPass()){
-        thiscount = 2;
-        ptr.Node(1) = DataNode(NextPass());
+        ptr->Node(idx++) = NextPass();
     }
     for(ObjDirItr<RndMat> it(Dir(), true); it != 0; ++it){
         if(!IsNextPass(it)){
-            ptr.Node(thiscount++) = DataNode(it);
+            ptr->Node(idx++) = DataNode(it);
         }
     }
-    ptr->Resize(thiscount);
-    return DataNode(ptr);
+    ptr->Resize(idx);
+    return ptr;
 }
 
-DataNode RndMat::OnAllowedNormalMap(const DataArray* da){
+DataNode RndMat::OnAllowedNormalMap(const DataArray*){
     return GetNormalMapTextures(Dir());
 }
 

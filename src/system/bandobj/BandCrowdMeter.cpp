@@ -48,7 +48,7 @@ float BandCrowdMeter::InitialCrowdRating() const {
 void BandCrowdMeter::Reset(){
     mOrderedPeaks.clear();
     ShowPeakArrow(false);
-    bool editmode = TheLoadMgr.EditMode();
+    bool editmode = LOADMGR_EDITMODE;
     for(int i = 0; i < mIconData.size(); i++){
         mIconData[i].Reset();
         mIconData[i].unkc->SetFrame(InitialCrowdRating(), 1.0f);
@@ -94,7 +94,7 @@ void BandCrowdMeter::UpdatePlayers(const std::vector<TrackInstrument>& insts){
 
 void BandCrowdMeter::Poll(){
     RndDir::Poll();
-    if(!mDisabled && !TheLoadMgr.EditMode()){
+    if(!mDisabled && !LOADMGR_EDITMODE){
         int oldgrpsize = mOrderedPeaks.size();
         float f13 = GetPeakValue();
         for(int i = 0; i < mIconData.size(); i++){

@@ -10,7 +10,7 @@
 
 INIT_REVS(TrackDir)
 
-TrackDir::TrackDir() : mRunning(!TheLoadMgr.EditMode()), mDrawGroup(this, 0), mAnimGroup(this, 0), mYPerSecond(10.0f), 
+TrackDir::TrackDir() : mRunning(!LOADMGR_EDITMODE), mDrawGroup(this, 0), mAnimGroup(this, 0), mYPerSecond(10.0f), 
     mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false), mShowingWhenEnabled(this, 0), mStationaryBack(this, 0), mKeyShiftStationaryBack(this, 0), 
     mStationaryBackAfterKeyShift(this, 0), mMovingBack(this, 0), mKeyShiftMovingBack(this, 0), mKeyShiftStationaryMiddle(this, 0),
     mStationaryMiddle(this, 0), mMovingFront(this, 0), mKeyShiftMovingFront(this, 0), mKeyShiftStationaryFront(this, 0),
@@ -200,7 +200,7 @@ float TrackDir::YToSeconds(float f) const {
 }
 
 float TrackDir::CutOffY() const {
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         return mBottomY;
     } else {
         float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);

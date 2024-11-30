@@ -54,7 +54,7 @@ void BandHighlight::Exit(){
 
 void BandHighlight::Poll(){
     UIComponent::Poll();
-    if (!TheLoadMgr.EditMode()) {
+    if (!LOADMGR_EDITMODE) {
         SetState(kDisabled);
         UIScreen* curscreen = TheUI->CurrentScreen();
         if(curscreen){

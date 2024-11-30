@@ -21,9 +21,9 @@ DynamicTex::DynamicTex(const char* c1, const char* c2, bool b1, bool b2) : mTex(
     }
     if(b1){
         mMat = Hmx::Object::New<RndMat>();
-        if(unk1c) mMat->SetZMode(kNormal);
-        else mMat->SetZMode(kDisable);
-        mMat->SetBlend(kSrcAlpha);
+        if(unk1c) mMat->SetZMode(kZModeNormal);
+        else mMat->SetZMode(kZModeDisable);
+        mMat->SetBlend(kBlendSrcAlpha);
     }
 }
 

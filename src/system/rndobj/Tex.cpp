@@ -158,7 +158,7 @@ void RndTex::SetBitmap(FileLoader* fl){
         TheLoadMgr.PollUntilLoaded(fl, 0);
         int i = 0;
         buffer = (void*)fl->GetBuffer(&i);
-        if(!TheLoadMgr.EditMode() && fl != mLoader){
+        if(!LOADMGR_EDITMODE && fl != mLoader){
             if(!strstr(mFilepath.c_str(), "_keep")){
                 MILO_WARN("%s will not be included on a disc build", mFilepath);
             }

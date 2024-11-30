@@ -59,7 +59,7 @@ const char* StringTable::Add(const char* str){
             else {
                 int strsize = Size();
                 AddBuf(0x400);
-                if(!TheLoadMgr.EditMode()){
+                if(!LOADMGR_EDITMODE){
                     OSReport("Resizing string table (%d) adding %s\n", strsize + 0x400, str);
                 }
             }

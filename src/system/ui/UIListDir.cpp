@@ -177,34 +177,27 @@ END_COPYS
 
 void UIListDir::SyncObjects(){
     RndDir::SyncObjects();
-#ifdef VERSION_SZBE69_B8
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         CreateElements(0, unk1fc, mTestState.mNumDisplay);
         FillElements(mTestState, unk1fc);
     }
-#endif
 }
 
 void UIListDir::DrawShowing(){
-#ifdef VERSION_SZBE69_B8
-    if(mTestMode && TheLoadMgr.EditMode()){
+    if(mTestMode && LOADMGR_EDITMODE){
         DrawWidgets(mTestState, unk1fc, WorldXfm(), mTestComponentState, 0, false);
     }
-    else
-#endif
-        RndDir::DrawShowing();
+    else RndDir::DrawShowing();
 }
 
 void UIListDir::Poll(){
-#ifdef VERSION_SZBE69_B8
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         RndDir::Poll();
         if(mTestMode){
             mTestState.Poll(TheTaskMgr.Seconds(TaskMgr::kRealTime));
             PollWidgets(unk1fc);
         }
     }
-#endif
 }
 
 int UIListDir::NumData() const { return mTestNumData; }

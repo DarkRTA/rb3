@@ -411,7 +411,7 @@ void BandPatchMesh::Render(RndTex* tex, RndMat* mat){
                     }
                     else {
                         mat->SetColor(Hmx::Color(1,1,1,1));
-                        mat->SetTexWrap(kBorderBlack);
+                        mat->SetTexWrap(kTexBorderBlack);
                         mat->SetBlend(kPreMultAlpha);
                         mat->SetDiffuseTex(mMeshes[i].patches[j].mTex);
                     }

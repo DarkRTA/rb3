@@ -74,7 +74,7 @@ void ScoreDisplay::SetAlphaColor(float f, UIColor* col){
 void ScoreDisplay::GrowBoundingBox(Box&) const {}
 
 void ScoreDisplay::UpdateDisplay(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         if(mRank == 0){
             mCombinedLabel->SetEditText(MakeString("<alt>GBDV</alt> %s", LocalizeSeparatedInt(mScore)));
         }

@@ -233,7 +233,7 @@ void CameraManager::DeleteFreeCam(){
 }
 
 CamShot* CameraManager::MiloCamera(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         static DataNode& anim = DataVariable("milo.anim");
         if(anim.Type() == kDataObject){
             return anim.Obj<CamShot>();

@@ -131,7 +131,7 @@ void EndingBonus::UnisonSucceed(){
 
 void EndingBonus::SetScore(int score){
     if(mSucceeded) return;
-    if(!TheLoadMgr.EditMode() && score == mScore) return;
+    if(!LOADMGR_EDITMODE && score == mScore) return;
     mScore = score;
     mScoreLabel->SetInt(score, false);
 }

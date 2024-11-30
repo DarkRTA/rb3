@@ -19,7 +19,7 @@ bool gSendFocusMsg = true;
 bool PanelDir::sAlwaysNeedFocus = true;
 
 PanelDir::PanelDir() : mFocusComponent(0), mOwnerPanel(0), mCam(this, 0), mCanEndWorld(1), mUseSpecifiedCam(0), mShowEditModePanels(0), mShowFocusComponent(1) {
-    if(TheLoadMgr.EditMode()) mShowEditModePanels = true;
+    if(LOADMGR_EDITMODE) mShowEditModePanels = true;
 }
 
 PanelDir::~PanelDir() {
@@ -110,7 +110,7 @@ void PanelDir::RemovingObject(Hmx::Object* o){
 }
 
 RndCam* PanelDir::CamOverride(){
-    if(TheLoadMgr.EditMode() && !mUseSpecifiedCam) return 0;
+    if(LOADMGR_EDITMODE && !mUseSpecifiedCam) return 0;
     if(mCam) return mCam;
     return TheUI->unk34;
 }
@@ -369,7 +369,7 @@ DataNode PanelDir::OnDisableComponent(const DataArray* da){
 
 // stubbed out in retail
 void PanelDir::SyncEditModePanels(){
-    if(TheLoadMgr.EditMode()){
+    if(LOADMGR_EDITMODE){
         for(std::vector<RndDir*>::iterator it = mBackPanels.begin(); it != mBackPanels.end(); ++it){
             delete *it;
             *it = 0;

@@ -1,12 +1,16 @@
-#ifndef RNDOBJ_MATANIM_H
-#define RNDOBJ_MATANIM_H
+#pragma once
 #include "rndobj/Anim.h"
 #include "rndobj/Mat.h"
 #include "math/Key.h"
 
+/**
+ * @brief A class for animating Mats.
+ * Original _objects description:
+ * "MatAnim objects animate material properties."
+ */
 class RndMatAnim : public RndAnimatable {
 public:
-    class TexPtr : public ObjPtr<RndTex, ObjectDir> {
+    class TexPtr : public ObjPtr<RndTex> {
     public:
         TexPtr();
         TexPtr(RndTex*);
@@ -55,8 +59,8 @@ public:
     static void Init(){ REGISTER_OBJ_FACTORY(RndMatAnim) }
     static Hmx::Object* sOwner;
 
-    ObjPtr<RndMat, ObjectDir> mMat; // 0x10
-    ObjOwnerPtr<RndMatAnim, ObjectDir> mKeysOwner; // 0x1c
+    ObjPtr<RndMat> mMat; // 0x10
+    ObjOwnerPtr<RndMatAnim> mKeysOwner; // 0x1c
     Keys<Hmx::Color, Hmx::Color> mColorKeys; // 0x28
     Keys<float, float> mAlphaKeys; // 0x30
     Keys<Vector3, Vector3> mTransKeys; // 0x38
@@ -66,5 +70,3 @@ public:
 };
 
 void Interp(const RndMatAnim::TexPtr&, const RndMatAnim::TexPtr&, float, RndTex*&);
-
-#endif
