@@ -336,27 +336,68 @@ band3/game/StatMemberTracker.cpp:
 band3/game/Stats.cpp:
 	.text       start:0x8015F1A8 end:0x8016395C
 
-rb3/mgrs/tambourinemanager.cpp:
+band3/game/StreakTracker.cpp:
+	.text       start:0x8016395C end:0x801652BC
+
+band3/game/SyncGameStartPanel.cpp:
+	.text       start:0x801652BC end:0x80165E70
+
+band3/game/TambourineDetector.cpp:
+	.text       start:0x80165E70 end:0x801660DC
+	.ctors      start:0x807EFE54 end:0x807EFE58
+
+band3/game/TambourineManager.cpp:
 	.text       start:0x801660DC end:0x80167A84
 
 band3/game/Tracker.cpp:
-	.text       start:0x80167A84 end:0x80169884
+	.text       start:0x80167A84 end:0x80169834
+
+band3/game/TrackerDisplay.cpp:
+	.text       start:0x80169834 end:0x8016BB2C
 
 band3/game/TrackerManager.cpp:
 	.text       start:0x8016BB2C end:0x8016D468
 
 band3/game/TrackerSource.cpp:
-	.text       start:0x8016D468 end:0x801703DC
+	.text       start:0x8016D468 end:0x8016DE44
 
-rb3/panels/trainerpanel.cpp:
+band3/game/TrackerUtils.cpp:
+	.text       start:0x8016DE44 end:0x801703DC
+
+band3/game/TrainerGemTab.cpp:
+	.text       start:0x801703DC end:0x80172878
+
+band3/game/TrainerPanel.cpp:
 	.text       start:0x80172878 end:0x80176170
 
-rb3/unknown/801/unk_801660DC.cpp:
-	.text       start:0x80176170 end:0x8017C088
+band3/game/TrainerProgressMeter.cpp:
+	.text       start:0x80176170 end:0x80176CC0
 
-rb3/vocalplayer.cpp:
+band3/game/UISyncNetMsgs.cpp:
+	.text       start:0x80176CC0 end:0x80177FB8
+
+band3/game/UITransitionNetMsgs.cpp:
+	.text       start:0x80177FB8 end:0x80178B10
+
+band3/game/VocalGuidePitch.cpp:
+	.text       start:0x80178B10 end:0x8017916C
+
+band3/game/VocalPart.cpp:
+	.text       start:0x8017916C end:0x8017C088
+
+band3/game/VocalPlayer.cpp:
 	.text       start:0x8017C088 end:0x80184D60
 	.ctors      start:0x807EFE58 end:0x807EFE5C
+
+band3/game/VocalScoreHistory.cpp:
+	.text       start:0x80184D60 end:0x801850A0
+
+band3/game/VocalTrainerPanel.cpp:
+	.text       start:0x801850A0 end:0x80187778
+
+band3/game/PresenceMgr.cpp:
+	.text       start:0x80187778 end:0x80188850
+	.ctors      start:0x807EFE5C end:0x807EFE60
 
 band3/meta_band/AccomplishmentManager.cpp:
 	.text       start:0x80188850 end:0x8019BE78
