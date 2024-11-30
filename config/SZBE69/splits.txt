@@ -169,68 +169,172 @@ band3/bandtrack/TrackConfig.cpp:
 band3/bandtrack/TrackPanel.cpp:
 	.text       start:0x800E481C end:0x800E92A4
 
-rb3/unknown/800/unk_800F6DF8.cpp:
-	.text       start:0x800F6DF8 end:0x800FF880
+band3/bandtrack/VocalTrack.cpp:
+	.text       start:0x800E92A4 end:0x800F6DF8
+	.ctors      start:0x807EFE48 end:0x807EFE4C
 
-rb3/mgrs/bandusermgr.cpp:
+band3/game/AccuracyTracker.cpp:
+	.text       start:0x800F6DF8 end:0x800F7520
+
+band3/game/Band.cpp:
+	.text       start:0x800F7520 end:0x800F98D8
+
+band3/game/BandPerformer.cpp:
+	.text       start:0x800F98D8 end:0x800FB504
+
+band3/game/BandUser.cpp:
+	.text       start:0x800FB504 end:0x800FF880
+
+band/game/BandUserMgr.cpp:
 	.text       start:0x800FF880 end:0x80101808
 
-rb3/panels/chordbookpanel.cpp:
+band3/game/ChordbookPanel.cpp:
 	.text       start:0x80101808 end:0x8010417C
+
+band3/game/ChordPreview.cpp:
+	.text       start:0x8010417C end:0x801044C4
+
+band3/game/CommonPhraseCapturer.cpp:
+	.text       start:0x801044C4 end:0x80105B0C
+
+band3/game/CrowdRating.cpp:
+	.text       start:0x80105B0C end:0x80106180
+
+band3/game/Defines.cpp:
+	.text       start:0x80106180 end:0x80107200
+
+band3/game/DirectInstrument.cpp:
+	.text       start:0x80107200 end:0x8010765C
 
 band3/game/DeployCountTracker.cpp:
 	.text       start:0x8010765C end:0x80108E3C
 
-rb3/panels/fadepanel.cpp:
+band3/game/FadePanel.cpp:
 	.text       start:0x80108E3C end:0x801096AC
 
 band3/game/FocusTracker.cpp:
 	.text       start:0x801096AC end:0x8010C65C
 
-rb3/panels/freestylepanel.cpp:
+band3/game/FreestylePanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
 band3/game/FretHand.cpp:
 	.text       start:0x8010D754 end:0x8010DCD0
 
-rb3/game.cpp:
-	.text       start:0x80110030 end:0x80116E14
+band3/game/Game.cpp:
+	.text       start:0x8010DCD0 end:0x801170B0
 
-rb3/mgrs/gamemicmanager.cpp:
+band3/game/GameConfig.cpp:
+	.text       start:0x801170B0 end:0x801192CC
+
+band3/game/GameMic.cpp:
+	.text       start:0x801192CC end:0x80119E40
+
+band3/game/GameMicManager.cpp:
 	.text       start:0x80119E40 end:0x8011AF08
 	.ctors      start:0x807EFE4C end:0x807EFE50
 
-rb3/gamemode.cpp:
+band3/game/GameMode.cpp:
 	.text       start:0x8011AF08 end:0x8011BA2C
 	.data       start:0x80833390 end:0x80833570
 	.bss        start:0x808F97D0 end:0x808F97D4
 
-rb3/panels/gamepanel.cpp:
+band3/game/GamePanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C
+
+band3/game/GemPlayer.cpp:
+	.text       start:0x8011DD8C end:0x8012B7B8
+
+band3/game/GemTrainerPanel.cpp:
+	.text       start:0x8012B7B8 end:0x8012E974
 
 band3/game/GuitarFx.cpp:
 	.text       start:0x8012E974 end:0x8012F4C4
 
+band3/game/HeldNote.cpp:
+	.text       start:0x8012F4C4 end:0x8012F8D8
+
+band3/game/HitTracker.cpp:
+	.text       start:0x8012F8D8 end:0x8012FAF8
+
 band3/game/KeysFx.cpp:
 	.text       start:0x8012FAF8 end:0x8013032C
 
-rb3/performer.cpp:
+band3/game/Metronome.cpp:
+	.text       start:0x8013032C end:0x8013066C
+
+band3/game/MultiplayerAnalyzer.cpp:
+	.text       start:0x8013066C end:0x80133DD0
+
+band3/game/NetGameMsgs.cpp:
+	.text       start:0x80133DD0 end:0x801383B8
+
+band3/game/OverdriveTimeTracker.cpp:
+	.text       start:0x801383B8 end:0x80138ADC
+
+band3/game/OverdriveTracker.cpp:
+	.text       start:0x80138ADC end:0x8013A3D0
+
+band3/game/PerfectOverdriveTracker.cpp:
+	.text       start:0x8013A3D0 end:0x8013D00C
+
+band3/game/PerfectSectionTracker.cpp:
+	.text       start:0x8013D00C end:0x80141EE8
+
+band3/game/Performer.cpp:
 	.text       start:0x80141EE8 end:0x801444A4
 
-rb3/player.cpp:
-	.text       start:0x801444A4 end:0x80149978
+band3/game/Player.cpp:
+	.text       start:0x801444A4 end:0x801498D4
 
-rb3/panels/practicepanel.cpp:
+band3/game/PlayerBehavior.cpp:
+	.text       start:0x801498D4 end:0x80149978
+
+band3/game/PracticePanel.cpp:
 	.text       start:0x80149978 end:0x8014BAA0
 
-rb3/providers/practicesectionprovider.cpp:
+band3/game/PracticeSectionProvider.cpp:
 	.text       start:0x8014BAA0 end:0x8014CF80
+
+band3/game/RealGuitarGemPlayer.cpp:
+	.text       start:0x8014CF80 end:0x8014DA04
 
 band3/game/RGTrainerPanel.cpp:
 	.text       start:0x8014DA04 end:0x8015143C
 
+band3/game/RGTutor.cpp:
+	.text       start:0x8015143C end:0x80152268
+
+band3/game/RKTrainerPanel.cpp:
+	.text       start:0x80152268 end:0x80152660
+
+band3/game/ScoreTracker.cpp:
+	.text       start:0x80152660 end:0x80152924
+
+band3/game/ScoreUtl.cpp:
+	.text       start:0x80152924 end:0x80152974
+
+band3/game/Scoring.cpp:
+	.text       start:0x80152974 end:0x80155004
+
+band3/game/Shuttle.cpp:
+	.text       start:0x80155004 end:0x80155090
+
+band3/game/Singer.cpp:
+	.text       start:0x80155090 end:0x80159E44
+	.ctors      start:0x807EFE50 end:0x807EFE54
+
+band3/game/SongDB.cpp:
+	.text       start:0x80159E44 end:0x8015E774
+
+band3/game/StatCollector.cpp:
+	.text       start:0x8015E774 end:0x8015EA58
+
 band3/game/StatMemberTracker.cpp:
 	.text       start:0x8015EA58 end:0x8015F1A8
+
+band3/game/Stats.cpp:
+	.text       start:0x8015F1A8 end:0x8016395C
 
 rb3/mgrs/tambourinemanager.cpp:
 	.text       start:0x801660DC end:0x80167A84
