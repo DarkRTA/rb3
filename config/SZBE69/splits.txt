@@ -1016,7 +1016,32 @@ band3/tour/TourWeightManager.cpp:
 	.text       start:0x802C1124 end:0x802C12E0
 
 band3/net_band/ContextWrapper.cpp:
-	.text		start:0x802C12E0 end:0x802C1C04
+	.text       start:0x802C12E0 end:0x802C1C04
+	.ctors      start:0x807EFE90 end:0x807EFE94
+
+band3/net_band/DataResults.cpp:
+	.text       start:0x802C1C04 end:0x802C31BC
+
+band3/net_band/RockCentral.cpp:
+	.text       start:0x802C31BC end:0x802D0A5C
+	.ctors      start:0x807EFE94 end:0x807EFE98
+
+band3/net_band/RockCentralJobs.cpp:
+	.text       start:0x802D0A5C end:0x802D16AC
+
+band3/net_band/EntityUploader.cpp:
+	.text       start:0x802D16AC end:0x802D341C
+
+band3/net_band/EntityUploader_Wii.cpp:
+	.text       start:0x802D341C end:0x802D4A4C
+	.ctors      start:0x807EFE98 end:0x807EFE9C
+
+band3/net_band/RockBandDDF_Wii.cpp:
+	.text       start:0x802D4A4C end:0x802D4B74
+	.ctors      start:0x807EFE9C end:0x807EFEA0
+
+band3/net_band/RBTestDDL_Wii.cpp:
+	.text       start:0x802D4B74 end:0x802D4C40
 
 system/math/SHA1.cpp:
 	.text       start:0x802D5518 end:0x802D7088

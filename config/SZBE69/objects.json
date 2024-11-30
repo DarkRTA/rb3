@@ -281,6 +281,18 @@
             "band3/meta_band/WiiFriendsProvider.cpp": "NonMatching",
             "band3/meta_band/WiiProfilePanel.cpp": "NonMatching",
 
+            "band3/net_band/ContextWrapper.cpp": "NonMatching",
+            "band3/net_band/DataResults.cpp": "NonMatching",
+            "band3/net_band/EntityUploader_Wii.cpp": "NonMatching",
+            "band3/net_band/EntityUploader.cpp": "NonMatching",
+            "band3/net_band/RBBinaryBufferDDL_Wii.cpp": "NonMatching",
+            "band3/net_band/RBBinaryDataDDL_Wii.cpp": "NonMatching",
+            "band3/net_band/RBDataDDL_Wii.cpp": "NonMatching",
+            "band3/net_band/RBTestDDL_Wii.cpp": "NonMatching",
+            "band3/net_band/RockBandDDF_Wii.cpp": "NonMatching",
+            "band3/net_band/RockCentral.cpp": "NonMatching",
+            "band3/net_band/RockCentralJobs.cpp": "NonMatching",
+
             "band3/tour/FixedSetlist.cpp": "NonMatching",
             "band3/tour/GigFilter.cpp": "NonMatching",
             "band3/tour/Quest.cpp": "NonMatching",
