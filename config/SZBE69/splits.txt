@@ -403,7 +403,10 @@ band3/meta_band/AccomplishmentManager.cpp:
 	.text       start:0x80188850 end:0x8019BE78
 
 band3/meta_band/AccomplishmentOneShot.cpp:
-	.text       start:0x8019BE78 end:0x8019C7D4
+	.text       start:0x8019BE78 end:0x8019C4AC
+
+band3/meta_band/AccomplishmentPanel.cpp:
+	.text       start:0x8019C4AC end:0x801A7544
 
 band3/meta_band/AccomplishmentProgress.cpp:
 	.text       start:0x801A7544 end:0x801ABEF8
@@ -413,6 +416,48 @@ band3/meta_band/Accomplishment.cpp:
 
 band3/meta_band/AccomplishmentCategory.cpp:
 	.text       start:0x801ADF78 end:0x801AE0F4
+
+band3/meta_band/AccomplishmentConditional.cpp:
+	.text       start:0x801AE0F4 end:0x801AED34
+
+band3/meta_band/AccomplishmentDiscSongConditional.cpp:
+	.text       start:0x801AED34 end:0x801AF30C
+
+band3/meta_band/AccomplishmentGroup.cpp:
+	.text       start:0x801AF30C end:0x801AF538
+
+band3/meta_band/AccomplishmentLessonSongListConditional.cpp:
+	.text       start:0x801AF538 end:0x801AF780
+
+band3/meta_band/AccomplishmentLessonDiscSongConditional.cpp:
+	.text       start:0x801AF780 end:0x801AF9C8
+
+band3/meta_band/AccomplishmentPlayerConditional.cpp:
+	.text       start:0x801AF9C8 end:0x801B0D90
+
+band3/meta_band/AccomplishmentSetlist.cpp:
+	.text       start:0x801B0D90 end:0x801B100C
+
+band3/meta_band/AccomplishmentSongConditional.cpp:
+	.text       start:0x801B100C end:0x801B1E78
+
+band3/meta_band/AccomplishmentSongFilterConditional.cpp:
+	.text       start:0x801B1E78 end:0x801B2744
+
+band3/meta_band/AccomplishmentSongListConditional.cpp:
+	.text       start:0x801B2744 end:0x801B2AD8
+
+band3/meta_band/AccomplishmentTourConditional.cpp:
+	.text       start:0x801B2AD8 end:0x801B37DC
+
+band3/meta_band/AccomplishmentTrainerConditional.cpp:
+	.text       start:0x801B37DC end:0x801B407C
+
+band3/meta_band/AccomplishmentTrainerListConditional.cpp:
+	.text       start:0x801B407C end:0x801B4340
+
+band3/meta_band/AccomplishmentTrainerCategoryConditional.cpp:
+	.text       start:0x801B4340 end:0x801B481C
 
 rb3/bandnetgamedata.cpp:
 	.text       start:0x801C14AC end:0x801C2718
