@@ -367,7 +367,7 @@ inline float LengthSquared(const Vector3& v){
 // https://decomp.me/scratch/TWZ2T
 // why oh why does debug behave this way
 inline float DistanceSquared(const Vector3& v1, const Vector3& v2){
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     float zdiff = v1.z - v2.z;
     float ydiff = v1.y - v2.y;
     float xdiff = v1.x - v2.x;
