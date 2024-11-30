@@ -185,7 +185,7 @@ band3/game/BandPerformer.cpp:
 band3/game/BandUser.cpp:
 	.text       start:0x800FB504 end:0x800FF880
 
-band/game/BandUserMgr.cpp:
+band3/game/BandUserMgr.cpp:
 	.text       start:0x800FF880 end:0x80101808
 
 band3/game/ChordbookPanel.cpp:
@@ -932,14 +932,91 @@ band3/meta_band/StoreOfferContentsProvider.cpp:
 band3/tour/FixedSetlist.cpp:
 	.text       start:0x802A871C end:0x802A8A78
 
+band3/tour/GigFilter.cpp:
+	.text       start:0x802A8A78 end:0x802A8DD8
+
+band3/tour/Quest.cpp:
+	.text       start:0x802A8DD8 end:0x802A93EC
+
+band3/tour/QuestJournal.cpp:
+	.text       start:0x802A93EC end:0x802A950C
+
+band3/tour/QuestManager.cpp:
+	.text       start:0x802A950C end:0x802AC6C4
+	.ctors      start:0x807EFE88 end:0x807EFE8C
+
+band3/tour/QuestFilterPanel.cpp:
+	.text       start:0x802AC6C4 end:0x802ADF00
+
+band3/tour/Tour.cpp:
+	.text       start:0x802ADF00 end:0x802B32F0
+
+band3/tour/TourBand.cpp:
+	.text       start:0x802B32F0 end:0x802B3A24
+
+band3/tour/TourChallengeResultsPanel.cpp:
+	.text       start:0x802B3A24 end:0x802B4324
+
+band3/tour/TourChar.cpp:
+	.text       start:0x802B4324 end:0x802B49D4
+
+band3/tour/TourCharLocal.cpp:
+	.text       start:0x802B49D4 end:0x802B52F8
+
+band3/tour/TourCharRemote.cpp:
+	.text       start:0x802B52F8 end:0x802B5A38
+
+band3/tour/TourCondition.cpp:
+	.text       start:0x802B5A38 end:0x802B63F8
+
+band3/tour/TourDesc.cpp:
+	.text       start:0x802B63F8 end:0x802B7188
+
+band3/tour/TourDescPanel.cpp:
+	.text       start:0x802B7188 end:0x802BA3C8
+
+band3/tour/TourGameModifier.cpp:
+	.text       start:0x802BA3C8 end:0x802BA4F0
+
+band3/tour/TourGameRules.cpp:
+	.text       start:0x802BA4F0 end:0x802BA70C
+
+band3/tour/TourPerformer.cpp:
+	.text       start:0x802BA70C end:0x802BC2E8
+	.ctors      start:0x807EFE8C end:0x807EFE90
+
+band3/tour/TourPerformerLocal.cpp:
+	.text       start:0x802BC2E8 end:0x802BE204
+
+band3/tour/TourPerformerRemote.cpp:
+	.text       start:0x802BE204 end:0x802BE3E8
+
+band3/tour/TourProgress.cpp:
+	.text       start:0x802BE3E8 end:0x802C0100
+
+band3/tour/TourProperty.cpp:
+	.text       start:0x802C0100 end:0x802C0338
+
 band3/tour/TourPropertyCollection.cpp:
 	.text       start:0x802C0338 end:0x802C059C
+
+band3/tour/TourQuestGameRules.cpp:
+	.text       start:0x802C059C end:0x802C06A8
 
 band3/tour/TourReward.cpp:
 	.text       start:0x802C06A8 end:0x802C0DC4
 	.data       start:0x8084FB00 end:0x8084FB38
 	.sbss       start:0x808E4370 end:0x808E4378
 	.bss        start:0x80900740 end:0x80900758
+
+band3/tour/TourSavable.cpp:
+	.text       start:0x802C0DC4 end:0x802C1124
+
+band3/tour/TourWeightManager.cpp:
+	.text       start:0x802C1124 end:0x802C12E0
+
+band3/net_band/ContextWrapper.cpp:
+	.text		start:0x802C12E0 end:0x802C1C04
 
 system/math/SHA1.cpp:
 	.text       start:0x802D5518 end:0x802D7088
