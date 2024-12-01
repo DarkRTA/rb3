@@ -12,13 +12,9 @@ public:
     void Reset();
     void Configure(BandUser*, Difficulty);
     float GetThreshold(ExcitementLevel) const;
-    float GetMinValue();
-    bool IsActive() const;
-    float GetValue() const;
     void SetActive(bool);
     void SetValue(float);
     bool IsInWarning() const;
-    float GetRawValue() const;
     void SetDisplayValue(float);
     float GetDisplayValue() const;
     bool IsBelowLoseLevel() const;
@@ -26,6 +22,10 @@ public:
     void ChangeDifficulty(BandUser *, Difficulty);
     float GetLoseLevel() const { return unk18; }
     void SetLoseLevel(float level) { unk18 = level; }
+    float GetMinValue(){ return unk10; }
+    float GetValue() const { return unkc; }
+    float GetRawValue() const { return unk8; }
+    bool IsActive() const { return mActive; }
 
     bool mActive; // 0x4
     float unk8;
