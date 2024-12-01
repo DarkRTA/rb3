@@ -1,15 +1,18 @@
 #include "Stats.h"
 #include "math/Utl.h"
 #include "os/Debug.h"
+#include <algorithm>
 
-Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0), mUpstrumCount(0), mDownstrumCount(0),
-    m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0), m0x48(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0),
-    mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0), mSolo(0), mOverdrive(0), mSustain(0), mScoreStreak(0),
-    mBandContribution(0), mCodaPoints(0), mHasCoda(0), mHasSolos(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0), mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0),
-    mClosestPlayersSaved(3, 2.0f), mTimesSaved(0), mClosestTimesSaved(3, 2.0f), mBestSolos(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0), m0x14c(0), m0x150(0), mEndGameScore(0),
-    mEndGameCrowdLevel(0), mEndGameOverdrive(0), mOverdrivePhrasesCompleted(0), mOverdrivePhraseCount(0), mUnisonPhraseCompleted(0), mUnisonPhraseCount(0), mHopoGemsHopoed(0), mHopoGemsStrummed(0),
-    mHopoGemCount(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0), mAverageMultiplier(0), mRollCount(0),
-    mRollsHitCompletely(0), mTrillCount(0), mTrillsHitCompletely(0), mTrillsHitPartially(0), mCymbalGemInfo1(0), mCymbalGemInfo2(0), mCymbalGemInfo3(0), unk1c0(0), unk1c4(0), unk1c8(0) {
+Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0),
+    mUpstrumCount(0), mDownstrumCount(0), m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0),
+    m0x48(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0), mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0),
+    mSolo(0), mOverdrive(0), mSustain(0), mScoreStreak(0), mBandContribution(0), mCodaPoints(0), mHasCoda(0), mHasSolos(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0),
+    mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0), mClosestPlayersSaved(3, 2.0f), mTimesSaved(0),
+    mClosestTimesSaved(3, 2.0f), mBestSolos(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0),
+    m0x14c(0), m0x150(0), mEndGameScore(0), mEndGameCrowdLevel(0), mEndGameOverdrive(0), mOverdrivePhrasesCompleted(0), mOverdrivePhraseCount(0), mUnisonPhraseCompleted(0), mUnisonPhraseCount(0),
+    mHopoGemsHopoed(0), mHopoGemsStrummed(0), mHopoGemCount(0), mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0), mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0),
+    mSustainGemCount(0), mAverageMultiplier(0), mRollCount(0), mRollsHitCompletely(0), mTrillCount(0), mTrillsHitCompletely(0), mTrillsHitPartially(0), mCymbalGemInfo1(0), mCymbalGemInfo2(0),
+    mCymbalGemInfo3(0), unk1c0(0), unk1c4(0), unk1c8(0) {
 
 }
 
@@ -62,18 +65,6 @@ void Stats::EndStreak(Stats::StreakInfo& info, std::vector<Stats::StreakInfo>& v
     info = StreakInfo();
 }
 
-template <class T>
-void Stats::SaveHighest(std::vector<T>& vec, const T& item){
-    typename std::vector<T>::iterator it;
-    for(it = vec.begin(); it != vec.end(); ++it){
-        if(*it > item){
-            vec.pop_back();
-            vec.insert(it, item);
-            break;
-        }
-    }
-}
-
 void Stats::SetFinalized(bool b){
     mFinalized = b;
     if(b){
@@ -113,7 +104,7 @@ void Stats::SetSingerPitchDeviationInfo(int i, float f1, float f2){
 }
 
 void Stats::UpdateBestTambourineSection(int i){
-    if(m0x5c < i) m0x5c = i;
+    MaxEq(m0x5c, i);
 }
 
 void Stats::SaveForEndGame(BinStream& bs) const {
@@ -244,11 +235,28 @@ int Stats::GetCodaPoints() const { return mCodaPoints; }
 float Stats::GetTambourine() const { return mTambourine; }
 int Stats::GetHarmony() const { return mHarmony; }
 
-void Stats::SetNoScorePercent(float) {}
-bool Stats::FailedNoScore() const {}
-void Stats::AddFailurePoint(float) {}
-void Stats::AddToPlayersSaved(int, float) {}
-void Stats::AddToTimesSaved(float, float) {}
+void Stats::SetNoScorePercent(float pct) {
+    *this = Stats();
+    mNoScorePercent = pct;
+}
+
+bool Stats::FailedNoScore() const { return mNoScorePercent != 0; }
+
+void Stats::AddFailurePoint(float fp) {
+    SaveNewest(mFailurePoints, fp);
+}
+void Stats::AddToPlayersSaved(int i, float f) {
+    if(i > 0){
+        mPlayersSaved += i;
+        SaveLowest(mClosestPlayersSaved, f);
+    }
+}
+
+void Stats::AddToTimesSaved(float f1, float f2) {
+    mTimesSaved++;
+    SaveLowest(mClosestTimesSaved, f1);
+    SaveNewest(mSavedPoints, f2);
+}
 
 void Stats::DeployOverdrive(float f, int i){
     BeginMultiplier(mCurrentOverdriveDeployment, f, i, mOverdrive);
@@ -282,7 +290,10 @@ void Stats::EndMultiplier(Stats::MultiplierInfo& info, std::vector<Stats::Multip
     info = MultiplierInfo();
 }
 
-// void Stats::GetUnisonPhrasePercent() const {}
+int Stats::GetUnisonPhrasePercent() const {
+    if(mUnisonPhraseCount == 0) return 0;
+    else return ((float)mUnisonPhraseCompleted / (float)mUnisonPhraseCount) * 100.0f;
+}
 
 void Stats::SetHopoGemInfo(int i1, int i2, int i3){
     mHopoGemsHopoed = i1;
@@ -329,20 +340,35 @@ const Stats::SectionInfo& Stats::GetSectionInfo(int index) const {
     return mSections[index];
 }
 
-void Stats::GetAverageMsError() const {}
+float Stats::GetAverageMsError() const {
+    if(mHitCount == 0) return 0;
+    else return unk1c8 / mHitCount;
+}
 
-SingerStats::SingerStats(int) {}
-void SingerStats::Finalize() {}
+SingerStats::SingerStats(int count) {
+    for(int i = 0; i < count; i++){
+        unk0.push_back(std::pair<int,float>(i, 0.0f));
+    }
+}
+
+void SingerStats::Finalize() {
+    std::sort(unk0.begin(), unk0.end(), PartPercentageSorter());
+}
+
 void SingerStats::SetPartPercentage(int, float) {}
-void SingerStats::GetRankData(int) const {}
+const std::pair<int, float>& SingerStats::GetRankData(int part) const {
+    return unk0[part];
+}
 
 void SingerStats::SetPitchDeviationInfo(float param_1, float param_2) {
     mPitchDeviation1 = param_1;
     mPitchDeviation2 = param_2;
 }
 
-void SingerStats::GetPitchDeviationInfo(float&, float&) const {}
-
+void SingerStats::GetPitchDeviationInfo(float& f1, float& f2) const {
+    f1 = mPitchDeviation1;
+    f2 = mPitchDeviation2;
+}
 
 Stats::StreakInfo::StreakInfo() : mStart(-1), mDuration(0) {}
 

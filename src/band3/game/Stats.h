@@ -1,15 +1,20 @@
-#ifndef GAME_STATS_H
-#define GAME_STATS_H
+#pragma once
 #include <vector>
 #include "system/utl/BinStream.h"
 #include "os/Debug.h"
 
 class SingerStats {
 public:
+    struct PartPercentageSorter {
+        bool operator()(const std::pair<int,float>& p1, const std::pair<int,float>& p2){
+            return p1.second < p2.second ? true : false;
+        }
+    };
+
     SingerStats(int);
     void Finalize();
     void SetPartPercentage(int, float);
-    void GetRankData(int) const;
+    const std::pair<int, float>& GetRankData(int) const;
     void SetPitchDeviationInfo(float, float);
     void GetPitchDeviationInfo(float&, float&) const;
 
@@ -25,7 +30,7 @@ public:
     public:
         StreakInfo();
 
-        bool operator>(const StreakInfo& s){
+        bool operator>(const StreakInfo& s) const {
             return mDuration > s.mDuration;
         }
 
@@ -129,7 +134,7 @@ public:
     void SetCymbalGemInfo(int, int, int);
     void SetSectionInfo(int, Symbol, float, float);
     const SectionInfo& GetSectionInfo(int) const;
-    void GetAverageMsError() const;
+    float GetAverageMsError() const;
 
     int GetDoubleHarmonyHit() const { return mDoubleHarmonyHit; }
     int GetDoubleHarmonyPhraseCount() const { return mDoubleHarmonyPhraseCount; }
@@ -223,6 +228,8 @@ public:
     }
 
     template <class T> void SaveHighest(std::vector<T>&, const T&);
+    template <class T> void SaveNewest(std::vector<T>&, const T&);
+    template <class T> void SaveLowest(std::vector<T>&, const T&);
 
     int mHitCount;                             // 0x000
     int mMissCount;                            // 0x004
@@ -329,4 +336,32 @@ BinStream& operator<<(BinStream&, const Stats::SectionInfo&);
 BinStream& operator>>(BinStream&, Stats::SectionInfo&);
 bool operator>(const Stats::MultiplierInfo&, const Stats::MultiplierInfo&);
 
-#endif // GAME_STATS_H
+template <class T>
+void Stats::SaveHighest(std::vector<T>& vec, const T& item){
+    typename std::vector<T>::iterator it;
+    for(it = vec.begin(); it != vec.end(); ++it){
+        if(item > *it){
+            vec.pop_back();
+            vec.insert(it, item);
+            break;
+        }
+    }
+}
+
+template <class T>
+void Stats::SaveNewest(std::vector<T>& vec, const T& item){
+    vec.pop_back();
+    vec.insert(vec.begin(), item);
+}
+
+template <class T>
+void Stats::SaveLowest(std::vector<T>& vec, const T& item){
+    typename std::vector<T>::iterator it;
+    for(it = vec.begin(); it != vec.end(); ++it){
+        if(item < *it){
+            vec.pop_back();
+            vec.insert(it, item);
+            break;
+        }
+    }
+}
