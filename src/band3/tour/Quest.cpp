@@ -59,28 +59,31 @@ int Quest::GetTier() const { return mTier; }
 float Quest::GetWeight() const { return mWeight; }
 const TourCondition* Quest::GetPrereqs() const { return &mPrerequisites; }
 
+static inline bool QuestEmptySymbolHack(const Symbol& s){
+    return s != "";
+}
+
 DECOMP_FORCEFUNC(Quest, Quest, HasCustomIntro())
 DECOMP_FORCEFUNC(Quest, Quest, HasCustomOutro())
 
-// TODO: why doesn't this hack work with functions that have strings :sadge:
 #pragma push
 #pragma force_active on
-bool Quest::HasCustomIntro() const {
-    return mIntroVignette != "";
+inline bool Quest::HasCustomIntro() const {
+    return QuestEmptySymbolHack(mIntroVignette);
 }
 
-bool Quest::HasCustomOutro() const {
-    return mOutroVignette != "";
+inline bool Quest::HasCustomOutro() const {
+    return QuestEmptySymbolHack(mOutroVignette);
 }
 #pragma pop
 
-Symbol Quest::GetCustomIntro() const { // this looks stupid, i'm aware, but i can't really do anything about it
-    (!(mIntroVignette == "") || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, 184, "HasCustomIntro()")), 0));
+Symbol Quest::GetCustomIntro() const {
+    MILO_ASSERT(HasCustomIntro(), 184);
     return mIntroVignette;
 }
 
 Symbol Quest::GetCustomOutro() const {
-    (!(mOutroVignette == "") || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, 192, "HasCustomOutro()")), 0));
+    MILO_ASSERT(HasCustomOutro(), 192);
     return mOutroVignette;
 }
 

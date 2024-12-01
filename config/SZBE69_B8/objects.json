@@ -319,7 +319,7 @@
             "band3/tour/Quest.cpp": "Matching",
             "band3/tour/QuestFilterPanel.cpp": "NonMatching",
             "band3/tour/QuestJournal.cpp": "Matching",
-            "band3/tour/QuestManager.cpp": "Matching",
+            "band3/tour/QuestManager.cpp": "LinkIssues",
             "band3/tour/Tour.cpp": "NonMatching",
             "band3/tour/TourBand.cpp": "NonMatching",
             "band3/tour/TourChallengeResultsPanel.cpp": "Matching",
