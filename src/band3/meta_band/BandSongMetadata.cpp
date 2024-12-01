@@ -1,8 +1,10 @@
 #include "meta_band/BandSongMetadata.h"
+#include "BandMachineMgr.h"
+#include "decomp.h"
+#include "meta_band/SessionMgr.h"
+#include "meta_band/SongUpgradeMgr.h"
 #include "utl/UTF8.h"
 #include "utl/Symbols.h"
-
-int BandSongMetadata::sBandSaveVer = 0x11;
 
 void BandSongMetadata::InitBandSongMetadata(){
     mTitle = 0;
@@ -182,6 +184,8 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
     }
 }
 
+int BandSongMetadata::sBandSaveVer = 0x11; // put here to get this damn TU to link
+
 const char* BandSongMetadata::Title() const { return mTitle.c_str(); }
 const char* BandSongMetadata::Artist() const { return mArtist.c_str(); }
 const char* BandSongMetadata::Album() const { return mAlbum.c_str(); }
@@ -226,8 +230,24 @@ Symbol BandSongMetadata::Decade() const {
     return sym;
 }
 
-bool BandSongMetadata::HasPart(Symbol, bool) const {
-
+bool BandSongMetadata::HasPart(Symbol s, bool b) const {
+    BandMachineMgr* mgr = TheSessionMgr ? TheSessionMgr->mMachineMgr : nullptr;
+    if(mgr && !b && !mgr->IsSongAllowedToHavePart(ID(), s)){
+        return false;
+    }
+    else {
+        if(s == real_guitar || s == real_bass){
+            SongUpgradeData* upgradeData = mSongMgr->GetUpgradeData(ID());
+            if(upgradeData){
+                return upgradeData->HasPart(s);
+            }
+        }
+        std::map<Symbol, float>::const_iterator it = mRanks.find(s);
+        if(it != mRanks.end() && it->second > 0){
+            return true;
+        }
+        else return false;
+    }
 }
 
 float BandSongMetadata::Rank(Symbol s) const {
@@ -256,7 +276,10 @@ bool BandSongMetadata::IsRanked() const { return !mRanks.empty(); }
 
 bool BandSongMetadata::IsVersionOK() const {
     bool ret = false;
-    if(mVersion <= 0x1E) ret = true;
+    u32 version = (mVersion & 0xffff);
+    if(version <= 30) { 
+        ret = true;
+    }    
     return ret;
 }
 
@@ -291,9 +314,14 @@ Symbol BandSongMetadata::HasProGuitarSym() const {
     return haspropart ? has_part_yes : has_part_no;
 }
 
-bool BandSongMetadata::HasKeys() const {
+DECOMP_FORCEFUNC(BandSongMetadata, BandSongMetadata, HasKeys())
+
+#pragma push
+#pragma force_active on
+inline bool BandSongMetadata::HasKeys() const {
     return HasPart(keys, false) || HasPart(real_keys, false);
 }
+#pragma pop
 
 bool BandSongMetadata::HasGuitar() const {
     return HasPart(guitar, false) || HasPart(real_guitar, false);
@@ -303,14 +331,8 @@ bool BandSongMetadata::HasBass() const {
     return HasPart(bass, false) || HasPart(real_bass, false);
 }
 
-// FIXME: how do we get the regular HasKeys() to inline here but not anywhere else?
-// this hack is in place for now
-inline bool BandSongMetadata::HasKeysDebug() const {
-    return HasPart(keys, false) || HasPart(real_keys, false);
-}
-
 Symbol BandSongMetadata::HasKeysSym() const {
-    return HasKeysDebug() ? has_part_yes : has_part_no;
+    return HasKeys() ? has_part_yes : has_part_no;
 }
 
 bool BandSongMetadata::HasSolo(Symbol s) const {
