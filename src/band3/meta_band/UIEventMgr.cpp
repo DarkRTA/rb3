@@ -1,5 +1,6 @@
 #include "meta_band/UIEventMgr.h"
 #include "NetSync.h"
+#include "decomp.h"
 #include "meta_band/UIEvent.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
@@ -126,13 +127,19 @@ bool UIEventMgr::HasActiveEvent() const {
     return mDialogEventQueue.CurrentEvent() || mTransitionEventQueue.CurrentEvent();
 }
 
-bool UIEventMgr::HasActiveDialogEvent() const {
+DECOMP_FORCEFUNC(UIEventMgr, UIEventMgr, HasActiveDialogEvent())
+DECOMP_FORCEFUNC(UIEventMgr, UIEventMgr, HasActiveTransitionEvent())
+
+#pragma push
+#pragma force_active on
+inline bool UIEventMgr::HasActiveDialogEvent() const {
     return mDialogEventQueue.CurrentEvent();
 }
 
-bool UIEventMgr::HasActiveTransitionEvent() const {
+inline bool UIEventMgr::HasActiveTransitionEvent() const {
     return mTransitionEventQueue.CurrentEvent();
 }
+#pragma pop
 
 bool UIEventMgr::HasActiveDestructiveEvent() const {
     UIEvent* transitionEvent = mTransitionEventQueue.CurrentEvent();
@@ -142,13 +149,19 @@ bool UIEventMgr::HasActiveDestructiveEvent() const {
     return false;
 }
 
-bool UIEventMgr::HasTransitionEvent(Symbol s) const {
+DECOMP_FORCEFUNC(UIEventMgr, UIEventMgr, HasTransitionEvent(Symbol()))
+DECOMP_FORCEFUNC(UIEventMgr, UIEventMgr, HasDialogEvent(Symbol()))
+
+#pragma push
+#pragma force_active on
+inline bool UIEventMgr::HasTransitionEvent(Symbol s) const {
     return mTransitionEventQueue.HasEvent(s);
 }
 
-bool UIEventMgr::HasDialogEvent(Symbol s) const {
+inline bool UIEventMgr::HasDialogEvent(Symbol s) const {
     return mDialogEventQueue.HasEvent(s);
 }
+#pragma pop
 
 Symbol UIEventMgr::CurrentDialogEvent() const {
     UIEvent* event = mDialogEventQueue.CurrentEvent();
@@ -163,7 +176,7 @@ Symbol UIEventMgr::CurrentTransitionEvent() const {
 }
 
 bool UIEventMgr::IsTransitionEventFinished() const {
-    MILO_ASSERT(HasActiveTransitionEvent(), 0xFD); // should be inlined in this TU
+    MILO_ASSERT(HasActiveTransitionEvent(), 0xFD);
     TransitionEvent* event = dynamic_cast<TransitionEvent*>(mTransitionEventQueue.CurrentEvent());
 }
 
@@ -181,13 +194,13 @@ BEGIN_HANDLERS(UIEventMgr)
     HANDLE(trigger_event, OnTriggerEvent)
     HANDLE_ACTION(dismiss_dialog_event, DismissDialogEvent())
     HANDLE_ACTION(dismiss_transition_event, DismissTransitionEvent())
-    HANDLE_EXPR(has_active_transition_event, HasActiveTransitionEvent()) // should be inlined in this TU
+    HANDLE_EXPR(has_active_transition_event, HasActiveTransitionEvent())
     HANDLE_EXPR(has_active_destructive_event, HasActiveDestructiveEvent())
-    HANDLE_EXPR(has_active_dialog_event, HasActiveDialogEvent()) // should be inlined in this TU
+    HANDLE_EXPR(has_active_dialog_event, HasActiveDialogEvent())
     HANDLE_EXPR(current_dialog_event, CurrentDialogEvent())
     HANDLE_EXPR(current_transition_event, CurrentTransitionEvent())
-    HANDLE_EXPR(has_transition_event, HasTransitionEvent(_msg->Sym(2))) // should be inlined in this TU
-    HANDLE_EXPR(has_dialog_event, HasDialogEvent(_msg->Sym(2))) // should be inlined in this TU
+    HANDLE_EXPR(has_transition_event, HasTransitionEvent(_msg->Sym(2)))
+    HANDLE_EXPR(has_dialog_event, HasDialogEvent(_msg->Sym(2)))
     HANDLE_SUPERCLASS(MsgSource)
     HANDLE_CHECK(0x141)
 END_HANDLERS
