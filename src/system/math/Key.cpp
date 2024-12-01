@@ -47,7 +47,7 @@ void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, cons
 }
 
 // fn_802E36D4 - InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*)
-// https://decomp.me/scratch/PHQ02 - retail
+// https://decomp.me/scratch/hblrn - retail
 void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* key1, const Key<Vector3>* key2, float f, bool b, Vector3& vref, Vector3* vptr){
     if(keys.size() < 3){
         b = false;
@@ -58,4 +58,42 @@ void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* key1, 
             return;
         }
     }
+    int idx = key1->value.x; // this line is wrong
+    if(b){
+        float fsq = f * f;
+        float fcubed = fsq * f;
+        float fsq3 = fsq * 3.0f;
+        Scale(key1->value, (fcubed * 2.0f - fsq3) + 1.0f, vref);
+        Vector3 v70;
+        SplineTangent(keys, idx, v70);
+        Vector3 v7c;
+        Vector3 v88;
+        Scale(v70, f + -(fsq * 2.0f - fcubed), v88);
+        Add(vref, v88, vref);
+        Scale(key2->value, fcubed * -2.0f + fsq3, v88);
+        Add(vref, v88, vref);
+        SplineTangent(keys, idx + 1, v7c);
+        Scale(v7c, fcubed - fsq, v88);
+        Add(vref, v88, vref);
+        if(vptr){
+            InterpTangent(key1->value, v70, key2->value, v7c, f, *vptr);
+        }        
+    }
+    else {
+        Interp(key1->value, key2->value, f, vref);
+        if(vptr){
+            if(idx == keys.size() - 1){
+                idx--;
+            }
+            Subtract(keys[idx+1].value, keys[idx].value, *vptr);
+        }        
+    }
+}
+
+void InterpVector(const Keys<Vector3, Vector3>& keys, bool b, float frame, Vector3& vref, Vector3* vptr){
+    const Key<Vector3>* prev;
+    const Key<Vector3>* next;
+    float ref;
+    keys.AtFrame(frame, prev, next, ref);
+    InterpVector(keys, prev, next, ref, b, vref, vptr);
 }
