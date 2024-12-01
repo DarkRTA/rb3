@@ -1,7 +1,11 @@
 #include "Stats.h"
+#include "decomp.h"
 #include "math/Utl.h"
 #include "os/Debug.h"
 #include <algorithm>
+
+DECOMP_FORCEACTIVE(Stats, __FILE__, "index < mHitStreaks.size()", "index < mFailurePoints.size()", "index < mSavedPoints.size()",
+    "index < mClosestPlayersSaved.size()", "index < mClosestTimesSaved.size()", "index < mBestOverdriveDeployments.size()", "index < mBestStreakMultipliers.size()")
 
 Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0),
     mUpstrumCount(0), mDownstrumCount(0), m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0),
@@ -213,7 +217,19 @@ void Stats::SaveSingerStats(BinStream& bs) const {
 }
 
 void Stats::LoadSingerStats(BinStream& bs){
-
+    for(int i = 0; i < mNumberOfSingers; i++){
+        SingerStats singerStats(m0x48);
+        for(int j = 0; j < m0x48; j++){
+            int part; float pct;
+            bs >> part; bs >> pct;
+            singerStats.SetPartPercentage(part, pct);
+        }
+        float dev1, dev2;
+        bs >> dev1; bs >> dev2;
+        singerStats.SetPitchDeviationInfo(dev1, dev2);
+        singerStats.Finalize();
+        mSingerStats.push_back(singerStats);
+    }
 }
 
 void Stats::AddAccuracy(int accuracy) { mAccuracy += accuracy; }
