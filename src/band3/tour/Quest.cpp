@@ -39,42 +39,40 @@ void Quest::Configure(DataArray* i_pConfig) {
 Symbol Quest::GetName() const { return mName; }
 
 Symbol Quest::GetDisplayName() const {
-    bool noDispName;
-    if (gNullStr) {
-        noDispName = !strcmp(mDisplayName.Str(), gNullStr);
-    } else { noDispName = (mDisplayName.Str() == gNullStr); }
-    if (!noDispName) return mDisplayName; else return mName;
+    if(mDisplayName != gNullStr) return mDisplayName;
+    else return mName;
 }
 
 Symbol Quest::GetLongDescription() const {
-    bool noLongDesc; Symbol used_sym;
-    if (gNullStr) {
-        noLongDesc = !strcmp(mLongDescription.Str(), gNullStr);
-    } else { noLongDesc = (mLongDescription.Str() == gNullStr); }
-    if (!noLongDesc) return mLongDescription; else return Symbol(MakeString("%s_long_desc", mName));
+    if(mLongDescription != gNullStr) return mLongDescription;
+    else return MakeString("%s_long_desc", mName);
 }
 
 Symbol Quest::GetDescription() const {
-    bool noDesc; Symbol used_sym;
-    if (gNullStr) {
-        noDesc = !strcmp(mDescription.Str(), gNullStr);
-    } else { noDesc = (mDescription.Str() == gNullStr); }
-    if (!noDesc) return mDescription; else return Symbol(MakeString("%s_desc", mName));
+    if(mDescription != gNullStr) return mDescription;
+    else return MakeString("%s_desc", mName);
 }
 
 DECOMP_FORCEACTIVE(Quest, "%s_ingame_desc") // it's so sad that GetIngameDesc died of ligma (got deadstripped)
 
 int Quest::GetTier() const { return mTier; }
 float Quest::GetWeight() const { return mWeight; }
-const TourCondition* Quest::GetPrereqs() const {return &mPrerequisites; }
+const TourCondition* Quest::GetPrereqs() const { return &mPrerequisites; }
 
+DECOMP_FORCEFUNC(Quest, Quest, HasCustomIntro())
+DECOMP_FORCEFUNC(Quest, Quest, HasCustomOutro())
+
+// TODO: why doesn't this hack work with functions that have strings :sadge:
+#pragma push
+#pragma force_active on
 bool Quest::HasCustomIntro() const {
-    return !(mIntroVignette == "");
+    return mIntroVignette != "";
 }
 
 bool Quest::HasCustomOutro() const {
-    return !(mOutroVignette == "");
+    return mOutroVignette != "";
 }
+#pragma pop
 
 Symbol Quest::GetCustomIntro() const { // this looks stupid, i'm aware, but i can't really do anything about it
     (!(mIntroVignette == "") || (TheDebug.Fail(MakeString(kAssertStr, __FILE__, 184, "HasCustomIntro()")), 0));

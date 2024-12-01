@@ -4,7 +4,7 @@
 #include "tour/QuestManager.h"
 #include "tour/TourProgress.h"
 
-QuestJournal::QuestJournal(TourProgress& tp) : unk_0x8(tp) {
+QuestJournal::QuestJournal(TourProgress& tp) : m_rOwningProgress(tp) {
     mSaveSizeMethod = SaveSize;
 }
 
@@ -13,7 +13,7 @@ QuestJournal::~QuestJournal() { }
 void QuestJournal::CompleteQuest(Symbol) { HandleDataChange(); }
 
 void QuestJournal::SaveFixed(FixedSizeSaveableStream& fsss) const {
-    SaveStd(fsss, unk_0xC, 20);
+    SaveStd(fsss, m_setCompletedQuests, 20);
 }
 
 int QuestJournal::SaveSize(int) {
@@ -24,22 +24,22 @@ int QuestJournal::SaveSize(int) {
 }
 
 void QuestJournal::LoadFixed(FixedSizeSaveableStream& fsss, int) {
-    LoadStd(fsss, unk_0xC, 20);
+    LoadStd(fsss, m_setCompletedQuests, 20);
 }
 
 void QuestJournal::HandleDataChange() {
-    unk_0x8.SetDirty(true, 1);
+    m_rOwningProgress.SetDirty(true, 1);
 }
 
 void QuestJournal::Clear() {
-    unk_0xC.clear();
+    m_setCompletedQuests.clear();
 }
 
 void QuestJournal::FakeFill() {
     std::map<Symbol, Quest*>::iterator end_it = TheQuestMgr.mMapQuests.end(), it = TheQuestMgr.mMapQuests.begin();
     while (it != end_it) {
-        if (unk_0xC.size() >= 20) break;
-        unk_0xC.insert(Symbol(it->first));
+        if (m_setCompletedQuests.size() >= 20) break;
+        m_setCompletedQuests.insert(Symbol(it->first));
         it++;
         
     }

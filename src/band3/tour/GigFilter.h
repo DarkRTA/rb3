@@ -1,5 +1,4 @@
-#ifndef TOUR_GIGFILTER_H
-#define TOUR_GIGFILTER_H
+#pragma once
 #include "system/obj/Data.h"
 #include "meta_band/SongSortMgr.h"
 
@@ -22,5 +21,3 @@ public:
     Symbol mFilteredPartSym; // 0x20
     float mWeight; // 0x24
 };
-
-#endif // TOUR_GIGFILTER_H
