@@ -1,9 +1,13 @@
 #include "tour/TourBand.h"
 #include "meta/FixedSizeSaveable.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/SessionMgr.h"
+#include "meta_band/UIEventMgr.h"
+#include "net/Server.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "tour/TourSavable.h"
+#include "utl/Symbols2.h"
 
 TourBand::TourBand(BandProfile* pf) : unk1c(pf), unk30(0) {
     mSaveSizeMethod = &SaveSize;
@@ -30,6 +34,24 @@ void TourBand::ChooseBandLogo(int i, int j){
     unk2c->patchIndex = j;
     unk2c->patchType = i;
     SetDirty(true, 3);
+}
+
+int TourBand::GetBandID() const {
+    return TheServer->GetPlayerID(unk1c->GetPadNum());
+}
+
+void TourBand::ProcessRetCode(int code){
+    static Message msg("init", 0, 0);
+    if(code == 2){
+        msg[0] = Symbol("upload_error_band_name_profane");
+        msg[1] = unk20;
+        TheUIEventMgr->TriggerEvent(band_upload_event, msg);
+    }
+    else if(code == 5){
+        msg[0] = Symbol("upload_error_band_name_duplicate");
+        msg[1] = unk20;
+        TheUIEventMgr->TriggerEvent(band_upload_event, msg);
+    }
 }
 
 bool TourBand::IsUploadNeeded() const {

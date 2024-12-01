@@ -12,6 +12,7 @@ class PatchDir; // forward dec
 
 class PatchDescriptor {
 public:
+    PatchDescriptor() : patchType(0), patchIndex(0) {}
     int patchType; // 0x0 - enum Type, but we don't know the enum names for certain
     int patchIndex; // 0x4
 };
