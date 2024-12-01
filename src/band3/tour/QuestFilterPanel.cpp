@@ -1,7 +1,6 @@
 #include "tour/QuestFilterPanel.h"
 #include "meta_band/TexLoadPanel.h"
 #include "os/Debug.h"
-#include "tour/Quest.h"
 #include "tour/Tour.h"
 #include "tour/TourPerformer.h"
 #include "tour/TourProgress.h"
