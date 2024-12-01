@@ -36,7 +36,7 @@ public:
     DataThisPtr() : ObjPtr(0, 0) {}
     virtual ~DataThisPtr(){}
     virtual void Replace(Hmx::Object* from, Hmx::Object* to){
-        ObjPtr<Hmx::Object, class ObjectDir>::operator=(to);
+        *this = to;
         if(gDataThis == from) DataSetThis(to);
     }
     void operator=(Hmx::Object* obj){
