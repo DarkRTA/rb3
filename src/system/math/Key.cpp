@@ -1,9 +1,7 @@
 #include "math/Key.h"
 #include "math/Vec.h"
 
-// fn_802E33CC - SplineTangent(const Keys<Vector3, Vector3>&, int, Vector3&)
-// https://decomp.me/scratch/uaX0T - retail
-// https://decomp.me/scratch/g4W1K - debug (i hate inlining)
+// matches in retail with the right inline settings: https://decomp.me/scratch/xQcyC
 void SplineTangent(const Keys<Vector3, Vector3>& keys, int i, Vector3& vout){
     int size = keys.size();
     MILO_ASSERT(size > 1, 0x17);
@@ -32,17 +30,19 @@ void SplineTangent(const Keys<Vector3, Vector3>& keys, int i, Vector3& vout){
     }
 }
 
-// fn_802E35A8 - InterpTangent(const Vector3&, const Vector3&, const Vector3&, const Vector3&, float, Vector3&)
+// regswaps in retail with the right inline settings: https://decomp.me/scratch/lOd4o
 // i absolutely hate inlines
 void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector3& v4, float f, Vector3& vout){
+    float ftimes6 = f * 6.0f;
     float scale = f * f;
-    Scale(v1, scale * 6.0f - f * 6.0f, vout);
+    Scale(v1, (6.0f * scale) - ftimes6, vout);
     Vector3 vtmp;
-    Scale(v2, -(f * 4.0f - scale * 3.0f) + 1.0f, vtmp);
+    float scale3 = scale * 3.0f;
+    Scale(v2, -((f * 4.0f) - scale3) + 1.0f, vtmp);
     Add(vout, vtmp, vout);
-    Scale(v3, scale * -6.0f + f * 6.0f, vtmp);
+    Scale(v3, (-6.0f * scale) + ftimes6, vtmp);
     Add(vout, vtmp, vout);
-    Scale(v4, -(f * 2.0f - f * 3.0f), vtmp);
+    Scale(v4, -((f * 2.0f) - scale3), vtmp);
     Add(vout, vtmp, vout);
 }
 
