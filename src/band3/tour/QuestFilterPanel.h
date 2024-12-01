@@ -1,23 +1,31 @@
 #pragma once
 #include "meta_band/TexLoadPanel.h"
 #include "tour/TourPerformer.h"
+#include "tour/TourProgress.h"
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
 
 class QuestFilterProvider : public UIListProvider, public Hmx::Object {
 public:
-    QuestFilterProvider(){}
+    QuestFilterProvider(const std::vector<DynamicTex*>& texes, TourProgress& tp, UIList* uil) : m_rIcons(texes), m_rProgress(tp), unk30(uil) {}
     virtual ~QuestFilterProvider(){}
     virtual void Text(int, int, UIListLabel*, UILabel*) const;
     virtual RndMat* Mat(int, int, UIListMesh*) const;
     virtual Symbol DataSymbol(int) const;
-    virtual int NumData() const { return unk24.size(); }
+    virtual int NumData() const { return m_vQuestFilters.size(); }
     virtual UIComponent::State ComponentStateOverride(int, int, UIComponent::State s) const;
     
-    int unk20;
-    std::vector<Symbol> unk24; // 0x24
-    int unk2c;
-    int unk30;
+    void Update(){
+        m_vQuestFilters.clear();
+        for(int i = 0; i < 3; i++){
+            m_vQuestFilters.push_back(m_rProgress.GetQuestFilter(i));
+        }
+    }
+
+    const std::vector<DynamicTex*>& m_rIcons; // 0x20
+    std::vector<Symbol> m_vQuestFilters; // 0x24
+    TourProgress& m_rProgress; // 0x2c
+    UIList* unk30; // 0x30
 };
 
 class QuestFilterPanel : public TexLoadPanel {
@@ -42,6 +50,11 @@ public:
     Symbol GetDiffSelectScreen();
     void HandleFilterSelected();
     Symbol GetGigFilter();
+    void CheatWinQuest();
+    void CheatCycleChallenge();
+    void CheatCycleSetlist();
+    void HandleLeaderToggledFilters(bool);
+    bool AreCurrentFiltersValid();
 
     Symbol m_symQuest; // 0x4c
     QuestFilterProvider* m_pQuestFilterProvider; // 0x50
