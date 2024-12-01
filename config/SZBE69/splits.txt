@@ -132,106 +132,281 @@ network/net/json-c/printbuf.c:
 	.text       start:0x800C999C end:0x800C9D04
 	.sbss       start:0x808E3E98 end:0x808E3EA0
 
-rb3/unknown/800/unk_800C9D04.cpp:
-	.text       start:0x800C9D04 end:0x800DB158
+band3/bandtrack/Gem.cpp:
+	.text       start:0x800C9D04 end:0x800CD238
 
-rb3/unknown/800/unk_800DB160.cpp:
-	.text       start:0x800DB160 end:0x800E4020
+band3/bandtrack/GemManager.cpp:
+	.text       start:0x800CD238 end:0x800D766C
+
+band3/bandtrack/GemRepTemplate.cpp:
+	.text       start:0x800D766C end:0x800D962C
+
+band3/bandtrack/GemSmasher.cpp:
+	.text       start:0x800D962C end:0x800DA08C
+
+band3/bandtrack/GemTrack.cpp:
+	.text       start:0x800DA08C end:0x800DEAD4
+
+band3/bandtrack/GraphicsUtl.cpp:
+	.text       start:0x800DEAD4 end:0x800DFD64
+
+band3/bandtrack/Lyric.cpp:
+	.text       start:0x800DFD64 end:0x800E0170
+
+band3/bandtrack/NowBar.cpp:
+	.text       start:0x800E0170 end:0x800E0C44
+
+band3/bandtrack/Tail.cpp:
+	.text       start:0x800E0C44 end:0x800E2E1C
+
+band3/bandtrack/Track.cpp:
+	.text       start:0x800E2E1C end:0x800E4020
 
 band3/bandtrack/TrackConfig.cpp:
-	.text       start:0x800E4020 end:0x800E43A0
+	.text       start:0x800E4020 end:0x800E481C
 	.data       start:0x8082F9F8 end:0x8082FA28
 
-rb3/unknown/800/unk_800F6DF8.cpp:
-	.text       start:0x800F6DF8 end:0x800FF880
+band3/bandtrack/TrackPanel.cpp:
+	.text       start:0x800E481C end:0x800E92A4
 
-rb3/mgrs/bandusermgr.cpp:
+band3/bandtrack/VocalTrack.cpp:
+	.text       start:0x800E92A4 end:0x800F6DF8
+	.ctors      start:0x807EFE48 end:0x807EFE4C
+
+band3/game/AccuracyTracker.cpp:
+	.text       start:0x800F6DF8 end:0x800F7520
+
+band3/game/Band.cpp:
+	.text       start:0x800F7520 end:0x800F98D8
+
+band3/game/BandPerformer.cpp:
+	.text       start:0x800F98D8 end:0x800FB504
+
+band3/game/BandUser.cpp:
+	.text       start:0x800FB504 end:0x800FF880
+
+band3/game/BandUserMgr.cpp:
 	.text       start:0x800FF880 end:0x80101808
 
-rb3/panels/chordbookpanel.cpp:
+band3/game/ChordbookPanel.cpp:
 	.text       start:0x80101808 end:0x8010417C
+
+band3/game/ChordPreview.cpp:
+	.text       start:0x8010417C end:0x801044C4
+
+band3/game/CommonPhraseCapturer.cpp:
+	.text       start:0x801044C4 end:0x80105B0C
+
+band3/game/CrowdRating.cpp:
+	.text       start:0x80105B0C end:0x80106180
+
+band3/game/Defines.cpp:
+	.text       start:0x80106180 end:0x80107200
+
+band3/game/DirectInstrument.cpp:
+	.text       start:0x80107200 end:0x8010765C
 
 band3/game/DeployCountTracker.cpp:
 	.text       start:0x8010765C end:0x80108E3C
 
-rb3/panels/fadepanel.cpp:
+band3/game/FadePanel.cpp:
 	.text       start:0x80108E3C end:0x801096AC
 
 band3/game/FocusTracker.cpp:
 	.text       start:0x801096AC end:0x8010C65C
 
-rb3/panels/freestylepanel.cpp:
+band3/game/FreestylePanel.cpp:
 	.text       start:0x8010C65C end:0x8010D754
 
 band3/game/FretHand.cpp:
 	.text       start:0x8010D754 end:0x8010DCD0
 
-rb3/game.cpp:
-	.text       start:0x80110030 end:0x80116E14
+band3/game/Game.cpp:
+	.text       start:0x8010DCD0 end:0x801170B0
 
-rb3/mgrs/gamemicmanager.cpp:
+band3/game/GameConfig.cpp:
+	.text       start:0x801170B0 end:0x801192CC
+
+band3/game/GameMic.cpp:
+	.text       start:0x801192CC end:0x80119E40
+
+band3/game/GameMicManager.cpp:
 	.text       start:0x80119E40 end:0x8011AF08
 	.ctors      start:0x807EFE4C end:0x807EFE50
 
-rb3/gamemode.cpp:
+band3/game/GameMode.cpp:
 	.text       start:0x8011AF08 end:0x8011BA2C
 	.data       start:0x80833390 end:0x80833570
 	.bss        start:0x808F97D0 end:0x808F97D4
 
-rb3/panels/gamepanel.cpp:
+band3/game/GamePanel.cpp:
 	.text       start:0x8011BA2C end:0x8011DD8C
+
+band3/game/GemPlayer.cpp:
+	.text       start:0x8011DD8C end:0x8012B7B8
+
+band3/game/GemTrainerPanel.cpp:
+	.text       start:0x8012B7B8 end:0x8012E974
 
 band3/game/GuitarFx.cpp:
 	.text       start:0x8012E974 end:0x8012F4C4
 
+band3/game/HeldNote.cpp:
+	.text       start:0x8012F4C4 end:0x8012F8D8
+
+band3/game/HitTracker.cpp:
+	.text       start:0x8012F8D8 end:0x8012FAF8
+
 band3/game/KeysFx.cpp:
 	.text       start:0x8012FAF8 end:0x8013032C
 
-rb3/performer.cpp:
+band3/game/Metronome.cpp:
+	.text       start:0x8013032C end:0x8013066C
+
+band3/game/MultiplayerAnalyzer.cpp:
+	.text       start:0x8013066C end:0x80133DD0
+
+band3/game/NetGameMsgs.cpp:
+	.text       start:0x80133DD0 end:0x801383B8
+
+band3/game/OverdriveTimeTracker.cpp:
+	.text       start:0x801383B8 end:0x80138ADC
+
+band3/game/OverdriveTracker.cpp:
+	.text       start:0x80138ADC end:0x8013A3D0
+
+band3/game/PerfectOverdriveTracker.cpp:
+	.text       start:0x8013A3D0 end:0x8013D00C
+
+band3/game/PerfectSectionTracker.cpp:
+	.text       start:0x8013D00C end:0x80141EE8
+
+band3/game/Performer.cpp:
 	.text       start:0x80141EE8 end:0x801444A4
 
-rb3/player.cpp:
-	.text       start:0x801444A4 end:0x80149978
+band3/game/Player.cpp:
+	.text       start:0x801444A4 end:0x801498D4
 
-rb3/panels/practicepanel.cpp:
+band3/game/PlayerBehavior.cpp:
+	.text       start:0x801498D4 end:0x80149978
+
+band3/game/PracticePanel.cpp:
 	.text       start:0x80149978 end:0x8014BAA0
 
-rb3/providers/practicesectionprovider.cpp:
+band3/game/PracticeSectionProvider.cpp:
 	.text       start:0x8014BAA0 end:0x8014CF80
+
+band3/game/RealGuitarGemPlayer.cpp:
+	.text       start:0x8014CF80 end:0x8014DA04
 
 band3/game/RGTrainerPanel.cpp:
 	.text       start:0x8014DA04 end:0x8015143C
 
+band3/game/RGTutor.cpp:
+	.text       start:0x8015143C end:0x80152268
+
+band3/game/RKTrainerPanel.cpp:
+	.text       start:0x80152268 end:0x80152660
+
+band3/game/ScoreTracker.cpp:
+	.text       start:0x80152660 end:0x80152924
+
+band3/game/ScoreUtl.cpp:
+	.text       start:0x80152924 end:0x80152974
+
+band3/game/Scoring.cpp:
+	.text       start:0x80152974 end:0x80155004
+
+band3/game/Shuttle.cpp:
+	.text       start:0x80155004 end:0x80155090
+
+band3/game/Singer.cpp:
+	.text       start:0x80155090 end:0x80159E44
+	.ctors      start:0x807EFE50 end:0x807EFE54
+
+band3/game/SongDB.cpp:
+	.text       start:0x80159E44 end:0x8015E774
+
+band3/game/StatCollector.cpp:
+	.text       start:0x8015E774 end:0x8015EA58
+
 band3/game/StatMemberTracker.cpp:
 	.text       start:0x8015EA58 end:0x8015F1A8
 
-rb3/mgrs/tambourinemanager.cpp:
+band3/game/Stats.cpp:
+	.text       start:0x8015F1A8 end:0x8016395C
+
+band3/game/StreakTracker.cpp:
+	.text       start:0x8016395C end:0x801652BC
+
+band3/game/SyncGameStartPanel.cpp:
+	.text       start:0x801652BC end:0x80165E70
+
+band3/game/TambourineDetector.cpp:
+	.text       start:0x80165E70 end:0x801660DC
+	.ctors      start:0x807EFE54 end:0x807EFE58
+
+band3/game/TambourineManager.cpp:
 	.text       start:0x801660DC end:0x80167A84
 
 band3/game/Tracker.cpp:
-	.text       start:0x80167A84 end:0x80169884
+	.text       start:0x80167A84 end:0x80169834
+
+band3/game/TrackerDisplay.cpp:
+	.text       start:0x80169834 end:0x8016BB2C
 
 band3/game/TrackerManager.cpp:
 	.text       start:0x8016BB2C end:0x8016D468
 
 band3/game/TrackerSource.cpp:
-	.text       start:0x8016D468 end:0x801703DC
+	.text       start:0x8016D468 end:0x8016DE44
 
-rb3/panels/trainerpanel.cpp:
+band3/game/TrackerUtils.cpp:
+	.text       start:0x8016DE44 end:0x801703DC
+
+band3/game/TrainerGemTab.cpp:
+	.text       start:0x801703DC end:0x80172878
+
+band3/game/TrainerPanel.cpp:
 	.text       start:0x80172878 end:0x80176170
 
-rb3/unknown/801/unk_801660DC.cpp:
-	.text       start:0x80176170 end:0x8017C088
+band3/game/TrainerProgressMeter.cpp:
+	.text       start:0x80176170 end:0x80176CC0
 
-rb3/vocalplayer.cpp:
+band3/game/UISyncNetMsgs.cpp:
+	.text       start:0x80176CC0 end:0x80177FB8
+
+band3/game/UITransitionNetMsgs.cpp:
+	.text       start:0x80177FB8 end:0x80178B10
+
+band3/game/VocalGuidePitch.cpp:
+	.text       start:0x80178B10 end:0x8017916C
+
+band3/game/VocalPart.cpp:
+	.text       start:0x8017916C end:0x8017C088
+
+band3/game/VocalPlayer.cpp:
 	.text       start:0x8017C088 end:0x80184D60
 	.ctors      start:0x807EFE58 end:0x807EFE5C
+
+band3/game/VocalScoreHistory.cpp:
+	.text       start:0x80184D60 end:0x801850A0
+
+band3/game/VocalTrainerPanel.cpp:
+	.text       start:0x801850A0 end:0x80187778
+
+band3/game/PresenceMgr.cpp:
+	.text       start:0x80187778 end:0x80188850
+	.ctors      start:0x807EFE5C end:0x807EFE60
 
 band3/meta_band/AccomplishmentManager.cpp:
 	.text       start:0x80188850 end:0x8019BE78
 
 band3/meta_band/AccomplishmentOneShot.cpp:
-	.text       start:0x8019BE78 end:0x8019C7D4
+	.text       start:0x8019BE78 end:0x8019C4AC
+
+band3/meta_band/AccomplishmentPanel.cpp:
+	.text       start:0x8019C4AC end:0x801A7544
 
 band3/meta_band/AccomplishmentProgress.cpp:
 	.text       start:0x801A7544 end:0x801ABEF8
@@ -242,229 +417,417 @@ band3/meta_band/Accomplishment.cpp:
 band3/meta_band/AccomplishmentCategory.cpp:
 	.text       start:0x801ADF78 end:0x801AE0F4
 
-rb3/bandnetgamedata.cpp:
+band3/meta_band/AccomplishmentConditional.cpp:
+	.text       start:0x801AE0F4 end:0x801AED34
+
+band3/meta_band/AccomplishmentDiscSongConditional.cpp:
+	.text       start:0x801AED34 end:0x801AF30C
+
+band3/meta_band/AccomplishmentGroup.cpp:
+	.text       start:0x801AF30C end:0x801AF538
+
+band3/meta_band/AccomplishmentLessonSongListConditional.cpp:
+	.text       start:0x801AF538 end:0x801AF780
+
+band3/meta_band/AccomplishmentLessonDiscSongConditional.cpp:
+	.text       start:0x801AF780 end:0x801AF9C8
+
+band3/meta_band/AccomplishmentPlayerConditional.cpp:
+	.text       start:0x801AF9C8 end:0x801B0D90
+
+band3/meta_band/AccomplishmentSetlist.cpp:
+	.text       start:0x801B0D90 end:0x801B100C
+
+band3/meta_band/AccomplishmentSongConditional.cpp:
+	.text       start:0x801B100C end:0x801B1E78
+
+band3/meta_band/AccomplishmentSongFilterConditional.cpp:
+	.text       start:0x801B1E78 end:0x801B2744
+
+band3/meta_band/AccomplishmentSongListConditional.cpp:
+	.text       start:0x801B2744 end:0x801B2AD8
+
+band3/meta_band/AccomplishmentTourConditional.cpp:
+	.text       start:0x801B2AD8 end:0x801B37DC
+
+band3/meta_band/AccomplishmentTrainerConditional.cpp:
+	.text       start:0x801B37DC end:0x801B407C
+
+band3/meta_band/AccomplishmentTrainerListConditional.cpp:
+	.text       start:0x801B407C end:0x801B4340
+
+band3/meta_band/AccomplishmentTrainerCategoryConditional.cpp:
+	.text       start:0x801B4340 end:0x801B481C
+
+band3/meta_band/AppInlineHelp.cpp:
+	.text       start:0x801B481C end:0x801B5730
+
+band3/meta_band/AppLabel.cpp:
+	.text       start:0x801B5730 end:0x801B9680
+
+band3/meta_band/AppMiniLeaderboardDisplay.cpp:
+	.text       start:0x801B9680 end:0x801BA7E8
+
+band3/meta_band/AppScoreDisplay.cpp:
+	.text       start:0x801BA7E8 end:0x801BAC18
+
+band3/meta_band/Asset.cpp:
+	.text       start:0x801BAC18 end:0x801BAFEC
+
+band3/meta_band/AssetMgr.cpp:
+	.text       start:0x801BAFEC end:0x801BE5A4
+
+band3/meta_band/AssetProvider.cpp:
+	.text       start:0x801BE5A4 end:0x801BFBE4
+
+band3/meta_band/AssetTypes.cpp:
+	.text       start:0x801BFBE4 end:0x801C0478
+
+band3/meta_band/Award.cpp:
+	.text       start:0x801C0478 end:0x801C14AC
+
+band3/meta_band/BandNetGameData.cpp:
 	.text       start:0x801C14AC end:0x801C2718
 
-rb3/panels/bandpreloadpanel.cpp:
+band3/meta_band/BandPreloadPanel.cpp:
 	.text       start:0x801C2718 end:0x801C2EA4
 
-rb3/bandprofile.cpp:
+band3/meta_band/BandProfile.cpp:
 	.text       start:0x801C2EA4 end:0x801C8588
 
-rb3/mgrs/bandsongmgr.cpp:
+band3/meta_band/BandScreen.cpp:
+	.text       start:0x801C8588 end:0x801C8F40
+
+band3/meta_band/BandSongMetadata.cpp:
+	.text       start:0x801C8F40 end:0x801CDCC8
+
+band3/meta_band/BandSongMgr.cpp:
 	.text       start:0x801CDCC8 end:0x801D6B94
 	.ctors      start:0x807EFE60 end:0x807EFE64
 
-rb3/bandstoreoffer.cpp:
+band3/meta_band/BandStoreOffer.cpp:
 	.text       start:0x801D6B94 end:0x801D6F44
 
-rb3/panels/bandstorepanel.cpp:
+band3/meta_band/BandStorePanel.cpp:
 	.text       start:0x801D6F44 end:0x801D939C
 
-rb3/panels/bandstoreuipanel.cpp:
+band3/meta_band/BandStoreUIPanel.cpp:
 	.text       start:0x801D939C end:0x801D97B0
 
-rb3/bandui.cpp:
+band3/meta_band/BandUI.cpp:
 	.text       start:0x801D97B0 end:0x801DDA64
 	.ctors      start:0x807EFE64 end:0x807EFE68
 
-rb3/campaign.cpp:
-	.text       start:0x801DDA64 end:0x801E30D8
+band3/meta_band/Campaign.cpp:
+	.text       start:0x801DDA64 end:0x801E2FE0
 
-rb3/playercampaigngoalleaderboard.cpp:
+band3/meta_band/CampaignKey.cpp:
+	.text       start:0x801E2FE0 end:0x801E30D8
+
+band3/meta_band/CampaignLeaderboards.cpp:
 	.text       start:0x801E30D8 end:0x801E35FC
 
-rb3/panels/campaignsonginfopanel.cpp:
+band3/meta_band/CampaignSongInfoPanel.cpp:
 	.text       start:0x801E35FC end:0x801E46B0
 
-rb3/panels/calibrationpanel.cpp:
-	.text       start:0x801E46B0 end:0x801E76EC
+band3/meta_band/CalibrationPanel.cpp:
+	.text       start:0x801E46B0 end:0x801E8498
 
-rb3/providers/calibrationmodesprovider.cpp:
-	.text       start:0x801E76EC end:0x801E7C0C
-
-rb3/panels/calibrationwelcomepanel.cpp:
-	.text       start:0x801E7C0C end:0x801E8498
-
-rb3/campaignlevel.cpp:
+band3/meta_band/CampaignLevel.cpp:
 	.text       start:0x801E8498 end:0x801E8744
 
-rb3/campaigngoalsleaderboard.cpp:
+band3/meta_band/CampaignGoalsLeaderboardPanel.cpp:
 	.text       start:0x801E8744 end:0x801E953C
 
-rb3/panels/campaigncareerleaderboardpanel.cpp:
+band3/meta_band/CampaignCareerLeaderboardPanel.cpp:
 	.text       start:0x801E953C end:0x801EA178
 
-rb3/panels/campaigngoalsleaderboardchoicepanel.cpp:
+band3/meta_band/CampaignGoalsLeaderboardChoicePanel.cpp:
 	.text       start:0x801EA178 end:0x801EBCA8
 
-rb3/panels/charactercreatorpanel.cpp:
+band3/meta_band/CharacterCreatorPanel.cpp:
 	.text       start:0x801EBCA8 end:0x801F02A8
 
-rb3/panels/choosecolorpanel.cpp:
+band3/meta_band/CharCache.cpp:
+	.text       start:0x801F02A8 end:0x801F11E0
+
+band3/meta_band/CharData.cpp:
+	.text       start:0x801F11E0 end:0x801F19D4
+
+band3/meta_band/CharSync.cpp:
+	.text       start:0x801F19D4 end:0x801F2914
+
+band3/meta_band/CharProvider.cpp:
+	.text       start:0x801F2914 end:0x801F4EB0
+
+band3/meta_band/ChooseColorPanel.cpp:
 	.text       start:0x801F4EB0 end:0x801F62F4
 
-rb3/mgrs/closetmgr.cpp:
+band3/meta_band/ClosetMgr.cpp:
 	.text       start:0x801F62F4 end:0x801F8A84
 
-rb3/panels/closetpanel.cpp:
+band3/meta_band/ClosetPanel.cpp:
 	.text       start:0x801F8A84 end:0x801F9774
 
-rb3/panels/contentdeletepanel.cpp:
+band3/meta_band/ContentDeletePanel.cpp:
 	.text       start:0x801F9774 end:0x801FA240
 
-rb3/criticaluserlistener.cpp:
+band3/meta_band/ContentLoadingPanel.cpp:
+	.text       start:0x801FA240 end:0x801FAE00
+
+band3/meta_band/ContextChecker.cpp:
+	.text       start:0x801FAE00 end:0x801FCC20
+	.ctors      start:0x807EFE68 end:0x807EFE6C
+
+band3/meta_band/CriticalUserListener.cpp:
 	.text       start:0x801FCC20 end:0x801FD254
 
-rb3/providers/currentoutfitprovider.cpp:
+band3/meta_band/CurrentOutfitProvider.cpp:
 	.text       start:0x801FD254 end:0x801FD6B0
 
-rb3/panels/customizepanel.cpp:
+band3/meta_band/CustomizePanel.cpp:
 	.text       start:0x801FD6B0 end:0x80201BA0
 
-rb3/providers/cymbalselectionprovider.cpp:
+band3/meta_band/CymbalSelectionProvider.cpp:
 	.text       start:0x80201BA0 end:0x80201E24
 
-rb3/panels/editsetlistpanel.cpp:
+band3/meta_band/EditSetlistPanel.cpp:
 	.text       start:0x80201E24 end:0x80203F40
 
-rb3/panels/eventdialogpanel.cpp:
+band3/meta_band/EventDialogPanel.cpp:
 	.text       start:0x80203F40 end:0x802047A8
 
-rb3/providers/eyebrowsprovider.cpp:
+band3/meta_band/EyebrowsProvider.cpp:
 	.text       start:0x802047A8 end:0x80204A0C
 
-rb3/providers/facehairprovider.cpp:
+band3/meta_band/FaceHairProvider.cpp:
 	.text       start:0x80204A0C end:0x80204D00
 
-rb3/providers/facetypeprovider.cpp:
+band3/meta_band/FaceTypeProvider.cpp:
 	.text       start:0x80204D00 end:0x80204EE0
 
-rb3/gameplayoptions.cpp:
+band3/meta_band/GameplayOptions.cpp:
 	.text       start:0x80204EE0 end:0x8020535C
 
-rb3/panels/gametimepanel.cpp:
+band3/meta_band/GameTimePanel.cpp:
 	.text       start:0x8020535C end:0x80205844
 
-rb3/providers/setlistscoresprovider.cpp:
+band3/meta_band/HeaderPerformanceProvider.cpp:
 	.text       start:0x80205844 end:0x80206DF4
 
-rb3/mgrs/inputmgr.cpp:
+band3/meta_band/InputMgr.cpp:
 	.text       start:0x80206DF4 end:0x80208454
 
-rb3/instarank.cpp:
+band3/meta_band/Instarank.cpp:
 	.text       start:0x80208454 end:0x80208EE0
 
-rb3/providers/instrumentfinishprovider.cpp:
+band3/meta_band/InstrumentFinishProvider.cpp:
 	.text       start:0x80208EE0 end:0x80209130
 
-rb3/mgrs/interstitialmgr.cpp:
+band3/meta_band/InterstitialMgr.cpp:
 	.text       start:0x80209130 end:0x8020B914
 
-rb3/panels/interstitialpanel.cpp:
+band3/meta_band/InterstitialPanel.cpp:
 	.text       start:0x8020B914 end:0x8020C428
 
-rb3/panels/joininvitepanel.cpp:
+band3/meta_band/JoinInvitePanel.cpp:
 	.text       start:0x8020C428 end:0x8020D31C
 
-rb3/leaderboard.cpp:
-	.text       start:0x8020D31C end:0x8020F174
+band3/meta_band/Leaderboard.cpp:
+	.text       start:0x8020D31C end:0x8020F858
 
-rb3/providers/leaderboardshortcutprovider.cpp:
-	.text       start:0x8020F174 end:0x8020F858
-
-rb3/mgrs/lessonmgr.cpp:
+band3/meta_band/LessonMgr.cpp:
 	.text       start:0x8020F858 end:0x802110E4
 
-rb3/providers/lessonprovider.cpp:
+band3/meta_band/LessonProvider.cpp:
 	.text       start:0x802110E4 end:0x80212164
 
-rb3/unknown/801/unk_801FCC20.cpp:
-	.text       start:0x80212164 end:0x80215C24
+band3/meta_band/LicenseMgr.cpp:
+	.text       start:0x80212164 end:0x802123EC
 
-rb3/mgrs/bandmachinemgr.cpp:
-	.text       start:0x80215C24 end:0x80217538
+band3/meta_band/LockStepMgr.cpp:
+	.text       start:0x802123EC end:0x80214694
 
-rb3/providers/makeupprovider.cpp:
+band3/meta_band/BandMachine.cpp:
+	.text       start:0x80214694 end:0x80215540
+
+band3/meta_band/BandMachineMgr.cpp:
+	.text       start:0x80215540 end:0x80217538
+
+band3/meta_band/MakeupProvider.cpp:
 	.text       start:0x80217538 end:0x802179E4
 
-rb3/providers/mainhubmessageprovider.cpp:
+band3/meta_band/MainHubMessageProvider.cpp:
 	.text       start:0x802179E4 end:0x8021822C
 
-rb3/panels/mainhubpanel.cpp:
+band3/meta_band/MainHubPanel.cpp:
 	.text       start:0x8021822C end:0x8021B9B0
 
-rb3/panels/managebandpanel.cpp:
+band3/meta_band/ManageBandPanel.cpp:
 	.text       start:0x8021B9B0 end:0x8021D310
 
-rb3/matchmaker.cpp:
-	.text       start:0x8021D310 end:0x8021DD80
+band3/meta_band/Matchmaker.cpp:
+	.text       start:0x8021D310 end:0x8021F218
 
-rb3/bandmatchmaker.cpp:
-	.text       start:0x8021DD80 end:0x8021F218
+band3/meta_band/MetaNetMsgs.cpp:
+	.text       start:0x8021F218 end:0x8021F840
 
-rb3/panels/metapanel.cpp:
+band3/meta_band/MetaPanel.cpp:
 	.text       start:0x8021F840 end:0x8022376C
 
-rb3/metaperformer.cpp:
-	.text       start:0x80224488 end:0x8022BF20
+band3/meta_band/MetaPerformer.cpp:
+	.text       start:0x8022376C end:0x8022BF20
 	.ctors      start:0x807EFE6C end:0x807EFE70
 
-rb3/mgrs/modifiermgr.cpp:
+band3/meta_band/ModifierMgr.cpp:
 	.text       start:0x8022BF20 end:0x8022CD04
 
-rb3/panels/multiselectlistpanel.cpp:
+band3/meta_band/MultiSelectListPanel.cpp:
 	.text       start:0x8022CD04 end:0x8022D874
 
-rb3/musiclibrary.cpp:
+band3/meta_band/MusicLibrary.cpp:
 	.text       start:0x8022D874 end:0x80235F10
 
-rb3/unknown/802/unk_8022CD04.cpp:
-	.text       start:0x80235F10 end:0x8023F918
+band3/meta_band/MusicLibraryNetSetlists.cpp:
+	.text       start:0x80235F10 end:0x80237C80
 
-rb3/providers/outfitprovider.cpp:
+band3/meta_band/NameGenerator.cpp:
+	.text       start:0x80237C80 end:0x80238164
+
+band3/meta_band/NetSync.cpp:
+	.text       start:0x80238164 end:0x80239EB8
+
+band3/meta_band/NewAssetProvider.cpp:
+	.text       start:0x80239EB8 end:0x8023A2F8
+
+band3/meta_band/NextSongPanel.cpp:
+	.text       start:0x8023A2F8 end:0x8023F918
+
+band3/meta_band/OutfitProvider.cpp:
 	.text       start:0x8023F918 end:0x8023FAF4
 
 band3/meta_band/OvershellPanel.cpp:
 	.text       start:0x8023FAF4 end:0x802473C0
 	.ctors      start:0x807EFE70 end:0x807EFE74
 
+band3/meta_band/OvershellPartSelectProvider.cpp:
+	.text       start:0x802473C0 end:0x80248898
+
+band3/meta_band/OvershellSlot.cpp:
+	.text       start:0x80248898 end:0x80252B98
+	.ctors      start:0x807EFE74 end:0x807EFE78
+
 band3/meta_band/OvershellSlotState.cpp:
 	.text       start:0x80252B98 end:0x80253774
 
-rb3/panels/parentalcontrolpanel.cpp:
+band3/meta_band/ParentalControlPanel.cpp:
 	.text       start:0x80253774 end:0x80253A14
 
-rb3/panels/passivemessagespanel.cpp:
+band3/meta_band/PassiveMessagesPanel.cpp:
 	.text       start:0x80253A14 end:0x80254530
 
-rb3/mgrs/profilemgr.cpp:
-	.text       start:0x80260B90 end:0x80266448
+band3/meta_band/PassiveMessenger.cpp:
+	.text       start:0x80254530 end:0x802574E8
+
+band3/meta_band/PatchPanel.cpp:
+	.text       start:0x802574E8 end:0x8025B3BC
+
+band3/meta_band/PatchSelectPanel.cpp:
+	.text       start:0x8025B3BC end:0x8025C368
+
+band3/meta_band/PerformanceData.cpp:
+	.text       start:0x8025C368 end:0x8025DF9C
+
+band3/meta_band/PlayerLeaderboards.cpp:
+	.text       start:0x8025DF9C end:0x8025E65C
+
+band3/meta_band/PrefabMgr.cpp:
+	.text       start:0x8025E65C end:0x80260654
+
+band3/meta_band/ProfileAssets.cpp:
+	.text       start:0x80260654 end:0x80260B58
+
+band3/meta_band/ProfileMgr.cpp:
+	.text       start:0x80260B58 end:0x80266448
 	.ctors      start:0x807EFE78 end:0x807EFE7C
 
-rb3/panels/retryaudiopanel.cpp:
+band3/meta_band/RetryAudioPanel.cpp:
 	.text       start:0x80266448 end:0x802669E4
 
-rb3/mgrs/saveloadmanager.cpp:
+band3/meta_band/SavedSetlist.cpp:
+	.text       start:0x802669E4 end:0x80267794
+
+band3/meta_band/SaveLoadManager.cpp:
 	.text       start:0x80267794 end:0x8026D7B0
 
-rb3/panels/saveloadstatuspanel.cpp:
+band3/meta_band/SaveLoadStatusPanel.cpp:
 	.text       start:0x8026D7B0 end:0x8026DEFC
 
-rb3/panels/selectdifficultypanel.cpp:
+band3/meta_band/SelectDifficultyPanel.cpp:
 	.text       start:0x8026DEFC end:0x8026F090
 
-rb3/mgrs/sessionmgr.cpp:
+band3/meta_band/SessionMgr.cpp:
 	.text       start:0x8026F090 end:0x80271B5C
 
-rb3/providers/sessionusersprovider.cpp:
+band3/meta_band/SessionUsersProviders.cpp:
 	.text       start:0x80271B5C end:0x8027238C
 
-rb3/panels/setlistmergepanel.cpp:
+band3/meta_band/SetlistMergePanel.cpp:
 	.text       start:0x8027238C end:0x80274308
 
-rb3/unknown/802/unk_802663BC.cpp:
-	.text       start:0x80274308 end:0x802863A0
+band3/meta_band/SetlistSortByLocation.cpp:
+	.text       start:0x80274308 end:0x80274F1C
+
+band3/meta_band/SetlistToStorePanel.cpp:
+	.text       start:0x80274F1C end:0x802755FC
+
+band3/meta_band/ShellInputInterceptor.cpp:
+	.text       start:0x802755FC end:0x80275EF0
+
+band3/meta_band/SigninScreen.cpp:
+	.text       start:0x80275EF0 end:0x80276B10
+
+band3/meta_band/SongRecord.cpp:
+	.text       start:0x80276B10 end:0x80277B18
+
+band3/meta_band/SongSelectPanel.cpp:
+	.text       start:0x80277B18 end:0x80278CAC
+
+band3/meta_band/SongSetlistProvider.cpp:
+	.text       start:0x80278CAC end:0x80278EC4
+
+band3/meta_band/SongSort.cpp:
+	.text       start:0x80278EC4 end:0x8027AD50
+
+band3/meta_band/SongSortByArtist.cpp:
+	.text       start:0x8027AD50 end:0x8027B94C
+
+band3/meta_band/SongSortByDiff.cpp:
+	.text       start:0x8027B94C end:0x8027BEB8
+
+band3/meta_band/SongSortByPlays.cpp:
+	.text       start:0x8027BEB8 end:0x8027C278
+
+band3/meta_band/SongSortByRank.cpp:
+	.text       start:0x8027C278 end:0x8027DBA8
+
+band3/meta_band/SongSortByRecent.cpp:
+	.text       start:0x8027DBA8 end:0x8027E2E0
+
+band3/meta_band/SongSortByReview.cpp:
+	.text       start:0x8027E2E0 end:0x8027E83C
+
+band3/meta_band/SongSortBySong.cpp:
+	.text       start:0x8027E83C end:0x8027ED94
+
+band3/meta_band/SongSortByStars.cpp:
+	.text       start:0x8027ED94 end:0x8027F458
+
+band3/meta_band/SongSortMgr.cpp:
+	.text       start:0x8027F458 end:0x80282D38
+
+band3/meta_band/SongSortNode.cpp:
+	.text       start:0x80282D38 end:0x802863A0
 
 band3/meta_band/SongStatusMgr.cpp:
 	.text       start:0x802863A0 end:0x8028974C
@@ -472,67 +835,213 @@ band3/meta_band/SongStatusMgr.cpp:
 band3/meta_band/SongUpgradeMgr.cpp:
 	.text       start:0x8028974C end:0x8028B90C
 
-rb3/providers/standinprovider.cpp:
-	.text       start:0x8028B90C end:0x8028BE14
+band3/meta_band/StandIn.cpp:
+	.text       start:0x8028B90C end:0x8028BC68
 
-rb3/panels/storeinfopanel.cpp:
+band3/meta_band/StandInProvider.cpp:
+	.text       start:0x8028BC68 end:0x8028BE14
+
+band3/meta_band/StoreInfoPanel.cpp:
 	.text       start:0x8028BE14 end:0x8028D7F0
 
-rb3/panels/storemainpanel.cpp:
+band3/meta_band/StoreMainPanel.cpp:
 	.text       start:0x8028D7F0 end:0x8028F244
 
-rb3/panels/storemenupanel.cpp:
+band3/meta_band/StoreMenuPanel.cpp:
 	.text       start:0x8028F244 end:0x8028FECC
 
-rb3/providers/storemenuprovider.cpp:
+band3/meta_band/StoreMenuProvider.cpp:
 	.text       start:0x8028FECC end:0x80290618
 
-rb3/providers/storeofferprovider.cpp:
+band3/meta_band/StoreOfferProvider.cpp:
 	.text       start:0x80290618 end:0x802923F0
 
-rb3/panels/storerootpanel.cpp:
+band3/meta_band/StoreRootPanel.cpp:
 	.text       start:0x802923F0 end:0x80292750
 
-rb3/storesongsortnode.cpp:
+band3/meta_band/StoreSongSortNode.cpp:
 	.text       start:0x80292750 end:0x802929D0
 
 band3/meta_band/TexLoadPanel.cpp:
-	.text       start:0x80292A70 end:0x80293878
+	.text       start:0x802929D0 end:0x80293878
 
-rb3/panels/tokenredemptionpanel.cpp:
+band3/meta_band/TokenRedemptionPanel.cpp:
 	.text       start:0x80293878 end:0x80295408
 
-rb3/providers/trainerprovider.cpp:
+band3/meta_band/TrainerProvider.cpp:
 	.text       start:0x80295408 end:0x802956CC
 
-rb3/mgrs/trainingmgr.cpp:
+band3/meta_band/TrainingMgr.cpp:
 	.text       start:0x802956CC end:0x802960B0
 	.data       start:0x8084CAC8 end:0x8084CB60
 
-rb3/panels/trainingpanel.cpp:
+band3/meta_band/TrainingPanel.cpp:
 	.text       start:0x802960B0 end:0x80296BB4
 
-rb3/panels/ugcpurchasepanel.cpp:
+band3/meta_band/UGCPurchasePanel.cpp:
 	.text       start:0x80296BB4 end:0x80297868
 
-rb3/ui/uievent.cpp:
-	.text       start:0x80297868 end:0x8029948C
+band3/meta_band/UIEvent.cpp:
+	.text       start:0x80297868 end:0x80298450
 
-rb3/ui/uistats.cpp:
+band3/meta_band/UIEventMgr.cpp:
+	.text       start:0x80298450 end:0x8029948C
+
+band3/meta_band/UIStats.cpp:
 	.text       start:0x8029948C end:0x8029A744
 	.ctors      start:0x807EFE7C end:0x807EFE80
 
-rb3/panels/voiceoverpanel.cpp:
+band3/meta_band/UploadErrorMgr.cpp:
+	.text       start:0x8029A744 end:0x8029ACE8
+
+band3/meta_band/Utl.cpp:
+	.text       start:0x8029ACE8 end:0x8029B714
+
+band3/meta_band/ViewSetting.cpp:
+	.text       start:0x8029B714 end:0x8029E738
+
+band3/meta_band/VoiceoverPanel.cpp:
 	.text       start:0x8029E738 end:0x8029F41C
+
+band3/meta_band/WaitingUserGate.cpp:
+	.text       start:0x8029F41C end:0x802A095C
+
+band3/meta_band/OvershellProfileProvider_Wii.cpp:
+	.text       start:0x802A095C end:0x802A2274
+
+band3/meta_band/WiiBufStreamMgr.cpp:
+	.text       start:0x802A2274 end:0x802A22F8
+	.ctors      start:0x807EFE80 end:0x807EFE84
+
+band3/meta_band/BandMemcardAction_Wii.cpp:
+	.text       start:0x802A22F8 end:0x802A2BA0
+
+band3/meta_band/WiiFriendsProvider.cpp:
+	.text       start:0x802A2BA0 end:0x802A5E44
+	.ctors      start:0x807EFE84 end:0x807EFE88
+
+band3/meta_band/WiiProfilePanel.cpp:
+	.text       start:0x802A5E44 end:0x802A6F28
+
+band3/meta_band/WiiFriendsList.cpp:
+	.text       start:0x802A6F28 end:0x802A781C
+
+band3/meta_band/StoreOfferContentsProvider.cpp:
+	.text       start:0x802A781C end:0x802A871C
+
+band3/tour/FixedSetlist.cpp:
+	.text       start:0x802A871C end:0x802A8A78
+
+band3/tour/GigFilter.cpp:
+	.text       start:0x802A8A78 end:0x802A8DD8
+
+band3/tour/Quest.cpp:
+	.text       start:0x802A8DD8 end:0x802A93EC
+
+band3/tour/QuestJournal.cpp:
+	.text       start:0x802A93EC end:0x802A950C
+
+band3/tour/QuestManager.cpp:
+	.text       start:0x802A950C end:0x802AC6C4
+	.ctors      start:0x807EFE88 end:0x807EFE8C
+
+band3/tour/QuestFilterPanel.cpp:
+	.text       start:0x802AC6C4 end:0x802ADF00
+
+band3/tour/Tour.cpp:
+	.text       start:0x802ADF00 end:0x802B32F0
+
+band3/tour/TourBand.cpp:
+	.text       start:0x802B32F0 end:0x802B3A24
+
+band3/tour/TourChallengeResultsPanel.cpp:
+	.text       start:0x802B3A24 end:0x802B4324
+
+band3/tour/TourChar.cpp:
+	.text       start:0x802B4324 end:0x802B49D4
+
+band3/tour/TourCharLocal.cpp:
+	.text       start:0x802B49D4 end:0x802B52F8
+
+band3/tour/TourCharRemote.cpp:
+	.text       start:0x802B52F8 end:0x802B5A38
+
+band3/tour/TourCondition.cpp:
+	.text       start:0x802B5A38 end:0x802B63F8
+
+band3/tour/TourDesc.cpp:
+	.text       start:0x802B63F8 end:0x802B7188
+
+band3/tour/TourDescPanel.cpp:
+	.text       start:0x802B7188 end:0x802BA3C8
+
+band3/tour/TourGameModifier.cpp:
+	.text       start:0x802BA3C8 end:0x802BA4F0
+
+band3/tour/TourGameRules.cpp:
+	.text       start:0x802BA4F0 end:0x802BA70C
+
+band3/tour/TourPerformer.cpp:
+	.text       start:0x802BA70C end:0x802BC2E8
+	.ctors      start:0x807EFE8C end:0x807EFE90
+
+band3/tour/TourPerformerLocal.cpp:
+	.text       start:0x802BC2E8 end:0x802BE204
+
+band3/tour/TourPerformerRemote.cpp:
+	.text       start:0x802BE204 end:0x802BE3E8
+
+band3/tour/TourProgress.cpp:
+	.text       start:0x802BE3E8 end:0x802C0100
+
+band3/tour/TourProperty.cpp:
+	.text       start:0x802C0100 end:0x802C0338
 
 band3/tour/TourPropertyCollection.cpp:
 	.text       start:0x802C0338 end:0x802C059C
+
+band3/tour/TourQuestGameRules.cpp:
+	.text       start:0x802C059C end:0x802C06A8
 
 band3/tour/TourReward.cpp:
 	.text       start:0x802C06A8 end:0x802C0DC4
 	.data       start:0x8084FB00 end:0x8084FB38
 	.sbss       start:0x808E4370 end:0x808E4378
 	.bss        start:0x80900740 end:0x80900758
+
+band3/tour/TourSavable.cpp:
+	.text       start:0x802C0DC4 end:0x802C1124
+
+band3/tour/TourWeightManager.cpp:
+	.text       start:0x802C1124 end:0x802C12E0
+
+band3/net_band/ContextWrapper.cpp:
+	.text       start:0x802C12E0 end:0x802C1C04
+	.ctors      start:0x807EFE90 end:0x807EFE94
+
+band3/net_band/DataResults.cpp:
+	.text       start:0x802C1C04 end:0x802C31BC
+
+band3/net_band/RockCentral.cpp:
+	.text       start:0x802C31BC end:0x802D0A5C
+	.ctors      start:0x807EFE94 end:0x807EFE98
+
+band3/net_band/RockCentralJobs.cpp:
+	.text       start:0x802D0A5C end:0x802D16AC
+
+band3/net_band/EntityUploader.cpp:
+	.text       start:0x802D16AC end:0x802D341C
+
+band3/net_band/EntityUploader_Wii.cpp:
+	.text       start:0x802D341C end:0x802D4A4C
+	.ctors      start:0x807EFE98 end:0x807EFE9C
+
+band3/net_band/RockBandDDF_Wii.cpp:
+	.text       start:0x802D4A4C end:0x802D4B74
+	.ctors      start:0x807EFE9C end:0x807EFEA0
+
+band3/net_band/RBTestDDL_Wii.cpp:
+	.text       start:0x802D4B74 end:0x802D4C40
 
 system/math/SHA1.cpp:
 	.text       start:0x802D5518 end:0x802D7088
