@@ -65,8 +65,8 @@ public:
     // Stats::Stats(const Stats& s) : mHitCount(s.mHitCount), mMissCount(s.mMissCount), m0x08(s.m0x08), m0x0c(s.m0x0c), mPersistentStreak(s.mPersistentStreak), mLongestPersistentStreak(s.mLongestPersistentStreak),
     //     mNotesHitFraction(s.mNotesHitFraction), mFailedDeploy(s.mFailedDeploy), mDeployCount(s.mDeployCount), mFillHitCount(s.mFillHitCount), mUpstrumCount(s.mUpstrumCount), mDownstrumCount(s.mDownstrumCount), m0x30(s.m0x30), m0x34(s.m0x34),
     //     mFinalized(s.mFinalized), mSoloPercentage(s.mSoloPercentage), mSoloButtonedSoloPercentage(s.mSoloButtonedSoloPercentage), mPerfectSoloWithSoloButtons(s.mPerfectSoloWithSoloButtons), m0x41(s.m0x41),
-    //     mNumberOfSingers(s.mNumberOfSingers), m0x48(s.m0x48), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
-    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), m0x70(s.m0x70), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
+    //     mSingerCount(s.mSingerCount), mVocalPartCount(s.mVocalPartCount), mDoubleHarmonyHit(s.mDoubleHarmonyHit), mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount), mTripleHarmonyHit(s.mTripleHarmonyHit),
+    //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c), m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c), mVocalPartPercentages(s.mVocalPartPercentages), mSingerStats(s.mSingerStats), mAccessPerformanceAwards(s.mAccessPerformanceAwards),
     //     mAccuracy(s.mAccuracy), m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain), mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
     //     mCodaPoints(s.mCodaPoints), mHasCoda(s.mHasCoda), mHasSolos(s.mHasSolos), mTambourine(s.mTambourine), mHarmony(s.mHarmony), mFullCombo(s.mFullCombo), mNoScorePercent(s.mNoScorePercent), mCurrentHitStreak(s.mCurrentHitStreak) {
 
@@ -142,8 +142,8 @@ public:
     int GetTripleHarmonyPhraseCount() const { return mTripleHarmonyPhraseCount; }
     int GetHitCount() const { return mHitCount; }
     float GetNotesHitFraction() const { return mNotesHitFraction; }
-    int GetNumberOfSingers() const { return mNumberOfSingers; }
-    float GetVocalPartPercentage(int i) const { return m0x70[i]; }
+    int GetNumberOfSingers() const { return mSingerCount; }
+    float GetVocalPartPercentage(int i) const { return mVocalPartPercentages[i]; }
     bool GetFailedDeploy() const { return mFailedDeploy; }
     int GetPlayersSaved() const { return mPlayersSaved; }
     int GetFillHitCount() const { return mFillHitCount; }
@@ -250,8 +250,8 @@ public:
     int mSoloButtonedSoloPercentage;           // 0x03c
     bool mPerfectSoloWithSoloButtons;          // 0x040
     bool m0x41;                                // 0x041
-    int mNumberOfSingers;                      // 0x044
-    int m0x48;                                 // 0x048
+    int mSingerCount;                      // 0x044
+    int mVocalPartCount;                                 // 0x048
     int mDoubleHarmonyHit;                     // 0x04c
     int mDoubleHarmonyPhraseCount;             // 0x050
     int mTripleHarmonyHit;                     // 0x054
@@ -261,7 +261,7 @@ public:
     int m0x64;                                 // 0x064
     int m0x68;                                 // 0x068
     int m0x6c;                                 // 0x06c
-    std::vector<float> m0x70;                    // 0x070
+    std::vector<float> mVocalPartPercentages;                    // 0x070
     std::vector<SingerStats> mSingerStats;     // 0x078
     std::vector<Symbol> mAccessPerformanceAwards;                    // 0x080
     int mAccuracy; // 0x88

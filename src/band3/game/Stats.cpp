@@ -8,8 +8,8 @@ DECOMP_FORCEACTIVE(Stats, __FILE__, "index < mHitStreaks.size()", "index < mFail
     "index < mClosestPlayersSaved.size()", "index < mClosestTimesSaved.size()", "index < mBestOverdriveDeployments.size()", "index < mBestStreakMultipliers.size()")
 
 Stats::Stats() : mHitCount(0), mMissCount(0), m0x08(0), m0x0c(0), mPersistentStreak(0), mLongestPersistentStreak(0), mNotesHitFraction(0), mFailedDeploy(0), mDeployCount(0), mFillHitCount(0),
-    mUpstrumCount(0), mDownstrumCount(0), m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mNumberOfSingers(0),
-    m0x48(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0), mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0),
+    mUpstrumCount(0), mDownstrumCount(0), m0x30(0), m0x34(0), mFinalized(0), mSoloPercentage(0), mSoloButtonedSoloPercentage(0), mPerfectSoloWithSoloButtons(0), m0x41(0), mSingerCount(0),
+    mVocalPartCount(0), mDoubleHarmonyHit(0), mDoubleHarmonyPhraseCount(0), mTripleHarmonyHit(0), mTripleHarmonyPhraseCount(0), m0x5c(0), m0x60(0), m0x64(0), m0x68(0), m0x6c(0), mAccuracy(0), m0x8c(0),
     mSolo(0), mOverdrive(0), mSustain(0), mScoreStreak(0), mBandContribution(0), mCodaPoints(0), mHasCoda(0), mHasSolos(0), mTambourine(0), mHarmony(0), mFullCombo(0), mNoScorePercent(0),
     mHitStreaks(3), mMissStreaks(3), mFailurePoints(3, -1.0f), mSavedPoints(3, -1.0f), mPlayersSaved(0), mClosestPlayersSaved(3, 2.0f), mTimesSaved(0),
     mClosestTimesSaved(3, 2.0f), mBestSolos(3, -1), mBestOverdriveDeployments(3), mTotalOverdriveDurationMs(0), mBestStreakMultipliers(3), mTotalMultiplierDuration(0),
@@ -90,7 +90,16 @@ void Stats::SetSoloButtonedSoloPercentage(int i){
     if(mSoloButtonedSoloPercentage < i) mSoloButtonedSoloPercentage = i;
 }
 
-void Stats::SetVocalSingerAndPartCounts(int, int) {}
+void Stats::SetVocalSingerAndPartCounts(int i, int j) {
+    mSingerCount = i;
+    mVocalPartCount = j;
+    mVocalPartPercentages.resize(j);
+    mSingerStats.clear();
+    for(int x = 0; x < i; x++){
+        mSingerStats.push_back(SingerStats(j));
+    }
+}
+
 void Stats::SetSingerPartPercentage(int i, int j, float f){
     mSingerStats[i].SetPartPercentage(j, f);
 }
@@ -129,8 +138,8 @@ void Stats::SaveForEndGame(BinStream& bs) const {
     bs << mDoubleHarmonyPhraseCount;
     bs << mTripleHarmonyHit;
     bs << mTripleHarmonyPhraseCount;
-    bs << mNumberOfSingers;
-    bs << m0x48;
+    bs << mSingerCount;
+    bs << mVocalPartCount;
     bs << mAccuracy;
     bs << m0x8c;
     bs << mOverdrive;
@@ -174,8 +183,8 @@ void Stats::LoadForEndGame(BinStream& bs){
     bs >> mDoubleHarmonyPhraseCount;
     bs >> mTripleHarmonyHit;
     bs >> mTripleHarmonyPhraseCount;
-    bs >> mNumberOfSingers;
-    bs >> m0x48;
+    bs >> mSingerCount;
+    bs >> mVocalPartCount;
     bs >> mAccuracy;
     bs >> m0x8c;
     bs >> mOverdrive;
@@ -202,9 +211,9 @@ void Stats::LoadForEndGame(BinStream& bs){
 }
 
 void Stats::SaveSingerStats(BinStream& bs) const {
-    for(int i = 0; i < mNumberOfSingers; i++){
+    for(int i = 0; i < mSingerCount; i++){
         const SingerStats& stats = mSingerStats[i];
-        for(int j = 0; j < m0x48; j++){
+        for(int j = 0; j < mVocalPartCount; j++){
             const std::pair<int, float>& p = stats.unk0[j];
             bs << p.first;
             bs << p.second;
@@ -217,9 +226,9 @@ void Stats::SaveSingerStats(BinStream& bs) const {
 }
 
 void Stats::LoadSingerStats(BinStream& bs){
-    for(int i = 0; i < mNumberOfSingers; i++){
-        SingerStats singerStats(m0x48);
-        for(int j = 0; j < m0x48; j++){
+    for(int i = 0; i < mSingerCount; i++){
+        SingerStats singerStats(mVocalPartCount);
+        for(int j = 0; j < mVocalPartCount; j++){
             int part; float pct;
             bs >> part; bs >> pct;
             singerStats.SetPartPercentage(part, pct);
@@ -372,6 +381,7 @@ void SingerStats::Finalize() {
 }
 
 void SingerStats::SetPartPercentage(int, float) {}
+
 const std::pair<int, float>& SingerStats::GetRankData(int part) const {
     return unk0[part];
 }
