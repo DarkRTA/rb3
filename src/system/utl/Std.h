@@ -65,6 +65,13 @@ inline bool ListFind(const std::list<T>& list, const T& key){
     return std::find(list.begin(), list.end(), key) != list.end();
 }
 
+// T must be an std iterator type
+template <class T>
+inline T NextItr(T it, int idx){
+    while(idx-- != 0) ++it;
+    return it;
+}
+
 // not sure where else to put this
 inline int atoi_s(char* str){
     if(str) return atoi(str);

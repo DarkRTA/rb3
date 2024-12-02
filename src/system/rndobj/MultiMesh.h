@@ -66,6 +66,10 @@ public:
     DataNode OnDistribute(const DataArray*);
 
     RndMesh* GetMesh() const { return mMesh; }
+    void RemoveInstance(int);
+    Instance& Instances(int idx){
+        return *NextItr(mInstances.begin(), idx);
+    }
 
     ObjPtr<RndMesh> mMesh; // 0x20
     std::list<RndMultiMesh::Instance> mInstances; // 0x2C

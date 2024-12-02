@@ -262,10 +262,7 @@ template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray*
     }
     else {
         int count = prop->Int(i++);
-        typename std::list<T>::iterator it = objList.begin();
-        for(; count != 0; count--){
-            it++;
-        }
+        typename std::list<T>::iterator it = NextItr(objList.begin(), count);
         if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
             return PropSync(*it, node, prop, i, op);
         }

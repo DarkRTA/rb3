@@ -215,7 +215,8 @@ void RndMultiMesh::SetMesh(RndMesh* mesh){
     UpdateMesh();
 }
 
-// for whatever reason this isn't inlined
+#pragma push
+#pragma dont_inline on
 BEGIN_HANDLERS(RndMultiMesh)
     HANDLE(move_xfms, OnMoveXfms)
     HANDLE(scale_xfms, OnScaleXfms)
@@ -239,6 +240,15 @@ BEGIN_HANDLERS(RndMultiMesh)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x196)
 END_HANDLERS
+#pragma pop
+
+DataNode RndMultiMesh::OnGetPos(const DataArray* da){
+    Instance& inst = Instances(da->Int(2));
+    *da->Var(3) = inst.mXfm.v.x;
+    *da->Var(4) = inst.mXfm.v.y;
+    *da->Var(5) = inst.mXfm.v.z;
+    return 0;
+}
 
 DataNode RndMultiMesh::OnSetPos(const DataArray* da) {
     RndMultiMesh::Instance* inst;
@@ -251,6 +261,11 @@ DataNode RndMultiMesh::OnSetPos(const DataArray* da) {
     float nu_y = da->Float(4);
     float nu_x = da->Float(3);
     inst->mXfm.v.x = nu_x; inst->mXfm.v.y = nu_y; inst->mXfm.v.z = nu_z;
+    return 0;
+}
+
+DataNode RndMultiMesh::OnRemoveXfm(const DataArray* da){
+    RemoveInstance(da->Int(2));
     return 0;
 }
 
