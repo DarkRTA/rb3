@@ -66,6 +66,7 @@ inline bool ListFind(const std::list<T>& list, const T& key){
 }
 
 // T must be an std iterator type
+// std::next before std::next was a thing
 template <class T>
 inline T NextItr(T it, int idx){
     while(idx-- != 0) ++it;

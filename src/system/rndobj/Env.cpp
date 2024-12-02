@@ -1,6 +1,7 @@
 #include "Env.h"
 #include "obj/Object.h"
 #include "rndobj/Draw.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
@@ -18,7 +19,7 @@ void RndEnviron::Select(const Vector3* v) {
     if (v) {
         sCurrentPos = *v;
     } else {
-    #ifdef VERSION_SZBE69_B8
+    #ifdef MILO_DEBUG
         sCurrentPos.z = 0;
         sCurrentPos.y = 0;
         sCurrentPos.x = 0;
@@ -255,10 +256,7 @@ DataNode RndEnviron::OnAllowableLights_Real(const DataArray* da){
     static DataNode& milo_prop_path = DataVariable("milo_prop_path");
     if(milo_prop_path.Type() == kDataArray){
         if(milo_prop_path.Array()->Size() == 2){
-            int num = milo_prop_path.Array()->Int(1);
-            ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsReal.begin();
-            it += num;
-            ptr->Insert(ptr->Size(), *it);
+            ptr->Insert(ptr->Size(), *NextItr(mLightsReal.begin(), milo_prop_path.Array()->Int(1)));
         }
     }
     return DataNode(ptr);
@@ -274,10 +272,7 @@ DataNode RndEnviron::OnAllowableLights_Approx(const DataArray* da){
     static DataNode& milo_prop_path = DataVariable("milo_prop_path");
     if(milo_prop_path.Type() == kDataArray){
         if(milo_prop_path.Array()->Size() == 2){
-            int num = milo_prop_path.Array()->Int(1);
-            ObjPtrList<RndLight, class ObjectDir>::iterator it = mLightsApprox.begin();
-            it += num;
-            ptr->Insert(ptr->Size(), *it);
+            ptr->Insert(ptr->Size(), *NextItr(mLightsApprox.begin(), milo_prop_path.Array()->Int(1)));
         }
     }
     return DataNode(ptr);
