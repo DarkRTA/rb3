@@ -4,6 +4,229 @@
 
 class OvershellSlot;
 
+// #define kState_NoInstrument
+// (0)
+// #define kState_Join
+// (1)
+// #define kState_SignIn
+// (2)
+// #define kState_ConnectMic
+// (3)
+// #define kState_Finding
+// (4)
+// #define kState_JoinedDefault
+// (5)
+// #define kState_ChooseChar
+// (6)
+// #define kState_Options
+// (7)
+// #define kState_OnlineOptions
+// (8)
+// #define kState_GameOptions
+// (9)
+// #define kState_ChoosePart
+// (10)
+// #define kState_ChoosePartWait
+// (11)
+// #define kState_ChooseDiff
+// (12)
+// #define kState_SongOptionsCancel
+// (13)
+// #define kState_ReadyToPlay
+// (14)
+// #define kState_ReadyToPlayWait
+// (15)
+// #define kState_AutoSignInSony
+// (16)
+// #define kState_SignInSonyPrivilegeDenial
+// (17)
+// #define kState_AutoSignInRockCentral
+// (18)
+// #define kState_SignInToRegister
+// (19)
+// #define kState_SignInWait
+// (20)
+// #define kState_RegisteringOnline
+// (21)
+// #define kState_SignInFailRetry
+// (22)
+// #define kState_EnterCalibration
+// (23)
+// #define kState_EnterCharCreator
+// (24)
+// #define kState_DisconnectConfirm
+// (25)
+// #define kState_RemoveUserDisconnectConfirm
+// (26)
+// #define kState_KickUsers
+// (27)
+// #define kState_MuteUsers
+// (28)
+// #define kState_GamercardUsers
+// (29)
+// #define kState_InviteFriends
+// (30)
+// #define kState_ChooseProfile
+// (31)
+// #define kState_ChooseProfileConfirm
+// (32)
+// #define kState_OptionsEndGame
+// (33)
+// #define kState_Modifiers
+// (34)
+// #define kState_AutoVocalsDenial
+// (35)
+// #define kState_RegisterOnlineDenial
+// (36)
+// #define kState_OptionsDrumInSongSettings
+// (37)
+// #define kState_OptionsDrumMessage
+// (38)
+// #define kState_OptionsDrum
+// (39)
+// #define kState_ChooseDiffConfirm
+// (40)
+// #define kState_KickConfirmation
+// (41)
+// #define kState_OptionsAVSettings
+// (42)
+// #define kState_OptionsAudio
+// (43)
+// #define kState_OptionsVocal
+// (44)
+// #define kState_OptionsExtras
+// (45)
+// #define kState_ModifierUnlock
+// (46)
+// #define kState_LinkingCode
+// (47)
+// #define kState_CharCreatorDenial
+// (48)
+// #define kState_CalibrationDenial
+// (49)
+// #define kState_ReconnectController
+// (50)
+// #define kState_CharCreatorDenialNoProfile
+// (51)
+// #define kState_CharCreatorDenialMaxChars
+// (52)
+// #define kState_ChooseCharEdit
+// (53)
+// #define kState_ChooseCharDelete
+// (54)
+// #define kState_FirstTimeRG
+// (55)
+// #define kState_SecondTimeRG
+// (56)
+// #define kState_NoJoinInGame
+// (57)
+// #define kState_LinkingCodeError
+// (58)
+// #define kState_EnterCredits
+// (59)
+// #define kState_CreditsDenial
+// (60)
+// #define kState_RemoveUserDenial
+// (61)
+// #define kState_SaveloadManagerNotIdle
+// (62)
+// #define kState_ModifiersDrumWarning
+// (63)
+// #define kState_ChooseContribute
+// (64)
+// #define kState_RemoveCriticalUserConfirm
+// (65)
+// #define kState_ChooseCharDeleteDenial
+// (66)
+// #define kState_ToggleNoFailDenial
+// (67)
+// #define kState_ChoosePartDenial
+// (68)
+// #define kState_SaveloadManagerNotMeta
+// (69)
+// #define kState_SignInToRegisterNoResolve
+// (70)
+// #define kState_SaveloadManagerAutosaveConfirm
+// (71)
+// #define kState_InviteFriendsDenial
+// (72)
+// #define kState_ChooseCharDenial
+// (73)
+// #define kState_ModifierDelayedEffect
+// (74)
+// #define kState_QuitEarlyConfirm
+// (75)
+// #define kState_SkipSongConfirm
+// (76)
+// #define kState_RemoveUserInSongConfirm
+// (77)
+// #define kState_ChoosePartWarn
+// (78)
+// #define kState_RestartConfirm
+// (79)
+// #define kState_NotBattlePartWarn
+// (80)
+// #define kState_AuditionNoHardDriveConfirm
+// (81)
+// #define kState_AuditionNoMembershipConfirm
+// (82)
+// #define kState_AuditionNoRockCentral
+// (83)
+// #define kState_AuditionEnterConfirm
+// (84)
+// #define kState_AuditionDenialRemotePlayers
+// (85)
+// #define kState_EnterWiiSpeakOptions
+// (128)
+// #define kState_WaitWii
+// (129)
+// #define kState_WiiProfileOptions
+// (130)
+// #define kState_WiiProfileList
+// (131)
+// #define kState_WiiProfileConfirm
+// (132)
+// #define kState_WiiProfileRemoveUserConfirm
+// (133)
+// #define kState_WiiProfileListEmpty
+// (134)
+// #define kState_WiiProfileFail
+// (135)
+// #define kState_WiiProfileFailBusy
+// (136)
+// #define kState_WiiProfileFailCreate
+// (137)
+// #define kState_WiiProfileSwapFail
+// (138)
+// #define kState_AutoSignInNintendo
+// (139)
+// #define kState_ChooseInvitation
+// (140)
+// #define kState_AcceptInvitation
+// (141)
+// #define kState_NoInvitations
+// (142)
+// #define kState_WiiProfilePreconfirm
+// (143)
+// #define kState_WiiProfileSwitchConfirm
+// (144)
+// #define kState_WiiProfilePostAction
+// (145)
+// #define kState_OptionsWiiSpeak
+// (146)
+// #define kState_EnterWiiProfile
+// (201)
+// #define kState_WiiProfileGuestConfirm
+// (202)
+// #define kState_RemoveUserInCampaignConfirm
+// (203)
+// #define kState_RegisterWiiProfile
+// (204)
+// #define kState_WiiProfileDenial
+// (205)
+// #define kState_RegisterWiiProfileDenial
+// (206)
+
 enum OvershellSlotStateID {
     kState_NoInstrument = 0,
     kState_Join = 1,
