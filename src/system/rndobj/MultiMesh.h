@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_MULTIMESH_H
-#define RNDOBJ_MULTIMESH_H
+#pragma once
 #include "math/Mtx.h"
 #include "obj/Object.h"
 #include "rndobj/Draw.h"
@@ -9,7 +8,6 @@
 #include "utl/TextStream.h"
 #include <list>
 #include <utility>
-
 
 /**
  * @brief An object that instances \ref RndMesh "RndMeshes".
@@ -69,7 +67,7 @@ public:
 
     RndMesh* GetMesh() const { return mMesh; }
 
-    ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x20
+    ObjPtr<RndMesh> mMesh; // 0x20
     std::list<RndMultiMesh::Instance> mInstances; // 0x2C
 
     static void Terminate();
@@ -90,5 +88,3 @@ inline BinStream& operator>>(BinStream& bs, RndMultiMesh::Instance& i) {
 }
 
 TextStream& operator<<(TextStream& ts, const RndMultiMesh::Instance& i);
-
-#endif

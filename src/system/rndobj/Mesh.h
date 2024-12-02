@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_MESH_H
-#define RNDOBJ_MESH_H
+#pragma once
 #include "math/Bsp.h"
 #include "math/strips/StdAfx.h"
 #include "math/Vec.h"
@@ -7,6 +6,7 @@
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
 #include "obj/Object.h"
+#include "revolution/gx/GXTypes.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Trans.h"
@@ -207,9 +207,9 @@ public:
     // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0
     std::vector<Face> mFaces; // 0xBC
-    ObjPtr<RndMat, class ObjectDir> mMat; // 0xC4
+    ObjPtr<RndMat> mMat; // 0xC4
     std::vector<unsigned char> mPatches; // 0xd0
-    ObjOwnerPtr<RndMesh, class ObjectDir> mGeomOwner; // 0xD8
+    ObjOwnerPtr<RndMesh> mGeomOwner; // 0xD8
     ObjVector<RndBone> mBones; // 0xe4
     int mMutable; // 0xf0
     Volume mVolume; // 0xf4
@@ -220,7 +220,7 @@ public:
     unsigned char* mCompressedVerts; // 0x114
     unsigned int mNumCompressedVerts; // 0x118
     FileLoader* mFileLoader; // 0x11c
-    int mBoxLightColorsCached[6]; // 0x120 - apparently these are _GXColors instead of ints
+    GXColor mBoxLightColorsCached[6]; // 0x120
 };
 
 BinStream& operator>>(BinStream&, RndMesh::Vert&);
@@ -235,5 +235,3 @@ public:
     virtual bool HasMesh(RndMesh*) = 0;
     virtual const std::vector<RndMesh::Vert>& GetVerts(RndMesh*) const = 0; // fix return type
 };
-
-#endif
