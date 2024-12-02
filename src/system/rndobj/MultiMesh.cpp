@@ -315,7 +315,7 @@ DataNode RndMultiMesh::OnNumXfms(const DataArray*) {
     return (int)mInstances.size();
 }
 
-DataNode RndMultiMesh::OnMesh(const DataArray*) { return DataNode(mMesh); }
+DataNode RndMultiMesh::OnMesh(const DataArray*) { return mMesh.Ptr(); }
 
 DataNode RndMultiMesh::OnMoveXfms(const DataArray* da) {
     MoveXfms(this, Vector3(da->Float(2), da->Float(3), da->Float(4)));
