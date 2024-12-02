@@ -322,6 +322,26 @@ DataNode RndMultiMesh::OnMoveXfms(const DataArray* da) {
     return 0;
 }
 
+DataNode RndMultiMesh::OnScaleXfms(const DataArray* da){
+    ScaleXfms(this, Vector3(da->Float(2), da->Float(3), da->Float(4)));
+    return 0;
+}
+
+DataNode RndMultiMesh::OnSortXfms(const DataArray* da){
+    SortXfms(this, Vector3(da->Float(2), da->Float(3), da->Float(4)));
+    return 0;
+}
+
+DataNode RndMultiMesh::OnRandomXfms(const DataArray* da){
+    RandomXfms(this);
+    return 0;
+}
+
+DataNode RndMultiMesh::OnScrambleXfms(const DataArray* da){
+    ScrambleXfms(this);
+    return 0;
+}
+
 DataNode RndMultiMesh::OnDistribute(const DataArray* da) {
     DistributeXfms(this, da->Int(2), da->Float(3));
     return 0;
