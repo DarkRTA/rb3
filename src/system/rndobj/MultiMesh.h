@@ -5,6 +5,7 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Mesh.h"
 #include "utl/BinStream.h"
+#include "utl/Std.h"
 #include "utl/TextStream.h"
 #include <list>
 #include <utility>
@@ -66,7 +67,9 @@ public:
     DataNode OnDistribute(const DataArray*);
 
     RndMesh* GetMesh() const { return mMesh; }
-    void RemoveInstance(int);
+    void RemoveInstance(int idx){
+        mInstances.erase(NextItr(mInstances.begin(), idx));
+    }
     Instance& Instances(int idx){
         return *NextItr(mInstances.begin(), idx);
     }

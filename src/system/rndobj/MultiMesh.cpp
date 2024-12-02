@@ -14,6 +14,7 @@
 #include "types.h"
 #include "utl/BinStream.h"
 #include "utl/Loader.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 #include "utl/TextStream.h"
@@ -251,16 +252,57 @@ DataNode RndMultiMesh::OnGetPos(const DataArray* da){
 }
 
 DataNode RndMultiMesh::OnSetPos(const DataArray* da) {
-    RndMultiMesh::Instance* inst;
-    std::list<RndMultiMesh::Instance>::iterator it = mInstances.begin();
-    for (int i = da->Int(2); i != 0; i--) {
-        inst = &(*it);
-        it++;
+    Vector3& pos = NextItr(mInstances.begin(), da->Int(2))->mXfm.v;
+    pos.Set(da->Float(3), da->Float(4), da->Float(5));
+    return 0;
+}
+
+DataNode RndMultiMesh::OnGetRot(const DataArray* da){
+    Vector3 rot;
+    MakeEuler(Instances(da->Int(2)).mXfm.m, rot);
+    rot *= RAD2DEG;
+    *da->Var(3) = rot.x;
+    *da->Var(4) = rot.y;
+    *da->Var(5) = rot.z;
+    return 0;
+}
+
+DataNode RndMultiMesh::OnSetRot(const DataArray* da){
+    Instance& inst = *NextItr(mInstances.begin(), da->Int(2));
+    MakeRotMatrix(Vector3(da->Float(3), da->Float(4), da->Float(5)), inst.mXfm.m, true);
+    return 0;
+}
+
+DataNode RndMultiMesh::OnGetScale(const DataArray* da){
+    Vector3 scale;
+    MakeScale(Instances(da->Int(2)).mXfm.m, scale);
+    *da->Var(3) = scale.x;
+    *da->Var(4) = scale.y;
+    *da->Var(5) = scale.z;
+    return 0;
+}
+
+DataNode RndMultiMesh::OnSetScale(const DataArray* da){
+    Hmx::Matrix3& mtx = NextItr(mInstances.begin(), da->Int(2))->mXfm.m;
+    Normalize(mtx, mtx);
+    Scale(Vector3(da->Float(3), da->Float(4), da->Float(5)), mtx, mtx);
+    return 0;
+}
+
+DataNode RndMultiMesh::OnAddXfm(const DataArray* da){
+    RndMultiMesh* otherMesh = da->Obj<RndMultiMesh>(2);
+    Instance& inst = otherMesh->Instances(da->Int(3));
+    mInstances.push_back(inst);
+    return 0;
+}
+
+DataNode RndMultiMesh::OnAddXfms(const DataArray* da){
+    int idx = da->Int(2);
+    if(idx > 0){
+        Transform tf;
+        tf.Reset();
+        mInstances.insert(mInstances.end(), idx, Instance(tf));
     }
-    float nu_z = da->Float(5);
-    float nu_y = da->Float(4);
-    float nu_x = da->Float(3);
-    inst->mXfm.v.x = nu_x; inst->mXfm.v.y = nu_y; inst->mXfm.v.z = nu_z;
     return 0;
 }
 
