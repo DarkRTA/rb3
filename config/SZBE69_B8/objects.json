@@ -164,8 +164,8 @@
             "band3/meta_band/CampaignSongInfoPanel.cpp": "NonMatching",
             "band3/meta_band/CharCache.cpp": "NonMatching",
             "band3/meta_band/CharData.cpp": {
-                "status": "NonMatching",
-                "comment": "inline meme - we did try inline auto,deferred, but then CharData's ctor and GetPrefabPortaitPath are being inlined when they shouldn't be"
+                "status": "LinkIssues",
+                "comment": "bss meme"
             },
             "band3/meta_band/CharProvider.cpp": "NonMatching",
             "band3/meta_band/CharSync.cpp": "NonMatching",
@@ -285,11 +285,7 @@
             },
             "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",
             "band3/meta_band/UIEvent.cpp": "NonMatching",
-            "band3/meta_band/UIEventMgr.cpp": {
-                "status": "NonMatching",
-                "comment": "inline meme",
-                "extra_cflags": ["-inline deferred"]
-            },
+            "band3/meta_band/UIEventMgr.cpp": "Matching",
             "band3/meta_band/UIStats.cpp": "NonMatching",
             "band3/meta_band/UploadErrorMgr.cpp": "MISSING",
             "band3/meta_band/Utl.cpp": "Matching",

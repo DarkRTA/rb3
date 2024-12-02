@@ -1,6 +1,8 @@
 #include "meta_band/UIEventMgr.h"
+#include "BandUI.h"
 #include "NetSync.h"
 #include "decomp.h"
+#include "meta_band/NetSync.h"
 #include "meta_band/UIEvent.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
@@ -8,6 +10,7 @@
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "ui/UIScreen.h"
 #include "utl/Std.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
@@ -178,6 +181,20 @@ Symbol UIEventMgr::CurrentTransitionEvent() const {
 bool UIEventMgr::IsTransitionEventFinished() const {
     MILO_ASSERT(HasActiveTransitionEvent(), 0xFD);
     TransitionEvent* event = dynamic_cast<TransitionEvent*>(mTransitionEventQueue.CurrentEvent());
+    std::vector<UIScreen*> screens;
+    TheBandUI.GetCurrentScreenState(screens);
+    return event->IsDestination(screens);
+}
+
+bool UIEventMgr::IsTransitionAllowed(UIScreen* screen) const {
+    if(HasActiveTransitionEvent()){
+        if(TheNetSync->IsBlockingEvent(CurrentTransitionEvent()) || !screen) return true;
+        else {
+            TransitionEvent* event = dynamic_cast<TransitionEvent*>(mTransitionEventQueue.CurrentEvent());
+            return event->IsTransitionAllowed(screen);
+        }
+    }
+    else return true;
 }
 
 DataNode UIEventMgr::OnTriggerEvent(DataArray* a){
