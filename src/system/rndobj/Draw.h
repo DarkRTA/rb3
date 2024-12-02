@@ -28,6 +28,7 @@ class RndDrawable : public virtual RndHighlightable {
 public:
     struct Collision {
         Collision(){}
+        Collision(RndDrawable* o, float d, const Plane& p) : object(o), distance(d), plane(p) {}
         RndDrawable* object; // offset 0x0, size 0x4
         float distance; // offset 0x4, size 0x4
         Plane plane; // offset 0x10, size 0x10
@@ -131,7 +132,7 @@ public:
     bool mKeepMeshData : 1; // used in RndMesh
     bool unk9p2 : 1;
     bool mForceNoQuantize : 1; // used in RndMesh
-    bool unk9p4 : 1; // used in RndMultiMesh
+    bool mModulateColor : 1; // used in RndMultiMesh
     bool mUseCurrentRect : 1; // used in RndScreenMask
     bool unk9p6 : 1; // used in RndTexBlender
     bool mFrameDrive : 1; // used in RndParticleSys

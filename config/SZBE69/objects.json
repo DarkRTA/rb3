@@ -692,6 +692,7 @@
             "system/rndobj/Morph.cpp": "NonMatching",
             "system/rndobj/MotionBlur.cpp": "NonMatching",
             "system/rndobj/Movie.cpp": "Equivalent",
+            "system/rndobj/MultiMesh.cpp": "NonMatching",
             "system/rndobj/MultiMeshProxy.cpp": "NonMatching",
             "system/rndobj/Overlay.cpp": "NonMatching",
             "system/rndobj/Part.cpp": "NonMatching",

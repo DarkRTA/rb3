@@ -238,6 +238,9 @@ public:
     void SetPointLights(bool lit){
         mPointLights = lit;
     }
+    void SetShaderOpts(const MatShaderOptions& opts){
+        mShaderOptions = opts;
+    }
 
     /** Handler to get all Mats in this Object's Dir that are NOT part of the material list.
      * @returns a DataArray of all Mats that satisfy the above condition.

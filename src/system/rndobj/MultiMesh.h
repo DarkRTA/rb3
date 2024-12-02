@@ -20,7 +20,7 @@ class RndMultiMesh : public RndDrawable {
 public:
     struct Instance {
         Instance();
-        Instance(Transform t) : mXfm(t) {}
+        Instance(const Transform& t) : mXfm(t) {}
         void LoadRev(BinStream&, int);
         void Load(BinStream&);
 
