@@ -3,7 +3,12 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Anim.h"
+#include "utl/BinStream.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols4.h"
 #include "utl/TextStream.h"
+
+INIT_REVS(RndMorph)
 
 RndMorph::RndMorph() : mPoses(this), mTarget(this, 0), mNormals(0), mSpline(0), mIntensity(1.0f) {
 
@@ -36,3 +41,37 @@ void RndMorph::Print(){
 }
 
 SAVE_OBJ(RndMorph, 0xCB);
+
+BinStream& operator>>(BinStream& bs, RndMorph::Pose& pose){
+    bs >> pose.mesh;
+    if(RndMorph::gRev < 2){
+        // stuff
+    }
+    else bs >> pose.weights;
+    return bs;
+}
+
+BEGIN_LOADS(RndMorph)
+    LOAD_REVS(bs)
+    ASSERT_REVS(4, 0)
+    if(gRev > 3) LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndAnimatable)
+    bs >> mPoses >> mTarget;
+    if(gRev != 0){
+        bs >> mNormals;
+        bs >> mSpline;
+    }
+    if(gRev > 2) bs >> mIntensity;
+END_LOADS
+
+BEGIN_HANDLERS(RndMorph)
+    HANDLE(set_target, OnSetTarget)
+    HANDLE(set_pose_weight, OnSetPoseWeight)
+    HANDLE(set_pose_mesh, OnSetPoseMesh)
+    HANDLE(set_intensity, OnSetIntensity)
+    HANDLE_ACTION(set_num_poses, SetNumPoses(_msg->Int(2)))
+    HANDLE(pose_mesh, OnPoseMesh)
+    HANDLE_SUPERCLASS(RndAnimatable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x12C)
+END_HANDLERS

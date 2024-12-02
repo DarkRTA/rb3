@@ -1,4 +1,6 @@
 #pragma once
+#include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "rndobj/Anim.h"
 #include "obj/ObjVector.h"
 #include "rndobj/Mesh.h"
@@ -39,11 +41,19 @@ public:
     virtual float EndFrame();
     virtual void Print();
 
+    void SetNumPoses(int num){ mPoses.resize(num); }
     int NumPoses() const { return mPoses.size(); }
     Pose& PoseAt(int idx){ return mPoses[idx]; }
 
+    DataNode OnSetIntensity(const DataArray*);
+    DataNode OnSetTarget(const DataArray*);
+    DataNode OnSetPoseWeight(const DataArray*);
+    DataNode OnPoseMesh(const DataArray*);
+    DataNode OnSetPoseMesh(const DataArray*);
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    DECLARE_REVS;
     NEW_OBJ(RndMorph)
     static void Init(){ REGISTER_OBJ_FACTORY(RndMorph) }
 
