@@ -1,5 +1,7 @@
 #include "bandobj/BandDirector.h"
 #include "bandobj/BandWardrobe.h"
+#include "decomp.h"
+#include "obj/Object.h"
 #include "rndobj/Group.h"
 #include "bandobj/CrowdAudio.h"
 #include "world/Dir.h"
@@ -314,15 +316,32 @@ WorldDir* BandDirector::GetWorld(){
     else return 0;
 }
 
-bool BandDirector::DirectedCut(Symbol s) const {
-    return strncmp(s.mStr, "directed_", 9) == 0;
+DECOMP_FORCEACTIVE(BandDirector, "directed_", "BFTB_", "coop_")
+
+static inline const char* DirectedCutStringHack(){
+    return "directed_";
 }
 
-bool BandDirector::BFTB(Symbol s) const { return strncmp(s.mStr, "BFTB_", 5) == 0; }
-
-bool BandDirector::FacingCamera(Symbol s) const {
-    return (strnicmp(s.mStr, "coop_", 5) == 0 && !BehindCamera(s));
+static inline const char* BFTBStringHack(){
+    return "BFTB_";
 }
+
+static inline const char* FacingCameraStringHack(){
+    return "coop_";
+}
+
+#pragma push
+#pragma force_active on
+inline bool BandDirector::DirectedCut(Symbol s) const {
+    return strncmp(s.mStr, DirectedCutStringHack(), 9) == 0;
+}
+
+inline bool BandDirector::BFTB(Symbol s) const { return strncmp(s.mStr, BFTBStringHack(), 5) == 0; }
+
+inline bool BandDirector::FacingCamera(Symbol s) const {
+    return (strnicmp(s.mStr, FacingCameraStringHack(), 5) == 0 && !BehindCamera(s));
+}
+#pragma pop
 
 bool BandDirector::BehindCamera(Symbol s) const {
     const char* str = s.mStr;
@@ -443,9 +462,16 @@ void GetVenuePath(FilePath& fp, const char* cc){
     }
 }
 
-bool BandDirector::IsMusicVideo(){
-    return strstr(mVenue.Name().mStr, "video");
+static inline const char* BandDirectorMusicVideoStrHack(){
+    return "video";
 }
+
+#pragma push
+#pragma force_active on
+inline bool BandDirector::IsMusicVideo(){
+    return strstr(mVenue.Name().mStr, BandDirectorMusicVideoStrHack());
+}
+#pragma pop
 
 void BandDirector::SetShot(Symbol cat, Symbol s2){
     bool b1 = true;
@@ -702,7 +728,7 @@ BEGIN_HANDLERS(BandDirector)
 #endif
     HANDLE(cur_postprocs, OnPostProcs)
     HANDLE_EXPR(get_curworld, mCurWorld.Ptr())
-    HANDLE_EXPR(get_world, mMerger ? mMerger->Dir() : (Hmx::Object*)0)
+    HANDLE_EXPR(get_world, mMerger ? mMerger->Dir() : (ObjectDir*)0)
     HANDLE(set_dircut, OnSetDircut)
     HANDLE(force_preset, OnForcePreset)
     HANDLE(stomp_presets, OnStompPresets)

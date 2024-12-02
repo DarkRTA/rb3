@@ -1,7 +1,7 @@
 #include "tour/QuestFilterPanel.h"
 #include "meta_band/TexLoadPanel.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
-#include "tour/Quest.h"
 #include "tour/Tour.h"
 #include "tour/TourPerformer.h"
 #include "tour/TourProgress.h"
@@ -11,6 +11,9 @@
 #include "utl/Messages2.h"
 #include "utl/Messages4.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 
 QuestFilterPanel::QuestFilterPanel() : m_symQuest(""), m_pQuestFilterProvider(0) {
 
@@ -30,7 +33,7 @@ Symbol QuestFilterPanel::GetSelectedFilter(){
 
 inline Symbol QuestFilterProvider::DataSymbol(int i_iData) const {
     MILO_ASSERT_RANGE( i_iData, 0, NumData(), 0xD0);
-    return unk24[i_iData];
+    return m_vQuestFilters[i_iData];
 }
 
 TourSetlistType QuestFilterPanel::GetSelectedSetlistType(){
@@ -56,9 +59,10 @@ TourSetlistType QuestFilterPanel::GetSelectedSetlistType(){
 }
 
 void QuestFilterPanel::LoadIcons(){
-    AddTex(MakeString("ui/tour/setlist_art/%s_keep.png", "setlist_random"), "setlist_random", true, false);
-    AddTex(MakeString("ui/tour/setlist_art/%s_keep.png", "setlist_custom"), "setlist_custom", true, false);
-    AddTex(MakeString("ui/tour/setlist_art/%s_keep.png", "setlist_fixed"), "setlist_fixed", true, false);
+    const char* artStr = "ui/tour/setlist_art/%s_keep.png";
+    AddTex(MakeString(artStr, "setlist_random"), "setlist_random", true, false);
+    AddTex(MakeString(artStr, "setlist_custom"), "setlist_custom", true, false);
+    AddTex(MakeString(artStr, "setlist_fixed"), "setlist_fixed", true, false);
 }
 
 void QuestFilterPanel::Load(){
@@ -74,7 +78,7 @@ void QuestFilterPanel::FinishLoad(){
     MILO_ASSERT(pProgress, 0x153);
     UIList* pList = mDir->Find<UIList>("filters.lst", true);
     MILO_ASSERT(pList, 0x156);
-    m_pQuestFilterProvider = new QuestFilterProvider();
+    m_pQuestFilterProvider = new QuestFilterProvider(mTexs, *pProgress, pList);
 }
 
 void QuestFilterPanel::Enter(){
@@ -90,6 +94,14 @@ void QuestFilterPanel::Enter(){
 void QuestFilterPanel::Unload(){
     TexLoadPanel::Unload();
     RELEASE(m_pQuestFilterProvider);
+}
+
+void QuestFilterPanel::UpdateFilters(){
+    MILO_ASSERT(m_pQuestFilterProvider, 0x17B);
+    m_pQuestFilterProvider->Update();
+    static Message cUpdateFilterProviderMsg("update_filter_provider", 0);
+    cUpdateFilterProviderMsg[0] = m_pQuestFilterProvider;
+    Handle(cUpdateFilterProviderMsg, true);
 }
 
 void QuestFilterPanel::Refresh(){
@@ -125,3 +137,15 @@ Symbol QuestFilterPanel::GetGigFilter(){
     MILO_ASSERT(pProgress, 0x1D8);
     return pProgress->GetFilterForCurrentGig();
 }
+
+BEGIN_HANDLERS(QuestFilterPanel)
+    HANDLE_ACTION(cheat_win_quest, CheatWinQuest())
+    HANDLE_ACTION(cheat_cycle_challenge, CheatCycleChallenge())
+    HANDLE_ACTION(cheat_cycle_setlist, CheatCycleSetlist())
+    HANDLE_EXPR(update_details, 0)
+    HANDLE_ACTION(handle_leader_toggled_filters, HandleLeaderToggledFilters(_msg->Int(2)))
+    HANDLE_ACTION(handle_filter_selected, HandleFilterSelected())
+    HANDLE_EXPR(are_current_filters_valid, AreCurrentFiltersValid())
+    HANDLE_SUPERCLASS(TexLoadPanel)
+    HANDLE_CHECK(0x244)
+END_HANDLERS

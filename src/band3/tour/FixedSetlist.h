@@ -1,5 +1,4 @@
-#ifndef TOUR_FIXEDSETLIST_H
-#define TOUR_FIXEDSETLIST_H
+#pragma once
 #include "system/obj/Data.h"
 
 class FixedSetlist {
@@ -23,5 +22,3 @@ public:
     DataArray* m_pSongEntries;  // 0x10
     std::vector<Symbol> mSongs; // 0x14
 };
-
-#endif // TOUR_FIXEDSETLIST_H

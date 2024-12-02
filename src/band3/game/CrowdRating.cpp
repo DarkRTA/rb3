@@ -1,20 +1,20 @@
 #include "game/CrowdRating.h"
 
-CrowdRating::CrowdRating(BandUser *user, Difficulty diff) : unk10(1) {
+CrowdRating::CrowdRating(BandUser *user, Difficulty diff) : mRunningMin(1) {
     Configure(user, diff);
     Reset();
 }
 
 void CrowdRating::ChangeDifficulty(BandUser *user, Difficulty diff) {
     Configure(user, diff);
-    SetValue(unkc);
+    SetValue(mValue);
 }
 
 void CrowdRating::Reset() {
     mActive = true;
     SetDisplayValue(unk2c);
-    unk14 = 0;
-    unk10 = 1;
+    mSongFraction = 0;
+    mRunningMin = 1;
 }
 
 void CrowdRating::SetActive(bool active) { mActive = active; }

@@ -1,6 +1,4 @@
-#ifndef TOUR_QUESTJOURNAL_H
-#define TOUR_QUESTJOURNAL_H
-
+#pragma once
 #include "meta/FixedSizeSaveable.h"
 #include <set>
 class TourProgress;
@@ -19,8 +17,6 @@ class QuestJournal : public FixedSizeSaveable {
 
     static int SaveSize(int);
     
-    TourProgress& unk_0x8;
-    std::set<Symbol> unk_0xC;
+    TourProgress& m_rOwningProgress; // 0x8
+    std::set<Symbol> m_setCompletedQuests; // 0xc
 };
-
-#endif // TOUR_QUESTJOURNAL_H

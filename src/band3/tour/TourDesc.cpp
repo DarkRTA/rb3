@@ -52,18 +52,19 @@ void TourDesc::Configure(DataArray* i_pConfig){
             }
         }
         pGigEntry->FindData(filter, entry->mFilter, false);
-        pGigEntry->FindData(num_songs, entry->mNumSongs, false);
+        pGigEntry->FindData(num_songs, entry->mNumSongs, true);
         pGigEntry->FindData(city, entry->mCity, true);
         pGigEntry->FindData(announce, entry->mAnnouncementScreen, false);
         pGigEntry->FindData(flavor, entry->mFlavor, false);
         pGigEntry->FindData(map, entry->mMapScreen, true);
         pGigEntry->FindData(venue, entry->mVenue, false);
+        std::vector<Symbol>& setlistTypes = entry->mSetlistTypes;
         DataArray* pSetlistTypeArray = pGigEntry->FindArray(setlist_type, true);
         MILO_ASSERT(pSetlistTypeArray, 0x79);
         MILO_ASSERT(pSetlistTypeArray->Size() == 4, 0x7C);
         for(int j = 1; j < pSetlistTypeArray->Size(); j++){
             Symbol sym = pSetlistTypeArray->Node(j).Sym();
-            entry->mSetlistTypes.push_back(sym);
+            setlistTypes.push_back(sym);
         }
         m_vEntries.push_back(entry);
     }

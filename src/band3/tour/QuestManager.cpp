@@ -55,9 +55,9 @@ void QuestManager::ConfigureQuestFilterData(DataArray* da) {
 }
 
 #pragma push
-#pragma dont_inline on
-bool hasquestfilterlol(QuestManager* q, Symbol s){
-    return q->HasQuestFilter(s);
+#pragma force_active on
+inline bool QuestManager::HasQuestFilter(Symbol s) const {
+    return GetQuestFilter(s);
 }
 #pragma pop
 
@@ -81,9 +81,9 @@ void QuestManager::ConfigureFixedSetlistData(DataArray* da) {
 }
 
 #pragma push
-#pragma dont_inline on
-bool hasfixedsetlistlol(QuestManager* q, Symbol s){
-    return q->HasFixedSetlist(s);
+#pragma force_active on
+inline bool QuestManager::HasFixedSetlist(Symbol s) const {
+    return GetFixedSetlist(s);
 }
 #pragma pop
 
@@ -106,9 +106,9 @@ void QuestManager::ConfigureQuestData(DataArray* da) {
 }
 
 #pragma push
-#pragma dont_inline on
-bool hasquestlol(QuestManager* q, Symbol s){
-    return q->HasQuest(s);
+#pragma force_active on
+inline bool QuestManager::HasQuest(Symbol s) const {
+    return GetQuest(s);
 }
 #pragma pop
 

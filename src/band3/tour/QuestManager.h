@@ -15,9 +15,9 @@ public:
     void ConfigureQuestData(DataArray*);
     void ConfigureQuestFilterData(DataArray*);
     void ConfigureFixedSetlistData(DataArray*);
-    bool HasQuest(Symbol s) const { return GetQuest(s); }
-    bool HasQuestFilter(Symbol s) const { return GetQuestFilter(s); }
-    bool HasFixedSetlist(Symbol s) const { return GetFixedSetlist(s); }
+    bool HasQuest(Symbol) const;
+    bool HasQuestFilter(Symbol) const;
+    bool HasFixedSetlist(Symbol) const;
     Quest* GetQuest(Symbol) const;
     GigFilter* GetQuestFilter(Symbol) const;
     FixedSetlist* GetFixedSetlist(Symbol) const;

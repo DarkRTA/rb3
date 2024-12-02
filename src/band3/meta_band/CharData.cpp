@@ -55,7 +55,11 @@ void PrefabChar::CachePortraitTex(RndTex* tex){
 
 bool PrefabChar::IsFinalized() const { return true; }
 bool PrefabChar::IsCustomizable() const { return PrefabMgr::PrefabIsCustomizable(); }
-Symbol PrefabChar::GetPrefabName() const { return mBandCharDesc->Name(); }
+
+#pragma push
+#pragma force_active on
+inline Symbol PrefabChar::GetPrefabName() const { return mBandCharDesc->Name(); }
+#pragma pop
 
 void PrefabChar::LoadPortrait(){
     if(mTexPortrait || mLoader){

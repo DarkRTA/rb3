@@ -38,6 +38,7 @@ public:
     Symbol CurrentDialogEvent() const;
     Symbol CurrentTransitionEvent() const;
     bool IsTransitionEventFinished() const;
+    bool IsTransitionAllowed(UIScreen*) const;
 
     DataNode OnTriggerEvent(DataArray*);
 

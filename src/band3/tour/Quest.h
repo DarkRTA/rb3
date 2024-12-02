@@ -1,6 +1,4 @@
-#ifndef TOUR_QUEST_H
-#define TOUR_QUEST_H
-
+#pragma once
 #include "obj/Data.h"
 #include "tour/TourCondition.h"
 #include "tour/TourQuestGameRules.h"
@@ -34,5 +32,3 @@ class Quest {
     TourReward mFailureReward; const TourReward* GetFailureReward() const;
     TourQuestGameRules mGameRules; const TourQuestGameRules* GetGameRules() const;
 };
-
-#endif // TOUR_QUEST_H

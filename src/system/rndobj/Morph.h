@@ -1,8 +1,10 @@
-#ifndef RNDOBJ_MORPH_H
-#define RNDOBJ_MORPH_H
+#pragma once
+#include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "rndobj/Anim.h"
 #include "obj/ObjVector.h"
 #include "rndobj/Mesh.h"
+#include "math/Key.h"
 
 /**
  * @brief A set of RndMesh poses that can be blended between.
@@ -20,7 +22,10 @@ public:
     /** An individual state of a RndMorph. */
     class Pose {
     public:
-        Pose(Hmx::Object* owner_morph);
+        Pose(Hmx::Object* owner_morph) : mesh(owner_morph) {}
+
+        ObjPtr<RndMesh> mesh; // 0x0
+        Keys<float, float> weights; // 0x4
     };
 
     RndMorph();
@@ -31,16 +36,24 @@ public:
     virtual void Save(BinStream&);
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
-    virtual ~RndMorph();
+    virtual ~RndMorph(){}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
     virtual void Print();
 
+    void SetNumPoses(int num){ mPoses.resize(num); }
     int NumPoses() const { return mPoses.size(); }
     Pose& PoseAt(int idx){ return mPoses[idx]; }
 
+    DataNode OnSetIntensity(const DataArray*);
+    DataNode OnSetTarget(const DataArray*);
+    DataNode OnSetPoseWeight(const DataArray*);
+    DataNode OnPoseMesh(const DataArray*);
+    DataNode OnSetPoseMesh(const DataArray*);
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    DECLARE_REVS;
     NEW_OBJ(RndMorph)
     static void Init(){ REGISTER_OBJ_FACTORY(RndMorph) }
 
@@ -59,5 +72,3 @@ public:
     /** "Modifier for weight interpolation" */
     float mIntensity; // 0x2c
 };
-
-#endif

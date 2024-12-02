@@ -16,6 +16,8 @@ public:
 
     void SetBandName(const char*);
     void ChooseBandLogo(int, int);
+    int GetBandID() const;
+    void ProcessRetCode(int);
 
     static int SaveSize(int);
 

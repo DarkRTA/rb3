@@ -298,6 +298,7 @@ void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
 void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Plane&, const Transform&, Plane&);
 void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
+void NormalizeTo(const Hmx::Quat&, Hmx::Quat&);
 
 inline float AngleBetween(const Hmx::Quat& q1, const Hmx::Quat& q2){
     Hmx::Quat q18;
