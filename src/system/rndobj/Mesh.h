@@ -63,11 +63,17 @@ public:
         DELETE_OVERLOAD;
         DELETE_ARRAY_OVERLOAD;
 
+        /** The vertex's position. */
         Vector3 pos; // 0x0
+        /** The vertex's normal. */
         Vector3 norm; // 0xc
+        /** The vertex's bone weight group. */
         Vector4_16_01 boneWeights; // 0x18 the hate format
+        /** The vertex point's color. */
         Hmx::Color32 color; // 0x20
+        /** The vertex's UV. */
         Vector2 uv; // 0x24
+        /** The vertex's bone indices. */
         short boneIndices[4]; // 0x28
     };
 
@@ -144,25 +150,50 @@ public:
     virtual void Print();
     virtual void OnSync(int);
 
-    void SetNumVerts(int);
-    void SetNumFaces(int);
+    /** Set the number of vertices this Mesh should have.
+     * @param [in] num The number to set.
+     */
+    void SetNumVerts(int num);
+    /** Set the number of faces this Mesh should have.
+     * @param [in] num The number to set.
+     */
+    void SetNumFaces(int num);
     bool CacheStrips(BinStream&);
+    /** Clear the list of compressed vertices. */
     void ClearCompressedVerts();
-    void CopyBones(const RndMesh*);
+    /** Copy the bones from the supplied Mesh. If the other Mesh is NULL, clear our current bone list.
+     * @param [in] m The other Mesh.
+     */
+    void CopyBones(const RndMesh* m);
     void CopyGeometryFromOwner();
+    /** Create a MultiMesh that will draw this Mesh multiple times.
+     * @returns The newly created MultiMesh.
+     */
     RndMultiMesh* CreateMultiMesh();
     void CreateStrip(int, int, Striper&, STRIPERRESULT&, bool);
     int EstimatedSizeKb() const;
-    int NumBones() const { return mBones.size(); }
+    /** Routine to load any relevant vertex data from the BinStream before the main Load method executes. */
     void PreLoadVertices(BinStream&);
+    /** Routine to load any relevant vertex data from the BinStream after the main Load method executes. */
     void PostLoadVertices(BinStream&);
+    /** Remove all RndBones from our bone list that have NULL bone values. */
     void RemoveInvalidBones();
-    void ScaleBones(float);
-    void SetMat(RndMat*);
-    void SetGeomOwner(RndMesh*);
+    /** Scale all our bones by a given value.
+     * @param [in] val The scalar value.
+     */
+    void ScaleBones(float val);
     void Sync(int);
-    bool HasValidBones(unsigned int*) const;
-    void SetBone(int, RndTransformable*, bool);
+    /** Check if all our bones are valid (i.e. not NULL).
+     * @param [out] idx The index of the first invalid bone, or the bone vector's size if everything is valid.
+     * @returns True if all our bones are valid, false otherwise.
+     */
+    bool HasValidBones(unsigned int* idx) const;
+    /** Set the bone at the given index.
+     * @param [in] idx The index of the bone to set.
+     * @param [in] bone The bone to set.
+     * @param [in] calcOffset If true, calculate this bone's resulting offset.
+     */
+    void SetBone(int idx, RndTransformable* bone, bool calcOffset);
     void SetVolume(Volume);
     void SetKeepMeshData(bool);
     void SetZeroWeightBones();
@@ -171,6 +202,10 @@ public:
     Vector3 SkinVertex(const RndMesh::Vert&, Vector3*);
     void UpdateApproxLighting();
 
+    // getters/setters
+    void SetMat(RndMat*);
+    void SetGeomOwner(RndMesh*);
+    int NumBones() const { return mBones.size(); }
     RndMesh* GeometryOwner() const { return mGeomOwner; }
     bool KeepMeshData() const { return mKeepMeshData; }
     int GetMutable() const { return mGeomOwner->mMutable; }

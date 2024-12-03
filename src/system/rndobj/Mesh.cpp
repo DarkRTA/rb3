@@ -253,12 +253,12 @@ void RndMesh::ScaleBones(float f) {
     }
 }
 
-void RndMesh::SetBone(int i, RndTransformable* t, bool b){
-    mBones[i].mBone = t;
-    if(b){
+void RndMesh::SetBone(int idx, RndTransformable* bone, bool calcOffset){
+    mBones[idx].mBone = bone;
+    if(calcOffset){
         Transform tf48;
-        Invert(t->WorldXfm(), tf48);
-        Multiply(WorldXfm(), tf48, mBones[i].mOffset);
+        Invert(bone->WorldXfm(), tf48);
+        Multiply(WorldXfm(), tf48, mBones[idx].mOffset);
     }
 }
 
@@ -839,22 +839,22 @@ BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
 void FaceCenter(RndMesh* mesh, RndMesh::Face* face, Vector3& v){
     v.Set(0,0,0);
     for(int i = 0; i < 3; i++){
-        v += mesh->VertAt(face->operator[](i)).pos;
+        v += mesh->VertAt((*face)[i]).pos;
     }
     v *= 0.33333333f;
 }
 
-void RndMesh::Sync(int i) {
-    OnSync(mKeepMeshData ? i | 0x200 : i);
+void RndMesh::Sync(int flags) {
+    OnSync(mKeepMeshData ? flags | 0x200 : flags);
 }
 
-void RndMesh::OnSync(int mask){
-    if(mGeomOwner != this || (mask & 0x80U) || !(mask & 0x20U)) return;
+void RndMesh::OnSync(int flags){
+    if(mGeomOwner != this || (flags & 0x80U) || !(flags & 0x20U)) return;
     mPatches.clear();
     if(PatchOkay(mVerts.size(), mFaces.size())){
         mPatches.push_back(mFaces.size());
     }
-    else if(mask & 0x100U){
+    else if(flags & 0x100U){
         int u13 = 0xFFFF;
         int i4 = 0;
         int i12 = 0;
