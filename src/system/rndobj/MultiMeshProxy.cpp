@@ -1,7 +1,7 @@
 #include "rndobj/MultiMeshProxy.h"
 #include "utl/Symbols.h"
 
-RndMultiMeshProxy::RndMultiMeshProxy() : mMultiMesh(this, 0), mIndex(0) {
+RndMultiMeshProxy::RndMultiMeshProxy() : mMultiMesh(this), mIndex(0) {
 
 }
 
@@ -23,7 +23,7 @@ void RndMultiMeshProxy::DrawShowing(){
 }
 
 void RndMultiMeshProxy::UpdatedWorldXfm(){
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     if(mMultiMesh){
         Transform& tfm = WorldXfm();
         mIndex->mXfm = tfm;

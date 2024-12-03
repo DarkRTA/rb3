@@ -11,6 +11,7 @@
 #include "rndobj/Mat.h"
 #include "rndobj/Trans.h"
 #include "types.h"
+#include "utl/MemMgr.h"
 #include <vector>
 
 #define MAX_BONES 40
@@ -59,7 +60,9 @@ public:
         }
 
         NEW_OVERLOAD;
+        NEW_ARRAY_OVERLOAD;
         DELETE_OVERLOAD;
+        DELETE_ARRAY_OVERLOAD;
 
         Vector3 pos; // 0x0
         Vector3 norm; // 0xc
@@ -95,6 +98,7 @@ public:
         bool empty() const { return mNumVerts == 0; }
         void resize(int, bool);
         void reserve(int, bool);
+        void realloc_perm();
         Vert& operator[](int i){ return mVerts[i]; }
         const Vert& operator[](int i) const { return mVerts[i]; }
         VertVector& operator=(const VertVector&);

@@ -5,11 +5,14 @@
 #include "obj/Object.h"
 #include "obj/DataUtl.h"
 #include "os/Debug.h"
+#include "os/System.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
 #include "utl/BufStream.h"
 #include "utl/ChunkStream.h"
+#include "utl/Loader.h"
+#include "utl/MemMgr.h"
 #include "utl/Symbols.h"
 #include <vector>
 
@@ -159,31 +162,34 @@ RndMesh::~RndMesh() {
     ClearCompressedVerts();
 }
 
+// https://decomp.me/scratch/gZ1eO
 void RndMesh::VertVector::resize(int n, bool b){
     unka = b;
     if(mCapacity){
         MILO_ASSERT(n <= mCapacity, 0x26A);
         mNumVerts = n;
     }
-    else {
-        if(n == 0){
-            RELEASE(mVerts);
-            mNumVerts = 0;
+    else if(n == 0){
+        delete [] mVerts;
+        mVerts = 0;
+        mNumVerts = 0;
+    }
+    else if(n != mNumVerts){
+        Vert* oldverts = mVerts;
+        Vert* oldit = oldverts;
+        Vert* end = oldverts + Min(n, mNumVerts);
+        {
+            MemDoTempAllocations m(true, false);
+            mVerts = new Vert[n];
         }
-        else if(n != mNumVerts){
-            Vert* oldverts = mVerts;
-            int oldvertcount = Min(n, mNumVerts);
-            {
-                MemDoTempAllocations m(true, false);
-                mVerts = new Vert[n];
-            }
-            mNumVerts = n;
-            Vert* newit = mVerts;
-            for(Vert* it = oldverts; it != &oldverts[oldvertcount]; ++it, ++newit){
-                *newit = *it;
-            }
-            delete oldverts;
+        mNumVerts = n;
+
+        Vert* newit = mVerts;
+        while(oldit != end){
+            *newit++ = *oldit++;
         }
+
+        delete [] oldverts;
     }
 }
 
@@ -192,15 +198,47 @@ void RndMesh::VertVector::reserve(int capacity, bool b){
     MILO_ASSERT(capacity > mNumVerts, 0x298);
     mCapacity = 0;
     int num = mNumVerts;
-    if(capacity > 0xFFFFU) MILO_FAIL("RndMesh::reserve(): capacity %d overflows short!\n", capacity);
+    MILO_ASSERT_FMT(capacity <= 0xFFFFU, "RndMesh::reserve(): capacity %d overflows short!\n", capacity);
     resize(capacity, b);
     mCapacity = capacity;
     mNumVerts = num;
 }
 
+void RndMesh::VertVector::realloc_perm(){
+    if(unka){
+        MemDoTempAllocations m(false, false);
+        Vert* oldverts = mVerts;
+        mVerts = new Vert[mNumVerts];
+        for(int i = 0; i < mNumVerts; i++){
+            mVerts[i] = oldverts[i];
+        }
+        delete [] oldverts;
+        unka = 0;
+        mCapacity = 0;
+    }
+}
+
 RndMesh::VertVector& RndMesh::VertVector::operator=(const RndMesh::VertVector& c){
     MILO_ASSERT(mCapacity == 0, 0x2E0);
     MILO_ASSERT(c.mCapacity == 0, 0x2E1);
+    if(c.mNumVerts != mNumVerts){
+        mNumVerts = Max(c.mNumVerts, 0);
+        delete [] mVerts;
+        mVerts = nullptr;
+        if(mNumVerts != 0){
+            MemDoTempAllocations m(true, false);
+            unka = 1;
+            mVerts = new Vert[mNumVerts];
+        }
+    }
+    if(mVerts){
+        Vert* otherVerts = c.mVerts;
+        Vert* otherEnd = &otherVerts[mNumVerts];
+        Vert* myVerts = mVerts;
+        while(otherVerts != otherEnd){
+            *myVerts++ = *otherVerts++;
+        }
+    }
 }
 
 void RndMesh::PreLoadVertices(BinStream& bs) {
@@ -210,7 +248,8 @@ void RndMesh::PreLoadVertices(BinStream& bs) {
 }
 
 void RndMesh::PostLoadVertices(BinStream& bs) {
-    void* buf; int len;
+    void* buf = 0;
+    int len = 0;
     if (mFileLoader) {
         buf = (void*)mFileLoader->GetBuffer(NULL);
         len = mFileLoader->GetSize();
@@ -228,7 +267,11 @@ void RndMesh::PostLoadVertices(BinStream& bs) {
     if(b58){
         bs >> loadedCompressedSize;
         bs >> loadedVersion;
+#ifdef MILO_DEBUG
         MILO_ASSERT(IsVertexCompressionSupported(TheLoadMgr.GetPlatform()), 0x331);
+#else
+        IsVertexCompressionSupported(kPlatformWii);
+#endif
         MILO_FAIL("Unsupported platform for vertex compression");
         if(loadedCompressedSize == 0 && loadedVersion == 0) b4 = true;
         if(!b4){
@@ -240,7 +283,7 @@ void RndMesh::PostLoadVertices(BinStream& bs) {
         if(b4){
             mNumCompressedVerts = compressedSize;
             if(compressedSize != 0){
-                TheDebug.Fail(MakeString(kAssertStr, __FILE__, 0x369, "compressedSize > 0"));
+                MILO_ASSERT(compressedSize > 0, 0x369);
                 mCompressedVerts = new unsigned char[mNumCompressedVerts];
                 ReadChunks(bs, mCompressedVerts, 0, 0);
             }
