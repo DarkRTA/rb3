@@ -246,7 +246,7 @@ void RndMesh::VertVector::resize(int n, bool b){
     else if(n != mNumVerts){
         Vert* oldverts = mVerts;
         Vert* oldit = oldverts;
-        Vert* end = oldverts + Min(n, mNumVerts);
+        Vert* end = oldverts + Min(n, size());
         {
             MemDoTempAllocations m(true, false);
             mVerts = new Vert[n];
@@ -267,7 +267,11 @@ void RndMesh::VertVector::reserve(int capacity, bool b){
     MILO_ASSERT(capacity > mNumVerts, 0x298);
     mCapacity = 0;
     int num = mNumVerts;
-    MILO_ASSERT_FMT(capacity <= 0xFFFFU, "RndMesh::reserve(): capacity %d overflows short!\n", capacity);
+    int temp = 0;
+    if (capacity <= 0xFFFFU) {
+        temp = 1;
+    }    
+    MILO_ASSERT_FMT(temp, "RndMesh::reserve(): capacity %d overflows short!\n", capacity);    
     resize(capacity, b);
     mCapacity = capacity;
     mNumVerts = num;
@@ -320,19 +324,21 @@ void RndMesh::PostLoadVertices(BinStream& bs) {
     void* buf = 0;
     int len = 0;
     if (mFileLoader) {
-        buf = (void*)mFileLoader->GetBuffer(NULL);
+        buf = (void*)mFileLoader->GetBuffer(0);
         len = mFileLoader->GetSize();
-        RELEASE(mFileLoader);
+        (delete mFileLoader, mFileLoader = 0);
     }
     BufStream bfs(buf, len, true);
     if(buf) &bs = &bfs;
-    int compressedSize; bs >> compressedSize;
+    int count;
+    bs >> count;
     bool b58;
     if(gRev > 0x22) bs >> b58;
     else b58 = false;
-    int loadedCompressedSize = 0;
+    unsigned int compressedSize = 0;
+    unsigned int loadedCompressedSize = 0;
     bool b4 = false;
-    int loadedVersion = 0;
+    unsigned int loadedVersion = 0;
     if(b58){
         bs >> loadedCompressedSize;
         bs >> loadedVersion;
@@ -342,30 +348,32 @@ void RndMesh::PostLoadVertices(BinStream& bs) {
         IsVertexCompressionSupported(kPlatformWii);
 #endif
         MILO_FAIL("Unsupported platform for vertex compression");
+        b4 = false;
         if(loadedCompressedSize == 0 && loadedVersion == 0) b4 = true;
         if(!b4){
             MILO_WARN("Loaded stale compressed vertex data, resave mesh file \"%s\"(loaded size = %d, current = %d; loaded ver = %d, current = %d",
-                bs.Name(), loadedCompressedSize, 0, loadedVersion, 0);
+                bs.Name(), loadedCompressedSize, 0U, loadedVersion, 0U);
         }
     }
     if(b58){
         if(b4){
-            mNumCompressedVerts = compressedSize;
-            if(compressedSize != 0){
+            mNumCompressedVerts = count;
+            if(mNumCompressedVerts != 0){
+                compressedSize *= count;
                 MILO_ASSERT(compressedSize > 0, 0x369);
-                mCompressedVerts = new unsigned char[mNumCompressedVerts];
-                ReadChunks(bs, mCompressedVerts, 0, 0);
+                mCompressedVerts = new unsigned char[compressedSize];
+                ReadChunks(bs, mCompressedVerts, compressedSize, 0);
             }
         }
         else {
-            loadedCompressedSize *= compressedSize;
+            loadedCompressedSize *= count;
             MILO_ASSERT(loadedCompressedSize> 0, 0x376);
             bs.Seek(loadedCompressedSize, BinStream::kSeekCur);
         }
     }
     else {
         bool resizebool = !(mMutable & 0x1F) && !mKeepMeshData;
-        mVerts.resize(compressedSize, resizebool);
+        mVerts.resize(count, resizebool);
         int i5 = 0;
         for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
             bs >> *it;
