@@ -44,9 +44,14 @@ inline BinStream& operator>>(BinStream& bs, RndBone& bone){
     return bs;
 }
 
-// "A Mesh object is composed of triangle faces."
+/**
+ * @brief A mesh object, used to make models.
+ * Original _objects description:
+ * "A Mesh object is composed of triangle faces."
+ */
 class RndMesh : public RndDrawable, public RndTransformable {
 public:
+    /** A mesh vertex. */
     class Vert {
     public:
         Vert() : pos(0,0,0), norm(0,1,0), boneWeights(0,0,0,0), color(-1), uv(0,0) {
@@ -66,15 +71,17 @@ public:
         short boneIndices[4]; // 0x28
     };
 
+    /** A triangle mesh face. */
     class Face {
     public:
-        Face() : idx0(0), idx1(0), idx2(0) {}
-        unsigned short& operator[](int i){ return *(&idx0 + i); }
+        Face() : v1(0), v2(0), v3(0) {}
+        unsigned short& operator[](int i){ return *(&v1 + i); }
         void Set(int i0, int i1, int i2){
-            idx0 = i0; idx1 = i1; idx2 = i2;
+            v1 = i0; v2 = i1; v3 = i2;
         }
 
-        u16 idx0, idx1, idx2;
+        /** The three points that make up the face. */
+        u16 v1, v2, v3;
     };
 
     enum Volume {
@@ -84,6 +91,7 @@ public:
         kVolumeBox
     };
 
+    /** A specialized vector for RndMesh vertices. */
     class VertVector { // more custom STL! woohoo!!!! i crave death
     public:
         VertVector() { mVerts = NULL; mNumVerts = 0; mCapacity = 0;}
@@ -210,18 +218,22 @@ public:
     static bool sUpdateApproxLight;
     static void SetRawCollide(bool b){ sRawCollide = b; }
 
+    /** This mesh's vertices. */
     VertVector mVerts; // 0xB0
+    /** This mesh's faces. */
     std::vector<Face> mFaces; // 0xBC
     /** "Material used for rendering the Mesh" */
     ObjPtr<RndMat> mMat; // 0xC4
     std::vector<unsigned char> mPatches; // 0xd0
     /** "Geometry owner for the mesh" */
     ObjOwnerPtr<RndMesh> mGeomOwner; // 0xD8
+    /** This mesh's bones. */
     ObjVector<RndBone> mBones; // 0xe4
     int mMutable; // 0xf0
     /** "Volume of the Mesh" */
     Volume mVolume; // 0xf4
     BSPNode* mBSPTree; // 0xf8
+    /** The MultiMesh that will draw this Mesh multiple times. */
     RndMultiMesh* mMultiMesh; // 0xfc
     std::vector<STRIPERRESULT> mStriperResults; // 0x100
     MotionBlurCache mMotionCache; // 0x108

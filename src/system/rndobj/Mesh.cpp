@@ -55,9 +55,9 @@ RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
             bool b1 = false;
             f = 1.0f;
             for(std::vector<Face>::iterator it = Faces().begin(); it != Faces().end(); ++it){
-                const Vert& vert0 = VertAt(it->idx0);
-                const Vert& vert1 = VertAt(it->idx1);
-                const Vert& vert2 = VertAt(it->idx2);
+                const Vert& vert0 = VertAt(it->v1);
+                const Vert& vert1 = VertAt(it->v2);
+                const Vert& vert2 = VertAt(it->v3);
                 Triangle tri;
                 if(IsSkinned() && !sRawCollide){
                     tri.Set(SkinVertex(vert0, 0), SkinVertex(vert1, 0), SkinVertex(vert2, 0));
@@ -82,9 +82,9 @@ RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
 }
 
 int RndMesh::CollidePlane(const RndMesh::Face& face, const Plane& plane){
-    bool first = VertAt(face.idx0).pos <= plane;
-    bool second = VertAt(face.idx1).pos <= plane;
-    bool third = VertAt(face.idx2).pos <= plane;
+    bool first = VertAt(face.v1).pos <= plane;
+    bool second = VertAt(face.v2).pos <= plane;
+    bool third = VertAt(face.v3).pos <= plane;
     if(first == second && second == third){
         int ret = -1;
         if(first) ret = 1;
@@ -210,9 +210,9 @@ void RndMesh::SetVolume(RndMesh::Volume vol){
                 std::list<BSPFace> faces;
                 for(int i = mFaces.size() - 1; i >= 0; i--){
                     Face& curFace = mFaces[i];
-                    const Vector3& v1 = mVerts[curFace.idx0].pos;
-                    const Vector3& v2 = mVerts[curFace.idx1].pos;
-                    const Vector3& v3 = mVerts[curFace.idx2].pos;
+                    const Vector3& v1 = mVerts[curFace.v1].pos;
+                    const Vector3& v2 = mVerts[curFace.v2].pos;
+                    const Vector3& v3 = mVerts[curFace.v3].pos;
                     BSPFace bspFace;
                     bspFace.Set(v1, v2, v3);
                     faces.push_back(bspFace);
@@ -267,7 +267,7 @@ RndMesh::RndMesh() : mMat(this), mGeomOwner(this, this), mBones(this),
     mNumCompressedVerts(0), mFileLoader(0) {
     mHasAOCalc = false;
     mKeepMeshData = false;
-    unk9p2 = true;
+    mUseCachedBoxLightColors = true;
     mForceNoQuantize = false;
 }
 
@@ -463,7 +463,7 @@ DECOMP_FORCEACTIVE(Mesh, "0", "Endian.h", "block != NULL", "count >= 0")
 
 void RndMesh::CreateStrip(int i, int j, Striper& striper, STRIPERRESULT& sr, bool onesided) {
     STRIPERCREATE sc;
-    sc.WFaces = &mFaces[i].idx0;
+    sc.WFaces = &mFaces[i].v1;
     sc.NbFaces = j;
     sc.ConnectAllStrips = false;
     sc.OneSided = onesided;
@@ -490,7 +490,7 @@ void RndMesh::PreLoad(BinStream& bs){
     LOAD_SUPERCLASS(RndDrawable)
     if(gRev < 15){
         int i;
-        ObjPtrList<Hmx::Object, ObjectDir> l(this, kObjListNoNull);
+        ObjPtrList<Hmx::Object> l(this, kObjListNoNull);
         bs >> i;
         bs >> l;
     }
@@ -525,19 +525,19 @@ void RndMesh::PreLoad(BinStream& bs){
         }
     }
     if(gRev < 0xD){
-        ObjOwnerPtr<RndMesh, ObjectDir> meshOwner(this, 0);
+        ObjOwnerPtr<RndMesh> meshOwner(this, 0);
         bs >> meshOwner;
         if(meshOwner != mGeomOwner) MILO_WARN("Combining face and vert owner of %s", Name());
     }
     if(gRev < 0xF){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this, 0);
         bs >> tPtr;
         SetTransParent(tPtr, false);
         SetTransConstraint(RndTransformable::kParentWorld, 0, false);
     }
     if(gRev < 0xE){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
-        ObjPtr<RndTransformable, ObjectDir> tPtr2(this, 0);
+        ObjPtr<RndTransformable> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr2(this, 0);
         bs >> tPtr >> tPtr2;
     }
     if(gRev < 3){
@@ -614,7 +614,7 @@ void RndMesh::PostLoad(BinStream& bs) {
         if(mBones.size() > max) mBones.resize(MaxBones());
     }
     else if(gRev > 0xD){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this, 0);
         bs >> tPtr;
         if(tPtr){
             mBones.resize(4);
@@ -829,7 +829,7 @@ void RndMesh::Replace(Hmx::Object* from, Hmx::Object* to){
 }
 
 BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
-    bs >> f.idx0 >> f.idx1 >> f.idx2;
+    bs >> f.v1 >> f.v2 >> f.v3;
     if (RndMesh::gRev < 1) {
         Vector3 v; bs >> v;
     }
@@ -859,12 +859,12 @@ void RndMesh::OnSync(int mask){
         int i4 = 0;
         int i12 = 0;
         for(std::vector<Face>::iterator it = mFaces.begin(); it != mFaces.end(); ++it){
-            i12 = Max(Max<u16>(i12, it->idx0, it->idx1), it->idx2);
-            u13 = Min(Min<u16>(u13, it->idx0, it->idx1), it->idx2);
+            i12 = Max(Max<u16>(i12, it->v1, it->v2), it->v3);
+            u13 = Min(Min<u16>(u13, it->v1, it->v2), it->v3);
             if(!PatchOkay((i12 - u13) + 1, i4 + 1)){
                 mPatches.push_back(i4);
-                i12 = Max(it->idx0, it->idx1, it->idx2);
-                u13 = Min(it->idx0, it->idx1, it->idx2);
+                i12 = Max(it->v1, it->v2, it->v3);
+                u13 = Min(it->v1, it->v2, it->v3);
                 i4 = 1;
             }
             else i4++;
@@ -882,7 +882,7 @@ void RndMesh::OnSync(int mask){
             float f68 = 0;
             std::vector<Face>::iterator faceIt = mFaces.begin();
             for(; faceIt != mFaces.end(); ++faceIt){
-                int uvar16 = !gPatchVerts.HasVert(faceIt->idx0) + !gPatchVerts.HasVert(faceIt->idx1) + !gPatchVerts.HasVert(faceIt->idx2);
+                int uvar16 = !gPatchVerts.HasVert(faceIt->v1) + !gPatchVerts.HasVert(faceIt->v2) + !gPatchVerts.HasVert(faceIt->v3);
                 if(uvar16 < u5){
                     Vector3 v4c;
                     FaceCenter(this, faceIt, v4c);
@@ -994,8 +994,8 @@ void RndMesh::UpdateApproxLighting(){
     if(sUpdateApproxLight && !TheRnd->UnkE4()){
         RndEnviron* curEnv = RndEnviron::sCurrent;
         if(curEnv){
-            unk9p2 = !unk9p2;
-            if(unk9p2){
+            mUseCachedBoxLightColors = !mUseCachedBoxLightColors;
+            if(mUseCachedBoxLightColors){
                 curEnv->ApplyApproxLighting(mBoxLightColorsCached);
             }
             else {
@@ -1125,9 +1125,9 @@ DataNode RndMesh::OnGetFace(const DataArray* da) {
     int index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mFaces.size(), 2513);
     f = &mFaces[index];
-    *da->Var(3) = f->idx0;
-    *da->Var(4) = f->idx1;
-    *da->Var(5) = f->idx2;
+    *da->Var(3) = f->v1;
+    *da->Var(4) = f->v2;
+    *da->Var(5) = f->v3;
     return 0;
 }
 
@@ -1136,7 +1136,7 @@ DataNode RndMesh::OnSetFace(const DataArray* da) {
     int index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mFaces.size(), 2524);
     f = &mFaces[index];
-    f->idx0 = da->Int(3); f->idx1 = da->Int(4); f->idx2 = da->Int(5);
+    f->v1 = da->Int(3); f->v2 = da->Int(4); f->v3 = da->Int(5);
     Sync(32);
     return 0;
 }

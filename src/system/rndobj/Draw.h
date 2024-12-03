@@ -17,7 +17,6 @@ enum HighlightStyle {
     kNumHighlightStyles
 };
 
-// "Base class for drawable objects. Draw objects either\n        render polys or determine rendering state."
 /**
  * @brief An object that is drawable.
  * Original _objects description:
@@ -131,7 +130,7 @@ public:
     bool mHasAOCalc : 1; // used in RndMesh
     /** "Whether or not to keep mesh vertices and faces.  Mutable meshes will always keep this data." */
     bool mKeepMeshData : 1; // used in RndMesh
-    bool unk9p2 : 1;
+    bool mUseCachedBoxLightColors : 1; // used in RndMesh
     bool mForceNoQuantize : 1; // used in RndMesh
     bool mModulateColor : 1; // used in RndMultiMesh
     bool mUseCurrentRect : 1; // used in RndScreenMask
