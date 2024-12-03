@@ -10,7 +10,9 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Env.h"
 #include "rndobj/MultiMesh.h"
+#include "rndobj/Rnd.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
 #include "utl/BufStream.h"
@@ -231,7 +233,6 @@ RndMesh::~RndMesh() {
     ClearCompressedVerts();
 }
 
-// https://decomp.me/scratch/gZ1eO
 void RndMesh::VertVector::resize(int n, bool b){
     unka = b;
     if(mCapacity){
@@ -886,6 +887,13 @@ void RndMesh::SetNumFaces(int num){
     Sync(0x3F);
 }
 
+void RndMesh::Mats(std::list<RndMat*>& mats, bool){
+    if(mMat){
+        mMat->SetShaderOpts(GetDefaultMatShaderOpts(this, mMat));
+        mats.push_back(mMat);
+    }
+}
+
 void RndMesh::SetKeepMeshData(bool keep){
     if(keep != mKeepMeshData){
         mKeepMeshData = keep;
@@ -893,6 +901,26 @@ void RndMesh::SetKeepMeshData(bool keep){
             mVerts.clear();
             ClearAndShrink(mFaces);
             ClearAndShrink(mPatches);
+        }
+    }
+}
+
+void RndMesh::UpdateApproxLighting(){
+    if(sUpdateApproxLight && !TheRnd->UnkE4()){
+        RndEnviron* curEnv = RndEnviron::sCurrent;
+        if(curEnv){
+            unk9p2 = !unk9p2;
+            if(unk9p2){
+                curEnv->ApplyApproxLighting(mBoxLightColorsCached);
+            }
+            else {
+                Vector3& v = WorldXfm().v;
+                Sphere s;
+                if(MakeWorldSphere(s, false) && s.GetRadius() > 0){
+                    v = s.center;
+                }
+                curEnv->UpdateApproxLighting(&v, mBoxLightColorsCached);
+            }
         }
     }
 }
@@ -930,14 +958,14 @@ DataNode RndMesh::OnPointCollide(const DataArray* da){
     BSPNode* tree = GetBSPTree();
     Vector3 v(da->Float(2), da->Float(3), da->Float(4));
     Multiply(WorldXfm(), v, v);
-    return DataNode(tree && Intersect(v, tree));
+    return tree && Intersect(v, tree);
 }
 
 DataNode RndMesh::OnAttachMesh(const DataArray* da) {
     RndMesh* m = da->Obj<RndMesh>(2);
     AttachMesh(this, m);
     delete m;
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
@@ -945,10 +973,10 @@ DataNode RndMesh::OnGetVertNorm(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2446);
     v = &mVerts[index];
-    *da->Var(3) = DataNode(v->norm.x);
-    *da->Var(4) = DataNode(v->norm.y);
-    *da->Var(5) = DataNode(v->norm.z);
-    return DataNode(0);
+    *da->Var(3) = v->norm.x;
+    *da->Var(4) = v->norm.y;
+    *da->Var(5) = v->norm.z;
+    return 0;
 }
 
 DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
@@ -960,7 +988,7 @@ DataNode RndMesh::OnSetVertNorm(const DataArray* da) {
     v->norm.y = da->Float(4);
     v->norm.z = da->Float(5);
     Sync(31);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
@@ -968,10 +996,10 @@ DataNode RndMesh::OnGetVertXYZ(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2469);
     v = &mVerts[index];
-    *da->Var(3) = DataNode(v->pos.x);
-    *da->Var(4) = DataNode(v->pos.y);
-    *da->Var(5) = DataNode(v->pos.z);
-    return DataNode(0);
+    *da->Var(3) = v->pos.x;
+    *da->Var(4) = v->pos.y;
+    *da->Var(5) = v->pos.z;
+    return 0;
 }
 
 DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
@@ -983,7 +1011,7 @@ DataNode RndMesh::OnSetVertXYZ(const DataArray* da) {
     v->pos.y = da->Float(4);
     v->pos.z = da->Float(5);
     Sync(31);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndMesh::OnGetVertUV(const DataArray* da) {
@@ -991,9 +1019,9 @@ DataNode RndMesh::OnGetVertUV(const DataArray* da) {
     s32 index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mVerts.size(), 2492);
     v = &mVerts[index];
-    *da->Var(3) = DataNode(v->uv.x);
-    *da->Var(4) = DataNode(v->uv.y);
-    return DataNode(0);
+    *da->Var(3) = v->uv.x;
+    *da->Var(4) = v->uv.y;
+    return 0;
 }
 
 DataNode RndMesh::OnSetVertUV(const DataArray* da) {
@@ -1004,7 +1032,7 @@ DataNode RndMesh::OnSetVertUV(const DataArray* da) {
     v->uv.x = da->Float(3);
     v->uv.y = da->Float(4);
     Sync(31);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndMesh::OnGetFace(const DataArray* da) {
@@ -1012,10 +1040,10 @@ DataNode RndMesh::OnGetFace(const DataArray* da) {
     int index = da->Int(2);
     MILO_ASSERT(index >= 0 && index < mFaces.size(), 2513);
     f = &mFaces[index];
-    *da->Var(3) = DataNode(f->idx0);
-    *da->Var(4) = DataNode(f->idx1);
-    *da->Var(5) = DataNode(f->idx2);
-    return DataNode(0);
+    *da->Var(3) = f->idx0;
+    *da->Var(4) = f->idx1;
+    *da->Var(5) = f->idx2;
+    return 0;
 }
 
 DataNode RndMesh::OnSetFace(const DataArray* da) {
@@ -1025,14 +1053,14 @@ DataNode RndMesh::OnSetFace(const DataArray* da) {
     f = &mFaces[index];
     f->idx0 = da->Int(3); f->idx1 = da->Int(4); f->idx2 = da->Int(5);
     Sync(32);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndMesh::OnUnitizeNormals(const DataArray* da){
     for(Vert* it = Verts().begin(); it != Verts().end(); ++it){
         Normalize(it->norm, it->norm);
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndMesh::OnConfigureMesh(const DataArray* da){
@@ -1051,7 +1079,26 @@ DataNode RndMesh::OnConfigureMesh(const DataArray* da){
         mVerts[3].pos = v78;
         Sync(0x3F);
     }
-    return DataNode(0);
+    return 0;
+}
+
+bool RndMesh::HasValidBones(unsigned int* ui) const {
+    int idx = 0;
+    for(ObjVector<RndBone>::const_iterator it = mBones.begin(); it != mBones.end(); ++it, ++idx){
+        if(!it->mBone){
+            if(ui) *ui = idx;
+            return false;
+        }
+    }
+    if(ui) *ui = mBones.size();
+    return true;
+}
+
+void RndMesh::RemoveInvalidBones(){
+    for(ObjVector<RndBone>::iterator it = mBones.begin(); it != mBones.end(); ){
+        if(it->mBone) ++it;
+        else it = mBones.erase(it);
+    }
 }
 
 BEGIN_CUSTOM_PROPSYNC(RndBone)

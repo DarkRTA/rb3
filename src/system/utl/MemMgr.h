@@ -8,6 +8,8 @@ class MemDoTempAllocations {
 public:
     MemDoTempAllocations(bool, bool);
     ~MemDoTempAllocations();
+
+    int mOld; // 0x0
 };
 
 class MemHandle {

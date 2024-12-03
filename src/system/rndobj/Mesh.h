@@ -123,7 +123,6 @@ public:
     virtual int CollidePlane(const Plane&);
     virtual void Highlight() { RndDrawable::Highlight(); }
     virtual ~RndMesh();
-
     virtual void Replace(Hmx::Object *, Hmx::Object *);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
@@ -162,6 +161,7 @@ public:
     void CopyGeometry(const RndMesh*, bool);
     int CollidePlane(const RndMesh::Face&, const Plane&);
     Vector3 SkinVertex(const RndMesh::Vert&, Vector3*);
+    void UpdateApproxLighting();
 
     RndMesh* GeometryOwner() const { return mGeomOwner; }
     bool KeepMeshData() const { return mKeepMeshData; }
@@ -206,6 +206,7 @@ public:
     static int MaxBones();
     static int sLastCollide;
     static bool sRawCollide;
+    static bool sUpdateApproxLight;
     static void SetRawCollide(bool b){ sRawCollide = b; }
 
     VertVector mVerts; // 0xB0
