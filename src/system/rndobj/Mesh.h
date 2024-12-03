@@ -179,6 +179,7 @@ public:
     void SetHasAOCalc(bool b){ mHasAOCalc = b; }
     void SetForceNoQuantize(bool b){ mForceNoQuantize = b; }
     RndTransformable* BoneTransAt(int idx){ return mBones[idx].mBone; }
+    Transform& BoneOffsetAt(int idx){ return mBones[idx].mOffset; }
     bool PatchOkay(int i, int j){
         return i * 4.31 + j * 0.25 < 329.0;
     }

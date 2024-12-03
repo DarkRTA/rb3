@@ -152,10 +152,10 @@ public:
         SetX(f0); SetY(f1); SetZ(f2); SetW(f3);
     }
     
-    float GetX() const { return x / 65535.0f;}
-    float GetY() const { return y / 65535.0f;}
-    float GetZ() const { return z / 65535.0f;}
-    float GetW() const { return w / 65535.0f;}
+    float GetX() const { return ScaleUShortToFloat01(x); }
+    float GetY() const { return ScaleUShortToFloat01(y); }
+    float GetZ() const { return ScaleUShortToFloat01(z); }
+    float GetW() const { return ScaleUShortToFloat01(w); }
 
     void SetX(float f){ x = ScaleFloat01ToUShort(f); }
     void SetY(float f){ y = ScaleFloat01ToUShort(f); }
@@ -175,6 +175,11 @@ public:
         SetZ(f2);
         SetW(f3);
     }
+
+    float FloatAt(int idx) const {
+        return ScaleUShortToFloat01(((u16*)&x)[idx]);
+    }
+    const u16 operator[](int i) const { return ((u16*)&x)[i]; }
 
     u16 x, y, z, w;
 };

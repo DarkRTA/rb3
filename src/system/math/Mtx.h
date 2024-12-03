@@ -300,6 +300,16 @@ void Multiply(const Plane&, const Transform&, Plane&);
 void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 void NormalizeTo(const Hmx::Quat&, Hmx::Quat&);
 bool operator<=(const Vector3&, const Plane&);
+Vector3 TransformNormal(const Vector3&, const Hmx::Matrix3&);
+inline void ScaleAddEq(Hmx::Matrix3& m1, const Hmx::Matrix3& m2, float f){
+    ScaleAddEq(m1.x, m2.x, f);
+    ScaleAddEq(m1.y, m2.y, f);
+    ScaleAddEq(m1.z, m2.z, f);
+}
+inline void ScaleAddEq(Transform& tf1, const Transform& tf2, float f){
+    ScaleAddEq(tf1.m, tf2.m, f);
+    ScaleAddEq(tf1.v, tf2.v, f);
+}
 
 inline float AngleBetween(const Hmx::Quat& q1, const Hmx::Quat& q2){
     Hmx::Quat q18;

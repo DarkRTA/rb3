@@ -1,10 +1,10 @@
-#ifndef MATH_BSP_H
-#define MATH_BSP_H
-
+#pragma once
+#include "math/Geo.h"
 #include "math/Mtx.h"
+#include "math/Vec.h"
 #include "utl/PoolAlloc.h"
 
-struct BSPNode {
+class BSPNode {
 public:
     BSPNode() : left(0), right(0) {}
     ~BSPNode() { delete left; delete right; }
@@ -17,15 +17,17 @@ public:
     DELETE_POOL_OVERLOAD(BSPNode)
 };
 
-/*
-class BSPNode {
-    // total size: 0x20
+class BSPFace {
 public:
-    class Plane plane; // offset 0x0, size 0x10
-    class BSPNode * front; // offset 0x10, size 0x4
-    class BSPNode * back; // offset 0x14, size 0x4
+    BSPFace(){}
+    ~BSPFace(){}
+    void Set(const Vector3&, const Vector3&, const Vector3&);
+
+    Hmx::Polygon p;
+    Transform t;
+    float area;
+    std::list<Plane> planes;
 };
-*/
 
 extern float gBSPPosTol;
 extern float gBSPDirTol;
@@ -35,5 +37,5 @@ extern float gBSPCheckScale;
 
 void NumNodes(const BSPNode*, int&, int&);
 BinStream& operator>>(BinStream&, BSPNode*&);
-
-#endif // MATH_BSP_H
+bool MakeBSPTree(BSPNode*&, std::list<BSPFace>&, int);
+bool CheckBSPTree(const BSPNode*, const Box&);

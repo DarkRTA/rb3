@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "decomp.h"
+#include "math/Bsp.h"
 #include "math/Geo.h"
 #include "math/Mtx.h"
 #include "math/Vec.h"
@@ -181,19 +182,63 @@ void RndMesh::SetVolume(RndMesh::Volume vol){
     else {
         mVolume = vol;
         RELEASE(mBSPTree);
-        if(!mVerts.empty() && !mFaces.empty()){
+        if(mVerts.empty() || mFaces.empty()) return;
+        else {
             if(mVolume == kVolumeBox){
                 Box box;
                 for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
-                    box.GrowToContain(it->pos, mVerts.begin()->pos == it->pos);
+                    box.GrowToContain(it->pos, &it->pos == &mVerts.begin()->pos);
                 }
                 mBSPTree = new BSPNode();
+                BSPNode* bspIt = mBSPTree;
                 for(int i = 0; i < 6; i++){
-
+                    Vector3 vb0;
+                    vb0.Zero();
+                    vb0[i % 3] = i > 2 ? -1.0f : 1.0f;
+                    bspIt->plane.Set(i > 2 ? box.mMin : box.mMax, vb0);
+                    bspIt->left = 0;
+                    if(i == 5){
+                        bspIt->right = 0;
+                    }
+                    else {
+                        bspIt->right = new BSPNode();
+                        bspIt = bspIt->right;
+                    }
                 }
             }
             else if(mVolume == kVolumeBSP){
-
+                std::list<BSPFace> faces;
+                for(int i = mFaces.size() - 1; i >= 0; i--){
+                    Face& curFace = mFaces[i];
+                    const Vector3& v1 = mVerts[curFace.idx0].pos;
+                    const Vector3& v2 = mVerts[curFace.idx1].pos;
+                    const Vector3& v3 = mVerts[curFace.idx2].pos;
+                    BSPFace bspFace;
+                    bspFace.Set(v1, v2, v3);
+                    faces.push_back(bspFace);
+                }
+                if(!MakeBSPTree(mBSPTree, faces, 0)){
+                    RELEASE(mBSPTree);
+                }
+                if(mBSPTree){
+                    Box boxa0;
+                    for(Vert* it = mVerts.begin(); it != mVerts.end(); ++it){
+                        boxa0.GrowToContain(it->pos, &it->pos == &mVerts.begin()->pos);
+                    }
+                    if(!CheckBSPTree(mBSPTree, boxa0)){
+                        MILO_WARN("BSP tree outside bounding box");
+                        RELEASE(mBSPTree);
+                    }
+                }
+                if(mBSPTree){
+                    int x = 0, y = 0;
+                    NumNodes(mBSPTree, x, y);
+                    MILO_LOG("Made BSP tree for \"%s\" (nodes:%d depth:%d)\n", Name(), x, y);
+                }
+                else {
+                    MILO_WARN("Couldn't make BSP tree for \"%s\"", Name());
+                    mVolume = kVolumeEmpty;
+                }
             }
         }
     }
@@ -868,8 +913,48 @@ void RndMesh::OnSync(int mask){
     }
 }
 
-Vector3 RndMesh::SkinVertex(const RndMesh::Vert&, Vector3*){
-    
+// matches in retail
+Vector3 RndMesh::SkinVertex(const RndMesh::Vert& vert, Vector3* vptr){
+    Vector3 ret(0,0,0);
+    if(NumBones() > 0){
+        const short* indices = vert.boneIndices;
+        Transform tf60;
+        tf60.Zero();
+        bool b1 = false;
+        for(int i = 0; i < 4; i++){
+            int boneIdx = indices[i];
+            if(boneIdx < NumBones()){
+                RndTransformable* curBoneTrans = BoneTransAt(boneIdx);
+                unsigned short vec16Idx = vert.boneWeights[i];
+                if(vec16Idx && curBoneTrans){
+                    Transform tf90;
+                    Multiply(BoneOffsetAt(boneIdx), curBoneTrans->WorldXfm(), tf90);
+                    ScaleAddEq(tf60, tf90, vert.boneWeights.FloatAt(i));
+                    b1 = true;
+                }
+            }
+        }
+        if(!b1){
+            MILO_WARN("This mesh (%s // %s) cannot be skinned properly because it has an invalid, unweighted transform",
+                ((Hmx::Object*)this)->Name(), ((Hmx::Object*)this)->Dir()->GetPathName());
+            *vptr = vert.norm;
+            ret = vert.pos;
+        }
+        else {
+            Multiply(vert.pos, tf60, ret);
+            if(vptr){
+                *vptr = TransformNormal(vert.norm, tf60.m);
+            }
+        }
+    }
+    else {
+        const Transform& worldXfm = WorldXfm();
+        Multiply(vert.pos, worldXfm, ret);
+        if(vptr){
+            *vptr = TransformNormal(vert.norm, worldXfm.m);
+        }
+    }
+    return ret;
 }
 
 void RndMesh::ClearCompressedVerts() {
