@@ -1,11 +1,15 @@
 #include "Mesh.h"
 #include "decomp.h"
+#include "math/Geo.h"
+#include "math/Mtx.h"
+#include "math/Vec.h"
 #include "math/strips/Striper.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "obj/DataUtl.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Draw.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
@@ -13,6 +17,7 @@
 #include "utl/ChunkStream.h"
 #include "utl/Loader.h"
 #include "utl/MemMgr.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 #include <vector>
 
@@ -73,6 +78,45 @@ RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
     return 0;
 }
 
+int RndMesh::CollidePlane(const RndMesh::Face& face, const Plane& plane){
+    bool first = VertAt(face.idx0).pos <= plane;
+    bool second = VertAt(face.idx1).pos <= plane;
+    bool third = VertAt(face.idx2).pos <= plane;
+    if(first == second && second == third){
+        int ret = -1;
+        if(first) ret = 1;
+        return ret;
+    }
+    else return 0;
+}
+
+int RndMesh::CollidePlane(const Plane& plane){
+    int super = RndDrawable::CollidePlane(plane);
+    if(super != 0) return super;
+    Transform tf48;
+    FastInvert(WorldXfm(), tf48);
+    Plane pl58;
+    Multiply(plane, tf48, pl58);
+    if(GetVolume() == kVolumeTriangles){
+        if(Faces().empty()) return -1;
+        else {
+            std::vector<Face>::iterator faceIt = Faces().begin();
+            int faceColl = CollidePlane(*faceIt, pl58);
+            if(faceColl == 0) return 0;
+            else {
+                ++faceIt;
+                for(; faceIt != Faces().end(); ++faceIt){
+                    if(faceColl != CollidePlane(*faceIt, pl58)){
+                        return 0;
+                    }
+                }
+                return faceColl;
+            }
+        }
+    }
+    else return 0;
+}
+
 void RndMesh::UpdateSphere(){
     Sphere s;
     if(mBones.empty()){
@@ -103,6 +147,31 @@ float RndMesh::GetDistanceToPlane(const Plane& p, Vector3& v){
         }
         return dot;
     }
+}
+
+bool RndMesh::MakeWorldSphere(Sphere& s, bool b){
+    if(b){
+        Box box;
+        CalcBox(this, box);
+        Vector3 v68;
+        CalcBoxCenter(v68, box);
+        s.Set(v68, 0);
+        const Transform& worldXfm = WorldXfm();
+        for(Vert* it = Verts().begin(); it != Verts().end(); ++it){
+            Vector3 v50;
+            Multiply(it->pos, worldXfm, v50);
+            Vector3 v5c;
+            Subtract(v50, s.center, v5c);
+            s.radius = Max(s.GetRadius(), Dot(v5c, v5c));
+        }
+        s.radius = sqrtf(s.GetRadius());
+        return true;
+    }
+    else if(mSphere.GetRadius()){
+        Multiply(mSphere, WorldXfm(), s);
+        return true;
+    }
+    else return false;
 }
 
 void RndMesh::SetVolume(RndMesh::Volume vol){
@@ -146,7 +215,7 @@ void RndMesh::SetBone(int i, RndTransformable* t, bool b){
     }
 }
 
-RndMesh::RndMesh() : mMat(this, NULL), mGeomOwner(this, this), mBones(this),
+RndMesh::RndMesh() : mMat(this), mGeomOwner(this, this), mBones(this),
     mMutable(0), mVolume(kVolumeTriangles), mBSPTree(0), mMultiMesh(0), mCompressedVerts(0),
     mNumCompressedVerts(0), mFileLoader(0) {
     mHasAOCalc = false;
@@ -331,8 +400,8 @@ BinStream& operator>>(BinStream& bs, STRIPERRESULT& sr) {
 
 bool RndMesh::CacheStrips(BinStream& bs) {
     bool ret = false;
-    if (bs.Cached() && bs.GetPlatform() == kPlatformWii && mGeomOwner.mPtr == this && mFaces.size() != 0
-        && mVerts.size() != 0 && !(mMutable & 0x20)) ret = true;
+    if (bs.Cached() && bs.GetPlatform() == kPlatformWii && mGeomOwner == this && !mFaces.empty()
+        && !mVerts.empty() && !(mMutable & 0x20)) ret = true;
     return ret;
 }
 
@@ -348,7 +417,7 @@ void RndMesh::CreateStrip(int i, int j, Striper& striper, STRIPERRESULT& sr, boo
     MILO_ASSERT(striper.Init(sc), 1115);
     MILO_ASSERT(striper.Compute(sr), 1116);
     for (int i = 1; i < sr.NbStrips; i++) {
-        sr.NbStrips += sr.StripLengths[i];
+        sr.StripLengths[i] += sr.StripLengths[i - 1];
     }
 }
 
@@ -634,12 +703,13 @@ void RndMesh::CopyGeometry(const RndMesh* mesh, bool b){
     mBones = mesh->mBones;
     // some operation on mStriperResults that sets every member to 0
     mStriperResults = std::vector<STRIPERRESULT>();
-
+    // ClearAndShrink(mStriperResults);
     if(mStriperResults.size() != 0){
         MemDoTempAllocations m(true, false);
         mStriperResults.resize(mStriperResults.size());
+        int i = 0;
         int stripersize = mStriperResults.size();
-        for(int i = 0; i < stripersize; i++){
+        for(; i < stripersize; i++){
             mStriperResults[i] = mesh->mStriperResults[i];
         }
     }
@@ -653,7 +723,7 @@ BinStream& operator>>(BinStream& bs, RndMesh::Vert& v) {
     if(RndMesh::gRev < MESH_REV_SEP_COLOR) bs >> v.color;
     else bs >> v.color;
     bs >> v.uv;
-    if(MESH_REV_SEP_COLOR <= RndMesh::gRev){
+    if(RndMesh::gRev >= MESH_REV_SEP_COLOR){
         Vector4 v4; bs >> v4;
         v.boneWeights.Set(v4.x, v4.y, v4.z, v4.w);
     }
@@ -724,6 +794,75 @@ void RndMesh::Sync(int i) {
     OnSync(mKeepMeshData ? i | 0x200 : i);
 }
 
+void RndMesh::OnSync(int mask){
+    if(mGeomOwner != this || (mask & 0x80U) || !(mask & 0x20U)) return;
+    mPatches.clear();
+    if(PatchOkay(mVerts.size(), mFaces.size())){
+        mPatches.push_back(mFaces.size());
+    }
+    else if(mask & 0x100U){
+        int u13 = 0xFFFF;
+        int i4 = 0;
+        int i12 = 0;
+        for(std::vector<Face>::iterator it = mFaces.begin(); it != mFaces.end(); ++it){
+            i12 = Max(Max<u16>(i12, it->idx0, it->idx1), it->idx2);
+            u13 = Min(Min<u16>(u13, it->idx0, it->idx1), it->idx2);
+            if(!PatchOkay((i12 - u13) + 1, i4 + 1)){
+                mPatches.push_back(i4);
+                i12 = Max(it->idx0, it->idx1, it->idx2);
+                u13 = Min(it->idx0, it->idx1, it->idx2);
+                i4 = 1;
+            }
+            else i4++;
+        }
+        mPatches.push_back(i4);
+    }
+    else {
+        gPatchVerts.Clear();
+        std::vector<Face> faces;
+        Vector3 v40(0,0,0);
+        int i4 = 0;
+        while(true){
+            if(mFaces.empty()) break;
+            int u5 = 4;
+            float f68 = 0;
+            std::vector<Face>::iterator faceIt = mFaces.begin();
+            for(; faceIt != mFaces.end(); ++faceIt){
+                int uvar16 = !gPatchVerts.HasVert(faceIt->idx0) + !gPatchVerts.HasVert(faceIt->idx1) + !gPatchVerts.HasVert(faceIt->idx2);
+                if(uvar16 < u5){
+                    Vector3 v4c;
+                    FaceCenter(this, faceIt, v4c);
+                    f68 = DistanceSquared(v4c, v40);
+                    u5 = uvar16;
+                }
+                else if(uvar16 == u5){
+                    Vector3 v58;
+                    FaceCenter(this, faceIt, v58);
+                    if(MinEq(f68, DistanceSquared(v58, v40))){
+                        u5 = uvar16;
+                    }
+                }
+            }
+            if(!PatchOkay(u5 + gPatchVerts.NumVerts(), i4 + 1)){
+                gPatchVerts.Clear();
+                mPatches.push_back(i4);
+                i4 = 0;
+            }
+            for(int i = 0; i < 3; i++){
+                if(!gPatchVerts.HasVert((*faceIt)[i])){
+                    gPatchVerts.Add((*faceIt)[i], mVerts, v40);
+                }
+            }
+            mPatches.push_back(i4);
+            mFaces = faces;
+        }
+    }
+}
+
+Vector3 RndMesh::SkinVertex(const RndMesh::Vert&, Vector3*){
+    
+}
+
 void RndMesh::ClearCompressedVerts() {
     RELEASE(mCompressedVerts);
     mNumCompressedVerts = 0;
@@ -744,8 +883,8 @@ void RndMesh::SetKeepMeshData(bool keep){
         mKeepMeshData = keep;
         if(!mKeepMeshData){
             mVerts.clear();
-            mFaces = std::vector<Face>();
-            mPatches = std::vector<unsigned char>();
+            ClearAndShrink(mFaces);
+            ClearAndShrink(mPatches);
         }
     }
 }

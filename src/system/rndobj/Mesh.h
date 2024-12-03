@@ -18,14 +18,6 @@
 
 class RndMultiMesh;
 
-class PatchVerts {
-public:
-    PatchVerts() : mCentroid(0,0,0) {}
-    ~PatchVerts(){}
-    Vector3 mCentroid; // 0x0
-    std::vector<int> mPatchVerts; // 0xc
-};
-
 class MotionBlurCache {
 public:
     MotionBlurCache(){
@@ -42,6 +34,7 @@ public:
     RndBone(Hmx::Object* o) : mBone(o, NULL) {}
     void Load(BinStream&);
 
+    /** "Trans of the bone" */
     ObjPtr<RndTransformable, ObjectDir> mBone; // 0x0
     Transform mOffset;
 };
@@ -51,6 +44,7 @@ inline BinStream& operator>>(BinStream& bs, RndBone& bone){
     return bs;
 }
 
+// "A Mesh object is composed of triangle faces."
 class RndMesh : public RndDrawable, public RndTransformable {
 public:
     class Vert {
@@ -135,7 +129,9 @@ public:
     virtual void PostLoad(BinStream&);
     virtual void DrawFaces() {}
 #ifdef MILO_DEBUG
+    /** "Number of faces in the mesh" */
     virtual int NumFaces() const;
+    /** "Number of verts in the mesh" */
     virtual int NumVerts() const;
 #endif
     virtual void Print();
@@ -164,6 +160,7 @@ public:
     void SetKeepMeshData(bool);
     void SetZeroWeightBones();
     void CopyGeometry(const RndMesh*, bool);
+    int CollidePlane(const RndMesh::Face&, const Plane&);
     Vector3 SkinVertex(const RndMesh::Vert&, Vector3*);
 
     RndMesh* GeometryOwner() const { return mGeomOwner; }
@@ -182,6 +179,9 @@ public:
     void SetHasAOCalc(bool b){ mHasAOCalc = b; }
     void SetForceNoQuantize(bool b){ mForceNoQuantize = b; }
     RndTransformable* BoneTransAt(int idx){ return mBones[idx].mBone; }
+    bool PatchOkay(int i, int j){
+        return i * 4.31 + j * 0.25 < 329.0;
+    }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
@@ -208,14 +208,16 @@ public:
     static bool sRawCollide;
     static void SetRawCollide(bool b){ sRawCollide = b; }
 
-    // TODO: figure out what RndMesh's members do
     VertVector mVerts; // 0xB0
     std::vector<Face> mFaces; // 0xBC
+    /** "Material used for rendering the Mesh" */
     ObjPtr<RndMat> mMat; // 0xC4
     std::vector<unsigned char> mPatches; // 0xd0
+    /** "Geometry owner for the mesh" */
     ObjOwnerPtr<RndMesh> mGeomOwner; // 0xD8
     ObjVector<RndBone> mBones; // 0xe4
     int mMutable; // 0xf0
+    /** "Volume of the Mesh" */
     Volume mVolume; // 0xf4
     BSPNode* mBSPTree; // 0xf8
     RndMultiMesh* mMultiMesh; // 0xfc
@@ -238,4 +240,54 @@ public:
     virtual void SyncMesh(RndMesh*, int) = 0;
     virtual bool HasMesh(RndMesh*) = 0;
     virtual const std::vector<RndMesh::Vert>& GetVerts(RndMesh*) const = 0; // fix return type
+};
+
+class PatchVerts {
+public:
+    PatchVerts() : mCentroid(0,0,0) {}
+    ~PatchVerts(){}
+
+    int NumVerts() const { return mPatchVerts.size(); }
+
+    void Add(int, RndMesh::VertVector&, Vector3&);
+
+    void Clear(){
+        mPatchVerts.clear();
+        mCentroid.Set(0, 0, 0);
+    }
+
+    bool HasVert(int vert) const {
+        int idx = GreaterEq(vert);
+        if(idx < mPatchVerts.size()){
+            return mPatchVerts[idx] == vert;
+        }
+        else return false;
+    }
+
+    int GreaterEq(int iii) const {
+        if(!mPatchVerts.empty() && mPatchVerts.front() < iii){
+            if(mPatchVerts.back() < iii){
+                return mPatchVerts.size();
+            }
+            else {
+                int u5 = 0;
+                int u2 = mPatchVerts.size() - 1;
+                if(u5 + 1 < u2){
+                    int u4 = (u5 + u2) >> 1;
+                    int curVert = mPatchVerts[u4];
+                    if(curVert < iii){
+                        u5 = u4;
+                    }
+                    if(iii <= curVert){
+                        u2 = u4;
+                    }
+                }
+                return u2;
+            }
+        }
+        else return 0;
+    }
+
+    Vector3 mCentroid; // 0x0
+    std::vector<int> mPatchVerts; // 0xc
 };

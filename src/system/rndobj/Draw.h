@@ -129,6 +129,7 @@ public:
     bool mLineUpdate : 1; // used in RndLine
 
     bool mHasAOCalc : 1; // used in RndMesh
+    /** "Whether or not to keep mesh vertices and faces.  Mutable meshes will always keep this data." */
     bool mKeepMeshData : 1; // used in RndMesh
     bool unk9p2 : 1;
     bool mForceNoQuantize : 1; // used in RndMesh
