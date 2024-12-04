@@ -40,6 +40,10 @@ void SetRndSplasherCallback(void (*)(void), void (*)(void), void (*)(void));
 void ConvertBonesToTranses(ObjectDir*, bool);
 int GenerationCount(RndTransformable*, RndTransformable*);
 void AddMotionSphere(RndTransformable* t, Sphere& s);
+void ScaleXfms(RndMultiMesh* mm, const Vector3& v);
+void SortXfms(RndMultiMesh*, const Vector3&);
+void RandomXfms(RndMultiMesh*);
+void ScrambleXfms(RndMultiMesh* mm);
 
 void RndUtlPreInit();
 void RndUtlInit();

@@ -3,6 +3,7 @@
 #include "char/CharDriver.h"
 #include "obj/Msg.h"
 #include "obj/Utl.h"
+#include "utl/Std.h"
 #include "world/EventAnim.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
@@ -469,9 +470,7 @@ DataNode BandCamShot::OnAllowableNextShots(const DataArray* da){
     static DataNode& milo_prop_path = DataVariable("milo_prop_path");
     if(milo_prop_path.Type() == kDataArray){
         if(milo_prop_path.Array()->Size() == 2){
-            ObjPtrList<BandCamShot, ObjectDir>::iterator it = mNextShots.begin();
-            it += milo_prop_path.Array()->Int(1);
-            ptr->Insert(ptr->Size(), DataNode(*it));
+            ptr->Insert(ptr->Size(), *NextItr(mNextShots.begin(), milo_prop_path.Array()->Int(1)));
         }
     }
     return DataNode(ptr);

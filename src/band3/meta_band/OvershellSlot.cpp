@@ -25,7 +25,6 @@
 #include "tour/TourCharLocal.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
-#include "utl/Symbols4.h"
 #include <cstddef>
 
 OvershellSlot::OvershellSlot(int i, OvershellPanel* panel, OvershellDir* dir, BandUserMgr* umgr, SessionMgr* smgr) : mStateMgr(new OvershellSlotStateMgr()), mState(0),
@@ -196,7 +195,7 @@ DataNode OvershellSlot::OnMsg(const LocalUserLeftMsg& msg){
 void OvershellSlot::ShowState(OvershellSlotStateID id){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x21B);
-    if(id == kState_CalibrationDenial){
+    if(id == kState_ReconnectController){
         UILabel* lbl = mOvershellDir->Find<UILabel>("reconnect_controller.lbl", false);
         if(lbl){
             static Symbol overshell_reconnect_controller("overshell_reconnect_controller");
@@ -248,7 +247,7 @@ void OvershellSlot::LeaveOptions(){
 void OvershellSlot::ShowProfiles(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x2A8);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x1F);
+    pUser->SetOvershellSlotState(kState_ChooseProfile);
     mOvershell->UpdateAll();
 }
 
@@ -256,21 +255,21 @@ void OvershellSlot::AttemptRegisterOnline(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x2B0);
     if(TheModifierMgr && TheModifierMgr->IsModifierActive(mod_auto_vocals)){
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x24);
+        pUser->SetOvershellSlotState(kState_RegisterOnlineDenial);
         mOvershell->UpdateAll();
     }
     else {
         if(mOvershell->mPanelOverrideFlow != 0){
             mOvershell->UpdateAll();
         }
-        else mOvershell->BeginOverrideFlow((OvershellOverrideFlow)2);
+        else mOvershell->BeginOverrideFlow(kOverrideFlow_RegisterOnline);
     }
 }
 
 void OvershellSlot::ShowOnlineOptions(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x2CA);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)8);
+    pUser->SetOvershellSlotState(kState_OnlineOptions);
     if(mSessionMgr->IsOnlineEnabled()) mOvershell->UpdateAll();
     else AttemptRegisterOnline();
 }
@@ -350,10 +349,10 @@ void OvershellSlot::SelectPartImpl(TrackType track, bool harmony, bool proDrums)
     MILO_ASSERT(pUser, 0x325);
     MILO_ASSERT(pUser->IsLocal(), 0x326);
     if(mSessionMgr->mCritUserListener->mCriticalUser == pUser && b3){
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x44);
+        pUser->SetOvershellSlotState(kState_ChoosePartDenial);
     }
     else if(b1){
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x44);
+        pUser->SetOvershellSlotState(kState_ChoosePartDenial);
     }
     else {
         pUser->SetTrackType(track);
@@ -370,10 +369,10 @@ void OvershellSlot::SelectPartImpl(TrackType track, bool harmony, bool proDrums)
             pUser->SetPreferredScoreType(kScoreDrum);
         }
         if(b2){
-            pUser->SetOvershellSlotState((OvershellSlotStateID)0x50);
+            pUser->SetOvershellSlotState(kState_NotBattlePartWarn);
         }
         else if(b3){
-            pUser->SetOvershellSlotState((OvershellSlotStateID)0x4e);
+            pUser->SetOvershellSlotState(kState_ChoosePartWarn);
         }
         else ShowChoosePartWait();
     }
@@ -388,10 +387,10 @@ void OvershellSlot::ShowChoosePartWait(){
     unsigned int cymbals = TheProfileMgr.GetCymbalConfiguration();
     if(b1 && cymbals == 0){
         mCymbalConfiguration = cymbals;
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x25);
+        pUser->SetOvershellSlotState(kState_OptionsDrumInSongSettings);
     }
     else {
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0xB);
+        pUser->SetOvershellSlotState(kState_ChoosePartWait);
     }
     mOvershell->UpdateAll();
 }
@@ -481,7 +480,7 @@ void OvershellSlot::ConfirmChooseDiff(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x3F8);
     pUser->SetDifficulty((Difficulty)mState->Property("difficulty", true)->Int());
-    EndOverrideFlow((OvershellOverrideFlow)1, true);
+    EndOverrideFlow(kOverrideFlow_SongSettings, true);
     mOvershell->UpdateAll();
 }
 
@@ -544,7 +543,7 @@ void OvershellSlot::LeaveReadyToPlay(){
         CancelSongSettings();
     }
     else {
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0xc);
+        pUser->SetOvershellSlotState(kState_ChooseDiff);
         mOvershell->UpdateAll();
     }
 }
@@ -552,7 +551,7 @@ void OvershellSlot::LeaveReadyToPlay(){
 void OvershellSlot::LeaveSignInWait(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x45E);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x46); // missing enum whoa
+    pUser->SetOvershellSlotState(kState_SignInToRegisterNoResolve);
     mOvershell->UpdateAll();
 }
 
@@ -569,7 +568,7 @@ void OvershellSlot::ShowEnterWiiProfile(){
     if(mSessionMgr->IsLocal()){
         pUser->SetOvershellSlotState(kState_EnterWiiProfile);
     }
-    else pUser->SetOvershellSlotState((OvershellSlotStateID)0xCD); // missing enum whoa
+    else pUser->SetOvershellSlotState(kState_WiiProfileDenial);
     mOvershell->UpdateAll();
 }
 
@@ -697,14 +696,14 @@ void OvershellSlot::ShowWiiProfileConfirm(){
 void OvershellSlot::ShowWiiProfilePreconfirm(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x5B5);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x8F);
+    pUser->SetOvershellSlotState(kState_WiiProfilePreconfirm);
     mOvershell->UpdateAll();
 }
 
 void OvershellSlot::ShowWiiProfileSwitchConfirm(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x5BD);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x90);
+    pUser->SetOvershellSlotState(kState_WiiProfileSwitchConfirm);
     mOvershell->UpdateAll();
 }
 
@@ -718,28 +717,28 @@ void OvershellSlot::ShowWiiProfileFail(){
 void OvershellSlot::ShowWiiProfileFailBusy(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x5CD);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x88);
+    pUser->SetOvershellSlotState(kState_WiiProfileFailBusy);
     mOvershell->UpdateAll();
 }
 
 void OvershellSlot::ShowWiiProfileFailCreate(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x5D5);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x89);
+    pUser->SetOvershellSlotState(kState_WiiProfileFailCreate);
     mOvershell->UpdateAll();
 }
 
 void OvershellSlot::ShowWiiProfileSwapFail(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x5DD);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x8A);
+    pUser->SetOvershellSlotState(kState_WiiProfileSwapFail);
     mOvershell->UpdateAll();
 }
 
 void OvershellSlot::ShowWiiProfilePostAction(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x5E5);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x91);
+    pUser->SetOvershellSlotState(kState_WiiProfilePostAction);
     mOvershell->UpdateAll();
 }
 
@@ -760,13 +759,13 @@ void OvershellSlot::ShowWiiProfileList(int i){
     MILO_ASSERT(pUser->IsLocal(), 0x60E);
     SetWiiProfileListMode(i, false);
     if(i == 0 || i == 2){
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0xC9);
+        pUser->SetOvershellSlotState(kState_EnterWiiProfile);
     }
     else {
         if(mSwappableProfilesProvider->GetWiiProfileCount(pUser->GetLocalBandUser()) <= 0){
-            pUser->SetOvershellSlotState((OvershellSlotStateID)0x86);
+            pUser->SetOvershellSlotState(kState_WiiProfileListEmpty);
         }
-        else pUser->SetOvershellSlotState((OvershellSlotStateID)0x83);
+        else pUser->SetOvershellSlotState(kState_WiiProfileList);
     }
     mOvershell->UpdateAll();
 }
@@ -777,21 +776,21 @@ void OvershellSlot::ShowWiiProfileOptions(){
     LocalBandUser* pLocalUser = pUser->GetLocalBandUser();
     MILO_ASSERT(pLocalUser, 0x62D);
     unk28 = 0x82;
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x82);
+    pUser->SetOvershellSlotState(kState_WiiProfileOptions);
     mOvershell->UpdateAll();
 }
 
 void OvershellSlot::ShowWaitWii(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x638);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x81);
+    pUser->SetOvershellSlotState(kState_WaitWii);
     mOvershell->UpdateAll();
 }
 
 void OvershellSlot::LeaveWaitWii(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x640);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x5);
+    pUser->SetOvershellSlotState(kState_JoinedDefault);
     mOvershell->UpdateAll();
 }
 
@@ -804,14 +803,14 @@ void OvershellSlot::ShowWiiProfileSelector(bool b){
     unk28 = oid;
     SetWiiProfileListMode(1, b);
     if(mSwappableProfilesProvider->GetWiiProfileCount(pUser->GetLocalBandUser()) <= 0){
-        ShowState((OvershellSlotStateID)0x86);
+        ShowState(kState_WiiProfileListEmpty);
     }
-    else ShowState((OvershellSlotStateID)0x83);
+    else ShowState(kState_WiiProfileList);
 }
 
 void OvershellSlot::CancelWiiProfileSelector(){
     ShowState((OvershellSlotStateID)unk28);
-    unk28 = 0x82;
+    unk28 = kState_WiiProfileOptions;
 }
 
 void OvershellSlot::AttemptSwapUserProfile(int i){
@@ -820,12 +819,12 @@ void OvershellSlot::AttemptSwapUserProfile(int i){
         LocalBandUser* user = mBandUserMgr->GetUserFromPad(pad);
         OvershellSlotState* state = mStateMgr->GetSlotState(kState_ChooseProfileConfirm);
         state->SetProperty("swap_user", user);
-        ShowState((OvershellSlotStateID)0x20);
+        ShowState(kState_ChooseProfileConfirm);
     }
 }
 
 bool OvershellSlot::ConfirmSwapUserProfile(){
-    OvershellSlotState* state = mStateMgr->GetSlotState((OvershellSlotStateID)0x20);
+    OvershellSlotState* state = mStateMgr->GetSlotState(kState_ChooseProfileConfirm);
     return SwapUserProfile(state->Property("swap_user", true)->Obj<LocalBandUser>());
 }
 
@@ -838,7 +837,7 @@ void OvershellSlot::ShowOptionsDrum(){
     BandUser* pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x70A);
     mCymbalConfiguration = TheProfileMgr.GetCymbalConfiguration();
-    pUser->SetOvershellSlotState((OvershellSlotStateID)0x27);
+    pUser->SetOvershellSlotState(kState_OptionsDrum);
     mOvershell->UpdateAll();
 }
 
@@ -999,11 +998,11 @@ DataNode OvershellSlot::OnMsg(const AddLocalUserResultMsg& msg){
                 pUser->SetTrackType(kTrackPending);
             }
             mSongOptionsRequired = true;
-            BeginOverrideFlow((OvershellOverrideFlow)1, true);
+            BeginOverrideFlow(kOverrideFlow_SongSettings, true);
         }
         else {
             MILO_ASSERT(!InGame(), 0xAF4);
-            pUser->SetOvershellSlotState((OvershellSlotStateID)0x1F);
+            pUser->SetOvershellSlotState(kState_ChooseProfile);
         }
         mOvershell->UpdateAll();
         // some more
@@ -1017,12 +1016,12 @@ DataNode OvershellSlot::OnMsg(const VirtualKeyboardResultMsg& msg){
 
 void OvershellSlot::ShowCharEdit(int i){
     if(TheNetSync->GetUIState() == 0xF){
-        ShowState((OvershellSlotStateID)0x49);
+        ShowState(kState_ChooseCharDenial);
     }
     else {
         mCharForEdit = dynamic_cast<TourCharLocal*>(mCharProvider->GetCharData(i));
         MILO_ASSERT(mCharForEdit != NULL, 0xB23);
-        ShowState((OvershellSlotStateID)0x35);
+        ShowState(kState_ChooseCharEdit);
     }
 }
 
@@ -1043,7 +1042,7 @@ void OvershellSlot::DeleteCharacter(){
     LocalBandUser* localUser = pUser->GetLocalBandUser();
     BandProfile* pProfile = TheProfileMgr.GetProfileForUser(localUser);
     if(TheNetSync->GetUIState() == 0xF){
-        ShowState((OvershellSlotStateID)0x42);
+        ShowState(kState_ChooseCharDeleteDenial);
     }
     else if(!pProfile){
         MILO_WARN("illegal attempt made to delete guest character\n");
@@ -1116,15 +1115,15 @@ BEGIN_HANDLERS(OvershellSlot)
     HANDLE_ACTION(show_options_av_settings, ShowState(kState_OptionsAVSettings))
     HANDLE_ACTION(show_options_audio, ShowState(kState_OptionsAudio))
     HANDLE_ACTION(show_options_vocal, ShowState(kState_OptionsVocal))
-    HANDLE_ACTION(show_options_wiispeak, ShowState((OvershellSlotStateID)0x92))
+    HANDLE_ACTION(show_options_wiispeak, ShowState(kState_OptionsWiiSpeak))
     HANDLE_ACTION(show_options_extras, ShowState(kState_OptionsExtras))
     HANDLE_ACTION(show_options_drum, ShowOptionsDrum())
-    HANDLE_ACTION(show_saveloadmgr_not_idle, ShowState((OvershellSlotStateID)0x3E))
-    HANDLE_ACTION(show_saveloadmgr_not_meta, ShowState((OvershellSlotStateID)0x45))
-    HANDLE_ACTION(show_saveloadmgr_autosave_confirm, ShowState((OvershellSlotStateID)0x47))
+    HANDLE_ACTION(show_saveloadmgr_not_idle, ShowState(kState_SaveloadManagerNotIdle))
+    HANDLE_ACTION(show_saveloadmgr_not_meta, ShowState(kState_SaveloadManagerNotMeta))
+    HANDLE_ACTION(show_saveloadmgr_autosave_confirm, ShowState(kState_SaveloadManagerAutosaveConfirm))
     HANDLE_ACTION(show_options_end_game, ShowState(kState_OptionsEndGame))
     HANDLE_ACTION(show_linking_code, ShowState(kState_LinkingCode))
-    HANDLE_ACTION(show_linking_code_error, ShowState((OvershellSlotStateID)0x3a))
+    HANDLE_ACTION(show_linking_code_error, ShowState(kState_LinkingCodeError))
     HANDLE_ACTION(fetch_linking_code, FetchLinkingCode())
     HANDLE_ACTION(cancel_linking_code, CancelLinkingCode())
     HANDLE_ACTION(show_char_edit, ShowCharEdit(_msg->Int(2)))
@@ -1144,8 +1143,8 @@ BEGIN_HANDLERS(OvershellSlot)
     HANDLE_ACTION(leave_choose_part_wait, LeaveChoosePartWait())
     HANDLE_ACTION(leave_choose_difficulty, LeaveChooseDifficulty())
     HANDLE_ACTION(leave_ready_to_play, LeaveReadyToPlay())
-    HANDLE_ACTION(leave_char_delete, ShowState((OvershellSlotStateID)0x35))
-    HANDLE_ACTION(show_sign_in_wait, ShowState((OvershellSlotStateID)0x14))
+    HANDLE_ACTION(leave_char_delete, ShowState(kState_ChooseCharEdit))
+    HANDLE_ACTION(show_sign_in_wait, ShowState(kState_SignInWait))
     HANDLE_ACTION(leave_sign_in_wait, LeaveSignInWait())
     HANDLE_ACTION(refresh_highlighted_char, RefreshHighlightedChar(_msg->Int(2)))
     HANDLE_ACTION(update_character_list, UpdateCharacterList())
@@ -1153,28 +1152,28 @@ BEGIN_HANDLERS(OvershellSlot)
     HANDLE_ACTION(select_char, SelectChar(_msg->Int(2)))
     HANDLE_ACTION(begin_override_flow, BeginOverrideFlow((OvershellOverrideFlow)_msg->Int(2), true))
     HANDLE_ACTION(end_override_flow, EndOverrideFlow((OvershellOverrideFlow)_msg->Int(2), true))
-    HANDLE_ACTION(show_enter_calibration, ShowEnterFlowPrompt((OvershellSlotStateID)0x17))
-    HANDLE_ACTION(show_enter_credits, ShowEnterFlowPrompt((OvershellSlotStateID)0x3B))
+    HANDLE_ACTION(show_enter_calibration, ShowEnterFlowPrompt(kState_EnterCalibration))
+    HANDLE_ACTION(show_enter_credits, ShowEnterFlowPrompt(kState_EnterCredits))
     HANDLE_ACTION(show_enter_wiispeak_options, ShowEnterWiiSpeakOptions())
     HANDLE_ACTION(attempt_disconnect, AttemptDisconnect())
     HANDLE_ACTION(attempt_remove_user, AttemptRemoveUser())
-    HANDLE_ACTION(show_kick_users, ShowState((OvershellSlotStateID)0x1B))
+    HANDLE_ACTION(show_kick_users, ShowState(kState_KickUsers))
     HANDLE_ACTION(kick_user, KickUser(_msg->Int(2)))
-    HANDLE_ACTION(show_mute_users, ShowState((OvershellSlotStateID)0x1C))
+    HANDLE_ACTION(show_mute_users, ShowState(kState_MuteUsers))
     HANDLE_ACTION(toggle_mute_user, ToggleMuteUser(_msg->Int(2)))
-    HANDLE_ACTION(show_gamercard_users, ShowState((OvershellSlotStateID)0x1D))
+    HANDLE_ACTION(show_gamercard_users, ShowState(kState_GamercardUsers))
     HANDLE_ACTION(toggle_vocal_style, ToggleVocalStyle())
     HANDLE_ACTION(toggle_lefty_flip, ToggleLeftyFlip())
     HANDLE_EXPR(get_char_provider, mCharProvider)
     HANDLE_EXPR(get_profiles_provider, mSwappableProfilesProvider)
     HANDLE_EXPR(confirm_swap_user_profile, ConfirmSwapUserProfile())
     HANDLE_ACTION(select_guest_profile, SelectGuestProfile())
-    HANDLE_ACTION(show_modifiers, ShowState((OvershellSlotStateID)0x22))
-    HANDLE_ACTION(show_modifiers_drum_warning, ShowState((OvershellSlotStateID)0x3F))
-    HANDLE_ACTION(show_modifier_unlock, ShowState((OvershellSlotStateID)0x2e))
-    HANDLE_ACTION(show_modifier_delayed_effect, ShowState((OvershellSlotStateID)0x4a))
-    HANDLE_ACTION(show_toggle_no_fail_denial, ShowState((OvershellSlotStateID)0x43))
-    HANDLE_EXPR(is_unlocking_modifiers, GetState()->GetStateID() == 0x2e)
+    HANDLE_ACTION(show_modifiers, ShowState(kState_Modifiers))
+    HANDLE_ACTION(show_modifiers_drum_warning, ShowState(kState_ModifiersDrumWarning))
+    HANDLE_ACTION(show_modifier_unlock, ShowState(kState_ModifierUnlock))
+    HANDLE_ACTION(show_modifier_delayed_effect, ShowState(kState_ModifierDelayedEffect))
+    HANDLE_ACTION(show_toggle_no_fail_denial, ShowState(kState_ToggleNoFailDenial))
+    HANDLE_EXPR(is_unlocking_modifiers, GetState()->GetStateID() == kState_ModifierUnlock)
     HANDLE_ACTION(attempt_toggle_auto_vocals, AttemptToggleAutoVocals())
     HANDLE_ACTION(update_part_select_list, UpdatePartSelectList())
     HANDLE_EXPR(is_cymbal_selected, IsCymbalSelected(_msg->Sym(2)))
@@ -1218,9 +1217,9 @@ BEGIN_HANDLERS(OvershellSlot)
     HANDLE_ACTION(show_wiiprofile_swap_fail, ShowWiiProfileSwapFail())
     HANDLE_ACTION(show_wait_wii, ShowWaitWii())
     HANDLE_ACTION(leave_wait_wii, LeaveWaitWii())
-    HANDLE_ACTION(show_choose_invitation, ShowState((OvershellSlotStateID)0x8C))
-    HANDLE_ACTION(show_accept_invitation, ShowState((OvershellSlotStateID)0x8D))
-    HANDLE_ACTION(show_no_invitations, ShowState((OvershellSlotStateID)0x8E))
+    HANDLE_ACTION(show_choose_invitation, ShowState(kState_ChooseInvitation))
+    HANDLE_ACTION(show_accept_invitation, ShowState(kState_AcceptInvitation))
+    HANDLE_ACTION(show_no_invitations, ShowState(kState_NoInvitations))
     HANDLE_ACTION(show_wii_profile_selector, ShowWiiProfileSelector(false))
     HANDLE_ACTION(cancel_wii_profile_selector, CancelWiiProfileSelector())
     HANDLE_MESSAGE(RockCentralOpCompleteMsg)

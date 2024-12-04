@@ -38,6 +38,7 @@ public:
     bool FogEnable() const;
     bool IsLightInList(const RndLight*, const ObjPtrList<RndLight, class ObjectDir>&) const;
     bool IsValidRealLight(const RndLight*) const;
+    void UpdateApproxLighting(const Vector3*, _GXColor*);
     bool GetAnimateFromPreset() const { return mAnimateFromPreset; }
 
     const Hmx::Color& AmbientColor() const { return mAmbientFogOwner->mAmbientColor; }

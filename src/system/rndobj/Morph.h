@@ -25,7 +25,7 @@ public:
         Pose(Hmx::Object* owner_morph) : mesh(owner_morph) {}
 
         ObjPtr<RndMesh> mesh; // 0x0
-        Keys<float, float> weights; // 0x4
+        Keys<float, float> weights; // 0xc
     };
 
     RndMorph();
@@ -44,6 +44,8 @@ public:
     void SetNumPoses(int num){ mPoses.resize(num); }
     int NumPoses() const { return mPoses.size(); }
     Pose& PoseAt(int idx){ return mPoses[idx]; }
+    void SetIntensity(float intensity){ mIntensity = intensity; }
+    void SetTarget(RndMesh* target){ mTarget = target; }
 
     DataNode OnSetIntensity(const DataArray*);
     DataNode OnSetTarget(const DataArray*);

@@ -1,4 +1,5 @@
 #include "char/CharCuff.h"
+#include "math/Vec.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharCuff)
@@ -46,6 +47,11 @@ void AddBoneChildren(std::list<RndTransformable*>& tlist, RndTransformable* tran
             }
         }
     }
+}
+
+void CharCuff::DeformMesh(RndMesh*, int, SyncMeshCB*){
+    Vector4_16_01 v;
+    v.GetW(); v.GetX(); v.GetY(); v.GetZ();
 }
 
 SAVE_OBJ(CharCuff, 0x1A2)

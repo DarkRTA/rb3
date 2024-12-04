@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_MULTIMESHPROXY_H
-#define RNDOBJ_MULTIMESHPROXY_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
@@ -33,5 +32,3 @@ public:
     ObjPtr<RndMultiMesh, ObjectDir> mMultiMesh; // 0xb0
     std::list<RndMultiMesh::Instance>::iterator mIndex; // 0xbc
 };
-
-#endif

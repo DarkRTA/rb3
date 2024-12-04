@@ -236,7 +236,7 @@ void AttachMesh(RndMesh* main, RndMesh* attach){
     for(int i = 0; i < numattachfaces; i++){
         RndMesh::Face& curattachface = attach->FaceAt(i);
         RndMesh::Face& mainface = main->FaceAt(i + nummainfaces);
-        mainface.Set(curattachface.idx0 + numverts, curattachface.idx1 + numverts, curattachface.idx2 + numverts);
+        mainface.Set(curattachface.v1 + numverts, curattachface.v2 + numverts, curattachface.v3 + numverts);
     }
     Transform tf50;
     FastInvert(main->WorldXfm(), tf50);
@@ -258,7 +258,7 @@ void AttachMesh(RndMesh* main, RndMesh* attach){
 void RandomPointOnMesh(RndMesh* m, Vector3& v1, Vector3& v2){
     RndMesh::Face& face = m->Faces()[RandomInt(0, m->Faces().size())];
     int numverts = m->Verts().size();
-    if(face.idx0 >= numverts || face.idx1 >= numverts || face.idx2 >= numverts){
+    if(face.v1 >= numverts || face.v2 >= numverts || face.v3 >= numverts){
         MILO_NOTIFY_ONCE("%s: %s random face contains unknown vert indices!", PathName(m), m->Name());
         v1.Zero();
         v2.Zero();
@@ -267,17 +267,17 @@ void RandomPointOnMesh(RndMesh* m, Vector3& v1, Vector3& v2){
         Vector3 v58, v64, v70;
         Vector3 v7c, v88, v94;
         if(m->NumBones() > 0){
-            v58 = m->SkinVertex(m->Verts()[face.idx0], &v7c);
-            v64 = m->SkinVertex(m->Verts()[face.idx1], &v88);
-            v70 = m->SkinVertex(m->Verts()[face.idx2], &v94);
+            v58 = m->SkinVertex(m->Verts()[face.v1], &v7c);
+            v64 = m->SkinVertex(m->Verts()[face.v2], &v88);
+            v70 = m->SkinVertex(m->Verts()[face.v3], &v94);
         }
         else {
-            v58 = m->Verts()[face.idx0].pos;
-            v64 = m->Verts()[face.idx1].pos;
-            v70 = m->Verts()[face.idx2].pos;
-            v7c = m->Verts()[face.idx0].norm;
-            v88 = m->Verts()[face.idx1].norm;
-            v94 = m->Verts()[face.idx2].norm;
+            v58 = m->Verts()[face.v1].pos;
+            v64 = m->Verts()[face.v2].pos;
+            v70 = m->Verts()[face.v3].pos;
+            v7c = m->Verts()[face.v1].norm;
+            v88 = m->Verts()[face.v2].norm;
+            v94 = m->Verts()[face.v3].norm;
         }
         float f8 = RandomFloat();
         float f9 = RandomFloat();

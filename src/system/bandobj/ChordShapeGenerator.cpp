@@ -162,9 +162,9 @@ RndMesh* ChordShapeGenerator::MakeInvertedMesh(const RndMesh* mesh){
     }
     for(int i = 0; i < ret->Faces().size(); i++){
         RndMesh::Face& curface = ret->Faces()[i];
-        int temp = curface.idx1;
-        curface.idx1 = curface.idx2;
-        curface.idx2 = temp;
+        int temp = curface.v2;
+        curface.v2 = curface.v3;
+        curface.v3 = temp;
     }
     if(LOADMGR_EDITMODE){
         ret->Sync(0x3F);

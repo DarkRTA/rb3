@@ -3,15 +3,27 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Anim.h"
+#include "rndobj/Mesh.h"
 #include "utl/BinStream.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
+#include "utl/Symbols3.h"
 #include "utl/TextStream.h"
 
 INIT_REVS(RndMorph)
 
 RndMorph::RndMorph() : mPoses(this), mTarget(this, 0), mNormals(0), mSpline(0), mIntensity(1.0f) {
 
+}
+
+float RndMorph::EndFrame(){
+    float end = 0;
+    for(int i = 0; i < mPoses.size(); i++){
+        float curLast = mPoses[i].weights.LastFrame();
+        if(curLast > end){
+            end = curLast;
+        }
+    }
+    return end;
 }
 
 BEGIN_COPYS(RndMorph)
@@ -45,7 +57,17 @@ SAVE_OBJ(RndMorph, 0xCB);
 BinStream& operator>>(BinStream& bs, RndMorph::Pose& pose){
     bs >> pose.mesh;
     if(RndMorph::gRev < 2){
-        // stuff
+        Keys<Weight, Weight> weightKeys;
+        bs >> weightKeys;
+        pose.weights.resize(weightKeys.size());
+        Keys<Weight, Weight>::iterator it = weightKeys.begin();
+        Keys<float, float>::iterator poseIt = pose.weights.begin();
+        for(; it != weightKeys.end(); ++it, ++poseIt){
+            Key<Weight>& curWeight = *it;
+            Key<float>& curKey = *poseIt;
+            curKey.frame = curWeight.frame;
+            curKey.value = curWeight.value.weight;
+        }
     }
     else bs >> pose.weights;
     return bs;
@@ -75,3 +97,48 @@ BEGIN_HANDLERS(RndMorph)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x12C)
 END_HANDLERS
+
+DataNode RndMorph::OnSetIntensity(const DataArray* arr){
+    SetIntensity(arr->Float(2));
+    return 0;
+}
+
+DataNode RndMorph::OnSetTarget(const DataArray* arr){
+    SetTarget(arr->Obj<RndMesh>(2));
+    return 0;
+}
+
+DataNode RndMorph::OnSetPoseWeight(const DataArray* arr){
+    Keys<float, float>& curWeights = PoseAt(arr->Int(2)).weights;
+    float frame = arr->Float(3);
+    float weightVal = arr->Float(4);
+    Keys<float, float>::iterator it = curWeights.begin();
+    for(; it != curWeights.end(); ++it){
+        if(it->frame == frame){
+            it->value = weightVal;
+            break;
+        }
+    }
+    if(it == curWeights.end()){
+        curWeights.Add(weightVal, frame, false);
+    }
+    return 0;
+}
+
+DataNode RndMorph::OnPoseMesh(const DataArray* arr){
+    return PoseAt(arr->Int(2)).mesh.Ptr();
+}
+
+DataNode RndMorph::OnSetPoseMesh(const DataArray* arr){
+    PoseAt(arr->Int(2)).mesh = arr->Obj<RndMesh>(3);
+    return 0;
+}
+
+BEGIN_PROPSYNCS(RndMorph)
+    SYNC_PROP(target, mTarget)
+    SYNC_PROP_SET(num_poses, NumPoses(), SetNumPoses(_val.Int()))
+    SYNC_PROP(intensity, mIntensity)
+    SYNC_PROP(normals, mNormals)
+    SYNC_PROP(spline, mSpline)
+    SYNC_SUPERCLASS(RndAnimatable)
+END_PROPSYNCS

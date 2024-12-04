@@ -8,6 +8,8 @@ class MemDoTempAllocations {
 public:
     MemDoTempAllocations(bool, bool);
     ~MemDoTempAllocations();
+
+    int mOld; // 0x0
 };
 
 class MemHandle {
@@ -49,7 +51,13 @@ void MemFreeBlockStats(int, int&, int&, int&, int&);
 #define NEW_OVERLOAD \
     void* operator new(size_t t) {return _MemAlloc(t, 0);}
 
+#define NEW_ARRAY_OVERLOAD \
+    void* operator new[](size_t t) {return _MemAlloc(t, 0);}
+
 #define DELETE_OVERLOAD \
     void operator delete(void* v){ _MemFree(v); }
+    
+#define DELETE_ARRAY_OVERLOAD \
+    void operator delete[](void* v){ _MemFree(v); }
 
 #endif

@@ -1,7 +1,19 @@
 #pragma once
+#include "utl/BinStream.h"
 #include <vector>
 #include "math/Utl.h"
 #include "math/Rot.h" // so that Vector2 is textstream-able
+
+struct Weight {
+    float weight;
+    float derivIn;
+    float derivOut;
+};
+
+inline BinStream& operator>>(BinStream& bs, Weight& w){
+    bs >> w.weight >> w.derivIn >> w.derivOut;
+    return bs;
+}
 
 // thank god for the RB2 dump
 /**

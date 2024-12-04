@@ -25,6 +25,7 @@ public:
 
     void Deform(SyncMeshCB*, FileMerger*);
     float Eccentricity(const Vector2&) const;
+    void DeformMesh(RndMesh*, int, SyncMeshCB*);
 
     DECLARE_REVS;
 
