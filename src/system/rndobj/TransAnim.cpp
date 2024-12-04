@@ -159,10 +159,10 @@ float RndTransAnim::StartFrame() {
 }
 
 // matches in retail with the right inline settings: https://decomp.me/scratch/vtXKh
-void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
-    float f5 = f1;
+void RndTransAnim::MakeTransform(float frame, Transform& tf, bool whole, float blend) {
+    float f5 = frame;
     if(mKeysOwner != this){
-        mKeysOwner->MakeTransform(f1, tf, b3, f2);
+        mKeysOwner->MakeTransform(frame, tf, whole, blend);
     }
     else {
         Vector3 v4c;
@@ -172,19 +172,19 @@ void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
                 int iac;
                 float& backFrame = mTransKeys.back().frame;
                 float& frontFrame = mTransKeys.front().frame;
-                f5 = Limit(frontFrame, backFrame, f1, iac);
+                f5 = Limit(frontFrame, backFrame, frame, iac);
                 Vector3& frontVec = mTransKeys.front().value;
                 Vector3& backVec = mTransKeys.back().value;
                 Subtract(backVec, frontVec, v58);
                 v58 *= iac;
             }
-            if(f2 != 1.0f){
+            if(blend != 1.0f){
                 Vector3 v64;
                 InterpVector(mTransKeys, mTransSpline, f5, v64, mFollowPath ? &v4c : nullptr);
                 if(mRepeatTrans){
                     ::Add(v64, v58, v64);
                 }
-                Interp(tf.v, v64, f2, tf.v);
+                Interp(tf.v, v64, blend, tf.v);
             }
             else {
                 InterpVector(mTransKeys, mTransSpline, f5, tf.v, mFollowPath ? &v4c : nullptr);
@@ -193,7 +193,7 @@ void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
                 }
             }
         }
-        else if(b3){
+        else if(whole){
             tf.v.Zero();
         }
         Vector3 v70;
@@ -209,7 +209,7 @@ void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
                 if(mRotSlerp) Interp(prev->value, next->value, ref, q80);
                 else FastInterp(prev->value, next->value, ref, q80);
             }
-            if(f2 != 1.0f){
+            if(blend != 1.0f){
                 if(!mScaleKeys.empty()){
                     MakeScale(tf.m, v70);
                     tf.m.x *= 1.0f / v70.x;
@@ -218,15 +218,15 @@ void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
                 }
                 Hmx::Quat q90(tf.m);
                 if(mRotSlerp || mRotSpline){
-                    Interp(q90, q80, f2, q80);
+                    Interp(q90, q80, blend, q80);
                 }
                 else {
-                    FastInterp(q90, q80, f2, q80);
+                    FastInterp(q90, q80, blend, q80);
                 }
             }
             MakeRotMatrix(q80, tf.m);
         }
-        else if(b3) tf.m.Identity();
+        else if(whole) tf.m.Identity();
         if(mFollowPath && !mTransKeys.empty()){
             if(!mRotKeys.empty()){
                 MakeRotMatrix(v4c, tf.m.z, tf.m);
@@ -238,8 +238,8 @@ void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
         if(!mScaleKeys.empty()){
             Vector3 v9c;
             InterpVector(mScaleKeys, mScaleSpline, f5, v9c, 0);
-            if(f2 != 1.0f){
-                Interp(v70, v9c, f2, v9c);
+            if(blend != 1.0f){
+                Interp(v70, v9c, blend, v9c);
             }
             Scale(v9c, tf.m, tf.m);
         }
@@ -308,19 +308,19 @@ DataNode RndTransAnim::OnSetRotSlerp(const DataArray* da) {
 }
 
 DataNode RndTransAnim::OnTrans(const DataArray*) {
-    return DataNode(mTrans);
+    return mTrans.Ptr();
 }
 
 DataNode RndTransAnim::OnNumTransKeys(const DataArray*) {
-    return DataNode(TransKeys().NumKeys());
+    return TransKeys().NumKeys();
 }
 
 DataNode RndTransAnim::OnNumRotKeys(const DataArray*) {
-    return DataNode(RotKeys().NumKeys());
+    return RotKeys().NumKeys();
 }
 
 DataNode RndTransAnim::OnNumScaleKeys(const DataArray*) {
-    return DataNode(ScaleKeys().NumKeys());
+    return ScaleKeys().NumKeys();
 }
 
 DataNode RndTransAnim::OnAddTransKey(const DataArray* da) {

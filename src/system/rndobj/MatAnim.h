@@ -41,9 +41,11 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
-    void SetMat(RndMat*);
     void LoadStage(BinStream&);
     void LoadStages(BinStream&);
+
+    // getters/setters
+    void SetMat(RndMat*);
     Keys<Vector3, Vector3>& TransKeys(){ return mKeysOwner->mTransKeys; }
     Keys<Vector3, Vector3>& ScaleKeys(){ return mKeysOwner->mScaleKeys; }
     TexKeys& GetTexKeys(){ return mKeysOwner->mTexKeys; }
