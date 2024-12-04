@@ -47,7 +47,7 @@ void RndDrawable::Highlight(){
         if(!MakeWorldSphere(s, false) || !RndCam::sCurrent->CompareSphereToWorld(s)){
             bool showing = mShowing;
             mShowing = true;
-            #ifdef VERSION_SZBE69_B8
+            #ifdef MILO_DEBUG
                 UtilDrawSphere(s.center, s.radius, Hmx::Color(1.0f, 1.0f, 0.0f));
             #else
                 UtilDrawSphere(s.center, s.GetRadius(), Hmx::Color(1.0f, 1.0f, 0.0f));
@@ -66,7 +66,7 @@ BEGIN_COPYS(RndDrawable)
             COPY_MEMBER(mSphere)
         }
         else {
-        #ifdef VERSION_SZBE69_B8
+        #ifdef MILO_DEBUG
             float zero = 0.0f;
             float rad = mSphere.GetRadius();
             if(rad != zero){
@@ -191,12 +191,8 @@ int RndDrawable::CollidePlane(const Plane& plane){
     else {
         Sphere sphere;
         if(MakeWorldSphere(sphere, false)){
-            const Vector3& vec = sphere.center;
-            float prod = plane.Dot(vec);
-            if(prod >= sphere.radius){
-                return 1;
-            }
-            else return sphere.radius < -prod ? -1 : 0;
+            if(sphere >= plane) return 1;
+            else return -(sphere < plane);
         }
         else return -1;
     }

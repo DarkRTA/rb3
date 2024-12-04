@@ -1188,7 +1188,10 @@
             },
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/DOFProc_Wii.cpp": "Matching",
-            "system/rndobj/Draw.cpp": "NonMatching",
+            "system/rndobj/Draw.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/Dxt1Compress.cpp": "MISSING",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
