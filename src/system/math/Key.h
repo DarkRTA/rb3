@@ -149,7 +149,8 @@ public:
     int Remove(float fstart, float fend){
         int bound1 = KeyGreaterEq(fstart);
         int bound2 = KeyGreaterEq(fend);
-        erase(&(*this)[bound1], &(*this)[bound2]);
+        erase(begin() + bound1, begin() + bound2); // this seems to better match retail
+        // erase(&(*this)[bound1], &(*this)[bound2]);
         return bound1;
     }
 

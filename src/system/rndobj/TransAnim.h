@@ -1,10 +1,10 @@
-#ifndef RNDOBJ_TRANSANIM_H
-#define RNDOBJ_TRANSANIM_H
+#pragma once
 #include "rndobj/Anim.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 #include "math/Key.h"
 
+// "TransAnim objects animate the position, rotation, and\n        scale of transformable objects."
 class RndTransAnim : public RndAnimatable {
 public:
     RndTransAnim();
@@ -62,7 +62,7 @@ public:
         REGISTER_OBJ_FACTORY(RndTransAnim)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x10
+    ObjPtr<RndTransformable> mTrans; // 0x10
     bool mTransSpline; // 0x1C
     bool mScaleSpline; // 0x1D
     bool mRotSlerp; // 0x1E
@@ -70,9 +70,7 @@ public:
     Keys<Hmx::Quat, Hmx::Quat> mRotKeys; // 0x20
     Keys<Vector3, Vector3> mTransKeys; // 0x28
     Keys<Vector3, Vector3> mScaleKeys; // 0x30
-    ObjOwnerPtr<RndTransAnim, ObjectDir> mKeysOwner; // 0x38
+    ObjOwnerPtr<RndTransAnim> mKeysOwner; // 0x38
     bool mRepeatTrans; // 0x44
     bool mFollowPath; // 0x45
 };
-
-#endif
