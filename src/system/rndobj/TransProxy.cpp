@@ -1,5 +1,7 @@
 #include "rndobj/TransProxy.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
@@ -7,12 +9,12 @@
 
 INIT_REVS(RndTransProxy)
 
-RndTransProxy::RndTransProxy() : mProxy(this, 0), mPart() {
+RndTransProxy::RndTransProxy() : mProxy(this), mPart() {
 
 }
 
 void RndTransProxy::SetProxy(class ObjectDir* dir){
-    if(mProxy.Ptr() != dir){
+    if(mProxy != dir){
         mProxy = dir;
         Sync();
     }
@@ -27,14 +29,14 @@ void RndTransProxy::SetPart(Symbol sym){
 
 void RndTransProxy::Sync(){
     SetTransParent(0, false);
-    if(mProxy.Ptr() && mPart.Null()){
+    if(mProxy && mPart.Null()){
         RndTransformable* trans = dynamic_cast<RndTransformable*>(mProxy.Ptr());
         if(trans){
             SetTransParent(trans, false);
             return;
         }
     }
-    if(mProxy.Ptr()){
+    if(mProxy){
         RndTransformable* trans = mProxy->Find<RndTransformable>(mPart.mStr, false);
         if(trans){
             SetTransParent(dynamic_cast<RndTransformable*>(trans), false);
@@ -57,8 +59,8 @@ SAVE_OBJ(RndTransProxy, 0x44);
 void RndTransProxy::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
-    Hmx::Object::Load(bs);
-    if(gRev != 0) RndTransformable::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev != 0) LOAD_SUPERCLASS(RndTransformable)
     bs >> mProxy;
     bs >> mPart;
     Sync();
