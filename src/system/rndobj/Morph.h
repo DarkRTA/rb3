@@ -41,6 +41,8 @@ public:
     virtual float EndFrame();
     virtual void Print();
 
+    float InterpWeight(const Keys<float, float>&, float);
+
     void SetNumPoses(int num){ mPoses.resize(num); }
     int NumPoses() const { return mPoses.size(); }
     Pose& PoseAt(int idx){ return mPoses[idx]; }
@@ -61,16 +63,12 @@ public:
 
     /** "[Number of] mesh keyframes to blend" */
     ObjVector<Pose> mPoses; // 0x10
-
     /** "Mesh for the morph to occur" */
-    ObjPtr<RndMesh, ObjectDir> mTarget; // 0x1c
-
+    ObjPtr<RndMesh> mTarget; // 0x1c
     /** "Interpolates the normals if set to true, otherwise normals are not affected." */
     bool mNormals; // 0x28
-
     /** "Smooths the interpolation of the morphing." */
     bool mSpline; // 0x29
-
     /** "Modifier for weight interpolation" */
     float mIntensity; // 0x2c
 };
