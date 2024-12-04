@@ -158,7 +158,7 @@ float RndTransAnim::StartFrame() {
     return Min(TransKeys().FirstFrame(), RotKeys().FirstFrame(), ScaleKeys().FirstFrame());
 }
 
-// retail scratch: https://decomp.me/scratch/UVtdm
+// matches in retail with the right inline settings: https://decomp.me/scratch/vtXKh
 void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
     float f5 = f1;
     if(mKeysOwner != this){
@@ -170,8 +170,12 @@ void RndTransAnim::MakeTransform(float f1, Transform& tf, bool b3, float f2) {
             Vector3 v58(0,0,0);
             if(mRepeatTrans){
                 int iac;
-                f5 = Limit(mTransKeys.front().frame, mTransKeys.back().frame, f1, iac);
-                Subtract(mTransKeys.back().value, mTransKeys.front().value, v58);
+                float& backFrame = mTransKeys.back().frame;
+                float& frontFrame = mTransKeys.front().frame;
+                f5 = Limit(frontFrame, backFrame, f1, iac);
+                Vector3& frontVec = mTransKeys.front().value;
+                Vector3& backVec = mTransKeys.back().value;
+                Subtract(backVec, frontVec, v58);
                 v58 *= iac;
             }
             if(f2 != 1.0f){
@@ -251,13 +255,13 @@ void RndTransAnim::SetFrame(float frame, float blend) {
     }
 }
 
+// matches in retail with the right inline settings: https://decomp.me/scratch/05Ytm
 void RndTransAnim::SetKey(float frame) {
     if(mTrans){
         TransKeys().Add(mTrans->LocalXfm().v, frame, true);
         Hmx::Matrix3 mtx;
         Normalize(mTrans->LocalXfm().m, mtx);
-        Hmx::Quat q(mtx);
-        RotKeys().Add(q, frame, true);
+        RotKeys().Add(Hmx::Quat(mtx), frame, true);
         Vector3 vec;
         MakeScale(mTrans->LocalXfm().m, vec);
         ScaleKeys().Add(vec, frame, true);
@@ -332,9 +336,7 @@ DataNode RndTransAnim::OnAddScaleKey(const DataArray* da) {
 DataNode RndTransAnim::OnAddRotKey(const DataArray* da) {
     Vector3 vec(da->Float(2), da->Float(3), da->Float(4));
     vec *= DEG2RAD;
-    float frame = da->Float(5);
-    Hmx::Quat q(vec);
-    RotKeys().Add(q, frame, false);
+    RotKeys().Add(Hmx::Quat(vec), da->Float(5), false);
     return 0;
 }
 
