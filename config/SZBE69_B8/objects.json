@@ -1175,7 +1175,10 @@
             "system/rndobj/Bitmap.cpp": "NonMatching",
             "system/rndobj/BoxMap.cpp": "MISSING",
             "system/rndobj/Cam.cpp": "NonMatching",
-            "system/rndobj/CamAnim.cpp": "NonMatching",
+            "system/rndobj/CamAnim.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": {

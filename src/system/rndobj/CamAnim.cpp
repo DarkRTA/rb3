@@ -1,4 +1,5 @@
 #include "rndobj/CamAnim.h"
+#include "decomp.h"
 #include "obj/PropSync_p.h"
 #include "rndobj/Utl.h"
 
@@ -42,6 +43,8 @@ void RndCamAnim::Load(BinStream& bs){
     }
     if(!mKeysOwner.Ptr()) mKeysOwner = this;
 }
+
+DECOMP_FORCEACTIVE(CamAnim, "o")
 
 void RndCamAnim::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);

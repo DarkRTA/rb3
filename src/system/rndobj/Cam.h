@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_CAM_H
-#define RNDOBJ_CAM_H
+#pragma once
 #include "obj/Object.h"
 #include "rndobj/Trans.h"
 #include "math/Mtx.h"
@@ -119,5 +118,3 @@ public:
     ObjPtr<RndTex> mTargetTex; // 0x268
     Rnd::Aspect mAspect; // 0x274
 };
-
-#endif
