@@ -116,7 +116,7 @@ public:
      */
     Hmx::Rect mScreenRect; // 0x258
 
-    ObjPtr<RndTex, class ObjectDir> mTargetTex; // 0x268
+    ObjPtr<RndTex> mTargetTex; // 0x268
     Rnd::Aspect mAspect; // 0x274
 };
 

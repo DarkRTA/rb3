@@ -13,19 +13,41 @@
 
 RndCam* RndCam::sCurrent = 0;
 int CAM_REV = 12;
-Transform sFlipYZ;
+Transform sFlipYZ(Hmx::Matrix3(1,0,0,0,0, 1,0,1, 0), Vector3(0,0,0));
 
 float RndCam::WorldToScreen(const Vector3& w, Vector2& s) const {
-    s = mZRange;
+    Vector3 v18;
+    Multiply(w, mWorldProjectXfm, v18);
+    if(v18.z){
+        float scale = 1.0f / v18.z;
+        s.x = v18.x * scale;
+        s.y = v18.y * scale;
+    }
+    else {
+        s.x = v18.x;
+        s.y = v18.y;
+    }
+    s.x += 1;
+    s.y += 1;
+    ScreenToWorld(s, s *= 0.5f, (Vector3&)s);
+    return v18.z;
+}
+
+void RndCam::ScreenToWorld(const Vector2& v2, float f, Vector3& vout) const {
+    Vector2& v2out = (Vector2&)vout;
+    v2out.Set(v2.x * mScreenRect.w + mScreenRect.x, v2.y * mScreenRect.h + mScreenRect.y);
 }
 
 void RndCam::Select() {
-    if (sCurrent && sCurrent->mTargetTex.mPtr && sCurrent != this) {
-        sCurrent->mTargetTex->FinishDrawTarget();
+    if(sCurrent){
+        RndCam* cur = sCurrent;
+        if(cur->TargetTex() && cur != this){
+            cur->TargetTex()->FinishDrawTarget();
+        }
     }
-    if (mCache->mFlags & 1) WorldXfm_Force();
+    WorldXfm();
     sCurrent = this;
-    Rnd::Aspect a = TheRnd->mAspect;
+    Rnd::Aspect a = TheRnd->GetAspect();
     if (mAspect != a) UpdateLocal();
 }
 
@@ -88,12 +110,50 @@ RndCam::~RndCam(){
 
 void RndCam::SetFrustum(float f1, float f2, float f3, float f4) {
     if (f2 - 0.0001f > f1 * 1000) {
-        MILO_NOTIFY_ONCE("%s: %f/%f plane ratio exceeds 1000", mName, f2, f1);
+        MILO_NOTIFY_ONCE("%s: %f/%f plane ratio exceeds 1000", Name(), f2, f1);
         if (f2 == mFarPlane) f1 = f2 / 1000;
         if (f2 != mFarPlane) f2 = f1 * 1000;
     }
     mNearPlane = f1; mFarPlane = f2; mYFov = f3; mUnknownFloat = f4;
     UpdateLocal();
+}
+
+void RndCam::UpdateLocal() {
+    float ratio = (mScreenRect.h / mScreenRect.w) * mUnknownFloat;
+    if(mTargetTex){
+        ratio *= (float)mTargetTex->Height() / (float)mTargetTex->Width();
+    }
+    else ratio *= TheRnd->YRatio();
+    mLocalFrustum.Set(mNearPlane, mFarPlane, mYFov, ratio);
+    mLocalProjectXfm.m.Zero();
+    mLocalProjectXfm.v.Zero();
+    mInvLocalProjectXfm.m.Zero();
+    mInvLocalProjectXfm.v.Zero();
+    if(!mYFov){
+        mLocalProjectXfm.m.x.x = 1;
+        mInvLocalProjectXfm.m.x.x = 1;
+        mInvLocalProjectXfm.m.y.z = -ratio;
+        mLocalProjectXfm.m.z.y = -1.0f / ratio;
+    }
+    else {
+        float thetan = tanf(mYFov * 0.5f);
+        mLocalProjectXfm.m.y.z = 1;
+        mInvLocalProjectXfm.m.z.y = 1;
+        mLocalProjectXfm.m.x.x = ratio / thetan;
+        mLocalProjectXfm.m.z.y = -1.0f / thetan;
+        mInvLocalProjectXfm.m.x.x = thetan / ratio;
+        mInvLocalProjectXfm.m.y.z = -thetan;
+    }
+    UpdatedWorldXfm();
+    mAspect = TheRnd->GetAspect();
+}
+
+void RndCam::UpdatedWorldXfm(){
+    const Transform& world = WorldXfm();
+    Invert(world, mInvWorldXfm);
+    Multiply(mLocalFrustum, world, mWorldFrustum);
+    Multiply(mInvWorldXfm, mLocalProjectXfm, mWorldProjectXfm);
+    Multiply(mInvLocalProjectXfm, world, mInvWorldProjectXfm);
 }
 
 BEGIN_HANDLERS(RndCam)
@@ -116,26 +176,22 @@ DataNode RndCam::OnSetFrustum(const DataArray* da){
     else temp = mYFov;
     yFov = temp;
     SetFrustum(nearPlane, farPlane, yFov, 1.0f);
-    return DataNode(0);
-}
-
-void RndCam::UpdateLocal() {
-
+    return 0;
 }
 
 DataNode RndCam::OnSetZRange(const DataArray* da){
     SetZRange(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndCam::OnSetScreenRect(const DataArray* da){
     Hmx::Rect r(da->Float(2), da->Float(3), da->Float(4), da->Float(5));
     SetScreenRect(r);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndCam::OnFarPlane(const DataArray*){
-    return DataNode(mFarPlane);
+    return mFarPlane;
 }
 
 BEGIN_PROPSYNCS(RndCam)
