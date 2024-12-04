@@ -29,6 +29,7 @@ public:
     bool mShouldCache; // 0x8
 };
 
+/** A bone to associate with a Mesh. */
 class RndBone {
 public:
     RndBone(Hmx::Object* o) : mBone(o, NULL) {}
@@ -202,6 +203,10 @@ public:
     Vector3 SkinVertex(const RndMesh::Vert&, Vector3*);
     void UpdateApproxLighting();
 
+    bool PatchOkay(int i, int j){
+        return i * 4.31 + j * 0.25 < 329.0;
+    }
+
     // getters/setters
     void SetMat(RndMat*);
     void SetGeomOwner(RndMesh*);
@@ -223,9 +228,6 @@ public:
     void SetForceNoQuantize(bool b){ mForceNoQuantize = b; }
     RndTransformable* BoneTransAt(int idx){ return mBones[idx].mBone; }
     Transform& BoneOffsetAt(int idx){ return mBones[idx].mOffset; }
-    bool PatchOkay(int i, int j){
-        return i * 4.31 + j * 0.25 < 329.0;
-    }
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
@@ -234,15 +236,78 @@ public:
     }
 
     DataNode OnCompareEdgeVerts(const DataArray*);
-    DataNode OnAttachMesh(const DataArray*);
-    DataNode OnGetFace(const DataArray*);
-    DataNode OnSetFace(const DataArray*);
-    DataNode OnGetVertXYZ(const DataArray*);
-    DataNode OnSetVertXYZ(const DataArray*);
-    DataNode OnGetVertNorm(const DataArray*);
-    DataNode OnSetVertNorm(const DataArray*);
-    DataNode OnGetVertUV(const DataArray*);
-    DataNode OnSetVertUV(const DataArray*);
+    /** Handler to attach another Mesh's verts/faces to this one.
+     * Note that the other Mesh will be deleted after the attaching is done.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the other RndMesh.
+     * Example usage: {$this attach_mesh other_obj}
+     */
+    DataNode OnAttachMesh(const DataArray* arr);
+    /** Handler to get the vertices of the Face at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-5: vars to house the Face's three vertices.
+     * Example usage: {$this get_face 69 $v1 $v2 $v3}
+     */
+    DataNode OnGetFace(const DataArray* arr);
+    /** Handler to set the vertices of the Face at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-5: the values of the Face's three vertices to set.
+     * Example usage: {$this set_face 69 1 2 3}
+     */
+    DataNode OnSetFace(const DataArray* arr);
+    /** Handler to get the positional coordinates of the Vert at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-5: vars to house the Vert's X/Y/Z pos coordinates.
+     * Example usage: {$this get_vert_pos 69 $v1 $v2 $v3}
+     */
+    DataNode OnGetVertXYZ(const DataArray* arr);
+    /** Handler to set the positional coordinates of the Vert at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-5: the values of the Vert's X/Y/Z pos coordinates to set.
+     * Example usage: {$this set_vert_pos 69 1 2 3}
+     */
+    DataNode OnSetVertXYZ(const DataArray* arr);
+    /** Handler to get the normal coordinates of the Vert at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-5: vars to house the Vert's X/Y/Z norm coordinates.
+     * Example usage: {$this get_vert_norm 69 $v1 $v2 $v3}
+     */
+    DataNode OnGetVertNorm(const DataArray* arr);
+    /** Handler to set the normal coordinates of the Vert at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-5: the values of the Vert's X/Y/Z norm coordinates to set.
+     * Example usage: {$this set_vert_norm 69 1 2 3}
+     */
+    DataNode OnSetVertNorm(const DataArray* arr);
+    /** Handler to get the UV coordinates of the Vert at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-4: vars to house the Vert's UV X/Y coordinates.
+     * Example usage: {$this get_vert_uv 69 $v1 $v2}
+     */
+    DataNode OnGetVertUV(const DataArray* arr);
+    /** Handler to set the UV coordinates of the Vert at the supplied index.
+     * @param [in] arr The supplied DataArray.
+     * Expected DataArray contents: 
+     *     Node 2: the desired index.
+     *     Nodes 3-4: the values of the Vert's X/Y UV coordinates to set.
+     * Example usage: {$this set_vert_uv 69 1 2}
+     */
+    DataNode OnSetVertUV(const DataArray* arr);
     DataNode OnUnitizeNormals(const DataArray*);
     DataNode OnPointCollide(const DataArray*);
     DataNode OnConfigureMesh(const DataArray*);
