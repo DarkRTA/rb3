@@ -239,7 +239,7 @@ void RndConsole::List() {
             int i = 1;
             int numlines = mOutput->NumLines() / 2;
             int i4 = mDebugging->Line() - numlines;
-            numlines += mDebugging->Line();
+            int totalLines = numlines + mDebugging->Line();
             do {
                 char buf;
                 int read = f->Read(&buf, 1);
@@ -248,11 +248,11 @@ void RndConsole::List() {
                 }
                 if(buf == '\n' || read == 0){
                     i++;
-                    if(i > i4 && i < numlines){
+                    if(i > i4 && i < totalLines){
                         *mOutput << MakeString("%3d%c", i, i == mDebugging->Line() ? '>' : ':');
                     }
                 }
-            } while(i < numlines);
+            } while(i < totalLines);
             delete f;
         }
     }

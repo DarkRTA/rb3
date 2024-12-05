@@ -1173,7 +1173,7 @@
                 "comment": "Retail matches fine, debug and its inlining just sucks"
             },
             "system/rndobj/Bitmap.cpp": "NonMatching",
-            "system/rndobj/BoxMap.cpp": "MISSING",
+            "system/rndobj/BoxMap.cpp": "NonMatching",
             "system/rndobj/Cam.cpp": "NonMatching",
             "system/rndobj/CamAnim.cpp": {
                 "status": "Equivalent",

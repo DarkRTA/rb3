@@ -33,6 +33,7 @@ public:
     void SetBotRadius(float);
     void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
     float Range() const { return mRange; }
+    float FalloffStart() const { return mFalloffStart; }
     const Hmx::Color& GetColor() const { return mColorOwner->mColor; }
     Type GetType() const { return mType; }
     void SetShowing(bool b){ mShowing = b; }
@@ -43,6 +44,7 @@ public:
     bool GetAnimateFromPreset() const {
         return mAnimateColorFromPreset || mAnimatePositionFromPreset || mAnimateRangeFromPreset;
     }
+    bool Showing() const { return mShowing; }
 
     static const char* TypeToStr(Type);
 
