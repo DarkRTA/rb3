@@ -203,21 +203,21 @@ DataNode CameraManager::OnPickCameraShot(DataArray* da){
     std::vector<PropertyFilter> pvec;
     pvec.reserve(20);
     Symbol sym = MakeCategoryAndFilters(da, pvec);
-    return DataNode(PickCameraShot(sym, pvec));
+    return PickCameraShot(sym, pvec);
 }
 
 DataNode CameraManager::OnFindCameraShot(DataArray* da){
     std::vector<PropertyFilter> pvec;
     pvec.reserve(20);
     Symbol sym = MakeCategoryAndFilters(da, pvec);
-    return DataNode(FindCameraShot(sym, pvec));
+    return FindCameraShot(sym, pvec);
 }
 
 DataNode CameraManager::OnNumCameraShots(DataArray* da){
     std::vector<PropertyFilter> pvec;
     pvec.reserve(20);
     Symbol sym = MakeCategoryAndFilters(da, pvec);
-    return DataNode(NumCameraShots(sym, pvec));
+    return NumCameraShots(sym, pvec);
 }
 
 void CameraManager::ForceCameraShot(CamShot* shot){
@@ -272,14 +272,14 @@ CamShot* CameraManager::MiloCamera(){
             return anim.Obj<CamShot>();
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void CameraManager::PrePoll(){
     if(!MiloCamera()){
         if(mNextShot){
             StartShot_(mNextShot);
-            mNextShot = 0;
+            mNextShot = nullptr;
         }
         if(mCurrentShot){
             mCurrentShot->SetPreFrame(CalcFrame(), 1.0f);
@@ -330,7 +330,7 @@ END_HANDLERS
 
 DataNode CameraManager::OnRandomSeed(DataArray* da){
     sSeed = da->Int(2);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CameraManager::OnIterateShot(DataArray* da){
@@ -345,5 +345,5 @@ DataNode CameraManager::OnIterateShot(DataArray* da){
         }
     }
     *var = d28;
-    return DataNode(0);
+    return 0;
 }

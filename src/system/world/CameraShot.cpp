@@ -1,4 +1,5 @@
 #include "world/CameraShot.h"
+#include "os/System.h"
 #include "world/Spotlight.h"
 #include "world/Crowd.h"
 #include "rndobj/Trans.h"
@@ -16,10 +17,10 @@ Hmx::Object* CamShot::sAnimTarget;
 INIT_REVS(CamShot);
 
 CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f), mClampHeight(-1.0f), mCategory(),
-    mAnims(this, kObjListNoNull), mPath(this, 0), mDrawOverrides(this, kObjListNoNull), mPathFrame(-1.0f), mPlatformOnly(0),
-    mPostProcOverrides(this, kObjListNoNull), mCrowds(this), mGlowSpot(this, 0), unkc4(0.0f, 0.0f, 0.0f), unkd0(0.0f, 0.0f, 0.0f),
-    unkdc(0.0f, 0.0f, 0.0f), unke8(0.0f, 0.0f, 0.0f), unkf4(0.0f, 0.0f, 0.0f), unk100(0.0f, 0.0f, 0.0f), unk10c(0), unk110(0),
-    mDuration(0.0f), mDisabled(0), mFlags(0), mLooping(1), mUseDepthOfField(0), mPS3PerPixel(0) {
+    mAnims(this, kObjListNoNull), mPath(this), mDrawOverrides(this, kObjListNoNull), mPathFrame(-1.0f), mPlatformOnly(kPlatformNone),
+    mPostProcOverrides(this, kObjListNoNull), mCrowds(this), mGlowSpot(this), mLastShakeOffset(0,0,0), mLastShakeAngOffset(0,0,0),
+    mLastDesiredShakeOffset(0,0,0), mLastDesiredShakeAngOffset(0,0,0), mShakeVelocity(0,0,0), mShakeAngVelocity(0,0,0), mLastNext(0), mLastPrev(0),
+    mDuration(0), mDisabled(0), mFlags(0), mLooping(1), mUseDepthOfField(0), mPS3PerPixel(0) {
 
 }
 
@@ -33,7 +34,7 @@ void CamShot::Init(){
 }
 
 void CamShot::ListAnimChildren(std::list<RndAnimatable*>& animlist) const {
-    for(ObjPtrList<RndAnimatable, ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         animlist.push_back(*it);
     }
 }
@@ -45,15 +46,16 @@ void CamShot::StartAnim(){
     HandleType(start_shot_msg);
     WorldDir* wdir = dynamic_cast<WorldDir*>(Dir());
     if(wdir) wdir->SetCrowds(mCrowds);
-    unk10c = 0;
-    unk110 = 0;
-    unkc4.Zero();
-    unkdc.Zero();
-    unkf4.Zero();
-    unkd0.Zero();
-    unke8.Zero();
-    unk100.Zero();
-    for(ObjPtrList<RndAnimatable, ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    // firstframe and shotover are set to 1 and 0 too
+    mLastNext = nullptr;
+    mLastPrev = nullptr;
+    mLastShakeOffset.Zero();
+    mLastDesiredShakeOffset.Zero();
+    mShakeVelocity.Zero();
+    mLastShakeAngOffset.Zero();
+    mLastDesiredShakeAngOffset.Zero();
+    mShakeAngVelocity.Zero();
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         (*it)->StartAnim();
     }
     for(int i = 0; i != mCrowds.size(); i++){
@@ -64,27 +66,27 @@ void CamShot::StartAnim(){
 void CamShot::EndAnim(){
     UnHide();
     HandleType(stop_shot_msg);
-    for(ObjPtrList<RndAnimatable, ObjectDir>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
         (*it)->EndAnim();
     }
 }
 
 void CamShot::DoHide(){
     if(!mHidden){
-        unkb4.clear();
-        unkbc.clear();
-        unkbc.reserve(unk5c.size() + unk6c.size() + 3);
-        unkb4.reserve(unk64.size());
-        for(std::vector<RndDrawable*>::iterator it = unk5c.begin(); it != unk5c.end(); ++it){
+        mEndHideList.clear();
+        mEndShowList.clear();
+        mEndShowList.reserve(mHideList.size() + mShowList.size() + 3);
+        mEndHideList.reserve(unk64.size());
+        for(std::vector<RndDrawable*>::iterator it = mHideList.begin(); it != mHideList.end(); ++it){
             if((*it)->Showing()){
                 (*it)->SetShowing(false);
-                unkbc.push_back(*it);
+                mEndShowList.push_back(*it);
             }
         }
-        for(std::vector<RndDrawable*>::iterator it = unk6c.begin(); it != unk6c.end(); ++it){
+        for(std::vector<RndDrawable*>::iterator it = mShowList.begin(); it != mShowList.end(); ++it){
             if((*it)->Showing()){
                 (*it)->SetShowing(false);
-                unkbc.push_back(*it);
+                mEndShowList.push_back(*it);
             }
         }
         mHidden = true;
@@ -93,14 +95,14 @@ void CamShot::DoHide(){
 
 void CamShot::UnHide(){
     if(mHidden){
-        for(std::vector<RndDrawable*>::iterator it = unkb4.begin(); it != unkb4.end(); ++it){
+        for(std::vector<RndDrawable*>::iterator it = mEndHideList.begin(); it != mEndHideList.end(); ++it){
             (*it)->SetShowing(false);
         }
-        for(std::vector<RndDrawable*>::iterator it = unkbc.begin(); it != unkbc.end(); ++it){
+        for(std::vector<RndDrawable*>::iterator it = mEndShowList.begin(); it != mEndShowList.end(); ++it){
             (*it)->SetShowing(true);
         }
-        unkb4.clear();
-        unkbc.clear();
+        mEndHideList.clear();
+        mEndShowList.clear();
         mHidden = false;
     }
 }
@@ -194,9 +196,9 @@ BEGIN_COPYS(CamShot)
         COPY_MEMBER(mPath)
         COPY_MEMBER(mPlatformOnly)
         COPY_MEMBER(mCategory)
-        COPY_MEMBER(unk5c)
-        COPY_MEMBER(unk6c)
-        COPY_MEMBER(unk6c)
+        COPY_MEMBER(mHideList)
+        COPY_MEMBER(mShowList)
+        COPY_MEMBER(mShowList)
         COPY_MEMBER(unk64)
         COPY_MEMBER(mLooping)
         COPY_MEMBER(mLoopKeyframe)
@@ -330,8 +332,8 @@ BEGIN_LOADS(CamShot)
         bs >> mFilter;
         if(gRev < 7) mFilter = 0.9f;
         bs >> mClampHeight;
-        ObjPtrList<RndTransformable, ObjectDir> pList(this, kObjListNoNull);
-        ObjPtr<RndTransformable, ObjectDir> ptr(this, 0);
+        ObjPtrList<RndTransformable> pList(this, kObjListNoNull);
+        ObjPtr<RndTransformable> ptr(this, 0);
         int listsize;
         bs >> listsize;
         for(int i = 0; i < listsize; i++){
@@ -355,7 +357,7 @@ BEGIN_LOADS(CamShot)
             csf1.mFocusBlurMultiplier = 0.0f;
             csf1.mTargets = pList;
             csf1.mParent = ptr;
-            csf1.unk8bp1 = somebool;
+            csf1.mUseParentNotation = somebool;
             mKeyFrames.push_back(csf1);
         }
         csf2.mDuration = 0.0f;
@@ -369,7 +371,7 @@ BEGIN_LOADS(CamShot)
         csf2.mFocusBlurMultiplier = 0.0f;
         csf2.mTargets = pList;
         csf2.mParent = ptr;
-        csf2.unk8bp1 = somebool;
+        csf2.mUseParentNotation = somebool;
         mKeyFrames.push_back(csf2);
     }
     bs >> mPath;
@@ -390,13 +392,13 @@ BEGIN_LOADS(CamShot)
             bs >> f26;
         }
     }
-    if(gRev > 0x22) bs >> mPlatformOnly;
+    if(gRev > 0x22) bs >> (int&)mPlatformOnly;
     else if(gRev > 0x21){
         int state;
         bs >> state;
-        if(state == 1) mPlatformOnly = 2;
-        else if(state == 2) mPlatformOnly = 4;
-        else mPlatformOnly = 0;
+        if(state == 1) mPlatformOnly = kPlatformXBox;
+        else if(state == 2) mPlatformOnly = kPlatformPS3;
+        else mPlatformOnly = kPlatformNone;
     }
     if(gRev < 1) LOAD_SUPERCLASS(RndAnimatable)
     CamShotCrowd csc(this);
@@ -417,15 +419,15 @@ BEGIN_LOADS(CamShot)
     )
         bs >> loc240;
     if(gRev > 5){
-        unk6c.clear();
-        unk6c.clear();
-        unk5c.clear();
+        mShowList.clear();
+        mShowList.clear();
+        mHideList.clear();
         if(gRev <= 0x2F || (bs.Cached() && gRev < 0x32)){
-            LoadDrawables(bs, unk5c, Dir());
+            LoadDrawables(bs, mHideList, Dir());
         }
         else {
-            LoadDrawables(bs, unk5c, Dir());
-            LoadDrawables(bs, unk6c, Dir());
+            LoadDrawables(bs, mHideList, Dir());
+            LoadDrawables(bs, mShowList, Dir());
         }
     }
     if(gRev > 0x1B) LoadDrawables(bs, unk64, Dir());
@@ -445,7 +447,7 @@ BEGIN_LOADS(CamShot)
         gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
         gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
     )
-        bs >> csc.mCrowdRotate;
+        bs >> (int&)csc.mCrowdRotate;
     if(
         gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 ||
         gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 ||
@@ -525,7 +527,7 @@ void CamShot::Disable(bool b, int i){
 CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
     mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o, 0), mFocusTarget(o, 0),
     mZoomFOV(0), mMaxBlur(0xFF), mMinBlur(0),
-    mBlendEaseMode(0), unk8bp1(0), unk8bp0(0) {
+    mBlendEaseMode(0), mUseParentNotation(0), mParentFirstFrame(0) {
     mMaxAngularOffsetY = 0;
     mMaxAngularOffsetX = 0;
     SetBlurDepth(0.34999999f);
@@ -538,7 +540,7 @@ CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase
 CamShotFrame::CamShotFrame(Hmx::Object* o, const CamShotFrame& frame) : mDuration(frame.mDuration), mBlend(frame.mBlend), mBlendEase(frame.mBlendEase),
     unk10(frame.unk10), mScreenOffset(frame.mScreenOffset), mShakeNoiseAmp(frame.mShakeNoiseAmp), mShakeNoiseFreq(frame.mShakeNoiseFreq), mFocusBlurMultiplier(frame.mFocusBlurMultiplier),
     mTargets(frame.mTargets), unk68(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), mFOV(frame.mFOV), mZoomFOV(frame.mZoomFOV),
-    mBlurDepth(frame.mBlurDepth), mMaxBlur(frame.mMaxBlur), mMinBlur(frame.mMinBlur), mBlendEaseMode(frame.mBlendEaseMode), unk8bp1(frame.unk8bp1), unk8bp0(0) {
+    mBlurDepth(frame.mBlurDepth), mMaxBlur(frame.mMaxBlur), mMinBlur(frame.mMinBlur), mBlendEaseMode(frame.mBlendEaseMode), mUseParentNotation(frame.mUseParentNotation), mParentFirstFrame(0) {
     mMaxAngularOffsetX = frame.mMaxAngularOffsetX;
     mMaxAngularOffsetY = frame.mMaxAngularOffsetY;
 }
@@ -595,7 +597,7 @@ void CamShotFrame::Load(BinStream& bs){
     if(CamShot::gRev > 0x2B) bs >> mParent;
     else mParent = LoadSubPart(bs, unk68);
     bool b1; bs >> b1;
-    unk8bp1 = b1;
+    mUseParentNotation = b1;
     if(CamShot::gRev > 0x11){
         bs >> mShakeNoiseAmp;
         bs >> mShakeNoiseFreq;
@@ -608,7 +610,7 @@ void CamShotFrame::Load(BinStream& bs){
     }
     if(CamShot::gRev > 0x28){
         bool b0; bs >> b0;
-        unk8bp0 = b0;
+        mParentFirstFrame = b0;
     }
 }
 
@@ -757,7 +759,7 @@ void CamShotFrame::UpdateTarget() const {
 void CamShotFrame::GetCurrentTargetPosition(Vector3& v) const {
     v.Zero();
     int count = 0;
-    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+    for(ObjPtrList<RndTransformable>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
         RndTransformable* cur = *it;
         if(cur){
             count++;
@@ -768,7 +770,7 @@ void CamShotFrame::GetCurrentTargetPosition(Vector3& v) const {
 }
 
 bool CamShotFrame::HasTargets() const {
-    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+    for(ObjPtrList<RndTransformable>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
         if(*it) return true;
     }
     return false;
@@ -782,13 +784,13 @@ DataNode CamShot::OnSetAllCrowdChars3D(DataArray* da){
     return DataNode(0);
 }
 
-CamShotCrowd::CamShotCrowd(Hmx::Object* o) : mCrowd(o, 0), mCrowdRotate(0), unk18(dynamic_cast<CamShot*>(o)) {}
+CamShotCrowd::CamShotCrowd(Hmx::Object* o) : mCrowd(o, 0), mCrowdRotate(kCrowdRotateNone), unk18(dynamic_cast<CamShot*>(o)) {}
 CamShotCrowd::CamShotCrowd(Hmx::Object* o, const CamShotCrowd& crowd) : mCrowd(crowd.mCrowd),
     mCrowdRotate(crowd.mCrowdRotate), unk10(crowd.unk10), unk18(dynamic_cast<CamShot*>(o)) {}
 
 void CamShotCrowd::Load(BinStream& bs){
     bs >> mCrowd;
-    bs >> mCrowdRotate;
+    bs >> (int&)mCrowdRotate;
     bs >> unk10;
     int num;
     bs >> num;
@@ -891,7 +893,7 @@ DataNode CamShot::OnRadio(DataArray* da){
 
 BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
     SYNC_PROP_MODIFY_ALT(crowd, o.mCrowd, o.OnCrowdChanged())
-    SYNC_PROP(crowd_rotate, o.mCrowdRotate)
+    SYNC_PROP(crowd_rotate, (int&)o.mCrowdRotate)
 END_CUSTOM_PROPSYNC
 
 BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
@@ -915,8 +917,8 @@ BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
         }
     }
     SYNC_PROP(focal_target, o.mFocusTarget)
-    SYNC_PROP_SET(use_parent_rotation, o.unk8bp1, o.unk8bp1 = _val.Int())
-    SYNC_PROP_SET(parent_first_frame, o.unk8bp0, o.unk8bp0 = _val.Int())
+    SYNC_PROP_SET(use_parent_rotation, o.mUseParentNotation, o.mUseParentNotation = _val.Int())
+    SYNC_PROP_SET(parent_first_frame, o.mParentFirstFrame, o.mParentFirstFrame = _val.Int())
     SYNC_PROP_SET(field_of_view, o.FieldOfView() * RAD2DEG, o.SetFieldOfView(_val.Float() * DEG2RAD))
 END_CUSTOM_PROPSYNC
 
@@ -943,7 +945,7 @@ BEGIN_PROPSYNCS(CamShot)
     SYNC_PROP_SET(use_depth_of_field, mUseDepthOfField, mUseDepthOfField = _val.Int())
     SYNC_PROP(path, mPath)
     SYNC_PROP(path_frame, mPathFrame)
-    SYNC_PROP(platform_only, mPlatformOnly)
+    SYNC_PROP(platform_only, (int&)mPlatformOnly)
     SYNC_PROP(draw_overrides, mDrawOverrides)
     SYNC_PROP(postproc_overrides, mPostProcOverrides)
     SYNC_PROP(glow_spot, mGlowSpot)
