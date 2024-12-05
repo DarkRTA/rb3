@@ -1,5 +1,5 @@
-#ifndef RNDOBJ_CONSOLE_H
-#define RNDOBJ_CONSOLE_H
+#pragma once
+#include "obj/Data.h"
 #include "obj/Object.h"
 #include "os/Keyboard.h"
 #include "utl/Str.h"
@@ -10,7 +10,7 @@ class RndOverlay;
 class RndConsole : public Hmx::Object { // 0x58 - 0x1c = 0x3c
 public:
     struct Breakpoint { // total size: 0x8
-        Breakpoint() : parent(0), index(0) {}
+        Breakpoint() : parent(0) {}
         ~Breakpoint();
         DataArray* parent; // offset 0x0, size 0x4
         int index; // offset 0x4, size 0x4
@@ -32,6 +32,7 @@ public:
     void Continue();
     void Help(Symbol);
     void SetShowing(bool);
+    void ExecuteLine();
     int OnMsg(const KeyboardKeyMsg&);
 
     NEW_POOL_OVERLOAD(RndConsole);
@@ -51,5 +52,3 @@ public:
     int mLevel; // 0x4c
     std::list<Breakpoint> mBreakpoints; // 0x50
 };
-
-#endif // RNDOBJ_CONSOLE_H

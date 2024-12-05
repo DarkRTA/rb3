@@ -117,6 +117,7 @@ public:
     void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
     bool Unk130() const { return unk130; }
     int UnkE4() const { return unk_0xE4; }
+    bool Drawing() const { return mDrawing; }
     RndCam* DefaultCam(){ return mDefaultCam; }
     Vector2& DrawStringScreen(const char*, const Vector2&, const Hmx::Color&, bool);
     void CompressTextureCancel(CompressTextureCallback*);
@@ -177,7 +178,7 @@ public:
     int mSync; // 0xd8
     bool mGsTiming; // 0xdc
     bool mShowSafeArea; // 0xdd
-    bool unkde; // 0xde
+    bool mDrawing; // 0xde
     bool unkdf; // 0xdf
     Aspect mAspect; // 0xE0
     int unk_0xE4; // 0xe4 referenced in TexMovie

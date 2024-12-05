@@ -56,16 +56,16 @@ void RndMatAnim::LoadStage(BinStream& bs){
 }
 
 void RndMatAnim::LoadStages(BinStream& bs){
-    uint rev;
-    bs >> rev;
-    if(rev != 0){
+    uint stageCount;
+    bs >> stageCount;
+    if(stageCount != 0){
         bool oldeditmode = LOADMGR_EDITMODE;
         TheLoadMgr.SetEditMode(true);
         RndMatAnim* it = this;
         int i = 1;
         while(true){
             it->LoadStage(bs);
-            if(i == rev) break;
+            if(i == stageCount) break;
             else if(EndFrame()){
                 const char* mnm = MakeString("%s_%d.mnm", FileGetBase(Name(), 0), i);
                 MILO_WARN("Splitting out %s from %s", mnm, PathName(this));

@@ -12,10 +12,17 @@ public:
 
     void Set(float xx, float yy){ x = xx; y = yy; }
 
-    Vector2& operator*=(float f) { 
-        x *= f; y *= f; 
-        return *this;
+    // Vector2& operator*=(float f) { 
+    //     x *= f; y *= f; 
+    //     return *this;
+    // }
+    // there's no way this returns a float what
+    // according to RndCam::WorldToScreen it does
+    float operator*=(float f){
+        x *= f; y *= f;
+        return f;
     }
+
     void Zero(){ x = y = 0.0f; }
 
     Vector2& operator/=(float f){

@@ -1,22 +1,10 @@
-#ifndef RNDOBJ_COLORXFM_H
-#define RNDOBJ_COLORXFM_H
+#pragma once
 #include "math/Color.h"
 #include "math/Mtx.h"
 #include "utl/BinStream.h"
 
 class RndColorXfm {
 public:
-    float mHue;
-    float mSaturation;
-    float mLightness;
-    float mContrast;
-    float mBrightness;
-    Hmx::Color mLevelInLo;
-    Hmx::Color mLevelInHi;
-    Hmx::Color mLevelOutLo;
-    Hmx::Color mLevelOutHi;
-    Transform mColorXfm;
-
     RndColorXfm();
     void Reset();
     void AdjustHue();
@@ -27,11 +15,20 @@ public:
     void AdjustLevels();
     void AdjustColorXfm();
     bool Load(BinStream&);
+
+    float mHue; // 0x0
+    float mSaturation; // 0x4
+    float mLightness; // 0x8
+    float mContrast; // 0xc
+    float mBrightness; // 0x10
+    Hmx::Color mLevelInLo; // 0x14
+    Hmx::Color mLevelInHi; // 0x24
+    Hmx::Color mLevelOutLo; // 0x34
+    Hmx::Color mLevelOutHi; // 0x44
+    Transform mColorXfm; // 0x54
 };
 
 inline BinStream& operator>>(BinStream& bs, RndColorXfm& xfm){
     xfm.Load(bs);
     return bs;
 }
-
-#endif

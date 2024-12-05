@@ -42,7 +42,9 @@ public:
     virtual float StartFrame(){ return 0; }
     /** Get this animatable's last frame. */
     virtual float EndFrame(){ return 0; }
+    /** The actual target Object we want to animate. */
     virtual Hmx::Object* AnimTarget(){ return this; }
+    /** Set any of this Anim's keys values to any relevant anim target properties at the given frame. */
     virtual void SetKey(float frame){}
     /** Get the list of this Object's children that are animatable. */
     virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}

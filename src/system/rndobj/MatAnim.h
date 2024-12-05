@@ -41,9 +41,15 @@ public:
     virtual void Replace(Hmx::Object*, Hmx::Object*);
     virtual void Print();
 
-    void SetMat(RndMat*);
-    void LoadStage(BinStream&);
+    /** Load one animation stage from the BinStream.
+     * A stage consists of trans, scale, rot and texture keys in that order.
+     */
+    void LoadStage(BinStream&); // possibly private
+    /** Load all animation stages from the BinStream. */
     void LoadStages(BinStream&);
+
+    // getters/setters
+    void SetMat(RndMat*);
     Keys<Vector3, Vector3>& TransKeys(){ return mKeysOwner->mTransKeys; }
     Keys<Vector3, Vector3>& ScaleKeys(){ return mKeysOwner->mScaleKeys; }
     TexKeys& GetTexKeys(){ return mKeysOwner->mTexKeys; }
@@ -59,13 +65,21 @@ public:
     static void Init(){ REGISTER_OBJ_FACTORY(RndMatAnim) }
     static Hmx::Object* sOwner;
 
+    /** The Mat to animate. */
     ObjPtr<RndMat> mMat; // 0x10
+    /** The MatAnim that owns all of these keys. */
     ObjOwnerPtr<RndMatAnim> mKeysOwner; // 0x1c
+    /** The collection of Color keys. */
     Keys<Hmx::Color, Hmx::Color> mColorKeys; // 0x28
+    /** The collection of alpha keys. */
     Keys<float, float> mAlphaKeys; // 0x30
+    /** The collection of position keys. */
     Keys<Vector3, Vector3> mTransKeys; // 0x38
+    /** The collection of scale keys. */
     Keys<Vector3, Vector3> mScaleKeys; // 0x40
+    /** The collection of rotation keys. */
     Keys<Vector3, Vector3> mRotKeys; // 0x48
+    /** The collection of texture keys. */
     TexKeys mTexKeys; // 0x50
 };
 

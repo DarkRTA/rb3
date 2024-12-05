@@ -1,4 +1,5 @@
 #include "rndobj/Morph.h"
+#include "math/Vec.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -6,13 +7,94 @@
 #include "rndobj/Mesh.h"
 #include "utl/BinStream.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols3.h"
 #include "utl/TextStream.h"
 
 INIT_REVS(RndMorph)
 
 RndMorph::RndMorph() : mPoses(this), mTarget(this, 0), mNormals(0), mSpline(0), mIntensity(1.0f) {
 
+}
+
+float RndMorph::InterpWeight(const Keys<float, float>& keys, float frame){
+    const Key<float>* prev;
+    const Key<float>* next;
+    float ref;
+    keys.AtFrame(frame, prev, next, ref);
+    if(prev){
+        if(mSpline){
+            float prevVal = prev->value;
+            float ret = 0;
+            if(prevVal || next->value){
+                float f2 = prevVal * 2.0f - next->value * 2.0f;
+                ret = ref * ref * (f2 * ref + f2 * -3.0f * 0.5f) + prevVal;
+            }
+            return ret;
+        }
+        else return Interp(prev->value, next->value, ref);
+    }
+    else return 0;
+}
+
+// retail scratch: https://decomp.me/scratch/UVC1l
+void RndMorph::SetFrame(float frame, float blend){
+    RndAnimatable::SetFrame(frame, blend);
+    if(!mTarget || mPoses.empty()) return;
+    else {
+        float f1 = 1.0f;
+        bool b3 = true;
+        RndMesh::Vert* vertEnd = mTarget->Verts().end();
+        if(blend != 1.0f){
+            b3 = false;
+            float scalar = 1.0f - blend;
+            for(RndMesh::Vert* it = mTarget->Verts().begin(); it != vertEnd; ++it){
+                it->pos *= scalar;
+                if(mNormals){
+                    it->norm *= scalar;
+                }
+            }
+        }
+        for(ObjVector<Pose>::reverse_iterator it = mPoses.rbegin(); it != mPoses.rend(); ++it){
+            if((*it).mesh){
+                RndMesh::Vert* itVert = (*it).mesh->Verts().begin();
+                RndMesh::Vert* itVertEnd = (*it).mesh->Verts().end();
+                RndMesh::Vert* targetIt = mTarget->Verts().begin();
+                float intenseInterp;
+                if(it + 1 == mPoses.rend()){
+                    intenseInterp = f1;
+                }
+                else {
+                    intenseInterp = mIntensity * InterpWeight((*it).weights, frame);
+                    f1 = f1 - intenseInterp;
+                }
+                if(intenseInterp != 0){
+                    intenseInterp *= blend;
+                    if(b3){
+                        b3 = false;
+                        for(; targetIt != vertEnd && itVert != itVertEnd; ++targetIt, ++itVert){
+                            Scale(targetIt->pos, intenseInterp, itVert->pos);
+                            if(mNormals){
+                                Scale(targetIt->norm, intenseInterp, itVert->norm);
+                            }
+                        }
+                    }
+                    else {
+                        for(; targetIt != vertEnd && itVert != itVertEnd; ++targetIt, ++itVert){
+                            ScaleAddEq(targetIt->pos, itVert->pos, intenseInterp);
+                            if(mNormals){
+                                ScaleAddEq(targetIt->norm, itVert->norm, intenseInterp);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(mNormals){
+            for(RndMesh::Vert* it = mTarget->Verts().begin(); it != vertEnd; ++it){
+                Normalize(it->norm, it->norm);
+            }
+        }
+        mTarget->Sync(0x1F);
+    }
 }
 
 float RndMorph::EndFrame(){

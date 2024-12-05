@@ -69,7 +69,7 @@ namespace Hmx {
             z.z = mtx.z.z;
             return *this;
         }
-        Vector3& operator[](int);
+        Vector3& operator[](int i){ return *(&x + i); }
 
         bool operator==(const Matrix3& mtx) const {
             return x == mtx.x && y == mtx.y && z == mtx.z;
@@ -253,6 +253,8 @@ inline BinStream& operator>>(BinStream& bs, Plane& pl){
 class Frustum {
     // total size: 0x60
 public:
+    void Set(float, float, float, float);
+
     class Plane front; // offset 0x0, size 0x10
     class Plane back; // offset 0x10, size 0x10
     class Plane left; // offset 0x20, size 0x10
@@ -297,6 +299,16 @@ void Multiply(const Transform&, const Vector3&, Vector3&);
 void Multiply(const Vector3&, const Hmx::Quat&, Vector3&);
 void Multiply(const Vector3&, const Transform&, Vector3&);
 void Multiply(const Plane&, const Transform&, Plane&);
+
+inline void Multiply(const Frustum& fin, const Transform& tf, Frustum& fout){
+    Multiply(fin.front, tf, fout.front);
+    Multiply(fin.back, tf, fout.back);
+    Multiply(fin.left, tf, fout.left);
+    Multiply(fin.right, tf, fout.right);
+    Multiply(fin.top, tf, fout.top);
+    Multiply(fin.bottom, tf, fout.bottom);
+}
+
 void Interp(const Hmx::Matrix3&, const Hmx::Matrix3&, float, Hmx::Matrix3&);
 void NormalizeTo(const Hmx::Quat&, Hmx::Quat&);
 bool operator<=(const Vector3&, const Plane&);

@@ -53,9 +53,9 @@ void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, cons
 
 // fn_802E36D4 - InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*)
 // https://decomp.me/scratch/hblrn - retail
-void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* prev, const Key<Vector3>* next, float ref, bool b, Vector3& vref, Vector3* vptr){
+void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* prev, const Key<Vector3>* next, float ref, bool spline, Vector3& vref, Vector3* vptr){
     if(keys.size() < 3){
-        b = false;
+        spline = false;
         if(keys.size() < 2){
             if(vptr) vptr->Set(0.0f,1.0f,0.0f);
             if(keys.size() != 0) vref = prev->value;
@@ -64,7 +64,7 @@ void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* prev, 
         }
     }
     int idx = prev - keys.begin();
-    if(b){
+    if(spline){
         float fsq = ref * ref;
         float fcubed = fsq * ref;
         float fsq3 = fsq * 3.0f;
@@ -95,12 +95,12 @@ void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* prev, 
     }
 }
 
-void InterpVector(const Keys<Vector3, Vector3>& keys, bool b, float frame, Vector3& vref, Vector3* vptr){
+void InterpVector(const Keys<Vector3, Vector3>& keys, bool spline, float frame, Vector3& vref, Vector3* vptr){
     const Key<Vector3>* prev;
     const Key<Vector3>* next;
     float ref;
     keys.AtFrame(frame, prev, next, ref);
-    InterpVector(keys, prev, next, ref, b, vref, vptr);
+    InterpVector(keys, prev, next, ref, spline, vref, vptr);
 }
 
 void QuatSpline(const Keys<Hmx::Quat, Hmx::Quat>& keys, const Key<Hmx::Quat>* prev, const Key<Hmx::Quat>* next, float ref, Hmx::Quat& qout){

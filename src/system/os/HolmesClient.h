@@ -12,6 +12,7 @@
 #include "os/File.h"
 #include "os/NetworkSocket.h"
 #include "types.h"
+#include "obj/Msg.h"
 
 namespace Holmes {
     enum Protocol {
@@ -98,6 +99,7 @@ void HolmesClientPrint(const char*);
 void HolmesClientWrite(int, int, int, const void*);
 void HolmesClientClose(File*, int);
 void HolmesClientTruncate(int, int);
+void HolmesClientSendMessage(const Message&);
 
 FileStat* HolmesClientGetStat(const char*, FileStat&);
 

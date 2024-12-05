@@ -1,7 +1,11 @@
-#ifndef RNDOBJ_TRANSPROXY_H
-#define RNDOBJ_TRANSPROXY_H
+#pragma once
 #include "rndobj/Trans.h"
 
+/**
+ * @brief A RndTransformable but within a proxy.
+ * Original _objects description:
+ * "Stand-in for a RndTransformable inside of a proxy, so you can use it"
+ */
 class RndTransProxy : public RndTransformable {
 public:
     RndTransProxy();
@@ -16,9 +20,10 @@ public:
     virtual void PreSave(BinStream&);
     virtual void PostSave(BinStream&);
 
+    // setters
     void SetProxy(ObjectDir*);
     void SetPart(Symbol);
-    void Sync();
+    void Sync(); // probably private
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -28,8 +33,8 @@ public:
     }
     DECLARE_REVS;
 
-    ObjPtr<ObjectDir, ObjectDir> mProxy;
-    Symbol mPart;
+    /** "Proxy object this will look into." */
+    ObjPtr<ObjectDir> mProxy; // 0x90
+    /** "The part inside it" */
+    Symbol mPart; // 0x9c
 };
-
-#endif

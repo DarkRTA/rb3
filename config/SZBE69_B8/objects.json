@@ -1173,9 +1173,12 @@
                 "comment": "Retail matches fine, debug and its inlining just sucks"
             },
             "system/rndobj/Bitmap.cpp": "NonMatching",
-            "system/rndobj/BoxMap.cpp": "MISSING",
+            "system/rndobj/BoxMap.cpp": "NonMatching",
             "system/rndobj/Cam.cpp": "NonMatching",
-            "system/rndobj/CamAnim.cpp": "NonMatching",
+            "system/rndobj/CamAnim.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/ColorXfm.cpp": "NonMatching",
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": {
@@ -1188,7 +1191,10 @@
             },
             "system/rndobj/DOFProc.cpp": "Matching",
             "system/rndobj/DOFProc_Wii.cpp": "Matching",
-            "system/rndobj/Draw.cpp": "NonMatching",
+            "system/rndobj/Draw.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/Dxt1Compress.cpp": "MISSING",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
@@ -1238,7 +1244,10 @@
             "system/rndobj/TexRenderer.cpp": "NonMatching",
             "system/rndobj/Text.cpp": "NonMatching",
             "system/rndobj/Trans.cpp": "NonMatching",
-            "system/rndobj/TransAnim.cpp": "NonMatching",
+            "system/rndobj/TransAnim.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/rndobj/TransProxy.cpp": "Matching",
             "system/rndobj/Utl.cpp": "NonMatching",
             "system/rndobj/Wind.cpp": "NonMatching",

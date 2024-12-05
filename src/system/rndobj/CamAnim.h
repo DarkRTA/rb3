@@ -1,10 +1,14 @@
-#ifndef RNDOBJ_CAMANIM_H
-#define RNDOBJ_CAMANIM_H
+#pragma once
 #include "rndobj/Anim.h"
 #include "rndobj/Cam.h"
 #include "obj/ObjPtr_p.h"
-#include "rndobj/PropKeys.h"
+#include "math/Key.h"
 
+/**
+ * @brief A class for animating Cams.
+ * Original _objects description:
+ * "A CamAnim object animates Camera properties."
+ */
 class RndCamAnim : public RndAnimatable {
 public:
     RndCamAnim();
@@ -34,9 +38,10 @@ public:
         REGISTER_OBJ_FACTORY(RndCamAnim)
     }
 
-    ObjPtr<RndCam, ObjectDir> mCam; // 0x10
+    /** The Cam to animate. */
+    ObjPtr<RndCam> mCam; // 0x10
+    /** The collection of FOV keys. */
     Keys<float, float> mFovKeys; // 0x1c
-    ObjOwnerPtr<RndCamAnim, ObjectDir> mKeysOwner; // 0x24
+    /** The CamAnim that owns all of these keys. */
+    ObjOwnerPtr<RndCamAnim> mKeysOwner; // 0x24
 };
-
-#endif

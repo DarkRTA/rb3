@@ -38,4 +38,18 @@ inline BinStream& operator>>(BinStream& bs, Sphere& s){
 bool operator>(const Sphere&, const Frustum&);
 void Multiply(const Sphere&, const Transform&, Sphere&);
 
+// is the sphere in front of or on the plane?
+inline bool operator>=(const Sphere& s, const Plane& p){
+    float rad = s.GetRadius();
+    float dot = p.Dot(s.center);
+    return dot >= rad ? true : false;
+}
+
+// is the sphere behind the plane?
+inline bool operator<(const Sphere& s, const Plane& p){
+    float rad = -s.GetRadius();
+    float dot = p.Dot(s.center);
+    return dot < rad ? true : false;
+}
+
 #endif

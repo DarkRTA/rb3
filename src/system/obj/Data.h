@@ -127,6 +127,7 @@ public:
     Hmx::Object* UncheckedObj() const { return mValue.object; }
     DataArray* UncheckedArray() const { return mValue.array; }
     DataNode* UncheckedVar() const { return mValue.var; }
+    DataFunc* UncheckedFunc() const { return mValue.func; }
 
     int Int(const DataArray* source = nullptr) const;
     int LiteralInt(const DataArray* source = nullptr) const;
@@ -200,6 +201,7 @@ public:
     Hmx::Object* UncheckedObj(int i) const { return Node(i).UncheckedObj(); }
     DataNode* UncheckedVar(int i) const { return Node(i).UncheckedVar(); }
     DataArray* UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
+    DataFunc* UncheckedFunc(int i) const { return Node(i).UncheckedFunc(); }
 
     DataType Type(int i) const { return Node(i).Type(); }
     int Int(int i) const { return Node(i).Int(this); }
@@ -373,3 +375,9 @@ public:
 };
 
 inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
+
+#define HANDLE_STACK_SIZE 100
+extern DataArray* gCallStack[HANDLE_STACK_SIZE];
+extern DataArray** gCallStackPtr;
+extern DataFunc* gPreExecuteFunc;
+extern int gPreExecuteLevel;
