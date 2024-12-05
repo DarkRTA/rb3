@@ -28,6 +28,8 @@ public:
         mTimer.Restart();
     }
 
+    int NumLines() const { return mLines.size(); }
+
     void SetTimeout(float);
     void SetLines(int);
     void Clear();

@@ -6,8 +6,11 @@
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
 #include "os/File.h"
+#include "os/HolmesClient.h"
+#include "os/Keyboard.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
+#include "rndobj/Rnd.h"
 #include <string.h>
 
 static RndConsole* gConsole;
@@ -193,37 +196,77 @@ void RndConsole::Breakpoints(){
     }
 }
 
-void RndConsole::List() {
-    if (mDebugging) {
+void RndConsole::Break(DataArray* arr){
+    if(mDebugging) MILO_FAIL("Can't break while debugging, did you mean set_break?");
+    if(arr->UncheckedFunc(0) != DataNop){
+        bool drawing = TheRnd->Drawing();
+        bool showing = mShowing;
+        Hmx::Color oldClear = TheRnd->mClearColor;
+        if(drawing){
+            TheRnd->EndDrawing();
+        }
+        if(!showing){
+            SetShowing(true);
+        }
+        TheRnd->SetClearColor(Hmx::Color(0,0,0));
+        mDebugging = arr;
+        mLevel = 0;
+        gPreExecuteFunc = nullptr;
+        mInput->Clear();
+        if(arr->UncheckedFunc(0) == DataBreak){
+            *mInput << "Break at ";
+        }
+        else *mInput << "Step to ";
+        *mInput << arr->File() << ":" << arr->Line() << "\n";
+        List();
+        while(mDebugging){
+            KeyboardPoll();
+            TheRnd->BeginDrawing();
+            TheRnd->EndDrawing();
+        }
         mOutput->Clear();
-        if (File* f = NewFile(mDebugging->File(), 2)) {
-            int i = 1;
-            int x = mOutput->mLines.size();
-            int y = mDebugging->Line();
-            int z = y - x / 2;
-            do {
-                char buf[4];
-                f->Read(buf, 1);
-                if (i > z) *mOutput << buf[0];
-                i++;
-                char brk = '>';
-                if (i == mDebugging->mLine) brk = ':';
-                *mOutput << MakeString("%3d%c", i, brk);
-            } while (i > y);
+        TheRnd->SetClearColor(oldClear);
+        if(!showing) SetShowing(false);
+        if(drawing) TheRnd->BeginDrawing();
+    }
+}
 
+void RndConsole::List() {
+    if(mDebugging){
+        mOutput->Clear();
+        File* f = NewFile(mDebugging->File(), 2);
+        if(f){
+            int i = 1;
+            int numlines = mOutput->NumLines() / 2;
+            int i4 = mDebugging->Line() - numlines;
+            numlines += mDebugging->Line();
+            do {
+                char buf;
+                int read = f->Read(&buf, 1);
+                if(i > i4){
+                    *mOutput << buf;
+                }
+                if(buf == '\n' || read == 0){
+                    i++;
+                    if(i > i4 && i < numlines){
+                        *mOutput << MakeString("%3d%c", i, i == mDebugging->Line() ? '>' : ':');
+                    }
+                }
+            } while(i < numlines);
             delete f;
         }
-    } else MILO_FAIL("Can't list unless debugging");
+    }
+    else MILO_FAIL("Can't list unless debugging");
 }
 
 void RndConsole::Where(){
     if(mDebugging){
         mOutput->Clear();
-        for(DataArray** it = gCallStackPtr - 2 * sizeof(DataArray*); (int)it > gPreExecuteLevel + 3U; it--){
+        for(DataArray** it = &gCallStackPtr[-2]; it >= gCallStack; it--){
             if(*it != mDebugging){
-                TheDebug << "  ";
+                MILO_LOG("  ");
             }
-            TheDebug << MakeString("%s:%d\n", (*it)->mFile, (*it)->mLine);
+            MILO_LOG("%s:%d\n", (*it)->File(), (*it)->Line());
         }
     }
     else MILO_FAIL("Can't where unless debugging");
@@ -231,9 +274,10 @@ void RndConsole::Where(){
 
 void RndConsole::Step(int i) {
     if (mDebugging) {
-        mDebugging = 0;
+        mDebugging = nullptr;
         gPreExecuteFunc = *DataBreak;
-
+        int idx = gCallStackPtr - gCallStack;
+        gPreExecuteLevel = idx + mLevel + i;
     } else MILO_FAIL("Can't step unless debugging");
 }
 
@@ -316,12 +360,34 @@ RndConsole::RndConsole() : mShowing(0), mBuffer(),
     DataRegisterFunc("breakpoints", DataBreakpoints);
     DataRegisterFunc("up", DataUp);
     DataRegisterFunc("down", DataDown);
-    DataRegisterFunc("cpp_break", DataCppBreak);
+    DataRegisterFunc("cppbreak", DataCppBreak);
     DataRegisterFunc("help", DataHelp);
 }
 
 RndConsole::~RndConsole(){
     TheDebug.SetReflect(0);
+}
+
+void RndConsole::SetShowing(bool show){
+#ifdef MILO_DEBUG
+    if(mShowing != show){
+        if(show){
+            mInput->Clear();
+            mKeyboardOverride = KeyboardOverride(this);
+            TheDebug.SetReflect(mOutput);
+        }
+        else {
+            KeyboardOverride(mKeyboardOverride);
+            TheDebug.SetReflect(nullptr);
+            mDebugging = nullptr;
+        }
+        mShowing = show;
+        mOutput->SetOverlay(show);
+        mInput->SetOverlay(show);
+        Message msg("rnd_console_showing", show);
+        HolmesClientSendMessage(msg);
+    }
+#endif
 }
 
 BEGIN_HANDLERS(RndConsole)
