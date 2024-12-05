@@ -22,6 +22,7 @@ public:
 
     void SetCallback(Callback* cb){ mCallback = cb; }
     bool Showing() const { return mShowing; }
+    void SetCursorChar(int cursChar){ mCursorChar = cursChar; }
 
     void SetOverlay(bool b){
         mShowing = b;

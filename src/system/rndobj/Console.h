@@ -32,6 +32,7 @@ public:
     void Continue();
     void Help(Symbol);
     void SetShowing(bool);
+    void ExecuteLine();
     int OnMsg(const KeyboardKeyMsg&);
 
     NEW_POOL_OVERLOAD(RndConsole);

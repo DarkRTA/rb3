@@ -396,15 +396,127 @@ BEGIN_HANDLERS(RndConsole)
 END_HANDLERS
 
 int RndConsole::OnMsg(const KeyboardKeyMsg& msg) {
-    if (!mShowing) return 0;
-    if (msg.mData->Int(2) == 302) SetShowing(false);
-    else {
-        if (msg.mData->Int(2) == 9) {
-            if (mTabLen == 0) mTabLen = strlen(mInput->CurrentLine().c_str());
+    if(!mShowing) return 0;
+    if(msg.GetKey() == 0x12E){
+#ifdef MILO_DEBUG
+        SetShowing(false);
+#endif
+    }
+    else if(msg.GetKey() == 9){
+        if(mTabLen == 0) mTabLen = mInput->CurrentLine().length();
+        if(!mBuffer.empty()){
+            if(mBufPtr == mBuffer.end()){
+                mBufPtr = mBuffer.begin();
+            }
+            do {
+                ++mBufPtr;
+                if(mBufPtr == mBuffer.end()){
+                    mBufPtr = mBuffer.begin();
+                }
+                if(strncmp(mInput->CurrentLine().c_str(), (*mBufPtr).c_str(), mTabLen) == 0){
+                    mInput->CurrentLine() = *mBufPtr;
+                    break;
+                }
+            } while(mBufPtr != mBuffer.end());
+        }
+        MinEq<int>(mCursor, mInput->CurrentLine().length());
+    }
+    else if(msg.GetKey() == 0x142){
+        if(!mBuffer.empty()){
+            if(mBufPtr != mBuffer.end()){
+                ++mBufPtr;
+            }
+            if(mBufPtr == mBuffer.end()){
+                mBufPtr = mBuffer.begin();
+            }
+            mInput->CurrentLine() = *mBufPtr;
+        }
+        mCursor = mInput->CurrentLine().length();
+    }
+    else if(msg.GetKey() == 0x143){
+        if(!mBuffer.empty()){
+            if(mBufPtr != mBuffer.end()){
+                ++mBufPtr;
+            }
+//               fn_8000DBB0(auStack_5c,this + 0x28);
+//               uVar3 = fn_8000DAFC(auStack_58,auStack_5c);
+//               iVar1 = ObjPtrList<>::iterator::operator_!=(this + 0x30,uVar3);
+//               if (iVar1 == 0) {
+//                 fn_8000DB30(auStack_60,this + 0x28);
+//                 fn_8000F5F0(this + 0x30,auStack_60);
+//               }
+//               else {
+//                 fn_80236B8C(this + 0x30);
+//               }
+//               fn_8000DB30(auStack_68,this + 0x28);
+//               pSVar4 = fn_8000DAFC(auStack_64,auStack_68);
+//               iVar1 = Symbol::operator_==(this + 0x30,pSVar4);
+//               if (iVar1 != 0) {
+//                 fn_8000DB30(auStack_70,this + 0x28);
+//                 fn_805D1EA4(auStack_6c,auStack_70,1);
+//                 fn_8000F5F0(this + 0x30,auStack_6c);
+//               }
+//               pSVar6 = stlpmtx_std::_List_iterator<>::operator*(this + 0x30);
+//               pSVar2 = RndOverlay::CurrentLine(*(this + 0x24));
+//               String::operator_=(pSVar2,pSVar6);
+        }
+        MinEq<int>(mCursor, mInput->CurrentLine().length());
+    }
+    else if(msg.GetKey() == 8){
+        String& curLine = mInput->CurrentLine();
+        if(mCursor != 0){
+            mCursor--;
+            curLine.erase(mCursor, 1);
         }
     }
-
-    mTabLen = msg.mData->Int(2) == 10 ? mCursor : -1;
-    if (msg.mData->Int(2) != 9) mTabLen = 0;
+    else if(msg.GetKey() == 0x137){
+        String& curLine = mInput->CurrentLine();
+        if(mCursor < mInput->CurrentLine().length()){
+            curLine.erase(mCursor, 1);
+        }
+    }
+    else if(msg.GetKey() == 0x140){
+        mCursor = Max(mCursor - 1, 0);
+    }
+    else if(msg.GetKey() == 0x141){
+        mCursor = Min<int>(mCursor + 1, mInput->CurrentLine().length());
+    }
+    else if(msg.GetKey() == 0x139){
+        mCursor = mInput->CurrentLine().length();
+    }
+    else if(msg.GetKey() == 0x138){
+        mCursor = 0;
+    }
+    else if(msg.GetKey() == 10){
+        mCursor = 0;
+        MILO_TRY {
+            ExecuteLine();
+        } MILO_CATCH(errMsg){
+            mInput->CurrentLine().erase();
+            *mInput << errMsg << "\n";
+            MILO_LOG("%s\n", errMsg);
+        }
+    }
+    else if(msg.GetKey() == 0x7D){
+        if(msg.GetCtrl()){
+            String& curLine = mInput->CurrentLine();
+            curLine.insert(0, 1, '{');
+            curLine.insert(curLine.length(), "} ");
+            mCursor = curLine.length();
+        }
+        else {
+            char buf[2] = { '\0', '\0' };
+            buf[0] = msg.GetKey();
+            if(mCursor > mInput->CurrentLine().length()){
+                mCursor = mInput->CurrentLine().length();
+            }
+            mInput->CurrentLine().insert(mCursor, buf);
+            mCursor++;
+        }
+    }
+    mInput->SetCursorChar(msg.GetKey() == 10 ? -1 : mCursor);
+    if(msg.GetKey() != 9){
+        mTabLen = 0;
+    }
     return 0;
 }
