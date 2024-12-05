@@ -9,6 +9,9 @@ public:
     void Clear(){ mNumElements = 0; }
     bool CanAddEntry() const { return mNumElements < T2; }
     T1* AddEntry(){ return &mArray[mNumElements++]; }
+    void RemoveEntry(){ mNumElements--; }
+    unsigned int NumElements() const { return mNumElements; }
+    const T1& operator[](int idx) const { return mArray[idx]; }
 
     T1 mArray[T2]; // 0x0
     unsigned int mNumElements;
@@ -26,8 +29,8 @@ public:
     struct LightParams_Point {
         Vector3 unk0; // 0x0
         Hmx::Color mColor; // 0xc
-        float unk1c, unk20;
-        // Vector3 unk1c;
+        float mRange; // 0x1c
+        float mFalloffStart; // 0x20
     };
 
     // size 0x50
@@ -48,6 +51,13 @@ public:
     BoxMapLighting();
     void Clear();
     bool QueueLight(RndLight*, float);
+    bool CacheData(LightParams_Spot&);
+    void ApplyQueuedLights(Hmx::Color*, const Vector3*) const;
+
+    void ApplyLight(Hmx::Color*, const LightParams_Directional&) const;
+    void ApplyLight(Hmx::Color*, const LightParams_Point&, const Vector3&) const;
+    void ApplyLight(Hmx::Color*, const BoxLightArray<BoxMapLighting::LightParams_Spot, 50>&, const Vector3&) const;
+
     bool ParamsAt(LightParams_Directional*& pd){
         if(mQueued_Directional.CanAddEntry()){
             pd = mQueued_Directional.AddEntry();
@@ -62,6 +72,8 @@ public:
         }
         else return false;
     }
+
+    static Vector3 sAxisDir[6];
 
     BoxLightArray<LightParams_Directional, 50> mQueued_Directional; // 0x0
     BoxLightArray<LightParams_Point, 50> mQueued_Point; // 0x57c
