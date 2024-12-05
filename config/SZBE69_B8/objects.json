@@ -1458,7 +1458,7 @@
 
             "system/world/CameraManager.cpp": "NonMatching",
             "system/world/CameraShot.cpp": "NonMatching",
-            "system/world/ColorPalette.cpp": "Equivalent",
+            "system/world/ColorPalette.cpp": "Matching",
             "system/world/Crowd.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
             "system/world/EventAnim.cpp": "NonMatching",

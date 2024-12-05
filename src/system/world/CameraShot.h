@@ -212,4 +212,8 @@ public:
 
 void LoadDrawables(BinStream&, std::vector<RndDrawable*>&, ObjectDir*);
 
+struct NameSort {
+    bool operator()(CamShot* o1, CamShot* o2) const { return strcmp(o1->Name(), o2->Name()) < 0; }
+};
+
 #endif

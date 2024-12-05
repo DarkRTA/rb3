@@ -289,6 +289,11 @@ public:
     DELETE_POOL_OVERLOAD(DataArray);
 };
 
+inline TextStream& operator<<(TextStream& ts, const DataNode& node){
+    node.Print(ts, false);
+    return ts;
+}
+
 inline BinStream& operator<<(BinStream &bs, const DataNode& node) {
     node.Save(bs);
     return bs;
