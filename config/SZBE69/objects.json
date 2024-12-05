@@ -666,6 +666,7 @@
             "system/rndobj/Cam.cpp": "NonMatching",
             "system/rndobj/CamAnim.cpp": "NonMatching",
             "system/rndobj/ColorXfm.cpp": "NonMatching",
+            "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
             "system/rndobj/Dir.cpp": "NonMatching",
             "system/rndobj/DOFProc.cpp": "NonMatching",

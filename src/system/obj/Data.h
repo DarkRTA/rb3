@@ -373,3 +373,9 @@ public:
 };
 
 inline BinStream& operator>>(BinStream& bs, DataArrayPtr& ptr) { ptr.mData->Load(bs); return bs; }
+
+#define HANDLE_STACK_SIZE 100
+extern DataArray* gCallStack[HANDLE_STACK_SIZE];
+extern DataArray** gCallStackPtr;
+extern DataFunc* gPreExecuteFunc;
+extern int gPreExecuteLevel;

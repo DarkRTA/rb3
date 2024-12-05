@@ -12,8 +12,6 @@
 #include "utl/MemMgr.h"
 #include "utl/Symbol.h"
 
-#define HANDLE_STACK_SIZE 100
-
 int gIndent;
 
 std::list<bool> gDataArrayConditional;

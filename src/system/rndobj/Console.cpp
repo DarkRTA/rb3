@@ -1,5 +1,7 @@
 #include "rndobj/Console.h"
+#include "obj/DataUtl.h"
 #include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
@@ -12,85 +14,80 @@ static RndConsole* gConsole;
 
 static DataNode DataContinue(DataArray*) {
     gConsole->Continue();
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataBreak(DataArray* da) {
     gConsole->Break(da);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataStep(DataArray*) {
     gConsole->Step(0);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataNext(DataArray*) {
     gConsole->Step(-1);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataFinish(DataArray*) {
     gConsole->Step(-2);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataList(DataArray*) {
     gConsole->List();
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataWhere(DataArray*) {
     gConsole->Where();
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataSetBreak(DataArray* da) {
     gConsole->SetBreak(da);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataBreakpoints(DataArray*) {
     gConsole->Breakpoints();
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataClear(DataArray* da) {
     int clearInt;
     if(da->Size() < 2) clearInt = 0;
-    else {
-        bool b = ((const DataArray*)(da))->Node(1).Type() == kDataSymbol;
-        if (b) {
-            b = da->Sym(1) == "all"; // i'm just gonna hope that this isn't matching because dtk misreloc moment
-        }
-        clearInt = b ? -1 : da->Int(1);
-    }
+    else if(da->Type(1) == kDataSymbol && da->Sym(1) == "all") clearInt = -1;
+    else clearInt = da->Int(1);
     gConsole->Clear(clearInt);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataNop(DataArray*) {
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataUp(DataArray*) {
     gConsole->MoveLevel(-1);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataDown(DataArray*) {
     gConsole->MoveLevel(1);
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataCppBreak(DataArray*) {
     PlatformDebugBreak();
-    return DataNode(0);
+    return 0;
 }
 
 static DataNode DataHelp(DataArray* da) {
     gConsole->Help(da->Size() > 1 ? da->Sym(1) : "");
-    return DataNode(0);
+    return 0;
 }
 
 RndConsole::Breakpoint::~Breakpoint(){
@@ -98,6 +95,17 @@ RndConsole::Breakpoint::~Breakpoint(){
         DataArray* cmd = parent->Command(index);
         cmd->Node(0) = DataNode(DataNop);
     }
+}
+
+void RndConsole::MoveLevel(int level){
+    if(mDebugging){
+        mLevel += level;
+        int callstackIdx = gCallStack - gCallStackPtr;
+        ClampEq(mLevel, callstackIdx + 2, 0);
+        mDebugging = gCallStackPtr[mLevel - 2];
+        List();
+    }
+    else MILO_FAIL("Can't move level unless debugging");
 }
 
 void RndConsole::InsertBreak(DataArray* arr, int i){
@@ -110,6 +118,79 @@ void RndConsole::InsertBreak(DataArray* arr, int i){
     mBreakpoints.push_back(Breakpoint());
     mBreakpoints.back().parent = arr;
     mBreakpoints.back().index = i;
+}
+
+void RndConsole::SetBreak(DataArray* arr){
+    if(arr->Size() > 1){
+        DataArray* arr9 = nullptr;
+        if(arr->Size() > 2){
+            Hmx::Object* myObj = arr->Obj<Hmx::Object>(1);
+            if(myObj){
+                if(myObj->TypeDef()){
+                    arr9 = myObj->TypeDef()->FindArray(arr->Sym(2), true);
+                }
+            }
+            else if(arr->Size() > 3){
+                arr9 = SystemConfig("objects", arr->Sym(1), "types", arr->Sym(2), arr->Sym(3));
+            }
+        }
+        else if(DataThis()->TypeDef()){
+            arr9 = DataThis()->TypeDef()->FindArray(arr->Sym(1), true);
+        }
+        if(arr9){
+            for(int i = 0; i < arr9->Size(); i++){
+                if(arr9->Type(i) == kDataCommand){
+                    InsertBreak(arr9, i);
+                    return;
+                }
+            }
+        }
+    }
+    else if(gCallStackPtr - gCallStack > 1){
+        DataArray* arr9 = gCallStackPtr[-3];
+        DataArray* arr7 = gCallStackPtr[-2];
+        for(int i = 0; i < arr9->Size(); i++){
+            if(arr9->Type(i) == kDataCommand && arr9->UncheckedArray(i) == arr7){
+                InsertBreak(arr9, i);
+                return;
+            }
+        }
+    }
+    MILO_FAIL("Can't insert break");
+}
+
+void RndConsole::Clear(int iii){
+    if(iii > 0){
+        for(std::list<Breakpoint>::iterator it = mBreakpoints.begin(); it != mBreakpoints.end(); ++it){
+            iii--;
+            if(iii == 0){
+                mBreakpoints.erase(it);
+                return;
+            }
+        }
+    }
+    else if(iii == 0){
+        for(std::list<Breakpoint>::iterator it = mBreakpoints.begin(); it != mBreakpoints.end(); ++it){
+            if((*it).parent->UncheckedArray((*it).index) == mDebugging){
+                mBreakpoints.erase(it);
+                return;
+            }
+        }
+    }
+    else {
+        mBreakpoints.clear();
+        return;
+    }
+    MILO_FAIL("Couldn't clear breakpoint");
+}
+
+void RndConsole::Breakpoints(){
+    mOutput->Clear();
+    int idx = 1;
+    for(std::list<Breakpoint>::iterator it = mBreakpoints.begin(); it != mBreakpoints.end(); ++it){
+        DataArray* cmd = (*it).parent->Command((*it).index);
+        MILO_LOG("%d. %s:%d\n", idx++, cmd->File(), cmd->Line());
+    }
 }
 
 void RndConsole::List() {
@@ -134,13 +215,6 @@ void RndConsole::List() {
         }
     } else MILO_FAIL("Can't list unless debugging");
 }
-
-// // declared/defined in DataArray.cpp
-extern DataArray* gCallStack[100];
-extern DataArray** gCallStackPtr;
-
-extern DataFunc* gPreExecuteFunc;
-extern int gPreExecuteLevel;
 
 void RndConsole::Where(){
     if(mDebugging){
