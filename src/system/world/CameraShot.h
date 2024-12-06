@@ -36,7 +36,7 @@ public:
     bool SameTargets(const CamShotFrame&) const;
     void BuildTransform(RndCam*, Transform&, bool) const;
     const Vector2& MaxAngularOffset() const {
-        return Vector2(mMaxAngularOffsetX * 0.012319971f, mMaxAngularOffsetY * 0.012319971f);
+        return Vector2(mMaxAngularOffset[0] * 0.012319971f, mMaxAngularOffset[1] * 0.012319971f);
     }
 
     float BlurDepth() const { return mBlurDepth * 0.0039215689f; }
@@ -50,8 +50,8 @@ public:
     void SetMaxBlur(float f){ mMaxBlur = f * 255.0f; }
     void SetMinBlur(float f){ mMinBlur = f * 255.0f; }
     void SetMaxAngularOffset(const Vector2& v){
-        mMaxAngularOffsetX = v.x * 81.16902f;
-        mMaxAngularOffsetY = v.y * 81.16902f;
+        mMaxAngularOffset[0] = v.x * 81.16902f;
+        mMaxAngularOffset[1] = v.y * 81.16902f;
     }
 
     /** "Duration this keyframe holds steady" */
@@ -61,6 +61,7 @@ public:
     /** "Amount to ease into this keyframe" */
     float mBlendEase; // 0x8
     float mFrame; // 0xc
+    /** "Camera position for this keyframe" */
     TransformNoScale mWorldOffset; // 0x10
     /** "Screen space offset of target for this keyframe" */
     Vector2 mScreenOffset; // 0x24
@@ -92,19 +93,17 @@ public:
     unsigned char mMaxBlur; // 0x87
     /** "Minimum blurriness" */
     unsigned char mMinBlur; // 0x88
-    char mMaxAngularOffsetX; // 0x89
-    char mMaxAngularOffsetY; // 0x8a
+    char mMaxAngularOffset[2]; // 0x89 - X and Y
     /** "Amount to ease out to the next keyframe" */
     unsigned char mBlendEaseMode : 6; // 0x8b >> 2 & 1
     /** "Whether to take the parent object's rotation into account" */
-    bool mUseParentNotation : 1; // 0x8b >> 1 & 1
+    unsigned char mUseParentNotation : 1; // 0x8b >> 1 & 1
     /** "Only parent on the first frame" */
-    bool mParentFirstFrame : 1; // 0x8b & 1
+    unsigned char mParentFirstFrame : 1; // 0x8b & 1
     // mFieldOfView: 0x84, lensMM, lensPreset
     // mZoomFOV: 0x85
     // lensMM: "Lens focal length for this keyframe. Same as setting field of view above."
     // lens preset: "A preset lens for a 35mm camera that sets the appropriate field of view"
-    // world offset: "Camera position for this keyframe"
     // shake max angle: "Maximum angle for camera shake"
 };
 
@@ -223,6 +222,7 @@ public:
     }
     static Hmx::Object* sAnimTarget;
 
+    /** The collection of keyframes. */
     ObjVector<CamShotFrame> mKeyframes; // 0x10
     /** "If looping true, which keyframe to loop to." */
     int mLoopKeyframe; // 0x1c

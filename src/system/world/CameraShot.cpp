@@ -4,6 +4,7 @@
 #include "decomp.h"
 #include "math/Rand.h"
 #include "obj/Data.h"
+#include "obj/DataUtl.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/System.h"
@@ -817,8 +818,8 @@ CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase
     mTargets(o, kObjListNoNull), mCamShot(dynamic_cast<CamShot*>(o)), mParent(o), mFocusTarget(o),
     mZoomFOV(0), mMaxBlur(0xFF), mMinBlur(0),
     mBlendEaseMode(0), mUseParentNotation(0), mParentFirstFrame(0) {
-    mMaxAngularOffsetY = 0;
-    mMaxAngularOffsetX = 0;
+    mMaxAngularOffset[1] = 0;
+    mMaxAngularOffset[0] = 0;
     SetBlurDepth(0.34999999f);
     SetFieldOfView(1.2217305f);
     mWorldOffset.Reset();
@@ -830,8 +831,8 @@ CamShotFrame::CamShotFrame(Hmx::Object* o, const CamShotFrame& frame) : mDuratio
     mWorldOffset(frame.mWorldOffset), mScreenOffset(frame.mScreenOffset), mShakeNoiseAmp(frame.mShakeNoiseAmp), mShakeNoiseFreq(frame.mShakeNoiseFreq), mFocusBlurMultiplier(frame.mFocusBlurMultiplier),
     mTargets(frame.mTargets), mCamShot(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), mFOV(frame.mFOV), mZoomFOV(frame.mZoomFOV),
     mBlurDepth(frame.mBlurDepth), mMaxBlur(frame.mMaxBlur), mMinBlur(frame.mMinBlur), mBlendEaseMode(frame.mBlendEaseMode), mUseParentNotation(frame.mUseParentNotation), mParentFirstFrame(0) {
-    mMaxAngularOffsetX = frame.mMaxAngularOffsetX;
-    mMaxAngularOffsetY = frame.mMaxAngularOffsetY;
+    mMaxAngularOffset[0] = frame.mMaxAngularOffset[0];
+    mMaxAngularOffset[1] = frame.mMaxAngularOffset[1];
 }
 
 void CamShotFrame::Load(BinStream& bs){
@@ -1289,8 +1290,8 @@ BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
         }
     }
     SYNC_PROP(focal_target, o.mFocusTarget)
-    SYNC_PROP_SET(use_parent_rotation, o.mUseParentNotation, o.mUseParentNotation = _val.Int())
-    SYNC_PROP_SET(parent_first_frame, o.mParentFirstFrame, o.mParentFirstFrame = _val.Int())
+    SYNC_PROP_SET(use_parent_rotation, o.mUseParentNotation != 0, o.mUseParentNotation = _val.Int() != 0)
+    SYNC_PROP_SET(parent_first_frame, o.mParentFirstFrame != 0, o.mParentFirstFrame = _val.Int() != 0)
     SYNC_PROP_SET(field_of_view, o.FieldOfView() * RAD2DEG, o.SetFieldOfView(_val.Float() * DEG2RAD))
     SYNC_PROP_SET(lens_mm, ComputeFOVScale(o.FieldOfView()), o.SetFieldOfView(ScaleToFOV(_val.Float())))
     SYNC_PROP_SET(lens_preset, FOV_to_LensSym(o.FieldOfView()), 
@@ -1328,7 +1329,11 @@ BEGIN_PROPSYNCS(CamShot)
     SYNC_PROP(clamp_height, mClampHeight)
     SYNC_PROP(near_plane, mNear)
     SYNC_PROP(far_plane, mFar)
-    SYNC_PROP_STATIC(duration, mDuration)
+    {
+        static Symbol _s("duration");
+        if (sym == _s && _op & kPropGet)
+            return PropSync(mDuration, _val, _prop, _i + 1, _op);
+    }
     SYNC_PROP_SET(use_depth_of_field, mUseDepthOfField, mUseDepthOfField = _val.Int())
     SYNC_PROP(path, mPath)
     SYNC_PROP(path_frame, mPathFrame)
@@ -1346,7 +1351,48 @@ BEGIN_PROPSYNCS(CamShot)
             return ret;
         }
     }
-    SYNC_PROP(flags, mFlags)
+    {
+        static Symbol _s("flags");
+        if(sym == _s){
+            _i++;
+            if(_i < _prop->Size()){
+                DataNode& node = _prop->Node(_i);
+                int res = 0;
+                switch(node.Type()){
+                    case kDataInt:
+                        res = node.Int();
+                        break;
+                    case kDataSymbol: {
+                        const char* bitstr = node.Sym().Str();
+                        if(strncmp("BIT_", bitstr, 4) != 0){
+                            MILO_FAIL("%s does not begin with BIT_", bitstr);
+                        }
+                        Symbol bitsym(bitstr + 4);
+                        DataArray* macro = DataGetMacro(bitsym);
+                        if(!macro){
+                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
+                        }
+                        res = macro->Int(0);
+                        break;
+                    }
+                    default:
+                        MILO_ASSERT(0, 0xD19);
+                        break;
+                }
+                MILO_ASSERT(_op <= kPropInsert, 0xD19);
+                if(_op == kPropGet){
+                    int final = mFlags & res;
+                    _val = DataNode(final > 0);
+                }
+                else {
+                    if(_val.Int() != 0) mFlags |= res;
+                    else mFlags &= ~res;
+                }
+                return true;
+            }
+            else return PropSync(mFlags, _val, _prop, _i, _op);
+        }
+    }
     SYNC_PROP_SET(disabled, mDisabled, )
     SYNC_PROP(anims, mAnims)
     SYNC_SUPERCLASS(RndAnimatable)
