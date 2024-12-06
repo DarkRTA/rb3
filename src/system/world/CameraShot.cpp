@@ -1,5 +1,14 @@
 #include "world/CameraShot.h"
+#include "bandobj/BandCharacter.h"
+#include "bandobj/BandWardrobe.h"
+#include "obj/Data.h"
+#include "os/Debug.h"
 #include "os/System.h"
+#include "os/Timer.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Cam.h"
+#include "rndobj/Draw.h"
+#include "utl/Messages4.h"
 #include "world/Spotlight.h"
 #include "world/Crowd.h"
 #include "rndobj/Trans.h"
@@ -16,11 +25,11 @@ Hmx::Object* CamShot::sAnimTarget;
 
 INIT_REVS(CamShot);
 
-CamShot::CamShot() : mKeyFrames(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f), mClampHeight(-1.0f), mCategory(),
+CamShot::CamShot() : mKeyframes(this), mLoopKeyframe(0), mNear(1.0f), mFar(1000.0f), mFilter(0.9f), mClampHeight(-1.0f), mCategory(),
     mAnims(this, kObjListNoNull), mPath(this), mDrawOverrides(this, kObjListNoNull), mPathFrame(-1.0f), mPlatformOnly(kPlatformNone),
     mPostProcOverrides(this, kObjListNoNull), mCrowds(this), mGlowSpot(this), mLastShakeOffset(0,0,0), mLastShakeAngOffset(0,0,0),
     mLastDesiredShakeOffset(0,0,0), mLastDesiredShakeAngOffset(0,0,0), mShakeVelocity(0,0,0), mShakeAngVelocity(0,0,0), mLastNext(0), mLastPrev(0),
-    mDuration(0), mDisabled(0), mFlags(0), mLooping(1), mUseDepthOfField(0), mPS3PerPixel(0) {
+    mDuration(0), mDisabled(0), mFlags(0), mLooping(0), mUseDepthOfField(1), mPS3PerPixel(1), unk120p4(1), mShotOver(0), mHidden(0), unk120p1(0) {
 
 }
 
@@ -46,7 +55,8 @@ void CamShot::StartAnim(){
     HandleType(start_shot_msg);
     WorldDir* wdir = dynamic_cast<WorldDir*>(Dir());
     if(wdir) wdir->SetCrowds(mCrowds);
-    // firstframe and shotover are set to 1 and 0 too
+    unk120p4 = true;
+    mShotOver = false;
     mLastNext = nullptr;
     mLastPrev = nullptr;
     mLastShakeOffset.Zero();
@@ -78,15 +88,57 @@ void CamShot::DoHide(){
         mEndShowList.reserve(mHideList.size() + mShowList.size() + 3);
         mEndHideList.reserve(unk64.size());
         for(std::vector<RndDrawable*>::iterator it = mHideList.begin(); it != mHideList.end(); ++it){
-            if((*it)->Showing()){
-                (*it)->SetShowing(false);
-                mEndShowList.push_back(*it);
+            RndDrawable* curDraw = *it;
+            if(curDraw->Showing()){
+                curDraw->SetShowing(false);
+                mEndShowList.push_back(curDraw);
             }
         }
         for(std::vector<RndDrawable*>::iterator it = mShowList.begin(); it != mShowList.end(); ++it){
-            if((*it)->Showing()){
-                (*it)->SetShowing(false);
-                mEndShowList.push_back(*it);
+            RndDrawable* curDraw = *it;
+            if(curDraw->Showing()){
+                curDraw->SetShowing(false);
+                mEndShowList.push_back(curDraw);
+            }
+        }
+        for(std::vector<Symbol>::iterator it = unk74.begin(); it != unk74.end(); ++it){
+            BandCharacter* targetChar = TheBandWardrobe->FindTarget(*it);
+            if(!targetChar && unk74.size() == 1){
+                if(*it == player_bass0){
+                    targetChar = TheBandWardrobe->FindTarget(player_keyboard0);
+                }
+                else if(*it == player_guitar0){
+                    targetChar = TheBandWardrobe->FindTarget(player_keyboard0);
+                }
+                else if(*it == player_keyboard0){
+                    targetChar = TheBandWardrobe->FindTarget(player_bass0);
+                }
+
+                if(!targetChar){
+                    if(*it == player_bass0){
+                        targetChar = TheBandWardrobe->FindTarget(player_guitar0);
+                    }
+                    else if(*it == player_guitar0){
+                        targetChar = TheBandWardrobe->FindTarget(player_bass0);
+                    }
+                    else if(*it == player_keyboard0){
+                        targetChar = TheBandWardrobe->FindTarget(player_guitar0);
+                    }
+                }
+            }
+            if(targetChar){
+                RndDrawable* drawChar = targetChar;
+                if(drawChar && drawChar->Showing()){
+                    drawChar->SetShowing(false);
+                    mEndShowList.push_back(drawChar);
+                }
+            }
+        }
+        for(std::vector<RndDrawable*>::iterator it = unk64.begin(); it != unk64.end(); ++it){
+            RndDrawable* curDraw = *it;
+            if(!curDraw->Showing()){
+                curDraw->SetShowing(true);
+                mEndHideList.push_back(curDraw);
             }
         }
         mHidden = true;
@@ -123,6 +175,62 @@ RndCam* CamShot::GetCam(){
 }
 #pragma pop
 
+// matches on retail
+void CamShot::SetFrame(float frame, float blend){
+    START_AUTO_TIMER("camera");
+    if(!unk120p1){
+        RndAnimatable::SetFrame(frame, blend);
+        RndCam* cam = GetCam();
+        if(cam){
+            for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+                (*it)->SetFrame(frame, 1.0f);
+            }
+            if(!mKeyframes.empty()){
+                mPathFrame = -1.0f;
+                unk120p1 = true;
+                float endframe = EndFrame();
+                static CamShotFrame nullFrame(nullptr);
+                nullFrame.unk68 = this;
+                float f48 = 1.0f;
+                CamShotFrame* frame4c = nullptr;
+                CamShotFrame* frame50 = nullptr;
+                GetKey(frame, frame4c, frame50, f48);
+                if(mDisabled != 0){
+                    frame50->UpdateTarget();
+                    if(frame4c) frame4c->UpdateTarget();
+                    unk120p1 = false;
+                }
+                else {
+                    if(frame50 != mLastNext){
+                        frame50->UpdateTarget();
+                    }
+                    if(!frame4c){
+                        nullFrame.Interp(*frame50, 1.0f, blend, cam);
+                    }
+                    else {
+                        if(frame4c != mLastPrev){
+                            if(frame4c != mLastNext){
+                                frame4c->UpdateTarget();
+                            }
+                            mLastPrev = frame4c;
+                        }
+                        frame4c->Interp(*frame50, f48, blend, cam);
+                    }
+                    mLastNext = frame50;
+                    if(CheckShotStarted()){
+                        HandleType(shot_started_msg);
+                        unk120p4 = false;
+                    }
+                    if(CheckShotOver(frame)){
+                        SetShotOver();
+                    }
+                    unk120p1 = false;
+                }
+            }
+        }
+    }
+}
+
 float CamShot::EndFrame(){ return mDuration; }
 
 void CamShot::SetShotOver(){
@@ -136,41 +244,119 @@ bool CamShot::CheckShotOver(float f){
     return !mShotOver && !mLooping && f >= mDuration;
 }
 
+void CamShot::GetKey(float frame, CamShotFrame*& prev, CamShotFrame*& next, float& keyBlend){
+    MILO_ASSERT(!mKeyframes.empty(), 0x29B);
+    if(frame <= 0 || mDuration <= 0){
+        prev = nullptr;
+        next = mKeyframes.begin();
+        keyBlend = 1.0f;
+        return;
+    }
+    if(frame >= mKeyframes.back().mFrame){
+        if(mLooping && (mLoopKeyframe < mKeyframes.size() && mLoopKeyframe >= 0)){
+            if(frame >= mDuration){
+                float duration = mDuration - mKeyframes[mLoopKeyframe].mFrame;
+                MILO_ASSERT(duration > 0, 0x2AF);
+                float f9 = std::fmod(frame - mDuration, duration);
+                frame = f9 + mKeyframes[mLoopKeyframe].mFrame;
+            }
+            if(frame >= mKeyframes.back().mFrame){
+                if(mKeyframes.back().mBlend <= 0){
+                    prev = nullptr;
+                    next = &mKeyframes.back();
+                    keyBlend = 1.0f;
+                    return;
+                }
+                float fvar1 = mKeyframes.back().mFrame + mKeyframes.back().mDuration;
+                if(frame > fvar1){
+                    MILO_ASSERT(mKeyframes.back().mBlend > 0, 0x2C4);
+                    prev = &mKeyframes.back();
+                    next = &mKeyframes[mLoopKeyframe];
+                    keyBlend = (frame - fvar1) / mKeyframes.back().mBlend;
+                    return;
+                }
+            }
+            else {
+                goto ok;
+            }
+            prev = nullptr;
+            next = &mKeyframes.back();
+            keyBlend = 1.0f;
+            return;
+        }
+        prev = nullptr;
+        next = &mKeyframes.back();
+        keyBlend = 1.0f;
+        return;
+    }
+ok:
+    int before = 0;
+    int after = mKeyframes.size() - 1;
+    while(after > before + 1){
+        before = before + after >> 1;
+        CamShotFrame& curFrame = mKeyframes[before];
+        if(frame == curFrame.mFrame){
+            prev = nullptr;
+            next = &mKeyframes[before];
+            keyBlend = 1.0f;
+            return;
+        }
+        if(frame > curFrame.mFrame){
+            // ???
+        }
+        else {
+            after = before;
+        }
+    }
+    MILO_ASSERT(frame >= mKeyframes[before].mFrame && frame < mKeyframes[after].mFrame, 0x2F4);
+    float fvar1 = mKeyframes[before].mFrame + mKeyframes[before].mDuration;
+    if(frame > fvar1){
+        MILO_ASSERT(mKeyframes[before].mBlend > 0, 0x2F9);
+        prev = &mKeyframes[before];
+        next = &mKeyframes[after];
+        keyBlend = (frame - fvar1) / mKeyframes[before].mBlend;
+    }
+    else {
+        prev = nullptr;
+        next = &mKeyframes[before];
+        keyBlend = 1.0f;
+    }
+}
+
 void CamShot::CacheFrames(){
     float frames = 0.0f;
-    for(int i = 0; i != mKeyFrames.size(); i++){
-        CamShotFrame& curframe = mKeyFrames[i];
-        curframe.unkc = frames;
+    for(int i = 0; i != mKeyframes.size(); i++){
+        CamShotFrame& curframe = mKeyframes[i];
+        curframe.mFrame = frames;
         frames += curframe.mDuration + curframe.mBlend;
     }
     mDuration = frames;
 }
 
 bool CamShot::ShotOk(CamShot* shot){
-    static Message msg("shot_ok", DataNode(0));
-    msg[0] = DataNode(shot);
+    static Message msg("shot_ok", 0);
+    msg[0] = shot;
     DataNode handled = HandleType(msg);
-    switch(handled.Type()){
-        case kDataUnhandled:
-            break;
-        case kDataString:
-            if(DataVariable("camera_spew") != DataNode(0)){
+    if(handled.Type() != kDataUnhandled){
+        if(handled.Type() == kDataString){
+#ifdef MILO_DEBUG
+            if(DataVariable("camera_spew") != 0)
+#endif
                 MILO_LOG("Shot %s rejected: %s.\n", Name(), handled.Str());
-            }
             return false;
-        default:
-            if(handled.Int()){
-                break;
-            }
-            else {
-                if(DataVariable("camera_spew") != DataNode(0)){
-                    MILO_LOG("Shot %s rejected: not ok.\n", Name());
-                }
-                return false;
-            }
-            break;
+        }
+        else if(handled.Int() == 0){
+#ifdef MILO_DEBUG
+            if(DataVariable("camera_spew") != 0)
+#endif
+                MILO_LOG("Shot %s rejected: not ok.\n", Name());
+            return false;
+        }
+        else {
+            return true;
+        }
     }
-    return true;
+    else return true;
 }
 
 #pragma push
@@ -180,9 +366,9 @@ BEGIN_COPYS(CamShot)
     COPY_SUPERCLASS(RndAnimatable)
     CREATE_COPY(CamShot)
     BEGIN_COPYING_MEMBERS
-        mKeyFrames.clear();
-        for(int i = 0; i != c->mKeyFrames.size(); i++){
-            mKeyFrames.push_back(CamShotFrame(this, c->mKeyFrames[i]));
+        mKeyframes.clear();
+        for(int i = 0; i != c->mKeyframes.size(); i++){
+            mKeyframes.push_back(CamShotFrame(this, c->mKeyframes[i]));
         }
         mCrowds.clear();
         for(int i = 0; i != c->mCrowds.size(); i++){
@@ -223,10 +409,10 @@ RndTransformable* LoadSubPart(BinStream& bs, CamShot* shot){
     Symbol sym;
     bs >> sym;
     if(str.empty()) return 0;
-    RndTransformable* foundTrans = dynamic_cast<RndTransformable*>(shot->Dir()->FindObject(str.c_str(), false));
+    RndTransformable* foundTrans = shot->Dir()->Find<RndTransformable>(str.c_str(), false);
     if(sym.Null()){
         if(foundTrans) return foundTrans;
-        TheDebug << MakeString("%s could not find %s, assuming character, attaching to base\n", PathName(shot), str);
+        MILO_LOG("%s could not find %s, assuming character, attaching to base\n", PathName(shot), str);
     }
     char buf[256];
     strcpy(buf, sym.Str());
@@ -236,7 +422,7 @@ RndTransformable* LoadSubPart(BinStream& bs, CamShot* shot){
         strcpy(buf, "base");
     }
     const char* search = MakeString("%s_%s.tp", str, buf);
-    RndTransProxy* proxy = dynamic_cast<RndTransProxy*>(shot->Dir()->FindObject(search, false));
+    RndTransProxy* proxy = shot->Dir()->Find<RndTransProxy>(search, false);
     if(!proxy){
         proxy = Hmx::Object::New<RndTransProxy>();
         proxy->SetName(search, shot->Dir());
@@ -276,7 +462,7 @@ BEGIN_LOADS(CamShot)
         LOAD_SUPERCLASS(RndAnimatable)
     }
     if(gRev > 0xC){
-        bs >> mKeyFrames;
+        bs >> mKeyframes;
         bs >> bitfield_bool;
         mLooping = bitfield_bool;
         if(gRev > 0x1E) bs >> mLoopKeyframe;
@@ -358,7 +544,7 @@ BEGIN_LOADS(CamShot)
             csf1.mTargets = pList;
             csf1.mParent = ptr;
             csf1.mUseParentNotation = somebool;
-            mKeyFrames.push_back(csf1);
+            mKeyframes.push_back(csf1);
         }
         csf2.mDuration = 0.0f;
         csf2.mBlend = 0.0f;
@@ -372,16 +558,10 @@ BEGIN_LOADS(CamShot)
         csf2.mTargets = pList;
         csf2.mParent = ptr;
         csf2.mUseParentNotation = somebool;
-        mKeyFrames.push_back(csf2);
+        mKeyframes.push_back(csf2);
     }
     bs >> mPath;
-    if(
-        gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 ||
-        gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 ||
-        gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 || gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 ||
-        gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 || gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41 ||
-        gRev == 42 || gRev == 43 || gRev == 44
-    ){
+    if(gRev >= 2 && gRev <= 44){
         float f2b;
         bs >> f2b;
     }
@@ -402,22 +582,11 @@ BEGIN_LOADS(CamShot)
     }
     if(gRev < 1) LOAD_SUPERCLASS(RndAnimatable)
     CamShotCrowd csc(this);
-    if(
-        gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 ||
-        gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 ||
-        gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 || gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 ||
-        gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 || gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
-    ){
+    if(gRev >= 5 && gRev <= 41){
         bs >> csc.unk10;
     }
     int loc240 = -1;
-    if(
-        gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 ||
-        gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 ||
-        gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 || gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
-        gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
-    )
-        bs >> loc240;
+    if(gRev >= 8 && gRev <= 41) bs >> loc240;
     if(gRev > 5){
         mShowList.clear();
         mShowList.clear();
@@ -443,17 +612,8 @@ BEGIN_LOADS(CamShot)
             }
         }
     }
-    if(
-        gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
-        gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
-    )
-        bs >> (int&)csc.mCrowdRotate;
-    if(
-        gRev == 8 || gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 || gRev == 17 ||
-        gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23 || gRev == 24 || gRev == 25 || gRev == 26 || gRev == 27 ||
-        gRev == 28 || gRev == 29 || gRev == 30 || gRev == 31 || gRev == 32 || gRev == 33 || gRev == 34 || gRev == 35 || gRev == 36 || gRev == 37 ||
-        gRev == 38 || gRev == 39 || gRev == 40 || gRev == 41
-    ){
+    if(gRev >= 33 && gRev <= 41) bs >> (int&)csc.mCrowdRotate;
+    if(gRev >= 8 && gRev <= 41){
         if(csc.mCrowd){
             if(loc240 != csc.mCrowd->GetModifyStamp()){
                 csc.unk10.clear();
@@ -473,16 +633,16 @@ next:
         float f250, f254;
         bs >> f250;
         bs >> f254;
-        for(int i = 0; i != mKeyFrames.size(); i++){
-            mKeyFrames[i].mShakeNoiseAmp = f254;
-            mKeyFrames[i].mShakeNoiseFreq = f250;
+        for(int i = 0; i != mKeyframes.size(); i++){
+            mKeyframes[i].mShakeNoiseAmp = f254;
+            mKeyframes[i].mShakeNoiseFreq = f250;
         }
     }
     if(gRev > 0x10 && gRev < 0x12){
         Vector2 v210;
         bs >> v210;
-        for(int i = 0; i != mKeyFrames.size(); i++){
-            mKeyFrames[i].SetMaxAngularOffset(v210);
+        for(int i = 0; i != mKeyframes.size(); i++){
+            mKeyframes[i].SetMaxAngularOffset(v210);
         }
     }
     if(gRev > 0x13) bs >> mGlowSpot;
@@ -524,8 +684,8 @@ void CamShot::Disable(bool b, int i){
     else mDisabled &= ~i;
 }
 
-CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), unkc(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
-    mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o, 0), mFocusTarget(o, 0),
+CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), mFrame(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
+    mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o), mFocusTarget(o),
     mZoomFOV(0), mMaxBlur(0xFF), mMinBlur(0),
     mBlendEaseMode(0), mUseParentNotation(0), mParentFirstFrame(0) {
     mMaxAngularOffsetY = 0;
@@ -550,7 +710,7 @@ void CamShotFrame::Load(BinStream& bs){
     bs >> mBlend;
     bs >> mBlendEase;
     if(CamShot::gRev > 0x2D){
-        bool b; bs >> b;
+        int b; bs >> b;
         mBlendEaseMode = b;
     }
     float fov; bs >> fov;
@@ -853,12 +1013,12 @@ BEGIN_HANDLERS(CamShot)
 END_HANDLERS
 
 DataNode CamShot::OnHasTargets(DataArray* da){
-    return DataNode(mKeyFrames[da->Int(2)].HasTargets());
+    return DataNode(mKeyframes[da->Int(2)].HasTargets());
 }
 
 DataNode CamShot::OnSetPos(DataArray* da){
     int idx = da->Int(2);
-    return DataNode(SetPos(mKeyFrames[idx], RndCam::Current()));
+    return DataNode(SetPos(mKeyframes[idx], RndCam::Current()));
 }
 
 DataNode CamShot::OnClearCrowdChars(DataArray* da){
@@ -925,7 +1085,7 @@ END_CUSTOM_PROPSYNC
 #pragma push
 #pragma pool_data off
 BEGIN_PROPSYNCS(CamShot)
-    SYNC_PROP_MODIFY_ALT(keyframes, mKeyFrames, CacheFrames())
+    SYNC_PROP_MODIFY_ALT(keyframes, mKeyframes, CacheFrames())
     {
         static Symbol _s("looping");
         bool bit = mLooping;

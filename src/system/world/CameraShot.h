@@ -5,6 +5,7 @@
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
+#include "utl/Symbol.h"
 
 class CamShot;
 class Spotlight;
@@ -56,7 +57,7 @@ public:
     float mBlend; // 0x4
     /** "Amount to ease into this keyframe" */
     float mBlendEase; // 0x8
-    float unkc;
+    float mFrame; // 0xc
     TransformNoScale unk10;
     /** "Screen space offset of target for this keyframe" */
     Vector2 mScreenOffset; // 0x24
@@ -192,6 +193,8 @@ public:
     bool SetPos(CamShotFrame&, RndCam*);
     void Shake(float, float, const Vector2&, Vector3&, Vector3&);
     void Disable(bool, int);
+    void GetKey(float, CamShotFrame*&, CamShotFrame*&, float&);
+
     void SetNear(float n){ mNear = n; }
     void SetFar(float f){ mFar = f; }
     float Duration() const { return mDuration; }
@@ -217,7 +220,7 @@ public:
     }
     static Hmx::Object* sAnimTarget;
 
-    ObjVector<CamShotFrame> mKeyFrames; // 0x10
+    ObjVector<CamShotFrame> mKeyframes; // 0x10
     /** "If looping true, which keyframe to loop to." */
     int mLoopKeyframe; // 0x1c
     /** "Near clipping plane for the camera" */
@@ -243,7 +246,7 @@ public:
     std::vector<RndDrawable*> unk64;
     /** "List of objects to show while this camera shot is active, hides them when done" */
     std::vector<RndDrawable*> mShowList; // 0x6c
-    std::vector<RndDrawable*> unk74;
+    std::vector<Symbol> unk74;
     /** "List of objects to draw in order instead of whole world" */
     ObjPtrList<RndDrawable> mDrawOverrides; // 0x7c
     /** "List of objects to draw after post-processing" */
