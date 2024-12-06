@@ -97,9 +97,9 @@ public:
     /** "Amount to ease out to the next keyframe" */
     unsigned char mBlendEaseMode : 6; // 0x8b >> 2 & 1
     /** "Whether to take the parent object's rotation into account" */
-    unsigned char mUseParentNotation : 1; // 0x8b >> 1 & 1
+    bool mUseParentNotation : 1; // 0x8b >> 1 & 1
     /** "Only parent on the first frame" */
-    unsigned char mParentFirstFrame : 1; // 0x8b & 1
+    bool mParentFirstFrame : 1; // 0x8b & 1
     // mFieldOfView: 0x84, lensMM, lensPreset
     // mZoomFOV: 0x85
     // lensMM: "Lens focal length for this keyframe. Same as setting field of view above."

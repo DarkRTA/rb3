@@ -134,6 +134,10 @@ inline bool IsFabsZero(float f){
     return std::fabs(f) < 0.000099999997f ? true : false;
 }
 
+inline bool ApproxEq(float f1, float f2){
+    return std::fabs(f1 - f2) < 0.000099999997f ? true : false;
+}
+
 inline float Modulo(float f1, float f2) {
     if (f2 == 0.0f)
         return 0.0f;

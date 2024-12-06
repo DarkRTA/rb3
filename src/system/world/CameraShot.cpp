@@ -16,6 +16,8 @@
 #include "rndobj/PostProc.h"
 #include "stl/_pair.h"
 #include "utl/Loader.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "world/Spotlight.h"
 #include "world/Crowd.h"
 #include "rndobj/Trans.h"
@@ -1229,6 +1231,38 @@ bool CamShotFrame::OnSyncParent(ObjPtr<RndTransformable>& parent, DataNode& node
     return synced;
 }
 
+inline float ComputeFOVScale(float fov){
+    return 24.0f / (std::tan(fov / 2.0f) * 2.0f);
+}
+
+inline float ScaleToFOV(float scale){
+    return std::atan(24.0f / (scale * 2.0f)) * 2.0f;
+}
+
+Symbol FOV_to_LensSym(float fov){
+    float scaled = ComputeFOVScale(fov);
+    if(ApproxEq(scaled, 15.0f)) return "15mm";
+    else if(ApproxEq(scaled, 20.0f)) return "20mm";
+    else if(ApproxEq(scaled, 24.0f)) return "24mm";
+    else if(ApproxEq(scaled, 28.0f)) return "28mm";
+    else if(ApproxEq(scaled, 35.0f)) return "35mm";
+    else if(ApproxEq(scaled, 50.0f)) return "50mm";
+    else if(ApproxEq(scaled, 85.0f)) return "85mm";
+    else if(ApproxEq(scaled, 135.0f)) return "135mm";
+    else if(ApproxEq(scaled, 200.0f)) return "200mm";
+    else return "Custom";
+}
+
+float LensSym_to_FOV(Symbol sym){
+    String lensStr = sym.mStr;
+    unsigned int idx = lensStr.find("mm");
+    if(idx != String::npos){
+        float scale = atof(lensStr.substr(0, idx).c_str());
+        return ScaleToFOV(scale);
+    }
+    else return -1.0f;
+}
+
 BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
     SYNC_PROP_MODIFY_ALT(crowd, o.mCrowd, o.OnCrowdChanged())
     SYNC_PROP(crowd_rotate, (int&)o.mCrowdRotate)
@@ -1258,6 +1292,21 @@ BEGIN_CUSTOM_PROPSYNC(CamShotFrame)
     SYNC_PROP_SET(use_parent_rotation, o.mUseParentNotation, o.mUseParentNotation = _val.Int())
     SYNC_PROP_SET(parent_first_frame, o.mParentFirstFrame, o.mParentFirstFrame = _val.Int())
     SYNC_PROP_SET(field_of_view, o.FieldOfView() * RAD2DEG, o.SetFieldOfView(_val.Float() * DEG2RAD))
+    SYNC_PROP_SET(lens_mm, ComputeFOVScale(o.FieldOfView()), o.SetFieldOfView(ScaleToFOV(_val.Float())))
+    SYNC_PROP_SET(lens_preset, FOV_to_LensSym(o.FieldOfView()), 
+        { 
+            float fov = LensSym_to_FOV(_val.Sym());
+            if(fov != -1.0f) o.SetFieldOfView(fov);
+            else o.SetFieldOfView(o.FieldOfView() + 0.00010011921f);
+        }
+    )
+    SYNC_PROP_SET(blur_depth, o.BlurDepth(), o.SetBlurDepth(_val.Float()))
+    SYNC_PROP_SET(max_blur, o.MaxBlur(), o.SetMaxBlur(_val.Float()))
+    SYNC_PROP_SET(min_blur, o.MinBlur(), o.SetMinBlur(_val.Float()))
+    SYNC_PROP(focus_blur_multiplier, o.mFocusBlurMultiplier)
+    SYNC_PROP(shake_noisefreq, o.mShakeNoiseFreq)
+    SYNC_PROP(shake_noiseamp, o.mShakeNoiseAmp)
+    SYNC_PROP_SET(zoom_fov, o.ZoomFieldOfView() * RAD2DEG, o.SetZoomFieldOfView(_val.Float() * DEG2RAD))
 END_CUSTOM_PROPSYNC
 
 #pragma push
