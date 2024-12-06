@@ -1,5 +1,4 @@
-#ifndef OBJ_PROPSYNC_H
-#define OBJ_PROPSYNC_H
+#pragma once
 #include "math/Color.h"
 #include "math/Sphere.h"
 #include "math/Mtx.h"
@@ -280,5 +279,3 @@ template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray*
         return false;
     }
 }
-
-#endif

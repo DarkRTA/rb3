@@ -21,6 +21,7 @@ public:
     virtual void DrawShowing();
 
     void SetMultiMesh(RndMultiMesh*, const std::list<RndMultiMesh::Instance>::iterator&);
+    RndMultiMesh* GetMultiMesh() const { return mMultiMesh; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

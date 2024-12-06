@@ -1,6 +1,4 @@
-#ifndef MATH_ROT_H
-#define MATH_ROT_H
-
+#pragma once
 #include "utl/TextStream.h"
 #include "math/Vec.h"
 #include "math/Mtx.h"
@@ -32,5 +30,3 @@ TextStream& operator<<(TextStream& ts, const Vector3& v);
 TextStream& operator<<(TextStream& ts, const Vector2& v);
 TextStream& operator<<(TextStream& ts, const Hmx::Matrix3& m);
 TextStream& operator<<(TextStream& ts, const Transform& t);
-
-#endif

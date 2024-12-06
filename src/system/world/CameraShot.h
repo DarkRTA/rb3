@@ -1,5 +1,6 @@
 #pragma once
 #include "rndobj/Anim.h"
+#include "rndobj/Env.h"
 #include "rndobj/TransAnim.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Draw.h"
@@ -34,7 +35,9 @@ public:
     void Interp(const CamShotFrame&, float, float, RndCam*);
     bool SameTargets(const CamShotFrame&) const;
     void BuildTransform(RndCam*, Transform&, bool) const;
-    const Vector2 MaxAngularOffset() const;
+    const Vector2& MaxAngularOffset() const {
+        return Vector2(mMaxAngularOffsetX * 0.012319971f, mMaxAngularOffsetY * 0.012319971f);
+    }
 
     float BlurDepth() const { return mBlurDepth * 0.0039215689f; }
     float MaxBlur() const { return mMaxBlur * 0.0039215689f; }
@@ -58,20 +61,20 @@ public:
     /** "Amount to ease into this keyframe" */
     float mBlendEase; // 0x8
     float mFrame; // 0xc
-    TransformNoScale unk10;
+    TransformNoScale mWorldOffset; // 0x10
     /** "Screen space offset of target for this keyframe" */
     Vector2 mScreenOffset; // 0x24
     /** "Noise amplitude for camera shake" */
     float mShakeNoiseAmp; // 0x2c
     /** "Noise frequency for camera shake" */
     float mShakeNoiseFreq; // 0x30
-    Vector3 unk34;
+    Vector3 mLastTargetPos; // 0x34
     /** "Multiplier of distance from camere to focal target. Offsets focal point of blur. */
     float mFocusBlurMultiplier; // 0x40
     TransformNoScale unk44;
     /** "Target(s) that the camera should look at" */
     ObjPtrList<RndTransformable> mTargets; // 0x58
-    CamShot* unk68;
+    CamShot* mCamShot; // 0x68
     /** "Parent that the camera should attach itself to" */
     ObjPtr<RndTransformable> mParent; // 0x6c
     /** "The focal point when calculated depth of field" */
@@ -89,8 +92,8 @@ public:
     unsigned char mMaxBlur; // 0x87
     /** "Minimum blurriness" */
     unsigned char mMinBlur; // 0x88
-    unsigned char mMaxAngularOffsetX; // 0x89
-    unsigned char mMaxAngularOffsetY; // 0x8a
+    char mMaxAngularOffsetX; // 0x89
+    char mMaxAngularOffsetY; // 0x8a
     /** "Amount to ease out to the next keyframe" */
     unsigned char mBlendEaseMode : 6; // 0x8b >> 2 & 1
     /** "Whether to take the parent object's rotation into account" */
@@ -282,6 +285,44 @@ public:
     bool unk120p0 : 1;
 
     // gen hide list: "Automatically generated list of objects to hide while this camera shot is active, shows them when done.  Not editable"
+};
+
+class AutoPrepTarget {
+public:
+    AutoPrepTarget(CamShotFrame& frame) : mFrame(&frame), mShot(frame.mCamShot) {
+        mShot->StartAnim();
+        mOldFilter = mShot->mFilter;
+        mOldCamHeight = mShot->mClampHeight;
+        mOldZoomFov = mFrame->ZoomFieldOfView();
+        mFrame->mZoomFOV = 0;
+        mShot->mFilter = 0;
+        mShot->mClampHeight = -1.0f;
+        mShot->mLastDesiredShakeOffset.Set(0,0,0);
+        mShot->mLastDesiredShakeAngOffset.Set(0,0,0);
+        mShot->mLastShakeOffset.Set(0,0,0);
+        mShot->mLastShakeAngOffset.Set(0,0,0);
+        sChanging = true;
+        mFrame->UpdateTarget();
+        mShot->SetFrame(mFrame->mFrame, 1.0f);
+    }
+
+    ~AutoPrepTarget(){
+        mShot->SetPos(*mFrame, nullptr);
+        mFrame->UpdateTarget();
+        mShot->mFilter = mOldFilter;
+        mShot->mClampHeight = mOldCamHeight;
+        mFrame->SetZoomFieldOfView(mOldZoomFov);
+        sChanging = false;
+        mShot->EndAnim();
+    }
+
+    CamShotFrame* mFrame; // 0x0
+    CamShot* mShot; // 0x4
+    float mOldFilter; // 0x8
+    float mOldCamHeight; // 0xc
+    float mOldZoomFov; // 0x10
+
+    static bool sChanging;
 };
 
 void LoadDrawables(BinStream&, std::vector<RndDrawable*>&, ObjectDir*);

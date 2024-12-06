@@ -1,14 +1,21 @@
 #include "world/CameraShot.h"
 #include "bandobj/BandCharacter.h"
 #include "bandobj/BandWardrobe.h"
+#include "decomp.h"
+#include "math/Rand.h"
 #include "obj/Data.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/System.h"
 #include "os/Timer.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Draw.h"
-#include "utl/Messages4.h"
+#include "rndobj/MultiMesh.h"
+#include "rndobj/MultiMeshProxy.h"
+#include "rndobj/PostProc.h"
+#include "stl/_pair.h"
+#include "utl/Loader.h"
 #include "world/Spotlight.h"
 #include "world/Crowd.h"
 #include "rndobj/Trans.h"
@@ -20,6 +27,8 @@
 #include "math/Utl.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+
+bool AutoPrepTarget::sChanging = false;
 
 Hmx::Object* CamShot::sAnimTarget;
 
@@ -190,7 +199,7 @@ void CamShot::SetFrame(float frame, float blend){
                 unk120p1 = true;
                 float endframe = EndFrame();
                 static CamShotFrame nullFrame(nullptr);
-                nullFrame.unk68 = this;
+                nullFrame.mCamShot = this;
                 float f48 = 1.0f;
                 CamShotFrame* frame4c = nullptr;
                 CamShotFrame* frame50 = nullptr;
@@ -244,6 +253,71 @@ bool CamShot::CheckShotOver(float f){
     return !mShotOver && !mLooping && f >= mDuration;
 }
 
+// matches in retail
+void CamShot::Shake(float freq, float amp, const Vector2& ang, Vector3& output, Vector3& eulerOutput){
+    if(TheTaskMgr.DeltaSeconds() > 0 && !AutoPrepTarget::sChanging){
+        Vector2 localAng = ang;
+        localAng *= DEG2RAD;
+        if(RandomFloat() < freq){
+            float f5 = RandomFloat(0.0f, 6.2831855f);
+            float f6 = amp * RandomFloat();
+            float f1 = f6 * Cosine(f5);
+            mLastDesiredShakeOffset.x += f1;
+            mLastDesiredShakeOffset.y += f1 * 0.333f;
+            mLastDesiredShakeOffset.z += f6 * Sine(f5);
+            mLastDesiredShakeAngOffset.x += RandomFloat(-localAng.x, localAng.x);
+            mLastDesiredShakeAngOffset.y = 0;
+            mLastDesiredShakeAngOffset.z += RandomFloat(-localAng.y, localAng.y);
+        }
+        float lenamp = Length(mLastDesiredShakeOffset) - amp;
+        if(lenamp > 0){
+            Normalize(mLastDesiredShakeOffset, mLastDesiredShakeOffset);
+            mLastDesiredShakeOffset *= amp - lenamp;
+        }
+        float fabs1 = std::fabs(mLastDesiredShakeAngOffset.x) - localAng.x;
+        if(fabs1 > 0){
+            if(mLastDesiredShakeAngOffset.x > 0){
+                fabs1 *= -1.0f;
+            }
+            mLastDesiredShakeAngOffset.x += fabs1;
+        }
+
+        float fabs2 = std::fabs(mLastDesiredShakeAngOffset.z) - localAng.y;
+        if(fabs2 > 0){
+            if(mLastDesiredShakeAngOffset.z > 0){
+                fabs2 *= -1.0f;
+            }
+            mLastDesiredShakeAngOffset.z += fabs2;
+        }
+
+        Vector3 v58;
+        Subtract(mLastDesiredShakeOffset, mLastShakeOffset, v58);
+        bool usePPFPS = false;
+        if(RndPostProc::Current() && RndPostProc::Current()->EmulateFPS() > 0) usePPFPS = true;
+        float emulateFPS = usePPFPS ? RndPostProc::Current()->EmulateFPS() : 60.0f;
+        float fps = 60.0f / emulateFPS;
+        v58 *= 0.02f;
+        Vector3 v64 = mShakeVelocity;
+        v64 *= fps;
+        ::Add(mLastShakeOffset, v64, mLastShakeOffset);
+        ::Add(mShakeVelocity, v58, mShakeVelocity);
+        ::Add(mLastShakeOffset, v58, mLastShakeOffset);
+        float powed = std::pow(0.9f, fps);
+        mShakeVelocity *= powed;
+        Subtract(mLastDesiredShakeAngOffset, mLastShakeAngOffset, v58);
+        v58 *= 0.02f;
+        Vector3 v70 = mShakeAngVelocity;
+        v70 *= fps;
+        ::Add(mLastShakeAngOffset, v70, mLastShakeAngOffset);
+        ::Add(mShakeAngVelocity, v58, mShakeAngVelocity);
+        ::Add(mLastShakeAngOffset, v58, mLastShakeAngOffset);
+        mShakeAngVelocity *= powed;
+    }
+    output = mLastShakeOffset;
+    eulerOutput = mLastShakeAngOffset;
+}
+
+// matches in retail with the right inline settings: https://decomp.me/scratch/Tvtaz
 void CamShot::GetKey(float frame, CamShotFrame*& prev, CamShotFrame*& next, float& keyBlend){
     MILO_ASSERT(!mKeyframes.empty(), 0x29B);
     if(frame <= 0 || mDuration <= 0){
@@ -256,8 +330,9 @@ void CamShot::GetKey(float frame, CamShotFrame*& prev, CamShotFrame*& next, floa
         if(mLooping && (mLoopKeyframe < mKeyframes.size() && mLoopKeyframe >= 0)){
             if(frame >= mDuration){
                 float duration = mDuration - mKeyframes[mLoopKeyframe].mFrame;
+                frame -= mDuration;
                 MILO_ASSERT(duration > 0, 0x2AF);
-                float f9 = std::fmod(frame - mDuration, duration);
+                float f9 = std::fmod(frame, duration);
                 frame = f9 + mKeyframes[mLoopKeyframe].mFrame;
             }
             if(frame >= mKeyframes.back().mFrame){
@@ -275,37 +350,34 @@ void CamShot::GetKey(float frame, CamShotFrame*& prev, CamShotFrame*& next, floa
                     keyBlend = (frame - fvar1) / mKeyframes.back().mBlend;
                     return;
                 }
+                prev = nullptr;
+                next = &mKeyframes.back();
+                keyBlend = 1.0f;
+                return;
             }
-            else {
-                goto ok;
-            }
+        } else {
             prev = nullptr;
             next = &mKeyframes.back();
             keyBlend = 1.0f;
             return;
         }
-        prev = nullptr;
-        next = &mKeyframes.back();
-        keyBlend = 1.0f;
-        return;
     }
-ok:
     int before = 0;
     int after = mKeyframes.size() - 1;
     while(after > before + 1){
-        before = before + after >> 1;
-        CamShotFrame& curFrame = mKeyframes[before];
-        if(frame == curFrame.mFrame){
+        int avg = (before + after) >> 1;
+        float curFrame = mKeyframes[avg].mFrame;
+        if(frame == curFrame){
             prev = nullptr;
-            next = &mKeyframes[before];
+            next = &mKeyframes[avg];
             keyBlend = 1.0f;
             return;
         }
-        if(frame > curFrame.mFrame){
-            // ???
+        if(frame > curFrame) {
+            before = avg;
         }
-        else {
-            after = before;
+        if(!(frame > curFrame)) { 
+            after = avg;
         }
     }
     MILO_ASSERT(frame >= mKeyframes[before].mFrame && frame < mKeyframes[after].mFrame, 0x2F4);
@@ -331,6 +403,61 @@ void CamShot::CacheFrames(){
         frames += curframe.mDuration + curframe.mBlend;
     }
     mDuration = frames;
+}
+
+bool CamShot::SetPos(CamShotFrame& frame, RndCam* cam){
+    cam = cam ? cam : GetCam();
+    if(!cam) return false;
+    else {
+        Transform tf40(cam->WorldXfm());
+        if(frame.HasTargets()){
+            Vector3 ve0;
+            frame.GetCurrentTargetPosition(ve0);
+            cam->WorldToScreen(ve0, frame.mScreenOffset);
+            frame.mScreenOffset += Vector2(-0.5f, -0.5f);
+            frame.mScreenOffset.x *= 2.0f;
+            frame.mScreenOffset.y *= -2.0f;
+            Vector3 vec;
+            Subtract(ve0, tf40.v, vec);
+            Vector3 vf8(cam->WorldXfm().m.y);
+            vf8 *= Dot(vec, cam->WorldXfm().m.y);
+            Vector3 v104;
+            ::Add(cam->WorldXfm().v, vf8, v104);
+            Vector3 v110;
+            Subtract(ve0, v104, v110);
+            ::Add(tf40.v, v110, tf40.v);
+        }
+        else frame.mScreenOffset.Zero();
+
+        frame.SetFieldOfView(cam->YFov());
+        RndTransformable* frameParent = frame.mParent;
+        if(frameParent){
+            Transform tf70(frameParent->WorldXfm());
+            if(!frame.mUseParentNotation){
+                tf70.m.Identity();
+            }
+            Transform tfa0;
+            FastInvert(tf70, tfa0);
+            Multiply(tf40, tfa0, tf40);
+        }
+        if(mPath && &mKeyframes[0] == &frame){
+            Transform tfd0;
+            mPath->MakeTransform(0, tfd0, true, 1.0f);
+            tf40.v -= tfd0.v;
+            if(!frame.HasTargets()){
+                tf40.m.Identity();
+            }
+        }
+        frame.mWorldOffset.Set(tf40);
+        return true;
+    }
+}
+
+bool CamShot::PlatformOk() const {
+    if(LOADMGR_EDITMODE || mPlatformOnly == kPlatformNone || TheLoadMgr.GetPlatform() == kPlatformNone) return true;
+    Platform plat = TheLoadMgr.GetPlatform();
+    if(TheLoadMgr.GetPlatform() == kPlatformPC) plat = kPlatformXBox;
+    return plat == mPlatformOnly;
 }
 
 bool CamShot::ShotOk(CamShot* shot){
@@ -452,7 +579,7 @@ SAVE_OBJ(CamShot, 0x409);
 #pragma dont_inline on
 BEGIN_LOADS(CamShot)
     LOAD_REVS(bs)
-    ASSERT_REVS(0x32, 1)
+    ASSERT_REVS(50, 1)
     bool bitfield_bool;
     bool hidden = mHidden;
     if(hidden) UnHide();
@@ -534,7 +661,7 @@ BEGIN_LOADS(CamShot)
         if(fdummy1 > 0.0f){
             csf1.mDuration = 0.0f;
             csf1.mBlend = fdummy1;
-            csf1.unk10.Set(tf1);
+            csf1.mWorldOffset.Set(tf1);
             csf1.mScreenOffset = vec1;
             csf1.SetFieldOfView(fov1);
             csf1.SetBlurDepth(someotherfloat);
@@ -548,7 +675,7 @@ BEGIN_LOADS(CamShot)
         }
         csf2.mDuration = 0.0f;
         csf2.mBlend = 0.0f;
-        csf2.unk10.Set(tf2);
+        csf2.mWorldOffset.Set(tf2);
         csf2.mScreenOffset = vec2;
         csf2.SetFieldOfView(fov2);
         csf2.SetBlurDepth(someotherfloat);
@@ -685,21 +812,21 @@ void CamShot::Disable(bool b, int i){
 }
 
 CamShotFrame::CamShotFrame(Hmx::Object* o) : mDuration(0), mBlend(0), mBlendEase(0), mFrame(-1.0f), mShakeNoiseAmp(0), mShakeNoiseFreq(0), mFocusBlurMultiplier(0),
-    mTargets(o, kObjListNoNull), unk68(dynamic_cast<CamShot*>(o)), mParent(o), mFocusTarget(o),
+    mTargets(o, kObjListNoNull), mCamShot(dynamic_cast<CamShot*>(o)), mParent(o), mFocusTarget(o),
     mZoomFOV(0), mMaxBlur(0xFF), mMinBlur(0),
     mBlendEaseMode(0), mUseParentNotation(0), mParentFirstFrame(0) {
     mMaxAngularOffsetY = 0;
     mMaxAngularOffsetX = 0;
     SetBlurDepth(0.34999999f);
     SetFieldOfView(1.2217305f);
-    unk10.Reset();
+    mWorldOffset.Reset();
     mScreenOffset.Zero();
-    unk34.x = 1e+30f;
+    mLastTargetPos.x = 1e+30f;
 }
 
 CamShotFrame::CamShotFrame(Hmx::Object* o, const CamShotFrame& frame) : mDuration(frame.mDuration), mBlend(frame.mBlend), mBlendEase(frame.mBlendEase),
-    unk10(frame.unk10), mScreenOffset(frame.mScreenOffset), mShakeNoiseAmp(frame.mShakeNoiseAmp), mShakeNoiseFreq(frame.mShakeNoiseFreq), mFocusBlurMultiplier(frame.mFocusBlurMultiplier),
-    mTargets(frame.mTargets), unk68(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), mFOV(frame.mFOV), mZoomFOV(frame.mZoomFOV),
+    mWorldOffset(frame.mWorldOffset), mScreenOffset(frame.mScreenOffset), mShakeNoiseAmp(frame.mShakeNoiseAmp), mShakeNoiseFreq(frame.mShakeNoiseFreq), mFocusBlurMultiplier(frame.mFocusBlurMultiplier),
+    mTargets(frame.mTargets), mCamShot(dynamic_cast<CamShot*>(o)), mParent(frame.mParent), mFocusTarget(frame.mFocusTarget), mFOV(frame.mFOV), mZoomFOV(frame.mZoomFOV),
     mBlurDepth(frame.mBlurDepth), mMaxBlur(frame.mMaxBlur), mMinBlur(frame.mMinBlur), mBlendEaseMode(frame.mBlendEaseMode), mUseParentNotation(frame.mUseParentNotation), mParentFirstFrame(0) {
     mMaxAngularOffsetX = frame.mMaxAngularOffsetX;
     mMaxAngularOffsetY = frame.mMaxAngularOffsetY;
@@ -719,8 +846,8 @@ void CamShotFrame::Load(BinStream& bs){
     tf40.Zero();
     Transform tf70;
     bs >> tf70;
-    if(tf40 == tf70) unk10.Reset();
-    else unk10.Set(tf70);
+    if(tf40 == tf70) mWorldOffset.Reset();
+    else mWorldOffset.Set(tf70);
     bs >> mScreenOffset;
     float blurdepth; bs >> blurdepth;
     if(CamShot::gRev < 0x17){
@@ -746,16 +873,16 @@ void CamShotFrame::Load(BinStream& bs){
         int count; bs >> count;
         mTargets.clear();
         for(int i = 0; i < count; i++){
-            RndTransformable* part = LoadSubPart(bs, unk68);
+            RndTransformable* part = LoadSubPart(bs, mCamShot);
             if(part) mTargets.push_back(part);
         }
     }
     if(CamShot::gRev > 0x1A){
         if(CamShot::gRev > 0x2B) bs >> mFocusTarget;
-        else mFocusTarget = LoadSubPart(bs, unk68);
+        else mFocusTarget = LoadSubPart(bs, mCamShot);
     }
     if(CamShot::gRev > 0x2B) bs >> mParent;
-    else mParent = LoadSubPart(bs, unk68);
+    else mParent = LoadSubPart(bs, mCamShot);
     bool b1; bs >> b1;
     mUseParentNotation = b1;
     if(CamShot::gRev > 0x11){
@@ -772,6 +899,28 @@ void CamShotFrame::Load(BinStream& bs){
         bool b0; bs >> b0;
         mParentFirstFrame = b0;
     }
+}
+
+bool CamShotFrame::OnSyncTargets(ObjPtrList<RndTransformable>& transList, DataNode& node, DataArray* prop, int i, PropOp op){
+    bool synced;
+    if(op != kPropGet && op != kPropSize){
+        AutoPrepTarget target(*this);
+        synced = PropSync(transList, node, prop, i, op);
+    }
+    else synced = PropSync(transList, node, prop, i, op);
+    return synced;
+}
+
+bool CamShotFrame::SameTargets(const CamShotFrame& frame) const {
+    if(mTargets.size() != frame.mTargets.size()) return false;
+    for(ObjPtrList<RndTransformable>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+        ObjPtrList<RndTransformable>::iterator otherIt = frame.mTargets.begin();
+        for(; otherIt != frame.mTargets.end(); ++otherIt){
+            if(*it == *otherIt) break;
+        }
+        if(otherIt == frame.mTargets.end()) return false;
+    }
+    return true;
 }
 
 #pragma push
@@ -795,7 +944,7 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
     }
     float interp1 = ::Interp(FieldOfView(), frame.FieldOfView(), d11);
     float interp2 = ::Interp(cam->YFov(), interp1, f2);
-    cam->SetFrustum(unk68->mNear, unk68->mFar, interp2, 1.0f);
+    cam->SetFrustum(mCamShot->mNear, mCamShot->mFar, interp2, 1.0f);
     bool hasTarget = HasTargets();
     bool thasTarget = frame.HasTargets();
     bool sameTargets = SameTargets(frame);
@@ -812,25 +961,25 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
             Transform tf160(tf130);
             Transform tf190(tf130);
             if(hasTarget){
-                tf160.LookAt(unk34, tf130.m.z);
+                tf160.LookAt(mLastTargetPos, tf130.m.z);
             }
             if(thasTarget){
-                tf190.LookAt(frame.unk34, tf130.m.z);
+                tf190.LookAt(frame.mLastTargetPos, tf130.m.z);
             }
             ::Interp(tf160.m, tf190.m, d11, tf130.m);
         }
         Vector2 v1e0;
         if(hasTarget && !thasTarget){
-            f1fc = Distance(unk34, tf130.v);
+            f1fc = Distance(mLastTargetPos, tf130.v);
             v1e0 = mScreenOffset;
         }
         else if(!hasTarget && thasTarget){
-            f1fc = Distance(frame.unk34, tf130.v);
+            f1fc = Distance(frame.mLastTargetPos, tf130.v);
             v1e0 = frame.mScreenOffset;
         }
         else {
-            float dist13 = Distance(frame.unk34, tf130.v);
-            float dist14 = Distance(unk34, tf130.v);
+            float dist13 = Distance(frame.mLastTargetPos, tf130.v);
+            float dist14 = Distance(mLastTargetPos, tf130.v);
             ::Interp(dist14, dist13, d11, f1fc);
             ::Interp(mScreenOffset, frame.mScreenOffset, d11, v1e0);
         }
@@ -848,11 +997,11 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
     }
     float f200;
     ::Interp(ZoomFieldOfView(), frame.ZoomFieldOfView(), d11, f200);
-    cam->SetFrustum(unk68->mNear, unk68->mFar, interp2 + f200, 1.0f);
+    cam->SetFrustum(mCamShot->mNear, mCamShot->mFar, interp2 + f200, 1.0f);
     RndTransformable* focus = mFocusTarget;
     RndTransformable* towardFocus = frame.mFocusTarget;
     bool b10 = false;
-    if(unk68->mUseDepthOfField && (focus || hasTarget || towardFocus || thasTarget)){
+    if(mCamShot->mUseDepthOfField && (focus || hasTarget || towardFocus || thasTarget)){
         b10 = true;
     }
     if(b10){
@@ -871,13 +1020,13 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
         }
         else {
             d10 = d9;
-            if(hasTarget) d10 = Distance(unk34, tf130.v);
+            if(hasTarget) d10 = Distance(mLastTargetPos, tf130.v);
         }
         if(towardFocus){
             d9 = Distance(towardFocus->WorldXfm().v, tf130.v);
         }
         else {
-            if(thasTarget) d9 = Distance(frame.unk34, tf130.v);
+            if(thasTarget) d9 = Distance(frame.mLastTargetPos, tf130.v);
         }
         if(!focus && !hasTarget){
             MILO_ASSERT(towardFocus || thasTarget, 0x7D8);
@@ -900,7 +1049,7 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
     ::Interp(MaxAngularOffset(), frame.MaxAngularOffset(), d11, v1e8);
     Vector3 v1cc;
     Vector3 v1d8;
-    unk68->Shake(f218, f214, v1e8, v1cc, v1d8);
+    mCamShot->Shake(f218, f214, v1e8, v1cc, v1d8);
     Multiply(v1cc, tf130, tf130.v);
     Hmx::Matrix3 m1b4;
     MakeRotMatrix(v1d8, m1b4, true);
@@ -910,10 +1059,11 @@ void CamShotFrame::Interp(const CamShotFrame& frame, float f1, float f2, RndCam*
 #pragma pop
 
 void CamShotFrame::UpdateTarget() const {
-    // GetCurrentTargetPosition(unk34);
-    // if(mParent){
-    //     unk44.Set(mParent->WorldXfm());
-    // }
+    CamShotFrame* usable = const_cast<CamShotFrame*>(this);
+    GetCurrentTargetPosition(usable->mLastTargetPos);
+    if(mParent){
+        usable->unk44.Set(mParent->WorldXfm());
+    }
 }
 
 void CamShotFrame::GetCurrentTargetPosition(Vector3& v) const {
@@ -936,12 +1086,16 @@ bool CamShotFrame::HasTargets() const {
     return false;
 }
 
+void CamShotFrame::BuildTransform(RndCam* cam, Transform& tf, bool b3) const {
+    MILO_ASSERT(mLastTargetPos.x != kHugeFloat, 0x855);
+}
+
 DataNode CamShot::OnGetOccluded(DataArray* da){
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CamShot::OnSetAllCrowdChars3D(DataArray* da){
-    return DataNode(0);
+    return 0;
 }
 
 CamShotCrowd::CamShotCrowd(Hmx::Object* o) : mCrowd(o, 0), mCrowdRotate(kCrowdRotateNone), unk18(dynamic_cast<CamShot*>(o)) {}
@@ -994,6 +1148,20 @@ void CamShotCrowd::AddCrowdChars(){
     else AddCrowdChars(meshlist);
 }
 
+void CamShotCrowd::GetSelectedCrowd(std::list<std::pair<RndMultiMesh*, std::list<RndMultiMesh::Instance>::iterator> >& crowdChars){
+    for(std::list<std::pair<class RndMultiMeshProxy*, int> >::iterator it = RndMultiMesh::sProxyPool.begin(); it != RndMultiMesh::sProxyPool.end(); ++it){
+        RndMultiMeshProxy* proxy = it->first;
+        MILO_ASSERT(proxy, 0xB8F);
+        RndMultiMesh* multiMesh = proxy->GetMultiMesh();
+        if(!proxy->mRefs.empty() && multiMesh){
+            crowdChars.push_back(std::make_pair(multiMesh, proxy->mIndex));
+            proxy->SetMultiMesh(0, 0);
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(CameraShot, "ki != mmesh->Instances().size()")
+
 BEGIN_HANDLERS(CamShot)
     HANDLE(has_targets, OnHasTargets)
     HANDLE(set_pos, OnSetPos)
@@ -1013,33 +1181,33 @@ BEGIN_HANDLERS(CamShot)
 END_HANDLERS
 
 DataNode CamShot::OnHasTargets(DataArray* da){
-    return DataNode(mKeyframes[da->Int(2)].HasTargets());
+    return mKeyframes[da->Int(2)].HasTargets();
 }
 
 DataNode CamShot::OnSetPos(DataArray* da){
     int idx = da->Int(2);
-    return DataNode(SetPos(mKeyframes[idx], RndCam::Current()));
+    return SetPos(mKeyframes[idx], RndCam::Current());
 }
 
 DataNode CamShot::OnClearCrowdChars(DataArray* da){
     int idx = da->Int(2);
     MILO_ASSERT(idx < mCrowds.size(), 0xC82);
     mCrowds[idx].ClearCrowdChars();
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CamShot::OnAddCrowdChars(DataArray* da){
     int idx = da->Int(2);
     MILO_ASSERT(idx < mCrowds.size(), 0xC8A);
     mCrowds[idx].AddCrowdChars();
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CamShot::OnSetCrowdChars(DataArray* da){
     int idx = da->Int(2);
     MILO_ASSERT(idx < mCrowds.size(), 0xC92);
     mCrowds[idx].SetCrowdChars();
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CamShot::OnRadio(DataArray* da){
@@ -1048,7 +1216,17 @@ DataNode CamShot::OnRadio(DataArray* da){
     if(mFlags & i2){
         mFlags = mFlags & ~i3 | i2;
     }
-    return DataNode(0);
+    return 0;
+}
+
+bool CamShotFrame::OnSyncParent(ObjPtr<RndTransformable>& parent, DataNode& node, DataArray* prop, int i, PropOp op){
+    bool synced;
+    if(op != kPropGet){
+        AutoPrepTarget target(*this);
+        synced = PropSync(parent, node, prop, i, op);
+    }
+    else synced = PropSync(parent, node, prop, i, op);
+    return synced;
 }
 
 BEGIN_CUSTOM_PROPSYNC(CamShotCrowd)
