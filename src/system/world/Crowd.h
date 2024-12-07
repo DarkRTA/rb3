@@ -5,6 +5,7 @@
 #include "rndobj/Env.h"
 #include "rndobj/MultiMesh.h"
 #include "char/Character.h"
+#include "utl/BinStream.h"
 
 class WorldCrowd : public RndDrawable, public RndPollable {
 public:
@@ -35,6 +36,7 @@ public:
         CharData(Hmx::Object*);
         void Load(BinStream&);
 
+        // the RB3 dump says mDef is a member - would it be easier to make CharDef a superclass of CharData?
         CharDef mDef; // 0x0
         RndMultiMesh* mMMesh; // 0x2c
         std::list<RndMultiMesh::Instance> mBackup; // 0x30
@@ -108,6 +110,11 @@ public:
 };
 
 inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharData& cd){
+    cd.Load(bs);
+    return bs;
+}
+
+inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharDef& cd){
     cd.Load(bs);
     return bs;
 }
