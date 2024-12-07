@@ -82,7 +82,7 @@ RndPostProc *RndPostProc::Current() {
 }
 
 float RndPostProc::BloomIntensity() const {
-    if (mBloomGlare != 0 && TheHiResScreen->mActive != 0) {
+    if (mBloomGlare != 0 && TheHiResScreen.mActive != 0) {
         return mBloomIntensity / 3.0f;
     }
     return mBloomIntensity;
@@ -148,7 +148,7 @@ void RndPostProc::UpdateColorModulation() {
 }
 
 void RndPostProc::UpdateBlendPrevious() {
-    bool shouldBlend = mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen->IsActive();
+    bool shouldBlend = mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen.IsActive();
     if(shouldBlend) {
         if(mTrailDuration <= 0.0f) {
             MILO_ASSERT(mTrailDuration > 0.0f, 0xf6);
@@ -161,7 +161,7 @@ void RndPostProc::UpdateBlendPrevious() {
 }
 
 bool RndPostProc::BlendPrevious() const {
-    return mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen->IsActive();
+    return mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen.IsActive();
 }
 
 SAVE_OBJ(RndPostProc, 524)
