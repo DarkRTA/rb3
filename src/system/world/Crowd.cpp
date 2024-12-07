@@ -4,6 +4,7 @@
 #include "math/Color.h"
 #include "math/Mtx.h"
 #include "math/Rand.h"
+#include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -244,6 +245,12 @@ void WorldCrowd::Draw3DChars(){
     
 }
 
+void WorldCrowd::DrawShowing(){
+    START_AUTO_TIMER("crowd_draw");
+    MILO_ASSERT(!gImpostorMat->NextPass(), 0x34A);
+    MILO_NOTIFY_ONCE("%s: Rendering 2D crowd character texture without an environment, set the environ property on the WorldCrowd object.");
+}
+
 RndMesh* WorldCrowd::BuildBillboard(Character* c, float f){
     c->mSphere.GetRadius();
     RndMesh* mesh = Hmx::Object::New<RndMesh>();
@@ -275,6 +282,10 @@ RndMesh* WorldCrowd::BuildBillboard(Character* c, float f){
 
 void WorldCrowd::SetLod(int lod){
     mLod = Clamp(0, 2, lod);
+}
+
+void WorldCrowd::SetFullness(float, float){
+    START_AUTO_TIMER("crowd_set");
 }
 
 SAVE_OBJ(WorldCrowd, 0x4BF)
@@ -528,6 +539,10 @@ void WorldCrowd::Force3DCrowd(bool force){
         SetFullness(1, 1);
         Set3DCharList(std::vector<std::pair<int, int> >(), this);
     }
+}
+
+DataNode WorldCrowd::OnIterateFrac(DataArray* da){
+    START_AUTO_TIMER("crowd_iter");
 }
 
 void WorldCrowd::CleanUpCrowdFloor(){
