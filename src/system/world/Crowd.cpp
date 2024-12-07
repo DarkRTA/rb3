@@ -50,7 +50,7 @@ namespace {
 DECOMP_FORCEACTIVE(Crowd, "WorldCrowd[%s] does not have a placement mesh.")
 
 WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), unk44(0), mForce3DCrowd(0), mShow3DOnly(0),
-    unk58(1.0f), unk5c(1.0f), mLod(0), mEnviron(this), mEnviron3D(this), mFocus(this), unk88(0) {
+    mCharFullness(1.0f), mFlatFullness(1.0f), mLod(0), mEnviron(this), mEnviron3D(this), mFocus(this), mModifyStamp(0) {
     if(gNumCrowd++ == 0){
         GetGfxMode();
         gImpostorMat = Hmx::Object::New<RndMat>();
@@ -89,8 +89,8 @@ WorldCrowd::~WorldCrowd(){
 }
 
 void WorldCrowd::CreateMeshes(){
-    unk58 = 1.0f;
-    unk5c = 1.0f;
+    mCharFullness = 1.0f;
+    mFlatFullness = 1.0f;
     mLod = 0;
     for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
         if(it->mMMesh){
@@ -117,9 +117,9 @@ BEGIN_COPYS(WorldCrowd)
     BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mPlacementMesh)
         COPY_MEMBER(mNum)
-        COPY_MEMBER(unk48)
-        COPY_MEMBER(unk58)
-        COPY_MEMBER(unk5c)
+        COPY_MEMBER(mCenter)
+        COPY_MEMBER(mCharFullness)
+        COPY_MEMBER(mFlatFullness)
         COPY_MEMBER(mLod)
         COPY_MEMBER(mEnviron)
         COPY_MEMBER(mEnviron3D)
@@ -160,7 +160,7 @@ void WorldCrowd::CollideList(const Segment& seg, std::list<Collision>& colls){
 }
 
 void WorldCrowd::Reset3DCrowd(){
-    SetFullness(1.0f, unk58);
+    SetFullness(1.0f, mCharFullness);
     for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
         RndMultiMesh* multiMesh = it->mMMesh;
         if(multiMesh){
@@ -186,7 +186,7 @@ void WorldCrowd::Sort3DCharList(){
 
 void WorldCrowd::Set3DCharAll(){
     START_AUTO_TIMER("crowd_set3d");
-    float fvar1 = unk5c;
+    float fvar1 = mFlatFullness;
     Reset3DCrowd();
     for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
         RndMultiMesh* multiMesh = it->mMMesh;
@@ -202,7 +202,7 @@ void WorldCrowd::Set3DCharAll(){
         }
     }
     Sort3DCharList();
-    SetFullness(fvar1, unk58);
+    SetFullness(fvar1, mCharFullness);
     AssignRandomColors();
 }
 
@@ -360,7 +360,7 @@ BEGIN_LOADS(WorldCrowd)
         }
     }
     else OnRebuild(0);
-    if(gRev > 4) bs >> unk88;
+    if(gRev > 4) bs >> mModifyStamp;
     if(gRev > 0xC){
         bool force = false;
         bs >> force;
@@ -376,7 +376,7 @@ void WorldCrowd::AssignRandomColors(){
         if((*it).mDef.mChar && (*it).mMMesh && !(*it).m3DChars.empty()){
             bool b1 = false;
             std::vector<ColorPalette*> colorPaletteList;
-            (*it).mDef.unk18 = false;
+            (*it).mDef.mUseRandomColor = false;
             for(int i = 0; i < 3; i++){
                 ColorPalette* randPal = (*it).mDef.mChar->Find<ColorPalette>(MakeString("random%d.pal", i + 1), false);
                 if(randPal){
@@ -387,13 +387,13 @@ void WorldCrowd::AssignRandomColors(){
             if(b1){
                 for(int i = 0; i != (*it).m3DChars.size(); i++){
                     CharData::Char3D& curChar3D = (*it).m3DChars[i];
-                    curChar3D.unk34.clear();
+                    curChar3D.mRandomColors.clear();
                     MILO_ASSERT(!colorPaletteList.empty(), 0x5B8);
-                    (*it).mDef.unk18 = true;
-                    while(curChar3D.unk34.size() < 3){
+                    (*it).mDef.mUseRandomColor = true;
+                    while(curChar3D.mRandomColors.size() < 3){
                         ColorPalette* randPal = colorPaletteList[RandomInt(0, colorPaletteList.size())];
                         Hmx::Color randColor = randPal->GetColor(RandomInt(0, randPal->NumColors()));
-                        curChar3D.unk34.push_back(randColor);
+                        curChar3D.mRandomColors.push_back(randColor);
                     }
                 }
             }
@@ -484,7 +484,7 @@ void WorldCrowd::Enter(){
                 if(!randPal || randPal->NumColors() == 0) break;
                 if(i == 0){
                     for(ObjDirItr<RndMat> objIt(curChar, true); objIt; ++objIt){
-                        (*it).mDef.unk1c.push_back(objIt);
+                        (*it).mDef.mMats.push_back(objIt);
                     }
                 }
             }
@@ -511,14 +511,14 @@ WorldCrowd::CharData::CharData(Hmx::Object* o) : mDef(o), mMMesh(0) {
 
 void WorldCrowd::CharData::Load(BinStream& bs){ bs >> mDef; }
 
-WorldCrowd::CharDef::CharDef(Hmx::Object* o) : mChar(o, 0), mHeight(75.0f), mDensity(1.0f), mRadius(10.0f), unk18(0), unk1c(o, kObjListNoNull) {}
+WorldCrowd::CharDef::CharDef(Hmx::Object* o) : mChar(o), mHeight(75.0f), mDensity(1.0f), mRadius(10.0f), mUseRandomColor(0), mMats(o, kObjListNoNull) {}
 
 void WorldCrowd::CharDef::Load(BinStream& bs){
     bs >> mChar;
     bs >> mHeight;
     bs >> mDensity;
     if(WorldCrowd::gRev > 1) bs >> mRadius;
-    if(WorldCrowd::gRev > 8) bs >> unk18;
+    if(WorldCrowd::gRev > 8) bs >> mUseRandomColor;
 }
 
 BEGIN_HANDLERS(WorldCrowd)

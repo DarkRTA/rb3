@@ -1111,7 +1111,7 @@ void CamShotCrowd::Load(BinStream& bs){
     bs >> unk10;
     int num;
     bs >> num;
-    if(!mCrowd || num == mCrowd->unk88) unk10.resize(num);
+    if(!mCrowd || num == mCrowd->GetModifyStamp()) unk10.resize(num);
     else unk10.clear();
 }
 
