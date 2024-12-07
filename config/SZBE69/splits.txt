@@ -16,9 +16,6 @@ Sections:
 rb3/unknown/800/unk_8000D980.cpp:
 	.text       start:0x8000D980 end:0x8000F364
 
-sdk/MSL_C/sdata_1.c:
-	.sdata      start:0x808E3270 end:0x808E3280
-
 App.cpp:
 	.text       start:0x8000F364 end:0x8000F804
 
@@ -1860,6 +1857,7 @@ system/beatmatch/BeatMatch.cpp:
 
 system/beatmatch/BeatMatchController.cpp:
 	.text       start:0x80458F54 end:0x8045958C
+	.data       start:0x80883450 end:0x808835B8
 
 system/beatmatch/BeatMatchUtl.cpp:
 	.text       start:0x8045958C end:0x80459898
@@ -1992,6 +1990,7 @@ system/beatmatch/VocalPhrase.cpp:
 
 system/char/Char.cpp:
 	.text       start:0x80499BAC end:0x8049C168
+	.data       start:0x80886BE8 end:0x80886BF0
 
 system/char/Character.cpp:
 	.text       start:0x8049C168 end:0x804A498C
@@ -2597,7 +2596,7 @@ system/rndobj/HiResScreen.cpp:
 	.text       start:0x805F1B2C end:0x805F1C60
 	.ctors      start:0x807EFFEC end:0x807EFFF0
 	.data       start:0x80896860 end:0x808968A0
-	.bss        start:0x8098CD50 end:0x8098CD88
+	.bss        start:0x8098CD50 end:0x8098CD8C
 
 system/rndobj/Line.cpp:
 	.text       start:0x805F1C60 end:0x805F5224
@@ -2624,6 +2623,7 @@ system/rndobj/MatAnim.cpp:
 system/rndobj/Mesh.cpp:
 	.text       start:0x805FCEC0 end:0x80606C98
 	.ctors      start:0x807EFFF0 end:0x807EFFF4
+	.sbss       start:0x808E4C70 end:0x808E4C78
 
 system/rndobj/MeshAnim.cpp:
 	.text       start:0x80606C98 end:0x8060DD10
@@ -2655,6 +2655,7 @@ system/rndobj/MultiMeshProxy.cpp:
 system/rndobj/Overlay.cpp:
 	.text       start:0x806179C4 end:0x80618780
 	.ctors      start:0x807EFFF8 end:0x807EFFFC
+	.data       start:0x80897B88 end:0x80897BF0
 
 system/rndobj/Part.cpp:
 	.text       start:0x80618780 end:0x80620524
@@ -2773,6 +2774,8 @@ system/rndobj/AmbientOcclusion.cpp:
 
 system/rndobj/DOFProc_Wii.cpp:
 	.text       start:0x8065E1A4 end:0x8065E490
+	.data       start:0x8089AD98 end:0x8089AE98
+	.bss        start:0x8098FAE8 end:0x8098FAF0
 
 system/rndobj/Dxt1Compress.cpp:
 	.text       start:0x8065E490 end:0x80660180
@@ -3031,6 +3034,8 @@ system/rndwii/Cam.cpp:
 system/rndwii/Env.cpp:
 	.text       start:0x806A8DEC end:0x806A9784
 	.ctors      start:0x807F003C end:0x807F0040
+	.data       start:0x8089FDB8 end:0x8089FEB8
+	.bss        start:0x80991780 end:0x809917E0
 
 system/rndwii/Lit.cpp:
 	.text       start:0x806A9784 end:0x806A9AF0
@@ -3040,6 +3045,9 @@ system/rndwii/Mat.cpp:
 
 system/rndwii/Mesh.cpp:
 	.text       start:0x806ABEDC end:0x806B144C
+	.data       start:0x8089FFA8 end:0x808A0160
+	.sdata      start:0x808E31F0 end:0x808E31F8
+	.bss        start:0x80991A44 end:0x80991A6C
 
 system/rndwii/Movie.cpp:
 	.text       start:0x806B144C end:0x806B1F80
@@ -3064,11 +3072,13 @@ system/rndwii/SplitPostProc.cpp:
 system/rndwii/Tex.cpp:
 	.text       start:0x806BE9E0 end:0x806C0D88
 	.ctors      start:0x807F0044 end:0x807F0048
+	.bss        start:0x80992DF8 end:0x80992E20
 
 system/rndwii/TexRenderer.cpp:
 	.text       start:0x806C0D88 end:0x806C115C
+	.data       start:0x808A1310 end:0x808A14D8
 
-system/rndwii/UsbWii.cpp:
+system/usbwii/UsbWii.cpp:
 	.text       start:0x806C115C end:0x806C25F0
 
 system/oggvorbis/bitrate.c:

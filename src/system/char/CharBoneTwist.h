@@ -2,8 +2,10 @@
 #define CHAR_CHARBONETWIST_H
 #include "char/CharPollable.h"
 #include "char/CharWeightable.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
+#include "utl/MemMgr.h"
 
 class CharBoneTwist : public CharPollable, public CharWeightable {
 public:
@@ -19,8 +21,11 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    DECLARE_REVS;
-    DELETE_OVERLOAD;
+    NEW_OBJ(CharBoneTwist)
+    DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
+    static void Init() { REGISTER_OBJ_FACTORY(CharBoneTwist) }
 
     ObjPtr<RndTransformable, ObjectDir> mBone; // 0x20
     ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x2c

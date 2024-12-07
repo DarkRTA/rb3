@@ -58,6 +58,7 @@ public:
     int GetTick() const { return mTick; }
     bool IgnoreDuration() const { return mIgnoreDuration; }
     unsigned int GetSlots() const { return mSlots; }
+    bool GetForceStrum() const { return mForceStrum; }
     
     bool CompareTimes(const GameGem& g1, const GameGem& g2){
         return g1.mMs < g2.mMs;
@@ -108,7 +109,7 @@ public:
     unsigned int mSlots;
 
     unsigned char mPlayed : 1;
-    unsigned char unk10b6 : 1;
+    unsigned char mForceStrum : 1;
     unsigned char mIgnoreDuration : 1;
     unsigned char unk10b4 : 1;
     unsigned char mShowChordNames : 1;

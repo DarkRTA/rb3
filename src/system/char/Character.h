@@ -148,4 +148,6 @@ public:
 #endif
 };
 
+void CharacterInit();
+
 #endif

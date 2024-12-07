@@ -7,7 +7,7 @@
 #define kMaxRGStrings 6
 
 GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
-    mSlots(info.slots), mPlayed(false), unk10b6(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(info.is_cymbal),
+    mSlots(info.slots), mPlayed(false), mForceStrum(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(info.is_cymbal),
     unk10b1(false), mRealGuitar(false), mLoose(false), mShowChordNums(false), mLeftHandSlide(false),
     mReverseSlide(false), mEnharmonic(false), unk18(info.players), mChordNameOverride(), mImportantStrings(0) {
 
@@ -15,7 +15,7 @@ GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDu
 
 // fn_80460334
 GameGem::GameGem(const RGGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
-    mSlots(0), mPlayed(false), unk10b6(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(0), mShowChordNames(info.show_chord_names),
+    mSlots(0), mPlayed(false), mForceStrum(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(0), mShowChordNames(info.show_chord_names),
     mShowSlashes(info.show_slashes), unk10b1(false), mRealGuitar(true), mLoose(info.loose), mShowChordNums(info.show_chord_nums), mLeftHandSlide(info.left_hand_slide),
     mReverseSlide(info.reverse_slide), mEnharmonic(info.enharmonic), mStrumType(info.strum_type), mHandPosition(info.hand_position), mRootNote(info.root_note),
     unk18(0), mChordNameOverride(), mImportantStrings(0) {
@@ -29,7 +29,7 @@ GameGem::GameGem(const RGGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurat
     }
     PackRealGuitarData();
     if(info.chord_name != 0) mChordNameOverride = Symbol(&info.chord_name);
-    unk10b6 |= RightHandTap();
+    mForceStrum |= RightHandTap();
 }
 
 GameGem::~GameGem(){
@@ -45,7 +45,7 @@ GameGem& GameGem::operator=(const GameGem& gem){
     mSlots = gem.mSlots;
     // 10
     mPlayed = gem.mPlayed;
-    unk10b6 = gem.unk10b6;
+    mForceStrum = gem.mForceStrum;
     mIgnoreDuration = gem.mIgnoreDuration;
     unk10b4 = gem.unk10b4;
     mShowChordNames = gem.mShowChordNames;
@@ -135,7 +135,7 @@ void GameGem::RecalculateTimes(TempoMap* tmap){
 void GameGem::CopyGem(GameGem* gem, int i){
     mTick = gem->GetTick() + i;
     mDurationTicks = gem->mDurationTicks;
-    unk10b6 = gem->unk10b6;
+    mForceStrum = gem->mForceStrum;
     mIgnoreDuration = gem->IgnoreDuration();
     mSlots = gem->GetSlots();
     mRealGuitar = gem->mRealGuitar != 0; // this is gem->IsRealGuitar() but inlined

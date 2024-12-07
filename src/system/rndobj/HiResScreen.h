@@ -54,6 +54,6 @@ public:
     BmpCache* mCache; // 0x28
 };
 
-extern HiResScreen* TheHiResScreen;
+extern HiResScreen& TheHiResScreen;
 
 #endif

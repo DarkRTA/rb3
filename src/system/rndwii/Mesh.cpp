@@ -5,9 +5,6 @@
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "revolution/GX.h"
-#include "revolution/gx/GXAttr.h"
-#include "revolution/gx/GXTransform.h"
-#include "revolution/gx/GXTypes.h"
 #include "revolution/mtx/mtx.h"
 #include "revolution/os/OSCache.h"
 #include "rndwii/Rnd.h"
@@ -25,7 +22,7 @@ void* DisplayList::sCurr;
 static DataNode OnToggleAO(DataArray*) {
     gToggleAO = !gToggleAO;
     TheDebug << MakeString("Ambient Occlusion is now %s!\n", gToggleAO ? "ON" : "OFF");
-    return DataNode();
+    return 0;
 }
 
 DisplayList::DisplayList() : mData(NULL), mSize(0), unk_0x8(0) {}
@@ -75,7 +72,13 @@ void DisplayList::Begin(_GXPrimitive prim, _GXVtxFmt f, unsigned short us1, unsi
 }
 
 void DisplayList::Start(_GXPrimitive pr, _GXVtxFmt f, unsigned short us) {
-    // ????
+    u8* b = (u8*)sCurr;
+    u32* w = (u32*)sCurr;
+    u16* h = (u16*)sCurr;
+    *b = (pr | f);
+    sCurr = (void*)((u8*)sCurr + 1);
+    *h = us;
+    sCurr = (void*)((u8*)sCurr + 2);
 }
 
 void DisplayList::End() {
@@ -139,7 +142,10 @@ void DisplayList::Draw(u32, _GXVtxFmt) const {
     GXCallDisplayList(mData, mSize);
 }
 
-WiiMesh::WiiMesh() {}
+WiiMesh::WiiMesh() : mCTVtxs(nullptr), mPosNrmVtxs(nullptr), mPosQ(nullptr), mNrmQ(nullptr), mBoneWeights(nullptr),
+    mBoneIndices(nullptr), mNumVerts(0), mNumFaces(0), unk_0x164(0), bitmask_0(0), bitmask_1(1), bitmask_2(0), unk_0x168(-1) {
+    unk_0x150 = nullptr;
+}
 
 BEGIN_COPYS(WiiMesh)
     COPY_SUPERCLASS(RndMesh)
@@ -149,9 +155,20 @@ BEGIN_COPYS(WiiMesh)
     END_COPYING_MEMBERS
 END_COPYS
 
+int WiiMesh::GetSomeSizeFactor() {
+    int ret;
+    WiiMesh* own = (WiiMesh*)GeometryOwner();
+    if (own->bitmask_2 && own->bitmask_1) {
+        ret = 9;
+    } else {
+        ret = 16;
+        if (own->bitmask_1) ret = 10;
+    }
+    return ret;
+}
 
 void WiiMesh::Init() {
-    REGISTER_OBJ_FACTORY(WiiMesh)
+    Register();
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_POS, GX_POS_XYZ, (GXCompType)4, 0);
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_NRM, GX_NRM_XYZ, (GXCompType)1, 6);
     GXSetVtxAttrFmt(GX_VTXFMT0, GX_VA_CLR0, GX_CLR_RGBA, (GXCompType)5, 0);
@@ -170,36 +187,64 @@ void WiiMesh::Init() {
 }
 
 void WiiMesh::ReleaseBuffers() {
-    WiiRnd::SyncFree(unk_0x148);
-    WiiRnd::SyncFree(unk_0x14C);
-    WiiRnd::SyncFree(unk_0x138);
-    WiiRnd::SyncFree(unk_0x13C);
-    WiiRnd::SyncFree(unk_0x140);
-    WiiRnd::SyncFree(unk_0x144);
+    WiiRnd::SyncFree(mBoneWeights);
+    WiiRnd::SyncFree(mBoneIndices);
+    WiiRnd::SyncFree(mCTVtxs);
+    WiiRnd::SyncFree(mPosNrmVtxs);
+    WiiRnd::SyncFree(mPosQ);
+    WiiRnd::SyncFree(mNrmQ);
     WiiRnd::SyncFree(unk_0x150);
-    unk_0x138 = NULL;
-    unk_0x13C = NULL;
-    unk_0x140 = NULL;
-    unk_0x144 = NULL;
-    unk_0x148 = NULL;
-    unk_0x14C = NULL;
+    mCTVtxs = NULL;
+    mPosNrmVtxs = NULL;
+    mPosQ = NULL;
+    mNrmQ = NULL;
+    mBoneWeights = NULL;
+    mBoneIndices = NULL;
     unk_0x150 = NULL;
 }
 
 void* SkinAlloc(int i1, char*, int i2) {
-
+    static int fastHeapNum = MemFindHeap("");
+    int a,b,c,d;
+    MemFreeBlockStats(fastHeapNum, a, b, c, d);
 }
 
 void WiiMesh::CreateBuffers() {
-
+    u32 pos_nrm_vtx_scale = GetSomeSizeFactor();
+    
+    MILO_ASSERT(!mCTVtxs, 678);
+    MILO_ASSERT(!mPosNrmVtxs, 679);
+    MILO_ASSERT(!mPosQ, 680);
+    MILO_ASSERT(!mNrmQ, 681);
+    mCTVtxs = _MemAlloc(mNumVerts << 3, 0x20);
+    if (bitmask_2 && bitmask_1) {
+        mPosNrmVtxs = nullptr;
+        mPosQ = SkinAlloc(mNumVerts * 6, "mesh VPosNrmQ", 0x20);
+        mNrmQ = SkinAlloc(mNumVerts * 3, "mesh VPosNrmQ", 0x20);
+    } else {
+        mPosNrmVtxs = _MemAlloc(mNumVerts * pos_nrm_vtx_scale, 0x20);
+        mPosQ = nullptr;
+        mNrmQ = nullptr;
+    }
+    if (unk_0x164 > 1) {
+        MILO_ASSERT(!mBoneWeights && !mBoneIndices, 711);
+        mBoneWeights = SkinAlloc((Min((int)unk_0x164,4) * mNumVerts) << 1, "Vertex Weights", 0x20);
+    }
+    if (unk_0x164 > 4) {
+        MILO_ASSERT(!mBoneIndices, 723);
+        mBoneIndices = SkinAlloc(mNumVerts << 2, "Vertex Indices", 0x20);
+    } else {
+        if (unk_0x164 > 1) {
+            mBoneIndices = SkinAlloc(unk_0x164, "Vertex Indices", 0x20);
+        }
+    }
 }
 
-WiiMesh::~WiiMesh() { }
+WiiMesh::~WiiMesh() { ReleaseBuffers(); }
 
 void WiiMesh::SetVertexDesc() {
     GXClearVtxDesc();
-    GXAttrType x = GX_INDEX16;
-    if (mDisplays.unk_0x8 < 0x100) x = GX_INDEX8;
+    GXAttrType x = mDisplays.GetIdxType();
     GXSetVtxDesc(GX_VA_POS, x);
     GXSetVtxDesc(GX_VA_NRM, x);
     GXSetVtxDesc(GX_VA_CLR0, x);
@@ -208,7 +253,7 @@ void WiiMesh::SetVertexDesc() {
 }
 
 void WiiMesh::SetVertexBuffers(const void*) {
-    const void* v = unk_0x138;
+    const void* v = mCTVtxs;
     GXSetArray(GX_VA_CLR0, v, 8);
     GXSetArray(GX_VA_TEX0, (const void*)((u32)v + 4), 8);
 }
