@@ -72,12 +72,6 @@ enum ShaderVariation {
     kShaderVariationSkin = 1,
     kShaderVariationHair = 2
 };
-enum ColorModFlags {
-    kColorModNone = 0,
-    kColorModAlphaPack = 1,
-    kColorModAlphaUnpackModulate = 2,
-    kColorModModulate = 3
-};
 
 /** Toggles pertaining to RndMat performance. */
 struct MatPerfSettings {
@@ -153,6 +147,14 @@ struct MatShaderOptions {
  */
 class RndMat : public Hmx::Object {
 public:
+    enum ColorModFlags {
+        kColorModNone = 0,
+        kColorModAlphaPack = 1,
+        kColorModAlphaUnpackModulate = 2,
+        kColorModModulate = 3,
+        kColorModNum = 3
+    };
+
     RndMat();
     virtual ~RndMat(){}
     OBJ_CLASSNAME(Mat);
@@ -240,6 +242,11 @@ public:
     }
     void SetShaderOpts(const MatShaderOptions& opts){
         mShaderOptions = opts;
+    }
+
+    void SetColorModFlags(ColorModFlags flags){
+        mColorModFlags = flags;
+        mDirty |= 2;
     }
 
     /** Handler to get all Mats in this Object's Dir that are NOT part of the material list.

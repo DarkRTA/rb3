@@ -14,18 +14,22 @@ public:
         CharDef(Hmx::Object*);
         void Load(BinStream&);
 
-        ObjPtr<Character, ObjectDir> mChar; // 0x0
+        ObjPtr<Character> mChar; // 0x0
         float mHeight; // 0xc
         float mDensity; // 0x10
         float mRadius; // 0x14
         bool unk18; // 0x18 - use random color?
-        ObjPtrList<RndMat, ObjectDir> unk1c; // 0x1c
+        ObjPtrList<RndMat> unk1c; // 0x1c
     };
 
     class CharData {
     public:
         class Char3D {
         public:
+            Char3D(const Transform& tf, int i) : unk0(tf), unk30(i) {}
+            Transform unk0;
+            int unk30;
+            std::vector<Hmx::Color> unk34; // 0x34
         };
 
         CharData(Hmx::Object*);
@@ -69,6 +73,9 @@ public:
     RndMesh* BuildBillboard(Character*, float);
     void SetLod(int);
     void Force3DCrowd(bool);
+    void Reset3DCrowd();
+    void Sort3DCharList();
+    void Set3DCharAll();
 
     DataNode OnRebuild(DataArray*);
     DataNode OnIterateFrac(DataArray*);
@@ -81,7 +88,7 @@ public:
         REGISTER_OBJ_FACTORY(WorldCrowd)
     }
 
-    ObjPtr<RndMesh, ObjectDir> mPlacementMesh; // 0x28
+    ObjPtr<RndMesh> mPlacementMesh; // 0x28
     ObjList<CharData> mCharacters; // 0x34
     int mNum; // 0x40
     int unk44; // 0x44
@@ -91,9 +98,9 @@ public:
     float unk58; // 0x58
     float unk5c; // 0x5c
     int mLod; // 0x60
-    ObjPtr<RndEnviron, ObjectDir> mEnviron; // 0x64
-    ObjPtr<RndEnviron, ObjectDir> mEnviron3D; // 0x70
-    ObjPtr<RndTransformable, ObjectDir> mFocus; // 0x7c
+    ObjPtr<RndEnviron> mEnviron; // 0x64
+    ObjPtr<RndEnviron> mEnviron3D; // 0x70
+    ObjPtr<RndTransformable> mFocus; // 0x7c
     int unk88; // 0x88
 };
 
@@ -101,3 +108,9 @@ inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharData& cd){
     cd.Load(bs);
     return bs;
 }
+
+struct Sort3DChars {
+    bool operator()(const WorldCrowd::CharData::Char3D& char1, const WorldCrowd::CharData::Char3D& char2) const {
+        return char1.unk30 < char2.unk30;
+    }
+};
