@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_DRAW_H
-#define RNDOBJ_DRAW_H
+#pragma once
 #include "rndobj/Highlightable.h"
 #include "obj/Object.h"
 #include "math/Sphere.h"
@@ -162,5 +161,3 @@ public:
      * In groups, draw_order will be ignored unless you explicitly click the sort button." */
     float mOrder; // 0x1c
 };
-
-#endif

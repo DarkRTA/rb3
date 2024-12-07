@@ -10,6 +10,17 @@
 #include <list>
 #include <utility>
 
+class OldMMInst {
+public:
+    Transform mOldXfm; // 0x0
+    Hmx::Color mOldColor; // 0x30
+};
+
+inline BinStream& operator>>(BinStream& bs, OldMMInst& inst){
+    bs >> inst.mOldXfm >> inst.mOldColor;
+    return bs;
+}
+
 /**
  * @brief An object that instances \ref RndMesh "RndMeshes".
  * Original _objects description:

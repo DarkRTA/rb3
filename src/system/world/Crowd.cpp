@@ -1,10 +1,14 @@
 #include "world/Crowd.h"
 #include "decomp.h"
+#include "math/Mtx.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/Timer.h"
 #include "rndobj/Cam.h"
+#include "rndobj/Draw.h"
 #include "rndobj/MultiMesh.h"
+#include "rndobj/Poll.h"
 #include "rndwii/Rnd.h"
 #include "utl/Loader.h"
 #include "utl/Symbols.h"
@@ -193,6 +197,20 @@ void WorldCrowd::Set3DCharAll(){
     AssignRandomColors();
 }
 
+void WorldCrowd::Set3DCharList(const std::vector<std::pair<int, int> >& pairVec, Hmx::Object* obj){
+    START_AUTO_TIMER("crowd_set3d");
+    if(!IsForced3DCrowd()){
+        Reset3DCrowd();
+        std::vector<std::pair<RndMultiMesh*, std::list<RndMultiMesh::Instance>::iterator> > grosserPairs;
+        grosserPairs.reserve(pairVec.size());
+        for(int i = 0; i != pairVec.size(); i++){
+
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(Crowd, "%s setting bad mesh %d, only has %d", "%s setting bad 3d char %d on mmesh %s, only has %d chars")
+
 void SetMatColorFlags(ObjPtrList<RndMat>& matList, RndMat::ColorModFlags flags, std::vector<Hmx::Color>* modulate){
     for(ObjPtrList<RndMat>::iterator it = matList.begin(); it != matList.end(); ++it){
         (*it)->SetColorModFlags(flags);
@@ -205,11 +223,26 @@ void SetMatColorFlags(ObjPtrList<RndMat>& matList, RndMat::ColorModFlags flags, 
     }
 }
 
+bool WorldCrowd::Crowd3DExists(){
+    for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+        if((*it).mDef.mChar && (*it).mMMesh && !(*it).m3DChars.empty()){
+            return true;
+        }
+    }
+    return false;
+}
+
+void WorldCrowd::Draw3DChars(){
+    
+}
+
 void WorldCrowd::SetLod(int lod){
     mLod = Clamp(0, 2, lod);
 }
 
 SAVE_OBJ(WorldCrowd, 0x4BF)
+
+DECOMP_FORCEACTIVE(WorldCrowd, "ObjPtr_p.h", "f.Owner()", "")
 
 BEGIN_LOADS(WorldCrowd)
     LOAD_REVS(bs)
@@ -227,6 +260,67 @@ BEGIN_LOADS(WorldCrowd)
     if(gRev > 6) bs >> mEnviron;
     if(gRev > 9) bs >> mEnviron3D;
     else mEnviron3D = mEnviron;
+    if(gRev > 1){
+        CreateMeshes();
+        for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+            if(gRev < 0xE){
+                std::list<Transform> xfmList;
+                std::list<RndMultiMesh::Instance> instancesList;
+                std::list<OldMMInst> oldmmiList;
+                if(it->mMMesh){
+                    if(gRev < 9){
+                        bs >> xfmList;
+                        it->mMMesh->mInstances.clear();
+                        for(std::list<Transform>::iterator transIt = xfmList.begin(); transIt != xfmList.end(); ++transIt){
+                            it->mMMesh->mInstances.push_back(RndMultiMesh::Instance(*transIt));
+                        }
+                    }
+                    else if(gRev < 0xB){
+                        bs >> oldmmiList;
+                        for(std::list<OldMMInst>::iterator mmiIt = oldmmiList.begin(); mmiIt != oldmmiList.end(); ++mmiIt){
+                            it->mMMesh->mInstances.push_back(RndMultiMesh::Instance(mmiIt->mOldXfm));
+                        }
+                    }
+                    else {
+                        std::list<RndMultiMesh::Instance>& instances = it->mMMesh->mInstances;
+                        unsigned int count;
+                        bs >> count;
+                        if(count > 10000000){
+                            MILO_FAIL("Crowd tried to allocate %d mesh instances.  That's a little excessive, no?", count);
+                        }
+                        instances.resize(count);
+                        for(std::list<RndMultiMesh::Instance>::iterator instIt = instances.begin(); instIt != instances.end(); ++instIt){
+                            instIt->LoadRev(bs, 3);
+                        }
+                    }
+                }
+                else if(gRev > 3){
+                    if(gRev < 9) bs >> xfmList;
+                    else if(gRev < 0xB) bs >> oldmmiList;
+                    else bs >> instancesList;
+                }
+            }
+            else {
+                std::list<Transform> xfms;
+                bs >> xfms;
+                it->mMMesh->mInstances.clear();
+                for(std::list<Transform>::const_iterator xfmIt = xfms.begin(); xfmIt != xfms.end(); ++xfmIt){
+                    it->mMMesh->mInstances.push_back(RndMultiMesh::Instance(*xfmIt));
+                }
+            }
+            AssignRandomColors();
+        }
+    }
+    else OnRebuild(0);
+    if(gRev > 4) bs >> unk88;
+    if(gRev > 0xC){
+        bool force = false;
+        bs >> force;
+        Force3DCrowd(force);
+    }
+    if(gRev > 5) bs >> mShow3DOnly;
+    if(gRev > 0xB) bs >> mFocus;
+    if(gRev != 0) LOAD_SUPERCLASS(RndHighlightable);
 END_LOADS
 
 void WorldCrowd::Mats(std::list<RndMat*>&, bool){

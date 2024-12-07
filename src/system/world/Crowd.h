@@ -27,8 +27,8 @@ public:
         class Char3D {
         public:
             Char3D(const Transform& tf, int i) : unk0(tf), unk30(i) {}
-            Transform unk0;
-            int unk30;
+            Transform unk0; // 0x0
+            int unk30; // 0x30
             std::vector<Hmx::Color> unk34; // 0x34
         };
 
@@ -76,6 +76,9 @@ public:
     void Reset3DCrowd();
     void Sort3DCharList();
     void Set3DCharAll();
+    bool Crowd3DExists();
+    void Draw3DChars();
+    bool IsForced3DCrowd() const { return mForce3DCrowd; }
 
     DataNode OnRebuild(DataArray*);
     DataNode OnIterateFrac(DataArray*);
