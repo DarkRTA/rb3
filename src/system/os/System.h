@@ -1,5 +1,4 @@
-#ifndef OS_SYSTEM_H
-#define OS_SYSTEM_H
+#pragma once
 #include "obj/Data.h"
 #include "utl/Symbol.h"
 #include <vector>
@@ -68,5 +67,3 @@ void AppendStackTrace(char* msg);
 void AppendThreadStackTrace(char* msg, unsigned int* trace);
 
 bool PlatformDebugBreak();
-
-#endif

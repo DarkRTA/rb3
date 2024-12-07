@@ -1,37 +1,52 @@
-#ifndef WORLD_CROWD_H
-#define WORLD_CROWD_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Env.h"
 #include "rndobj/MultiMesh.h"
 #include "char/Character.h"
+#include "utl/BinStream.h"
 
+/**
+ * @brief The crowd of characters you would see in a loaded venue.
+ * Original _objects description:
+ * "A quickly-rendered bunch of instanced characters within an area"
+ */
 class WorldCrowd : public RndDrawable, public RndPollable {
 public:
 
+    /** "Character archetypes for the crowd" */
     class CharDef {
     public:
         CharDef(Hmx::Object*);
         void Load(BinStream&);
 
-        ObjPtr<Character, ObjectDir> mChar; // 0x0
+        /** "The character to use as the archetype" */
+        ObjPtr<Character> mChar; // 0x0
+        /** "The height at which to render the character" */
         float mHeight; // 0xc
+        /** "Density to place this character" */
         float mDensity; // 0x10
+        /** "Collision radius of the character - characters won't be placed within this range" */
         float mRadius; // 0x14
-        bool unk18; // 0x18 - use random color?
-        ObjPtrList<RndMat, ObjectDir> unk1c; // 0x1c
+        bool mUseRandomColor; // 0x18
+        ObjPtrList<RndMat> mMats; // 0x1c
     };
 
     class CharData {
     public:
         class Char3D {
         public:
+            Char3D(const Transform& tf, int i) : unk0(tf), unk30(i) {}
+            Transform unk0; // 0x0
+            int unk30; // 0x30
+            std::vector<Hmx::Color> mRandomColors; // 0x34
         };
 
         CharData(Hmx::Object*);
         void Load(BinStream&);
 
+        // the RB3 dump says mDef is a member - would it be easier to make CharDef a superclass of CharData?
         CharDef mDef; // 0x0
         RndMultiMesh* mMMesh; // 0x2c
         std::list<RndMultiMesh::Instance> mBackup; // 0x30
@@ -61,8 +76,9 @@ public:
     virtual void Exit();
 
     void CleanUpCrowdFloor();
-    int GetModifyStamp() const { return unk88; }
+    int GetModifyStamp() const { return mModifyStamp; }
     void Set3DCharList(const std::vector<std::pair<int, int> >&, Hmx::Object*);
+    /** "Reassigns the random crowd colors" */
     void AssignRandomColors();
     void SetFullness(float, float);
     void SetMatAndCameraLod();
@@ -70,6 +86,12 @@ public:
     RndMesh* BuildBillboard(Character*, float);
     void SetLod(int);
     void Force3DCrowd(bool);
+    void Reset3DCrowd();
+    void Sort3DCharList();
+    void Set3DCharAll();
+    bool Crowd3DExists();
+    void Draw3DChars();
+    bool IsForced3DCrowd() const { return mForce3DCrowd; }
 
     DataNode OnRebuild(DataArray*);
     DataNode OnIterateFrac(DataArray*);
@@ -82,20 +104,28 @@ public:
         REGISTER_OBJ_FACTORY(WorldCrowd)
     }
 
-    ObjPtr<RndMesh, ObjectDir> mPlacementMesh; // 0x28
+    /** "The placement mesh" */
+    ObjPtr<RndMesh> mPlacementMesh; // 0x28
+    /** The list of characters that will be in the crowd. */
     ObjList<CharData> mCharacters; // 0x34
+    /** "Number of characters to place" */
     int mNum; // 0x40
     int unk44; // 0x44
-    Vector3 unk48; // 0x48
+    Vector3 mCenter; // 0x48
+    /** "Makes crowd be 3D regardless of the CamShot" */
     bool mForce3DCrowd; // 0x54
+    /** "Shows only the 3D crowd, but ONLY in Milo so you can more easily distinguish them from the 2d crowd" */
     bool mShow3DOnly; // 0x55
-    float unk58; // 0x58
-    float unk5c; // 0x5c
+    float mCharFullness; // 0x58
+    float mFlatFullness; // 0x5c
     int mLod; // 0x60
-    ObjPtr<RndEnviron, ObjectDir> mEnviron; // 0x64
-    ObjPtr<RndEnviron, ObjectDir> mEnviron3D; // 0x70
-    ObjPtr<RndTransformable, ObjectDir> mFocus; // 0x7c
-    int unk88; // 0x88
+    /** "The environ to render the imposter billboards with" */
+    ObjPtr<RndEnviron> mEnviron; // 0x64
+    /** "The environ used when rendering the 3D crowd set by a cam shot" */
+    ObjPtr<RndEnviron> mEnviron3D; // 0x70
+    /** "Optional crowd facing focus when rotate is set to kCrowdRotateNone" */
+    ObjPtr<RndTransformable> mFocus; // 0x7c
+    int mModifyStamp; // 0x88
 };
 
 inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharData& cd){
@@ -103,4 +133,13 @@ inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharData& cd){
     return bs;
 }
 
-#endif
+inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharDef& cd){
+    cd.Load(bs);
+    return bs;
+}
+
+struct Sort3DChars {
+    bool operator()(const WorldCrowd::CharData::Char3D& char1, const WorldCrowd::CharData::Char3D& char2) const {
+        return char1.unk30 < char2.unk30;
+    }
+};

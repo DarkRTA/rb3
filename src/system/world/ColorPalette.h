@@ -31,6 +31,7 @@ class ColorPalette : public Hmx::Object {
         MILO_ASSERT(mColors.size(), 0x19);
         return mColors[idx % mColors.size()];
     }
+    int NumColors() const { return mColors.size(); }
 
     DECLARE_REVS
     NEW_OVERLOAD;

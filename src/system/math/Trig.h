@@ -1,5 +1,4 @@
-#ifndef MATH_TRIG_H
-#define MATH_TRIG_H
+#pragma once
 #include "obj/Data.h"
 
 void TrigTableInit(); // fn_802E2E28
@@ -30,5 +29,3 @@ DataNode DataASin(DataArray*);
 DataNode DataACos(DataArray*);
 DataNode DataATan(DataArray*);
 void TrigInit();
-
-#endif

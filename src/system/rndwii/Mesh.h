@@ -41,6 +41,7 @@ public:
  * as well as set things like reflections, buffers, and etc.
  */
 class WiiMesh : public RndMesh { // 0x198
+public:
     WiiMesh();
     ~WiiMesh();
     virtual void Copy(const Hmx::Object*, CopyType);

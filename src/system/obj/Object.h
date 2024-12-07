@@ -1,5 +1,4 @@
-#ifndef OBJ_OBJECT_H
-#define OBJ_OBJECT_H
+#pragma once
 #include "obj/Data.h"
 #include "utl/BinStream.h"
 #include "utl/Symbol.h"
@@ -417,4 +416,3 @@ inline int packRevs(unsigned short alt, unsigned short rev){
 
 #define NULL_OBJ (Hmx::Object*)nullptr
 
-#endif
