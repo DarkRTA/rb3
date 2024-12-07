@@ -1,17 +1,25 @@
 #include "world/Crowd.h"
+#include "char/Character.h"
 #include "decomp.h"
+#include "math/Color.h"
 #include "math/Mtx.h"
+#include "math/Rand.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/Timer.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Draw.h"
+#include "rndobj/Mesh.h"
 #include "rndobj/MultiMesh.h"
 #include "rndobj/Poll.h"
+#include "rndobj/Trans.h"
+#include "rndwii/Mesh.h"
 #include "rndwii/Rnd.h"
 #include "utl/Loader.h"
 #include "utl/Symbols.h"
+#include "world/ColorPalette.h"
 
 RndCam* gImpostorCamera;
 RndMat* gImpostorMat;
@@ -236,6 +244,35 @@ void WorldCrowd::Draw3DChars(){
     
 }
 
+RndMesh* WorldCrowd::BuildBillboard(Character* c, float f){
+    c->mSphere.GetRadius();
+    RndMesh* mesh = Hmx::Object::New<RndMesh>();
+    RndMesh::VertVector& verts = mesh->Verts();
+    std::vector<RndMesh::Face>& faces = mesh->Faces();
+    float f1 = f * 0.5f;
+    float f2 = f1 * 0.5f;
+    verts.resize(4, true);
+    float f2neg = -f2;
+    verts[0].pos.Set(f2neg, 0, f1);
+    float f1neg = -f1;
+    verts[1].pos.Set(f2neg, 0, f1neg);
+    verts[2].pos.Set(f2, 0, f1);
+    verts[3].pos.Set(f2, 0, f1neg);
+
+    verts[0].uv.Set(0, 0);
+    verts[1].uv.Set(0, 1);
+    verts[2].uv.Set(1, 0);
+    verts[3].uv.Set(1, 1);
+
+    faces.resize(2);
+    faces[0].Set(0, 1, 2);
+    faces[1].Set(1, 3, 2);
+    mesh->Sync(0x3F);
+    mesh->SetMat(gImpostorMat);
+    mesh->SetTransConstraint(RndTransformable::kFastBillboardXYZ, gImpostorCamera, false);
+    return mesh;
+}
+
 void WorldCrowd::SetLod(int lod){
     mLod = Clamp(0, 2, lod);
 }
@@ -323,6 +360,135 @@ BEGIN_LOADS(WorldCrowd)
     if(gRev != 0) LOAD_SUPERCLASS(RndHighlightable);
 END_LOADS
 
+void WorldCrowd::AssignRandomColors(){
+    for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+        if((*it).mDef.mChar && (*it).mMMesh && !(*it).m3DChars.empty()){
+            bool b1 = false;
+            std::vector<ColorPalette*> colorPaletteList;
+            (*it).mDef.unk18 = false;
+            for(int i = 0; i < 3; i++){
+                ColorPalette* randPal = (*it).mDef.mChar->Find<ColorPalette>(MakeString("random%d.pal", i + 1), false);
+                if(randPal){
+                    colorPaletteList.push_back(randPal);
+                    b1 = true;
+                }
+            }
+            if(b1){
+                for(int i = 0; i != (*it).m3DChars.size(); i++){
+                    CharData::Char3D& curChar3D = (*it).m3DChars[i];
+                    curChar3D.unk34.clear();
+                    MILO_ASSERT(!colorPaletteList.empty(), 0x5B8);
+                    (*it).mDef.unk18 = true;
+                    while(curChar3D.unk34.size() < 3){
+                        ColorPalette* randPal = colorPaletteList[RandomInt(0, colorPaletteList.size())];
+                        Hmx::Color randColor = randPal->GetColor(RandomInt(0, randPal->NumColors()));
+                        curChar3D.unk34.push_back(randColor);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void WorldCrowd::ListDrawChildren(std::list<RndDrawable*>& draws){
+    for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+        Character* curChar = (*it).mDef.mChar;
+        if(curChar) draws.push_back(curChar);   
+    }
+}
+
+void WorldCrowd::UpdateSphere(){
+    Sphere s;
+    MakeWorldSphere(s, true);
+    SetSphere(s);
+}
+
+float WorldCrowd::GetDistanceToPlane(const Plane& p, Vector3& vout){
+    if(mCharacters.empty()) return 0;
+    else {
+        float dist = 0;
+        bool b1 = true;
+        for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+            RndMultiMesh* multimesh = it->mMMesh;
+            if(multimesh){
+                Vector3 v4c;
+                float f5 = multimesh->GetDistanceToPlane(p, v4c);
+                if(b1 || (std::fabs(f5) < std::fabs(dist))){
+                    b1 = false;
+                    vout = v4c;
+                    dist = f5;
+                }
+            }
+        }
+        return dist;
+    }
+}
+
+bool WorldCrowd::MakeWorldSphere(Sphere& s, bool b){
+    if(b){
+        s.Zero();
+        for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+            RndMultiMesh* multimesh = it->mMMesh;
+            if(multimesh){
+                Sphere local;
+                multimesh->MakeWorldSphere(local, true);
+                s.GrowToContain(local);
+            }
+        }
+        return true;
+    }
+    else if(mSphere.GetRadius()){
+        s = mSphere;
+        return true;
+    }
+    else return false;
+}
+
+void WorldCrowd::ListPollChildren(std::list<RndPollable*>& polls) const {
+    for(ObjList<CharData>::const_iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+        Character* curChar = (*it).mDef.mChar;
+        if(curChar) polls.push_back(curChar);
+    }
+}
+
+void WorldCrowd::Poll(){
+    if(Showing()){
+        for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+            Character* curChar = (*it).mDef.mChar;
+            if(curChar && curChar->GetPollState() != 3){
+                curChar->Poll();
+            }
+        }
+    }
+}
+
+void WorldCrowd::Enter(){
+    RndPollable::Enter();
+    for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+        Character* curChar = (*it).mDef.mChar;
+        if(curChar){
+            if(curChar->GetPollState() != 2) curChar->Enter();
+            for(int i = 0; i < 3; i++){
+                ColorPalette* randPal = curChar->Find<ColorPalette>(MakeString("random%d.pal", i + 1), false);
+                if(!randPal || randPal->NumColors() == 0) break;
+                if(i == 0){
+                    for(ObjDirItr<RndMat> objIt(curChar, true); objIt; ++objIt){
+                        (*it).mDef.unk1c.push_back(objIt);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void WorldCrowd::Exit(){
+    RndPollable::Exit();
+    for(ObjList<CharData>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it){
+        Character* curChar = (*it).mDef.mChar;
+        if(curChar) curChar->Exit();
+    }
+}
+
 void WorldCrowd::Mats(std::list<RndMat*>&, bool){
     std::list<unsigned int> uints;
     GetMeshShaderFlags(0, uints);
@@ -332,7 +498,7 @@ WorldCrowd::CharData::CharData(Hmx::Object* o) : mDef(o), mMMesh(0) {
 
 }
 
-void WorldCrowd::CharData::Load(BinStream& bs){ mDef.Load(bs); }
+void WorldCrowd::CharData::Load(BinStream& bs){ bs >> mDef; }
 
 WorldCrowd::CharDef::CharDef(Hmx::Object* o) : mChar(o, 0), mHeight(75.0f), mDensity(1.0f), mRadius(10.0f), unk18(0), unk1c(o, kObjListNoNull) {}
 
@@ -354,6 +520,24 @@ BEGIN_HANDLERS(WorldCrowd)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x6FF)
 END_HANDLERS
+
+void WorldCrowd::Force3DCrowd(bool force){
+    mForce3DCrowd = force;
+    if(mForce3DCrowd) Set3DCharAll();
+    else {
+        SetFullness(1, 1);
+        Set3DCharList(std::vector<std::pair<int, int> >(), this);
+    }
+}
+
+void WorldCrowd::CleanUpCrowdFloor(){
+    Hmx::Object* miloObj = ObjectDir::Main()->FindObject("milo", false);
+    if(!miloObj){
+        WiiMesh* mesh = dynamic_cast<WiiMesh*>(mPlacementMesh.Ptr());
+        if(mesh) mesh->RemoveVertData();
+        else MILO_WARN("WorldCrowd[%s] does not have a placement mesh.", PathName(this));
+    }
+}
 
 BEGIN_CUSTOM_PROPSYNC(WorldCrowd::CharData)
     SYNC_PROP(character, o.mDef.mChar)
