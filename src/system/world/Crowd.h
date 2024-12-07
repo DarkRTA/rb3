@@ -1,5 +1,4 @@
-#ifndef WORLD_CROWD_H
-#define WORLD_CROWD_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Mesh.h"
@@ -102,5 +101,3 @@ inline BinStream& operator>>(BinStream& bs, WorldCrowd::CharData& cd){
     cd.Load(bs);
     return bs;
 }
-
-#endif

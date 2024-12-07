@@ -1,4 +1,5 @@
 #include "world/Crowd.h"
+#include "obj/Object.h"
 #include "rndobj/Cam.h"
 #include "rndwii/Rnd.h"
 #include "utl/Symbols.h"
@@ -9,6 +10,24 @@ int gNumCrowd;
 WorldCrowd* gParent;
 
 INIT_REVS(WorldCrowd)
+
+namespace {
+    void GetMeshShaderFlags(RndMat* mat, std::list<unsigned int>& flags){
+        std::vector<ObjRef*>::reverse_iterator it = mat->mRefs.rbegin();
+        std::vector<ObjRef*>::reverse_iterator itEnd = mat->mRefs.rend();
+        for(; it != itEnd; ++it){
+            RndMesh* mesh = dynamic_cast<RndMesh*>((*it)->RefOwner());
+            if(mesh){
+                unsigned int flag = 0;
+                flag |= mesh->IsSkinned();
+                flag |= -(mesh->HasAOCalc()) & 2;
+                flags.push_back(flag);
+            }
+        }
+        flags.sort();
+        flags.unique();
+    }
+}
 
 WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), unk44(0), mForce3DCrowd(0), mShow3DOnly(0),
     unk58(1.0f), unk5c(1.0f), mLod(0), mEnviron(this), mEnviron3D(this), mFocus(this), unk88(0) {
@@ -115,6 +134,11 @@ BEGIN_LOADS(WorldCrowd)
     if(gRev > 9) bs >> mEnviron3D;
     else mEnviron3D = mEnviron;
 END_LOADS
+
+void WorldCrowd::Mats(std::list<RndMat*>&, bool){
+    std::list<unsigned int> uints;
+    GetMeshShaderFlags(0, uints);
+}
 
 WorldCrowd::CharData::CharData(Hmx::Object* o) : mDef(o), mMMesh(0) {
 
