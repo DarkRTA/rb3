@@ -10,7 +10,7 @@
 RndEnviron* RndEnviron::sCurrent;
 bool RndEnviron::sCurrentPosSet;
 Vector3 RndEnviron::sCurrentPos = Vector3(0,0,0);
-// BoxMapLighting RndEnviron::sGlobalLighting();
+BoxMapLighting RndEnviron::sGlobalLighting;
 int ENVIRON_REV = 15;
 
 void RndEnviron::Select(const Vector3* v) {

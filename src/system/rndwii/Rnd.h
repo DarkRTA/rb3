@@ -35,6 +35,9 @@ public:
     int mFramesBuffered; // 0x2C0
 
     static bool mUseLockedCache, mShowParticle, mShowAssetName;
+    static void ToggleAssetName() { mShowAssetName = !mShowAssetName; }
+    static void ToggleShowParticle() { mShowParticle = !mShowParticle; }
+    static void ToggleLockedCache() { mUseLockedCache = !mUseLockedCache; }
     static void SyncFree(void*);
     static void* GetCurrXFB();
 };

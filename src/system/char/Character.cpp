@@ -1,6 +1,7 @@
 #include "char/Character.h"
 #include "char/CharacterTest.h"
 #include "char/CharPollable.h"
+#include "obj/ObjMacros.h"
 #include "rndobj/Mesh.h"
 #include "utl/Std.h"
 #include "rndobj/Utl.h"
@@ -85,7 +86,8 @@ void CharPollableSorter::AddDeps(Dep* me, const std::list<Hmx::Object*>& odeps, 
     }
 }
 
-void Character::Init(){ Register(); }
+void CharacterInit() { Character::Init(); }
+void Character::Init(){ REGISTER_OBJ_FACTORY(Character) }
 void Character::Terminate(){}
 
 Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0), mTransGroup(this, 0), mDriver(0),

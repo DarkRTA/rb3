@@ -73,8 +73,7 @@ BEGIN_PROPSYNCS(RndMovie)
     if(sym == movie_file){
         if(_op == kPropSet){
             const char* str = _val.Str();
-            FilePath fp;
-            fp.SetRoot(str);
+            FilePath fp(str);
             SetFile(fp, mStream);
         }
         else {

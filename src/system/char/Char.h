@@ -4,6 +4,8 @@
 #include "char/CharBoneDir.h"
 #include "char/CharBoneOffset.h"
 #include "char/CharBones.h"
+#include "char/CharBlendBone.h"
+#include "char/CharBoneTwist.h"
 
 #include "obj/Object.h"
 void CharDeferHighlight(Hmx::Object*);

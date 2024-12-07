@@ -123,6 +123,7 @@ class DebugNotifier {
 public:
     DebugNotifier& operator<<(const char* c){
         TheDebug.Notify(c);
+        return *this;
     }
 };
 
@@ -166,7 +167,7 @@ public:
         if(AddToNotifies(cc, mNotifies)){
             TheDebugNotifier << cc;
         }
-        // return *this;
+        return *this;
     }
 };
 #ifdef MILO_DEBUG

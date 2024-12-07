@@ -7,7 +7,7 @@ WiiTexRenderer::WiiTexRenderer() { }
 WiiTexRenderer::~WiiTexRenderer() { }
 
 void WiiTexRenderer::DrawPreClear() {
-    if (!mShowing) return;
+    if (!Showing()) return;
     if (TheRnd->UnkE4() == 4) return;
     DrawToTexture();
 }

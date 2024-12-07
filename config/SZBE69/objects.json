@@ -429,7 +429,7 @@
 
             "system/beatmatch/BaseGuitarTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/BeatMaster.cpp": "NonMatching",
-            "system/beatmatch/BeatMatch.cpp": "NonMatching",
+            "system/beatmatch/BeatMatch.cpp": "Matching",
             "system/beatmatch/BeatMatchController.cpp": "NonMatching",
             "system/beatmatch/BeatMatchUtl.cpp": "NonMatching",
             "system/beatmatch/BeatMatcher.cpp": "NonMatching",
@@ -474,6 +474,7 @@
             "system/beatmatch/TrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/VocalNoteList.cpp": "NonMatching",
 
+            "system/char/Char.cpp": "NonMatching",
             "system/char/Character.cpp": "NonMatching",
             "system/char/CharBlendBone.cpp": "NonMatching",
             "system/char/CharBone.cpp": "NonMatching",
@@ -670,7 +671,7 @@
             "system/rndobj/Console.cpp": "NonMatching",
             "system/rndobj/CubeTex.cpp": "NonMatching",
             "system/rndobj/Dir.cpp": "NonMatching",
-            "system/rndobj/DOFProc.cpp": "NonMatching",
+            "system/rndobj/DOFProc.cpp": "Equivalent",
             "system/rndobj/DOFProc_Wii.cpp": "NonMatching",
             "system/rndobj/Draw.cpp": "NonMatching",
             "system/rndobj/Dxt1Compress.cpp": "NonMatching",
@@ -683,7 +684,7 @@
             "system/rndobj/Gen.cpp": "NonMatching",
             "system/rndobj/Graph.cpp": "NonMatching",
             "system/rndobj/Group.cpp": "NonMatching",
-            "system/rndobj/HiResScreen.cpp": "NonMatching",
+            "system/rndobj/HiResScreen.cpp": "Matching",
             "system/rndobj/Line.cpp": "NonMatching",
             "system/rndobj/Lit.cpp": "NonMatching",
             "system/rndobj/LitAnim.cpp": "NonMatching",
@@ -722,7 +723,7 @@
             "system/rndobj/Wind.cpp": "NonMatching",
 
             "system/rndwii/Cam.cpp": "NonMatching",
-            "system/rndwii/Env.cpp": "MISSING",
+            "system/rndwii/Env.cpp": "NonMatching",
             "system/rndwii/Lit.cpp": "MISSING",
             "system/rndwii/Mat.cpp": "MISSING",
             "system/rndwii/Mesh.cpp": "NonMatching",
@@ -733,7 +734,7 @@
             "system/rndwii/Rnd.cpp": "NonMatching",
             "system/rndwii/SplitPostProc.cpp": "MISSING",
             "system/rndwii/Tex.cpp": "NonMatching",
-            "system/rndwii/TexRenderer.cpp": "NonMatching",
+            "system/rndwii/TexRenderer.cpp": "Equivalent",
 
             "system/synth/ADSR.cpp": "NonMatching",
             "system/synth/BinkClip.cpp": "NonMatching",

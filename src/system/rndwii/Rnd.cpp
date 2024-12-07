@@ -66,9 +66,9 @@ void WiiRnd::DrawLine(const Vector3& a, const Vector3& b, const Hmx::Color&, boo
 
 BEGIN_HANDLERS(WiiRnd)
     HANDLE_ACTION(tri_frame, SetTriFrameRendering(_msg->Int(2)))
-    HANDLE_ACTION(toggle_locked_cache, mUseLockedCache = !mUseLockedCache)
-    HANDLE_ACTION(toggle_show_particle, mShowParticle = !mShowParticle)
-    HANDLE_ACTION(toggle_asset_name, mShowAssetName = !mShowAssetName)
+    HANDLE_ACTION(toggle_locked_cache, ToggleLockedCache())
+    HANDLE_ACTION(toggle_show_particle, ToggleShowParticle())
+    HANDLE_ACTION(toggle_asset_name, ToggleAssetName())
     HANDLE_ACTION(frames_buffered, mFramesBuffered = _msg->Int(2))
     HANDLE_SUPERCLASS(Rnd)
     HANDLE_CHECK(2722)

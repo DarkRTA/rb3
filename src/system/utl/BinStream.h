@@ -115,7 +115,7 @@ public:
     void WriteEndian(const void *, int);
 
     bool LittleEndian() const { return mLittleEndian; }
-    bool UseLittleEndian(bool use){ mLittleEndian = use; }
+    bool UseLittleEndian(bool use){ mLittleEndian = use; return mLittleEndian; }
 
     BS_WRITE_OP(short);
     BS_WRITE_OP(unsigned short);

@@ -60,18 +60,18 @@ void App::CaptureHiRes() {
     if (TheGame && !TheGame->mIsPaused) notPaused = true;
     if (notPaused) TheGame->SetPaused(true, true, true);
     DrawRegular();
-    int max = TheHiResScreen->mTiling * TheHiResScreen->mTiling;
+    int max = TheHiResScreen.mTiling * TheHiResScreen.mTiling;
     for (int i = 0; i <= max; i++) {
         DrawRegular();
-        TheHiResScreen->Accumulate();
+        TheHiResScreen.Accumulate();
     }
-    TheHiResScreen->Finish();
+    TheHiResScreen.Finish();
 
     if (notPaused) TheGame->SetPaused(false, true, true);
 }
 
 void App::Draw() {
-    if (TheHiResScreen->mActive) CaptureHiRes();
+    if (TheHiResScreen.mActive) CaptureHiRes();
     else DrawRegular();
 }
 

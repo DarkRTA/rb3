@@ -46,9 +46,8 @@ void BaseGuitarTrackWatcherImpl::NonStrumSwing(int i, bool b1, bool b2){
     float now = mParent->GetNow();
     int uu = ClosestUnplayedGem(now, i);
     GameGem& gem = mGemList->GetGem(uu);
-    int tick = gem.mTick;
     unsigned int btns = GetFretButtonsDown();
-    CheckForTrills(now, tick, btns);
+    CheckForTrills(now, gem.GetTick(), btns);
     if(!IsTrillActive()) TryToHopo(now, i, b1, b2);
 }
 
@@ -107,8 +106,8 @@ void BaseGuitarTrackWatcherImpl::TryToFinishSwing(float f, int i){
         GameGem& gem = mGemList->GetGem(mGemNotFretted);
         MILO_ASSERT(!gem.GetPlayed(), 0x142); 
         if(FretMatch(mGemNotFretted, false, false)){
-            OnHit(f, i, mGemNotFretted, gem.mSlots, kGemHitFlagNone);
-            if(gem.unk10b6){
+            OnHit(f, i, mGemNotFretted, gem.GetSlots(), kGemHitFlagNone);
+            if(gem.GetForceStrum()){
                 SendSwingAtHopo(f, mGemNotFretted);
             }
             mLastLateGemHit = f;
@@ -147,7 +146,7 @@ void BaseGuitarTrackWatcherImpl::TryToHopo(float f, int i, bool b1, bool b2){
                 if(FretMatch(closestgem, true, false)){
                     int flags = mBaseGuitarFlags | kGemHitFlagHopo;
                     if(b2) flags = flags | kGemHitFlagSolo;
-                    OnHit(f, i, closestgem, gem.mSlots, (GemHitFlags)flags);
+                    OnHit(f, i, closestgem, gem.GetSlots(), (GemHitFlags)flags);
                 }
                 else {
                     int tick = mSongData->GetTempoMap()->TimeToTick(f);
@@ -197,21 +196,33 @@ bool BaseGuitarTrackWatcherImpl::CanHopo(int i) const {
     bool ret;
     GameGem& gem = mGemList->GetGem(i);
     if(gem.IsRealGuitar()){
+        #ifdef MILO_DEBUG
         ret = true;
-        if(!gem.RightHandTap()){
-            if(gem.unk10b6 && (mLastGemHit == i - 1) && mSucceeding){
+        #else
+        ret = false;
+        #endif
+        if (!gem.RightHandTap() && gem.GetForceStrum()) {
+            int i2 = i - 1;
+            if (mLastGemHit == i - 1 && mSucceeding){
                 if(i != 0){
-                    GameGem& gemgem = mGemList->GetGem(i);
+                    GameGem& gemgem = mGemList->GetGem(i2);
+                    #ifdef MILO_DEBUG
                     if(!gemgem.GetPlayed()) ret = false;
+                    #else
+                    if(gemgem.GetPlayed()) ret = true;
+                    #endif
                 }
             }
         }
     }
     else {
         ret = false;
-        if(gem.unk10b6 && (0 < i) && (mLastGemHit == i - 1) && mSucceeding){
-            GameGem& gemgem = mGemList->GetGem(i);
-            if(gemgem.GetPlayed()) ret = true;
+        if(gem.GetForceStrum() && (0 < i))  {
+            int i2 = i - 1;
+            if (mLastGemHit == i - 1 && mSucceeding) {
+                GameGem& gemgem = mGemList->GetGem(i2);
+                if(gemgem.GetPlayed()) ret = true;
+            }
         }
     }
     return ret;

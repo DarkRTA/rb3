@@ -50,9 +50,9 @@ void RndScreenMask::DrawShowing() {
     MILO_NOTIFY_ONCE("%s: Overriding camera screen_rect not supported with render texture", mName);
     if (!mUseCurrentRect && !RndCam::sCurrent->mTargetTex.mPtr) {
         //TheRnd->PostSave();
-        TheHiResScreen->InvScreenRect();
+        TheHiResScreen.InvScreenRect();
     } else {
-        TheHiResScreen->InvScreenRect();
+        TheHiResScreen.InvScreenRect();
         Hmx::Color c; Hmx::Rect r;
         TheRnd->DrawRect(r, c, mMat, NULL, NULL);
     }

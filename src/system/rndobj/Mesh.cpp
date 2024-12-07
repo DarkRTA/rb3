@@ -491,14 +491,12 @@ void RndMesh::PreLoad(BinStream& bs){
     if(gRev < 15){
         int i;
         ObjPtrList<Hmx::Object> l(this, kObjListNoNull);
-        bs >> i;
-        bs >> l;
+        bs >> i >> l;
     }
     int zmode = 0;
     if(gRev < 0x14){
         int i14, i18;
-        bs >> i14;
-        bs >> i18;
+        bs >> i14 >> i18;
         if(i14 == 0 || i18 == 0) zmode = 0;
         else if(i14 == 1) zmode = 2;
         else {

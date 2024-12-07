@@ -4,7 +4,7 @@
 #include "os/File.h"
 
 HiResScreen gHiResScreen;
-HiResScreen* TheHiResScreen;
+HiResScreen& TheHiResScreen = gHiResScreen;
 
 HiResScreen::BmpCache::BmpCache(unsigned int ui1, unsigned int ui2){
     mRowsPerCacheLine = ui2 + 1;

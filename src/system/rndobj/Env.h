@@ -3,10 +3,11 @@
 #include "types.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
+#include "math/Color.h"
 #include "math/Vec.h"
+#include "rndobj/BoxMap.h"
 #include "rndobj/Lit.h"
 #include "rndobj/ColorXfm.h"
-#include "math/Color.h"
 
 class _GXColor;
 
@@ -100,13 +101,13 @@ public:
     float mExposure; // 0x190
     float mWhitePoint; // 0x194
     bool mUseToneMapping; // 0x198
-    bool mUseApprox_Local;
-    bool mUseApprox_Global;
+    bool mUseApprox_Local; // 0x199
+    bool mUseApprox_Global; // 0x19A
 
     static RndEnviron* sCurrent;
     static Vector3 sCurrentPos;
     static bool sCurrentPosSet;
-    // static BoxMapLighting sGlobalLighting;
+    static BoxMapLighting sGlobalLighting;
     DECLARE_REVS
 
     static Vector3* CurrentPos(){

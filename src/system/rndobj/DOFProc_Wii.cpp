@@ -21,4 +21,8 @@ void WiiDOFProc::SetTint(bool b, Hmx::Color col){
 
 void WiiDOFProc::UnSet(){ mEnabled = false; }
 void WiiDOFProc::EndWorld(){}
-void WiiDOFProc::OnGPHangRecover(){ gTempDOFEnabled = false; }
+void WiiDOFProc::OnGPHangRecover(){ 
+#ifdef MILO_DEBUG
+    gTempDOFEnabled = false; 
+#endif
+}

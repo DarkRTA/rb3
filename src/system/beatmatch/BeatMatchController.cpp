@@ -42,7 +42,7 @@ BeatMatchController* NewController(User* user, const DataArray* cfg, BeatMatchCo
         }
         else controller = new JoypadMidiController(user, cfg, sink, disabled);
     }
-    else MILO_FAIL("NewController: Bad controller type %s, %s", cfg->Sym(0), instr.Str());
+    else MILO_FAIL("NewController: Bad controller type %s, %s", cfg->Sym(0), *(const char**)&instr);
     sink->SetController(controller);
     return controller;
 }
