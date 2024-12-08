@@ -9,6 +9,11 @@
 class CamShot;
 class WorldCrowd;
 
+/**
+ * @brief An ObjectDir dedicated to holding world objects.
+ * Original _objects description:
+ * "A WorldDir contains world objects."
+ */
 class WorldDir : public PanelDir {
 public:
 
@@ -17,7 +22,9 @@ public:
         PresetOverride(Hmx::Object* o) : preset(o), hue(o) {}
         void Sync(bool);
 
+        /** "Subdir preset to modify" */
         ObjPtr<LightPreset> preset; // 0x0
+        /** "Hue texture to use" */
         ObjPtr<LightHue> hue; // 0xc
     };
 
@@ -26,7 +33,9 @@ public:
         BitmapOverride(Hmx::Object* o) : original(o), replacement(o) {}
         void Sync(bool);
 
+        /** "Subdir texture to replace" */
         ObjPtr<RndTex> original; // 0x0
+        /** "Curdir texture to replace with" */
         ObjPtr<RndTex> replacement; // 0xc
     };
 
@@ -35,7 +44,9 @@ public:
         MatOverride(Hmx::Object* o) : mesh(o), mat(o), mat2(o) {}
         void Sync(bool);
 
+        /** "Subdir mesh to modify" */
         ObjPtr<RndMesh> mesh; // 0x0
+        /** "Curdir material to set" */
         ObjPtr<RndMat> mat; // 0xc
         ObjPtr<RndMat> mat2; // 0x18
     };
@@ -80,30 +91,37 @@ public:
         REGISTER_OBJ_FACTORY(WorldDir)
     }
 
-    ObjList<PresetOverride> mPresetOverrides; // 0x1d8 - WorldDir::PresetOverride
-    ObjList<BitmapOverride> mBitmapOverrides; // 0x1e4 - WorldDir::BitmapOverride
-    ObjList<MatOverride> mMatOverrides; // 0x1f0 - WorldDir::MatOverride
+    ObjList<PresetOverride> mPresetOverrides; // 0x1d8
+    ObjList<BitmapOverride> mBitmapOverrides; // 0x1e4
+    ObjList<MatOverride> mMatOverrides; // 0x1f0
+    /** "Subdir objects to hide" */
     ObjPtrList<RndDrawable> mHideOverrides; // 0x1fc
+    /** "Subdir camshots to inhibit" */
     ObjPtrList<CamShot> mCamShotOverrides; // 0x20c
+    /** "Things to show when ps3_per_pixel on CamShot" */
     ObjPtrList<RndDrawable> mPS3PerPixelShows; // 0x21c
+    /** "Things to hide when ps3_per_pixel on CamShot" */
     ObjPtrList<RndDrawable> mPS3PerPixelHides; // 0x22c
     ObjPtrList<WorldCrowd> mCrowds; // 0x23c
     RndMat* mGlowMat; // 0x24c
+    /** "HUD Preview Dir" */
     FilePath mFakeHudFilename; // 0x250
+    /** "hud to be drawn last" */
     RndDir* mFakeHudDir; // 0x25c
+    /** "Whether to draw the HUD preview" */
     bool mShowFakeHud; // 0x260
     ObjPtr<RndDir> mHud; // 0x264
     CameraManager mCameraManager; // 0x270
     LightPresetManager mPresetManager; // 0x2a4
     bool mEchoMsgs; // 0x2f4
     float mDeltaSincePoll[4]; // 0x2f8
-    bool unk308;
-    bool unk309;
+    bool mFirstPoll; // 0x308
+    bool mPollCamera; // 0x309
     ObjPtr<LightPreset> mTestPreset1; // 0x30c
     ObjPtr<LightPreset> mTestPreset2; // 0x318
     float mTestAnimationTime; // 0x324
-    float unk328;
-    float unk32c;
+    float mLastRndTimeWorld; // 0x328
+    float mLastRndTimeChar; // 0x32c
     RndDrawable** mDrawItr; // 0x330
 };
 

@@ -27,7 +27,7 @@ ObjectDir* gOldTexDir;
 
 WorldDir::WorldDir() : mPresetOverrides(this), mBitmapOverrides(this), mMatOverrides(this), mHideOverrides(this), mCamShotOverrides(this),
     mPS3PerPixelShows(this), mPS3PerPixelHides(this), mCrowds(this), mFakeHudDir(0), mShowFakeHud(0), mHud(this),
-    mCameraManager(this), mPresetManager(this), mEchoMsgs(0), unk308(0), unk309(1), mTestPreset1(this), mTestPreset2(this), mTestAnimationTime(10.0f) {
+    mCameraManager(this), mPresetManager(this), mEchoMsgs(0), mFirstPoll(0), mPollCamera(1), mTestPreset1(this), mTestPreset2(this), mTestAnimationTime(10.0f) {
     mGlowMat = Hmx::Object::New<RndMat>();
     mGlowMat->SetBlend(kBlendSrcAlpha);
     mGlowMat->SetZMode(kZModeDisable);
@@ -67,7 +67,7 @@ void WorldDir::Enter(){
     mCameraManager.Enter();
     PanelDir::Enter();
     ClearDeltas();
-    unk308 = true;
+    mFirstPoll = true;
     TheRnd->SetProcAndLock(false);
     TheRnd->ResetProcCounter();
     mDrawItr = mDraws.begin();
@@ -106,15 +106,15 @@ void WorldDir::Poll(){
         float deltas[4];
         AccumulateDeltas(deltas);
         bool b = true;
-        if(!unk308 && !(TheRnd->ProcCmds() & 2)) b = false;
-        unk308 = false;
+        if(!mFirstPoll && !(TheRnd->ProcCmds() & 2)) b = false;
+        mFirstPoll = false;
         if(b){
             ExtendDeltas();
             HandleType(select_camera_msg);
-            if(unk309) mCameraManager.PrePoll();
+            if(mPollCamera) mCameraManager.PrePoll();
             mPresetManager.Poll();
             RndDir::Poll();
-            if(unk309) mCameraManager.Poll();
+            if(mPollCamera) mCameraManager.Poll();
             RestoreDeltas(deltas);
         }
         SetTheWorld(0);
@@ -414,13 +414,13 @@ void WorldDir::DrawSplitWorld(){
         return;
     }
     if(TheRnd->LastProcCmds() & 1){
-        unk328 = worldTimer->GetLastMs();
+        mLastRndTimeWorld = worldTimer->GetLastMs();
     }
     if(TheRnd->LastProcCmds() & 4){
-        unk32c = worldTimer->GetLastMs();
+        mLastRndTimeChar = worldTimer->GetLastMs();
     }
     if(TheRnd->ProcCmds() == 2) return;
-    float f1 = (unk328 + unk32c) / 2.0f;
+    float f1 = (mLastRndTimeWorld + mLastRndTimeChar) / 2.0f;
     if(f1 < 1.0f) f1 = 5.5f;
     DrawBudget(f1);
 }
