@@ -95,6 +95,11 @@ public:
     Hmx::Color32 Color() const { return mColorOwner->mColor; }
     float Intensity() const { return mColorOwner->mIntensity; }
     bool LightCanSort() const { return mLightCanSort; }
+    RndTransformable* Target() const { return mTarget; }
+    bool IsFlareEnabled() const { return mFlareEnabled; }
+    bool AnimateColorFromPreset() const { return mAnimateColorFromPreset; }
+    bool AnimateOrientationFromPreset() const { return mAnimateOrientationFromPreset; }
+    RndFlare* GetFlare() const { return mFlare; }
 
     RndTransformable* GetFloorSpotTarget() const {
         return mSpotTarget ? mSpotTarget : mTarget;

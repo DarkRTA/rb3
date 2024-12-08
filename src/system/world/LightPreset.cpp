@@ -1,4 +1,5 @@
 #include "world/LightPreset.h"
+#include "decomp.h"
 #include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/System.h"
@@ -570,6 +571,8 @@ void LightPreset::GetKey(float frame, int& iref1, int& iref2, float& fref) const
     }
 }
 
+DECOMP_FORCEACTIVE(LightPreset, "frame >= mKeyframes[before].mFrame && frame < mKeyframes[after].mFrame", "mKeyframes[before].mFadeOutTime > 0")
+
 void LightPreset::ApplyState(const LightPreset::Keyframe& k){
     mSpotlightState = k.mSpotlightEntries;
     mEnvironmentState = k.mEnvironmentEntries;
@@ -764,6 +767,53 @@ void LightPreset::TranslateColor(const Hmx::Color& col, Hmx::Color& res){
     else res = col;
 }
 
+void LightPreset::FillSpotPresetData(Spotlight* spot, LightPreset::SpotlightEntry& entry, int mask){
+    if(mask & 1){
+        entry.mIntensity = spot->Intensity();
+        entry.mColor = spot->Color().Opaque();
+    }
+    if(mask & 2){
+        entry.mTarget = spot->Target();
+        entry.unk10 = entry.mTarget ? Hmx::Quat(0,0,0,0) : Hmx::Quat(spot->mLocalXfm.m);
+    }
+    if(mask != 0 && spot->IsFlareEnabled()){
+        entry.mFlareEnabled = true;
+    }
+}
+
+void LightPreset::AnimateSpotFromPreset(Spotlight* spot, const LightPreset::SpotlightEntry& entry, float f3){
+    if(spot->AnimateColorFromPreset()){
+        Hmx::Color spotColor = spot->Color();
+        float intensity = spot->Intensity();
+        Hmx::Color col;
+        col.Unpack(entry.mColor);
+        TranslateColor(col, col);
+        Interp(spotColor, col, f3, spotColor);
+        Interp(intensity, entry.mIntensity, f3, intensity);
+        spot->SetColorIntensity(spotColor, intensity);
+        if(spot->GetFlare() && f3 == 1.0f){
+            spot->SetFlareEnabled(entry.mFlareEnabled);
+        }
+    }
+    if(spot->AnimateOrientationFromPreset()){
+        Hmx::Quat q50(0,0,0,0);
+        if(entry.unk8p1){
+
+        }
+        else {
+
+        }
+    }
+}
+
+void LightPreset::FillLightPresetData(RndLight* light, LightPreset::EnvLightEntry& entry){
+    entry.mColor = light->GetColor().Pack();
+    entry.unk0 = Hmx::Quat(light->WorldXfm().m);
+    entry.mPosition = light->WorldXfm().v;
+    entry.mRange = light->Range();
+    entry.mLightType = light->GetType();
+}
+
 void LightPreset::FillEnvPresetData(RndEnviron* env, LightPreset::EnvironmentEntry& e){
     e.mColor = env->AmbientColor().Pack();
     e.mFogColor = env->FogColor().Pack();
@@ -862,6 +912,8 @@ void LightPreset::Keyframe::Load(BinStream& bs){
     if(gRev > 0x13) bs >> mTriggers;
     if(gRev > 0xB) LoadStageKit(bs);
 }
+
+DECOMP_FORCEACTIVE(LightPreset, "0")
 
 LightPreset::SpotlightEntry::SpotlightEntry(Hmx::Object* o) : mIntensity(0), mColor(0), mFlareEnabled(1), mTarget(0) {
     unk10.Reset();
