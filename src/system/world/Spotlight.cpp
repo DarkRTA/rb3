@@ -1,4 +1,7 @@
 #include "world/Spotlight.h"
+#include "decomp.h"
+#include "os/Debug.h"
+#include "os/Timer.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Flare.h"
 #include "rndobj/Lit.h"
@@ -10,6 +13,7 @@
 #include "utl/Symbols.h"
 
 RndEnviron* Spotlight::sEnviron;
+RndMesh* Spotlight::sDiskMesh;
 
 INIT_REVS(Spotlight)
 
@@ -346,9 +350,10 @@ void Spotlight::UpdateSlaves(){
     }
 }
 
-void Spotlight::CalculateDirection(RndTransformable* trans, Hmx::Matrix3& mtx){
+void Spotlight::CalculateDirection(RndTransformable* target, Hmx::Matrix3& mtx){
+    MILO_ASSERT(target, 0x2C3);
     Vector3 v20;
-    Subtract(trans->WorldXfm().v, WorldXfm().v, v20);
+    Subtract(target->WorldXfm().v, WorldXfm().v, v20);
     Vector3 v2c;
     Cross(v20, Vector3(1.0f, 0.0f, 0.0f), v2c);
     Normalize(v2c, v2c);
@@ -374,6 +379,7 @@ bool Spotlight::MakeWorldSphere(Sphere& s, bool b){
             }
         }
         if(DoFloorSpot()){
+            MILO_ASSERT(sDiskMesh, 0x2F2);
             Sphere s38;
             sDiskMesh->SetWorldXfm(mFloorSpotXfm);
             if(sDiskMesh->MakeWorldSphere(s38, true)){
@@ -498,6 +504,20 @@ void Spotlight::UpdateFloorSpotTransform(const Transform& tf){
         unk22c = f1;
     }
 }
+
+void Spotlight::DrawShowing(){
+    START_AUTO_TIMER("spotlight");
+    for(ObjPtrList<RndDrawable>::iterator it = mAdditionalObjects.begin(); it != mAdditionalObjects.end(); ++it){
+        MILO_ASSERT(*it != this, 0x3D8);
+        if(*it != this) (*it)->DrawShowing();
+    }
+}
+
+void Spotlight::BuildBoard(){
+    MILO_ASSERT(!sDiskMesh, 0x427);
+}
+
+DECOMP_FORCEACTIVE(Spotlight, "iVert == kNumVerts", "iFace == kNumFaces", "!SpotlightDrawer::DrawNGSpotlights()")
 
 void Spotlight::BuildShaft(Spotlight::BeamDef& def){
     if(def.mIsCone) BuildCone(def);
