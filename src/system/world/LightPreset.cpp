@@ -1,4 +1,5 @@
 #include "world/LightPreset.h"
+#include "os/System.h"
 #include "world/Spotlight.h"
 #include "world/SpotlightDrawer.h"
 #include "world/LightHue.h"
@@ -27,7 +28,7 @@ LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s){
     else return LightPreset::kPresetKeyframeNum;
 }
 
-LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(0), mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0), mLocked(0),
+LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(kPlatformNone), mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0), mLocked(0),
     mSpotlightState(this), mLastKeyframe(0), mLastBlend(-1.0f), mStartBeat(0.0f), mManualFrameStart(0.0f), mManualFrame(0), mLastManualFrame(-1), mManualFadeTime(0.0f), mCachedDuration(0.0f), mHue(0) {
 
 }
@@ -199,7 +200,7 @@ BEGIN_LOADS(LightPreset)
         if(gRev != 0xE) bs >> mManual;
         bs >> mLocked;
     }
-    if(gRev > 0xC) bs >> mPlatformOnly;
+    if(gRev > 0xC) bs >> (int&)mPlatformOnly;
     if(gRev > 9){
         unsigned int sdrawercount;
         bs >> sdrawercount;
@@ -870,7 +871,7 @@ BEGIN_PROPSYNCS(LightPreset)
     SYNC_PROP(legacy_fade_in, mLegacyFadeIn)
     SYNC_PROP(manual, mManual)
     SYNC_PROP(locked, mLocked)
-    SYNC_PROP(platform_only, mPlatformOnly)
+    SYNC_PROP(platform_only, (int&)mPlatformOnly)
     SYNC_PROP(hue, mHue)
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS

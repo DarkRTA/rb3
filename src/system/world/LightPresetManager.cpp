@@ -27,7 +27,7 @@ void LightPresetManager::SendLightingMessage(Symbol s){
     char buf[0x100];
     static Message msg("");
     strcpy(buf, "lighting_");
-    strcpy(buf, s.Str());
+    strcpy(buf + 9, s.Str());
     msg.SetType(buf);
     mParent->Handle(msg, false);
 }
@@ -49,6 +49,7 @@ void LightPresetManager::Reset(){
 
 void LightPresetManager::Enter(){ Reset(); }
 
+// retail scratch: https://decomp.me/scratch/uIZ8B
 void LightPresetManager::Poll(){
     LightPreset* pnew = mPresetNew;
     LightPreset* pprev = mPresetPrev;
