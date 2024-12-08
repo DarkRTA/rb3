@@ -74,6 +74,7 @@ public:
         void Load(BinStream&);
         void CalculateDirection(Spotlight*, Hmx::Quat&) const;
         void Animate(Spotlight*, const SpotlightEntry&, float);
+        bool operator!=(const SpotlightEntry&) const;
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color
@@ -202,6 +203,7 @@ public:
     void AnimateEnvFromPreset(RndEnviron*, const EnvironmentEntry&, float);
     void AnimateLightFromPreset(RndLight*, const EnvLightEntry&, float);
     void AnimateSpotlightDrawerFromPreset(SpotlightDrawer*, const SpotlightDrawerEntry&, float);
+    void AnimateState(const Keyframe&, const Keyframe&, float);
     void SetHue(LightHue* hue){ mHue = hue; }
     float LegacyFadeIn() const { return mLegacyFadeIn; }
 
