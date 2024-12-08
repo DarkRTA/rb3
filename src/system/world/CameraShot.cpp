@@ -5,6 +5,7 @@
 #include "math/Rand.h"
 #include "obj/Data.h"
 #include "obj/DataUtl.h"
+#include "obj/ObjMacros.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/System.h"
@@ -1351,48 +1352,7 @@ BEGIN_PROPSYNCS(CamShot)
             return ret;
         }
     }
-    {
-        static Symbol _s("flags");
-        if(sym == _s){
-            _i++;
-            if(_i < _prop->Size()){
-                DataNode& node = _prop->Node(_i);
-                int res = 0;
-                switch(node.Type()){
-                    case kDataInt:
-                        res = node.Int();
-                        break;
-                    case kDataSymbol: {
-                        const char* bitstr = node.Sym().Str();
-                        if(strncmp("BIT_", bitstr, 4) != 0){
-                            MILO_FAIL("%s does not begin with BIT_", bitstr);
-                        }
-                        Symbol bitsym(bitstr + 4);
-                        DataArray* macro = DataGetMacro(bitsym);
-                        if(!macro){
-                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
-                        }
-                        res = macro->Int(0);
-                        break;
-                    }
-                    default:
-                        MILO_ASSERT(0, 0xD19);
-                        break;
-                }
-                MILO_ASSERT(_op <= kPropInsert, 0xD19);
-                if(_op == kPropGet){
-                    int final = mFlags & res;
-                    _val = DataNode(final > 0);
-                }
-                else {
-                    if(_val.Int() != 0) mFlags |= res;
-                    else mFlags &= ~res;
-                }
-                return true;
-            }
-            else return PropSync(mFlags, _val, _prop, _i, _op);
-        }
-    }
+    SYNC_PROP_BITFIELD_STATIC(flags, mFlags, 0xD19)
     SYNC_PROP_SET(disabled, mDisabled, )
     SYNC_PROP(anims, mAnims)
     SYNC_SUPERCLASS(RndAnimatable)

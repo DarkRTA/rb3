@@ -227,6 +227,44 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
             else return false; \
         }
 
+#define SYNC_PROP_BITFIELD(symbol, mask_member, line_num) \
+        if(sym == symbol){ \
+            _i++; \
+            if(_i < _prop->Size()){ \
+                DataNode& node = _prop->Node(_i); \
+                int res = 0; \
+                switch(node.Type()){ \
+                    case kDataInt: \
+                        res = node.Int(); \
+                        break; \
+                    case kDataSymbol: { \
+                        const char* bitstr = node.Sym().Str(); \
+                        MILO_ASSERT_FMT(strncmp("BIT_", bitstr, 4) == 0, "%s does not begin with BIT_", bitstr); \
+                        Symbol bitsym(bitstr + 4); \
+                        const Symbol& test = Symbol(bitsym); \
+                        DataArray* macro = DataGetMacro(test); \
+                        MILO_ASSERT_FMT(macro, "PROPERTY_BITFIELD %s could not find macro %s", symbol, test); \
+                        res = macro->Int(0); \
+                        break; \
+                    } \
+                    default: \
+                        MILO_ASSERT(0, line_num); \
+                        break; \
+                } \
+                MILO_ASSERT(_op <= kPropInsert, line_num); \
+                if(_op == kPropGet){ \
+                    int final = mask_member & res; \
+                    _val = DataNode(final > 0); \
+                } \
+                else { \
+                    if(_val.Int() != 0) mask_member |= res; \
+                    else mask_member &= ~res; \
+                } \
+                return true; \
+            } \
+            else return PropSync(mask_member, _val, _prop, _i, _op); \
+        }
+
 #define SYNC_PROP_STATIC(symbol, member) { \
     _NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP(_s, member) \
@@ -240,6 +278,11 @@ bool PropSync(objType& o, DataNode& _val, DataArray* _prop, int _i, PropOp _op){
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func) { \
     _NEW_STATIC_SYMBOL(symbol) \
     SYNC_PROP_MODIFY(_s, member, func) \
+}
+
+#define SYNC_PROP_BITFIELD_STATIC(symbol, mask_member, line_num) { \
+    _NEW_STATIC_SYMBOL(symbol) \
+    SYNC_PROP_BITFIELD(_s, mask_member, line_num) \
 }
 
 #define SYNC_SUPERCLASS(parent) \

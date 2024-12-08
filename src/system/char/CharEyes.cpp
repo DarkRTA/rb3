@@ -4,6 +4,7 @@
 #include "char/CharLookAt.h"
 #include "char/CharInterest.h"
 #include "obj/DataUtl.h"
+#include "obj/ObjMacros.h"
 #include "obj/Task.h"
 #include "rndobj/Graph.h"
 #include "utl/Symbols.h"
@@ -442,96 +443,16 @@ BEGIN_PROPSYNCS(CharEyes)
     SYNC_PROP(interests, mInterests)
     SYNC_PROP(face_servo, mFaceServo)
     SYNC_PROP(camera_weight, mCamWeight)
-    {
-        static Symbol _s("default_interest_categories");
-        if(sym == _s){
-            if(++_i < _prop->Size()){
-                DataNode& node = _prop->Node(_i);
-                int res = 0;
-                switch(node.Type()){
-                    case kDataInt:
-                        res = node.Int();
-                        break;
-                    case kDataSymbol: {
-                        const char* bitstr = node.Sym().Str();
-                        if(strncmp("BIT_", bitstr, 4) != 0){
-                            MILO_FAIL("%s does not begin with BIT_", bitstr);
-                        }
-                        Symbol bitsym(bitstr + 4);
-                        DataArray* macro = DataGetMacro(bitsym);
-                        if(!macro){
-                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
-                        }
-                        res = macro->Int(0);
-                        break;
-                    }
-                    default:
-                        MILO_ASSERT(0, 0x67B);
-                        break;
-                }
-                MILO_ASSERT(_op <= kPropInsert, 0x67B);
-                if(_op == kPropGet){
-                    int final = mDefaultFilterFlags & res;
-                    _val = DataNode(final > 0);
-                }
-                else {
-                    if(_val.Int() != 0) mDefaultFilterFlags |= res;
-                    else mDefaultFilterFlags &= ~res;
-                }
-                return true;
-            }
-            return PropSync(mDefaultFilterFlags, _val, _prop, _i, _op);
-        }
-    }
+    SYNC_PROP_BITFIELD_STATIC(default_interest_categories, mDefaultFilterFlags, 0x67B)
     SYNC_PROP(head_lookat, mHeadLookAt)
     SYNC_PROP(max_extrapolation, mMaxExtrapolation)
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     SYNC_PROP(disable_eye_dart, sDisableEyeDart)
     SYNC_PROP(disable_eye_jitter, sDisableEyeJitter)
     SYNC_PROP(disable_interest_objects, sDisableInterestObjects)
     SYNC_PROP(disable_procedural_blink, sDisableProceduralBlink)
     SYNC_PROP(disable_eye_clamping, sDisableEyeClamping)
-    {
-        static Symbol _s("interest_filter_testing");
-        if(sym == _s){
-            if(++_i < _prop->Size()){
-                DataNode& node = _prop->Node(_i);
-                int res = 0;
-                switch(node.Type()){
-                    case kDataInt:
-                        res = node.Int();
-                        break;
-                    case kDataSymbol: {
-                        const char* bitstr = node.Sym().Str();
-                        if(strncmp("BIT_", bitstr, 4) != 0){
-                            MILO_FAIL("%s does not begin with BIT_", bitstr);
-                        }
-                        Symbol bitsym(bitstr + 4);
-                        DataArray* macro = DataGetMacro(bitsym);
-                        if(!macro){
-                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
-                        }
-                        res = macro->Int(0);
-                        break;
-                    }
-                    default:
-                        MILO_ASSERT(0, 0x684);
-                        break;
-                }
-                MILO_ASSERT(_op <= kPropInsert, 0x684);
-                if(_op == kPropGet){
-                    int final = mInterestFilterFlags & res;
-                    _val = DataNode(final > 0);
-                }
-                else {
-                    if(_val.Int() != 0) mInterestFilterFlags |= res;
-                    else mInterestFilterFlags &= ~res;
-                }
-                return true;
-            }
-            return PropSync(mInterestFilterFlags, _val, _prop, _i, _op);
-        }
-    }
+    SYNC_PROP_BITFIELD_STATIC(interest_filter_testing, mInterestFilterFlags, 0x684)
 #endif
     SYNC_PROP(min_target_dist, mMinTargetDist)
     SYNC_PROP(ulid_track_up, mUpperLidTrackUp)
