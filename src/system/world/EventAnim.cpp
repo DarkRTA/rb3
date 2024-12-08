@@ -1,4 +1,5 @@
 #include "world/EventAnim.h"
+#include "decomp.h"
 #include "utl/Symbols.h"
 
 EventAnim* gEventAnimOwner;
@@ -86,6 +87,8 @@ BEGIN_LOADS(EventAnim)
     }
 END_LOADS
 
+DECOMP_FORCEACTIVE(EventAnim, "ObjPtr_p.h", "f.Owner()", "")
+
 BinStream& operator>>(BinStream& bs, EventAnim::KeyFrame& k){
     bs >> k.mTime;
     bs >> k.mCalls;
@@ -96,6 +99,10 @@ BinStream& operator>>(BinStream& bs, EventAnim::EventCall& e){
     bs >> e.mDir;
     e.mEvent.Load(bs, true, e.mDir);
     return bs;
+}
+
+void EventAnim::RefreshKeys(){
+    mKeys.sort();
 }
 
 BEGIN_HANDLERS(EventAnim)

@@ -1461,7 +1461,7 @@
             "system/world/ColorPalette.cpp": "Matching",
             "system/world/Crowd.cpp": "NonMatching",
             "system/world/Dir.cpp": "NonMatching",
-            "system/world/EventAnim.cpp": "NonMatching",
+            "system/world/EventAnim.cpp": "Equivalent",
             "system/world/FreeCamera.cpp": "NonMatching",
             "system/world/Instance.cpp": "NonMatching",
             "system/world/LightHue.cpp": "NonMatching",
