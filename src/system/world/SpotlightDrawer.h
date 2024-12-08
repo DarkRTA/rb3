@@ -1,9 +1,9 @@
-#ifndef WORLD_SPOTLIGHTDRAWER_H
-#define WORLD_SPOTLIGHTDRAWER_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/PostProc.h"
 
+class RndEnviron;
 class RndTex;
 class SpotlightDrawer;
 
@@ -19,8 +19,8 @@ public:
     float mSmokeIntensity; // 0x18
     float mHalfDistance; // 0x1c
     float mLightingInfluence; // 0x20
-    ObjPtr<RndTex, ObjectDir> mTexture; // 0x24
-    ObjPtr<RndDrawable, ObjectDir> mProxy; // 0x30
+    ObjPtr<RndTex> mTexture; // 0x24
+    ObjPtr<RndDrawable> mProxy; // 0x30
     SpotlightDrawer* mOwner; // 0x3c
 };
 
@@ -35,7 +35,7 @@ public:
     // size: 0x8
     class SpotlightEntry {
     public:
-        int unk0;
+        unsigned int unk0;
         int unk4;
     };
 
@@ -73,6 +73,8 @@ public:
 
     static SpotlightDrawer* sCurrent;
     static SpotlightDrawer* sDefault;
+    static RndEnviron* sEnviron;
+    static RndMat* sEditorMat;
     static int sNeedBoxMap;
     static std::vector<SpotlightEntry> sLights;
     static std::vector<SpotMeshEntry> sCans;
@@ -89,4 +91,12 @@ public:
     SpotDrawParams mParams; // 0x24
 };
 
-#endif
+struct ByColor {
+    bool operator()(const SpotlightDrawer::SpotlightEntry& e1, const SpotlightDrawer::SpotlightEntry& e2) const {
+        return e1.unk0 < e2.unk0;
+    }
+};
+
+struct ByEnvMesh {
+    bool operator()(const SpotlightDrawer::SpotMeshEntry&, const SpotlightDrawer::SpotMeshEntry&) const;
+};
