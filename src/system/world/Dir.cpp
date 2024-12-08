@@ -1,12 +1,20 @@
 #include "world/Dir.h"
+#include "math/Utl.h"
+#include "obj/ObjMacros.h"
+#include "os/Timer.h"
+#include "rndobj/Draw.h"
+#include "rndobj/Env.h"
+#include "world/CameraShot.h"
 #include "world/Crowd.h"
 #include "world/LightPreset.h"
+#include "world/Spotlight.h"
 #include "world/SpotlightDrawer.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Rnd.h"
 #include "string.h"
 #include "obj/ObjVersion.h"
+#include "ui/UI.h"
 #include "utl/Std.h"
 #include "utl/Messages.h"
 
@@ -17,10 +25,14 @@ WorldDir* gLastWorld;
 std::vector<FilePath> gOldChars;
 ObjectDir* gOldTexDir;
 
-WorldDir::WorldDir() : mPresetOverrides(this), mBitmapOverrides(this), mMatOverrides(this), mHideOverrides(this, kObjListNoNull), mCamShotOverrides(this, kObjListNoNull),
-    mPS3PerPixelShows(this, kObjListNoNull), mPS3PerPixelHides(this, kObjListNoNull), mCrowds(this, kObjListNoNull), mFakeHudDir(0), mShowFakeHud(0), mHud(this, 0),
-    mCameraManager(this), mPresetManager(this), mEchoMsgs(0), unk308(0), unk309(1), mTestPreset1(this, 0), mTestPreset2(this, 0), mTestAnimationTime(10.0f) {
+WorldDir::WorldDir() : mPresetOverrides(this), mBitmapOverrides(this), mMatOverrides(this), mHideOverrides(this), mCamShotOverrides(this),
+    mPS3PerPixelShows(this), mPS3PerPixelHides(this), mCrowds(this), mFakeHudDir(0), mShowFakeHud(0), mHud(this),
+    mCameraManager(this), mPresetManager(this), mEchoMsgs(0), unk308(0), unk309(1), mTestPreset1(this), mTestPreset2(this), mTestAnimationTime(10.0f) {
     mGlowMat = Hmx::Object::New<RndMat>();
+    mGlowMat->SetBlend(kBlendSrcAlpha);
+    mGlowMat->SetZMode(kZModeDisable);
+    mGlowMat->SetPreLit(true);
+    ClearDeltas();
 }
 
 #pragma push
@@ -66,11 +78,10 @@ void WorldDir::ClearDeltas(){
     for(int i = 0; i < 4; i++) mDeltaSincePoll[i] = 0;
 }
 
-void WorldDir::AccumulateDeltas(float* f){
+void WorldDir::AccumulateDeltas(float* deltas){
     for(int i = 0; i < 4; i++){
-        float deltatime = TheTaskMgr.DeltaTime((TaskUnits)i);
-        *f++ = deltatime;
-        mDeltaSincePoll[i] += deltatime;
+        deltas[i] = TheTaskMgr.DeltaTime((TaskUnits)i);
+        mDeltaSincePoll[i] += deltas[i];
     }
 }
 
@@ -83,7 +94,7 @@ void WorldDir::ExtendDeltas(){
 void WorldDir::RestoreDeltas(float* f){
     for(int i = 0; i < 4; i++){
         mDeltaSincePoll[i] = 0;
-        TheTaskMgr.SetDeltaTime((TaskUnits)i, *f++);
+        TheTaskMgr.SetDeltaTime((TaskUnits)i, f[i]);
     }
 }
 
@@ -95,7 +106,8 @@ void WorldDir::Poll(){
         float deltas[4];
         AccumulateDeltas(deltas);
         bool b = true;
-        if(!unk308 && TheRnd->mProcCmds & 2 == 0) b = false;
+        if(!unk308 && !(TheRnd->ProcCmds() & 2)) b = false;
+        unk308 = false;
         if(b){
             ExtendDeltas();
             HandleType(select_camera_msg);
@@ -152,8 +164,7 @@ BinStream& operator>>(BinStream& bs, WorldDir::BitmapOverride& c){
         bs >> bitmap;
         if(!bitmap.empty()){
             const char* chr = strrchr(bitmap.c_str(), 0x2F);
-            if(!chr) chr = bitmap.c_str();
-            else chr = chr + 1;
+            chr = chr ? chr + 1 : bitmap.c_str();
             c.replacement = gOldTexDir->Find<RndTex>(chr, false);
             if(!c.replacement){
                 MILO_WARN("Loading %s synchronously, please resave %s", chr, gOldTexDir->mLoader->mFile);
@@ -175,12 +186,10 @@ void WorldDir::PreLoad(BinStream& bs){
     ASSERT_REVS(0x19, 0);
     MILO_ASSERT(gRev >= 4, 0x163);
     if(gRev != 0 && gRev < 5){
-        ObjPtr<RndCam, ObjectDir> ptr(this, 0);
+        ObjPtr<RndCam> ptr(this, 0);
         bs >> ptr;
     }
-    if(gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 ||
-        gRev == 9 || gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 ||
-        gRev == 16 || gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20){
+    if(gRev >= 2 && gRev <= 20){
         int i, j;
         bs >> i >> j;
     }
@@ -200,7 +209,7 @@ void WorldDir::PostLoad(BinStream& bs){
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
     if(gRev == 5){
-        ObjPtr<RndCam, ObjectDir> camPtr(this, 0);
+        ObjPtr<RndCam> camPtr(this, 0);
         bs >> camPtr;
         SetCam(camPtr);
     }
@@ -282,7 +291,7 @@ void WorldDir::SyncObjects(){
     for(ObjDirItr<WorldCrowd> it(this, true); it; ++it){
         mCrowds.push_back(it);
     }
-    for(ObjPtrList<WorldCrowd, ObjectDir>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
+    for(ObjPtrList<WorldCrowd>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
         (*it)->CleanUpCrowdFloor();
     }
     if(mHud) VectorRemove(mDraws, mHud);
@@ -297,23 +306,127 @@ CamShotCrowd* FindCrowd(ObjVector<CamShotCrowd>& vec, WorldCrowd* crowd){
 }
 
 void WorldDir::SetCrowds(ObjVector<CamShotCrowd>& crowdvec){
-    bool b = false;
-    for(ObjPtrList<WorldCrowd, ObjectDir>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
-
+    bool found = false;
+    for(ObjPtrList<WorldCrowd>::iterator it = mCrowds.begin(); it != mCrowds.end(); ++it){
+        WorldCrowd* curWorldCrowd = *it;
+        CamShotCrowd* curCrowd = FindCrowd(crowdvec, curWorldCrowd);
+        if(curCrowd != crowdvec.end()){
+            found = true;
+            curWorldCrowd->SetShowing(true);
+            curWorldCrowd->SetCrowdRotate(curCrowd->mCrowdRotate);
+        }
+        else {
+            curWorldCrowd->SetShowing(false);
+        }
     }
-    if(!b){
-        MILO_FAIL("Crowd %s not found in world %s");
+    if(!found){
+        for(ObjVector<CamShotCrowd>::iterator it = crowdvec.begin(); it != crowdvec.end(); ++it){
+            WorldCrowd* crowd = it->mCrowd;
+            if(crowd){
+                MILO_FAIL("Crowd %s not found in world %s", PathName(crowd), PathName(this));
+            }            
+        }
     }
 }
 
+#pragma push
+#pragma pool_data off
 void WorldDir::DrawShowing(){
     START_AUTO_TIMER("world_draw");
-    MILO_LOG("hud_draw");
+    if(TheWorld){
+        if(Showing()) DrawSplitWorld();
+    }
+    else {
+        SetTheWorld(this);
+        CamShot* shot = mCameraManager.MiloCamera();
+        if(!shot) shot = mCameraManager.CurrentShot();
+        if(shot) shot = shot->CurrentShot();
+        RndCam* cam2 = CamOverride();
+        RndCam* cam7 = RndCam::sCurrent;
+        if(cam2){
+            cam2->Select();
+            cam7 = cam2;
+        }
+        RndEnviron* env = GetEnv() ? GetEnv() : TheUI->GetEnv();
+        env->Select(0);
+        if(TheRnd->ProcCmds() & 1 && shot && !shot->mDrawOverrides.empty()){
+            for(ObjPtrList<RndDrawable>::iterator it = shot->mDrawOverrides.begin(); it != shot->mDrawOverrides.end(); ++it){
+                (*it)->DrawShowing();
+            }
+        }
+        if(!shot || shot->mDrawOverrides.empty()){
+            RndDir::DrawShowing();
+        }
+        if(TheRnd->ProcCmds() & 1 && shot){
+            Spotlight* spot = shot->GlowSpot();
+            if(spot && spot->Showing() && spot->Intensity() > 0){
+                Hmx::Rect rect(0,0,TheRnd->Width(), TheRnd->Height());
+                Hmx::Color color(spot->Color());
+                color.alpha = 0.25f;
+                TheRnd->DrawRect(rect, color, mGlowMat, 0, 0);
+            }
+        }
+        TheRnd->CopyWorldCam(TheWorld->GetCam());
+        TheRnd->EndWorld();
+        if(shot){
+            cam7->Select();
+            env->Select(0);
+            for(ObjPtrList<RndDrawable>::iterator it = shot->mPostProcOverrides.begin(); it != shot->mPostProcOverrides.end(); ++it){
+                (*it)->DrawShowing();
+            }
+        }
+        if(mFakeHudDir) mFakeHudDir->DrawShowing();
+        if(mHud && mHud->Showing()){
+            START_AUTO_TIMER("hud_draw");
+            mHud->DrawShowing();
+        }
+        if(TheRnd->ProcCmds() & 2 && SpotlightDrawer::sCurrent){
+            SpotlightDrawer::sCurrent->DeSelect();
+        }
+        SetTheWorld(0);
+    }
+}
+#pragma pop
+
+bool WorldDir::DrawShowingBudget(float fff){
+    Timer timer;
+    timer.Start();
+    RndEnvironTracker tracker(mEnv, &WorldXfm().v);
+    if(TheRnd->ProcCmds() & 1){
+        mDrawItr = mDraws.begin();
+    }
+    for(; mDrawItr != mDraws.end(); ++mDrawItr){
+        float f1 = kHugeFloat;
+        if(TheRnd->ProcCmds() & 1){
+            float split = timer.SplitMs() - 0.0f;
+            f1 = fff - split;
+            if(split > fff || std::fabs(f1) <= 1.0f) return false;
+        }
+        if(!(*mDrawItr)->DrawBudget(f1)) return false;
+    }
+    return true;
+}
+
+void WorldDir::DrawSplitWorld(){
+    static Timer* worldTimer = AutoTimer::GetTimer("world");
+    if(!worldTimer || TheRnd->ProcCmds() == 7){
+        RndDir::DrawShowing();
+        return;
+    }
+    if(TheRnd->LastProcCmds() & 1){
+        unk328 = worldTimer->GetLastMs();
+    }
+    if(TheRnd->LastProcCmds() & 4){
+        unk32c = worldTimer->GetLastMs();
+    }
+    if(TheRnd->ProcCmds() == 2) return;
+    float f1 = (unk328 + unk32c) / 2.0f;
+    if(f1 < 1.0f) f1 = 5.5f;
+    DrawBudget(f1);
 }
 
 void WorldDir::SyncHUD(){
-    delete mFakeHudDir;
-    mFakeHudDir = 0;
+    RELEASE(mFakeHudDir);
     if(mShowFakeHud && !mFakeHudFilename.empty()){
         mFakeHudDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(mFakeHudFilename, 0, 0));
         if(mFakeHudDir) mFakeHudDir->Enter();
@@ -321,7 +434,7 @@ void WorldDir::SyncHUD(){
 }
 
 void WorldDir::SyncHides(bool b){
-    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = mHideOverrides.begin(); it != mHideOverrides.end(); it++){
+    for(ObjPtrList<RndDrawable>::iterator it = mHideOverrides.begin(); it != mHideOverrides.end(); ++it){
         (*it)->SetShowing(!b);
     }
 }
@@ -345,56 +458,55 @@ void WorldDir::SyncPresets(bool b){
 }
 
 void WorldDir::SyncCamShots(bool b){
-    for(ObjPtrList<CamShot, ObjectDir>::iterator it = mCamShotOverrides.begin(); it != mCamShotOverrides.end(); it++){
+    for(ObjPtrList<CamShot>::iterator it = mCamShotOverrides.begin(); it != mCamShotOverrides.end(); it++){
         (*it)->Disable(b, 1);
     }
 }
 
 void WorldDir::BitmapOverride::Sync(bool b){
-    if(original && replacement){
-        if(b){
-            std::vector<ObjRef*> texrefs;
-            {
-                MemDoTempAllocations m(true, false);
-                texrefs = replacement->Refs();
-            }
-            for(std::vector<ObjRef*>::reverse_iterator rit = texrefs.rbegin(); rit != texrefs.rend(); rit++){
-                ObjRef* ref = *rit;
-                Hmx::Object* owner = ref->RefOwner();
-                if(owner){
-                    if(owner->Dir() != replacement->Dir()){
-                        ref->Replace(original, replacement);
-                    }
-                }
+    if(!original || !replacement) return;
+    else if(!b){
+        std::vector<ObjRef*> texrefs;
+        {
+            MemDoTempAllocations m(true, false);
+            texrefs = replacement->mRefs;
+        }
+        std::vector<ObjRef*>::const_reverse_iterator rit = texrefs.rbegin();
+        std::vector<ObjRef*>::const_reverse_iterator ritEnd = texrefs.rend();
+        while(rit != ritEnd){
+            rit++;
+            ObjRef* ref = *rit;
+            if(ref->RefOwner()->Dir() != replacement->Dir()){
+                ref->Replace(replacement, original);
             }
         }
-        else {
-            std::vector<ObjRef*> texrefs;
-            {
-                MemDoTempAllocations m(true, false);
-                texrefs = replacement->Refs();
-            }
-            for(std::vector<ObjRef*>::reverse_iterator rit = texrefs.rbegin(); rit != texrefs.rend(); rit++){
-                ObjRef* ref = *rit;
-                if(ref->RefOwner()){
-                    if(ref->RefOwner()->Dir() != replacement->Dir()){
-                        ref->Replace(replacement, original);
-                    }
-                }
+    }
+    else {
+        std::vector<ObjRef*> texrefs;
+        {
+            MemDoTempAllocations m(true, false);
+            texrefs = replacement->mRefs;
+        }
+        std::vector<ObjRef*>::const_reverse_iterator rit = texrefs.rbegin();
+        std::vector<ObjRef*>::const_reverse_iterator ritEnd = texrefs.rend();
+        while(rit != ritEnd){
+            rit++;
+            ObjRef* ref = *rit;
+            if(ref->RefOwner() && ref->RefOwner()->Dir() != replacement->Dir()){
+                ref->Replace(original, replacement);
             }
         }
     }
 }
 
 void WorldDir::MatOverride::Sync(bool b){
-    if(mat && mesh){
-        if(b){
-            mat2 = mesh->mMat;
-            mesh->SetMat(mat);
-        }
-        else if(mat2){
-            mesh->SetMat(mat2);
-        }
+    if(!mat || !mesh) return;
+    else if(!b){
+        if(mat2) mesh->SetMat(mat2);
+    }
+    else {
+        mat2 = mesh->Mat();
+        mesh->SetMat(mat);
     }
 }
 

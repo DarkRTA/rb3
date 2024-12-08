@@ -119,6 +119,8 @@ public:
     int UnkE4() const { return unk_0xE4; }
     bool Drawing() const { return mDrawing; }
     RndCam* DefaultCam(){ return mDefaultCam; }
+    ProcessCmd ProcCmds() const { return mProcCmds; }
+    ProcessCmd LastProcCmds() const { return mLastProcCmds; }
     Vector2& DrawStringScreen(const char*, const Vector2&, const Hmx::Color&, bool);
     void CompressTextureCancel(CompressTextureCallback*);
 

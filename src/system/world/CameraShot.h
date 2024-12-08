@@ -112,17 +112,18 @@ inline BinStream& operator>>(BinStream& bs, CamShotFrame& csf){
     return bs;
 }
 
+enum CrowdRotate {
+    /** "Face along the placement mesh, or along focus, if set" */
+    kCrowdRotateNone = 0,
+    /** "Face towards the camera" */
+    kCrowdRotateFace = 1,
+    /** "Face away from the camera" */
+    kCrowdRotateAway = 2
+};
+
 // size 0x1c
 class CamShotCrowd {
 public:
-    enum CrowdRotate {
-        /** "Face along the placement mesh, or along focus, if set" */
-        kCrowdRotateNone = 0,
-        /** "Face towards the camera" */
-        kCrowdRotateFace = 1,
-        /** "Face away from the camera" */
-        kCrowdRotateAway = 2
-    };
 
     CamShotCrowd(Hmx::Object*);
     CamShotCrowd(Hmx::Object*, const CamShotCrowd&);
@@ -201,6 +202,7 @@ public:
     void SetFar(float f){ mFar = f; }
     float Duration() const { return mDuration; }
     Symbol Category() const { return mCategory; }
+    Spotlight* GlowSpot() const { return mGlowSpot; }
 
     DataNode OnHasTargets(DataArray*);
     DataNode OnSetPos(DataArray*);

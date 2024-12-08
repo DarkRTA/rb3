@@ -1,4 +1,5 @@
 #pragma once
+#include "CameraShot.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Mesh.h"
@@ -92,6 +93,7 @@ public:
     bool Crowd3DExists();
     void Draw3DChars();
     bool IsForced3DCrowd() const { return mForce3DCrowd; }
+    void SetCrowdRotate(CrowdRotate rot){ mRotate = rot; }
 
     DataNode OnRebuild(DataArray*);
     DataNode OnIterateFrac(DataArray*);
@@ -110,7 +112,7 @@ public:
     ObjList<CharData> mCharacters; // 0x34
     /** "Number of characters to place" */
     int mNum; // 0x40
-    int unk44; // 0x44
+    CrowdRotate mRotate; // 0x44
     Vector3 mCenter; // 0x48
     /** "Makes crowd be 3D regardless of the CamShot" */
     bool mForce3DCrowd; // 0x54

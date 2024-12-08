@@ -1,4 +1,5 @@
 #include "world/Crowd.h"
+#include "CameraShot.h"
 #include "char/Character.h"
 #include "decomp.h"
 #include "math/Color.h"
@@ -49,7 +50,7 @@ namespace {
 
 DECOMP_FORCEACTIVE(Crowd, "WorldCrowd[%s] does not have a placement mesh.")
 
-WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), unk44(0), mForce3DCrowd(0), mShow3DOnly(0),
+WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), mRotate(kCrowdRotateNone), mForce3DCrowd(0), mShow3DOnly(0),
     mCharFullness(1.0f), mFlatFullness(1.0f), mLod(0), mEnviron(this), mEnviron3D(this), mFocus(this), mModifyStamp(0) {
     if(gNumCrowd++ == 0){
         GetGfxMode();

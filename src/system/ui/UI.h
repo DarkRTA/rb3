@@ -152,6 +152,7 @@ public:
     DataNode ForeachScreen(const DataArray*);
     TransitionState GetTransitionState() const { return mTransitionState; }
     bool IsTransitioning() const { return mTransitionState != kTransitionNone; }
+    RndEnviron* GetEnv() const { return unk38; }
 
     TransitionState mTransitionState; // 0x8
     bool mWentBack; // 0xc

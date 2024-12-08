@@ -1,5 +1,4 @@
-#ifndef WORLD_DIR_H
-#define WORLD_DIR_H
+#pragma once
 #include "ui/PanelDir.h"
 #include "obj/ObjList.h"
 #include "world/CameraManager.h"
@@ -18,8 +17,8 @@ public:
         PresetOverride(Hmx::Object* o) : preset(o), hue(o) {}
         void Sync(bool);
 
-        ObjPtr<LightPreset, ObjectDir> preset; // 0x0
-        ObjPtr<LightHue, ObjectDir> hue; // 0xc
+        ObjPtr<LightPreset> preset; // 0x0
+        ObjPtr<LightHue> hue; // 0xc
     };
 
     class BitmapOverride {
@@ -27,8 +26,8 @@ public:
         BitmapOverride(Hmx::Object* o) : original(o), replacement(o) {}
         void Sync(bool);
 
-        ObjPtr<RndTex, ObjectDir> original; // 0x0
-        ObjPtr<RndTex, ObjectDir> replacement; // 0xc
+        ObjPtr<RndTex> original; // 0x0
+        ObjPtr<RndTex> replacement; // 0xc
     };
 
     class MatOverride {
@@ -36,9 +35,9 @@ public:
         MatOverride(Hmx::Object* o) : mesh(o), mat(o), mat2(o) {}
         void Sync(bool);
 
-        ObjPtr<RndMesh, ObjectDir> mesh; // 0x0
-        ObjPtr<RndMat, ObjectDir> mat; // 0xc
-        ObjPtr<RndMat, ObjectDir> mat2; // 0x18
+        ObjPtr<RndMesh> mesh; // 0x0
+        ObjPtr<RndMat> mat; // 0xc
+        ObjPtr<RndMat> mat2; // 0x18
     };
 
     WorldDir();
@@ -67,6 +66,7 @@ public:
     void SyncPresets(bool);
     void SyncCamShots(bool);
     void SyncHUD();
+    void DrawSplitWorld();
     void SetCrowds(ObjVector<CamShotCrowd>&);
     CameraManager& CamManager(){ return mCameraManager; }
 
@@ -83,27 +83,27 @@ public:
     ObjList<PresetOverride> mPresetOverrides; // 0x1d8 - WorldDir::PresetOverride
     ObjList<BitmapOverride> mBitmapOverrides; // 0x1e4 - WorldDir::BitmapOverride
     ObjList<MatOverride> mMatOverrides; // 0x1f0 - WorldDir::MatOverride
-    ObjPtrList<RndDrawable, ObjectDir> mHideOverrides; // 0x1fc
-    ObjPtrList<CamShot, ObjectDir> mCamShotOverrides; // 0x20c
-    ObjPtrList<RndDrawable, ObjectDir> mPS3PerPixelShows; // 0x21c
-    ObjPtrList<RndDrawable, ObjectDir> mPS3PerPixelHides; // 0x22c
-    ObjPtrList<WorldCrowd, ObjectDir> mCrowds; // 0x23c
+    ObjPtrList<RndDrawable> mHideOverrides; // 0x1fc
+    ObjPtrList<CamShot> mCamShotOverrides; // 0x20c
+    ObjPtrList<RndDrawable> mPS3PerPixelShows; // 0x21c
+    ObjPtrList<RndDrawable> mPS3PerPixelHides; // 0x22c
+    ObjPtrList<WorldCrowd> mCrowds; // 0x23c
     RndMat* mGlowMat; // 0x24c
     FilePath mFakeHudFilename; // 0x250
     RndDir* mFakeHudDir; // 0x25c
     bool mShowFakeHud; // 0x260
-    ObjPtr<RndDir, ObjectDir> mHud; // 0x264
+    ObjPtr<RndDir> mHud; // 0x264
     CameraManager mCameraManager; // 0x270
     LightPresetManager mPresetManager; // 0x2a4
     bool mEchoMsgs; // 0x2f4
     float mDeltaSincePoll[4]; // 0x2f8
     bool unk308;
     bool unk309;
-    ObjPtr<LightPreset, ObjectDir> mTestPreset1; // 0x30c
-    ObjPtr<LightPreset, ObjectDir> mTestPreset2; // 0x318
+    ObjPtr<LightPreset> mTestPreset1; // 0x30c
+    ObjPtr<LightPreset> mTestPreset2; // 0x318
     float mTestAnimationTime; // 0x324
-    int unk328;
-    int unk32c;
+    float unk328;
+    float unk32c;
     RndDrawable** mDrawItr; // 0x330
 };
 
@@ -121,5 +121,3 @@ inline BinStream& operator>>(BinStream& bs, WorldDir::PresetOverride& o){
 
 extern WorldDir* TheWorld;
 void SetTheWorld(WorldDir*);
-
-#endif
