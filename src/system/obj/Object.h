@@ -387,6 +387,8 @@ namespace Hmx {
 }
 
 struct ObjPair {
+    ObjPair(Hmx::Object* o1, Hmx::Object* o2) : from(o1), to(o2) {}
+    
     Hmx::Object* from;
     Hmx::Object* to;
 };
