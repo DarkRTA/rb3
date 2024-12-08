@@ -1,10 +1,10 @@
-#ifndef WORLD_LIGHTHUE_H
-#define WORLD_LIGHTHUE_H
+#pragma once
 #include "obj/Object.h"
 #include "math/Key.h"
 
 class FileLoader;
 
+/** "Represents a hue translation for LightPresets" */
 class LightHue : public Hmx::Object {
 public:
     LightHue();
@@ -37,5 +37,3 @@ public:
     }
 
 };
-
-#endif

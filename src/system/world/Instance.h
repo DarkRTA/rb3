@@ -72,6 +72,7 @@ public:
     WorldInstance* PollMaster() const { return mPollMaster; }
 
     RndGroup* mGroup; // 0x8
+    /** "Am I the guy that polls the shared group" */
     ObjPtr<WorldInstance> mPollMaster; // 0xc
     std::list<RndPollable*> mPolls; // 0x18
 };

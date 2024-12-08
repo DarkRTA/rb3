@@ -101,8 +101,8 @@ void LightPresetManager::Poll(){
 
 void LightPresetManager::StartPreset(LightPreset* preset, bool b){
     MILO_ASSERT(preset, 0xAE);
-    LightPreset* toSet = b ? mPresetNew : mPresetPrev;
-    toSet = preset;
+    LightPreset** toSet = b ? &mPresetNew : &mPresetPrev;
+    *toSet = preset;
     preset->StartAnim();
     float time = TheTaskMgr.Time(preset->Units());
     if(b) unk30 = time;
@@ -281,16 +281,16 @@ void PrintPreset(const char* str, LightPreset* preset){
 
 void LightPresetManager::UpdateOverlay(){
     RndOverlay* o = RndOverlay::Find("light_preset", true);
-    TextStream* ts = TheDebug.mReflect;
     if(o->Showing()){
+        TextStream* ts = TheDebug.mReflect;
         TheDebug.SetReflect(o);
-        MILO_LOG("Last Category: %s\n", mLastCategory);
+        MILO_LOG("Last Category: %s\n", mLastCategory.Str());
         PrintPreset("PresetNew", mPresetNew);
         PrintPreset("PresetPrev", mPresetPrev);
         PrintPreset("PresetOverride", mPresetOverride);
         MILO_LOG("Blend: %f\n", mBlend);
+        TheDebug.SetReflect(ts);
     }
-    TheDebug.SetReflect(ts);
 }
 
 void LightPresetManager::GetPresets(LightPreset*& prevl, LightPreset*& newl){
