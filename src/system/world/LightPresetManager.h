@@ -1,5 +1,4 @@
-#ifndef WORLD_LIGHTPRESETMANAGER_H
-#define WORLD_LIGHTPRESETMANAGER_H
+#pragma once
 #include "obj/Data.h"
 #include "world/LightPreset.h"
 #include <map>
@@ -53,5 +52,3 @@ public:
     int unk48; // 0x48
     bool mIgnoreLightingEvents; // 0x4c
 };
-
-#endif

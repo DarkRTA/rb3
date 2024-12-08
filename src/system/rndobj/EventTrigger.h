@@ -114,6 +114,7 @@ public:
     void LoadOldAnim(BinStream&, RndAnimatable*);
     void LoadOldEvent(BinStream&, Hmx::Object*, const char*, ObjectDir*);
     void TriggerSelf();
+    bool HasTriggerEvents() const { return !mTriggerEvents.empty(); }
 
     DataNode OnTrigger(DataArray*);
     static DataNode Cleanup(DataArray*);

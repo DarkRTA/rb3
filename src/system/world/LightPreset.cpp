@@ -1,4 +1,12 @@
 #include "world/LightPreset.h"
+#include "decomp.h"
+#include "obj/Object.h"
+#include "obj/Task.h"
+#include "os/System.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Lit.h"
+#include "utl/Loader.h"
+#include "utl/Messages3.h"
 #include "world/Spotlight.h"
 #include "world/SpotlightDrawer.h"
 #include "world/LightHue.h"
@@ -27,7 +35,7 @@ LightPreset::KeyframeCmd SymToPstKeyframe(Symbol s){
     else return LightPreset::kPresetKeyframeNum;
 }
 
-LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(0), mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0), mLocked(0),
+LightPreset::LightPreset() : mKeyframes(this), mPlatformOnly(kPlatformNone), mSelectTriggers(this, kObjListNoNull), mLegacyFadeIn(0.0f), mLooping(0), mManual(0), mLocked(0),
     mSpotlightState(this), mLastKeyframe(0), mLastBlend(-1.0f), mStartBeat(0.0f), mManualFrameStart(0.0f), mManualFrame(0), mLastManualFrame(-1), mManualFadeTime(0.0f), mCachedDuration(0.0f), mHue(0) {
 
 }
@@ -199,7 +207,7 @@ BEGIN_LOADS(LightPreset)
         if(gRev != 0xE) bs >> mManual;
         bs >> mLocked;
     }
-    if(gRev > 0xC) bs >> mPlatformOnly;
+    if(gRev > 0xC) bs >> (int&)mPlatformOnly;
     if(gRev > 9){
         unsigned int sdrawercount;
         bs >> sdrawercount;
@@ -265,6 +273,60 @@ RndPostProc* LightPreset::GetCurrentPostProc() const {
     int frame = GetCurrentKeyframe();
     if(frame >= 0) ret = mKeyframes[frame].mVideoVenuePostProc;
     return ret;
+}
+
+void LightPreset::Replace(Hmx::Object* from, Hmx::Object* to){
+    Hmx::Object::Replace(from, to);
+    
+    int idx;
+    for(idx = 0; idx != mSpotlights.size(); idx++){
+        if(mSpotlights[idx] == from){
+            if(to){
+                from->Release(this);
+                mSpotlights[idx] = dynamic_cast<Spotlight*>(to);
+                to->AddRef(this);
+            }
+            else RemoveSpotlight(idx);
+            CacheFrames();
+            return;
+        }
+    }
+    for(idx = 0; idx != mEnvironments.size(); idx++){
+        if(mEnvironments[idx] == from){
+            if(to){
+                from->Release(this);
+                mEnvironments[idx] = dynamic_cast<RndEnviron*>(to);
+                to->AddRef(this);
+            }
+            else RemoveEnvironment(idx);
+            CacheFrames();
+            return;
+        }
+    }
+    for(idx = 0; idx != mLights.size(); idx++){
+        if(mLights[idx] == from){
+            if(to){
+                from->Release(this);
+                mLights[idx] = dynamic_cast<RndLight*>(to);
+                to->AddRef(this);
+            }
+            else RemoveLight(idx);
+            CacheFrames();
+            return;
+        }
+    }
+    for(idx = 0; idx != mSpotlightDrawers.size(); idx++){
+        if(mSpotlightDrawers[idx] == from){
+            if(to){
+                from->Release(this);
+                mSpotlightDrawers[idx] = dynamic_cast<SpotlightDrawer*>(to);
+                to->AddRef(this);
+            }
+            else RemoveSpotlightDrawer(idx);
+            CacheFrames();
+            return;
+        }
+    }
 }
 
 void LightPreset::RemoveSpotlight(int idx){
@@ -335,6 +397,78 @@ void LightPreset::SetFrame(float frame, float blend){
 
 void LightPreset::SetFrameEx(float frame, float blend, bool b){
     START_AUTO_TIMER("light");
+    RndAnimatable::SetFrame(frame, blend);
+    if(frame == 0 && LOADMGR_EDITMODE){
+        SyncNewSpotlights();
+    }
+    if(!mKeyframes.empty()){
+        Keyframe* kf7 = nullptr;
+        float f74 = 1.0f;
+        Keyframe* kf5;
+        if(mManual){
+            kf5 = &mKeyframes[mManualFrame];
+            while(!sManualEvents.empty() && sManualEvents.front().second <= mStartBeat){
+                sManualEvents.pop_front();
+            }
+            if(!sManualEvents.empty()){
+                float f1 = kf5->mFadeOutTime;
+                float sec = sManualEvents.front().second;
+                float beat = TheTaskMgr.Beat();
+                if(sec - f1 / 480.0f <= beat){
+                    AdvanceManual(sManualEvents.front().first);
+                    beat = TheTaskMgr.Beat();
+                    if(sec > beat){
+                        beat = TheTaskMgr.Beat();
+                        mManualFadeTime = (sec - beat) * 480.0f;
+                    }
+                    else {
+                        mManualFadeTime = 0;
+                    }
+                    sManualEvents.pop_front();
+                    kf5 = &mKeyframes[mManualFrame];
+                }
+            }
+
+            if(mLastManualFrame != -1){
+                kf7 = &mKeyframes[mLastManualFrame];
+                if(mManualFadeTime > 0){
+                    f74 = Min((frame - mManualFrameStart) / mManualFadeTime, 1.0f);
+                    f74 = Max(0.0f, f74);
+                }
+                else f74 = 0;
+            }
+
+        }
+        else {
+            int i78, i7c;
+            GetKey(frame, i78, i7c, f74);
+            kf5 = &mKeyframes[i7c];
+            if(i78 != -1){
+                kf7 = &mKeyframes[i78];
+            }
+        }
+
+        bool b2 = false;
+        Keyframe* last = mLastKeyframe;
+        if(kf5 == last && mLastBlend == f74) b2 = true;
+        if(!b2){
+            ApplyState(*kf5);
+            if(kf7){
+                AnimateState(*kf7, *kf5, 1.0f - f74);
+            }
+            mLastKeyframe = kf5;
+            mLastBlend = f74;
+        }
+        if(!b2 || !b){
+            Animate(blend);
+        }
+        if(kf5 != last){
+            for(ObjPtrList<EventTrigger>::iterator it = mLastKeyframe->mTriggers.begin(); it != mLastKeyframe->mTriggers.end(); ++it){
+                (*it)->Trigger();
+            }
+        }
+        Handle(on_set_frame_msg, false);
+    }
 }
 
 void LightPreset::OnKeyframeCmd(LightPreset::KeyframeCmd cmd){
@@ -437,6 +571,8 @@ void LightPreset::GetKey(float frame, int& iref1, int& iref2, float& fref) const
     }
 }
 
+DECOMP_FORCEACTIVE(LightPreset, "frame >= mKeyframes[before].mFrame && frame < mKeyframes[after].mFrame", "mKeyframes[before].mFadeOutTime > 0")
+
 void LightPreset::ApplyState(const LightPreset::Keyframe& k){
     mSpotlightState = k.mSpotlightEntries;
     mEnvironmentState = k.mEnvironmentEntries;
@@ -499,30 +635,36 @@ void LightPreset::SyncNewSpotlights(){
 }
 
 void LightPreset::SyncKeyframeTargets(){
-    for(ObjDirItr<Spotlight> it(Dir(), true); it != 0; ++it){
+    for(ObjDirItr<Spotlight> it(Dir(), true); it; ++it){
         Spotlight* key = it;
-        std::vector<Spotlight*>::iterator found = std::find(mSpotlights.begin(), mSpotlights.end(), key);
-        if(found == mSpotlights.end()) AddSpotlight(key, true);
+        if(std::find(mSpotlights.begin(), mSpotlights.end(), key) == mSpotlights.end()){
+            AddSpotlight(key, false);
+        }
     }
-    for(ObjDirItr<RndEnviron> it(Dir(), true); it != 0; ++it){
+    for(ObjDirItr<RndEnviron> it(Dir(), true); it; ++it){
         RndEnviron* key = it;
-        std::vector<RndEnviron*>::iterator found = std::find(mEnvironments.begin(), mEnvironments.end(), key);
-        if(found == mEnvironments.end()) AddEnvironment(key);
-        for(ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsReal.begin(); lit != key->mLightsReal.end(); ++it){
-            RndLight* lkey = *lit;
-            std::vector<RndLight*>::iterator lfound = std::find(mLights.begin(), mLights.end(), lkey);
-            if(lfound == mLights.end()) AddLight(lkey);
+        if(std::find(mEnvironments.begin(), mEnvironments.end(), key) == mEnvironments.end()){
+            AddEnvironment(key);
         }
-        for(ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsApprox.begin(); lit != key->mLightsApprox.end(); ++it){
+
+        for(ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsReal.begin(); lit != key->mLightsReal.end(); ++lit){
             RndLight* lkey = *lit;
-            std::vector<RndLight*>::iterator lfound = std::find(mLights.begin(), mLights.end(), lkey);
-            if(lfound == mLights.end()) AddLight(lkey);
+            if(std::find(mLights.begin(), mLights.end(), lkey) == mLights.end()){
+                AddLight(lkey);
+            }
+        }
+        for(ObjPtrList<RndLight, ObjectDir>::iterator lit = key->mLightsApprox.begin(); lit != key->mLightsApprox.end(); ++lit){
+            RndLight* lkey = *lit;
+            if(std::find(mLights.begin(), mLights.end(), lkey) == mLights.end()){
+                AddLight(lkey);
+            }
         }
     }
-    for(ObjDirItr<SpotlightDrawer> it(Dir(), true); it != 0; ++it){
+    for(ObjDirItr<SpotlightDrawer> it(Dir(), true); it; ++it){
         SpotlightDrawer* key = it;
-        std::vector<SpotlightDrawer*>::iterator found = std::find(mSpotlightDrawers.begin(), mSpotlightDrawers.end(), key);
-        if(found == mSpotlightDrawers.end()) AddSpotlightDrawer(key);
+        if(std::find(mSpotlightDrawers.begin(), mSpotlightDrawers.end(), key) == mSpotlightDrawers.end()){
+            AddSpotlightDrawer(key);
+        }
     }
     CacheFrames();
 }
@@ -579,9 +721,97 @@ void LightPreset::AddSpotlightDrawer(SpotlightDrawer* sd){
     mSpotlightDrawerState.push_back(e);
 }
 
+void LightPreset::CacheFrames(){
+    float f1 = 0;
+    for(int i = 0; i != mKeyframes.size(); i++){
+        Keyframe& curKF = mKeyframes[i];
+        curKF.mFrame = f1;
+        f1 += curKF.mDuration + curKF.mFadeOutTime;
+        curKF.mSpotlightChanges.clear();
+        curKF.mSpotlightChanges.resize(curKF.mSpotlightEntries.size());
+        curKF.mEnvironmentChanges.clear();
+        curKF.mEnvironmentChanges.resize(curKF.mEnvironmentEntries.size());
+        curKF.mLightChanges.clear();
+        curKF.mLightChanges.resize(curKF.mLightEntries.size());
+        curKF.mSpotlightDrawerChanges.clear();
+        curKF.mSpotlightDrawerChanges.resize(curKF.mSpotlightDrawerEntries.size());
+        if(mLooping || i != 0){
+            Keyframe& kfIter = mKeyframes[i == 0 ? mKeyframes.size() - 1 : i - 1];
+            for(int j = 0; j != curKF.mSpotlightEntries.size(); j++){
+                if(curKF.mSpotlightEntries[j] != kfIter.mSpotlightEntries[j]){
+                    curKF.mSpotlightChanges[j] = true;
+                }
+            }
+            for(int j = 0; j != curKF.mEnvironmentEntries.size(); j++){
+                if(curKF.mEnvironmentEntries[j] != kfIter.mEnvironmentEntries[j]){
+                    curKF.mEnvironmentChanges[j] = true;
+                }
+            }
+            for(int j = 0; j != curKF.mLightEntries.size(); j++){
+                if(curKF.mLightEntries[j] != kfIter.mLightEntries[j]){
+                    curKF.mLightChanges[j] = true;
+                }
+            }
+            for(int j = 0; j != curKF.mSpotlightDrawerEntries.size(); j++){
+                if(curKF.mSpotlightDrawerEntries[j] != kfIter.mSpotlightDrawerEntries[j]){
+                    curKF.mSpotlightDrawerChanges[j] = true;
+                }
+            }
+        }
+    }
+    mCachedDuration = f1;
+}
+
 void LightPreset::TranslateColor(const Hmx::Color& col, Hmx::Color& res){
     if(mHue) mHue->TranslateColor(col, res);
     else res = col;
+}
+
+void LightPreset::FillSpotPresetData(Spotlight* spot, LightPreset::SpotlightEntry& entry, int mask){
+    if(mask & 1){
+        entry.mIntensity = spot->Intensity();
+        entry.mColor = spot->Color().Opaque();
+    }
+    if(mask & 2){
+        entry.mTarget = spot->Target();
+        entry.unk10 = entry.mTarget ? Hmx::Quat(0,0,0,0) : Hmx::Quat(spot->mLocalXfm.m);
+    }
+    if(mask != 0 && spot->IsFlareEnabled()){
+        entry.mFlareEnabled = true;
+    }
+}
+
+void LightPreset::AnimateSpotFromPreset(Spotlight* spot, const LightPreset::SpotlightEntry& entry, float f3){
+    if(spot->AnimateColorFromPreset()){
+        Hmx::Color spotColor = spot->Color();
+        float intensity = spot->Intensity();
+        Hmx::Color col;
+        col.Unpack(entry.mColor);
+        TranslateColor(col, col);
+        Interp(spotColor, col, f3, spotColor);
+        Interp(intensity, entry.mIntensity, f3, intensity);
+        spot->SetColorIntensity(spotColor, intensity);
+        if(spot->GetFlare() && f3 == 1.0f){
+            spot->SetFlareEnabled(entry.mFlareEnabled);
+        }
+    }
+    if(spot->AnimateOrientationFromPreset()){
+        Hmx::Quat q50(0,0,0,0);
+        if(entry.unk8p1){
+
+        }
+        else {
+
+        }
+    }
+}
+
+void LightPreset::FillLightPresetData(RndLight* light, LightPreset::EnvLightEntry& entry){
+    entry.mColor = light->GetColor().Pack();
+    entry.unk0 = Hmx::Quat(light->WorldXfm().m);
+    entry.mPosition = light->WorldXfm().v;
+    entry.mRange = light->Range();
+    entry.mLightType = light->GetType();
 }
 
 void LightPreset::FillEnvPresetData(RndEnviron* env, LightPreset::EnvironmentEntry& e){
@@ -682,6 +912,8 @@ void LightPreset::Keyframe::Load(BinStream& bs){
     if(gRev > 0x13) bs >> mTriggers;
     if(gRev > 0xB) LoadStageKit(bs);
 }
+
+DECOMP_FORCEACTIVE(LightPreset, "0")
 
 LightPreset::SpotlightEntry::SpotlightEntry(Hmx::Object* o) : mIntensity(0), mColor(0), mFlareEnabled(1), mTarget(0) {
     unk10.Reset();
@@ -870,7 +1102,7 @@ BEGIN_PROPSYNCS(LightPreset)
     SYNC_PROP(legacy_fade_in, mLegacyFadeIn)
     SYNC_PROP(manual, mManual)
     SYNC_PROP(locked, mLocked)
-    SYNC_PROP(platform_only, mPlatformOnly)
+    SYNC_PROP(platform_only, (int&)mPlatformOnly)
     SYNC_PROP(hue, mHue)
     SYNC_SUPERCLASS(RndAnimatable)
 END_PROPSYNCS

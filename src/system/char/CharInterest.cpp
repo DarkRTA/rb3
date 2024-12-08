@@ -154,48 +154,7 @@ BEGIN_PROPSYNCS(CharInterest)
     SYNC_PROP(max_look_time, mMaxLookTime)
     SYNC_PROP(refractory_period, mRefractoryPeriod)
     SYNC_PROP(dart_ruleset_override, mDartOverride)
-    {
-        static Symbol _s("category_flags");
-        if(sym == _s){
-            int plusone = _i + 1;
-            if(plusone < _prop->Size()){
-                DataNode& node = _prop->Node(plusone);
-                int flags = 0;
-                switch(node.Type()){
-                    case kDataInt:
-                        flags = node.Int();
-                        break;
-                    case kDataSymbol: {
-                        const char* str = node.Sym().Str();
-                        if(strncmp("BIT_", str, 4) != 0){
-                            MILO_FAIL("%s does not begin with BIT_", str);
-                        }
-                        Symbol bitsym(str + 4);
-                        DataArray* macro = DataGetMacro(bitsym);
-                        if(!macro){
-                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
-                        }
-                        flags = macro->Int(0);
-                        break;
-                    }
-                    default:
-                        MILO_ASSERT(0, 0x138);
-                        break;
-                }
-                MILO_ASSERT(_op <= kPropInsert, 0x138);
-                if(_op == kPropGet){
-                    _val = DataNode(mCategoryFlags & flags);
-                }
-                else {
-                    int themask = _val.Int();
-                    if(themask != 0) mCategoryFlags |= themask;
-                    else mCategoryFlags &= ~themask;
-                }
-                return true;
-            }
-            else return PropSync(mCategoryFlags, _val, _prop, _i + 1, _op);
-        }
-    }
+    SYNC_PROP_BITFIELD_STATIC(category_flags, mCategoryFlags, 0x138)
     SYNC_PROP(overrides_min_target_dist, mOverrideMinTargetDistance)
     SYNC_PROP(min_target_dist_override, mMinTargetDistanceOverride)
     SYNC_SUPERCLASS(RndTransformable)

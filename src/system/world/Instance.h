@@ -42,7 +42,6 @@ public:
 
     /** "Which file we instance, only set in instances" */
     ObjDirPtr<WorldInstance> mDir; // 0x18c
-
     /** "Pointer to shared group, if any" */
     SharedGroup* mSharedGroup; // 0x198
     SharedGroup* mSharedGroup2; // 0x19c
@@ -69,8 +68,11 @@ public:
     bool MakeWorldSphere(const Transform&, Sphere&);
     void AddPolls(RndGroup*);
     void ClearPollMaster();
+    RndGroup* Group() const { return mGroup; }
+    WorldInstance* PollMaster() const { return mPollMaster; }
 
     RndGroup* mGroup; // 0x8
-    ObjPtr<WorldInstance, ObjectDir> mPollMaster; // 0xc
+    /** "Am I the guy that polls the shared group" */
+    ObjPtr<WorldInstance> mPollMaster; // 0xc
     std::list<RndPollable*> mPolls; // 0x18
 };

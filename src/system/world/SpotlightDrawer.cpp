@@ -1,7 +1,11 @@
 #include "world/SpotlightDrawer.h"
+#include "rndobj/Env.h"
 #include "rndobj/Rnd.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 
+RndEnviron* SpotlightDrawer::sEnviron;
+RndMat* SpotlightDrawer::sEditorMat;
 SpotlightDrawer* SpotlightDrawer::sCurrent;
 SpotlightDrawer* SpotlightDrawer::sDefault;
 std::vector<SpotlightDrawer::SpotlightEntry> SpotlightDrawer::sLights;
@@ -19,7 +23,12 @@ SpotlightDrawer::SpotlightDrawer() : mParams(this) {
 }
 
 SpotlightDrawer::~SpotlightDrawer(){
-    
+    if(sCurrent == this){
+        DeSelect();
+        ClearAndShrink(sLights);
+        ClearAndShrink(sShadowSpots);
+        ClearAndShrink(sCans);
+    }
 }
 
 void SpotlightDrawer::OnGPHangRecover(){}
@@ -39,6 +48,15 @@ void SpotlightDrawer::DeSelect(){
     if(sCurrent != this) return;
     if(sDefault == this) return;
     sDefault->Select();
+}
+
+void SpotlightDrawer::SortLights(){
+    if(sLights.size() > 2){
+        std::sort(sLights.begin(), sLights.end(), ByColor());
+    }
+    if(sCans.size() > 2){
+        std::sort(sCans.begin(), sCans.end(), ByEnvMesh());
+    }
 }
 
 void SpotlightDrawer::DrawShowing(){

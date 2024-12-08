@@ -5,6 +5,7 @@
 #include "math/Mtx.h"
 #include "math/Vec.h"
 #include "math/strips/Striper.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "obj/DataUtl.h"
@@ -1194,48 +1195,7 @@ END_CUSTOM_PROPSYNC
 BEGIN_PROPSYNCS(RndMesh)
     SYNC_PROP(mat, mMat)
     SYNC_PROP_MODIFY_ALT(geom_owner, mGeomOwner, if(!mGeomOwner) mGeomOwner = this)
-    {
-        static Symbol _s("mutable");
-        if(sym == _s){
-            _i++;
-            if(_i < _prop->Size()){
-                DataNode& node = _prop->Node(_i);
-                int res = 0;
-                switch(node.Type()){
-                    case kDataInt:
-                        res = node.Int();
-                        break;
-                    case kDataSymbol: {
-                        const char* bitstr = node.Sym().Str();
-                        if(strncmp("BIT_", bitstr, 4) != 0){
-                            MILO_FAIL("%s does not begin with BIT_", bitstr);
-                        }
-                        Symbol bitsym(bitstr + 4);
-                        DataArray* macro = DataGetMacro(bitsym);
-                        if(!macro){
-                            MILO_FAIL("PROPERTY_BITFIELD %s could not find macro %s", _s, bitsym);
-                        }
-                        res = macro->Int(0);
-                        break;
-                    }
-                    default:
-                        MILO_ASSERT(0, 0xB90);
-                        break;
-                }
-                MILO_ASSERT(_op <= kPropInsert, 0xB90);
-                if(_op == kPropGet){
-                    int final = mGeomOwner->mMutable & res;
-                    _val = DataNode(final > 0);
-                }
-                else {
-                    if(_val.Int() != 0) mGeomOwner->mMutable |= res;
-                    else mGeomOwner->mMutable &= ~res;
-                }
-                return true;
-            }
-            else return PropSync(mGeomOwner->mMutable, _val, _prop, _i, _op);
-        }
-    }
+    SYNC_PROP_BITFIELD_STATIC(mutable, mGeomOwner->mMutable, 0xB90)
     SYNC_PROP_SET(num_verts, Verts().size(), SetNumVerts(_val.Int()))
     SYNC_PROP_SET(num_faces, (int)Faces().size(), SetNumFaces(_val.Int()))
     SYNC_PROP_SET(volume, GetVolume(), SetVolume((Volume)_val.Int()))

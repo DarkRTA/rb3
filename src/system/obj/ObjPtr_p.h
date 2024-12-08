@@ -1,5 +1,4 @@
-#ifndef OBJ_OBJPTR_H
-#define OBJ_OBJPTR_H
+#pragma once
 #include "os/Debug.h"
 #include "obj/Object.h"
 #include "utl/BinStream.h"
@@ -185,7 +184,7 @@ public:
     /** The mode of this ObjPtrList. */
     ObjListMode mMode : 8;
 
-    ObjPtrList(Hmx::Object* owner, ObjListMode mode) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
+    ObjPtrList(Hmx::Object* owner, ObjListMode mode = kObjListNoNull) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
             MILO_ASSERT(owner, 0xFC);
         }
@@ -491,9 +490,6 @@ inline bool ObjPtrList<T1, T2>::Load(BinStream& bs, bool b){
         }
         return ret;
 }
-
-
-#endif
 
 // ObjPtrList work:
 // https://decomp.me/scratch/xXn7G
