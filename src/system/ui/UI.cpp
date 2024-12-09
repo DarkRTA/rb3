@@ -9,14 +9,17 @@
 #include "obj/Dir.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
+#include "os/File.h"
 #include "os/JoypadClient.h"
 #include "os/JoypadMsgs.h"
 #include "os/Keyboard.h"
 #include "os/System.h"
 #include "os/Timer.h"
+#include "os/UserMgr.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Env.h"
 #include "ui/LocalePanel.h"
+#include "ui/UIComponent.h"
 #include "ui/UIGuide.h"
 #include "ui/LabelNumberTicker.h"
 #include "ui/LabelShrinkWrapper.h"
@@ -25,17 +28,21 @@
 #include "ui/UIPanel.h"
 #include "ui/UIPicture.h"
 #include "ui/UIProxy.h"
+#include "ui/UIResource.h"
 #include "ui/UIScreen.h"
 #include "ui/UISlider.h"
 #include "ui/UITrigger.h"
 #include "rndobj/Overlay.h"
 #include "obj/Msg.h"
 #include "obj/DataFile.h"
+#include "utl/Cheats.h"
 #include "utl/Loader.h"
 #include "utl/Locale.h"
 #include "utl/Messages.h"
 #include "utl/Messages2.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols4.h"
 #include <algorithm>
 
 #pragma push
@@ -61,6 +68,42 @@ BEGIN_HANDLERS(Automator)
     HANDLE_CHECK(0x1B2)
 END_HANDLERS
 #pragma pop
+
+inline void Automator::FillButtonMsg(ButtonDownMsg& msg, int idx){
+    MILO_ASSERT(mCurScript, 0x145);
+    DataArray* b = mCurScript->Array(idx);
+    MILO_ASSERT(b->Sym(0) == button_down, 0x148);
+    int padnum = b->Int(3);
+    msg[0] = TheUserMgr->GetLocalUserFromPadNum(padnum);
+    msg[1] = b->Int(1);
+    msg[2] = b->Int(2);
+    msg[3] = padnum;
+}
+
+inline void Automator::Poll(){
+    static ButtonDownMsg b_msg(nullptr, kPad_NumButtons, kAction_None, -1);
+    if(mCurScript){
+        mFramesSinceAdvance++;
+        Symbol sym = mCurScript->Array(mCurMsgIndex)->Sym(0);
+        if(sym == button_down){
+            FillButtonMsg(b_msg, mCurMsgIndex);
+            AdvanceScript(b_msg.Message::Type());
+            TheUI->Handle(b_msg, false);
+        }
+        else if(sym == quick_cheat){
+            DataArray* cheatArr = mCurScript->Array(1);
+            AdvanceScript(quick_cheat);
+            CallQuickCheat(cheatArr, nullptr);
+        }
+        else if(mCurMsgIndex > 1 && mFramesSinceAdvance > 0x1e){
+            mCurMsgIndex--;
+            if(mCurScript->Array(mCurMsgIndex)->Sym(0) == button_down){
+                FillButtonMsg(b_msg, mCurMsgIndex);
+                TheUI->Handle(b_msg, false);
+            }
+        }
+    }
+}
 
 inline void Automator::FinishRecord(){
     if(mRecord){
@@ -396,11 +439,33 @@ void UIManager::Draw(){
     if(mCurrentScreen) mCurrentScreen->Draw();
 }
 
+void UIManager::CancelTransition(){
+    if(mCancelTransitionNotify && mTransitionState != kTransitionNone && mTransitionState != kTransitionFrom){
+        MILO_WARN("Cancelled transition");
+    }
+    TransitionState oldState = mTransitionState;
+    UIScreen* oldScreen = mTransitionScreen;
+    mTransitionState = kTransitionNone;
+    mTransitionScreen = nullptr;
+    if(oldState == kTransitionTo){
+        if(mCurrentScreen){
+            TheLoadMgr.SetLoaderPeriod(10.0f);
+            mCurrentScreen->Enter(oldScreen);
+        }
+        else if(oldScreen) oldScreen->UnloadPanels();
+    }
+    else if(oldState == kTransitionPop && mCurrentScreen){
+        TheLoadMgr.SetLoaderPeriod(10.0f);
+        mCurrentScreen->Enter(nullptr);
+    }
+}
+
 void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
     if(b1 || mTransitionState != kTransitionNone || mCurrentScreen != scr &&
         (mTransitionState != kTransitionTo && mTransitionState != kTransitionPop) ||
         mTransitionScreen != scr){
         CancelTransition();
+#ifdef MILO_DEBUG
         if(scr){
             for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
                 if(scr->SharesPanels(*it)){
@@ -408,18 +473,116 @@ void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
                 }
             }
         }
+#endif
         mWentBack = b2;
-        UIScreenChangeMsg msg(scr, mCurrentScreen, b2);
+        UIScreenChangeMsg msg(scr, mCurrentScreen, mWentBack);
         Handle(msg, false);
         mTransitionState = kTransitionTo;
         mTransitionScreen = scr;
         if(mCurrentScreen) mCurrentScreen->Exit(scr);
         else if(scr) scr->LoadPanels();
+#ifdef MILO_DEBUG
         if(mTransitionScreen){
             mOverlay->CurrentLine() = gNullStr;
             mLoadTimer.Restart();
         }
+#endif
     }
+}
+
+void UIManager::GotoScreen(const char* name, bool b2, bool b3){
+    UIScreen* screen = ObjectDir::Main()->Find<UIScreen>(name, true);
+    MILO_ASSERT(screen, 0x348);
+    GotoScreen(screen, b2, b3);
+}
+
+void UIManager::GotoScreen(UIScreen* scr, bool b1, bool b2){
+    GotoScreenImpl(scr, b1, b2);
+}
+
+void UIManager::PushScreen(UIScreen* screen){
+    CancelTransition();
+    MILO_ASSERT(mCurrentScreen, 0x358);
+    MILO_ASSERT(screen, 0x359);
+    for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+        if(screen == *it){
+            MILO_WARN("Don't push %s, it is already there!\n", screen->Name());
+        }
+    }
+    mPushedScreens.push_back(mCurrentScreen);
+    if(mPushedScreens.size() >= mMaxPushDepth){
+        MILO_WARN("Exceeded max push depth of %i, pushing %s", mMaxPushDepth, screen->Name());
+        MILO_LOG("mPushedScreens:\n");
+        for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+            MILO_LOG("%s\n", (*it)->Name());
+        }
+    }
+    mCurrentScreen = nullptr;
+    GotoScreenImpl(screen, false, false);
+}
+
+void UIManager::PopScreen(UIScreen* screen){
+    if(mPushedScreens.empty()){
+        MILO_WARN("No screen to pop\n");
+    }
+    else {
+        GotoScreenImpl(nullptr, false, false);
+        mTransitionState = kTransitionPop;
+        if(screen) mTransitionScreen = screen;
+        else mTransitionScreen = mPushedScreens.back();
+    }
+}
+
+void UIManager::ResetScreen(UIScreen* screen){
+    if(mTransitionState != kTransitionNone && mTransitionState != kTransitionFrom){
+        bool old = mCancelTransitionNotify;
+        mCancelTransitionNotify = false;
+        CancelTransition();
+        mCancelTransitionNotify = old;
+    }
+    if(mPushedScreens.empty()){
+        GotoScreen(screen, false, false);
+    }
+    else {
+        MILO_ASSERT(mPushedScreens.size() == 1, 0x3A7);
+        PopScreen(screen);
+    }
+}
+
+bool UIManager::InComponentSelect(){
+    if(mCurrentScreen) return mCurrentScreen->InComponentSelect();
+    else return false;
+}
+
+UIPanel* UIManager::FocusPanel(){
+    if(mCurrentScreen) return mCurrentScreen->FocusPanel();
+    else return nullptr;
+}
+
+UIComponent* UIManager::FocusComponent(){
+    UIPanel* focusPanel = FocusPanel();
+    if(focusPanel) return focusPanel->FocusComponent();
+    else return nullptr;
+}
+
+UIResource* UIManager::Resource(const UIComponent* comp){
+    return FindResource(comp->TypeDef());
+}
+
+void UIManager::InitResources(Symbol s){
+    DataArray* cfg = SystemConfig("objects", s);
+    DataArray* typesArr = cfg->FindArray(types, true);
+    if(typesArr){
+        for(int i = 1; i < typesArr->Size(); i++){
+            DataArray* curArr = typesArr->Array(i);
+            DataArray* rsrcsArr = curArr->FindArray(resource_file, false);
+            if(rsrcsArr && !FindResource(curArr)){
+                FilePath fp(FileGetPath(rsrcsArr->File(), 0), rsrcsArr->Str(1));
+                mResources.push_back(new UIResource(fp));
+            }
+        }
+    }
+    std::sort(mResources.begin(), mResources.end(), UIResource::Compare());
 }
 
 UIResource* UIManager::FindResource(const DataArray* array) {

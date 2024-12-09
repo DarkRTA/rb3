@@ -85,6 +85,7 @@ public:
     void HandleMessage(Symbol);
     void AdvanceScript(Symbol);
     void Poll();
+    void FillButtonMsg(ButtonDownMsg&, int);
 
     DataNode OnMsg(const UITransitionCompleteMsg&);
     DataNode OnMsg(const ButtonDownMsg&);
