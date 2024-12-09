@@ -1334,7 +1334,7 @@
             "system/ui/CheatProvider.cpp": "NonMatching",
             "system/ui/LabelNumberTicker.cpp": "Equivalent",
             "system/ui/LabelShrinkWrapper.cpp": "Matching",
-            "system/ui/LocalePanel.cpp": "Equivalent",
+            "system/ui/LocalePanel.cpp": "LinkIssues",
             "system/ui/PanelDir.cpp": "NonMatching",
             "system/ui/Screenshot.cpp": "Equivalent",
             "system/ui/ScrollSelect.cpp": "LinkIssues",

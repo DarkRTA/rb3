@@ -78,8 +78,9 @@ void LocalePanel::AddDirEntries(ObjectDir* dir, const char* cc){
         if(it->Showing()){
             AddHeading(MakeString("%s: %s", it->ClassName(), it->Name()));
             const std::vector<UIListWidget*>& widgets = it->GetWidgets();
+            std::vector<UIListWidget*>::const_iterator wIt;
             for(int i = 0; i < it->NumDisplay(); i++){
-                for(std::vector<UIListWidget*>::const_iterator wIt = widgets.begin(); wIt != widgets.end(); ++wIt){
+                for(wIt = widgets.begin(); wIt != widgets.end(); ++wIt){
                     UIListLabel* listLabel = dynamic_cast<UIListLabel*>(*wIt);
                     if(listLabel){
                         UILabel* elementLabel = listLabel->ElementLabel(i);
