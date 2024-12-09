@@ -135,7 +135,7 @@ public:
     bool RequireFixedText() const;
     void SetRequireFixedText(bool);
     int PushDepth() const;
-    void ScreenAtDepth(int);
+    UIScreen* ScreenAtDepth(int);
     void ToggleLoadTimes();
     bool InTransition();
     bool BlockHandlerDuringTransition(Symbol, DataArray*);

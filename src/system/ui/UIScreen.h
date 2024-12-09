@@ -1,6 +1,4 @@
-#ifndef UI_UISCREEN_H
-#define UI_UISCREEN_H
-
+#pragma once
 #include <list>
 #include "obj/Data.h"
 #include "obj/Object.h"
@@ -9,7 +7,7 @@
 #include "utl/Symbol.h"
 
 class PanelRef {
-private:
+public:
     class UIPanel *mPanel;
     bool mActive;
     bool mAlwaysLoad;
@@ -17,7 +15,6 @@ private:
 
     friend class UIScreen;
 
-public:
     PanelRef() : mLoaded(false) {}
 
     bool Active() const { return mActive && mLoaded; }
@@ -100,5 +97,3 @@ END_MESSAGE;
 DECLARE_MESSAGE(EventDialogDismissMsg, "event_dialog_dismiss");
     EventDialogDismissMsg() : Message(Type()) {}
 END_MESSAGE;
-
-#endif
