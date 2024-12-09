@@ -27,8 +27,8 @@ UIComponent::State SymToUIComponentState(Symbol s) {
     return UIComponent::kNumStates;
 }
 
-UIComponent::UIComponent() : mNavRight(this, NULL), mNavDown(this, NULL), unk_0xD4(0), mResource(NULL),
-    mResourceName(), mResourceDir(NULL), unk108(0), mState(kNormal), mLoading(0), mMockSelect(0) { }
+UIComponent::UIComponent() : mNavRight(this), mNavDown(this), mSelectScreen(0), mResource(NULL),
+    mResourceName(), mResourceDir(NULL), mSelected(0), mState(kNormal), mLoading(0), mMockSelect(0) { }
 
 void UIComponent::Init() {
     Register();
@@ -135,17 +135,13 @@ void UIComponent::PreLoad(BinStream& bs) {
 
 void UIComponent::PostLoad(BinStream& bs) {
     if(mResource) mResource->PostLoad();
-    bool b1 = false;
-    bool b2 = false;
-    if(!Type().Null() && mResourcePath.length() != 0) b1 = true;
-    if(b1 && mResourceName.length() == 0) b2 = true;
-    if(b2){
-        mResourceName = Type().Str();
+    if(!Type().Null() && mResourcePath.length() != 0 && mResourceName.length() == 0){
+        mResourceName = Type().mStr;
         MILO_WARN("upgrading UIComponent %s to new resource loading system (Old type: %s). Please resave this file and checkin (%s).\n", Name(), mResourceName.c_str(), PathName(this));
         ResourceFileUpdated(false);
         SetType("");
         mResource = 0;
-        DataVariable("uicomponent.resource_upgrade") = DataNode(1);
+        DataVariable("uicomponent.resource_upgrade") = 1;
     }
     if(mResourceName.length() != 0){
         mResourceDir.PostLoad(0);
@@ -158,7 +154,7 @@ bool UIComponent::Exiting() const {
 
 void UIComponent::Enter() {
     RndPollable::Enter();
-    unk108 = 0;
+    mSelected = 0;
     if (mState == kSelecting) {
         SetState(kFocused);
     }
@@ -167,8 +163,8 @@ void UIComponent::Enter() {
 void UIComponent::Exit() {RndPollable::Exit();}
 
 void UIComponent::Poll() {
-    if(unk108 == 0) return;
-    if(--unk108 != 0) return;
+    if(mSelected == 0) return;
+    if(--mSelected != 0) return;
     FinishSelecting();
 }
 
@@ -181,13 +177,13 @@ void UIComponent::SendSelect(LocalUser* user){
         select_msg[0] = DataNode(this);
         select_msg[1] = DataNode(user);
         TheUI->Handle(select_msg, false);
-        if(mState != kSelecting) unk_0xD4 = 0;
+        if(mState != kSelecting) mSelectScreen = 0;
         else {
-            unk_0xD4 = TheUI->mCurrentScreen;
+            mSelectScreen = TheUI->mCurrentScreen;
             mSelectingUser = user;
             MILO_ASSERT(sSelectFrames < 255, 0x137);
             MILO_ASSERT(sSelectFrames >= 0, 0x138);
-            unk108 = sSelectFrames;
+            mSelected = sSelectFrames;
         }
     }
 }
@@ -196,7 +192,7 @@ void UIComponent::SendSelect(LocalUser* user){
 void UIComponent::MockSelect(){
     MILO_ASSERT(sSelectFrames < 255, 0x13F);
     MILO_ASSERT(sSelectFrames >= 0, 0x140);
-    unk108 = sSelectFrames;
+    mSelected = sSelectFrames;
     SetState(UIComponent::kSelecting);
     mMockSelect = true;
 }
@@ -333,7 +329,7 @@ DataNode UIComponent::OnGetResourcesPath(DataArray* da) {
 #pragma pool_data off
 void UIComponent::FinishSelecting(){
     if(mState != kDisabled && mState != kNormal) SetState(kFocused);
-    if(!mMockSelect && unk_0xD4 == TheUI->mCurrentScreen){
+    if(!mMockSelect && mSelectScreen == TheUI->mCurrentScreen){
         static UIComponentSelectDoneMsg select_msg(this, 0);
         select_msg[0] = DataNode(this);
         select_msg[1] = DataNode(mSelectingUser);
