@@ -1,4 +1,5 @@
 #include "ui/UI.h"
+#include "CheatProvider.h"
 #include "UIButton.h"
 #include "math/Rot.h"
 #include "obj/Data.h"
@@ -11,6 +12,7 @@
 #include "os/System.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Env.h"
+#include "ui/LocalePanel.h"
 #include "ui/UIGuide.h"
 #include "ui/LabelNumberTicker.h"
 #include "ui/LabelShrinkWrapper.h"
@@ -25,8 +27,10 @@
 #include "rndobj/Overlay.h"
 #include "obj/Msg.h"
 #include "obj/DataFile.h"
+#include "utl/Loader.h"
 #include "utl/Locale.h"
 #include "utl/Messages.h"
+#include "utl/Messages2.h"
 #include "utl/Symbols.h"
 #include <algorithm>
 
@@ -231,9 +235,7 @@ void UIManager::Init(){
     SetName("ui", ObjectDir::Main());
     DataArray* cfg = SystemConfig("ui");
     SetTypeDef(SystemConfig("ui"));
-    bool autoRepeatEnabled = cfg->FindInt("enable_auto_repeat");
-    bool useJoypad = cfg->FindInt("use_joypad");
-    UseJoypad(useJoypad, autoRepeatEnabled);
+    UseJoypad(cfg->FindInt("use_joypad"), cfg->FindInt("enable_auto_repeat"));
     KeyboardSubscribe(this);
     mCurrentScreen = nullptr;
     mTransitionState = kTransitionNone;
@@ -273,6 +275,30 @@ void UIManager::Init(){
     LabelNumberTicker::Init();
     LabelShrinkWrapper::Init();
     TheDebug.AddExitCallback(UITerminateCallback);
+
+    std::vector<ObjDirPtr<ObjectDir> > dirPtrs;
+    DataArray* frontloadArr = cfg->FindArray("frontload_subdirs", false);
+    if(frontloadArr){
+        dirPtrs.resize(frontloadArr->Size() - 1);
+        for(int i = 1; i < frontloadArr->Size(); i++){
+            String curStr = frontloadArr->Str(i);
+            dirPtrs[i - 1].LoadFile(curStr.c_str(), false, true, kLoadFront, false);
+        }
+    }
+    
+    CheatProvider::Init();
+    LocalePanel::Init();
+    Hmx::Object::Handle(cheat_init_msg, false);
+    mOverlay = RndOverlay::Find("ui", true);
+    mOverlay->SetOverlay(false);
+    PreloadSharedSubdirs("ui");
+    Hmx::Object::Handle(init_msg, false);
+    mTimer.Restart();
+    cfg->FindData("overload_horizontal_nav", unk70, false);
+}
+
+void UIManager::Terminate(){
+
 }
 
 void UIManager::SendTransitionComplete(UIScreen* scr1, UIScreen* scr2){

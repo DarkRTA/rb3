@@ -69,7 +69,7 @@ public:
             if(!p.empty()) d = new DirLoader(p, pos, 0, 0, 0, b3);
         }
         mLoader = d;
-        if(mLoader){
+        if(d){
             if(!async || mLoader->IsLoaded()) PostLoad(0);
         }
         else if(!p.empty()) MILO_WARN("Couldn't load %s", p);

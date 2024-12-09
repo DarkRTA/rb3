@@ -21,7 +21,7 @@ class MsgSource;
 // size 0x58
 class Automator : public Hmx::Object {
 public:
-    Automator() : mScreenScripts(0), mRecord(0), mRecordPath("automator.dta"), mAutoPath("automator.dta"),
+    Automator() : mScreenScripts(0), mRecord(0), mAutoPath("automator.dta"), mRecordPath("automator.dta"), 
         mCurScript(0), mSkipNextQuickCheat(0) {}
     virtual ~Automator(){
         if(mScreenScripts){

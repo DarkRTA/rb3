@@ -32,5 +32,10 @@ public:
     void AddHeading(const char*);
     Symbol TokenForLabel(UILabel*);
 
+    NEW_OBJ(LocalePanel);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(LocalePanel);
+    }
+
     std::vector<Entry> mEntries;
 };
