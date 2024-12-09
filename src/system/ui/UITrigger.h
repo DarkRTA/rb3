@@ -27,6 +27,12 @@ public:
     bool IsDone() const { return mEndTime <= TheTaskMgr.UISeconds(); }
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD
+    NEW_OBJ(UITrigger);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UITrigger);
+    }
 
     ObjPtr<Hmx::Object, ObjectDir> mCallbackObject; // 0xe8
     float mStartTime; // 0xf4

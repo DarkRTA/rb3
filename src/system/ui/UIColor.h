@@ -25,6 +25,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(UIColor);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIColor);
+    }
 
     /** The color. */
     Hmx::Color mColor;

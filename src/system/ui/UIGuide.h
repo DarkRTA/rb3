@@ -1,5 +1,6 @@
 #ifndef UI_UIGUIDE_H
 #define UI_UIGUIDE_H
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "utl/MemMgr.h"
 
@@ -15,12 +16,13 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    void operator delete(void* v){
-        _MemFree(v);
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD
+    NEW_OBJ(UIGuide);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIGuide);
     }
-
-    static unsigned short gRev;
-    static unsigned short gAltRev;
 
     int mType;
     float mPos;

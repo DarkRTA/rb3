@@ -22,7 +22,7 @@ class MsgSource;
 class Automator : public Hmx::Object {
 public:
     Automator() : mScreenScripts(0), mRecord(0), mRecordPath("automator.dta"), mAutoPath("automator.dta"),
-        mCurScript(0), mCurScreenIndex(0), mCurMsgIndex(0), mFramesSinceAdvance(0), mSkipNextQuickCheat(0) {}
+        mCurScript(0), mSkipNextQuickCheat(0) {}
     virtual ~Automator(){
         if(mScreenScripts){
             mScreenScripts->Release();
@@ -82,6 +82,8 @@ public:
     }
 
     void AddRecord(Symbol, DataArray*);
+    void HandleMessage(Symbol);
+    void AdvanceScript(Symbol);
 
     DataNode OnMsg(const UITransitionCompleteMsg&);
     DataNode OnMsg(const ButtonDownMsg&);

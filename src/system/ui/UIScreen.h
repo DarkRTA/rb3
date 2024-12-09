@@ -1,4 +1,5 @@
 #pragma once
+#include "obj/ObjMacros.h"
 #include <list>
 #include "obj/Data.h"
 #include "obj/Object.h"
@@ -66,6 +67,10 @@ public:
 
     static int sMaxScreenId;
     static UIScreen *sUnloadingScreen;
+    NEW_OBJ(UIScreen);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIScreen);
+    }
 
     std::vector<PanelRef> mPanelList;
     class UIPanel *mFocusPanel;

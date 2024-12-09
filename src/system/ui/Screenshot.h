@@ -22,6 +22,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(Screenshot);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(Screenshot);
+    }
 
     void Sync();
 

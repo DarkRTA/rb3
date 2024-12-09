@@ -62,7 +62,12 @@ public:
     DataNode OnGetResourcesPath(DataArray*);
     DataNode OnGetGennedBitmapPath(DataArray*);
 
-    DELETE_OVERLOAD;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD
+    NEW_OBJ(UIFontImporter);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIFontImporter);
+    }
     
     bool mUpperCaseAthroughZ; // 0x8
     bool mLowerCaseAthroughZ; // 0x9

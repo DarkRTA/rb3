@@ -1,17 +1,33 @@
 #include "ui/UI.h"
+#include "UIButton.h"
+#include "math/Rot.h"
 #include "obj/Data.h"
 #include "obj/DataUtl.h"
+#include "obj/Dir.h"
 #include "os/Debug.h"
 #include "os/JoypadClient.h"
 #include "os/JoypadMsgs.h"
+#include "os/Keyboard.h"
 #include "os/System.h"
+#include "rndobj/Cam.h"
+#include "rndobj/Env.h"
+#include "ui/UIGuide.h"
+#include "ui/LabelNumberTicker.h"
+#include "ui/LabelShrinkWrapper.h"
+#include "ui/PanelDir.h"
+#include "ui/UIList.h"
+#include "ui/UIPanel.h"
+#include "ui/UIPicture.h"
+#include "ui/UIProxy.h"
 #include "ui/UIScreen.h"
+#include "ui/UISlider.h"
+#include "ui/UITrigger.h"
 #include "rndobj/Overlay.h"
 #include "obj/Msg.h"
 #include "obj/DataFile.h"
-#include "utl/Messages2.h"
+#include "utl/Locale.h"
+#include "utl/Messages.h"
 #include "utl/Symbols.h"
-
 #include <algorithm>
 
 #pragma push
@@ -121,12 +137,142 @@ inline DataNode Automator::OnMsg(const ButtonDownMsg& msg){
     return DataNode(kDataUnhandled, 0);
 }
 
+inline void Automator::HandleMessage(Symbol msgType){
+    if(!TheUI->IsTransitioning()){
+        if(mRecord){
+            Symbol screenName = CurScreenName();
+            if(!screenName.Null()){
+                DataArrayPtr ptr(msgType);
+                AddRecord(screenName, ptr);
+            }
+        }
+        else if(mScreenScripts){
+            AdvanceScript(msgType);
+        }
+    }
+}
+
+inline void Automator::AdvanceScript(Symbol msg){
+    if(mCurScript){
+        if(mCurScript->Array(mCurMsgIndex)->Sym(0) == msg){
+            mFramesSinceAdvance = 0;
+            mCurMsgIndex++;
+            if(mCurMsgIndex >= mCurScript->Size()){
+                mCurScript = 0;
+                if(mCurScreenIndex == mScreenScripts->Size()){
+                    TheUI->Handle(auto_script_done_msg, false);
+                }
+            }
+        }
+    }
+}
+
+DataNode Automator::OnMsg(const UIComponentSelectMsg& msg){
+    HandleMessage(msg.Message::Type());
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Automator::OnMsg(const UIComponentScrollMsg& msg){
+    HandleMessage(msg.Message::Type());
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Automator::OnMsg(const UIComponentFocusChangeMsg& msg){
+    HandleMessage(msg.Message::Type());
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Automator::OnMsg(const UIScreenChangeMsg& msg){
+    HandleMessage(msg.Message::Type());
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Automator::OnCheatInvoked(const DataArray* arr){
+    if(!mRecord) goto ret;
+    if(mSkipNextQuickCheat){
+        mSkipNextQuickCheat = false;
+        goto ret;
+    }
+    if(arr->Int(2) == 0) goto ret;
+    Symbol screenName = CurScreenName();
+    if(TheUI->CurrentScreen() && screenName.Null()){
+        screenName = CurRecordScreen();
+    }
+    if(!screenName.Null()){
+        DataArrayPtr ptr(quick_cheat, DataNode(arr->Array(3), kDataArray));
+        AddRecord(screenName, ptr);      
+    }
+ret:
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode Automator::OnCustomMsg(const Message& msg){
+    Symbol key = msg.Type();
+    std::list<Symbol>::iterator it = mCustomMsgs.begin();
+    for(; it != mCustomMsgs.end() && *it != key; ++it);
+    if(it != mCustomMsgs.end()) HandleMessage(key);
+    return DataNode(kDataUnhandled, 0);
+}
+
 UIManager::UIManager() : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0), unk70(0), unk71(0), unk72(1), mOverlay(0), mRequireFixedText(0), unkb0(0), unkb5(0) {
 
 }
 
 UIManager::~UIManager(){
 
+}
+
+void UITerminateCallback(){
+    TheUI->Terminate();
+}
+
+void UIManager::Init(){
+    unkb0 = new Automator();
+    SetName("ui", ObjectDir::Main());
+    DataArray* cfg = SystemConfig("ui");
+    SetTypeDef(SystemConfig("ui"));
+    bool autoRepeatEnabled = cfg->FindInt("enable_auto_repeat");
+    bool useJoypad = cfg->FindInt("use_joypad");
+    UseJoypad(useJoypad, autoRepeatEnabled);
+    KeyboardSubscribe(this);
+    mCurrentScreen = nullptr;
+    mTransitionState = kTransitionNone;
+    mTransitionScreen = nullptr;
+    mWentBack = false;
+    unk34 = ObjectDir::Main()->New<RndCam>("[ui.cam]");
+    DataArray* camCfg = cfg->FindArray("cam", true);
+    unk34->SetFrustum(camCfg->FindFloat("near"), camCfg->FindFloat("far"), camCfg->FindFloat("fov") * DEG2RAD, 1.0f);
+    unk34->SetLocalPos(0, camCfg->FindFloat("y"), 0);
+    DataArray* zArr = camCfg->FindArray("z-range", true);
+    unk34->SetZRange(zArr->Float(1), zArr->Float(2));
+    unk38 = Hmx::Object::New<RndEnviron>();
+    Hmx::Color envAmbientColor;
+    cfg->FindArray("env", true)->FindData("ambient", envAmbientColor, true);
+    unk38->SetAmbientColor(envAmbientColor);
+    cfg->FindData("max_push_depth", mMaxPushDepth, false);
+    cfg->FindData("cancel_transition_notify", unk71, false);
+    cfg->FindData("default_allow_edit_text", unk72, false);
+    bool notify = false;
+    cfg->FindData("verbose_locale_notifies", notify, false);
+    SetLocaleVerboseNotify(notify);
+    UIScreen::Init();
+    UIPanel::Init();
+    PanelDir::Init();
+    UIComponent::Init();
+    UIButton::Init();
+    UIColor::Init();
+    UILabel::Init();
+    UIList::Init();
+    UIPicture::Init();
+    UIProxy::Init();
+    UISlider::Init();
+    UITrigger::Init();
+    UIFontImporter::Init();
+    UIGuide::Init();
+    Screenshot::Init();
+    LabelNumberTicker::Init();
+    LabelShrinkWrapper::Init();
+    TheDebug.AddExitCallback(UITerminateCallback);
 }
 
 void UIManager::SendTransitionComplete(UIScreen* scr1, UIScreen* scr2){

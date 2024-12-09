@@ -10,6 +10,7 @@
 #include "rndobj/Tex.h"
 #include "utl/FilePath.h"
 #include "utl/Loader.h"
+#include "utl/MemMgr.h"
 
 class UIPicture : public UIComponent, public UITransitionHandler {
 public:
@@ -38,7 +39,12 @@ public:
     void HookupMesh();
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD
+    NEW_OBJ(UIPicture);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIPicture);
+    }
 
     ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x12c
     FilePath mTexFile; // 0x138

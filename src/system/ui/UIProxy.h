@@ -31,6 +31,12 @@ public:
     RndDir* ProxyDir() const { return mDir; }
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD
+    NEW_OBJ(UIProxy);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIProxy);
+    }
 
     ObjDirPtr<RndDir> mDir; // 0x10c
     ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x118
