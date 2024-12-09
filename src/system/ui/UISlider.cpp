@@ -21,7 +21,7 @@ BEGIN_COPYS(UISlider)
     CREATE_COPY_AS(UISlider, s)
     MILO_ASSERT(s, 0x2B);
     UIComponent::Copy(s, ty);
-    COPY_MEMBER_FROM(s, unk_0x4)
+    COPY_MEMBER_FROM(s, mSelectToScroll)
 END_COPYS
 
 SAVE_OBJ(UISlider, 0x36)
@@ -40,7 +40,7 @@ void UISlider::PreLoad(BinStream& bs){
 void UISlider::PostLoad(BinStream& bs){
     UIComponent::PostLoad(bs);
     if(gRev != 0){
-        bs >> unk_0x4;
+        bs >> mSelectToScroll;
     }
     Update();
 }

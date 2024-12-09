@@ -1,5 +1,4 @@
-#ifndef UI_SCROLLSELECT_H
-#define UI_SCROLLSELECT_H
+#pragma once
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "ui/UIComponent.h"
@@ -24,11 +23,10 @@ public:
     UIComponent::State DrawState(UIComponent*) const;
     bool CatchNavAction(JoypadAction) const;
     bool RevertScrollSelect(UIComponent*, LocalUser*, Hmx::Object*);
+    bool IsScrollSelected() const { return mSelectedAux != -1; }
 
-    bool unk_0x4;
-    int unk_0x8;
+    bool mSelectToScroll; // 0x4
+    int mSelectedAux; // 0x8
 
     DELETE_POOL_OVERLOAD(ScrollSelect);
 };
-
-#endif // UI_SCROLLSELECT_H
