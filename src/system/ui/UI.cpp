@@ -7,12 +7,16 @@
 #include "obj/Data.h"
 #include "obj/DataUtl.h"
 #include "obj/Dir.h"
+#include "obj/DirLoader.h"
+#include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/File.h"
+#include "os/Joypad.h"
 #include "os/JoypadClient.h"
 #include "os/JoypadMsgs.h"
 #include "os/Keyboard.h"
+#include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "os/Timer.h"
 #include "os/UserMgr.h"
@@ -608,6 +612,121 @@ UIResource* UIManager::FindResource(const DataArray* array) {
     return nullptr;
 }
 
+DataNode UIManager::OnIsResource(DataArray* arr){
+    FilePath fp(FileRoot(), arr->Str(2));
+    Symbol sym = arr->Sym(3);
+    DataArray* cfg = SystemConfig(objects, sym, types);
+    for(int i = 1; i < cfg->Size(); i++){
+        DataArray* curArr = cfg->Array(i);
+        DataArray* rsrcArr = curArr->FindArray(resource_file, false);
+        if(rsrcArr){
+            if(FilePath(FileGetPath(rsrcArr->File(), 0), rsrcArr->Str(1)) == fp){
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+void UIManager::UseJoypad(bool useJoypad, bool enableAutoRepeat){
+    if(useJoypad && !mJoyClient){
+        mJoyClient = new JoypadClient(this);
+        mJoyClient->SetVirtualDpad(true);
+        if(enableAutoRepeat){
+            mJoyClient->SetRepeatMask(0xf000);
+        }
+    }
+    else if(!useJoypad){
+        if(mJoyClient){
+            RELEASE(mJoyClient);
+        }        
+    }
+}
+
+namespace {
+    JoypadAction NavButtonToNavAction(JoypadButton btn){
+        switch(btn){
+            case kPad_DLeft: return kAction_Left;
+            case kPad_DRight: return kAction_Right;
+            case kPad_DDown: return kAction_Down;
+            case kPad_DUp: return kAction_Up;
+            default: return kAction_None;
+        }
+    }
+}
+
+bool UIManager::OverloadHorizontalNav(JoypadAction act, JoypadButton btn, Symbol s) const {
+    bool ret = false;
+    if(mOverloadHorizontalNav){
+        bool b2 = true;
+        if(act == NavButtonToNavAction(btn)){
+            bool b1 = false;
+            if(s != none){
+                if(JoypadTypeHasLeftyFlip(s)) b1 = true;
+            }
+            if(!b1) b2 = false;
+        }
+        if(b2) ret = true;
+    }
+    return ret;
+}
+
+bool UIManager::RequireFixedText() const { return mRequireFixedText; }
+void UIManager::SetRequireFixedText(bool req){ mRequireFixedText = req; }
+
+UIScreen* UIManager::BottomScreen(){
+    if(mPushedScreens.empty()) return mCurrentScreen;
+    else return mPushedScreens.front();
+}
+
+int UIManager::PushDepth() const { return mPushedScreens.size(); }
+
+UIScreen* UIManager::ScreenAtDepth(int depth){
+    MILO_ASSERT(depth < mPushedScreens.size(), 0x478);
+    return mPushedScreens[depth];
+}
+
+void UIManager::ToggleLoadTimes(){
+    mOverlay->CurrentLine() = gNullStr;
+    mOverlay->SetOverlay(!mOverlay->Showing());
+}
+
+bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray* da){
+    if(s == KeyboardKeyMsg::Type()) return true;
+    else if(ButtonDownMsg::Type() != s){
+        if(ButtonUpMsg::Type() == s){
+            UIPanel* focus = FocusPanel();
+            if(focus){
+                DataArray* arr;
+                DataNode* prop = focus->Property(allowed_transition_actions, false);
+                if(prop) arr = prop->Array();
+                else arr = nullptr;
+                if(arr){
+                    for(int i = 0; i < arr->Size(); i++){
+                        if(arr->Int(i) == da->Int(4)) return false;
+                    }
+                }
+            }
+            return true;                
+        }
+        else return false;
+    }
+}
+
+void UIManager::EnableInputPerformanceMode(bool b){
+    if(mJoyClient) mJoyClient->SetFilterAllButStart(b);
+}
+
+void UIManager::PrintLoadedDirs(const char* cc){
+    DirLoader::PrintLoaded(cc);
+}
+
+void UIManager::ShowNetError(){
+    Message msg("show_net_error", ThePlatformMgr.GetNetErrorString(false));
+    Handle(msg, true);
+    ThePlatformMgr.ClearNetError();
+}
+
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(UIManager)
@@ -642,3 +761,50 @@ BEGIN_HANDLERS(UIManager)
     HANDLE_CHECK(0x4FF)
 END_HANDLERS
 #pragma pop
+
+DataNode UIManager::OnGotoScreen(const DataArray* arr){
+    Hmx::Object* obj = arr->GetObj(2);
+    UIScreen* screen = dynamic_cast<UIScreen*>(obj);
+    bool isscreen = false;
+    if(screen || !obj) isscreen = true;
+    if(!isscreen){
+        MILO_FAIL("%s is not a screen", obj->Name());
+    }
+    if(arr->Size() > 4){
+        GotoScreen(screen, arr->Int(3), arr->Int(4));
+    }
+    else if(arr->Size() > 3){
+        GotoScreen(screen, arr->Int(3), false);
+    }
+    else {
+        GotoScreen(screen, false, false);
+    }
+    return 0;
+}
+
+DataNode UIManager::OnGoBackScreen(const DataArray* arr){
+    Hmx::Object* obj = arr->GetObj(2);
+    UIScreen* screen = dynamic_cast<UIScreen*>(obj);
+    bool isscreen = false;
+    if(screen || !obj) isscreen = true;
+    if(!isscreen){
+        MILO_FAIL("%s is not a screen", obj->Name());
+    }
+    GotoScreen(screen, false, true);
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode UIManager::ForeachScreen(const DataArray* arr){
+    DataNode* var = arr->Var(2);
+    DataNode node(*var);
+    std::vector<UIScreen*> screens(mPushedScreens);
+    if(mCurrentScreen) screens.push_back(mCurrentScreen);
+    for(std::vector<UIScreen*>::iterator it = screens.begin(); it != screens.end(); ++it){
+        *var = *it;
+        for(int i = 3; i < arr->Size(); i++){
+            arr->Command(i)->Execute();
+        }
+    }
+    *var = node;
+    return 0;
+}
