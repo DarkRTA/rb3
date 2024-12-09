@@ -1,4 +1,5 @@
 #include "ui/LocalePanel.h"
+#include "obj/ObjMacros.h"
 #include "ui/UI.h"
 #include "ui/UIList.h"
 #include "ui/UIListLabel.h"
@@ -6,6 +7,9 @@
 #include "ui/UIListWidget.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
+#include "utl/Locale.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols4.h"
 
 namespace {
     struct LabelSort {
@@ -60,7 +64,7 @@ void LocalePanel::AddDirEntries(ObjectDir* dir, const char* cc){
     }
     std::sort(labels.begin(), labels.end(), LabelSort());
     if(!labels.empty()){
-        AddHeading(MakeString("%s: %s", cc ? cc : "proxy", PathName(this)));
+        AddHeading(MakeString("%s: %s", cc ? cc : "proxy", PathName(dir)));
     }
     for(std::vector<UILabel*>::iterator it = labels.begin(); it != labels.end(); ++it){
         UILabel* cur = *it;
@@ -99,3 +103,28 @@ void LocalePanel::AddDirEntries(ObjectDir* dir, const char* cc){
         }
     }
 }
+
+void LocalePanel::AddHeading(const char* cc){
+    Entry entry;
+    entry.mHeading = cc;
+    mEntries.push_back(entry);
+}
+
+Symbol LocalePanel::TokenForLabel(UILabel* label){
+    if(label->TextToken().Null()){
+        return "<no token>";
+    }
+    else {
+        bool b18 = false;
+        Localize(label->TextToken(), &b18);
+        if(b18) return label->TextToken();
+        else return "<token not found>";
+    }
+}
+
+BEGIN_HANDLERS(LocalePanel)
+    HANDLE_EXPR(token, mEntries[_msg->Int(2)].mToken)
+    HANDLE_EXPR(screen, Screen())
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0xC8)
+END_HANDLERS
