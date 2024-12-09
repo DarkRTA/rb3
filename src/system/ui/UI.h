@@ -1,5 +1,5 @@
-#ifndef UI_UI_H
-#define UI_UI_H
+#pragma once
+#include "obj/Data.h"
 #include "obj/Object.h"
 #include "utl/Symbol.h"
 #include "os/Joypad.h"
@@ -69,6 +69,16 @@ public:
     void AddMessageType(MsgSource* src, Symbol s){
         src->AddSink(this, s, Symbol(), MsgSource::kHandle);
         mCustomMsgs.push_back(s);
+    }
+
+    Symbol CurScreenName();
+
+    Symbol CurRecordScreen(){
+        DataArray* recordArr = mRecord;
+        if(recordArr->Size() > 0){
+            return recordArr->Array(recordArr->Size() - 1)->Sym(0);
+        }
+        else return gNullStr;
     }
 
     void AddRecord(Symbol, DataArray*);
@@ -180,5 +190,3 @@ public:
 };
 
 extern UIManager* TheUI;
-
-#endif

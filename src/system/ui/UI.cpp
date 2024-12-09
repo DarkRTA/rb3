@@ -1,9 +1,15 @@
 #include "ui/UI.h"
+#include "obj/Data.h"
+#include "obj/DataUtl.h"
+#include "os/Debug.h"
 #include "os/JoypadClient.h"
+#include "os/JoypadMsgs.h"
+#include "os/System.h"
 #include "ui/UIScreen.h"
 #include "rndobj/Overlay.h"
 #include "obj/Msg.h"
 #include "obj/DataFile.h"
+#include "utl/Messages2.h"
 #include "utl/Symbols.h"
 
 #include <algorithm>
@@ -77,6 +83,41 @@ inline void Automator::StartAuto(UIScreen* screen){
 
 DataNode Automator::OnMsg(const UITransitionCompleteMsg& msg){
     if(mScreenScripts && !mRecord) StartAuto(msg.GetScreen1());
+    return DataNode(kDataUnhandled, 0);
+}
+
+inline Symbol Automator::CurScreenName(){
+    UIScreen* curScreen = TheUI->CurrentScreen();
+    if(curScreen){
+        DataNode handled = curScreen->Handle(is_system_cheat_msg, false);
+        if(handled == DataNode(kDataUnhandled, 0) || handled.Int() == 0){
+            return curScreen->Name();
+        }
+    }
+    return gNullStr;
+}
+
+inline void Automator::AddRecord(Symbol s, DataArray* arr){
+    MILO_ASSERT(mRecord, 0x153);
+    int recordSize = mRecord->Size();
+    DataArray* addArr;
+    if(CurRecordScreen() == s){
+        addArr = mRecord->Array(recordSize - 1);
+    }
+    else {
+        addArr = new DataArray(1);
+        addArr->Node(0) = s;
+        mRecord->Insert(recordSize, DataNode(addArr, kDataArray));
+    }
+    addArr->Insert(addArr->Size(), DataNode(arr, kDataArray));
+}
+
+inline DataNode Automator::OnMsg(const ButtonDownMsg& msg){
+    Symbol screenName = CurScreenName();
+    if(mRecord && !screenName.Null()){
+        DataArrayPtr ptr(button_down, DataGetMacroByInt(msg.GetButton(), "kPad_"), DataGetMacroByInt(msg.GetAction(), "kAction_"), msg.GetPadNum());
+        AddRecord(screenName, ptr);
+    }
     return DataNode(kDataUnhandled, 0);
 }
 
