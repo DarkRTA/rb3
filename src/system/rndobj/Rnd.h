@@ -121,6 +121,7 @@ public:
     RndCam* DefaultCam(){ return mDefaultCam; }
     ProcessCmd ProcCmds() const { return mProcCmds; }
     ProcessCmd LastProcCmds() const { return mLastProcCmds; }
+    bool TimersShowing() { return mTimersOverlay->Showing(); }
     Vector2& DrawStringScreen(const char*, const Vector2&, const Hmx::Color&, bool);
     void CompressTextureCancel(CompressTextureCallback*);
 

@@ -18,7 +18,7 @@ public:
     Hmx::Object* mOwner; // 0x8
 
     // fn_80632140
-    ObjKeys& operator=(const ObjKeys& keys){
+    void operator=(const ObjKeys& keys){
         Hmx::Object* oldowner = ObjectStage::sOwner;
         if(this != &keys){
             resize(keys.size());

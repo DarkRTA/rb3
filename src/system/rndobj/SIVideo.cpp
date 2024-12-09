@@ -19,6 +19,7 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
     bs >> magic;
     if (magic != 'SIV_') {
         mMagic = magic;
+        #ifdef MILO_DEBUG
         bs >> mWidth;
         bs >> mHeight;
         bs >> dump;
@@ -26,15 +27,22 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
         bs >> unused;
         bs >> unused;
         bs >> unused;
+        #else 
+        bs >> mWidth >> mHeight >> dump >> unused >> unused >> unused >> unused;
+        #endif
         mBpp = 8;
     } else {
         uint x;
         bs >> x;
         if (x > 1) MILO_FAIL("Can't load new SIVideo.\n");
+        #ifdef MILO_DEBUG
         bs >> mMagic;
         bs >> mWidth;
         bs >> mHeight;
         bs >> mBpp;
+        #else
+        bs >> mMagic >> mWidth >> mHeight >> mBpp;
+        #endif
     }
     if (mData) {
         _MemFree(mData);
@@ -62,9 +70,3 @@ char* SIVideo::Frame(int i) {
     }
     else return NULL;
 }
-
-// unsigned int mWidth;
-//     unsigned int mHeight;
-//     unsigned int mNumFrames;
-//     unsigned int mOrder;
-//     char* mData;

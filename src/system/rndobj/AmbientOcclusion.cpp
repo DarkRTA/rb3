@@ -14,15 +14,22 @@ void RndAmbientOcclusion::Load(BinStream& bs){
     ASSERT_REVS(4, 0);
     Hmx::Object::Load(bs);
     int i, j;
-    unsigned char c, d, e, f;
+    bool c, d, e, f;
     ObjPtrList<Hmx::Object, ObjectDir> pList(this, kObjListNoNull);
     bs >> pList;
     bs >> pList;
     bs >> pList;
+    #ifdef MILO_DEBUG
     bs >> c;
     bs >> d;
     bs >> e;
     bs >> f;
+    #else
+    bs >> c;
+    bs >> c;
+    bs >> c;
+    bs >> c;
+    #endif
     if(gRev > 1){
         bs >> i;
         bs >> j;

@@ -76,15 +76,15 @@ BEGIN_HANDLERS(ModalKeyListener)
 END_HANDLERS
 
 DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg& k){
-    if(((DataArray*)k)->Int(2) == 0x12e){
-        if(!GetEnabledKeyCheats() && !TheRnd->mConsole->mShowing){
+    if(k.GetKey() == 0x12e){
+        if(!GetEnabledKeyCheats() && !TheRnd->ConsoleShowing()){
             TheRnd->ShowConsole(true);
             return DataNode(0);
         }
         else return DataNode(kDataUnhandled, 0);
     }
     else {
-        if(!TheRnd->mConsole->mShowing){
+        if(!TheRnd->ConsoleShowing()){
             gNotifyKeepGoing = true;
             return DataNode(0);
         }
@@ -94,16 +94,16 @@ DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg& k){
 
 static DataNode FailKeepGoing(DataArray*) {
     gFailKeepGoing = true;
-    return DataNode();
+    return 0;
 }
 
 static DataNode FailRestartConsole(DataArray*) {
     gFailRestartConsole = true;
-    return DataNode();
+    return 0;
 }
 
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
-bool Rnd::ConsoleShowing() { return mConsole->mShowing; }
+bool Rnd::ConsoleShowing() { return mConsole->Showing(); }
 
 void WordWrap(const char*, int, char*, int){
 
@@ -168,14 +168,14 @@ Vector2& Rnd::DrawString(const char*, const Vector2& v, const Hmx::Color&, bool)
 void Rnd::SetupFont(){
     mFont = SystemConfig("rnd", "font");
     for(int i = 0; i < 0x1a; i++){
-        DataArray* cloned = CONST_ARRAY(mFont)->Node(i + 0x42).Array(mFont)->Clone(true, false, 0);
+        DataArray* cloned = mFont->Array(i + 0x42)->Clone(true, false, 0);
         for(int j = 0; j < cloned->Size(); j++){
             DataArray* jArr = cloned->Array(j);
             for(int k = 1; k < jArr->Size(); k += 2){
-                jArr->Node(k) = DataNode(0.7f * jArr->Float(k) + 0.3f);
+                CONST_ARRAY(jArr)->Node(k) = DataNode(0.7f * jArr->Float(k) + 0.3f);
             }
         }
-        mFont->Node(i + 0x62) = DataNode(cloned, kDataArray);
+        CONST_ARRAY(mFont)->Node(i + 0x62) = DataNode(cloned, kDataArray);
         cloned->Release();
     }
 }
@@ -272,14 +272,16 @@ void Rnd::Init() {
     DataArray* da = syscfg->FindArray("timer_stats", false);
     if (da) {
         if (da->Int(1)) {
-            TheDebug << MakeString("");
+            MILO_LOG("config showing timers\n");
             SetShowTimers(true, true);
         }
     }
 }
 
 void Rnd::Terminate() {
+    #ifdef MILO_DEBUG
     gpDbgFrameID = 0;
+    #endif
     delete mConsole;
     mConsole = NULL;
     TheDebug.RemoveExitCallback(TerminateCallback);
@@ -428,8 +430,7 @@ END_HANDLERS
 
 DataNode Rnd::OnShowOverlay(const DataArray* da){
     RndOverlay* o = RndOverlay::Find(da->Str(2), true);
-    o->mShowing = da->Int(3);
-    o->mTimer.Restart();
+    o->SetOverlay(da->Int(3));
     if(da->Size() > 4){
         o->SetTimeout(da->Float(4));
     }
@@ -438,21 +439,17 @@ DataNode Rnd::OnShowOverlay(const DataArray* da){
 
 DataNode Rnd::OnToggleHeap(const DataArray*){
     int num = MemNumHeaps();
-    RndOverlay* o = mHeapOverlay;
-    if(!o->mShowing){
-        o->mShowing = true;
-        o->mTimer.Restart();
+    if(!mHeapOverlay->Showing()){
+        mHeapOverlay->SetOverlay(true);
     }
     else {
         gCurHeap++;
         if(gCurHeap >= num){
             gCurHeap = -1;
-            o->mShowing = false;
-            o->mTimer.Restart();
+            mHeapOverlay->SetOverlay(false);
         }
         else {
-            o->mShowing = true;
-            o->mTimer.Restart();
+            mHeapOverlay->SetOverlay(true);
         }
     }
     return DataNode(0);
@@ -472,12 +469,11 @@ DataNode Rnd::OnReflect(const DataArray* da){
 
 DataNode Rnd::OnToggleOverlay(const DataArray* da){
     RndOverlay* o = RndOverlay::Find(da->Str(2), true);
-    o->mShowing = o->mShowing == 0;
-    o->mTimer.Restart();
-    if(o->mShowing){
-        o->mDumpCount = 1;
+    o->SetOverlay(!o->Showing());
+    if(o->Showing()){
+        o->SetDumpCount(1);
     }
-    return DataNode(o->mShowing);
+    return DataNode(o->Showing());
 }
 
 DataNode Rnd::OnToggleOverlayPosition(const DataArray*){
@@ -526,7 +522,7 @@ DataNode Rnd::OnShowConsole(const DataArray*){
 }
 
 DataNode Rnd::OnToggleTimers(const DataArray*){
-    SetShowTimers(unkec || !mTimersOverlay->mShowing, false);
+    SetShowTimers(unkec || !TimersShowing(), false);
     return DataNode(0);
 }
 

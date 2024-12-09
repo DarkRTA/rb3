@@ -53,7 +53,9 @@ DECOMP_FORCEACTIVE(Crowd, "WorldCrowd[%s] does not have a placement mesh.")
 WorldCrowd::WorldCrowd() : mPlacementMesh(this), mCharacters(this), mNum(0), mRotate(kCrowdRotateNone), mForce3DCrowd(0), mShow3DOnly(0),
     mCharFullness(1.0f), mFlatFullness(1.0f), mLod(0), mEnviron(this), mEnviron3D(this), mFocus(this), mModifyStamp(0) {
     if(gNumCrowd++ == 0){
+        #ifdef MILO_DEBUG
         GetGfxMode();
+        #endif
         gImpostorMat = Hmx::Object::New<RndMat>();
         gImpostorMat->SetUseEnv(true);
         gImpostorMat->SetPreLit(false);
