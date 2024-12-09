@@ -197,6 +197,7 @@ void UIComponent::MockSelect(){
     mMockSelect = true;
 }
 
+// matches on retail: https://decomp.me/scratch/3ya1L
 void UIComponent::Update(){
     if(mResourcePath.length() != 0){
         if(!mResourceDir){
@@ -231,12 +232,13 @@ void UIComponent::Update(){
                     for(int i = 1; i < mesharr->Size(); i++){
                         DataArray* innerarr = mesharr->Array(i);
                         RndMesh* newmesh = rdir->Find<RndMesh>(innerarr->Str(0), true);
-                        UIMesh uimesh(newmesh);
+                        UIMesh uimesh;
+                        uimesh.mMesh = newmesh;
+                        for(int i = 0; i < kNumStates; i++) uimesh.mMats[i] = 0;
                         for(int j = 1; j < innerarr->Size(); j++){
                             DataArray* anotherarr = innerarr->Array(j);
                             State state = SymToUIComponentState(anotherarr->Sym(0));
-                            RndMat* mat = rdir->Find<RndMat>(anotherarr->Str(1), true);
-                            uimesh.mMats[state] = mat;
+                            uimesh.mMats[state] = rdir->Find<RndMat>(anotherarr->Str(1), true);
                         }
                         mMeshes.push_back(uimesh);
                     }
@@ -245,7 +247,7 @@ void UIComponent::Update(){
             else {
                 const DataArray* def = TypeDef();
                 MILO_WARN("Can't find %s (%s) resource file %s for type %s! (%s)",
-                    ClassName(), Name(), def->FindStr("resource_file"), Type(), PathName(this));
+                     ClassName(), Name(), def->FindStr("resource_file"), Type(), PathName(Dir()));
                 DataArray* cfg = SystemConfig("objects", ClassName(), "types");
                 DataArray* defaultarr = cfg->FindArray("default", false);
                 if(!defaultarr){

@@ -1341,7 +1341,7 @@
             "system/ui/UI.cpp": "NonMatching",
             "system/ui/UIButton.cpp": "Matching",
             "system/ui/UIColor.cpp": "Matching",
-            "system/ui/UIComponent.cpp": "NonMatching",
+            "system/ui/UIComponent.cpp": "Equivalent",
             "system/ui/UIFontImporter.cpp": "NonMatching",
             "system/ui/UIGridProvider.cpp": "Matching",
             "system/ui/UIGuide.cpp": "Matching",
