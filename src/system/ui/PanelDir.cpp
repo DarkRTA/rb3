@@ -112,7 +112,7 @@ void PanelDir::RemovingObject(Hmx::Object* o){
 RndCam* PanelDir::CamOverride(){
     if(LOADMGR_EDITMODE && !mUseSpecifiedCam) return 0;
     if(mCam) return mCam;
-    return TheUI->unk34;
+    return TheUI->GetCam();
 }
 
 void PanelDir::DrawShowing(){
@@ -123,7 +123,7 @@ void PanelDir::DrawShowing(){
         camOverride->Select();
     }
     if(!mEnv){
-        RndEnviron* curEnv = TheUI->unk38;
+        RndEnviron* curEnv = TheUI->GetEnv();
         if(curEnv != RndEnviron::sCurrent){
             curEnv->Select(0);
         }

@@ -54,7 +54,7 @@ void TrainerPanel::Exit(){
 void TrainerPanel::Draw(){
     UIPanel::Draw();
     if(mShowProgressMeter){
-        TheUI->unk34->Select();
+        TheUI->GetCam()->Select();
         mProgressMeter->Draw();
     }
     else {

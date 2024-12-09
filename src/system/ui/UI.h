@@ -84,6 +84,7 @@ public:
     void AddRecord(Symbol, DataArray*);
     void HandleMessage(Symbol);
     void AdvanceScript(Symbol);
+    void Poll();
 
     DataNode OnMsg(const UITransitionCompleteMsg&);
     DataNode OnMsg(const ButtonDownMsg&);
@@ -164,7 +165,8 @@ public:
     DataNode ForeachScreen(const DataArray*);
     TransitionState GetTransitionState() const { return mTransitionState; }
     bool IsTransitioning() const { return mTransitionState != kTransitionNone; }
-    RndEnviron* GetEnv() const { return unk38; }
+    RndEnviron* GetEnv() const { return mEnv; }
+    RndCam* GetCam() const { return mCam; }
 
     TransitionState mTransitionState; // 0x8
     bool mWentBack; // 0xc
@@ -175,18 +177,18 @@ public:
     UIScreen* mTransitionScreen; // 0x24
     std::vector<UIResource*> mResources; // 0x28
     Hmx::Object* mSink; // 0x30
-    RndCam* unk34; // 0x34
-    RndEnviron* unk38; // 0x38
+    RndCam* mCam; // 0x34
+    RndEnviron* mEnv; // 0x38
     int unk3c; // 0x3c
     Timer mTimer; // 0x40
-    bool unk70; // 0x70
-    bool unk71; // 0x71
-    bool unk72; // 0x72
+    bool mOverloadHorizontalNav; // 0x70
+    bool mCancelTransitionNotify; // 0x71
+    bool mDefaultAllowEditText; // 0x72
     int unk74; // 0x74
     Timer mLoadTimer; // 0x78
     RndOverlay* mOverlay; // 0xa8
     bool mRequireFixedText; // 0xac
-    Automator* unkb0; // 0xb0
+    Automator* mAutomator; // 0xb0
     bool unkb4; // 0xb4
     bool unkb5; // 0xb5
 };

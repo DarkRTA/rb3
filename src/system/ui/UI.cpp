@@ -1,15 +1,19 @@
 #include "ui/UI.h"
 #include "CheatProvider.h"
+#include "UI.h"
 #include "UIButton.h"
+#include "UILabel.h"
 #include "math/Rot.h"
 #include "obj/Data.h"
 #include "obj/DataUtl.h"
 #include "obj/Dir.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/JoypadClient.h"
 #include "os/JoypadMsgs.h"
 #include "os/Keyboard.h"
 #include "os/System.h"
+#include "os/Timer.h"
 #include "rndobj/Cam.h"
 #include "rndobj/Env.h"
 #include "ui/LocalePanel.h"
@@ -218,7 +222,7 @@ DataNode Automator::OnCustomMsg(const Message& msg){
     return DataNode(kDataUnhandled, 0);
 }
 
-UIManager::UIManager() : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0), unk70(0), unk71(0), unk72(1), mOverlay(0), mRequireFixedText(0), unkb0(0), unkb5(0) {
+UIManager::UIManager() : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0), mOverloadHorizontalNav(0), mCancelTransitionNotify(0), mDefaultAllowEditText(1), mOverlay(0), mRequireFixedText(0), mAutomator(0), unkb5(0) {
 
 }
 
@@ -231,7 +235,7 @@ void UITerminateCallback(){
 }
 
 void UIManager::Init(){
-    unkb0 = new Automator();
+    mAutomator = new Automator();
     SetName("ui", ObjectDir::Main());
     DataArray* cfg = SystemConfig("ui");
     SetTypeDef(SystemConfig("ui"));
@@ -241,19 +245,19 @@ void UIManager::Init(){
     mTransitionState = kTransitionNone;
     mTransitionScreen = nullptr;
     mWentBack = false;
-    unk34 = ObjectDir::Main()->New<RndCam>("[ui.cam]");
+    mCam = ObjectDir::Main()->New<RndCam>("[ui.cam]");
     DataArray* camCfg = cfg->FindArray("cam", true);
-    unk34->SetFrustum(camCfg->FindFloat("near"), camCfg->FindFloat("far"), camCfg->FindFloat("fov") * DEG2RAD, 1.0f);
-    unk34->SetLocalPos(0, camCfg->FindFloat("y"), 0);
+    mCam->SetFrustum(camCfg->FindFloat("near"), camCfg->FindFloat("far"), camCfg->FindFloat("fov") * DEG2RAD, 1.0f);
+    mCam->SetLocalPos(0, camCfg->FindFloat("y"), 0);
     DataArray* zArr = camCfg->FindArray("z-range", true);
-    unk34->SetZRange(zArr->Float(1), zArr->Float(2));
-    unk38 = Hmx::Object::New<RndEnviron>();
+    mCam->SetZRange(zArr->Float(1), zArr->Float(2));
+    mEnv = Hmx::Object::New<RndEnviron>();
     Hmx::Color envAmbientColor;
     cfg->FindArray("env", true)->FindData("ambient", envAmbientColor, true);
-    unk38->SetAmbientColor(envAmbientColor);
+    mEnv->SetAmbientColor(envAmbientColor);
     cfg->FindData("max_push_depth", mMaxPushDepth, false);
-    cfg->FindData("cancel_transition_notify", unk71, false);
-    cfg->FindData("default_allow_edit_text", unk72, false);
+    cfg->FindData("cancel_transition_notify", mCancelTransitionNotify, false);
+    cfg->FindData("default_allow_edit_text", mDefaultAllowEditText, false);
     bool notify = false;
     cfg->FindData("verbose_locale_notifies", notify, false);
     SetLocaleVerboseNotify(notify);
@@ -294,11 +298,91 @@ void UIManager::Init(){
     PreloadSharedSubdirs("ui");
     Hmx::Object::Handle(init_msg, false);
     mTimer.Restart();
-    cfg->FindData("overload_horizontal_nav", unk70, false);
+    cfg->FindData("overload_horizontal_nav", mOverloadHorizontalNav, false);
 }
 
 void UIManager::Terminate(){
+    CheatProvider::Terminate();
+    UILabel::Terminate();
+    SetName(0, 0);
+    KeyboardUnsubscribe(this);
+    RELEASE(mCam);
+    RELEASE(mEnv);
+    RELEASE(mJoyClient);
+    for(std::vector<UIResource*>::iterator it = mResources.begin(); it != mResources.end(); ++it){
+        (*it)->ForceRelease();
+    }
+    for(std::vector<UIResource*>::iterator it = mResources.begin(); it != mResources.end(); ++it){
+        delete *it;
+    }
+    TheDebug.RemoveExitCallback(UITerminateCallback);
+    RELEASE(mAutomator);
+}
 
+void UIManager::Poll(){
+    UIList::CollectGarbage();
+    mAutomator->Poll();
+    TheTaskMgr.SetUISeconds(mTimer.SplitMs() / 1000.0f, false);
+    for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+        (*it)->Poll();
+    }
+    if(mCurrentScreen) mCurrentScreen->Poll();
+    if(mTransitionState == kTransitionTo){
+        START_AUTO_TIMER("ui_transition_to_poll");
+        if(
+            (!mTransitionScreen || mTransitionScreen->CheckIsLoaded()) && 
+            (!mCurrentScreen || !mCurrentScreen->Exiting()) && !IsBlockingTransition()
+        ){
+            UIScreen* trans = mTransitionScreen;
+            mTransitionState = kTransitionFrom;
+            mTransitionScreen = mCurrentScreen;
+            mCurrentScreen = trans;
+            if(trans){
+                if(trans->AllPanelsDown() && mPushedScreens.empty() && IsTimelineResetAllowed()){
+                    mTimer.Restart();
+                    TheTaskMgr.SetUISeconds(0, true);
+                }
+                TheLoadMgr.SetLoaderPeriod(10.0f);
+                mCurrentScreen->Enter(mTransitionScreen);
+            }
+        }
+        else if(
+            (mTransitionScreen && !mTransitionScreen->CheckIsLoaded()) &&
+            (!mCurrentScreen || !mCurrentScreen->Exiting())
+        ){
+            TheLoadMgr.SetLoaderPeriod(26.67f);
+        }
+    }
+    if(mTransitionState == kTransitionPop){
+        START_AUTO_TIMER("ui_transition_pop_poll");
+        if(!mCurrentScreen || !mCurrentScreen->Exiting()){
+            if(mCurrentScreen) mCurrentScreen->UnloadPanels();
+            UIScreen* oldCurScreen = mCurrentScreen;
+            MILO_ASSERT(!mPushedScreens.empty(), 0x2AF);
+            mCurrentScreen = mPushedScreens.back();
+            mPushedScreens.pop_back();
+            mTransitionState = kTransitionNone;
+            if(mTransitionScreen == mCurrentScreen){
+                SendTransitionComplete(mCurrentScreen, oldCurScreen);
+            }
+            else GotoScreenImpl(mTransitionScreen, false, false);
+        }
+    }
+    if(mTransitionState == kTransitionFrom){
+        START_AUTO_TIMER("ui_transition_from_poll");
+        if(!mCurrentScreen || !mCurrentScreen->Entering()){
+            if(mOverlay->Showing() && mLoadTimer.Running()){
+                if(mCurrentScreen){
+                    mOverlay->CurrentLine() = MakeString("%s entered in %f seconds", mCurrentScreen->Name(), mLoadTimer.SplitMs() / 1000.0f);
+                    MILO_LOG("%s\n", mOverlay->CurrentLine());
+                }
+            }
+            UIScreen* oldTrans = mTransitionScreen;
+            mTransitionState = kTransitionNone;
+            mTransitionScreen = nullptr;
+            SendTransitionComplete(mCurrentScreen, oldTrans);
+        }
+    }
 }
 
 void UIManager::SendTransitionComplete(UIScreen* scr1, UIScreen* scr2){
@@ -389,7 +473,7 @@ BEGIN_HANDLERS(UIManager)
     HANDLE_ACTION(toggle_load_times, ToggleLoadTimes())
     HANDLE_EXPR(showing_load_times, mOverlay->Showing())
     HANDLE_ACTION(set_require_fixed_text, SetRequireFixedText(_msg->Int(2)))
-    HANDLE_MEMBER_PTR(unkb0)
+    HANDLE_MEMBER_PTR(mAutomator)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_MEMBER_PTR(mCurrentScreen)
     HANDLE_CHECK(0x4FF)
