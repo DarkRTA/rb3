@@ -151,7 +151,6 @@ public:
     int PushDepth() const;
     UIScreen* ScreenAtDepth(int);
     void ToggleLoadTimes();
-    bool InTransition();
     bool BlockHandlerDuringTransition(Symbol, DataArray*);
     void EnableInputPerformanceMode(bool);
     void PrintLoadedDirs(const char*);
@@ -165,7 +164,7 @@ public:
     DataNode OnIsResource(DataArray*);
     DataNode ForeachScreen(const DataArray*);
     TransitionState GetTransitionState() const { return mTransitionState; }
-    bool IsTransitioning() const { return mTransitionState != kTransitionNone; }
+    bool InTransition() const { return mTransitionState != kTransitionNone; }
     RndEnviron* GetEnv() const { return mEnv; }
     RndCam* GetCam() const { return mCam; }
 

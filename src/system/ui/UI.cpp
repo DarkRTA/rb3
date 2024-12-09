@@ -193,7 +193,7 @@ inline DataNode Automator::OnMsg(const ButtonDownMsg& msg){
 }
 
 inline void Automator::HandleMessage(Symbol msgType){
-    if(!TheUI->IsTransitioning()){
+    if(!TheUI->InTransition()){
         if(mRecord){
             Symbol screenName = CurScreenName();
             if(!screenName.Null()){

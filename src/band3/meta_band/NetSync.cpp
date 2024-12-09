@@ -90,7 +90,7 @@ NetUIState NetSync::GetUIState() const {
 }
 
 void NetSync::Poll(){
-    if(TheUI->IsTransitioning()){
+    if(TheUI->InTransition()){
         UIScreen* cur = TheUI->CurrentScreen();
         if(!TheUI->TransitionScreen() || TheUI->TransitionScreen()->IsLoaded()){
             if(!cur || !cur->Exiting()){
