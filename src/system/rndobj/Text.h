@@ -39,8 +39,11 @@ public:
     };
 
     enum CapsMode {
+        /** "Leave the text as is" */
         kCapsModeNone = 0,
+        /** "Force text to all lower case" */
         kForceLower = 1,
+        /** "Force text to all upper case" */
         kForceUpper = 2,
     };
 

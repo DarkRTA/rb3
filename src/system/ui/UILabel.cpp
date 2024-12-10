@@ -379,7 +379,12 @@ float UILabel::GetDistanceToPlane(const Plane& p, Vector3& v){
 }
 
 Symbol UILabel::TextToken() const { return mTextToken; }
-RndText* UILabel::TextObj(){ return mText; }
+
+DECOMP_FORCEFUNC(UILabel, UILabel, TextObj())
+#pragma push
+#pragma force_active on
+inline RndText* UILabel::TextObj(){ return mText; }
+#pragma pop
 
 const char* UILabel::GetDefaultText() const {
     if(!mIcon.empty()) return mIcon.c_str();
@@ -548,6 +553,37 @@ RndFont* UILabel::Font(){
     return mFont;
 }
 
+void UILabel::AltFontResourceFileUpdated(bool b){
+    if(!mAltFontResourceName.empty()){
+        const char* miloPath = MakeString("%s/%s.milo", GetResourcesPath(), mAltFontResourceName);
+        mObjDirPtr.LoadFile(FilePath(FileRoot(), miloPath), b, true, kLoadFront, false);
+        if(!b){
+            mObjDirPtr.PostLoad(nullptr);
+        }
+    }
+    else mObjDirPtr = nullptr;
+    if(!b){
+        Update();
+    }
+}
+
+void UILabel::AdjustHeight(bool b){
+    if(mFitType == kFitWrap && mText->GetFont()){
+        std::vector<RndText::Line> lines;
+        float f24;
+        mText->GetStringDimensions(f24, mHeight, lines, "", mTextSize);
+        int numlines;
+        bool b1 = false;
+        if(b && mReservedLine > 0) b1 = true;
+        if(b1){
+            numlines = mReservedLine;
+        }
+        else numlines = mText->NumLines();
+        mHeight *= numlines;
+        mHeight = (1.0f - mLeading) * mTextSize * mText->GetFont()->CellDiff() + mHeight;
+    }
+}
+
 void UILabel::SetAlignment(RndText::Alignment a){
     mAlignment = a;
     Update();
@@ -563,6 +599,115 @@ void UILabel::SetFitType(UILabel::FitType f){
     Update();
 }
 
+void UILabel::FitText(){
+    RndTextUpdateDeferrer deferrer(mText);
+    if(mFitType == kFitStretch){
+        float linewidth = mText->MaxLineWidth();
+        if(linewidth != 0){
+            Transform tf;
+            tf.Reset();
+            float f1, f2;
+            mText->GetVerticalBounds(f1, f2);
+            float fabs = std::fabs(f2 - f1);
+            float fvec;
+            if(fabs > 0 && mHeight > 0){
+                fvec = mHeight / fabs;
+            }
+            else fvec = 1.0f;
+            float diff = mText->GetFont()->CellDiff();
+            Vector3 v98(mWidth / linewidth, 1.0f, fvec / diff);
+            Scale(v98, tf.m, tf.m);
+            mText->SetLocalXfm(tf);
+        }
+    }
+    else if(mFitType == kFitJust){
+//     pcVar6 = fn_800EEFE8(*(this + 0x110)); text.mtext
+//     fVar4 = *(this + 0x140);
+//     fn_8051B76C(avStack_b8,auStack_e4);
+//     MergedGenericDtor(auStack_e4,0xffffffff);
+//     while (dVar13 = fVar4, dVar12 = 0.0, dVar13 >= 0.0) {
+//       RndText::GetStringDimensions(*(this + 0x110),&local_d0,&local_d4,avStack_b8,pcVar6,fVar4);
+//       if (((*(this + 0x150) == 0.0) || (local_d0 <= *(this + 0x150))) &&
+//          ((dVar12 = dVar13, *(this + 0x154) == 0.0 || (local_d4 <= *(this + 0x154))))) break;
+//       fVar4 = dVar13 - 0.2000000029802322;
+//     }
+//     dVar13 = MergedGetF0xDC(*(this + 0x110));
+//     if (dVar12 == dVar13) {
+//       RndText::SetText(*(this + 0x110),pcVar6);
+//     }
+//     else {
+//       RndTextUpdateDeferrer::RndTextUpdateDeferrer(aRStack_d8,*(this + 0x110));
+//       fVar4 = *(this + 0x140);
+//       RndText::SetSize(*(this + 0x110),dVar12);
+//       RndText::SetAltSizeAndZOffset
+//                 (*(this + 0x110),*(this + 0x180) * (dVar12 / fVar4),
+//                  *(this + 0x194) * (dVar12 / fVar4));
+//       RndTextUpdateDeferrer::~RndTextUpdateDeferrer(aRStack_d8);
+//     }
+//     fn_8051B3F4(avStack_b8,0xffffffff);
+
+    }
+    else if(mFitType == kFitEllipsis){
+        String ellipsis("...");
+//     String::String(aSStack_a4,&DAT_80890ab9);
+//     pcVar6 = fn_800EEFE8(*(this + 0x110));
+//     String::String(aSStack_b0,pcVar6);
+//     uVar7 = String::length(aSStack_b0);
+//     fn_8051B76C(avStack_c0,auStack_e8);
+//     MergedGenericDtor(auStack_e8,0xffffffff);
+//     pcVar6 = MergedGet0x8(this + 0x15c);
+//     iVar8 = String::rfind(aSStack_b0,pcVar6);
+//     iVar9 = String::length(this + 0x15c);
+//     if (iVar8 == uVar7 - iVar9) {
+//       String::operator_+=(aSStack_a4,this + 0x15c);
+//     }
+//     iVar8 = String::length(aSStack_a4);
+//     pcVar6 = MergedGet0x8(aSStack_b0);
+//     RndText::GetStringDimensions
+//               (*(this + 0x110),&local_dc,&fStack_e0,avStack_c0,pcVar6,*(this + 0x140));
+//     if (((*(this + 0x140) > 0.0) && (*(this + 0x150) > 0.0)) &&
+//        ((*(this + 0x150) < local_dc ||
+//         (uVar10 = stlpmtx_std::vector<><>::size(avStack_c0), uVar10 > 1)))) {
+//       String::insert(aSStack_b0,uVar7,aSStack_a4);
+//       uVar7 = uVar7 + iVar8;
+//       while (uVar7 > 1) {
+//         uVar10 = stlpmtx_std::vector<><>::size(avStack_c0);
+//         if ((uVar10 < 2) && (local_dc < *(this + 0x150))) {
+//           uVar10 = (uVar7 - iVar8) - 1;
+//           pcVar6 = String::operator_[](aSStack_b0,uVar10);
+//           if ((*pcVar6 != ' ') &&
+//              ((pcVar6 = String::operator_[](aSStack_b0,uVar10), *pcVar6 != '.' &&
+//               (pcVar6 = String::operator_[](aSStack_b0,uVar10), *pcVar6 != ',')))) break;
+//         }
+//         iVar9 = String::find_last_of(aSStack_b0,' ');
+//         if ((iVar9 == -1) || (iVar9 * 10 < uVar7 * 9)) {
+//           uVar7 = uVar7 - 1;
+//           String::erase(aSStack_b0,uVar7);
+//         }
+//         else {
+//           uVar7 = iVar9 + iVar8;
+//           String::erase(aSStack_b0,uVar7);
+//         }
+//         for (uVar10 = 0; uVar10 < iVar8; uVar10 = uVar10 + 1) {
+//           puVar11 = String::operator_[](aSStack_a4,uVar10);
+//           uVar3 = *puVar11;
+//           puVar11 = String::operator_[](aSStack_b0,uVar10 + (uVar7 - iVar8));
+//           *puVar11 = uVar3;
+//         }
+//         pcVar6 = MergedGet0x8(aSStack_b0);
+//         RndText::GetStringDimensions
+//                   (*(this + 0x110),&local_dc,&fStack_e0,avStack_c0,pcVar6,*(this + 0x140));
+//       }
+//     }
+//     pcVar6 = MergedGet0x8(aSStack_b0);
+//     RndText::SetText(*(this + 0x110),pcVar6);
+//     fn_8051B3F4(avStack_c0,0xffffffff);
+//     String::~String(aSStack_b0);
+//     String::~String(aSStack_a4);
+
+    }
+}
+
 void UILabel::OnSetIcon(const char* cc){
     if(strlen(cc) > 1) MILO_WARN("%s is not a valid icon, must be one character", cc);
     SetIcon(*cc);
@@ -572,20 +717,14 @@ DataNode UILabel::OnSetTokenFmt(const DataArray* da){
     DataNode& n = da->Evaluate(2);
     if(n.Type() == kDataArray){
         DataArray* arr = n.Array();
-        bool b = false;
-        if(arr->Size() > 1){
-            if(arr->Evaluate(1).Type() == kDataArray) b = true;
-        }
+        bool b = arr->Size() > 1 && arr->Evaluate(1).Type() == kDataArray;
         if(b){
             SetTokenFmtImp(arr->ForceSym(0), arr->Array(1), arr, 2, false);
         }
         else SetTokenFmtImp(arr->ForceSym(0), 0, arr, 1, false);
     }
     else {
-        bool b = false;
-        if(da->Size() > 3){
-            if(da->Evaluate(3).Type() == kDataArray) b = true;
-        }
+        bool b = da->Size() > 3 && da->Evaluate(3).Type() == kDataArray;
         if(b){
             SetTokenFmtImp(da->ForceSym(2), da->Array(3), da, 4, false);
         }
@@ -593,16 +732,16 @@ DataNode UILabel::OnSetTokenFmt(const DataArray* da){
             SetTokenFmtImp(da->ForceSym(2), 0, da, 3, false);
         }
     }
-    return DataNode(1);
+    return 1;
 }
 
 void UILabel::SetTokenFmtImp(Symbol s, const DataArray* da1, const DataArray* da2, int i, bool b){
     mTextToken = s;
     if(mTextToken.Null()) SetDisplayText(gNullStr, true);
     else {
-        bool* b2;
-        const char* localized = Localize(mTextToken, b2);
-        if(*b2){
+        bool b2;
+        const char* localized = Localize(mTextToken, &b2);
+        if(b2){
             SuperFormatString str(localized, da1, b);
             if(da2){
                 for(; i < da2->Size(); i++){
