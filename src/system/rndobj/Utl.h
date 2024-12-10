@@ -15,6 +15,7 @@ void SetLocalScale(RndTransformable*, const Vector3&);
 void AttachMesh(RndMesh*, RndMesh*);
 void UtilDrawSphere(const Vector3&, float, const Hmx::Color&);
 void UtilDrawString(const char*, const Vector3&, const Hmx::Color&);
+void UtilDrawBox(const Transform&, const Box&, const Hmx::Color&, bool);
 void UtilDrawAxes(const Transform&, float, const Hmx::Color&);
 void UtilDrawCigar(const Transform&, const float*, const float*, const Hmx::Color&, int);
 void UtilDrawPlane(const Plane&, const Vector3&, const Hmx::Color&, int, float);

@@ -1,6 +1,18 @@
 #include "UILabel.h"
+#include "math/Color.h"
 #include "obj/Object.h"
+#include "obj/Task.h"
+#include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Env.h"
+#include "rndobj/Mat.h"
+#include "rndobj/Mesh.h"
+#include "rndobj/Text.h"
+#include "rndobj/Trans.h"
+#include "rndobj/Utl.h"
+#include "rndwii/Rnd.h"
+#include "ui/UIComponent.h"
+#include "utl/Loader.h"
 #include "utl/Locale.h"
 #include "ui/UILabelDir.h"
 #include "ui/UI.h"
@@ -117,16 +129,16 @@ void UILabel::PreLoad(BinStream& bs){
     if(gRev < 4){
         Transform xfm = LocalXfm();
         if(mAlignment & 1){
-            xfm.v.x -= mWidth * 0.5f;
+            xfm.v.x -= mWidth / 2.0f;
         }
         else if(mAlignment & 4){
-            xfm.v.x += mWidth * 0.5f;
+            xfm.v.x += mWidth / 2.0f;
         }
         if(mAlignment & 0x10){
-            xfm.v.z += mHeight * 0.5f;
+            xfm.v.z += mHeight / 2.0f;
         }
         else if(mAlignment & 0x40){
-            xfm.v.z -= mHeight * 0.5f;
+            xfm.v.z -= mHeight / 2.0f;
         }
         SetLocalXfm(xfm);
     }
@@ -144,7 +156,7 @@ void UILabel::PreLoad(BinStream& bs){
         MILO_ASSERT(reserveLines >= 0, 0x139);
         mReservedLine = reserveLines;
     }
-    if(gRev - 9 < 7U){
+    if(gRev >= 9 && gRev <= 15){
         bool b;
         int a, c, d;
         bs >> b >> a >> c >> d;
@@ -188,15 +200,8 @@ void UILabel::PostLoad(BinStream& bs){
         }
     }
     sDeferUpdate = false;
-    if(mTextToken.Null()){
-        if(mIcon.empty()){
-            ObjectDir* rdir = ResourceDir();
-            if(rdir && mFixedLength == 0 && mReservedLine != 0){
-                mText->SetFont(0);
-            }
-            else Update();
-        }
-    }
+    if(!mTextToken.Null() || !mIcon.empty() || !ResourceDir() || mFixedLength != 0 || mReservedLine != 0) Update();
+    else mText->SetFont(0);
     if(!mAltFontResourceName.empty()) mObjDirPtr.PostLoad(0);
 }
 
@@ -210,6 +215,52 @@ void UILabel::Poll(){
 
 void UILabel::Draw() {
     if (!(mAlpha <= 0)) RndDrawable::Draw();
+}
+
+void UILabel::DrawShowing(){
+    if(mAlpha <= 0) return;
+    if(mText->GetFont()){
+        mText->GetFont()->GetMat()->SetAlpha(mAlpha);
+        if(mAltStyleEnabled && AltFont()){
+            RndMat* fontMat = AltFont()->GetMat();
+            if(fontMat) fontMat->SetAlpha(mAltAlpha);
+        }
+    }
+    else Update();
+
+    if(mColorOverride){
+        RndMat* fontMat = mText->GetFont()->GetMat();
+        if(fontMat){
+            fontMat->SetColor(mColorOverride->GetColor());
+        }
+    }
+    else {
+        Hmx::Color color;
+        mLabelDir->GetStateColor((UIComponent::State)mState, color);
+        RndMat* fontMat = mText->GetFont()->GetMat();
+        if(fontMat) fontMat->SetColor(color);
+    }
+
+    if(mAltStyleEnabled && AltFont()){
+        if(mAltTextColor){
+            RndMat* fontMat = AltFont()->GetMat();
+            if(fontMat){
+                fontMat->SetColor(mAltTextColor->GetColor());
+            }
+        }
+        else {
+            Hmx::Color color;
+            mLabelDir->GetStateColor((UIComponent::State)mState, color);
+            RndMat* fontMat = AltFont()->GetMat();
+            if(fontMat) fontMat->SetColor(color);
+        }
+    }
+
+    UpdateAndDrawHighlightMesh();
+    mText->DrawShowing();
+    if(sDebugHighlight){
+        Highlight();
+    }
 }
 
 float UILabel::GetDrawWidth(){
@@ -226,9 +277,93 @@ float UILabel::GetDrawHeight(){
     return h;
 }
 
+// matches on retail with the right inline settings: https://decomp.me/scratch/UdK2F
+void UILabel::UpdateAndDrawHighlightMesh(){
+    RndGroup* meshgroup = mLabelDir->HighlighMeshGroup();
+    if(mUseHighlightMesh && meshgroup && GetState() == UIComponent::kFocused){
+        RndMesh* topleft = mLabelDir->TopLeftHighlightBone();
+        RndMesh* topright = mLabelDir->TopRightHighlightBone();
+        RndMesh* botleft = mLabelDir->BottomLeftHighlightBone();
+        RndMesh* botright = mLabelDir->BottomRightHighlightBone();
+        if(topleft && topright && botleft && botright){
+            RndGxDrawDone();
+            float f1 = 0;
+            float f2 = 0;
+            mText->GetCurrentStringDimensions(f1, f2);
+            Vector3 v74, v80;
+            InqMinMaxFromWidthAndHeight(f1, f2, Alignment(), v74, v80);
+            float x1 = v74.x;
+            float x2 = v80.x;
+            float z2 = v80.z;
+            float z1 = v74.z;
+            mLabelDir->SetWorldXfm(WorldXfm());
+            Vector3 v8c(x1, 0, z2);
+            Vector3 v98(x2, 0, z2);
+            Vector3 va4(x1, 0, z1);
+            Vector3 vb0(x2, 0, z1);
+            topleft->SetLocalPos(v8c);
+            topright->SetLocalPos(v98);
+            botleft->SetLocalPos(va4);
+            botright->SetLocalPos(vb0);
+        }
+        RndEnviron* env = meshgroup->GetEnv();
+        if(env){
+            env->SetAmbientAlpha(mAlpha);
+        }
+        meshgroup->Draw();
+    }
+}
+
 void UILabel::SetUseHighlightMesh(bool b){
     mUseHighlightMesh = b;
     Update();
+}
+
+int UILabel::InqMinMaxFromWidthAndHeight(float f1, float f2, RndText::Alignment a, Vector3& v1, Vector3& v2){
+    v1.Zero();
+    v2.Zero();
+    if(a & 1){ // aligns left
+        v1.x = 0;
+        v2.x = f1;
+    }
+    else if(a & 2){ // aligns center
+        v1.x = -f1 / 2.0f;
+        v2.x = f1 / 2.0f;
+    }
+    else if(a & 4){ // aligns right
+        v1.x = -f1;
+        v2.x = 0;
+    }
+
+    if(a & 0x10){ // aligns top
+        v1.z = -f2;
+        v2.z = 0;
+    }
+    else if(a & 0x20){ // aligns middle
+        v1.z = -f2 / 2.0f;
+        v2.z = f2 / 2.0f;
+    }
+    else if(a & 0x40){ // aligns bottom
+        v1.z = 0;
+        v2.z = f2;
+    }
+    return 1;
+}
+
+void UILabel::Highlight(){
+    RndTransformable::Highlight();
+    Vector3 v3c, v48;
+    InqMinMaxFromWidthAndHeight(mWidth, mHeight, Alignment(), v3c, v48);
+    Box box(v3c, v48);
+    Hmx::Color color(1,1,0.5f,1);
+    if(!CheckValid(false)){
+        int secs = TheTaskMgr.UISeconds() * 2.0f;
+        if(!(secs % 2)){
+            color.Set(1.0f, 0.2f, 0.2f, 1.0f);
+        }
+    }
+    mText->Highlight();
+    UtilDrawBox(WorldXfm(), box, color, false);
 }
 
 RndDrawable* UILabel::CollideShowing(const Segment& s, float& f, Plane& pl){
@@ -248,7 +383,7 @@ RndText* UILabel::TextObj(){ return mText; }
 
 const char* UILabel::GetDefaultText() const {
     if(!mIcon.empty()) return mIcon.c_str();
-    else return Localize(mTextToken, false);
+    else return Localize(mTextToken, nullptr);
 }
 
 void UILabel::SetEditText(const char*){}
@@ -316,12 +451,66 @@ void UILabel::SetColorOverride(UIColor* col){
     mColorOverride = col;
 }
 
+bool UILabel::CheckValid(bool warn){
+    if(mFixedLength != 0 && unk114.length() > mFixedLength){
+        if(warn){
+            MILO_WARN("%s: %s has fixed length of %i but text is %i long (%s)", PathName(Dir()), Name(), mFixedLength, unk114.length(), unk114);
+        }
+        return false;
+    }
+    else if(mFitType == kFitWrap && mReservedLine != 0 && mReservedLine < mText->NumLines()){
+        if(warn){
+            MILO_WARN("%s: %s has reserve lines of %i, but text has %i lines (%s)", PathName(Dir()), Name(), mReservedLine, mText->NumLines(), unk114);
+        }
+        return false;
+    }
+    else return true;
+}
+
 void UILabel::Update() {
     if (!sDeferUpdate) LabelUpdate(false, false);
 }
 
-void UILabel::LabelUpdate(bool b, bool c) {
+void UILabel::LabelUpdate(bool b1, bool b2) {
+    UIComponent::Update();
+    MILO_ASSERT(ResourceDir(), 0x3CE);
+    mLabelDir = dynamic_cast<UILabelDir*>(ResourceDir());
+    MILO_ASSERT(mLabelDir, 0x3D1);
+    if(!b2){
+        if(mReservedLine != 0){
+            mText->ReserveLines(mReservedLine);
+        }
+        RndFont* mainfont = Font();
+        RndFont* altfont = AltFont();
+        float basekern = mainfont->TextureOwner()->BaseKerning();
+        mainfont->TextureOwner()->SetBaseKerning(mKerning + basekern);
+        float altkern = 0;
+        if(altfont && altfont != mainfont){
+            altkern = altfont->TextureOwner()->BaseKerning();
+            altfont->TextureOwner()->SetBaseKerning(mAltKerning + altkern);
+        }
+        {
+            RndTextUpdateDeferrer yuh(mText);
+            mText->SetData(Alignment(), unk114.c_str(), mainfont, mLeading, mWidth, mTextSize, mItalics, mText->mStyle.color, mMarkup, (RndText::CapsMode)mCapsMode, mFixedLength);
+            Hmx::Color32 color;
 
+            Hmx::Color32* cPtr = nullptr;
+            if(mAltTextColor){
+                color = mAltTextColor->GetColor();
+                cPtr = &color;
+            }
+            mText->SetAltStyle(altfont, mAltTextSize, cPtr, mAltZOffset, mAltItalics, mAltStyleEnabled);
+            FitText();
+            if(b1){
+                mText->UpdateText(true);
+            }
+        }
+        mainfont->TextureOwner()->SetBaseKerning(basekern);
+        if(altfont && altfont != mainfont){
+            altfont->TextureOwner()->SetBaseKerning(altkern);
+        }
+        CheckValid(!LOADMGR_EDITMODE);
+    }
 }
 
 RndFont* UILabel::AltFont(){

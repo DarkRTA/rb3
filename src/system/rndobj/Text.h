@@ -134,6 +134,7 @@ public:
     void ApplyLineText(const String&, const RndText::Style&, float&, RndText::Line&, int, int, bool*);
     int AddLineUTF8(const String&, const Transform&, const RndText::Style&, float*, bool*, int);
     void UpdateLineColor(unsigned int, const Hmx::Color32&, bool*);
+    int NumLines() const { return mLines.size(); }
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);

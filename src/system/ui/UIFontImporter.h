@@ -1,5 +1,4 @@
-#ifndef UI_UIFONTIMPORTER_H
-#define UI_UIFONTIMPORTER_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Font.h"
@@ -90,17 +89,15 @@ public:
     int mTop; // 0x58
     int mBottom; // 0x5c
     bool mFillWithSafeWhite; // 0x60
-    ObjPtr<RndFont, ObjectDir> mFontToImportFrom; // 0x64
+    ObjPtr<RndFont> mFontToImportFrom; // 0x64
     String mBitmapSavePath; // 0x70
     String mBitMapSaveName; // 0x7c
-    ObjPtrList<RndFont, ObjectDir> mGennedFonts; // 0x88
-    ObjPtr<RndFont, ObjectDir> mReferenceKerning; // 0x98
-    ObjPtrList<RndMat, ObjectDir> mMatVariations; // 0xa4
-    ObjPtr<RndMat, ObjectDir> mDefaultMat; // 0xb4
-    ObjPtr<RndFont, ObjectDir> mHandmadeFont; // 0xc0
+    ObjPtrList<RndFont> mGennedFonts; // 0x88
+    ObjPtr<RndFont> mReferenceKerning; // 0x98
+    ObjPtrList<RndMat> mMatVariations; // 0xa4
+    ObjPtr<RndMat> mDefaultMat; // 0xb4
+    ObjPtr<RndFont> mHandmadeFont; // 0xc0
     bool mCheckNG; // 0xcc
     String mSyncResource; // 0xd0
     bool mLastGenWasNG; // 0xdc
 };
-
-#endif
