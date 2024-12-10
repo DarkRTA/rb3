@@ -65,6 +65,10 @@ public:
 
     DECLARE_REVS
     static bool sAlwaysNeedFocus;
+    NEW_OBJ(PanelDir);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(PanelDir);
+    }
 
     UIComponent* mFocusComponent; // 0x18c
     class UIPanel* mOwnerPanel; // 0x190

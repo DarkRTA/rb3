@@ -153,7 +153,7 @@ void BandButton::SetState(UIComponent::State state){
         UIComponent::State curstate = GetState();
         UIComponent::SetState(state);
         if(mState == kFocused && mFocusAnim){
-            if(TheUI->IsTransitioning()) SkipToFocused();
+            if(TheUI->InTransition()) SkipToFocused();
             else {
                 mAnimTask = mFocusAnim->Animate(mFocusAnim->StartFrame(), mFocusAnim->EndFrame(), kTaskUISeconds, 0.0f, 0.05f);
                 mStartTime = TheTaskMgr.UISeconds();
@@ -162,7 +162,7 @@ void BandButton::SetState(UIComponent::State state){
         else if(curstate == kFocused){
             if(mPulseAnim && mPulseAnim->IsAnimating()) mPulseAnim->StopAnimation();
             if(mFocusAnim){
-                if(TheUI->IsTransitioning()) SkipToUnfocused();
+                if(TheUI->InTransition()) SkipToUnfocused();
                 else {
                     mAnimTask = mFocusAnim->Animate(mFocusAnim->EndFrame(), mFocusAnim->StartFrame(), kTaskUISeconds, 0.0f, 0.05f);
                     mStartTime = TheTaskMgr.UISeconds();

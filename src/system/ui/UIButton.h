@@ -1,10 +1,14 @@
-#ifndef UI_UIBUTTON_H
-#define UI_UIBUTTON_H
-
+#pragma once
 #include "obj/Object.h"
 #include "ui/UILabel.h"
 #include "os/JoypadMsgs.h"
 
+ /**
+ * @brief A base implementation of a button.
+ * Original _objects description:
+ * "Simple button, basically just a 
+ * label that can be selected"
+ */
 class UIButton : public UILabel {
 public:
     UIButton();
@@ -24,14 +28,10 @@ public:
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
-
+    DECLARE_REVS
     static void Register(){
         REGISTER_OBJ_FACTORY(UIButton);
     }
     static void Init();
     static Hmx::Object* NewObject();
-
-    DECLARE_REVS
 };
-
-#endif // UI_UIBUTTON_H

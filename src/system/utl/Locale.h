@@ -51,7 +51,9 @@ public:
 
 extern Locale TheLocale;
 
-void SetLocaleVerboseNotify(bool);
+inline void SetLocaleVerboseNotify(bool set){
+    Locale::sVerboseNotify = set;
+}
 
 void SyncReloadLocale();
 const char* Localize(Symbol, bool*);

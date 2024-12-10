@@ -71,6 +71,10 @@ public:
     int mPanelId; // 0x34
 
     static int sMaxPanelId;
+    NEW_OBJ(UIPanel);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIPanel);
+    }
 };
 
 #endif

@@ -167,7 +167,7 @@ void GemTrainerPanel::Poll(){
 void GemTrainerPanel::Draw(){
     TrainerPanel::Draw();
     if(mGemPlayer && ShouldDrawTab()){
-        TheUI->unk34->Select();
+        TheUI->GetCam()->Select();
         mTab->Draw(GetLoopTick(GetTick()));
     }
 }

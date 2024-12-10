@@ -1,6 +1,4 @@
-#ifndef UI_UICOMPONENT_H
-#define UI_UICOMPONENT_H
-
+#pragma once
 #include "types.h"
 #include "obj/Dir.h"
 #include "obj/Object.h"
@@ -15,6 +13,12 @@
 #include "utl/FilePath.h"
 #include <vector>
 
+ /**
+ * @brief A base implementation of a UI object.
+ * Original _objects description:
+ * "Base class of all UI components, 
+ * defines navigation and component state"
+ */
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
     public:
 
@@ -30,10 +34,10 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     // size 0x18
     class UIMesh {
     public:
-        UIMesh(){}
-        UIMesh(RndMesh* mesh) : mMesh(mesh) {
-            for(int i = 0; i < kNumStates; i++) mMats[i] = 0;
-        }
+        // UIMesh(){}
+        // UIMesh(RndMesh* mesh) : mMesh(mesh) {
+        //     for(int i = 0; i < kNumStates; i++) mMats[i] = 0;
+        // }
         RndMesh* mMesh;
         RndMat* mMats[kNumStates];
     };
@@ -63,8 +67,6 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void CopyMembers(const UIComponent*, CopyType);
     virtual void Update();
 
-    State GetState(){ return (State)mState; }
-
     void FinishSelecting();
     void SendSelect(LocalUser*);
     const char* GetResourcesPath();
@@ -78,20 +80,22 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     UIComponent* NavRight(){ return mNavRight; }
     UIComponent* NavDown(){ return mNavDown; }
     bool Loading() const { return mLoading; }
+    State GetState(){ return (State)mState; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    ObjPtr<UIComponent, class ObjectDir> mNavRight; // 0xB8
-    ObjPtr<UIComponent, class ObjectDir> mNavDown; // 0xC4
+    ObjPtr<UIComponent> mNavRight; // 0xB8
+    ObjPtr<UIComponent> mNavDown; // 0xC4
     LocalUser* mSelectingUser; // 0xD0
-    UIScreen* unk_0xD4; // 0xD4
+    UIScreen* mSelectScreen; // 0xD4
     UIResource* mResource; // 0xD8
     std::vector<UIMesh> mMeshes; // 0xDC
-    class String mResourceName; // 0xE4
-    ObjDirPtr<class ObjectDir> mResourceDir; // 0xF0
-    class String mResourcePath; // 0xFC
-    unsigned char unk108; // 0x108
+    /** "path to resource file for this component" */
+    String mResourceName; // 0xE4
+    ObjDirPtr<ObjectDir> mResourceDir; // 0xF0
+    String mResourcePath; // 0xFC
+    unsigned char mSelected; // 0x108
     unsigned char mState; // 0x109
     bool mLoading; // 0x10A
     bool mMockSelect; // 0x10B
@@ -101,6 +105,8 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     static void Register(){ REGISTER_OBJ_FACTORY(UIComponent); }
     static int sSelectFrames;
     DECLARE_REVS
+
+    // open resource: "opens the current resource file for this component - will open in a new milo window"
 };
 
 Symbol UIComponentStateToSym(UIComponent::State);
@@ -138,5 +144,3 @@ DECLARE_MESSAGE(UIComponentScrollStartMsg, "component_scroll_start");
     UIComponentScrollStartMsg(UIComponent* comp, LocalUser* user) :
         Message(Type(), DataNode(comp), DataNode(user)){}
 END_MESSAGE;
-
-#endif // UI_UICOMPONENT_H

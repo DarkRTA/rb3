@@ -1,6 +1,5 @@
-#ifndef UI_UISCREEN_H
-#define UI_UISCREEN_H
-
+#pragma once
+#include "obj/ObjMacros.h"
 #include <list>
 #include "obj/Data.h"
 #include "obj/Object.h"
@@ -9,7 +8,7 @@
 #include "utl/Symbol.h"
 
 class PanelRef {
-private:
+public:
     class UIPanel *mPanel;
     bool mActive;
     bool mAlwaysLoad;
@@ -17,7 +16,6 @@ private:
 
     friend class UIScreen;
 
-public:
     PanelRef() : mLoaded(false) {}
 
     bool Active() const { return mActive && mLoaded; }
@@ -69,6 +67,10 @@ public:
 
     static int sMaxScreenId;
     static UIScreen *sUnloadingScreen;
+    NEW_OBJ(UIScreen);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIScreen);
+    }
 
     std::vector<PanelRef> mPanelList;
     class UIPanel *mFocusPanel;
@@ -100,5 +102,3 @@ END_MESSAGE;
 DECLARE_MESSAGE(EventDialogDismissMsg, "event_dialog_dismiss");
     EventDialogDismissMsg() : Message(Type()) {}
 END_MESSAGE;
-
-#endif

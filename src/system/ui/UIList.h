@@ -75,7 +75,6 @@ public:
     void AutoScroll();
     void StopAutoScroll();
     int NumProviderData() const;
-    void CollectGarbage();
     void BoundingBoxTriangles(std::vector<std::vector<Vector3> >&);
     const std::vector<UIListWidget*>& GetWidgets() const;
     void EnableData(Symbol);
@@ -85,6 +84,7 @@ public:
     void UpdateExtendedEntries(const UIListState&);
     void SetScrollUser(LocalUser*);
     void SetDrawManuallyControlledWidgets(bool);
+    static void CollectGarbage();
 
     DataNode OnMsg(const ButtonDownMsg&);
     DataNode OnSetData(DataArray*);

@@ -1,5 +1,4 @@
-#ifndef UI_UIRESOURCE_H
-#define UI_UIRESOURCE_H
+#pragma once
 #include "utl/FilePath.h"
 #include "rndobj/Dir.h"
 #include <string.h>
@@ -7,19 +6,19 @@
 class UIResource {
 public:
     struct Compare {
-        bool operator()(const UIResource* left, const UIResource* right) {
-            return strcmp(left->mResourcePath.c_str(), right->mResourcePath.c_str()) < 0;
+        bool operator()(const UIResource* left, const UIResource* right) const {
+            return left->mResourcePath < right->mResourcePath;
         }
 
-        bool operator()(const UIResource* left, const char* right) {
+        bool operator()(const UIResource* left, const char* right) const {
             return strcmp(left->mResourcePath.c_str(), right) < 0;
         }
 
-        bool operator()(const char* left, const UIResource* right) {
+        bool operator()(const char* left, const UIResource* right) const {
             return strcmp(left, right->mResourcePath.c_str()) < 0;
         }
 
-        bool operator()(const char* left, const char* right) {
+        bool operator()(const char* left, const char* right) const {
             return strcmp(left, right) < 0;
         }
     };
@@ -35,5 +34,3 @@ public:
     void ForceRelease();
     RndDir* Dir() { return mDir; }
 };
-
-#endif

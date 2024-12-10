@@ -39,8 +39,11 @@ public:
     };
 
     enum CapsMode {
+        /** "Leave the text as is" */
         kCapsModeNone = 0,
+        /** "Force text to all lower case" */
         kForceLower = 1,
+        /** "Force text to all upper case" */
         kForceUpper = 2,
     };
 
@@ -134,6 +137,8 @@ public:
     void ApplyLineText(const String&, const RndText::Style&, float&, RndText::Line&, int, int, bool*);
     int AddLineUTF8(const String&, const Transform&, const RndText::Style&, float*, bool*, int);
     void UpdateLineColor(unsigned int, const Hmx::Color32&, bool*);
+    int NumLines() const { return mLines.size(); }
+    const char* RawText() const { return mText.c_str(); }
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);

@@ -1,5 +1,5 @@
-#ifndef UI_UI_H
-#define UI_UI_H
+#pragma once
+#include "obj/Data.h"
 #include "obj/Object.h"
 #include "utl/Symbol.h"
 #include "os/Joypad.h"
@@ -21,8 +21,8 @@ class MsgSource;
 // size 0x58
 class Automator : public Hmx::Object {
 public:
-    Automator() : mScreenScripts(0), mRecord(0), mRecordPath("automator.dta"), mAutoPath("automator.dta"),
-        mCurScript(0), mCurScreenIndex(0), mCurMsgIndex(0), mFramesSinceAdvance(0), mSkipNextQuickCheat(0) {}
+    Automator() : mScreenScripts(0), mRecord(0), mAutoPath("automator.dta"), mRecordPath("automator.dta"), 
+        mCurScript(0), mSkipNextQuickCheat(0) {}
     virtual ~Automator(){
         if(mScreenScripts){
             mScreenScripts->Release();
@@ -71,7 +71,21 @@ public:
         mCustomMsgs.push_back(s);
     }
 
+    Symbol CurScreenName();
+
+    Symbol CurRecordScreen(){
+        DataArray* recordArr = mRecord;
+        if(recordArr->Size() > 0){
+            return recordArr->Array(recordArr->Size() - 1)->Sym(0);
+        }
+        else return gNullStr;
+    }
+
     void AddRecord(Symbol, DataArray*);
+    void HandleMessage(Symbol);
+    void AdvanceScript(Symbol);
+    void Poll();
+    void FillButtonMsg(ButtonDownMsg&, int);
 
     DataNode OnMsg(const UITransitionCompleteMsg&);
     DataNode OnMsg(const ButtonDownMsg&);
@@ -135,9 +149,8 @@ public:
     bool RequireFixedText() const;
     void SetRequireFixedText(bool);
     int PushDepth() const;
-    void ScreenAtDepth(int);
+    UIScreen* ScreenAtDepth(int);
     void ToggleLoadTimes();
-    bool InTransition();
     bool BlockHandlerDuringTransition(Symbol, DataArray*);
     void EnableInputPerformanceMode(bool);
     void PrintLoadedDirs(const char*);
@@ -151,8 +164,9 @@ public:
     DataNode OnIsResource(DataArray*);
     DataNode ForeachScreen(const DataArray*);
     TransitionState GetTransitionState() const { return mTransitionState; }
-    bool IsTransitioning() const { return mTransitionState != kTransitionNone; }
-    RndEnviron* GetEnv() const { return unk38; }
+    bool InTransition() const { return mTransitionState != kTransitionNone; }
+    RndEnviron* GetEnv() const { return mEnv; }
+    RndCam* GetCam() const { return mCam; }
 
     TransitionState mTransitionState; // 0x8
     bool mWentBack; // 0xc
@@ -163,22 +177,20 @@ public:
     UIScreen* mTransitionScreen; // 0x24
     std::vector<UIResource*> mResources; // 0x28
     Hmx::Object* mSink; // 0x30
-    RndCam* unk34; // 0x34
-    RndEnviron* unk38; // 0x38
+    RndCam* mCam; // 0x34
+    RndEnviron* mEnv; // 0x38
     int unk3c; // 0x3c
     Timer mTimer; // 0x40
-    bool unk70; // 0x70
-    bool unk71; // 0x71
-    bool unk72; // 0x72
+    bool mOverloadHorizontalNav; // 0x70
+    bool mCancelTransitionNotify; // 0x71
+    bool mDefaultAllowEditText; // 0x72
     int unk74; // 0x74
     Timer mLoadTimer; // 0x78
     RndOverlay* mOverlay; // 0xa8
     bool mRequireFixedText; // 0xac
-    Automator* unkb0; // 0xb0
+    Automator* mAutomator; // 0xb0
     bool unkb4; // 0xb4
     bool unkb5; // 0xb5
 };
 
 extern UIManager* TheUI;
-
-#endif

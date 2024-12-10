@@ -69,7 +69,7 @@ BEGIN_COPYS(UIList)
     SetGridSpan(l->GridSpan());
     SetSpeed(l->Speed());
     COPY_MEMBER_FROM(l, mPaginate)
-    COPY_MEMBER_FROM(l, unk_0x4) // from ScrollSelect
+    COPY_MEMBER_FROM(l, mSelectToScroll) // from ScrollSelect
     mListState.SetMinDisplay(l->mListState.MinDisplay());
     mListState.SetScrollPastMinDisplay(l->mListState.ScrollPastMinDisplay());
     mListState.SetMaxDisplay(l->mListState.MaxDisplay());
@@ -147,7 +147,7 @@ void UIList::PostLoad(BinStream& bs) {
         bs >> local_scrollpastmax;
     }
     if(mUIListRev > 2) bs >> mPaginate;
-    if(mUIListRev > 3) bs >> unk_0x4; // from scroll select
+    if(mUIListRev > 3) bs >> mSelectToScroll; // from scroll select
     if(mUIListRev >= 10) bs >> local_mindisplay;
     if(mUIListRev >= 6) bs >> local_maxdisplay;
     gLoading = true;

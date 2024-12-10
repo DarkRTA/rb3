@@ -1,7 +1,9 @@
-#ifndef UI_LOCALEPANEL_H
-#define UI_LOCALEPANEL_H
+#pragma once
+#include "obj/Dir.h"
+#include "ui/UILabel.h"
 #include "ui/UIPanel.h"
 #include "ui/UIListProvider.h"
+#include "ui/UIScreen.h"
 
 class LocalePanel : public UIPanel, public UIListProvider {
 public:
@@ -25,7 +27,15 @@ public:
     virtual bool IsActive(int) const;
     virtual float GapSize(int, int, int, int) const;
 
+    void AddDirEntries(ObjectDir*, const char*);
+    UIScreen* Screen();
+    void AddHeading(const char*);
+    Symbol TokenForLabel(UILabel*);
+
+    NEW_OBJ(LocalePanel);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(LocalePanel);
+    }
+
     std::vector<Entry> mEntries;
 };
-
-#endif

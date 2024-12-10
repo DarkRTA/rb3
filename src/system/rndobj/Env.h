@@ -47,6 +47,10 @@ public:
         mAmbientFogOwner->mAmbientColor.Set(col.red, col.green, col.blue);
     }
 
+    void SetAmbientAlpha(float alpha){
+        mAmbientFogOwner->mAmbientColor.alpha = alpha;
+    }
+
     const Hmx::Color& FogColor() const { return mAmbientFogOwner->mFogColor; }
     void SetFogColor(const Hmx::Color& col){ mAmbientFogOwner->mFogColor = col; }
 

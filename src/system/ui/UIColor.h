@@ -1,8 +1,12 @@
-#ifndef UI_UICOLOR_H
-#define UI_UICOLOR_H
+#pragma once
 #include "obj/Object.h"
 #include "math/Color.h"
 
+ /**
+ * @brief A color to used by UI objects.
+ * Original _objects description:
+ * "Just a color, used by UI components"
+ */
 class UIColor : public Hmx::Object {
 public:
     UIColor();
@@ -21,8 +25,11 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(UIColor);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(UIColor);
+    }
 
+    /** The color. */
     Hmx::Color mColor;
 };
-
-#endif
