@@ -114,6 +114,7 @@ BEGIN_LOADS(UIFontImporter)
     if(rev > 8) bs >> mLastGenWasNG;
 END_LOADS
 
+// matches in retail
 void UIFontImporter::FontImporterSyncObjects(){
     if(!mDefaultMat && mMatVariations.size() > 0 && mGennedFonts.size() > 0){
         ObjPtrList<RndMat>::iterator mit;
@@ -150,8 +151,8 @@ void UIFontImporter::FontImporterSyncObjects(){
                 class String matname = mat->Name();
                 if(matname.find(name.c_str()) == 0){
                     int nameLen = name.length();
-                    int lenDiff = matname.length() - name.length();
-                    matname = matname.substr(nameLen + 1, lenDiff - 1);
+                    int matLen = matname.length();
+                    matname = matname.substr(name.length() + 1, matLen - nameLen - 1);
                 }
                 mat->SetName(matname.c_str(), Dir());
                 mMatVariations.push_back(mat);
