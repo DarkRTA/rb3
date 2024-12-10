@@ -138,6 +138,7 @@ public:
     int AddLineUTF8(const String&, const Transform&, const RndText::Style&, float*, bool*, int);
     void UpdateLineColor(unsigned int, const Hmx::Color32&, bool*);
     int NumLines() const { return mLines.size(); }
+    const char* RawText() const { return mText.c_str(); }
 
     DataNode OnSetFixedLength(DataArray*);
     DataNode OnSetFont(DataArray*);

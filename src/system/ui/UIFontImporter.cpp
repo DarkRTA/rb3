@@ -29,8 +29,8 @@ inline int FontPercentToSizeHD(float f){
 UIFontImporter::UIFontImporter() : mUpperCaseAthroughZ(1), mLowerCaseAthroughZ(1), mNumbers0through9(1), mPunctuation(1), mUpperEuro(1), mLowerEuro(1),
     mPlus(""), mMinus(""), mFontName("Arial"), mFontPctSize(FontSizeToPercentHD(-12)), mItalics(0), mFontQuality(kFontQuality_AntiAliased), mFontWeight(400),
     mPitchAndFamily(0x22), mFontCharset(0), mFontSupersample(kFontSuperSample_None), mLeft(0), mRight(0), mTop(0), mBottom(0), mFillWithSafeWhite(0),
-    mFontToImportFrom(this, 0), mBitmapSavePath("ui/image/"), mBitMapSaveName("temp.BMP"), mGennedFonts(this, kObjListNoNull), mReferenceKerning(this, 0),
-    mMatVariations(this, kObjListNoNull), mDefaultMat(this, 0), mHandmadeFont(this, 0), mCheckNG(0), mSyncResource(), mLastGenWasNG(1) {
+    mFontToImportFrom(this), mBitmapSavePath("ui/image/"), mBitMapSaveName("temp.BMP"), mGennedFonts(this, kObjListNoNull), mReferenceKerning(this),
+    mMatVariations(this), mDefaultMat(this), mHandmadeFont(this), mCheckNG(0), mSyncResource(), mLastGenWasNG(1) {
     DataArray* cfg = SystemConfig(objects, StaticClassName())->FindArray(default_bitmap_path, false);
     if(cfg) mBitmapSavePath = cfg->Str(1);
     GenerateBitmapFilename();
@@ -104,7 +104,7 @@ BEGIN_LOADS(UIFontImporter)
         bs >> mReferenceKerning;
     }
     if(rev == 3){
-        ObjPtr<RndMat, class ObjectDir> o(this, 0);
+        ObjPtr<RndMat> o(this, 0);
         bs >> o;
     }
     if(rev > 3) bs >> mMatVariations;
@@ -114,18 +114,19 @@ BEGIN_LOADS(UIFontImporter)
     if(rev > 8) bs >> mLastGenWasNG;
 END_LOADS
 
-// fn_8055B51C - https://decomp.me/scratch/NAYDg
 void UIFontImporter::FontImporterSyncObjects(){
-    if(!mDefaultMat && NumMatVariations() > 0 && mGennedFonts.size() > 0){
-        for(ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin(); it != mMatVariations.end();){
-            RndMat* old = *it;
-            it = mMatVariations.erase(it);
+    if(!mDefaultMat && mMatVariations.size() > 0 && mGennedFonts.size() > 0){
+        ObjPtrList<RndMat>::iterator mit;
+        for(mit = mMatVariations.begin(); mit != mMatVariations.end();){
+            RndMat* old = *mit;
+            mit = mMatVariations.erase(mit);
             delete old;
         }
+        ObjPtrList<RndFont>::iterator it;
         int idx = 0;
-        for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end(); ++it){
+        for(it = mGennedFonts.begin(); it != mGennedFonts.end(); it++, idx++){
             RndFont* font = *it;
-            RndMat* mat = (*it)->mMat;
+            RndMat* mat = font->GetMat();
             if(idx == 0){
                 class String name = GetBaseName();
                 class String matname = name + ".mat";
@@ -137,7 +138,7 @@ void UIFontImporter::FontImporterSyncObjects(){
                 if(text){
                     class String textname = name + ".txt";
                     text->SetName(textname.c_str(), Dir());
-                    class String textstr(text->mText.c_str());
+                    class String textstr(text->RawText());
                     if(textstr.find("_default") != String::npos){
                         textstr = textstr.substr(0, textstr.find("_default"));
                         text->SetText(textstr.c_str());
@@ -148,22 +149,22 @@ void UIFontImporter::FontImporterSyncObjects(){
                 class String name = GetBaseName();
                 class String matname = mat->Name();
                 if(matname.find(name.c_str()) == 0){
-                    matname = matname.substr(name.length() + 1, matname.length() - name.length() - 1);
+                    int nameLen = name.length();
+                    int lenDiff = matname.length() - name.length();
+                    matname = matname.substr(nameLen + 1, lenDiff - 1);
                 }
                 mat->SetName(matname.c_str(), Dir());
                 mMatVariations.push_back(mat);
             }
-            idx++;
         }
-        FormatString fstr(MakeString("Upgraded font resource to new material variation setup.  Please resave %s", Dir()->mPathName));
-        TheDebugNotifier << fstr.Str();
+        MILO_WARN(MakeString("Upgraded font resource to new material variation setup.  Please resave %s", Dir()->GetPathName()));
     }
 }
 
 // fn_8055B9E4 - get genned font
 RndFont* UIFontImporter::GetGennedFont(unsigned int ui) const {
     if(ui >= NumGennedFonts()) return 0;
-    ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin();
+    ObjPtrList<RndFont>::iterator it = mGennedFonts.begin();
     for (int i = 0; i < ui; i++) it++;
     return *it;
 }
@@ -202,12 +203,12 @@ RndFont* UIFontImporter::FindFontForMat(RndMat* mat) const {
 
 DataNode UIFontImporter::OnAttachToImportFont(DataArray* da){
     AttachImporterToFont(mFontToImportFrom);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode UIFontImporter::OnImportSettings(DataArray* da){
     ImportSettingsFromFont(mFontToImportFrom);
-    return DataNode(0);
+    return 0;
 }
 
 const char* UIFontImporter::GetResourcesPath(){
@@ -281,7 +282,7 @@ DataNode UIFontImporter::OnSyncWithResourceFile(DataArray* da){
             }
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 void UIFontImporter::GenerateBitmapFilename(){
@@ -297,13 +298,13 @@ void UIFontImporter::GenerateBitmapFilename(){
     mBitMapSaveName.ReplaceAll(' ', '_');
 }
 
-DataNode UIFontImporter::OnShowFontPicker(DataArray*){ return DataNode(0); }
-DataNode UIFontImporter::OnGenerate(DataArray*){ return DataNode(0); }
-DataNode UIFontImporter::OnGenerateOG(DataArray*){ return DataNode(0); }
+DataNode UIFontImporter::OnShowFontPicker(DataArray*){ return 0; }
+DataNode UIFontImporter::OnGenerate(DataArray*){ return 0; }
+DataNode UIFontImporter::OnGenerateOG(DataArray*){ return 0; }
 
 DataNode UIFontImporter::OnForgetGened(DataArray* da){
     mGennedFonts.clear();
-    return DataNode(0);
+    return 0;
 }
 
 void UIFontImporter::ImportSettingsFromFont(RndFont* font){
@@ -354,14 +355,14 @@ RndText* UIFontImporter::GetGennedText(Symbol s) const {
 
 RndMat* UIFontImporter::GetMatVariation(unsigned int ui) const {
     if(ui >= NumMatVariations()) return 0;
-    ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin();
+    ObjPtrList<RndMat>::iterator it = mMatVariations.begin();
     for (int i = 0; i < ui; i++) it++;
     return *it;
 }
 
 Symbol UIFontImporter::GetMatVariationName(unsigned int ui) const {
     if(ui >= NumMatVariations()) return Symbol();
-    ObjPtrList<RndMat, class ObjectDir>::iterator it = mMatVariations.begin();
+    ObjPtrList<RndMat>::iterator it = mMatVariations.begin();
     for (int i = 0; i < ui; i++) it++;
     class String s18((*it)->Name());
     if(s18.rfind(".") != String::npos){
@@ -389,7 +390,7 @@ void UIFontImporter::HandmadeFontChanged(){
                 if(text) delete text;
             }
             mGennedFonts.Set(mGennedFonts.begin(), mHandmadeFont);
-            for(ObjPtrList<RndFont, class ObjectDir>::iterator it = ++mGennedFonts.begin(); it != mGennedFonts.end(); it++){
+            for(ObjPtrList<RndFont>::iterator it = ++mGennedFonts.begin(); it != mGennedFonts.end(); it++){
                 if(*it == mHandmadeFont){
                     mGennedFonts.erase(it);
                     break;
@@ -412,10 +413,10 @@ void UIFontImporter::HandmadeFontChanged(){
 
 // fn_8055DA08
 void UIFontImporter::SyncWithGennedFonts(){
-    for(ObjPtrList<RndFont, class ObjectDir>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end();){
+    for(ObjPtrList<RndFont>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end();){
         RndFont* font = *it;
         bool matfound = false;
-        for(ObjPtrList<RndMat, class ObjectDir>::iterator mit = mMatVariations.begin(); mit != mMatVariations.end(); ++mit){
+        for(ObjPtrList<RndMat>::iterator mit = mMatVariations.begin(); mit != mMatVariations.end(); ++mit){
             if(font->mMat == *mit) matfound = true;
         }
         if(font->mMat == mDefaultMat) matfound = true;
