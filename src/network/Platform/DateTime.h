@@ -5,10 +5,10 @@ namespace Quazal {
     class DateTime {
     public:
         DateTime();
-        DateTime(const DateTime&);
-        DateTime& operator=(const DateTime&);
+        DateTime(const DateTime &);
+        DateTime &operator=(const DateTime &);
         operator unsigned long long() const;
-        bool operator>(const DateTime&) const;
+        bool operator>(const DateTime &) const;
 
         unsigned int GetYear() const;
         unsigned int GetMonth() const;
@@ -17,8 +17,8 @@ namespace Quazal {
         unsigned int GetMinute() const;
         unsigned int GetSecond() const;
 
-        static const DateTime& Never;
-        static void GetSystemTime(Quazal::DateTime&);
+        static const DateTime &Never;
+        static void GetSystemTime(Quazal::DateTime &);
 
         unsigned long long m_ui64Value;
     };

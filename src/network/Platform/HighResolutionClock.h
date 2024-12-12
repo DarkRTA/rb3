@@ -5,8 +5,8 @@
 
 namespace Quazal {
     class HighResolutionClock : public RootObject {
-        public:
+    public:
         HighResolutionClock() {}
-        Time& GetTime();
+        Time &GetTime();
     };
 }

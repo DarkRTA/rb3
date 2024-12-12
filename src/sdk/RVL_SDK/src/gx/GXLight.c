@@ -3,9 +3,10 @@
 
 #define XF_MEM_LOBJ_SIZE 16
 
-void GXInitLightAttn(GXLightObj* light, float aa, float ab, float ac, float ka, float kb,
-                     float kc) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightAttn(
+    GXLightObj *light, float aa, float ab, float ac, float ka, float kb, float kc
+) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     impl->aa = aa;
     impl->ab = ab;
@@ -15,32 +16,30 @@ void GXInitLightAttn(GXLightObj* light, float aa, float ab, float ac, float ka, 
     impl->kc = kc;
 }
 
-void GXInitLightAttnA(GXLightObj* light, float a, float b, float c) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightAttnA(GXLightObj *light, float a, float b, float c) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     impl->aa = a;
     impl->ab = b;
     impl->ac = c;
 }
 
-//unused
-void GXGetLightAttnA(){
-}
+// unused
+void GXGetLightAttnA() {}
 
-void GXInitLightAttnK(GXLightObj* light, float a, float b, float c) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightAttnK(GXLightObj *light, float a, float b, float c) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     impl->ka = a;
     impl->kb = b;
     impl->kc = c;
 }
 
-//unused
-void GXGetLightAttnK(){
-}
+// unused
+void GXGetLightAttnK() {}
 
-void GXInitLightSpot(GXLightObj* light, float angle, GXSpotFn fn) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightSpot(GXLightObj *light, float angle, GXSpotFn fn) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
     float a, b, c, d;
     float rad;
 
@@ -97,9 +96,10 @@ void GXInitLightSpot(GXLightObj* light, float angle, GXSpotFn fn) {
     impl->ac = c;
 }
 
-void GXInitLightDistAttn(GXLightObj* light, float distance, float brightness,
-                         GXDistAttnFn fn) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightDistAttn(
+    GXLightObj *light, float distance, float brightness, GXDistAttnFn fn
+) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
     float a, b, c;
 
     if (distance < 0.0f) {
@@ -139,40 +139,40 @@ void GXInitLightDistAttn(GXLightObj* light, float distance, float brightness,
     impl->kc = c;
 }
 
-void GXInitLightPos(GXLightObj* light, float x, float y, float z) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightPos(GXLightObj *light, float x, float y, float z) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     impl->posX = x;
     impl->posY = y;
     impl->posZ = z;
 }
 
-void GXGetLightPos(const GXLightObj* light, float* x, float* y, float* z) {
-    const GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXGetLightPos(const GXLightObj *light, float *x, float *y, float *z) {
+    const GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     *x = impl->posX;
     *y = impl->posY;
     *z = impl->posZ;
 }
 
-void GXInitLightDir(GXLightObj* light, float x, float y, float z) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitLightDir(GXLightObj *light, float x, float y, float z) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     impl->dirX = -x;
     impl->dirY = -y;
     impl->dirZ = -z;
 }
 
-void GXGetLightDir(const GXLightObj* light, float* x, float* y, float* z) {
-    const GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXGetLightDir(const GXLightObj *light, float *x, float *y, float *z) {
+    const GXLightObjImpl *impl = (GXLightObjImpl *)light;
 
     *x = -impl->dirX;
     *y = -impl->dirY;
     *z = -impl->dirZ;
 }
 
-void GXInitSpecularDir(GXLightObj* light, float x, float y, float z) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
+void GXInitSpecularDir(GXLightObj *light, float x, float y, float z) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
     float dirX, dirY, dirZ;
     float mag;
 
@@ -194,23 +194,20 @@ void GXInitSpecularDir(GXLightObj* light, float x, float y, float z) {
     impl->posZ = -999999999999999999.0f * z;
 }
 
-//unused
-void GXInitSpecularDirHA(){
+// unused
+void GXInitSpecularDirHA() {}
+
+void GXInitLightColor(GXLightObj *light, GXColor color) {
+    GXLightObjImpl *impl = (GXLightObjImpl *)light;
+    *(u32 *)&impl->color = *(u32 *)&color;
 }
 
-
-void GXInitLightColor(GXLightObj* light, GXColor color) {
-    GXLightObjImpl* impl = (GXLightObjImpl*)light;
-    *(u32*)&impl->color = *(u32*)&color;
-}
-
-//unused
-void GXGetLightColor(){
-}
+// unused
+void GXGetLightColor() {}
 
 // TODO: This inline is fake, and also is a fake match (r6 hardcoded)
-inline void WriteLightObj(register volatile void* dst,
-                          register const GXLightObjImpl* src) {
+inline void
+WriteLightObj(register volatile void *dst, register const GXLightObjImpl *src) {
     register u32 color;
     register float ps_0, ps_1, ps_2, ps_3, ps_4, ps_5;
 
@@ -240,11 +237,11 @@ inline void WriteLightObj(register volatile void* dst,
     // clang-format on
 }
 
-void GXLoadLightObjImm(const GXLightObj* light, GXLightID id) {
-    const GXLightObjImpl* impl;
+void GXLoadLightObjImm(const GXLightObj *light, GXLightID id) {
+    const GXLightObjImpl *impl;
     u32 num;
 
-    impl = (GXLightObjImpl*)light;
+    impl = (GXLightObjImpl *)light;
     num = 31 - __cntlzw(id);
     num = (num % 8) * XF_MEM_LOBJ_SIZE;
 
@@ -253,7 +250,7 @@ void GXLoadLightObjImm(const GXLightObj* light, GXLightID id) {
     gxdt->lastWriteWasXF = TRUE;
 }
 
-//unused
+// unused
 void GXLoadLightObjIndx(u16 index, GXLightID id) {
     u32 num;
 
@@ -270,29 +267,27 @@ void GXSetChanAmbColor(GXChannelID chan, GXColor color) {
 
     switch (chan) {
     case GX_COLOR0:
-        ambColor =
-            GX_BITSET_TRUNC(*(u32*)&gxdt->ambColors[0], 0, 24, *(u32*)&color);
+        ambColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->ambColors[0], 0, 24, *(u32 *)&color);
         colorId = 0;
         break;
     case GX_COLOR1:
-        ambColor =
-            GX_BITSET_TRUNC(*(u32*)&gxdt->ambColors[1], 0, 24, *(u32*)&color);
+        ambColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->ambColors[1], 0, 24, *(u32 *)&color);
         colorId = 1;
         break;
     case GX_ALPHA0:
-        ambColor = GX_BITSET_TRUNC(*(u32*)&gxdt->ambColors[0], 24, 8, color.a);
+        ambColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->ambColors[0], 24, 8, color.a);
         colorId = 0;
         break;
     case GX_ALPHA1:
-        ambColor = GX_BITSET_TRUNC(*(u32*)&gxdt->ambColors[1], 24, 8, color.a);
+        ambColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->ambColors[1], 24, 8, color.a);
         colorId = 1;
         break;
     case GX_COLOR0A0:
-        ambColor = *(u32*)&color;
+        ambColor = *(u32 *)&color;
         colorId = 0;
         break;
     case GX_COLOR1A1:
-        ambColor = *(u32*)&color;
+        ambColor = *(u32 *)&color;
         colorId = 1;
         break;
     default:
@@ -300,7 +295,7 @@ void GXSetChanAmbColor(GXChannelID chan, GXColor color) {
     }
 
     gxdt->gxDirtyFlags |= GX_DIRTY_AMB_COLOR0 << colorId;
-    *(u32*)&gxdt->ambColors[colorId] = ambColor;
+    *(u32 *)&gxdt->ambColors[colorId] = ambColor;
 }
 
 void GXSetChanMatColor(GXChannelID chan, GXColor color) {
@@ -309,29 +304,27 @@ void GXSetChanMatColor(GXChannelID chan, GXColor color) {
 
     switch (chan) {
     case GX_COLOR0:
-        matColor =
-            GX_BITSET_TRUNC(*(u32*)&gxdt->matColors[0], 0, 24, *(u32*)&color);
+        matColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->matColors[0], 0, 24, *(u32 *)&color);
         colorId = 0;
         break;
     case GX_COLOR1:
-        matColor =
-            GX_BITSET_TRUNC(*(u32*)&gxdt->matColors[1], 0, 24, *(u32*)&color);
+        matColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->matColors[1], 0, 24, *(u32 *)&color);
         colorId = 1;
         break;
     case GX_ALPHA0:
-        matColor = GX_BITSET_TRUNC(*(u32*)&gxdt->matColors[0], 24, 8, color.a);
+        matColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->matColors[0], 24, 8, color.a);
         colorId = 0;
         break;
     case GX_ALPHA1:
-        matColor = GX_BITSET_TRUNC(*(u32*)&gxdt->matColors[1], 24, 8, color.a);
+        matColor = GX_BITSET_TRUNC(*(u32 *)&gxdt->matColors[1], 24, 8, color.a);
         colorId = 1;
         break;
     case GX_COLOR0A0:
-        matColor = *(u32*)&color;
+        matColor = *(u32 *)&color;
         colorId = 0;
         break;
     case GX_COLOR1A1:
-        matColor = *(u32*)&color;
+        matColor = *(u32 *)&color;
         colorId = 1;
         break;
     default:
@@ -339,7 +332,7 @@ void GXSetChanMatColor(GXChannelID chan, GXColor color) {
     }
 
     gxdt->gxDirtyFlags |= GX_DIRTY_MAT_COLOR0 << colorId;
-    *(u32*)&gxdt->matColors[colorId] = matColor;
+    *(u32 *)&gxdt->matColors[colorId] = matColor;
 }
 
 void GXSetNumChans(u8 num) {
@@ -348,17 +341,22 @@ void GXSetNumChans(u8 num) {
     gxdt->gxDirtyFlags |= GX_DIRTY_GEN_MODE;
 }
 
-void GXSetChanCtrl(GXChannelID chan, GXBool enable, GXColorSrc ambSrc,
-                   GXColorSrc matSrc, GXLightID lightMask, GXDiffuseFn diffFn,
-                   GXAttnFn attnFn) {
+void GXSetChanCtrl(
+    GXChannelID chan,
+    GXBool enable,
+    GXColorSrc ambSrc,
+    GXColorSrc matSrc,
+    GXLightID lightMask,
+    GXDiffuseFn diffFn,
+    GXAttnFn attnFn
+) {
     u32 regIdx = (u32)chan % 4;
     u32 reg = 0;
 
     GX_XF_SET_COLOR0CNTRL_LIGHT(reg, enable);
     GX_XF_SET_COLOR0CNTRL_MATSRC(reg, matSrc);
     GX_XF_SET_COLOR0CNTRL_AMBSRC(reg, ambSrc);
-    GX_XF_SET_COLOR0CNTRL_DIFFUSEATTN(reg, attnFn == GX_AF_SPEC ? GX_DF_NONE
-                                                                : diffFn);
+    GX_XF_SET_COLOR0CNTRL_DIFFUSEATTN(reg, attnFn == GX_AF_SPEC ? GX_DF_NONE : diffFn);
     GX_XF_SET_COLOR0CNTRL_ATTNENABLE(reg, attnFn != GX_AF_NONE);
     GX_XF_SET_COLOR0CNTRL_ATTNSELECT(reg, attnFn != GX_AF_SPEC);
     GX_XF_SET_COLOR0CNTRL_LMASKHI(reg, (u32)lightMask);

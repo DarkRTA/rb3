@@ -5,20 +5,20 @@
 
 class Synchronizable {
 public:
-    Synchronizable(const char*);
+    Synchronizable(const char *);
     virtual ~Synchronizable();
-    virtual void SyncSave(BinStream&, unsigned int) const = 0;
-    virtual void SyncLoad(BinStream&, unsigned int) = 0;
+    virtual void SyncSave(BinStream &, unsigned int) const = 0;
+    virtual void SyncLoad(BinStream &, unsigned int) = 0;
     virtual bool HasSyncPermission() const = 0;
-    virtual void OnSynchronizing(unsigned int){}
-    virtual void OnSynchronized(unsigned int){}
+    virtual void OnSynchronizing(unsigned int) {}
+    virtual void OnSynchronized(unsigned int) {}
 
-    void Publish(const char*);
+    void Publish(const char *);
     void Unpublish();
     void SetSyncDirty(unsigned int, bool);
     void SynchronizeIfDirty();
-    void AddDirtyUser(const UserGuid&);
-    const char* GetUniqueTag() const;
+    void AddDirtyUser(const UserGuid &);
+    const char *GetUniqueTag() const;
 
     unsigned int mDirtyMask; // 0x4
     std::vector<UserGuid> mDirtyUsers; // 0x8

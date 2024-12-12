@@ -9,9 +9,9 @@
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 
-NetSearchResult* NetSearchResult::New(){ return new NetSearchResult(); }
+NetSearchResult *NetSearchResult::New() { return new NetSearchResult(); }
 
-NetSearchResult::NetSearchResult(){
+NetSearchResult::NetSearchResult() {
     mSessionData = SessionData::New();
     mSettings = new MatchmakingSettings();
     MemStream stream(false);
@@ -21,19 +21,19 @@ NetSearchResult::NetSearchResult(){
     mNumOpenSlots = TheNetSession->NumOpenSlots();
 }
 
-NetSearchResult::~NetSearchResult(){
+NetSearchResult::~NetSearchResult() {
     delete mSessionData;
     delete mSettings;
 }
 
-void NetSearchResult::Save(BinStream& bs) const {
+void NetSearchResult::Save(BinStream &bs) const {
     mSessionData->Save(bs);
     mSettings->Save(bs);
     bs << (unsigned char)mNumOpenSlots;
     bs << mHostName;
 }
 
-void NetSearchResult::Load(BinStream& bs){
+void NetSearchResult::Load(BinStream &bs) {
     mSessionData->Load(bs);
     mSettings->Load(bs);
     unsigned char slots;
@@ -42,10 +42,9 @@ void NetSearchResult::Load(BinStream& bs){
     bs >> mHostName;
 }
 
-bool NetSearchResult::Equals(const NetSearchResult* res) const {
-    return mSessionData->Equals(res->mSessionData) &&
-        mNumOpenSlots == res->mNumOpenSlots &&
-        mHostName == res->mHostName;
+bool NetSearchResult::Equals(const NetSearchResult *res) const {
+    return mSessionData->Equals(res->mSessionData) && mNumOpenSlots == res->mNumOpenSlots
+        && mHostName == res->mHostName;
 }
 
 BEGIN_HANDLERS(NetSearchResult)

@@ -9,17 +9,17 @@
 #include "rndwii/Lit.h"
 
 class WiiEnviron : public RndEnviron {
-    public:
+public:
     WiiEnviron();
     virtual ~WiiEnviron();
     OBJ_CLASSNAME(WiiEnviron)
     OBJ_SET_TYPE(WiiEnviron)
 
-    bool SetLight(int, WiiLight*);
+    bool SetLight(int, WiiLight *);
     void RenderCharactersToShadowBuffers();
 
-    static RndMat* mShadowMat;
-    static RndCam* mShadowCam;
+    static RndMat *mShadowMat;
+    static RndCam *mShadowCam;
     static ObjPtrList<BandCharacter> mShadowedCharacters;
     static bool mbEnableShadows;
     static bool mbRenderingShadows;

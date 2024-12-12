@@ -1,11 +1,18 @@
 #include <revolution/GX.h>
 #include <revolution/gx/GXTypes.h>
 
-void GXSetTevIndirect(GXTevStageID tevStage, GXIndTexStageID texStage,
-                      GXIndTexFormat texFmt, GXIndTexBiasSel biasSel,
-                      GXIndTexMtxID mtxId, GXIndTexWrap wrapS,
-                      GXIndTexWrap wrapT, GXBool addPrev, GXBool utcLod,
-                      GXIndTexAlphaSel alphaSel) {
+void GXSetTevIndirect(
+    GXTevStageID tevStage,
+    GXIndTexStageID texStage,
+    GXIndTexFormat texFmt,
+    GXIndTexBiasSel biasSel,
+    GXIndTexMtxID mtxId,
+    GXIndTexWrap wrapS,
+    GXIndTexWrap wrapT,
+    GXBool addPrev,
+    GXBool utcLod,
+    GXIndTexAlphaSel alphaSel
+) {
     u32 opcode = tevStage + GX_BP_REG_INDTEVSTAGE0;
 
     u32 cmd = 0;
@@ -24,7 +31,7 @@ void GXSetTevIndirect(GXTevStageID tevStage, GXIndTexStageID texStage,
     gxdt->lastWriteWasXF = FALSE;
 }
 
-//only matches on 1.0
+// only matches on 1.0
 void GXSetIndTexMtx(GXIndTexMtxID id, const float offset[2][3], s8 scaleExp) {
     u32 index;
     u32 cmd;
@@ -79,9 +86,9 @@ void GXSetIndTexMtx(GXIndTexMtxID id, const float offset[2][3], s8 scaleExp) {
     gxdt->lastWriteWasXF = FALSE;
 }
 
-
-void GXSetIndTexCoordScale(GXIndTexStageID stage, GXIndTexScale scaleS,
-                           GXIndTexScale scaleT) {
+void GXSetIndTexCoordScale(
+    GXIndTexStageID stage, GXIndTexScale scaleS, GXIndTexScale scaleT
+) {
     switch (stage) {
     case GX_INDTEXSTAGE0:
         GX_BP_SET_RAS1_SS0_S0(gxdt->ras1_ss0, scaleS);
@@ -112,8 +119,7 @@ void GXSetIndTexCoordScale(GXIndTexStageID stage, GXIndTexScale scaleS,
     gxdt->lastWriteWasXF = FALSE;
 }
 
-void GXSetIndTexOrder(GXIndTexStageID stage, GXTexCoordID coord,
-                      GXTexMapID map) {
+void GXSetIndTexOrder(GXIndTexStageID stage, GXTexCoordID coord, GXTexMapID map) {
     if (map == GX_TEXMAP_NULL) {
         map = GX_TEXMAP0;
     }
@@ -154,33 +160,54 @@ void GXSetNumIndStages(u8 num) {
 }
 
 void GXSetTevDirect(GXTevStageID stage) {
-    GXSetTevIndirect(stage, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_NONE, GX_ITM_OFF,
-                     GX_ITW_OFF, GX_ITW_OFF, FALSE, FALSE, GX_ITBA_OFF);
+    GXSetTevIndirect(
+        stage,
+        GX_INDTEXSTAGE0,
+        GX_ITF_8,
+        GX_ITB_NONE,
+        GX_ITM_OFF,
+        GX_ITW_OFF,
+        GX_ITW_OFF,
+        FALSE,
+        FALSE,
+        GX_ITBA_OFF
+    );
 }
 
-void GXSetTevIndWarp(GXTevStageID tev_stage, GXIndTexStageID ind_stage,
-GXBool signed_offsets, GXBool replace_mode, GXIndTexMtxID matrix_sel){
+void GXSetTevIndWarp(
+    GXTevStageID tev_stage,
+    GXIndTexStageID ind_stage,
+    GXBool signed_offsets,
+    GXBool replace_mode,
+    GXIndTexMtxID matrix_sel
+) {
     GXIndTexWrap wrap = replace_mode ? GX_ITW_0 : GX_ITW_OFF;
     GXIndTexBiasSel bias = signed_offsets ? GX_ITB_STU : GX_ITB_NONE;
 
-    GXSetTevIndirect(tev_stage, ind_stage, GX_ITF_8, bias, matrix_sel,
-                    wrap, wrap, FALSE, FALSE, GX_ITBA_OFF);
+    GXSetTevIndirect(
+        tev_stage,
+        ind_stage,
+        GX_ITF_8,
+        bias,
+        matrix_sel,
+        wrap,
+        wrap,
+        FALSE,
+        FALSE,
+        GX_ITBA_OFF
+    );
 }
 
-//unused
-void GXSetTevIndTile(){
-}
+// unused
+void GXSetTevIndTile() {}
 
-//unused
-void GXSetTevIndBumpST(){
-}
+// unused
+void GXSetTevIndBumpST() {}
 
-//unused
-void GXSetTevIndBumpXYZ(){
-}
+// unused
+void GXSetTevIndBumpXYZ() {}
 
-
-void GXSetTevIndRepeat(GXTevStageID tev_stage){
+void GXSetTevIndRepeat(GXTevStageID tev_stage) {
     GXSetTevIndirect(tev_stage, 0, 0, 0, 0, 6, 6, 1, 0, 0);
 }
 

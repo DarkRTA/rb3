@@ -9,24 +9,24 @@
 class WiiRnd : public Rnd {
 public:
     enum SharedTexType {
-
     };
 
     WiiRnd();
     virtual ~WiiRnd();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void SwapFrameBuffer();
     void SetTriFrameRendering(bool);
     void SetOrthoProj();
     void DoPointTests();
     bool GetProgressiveScan();
-    void DrawQuad(const Hmx::Rect&);
-    void DrawLine(const Vector3&, const Vector3&, const Hmx::Color&, bool);
+    void DrawQuad(const Hmx::Rect &);
+    void DrawLine(const Vector3 &, const Vector3 &, const Hmx::Color &, bool);
     void WiiPreInit();
-    RndTex* GetSharedTex(SharedTexType, bool);
+    void SetFullScrProj();
+    RndTex *GetSharedTex(SharedTexType, bool);
 
-    void* unk_0x1A8, *unk_0x1AC;
+    void *unk_0x1A8, *unk_0x1AC;
     Mtx44 unk_0x1BC, unk_0x1FC, unk_0x23C;
     bool mProgScan; // 0x2AC
     bool unk_0x2B0, unk_0x2B1, unk_0x2B2, unk_0x2B3;
@@ -38,11 +38,11 @@ public:
     static void ToggleAssetName() { mShowAssetName = !mShowAssetName; }
     static void ToggleShowParticle() { mShowParticle = !mShowParticle; }
     static void ToggleLockedCache() { mUseLockedCache = !mUseLockedCache; }
-    static void SyncFree(void*);
-    static void* GetCurrXFB();
+    static void SyncFree(void *);
+    static void *GetCurrXFB();
 };
 
-void SetGPHangDetectEnabled(bool, const char*);
+void SetGPHangDetectEnabled(bool, const char *);
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts);
 void RndGXEnd();
 void RndGxDrawDone();

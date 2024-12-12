@@ -354,23 +354,15 @@ void RndTex::PostLoad(BinStream& bs){
             while(mHeight > 0x100) mHeight /= 2;
         }
     }
-    #ifndef MILO_DEBUG
-    bool b = 0;
-    #endif
-    if(gRev > 7) {
+    if(gRev > 7){
+        bool b;
         bs >> b;
     }
-    #ifdef MILO_DEBUG
-    if(gRev > 10) {
+    if(gRev > 10){
         bool b;
         bs >> b;
         mOptimizeForPS3 = b;
     }
-    #else
-    if(gRev > 10) {
-        bs >> mOptimizeForPS3;
-    }
-    #endif
 
     if(bs.Cached()){
         void* buffer = 0;
@@ -383,7 +375,6 @@ void RndTex::PostLoad(BinStream& bs){
         BufStream bufs(buffer, size, true);
         if(buffer) &bs = &bufs;
         PresyncBitmap();
-        #ifdef MILO_DEBUG
         if(UseBottomMip()){
             RndBitmap someotherbmap;
             bs >> someotherbmap;
@@ -391,9 +382,6 @@ void RndTex::PostLoad(BinStream& bs){
             CopyBottomMip(mBitmap, someotherbmap);
         }
         else mBitmap.Load(bs);
-        #else
-        bs >> mBitmap;
-        #endif
         if(buffer) _MemFree(buffer);
         mNumMips = mBitmap.NumMips();
         MILO_ASSERT(!mNumMips, 0x3B7);
@@ -403,20 +391,14 @@ void RndTex::PostLoad(BinStream& bs){
         MILO_ASSERT(!mNumMips, 0x3BE);
         SetBitmap(mWidth, mHeight, mBpp, mType, false, 0);
     }
-    else 
-    #ifdef MILO_DEBUG
-    if(TheLoadMgr.GetPlatform() != kPlatformNone)
-    #endif
-    {
+    else if(TheLoadMgr.GetPlatform() != kPlatformNone){
         MILO_ASSERT(!mNumMips, 0x3C7);
         SetBitmap(mLoader);
         mLoader = nullptr;
     }
-    #ifdef MILO_DEBUG
     else {
         RELEASE(mLoader);
     }
-    #endif
 }
 
 BEGIN_COPYS(RndTex)

@@ -1,9 +1,8 @@
 #pragma once
 
 namespace Quazal {
-class PseudoSingleton {
-public:
-
-    static int GetCurrentContext();
-};
+    class PseudoSingleton {
+    public:
+        static int GetCurrentContext();
+    };
 }

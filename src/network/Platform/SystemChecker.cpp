@@ -3,4 +3,3 @@ namespace Quazal {
         int s_pfGetSystemCheckInfo = 0;
     }
 }
-

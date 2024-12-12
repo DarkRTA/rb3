@@ -1,9 +1,9 @@
 #include <revolution/GX.h>
 
 // TODO: Fake inline
-inline void LoadProjPS(register float* dst) {
+inline void LoadProjPS(register float *dst) {
     register float ps_0, ps_1, ps_2;
-    register GXData* src;
+    register GXData *src;
 
     asm volatile {
         lwz src, __GXData
@@ -16,7 +16,7 @@ inline void LoadProjPS(register float* dst) {
     }
 }
 
-inline void WriteProjPS(register volatile void* dst, register const float* src) {
+inline void WriteProjPS(register volatile void *dst, register const float *src) {
     register float ps_0, ps_1, ps_2;
 
     asm volatile {
@@ -29,7 +29,7 @@ inline void WriteProjPS(register volatile void* dst, register const float* src) 
     }
 }
 
-inline void Copy6Floats(register float* dst, register const float* src) {
+inline void Copy6Floats(register float *dst, register const float *src) {
     register float ps_0, ps_1, ps_2;
 
     asm volatile {
@@ -42,13 +42,12 @@ inline void Copy6Floats(register float* dst, register const float* src) {
     }
 }
 
-//unused
-void GXProject(){
-}
+// unused
+void GXProject() {}
 
 void __GXSetProjection(void) {
     // Temp required to match
-    volatile void* wgpipe = &WGPIPE;
+    volatile void *wgpipe = &WGPIPE;
 
     {
         u32 cmd = 0x60000;
@@ -86,13 +85,13 @@ void GXSetProjectionv(const float proj[7]) {
     gxdt->gxDirtyFlags |= GX_DIRTY_PROJECTION;
 }
 
-//unused
+// unused
 void GXGetProjectionv(float proj[7]) {
     proj[0] = gxdt->projType != GX_PERSPECTIVE ? 1.0f : 0.0f;
     LoadProjPS(proj + 1);
 }
 
-inline void WriteMTXPS4x3(register volatile void* dst, register const Mtx src) {
+inline void WriteMTXPS4x3(register volatile void *dst, register const Mtx src) {
     register float ps_0, ps_1, ps_2, ps_3, ps_4, ps_5;
 
     asm volatile {
@@ -112,7 +111,7 @@ inline void WriteMTXPS4x3(register volatile void* dst, register const Mtx src) {
     }
 }
 
-inline void WriteMTXPS3x3(register volatile void* dst, register const Mtx src) {
+inline void WriteMTXPS3x3(register volatile void *dst, register const Mtx src) {
     register float ps_0, ps_1, ps_2, ps_3, ps_4, ps_5;
 
     asm volatile {
@@ -132,7 +131,7 @@ inline void WriteMTXPS3x3(register volatile void* dst, register const Mtx src) {
     }
 }
 
-inline void WriteMTXPS4x2(register volatile void* dst, register const Mtx src) {
+inline void WriteMTXPS4x2(register volatile void *dst, register const Mtx src) {
     register float ps_0, ps_1, ps_2, ps_3;
 
     asm volatile {
@@ -165,9 +164,8 @@ void GXLoadNrmMtxImm(const Mtx mtx, u32 id) {
     WriteMTXPS3x3(&WGPIPE, mtx);
 }
 
-//unused
-void GXLoadNrmMtxImm3x3(){
-}
+// unused
+void GXLoadNrmMtxImm3x3() {}
 
 void GXLoadNrmMtxIndx3x3(u16 index, u32 id) {
     // Normal matrices are 3x3
@@ -184,9 +182,8 @@ void GXLoadTexMtxImm(const Mtx mtx, u32 id, GXMtxType type) {
     u32 num;
 
     // Base row address in XF memory
-    addr = id >= GX_DUALMTX0
-               ? (id - GX_DUALMTX0) * sizeof(f32) + GX_XF_MEM_DUALTEXMTX
-               : id * 4 + (u64)GX_XF_MEM_POSMTX;
+    addr = id >= GX_DUALMTX0 ? (id - GX_DUALMTX0) * sizeof(f32) + GX_XF_MEM_DUALTEXMTX
+                             : id * 4 + (u64)GX_XF_MEM_POSMTX;
 
     // Number of elements in matrix
     num = type == GX_MTX_2x4 ? (u64)(2 * 4) : 3 * 4;
@@ -200,9 +197,8 @@ void GXLoadTexMtxImm(const Mtx mtx, u32 id, GXMtxType type) {
     }
 }
 
-//unused
-void GXLoadTexMtxIndx(){
-}
+// unused
+void GXLoadTexMtxIndx() {}
 
 void __GXSetViewport(void) {
     float a, b, c, d, e, f;
@@ -228,8 +224,9 @@ void __GXSetViewport(void) {
     WGPIPE.f = f;
 }
 
-void GXSetViewportJitter(float ox, float oy, float sx, float sy, float near, float far,
-                         u32 nextField) {
+void GXSetViewportJitter(
+    float ox, float oy, float sx, float sy, float near, float far, u32 nextField
+) {
     // "Field" as in VI field
     // TODO: Is this an enum? I don't know anything about the return value other
     // than that it is a u32 (NW4R signature)
@@ -256,14 +253,12 @@ void GXSetViewport(float ox, float oy, float sx, float sy, float near, float far
     gxdt->gxDirtyFlags |= GX_DIRTY_VIEWPORT;
 }
 
-//unused
-void GXGetViewportv(float view[6]) {
-    Copy6Floats(view, gxdt->view);
-}
+// unused
+void GXGetViewportv(float view[6]) { Copy6Floats(view, gxdt->view); }
 
-//unused
+// unused
 void GXSetZScaleOffset(float scale, float offset) {
-    gxdt->offsetZ = (f32)0xFFFFFF * offset;      // ???
+    gxdt->offsetZ = (f32)0xFFFFFF * offset; // ???
     gxdt->scaleZ = 1.0f + (f32)0xFFFFFF * scale; // ???
     gxdt->gxDirtyFlags |= GX_DIRTY_VIEWPORT;
 }
@@ -292,8 +287,8 @@ void GXSetScissor(u32 x, u32 y, u32 w, u32 h) {
     gxdt->lastWriteWasXF = FALSE;
 }
 
-//unused
-void GXGetScissor(u32* x, u32* y, u32* w, u32* h) {
+// unused
+void GXGetScissor(u32 *x, u32 *y, u32 *w, u32 *h) {
     u32 y2, y1;
     u32 x2, x1;
 

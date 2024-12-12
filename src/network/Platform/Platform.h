@@ -7,11 +7,11 @@
 
 namespace Quazal {
     struct Platform : public RootObject {
-        static Platform* _Instance;
+        static Platform *_Instance;
         static RandomNumberGenerator s_oRNG;
         static ErrorDescriptionTable m_oErrorTable;
         Platform() {}
-        static Platform* CreateInstance();
+        static Platform *CreateInstance();
         static void DeleteInstance();
         static u32 GetRandomNumber(unsigned int);
         static float GetRealRandomNumber(float);

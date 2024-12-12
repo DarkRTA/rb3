@@ -14,7 +14,7 @@ namespace Quazal {
 
         static bool s_bNoOp;
 
-        OSMutex* m_hMutex;
+        OSMutex *m_hMutex;
     };
 }
 

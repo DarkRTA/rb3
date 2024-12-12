@@ -8,35 +8,36 @@
 
 static int gBufferSize = 0x20000;
 
-void PrintDiscFile(const char* cc){
-    const char* gen = "gen/";
-    const char* path = FileGetPath(cc, 0);
-    const char* base = FileGetBase(cc, 0);
-    const char* ext = FileGetExt(cc);
+void PrintDiscFile(const char *cc) {
+    const char *gen = "gen/";
+    const char *path = FileGetPath(cc, 0);
+    const char *base = FileGetBase(cc, 0);
+    const char *ext = FileGetExt(cc);
     int miloCmp = strncmp(ext, "milo", 4);
-    if(miloCmp == 0){
-        DataArray* found = SystemConfig()->FindArray("force_milo_inline", false);
-        if(found){
-            for(int i = 1; i < found->Size(); i++){
-                if(FileMatch(cc, found->Str(i))) return;
+    if (miloCmp == 0) {
+        DataArray *found = SystemConfig()->FindArray("force_milo_inline", false);
+        if (found) {
+            for (int i = 1; i < found->Size(); i++) {
+                if (FileMatch(cc, found->Str(i)))
+                    return;
             }
         }
-    }
-    else {
-        if(strncmp(ext, "wav", 3) == 0 || strncmp(ext, "bmp", 3) == 0 || strncmp(ext, "png", 3) == 0){
-            if(strstr(cc, "_keep") == 0) return;
-        }
-        else {
-            if(strncmp(ext, "dta", 3) == 0){
+    } else {
+        if (strncmp(ext, "wav", 3) == 0 || strncmp(ext, "bmp", 3) == 0
+            || strncmp(ext, "png", 3) == 0) {
+            if (strstr(cc, "_keep") == 0)
+                return;
+        } else {
+            if (strncmp(ext, "dta", 3) == 0) {
                 gen = "";
-            }
-            else ext = "dtb";
+            } else
+                ext = "dtb";
         }
     }
     String fullPath(MakeString("%s/%s%s.%s", path, gen, base, ext));
     unsigned int last = fullPath.find_last_of('_');
     bool lastFound = last != String::npos;
-    if(lastFound){
+    if (lastFound) {
         Symbol plat = PlatformSymbol(TheLoadMgr.GetPlatform());
         lastFound = plat == fullPath.c_str() + last + 1;
     }
@@ -46,45 +47,51 @@ void PrintDiscFile(const char* cc){
 
 extern bool UsingHolmes(int);
 
-AsyncFile* AsyncFile::New(const char* cc, int i){
-    if(Archive::DebugArkOrder() != 0) PrintDiscFile(cc);
-    if(!UsingHolmes(4) || !(i & 4U) || FileIsLocal(cc)){
-
+AsyncFile *AsyncFile::New(const char *cc, int i) {
+    if (Archive::DebugArkOrder() != 0)
+        PrintDiscFile(cc);
+    if (!UsingHolmes(4) || !(i & 4U) || FileIsLocal(cc)) {
     }
 }
 
-AsyncFile::AsyncFile(const char* c, int i) : mMode(i), mFail(false), unk9(0), mFilename(c), mTell(0), mOffset(0), mBuffer(0), mData(0), mBytesLeft(0) {
+AsyncFile::AsyncFile(const char *c, int i)
+    : mMode(i), mFail(false), unk9(0), mFilename(c), mTell(0), mOffset(0), mBuffer(0),
+      mData(0), mBytesLeft(0) {}
 
-}
-
-int AsyncFile::Read(void* iBuf, int iBytes){
+int AsyncFile::Read(void *iBuf, int iBytes) {
     ReadAsync(iBuf, iBytes);
-    if(mFail) return 0;
-    else while(!ReadDone(iBytes));
+    if (mFail)
+        return 0;
+    else
+        while (!ReadDone(iBytes))
+            ;
     return iBytes;
 }
 
-int AsyncFile::Write(const void* iBuf, int iBytes){
-    WriteAsync((void*)iBuf, iBytes);
-    if(mFail) return 0;
-    else while(!WriteDone(iBytes));
+int AsyncFile::Write(const void *iBuf, int iBytes) {
+    WriteAsync((void *)iBuf, iBytes);
+    if (mFail)
+        return 0;
+    else
+        while (!WriteDone(iBytes))
+            ;
     return iBytes;
 }
 
-bool AsyncFile::ReadAsync(void* iBuff, int iBytes){
+bool AsyncFile::ReadAsync(void *iBuff, int iBytes) {
     MILO_ASSERT(iBytes >= 0, 299);
     MILO_ASSERT(mMode & FILE_OPEN_READ, 0x12D);
-    if(mFail) return false;
+    if (mFail)
+        return false;
     else {
-        if(!mBuffer){
+        if (!mBuffer) {
             _ReadAsync(iBuff, iBytes);
-        }
-        else {
-            if(mTell + iBytes > mSize){
+        } else {
+            if (mTell + iBytes > mSize) {
                 iBytes = mSize - mTell;
             }
             MILO_ASSERT(iBytes >= 0, 0x13F);
-            mData = (char*)iBuff;
+            mData = (char *)iBuff;
             mBytesLeft = iBytes;
             mBytesRead = 0;
             ReadDone(iBytes);
@@ -93,25 +100,23 @@ bool AsyncFile::ReadAsync(void* iBuff, int iBytes){
     }
 }
 
-bool AsyncFile::ReadDone(int& i){
-    if(mFail){
+bool AsyncFile::ReadDone(int &i) {
+    if (mFail) {
         i = 0;
         return true;
-    }
-    else {
-        if(mBuffer && mBytesLeft == 0){
+    } else {
+        if (mBuffer && mBytesLeft == 0) {
             i = mBytesRead;
             return true;
-        }
-        else {
-            if(!_ReadDone()){
+        } else {
+            if (!_ReadDone()) {
                 i = mBytesRead;
                 return false;
-            }
-            else {
-                if(!mBuffer) return true;
+            } else {
+                if (!mBuffer)
+                    return true;
                 else {
-                    if(mOffset + mBytesLeft > gBufferSize){
+                    if (mOffset + mBytesLeft > gBufferSize) {
                         int size = gBufferSize - mOffset;
                         memcpy(mData, mBuffer + mOffset, size);
                         mBytesRead += size;
@@ -122,8 +127,7 @@ bool AsyncFile::ReadDone(int& i){
                         FillBuffer();
                         i = mBytesRead;
                         return false;
-                    }
-                    else {
+                    } else {
                         memcpy(mData, mBuffer + mOffset, mBytesLeft);
                         mOffset += mBytesLeft;
                         int ret = mBytesRead + mBytesLeft;
@@ -139,38 +143,40 @@ bool AsyncFile::ReadDone(int& i){
     }
 }
 
-bool AsyncFile::WriteDone(int& i){
-    if(mBuffer) return true;
-    else return _WriteDone();
+bool AsyncFile::WriteDone(int &i) {
+    if (mBuffer)
+        return true;
+    else
+        return _WriteDone();
 }
 
-bool AsyncFile::WriteAsync(const void* v, int i){
+bool AsyncFile::WriteAsync(const void *v, int i) {
     MILO_ASSERT(mMode & FILE_OPEN_WRITE, 0x18E);
-    if(mFail) return false;
+    if (mFail)
+        return false;
     else {
-        if(!mBuffer){
+        if (!mBuffer) {
             _WriteAsync(v, i);
-        }
-        else {
+        } else {
             do {
-                if(mOffset + i > gBufferSize){
+                if (mOffset + i > gBufferSize) {
                     int size = gBufferSize - mOffset;
                     memcpy(mBuffer + mOffset, v, size);
                     mOffset = gBufferSize;
-                    v = (void*)((int)v + size);
+                    v = (void *)((int)v + size);
                     mTell += size;
                     Flush();
                     i -= size;
-                }
-                else {
+                } else {
                     memcpy(mBuffer + mOffset, v, i);
                     mTell += i;
                     mOffset += i;
-                    if(mSize < mTell) mSize = mTell;
+                    if (mSize < mTell)
+                        mSize = mTell;
                     goto okthen;
                 }
 
-            } while(!mFail);
+            } while (!mFail);
             return false;
         }
     okthen:
@@ -178,14 +184,17 @@ bool AsyncFile::WriteAsync(const void* v, int i){
     }
 }
 
-int AsyncFile::Seek(int i, int j){
-    if(mFail) return mTell;
+int AsyncFile::Seek(int i, int j) {
+    if (mFail)
+        return mTell;
     else {
-        if(mMode & FILE_OPEN_WRITE) Flush();
-        else MILO_ASSERT(!mBytesLeft, 0x1CA);
+        if (mMode & FILE_OPEN_WRITE)
+            Flush();
+        else
+            MILO_ASSERT(!mBytesLeft, 0x1CA);
         // stuff in between
         _SeekToTell();
-        if(mBuffer && (mMode & FILE_OPEN_READ)){
+        if (mBuffer && (mMode & FILE_OPEN_READ)) {
             mOffset = gBufferSize;
             FillBuffer();
         }
@@ -193,30 +202,29 @@ int AsyncFile::Seek(int i, int j){
     }
 }
 
-int AsyncFile::Tell(){ return mTell; }
+int AsyncFile::Tell() { return mTell; }
 
-void AsyncFile::Flush(){
-    if(!mFail && (mMode & FILE_OPEN_WRITE)){
+void AsyncFile::Flush() {
+    if (!mFail && (mMode & FILE_OPEN_WRITE)) {
         _WriteAsync(mBuffer, mOffset);
-        while(!_WriteDone());
+        while (!_WriteDone())
+            ;
         mOffset = 0;
     }
 }
 
-void AsyncFile::FillBuffer(){
-    if(!mFail && (mMode & FILE_OPEN_READ)){
-        if(mOffset != gBufferSize) _SeekToTell();
+void AsyncFile::FillBuffer() {
+    if (!mFail && (mMode & FILE_OPEN_READ)) {
+        if (mOffset != gBufferSize)
+            _SeekToTell();
         int newsize = mSize - mTell;
-        if(gBufferSize < newsize) newsize = gBufferSize;
-        _ReadAsync(mBuffer, newsize);
+        _ReadAsync(mBuffer, Min<uint>(gBufferSize, newsize));
         mOffset = 0;
     }
 }
 
-bool AsyncFile::Eof(){
-    return mTell == mSize;
-}
+bool AsyncFile::Eof() { return mTell == mSize; }
 
-bool AsyncFile::Fail(){ return mFail; }
-int AsyncFile::Size(){ return mSize; }
-int AsyncFile::UncompressedSize(){ return mUCSize; }
+bool AsyncFile::Fail() { return mFail; }
+int AsyncFile::Size() { return mSize; }
+int AsyncFile::UncompressedSize() { return mUCSize; }

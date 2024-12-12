@@ -5,9 +5,7 @@ Transform WiiCam::sWiiViewToViewXfm;
 
 WiiCam::WiiCam() {}
 
-void WiiCam::Select() {
-
-}
+void WiiCam::Select() {}
 
 u32 WiiCam::ProjectZ(float f1) {
     float f3 = mNearPlane - mFarPlane;

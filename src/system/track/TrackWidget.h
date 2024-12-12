@@ -41,7 +41,7 @@ public:
     void AddTextInstance(const Transform&, class String, bool);
     void AddMeshInstance(const Transform&, RndMesh*, float);
     void SetTrackDir(TrackDir* dir){ mTrackDir = dir; }
-    bool Empty(){ return mImp->Empty(); }
+    bool Empty();
 
     float NewYOffset(float secs) const {
         return mYOffset + mTrackDir->SecondsToY(secs);

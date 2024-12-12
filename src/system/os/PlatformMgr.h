@@ -61,6 +61,7 @@ public:
     void ClearNetError();
     void ClearDWCError();
     bool CanSeeUserCreatedContent(const OnlineID*) const;
+    void SystemInitPowerCallbacks();
 
     bool IsUserAWiiGuest(const LocalUser*) const;
     int InitNintendoConnection();

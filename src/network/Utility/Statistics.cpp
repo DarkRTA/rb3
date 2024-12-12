@@ -13,5 +13,5 @@ namespace Quazal {
         m_oSmoothedAverage.m_dTotalWeightOfEntries = 0;
     }
 
-    Statistics::~Statistics() {} 
+    Statistics::~Statistics() {}
 }

@@ -6,7 +6,7 @@ namespace Quazal {
     RTT::~RTT() {}
 
     void RTT::Adjust(uint i) {
-        int r8 = i - unk_0x0/8;
+        int r8 = i - unk_0x0 / 8;
         unk_0x8 = i;
         unk_0x0 += r8;
     }

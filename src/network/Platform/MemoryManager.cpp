@@ -2,8 +2,6 @@
 
 namespace Quazal {
 
-    MemoryManager::~MemoryManager(){
-
-    }
+    MemoryManager::~MemoryManager() {}
 
 }

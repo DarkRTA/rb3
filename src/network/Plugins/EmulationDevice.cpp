@@ -6,17 +6,11 @@ namespace Quazal {
           m_uiJitter(0), m_rPacketDropProbability(0.0f) {}
     EmulationDevice::~EmulationDevice() {}
 
-    void EmulationDevice::Enable() {
-        m_bEnabled = true;
-    }
+    void EmulationDevice::Enable() { m_bEnabled = true; }
 
-    void EmulationDevice::SetLatency(unsigned int latency) {
-        m_uiLatency = latency;
-    }
+    void EmulationDevice::SetLatency(unsigned int latency) { m_uiLatency = latency; }
 
-    void EmulationDevice::SetJitter(unsigned int jitter) {
-        m_uiJitter = jitter;
-    }
+    void EmulationDevice::SetJitter(unsigned int jitter) { m_uiJitter = jitter; }
 
     void EmulationDevice::SetBandwidth(unsigned int bandwidth) {
         m_uiBandwidth = bandwidth;
@@ -26,19 +20,11 @@ namespace Quazal {
         m_rPacketDropProbability = probability;
     }
 
-    unsigned int EmulationDevice::GetLatency() {
-        return m_uiLatency;
-    }
+    unsigned int EmulationDevice::GetLatency() { return m_uiLatency; }
 
-    unsigned int EmulationDevice::GetJitter() {
-        return m_uiJitter;
-    }
+    unsigned int EmulationDevice::GetJitter() { return m_uiJitter; }
 
-    unsigned int EmulationDevice::GetBandwidth() {
-        return m_uiBandwidth;
-    }
+    unsigned int EmulationDevice::GetBandwidth() { return m_uiBandwidth; }
 
-    float EmulationDevice::GetPacketDropProbability() {
-        return m_rPacketDropProbability;
-    }
+    float EmulationDevice::GetPacketDropProbability() { return m_rPacketDropProbability; }
 }

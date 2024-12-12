@@ -7,16 +7,21 @@ class CustomSplash {
 public:
     CustomSplash();
     ~CustomSplash();
+    void Init();
+    void Show();
+    void EndShow();
+    void InitPAD();
+    void InitSplasher();
+    void DrawSplasher(unsigned char);
+    TPLPalette *LoadFile(const char *, uint &, void *(*)(int));
 
     Timer mTimer1; // 0x0
     Timer mTimer2; // 0x30
     float unk_60; // 0x60
     unsigned int unk_64; // 0x64
     TPLPalette *mPalette; // 0x68
-    GXTexObj *mGXTexObj; // 0x6C
-
-    // no clue what this is
-    char unknownBytes[0x41c];
+    GXTexObj mGXTexObj; // 0x6C
+    char fname[0x400];
 
     char unk_48c; // 0x48C
     char unk_48d; // 0x48D

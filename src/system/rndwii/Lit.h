@@ -4,7 +4,7 @@
 #include "rndobj/Lit.h"
 
 class WiiLight : public RndLight {
-    public:
+public:
     WiiLight() {}
     virtual ~WiiLight() {}
 

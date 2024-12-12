@@ -7,8 +7,8 @@
 #include "rndobj/Mat.h"
 
 ObjPtrList<BandCharacter> WiiEnviron::mShadowedCharacters(NULL, kObjListNoNull);
-RndMat* WiiEnviron::mShadowMat;
-RndCam* WiiEnviron::mShadowCam;
+RndMat *WiiEnviron::mShadowMat;
+RndCam *WiiEnviron::mShadowCam;
 #ifndef MILO_DEBUG
 Transform some_xform;
 #endif
@@ -22,12 +22,12 @@ static GXLightID LightId(int n) {
     return (GXLightID)(1 << n);
 }
 
-static DataNode DebugToggleShadows(DataArray* array) {
+static DataNode DebugToggleShadows(DataArray *array) {
     WiiEnviron::mbEnableShadows = 0;
     return 0;
 }
 
-static DataNode DebugToggleShowShadowTextureOnScreen(DataArray* array) {
+static DataNode DebugToggleShowShadowTextureOnScreen(DataArray *array) {
     WiiEnviron::mbShowShadowTextureOnScreen = !WiiEnviron::mbShowShadowTextureOnScreen;
     return 0;
 }
@@ -40,25 +40,24 @@ WiiEnviron::WiiEnviron() {
         mShadowMat->SetTexWrap(kTexWrapClamp);
         mShadowMat->SetDiffuseTex(NULL);
         mShadowMat->SetAlpha(1);
-        mShadowMat->SetColor(Hmx::Color(0,0,0,1));
+        mShadowMat->SetColor(Hmx::Color(0, 0, 0, 1));
         mShadowMat->SetUseEnv(false);
     }
     if (mShadowCam == nullptr) {
         mShadowCam = New<RndCam>();
     }
-    #ifdef MILO_DEBUG
+#ifdef MILO_DEBUG
     DataRegisterFunc("toggle_shadows", DebugToggleShadows);
     DataRegisterFunc("toggle_show_shadow_texture", DebugToggleShowShadowTextureOnScreen);
-    #endif
+#endif
 }
 
 WiiEnviron::~WiiEnviron() {}
 
-bool WiiEnviron::SetLight(int i, WiiLight* lit) {
+bool WiiEnviron::SetLight(int i, WiiLight *lit) {
     GXLightID id = LightId(i);
     lit->Update(id);
 
-    
     return 1;
 }
 

@@ -9,7 +9,7 @@ void OSInitSemaphore(OSSemaphore *sema, s32 active_signals) {
     OSRestoreInterrupts(status);
 }
 
-s32 OSWaitSemaphore(OSSemaphore* sema) {
+s32 OSWaitSemaphore(OSSemaphore *sema) {
     BOOL status = OSDisableInterrupts();
     s32 ret;
     while ((ret = sema->activeSignals) <= 0) {
@@ -20,7 +20,7 @@ s32 OSWaitSemaphore(OSSemaphore* sema) {
     return ret;
 }
 
-s32 OSSignalSemaphore(OSSemaphore* sema) {
+s32 OSSignalSemaphore(OSSemaphore *sema) {
     BOOL status = OSDisableInterrupts();
     s32 ret;
     ret = sema->activeSignals++;

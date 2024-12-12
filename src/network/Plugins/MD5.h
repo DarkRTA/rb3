@@ -6,12 +6,13 @@ namespace Quazal {
     class MD5 {
     public:
         MD5();
-        void update(const unsigned char*, unsigned int);
+        void update(const unsigned char *, unsigned int);
         void finalize();
-        void transform(const unsigned char*);
+        void transform(const unsigned char *);
 
     private:
-        static void encode(unsigned char *dest, const unsigned int *src, unsigned int size) {
+        static void
+        encode(unsigned char *dest, const unsigned int *src, unsigned int size) {
             if (size == 0) {
                 return;
             }
@@ -24,12 +25,40 @@ namespace Quazal {
             }
         }
 
-        static void decode(unsigned int*, const unsigned char*, unsigned int);
+        static void decode(unsigned int *, const unsigned char *, unsigned int);
 
-        static void FF(unsigned int&, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
-        static void GG(unsigned int&, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
-        static void HH(unsigned int&, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
-        static void II(unsigned int&, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+        static void
+        FF(unsigned int &,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int);
+        static void
+        GG(unsigned int &,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int);
+        static void
+        HH(unsigned int &,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int);
+        static void
+        II(unsigned int &,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int,
+           unsigned int);
 
         unsigned int state[4];
         unsigned int count[2];

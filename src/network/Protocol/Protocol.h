@@ -3,8 +3,5 @@
 #include "network/Core/SystemComponent.h"
 
 namespace Quazal {
-class Protocol : public SystemComponent {
-
-};
+    class Protocol : public SystemComponent {};
 }
-

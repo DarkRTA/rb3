@@ -1,4 +1,6 @@
 #include "track/TrackDir.h"
+#include "compiler_macros.h"
+#include "decomp.h"
 #include "obj/ObjMacros.h"
 #include "ui/PanelDir.h"
 #include "utl/Loader.h"
@@ -59,12 +61,11 @@ void TrackDir::SyncObjects() {
 void TrackDir::SetupKeyShifting(RndDir* rnddir){
     mRotatorCam = rnddir->Find<RndTransformable>("rotator_cam.trans", true);
     unk2d8.Reset();
-    Vector3 v38(1.0f / rnddir->mOrder, 1.0f, 1.0f);
-    Scale(unk2d8.m, v38, unk2d8.m);
+    Scale(unk2d8.m, Vector3(1.0f / rnddir->mOrder, 1.0f, 1.0f), unk2d8.m);
     unk308.Reset();
     unk308.v = mRotatorCam->WorldXfm().v;
     unk338.Reset();
-    Invert(unk338, unk338);
+    Invert(unk308, unk338);
 }
 
 void TrackDir::ResetKeyShifting(){
@@ -134,6 +135,11 @@ void TrackDir::PostLoad(BinStream& bs){
         if(gRev > 3){
             bs >> mTest->mWidget >> mTest->mSlot;
         }
+#else
+        if (gRev > 3) {
+            String s; int x;
+            bs >> s >> x;
+        }
 #endif
     }
     for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
@@ -191,9 +197,13 @@ float TrackDir::BottomSeconds() const {
     return mBottomY / mYPerSecond;
 }
 
-float TrackDir::SecondsToY(float f) const {
+RETAIL_DONT_INLINE_FUNC float TrackDir::SecondsToY(float f) const {
     return f * mYPerSecond;
 }
+#pragma push
+#pragma dont_inline on
+DECOMP_FORCELITERAL(TrackDir, ((TrackDir*)NULL)->SecondsToY(3))
+#pragma pop
 
 float TrackDir::YToSeconds(float f) const {
     return f / mYPerSecond;
@@ -204,7 +214,7 @@ float TrackDir::CutOffY() const {
         return mBottomY;
     } else {
         float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
-        float bias = secs * mYPerSecond;
+        float bias = SecondsToY(secs);
         return mBottomY + bias;
     }
 }
@@ -229,12 +239,12 @@ void TrackDir::SetSlotXfm(int i, const Transform& tf){
 
 void TrackDir::MakeSecondsXfm(float f, Transform& tf) const {
     tf.Reset();
-    tf.v.y = f * mYPerSecond;
+    tf.v.y = SecondsToY(f);
 }
 
 void TrackDir::MakeWidgetXfm(int i, float f, Transform& tf) const {
     MakeSlotXfm(i, tf);
-    tf.v.y = f * mYPerSecond;
+    tf.v.y = SecondsToY(f);
 }
 
 void TrackDir::MakeSlotXfm(int slot, Transform& tf) const {

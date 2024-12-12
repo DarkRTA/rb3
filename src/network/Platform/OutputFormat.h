@@ -8,14 +8,14 @@ namespace Quazal {
     class OutputFormat : public RootObject {
     public:
         OutputFormat();
-        virtual ~OutputFormat(){}
-        virtual void StartString(char*, unsigned int);
-        virtual void StartPrefixes(char*, unsigned int);
-        virtual void AddPrefixes(char*, unsigned int);
-        virtual void EndPrefixes(char*, unsigned int);
-        virtual void AddIndent(char*, unsigned int);
-        virtual int AddMessage(char*, unsigned int, const char*, va_list);
-        virtual void EndString(char*, unsigned int);
+        virtual ~OutputFormat() {}
+        virtual void StartString(char *, unsigned int);
+        virtual void StartPrefixes(char *, unsigned int);
+        virtual void AddPrefixes(char *, unsigned int);
+        virtual void EndPrefixes(char *, unsigned int);
+        virtual void AddIndent(char *, unsigned int);
+        virtual int AddMessage(char *, unsigned int, const char *, va_list);
+        virtual void EndString(char *, unsigned int);
 
         void IncreaseIndent(uint);
         void DecreaseIndent(uint);
@@ -32,7 +32,7 @@ namespace Quazal {
         bool m_bShowCurrentContext;
         bool m_bShowCID;
         bool m_bShowPID;
-        const char* m_szPrefix;
+        const char *m_szPrefix;
         unsigned int m_uiInitTime;
     };
 }

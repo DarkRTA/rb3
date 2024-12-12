@@ -14,13 +14,13 @@
  */
 
 #ifdef __cplusplus
-	extern "C" {
+extern "C" {
 #endif
 
 void WUDiHidHostEventCallback(tBTA_HH_EVT event, tBTA_HH *p_data);
 
 #ifdef __cplusplus
-	}
+}
 #endif
 
 #endif // RVL_SDK_WPAD_INTERNAL_WUD_HID_HOST_H
