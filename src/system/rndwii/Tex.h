@@ -21,11 +21,11 @@ public:
     void CreateScreenShot();
 
     u8 pad[32];
-    void* mImageData; // 0x84
+    void *mImageData; // 0x84
     GXTexFmt mFormat; // 0x88
 
     static bool bComposingOutfitTexture;
 
-    void* operator new(unsigned long i) { return _PoolAlloc(i, i, FastPool); }
-    void operator delete(void* obj) { _PoolFree(0xd0, FastPool, obj); }
+    void *operator new(unsigned long i) { return _PoolAlloc(i, i, FastPool); }
+    void operator delete(void *obj) { _PoolFree(0xd0, FastPool, obj); }
 };

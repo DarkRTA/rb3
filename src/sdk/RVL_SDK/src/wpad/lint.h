@@ -7,14 +7,14 @@
  * macros
  */
 
-#define LINTNextElement(a, b)	((&((a)[b]))[1])
+#define LINTNextElement(a, b) ((&((a)[b]))[1])
 
 /*******************************************************************************
  * types
  */
 
 #ifdef __cplusplus
-	extern "C" {
+extern "C" {
 #endif
 
 typedef unsigned long ULONG;
@@ -30,7 +30,7 @@ void LINTSub(ULONG *dst, const ULONG *lhs, const ULONG *rhs);
 void LINTMul(ULONG *dst, const ULONG *lhs, const ULONG *rhs);
 
 #ifdef __cplusplus
-	}
+}
 #endif
 
 #endif // RVL_SDK_WPAD_INTERNAL_LINT_H

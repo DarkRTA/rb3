@@ -144,10 +144,8 @@ void TrackWidget::Poll(){
     }
 }
 
-#pragma push
-#pragma dont_inline on
-DECOMP_FORCEFUNC(TrackWidget, TrackWidget, Empty())
-#pragma pop
+bool TrackWidget::Empty() { return mImp->Empty(); }
+
 int TrackWidget::Size() const { return mImp->Size(); }
 float TrackWidget::GetFirstInstanceY(){ return mImp->GetFirstInstanceY(); }
 

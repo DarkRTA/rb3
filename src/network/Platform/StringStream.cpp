@@ -3,7 +3,7 @@
 
 namespace Quazal {
 
-    StringStream::StringStream(){
+    StringStream::StringStream() {
         m_szBuffer = m_szInitialBuffer;
         m_uiSize = 0x100;
         m_szCurrentPosition = m_szInitialBuffer;
@@ -13,18 +13,14 @@ namespace Quazal {
         m_bBoolAlpha = true;
     }
 
-    StringStream::~StringStream(){
-        if(m_szBuffer != m_szInitialBuffer){
+    StringStream::~StringStream() {
+        if (m_szBuffer != m_szInitialBuffer) {
             QUAZAL_DEFAULT_FREE(&m_szBuffer - 1, _InstType9);
         }
     }
 
-    void hex(StringStream& ss){
-        ss.m_bHex = true;
-    }
+    void hex(StringStream &ss) { ss.m_bHex = true; }
 
-    void dec(StringStream& ss){
-        ss.m_bHex = false;
-    }
+    void dec(StringStream &ss) { ss.m_bHex = false; }
 
 }

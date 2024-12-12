@@ -3,38 +3,36 @@
 
 namespace Quazal {
 
-    void* RootObject::operator new(unsigned long ul){
+    void *RootObject::operator new(unsigned long ul) {
         return MemoryManager::Allocate(ul, MemoryManager::_InstType3);
     }
 
-    void* RootObject::operator new(unsigned long ul, const char *cc, unsigned int ui) {
+    void *RootObject::operator new(unsigned long ul, const char *cc, unsigned int ui) {
         return MemoryManager::Allocate(
-            MemoryManager::GetDefaultMemoryManager(),
-            ul, cc, ui,
-            MemoryManager::_InstType3);
+            MemoryManager::GetDefaultMemoryManager(), ul, cc, ui, MemoryManager::_InstType3
+        );
     }
 
-    void* RootObject::operator new[](unsigned long ul) {
+    void *RootObject::operator new[](unsigned long ul) {
         return MemoryManager::Allocate(ul, MemoryManager::_InstType4);
     }
 
-    void* RootObject::operator new[](unsigned long ul, const char *cc, unsigned int ui) {
+    void *RootObject::operator new[](unsigned long ul, const char *cc, unsigned int ui) {
         return MemoryManager::Allocate(
-            MemoryManager::GetDefaultMemoryManager(),
-            ul, cc, ui,
-            MemoryManager::_InstType4);
+            MemoryManager::GetDefaultMemoryManager(), ul, cc, ui, MemoryManager::_InstType4
+        );
     }
 
     void RootObject::operator delete(void *v) {
         MemoryManager::Free(
-            MemoryManager::GetDefaultMemoryManager(),
-            v, MemoryManager::_InstType3);
+            MemoryManager::GetDefaultMemoryManager(), v, MemoryManager::_InstType3
+        );
     }
 
     void RootObject::operator delete[](void *v) {
         MemoryManager::Free(
-            MemoryManager::GetDefaultMemoryManager(),
-            v, MemoryManager::_InstType4);
+            MemoryManager::GetDefaultMemoryManager(), v, MemoryManager::_InstType4
+        );
     }
 
 }

@@ -12,7 +12,7 @@
 #include <algorithm>
 
 namespace {
-    bool NumPlayersGreaterThan(const NetSearchResult* n1, const NetSearchResult* n2){
+    bool NumPlayersGreaterThan(const NetSearchResult *n1, const NetSearchResult *n2) {
         return n1->mNumOpenSlots > n2->mNumOpenSlots;
     }
 }
@@ -22,53 +22,57 @@ SessionSearcher::SessionSearcher() : mLastInviteResult(0), mSearching(0), mNextR
     ThePlatformMgr.AddSink(this, invite_accepted);
 }
 
-void SessionSearcher::AllocateNetSearchResults(){
+void SessionSearcher::AllocateNetSearchResults() {
     mLastInviteResult = NetSearchResult::New();
 }
 
-SessionSearcher::~SessionSearcher(){
+SessionSearcher::~SessionSearcher() {
     ThePlatformMgr.RemoveSink(this);
     delete mLastInviteResult;
     DeleteAll(mSearchList);
 }
 
-void SessionSearcher::Poll(){}
+void SessionSearcher::Poll() {}
 
-void SessionSearcher::StartSearching(User*, const SearchSettings&){
+void SessionSearcher::StartSearching(User *, const SearchSettings &) {
     MILO_ASSERT(!mSearching, 0x3D);
     DeleteAll(mSearchList);
     mSearching = true;
 }
 
-void SessionSearcher::StopSearching(){
+void SessionSearcher::StopSearching() {
     mSearching = false;
     mNextResult = 0;
     std::sort(mSearchList.begin(), mSearchList.end(), NumPlayersGreaterThan);
     Handle(search_finished_msg, false);
 }
 
-void SessionSearcher::GetSearchResults(std::vector<NetSearchResult*>& results){
-    for(std::vector<NetSearchResult*>::iterator it = mSearchList.begin(); it != mSearchList.end(); ++it){
+void SessionSearcher::GetSearchResults(std::vector<NetSearchResult *> &results) {
+    for (std::vector<NetSearchResult *>::iterator it = mSearchList.begin();
+         it != mSearchList.end();
+         ++it) {
         results.push_back(*it);
     }
 }
 
-NetSearchResult* SessionSearcher::GetNextResult(){
+NetSearchResult *SessionSearcher::GetNextResult() {
     MILO_ASSERT(!mSearching, 0x5D);
-    if(mNextResult >= mSearchList.size()) return nullptr;
-    else return mSearchList[mNextResult++];
+    if (mNextResult >= mSearchList.size())
+        return nullptr;
+    else
+        return mSearchList[mNextResult++];
 }
 
-void SessionSearcher::ClearSearchResults(){
+void SessionSearcher::ClearSearchResults() {
     MILO_ASSERT(!mSearching, 0x65);
     DeleteAll(mSearchList);
 }
 
-void SessionSearcher::UpdateSearchList(NetSearchResult* res){
+void SessionSearcher::UpdateSearchList(NetSearchResult *res) {
     mSearchList.push_back(res);
 }
 
-int SessionSearcher::OnMsg(const InviteAcceptedMsg&){ return 1; }
+int SessionSearcher::OnMsg(const InviteAcceptedMsg &) { return 1; }
 
 BEGIN_HANDLERS(SessionSearcher)
     HANDLE_ACTION(stop_searching, StopSearching())

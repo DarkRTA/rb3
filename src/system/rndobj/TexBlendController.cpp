@@ -19,7 +19,12 @@ RndTexBlendController::~RndTexBlendController(){
 // fn_806413C4
 bool RndTexBlendController::GetCurrentDistance(float& dist) const {
     if(mObject1 && mObject2){
+        #ifdef MILO_DEBUG
         dist = Distance(mObject1->WorldXfm().v, mObject2->WorldXfm().v);
+        #else
+        Transform& t = mObject1->WorldXfm();
+        dist = Distance(t.v, mObject2->WorldXfm().v);
+        #endif
         return true;
     }
     else {
@@ -69,9 +74,11 @@ SAVE_OBJ(RndTexBlendController, 0xF5)
 void RndTexBlendController::Load(BinStream& bs){
     int rev;
     bs >> rev;
+    #ifdef MILO_DEBUG
     if (rev > 2){
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, (unsigned short)2);
     }
+    #endif
     Hmx::Object::Load(bs);
     bs >> mMesh;
     bs >> mObject1;

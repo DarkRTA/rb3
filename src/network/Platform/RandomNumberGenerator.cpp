@@ -2,31 +2,29 @@
 
 namespace Quazal {
 
-    RandomNumberGenerator::RandomNumberGenerator(){
+    RandomNumberGenerator::RandomNumberGenerator() {
         m_mag01[0] = 0;
         m_mag01[1] = 0x9908B0DF;
         m_mti = 0x271;
-        //SetRandomNumberSeed(1);
+        // SetRandomNumberSeed(1);
         m_mt[0] = 1;
         m_mti = 1;
-        for(; m_mti < 0x270; m_mti++){
+        for (; m_mti < 0x270; m_mti++) {
             m_mt[m_mti] = m_mt[m_mti - 1] * 0x10DCD;
         }
     }
 
-    RandomNumberGenerator::~RandomNumberGenerator(){
+    RandomNumberGenerator::~RandomNumberGenerator() {}
 
-    }
-
-    void RandomNumberGenerator::SetRandomNumberSeed(unsigned int ui){
+    void RandomNumberGenerator::SetRandomNumberSeed(unsigned int ui) {
         m_mt[0] = ui;
         m_mti = 1;
-        for(; m_mti < 0x270; m_mti++){
+        for (; m_mti < 0x270; m_mti++) {
             m_mt[m_mti] = m_mt[m_mti - 1] * 0x10DCD;
         }
     }
 
-    unsigned int RandomNumberGenerator::GetRandomNumber(unsigned int ui){
+    unsigned int RandomNumberGenerator::GetRandomNumber(unsigned int ui) {
         unsigned int i;
         unsigned int tmp2;
         if (0x270 <= m_mti) {
@@ -57,7 +55,7 @@ namespace Quazal {
         return i % ui;
     }
 
-    float RandomNumberGenerator::GetRealRandomNumber(float f){
+    float RandomNumberGenerator::GetRealRandomNumber(float f) {
         return (GetRandomNumber(0x10000) / 65536.0f * f);
     }
 

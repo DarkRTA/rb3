@@ -3,19 +3,19 @@
 
 inline void __GXSetAmbMat(u32 dirtyFlags) {
     if (dirtyFlags & GX_DIRTY_AMB_COLOR0) {
-        GX_XF_LOAD_REG(GX_XF_REG_AMBIENT0, *(u32*)&gxdt->ambColors[0]);
+        GX_XF_LOAD_REG(GX_XF_REG_AMBIENT0, *(u32 *)&gxdt->ambColors[0]);
     }
 
     if (dirtyFlags & GX_DIRTY_AMB_COLOR1) {
-        GX_XF_LOAD_REG(GX_XF_REG_AMBIENT1, *(u32*)&gxdt->ambColors[1]);
+        GX_XF_LOAD_REG(GX_XF_REG_AMBIENT1, *(u32 *)&gxdt->ambColors[1]);
     }
 
     if (dirtyFlags & GX_DIRTY_MAT_COLOR0) {
-        GX_XF_LOAD_REG(GX_XF_REG_MATERIAL0, *(u32*)&gxdt->matColors[0]);
+        GX_XF_LOAD_REG(GX_XF_REG_MATERIAL0, *(u32 *)&gxdt->matColors[0]);
     }
 
     if (dirtyFlags & GX_DIRTY_MAT_COLOR1) {
-        GX_XF_LOAD_REG(GX_XF_REG_MATERIAL1, *(u32*)&gxdt->matColors[1]);
+        GX_XF_LOAD_REG(GX_XF_REG_MATERIAL1, *(u32 *)&gxdt->matColors[1]);
     }
 }
 
@@ -176,9 +176,8 @@ void GXSetLineWidth(u8 width, u32 offset) {
     gxdt->lastWriteWasXF = FALSE;
 }
 
-//unused
-void GXGetLineWidth(){
-}
+// unused
+void GXGetLineWidth() {}
 
 void GXSetPointSize(u8 size, u32 offset) {
     GX_BP_SET_LINEPTWIDTH_POINTSZ(gxdt->linePtWidth, size);
@@ -187,9 +186,8 @@ void GXSetPointSize(u8 size, u32 offset) {
     gxdt->lastWriteWasXF = FALSE;
 }
 
-//unused
-void GXGetPointSize(){
-}
+// unused
+void GXGetPointSize() {}
 
 void GXEnableTexOffsets(GXTexCoordID id, GXBool lineOfs, GXBool pointOfs) {
     GX_BP_SET_SU_SSIZE_USELINEOFS(gxdt->txcRegs[id], lineOfs);
@@ -205,8 +203,8 @@ void GXSetCullMode(GXCullMode mode) {
     gxdt->gxDirtyFlags |= GX_DIRTY_GEN_MODE;
 }
 
-//unused
-void GXGetCullMode(GXCullMode* out) {
+// unused
+void GXGetCullMode(GXCullMode *out) {
     // TODO: Fakematch? Should use GX_BP_GET_GENMODE_CULLMODE if possible
     s32 bits = 0;
     bits |= (s32)(gxdt->genMode >> (13 + 1) & 2) >> 1;

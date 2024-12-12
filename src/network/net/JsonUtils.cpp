@@ -2,25 +2,17 @@
 #include "json-c/printbuf.h"
 #include "system/os/Debug.h"
 
-JsonObject::JsonObject() {
-    mObject = nullptr;
-}
+JsonObject::JsonObject() { mObject = nullptr; }
 
-JsonObject::~JsonObject() {
-    json_object_put(mObject);
-}
+JsonObject::~JsonObject() { json_object_put(mObject); }
 
 const char *JsonObject::GetObjectAsString() const {
     return json_object_get_string(mObject);
 }
 
-enum json_type JsonObject::GetType() const {
-    return json_object_get_type(mObject);
-}
+enum json_type JsonObject::GetType() const { return json_object_get_type(mObject); }
 
-JsonArray::JsonArray() {
-    mObject = json_object_new_array();
-}
+JsonArray::JsonArray() { mObject = json_object_new_array(); }
 
 JsonArray::~JsonArray() {
     for (int len = json_object_array_length(mObject) - 1; len >= 0; len--) {
@@ -33,45 +25,27 @@ void JsonArray::AddMember(JsonObject *obj) {
     json_object_array_add(mObject, obj->GetObject());
 }
 
-int JsonArray::GetSize() const {
-    return json_object_array_length(mObject);
-}
+int JsonArray::GetSize() const { return json_object_array_length(mObject); }
 
-JsonString::JsonString(const char *s) {
-    mObject = json_object_new_string(s);
-}
+JsonString::JsonString(const char *s) { mObject = json_object_new_string(s); }
 
-JsonString::~JsonString() {
-}
+JsonString::~JsonString() {}
 
-const char *JsonString::GetValue() const {
-    return json_object_get_string(mObject);
-}
+const char *JsonString::GetValue() const { return json_object_get_string(mObject); }
 
-JsonInt::JsonInt(int i) {
-    mObject = json_object_new_int(i);
-}
+JsonInt::JsonInt(int i) { mObject = json_object_new_int(i); }
 
-JsonInt::~JsonInt() {
-}
+JsonInt::~JsonInt() {}
 
-int JsonInt::GetValue() const {
-    return json_object_get_int(mObject);
-}
+int JsonInt::GetValue() const { return json_object_get_int(mObject); }
 
-JsonDouble::JsonDouble(double d) {
-    mObject = json_object_new_double(d);
-}
+JsonDouble::JsonDouble(double d) { mObject = json_object_new_double(d); }
 
-JsonDouble::~JsonDouble() {
-}
+JsonDouble::~JsonDouble() {}
 
-double JsonDouble::GetValue() const {
-    return json_object_get_double(mObject);
-}
+double JsonDouble::GetValue() const { return json_object_get_double(mObject); }
 
-JsonConverter::JsonConverter() {
-}
+JsonConverter::JsonConverter() {}
 
 JsonConverter::~JsonConverter() {
     if (!objects.empty()) {

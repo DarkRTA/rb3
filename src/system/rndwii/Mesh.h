@@ -12,28 +12,28 @@ public:
     ~DisplayList();
     static void Init();
     void Clear();
-    void Copy(const DisplayList&);
+    void Copy(const DisplayList &);
     void Begin(unsigned short);
     void Begin(_GXPrimitive, _GXVtxFmt, unsigned short, unsigned short);
     void Start(_GXPrimitive, _GXVtxFmt, unsigned short);
     void End();
-    DisplayList& operator<<(unsigned short);
+    DisplayList &operator<<(unsigned short);
     void Draw(u32, _GXVtxFmt) const;
 
     inline GXAttrType GetIdxType() {
         GXAttrType x = GX_INDEX16;
-        if (unk_0x8 < 0x100) x = GX_INDEX8;
+        if (unk_0x8 < 0x100)
+            x = GX_INDEX8;
         return x;
     }
 
-    void* mData;
+    void *mData;
     int mSize;
     int unk_0x8;
 
-    static void* sTemp;
-    static void* sCurr;
+    static void *sTemp;
+    static void *sCurr;
 };
-
 
 /**
  * @brief Platform implementation of RndMesh.
@@ -44,7 +44,7 @@ class WiiMesh : public RndMesh { // 0x198
 public:
     WiiMesh();
     ~WiiMesh();
-    virtual void Copy(const Hmx::Object*, CopyType);
+    virtual void Copy(const Hmx::Object *, CopyType);
     virtual int NumVerts() const { return mNumVerts; }
     virtual int NumFaces() const { return mNumFaces; }
     OBJ_CLASSNAME(WiiMesh)
@@ -62,16 +62,16 @@ public:
     void DrawFaces();
     void DrawReflection(bool);
     void RemoveVertData();
-    void SetVertexBuffers(const void*);
+    void SetVertexBuffers(const void *);
     int GetSomeSizeFactor();
 
-    void* mCTVtxs; // 0x138
-    void* mPosNrmVtxs; // 0x13C
-    void* mPosQ; // 0x140
-    void* mNrmQ; // 0x144
-    void* mBoneWeights; // 0x148
-    void* mBoneIndices; // 0x14C
-    void* unk_0x150;
+    void *mCTVtxs; // 0x138
+    void *mPosNrmVtxs; // 0x13C
+    void *mPosQ; // 0x140
+    void *mNrmQ; // 0x144
+    void *mBoneWeights; // 0x148
+    void *mBoneIndices; // 0x14C
+    void *unk_0x150;
     u16 mNumVerts; // 0x154
     u16 mNumFaces; // 0x156
     DisplayList mDisplays; // 0x158

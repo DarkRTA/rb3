@@ -520,3 +520,9 @@ int RndConsole::OnMsg(const KeyboardKeyMsg& msg) {
     }
     return 0;
 }
+
+void RndConsole::ExecuteLine() {
+    String& line_txt = mInput->CurrentLine();
+    DataNode a, b;
+    if (line_txt.empty()) MILO_FAIL("Empty command");
+}

@@ -1,25 +1,17 @@
 #include "Platform/DateTime.h"
 
 namespace Quazal {
-    const DateTime& DateTime::Never = DateTime(); // yeah sure
+    const DateTime &DateTime::Never = DateTime(); // yeah sure
 
-    DateTime::DateTime() : m_ui64Value(0) {
+    DateTime::DateTime() : m_ui64Value(0) {}
 
-    }
+    DateTime::DateTime(const DateTime &dt) : m_ui64Value(dt.m_ui64Value) {}
 
-    DateTime::DateTime(const DateTime& dt) : m_ui64Value(dt.m_ui64Value) {
+    DateTime &DateTime::operator=(const DateTime &dt) { m_ui64Value = dt.m_ui64Value; }
 
-    }
+    DateTime::operator unsigned long long() const { return m_ui64Value; }
 
-    DateTime& DateTime::operator=(const DateTime& dt){
-        m_ui64Value = dt.m_ui64Value;
-    }
-
-    DateTime::operator unsigned long long() const {
-        return m_ui64Value;
-    }
-
-    bool DateTime::operator>(const DateTime& dt) const {
+    bool DateTime::operator>(const DateTime &dt) const {
         return m_ui64Value > dt.m_ui64Value;
     }
 
@@ -47,7 +39,5 @@ namespace Quazal {
         return m_ui64Value & 0x3F; // seconds: bits 0-5
     }
 
-    void DateTime::GetSystemTime(DateTime&) {
-        
-    }
+    void DateTime::GetSystemTime(DateTime &) {}
 }

@@ -36,7 +36,7 @@ namespace Quazal {
         static void Free(MemoryManager *, void *, _InstructionType);
 
         static void *Allocate(unsigned long size, _InstructionType inst) {
-            MemoryManager* memMgr = MemoryManager::GetDefaultMemoryManager();
+            MemoryManager *memMgr = MemoryManager::GetDefaultMemoryManager();
             return Allocate(memMgr, size, "Unknown", 0, inst);
         }
 
@@ -49,10 +49,18 @@ namespace Quazal {
     };
 }
 
-#define QUAZAL_DEFAULT_ALLOC(ul, ui, instType) \
-    MemoryManager::Allocate(MemoryManager::GetDefaultMemoryManager(), ul, __FILE__, ui, MemoryManager::instType);
+#define QUAZAL_DEFAULT_ALLOC(ul, ui, instType)                                           \
+    MemoryManager::Allocate(                                                             \
+        MemoryManager::GetDefaultMemoryManager(),                                        \
+        ul,                                                                              \
+        __FILE__,                                                                        \
+        ui,                                                                              \
+        MemoryManager::instType                                                          \
+    );
 
-#define QUAZAL_DEFAULT_FREE(memToFree, instType) \
-    MemoryManager::Free(MemoryManager::GetDefaultMemoryManager(), memToFree, MemoryManager::instType);
+#define QUAZAL_DEFAULT_FREE(memToFree, instType)                                         \
+    MemoryManager::Free(                                                                 \
+        MemoryManager::GetDefaultMemoryManager(), memToFree, MemoryManager::instType     \
+    );
 
 #endif

@@ -23,6 +23,7 @@ public:
     void SetCallback(Callback* cb){ mCallback = cb; }
     bool Showing() const { return mShowing; }
     void SetCursorChar(int cursChar){ mCursorChar = cursChar; }
+    void SetDumpCount(int dump_count) { mDumpCount = dump_count; }
 
     void SetOverlay(bool b){
         mShowing = b;

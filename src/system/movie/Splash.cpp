@@ -17,38 +17,29 @@
 #include <revolution/VI.h>
 
 bool gSplashing = false;
-Splash* TheSplasher;
+Splash *TheSplasher;
 
-const char* kSplashMovie = "splash.tmov";
-const char* kSplashCam = "splash.cam";
+const char *kSplashMovie = "splash.tmov";
+const char *kSplashCam = "splash.cam";
 
-int Splash::ThreadStart(void* spl) {
-    ((Splash*)spl)->UpdateThread();
+int Splash::ThreadStart(void *spl) {
+    ((Splash *)spl)->UpdateThread();
     return 0;
 }
 
-Splash::Splash() : mSplashTime(SystemConfig("ui")->FindArray("splash_time", true)->Float(1) * 1000),
-    mWaitForSplash(SystemConfig("ui")->FindArray("wait_for_splash", true)->Int(1)), mLastSplash(NULL), 
-    unk_0x4C(0), unk_0x50(0), unk_0x54(0), unk_0x58(-1), mSuspendCount(0), unk_0x64(1), unk_0x68(0), mState(0) {
-    
-}
+Splash::Splash()
+    : mSplashTime(SystemConfig("ui")->FindArray("splash_time", true)->Float(1) * 1000),
+      mWaitForSplash(SystemConfig("ui")->FindArray("wait_for_splash", true)->Int(1)),
+      mLastSplash(NULL), unk_0x4C(0), unk_0x50(0), unk_0x54(0), unk_0x58(-1),
+      mSuspendCount(0), unk_0x64(1), unk_0x68(0), mState(0) {}
 
-Splash::~Splash() { 
-    MILO_ASSERT(!gSplashing, 80);
-}
+Splash::~Splash() { MILO_ASSERT(!gSplashing, 80); }
 
-void PollFunc() {
-    TheSplasher->Poll();
-}
+void PollFunc() { TheSplasher->Poll(); }
 
-void SuspendFunc() {
-    TheSplasher->Suspend();
-}
+void SuspendFunc() { TheSplasher->Suspend(); }
 
-void ResumeFunc() {
-    TheSplasher->Resume();
-}
-
+void ResumeFunc() { TheSplasher->Resume(); }
 
 void Splash::BeginSplasher() {
     if (unk_0x64) {
@@ -59,10 +50,18 @@ void Splash::BeginSplasher() {
         MILO_ASSERT(SetMutableState(kResuming), 104);
         {
             MemDoTempAllocations mdta(true, false);
-            void* stack = _MemAlloc(0x20000, 0x20);
+            void *stack = _MemAlloc(0x20000, 0x20);
             mThreadStack = stack;
-            OSCreateThread(&mThread, (OSThreadFunc)Splash::ThreadStart, this, (char*)stack + 0x20000, 0x20000, 0x0F, 1);
-            mThread.specific[0] = (void*)"SplashThread";
+            OSCreateThread(
+                &mThread,
+                (OSThreadFunc)Splash::ThreadStart,
+                this,
+                (char *)stack + 0x20000,
+                0x20000,
+                0x0F,
+                1
+            );
+            mThread.specific[0] = (void *)"SplashThread";
             OSResumeThread(&mThread);
         }
         WaitForState(kResumed);
@@ -86,13 +85,15 @@ void Splash::EndSplasher() {
             WaitForState(kTerminated);
             gSplashing = false;
         } else {
-            while (ShowNext());
+            while (ShowNext())
+                ;
             MILO_ASSERT(SetImmutableState(kTerminated), 183);
         }
         TheSplasher = NULL;
         SetRndSplasherCallback(NULL, NULL, NULL);
         TheRnd->unk130 = false;
-        for (std::list<RndDir*>::iterator it = unk_0xF8.begin(); it != unk_0xF8.end(); it++) {
+        for (std::list<RndDir *>::iterator it = unk_0xF8.begin(); it != unk_0xF8.end();
+             it++) {
             delete *it;
         }
         Movie::Validate();
@@ -107,7 +108,7 @@ void Splash::Suspend() {
             if (SetMutableState(s1)) {
                 WaitForState(s2);
                 if (unk_0x50 != NULL) {
-                    unk_0x50->mShowing = true;
+                    unk_0x50->SetShowing(true);
                     unk_0x50->mMovie.LockThread();
                 }
                 unk_0x5C = false;
@@ -115,20 +116,20 @@ void Splash::Suspend() {
             } else {
                 MILO_ASSERT(mState == kWaitingForTerminating, 235);
                 if (unk_0x50 != NULL) {
-                    unk_0x50->mShowing = true;
+                    unk_0x50->SetShowing(true);
                     unk_0x50->mMovie.LockThread();
                 }
             }
         } else {
             SetMutableState(s2);
         }
-        
+
         unk_0x100.Reset();
     }
 }
 
 void Splash::Resume() {
-    MILO_ASSERT(MainThread(), 257); 
+    MILO_ASSERT(MainThread(), 257);
     if (--mSuspendCount <= 0) {
         MILO_ASSERT(mSuspendCount == 0, 264);
         if (unk_0x64 != 0) {
@@ -147,7 +148,8 @@ void Splash::Resume() {
                 }
             }
         } else {
-            if (SetMutableState(kResumed) == 0) return;
+            if (SetMutableState(kResumed) == 0)
+                return;
             unk_0x5C = 0;
             Draw();
         }
@@ -156,33 +158,46 @@ void Splash::Resume() {
 
 int Splash::SetMutableState(Splash::SplashState state) {
     MILO_ASSERT(state <= kResumed, 310);
-    CriticalSection* cs = &unk_0x6C;
-    if (cs) cs->Enter(); // ???
+    CriticalSection *cs = &unk_0x6C;
+    if (cs)
+        cs->Enter(); // ???
     if (mState <= kResumed) {
         mState = state;
-        if (MainThread()) unk_0xAC.Set(); else unk_0x88.Set();
-        if (cs) cs->Exit();
+        if (MainThread())
+            unk_0xAC.Set();
+        else
+            unk_0x88.Set();
+        if (cs)
+            cs->Exit();
         return 1;
     } else {
-        if (cs) cs->Exit();
+        if (cs)
+            cs->Exit();
         return 0;
     }
 }
 
 int Splash::SetImmutableState(Splash::SplashState state) {
     MILO_ASSERT(state > kResumed, 331);
-    CriticalSection* cs = &unk_0x6C;
-    if (cs) cs->Enter(); // ???
+    CriticalSection *cs = &unk_0x6C;
+    if (cs)
+        cs->Enter(); // ???
     if (mState >= kResumed && state > mState) {
         mState = state;
-        if (MainThread()) unk_0xAC.Set(); else unk_0x88.Set();
-        if (cs) cs->Exit();
+        if (MainThread())
+            unk_0xAC.Set();
+        else
+            unk_0x88.Set();
+        if (cs)
+            cs->Exit();
         return 1;
     } else if (state == kWaitingForTerminating && mState == kTerminating) {
-        if (cs) cs->Exit();
+        if (cs)
+            cs->Exit();
         return 1;
     } else {
-        if (cs) cs->Exit();
+        if (cs)
+            cs->Exit();
         return 0;
     }
 }
@@ -192,21 +207,24 @@ void Splash::SetWaitForSplash(bool b) {
     mWaitForSplash = b;
 }
 
-void Splash::AddScreen(const char* s, int i) {
+void Splash::AddScreen(const char *s, int i) {
     MILO_ASSERT(!gSplashing, 368);
-    CriticalSection* cs = &unk_0xD4;
-    ScreenParams sp; sp.unk_0x0 = s; sp.unk_0x4 = i;
-    if (cs) cs->Enter();
+    CriticalSection *cs = &unk_0xD4;
+    ScreenParams sp;
+    sp.unk_0x0 = s;
+    sp.unk_0x4 = i;
+    if (cs)
+        cs->Enter();
     mScreens.push_back(sp);
-    if (cs) cs->Exit();
+    if (cs)
+        cs->Exit();
 }
 
-int Splash::PrepareNext() {
-
-}
+int Splash::PrepareNext() {}
 
 void Splash::PrepareRemaining() {
-    while (PrepareNext());
+    while (PrepareNext())
+        ;
 }
 
 void Splash::Poll() {
@@ -227,11 +245,13 @@ void Splash::Poll() {
 }
 
 bool Splash::UpdateThreadLoop() {
-    if (unk_0x18.SplitMs() > 1 && !ShowNext()) return true;
+    if (unk_0x18.SplitMs() > 1 && !ShowNext())
+        return true;
     Draw();
     if (mState == kTerminating) {
-        if (!mWaitForSplash|| mLastSplash == NULL) {
-            while (ShowNext());
+        if (!mWaitForSplash || mLastSplash == NULL) {
+            while (ShowNext())
+                ;
             return false;
         }
     }
@@ -239,10 +259,12 @@ bool Splash::UpdateThreadLoop() {
 }
 
 void Splash::WaitForState(Splash::SplashState ss) {
-    if (!unk_0x64) MILO_FAIL("Can't WaitForState");
+    if (!unk_0x64)
+        MILO_FAIL("Can't WaitForState");
     while (mState != ss) {
         if (ss == kResumed) {
-            if (mState > kResumed) return;
+            if (mState > kResumed)
+                return;
         }
         if (MainThread()) {
             unk_0x88.Wait(-1);
@@ -271,16 +293,19 @@ int Splash::ShowNext() {
         mLastSplash->Exit();
         unk_0xF8.push_back(mLastSplash);
     }
-    CriticalSection* cs = &unk_0xD4;
-    if (cs) cs->Enter();
+    CriticalSection *cs = &unk_0xD4;
+    if (cs)
+        cs->Enter();
 }
 
 void Splash::Show() {
-    CriticalSection* cs = &unk_0xD4;
-    if (cs) cs->Enter();
+    CriticalSection *cs = &unk_0xD4;
+    if (cs)
+        cs->Enter();
     MILO_ASSERT(!mPreparedScreens.empty(), 684);
-    RndDir* rd = (*mPreparedScreens.begin()).unk_0x0;
-    if (cs) cs->Exit();
+    RndDir *rd = (*mPreparedScreens.begin()).unk_0x0;
+    if (cs)
+        cs->Exit();
     mLastSplash = rd;
     mLastSplash->Enter();
     mLastSplash->Find<RndCam>(kSplashCam, false);
@@ -297,7 +322,8 @@ void Splash::Draw() {
     if (unk_0x50 != NULL) {
         if (MainThread()) {
             float f = unk_0x50->mMovie.MsPerFrame() - 1;
-            if (unk_0x100.SplitMs() < f) return;
+            if (unk_0x100.SplitMs() < f)
+                return;
             unk_0x100.Restart();
         }
 
@@ -305,7 +331,7 @@ void Splash::Draw() {
             mSplashTime = 0;
             return;
         }
-    } 
+    }
 
     TheRnd->BeginDrawing();
     if (mLastSplash != NULL) {
@@ -313,13 +339,14 @@ void Splash::Draw() {
     }
     ThePlatformMgr.mHomeMenuWii->ShowBannedIcon();
     TheRnd->EndDrawing();
-    if (MainThread()) return;
+    if (MainThread())
+        return;
     int x = int(unk_0x18.SplitMs()) - mSplashTime;
     if (unk_0x50 != NULL) {
         int z = unk_0x50->mMovie.MsPerFrame() - 10;
-        if (z >= x) return;
+        if (z >= x)
+            return;
     } else {
-
     }
 
     OSSleepTicks(OSMillisecondsToTicks(x)); // ?????

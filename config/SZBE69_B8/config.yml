@@ -37,6 +37,9 @@ add_relocations:
 - source: .text:0x80173be4
   type: l
   target: TheLoadMgr
+- source: .text:0x80484d04
+  type: l
+  target: TheLoadMgr
 - source: .text:0x807c8968
   type: l
   target: TheLoadMgr

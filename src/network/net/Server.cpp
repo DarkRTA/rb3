@@ -8,17 +8,16 @@
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 
-Server::Server() : mLoginState(0) {
+Server::Server() : mLoginState(0) {}
 
-}
-
-void Server::Init(){
+void Server::Init() {
     SetName("server", ObjectDir::Main());
-    DataArray* cfg = SystemConfig("net", "server");
+    DataArray *cfg = SystemConfig("net", "server");
     mKey = cfg->FindStr("access_key");
     mPort = cfg->FindInt("port");
     mAddress = cfg->FindStr("address");
-    for(int i = 0; i < 4; i++) mPlayerIDs[i] = 0;
+    for (int i = 0; i < 4; i++)
+        mPlayerIDs[i] = 0;
 }
 
 BEGIN_HANDLERS(Server)
@@ -29,6 +28,4 @@ BEGIN_HANDLERS(Server)
     HANDLE_CHECK(0x32)
 END_HANDLERS
 
-Server::~Server(){
-
-}
+Server::~Server() {}

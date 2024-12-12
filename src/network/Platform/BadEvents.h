@@ -2,10 +2,9 @@
 namespace Quazal {
     class BadEvents {
         enum _ID {
-
         };
 
         static void Signal(_ID);
-        static int* s_pInstance;
+        static int *s_pInstance;
     };
 }

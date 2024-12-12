@@ -5,7 +5,7 @@
 
 namespace Quazal {
     class Statistics : public RootObject {
-        public:
+    public:
         Statistics();
         ~Statistics();
 

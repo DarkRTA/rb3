@@ -2,7 +2,7 @@
 
 namespace Quazal {
 
-    void ExceptionHandler::CheckCrtExceptions(){}
-    void ExceptionHandler::Initialize(){}
+    void ExceptionHandler::CheckCrtExceptions() {}
+    void ExceptionHandler::Initialize() {}
 
 }

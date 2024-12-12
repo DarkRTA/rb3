@@ -6,10 +6,10 @@
 
 class MatchmakingSettings {
 public:
-    MatchmakingSettings(){}
-    virtual ~MatchmakingSettings(){}
+    MatchmakingSettings() {}
+    virtual ~MatchmakingSettings() {}
     virtual void SetMode(Symbol, int);
-    virtual void SetRanked(bool b){ mRanked = b; }
+    virtual void SetRanked(bool b) { mRanked = b; }
     virtual void AddCustomSetting(int, int);
 
     void ClearCustomSettings();
@@ -17,8 +17,8 @@ public:
     int GetCustomID(int) const;
     int GetCustomValue(int) const;
     int GetCustomValueByID(int) const;
-    void Save(BinStream&) const;
-    void Load(BinStream&);
+    void Save(BinStream &) const;
+    void Load(BinStream &);
 
     Symbol mModeName; // 0x4
     int mModeFilter; // 0x8
@@ -30,12 +30,12 @@ public:
 class SessionSettings : public MatchmakingSettings, public Synchronizable {
 public:
     SessionSettings();
-    virtual ~SessionSettings(){}
+    virtual ~SessionSettings() {}
     virtual void SetMode(Symbol, int);
     virtual void SetRanked(bool);
     virtual void AddCustomSetting(int, int);
-    virtual void SyncSave(BinStream&, unsigned int) const;
-    virtual void SyncLoad(BinStream&, unsigned int);
+    virtual void SyncSave(BinStream &, unsigned int) const;
+    virtual void SyncLoad(BinStream &, unsigned int);
     virtual bool HasSyncPermission() const;
     virtual void OnSynchronizing(unsigned int);
     virtual void OnSynchronized(unsigned int);
@@ -49,7 +49,7 @@ public:
 class SearchSettings : public MatchmakingSettings {
 public:
     SearchSettings(int, bool, int);
-    virtual ~SearchSettings(){}
+    virtual ~SearchSettings() {}
 
     int mQueryID; // 0x20
 };

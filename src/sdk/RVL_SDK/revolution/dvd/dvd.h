@@ -43,18 +43,18 @@ typedef struct DVDDriveInfo {
 typedef void (*DVDCBCallback)(s32 result, struct DVDCommandBlock* block);
 
 struct DVDCommandBlock {
-    struct DVDCommandBlock* next;
-    struct DVDCommandBlock* prev;
-    u32 command;
-    s32 state;
-    u32 offset;
-    u32 length;
-    void* addr;
-    u32 currTransferSize;
-    u32 transferredSize;
-    struct DVDDiskID* id;
-    DVDCBCallback callback;
-    void* userData;
+    struct DVDCommandBlock* next; // 0x0
+    struct DVDCommandBlock* prev; // 0x4
+    u32 command; // 0x8
+    s32 state; // 0xC
+    u32 offset; // 0x10
+    u32 length; // 0x14
+    void* addr; // 0x18
+    u32 currTransferSize; // 0x1C
+    u32 transferredSize; // 0x20
+    struct DVDDiskID* id; // 0x24
+    DVDCBCallback callback; // 0x28
+    void* userData; // 0x2C
 };
 
 

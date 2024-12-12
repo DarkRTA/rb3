@@ -16,10 +16,10 @@
 
 int NUM_BUFFERS = 4;
 bool gToggleAO = true;
-void* DisplayList::sTemp;
-void* DisplayList::sCurr;
+void *DisplayList::sTemp;
+void *DisplayList::sCurr;
 
-static DataNode OnToggleAO(DataArray*) {
+static DataNode OnToggleAO(DataArray *) {
     gToggleAO = !gToggleAO;
     TheDebug << MakeString("Ambient Occlusion is now %s!\n", gToggleAO ? "ON" : "OFF");
     return 0;
@@ -45,7 +45,7 @@ void DisplayList::Clear() {
     unk_0x8 = 0;
 }
 
-void DisplayList::Copy(const DisplayList& d) {
+void DisplayList::Copy(const DisplayList &d) {
     Clear();
     mSize = d.mSize;
     unk_0x8 = d.unk_0x8;
@@ -66,19 +66,21 @@ void DisplayList::Begin(unsigned short us) {
     unk_0x8 = us;
 }
 
-void DisplayList::Begin(_GXPrimitive prim, _GXVtxFmt f, unsigned short us1, unsigned short us2) {
+void DisplayList::Begin(
+    _GXPrimitive prim, _GXVtxFmt f, unsigned short us1, unsigned short us2
+) {
     Begin(us2);
     Start(prim, f, us1);
 }
 
 void DisplayList::Start(_GXPrimitive pr, _GXVtxFmt f, unsigned short us) {
-    u8* b = (u8*)sCurr;
-    u32* w = (u32*)sCurr;
-    u16* h = (u16*)sCurr;
+    u8 *b = (u8 *)sCurr;
+    u32 *w = (u32 *)sCurr;
+    u16 *h = (u16 *)sCurr;
     *b = (pr | f);
-    sCurr = (void*)((u8*)sCurr + 1);
+    sCurr = (void *)((u8 *)sCurr + 1);
     *h = us;
-    sCurr = (void*)((u8*)sCurr + 2);
+    sCurr = (void *)((u8 *)sCurr + 2);
 }
 
 void DisplayList::End() {
@@ -92,40 +94,34 @@ void DisplayList::End() {
     mData = _MemAlloc(tmp_b, 0x20);
     DCZeroRange(mData, mSize);
     memcpy(mData, sTemp, tmp_a);
-    memset((void*)((u32)mData + tmp_a), 0, mSize - tmp_a);
+    memset((void *)((u32)mData + tmp_a), 0, mSize - tmp_a);
     DCStoreRange(mData, mSize);
     sCurr = NULL; // memleak? mem is alloc'd but not freed
     MemPopHeap();
 }
 
-DisplayList& DisplayList::operator<<(unsigned short us) {
+DisplayList &DisplayList::operator<<(unsigned short us) {
     MILO_ASSERT(sCurr, 202);
     if (unk_0x8 < 0x100) {
-        u8* test = (u8*)((u32)sCurr + 4);
+        u8 *test = (u8 *)((u32)sCurr + 4);
         us &= 0xFF;
         sCurr = test;
         (((u32)sCurr < (u32)sTemp + kTempSize)
-         || (TheDebugFailer << (MakeString(
-                 kAssertStr,
-                 "Mesh.cpp",
-                 210,
-                 "sCurr < sTemp + kTempSize"
-             )),
+         || (TheDebugFailer
+                 << (MakeString(kAssertStr, "Mesh.cpp", 210, "sCurr < sTemp + kTempSize")
+                    ),
              0));
         test[3] = us;
         test[2] = us;
         test[1] = us;
         test[0] = us;
     } else {
-        u16* test = (u16*)((u32)sCurr + 8);
+        u16 *test = (u16 *)((u32)sCurr + 8);
         sCurr = test;
         (((u32)sCurr < (u32)sTemp + kTempSize)
-         || (TheDebugFailer << (MakeString(
-                 kAssertStr,
-                 "Mesh.cpp",
-                 219,
-                 "sCurr < sTemp + kTempSize"
-             )),
+         || (TheDebugFailer
+                 << (MakeString(kAssertStr, "Mesh.cpp", 219, "sCurr < sTemp + kTempSize")
+                    ),
              0));
         test[3] = us;
         test[2] = us;
@@ -142,8 +138,10 @@ void DisplayList::Draw(u32, _GXVtxFmt) const {
     GXCallDisplayList(mData, mSize);
 }
 
-WiiMesh::WiiMesh() : mCTVtxs(nullptr), mPosNrmVtxs(nullptr), mPosQ(nullptr), mNrmQ(nullptr), mBoneWeights(nullptr),
-    mBoneIndices(nullptr), mNumVerts(0), mNumFaces(0), unk_0x164(0), bitmask_0(0), bitmask_1(1), bitmask_2(0), unk_0x168(-1) {
+WiiMesh::WiiMesh()
+    : mCTVtxs(nullptr), mPosNrmVtxs(nullptr), mPosQ(nullptr), mNrmQ(nullptr),
+      mBoneWeights(nullptr), mBoneIndices(nullptr), mNumVerts(0), mNumFaces(0),
+      unk_0x164(0), bitmask_0(0), bitmask_1(1), bitmask_2(0), unk_0x168(-1) {
     unk_0x150 = nullptr;
 }
 
@@ -151,18 +149,20 @@ BEGIN_COPYS(WiiMesh)
     COPY_SUPERCLASS(RndMesh)
     CREATE_COPY(WiiMesh)
     BEGIN_COPYING_MEMBERS
-        if (mNumFaces > 0) mDisplays.Copy(c->mDisplays);
+        if (mNumFaces > 0)
+            mDisplays.Copy(c->mDisplays);
     END_COPYING_MEMBERS
 END_COPYS
 
 int WiiMesh::GetSomeSizeFactor() {
     int ret;
-    WiiMesh* own = (WiiMesh*)GeometryOwner();
+    WiiMesh *own = (WiiMesh *)GeometryOwner();
     if (own->bitmask_2 && own->bitmask_1) {
         ret = 9;
     } else {
         ret = 16;
-        if (own->bitmask_1) ret = 10;
+        if (own->bitmask_1)
+            ret = 10;
     }
     return ret;
 }
@@ -203,15 +203,15 @@ void WiiMesh::ReleaseBuffers() {
     unk_0x150 = NULL;
 }
 
-void* SkinAlloc(int i1, char*, int i2) {
+void *SkinAlloc(int i1, char *, int i2) {
     static int fastHeapNum = MemFindHeap("");
-    int a,b,c,d;
+    int a, b, c, d;
     MemFreeBlockStats(fastHeapNum, a, b, c, d);
 }
 
 void WiiMesh::CreateBuffers() {
     u32 pos_nrm_vtx_scale = GetSomeSizeFactor();
-    
+
     MILO_ASSERT(!mCTVtxs, 678);
     MILO_ASSERT(!mPosNrmVtxs, 679);
     MILO_ASSERT(!mPosQ, 680);
@@ -228,7 +228,8 @@ void WiiMesh::CreateBuffers() {
     }
     if (unk_0x164 > 1) {
         MILO_ASSERT(!mBoneWeights && !mBoneIndices, 711);
-        mBoneWeights = SkinAlloc((Min((int)unk_0x164,4) * mNumVerts) << 1, "Vertex Weights", 0x20);
+        mBoneWeights =
+            SkinAlloc((Min((int)unk_0x164, 4) * mNumVerts) << 1, "Vertex Weights", 0x20);
     }
     if (unk_0x164 > 4) {
         MILO_ASSERT(!mBoneIndices, 723);
@@ -252,10 +253,10 @@ void WiiMesh::SetVertexDesc() {
     GXInvalidateVtxCache();
 }
 
-void WiiMesh::SetVertexBuffers(const void*) {
-    const void* v = mCTVtxs;
+void WiiMesh::SetVertexBuffers(const void *) {
+    const void *v = mCTVtxs;
     GXSetArray(GX_VA_CLR0, v, 8);
-    GXSetArray(GX_VA_TEX0, (const void*)((u32)v + 4), 8);
+    GXSetArray(GX_VA_TEX0, (const void *)((u32)v + 4), 8);
 }
 
 void WiiMesh::DrawFaces() {

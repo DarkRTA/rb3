@@ -2,13 +2,15 @@
 #include "rndobj/Rnd.h"
 #include "rndobj/TexRenderer.h"
 
-WiiTexRenderer::WiiTexRenderer() { }
+WiiTexRenderer::WiiTexRenderer() {}
 
-WiiTexRenderer::~WiiTexRenderer() { }
+WiiTexRenderer::~WiiTexRenderer() {}
 
 void WiiTexRenderer::DrawPreClear() {
-    if (!Showing()) return;
-    if (TheRnd->UnkE4() == 4) return;
+    if (!Showing())
+        return;
+    if (TheRnd->UnkE4() == 4)
+        return;
     DrawToTexture();
 }
 

@@ -10,18 +10,18 @@
 class SyncObjMsg : public NetMessage {
 public:
     SyncObjMsg() : mObjData(false) {}
-    SyncObjMsg(String&, unsigned int, Synchronizable*);
-    virtual ~SyncObjMsg(){}
+    SyncObjMsg(String &, unsigned int, Synchronizable *);
+    virtual ~SyncObjMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual void Print(TextStream&) const;
+    virtual void Print(TextStream &) const;
     NETMSG_BYTECODE(SyncObjMsg);
     NETMSG_NAME(SyncObjMsg);
 
     NETMSG_NEWNETMSG(SyncObjMsg);
 
-    void GetObjData(BinStream&) const;
+    void GetObjData(BinStream &) const;
 
     String mObjTag; // 0x4
     unsigned int mDirtyMask; // 0x10
@@ -30,9 +30,9 @@ public:
 
 class SyncUserMsg : public NetMessage {
 public:
-    SyncUserMsg(){}
-    SyncUserMsg(const User*);
-    virtual ~SyncUserMsg(){}
+    SyncUserMsg() {}
+    SyncUserMsg(const User *);
+    virtual ~SyncUserMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -46,10 +46,10 @@ public:
 
 class SyncAllMsg : public NetMessage {
 public:
-    SyncAllMsg(){}
-    virtual ~SyncAllMsg(){}
+    SyncAllMsg() {}
+    virtual ~SyncAllMsg() {}
     virtual void Save(BinStream &) const {}
-    virtual void Load(BinStream &){}
+    virtual void Load(BinStream &) {}
     virtual void Dispatch();
     NETMSG_BYTECODE(SyncAllMsg);
     NETMSG_NAME(SyncAllMsg);
@@ -61,13 +61,13 @@ class SyncStore {
 public:
     SyncStore();
     void Poll();
-    void AddSyncObj(Synchronizable*, String&);
-    void RemoveSyncObj(String&);
-    Synchronizable* GetSyncObj(String&);
-    void SyncUser(const User*);
+    void AddSyncObj(Synchronizable *, String &);
+    void RemoveSyncObj(String &);
+    Synchronizable *GetSyncObj(String &);
+    void SyncUser(const User *);
     void SyncAllUsers();
 
-    std::vector<Synchronizable*> mSyncObjs; // 0x0
+    std::vector<Synchronizable *> mSyncObjs; // 0x0
 };
 
-extern SyncStore* TheSyncStore;
+extern SyncStore *TheSyncStore;

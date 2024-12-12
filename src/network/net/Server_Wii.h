@@ -5,8 +5,8 @@
 class WiiServer : public Server {
 public:
     WiiServer();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~WiiServer(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~WiiServer() {}
     virtual void Init();
     virtual void Terminate();
     virtual void Poll();
@@ -24,7 +24,7 @@ public:
     virtual int GetAccountManagementClient();
     virtual int GetMasterProfileID();
     virtual int CreateProfile(String);
-    virtual int DeleteProfile(OnlineID&);
+    virtual int DeleteProfile(OnlineID &);
     virtual int GetCustomAuthData();
 
     bool unk68;

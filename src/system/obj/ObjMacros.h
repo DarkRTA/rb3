@@ -25,7 +25,7 @@ const char* PathName(const class Hmx::Object* obj);
 // END CLASSNAME MACRO ---------------------------------------------------------------------------------
 
 // BEGIN SET TYPE MACRO --------------------------------------------------------------------------------
-
+#ifdef MILO_DEBUG
 #define OBJ_SET_TYPE(classname) \
     virtual void SetType(Symbol classname){ \
         static DataArray* types = SystemConfig("objects", StaticClassName(), "types"); \
@@ -39,6 +39,21 @@ const char* PathName(const class Hmx::Object* obj);
             } \
         } \
     }
+#else
+#define OBJ_SET_TYPE(classname) \
+    virtual void SetType(Symbol classname){ \
+        static DataArray* types = SystemConfig("objects", StaticClassName(), "types"); \
+        if(classname.Null()) SetTypeDef(0); \
+        else { \
+            DataArray* found = types->FindArray(classname, false); \
+            if(found != 0) SetTypeDef(found); \
+            else { \
+                MILO_WARN("%s:%s couldn't find type %s", PathName(this), ClassName(), classname); \
+                SetTypeDef(0); \
+            } \
+        } \
+    }
+#endif
 
 // END SET TYPE MACRO ----------------------------------------------------------------------------------
 

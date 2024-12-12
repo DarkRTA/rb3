@@ -31,6 +31,7 @@ public:
     void Step(int);
     void Continue();
     void Help(Symbol);
+    bool Showing() { return mShowing; }
     void SetShowing(bool);
     void ExecuteLine();
     int OnMsg(const KeyboardKeyMsg&);

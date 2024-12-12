@@ -13,32 +13,34 @@
 
 bool gInBegin, gBeginIntState;
 int gSuppressPointTest;
-void* sDispFB;
+void *sDispFB;
 OSThreadQueue drawDoneThreadQueue;
 WiiRnd TheWiiRnd;
 
 void WiiRnd::SwapFrameBuffer() {
-    if (sDispFB == unk_0x1A8) sDispFB = unk_0x1AC;
-    else sDispFB = unk_0x1A8;
+    if (sDispFB == unk_0x1A8)
+        sDispFB = unk_0x1AC;
+    else
+        sDispFB = unk_0x1A8;
 }
 
 void OnDrawSync(u16 s) {
-    if (s != 62001) return;
-    if (gSuppressPointTest) return;
+    if (s != 62001)
+        return;
+    if (gSuppressPointTest)
+        return;
     TheWiiRnd.DoPointTests();
 }
 
 /*
-WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false), unk_0x2BC(false),
-    mFramesBuffered(2) {
-    mColor.Set(0, 0, 0, 0);
-    unk_0x2B4.reserve(0x20);
+WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false),
+unk_0x2BC(false), mFramesBuffered(2) { mColor.Set(0, 0, 0, 0); unk_0x2B4.reserve(0x20);
 }
 */
 
 WiiRnd::~WiiRnd() {}
 
-void WiiModal(bool& rb, char* c, bool b) { TheWiiRnd.Modal(rb, c, b); }
+void WiiModal(bool &rb, char *c, bool b) { TheWiiRnd.Modal(rb, c, b); }
 
 void WiiRnd::WiiPreInit() {
     Rnd::PreInit();
@@ -48,11 +50,8 @@ void WiiRnd::WiiPreInit() {
 bool WiiRnd::GetProgressiveScan() { return mProgScan; }
 
 /*
-void WiiRnd::DrawLine(const Vector3& a, const Vector3& b, const Hmx::Color&, bool) { // ????·
-    int col;
-    GXLoadPosMtxImm(unk_0x23C, 0);
-    GXSetCurrentMtx(0);
-    GXClearVtxDesc();
+void WiiRnd::DrawLine(const Vector3& a, const Vector3& b, const Hmx::Color&, bool) { //
+????· int col; GXLoadPosMtxImm(unk_0x23C, 0); GXSetCurrentMtx(0); GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_VA_TEX0MTXIDX);
     GXSetVtxDesc(GX_VA_CLR0, GX_VA_TEX0MTXIDX);
     RndGXBegin(GX_LINES, GX_VTXFMT6, 2);
@@ -75,8 +74,10 @@ BEGIN_HANDLERS(WiiRnd)
 END_HANDLERS
 
 void WiiRnd::SetOrthoProj() {
-    if (unk_0x2B0) GXSetProjection(unk_0x1FC, GX_ORTHOGRAPHIC);
-    else GXSetProjection(unk_0x1BC, GX_ORTHOGRAPHIC);
+    if (unk_0x2B0)
+        GXSetProjection(unk_0x1FC, GX_ORTHOGRAPHIC);
+    else
+        GXSetProjection(unk_0x1BC, GX_ORTHOGRAPHIC);
     GXLoadPosMtxImm(unk_0x23C, 0);
     GXSetCurrentMtx(0);
 }
@@ -101,7 +102,7 @@ void WiiRnd::DrawQuad(const Hmx::Rect& r) {
 }
 */
 
-void* WiiRnd::GetCurrXFB() { return sDispFB; }
+void *WiiRnd::GetCurrXFB() { return sDispFB; }
 
 void RndGXBegin(_GXPrimitive prim, _GXVtxFmt fmt, unsigned short verts) {
     MILO_ASSERT(!gInBegin, 3699);

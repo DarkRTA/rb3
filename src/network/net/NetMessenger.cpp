@@ -2,10 +2,6 @@
 
 NetMessenger TheNetMessenger;
 
-NetMessenger::NetMessenger() : mLastSender(0) {
+NetMessenger::NetMessenger() : mLastSender(0) {}
 
-}
-
-NetMessenger::~NetMessenger(){
-
-}
+NetMessenger::~NetMessenger() {}

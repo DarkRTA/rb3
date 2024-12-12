@@ -3,10 +3,10 @@
 #include "Platform/RefCountedObject.h"
 
 namespace Quazal {
-// forward decl cause i can't find the bastard
-class DebugString;
+    // forward decl cause i can't find the bastard
+    class DebugString;
 
-class Job : public RefCountedObject {
-    Job(const DebugString&);
-};
+    class Job : public RefCountedObject {
+        Job(const DebugString &);
+    };
 }

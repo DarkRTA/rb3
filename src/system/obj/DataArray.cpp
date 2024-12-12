@@ -631,7 +631,7 @@ void DataArray::Load(BinStream& bs) {
 
     for (int i = 0; i < size;) {
         DataNode& node = mNodes[i];
-        node.Load(bs);
+        bs >> node;
         if (!DataArrayDefined() && (node.Type() < kDataIfdef || node.Type() > kDataEndif || node.Type() > kDataIfndef)) {
             if (node.Type() != kDataIfndef) {
                 size--;
@@ -654,14 +654,14 @@ void DataArray::Load(BinStream& bs) {
         switch (node.Type()) {
             case kDataAutorun: {
                 DataNode command;
-                command.Load(bs);
+                bs >> command;
                 command.Command(this)->Execute();
                 size -= 2;
                 break;
             }
             case kDataDefine: {
                 DataNode macro;
-                macro.Load(bs);
+                bs >> macro;
                 DataSetMacro(STR_TO_SYM(node.mValue.symbol), macro.Array(this));
                 size -= 2;
                 break;
@@ -699,7 +699,7 @@ void DataArray::Load(BinStream& bs) {
                 bool readFile = false;
                 DataArray* macro = DataGetMacro(path);
                 if (!macro) {
-                    path = FileMakePath(FileGetPath(mFile.Str(), nullptr), path, nullptr);
+                    path = FileMakePath(FileGetPath(mFile.mStr, nullptr), path, nullptr);
                     macro = DataReadFile(path, true);
                     readFile = true;
                     if (!macro) {

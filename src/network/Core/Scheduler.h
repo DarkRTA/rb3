@@ -1,8 +1,8 @@
 #pragma once
 
 namespace Quazal {
-class Scheduler {
+    class Scheduler {
     public:
-    static bool CurrentThreadCanWaitForJob();
-};
+        static bool CurrentThreadCanWaitForJob();
+    };
 }
