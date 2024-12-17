@@ -56,19 +56,16 @@ CheatProvider::CheatProvider() : mFilterIdx(0) {
     ApplyFilter();
 }
 
-extern bool CheatsInitialized();
-
 void CheatProvider::Init() {
     if (CheatsInitialized()) {
         MILO_ASSERT(!sInstance, 97);
-        sInstance = new CheatProvider;
+        sInstance = new CheatProvider();
     }
 }
 
 void CheatProvider::Terminate() {
     MILO_ASSERT(sInstance, 104);
-    delete sInstance;
-    sInstance = NULL;
+    RELEASE(sInstance);
 }
 
 CheatProvider::~CheatProvider(){
@@ -131,7 +128,39 @@ void CheatProvider::NextFilter(){
 }
 
 void CheatProvider::ApplyFilter(){
-
+    Symbol curFilt = mFilters[mFilterIdx];
+    mFilterCheats.clear();
+    Cheat* curCheat = nullptr;
+    for(std::vector<Cheat>::iterator it = mCheats.begin(); it != mCheats.end(); ++it){
+        if(!it->mScript) goto routine;
+        Symbol cheatMode = GetCheatMode();
+        DataArray* modeArr = it->mScript->FindArray(modes, false);
+        if(modeArr && !modeArr->Contains(cheatMode)) continue;
+        else {
+routine:
+            if(curFilt != all){
+                if(!it->mScript){
+                    if(!it->mDesc.empty()){
+                        curCheat = it;
+                    }
+                }
+                else {
+                    DataArray* filterArr = it->mScript->FindArray(filters, false);
+                    if(filterArr && filterArr->Contains(curFilt)){
+                        if(curCheat){
+                            if(!mFilterCheats.empty()){
+                                mFilterCheats.push_back(gNullStr);
+                            }
+                            mFilterCheats.push_back(*curCheat);
+                            curCheat = nullptr;
+                        }
+                        mFilterCheats.push_back(*it);
+                    }
+                }
+            }
+            else mFilterCheats.push_back(*it);
+        }
+    }
 }
 
 BEGIN_HANDLERS(CheatProvider)

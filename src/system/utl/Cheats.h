@@ -1,5 +1,5 @@
-#ifndef UTL_CHEATS_H
-#define UTL_CHEATS_H
+#pragma once
+#include "utl/Symbol.h"
 
 class DataArray;
 class LocalUser;
@@ -7,7 +7,6 @@ class LocalUser;
 void EnableKeyCheats(bool);
 bool GetEnabledKeyCheats();
 void CallQuickCheat(DataArray*, LocalUser*);
-
+bool CheatsInitialized();
+Symbol GetCheatMode();
 void AppendCheatsLog(char*);
-
-#endif // UTL_CHEATS_H
