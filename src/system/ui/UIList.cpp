@@ -177,16 +177,22 @@ void UIList::PostLoad(BinStream& bs) {
     Update();
 }
 
-int UIList::NumDisplay() const { return mListState.NumDisplay(); }
-float UIList::Speed() const { return mListState.Speed(); }
-int UIList::FirstShowing() const { return mListState.FirstShowing(); }
+#pragma push
+#pragma force_active on
+inline int UIList::NumDisplay() const { return mListState.NumDisplay(); }
+inline float UIList::Speed() const { return mListState.Speed(); }
+inline int UIList::FirstShowing() const { return mListState.FirstShowing(); }
+#pragma pop
 int UIList::Selected() const { return mListState.Selected(); }
 int UIList::SelectedDisplay() const { return mListState.SelectedDisplay(); }
-int UIList::SelectedData() const { return mListState.SelectedData(); }
+#pragma push
+#pragma force_active on
+inline int UIList::SelectedData() const { return mListState.SelectedData(); }
+#pragma pop
 int UIList::SelectedPos() const { return mListState.Selected(); }
 
 Symbol UIList::SelectedSym(bool fail) const {
-    Symbol sym = mListState.Provider()->DataSymbol(mListState.SelectedData());
+    Symbol sym = mListState.Provider()->DataSymbol(SelectedData());
     if(fail){
         if(sym == gNullStr) MILO_FAIL("DataSymbol() not implemented in UIList provider");
     }
@@ -197,11 +203,14 @@ bool UIList::IsScrolling() const { return mListState.IsScrolling(); }
 
 UIListState& UIList::GetListState(){ return mListState; }
 
-UIList* UIList::ChildList(){
+#pragma push
+#pragma force_active on
+inline UIList* UIList::ChildList(){
     return mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
 }
+inline UIList* UIList::ParentList(){ return mParent; }
+#pragma pop
 
-UIList* UIList::ParentList(){ return mParent; }
 UIListDir* UIList::GetUIListDir() const { return mListDir; }
 
 void UIList::SetNumDisplay(int i){
@@ -344,7 +353,7 @@ void UIList::Refresh(bool b){
             int nowrap = mListState.SelectedNoWrap();
             if(nowrap >= NumProviderData() && nowrap != 0) SetSelected(NumProviderData() - 1, -1);
             else {
-                if(!mListState.Provider()->IsActive(mListState.SelectedData()) && !mListState.IsScrolling()){
+                if(!mListState.Provider()->IsActive(SelectedData()) && !mListState.IsScrolling()){
                     SetSelected(nowrap, -1);
                 }
             }
@@ -686,7 +695,7 @@ DataNode UIList::OnSelectedSym(DataArray* da){
     else return DataNode(SelectedSym(true));
 }
 
-bool UIList::IsEmptyValue() const { return mListState.SelectedData() == -1; }
+bool UIList::IsEmptyValue() const { return SelectedData() == -1; }
 
 void UIList::FinishValueChange(){
     UpdateExtendedEntries(mListState);
