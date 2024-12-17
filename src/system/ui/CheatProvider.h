@@ -36,7 +36,7 @@ public:
      */
     void Invoke(int idx, LocalUser* user);
     /** Set the current filter in place to the next available filter. */
-    void NextFilter();
+    void NextFilter(); // likely private
     /** Update the filtered cheats vector based on the current filter. */
     void ApplyFilter();
 
@@ -44,12 +44,12 @@ public:
     static void Terminate();
     static CheatProvider* sInstance;
 
-    /** The series of cheats. */
+    /** The complete series of cheats. */
     std::vector<Cheat> mCheats; // 0x20
     /** The series of filtered cheats. */
     std::vector<Cheat> mFilterCheats; // 0x28
-    /** The series of filters (places where certain cheats are only allowed to work, i.e. game, meta, store, writer) */
+    /** The series of filters (places where certain cheats are only allowed to work, i.e. game, meta, store, writer, all) */
     std::vector<Symbol> mFilters; // 0x30
-    /** The current filter in place. */
+    /** The current filter being applied. */
     int mFilterIdx; // 0x38
 };

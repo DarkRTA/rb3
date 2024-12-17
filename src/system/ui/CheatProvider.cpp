@@ -131,21 +131,20 @@ void CheatProvider::ApplyFilter(){
     Symbol curFilt = mFilters[mFilterIdx];
     mFilterCheats.clear();
     Cheat* curCheat = nullptr;
-    for(std::vector<Cheat>::iterator it = mCheats.begin(); it != mCheats.end(); ++it){
-        if(!it->mScript) goto routine;
-        Symbol cheatMode = GetCheatMode();
-        DataArray* modeArr = it->mScript->FindArray(modes, false);
-        if(modeArr && !modeArr->Contains(cheatMode)) continue;
-        else {
-routine:
-            if(curFilt != all){
-                if(!it->mScript){
-                    if(!it->mDesc.empty()){
-                        curCheat = it;
-                    }
-                }
-                else {
-                    DataArray* filterArr = it->mScript->FindArray(filters, false);
+    for(std::vector<Cheat>::iterator it = mCheats.begin(); it != mCheats.end(); ++it) {
+        if (it->mScript) {
+            Symbol cheatMode = GetCheatMode();
+            DataArray* modeArr = it->mScript->FindArray(modes, false);
+            if (modeArr && !modeArr->Contains(cheatMode)) continue;
+        }
+        if(curFilt != all){
+            if(!it->mScript){
+                if(!it->mDesc.empty()){
+                    curCheat = it;
+                 }
+            }
+            else {
+                DataArray* filterArr = it->mScript->FindArray(filters, false);
                     if(filterArr && filterArr->Contains(curFilt)){
                         if(curCheat){
                             if(!mFilterCheats.empty()){
@@ -158,8 +157,7 @@ routine:
                     }
                 }
             }
-            else mFilterCheats.push_back(*it);
-        }
+        else mFilterCheats.push_back(*it);
     }
 }
 
