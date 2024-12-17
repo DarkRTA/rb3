@@ -14,14 +14,14 @@ CheatProvider::CheatProvider() : mFilterIdx(0) {
     for(int i = 1; i < cfg->Size(); i++){
         DataArray* arr = cfg->Array(i);
         Symbol cheatTypeSym = arr->Sym(0);
-        const char* strtext;
+        const char* strtext = 0;
         if(cheatTypeSym == "keyboard") strtext = "KEYBOARD CHEATS";
         else if(cheatTypeSym == "right") strtext = "RIGHT CHEATS (R1 + R2)";
         else if(cheatTypeSym == "left") strtext = "LEFT CHEATS (L1 + L2)";
         mCheats.push_back(Cheat(strtext));
         for(int j = 1; j < arr->Size(); j++){
             DataArray* arr2 = arr->Array(j);
-            DataType nType = arr2->Type(0);
+            DataType nType = arr2->Node(0).Type();
             String theKeyStr;
             if(nType == kDataString || nType == kDataSymbol){
                 theKeyStr = arr2->Str(0);
@@ -49,11 +49,9 @@ CheatProvider::CheatProvider() : mFilterIdx(0) {
                 }
             }
         }
-
         if(i < cfg->Size() - 1){
-            mCheats.push_back("");
+            mCheats.push_back(gNullStr);
         }
-
     }
     ApplyFilter();
 }
