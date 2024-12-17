@@ -1,5 +1,4 @@
-#ifndef UI_CHEATPROVIDER_H
-#define UI_CHEATPROVIDER_H
+#pragma once
 #include "ui/UIListProvider.h"
 #include "obj/Object.h"
 
@@ -14,6 +13,7 @@ public:
     class Cheat {
     public:
         Cheat(const char* desc) : mKey(), mDesc(desc), mScript(0) {}
+        Cheat(const String& key, const String& desc, DataArray* script) : mKey(key), mDesc(desc), mScript(script) {}
         String mKey; // 0x0
         String mDesc; // 0xc
         DataArray* mScript; // 0x18
@@ -40,5 +40,3 @@ public:
     std::vector<Symbol> mFilters; // 0x30
     int mFilterIdx; // 0x38
 };
-
-#endif

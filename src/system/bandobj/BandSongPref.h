@@ -2,6 +2,7 @@
 #include "obj/Object.h"
 #include "utl/MemMgr.h"
 
+/** "Band Song Preferences, per song file settable properties" */
 class BandSongPref : public Hmx::Object {
 public:
     BandSongPref();
@@ -28,5 +29,12 @@ public:
     Symbol Part4Inst() const { return mPart4Instrument; }
     Symbol GetAnimGenre() const { return mAnimGenre; }
 
-    Symbol mPart2Instrument, mPart3Instrument, mPart4Instrument, mAnimGenre;
+    /** "Who should sing the vocal part2?" Can choose from guitar, bass, drum */
+    Symbol mPart2Instrument; // 0x1c
+    /** "Who should sing the vocal part3?" Can choose from guitar, bass, drum */
+    Symbol mPart3Instrument; // 0x20
+    /** "Who should sing the vocal part4?" Can choose from guitar, bass, drum */
+    Symbol mPart4Instrument; // 0x24
+    /** "Animation genre for the song" Can choose from banger, dramatic, rocker, spazz */
+    Symbol mAnimGenre; // 0x28
 };
