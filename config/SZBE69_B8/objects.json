@@ -1346,7 +1346,7 @@
             "system/ui/UIGridProvider.cpp": "Matching",
             "system/ui/UIGuide.cpp": "Matching",
             "system/ui/UILabel.cpp": "NonMatching",
-            "system/ui/UILabelDir.cpp": "NonMatching",
+            "system/ui/UILabelDir.cpp": "Equivalent",
             "system/ui/UIList.cpp": "NonMatching",
             "system/ui/UIListArrow.cpp": "Matching",
             "system/ui/UIListCustom.cpp": "Matching",

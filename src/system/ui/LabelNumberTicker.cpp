@@ -12,8 +12,8 @@ void LabelNumberTicker::Init(){
     TheUI->InitResources("LabelNumberTicker");
 }
 
-LabelNumberTicker::LabelNumberTicker() : mLabel(this, 0), mDesiredValue(0), mAnimTime(0.0f), mAnimDelay(0.0f), mWrapperText(gNullStr),
-    mAcceleration(0.0f), unk12c(0), unk130(0), mTickTrigger(this, 0), mTickEvery(0) {
+LabelNumberTicker::LabelNumberTicker() : mLabel(this), mDesiredValue(0), mAnimTime(0.0f), mAnimDelay(0.0f), mWrapperText(gNullStr),
+    mAcceleration(0.0f), unk12c(0), unk130(0), mTickTrigger(this), mTickEvery(0) {
 
 }
 
@@ -65,8 +65,7 @@ void LabelNumberTicker::PostLoad(BinStream& bs){
 
 void LabelNumberTicker::UpdateDisplay(){
     if(mLabel){
-        bool textIsNull = mWrapperText != gNullStr;
-        if(textIsNull){
+        if(mWrapperText != gNullStr){
             mLabel->SetTokenFmt(mWrapperText, LocalizeSeparatedInt(unk130));
         }
     }

@@ -1,5 +1,4 @@
-#ifndef UI_SCREENSHOT_H
-#define UI_SCREENSHOT_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "obj/Object.h"
 #include "utl/FilePath.h"
@@ -7,6 +6,8 @@
 class RndTex;
 class RndMat;
 
+/** "Object to draw a screensot in Milo, to help with positioning.
+ *  The screenshot will not be drawn or even loaded in-game." */
 class Screenshot : public RndDrawable {
 public:
     Screenshot();
@@ -31,9 +32,8 @@ public:
 
     DECLARE_REVS
 
+    /** "File containing the screenshot to display.  This file will only be loaded in Milo, not in game." */
     FilePath mTexPath; // 0x20
     RndTex* mTex; // 0x2c
     RndMat* mMat; // 0x30
 };
-
-#endif

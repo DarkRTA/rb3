@@ -1,5 +1,4 @@
-#ifndef UI_UILISTSTATE_H
-#define UI_UILISTSTATE_H
+#pragma once
 #include "ui/UIListProvider.h"
 #include "types.h"
 #include <vector>
@@ -52,13 +51,17 @@ public:
     int FirstShowing() const { return mFirstShowing; }
     int GridSpan() const { return mGridSpan; }
 
+    /** "Does the list scrolling wrap?" */
     bool mCircular; // 0x0
     int mNumDisplay; // 0x4
     int mGridSpan; // 0x8
     float mSpeed; // 0xc
+    /** "How far from top of list to start scrolling". Range from 0 to 50 */
     int mMinDisplay; // 0x10
     bool mScrollPastMinDisplay; // 0x14
+    /** "How far down can the highlight travel before scoll? Use -1 for no limit". Range from -1 to 50 */
     int mMaxDisplay; // 0x18
+    /** "Allow selected data to move beyond max highlight?" */
     bool mScrollPastMaxDisplay; // 0x1c
     UIListProvider* mProvider; // 0x20
     std::vector<int> mHiddenData; // 0x24
@@ -77,5 +80,3 @@ public:
     virtual void StartScroll(const UIListState&, int, bool) = 0;
     virtual void CompleteScroll(const UIListState&) = 0;
 };
-
-#endif

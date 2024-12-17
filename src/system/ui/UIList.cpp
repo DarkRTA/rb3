@@ -98,7 +98,7 @@ void UIList::PreLoad(BinStream& bs) {
 
 void UIList::PreLoadWithRev(BinStream& bs, int rev) {
     mUIListRev = rev;
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     if (mUIListRev > 19) {
         MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), mUIListRev, (unsigned short)19);
     }

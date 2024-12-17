@@ -1,5 +1,4 @@
-#ifndef UI_LABELNUMBERTICKER_H
-#define UI_LABELNUMBERTICKER_H
+#pragma once
 #include "ui/UIComponent.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/EventTrigger.h"
@@ -7,6 +6,7 @@
 
 class UILabel;
 
+/** "a ticker to control counting up or down for a given number based label" */
 class LabelNumberTicker : public UIComponent {
 public:
     LabelNumberTicker();
@@ -42,18 +42,24 @@ public:
 
     static void Register(){ REGISTER_OBJ_FACTORY(LabelNumberTicker); }
 
-    ObjPtr<UILabel, ObjectDir> mLabel; // 0x10c
+    /** "label to be shrink wrapped" */
+    ObjPtr<UILabel> mLabel; // 0x10c
+    /** "desired value" */
     int mDesiredValue; // 0x118
+    /** "Time taken for number ticking animation" */
     float mAnimTime; // 0x11c
+    /** "delay before number ticking animation" */
     float mAnimDelay; // 0x120
+    /** "Localization token to use for wrapper (must include %s)" */
     Symbol mWrapperText; // 0x124
+    /** "Higher number accelerates faster, 3 is a good number." */
     float mAcceleration; // 0x128
     int unk12c; // 0x12c
     int unk130; // 0x130
     int unk134; // 0x134
     Timer mTimer; // 0x138
-    ObjPtr<EventTrigger, ObjectDir> mTickTrigger; // 0x168
+    /** "Event to trigger while counting up" */
+    ObjPtr<EventTrigger> mTickTrigger; // 0x168
+    /** "Trigger tick_trigger every time the count goes up by this much" */
     int mTickEvery; // 0x174
 };
-
-#endif

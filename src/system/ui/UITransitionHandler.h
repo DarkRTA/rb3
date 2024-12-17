@@ -1,5 +1,4 @@
-#ifndef UI_UITRANSITIONHANDLER_H
-#define UI_UITRANSITIONHANDLER_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Anim.h"
@@ -32,10 +31,11 @@ public:
     void UpdateHandler();
     bool IsReadyToChange() const;
 
-    ObjPtr<RndAnimatable, ObjectDir> mInAnim;
-    ObjPtr<RndAnimatable, ObjectDir> mOutAnim;
-    u8 mAnimationState; // make this the enum above but only take up 1 byte?
+    /** "animation kicked off before extended entries are updated" */
+    ObjPtr<RndAnimatable> mInAnim;
+    /** "animation kicked off after extended entries are updated" */
+    ObjPtr<RndAnimatable> mOutAnim;
+    /** The current transition animation state. */
+    unsigned char mAnimationState; // make this the enum above but only take up 1 byte?
     bool mChangePending, b3; // mChangePending, mOutAnimStartedThisFrame
 };
-
-#endif

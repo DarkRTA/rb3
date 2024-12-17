@@ -34,14 +34,16 @@ public:
     void SetFrame(float);
     int Current() const;
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    DECLARE_REVS;
+
     static void Init();
     static void Register(){
         REGISTER_OBJ_FACTORY(UISlider);
     }
     NEW_OBJ(UISlider);
 
-    DECLARE_REVS;
-    DELETE_OVERLOAD;
 
     int mCurrent; // 0x118
     int mNumSteps; // 0x11c
