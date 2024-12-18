@@ -100,11 +100,9 @@ inline void UIListSubListElement::Fill(const UIListProvider& prov, int i, int j)
     else theProvider = prov.Provider(i, j, mSlot);
     if(theProvider){
         mList->SetProvider(theProvider);
-        int thefill = UIListSubList::sNextFillSelection;
-        if(-1 < UIListSubList::sNextFillSelection){
-
+        if(0 <= UIListSubList::sNextFillSelection){
+            mList->SetSelected(Clamp(0, theProvider->NumData() - 1, UIListSubList::sNextFillSelection), -1);
+            UIListSubList::sNextFillSelection = -1;
         }
-        mList->SetSelected(thefill, -1);
-        UIListSubList::sNextFillSelection = -1;
     }
 }
