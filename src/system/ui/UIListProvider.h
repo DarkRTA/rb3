@@ -1,5 +1,4 @@
-#ifndef UI_UILISTPROVIDER_H
-#define UI_UILISTPROVIDER_H
+#pragma once
 #include "utl/Symbol.h"
 #include "ui/UIComponent.h"
 #include "ui/UIColor.h"
@@ -71,5 +70,3 @@ public:
     std::vector<float> mWidths; // 0x20
     UIList* mList; // 0x28
 };
-
-#endif

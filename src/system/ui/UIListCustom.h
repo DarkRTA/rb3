@@ -1,6 +1,4 @@
-#ifndef UI_UILISTCUSTOM_H
-#define UI_UILISTCUSTOM_H
-
+#pragma once
 #include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
@@ -18,6 +16,7 @@ public:
     virtual void GrowBoundingBox(Box&) const = 0;
 };
 
+/** "Custom slot for use with UIList" */
 class UIListCustom : public UIListSlot {
 public:
     UIListCustom();
@@ -34,7 +33,8 @@ public:
 
     void SetObject(Hmx::Object*);
 
-    ObjPtr<Hmx::Object, ObjectDir> mObject;
+    /** "custom object to draw/transform" */
+    ObjPtr<Hmx::Object> mObject;
 
     DECLARE_REVS
     NEW_OVERLOAD
@@ -55,5 +55,3 @@ class UIListCustomElement : public UIListSlotElement {
     class UIListCustom* mOwner;
     Hmx::Object* mPtr;
 };
-
-#endif // UI_UILISTCUSTOM_H

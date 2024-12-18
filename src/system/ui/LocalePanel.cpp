@@ -9,7 +9,6 @@
 #include "ui/UIScreen.h"
 #include "utl/Locale.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
 
 namespace {
     struct LabelSort {

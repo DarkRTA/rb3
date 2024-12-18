@@ -1,5 +1,4 @@
-#ifndef UI_UILISTHIGHLIGHT_H
-#define UI_UILISTHIGHLIGHT_H
+#pragma once
 #include "ui/UIListWidget.h"
 #include "obj/ObjPtr_p.h"
 
@@ -32,5 +31,3 @@ public:
     /** "arrow mesh to draw/transform" */
     ObjPtr<RndMesh, ObjectDir> mMesh; // 0x40
 };
-
-#endif

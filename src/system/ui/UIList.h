@@ -1,5 +1,4 @@
-#ifndef UI_UILIST_H
-#define UI_UILIST_H
+#pragma once
 #include "obj/Object.h"
 #include "types.h"
 #include "ui/ScrollSelect.h"
@@ -14,6 +13,14 @@
 
 class UIListDir;
 
+/**
+ * @brief A UI Object representing a list element.
+ * Original _objects description:
+ * "Component for displaying 1- or 2-dimensional lists of data.
+ * Can be oriented horizontally or vertically, can scroll normally or
+ * circularly, and can have any number of visible elements (even just
+ * one, a.k.a. a spin button)."
+ */
 class UIList : public UIComponent, public UIListProvider, public ScrollSelect, public UIListStateCallback, public UITransitionHandler {
 public:
     UIList();
@@ -84,6 +91,8 @@ public:
     void UpdateExtendedEntries(const UIListState&);
     void SetScrollUser(LocalUser*);
     void SetDrawManuallyControlledWidgets(bool);
+    int CollidePlane(const std::vector<Vector3>&, const Plane&);
+
     static void CollectGarbage();
 
     DataNode OnMsg(const ButtonDownMsg&);
@@ -101,17 +110,24 @@ public:
     UIListState mListState; // 0x14c
     int mUIListRev; // 0x190
     DataProvider* mDataProvider; // 0x194
+    /** "Num data to show (only for milo)". Range from 1 to 1000 */
     int mNumData; // 0x198
     LocalUser* mUser; // 0x19c
     UIList* mParent; // 0x1a0
-    ObjPtrList<UILabel, ObjectDir> mExtendedLabelEntries; // 0x1a4
-    ObjPtrList<RndMesh, ObjectDir> mExtendedMeshEntries; // 0x1b4
-    ObjPtrList<Hmx::Object, ObjectDir> mExtendedCustomEntries; // 0x1c4
+    /** "labels to be filled in by list provider at runtime" */
+    ObjPtrList<UILabel> mExtendedLabelEntries; // 0x1a4
+    /** "meshes to be filled in by list provider at runtime" */
+    ObjPtrList<RndMesh> mExtendedMeshEntries; // 0x1b4
+    /** "custom objects to be filled in by list provider at runtime" */
+    ObjPtrList<Hmx::Object> mExtendedCustomEntries; // 0x1c4
+    /** "Time to pause when auto scroll changes directions (seconds)" */
     float mAutoScrollPause; // 0x1d4
     int unk_0x1D8; // 0x1d8
     float unk_0x1DC; // 0x1dc
     u8 unk_0x1E0; // 0x1e0
+    /** "Allow scrolling by pages?" */
     bool mPaginate; // 0x1e1
+    /** "Should this list send UIComponentScroll* messages while auto-scrolling?" */
     bool mAutoScrollSendMessages; // 0x1e2
     bool mAutoScrolling; // 0x1e3
     bool unk_0x1E4; // 0x1e4 - scroll related
@@ -119,6 +135,7 @@ public:
     bool unk_0x1E6;
     bool mNeedsGarbageCollection; // 0x1e7
 
+    NEW_OVERLOAD
     DELETE_OVERLOAD
     DECLARE_REVS
 
@@ -127,6 +144,7 @@ public:
         REGISTER_OBJ_FACTORY(UIList)
     }
     NEW_OBJ(UIList)
-};
 
-#endif // UI_UILIST_H
+    // display num: "Number of rows/columns". range is 1-50
+    // scroll time: "Time (seconds) to scroll one step - 0 for instant scrolling". Range from 0 to 5
+};

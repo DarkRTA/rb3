@@ -1,3 +1,4 @@
+#include "ui/UIList.h"
 #include "ui/UIListDir.h"
 #include "ui/UIListWidget.h"
 #include <algorithm>
@@ -39,8 +40,19 @@ void UIListDir::BuildDrawState(UIListWidgetDrawState&, const UIListState&, UICom
 
 }
 
-void UIListDir::SetElementPos(Vector3&, float, int, float, float) const {
-
+void UIListDir::SetElementPos(Vector3& v, float f1, int i2, float f3, float f4) const {
+    v.Zero();
+    int floored = std::floor(f1);
+    float f3toset = mElementSpacing * ((f1 - (float)floored) + (float)(floored / i2)) + f3;
+    float f2toset = mElementSpacing * (float)(floored % i2) + f4;
+    if(mOrientation == kUIListVertical){
+        v.z -= f3toset;
+        v.x += f2toset;
+    }
+    else {
+        v.x += f3toset;
+        v.z -= f2toset;
+    }
 }
 
 UIList* UIListDir::SubList(int i, std::vector<UIListWidget*>& vec){
@@ -48,7 +60,7 @@ UIList* UIListDir::SubList(int i, std::vector<UIListWidget*>& vec){
         UIList* l = (*it)->SubList(i);
         if(l) return l;
     }
-    return 0;
+    return nullptr;
 }
 
 void UIListDir::CreateElements(UIList* uilist, std::vector<UIListWidget*>& vec, int i){
@@ -74,14 +86,52 @@ void UIListDir::FillElements(const UIListState& state, std::vector<UIListWidget*
 
 // fn_8056AEBC
 void UIListDir::FillElement(const UIListState& state, std::vector<UIListWidget*>& vec, int i){
-    if(state.Display2Data(i) != -1){
-
+    int disp = state.Display2Data(i);
+    if(disp != -1){
+        int snapped = state.SnappedDataForDisplay(i);
+        if(snapped >= 0) disp = snapped;
+        int disp2show = state.Display2Showing(i);
+        bool isnegone = i == -1;
+        ClampEq(i, 0, state.NumDisplay());
+        for(std::vector<UIListWidget*>::iterator it = vec.begin(); it != vec.end(); ++it){
+            (*it)->Fill(*state.Provider(), i, disp2show, disp);
+            if(isnegone && snapped >= 0){
+                (*it)->Fill(*state.Provider(), 1, state.Display2Showing(0), state.Display2Data(0));
+            }
+        }
     }
 }
 
 // fn_8056B014
-void UIListDir::DrawWidgets(const UIListState&, std::vector<UIListWidget*>&, const Transform&, UIComponent::State, Box*, bool){
-
+void UIListDir::DrawWidgets(const UIListState& state, std::vector<UIListWidget*>& vec, const Transform& tf, UIComponent::State compstate, Box* box, bool bptr){
+    // some ctor
+    UIListWidgetDrawState drawstate;
+    float f1;
+    UIList* sublist = SubList(state.SelectedDisplay(), vec);
+    if(sublist){
+        f1 = (float)sublist->SelectedDisplay() * sublist->GetUIListDir()->ElementSpacing();
+    }
+    else f1 = 0;
+    BuildDrawState(drawstate, state, compstate, f1);
+    bool scrolling = state.IsScrolling();
+    for(std::vector<UIListWidget*>::iterator it = vec.begin(); it != vec.end(); ++it){
+        UIListWidget* curWidget = *it;
+        UIListWidgetDrawType drawType = curWidget->WidgetDrawType();
+        if(drawType == 0 || (drawType == 3 && (bptr || compstate == 1)) || (drawType == 1 && compstate == 1)){
+            DrawCommand cmd = kDrawAll;
+            if(scrolling) cmd = kExcludeFirst;
+            curWidget->Draw(drawstate, state, tf, compstate, box, cmd);
+        }
+    }
+    if(scrolling){
+        for(std::vector<UIListWidget*>::iterator it = vec.begin(); it != vec.end(); ++it){
+            UIListWidget* curWidget = *it;
+            UIListWidgetDrawType drawType = curWidget->WidgetDrawType();
+            if(drawType == 0 || (drawType == 1 && compstate == 1)){
+                curWidget->Draw(drawstate, state, tf, compstate, box, kDrawFirst);
+            }
+        }
+    }
 }
 
 void UIListDir::PollWidgets(std::vector<UIListWidget*>& widgets){
@@ -203,7 +253,7 @@ void UIListDir::Poll(){
 int UIListDir::NumData() const { return mTestNumData; }
 float UIListDir::GapSize(int, int, int, int) const { return mTestGapSize; }
 bool UIListDir::IsActive(int i) const {
-    if(mTestDisableElements) return i == -1;
+    if(mTestDisableElements) return !(i % 2);
     else return true;
 }
 

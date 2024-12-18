@@ -1,10 +1,10 @@
-#ifndef UI_LABELSHRINKWRAPPER_H
-#define UI_LABELSHRINKWRAPPER_H
+#pragma once
 #include "ui/UIComponent.h"
 #include "obj/ObjPtr_p.h"
 
 class UILabel;
 
+/** "a mesh shrink wrapped to selected label" */
 class LabelShrinkWrapper : public UIComponent {
 public:
     LabelShrinkWrapper();
@@ -40,12 +40,12 @@ public:
 
     static void Register(){ REGISTER_OBJ_FACTORY(LabelShrinkWrapper); }
 
-    ObjPtr<UILabel, ObjectDir> m_pLabel; // 0x10c
+    /** "label to be shrink wrapped" */
+    ObjPtr<UILabel> m_pLabel; // 0x10c
+    /** "Should this be shown?" */
     bool m_pShow; // 0x118
     RndMesh* m_pTopLeftBone; // 0x11c
     RndMesh* m_pTopRightBone; // 0x120
     RndMesh* m_pBottomLeftBone; // 0x124
     RndMesh* m_pBottomRightBone; // 0x128
 };
-
-#endif

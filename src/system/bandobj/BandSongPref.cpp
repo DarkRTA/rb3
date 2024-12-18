@@ -1,9 +1,6 @@
-#include "BandSongPref.h"
-#include "obj/ObjMacros.h"
+#include "bandobj/BandSongPref.h"
 #include "obj/Object.h"
-#include "types.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols4.h"
+#include "utl/Symbols.h"
 
 INIT_REVS(BandSongPref)
 
@@ -14,7 +11,7 @@ SAVE_OBJ(BandSongPref, 24)
 BEGIN_LOADS(BandSongPref)
     LOAD_REVS(bs)
     ASSERT_REVS(3, 0)
-    Hmx::Object::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object);
     bs >> mPart2Instrument;
     bs >> mPart3Instrument;
     bs >> mPart4Instrument;

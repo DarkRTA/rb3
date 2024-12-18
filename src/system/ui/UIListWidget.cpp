@@ -6,12 +6,12 @@
 
 INIT_REVS(UIListWidget);
 
-UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this, 0),
+UIListWidget::UIListWidget() : mDrawOrder(0.0f), mDisabledAlphaScale(1.0f), mDefaultColor(this),
     mWidgetDrawType(kUIListWidgetDrawAlways), mParentList(nullptr) {
     for(int i = 0; i < kNumUIListWidgetStates; i++){
-        std::vector<ObjPtr<UIColor, class ObjectDir> > vec;
+        std::vector<ObjPtr<UIColor> > vec;
         for(int j = 0; j < UIComponent::kNumStates; j++){
-            vec.push_back(ObjPtr<UIColor, class ObjectDir>(this, 0));
+            vec.push_back(ObjPtr<UIColor>(this));
         }
         mColors.push_back(vec);
     }
@@ -65,7 +65,7 @@ UIColor* UIListWidget::DisplayColor(UIListWidgetState element_state, UIComponent
 void UIListWidget::SetColor(UIListWidgetState ws, UIComponent::State cs, UIColor* color){
     MILO_ASSERT(ws < kNumUIListWidgetStates, 0x7C);
     MILO_ASSERT(cs < UIComponent::kNumStates, 0x7D);
-    ObjPtr<UIColor, class ObjectDir>& theColor = mColors[ws][cs];
+    ObjPtr<UIColor>& theColor = mColors[ws][cs];
     theColor = color;
 }
 

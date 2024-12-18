@@ -1,9 +1,11 @@
-#ifndef UI_UIPROXY_H
-#define UI_UIPROXY_H
+#pragma once
 #include "ui/UIComponent.h"
 #include "obj/Dir.h"
 #include "rndobj/Dir.h"
 
+/** "A UIProxy object allows artists to position dynamically
+ *  loaded resources (e.g. a character) in Milo. The app will then load
+ *  the appropriate resources into it." */
 class UIProxy : public UIComponent {
 public:
     UIProxy();
@@ -39,11 +41,10 @@ public:
     }
 
     ObjDirPtr<RndDir> mDir; // 0x10c
-    ObjPtr<RndEnviron, ObjectDir> mEnv; // 0x118
+    /** "environment to use on it" */
+    ObjPtr<RndEnviron> mEnv; // 0x118
     RndTransformable* mMainTrans; // 0x124
     Transform mOldXfm; // 0x128
     bool mSyncOnMove; // 0x158
     bool mPolled; // 0x159
 };
-
-#endif

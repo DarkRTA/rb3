@@ -1,5 +1,4 @@
-#ifndef UI_UILISTDIR_H
-#define UI_UILISTDIR_H
+#pragma once
 #include "rndobj/Dir.h"
 #include "ui/UIListProvider.h"
 #include "ui/UIListState.h"
@@ -10,6 +9,7 @@ enum UIListOrientation {
     kUIListHorizontal
 };
 
+/** "Top-level resource object for UILists" */
 class UIListDir : public RndDir, public UIListProvider, public UIListStateCallback {
 public:
     UIListDir();
@@ -54,18 +54,27 @@ public:
         REGISTER_OBJ_FACTORY(UIListDir)
     }
 
+    /** "scroll direction of list" */
     UIListOrientation mOrientation; // 0x194
+    /** "Number of elements to fade from beginning/end of list". Ranges from 0 to 10. */
     int mFadeOffset; // 0x198
+    /** "spacing between elements". Ranges from 0 to 1000. */
     float mElementSpacing; // 0x19c
+    /** "point during scroll when highlight changes". Ranges from 0 to 1. */
     float mScrollHighlightChange; // 0x1a0
+    /** "draw widgets in preview mode?" */
     bool mTestMode; // 0x1a4
     UIListState mTestState; // 0x1a8
+    /** "total number of data elements" */
     int mTestNumData; // 0x1ec
+    /** "test gaps between elements". Ranges from 0 to 1000. */
     float mTestGapSize; // 0x1f0
     UIComponent::State mTestComponentState; // 0x1f4
+    /** "test disable every other element" */
     bool mTestDisableElements; // 0x1f8
     std::vector<UIListWidget*> unk1fc; // 0x1fc
     int mDirection; // 0x204
-};
 
-#endif
+    // test num display: "number of elements to draw"
+    // test scroll time: "test scroll time"
+};

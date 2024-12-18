@@ -1,11 +1,15 @@
-#ifndef UI_UIGUIDE_H
-#define UI_UIGUIDE_H
-#include "obj/ObjMacros.h"
+#pragma once
 #include "obj/Object.h"
 #include "utl/MemMgr.h"
 
+/** "a guide used to line up UI elements" */
 class UIGuide : public Hmx::Object {
 public:
+    enum Type {
+        kGuideVertical,
+        kGuideHorizontal
+    };
+
     UIGuide();
     virtual ~UIGuide();
     OBJ_CLASSNAME(UIGuide);
@@ -24,8 +28,8 @@ public:
         REGISTER_OBJ_FACTORY(UIGuide);
     }
 
-    int mType;
+    /** "Horizontal or vertical guide?" */
+    Type mType;
+    /** "position in proportion to screen width (if vertical) or height (if horizontal)". Ranges from 0 to 1. */
     float mPos;
 };
-
-#endif

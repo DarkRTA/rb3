@@ -1,8 +1,8 @@
-#ifndef UI_UILISTSUBLIST_H
-#define UI_UILISTSUBLIST_H
+#pragma once
 #include "ui/UIListSlot.h"
 #include "ui/UIList.h"
 
+/** "Custom slot for use with UIList" */
 class UIListSubList : public UIListSlot {
 public:
     UIListSubList();
@@ -29,7 +29,8 @@ public:
 
     static int sNextFillSelection;
     
-    ObjPtr<UIList, ObjectDir> mList; // 0x5c
+    /** "sub list template" */
+    ObjPtr<UIList> mList; // 0x5c
 };
 
 class UIListSubListElement : public UIListSlotElement {
@@ -44,5 +45,3 @@ public:
     UIListSubList* mSlot;
     UIList* mList;
 };
-
-#endif

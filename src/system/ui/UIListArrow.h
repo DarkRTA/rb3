@@ -32,10 +32,10 @@ public:
     void StartScroll(int, bool);
 
     /** "arrow mesh to draw/transform" */
-    ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x40
+    ObjPtr<RndMesh> mMesh; // 0x40
 
     /** "animation to play on scroll" */
-    ObjPtr<RndAnimatable, class ObjectDir> mScrollAnim; // 0x4c
+    ObjPtr<RndAnimatable> mScrollAnim; // 0x4c
 
     /** "whether to position relative to first or last element" */
     UIListArrowPosition mPosition; // 0x58

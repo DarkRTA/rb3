@@ -1,11 +1,11 @@
-#ifndef UI_UILISTLABEL_H
-#define UI_UILISTLABEL_H
+#pragma once
 #include "ui/UIListSlot.h"
 #include "ui/UILabel.h"
 #include "obj/ObjPtr_p.h"
 
 class UIListLabelElement;
 
+/** "Custom slot for use with UIList" */
 class UIListLabel : public UIListSlot {
 public:
     UIListLabel();
@@ -31,7 +31,8 @@ public:
         REGISTER_OBJ_FACTORY(UIListLabel)
     }
 
-    ObjPtr<UILabel, ObjectDir> mLabel; // 0x5c
+    /** "label to draw/transform" */
+    ObjPtr<UILabel> mLabel; // 0x5c
 };
 
 class UIListLabelElement : public UIListSlotElement {
@@ -46,5 +47,3 @@ public:
     UIListLabel* mListLabel;
     UILabel* mLabel;
 };
-
-#endif

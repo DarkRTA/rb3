@@ -1,6 +1,4 @@
-#ifndef UI_UIPANEL_H
-#define UI_UIPANEL_H
-// #include "obj/DirLoader.h"
+#pragma once
 #include "obj/Object.h"
 #include "ui/PanelDir.h"
 #include "utl/FilePath.h"
@@ -76,5 +74,3 @@ public:
         REGISTER_OBJ_FACTORY(UIPanel);
     }
 };
-
-#endif

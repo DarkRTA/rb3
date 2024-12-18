@@ -25,8 +25,10 @@ public:
     bool RevertScrollSelect(UIComponent*, LocalUser*, Hmx::Object*);
     bool IsScrollSelected() const { return mSelectedAux != -1; }
 
+    /** "Does [UI item] need to be selected before user can scroll?" */
     bool mSelectToScroll; // 0x4
     int mSelectedAux; // 0x8
 
+    NEW_POOL_OVERLOAD(ScrollSelect);
     DELETE_POOL_OVERLOAD(ScrollSelect);
 };

@@ -1,5 +1,4 @@
-#ifndef UI_UILABELDIR_H
-#define UI_UILABELDIR_H
+#pragma once
 #include "rndobj/Dir.h"
 #include "ui/UIColor.h"
 #include "ui/UIFontImporter.h"
@@ -14,6 +13,7 @@ class RndText;
 class RndMesh;
 class RndGroup;
 
+/** "Top-level resource object for UILabels" */
 class UILabelDir : public RndDir, public UIFontImporter {
 public:
     UILabelDir();
@@ -49,19 +49,28 @@ public:
         REGISTER_OBJ_FACTORY(UILabelDir)
     }
 
-    ObjPtr<UIColor, ObjectDir> mDefaultColor; // 0x26c
-    std::vector<ObjPtr<UIColor,ObjectDir> > mColors; // 0x278
-    ObjPtr<RndText, ObjectDir> mTextObj; // 0x280
-    ObjPtr<RndAnimatable, ObjectDir> mFocusAnim; // 0x28c
-    ObjPtr<RndAnimatable, ObjectDir> mPulseAnim; // 0x298
-    ObjPtr<RndMesh, ObjectDir> mTopLeftHighlightBone; // 0x2a4
-    ObjPtr<RndMesh, ObjectDir> mTopRightHighlightBone; // 0x2b0
-    ObjPtr<RndMesh, ObjectDir> mBottomLeftHighlightBone; // 0x2bc
-    ObjPtr<RndMesh, ObjectDir> mBottomRightHighlightBone; // 0x2c8
-    ObjPtr<RndGroup, ObjectDir> mHighlightMeshGroup; // 0x2d4
-    ObjPtr<RndGroup, ObjectDir> mFocusedBackgroundGroup; // 0x2e0
-    ObjPtr<RndGroup, ObjectDir> mUnfocusedBackgroundGroup; // 0x2ec
+    /** "color to use when no other color is defined for a state" */
+    ObjPtr<UIColor> mDefaultColor; // 0x26c
+    /** The colors to use depending on the label's state.
+     * This vector is expected to be of size UIComponent::kNumStates.
+     * Original _objects descriptions:
+     * "color when label is normal"
+     * "color when label is focused"
+     * "color when label is disabled"
+     * "color when label is selecting"
+     * "color when label is selected"
+     */
+    std::vector<ObjPtr<UIColor> > mColors; // 0x278
+    ObjPtr<RndText> mTextObj; // 0x280
+    ObjPtr<RndAnimatable> mFocusAnim; // 0x28c
+    ObjPtr<RndAnimatable> mPulseAnim; // 0x298
+    ObjPtr<RndMesh> mTopLeftHighlightBone; // 0x2a4
+    ObjPtr<RndMesh> mTopRightHighlightBone; // 0x2b0
+    ObjPtr<RndMesh> mBottomLeftHighlightBone; // 0x2bc
+    ObjPtr<RndMesh> mBottomRightHighlightBone; // 0x2c8
+    ObjPtr<RndGroup> mHighlightMeshGroup; // 0x2d4
+    ObjPtr<RndGroup> mFocusedBackgroundGroup; // 0x2e0
+    ObjPtr<RndGroup> mUnfocusedBackgroundGroup; // 0x2ec
+    /** "allow non-localized text with this resource?" */
     bool mAllowEditText; // 0x2f8
 };
-
-#endif
