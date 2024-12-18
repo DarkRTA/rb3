@@ -45,6 +45,7 @@ public:
     int SelectedNoWrap() const;
     int MaxFirstShowing() const;
     int CurrentScroll() const;
+    void PageScroll(int);
 
     int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
     int NumDisplay() const { return mNumDisplay; }
