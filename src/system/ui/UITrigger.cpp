@@ -20,6 +20,7 @@ END_COPYS
 
 SAVE_OBJ(UITrigger, 0x2A)
 
+// matches in retail
 BEGIN_LOADS(UITrigger)
     LOAD_REVS(bs)
     ASSERT_REVS(1, 0)
@@ -56,10 +57,112 @@ bool UITrigger::IsBlocking() const {
     return mBlockTransition && mEndTime && !IsDone();
 }
 
+    // class Anim {
+    // public:
+    //     Anim(Hmx::Object*);
+
+    //     ObjOwnerPtr<RndAnimatable> mAnim; // 0x0
+    //     float mBlend; // 0xc
+    //     float mDelay; // 0x10
+    //     bool mWait; // 0x14
+    //     /** "Enable animation filtering" */
+    //     bool mEnable; // 0x15
+    //     /** "Rate to animate" */
+    //     unsigned char mRate; // 0x16 - enum?
+    //     /** "Start frame of animation" */
+    //     float mStart; // 0x18
+    //     /** "End frame of animation" */
+    //     float mEnd; // 0x1c
+    //     /** "Period of animation if non-zero" */
+    //     float mPeriod; // 0x20
+    //     /** "Scale of animation" */
+    //     float mScale; // 0x24
+    //     /** "Type of animation" */
+    //     Symbol mType; // 0x28
+    // };
+
+void UITrigger::Trigger(){
+    EventTrigger::Trigger();
+    mStartTime = TheTaskMgr.UISeconds();
+    mEndTime = 0;
+    for(ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        Anim& curAnim = *it;
+        if(curAnim.mAnim){
+            float f4;
+            if(curAnim.mEnable){
+                if(curAnim.mPeriod * 30.0f == 0.0f){
+                    f4 = curAnim.mScale;
+                    if(f4 == 0) f4 = 1.0f;
+                    f4 = std::fabs(curAnim.mStart - curAnim.mEnd) / f4;
+                }
+            }
+            else {
+                f4 = std::fabs(curAnim.mAnim->StartFrame() - curAnim.mAnim->EndFrame());
+            }
+            MaxEq(mEndTime, (curAnim.mDelay * 30.0f + f4) / 30.0f);
+        }
+    }
+    if(mBlockTransition && mEndTime > 5.0f){
+        MILO_WARN("%s (%s) is blocking and really long! (%f seconds)", Name(), PathName(Dir()), mEndTime);
+    }
+    mEndTime += TheTaskMgr.UISeconds();
+    unkfc = false;
+}
+
+void UITrigger::CheckAnims(){
+    for(ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+        Anim& curAnim = *it;
+        RndAnimatable* anim = curAnim.mAnim;
+        if(anim && anim->GetRate() != RndAnimatable::k30_fps_ui){
+            if(LOADMGR_EDITMODE){
+                MILO_WARN("Setting animatable rate to k30_fps_ui for %s", anim->Name());
+            }
+            anim->SetRate(RndAnimatable::k30_fps_ui);
+        }
+        curAnim.mRate = RndAnimatable::k30_fps_ui;
+    }
+}
+
 void UITrigger::StopAnimations(){
     for(ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end(); it++){
         RndAnimatable* anim = (*it).mAnim;
         if(anim && anim->IsAnimating()) anim->StopAnimation();
+    }
+}
+
+void UITrigger::PlayStartOfAnims(){
+    for(ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end(); it++){
+        Anim& curAnim = *it;
+        RndAnimatable* anim = curAnim.mAnim;
+        if(anim){
+            float f3 = anim->StartFrame();
+            float f4 = 0.0099999998f;
+            if(curAnim.mEnable){
+                f3 = curAnim.mStart;
+                if(f3 > curAnim.mEnd){
+                    f4 *= -1;
+                }
+            }
+            anim->Animate(f3 + f4, f3, kTaskUISeconds, 0, 0);
+        }
+    }
+}
+
+void UITrigger::PlayEndOfAnims(){
+    for(ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end(); it++){
+        Anim& curAnim = *it;
+        RndAnimatable* anim = curAnim.mAnim;
+        if(anim){
+            float f3 = anim->EndFrame();
+            float f4 = 0.0099999998f;
+            if(curAnim.mEnable){
+                f3 = curAnim.mEnd;
+                if(curAnim.mStart > f3){
+                    f4 *= -1;
+                }
+            }
+            anim->Animate(f3 - f4, f3, kTaskUISeconds, 0, 0);
+        }
     }
 }
 
