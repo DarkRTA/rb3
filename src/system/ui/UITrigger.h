@@ -1,8 +1,8 @@
-#ifndef UI_UITRIGGER_H
-#define UI_UITRIGGER_H
+#pragma once
 #include "rndobj/EventTrigger.h"
 #include "rndobj/Poll.h"
 
+/** "Triggers anims based on UI events (enter, exit, etc.)" */
 class UITrigger : public EventTrigger, public RndPollable {
 public:
     UITrigger();
@@ -34,10 +34,11 @@ public:
         REGISTER_OBJ_FACTORY(UITrigger);
     }
 
-    ObjPtr<Hmx::Object, ObjectDir> mCallbackObject; // 0xe8
+    ObjPtr<Hmx::Object> mCallbackObject; // 0xe8
     float mStartTime; // 0xf4
     float mEndTime; // 0xf8
     bool unkfc; // 0xfc
+    /** "Block enter/exit transition during animation?" */
     bool mBlockTransition; // 0xfd
 };
 
@@ -47,5 +48,3 @@ DECLARE_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete");
     UITriggerCompleteMsg(UITrigger* trig) : 
         Message(Type(), trig){}
 END_MESSAGE;
-
-#endif

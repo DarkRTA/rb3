@@ -1,6 +1,4 @@
-#ifndef UI_UIPICTURE_H
-#define UI_UIPICTURE_H
-
+#pragma once
 #include "obj/Object.h"
 #include "ui/Screenshot.h"
 #include "ui/UIComponent.h"
@@ -12,6 +10,7 @@
 #include "utl/Loader.h"
 #include "utl/MemMgr.h"
 
+/** "A picture object with asynchronously loading texture" */
 class UIPicture : public UIComponent, public UITransitionHandler {
 public:
     UIPicture();
@@ -46,7 +45,9 @@ public:
         REGISTER_OBJ_FACTORY(UIPicture);
     }
 
-    ObjPtr<RndMesh, class ObjectDir> mMesh; // 0x12c
+    /** "Mesh to show loaded tex on (should have Mat)" */
+    ObjPtr<RndMesh> mMesh; // 0x12c
+    /** "Path of texture to load" */
     FilePath mTexFile; // 0x138
     FilePath mLoadedFile; // 0x144
     RndTex* mTex; // 0x150
@@ -55,5 +56,3 @@ public:
     FilePath mDelayedTexFile; // 0x15c
 
 };
-
-#endif // UI_UIPICTURE_H

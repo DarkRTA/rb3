@@ -1,9 +1,11 @@
-#ifndef UI_UISLIDER_H
-#define UI_UISLIDER_H
+#pragma once
 #include "ui/UIComponent.h"
 #include "ui/ScrollSelect.h"
 #include "os/JoypadMsgs.h"
 
+/** "A component with animatable whose frames correspond to a
+ *  range of values. The resources don't have to look like a slider;
+ *  they could easily be a knob, dial, etc." */
 class UISlider : public UIComponent, public ScrollSelect {
 public:
     UISlider();
@@ -49,5 +51,3 @@ public:
     int mNumSteps; // 0x11c
     bool mVertical; // 0x120
 };
-
-#endif // UI_UISLIDER_H

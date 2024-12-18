@@ -1,5 +1,4 @@
-#ifndef UI_UIGRIDPROVIDER_H
-#define UI_UIGRIDPROVIDER_H
+#pragma once
 #include "ui/UIListProvider.h"
 
 class UIGridProvider;
@@ -67,5 +66,3 @@ public:
     UIGridProvider* mGridProvider; // 0x8
     int mIndex; // 0xc
 };
-
-#endif

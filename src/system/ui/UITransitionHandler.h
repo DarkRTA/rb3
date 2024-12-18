@@ -31,9 +31,9 @@ public:
     void UpdateHandler();
     bool IsReadyToChange() const;
 
-    /** "animation kicked off before extended entries are updated" */
+    /** "animation kicked off before [transition]" */
     ObjPtr<RndAnimatable> mInAnim;
-    /** "animation kicked off after extended entries are updated" */
+    /** "animation kicked off after [transition]" */
     ObjPtr<RndAnimatable> mOutAnim;
     /** The current transition animation state. */
     unsigned char mAnimationState; // make this the enum above but only take up 1 byte?
