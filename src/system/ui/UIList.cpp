@@ -192,7 +192,7 @@ inline int UIList::SelectedData() const { return mListState.SelectedData(); }
 int UIList::SelectedPos() const { return mListState.Selected(); }
 
 Symbol UIList::SelectedSym(bool fail) const {
-    Symbol sym = mListState.Provider()->DataSymbol(SelectedData());
+    Symbol sym = mListState.Provider()->DataSymbol(mListState.SelectedData());
     if(fail){
         if(sym == gNullStr) MILO_FAIL("DataSymbol() not implemented in UIList provider");
     }
@@ -321,26 +321,30 @@ void UIList::Update() {
         if (mNeedsGarbageCollection) {
             for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
                 if(*it == this){
-                    it = sUIListSet.erase(it);
+                    sUIListSet.erase(it);
+                    break;
                 }
             }
-            sUIListSet.push_back(this);
+            sUIListSet.push_front(this);
         }
         mListDir = dynamic_cast<UIListDir*>(mResource->Dir());
         MILO_ASSERT(mListDir, 0x248);
-        mListDir->CreateElements(this, mWidgets, mListState.mNumDisplay);
+        mListDir->CreateElements(this, mWidgets, mListState.NumDisplay());
 
         if (LOADMGR_EDITMODE) Refresh(false);
     }
 }
 
 void UIList::CollectGarbage(){
-    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end(); it++){
+    for(std::list<UIList*>::iterator it = sUIListSet.begin(); it != sUIListSet.end();){
         UIList* pList = *it;
+        std::list<UIList*>::iterator cur = it++;
         pList->unk_0x1E0++;
         MILO_ASSERT(pList->mNeedsGarbageCollection, 600);
         if(pList->unk_0x1E0 > 4){
             pList->unk_0x1E6 = true;
+            DeleteAll(pList->mWidgets);
+            sUIListSet.erase(cur);
         }
     }
 }
@@ -353,7 +357,7 @@ void UIList::Refresh(bool b){
             int nowrap = mListState.SelectedNoWrap();
             if(nowrap >= NumProviderData() && nowrap != 0) SetSelected(NumProviderData() - 1, -1);
             else {
-                if(!mListState.Provider()->IsActive(SelectedData()) && !mListState.IsScrolling()){
+                if(!mListState.Provider()->IsActive(mListState.SelectedData()) && !mListState.IsScrolling()){
                     SetSelected(nowrap, -1);
                 }
             }
@@ -400,11 +404,82 @@ void UIList::DrawShowing(){
     mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), 0, b);
 }
 
+float UIList::GetDistanceToPlane(const Plane& p, Vector3& v){
+    float ret = 0;
+    bool first = true;
+    Box box;
+    CalcBoundingBox(box);
+    Vector3 boxVecs[8] = {
+        Vector3(box.mMin.x, box.mMin.y, box.mMin.z),
+        Vector3(box.mMax.x, box.mMin.y, box.mMin.z),
+        Vector3(box.mMax.x, box.mMax.y, box.mMin.z),
+        Vector3(box.mMin.x, box.mMax.y, box.mMin.z),
+        Vector3(box.mMin.x, box.mMin.y, box.mMax.z),
+        Vector3(box.mMax.x, box.mMin.y, box.mMax.z),
+        Vector3(box.mMax.x, box.mMax.y, box.mMax.z),
+        Vector3(box.mMin.x, box.mMax.y, box.mMax.z)
+    };
+    for(int i = 0; i < 8; i++){
+        float dot = p.Dot(boxVecs[i]);
+        if(first || (std::fabs(dot) < std::fabs(ret))){
+            ret = dot;
+            v = boxVecs[i];
+            first = false;
+        }
+    }
+    return ret;
+}
+
+RndDrawable* UIList::CollideShowing(const Segment& seg, float& fref, Plane& p){
+    std::vector<std::vector<Vector3> > vecOfVecs;
+    BoundingBoxTriangles(vecOfVecs);
+    Segment s(seg);
+    Vector3 vset;
+    bool intersects = false;
+    fref = 1;
+    for(std::vector<std::vector<Vector3> >::iterator it = vecOfVecs.begin(); it != vecOfVecs.end(); ++it){
+        Triangle tri((*it)[0], (*it)[1], (*it)[2]);
+        float loc_f;
+        if(Intersect(s, tri, 0, loc_f)){
+            Interp(s.start, s.end, loc_f, s.end);
+            fref *= loc_f;
+            p.Set(s.end, vset);
+            intersects = true;
+        }
+    }
+    if(intersects) return this;
+    else return nullptr;
+}
+
+int UIList::CollidePlane(const std::vector<Vector3>& vec, const Plane& p){
+    bool le0 = vec[0] <= p;
+    bool le1 = vec[1] <= p;
+    bool le2 = vec[2] <= p;
+    if(le0 == le1 && le1 == le2){
+        int ret = -1;
+        if(le0) ret = 1;
+        return ret;
+    }
+    else return 0;
+}
+
+int UIList::CollidePlane(const Plane& pl){
+    std::vector<std::vector<Vector3> > vecOfVecs;
+    BoundingBoxTriangles(vecOfVecs);
+    std::vector<std::vector<Vector3> >::iterator it = vecOfVecs.begin();
+    int coll = CollidePlane(*it, pl);
+    if(coll == 0) return 0;
+    else {
+        ++it;
+        for(; it != vecOfVecs.end(); ++it){
+            if(coll != CollidePlane(*it, pl)) return 0;
+        }
+        return coll;
+    }
+}
+
 void UIList::CalcBoundingBox(Box& box){
-    const Transform& tf1 = WorldXfm();
-    const Transform& tf2 = WorldXfm();
-    box.mMin = tf1.v;
-    box.mMax = tf2.v;
+    box.Set(WorldXfm().v, WorldXfm().v);
     mListDir->DrawWidgets(mListState, mWidgets, WorldXfm(), DrawState(this), &box, mDrawManuallyControlledWidgets);
 }
 
@@ -418,8 +493,9 @@ void UIList::BoundingBoxTriangles(std::vector<std::vector<Vector3> >& vec){
     CalcBoundingBox(box);
     std::vector<Vector3> locVec;
     for(int i = 0; i < 2; i++){
-        float f = box.mMax.x;
+        float f;
         if(i != 0) f = box.mMin.x;
+        else f = box.mMax.x;
         locVec.clear();
         locVec.push_back(Vector3(f, box.mMin.y, box.mMin.z));
         locVec.push_back(Vector3(f, box.mMin.y, box.mMax.z));
@@ -432,8 +508,9 @@ void UIList::BoundingBoxTriangles(std::vector<std::vector<Vector3> >& vec){
         vec.push_back(locVec);
     }
     for(int i = 0; i < 2; i++){
-        float f = box.mMax.y;
+        float f;
         if(i != 0) f = box.mMin.y;
+        else f = box.mMax.y;
         locVec.clear();
         locVec.push_back(Vector3(box.mMin.x, f, box.mMin.z));
         locVec.push_back(Vector3(box.mMin.x, f, box.mMax.z));
@@ -446,8 +523,9 @@ void UIList::BoundingBoxTriangles(std::vector<std::vector<Vector3> >& vec){
         vec.push_back(locVec);
     }
     for(int i = 0; i < 2; i++){
-        float f = box.mMax.z;
+        float f;
         if(i != 0) f = box.mMin.z;
+        else f = box.mMax.z;
         locVec.clear();
         locVec.push_back(Vector3(box.mMin.x, box.mMin.y, f));
         locVec.push_back(Vector3(box.mMin.x, box.mMax.y, f));
@@ -516,7 +594,7 @@ void UIList::CompleteScroll(const UIListState& state){
         state.Provider();
         int i3 = unk_0x1D8 > 0 ? mListState.MaxFirstShowing() : 0;
         if(firstshowing == i3){
-            unk_0x1D8 = -unk_0x1D8;
+            unk_0x1D8 = unk_0x1D8 - unk_0x1D8 * 2;
             unk_0x1DC = mAutoScrollPause + TheTaskMgr.UISeconds();
         }
         else Scroll(unk_0x1D8);
@@ -705,10 +783,10 @@ void UIList::FinishValueChange(){
 void UIList::SetDrawManuallyControlledWidgets(bool b){ mDrawManuallyControlledWidgets = b; }
 
 BEGIN_PROPSYNCS(UIList)
-    SYNC_PROP_SET(display_num, mListState.mNumDisplay, SetNumDisplay(_val.Int()))
-    SYNC_PROP_SET(grid_span, mListState.mGridSpan, SetGridSpan(_val.Int()))
-    SYNC_PROP_SET(circular, mListState.mCircular, SetCircular(_val.Int()))
-    SYNC_PROP_SET(scroll_time, mListState.Speed(), SetSpeed(_val.Float()))
+    SYNC_PROP_SET(display_num, NumDisplay(), SetNumDisplay(_val.Int()))
+    SYNC_PROP_SET(grid_span, GridSpan(), SetGridSpan(_val.Int()))
+    SYNC_PROP_SET(circular, Circular(), SetCircular(_val.Int()))
+    SYNC_PROP_SET(scroll_time, Speed(), SetSpeed(_val.Float()))
     SYNC_PROP(paginate, mPaginate)
     SYNC_PROP_SET(min_display, mListState.MinDisplay(), mListState.SetMinDisplay(_val.Int()))
     SYNC_PROP_SET(scroll_past_min_display, mListState.ScrollPastMinDisplay(), mListState.SetScrollPastMinDisplay(_val.Int()))

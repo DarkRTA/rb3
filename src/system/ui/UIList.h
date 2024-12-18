@@ -91,6 +91,8 @@ public:
     void UpdateExtendedEntries(const UIListState&);
     void SetScrollUser(LocalUser*);
     void SetDrawManuallyControlledWidgets(bool);
+    int CollidePlane(const std::vector<Vector3>&, const Plane&);
+
     static void CollectGarbage();
 
     DataNode OnMsg(const ButtonDownMsg&);

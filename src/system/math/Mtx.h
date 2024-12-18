@@ -266,6 +266,9 @@ public:
 class Triangle {
 public:
     Triangle(){}
+    Triangle(const Vector3& v1, const Vector3& v2, const Vector3& v3){
+        Set(v1, v2, v3);
+    }
     void Set(const Vector3&, const Vector3&, const Vector3&);
 
     Vector3 origin; // 0x0
