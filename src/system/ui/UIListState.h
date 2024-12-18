@@ -46,8 +46,18 @@ public:
     int MaxFirstShowing() const;
     int CurrentScroll() const;
     void PageScroll(int);
+    int ScrollToTarget(int) const;
+    int ScrollMaxDisplay() const;
+    bool ShouldHoldDisplayInPlace(int) const;
 
-    int NumShowing() const { return mProvider->NumData() - mHiddenData.size(); }
+    int NumShowing() const {
+    #ifdef MILO_DEBUG
+        return mProvider->NumData() - mHiddenData.size();
+    #else
+        int hiddenCnt = mHiddenData.size();
+        return mProvider->NumData() - hiddenCnt;
+    #endif
+    }
     int NumDisplay() const { return mNumDisplay; }
     int FirstShowing() const { return mFirstShowing; }
     int GridSpan() const { return mGridSpan; }
