@@ -205,7 +205,10 @@ Symbol UIList::SelectedSym(bool fail) const {
     return sym;
 }
 
-bool UIList::IsScrolling() const { return mListState.IsScrolling(); }
+#pragma push
+#pragma force_active on
+inline bool UIList::IsScrolling() const { return mListState.IsScrolling(); }
+#pragma pop
 
 UIListState& UIList::GetListState(){ return mListState; }
 
@@ -215,9 +218,8 @@ inline UIList* UIList::ChildList(){
     return mListDir->SubList(mListState.SelectedDisplay(), mWidgets);
 }
 inline UIList* UIList::ParentList(){ return mParent; }
+inline UIListDir* UIList::GetUIListDir() const { return mListDir; }
 #pragma pop
-
-UIListDir* UIList::GetUIListDir() const { return mListDir; }
 
 void UIList::SetNumDisplay(int i){
     mListState.SetNumDisplay(i, gLoading == 0);
@@ -668,44 +670,47 @@ DataNode UIList::OnMsg(const ButtonDownMsg& msg){
     
         int scrollDir = ScrollDirection(msg, cntType, o == 0, gridspan);
         if(scrollDir != 0){
-            if(gridspan != 1){
-                if(
-                    (scrollDir == 1 && ((mListState.SelectedDisplay() + 1) % gridspan))
-                    || (scrollDir == -1 && (mListState.SelectedDisplay() % gridspan))
-                ){
-                    int oldSelData = SelectedData();
-                    Scroll(scrollDir);
-                    if(oldSelData == SelectedData() && !IsScrolling() && !mSelectToScroll){
-                        return DataNode(kDataUnhandled, 0);
+            if(
+                gridspan == 1
+                || (scrollDir != 1 && scrollDir != -1)
+                || (
+                    (scrollDir == 1 && (mListState.SelectedDisplay() + 1) % gridspan)
+                    || (scrollDir == -1 && mListState.SelectedDisplay() % gridspan)
+                )
+            ){
+                int oldSelData = SelectedData();
+                Scroll(scrollDir);
+                if(oldSelData == SelectedData() && !IsScrolling() && !mSelectToScroll){
+                    return DataNode(kDataUnhandled, 0);
+                }
+    
+                int oldNextFill = UIListSubList::sNextFillSelection;
+                if(childList){
+                    UIList* curChild = ChildList();
+                    bool b2 = false;
+                    if(curChild == childList){
+                        int dispFill = scrollDir + mListState.SelectedDisplay();
+                        if(dispFill < 0 || dispFill >= NumDisplay()) b2 = true;
+                        else {
+                            curChild = mListDir->SubList(dispFill, mWidgets);
+                        }
                     }
-        
-                    int oldNextFill = UIListSubList::sNextFillSelection;
-                    if(childList){
-                        UIList* curChild = ChildList();
-                        bool b2 = false;
-                        if(curChild == childList){
-                            int dispFill = scrollDir + mListState.SelectedDisplay();
-                            if(dispFill < 0 || dispFill >= NumDisplay()) b2 = true;
-                            else {
-                                curChild = mListDir->SubList(dispFill, mWidgets);
-                            }
+                    // oldNextFill = UIListSubList::sNextFillSelection;
+                    if(curChild){
+                        if(b1){
+                            if(scrollDir > 0) oldNextFill = 0;
+                            else if(b2) oldNextFill = 1000000;
+                            else oldNextFill = curChild->NumProviderData() - 1;
                         }
-                        // oldNextFill = UIListSubList::sNextFillSelection;
-                        if(curChild){
-                            if(b1){
-                                if(scrollDir > 0) oldNextFill = 0;
-                                else if(b2) oldNextFill = 1000000;
-                                else oldNextFill = curChild->NumProviderData() - 1;
-                            }
-                            else {
-                                oldNextFill = Min(curChild->NumProviderData() - 1, childList->SelectedData());
-                            }
-                            if(b2) UIListSubList::sNextFillSelection = oldNextFill;
-                            else curChild->SetSelectedSimulateScroll(oldNextFill);
+                        else {
+                            oldNextFill = Min(curChild->NumProviderData() - 1, childList->SelectedData());
                         }
-                        return 1;
+                        if(b2) UIListSubList::sNextFillSelection = oldNextFill;
+                        else curChild->SetSelectedSimulateScroll(oldNextFill);
                     }
                 }
+
+                return 1;
             }
 
             return 1;
