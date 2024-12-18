@@ -109,27 +109,33 @@ void UIList::PreLoadWithRev(BinStream& bs, int rev) {
 void UIList::PostLoad(BinStream& bs) {
     UIComponent::PostLoad(bs);
     mNeedsGarbageCollection = gGCNewLists;
-    int local_numdisplay;
-    float local_speed;
-    bool local_circular;
-    bool local_scrollpastmin = false;
-    bool local_scrollpastmax = true;
-    int local_gridspan = 1;
+    int local_numdisplay; // 0x3c
+    int local_gridspan = 1; // 0x38
+    float local_speed; // 0x34
+    bool local_circular; // 0xd
+    bool local_scrollpastmin = false; // 0xc
+    bool local_scrollpastmax = true; // 0xb
     int local_mindisplay = 0;
     int local_maxdisplay = -1;
     if(mUIListRev < 0xF){
-        int i, j, k, x;
-        bool bb;
-        bs >> i >> j;
+        int i; // 0x28
+        int x;
+        int j; // 0x20
+        int k; // 0x1c
+        bool ba; // 0xa
+        bool b9; // 0x9
+        bool b8; // 0x8
+        bs >> i;
+        bs >> j;
         if(mUIListRev > 4){
             if(mUIListRev > 6) bs >> k;
-            else bs >> bb;
+            else bs >> b8;
         }
         if(mUIListRev > 6){
-            bool b; bs >> b;
+            bs >> b9;
         }
         if(mUIListRev > 8){
-            bool b; bs >> b;
+            bs >> ba;
         }
         if(mUIListRev > 10){
             int b; bs >> b;
@@ -147,7 +153,7 @@ void UIList::PostLoad(BinStream& bs) {
         bs >> local_scrollpastmax;
     }
     if(mUIListRev > 2) bs >> mPaginate;
-    if(mUIListRev > 3) bs >> mSelectToScroll; // from scroll select
+    if(mUIListRev > 3) bs >> mSelectToScroll;
     if(mUIListRev >= 10) bs >> local_mindisplay;
     if(mUIListRev >= 6) bs >> local_maxdisplay;
     gLoading = true;
