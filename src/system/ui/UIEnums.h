@@ -1,5 +1,4 @@
-#ifndef UI_UIENUMS_H
-#define UI_UIENUMS_H
+#pragma once
 
 enum UIListWidgetState {
     kUIListWidgetActive,
@@ -11,7 +10,7 @@ enum UIListWidgetState {
 enum UIListWidgetDrawType {
     kUIListWidgetDrawAlways,
     kUIListWidgetDrawOnlyFocused,
-    kUIListWidgetDrawNever,
+    kUIListWidgetDrawFocusedOrManual,
     kNumUIListWidgetDrawTypes
 };
 
@@ -20,5 +19,3 @@ enum DrawCommand {
     kDrawFirst,
     kExcludeFirst
 };
-
-#endif

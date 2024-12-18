@@ -1,5 +1,4 @@
-#ifndef UI_UILISTELEMENTDRAWSTATE_H
-#define UI_UILISTELEMENTDRAWSTATE_H
+#pragma once
 #include "math/Vec.h"
 #include "ui/UIEnums.h"
 #include "ui/UIComponent.h"
@@ -16,5 +15,3 @@ public:
     int mShowing; // 0x20
     int mData; // 0x24
 };
-
-#endif

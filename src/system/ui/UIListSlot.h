@@ -1,5 +1,4 @@
-#ifndef UI_UILISTSLOT_H
-#define UI_UILISTSLOT_H
+#pragma once
 #include "UIListWidget.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -22,6 +21,7 @@ public:
     virtual void Poll() {}
 };
 
+/** "Base functionality for UIList slots" */
 class UIListSlot : public UIListWidget {
 public:
     UIListSlot();
@@ -60,5 +60,3 @@ public:
         REGISTER_OBJ_FACTORY(UIListSlot)
     }
 };
-
-#endif // UI_UILISTSLOT_H

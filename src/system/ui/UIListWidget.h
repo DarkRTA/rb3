@@ -1,5 +1,4 @@
-#ifndef UI_UILISTWIDGET_H
-#define UI_UILISTWIDGET_H
+#pragma once
 #include "obj/Object.h"
 #include "ui/UIColor.h"
 #include "math/Vec.h"
@@ -15,6 +14,8 @@ class UIList;
 
 class UIListWidgetDrawState {
 public:
+    UIListWidgetDrawState(){}
+    ~UIListWidgetDrawState(){}
     Vector3 mFirstPos; // 0x0
     Vector3 mLastPos; // 0xc
     Vector3 mHighlightPos; // 0x18
@@ -23,6 +24,7 @@ public:
     std::vector<UIListElementDrawState> mElements; // 0x2c
 };
 
+/** "Base functionality for UIList widgets" */
 class UIListWidget : public Hmx::Object {
 public:
     UIListWidget();
@@ -63,10 +65,8 @@ public:
 
     float mDrawOrder; // 0x1c
     float mDisabledAlphaScale; // 0x20
-    ObjPtr<UIColor, class ObjectDir> mDefaultColor; // 0x24
-    std::vector< std::vector<ObjPtr<UIColor, class ObjectDir> > > mColors; // 0x30 - a vector of vectors of ObjPtrs...wonderful
+    ObjPtr<UIColor> mDefaultColor; // 0x24
+    std::vector< std::vector<ObjPtr<UIColor> > > mColors; // 0x30 - a vector of vectors of ObjPtrs...wonderful
     UIListWidgetDrawType mWidgetDrawType; // 0x38
     UIList* mParentList; // 0x3c
 };
-
-#endif

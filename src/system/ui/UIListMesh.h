@@ -1,9 +1,9 @@
-#ifndef UI_UILISTMESH_H
-#define UI_UILISTMESH_H
+#pragma once
 #include "ui/UIListSlot.h"
 #include "ui/UILabel.h"
 #include "obj/ObjPtr_p.h"
 
+/** "Custom slot for use with UIList" */
 class UIListMesh : public UIListSlot {
 public:
     UIListMesh();
@@ -30,8 +30,10 @@ public:
         REGISTER_OBJ_FACTORY(UIListMesh)
     }
 
-    ObjPtr<RndMesh, ObjectDir> mMesh; // 0x5c
-    ObjPtr<RndMat, ObjectDir> mDefaultMat; // 0x68
+    /** "mesh to draw/transform" */
+    ObjPtr<RndMesh> mMesh; // 0x5c
+    /** "default material" */
+    ObjPtr<RndMat> mDefaultMat; // 0x68
 };
 
 class UIListMeshElement : public UIListSlotElement {
@@ -46,5 +48,3 @@ public:
     UIListMesh* mListMesh;
     RndMat* mMat;
 };
-
-#endif
