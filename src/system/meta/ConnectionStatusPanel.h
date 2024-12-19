@@ -1,5 +1,4 @@
-#ifndef META_CONNECTIONSTATUSPANEL_H
-#define META_CONNECTIONSTATUSPANEL_H
+#pragma once
 #include "obj/Object.h"
 #include "ui/UIPanel.h"
 #include "obj/Msg.h"
@@ -8,6 +7,7 @@ DECLARE_MESSAGE(ConnectionStatusChangedMsg, "connection_status_changed")
     ConnectionStatusChangedMsg(int);
 END_MESSAGE;
 
+/** A panel to convey the current network connection status. */
 class ConnectionStatusPanel : public UIPanel {
 public:
     ConnectionStatusPanel();
@@ -23,5 +23,3 @@ public:
 
     NEW_OBJ(ConnectionStatusPanel)
 };
-
-#endif

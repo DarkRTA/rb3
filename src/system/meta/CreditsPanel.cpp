@@ -53,8 +53,7 @@ void CreditsPanel::Unload(){
         mNames->Release();
         mNames = 0;
     }
-    delete mStream;
-    mStream = 0;
+    RELEASE(mStream);
 }
 
 void CreditsPanel::Enter(){
@@ -69,7 +68,6 @@ void CreditsPanel::Enter(){
 void CreditsPanel::Poll(){
     UIPanel::Poll();
     if(!mStream){
-        // virtual Stream* NewStream(const char*, float, float, bool);
         mStream = TheSynth->NewStream("sfx/streams/credits",0,0,0);
         MILO_ASSERT_FMT(mStream, "sfx/streams/credits.foo missing");
         mStream->SetJump(Stream::kStreamEndMs,0,0);
@@ -141,7 +139,7 @@ END_HANDLERS
 
 DataNode CreditsPanel::OnMsg(const ButtonDownMsg& msg){
     if(!mAutoScroll) return DataNode(kDataUnhandled, 0);
-    else return DataNode(1);
+    else return 1;
 }
 
 void CreditsPanel::Text(int i, int j, UIListLabel* listlabel, UILabel* label) const {
@@ -157,7 +155,7 @@ RndMat* CreditsPanel::Mat(int i, int j, UIListMesh* mesh) const {
     if(s == image){
         return mDir->Find<RndMat>(arr->Str(1), true);
     }
-    else return 0;
+    else return nullptr;
 }
 
 int CreditsPanel::NumData() const { return mNames->Size(); }

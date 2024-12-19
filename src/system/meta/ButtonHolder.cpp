@@ -85,41 +85,49 @@ DataNode ButtonHolder::OnMsg(const ButtonDownMsg& msg){
     else return DataNode(kDataUnhandled, 0);
 }
 
-// void OnMsg__12ButtonHolderFRC13ButtonDownMsg(undefined4 out,int this,undefined4 msg)
-
-// {
-//   undefined4 uVar1;
-//   int iVar2;
-//   int iVar3;
-//   double dVar4;
-//   undefined4 local_18 [2];
-  
-//   local_18[0] = GetAction__13ButtonDownMsgCFv(msg);
-//   uVar1 = end__Q211stlpmtx_std89vector<>Fv(this + 0x24);
-//   iVar2 = fn_8050AC60(*(undefined4 *)(this + 0x24),uVar1,local_18);
-//   iVar3 = end__Q211stlpmtx_std89vector<>Fv(this + 0x24);
-//   if (iVar2 == iVar3) {
-//     __ct__8DataNodeF8DataTypei(out,0,0);
-//   }
-//   else {
-//     iVar3 = GetUser__13ButtonDownMsgCFv(msg);
-//     uVar1 = (**(code **)(*(int *)(iVar3 + 4) + 0x10))();
-//     iVar2 = GetPressRec__9ActionRecFi(iVar2,uVar1);
-//     uVar1 = GetButton__13ButtonDownMsgCFv(msg);
-//     *(undefined4 *)(iVar2 + 4) = uVar1;
-//     uVar1 = GetAction__13ButtonDownMsgCFv(msg);
-//     *(undefined4 *)(iVar2 + 8) = uVar1;
-//     dVar4 = (double)UISeconds__7TaskMgrCFv(TheTaskMgr);
-//     *(float *)(iVar2 + 0xc) = (float)dVar4;
-//     uVar1 = GetPadNum__13ButtonDownMsgCFv(msg);
-//     *(undefined4 *)(iVar2 + 0x10) = uVar1;
-//     __ct__8DataNodeFi(out,1);
-//   }
-//   return;
-// }
-
 void ButtonHolder::Poll(){
-
+    std::vector<ActionRec> recs = mActionRecs;
+    for(int i = 0; i < 4; i++){
+        if(JoypadIsConnectedPadNum(i)){
+            JoypadData* curPadData = JoypadGetPadData(i);
+            for(std::vector<ActionRec>::iterator it = recs.begin(); curPadData && it != recs.end(); ++it){
+                static ProcessedButtonDownMsg msg(nullptr,kPad_L2,kAction_None,0,false);
+                PressRec& pressRec = it->GetPressRec(i);
+                if(curPadData->IsButtonInMask(pressRec.iRawButton)){
+                    if(pressRec.fPressTime > 0 && TheTaskMgr.UISeconds() - pressRec.fPressTime >= it->mHoldTime){
+                        msg[0] = pressRec.iUser;
+                        msg[1] = pressRec.iRawButton;
+                        msg[2] = pressRec.iAction;
+                        msg[3] = pressRec.iPadNum;
+                        msg[4] = 1;
+                        mCallback->Handle(msg, true);
+                        pressRec.fPressTime = -TheTaskMgr.UISeconds();
+                        goto out;
+                    }
+                }
+                else {
+                    if(pressRec.fPressTime > 0){
+                        msg[0] = pressRec.iUser;
+                        msg[1] = pressRec.iRawButton;
+                        msg[2] = pressRec.iAction;
+                        msg[3] = pressRec.iPadNum;
+                        msg[4] = 0;
+                        mCallback->Handle(msg, true);
+                        pressRec.fPressTime = 0;
+                        goto out;
+                    }
+                    if(pressRec.fPressTime < 0) pressRec.fPressTime = 0;
+                }
+            }
+        }
+    }
+out:
+    for(int i = 0; i < mActionRecs.size(); i++){
+        std::vector<ActionRec>::iterator it = std::find(recs.begin(), recs.end(), mActionRecs[i].mAction);
+        if(it != recs.end()){
+            mActionRecs[i].mPresses = it->mPresses;
+        }
+    }
 }
 
 BEGIN_HANDLERS(ButtonHolder)

@@ -1,6 +1,4 @@
 #pragma once
-
-#include "obj/ObjMacros.h"
 #include "ui/UIPanel.h"
 #include "utl/DeJitter.h"
 
