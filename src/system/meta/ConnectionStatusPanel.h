@@ -21,5 +21,9 @@ public:
     void CheckForLostConnection();
     DataNode OnMsg(const ConnectionStatusChangedMsg&);
 
+    static void Init(){
+        REGISTER_OBJ_FACTORY(ConnectionStatusPanel)
+    }
+
     NEW_OBJ(ConnectionStatusPanel)
 };

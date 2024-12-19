@@ -15,6 +15,10 @@ public:
     DeJitter unk_0x68;
     bool unk_0x84;
 
+    static void Init(){
+        REGISTER_OBJ_FACTORY(DeJitterPanel)
+    }
+
     NEW_OBJ(DeJitterPanel)
 };
 

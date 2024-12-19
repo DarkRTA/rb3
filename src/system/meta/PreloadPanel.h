@@ -27,6 +27,9 @@ public:
     
     static FileCache* sCache;
     NEW_OBJ(PreloadPanel)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(PreloadPanel)
+    }
 
     int unk3c; // some kind of state?
     std::vector<String> unk40;

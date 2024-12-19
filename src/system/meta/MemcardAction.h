@@ -1,5 +1,4 @@
-#ifndef META_MEMCARDACTION_H
-#define META_MEMCARDACTION_H
+#pragma once
 
 class Profile;
 
@@ -23,5 +22,3 @@ class MemcardAction {
 
     void SetBuffer(char*, int);
 };
-
-#endif // META_MEMCARDACTION_H

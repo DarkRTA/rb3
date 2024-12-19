@@ -1,5 +1,4 @@
-#ifndef META_MOVIEPANEL_H
-#define META_MOVIEPANEL_H
+#pragma once
 #include "movie/Movie.h"
 #include "ui/UIPanel.h"
 #include "os/HomeMenu_Wii.h"
@@ -58,5 +57,3 @@ public:
     bool mShowMenu; // 0x80
     bool unk81; // 0x81
 };
-
-#endif

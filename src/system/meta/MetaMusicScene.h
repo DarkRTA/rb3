@@ -1,5 +1,4 @@
-#ifndef META_METAMUSICSCENE_H
-#define META_METAMUSICSCENE_H
+#pragma once
 #include "obj/Data.h"
 #include "utl/Symbol.h"
 #include <list>
@@ -17,5 +16,3 @@ public:
     std::list<Symbol> m_lScreens;
     DataArray* mMix;
 };
-
-#endif
