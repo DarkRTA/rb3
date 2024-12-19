@@ -30,7 +30,9 @@ public:
     void DebugToggleAutoScroll();
     DataNode OnMsg(const ButtonDownMsg&);
 
+#ifdef MILO_DEBUG
     bool mCheatOn; // 0x3c
+#endif
     DataLoader* mLoader; // 0x40
     DataArray* mNames; // 0x44
     UIList* mList; // 0x48
