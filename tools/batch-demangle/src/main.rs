@@ -1,10 +1,6 @@
 use clap::Parser;
 use cwdemangle::*;
 use std::fs::read_to_string;
-use std::collections::hash_set::HashSet;
-
-#[macro_use]
-extern crate lazy_static;
 
 #[derive(Parser)]
 struct Args {
@@ -96,20 +92,21 @@ fn split_return<'a>(prolog: &'a str) -> (&'a str, &'a str) {
     }
 }
 
-lazy_static! {
-    static ref NON_TEMPLATE_NAMES: HashSet<&'static str> = HashSet::from_iter([
-        "operator<",
-        "operator>",
-        "operator<<",
-        "operator>>",
-        "operator>>=",
-        "operator<<=",
-        "operator<=",
-        "operator>=",
-        "operator->*",
-        "operator->",
-    ]);
-}
+static AMBIGUOUS_OPERATORS: [&'static str; 10] = [
+    // Note: sorted by length, then from least ambiguous to most ambiguous.
+    // This order avoids immense complexity, as we can just do a simple loop
+    // to find the right operator.
+    "->*",
+    ">>=",
+    "<<=",
+    ">=",
+    "<=",
+    ">>",
+    "<<",
+    "->",
+    ">",
+    "<",
+];
 
 fn split_namespace(prolog: &str) -> (String, String) {
     const PATTERN: &str = "::";
@@ -120,18 +117,46 @@ fn split_namespace(prolog: &str) -> (String, String) {
     let mut template_depth = 0;
     let mut template_buffer = String::new();
     for split in prolog.split(PATTERN) {
-        // Ensure special names that contain <> but aren't templates are added as-is
-        if NON_TEMPLATE_NAMES.contains(split) {
-            namespaces.push(split.to_string());
-            continue;
+        let mut template_count_text = split;
+
+        // Specially handle operator names that contain <>
+        if split.starts_with("operator") {
+            let operator_remaining = &split["operator".len()..];
+            for operator in AMBIGUOUS_OPERATORS {
+                if !operator_remaining.starts_with(operator) {
+                    continue;
+                }
+
+                // Check for templated operators such as operator<<<int>
+                if operator_remaining.len() > operator.len() {
+                    let template_start = &operator_remaining[operator.len()..];
+                    // This is not the right operator if there is no template open at the end,
+                    // or if there's more than one (the extras are part of the operator).
+                    // This prevents operator<<int> from being detected as operator<<,
+                    // other operator ambiguities are handled via the ordering in AMBIGUOUS_OPERATORS.
+                    let lt_count = template_start.chars().take_while(|c| *c == '<').count();
+                    if lt_count != 1 {
+                        continue;
+                    }
+                }
+
+                template_count_text = &operator_remaining[operator.len()..];
+                break;
+            }
         }
 
-        template_depth += split.matches('<').count();
+        // // Ensure special names that contain <> but aren't templates are added as-is
+        // if NON_TEMPLATE_NAMES.contains(split) {
+        //     namespaces.push(split.to_string());
+        //     continue;
+        // }
+
+        template_depth += template_count_text.matches('<').count();
 
         if template_depth > 0 {
             template_buffer += split;
 
-            template_depth -= split.matches('>').count();
+            template_depth -= template_count_text.matches('>').count();
             if template_depth < 1 {
                 namespaces.push(template_buffer);
                 template_buffer = String::new();
@@ -144,6 +169,7 @@ fn split_namespace(prolog: &str) -> (String, String) {
         }
     }
 
+    assert_eq!(template_depth, 0);
     assert!(template_buffer.is_empty());
 
     // Split off name, and re-join namespaces with a padded separator to make later splitting easier
