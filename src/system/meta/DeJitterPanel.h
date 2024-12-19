@@ -27,17 +27,13 @@ public:
     DeJitterPanelTimer(DeJitter& dj, Timer* t){
         secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
         delta_secs = TheTaskMgr.DeltaSeconds();
-        float f2 = 0;
-        float f18 = 0;
-        float f1 = f2;
-        // everything within here is currently wrong
+        float f1 = 0.0f;
+        float f18 = 0.0f;
         if(t){
-            dj.Apply(t->SplitMs(), f18);
+            f1 = dj.Apply(t->SplitMs(), f18) * 0.001f;
             f18 *= 0.001f;
-            f2 = f18;
-            f1 *= 0.001f;
         }
-        TheTaskMgr.SetTimeAndDelta(kTaskSeconds, f1, f2);
+        TheTaskMgr.SetTimeAndDelta(kTaskSeconds, f1, f18);
     }
     ~DeJitterPanelTimer(){
         TheTaskMgr.SetTimeAndDelta(kTaskSeconds, secs, delta_secs);

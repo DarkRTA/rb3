@@ -1041,7 +1041,7 @@
             "system/meta/ConnectionStatusPanel.cpp": "Matching",
             "system/meta/CreditsPanel.cpp": "Matching",
             "system/meta/DataArraySongInfo.cpp": "Equivalent",
-            "system/meta/DeJitterPanel.cpp": "NonMatching",
+            "system/meta/DeJitterPanel.cpp": "Matching",
             "system/meta/FixedSizeSaveable.cpp": {
                 "status": "LinkIssues",
                 "comment": "std::type_info issues"

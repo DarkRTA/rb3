@@ -40,8 +40,8 @@ void PreloadPanel::Load(){
     MILO_ASSERT(mAppReadFailureHandler, 0x57);
     unk58 = false;
     unk5c = gNullStr;
-    Symbol songSym = TypeDef()->FindSym(current_song);
-    if(songSym.Null()) MILO_WARN("Trying to preload null song");
+    Symbol curSong = CurrentSong();
+    if(curSong.Null()) MILO_WARN("Trying to preload null song");
     class SongMgr* song_mgr = SongMgr();
     MILO_ASSERT(song_mgr, 0x67);
     mContentNames.clear();
@@ -99,9 +99,12 @@ void PreloadPanel::ContentFailed(const char* cc){
     mPreloadResult = kPreloadFailure;
 }
 
-Symbol PreloadPanel::CurrentSong() const {
+#pragma push
+#pragma force_active on
+inline Symbol PreloadPanel::CurrentSong() const {
     return TypeDef()->FindSym(current_song);
 }
+#pragma pop
 
 void PreloadPanel::StartCache(){
     MILO_ASSERT(mContentNames.empty(), 0x10E);
@@ -151,7 +154,9 @@ bool PreloadPanel::CheckFileCached(const char* cc){
 }
 
 DataNode PreloadPanel::OnMsg(const ContentReadFailureMsg& msg){
-
+    unk58 = msg.GetBool();
+    unk5c = msg.GetStr();
+    return 1;
 }
 
 DataNode PreloadPanel::OnMsg(const UITransitionCompleteMsg& msg){

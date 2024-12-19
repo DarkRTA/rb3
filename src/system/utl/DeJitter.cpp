@@ -8,7 +8,7 @@ DeJitter::DeJitter() {
     unk_0x0.resize(32);
 }
 
-void DeJitter::Apply(float, float&) {
+float DeJitter::Apply(float, float&) {
     static DataNode& dejitter_disable = DataVariable("dejitter_disable");
 }
 
