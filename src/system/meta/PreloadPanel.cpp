@@ -46,7 +46,33 @@ void PreloadPanel::Load(){
     MILO_ASSERT(song_mgr, 0x67);
     mContentNames.clear();
     unk68 = false;
+    if(!song_mgr->HasSong(curSong, false)) unk68 = true;
+    else {
+        song_mgr->GetContentNames(curSong, mContentNames);
+        bool b1 = true;
+        for(std::vector<Symbol>::iterator it = mContentNames.begin(); it != mContentNames.end(); ++it){
+            Symbol cur = *it;
+            // WiiContent stuff happens here
+            MILO_WARN("PreloadPanel: content %s not found.\n");
+        }
+        if(b1){
+            mContentNames.clear();
+        }
+        for(std::vector<Symbol>::iterator it = mContentNames.begin(); it != mContentNames.end(); it){
+            Symbol cur = *it;
+            if(!TheContentMgr->IsMounted(cur)){
+                mMounted = false;
+                ++it;
+            }
+            else it = mContentNames.erase(it);
+        }        
+    }
+    if(mContentNames.empty()){
+        StartCache();
+    }
 }
+
+DECOMP_FORCEACTIVE(PreloadPanel, "")
 
 inline SongMgr* PreloadPanel::SongMgr() const {
     return TypeDef()->FindArray(song_mgr, true)->Obj<class SongMgr>(1);
