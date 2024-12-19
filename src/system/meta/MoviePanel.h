@@ -34,6 +34,7 @@ public:
     void HideHint();
     void ChooseMovie();
     void ShowMenu(bool);
+    bool IsMenuShown() const { return mShowMenu; }
 
     static bool sUseSubtitles;
 

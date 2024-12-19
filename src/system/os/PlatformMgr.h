@@ -91,6 +91,7 @@ public:
     void EnableSFX(bool b){ mEnableSFX = b; }
     bool AreSFXEnabled(){ return mEnableSFX; }
     void IgnoreWiiSpeakFriends(){ unkce5a = true; }
+    DiscErrorMgrWii* GetDiscErrorMgrWii() const { return mDiscErrorMgr; }
 
     LocalUser* GetOwnerUserOfGuestUser(LocalUser*);
     int GetOwnerOfGuest(int) const;

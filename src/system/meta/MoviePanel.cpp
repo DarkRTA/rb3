@@ -110,7 +110,7 @@ void MoviePanel::FinishLoad(){
 
 void MoviePanel::Enter(){
     UIPanel::Enter();
-    ThePlatformMgr.mDiscErrorMgr->RegisterCallback(this);
+    ThePlatformMgr.GetDiscErrorMgrWii()->RegisterCallback(this);
     ThePlatformMgr.SetHomeMenuEnabled(false);
 }
 
@@ -118,7 +118,7 @@ void MoviePanel::Exit(){
     UIPanel::Exit();
     if(!mPreload) mMovie.End();
     mShowMenu = false;
-    ThePlatformMgr.mDiscErrorMgr->UnregisterCallback(this);
+    ThePlatformMgr.GetDiscErrorMgrWii()->UnregisterCallback(this);
     ThePlatformMgr.SetHomeMenuEnabled(true);
     if(TheRnd->GetAspect() != Rnd::kWidescreen){
         TheRnd->SetAspect(Rnd::kLetterbox);
@@ -136,8 +136,8 @@ void MoviePanel::Unload(){
 
 void MoviePanel::Poll(){
     UIPanel::Poll();
-    if(mState == kUnloaded) return;
-    if(!mMovie.Poll() && TheUI->GetTransitionState() == kTransitionNone){
+    if(GetState() == kUnloaded) return;
+    if(!mMovie.Poll() && !TheUI->InTransition()){
         DataNode handled = HandleType(movie_done_msg);
         if(handled == DataNode(kDataUnhandled, 0)){
             mMovie.End();
@@ -188,7 +188,7 @@ lol:
 float gTempBS = 0.55263156f;
 
 void MoviePanel::Draw(){
-    if(mState != kUnloaded){
+    if(GetState() != kUnloaded){
         if(TheRnd->GetAspect() != Rnd::kWidescreen){
             mMovie.SetAspect(gTempBS);
         }
@@ -237,8 +237,7 @@ void MoviePanel::ShowMenu(bool b){
 
 void MoviePanel::HideHint(){
     mShowHint = false;
-    float frame = mPauseHintAnim->mFrame;
-    mPauseHintAnim->Animate(frame, mPauseHintAnim->StartFrame(), mPauseHintAnim->Units(), 0.0f, 0.0f);
+    mPauseHintAnim->Animate(mPauseHintAnim->GetFrame(), mPauseHintAnim->StartFrame(), mPauseHintAnim->Units(), 0.0f, 0.0f);
 }
 
 void MoviePanel::ShowHint(){
@@ -246,8 +245,7 @@ void MoviePanel::ShowHint(){
         mShowHint = true;
         float secs = TheTaskMgr.UISeconds();
         mTimeShowHintStarted = secs;
-        float frame = mPauseHintAnim->mFrame;
-        mPauseHintAnim->Animate(frame, mPauseHintAnim->EndFrame(), mPauseHintAnim->Units(), 0.0f, 0.0f);
+        mPauseHintAnim->Animate(mPauseHintAnim->GetFrame(), mPauseHintAnim->EndFrame(), mPauseHintAnim->Units(), 0.0f, 0.0f);
     }
 }
 
@@ -269,7 +267,7 @@ void MoviePanel::HomeMenuClose(bool b){
 BEGIN_HANDLERS(MoviePanel)
     HANDLE_ACTION(set_paused, SetPaused(_msg->Int(2)))
     HANDLE_ACTION(set_menu_shown, ShowMenu(_msg->Int(2)))
-    HANDLE_EXPR(is_menu_shown, mShowMenu)
+    HANDLE_EXPR(is_menu_shown, IsMenuShown())
     HANDLE_ACTION(show_hint, ShowHint())
     HANDLE_SUPERCLASS(UIPanel)
     HANDLE_CHECK(0x1B9)
