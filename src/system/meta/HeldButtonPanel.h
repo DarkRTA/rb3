@@ -1,5 +1,4 @@
-#ifndef META_HELDBUTTONPANEL_H
-#define META_HELDBUTTONPANEL_H
+#pragma once
 #include "ui/UIPanel.h"
 #include "meta/ButtonHolder.h"
 
@@ -21,5 +20,3 @@ public:
 
     NEW_OBJ(HeldButtonPanel)
 };
-
-#endif

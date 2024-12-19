@@ -1,5 +1,4 @@
-#ifndef META_FIXEDSIZESAVEABLESTREAM_H
-#define META_FIXEDSIZESAVEABLESTREAM_H
+#pragma once
 #include "utl/BufStream.h"
 #include <map>
 
@@ -30,5 +29,3 @@ public:
     int m_iCurrentID; // 0x60
     int m_iTableOffset; // 0x64
 };
-
-#endif
