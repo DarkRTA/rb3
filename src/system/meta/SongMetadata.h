@@ -1,5 +1,4 @@
-#ifndef META_SONGMETADATA_H
-#define META_SONGMETADATA_H
+#pragma once
 #include "utl/Symbol.h"
 #include "obj/Object.h"
 #include "obj/Data.h"
@@ -41,5 +40,3 @@ public:
     // DataArray* mSongVocalsBlock; // 0x3c - maybe this went unused?
     int mAge; // 0x3c
 };
-
-#endif
