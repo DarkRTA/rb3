@@ -1,6 +1,4 @@
-#ifndef META_ACHIEVEMENTS_H
-#define META_ACHIEVEMENTS_H
-
+#pragma once
 #include "obj/Object.h"
 
 class LocalUser;
@@ -10,24 +8,20 @@ class LocalUser;
  */
 class Achievements : public Hmx::Object {
 public:
-    int unk_1c; // if i had to guess, this would be a LocalUser*
-    bool mAllowAchievements;
 
     Achievements();
-    virtual ~Achievements();
-
+    virtual ~Achievements(){}
     virtual DataNode Handle(DataArray*, bool);
 
     void Poll();
-
     void Submit(LocalUser*, Symbol, int);
-
     void SetAllowAchievements(bool);
+
+    int unk_1c; // if i had to guess, this would be a LocalUser*
+    bool mAllowAchievements; // 0x20
 
     static void Init();
     static void Terminate();
 };
 
 extern Achievements* TheAchievements;
-
-#endif // META_ACHIEVEMENTS_H

@@ -1,27 +1,24 @@
 #include "Achievements.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "utl/Symbols4.h"
+#include "utl/Symbols.h"
 
 Achievements* TheAchievements;
 
 void Achievements::Init() {
-    TheAchievements = new Achievements;
+    TheAchievements = new Achievements();
     TheAchievements->SetName("achievements", ObjectDir::Main());
 }
 
-void Achievements::Poll() {return;}
+void Achievements::Poll(){}
 
 void Achievements::Terminate() {
-    delete TheAchievements;
-    TheAchievements = 0;
+    RELEASE(TheAchievements);
 }
-
-Achievements::~Achievements() {}
 
 Achievements::Achievements() : unk_1c(0), mAllowAchievements(true) {}
 
-void Achievements::Submit(LocalUser* l, Symbol s, int i) {return;}
+void Achievements::Submit(LocalUser* l, Symbol s, int i){}
 
 void Achievements::SetAllowAchievements(bool b) {mAllowAchievements = b;}
 
