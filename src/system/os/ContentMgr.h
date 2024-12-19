@@ -136,4 +136,10 @@ public:
 
 extern ContentMgr* TheContentMgr;
 
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(ContentReadFailureMsg, "content_read_failure");
+    ContentReadFailureMsg(bool b, const char* cc) : Message(Type(), b, cc) {}
+END_MESSAGE;
+
 #endif

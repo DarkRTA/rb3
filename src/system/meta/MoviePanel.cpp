@@ -1,5 +1,4 @@
 #include "meta/MoviePanel.h"
-
 #include "math/Rand.h"
 #include "obj/Task.h"
 #include "os/File.h"
@@ -200,12 +199,10 @@ void MoviePanel::Draw(){
 void MoviePanel::ChooseMovie(){
     MILO_ASSERT(!mMovies.empty(), 0x13A);
 
-    std::list<const char*>::iterator it;
     do {
         int random = RandomInt(0, mMovies.size());
         mCurrentMovie = mMovies[random];
-        for (it = mRecent.begin(); (it != mRecent.end() && (*it != mCurrentMovie)); ++it) {}
-    } while (it != mRecent.end());
+    } while (std::find(mRecent.begin(), mRecent.end(), mCurrentMovie) != mRecent.end());
 
     const char* current = mCurrentMovie;
     mRecent.push_back(current);

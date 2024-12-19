@@ -47,6 +47,12 @@ public:
 class FileCache {
 public:
     FileCache(int, LoaderPos, bool);
+    bool DoneCaching();
+    void Clear();
+    void StartSet(int);
+    void EndSet();
+    void Add(const FilePath&, int, const FilePath&);
+    bool FileCached(const char*);
 
     int mMaxSize;
     bool mTryClear;

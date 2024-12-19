@@ -1,12 +1,18 @@
-#ifndef META_PRELOADPANEL_H
-#define META_PRELOADPANEL_H
-#include "obj/ObjMacros.h"
+#pragma once
 #include "ui/UIPanel.h"
+#include "ui/UIScreen.h"
 #include "os/ContentMgr.h"
 #include "os/FileCache.h"
+#include "meta/SongMgr.h"
 
 class PreloadPanel : public UIPanel, public ContentMgr::Callback {
 public:
+    enum PreloadResult {
+        kPreloadInProgress = 0,
+        kPreloadSuccess = 1,
+        kPreloadFailure = 2
+    };
+
     PreloadPanel();
     OBJ_CLASSNAME(PreloadPanel);
     OBJ_SET_TYPE(PreloadPanel);
@@ -24,6 +30,14 @@ public:
 
     void CheckTypeDef(Symbol);
     Symbol CurrentSong() const;
+    void StartCache();
+    bool CheckFileCached(const char*);
+    void OnContentMountedOrFailed(const char*, bool);
+
+    DataNode OnMsg(const ContentReadFailureMsg&);
+    DataNode OnMsg(const UITransitionCompleteMsg&);
+
+    SongMgr* SongMgr() const;
     
     static FileCache* sCache;
     NEW_OBJ(PreloadPanel)
@@ -31,15 +45,13 @@ public:
         REGISTER_OBJ_FACTORY(PreloadPanel)
     }
 
-    int unk3c; // some kind of state?
-    std::vector<String> unk40;
-    bool unk48;
-    std::vector<Symbol> unk4c;
+    PreloadResult mPreloadResult; // 0x3c
+    std::vector<String> mPreloadedFiles; // 0x40
+    bool mMounted; // 0x48
+    std::vector<Symbol> mContentNames; // 0x4c
     Hmx::Object* mAppReadFailureHandler; // 0x54
-    bool unk58;
-    String unk5c;
-    bool unk68;
+    bool unk58; // 0x58
+    String unk5c; // 0x5c
+    bool unk68; // 0x68
 
 };
-
-#endif
