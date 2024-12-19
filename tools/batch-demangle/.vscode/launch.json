@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'rb3-batch-demangle'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=rb3-batch-demangle",
+                    "--package=rb3-batch-demangle"
+                ],
+                "filter": {
+                    "name": "rb3-batch-demangle",
+                    "kind": "bin"
+                }
+            },
+            "args": [
+                "../../config/SZBE69/symbols.txt"
+            ],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
