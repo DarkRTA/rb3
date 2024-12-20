@@ -18,6 +18,7 @@
             },
             "args": [
                 "../../config/SZBE69/symbols.txt"
+                // "../../config/SZBE69_B8/symbols.txt"
             ],
             "cwd": "${workspaceFolder}"
         }
