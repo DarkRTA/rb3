@@ -1144,7 +1144,10 @@ system/os/CommerceMgr_Wii.cpp:
 	.ctors      start:0x807EFEC0 end:0x807EFEC4
 
 system/os/ContentMgr.cpp:
-	.text       start:0x802F0378 end:0x802F86F4
+	.text       start:0x802F0378 end:0x802F3014
+
+system/os/ContentMgr_Wii.cpp:
+	.text       start:0x802F3014 end:0x802F86F4
 	.ctors      start:0x807EFEC4 end:0x807EFEC8
 
 system/os/CritSec.cpp:
