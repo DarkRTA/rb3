@@ -5,11 +5,24 @@
 
 SongMgr* TheBaseSongManger;
 const char* SONG_CACHE_CONTAINER_NAME = "songcache_bb";
-int gSongCacheSaveVer = 0xB;
 
-int GetSongID(DataArray*, DataArray*){
-    MILO_WARN("The song %s has an invalid songID, assigning temp id %d.\n");
-    return 0;
+int GetSongID(DataArray* main_arr, DataArray* backup_arr){
+    static int sDebugSongID = 99000001;
+    int theID = 0;
+    main_arr->FindData(song_id, theID, false);
+    if(theID == 0 && backup_arr){
+        backup_arr->FindData(song_id, theID, false);
+    }
+    if(theID == 0){
+        theID = TheBaseSongManger->GetSongIDFromShortName(main_arr->Sym(0), false);
+    }
+    if(theID == 0){
+        while(TheBaseSongManger->HasSong(sDebugSongID)) sDebugSongID++;
+        theID = sDebugSongID++;
+        main_arr->Insert(main_arr->Size(), DataArrayPtr(song_id, theID));
+        MILO_LOG("The song %s has an invalid songID, assigning temp id %d.\n", main_arr->Sym(0).Str(), theID);
+    }
+    return theID;
 }
 
 int CountSongsInArray(DataArray* arr){
@@ -41,8 +54,9 @@ inline bool SongMgr::HasSong(int id) const {
 
 bool SongMgr::HasSong(Symbol s, bool b) const {
     int songid = GetSongIDFromShortName(s, b);
-    if(songid != 0) return HasSong(songid);
-    else return false;
+    bool ret = songid != 0;
+    if(ret) ret = HasSong(songid);
+    return ret;
 }
 
 SongMetadata* SongMgr::Data(int id) const {
@@ -208,6 +222,8 @@ void SongMgr::StartSongCacheWrite(){
     }
 }
 
+int gSongCacheSaveVer = 0xB;
+
 bool SongMgr::SaveCachedSongInfo(BufStream& bs){
     bs << gSongCacheSaveVer << mSongIDsInContent;
     WriteCachedMetadataFromStream(bs);
@@ -276,7 +292,7 @@ void SongMgr::CacheSongData(DataArray* arr, DataLoader* loader, ContentLocT loct
             if(songID != 0) songIDs.push_back(songID);
         }
         mSongIDsInContent[s] = songIDs;
-        for(std::vector<int>::iterator it = otherIntVec.begin(); it != otherIntVec.end(); ++it){
+        for(std::vector<int>::const_iterator it = otherIntVec.begin(); it != otherIntVec.end(); ++it){
             int id = *it;
             MILO_ASSERT(mContentUsedForSong.find(id) == mContentUsedForSong.end(), 0x2BE);
             mContentUsedForSong[id] = s;
@@ -388,7 +404,7 @@ void SongMgr::DumpSongMgrContents(bool all){
     for(std::map<int, SongMetadata*>::iterator it = mUncachedSongMetadata.begin(); it != mUncachedSongMetadata.end(); ++it){
         SongMetadata* meta = it->second;
         int id = meta->ID();
-        if(all || id > 1000000){ // wrong num
+        if(all || id > 1000000){
             MILO_LOG(" %d. ID: %d, Short Name: %s, Age: %d\n", idx, meta->ID(), meta->ShortName(), meta->Age());
         }
         else skipped++;
