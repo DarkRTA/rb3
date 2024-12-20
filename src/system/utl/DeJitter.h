@@ -4,7 +4,7 @@
 class DeJitter {
 public:
     DeJitter();
-    void Apply(float, float&);
+    float Apply(float, float&);
     void Reset();
 
     std::vector<float> unk_0x0;

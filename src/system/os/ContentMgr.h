@@ -90,6 +90,9 @@ public:
     bool RefreshInProgress(){
 
     }
+    void UpdateShouldCreateCache(){
+        if(InDiscoveryState()) mCreateSongCache = true;
+    }
 
     static void ContentRecurseCallback(const char*, const char*);
 
@@ -135,5 +138,14 @@ public:
 };
 
 extern ContentMgr* TheContentMgr;
+
+#include "obj/Msg.h"
+
+DECLARE_MESSAGE(ContentReadFailureMsg, "content_read_failure");
+    ContentReadFailureMsg(bool b, const char* cc) : Message(Type(), b, cc) {}
+    // TODO: rename these methods once you actually know what the bool and const char* represent
+    bool GetBool() const { return mData->Int(2); }
+    const char* GetStr() const { return mData->Str(3); }
+END_MESSAGE;
 
 #endif

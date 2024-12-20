@@ -93,6 +93,6 @@ public:
 };
 
 extern BandSongMgr* TheSongMgr;
-extern BandSongMgr* TheBaseSongManger;
+// extern BandSongMgr* TheBaseSongManger;
 
 #endif

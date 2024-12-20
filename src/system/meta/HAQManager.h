@@ -1,5 +1,4 @@
-#ifndef META_HAQMANAGER_H
-#define META_HAQMANAGER_H
+#pragma once
 #include "obj/Object.h"
 #include "utl/Str.h"
 #include "os/Joypad.h"
@@ -50,5 +49,3 @@ public:
 };
 
 extern HAQManager* TheHAQMgr;
-
-#endif

@@ -10,7 +10,7 @@ public:
     MemStream(bool = false);
     virtual ~MemStream(){}
     virtual void Flush();
-    virtual int Tell();
+    virtual int Tell(){ return mTell; }
     virtual EofType Eof();
     virtual bool Fail();
     virtual void ReadImpl(void*, int);

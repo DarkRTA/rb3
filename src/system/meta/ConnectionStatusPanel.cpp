@@ -13,7 +13,7 @@ ConnectionStatusPanel::~ConnectionStatusPanel(){
 
 void ConnectionStatusPanel::Enter(){
     UIPanel::Enter();
-    ThePlatformMgr.AddSink(this, connection_status_changed, Symbol(), MsgSource::kHandle);
+    ThePlatformMgr.AddSink(this, connection_status_changed);
     CheckForLostConnection();
 }
 
@@ -24,7 +24,7 @@ void ConnectionStatusPanel::Exit(){
 
 DataNode ConnectionStatusPanel::OnMsg(const ConnectionStatusChangedMsg& msg){
     CheckForLostConnection();
-    return DataNode(0);
+    return 0;
 }
 
 void ConnectionStatusPanel::CheckForLostConnection(){

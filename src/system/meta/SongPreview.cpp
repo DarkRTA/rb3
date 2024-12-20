@@ -19,8 +19,7 @@ SongPreview::~SongPreview(){
 void SongPreview::Init(){
     mSong = Symbol(0);
     mSongContent = Symbol(0);
-    delete mStream;
-    mStream = 0;
+    RELEASE(mStream);
     mState = kIdle;
     mRestart = true;
     DataArray* cfg = SystemConfig("sound", "song_select");
@@ -38,14 +37,10 @@ void SongPreview::Terminate(){
     DetachFaders();
     mSong = Symbol(0);
     mSongContent = Symbol(0);
-    delete mStream;
-    mStream = 0;
-    delete mFader;
-    mFader = 0;
-    delete mMusicFader;
-    mMusicFader = 0;
-    delete mCrowdSingFader;
-    mCrowdSingFader = 0;
+    RELEASE(mStream);
+    RELEASE(mFader);
+    RELEASE(mMusicFader);
+    RELEASE(mCrowdSingFader);
     if(unk72){
         TheContentMgr->UnregisterCallback(this, true);
         unk72 = 0;
@@ -259,8 +254,7 @@ void SongPreview::PrepareFaders(const SongInfo* info){
 // fn_80517DC8
 void SongPreview::PrepareSong(Symbol s){
     mState = kPreparingSong;
-    delete mStream;
-    mStream = 0;
+    RELEASE(mStream);
     SongInfo* data = mSongMgr.SongAudioData(s);
     const char* filename = data->GetBaseFileName();
     if(!unk71){

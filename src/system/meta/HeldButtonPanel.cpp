@@ -10,6 +10,29 @@ HeldButtonPanel::~HeldButtonPanel(){
     delete mHolder;
 }
 
+void HeldButtonPanel::Enter(){
+    std::vector<ActionRec> recs;
+    DataArray* heldButtonsArr = TypeDef()->FindArray(held_buttons, false);
+    if(heldButtonsArr){
+        for(int i = 1; i < heldButtonsArr->Size(); i++){
+            DataArray* el = heldButtonsArr->Array(i);
+            MILO_ASSERT(el, 0x27);
+            float innerFloat = el->Float(1);
+            if(innerFloat > 0){
+                recs.push_back(ActionRec((JoypadAction)el->Int(0), innerFloat, TheUserMgr));
+            }
+        }
+    }
+    mHolder->SetHoldActions(recs);
+    UIPanel::Enter();
+}
+
+void HeldButtonPanel::Exit(){
+    std::vector<ActionRec> recs;
+    mHolder->SetHoldActions(recs);
+    UIPanel::Exit();
+}
+
 void HeldButtonPanel::Poll(){
     if(TheUI->FocusPanel() == this) mHolder->Poll();
     else mHolder->ClearHeldButtons();
@@ -37,7 +60,7 @@ DataNode HeldButtonPanel::OnMsg(const ProcessedButtonDownMsg& msg){
         Handle(msgButtonDown, false);
         mHandling = false;
     }
-    return DataNode(1);
+    return 1;
 }
 #pragma pop
 

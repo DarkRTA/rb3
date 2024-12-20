@@ -1,5 +1,4 @@
-#ifndef METABAND_SONGPREVIEW_H
-#define METABAND_SONGPREVIEW_H
+#pragma once
 #include "os/ContentMgr.h"
 #include "obj/Object.h"
 #include "meta/SongMgr.h"
@@ -64,5 +63,3 @@ public:
     bool unk72; // 0x72
     bool mSecurePreview; // 0x73
 };
-
-#endif

@@ -31,8 +31,7 @@ DECOMP_FORCEFUNC(Profile, Profile, GetPadNum())
 #pragma push
 #pragma force_active on
 inline const char* Profile::GetName() const {
-    LocalUser* u = TheUserMgr->GetLocalUserFromPadNum(mPadNum);
-    return u->UserName();
+    return GetLocalUser()->UserName();
 }
 
 inline int Profile::GetPadNum() const {
@@ -77,7 +76,7 @@ void Profile::MakeDirty(){
 }
 
 BEGIN_HANDLERS(Profile)
-    HANDLE_EXPR(get_pad_num, GetPadNum())
+    HANDLE_EXPR(get_pad_num, mPadNum)
     HANDLE_EXPR(get_name, GetName())
     HANDLE_EXPR(has_cheated, HasCheated())
     HANDLE_SUPERCLASS(Hmx::Object)

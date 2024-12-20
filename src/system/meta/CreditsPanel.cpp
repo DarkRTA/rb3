@@ -53,13 +53,14 @@ void CreditsPanel::Unload(){
         mNames->Release();
         mNames = 0;
     }
-    delete mStream;
-    mStream = 0;
+    RELEASE(mStream);
 }
 
 void CreditsPanel::Enter(){
     UIPanel::Enter();
+#ifdef MILO_DEBUG
     mCheatOn = false;
+#endif
     mPaused = false;
     mList->SetSelected(0, -1);
     mAutoScroll = true;
@@ -69,7 +70,6 @@ void CreditsPanel::Enter(){
 void CreditsPanel::Poll(){
     UIPanel::Poll();
     if(!mStream){
-        // virtual Stream* NewStream(const char*, float, float, bool);
         mStream = TheSynth->NewStream("sfx/streams/credits",0,0,0);
         MILO_ASSERT_FMT(mStream, "sfx/streams/credits.foo missing");
         mStream->SetJump(Stream::kStreamEndMs,0,0);
@@ -83,7 +83,7 @@ void CreditsPanel::Poll(){
             mStream->Play();
         }
     }
-    if(mAutoScroll && TheUI->GetTransitionState() == kTransitionNone){
+    if(mAutoScroll && !TheUI->InTransition()){
         if(!mList->IsScrolling()){
             HandleType(credits_done_msg);
             SetAutoScroll(false);
@@ -116,6 +116,7 @@ void CreditsPanel::PausePanel(bool b){
     }
 }
 
+#ifdef MILO_DEBUG
 void CreditsPanel::DebugToggleAutoScroll(){
     if(!mAutoScroll){
         mList->SetSpeed(mSavedSpeed);
@@ -129,11 +130,18 @@ void CreditsPanel::DebugToggleAutoScroll(){
         mCheatOn = true;
     }
 }
+#endif
 
 BEGIN_HANDLERS(CreditsPanel)
     HANDLE_ACTION(pause_panel, PausePanel(_msg->Int(2)))
+#ifdef MILO_DEBUG
     HANDLE_EXPR(is_cheat_on, mCheatOn)
+#else
+    HANDLE_EXPR(is_cheat_on, false)
+#endif
+#ifdef MILO_DEBUG
     HANDLE_ACTION(debug_toggle_autoscroll, DebugToggleAutoScroll())
+#endif
     HANDLE_MESSAGE(ButtonDownMsg)
     HANDLE_SUPERCLASS(UIPanel)
     HANDLE_CHECK(0xD5)
@@ -141,7 +149,7 @@ END_HANDLERS
 
 DataNode CreditsPanel::OnMsg(const ButtonDownMsg& msg){
     if(!mAutoScroll) return DataNode(kDataUnhandled, 0);
-    else return DataNode(1);
+    else return 1;
 }
 
 void CreditsPanel::Text(int i, int j, UIListLabel* listlabel, UILabel* label) const {
@@ -157,7 +165,7 @@ RndMat* CreditsPanel::Mat(int i, int j, UIListMesh* mesh) const {
     if(s == image){
         return mDir->Find<RndMat>(arr->Str(1), true);
     }
-    else return 0;
+    else return nullptr;
 }
 
 int CreditsPanel::NumData() const { return mNames->Size(); }

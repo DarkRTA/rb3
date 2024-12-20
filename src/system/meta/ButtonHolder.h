@@ -1,5 +1,4 @@
-#ifndef META_BUTTONHOLDER_H
-#define META_BUTTONHOLDER_H
+#pragma once
 #include "obj/Msg.h"
 #include "os/User.h"
 #include "os/UserMgr.h"
@@ -17,30 +16,18 @@ DECLARE_MESSAGE(ProcessedButtonDownMsg, "processed_button_down")
 END_MESSAGE;
 
 struct PressRec {
-    // PressRec(){}
-
-    LocalUser* iUser;
-    int unk4;
-    int unk8;
-    float unkc;
-    int unk10;
+    LocalUser* iUser; // 0x0
+    JoypadButton iRawButton; // 0x4
+    JoypadAction iAction; // 0x8
+    float fPressTime; // 0xc
+    int iPadNum; // 0x10
 };
-
-// // RB2
-// struct PressRec {
-//     // total size: 0x18
-//     int iUserNum; // offset 0x0, size 0x4
-//     class User * iUser; // offset 0x4, size 0x4
-//     enum JoypadButton iRawButton; // offset 0x8, size 0x4
-//     enum JoypadAction iAction; // offset 0xC, size 0x4
-//     float fPressTime; // offset 0x10, size 0x4
-//     int iPadNum; // offset 0x14, size 0x4
-// };
 
 class ActionRec {
 public:
     ActionRec(JoypadAction, float, UserMgr*);
     PressRec& GetPressRec(int);
+    bool operator==(const JoypadAction& a){ return a == mAction; }
 
     JoypadAction mAction; // 0x0
     float mHoldTime; // 0x4
@@ -63,5 +50,3 @@ public:
     UserMgr* mUserMgr; // 0x20
     std::vector<ActionRec> mActionRecs; // 0x24
 };
-
-#endif

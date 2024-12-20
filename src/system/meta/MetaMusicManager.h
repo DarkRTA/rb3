@@ -1,5 +1,4 @@
-#ifndef META_METAMUSICMANAGER_H
-#define META_METAMUSICMANAGER_H
+#pragma once
 #include "obj/Object.h"
 #include "meta/MetaMusicScene.h"
 #include <map>
@@ -24,5 +23,3 @@ public:
 };
 
 extern MetaMusicManager* TheMetaMusicManager;
-
-#endif

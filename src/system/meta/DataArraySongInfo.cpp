@@ -1,5 +1,6 @@
 #include "meta/DataArraySongInfo.h"
 #include "os/Debug.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 
 int DataArraySongInfo::sSaveVer = 1;
@@ -73,17 +74,17 @@ DataArraySongInfo::DataArraySongInfo(DataArray* main_arr, DataArray* backup_arr,
         mTrackChannels.reserve(track_arr->Size());
         for(int i = 0; i < track_arr->Size(); i++){
             DataArray* chan_arr = track_arr->Array(i);
-            mTrackChannels = std::vector<TrackChannels>();
-            mTrackChannels[i].mAudioType = SymbolToAudioType(chan_arr->Sym(0));
+            mTrackChannels.push_back(TrackChannels());
+            mTrackChannels.back().mAudioType = SymbolToAudioType(chan_arr->Sym(0));
             DataNode& chan_node = chan_arr->Node(1);
             if(chan_node.Type() == kDataArray){
                 DataArray* chan_nums = chan_node.Array();
                 for(int j = 0; j < chan_nums->Size(); j++){
-                    mTrackChannels[i].mChannels.push_back(chan_nums->Int(j));
+                    mTrackChannels.back().mChannels.push_back(chan_nums->Int(j));
                 }
             }
             else {
-                mTrackChannels[i].mChannels.push_back(chan_node.Int());
+                mTrackChannels.back().mChannels.push_back(chan_node.Int());
             }
         }
     }
@@ -122,8 +123,8 @@ void DataArraySongInfo::Save(BinStream& bs) const {
 }
 
 void DataArraySongInfo::Load(BinStream& bs) {
-    int lol;
-    bs >> lol;
+    int rev;
+    bs >> rev;
     bs >> mName;
     bs >> mBaseFileName;
     bs >> mPackageName;

@@ -1,5 +1,4 @@
-#ifndef META_FIXEDSIZESAVEABLE_H
-#define META_FIXEDSIZESAVEABLE_H
+#pragma once
 #include "utl/BinStream.h"
 #include "utl/BufStream.h"
 #include "meta/FixedSizeSaveableStream.h"
@@ -215,5 +214,3 @@ FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream&, FixedSizeSaveable&
         MILO_LOG("* %s = %i\n", name, size); \
     } \
     return size;
-
-#endif

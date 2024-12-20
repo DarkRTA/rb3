@@ -1,5 +1,4 @@
-#ifndef META_PROFILE_H
-#define META_PROFILE_H
+#pragma once
 #include "meta/FixedSizeSaveable.h"
 #include "obj/Object.h"
 #include "os/User.h"
@@ -35,6 +34,9 @@ public:
 
     int GetPadNum() const;
     const char* GetName() const;
+    LocalUser* GetLocalUser() const {
+        return TheUserMgr->GetLocalUserFromPadNum(mPadNum);
+    }
 
     bool mDirty; // 0xc
     mutable int mPadNum; // 0x10
@@ -48,5 +50,3 @@ DECLARE_MESSAGE(ProfileSwappedMsg, "profile_swapped")
     LocalUser* GetUser1() const;
     LocalUser* GetUser2() const;
 END_MESSAGE;
-
-#endif

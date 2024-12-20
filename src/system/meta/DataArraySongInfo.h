@@ -1,9 +1,9 @@
-#ifndef META_DATAARRAYSONGINFO_H
-#define META_DATAARRAYSONGINFO_H
+#pragma once
 #include "utl/SongInfoCopy.h"
 #include "obj/Data.h"
 #include "utl/BinStream.h"
 
+/** Song metadata contained inside the (song ) DataArray in a songs.dta (pans, vols, cores, etc). */
 class DataArraySongInfo : public SongInfoCopy {
 public:
     DataArraySongInfo(DataArray*, DataArray*, Symbol);
@@ -27,5 +27,3 @@ BinStream& operator>>(BinStream& bs, DataArraySongInfo& dinfo);
 
 #define FIND_WITH_BACKUP(sym) \
     ((member_arr = main_arr->FindArray(sym, false), member_arr) || (backup_arr && (member_arr = backup_arr->FindArray(sym, false), member_arr)))
-
-#endif
