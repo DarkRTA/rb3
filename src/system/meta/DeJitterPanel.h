@@ -22,9 +22,9 @@ public:
     NEW_OBJ(DeJitterPanel)
 };
 
-class DeJitterPanelTimer {
+class DeJitterSetter {
 public:
-    DeJitterPanelTimer(DeJitter& dj, Timer* t){
+    DeJitterSetter(DeJitter& dj, Timer* t){
         secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
         delta_secs = TheTaskMgr.DeltaSeconds();
         float f1 = 0.0f;
@@ -35,7 +35,7 @@ public:
         }
         TheTaskMgr.SetTimeAndDelta(kTaskSeconds, f1, f18);
     }
-    ~DeJitterPanelTimer(){
+    ~DeJitterSetter(){
         TheTaskMgr.SetTimeAndDelta(kTaskSeconds, secs, delta_secs);
     }
 

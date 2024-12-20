@@ -90,6 +90,9 @@ public:
     bool RefreshInProgress(){
 
     }
+    void UpdateShouldCreateCache(){
+        if(InDiscoveryState()) mCreateSongCache = true;
+    }
 
     static void ContentRecurseCallback(const char*, const char*);
 

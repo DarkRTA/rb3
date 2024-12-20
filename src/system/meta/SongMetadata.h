@@ -26,6 +26,8 @@ public:
     int NumVocalParts() const;
     Symbol ShortName() const { return mShortName; }
     int Age() const { return mAge; }
+    void IncrementAge(){ mAge++; }
+    void ResetAge(){ mAge = 0; }
 
     static int sSaveVer;
 

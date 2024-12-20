@@ -1,5 +1,4 @@
-#ifndef METABAND_SONGMGR_H
-#define METABAND_SONGMGR_H
+#pragma once
 #include "obj/Msg.h"
 #include "os/ContentMgr.h"
 #include "meta/SongMetadata.h"
@@ -77,10 +76,15 @@ public:
     int GetCachedSongInfoSize() const;
     const char* GetCachedSongInfoName() const;
     void GetSongsInContent(Symbol, std::vector<int>&) const;
+    void CacheSongData(DataArray*, DataLoader*, ContentLocT, Symbol);
 
     void SaveWrite();
     void SaveMount();
     void SaveUnmount();
+
+    bool SongIDInContent(Symbol key){
+        return mSongIDsInContent.find(key) != mSongIDsInContent.end();
+    }
 
     std::set<int> mAvailableSongs; // 0x20
     std::map<int, SongMetadata*> mUncachedSongMetadata; // 0x38
@@ -99,4 +103,4 @@ public:
 int GetSongID(DataArray*, DataArray*);
 int CountSongsInArray(DataArray*);
 
-#endif // METABAND_SONGMGR_H
+extern SongMgr* TheBaseSongManger;
