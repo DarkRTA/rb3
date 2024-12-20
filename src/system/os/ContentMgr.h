@@ -9,15 +9,29 @@ enum ContentLocT {
 
 class Content {
 public:
+    enum State {
+        kUnmounted = 0,
+        kNeedsMounting = 1,
+        kMounting = 2,
+        kUnmounting = 3,
+        kMounted = 4,
+        kAlwaysMounted = 5,
+        kNeedsBackup = 6,
+        kBackingUp = 7,
+        kContentDeleting = 8,
+        kDeleted = 9,
+        kFailed = 10
+    };
+
     Content(){}
     virtual ~Content(){}
     // fix ret types as you implement them
-    virtual void Root() = 0;
+    virtual const char* Root() = 0;
     virtual int OnMemcard() = 0;
-    virtual int Location() = 0;
+    virtual ContentLocT Location() = 0;
     virtual int LicenseBits(){ return 0; }
     virtual bool HasValidLicenseBits(){ return true; }
-    virtual int GetState() = 0;
+    virtual State GetState() = 0;
     virtual void Poll(){}
     virtual void Mount(){}
     virtual void Unmount(){}
@@ -99,6 +113,7 @@ public:
         if(InDiscoveryState()) mCreateSongCache = true;
     }
     bool PollContents();
+    Content* FindFirstContent(Content::State);
 
     static void ContentRecurseCallback(const char*, const char*);
 
@@ -112,7 +127,7 @@ public:
         kMounting = 5,
     } mState; // 0x20
     std::list<Callback*> mCallbacks; // 0x24
-    std::list<int> unk2c; // 0x2c - mContents?
+    std::list<Content*> mContents; // 0x2c
     std::list<String> unk34; // 0x34 - mExtraContents?
     bool mDirty; // 0x3c
     Loader* mLoader; // 0x40
@@ -125,6 +140,7 @@ public:
 };
 
 extern ContentMgr* TheContentMgr;
+extern const char* gContentStateName[11];
 
 #include "obj/Msg.h"
 
