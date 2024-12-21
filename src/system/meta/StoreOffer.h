@@ -12,18 +12,19 @@ enum StoreOfferType {
 class StorePackedOfferBase {
 public:
     const char* GetName() const;
+    StoreOfferType OfferType() const { return (StoreOfferType)mOfferType; }
+    int Genre() const { return mGenre; }
 
     // 0x0
-    unsigned char sometopthing : 1;
+    unsigned char mIsRBN : 1;
     unsigned char mOfferType : 2;
     unsigned char mRating : 3;
     unsigned char mNewRelease : 1;
-    unsigned char asdf : 1;
     // 0x1
     unsigned char mGenre : 5;
     unsigned char mCover : 1;
     unsigned char mVocalParts : 2;
-    char filler[2]; // 0x2-3
+
     int unk4;
     int unk8;
     int unkc;
@@ -32,9 +33,17 @@ public:
     int unk18;
     int unk1c;
     int unk20;
-    int unk24;
+    char unk24;
     char unk25;
     unsigned char mYearReleased; // 0x26
+};
+
+class StorePackedOffer : public StorePackedOfferBase {
+public:
+};
+
+class StorePackedRBNOffer : public StorePackedOfferBase {
+public:
 };
 
 class StorePurchaseable : public Hmx::Object {
@@ -48,7 +57,11 @@ public:
     bool IsPartiallyDownloaded() const;
     bool IsPartiallyPurchased() const;
 
-    const StorePackedOfferBase* unk1c; // 0x1c - union between PackedOffer and RBNPackedOffer?
+    union {
+        const StorePackedOfferBase* mPackedData;
+        const StorePackedOffer* mPackedOffer;
+        const StorePackedRBNOffer* mPackedRbnOffer;
+    } mPacked; // 0x1c
     int unk20; // 0x20 - ptr to some struct
 };
 
@@ -96,6 +109,10 @@ public:
     Symbol FirstCharName(bool) const;
     const char* AlbumLink() const;
     const char* PackLink() const;
+
+    bool IsRbn() const {
+        return mPacked.mPackedData->mIsRBN;
+    }
 
     StorePurchaseable mAlbum; // 0x24
     StorePurchaseable mPack; // 0x48

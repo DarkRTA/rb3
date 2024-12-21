@@ -23,8 +23,9 @@ const char* gGenreStrs[30] = {
     "rbsoulfunk", "reggaeska", "world"
 };
 
-StorePurchaseable::StorePurchaseable() : unk1c(0), unk20(0) {
-
+StorePurchaseable::StorePurchaseable() {
+    mPacked.mPackedData = nullptr;
+    unk20 = 0;
 }
 
 bool StorePurchaseable::Exists() const {
@@ -32,7 +33,7 @@ bool StorePurchaseable::Exists() const {
 }
 
 const char* StorePurchaseable::CostStr() const {
-    if(unk1c) return " ";
+    if(mPacked.mPackedData) return " ";
     else return "%i";
 }
 
@@ -41,7 +42,7 @@ bool operator==(const StoreOffer* o, Symbol s){
 }
 
 Symbol StoreOffer::Decade() const {
-    int year = ((unk1c->mYearReleased + 1900) / 10) * 10;
+    int year = ((YearReleased() + 1900) / 10) * 10;
     return MakeString("the%is", year);
 }
 
@@ -69,14 +70,14 @@ void SetupStoreOfferLocals(){
 }
 
 void UpdatePurchasable(StorePurchaseable* p){
-    if(p->unk1c){
-        int status = TheStoreMetadata.GetOfferStatus(p->unk1c);
+    if(p->mPacked.mPackedData){
+        int status = TheStoreMetadata.GetOfferStatus(p->mPacked.mPackedData);
         if(status != 0) p->unk20 = status;
     }
 }
 
 StoreOffer::StoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) : unk74(mgr) {
-    unk1c = base;
+    mPacked.mPackedData = base;
     UpdatePurchasable(this);
 }
 
@@ -85,33 +86,45 @@ StoreOffer::~StoreOffer(){
 }
 
 Symbol StoreOffer::OfferType() const {
-    StoreOfferType offerType = (StoreOfferType)unk1c->mOfferType;
-    switch(offerType){
+    switch(mPacked.mPackedData->OfferType()){
         case kStoreOfferAlbum: return "album";
         case kStoreOfferPack: return "pack";
         default: return "song";
     }
 }
 
-bool StoreOffer::IsNewRelease() const { return unk1c->mNewRelease; }
+const char* StoreOffer::OfferName() const {
+    return mPacked.mPackedData->GetName();
+}
+
+bool StoreOffer::IsNewRelease() const { return mPacked.mPackedData->mNewRelease; }
 
 Symbol StoreOffer::Genre() const {
-    StoreOfferType offerType = (StoreOfferType)unk1c->mOfferType;
-    if(offerType != kStoreOfferPack){
-        int idx = unk1c->mGenre;
-        if(idx > 29) idx = 29;
-        return gGenreStrs[idx];
+    if(mPacked.mPackedData->OfferType() != kStoreOfferPack){
+        return gGenreStrs[Clamp(0, 29, mPacked.mPackedData->Genre())];
     }
     else return gNullStr;
 }
 
-bool StoreOffer::IsCover() const { return unk1c->mCover; }
-int StoreOffer::Rating() const { return unk1c->mRating; }
-int StoreOffer::VocalParts() const { return unk1c->mVocalParts; }
-bool StoreOffer::HasPreviewAudio() const { return unk1c->mOfferType == 0; }
+bool StoreOffer::IsCover() const { return mPacked.mPackedData->mCover; }
+int StoreOffer::Rating() const { return mPacked.mPackedData->mRating; }
+int StoreOffer::VocalParts() const { return mPacked.mPackedData->mVocalParts; }
 
-bool StoreOffer::HasGenre() const { return unk1c->mOfferType != 2; }
-bool StoreOffer::HasVocalParts() const { return unk1c->mVocalParts > 0; }
+float StoreOffer::Review() const {
+    MILO_ASSERT(IsRbn(), 0x4F3);
+    // return mPacked.mPackedData->unk3b;
+}
+
+#pragma push
+#pragma force_active on
+inline int StoreOffer::YearReleased() const { return mPacked.mPackedData->mYearReleased + 1900; }
+#pragma pop
+
+bool StoreOffer::HasPreviewAudio() const { return mPacked.mPackedData->OfferType() == 0; }
+
+bool StoreOffer::HasGenre() const { return mPacked.mPackedData->OfferType() != 2; }
+bool StoreOffer::HasVocalParts() const { return mPacked.mPackedData->mVocalParts > 0; }
+bool StoreOffer::HasPreviewArt() const { return true; }
 
 #pragma push
 #pragma dont_inline on
@@ -131,8 +144,8 @@ BEGIN_HANDLERS(StoreOffer)
     HANDLE_EXPR(is_purchased, IsPurchased())
     HANDLE_EXPR(has_available_pack, IsAvailable())
     HANDLE_EXPR(has_available_album, IsAvailable())
-    HANDLE_EXPR(pack_name, mPack.unk1c ? mPack.unk1c->GetName() : "")
-    HANDLE_EXPR(album_name, mAlbum.unk1c ? mAlbum.unk1c->GetName() : "")
+    HANDLE_EXPR(pack_name, mPack.mPacked.mPackedData ? mPack.mPacked.mPackedData->GetName() : "")
+    HANDLE_EXPR(album_name, mAlbum.mPacked.mPackedData ? mAlbum.mPacked.mPackedData->GetName() : "")
     HANDLE_EXPR(is_completely_unavailable, IsCompletelyUnavailable())
     HANDLE_EXPR(is_test, IsTest())
     HANDLE_EXPR(pack_first_letter, PackFirstLetter())
