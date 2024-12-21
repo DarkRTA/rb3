@@ -65,6 +65,50 @@ void SetupStoreOfferLocals(){
             ALBUM_INCLUDES = "Includes";
             PACK_INCLUDES = "This pack includes";
         }
+        else if(lang == fre){
+            LQUOTE = "\"";
+            RQUOTE = "\"";
+            RQUOTE_COMMA = ",\"";
+            BY_DASH = "par";
+            BY = "par";
+            AND = "et";
+            SONG_CREDITS = "Rends-toi sur www.RockBand.com pour les crédits des musiques. (site en anglais)";
+            ALBUM_INCLUDES = "Cet album comprend";
+            PACK_INCLUDES = "Ce pack comprend";
+        }
+        else if(lang == ita){
+            LQUOTE = "\"";
+            RQUOTE = "\"";
+            RQUOTE_COMMA = ",\"";
+            BY_DASH = "--";
+            BY = "di";
+            AND = "e";
+            SONG_CREDITS = "Per i riconoscimenti dei brani, visita il sito Web www.RockBand.com.";
+            ALBUM_INCLUDES = "Questo album include";
+            PACK_INCLUDES = "Questo pachetto include";
+        }
+        else if(lang == deu){
+            LQUOTE = ",,";
+            RQUOTE = "\"";
+            RQUOTE_COMMA = "\",";
+            BY_DASH = "--";
+            BY = "von";
+            AND = "und";
+            SONG_CREDITS = "Songinfos gibt es unter www.RockBand.com.";
+            ALBUM_INCLUDES = "Diese Album enthält";
+            PACK_INCLUDES = "Diese Sammlung enthält";
+        }
+        else if(lang == esl){
+            LQUOTE = "\"";
+            RQUOTE = "\"";
+            RQUOTE_COMMA = ",\"";
+            BY_DASH = "--";
+            BY = "de";
+            AND = "y";
+            SONG_CREDITS = "Para ver los créditos de la música, visita www.RockBand.com.";
+            ALBUM_INCLUDES = "Este album incluye las canciones";
+            PACK_INCLUDES = "Este paquete incluye las canciones";
+        }
         gSetup = true;
     }
 }
@@ -99,11 +143,69 @@ const char* StoreOffer::OfferName() const {
 
 bool StoreOffer::IsNewRelease() const { return mPacked.mPackedData->mNewRelease; }
 
+float StoreOffer::PartRank(Symbol s) const {
+//   iVar1 = *(int *)param_1.mStr;
+//   if (iVar1 == vocals) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2b) >> 0xc & 0x3ff);
+//   }
+//   else if (iVar1 == guitar) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2b) >> 2 & 0x3ff);
+//   }
+//   else if (iVar1 == bass) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2f) >> 0x16);
+//   }
+//   else if (iVar1 == drum) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2f) >> 0xc & 0x3ff);
+//   }
+//   else if (iVar1 == keys) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2f) >> 2 & 0x3ff);
+//   }
+//   else if (iVar1 == real_guitar) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x33) >> 0x16);
+//   }
+//   else if (iVar1 == real_bass) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x33) >> 0xc & 0x3ff);
+//   }
+//   else if (iVar1 == real_keys) {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x33) >> 2 & 0x3ff);
+//   }
+//   else {
+//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2b) >> 0x16);
+//   }
+//   return dVar2;
+}
+
 Symbol StoreOffer::Genre() const {
     if(mPacked.mPackedData->OfferType() != kStoreOfferPack){
         return gGenreStrs[Clamp(0, 29, mPacked.mPackedData->Genre())];
     }
     else return gNullStr;
+}
+
+Symbol StoreOffer::RatingSym() const {
+    return MakeString("rating_%i", mPacked.mPackedData->mRating);
+}
+
+Symbol StoreOffer::VocalPartsSym() const {
+    return MakeString("vocal_parts_%i", mPacked.mPackedData->mVocalParts);
+}
+
+const char* StoreOffer::Artist() const {
+    return mPacked.mPackedData->GetArtist();
+}
+
+const char* StoreOffer::AlbumName() const {
+    return mPacked.mPackedData->GetAlbumName();
+}
+
+const char* StoreOffer::PreviewArt() const {
+    if(IsRbn()) return mPacked.mPackedRbnOffer->GetArtPath();
+    else return mPacked.mPackedOffer->GetArtPath();
+}
+
+const char* StoreOffer::PreviewAudio() const {
+    if(IsRbn()) return mPacked.mPackedRbnOffer->GetPreviewPath();
+    else return mPacked.mPackedOffer->GetPreviewPath();
 }
 
 bool StoreOffer::IsCover() const { return mPacked.mPackedData->mCover; }

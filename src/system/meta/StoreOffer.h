@@ -14,6 +14,10 @@ public:
     const char* GetName() const;
     StoreOfferType OfferType() const { return (StoreOfferType)mOfferType; }
     int Genre() const { return mGenre; }
+    const char* GetArtist() const;
+    const char* GetAlbumName() const;
+    String GetOfferId() const;
+    String GetUpgradeId() const;
 
     // 0x0
     unsigned char mIsRBN : 1;
@@ -25,25 +29,25 @@ public:
     unsigned char mCover : 1;
     unsigned char mVocalParts : 2;
 
-    int unk4;
-    int unk8;
-    int unkc;
-    int unk10;
-    int unk14;
-    int unk18;
-    int unk1c;
-    int unk20;
-    char unk24;
-    char unk25;
+    char mId[16]; // 0x2
+    char mUpgradeId[16]; // 0x12
+    unsigned short mNameIndex; // 0x22
+    unsigned short mArtistIndex; // 0x24
     unsigned char mYearReleased; // 0x26
+    unsigned short mArtIndex; // 0x27
+    unsigned short mAlbumIndex; // 0x29
 };
 
 class StorePackedOffer : public StorePackedOfferBase {
 public:
+    const char* GetArtPath() const;
+    const char* GetPreviewPath() const;
 };
 
 class StorePackedRBNOffer : public StorePackedOfferBase {
 public:
+    const char* GetArtPath() const;
+    const char* GetPreviewPath() const;
 };
 
 class StorePurchaseable : public Hmx::Object {
@@ -109,6 +113,8 @@ public:
     Symbol FirstCharName(bool) const;
     const char* AlbumLink() const;
     const char* PackLink() const;
+    Symbol VocalPartsSym() const;
+    const char* AlbumName() const;
 
     bool IsRbn() const {
         return mPacked.mPackedData->mIsRBN;

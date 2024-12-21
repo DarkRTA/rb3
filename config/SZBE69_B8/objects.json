@@ -1067,7 +1067,7 @@
             "system/meta/StoreArtLoaderPanel.cpp": "Matching",
             "system/meta/StoreEnumeration.cpp": "NonMatching",
             "system/meta/StoreOffer.cpp": "NonMatching",
-            "system/meta/StorePackedMetadata.cpp": "MISSING",
+            "system/meta/StorePackedMetadata.cpp": "NonMatching",
             "system/meta/StorePanel.cpp": "MISSING",
             "system/meta/StorePreviewMgr.cpp": "MISSING",
             "system/meta/StreamPlayer.cpp": "Matching",
