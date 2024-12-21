@@ -1,5 +1,6 @@
 #include "meta/SongPreview.h"
 #include "os/System.h"
+#include "os/ContentMgr_Wii.h"
 #include "obj/Task.h"
 #include "synth/Synth.h"
 #include "ui/UIPanel.h"
@@ -64,7 +65,7 @@ void SongPreview::Start(Symbol sym){
             TheContentMgr->RegisterCallback(this, false);
             unk72 = true;
         }
-        TheDebug << MakeString("Preview: Requesting %s...\n", sym.Str());
+        MILO_LOG("Preview: Requesting %s...\n", sym.Str());
     }
     mPreviewRequestedMs = TheTaskMgr.UISeconds();
     if(unk64){
@@ -138,12 +139,13 @@ void SongPreview::ContentFailed(const char* contentName){
 
 void SongPreview::PreparePreview(){
     if(TheTaskMgr.UISeconds() - mPreviewRequestedMs < 1.0f) return;
-    TheDebug << MakeString("Preview: Preparing %s\n", mSong.Str());
+    MILO_LOG("Preview: Preparing %s\n", mSong.mStr);
     float previewstart = 0.0f;
     float previewend = 15000.0f;
-    if(mStartPreviewMs || mEndPreviewMs){
+    float startms = mStartPreviewMs;
+    if(startms != 0 || mEndPreviewMs != 0){
+        previewstart = startms;
         previewend = mEndPreviewMs;
-        previewstart = mStartPreviewMs;
     }
     else {
         int songid = mSongMgr.GetSongIDFromShortName(mSong, true);
@@ -159,6 +161,30 @@ void SongPreview::Poll(){
     if(unk70) Start(unk6c);
     switch(mState){
         case kIdle:
+            if(!mSong.Null() && mRestart){
+                const char* name = mSongMgr.ContentName(mSong, true);
+                if(name){
+                    mSongContent = MakeString("%s_song", name);
+                    WiiContent* content = TheWiiContentMgr.ContentOf(mSongContent);
+                    if(content && content->GetState() == 4){
+                        mSongContent = 0;
+                        unk71 = true;
+                    }
+                    else {
+                        unk71 = false;
+                        mSongContent = name;
+                        TheWiiContentMgr.UnmountContents(mSongContent);
+                        if(TheContentMgr->MountContent(mSongContent)){
+                            mSongContent = 0;
+                        }
+                    }
+                    mState = kMountingSong;
+                }
+                else {
+                    unk71 = true;
+                    PreparePreview();
+                }
+            }
             break;
         case kMountingSong: {
             bool b = true;
