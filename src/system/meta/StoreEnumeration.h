@@ -1,5 +1,4 @@
-#ifndef META_STOREENUMERATION_H
-#define META_STOREENUMERATION_H
+#pragma once
 #include "utl/Str.h"
 #include <list>
 
@@ -44,5 +43,3 @@ public:
     bool mLoading;
     StoreEnumeration::State mState;
 };
-
-#endif // META_STOREENUMERATION_H

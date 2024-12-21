@@ -4,6 +4,8 @@
 #include "system/obj/Object.h"
 #include "system/obj/Dir.h"
 #include "system/utl/Symbols.h"
+#include "utl/NetLoader.h"
+#include "utl/NetCacheLoader.h"
 #include <vector>
 #include <list>
 
@@ -58,6 +60,8 @@ public:
     void OnInit();
     void CheatNextServer();
     void DebugClearCache();
+    void DeleteNetCacheLoader(NetCacheLoader*);
+    NetCacheLoader* AddNetCacheLoader(const char*, NetLoaderPos);
 
     NetCacheMgrState mState; // 0x1c
     bool unk_0x20; // 0x20

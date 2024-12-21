@@ -37,15 +37,15 @@ void CalculateAlphaKey(char* c1, const char* c2, bool b){
     strcpy(c1, AlphaKeySkip(c2, b));
 }
 
-inline bool IsASCII(char c){ return c & 0x80; }
+inline bool NotASCII(char c){ return !(c & 0x80); }
 
 int AlphaKeyStrCmp(const char* c1, const char* c2, bool b){
     c1 = AlphaKeySkip(c1, b);
     c2 = AlphaKeySkip(c2, b);
-    if(IsASCII(*c1)){
-        if(!IsASCII(*c2)) return -1;
+    if(!NotASCII(*c1)){
+        if(NotASCII(*c2)) return -1;
     }
-    else if(IsASCII(*c2)) return 1;
+    else if(!NotASCII(*c2)) return 1;
     return stricmp(c1, c2);
 }
 
@@ -53,7 +53,7 @@ Symbol FirstSortChar(const char* cc, bool b){
     char buf[256];
     CalculateAlphaKey(buf, cc, b);
 
-    if(!IsASCII(buf[0])){
+    if(NotASCII(buf[0])){
         if(isalpha(buf[0])){
             return Symbol(MakeString("%c", toupper(buf[0])));
         }
