@@ -72,7 +72,7 @@ void SetupStoreOfferLocals(){
             BY_DASH = "par";
             BY = "par";
             AND = "et";
-            SONG_CREDITS = "Rends-toi sur www.RockBand.com pour les crédits des musiques. (site en anglais)";
+            SONG_CREDITS = "Rends-toi sur www.RockBand.com pour les cr\xe9""dits des musiques. (site en anglais)";
             ALBUM_INCLUDES = "Cet album comprend";
             PACK_INCLUDES = "Ce pack comprend";
         }
@@ -95,8 +95,8 @@ void SetupStoreOfferLocals(){
             BY = "von";
             AND = "und";
             SONG_CREDITS = "Songinfos gibt es unter www.RockBand.com.";
-            ALBUM_INCLUDES = "Diese Album enthält";
-            PACK_INCLUDES = "Diese Sammlung enthält";
+            ALBUM_INCLUDES = "Diese Album enth\xe4""lt";
+            PACK_INCLUDES = "Diese Sammlung enth\xe4""lt";
         }
         else if(lang == esl){
             LQUOTE = "\"";
@@ -105,7 +105,7 @@ void SetupStoreOfferLocals(){
             BY_DASH = "--";
             BY = "de";
             AND = "y";
-            SONG_CREDITS = "Para ver los créditos de la música, visita www.RockBand.com.";
+            SONG_CREDITS = "Para ver los cr\xe9""ditos de la m\xfa""sica, visita www.RockBand.com.";
             ALBUM_INCLUDES = "Este album incluye las canciones";
             PACK_INCLUDES = "Este paquete incluye las canciones";
         }
@@ -123,6 +123,7 @@ void UpdatePurchasable(StorePurchaseable* p){
 StoreOffer::StoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) : unk74(mgr) {
     mPacked.mPackedData = base;
     UpdatePurchasable(this);
+    SetupStoreOfferLocals();
 }
 
 StoreOffer::~StoreOffer(){
@@ -143,36 +144,34 @@ const char* StoreOffer::OfferName() const {
 
 bool StoreOffer::IsNewRelease() const { return mPacked.mPackedData->mNewRelease; }
 
-float StoreOffer::PartRank(Symbol s) const {
-//   iVar1 = *(int *)param_1.mStr;
-//   if (iVar1 == vocals) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2b) >> 0xc & 0x3ff);
-//   }
-//   else if (iVar1 == guitar) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2b) >> 2 & 0x3ff);
-//   }
-//   else if (iVar1 == bass) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2f) >> 0x16);
-//   }
-//   else if (iVar1 == drum) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2f) >> 0xc & 0x3ff);
-//   }
-//   else if (iVar1 == keys) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2f) >> 2 & 0x3ff);
-//   }
-//   else if (iVar1 == real_guitar) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x33) >> 0x16);
-//   }
-//   else if (iVar1 == real_bass) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x33) >> 0xc & 0x3ff);
-//   }
-//   else if (iVar1 == real_keys) {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x33) >> 2 & 0x3ff);
-//   }
-//   else {
-//     dVar2 = (double)(*(uint *)(*(int *)(this + 0x1c) + 0x2b) >> 0x16);
-//   }
-//   return dVar2;
+int StoreOffer::NumSongs() const { return mPacked.mPackedData->mNumSongs; }
+
+float StoreOffer::PartRank(Symbol part) const {
+    if(part == vocals){
+        return mPacked.mPackedData->mRanks.mVocals;
+    }
+    else if(part == guitar){
+        return mPacked.mPackedData->mRanks.mGuitar;
+    }
+    else if(part == bass){
+        return mPacked.mPackedData->mRanks.mBass;
+    }
+    else if(part == drum){
+        return mPacked.mPackedData->mRanks.mDrums;
+    }
+    else if(part == keys){
+        return mPacked.mPackedData->mRanks.mKeys;
+    }
+    else if(part == real_guitar){
+        return mPacked.mPackedData->mRanks.mRealGuitar;
+    }
+    else if(part == real_bass){
+        return mPacked.mPackedData->mRanks.mRealBass;
+    }
+    else if(part == real_keys){
+        return mPacked.mPackedData->mRanks.mRealKeys;
+    }
+    else return mPacked.mPackedData->mRanks.mBand;
 }
 
 Symbol StoreOffer::Genre() const {
@@ -214,7 +213,15 @@ int StoreOffer::VocalParts() const { return mPacked.mPackedData->mVocalParts; }
 
 float StoreOffer::Review() const {
     MILO_ASSERT(IsRbn(), 0x4F3);
-    // return mPacked.mPackedData->unk3b;
+    return mPacked.mPackedData->mReview;
+}
+
+const char* StoreOffer::AlbumLink() const {
+    return MakeString("%d", (int)mPacked.mPackedData->mAlbumLink);
+}
+
+const char* StoreOffer::PackLink() const {
+    return MakeString("%d", (int)mPacked.mPackedData->mPackLink);
 }
 
 #pragma push

@@ -9,6 +9,21 @@ enum StoreOfferType {
     kStoreOfferPack = 2
 };
 
+class StorePackedRanks {
+public:
+    unsigned int mBand : 10;
+    unsigned int mVocals : 10;
+    unsigned int mGuitar : 10;
+    unsigned int mBass : 10;
+    unsigned int mDrums : 10;
+    unsigned int mKeys : 10;
+    unsigned int mRealGuitar : 10;
+    unsigned int mRealBass : 10;
+    unsigned int mRealKeys : 10;
+};
+
+#pragma push
+#pragma pack(1)
 class StorePackedOfferBase {
 public:
     const char* GetName() const;
@@ -36,7 +51,16 @@ public:
     unsigned char mYearReleased; // 0x26
     unsigned short mArtIndex; // 0x27
     unsigned short mAlbumIndex; // 0x29
+    StorePackedRanks mRanks; // 0x2b
+    unsigned short mAlbumLink; // 0x37
+    unsigned short mPackLink; // 0x39
+    float mReview; // 0x3b
+    unsigned char unk3f;
+    unsigned char unk40;
+    unsigned char unk41;
+    unsigned char mNumSongs; // 0x42
 };
+#pragma pop
 
 class StorePackedOffer : public StorePackedOfferBase {
 public:
@@ -115,6 +139,7 @@ public:
     const char* PackLink() const;
     Symbol VocalPartsSym() const;
     const char* AlbumName() const;
+    int NumSongs() const;
 
     bool IsRbn() const {
         return mPacked.mPackedData->mIsRBN;
