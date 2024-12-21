@@ -57,44 +57,52 @@ void ContentMgr::PollRefresh(){
             if(mCallbackFiles.empty()){
                 for(std::list<Content*>::iterator it = mContents.begin(); it != mContents.end(); ++it){
                     Content::State curState = (*it)->GetState();
-                    if((curState == 5 && mRootLoaded > 0) || curState == 4){
-                        for(std::list<Callback*>::iterator it2 = mCallbacks.begin(); it2 != mCallbacks.end(); ++it2){
-                            mCallback = *it2;
-                            mLocation = (*it)->Location();
-                            mName = (*it)->FileName();
-                            if((*it2)->ContentDir()){
-                                String pathStr(FileMakePath((*it)->Root(), (*it2)->ContentDir(), 0));
-                                String makeStr(MakeString("%s/%s", pathStr, (*it2)->ContentPattern()));
-                                if(mLocation == 0 || mLocation == 1){
-                                    WiiContent* wc = dynamic_cast<WiiContent*>(*it);
-                                    if(wc){
-                                        gCurContentName = (*it)->Root();
-                                        wc->Enumerate("/", ContentRecurseCallback, true, (*it2)->ContentPattern());
-                                    }
+                    // this line right here officer
+                    
+                    if (curState == 5) {
+                        if (mRootLoaded <= 0) {
+                            continue;
+                        }
+                    } else if (curState != 4) {
+                        continue;
+                    }
+                    
+                    for(std::list<Callback*>::iterator it2 = mCallbacks.begin(); it2 != mCallbacks.end(); ++it2){
+                        mCallback = *it2;
+                        mLocation = (*it)->Location();
+                        mName = (*it)->FileName();
+                        if((*it2)->ContentDir()){
+                            String pathStr(FileMakePath((*it)->Root(), (*it2)->ContentDir(), 0));
+                            String makeStr(MakeString("%s/%s", pathStr, (*it2)->ContentPattern()));
+                            if(mLocation == 0 || mLocation == 1){
+                                WiiContent* wc = dynamic_cast<WiiContent*>(*it);
+                                if(wc){
+                                    gCurContentName = (*it)->Root();
+                                    wc->Enumerate("/", ContentRecurseCallback, true, (*it2)->ContentPattern());
+                                }
+                            }
+                            else {
+                                FileEnumerate(pathStr.c_str(), ContentRecurseCallback, false, makeStr.c_str(), false);
+                            }
+                        }
+                        if((*it2)->HasContentAltDirs()){
+                            std::vector<String>* altDirs = (*it2)->ContentAltDirs();
+                            const char* pattern = (*it2)->ContentPattern();
+                            for(std::vector<String>::iterator dirIt = altDirs->begin(); dirIt != altDirs->end(); ++dirIt){
+                                DataArray* cfg = SystemConfig("net", "game");
+                                const char* codeStr = cfg->FindStr("code");
+                                if(mName.contains(MakeString("%s/", codeStr)) && !mName.contains("_song")){
+                                    AddCallbackFile("dlc/content/songs", "songs.dta");
                                 }
                                 else {
+                                    String pathStr(FileMakePath((*it)->Root(), dirIt->c_str(), 0));
+                                    String makeStr(MakeString("%s/%s", pathStr, pattern));
                                     FileEnumerate(pathStr.c_str(), ContentRecurseCallback, false, makeStr.c_str(), false);
                                 }
                             }
-                            if((*it2)->HasContentAltDirs()){
-                                std::vector<String>* altDirs = (*it2)->ContentAltDirs();
-                                const char* pattern = (*it2)->ContentPattern();
-                                for(std::vector<String>::iterator dirIt = altDirs->begin(); dirIt != altDirs->end(); ++dirIt){
-                                    DataArray* cfg = SystemConfig("net", "game");
-                                    const char* codeStr = cfg->FindStr("code");
-                                    if(mName.contains(MakeString("%s/", codeStr)) && !mName.contains("_song")){
-                                        AddCallbackFile("dlc/content/songs", "songs.dta");
-                                    }
-                                    else {
-                                        String pathStr(FileMakePath((*it)->Root(), dirIt->c_str(), 0));
-                                        String makeStr(MakeString("%s/%s", pathStr, pattern));
-                                        FileEnumerate(pathStr.c_str(), ContentRecurseCallback, false, makeStr.c_str(), false);
-                                    }
-                                }
-                            }                                
                         }
-                        if(curState == 5) mRootLoaded--;
                     }
+                    if(curState == 5) mRootLoaded--;
                 }
             }
         }
