@@ -22,6 +22,15 @@ public:
     unsigned int mRealKeys : 10;
 };
 
+class StoreOfferState {
+public:
+    void UpdateFlags(class StorePackedOfferBase*, unsigned char, unsigned char);
+
+    unsigned short unk0;
+    unsigned short unk2;
+    unsigned char mFlags; // 0x4
+};
+
 #pragma push
 #pragma pack(1)
 class StorePackedOfferBase {
@@ -66,12 +75,16 @@ class StorePackedOffer : public StorePackedOfferBase {
 public:
     const char* GetArtPath() const;
     const char* GetPreviewPath() const;
+    void EndianFix();
 };
 
 class StorePackedRBNOffer : public StorePackedOfferBase {
 public:
     const char* GetArtPath() const;
     const char* GetPreviewPath() const;
+    void EndianFix();
+
+    unsigned char mSubGenre : 7; // 0x43
 };
 
 class StorePurchaseable : public Hmx::Object {
@@ -84,13 +97,15 @@ public:
     bool IsDownloaded() const;
     bool IsPartiallyDownloaded() const;
     bool IsPartiallyPurchased() const;
+    bool IsAvailable() const;
+    void GetContentIndexes(std::vector<unsigned short>&, bool) const;
 
     union {
         const StorePackedOfferBase* mPackedData;
         const StorePackedOffer* mPackedOffer;
         const StorePackedRBNOffer* mPackedRbnOffer;
-    } mPacked; // 0x1c
-    int unk20; // 0x20 - ptr to some struct
+    }; // 0x1c
+    StoreOfferState* mOfferState; // 0x20
 };
 
 class StoreOffer : public StorePurchaseable {
@@ -118,7 +133,6 @@ public:
     int YearReleased() const;
     Symbol SubGenre() const;
     bool InLibrary() const;
-    bool IsAvailable() const;
     bool IsPurchased() const;
     bool IsTest() const;
     Symbol PackFirstLetter() const;
@@ -140,13 +154,15 @@ public:
     Symbol VocalPartsSym() const;
     const char* AlbumName() const;
     int NumSongs() const;
+    bool HasArtist() const;
+    int GetSingleSongID() const;
 
     bool IsRbn() const {
-        return mPacked.mPackedData->mIsRBN;
+        return mPackedData->mIsRBN;
     }
 
     StorePurchaseable mAlbum; // 0x24
     StorePurchaseable mPack; // 0x48
-    String unk6c; // 0x6c
-    SongMgr* unk74; // 0x74
+    String unk6c; // 0x6c - release date str
+    SongMgr* unk78; // 0x78
 };
