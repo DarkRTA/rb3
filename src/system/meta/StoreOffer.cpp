@@ -1,6 +1,7 @@
 #include "meta/StoreOffer.h"
 #include "meta/StorePackedMetadata.h"
 #include "meta/Sorting.h"
+#include "utl/Locale.h"
 #include "utl/Symbols.h"
 
 namespace {
@@ -46,6 +47,14 @@ const char* gSubGenreStrs[] = {
     "subgenre_traditionalfolk", "subgenre_trance", "subgenre_triphop", "subgenre_undergroundrap"
 };
 
+inline StorePackedSong* StorePackedOffer::GetPackedSong(int idx) const {
+    return &TheStoreMetadata.mSongTable->mSongs[mSongs + idx];
+}
+
+inline StorePackedSong* StorePackedRBNOffer::GetPackedSong(int idx) const {
+    return &TheStoreMetadata.mSongTable->mSongs[mSongs + idx];
+}
+
 StorePurchaseable::StorePurchaseable() {
     mPackedData = nullptr;
     mOfferState = 0;
@@ -63,6 +72,9 @@ const char* StorePurchaseable::CostStr() const {
 void StorePurchaseable::GetContentIndexes(std::vector<unsigned short>& vec, bool b) const {
     vec.clear();
     vec.reserve(mPackedData->mNumSongs);
+    for(int i = 0; i < mPackedData->mNumSongs; i++){
+
+    }
 }
 
 bool operator==(const StoreOffer* o, Symbol s){
@@ -151,11 +163,84 @@ void UpdatePurchasable(StorePurchaseable* p){
 StoreOffer::StoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) : unk78(mgr) {
     mPackedData = base;
     UpdatePurchasable(this);
+    StoreOfferType ty = mPackedData->OfferType();
     SetupStoreOfferLocals();
+    mAlbum.mPackedData = nullptr;
+    if(mPackedData->mAlbumLink && ty == kStoreOfferSong){
+//     iVar3 = StoreMetadataManager::LoadPage(TheStoreMetadata);
+//     if (iVar3 == 0) {
+//       StorePackedOfferBase::GetName(*(undefined4 *)(this + 0x1c));
+//     }
+//     else {
+//       iVar4 = fn_8028F9C4();
+//       if ((iVar4 != 0) && (iVar4 = fn_80290204(iVar3), iVar4 != 0)) {
+//         iVar4 = fn_8051A1E4(iVar3,0);
+//         if (iVar4 == 0) {
+//           uVar5 = StorePage::Offer(iVar3,0);
+//         }
+//         else {
+//           uVar5 = StorePage::RbnOffer(iVar3,0);
+//         }
+//         *(undefined4 *)(this + 0x40) = uVar5;
+//         UpdatePurchasable(this + 0x24);
+//       }
+//     }
+    }
+    mPack.mPackedData = nullptr;
+    if(mPackedData->mPackLink && ty == kStoreOfferSong){
+//     iVar2 = StoreMetadataManager::LoadPage(TheStoreMetadata);
+//     if (iVar2 == 0) {
+//       StorePackedOfferBase::GetName(*(undefined4 *)(this + 0x1c));
+//     }
+//     else {
+//       iVar3 = fn_8028F9C4();
+//       if ((iVar3 != 0) && (iVar3 = fn_80290204(iVar2), iVar3 != 0)) {
+//         iVar3 = fn_8051A1E4(iVar2,0);
+//         if (iVar3 == 0) {
+//           uVar5 = StorePage::Offer(iVar2,0);
+//         }
+//         else {
+//           uVar5 = StorePage::RbnOffer(iVar2,0);
+//         }
+//         *(undefined4 *)(this + 100) = uVar5;
+//         UpdatePurchasable(this + 0x48);
+//       }
+//     }
+    }
+    DateTime dt(0,0,0,0,0,0);
+    unk6c = Localize(store_release_date_format, 0);
+    dt.Format(unk6c);
+    if(mPackedData->mNumSongs == 0){
+        OfferName();
+    }
 }
 
 StoreOffer::~StoreOffer(){
 
+}
+
+Symbol StoreOffer::ShortName() const {
+    if(mPackedData->OfferType() == kStoreOfferSong){
+        return GetPackedSong(0)->GetShortName();
+    }
+    else {
+        return mPackedData->GetOfferId().c_str();
+    }
+//       iVar1 = StorePackedOfferBase::OfferType(*(undefined4 *)(param_1 + 0x1c));
+//   if (iVar1 == 0) {
+//     fn_801D6C94(param_1,0);
+//     uVar2 = StorePackedSong::GetShortName();
+//     puVar3 = (undefined4 *)Symbol::Symbol(auStack_24,uVar2);
+//     uVar2 = *puVar3;
+//   }
+//   else {
+//     StorePackedOfferBase::GetOfferId(auStack_20,*(undefined4 *)(param_1 + 0x1c));
+//     uVar2 = MergedGet0x8(auStack_20);
+//     puVar3 = (undefined4 *)Symbol::Symbol(auStack_28,uVar2);
+//     uVar2 = *puVar3;
+//     String::~String(auStack_20,0xffffffff);
+//   }
+//   return uVar2;
 }
 
 Symbol StoreOffer::OfferType() const {
@@ -248,8 +333,22 @@ float StoreOffer::Review() const {
     return mPackedData->mReview;
 }
 
+inline const char* StorePackedRBNOffer::LabelStr() const {
+    return TheStoreMetadata.GetString(mLabelIndex);
+}
+
 Symbol StoreOffer::Label() const {
     MILO_ASSERT(IsRbn(), 0x4FA);
+    return mPackedRbnOffer->LabelStr();
+}
+
+inline const char* StorePackedRBNOffer::AuthorStr() const {
+    return TheStoreMetadata.GetString(mAuthorIndex);
+}
+
+Symbol StoreOffer::Author() const {
+    MILO_ASSERT(IsRbn(), 0x501);
+    return mPackedRbnOffer->AuthorStr();
 }
 
 Symbol StoreOffer::Language() const {

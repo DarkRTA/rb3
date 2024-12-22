@@ -9,6 +9,43 @@ enum StoreOfferType {
     kStoreOfferPack = 2
 };
 
+class StorePackedSong {
+public:
+    void EndianFix();
+    const char* GetShortName() const;
+    const char* GetName() const;
+    const char* GetArtist() const;
+    const char* GetDataTitle() const;
+    const char* GetUpgradeDataTitle() const;
+
+    int unk0;
+    unsigned short unk4;
+    char unk6;
+    char unk7;
+    char unk8;
+    char unk9;
+    char unka;
+    char unkb;
+    char unkc;
+    char unkd;
+    char unke;
+    char unkf;
+    unsigned short unk10; // 0x10
+    unsigned short mNameIndex; // 0x12
+    unsigned short mArtistIndex; // 0x14
+    int unk18;
+};
+
+class StoreSongTable {
+public:
+    ~StoreSongTable();
+    bool Load(const char*);
+
+    int mNumSongs; // 0x0
+    char* mBuffer; // 0x4
+    StorePackedSong* mSongs; // 0x8
+};
+
 class StorePackedRanks {
 public:
     unsigned int mBand : 10;
@@ -70,13 +107,15 @@ public:
     unsigned char unk41;
     unsigned char mNumSongs; // 0x42
 };
-#pragma pop
 
 class StorePackedOffer : public StorePackedOfferBase {
 public:
     const char* GetArtPath() const;
     const char* GetPreviewPath() const;
     void EndianFix();
+    StorePackedSong* GetPackedSong(int) const;
+
+    unsigned short mSongs; // 0x43
 };
 
 class StorePackedRBNOffer : public StorePackedOfferBase {
@@ -84,13 +123,21 @@ public:
     const char* GetArtPath() const;
     const char* GetPreviewPath() const;
     void EndianFix();
+    StorePackedSong* GetPackedSong(int) const;
 
     int SubGenre() const { return mSubGenre; }
     int Language() const { return mLanguage; }
+    const char* LabelStr() const;
+    const char* AuthorStr() const;
 
     unsigned char mSubGenre : 7; // 0x43
     unsigned char mLanguage : 3; // 0x44
+    unsigned char unk44 : 5;
+    unsigned short mAuthorIndex; // 0x45
+    unsigned short mLabelIndex; // 0x47
+    unsigned short mSongs; // 0x49
 };
+#pragma pop
 
 class StorePurchaseable : public Hmx::Object {
 public:
@@ -165,6 +212,15 @@ public:
 
     bool IsRbn() const {
         return mPackedData->mIsRBN;
+    }
+
+    StorePackedSong* GetPackedSong(int idx) const {
+        if(mPackedData->mIsRBN){
+            return mPackedRbnOffer->GetPackedSong(idx);
+        }
+        else {
+            return mPackedOffer->GetPackedSong(idx);
+        }
     }
 
     StorePurchaseable mAlbum; // 0x24

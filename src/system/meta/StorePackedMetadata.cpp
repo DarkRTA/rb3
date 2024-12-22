@@ -26,6 +26,61 @@ bool StoreStringTable::IsValid(int i){
     else return i >= 0 && i < mNonLocalized.mNumStrings;
 }
 
+const char* StorePackedSong::GetShortName() const {
+    return TheStoreMetadata.GetString(unk4);
+}
+
+const char* StorePackedSong::GetName() const {
+    return TheStoreMetadata.GetString(mNameIndex);
+}
+
+const char* StorePackedSong::GetArtist() const {
+    return TheStoreMetadata.GetString(mArtistIndex);
+}
+
+const char* StorePackedSong::GetDataTitle() const {
+    return MakeString("%c%c%c%c", unk6, unk7, unk8, unk9);
+}
+
+const char* StorePackedSong::GetUpgradeDataTitle() const {
+    return MakeString("%c%c%c%c", unkc, unkd, unke, unkf);
+}
+
+StoreSongTable::~StoreSongTable(){
+    if(mBuffer) _MemFree(mBuffer);
+}
+
+bool StoreSongTable::Load(const char* cc){
+    char buf[256];
+    sprintf(buf, "%ssongs", cc);
+
+    char* loc12c;
+    char* loc130;
+    bool ret = StoreLoadPackedFile(buf, true, 0x40000, false, true, &mBuffer, &loc12c, &loc130, &mNumSongs);
+    if(!ret) return ret;
+    else {
+        loc12c += mNumSongs;
+        int diff = loc130 - loc12c;
+        int u1 = diff / 0x1cul;
+        if(u1 != mNumSongs){
+            MILO_LOG("There are %d bytes left in song file, at %d bytes per song is %d songs, but the file says there are %d songs.\n",
+                diff, 0x1cul, u1, mNumSongs);
+        }
+        mSongs = (StorePackedSong*)loc12c;
+        for(int i = 0; i < mNumSongs; i++){
+            StorePackedSong* song = &mSongs[i];
+            song->EndianFix();
+            if(!TheStoreMetadata.mStringTable->IsValid(song->mNameIndex)){
+                MILO_LOG("Song %d: name %d is invalid\n", i, song->mNameIndex);
+            }
+            if(!TheStoreMetadata.mStringTable->IsValid(song->mArtistIndex)){
+                MILO_LOG("Song %d: artist %d is invalid\n", i, song->mArtistIndex);
+            }
+        }
+        return true;
+    }
+}
+
 String StorePackedOfferBase::GetOfferId() const {
     String ret;
     ret.reserve(0x11);
@@ -57,27 +112,35 @@ StoreOfferTable::~StoreOfferTable(){
     mBufferNewRelease = 0;
 }
 
+#define BYTES_PER_OFFER 69UL
+
 bool StoreOfferTable::Load(const char* cc){
     char buf[256];
     sprintf(buf, "%soffers", cc);
-
-    char* loc12c;
-    char* loc130;
-    bool ret = StoreLoadPackedFile(buf, true, 0x40000, true, true, &mBuffer, &loc12c, &loc130, &mNumOffers);
+    StorePackedOffer** n;
+    char* b[4];
+    StorePackedOffer** loc130;
+    bool ret = StoreLoadPackedFile(buf, true, 0x40000, true, true, &mBuffer, (char**)&n, (char**)&loc130, &mNumOffers);
     if(!ret) return ret;
     else {
-        int diff = loc130 - loc12c;
-        int u4 = diff / 0x45ul;
-        if(u4 < mNumOffers){
-            MILO_LOG("There are %d bytes left in offers file, at %d bytes per offer is %d offers, but the file says there are %d offers.\n", 
-                diff, 0x45ul, u4, mNumOffers);
+        int diff = (int)loc130 - (int)n;
+        int actualNumOffers = diff / BYTES_PER_OFFER;
+        if(actualNumOffers < mNumOffers){
+            MILO_LOG("There are %d bytes left in offers file, at %d bytes per offer is %d offers, but the file says there are %d offers.\n",
+                diff, BYTES_PER_OFFER, actualNumOffers, mNumOffers);
         }
-        (char**)mOffers = &loc12c;
-        mBufferNewRelease = new StoreOfferState[mNumOffers];
-        memset(mBufferNewRelease, 0, mNumOffers);
+        mOffers = n;
+        void* buf = new StoreOfferState[mNumOffers];
+        mBufferNewRelease = (StoreOfferState*)buf;
+        memset(buf, 0, mNumOffers * sizeof(StoreOfferState));
+        n += mNumOffers;
+        b[0] = 0;
+        b[1] = 0;
+        b[2] = 0;
         for(int i = 0; i < mNumOffers; i++){
             StorePackedOffer* curOffer = mOffers[i];
             curOffer->EndianFix();
+            (b[curOffer->OfferType()])++;
         }
         return true;
     }
@@ -101,6 +164,46 @@ StoreRbnOfferTable::~StoreRbnOfferTable(){
 
 bool StoreRbnOfferTable::Load(const char* cc){
 
+}
+
+int StoreRbnOfferTable::OfferIndex(const StorePackedOfferBase* base) const {
+    for(int i = 0; i < mNumOffers; i++){
+        if(base == mOffers[i]) return i;
+    }
+    return -1;
+}
+
+Symbol StorePackedPage::DefaultSort() const {
+    switch(unk6){
+        case 1:
+            return "by_artist";
+        case 2:
+            return "by_song_first_letter";
+        case 3:
+            return "by_subgenre";
+        case 4:
+            return "by_year_released";
+        case 5:
+            return "by_author";
+        case 6:
+            return "by_label";
+        case 7:
+            return "by_difficulty";
+        case 8:
+            return "by_review";
+        case 9:
+            return "by_release_date";
+        case 10:
+            return "by_pack_first_letter";
+        default:
+            return "by_artist";
+    }
+}
+
+void StorePage::LoadFromBuffer(char* buffer, unsigned short num){
+    mPageNumber = num;
+    mPage = (StorePackedPage*)buffer;
+    mPage->EndianFix();
 }
 
 void StoreMetadataManager::Init(){

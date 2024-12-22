@@ -63,11 +63,40 @@ public:
     StoreSingleStringTable mLocalized; // 0xc
 };
 
+class StorePackedPage {
+public:
+    void EndianFix();
+    Symbol DefaultSort() const;
+
+    int unk4;
+    unsigned char unk5;
+    unsigned short unk6;
+};
+
+class StorePage {
+public:
+    StorePage() : mPageNumber(0), mPage(0), unk8(0) {}
+    void LoadFromBuffer(char*, unsigned short);
+
+    int mPageNumber; // 0x0
+    StorePackedPage* mPage; // 0x4
+    int unk8;
+};
+
+class StorePageTable {
+public:
+    int mNumOffsets; // 0x0
+    int mNumPages; // 0x4
+    char* mBuffer; // 0x8
+    StorePage* mPages; // 0xc
+    std::map<unsigned short, StorePage*> mPageLookup; // 0x10
+};
+
 class StoreMetadataManager : public Hmx::Object {
 public:
     StoreMetadataManager() : mFlags(0), mLoadingState(0), mBasePath(),
-        mVersion(0), mStringTable(0), unk3c(0), mOfferTable(0), mRbnOfferTable(0), unk48(0),
-        unk4c(0), unk50(0), unk54(0) {}
+        mVersion(0), mStringTable(0), mSongTable(0), mOfferTable(0), mRbnOfferTable(0), mPageTable(0),
+        mCurrentPage(0), unk50(0), unk54(0) {}
     ~StoreMetadataManager(){}
     virtual DataNode Handle(DataArray*, bool);
 
@@ -91,11 +120,11 @@ public:
     String mBasePath; // 0x28
     StoreVersionHeader* mVersion; // 0x34
     StoreStringTable* mStringTable; // 0x38
-    int unk3c; // ptr to StoreSongTable
+    StoreSongTable* mSongTable; // 0x3c
     StoreOfferTable* mOfferTable; // 0x40
     StoreRbnOfferTable* mRbnOfferTable; // 0x44
-    int unk48; // ptr to StorePageTable
-    int unk4c; // ptr to StorePage
+    StorePageTable* mPageTable; // 0x48
+    StorePage* mCurrentPage; // 0x4c
     int unk50; // ptr to StoreMarqueeTable
     int unk54;
     std::map<unsigned long long, StoreTitleContentState*> unk58;
