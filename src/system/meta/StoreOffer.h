@@ -26,9 +26,10 @@ class StoreOfferState {
 public:
     void UpdateFlags(class StorePackedOfferBase*, unsigned char, unsigned char);
 
-    unsigned short unk0;
+    unsigned short mPrice; // 0x0
     unsigned short unk2;
     unsigned char mFlags; // 0x4
+    int unk8;
 };
 
 #pragma push
@@ -84,7 +85,11 @@ public:
     const char* GetPreviewPath() const;
     void EndianFix();
 
+    int SubGenre() const { return mSubGenre; }
+    int Language() const { return mLanguage; }
+
     unsigned char mSubGenre : 7; // 0x43
+    unsigned char mLanguage : 3; // 0x44
 };
 
 class StorePurchaseable : public Hmx::Object {
@@ -94,9 +99,10 @@ public:
 
     bool Exists() const;
     const char* CostStr() const;
-    bool IsDownloaded() const;
-    bool IsPartiallyDownloaded() const;
-    bool IsPartiallyPurchased() const;
+    bool IsDownloaded() const { return mOfferState->mFlags & 2; }
+    bool IsPartiallyDownloaded() const { return mOfferState->mFlags & 4; }
+    bool IsPartiallyPurchased() const { return mOfferState->mFlags & 8; }
+    bool IsPurchased() const;
     bool IsAvailable() const;
     void GetContentIndexes(std::vector<unsigned short>&, bool) const;
 

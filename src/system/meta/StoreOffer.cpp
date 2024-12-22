@@ -1,5 +1,6 @@
 #include "meta/StoreOffer.h"
 #include "meta/StorePackedMetadata.h"
+#include "meta/Sorting.h"
 #include "utl/Symbols.h"
 
 namespace {
@@ -55,8 +56,8 @@ bool StorePurchaseable::Exists() const {
 }
 
 const char* StorePurchaseable::CostStr() const {
-    if(mOfferState->unk0 == 9999) return " ";
-    else return MakeString("%i", mOfferState->unk0);
+    if(mOfferState->mPrice == 9999) return " ";
+    else return MakeString("%i", mOfferState->mPrice);
 }
 
 void StorePurchaseable::GetContentIndexes(std::vector<unsigned short>& vec, bool b) const {
@@ -209,7 +210,7 @@ Symbol StoreOffer::Genre() const {
 }
 
 Symbol StoreOffer::SubGenre() const {
-    return gSubGenreStrs[Clamp(0, 0x5D, (int)mPackedRbnOffer->mSubGenre)];
+    return gSubGenreStrs[Clamp(0, 0x5D, mPackedRbnOffer->SubGenre())];
 }
 
 Symbol StoreOffer::RatingSym() const {
@@ -247,6 +248,22 @@ float StoreOffer::Review() const {
     return mPackedData->mReview;
 }
 
+Symbol StoreOffer::Label() const {
+    MILO_ASSERT(IsRbn(), 0x4FA);
+}
+
+Symbol StoreOffer::Language() const {
+    MILO_ASSERT(IsRbn(), 0x508);
+    Symbol ret = eng;
+    switch(mPackedRbnOffer->Language()){
+        case 1: ret = fre; break;
+        case 2: ret = ita; break;
+        case 3: ret = esl; break;
+        case 4: ret = deu; break;
+    }
+    return ret;
+}
+
 const char* StoreOffer::AlbumLink() const {
     return MakeString("%d", (int)mPackedData->mAlbumLink);
 }
@@ -273,8 +290,31 @@ bool StoreOffer::HasGenre() const { return mPackedData->OfferType() != 2; }
 bool StoreOffer::HasVocalParts() const { return mPackedData->mVocalParts > 0; }
 bool StoreOffer::HasPreviewArt() const { return true; }
 
+Symbol StoreOffer::FirstCharName(bool b) const {
+    return FirstSortChar(mPackedData->GetName(), b);
+}
+
+Symbol StoreOffer::FirstCharArtist(bool b) const {
+    return FirstSortChar(mPackedData->GetArtist(), b);
+}
+
+Symbol StoreOffer::PackFirstLetter() const {
+    if(mPackedData->OfferType() == kStoreOfferPack){
+        return FirstCharName(true);
+    }
+    else return gNullStr;
+}
+
 int StoreOffer::GetSingleSongID() const {
     MILO_ASSERT(mPackedData->mNumSongs == 1, 0x587);
+}
+
+bool StorePurchaseable::IsAvailable() const {
+    return mOfferState && mOfferState->mFlags & 0x40;
+}
+
+bool StorePurchaseable::IsPurchased() const {
+    return mOfferState && mOfferState->mFlags & 1;
 }
 
 #pragma push
@@ -284,7 +324,7 @@ BEGIN_HANDLERS(StoreOffer)
     HANDLE_EXPR(offer_type, OfferType())
     HANDLE_EXPR(offer_name, OfferName())
     HANDLE_EXPR(description, Description())
-    HANDLE_EXPR(description_data, (DescriptionData(_msg->Obj<UILabel>(2)), kDataArray))
+    HANDLE_EXPR(description_data, DataNode(DescriptionData(_msg->Obj<UILabel>(2)), kDataArray))
     HANDLE_EXPR(is_new_release, IsNewRelease())
     HANDLE_EXPR(year_released, YearReleased())
     HANDLE_EXPR(genre, Genre())
@@ -321,7 +361,7 @@ BEGIN_HANDLERS(StoreOffer)
     HANDLE_EXPR(pack_link, PackLink())
     HANDLE_EXPR(rating_num, Rating())
     HANDLE_EXPR(has_rating, Rating() != 0)
-    // HANDLE_EXPR(price, )
+    HANDLE_EXPR(price, mOfferState->mPrice)
     HANDLE_EXPR(is_downloaded, IsDownloaded())
     HANDLE_EXPR(is_partially_downloaded, IsPartiallyDownloaded())
     HANDLE_EXPR(is_partially_purchased, IsPartiallyPurchased())

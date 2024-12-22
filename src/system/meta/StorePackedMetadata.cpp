@@ -43,9 +43,8 @@ bool StoreOfferTable::Load(const char* cc){
 
     char* loc12c;
     char* loc130;
-    if(!StoreLoadPackedFile(buf, true, 0x40000, true, true, &mBuffer, &loc12c, &loc130, &mNumOffers)){
-        return false;
-    }
+    bool ret = StoreLoadPackedFile(buf, true, 0x40000, true, true, &mBuffer, &loc12c, &loc130, &mNumOffers);
+    if(!ret) return ret;
     else {
         int diff = loc130 - loc12c;
         int u4 = diff / 0x45ul;
@@ -54,12 +53,13 @@ bool StoreOfferTable::Load(const char* cc){
                 diff, 0x45ul, u4, mNumOffers);
         }
         (char**)mOffers = &loc12c;
-        mBufferNewRelease = new char[mNumOffers];
+        mBufferNewRelease = new StoreOfferState[mNumOffers];
         memset(mBufferNewRelease, 0, mNumOffers);
         for(int i = 0; i < mNumOffers; i++){
             StorePackedOffer* curOffer = mOffers[i];
             curOffer->EndianFix();
         }
+        return true;
     }
 }
 
@@ -85,9 +85,9 @@ bool StoreRbnOfferTable::Load(const char* cc){
 
 void StoreMetadataManager::Init(){
     SetName("store", ObjectDir::sMainDir);
-    unk20 = 0;
-    unk24 = 0;
-    unk84 = 0;
+    mLoadingState = 0;
+    mContentSize = 0;
+    mErrorMsg = 0;
     if(SystemConfig("store", "local_metadata")->Int(1)){
         gDebugMakeAllSongsAvailable = true;
         gDebugDontRelyOnCommerceServer = true;
@@ -110,14 +110,29 @@ void StoreMetadataManager::UpdateOfferOwnership(){
     }
 }
 
+void StoreMetadataManager::Load(const char* cc){
+    if(!(mFlags & 0xC)){
+        mBasePath = cc;
+        mErrorMsg = 0;
+        SetLoadingState(1);
+        mFlags |= 4;
+    }
+}
+
+void StoreMetadataManager::Unload(){
+    RELEASE(mStringTable);
+    RELEASE(mOfferTable);
+    RELEASE(mRbnOfferTable);
+}
+
 StoreOfferState* StoreMetadataManager::GetOfferStatus(const StorePackedOfferBase* base){
     int idx = mOfferTable->OfferIndex(base);
     if(idx >= 0){
-        return (StoreOfferState*)mOfferTable->mBufferNewRelease[idx];
+        return &mOfferTable->mBufferNewRelease[idx];
     }
     else {
         idx = mRbnOfferTable->OfferIndex(base);
-        if(idx >= 0) return (StoreOfferState*)mRbnOfferTable->mBufferNewRelease[idx];
+        if(idx >= 0) return &mRbnOfferTable->mBufferNewRelease[idx];
     }
     return 0;
 }
