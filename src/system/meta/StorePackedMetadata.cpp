@@ -10,6 +10,22 @@ bool StoreLoadPackedFile(const char*, bool, int, bool, bool, char**, char**, cha
 
 }
 
+bool StoreStringTable::Load(const char* cc){
+    char buf[256];
+    sprintf(buf, "%sstrings", cc);
+    bool nonloc = mNonLocalized.LoadFile(buf);
+    sprintf(buf, "%sstrings_%s", cc, SystemLanguage().mStr);
+    return nonloc && mLocalized.LoadFile(buf);
+}
+
+bool StoreStringTable::IsValid(int i){
+    if(i & 0x8000U){
+        if(mLocalized.mNumStrings <= (i & 0x7FFFU)) return false;
+        else return true;
+    }
+    else return i >= 0 && i < mNonLocalized.mNumStrings;
+}
+
 String StorePackedOfferBase::GetOfferId() const {
     String ret;
     ret.reserve(0x11);
@@ -26,6 +42,10 @@ String StorePackedOfferBase::GetUpgradeId() const {
     char* ptr = (char*)ret.c_str();
     ptr[16] = 0;
     return ret;
+}
+
+const char* StorePackedOfferBase::GetName() const {
+    return TheStoreMetadata.GetString(mNameIndex);
 }
 
 StoreOfferTable::~StoreOfferTable(){

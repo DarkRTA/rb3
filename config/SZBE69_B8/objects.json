@@ -267,7 +267,7 @@
             "band3/meta_band/StandIn.cpp": "Matching",
             "band3/meta_band/StandInProvider.cpp": "Matching",
             "band3/meta_band/StoreInfoPanel.cpp": "MISSING",
-            "band3/meta_band/StoreMainPanel.cpp": "MISSING",
+            "band3/meta_band/StoreMainPanel.cpp": "NonMatching",
             "band3/meta_band/StoreMenuPanel.cpp": "MISSING",
             "band3/meta_band/StoreMenuProvider.cpp": "MISSING",
             "band3/meta_band/StoreOfferContentsProvider.cpp": "MISSING",

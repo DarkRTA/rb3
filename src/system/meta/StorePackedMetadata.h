@@ -4,6 +4,11 @@
 
 class StoreTitleContentState;
 
+class StoreVersionHeader {
+public:
+
+};
+
 class StoreOfferTable {
 public:
     ~StoreOfferTable();
@@ -37,15 +42,22 @@ public:
     ~StoreSingleStringTable(){
         if(mBuffer) _MemFree(mBuffer);
     }
+    bool LoadFile(const char*);
+    const char* GetString(int idx) const {
+        if(idx < 0 || idx >= mNumStrings) return "STRING INDEX OUT OF BOUNDS";
+        else return mStrings[idx];
+    }
 
-    int mNumStrings;
-    char* mBuffer;
-    char** mStrings;
+    int mNumStrings; // 0x0
+    char* mBuffer; // 0x4
+    char** mStrings; // 0x8
 };
 
 class StoreStringTable {
 public:
     ~StoreStringTable(){}
+    bool Load(const char*);
+    bool IsValid(int);
 
     StoreSingleStringTable mNonLocalized; // 0x0
     StoreSingleStringTable mLocalized; // 0xc
@@ -54,7 +66,7 @@ public:
 class StoreMetadataManager : public Hmx::Object {
 public:
     StoreMetadataManager() : mFlags(0), mLoadingState(0), mBasePath(),
-        unk34(0), mStringTable(0), unk3c(0), mOfferTable(0), mRbnOfferTable(0), unk48(0),
+        mVersion(0), mStringTable(0), unk3c(0), mOfferTable(0), mRbnOfferTable(0), unk48(0),
         unk4c(0), unk50(0), unk54(0) {}
     ~StoreMetadataManager(){}
     virtual DataNode Handle(DataArray*, bool);
@@ -65,6 +77,11 @@ public:
     void Load(const char*);
     void SetLoadingState(int);
     void Unload();
+    const char* GetString(int idx) const {
+        StoreStringTable* table = mStringTable;
+        if(idx & 0x8000) return table->mLocalized.GetString((idx & 0x7FFF) - 1);
+        else return table->mNonLocalized.GetString(idx - 1);
+    }
 
     static std::vector<int> mSetlistOffers;
 
@@ -72,8 +89,8 @@ public:
     int mLoadingState; // 0x20 - loading state
     int mContentSize; // 0x24
     String mBasePath; // 0x28
-    int unk34; // some buffer
-    StoreStringTable* mStringTable; // StoreSingleStringTable?
+    StoreVersionHeader* mVersion; // 0x34
+    StoreStringTable* mStringTable; // 0x38
     int unk3c; // ptr to StoreSongTable
     StoreOfferTable* mOfferTable; // 0x40
     StoreRbnOfferTable* mRbnOfferTable; // 0x44
