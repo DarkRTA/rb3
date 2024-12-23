@@ -1122,7 +1122,7 @@
             "system/os/AsyncTask.cpp": "Matching",
             "system/os/BlockMgr.cpp": "NonMatching",
             "system/os/CDReader.cpp": "NonMatching",
-            "system/os/CommerceMgr_Wii.cpp": "MISSING",
+            "system/os/CommerceMgr_Wii.cpp": "NonMatching",
             "system/os/ContentMgr.cpp": "NonMatching",
             "system/os/ContentMgr_Wii.cpp": "NonMatching",
             "system/os/CritSec.cpp": "Matching",

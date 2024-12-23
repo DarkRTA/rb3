@@ -114,33 +114,38 @@ StoreOfferTable::~StoreOfferTable(){
 
 #define BYTES_PER_OFFER 69UL
 
+struct test {
+    StorePackedOffer** n;
+    StorePackedOffer** b[4];
+};
+
 bool StoreOfferTable::Load(const char* cc){
     char buf[256];
     sprintf(buf, "%soffers", cc);
-    StorePackedOffer** n;
-    char* b[4];
+    test t;
     StorePackedOffer** loc130;
-    bool ret = StoreLoadPackedFile(buf, true, 0x40000, true, true, &mBuffer, (char**)&n, (char**)&loc130, &mNumOffers);
+    bool ret = StoreLoadPackedFile(buf, true, 0x40000, true, true, &mBuffer, (char**)&t.n, (char**)&loc130, &mNumOffers);
     if(!ret) return ret;
     else {
-        int diff = (int)loc130 - (int)n;
+        int diff = (int)loc130 - (int)t.n;
         int actualNumOffers = diff / BYTES_PER_OFFER;
         if(actualNumOffers < mNumOffers){
             MILO_LOG("There are %d bytes left in offers file, at %d bytes per offer is %d offers, but the file says there are %d offers.\n",
                 diff, BYTES_PER_OFFER, actualNumOffers, mNumOffers);
         }
-        mOffers = n;
+        mOffers = t.n;
         void* buf = new StoreOfferState[mNumOffers];
         mBufferNewRelease = (StoreOfferState*)buf;
         memset(buf, 0, mNumOffers * sizeof(StoreOfferState));
-        n += mNumOffers;
-        b[0] = 0;
-        b[1] = 0;
-        b[2] = 0;
+        
+        t.n += mNumOffers;
+        t.b[0] = 0;
+        t.b[1] = 0;
+        t.b[2] = 0;
         for(int i = 0; i < mNumOffers; i++){
             StorePackedOffer* curOffer = mOffers[i];
             curOffer->EndianFix();
-            (b[curOffer->OfferType()])++;
+            (((char**)&t.b[0])[curOffer->OfferType()])++;
         }
         return true;
     }
@@ -174,7 +179,7 @@ int StoreRbnOfferTable::OfferIndex(const StorePackedOfferBase* base) const {
 }
 
 Symbol StorePackedPage::DefaultSort() const {
-    switch(unk6){
+    switch(mDefaultSort){
         case 1:
             return "by_artist";
         case 2:
@@ -206,6 +211,21 @@ void StorePage::LoadFromBuffer(char* buffer, unsigned short num){
     mPage->EndianFix();
 }
 
+StorePackedOffer* StorePage::Offer(int idx) const {
+    if(mPage->mHasOffers){
+        int key = mOffers[idx];
+        if(!(key & 0x8000))
+        return TheStoreMetadata.mOfferTable->mOffers[key];
+    }
+    return nullptr;
+}
+
+StorePage* StorePageTable::GetPage(unsigned short idx){
+    std::map<unsigned short, StorePage*>::const_iterator it = mPageLookup.find(idx);
+    if(it != mPageLookup.end()) return it->second;
+    else return nullptr;
+}
+
 void StoreMetadataManager::Init(){
     SetName("store", ObjectDir::sMainDir);
     mLoadingState = 0;
@@ -231,6 +251,11 @@ void StoreMetadataManager::UpdateOfferOwnership(){
     for(int i = 0; i < mOfferTable->mNumOffers; i++){
 
     }
+}
+
+StorePage* StoreMetadataManager::LoadPage(unsigned short idx){
+    mCurrentPage = mPageTable->GetPage(idx);
+    return mCurrentPage;
 }
 
 void StoreMetadataManager::Load(const char* cc){

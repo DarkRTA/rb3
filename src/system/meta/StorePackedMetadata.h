@@ -68,23 +68,34 @@ public:
     void EndianFix();
     Symbol DefaultSort() const;
 
-    int unk4;
+    int unk0;
+    unsigned char unk4;
     unsigned char unk5;
-    unsigned short unk6;
+    unsigned short unk6p0 : 4;
+    unsigned short unk6p1 : 4;
+    unsigned short mDefaultSort : 4;
+    unsigned short mHasOffers : 1;
+    unsigned short unk6p3 : 3;
 };
 
 class StorePage {
 public:
-    StorePage() : mPageNumber(0), mPage(0), unk8(0) {}
+    StorePage() : mPageNumber(0), mPage(0), mOffers(0) {}
     void LoadFromBuffer(char*, unsigned short);
+    StorePackedOffer* Offer(int) const;
 
     int mPageNumber; // 0x0
     StorePackedPage* mPage; // 0x4
-    int unk8;
+    union {
+        unsigned short* mOffers;
+        class StorePackedSubMenu* mSubmenus;
+    }; // 0x8
 };
 
 class StorePageTable {
 public:
+    StorePage* GetPage(unsigned short);
+
     int mNumOffsets; // 0x0
     int mNumPages; // 0x4
     char* mBuffer; // 0x8
@@ -106,6 +117,7 @@ public:
     void Load(const char*);
     void SetLoadingState(int);
     void Unload();
+    StorePage* LoadPage(unsigned short);
     const char* GetString(int idx) const {
         StoreStringTable* table = mStringTable;
         if(idx & 0x8000) return table->mLocalized.GetString((idx & 0x7FFF) - 1);

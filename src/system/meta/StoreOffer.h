@@ -18,14 +18,13 @@ public:
     const char* GetDataTitle() const;
     const char* GetUpgradeDataTitle() const;
 
-    int unk0;
+    unsigned int mSongID; // 0x0
     unsigned short unk4;
     char unk6;
     char unk7;
     char unk8;
     char unk9;
-    char unka;
-    char unkb;
+    unsigned short unka;
     char unkc;
     char unkd;
     char unke;
@@ -80,6 +79,7 @@ public:
     const char* GetAlbumName() const;
     String GetOfferId() const;
     String GetUpgradeId() const;
+    bool IsVariousArtist() const;
 
     // 0x0
     unsigned char mIsRBN : 1;
@@ -115,7 +115,7 @@ public:
     void EndianFix();
     StorePackedSong* GetPackedSong(int) const;
 
-    unsigned short mSongs; // 0x43
+    unsigned short mSongs[1]; // 0x43
 };
 
 class StorePackedRBNOffer : public StorePackedOfferBase {
@@ -135,7 +135,7 @@ public:
     unsigned char unk44 : 5;
     unsigned short mAuthorIndex; // 0x45
     unsigned short mLabelIndex; // 0x47
-    unsigned short mSongs; // 0x49
+    unsigned short mSongs[1]; // 0x49
 };
 #pragma pop
 
@@ -150,8 +150,21 @@ public:
     bool IsPartiallyDownloaded() const { return mOfferState->mFlags & 4; }
     bool IsPartiallyPurchased() const { return mOfferState->mFlags & 8; }
     bool IsPurchased() const;
-    bool IsAvailable() const;
+    bool IsAvailable() const {
+        return mOfferState && mOfferState->mFlags & 0x40;
+    }
     void GetContentIndexes(std::vector<unsigned short>&, bool) const;
+    unsigned long long GetTitleId() const;
+    unsigned long long GetUpgradeTitleId() const;
+
+    StorePackedSong* GetPackedSong(int idx) const {
+        if(mPackedData->mIsRBN){
+            return mPackedRbnOffer->GetPackedSong(idx);
+        }
+        else {
+            return mPackedOffer->GetPackedSong(idx);
+        }
+    }
 
     union {
         const StorePackedOfferBase* mPackedData;
@@ -186,7 +199,6 @@ public:
     int YearReleased() const;
     Symbol SubGenre() const;
     bool InLibrary() const;
-    bool IsPurchased() const;
     bool IsTest() const;
     Symbol PackFirstLetter() const;
     const char* ReleaseDateStr() const;
@@ -208,23 +220,16 @@ public:
     const char* AlbumName() const;
     int NumSongs() const;
     bool HasArtist() const;
-    int GetSingleSongID() const;
+    unsigned int GetSingleSongID() const;
+    bool HasSong(const StoreOffer*) const;
+    bool HasSolo() const;
 
     bool IsRbn() const {
         return mPackedData->mIsRBN;
     }
 
-    StorePackedSong* GetPackedSong(int idx) const {
-        if(mPackedData->mIsRBN){
-            return mPackedRbnOffer->GetPackedSong(idx);
-        }
-        else {
-            return mPackedOffer->GetPackedSong(idx);
-        }
-    }
-
     StorePurchaseable mAlbum; // 0x24
     StorePurchaseable mPack; // 0x48
     String unk6c; // 0x6c - release date str
-    SongMgr* unk78; // 0x78
+    SongMgr* mSongMgr; // 0x78
 };

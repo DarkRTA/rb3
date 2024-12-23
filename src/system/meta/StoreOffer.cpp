@@ -1,8 +1,11 @@
 #include "meta/StoreOffer.h"
 #include "meta/StorePackedMetadata.h"
 #include "meta/Sorting.h"
+#include "os/CommerceMgr_Wii.h"
 #include "utl/Locale.h"
 #include "utl/Symbols.h"
+
+DataArray* gStoreOfferDescriptionArray;
 
 namespace {
     bool gSetup;
@@ -48,11 +51,11 @@ const char* gSubGenreStrs[] = {
 };
 
 inline StorePackedSong* StorePackedOffer::GetPackedSong(int idx) const {
-    return &TheStoreMetadata.mSongTable->mSongs[mSongs + idx];
+    return &TheStoreMetadata.mSongTable->mSongs[mSongs[idx]];
 }
 
 inline StorePackedSong* StorePackedRBNOffer::GetPackedSong(int idx) const {
-    return &TheStoreMetadata.mSongTable->mSongs[mSongs + idx];
+    return &TheStoreMetadata.mSongTable->mSongs[mSongs[idx]];
 }
 
 StorePurchaseable::StorePurchaseable() {
@@ -69,11 +72,28 @@ const char* StorePurchaseable::CostStr() const {
     else return MakeString("%i", mOfferState->mPrice);
 }
 
+unsigned long long StorePurchaseable::GetTitleId() const {
+    return WiiCommerceMgr::MakeDataTitleId(GetPackedSong(0)->GetDataTitle());
+}
+
+unsigned long long StorePurchaseable::GetUpgradeTitleId() const {
+    return WiiCommerceMgr::MakeDataTitleId(GetPackedSong(0)->GetUpgradeDataTitle());
+}
+
 void StorePurchaseable::GetContentIndexes(std::vector<unsigned short>& vec, bool b) const {
     vec.clear();
     vec.reserve(mPackedData->mNumSongs);
     for(int i = 0; i < mPackedData->mNumSongs; i++){
-
+        StorePackedSong* song = GetPackedSong(i);
+        if(b){
+            unsigned short push = song->unk10;
+            if(push != 0) vec.push_back(push);
+        }
+        else {
+            unsigned short push = song->unka;
+            vec.push_back(push);
+            vec.push_back(push + 1);
+        }
     }
 }
 
@@ -160,13 +180,20 @@ void UpdatePurchasable(StorePurchaseable* p){
     }
 }
 
-StoreOffer::StoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) : unk78(mgr) {
+StoreOffer::StoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) : mSongMgr(mgr) {
     mPackedData = base;
     UpdatePurchasable(this);
     StoreOfferType ty = mPackedData->OfferType();
     SetupStoreOfferLocals();
     mAlbum.mPackedData = nullptr;
     if(mPackedData->mAlbumLink && ty == kStoreOfferSong){
+        StorePage* page = TheStoreMetadata.LoadPage(mPackedData->mAlbumLink);
+        if(!page){
+            MILO_WARN("Offer %s has pack link, but page not found.\n", mPackedData->GetName());
+        }
+        else {
+            UpdatePurchasable(&mAlbum);
+        }
 //     iVar3 = StoreMetadataManager::LoadPage(TheStoreMetadata);
 //     if (iVar3 == 0) {
 //       StorePackedOfferBase::GetName(*(undefined4 *)(this + 0x1c));
@@ -211,7 +238,7 @@ StoreOffer::StoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) :
     unk6c = Localize(store_release_date_format, 0);
     dt.Format(unk6c);
     if(mPackedData->mNumSongs == 0){
-        OfferName();
+        MILO_WARN("%s does not have song_ids", OfferName());
     }
 }
 
@@ -226,21 +253,6 @@ Symbol StoreOffer::ShortName() const {
     else {
         return mPackedData->GetOfferId().c_str();
     }
-//       iVar1 = StorePackedOfferBase::OfferType(*(undefined4 *)(param_1 + 0x1c));
-//   if (iVar1 == 0) {
-//     fn_801D6C94(param_1,0);
-//     uVar2 = StorePackedSong::GetShortName();
-//     puVar3 = (undefined4 *)Symbol::Symbol(auStack_24,uVar2);
-//     uVar2 = *puVar3;
-//   }
-//   else {
-//     StorePackedOfferBase::GetOfferId(auStack_20,*(undefined4 *)(param_1 + 0x1c));
-//     uVar2 = MergedGet0x8(auStack_20);
-//     puVar3 = (undefined4 *)Symbol::Symbol(auStack_28,uVar2);
-//     uVar2 = *puVar3;
-//     String::~String(auStack_20,0xffffffff);
-//   }
-//   return uVar2;
 }
 
 Symbol StoreOffer::OfferType() const {
@@ -251,13 +263,99 @@ Symbol StoreOffer::OfferType() const {
     }
 }
 
-const char* StoreOffer::OfferName() const {
+#pragma push
+#pragma force_active on
+inline const char* StoreOffer::OfferName() const {
     return mPackedData->GetName();
 }
+#pragma pop
 
 bool StoreOffer::IsNewRelease() const { return mPackedData->mNewRelease; }
 
+const char* StoreOffer::Description() const {
+    StoreOfferType ty = mPackedData->OfferType();
+    String str;
+    int numSongs = mPackedData->mNumSongs;
+    if(ty == kStoreOfferAlbum){
+        str = ALBUM_INCLUDES;
+        str += " ";
+    }
+    else {
+        if(ty != kStoreOfferPack){
+            return MakeString("%s%s%s %s %s. %s", LQUOTE, mPackedData->GetName(), RQUOTE, BY_DASH, mPackedData->GetArtist(), SONG_CREDITS);
+        }
+        str = PACK_INCLUDES;
+        str += " ";
+        if(mPackedData->IsVariousArtist()){
+            int i = 0;
+            for(; i < numSongs - 1; i++){
+                StorePackedSong* song = GetPackedSong(i);
+                str += LQUOTE;
+                str += song->GetName();
+                str += RQUOTE;
+                str += " ";
+                str += BY;
+                str += " ";
+                str += song->GetArtist();
+                str += ", ";
+            }
+            str += AND;
+            str += " ";
+            StorePackedSong* song = GetPackedSong(i);
+            str += LQUOTE;
+            str += song->GetName();
+            str += RQUOTE;
+            str += " ";
+            str += BY;
+            str += " ";
+            str += song->GetArtist();
+            str += ". ";
+            str += SONG_CREDITS;
+            return MakeString("%s", str.c_str());
+        }
+    }
+
+    int i = 0;
+    for(; i < numSongs - 1; i++){
+        StorePackedSong* song = GetPackedSong(i);
+        str += LQUOTE;
+        str += song->GetName();
+        str += RQUOTE_COMMA;
+        str += " ";
+    }
+    StorePackedSong* song = GetPackedSong(i);
+    str += AND;
+    str += " ";
+    str += LQUOTE;
+    str += song->GetName();
+    str += RQUOTE;
+    str += " ";
+    str += BY;
+    str += " ";
+    str += mPackedData->GetArtist();
+    str += ". ";
+    str += SONG_CREDITS;
+    return MakeString("%s", str.c_str());
+}
+
+bool StoreOffer::IsTest() const { return true; }
 int StoreOffer::NumSongs() const { return mPackedData->mNumSongs; }
+
+bool StoreOffer::HasSong(const StoreOffer* offer) const {
+    if(IsRbn() && offer->IsRbn()){
+        StorePackedSong* otherSong = offer->mPackedRbnOffer->GetPackedSong(0);
+        for(int i = 0; i < mPackedRbnOffer->mNumSongs; i++){
+            if(mPackedRbnOffer->GetPackedSong(i) == otherSong) return true;
+        }
+    }
+    else if(!IsRbn() && !offer->IsRbn()){
+        StorePackedSong* otherSong = offer->mPackedOffer->GetPackedSong(0);
+        for(int i = 0; i < mPackedData->mNumSongs; i++){
+            if(mPackedOffer->GetPackedSong(i) == otherSong) return true;
+        }
+    }
+    return false;
+}
 
 float StoreOffer::PartRank(Symbol part) const {
     if(part == vocals){
@@ -306,9 +404,12 @@ Symbol StoreOffer::VocalPartsSym() const {
     return MakeString("vocal_parts_%i", (int)mPackedData->mVocalParts);
 }
 
-const char* StoreOffer::Artist() const {
+#pragma push
+#pragma force_active on
+inline const char* StoreOffer::Artist() const {
     return mPackedData->GetArtist();
 }
+#pragma pop
 
 const char* StoreOffer::AlbumName() const {
     return mPackedData->GetAlbumName();
@@ -404,16 +505,92 @@ Symbol StoreOffer::PackFirstLetter() const {
     else return gNullStr;
 }
 
-int StoreOffer::GetSingleSongID() const {
+bool StoreOffer::InLibrary() const {
+    bool hasSongs = mPackedData->mNumSongs != 0;
+    for(int i = 0; i < mPackedData->mNumSongs; i++){
+        StorePackedSong* song = GetPackedSong(i);
+        int songID = song->mSongID;
+        if(!mSongMgr || !mSongMgr->HasSong(songID)){
+            hasSongs = false;
+            break;
+        }
+    }
+    return hasSongs;
+}
+
+unsigned int StoreOffer::GetSingleSongID() const {
     MILO_ASSERT(mPackedData->mNumSongs == 1, 0x587);
+    return GetPackedSong(0)->mSongID;
 }
 
-bool StorePurchaseable::IsAvailable() const {
-    return mOfferState && mOfferState->mFlags & 0x40;
+bool StoreOffer::HasSolo() const {
+    MILO_WARN("store metadata should have solo inclusion\n");
+    return false;
 }
 
-bool StorePurchaseable::IsPurchased() const {
+bool StoreOffer::IsCompletelyUnavailable() const {
+    return !IsAvailable() && !mPack.IsAvailable() && !mAlbum.IsAvailable();
+}
+
+DataArray* StoreOffer::DescriptionData(UILabel* label) const {
+    RndText* text = label->TextObj();
+    text->SetFont(label->Font());
+    String str(Description());
+    std::vector<RndText::Line> lines;
+    float f44, f48;
+    const char* c28;
+    text->GetStringDimensions(f44, f48, lines, c28, text->Size());
+    if(!gStoreOfferDescriptionArray){
+        gStoreOfferDescriptionArray = new DataArray(lines.size());
+    }
+    else gStoreOfferDescriptionArray->Resize(lines.size());
+    for(std::vector<RndText::Line>::iterator it = lines.begin(); it != lines.end(); ++it){
+        MILO_WARN("line: %d - %d: %s\n"); // just here for the stringbase
+    }
+    return gStoreOfferDescriptionArray;
+}
+
+void MakeOfferSortString(char* cc, const StoreOffer* offer){
+    CalculateAlphaKey(cc, offer->Artist(), true);
+    int cclen = strlen(cc);
+    cc[cclen] = ' ';
+    char* cc_offset = &cc[cclen + 1];
+    *cc_offset = '\0';
+    const char* cc5 = "";
+    if(offer->mPackedData->OfferType() == kStoreOfferAlbum){
+        cc5 = offer->OfferName();
+    }
+    else if(offer->mAlbum.mPackedData && offer->mAlbum.IsPurchased()){
+        cc5 = offer->mAlbum.mPackedData->GetName();
+    }
+    else if(offer->mPackedData->OfferType() == kStoreOfferPack){
+        cc5 = offer->OfferName();
+    }
+    else if(offer->mPack.mPackedData && offer->mPack.IsPurchased()){
+        cc5 = offer->mPack.mPackedData->GetName();
+    }
+    CalculateAlphaKey(cc_offset, cc5, true);
+    cc_offset += strlen(cc_offset);
+    cc_offset[0] = ' ';
+    cc_offset[1] = '\0';
+    if(offer->mPackedData->OfferType() == kStoreOfferSong){
+        CalculateAlphaKey(cc_offset, offer->mPackedData->GetName(), true);
+    }
+}
+
+#pragma push
+#pragma force_active on
+inline bool StorePurchaseable::IsPurchased() const {
     return mOfferState && mOfferState->mFlags & 1;
+}
+#pragma pop
+
+bool StoreOfferSort(const StoreOffer* o1, const StoreOffer* o2){
+    char buf1[1024];
+    char buf2[1024];
+    MakeOfferSortString(buf1, o1);
+    MakeOfferSortString(buf2, o2);
+    return strcmp(buf1, buf2) < 0;
 }
 
 #pragma push

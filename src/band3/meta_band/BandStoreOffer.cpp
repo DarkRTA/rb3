@@ -1,3 +1,8 @@
-#include "meta/StoreOffer.h"
+#include "meta_band/BandStoreOffer.h"
+#include "meta/StorePackedMetadata.h"
 
-DECOMP_FORCEFUNC(BandStoreOffer, StoreOffer, GetPackedSong(0))
+BandStoreOffer::BandStoreOffer(const StorePackedOfferBase* base, SongMgr* mgr, bool b) :
+    StoreOffer(base, mgr, b) {
+    mPackedRbnOffer->GetPackedSong(0);
+    mPackedOffer->GetPackedSong(0);
+}
