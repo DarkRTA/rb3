@@ -111,74 +111,64 @@ void HandleSlashChords(char* buf, int bufLen, const GameGem& gem, int i4, int& i
         int slashIdx = gSlashNote;
         if(slashIdx != gem.GetRootNote()){
             sprintf(localbuf, "/%s", gCurrNoteNames[slashIdx]);
-            AddChordLevel(buf, bufLen, i4, iRef, localbuf, false);
+            if (AddChordLevel(buf, bufLen, i4, iRef, localbuf, false)) {
+                return;
+            }
         }
     }
 }
 
 bool HandleInterval(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
     unsigned char root = gem.GetRootNote();
-    unsigned char* tunedPtr = gTunedNotes;
-    unsigned int i = 0;
-    unsigned char i7 = -1;
-    unsigned char i8;
-    while(true){
-        i8 = i7;
-        if(0 <= gem.GetFret(i)){
-            unsigned char u1 = (*tunedPtr + gem.GetFret(i)) % 0xC;
-            // this part needs work
-            if(u1 != root){
-                i8 = u1;
-                if(i7 != 0xFF){
-                    i8 = i7;
-                    if(i7 != u1){
-                        return false;
-                    }
+    unsigned char noteToAddLevelTo = -1;
+    for(unsigned int i = 0; i < 6; i++){
+        if(gem.GetFret(i) >= 0){
+            unsigned char tunedNote = (gTunedNotes[i] + gem.GetFret(i)) % 0xC;
+            if(tunedNote != root){
+                if(noteToAddLevelTo == 0xFF){
+                    noteToAddLevelTo = tunedNote;
+                }
+                else if(noteToAddLevelTo != tunedNote){
+                    return false;
                 }
             }
-            // end the part that needs work
         }
-        i++;
-        *tunedPtr++;
-        // i7 = i8;
-        if(6 <= i){
-            if(i8 == (root + 7) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "5", false);
-                return true;
-            }
-            else if(i8 == (root + 1) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(b2)", false);
-                return true;
-            }
-            else if(i8 == (root + 2) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(2)", false);
-                return true;
-            }
-            else if(i8 == (root + 5) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(4)", false);
-                return true;
-            }
-            else if(i8 == (root + 6) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(b5)", false);
-                return true;
-            }
-            else if(i8 == (root + 8) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(b6)", false);
-                return true;
-            }
-            else if(i8 == (root + 9) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(6)", false);
-                return true;
-            }
-            else if(i8 == (root + 10) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(b7)", false);
-                return true;
-            }
-            else if(i8 == (root + 11) % 0xC){
-                AddChordLevel(buf, bufLen, i4, iRef, "(7)", false);
-                return true;
-            }
-            else return false;
-        }
+    }    
+    if(noteToAddLevelTo == (root + 7) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "5", false);
+        return true;
     }
+    else if(noteToAddLevelTo == (root + 1) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(b2)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 2) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(2)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 5) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(4)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 6) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(b5)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 8) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(b6)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 9) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(6)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 10) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(b7)", false);
+        return true;
+    }
+    else if(noteToAddLevelTo == (root + 11) % 0xC){
+        AddChordLevel(buf, bufLen, i4, iRef, "(7)", false);
+        return true;
+    }
+    else return false;
 }
