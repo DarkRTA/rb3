@@ -1,8 +1,8 @@
 #include "beatmatch/RGState.h"
+#include "beatmatch/RGUtl.h"
 #include "os/Debug.h"
 #include <string.h>
 
-#define kNumRGStrings 6
 #define kNumRGFrets 24
 
 RGState::RGState(){

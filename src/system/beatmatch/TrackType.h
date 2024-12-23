@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_TRACKTYPE_H
-#define BEATMATCH_TRACKTYPE_H
+#pragma once
 #include "utl/Symbol.h"
 
 enum TrackType {
@@ -21,5 +20,3 @@ enum TrackType {
 
 Symbol TrackTypeToSym(TrackType);
 TrackType SymToTrackType(Symbol);
-
-#endif

@@ -43,6 +43,7 @@ bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags){
             mSongData->GetNextRoll(mTrack, loopTick, roll1, roll2);
             float rollInterval = GetRollIntervalMs(mRollIntervalsConfig, mSongData->mTrackInfos[mTrack]->mType, mSongData->mTrackDifficulties[mTrack], false);
         }
+        mSongData->TrackTypeAt(0);
     }
 
     if(mChordGemInProgress != -1){

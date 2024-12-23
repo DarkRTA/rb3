@@ -834,8 +834,6 @@ void GemTrackDir::SetUnisonProgress(float f){
     if(mUnisonIcon) mUnisonIcon->SetProgress(f);
 }
 
-#define kNumRGStrings 6
-
 void GemTrackDir::AddChordRepImpl(RndMesh* mesh, TrackWidget* widget1, TrackWidget* widget2, TrackWidget* widget3,
     float f, const std::vector<int>& fretNums, String chordLabel){
     float secy = SecondsToY(f);

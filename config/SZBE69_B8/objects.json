@@ -913,7 +913,7 @@
             "system/beatmatch/Playback.cpp": "NonMatching",
             "system/beatmatch/PlayerTrackConfigList.cpp": "NonMatching",
             "system/beatmatch/RealGuitarController.cpp": "Matching",
-            "system/beatmatch/RealGuitarTrackWatcherImpl.cpp": "MISSING",
+            "system/beatmatch/RealGuitarTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/RGGemMatcher.cpp": "NonMatching",
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/RGUtl.cpp": "NonMatching",
