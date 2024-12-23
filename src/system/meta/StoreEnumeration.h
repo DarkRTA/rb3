@@ -22,7 +22,7 @@ public:
         kFail = 5,
     };
     StoreEnumeration(){}
-    ~StoreEnumeration(){}
+    virtual ~StoreEnumeration(){}
     virtual void Start() = 0;
     virtual bool IsSuccess() const = 0;
     virtual int IsEnumerating() const = 0;

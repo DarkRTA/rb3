@@ -4,7 +4,7 @@
 #include "ui/UI.h"
 #include "utl/Symbols.h"
 
-StorePreviewMgr::StorePreviewMgr() : mStreamPlayer(0), mNetCacheLoader(0), unk38(0), unk40(0) {
+StorePreviewMgr::StorePreviewMgr() : mStreamPlayer(0), mNetCacheLoader(0), mRequestedPreview(0), mIsPreviewPlaying(0) {
     mStreamPlayer = new StreamPlayer();
     MILO_ASSERT(mStreamPlayer, 0x22);
     SetName("store_preview_mgr", ObjectDir::Main());
@@ -32,7 +32,7 @@ void StorePreviewMgr::ClearCurrentPreview(){
 void StorePreviewMgr::SetCurrentPreviewFile(const String& str){
     if(mStrPathCur == str) return;
     mStrPathCur = str;
-    unk38 = false;
+    mRequestedPreview = false;
     PlayCurrentPreview();
 }
 
@@ -52,13 +52,13 @@ bool StorePreviewMgr::IsDownloadingFile(const String& str){
 void StorePreviewMgr::Poll(){
     MILO_ASSERT(mStreamPlayer, 0x89);
     mStreamPlayer->Poll();
-    if(unk38) PlayCurrentPreview();
+    if(mRequestedPreview) PlayCurrentPreview();
     if(mNetCacheLoader){
         static PreviewDownloadCompleteMsg msg(true);
         if(mNetCacheLoader->IsLoaded()){
             TheNetCacheMgr->DeleteNetCacheLoader(mNetCacheLoader);
             mNetCacheLoader = nullptr;
-            unk38 = false;
+            mRequestedPreview = false;
             PlayCurrentPreview();
             msg[0] = true;
             MsgSource::Handle(msg, false);
@@ -99,16 +99,16 @@ void StorePreviewMgr::PlayCurrentPreview(){
         mStreamPlayer->StopPlaying();
     }
     else {
-        if(unk40){
-            unk40 = false;
+        if(mIsPreviewPlaying){
+            mIsPreviewPlaying = false;
             mStreamPlayer->StopPlaying();
         }
-        if(!unk38){
-            unk38 = true;
-            unk3c = TheTaskMgr.UISeconds();
+        if(!mRequestedPreview){
+            mRequestedPreview = true;
+            mPreviewRequestedSeconds = TheTaskMgr.UISeconds();
         }
-        else if(TheTaskMgr.UISeconds() - unk3c < 1.5f) return;
-        unk38 = false;
+        else if(TheTaskMgr.UISeconds() - mPreviewRequestedSeconds < 1.5f) return;
+        mRequestedPreview = false;
         String str(mStrPathCur.c_str());
         int len = str.length();
         if(str.find(".mogg", len - 5) != String::npos){

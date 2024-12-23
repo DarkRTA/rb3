@@ -22,9 +22,9 @@ public:
     StreamPlayer* mStreamPlayer; // 0x28
     NetCacheLoader* mNetCacheLoader; // 0x2c
     std::list<String> mDownloadQueue; // 0x30
-    bool unk38;
-    float unk3c;
-    bool unk40;
+    bool mRequestedPreview; // 0x38
+    float mPreviewRequestedSeconds; // 0x3c
+    bool mIsPreviewPlaying; // 0x40
 };
 
 DECLARE_MESSAGE(PreviewDownloadCompleteMsg, "preview_download_complete_msg")

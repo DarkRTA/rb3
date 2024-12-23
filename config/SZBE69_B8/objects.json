@@ -1053,7 +1053,7 @@
                 "comment": "bss meme"
             },
             "system/meta/MemcardAction.cpp": "Matching",
-            "system/meta/MemcardMgr_Wii.cpp": "MISSING",
+            "system/meta/MemcardMgr_Wii.cpp": "NonMatching",
             "system/meta/Meta.cpp": "Matching",
             "system/meta/MetaMusicManager.cpp": "Matching",
             "system/meta/MetaMusicScene.cpp": "Matching",
@@ -1068,7 +1068,7 @@
             "system/meta/StoreEnumeration.cpp": "NonMatching",
             "system/meta/StoreOffer.cpp": "NonMatching",
             "system/meta/StorePackedMetadata.cpp": "NonMatching",
-            "system/meta/StorePanel.cpp": "MISSING",
+            "system/meta/StorePanel.cpp": "NonMatching",
             "system/meta/StorePreviewMgr.cpp": "LinkIssues",
             "system/meta/StreamPlayer.cpp": "Matching",
             "system/meta/WiiProfileMgr.cpp": "NonMatching",
