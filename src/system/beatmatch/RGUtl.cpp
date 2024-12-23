@@ -87,7 +87,7 @@ bool RGContainsNote(unsigned char uc, const GameGem& gem){
     for(unsigned int i = 0; i < 6; i++){
         char fret = gem.GetFret(i);
         if(0 <= fret){
-            unsigned char tunedNote = (gTunedNotes[i] + fret) % 0xC;
+            unsigned char tunedNote = (gTunedNotes[i] + fret) % 12;
             if(tunedNote == uc) return true;
         }
     }
@@ -99,7 +99,7 @@ void RGStringContainsNote(unsigned char uc, const GameGem& gem, unsigned char& u
     for(unsigned int i = 0; i < 6; i++){
         char fret = gem.GetFret(i);
         if(0 <= fret){
-            unsigned char tunedNote = (gTunedNotes[i] + fret) % 0xC;
+            unsigned char tunedNote = (gTunedNotes[i] + fret) % 12;
             if(tunedNote == uc) ucRef |= 1 << i;
         }
     }
@@ -123,7 +123,7 @@ bool HandleInterval(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef
     unsigned char noteToAddLevelTo = -1;
     for(unsigned int i = 0; i < 6; i++){
         if(gem.GetFret(i) >= 0){
-            unsigned char tunedNote = (gTunedNotes[i] + gem.GetFret(i)) % 0xC;
+            unsigned char tunedNote = (gTunedNotes[i] + gem.GetFret(i)) % 12;
             if(tunedNote != root){
                 if(noteToAddLevelTo == 0xFF){
                     noteToAddLevelTo = tunedNote;
@@ -134,41 +134,140 @@ bool HandleInterval(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef
             }
         }
     }    
-    if(noteToAddLevelTo == (root + 7) % 0xC){
+    if(noteToAddLevelTo == (root + 7) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "5", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 1) % 0xC){
+    else if(noteToAddLevelTo == (root + 1) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(b2)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 2) % 0xC){
+    else if(noteToAddLevelTo == (root + 2) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(2)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 5) % 0xC){
+    else if(noteToAddLevelTo == (root + 5) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(4)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 6) % 0xC){
+    else if(noteToAddLevelTo == (root + 6) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(b5)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 8) % 0xC){
+    else if(noteToAddLevelTo == (root + 8) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(b6)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 9) % 0xC){
+    else if(noteToAddLevelTo == (root + 9) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(6)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 10) % 0xC){
+    else if(noteToAddLevelTo == (root + 10) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(b7)", false);
         return true;
     }
-    else if(noteToAddLevelTo == (root + 11) % 0xC){
+    else if(noteToAddLevelTo == (root + 11) % 12){
         AddChordLevel(buf, bufLen, i4, iRef, "(7)", false);
         return true;
     }
     else return false;
+}
+
+void HandleNoThird(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
+    unsigned char root = gem.GetRootNote();
+    if(RGContainsNote((root + 10) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "7", false)) return;
+    }
+    else if(RGContainsNote((root + 11) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "M7", false)) return;
+    }
+
+    bool has9th = RGContainsNote((root + 9) % 12, gem);
+    bool has5th = RGContainsNote((root + 5) % 12, gem);
+    bool has4th = RGContainsNote((root + 4) % 12, gem);
+    bool has3rd = RGContainsNote((root + 3) % 12, gem);
+
+    if(has9th && has5th && !has4th && !has3rd){
+        AddChordLevel(buf, bufLen, i4, iRef, "sus4/6", true);
+        return;
+    }
+        if(has9th){
+        if (!AddChordLevel(buf, bufLen, i4, iRef, "sus6", true)) {
+            return;
+        }
+    }
+    else if(has5th){
+        if (!AddChordLevel(buf, bufLen, i4, iRef, "sus4", true)) {
+            return;
+        }
+    }
+    else if(RGContainsNote((root + 6) % 12, gem)){
+        if (!AddChordLevel(buf, bufLen, i4, iRef, "sus#4", true)) {
+            return;
+        }
+    }
+    else if(RGContainsNote((root + 2) % 12, gem)){
+        if (!AddChordLevel(buf, bufLen, i4, iRef, "sus2", true)) {
+            return;
+        }
+    }
+    else if(RGContainsNote((root + 1) % 12, gem)){
+        if (!AddChordLevel(buf, bufLen, i4, iRef, "susb2", true)) {
+            return;
+        }
+    }
+    HandleSlashChords(buf, bufLen, gem, i4, iRef);
+}
+
+void HandleNoSeventh(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
+    unsigned char root = gem.GetRootNote();
+    if(RGContainsNote((root + 6) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "#4", true)) return;
+    }
+    else if(RGContainsNote((root + 8) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "+", true)) return;
+    }
+
+    if(RGContainsNote((root + 3) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "#9", true)) return;
+    }
+
+    if(RGContainsNote((root + 1) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "b2", true)) return;
+    }
+    else if(RGContainsNote((root + 2) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "2", true)) return;
+    }
+
+    if(
+        (!RGContainsNote((root + 5) % 12, gem) || AddChordLevel(buf, bufLen, i4, iRef, "4", true)) &&
+        (!RGContainsNote((root + 9) % 12, gem) || AddChordLevel(buf, bufLen, i4, iRef, "6", true))
+    ){
+        HandleSlashChords(buf,bufLen,gem,i4,iRef);
+    }
+}
+
+void HandleNoSeventhMinor(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
+    unsigned char root = gem.GetRootNote();
+    bool has6th = RGContainsNote((root + 6) % 12, gem);
+    if(!has6th && !AddChordLevel(buf, bufLen, i4, iRef, "m", false)) return;
+    if(has6th && !AddChordLevel(buf, bufLen, i4, iRef, "0", true)) return;
+
+    if(RGContainsNote((root + 8) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "#5", true)) return;
+    }
+    
+    if(RGContainsNote((root + 1) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "b2", true)) return;
+    }
+    else if(RGContainsNote((root + 2) % 12, gem)){
+        if(!AddChordLevel(buf, bufLen, i4, iRef, "2", true)) return;
+    }
+
+    if(
+        (!RGContainsNote((root + 5) % 12, gem) || AddChordLevel(buf, bufLen, i4, iRef, "4", true)) &&
+        (!RGContainsNote((root + 9) % 12, gem) || AddChordLevel(buf, bufLen, i4, iRef, "6", true))
+    ){
+        HandleSlashChords(buf,bufLen,gem,i4,iRef);
+    }
 }
