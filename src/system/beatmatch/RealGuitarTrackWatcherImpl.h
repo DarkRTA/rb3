@@ -26,7 +26,9 @@ public:
     virtual bool IsHighestFret(int) const;
     virtual bool InGem(int, const GameGem&) const;
     virtual bool HarmlessFretDown(int, int) const;
-    virtual bool IsCoreGuitar(void) const;
+    virtual bool IsCoreGuitar() const;
+
+    bool StrumOK(int) const;
 
     RGGemMatcher mMatcher; // 0xe8
     float unk1f0; // 0x1f0 - mLastMissTime

@@ -102,11 +102,11 @@ public:
 
     bool GetPlayed(){ return mPlayed != 0; }
 
-    float mMs;
-    int mTick;
-    unsigned short mDurationMs;
-    unsigned short mDurationTicks;
-    unsigned int mSlots;
+    float mMs; // 0x0
+    int mTick; // 0x4
+    unsigned short mDurationMs; // 0x8
+    unsigned short mDurationTicks; // 0xa
+    unsigned int mSlots; // 0xc
 
     unsigned char mPlayed : 1;
     unsigned char mForceStrum : 1;
