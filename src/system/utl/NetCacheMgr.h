@@ -56,7 +56,7 @@ public:
     NetCacheMgrFailType GetFailType() const;
     void SetState(NetCacheMgrState);
     void Unload();
-
+    bool IsLocalFile(const char*) const;
     void OnInit();
     void CheatNextServer();
     void DebugClearCache();

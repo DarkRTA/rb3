@@ -10,6 +10,7 @@ public:
     int GetSize();
     void* GetBuffer();
     bool HasFailed() const;
+    const char* GetRemotePath() const;
 
     int mState;
     FileCache* unk4;

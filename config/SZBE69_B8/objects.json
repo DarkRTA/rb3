@@ -1069,7 +1069,7 @@
             "system/meta/StoreOffer.cpp": "NonMatching",
             "system/meta/StorePackedMetadata.cpp": "NonMatching",
             "system/meta/StorePanel.cpp": "MISSING",
-            "system/meta/StorePreviewMgr.cpp": "MISSING",
+            "system/meta/StorePreviewMgr.cpp": "LinkIssues",
             "system/meta/StreamPlayer.cpp": "Matching",
             "system/meta/WiiProfileMgr.cpp": "NonMatching",
 
