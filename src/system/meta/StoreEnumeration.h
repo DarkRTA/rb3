@@ -1,5 +1,4 @@
-#ifndef META_STOREENUMERATION_H
-#define META_STOREENUMERATION_H
+#pragma once
 #include "utl/Str.h"
 #include <list>
 
@@ -23,7 +22,7 @@ public:
         kFail = 5,
     };
     StoreEnumeration(){}
-    ~StoreEnumeration(){}
+    virtual ~StoreEnumeration(){}
     virtual void Start() = 0;
     virtual bool IsSuccess() const = 0;
     virtual int IsEnumerating() const = 0;
@@ -44,5 +43,3 @@ public:
     bool mLoading;
     StoreEnumeration::State mState;
 };
-
-#endif // META_STOREENUMERATION_H

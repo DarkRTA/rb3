@@ -4,6 +4,9 @@
 WiiProfileMgr TheWiiProfileMgr;
 const int kWiiProfileNameBufferSize = 46;
 
+int WiiProfileMgr::sSaveVersion = -1;
+int WiiProfileMgr::sSaveVersionWii = -1;
+
 WiiProfile::WiiProfile() : mSlot(-1), mId(0), mFlags(0), unk_0x28(0) {}
 
 WiiProfile::~WiiProfile() {}
@@ -19,11 +22,7 @@ void WiiProfile::Clear(int Slot) {
 }
 
 int WiiProfile::SaveSize() {
-    if (FixedSizeSaveable::sPrintoutsEnabled) {
-        MILO_LOG("* %s = %i\n", "WiiProfile", 59);
-    }
-
-    return 0x3b;
+    REPORT_SIZE("WiiProfile", 59);
 }
 
 void WiiProfile::SaveToStream(BinStream &bs) const {
@@ -85,6 +84,27 @@ BEGIN_HANDLERS(WiiProfile)
     HANDLE_CHECK(0x98)
 END_HANDLERS
 
-WiiProfileMgr::WiiProfileMgr() {}
-WiiProfileMgr::~WiiProfileMgr() {}
-void WiiProfileMgr::SetProfileDirty(int Slot) {}
+WiiProfileMgr::WiiProfileMgr() : unk1d0(0), mDirty(0) {
+    mSaveSizeMethod = &SaveSize;
+}
+
+WiiProfileMgr::~WiiProfileMgr(){
+
+}
+
+void WiiProfileMgr::Init(int rev, int revWii){
+    Clear(rev, revWii);
+}
+
+void WiiProfileMgr::Clear(int rev, int revWii){
+    sSaveVersion = rev;
+    sSaveVersionWii = revWii;
+    for(int i = 0; i < 4; i++){
+        mWiiProfiles[i].Clear(i);
+    }
+    for(int i = 0; i < 4; i++){
+        unk1c0[i] = -1;
+    }
+}
+
+void WiiProfileMgr::SetProfileDirty(int Slot) { mDirty = true; }

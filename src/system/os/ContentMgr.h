@@ -1,5 +1,4 @@
-#ifndef OS_CONTENTMGR_H
-#define OS_CONTENTMGR_H
+#pragma once
 #include "obj/Object.h"
 
 enum ContentLocT {
@@ -10,15 +9,29 @@ enum ContentLocT {
 
 class Content {
 public:
+    enum State {
+        kUnmounted = 0,
+        kNeedsMounting = 1,
+        kMounting = 2,
+        kUnmounting = 3,
+        kMounted = 4,
+        kAlwaysMounted = 5,
+        kNeedsBackup = 6,
+        kBackingUp = 7,
+        kContentDeleting = 8,
+        kDeleted = 9,
+        kFailed = 10
+    };
+
     Content(){}
     virtual ~Content(){}
     // fix ret types as you implement them
-    virtual void Root() = 0;
+    virtual const char* Root() = 0;
     virtual int OnMemcard() = 0;
-    virtual int Location() = 0;
+    virtual ContentLocT Location() = 0;
     virtual int LicenseBits(){ return 0; }
     virtual bool HasValidLicenseBits(){ return true; }
-    virtual int GetState() = 0;
+    virtual State GetState() = 0;
     virtual void Poll(){}
     virtual void Mount(){}
     virtual void Unmount(){}
@@ -53,10 +66,17 @@ public:
 
     class CallbackFile {
     public:
+        CallbackFile(const char* cc1, Callback* cb, ContentLocT t, const char* cc2) :
+            unk0(cc1), unkc(cb), unk10(t), unk14(cc2) {}
+        ~CallbackFile(){}
+        FilePath unk0;
+        Callback* unkc;
+        ContentLocT unk10;
+        String unk14;
     };
 
     ContentMgr(){}
-    virtual ~ContentMgr();
+    virtual ~ContentMgr(){}
     virtual DataNode Handle(DataArray*, bool);
     virtual void PreInit(){}
     virtual void Init();
@@ -71,9 +91,9 @@ public:
     virtual bool IsMounted(Symbol){ return true; }
     virtual bool DeleteContent(Symbol){ return true; }
     virtual bool IsDeleteDone(Symbol){ return true; }
-    virtual bool GetLicensedBits(Symbol, unsigned long& ul){ ul = 0; return true; }
+    virtual bool GetLicenseBits(Symbol, unsigned long& ul){ ul = 0; return true; }
     virtual int GetCreationDate(Symbol){ return 0; } // ditto
-    virtual bool InDiscoveryState(){ return mState == kDiscoveryLoading; }
+    virtual bool InDiscoveryState(){ return mState == 2 || mState == 3 || mState == 4 || mState == 5; }
     virtual void NotifyMounted(Content*){}
     virtual void NotifyUnmounted(Content*){}
     virtual void NotifyDeleted(Content*){}
@@ -87,12 +107,13 @@ public:
     DataNode OnRemoveContent(DataArray*);
     Hmx::Object* SetReadFailureHandler(Hmx::Object*);
     bool RefreshDone() const;
-    bool RefreshInProgress(){
-
-    }
+    bool NeverRefreshed() const { return mState == kDone; }
+    bool RefreshInProgress();
     void UpdateShouldCreateCache(){
         if(InDiscoveryState()) mCreateSongCache = true;
     }
+    bool PollContents();
+    Content* FindFirstContent(Content::State);
 
     static void ContentRecurseCallback(const char*, const char*);
 
@@ -105,39 +126,21 @@ public:
         kDiscoveryCheckIfDone = 4,
         kMounting = 5,
     } mState; // 0x20
-    std::list<int> unk24; // 0x24
-    std::list<int> unk2c; // 0x2c
-    std::list<String> unk34; // 0x34
+    std::list<Callback*> mCallbacks; // 0x24
+    std::list<Content*> mContents; // 0x2c
+    std::list<String> unk34; // 0x34 - mExtraContents?
     bool mDirty; // 0x3c
-    int unk40; // 0x40
-    int unk44; // 0x44
-    int unk48; // 0x48
-    String unk4c; // 0x4c
+    Loader* mLoader; // 0x40
+    Callback* mCallback; // 0x44
+    ContentLocT mLocation; // 0x48
+    String mName; // 0x4c
     int mRootLoaded; // 0x58
-    std::list<CallbackFile> unk5c; // 0x5c
+    std::list<CallbackFile> mCallbackFiles; // 0x5c
     Hmx::Object* mReadFailureHandler; // 0x64
-
-    // enum /* @enum$36095BandOffline_cpp */ {
-    //     kDone = 0,
-    //     kDiscoveryEnumerating = 1,
-    //     kDiscoveryMounting = 2,
-    //     kDiscoveryLoading = 3,
-    //     kDiscoveryCheckIfDone = 4,
-    //     kMounting = 5,
-    // } mState; // offset 0x28, size 0x4
-    // class list mCallbacks; // offset 0x2C, size 0x8
-    // class list mContents; // offset 0x34, size 0x8
-    // class list mExtraContents; // offset 0x3C, size 0x8
-    // unsigned char mDirty; // offset 0x44, size 0x1
-    // class Loader * mLoader; // offset 0x48, size 0x4
-    // class Callback * mCallback; // offset 0x4C, size 0x4
-    // enum ContentLocT mLocation; // offset 0x50, size 0x4
-    // class String mName; // offset 0x54, size 0xC
-    // int mRootLoaded; // offset 0x60, size 0x4
-    // class list mCallbackFiles; // offset 0x64, size 0x8
 };
 
 extern ContentMgr* TheContentMgr;
+extern const char* gContentStateName[11];
 
 #include "obj/Msg.h"
 
@@ -147,5 +150,3 @@ DECLARE_MESSAGE(ContentReadFailureMsg, "content_read_failure");
     bool GetBool() const { return mData->Int(2); }
     const char* GetStr() const { return mData->Str(3); }
 END_MESSAGE;
-
-#endif

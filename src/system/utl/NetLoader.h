@@ -5,6 +5,10 @@
 #include "utl/Str.h"
 #include "utl/Loader.h"
 
+enum NetLoaderPos {
+
+};
+
 class NetLoader {
 public:
     NetLoader(const String &);

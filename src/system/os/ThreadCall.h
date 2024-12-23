@@ -2,7 +2,7 @@
 #define OS_THREADCALL_H
 
 class ThreadCallback {
-    public:
+public:
     ThreadCallback() {}
     virtual ~ThreadCallback() {}
     virtual int ThreadStart() = 0;
