@@ -6,6 +6,7 @@
 import subprocess
 
 from ghidra.program.model.symbol import *
+from ghidra.program.model.symbol import SourceType, SymbolType, SymbolUtilities
 
 # Read/demangle symbols file
 f = askFile("Symbols File", "OK")
