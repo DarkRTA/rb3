@@ -66,3 +66,34 @@ void RGGemMatcher::ClearNonStrums(){
         mStringNonStrum[i] = 0.0f;
     }
 }
+
+bool RGGemMatcher::FretHistoryMatch(int i1, int i2, float f3, float f4, RGMatchType ty) const {
+    
+}
+
+void RGGemMatcher::AddFretHistory(int i1, int i2, float f3){
+    for(int i = 3; i > 0; i--){
+
+    }
+}
+
+// void __thiscall
+// RGGemMatcher::AddFretHistory(double param_1,RGGemMatcher *this,int param_3,undefined4 param_4)
+
+// {
+//   int iVar1;
+//   RGGemMatcher *pRVar2;
+//   int iVar3;
+  
+//   iVar1 = 3;
+//   pRVar2 = this + param_3 * 0x20 + 0x48;
+//   iVar3 = 0x18;
+//   do {
+//     fn_8016E284(pRVar2 + iVar3,pRVar2 + (iVar1 + -1) * 8);
+//     iVar1 = iVar1 + -1;
+//     iVar3 = iVar3 + -8;
+//   } while (iVar1 > 0);
+//   *(undefined4 *)(this + param_3 * 0x20 + 0x4c) = param_4;
+//   *(float *)pRVar2 = (float)param_1;
+//   return;
+// }

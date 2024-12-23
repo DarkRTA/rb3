@@ -15,19 +15,17 @@ int gSlashNote = -1;
 int gSlashString = -1;
 int gSlashFret = -1;
 bool gSuperscriptStarted;
-int gCurrNoteNames[2];
+const char** gCurrNoteNames;
 
 void RGSetTuning(const std::vector<int>& vec){
     unsigned char* stringPtr = gStringNotes;
     unsigned char* tunedPtr = gTunedNotes;
-    int i5 = 0;
     for(int i = 0; i < vec.size(); i++){
-        int note = *stringPtr + i + i5;
+        int note = vec[i] + *stringPtr;
         MILO_ASSERT_RANGE(note, 0, 256, 0x45);
         *tunedPtr = note;
         stringPtr++;
         tunedPtr++;
-        i5 += 4;
     }
 }
 
@@ -36,45 +34,40 @@ unsigned char RGGetTuning(int string){
     return gTunedNotes[string];
 }
 
-#define start "<gtr>"
-#define end "</gtr>"
-
 bool AddChordLevel(char* buffer, int bufferLen, int i3, int& i4, const char* cc, bool bbb){
     char localBuf[256];
     int bufIdx = 0;
     if(bbb && !gSuperscriptStarted){
+        const char* start = "<gtr>";
         MILO_ASSERT(strlen(buffer) + strlen(start) < bufferLen - 1, 0x5B);
         strcat(buffer, start);
         gSuperscriptStarted = true;
     }
     else if(!bbb && gSuperscriptStarted){
+        const char* end = "</gtr>";
         MILO_ASSERT(strlen(buffer) + strlen(end) < bufferLen - 1, 0x62);
         strcat(buffer, end);
         gSuperscriptStarted = false;
     }
     for(char* p = (char*)cc; *p != 0; p++){
-        if(*p == 0x23){
-            localBuf[bufIdx] = -0x3E;
-            localBuf[bufIdx + 1] = -0x54;
-            bufIdx += 2;
+        if(*p == '#'){
+            localBuf[bufIdx++] = -0x3E;
+            localBuf[bufIdx++] = -0x54;
         }
-        else if(*p == 0x62){
-            localBuf[bufIdx] = -0x3E;
-            localBuf[bufIdx + 1] = -0x56;
-            bufIdx += 2;
+        else if(*p == 'b'){
+            localBuf[bufIdx++] = -0x3E;
+            localBuf[bufIdx++] = -0x56;
         }
-        else if(*p == 0x30){
-            localBuf[bufIdx] = -0x3E;
-            localBuf[bufIdx + 1] = -0x55;
-            bufIdx += 2;
+        else if(*p == '0'){
+            localBuf[bufIdx++] = -0x3E;
+            localBuf[bufIdx++] = -0x55;
         }
         else {
-            localBuf[bufIdx] = *p;
-            bufIdx += 1;
+            localBuf[bufIdx++] = *p;
         }
     }
     bool ret = false;
-    localBuf[bufIdx] = 0;
+    localBuf[bufIdx] = '\0';
     if(strlen(buffer) + strlen(localBuf) >= bufferLen - 1) return false;
     else {
         strcat(buffer, localBuf);
@@ -91,32 +84,33 @@ void RGParseOverrideChord(char* buf, int bufLen, const char* cc){
 }
 
 bool RGContainsNote(unsigned char uc, const GameGem& gem){
-    unsigned char* tunedPtr = gTunedNotes;
     for(unsigned int i = 0; i < 6; i++){
         char fret = gem.GetFret(i);
-        if(0 <= fret && ((*tunedPtr + fret) % 0xC & 0xFFU) == uc) return true;
-        tunedPtr++;
+        if(0 <= fret){
+            unsigned char tunedNote = (gTunedNotes[i] + fret) % 0xC;
+            if(tunedNote == uc) return true;
+        }
     }
     return false;
 }
 
 void RGStringContainsNote(unsigned char uc, const GameGem& gem, unsigned char& ucRef){
     ucRef = 0;
-    unsigned char* tunedPtr = gTunedNotes;
     for(unsigned int i = 0; i < 6; i++){
         char fret = gem.GetFret(i);
-        if(0 <= fret && ((*tunedPtr + fret) % 0xC & 0xFFU) == uc){
-            ucRef |= 1 << i;
+        if(0 <= fret){
+            unsigned char tunedNote = (gTunedNotes[i] + fret) % 0xC;
+            if(tunedNote == uc) ucRef |= 1 << i;
         }
-        tunedPtr++;
     }
 }
 
 void HandleSlashChords(char* buf, int bufLen, const GameGem& gem, int i4, int& iRef){
-    char localbuf[20];
+    char localbuf[16];
     if(gem.GetShowSlashes()){
-        if(gSlashNote != gem.GetRootNote()){
-            sprintf(buf, "/%s", gCurrNoteNames[gSlashNote]);
+        int slashIdx = gSlashNote;
+        if(slashIdx != gem.GetRootNote()){
+            sprintf(localbuf, "/%s", gCurrNoteNames[slashIdx]);
             AddChordLevel(buf, bufLen, i4, iRef, localbuf, false);
         }
     }

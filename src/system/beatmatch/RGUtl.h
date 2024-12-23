@@ -19,7 +19,7 @@ bool AddChordLevel(char*, int, int, int&, const char*, bool);
 void RGParseOverrideChord(char*, int, const char*);
 bool RGContainsNote(unsigned char, const GameGem&);
 void RGStringContainsNote(unsigned char, const GameGem&, unsigned char&);
-void HandleSlashChords(char*, int, const GameGem&, int, int&); // could return a bool?
+void HandleSlashChords(char*, int, const GameGem&, int, int&);
 bool HandleInterval(char*, int, const GameGem&, int, int&);
 void HandleNoThird(char*, int, const GameGem&, int, int&);
 void HandleNoSeventh(char*, int, const GameGem&, int, int&);
