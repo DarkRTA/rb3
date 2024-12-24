@@ -52,6 +52,10 @@ bool RGGemMatcher::FretMatch(const GameGem& gem, float f1, float f2, float f3, f
     return matchimpl;
 }
 
+bool RGGemMatcher::FretMatchImpl(const GameGem&, float, float, float, float, bool, bool, RGMatchType) const {
+    
+}
+
 RGState* RGGemMatcher::GetState(){ return &mState; }
 const RGState* RGGemMatcher::GetState() const { return &mState; }
 
@@ -65,4 +69,24 @@ void RGGemMatcher::ClearNonStrums(){
     for(int i = 0; i < 6; i++){
         mStringNonStrum[i] = 0.0f;
     }
+}
+
+bool RGGemMatcher::FretHistoryMatch(int i1, int i2, float f3, float f4, RGMatchType ty) const {
+    if(ty == 0) return mState.GetFret(i1) == i2;
+    else {
+        float f1 = f3;
+        for(int i = 0; i < 4; i++){
+            if(i2 == pairs[i][0].i && f3 - f1 < f4) return true;
+            f1 = pairs[i][0].f;
+        }
+        return false;
+    }
+}
+
+void RGGemMatcher::AddFretHistory(int i1, int i2, float f3){
+    for(int i = 3; i >= 1; i--){
+        pairs[i1][i] = pairs[i1][i - 1];
+    }
+    pairs[i1][0].i = i2;
+    pairs[i1][0].f = f3;
 }

@@ -138,14 +138,14 @@ void GameGem::CopyGem(GameGem* gem, int i){
     mForceStrum = gem->mForceStrum;
     mIgnoreDuration = gem->IgnoreDuration();
     mSlots = gem->GetSlots();
-    mRealGuitar = gem->mRealGuitar != 0; // this is gem->IsRealGuitar() but inlined
+    mRealGuitar = gem->IsRealGuitar(); // this is gem->IsRealGuitar() but inlined
 
     for(unsigned int ui = 0; ui < 6; ui++){
         mFrets[ui] = gem->GetFret(ui);
         SetRGNoteTypeEntry(ui, gem->GetRGNoteType(ui));
     }
 
-    mHandPosition = gem->mHandPosition; // this is gem->GetHandPosition() but inlined
+    mHandPosition = gem->GetHandPosition(); // this is gem->GetHandPosition() but inlined
     mStrumType = gem->mStrumType;
     mRootNote = gem->mRootNote;
     mLoose = gem->mLoose;
@@ -158,7 +158,10 @@ void GameGem::CopyGem(GameGem* gem, int i){
     mImportantStrings = gem->mImportantStrings;
 }
 
-bool GameGem::IsRealGuitar() const { return mRealGuitar; }
+#pragma push
+#pragma force_active on
+inline bool GameGem::IsRealGuitar() const { return mRealGuitar; }
+#pragma pop
 
 bool GameGem::IsRealGuitarChord() const {
     if(!mRealGuitar) return false;
@@ -177,10 +180,7 @@ char GameGem::GetFret(unsigned int string) const {
 char GameGem::GetHighestFret() const {
     char fret = GetFret(0);
     for(unsigned int i = 1; i < 6; i++){
-        char loopFret = GetFret(i);
-        char* fretPtr = &fret;
-        if(fret < loopFret) fretPtr = &loopFret;
-        fret = *fretPtr;
+        fret = std::max(fret, GetFret(i));
     }
     return fret;
 }
@@ -209,7 +209,12 @@ RGNoteType GameGem::GetRGNoteType(unsigned int string) const {
     return GetRGNoteTypeEntry(string);
 }
 
-unsigned char GameGem::GetHandPosition() const { return mHandPosition; }
+
+#pragma push
+#pragma force_active on
+inline unsigned char GameGem::GetHandPosition() const { return mHandPosition; }
+#pragma pop
+
 int GameGem::GetRGChordID() const { return mRGChordID; }
 unsigned char GameGem::GetRootNote() const { return mRootNote; }
 bool GameGem::GetShowChordNames() const { return mShowChordNames; }
@@ -229,7 +234,7 @@ unsigned int GameGem::GetHighestString() const {
     return -1;
 }
 
-unsigned char GameGem::GetRGStrumType() const { return mStrumType; }
+int GameGem::GetRGStrumType() const { return mStrumType; }
 
 bool GameGem::IsMuted() const {
     if(!mRealGuitar) return false;

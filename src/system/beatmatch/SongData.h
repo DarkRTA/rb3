@@ -42,11 +42,11 @@ public:
         TrackInfo(Symbol, SongInfoAudioType, AudioTrackNum, TrackType, bool);
         ~TrackInfo();
 
-        Symbol mName;
+        Symbol mName; // 0x0
         TickedInfoCollection<String>* mLyrics; // fix type
-        BeatmatchAudioType mAudioType;
-        AudioTrackNum mAudioTrackNum;
-        TrackType mType;
+        BeatmatchAudioType mAudioType; // 0x8
+        AudioTrackNum mAudioTrackNum; // 0xc
+        TrackType mType; // 0x10
         bool mIndependentSlots;
     };
 
@@ -121,6 +121,9 @@ public:
     bool Poll();
     void SendPhrases(int);
     void ChangeTrackDiff(int, int);
+    TrackType TrackTypeAt(int idx) const {
+        return mTrackInfos[idx]->mType;
+    }
 
     int unkc; // 0xc
     int unk10; // 0x10

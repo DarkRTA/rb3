@@ -1,12 +1,10 @@
-#ifndef BEATMATCH_REALGUITARCONTROLLER_H
-#define BEATMATCH_REALGUITARCONTROLLER_H
+#pragma once
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
 #include "os/JoypadMsgs.h"
 #include "os/UsbMidiGuitarMsgs.h"
-
-#define kNumRGStrings 6
+#include "beatmatch/RGUtl.h"
 
 // for the Squier
 class RealGuitarController : public BeatMatchController {
@@ -30,11 +28,9 @@ public:
     int OnMsg(const RGAccelerometerMsg&);
     int OnMsg(const StringStoppedMsg&){ return 0; }
 
-    bool mDisabled;
-    int unk40;
-    BeatMatchControllerSink* mSink;
-    int mStrings[kNumRGStrings];
+    bool mDisabled; // 0x3c
+    int unk40; // 0x40 - usbmidiguitar* mguitar?
+    BeatMatchControllerSink* mSink; // 0x44
+    int mStrings[kNumRGStrings]; // 0x48
 
 };
-
-#endif

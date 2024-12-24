@@ -7,7 +7,9 @@ RealGuitarController::RealGuitarController(User* user, const DataArray* cfg, Bea
     BeatMatchController(user, cfg, false), mDisabled(disabled), mSink(bsink) {
     mLefty = lefty;
     JoypadSubscribe(this);
-    mStrings[5] = mStrings[4] = mStrings[3] = mStrings[2] = mStrings[1] = mStrings[0] = 0;
+    for(int i = 0; i < kNumRGStrings; i++){
+        mStrings[i] = 0;
+    }
 }
 
 RealGuitarController::~RealGuitarController(){
@@ -30,7 +32,7 @@ int RealGuitarController::GetRGFret(int string) const {
 int RealGuitarController::OnMsg(const StringStrummedMsg& msg){
     if(!IsOurPadNum(msg.GetPadNum())) return 0;
     int fretnum = msg.GetFretNum();
-    if(fretnum > 0x16){
+    if(fretnum > 22){
         MILO_WARN("Warning: Fret # is %d:", fretnum);
         return 0;
     }

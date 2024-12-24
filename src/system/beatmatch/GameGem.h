@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_GAMEGEM_H
-#define BEATMATCH_GAMEGEM_H
+#pragma once
 #include "os/Debug.h"
 #include "utl/PoolAlloc.h"
 #include "beatmatch/GemInfo.h"
@@ -33,7 +32,7 @@ public:
     bool RightHandTap() const;
     unsigned int GetLowestString() const;
     unsigned int GetHighestString() const;
-    unsigned char GetRGStrumType() const;
+    int GetRGStrumType() const;
     Symbol GetChordNameOverride() const;
     void SetFret(unsigned int, signed char);
     bool PlayableBy(int) const;
@@ -102,11 +101,11 @@ public:
 
     bool GetPlayed(){ return mPlayed != 0; }
 
-    float mMs;
-    int mTick;
-    unsigned short mDurationMs;
-    unsigned short mDurationTicks;
-    unsigned int mSlots;
+    float mMs; // 0x0
+    int mTick; // 0x4
+    unsigned short mDurationMs; // 0x8
+    unsigned short mDurationTicks; // 0xa
+    unsigned int mSlots; // 0xc
 
     unsigned char mPlayed : 1;
     unsigned char mForceStrum : 1;
@@ -147,5 +146,3 @@ public:
     Symbol mChordNameOverride;
     unsigned char mImportantStrings;
 };
-
-#endif

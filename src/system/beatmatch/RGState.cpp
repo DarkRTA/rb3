@@ -1,8 +1,8 @@
 #include "beatmatch/RGState.h"
+#include "beatmatch/RGUtl.h"
 #include "os/Debug.h"
 #include <string.h>
 
-#define kNumRGStrings 6
 #define kNumRGFrets 24
 
 RGState::RGState(){
@@ -31,12 +31,9 @@ bool RGState::operator!=(const RGState& state) const {
 }
 
 RGState& RGState::operator=(const RGState& state){
-    mStrings[0] = state.mStrings[0];
-    mStrings[1] = state.mStrings[1];
-    mStrings[2] = state.mStrings[2];
-    mStrings[3] = state.mStrings[3];
-    mStrings[4] = state.mStrings[4];
-    mStrings[5] = state.mStrings[5];
+    for(int i = 0; i < 6; i++){
+        mStrings[i] = state.mStrings[i];
+    }
     return *this;
 }
 

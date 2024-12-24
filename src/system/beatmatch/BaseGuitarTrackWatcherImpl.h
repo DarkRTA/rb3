@@ -38,16 +38,16 @@ public:
     void SetLastNoStrumGem(float, int);
     bool CanHopo(int) const;
 
-    float mLastLateGemHit;
-    int mLastNoStrumGemHit;
-    int mLastNoStrumGemSwung;
-    float mMostRecentHit;
-    int mGemNotFretted;
-    int mFretWhenStrummed;
-    float mFretWaitTimeout;
-    bool mHarmlessSwing;
-    float mFretSlop;
-    GemHitFlags mBaseGuitarFlags; // change the name of this var cuz it probably ain't the clearest
+    float mLastLateGemHit; // 0xc0
+    int mLastNoStrumGemHit; // 0xc4
+    int mLastNoStrumGemSwung; // 0xc8
+    float mMostRecentHit; // 0xcc
+    int mGemNotFretted; // 0xd0
+    int mFretWhenStrummed; // 0xd4
+    float mFretWaitTimeout; // 0xd8
+    bool mHarmlessSwing; // 0xdc
+    float mFretSlop; // 0xe0
+    GemHitFlags mBaseGuitarFlags; // 0xe4 - change the name of this var cuz it probably ain't the clearest
 };
 
 #endif

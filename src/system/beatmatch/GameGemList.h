@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_GAMEGEMLIST_H
-#define BEATMATCH_GAMEGEMLIST_H
+#pragma once
 #include "beatmatch/GameGem.h"
 #include <vector>
 
@@ -33,5 +32,3 @@ public:
 };
 
 bool GameGemCmp(const GameGem& gem, float ms);
-
-#endif

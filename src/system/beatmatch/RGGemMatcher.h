@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_RGGEMMATCHER_H
-#define BEATMATCH_RGGEMMATCHER_H
+#pragma once
 #include "beatmatch/RGState.h"
 #include "beatmatch/GameGem.h"
 
@@ -31,10 +30,8 @@ public:
     bool FretHistoryMatch(int, int, float, float, RGMatchType) const;
     void AddFretHistory(int, int, float);
 
-    RGState mState;
-    float mStringSwings[6];
-    float mStringNonStrum[6];
-    RGGemMatcherPair pairs[24];
+    RGState mState; // 0x0
+    float mStringSwings[6]; // 0x18, 0x1c, 0x20, 0x24, 0x28, 0x2c
+    float mStringNonStrum[6]; // 0x30, 0x34, 0x38, 0x3c, 0x40, 0x44
+    RGGemMatcherPair pairs[6][4]; // 0x48
 };
-
-#endif
