@@ -59,3 +59,16 @@ BEGIN_HANDLERS(CheatsManager)
     HANDLE_MESSAGE(KeyboardKeyMsg)
     HANDLE_CHECK(0x115)
 END_HANDLERS
+
+void InitQuickJoyCheats(const DataArray* arr, CheatsManager::ShiftMode shiftmode){
+    for(int i = 1; i < arr->Size(); i++){
+        DataArray* curArr = arr->Array(i);
+        if(curArr->Int(0) >= 0 && curArr->Int(0) < 0x18){
+            QuickJoyCheat cheat;
+            cheat.unk0 = curArr->Int(0);
+            cheat.unk4 = curArr;
+            gCheatsManager->mQuickJoyCheats[shiftmode].push_back(cheat);
+        }
+        else MILO_LOG("Error in quick_cheats: %s is not a valid button\n", curArr->Str(0));
+    }
+}

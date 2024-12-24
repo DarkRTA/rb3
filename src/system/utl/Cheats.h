@@ -9,16 +9,26 @@ class DataArray;
 class LocalUser;
 
 struct QuickJoyCheat {
-    int unk0;
-    int unk4;
+    int unk0; // joypad button?
+    DataArray* unk4; // a cheat script, in form of data array?
 };
 
 struct LongJoyCheat {
-
+    std::vector<int> unk0;
+    int unk8;
+    int unkc;
 };
 
 struct KeyCheat {
+    int unk0;
+    int unk4;
+    int unk8;
+};
 
+struct CheatLog {
+    int unk0;
+    int unk4;
+    DataNode unk8;
 };
 
 class CheatsManager : public Hmx::Object {
@@ -34,18 +44,18 @@ public:
 
     void CallCheatScript(bool, DataArray*, LocalUser*, bool);
     bool OnMsg(const ButtonDownMsg&);
-    
+
     DataNode OnMsg(const KeyboardKeyMsg&);
 
     std::vector<LongJoyCheat> mLongJoyCheats; // 0x1c
     std::vector<QuickJoyCheat> mQuickJoyCheats[2]; // 0x20
-    std::vector<int> mKeyCheats; // 0x34
+    std::vector<KeyCheat> mKeyCheats; // 0x34
     Symbol mSymMode; // 0x3c
     std::vector<QuickJoyCheat*> mJoyCheatPtrsMode[2]; // 0x40
-    std::vector<int> mKeyCheatPtrsMode; // 0x50
+    std::vector<KeyCheat*> mKeyCheatPtrsMode; // 0x50
     Timer mLastButtonTime; // 0x58
     bool mKeyCheatsEnabled; // 0x88
-    std::list<int> mBuffer; // 0x8c
+    std::list<CheatLog> mBuffer; // 0x8c
     int mMaxBuffer; // 0x94
 };
 
