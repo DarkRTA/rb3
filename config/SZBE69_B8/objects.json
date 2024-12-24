@@ -1389,7 +1389,7 @@
             "system/utl/Cache_Wii.cpp": "NonMatching",
             "system/utl/CacheMgr.cpp": "Matching",
             "system/utl/CacheMgr_Wii.cpp": "NonMatching",
-            "system/utl/Cheats.cpp": "MISSING",
+            "system/utl/Cheats.cpp": "NonMatching",
             "system/utl/ChunkIDs.cpp": "Matching",
             "system/utl/ChunkStream.cpp": {
                 "status": "Equivalent",
