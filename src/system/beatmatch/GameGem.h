@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_GAMEGEM_H
-#define BEATMATCH_GAMEGEM_H
+#pragma once
 #include "os/Debug.h"
 #include "utl/PoolAlloc.h"
 #include "beatmatch/GemInfo.h"
@@ -147,5 +146,3 @@ public:
     Symbol mChordNameOverride;
     unsigned char mImportantStrings;
 };
-
-#endif

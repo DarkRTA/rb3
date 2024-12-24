@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_GAMEGEMDB_H
-#define BEATMATCH_GAMEGEMDB_H
+#pragma once
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/GemInfo.h"
 #include <vector>
@@ -20,5 +19,3 @@ public:
     std::vector<GameGemList*> mGameGemLists;
     int mHopoThreshold;
 };
-
-#endif
