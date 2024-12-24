@@ -24,27 +24,40 @@ void JobMgr::QueueJob(Job* job){
 }
 
 bool JobMgr::HasJob(int id){
-    for(std::list<Job*>::iterator it = mJobQueue.begin(); it != mJobQueue.end(); it++){
-        if((*it)->mID == id) return true;
+    for(std::list<Job*>::const_iterator it = mJobQueue.begin(); it != mJobQueue.end(); ++it){
+        if((*it)->ID() == id) return true;
     }
     return false;
 }
 
 void JobMgr::CancelJob(int id){
-    for(std::list<Job*>::iterator it = mJobQueue.begin(); it != mJobQueue.end(); it++){
-        if((*it)->mID == id){
-            (*it)->Cancel(mCallback);
+    for(std::list<Job*>::iterator it = mJobQueue.begin(); it != mJobQueue.end(); ++it){
+        if((*it)->ID() == id){
+            Job* curJob = *it;
+            int curID = curJob->ID();
+            it = mJobQueue.erase(it);
+            bool oldstart = mPreventStart;
+            mPreventStart = true;
+            curJob->Cancel(mCallback);
+            mPreventStart = oldstart;
+            if(curID == id && !oldstart){
+                for(std::list<Job*>::iterator it2 = mJobQueue.begin(); it2 != it; ++it2){
+                    (*it2)->Start();
+                }
+            }
+            delete curJob;
+            return;
         }
     }
+    MILO_WARN("This job is not in the queue %i", id);
 }
 
 void JobMgr::CancelAllJobs(){
-    while(!mJobQueue.empty()){
-        mJobQueue.back()->Cancel(mCallback);
-        mJobQueue.pop_back();
+    std::list<Job*> dupeJobs = mJobQueue;
+    mJobQueue.clear();
+    for(std::list<Job*>::const_iterator it = dupeJobs.begin(); it != dupeJobs.end(); ++it){
+        (*it)->Cancel(mCallback);
+        delete *it;
+        
     }
-    // for(std::list<Job*>::iterator it = mJobQueue.begin(); it != mJobQueue.end(); it++){
-    //     (*it)->Cancel(mCallback);
-    //     delete *it;
-    // }
 }

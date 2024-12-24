@@ -1,5 +1,4 @@
-#ifndef UTL_JOBMGR_H
-#define UTL_JOBMGR_H
+#pragma once
 #include "obj/Object.h"
 #include <list>
 
@@ -12,6 +11,8 @@ public:
     virtual void Cancel(Hmx::Object*) = 0;
     virtual void OnCompletion(Hmx::Object*){}
 
+    int ID() const { return mID; }
+    
     int mID;
 };
 
@@ -29,5 +30,3 @@ public:
     void CancelJob(int);
     void CancelAllJobs();
 };
-
-#endif
