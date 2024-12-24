@@ -271,3 +271,147 @@ void HandleNoSeventhMinor(char* buf, int bufLen, const GameGem& gem, int i4, int
         HandleSlashChords(buf,bufLen,gem,i4,iRef);
     }
 }
+
+void RGGetFretLabelInfo(const GameGem& gem, int& i1, int& i2, bool b){
+    RGState state;
+    RGGameGemToRGState(gem, state, b);
+    RGGetFretLabelInfo(state, i1, i2);
+}
+
+void RGGetFretLabelInfo(const RGState& state, int& i1, int& i2){
+    i2 = -1;
+    i1 = -1;
+    for(unsigned int i = 0; i < 6; i++){
+        int fret = state.GetFret(i);
+        if(fret < 0) continue;
+        if(fret >= 0){
+            if(fret == 0){
+                if(i2 == -1){
+                    i2 = 0;
+                    i1 = i;
+                }
+            }
+            else if(i2 <= 0 || fret < i2){
+                i2 = fret;
+                i1 = i;
+            }
+        }
+    }
+}
+
+void RGGameGemToRGState(const GameGem& gem, RGState& state, bool b){
+    for(unsigned int i = 0; i < 6; i++){
+        int fret = gem.GetFret(i);
+        if(!b && gem.GetRGNoteType(i) == 1) fret = -1;
+        state.FretDown(i, fret);
+    }
+}
+
+unsigned int RGGetChordShapeID(const GameGem& gem, bool b){
+    MILO_ASSERT(gem.IsRealGuitarChord(), 0x296);
+    int low = -1;
+    int high = -1;
+    int range = RGGetHeldFretRange(gem, low, high, 1);
+    if(high - low > 5) MILO_WARN("Chord span is too large; truncating higher frets!");
+    range = range != 0 ? 2 - low : 0;
+    unsigned int mask = 0;
+    for(unsigned int i = 0; i < 6; i++){
+        int fret = gem.GetFret(i);
+        if(!b && gem.GetRGNoteType(i) == 1) fret = -1;
+        MILO_ASSERT(fret > -2, 0x2B4);
+        fret = fret < 1 ? fret + 1 : Min(fret + range, 7);
+        mask |= fret << (i * 4);
+    }
+    unsigned int strumMask = 0x3F;
+    if(gem.GetRGStrumType() != kRGNoStrum){
+        strumMask = RGGetStrumBitMask(gem);
+    }
+    return mask | strumMask << 0x18;
+}
+
+unsigned int RGGetStrumBitMask(const GameGem& gem){
+    unsigned int mask = 0;
+    int low = gem.GetLowestString();
+    int high = gem.GetHighestString();
+    float diff = (high - low) + 1;
+    switch(gem.GetRGStrumType()){
+        case kRGStrum:
+            for(int i = 0; i < 6; i++){
+                float prod = diff * 0.2f;
+                float i_f = i;
+                float highf = high - prod;
+                float lowf = prod + low;
+                if(i_f >= lowf && i_f <= highf){
+                    mask |= (1 << i);
+                }
+            }
+            break;
+        case kRGStrumLow:
+            for(int i = 0; i < 6; i++){
+                if(i < diff * 0.4f - low){
+                    mask |= (1 << i);
+                }
+            }
+            break;
+        case kRGStrumHigh:
+            for(int i = 0; i < 6; i++){
+                if(-(diff * 0.4f - high) < i){
+                    mask |= (1 << i);
+                }
+            }
+            break;
+        default:
+            mask = 0x3F;
+            break;
+    }
+    return mask;
+}
+
+void RGUnpackChordShapeID(unsigned int ui, std::vector<int>& ivec, std::vector<bool>* bvec){
+    ivec.clear();
+    for(int i = 0; i < 6; i++){
+        int push = ((ui >> i) & 0xF) - 1;
+        ivec.push_back(push);
+    }
+    if(bvec){
+        bvec->clear();
+        for(int i = 0; i < 6; i++){
+            bool push = (ui >> 0x18) >> i;
+            bvec->push_back(push);
+        }
+    }
+}
+
+bool RGGetHeldFretRange(const GameGem& gem, int& i1, int& i2, bool b){
+    RGState state;
+    RGGameGemToRGState(gem, state, b);
+    return RGGetHeldFretRange(state, i1, i2);
+}
+
+bool RGGetHeldFretRange(const RGState& state, int& i1, int& i2){
+    i1 = 0x7FFFFFFF;
+    i2 = 0x80000000;
+    bool ret = false;
+    for(unsigned int i = 0; i < 6; i++){
+        int fret = state.GetFret(i);
+        MILO_ASSERT(fret >= -1, 0x334);
+        if(fret > 0){
+            MinEq(i1, fret);
+            MaxEq(i1, fret);
+            ret = true;
+        }
+    }
+    if(!ret){
+        i1 = -1;
+        i2 = -1;
+    }
+    return ret;
+}
+
+const char* RGFretNumberToString(int i){
+    return MakeString("%c", i + 0x41);
+}
+
+const char* RGGetNoteName(unsigned char note, int){
+    MILO_ASSERT(note < sizeof(gNoteNames), 0x34E);
+}

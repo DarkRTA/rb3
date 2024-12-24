@@ -28,4 +28,7 @@ bool RGGetHeldFretRange(const RGState&, int&, int&);
 void RGGetFretLabelInfo(const RGState&, int&, int&);
 const char* RGFretNumberToString(int);
 void RGUnpackChordShapeID(unsigned int, std::vector<int>&, std::vector<bool>*);
+void RGGameGemToRGState(const GameGem&, RGState&, bool);
 const char* RGGetNoteName(unsigned char, int);
+bool RGGetHeldFretRange(const GameGem&, int&, int&, bool);
+unsigned int RGGetStrumBitMask(const GameGem&);

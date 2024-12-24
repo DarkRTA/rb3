@@ -33,7 +33,7 @@ public:
     bool RightHandTap() const;
     unsigned int GetLowestString() const;
     unsigned int GetHighestString() const;
-    unsigned char GetRGStrumType() const;
+    int GetRGStrumType() const;
     Symbol GetChordNameOverride() const;
     void SetFret(unsigned int, signed char);
     bool PlayableBy(int) const;

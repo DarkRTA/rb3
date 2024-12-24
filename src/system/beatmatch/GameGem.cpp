@@ -229,7 +229,7 @@ unsigned int GameGem::GetHighestString() const {
     return -1;
 }
 
-unsigned char GameGem::GetRGStrumType() const { return mStrumType; }
+int GameGem::GetRGStrumType() const { return mStrumType; }
 
 bool GameGem::IsMuted() const {
     if(!mRealGuitar) return false;
