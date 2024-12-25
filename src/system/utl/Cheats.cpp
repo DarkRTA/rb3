@@ -1,11 +1,13 @@
 #include "utl/Cheats.h"
 #include "os/Joypad.h"
 #include "os/UserMgr.h"
+#include "obj/DataFunc.h"
 #include "obj/Dir.h"
 #include "utl/Symbols.h"
 
 CheatsManager* gCheatsManager;
 bool sKeyCheatsEnabled = true;
+bool gDisable;
 
 CheatsManager::CheatsManager() : mKeyCheatsEnabled(sKeyCheatsEnabled) {
     mLastButtonTime.Start();
@@ -153,3 +155,77 @@ void InitKeyCheats(const DataArray* arr){
     }
     gCheatsManager->RebuildKeyCheatsForMode();
 }
+
+void EnableKeyCheats(bool b){
+    sKeyCheatsEnabled = b;
+    if(gCheatsManager) gCheatsManager->mKeyCheatsEnabled = b;
+}
+
+bool GetEnabledKeyCheats(){ return sKeyCheatsEnabled; }
+
+DataNode SetKeyCheatsEnabled(DataArray* arr){
+    EnableKeyCheats(arr->Int(1));
+    return 0;
+}
+
+DataNode OnSetCheatMode(DataArray* arr){
+    SetCheatMode(arr->Sym(1));
+    return 0;
+}
+
+DataNode OnGetCheatMode(DataArray* arr){
+    return gCheatsManager->mSymMode;
+}
+
+bool CheatsInitialized(){ return gCheatsManager; }
+DataNode MemHuntStatsDF(DataArray*){ return 0; }
+
+DataNode ForceGPHangRecoveryDF(DataArray*){
+
+}
+
+void CheatsInit(){
+    SystemConfig()->FindData("disable_cheats", gDisable, true);
+    if(!gDisable){
+        MILO_ASSERT(gCheatsManager == null, 0x2A5);
+        gCheatsManager = new CheatsManager();
+        JoypadSubscribe(gCheatsManager);
+        KeyboardSubscribe(gCheatsManager);
+        DataArray* cheatCfg = SystemConfig("quick_cheats");
+        InitQuickJoyCheats(cheatCfg->FindArray("left", true), CheatsManager::kLeftShift);
+        InitQuickJoyCheats(cheatCfg->FindArray("right", true), CheatsManager::kRightShift);
+        InitKeyCheats(cheatCfg->FindArray("keyboard", true));
+        InitLongJoyCheats(SystemConfig("long_cheats"));
+        DataRegisterFunc("set_key_cheats_enabled", SetKeyCheatsEnabled);
+        DataRegisterFunc("set_cheat_mode", OnSetCheatMode);
+        DataRegisterFunc("get_cheat_mode", OnGetCheatMode);
+        DataRegisterFunc("mem_hunt_stats", MemHuntStatsDF);
+        DataRegisterFunc("gp_hang", ForceGPHangRecoveryDF);
+    }
+}
+
+void CheatsTerminate(){
+    if(!gDisable){
+        MILO_ASSERT(gCheatsManager, 0x2D0);
+        JoypadUnsubscribe(gCheatsManager);
+        KeyboardUnsubscribe(gCheatsManager);
+        RELEASE(gCheatsManager);
+    }
+}
+
+void LogCheat(int i, bool b, DataArray* a){
+    MILO_ASSERT(gCheatsManager, 0x2D9);
+    gCheatsManager->Log(i, b, a);
+}
+
+void CallQuickCheat(DataArray* a, LocalUser* u){
+    MILO_ASSERT(gCheatsManager, 0x2DF);
+    gCheatsManager->CallCheatScript(true, a, u, false);
+
+}
+
+void SetCheatMode(Symbol mode){
+
+}
+
+Symbol GetCheatMode(){ return gCheatsManager->mSymMode; }

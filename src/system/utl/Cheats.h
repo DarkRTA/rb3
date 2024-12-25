@@ -29,7 +29,7 @@ struct KeyCheat {
 
 struct CheatLog {
     int unk0;
-    int unk4;
+    bool unk4;
     DataNode unk8;
 };
 
@@ -59,6 +59,8 @@ public:
         mKeyCheats.push_back(cheat);
     }
     void RebuildKeyCheatsForMode();
+    void Log(int, bool, DataArray*);
+    void AppendLog(char*);
 
     std::vector<LongJoyCheat> mLongJoyCheats; // 0x1c
     std::vector<QuickJoyCheat> mQuickJoyCheats[2]; // 0x20
@@ -78,6 +80,7 @@ void EnableKeyCheats(bool);
 bool GetEnabledKeyCheats();
 void CallQuickCheat(DataArray*, LocalUser*);
 bool CheatsInitialized();
+void SetCheatMode(Symbol);
 Symbol GetCheatMode();
 void AppendCheatsLog(char*);
 void LogCheat(int, bool, DataArray*);
