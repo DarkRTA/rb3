@@ -2,6 +2,7 @@
 #include "os/Joypad.h"
 #include "os/UserMgr.h"
 #include "obj/Dir.h"
+#include "utl/Symbols.h"
 
 CheatsManager* gCheatsManager;
 bool sKeyCheatsEnabled = true;
@@ -67,8 +68,88 @@ void InitQuickJoyCheats(const DataArray* arr, CheatsManager::ShiftMode shiftmode
             QuickJoyCheat cheat;
             cheat.unk0 = curArr->Int(0);
             cheat.unk4 = curArr;
-            gCheatsManager->mQuickJoyCheats[shiftmode].push_back(cheat);
+            gCheatsManager->AddQuickJoyCheat(cheat, shiftmode);
         }
         else MILO_LOG("Error in quick_cheats: %s is not a valid button\n", curArr->Str(0));
     }
+}
+
+void InitLongJoyCheats(const DataArray* arr){
+    for(int i = 1; i < arr->Size(); i++){
+        DataArray* curArr = arr->Array(i);
+        DataArray* buttonArr = curArr->Array(0);
+        if(buttonArr->Size() > 0x10){
+            MILO_LOG("Too many buttons in long cheat, max %d\n", 0x10);
+        }
+        else {
+            LongJoyCheat cheat;
+            bool push = true;
+            for(int j = 0; j < buttonArr->Size(); j++){
+                int curBtn = buttonArr->Int(j);
+                if(curBtn > 0x17U){
+                    MILO_LOG("Error in long_cheats: %s is not a valid button\n", curBtn);
+                    push = false;
+                    break;
+                }
+                cheat.unk0.push_back(curBtn);
+            }
+            if(push){
+                cheat.unkc = curArr->Command(1);
+                gCheatsManager->AddLongJoyCheat(cheat);
+            }
+        }
+    }
+}
+
+inline void CheatsManager::RebuildKeyCheatsForMode(){
+    mKeyCheatPtrsMode.clear();
+    for(std::vector<KeyCheat>::iterator it = mKeyCheats.begin(); it != mKeyCheats.end(); ++it){
+        DataArray* modesArr = it->unk8->FindArray(modes, false);
+        if(!modesArr || modesArr->Contains(mSymMode)){
+            mKeyCheatPtrsMode.push_back(&*it);
+        }
+    }
+    for(int i = 0; i < 2; i++){
+        mJoyCheatPtrsMode[i].clear();
+        for(std::vector<QuickJoyCheat>::iterator it = mQuickJoyCheats[i].begin(); it != mQuickJoyCheats[i].end(); ++it){
+            DataArray* modesArr = it->unk4->FindArray(modes, false);
+            if(!modesArr || modesArr->Contains(mSymMode)){
+                mJoyCheatPtrsMode[i].push_back(&*it);
+            }            
+        }
+    }
+}
+
+void InitKeyCheats(const DataArray* arr){
+    for(int i = 1; i < arr->Size(); i++){
+        DataArray* cheat = arr->Array(i);
+        if(cheat->Type(0) == kDataInt){
+            if(cheat->Int(0) < 0){
+                MILO_LOG("Error in quick_cheats: %i is not a valid key code\n", cheat->Int(0));
+                continue;
+            }
+        }
+        else {
+            const char* key = cheat->Str(0);
+            if(strlen(key) > 1){
+                MILO_LOG("Error in quick_cheats: %s is not a valid key\n", key);
+                continue;
+            }
+        }
+        KeyCheat keyCheat;
+        keyCheat.unk0 = cheat->Int(0);
+        int subIndex = 1;
+        for(; subIndex < cheat->Size() && cheat->Type(subIndex) == kDataSymbol; subIndex++){
+            Symbol keyModifier = cheat->Sym(subIndex);
+            if(keyModifier == ctrl) keyCheat.unk4 = 1;
+            else if(keyModifier == alt) keyCheat.unk5 = 1;
+            else {
+                MILO_WARN("Unknown modifier symbol in cheat: %s", cheat->Sym(subIndex));
+            }
+        }
+        MILO_ASSERT(cheat->Type( subIndex ) == kDataString, 0x251);
+        keyCheat.unk8 = cheat;
+        gCheatsManager->AddKeyCheat(keyCheat);
+    }
+    gCheatsManager->RebuildKeyCheatsForMode();
 }

@@ -14,15 +14,17 @@ struct QuickJoyCheat {
 };
 
 struct LongJoyCheat {
+    LongJoyCheat() : unk8(0), unkc(0) {}
     std::vector<int> unk0;
     int unk8;
-    int unkc;
+    DataArray* unkc;
 };
 
 struct KeyCheat {
     int unk0;
-    int unk4;
-    int unk8;
+    bool unk4; // ctrl?
+    bool unk5; // alt?
+    DataArray* unk8;
 };
 
 struct CheatLog {
@@ -46,6 +48,17 @@ public:
     bool OnMsg(const ButtonDownMsg&);
 
     DataNode OnMsg(const KeyboardKeyMsg&);
+
+    void AddQuickJoyCheat(const QuickJoyCheat& cheat, ShiftMode mode){
+        mQuickJoyCheats[mode].push_back(cheat);
+    }
+    void AddLongJoyCheat(const LongJoyCheat& cheat){
+        mLongJoyCheats.push_back(cheat);
+    }
+    void AddKeyCheat(const KeyCheat& cheat){
+        mKeyCheats.push_back(cheat);
+    }
+    void RebuildKeyCheatsForMode();
 
     std::vector<LongJoyCheat> mLongJoyCheats; // 0x1c
     std::vector<QuickJoyCheat> mQuickJoyCheats[2]; // 0x20
