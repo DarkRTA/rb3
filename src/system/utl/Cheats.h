@@ -28,8 +28,8 @@ struct KeyCheat {
 };
 
 struct CheatLog {
-    int unk0;
-    bool unk4;
+    bool unk0;
+    int unk4;
     DataNode unk8;
 };
 

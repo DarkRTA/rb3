@@ -1,5 +1,4 @@
-#ifndef UTL_GLITCHFINDER_H
-#define UTL_GLITCHFINDER_H
+#pragma once
 #include "os/Timer.h"
 #include "utl/TextStream.h"
 #include <vector>
@@ -73,5 +72,3 @@ public:
     float mLeafThreshold;
     unsigned int mOverheadCycles;
 };
-
-#endif

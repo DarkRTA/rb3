@@ -3,6 +3,7 @@
 #include "os/UserMgr.h"
 #include "obj/DataFunc.h"
 #include "obj/Dir.h"
+#include "rndwii/Rnd.h"
 #include "utl/Symbols.h"
 
 CheatsManager* gCheatsManager;
@@ -180,8 +181,18 @@ DataNode OnGetCheatMode(DataArray* arr){
 bool CheatsInitialized(){ return gCheatsManager; }
 DataNode MemHuntStatsDF(DataArray*){ return 0; }
 
-DataNode ForceGPHangRecoveryDF(DataArray*){
-
+DataNode ForceGPHangRecoveryDF(DataArray* arr){
+    if(!gbDbgRequestHangRecovery && !gbDbgRequestForcedHang){
+        if(arr && arr->Size() > 1 && arr->Type(1) == kDataInt && arr->Int(1) != 0){
+            gbDbgRequestForcedHang = true;
+            OSReport("GPHangDebug: Requesting forced hang.\n");
+        }
+        else {
+            gbDbgRequestHangRecovery = true;
+            OSReport("GPHangDebug: Requesting hang recovery.\n");
+        }
+    }
+    return 0;
 }
 
 void CheatsInit(){
@@ -221,7 +232,37 @@ void LogCheat(int i, bool b, DataArray* a){
 void CallQuickCheat(DataArray* a, LocalUser* u){
     MILO_ASSERT(gCheatsManager, 0x2DF);
     gCheatsManager->CallCheatScript(true, a, u, false);
+}
 
+void CheatsManager::Log(int i, bool b, DataArray* a){
+    CheatLog log;
+    log.unk4 = i;
+    log.unk0 = b;
+    log.unk8 = DataNode(a, kDataArray);
+    mBuffer.push_front(log);
+    if(mBuffer.size() > mMaxBuffer){
+        mBuffer.pop_back();
+    }
+}
+
+void AppendCheatsLog(char* c){
+    if(gCheatsManager) gCheatsManager->AppendLog(c);
+}
+
+void CheatsManager::AppendLog(char* c){
+    if(mBuffer.size() != 0){
+        strcat(c, "\n\nCheats Used");
+        char buf[16];
+        strncpy(buf, "\n   %.30s", 10);
+        for(std::list<CheatLog>::iterator it = mBuffer.begin(); it != mBuffer.end(); ++it){
+            String str;
+            it->unk8.Print(str, true);
+            strcat(c, MakeString(buf, str));
+        }
+        if(mMaxBuffer == mBuffer.size()){
+            strcat(c, "\n   ...");
+        }
+    }
 }
 
 void SetCheatMode(Symbol mode){
