@@ -53,3 +53,6 @@ const char* SymbolCacheLookup(const char*);
 inline void Interp(const Symbol& s1, const Symbol& s2, float f, Symbol& s3){
     s3 = (f < 1.0f) ? s1 : s2;
 }
+
+#include "utl/StringTable.h"
+extern StringTable* gStringTable;

@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <new>
 
-static StringTable* gStringTable;
+StringTable* gStringTable;
 static KeylessHash<const char*, const char*>* gHashTable;
 bool gLiteralSymbolStaticInitialization = true;
 
