@@ -17,7 +17,7 @@ Hmx::Object* Song::sCallback; // almost definitely some derivative of an Object,
 // (**(code **)(*sCallback + 0x18))(sCallback,this,this_00);
 // (**(code **)(*sCallback + 0x1c))(); - returns void
 
-Song::Song() : mHxMaster(0), mHxSongData(0), mDebugParsers(this, kObjListNoNull), mSongEndFrame(0), mSpeed(1.0f), unk5c(0), unk60(0), unk7c(1) {
+Song::Song() : mHxMaster(0), mHxSongData(0), mDebugParsers(this, kObjListNoNull), mSongEndFrame(0), mSpeed(1.0f), unk5c(0, 0), unk7c(1) {
     SetName("Song", ObjectDir::Main());
     static DataNode& tool_song(DataVariable("tool_song"));
     tool_song = DataNode(this);
@@ -51,7 +51,7 @@ END_LOADS
 float Song::GetBeat(){
     float ret;
     if(!GetTempoMap()) return 0;
-    else ret = GetBeatMap()->Beat(GetTempoMap()->TimeToTick(mFrame * 1000.0f));
+    else ret = GetBeatMap()->Beat(GetTempoMap()->TimeToTick(GetFrame() * 1000.0f));
     return ret;
 }
 
@@ -125,8 +125,8 @@ void Song::LoadSong(){
         SetLoopEnd(mSongEndFrame);
     }
     else {
-        if(unk5c > mSongEndFrame) SetLoopStart(mSongEndFrame);
-        if(unk60 > mSongEndFrame) SetLoopEnd(mSongEndFrame);
+        if(unk5c.x > mSongEndFrame) SetLoopStart(mSongEndFrame);
+        if(unk5c.y > mSongEndFrame) SetLoopEnd(mSongEndFrame);
     }
     JumpTo(0);
 }
@@ -168,13 +168,12 @@ void Song::SetSong(Symbol s){
 void Song::OnText(int i, const char* cc, unsigned char uc){
     static bool sListening;
     if(uc == 3){
-        sListening = strcmp(cc, "EVENTS") == 0;
+        sListening = streq(cc, "EVENTS");
     }
     if(sListening){
-        bool insection = strncmp(cc, "[section ", 9) == 0;
-        if(insection){
+        if(strneq(cc, "[section ", 9)){
             String str(cc);
-            str = str.substr(9, strlen(str.c_str()) - 10);
+            str = str.substr(9, str.length() - 10);
             Symbol s(str.c_str());
             AddSection(s, GetBeatMap()->Beat(i));
         }
@@ -191,7 +190,7 @@ DataNode Song::OnMBTFromSeconds(const DataArray* da){
 
 void Song::JumpTo(Symbol s){
     int jump = 0;
-    for(std::map<int, Symbol>::iterator it = unk24.begin(); it != unk24.end(); ++it){
+    for(std::map<int, Symbol>::const_iterator it = unk24.begin(); it != unk24.end(); ++it){
         if(s == it->second){
             jump = it->first;
             break;
@@ -253,21 +252,20 @@ DataNode Song::GetMidiParsers(){
 
 void Song::UpdateDebugParsers(){
     RndOverlay* o = RndOverlay::Find("song", true);
-    if(o) o->mCallback = this;
-    o->mShowing = mDebugParsers.size() > 0;
-    o->mTimer.Restart();
+    if(o) o->SetCallback(this);
+    o->SetOverlay(mDebugParsers.size() > 0);
 }
 
 void Song::SetLoopStart(float f){
-    unk5c = f;
+    unk5c.x = f;
     mLoopStart = GetMBTFromFrame(f, 0);
-    if(unk60 < f) SetLoopEnd(f);
+    if(unk5c.y < f) SetLoopEnd(f);
 }
 
 void Song::SetLoopEnd(float f){
-    unk60 = f;
+    unk5c.y = f;
     mLoopEnd = GetMBTFromFrame(f, 0);
-    if(unk5c > f) SetLoopStart(f);
+    if(unk5c.x > f) SetLoopStart(f);
 }
 
 // fn_8035FC14

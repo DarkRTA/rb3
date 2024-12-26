@@ -1,5 +1,4 @@
-#ifndef UTL_KEYLESSHASH_H
-#define UTL_KEYLESSHASH_H
+#pragma once
 #include "math/Primes.h"
 #include "math/Sort.h"
 #include "utl/Loader.h"
@@ -192,5 +191,3 @@ void KeylessHash<T1, T2>::Resize(int size, T2* entries){
     mSize = size;
     mOwnEntries = owned;
 }
-
-#endif

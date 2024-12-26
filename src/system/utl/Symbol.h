@@ -1,5 +1,4 @@
-#ifndef UTL_SYMBOL_H
-#define UTL_SYMBOL_H
+#pragma once
 #include <string.h>
 
 #define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(const_cast<char**>(&str))
@@ -54,5 +53,3 @@ const char* SymbolCacheLookup(const char*);
 inline void Interp(const Symbol& s1, const Symbol& s2, float f, Symbol& s3){
     s3 = (f < 1.0f) ? s1 : s2;
 }
-
-#endif
