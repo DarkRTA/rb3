@@ -1,5 +1,4 @@
-#ifndef UTL_UTF8_H
-#define UTL_UTF8_H
+#pragma once
 #include "utl/Str.h"
 
 unsigned int DecodeUTF8(unsigned short&, const char*);
@@ -16,5 +15,4 @@ int WideVectorToUTF8(std::vector<unsigned short>& vec, String& str);
 void UTF8FilterKeyboardString(char*, int, const char*); // defined in os/PlatformMgr.cpp for some reason
 String WideVectorToASCII(std::vector<unsigned short>&);
 char* WideCharToChar(const unsigned short* us);
-
-#endif
+void UTF8RemoveSpaces(char*, int, const char*);
