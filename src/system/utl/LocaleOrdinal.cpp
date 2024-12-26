@@ -2,12 +2,11 @@
 #include "utl/Str.h"
 #include "utl/UTF8.h"
 #include <string.h>
+#include "os/Debug.h"
 #include "os/System.h"
 #include "utl/Locale.h"
 #include "utl/Symbol.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "os/Debug.h"
+#include "utl/Symbols.h"
 
 const char* LocalizeOrdinal(int i, LocaleGender gender, LocaleNumber number, bool super){
     char buf[254];

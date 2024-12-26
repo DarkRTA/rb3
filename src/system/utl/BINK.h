@@ -1,6 +1,4 @@
-#ifndef UTL_BINK_H
-#define UTL_BINK_H
-
+#pragma once
 #include <revolution/GX.h>
 
 struct BINKRECT {
@@ -284,5 +282,3 @@ struct BINKTRACK {
     unsigned int sndcomp; // offset 0x14, size 0x4
     int trackindex; // offset 0x18, size 0x4
 };
-
-#endif

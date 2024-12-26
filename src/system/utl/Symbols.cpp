@@ -2,7 +2,6 @@
 #include "utl/StringTable.h"
 #include "utl/Symbol.h"
 
-extern StringTable* gStringTable;
 extern bool gLiteralSymbolStaticInitialization;
 
 static BeginLiteralSymbols gBeginLiteralSymbols;

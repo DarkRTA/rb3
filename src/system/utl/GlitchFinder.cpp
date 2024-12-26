@@ -190,6 +190,89 @@ void GlitchFinder::Poke(const char* cc, unsigned int ui){
     PokeEnd(ui);
 }
 
+void GlitchFinder::PokeStart(const char* cc, unsigned int ui, float f1, float f2, GlitchAverager* avg){
+    if(!mStartPoker && f1 < 0) return;
+    else {
+        if(mStop){
+            mStop = false;
+            mTime.Restart();
+            Reset();
+        }
+        GlitchPoker* poker = NewPoker();
+        strcpy(poker->mName, cc);
+        poker->mTime = mTime.SplitMs();
+        poker->mParent = mCurPoker;
+        poker->mBudget = f1;
+        poker->mAvg = avg;
+        if(!mStartPoker){
+            mCurPoker = poker;
+            mStartPoker = poker;
+            mLeafThreshold = f2;
+            mOverheadCycles = 0;
+        }
+        else {
+            mCurPoker->mChildren.push_back(poker);
+            mCurPoker = poker;
+            if(ui != 0){
+                TIMER_GET_CYCLES(cycles);
+                mOverheadCycles += cycles - ui;
+            }
+        }
+    }
+}
+
+void GlitchFinder::PokeEnd(unsigned int ui){
+    if(mCurPoker){
+        mCurPoker->mTimeEnd = mTime.SplitMs();
+        mCurPoker = mCurPoker->mParent;
+        if(!mCurPoker) CheckDump();
+    }
+    if(ui){
+        TIMER_GET_CYCLES(cycles);
+        mOverheadCycles += cycles - ui;
+    }
+}
+
+void GlitchFinder::CheckDump(){
+    if(!mStop && mStartPoker){
+        mStop = true;
+        mCurPoker->mTimeEnd = mTime.SplitMs();
+        static unsigned int sStart;
+        if(sStart == 0){
+            TIMER_GET_CYCLES(start_cycles);
+            sStart = start_cycles;
+        }
+        bool b1 = mActive && mStartPoker->OverBudget();
+        mStartPoker->PollAveragesRecurse(b1);
+        if(b1){
+            GlitchPoker::smThreshold = mLeafThreshold;
+            GlitchPoker::smDumpLeaves = GlitchPoker::smThreshold > 0;
+            GlitchPoker::smTotalLeafTime = 0;
+            String str(0x2000, '\0');
+            str << "-------- GLITCH #" << mGlitchCount << " -------- Frame " << mFrameCount << " -----\n";
+            GlitchPoker::smLastDumpTime = mStartPoker->mTime;
+            mStartPoker->Dump(str, 0);
+            str << "Overhead: " << Timer::CyclesToMs(mOverheadCycles) << "\n";
+            str << "-------- GLITCH END --------\n";
+            int strLen = str.length();
+            if(strLen > 0x400){
+                char buf[1024];
+                int i = 0;
+                for(; i + 0x400 < strLen; i += 0x400){
+                    strncpy(buf, str.c_str() + i, 0x400);
+                    MILO_LOG(buf);
+                }
+                strncpy(buf, str.c_str() + i, strLen - i);
+                buf[strLen - i] = '\0';
+                MILO_LOG(buf);
+            }
+            else MILO_LOG(str.c_str());
+            mGlitchCount++;
+        }
+        if(mActive) mFrameCount++;
+    }
+}
+
 GlitchPoker* GlitchFinder::NewPoker(){
     if(8 <= mPokerIndex) MILO_FAIL("too many glitch pokers : %d\n", mPokerIndex);
     GlitchPoker* thePoker = &mPokerPool[mPokerIndex++];
@@ -203,8 +286,38 @@ void GlitchFinder::Reset(){
     mStartPoker = 0;
 }
 
-DataNode GlitchFindScriptImpl(DataArray*, int){
-
+DataNode GlitchFindScriptImpl(DataArray* arr, int iii){
+    TIMER_GET_CYCLES(cycles);
+    if(arr->Node(2).NotNull()){
+        switch(iii){
+            case 3:
+                TheGlitchFinder.PokeStart(arr->Str(1), cycles, -1.0f, 0.0f, 0);
+                break;
+            case 4:
+                TheGlitchFinder.PokeStart(arr->Str(1), cycles, arr->Float(3), 0, 0);
+                break;
+            case 5:
+                TheGlitchFinder.PokeStart(arr->Str(1), cycles, arr->Float(3), arr->Float(4), 0);
+                break;
+            default:
+                MILO_FAIL("improper use of internal glitch finder code");
+                break;
+        }
+        for(int i = iii; i < arr->Size(); i++){
+            arr->Command(i)->Execute();
+        }
+        TIMER_GET_CYCLES(now_cycles);
+        TheGlitchFinder.PokeEnd(now_cycles);
+        return 0;
+    }
+    else {
+        TIMER_GET_CYCLES(now_cycles);
+        TheGlitchFinder.mOverheadCycles += now_cycles - cycles;
+        for(int i = iii; i < arr->Size(); i++){
+            arr->Command(i)->Execute();
+        }
+        return 0;
+    }
 }
 
 DataNode GlitchFinder::OnGlitchFind(DataArray* arr){
@@ -220,6 +333,17 @@ DataNode GlitchFinder::OnGlitchFindLeaves(DataArray* arr){
 }
 
 DataNode GlitchFinder::OnGlitchFindPoke(DataArray* arr){
-    TheGlitchFinder.Poke(arr->Str(1), 0);
+    TIMER_GET_CYCLES(cycles);
+    TheGlitchFinder.Poke(arr->Str(1), cycles);
     return DataNode(0);
+}
+
+void GlitchAverager::PushInstance(float f, bool b){
+    mCount++;
+    mAvg = mAvg + (f - mAvg) / (mCount);
+    if(b){
+        mGlitchCount++;
+        mGlitchAvg = mGlitchAvg + (f - mGlitchAvg) / (mGlitchCount);
+    }
+    if(f > mMax) mMax = f;
 }

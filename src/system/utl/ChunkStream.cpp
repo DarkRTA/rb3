@@ -307,16 +307,16 @@ void ChunkStream::DecompressChunkAsync(){
         idx = (mCurBufferIdx + bufIdx) % 2;
         if(mBuffersState[idx] == kReading) break;
     }
-    BufferState* state = &mBuffersState[idx];
-    if(*state == kReading){
+    
+    if(mBuffersState[idx] == kReading){
         bool maskexists = (mCurChunk[bufIdx] >> 24) & 1;
         if(mChunkInfo.mID != 0xCABEDEAF && !maskexists){
-            *state = kDecompressing;
-            DecompressTask dtask(&mCurChunk[bufIdx], mBuffers[idx], state, mBufSize, mChunkInfo.mID, mFilename.c_str());
+            mBuffersState[idx] = kDecompressing;
+            DecompressTask dtask(&mCurChunk[bufIdx], mBuffers[idx], &mBuffersState[idx], mBufSize, mChunkInfo.mID, mFilename.c_str());
             gDecompressionQueue.push_back(dtask);
         }
         else {
-            *state = kReady;
+            mBuffersState[idx] = kReady;
         }
     }
 }

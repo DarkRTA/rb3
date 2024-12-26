@@ -49,5 +49,8 @@ void RndGxDrawDone();
 
 extern WiiRnd TheWiiRnd;
 extern int gSuppressPointTest;
+extern bool gbDbgRequestForcedHang;
+extern bool gbDbgRequestHangRecovery;
+extern bool gRecoveringThisFrame;
 
 #endif // RNDWII_RND_H

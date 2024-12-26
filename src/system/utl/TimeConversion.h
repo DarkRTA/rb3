@@ -1,5 +1,4 @@
-#ifndef UTL_TIMECONVERSION_H
-#define UTL_TIMECONVERSION_H
+#pragma once
 
 void TimeConversionInit();
 float MsToTick(float);
@@ -11,5 +10,3 @@ float TickToBeat(int);
 float SecondsToBeat(float);
 float TickToSeconds(float);
 float BeatToSeconds(float);
-
-#endif

@@ -108,7 +108,7 @@ char* WideCharToChar(const unsigned short* us){
             else cstring.push_back(*us);
         }
         cstring.push_back('\0');
-        return &cstring.front();
+        return &cstring[0];
     }
 }
 
@@ -209,6 +209,12 @@ void UTF8FilterString(char* out, int len, const char* in, const char* allowed, c
     *out = 0;
 }
 
+void UTF8RemoveSpaces(char* out, int len, const char* in){
+    MILO_ASSERT(out, 0x1AD);
+    MILO_ASSERT(in, 0x1AE);
+    MILO_ASSERT(len > 0, 0x1AF);
+}
+
 void UTF8toWChar_t(wchar_t* wc, const char* c){
     unsigned short* us = (unsigned short*)wc;
     while(*c != '\0'){
@@ -244,7 +250,7 @@ int UTF16toUTF8(char* c, const unsigned short* us){
 
 void ASCIItoWideVector(std::vector<unsigned short>& vec, const char* cc){
     vec.clear();
-    for(int i = 0; i < strlen(cc); i++, cc++){
+    for(int i = 0; i < strlen(cc); cc++, i++){
         String str;
         EncodeUTF8(str, (unsigned char)*cc);
         unsigned short us;
@@ -263,115 +269,23 @@ String WideVectorToASCII(std::vector<unsigned short>& vec){
 }
 
 int WideVectorToUTF8(std::vector<unsigned short>& vec, String& str){
-    String thisStr;
     int i3 = 0;
-    for(int i = vec.size(); i != 0; i--){
-        i3 += DecodeUTF8(vec[i], 0);
+    String thisStr;
+    for(int i = 0; i < vec.size(); i++){
+        int curChar = vec[i];
+        if(curChar < 0x80U) i3 += 1;
+        else if(curChar <= 0x7FFU) i3 += 2;
+        else if(curChar <= 0xFFFFU) i3 += 3;
+        else {
+            MILO_FAIL("HMX wide chars cannot exceed 16 bits");
+            return 0;
+        }
     }
     str.resize(i3 + 1);
     str.erase();
     for(int i = 0; i < vec.size(); i++){
         EncodeUTF8(thisStr, vec[i]);
-        str.Print(thisStr.c_str());
+        str << thisStr;
     }
     return i3;
 }
-
-// // fn_8037B9F0
-// int fn_8037B9F0(char *arg0, unsigned short *arg1) {
-//     int ctr = 0;
-//     while (*arg1 != 0) {
-//         String sp8;
-//         int temp_r3 = EncodeUTF8(sp8, *arg1);
-//         ctr += temp_r3;
-//         if (arg0 != 0) {
-//             strncpy(arg0, sp8.c_str(), temp_r3);
-//             arg0 = &arg0[temp_r3];
-//         }
-//         arg1++;
-//     }
-//     *arg0 = 0;
-//     return ctr;
-// }
-
-// extern "C" void fn_8037B78C(char *, int, const char *, char *, char);
-
-// // fn_8037B78C
-// void fn_8037B78C(char *arg0, int arg1, const char *arg2, char *arg3, char arg4) {
-//     unsigned short sp8;
-//     int temp_r30;
-//     char *temp_r28 = arg0;
-
-//     while ((*arg2 != 0) && ((int)(arg0 - temp_r28) < (int)(arg1 - 3))) {
-//         sp8 = 0;
-//         temp_r30 = DecodeUTF8(sp8, arg2);
-//         if (fn_8037B598(arg3, sp8) != 0) {
-//             for (unsigned int i = 0; i < temp_r30; i++) {
-//                 *arg0++ = *arg2++;
-//             }
-//         } else {
-//             *arg0++ = arg4;
-//             arg2 = &arg2[temp_r30];
-//         }
-//     }
-//     *arg0 = 0;
-// }
-
-// // fn_8037B850
-// void UTF8RemoveSpaces(char *arg0, int arg1, const char *arg2) {
-//     unsigned short sp8;
-//     char *temp_r29;
-//     bool temp_r5;
-//     unsigned int temp_r3;
-//     char *max = ((arg0 + arg1) - 3);
-//     bool var_r27;
-//     char temp_r0;
-
-//     var_r27 = true;
-//     temp_r29 = arg0;
-
-//     while ((*arg2 != 0) && (arg0 < max)) {
-//         sp8 = 0;
-//         temp_r3 = DecodeUTF8(sp8, arg2);
-//         temp_r5 = (sp8 == 0x20);
-//         if ((!temp_r5) || (!var_r27)) {
-//             for (unsigned int i = 0; i < temp_r3; i++) {
-//                 *arg0++ = arg2[i];
-//             }
-//         }
-//         var_r27 = temp_r5;
-//         arg2 = &arg2[temp_r3];
-//     }
-//     if ((arg0 > temp_r29) && (arg0[-1] == ' ')) {
-//         arg0--;
-//     }
-//     *arg0 = 0;
-// }
-
-// extern "C" void fn_8037B930(unsigned short *, char *);
-
-// // fn_8037B930
-// void fn_8037B930(unsigned short *arg0, char *arg1) {
-//     unsigned short *var_r31;
-//     char *var_r30;
-
-//     var_r31 = arg0;
-//     var_r30 = arg1;
-//     while (*var_r30 != 0) {
-//         var_r30 = &var_r30[DecodeUTF8(*var_r31, var_r30)];
-//         var_r31++;
-//     }
-//     *var_r31 = 0;
-// }
-
-// extern "C" void fn_8037B990(unsigned short *, char *);
-
-// // fn_8037B990
-// void fn_8037B990(unsigned short *arg0, char *arg1) {
-//     char *var_r31 = arg1;
-//     while (*var_r31 != 0) {
-//         var_r31 = &var_r31[DecodeUTF8(*arg0, var_r31)];
-//         arg0++;
-//     }
-//     *arg0 = 0;
-// }

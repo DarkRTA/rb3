@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <new>
 
-static StringTable* gStringTable;
+StringTable* gStringTable;
 static KeylessHash<const char*, const char*>* gHashTable;
 bool gLiteralSymbolStaticInitialization = true;
 
@@ -28,10 +28,11 @@ Symbol::Symbol(const char* str){
             else {
                 if(gLiteralSymbolStaticInitialization) mStr = str;
                 else mStr = gStringTable->Add(str);
-
+            #ifdef MILO_DEBUG
                 if(100 < strlen(str) && MakeStringInitted()){
                     MILO_WARN("Huge symbol %s", str);
                 }
+            #endif
                 gHashTable->Insert(mStr);
             }
         }
@@ -74,19 +75,19 @@ struct Alpha {
 };
 
 static DataNode PrintSymbolTable(DataArray* da){
-    TheDebug << MakeString("Symbol table:\n");
-    TheDebug << MakeString("%d / %d hashes\n", gHashTable->mNumEntries, gHashTable->mSize);
-    TheDebug << MakeString("%d / %d strings\n", gStringTable->UsedSize(), gStringTable->Size());
-    TheDebug << MakeString("adding 30%%, suggest Symbol::PreInit(%d, %d)\n", (int)(gStringTable->UsedSize() * 1.3f), (int)((gHashTable->mNumEntries << 1) * 1.3f));
+    MILO_LOG("Symbol table:\n");
+    MILO_LOG("%d / %d hashes\n", gHashTable->UsedSize(), gHashTable->Size());
+    MILO_LOG("%d / %d strings\n", gStringTable->UsedSize(), gStringTable->Size());
+    MILO_LOG("adding 30%%, suggest Symbol::PreInit(%d, %d)\n", (int)(gStringTable->UsedSize() * 1.3f), (int)((gHashTable->UsedSize() << 1) * 1.3f));
     if(da->Size() > 1){
         std::vector<const char*> strvec;
-        strvec.reserve(gHashTable->mNumEntries);
+        strvec.reserve(gHashTable->UsedSize());
         for(const char** it = gHashTable->Begin(); it != 0; it = gHashTable->Next(it)){
             strvec.push_back(*it);
         }
         std::sort(strvec.begin(), strvec.end(), Alpha());
         for(int i = 0; i < strvec.size(); i++){
-            TheDebug << MakeString("%s\n", strvec[i]);
+            MILO_LOG("%s\n", strvec[i]);
         }
     }
     return DataNode(0);

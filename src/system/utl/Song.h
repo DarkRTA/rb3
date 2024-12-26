@@ -1,5 +1,4 @@
-#ifndef UTL_SONG_H
-#define UTL_SONG_H
+#pragma once
 #include "rndobj/Anim.h"
 #include "rndobj/Overlay.h"
 #include "midi/Midi.h"
@@ -67,17 +66,13 @@ public:
     HxMaster* mHxMaster; // 0x1c
     HxSongData* mHxSongData; // 0x20
     std::map<int, Symbol> unk24; // 0x24
-    ObjPtrList<Hmx::Object, ObjectDir> mDebugParsers; // 0x3c
+    ObjPtrList<Hmx::Object> mDebugParsers; // 0x3c
     Symbol mSongName; // 0x4c
     Symbol unk50; // 0x50
     float mSongEndFrame; // 0x54
     float mSpeed; // 0x58
-    // 5c and 60 could also be a Vector2?
-    float unk5c; // 0x5c
-    float unk60; // 0x60
+    Vector2 unk5c; // 0x5c - loop start and end points
     MBT mLoopStart; // 0x64
     MBT mLoopEnd; // 0x70
     bool unk7c; // 0x7c
 };
-
-#endif
