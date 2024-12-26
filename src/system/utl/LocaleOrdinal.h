@@ -1,7 +1,4 @@
-#ifndef UTL_LOCALEORDINAL_H
-#define UTL_LOCALEORDINAL_H
+#pragma once
 #include "utl/Locale.h"
 
 const char* LocalizeOrdinal(int, LocaleGender, LocaleNumber, bool);
-
-#endif
