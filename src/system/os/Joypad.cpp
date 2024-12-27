@@ -8,13 +8,14 @@
 namespace {
     static DataArray* gControllersCfg; // 0x0
     static DataArray* gButtonMeanings; // 0x4
-    static int gPadsToKeepAlive; // prolly not an int
-    static int gPadsToKeepAliveNext; // also prolly not an int
-    static int gKeepAliveCountdown;
+    static unsigned int gPadsToKeepAlive; // 0x8
+    static unsigned int gPadsToKeepAliveNext; // 0xc
+    static int gKeepAliveCountdown; // 0x10
     static int gKeepaliveThresholdMs = -1; // 0x18
     static bool gExportMsgs = true;
     static bool gJoypadLibInitialized;
     static JoypadData gJoypadData[4];
+    static unsigned int gHolmesPressed; // 0x288
     static bool gJoypadDisabled[4]; // 0x28c
     static MsgSource* gJoypadMsgSource; // 0x290
 
@@ -214,15 +215,19 @@ int ButtonToVelocityBucket(JoypadData* data, JoypadButton btn){
 }
 
 void JoypadInitCommon(DataArray* joypad_config){
+    int i;
     gJoypadMsgSource = Hmx::Object::New<MsgSource>();
     float thresh;
     joypad_config->FindData("threshold", thresh, true);
     joypad_config->FindData("keepalive_ms", gKeepaliveThresholdMs, true);
-    for(int i = 0; i < 4; i++) gJoypadDisabled[i] = 0;
+    for(i = 0; i < 4; i++){
+        gJoypadData[i].mDistFromRest = thresh;
+        gJoypadDisabled[i] = 0;
+    }
     DataArray* ignores = joypad_config->FindArray("ignore", true);
-    for(int i = 1; i < ignores->Size(); i++){
+    for(i = 1; i < ignores->Size(); i++){
         int nodeInt = ignores->Int(i);
-        if(nodeInt <= 3U){
+        if(nodeInt == 0 || nodeInt == 1 || nodeInt == 2 || nodeInt == 3){
             gJoypadDisabled[nodeInt] = true;
         }
     }
@@ -236,6 +241,67 @@ void JoypadInitCommon(DataArray* joypad_config){
     DataRegisterFunc("joypad_is_button_down", OnJoypadIsButtonDownPadNum);
     DataRegisterFunc("joypad_is_calbert_guitar", OnJoypadIsCalbertGuitar);
     gJoypadLibInitialized = true;
+}
+
+inline WaitInfo::WaitInfo(int pad) : mPadNum(pad), mButtons(gJoypadData[pad].mButtons) {}
+
+unsigned int JoypadPollForButton(int pad){
+    if(!gJoypadLibInitialized) return 0;
+    else {
+        gExportMsgs = false;
+        JoypadPoll();
+        std::vector<WaitInfo> waitInfos;
+        if(pad == -1){
+            for(int i = 0; i < 4; i++){
+                if(!gJoypadDisabled[i]){
+                    waitInfos.push_back(WaitInfo(i));
+                }
+            }
+        }
+        else {
+            waitInfos.push_back(WaitInfo(pad));
+        }
+        std::vector<WaitInfo>::iterator it = waitInfos.begin();
+        unsigned int retMask = 0;
+        for(; it != waitInfos.end(); ++it){
+            retMask |= gJoypadData[it->mPadNum].mNewPressed;
+        }
+    #ifdef MILO_DEBUG
+        if(pad == -1){
+            retMask |= gHolmesPressed;
+        }
+    #endif
+        gExportMsgs = true;
+        return retMask;
+    }
+}
+
+void JoypadPollCommon(){
+    if(!gJoypadLibInitialized){
+        MILO_WARN(" Can't call JoypadPoll before initialization...");
+    }
+    MILO_WARN("!(justDisconnected && justConnected)");
+}
+
+void JoypadKeepEverythingAlive(){
+    for(int i = 0; i < 4; i++){
+        if(1 << i){
+            gJoypadData[i].unk98 = SystemMs();
+        }
+    }
+}
+
+void JoypadKeepAlive(int pad, bool alive){
+    if(pad == -1) return;
+    if(alive){
+        int padmask = 1 << pad;
+        gPadsToKeepAlive |= padmask;
+        gPadsToKeepAliveNext |= padmask;
+    }
+    else {
+        gPadsToKeepAliveNext &= ~(1 << pad);
+    }
+    gKeepAliveCountdown = 0;
 }
 
 inline void JoypadSendMsg(const Message& msg){
@@ -282,10 +348,8 @@ void ResetAllUsersPads(){
 }
 
 int GetUsersPadNum(LocalUser* user){
-    bool* disabled = gJoypadDisabled;
-    JoypadData* data = gJoypadData;
     for(int i = 0; i < 4; i++){
-        if(!disabled[i] && data[i].mUser == user) return i;
+        if(!gJoypadDisabled[i] && gJoypadData[i].mUser == user) return i;
     }
     return -1;
 }

@@ -208,34 +208,34 @@ public:
     unsigned int mNewReleased; // 0x8
     float mSticks[2][2]; // 0xC = LX; 0x10 = LY; 0x14 = RX; 0x18 = RY
     float mTriggers[2]; // 0x1C = LT; 0x20 = RT
-    float mSensors[3]; // SX, SY, SZ
-    float mPressures[8];
+    float mSensors[3]; // 0x24 = SX; 0x28 = SY; 0x2C = SZ
+    float mPressures[8]; // 0x30 - 0x50
 
-    ProData mProData;
+    ProData mProData; // 0x50
 
-    class LocalUser* mUser;
-    bool mConnected;
-    bool mVibrateEnabled;
+    class LocalUser* mUser; // 0x60
+    bool mConnected; // 0x64
+    bool mVibrateEnabled; // 0x65
 
     bool unk66, unk67, unk68;
 
-    bool mHasAnalogSticks;
-    bool mTranslateSticks;
-    int mIgnoreButtonMask;
-    int mGreenCymbalMask;
-    int mYellowCymbalMask;
-    int mBlueCymbalMask;
-    int mSecondaryPedalMask;
-    int mCymbalMask;
-    bool mIsDrum;
-    JoypadType mType;
-    Symbol mControllerType;
-    float mDistFromRest;
-    bool mHasGreenCymbal;
-    bool mHasYellowCymbal;
-    bool mHasBlueCymbal;
-    bool mHasSecondaryPedal;
-    int unk98;
+    bool mHasAnalogSticks; // 0x69
+    bool mTranslateSticks; // 0x6a
+    int mIgnoreButtonMask; // 0x6c
+    int mGreenCymbalMask; // 0x70
+    int mYellowCymbalMask; // 0x74
+    int mBlueCymbalMask; // 0x78
+    int mSecondaryPedalMask; // 0x7c
+    int mCymbalMask; // 0x80
+    bool mIsDrum; // 0x84
+    JoypadType mType; // 0x88
+    Symbol mControllerType; // 0x8c
+    float mDistFromRest; // 0x90
+    bool mHasGreenCymbal; // 0x94
+    bool mHasYellowCymbal; // 0x95
+    bool mHasBlueCymbal; // 0x96
+    bool mHasSecondaryPedal; // 0x97
+    int unk98; // 0x98
 
     JoypadData();
     float GetAxis(Symbol) const;
@@ -256,6 +256,12 @@ public:
     float GetSZ() const { return mSensors[2]; }
 };
 
+struct WaitInfo {
+    WaitInfo(int pad);
+    int mPadNum; // 0x0
+    unsigned int mButtons; // 0x4
+};
+
 class LocalUser; // forward dec
 
 extern "C" bool JoypadIsCalbertGuitar(int);
@@ -268,6 +274,8 @@ extern "C" LocalUser* JoypadGetUserFromPadNum(int);
 extern "C" int JoypadGetUsersPadNum(LocalUser*);
 extern "C" void JoypadSetCalbertMode(int, int);
 extern "C" void JoypadSetActuatorsImp(int, int, int);
+extern "C" void JoypadKeepEverythingAlive();
+extern "C" void JoypadPollCommon();
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -283,6 +291,8 @@ JoypadAction ButtonToAction(JoypadButton, Symbol);
 const char* JoypadGetBreedString(int);
 float JoypadGetCalbertValue(int, bool);
 bool JoypadVibrate(int);
+unsigned int JoypadPollForButton(int);
+void JoypadPoll();
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);
