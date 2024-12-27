@@ -1,5 +1,4 @@
-#ifndef MATH_COLOR_H
-#define MATH_COLOR_H
+#pragma once
 #include "types.h"
 #include "utl/TextStream.h"
 #include "utl/BinStream.h"
@@ -185,5 +184,3 @@ inline void Interp(const Hmx::Color& c1, const Hmx::Color& c2, float f, Hmx::Col
 }
 
 void Interp(const Hmx::Color32&, const Hmx::Color32&, float, Hmx::Color32&);
-
-#endif

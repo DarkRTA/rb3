@@ -1,7 +1,7 @@
-#ifndef UTL_BINSTREAM_H
-#define UTL_BINSTREAM_H
+#pragma once
 #include "math/Rand2.h"
 #include "types.h"
+#include "os/Platform.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include <utility>
@@ -33,6 +33,7 @@ enum EofType {
     TempEof = 2
 };
 
+/** A stream of raw bytes. Can be read from or written to. */
 class BinStream {
 public:
     /** 
@@ -45,23 +46,42 @@ public:
         kSeekEnd = 2,
     };
 
-    BinStream(bool);
+    BinStream(bool littleEndian);
     virtual ~BinStream();
+    /** Completely flush out this BinStream. */
     virtual void Flush() = 0;
+    /** Get the current position of the BinStream. */
     virtual int Tell() = 0;
+    /** Get the current End Of File type of the BinStream. */
     virtual EofType Eof() = 0;
+    /** Get whether or not the BinStream has failed. */
     virtual bool Fail() = 0;
+    /** Get this BinStream's name. */
     virtual const char* Name() const;
+    /** Get whether or not this BinStream is cached. Interestingly only overwritten in ChunkStream. */
     virtual bool Cached() const { return false; }
-    virtual int GetPlatform() const { return 0; }
-    virtual void ReadImpl(void*, int) = 0;
-    virtual void WriteImpl(const void*, int) = 0;
-    virtual void SeekImpl(int, SeekType) = 0;
+    /** Get this BinStream's current platform (Xbox, PS3, etc). Interestingly only overwritten in ChunkStream. */
+    virtual Platform GetPlatform() const { return kPlatformNone; }
+    /** The specific implementation for reading from byte data.
+     *  @param [in] data The data to read from.
+     *  @param [in] bytes The number of bytes to read.
+     */
+    virtual void ReadImpl(void* data, int bytes) = 0;
+    /** The specific implementation for writing to byte data.
+     *  @param [in] data The data to write to.
+     *  @param [in] bytes The number of bytes to read.
+     */
+    virtual void WriteImpl(const void* data, int bytes) = 0;
+    /** The specific implementation for seeking within this BinStream.
+     *  @param [in] offset The offset in the data to seek to.
+     *  @param [in] type The Seek type.
+     */
+    virtual void SeekImpl(int offset, SeekType type) = 0;
 
     /** Whether or not the stream uses little endian. */
-    bool mLittleEndian;
+    bool mLittleEndian; // 0x4
     /** PRNG source, used for encryption */
-    Rand2 *mCrypto;
+    Rand2 *mCrypto; // 0x8
 
     BinStream &operator<<(const char *);
     BinStream &operator<<(const Symbol &);
@@ -97,7 +117,11 @@ public:
      */
     void Read(void * out, int len);
 
-    void Write(const void *, int);
+    /** Write `len` bytes from the current BinStream position, into the `data` buffer.
+     * @param [out] data The pointer to write data into.
+     * @param [in] len The length of data to write.
+     */
+    void Write(const void * data, int len);
 
     /** Seeks to `offset` using `mode`. */
     void Seek(int offset, SeekType mode);
@@ -112,7 +136,12 @@ public:
      */
     void ReadEndian(void * out, int len);
 
-    void WriteEndian(const void *, int);
+    /** Writes `len` bytes of data into `data`, reversed if mLittleEndian is true.
+     *
+     * @param [out] out The pointer to write data into.
+     * @param [in] len The length of data to write.
+     */
+    void WriteEndian(const void * data, int len);
 
     bool LittleEndian() const { return mLittleEndian; }
     bool UseLittleEndian(bool use){ mLittleEndian = use; return mLittleEndian; }
@@ -252,5 +281,3 @@ template <class T>
 BinStream& operator>>(BinStream& bs, T* t) {
     t->Load(bs);
 }
-
-#endif

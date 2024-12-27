@@ -1,4 +1,5 @@
 #pragma once
+#include "os/File.h"
 #include <revolution/GX.h>
 
 struct BINKRECT {
@@ -108,7 +109,9 @@ struct BINKIO {
     unsigned int CurBufSize; // offset 0x48, size 0x4
     unsigned int CurBufUsed; // offset 0x4C, size 0x4
     unsigned int Suspended; // offset 0x50, size 0x4
-    unsigned char iodata[160]; // offset 0x54, size 0xA0
+    File* file; // 0x54
+    unsigned int unk58; // 0x58
+    unsigned char iodata[152]; // offset 0x5c
     void (* suspend_callback)(struct BINKIO *); // offset 0xF4, size 0x4
     int (* try_suspend_callback)(struct BINKIO *); // offset 0xF8, size 0x4
     void (* resume_callback)(struct BINKIO *); // offset 0xFC, size 0x4

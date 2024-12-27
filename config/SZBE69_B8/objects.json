@@ -1382,7 +1382,7 @@
 
             "system/utl/BeatMap.cpp": "NonMatching",
             "system/utl/BinStream.cpp": "NonMatching",
-            "system/utl/BinkIntegration.cpp": "MISSING",
+            "system/utl/BinkIntegration.cpp": "NonMatching",
             "system/utl/BufStream.cpp": "Matching",
             "system/utl/BufStreamNAND.cpp": "MISSING",
             "system/utl/Cache.cpp": "Matching",

@@ -370,6 +370,6 @@ ChunkStream::ChunkInfo::ChunkInfo(bool isCompressed) {
     mChunks[0] = 0;
 }
 
-int ChunkStream::GetPlatform() const { return mPlatform; }
+Platform ChunkStream::GetPlatform() const { return mPlatform; }
 bool ChunkStream::Cached() const { return mIsCached; }
 const char* ChunkStream::Name() const { return mFilename.c_str(); }

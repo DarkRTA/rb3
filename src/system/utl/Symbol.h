@@ -3,14 +3,21 @@
 
 #define STR_TO_SYM(str) *reinterpret_cast<Symbol*>(const_cast<char**>(&str))
 
+/** An empty string. */
 extern const char* gNullStr;
 
+/** An identifier for a scripting element.
+ *  Symbol strings are made unique via hash lookup, and compared via pointer for efficiency.
+ */
 class Symbol {
 public:
-    const char *mStr;
+    /** The string this Symbol contains. */
+    const char *mStr; // 0x0
+
     Symbol() : mStr(gNullStr) { }
     Symbol(const char *); // ctor pulled from gdrb
 
+    // used for maps
     bool operator<(const Symbol& s) const {
         return mStr < s.mStr;
     }
@@ -34,9 +41,6 @@ public:
         return !(*this == cc);
     }
 
-    // Symbol *operator=(const Symbol & s){
-    //     mStr = s.mStr;
-    // }
     const char *Str() const { return mStr; }
 
     static void UploadDebugStats();
