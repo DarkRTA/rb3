@@ -20,11 +20,11 @@ namespace {
 
     static DataNode OnJoypadSetVibrate(DataArray* arr){
         JoypadSetVibrate(arr->Int(1), arr->Int(2) != 0);
-        return DataNode(1);
+        return 1;
     }
 
     static DataNode OnJoypadVibrate(DataArray* arr){
-        return DataNode(JoypadGetPadData(arr->Int(1))->mVibrateEnabled);
+        return DataNode(JoypadVibrate(arr->Int(1)));
     }
 
     static DataNode OnJoypadControllerTypePadNum(DataArray* arr){
@@ -46,8 +46,10 @@ namespace {
         return DataNode(JoypadIsCalbertGuitar(arr->Int(1)));
     }
 
-    #pragma pool_data off
-
+#ifdef MILO_DEBUG
+#pragma push
+#pragma pool_data off
+#endif
     bool IsJoypadDetectMatch(DataArray* detect_cfg, const JoypadData& data){
         static Symbol type("type");
         static Symbol button("button");
@@ -62,7 +64,7 @@ namespace {
             return detect_cfg->Int(1) == (int)data.mType;
         }
         else if(sym == button){
-            return data.mButtons & 1 << detect_cfg->Int(1);
+            return data.IsButtonInMask(detect_cfg->Int(1));
         }
         else if(sym == stick){
             int i4 = 0;
@@ -98,10 +100,13 @@ namespace {
             return false;
         }
     }
+#ifdef MILO_DEBUG
+#pragma pop
+#endif
 
     static DataNode DataJoypadReset(DataArray* arr){
         JoypadReset();
-        return DataNode(0);
+        return 0;
     }
 
 }
@@ -110,14 +115,20 @@ JoypadData::JoypadData() : mButtons(0), mUser(0), mConnected(false), mVibrateEna
     mHasAnalogSticks(false), mTranslateSticks(false), mIgnoreButtonMask(0), mGreenCymbalMask(0), mYellowCymbalMask(0), mBlueCymbalMask(0),
     mSecondaryPedalMask(0), mCymbalMask(0), mIsDrum(false), mType(kJoypadNone), mControllerType(), mHasGreenCymbal(false), mHasYellowCymbal(false),
     mHasBlueCymbal(false), mHasSecondaryPedal(false) {
-        mSticks[0][0] = 0.0f;
-        mSticks[0][1] = 0.0f;
-        mSticks[1][0] = 0.0f;
-        mSticks[1][1] = 0.0f;
-        mTriggers[0] = 0.0f;
-        mTriggers[1] = 0.0f;
+    for(int i = 0; i < 2; i++){
+        for(int j = 0; j < 2; j++){
+            mSticks[i][j] = 0;
+        }
+    }
+    for(int i = 0; i < 2; i++){
+        mTriggers[i] = 0;
+    }
 }
 
+#ifdef MILO_DEBUG
+#pragma push
+#pragma pool_data off
+#endif
 float JoypadData::GetAxis(Symbol axis) const {
     static Symbol lx("LX");
     static Symbol ly("LY");
@@ -128,20 +139,21 @@ float JoypadData::GetAxis(Symbol axis) const {
     static Symbol sx("SX");
     static Symbol sy("SY");
     static Symbol sz("SZ");
-    if(axis == lx) return mSticks[0][0];
-    else if(axis == ly) return mSticks[0][1];
-    else if(axis == rx) return mSticks[1][0];
-    else if(axis == ry) return mSticks[1][1];
-    else if(axis == tl) return mTriggers[0];
-    else if(axis == tr) return mTriggers[1];
-    else if(axis == sx) return mSensors[0];
-    else if(axis == sy) return mSensors[1];
-    else if(axis == sz) return mSensors[2];
-    else TheDebug.Fail(MakeString("Bad axis %s in JoypadData::GetAxis()\n"));
+    if(axis == lx) return GetLX();
+    else if(axis == ly) return GetLY();
+    else if(axis == rx) return GetRX();
+    else if(axis == ry) return GetRY();
+    else if(axis == tl) return GetLT();
+    else if(axis == tr) return GetRT();
+    else if(axis == sx) return GetSX();
+    else if(axis == sy) return GetSY();
+    else if(axis == sz) return GetSZ();
+    else MILO_FAIL("Bad axis %s in JoypadData::GetAxis()\n");
     return 0.0f;
 }
-
-#pragma pool_data on
+#ifdef MILO_DEBUG
+#pragma pop
+#endif
 
 int JoypadData::FloatToBucket(float f) const {
     if(f < 0.11f) return 0;
@@ -206,10 +218,7 @@ void JoypadInitCommon(DataArray* joypad_config){
     float thresh;
     joypad_config->FindData("threshold", thresh, true);
     joypad_config->FindData("keepalive_ms", gKeepaliveThresholdMs, true);
-    gJoypadDisabled[0] = 0;
-    gJoypadDisabled[1] = 0;
-    gJoypadDisabled[2] = 0;
-    gJoypadDisabled[3] = 0;
+    for(int i = 0; i < 4; i++) gJoypadDisabled[i] = 0;
     DataArray* ignores = joypad_config->FindArray("ignore", true);
     for(int i = 1; i < ignores->Size(); i++){
         int nodeInt = ignores->Int(i);
@@ -229,9 +238,24 @@ void JoypadInitCommon(DataArray* joypad_config){
     gJoypadLibInitialized = true;
 }
 
+inline void JoypadSendMsg(const Message& msg){
+    if(gExportMsgs){
+        gJoypadMsgSource->Handle(msg, false);
+    }
+}
+
 JoypadData* JoypadGetPadData(int pad_num){
     MILO_ASSERT(0 <= pad_num && pad_num < kNumJoypads, 0x5CC);
     return &gJoypadData[pad_num];
+}
+
+void JoypadSetVibrate(int pad, bool vibrate){
+    JoypadSetActuatorsImp(pad, 0, 0);
+    JoypadGetPadData(pad)->mVibrateEnabled = vibrate;
+}
+
+inline bool JoypadVibrate(int pad){
+    return JoypadGetPadData(pad)->mVibrateEnabled;
 }
 
 void JoypadSubscribe(Hmx::Object* obj){
@@ -245,9 +269,7 @@ void JoypadUnsubscribe(Hmx::Object* obj){
 }
 
 void JoypadPushThroughMsg(const Message& msg){
-    if(gExportMsgs){
-        gJoypadMsgSource->Handle(msg, false);
-    }
+    JoypadSendMsg(msg);
 }
 
 void AssociateUserAndPad(LocalUser* iUser, int iPadNum){
@@ -262,11 +284,10 @@ void ResetAllUsersPads(){
 int GetUsersPadNum(LocalUser* user){
     bool* disabled = gJoypadDisabled;
     JoypadData* data = gJoypadData;
-    if(!disabled[0] && data[0].mUser == user) return 0;
-    else if(!disabled[1] && data[1].mUser == user) return 1;
-    else if(!disabled[2] && data[2].mUser == user) return 2;
-    else if(!disabled[3] && data[3].mUser == user) return 3;
-    else return -1;
+    for(int i = 0; i < 4; i++){
+        if(!disabled[i] && data[i].mUser == user) return i;
+    }
+    return -1;
 }
 
 LocalUser* JoypadGetUserFromPadNum(int iPadNum){

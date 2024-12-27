@@ -1,5 +1,4 @@
-#ifndef OS_JOYPAD_H
-#define OS_JOYPAD_H
+#pragma once
 #include "utl/Symbol.h"
 #include "obj/Msg.h"
 
@@ -204,11 +203,11 @@ union ProData {
 
 class JoypadData {
 public:
-    unsigned int mButtons;
-    unsigned int mNewPressed;
-    unsigned int mNewReleased;
-    float mSticks[2][2]; // LX, LY, RX, RY
-    float mTriggers[2]; // LT, RT
+    unsigned int mButtons; // 0x0
+    unsigned int mNewPressed; // 0x4
+    unsigned int mNewReleased; // 0x8
+    float mSticks[2][2]; // 0xC = LX; 0x10 = LY; 0x14 = RX; 0x18 = RY
+    float mTriggers[2]; // 0x1C = LT; 0x20 = RT
     float mSensors[3]; // SX, SY, SZ
     float mPressures[8];
 
@@ -250,6 +249,11 @@ public:
     float GetLY() const { return mSticks[0][1]; }
     float GetRX() const { return mSticks[1][0]; }
     float GetRY() const { return mSticks[1][1]; }
+    float GetLT() const { return mTriggers[0]; }
+    float GetRT() const { return mTriggers[1]; }
+    float GetSX() const { return mSensors[0]; }
+    float GetSY() const { return mSensors[1]; }
+    float GetSZ() const { return mSensors[2]; }
 };
 
 class LocalUser; // forward dec
@@ -263,6 +267,7 @@ extern "C" int GetUsersPadNum(LocalUser*);
 extern "C" LocalUser* JoypadGetUserFromPadNum(int);
 extern "C" int JoypadGetUsersPadNum(LocalUser*);
 extern "C" void JoypadSetCalbertMode(int, int);
+extern "C" void JoypadSetActuatorsImp(int, int, int);
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -277,6 +282,7 @@ bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
 const char* JoypadGetBreedString(int);
 float JoypadGetCalbertValue(int, bool);
+bool JoypadVibrate(int);
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);
@@ -289,5 +295,3 @@ namespace Hmx { class Object; }
 void JoypadSubscribe(Hmx::Object*);
 void JoypadUnsubscribe(Hmx::Object*);
 void JoypadPushThroughMsg(const Message&);
-
-#endif

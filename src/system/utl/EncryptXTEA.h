@@ -1,5 +1,4 @@
-#ifndef UTL_ENCRYPTXTEA_H
-#define UTL_ENCRYPTXTEA_H
+#pragma once
 
 struct XTEABlock {
     unsigned long long mData[2];
@@ -16,5 +15,3 @@ public:
     void Encrypt(const XTEABlock*, XTEABlock*);
     unsigned long long Encipher(unsigned long long, unsigned int*);
 };
-
-#endif

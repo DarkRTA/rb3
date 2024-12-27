@@ -1184,6 +1184,7 @@ system/os/DiscErrorMgr_Wii.cpp:
 system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
+	.bss        start:0x8090B558 end:0x8090B8A8
 
 system/os/Joypad_Wii.cpp:
 	.text       start:0x80303E44 end:0x80305F5C
