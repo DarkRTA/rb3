@@ -9,13 +9,13 @@ void BinkInit(){
 bool BinkFileOpen(BINKIO* bink, const char* cc, unsigned int ui){
     memset(bink, 0, sizeof(BINKIO));
     if(ui & 0x800000){
-        const char** binkCCData = (const char**)&bink->file;
+        const char** binkCCData = reinterpret_cast<const char**>(const_cast<unsigned char*>(&bink->iodata[0]));
         *binkCCData = cc;
     }
     else {
         File* file = NewFile(cc, 2);
-        bink->file = file;
-        bink->unk58 = 1;        
+        *reinterpret_cast<File**>(const_cast<unsigned char*>(&bink->iodata[0])) = file;
+        *reinterpret_cast<int*>(const_cast<unsigned char*>(&bink->iodata[4])) = 1;
         if(!file) return false;
     }
     bink->ReadHeader = BinkFileReadHeader;
