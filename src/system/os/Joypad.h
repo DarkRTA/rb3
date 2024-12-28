@@ -115,6 +115,11 @@ enum JoypadType {
     kJoypadNumTypes = 47
 };
 
+struct ProGuitarStringInfo {
+    bool mDown : 1;
+    unsigned char mVelocity : 7;
+};
+
 struct ProGuitarData {
     unsigned char mString4FretBottomHalf : 3;
     unsigned char mString5Fret : 5;
@@ -130,23 +135,25 @@ struct ProGuitarData {
     unsigned char mString0Fret : 5;
     unsigned char mString1FretTopHalf : 2;
 
-    bool unk4bool : 1;
-    unsigned char mString5Velocity : 7;
-
-    bool unk5bool : 1;
-    unsigned char mString4Velocity : 7;
-
-    bool unk6bool : 1;
-    unsigned char mString3Velocity : 7;
-
-    bool unk7bool : 1;
-    unsigned char mString2Velocity : 7;
-
-    bool unk8bool : 1;
-    unsigned char mString1Velocity : 7;
-
-    bool unk9bool : 1;
-    unsigned char mString0Velocity : 7;
+    union {
+        struct {
+            bool unk4bool : 1;
+            unsigned char mString5Velocity : 7;
+            bool unk5bool : 1;
+            unsigned char mString4Velocity : 7;
+            bool unk6bool : 1;
+            unsigned char mString3Velocity : 7;
+            bool unk7bool : 1;
+            unsigned char mString2Velocity : 7;
+            bool unk8bool : 1;
+            unsigned char mString1Velocity : 7;
+            bool unk9bool : 1;
+            unsigned char mString0Velocity : 7;
+        };
+        struct {
+            ProGuitarStringInfo mStringInfos[6];
+        };
+    };   
 
     bool unkabool : 1;
     unsigned char unkachar : 7;

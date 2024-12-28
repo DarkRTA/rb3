@@ -55,19 +55,15 @@ void UsbMidiGuitar::Terminate(){
     RELEASE(TheGuitar);
 }
 
-// https://decomp.me/scratch/Kfn0h
+// matches in retail
 void UsbMidiGuitar::Poll(){
-    char someCharArr[8];
     if(TheGuitar){
+        ProGuitarData* proData;
         for(int i = 0; i < 4; i++){
-            JoypadData* thePadData = JoypadGetPadData(i);
-            JoypadType ty = thePadData->mType;
+            JoypadType ty = JoypadGetPadData(i)->mType;
             if(ty == kJoypadXboxButtonGuitar || ty == kJoypadPs3ButtonGuitar || ty == kJoypadWiiButtonGuitar ||
                 ty == kJoypadXboxRealGuitar22Fret || ty == kJoypadPs3RealGuitar22Fret || ty == kJoypadWiiRealGuitar22Fret){
-                    JoypadData* padData = JoypadGetPadData(i);
-                    // here, assign a pointer to padData's struct for pro guitar data
-                    ProGuitarData* proData = &padData->mProData.guitarData;
-                    // this loop sets frets and velocities
+                    proData = &JoypadGetPadData(i)->mProData.guitarData;
                     unsigned int uVar9 = 0;
                     for(int j = 5; j >= 0; j--){
                         int curFret, curVel;
@@ -77,8 +73,7 @@ void UsbMidiGuitar::Poll(){
                                 curVel = proData->mString5Velocity;
                                 break;
                             case 4:
-                                // concatenate 2 bit and 3 bit numbers to make one big 5 bit number
-                                curFret = proData->mString4FretTopHalf * 8 + proData->mString4FretBottomHalf; 
+                                curFret = proData->mString4FretTopHalf * 8 + proData->mString4FretBottomHalf;
                                 curVel = proData->mString4Velocity;
                                 break;
                             case 3:
@@ -106,30 +101,27 @@ void UsbMidiGuitar::Poll(){
                         if(curFret != TheGuitar->GetFret(i, j) || velUpdated){
                             TheGuitar->SetFret(i, j, curFret);
                             TheGuitar->SetVelocity(i, j, curVel);
-                            StringStrummedMsg ssmsg(j, curFret, curVel & velUpdated != 0, i);
+                            StringStrummedMsg ssmsg(j, curFret, curVel & -(velUpdated != 0), i);
                             SendMessage(ssmsg);
                             TheGuitar->UpdateStringStrummed(i, j);
                             if((curVel > UsbMidiGuitar::mMinVelocity) && velUpdated){
-                                uVar9 = uVar9 | 1 << 5 - j;
+                                uVar9 |= 1 << (5 - j);
                             }
                         }
                     }
-                    // this loop sets whether frets are up or down
-                    bool RGFretBool = proData->unk3upper; // shifted?
+                    volatile bool someCharArr[8]; // volatile for usb?
+                    bool RGFretBool = proData->unk3upper;
                     for(int k = 0; k < 5; k++){
-                        // this part needs work
-                        // i assume judging by the fact there's a neg in the asm,
-                        // there's either a char assignment or a branchless comparison being assigned to a bool
-                        bool padDataFretDown = (proData + k + 4); // accesses the bool bitfield of proData with offset k + 4?
-                        // bool isTheGuitarFretDown = TheGuitar->mFretDown[i][k];
+                        bool padDataFretDown = proData->mStringInfos[k].mDown;
+                        someCharArr[k] = padDataFretDown;
                         if(padDataFretDown != TheGuitar->GetFretDown(i, k)){
                             if(padDataFretDown){
                                 TheGuitar->SetFretDown(i, k, true);
-                                SendMessage(RGFretButtonDownMsg(i, k, RGFretBool));
+                                SendMessage(RGFretButtonDownMsg(k, i, RGFretBool));
                             }
                             else {
                                 TheGuitar->SetFretDown(i, k, false);
-                                SendMessage(RGFretButtonUpMsg(i, k, RGFretBool));
+                                SendMessage(RGFretButtonUpMsg(k, i, RGFretBool));
                             }
                         }
                     }
@@ -165,9 +157,7 @@ void UsbMidiGuitar::Poll(){
                         TheGuitar->SetStompBox(i, stompBox);
                         SendMessage(RGStompBoxMsg(stompBox, i));
                     }
-                    // these bits could be combined together into one 3 bit value?
-                    // from MSB to LSB: unkcbool, unkbbool, unkabool
-                    int programChange = proData->unkcbool + proData->unkbbool + proData->unkabool;
+                    int programChange = proData->unkabool + (proData->unkbbool << 1) + (proData->unkcbool << 2);
                     if(programChange != TheGuitar->GetProgramChange(i)){
                         TheGuitar->SetProgramChange(i, programChange);
                         SendMessage(RGProgramChangeMsg(programChange, i));
