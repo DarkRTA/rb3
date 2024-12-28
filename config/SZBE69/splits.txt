@@ -1275,6 +1275,8 @@ system/os/UsbMidiGuitarMsgs.cpp:
 
 system/os/UsbMidiKeyboard.cpp:
 	.text       start:0x80314814 end:0x80315298
+	.sbss       start:0x808E4460 end:0x808E4468
+	.bss        start:0x8091A290 end:0x8091A2C0
 
 system/os/UsbMidiKeyboardMsgs.cpp:
 	.text       start:0x80315298 end:0x80315A70

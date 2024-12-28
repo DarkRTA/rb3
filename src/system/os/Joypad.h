@@ -203,11 +203,6 @@ struct ProKeysData {
 
 };
 
-union ProData {
-    ProGuitarData guitarData;
-    ProKeysData keysData;
-};
-
 class JoypadData {
 public:
     unsigned int mButtons; // 0x0
@@ -218,7 +213,10 @@ public:
     float mSensors[3]; // 0x24 = SX; 0x28 = SY; 0x2C = SZ
     float mPressures[8]; // 0x30 - 0x50
 
-    ProData mProData; // 0x50
+    union {
+        ProGuitarData mProGuitarData;
+        ProKeysData mProKeysData;
+    }; // 0x50
 
     class LocalUser* mUser; // 0x60
     bool mConnected; // 0x64

@@ -63,7 +63,7 @@ void UsbMidiGuitar::Poll(){
             JoypadType ty = JoypadGetPadData(i)->mType;
             if(ty == kJoypadXboxButtonGuitar || ty == kJoypadPs3ButtonGuitar || ty == kJoypadWiiButtonGuitar ||
                 ty == kJoypadXboxRealGuitar22Fret || ty == kJoypadPs3RealGuitar22Fret || ty == kJoypadWiiRealGuitar22Fret){
-                    proData = &JoypadGetPadData(i)->mProData.guitarData;
+                    proData = &JoypadGetPadData(i)->mProGuitarData;
                     unsigned int uVar9 = 0;
                     for(int j = 5; j >= 0; j--){
                         int curFret, curVel;
