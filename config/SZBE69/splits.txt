@@ -1267,6 +1267,8 @@ system/os/VirtualKeyboard_Wii.cpp:
 system/os/UsbMidiGuitar.cpp:
 	.text       start:0x80313368 end:0x80313E98
 	.ctors      start:0x807EFF00 end:0x807EFF04
+	.data       start:0x808546E8 end:0x808546F0
+	.bss        start:0x8091A1A4 end:0x8091A254
 
 system/os/UsbMidiGuitarMsgs.cpp:
 	.text       start:0x80313E98 end:0x80314814

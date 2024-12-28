@@ -15,52 +15,24 @@ UsbMidiGuitar::UsbMidiGuitar(){
     mPadNum = 0;
     if(!mUsbMidiGuitarExists){
         mUsbMidiGuitarExists = true;
-        for(int inc = 0; inc < 4; inc++){
-            mConnectedAccessories[inc] = 0;
-            mPitchBend[inc] = 0;
-            mMuting[inc] = 0;
-            mStompBox[inc] = false;
-            mProgramChange[inc] = 0;
-            
-            mStringStrummed[inc][0] = false;
-            mStringFret[inc][0] = 0;
-            mStringVelocity[inc][0] = 0;
-            mLastSixStringsStrummed[inc][0] = 0;
-            
-            mStringStrummed[inc][1] = false;
-            mStringFret[inc][1] = 0;
-            mStringVelocity[inc][1] = 0;
-            mLastSixStringsStrummed[inc][1] = 0;
-
-            mStringStrummed[inc][2] = false;
-            mStringFret[inc][2] = 0;
-            mStringVelocity[inc][2] = 0;
-            mLastSixStringsStrummed[inc][2] = 0;
-
-            mStringStrummed[inc][3] = false;
-            mStringFret[inc][3] = 0;
-            mStringVelocity[inc][3] = 0;
-            mLastSixStringsStrummed[inc][3] = 0;
-
-            mStringStrummed[inc][4] = false;
-            mStringFret[inc][4] = 0;
-            mStringVelocity[inc][4] = 0;
-            mLastSixStringsStrummed[inc][4] = 0;
-
-            mStringStrummed[inc][5] = false;
-            mStringFret[inc][5] = 0;
-            mStringVelocity[inc][5] = 0;
-            mLastSixStringsStrummed[inc][5] = 0;
-
-            mFretDown[inc][0] = false;
-            mFretDown[inc][1] = false;
-            mFretDown[inc][2] = false;
-            mFretDown[inc][3] = false;
-            mFretDown[inc][4] = false;
-
-            mAccelerometer[inc][0] = 0;
-            mAccelerometer[inc][1] = 0;
-            mAccelerometer[inc][2] = 0;
+        for(int i = 0; i < 4; i++){
+            mConnectedAccessories[i] = 0;
+            mPitchBend[i] = 0;
+            mMuting[i] = 0;
+            mStompBox[i] = false;
+            mProgramChange[i] = 0;
+            for(int j = 0; j < 6; j++){
+                mStringStrummed[i][j] = false;
+                mStringFret[i][j] = 0;
+                mStringVelocity[i][j] = 0;
+                mLastSixStringsStrummed[i][j] = 0;
+            }
+            for(int j = 0; j < 5; j++){
+                mFretDown[i][j] = false;
+            }
+            for(int j = 0; j < 3; j++){
+                mAccelerometer[i][j] = 0;
+            }
         }
         mTimer.Init();
         mTimer.Start();
@@ -80,8 +52,7 @@ void UsbMidiGuitar::Init(){
 
 void UsbMidiGuitar::Terminate(){
     MILO_ASSERT(TheGuitar != NULL, 0x6F);
-    delete TheGuitar;
-    TheGuitar = 0;
+    RELEASE(TheGuitar);
 }
 
 // https://decomp.me/scratch/Kfn0h
@@ -128,15 +99,15 @@ void UsbMidiGuitar::Poll(){
                                 break;
                         }
                         bool velUpdated = false;
-                        if(curVel != TheGuitar->mStringVelocity[i][j]){
+                        if(curVel != TheGuitar->GetVelocity(i, j)){
                             TheGuitar->SetVelocity(i, j, curVel);
                             velUpdated = true;
                         }
-                        if(curFret != TheGuitar->mStringFret[i][j] || velUpdated){
+                        if(curFret != TheGuitar->GetFret(i, j) || velUpdated){
                             TheGuitar->SetFret(i, j, curFret);
                             TheGuitar->SetVelocity(i, j, curVel);
                             StringStrummedMsg ssmsg(j, curFret, curVel & velUpdated != 0, i);
-                            JoypadPushThroughMsg(ssmsg);
+                            SendMessage(ssmsg);
                             TheGuitar->UpdateStringStrummed(i, j);
                             if((curVel > UsbMidiGuitar::mMinVelocity) && velUpdated){
                                 uVar9 = uVar9 | 1 << 5 - j;
@@ -150,20 +121,20 @@ void UsbMidiGuitar::Poll(){
                         // i assume judging by the fact there's a neg in the asm,
                         // there's either a char assignment or a branchless comparison being assigned to a bool
                         bool padDataFretDown = (proData + k + 4); // accesses the bool bitfield of proData with offset k + 4?
-                        bool isTheGuitarFretDown = TheGuitar->mFretDown[i][k];
-                        if(padDataFretDown != isTheGuitarFretDown){
+                        // bool isTheGuitarFretDown = TheGuitar->mFretDown[i][k];
+                        if(padDataFretDown != TheGuitar->GetFretDown(i, k)){
                             if(padDataFretDown){
                                 TheGuitar->SetFretDown(i, k, true);
-                                JoypadPushThroughMsg(RGFretButtonDownMsg(i, k, RGFretBool));
+                                SendMessage(RGFretButtonDownMsg(i, k, RGFretBool));
                             }
                             else {
                                 TheGuitar->SetFretDown(i, k, false);
-                                JoypadPushThroughMsg(RGFretButtonUpMsg(i, k, RGFretBool));
+                                SendMessage(RGFretButtonUpMsg(i, k, RGFretBool));
                             }
                         }
                     }
                     if(uVar9 != 0){
-                        JoypadPushThroughMsg(RGSwingMsg(uVar9, i));
+                        SendMessage(RGSwingMsg(uVar9, i));
                     }
                     int axisVal11 = proData->unkachar;
                     int axisVal12 = proData->unkbchar;
@@ -172,34 +143,34 @@ void UsbMidiGuitar::Poll(){
                         axisVal12 != TheGuitar->CurrentAccelAxisVal(i, 1) ||
                         axisVal10 != TheGuitar->CurrentAccelAxisVal(i, 2)){
                             TheGuitar->SetAccelerometer(i, axisVal11, axisVal12, axisVal10);
-                            JoypadPushThroughMsg(RGAccelerometerMsg(axisVal11, axisVal12, axisVal10, i));
+                            SendMessage(RGAccelerometerMsg(axisVal11, axisVal12, axisVal10, i));
                         }
                     int connAcc = proData->unkdchar;
-                    if(connAcc != TheGuitar->mConnectedAccessories[i]){
+                    if(connAcc != TheGuitar->GetConnectedAccessory(i)){
                         TheGuitar->SetConnectedAccessories(i, connAcc);
-                        JoypadPushThroughMsg(RGConnectedAccessoriesMsg(connAcc, i));
+                        SendMessage(RGConnectedAccessoriesMsg(connAcc, i));
                     }
                     int pitchBend = proData->unkdchar;
-                    if(pitchBend != TheGuitar->mPitchBend[i]){
+                    if(pitchBend != TheGuitar->GetPitchBend(i)){
                         TheGuitar->SetPitchBend(i, pitchBend);
-                        JoypadPushThroughMsg(RGPitchBendMsg(pitchBend, i));
+                        SendMessage(RGPitchBendMsg(pitchBend, i));
                     }
                     int muting = proData->mMuting;
-                    if(muting != TheGuitar->mMuting[i]){
+                    if(muting != TheGuitar->GetMuting(i)){
                         TheGuitar->SetMuting(i, muting);
-                        JoypadPushThroughMsg(RGMutingMsg(muting, i));
+                        SendMessage(RGMutingMsg(muting, i));
                     }
                     bool stompBox = proData->mStompBox;
-                    if(stompBox != TheGuitar->mStompBox[i]){
+                    if(stompBox != TheGuitar->GetStompBox(i)){
                         TheGuitar->SetStompBox(i, stompBox);
-                        JoypadPushThroughMsg(RGStompBoxMsg(stompBox, i));
+                        SendMessage(RGStompBoxMsg(stompBox, i));
                     }
                     // these bits could be combined together into one 3 bit value?
                     // from MSB to LSB: unkcbool, unkbbool, unkabool
                     int programChange = proData->unkcbool + proData->unkbbool + proData->unkabool;
-                    if(programChange != TheGuitar->mProgramChange[i]){
+                    if(programChange != TheGuitar->GetProgramChange(i)){
                         TheGuitar->SetProgramChange(i, programChange);
-                        JoypadPushThroughMsg(RGProgramChangeMsg(programChange, i));
+                        SendMessage(RGProgramChangeMsg(programChange, i));
                     }
             }
         }
@@ -259,12 +230,9 @@ void UsbMidiGuitar::SetFretDown(int pad, int str, bool down){
 }
 
 void UsbMidiGuitar::UpdateStringStrummed(int pad, int str){
-    mLastSixStringsStrummed[pad][6] = mLastSixStringsStrummed[pad][5];
-    mLastSixStringsStrummed[pad][5] = mLastSixStringsStrummed[pad][4];
-    mLastSixStringsStrummed[pad][4] = mLastSixStringsStrummed[pad][3];
-    mLastSixStringsStrummed[pad][3] = mLastSixStringsStrummed[pad][2];
-    mLastSixStringsStrummed[pad][2] = mLastSixStringsStrummed[pad][1];
-    mLastSixStringsStrummed[pad][1] = mLastSixStringsStrummed[pad][0];
+    for(int i = 6; i > 0; i--){
+        mLastSixStringsStrummed[pad][i] = mLastSixStringsStrummed[pad][i - 1];
+    }
     mLastSixStringsStrummed[pad][0] = str;
 }
 
