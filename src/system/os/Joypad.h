@@ -115,6 +115,10 @@ enum JoypadType {
     kJoypadNumTypes = 47
 };
 
+inline bool MovedLeftStick(JoypadButton btn){
+    return btn == kPad_LStickUp || btn == kPad_LStickRight || btn == kPad_LStickDown || btn == kPad_LStickLeft;
+}
+
 struct ProGuitarStringInfo {
     bool mDown : 1;
     unsigned char mVelocity : 7;
