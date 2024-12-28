@@ -1157,7 +1157,10 @@
             "system/os/System_Wii.cpp": "Matching",
             "system/os/ThreadCall_Wii.cpp": "NonMatching",
             "system/os/Timer.cpp": "NonMatching",
-            "system/os/UsbMidiGuitar.cpp": "NonMatching",
+            "system/os/UsbMidiGuitar.cpp": {
+                "status": "Equivalent",
+                "comment": "Retail matches fine, debug and its inlining just sucks"
+            },
             "system/os/UsbMidiGuitarMsgs.cpp": "Matching",
             "system/os/UsbMidiKeyboard.cpp": "NonMatching",
             "system/os/UsbMidiKeyboardMsgs.cpp": "Matching",

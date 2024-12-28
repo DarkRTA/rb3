@@ -1,5 +1,4 @@
-#ifndef OS_USBMIDIKEYBOARD_H
-#define OS_USBMIDIKEYBOARD_H
+#pragma once
 #include "os/CritSec.h"
 
 class UsbMidiKeyboard {
@@ -47,5 +46,3 @@ public:
     ~StaticCriticalSection();
     static StaticCriticalSection* Instance();
 };
-
-#endif

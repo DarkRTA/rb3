@@ -66,5 +66,5 @@ public:
     MidiMessage* mQueueStart;
     MidiMessage* mQueueEnd;
     int mUsurpedFret[6];
-    // int mUsurpedTime[6];
+    int mUsurpedTime[6];
 };
