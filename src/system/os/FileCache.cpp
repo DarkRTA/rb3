@@ -1,6 +1,8 @@
 #include "os/FileCache.h"
 #include "os/Debug.h"
 
+std::list<FileCache*> gCaches;
+
 FileCacheFile::FileCacheFile(FileCacheEntry* entry) : mParent(entry), mBytesRead(0), mData(0), mPos(0) {
     entry->mRefCount++;
     entry->mReads++;

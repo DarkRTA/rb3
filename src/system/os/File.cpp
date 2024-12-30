@@ -15,8 +15,7 @@
 #include "utl/Option.h"
 #include <ctype.h>
 
-int File::sOpenCount[4];
-std::vector<File *> gFiles;
+std::vector<File *> gFiles(0x80); // 0x10...?
 File *gOpenCaptureFile; // 0x18
 int gCaptureFileMode;
 static char gRoot[256]; // 0x20
@@ -322,6 +321,56 @@ const char* FileMakePath(const char* root, const char* file, char* buffer){
     return buffer;
 }
 
+const char* FileRelativePath(const char* root, const char* filepath){
+    MILO_ASSERT(root && filepath, 0x3A3);
+    if(*filepath == nullptr) return filepath;
+    char rootBuf[256];
+    char fpBuf[256];
+    strcpy(rootBuf, root);
+    strcpy(fpBuf, filepath);
+    std::list<const char*> list218;
+    std::list<const char*> list220;
+    for(const char* tok = strtok(rootBuf, "/"); tok != nullptr; tok = strtok(nullptr, "/")){
+        list218.push_back(tok);
+    }
+    for(const char* tok = strtok(fpBuf, "/"); tok != nullptr; tok = strtok(nullptr, "/")){
+        list220.push_back(tok);
+    }
+    static char relative[256];
+    if(!list220.empty() && !list218.empty()){
+        if(strcmp(list220.back(), list218.back()) != 0) return filepath;
+        while(list218.size() != 0 && list220.size() != 0 &&
+            strcmp(list220.back(), list218.back()) == 0){
+            list218.pop_back();
+            list220.pop_back();
+        }
+        char* p = relative;
+        while(list218.size() != 0){
+            if(p != relative){
+                *p++ = '/';
+            }
+            *p++ = '.';
+            *p++ = '.';
+            list218.pop_back();
+        }
+        while(list220.size() != 0){
+            if(p != relative){
+                *p++ = '/';
+            }
+            for(const char* pp = list220.back(); *pp != nullptr; pp++){
+                *p++ = *pp;
+            }
+            list220.pop_back();
+        }
+        MILO_ASSERT(p - relative < sizeof(relative), 0x3ED);
+        if(p == relative){
+            *p++ = '.';
+        }
+        *p = '\0';
+    }
+    return relative;
+}
+
 const char *FileGetPath(const char *arg1, char *arg2) {
     static char static_path[256];
     char *p2;
@@ -399,6 +448,55 @@ const char *FileGetName(const char *file) {
     return path;
 }
 
+int GetUnusedFile(){
+    for(int i = 0; i < gFiles.size(); i++){
+        if(!gFiles[i]) return i;
+    }
+    MILO_FAIL("Can't open file, too many already open!!!");
+    return -1;
+}
+
+int FileOpen(const char* iFilename, int iMode){
+    int file = GetUnusedFile();
+    if(file == -1) return file;
+    else {
+        gFiles[file] = NewFile(iFilename, iMode);
+        int ret = -1;
+        if(gFiles[file]) ret = file;
+        file = ret;
+    }
+    return file;
+}
+
+int FileClose(int iFd){
+    MILO_ASSERT_RANGE(iFd, 0, gFiles.size(), 0x49E);
+    MILO_ASSERT(gFiles[iFd] != NULL, 0x49F);
+    RELEASE(gFiles[iFd]);
+    return 1;
+}
+
+int FileWrite(int iFd, void* iBuff, unsigned int iLen){
+    MILO_ASSERT_RANGE(iFd, 0, gFiles.size(), 0x4C1);
+    MILO_ASSERT(gFiles[iFd] != NULL, 0x4C2);
+    return gFiles[iFd]->Write(iBuff, iLen);
+}
+
+const char* FileLocalize(const char* iFilename, char* buffer){
+    if(SystemLanguage().Null()) return iFilename;
+    if(!SystemLanguage().Null()){
+        for(const char* p = iFilename; *p != '\0'; p++){
+            if(*p == '/' && p[1] == 'e' && p[2] == 'n' && p[3] == 'g' && p[4] == '/'){
+                static char mybuffer[256];
+                if(!buffer) buffer = mybuffer;
+                strcpy(buffer, iFilename);
+                memcpy((void*)buffer[(int)p[1 - (int)iFilename]], (const void*)SystemLanguage().mStr, 3);
+                return buffer;
+            }
+        }
+    }
+    return iFilename;
+}
+
 static bool FileMatchInternal(const char *arg0, const char *arg1, bool arg2) {
     for (; *arg0 != 0; arg0++) {
         if (FileMatch(arg0, arg1))
@@ -434,3 +532,6 @@ bool FileMatch(const char *param1, const char *param2) {
 }
 
 void FileDiscSpinUp() { TheBlockMgr.SpinUp(); }
+
+// the weird __rs in the debug symbols here, is for a FileStat&
+// so BinStream >> FileStat
