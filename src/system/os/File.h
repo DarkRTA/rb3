@@ -1,5 +1,4 @@
-#ifndef OS_FILE_H
-#define OS_FILE_H
+#pragma once
 #include "utl/Str.h"
 #include <revolution/DVD.h>
 
@@ -111,5 +110,3 @@ bool FileReadOnly(const char* filepath);
 bool FileExists(const char* filepath, int);
 bool FileIsLocal(const char*);
 bool FileIsDLC(const char*);
-
-#endif
