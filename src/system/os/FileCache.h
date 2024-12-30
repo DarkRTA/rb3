@@ -4,15 +4,35 @@
 
 class FileCacheEntry {
 public:
-    FilePath mFileName;
-    FilePath mReadFileName;
-    const char* mBuf;
-    FileLoader* mLoader;
-    int mSize;
-    int mRefCount;
-    int mPriority;
-    int mReads;
-    float mLastRead;
+    void AddRef(){
+        mRefCount++;
+        mReads++;
+    }
+    void Release(){ mRefCount--; }
+    int Size() const { return mSize; }
+    bool Fail() const { return !mSize && !mBuf; }
+    const char* Buf() const { return mBuf; }
+    bool ReadDone(bool bbb){
+        if(!bbb) mLastRead = SystemMs();
+        if(mSize > -1) return true;
+        if(!mLoader || !mLoader->IsLoaded()) return false;
+        else {
+            mSize = mLoader->GetSize();
+            mBuf = mLoader->GetBuffer(0);
+            RELEASE(mLoader);
+            return true;
+        }
+    }
+
+    FilePath mFileName; // 0x0
+    FilePath mReadFileName; // 0xc
+    const char* mBuf; // 0x18
+    FileLoader* mLoader; // 0x1c
+    int mSize; // 0x20
+    int mRefCount; // 0x24
+    int mPriority; // 0x28
+    int mReads; // 0x2c
+    float mLastRead; // 0x30
     // DataArray * mSongData; // found in RB2
 };
 
@@ -35,10 +55,10 @@ public:
 
     DELETE_POOL_OVERLOAD(FileCacheFile);
 
-    FileCacheEntry* mParent;
-    int mBytesRead;
-    void* mData;
-    int mPos;
+    FileCacheEntry* mParent; // 0x4
+    int mBytesRead; // 0x8
+    void* mData; // 0xc
+    int mPos; // 0x10
 };
 
 class FileCache {
@@ -50,8 +70,13 @@ public:
     void EndSet();
     void Add(const FilePath&, int, const FilePath&);
     bool FileCached(const char*);
+    void Poll();
+    File* GetFile(const char*);
 
-    static File* GetFileAll(const char*); // change ret type
+    static void Init();
+    static void Terminate();
+    static void PollAll();
+    static File* GetFileAll(const char*);
 
     int mMaxSize;
     bool mTryClear;

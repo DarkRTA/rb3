@@ -1117,7 +1117,6 @@ system/os/Archive.cpp:
 system/os/ArkFile.cpp:
 	.text       start:0x802E72CC end:0x802E7828
 	.data       start:0x808516F0 end:0x808517C8
-	.bss        start:0x80906C88 end:0x80906C98
 
 system/os/AsyncFile.cpp:
 	.text       start:0x802E7828 end:0x802E8680
@@ -1163,7 +1162,7 @@ system/os/Debug.cpp:
 system/os/File.cpp:
 	.text       start:0x802F98DC end:0x802FB548
 	.ctors      start:0x807EFECC end:0x807EFED0
-	.bss        start:0x80906CA8 end:0x80906FC0
+	.bss        start:0x80906C88 end:0x80906FC0
 
 system/os/File_Wii.cpp:
 	.text       start:0x802FB548 end:0x802FB6C4
