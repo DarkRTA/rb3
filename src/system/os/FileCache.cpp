@@ -26,6 +26,7 @@ int FileCacheFile::Read(void* iData, int iBytes){
 }
 
 bool FileCacheFile::ReadAsync(void* v, int i){
+    MILO_ASSERT(!mData, 0x117);
     if(mParent->ReadDone(false)){
         if(mParent->Fail()) return false;
         else {
@@ -120,4 +121,30 @@ bool FileCache::FileCached(const char* cc){
         return true;
     }
     else return false;
+}
+
+FileCache::FileCache(int i1, LoaderPos pos, bool b3) : mMaxSize(i1), mTryClear(0), unk10(pos), unk14(b3) {
+    gCaches.push_back(this);
+    mEntries.reserve(0x200);
+}
+
+inline FileCacheEntry::~FileCacheEntry(){
+    MILO_ASSERT(mRefCount == 0, 0x88);
+    delete mLoader;
+    _MemFree((void*)mBuf);
+}
+
+FileCache::~FileCache(){
+    for(int i = 0; i < mEntries.size(); i++) delete mEntries[i];
+    gCaches.erase(std::find(gCaches.begin(), gCaches.end(), this), gCaches.end());
+}
+
+struct Priority {
+    bool operator()(FileCacheEntry* e1, FileCacheEntry* e2) const { return e1->mPriority > e2->mPriority; }
+};
+
+void FileCache::EndSet(){
+    mTryClear = false;
+    std::sort(mEntries.begin(), mEntries.end(), Priority());
+    Poll();
 }

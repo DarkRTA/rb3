@@ -1,9 +1,11 @@
 #pragma once
 #include "utl/FilePath.h"
 #include "utl/Loader.h"
+#include "os/Debug.h"
 
 class FileCacheEntry {
 public:
+    ~FileCacheEntry();
     void AddRef(){
         mRefCount++;
         mReads++;
@@ -24,6 +26,9 @@ public:
         }
     }
 
+    NEW_POOL_OVERLOAD(FileCacheEntry);
+    DELETE_POOL_OVERLOAD(FileCacheEntry);
+
     FilePath mFileName; // 0x0
     FilePath mReadFileName; // 0xc
     const char* mBuf; // 0x18
@@ -42,16 +47,19 @@ public:
     virtual ~FileCacheFile();
     virtual int Read(void *, int);
     virtual bool ReadAsync(void *, int);
-    virtual int Write(const void *, int);
+    virtual int Write(const void *, int){
+        MILO_FAIL("not implemented");
+        return 0;
+    }
     virtual int Seek(int, int);
     virtual int Tell();
-    virtual void Flush();
+    virtual void Flush(){}
     virtual bool Eof();
     virtual bool Fail();
     virtual int Size();
-    virtual int UncompressedSize();
+    virtual int UncompressedSize(){ return 0; }
     virtual bool ReadDone(int &);
-    virtual int GetFileHandle(DVDFileInfo*&);
+    virtual int GetFileHandle(DVDFileInfo*&){ return 0; }
 
     DELETE_POOL_OVERLOAD(FileCacheFile);
 
@@ -64,6 +72,7 @@ public:
 class FileCache {
 public:
     FileCache(int, LoaderPos, bool);
+    ~FileCache();
     bool DoneCaching();
     void Clear();
     void StartSet(int);
@@ -78,7 +87,9 @@ public:
     static void PollAll();
     static File* GetFileAll(const char*);
 
-    int mMaxSize;
-    bool mTryClear;
-    // vector mEntries
+    int mMaxSize; // 0x0
+    bool mTryClear; // 0x4
+    std::vector<FileCacheEntry*> mEntries; // 0x8
+    LoaderPos unk10; // 0x10
+    bool unk14; // 0x14
 };
