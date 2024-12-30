@@ -1,5 +1,4 @@
 #pragma once
-
 #include "obj/Object.h"
 #include "os/File.h"
 #include "os/System.h"
@@ -64,7 +63,7 @@ public:
     virtual bool Fail();
     virtual const char* Name() const;
     virtual bool Cached() const;
-    virtual int GetPlatform() const;
+    virtual Platform GetPlatform() const;
     virtual void ReadImpl(void*, int);
     virtual void WriteImpl(const void*, int);
     virtual void SeekImpl(int, SeekType);

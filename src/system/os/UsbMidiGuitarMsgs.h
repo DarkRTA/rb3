@@ -1,5 +1,4 @@
-#ifndef OS_USBMIDIGUITARMSGS_H
-#define OS_USBMIDIGUITARMSGS_H
+#pragma once
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(StringStrummedMsg, "string_strummed")
@@ -61,5 +60,3 @@ DECLARE_MESSAGE(RGFretButtonUpMsg, "rg_fret_button_up")
     int GetPadNum() const { return mData->Int(3); }
     int GetShifted() const { return mData->Int(4); }
 END_MESSAGE;
-
-#endif

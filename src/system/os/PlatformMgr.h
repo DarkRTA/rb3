@@ -1,5 +1,4 @@
-#ifndef OS_PLATFORMMGR_H
-#define OS_PLATFORMMGR_H
+#pragma once
 #include "obj/Msg.h"
 #include "os/ContentMgr.h"
 #include "os/JoypadMsgs.h"
@@ -168,5 +167,3 @@ Symbol PlatformRegionToSymbol(PlatformRegion);
 PlatformRegion SymbolToPlatformRegion(Symbol);
 
 extern PlatformMgr ThePlatformMgr;
-
-#endif

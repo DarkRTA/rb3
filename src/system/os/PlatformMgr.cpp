@@ -90,14 +90,8 @@ void PlatformMgr::SetRegion(PlatformRegion region){
     class String platRegion(PlatformRegionToSymbol(mRegion));
     platRegion.ToUpper();
     platRegion = MakeString("REGION_%s", (class String)(platRegion));
-    DataArray* arr;
-    {
-        DataNode node(1);
-        arr = new DataArray(1);
-        arr->Node(0) = node;
-    }
-    DataSetMacro(platRegion.c_str(), arr);
-    arr->Release();
+    DataArrayPtr ptr(1);
+    DataSetMacro(platRegion.c_str(), ptr);
 }
 
 #pragma push

@@ -1,6 +1,6 @@
-#ifndef OS_USBMIDIKEYBOARD_H
-#define OS_USBMIDIKEYBOARD_H
+#pragma once
 #include "os/CritSec.h"
+#include "os/Joypad.h"
 
 class UsbMidiKeyboard {
 public:
@@ -11,6 +11,7 @@ public:
     static void Init();
     static void Terminate();
     static void Poll();
+    static void SendMessage(const Message& msg){ JoypadPushThroughMsg(msg); }
 
     int GetSlottedKeyVelocityFromExtended(int, unsigned char*);
     int GetAccelAxisVal(int, int);
@@ -27,18 +28,25 @@ public:
     void SetKeyPressed(int, int, bool);
     void SetKeyVelocity(int, int, int);
 
-    bool mKeyPressed[4][128];
-    int mKeyVelocity[4][128];
-    int mModVal[4];
-    int mExpressionPedal[4];
-    int mConnectedAccessories[4];
-    bool mSustain[4];
-    bool mStompPedal[4];
-    int mAccelerometer[4][3];
-    int mLowHandPlacement[4];
-    int mHighHandPlacement[4];
-    int mPadNum;
+    bool GetSustain(int i) const { return mSustain[i]; }
+    bool GetStompPedal(int i) const { return mStompPedal[i]; }
+    int GetModVal(int i) const { return mModVal[i]; }
+    int GetExpressionPedal(int i) const { return mExpressionPedal[i]; }
+    int GetConnectedAccessory(int i) const { return mConnectedAccessories[i]; }
+    int GetLowHandPlacement(int i) const { return mLowHandPlacement[i]; }
+    int GetHighHandPlacement(int i) const { return mHighHandPlacement[i]; }
 
+    bool mKeyPressed[4][128]; // 0x0
+    int mKeyVelocity[4][128]; // 0x200
+    int mModVal[4]; // 0xa00
+    int mExpressionPedal[4]; // 0xa10
+    int mConnectedAccessories[4]; // 0xa20
+    bool mSustain[4]; // 0xa30
+    bool mStompPedal[4]; // 0xa34
+    int mAccelerometer[4][3]; // 0xa38
+    int mLowHandPlacement[4]; // 0xa68
+    int mHighHandPlacement[4]; // 0xa78
+    int mPadNum; // 0xa88
 };
 
 class StaticCriticalSection : public CriticalSection {
@@ -47,5 +55,3 @@ public:
     ~StaticCriticalSection();
     static StaticCriticalSection* Instance();
 };
-
-#endif

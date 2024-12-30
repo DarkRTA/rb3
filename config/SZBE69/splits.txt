@@ -1163,6 +1163,7 @@ system/os/Debug.cpp:
 system/os/File.cpp:
 	.text       start:0x802F98DC end:0x802FB548
 	.ctors      start:0x807EFECC end:0x807EFED0
+	.bss        start:0x80906CA8 end:0x80906FC0
 
 system/os/File_Wii.cpp:
 	.text       start:0x802FB548 end:0x802FB6C4
@@ -1184,6 +1185,7 @@ system/os/DiscErrorMgr_Wii.cpp:
 system/os/Joypad.cpp:
 	.text       start:0x80300F98 end:0x80303E44
 	.ctors      start:0x807EFED8 end:0x807EFEDC
+	.bss        start:0x8090B558 end:0x8090B8A8
 
 system/os/Joypad_Wii.cpp:
 	.text       start:0x80303E44 end:0x80305F5C
@@ -1266,12 +1268,16 @@ system/os/VirtualKeyboard_Wii.cpp:
 system/os/UsbMidiGuitar.cpp:
 	.text       start:0x80313368 end:0x80313E98
 	.ctors      start:0x807EFF00 end:0x807EFF04
+	.data       start:0x808546E8 end:0x808546F0
+	.bss        start:0x8091A1A4 end:0x8091A254
 
 system/os/UsbMidiGuitarMsgs.cpp:
 	.text       start:0x80313E98 end:0x80314814
 
 system/os/UsbMidiKeyboard.cpp:
 	.text       start:0x80314814 end:0x80315298
+	.sbss       start:0x808E4460 end:0x808E4468
+	.bss        start:0x8091A290 end:0x8091A2C0
 
 system/os/UsbMidiKeyboardMsgs.cpp:
 	.text       start:0x80315298 end:0x80315A70

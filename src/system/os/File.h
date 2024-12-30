@@ -1,5 +1,4 @@
-#ifndef OS_FILE_H
-#define OS_FILE_H
+#pragma once
 #include "utl/Str.h"
 #include <revolution/DVD.h>
 
@@ -30,6 +29,7 @@ public:
     virtual int Truncate(int){ return 0; }
 
     static int sOpenCount[4];
+    static const int MaxFileNameLen;
 };
 
 class NullFile : public File {
@@ -111,5 +111,3 @@ bool FileReadOnly(const char* filepath);
 bool FileExists(const char* filepath, int);
 bool FileIsLocal(const char*);
 bool FileIsDLC(const char*);
-
-#endif

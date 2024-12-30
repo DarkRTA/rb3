@@ -1,5 +1,4 @@
-#ifndef OS_JOYPAD_H
-#define OS_JOYPAD_H
+#pragma once
 #include "utl/Symbol.h"
 #include "obj/Msg.h"
 
@@ -116,6 +115,15 @@ enum JoypadType {
     kJoypadNumTypes = 47
 };
 
+inline bool MovedLeftStick(JoypadButton btn){
+    return btn == kPad_LStickUp || btn == kPad_LStickRight || btn == kPad_LStickDown || btn == kPad_LStickLeft;
+}
+
+struct ProGuitarStringInfo {
+    bool mDown : 1;
+    unsigned char mVelocity : 7;
+};
+
 struct ProGuitarData {
     unsigned char mString4FretBottomHalf : 3;
     unsigned char mString5Fret : 5;
@@ -131,23 +139,25 @@ struct ProGuitarData {
     unsigned char mString0Fret : 5;
     unsigned char mString1FretTopHalf : 2;
 
-    bool unk4bool : 1;
-    unsigned char mString5Velocity : 7;
-
-    bool unk5bool : 1;
-    unsigned char mString4Velocity : 7;
-
-    bool unk6bool : 1;
-    unsigned char mString3Velocity : 7;
-
-    bool unk7bool : 1;
-    unsigned char mString2Velocity : 7;
-
-    bool unk8bool : 1;
-    unsigned char mString1Velocity : 7;
-
-    bool unk9bool : 1;
-    unsigned char mString0Velocity : 7;
+    union {
+        struct {
+            bool unk4bool : 1;
+            unsigned char mString5Velocity : 7;
+            bool unk5bool : 1;
+            unsigned char mString4Velocity : 7;
+            bool unk6bool : 1;
+            unsigned char mString3Velocity : 7;
+            bool unk7bool : 1;
+            unsigned char mString2Velocity : 7;
+            bool unk8bool : 1;
+            unsigned char mString1Velocity : 7;
+            bool unk9bool : 1;
+            unsigned char mString0Velocity : 7;
+        };
+        struct {
+            ProGuitarStringInfo mStringInfos[6];
+        };
+    };   
 
     bool unkabool : 1;
     unsigned char unkachar : 7;
@@ -197,46 +207,44 @@ struct ProKeysData {
 
 };
 
-union ProData {
-    ProGuitarData guitarData;
-    ProKeysData keysData;
-};
-
 class JoypadData {
 public:
-    unsigned int mButtons;
-    unsigned int mNewPressed;
-    unsigned int mNewReleased;
-    float mSticks[2][2]; // LX, LY, RX, RY
-    float mTriggers[2]; // LT, RT
-    float mSensors[3]; // SX, SY, SZ
-    float mPressures[8];
+    unsigned int mButtons; // 0x0
+    unsigned int mNewPressed; // 0x4
+    unsigned int mNewReleased; // 0x8
+    float mSticks[2][2]; // 0xC = LX; 0x10 = LY; 0x14 = RX; 0x18 = RY
+    float mTriggers[2]; // 0x1C = LT; 0x20 = RT
+    float mSensors[3]; // 0x24 = SX; 0x28 = SY; 0x2C = SZ
+    float mPressures[8]; // 0x30 - 0x50
 
-    ProData mProData;
+    union {
+        ProGuitarData mProGuitarData;
+        ProKeysData mProKeysData;
+    }; // 0x50
 
-    class LocalUser* mUser;
-    bool mConnected;
-    bool mVibrateEnabled;
+    class LocalUser* mUser; // 0x60
+    bool mConnected; // 0x64
+    bool mVibrateEnabled; // 0x65
 
     bool unk66, unk67, unk68;
 
-    bool mHasAnalogSticks;
-    bool mTranslateSticks;
-    int mIgnoreButtonMask;
-    int mGreenCymbalMask;
-    int mYellowCymbalMask;
-    int mBlueCymbalMask;
-    int mSecondaryPedalMask;
-    int mCymbalMask;
-    bool mIsDrum;
-    JoypadType mType;
-    Symbol mControllerType;
-    float mDistFromRest;
-    bool mHasGreenCymbal;
-    bool mHasYellowCymbal;
-    bool mHasBlueCymbal;
-    bool mHasSecondaryPedal;
-    int unk98;
+    bool mHasAnalogSticks; // 0x69
+    bool mTranslateSticks; // 0x6a
+    int mIgnoreButtonMask; // 0x6c
+    int mGreenCymbalMask; // 0x70
+    int mYellowCymbalMask; // 0x74
+    int mBlueCymbalMask; // 0x78
+    int mSecondaryPedalMask; // 0x7c
+    int mCymbalMask; // 0x80
+    bool mIsDrum; // 0x84
+    JoypadType mType; // 0x88
+    Symbol mControllerType; // 0x8c
+    float mDistFromRest; // 0x90
+    bool mHasGreenCymbal; // 0x94
+    bool mHasYellowCymbal; // 0x95
+    bool mHasBlueCymbal; // 0x96
+    bool mHasSecondaryPedal; // 0x97
+    int unk98; // 0x98
 
     JoypadData();
     float GetAxis(Symbol) const;
@@ -250,6 +258,17 @@ public:
     float GetLY() const { return mSticks[0][1]; }
     float GetRX() const { return mSticks[1][0]; }
     float GetRY() const { return mSticks[1][1]; }
+    float GetLT() const { return mTriggers[0]; }
+    float GetRT() const { return mTriggers[1]; }
+    float GetSX() const { return mSensors[0]; }
+    float GetSY() const { return mSensors[1]; }
+    float GetSZ() const { return mSensors[2]; }
+};
+
+struct WaitInfo {
+    WaitInfo(int pad);
+    int mPadNum; // 0x0
+    unsigned int mButtons; // 0x4
 };
 
 class LocalUser; // forward dec
@@ -263,6 +282,9 @@ extern "C" int GetUsersPadNum(LocalUser*);
 extern "C" LocalUser* JoypadGetUserFromPadNum(int);
 extern "C" int JoypadGetUsersPadNum(LocalUser*);
 extern "C" void JoypadSetCalbertMode(int, int);
+extern "C" void JoypadSetActuatorsImp(int, int, int);
+extern "C" void JoypadKeepEverythingAlive();
+extern "C" void JoypadPollCommon();
 
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
@@ -277,6 +299,9 @@ bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
 const char* JoypadGetBreedString(int);
 float JoypadGetCalbertValue(int, bool);
+bool JoypadVibrate(int);
+unsigned int JoypadPollForButton(int);
+void JoypadPoll();
 
 bool UserHasController(LocalUser*);
 bool UserHasGHDrums(LocalUser*);
@@ -289,5 +314,3 @@ namespace Hmx { class Object; }
 void JoypadSubscribe(Hmx::Object*);
 void JoypadUnsubscribe(Hmx::Object*);
 void JoypadPushThroughMsg(const Message&);
-
-#endif

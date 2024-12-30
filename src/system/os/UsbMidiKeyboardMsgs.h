@@ -1,5 +1,4 @@
-#ifndef OS_USBMIDIKEYBOARDMSGS_H
-#define OS_USBMIDIKEYBOARDMSGS_H
+#pragma once
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(KeyboardKeyPressedMsg, "keyboard_key_pressed");
@@ -50,5 +49,3 @@ END_MESSAGE;
 DECLARE_MESSAGE(KeyboardHighHandPlacementMsg, "keyboard_high_hand_placement")
     KeyboardHighHandPlacementMsg(int, int);
 END_MESSAGE;
-
-#endif

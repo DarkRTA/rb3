@@ -2,6 +2,7 @@
 #include "obj/Data.h"
 #include "utl/Symbol.h"
 #include <vector>
+#include "os/Platform.h"
 
 extern const char* gNullStr;
 extern std::vector<char*> TheSystemArgs;
@@ -20,15 +21,6 @@ static DataNode OnSystemLanguage(DataArray*);
 static DataNode OnSystemExec(DataArray*);
 static DataNode OnUsingCD(DataArray*);
 static DataNode OnSupportedLanguages(DataArray*);
-
-enum Platform {
-    kPlatformNone = 0,
-    kPlatformPS2 = 1,
-    kPlatformXBox = 2,
-    kPlatformPC = 3,
-    kPlatformPS3 = 4,
-    kPlatformWii = 5,
-};
 
 inline bool IsVertexCompressionSupported(Platform p){
     return p == kPlatformXBox || p == kPlatformPS3;

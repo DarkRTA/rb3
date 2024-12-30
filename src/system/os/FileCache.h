@@ -1,5 +1,4 @@
-#ifndef OS_FILECACHE_H
-#define OS_FILECACHE_H
+#pragma once
 #include "utl/FilePath.h"
 #include "utl/Loader.h"
 
@@ -33,10 +32,8 @@ public:
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
     virtual int GetFileHandle(DVDFileInfo*&);
-    
-    void operator delete(void* v){
-        _PoolFree(sizeof(FileCacheFile), FastPool, v);
-    }
+
+    DELETE_POOL_OVERLOAD(FileCacheFile);
 
     FileCacheEntry* mParent;
     int mBytesRead;
@@ -54,9 +51,9 @@ public:
     void Add(const FilePath&, int, const FilePath&);
     bool FileCached(const char*);
 
+    static File* GetFileAll(const char*); // change ret type
+
     int mMaxSize;
     bool mTryClear;
     // vector mEntries
 };
-
-#endif
