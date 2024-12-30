@@ -1,5 +1,4 @@
-#ifndef OS_ARKFILE_H
-#define OS_ARKFILE_H
+#pragma once
 #include "os/File.h"
 #include <revolution/DVD.h>
 
@@ -22,6 +21,8 @@ public:
     virtual int GetFileHandle(DVDFileInfo*&);
 
     void TaskDone(int);
+    
+    void* operator new(size_t t) {return _MemAllocTemp(t, 0);}
 
     void operator delete(void* v){
         _MemFree(v);
@@ -39,5 +40,3 @@ public:
     bool mReadAhead; // 0x2C
     String mFilename; // 0x30
 };
-
-#endif

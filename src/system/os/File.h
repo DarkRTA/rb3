@@ -29,6 +29,7 @@ public:
     virtual int Truncate(int){ return 0; }
 
     static int sOpenCount[4];
+    static const int MaxFileNameLen;
 };
 
 class NullFile : public File {

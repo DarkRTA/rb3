@@ -1163,6 +1163,7 @@ system/os/Debug.cpp:
 system/os/File.cpp:
 	.text       start:0x802F98DC end:0x802FB548
 	.ctors      start:0x807EFECC end:0x807EFED0
+	.bss        start:0x80906CA8 end:0x80906FC0
 
 system/os/File_Wii.cpp:
 	.text       start:0x802FB548 end:0x802FB6C4

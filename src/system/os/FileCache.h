@@ -54,6 +54,8 @@ public:
     void Add(const FilePath&, int, const FilePath&);
     bool FileCached(const char*);
 
+    static File* GetFileAll(const char*); // change ret type
+
     int mMaxSize;
     bool mTryClear;
     // vector mEntries

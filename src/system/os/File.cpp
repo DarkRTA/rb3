@@ -1,34 +1,43 @@
 #include "os/File.h"
 #include "obj/Data.h"
 #include "os/OSFuncs.h"
+#include "os/ArkFile.h"
+#include "os/AsyncFile.h"
 #include "os/Debug.h"
 #include "utl/FilePath.h"
 #include <vector>
 #include "os/BlockMgr.h"
 #include "os/System.h"
+#include "os/FileCache.h"
+#include "os/PlatformMgr.h"
 #include "utl/Loader.h"
 #include "obj/DataFunc.h"
 #include "utl/Option.h"
+#include <ctype.h>
 
 int File::sOpenCount[4];
 std::vector<File *> gFiles;
-File *gOpenCaptureFile;
+File *gOpenCaptureFile; // 0x18
 int gCaptureFileMode;
-static char gRoot[256];
-static char gExecRoot[256];
-static char gSystemRoot[256];
+static char gRoot[256]; // 0x20
+static char gExecRoot[256]; // 0x120
+static char gSystemRoot[256]; // 0x220
 std::vector<String> gDirList;
 int kNoHandle;
 DataArray *gFrameRateArray;
 bool gNullFiles;
+const int File::MaxFileNameLen = 0x100;
 
 void DirListCB(const char *cc1, const char *cc2) {
     gDirList.push_back(String(cc2));
 }
 
-const char *FileRoot() {
+#pragma push
+#pragma force_active on
+inline const char *FileRoot() {
     return gRoot;
 }
+#pragma pop
 
 const char *FileExecRoot() {
     return gExecRoot;
@@ -39,45 +48,45 @@ const char *FileSystemRoot() {
 }
 
 static DataNode OnFileExecRoot(DataArray *da) {
-    return DataNode(gExecRoot);
+    return gExecRoot;
 }
 
 static DataNode OnFileRoot(DataArray *da) {
-    return DataNode(gRoot);
+    return gRoot;
 }
 
 static DataNode OnFileGetDrive(DataArray *da) {
-    return DataNode(FileGetDrive(da->Str(1)));
+    return FileGetDrive(da->Str(1));
 }
 
 static DataNode OnFileGetPath(DataArray *da) {
-    return DataNode(FileGetPath(da->Str(1), 0));
+    return FileGetPath(da->Str(1), 0);
 }
 
 static DataNode OnFileGetBase(DataArray *da) {
-    return DataNode(FileGetBase(da->Str(1), 0));
+    return FileGetBase(da->Str(1), 0);
 }
 
 static DataNode OnFileGetExt(DataArray *da) {
-    return DataNode(FileGetExt(da->Str(1)));
+    return FileGetExt(da->Str(1));
 }
 
 static DataNode OnFileMatch(DataArray *da) {
-    return DataNode(FileMatch(da->Str(1), da->Str(2)));
+    return FileMatch(da->Str(1), da->Str(2));
 }
 
 static DataNode OnFileAbsolutePath(DataArray *da) {
-    return DataNode(FileMakePath(da->Str(1), da->Str(2), 0));
+    return FileMakePath(da->Str(1), da->Str(2), 0);
 }
 
 static DataNode OnFileRelativePath(DataArray *da) {
-    return DataNode(FileRelativePath(da->Str(1), da->Str(2)));
+    return FileRelativePath(da->Str(1), da->Str(2));
 }
 
 static DataNode OnWithFileRoot(DataArray *da) {
     FilePathTracker fpt(da->Str(1));
-    int i;
     int thresh = da->Size() - 1;
+    int i;
     for (i = 2; i < thresh; i++) {
         da->Command(i)->Execute();
     }
@@ -86,13 +95,15 @@ static DataNode OnWithFileRoot(DataArray *da) {
 }
 
 static DataNode OnSynchProc(DataArray *da) {
-    TheDebug.Fail(MakeString("calling synchproc on non-pc platform"));
-    return DataNode("");
+    MILO_FAIL("calling synchproc on non-pc platform");
+    return "";
 }
 
 static DataNode OnToggleFakeFileErrors(DataArray *da) {
-    return DataNode(0);
+    return 0;
 }
+
+DECOMP_FORCEACTIVE(File, "_keep_%s.dta")
 
 void OnFrameRateRecurseCB(const char *cc1, const char *cc2) {
     MILO_ASSERT(gFrameRateArray, 0x148);
@@ -126,7 +137,7 @@ void FileInit() {
     strcpy(gRoot, ".");
     strcpy(gExecRoot, ".");
     strcpy(gSystemRoot, FileMakePath(gExecRoot, "../../system/run", 0));
-    FilePath::sRoot.Set(gRoot, gRoot);
+    ResetRoot(gRoot);
     DataRegisterFunc("file_root", OnFileRoot);
     DataRegisterFunc("file_exec_root", OnFileExecRoot);
     DataRegisterFunc("file_get_drive", OnFileGetDrive);
@@ -138,9 +149,11 @@ void FileInit() {
     DataRegisterFunc("file_relative_path", OnFileRelativePath);
     DataRegisterFunc("with_file_root", OnWithFileRoot);
     DataRegisterFunc("synch_proc", OnSynchProc);
+#ifdef MILO_DEBUG
     DataRegisterFunc("toggle_fake_file_errors", OnToggleFakeFileErrors);
     DataRegisterFunc("enumerate_frame_rate_results", OnEnumerateFrameRateResults);
     HolmesClientInit();
+#endif
     const char *optionStr = OptionStr("file_order", 0);
     if (optionStr && *optionStr) {
         gOpenCaptureFile = NewFile(optionStr, 0xA04);
@@ -149,34 +162,64 @@ void FileInit() {
 }
 
 void FileTerminate() {
-    delete gOpenCaptureFile;
-    gOpenCaptureFile = 0;
+    RELEASE(gOpenCaptureFile);
     *gRoot = 0;
     *gExecRoot = 0;
     *gSystemRoot = 0;
 }
 
 File *NewFile(const char *cc, int i) {
-    File *retFile = 0;
-    if (gNullFiles) {
-        return new NullFile();
-    } else {
-        if (!MainThread()) {
-            MILO_WARN("NewFile(%s) from !MainThread()", cc);
-        }
-        if (!cc || !*cc)
-            return 0;
-        else {
-            if (strstr(cc, "/band3_ng/")) {
-                MILO_WARN("Loading files from the wrong branch: %s", cc);
-                return 0;
-            } else {
+#ifdef MILO_DEBUG
+    if(gNullFiles) return new NullFile();
+#endif
+    if (!MainThread()) {
+        MILO_WARN("NewFile(%s) from !MainThread()", cc);
+    }
+    if (!cc || !*cc) return nullptr;
+    else {
+        if (strstr(cc, "/band3_ng/")) {
+            MILO_WARN("Loading files from the wrong branch: %s", cc);
+            return nullptr;
+        } else {
+            if(!ThePlatformMgr.AreSFXEnabled() && strstr(cc, ".wav")) return nullptr;
+            else if(strstr(cc, "_norm.")) return nullptr;
+            else if(strstr(cc, "_spec.")) return nullptr;
+            else {
+                if(i & 2U){
+                    char buf[256];
+                    cc = FileLocalize(cc, buf);
+                }
+                if(FileIsLocal(cc)) i |= 0x10000;
+
+                File *retFile;
+                if(i & 2U && !(i & 0x20000U)){
+                    retFile = FileCache::GetFileAll(cc);
+                    if(retFile) return retFile;
+                }
+                if(UsingCD() && i & 2U && !(i & 0x10000U)){
+                    retFile = new ArkFile(cc, i);
+                }
+                else {
+                    i &= 0xfffcffff;
+                    retFile = AsyncFile::New(cc, i);
+                }
+                if(retFile->Fail()){
+                    RELEASE(retFile);
+                    return retFile;
+                }
+                else {
+                    if(gOpenCaptureFile != 0 && i & 2U && gCaptureFileMode == 0){
+                        char buf[256];
+                        sprintf(buf, "'%s'\n", FileMakePath(".", cc, 0));
+                        gOpenCaptureFile->Write(buf, strlen(buf));
+                        gOpenCaptureFile->Flush();
+                    }
+                }
+                return retFile;
             }
         }
     }
 }
-
-void FileDiscSpinUp() { TheBlockMgr.SpinUp(); }
 
 bool FileExists(const char *filepath, int iMode) {
     MILO_ASSERT((iMode & ~FILE_OPEN_NOARK) == 0, 0x2D5);
@@ -190,6 +233,93 @@ bool FileExists(const char *filepath, int iMode) {
 
 bool FileReadOnly(const char *) {
     return true;
+}
+
+void FileQualifiedFilename(String& str, const char* cc){
+    char buf[256];
+    FileQualifiedFilename(buf, 0x100, cc);
+    str = buf;
+}
+
+void FileNormalizePath(const char* cc){
+    for(char* ptr = (char*)cc; *ptr != '\0'; ptr++){
+        if(*ptr == '\\') *ptr = '/';
+        else *ptr = tolower(*ptr);
+    }
+}
+
+const char* FileMakePath(const char* root, const char* file, char* buffer){
+    MILO_ASSERT(root && file, 800);
+    if(!buffer){
+        static char static_buffer[256];
+        buffer = static_buffer;
+    }
+    char buf[256];
+    if(file >= buffer && file < buffer + 4){
+        strcpy(buf, file);
+        file = buf;
+    }
+    else if(root >= buffer && root < buffer + 4){
+        strcpy(buf, root);
+        root = buf;
+    }
+    const char* fileDrive = FileGetDrive(file);
+    if(*fileDrive != '\0'){
+        file += strlen(fileDrive) + 1;
+    }
+    char* c = buffer;
+    if(*file == '/' || *file == '\\' || *file == '\0'){
+        if(*fileDrive != '\0'){
+            sprintf(buffer, "%s:%s", buffer, file);
+            c = buffer + strlen(fileDrive) + 1;
+        }
+        else {
+            const char* rootDrive = FileGetDrive(root);
+            if(*rootDrive != '\0'){
+                sprintf(buffer, "%s:%s", buffer, file);
+                c = buffer + strlen(rootDrive) + 1;
+            }
+            else strcpy(buffer, file);
+        }
+    }
+    else {
+        sprintf(buffer, "%s/%s", root, file);
+        const char* rootDrive = FileGetDrive(root);
+        if(*rootDrive != '\0'){
+            c = buffer + strlen(rootDrive) + 1;
+        }
+    }
+    FileNormalizePath(buffer);
+    char curC3Ptr = *c;
+    char* dirs[32];
+    const char** endDir = (const char**)&dirs[0];
+    for(char* p = (char*)strtok(c, "/"); p != nullptr; p = strtok(nullptr, "/")){
+        if(*p != '.') *endDir++ = p;
+        else if(p[1] == '.' && p[2] == '\0'){
+            if(endDir != dirs && *endDir[-1] != '.') endDir--;
+            else *endDir++ = p;
+        }
+    }
+    MILO_ASSERT(endDir - dirs <= 32, 0x37D);
+    if(endDir == dirs){
+        if(curC3Ptr == '/'){
+            *c++ = '/';
+        }
+        else *c++ = '.';
+    }
+    else {
+        for(const char** dir = (const char**)&dirs[0]; dir != endDir; dir++){
+            if(dir != dirs || curC3Ptr == '/'){
+                *c++ = '/';
+            }
+            for(char* p = (char*)*dir; *p != '\0'; p++){
+                *c++ = *p;
+            }
+        }
+    }
+    MILO_ASSERT(c - buffer < File::MaxFileNameLen, 0x393);
+    *c = '\0';
+    return buffer;
 }
 
 const char *FileGetPath(const char *arg1, char *arg2) {
@@ -302,3 +432,5 @@ bool FileMatch(const char *param1, const char *param2) {
     }
     return (*param2 - *param1) == 0;
 }
+
+void FileDiscSpinUp() { TheBlockMgr.SpinUp(); }

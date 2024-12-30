@@ -1,5 +1,4 @@
-#ifndef UTL_FILEPATH_H
-#define UTL_FILEPATH_H
+#pragma once
 #include "utl/Str.h"
 #include "os/File.h"
 #include "utl/BinStream.h"
@@ -19,7 +18,6 @@ public:
 
     void Set(const char *, const char *); // fn_8034C91C - the only not-weak method here
 
-    // FilePath *operator=(const FilePath &);
     const char* FilePathRelativeToRoot(){ return FileRelativePath(sRoot.c_str(), this->c_str()); }
     void SetRoot(const char* str){ Set(sRoot.c_str(), str); }
 };
@@ -27,6 +25,10 @@ public:
 inline TextStream& operator<<(TextStream& ts, FilePath& fp){
     return ts << fp.FilePathRelativeToRoot();
     // return ts; // commented out to get RndTex::Print to match
+}
+
+inline void ResetRoot(const char* path){
+    FilePath::sRoot.Set(FileRoot(), path);
 }
 
 inline BinStream& operator>>(BinStream& bs, FilePath& fp){
@@ -40,7 +42,7 @@ class FilePathTracker {
 public:
     FilePathTracker(const char* root) {
         mOldRoot = FilePath::sRoot;
-        FilePath::sRoot.Set(FileRoot(), root);
+        ResetRoot(root);
     }
 
     ~FilePathTracker(){
@@ -49,5 +51,3 @@ public:
 
     FilePath mOldRoot;
 };
-
-#endif
