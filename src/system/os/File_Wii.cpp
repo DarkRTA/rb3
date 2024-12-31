@@ -3,8 +3,7 @@
 #include "os/Debug.h"
 #include "os/HolmesClient.h"
 #include "os/System.h"
-#include "revolution/dvd/dvd.h"
-#include "revolution/dvd/dvdfs.h"
+#include <revolution/DVD.h>
 #include <cstring>
 
 bool FileIsLocal(const char* file){

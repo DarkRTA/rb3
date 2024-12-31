@@ -1128,7 +1128,7 @@
             "system/os/CritSec.cpp": "Matching",
             "system/os/DateTime.cpp": "NonMatching",
             "system/os/Debug.cpp": "Matching",
-            "system/os/DiscErrorMgr_Wii.cpp": "MISSING",
+            "system/os/DiscErrorMgr_Wii.cpp": "NonMatching",
             "system/os/File.cpp": "NonMatching",
             "system/os/File_Wii.cpp": "Matching",
             "system/os/FileCache.cpp": "NonMatching",
