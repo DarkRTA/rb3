@@ -1,12 +1,10 @@
-#ifndef OS_DISCERRORMGR_WII_H
-#define OS_DISCERRORMGR_WII_H
+#pragma once
 #include <list>
 
 struct TPLPalette;
 
 class DiscErrorMgrWii {
 public:
-
     class Callback {
     public:
         virtual void DiscErrorStart(){}
@@ -26,5 +24,3 @@ public:
     TPLPalette* mRetryErrorTpl;
     std::list<Callback*> mCallbacks;
 };
-
-#endif

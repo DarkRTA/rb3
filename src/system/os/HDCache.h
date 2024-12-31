@@ -1,5 +1,4 @@
-#ifndef OS_HDCACHE_H
-#define OS_HDCACHE_H
+#pragma once
 #include "os/CritSec.h"
 #include "os/ArkFile.h"
 #include "utl/Str.h"
@@ -10,6 +9,21 @@
 
 class HDCache {
 public:
+    HDCache();
+    ~HDCache();
+    void Init();
+    bool LockCache();
+    void UnlockCache();
+    void Poll();
+    int HdrSize();
+    bool WriteAsync(int, int, const void*);
+    void WriteDone();
+    void WriteHdr();
+    bool ReadAsync(int, int, void*);
+    bool ReadFail();
+    bool ReadDone();
+    FileStream* OpenHeader();
+
     int** mBlockState; // 0x0
     std::vector<ArkFile*> mReadArkFiles; // 0x4
     std::vector<ArkFile*> mWriteArkFiles; // 0xc
@@ -29,24 +43,6 @@ public:
     String mHdrFmt; // 0x4c
     String mFileFmt; // 0x58
     bool unk64; // 0x64
-
-    HDCache();
-    ~HDCache();
-    void Init();
-    bool LockCache();
-    void UnlockCache();
-    void Poll();
-    int HdrSize();
-    bool WriteAsync(int, int, const void*);
-    void WriteDone();
-    void WriteHdr();
-    bool ReadAsync(int, int, void*);
-    bool ReadFail();
-    bool ReadDone();
-    FileStream* OpenHeader();
-
 };
 
 extern HDCache TheHDCache;
-
-#endif // OS_HDCACHE_H
