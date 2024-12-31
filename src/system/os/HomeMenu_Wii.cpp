@@ -41,12 +41,12 @@ void HomeMenu::Init(){
 void HomeMenu::Begin(){
     MILO_ASSERT(mIconTpl, 0xB2);
     unk_0x38 = false;
-    ThePlatformMgr.mDiscErrorMgr->RegisterCallback(this);
+    ThePlatformMgr.GetDiscErrorMgrWii()->RegisterCallback(this);
     HmbRsoInit();
     unk34 = (TPLPalette*)ReadDvdFile(MakeString("%s/HomeMenu/HomeButton%d/HomeButtonSe.arc", FileSystemRoot(), 2), 0);
     unk30 = _MemAlloc(0x18700, 0x20);
     InitHomeMenuButtonInfo();
-    ThePlatformMgr.mDiscErrorMgr->UnregisterCallback(this);
+    ThePlatformMgr.GetDiscErrorMgrWii()->UnregisterCallback(this);
 }
 
 void HomeMenu::End(){
