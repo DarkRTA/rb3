@@ -1,6 +1,4 @@
-#ifndef OS_MEMCARD_H
-#define OS_MEMCARD_H
-
+#pragma once
 #include "system/obj/Dir.h"
 #include "system/obj/Object.h"
 #include "system/os/Debug.h"
@@ -44,15 +42,18 @@ public:
 
 class Memcard : public Hmx::Object {
 public:
+    Memcard(){}
+    virtual ~Memcard(){}
     virtual void Init();
+    virtual void Terminate();
     virtual void Poll();
-    void ShowDeviceSelector(const ContainerId &, bool, Hmx::Object *, int);
-    bool IsDeviceValid(const ContainerId&);
-    void DestroyContainer(MCContainer *);
-    DONT_INLINE_CLASS const wchar_t *GetDisplayName() { return L""; }
-    DONT_INLINE_CLASS const char *GetContainerName() { return ""; }
-    DONT_INLINE_CLASS void SetContainerDisplayName(const wchar_t *) { return; }
-    DONT_INLINE_CLASS void SetContainerName(const char *) { return; }
+    virtual void SetContainerName(const char *){}
+    virtual void SetContainerDisplayName(const wchar_t *){}
+    virtual const char *GetContainerName(){ return ""; }
+    virtual const wchar_t *GetDisplayName() { return L""; }
+    virtual void ShowDeviceSelector(const ContainerId &, bool, Hmx::Object *, int);
+    virtual bool IsDeviceValid(const ContainerId&);
+    virtual int DeleteContainer(const ContainerId&) = 0;
+    virtual void CreateContainer(const ContainerId&) = 0;
+    virtual void DestroyContainer(MCContainer *);
 };
-
-#endif // OS_MEMCARD_H

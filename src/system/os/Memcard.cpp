@@ -33,9 +33,3 @@ void MCContainer::DestroyMCFile(MCFile* pFile) {
 String MCContainer::BuildPath(const char* pPath) {
     return pPath;
 }
-
-
-DECOMP_FORCEFUNC(Memcard, Memcard, GetDisplayName())
-DECOMP_FORCEFUNC(Memcard, Memcard, GetContainerName())
-DECOMP_FORCEFUNC(Memcard, Memcard, SetContainerDisplayName(L""))
-DECOMP_FORCEFUNC(Memcard, Memcard, SetContainerName(""))
