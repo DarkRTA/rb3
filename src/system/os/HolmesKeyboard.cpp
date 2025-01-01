@@ -39,7 +39,7 @@ void HolmesInput::SendKeyboardMessages(){
     mKeyboardBuffer->Seek(0, BinStream::kSeekBegin);
     bool bbb;
     while(!mKeyboardBuffer->Eof()){
-        bbb = ThePlatformMgr.unk2b;
+        bbb = ThePlatformMgr.mScreenSaver;
         ThePlatformMgr.SetScreenSaver(false);
         ThePlatformMgr.SetScreenSaver(bbb);
         int i;
@@ -59,7 +59,7 @@ int HolmesInput::SendJoypadMessages(){
     mJoypadBuffer->Seek(0, BinStream::kSeekBegin);
     while(!mJoypadBuffer->Eof()){
         fake_controllers = 1;
-        bool bbb = ThePlatformMgr.unk2b;
+        bool bbb = ThePlatformMgr.mScreenSaver;
         ThePlatformMgr.SetScreenSaver(false);
         ThePlatformMgr.SetScreenSaver(bbb);
         int up;

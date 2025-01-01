@@ -31,7 +31,7 @@ void ThreadCallInit() {
     gThreadStack = (u8 *)_MemAlloc(0x10000, 0x20);
 
     OSCreateThread(&gThread, MyThreadFunc, NULL, gThreadStack + 0x10000, 0x10000, 0xC, 0);
-    // gThread.specific[0] = (void *)"ThreadCallInit";
+    gThread.specific[0] = (void *)__FUNCTION__;
     OSResumeThread(&gThread);
 }
 
@@ -108,17 +108,14 @@ namespace {
                     gCallDone = true;
                     break;
                 case kTCDT_Class:
-                    data.mClass->ThreadStart();
+                    data.mArg = data.mClass->ThreadStart();
                     gCallDone = true;
                     break;
                 default:
-                case kTCDT_None:
                     MILO_ASSERT(false, 180);
             }
-
             OSSuspendThread(&gThread);
         }
-
         return 0;
     }
 }

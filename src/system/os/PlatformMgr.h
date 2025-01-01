@@ -4,6 +4,8 @@
 #include "os/JoypadMsgs.h"
 #include "os/HomeMenu_Wii.h"
 #include "os/DiscErrorMgr_Wii.h"
+#include "os/Friend.h"
+#include "utl/MemStream.h"
 
 class OnlineID; // forward dec
 class LocalUser;
@@ -26,6 +28,10 @@ enum PlatformRegion {
 enum NotifyLocation {
     i, d, k
 };
+
+typedef bool EnumerateFriendsCallbackFunc(int, std::vector<Friend*>&, Hmx::Object*);
+typedef bool SendMsgCallbackFunc(Friend*, const char*, const char*, MemStream&);
+typedef bool SignInUserCallbackFunc(User*, unsigned long);
 
 class PlatformMgr : public MsgSource, public ContentMgr::Callback {
 public:
@@ -75,7 +81,15 @@ public:
     void PrintParentalPin();
     void StartProfanity(const char*, Hmx::Object*);
     bool IsEthernetCableConnected();
-
+    void PreInit();
+    void RegionInit();
+    void UpdateSigninState();
+    void SetUserSignedIn(int);
+    void SetUserSignedOut(int);
+    void RegisterEnumerateFriendsCallback(EnumerateFriendsCallbackFunc*);
+    void RegisterSendMsgCallback(SendMsgCallbackFunc*);
+    void RegisterSignInserCallback(SignInUserCallbackFunc*);
+    
     bool OnMsg(const ButtonDownMsg&);
     bool OnMsg(const ButtonUpMsg&);
 
@@ -102,20 +116,20 @@ public:
     int mSigninChangeMask; // 0x24
     bool mGuideShowing; // 0x28
     bool mConnected; // 0x29
-    bool unk2a;
-    bool unk2b;
-    PlatformRegion mRegion;
-    int unk30;
-    int unk34;
-    Timer mTimer;
-    bool unk68;
-    bool unk69;
-    bool unk6a;
-    bool unk6b;
-    bool unk6c;
-    bool unk6d;
-    int unk70;
-    bool mEthernetCableConnected;
+    bool unk2a; // 0x2a
+    bool mScreenSaver; // 0x2b
+    PlatformRegion mRegion; // 0x2c
+    DiskError mDiskError; // 0x30
+    int unk34; // 0x34
+    Timer mTimer; // 0x38
+    bool unk68; // 0x68
+    bool unk69; // 0x69
+    bool unk6a; // 0x6a
+    bool unk6b; // 0x6b
+    bool unk6c; // 0x6c
+    bool unk6d; // 0x6d
+    int unk70; // 0x70
+    bool mEthernetCableConnected; // 0x74
 
     char filler[0x432b];
 
@@ -126,8 +140,8 @@ public:
 
     char filler43a4[0x431c];
 
-    int mHasNetError;
-    Symbol unk86c4;
+    int mHasNetError; // 0x86c0
+    Symbol mNetError; // 0x86c4
 
     char filler86c8[0x4018];
 
@@ -142,21 +156,22 @@ public:
     int unkca14;
     int unkca18;
 
-    char fillerunkca1c[0x42c];
+    char fillerunkca1c[0x428];
 
-    HomeMenu* mHomeMenuWii;
-    bool unkce4c;
-    DiscErrorMgrWii* mDiscErrorMgr;
-    bool mStorageChanged;
-    bool unkce55;
+    bool mDisabling; // 0xce44
+    HomeMenu* mHomeMenuWii; // 0xce48
+    char unkce4c; // 0xce4c
+    DiscErrorMgrWii* mDiscErrorMgr; // 0xce50
+    bool mStorageChanged; // 0xce54
+    bool mNetworkPlay; // 0xce55
     bool unkce56;
-    bool mIsRestarting;
-    bool unkce58;
+    bool mIsRestarting; // 0xce57
+    bool mPartyMicAllowed; // 0xce58
     bool mEnableSFX;
     bool unkce5a;
-    int unkce5c;
-    int unkce60;
-    int unkce64;
+    EnumerateFriendsCallbackFunc* mEnumerateFriendsCallback; // 0xce5c
+    SendMsgCallbackFunc* mSendMsgCallback; // 0xce60
+    SignInUserCallbackFunc* mSignInUserCallback; // 0xce64
     bool mIsOnlineRestricted;
     bool unkce69;
     bool unkce6a;

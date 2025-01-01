@@ -38,6 +38,7 @@ public:
     void NotifyCallbacksSDDraw(short);
     void DrawBannedIcon(unsigned char);
     void DrawSDIcon(unsigned char);
+    void ActivateHomeMenu();
 
     bool mAllowHomeMenu; // 0x4
     bool mHomeMenuActive; // 0x5

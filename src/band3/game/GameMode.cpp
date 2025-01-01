@@ -61,7 +61,7 @@ void GameMode::SetMode(Symbol mode){
         SetTypeDef(cloned);
         cloned->Release();
         HandleType(enter_msg);
-        ThePlatformMgr.unkce55 = Property("online_play_required", true)->Int();
+        ThePlatformMgr.mNetworkPlay = Property("online_play_required", true)->Int();
         mOverdriveEnabled = Property("enable_overdrive", true)->Int();
         mH2HArrangement = InMode("h2h");
         mIsPractice = InMode("practice");
