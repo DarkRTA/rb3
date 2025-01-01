@@ -3,6 +3,13 @@
 #include "meta/Profile.h"
 #include <revolution/SC.h>
 
+bool gDNSRunning;
+const char* gDNSRequest;
+
+void* DNSThread(void*){
+
+}
+
 PlatformMgr::PlatformMgr() : mSigninMask(0), mSigninChangeMask(0), mGuideShowing(0), mConnected(0), unk2a(0), mScreenSaver(0), mRegion(kRegionNone), mDiskError(kNoDiskError), 
     mTimer(), unk6a(0), unk6d(0), unk70(0), unk68(0), unk69(0), unk6b(0), unk6c(0), mEthernetCableConnected(0), unk43a0(0), unk43a1(0), unk43a2(0), unk43a3(0),
     mCheckingProfanity(0), unkca11(0), unkca12(1), unkca14(0), unkce4c(0), mNetworkPlay(0), unkce56(0), mIsRestarting(0), mPartyMicAllowed(0), mEnableSFX(0), unkce5a(0),
@@ -81,6 +88,61 @@ void PlatformMgr::RegisterSendMsgCallback(SendMsgCallbackFunc* func){
 
 void PlatformMgr::RegisterSignInserCallback(SignInUserCallbackFunc* func){
     mSignInUserCallback = func;
+}
+
+int PlatformMgr::InitNintendoConnection(){
+    if(!mTimer.Running()){
+        InitSOLibrary(false);
+        mTimer.Restart();
+    }
+    return 1;
+}
+
+void PlatformMgr::InitDWCLibrary(){
+    if(!unk43a3){
+        if(!unk43a0){
+            unk43a0 = true;
+            unk43a1 = false;
+            OSCreateThread(&mThread, DWCStartupThreadFunc, 0, &mHasNetError, 0x4000, 0xF, 1);
+            mThread.specific[0] = (void*)"DWCThread";
+            OSResumeThread(&mThread);
+        }
+        else unk43a2 = false;
+    }
+}
+
+bool PlatformMgr::StartDNSLookup(const char* cc){
+    if(gDNSRunning) return false;
+    else {
+        gDNSRequest = cc;
+        if(!OSIsThreadTerminated(&mDNSThread)) return false;
+        else {
+            OSCreateThread(&mDNSThread, DNSThread, &mDNSResult, &mDNSResult, 0x4000, 0xF, 1);
+            mThread.specific[0] = (void*)"DNSThread";
+            OSResumeThread(&mDNSThread);
+            return true;
+        }
+    }
+}
+
+bool PlatformMgr::CheckDNSLookup(String& str){
+    if(gDNSRunning) return false;
+    else {
+        str = mDNSResult;
+        return true;
+    }
+}
+
+void PlatformMgr::KillDNSLookup(){
+    if(gDNSRunning){
+        OSCancelThread(&mDNSThread);
+        gDNSRunning = false;
+    }
+}
+
+void PlatformMgr::ClearNetError(){
+    mNetError = "";
+    mHasNetError = 0;
 }
 
 bool PlatformMgr::OnMsg(const ButtonDownMsg& msg){

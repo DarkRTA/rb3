@@ -61,7 +61,7 @@ public:
     void RunNetStartUtility();
     void SetNotifyUILocation(NotifyLocation);
     int GetLastDWCError();
-    class String GetNetErrorString(bool);
+    String GetNetErrorString(bool);
     DataArrayPtr GetNetErrorStringAsDataArray(bool);
     void ClearNetError();
     void ClearDWCError();
@@ -89,6 +89,10 @@ public:
     void RegisterEnumerateFriendsCallback(EnumerateFriendsCallbackFunc*);
     void RegisterSendMsgCallback(SendMsgCallbackFunc*);
     void RegisterSignInserCallback(SignInUserCallbackFunc*);
+    void InitDWCLibrary();
+    bool StartDNSLookup(const char*);
+    bool CheckDNSLookup(String&);
+    void KillDNSLookup();
     
     bool OnMsg(const ButtonDownMsg&);
     bool OnMsg(const ButtonUpMsg&);
@@ -111,6 +115,8 @@ public:
     void Draw();
     void Poll();
     void InitGQR();
+
+    static void* DWCStartupThreadFunc(void*);
 
     int mSigninMask; // 0x20
     int mSigninChangeMask; // 0x24
@@ -137,19 +143,18 @@ public:
     bool unk43a1;
     bool unk43a2;
     bool unk43a3;
-
-    char filler43a4[0x431c];
+    int unk43a4;
+    OSThread mThread; // 0x43a8
+    char filler43a4[0x4000]; // 0x46c0
 
     int mHasNetError; // 0x86c0
     Symbol mNetError; // 0x86c4
 
     char filler86c8[0x4018];
 
-    class String unkc6e0;
-    class String unkc6ec;
-
-    char fillerunkc6f0[0x318];
-
+    String mDNSResult; // 0xc6e0
+    String unkc6ec;
+    OSThread mDNSThread; // 0xc6f0
     bool mCheckingProfanity;
     bool unkca11;
     bool unkca12;

@@ -1237,6 +1237,7 @@ system/os/ProfilePicture_Wii.cpp:
 system/os/System.cpp:
 	.text       start:0x8030DEFC end:0x8030F4F0
 	.ctors      start:0x807EFEF4 end:0x807EFEF8
+	.bss        start:0x80919820 end:0x809198A8
 
 system/os/System_Wii.cpp:
 	.text       start:0x8030F4F0 end:0x8030F69C
