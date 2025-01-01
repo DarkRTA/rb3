@@ -43,6 +43,10 @@ public:
     void SetPadToGuest(int);
     void Init(int, int);
     void Clear(int, int);
+    WiiProfile* GetProfileForPad(int);
+    bool IsPadAGuest(int) const;
+    bool IsPadRegistered(int) const;
+    const char* GetNameForPad(int) const;
 
     static int sSaveVersion;
     static int sSaveVersionWii;

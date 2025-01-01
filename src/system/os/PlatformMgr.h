@@ -79,7 +79,7 @@ public:
     int GetLastDNSError();
     void SetHomeMenuEnabled(bool);
     void PrintParentalPin();
-    void StartProfanity(const char*, Hmx::Object*);
+    bool StartProfanity(const char*, Hmx::Object*);
     bool IsEthernetCableConnected();
     void PreInit();
     void RegionInit();
@@ -93,6 +93,13 @@ public:
     bool StartDNSLookup(const char*);
     bool CheckDNSLookup(String&);
     void KillDNSLookup();
+    void UpdateDWCLibrary();
+    void TerminateDWCLibrary();
+    void EnumerateFriends(int, std::vector<Friend*>&, Hmx::Object*);
+    void SendMsg(Friend*, const char*, const char*, MemStream&);
+    bool IsPadAGuest(int) const;
+    bool IsGuestOnlineID(const OnlineID*) const;
+    bool StartProfanity(const unsigned short**, int, char*, Hmx::Object*);
     
     bool OnMsg(const ButtonDownMsg&);
     bool OnMsg(const ButtonUpMsg&);
@@ -155,17 +162,19 @@ public:
     String mDNSResult; // 0xc6e0
     String unkc6ec;
     OSThread mDNSThread; // 0xc6f0
-    bool mCheckingProfanity;
+    bool mCheckingProfanity; // 0xca10
     bool unkca11;
-    bool unkca12;
-    int unkca14;
-    int unkca18;
-
-    char fillerunkca1c[0x428];
-
+    bool mProfanityAllowed; // 0xca12
+    Hmx::Object* unkca14; // 0xca14
+    const unsigned short* mProfaneWord; // 0xca18
+    unsigned short mProfaneChars[501]; // 0xca1c
+    char mProfaneResults[50]; // 0xce06
+    int unkce38; // 0xce38
+    int mProfaneWordCount; // 0xce3c
+    int unkce40; // 0xce40
     bool mDisabling; // 0xce44
     HomeMenu* mHomeMenuWii; // 0xce48
-    char unkce4c; // 0xce4c
+    char mHomeMenuDisabled; // 0xce4c
     DiscErrorMgrWii* mDiscErrorMgr; // 0xce50
     bool mStorageChanged; // 0xce54
     bool mNetworkPlay; // 0xce55
@@ -187,3 +196,7 @@ Symbol PlatformRegionToSymbol(PlatformRegion);
 PlatformRegion SymbolToPlatformRegion(Symbol);
 
 extern PlatformMgr ThePlatformMgr;
+
+DECLARE_MESSAGE(PlatformMgrOpCompleteMsg, "platform_mgr_op_complete")
+    PlatformMgrOpCompleteMsg(int i) : Message(Type(), i){}
+END_MESSAGE;

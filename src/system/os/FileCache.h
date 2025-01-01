@@ -25,6 +25,7 @@ public:
     virtual bool ReadDone(int &);
     virtual int GetFileHandle(DVDFileInfo*&){ return 0; }
 
+    NEW_POOL_OVERLOAD(FileCacheFile);
     DELETE_POOL_OVERLOAD(FileCacheFile);
 
     FileCacheEntry* mParent; // 0x4
