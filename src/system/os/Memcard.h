@@ -1,7 +1,8 @@
 #pragma once
-#include "system/obj/Dir.h"
-#include "system/obj/Object.h"
-#include "system/os/Debug.h"
+#include "obj/Dir.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
+#include "obj/Msg.h"
 
 enum AccessType {};
 enum CreateType {};
@@ -24,22 +25,6 @@ public:
     int dummy;
 };
 
-class MCContainer {
-public:
-    virtual ~MCContainer();
-    virtual void Mount(CreateType);
-    virtual void Unmount();
-    virtual int GetPathFreeSpace(const char*, unsigned long long*);
-    virtual void GetDeviceFreeSpace(unsigned long long*);
-    virtual void Delete(const char*);
-    void DestroyMCFile(MCFile *);
-    String BuildPath(const char *);
-
-    ContainerId mCid;
-    bool mIsMounted;
-    inline bool IsMounted() { return mIsMounted; }
-};
-
 class Memcard : public Hmx::Object {
 public:
     Memcard(){}
@@ -57,3 +42,32 @@ public:
     virtual void CreateContainer(const ContainerId&) = 0;
     virtual void DestroyContainer(MCContainer *);
 };
+
+class MCContainer {
+public:
+    MCContainer(const ContainerId& id) : mCid(id), mIsMounted(0) {}
+    virtual ~MCContainer(){}
+    virtual void Mount(CreateType) = 0;
+    virtual void Unmount() = 0;
+    virtual int GetPathFreeSpace(const char*, unsigned long long*) = 0;
+    virtual int GetDeviceFreeSpace(unsigned long long*) = 0;
+    virtual int Delete(const char*) = 0;
+    virtual int RemoveDir(const char*) = 0;
+    virtual int MakeDir(const char*) = 0;
+    virtual int GetSize(const char*, int*) = 0;
+    virtual int Format() = 0;
+    virtual int Unformat() = 0;
+    virtual MCFile* CreateMCFile() = 0;
+    virtual void DestroyMCFile(MCFile *);
+    virtual String BuildPath(const char *);
+    virtual int PrintDir(const char*, bool) = 0;
+
+    bool IsMounted() { return mIsMounted; }
+
+    ContainerId mCid;
+    bool mIsMounted;
+};
+
+DECLARE_MESSAGE(DeviceChosenMsg, "device_chosen")
+    DeviceChosenMsg(int i) : Message(Type(), i){}
+END_MESSAGE

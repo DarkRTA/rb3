@@ -3,15 +3,13 @@
 #include "decomp.h"
 
 void Memcard::Init() {
-    this->SetName("memcard", ObjectDir::sMainDir);
+    SetName("memcard", ObjectDir::sMainDir);
 }
 
-void Memcard::Poll() {
-    return;
-}
+void Memcard::Poll(){}
 
-void Memcard::ShowDeviceSelector(const ContainerId&, bool, Hmx::Object*, int) {
-
+void Memcard::ShowDeviceSelector(const ContainerId&, bool, Hmx::Object* o, int) {
+    if(o) o->Handle(DeviceChosenMsg(-1), false);
 }
 
 bool Memcard::IsDeviceValid(const ContainerId&) { return true; }
@@ -21,8 +19,6 @@ void Memcard::DestroyContainer(MCContainer *pContainer) {
     MILO_ASSERT(!pContainer->IsMounted(), 0x35);
     delete pContainer;
 }
-
-MCContainer::~MCContainer() {}
 
 void MCContainer::DestroyMCFile(MCFile* pFile) {
     MILO_ASSERT(pFile, 69);
