@@ -1,9 +1,7 @@
-#ifndef UTL_NETCACHEMGR_H
-#define UTL_NETCACHEMGR_H
-
-#include "system/obj/Object.h"
-#include "system/obj/Dir.h"
-#include "system/utl/Symbols.h"
+#pragma once
+#include "obj/Object.h"
+#include "obj/Dir.h"
+#include "utl/Symbols.h"
 #include "utl/Cache.h"
 #include "utl/NetLoader.h"
 #include "utl/NetCacheLoader.h"
@@ -36,10 +34,6 @@ enum LoadState {
     kLS_Resync
 };
 
-// class CacheID {};
-
-// class Cache {};
-
 class NetCacheMgr : public Hmx::Object {
 public:
     enum CacheSize {
@@ -68,6 +62,7 @@ public:
     void DeleteNetCacheLoader(NetCacheLoader*);
     void Load(CacheSize);
     bool IsUnloaded() const;
+    bool IsReady() const;
     NetCacheLoader* AddNetCacheLoader(const char*, NetLoaderPos);
 
     NetCacheMgrState mState; // 0x1c
@@ -84,5 +79,3 @@ public:
 extern NetCacheMgr *TheNetCacheMgr;
 void NetCacheMgrInit();
 void NetCacheMgrTerminate();
-
-#endif // UTL_NETCACHEMGR_H

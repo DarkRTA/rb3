@@ -233,3 +233,5 @@ public:
     String unk6c; // 0x6c - release date str
     SongMgr* mSongMgr; // 0x78
 };
+
+bool StoreOfferSort(const StoreOffer* o1, const StoreOffer* o2);

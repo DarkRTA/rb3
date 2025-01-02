@@ -1,5 +1,6 @@
 #pragma once
 #include "obj/Object.h"
+#include "meta/StoreEnumeration.h"
 #include "meta/StoreOffer.h"
 
 class StoreTitleContentState;
@@ -117,12 +118,14 @@ public:
     void Load(const char*);
     void SetLoadingState(int);
     void Unload();
+    bool LoadingFailed() const;
     StorePage* LoadPage(unsigned short);
     const char* GetString(int idx) const {
         StoreStringTable* table = mStringTable;
         if(idx & 0x8000) return table->mLocalized.GetString((idx & 0x7FFF) - 1);
         else return table->mNonLocalized.GetString(idx - 1);
     }
+    StoreError LoadError() const;
 
     static std::vector<int> mSetlistOffers;
 

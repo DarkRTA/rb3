@@ -13,7 +13,7 @@ bool WiiEnumeration::IsSuccess() const {
     return mState == kSuccess;
 }
 
-int WiiEnumeration::IsEnumerating() const {
+bool WiiEnumeration::IsEnumerating() const {
     return (mState != kSuccess && mState != kFail) ? true : false;
 }
 

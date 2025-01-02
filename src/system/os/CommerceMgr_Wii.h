@@ -5,7 +5,7 @@ class WiiCommerceMgr : public MsgSource {
 public:
     WiiCommerceMgr();
 
-    void InitCommerce(Hmx::Object*);
+    bool InitCommerce(Hmx::Object*);
     void DestroyCommerce();
 
     static unsigned long long MakeDataTitleId(const char*);
