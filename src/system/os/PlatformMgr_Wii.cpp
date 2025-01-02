@@ -4,7 +4,7 @@
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
 #include <revolution/SC.h>
-#include <revolution/mem.h>
+#include <revolution/MEM.h>
 #include "DWC/dwc_common/dwc_init.h"
 #include "DWC/dwc_common/dwc_error.h"
 #include "utl/Locale.h"
