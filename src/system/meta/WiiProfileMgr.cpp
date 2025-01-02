@@ -89,7 +89,7 @@ BEGIN_HANDLERS(WiiProfile)
     HANDLE_CHECK(0x98)
 END_HANDLERS
 
-WiiProfileMgr::WiiProfileMgr() : unk1d0(0), mDirty(0) {
+WiiProfileMgr::WiiProfileMgr() : mHasLoaded(0), mDirty(0) {
     mSaveSizeMethod = &SaveSize;
 }
 
@@ -128,7 +128,7 @@ int WiiProfileMgr::SaveSize(int){
 }
 
 bool WiiProfileMgr::NeedsSave() const { return mDirty; }
-bool WiiProfileMgr::NeedsLoading() const { return !unk1d0 && !mDirty; }
+bool WiiProfileMgr::NeedsLoading() const { return !mHasLoaded && !mDirty; }
 void WiiProfileMgr::SetProfileDirty(int Slot) { mDirty = true; }
 
 void WiiProfileMgr::SaveFixed(FixedSizeSaveableStream& fs) const {
@@ -165,7 +165,7 @@ void WiiProfileMgr::LoadFixed(FixedSizeSaveableStream& fs, int){
             fs >> unk24[i];
         }
     }
-    unk1d0 = true;
+    mHasLoaded = true;
     mDirty = false;
 }
 
@@ -294,6 +294,92 @@ int WiiProfileMgr::GetIndexForName(const char* name, int idx) const {
     return -1;
 }
 
-const char* WiiProfileMgr::GetNameForPad(int) const {
-    
+const char* WiiProfileMgr::GetNameForPad(int pad) const {
+    return GetNameForIndex(GetIndexForPad(pad));
+}
+
+bool WiiProfileMgr::IsSlotAvailable() const {
+    for(int i = 0; i < 4; i++){
+        if(!mWiiProfiles[i].IsFlag(1)) return true;
+    }
+    return false;
+}
+
+bool WiiProfileMgr::IsIndexValid(int idx) const {
+    if(idx <= 3U) return mWiiProfiles[idx].IsFlag(1);
+    else return false;
+}
+
+void WiiProfileMgr::SetIndexValid(int idx, bool valid){
+    if(idx <= 3U){
+        mWiiProfiles[idx].SetFlag(1, valid);
+        mDirty = true;
+    }
+}
+
+bool WiiProfileMgr::IsIndexSaved(int idx) const {
+    if(idx <= 3U) return mWiiProfiles[idx].IsFlag(4);
+    else return false;
+}
+
+void WiiProfileMgr::SetIndexSaved(int idx, bool saved){
+    if(idx <= 3U){
+        mWiiProfiles[idx].SetFlag(4, saved);
+        mDirty = true;
+    }
+}
+
+bool WiiProfileMgr::IsIndexRegistered(int idx) const {
+    if(idx <= 3U) return mWiiProfiles[idx].IsFlag(2);
+    else return false;
+}
+
+bool WiiProfileMgr::IsPadRegistered(int pad) const {
+    return IsIndexRegistered(GetIndexForPad(pad));
+}
+
+void WiiProfileMgr::SetIndexRegistered(int idx, bool regged){
+    if(idx <= 3U){
+        mWiiProfiles[idx].SetFlag(2, regged);
+        mDirty = true;
+    }
+}
+
+bool WiiProfileMgr::IsIndexLoaded(int idx) const {
+    if(idx <= 3U) return mWiiProfiles[idx].IsFlag(0x4000);
+    else return false;
+}
+
+void WiiProfileMgr::SetIndexLoaded(int idx, bool loaded){
+    if(idx <= 3U) mWiiProfiles[idx].SetFlag(0x4000, loaded);
+}
+
+bool WiiProfileMgr::IsIndexSwapping(int idx) const {
+    if(idx <= 3U) return mWiiProfiles[idx].IsFlag(0x2000);
+    else return false;
+}
+
+bool WiiProfileMgr::IsIndexLocked(int idx) const {
+    if(idx <= 3U) return mWiiProfiles[idx].IsFlag(0x8000);
+    else return false;
+}
+
+void WiiProfileMgr::SetIndexLocked(int idx, bool locked){
+    if(idx <= 3U) mWiiProfiles[idx].SetFlag(0x8000, locked);
+}
+
+void WiiProfileMgr::SetLocked(Profile* p, bool locked){
+    if(p){
+        WiiProfile* pwii = GetProfileForIndex(GetIndexForPad(p->GetPadNum()));
+        if(pwii) pwii->SetFlag(0x8000, locked);
+    }
+}
+
+void WiiProfileMgr::DoSignin(LocalUser* u, int idx, int pad, int){
+    SetPadToIndex(pad, idx);
+    u->UpdateOnlineID();
+}
+
+bool WiiProfileMgr::AddIdToDeleteQueue(unsigned int id){
+
 }

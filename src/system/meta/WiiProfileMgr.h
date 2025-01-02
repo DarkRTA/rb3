@@ -1,5 +1,6 @@
 #pragma once
 #include "meta/FixedSizeSaveable.h"
+#include "meta/Profile.h"
 #include "obj/Msg.h"
 
 class LocalUser; // forward dec
@@ -69,6 +70,15 @@ public:
     const char* GetNameForIndex(int) const;
     void SetIndexName(int, const char*);
     int GetIndexForName(const char*, int) const;
+    bool IsSlotAvailable() const;
+    bool IsIndexSaved(int) const;
+    bool IsIndexLoaded(int) const;
+    void SetIndexLoaded(int, bool);
+    bool IsIndexSwapping(int) const;
+    bool IsIndexLocked(int) const;
+    void SetIndexLocked(int, bool);
+    void SetLocked(Profile*, bool);
+    void DoSignin(LocalUser*, int, int, int);
 
     static int sSaveVersion;
     static int sSaveVersionWii;
@@ -78,7 +88,7 @@ public:
     int unk4c;
     WiiProfile mWiiProfiles[4]; // 0x50
     int mPadProfileIndex[4]; // 0x1c0
-    bool unk1d0;
+    bool mHasLoaded; // 0x1d0
     bool mDirty; // 0x1d1
 };
 
