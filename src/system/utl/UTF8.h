@@ -16,3 +16,4 @@ void UTF8FilterKeyboardString(char*, int, const char*); // defined in os/Platfor
 String WideVectorToASCII(std::vector<unsigned short>&);
 char* WideCharToChar(const unsigned short* us);
 void UTF8RemoveSpaces(char*, int, const char*);
+void UTF8toUTF16(unsigned short* us, const char* c);

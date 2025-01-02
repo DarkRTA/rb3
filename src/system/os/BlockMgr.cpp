@@ -21,7 +21,7 @@ Timer gReadTime;
 namespace {
     bool gReadHD = false;
     static DataNode OnSpinUp(DataArray*){
-        return DataNode(TheBlockMgr.SpinUp());
+        return TheBlockMgr.SpinUp();
     }
 }
 
@@ -36,7 +36,7 @@ DECOMP_FORCEACTIVE(BlockMgr,
 
 
 Block::Block() : mArkfileNum(-1), mBlockNum(-1), mWritten(true), mDebugName("") {
-    mBuffer = gBuffers + GetFreeBuffer() + 0x10000;
+    mBuffer = &gBuffers[GetFreeBuffer() * 0x10000];
     UpdateTimestamp();
 }
 
@@ -44,15 +44,17 @@ void Block::UpdateTimestamp(){
     mTimestamp = ++sCurrTimestamp;
 }
 
+BlockRequest::BlockRequest(const AsyncTask& task) : mArkfileNum(task.mArkfileNum), mBlockNum(task.GetBlockNum()), mStr(task.GetStr()) {
+    mTasks.push_back(task);
+}
+
 void BlockMgr::Init() {
-    gBuffers = (char*)_MemAlloc(4, 0x40);
+    gBuffers = (char*)_MemAlloc(0x40000, 0x40);
     gCurrBuffNum = 0;
-    if (mBlockCache.size() > 4) {
-        mBlockCache.reserve(5);
-    }
+    mBlockCache.resize(4);
     mReadingBlock = nullptr;
     for (int i = 0; i < mBlockCache.size(); i++) {
-        mBlockCache[i] = new Block;
+        mBlockCache[i] = new Block();
     }
     TheHDCache.Init();
     DataRegisterFunc("disc_spin_up", OnSpinUp);
@@ -103,29 +105,35 @@ void BlockMgr::ReadBlock() {
     }
 }
 
-Block* BlockMgr::FindLRUBlock(bool) {
+Block* BlockMgr::FindBlock(int i1, int i2){
+    for(int i = 0; i < mBlockCache.size(); i++){
+        if(mBlockCache[i]->CheckMetadata(i1, i2)) return mBlockCache[i];
+    }
+    return nullptr;
+}
+
+Block* BlockMgr::FindLRUBlock(bool b) {
+    int time = Block::sCurrTimestamp;
     Block* ret = nullptr;
-    int time = -1;
-    u32 fwd_i = 0;
-    for (u32 i = mBlockCache.size(); i > 0; fwd_i++, i--) {
-        Block* blk = mBlockCache[fwd_i];
-        if (blk->mTimestamp < Block::sCurrTimestamp) {
-            ret = blk;
-            time = blk->mTimestamp;
+    for(int i = 0; i < mBlockCache.size(); i++){
+        if(mBlockCache[i] != mWritingBlock && mBlockCache[i] != mReadingBlock &&
+            (!b || !mBlockCache[i]->mWritten && mBlockCache[i]->mTimestamp < time)
+        ){
+            ret = mBlockCache[i];
+            time = mBlockCache[i]->mTimestamp;
         }
     }
     return ret;
 }
 
 Block* BlockMgr::FindMRUBlock() {
-    Block* ret = nullptr;
     int time = -1;
-    u32 fwd_i = 0;
-    for (u32 i = mBlockCache.size(); i > 0; fwd_i++, i--) {
-        Block* blk = mBlockCache[fwd_i];
-        if (blk->mTimestamp > time) {
-            ret = blk;
-            time = blk->mTimestamp;
+    Block* ret = nullptr;
+    for(int i = 0; i < mBlockCache.size(); i++){
+        if(mBlockCache[i]->mTimestamp > time){
+            ret = mBlockCache[i];
+            time = mBlockCache[i]->mTimestamp;
+
         }
     }
     return ret;

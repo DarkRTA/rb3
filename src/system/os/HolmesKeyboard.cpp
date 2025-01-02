@@ -39,7 +39,7 @@ void HolmesInput::SendKeyboardMessages(){
     mKeyboardBuffer->Seek(0, BinStream::kSeekBegin);
     bool bbb;
     while(!mKeyboardBuffer->Eof()){
-        bbb = ThePlatformMgr.unk2b;
+        bbb = ThePlatformMgr.mScreenSaver;
         ThePlatformMgr.SetScreenSaver(false);
         ThePlatformMgr.SetScreenSaver(bbb);
         int i;
@@ -58,20 +58,22 @@ int HolmesInput::SendJoypadMessages(){
     int mask = 0;
     mJoypadBuffer->Seek(0, BinStream::kSeekBegin);
     while(!mJoypadBuffer->Eof()){
-        fake_controllers = DataNode(1);
-        bool bbb = ThePlatformMgr.unk2b;
+        fake_controllers = 1;
+        bool bbb = ThePlatformMgr.mScreenSaver;
         ThePlatformMgr.SetScreenSaver(false);
         ThePlatformMgr.SetScreenSaver(bbb);
-        int x, y, z;
-        *mJoypadBuffer >> x;
-        *mJoypadBuffer >> y;
-        *mJoypadBuffer >> z;
+        int up;
+        JoypadButton btn;
+        JoypadAction action;
+        *mJoypadBuffer >> up;
+        *mJoypadBuffer >> (int&)btn;
+        *mJoypadBuffer >> (int&)action;
         JoypadData* jdata = JoypadGetPadData(0);
-        if(!x){
-            mask |= 1 << y;
-            JoypadPushThroughMsg(ButtonDownMsg(jdata->mUser, (JoypadButton)y, (JoypadAction)z, 0));
+        if(!up){
+            mask |= 1 << btn;
+            JoypadPushThroughMsg(ButtonDownMsg(jdata->mUser, btn, action, 0));
         }
-        else JoypadPushThroughMsg(ButtonUpMsg(jdata->mUser, (JoypadButton)y, (JoypadAction)z, 0));
+        else JoypadPushThroughMsg(ButtonUpMsg(jdata->mUser, btn, action, 0));
     }
     mJoypadBuffer->Compact();
     return mask;

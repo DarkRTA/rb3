@@ -161,7 +161,3 @@ public:
     ProfilePicture* mProfilePicture; // 0x6fbc
     TourBand* unk6fc0; // TourBand*
 };
-
-DECLARE_MESSAGE(SigninChangedMsg, "signin_changed")
-    SigninChangedMsg() : Message(Type()) {}
-END_MESSAGE;

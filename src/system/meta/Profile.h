@@ -50,3 +50,8 @@ DECLARE_MESSAGE(ProfileSwappedMsg, "profile_swapped")
     LocalUser* GetUser1() const;
     LocalUser* GetUser2() const;
 END_MESSAGE;
+
+DECLARE_MESSAGE(SigninChangedMsg, "signin_changed")
+    SigninChangedMsg() : Message(Type()) {}
+    SigninChangedMsg(int mask, int changed_mask) : Message(Type(), mask, changed_mask) {}
+END_MESSAGE;

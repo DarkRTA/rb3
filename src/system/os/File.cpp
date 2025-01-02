@@ -15,6 +15,7 @@
 #include "utl/Option.h"
 #include <ctype.h>
 
+int File::sOpenCount;
 std::vector<File *> gFiles(0x80); // 0x10...?
 File *gOpenCaptureFile; // 0x18
 int gCaptureFileMode;

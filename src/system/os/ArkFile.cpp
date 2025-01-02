@@ -9,10 +9,6 @@
 #include "utl/Loader.h"
 #include "utl/TextStream.h"
 
-#ifndef MILO_DEBUG
-int File::sOpenCount[4] = {0,0,0,0};
-#endif
-
 ArkFile::ArkFile(const char* iFilename, int iMode) : mNumOutstandingTasks(0), mBytesRead(0), mTell(0), mFail(0), mReadAhead(true), mFilename(iFilename) {
     bool fileinfores = TheArchive->GetFileInfo(FileMakePath(".", iFilename, 0), mArkfileNum, mByteStart, mSize, mUCSize);
     if(!fileinfores || (iMode & 4)){
@@ -95,9 +91,7 @@ bool ArkFile::ReadAsync(void* iBuff, int iBytes){
 }
 
 int ArkFile::Write(const void*, int){
-#ifdef MILO_DEBUG
     MILO_FAIL("ERROR: Cannot write to a file in an archive!");
-#endif
     return 0;
 }
 

@@ -1,5 +1,4 @@
-#ifndef OS_BLOCKMGR_H
-#define OS_BLOCKMGR_H
+#pragma once
 #include "os/AsyncTask.h"
 #include "os/Timer.h"
 #include "utl/PoolAlloc.h"
@@ -11,24 +10,31 @@ public:
     Block();
     void UpdateTimestamp();
 
-    const char* mBuffer;
-    int mArkfileNum;
-    int mBlockNum;
-    int mTimestamp;
-    bool mWritten;
-    const char* mDebugName;
+    const char* mBuffer; // 0x0
+    int mArkfileNum; // 0x4
+    int mBlockNum; // 0x8
+    int mTimestamp; // 0xc
+    bool mWritten; // 0x10
+    const char* mDebugName; // 0x14
+
+    bool CheckMetadata(int arknum, int blocknum) const {
+        return mArkfileNum == arknum && mBlockNum == blocknum;
+    }
+
     static int sCurrTimestamp;
 
-    void* operator new(size_t siz) {
-        return _PoolAlloc(siz, siz, FastPool);
-    }
+    NEW_POOL_OVERLOAD(Block);
+    DELETE_POOL_OVERLOAD(Block);
 };
 
 class BlockRequest {
 public:
-    int mArkfileNum;
-    int mBlockNum;
-    std::list<AsyncTask> mTasks;
+    BlockRequest(const AsyncTask&);
+
+    int mArkfileNum; // 0x0
+    int mBlockNum; // 0x4
+    const char* mStr; // 0x8
+    std::list<AsyncTask> mTasks; // 0xc
 };
 
 class BlockMgr {
@@ -58,5 +64,3 @@ public:
 };
 
 extern BlockMgr TheBlockMgr;
-
-#endif
