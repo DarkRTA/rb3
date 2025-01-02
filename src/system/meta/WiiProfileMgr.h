@@ -24,7 +24,7 @@ public:
     char mSlot; // 0x1C
     uint mId; // 0x20
     uint mFlags; // 0x24
-    int unk_0x28; // 0x28
+    int mHasSeenFirstTimeInstrumentFlags; // 0x28
     char mProfileName[48]; // 0x2c
 };
 
@@ -79,12 +79,15 @@ public:
     void SetIndexLocked(int, bool);
     void SetLocked(Profile*, bool);
     void DoSignin(LocalUser*, int, int, int);
+    bool IsDeleteQueueFull() const;
+    int GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser*) const;
+    void SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser*, int, bool);
 
     static int sSaveVersion;
     static int sSaveVersionWii;
     static int SaveSize(int);
 
-    int unk24[10];
+    int mDeleteQueue[10]; // 0x24
     int unk4c;
     WiiProfile mWiiProfiles[4]; // 0x50
     int mPadProfileIndex[4]; // 0x1c0

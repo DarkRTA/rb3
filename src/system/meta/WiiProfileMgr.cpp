@@ -9,7 +9,7 @@ const int kWiiProfileNameBufferSize = 46;
 int WiiProfileMgr::sSaveVersion = -1;
 int WiiProfileMgr::sSaveVersionWii = -1;
 
-WiiProfile::WiiProfile() : mSlot(-1), mId(0), mFlags(0), unk_0x28(0) {}
+WiiProfile::WiiProfile() : mSlot(-1), mId(0), mFlags(0), mHasSeenFirstTimeInstrumentFlags(0) {}
 
 WiiProfile::~WiiProfile() {}
 
@@ -17,7 +17,7 @@ void WiiProfile::Clear(int Slot) {
     mSlot = Slot;
     mId = 0;
     mFlags = 0;
-    unk_0x28 = 0;
+    mHasSeenFirstTimeInstrumentFlags = 0;
 
     const char *NewProfileName = MakeString("%s %i", Localize("Profile", NULL), Slot + 1);
     strncpy(mProfileName, NewProfileName, kWiiProfileNameBufferSize);
@@ -31,7 +31,7 @@ void WiiProfile::SaveToStream(BinStream &bs) const {
     bs << mSlot;
     bs << mId;
     bs << (mFlags & 7);
-    bs << unk_0x28;
+    bs << mHasSeenFirstTimeInstrumentFlags;
     bs.Write(mProfileName, kWiiProfileNameBufferSize);
 }
 
@@ -43,7 +43,7 @@ void WiiProfile::LoadFromStream(BinStream &bs) {
     bs >> NewFlags;
     mFlags |= NewFlags & 7;
 
-    bs >> unk_0x28;
+    bs >> mHasSeenFirstTimeInstrumentFlags;
     bs.Read(mProfileName, kWiiProfileNameBufferSize);
 }
 
@@ -139,7 +139,7 @@ void WiiProfileMgr::SaveFixed(FixedSizeSaveableStream& fs) const {
         mWiiProfiles[i].SaveToStream(fs);
     }
     for(int i = 0; i < 10; i++){
-        fs << unk24[i];
+        fs << mDeleteQueue[i];
     }
 }
 
@@ -162,7 +162,7 @@ void WiiProfileMgr::LoadFixed(FixedSizeSaveableStream& fs, int){
             mWiiProfiles[i].LoadFromStream(fs);
         }
         for(int i = 0; i < 10; i++){
-            fs >> unk24[i];
+            fs >> mDeleteQueue[i];
         }
     }
     mHasLoaded = true;
@@ -261,9 +261,12 @@ WiiProfile* WiiProfileMgr::GetProfileForIndex(int idx){
     else return nullptr;
 }
 
-WiiProfile* WiiProfileMgr::GetProfileForPad(int pad){
+#pragma push
+#pragma force_active on
+inline WiiProfile* WiiProfileMgr::GetProfileForPad(int pad){
     return GetProfileForIndex(GetIndexForPad(pad));
 }
+#pragma pop
 
 int WiiProfileMgr::GetIdForIndex(int idx) const {
     if(idx <= 3U) return mWiiProfiles[idx].mId;
@@ -370,7 +373,7 @@ void WiiProfileMgr::SetIndexLocked(int idx, bool locked){
 
 void WiiProfileMgr::SetLocked(Profile* p, bool locked){
     if(p){
-        WiiProfile* pwii = GetProfileForIndex(GetIndexForPad(p->GetPadNum()));
+        WiiProfile* pwii = GetProfileForPad(p->GetPadNum());
         if(pwii) pwii->SetFlag(0x8000, locked);
     }
 }
@@ -382,4 +385,25 @@ void WiiProfileMgr::DoSignin(LocalUser* u, int idx, int pad, int){
 
 bool WiiProfileMgr::AddIdToDeleteQueue(unsigned int id){
 
+}
+
+bool WiiProfileMgr::IsDeleteQueueFull() const {
+    for(int i = 0; i < 10; i++){
+        if(mDeleteQueue[i] == 0) return false;
+    }
+    return true;
+}
+
+int WiiProfileMgr::GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser* user) const {
+    int idx = GetIndexForUser(user);
+    if(idx >= 0) return mWiiProfiles[idx].mHasSeenFirstTimeInstrumentFlags;
+    else return 0;
+}
+
+void WiiProfileMgr::SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser* user, int flags, bool on){
+    int idx = GetIndexForUser(user);
+    if(idx >= 0){
+        if(on) mWiiProfiles[idx].mHasSeenFirstTimeInstrumentFlags |= flags;
+        else mWiiProfiles[idx].mHasSeenFirstTimeInstrumentFlags &= ~flags;
+    }
 }
