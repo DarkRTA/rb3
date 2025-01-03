@@ -10,6 +10,9 @@ public:
     DataEvent(float s, float e, DataArray* da) : start(s), end(e), mMsg(da) {
         if(mMsg) mMsg->AddRef();
     }
+    DataEvent(const DataEvent& e) : mMsg(0) {
+        *this = e;
+    }
     ~DataEvent(){ if(mMsg) mMsg->Release(); }
 
     void SetMsg(DataArray* da){
@@ -18,6 +21,12 @@ public:
         if(mMsg) mMsg->AddRef();
     }
     DataArray* Msg() const { return mMsg; }
+    DataEvent& operator=(const DataEvent& e){
+        start = e.start;
+        end = e.end;
+        SetMsg(e.mMsg);
+        return *this;
+    }
 
     float start; // 0x0
     float end; // 0x4

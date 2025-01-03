@@ -121,17 +121,19 @@ float* DataEventList::EndPtr(int index){
 void DataEventList::Invert(float f){
     if(mElement < 0){
         for(int i = 0; i < mSize; i++){
-            float tmp = mEvents[i].end;
-            mEvents[i].end = mEvents[i].start;
-            mEvents[i].start = f;
+            DataEvent& event = mEvents[i];
+            float tmp = event.end;
+            event.end = event.start;
+            event.start = f;
             f = tmp;
         }
     }
     else {
         for(int i = 0; i < mSize; i++){
-            float tmp = mComps[i].end;
-            mComps[i].end = mComps[i].start;
-            mComps[i].start = f;
+            CompEv& event = mComps[i];
+            float tmp = event.end;
+            event.end = event.start;
+            event.start = f;
             f = tmp;
         }
     }
