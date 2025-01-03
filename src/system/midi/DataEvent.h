@@ -1,5 +1,4 @@
-#ifndef MIDI_DATAEVENT_H
-#define MIDI_DATAEVENT_H
+#pragma once
 #include "obj/Data.h"
 #include "utl/VectorSizeDefs.h"
 #include <vector>
@@ -46,6 +45,7 @@ public:
     DataEvent* NextEvent(float);
     float* EndPtr(int);
     void Invert(float);
+    void Compact();
     int CurIndex() const { return mCurIndex; }
 
     int mCurIndex; // 0x0
@@ -53,9 +53,7 @@ public:
     std::vector<DataEvent> mEvents; // 0x8
     std::vector<CompEv VECTOR_SIZE_LARGE> mComps; // 0x10
     int mElement; // 0x1c
-    DataEvent mTemplate; // 0x20, 0x24, 0x28
+    mutable DataEvent mTemplate; // 0x20, 0x24, 0x28
     DataType mCompType; // 0x2c
     int* mValue; // 0x30
 };
-
-#endif
