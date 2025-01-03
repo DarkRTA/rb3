@@ -1,5 +1,4 @@
-#ifndef MIDI_MIDIPARSER_H
-#define MIDI_MIDIPARSER_H
+#pragma once
 #include "obj/Msg.h"
 #include "midi/DataEvent.h"
 #include "utl/VectorSizeDefs.h"
@@ -24,9 +23,10 @@ public:
     };
 
     struct Note {
-        int unk0;
-        int unk4;
-        int unk8;
+        Note(int x, int y, int z) : note(z), startTick(x), endTick(y) {}
+        int note; // 0x0
+        int startTick; // 0x4
+        int endTick; // 0x8
     };
 
     struct VocalEvent {
@@ -60,6 +60,7 @@ public:
     void InsertDataEvent(float, float, const DataNode&);
     int ParseAll(GemListInterface*, std::vector<VocalEvent VECTOR_SIZE_LARGE>&);
     void PushIdle(float, float, int, Symbol);
+    void ParseNote(int, int, unsigned char);
     DataEventList* Events() const { return mEvents; }
 
     DataNode OnGetStart(DataArray*);
@@ -130,5 +131,3 @@ public:
 
     static std::list<MidiParser*> sParsers;
 };
-
-#endif // MIDI_MIDIPARSER_H
