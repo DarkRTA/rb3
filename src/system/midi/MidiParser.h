@@ -30,9 +30,16 @@ public:
     };
 
     struct VocalEvent {
-        int unk0;
-        int unk4;
+        // because midis can store text as either Text or Lyric types
+        enum TextType {
+            kText,
+            kLyric
+        };
+
+        DataNode unk0;
         int unk8;
+
+        TextType GetTextType() const { return unk0.Type() == kDataString ? kLyric : kText; }
     };
 
     MidiParser();
@@ -86,7 +93,7 @@ public:
     DataArray* mIdleParser; // 0x34
     DataArray* mCurParser; // 0x38
     DataArray* mAllowedNotes; // 0x3c
-    std::vector<VocalEvent>* mVocalEvents; // 0x40
+    std::vector<VocalEvent VECTOR_SIZE_LARGE>* mVocalEvents; // 0x40
     std::vector<Note VECTOR_SIZE_LARGE> mNotes; // 0x44
     GemListInterface* mGems; // 0x50
     bool mInverted; // 0x54

@@ -75,6 +75,7 @@ MidiParser::~MidiParser(){
     RELEASE(mEvents);
 }
 
+// matches fine in retail
 void MidiParser::SetTypeDef(DataArray* arr){
     if(TypeDef() != arr){
         Hmx::Object::SetTypeDef(arr);
@@ -94,7 +95,7 @@ void MidiParser::SetTypeDef(DataArray* arr){
             arr->FindData("message_type", mMessageType, false);
             arr->FindData("compress", mCompressed, false);
             if(mCompressed){
-                DataArray* localArr = new DataArray(mAppendLength + !mMessageType.Null() + 2);
+                DataArray* localArr = new DataArray(!mMessageType.Null() + 2 + mAppendLength);
                 localArr->Node(0) = 0;
                 int i = 1;
                 if(!mMessageType.Null()){
@@ -193,7 +194,7 @@ void MidiParser::PushIdle(float f1, float f2, int i3, Symbol s4){
     DataNode node;
     if(mCompressed) node = s4;
     else {
-        DataArray* arr = new DataArray(!mMessageType.Null() + mAppendLength + 2);
+        DataArray* arr = new DataArray(!mMessageType.Null() + 2 + mAppendLength);
         arr->Node(0) = 0;
         int idx = 1;
         if(!mMessageType.Null()){
@@ -224,26 +225,94 @@ void MidiParser::SetIndex(int idx){
         if(mCurParser == mNoteParser){
             if(idx < mNotes.size()){
                 mNoteIndex = idx;
-                SetGlobalVars(mNotes[idx].startTick, mNotes[idx].endTick, DataNode(mNotes[idx].note));
+                Note& curNote = mNotes[idx];
+                SetGlobalVars(curNote.startTick, curNote.endTick, curNote.note);
             }
         }
         else if(mCurParser == mGemParser){
             int x, y, z;
             if(mGems->GetGem(idx, x, y, z)){
                 mGemIndex = idx;
-                SetGlobalVars(x, y, DataNode(z));
+                SetGlobalVars(x, y, z);
+                return;
             }
         }
         else if(mCurParser == mTextParser || mCurParser == mLyricParser){
             if(idx < mVocalEvents->size()){
                 mVocalIndex = idx;
                 VocalEvent& ev = mVocalEvents->operator[](idx);
-                SetGlobalVars(ev.unk0, ev.unk0, DataNode(ev.unk0));
+                SetGlobalVars(ev.unk8, ev.unk8, ev.unk0);
+                return;
             }
         }
-        else MILO_WARN("%s calling set index without note or gem parser", mName);
+        else MILO_WARN("%s calling set index without note or gem parser", Name());
     }
-    *mpOutOfBounds = DataNode(1);
+    *mpOutOfBounds = 1;
+}
+
+int MidiParser::ParseAll(GemListInterface* gemInterface, std::vector<VocalEvent VECTOR_SIZE_LARGE>& vocalEvents){
+    mLastStart = -kHugeFloat;
+    mLastEnd = -kHugeFloat;
+    *mpStart = -kHugeFloat;
+    *mpEnd = -kHugeFloat;
+    DataArray* initArr = TypeDef()->FindArray("init", false);
+    if(initArr) initArr->ExecuteScript(1, this, 0, 1);
+    mGemIndex = 0;
+    mNoteIndex = 0;
+    mVocalIndex = 0;
+    mGems = mGemParser ? gemInterface : nullptr;
+    mVocalEvents = mTextParser || mLyricParser ? &vocalEvents : nullptr;
+    // three nested loops good lord
+    int loc48, loc4c, loc50;
+    int i4;
+    while(true){
+        while(true){
+            while(true){
+                int loc44 = -1;
+                i4 = -1;
+                if(mVocalEvents && mVocalIndex < mVocalEvents->size()){
+                    if(MinEq(loc44, (*mVocalEvents)[mVocalIndex].unk8)){
+                        i4 = 0;
+                    }
+                }
+                if(mNoteParser && mNoteIndex < mNotes.size()){
+                    if(MinEq(loc44, mNotes[mNoteIndex].startTick)){
+                        i4 = 1;
+                    }
+                }
+                if(mGems && mGems->GetGem(mGemIndex, loc48, loc4c, loc50) && MinEq(loc44, loc48)){
+                    i4 = 2;
+                }
+                if(i4 != 0) break;
+                VocalEvent& vocEv = (*mVocalEvents)[mVocalIndex];
+                if((vocEv.GetTextType() == VocalEvent::kLyric && mLyricParser) || (vocEv.GetTextType() == VocalEvent::kText && mTextParser)){
+                    mCurParser = vocEv.GetTextType() == VocalEvent::kLyric ? mLyricParser : mTextParser;
+                    HandleEvent(vocEv.unk8, vocEv.unk8, vocEv.unk0);
+                }
+                mVocalIndex++;
+            }
+            if(i4 != 1) break;
+            mCurParser = mNoteParser;
+            Note& curNote = mNotes[mNoteIndex];
+            HandleEvent(curNote.startTick, curNote.endTick, curNote.note);
+            mNoteIndex++;
+        }
+        if(i4 != 2) break;
+        mCurParser = mGemParser;
+        HandleEvent(loc48, loc4c, loc50);
+        mGemIndex++;
+    }
+    if(mEvents->Size() != 0 && mIdleParser){
+        InsertIdle(kHugeFloat, mEvents->Size() - 1);
+    }
+    mCurParser = nullptr;
+    DataArray* termArr = TypeDef()->FindArray("term", false);
+    if(termArr) termArr->ExecuteScript(1, this, 0, 1);
+    if(mInverted) mEvents->Invert(mFirstEnd);
+    int numNotes = mNotes.size();
+    ClearAndShrink(mNotes);
+    mEvents->Compact();
+    return numNotes;
 }
 
 void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode& data){
