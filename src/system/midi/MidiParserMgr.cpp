@@ -1,4 +1,5 @@
 #include "midi/MidiParserMgr.h"
+#include "midi/MidiConstants.h"
 #include "os/Debug.h"
 #include "obj/DataFile.h"
 #include "obj/Dir.h"
@@ -88,8 +89,9 @@ void MidiParserMgr::OnEndOfTrack(){
         }
         if(mGems) mGems->SetTrack(mTrackName);
         FOREACH_MIDIPARSER(
-            if((*it)->mTrackName == mTrackName){
-                int numnotes = (*it)->ParseAll(mGems, unk30);
+            MidiParser* cur = *it;
+            if(cur->TrackName() == mTrackName){
+                int numnotes = cur->ParseAll(mGems, unk30);
                 if(numnotes > 20000){
                     MILO_WARN("%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize", mFilename, mTrackName, numnotes, 20000);
                 }
@@ -118,8 +120,9 @@ void MidiParserMgr::OnMidiMessage(int tick, unsigned char c1, unsigned char c2, 
     bool created = CreateNote(tick, c1, c2, i28);
     if(created){
         FOREACH_MIDIPARSER(
-            if((*it)->mTrackName == mTrackName){
-                (*it)->ParseNote(i28, tick, c2);
+            MidiParser* cur = *it;
+            if(cur->TrackName() == mTrackName){
+                cur->ParseNote(i28, tick, c2);
             }
         )
     }
@@ -156,8 +159,9 @@ DataArray* MidiParserMgr::ParseText(const char* str, int tick){
 void MidiParserMgr::OnTrackName(Symbol s){
     if(std::find(unk50.begin(), unk50.end(), s) != unk50.end()){
         FOREACH_MIDIPARSER(
-            if((*it)->mTrackName == s){
-                (*it)->Clear();
+            MidiParser* cur = *it;
+            if(cur->TrackName() == s){
+                cur->Clear();
             }
         )
     }
@@ -169,7 +173,8 @@ void MidiParserMgr::OnText(int i1, const char* cc, unsigned char uc){
     if(uc == 3) OnTrackName(cc);
     else if(uc == 5 || uc == 1){
         MemDoTempAllocations m(true, false);
-        MidiParser::VocalEvent vocEv(i1);
+        MidiParser::VocalEvent vocEv;
+        vocEv.unk8 = i1;
         if(*cc == '['){
             DataArray* parsed = ParseText(cc, i1);
             if(!parsed) return;
@@ -178,6 +183,40 @@ void MidiParserMgr::OnText(int i1, const char* cc, unsigned char uc){
         }
         else vocEv.unk0 = cc;
         unk30.push_back(vocEv);
+    }
+}
+
+bool MidiParserMgr::CreateNote(int i1, unsigned char uc1, unsigned char uc2, int& iref){
+    if(unk24.empty()){
+        if(unk58){
+            MILO_WARN("%s has a track that was not named.", mFilename);
+            unk58 = false;
+        }
+        return true;
+    }
+    else {
+        switch(MidiGetType(uc1)){
+            case 0x90:
+                if(unk24[uc2] == -1){
+                    unk24[uc2] = i1;
+                }
+                else Error(MakeString("Double note-on (%d)", uc2), i1);
+                break;
+            case 0x80:
+                int ref = unk24[uc2];
+                if(ref == -1){
+                    Error(MakeString("Double note-off (%d)", uc2), i1);
+                }
+                else {
+                    unk24[uc2] = -1;
+                    iref = ref;
+                    return true;
+                }
+                break;
+            default:
+                break;
+        }
+        return false;
     }
 }
 
@@ -190,6 +229,13 @@ DataEventList* MidiParserMgr::GetEventsList(){
     MidiParser* evParser = GetParser("events_parser");
     MILO_ASSERT(evParser, 0x17E);
     return evParser->Events();
+}
+
+MidiParser* MidiParserMgr::GetParser(Symbol s){
+    FOREACH_MIDIPARSER(
+        if(s == (*it)->Name()) return *it;
+    )
+    return nullptr;
 }
 
 BEGIN_PROPSYNCS(MidiParserMgr)

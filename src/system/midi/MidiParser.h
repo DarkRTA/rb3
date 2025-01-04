@@ -30,8 +30,6 @@ public:
     };
 
     struct VocalEvent {
-        VocalEvent(int i) : unk8(i) {}
-
         // because midis can store text as either Text or Lyric types
         enum TextType {
             kText,
@@ -71,6 +69,7 @@ public:
     void PushIdle(float, float, int, Symbol);
     void ParseNote(int, int, unsigned char);
     DataEventList* Events() const { return mEvents; }
+    Symbol TrackName() const { return mTrackName; }
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
