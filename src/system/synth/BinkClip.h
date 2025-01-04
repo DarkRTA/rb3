@@ -1,5 +1,4 @@
-#ifndef SYNTH_BINKCLIP_H
-#define SYNTH_BINKCLIP_H
+#pragma once
 #include "obj/Object.h"
 #include "synth/Pollable.h"
 #include "synth/Faders.h"
@@ -47,6 +46,7 @@ public:
     void FadeOut(float);
     void UnloadWhenFinishedPlaying(bool);
     bool IsReadyToPlay() const;
+    void SetPreLoad(bool preload){ mPreload = preload; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -68,5 +68,3 @@ public:
     bool mPlaying; // 0x66
     Loader* mStreamLoader; // 0x68
 };
-
-#endif // SYNTH_BINKCLIP_H

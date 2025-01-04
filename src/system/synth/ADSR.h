@@ -1,5 +1,4 @@
-#ifndef SYNTH_ADSR_H
-#define SYNTH_ADSR_H
+#pragma once
 #include "utl/BinStream.h"
 
 class ADSR; // forward dec
@@ -70,9 +69,6 @@ public:
 };
 
 BinStream& operator>>(BinStream&, ADSR&);
-static int FindNearestInTable(const float* table, int tableSize, float val);
 
 #include "obj/PropSync_p.h"
 bool PropSync(ADSR&, DataNode&, DataArray*, int, PropOp);
-
-#endif
