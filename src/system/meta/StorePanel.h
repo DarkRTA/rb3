@@ -4,19 +4,6 @@
 #include "meta/StorePreviewMgr.h"
 #include "ui/UIPanel.h"
 
-enum StoreError {
-    kStoreErrorSuccess = 0,
-    kStoreErrorNoContent = 1,
-    kStoreErrorCacheNoSpace = 2,
-    kStoreErrorCacheRemoved = 3,
-    kStoreErrorLiveServer = 4,
-    kStoreErrorStoreServer = 5,
-    kStoreErrorSignedOut = 6,
-    kStoreErrorNoMetadata = 7,
-    kStoreErrorEcommerce = 8,
-    kStoreErrorNoEula = 9
-};
-
 enum SessionStatus {
     kSessionNone = 0,
     kSessionCreating = 1,
@@ -59,20 +46,24 @@ public:
     void SetStoreMode(Symbol);
     void CancelArt();
     bool ToggleTestOffers();
+    void HandleNetCacheMgrFailure();
+    void ExitError(StoreError);
+    bool IsEnumerating() const;
+    bool InCheckout() const;
 
     static StorePanel* Instance();
 
     std::vector<StoreOffer*> unk38;
-    std::vector<int> unk40;
+    std::vector<StoreOffer*> unk40;
     std::vector<int> unk48;
     bool mLoadOK; // 0x50
     bool mShowTestOffers; // 0x51
-    std::list<StorePanel*> unk54;
+    std::list<StorePanel*> unk54; // 0x54
     NetCacheLoader* mPendingArtLoader; // 0x5c
     RndTex* mAlbumTex; // 0x60
     UIPanel* mPendingArtCallback; // 0x64
     StorePreviewMgr* mStorePreviewMgr; // 0x68
-    WiiEnumeration* mEnum; // wiienumeration
+    WiiEnumeration* mEnum; // 0x6c
     bool unk70;
     bool unk71;
     int mPurchaser; // 0x74

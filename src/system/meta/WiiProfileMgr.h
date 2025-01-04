@@ -1,5 +1,6 @@
 #pragma once
 #include "meta/FixedSizeSaveable.h"
+#include "meta/Profile.h"
 #include "obj/Msg.h"
 
 class LocalUser; // forward dec
@@ -11,7 +12,6 @@ public:
     virtual DataNode Handle(DataArray *, bool);
 
     void Clear(int);
-    int SaveSize();
     void SaveToStream(BinStream &) const;
     void LoadFromStream(BinStream &);
     void SetId(uint);
@@ -19,13 +19,16 @@ public:
     void SetName(const char *);
     bool IsFlag(uint) const;
     void SetFlag(uint, bool);
+    static int SaveSize();
 
     char mSlot; // 0x1C
     uint mId; // 0x20
     uint mFlags; // 0x24
-    int unk_0x28; // 0x28
+    int mHasSeenFirstTimeInstrumentFlags; // 0x28
     char mProfileName[48]; // 0x2c
 };
+
+#define kNumWiiPads 4
 
 class WiiProfileMgr : public FixedSizeSaveable, public MsgSource {
 public:
@@ -47,25 +50,48 @@ public:
     bool IsPadAGuest(int) const;
     bool IsPadRegistered(int) const;
     const char* GetNameForPad(int) const;
+    int Count(unsigned int) const;
+    bool NeedsSave() const;
+    bool NeedsLoading() const;
+    void PostSave();
+    void PreLoad();
+    void CreateProfile(int);
+    void SetIndexValid(int, bool);
+    void SetIndexSaved(int, bool);
+    bool DeleteProfile(int);
+    bool IsIndexRegistered(int) const;
+    bool AddIdToDeleteQueue(unsigned int);
+    void RegisterProfile(int, unsigned int);
+    void SetIndexRegistered(int, bool);
+    int GetNextEmptyIndex() const;
+    void SetPadToIndex(int, int);
+    void RemovePad(int);
+    WiiProfile* GetProfileForIndex(int);
+    const char* GetNameForIndex(int) const;
+    void SetIndexName(int, const char*);
+    int GetIndexForName(const char*, int) const;
+    bool IsSlotAvailable() const;
+    bool IsIndexSaved(int) const;
+    bool IsIndexLoaded(int) const;
+    void SetIndexLoaded(int, bool);
+    bool IsIndexSwapping(int) const;
+    bool IsIndexLocked(int) const;
+    void SetIndexLocked(int, bool);
+    void SetLocked(Profile*, bool);
+    void DoSignin(LocalUser*, int, int, int);
+    bool IsDeleteQueueFull() const;
+    int GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser*) const;
+    void SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser*, int, bool);
 
     static int sSaveVersion;
     static int sSaveVersionWii;
     static int SaveSize(int);
 
-    int unk24;
-    int unk28;
-    int unk2c;
-    int unk30;
-    int unk34;
-    int unk38;
-    int unk3c;
-    int unk40;
-    int unk44;
-    int unk48;
+    int mDeleteQueue[10]; // 0x24
     int unk4c;
     WiiProfile mWiiProfiles[4]; // 0x50
-    int unk1c0[4]; // 0x1c0
-    bool unk1d0;
+    int mPadProfileIndex[4]; // 0x1c0
+    bool mHasLoaded; // 0x1d0
     bool mDirty; // 0x1d1
 };
 

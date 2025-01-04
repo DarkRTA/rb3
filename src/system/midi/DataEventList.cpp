@@ -1,12 +1,17 @@
 #include "midi/DataEvent.h"
 #include "os/Debug.h"
 #include "utl/VectorSizeDefs.h"
+#include "utl/Std.h"
+#include "utl/TimeConversion.h"
 #include <algorithm>
 
 namespace {
-    bool EventTimeCompComp(float f, const DataEventList::CompEv& ev){
-        return f < ev.start;
-    }
+    struct EventTimeComp {
+        bool operator()(const DataEvent& e, const float& f) const { return e.start < f ? true : false; }
+    };
+    struct EventTimeCompComp {
+        bool operator()(const DataEventList::CompEv& e, const float& f) const { return e.start < f ? true : false; }
+    };
 }
 
 DataEventList::DataEventList() : mCurIndex(0), mSize(0), mElement(-1), mCompType(kDataUnhandled), mValue(0) {
@@ -28,7 +33,8 @@ void DataEventList::Compress(DataArray* arr, int i){
 void DataEventList::InsertEvent(float start, float end, const DataNode& node, int idx){
     if(mElement < 0){
         if(mSize == 0) mEvents.reserve(32);
-        mEvents.insert(mEvents.begin() + idx, DataEvent(start, end, node.Array()));
+        DataEvent d(start, end, node.Array());
+        mEvents.insert(mEvents.begin() + idx, d);
     }
     else {
         CompEv event;
@@ -42,9 +48,11 @@ void DataEventList::InsertEvent(float start, float end, const DataNode& node, in
             MILO_ASSERT(mCompType == kDataSymbol || mCompType == kDataInt, 0x43);
         }
         else if(mCompType != node.Type()){
+        #ifdef MILO_DEBUG
             String str;
             node.Print(str, false);
             MILO_WARN("Trying to add event %s but mCompType is %s, ignoring", str, mCompType == kDataInt ? "kDataInt" : "kDataSymbol");
+        #endif
             return;
         }
         mComps.insert(mComps.begin() + idx, event);
@@ -55,17 +63,15 @@ void DataEventList::InsertEvent(float start, float end, const DataNode& node, in
 int DataEventList::FindStartFromBack(float start) const {
     int ret = mSize - 1;
     if(mElement < 0){
-        for(int i = mSize - 1; i >= 0; i--){
-            if(start >= mEvents[i].start){
-                ret = i;
+        for(; ret >= 0; ret--){
+            if(start >= mEvents[ret].start){
                 break;
             }
         }
     }
     else {
-        for(int i = mSize - 1; i >= 0; i--){
-            if(start >= mComps[i].start){
-                ret = i;
+        for(; ret >= 0; ret--){
+            if(start >= mComps[ret].start){
                 break;
             }
         }
@@ -74,21 +80,27 @@ int DataEventList::FindStartFromBack(float start) const {
 }
 
 void DataEventList::Reset(float f){
-    if(mElement < 0){
-        // std::lower_bound(mComps.begin(), mComps.end(), f, EventTimeCompComp);
+    if(mElement >= 0){
+        CompEv* lower = std::lower_bound(mComps.begin(), mComps.end(), f, EventTimeCompComp());
+        mCurIndex = lower - mComps.begin();
+    }
+    else {
+        DataEvent* lower = std::lower_bound(mEvents.begin(), mEvents.end(), f, EventTimeComp());
+        mCurIndex = lower - mEvents.begin();
     }
 }
 
 const DataEvent& DataEventList::Event(int idx) const {
-    if(mElement >= 0){
-        const DataEventList::CompEv& compev = mComps[idx];
-        ((DataEvent&)mTemplate).start = compev.start;
-        ((DataEvent&)mTemplate).end = compev.end;
-        ((int*&)mValue) = (int*)&compev.value;
-        // mValue = &compev.value;
+    if (mElement >= 0) {
+        const DataEventList::CompEv& ev = mComps[idx];
+        mTemplate.start = ev.start;
+        mTemplate.end = ev.end;
+        *mValue = ev.value;
         return mTemplate;
     }
-    else return mEvents[idx];
+    else {
+        return mEvents[idx];
+    }
 }
 
 DataEvent* DataEventList::NextEvent(float f){
@@ -109,26 +121,56 @@ float* DataEventList::EndPtr(int index){
 void DataEventList::Invert(float f){
     if(mElement < 0){
         for(int i = 0; i < mSize; i++){
-            float tmp = mEvents[i].end;
-            mEvents[i].end = mEvents[i].start;
-            mEvents[i].start = f;
+            DataEvent& event = mEvents[i];
+            float tmp = event.end;
+            event.end = event.start;
+            event.start = f;
             f = tmp;
         }
     }
     else {
         for(int i = 0; i < mSize; i++){
-            float tmp = mComps[i].end;
-            mComps[i].end = mComps[i].start;
-            mComps[i].start = f;
+            CompEv& event = mComps[i];
+            float tmp = event.end;
+            event.end = event.start;
+            event.start = f;
             f = tmp;
         }
+    }
+}
+
+void DataEventList::SecOffset(float fff){
+    float mult = fff * 1000.0f;
+    if(mElement < 0){
+        for(int i = 0; i < mSize; i++){
+            DataEvent& event = mEvents[i];
+            event.start = MsToBeat(mult + BeatToMs(event.start));
+            event.end = MsToBeat(mult + BeatToMs(event.end));
+        }
+    }
+    else {
+        for(int i = 0; i < mSize; i++){
+            CompEv& event = mComps[i];
+            event.start = MsToBeat(mult + BeatToMs(event.start));
+            event.end = MsToBeat(mult + BeatToMs(event.end));
+        }
+    }
+}
+
+void DataEventList::Compact(){
+    if(mElement < 0){
+        MILO_ASSERT(mComps.empty(), 0x104);
+        TrimExcess(mEvents);
+    }
+    else {
+        MILO_ASSERT(mEvents.empty(), 0x109);
+        TrimExcess(mComps);
     }
 }
 
 void DataEventList::Clear(){
     mCurIndex = 0;
     mSize = 0;
-    // probably wrong
-    mComps = std::vector<CompEv VECTOR_SIZE_LARGE>();
-    mEvents = std::vector<DataEvent>();
+    ClearAndShrink(mComps);
+    ClearAndShrink(mEvents);
 }

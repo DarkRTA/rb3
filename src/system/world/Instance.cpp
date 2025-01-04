@@ -154,41 +154,45 @@ void WorldInstance::PreSave(BinStream& bs){}
 void WorldInstance::LoadPersistentObjects(BinStream* bs){
     if(IsProxy()){
         if(gRev > 2){
-            int size1, size2;
-            *bs >> size1;
-            *bs >> size2;
-            size1 *= 2;
-            Reserve(size1, size2);
+            // allocate more hashtable and stringtable space
+            int hashSize, stringSize;
+            *bs >> hashSize;
+            *bs >> stringSize;
+            hashSize *= 2;
+            Reserve(hashSize, stringSize);
         }
+        // create the persistent objects using their ClassName and Name
+        // then push them into our persistent object list
         std::list<Hmx::Object*> objlist;
         int count;
         *bs >> count;
         while(count-- != 0){
-            Symbol sym;
-            *bs >> sym;
-            char buf[0x80];
-            bs->ReadString(buf, 0x80);
+            Symbol objClassName;
+            *bs >> objClassName;
+            char objName[0x80];
+            bs->ReadString(objName, 0x80);
 #ifdef MILO_DEBUG
-            if(!Hmx::Object::RegisteredFactory(sym)){
-                MILO_WARN("%s: Can't make %s", mStoredFile.c_str(), sym);
+            if(!Hmx::Object::RegisteredFactory(objClassName)){
+                MILO_WARN("%s: Can't make %s", mStoredFile.c_str(), objClassName);
                 DeleteObjects();
                 return;
             }
 #endif
-            Hmx::Object* obj = Hmx::Object::NewObject(sym);
-            obj->SetName(buf, this);
+            Hmx::Object* obj = Hmx::Object::NewObject(objClassName);
+            obj->SetName(objName, this);
             objlist.push_back(obj);
         }
-        String strac;
-        ObjectDir* dir1 = 0;
-        DataArray* defarr = 0;
-        ObjDirPtr<ObjectDir> dirPtr;
+
+        String dirNameStr;
+        ObjectDir* dirDir = nullptr;
+        DataArray* dirTypeDef = nullptr;
+        ObjDirPtr<ObjectDir> subDir;
         if(mDir){
-            strac = mDir->Name();
-            dir1 = mDir->Dir();
-            defarr = (DataArray*)mDir->TypeDef();
-            dirPtr = mDir;
-            AppendSubDir(dirPtr);
+            dirNameStr = mDir->Name();
+            dirDir = mDir->Dir();
+            dirTypeDef = (DataArray*)mDir->TypeDef();
+            subDir = mDir;
+            AppendSubDir(subDir);
         }
         while(!objlist.empty()){
             Hmx::Object* cur = objlist.front();
@@ -197,9 +201,9 @@ void WorldInstance::LoadPersistentObjects(BinStream* bs){
             objlist.pop_front();
         }
         if(mDir){
-            RemoveSubDir(dirPtr);
-            mDir->SetName(strac.c_str(), dir1);
-            mDir->SetTypeDef(defarr);
+            RemoveSubDir(subDir);
+            mDir->SetName(dirNameStr.c_str(), dirDir);
+            mDir->SetTypeDef(dirTypeDef);
         }
     }
 }

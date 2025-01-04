@@ -2,6 +2,19 @@
 #include "utl/Str.h"
 #include <list>
 
+enum StoreError {
+    kStoreErrorSuccess = 0,
+    kStoreErrorNoContent = 1,
+    kStoreErrorCacheNoSpace = 2,
+    kStoreErrorCacheRemoved = 3,
+    kStoreErrorLiveServer = 4,
+    kStoreErrorStoreServer = 5,
+    kStoreErrorSignedOut = 6,
+    kStoreErrorNoMetadata = 7,
+    kStoreErrorEcommerce = 8,
+    kStoreErrorNoEula = 9
+};
+
 struct EnumProduct {
     String mName;
     String mGameCode;
@@ -24,8 +37,8 @@ public:
     StoreEnumeration(){}
     virtual ~StoreEnumeration(){}
     virtual void Start() = 0;
+    virtual bool IsEnumerating() const = 0;
     virtual bool IsSuccess() const = 0;
-    virtual int IsEnumerating() const = 0;
     virtual void Poll() = 0;
 
     std::list<EnumProduct> mContentList;
@@ -36,8 +49,8 @@ public:
     WiiEnumeration(int);
     virtual ~WiiEnumeration(){}
     virtual void Start();
+    virtual bool IsEnumerating() const;
     virtual bool IsSuccess() const;
-    virtual int IsEnumerating() const;
     virtual void Poll();
 
     bool mLoading;

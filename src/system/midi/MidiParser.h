@@ -1,5 +1,4 @@
-#ifndef MIDI_MIDIPARSER_H
-#define MIDI_MIDIPARSER_H
+#pragma once
 #include "obj/Msg.h"
 #include "midi/DataEvent.h"
 #include "utl/VectorSizeDefs.h"
@@ -24,15 +23,23 @@ public:
     };
 
     struct Note {
-        int unk0;
-        int unk4;
-        int unk8;
+        Note(int x, int y, int z) : note(z), startTick(x), endTick(y) {}
+        int note; // 0x0
+        int startTick; // 0x4
+        int endTick; // 0x8
     };
 
     struct VocalEvent {
-        int unk0;
-        int unk4;
-        int unk8;
+        // because midis can store text as either Text or Lyric types
+        enum TextType {
+            kText,
+            kLyric
+        };
+
+        DataNode unk0;
+        int unk8; // tick
+
+        TextType GetTextType() const { return unk0.Type() == kDataString ? kLyric : kText; }
     };
 
     MidiParser();
@@ -60,7 +67,9 @@ public:
     void InsertDataEvent(float, float, const DataNode&);
     int ParseAll(GemListInterface*, std::vector<VocalEvent VECTOR_SIZE_LARGE>&);
     void PushIdle(float, float, int, Symbol);
+    void ParseNote(int, int, unsigned char);
     DataEventList* Events() const { return mEvents; }
+    Symbol TrackName() const { return mTrackName; }
 
     DataNode OnGetStart(DataArray*);
     DataNode OnGetEnd(DataArray*);
@@ -85,7 +94,7 @@ public:
     DataArray* mIdleParser; // 0x34
     DataArray* mCurParser; // 0x38
     DataArray* mAllowedNotes; // 0x3c
-    std::vector<VocalEvent>* mVocalEvents; // 0x40
+    std::vector<VocalEvent VECTOR_SIZE_LARGE>* mVocalEvents; // 0x40
     std::vector<Note VECTOR_SIZE_LARGE> mNotes; // 0x44
     GemListInterface* mGems; // 0x50
     bool mInverted; // 0x54
@@ -130,5 +139,3 @@ public:
 
     static std::list<MidiParser*> sParsers;
 };
-
-#endif // MIDI_MIDIPARSER_H

@@ -31,9 +31,15 @@ void VectorRemove(std::vector<T VECTOR_SIZE_ARG>& vec, const T2& obj){
     }
 }
 
-template <typename T>
-inline void ClearAndShrink(std::vector<T>& vec) {
-    std::vector<T> temp;
+template <typename T VECTOR_SIZE_PARAM>
+inline void TrimExcess(std::vector<T VECTOR_SIZE_ARG>& vec){
+    std::vector<T VECTOR_SIZE_ARG> copy(vec);
+    vec.swap(copy);
+}
+
+template <typename T VECTOR_SIZE_PARAM>
+inline void ClearAndShrink(std::vector<T VECTOR_SIZE_ARG>& vec) {
+    std::vector<T VECTOR_SIZE_ARG> temp;
     temp.swap(vec);
 }
 

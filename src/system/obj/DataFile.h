@@ -49,6 +49,7 @@ class DataLoaderThreadObj : public ThreadCallback {
     bool unk1c; // 0x1c
 };
 
+DataArray* DataReadString(const char*);
 DataArray* ReadCacheStream(BinStream&, const char*);
 DataArray* ReadEmbeddedFile(const char*, bool);
 DataArray* DataReadFile(const char*, bool);
