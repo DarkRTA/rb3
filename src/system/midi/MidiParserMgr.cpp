@@ -1,18 +1,26 @@
 #include "midi/MidiParserMgr.h"
 #include "os/Debug.h"
+#include "obj/DataFile.h"
 #include "obj/Dir.h"
 #include "midi/MidiParser.h"
 #include "utl/TimeConversion.h"
 #include "beatmatch/GemListInterface.h"
 #include "utl/Symbols.h"
 
-MidiParserMgr* TheMidiParserMgr = 0;
+#define FOREACH_MIDIPARSER(code) \
+    const std::list<MidiParser*>& parsers = MidiParser::sParsers; \
+    for(std::list<MidiParser*>::const_iterator it = parsers.begin(); it != parsers.end(); ++it){ \
+        code; \
+    }
 
-DECOMP_FORCEACTIVE(MidiParserMgr, "beatmatcher", "midi_parsers")
+MidiParserMgr* TheMidiParserMgr;
 
-// inline DataArray* MidiParserArray(){
-//     return SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
-// }
+static inline const char* GetBeatMatcherStr(){ return "beatmatcher"; }
+static inline const char* GetMidiParsersStr(){ return "midi_parsers"; }
+
+inline DataArray* MidiParserArray(){
+    return SystemConfig(GetBeatMatcherStr())->FindArray(GetMidiParsersStr(), false);
+}
 
 MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : mGems(gListInt),
     mLoaded(0), mFilename(0), mTrackName(), mSongName(), unk50(), unk58(true), unk59(true) {
@@ -21,7 +29,7 @@ MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : mGems(gLi
     SetName("midiparsermgr", ObjectDir::sMainDir);
     mSongName = sym;
     MidiParser::Init();
-    DataArray* arr = SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
+    DataArray* arr = MidiParserArray();
     if(arr){
         DataArray* initArr = arr->FindArray("init", false);
         if(initArr) initArr->ExecuteScript(1, this, 0, 1);
@@ -31,37 +39,37 @@ MidiParserMgr::MidiParserMgr(GemListInterface* gListInt, Symbol sym) : mGems(gLi
 
 MidiParserMgr::~MidiParserMgr(){
     ClearManagedParsers();
-    TheMidiParserMgr = 0;
+    TheMidiParserMgr = nullptr;
 }
 
 void MidiParserMgr::Reset(int i){
     if(mLoaded && unk59){
         float beat = TickToBeat(i);
-        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
+        FOREACH_MIDIPARSER(
             (*it)->Reset(beat);
-        }
+        )
     }
 }
 
 void MidiParserMgr::Reset(){
     if(mLoaded){
-        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
-            (*it)->Reset(-2e+30f);
-        }
+        FOREACH_MIDIPARSER(
+            (*it)->Reset(-2 * kHugeFloat);
+        )
     }
 }
 
 void MidiParserMgr::Poll(){
     if(unk59){
-        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
+        FOREACH_MIDIPARSER(
             (*it)->Poll();
-        }
+        )
     }
 }
 
 void MidiParserMgr::FreeAllData(){
-    unk30.clear();
-    unk24.clear();
+    ClearAndShrink(unk30);
+    ClearAndShrink(unk24);
 }
 
 void MidiParserMgr::OnNewTrack(int i){
@@ -79,14 +87,14 @@ void MidiParserMgr::OnEndOfTrack(){
             MILO_WARN("%s track %s has %d text events which is over the limit of %d, if that is correct contact James to increase kMaxTextSize", mFilename, mTrackName, unk30.size(), 2000);
         }
         if(mGems) mGems->SetTrack(mTrackName);
-        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); it++){
+        FOREACH_MIDIPARSER(
             if((*it)->mTrackName == mTrackName){
                 int numnotes = (*it)->ParseAll(mGems, unk30);
                 if(numnotes > 20000){
                     MILO_WARN("%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize", mFilename, mTrackName, numnotes, 20000);
                 }
             }
-        }
+        )
         FreeAllData();
         mTrackName = Symbol("");
     }
@@ -95,7 +103,7 @@ void MidiParserMgr::OnEndOfTrack(){
 void MidiParserMgr::OnAllTracksRead(){}
 
 void MidiParserMgr::FinishLoad(){
-    DataArray* arr = SystemConfig("beatmatcher")->FindArray("midi_parsers", false);
+    DataArray* arr = MidiParserArray();
     if(arr){
         DataArray* finishArr = arr->FindArray("finish_loading", false);
         if(finishArr){
@@ -103,6 +111,74 @@ void MidiParserMgr::FinishLoad(){
         }
     }
     mLoaded = true;
+}
+
+void MidiParserMgr::OnMidiMessage(int tick, unsigned char c1, unsigned char c2, unsigned char c3){
+    int i28;
+    bool created = CreateNote(tick, c1, c2, i28);
+    if(created){
+        FOREACH_MIDIPARSER(
+            if((*it)->mTrackName == mTrackName){
+                (*it)->ParseNote(i28, tick, c2);
+            }
+        )
+    }
+}
+
+char* MidiParserMgr::StripEndBracket(char* c1, const char* cc2){
+    char* ret = c1;
+    for(const char* ptr = cc2; *ptr != '\0'; ptr++){
+        char ptrChar = *ptr;
+        if(ptrChar == ']') goto finalize;
+        else *ret++ = ptrChar;
+    }
+    MILO_WARN("MidiParser: %s, track %s event \"%s\" is missing right bracket", mFilename, mTrackName, cc2);
+finalize:
+    *ret = '\0';
+    return ret;
+}
+
+DataArray* MidiParserMgr::ParseText(const char* str, int tick){
+    MILO_ASSERT(strlen(str) < 256, 0xF3);
+    char buf[256];
+    StripEndBracket(buf, str + 1);
+    DataArray* parsed = nullptr;
+    MILO_TRY {
+        parsed = DataReadString(buf);
+    } MILO_CATCH(errMsg){
+        parsed = nullptr;
+        MILO_WARN(MakeString("MidiParser: %s, track %s, tick %d, event \"%s\" has bad format: %s",
+            TheMidiParserMgr->mFilename, mTrackName, tick, buf, errMsg));
+    }
+    return parsed;
+}
+
+void MidiParserMgr::OnTrackName(Symbol s){
+    if(std::find(unk50.begin(), unk50.end(), s) != unk50.end()){
+        FOREACH_MIDIPARSER(
+            if((*it)->mTrackName == s){
+                (*it)->Clear();
+            }
+        )
+    }
+    else unk50.push_back(s);
+    mTrackName = s;
+}
+
+void MidiParserMgr::OnText(int i1, const char* cc, unsigned char uc){
+    if(uc == 3) OnTrackName(cc);
+    else if(uc == 5 || uc == 1){
+        MemDoTempAllocations m(true, false);
+        MidiParser::VocalEvent vocEv(i1);
+        if(*cc == '['){
+            DataArray* parsed = ParseText(cc, i1);
+            if(!parsed) return;
+            vocEv.unk0 = DataNode(parsed, kDataArray);
+            parsed->Release();
+        }
+        else vocEv.unk0 = cc;
+        unk30.push_back(vocEv);
+    }
 }
 
 void MidiParserMgr::SetMidiReader(MidiReader* mr){

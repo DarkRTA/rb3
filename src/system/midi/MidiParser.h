@@ -30,6 +30,8 @@ public:
     };
 
     struct VocalEvent {
+        VocalEvent(int i) : unk8(i) {}
+
         // because midis can store text as either Text or Lyric types
         enum TextType {
             kText,
@@ -37,7 +39,7 @@ public:
         };
 
         DataNode unk0;
-        int unk8;
+        int unk8; // tick
 
         TextType GetTextType() const { return unk0.Type() == kDataString ? kLyric : kText; }
     };

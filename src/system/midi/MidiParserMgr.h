@@ -1,5 +1,4 @@
-#ifndef MIDI_MIDIPARSERMGR_H
-#define MIDI_MIDIPARSERMGR_H
+#pragma once
 #include "midi/Midi.h"
 #include "midi/MidiParser.h"
 #include "obj/Object.h"
@@ -28,6 +27,10 @@ public:
     void FreeAllData();
     DataEventList* GetEventsList();
     MidiParser* GetParser(Symbol);
+    bool CreateNote(int, unsigned char, unsigned char, int&);
+    char* StripEndBracket(char*, const char*);
+    DataArray* ParseText(const char*, int);
+    void OnTrackName(Symbol);
     const char* GetSongName() const { return mSongName.Str(); }
 
     std::vector<int VECTOR_SIZE_LARGE> unk24; // 0x24
@@ -37,10 +40,8 @@ public:
     const char* mFilename; // 0x44
     Symbol mTrackName; // 0x48
     Symbol mSongName; // 0x4c
-    std::vector<int> unk50; // 0x50
+    std::vector<Symbol> unk50; // 0x50
     bool unk58, unk59;
 };
 
 extern MidiParserMgr* TheMidiParserMgr;
-
-#endif

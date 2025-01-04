@@ -318,19 +318,19 @@ int MidiParser::ParseAll(GemListInterface* gemInterface, std::vector<VocalEvent 
 }
 
 void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode& data){
-    float beat1 = TickToBeat(startTick);
-    float beat2 = TickToBeat(endTick);
+    float startBeat = TickToBeat(startTick);
+    float endBeat = TickToBeat(endTick);
     *mpOutOfBounds = 0;
-    *mpStart = beat1;
-    *mpEnd = beat2;
-    *mpLength = beat2 - beat1;
-    *mpPrevStartDelta = beat1 - mLastStart;
-    *mpPrevEndDelta = beat1 - mLastEnd;
+    *mpStart = startBeat;
+    *mpEnd = endBeat;
+    *mpLength = endBeat - startBeat;
+    *mpPrevStartDelta = startBeat - mLastStart;
+    *mpPrevEndDelta = startBeat - mLastEnd;
     *mpData = data;
     if(mCurParser == mTextParser){
         MILO_ASSERT(data.Type() == kDataArray, 0x230);
         if(data.Array()->Type(0) == kDataSymbol){
-            *mpVal = DataNode(data.Array()->Sym(0));
+            *mpVal = data.Array()->Sym(0);
         }
         else MILO_WARN("Text Event in midi file is missing Text.  \n");
     }
@@ -342,24 +342,31 @@ void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode& data)
         *mpVal = data;
         if(mCurParser == mGemParser){
             int gemval = data.Int();
+            int lowestBit = 1;
             int i6 = 0x1000000;
-            int d8 = 0;
-            int d7 = 0x17;
-            int d9;
-            for(d9 = 1; d9 <= 0x1000001 && (gemval & d9) == 0; d9 <<= 1);
-            if(d9 >= 0x1000001) MILO_WARN("Bad gem, value 0x%x", gemval);
-            else for(; i6 > 0; i6 >>= 1){
-                if(gemval & i6) break;
-                d7--;
+            int lowestSlot = 0;
+            int highestSlot = 0x17;
+            for(; lowestBit <= 0x1000000; lowestBit <<= 1){
+                if(gemval & lowestBit) break;
+                lowestSlot++;
             }
-            *mpSingleBit = (gemval & ~d9) == 0;
-            *mpLowestBit = d9;
-            *mpLowestSlot = d8;
-            *mpHighestSlot = d7;
+            if(lowestBit > 0x1000000){
+                MILO_WARN("Bad gem, value 0x%x", gemval);
+            }
+            else {
+                for(; i6 > 0; i6 >>= 1){
+                    if(gemval & i6) break;
+                    highestSlot--;
+                }
+            }
+            *mpSingleBit = (gemval & ~lowestBit) == 0;
+            *mpLowestBit = lowestBit;
+            *mpLowestSlot = lowestSlot;
+            *mpHighestSlot = highestSlot;
         }
     }
-    mLastStart = beat1;
-    mLastEnd = beat2;
+    mLastStart = startBeat;
+    mLastEnd = endBeat;
 }
 
 void MidiParser::HandleEvent(int start, int end, const DataNode& data){
@@ -372,17 +379,15 @@ void MidiParser::HandleEvent(int start, int end, const DataNode& data){
 void MidiParser::InsertDataEvent(float f1, float f2, const DataNode& node){
     float f7 = f1 + mProcess.startOffset;
     if(mProcess.zeroLength) f2 = f7;
+    f2 += mProcess.endOffset;
     int back = mEvents->FindStartFromBack(f7);
     if(InsertIdle(f7, back)){
         back++;
     }
     else {
-        float* fp;
-        if(mBefore >= 0) fp = mEvents->EndPtr(mBefore);
-        else fp = &mFirstEnd;
-        FixGap(fp);
+        FixGap(mBefore < 0 ? &mFirstEnd : mEvents->EndPtr(mBefore));
     }
-    float clamped = Clamp(mProcess.minLength, mProcess.maxLength, f2 + mProcess.endOffset - f7);
+    float clamped = Clamp(mProcess.minLength, mProcess.maxLength, f2 - f7);
     MemDoTempAllocations m(true, false);
     mEvents->InsertEvent(f7, f7 + clamped, node, back + 1);
 }
@@ -446,9 +451,9 @@ float MidiParser::GetStart(int i){
             }
         }
         else {
-            MILO_WARN("%s calling get_start outside of gem or note parser", mName);
+            MILO_WARN("%s calling get_start outside of gem or note parser", Name());
         }
-        return 1e30f;
+        return kHugeFloat;
     }
 }
 
@@ -468,12 +473,13 @@ float MidiParser::GetEnd(int i){
             }
         }
         else {
-            MILO_WARN("%s calling get_end outside of gem or note parser", mName);
+            MILO_WARN("%s calling get_end outside of gem or note parser", Name());
         }
         return 1e30f;
     }
 }
 
+#pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(MidiParser)
     HANDLE_EXPR(add_message, AddMessage(MidiParser::mpStart->Float(), MidiParser::mpEnd->Float(), _msg, 2))
@@ -498,8 +504,10 @@ BEGIN_HANDLERS(MidiParser)
     HANDLE_SUPERCLASS(MsgSource)
     HANDLE_CHECK(0x369)
 END_HANDLERS
-#pragma dont_inline reset
+#pragma pop
 
+#pragma push
+#pragma fp_contract off
 DataNode MidiParser::OnInsertIdle(DataArray* arr){
     Symbol sym = arr->Sym(2);
     float f3 = arr->Float(3);
@@ -520,7 +528,7 @@ DataNode MidiParser::OnInsertIdle(DataArray* arr){
     float sub = mStart - f5;
     if(sub - f4 >= f3){
         if(mUseVariableBlending){
-            float f10 = -1e+30f;
+            float f10 = -kHugeFloat;
             if(mBefore >= 0){
                 f10 = mEvents->Event(mBefore).start;
             }
@@ -538,6 +546,7 @@ DataNode MidiParser::OnInsertIdle(DataArray* arr){
         return 0;
     }
 }
+#pragma pop
 
 float MidiParser::ConvertToBeats(float f1, float f2){
     float secs = BeatToSeconds(f2);
