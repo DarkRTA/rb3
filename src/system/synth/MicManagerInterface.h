@@ -2,9 +2,9 @@
 
 class MicClientID {
 public:
-    MicClientID(int i, int j) : unk0(i), unk4(j) {}
-    int unk0;
-    int unk4;
+    MicClientID(int i, int j) : unk0(i), mPlayerID(j) {}
+    int unk0; // mic id
+    int mPlayerID; // 0x4
 };
 
 class MicManagerInterface {

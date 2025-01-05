@@ -160,6 +160,82 @@ void MetaMusic::Start(){
     }
 }
 
+// matches in retail
+void MetaMusic::UpdateMix(){
+    if(!unk88){
+        if(mStream && mStream->GetNumChannels() == 2){
+            if(unk8c){
+                mStream->SetPan(0, -2.0f);
+                mStream->SetPan(1, 2.0f);
+            }
+            else {
+                mStream->SetPan(0, -1.0f);
+                mStream->SetPan(1, 1.0f);
+            }
+        }
+    }
+    else {
+        MILO_ASSERT(m_CurrentFxConfig, 0x16F);
+        DataArray* volsArr = m_CurrentFxConfig->FindArray(vols, true);
+        DataArray* pansArr = m_CurrentFxConfig->FindArray(pans, true);
+        float f15 = SomeMinusFunc();
+        float f16 = SomePlusFunc();
+        int numChannels = Min(mStream->GetNumChannels(), 6);
+        if(unk80 && unk84 <= 90){
+            DataArray* volsArr80 = unk80->FindArray(vols, true);
+            DataArray* pansArr80 = unk80->FindArray(pans, true);
+            for(int i = 0; i < numChannels; i++){
+                char buf[16];
+                sprintf(buf, "channel_%d", i + 1);
+                DataArray* chanArr7c = m_CurrentFxConfig->FindArray(buf, false);
+                DataArray* chanArr80 = unk80->FindArray(buf, false);
+                if(chanArr7c && chanArr80){
+                    for(ObjDirItr<FxSend> it(unk70[i], true); it != nullptr; ++it){
+                        it->EnableUpdates(false);
+                        DataArray* thisFxConfigPost = chanArr7c->FindArray(it->Name(), false);
+                        DataArray* thisFxConfigPre = chanArr80->FindArray(it->Name(), false);
+                        MILO_ASSERT(thisFxConfigPost, 0x18C);
+                        MILO_ASSERT(thisFxConfigPre, 0x18D);
+                        MILO_ASSERT(thisFxConfigPre->Size() == thisFxConfigPost->Size(), 0x18E);
+                        for(int j = 1; j < thisFxConfigPre->Size(); j++){
+                            DataArray* yetAnotherArr80 = thisFxConfigPre->Array(j);
+                            DataArray* yetAnotherArr7c = thisFxConfigPost->Array(j);
+                            it->SetProperty(yetAnotherArr80->Sym(0), f15 * yetAnotherArr80->Float(1) + f16 * yetAnotherArr7c->Float(1));
+                        }
+                        it->EnableUpdates(true);
+                    }
+                }
+                mStream->SetVolume(i, f15 * volsArr80->Float(i + 1) + f16 * volsArr->Float(i + 1));
+                mStream->SetPan(i, f15 * pansArr80->Float(i + 1) + f16 * pansArr->Float(i + 1));
+            }
+
+        }
+        else if(unk84 == 0){
+            for(int i = 0; i < numChannels; i++){
+                char buf[16];
+                sprintf(buf, "channel_%d", i + 1);
+                DataArray* chanArr = m_CurrentFxConfig->FindArray(buf, false);
+                if(chanArr){
+                    for(ObjDirItr<FxSend> it(unk70[i], true); it != nullptr; ++it){
+                        it->EnableUpdates(false);
+                        DataArray* fxArr = chanArr->FindArray(it->Name(), false);
+                        for(int j = 1; j < fxArr->Size(); j++){
+                            DataArray* propArr = fxArr->Array(j);
+                            it->SetProperty(propArr->Sym(0), propArr->Node(1));
+                        }
+                        it->EnableUpdates(true);
+                    }
+                }
+                mStream->SetVolume(i, volsArr->Float(i + 1));
+                mStream->SetPan(i, pansArr->Float(i + 1));
+            }                
+        }
+        unk84++;
+    }
+}
+
+DECOMP_FORCEACTIVE(MetaMusic, "mStream")
+
 bool MetaMusic::IsPlaying() const {
     return mStream;
 }
@@ -200,9 +276,9 @@ void MetaMusic::SetScene(MetaMusicScene* scene){
                 Start();
                 unk80 = nullptr;
             }
-            else unk80 = unk7c;
-            unk7c = mix;
-            if(unk7c != unk80){
+            else unk80 = m_CurrentFxConfig;
+            m_CurrentFxConfig = mix;
+            if(m_CurrentFxConfig != unk80){
                 unk84 = 0;
             }
         }

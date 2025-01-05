@@ -64,7 +64,7 @@ public:
     virtual void SuspendMics(){}
     virtual void ResumeMics(){}
     virtual int GetNumConnectedMics(){ return 0; }
-    virtual int GetNextAvailableMiCID() const { return -1; }
+    virtual int GetNextAvailableMicID() const { return -1; }
     virtual bool IsMicConnected(int) const { return false; }
     virtual void CaptureMic(int){}
     virtual void ReleaseMic(int){}

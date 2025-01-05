@@ -14,10 +14,14 @@ class MetaMusicLoader : public Loader {
 public:
     MetaMusicLoader(File *f, int & bytes, unsigned char * buf, int size);
     virtual ~MetaMusicLoader() {}
+    virtual bool IsLoaded() const { return mState == DoneLoading; }
+    virtual void PollLoading(){
+        while(!TheLoadMgr.CheckSplit() && TheLoadMgr.GetFirstLoading() == this && !IsLoaded()){
+            (this->*mState)();
+        }
+    }
     virtual const char *DebugText() { return "MetaMusicLoader"; }
-    virtual bool IsLoaded() const;
     virtual const char *StateName() const { return "MetaMusicLoader"; }
-    virtual void PollLoading();
 
     void DoneLoading();
     void LoadFile();
@@ -52,6 +56,9 @@ public:
     void Poll();
     void UpdateMix();
 
+    float SomeMinusFunc(){ return 1.0f - (float)unk84 / 90.0f; }
+    float SomePlusFunc(){ return (float)unk84 / 90.0f; }
+
     Stream *mStream; // 0x1c
     bool mLoop; // 0x20
     float mFadeTime; // 0x24
@@ -71,7 +78,7 @@ public:
     MetaMusicLoader *mLoader; // 0x6c
     std::vector<ObjDirPtr<ObjectDir> > unk70; // 0x70
     bool unk78; // 0x78
-    DataArray* unk7c; // 0x7c
+    DataArray* m_CurrentFxConfig; // 0x7c
     DataArray* unk80; // 0x80
     int unk84; // 0x84
     const char *unk88; // 0x88
