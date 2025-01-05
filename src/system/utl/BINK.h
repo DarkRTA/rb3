@@ -1,6 +1,8 @@
 #pragma once
 #include <revolution/GX.h>
 
+#define BINK_AUDIO_CHANNEL_MAX 16
+
 struct BINKRECT {
     // total size: 0x10
     int Left; // offset 0x0, size 0x4
