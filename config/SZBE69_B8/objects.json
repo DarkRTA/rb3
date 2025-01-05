@@ -1277,7 +1277,7 @@
             "system/synth/BinkReader.cpp": "NonMatching",
             "system/synth/ByteGrinder.cpp": "NonMatching",
             "system/synth/Emitter.cpp": "NonMatching",
-            "system/synth/Faders.cpp": "Equivalent",
+            "system/synth/Faders.cpp": "Matching",
             "system/synth/FxSend.cpp": "Matching",
             "system/synth/FxSendChorus.cpp": "Matching",
             "system/synth/FxSendCompress.cpp": "Matching",

@@ -36,6 +36,7 @@ public:
     void Check();
     float GetVal() const { return mVal; }
     Symbol LocalName() const { return mLocalName; }
+    void SetLocalName(Symbol name){ mLocalName = name; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -77,8 +78,8 @@ public:
     void Print(TextStream&);
     void Load(BinStream&);
 
-    ObjPtrList<Fader> mFaders;
-    bool mDirty;
+    ObjPtrList<Fader> mFaders; // 0x0
+    bool mDirty; // 0x10
 };
 
 bool PropSync(FaderGroup&, DataNode&, DataArray*, int, PropOp);

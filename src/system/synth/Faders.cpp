@@ -1,4 +1,5 @@
 #include "synth/Faders.h"
+#include <functional>
 #include "utl/Symbols.h"
 
 static std::vector<Fader*> sFaderList;
@@ -76,7 +77,7 @@ typedef void(FaderGroup::*FaderGroupFunc)(void);
 
 void Fader::UpdateValue(float val){
     mVal = val;
-    // std::for_each(mClients.begin(), mClients.end(), FaderGroup::SetDirty());
+    std::for_each(mClients.begin(), mClients.end(), std::mem_fun_t<void, FaderGroup>(&FaderGroup::SetDirty));
 }
 
 SAVE_OBJ(Fader, 0x9B)
@@ -110,7 +111,7 @@ BEGIN_HANDLERS(Fader)
     HANDLE_CHECK(0xCE)
 END_HANDLERS
 
-FaderGroup::FaderGroup(Hmx::Object* o) : mFaders(o, kObjListNoNull), mDirty(true) {
+FaderGroup::FaderGroup(Hmx::Object* o) : mFaders(o), mDirty(true) {
 
 }
 
@@ -127,12 +128,12 @@ FaderGroup::~FaderGroup(){
 
 Fader* FaderGroup::AddLocal(Symbol name){
     MILO_ASSERT(!name.Null(), 0xEA);
-    ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin();
+    ObjPtrList<Fader>::iterator it = mFaders.begin();
     for(; it != mFaders.end(); ++it){
-        if((*it)->mLocalName == name) return *it;
+        if((*it)->LocalName() == name) return *it;
     }
     Fader* f = Hmx::Object::New<Fader>();
-    f->mLocalName = name;
+    f->SetLocalName(name);
     f->AddClient(this);
     mFaders.push_back(f);
     mDirty = true;
@@ -140,7 +141,7 @@ Fader* FaderGroup::AddLocal(Symbol name){
 }
 
 void FaderGroup::Add(Fader* f){
-    ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin();
+    ObjPtrList<Fader>::iterator it = mFaders.begin();
     for(; it != mFaders.end(); ++it){
         if(*it == f) return;
     }
@@ -150,7 +151,7 @@ void FaderGroup::Add(Fader* f){
 }
 
 void FaderGroup::Remove(Fader* f){
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+    for(ObjPtrList<Fader>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
         if(*it == f){
             f->RemoveClient(this);
             mFaders.erase(it);
@@ -162,8 +163,8 @@ void FaderGroup::Remove(Fader* f){
 
 float FaderGroup::GetVal(){
     float sum = 0.0f;
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
-        sum += (*it)->mVal;
+    for(ObjPtrList<Fader>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        sum += (*it)->GetVal();
     }
     return sum;
 }
@@ -174,8 +175,8 @@ void FaderGroup::ClearDirty(){ mDirty = false; }
 
 Fader* FaderGroup::FindLocal(Symbol sym, bool fail){
     if(!sym.Null()){
-        for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
-            if((*it)->mLocalName == sym) return *it;
+        for(ObjPtrList<Fader>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+            if((*it)->LocalName() == sym) return *it;
         }
     }
     if(fail) MILO_FAIL("bad local fader: %s", sym);
@@ -184,12 +185,12 @@ Fader* FaderGroup::FindLocal(Symbol sym, bool fail){
 
 void FaderGroup::Print(TextStream& ts){
     ts << "FaderGroup (size " << mFaders.size() << ")\n";
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
-        String str((*it)->mLocalName.Str());
+    for(ObjPtrList<Fader>::iterator it = mFaders.begin(); it != mFaders.end(); ++it){
+        String str((*it)->LocalName().Str());
         if(str.empty()) str = (*it)->Name();
         else str += "(local)";
         if(str.empty()) str = "(anon)";
-        float val = (*it)->mVal;
+        float val = (*it)->GetVal();
         ts << "  " << str << ": " << val << "\n";
     }
 }
@@ -203,45 +204,30 @@ void FaderGroup::Load(BinStream& bs){
     int rev;
     bs >> rev;
     MILO_ASSERT(rev <= kGroupRev, 0x187);
-    ObjPtrList<Fader, ObjectDir> pList(mFaders.mOwner, kObjListNoNull);
+    ObjPtrList<Fader> pList(mFaders.Owner(), kObjListNoNull);
     bs >> pList;
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = mFaders.begin(); it != mFaders.end(); it){
+    for(ObjPtrList<Fader>::iterator it = mFaders.begin(); it != mFaders.end(); it){
         Fader* f = *it++;
-        bool b = false;
-        if(f->Dir() && f->mLocalName.Null()){
-            b = true;
-        }
-        if(b) Remove(f);
+        if(f->Dir() && f->LocalName().Null()) Remove(f);
     }
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+    for(ObjPtrList<Fader>::iterator it = pList.begin(); it != pList.end(); ++it){
         Add(*it);
     }
 }
 
 // fn_80670F64
 bool PropSync(FaderGroup& grp, DataNode& node, DataArray* prop, int i, PropOp op){
-    ObjPtrList<Fader, ObjectDir> pList(grp.mFaders);
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); it){
-        Fader* f = *it;
-        bool b = false;
-        if(f->Dir() && f->mLocalName.Null()){
-            b = true;
-        }
-        if(b) it++;
+    ObjPtrList<Fader> pList(grp.mFaders);
+    for(ObjPtrList<Fader>::iterator it = pList.begin(); it != pList.end(); it){
+        if((*it)->Dir() && (*it)->LocalName().Null()) ++it;
         else it = pList.erase(it);
-        // else it++;
-        // pList.erase(it++);
     }
     bool sync = PropSync(pList, node, prop, i, op);
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = grp.mFaders.begin(); it != grp.mFaders.end(); it){
+    for(ObjPtrList<Fader>::iterator it = grp.mFaders.begin(); it != grp.mFaders.end(); it){
         Fader* f = *it++;
-        bool b = false;
-        if(f->Dir() && f->mLocalName.Null()){
-            b = true;
-        }
-        if(b) grp.Remove(f);
+        if(f->Dir() && f->LocalName().Null()) grp.Remove(f);
     }
-    for(ObjPtrList<Fader, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+    for(ObjPtrList<Fader>::iterator it = pList.begin(); it != pList.end(); ++it){
         grp.Add(*it);
     }
     return sync;
@@ -252,8 +238,7 @@ FaderTask::FaderTask() : mTimer(), mInterp(0), mFader(0), mDone(0) {
 }
 
 FaderTask::~FaderTask(){
-    delete mInterp;
-    mInterp = 0;
+    RELEASE(mInterp);
 }
 
 void FaderTask::PollAll(){
@@ -264,7 +249,7 @@ void FaderTask::PollAll(){
         }
         else {
             (*it)->Poll();
-            it++;
+            ++it;
         }
     }
 }
@@ -272,7 +257,8 @@ void FaderTask::PollAll(){
 void FaderTask::Poll(){
     MILO_ASSERT(!mDone, 0x1DE);
     MILO_ASSERT(mInterp != NULL, 0x1DF);
-    float f = mTimer.SplitMs();
+    mTimer.Split();
+    float f = mTimer.Ms();
     if (f > mInterp->mX1) {
         mFader->UpdateValue(mInterp->mY1);
         mFader->CancelFade();

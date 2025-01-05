@@ -183,6 +183,8 @@ public:
     int mSize : 24;
     /** The mode of this ObjPtrList. */
     ObjListMode mMode : 8;
+    
+    Hmx::Object* Owner() const { return mOwner; }
 
     ObjPtrList(Hmx::Object* owner, ObjListMode mode = kObjListNoNull) : mNodes(0), mOwner(owner), mSize(0), mMode(mode) {
         if(mode == kObjListOwnerControl){
