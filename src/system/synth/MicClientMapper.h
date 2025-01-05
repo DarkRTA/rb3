@@ -16,8 +16,8 @@ public:
 
     class PlayerMappingData {
     public:
-        int mMicID; // mic ID
-        int unk4;
+        int iActualMicID; // 0x0
+        int iPreferredMicID; // 0x4
     };
 
     MicClientMapper();
