@@ -1,5 +1,7 @@
 #include "synth/MetaMusic.h"
 #include "synth/Synth.h"
+#include "synth/FxSendEQ.h"
+#include "os/PlatformMgr.h"
 #include "utl/Symbols.h"
 
 void MetaMusicLoader::DoneLoading() {}
@@ -81,12 +83,81 @@ void MetaMusicLoader::LoadFile(){
     }
 }
 
-bool MetaMusic::Loaded() {
+#pragma push
+#pragma force_active on
+inline bool MetaMusic::Loaded() {
     bool isLoaded = 0;
     if (mPlayFromBuffer == 0 || (mBuf != 0 && mFile == 0)) {
         isLoaded = 1;
     }
     return isLoaded;
+}
+#pragma pop
+
+void MetaMusic::Poll(){
+    if(mRndHeap && !mBuf){
+        int i18, i1c, i20, i24;
+        MemFreeBlockStats(MemFindHeap("rnd"), i18, i1c, i20, i24);
+        if(i24 <= mBufSize + 0x20) return;
+        static int _x = MemFindHeap("rnd");
+        MemTempHeap tmp(_x);
+        mBufferH = _MemAllocH(mBufSize);
+        mBuf = (unsigned char*)mBufferH->Lock();
+        MILO_ASSERT(!mLoader, 0xE9);
+        mLoader = new MetaMusicLoader(mFile, mBytesRead, mBuf, mBufSize);
+    }
+    if(mLoader && mBytesRead == mBufSize){
+        RELEASE(mLoader);
+        RELEASE(mFile);
+    }
+    if(mStream && !mStream->IsPlaying() && mStream->IsReady() && !ThePlatformMgr.HomeMenuActive()){
+        mFader->SetVal(-96.0f);
+        mFader->DoFade(mVolume, mFadeTime * 1000.0f);
+        mStream->Play();
+    }
+    if(mStream && mStream->IsPlaying()){
+        if(!mFader->IsFading() && mFader->mVal == -96.0f){
+            RELEASE(mStream);
+            UnloadStreamFx();
+        }
+        else UpdateMix();
+    }
+}
+
+void MetaMusic::Start(){
+    if(!mPlayFromBuffer || mBuf){
+        if(mStream && mStream->IsPlaying()){
+            mFader->DoFade(mVolume, mFadeTime * 1000.0f);
+        }
+        else {
+            MILO_ASSERT(Loaded(), 0x122);
+            RELEASE(mStream);
+            UnloadStreamFx();
+            if(mPlayFromBuffer){
+                MILO_ASSERT(mBuf, 0x128);
+                mStream = TheSynth->NewBufStream(mBuf, mBufSize, mExt, ChooseStartMs(), true);
+            }
+            else {
+                MILO_ASSERT(!mFilename.empty(), 0x12D);
+                mStream = TheSynth->NewStream(mFilename.c_str(), ChooseStartMs(), 0, false);
+            }
+            mStream->Faders()->Add(mFaderMute);
+            mStream->Faders()->Add(mFader);
+            for(ObjPtrList<Fader>::iterator it = mExtraFaders.begin(); it != mExtraFaders.end(); ++it){
+                mStream->Faders()->Add(*it);
+            }
+            if(mLoop){
+                mStream->SetJump(Stream::kStreamEndMs,0,0);
+            }
+            if(unk88){
+                LoadStreamFx();
+                for(int i = 0; i < 6; i++){
+                    mStream->SetFXSend(i, unk70[i]->Find<FxSendEQ>("eq.send", true));
+                }
+            }
+            unk78 = true;
+        }
+    }
 }
 
 bool MetaMusic::IsPlaying() const {

@@ -15,10 +15,11 @@ public:
 class MemHandle {
 public:
     MemHandle(void*);
-    void Lock();
+    void* Lock();
     void Unlock();
 };
 
+MemHandle* _MemAllocH(int);
 void MemFreeH(MemHandle*);
 
 void *operator new(size_t size) throw(std::bad_alloc);
@@ -47,6 +48,12 @@ int MemNumHeaps();
 int MemFindAddrHeap(void*);
 const char* MemHeapName(int);
 void MemFreeBlockStats(int, int&, int&, int&, int&);
+
+class MemTempHeap {
+public:
+    MemTempHeap(int x){ MemPushHeap(x); }
+    ~MemTempHeap(){ MemPopHeap(); }
+};
 
 #define NEW_OVERLOAD \
     void* operator new(size_t t) {return _MemAlloc(t, 0);}

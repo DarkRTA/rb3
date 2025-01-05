@@ -49,6 +49,8 @@ public:
     void SetScene(MetaMusicScene*);
     void LoadStreamFx();
     void Load(const char*, float, bool, bool);
+    void Poll();
+    void UpdateMix();
 
     Stream *mStream; // 0x1c
     bool mLoop; // 0x20
