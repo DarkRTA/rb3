@@ -1,5 +1,4 @@
-#ifndef SYNTH_BYTEGRINDER_H
-#define SYNTH_BYTEGRINDER_H
+#pragma once
 
 /** Handles MOGG/BIK encryption, as it is unique from BinStream encryption. */
 class ByteGrinder {
@@ -12,5 +11,3 @@ public:
     void Init();
     void HvDecrypt(unsigned char*, unsigned char*, int);
 };
-
-#endif

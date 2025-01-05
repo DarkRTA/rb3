@@ -1,5 +1,4 @@
-#ifndef SYNTH_EMITTER_H
-#define SYNTH_EMITTER_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
@@ -27,9 +26,9 @@ public:
 
     void CheckLoadResources();
 
-    ObjPtr<Sfx, ObjectDir> mSfx; // 0xb8
-    ObjPtr<SfxInst, ObjectDir> mInst; // 0xc4
-    ObjPtr<RndTransformable, ObjectDir> mListener; // 0xd0
+    ObjPtr<Sfx> mSfx; // 0xb8
+    ObjPtr<SfxInst> mInst; // 0xc4
+    ObjPtr<RndTransformable> mListener; // 0xd0
     float mRadInner; // 0xdc
     float mRadOuter; // 0xe0
     float mVolInner; // 0xe4
@@ -37,5 +36,3 @@ public:
 
     // mEnabled: 0x98 >> 5 & 1
 };
-
-#endif
