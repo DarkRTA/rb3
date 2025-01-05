@@ -3,8 +3,7 @@
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
 
-unsigned short FxSendWah::gRev = 0;
-unsigned short FxSendWah::gAltRev = 0;
+INIT_REVS(FxSendWah);
 
 FxSendWah::FxSendWah() : mResonance(7.0f), mUpperFreq(5000.0f), mLowerFreq(1000.0f), mLfoFreq(1.35f),
     mMagic(0.3f), mDistAmount(0.5f), mAutoWah(0), mFrequency(0.5f), mTempoSync(0), mSyncType("quarter"), mTempo(120.0f), mBeatFrac(0.0f) {

@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendFlanger::gRev = 0;
-unsigned short FxSendFlanger::gAltRev = 0;
+INIT_REVS(FxSendFlanger);
 
 FxSendFlanger::FxSendFlanger() : mDelayMs(2.0f), mRate(0.5f), mDepthPct(50), mFeedbackPct(50), mOffsetPct(10), mTempoSync(0), mSyncType(), mTempo(120.0f) {
     mSyncType = quarter;

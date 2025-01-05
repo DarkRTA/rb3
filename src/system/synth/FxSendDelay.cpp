@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendDelay::gRev = 0;
-unsigned short FxSendDelay::gAltRev = 0;
+INIT_REVS(FxSendDelay);
 
 FxSendDelay::FxSendDelay() : mDelayTime(0.2f), mGain(-6.0f), mPingPongPct(0.0f), mTempoSync(0), mSyncType(), mTempo(120.0f) {
     mSyncType = eighth;

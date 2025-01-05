@@ -3,8 +3,7 @@
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
 
-unsigned short FxSendPitchShift::gRev = 0;
-unsigned short FxSendPitchShift::gAltRev = 0;
+INIT_REVS(FxSendPitchShift);
 
 FxSendPitchShift::FxSendPitchShift() : mRatio(1.0f) {
 

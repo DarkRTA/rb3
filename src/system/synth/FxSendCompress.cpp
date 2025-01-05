@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendCompress::gRev = 0;
-unsigned short FxSendCompress::gAltRev = 0;
+INIT_REVS(FxSendCompress);
 
 FxSendCompress::FxSendCompress() : mThresholdDB(-12.0f), mRatio(3.0f), mOutputLevel(0.0f), mAttack(0.005f), mRelease(0.12f), mExpRatio(1.0f), mExpAttack(0.12f), mExpRelease(0.005f) {
 

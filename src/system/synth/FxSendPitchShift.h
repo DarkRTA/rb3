@@ -1,5 +1,4 @@
-#ifndef SYNTH_FXSENDPITCHSHIFT_H
-#define SYNTH_FXSENDPITCHSHIFT_H
+#pragma once
 #include "synth/FxSend.h"
 
 class FxSendPitchShift : public FxSend {
@@ -14,10 +13,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    DECLARE_REVS;
 
-    float mRatio;
+    float mRatio; // 0x48
 };
-
-#endif

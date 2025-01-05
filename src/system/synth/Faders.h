@@ -6,6 +6,7 @@
 
 class FaderGroup;
 
+/** "A fader controls the volume level of one or more sound effects." */
 class Fader : public Hmx::Object {
 public:
     enum Mode {
@@ -41,6 +42,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
+    /** "volume level in dB" */
     float mVal; // 0x1c
     class FaderTask* mFaderTask; // 0x20
     Symbol mLocalName; // 0x24

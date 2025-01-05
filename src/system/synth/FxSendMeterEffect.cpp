@@ -3,8 +3,7 @@
 #include "obj/PropSync_p.h"
 #include "math/Utl.h"
 
-unsigned short FxSendMeterEffect::gRev = 0;
-unsigned short FxSendMeterEffect::gAltRev = 0;
+INIT_REVS(FxSendMeterEffect);
 
 FxSendMeterEffect::FxSendMeterEffect() : mResetPeaks(0) {
     

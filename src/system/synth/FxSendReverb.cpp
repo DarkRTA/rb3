@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendReverb::gRev = 0;
-unsigned short FxSendReverb::gAltRev = 0;
+INIT_REVS(FxSendReverb);
 
 FxSendReverb::FxSendReverb() : mEnvironmentPreset(), mPreDelayMs(50.0f), mHighCut(5000.0f), mLowCut(100.0f), mRoomSize(0.5f), mDamping(0.5f), mDiffusion(0.5f), mEarlyLate(0.5f) {
     mEnvironmentPreset = generic;

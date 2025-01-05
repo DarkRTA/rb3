@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendChorus::gRev = 0;
-unsigned short FxSendChorus::gAltRev = 0;
+INIT_REVS(FxSendChorus);
 
 FxSendChorus::FxSendChorus() : mDelayMs(50.0f), mRate(1.0f), mDepth(10.0f), mFeedbackPct(30), mOffsetPct(20), mTempoSync(0), mSyncType(), mTempo(120.0f) {
     mSyncType = quarter;

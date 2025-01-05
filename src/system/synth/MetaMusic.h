@@ -48,7 +48,7 @@ public:
     int mBytesRead; // 0x50
     Fader *mFader; // 0x54
     Fader *mFaderMute; // 0x58
-    ObjPtrList<Fader, ObjectDir> mExtraFaders; // 0x5c
+    ObjPtrList<Fader> mExtraFaders; // 0x5c
     MetaMusicLoader *mLoader; // 0x6c
     std::vector<ObjDirPtr<ObjectDir> > unk70; // 0x70
     bool unk78; // 0x78

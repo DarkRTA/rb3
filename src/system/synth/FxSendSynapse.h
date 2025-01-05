@@ -1,7 +1,7 @@
-#ifndef SYNTH_FXSENDSYNAPSE_H
-#define SYNTH_FXSENDSYNAPSE_H
+#pragma once
 #include "synth/FxSend.h"
 
+/** "synapse effect" */
 class FxSendSynapse : public FxSend {
 public:
     FxSendSynapse();
@@ -20,18 +20,24 @@ public:
     void SetProximityEffect(float);
     void SetProximityFocus(float);
 
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    DECLARE_REVS;
 
-    float mAmount;
-    float mProximityEffect;
-    float mProximityFocus;
-    float mNote1Hz;
-    float mNote2Hz;
-    float mNote3Hz;
-    bool mUnisonTrio;
-    float mAttackSmoothing;
-    float mReleaseSmoothing;
+    /** "amount of correction". Ranges from 0 to 1. */
+    float mAmount; // 0x48
+    /** "amount of correction dependence on error". Ranges from 0 to 1. */
+    float mProximityEffect; // 0x4c
+    /** "focus for amount of correction dependence on error". Ranges from 0 to 1. */
+    float mProximityFocus; // 0x50
+    /** "target note 1 frequency". Ranges from 10 to 1000. */
+    float mNote1Hz; // 0x54
+    /** "target note 2 frequency". Ranges from 10 to 1000. */
+    float mNote2Hz; // 0x58
+    /** "target note 3 frequency". Ranges from 10 to 1000. */
+    float mNote3Hz; // 0x5c
+    /** "whether the three voices would sing in unison" */
+    bool mUnisonTrio; // 0x60
+    /** "attack time ms for correction". Ranges from 10 to 500. */
+    float mAttackSmoothing; // 0x64
+    /** "release time ms for correction". Ranges from 10 to 500. */
+    float mReleaseSmoothing; // 0x68
 };
-
-#endif
