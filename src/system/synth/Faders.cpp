@@ -52,7 +52,7 @@ void Fader::DoFade(float targetDb, float duration){
 bool Fader::IsFading() const { return mFaderTask; }
 
 float Fader::GetTargetDb() const {
-    if(mFaderTask) return mFaderTask->mInterp->mY1;
+    if(mFaderTask) return mFaderTask->mInterp->Y1();
     else return mVal;
 }
 
@@ -76,14 +76,7 @@ typedef void(FaderGroup::*FaderGroupFunc)(void);
 
 void Fader::UpdateValue(float val){
     mVal = val;
-
-    FaderGroupFunc funcs[2];
-    funcs[0] = funcs[1] = &FaderGroup::SetDirty;
-    std::set<FaderGroup*>::iterator it = mClients.begin();
-
-    for (;it != mClients.end(); it++) {
-        ((*it)->*funcs[1])();
-    }
+    // std::for_each(mClients.begin(), mClients.end(), FaderGroup::SetDirty());
 }
 
 SAVE_OBJ(Fader, 0x9B)
@@ -122,11 +115,11 @@ FaderGroup::FaderGroup(Hmx::Object* o) : mFaders(o, kObjListNoNull), mDirty(true
 }
 
 FaderGroup::~FaderGroup(){
-    while(mFaders.size() != 0){
+    while(!mFaders.empty()){
         Fader* frontObj = mFaders.front();
         mFaders.pop_front();
         frontObj->RemoveClient(this);
-        if(!frontObj->mLocalName.Null()){
+        if(!frontObj->LocalName().Null()){
             delete frontObj;
         }
     }

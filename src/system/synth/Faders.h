@@ -1,5 +1,4 @@
-#ifndef SYNTH_FADERS_H
-#define SYNTH_FADERS_H
+#pragma once
 #include "obj/Object.h"
 #include "math/Interp.h"
 #include "obj/ObjPtr_p.h"
@@ -36,6 +35,7 @@ public:
     void RemoveClient(FaderGroup*);
     void Check();
     float GetVal() const { return mVal; }
+    Symbol LocalName() const { return mLocalName; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -77,10 +77,8 @@ public:
     void Print(TextStream&);
     void Load(BinStream&);
 
-    ObjPtrList<Fader, class ObjectDir> mFaders;
+    ObjPtrList<Fader> mFaders;
     bool mDirty;
 };
 
 bool PropSync(FaderGroup&, DataNode&, DataArray*, int, PropOp);
-
-#endif
