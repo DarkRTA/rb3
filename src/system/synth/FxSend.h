@@ -1,5 +1,4 @@
-#ifndef SYNTH_FXSEND_H
-#define SYNTH_FXSEND_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include <vector>
@@ -35,20 +34,21 @@ public:
     void SetChannels(SendChannels);
     void TestWithMic();
     void EnableUpdates(bool);
+    FxSend* NextSend() const { return mNextSend; }
+    int Stage() const { return mStage; }
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    ObjOwnerPtr<FxSend, class ObjectDir> mNextSend;
-    int mStage;
-    bool mBypass;
-    float mDryGain;
-    float mWetGain;
-    float mInputGain;
-    float mReverbMixDb;
-    bool mReverbEnable;
-    bool mEnableUpdates;
-    SendChannels mChannels;
+    ObjOwnerPtr<FxSend> mNextSend; // 0x1c
+    int mStage; // 0x28
+    bool mBypass; // 0x2c
+    float mDryGain; // 0x30
+    float mWetGain; // 0x34
+    float mInputGain; // 0x38
+    float mReverbMixDb; // 0x3c
+    bool mReverbEnable; // 0x40
+    bool mEnableUpdates; // 0x41
+    SendChannels mChannels; // 0x44
 };
-
-#endif

@@ -7,7 +7,7 @@
 
 INIT_REVS(FxSend);
 
-FxSend::FxSend() : mNextSend(this, 0), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f),
+FxSend::FxSend() : mNextSend(this), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f),
     mInputGain(0.0f), mReverbMixDb(-96.0f), mReverbEnable(0), mEnableUpdates(1), mChannels(kSendAll) {
 }
 
@@ -18,12 +18,12 @@ FxSend::~FxSend(){
 void FxSend::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);
     MILO_ASSERT(from == mNextSend, 0x30);
-    mNextSend = ObjOwnerPtr<FxSend, class ObjectDir>(to, 0);
+    mNextSend = ObjOwnerPtr<FxSend>(to, 0);
     RebuildChain();
 }
 
 void FxSend::SetNextSend(FxSend* next){
-    if(next != mNextSend.Ptr() && CheckChain(next, mStage)){
+    if(next != mNextSend && CheckChain(next, mStage)){
         mNextSend = next;
         RebuildChain();
     }
@@ -55,7 +55,7 @@ void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
     for(; rit != ritEnd; ++rit){
         ObjRef* ref = *rit;
         FxSend* rsend = dynamic_cast<FxSend*>(ref->RefOwner());
-        if(rsend && rsend->mNextSend == this) {
+        if(rsend && rsend->NextSend() == this) {
             rsend->BuildChainVector(vec);
         }
         else {
@@ -72,8 +72,8 @@ bool FxSend::CheckChain(FxSend* send, int i){
         MILO_WARN("Error: can't have loops in your FX chain.");
         return false;
     }
-    else if(send && send->mStage <= i){
-        MILO_WARN("Error: output send must be set to a higher stage (%d <= %d).", send->mStage, i);
+    else if(send && send->Stage() <= i){
+        MILO_WARN("Error: output send must be set to a higher stage (%d <= %d).", send->Stage(), i);
         return false;
     }
     else {
@@ -81,7 +81,7 @@ bool FxSend::CheckChain(FxSend* send, int i){
         std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
         for(; rit != ritEnd; ++rit){
             FxSend* rsend = dynamic_cast<FxSend*>((*rit)->RefOwner());
-            if(rsend && rsend->mNextSend == this && rsend->mStage >= i){
+            if(rsend && rsend->NextSend() == this && rsend->Stage() >= i){
                 MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", rsend->Name());
                 return false;
             }
@@ -169,8 +169,8 @@ BEGIN_HANDLERS(FxSend)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(FxSend)
-    SYNC_PROP_SET(next_send, mNextSend, SetNextSend(_val.Obj<FxSend>()))
-    SYNC_PROP_SET(stage, mStage, SetStage(_val.Int()))
+    SYNC_PROP_SET(next_send, NextSend(), SetNextSend(_val.Obj<FxSend>()))
+    SYNC_PROP_SET(stage, Stage(), SetStage(_val.Int()))
     SYNC_PROP_MODIFY(dry_gain, mDryGain, UpdateMix())
     SYNC_PROP_MODIFY(wet_gain, mWetGain, UpdateMix())
     SYNC_PROP_MODIFY(input_gain, mInputGain, UpdateMix())

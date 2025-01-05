@@ -77,7 +77,7 @@ typedef void(FaderGroup::*FaderGroupFunc)(void);
 
 void Fader::UpdateValue(float val){
     mVal = val;
-    std::for_each(mClients.begin(), mClients.end(), std::mem_fun_t<void, FaderGroup>(&FaderGroup::SetDirty));
+    std::for_each(mClients.begin(), mClients.end(), std::mem_fun(&FaderGroup::SetDirty));
 }
 
 SAVE_OBJ(Fader, 0x9B)
