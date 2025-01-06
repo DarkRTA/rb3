@@ -1,5 +1,4 @@
-#ifndef SYNTH_SEQUENCE_H
-#define SYNTH_SEQUENCE_H
+#pragma once
 #include "obj/Object.h"
 #include "synth/Pollable.h"
 #include "utl/FilePath.h"
@@ -32,7 +31,7 @@ public:
 
     void Stop(bool);
     
-    ObjPtrList<SeqInst, class ObjectDir> mInsts; // 0x28
+    ObjPtrList<SeqInst> mInsts; // 0x28
     float mAvgVol; // 0x38
     float mVolSpread; // 0x3c
     float mAvgTranspose; // 0x40
@@ -60,8 +59,8 @@ public:
         REGISTER_OBJ_FACTORY(WaitSeq)
     }
 
-    float mAvgWaitSecs;
-    float mWaitSpread;
+    float mAvgWaitSecs; // 0x68
+    float mWaitSpread; // 0x6c
 };
 
 class GroupSeq : public Sequence {
@@ -73,9 +72,9 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    ObjPtrList<Sequence, class ObjectDir>& Children(){ return mChildren; }
+    ObjPtrList<Sequence>& Children(){ return mChildren; }
 
-    ObjPtrList<Sequence, class ObjectDir> mChildren; // 0x68
+    ObjPtrList<Sequence> mChildren; // 0x68
 };
 
 class RandomGroupSeq : public GroupSeq {
@@ -176,5 +175,3 @@ public:
         REGISTER_OBJ_FACTORY(SfxSeq)
     }
 };
-
-#endif

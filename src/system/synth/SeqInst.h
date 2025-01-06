@@ -26,6 +26,7 @@ public:
 
     void Start();
     void SetVolume(float);
+    bool Started() const { return mStarted; }
 
     NEW_POOL_OVERLOAD(SeqInst);
     DELETE_POOL_OVERLOAD(SeqInst);
