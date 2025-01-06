@@ -1303,7 +1303,7 @@
             "system/synth/MidiSynth.cpp": "NonMatching",
             "system/synth/MoggClip.cpp": "Matching",
             "system/synth/MoggClipMap.cpp": "Matching",
-            "system/synth/OggMap.cpp": "NonMatching",
+            "system/synth/OggMap.cpp": "Equivalent",
             "system/synth/Pollable.cpp": "NonMatching",
             "system/synth/SampleData.cpp": "NonMatching",
             "system/synth/SampleInst.cpp": "Matching",

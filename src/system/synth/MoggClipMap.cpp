@@ -3,7 +3,7 @@
 
 int MoggClipMap::sRev = 0;
 
-MoggClipMap::MoggClipMap(Hmx::Object* obj) : mMoggClip(obj, 0), mPan(0.0f), mPanWidth(0.0f), mVolume(0.0f), mIsStereo(false) {
+MoggClipMap::MoggClipMap(Hmx::Object* obj) : mMoggClip(obj), mPan(0.0f), mPanWidth(0.0f), mVolume(0.0f), mIsStereo(false) {
 
 }
 

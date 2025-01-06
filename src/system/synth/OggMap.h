@@ -1,5 +1,4 @@
-#ifndef SYNTH_OGGMAP_H
-#define SYNTH_OGGMAP_H
+#pragma once
 #include <vector>
 #include "utl/BinStream.h"
 
@@ -11,8 +10,6 @@ public:
     void Read(BinStream&);
     void GetSeekPos(int, int&, int&);
 
-    int mGran;
-    std::vector<std::pair<int, int> > mLookup;
+    int mGran; // 0x4
+    std::vector<std::pair<int, int> > mLookup; // 0x8
 };
-
-#endif
