@@ -94,6 +94,29 @@ public:
     void PickNextIndex();
     void ForceNextIndex(int);
     int GetNumSimul(){ return mNumSimul; }
+    void AddToPlayedHistory(int idx){
+        if(!mAllowRepeats){
+            if(mPlayHistory.size() != 0){
+                unsigned int plays = mPlayHistory.size();
+                int cap = mChildren.size() - 1;
+                if(plays == cap){
+                    int numChildren = mChildren.size();
+                    for(int i = 0; i < numChildren / 2; i++){
+                        mPlayHistory.pop_front();
+                    }
+                }
+            }
+            mPlayHistory.push_back(idx);
+        }
+    }
+    bool AllowRepeats() const { return mAllowRepeats; }
+    bool InPlayedHistory(int idx) const {
+        std::list<int>::const_reverse_iterator it;
+        for(it = mPlayHistory.rbegin(); it != mPlayHistory.rend(); it++){
+            if(*it == idx) return true;
+        }
+        return false;
+    }
 
     NEW_OBJ(RandomGroupSeq)
     static void Init(){

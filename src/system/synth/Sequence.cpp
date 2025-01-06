@@ -202,9 +202,28 @@ int RandomGroupSeq::NextIndex(){
 }
 
 void RandomGroupSeq::PickNextIndex(){
+#ifdef MILO_DEBUG
     MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1C0);
-    if(!sForceSerialSequences) mNextIndex = RandomInt(0, Children().size());
-    else mNextIndex = (mNextIndex + 1) % Children().size();
+#else
+    if(GetNumSimul() != 1) mChildren.size();
+#endif
+    if(!sForceSerialSequences){
+        mNextIndex = RandomInt(0, mChildren.size());
+    }
+    else mNextIndex = (mNextIndex + 1) % mChildren.size();
+
+    if(mChildren.size() > 1 && !AllowRepeats()){
+        if(mForceChooseIndex > 0) mNextIndex = mForceChooseIndex; 
+        else {
+            while(InPlayedHistory(mNextIndex)){
+                if(!sForceSerialSequences){
+                    mNextIndex = RandomInt(0, mChildren.size());
+                }
+                else mNextIndex = (mNextIndex + 1) % mChildren.size();
+            }
+        }
+    }
+    AddToPlayedHistory(mNextIndex);
 }
 
 void RandomGroupSeq::ForceNextIndex(int i){
@@ -213,11 +232,7 @@ void RandomGroupSeq::ForceNextIndex(int i){
         MILO_WARN("index out of bounds for ForceNextIndex (index = %d)", i);
     }
     else {
-        for(std::list<int>::iterator it = mPlayHistory.begin(); it != mPlayHistory.end(); it){
-            if(mNextIndex == *it++){
-                it = mPlayHistory.erase(it);
-            }
-        }
+        mPlayHistory.remove(mNextIndex);
         mNextIndex = i;
     }
 }
