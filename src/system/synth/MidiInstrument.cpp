@@ -2,7 +2,6 @@
 #include "synth/Synth.h"
 #include "synth/SampleInst.h"
 #include "math/Decibels.h"
-#include "synth/Utl.h"
 #include "utl/Symbols.h"
 
 NoteVoiceInst::NoteVoiceInst(MidiInstrument* minst, SampleZone* zone, unsigned char uc1, unsigned char uc2, int i1, int i2, float f) :
@@ -12,16 +11,47 @@ NoteVoiceInst::NoteVoiceInst(MidiInstrument* minst, SampleZone* zone, unsigned c
         mSample = zone->mSample->NewInst();
         mSample->SetBankVolume(zone->mVolume + RatioToDb(uc2 / 127.0f));
         mSample->SetBankPan(zone->mPan);
-        mSample->SetBankSpeed(CalcSpeedFromTranspose(mFineTune / 100.0f + (mTriggerNote - mCenterNote)));
+        mSample->SetBankSpeed(CalcBankSpeed(mTriggerNote));
         mSample->SetFXCore(zone->mFXCore);
         mSample->SetADSR(zone->mADSR);
-        mSample->SetSend(minst->mSend);
+        mSample->SetSend(minst->GetSend());
+    }
+}
+
+void NoteVoiceInst::Poll(){
+    if(mDurationFramesLeft == 0){
+        Stop();
+    }
+    else {
+        if(mDurationFramesLeft > 0) mDurationFramesLeft--;
+        if(mGlideFramesLeft >= 0){
+            float interped = Interp(mGlideFromNote, mGlideToNote, (float)(mGlideFrames - mGlideFramesLeft--) / (float)mGlideFrames);
+            mSample->SetBankSpeed(CalcSpeedFromTranspose(mFineTune / 100.0f + (interped - mCenterNote)));
+        }
+    }
+}
+
+void NoteVoiceInst::SetFineTune(float tune){
+    mFineTune = tune;
+    if(mGlideFramesLeft <= 0){
+        mSample->SetBankSpeed(CalcSpeedFromTranspose(CalcBankSpeed(mTriggerNote)));
+    }
+}
+
+void NoteVoiceInst::GlideToNote(unsigned char uc, int i){
+    int num = std::max(1, i);
+    if(mSample){
+        unsigned char oldTrigNote = mTriggerNote;
+        mGlideToNote = uc;
+        mTriggerNote = uc;
+        mGlideFromNote = oldTrigNote;
+        mGlideFrames = num;
+        mGlideFramesLeft = num;
     }
 }
 
 NoteVoiceInst::~NoteVoiceInst(){
-    delete mSample;
-    mSample = 0;
+    RELEASE(mSample);
 }
 
 void NoteVoiceInst::Start(){
@@ -85,8 +115,8 @@ MidiInstrument::MidiInstrument() : mMultiSampleMap(this), mPatchNumber(0), mSend
 }
 
 void MidiInstrument::Poll(){
-    if(mActiveVoices.size() != 0){
-        for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); it){
+    if(!mActiveVoices.empty()){
+        for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); it){
             NoteVoiceInst* theinst = *it++;
             theinst->Poll();
             if(theinst->Started() && !theinst->IsRunning()){
@@ -94,7 +124,7 @@ void MidiInstrument::Poll(){
             }
         }
         if(mFaders.Dirty()){
-            for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
+            for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
                 (*it)->UpdateVolume();
             }
         }
@@ -102,7 +132,7 @@ void MidiInstrument::Poll(){
 }
 
 BEGIN_HANDLERS(MidiInstrument)
-    HANDLE_ACTION(add_map, mMultiSampleMap.push_back(SampleZone(this)));
+    HANDLE_ACTION(add_map, mMultiSampleMap.push_back());
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0xFE)
 END_HANDLERS
@@ -122,9 +152,9 @@ END_CUSTOM_PROPSYNC
 
 BEGIN_PROPSYNCS(MidiInstrument)
     SYNC_PROP(multisamplemaps, mMultiSampleMap)
-    SYNC_PROP_SET(send, mSend, SetSend(_val.Obj<FxSend>()))
-    SYNC_PROP_SET(reverb_mix_db, mReverbMixDb, SetReverbMixDb(_val.Float()))
-    SYNC_PROP_SET(reverb_enable, mReverbEnable, SetReverbEnable(_val.Int()))
+    SYNC_PROP_SET(send, GetSend(), SetSend(_val.Obj<FxSend>()))
+    SYNC_PROP_SET(reverb_mix_db, GetReverbMixDb(), SetReverbMixDb(_val.Float()))
+    SYNC_PROP_SET(reverb_enable, GetReverbEnable(), SetReverbEnable(_val.Int()))
     SYNC_PROP(faders, mFaders)
     SYNC_PROP(patchnum, mPatchNumber)
 END_PROPSYNCS
@@ -164,8 +194,8 @@ END_COPYS
 void MidiInstrument::PressNote(unsigned char uc1, unsigned char uc2, int i, int j){
     if(i != -1){
         bool b = false;
-        for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
-            if(i == (*it)->mGlideID && !(*it)->Stopped()){
+        for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); it++){
+            if(i == (*it)->GlideID() && !(*it)->Stopped()){
                 b = true;
                 (*it)->GlideToNote(uc1, j);
                 (*it)->SetFineTune(mFineTuneCents);
@@ -177,8 +207,8 @@ void MidiInstrument::PressNote(unsigned char uc1, unsigned char uc2, int i, int 
 }
 
 void MidiInstrument::ReleaseNote(unsigned char uc){
-    for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
-        if(uc == (*it)->mTriggerNote){
+    for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
+        if(uc == (*it)->TriggerNote()){
             (*it)->Stop();
         }
     }
@@ -190,14 +220,14 @@ void MidiInstrument::PlayNote(unsigned char uc1, unsigned char uc2, int i){
 
 void MidiInstrument::SetReverbMixDb(float f){
     mReverbMixDb = f;
-    for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
+    for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
         (*it)->SetReverbMixDb(mReverbMixDb);
     }
 }
 
 void MidiInstrument::SetReverbEnable(bool b){
     mReverbEnable = b;
-    for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
+    for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
         (*it)->SetReverbEnable(mReverbEnable);
     }
 }
@@ -214,16 +244,12 @@ void MidiInstrument::StartSample(unsigned char uc1, unsigned char uc2, int i, in
 }
 
 void MidiInstrument::KillAllVoices(){
-    while(!mActiveVoices.empty()){
-        NoteVoiceInst* front = mActiveVoices.front();
-        mActiveVoices.pop_front();
-        delete front;
-    }
+    mActiveVoices.DeleteAll();
 }
 
 void MidiInstrument::SetSend(FxSend* send){
     mSend = send;
-    for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
+    for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
         (*it)->SetSend(mSend);
     }
 }
@@ -235,7 +261,7 @@ NoteVoiceInst* MidiInstrument::MakeNoteInst(SampleZone* zone, unsigned char uc1,
 }
 
 void MidiInstrument::Pause(bool b){
-    for(ObjPtrList<NoteVoiceInst, ObjectDir>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
+    for(ObjPtrList<NoteVoiceInst>::iterator it = mActiveVoices.begin(); it != mActiveVoices.end(); ++it){
         (*it)->Pause(b);
     }
 }

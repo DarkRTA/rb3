@@ -1,9 +1,9 @@
-#ifndef SYNTH_MIDIINSTRUMENT_H
-#define SYNTH_MIDIINSTRUMENT_H
+#pragma once
 #include "obj/Object.h"
 #include "synth/SampleZone.h"
 #include "synth/Faders.h"
 #include "synth/FxSend.h"
+#include "synth/Utl.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
 
@@ -33,7 +33,12 @@ public:
     void SetSpeed(float);
     void GlideToNote(unsigned char, int);
     void SetFineTune(float);
-    void KillAllVoices();
+    int GlideID() const { return mGlideID; }
+    unsigned char TriggerNote() const { return mTriggerNote; }
+
+    float CalcBankSpeed(float trigNote){
+        return CalcSpeedFromTranspose(mFineTune / 100.0f + (trigNote - mCenterNote));
+    }
 
     NEW_POOL_OVERLOAD(NoteVoiceInst)
     DELETE_POOL_OVERLOAD(NoteVoiceInst)
@@ -55,6 +60,7 @@ public:
     MidiInstrument* mOwner; // 0x48
 };
 
+/** "Basic sound effect object.  Plays several samples with a given volume, pan, transpose, and envelope settings." */
 class MidiInstrument : public Hmx::Object {
 public:
     MidiInstrument();
@@ -80,17 +86,23 @@ public:
     void PlayNote(unsigned char, unsigned char, int);
     NoteVoiceInst* MakeNoteInst(SampleZone*, unsigned char, unsigned char, int, int);
 
+    FxSend* GetSend() const { return mSend; }
+    float GetReverbMixDb() const { return mReverbMixDb; }
+    bool GetReverbEnable() const { return mReverbEnable; }
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     ObjVector<SampleZone> mMultiSampleMap; // 0x1c
     int mPatchNumber; // 0x28
-    ObjPtr<FxSend, ObjectDir> mSend; // 0x2c
+    /** "Effect chain to use" */
+    ObjPtr<FxSend> mSend; // 0x2c
+    /** "Reverb send for this instrument". Ranges from -96 to 20. */
     float mReverbMixDb; // 0x38
+    /** "Enable reverb send" */
     bool mReverbEnable; // 0x3c
-    ObjPtrList<NoteVoiceInst, ObjectDir> mActiveVoices; // 0x40
+    ObjPtrList<NoteVoiceInst> mActiveVoices; // 0x40
+    /** "Faders affecting this sound effect" */
     FaderGroup mFaders; // 0x50
     float mFineTuneCents; // 0x64
 };
-
-#endif
