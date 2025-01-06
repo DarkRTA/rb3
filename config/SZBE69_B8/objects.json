@@ -1257,7 +1257,7 @@
 
             "system/rndwii/Cam.cpp": "NonMatching",
             "system/rndwii/Env.cpp": "NonMatching",
-            "system/rndwii/Lit.cpp": "MISSING",
+            "system/rndwii/Lit.cpp": "NonMatching",
             "system/rndwii/Mat.cpp": "MISSING",
             "system/rndwii/Mesh.cpp": "NonMatching",
             "system/rndwii/Movie.cpp": "MISSING",

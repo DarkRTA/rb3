@@ -4,6 +4,7 @@
 #include "obj/ObjPtr_p.h"
 #include "os/Debug.h"
 #include "revolution/gx/GXTypes.h"
+#include "rndobj/Lit.h"
 #include "rndobj/Mat.h"
 
 ObjPtrList<BandCharacter> WiiEnviron::mShadowedCharacters(NULL, kObjListNoNull);
@@ -57,7 +58,10 @@ WiiEnviron::~WiiEnviron() {}
 bool WiiEnviron::SetLight(int i, WiiLight *lit) {
     GXLightID id = LightId(i);
     lit->Update(id);
-
+    unk_0x19E |= id;
+    if (unk_0x19C && lit->GetType() != RndLight::kDirectional) {
+        unk_0x19C = false;
+    }
     return 1;
 }
 

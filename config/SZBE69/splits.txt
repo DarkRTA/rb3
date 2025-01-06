@@ -1373,6 +1373,7 @@ system/utl/BinStream.cpp:
 
 system/utl/BufStream.cpp:
 	.text       start:0x803431F4 end:0x80343728
+	.data       start:0x808567C8 end:0x80856820
 
 system/utl/BufStreamNAND.cpp:
 	.text       start:0x80343728 end:0x80344238
@@ -1437,6 +1438,7 @@ system/utl/GlitchFinder.cpp:
 system/utl/HangBlock_Wii.cpp:
 	.text       start:0x8034D0E4 end:0x8034D138
 	.ctors      start:0x807EFF44 end:0x807EFF48
+	.bss        start:0x8097BEA8 end:0x8097BF18
 
 system/utl/HttpWii.cpp:
 	.text       start:0x8034D138 end:0x8034DAAC
@@ -1565,7 +1567,8 @@ system/utl/Spew.cpp:
 
 system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
-	.data       start:0x80858C90 end:0x80858CA0
+	.data       start:0x80858C90 end:0x80858CA8
+	.sbss       start:0x808E4560 end:0x808E4568
 
 system/utl/StringTable.cpp:
 	.text       start:0x80362B4C end:0x803638E0
@@ -1612,6 +1615,7 @@ system/utl/TempoMap.cpp:
 
 system/utl/TextFileStream.cpp:
 	.text       start:0x8037A58C end:0x8037A67C
+	.data       start:0x808744D8 end:0x80874510
 	.sdata2     start:0x808E5870 end:0x808E5878
 
 system/utl/TextStream.cpp:
@@ -1620,10 +1624,12 @@ system/utl/TextStream.cpp:
 
 system/utl/TimeConversion.cpp:
 	.text       start:0x8037AA74 end:0x8037AD34
+	.data       start:0x80874550 end:0x80874588
 
 system/utl/UserGuid.cpp:
 	.text       start:0x8037AD34 end:0x8037AD40
 	.ctors      start:0x807EFF80 end:0x807EFF84
+	.bss        start:0x80985920 end:0x80985930
 
 system/utl/UTF8.cpp:
 	.text       start:0x8037AD40 end:0x8037BE50
@@ -3115,6 +3121,8 @@ system/oggvorbis/floor0.c:
 
 system/oggvorbis/floor1.c:
 	.text       start:0x806C504C end:0x806C6ED4
+	.data       start:0x808A1600 end:0x808A1A20
+	.bss        start:0x80993248 end:0x80993250
 
 system/oggvorbis/framing.c:
 	.text       start:0x806C6ED4 end:0x806C7B44

@@ -151,13 +151,11 @@
             "base": "zlib",
             "flags": []
         },
-        "libogg": {
+        "system/vorbis": {
             "base": "zlib",
-            "flags": []
-        },
-        "vorbis": {
-            "base": "zlib",
-            "flags": []
+            "flags": [
+                "-fp_contract on"
+            ]
         },
         "bt": {
             "base": "base",

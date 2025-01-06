@@ -11,11 +11,12 @@
 const unsigned int String::npos = -1;
 
 char gEmpty = 0;
-
+#ifdef VERSION_SZBE69_B8
 DECOMP_FORCEACTIVE(Str,
     __FILE__,
     "i < mCap + 1"
 )
+#endif
 
 String::String() : mCap(0), mStr(&gEmpty) {}
 
@@ -78,7 +79,11 @@ String String::operator+(char c) const {
 
 String String::operator+(const String& str) const {
     String ret(*this);
+    #ifdef VERSION_SZBE69_B8
     ret += str.c_str();
+    #else
+    ret += str;
+    #endif
     return ret;
 }
 
@@ -378,7 +383,7 @@ String& String::erase(unsigned int idx){
 String& String::erase(unsigned int start, unsigned int len){
     return replace(start, len, "");
 }
-
+#ifdef VERSION_SZBE69_B8
 DECOMP_FORCEACTIVE(Str,
     "strlen( format ) < 30",
     "out",
@@ -386,6 +391,7 @@ DECOMP_FORCEACTIVE(Str,
     "len > 0",
     "allowed"
 )
+#endif
 
 // inserts the char c into this->text at index pos, cnt times
 String& String::insert(unsigned int pos, unsigned int cnt, char c){

@@ -41,7 +41,7 @@ TextStream &TextStream::operator<<(unsigned char i) {
     Print(buf);
     return *this;
 }
-
+#ifdef VERSION_SZBE69_B8
 TextStream &TextStream::operator<<(unsigned short i) {
     char buf[1024];
     MILO_ASSERT(SNPRINTF(buf, sizeof(buf), "%hu", i) >= 0, 0x39);
@@ -55,7 +55,21 @@ TextStream &TextStream::operator<<(unsigned int i) {
     Print(buf);
     return *this;
 }
+#else
+TextStream &TextStream::operator<<(unsigned int i) {
+    char buf[1024];
+    MILO_ASSERT(SNPRINTF(buf, sizeof(buf), "%u", i) >= 0, 0x3E);
+    Print(buf);
+    return *this;
+}
 
+TextStream &TextStream::operator<<(unsigned short i) {
+    char buf[1024];
+    MILO_ASSERT(SNPRINTF(buf, sizeof(buf), "%hu", i) >= 0, 0x39);
+    Print(buf);
+    return *this;
+}
+#endif
 TextStream &TextStream::operator<<(unsigned long i) {
     char buf[1024];
     MILO_ASSERT(SNPRINTF(buf, sizeof(buf), "%lu", i) >= 0, 0x43);
