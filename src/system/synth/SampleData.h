@@ -1,5 +1,4 @@
-#ifndef SYNTH_SAMPLEDATA_H
-#define SYNTH_SAMPLEDATA_H
+#pragma once
 #include "utl/Str.h"
 #include "utl/BinStream.h"
 #include "utl/FilePath.h"
@@ -8,6 +7,9 @@
 struct SampleMarker {
     SampleMarker() : name(""), sample(-1) {}
     SampleMarker(const String& str, int i) : name(str), sample(i) {}
+    void Load(BinStream& bs){
+        bs >> name; bs >> sample;
+    }
 
     String name;
     int sample;
@@ -49,5 +51,3 @@ public:
     void* mData; // 0x10
     std::vector<SampleMarker> mMarkers; // 0x14
 };
-
-#endif

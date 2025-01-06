@@ -1,5 +1,4 @@
-#ifndef SYNTH_POLLABLE_H
-#define SYNTH_POLLABLE_H
+#pragma once
 #include <list>
 
 class SynthPollable {
@@ -12,11 +11,9 @@ public:
     void StartPolling();
     void CancelPolling();
     void PollAll();
-
-    std::list<SynthPollable*>::iterator mItr;
-
+    
     static std::list<SynthPollable*> sPollables;
-    bool mIsActive;
-};
 
-#endif
+    std::list<SynthPollable*>::iterator mItr; // 0x4
+    bool mIsActive; // 0x8
+};

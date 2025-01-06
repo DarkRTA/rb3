@@ -48,7 +48,7 @@ void SampleData::Load(BinStream& bs, const FilePath& fp){
             bs >> b;
         }
         if(b){
-            if(ThePlatformMgr.mEnableSFX){
+            if(ThePlatformMgr.AreSFXEnabled()){
                 mData = sAlloc(mSizeBytes, fp.c_str());
                 ReadChunks(bs, mData, mSizeBytes, 0x8000);
             }
@@ -144,7 +144,6 @@ int SampleData::NumMarkers() const { return mMarkers.size(); }
 const SampleMarker& SampleData::GetMarker(int i) const { return mMarkers[i]; }
 
 BinStream& operator>>(BinStream& bs, SampleMarker& m){
-    bs >> m.name;
-    bs >> m.sample;
+    m.Load(bs);
     return bs;
 }
