@@ -16,7 +16,12 @@ char* MicNull::GetRecentBuf(int& i){
 
 char* MicNull::GetContinuousBuf(int& i){
     mTimer.Restart();
-    float f = GetSampleRate();
+    i = ((int)GetSampleRate() / 1000) * mTimer.GetLastMs();
+    MinEq(i, 10000);
+    int num = i % 8;
+    if(num != 0) i += num;
     memcpy(filler, mBuf, i * 2);
     return filler;
 }
+
+int MicNull::GetSampleRate() const { return 48000; }

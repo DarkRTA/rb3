@@ -1,5 +1,4 @@
-#ifndef SYNTH_MIC_H
-#define SYNTH_MIC_H
+#pragma once
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 
@@ -53,5 +52,3 @@ public:
     bool mInUse;
     float unk8;
 };
-
-#endif

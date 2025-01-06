@@ -1296,7 +1296,7 @@
             },
             "system/synth/Mic.cpp": "Matching",
             "system/synth/MicClientMapper.cpp": "NonMatching",
-            "system/synth/MicNull.cpp": "NonMatching",
+            "system/synth/MicNull.cpp": "Matching",
             "system/synth/MidiChannel.cpp": "NonMatching",
             "system/synth/MidiInstrument.cpp": "NonMatching",
             "system/synth/MidiInstrumentMgr.cpp": "Matching",
