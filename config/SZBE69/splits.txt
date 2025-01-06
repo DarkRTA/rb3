@@ -14,10 +14,10 @@ Sections:
 	.bss        type:bss align:64
 
 rb3/unknown/800/unk_8000D980.cpp:
-	.text       start:0x8000D980 end:0x8000F364
+	.text       start:0x8000D980 end:0x8000E1BC
 
 App.cpp:
-	.text       start:0x8000F364 end:0x8000F804
+	.text       start:0x8000E1BC end:0x8000F804
 
 rb3/stubs/stubone.cpp:
 	.text       start:0x8000F90C end:0x8000F914
@@ -32,8 +32,9 @@ network/Platform/BadEvents.cpp:
 	.text       start:0x80011754 end:0x80011778
 	.bss        start:0x808F0950 end:0x808F0954
 
-libs/quazal/datetime.cpp:
-	.text       start:0x800127E4 end:0x800129F4
+network/Platform/DateTime.cpp:
+	.text       start:0x800127E4 end:0x80012A38
+	.ctors      start:0x807EFD2C end:0x807EFD30
 
 libs/quazal/unknown/8001/unk_800135F0.cpp:
 	.text       start:0x800135F0 end:0x80015228
@@ -2346,6 +2347,7 @@ system/movie/Movie_Wii.cpp:
 
 system/movie/CustomSplash_Wii.cpp:
 	.text       start:0x8053D604 end:0x8053E0F4
+	.data       start:0x8088EC38 end:0x8088ED90
 
 system/track/Track.cpp:
 	.text       start:0x8053E0F4 end:0x8053E2A4
@@ -3195,20 +3197,20 @@ libs/bt/stack/l2cap/l2c_utils.c:
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
-sdk/RVL_SDK/revolution/os/OSReboot.c:
+sdk/RVL_SDK/src/os/OSReboot.c:
 	.text       start:0x80769E30 end:0x80769EC0
 	.sbss       start:0x808E5498 end:0x808E54A0
 
-sdk/RVL_SDK/revolution/os/OSSemaphore.c:
+sdk/RVL_SDK/src/os/OSSemaphore.c:
 	.text       start:0x8076B2A0 end:0x8076B3D0
 
-sdk/RVL_SDK/revolution/pad/Pad.c:
+sdk/RVL_SDK/src/pad/Pad.c:
 	.text       start:0x8076F4E0 end:0x8076F540
 
-sdk/RVL_SDK/revolution/rso/RSOLink.c:
+sdk/RVL_SDK/src/rso/RSOLink.c:
 	.text       start:0x8076F540 end:0x807713F0
 
-sdk/RVL_SDK/revolution/sc/scsystem.c:
+sdk/RVL_SDK/src/sc/scsystem.c:
 	.text       start:0x807713F0 end:0x80772E80
 	.data       start:0x808D2AF8 end:0x808D2CF0
 	.sdata      start:0x808E35F8 end:0x808E3708

@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/SavedSetlist.h"
 #include "rndobj/Tex.h"
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
@@ -12,6 +13,7 @@
 #include "tour/TourCharLocal.h"
 
 #define kMaxCharacters 10
+#define kMaxPatchesPerProfile 8
 
 class PatchDir;
 class CharData;
@@ -19,7 +21,6 @@ class TourProgress;
 class PerformerStatsInfo;
 class PerformanceData;
 class PatchDescriptor;
-class LocalSavedSetlist;
 class SongStatusMgr;
 class RockCentralOpCompleteMsg;
 class LocalBandUser;
@@ -96,7 +97,7 @@ public:
     void EarnAccomplishment(Symbol);
     AccomplishmentProgress* GetAccomplishmentProgress() const;
     AccomplishmentProgress* AccessAccomplishmentProgress();
-    void GetHardcoreIconLevel() const;
+    int GetHardcoreIconLevel() const;
     void SetHardcoreIconLevel(int);
     void GetTourBand();
     String GetBandName() const;
@@ -123,7 +124,7 @@ public:
     void FakeProfileFill();
     void GetPictureTex();
     void AutoFakeFill(int);
-    int NumChars() const;
+    int NumChars() const { return mCharacters.size(); }
     
     static int SaveSize(int);
 
@@ -131,11 +132,9 @@ public:
     std::vector<PatchDir*> mPatches; // 0x1c
     std::vector<TourCharLocal*> mCharacters; // 0x24 
     TourProgress* mTourProgress; // 0x2c
-    std::map<Symbol, float> unk30; // 0x30
+    std::map<Symbol, float> mLessonCompletions; // 0x30
     SongStatusMgr* mScores; // 0x48
-    std::vector<int> unk4c; // 0x4c
-    // song status mgr 0x48
-    // saved song lists 0x4c
+    std::vector<LocalSavedSetlist*> mSavedSetlists; // 0x4c
     std::vector<StandIn> mStandIns; // 0x54
     HxGuid unk5c; // 0x5c
     Symbol unk6c; // 0x6c
@@ -152,7 +151,7 @@ public:
     DataResultList unk754;
     DataResultList unk76c;
     int unk784;
-    PerformanceData unk788[0x32];
+    PerformanceData unk788[50];
     int unk6f70;
     int unk6f74;
     ProfileAssets mProfileAssets; // 0x6f78
