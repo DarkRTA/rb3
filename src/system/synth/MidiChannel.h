@@ -1,16 +1,23 @@
-#ifndef SYNTH_MIDICHANNEL_H
-#define SYNTH_MIDICHANNEL_H
-
+#pragma once
+#include "utl/Symbol.h"
 #include <list>
-#include "system/utl/Symbol.h"
 #include <vector>
 
 class MidiChannel {
 public:
+    // got this from DC1
+    class DummySample {
+    public:
+        int unk0;
+    };
 
     class Note {
     public:
         // todo: figure out what this is, it's not in the bank5/6 symbols anywhere
+        int unk0;
+        float unk4;
+        std::vector<DummySample*> unk8;
+        std::vector<float> unk10;
     };
 
     MidiChannel();
@@ -21,5 +28,3 @@ public:
     float mTranspose; // 0x10 
     std::list<Note> mPlayingNotes; // 0x14
 };
-
-#endif // SYNTH_MIDICHANNEL_H
