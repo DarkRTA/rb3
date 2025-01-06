@@ -66,7 +66,7 @@ public:
     virtual void SetTranspose(float);
     virtual void Poll(){}
 
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> > mSeqs; // 0x34
+    ObjVector<ObjPtr<SeqInst> > mSeqs; // 0x34
 };
 
 class RandomGroupSeqInst : public GroupSeqInst {
@@ -82,7 +82,7 @@ public:
     DELETE_POOL_OVERLOAD(RandomGroupSeqInst);
 
     int mNumSeqs; // 0x40
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt; // 0x44
+    ObjVector<ObjPtr<SeqInst> >::iterator mIt; // 0x44
 };
 
 class RandomIntervalGroupSeqInst : public GroupSeqInst {
@@ -118,7 +118,7 @@ public:
     NEW_POOL_OVERLOAD(SerialGroupSeqInst);
     DELETE_POOL_OVERLOAD(SerialGroupSeqInst);
 
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt; // 0x40
+    ObjVector<ObjPtr<SeqInst> >::iterator mIt; // 0x40
 };
 
 class ParallelGroupSeqInst : public GroupSeqInst {
@@ -133,7 +133,7 @@ public:
     NEW_POOL_OVERLOAD(ParallelGroupSeqInst);
     DELETE_POOL_OVERLOAD(ParallelGroupSeqInst);
 
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator mIt; // 0x40
+    ObjVector<ObjPtr<SeqInst> >::iterator mIt; // 0x40
 };
 
 #endif

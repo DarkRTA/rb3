@@ -417,7 +417,14 @@ bool WaitSeqInst::IsRunning(){
 }
 
 GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {
-    mSeqs.push_back(ObjPtr<SeqInst>(this, 0));
+    if(b){
+        ObjPtrList<Sequence>& children = seq->mChildren;
+        for(ObjPtrList<Sequence>::iterator it = children.begin(); it != children.end(); ++it){
+            SeqInst* inst = (*it)->MakeInst();
+            mSeqs.push_back();
+            mSeqs.back() = inst;
+        }
+    }
 }
 
 GroupSeqInst::~GroupSeqInst(){
