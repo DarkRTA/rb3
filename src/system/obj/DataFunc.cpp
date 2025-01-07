@@ -1237,9 +1237,11 @@ DataMergeFilter::DataMergeFilter(const DataNode& node, Subdirs subs) : MergeFilt
     else if(mType == kDataFunc) mFunc = node.Func();
     else if(mType == kDataObject) mObj = node.GetObj();
     else if(mType == kDataSymbol){
-        mObj = gDataDir->FindObject(node.mValue.symbol, true);
+        const char* _name = node.UncheckedStr();
+        Symbol name = STR_TO_SYM(_name);
+        mObj = gDataDir->FindObject(name.Str(), true);
         if(!mObj){
-            const std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(node.mValue.symbol);
+            const std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(name);
             MILO_ASSERT(func != gDataFuncs.end(), 0x6ED);
             mFunc = func->second;
             mType = kDataFunc;
