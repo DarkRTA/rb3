@@ -1,5 +1,4 @@
-#ifndef SYNTH_SFXMAP_H
-#define SYNTH_SFXMAP_H
+#pragma once
 #include "obj/Object.h"
 #include "synth/SynthSample.h"
 #include "obj/ObjPtr_p.h"
@@ -13,14 +12,17 @@ public:
 
     static int gRev;
 
-    ObjPtr<SynthSample, ObjectDir> mSample; // 0x0
+    /** "Which sample to play" */
+    ObjPtr<SynthSample> mSample; // 0x0
+    /** "Volume in dB (0 is full volume, -96 is silence)" */
     float mVolume; // 0xc
+    /** "Surround pan, between -4 and 4" */
     float mPan; // 0x10
+    /** "Transpose in half steps" */
     float mTranspose; // 0x14
+    /** "Which core's digital FX should be used in playing this sample" */
     FXCore mFXCore; // 0x18
     ADSR mADSR; // 0x1c
 };
 
 BinStream& operator>>(BinStream&, SfxMap&);
-
-#endif

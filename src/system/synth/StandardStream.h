@@ -1,5 +1,4 @@
-#ifndef SYNTH_STANDARDSTREAM_H
-#define SYNTH_STANDARDSTREAM_H
+#pragma once
 #include "synth/Stream.h"
 #include "synth/Pollable.h"
 #include "synth/StreamReader.h"
@@ -140,5 +139,3 @@ public:
     float mAccumulatedLoopbacks;
     bool mPollingEnabled;
 };
-
-#endif

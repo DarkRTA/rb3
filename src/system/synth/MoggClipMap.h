@@ -9,6 +9,8 @@ public:
     virtual ~MoggClipMap(){}
     void myLoad(BinStream&);
 
+    MoggClip* GetMoggClip() const { return mMoggClip; }
+
     static int sRev;
 
     /** "Which moggclip to play" */

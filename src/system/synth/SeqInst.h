@@ -1,5 +1,4 @@
-#ifndef SYNTH_SEQINST_H
-#define SYNTH_SEQINST_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
@@ -135,5 +134,3 @@ public:
 
     ObjVector<ObjPtr<SeqInst> >::iterator mIt; // 0x40
 };
-
-#endif

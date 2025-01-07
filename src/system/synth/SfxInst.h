@@ -1,5 +1,4 @@
-#ifndef SYNTH_SFXINST_H
-#define SYNTH_SFXINST_H
+#pragma once
 #include "synth/SeqInst.h"
 #include "synth/MoggClipMap.h"
 #include "synth/SampleInst.h"
@@ -28,8 +27,6 @@ public:
     DELETE_POOL_OVERLOAD(SfxInst);
 
     std::vector<SampleInst*> mSamples; // 0x34
-    ObjPtrList<MoggClipMap, ObjectDir> mMoggClips; // 0x3c
+    ObjPtrList<MoggClipMap> mMoggClips; // 0x3c
     float mStartProgress; // 0x4c
 };
-
-#endif

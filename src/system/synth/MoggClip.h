@@ -51,6 +51,8 @@ public:
     void SetControllerVolume(float);
     void SetupPanInfo(float, float, bool);
 
+    bool HasStream() const { return mStream; }
+
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
