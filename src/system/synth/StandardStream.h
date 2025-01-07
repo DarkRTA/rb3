@@ -47,15 +47,15 @@ public:
     virtual bool IsPlaying() const;
     virtual bool IsPaused() const;
     virtual void Resync(float);
-    virtual void Fill();
-    virtual bool FillDone() const;
+    virtual void Fill(){}
+    virtual bool FillDone() const { return true; }
     virtual void EnableReads(bool);
     virtual float GetTime();
     virtual float GetJumpBackTotalTime();
     virtual float GetInSongTime();
     virtual int GetLoopInstances();
-    virtual float GetFilePos() const;
-    virtual float GetFileLength() const;
+    virtual float GetFilePos() const { return 0; }
+    virtual float GetFileLength() const { return 0; }
     virtual void SetVolume(int, float);
     virtual float GetVolume(int) const;
     virtual void SetPan(int, float);
@@ -83,7 +83,7 @@ public:
     virtual void SlipStop(int);
     virtual float GetSlipOffset(int);
     virtual void SetSlipSpeed(int, float);
-    virtual FaderGroup* ChannelFaders(int); // fix return type
+    virtual FaderGroup* ChannelFaders(int);
     virtual void AddVirtualChannels(int);
     virtual void RemapChannel(int, int);
 
@@ -105,8 +105,9 @@ public:
     void UpdateSpeed(int);
     int MsToSamp(float);
     float SampToMs(int);
-    void UpdateFxSends();
+    void UpdateFXSends();
     bool StuffChannels();
+    void DoJump();
     int ConsumeData(void**, int, int);
 
     State mState; // 0x14
@@ -138,7 +139,7 @@ public:
     float unkec; // 0xec
     bool mGetInfoOnly; // 0xf0
     std::vector<void*> unkf4; // 0xf4
-    std::vector<int> unkfc; // 0xfc
+    std::vector<std::pair<int, int> > unkfc; // 0xfc
     std::vector<int> unk104; // 0x104
     std::vector<Marker> mMarkerList; // 0x10c
     Marker mStartMarker; // 0x114

@@ -1,3 +1,4 @@
+#include "math/Decibels.h"
 #include "synth/StandardStream.h"
 #include "synth/Synth.h"
 #include <functional>
@@ -157,7 +158,7 @@ void StandardStream::InitInfo(int i1, int sampleRate, bool floatSamples, int i4)
             mRdr->Seek(numChannels);
         }
         Faders()->SetDirty();
-        UpdateFxSends();
+        UpdateFXSends();
     }
 }
 
@@ -315,8 +316,42 @@ void StandardStream::SetJump(float fromMs, float toMs, const char* file){
     else setJumpSamplesFromMs(fromMs, toMs);
 }
 
-void StandardStream::setJumpSamplesFromMs(float, float){
+void StandardStream::setJumpSamplesFromMs(float f1, float f2){
+    mJumpFromSamples = kStreamEndSamples;
+    mJumpToSamples = 0;
+    if(f1 != kStreamEndMs){
+        mJumpFromSamples = MsToSamp(f1);
+    }
+    if(f2 != 0){
+        mJumpToSamples = MsToSamp(f2);
+    }
+    if(unk144 != -1){
+        if(mJumpFromSamples >= unk144){
+            String str = mFile ? mFile->Filename() : "SynthStream";
+            MILO_WARN("%s: JumpFromSamples (%g sec) exceeds the length of the stream (%g sec)!",
+                str, f1 / 1000.0f, f2 / 1000.0f);
+        }
+        if(mJumpToSamples >= unk144){
+            String str = mFile ? mFile->Filename() : "SynthStream:";
+            MILO_WARN("%s: JumpToSamples (%g sec) exceeds the length of the stream (%g sec)!",
+                str, f2 / 1000.0f, SampToMs(unk144) / 1000.0f);
+        }
+    }
+}
 
+void StandardStream::SetJumpSamples(int fromSamples, int toSamples, const char* file){
+    MILO_ASSERT(toSamples >= 0, 0x2F4);
+    MILO_ASSERT(fromSamples >= 0 || fromSamples == kStreamEndSamples, 0x2F5);
+    MILO_ASSERT(file || fromSamples > toSamples || fromSamples == kStreamEndSamples, 0x2F6);
+    MILO_ASSERT(mJumpFromSamples == 0, 0x2F8);
+    mJumpFromSamples = fromSamples;
+    mJumpToSamples = toSamples;
+    mJumpFile = file;
+    if(!mJumpFile.empty()){
+        mJumpFile += ".";
+        mJumpFile += mExt.mStr;
+    }
+    mJumpSamplesInvalid = false;
 }
 
 void StandardStream::ClearJump(){
@@ -326,8 +361,33 @@ void StandardStream::ClearJump(){
     mJumpToMs = 0;
 }
 
+void StandardStream::DoJump(){
+    MILO_ASSERT(mJumpFromSamples != 0, 0x314);
+    if(!mJumpFile.empty()){
+        delete mFile;
+        delete mRdr;
+        mFile = NewFile(mJumpFile.c_str(), 2);
+        if(!mFile) MILO_FAIL("\nCould not open %s", mJumpFile.c_str());
+        mRdr = TheSynth->NewStreamDecoder(mFile, this, mExt);
+        mFileStartMs = SampToMs(mJumpToSamples);
+        mCurrentSamp = 0;
+        ClearJump();
+    }
+    else {
+        if(mJumpFromSamples != mJumpToSamples){
+            if(mRdr) mRdr->Seek(mJumpToSamples);
+            mCurrentSamp = mJumpToSamples;
+        }
+    }
+    mAccumulatedLoopbacks -= mEndMarker.posMS - mStartMarker.posMS;
+}
+
 void StandardStream::EnableReads(bool b){
     if(mRdr) mRdr->EnableReads(b);
+}
+
+void StandardStream::UpdateTime(){
+    MILO_WARN("timer error is large: %f\n");
 }
 
 float StandardStream::GetJumpBackTotalTime(){
@@ -390,4 +450,89 @@ float StandardStream::SampToMs(int samps){
     MILO_ASSERT(mSampleRate, 0x412);
     float rate = mSampleRate;
     return (float)samps / (rate * 1000.0f);
+}
+
+void StandardStream::UpdateVolumes(){
+    if(Faders()->Dirty()){
+        float val = Faders()->GetVal();
+        for(std::vector<ChannelParams*>::iterator it = mChanParams.begin(); it != mChanParams.end(); ++it){
+            (*it)->mFaders.FindLocal(_parent, true)->SetVal(val);
+        }
+        Faders()->ClearDirty();
+    }
+    for(int i = 0; i < mChannels.size(); i++){
+        if(mChanParams[i]->mFaders.Dirty()){
+            float ratio = DbToRatio(mChanParams[i]->mFaders.GetVal());
+            ClampEq(ratio, 0.0f, 1.0f);
+            mChannels[i]->SetVolume(ratio);
+            mChanParams[i]->mFaders.ClearDirty();
+        }
+    }
+}
+
+void StandardStream::UpdateFXSends(){
+    for(int i = 0; i < mChannels.size(); i++){
+        mChannels[i]->SetFXSend(mChanParams[i]->mFxSend);
+    }
+}
+
+FaderGroup* StandardStream::ChannelFaders(int channel){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x43F);
+    return &mChanParams[channel]->mFaders;
+}
+
+void StandardStream::AddVirtualChannels(int i){
+    MILO_ASSERT(mChannels.empty(), 0x447);
+    mVirtualChans += i;
+}
+
+void StandardStream::RemapChannel(int i1, int i2){
+    unkfc.push_back(std::make_pair(i1, i2));
+}
+
+void StandardStream::UpdateSpeed(int chn){
+    MILO_ASSERT_RANGE(chn, 0, mChanParams.size(), 0x454);
+    mChannels[chn]->SetSpeed(mSpeed);
+    if(mChanParams[chn]->mSlipEnabled){
+        mChannels[chn]->SetSlipSpeed((float)mSpeed * mChanParams[chn]->mSlipSpeed);
+    }
+}
+
+void StandardStream::EnableSlipStreaming(int channel){
+    if(mChannels.empty()){
+        MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x46C);
+        mChanParams[channel]->mSlipEnabled = true;
+    }
+}
+
+void StandardStream::SetSlipOffset(int channel, float offset){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x473);
+    mChannels[channel]->SetSlipOffset(offset);
+}
+
+void StandardStream::SlipStop(int channel){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x47A);
+    mChannels[channel]->SlipStop();
+}
+
+void StandardStream::SetSlipSpeed(int channel, float speed){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x481);
+    MILO_ASSERT(mChanParams[channel]->mSlipEnabled, 0x482);
+    mChanParams[channel]->mSlipSpeed = speed;
+    if(!mChannels.empty()){
+        UpdateSpeed(channel);
+    }
+}
+
+float StandardStream::GetSlipOffset(int channel){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x48B);
+    return mChannels[channel]->GetSlipOffset();
+}
+
+void StandardStream::SetFXSend(int channel, FxSend* send){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x495);
+    mChanParams[channel]->mFxSend = send;
+    if(!mChannels.empty()){
+        mChannels[channel]->SetFXSend(send);
+    }
 }
