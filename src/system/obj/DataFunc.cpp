@@ -611,18 +611,15 @@ DEF_DATA_FUNC(DataForEachInt) {
     DataNode *var = array->Var(1);
     int begin = array->Int(2);
     int end = array->Int(3);
-
-    int inc = -1;
-    if (end > begin) {
-        inc = 1;
-    }
+    int inc = end > begin ? 1 : -1;
 
     DataNode save(*var);
-    for (int cur = begin; cur != end; cur = var->UncheckedInt() + inc) {
+    for (int cur = begin; cur != end; cur += inc) {
         *var = cur;
         for (int cnt = 4; cnt < array->Size(); cnt++) {
             array->Command(cnt)->Execute();
         }
+        cur = var->UncheckedInt();
     }
 
     *var = save;
