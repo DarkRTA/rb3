@@ -71,19 +71,19 @@ template<class T> inline T Max(T x, T y, T z){
     return Max(x, Max(y, z));
 }
 
-template<class T> inline T Clamp(T x, T y, T z){
-    if(z > y) return y;
-    if(!(z < x)) return z;
-    return x;
+template<class T> inline T Clamp(T min, T max, T value){
+    if(value > max) return max;
+    if(!(value < min)) return value;
+    return min;
 }
 
-template<class T> inline bool ClampEq(T& x, const T& y, const T& z) {
-    T temp = y;
-    if (x < y) {
-        x = temp;
+template<class T> inline bool ClampEq(T& value, const T& min, const T& max) {
+    T temp = min;
+    if (value < min) {
+        value = temp;
         return true;
-    } else if (x > z) {
-        x = z;
+    } else if (value > max) {
+        value = max;
         return true;
     }
     return false;

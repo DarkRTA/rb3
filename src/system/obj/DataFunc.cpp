@@ -349,10 +349,15 @@ DEF_DATA_FUNC(DataMin){
     DataNode& n1 = array->Evaluate(1);
     DataNode& n2 = array->Evaluate(2);
     if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
-        return Min<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
-    }
-    else {
-        return Min<int>(n2.LiteralInt(array), n1.LiteralInt(array));
+        return Min<float>(
+            n1.LiteralFloat(array),
+            n2.LiteralFloat(array)
+        );
+    } else {
+        return Min<int>(
+            n1.LiteralInt(array),
+            n2.LiteralInt(array)
+        );
     }
 }
 
@@ -361,9 +366,8 @@ DEF_DATA_FUNC(DataMax){
     DataNode& n2 = array->Evaluate(2);
     if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
         return Max<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
-    }
-    else {
-        return Max<int>(n2.LiteralInt(array), n1.LiteralInt(array));
+    } else {
+        return Max<int>(n1.LiteralInt(array), n2.LiteralInt(array));
     }
 }
 
@@ -433,13 +437,22 @@ DEF_DATA_FUNC(DataMean) {
 }
 
 DEF_DATA_FUNC(DataClamp) {
-    DataNode& dn1 = array->Evaluate(1);
-    DataNode& dn2 = array->Evaluate(2);
-    DataNode& dn3 = array->Evaluate(3);
-    if(dn1.Type() == kDataFloat || dn2.Type() == kDataFloat || dn3.Type() == kDataFloat){
-        return Clamp<float>(dn1.LiteralFloat(array), dn2.LiteralFloat(array), dn3.LiteralFloat(array));
+    DataNode& n1 = array->Evaluate(1);
+    DataNode& n2 = array->Evaluate(2);
+    DataNode& n3 = array->Evaluate(3);
+    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat || n3.Type() == kDataFloat){
+        return Clamp<float>(
+            n2.LiteralFloat(array),
+            n3.LiteralFloat(array),
+            n1.LiteralFloat(array)
+        );
+    } else {
+        return Clamp<int>(
+            n2.LiteralInt(array),
+            n3.LiteralInt(array),
+            n1.LiteralInt(array)
+        );
     }
-    else return Clamp<int>(dn1.LiteralInt(array), dn2.LiteralInt(array), dn3.LiteralInt(array));
 }
 
 DEF_DATA_FUNC(DataSubEq){
