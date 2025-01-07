@@ -569,34 +569,39 @@ DEF_DATA_FUNC(DataForEach) {
     DataArray *arr = array->Array(2);
     arr->AddRef();
     DataNode *var = array->Var(1);
-    DataNode lol(*var);
+
+    DataNode save(*var);
     for (int i = 0; i < arr->Size(); i++) {
         *var = arr->Evaluate(i);
         for (int j = 3; j < array->Size(); j++) {
             array->Command(j)->Execute();
         }
     }
-    *var = lol;
+
+    *var = save;
     arr->Release();
     return 0;
 }
 
 DEF_DATA_FUNC(DataForEachInt) {
     DataNode *var = array->Var(1);
-    int i2 = array->Int(2);
-    int i3 = array->Int(3);
-    int r31 = -1;
-    if (i2 > i3)
-        r31 = 1;
-    DataNode idk(*var);
-    while (i2 != i3) {
-        *var = DataNode(i2);
+    int begin = array->Int(2);
+    int end = array->Int(3);
+
+    int inc = -1;
+    if (end > begin) {
+        inc = 1;
+    }
+
+    DataNode save(*var);
+    for (int cur = begin; cur != end; cur = var->UncheckedInt() + inc) {
+        *var = cur;
         for (int cnt = 4; cnt < array->Size(); cnt++) {
             array->Command(cnt)->Execute();
         }
-        i2 = var->UncheckedInt() + r31;
     }
-    *var = idk;
+
+    *var = save;
     return 0;
 }
 
@@ -1113,9 +1118,8 @@ DEF_DATA_FUNC(DataBasename) {
 
 DEF_DATA_FUNC(DataDirname) {
     const char* s = FileGetPath(array->Str(1), NULL);
-    class String str(s);
-    uint x = str.find_last_of("/");
-    return s + (x + 1U & ~-(x == String::npos));
+    uint x = String(s).find_last_of("/");
+    return s + (x == String::npos ? 0 : x + 1);
 }
 
 DEF_DATA_FUNC(DataHasSubStr) {
@@ -1292,8 +1296,9 @@ DEF_DATA_FUNC(DataNextName) {
 DataNode Quasiquote(const DataNode& node) {
     static Symbol unquoteAbbrev(",");
     DataType nodeType = node.Type();
-    if(nodeType - 0x10 <= 1U){
+    if(nodeType == kDataArray || nodeType == kDataCommand){
         DataArray* nodeArr = node.UncheckedArray();
+
         if(nodeType == kDataCommand && nodeArr->Type(0) == kDataSymbol){
             char* str = (char*)nodeArr->Node(0).UncheckedStr();
             Symbol sym = STR_TO_SYM(str);
@@ -1301,13 +1306,16 @@ DataNode Quasiquote(const DataNode& node) {
                 return nodeArr->Evaluate(1);
             }
         }
+
         DataArrayPtr ptr(new DataArray(nodeArr->Size()));
         for(int i = 0; i < nodeArr->Size(); i++){
             ptr.Node(i) = Quasiquote(nodeArr->Node(i));
         }
+
         return DataNode(UNCONST_ARRAY(ptr), nodeType);
+    } else {
+        return node;
     }
-    else return node;
 }
 
 DEF_DATA_FUNC(DataQuasiquote) {
