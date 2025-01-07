@@ -756,45 +756,10 @@ DEF_DATA_FUNC(DataNotifyBeta) {
     for (int i = 1; i < array->Size(); i++){
         array->Evaluate(i).Print(str, true);
     }
-    TheDebug << MakeString(str.c_str());
+    MILO_NOTIFY_BETA(str.c_str());
 #endif
     return 0;
 }
-
-// DataNode DataNotifyBeta(DataArray *da)
-
-// {
-//   DataNode *pDVar1;
-//   char *pcVar2;
-//   int iVar3;
-//   undefined local_938 [4];
-//   String SStack_934;
-//   char acStack_928 [256];
-//   FormatString aFStack_828 [2076];
-
-//   String::String(&SStack_934);
-//   for (iVar3 = 1; iVar3 < da->mSize; iVar3 = iVar3 + 1) {
-//     pDVar1 = (DataNode *)DataArray::Node(da,iVar3);
-//     pDVar1 = (DataNode *)DataNode::Evaluate(pDVar1);
-//     DataNode::Print(pDVar1,(TextStream *)&SStack_934,true);
-//   }
-//   FormatString::FormatString(aFStack_828,SStack_934.mStr);
-//   pcVar2 = (char *)FormatString::Str(aFStack_828);
-//   if (TheDebug._28_4_ == 0) {
-//     pcVar2 = MakeString(@STRING@__ls__9DebugBetaFPCc@0,pcVar2);
-//     TextStream::operator_<<((TextStream *)TheDebug,pcVar2);
-//   }
-//   else {
-//     local_938[0] = 0;
-//     pcVar2 = MakeString(@STRING@__ls__9DebugBetaFPCc,pcVar2);
-//     strncpy(acStack_928,pcVar2,0xfe);
-//     (*(code *)TheDebug._28_4_)(local_938,acStack_928,0);
-//   }
-//   param_1->mNodes = (DataNode *)0x0;
-//   param_1->mFile = 6;
-//   String::~String(&SStack_934);
-//   return;
-// }
 
 DEF_DATA_FUNC(DataFail){
 #ifdef MILO_DEBUG

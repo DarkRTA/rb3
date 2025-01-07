@@ -62,6 +62,25 @@ public:
 extern Debug TheDebug;
 extern jmp_buf TheDebugJump;
 
+class DebugBeta {
+public:
+    DebugBeta& operator<<(const char* msg) {
+        if (TheDebug.mModalCallback) {
+            bool b = false;
+            char buf[256];
+
+            msg = MakeString("NOTIFY_BETA: %s", msg);
+            strncpy(buf, msg, sizeof(buf) - 2);
+
+            TheDebug.mModalCallback(b, buf, false);
+        } else {
+            TheDebug << MakeString("NOTIFY_BETA: %s\n", msg);
+        }
+
+        return *this;
+    }
+};
+
 extern const char* kAssertStr;
 extern int* gpDbgFrameID;
 
@@ -70,6 +89,7 @@ extern int* gpDbgFrameID;
 #  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebugFailer << (MakeString(__VA_ARGS__)), 0))
 #  define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
 #  define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
+#  define MILO_NOTIFY_BETA(...) DebugBeta() << MakeString(__VA_ARGS__)
 #  define MILO_LOG(...) TheDebug << MakeString(__VA_ARGS__)
 
 // Usage:
@@ -170,8 +190,27 @@ public:
         return *this;
     }
 };
+
+class DebugNotifyOncerBeta {
+public:
+    std::list<String> mNotifies;
+    DebugNotifyOncerBeta(){}
+    ~DebugNotifyOncerBeta(){}
+
+    DebugNotifyOncerBeta& operator<<(const char* cc){
+        if(AddToNotifies(cc, mNotifies)){
+            DebugBeta() << cc;
+        }
+        return *this;
+    }
+};
+
 #ifdef MILO_DEBUG
     #define MILO_NOTIFY_ONCE(...) { \
+            static DebugNotifyOncer _dw; \
+            _dw << MakeString(__VA_ARGS__); \
+        }
+    #define MILO_NOTIFY_ONCE_BETA(...) { \
             static DebugNotifyOncer _dw; \
             _dw << MakeString(__VA_ARGS__); \
         }
@@ -185,6 +224,7 @@ public:
     }
 #else
     #define MILO_NOTIFY_ONCE(...) (void)(__VA_ARGS__)
+    #define MILO_NOTIFY_ONCE_BETA(...) (void)(__VA_ARGS__)
     #define MILO_LOG_ONCE(...) (void)(__VA_ARGS__)
 #endif
 
