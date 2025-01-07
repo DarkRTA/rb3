@@ -318,26 +318,30 @@ DEF_DATA_FUNC(DataUnpackColor) {
 }
 
 DEF_DATA_FUNC(DataDo){
-    int cnt;
-    int nodeCnt = array->Size();
-    for(cnt = 1; array->Type(cnt) == kDataArray; cnt++){
-        DataArray* arr = array->Node(cnt).mValue.array;
-        DataNode* n = arr->Var(0);
+    int size = array->Size(); // this needs to be up here to match
+
+    int i;
+    for (i = 1; array->Type(i) == kDataArray; i++){
+        DataArray* binding = CONST_ARRAY(array)->Node(i).mValue.array;
+        DataNode* n = binding->Var(0);
         DataPushVar(n);
-        if(arr->Size() == 2){
-            *n = arr->Evaluate(1);
+        if(binding->Size() == 2){
+            *n = binding->Evaluate(1);
+        } else {
+            MILO_ASSERT_FMT(binding->Size() == 1, "do var has more than one initializer");
         }
-#ifdef MILO_DEBUG
-        else if(arr->Size() != 1){
-            MILO_FAIL("do var has more than one initializer");
-        }
-#endif
     }
-    int delCnt = cnt - 1;
-    for(; cnt < nodeCnt - 1; cnt++)
-        array->Command(cnt)->Execute();
-    DataNode ret(array->Evaluate(cnt));
-    while(delCnt-- != 0) DataPopVar();
+    int numVars = i - 1;
+
+    for (; i < size - 1; i++) {
+        array->Command(i)->Execute();
+    }
+    DataNode ret(array->Evaluate(i));
+
+    while (numVars-- != 0) {
+        DataPopVar();
+    }
+
     return ret;
 }
 
