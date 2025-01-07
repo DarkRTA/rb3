@@ -696,13 +696,18 @@ DEF_DATA_FUNC(DataTime) {
         if (eval.Type() == kDataCommand) break;
         eval.Print(TheDebug, true);
     }
-    if (i == 1) MILO_LOG("Timing %s, line %d:", array->File(), array->Line());
+
+    if (i == 1) {
+        MILO_LOG("Timing %s, line %d:", array->File(), array->Line());
+    }
+
     Timer time;
     time.Start();
     while (i < array->Size()) {
         array->Command(i++)->Execute();
     }
-    time.Split();
+    time.Stop();
+
     MILO_LOG(" %f ms\n", time.Ms());
     return time.Ms();
 };
