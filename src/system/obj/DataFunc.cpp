@@ -719,13 +719,14 @@ DEF_DATA_FUNC(DataRandomInt) {
 DEF_DATA_FUNC(DataRandomFloat) {
     if (array->Size() > 1) {
         return RandomFloat(array->Float(1), array->Float(2));
-    } else
+    } else {
         return RandomFloat();
+    }
 }
 
 DEF_DATA_FUNC(DataRandomElem) {
     DataArray *a = array->Array(1);
-    MILO_ASSERT_FMT(a->Size() != 0, "Empty array (file %s, line %d)", a->File(), a->Line());
+    MILO_ASSERT_FMT(a->Size() != 0, "Empty array (file %s, line %d)", array->File(), array->Line());
     return a->Node(RandomInt(0, a->Size()));
 }
 
