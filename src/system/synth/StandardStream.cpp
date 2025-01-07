@@ -56,10 +56,27 @@ void StandardStream::Init(float f1, float f2, Symbol sym, bool b){
 }
 
 void StandardStream::Destroy(){
-    delete mRdr;
-    mRdr = 0;
+    RELEASE(mRdr);
 }
 
 StandardStream::~StandardStream(){
     Destroy();
+}
+
+const char* StandardStream::GetSoundDisplayName(){
+    if(!IsPlaying()) return gNullStr;
+    else if(mFile){
+        return MakeString("StandardStream: %s", FileGetName(mFile->Filename().c_str()));
+    }
+    else {
+        return MakeString("StandardStream: --no file--");
+    }
+}
+
+void StandardStream::SynthPoll(){
+    PollStream();
+}
+
+void StandardStream::PollStream(){
+    
 }
