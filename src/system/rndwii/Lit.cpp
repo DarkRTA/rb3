@@ -6,10 +6,10 @@
 #include <cmath>
 
 void WiiLight::Update(GXLightID lit) {
-    Hmx::Color src_col = GetColor();
+    Hmx::Color src_col = GetColor(); src_col.alpha = 0;
 
     if (!mOnlyProjection) {
-        Hmx::Color32 c(src_col);
+        int c = src_col.Pack(); // something like this, not sure
         GXInitLightColor(&mLight, *(GXColor*)&c);
     }
 

@@ -173,8 +173,10 @@ static inline spx_word32_t cheb_poly_eva(
 #endif
 
 #else
-
-inline static float cheb_poly_eva(spx_word32_t *coef, spx_word16_t x, int m, char *stack)
+#ifdef VERSION_SZBE69_B8
+inline 
+#endif
+static float cheb_poly_eva(spx_word32_t *coef, spx_word16_t x, int m, char *stack)
 {
    int k;
    float b0, b1, tmp;
