@@ -897,16 +897,9 @@ DEF_DATA_FUNC(DataEval) {
     return array->Evaluate(1).Evaluate();
 }
 
-inline float InverseLerp(float f1, float f2, float f3) {
-    if (f2 != f1)
-        return (f3 - f1) / (f2 - f1);
-    else
-        return 1.0f;
-}
-
 DEF_DATA_FUNC(DataReverseInterp){
-    float ext = InverseLerp(array->Float(1), array->Float(2), array->Float(3));
-    return Clamp(0.0f, 1.0f, ext);
+    float value = InverseLerp(array->Float(1), array->Float(2), array->Float(3));
+    return Clamp(0.0f, 1.0f, value);
 }
 
 DEF_DATA_FUNC(DataInterp) {
