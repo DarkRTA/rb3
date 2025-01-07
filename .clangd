@@ -24,3 +24,16 @@ CompileFlags:
     "--language=c++",
     "-std=c++98",
   ]
+---
+# MSL_C++ is not C either
+If:
+  PathMatch: .*/MSL_C\+\+/.*
+CompileFlags:
+  Remove: [
+    "--language=",
+    "-std=",
+  ]
+  Add: [
+    "--language=c++",
+    "-std=c++98",
+  ]
