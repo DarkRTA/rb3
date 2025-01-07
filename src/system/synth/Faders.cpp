@@ -73,8 +73,6 @@ void Fader::CancelFade(){
     }
 }
 
-typedef void(FaderGroup::*FaderGroupFunc)(void);
-
 void Fader::UpdateValue(float val){
     mVal = val;
     std::for_each(mClients.begin(), mClients.end(), std::mem_fun(&FaderGroup::SetDirty));

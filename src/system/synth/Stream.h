@@ -6,9 +6,9 @@
 class FaderGroup;
 
 struct Marker {
-    class String name;
-    int position;
-    float posMS;
+    class String name; // 0x0
+    int position; // 0xc
+    float posMS; // 0x10
 };
 
 class Stream {
@@ -50,9 +50,9 @@ public:
     virtual void ClearMarkerList(){}
     virtual void AddMarker(Marker){}
     virtual int MarkerListSize() const { return 0; }
-    virtual int MarkerAt(int, Marker&) const { return 0; }
+    virtual bool MarkerAt(int, Marker&) const { return 0; }
     virtual void SetLoop(class String&, class String&) = 0;
-    virtual int CurrentLoopPoints(Marker&, Marker&){ return 0; }
+    virtual bool CurrentLoopPoints(Marker&, Marker&){ return 0; }
     virtual void AbandonLoop() = 0;
     virtual void SetJump(float, float, const char*) = 0;
     virtual void ClearJump() = 0;

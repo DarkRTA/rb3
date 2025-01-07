@@ -38,6 +38,11 @@ public:
     virtual bool SendDoneImpl() = 0;
 
     int BytesWriteable();
+    void Play();
+    void Stop();
+    void EndData();
+    bool Ready();
+    static StreamReceiver* New(int, int, bool, int);
 
     bool mSlipEnabled;
     unsigned char mBuffer[0x8000];
