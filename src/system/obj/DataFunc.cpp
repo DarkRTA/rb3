@@ -296,10 +296,17 @@ DEF_DATA_FUNC(DataVar){
 }
 
 DEF_DATA_FUNC(DataPackColor) {
-    return
-        ((int)(array->Float(3) * 255.0f) & 0xFF) << 0x10
-        | ((int)(array->Float(2) * 255.0f) & 0xFF) << 8
-        | ((int)(array->Float(1) * 255.0f) & 0xFF);
+    // don't question the ordering here lol, it matches
+
+    float g = array->Float(2);
+    float b = array->Float(3);
+    float r = array->Float(1);
+
+    int r_packed = ((int)(r * 255.0f) & 0xFF);
+    int b_packed = ((int)(b * 255.0f) & 0xFF) << 16;
+    int g_packed = ((int)(g * 255.0f) & 0xFF) << 8;
+
+    return g_packed | r_packed | b_packed;
 }
 
 DEF_DATA_FUNC(DataUnpackColor) {
