@@ -1,11 +1,20 @@
 #include "BandProfile.h"
 #include "ProfileMgr.h"
 #include "AccomplishmentManager.h"
+#include "meta/FixedSizeSaveable.h"
+#include "meta_band/AccomplishmentProgress.h"
+#include "meta_band/GameplayOptions.h"
+#include "meta_band/PerformanceData.h"
+#include "meta_band/SavedSetlist.h"
 #include "meta_band/SongStatusMgr.h"
 #include "meta_band/BandSongMgr.h"
 #include "game/BandUserMgr.h"
 #include "bandobj/PatchDir.h"
+#include "os/Debug.h"
+#include "os/OSFuncs.h"
 #include "os/ProfilePicture.h"
+#include "os/User.h"
+#include "tour/TourChar.h"
 #include "tour/TourProgress.h"
 #include "tour/TourBand.h"
 #include "system/utl/Symbols.h"
@@ -177,8 +186,72 @@ bool BandProfile::HasCheated() const {
 
 void BandProfile::GetUploadFriendsToken() const {}
 void BandProfile::SetUploadFriendsToken(int) {}
-void BandProfile::SaveFixed(FixedSizeSaveableStream&) const {}
-void BandProfile::PreLoad() {}
+
+void BandProfile::SaveFixed(FixedSizeSaveableStream& fsss) const {
+    MILO_ASSERT(!HasCheated(), 562);
+    fsss << *mTourProgress;
+    SaveStdPtr(fsss, mCharacters, kMaxCharacters, TourChar::SaveSize(151));
+    MILO_ASSERT(mPatches.size() == kMaxPatchesPerProfile, 572);
+    SaveStdPtr(fsss, mPatches, kMaxPatchesPerProfile, PatchDir::SaveSize(151));
+    fsss.EnableWriteEncryption();
+    fsss << *mScores;
+    fsss.DisableEncryption();
+    SaveStdPtr(fsss, mSavedSetlists, 20, LocalSavedSetlist::SaveSize(151));
+    SaveStd(fsss, mLessonCompletions, 1000, 8);
+    SaveStd(fsss, unk70, 20);
+    SaveStd(fsss, unk88, 20);
+    SaveStd(fsss, unka0, 15);
+    fsss << mAccomplishmentProgress;
+    int i = 0;
+    do {
+        fsss << unk788[i];
+    } while (++i < 50);
+    fsss << unk6f70;
+    fsss << unk6f74;
+    fsss << mProfileAssets;
+    fsss << unk6fb8;
+    fsss << unk6fb4;
+    fsss << mGameplayOptions;
+    fsss << *unk6fc0;
+    for (int i = 0; i < mStandIns.size(); i++) {
+        fsss << mStandIns[i];
+    }
+    fsss << unk5c;
+    mDirty = false;
+}
+
+int BandProfile::SaveSize(int i) {
+    int x = TourProgress::SaveSize(i);
+    x += TourChar::SaveSize(i) * 10 + 4;
+    x += PatchDir::SaveSize(i) * 8 + 4;
+    if (i >= 150) x += 4;
+    x += SongStatusMgr::SaveSize(i);
+    x += LocalSavedSetlist::SaveSize(i) * 20 + 0x2030;
+    x += AccomplishmentProgress::SaveSize(i);
+    if (i < 149) {
+        x += PerformanceData::SaveSize(i) * 50 + 4;
+    } else {
+        x += PerformanceData::SaveSize(i) * 50;
+        x += 8;
+    }
+    x += ProfileAssets::SaveSize(i);
+    x += 8;
+    x += GameplayOptions::SaveSize(i);
+    x += TourBand::SaveSize(i);
+    x += StandIn::SaveSize(i) * 4;
+    if (i >= 134) x += HxGuid::SaveSize();
+    if (FixedSizeSaveable::sPrintoutsEnabled) {
+        MILO_LOG("* %s = %i\n", "BandProfile", x);
+    }
+    return x;
+}
+
+void BandProfile::PreLoad() {
+    if (!MainThread()) {
+        MILO_WARN("BandProfile::PreLoad is unsafe to call in the main thread!\n");
+    }
+    DeleteAll();
+}
 
 void BandProfile::LoadFixed(FixedSizeSaveableStream&, int) {
 
@@ -213,19 +286,24 @@ bool BandProfile::IsProGuitarSongLessonSectionComplete(int, Difficulty, int) con
 bool BandProfile::IsProBassSongLessonSectionComplete(int, Difficulty, int) const {}
 bool BandProfile::IsProKeyboardSongLessonSectionComplete(int, Difficulty, int) const {}
 
-bool BandProfile::IsLessonComplete(const Symbol& symbol, float) const {
-    GetLessonCompleteSpeed(symbol);
+bool BandProfile::IsLessonComplete(const Symbol& symbol, float speed) const {
+    return GetLessonCompleteSpeed(symbol) >= speed;
 }
 
 void BandProfile::GetLessonComplete(const Symbol&) const {}
-float BandProfile::GetLessonCompleteSpeed(const Symbol&) const {}
+float BandProfile::GetLessonCompleteSpeed(const Symbol& sym) const {
+    float ret = 0;
+    std::map<Symbol, float>::const_iterator it = mLessonCompletions.find(sym);
+    if (it != mLessonCompletions.end()) ret = it->second;
+    return ret;
+}
 void BandProfile::SetLessonComplete(const Symbol&, float) {}
 void BandProfile::EarnAccomplishment(Symbol) {}
 // void BandProfile::GetAccomplishmentProgress() const {}
 
 // void BandProfile::AccessAccomplishmentProgress() {}
 
-void BandProfile::GetHardcoreIconLevel() const {}
+int BandProfile::GetHardcoreIconLevel() const {}
 
 void BandProfile::SetHardcoreIconLevel(int) {}
 
@@ -269,13 +347,13 @@ void BandProfile::FakeProfileFill() {}
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(BandProfile)
-    HANDLE_ACTION(get_associated_user, GetAssociatedLocalBandUser())
-    HANDLE_ACTION(is_lesson_complete, IsLessonComplete(_msg->Sym(2), _msg->Float(3)))
+    HANDLE_EXPR(get_associated_user, GetAssociatedLocalBandUser())
+    HANDLE_EXPR(is_lesson_complete, IsLessonComplete(_msg->Sym(2), _msg->Float(3)))
     HANDLE_ACTION(set_lesson_complete, SetLessonComplete(_msg->Sym(2), _msg->Float(3)))
     HANDLE_ACTION(unlock_modifier, UnlockModifier(_msg->Sym(2)))
-    HANDLE_ACTION(has_unlocked_modifier, HasUnlockedModifier(_msg->Sym(2)))
-    HANDLE_ACTION(get_accomplishment_progress, AccessAccomplishmentProgress())
-    HANDLE_ACTION(get_hardcore_icon_level, GetHardcoreIconLevel())
+    HANDLE_EXPR(has_unlocked_modifier, HasUnlockedModifier(_msg->Sym(2)))
+    HANDLE_EXPR(get_accomplishment_progress, AccessAccomplishmentProgress())
+    HANDLE_EXPR(get_hardcore_icon_level, GetHardcoreIconLevel())
     HANDLE_ACTION(set_hardcore_icon_level, SetHardcoreIconLevel(_msg->Int(2)))
     HANDLE_ACTION(set_song_review, SetSongReview(_msg->Int(2), _msg->Int(3)))
     // HANDLE_ACTION(setlist_changed, SetlistChanged(_msg->Obj<LocalSavedSetlist>(2)))

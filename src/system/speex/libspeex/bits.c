@@ -56,12 +56,15 @@ EXPORT void speex_bits_init(SpeexBits *bits)
 
    bits->owner=1;
 
-   //speex_bits_reset(bits);
+   #ifdef VERSION_SZBE69
+   speex_bits_reset(bits);
+   #else
    bits->chars[0]=0;
    bits->nbBits=0;
    bits->charPtr=0;
    bits->bitPtr=0;
    bits->overflow=0;
+   #endif
 }
 
 EXPORT void speex_bits_init_buffer(SpeexBits *bits, void *buff, int buf_size)

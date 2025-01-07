@@ -18,6 +18,9 @@ public:
     bool SetLight(int, WiiLight *);
     void RenderCharactersToShadowBuffers();
 
+    bool unk_0x19B, unk_0x19C;
+    u16 unk_0x19E;
+
     static RndMat *mShadowMat;
     static RndCam *mShadowCam;
     static ObjPtrList<BandCharacter> mShadowedCharacters;

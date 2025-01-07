@@ -140,6 +140,21 @@ public:
         if(maxsize > lsize) PadStream(stream, (savesize * (maxsize - lsize)));
     }
 
+    template <class T, class Allocator>
+    static void SaveStdPtr(FixedSizeSaveableStream& stream, const std::vector<T*, Allocator>& vec, int maxsize, int savesize){
+        int max = maxsize;
+        int lsize = vec.size();
+        if(lsize > maxsize){
+            MILO_WARN("The vector size is greater than the maximum supplied! size=%i max=%i\n", lsize, maxsize);
+            lsize = maxsize;
+        }
+        stream << lsize;
+        for(int i = 0; i < max; i++){
+            stream << *vec[i];
+        }
+        if(maxsize > lsize) PadStream(stream, (savesize * (maxsize - lsize)));
+    }
+
     template <class T>
     static void LoadStd(FixedSizeSaveableStream& stream, std::map<Symbol, T>& map, int maxsize, int savesize){
         if(map.size() != 0){

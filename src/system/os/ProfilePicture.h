@@ -16,7 +16,7 @@ enum State {
 class ProfilePicture {
 public:
     ProfilePicture(int, Hmx::Object*);
-    ~ProfilePicture();
+    ~ProfilePicture() {}
 
     void FetchUserData();
     bool ReceiveUserData();

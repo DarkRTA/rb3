@@ -127,7 +127,7 @@
                 "-inline noauto"
             ]
         },
-        "zlib": {
+        "system/zlib": {
             "base": "base",
             "flags": [
                 "-sdata 2",
@@ -144,20 +144,20 @@
             ]
         },
         "libtomcrypt": {
-            "base": "zlib",
+            "base": "system/zlib",
             "flags": []
         },
-        "speex": {
-            "base": "zlib",
-            "flags": []
+        "system/speex": {
+            "base": "system/zlib",
+            "flags": [
+                "-fp_contract on"
+            ]
         },
-        "libogg": {
-            "base": "zlib",
-            "flags": []
-        },
-        "vorbis": {
-            "base": "zlib",
-            "flags": []
+        "system/vorbis": {
+            "base": "system/zlib",
+            "flags": [
+                "-fp_contract on"
+            ]
         },
         "bt": {
             "base": "base",

@@ -192,26 +192,26 @@ DataNode op5(DataArray* msg) {
     u32 r3 = (operand << 29) >> 29, r4 = ret << 8;
     ret |= r4;
     ret >>= r3;
-    return DataNode(u8(ret));
+    return DataNode(kDataInt, u8(ret));
 }
 
 DataNode op6(DataArray* msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
-    return DataNode(u8(!w ^ operand));
+    return DataNode(kDataInt, u8(!w ^ operand));
 }
 
 DataNode op7(DataArray* msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u32 ret = !w + u8(operand);
-    return DataNode(u8(ret));
+    return DataNode(kDataInt, u8(ret));
 }
 
 DataNode op8(DataArray* msg) {
     u32 op = msg->Int(1);
     u8 ret = u8(op) + u8(msg->Int(2));
-    return DataNode(ret ^ u8(op));
+    return DataNode(kDataInt, ret ^ u8(op));
 }
 
 DataNode op9(DataArray* msg) {
@@ -220,7 +220,7 @@ DataNode op9(DataArray* msg) {
     u8 a = w;
     u8 b = operand;
     b ^= a;
-    return DataNode(u8(b + a));
+    return DataNode(kDataInt, u8(b + a));
 }
 
 DataNode op10(DataArray* msg) {
@@ -229,7 +229,7 @@ DataNode op10(DataArray* msg) {
     u8 w2 = (w & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (w & 0xFF);
 
-    return u8(operand ^ u32(w2 >> !operand));
+    return DataNode(kDataInt, u8(operand ^ u32(w2 >> !operand)));
 }
 DataNode op11(DataArray* msg) {
     u32 operand = msg->Int(1);
@@ -316,77 +316,77 @@ DataNode op21(DataArray* msg) {
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 1 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 1 ^ l));
 }
 DataNode op22(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 2 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 2 ^ l));
 }
 DataNode op23(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 3 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 3 ^ l));
 }
 DataNode op24(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 4 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 4 ^ l));
 }
 DataNode op25(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 5 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 5 ^ l));
 }
 DataNode op26(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 6 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 6 ^ l));
 }
 DataNode op27(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(w3 >> 7 ^ l);
+    return DataNode(kDataInt, u8(w3 >> 7 ^ l));
 }
 DataNode op28(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8((w3 >> 5) + l ^ l);
+    return DataNode(kDataInt, u8((w3 >> 5) + l ^ l));
 }
 DataNode op29(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8((w3 >> 3) + l ^ l);
+    return DataNode(kDataInt, u8((w3 >> 3) + l ^ l));
 }
 DataNode op30(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(((w3 >> 3) ^ l) + l);
+    return DataNode(kDataInt, u8(((w3 >> 3) ^ l) + l));
 }
 DataNode op31(DataArray* msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
-    return u8(((w3 >> 5) ^ l) + l);
+    return DataNode(kDataInt, u8(((w3 >> 5) ^ l) + l));
 }
 DataNode op32(DataArray* msg) {
 

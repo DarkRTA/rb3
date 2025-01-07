@@ -38,7 +38,7 @@ public:
         return TheUserMgr->GetLocalUserFromPadNum(mPadNum);
     }
 
-    bool mDirty; // 0xc
+    mutable bool mDirty; // 0xc
     mutable int mPadNum; // 0x10
     ProfileSaveState mState; // 0x14
 };

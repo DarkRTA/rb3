@@ -14,10 +14,10 @@ Sections:
 	.bss        type:bss align:64
 
 rb3/unknown/800/unk_8000D980.cpp:
-	.text       start:0x8000D980 end:0x8000F364
+	.text       start:0x8000D980 end:0x8000E1BC
 
 App.cpp:
-	.text       start:0x8000F364 end:0x8000F804
+	.text       start:0x8000E1BC end:0x8000F804
 
 rb3/stubs/stubone.cpp:
 	.text       start:0x8000F90C end:0x8000F914
@@ -32,25 +32,27 @@ network/Platform/BadEvents.cpp:
 	.text       start:0x80011754 end:0x80011778
 	.bss        start:0x808F0950 end:0x808F0954
 
-libs/quazal/datetime.cpp:
-	.text       start:0x800127E4 end:0x800129F4
+network/Platform/DateTime.cpp:
+	.text       start:0x800127E4 end:0x80012A38
+	.ctors      start:0x807EFD2C end:0x807EFD30
 
 libs/quazal/unknown/8001/unk_800135F0.cpp:
 	.text       start:0x800135F0 end:0x80015228
 
-libs/quazal/platform.cpp:
+network/Platform/Platform.cpp:
 	.text       start:0x80016BCC end:0x80016D24
 	.data       start:0x8081813C end:0x80818150
 
 libs/quazal/profilingunit.cpp:
 	.text       start:0x80016D94 end:0x800172FC
 
-libs/quazal/randomnumbergenerator.cpp:
+network/Platform/RandomNumberGenerator.cpp:
 	.text       start:0x80017448 end:0x800176FC
 
-libs/quazal/refcountedobject.cpp:
+network/Platform/RefCountedObject.cpp:
 	.text       start:0x800176FC end:0x8001784C
 	.data       start:0x80818510 end:0x80818558
+	.bss        start:0x808F1628 end:0x808F1648
 
 network/Platform/Result.cpp:
 	.text       start:0x80017898 end:0x80017964
@@ -59,11 +61,17 @@ network/Platform/Result.cpp:
 network/Platform/RootObject.cpp:
 	.text       start:0x80017964 end:0x80017AFC
 
-libs/quazal/string.cpp:
+network/Platform/String.cpp:
 	.text       start:0x80018278 end:0x80018968
 
-libs/quazal/unknown/8001/unk_80018968.cpp:
-	.text       start:0x80018968 end:0x800193E4
+network/Platform/StringConversion.cpp:
+	.text       start:0x80018970 end:0x80018AAC
+
+network/Platform/StringConverter.cpp:
+	.text       start:0x80018AAC end:0x80018C64
+
+network/Platform/StringStream.cpp:
+	.text       start:0x80018C64 end:0x800190E0
 
 libs/quazal/stream.cpp:
 	.text       start:0x80038924 end:0x80038978
@@ -78,7 +86,7 @@ libs/quazal/unknown/8007/unk_8007B998.cpp:
 libs/quazal/unknown/8007/unk_8007BF84.cpp:
 	.text       start:0x8007BF84 end:0x8007CA94
 
-libs/quazal/unknown/800A/unk_800A515C.cpp:
+network/Products/ProductSpecifics.cpp:
 	.text       start:0x800A515C end:0x800A51AC
 	.data       start:0x8082A5C0 end:0x8082A608
 
@@ -937,10 +945,12 @@ band3/tour/Quest.cpp:
 
 band3/tour/QuestJournal.cpp:
 	.text       start:0x802A93EC end:0x802A950C
+	.data       start:0x8084E6C0 end:0x8084E6F8
 
 band3/tour/QuestManager.cpp:
 	.text       start:0x802A950C end:0x802AC6C4
 	.ctors      start:0x807EFE88 end:0x807EFE8C
+	.data       start:0x8084E6F8 end:0x8084E748
 
 band3/tour/QuestFilterPanel.cpp:
 	.text       start:0x802AC6C4 end:0x802ADF00
@@ -965,6 +975,7 @@ band3/tour/TourCharRemote.cpp:
 
 band3/tour/TourCondition.cpp:
 	.text       start:0x802B5A38 end:0x802B63F8
+	.data       start:0x8084F0F8 end:0x8084F148
 
 band3/tour/TourDesc.cpp:
 	.text       start:0x802B63F8 end:0x802B7188
@@ -1042,6 +1053,7 @@ band3/net_band/RBTestDDL_Wii.cpp:
 
 system/math/SHA1.cpp:
 	.text       start:0x802D5518 end:0x802D7088
+	.data       start:0x808510F0 end:0x80851120
 
 system/math/Sort.cpp:
 	.text       start:0x802D7088 end:0x802D70BC
@@ -1372,6 +1384,7 @@ system/utl/BinStream.cpp:
 
 system/utl/BufStream.cpp:
 	.text       start:0x803431F4 end:0x80343728
+	.data       start:0x808567C8 end:0x80856820
 
 system/utl/BufStreamNAND.cpp:
 	.text       start:0x80343728 end:0x80344238
@@ -1436,6 +1449,7 @@ system/utl/GlitchFinder.cpp:
 system/utl/HangBlock_Wii.cpp:
 	.text       start:0x8034D0E4 end:0x8034D138
 	.ctors      start:0x807EFF44 end:0x807EFF48
+	.bss        start:0x8097BEA8 end:0x8097BF18
 
 system/utl/HttpWii.cpp:
 	.text       start:0x8034D138 end:0x8034DAAC
@@ -1564,7 +1578,8 @@ system/utl/Spew.cpp:
 
 system/utl/Str.cpp:
 	.text       start:0x80361B10 end:0x80362B4C
-	.data       start:0x80858C90 end:0x80858CA0
+	.data       start:0x80858C90 end:0x80858CA8
+	.sbss       start:0x808E4560 end:0x808E4568
 
 system/utl/StringTable.cpp:
 	.text       start:0x80362B4C end:0x803638E0
@@ -1611,6 +1626,7 @@ system/utl/TempoMap.cpp:
 
 system/utl/TextFileStream.cpp:
 	.text       start:0x8037A58C end:0x8037A67C
+	.data       start:0x808744D8 end:0x80874510
 	.sdata2     start:0x808E5870 end:0x808E5878
 
 system/utl/TextStream.cpp:
@@ -1619,10 +1635,12 @@ system/utl/TextStream.cpp:
 
 system/utl/TimeConversion.cpp:
 	.text       start:0x8037AA74 end:0x8037AD34
+	.data       start:0x80874550 end:0x80874588
 
 system/utl/UserGuid.cpp:
 	.text       start:0x8037AD34 end:0x8037AD40
 	.ctors      start:0x807EFF80 end:0x807EFF84
+	.bss        start:0x80985920 end:0x80985930
 
 system/utl/UTF8.cpp:
 	.text       start:0x8037AD40 end:0x8037BE50
@@ -2220,6 +2238,8 @@ system/dsp/VibratoDetector.cpp:
 
 system/meta/Achievements.cpp:
 	.text       start:0x80509548 end:0x80509750
+	.data       start:0x8088B830 end:0x8088B8C8
+	.bss        start:0x809876E0 end:0x809876E8
 
 system/meta/ButtonHolder.cpp:
 	.text       start:0x80509750 end:0x8050C02C
@@ -2277,6 +2297,9 @@ system/meta/SongPreview.cpp:
 
 system/meta/Sorting.cpp:
 	.text       start:0x805182D0 end:0x80518608
+	.data       start:0x8088C788 end:0x8088C790
+	.sbss       start:0x808E49B8 end:0x808E49C0
+	.bss        start:0x809877A0 end:0x809877A8
 
 system/meta/StoreEnumeration.cpp:
 	.text       start:0x80518608 end:0x805188D0
@@ -2346,6 +2369,7 @@ system/movie/Movie_Wii.cpp:
 
 system/movie/CustomSplash_Wii.cpp:
 	.text       start:0x8053D604 end:0x8053E0F4
+	.data       start:0x8088EC38 end:0x8088ED90
 
 system/track/Track.cpp:
 	.text       start:0x8053E0F4 end:0x8053E2A4
@@ -3113,6 +3137,8 @@ system/oggvorbis/floor0.c:
 
 system/oggvorbis/floor1.c:
 	.text       start:0x806C504C end:0x806C6ED4
+	.data       start:0x808A1600 end:0x808A1A20
+	.bss        start:0x80993248 end:0x80993250
 
 system/oggvorbis/framing.c:
 	.text       start:0x806C6ED4 end:0x806C7B44
@@ -3195,20 +3221,20 @@ libs/bt/stack/l2cap/l2c_utils.c:
 libs/bt/stack/rfcomm/port_api.c:
 	.text       start:0x807281FC end:0x8072A538
 
-sdk/RVL_SDK/revolution/os/OSReboot.c:
+sdk/RVL_SDK/src/os/OSReboot.c:
 	.text       start:0x80769E30 end:0x80769EC0
 	.sbss       start:0x808E5498 end:0x808E54A0
 
-sdk/RVL_SDK/revolution/os/OSSemaphore.c:
+sdk/RVL_SDK/src/os/OSSemaphore.c:
 	.text       start:0x8076B2A0 end:0x8076B3D0
 
-sdk/RVL_SDK/revolution/pad/Pad.c:
+sdk/RVL_SDK/src/pad/Pad.c:
 	.text       start:0x8076F4E0 end:0x8076F540
 
-sdk/RVL_SDK/revolution/rso/RSOLink.c:
+sdk/RVL_SDK/src/rso/RSOLink.c:
 	.text       start:0x8076F540 end:0x807713F0
 
-sdk/RVL_SDK/revolution/sc/scsystem.c:
+sdk/RVL_SDK/src/sc/scsystem.c:
 	.text       start:0x807713F0 end:0x80772E80
 	.data       start:0x808D2AF8 end:0x808D2CF0
 	.sdata      start:0x808E35F8 end:0x808E3708
@@ -3218,3 +3244,8 @@ sdk/DWC/dwc_common/dwc_init.c:
 	.text       start:0x807E7480 end:0x807E7540
 	.data       start:0x808E1FA8 end:0x808E2018
 	.sbss       start:0x808E57D8 end:0x808E57E0
+
+sdk/DWC/dwc_common/dwc_memfunc.c:
+	.text       start:0x807E7540 end:0x807E7690
+	.data       start:0x808E2018 end:0x808E2070
+	.sbss       start:0x808E57E0 end:0x808E57E8
