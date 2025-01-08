@@ -95,12 +95,39 @@ public:
     virtual void DestroyPitchShift(FxSendPitchShift*);
 
     void StopAllSfx(bool);
+    void PauseAllSfx(bool);
     float GetMasterVolume();
     void SetMasterVolume(float);
     void Play(const char*, float, float, float);
     void SetFX(const DataArray*);
     void StopPlaybackAllMics();
     void SetMic(const DataArray*);
+    void ToggleHud();
+    void DrawMeter(float&, float, float, const char*);
+    void DrawMeterScale(float&);
+    bool CheckCommonBank(bool);
+    int GetSampleMem(ObjectDir*, Platform);
+    int GetSPUOverhead();
+
+    template <class T> T* Find(const char* name, bool fail){
+        if(!CheckCommonBank(false)) return nullptr;
+        else {
+            T* obj = unk40->Find<T>(name, false);
+            if(!obj && fail){
+                MILO_FAIL("Synth::Find() - %s %s not found in %s",
+                    T::StaticClassName(), name, unk40->GetPathName());
+            }
+            return obj;
+        }
+    }
+
+    DataNode OnStartMic(const DataArray*);
+    DataNode OnStopMic(const DataArray*);
+    DataNode OnNumConnectedMics(const DataArray*);
+    DataNode OnSetMicVolume(const DataArray*);
+    DataNode OnSetFX(const DataArray*);
+    DataNode OnSetFXVol(const DataArray*);
+    DataNode OnPassthrough(DataArray*);
 
     int GetNumMics() const { return mNumMics; }
     static Synth* New();

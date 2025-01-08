@@ -20,6 +20,7 @@
 #include "synth/MoggClip.h"
 #include "synth/BinkClip.h"
 #include "obj/DataFunc.h"
+#include "utl/Symbols.h"
 
 namespace {
     struct DebugGraph {
@@ -227,3 +228,115 @@ void SynthTerminate(){
     TheSynth->Terminate();
     RELEASE(TheSynth);
 }
+
+void Synth::ToggleHud(){
+    mHud->SetOverlay(!mHud->Showing());
+    EnableLevels(mHud->Showing());
+}
+
+DECOMP_FORCEACTIVE(Synth, "%i", "0", "stream", "chan %i", "Total active Sequences: %d")
+
+float Synth::UpdateOverlay(RndOverlay*, float){
+
+}
+
+DataNode Synth::OnStartMic(const DataArray* a){
+    GetMic(a->Int(2))->Start();
+    return 0;
+}
+
+DataNode Synth::OnStopMic(const DataArray* a){
+    GetMic(a->Int(2))->Stop();
+    return 0;
+}
+
+DataNode Synth::OnNumConnectedMics(const DataArray*){
+    return GetNumConnectedMics();
+}
+
+DataNode Synth::OnSetMicVolume(const DataArray* a){
+    SetMicVolume(a->Float(2));
+    return 0;
+}
+
+DataNode Synth::OnSetFX(const DataArray* a){
+    SetFX(a->Array(2));
+    return 0;
+}
+
+DataNode Synth::OnSetFXVol(const DataArray* a){
+    SetFXVolume(a->Int(2), a->Float(3));
+    return 0;
+}
+
+void Synth::StopAllSfx(bool b){
+    const std::list<SynthPollable*>& polls = SynthPollable::sPollables;
+    for(std::list<SynthPollable*>::const_iterator it = polls.begin(); it != polls.end(); ++it){
+        Sequence* seq = dynamic_cast<Sequence*>(*it);
+        if(seq) seq->Stop(b);
+    }
+}
+
+void Synth::PauseAllSfx(bool b){
+    const std::list<SynthPollable*>& polls = SynthPollable::sPollables;
+    for(std::list<SynthPollable*>::const_iterator it = polls.begin(); it != polls.end(); ++it){
+        Sfx* sfx = dynamic_cast<Sfx*>(*it);
+        if(sfx) sfx->Pause(b);
+    }
+}
+
+DataNode Synth::OnPassthrough(DataArray* a){
+    if(!CheckCommonBank(false)) return 0;
+    else {
+        const char* str = a->Str(2);
+        Hmx::Object* obj = Find<Hmx::Object>(str, false);
+        if(obj) obj->Handle(a, true);
+        else MILO_WARN("Synth::OnPassthrough() - %s not found in %s", str, unk40->GetPathName());
+        return 0;
+    }
+}
+
+void Synth::Play(const char* name, float f1, float f2, float f3){
+    if(CheckCommonBank(false)){
+        Sequence* seq = Find<Sequence>(name, false);
+        if(seq) seq->Play(f1, f2, f3);
+        else MILO_WARN("Synth::Play() - Sequence %s not found in %s", name, unk40->GetPathName());
+    }
+}
+
+bool Synth::CheckCommonBank(bool notify){
+    bool ret = false;
+    if(unk40 && unk40.IsLoaded()) ret = true;
+    if(!ret && notify){
+        MILO_LOG("Synth::Find() - Common sound bank not loaded!\n");
+    }
+    return ret;
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(Synth)
+    HANDLE(play, OnPassthrough)
+    HANDLE(stop, OnPassthrough)
+    HANDLE(start_mic, OnStartMic)
+    HANDLE(stop_mic, OnStopMic)
+    HANDLE_ACTION(stop_playback_all_mics, StopPlaybackAllMics())
+    HANDLE(num_connected_mics, OnNumConnectedMics)
+    HANDLE_EXPR(did_mics_change, DidMicsChange())
+    HANDLE_ACTION(reset_mics_changed, ResetMicsChanged())
+    HANDLE(set_mic_volume, OnSetMicVolume)
+    HANDLE(set_fx, OnSetFX)
+    HANDLE(set_fx_vol, OnSetFXVol)
+    HANDLE_ACTION(stop_all_sfx, StopAllSfx(_msg->Size() == 3 ? _msg->Int(2) : false))
+    HANDLE_ACTION(pause_all_sfx, PauseAllSfx(_msg->Int(2)))
+    HANDLE_EXPR(master_vol, GetMasterVolume())
+    HANDLE_ACTION(set_master_vol, SetMasterVolume(_msg->Float(2)))
+    HANDLE_EXPR(find, Find<Hmx::Object>(_msg->Str(2), true))
+    HANDLE_ACTION(toggle_hud, ToggleHud())
+    HANDLE_EXPR(get_sample_mem, GetSampleMem(_msg->Obj<ObjectDir>(2), (Platform)_msg->Int(3)))
+    HANDLE_EXPR(spu_overhead, GetSPUOverhead())
+    HANDLE_ACTION(set_headset_target, 0)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x446)
+END_HANDLERS
+#pragma pop
