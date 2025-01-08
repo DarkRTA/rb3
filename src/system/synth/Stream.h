@@ -1,5 +1,4 @@
-#ifndef SYNTH_STREAM_H
-#define SYNTH_STREAM_H
+#pragma once
 #include "synth/SampleInst.h"
 #include "synth/ADSR.h"
 
@@ -72,7 +71,5 @@ public:
     static const float kStreamEndMs;
     static const int kStreamEndSamples;
 
-    FaderGroup* mFaders;
+    FaderGroup* mFaders; // 0x4
 };
-
-#endif

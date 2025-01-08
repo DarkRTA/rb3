@@ -109,6 +109,7 @@ public:
     bool StuffChannels();
     void DoJump();
     int ConsumeData(void**, int, int);
+    void SetPitchShift(int, bool);
 
     State mState; // 0x14
     File* mFile; // 0x18

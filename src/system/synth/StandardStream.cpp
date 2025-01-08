@@ -536,3 +536,36 @@ void StandardStream::SetFXSend(int channel, FxSend* send){
         mChannels[channel]->SetFXSend(send);
     }
 }
+
+void StandardStream::SetFX(int channel, bool fx){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x4A1);
+    // TODO: replace printf with MILO_LOG/MILO_WARN/some MILO macro
+    printf("mChanParams.size() == %d\n", mChanParams.size());
+    int numChannels = mChannels.size();
+    printf("mChannels.size() == %d\n", numChannels);
+    if(numChannels > channel){
+        mChannels[channel]->SetFX(fx);
+    }
+}
+
+bool StandardStream::GetFX(int channel) const {
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x4B6);
+    return mChannels[channel]->GetFX();
+}
+
+void StandardStream::SetFXCore(int channel, FXCore core){
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x4BD);
+    mChanParams[channel]->mFXCore = core;
+}
+
+FXCore StandardStream::GetFXCore(int channel) const {
+    MILO_ASSERT_RANGE(channel, 0, mChanParams.size(), 0x4C4);
+    return mChanParams[channel]->mFXCore;
+}
+
+void StandardStream::SetPitchShift(int channel, bool shift){
+    if(channel < mChanParams.size() && channel < mChannels.size()){
+        mChanParams[channel]->mPitchShift = shift;
+        mChannels[channel]->SetPitchShift(shift);
+    }
+}
