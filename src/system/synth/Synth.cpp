@@ -19,6 +19,7 @@
 #include "synth/FxSendWah.h"
 #include "synth/MoggClip.h"
 #include "synth/BinkClip.h"
+#include "synth/StreamNull.h"
 #include "obj/DataFunc.h"
 #include "utl/Symbols.h"
 
@@ -340,3 +341,11 @@ BEGIN_HANDLERS(Synth)
     HANDLE_CHECK(0x446)
 END_HANDLERS
 #pragma pop
+
+Stream* Synth::NewStream(const char*, float f1, float, bool){
+    return new StreamNull(f1);
+}
+
+Stream* Synth::NewBufStream(const void*, int, Symbol, float f1, bool){
+    return new StreamNull(f1);
+}
