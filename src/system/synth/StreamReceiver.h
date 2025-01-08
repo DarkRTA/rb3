@@ -9,6 +9,9 @@ enum State {
     kStopped = 3,
 };
 
+class StreamReceiver;
+typedef StreamReceiver* StreamReceiverFactoryFunc(int, int, bool, int);
+
 class StreamReceiver {
 public:
     StreamReceiver(int, bool);
@@ -42,22 +45,23 @@ public:
     void EndData();
     bool Ready();
     static StreamReceiver* New(int, int, bool, int);
+    static StreamReceiverFactoryFunc* sFactory;
 
-    bool mSlipEnabled;
-    unsigned char mBuffer[0x8000];
-    int mNumBuffers;
-    int mRingSize;
-    int mRingWritePos;
-    int mRingReadPos;
-    int mRingFreeSpace;
-    int mRingWrittenSpace;
-    State mState;
-    int mSendTarget;
-    bool mWantToSend;
-    bool mSending;
-    int mBuffersSent;
-    bool mStarving;
-    bool mEndData;
-    int mDoneBufferCounter;
-    int mLastPlayCursor;
+    bool mSlipEnabled; // 0x4
+    unsigned char mBuffer[0x18000]; // 0x8
+    int mNumBuffers; // 0x18008
+    int mRingSize; // 0x1800c
+    int mRingWritePos; // 0x18010
+    int mRingReadPos; // 0x18014
+    int mRingFreeSpace; // 0x18018
+    int mRingWrittenSpace; // 0x1801c
+    State mState; // 0x18020
+    int mSendTarget; // 0x18024
+    bool mWantToSend; // 0x18028
+    bool mSending; // 0x18029
+    int mBuffersSent; // 0x1802c
+    bool mStarving; // 0x18030
+    bool mEndData; // 0x18031
+    int mDoneBufferCounter; // 0x18034
+    int mLastPlayCursor; // 0x18038
 };
