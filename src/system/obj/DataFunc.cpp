@@ -24,6 +24,11 @@
 std::map<Symbol, DataFunc*> gDataFuncs;
 DataThisPtr gDataThisPtr;
 
+static DataArray* sFileMsg;
+bool sOldNoModal;
+ModalCallbackFunc* sOldModalCallback;
+DataArray* sNotifyMsg;
+
 // Force ~MergeFilter() to generate here
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
@@ -1337,8 +1342,6 @@ DEF_DATA_FUNC(DataGetDateTime) {
     return (int)dt.ToCode();
 }
 
-static DataArray* sFileMsg;
-
 bool FileListCallBack(char* s) {
     bool ret;
     DataArray* array = sFileMsg;
@@ -1392,6 +1395,29 @@ DEF_DATA_FUNC(DataDisableNotify) {
 }
 
 DEF_DATA_FUNC(DataFilterNotify) {
+    if (array->Size() > 3) {
+        bool restore = TheDebug.mModalCallback != ScriptDebugModal;
+        if (restore) {
+            sOldNoModal = TheDebug.mNoModal;
+            sOldModalCallback = TheDebug.mModalCallback;
+            TheDebug.mNoModal = false;
+        }
+
+        sNotifyMsg = array->Clone(true, false, 0);
+        TheDebug.SetModalCallback(ScriptDebugModal);
+
+        for (int i = 3; i < array->Size(); i++) {
+            array->Command(i)->Execute();
+        }
+
+        if (restore) {
+            TheDebug.mNoModal = sOldNoModal;
+            TheDebug.SetModalCallback(sOldModalCallback);
+        }
+    } else {
+        MILO_LOG("invalid # of arguments...\n");
+    }
+
     return 0;
 }
 
