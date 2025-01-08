@@ -28,6 +28,12 @@ public:
     virtual void Poll();
 
     void CheckLoadResources();
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(SynthEmitter);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(SynthEmitter)
+    }
 
     /** "sfx this emitter should play" */
     ObjPtr<Sfx> mSfx; // 0xb8

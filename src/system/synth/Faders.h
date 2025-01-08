@@ -41,6 +41,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(Fader);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(Fader)
+    }
 
     /** "volume level in dB" */
     float mVal; // 0x1c

@@ -32,6 +32,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(Sfx);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(Sfx)
+    }
 
     void Pause(bool);
 

@@ -31,12 +31,12 @@ void DirectInstrument::Enable() {
         mFader = Hmx::Object::New<Fader>();
         mInstrument = mDir->Find<MidiInstrument>("Chamberlin.inst", false);
         mInstrument->mFaders.Add(mFader);
-        TheSynth->mInstrumentMgr->SetInstrument(mInstrument);
+        TheSynth->mMidiInstrumentMgr->SetInstrument(mInstrument);
     }
 }
 
 void DirectInstrument::Disable() {
-    TheSynth->mInstrumentMgr->UnloadInstrument();
+    TheSynth->mMidiInstrumentMgr->UnloadInstrument();
     delete mFader;
     mFader = nullptr;
     mInstrument = nullptr;

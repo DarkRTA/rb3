@@ -15,6 +15,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendDistortion);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendDistortion)
+    }
 
     /** "amount of drive". Ranges from 0 to 100. */
     float mDrive; // 0x48

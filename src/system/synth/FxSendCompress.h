@@ -15,6 +15,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendCompress);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendCompress)
+    }
 
     /** "threshold (in dB) at which compression is applied". Ranges from -96 to 0 */
     float mThresholdDB; // 0x48

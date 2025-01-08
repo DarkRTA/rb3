@@ -27,6 +27,12 @@ public:
     float ChannelData(int);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendMeterEffect);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendMeterEffect)
+    }
 
     bool mResetPeaks; // 0x48
     std::vector<MeterEffectChannelData> mChannels; // 0x4c

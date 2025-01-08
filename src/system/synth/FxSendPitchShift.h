@@ -14,6 +14,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendPitchShift);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendPitchShift)
+    }
 
     float mRatio; // 0x48
 };

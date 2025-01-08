@@ -1,10 +1,11 @@
-#ifndef SYNTH_SYNTH_H
-#define SYNTH_SYNTH_H
+#pragma once
 #include "obj/Object.h"
 #include "rndobj/Overlay.h"
 #include "synth/FxSend.h"
 #include "synth/FxSendPitchShift.h"
 #include "synth/Mic.h"
+#include "synth/MicClientMapper.h"
+#include "synth/MidiSynth.h"
 #include "synth/ByteGrinder.h"
 #include "synth/MidiInstrumentMgr.h"
 
@@ -92,17 +93,17 @@ public:
     std::vector<int> unk20; // mLevelData?
     ByteGrinder mGrinder; // unk28
     int mNumMics; // unk2c
-    int unk30; // MidiSynth* mMidiSynth
+    MidiSynth* mMidiSynth; // 0x30
     std::vector<int> unk34; // mNullMics
     bool unk3c; // mMuted
-    ObjDirPtr<class ObjectDir> unk40;
-    Fader* unk4c;
-    Fader* unk50;
-    Fader* unk54;
-    int unk58;
-    MidiInstrumentMgr* mInstrumentMgr;
+    ObjDirPtr<ObjectDir> unk40;
+    Fader* unk4c; // 0x4c - master fader
+    Fader* unk50; // 0x50 - sfx fader
+    Fader* unk54; // 0x54 - midi instrument fader
+    MicClientMapper* mMicClientMapper; // 0x58
+    MidiInstrumentMgr* mMidiInstrumentMgr; // 0x5c
+    int unk60;
+    int unk64;
 };
 
 extern Synth* TheSynth;
-
-#endif

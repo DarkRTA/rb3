@@ -15,6 +15,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendEQ);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendEQ)
+    }
 
     /** "High frequency cutoff, in Hz". Ranges from 0 to 24000. */
     float mHighFreqCutoff; // 0x48

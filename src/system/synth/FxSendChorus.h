@@ -15,6 +15,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendChorus);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendChorus)
+    }
 
     /** "Maximum delay time in milliseconds". Ranges from 0 to 100. */
     float mDelayMs; // 0x48

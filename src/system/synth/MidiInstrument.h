@@ -92,6 +92,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(MidiInstrument);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(MidiInstrument)
+    }
 
     ObjVector<SampleZone> mMultiSampleMap; // 0x1c
     int mPatchNumber; // 0x28

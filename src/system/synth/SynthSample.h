@@ -41,7 +41,6 @@ public:
     int GetPlatformSize(Platform);
 
     DECLARE_REVS;
-
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 

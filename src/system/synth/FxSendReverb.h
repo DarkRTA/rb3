@@ -15,6 +15,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendReverb);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendReverb)
+    }
 
     /** "The reverb environment to simulate.". Possible options: 
      *  (default generic padded_cell room bath_room living_room stone_room auditorium concert_hall cave arena hangar 

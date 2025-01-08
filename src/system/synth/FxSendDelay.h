@@ -15,6 +15,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendDelay);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendDelay)
+    }
 
     float mDelayTime; // 0x48
     float mGain; // 0x4c
