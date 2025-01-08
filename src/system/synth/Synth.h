@@ -26,6 +26,15 @@ enum FXMode {
     kFXModeFlanger
 };
 
+// courtesy of RB2
+struct LevelData {
+    float mRMS; // offset 0x0, size 0x4
+    float mPeak; // offset 0x4, size 0x4
+    float mPeakHold; // offset 0x8, size 0x4
+    int mPeakAge; // offset 0xC, size 0x4
+    class String mName; // offset 0x10, size 0xC
+};
+
 class Fader;
 class Stream;
 class StandardStream;
@@ -57,7 +66,7 @@ public:
     virtual int GetFXChain() const { return 0; }
     virtual void SetChatVoiceGain(int, float){}
     virtual float GetChatVoiceGain(int){ return 1.0f; }
-    virtual Mic* GetMic(int){ return 0; } // fix this
+    virtual Mic* GetMic(int idx){ return mNullMics[idx]; }
     virtual Mic* GetPartyMic(){ return 0; } // ditto
     virtual void SetMicFX(bool){}
     virtual bool GetMixFC() const { return false; }
@@ -89,12 +98,16 @@ public:
     float GetMasterVolume();
     void SetMasterVolume(float);
     void Play(const char*, float, float, float);
+    void SetFX(const DataArray*);
+    void StopPlaybackAllMics();
+    void SetMic(const DataArray*);
 
     int GetNumMics() const { return mNumMics; }
+    static Synth* New();
 
-    std::vector<int> unk20; // mLevelData?
-    ByteGrinder mGrinder; // unk28
-    int mNumMics; // unk2c
+    std::vector<LevelData> mLevelData; // 0x20
+    ByteGrinder mGrinder; // 0x28
+    int mNumMics; // 0x2c
     MidiSynth* mMidiSynth; // 0x30
     std::vector<MicNull*> mNullMics; // 0x34
     bool mMuted; // 0x3c
@@ -104,9 +117,12 @@ public:
     Fader* mMidiInstrumentFader; // 0x54
     MicClientMapper* mMicClientMapper; // 0x58
     MidiInstrumentMgr* mMidiInstrumentMgr; // 0x5c
-    int unk60;
-    int unk64;
-    RndOverlay* unk68; // 0x68
+    int unk60; // TranscodableMixer* mSecureMixer?
+    int unk64; // Stream* mDebugStream?
+    RndOverlay* mHud; // 0x68
 };
+
+void SynthInit();
+void SynthTerminate();
 
 extern Synth* TheSynth;

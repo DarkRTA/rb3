@@ -10,8 +10,8 @@ public:
 
     void StartPolling();
     void CancelPolling();
-    void PollAll();
     
+    static void PollAll();
     static std::list<SynthPollable*> sPollables;
 
     std::list<SynthPollable*>::iterator mItr; // 0x4

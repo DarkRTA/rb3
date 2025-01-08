@@ -58,9 +58,9 @@ class FaderTask {
 public:
     FaderTask();
     ~FaderTask();
-    void PollAll();
     void Poll();
 
+    static void PollAll();
     static std::list<FaderTask*> sTasks;
 
     Timer mTimer; // 0x0
