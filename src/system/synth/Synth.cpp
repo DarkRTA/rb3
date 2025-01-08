@@ -40,7 +40,7 @@ DataNode returnMasterKey(DataArray*){
 
 }
 
-Synth::Synth() : unk3c(0), mMicClientMapper(0), mMidiInstrumentMgr(0), unk60(0), unk64(0) {
+Synth::Synth() : mMuted(0), mMicClientMapper(0), mMidiInstrumentMgr(0), unk60(0), unk64(0) {
     SetName("synth", ObjectDir::sMainDir);
     DataArray* cfg = SystemConfig("synth");
     cfg->FindData("mics", mNumMics, true);
@@ -54,7 +54,7 @@ Synth::Synth() : unk3c(0), mMicClientMapper(0), mMidiInstrumentMgr(0), unk60(0),
     MILO_ASSERT(!TheSynth, 0xBB);
 }
 
-FileLoader* WavFactory(const FilePath& fp, LoaderPos pos){
+Loader* WavFactory(const FilePath& fp, LoaderPos pos){
     CacheResourceResult res;
     return new FileLoader(fp, CacheWav(fp.c_str(), res), pos, 0, false, true, nullptr);
 }
@@ -79,4 +79,18 @@ void Synth::Init(){
     FxSendWah::Init();
     MoggClip::Init();
     BinkClip::Init();
+    mMasterFader = Hmx::Object::New<Fader>();
+    mSfxFader = Hmx::Object::New<Fader>();
+    mMidiInstrumentFader = Hmx::Object::New<Fader>();
+    DataArray* cfg = SystemConfig("synth");
+    mMuted = cfg->FindInt("mute");
+    TheLoadMgr.RegisterFactory("wav", WavFactory);
+    mNullMics.resize(GetNumMics());
+    for(int i = 0; i < mNullMics.size(); i++){
+        mNullMics[i] = new MicNull();
+    }
+    unk68 = RndOverlay::Find("synth_hud", true);
+    unk68->SetCallback(this);
+    InitSecurity();
+    mMidiInstrumentMgr->Init();
 }

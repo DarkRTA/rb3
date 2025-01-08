@@ -5,6 +5,7 @@
 #include "synth/FxSendPitchShift.h"
 #include "synth/Mic.h"
 #include "synth/MicClientMapper.h"
+#include "synth/MicNull.h"
 #include "synth/MidiSynth.h"
 #include "synth/ByteGrinder.h"
 #include "synth/MidiInstrumentMgr.h"
@@ -87,15 +88,16 @@ public:
     void StopAllSfx(bool);
     float GetMasterVolume();
     void SetMasterVolume(float);
-
     void Play(const char*, float, float, float);
+
+    int GetNumMics() const { return mNumMics; }
 
     std::vector<int> unk20; // mLevelData?
     ByteGrinder mGrinder; // unk28
     int mNumMics; // unk2c
     MidiSynth* mMidiSynth; // 0x30
-    std::vector<int> unk34; // mNullMics
-    bool unk3c; // mMuted
+    std::vector<MicNull*> mNullMics; // 0x34
+    bool mMuted; // 0x3c
     ObjDirPtr<ObjectDir> unk40;
     Fader* mMasterFader; // 0x4c
     Fader* mSfxFader; // 0x50
@@ -104,6 +106,7 @@ public:
     MidiInstrumentMgr* mMidiInstrumentMgr; // 0x5c
     int unk60;
     int unk64;
+    RndOverlay* unk68; // 0x68
 };
 
 extern Synth* TheSynth;
