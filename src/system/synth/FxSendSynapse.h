@@ -21,6 +21,12 @@ public:
     void SetProximityFocus(float);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendSynapse);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendSynapse)
+    }
 
     /** "amount of correction". Ranges from 0 to 1. */
     float mAmount; // 0x48

@@ -55,6 +55,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(MoggClip);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(MoggClip)
+    }
 
     /** "The mogg audio file to be played." */
     FilePath mFilePath; // 0x28

@@ -21,6 +21,12 @@ public:
     void SetProximityFocus(float);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendWah);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendWah)
+    }
 
     /** "amount of resonance (1-10)" */
     float mResonance; // 0x48

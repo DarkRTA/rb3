@@ -10,7 +10,7 @@ const int Stream::kStreamEndSamples = -1;
 
 Stream::Stream() : mFaders(new FaderGroup(0)) {
     mFaders->AddLocal(_default)->SetVal(0.0f);
-    mFaders->Add(TheSynth->unk4c);
+    mFaders->Add(TheSynth->mMasterFader);
 }
 
 Stream::~Stream(){

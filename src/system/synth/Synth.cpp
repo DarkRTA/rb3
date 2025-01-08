@@ -15,6 +15,10 @@
 #include "synth/FxSendChorus.h"
 #include "synth/FxSendMeterEffect.h"
 #include "synth/FxSendPitchShift.h"
+#include "synth/FxSendSynapse.h"
+#include "synth/FxSendWah.h"
+#include "synth/MoggClip.h"
+#include "synth/BinkClip.h"
 
 namespace {
     struct DebugGraph {
@@ -71,4 +75,8 @@ void Synth::Init(){
     FxSendChorus::Init();
     FxSendMeterEffect::Init();
     FxSendPitchShift::Init();
+    FxSendSynapse::Init();
+    FxSendWah::Init();
+    MoggClip::Init();
+    BinkClip::Init();
 }

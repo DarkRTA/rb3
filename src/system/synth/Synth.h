@@ -97,9 +97,9 @@ public:
     std::vector<int> unk34; // mNullMics
     bool unk3c; // mMuted
     ObjDirPtr<ObjectDir> unk40;
-    Fader* unk4c; // 0x4c - master fader
-    Fader* unk50; // 0x50 - sfx fader
-    Fader* unk54; // 0x54 - midi instrument fader
+    Fader* mMasterFader; // 0x4c
+    Fader* mSfxFader; // 0x50
+    Fader* mMidiInstrumentFader; // 0x54
     MicClientMapper* mMicClientMapper; // 0x58
     MidiInstrumentMgr* mMidiInstrumentMgr; // 0x5c
     int unk60;

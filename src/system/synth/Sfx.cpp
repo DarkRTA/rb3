@@ -137,8 +137,8 @@ void SfxInst::SetPan(float f){
 }
 
 Sfx::Sfx() : mMaps(this), mMoggClipMaps(this), mSend(this), mReverbMixDb(-96.0f), mReverbEnable(0), mSfxInsts(this, kObjListNoNull) {
-    mFaders.Add(TheSynth->unk4c);
-    mFaders.Add(TheSynth->unk50);
+    mFaders.Add(TheSynth->mMasterFader);
+    mFaders.Add(TheSynth->mSfxFader);
 }
 
 void Sfx::SynthPoll(){ Sequence::SynthPoll(); }

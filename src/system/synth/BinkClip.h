@@ -50,6 +50,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BinkClip);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(BinkClip)
+    }
 
     FilePath mFile; // 0x28
     float mVolume; // 0x34

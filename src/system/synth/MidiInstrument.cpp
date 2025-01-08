@@ -109,9 +109,9 @@ void NoteVoiceInst::SetPan(float f){
 DECOMP_FORCEFUNC(MidiInstrument, SampleInst, GetProgress())
 
 MidiInstrument::MidiInstrument() : mMultiSampleMap(this), mPatchNumber(0), mSend(this, 0), mReverbMixDb(-96.0f), mReverbEnable(0),
-    mActiveVoices(this, kObjListNoNull), mFaders(this), mFineTuneCents(0.0f) {
-    mFaders.Add(TheSynth->unk4c);
-    mFaders.Add(TheSynth->unk54);
+    mActiveVoices(this), mFaders(this), mFineTuneCents(0.0f) {
+    mFaders.Add(TheSynth->mSfxFader);
+    mFaders.Add(TheSynth->mMidiInstrumentFader);
 }
 
 void MidiInstrument::Poll(){
