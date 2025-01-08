@@ -9,6 +9,11 @@ public:
     virtual void Reset(const DataArray *) = 0;
     virtual ~Interpolator(){} // generic dtor
 
+    float Y0() const { return mY0; }
+    float Y1() const { return mY1; }
+    float X0() const { return mX0; }
+    float X1() const { return mX1; }
+
     float mY0, mY1, mX0, mX1;
 };
 

@@ -1,5 +1,4 @@
-#ifndef SYNTH_ADSR_H
-#define SYNTH_ADSR_H
+#pragma once
 #include "utl/BinStream.h"
 
 class ADSR; // forward dec
@@ -57,22 +56,27 @@ public:
     void Load(BinStream&);
     void SyncPacked();
 
-    float mAttackRate;
-    float mDecayRate;
-    float mSustainRate;
-    float mReleaseRate;
-    float mSustainLevel;
-    Ps2ADSR::AttackMode mAttackMode;
-    Ps2ADSR::SustainMode mSustainMode;
-    Ps2ADSR::ReleaseMode mReleaseMode;
-    Ps2ADSR mPacked;
-    bool mSynced;
+    /** "Duration of attack in seconds" */
+    float mAttackRate; // 0x0
+    /** "Duration of decay in seconds" */
+    float mDecayRate; // 0x4
+    /** "Duration of sustain in seconds" */
+    float mSustainRate; // 0x8
+    /** "Duration of release in seconds" */
+    float mReleaseRate; // 0xc
+    /** "Level of sustain volume (0-1)" */
+    float mSustainLevel; // 0x10
+    /** "Attack mode" */
+    Ps2ADSR::AttackMode mAttackMode; // 0x14
+    /** "Sustain mode" */
+    Ps2ADSR::SustainMode mSustainMode; // 0x18
+    /** "Release mode" */
+    Ps2ADSR::ReleaseMode mReleaseMode; // 0x1c
+    Ps2ADSR mPacked; // 0x20
+    bool mSynced; // 0x24
 };
 
 BinStream& operator>>(BinStream&, ADSR&);
-static int FindNearestInTable(const float* table, int tableSize, float val);
 
 #include "obj/PropSync_p.h"
 bool PropSync(ADSR&, DataNode&, DataArray*, int, PropOp);
-
-#endif

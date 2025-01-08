@@ -1,5 +1,4 @@
-#ifndef SYNTH_FXSENDMETEREFFECT_H
-#define SYNTH_FXSENDMETEREFFECT_H
+#pragma once
 #include "synth/FxSend.h"
 #include "utl/Str.h"
 #include <vector>
@@ -12,6 +11,7 @@ struct MeterEffectChannelData {
     class String unk10;
 };
 
+/** "meter effect" */
 class FxSendMeterEffect : public FxSend {
 public:
     FxSendMeterEffect();
@@ -26,11 +26,14 @@ public:
 
     float ChannelData(int);
 
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendMeterEffect);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendMeterEffect)
+    }
 
-    bool mResetPeaks;
-    std::vector<MeterEffectChannelData> mChannels;
+    bool mResetPeaks; // 0x48
+    std::vector<MeterEffectChannelData> mChannels; // 0x4c
 };
-
-#endif

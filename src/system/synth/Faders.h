@@ -1,5 +1,4 @@
-#ifndef SYNTH_FADERS_H
-#define SYNTH_FADERS_H
+#pragma once
 #include "obj/Object.h"
 #include "math/Interp.h"
 #include "obj/ObjPtr_p.h"
@@ -7,6 +6,7 @@
 
 class FaderGroup;
 
+/** "A fader controls the volume level of one or more sound effects." */
 class Fader : public Hmx::Object {
 public:
     enum Mode {
@@ -36,10 +36,17 @@ public:
     void RemoveClient(FaderGroup*);
     void Check();
     float GetVal() const { return mVal; }
+    Symbol LocalName() const { return mLocalName; }
+    void SetLocalName(Symbol name){ mLocalName = name; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(Fader);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(Fader)
+    }
 
+    /** "volume level in dB" */
     float mVal; // 0x1c
     class FaderTask* mFaderTask; // 0x20
     Symbol mLocalName; // 0x24
@@ -51,9 +58,9 @@ class FaderTask {
 public:
     FaderTask();
     ~FaderTask();
-    void PollAll();
     void Poll();
 
+    static void PollAll();
     static std::list<FaderTask*> sTasks;
 
     Timer mTimer; // 0x0
@@ -77,10 +84,8 @@ public:
     void Print(TextStream&);
     void Load(BinStream&);
 
-    ObjPtrList<Fader, class ObjectDir> mFaders;
-    bool mDirty;
+    ObjPtrList<Fader> mFaders; // 0x0
+    bool mDirty; // 0x10
 };
 
 bool PropSync(FaderGroup&, DataNode&, DataArray*, int, PropOp);
-
-#endif

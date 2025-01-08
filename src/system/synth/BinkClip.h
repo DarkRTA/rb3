@@ -1,5 +1,4 @@
-#ifndef SYNTH_BINKCLIP_H
-#define SYNTH_BINKCLIP_H
+#pragma once
 #include "obj/Object.h"
 #include "synth/Pollable.h"
 #include "synth/Faders.h"
@@ -47,9 +46,14 @@ public:
     void FadeOut(float);
     void UnloadWhenFinishedPlaying(bool);
     bool IsReadyToPlay() const;
+    void SetPreLoad(bool preload){ mPreload = preload; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BinkClip);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(BinkClip)
+    }
 
     FilePath mFile; // 0x28
     float mVolume; // 0x34
@@ -68,5 +72,3 @@ public:
     bool mPlaying; // 0x66
     Loader* mStreamLoader; // 0x68
 };
-
-#endif // SYNTH_BINKCLIP_H

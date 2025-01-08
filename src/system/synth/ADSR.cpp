@@ -8,6 +8,8 @@
 #define kMaxSustainLevel 0xf
 #define kMaxReleaseRate 0x20
 
+static int FindNearestInTable(const float* table, int tableSize, float val);
+
 const float gDecayRate[16] = {
     0.00007f, 0.00018f, 0.00039f, 0.00081f, 0.0016f, 0.0033f, 0.00669999989f, 0.013f,
     0.027f, 0.052999999f, 0.11f, 0.20999999f, 0.43f, 0.86f, 1.7f, 3.4f

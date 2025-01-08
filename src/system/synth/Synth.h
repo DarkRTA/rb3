@@ -1,10 +1,12 @@
-#ifndef SYNTH_SYNTH_H
-#define SYNTH_SYNTH_H
+#pragma once
 #include "obj/Object.h"
 #include "rndobj/Overlay.h"
 #include "synth/FxSend.h"
 #include "synth/FxSendPitchShift.h"
 #include "synth/Mic.h"
+#include "synth/MicClientMapper.h"
+#include "synth/MicNull.h"
+#include "synth/MidiSynth.h"
 #include "synth/ByteGrinder.h"
 #include "synth/MidiInstrumentMgr.h"
 
@@ -22,6 +24,15 @@ enum FXMode {
     kFXModeChorus,
     kFXModeWah,
     kFXModeFlanger
+};
+
+// courtesy of RB2
+struct LevelData {
+    float mRMS; // offset 0x0, size 0x4
+    float mPeak; // offset 0x4, size 0x4
+    float mPeakHold; // offset 0x8, size 0x4
+    int mPeakAge; // offset 0xC, size 0x4
+    class String mName; // offset 0x10, size 0xC
 };
 
 class Fader;
@@ -55,7 +66,7 @@ public:
     virtual int GetFXChain() const { return 0; }
     virtual void SetChatVoiceGain(int, float){}
     virtual float GetChatVoiceGain(int){ return 1.0f; }
-    virtual Mic* GetMic(int){ return 0; } // fix this
+    virtual Mic* GetMic(int idx){ return mNullMics[idx]; }
     virtual Mic* GetPartyMic(){ return 0; } // ditto
     virtual void SetMicFX(bool){}
     virtual bool GetMixFC() const { return false; }
@@ -64,7 +75,7 @@ public:
     virtual void SuspendMics(){}
     virtual void ResumeMics(){}
     virtual int GetNumConnectedMics(){ return 0; }
-    virtual int GetNextAvailableMiCID() const { return -1; }
+    virtual int GetNextAvailableMicID() const { return -1; }
     virtual bool IsMicConnected(int) const { return false; }
     virtual void CaptureMic(int){}
     virtual void ReleaseMic(int){}
@@ -84,25 +95,61 @@ public:
     virtual void DestroyPitchShift(FxSendPitchShift*);
 
     void StopAllSfx(bool);
+    void PauseAllSfx(bool);
     float GetMasterVolume();
     void SetMasterVolume(float);
-
     void Play(const char*, float, float, float);
+    void SetFX(const DataArray*);
+    void StopPlaybackAllMics();
+    void SetMic(const DataArray*);
+    void ToggleHud();
+    void DrawMeter(float&, float, float, const char*);
+    void DrawMeterScale(float&);
+    bool CheckCommonBank(bool);
+    int GetSampleMem(ObjectDir*, Platform);
+    int GetSPUOverhead();
 
-    std::vector<int> unk20; // mLevelData?
-    ByteGrinder mGrinder; // unk28
-    int mNumMics; // unk2c
-    int unk30; // MidiSynth* mMidiSynth
-    std::vector<int> unk34; // mNullMics
-    bool unk3c; // mMuted
-    ObjDirPtr<class ObjectDir> unk40;
-    Fader* unk4c;
-    Fader* unk50;
-    Fader* unk54;
-    int unk58;
-    MidiInstrumentMgr* mInstrumentMgr;
+    template <class T> T* Find(const char* name, bool fail){
+        if(!CheckCommonBank(false)) return nullptr;
+        else {
+            T* obj = unk40->Find<T>(name, false);
+            if(!obj && fail){
+                MILO_FAIL("Synth::Find() - %s %s not found in %s",
+                    T::StaticClassName(), name, unk40->GetPathName());
+            }
+            return obj;
+        }
+    }
+
+    DataNode OnStartMic(const DataArray*);
+    DataNode OnStopMic(const DataArray*);
+    DataNode OnNumConnectedMics(const DataArray*);
+    DataNode OnSetMicVolume(const DataArray*);
+    DataNode OnSetFX(const DataArray*);
+    DataNode OnSetFXVol(const DataArray*);
+    DataNode OnPassthrough(DataArray*);
+
+    int GetNumMics() const { return mNumMics; }
+    static Synth* New();
+
+    std::vector<LevelData> mLevelData; // 0x20
+    ByteGrinder mGrinder; // 0x28
+    int mNumMics; // 0x2c
+    MidiSynth* mMidiSynth; // 0x30
+    std::vector<MicNull*> mNullMics; // 0x34
+    bool mMuted; // 0x3c
+    ObjDirPtr<ObjectDir> unk40;
+    Fader* mMasterFader; // 0x4c
+    Fader* mSfxFader; // 0x50
+    Fader* mMidiInstrumentFader; // 0x54
+    MicClientMapper* mMicClientMapper; // 0x58
+    MidiInstrumentMgr* mMidiInstrumentMgr; // 0x5c
+    int unk60; // TranscodableMixer* mSecureMixer?
+    int unk64; // Stream* mDebugStream?
+    RndOverlay* mHud; // 0x68
 };
 
-extern Synth* TheSynth;
+void SynthInit();
+void SynthTerminate();
 
-#endif
+extern Synth* TheSynth;

@@ -1,5 +1,4 @@
-#ifndef SYNTH_SLIPTRACK_H
-#define SYNTH_SLIPTRACK_H
+#pragma once
 #include <vector>
 
 class Stream;
@@ -22,5 +21,3 @@ public:
     float mMaxSlip;
     bool mOn;
 };
-
-#endif

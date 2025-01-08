@@ -3,8 +3,7 @@
 #include "obj/PropSync_p.h"
 #include "os/Debug.h"
 
-unsigned short FxSendSynapse::gRev = 0;
-unsigned short FxSendSynapse::gAltRev = 0;
+INIT_REVS(FxSendSynapse);
 
 FxSendSynapse::FxSendSynapse() : mAmount(0.0f), mProximityEffect(0.5f), mProximityFocus(0.5f), mNote1Hz(200.0f), mNote2Hz(0.0f), mNote3Hz(0.0f), mUnisonTrio(0), mAttackSmoothing(30.0f), mReleaseSmoothing(60.0f) {
 

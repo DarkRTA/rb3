@@ -1,7 +1,7 @@
-#ifndef SYNTH_FXSENDDISTORTION_H
-#define SYNTH_FXSENDDISTORTION_H
+#pragma once
 #include "synth/FxSend.h"
 
+/** "distortion effect" */
 class FxSendDistortion : public FxSend {
 public:
     FxSendDistortion();
@@ -14,10 +14,14 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(FxSendDistortion);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FxSendDistortion)
+    }
 
-    float mDrive;
+    /** "amount of drive". Ranges from 0 to 100. */
+    float mDrive; // 0x48
 };
-
-#endif

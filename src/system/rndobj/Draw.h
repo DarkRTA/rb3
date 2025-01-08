@@ -119,6 +119,7 @@ public:
      * This has a CPU cost if there are many objects."
      */
     bool mSortInWorld : 1; // used in RndGroup
+    /** "enable/disable the emitter" */
     bool mSynthEmitterEnabled : 1; // used in SynthEmitter
     bool mTestDone : 1; // used in RndFlare
     bool mLastDone : 1; // used in RndFlare

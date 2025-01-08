@@ -1,5 +1,4 @@
-#ifndef SYNTH_STREAMREADER_H
-#define SYNTH_STREAMREADER_H
+#pragma once
 
 class StreamReader {
 public:
@@ -12,5 +11,3 @@ public:
     virtual bool Fail() = 0;
     virtual void Init() = 0;
 };
-
-#endif

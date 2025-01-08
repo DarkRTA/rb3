@@ -224,8 +224,7 @@ void BinkClip::UpdatePanInfo(){
 
 void BinkClip::KillStream(){
     mPlaying = false;
-    delete mStream;
-    mStream = 0;
+    RELEASE(mStream);
 }
 
 void BinkClip::UnloadData(){
@@ -240,7 +239,7 @@ BEGIN_PROPSYNCS(BinkClip)
     SYNC_PROP_SET(file, mFile, SetFile(_val.Str()))
     SYNC_PROP_SET(volume, mVolume, SetVolume(_val.Float()))
     SYNC_PROP_SET(loop, mLoop, SetLoop(_val.Int()))
-    SYNC_PROP_SET(preload, mPreload, mPreload = _val.Int())
+    SYNC_PROP_SET(preload, mPreload, SetPreLoad(_val.Int()))
     SYNC_SUPERCLASS(Hmx::Object)
 END_PROPSYNCS
 

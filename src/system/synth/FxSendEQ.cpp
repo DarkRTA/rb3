@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendEQ::gRev = 0;
-unsigned short FxSendEQ::gAltRev = 0;
+INIT_REVS(FxSendEQ);
 
 FxSendEQ::FxSendEQ() : mHighFreqCutoff(12000.0f), mHighFreqGain(0.0f), 
     mMidFreqCutoff(8000.0f), mMidFreqBandwidth(1000.0f), mMidFreqGain(0.0f), mLowFreqCutoff(2000.0f), mLowFreqGain(0.0f), 

@@ -25,7 +25,7 @@ void FadePanel::StartFade(float vol, const Hmx::Color& color, bool fade_synth, b
     mFadeSynth = fade_synth;
     mSavedVolume = TheSynth->GetMasterVolume();
     if (fade_synth) {
-        TheSynth->unk4c->DoFade(-96.f, vol);
+        TheSynth->mMasterFader->DoFade(-96.f, vol);
     }
 }
 

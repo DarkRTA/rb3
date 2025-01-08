@@ -1,5 +1,4 @@
-#ifndef SYNTH_BINKREADER_H
-#define SYNTH_BINKREADER_H
+#pragma once
 #include "utl/BINK.h"
 #include "os/File.h"
 #include "synth/StandardStream.h"
@@ -20,10 +19,14 @@ public:
     virtual ~BinkReader();
     virtual void Poll(float);
     virtual void Seek(int);
-    virtual void EnableReads(bool);
-    virtual bool Done();
-    virtual bool Fail();
+    virtual void EnableReads(bool){}
+    virtual bool Done(){ return mState == kDone; }
+    virtual bool Fail(){ return mState == kFailure; }
     virtual void Init();
+
+    void PollOpenTracks();
+    void PollInitStream();
+    void PollPlay();
 
     static int sHeap;
     static int mPlaying;
@@ -42,4 +45,4 @@ public:
     int mHeap; // 0xe4
 };
 
-#endif
+void BinkReaderHeapInit();

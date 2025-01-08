@@ -1,17 +1,19 @@
-#ifndef SYNTH_STREAMRECEIVER_H
-#define SYNTH_STREAMRECEIVER_H
+#pragma once
 #include "synth/ADSR.h"
 #include "synth/SampleInst.h"
 
-enum State {
-    kInit = 0,
-    kReady = 1,
-    kPlaying = 2,
-    kStopped = 3,
-};
+class StreamReceiver;
+typedef StreamReceiver* StreamReceiverFactoryFunc(int, int, bool, int);
 
 class StreamReceiver {
 public:
+    enum State {
+        kInit = 0,
+        kReady = 1,
+        kPlaying = 2,
+        kStopped = 3,
+    };
+
     StreamReceiver(int, bool);
     virtual ~StreamReceiver();
     virtual void SetVolume(float) = 0;
@@ -38,24 +40,32 @@ public:
     virtual bool SendDoneImpl() = 0;
 
     int BytesWriteable();
+    void Play();
+    void Stop();
+    void EndData();
+    bool Ready();
+    void WriteData(const void*, int);
+    void ClearAtEndData();
+    int GetBytesPlayed();
 
-    bool mSlipEnabled;
-    unsigned char mBuffer[0x8000];
-    int mNumBuffers;
-    int mRingSize;
-    int mRingWritePos;
-    int mRingReadPos;
-    int mRingFreeSpace;
-    int mRingWrittenSpace;
-    State mState;
-    int mSendTarget;
-    bool mWantToSend;
-    bool mSending;
-    int mBuffersSent;
-    bool mStarving;
-    bool mEndData;
-    int mDoneBufferCounter;
-    int mLastPlayCursor;
+    static StreamReceiver* New(int, int, bool, int);
+    static StreamReceiverFactoryFunc* sFactory;
+
+    bool mSlipEnabled; // 0x4
+    unsigned char mBuffer[0x18000]; // 0x5
+    int mNumBuffers; // 0x18008
+    int mRingSize; // 0x1800c
+    int mRingWritePos; // 0x18010
+    int mRingReadPos; // 0x18014
+    int mRingFreeSpace; // 0x18018
+    int mRingWrittenSpace; // 0x1801c
+    State mState; // 0x18020
+    int mSendTarget; // 0x18024
+    bool mWantToSend; // 0x18028
+    bool mSending; // 0x18029
+    int mBuffersSent; // 0x1802c
+    bool mStarving; // 0x18030
+    bool mEndData; // 0x18031
+    int mDoneBufferCounter; // 0x18034
+    int mLastPlayCursor; // 0x18038
 };
-
-#endif

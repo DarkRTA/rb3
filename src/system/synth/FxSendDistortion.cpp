@@ -2,8 +2,7 @@
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
-unsigned short FxSendDistortion::gRev = 0;
-unsigned short FxSendDistortion::gAltRev = 0;
+INIT_REVS(FxSendDistortion);
 
 FxSendDistortion::FxSendDistortion() : mDrive(0.0f) {
 

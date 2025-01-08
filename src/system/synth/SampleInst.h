@@ -1,5 +1,4 @@
-#ifndef SYNTH_SAMPLEINST_H
-#define SYNTH_SAMPLEINST_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "synth/FxSend.h"
@@ -43,15 +42,13 @@ public:
     void SetSpeed(float);
     void SetBankSpeed(float);
 
-    float mVolume;
-    float mBankVolume;
-    float mPan;
-    float mBankPan;
-    float mSpeed;
-    float mBankSpeed;
-    ObjPtr<FxSend, ObjectDir> mSend;
-    float mReverbMixDb;
-    bool mReverbEnabled;
+    float mVolume; // 0x1c
+    float mBankVolume; // 0x20
+    float mPan; // 0x24
+    float mBankPan; // 0x28
+    float mSpeed; // 0x2c
+    float mBankSpeed; // 0x30
+    ObjPtr<FxSend> mSend; // 0x34
+    float mReverbMixDb; // 0x40
+    bool mReverbEnabled; // 0x44
 };
-
-#endif

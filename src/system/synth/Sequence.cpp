@@ -3,6 +3,7 @@
 #include "math/Rand.h"
 #include "obj/ObjVector.h"
 #include "obj/Task.h"
+#include <functional>
 #include "utl/Symbols.h"
 
 bool sForceSerialSequences;
@@ -14,7 +15,7 @@ namespace {
     }
 }
 
-Sequence::Sequence() : mInsts(this, kObjListNoNull), mAvgVol(0.0f), mVolSpread(0.0f), mAvgTranspose(0.0f),
+Sequence::Sequence() : mInsts(this), mAvgVol(0.0f), mVolSpread(0.0f), mAvgTranspose(0.0f),
     mTransposeSpread(0.0f), mAvgPan(0.0f), mPanSpread(0.0f), mFaders(this), mCanStop(true) {
 
 }
@@ -41,9 +42,7 @@ SeqInst* Sequence::Play(float f1, float f2, float f3){
 
 void Sequence::Stop(bool b){
     if(mCanStop || b){
-        for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
-            // ptmf_scall (*it)
-        }
+        std::for_each(mInsts.begin(), mInsts.end(), std::mem_fun(&SeqInst::Stop));
     }
 }
 
@@ -54,15 +53,15 @@ Sequence::~Sequence(){
 }
 
 void Sequence::SynthPoll(){
-    for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); it){
+    for(ObjPtrList<SeqInst>::iterator it = mInsts.begin(); it != mInsts.end(); it){
         SeqInst* curSeq = *it++;
         curSeq->Poll();
-        if(curSeq->mStarted && !curSeq->IsRunning()){
+        if(curSeq->Started() && !curSeq->IsRunning()){
             delete curSeq;
         }
     }
     if(mFaders.Dirty()){
-        for(ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
+        for(ObjPtrList<SeqInst>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
             (*it)->UpdateVolume();
         }
     }
@@ -121,11 +120,11 @@ void Sequence::OnTriggerSound(int i){
         }
         case 2: {
 
-            ObjPtrList<SeqInst, class ObjectDir>::iterator it = mInsts.begin();
+            ObjPtrList<SeqInst>::iterator it = mInsts.begin();
             for(; it != mInsts.end(); ++it){
                 if((*it)->IsRunning()) break;
             }
-            if(!(it != mInsts.end())) Play(0.0f, 0.0f, 0.0f);
+            if(it == mInsts.end()) Play(0.0f, 0.0f, 0.0f);
             break;
         }
         default: break;
@@ -198,27 +197,42 @@ SeqInst* RandomGroupSeq::MakeInstImpl(){
 }
 
 int RandomGroupSeq::NextIndex(){
-    if(mNextIndex == -1 && !mChildren.empty()) PickNextIndex();
+    if(mNextIndex == -1 && mChildren.size() != 0) PickNextIndex();
     return mNextIndex;
 }
 
 void RandomGroupSeq::PickNextIndex(){
+#ifdef MILO_DEBUG
     MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1C0);
-    if(!sForceSerialSequences) mNextIndex = RandomInt(0, Children().size());
-    else mNextIndex = (mNextIndex + 1) % Children().size();
+#else
+    if(GetNumSimul() != 1) mChildren.size();
+#endif
+    if(!sForceSerialSequences){
+        mNextIndex = RandomInt(0, mChildren.size());
+    }
+    else mNextIndex = (mNextIndex + 1) % mChildren.size();
+
+    if(mChildren.size() > 1 && !AllowRepeats()){
+        if(mForceChooseIndex > 0) mNextIndex = mForceChooseIndex; 
+        else {
+            while(InPlayedHistory(mNextIndex)){
+                if(!sForceSerialSequences){
+                    mNextIndex = RandomInt(0, mChildren.size());
+                }
+                else mNextIndex = (mNextIndex + 1) % mChildren.size();
+            }
+        }
+    }
+    AddToPlayedHistory(mNextIndex);
 }
 
 void RandomGroupSeq::ForceNextIndex(int i){
     MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1EE);
     if(i < 0 || i > Children().size() - 1){
-        MILO_FAIL("index out of bounds for ForceNextIndex (index = %d)", i);
+        MILO_WARN("index out of bounds for ForceNextIndex (index = %d)", i);
     }
     else {
-        for(std::list<int>::iterator it = mPlayHistory.begin(); it != mPlayHistory.end(); it){
-            if(mNextIndex == *it++){
-                it = mPlayHistory.erase(it);
-            }
-        }
+        mPlayHistory.remove(mNextIndex);
         mNextIndex = i;
     }
 }
@@ -403,17 +417,24 @@ bool WaitSeqInst::IsRunning(){
 }
 
 GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {
-    mSeqs.push_back(ObjPtr<SeqInst, class ObjectDir>(this, 0));
+    if(b){
+        ObjPtrList<Sequence>& children = seq->mChildren;
+        for(ObjPtrList<Sequence>::iterator it = children.begin(); it != children.end(); ++it){
+            SeqInst* inst = (*it)->MakeInst();
+            mSeqs.push_back();
+            mSeqs.back() = inst;
+        }
+    }
 }
 
 GroupSeqInst::~GroupSeqInst(){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
         delete *it;
     }
 }
 
 void GroupSeqInst::UpdateVolume(){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
         if(*it){
             (*it)->SetVolume(mVolume + mRandVol + mOwner->mFaders.GetVal());
         }
@@ -421,7 +442,7 @@ void GroupSeqInst::UpdateVolume(){
 }
 
 void GroupSeqInst::SetPan(float f){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
         if(*it){
             (*it)->SetPan(f + mRandPan);
         }
@@ -429,7 +450,7 @@ void GroupSeqInst::SetPan(float f){
 }
 
 void GroupSeqInst::SetTranspose(float f){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
         if(*it){
             (*it)->SetTranspose(f + mRandTp);
         }
@@ -449,7 +470,7 @@ void SerialGroupSeqInst::Stop(){
     if(mIt != mSeqs.end()){
         if(*mIt) (*mIt)->Stop();
     }
-    ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator curIt = mIt;
+    ObjVector<ObjPtr<SeqInst> >::iterator curIt = mIt;
     if(curIt != mSeqs.end()) curIt++;
     while(curIt != mSeqs.end()){
         delete *curIt++;
@@ -479,7 +500,7 @@ ParallelGroupSeqInst::~ParallelGroupSeqInst(){
 }
 
 void ParallelGroupSeqInst::StartImpl(){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
         if(*it) (*it)->Start();
     }
     for(mIt = mSeqs.begin(); mIt != mSeqs.end(); mIt++){
@@ -488,7 +509,7 @@ void ParallelGroupSeqInst::StartImpl(){
 }
 
 void ParallelGroupSeqInst::Stop(){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mIt; it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++){
         if(*it) (*it)->Stop();
     }
 }
@@ -511,7 +532,7 @@ RandomGroupSeqInst::RandomGroupSeqInst(RandomGroupSeq* seq) : GroupSeqInst(seq, 
         int next = seq->NextIndex();
         seq->PickNextIndex();
         int n = 0;
-        for(ObjPtrList<Sequence, class ObjectDir>::iterator it = seq->Children().begin(); it != seq->Children().end(); ++it){
+        for(ObjPtrList<Sequence>::iterator it = seq->Children().begin(); it != seq->Children().end(); ++it){
             if(n == next % childrenSize){
                 SeqInst* si = (*it)->MakeInst();
                 if(si) mSeqs.push_back(ObjPtr<SeqInst, ObjectDir>(si, 0));
@@ -534,13 +555,13 @@ RandomGroupSeqInst::~RandomGroupSeqInst(){
 }
 
 void RandomGroupSeqInst::StartImpl(){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mIt; it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++){
         if(*it) (*it)->Start();
     }
 }
 
 void RandomGroupSeqInst::Stop(){
-    for(ObjVector<ObjPtr<SeqInst, class ObjectDir> >::iterator it = mIt; it != mSeqs.end(); it++){
+    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++){
         if(*it) (*it)->Stop();
     }
 }

@@ -1,5 +1,4 @@
-#ifndef SYNTH_EMITTER_H
-#define SYNTH_EMITTER_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
@@ -8,6 +7,9 @@
 
 class Sfx;
 
+/** "A 3D positional emitter.  The volume and surround-panning of
+ *  a sfx are controlled by its position relative to a listener (usually the
+ *  camera)." */
 class SynthEmitter : public RndTransformable, public RndDrawable, public RndPollable {
 public:
     SynthEmitter();
@@ -26,16 +28,26 @@ public:
     virtual void Poll();
 
     void CheckLoadResources();
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(SynthEmitter);
+    static void Init(){
+        REGISTER_OBJ_FACTORY(SynthEmitter)
+    }
 
-    ObjPtr<Sfx, ObjectDir> mSfx; // 0xb8
-    ObjPtr<SfxInst, ObjectDir> mInst; // 0xc4
-    ObjPtr<RndTransformable, ObjectDir> mListener; // 0xd0
+    /** "sfx this emitter should play" */
+    ObjPtr<Sfx> mSfx; // 0xb8
+    ObjPtr<SfxInst> mInst; // 0xc4
+    /** "object representing the listener's position" */
+    ObjPtr<RndTransformable> mListener; // 0xd0
+    /** "volume and pan are fixed inside this radius." */
     float mRadInner; // 0xdc
+    /** "the sound starts playing when you cross inside this radius." */
     float mRadOuter; // 0xe0
+    /** "volume at inner radius (and inside)" */
     float mVolInner; // 0xe4
+    /** "volume at outer radius, in dB" */
     float mVolOuter; // 0xe8
 
     // mEnabled: 0x98 >> 5 & 1
 };
-
-#endif

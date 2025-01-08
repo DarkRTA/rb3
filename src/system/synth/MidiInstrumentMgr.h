@@ -1,5 +1,4 @@
-#ifndef SYNTH_MIDIINSTRUMENTMGR_H
-#define SYNTH_MIDIINSTRUMENTMGR_H
+#pragma once
 #include "obj/Dir.h"
 #include "obj/ObjPtr_p.h"
 #include "synth/MidiInstrument.h"
@@ -14,7 +13,5 @@ public:
     void Poll();
 
     ObjDirPtr<ObjectDir> mObjectDir; // 0x0
-    ObjPtr<MidiInstrument, ObjectDir> mInstrument; // 0xc
+    ObjPtr<MidiInstrument> mInstrument; // 0xc
 };
-
-#endif

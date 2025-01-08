@@ -12,7 +12,7 @@ SynthPollable::~SynthPollable(){
 
 void SynthPollable::StartPolling(){
     if(mItr == sPollables.begin()){
-        sPollables.push_back(0);
+        sPollables.push_front(this);
         mItr = sPollables.begin();
         mIsActive = true;
     }
@@ -30,7 +30,7 @@ void SynthPollable::CancelPolling(){
 }
 
 void SynthPollable::PollAll(){
-    for(std::list<SynthPollable*>::iterator it = sPollables.begin(); it != sPollables.end(); it++){
-        (*it)->SynthPoll();
+    for(std::list<SynthPollable*>::const_iterator it = sPollables.begin(); it != sPollables.end(); it){
+        (*it++)->SynthPoll();
     }
 }

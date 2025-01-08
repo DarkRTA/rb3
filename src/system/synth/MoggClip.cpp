@@ -18,10 +18,8 @@ MoggClip::MoggClip() : mFilePath(), mVolume(0.0f), mLoop(0), mControllerVolume(0
 }
 
 MoggClip::~MoggClip(){
-    delete mFileLoader;
-    mFileLoader = 0;
-    delete mFader;
-    mFader = 0;
+    RELEASE(mFileLoader);
+    RELEASE(mFader);
     KillStream();
     UnloadData();
 }
@@ -37,7 +35,7 @@ void MoggClip::SynthPoll(){
     if(unk6a && mStream){
         mStream->PollStream();
         if(!mStream->IsPlaying() && mStream->IsReady()){
-            if(mPanInfos.size() == 0){
+            if(mPanInfos.empty()){
                 int chans = mStream->GetNumChannels();
                 if(chans == 1){
                     mStream->SetPan(0, 0.0f);
@@ -81,10 +79,7 @@ void MoggClip::PreLoad(BinStream& bs){
     if(rev > 2) MILO_WARN("Can't load new MoggClip");
     else {
         Hmx::Object::Load(bs);
-        char buf[0x100];
-        bs.ReadString(buf, 0x100);
-        mFilePath.SetRoot(buf);
-        bs >> mVolume >> mLoop;
+        bs >> mFilePath >> mVolume >> mLoop;
         if(rev > 1) bs >> mLoopStart >> mLoopEnd;
         LoadFile(rev > 0 ? &bs : 0);
     }
@@ -168,11 +163,10 @@ void MoggClip::SetPan(int chan, float pan){
 }
 
 void MoggClip::LoadFile(BinStream* bs){
-    delete mFileLoader;
-    mFileLoader = 0;
+    RELEASE(mFileLoader);
     KillStream();
     UnloadData();
-    if(*mFilePath.c_str() != '\0'){
+    if(!mFilePath.empty()){
         BinStream* bsToUse = (bs && bs->Cached()) ? bs : 0;
         mFileLoader = new FileLoader(mFilePath, FileLocalize(mFilePath.c_str(), 0), kLoadFront, 0, false, true, bsToUse);
         if(!mFileLoader) MILO_WARN("Could not load mogg file '%s'", mFilePath.c_str());
@@ -186,8 +180,7 @@ bool MoggClip::EnsureLoaded(){
             TheLoadMgr.PollUntilLoaded(mFileLoader, 0);
         }
         unk48 = (void*)mFileLoader->GetBuffer(&unk4c);
-        delete mFileLoader;
-        mFileLoader = 0;
+        RELEASE(mFileLoader);
     }
     bool ret = false;
     if(unk48 != 0 && 0 < unk4c) ret = true;

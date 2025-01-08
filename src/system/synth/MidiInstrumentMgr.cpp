@@ -1,6 +1,6 @@
 #include "synth/MidiInstrumentMgr.h"
 
-MidiInstrumentMgr::MidiInstrumentMgr() : mObjectDir(), mInstrument(0, 0) {
+MidiInstrumentMgr::MidiInstrumentMgr() : mObjectDir(), mInstrument(0) {
 
 }
 
