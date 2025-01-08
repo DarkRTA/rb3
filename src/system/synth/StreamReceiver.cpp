@@ -34,6 +34,102 @@ StreamReceiver::~StreamReceiver(){
 
 }
 
-int StreamReceiver::BytesWriteable(){
+DECOMP_FORCEFUNC(StreamReceiver, StreamReceiver, BytesWriteable())
+
+#pragma push
+#pragma force_active on
+inline int StreamReceiver::BytesWriteable(){
     return mRingFreeSpace;
+}
+#pragma pop
+
+void StreamReceiver::WriteData(const void* data, int bytes){
+    MILO_ASSERT(bytes > 0 && bytes <= BytesWriteable(), 0x55);
+    int num = mRingSize - mRingWritePos;
+    if(bytes <= num){
+        memcpy(mBuffer + mRingWritePos, data, bytes);
+        mRingWritePos += bytes;
+        if(mRingWritePos == mRingSize){
+            mRingWritePos = 0;
+        }
+    }
+    else {
+        memcpy(mBuffer + mRingWritePos, data, num);
+        char* cData = (char*)data;
+        memcpy(mBuffer, cData + num, bytes - num);
+        mRingWritePos = bytes - num;
+    }
+    mRingFreeSpace -= bytes;
+    mRingWrittenSpace += bytes;
+}
+
+void StreamReceiver::ClearAtEndData(){
+    if(mRingFreeSpace != 0){
+        if(mRingWritePos + mRingFreeSpace <= mRingSize){
+            memset(mBuffer + mRingWritePos, 0, mRingFreeSpace);
+            mRingWritePos += mRingFreeSpace;
+            if(mRingWritePos == mRingSize){
+                mRingWritePos = 0;
+            }
+        }
+        else {
+            int firstWipeSize = mRingSize - mRingWritePos;
+            int secondWipeSize = mRingFreeSpace - firstWipeSize;
+            MILO_ASSERT(firstWipeSize > 0, 0x7D);
+            MILO_ASSERT(secondWipeSize > 0, 0x7E);
+            memset(mBuffer + mRingWritePos, 0, firstWipeSize);
+            memset(mBuffer, 0, mRingFreeSpace - firstWipeSize);
+            mRingWritePos = mRingFreeSpace - firstWipeSize;
+        }
+    }
+}
+
+DECOMP_FORCEFUNC(StreamReceiver, StreamReceiver, Ready())
+
+#pragma push
+#pragma force_active on
+inline bool StreamReceiver::Ready(){ return mState != kInit; }
+#pragma pop
+
+void StreamReceiver::Play(){
+    MILO_ASSERT(Ready(), 0x91);
+    switch(mState){
+        case kPlaying:
+            break;
+        case kStopped:
+            PauseImpl(false);
+            goto play;
+            break;
+        default:
+            PlayImpl();
+        play:
+            mState = kPlaying;
+            break;
+    }
+}
+
+void StreamReceiver::Stop(){
+    MILO_ASSERT(mState == kPlaying || mState == kStopped, 0xA6);
+    if(mState == kPlaying){
+        PauseImpl(true);
+        mState = kStopped;
+    }
+}
+
+void StreamReceiver::Poll(){
+
+}
+
+void StreamReceiver::EndData(){
+    if(!mEndData){
+        if(mRingFreeSpace != 0){
+            ClearAtEndData();
+            mRingFreeSpace = 0;
+        }
+        mEndData = true;
+    }
+}
+
+int StreamReceiver::GetBytesPlayed(){
+    
 }

@@ -2,18 +2,18 @@
 #include "synth/ADSR.h"
 #include "synth/SampleInst.h"
 
-enum State {
-    kInit = 0,
-    kReady = 1,
-    kPlaying = 2,
-    kStopped = 3,
-};
-
 class StreamReceiver;
 typedef StreamReceiver* StreamReceiverFactoryFunc(int, int, bool, int);
 
 class StreamReceiver {
 public:
+    enum State {
+        kInit = 0,
+        kReady = 1,
+        kPlaying = 2,
+        kStopped = 3,
+    };
+
     StreamReceiver(int, bool);
     virtual ~StreamReceiver();
     virtual void SetVolume(float) = 0;
@@ -44,11 +44,15 @@ public:
     void Stop();
     void EndData();
     bool Ready();
+    void WriteData(const void*, int);
+    void ClearAtEndData();
+    int GetBytesPlayed();
+
     static StreamReceiver* New(int, int, bool, int);
     static StreamReceiverFactoryFunc* sFactory;
 
     bool mSlipEnabled; // 0x4
-    unsigned char mBuffer[0x18000]; // 0x8
+    unsigned char mBuffer[0x18000]; // 0x5
     int mNumBuffers; // 0x18008
     int mRingSize; // 0x1800c
     int mRingWritePos; // 0x18010
