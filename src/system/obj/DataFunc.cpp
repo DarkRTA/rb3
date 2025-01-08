@@ -24,6 +24,11 @@
 std::map<Symbol, DataFunc*> gDataFuncs;
 DataThisPtr gDataThisPtr;
 
+static DataArray* sFileMsg;
+bool sOldNoModal;
+ModalCallbackFunc* sOldModalCallback;
+DataArray* sNotifyMsg;
+
 // Force ~MergeFilter() to generate here
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
@@ -296,10 +301,17 @@ DEF_DATA_FUNC(DataVar){
 }
 
 DEF_DATA_FUNC(DataPackColor) {
-    return
-        ((int)(array->Float(3) * 255.0f) & 0xFF) << 0x10
-        | ((int)(array->Float(2) * 255.0f) & 0xFF) << 8
-        | ((int)(array->Float(1) * 255.0f) & 0xFF);
+    // don't question the ordering here lol, it matches
+
+    float g = array->Float(2);
+    float b = array->Float(3);
+    float r = array->Float(1);
+
+    int r_packed = ((int)(r * 255.0f) & 0xFF);
+    int b_packed = ((int)(b * 255.0f) & 0xFF) << 16;
+    int g_packed = ((int)(g * 255.0f) & 0xFF) << 8;
+
+    return g_packed | r_packed | b_packed;
 }
 
 DEF_DATA_FUNC(DataUnpackColor) {
@@ -311,26 +323,30 @@ DEF_DATA_FUNC(DataUnpackColor) {
 }
 
 DEF_DATA_FUNC(DataDo){
-    int cnt;
-    int nodeCnt = array->Size();
-    for(cnt = 1; array->Type(cnt) == kDataArray; cnt++){
-        DataArray* arr = array->Node(cnt).mValue.array;
-        DataNode* n = arr->Var(0);
+    int size = array->Size(); // this needs to be up here to match
+
+    int i;
+    for (i = 1; array->Type(i) == kDataArray; i++){
+        DataArray* binding = CONST_ARRAY(array)->Node(i).mValue.array;
+        DataNode* n = binding->Var(0);
         DataPushVar(n);
-        if(arr->Size() == 2){
-            *n = arr->Evaluate(1);
+        if(binding->Size() == 2){
+            *n = binding->Evaluate(1);
+        } else {
+            MILO_ASSERT_FMT(binding->Size() == 1, "do var has more than one initializer");
         }
-#ifdef MILO_DEBUG
-        else if(arr->Size() != 1){
-            MILO_FAIL("do var has more than one initializer");
-        }
-#endif
     }
-    int delCnt = cnt - 1;
-    for(; cnt < nodeCnt - 1; cnt++)
-        array->Command(cnt)->Execute();
-    DataNode ret(array->Evaluate(cnt));
-    while(delCnt-- != 0) DataPopVar();
+    int numVars = i - 1;
+
+    for (; i < size - 1; i++) {
+        array->Command(i)->Execute();
+    }
+    DataNode ret(array->Evaluate(i));
+
+    while (numVars-- != 0) {
+        DataPopVar();
+    }
+
     return ret;
 }
 
@@ -338,10 +354,15 @@ DEF_DATA_FUNC(DataMin){
     DataNode& n1 = array->Evaluate(1);
     DataNode& n2 = array->Evaluate(2);
     if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
-        return Min<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
-    }
-    else {
-        return Min<int>(n2.LiteralInt(array), n1.LiteralInt(array));
+        return Min<float>(
+            n1.LiteralFloat(array),
+            n2.LiteralFloat(array)
+        );
+    } else {
+        return Min<int>(
+            n1.LiteralInt(array),
+            n2.LiteralInt(array)
+        );
     }
 }
 
@@ -350,9 +371,8 @@ DEF_DATA_FUNC(DataMax){
     DataNode& n2 = array->Evaluate(2);
     if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
         return Max<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
-    }
-    else {
-        return Max<int>(n2.LiteralInt(array), n1.LiteralInt(array));
+    } else {
+        return Max<int>(n1.LiteralInt(array), n2.LiteralInt(array));
     }
 }
 
@@ -422,13 +442,22 @@ DEF_DATA_FUNC(DataMean) {
 }
 
 DEF_DATA_FUNC(DataClamp) {
-    DataNode& dn1 = array->Evaluate(1);
-    DataNode& dn2 = array->Evaluate(2);
-    DataNode& dn3 = array->Evaluate(3);
-    if(dn1.Type() == kDataFloat || dn2.Type() == kDataFloat || dn3.Type() == kDataFloat){
-        return Clamp<float>(dn1.LiteralFloat(array), dn2.LiteralFloat(array), dn3.LiteralFloat(array));
+    DataNode& n1 = array->Evaluate(1);
+    DataNode& n2 = array->Evaluate(2);
+    DataNode& n3 = array->Evaluate(3);
+    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat || n3.Type() == kDataFloat){
+        return Clamp<float>(
+            n2.LiteralFloat(array),
+            n3.LiteralFloat(array),
+            n1.LiteralFloat(array)
+        );
+    } else {
+        return Clamp<int>(
+            n2.LiteralInt(array),
+            n3.LiteralInt(array),
+            n1.LiteralInt(array)
+        );
     }
-    else return Clamp<int>(dn1.LiteralInt(array), dn2.LiteralInt(array), dn3.LiteralInt(array));
 }
 
 DEF_DATA_FUNC(DataSubEq){
@@ -569,34 +598,36 @@ DEF_DATA_FUNC(DataForEach) {
     DataArray *arr = array->Array(2);
     arr->AddRef();
     DataNode *var = array->Var(1);
-    DataNode lol(*var);
+
+    DataNode save(*var);
     for (int i = 0; i < arr->Size(); i++) {
         *var = arr->Evaluate(i);
         for (int j = 3; j < array->Size(); j++) {
             array->Command(j)->Execute();
         }
     }
-    *var = lol;
+
+    *var = save;
     arr->Release();
     return 0;
 }
 
 DEF_DATA_FUNC(DataForEachInt) {
     DataNode *var = array->Var(1);
-    int i2 = array->Int(2);
-    int i3 = array->Int(3);
-    int r31 = -1;
-    if (i2 > i3)
-        r31 = 1;
-    DataNode idk(*var);
-    while (i2 != i3) {
-        *var = DataNode(i2);
+    int begin = array->Int(2);
+    int end = array->Int(3);
+    int inc = end > begin ? 1 : -1;
+
+    DataNode save(*var);
+    for (int cur = begin; cur != end; cur += inc) {
+        *var = cur;
         for (int cnt = 4; cnt < array->Size(); cnt++) {
             array->Command(cnt)->Execute();
         }
-        i2 = var->UncheckedInt() + r31;
+        cur = var->UncheckedInt();
     }
-    *var = idk;
+
+    *var = save;
     return 0;
 }
 
@@ -670,13 +701,18 @@ DEF_DATA_FUNC(DataTime) {
         if (eval.Type() == kDataCommand) break;
         eval.Print(TheDebug, true);
     }
-    if (i == 1) MILO_LOG("Timing %s, line %d:", array->File(), array->Line());
+
+    if (i == 1) {
+        MILO_LOG("Timing %s, line %d:", array->File(), array->Line());
+    }
+
     Timer time;
     time.Start();
     while (i < array->Size()) {
         array->Command(i++)->Execute();
     }
-    time.Split();
+    time.Stop();
+
     MILO_LOG(" %f ms\n", time.Ms());
     return time.Ms();
 };
@@ -688,13 +724,14 @@ DEF_DATA_FUNC(DataRandomInt) {
 DEF_DATA_FUNC(DataRandomFloat) {
     if (array->Size() > 1) {
         return RandomFloat(array->Float(1), array->Float(2));
-    } else
+    } else {
         return RandomFloat();
+    }
 }
 
 DEF_DATA_FUNC(DataRandomElem) {
     DataArray *a = array->Array(1);
-    MILO_ASSERT_FMT(a->Size() != 0, "Empty array (file %s, line %d)", a->File(), a->Line());
+    MILO_ASSERT_FMT(a->Size() != 0, "Empty array (file %s, line %d)", array->File(), array->Line());
     return a->Node(RandomInt(0, a->Size()));
 }
 
@@ -724,45 +761,10 @@ DEF_DATA_FUNC(DataNotifyBeta) {
     for (int i = 1; i < array->Size(); i++){
         array->Evaluate(i).Print(str, true);
     }
-    TheDebug << MakeString(str.c_str());
+    MILO_NOTIFY_BETA(str.c_str());
 #endif
     return 0;
 }
-
-// DataNode DataNotifyBeta(DataArray *da)
-
-// {
-//   DataNode *pDVar1;
-//   char *pcVar2;
-//   int iVar3;
-//   undefined local_938 [4];
-//   String SStack_934;
-//   char acStack_928 [256];
-//   FormatString aFStack_828 [2076];
-
-//   String::String(&SStack_934);
-//   for (iVar3 = 1; iVar3 < da->mSize; iVar3 = iVar3 + 1) {
-//     pDVar1 = (DataNode *)DataArray::Node(da,iVar3);
-//     pDVar1 = (DataNode *)DataNode::Evaluate(pDVar1);
-//     DataNode::Print(pDVar1,(TextStream *)&SStack_934,true);
-//   }
-//   FormatString::FormatString(aFStack_828,SStack_934.mStr);
-//   pcVar2 = (char *)FormatString::Str(aFStack_828);
-//   if (TheDebug._28_4_ == 0) {
-//     pcVar2 = MakeString(@STRING@__ls__9DebugBetaFPCc@0,pcVar2);
-//     TextStream::operator_<<((TextStream *)TheDebug,pcVar2);
-//   }
-//   else {
-//     local_938[0] = 0;
-//     pcVar2 = MakeString(@STRING@__ls__9DebugBetaFPCc,pcVar2);
-//     strncpy(acStack_928,pcVar2,0xfe);
-//     (*(code *)TheDebug._28_4_)(local_938,acStack_928,0);
-//   }
-//   param_1->mNodes = (DataNode *)0x0;
-//   param_1->mFile = 6;
-//   String::~String(&SStack_934);
-//   return;
-// }
 
 DEF_DATA_FUNC(DataFail){
 #ifdef MILO_DEBUG
@@ -900,16 +902,9 @@ DEF_DATA_FUNC(DataEval) {
     return array->Evaluate(1).Evaluate();
 }
 
-inline float InverseLerp(float f1, float f2, float f3) {
-    if (f2 != f1)
-        return (f3 - f1) / (f2 - f1);
-    else
-        return 1.0f;
-}
-
 DEF_DATA_FUNC(DataReverseInterp){
-    float ext = InverseLerp(array->Float(1), array->Float(2), array->Float(3));
-    return Clamp(0.0f, 1.0f, ext);
+    float value = InverseLerp(array->Float(1), array->Float(2), array->Float(3));
+    return Clamp(0.0f, 1.0f, value);
 }
 
 DEF_DATA_FUNC(DataInterp) {
@@ -1113,9 +1108,8 @@ DEF_DATA_FUNC(DataBasename) {
 
 DEF_DATA_FUNC(DataDirname) {
     const char* s = FileGetPath(array->Str(1), NULL);
-    class String str(s);
-    uint x = str.find_last_of("/");
-    return s + (x + 1U & ~-(x == String::npos));
+    uint x = String(s).find_last_of("/");
+    return s + (x == String::npos ? 0 : x + 1);
 }
 
 DEF_DATA_FUNC(DataHasSubStr) {
@@ -1248,9 +1242,11 @@ DataMergeFilter::DataMergeFilter(const DataNode& node, Subdirs subs) : MergeFilt
     else if(mType == kDataFunc) mFunc = node.Func();
     else if(mType == kDataObject) mObj = node.GetObj();
     else if(mType == kDataSymbol){
-        mObj = gDataDir->FindObject(node.mValue.symbol, true);
+        const char* _name = node.UncheckedStr();
+        Symbol name = STR_TO_SYM(_name);
+        mObj = gDataDir->FindObject(name.Str(), true);
         if(!mObj){
-            const std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(node.mValue.symbol);
+            const std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(name);
             MILO_ASSERT(func != gDataFuncs.end(), 0x6ED);
             mFunc = func->second;
             mType = kDataFunc;
@@ -1266,18 +1262,18 @@ DEF_DATA_FUNC(DataMergeDirs) {
 }
 
 DEF_DATA_FUNC(DataReplaceObject) {
-    int x, y, z;
-    bool a,b,c;
-    if (array->Size() > 3) x = array->Int(3);
-    else x = 1;
-    a = x;
-    if (array->Size() > 4) y = array->Int(4);
-    else y = 1;
-    b = y;
-    if (array->Size() > 5) y = array->Int(5);
-    else z = 1;
-    c = z;
-    ReplaceObject(array->GetObj(1), array->GetObj(2), a, b, c);
+    bool copyDeep = array->Size() > 3 ? array->Int(3) : true;
+    bool deleteFrom = array->Size() > 4 ? array->Int(4) : true;
+    bool setProxyFile = array->Size() > 5 ? array->Int(5) : true;
+
+    ReplaceObject(
+        array->GetObj(1),
+        array->GetObj(2),
+        copyDeep,
+        deleteFrom,
+        setProxyFile
+    );
+
     return 0;
 }
 
@@ -1292,8 +1288,9 @@ DEF_DATA_FUNC(DataNextName) {
 DataNode Quasiquote(const DataNode& node) {
     static Symbol unquoteAbbrev(",");
     DataType nodeType = node.Type();
-    if(nodeType - 0x10 <= 1U){
+    if(nodeType == kDataArray || nodeType == kDataCommand){
         DataArray* nodeArr = node.UncheckedArray();
+
         if(nodeType == kDataCommand && nodeArr->Type(0) == kDataSymbol){
             char* str = (char*)nodeArr->Node(0).UncheckedStr();
             Symbol sym = STR_TO_SYM(str);
@@ -1301,13 +1298,16 @@ DataNode Quasiquote(const DataNode& node) {
                 return nodeArr->Evaluate(1);
             }
         }
+
         DataArrayPtr ptr(new DataArray(nodeArr->Size()));
         for(int i = 0; i < nodeArr->Size(); i++){
             ptr.Node(i) = Quasiquote(nodeArr->Node(i));
         }
+
         return DataNode(UNCONST_ARRAY(ptr), nodeType);
+    } else {
+        return node;
     }
-    else return node;
 }
 
 DEF_DATA_FUNC(DataQuasiquote) {
@@ -1341,8 +1341,6 @@ DEF_DATA_FUNC(DataGetDateTime) {
     }
     return (int)dt.ToCode();
 }
-
-static DataArray* sFileMsg;
 
 bool FileListCallBack(char* s) {
     bool ret;
@@ -1397,6 +1395,29 @@ DEF_DATA_FUNC(DataDisableNotify) {
 }
 
 DEF_DATA_FUNC(DataFilterNotify) {
+    if (array->Size() > 3) {
+        bool restore = TheDebug.mModalCallback != ScriptDebugModal;
+        if (restore) {
+            sOldNoModal = TheDebug.mNoModal;
+            sOldModalCallback = TheDebug.mModalCallback;
+            TheDebug.mNoModal = false;
+        }
+
+        sNotifyMsg = array->Clone(true, false, 0);
+        TheDebug.SetModalCallback(ScriptDebugModal);
+
+        for (int i = 3; i < array->Size(); i++) {
+            array->Command(i)->Execute();
+        }
+
+        if (restore) {
+            TheDebug.mNoModal = sOldNoModal;
+            TheDebug.SetModalCallback(sOldModalCallback);
+        }
+    } else {
+        MILO_LOG("invalid # of arguments...\n");
+    }
+
     return 0;
 }
 

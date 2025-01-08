@@ -71,19 +71,19 @@ template<class T> inline T Max(T x, T y, T z){
     return Max(x, Max(y, z));
 }
 
-template<class T> inline T Clamp(T x, T y, T z){
-    if(z > y) return y;
-    if(!(z < x)) return z;
-    return x;
+template<class T> inline T Clamp(T min, T max, T value){
+    if(value > max) return max;
+    if(value < min) return min;
+    return value;
 }
 
-template<class T> inline bool ClampEq(T& x, const T& y, const T& z) {
-    T temp = y;
-    if (x < y) {
-        x = temp;
+template<class T> inline bool ClampEq(T& value, const T& min, const T& max) {
+    T temp = min;
+    if (value < min) {
+        value = temp;
         return true;
-    } else if (x > z) {
-        x = z;
+    } else if (value > max) {
+        value = max;
         return true;
     }
     return false;
@@ -152,17 +152,25 @@ inline float ModRange(float f1, float f2, float f3){
 }
 
 
-inline float Interp(float a, float b, float c){
-    float delta = b - a;
-    return c * delta + a;
+inline float Interp(float a, float b, float t){
+    return t * (b - a) + a;
 }
 
-inline void Interp(float f1, float f2, float f3, float& fres){
-    fres = f3 * (f2 - f1) + f1;
+inline void Interp(float a, float b, float t, float& fres){
+    fres = t * (b - a) + a;
 }
 
-inline void Interp(bool b1, bool b2, float f, bool& bres){
-    bres = f < 1.0f ? b1 : b2;
+inline void Interp(bool a, bool b, float t, bool& bres){
+    bres = t < 1.0f ? a : b;
+}
+
+inline float InverseLerp(float min, float max, float value) {
+    // Prevent divide-by-zero from zero-sized range
+    if (max != min) {
+        return (value - min) / (max - min);
+    } else {
+        return 1.0f;
+    }
 }
 
 inline bool PowerOf2(int num){

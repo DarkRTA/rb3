@@ -1086,7 +1086,7 @@
 
             "system/obj/DataArray.cpp": "Equivalent",
             "system/obj/DataFile.cpp": "NonMatching",
-            "system/obj/DataFunc.cpp": "NonMatching",
+            "system/obj/DataFunc.cpp": "Equivalent",
             "system/obj/DataNode.cpp": "NonMatching",
             "system/obj/DataUtl.cpp": {
                 "status": "LinkIssues",

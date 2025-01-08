@@ -15,6 +15,7 @@
 #define DECOMP_FORCEACTIVE(module, ...)
 #define DECOMP_FORCELITERAL(module, ...)
 #define DECOMP_FORCEFUNC(module, decl, ...)
+#define DECOMP_FORCEFUNC_TEMPL(module, cls, func, ...)
 #define DECOMP_FORCEDTOR(module, cls)
 #define DECOMP_FORCEBLOCK(module, ...)
 // Compile with matching hacks.
