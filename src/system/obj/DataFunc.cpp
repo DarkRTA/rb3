@@ -1262,18 +1262,18 @@ DEF_DATA_FUNC(DataMergeDirs) {
 }
 
 DEF_DATA_FUNC(DataReplaceObject) {
-    int x, y, z;
-    bool a,b,c;
-    if (array->Size() > 3) x = array->Int(3);
-    else x = 1;
-    a = x;
-    if (array->Size() > 4) y = array->Int(4);
-    else y = 1;
-    b = y;
-    if (array->Size() > 5) y = array->Int(5);
-    else z = 1;
-    c = z;
-    ReplaceObject(array->GetObj(1), array->GetObj(2), a, b, c);
+    bool copyDeep = array->Size() > 3 ? array->Int(3) : true;
+    bool deleteFrom = array->Size() > 4 ? array->Int(4) : true;
+    bool setProxyFile = array->Size() > 5 ? array->Int(5) : true;
+
+    ReplaceObject(
+        array->GetObj(1),
+        array->GetObj(2),
+        copyDeep,
+        deleteFrom,
+        setProxyFile
+    );
+
     return 0;
 }
 
