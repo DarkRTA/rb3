@@ -92,7 +92,7 @@ public:
         mStart = cycle;
     }
 
-    bool Running() {
+    bool Running() const {
         return mRunning > 0;
     }
 

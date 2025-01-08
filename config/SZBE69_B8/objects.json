@@ -1314,7 +1314,7 @@
             "system/synth/SlipTrack.cpp": "Matching",
             "system/synth/StandardStream.cpp": "NonMatching",
             "system/synth/Stream.cpp": "Matching",
-            "system/synth/StreamNull.cpp": "MISSING",
+            "system/synth/StreamNull.cpp": "Matching",
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
             "system/synth/SynthSample.cpp": "Matching",

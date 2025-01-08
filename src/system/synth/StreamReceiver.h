@@ -1,5 +1,4 @@
-#ifndef SYNTH_STREAMRECEIVER_H
-#define SYNTH_STREAMRECEIVER_H
+#pragma once
 #include "synth/ADSR.h"
 #include "synth/SampleInst.h"
 
@@ -62,5 +61,3 @@ public:
     int mDoneBufferCounter;
     int mLastPlayCursor;
 };
-
-#endif

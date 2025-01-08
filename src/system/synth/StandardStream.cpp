@@ -487,7 +487,7 @@ void StandardStream::AddVirtualChannels(int i){
 }
 
 void StandardStream::RemapChannel(int i1, int i2){
-    unkfc.push_back(std::make_pair(i1, i2));
+    mChanMaps.push_back(std::make_pair(i1, i2));
 }
 
 void StandardStream::UpdateSpeed(int chn){
