@@ -1317,7 +1317,7 @@
             "system/synth/SynthSample.cpp": "Matching",
             "system/synth/Utl.cpp": "NonMatching",
             "system/synth/VoiceBeat.cpp": "NonMatching",
-            "system/synth/VorbisReader.cpp": "MISSING",
+            "system/synth/VorbisReader.cpp": "NonMatching",
             "system/synth/WavReader.cpp": "NonMatching",
 
             "system/synthwii/EnvelopeWii.cpp": "NonMatching",
