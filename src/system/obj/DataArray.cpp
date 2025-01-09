@@ -341,10 +341,12 @@ DataArray* DataArray::FindArray(Symbol tag, bool fail) const {
     return found;
 }
 
+#ifdef VERSION_SZBE69_B8
 DECOMP_FORCEACTIVE(DataArray,
     "a->Size()==3",
     "AddrIsInLinearMem!\n"
 )
+#endif
 
 #pragma push
 #pragma force_active on

@@ -88,7 +88,7 @@ void ReplaceObject(Hmx::Object* from, Hmx::Object* to, bool copyDeep, bool delet
     from->SetName(nullptr, nullptr);
     to->SetName(name, dir);
     if(copyDeep) CopyObject(from, to, Hmx::Object::kCopyDeep, setProxyFile);
-    const std::vector<ObjRef*>& refs = from->Refs();
+    const std::vector<ObjRef*>& refs = from->mRefs;
     while(!refs.empty()){
         ObjRef* cur = refs.back();
         cur->Replace(from, to);

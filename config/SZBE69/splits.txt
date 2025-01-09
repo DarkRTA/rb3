@@ -1299,6 +1299,7 @@ system/obj/DataArray.cpp:
 	.text       start:0x80315A70 end:0x80318880
 	.ctors      start:0x807EFF04 end:0x807EFF08
 	.data       start:0x80854D04 end:0x80854D48
+	.sbss       start:0x808E4468 end:0x808E4470
 
 system/obj/DataFile.cpp:
 	.text       start:0x80318880 end:0x8031B2B8
@@ -1362,7 +1363,9 @@ system/obj/Task.cpp:
 system/obj/TextFile.cpp:
 	.text       start:0x8033C93C end:0x8033D038
 	.data       start:0x80856610 end:0x808566C8
+	.sbss       start:0x808E44D8 end:0x808E44E0
 	.sdata2     start:0x808E5868 end:0x808E5870
+	.bss        start:0x8091B960 end:0x8091B968
 
 system/obj/TypeProps.cpp:
 	.text       start:0x8033D038 end:0x8033DE38
@@ -1370,6 +1373,8 @@ system/obj/TypeProps.cpp:
 system/obj/Utl.cpp:
 	.text       start:0x8033DE38 end:0x80340ED8
 	.ctors      start:0x807EFF28 end:0x807EFF2C
+	.data       start:0x808566C8 end:0x80856760
+	.bss        start:0x8097B990 end:0x8097B9C8
 
 system/utl/BeatMap.cpp:
 	.text       start:0x80340ED8 end:0x80341E68
@@ -2258,15 +2263,18 @@ system/meta/DeJitterPanel.cpp:
 
 system/meta/FixedSizeSaveable.cpp:
 	.text       start:0x8050EF80 end:0x8050FA30
+	.data       start:0x8088BE20 end:0x8088BE40
 
 system/meta/FixedSizeSaveableStream.cpp:
 	.text       start:0x8050FA30 end:0x8050FEF4
+	.data       start:0x8088BE40 end:0x8088BE80
 
 system/meta/HeldButtonPanel.cpp:
 	.text       start:0x8050FEF4 end:0x80510944
 
 system/meta/MemcardAction.cpp:
 	.text       start:0x80510944 end:0x8051098C
+	.data       start:0x8088BF50 end:0x8088BF68
 
 system/meta/Meta.cpp:
 	.text       start:0x8051098C end:0x80510B7C
@@ -2282,6 +2290,9 @@ system/meta/MoviePanel.cpp:
 
 system/meta/PreloadPanel.cpp:
 	.text       start:0x805133E4 end:0x805143A0
+	.data       start:0x8088C270 end:0x8088C398
+	.sbss       start:0x808E49B0 end:0x808E49B8
+	.bss        start:0x80987780 end:0x809877A0
 
 system/meta/Profile.cpp:
 	.text       start:0x805143A0 end:0x805147A4
@@ -2319,6 +2330,7 @@ system/meta/StorePreviewMgr.cpp:
 
 system/meta/StreamPlayer.cpp:
 	.text       start:0x80523A2C end:0x80523EB8
+	.data       start:0x8088DD58 end:0x8088DDE0
 
 system/meta/MemcardMgr_Wii.cpp:
 	.text       start:0x80523EB8 end:0x80525830

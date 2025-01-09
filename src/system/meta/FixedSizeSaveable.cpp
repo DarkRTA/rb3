@@ -9,10 +9,12 @@ int FixedSizeSaveable::sSaveVersion = -1;
 int FixedSizeSaveable::sMaxSymbols = -1;
 bool FixedSizeSaveable::sPrintoutsEnabled;
 
+#ifdef VERSION_SZBE69_B8
 DECOMP_FORCEACTIVE(FixedSizeSaveable,
     "Classes implementing FixedSizeSaveable should have their own implementations of SaveSize!",
     __FILE__
 )
+#endif
 
 FixedSizeSaveable::FixedSizeSaveable() : mSaveSizeMethod(0) {
 
@@ -183,10 +185,15 @@ FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream& fs, const FixedSize
     MILO_ASSERT(FixedSizeSaveable::sSaveVersion >= 0, 0xFF);
     MILO_ASSERT(FixedSizeSaveable::sMaxSymbols >= 0, 0x100);
 
+#ifdef VERSION_SZBE69_B8
     int oldtell = fs.Tell();
     saveable.SaveFixed(fs);
     int newtell = fs.Tell();
+#else
+    saveable.SaveFixed(fs);
+#endif
 
+#ifdef VERSION_SZBE69_B8
     MILO_ASSERT_FMT(!fs.Fail(), "FixedSizeSaveableStream operator<< fixedStream failed!");
     MILO_ASSERT_FMT(saveable.mSaveSizeMethod, "You must set the save size method of a FixedSizeSaveable object by            using the SETSAVESIZE macro in its constructor!");
 
@@ -197,6 +204,7 @@ FixedSizeSaveableStream& operator<<(FixedSizeSaveableStream& fs, const FixedSize
             saveable.mSaveSizeMethod(FixedSizeSaveable::GetSaveVersion())
         );
     }
+#endif
 
     return fs;
 }
@@ -207,13 +215,18 @@ FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream& fs, FixedSizeSaveab
     MILO_ASSERT(FixedSizeSaveable::sCurrentMemcardLoadVer > 0, 0x127);
 
     int asdf = FixedSizeSaveable::sCurrentMemcardLoadVer;
-
+    
+#ifdef VERSION_SZBE69_B8
     int oldtell = fs.Tell();
     saveable.LoadFixed(fs, asdf);
     int newtell = fs.Tell();
+#else
+    saveable.LoadFixed(fs, asdf);
+#endif
 
     MILO_ASSERT_FMT(saveable.mSaveSizeMethod, "You must set the save size method of a FixedSizeSaveable object by            using the SETSAVESIZE macro in its constructor!");
 
+#ifdef VERSION_SZBE69_B8
     if(newtell != oldtell + saveable.mSaveSizeMethod(asdf)){
         MILO_FAIL("Bad load!  %s read %d instead of the expected %d!",
             typeid(saveable).name(),
@@ -221,6 +234,6 @@ FixedSizeSaveableStream& operator>>(FixedSizeSaveableStream& fs, FixedSizeSaveab
             saveable.mSaveSizeMethod(asdf)
         );
     }
-
+#endif
     return fs;
 }
