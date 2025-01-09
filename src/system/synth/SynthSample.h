@@ -1,5 +1,4 @@
-#ifndef SYNTH_SYNTHSAMPLE_H
-#define SYNTH_SYNTHSAMPLE_H
+#pragma once
 #include "obj/Object.h"
 #include "utl/FilePath.h"
 #include "synth/SampleData.h"
@@ -32,6 +31,9 @@ public:
     static void* SampleAlloc(int, const char*);
     static void SampleFree(void*);
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(SynthSample)
+    }
     NEW_OBJ(SynthSample);
 
     int GetSampleRate() const;
@@ -49,7 +51,5 @@ public:
     int mLoopStartSamp; // 0x2c
     int mLoopEndSamp; // 0x30
     SampleData mSampleData; // 0x34
-    FileLoader* mFileLoader; // 0x50 - ptr to some class
+    FileLoader* mFileLoader; // 0x50
 };
-
-#endif

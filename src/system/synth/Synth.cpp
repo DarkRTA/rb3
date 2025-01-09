@@ -21,7 +21,10 @@
 #include "synth/BinkClip.h"
 #include "synth/StreamNull.h"
 #include "obj/DataFunc.h"
+#include "os/BufFile.h"
 #include "utl/Symbols.h"
+
+MicClientID sNullClientID(-1, -1);
 
 namespace {
     struct DebugGraph {
@@ -348,4 +351,45 @@ Stream* Synth::NewStream(const char*, float f1, float, bool){
 
 Stream* Synth::NewBufStream(const void*, int, Symbol, float f1, bool){
     return new StreamNull(f1);
+}
+
+void Synth::NewStreamFile(const char* cc, File*& file, Symbol& sym){
+    static char gFakeFile[16];
+    file = new BufFile(gFakeFile, sizeof(gFakeFile));
+    sym = "fake";
+}
+
+int Synth::GetSampleMem(ObjectDir* dir, Platform plat){
+    int size = 0;
+    for(ObjDirItr<SynthSample> it(dir, true); it != nullptr; ++it){
+        size += it->GetPlatformSize(plat);
+    }
+    return size;
+}
+
+int Synth::GetFXOverhead(){
+    int overheads[10] = {
+        0x80, 0x26c0, 8000, 0x4c28, 0x6fe0,
+        0xade0, 0xf6c0, 0x18040, 0x18040, 0x3c00
+    };
+    DataArray* cfg = SystemConfig("synth");
+    int mode = cfg->FindArray("fx", true)->FindArray("core_0", true)->FindInt("mode");
+    return overheads[mode] + 0x20000;
+}
+
+int Synth::GetSPUOverhead(){
+    DataArray* cfg = SystemConfig("synth");
+    int spuBufs = cfg->FindArray("iop", true)->FindInt("spu_buffers");
+    return spuBufs * 0x800 + 0x5010 + GetFXOverhead();
+}
+
+FxSendPitchShift* Synth::CreatePitchShift(int stage, SendChannels chans){
+    FxSendPitchShift* fx = Hmx::Object::New<FxSendPitchShift>();
+    fx->SetStage(stage);
+    fx->SetChannels(chans);
+    return fx;
+}
+
+void Synth::DestroyPitchShift(FxSendPitchShift* fx){
+    delete fx;
 }

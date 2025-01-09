@@ -13,7 +13,7 @@ void* SynthSample::SampleAlloc(int i, const char*){
 void SynthSample::SampleFree(void* v){ _MemFree(v); }
 
 void SynthSample::Init(){
-    REGISTER_OBJ_FACTORY(SynthSample)
+    Register();
     SampleData::SetAllocator(SampleAlloc, SampleFree);
 }
 
@@ -22,8 +22,7 @@ SynthSample::SynthSample() : mIsLooped(0), mLoopStartSamp(0), mLoopEndSamp(-1), 
 }
 
 SynthSample::~SynthSample(){
-    delete mFileLoader;
-    mFileLoader = 0;
+    RELEASE(mFileLoader);
 }
 
 int SynthSample::GetSampleRate() const { return mSampleData.mSampleRate; }
@@ -35,8 +34,7 @@ void SynthSample::Sync(SynthSample::SyncType ty){
     if(ty == sync3){
         void* buf = (void*)mFileLoader->GetBuffer(0);
         int size = mFileLoader->GetSize();
-        delete mFileLoader;
-        mFileLoader = 0;
+        RELEASE(mFileLoader);
         BufStream bufs(buf, size, true);
         mSampleData.Load(bufs, mFile);
         if(buf) _MemFree(buf);
