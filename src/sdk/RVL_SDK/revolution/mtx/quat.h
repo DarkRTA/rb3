@@ -1,6 +1,7 @@
 #ifndef _REVOSDK_QUAT_H
 #define _REVOSDK_QUAT_H
 
+#include "revolution/mtx/mtx.h"
 #include "types.h"
 
 #ifdef __cplusplus

@@ -160,7 +160,10 @@ void nandGenerateAbsPath(char *, const char *);
 void nandGetParentDirectory(char *, const char *);
 void nandGetRelativeName(char *, const char *);
 const char* nandGetHomeDir();
+BOOL nandCheckPathName();
 void nandCallback(ISFSError, void *);
+
+void NANDSetAutoErrorMessaging(BOOL);
 
 #ifdef __cplusplus
 }

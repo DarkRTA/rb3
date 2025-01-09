@@ -17,6 +17,9 @@ extern "C" {
 #define OSError(...) \
     OSError_Line(__LINE__, __VA_ARGS__)
 
+#define OS_ASSERT(cond, text) \
+    if (! (cond) ) OSError( (text) )
+
 // Forward declarations
 typedef struct OSContext;
 

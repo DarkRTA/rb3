@@ -1,6 +1,6 @@
 #ifndef RVL_SDK_PAD_H
 #define RVL_SDK_PAD_H
-#include "types.h"
+#include <types.h>
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,9 +47,14 @@ extern "C" {
 #define PAD_CHAN2_BIT 0x20000000
 #define PAD_CHAN3_BIT 0x10000000
 
+typedef enum {
+    PAD_FLAG_NO_RECALIBRATE = (1 << 6),
+} PADFlag;
+
 extern u32 __PADSpec;
 
 void PADControlMotor(s32 chan, u32 cmd);
+BOOL __PADDisableRecalibration(BOOL disable);
 
 #ifdef __cplusplus
 }

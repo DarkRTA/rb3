@@ -28,6 +28,8 @@ extern "C" {
 #define DVD_RESULT_IGNORED -2
 #define DVD_RESULT_CANCELED -3
 
+#define DVD_DEVICE_CODE_READ 0x8000
+
 // Forward declarations
 typedef struct DVDCommandBlock DVDCommandBlock;
 typedef struct DVDFileInfo DVDFileInfo;

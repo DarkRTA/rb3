@@ -2,16 +2,27 @@
 #include <revolution/NAND.h>
 #include <string.h>
 
-static BOOL nandInspectPermission(u8);
 static void nandSplitPerm(u8, u32 *, u32 *, u32 *);
 static void nandGetTypeCallback(ISFSError, void *);
 static void nandGetStatusCallback(ISFSError, void *);
+
+
+inline BOOL nandInspectPermission(const u8 perm) {
+  if (perm & 0x10) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
+}
 
 ISFSError nandCreate(const char *path, const u8 perm, const u8 attr,
                      NANDCommandBlock *block, BOOL async_flag,
                      BOOL privilege_flag) {
   char absPath[64] = "";
   u32 owner = 0, group = 0, others = 0;
+  if (!nandCheckPathName()) {
+    return ISFS_ERROR_INVALID;
+  }
   nandGenerateAbsPath(absPath, path);
 
   if (!privilege_flag && nandIsPrivatePath(absPath)) {
@@ -459,11 +470,3 @@ void NANDSetUserData(NANDCommandBlock *block, void *data) {
 }
 
 void *NANDGetUserData(const NANDCommandBlock *block) { return block->userData; }
-
-static BOOL nandInspectPermission(const u8 perm) {
-  if (perm & 0x10) {
-    return TRUE;
-  } else {
-    return FALSE;
-  }
-}

@@ -16,7 +16,7 @@ typedef enum {
 	EUART_ERROR_COMM
 } EUARTError;
 
-
+BOOL EUARTInit(void);
 UARTError InitializeUART(UARTBaudRate);
 UARTError WriteUARTN(const void *, unsigned long);
 
