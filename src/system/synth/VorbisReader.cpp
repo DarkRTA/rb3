@@ -15,65 +15,70 @@ namespace {
 
 void VorbisReader::setupCypher(int moggVersion){
     DataArray* arr = DataReadString("{Na 42 'O32'}");
-    char iEval = arr->Evaluate(0).Int();
+    unsigned int iEval = arr->Evaluate(0).Int();
     arr->Release();
     
-    int i6 = (iEval + (iEval / 0xD) * -0xD + 'A');
-    char buf118[256];
-    unsigned char buf218[256];
-    sprintf(buf118, "{%c %d %c}", i6, buf218[0] ^ iEval, i6);
-    DataArray* buf118Arr = DataReadString(buf118);
+    char i6 = (iEval % 13);
+    i6 = i6 + 'A';
+    char script[256];
+    unsigned char masterKey[256];
+    sprintf(script, "{%c %d %c}", i6, (int)masterKey ^ iEval, i6);
+    DataArray* buf118Arr = DataReadString(script);
     buf118Arr->Evaluate(0);
     buf118Arr->Release();
-    KeyChain::getKey(unk68, gKey, buf218);
-    TheSynth->mGrinder.GrindArray(unk60, unk64, gKey, 0x10, moggVersion);
+    KeyChain::getKey(mKeyIndex, gKey, masterKey);
+    TheSynth->mGrinder.GrindArray(mMagicA, mMagicB, gKey, 0x10, moggVersion);
     for(int i = 0; i < 16; i++){
-        gKey[i] ^= unkd0[i];
+        gKey[i] ^= mKeyMask[i];
     }
-    int ret = ctr_start(gCipher, unkc0, gKey, gKeySize, 0, (symmetric_CTR*)unkbc);
+    int ret = ctr_start(gCipher, mNonce, gKey, gKeySize, 0, mCtrState);
     memset(gKey, 0, gKeySize);
     MILO_ASSERT(ret == 0, 0xAA);
 
-    sprintf(buf118, "{ha %d 1}", unk60);
-    DataArray* unk6cArr = DataReadString(buf118);
-    unk6c = unk6cArr->Evaluate(0).Int();
-    unk6cArr->Release();
+    sprintf(script, "{ha %d 1}", mMagicA);
+    DataArray* magicGenA = DataReadString(script);
+    mMagicHashA = magicGenA->Evaluate(0).Int();
+    magicGenA->Release();
 
-    sprintf(buf118, "{ha %d 2}", unk64);
-    DataArray* unk70Arr = DataReadString(buf118);
-    unk70 = unk70Arr->Evaluate(0).Int();
-    unk70Arr->Release();
+    sprintf(script, "{ha %d 2}", mMagicB);
+    DataArray* magicGenB = DataReadString(script);
+    mMagicHashB = magicGenB->Evaluate(0).Int();
+    magicGenB->Release();
 }
 
-VorbisReader::VorbisReader(File* file, bool b2, StandardStream* stream, bool b4) : 
-    unk20(-1), unk24(-1), mFile(file), mHeadersRead(0), unk30(0), mEnableReads(1), unk38(0), unk3c(0),
-    unk3d(0), unk44(stream), unk48(0), mOggStream(0), unk50(0), unk54(0), mVorbisDsp(0), mVorbisBlock(0),
-    unk98(0), mSeekTarget(-1), mSamplesToSkip(0), mHdrSize(0), unkb8(0), unkbc(0), unke0(b4), unke1(0),
-    unke2(0), unke3(0), unkf4(-1), unkf0(-1), unkf8(0) {
+VorbisReader::VorbisReader(File* vorbisFile, bool expectMap, StandardStream* stream, bool b4) : 
+    unk20(-1), unk24(-1), mFile(vorbisFile), mHeadersRead(0), unk30(0), mEnableReads(1), unk38(0), unk3c(0),
+    mDone(0), unk44(stream), mOggSync(0), mOggStream(0), unk50(0), unk54(0), mVorbisDsp(0), mVorbisBlock(0),
+    unk98(0), mSeekTarget(-1), mSamplesToSkip(0), mHdrSize(0), mHdrBuf(0), mCtrState(0), unke0(b4), unke1(0),
+    unke2(0), mFail(0), mThreadBufferStart(-1), unkf8(0) {
     MILO_ASSERT(mFile, 0xE6);
-    if(b2){
-        unkb8 = new unsigned char[60000];
-        mFile->ReadAsync(unkb8,60000);
-        unke3 = mFile->Fail();
+    if(expectMap){
+        mHdrBuf = new char[60000];
+        mFile->ReadAsync(mHdrBuf,60000);
+        mFail = mFile->Fail();
     }
-    unk48 = new ogg_sync_state();
-    ogg_sync_init(unk48);
+    mOggSync = new ogg_sync_state();
+    ogg_sync_init(mOggSync);
 }
 
 VorbisReader::~VorbisReader(){
-    delete [] unkb8;
-    unkb8 = 0;
+    delete [] mHdrBuf;
+    mHdrBuf = 0;
     if(mOggStream) ogg_stream_clear(mOggStream);
     if(mVorbisBlock) vorbis_block_clear(mVorbisBlock);
     if(mVorbisDsp) vorbis_dsp_clear(mVorbisDsp);
     if(unk54) vorbis_comment_clear(unk54);
     if(unk50) vorbis_info_clear(unk50);
-    ogg_sync_clear(unk48);
+    ogg_sync_clear(mOggSync);
     RELEASE(mVorbisBlock);
     RELEASE(mVorbisDsp);
     RELEASE(unk54);
     RELEASE(unk50);
     RELEASE(mOggStream);
-    RELEASE(unk48);
-    RELEASE(unkbc);
+    RELEASE(mOggSync);
+    RELEASE(mCtrState);
+}
+
+void VorbisReader::Poll(float until){
+
 }
