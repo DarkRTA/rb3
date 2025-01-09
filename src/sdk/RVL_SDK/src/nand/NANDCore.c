@@ -1,3 +1,4 @@
+#include "revolution/nand/nand.h"
 #include <revolution/NAND.h>
 #include <revolution/ESP.h>
 #include <revolution/FS.h>
@@ -329,6 +330,7 @@ s32 NANDInit(void) {
             enabled = OSDisableInterrupts();
             s_libState = STATE_INITIALIZED;
             OSRestoreInterrupts(enabled);
+            NANDSetAutoErrorMessaging(TRUE);
             OSRegisterVersion(__NANDVersion);
             return 0;
         }

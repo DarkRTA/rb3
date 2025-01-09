@@ -55,7 +55,7 @@ static EXIControl Ecb[3];
 s32 __EXIProbeStartTime[2] : (OS_BASE_CACHED | 0x30C0);
 static u32 IDSerialPort1;
 
-static const char* __EXIVersion = "<< RVL_SDK - EXI \trelease build: Aug  8 2007 01:59:22 (0x4199_60831) >>";
+static const char* __EXIVersion = "<< RVL_SDK - EXI \trelease build: Dec 11 2009 15:55:59 (0x4302_145) >>";
 
 #define REG(chan, idx) (__EXIRegs[((chan) * 5) + (idx)])
 

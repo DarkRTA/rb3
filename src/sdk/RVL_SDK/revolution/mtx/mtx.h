@@ -19,7 +19,7 @@ void PSMTXConcat(const Mtx, const Mtx, Mtx);
 void PSMTXCopy(const Mtx, Mtx);
 void PSMTXIdentity(Mtx);
 void PSMTXTranspose(const Mtx, Mtx);
-u32 PSMTXInverse(const Mtx, Mtx);
+void PSMTXInverse(const Mtx, Mtx);
 void PSMTXRotRad(Mtx, char, float);
 void PSMTXRotTrig(Mtx, char, float, float);
 void __PSMTXRotAxisRadInternal(Mtx, const struct Vec*, float, float);

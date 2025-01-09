@@ -37,7 +37,7 @@ extern "C" {
 #include "revolution/os/OSTime.h"
 #include "revolution/os/OSUtils.h"
 #include "revolution/os/OSUtf.h"
-#include "revolution/os/__ppc_eabi_init.h"
+//#include "revolution/os/__ppc_eabi_init.h"
 
 #ifdef __cplusplus
 }
