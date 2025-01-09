@@ -1,12 +1,69 @@
 #ifndef RVL_SDK_FS_H
 #define RVL_SDK_FS_H
+#include "private/iostypes.h"
 #include "revolution/IPC.h"
+#include "private/iosrestypes.h"
 #include "types.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #define FS_MAX_PATH 64
+
+#define ISFS_ERROR_OK               0
+#define ISFS_ERROR_INVALID          -101
+#define ISFS_ERROR_ACCESS           -102
+#define ISFS_ERROR_CORRUPT          -103
+#define ISFS_ERROR_NOTREADY         -104
+#define ISFS_ERROR_EXISTS           -105
+#define ISFS_ERROR_NOEXISTS         -106
+#define ISFS_ERROR_MAXFILES         -107
+#define ISFS_ERROR_MAXBLOCKS        -108
+#define ISFS_ERROR_MAXFD            -109
+#define ISFS_ERROR_MAXDEPTH         -110
+#define ISFS_ERROR_OPENFD           -111
+#define ISFS_ERROR_BADBLOCK         -112
+#define ISFS_ERROR_ECC              -113
+#define ISFS_ERROR_ECC_CRIT         -114
+#define ISFS_ERROR_NOTEMPTY         -115
+#define ISFS_ERROR_HMAC             -116
+#define ISFS_ERROR_UNKNOWN          -117
+#define ISFS_ERROR_BUSY             -118
+#define ISFS_ERROR_SHUTDOWN         -119
+
+
+typedef s32 ISFSError;
+typedef void (*ISFSCallback) (ISFSError, void *ctxt);
+
+typedef struct {
+    u32 blockSize;
+    u32 freeBlocks;
+    u32 occupiedBlcocks;
+    u32 badBlocks;
+    u32 reservedBlocks;
+    u32 freeInodes;
+    u32 occupedInodes;
+} ISFSStats;
+
+typedef struct {
+    u32 size;
+    u32 offset;
+} ISFSFileStats;
+
+typedef struct {
+    IOSUid ownerId;
+    IOSGid groupId;
+    u8 path[FS_MAX_PATH];
+    u8 ownerAccess;
+    u8 groupAccess;
+    u8 othersAccess;
+    u8 attr;
+} ISFSPathAttrArgs;
+
+typedef struct {
+    u8 path1[FS_MAX_PATH];
+    u8 path2[FS_MAX_PATH];
+} ISFSPathsArgs;
 
 typedef void (*FSAsyncCallback)(s32, void*);
 
@@ -58,20 +115,20 @@ s32 ISFS_CreateFileAsync(const char* path, u32 attr, u32 ownerPerm,
 s32 ISFS_Open(const char* path, IPCOpenMode mode);
 s32 ISFS_OpenAsync(const char* path, IPCOpenMode mode, FSAsyncCallback callback,
                    void* callbackArg);
-s32 ISFS_GetFileStats(s32 fd, FSFileStats* statsOut);
-s32 ISFS_GetFileStatsAsync(s32 fd, FSFileStats* statsOut,
+s32 ISFS_GetFileStats(IOSFd fd, ISFSFileStats* statsOut);
+s32 ISFS_GetFileStatsAsync(IOSFd fd, ISFSFileStats* statsOut,
                            FSAsyncCallback callback, void* callbackArg);
-s32 ISFS_Seek(s32 fd, s32 offset, IPCSeekMode mode);
-s32 ISFS_SeekAsync(s32 fd, s32 offset, IPCSeekMode mode,
+s32 ISFS_Seek(IOSFd fd, s32 offset, IPCSeekMode mode);
+s32 ISFS_SeekAsync(IOSFd fd, s32 offset, IPCSeekMode mode,
                    FSAsyncCallback callback, void* callbackArg);
-s32 ISFS_Read(s32 fd, void* dst, s32 len);
-s32 ISFS_ReadAsync(s32 fd, void* dst, s32 len, FSAsyncCallback callback,
+s32 ISFS_Read(IOSFd fd, void* dst, s32 len);
+s32 ISFS_ReadAsync(IOSFd fd, void* dst, s32 len, FSAsyncCallback callback,
                    void* callbackArg);
-s32 ISFS_Write(s32 fd, const void* src, s32 len);
-s32 ISFS_WriteAsync(s32 fd, const void* src, s32 len, FSAsyncCallback callback,
+s32 ISFS_Write(IOSFd fd, const void* src, s32 len);
+s32 ISFS_WriteAsync(IOSFd fd, const void* src, s32 len, FSAsyncCallback callback,
                     void* callbackArg);
-s32 ISFS_Close(s32 fd);
-s32 ISFS_CloseAsync(s32 fd, FSAsyncCallback callback, void* callbackArg);
+s32 ISFS_Close(IOSFd fd);
+s32 ISFS_CloseAsync(IOSFd fd, FSAsyncCallback callback, void* callbackArg);
 s32 ISFS_ShutdownAsync(FSAsyncCallback callback, void* callbackArg);
 
 
