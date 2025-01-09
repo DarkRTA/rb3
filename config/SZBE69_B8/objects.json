@@ -1872,7 +1872,7 @@
 
             "sdk/RVL_SDK/src/esp/esp.c": "NonMatching",
 
-            "sdk/RVL_SDK/src/euart/euart.c": "MISSING",
+            "sdk/RVL_SDK/src/euart/euart.c": "Matching",
 
             "sdk/RVL_SDK/src/exi/EXIBios.c": "NonMatching",
             "sdk/RVL_SDK/src/exi/EXICommon.c": "Matching",
@@ -1903,9 +1903,9 @@
             "sdk/RVL_SDK/src/hid/hid_open_close.c": "MISSING",
             "sdk/RVL_SDK/src/hid/hid_task.c": "MISSING",
 
-            "sdk/RVL_SDK/src/ipc/ipcMain.c": "MISSING",
-            "sdk/RVL_SDK/src/ipc/ipcProfile.c": "MISSING",
-            "sdk/RVL_SDK/src/ipc/ipcclt.c": "MISSING",
+            "sdk/RVL_SDK/src/ipc/ipcMain.c": "Matching",
+            "sdk/RVL_SDK/src/ipc/ipcProfile.c": "NonMatching",
+            "sdk/RVL_SDK/src/ipc/ipcclt.c": "NonMatching",
             "sdk/RVL_SDK/src/ipc/memory.c": "MISSING",
 
             "sdk/RVL_SDK/src/kbd/kbd_lib_init.c": "MISSING",
@@ -1921,10 +1921,10 @@
 
             "sdk/RVL_SDK/src/kpr/kpr_lib.c": "MISSING",
 
-            "sdk/RVL_SDK/src/mem/mem_allocator.c": "MISSING",
-            "sdk/RVL_SDK/src/mem/mem_expHeap.c": "MISSING",
-            "sdk/RVL_SDK/src/mem/mem_heapCommon.c": "MISSING",
-            "sdk/RVL_SDK/src/mem/mem_list.c": "MISSING",
+            "sdk/RVL_SDK/src/mem/mem_allocator.c": "Matching",
+            "sdk/RVL_SDK/src/mem/mem_expHeap.c": "NonMatching",
+            "sdk/RVL_SDK/src/mem/mem_heapCommon.c": "NonMatching",
+            "sdk/RVL_SDK/src/mem/mem_list.c": "Matching",
 
             "sdk/RVL_SDK/src/mix/mix.c": "MISSING",
             "sdk/RVL_SDK/src/mix/remote.c": "MISSING",
@@ -1991,7 +1991,7 @@
             "sdk/RVL_SDK/src/sdi/sdi_api.c": "MISSING",
 
             "sdk/RVL_SDK/src/si/SIBios.c": "MISSING",
-            "sdk/RVL_SDK/src/si/SISamplingRate.c": "MISSING",
+            "sdk/RVL_SDK/src/si/SISamplingRate.c": "NonMatching",
 
             "sdk/RVL_SDK/src/tpl/TPL.c": "Matching",
 
