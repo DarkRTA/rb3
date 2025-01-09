@@ -1144,11 +1144,11 @@ static void __wudOpenWiiFitCallback(
 ) {
     if (__rvl_wudcb.syncState != WUD_STATE_START) {
         __rvl_wudcb.syncState =
-            result == NAND_ESUCCESS ? WUD_STATE_WII_FIT_SEEK : WUD_STATE_SYNC_SC_FLUSH;
+            result == NAND_RESULT_OK ? WUD_STATE_WII_FIT_SEEK : WUD_STATE_SYNC_SC_FLUSH;
     }
 
     if (__rvl_wudcb.deleteState != WUD_STATE_START) {
-        __rvl_wudcb.deleteState = result == NAND_ESUCCESS
+        __rvl_wudcb.deleteState = result == NAND_RESULT_OK
             ? WUD_STATE_WII_FIT_SEEK
             : WUD_STATE_DELETE_CLEANUP_SETTING;
     }
@@ -1197,7 +1197,7 @@ static void __wudSeekWiiFitFile(void) {
     NANDSeekAsync(
         &_wudNandFileInfo,
         RP_HEALTH_FILE_OFFSET,
-        NAND_SEEK_SET,
+        4,
         &__wudSeekWiiFitCallback,
         &_wudNandBlock
     );
@@ -1925,7 +1925,7 @@ static void __wudNandResultCallback(
 
     switch (_wudNandPhase) {
     case WUD_STATE_NAND_OPEN:
-        _wudNandPhase = result == NAND_ESUCCESS ? _wudNandPhase + 1 : WUD_STATE_ERROR;
+        _wudNandPhase = result == NAND_RESULT_OK ? _wudNandPhase + 1 : WUD_STATE_ERROR;
         break;
 
     case WUD_STATE_NAND_SEEK:
@@ -2001,7 +2001,7 @@ static WUDInitState __wudGetDevInfoFromWiiFit(void) {
     switch (_wudNandPhase) {
     case WUD_STATE_START:
         result = NANDInit();
-        _wudNandPhase = result == NAND_ESUCCESS ? WUD_STATE_NAND_OPEN : WUD_STATE_ERROR;
+        _wudNandPhase = result == NAND_RESULT_OK ? WUD_STATE_NAND_OPEN : WUD_STATE_ERROR;
         break;
 
     case WUD_STATE_NAND_OPEN:
@@ -2026,7 +2026,7 @@ static WUDInitState __wudGetDevInfoFromWiiFit(void) {
         _wudNandLocked = TRUE;
 
         result = NANDSeekAsync(
-            &_wudNandFileInfo, 0, NAND_SEEK_SET, &__wudNandResultCallback, &_wudNandBlock
+            &_wudNandFileInfo, 0, 4, &__wudNandResultCallback, &_wudNandBlock
         );
 
         break;

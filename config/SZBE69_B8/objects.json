@@ -1874,11 +1874,11 @@
 
             "sdk/RVL_SDK/src/euart/euart.c": "MISSING",
 
-            "sdk/RVL_SDK/src/exi/EXIBios.c": "MISSING",
-            "sdk/RVL_SDK/src/exi/EXICommon.c": "MISSING",
-            "sdk/RVL_SDK/src/exi/EXIUart.c": "MISSING",
+            "sdk/RVL_SDK/src/exi/EXIBios.c": "NonMatching",
+            "sdk/RVL_SDK/src/exi/EXICommon.c": "Matching",
+            "sdk/RVL_SDK/src/exi/EXIUart.c": "Matching",
 
-            "sdk/RVL_SDK/src/fs/fs.c": "MISSING",
+            "sdk/RVL_SDK/src/fs/fs.c": "NonMatching",
 
             "sdk/RVL_SDK/src/gx/GXAttr.c": "MISSING",
             "sdk/RVL_SDK/src/gx/GXBump.c": "NonMatching",
@@ -1934,13 +1934,13 @@
             "sdk/RVL_SDK/src/mtx/mtxvec.c": "MISSING",
             "sdk/RVL_SDK/src/mtx/vec.c": "MISSING",
 
-            "sdk/RVL_SDK/src/nand/nand.c": "MISSING",
-            "sdk/RVL_SDK/src/nand/NANDCheck.c": "MISSING",
-            "sdk/RVL_SDK/src/nand/NANDCore.c": "MISSING",
+            "sdk/RVL_SDK/src/nand/nand.c": "NonMatching",
+            "sdk/RVL_SDK/src/nand/NANDCheck.c": "NonMatching",
+            "sdk/RVL_SDK/src/nand/NANDCore.c": "NonMatching",
             "sdk/RVL_SDK/src/nand/NANDErrorMessage.c": "MISSING",
-            "sdk/RVL_SDK/src/nand/NANDLogging.c": "MISSING",
-            "sdk/RVL_SDK/src/nand/NANDOpenClose.c": "MISSING",
-            "sdk/RVL_SDK/src/nand/NANDSecret.c": "MISSING",
+            "sdk/RVL_SDK/src/nand/NANDLogging.c": "NonMatching",
+            "sdk/RVL_SDK/src/nand/NANDOpenClose.c": "Matching",
+            "sdk/RVL_SDK/src/nand/NANDSecret.c": "NonMatching",
 
             "sdk/RVL_SDK/src/os/__ppc_eabi_init.c": "MISSING",
             "sdk/RVL_SDK/src/os/__start.c": "MISSING",

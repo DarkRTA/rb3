@@ -41,7 +41,7 @@ BOOL EXIImmEx(EXIChannel chan, void* buf, s32 len, u32 type);
 BOOL EXIDma(EXIChannel chan, void* buf, s32 len, u32 type,
             EXICallback callback);
 BOOL EXISync(EXIChannel chan);
-void EXIClearInterrupts(EXIChannel chan, BOOL exi, BOOL tc, BOOL ext);
+u32 EXIClearInterrupts(EXIChannel chan, BOOL exi, BOOL tc, BOOL ext);
 EXICallback EXISetExiCallback(EXIChannel chan, EXICallback callback);
 void EXIProbeReset(void);
 BOOL EXIProbe(EXIChannel chan);
