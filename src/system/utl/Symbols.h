@@ -1073,7 +1073,6 @@ extern Symbol tier;
 extern Symbol tilt;
 extern Symbol tilt_camera;
 extern Symbol tilt_correction;
-extern Symbol time;
 extern Symbol time_between;
 extern Symbol time_end_units;
 extern Symbol time_end_val;

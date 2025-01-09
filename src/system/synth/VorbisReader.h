@@ -6,6 +6,7 @@
 #include "synth/OggMap.h"
 #include "oggvorbis/ogg.h"
 #include "oggvorbis/codec.h"
+#include "synth/tomcrypt/mycrypt.h"
 
 class VorbisReader : public StreamReader, public CriticalSection {
 public:
@@ -25,20 +26,20 @@ public:
     int unk20; // 0x20
     int unk24; // 0x24
     File* mFile; // 0x28
-    int unk2c; // 0x2c
+    int mHeadersRead; // 0x2c
     int unk30; // 0x30
-    bool unk34; // 0x34
+    bool mEnableReads; // 0x34
     int unk38; // 0x38
     bool unk3c; // 0x3c
     bool unk3d; // 0x3d
     int unk40; // 0x40
     StandardStream* unk44; // 0x44
     ogg_sync_state* unk48; // 0x48
-    ogg_stream_state* unk4c; // 0x4c
+    ogg_stream_state* mOggStream; // 0x4c
     vorbis_info* unk50; // 0x50
     vorbis_comment* unk54; // 0x54
-    vorbis_dsp_state* unk58; // 0x58
-    vorbis_block* unk5c; // 0x5c
+    vorbis_dsp_state* mVorbisDsp; // 0x58
+    vorbis_block* mVorbisBlock; // 0x5c
     long unk60; // 0x60 - byte grinder seed A
     long unk64; // 0x64 - byte grinder seed B
     int unk68; // 0x68
@@ -54,16 +55,13 @@ public:
     int unk90; // 0x90
     int unk94; // 0x94
     bool unk98; // 0x98
-    int unk9c; // 0x9c
-    int unka0; // 0xa0
+    int mSeekTarget; // 0x9c
+    int mSamplesToSkip; // 0xa0
     OggMap unka4; // 0xa4
-    int unkb4; // 0xb4
+    int mHdrSize; // 0xb4
     void* unkb8; // 0xb8
     void* unkbc; // 0xbc - actually a symmetric_CTR
-    int unkc0; // 0xc0
-    int unkc4; // 0xc4
-    int unkc8; // 0xc8
-    int unkcc; // 0xcc
+    unsigned char unkc0[16]; // 0xc0
     unsigned char unkd0[16]; // 0xd0
     bool unke0; // 0xe0
     bool unke1; // 0xe1

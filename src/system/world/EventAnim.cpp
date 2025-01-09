@@ -116,6 +116,7 @@ BEGIN_CUSTOM_PROPSYNC(EventAnim::EventCall)
     SYNC_PROP(event, o.mEvent)
 END_CUSTOM_PROPSYNC
 
+#include "utl/TimeSymbol.h"
 BEGIN_CUSTOM_PROPSYNC(EventAnim::KeyFrame)
     SYNC_PROP_MODIFY(time, o.mTime, gEventAnimOwner->RefreshKeys())
     SYNC_PROP(events, o.mCalls)
