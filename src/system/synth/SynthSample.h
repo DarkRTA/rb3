@@ -24,8 +24,8 @@ public:
     virtual void Load(BinStream&);
     virtual void PreLoad(BinStream&);
     virtual void PostLoad(BinStream&);
-    virtual SampleInst* NewInst() const { return 0; }
-    virtual float LengthMs() const { return 0.0f; }
+    virtual SampleInst* NewInst() const { return nullptr; }
+    virtual float LengthMs() const { return 0; }
     virtual void Sync(SyncType);
 
     static void* SampleAlloc(int, const char*);

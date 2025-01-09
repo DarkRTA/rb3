@@ -1315,8 +1315,8 @@
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
             "system/synth/SynthSample.cpp": "Matching",
-            "system/synth/Utl.cpp": "MISSING",
-            "system/synth/VoiceBeat.cpp": "MISSING",
+            "system/synth/Utl.cpp": "NonMatching",
+            "system/synth/VoiceBeat.cpp": "NonMatching",
             "system/synth/VorbisReader.cpp": "MISSING",
             "system/synth/WavReader.cpp": "NonMatching",
 
