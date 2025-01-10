@@ -1,3 +1,4 @@
+#pragma once
 #include "StreamReader.h"
 #include "system/os/File.h"
 #include "system/utl/FileStream.h"
@@ -8,14 +9,14 @@ class WavReader : public StreamReader {
 public:
     WavReader(File*, bool, StandardStream*);
     ~WavReader();
-    virtual void Poll(float) = 0;
-    virtual void Seek(int) = 0;
-    virtual void EnableReads(bool) = 0;
-    virtual bool Done() = 0;
-    virtual bool Fail() = 0;
-    virtual void Init() = 0;
+    virtual void Poll(float);
+    virtual void Seek(int);
+    virtual void EnableReads(bool enable){ mEnableReads = enable; }
+    virtual bool Done(){ return mSamplesLeft == 0; }
+    virtual bool Fail(){ return false; }
+    virtual void Init();
     virtual void ConsumeData(void**, int, int);
-    virtual void EndData();
+    virtual void EndData(){}
 
     int mNumChannels; // 0x4
     int mSampleRate; // 0x8
