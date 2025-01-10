@@ -75,7 +75,7 @@ public:
     /** The number of bits per pixel, aka color depth. */
     u8 mBpp; // 0x6
     /** The ordering of the color bytes in this bitmap (e.g. RGBA, BGRA) - determined with masking */
-    u32 mOrder; // 0x8
+    unsigned int mOrder; // 0x8
     /** The pixels that makes up this image. */
     u8* mPixels; // 0xc
     /** The colors of this image's color palette. */

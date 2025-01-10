@@ -1,5 +1,4 @@
-#ifndef RB3_KEYCHAIN_H
-#define RB3_KEYCHAIN_H
+#pragma once
 
 class KeyChain {
 public:
@@ -7,5 +6,3 @@ public:
     static void getKey(int, unsigned char*, unsigned char*);
     static int getNumKeys();
 };
-
-#endif

@@ -230,7 +230,7 @@ u32 HolmesClientSysExec(const char* filename) {
     HolmesFlushStreamBuffer();
     WaitForResponse(Holmes::kSysExec);
 
-    u32 return_code;
+    unsigned int return_code;
     *gHolmesStream >> return_code;
 
     FinishResponse();

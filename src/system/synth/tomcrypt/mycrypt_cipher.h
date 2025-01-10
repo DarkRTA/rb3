@@ -336,6 +336,7 @@ extern int ctr_start(int cipher, const unsigned char *IV, const unsigned char *k
                      int keylen, int num_rounds, symmetric_CTR *ctr);
 extern int ctr_encrypt(const unsigned char *pt, unsigned char *ct, unsigned long len, symmetric_CTR *ctr);
 extern int ctr_decrypt(const unsigned char *ct, unsigned char *pt, unsigned long len, symmetric_CTR *ctr);
+extern int ctr_reinit(int cipher, unsigned char* r4, symmetric_CTR* ctr);
 #endif
 	
 extern int find_cipher(const char *name);

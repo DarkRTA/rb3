@@ -7,8 +7,9 @@ void* OggMalloc(int i){
 }
 
 void* OggCalloc(int i1, int i2){
+    void* tmp;
     int mult = i1 * i2;
-    void* tmp = (void*)_MemAllocTemp(mult, 0);
+    tmp = (void*)_MemAllocTemp(mult, 0);
     memset(tmp, 0, mult);
     return tmp;
 }

@@ -97,7 +97,7 @@ int vorbis_block_init(vorbis_dsp_state *v, vorbis_block *vb){
     vbi->ampmax=-9999;
   }
 
-  vb->unknown_hmx_var = 0;
+  vb->synthesis_state = 0;
   
   return(0);
 }

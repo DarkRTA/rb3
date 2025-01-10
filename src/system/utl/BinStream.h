@@ -176,8 +176,11 @@ public:
     BS_READ_OP(unsigned int);
     BS_READ_OP(short);
     BS_READ_OP(unsigned short);
-    BS_READ_OP(long);
-    BS_READ_OP(unsigned long);
+    // TODO: if long has a special implementation, chances are unsigned long does too.
+    // Comment the macro for unsigned long out, and then refactor all instances of
+    // writing to a u32 typedef to writing to an unsigned int instead.
+    // BS_READ_OP(long);
+    // BS_READ_OP(unsigned long);
     BS_READ_OP(long long);
     BS_READ_OP(unsigned long long);
     BS_READ_OP(float);
@@ -199,14 +202,21 @@ public:
         return *this;
     }
 
+    BinStream& operator>>(long& l){
+        long long ll;
+        ReadEndian(&ll, sizeof(ll));
+        l = ll;
+        return *this;
+    }
+
     BS_READ_FUNC(char, Char);
     BS_READ_FUNC(unsigned char, Byte);
     BS_READ_FUNC(short, Short);
     BS_READ_FUNC(unsigned short, UShort);
     BS_READ_FUNC(int, Int);
     BS_READ_FUNC(unsigned int, UInt);
-    BS_READ_FUNC(long, Long);
-    BS_READ_FUNC(unsigned long, ULong);
+    // BS_READ_FUNC(long, Long);
+    // BS_READ_FUNC(unsigned long, ULong);
     BS_READ_FUNC(long long, LongLong);
     BS_READ_FUNC(unsigned long long, ULongLong);
     BS_READ_FUNC(bool, Bool);

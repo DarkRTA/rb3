@@ -10,6 +10,7 @@ struct SampleMarker {
     void Load(BinStream& bs){
         bs >> name; bs >> sample;
     }
+    int Sample() const { return sample; }
 
     String name;
     int sample;
@@ -38,9 +39,10 @@ public:
     int SizeAs(Format) const;
     int NumMarkers() const;
     const SampleMarker& GetMarker(int) const;
+    int GetSampleRate() const { return mSampleRate; }
+    Format GetFormat() const { return mFormat; }
 
     static void SetAllocator(SampleDataAllocFunc, SampleDataFreeFunc);
-
     static SampleDataAllocFunc sAlloc;
     static SampleDataFreeFunc sFree;
     

@@ -1107,7 +1107,7 @@
             "system/obj/TypeProps.cpp": "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
-            "system/oggvorbis/VorbisMem.cpp": "NonMatching",
+            "system/oggvorbis/VorbisMem.cpp": "Matching",
 
             "system/os/AppChild.cpp": "Matching",
             "system/os/Archive.cpp": "NonMatching",
@@ -1315,9 +1315,9 @@
             "system/synth/StreamReceiver.cpp": "NonMatching",
             "system/synth/Synth.cpp": "NonMatching",
             "system/synth/SynthSample.cpp": "Matching",
-            "system/synth/Utl.cpp": "MISSING",
-            "system/synth/VoiceBeat.cpp": "MISSING",
-            "system/synth/VorbisReader.cpp": "MISSING",
+            "system/synth/Utl.cpp": "NonMatching",
+            "system/synth/VoiceBeat.cpp": "NonMatching",
+            "system/synth/VorbisReader.cpp": "NonMatching",
             "system/synth/WavReader.cpp": "NonMatching",
 
             "system/synthwii/EnvelopeWii.cpp": "NonMatching",
@@ -1538,7 +1538,7 @@
         "objects": {
             "system/synth/tomcrypt/aes.c": "Matching",
             "system/synth/tomcrypt/crypt.c": "Matching",
-            "system/synth/tomcrypt/ctr.c": "NonMatching"
+            "system/synth/tomcrypt/ctr.c": "Matching"
         }
     },
     "system/vorbis": {

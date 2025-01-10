@@ -72,19 +72,3 @@ void WavReader::ConsumeData(void **pcm, int samples, int startSamp) {
 
     mOutStream->ConsumeData(pcm, samples, startSamp);
 }
-
-void WavReader::EndData() {
-    return;
-}
-
-bool WavReader::Fail() {
-    return false;
-}
-
-bool WavReader::Done() {
-    return mSamplesLeft == 0;
-}
-
-void WavReader::EnableReads(bool enabled) {
-    mEnableReads = enabled;
-}

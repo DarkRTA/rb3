@@ -13,7 +13,7 @@ void* SynthSample::SampleAlloc(int i, const char*){
 void SynthSample::SampleFree(void* v){ _MemFree(v); }
 
 void SynthSample::Init(){
-    REGISTER_OBJ_FACTORY(SynthSample)
+    Register();
     SampleData::SetAllocator(SampleAlloc, SampleFree);
 }
 
@@ -22,12 +22,11 @@ SynthSample::SynthSample() : mIsLooped(0), mLoopStartSamp(0), mLoopEndSamp(-1), 
 }
 
 SynthSample::~SynthSample(){
-    delete mFileLoader;
-    mFileLoader = 0;
+    RELEASE(mFileLoader);
 }
 
-int SynthSample::GetSampleRate() const { return mSampleData.mSampleRate; }
-SampleData::Format SynthSample::GetFormat() const { return mSampleData.mFormat; }
+int SynthSample::GetSampleRate() const { return mSampleData.GetSampleRate(); }
+SampleData::Format SynthSample::GetFormat() const { return mSampleData.GetFormat(); }
 bool SynthSample::GetIsLooped() const { return mIsLooped; }
 int SynthSample::GetLoopStartSamp() const { return mLoopStartSamp; }
 
@@ -35,8 +34,7 @@ void SynthSample::Sync(SynthSample::SyncType ty){
     if(ty == sync3){
         void* buf = (void*)mFileLoader->GetBuffer(0);
         int size = mFileLoader->GetSize();
-        delete mFileLoader;
-        mFileLoader = 0;
+        RELEASE(mFileLoader);
         BufStream bufs(buf, size, true);
         mSampleData.Load(bufs, mFile);
         if(buf) _MemFree(buf);
@@ -129,7 +127,7 @@ BEGIN_HANDLERS(SynthSample)
     HANDLE_EXPR(platform_size_kb, GetPlatformSize(TheLoadMgr.GetPlatform()) / 1024)
     HANDLE_EXPR(num_markers, mSampleData.NumMarkers())
     HANDLE_EXPR(marker_name, mSampleData.GetMarker(_msg->Int(2)).name)
-    HANDLE_EXPR(marker_sample, mSampleData.GetMarker(_msg->Int(2)).sample)
+    HANDLE_EXPR(marker_sample, mSampleData.GetMarker(_msg->Int(2)).Sample())
     HANDLE_EXPR(sample_length, LengthMs() / 1000.0f)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x121)
@@ -140,7 +138,7 @@ BEGIN_PROPSYNCS(SynthSample)
     SYNC_PROP_MODIFY(looped, mIsLooped, Sync(sync1))
     SYNC_PROP_MODIFY(loop_start_sample, mLoopStartSamp, Sync(sync1))
     SYNC_PROP_MODIFY(loop_end_sample, mLoopEndSamp, Sync(sync1))
-    SYNC_PROP_SET(sample_rate, mSampleData.mSampleRate, MILO_WARN("can't set property %s", "sample_rate"))
+    SYNC_PROP_SET(sample_rate, mSampleData.GetSampleRate(), MILO_WARN("can't set property %s", "sample_rate"))
     SYNC_PROP(markers, mSampleData.mMarkers)
 END_PROPSYNCS
 

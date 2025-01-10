@@ -3020,17 +3020,17 @@ system/synth/VorbisReader.cpp:
 system/synth/WavReader.cpp:
 	.text       start:0x8069BF6C end:0x8069C3FC
 
-system/synth/libtomcrypt/aes.c:
+system/synth/tomcrypt/aes.c:
 	.text       start:0x8069C3FC end:0x8069EA54
 	.rodata     start:0x807F4BE8 end:0x807F8CC8
 	.data       start:0x8089F260 end:0x8089F3A8
 
-system/synth/libtomcrypt/crypt.c:
+system/synth/tomcrypt/crypt.c:
 	.text       start:0x8069EA54 end:0x8069EB64
 	.data       start:0x8089F3A8 end:0x8089F5E8
 	.bss        start:0x80991198 end:0x80991720
 
-system/synth/libtomcrypt/ctr.c:
+system/synth/tomcrypt/ctr.c:
 	.text       start:0x8069EB64 end:0x8069EF40
 
 system/speex/libspeex/bits.c:

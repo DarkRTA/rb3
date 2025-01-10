@@ -43,7 +43,7 @@ class StreamReader;
 class Synth : public Hmx::Object, public RndOverlay::Callback {
 public:
     Synth();
-    virtual ~Synth();
+    virtual ~Synth(){}
     virtual DataNode Handle(DataArray*, bool);
     virtual void PreInit(){}
     virtual void Init();
@@ -69,7 +69,7 @@ public:
     virtual Mic* GetMic(int idx){ return mNullMics[idx]; }
     virtual Mic* GetPartyMic(){ return 0; } // ditto
     virtual void SetMicFX(bool){}
-    virtual bool GetMixFC() const { return false; }
+    virtual bool GetMicFX() const { return false; }
     virtual void SetMicVolume(float){}
     virtual float GetMicVolume() const { return 0.0f; }
     virtual void SuspendMics(){}
@@ -108,6 +108,7 @@ public:
     bool CheckCommonBank(bool);
     int GetSampleMem(ObjectDir*, Platform);
     int GetSPUOverhead();
+    int GetFXOverhead();
 
     template <class T> T* Find(const char* name, bool fail){
         if(!CheckCommonBank(false)) return nullptr;

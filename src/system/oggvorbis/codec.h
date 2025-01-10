@@ -124,7 +124,11 @@ typedef struct vorbis_block{
 
   void *internal;
 
-  int unknown_hmx_var;
+  enum {
+    vss_init = 0,
+    vss_decode = 1,
+    vss_mdct = 2,
+  } synthesis_state; // offset 0x6C, size 0x4
 
 } vorbis_block;
 
@@ -222,6 +226,9 @@ extern long     vorbis_packet_blocksize(vorbis_info *vi,ogg_packet *op);
 
 extern int      vorbis_synthesis_halfrate(vorbis_info *v,int flag);
 extern int      vorbis_synthesis_halfrate_p(vorbis_info *v);
+
+// i think HMX created this one
+extern int      vorbis_synthesis_poll(vorbis_block*, ogg_packet*);
 
 /* Vorbis ERRORS and return codes ***********************************/
 
