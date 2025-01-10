@@ -143,9 +143,11 @@
                 "-inline auto"
             ]
         },
-        "libtomcrypt": {
+        "system/tomcrypt": {
             "base": "system/zlib",
-            "flags": []
+            "flags": [
+                "-inline off"
+            ]
         },
         "system/speex": {
             "base": "system/zlib",
