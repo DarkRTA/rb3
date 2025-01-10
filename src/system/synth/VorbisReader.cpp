@@ -265,3 +265,101 @@ bool VorbisReader::TryReadHeader(){
         else return false;
     }
 }
+
+void VorbisReader::InitDecoder(){
+    MILO_ASSERT(!mVorbisDsp && !mVorbisBlock, 0x2D1);
+    MILO_ASSERT(mHeadersRead == 3, 0x2D2);
+    mVorbisDsp = new vorbis_dsp_state();
+    vorbis_synthesis_init(mVorbisDsp, mVorbisInfo);
+    mVorbisBlock = new vorbis_block();
+    vorbis_block_init(mVorbisDsp, mVorbisBlock);
+}
+
+bool VorbisReader::TryConsumeData(){
+    int ret = 0;
+    float** pcm;
+    int pcmErr = vorbis_synthesis_pcmout(mVorbisDsp, &pcm);
+    if(pcmErr < 0){
+        MILO_WARN("Ogg Vorbis failure: %s, error code %i", "PCMOut", pcmErr);
+    }
+    if(pcmErr > 0){
+        ret = ConsumeData((void**)pcm, pcmErr, mVorbisDsp->granulepos - pcmErr);
+        vorbis_synthesis_read(mVorbisDsp, ret);
+    }
+    return ret;
+}
+
+bool VorbisReader::TryDecode(){
+    if(mFail) return false;
+    if(QueuedOutputSamples() > 0) return false;
+    if(!unk98 && TryReadPacket(mPendingPacket)){
+        unk98 = true;
+    }
+    if(unk98){
+        START_AUTO_TIMER("vorbis_synthesis_poll_cpu");
+        if(mVorbisBlock->synthesis_state == vorbis_block::vss_init){
+            START_AUTO_TIMER("vorbis_synthesis_vssinit_cpu");
+        }
+        else if(mVorbisBlock->synthesis_state == vorbis_block::vss_decode){
+            START_AUTO_TIMER("vorbis_synthesis_vssdecode_cpu");
+        }
+        else {
+            START_AUTO_TIMER("vorbis_synthesis_vssmdct_cpu");
+        }
+        int pollErr = vorbis_synthesis_poll(mVorbisBlock, &mPendingPacket);
+        if(pollErr == OV_ENOTAUDIO){
+            unk98 = false;
+        }
+        else {
+            if(pollErr == -0x32) return true;
+            if(pollErr < 0){
+                MILO_WARN("Ogg Vorbis failure: %s, error code %i", "Synthesis", pollErr);
+            }
+            unk98 = false;
+            if(pollErr == 0){
+                START_AUTO_TIMER("vorbis_synthesis_blockin_cpu");
+                int blockErr = vorbis_synthesis_blockin(mVorbisDsp, mVorbisBlock);
+                if(blockErr < 0){
+                    MILO_WARN("Ogg Vorbis failure: %s, error code %i", "BlockIn", blockErr);
+                }
+                return true;
+            }
+        }
+    }
+    else if(unke2 && !mReadBuffer && QueuedOutputSamples() == 0 && !mDone){
+        EndData();
+        mDone = true;
+    }
+    return false;
+}
+
+bool VorbisReader::TryReadPacket(ogg_packet& pk){
+    MILO_ASSERT(mOggStream, 0x3AA);
+    while(true){
+        int streamErr = ogg_stream_packetout(mOggStream, &pk);
+        if(streamErr < 0){
+            MILO_WARN("Ogg Vorbis failure: %s, error code %i", "PacketOut", streamErr);
+        }
+        if(streamErr > 0) return true;
+        ogg_page page;
+        int syncErr = ogg_sync_pageout(mOggSync, &page);
+        if(syncErr > 0) ogg_stream_pagein(mOggStream, &page);
+        else return false;
+    }
+}
+
+bool VorbisReader::DoSeek(){
+    mEnableReads = false;
+    DoFileRead();
+    if(!mFail && !mReadBuffer){
+        int i1, i2;
+        mMap.GetSeekPos(mSeekTarget, i1, i2);
+        DoRawSeek(i1);
+        mSamplesToSkip = mSeekTarget - i2;
+        MILO_ASSERT(mSamplesToSkip >= 0, 0x3D0);
+        mSeekTarget = -1;
+        mEnableReads = true;
+        return true;
+    }
+    return false;
+}

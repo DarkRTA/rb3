@@ -29,9 +29,13 @@ public:
     void InitDecoder();
     bool TryConsumeData();
     bool TryDecode();
-    int QueuedInputBytes();
+    int QueuedInputBytes(){
+        return mOggSync->fill - mOggSync->returned;
+    }
+    int QueuedOutputSamples();
     void Decrypt(unsigned char*, int);
     bool TryReadPacket(ogg_packet&);
+    void DoRawSeek(int);
 
     int mNumChannels; // 0x20
     int mSampleRate; // 0x24
