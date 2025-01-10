@@ -42,7 +42,7 @@ BEGIN_LOADS(RndLine)
     RndDrawable::Load(bs);
     if (rev < 3) {
         ObjPtrList<Hmx::Object, ObjectDir> list(this, kObjListNoNull);
-        u32 _;
+        int _;
         bs >> _ >> list;
     }
     RndTransformable::Load(bs);
