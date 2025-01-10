@@ -1107,7 +1107,7 @@
             "system/obj/TypeProps.cpp": "Matching",
             "system/obj/Utl.cpp": "NonMatching",
 
-            "system/oggvorbis/VorbisMem.cpp": "NonMatching",
+            "system/oggvorbis/VorbisMem.cpp": "Matching",
 
             "system/os/AppChild.cpp": "Matching",
             "system/os/Archive.cpp": "NonMatching",
