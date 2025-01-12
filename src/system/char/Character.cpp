@@ -61,29 +61,6 @@ Character::Lod& Character::Lod::operator=(const Character::Lod& lod){
     return *this;
 }
 
-// class CharPollableSorter {
-// public:
-//     class Dep {
-//     public:
-//         Hmx::Object* obj; // 0x0
-//         std::list<Dep*> changedBy; // 0x4
-//         RndPollable* poll; // 0xc
-//         int searchID; // 0x10
-//     };
-
-//     CharPollableSorter(){}
-
-//     void Sort(std::vector<RndPollable*>&);
-//     bool ChangedBy(Dep*, Dep*);
-//     bool ChangedByRecurse(Dep*);
-//     void AddDeps(Dep*, const std::list<Hmx::Object*>&, std::list<Dep*>&, bool);
-
-//     static int sSearchID;
-
-//     std::map<Hmx::Object*, Dep> mDeps;
-//     Dep* mTarget;
-// };
-
 // fn_8049C858 - charpollablesorter::sort
 void CharPollableSorter::Sort(std::vector<RndPollable*>& polls){
     std::vector<Dep*> deps;
@@ -164,19 +141,29 @@ bool CharPollableSorter::ChangedByRecurse(Dep* d){
 // fn_8049DD04
 void CharPollableSorter::AddDeps(Dep* me, const std::list<Hmx::Object*>& odeps, std::list<Dep*>& toDo, bool changedBy){
     for(std::list<Hmx::Object*>::const_iterator it = odeps.begin(); it != odeps.end(); ++it){
-        if(*it){
-
+        Hmx::Object* cur = *it;
+        if(cur){
+            Dep* mapDep = &mDeps[cur];
+            if(!mapDep->obj){
+                mapDep->obj = cur;
+                toDo.push_back(mapDep);
+            }
+            if(changedBy){
+                me->changedBy.push_back(mapDep);
+            }
+            else {
+                mapDep->changedBy.push_back(me);
+            }
         }
     }
 }
 
-void CharacterInit() { Character::Init(); }
-void Character::Init(){ REGISTER_OBJ_FACTORY(Character) }
+void Character::Init(){ Register(); }
 void Character::Terminate(){}
 
-Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this, 0), mTransGroup(this, 0), mDriver(0),
+Character::Character() : mLods(this), mLastLod(0), mMinLod(0), mShadow(this), mTransGroup(this), mDriver(0),
     mSelfShadow(0), mSpotCutout(0), mFloorShadow(1), mSphereBase(this, this), mBounding(), mPollState(kCharCreated), mTest(new CharacterTest(this)),
-    mFrozen(0), mDrawMode(kCharDrawAll), mTeleported(1), mInterestToForce(), unk1fc(this, 0)
+    mFrozen(0), mDrawMode(kCharDrawAll), mTeleported(1), mInterestToForce(), unk1fc(this)
 #ifdef MILO_DEBUG
     , mDebugDrawInterestObjects(0)
 #endif
@@ -207,9 +194,7 @@ void Character::Exit(){
 void Character::Poll(){
     START_AUTO_TIMER("char_poll");
     if(!mFrozen){
-#ifdef VERSION_SZBE69_B8
         if(LOADMGR_EDITMODE) mTest->Poll();
-#endif
         RndDir::Poll();
         mTeleported = false;
         mPollState = kCharPolled;
