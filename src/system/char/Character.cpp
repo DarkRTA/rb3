@@ -1,8 +1,12 @@
 #include "char/Character.h"
 #include "char/CharacterTest.h"
 #include "char/CharPollable.h"
+#include "decomp.h"
 #include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "rndobj/Mesh.h"
+#include "rndobj/Poll.h"
+#include "rndobj/Trans.h"
 #include "utl/Std.h"
 #include "rndobj/Utl.h"
 #include "char/CharDriver.h"
@@ -18,7 +22,29 @@ INIT_REVS(Character)
 Character* gCharMe;
 int CharPollableSorter::sSearchID;
 
-BinStream& operator>>(BinStream&, Character::Lod&);
+DECOMP_FORCEACTIVE(Character, "ObjPtr_p.h", "f.Owner()", "")
+
+BinStream& operator>>(BinStream& bs, Character::Lod& lod){
+    bs >> lod.mScreenSize;
+    if(Character::gRev < 6){
+        lod.mScreenSize /= 0.75f;
+    }
+    if(gCharMe){
+        ObjPtrList<RndDrawable> draws(gCharMe);
+        bs >> draws;
+        lod.mGroup = gCharMe->New<RndGroup>(MakeString("group%x", (int)&lod));
+        for(ObjPtrList<RndDrawable>::iterator it = draws.begin(); it != draws.end(); ++it){
+            lod.mGroup->AddObject(*it);
+        }
+    }
+    else {
+        bs >> lod.mGroup;
+        if(Character::gRev > 0xD){
+            bs >> lod.mTransGroup;
+        }
+    }
+    return bs;
+}
 
 Character::Lod::Lod(Hmx::Object* obj) : mScreenSize(0.0f), mGroup(obj, 0), mTransGroup(obj, 0) {
 
@@ -35,25 +61,83 @@ Character::Lod& Character::Lod::operator=(const Character::Lod& lod){
     return *this;
 }
 
+// class CharPollableSorter {
+// public:
+//     class Dep {
+//     public:
+//         Hmx::Object* obj; // 0x0
+//         std::list<Dep*> changedBy; // 0x4
+//         RndPollable* poll; // 0xc
+//         int searchID; // 0x10
+//     };
+
+//     CharPollableSorter(){}
+
+//     void Sort(std::vector<RndPollable*>&);
+//     bool ChangedBy(Dep*, Dep*);
+//     bool ChangedByRecurse(Dep*);
+//     void AddDeps(Dep*, const std::list<Hmx::Object*>&, std::list<Dep*>&, bool);
+
+//     static int sSearchID;
+
+//     std::map<Hmx::Object*, Dep> mDeps;
+//     Dep* mTarget;
+// };
+
 // fn_8049C858 - charpollablesorter::sort
 void CharPollableSorter::Sort(std::vector<RndPollable*>& polls){
     std::vector<Dep*> deps;
     deps.reserve(polls.size());
-    int i = polls.size() - 1;
-    int old_i = i;
-    for(; i >= 0; i--){
-        CharPollable* cpoll = dynamic_cast<CharPollable*>(polls[i]);
-        if(cpoll){
-            Dep dep;
+    for(int i = polls.size() - 1, last = i; i >= 0; i--){
+        CharPollable* c = dynamic_cast<CharPollable*>(polls[i]);
+        if(c){
+            Dep& dep = mDeps[c];
+            dep.obj = c;
+            dep.poll = c;
             deps.push_back(&dep);
         }
         else {
-            polls[old_i--] = polls[i];
+            polls[last--] = polls[i];
         }
     }
     if(deps.empty()) return;
     else {
+        std::sort(deps.begin(), deps.end(), CharPollableSorter::AlphaSort());
+        std::list<Dep*> depList;
+        for(int i = 0; i < deps.size(); i++) depList.push_back(deps[i]);
+        while(!depList.empty()){
+            Dep* curDep = depList.back();
+            depList.pop_back();
+            CharPollable* c = dynamic_cast<CharPollable*>(curDep->obj);
+            if(c){
+                std::list<Hmx::Object*> depList1;
+                std::list<Hmx::Object*> depList2;
+                c->PollDeps(depList1, depList2);
+                AddDeps(curDep, depList1, depList, true);
+                AddDeps(curDep, depList2, depList, false);
+            }
+            RndTransformable* t = dynamic_cast<RndTransformable*>(curDep->obj);
+            if(t){
+                std::list<Hmx::Object*> tDepList;
+                tDepList.push_back(t->TransParent());
+                AddDeps(curDep, tDepList, depList, true);
+            }
+        }
 
+        std::list<Dep*> otherDepList;
+        for(int i = 0; i < deps.size(); i++){
+            Dep* curDep = deps[i];
+            std::list<Dep*>::iterator it = otherDepList.begin();
+            for(; it != otherDepList.end(); ++it){
+                if(ChangedBy(curDep, *it)) break;
+            }
+            otherDepList.insert(it, curDep);
+        }
+
+        int idx = 0;
+        for(std::list<Dep*>::iterator it = otherDepList.begin(); it != otherDepList.end(); ++it){
+            polls[idx++] = (*it)->poll;
+        }
     }
 }
 
@@ -490,7 +574,7 @@ BEGIN_PROPSYNCS(Character)
     SYNC_PROP_SET(shadow, mShadow, SetShadow(_val.Obj<RndGroup>()))
     SYNC_PROP_SET(driver, mDriver, )
     SYNC_PROP_MODIFY(interest_to_force, mInterestToForce, SetFocusInterest(mInterestToForce, 0))
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     SYNC_PROP(debug_draw_interest_objects, mDebugDrawInterestObjects)
     SYNC_PROP(CharacterTesting, *mTest)
 #endif

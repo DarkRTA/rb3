@@ -26,6 +26,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharBonesBlender)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBonesBlender)
+    }
     
     ObjPtr<CharBonesObject, ObjectDir> mDest; // 0x5c
     Symbol mClipType; // 0x68

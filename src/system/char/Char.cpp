@@ -1,4 +1,5 @@
 
+#include "CharBonesBlender.h"
 #include "CharGuitarString.h"
 #include "CharLookAt.h"
 #include "CharMeshHide.h"
@@ -11,6 +12,7 @@
 #include "CharUpperTwist.h"
 #include "CharWeightSetter.h"
 #include "ClipCollide.h"
+#include "FileMergerOrganizer.h"
 #include "Waypoint.h"
 #include "char/CharClipGroup.h"
 #include "char/CharClipSet.h"
@@ -78,7 +80,7 @@ void CharInit() {
     CharBoneOffset::Init();
     CharBlendBone::Init();
     CharBone::Init();
-    CharBonesAlloc::Init();
+    CharBonesBlender::Init();
     CharBoneTwist::Init();
     CharClip::Init();
     CharClipSet::Init();
@@ -122,6 +124,7 @@ void CharInit() {
     FileMerger::Init();
     CharBoneDir::Register();
     ClipCollide::Init();
+    FileMergerOrganizer::Init();
     PreloadSharedSubdirs("char");
     CharBoneDir::Init();
     CharUtlInit();

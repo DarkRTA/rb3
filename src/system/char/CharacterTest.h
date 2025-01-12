@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARACTERTEST_H
-#define CHAR_CHARACTERTEST_H
+#pragma once
 #include "rndobj/Overlay.h"
 #include "obj/ObjPtr_p.h"
 
@@ -22,6 +21,7 @@ public:
     void Poll();
     void Draw();
     void PlayNew();
+    /** "Recenters character at his last set waypoint" */
     void Recenter();
     void AddDefaults();
     void Walk();
@@ -34,25 +34,38 @@ public:
     DECLARE_REVS;
 
     Character* mMe; // 0x4
-    ObjPtr<CharDriver, ObjectDir> mDriver; // 0x8
-    ObjPtr<CharClip, ObjectDir> mClip1; // 0x14
-    ObjPtr<CharClip, ObjectDir> mClip2; // 0x20
-    ObjPtr<CharClipGroup, ObjectDir> mFilterGroup; // 0x2c
-    ObjPtr<Waypoint, ObjectDir> mTeleportTo; // 0x38
-    ObjPtrList<Waypoint, ObjectDir> mWalkPath; // 0x44
+    /** "The driver to animate" */
+    ObjPtr<CharDriver> mDriver; // 0x8
+    /** "Clip to play" */
+    ObjPtr<CharClip> mClip1; // 0x14
+    /** "Clip to transition to, if any" */
+    ObjPtr<CharClip> mClip2; // 0x20
+    /** "If set, group to use as filter for clips" */
+    ObjPtr<CharClipGroup> mFilterGroup; // 0x2c
+    /** "Teleport to this Waypoint" */
+    ObjPtr<Waypoint> mTeleportTo; // 0x38
+    ObjPtrList<Waypoint> mWalkPath; // 0x44
+    /** "Displays the transition distance map between clip1 and clip2, raw means the raw graph, no nodes". Options are: none, nodes, raw */
     Symbol mShowDistMap; // 0x54
+    /** "Which transition to use between clip1 and clip2" */
     int mTransition; // 0x58
+    /** "Cycle through all the transitions" */
     bool mCycleTransition; // 0x5c
+    /** "Click on every beat transition" */
     bool mMetronome; // 0x5d
+    /** "Character does not travel, constantly zeros out position and facing" */
     bool mZeroTravel; // 0x5e
+    /** "graphically displays the screensize and lod next to the character" */
     bool mShowScreenSize; // 0x5f
     bool mShowFootExtents; // 0x60
     float unk64; // 0x64
     int unk68; // 0x68
     ClipDistMap* unk6c; // 0x6c
     RndOverlay* mOverlay; // 0x70
+
+    // bool move_self: "Move ourselves around when playing animations, if true, the anim bar won't work backwards"
+    // script zero: "Teleports character to the origin"
+    // script add default rigging: "Adds default objects like main drivers and twist servos"
 };
 
 bool PropSync(CharacterTest&, DataNode&, DataArray*, int, PropOp);
-
-#endif
