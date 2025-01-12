@@ -29,6 +29,10 @@ public:
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharIKSliderMidi)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKSliderMidi)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mTarget;
     ObjPtr<RndTransformable, ObjectDir> mFirstSpot;

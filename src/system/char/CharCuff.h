@@ -28,6 +28,10 @@ public:
     void DeformMesh(RndMesh*, int, SyncMeshCB*);
 
     DECLARE_REVS;
+    NEW_OBJ(CharCuff)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharCuff)
+    }
 
     // offset0, radius0, offset1, radius1, offset2, radius2, outer_radius
     Shape mShape[3]; // 0x90, 0x98, 0xa0

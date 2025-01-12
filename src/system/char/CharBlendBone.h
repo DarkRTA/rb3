@@ -30,6 +30,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharBlendBone)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBlendBone)
+    }
 
     ObjList<ConstraintSystem> mTargets; // 0x8
     ObjPtr<RndTransformable, ObjectDir> mSrc1; // 0x14

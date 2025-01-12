@@ -40,6 +40,12 @@ public:
     DataNode OnListClips(DataArray*);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    NEW_OBJ(CharClipSet)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharClipSet)
+    }
 
     FilePath mCharFilePath; // 0xb0
     ObjPtr<RndDir, ObjectDir> mPreviewChar; // 0xbc
@@ -49,7 +55,6 @@ public:
     bool mPreviewWalk; // 0xdc
     ObjPtr<CharClip, ObjectDir> mStillClip; // 0xe0
 
-    DELETE_OVERLOAD
 };
 
 #endif

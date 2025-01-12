@@ -25,6 +25,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharDriverMidi)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharDriverMidi)
+    }
 
     Symbol mParser; // 0x8c
     Symbol mFlagParser; // 0x90

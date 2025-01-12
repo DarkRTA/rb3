@@ -35,6 +35,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharLookAt)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharLookAt)
+    }
 
     static bool sDisableJitter;
     

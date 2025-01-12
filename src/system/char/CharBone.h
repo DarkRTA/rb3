@@ -44,6 +44,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharBone)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBone)
+    }
     
     int mPositionContext; // 0x1c
     int mScaleContext; // 0x20

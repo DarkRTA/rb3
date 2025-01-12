@@ -1,6 +1,8 @@
 #ifndef CHAR_CHAREYEDARTRULESET_H
 #define CHAR_CHAREYEDARTRULESET_H
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "utl/MemMgr.h"
 
 class CharEyeDartRuleset : public Hmx::Object {
 public:
@@ -31,12 +33,13 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    void operator delete(void* v){
-        _MemFree(v);
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+    DECLARE_REVS;
+    NEW_OBJ(CharEyeDartRuleset)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharEyeDartRuleset)
     }
-
-    static unsigned short gRev;
-    static unsigned short gAltRev;
 
     EyeDartRulesetData mData;
 };

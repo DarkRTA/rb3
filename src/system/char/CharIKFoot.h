@@ -31,6 +31,10 @@ public:
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharIKFoot)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKFoot)
+    }
     
     ObjPtr<RndTransformable, ObjectDir> unk88;
     int unk94;

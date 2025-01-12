@@ -57,6 +57,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(ClipCollide)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(ClipCollide)
+    }
 
     std::vector<Report> mReports; // 0x1c
     RndGraph* mGraph; // 0x24

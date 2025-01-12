@@ -18,8 +18,13 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
     DECLARE_REVS;
+    NEW_OBJ(CharNeckTwist)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharNeckTwist)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mTwist; // 0x8
     ObjPtr<RndTransformable, ObjectDir> mHead; // 0x14

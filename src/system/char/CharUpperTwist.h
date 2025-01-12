@@ -19,7 +19,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharUpperTwist)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharUpperTwist)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mUpperArm; // 0x8
     ObjPtr<RndTransformable, ObjectDir> mTwist1; // 0x14

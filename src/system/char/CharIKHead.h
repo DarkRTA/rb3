@@ -40,6 +40,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharIKHead)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKHead)
+    }
     
     ObjVector<Point> mPoints; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mHead; // 0x34

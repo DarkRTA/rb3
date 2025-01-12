@@ -25,6 +25,10 @@ public:
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharPollGroup)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharPollGroup)
+    }
 
     ObjPtrList<CharPollable, ObjectDir> mPolls; // 0x20
     ObjPtr<CharPollable, ObjectDir> mChangedBy; // 0x30

@@ -1,6 +1,7 @@
 #ifndef CHAR_CHARBONEDIR_H
 #define CHAR_CHARBONEDIR_H
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
 #include "char/CharBone.h"
 #include "char/CharBones.h"
@@ -44,6 +45,10 @@ public:
     static void StuffBones(CharBones&, Symbol);
     static DataNode GetClipTypes();
     static DataArray* sCharClipTypes;
+    NEW_OBJ(CharBoneDir)
+    static void Register(){
+        REGISTER_OBJ_FACTORY(CharBoneDir)
+    }
     
     Recenter mRecenter; // 0x80
     int mMoveContext; // 0xa4

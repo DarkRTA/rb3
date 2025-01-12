@@ -42,6 +42,10 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     DECLARE_REVS;
+    NEW_OBJ(CharIKHand)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKHand)
+    }
     
     ObjPtr<RndTransformable, ObjectDir> mHand; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mFinger; // 0x34

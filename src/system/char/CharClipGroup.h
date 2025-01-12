@@ -33,6 +33,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharClipGroup)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharClipGroup)
+    }
 
     ObjVector<ObjOwnerPtr<CharClip, ObjectDir> > mClips; // 0x8
     int mWhich; // 0x14

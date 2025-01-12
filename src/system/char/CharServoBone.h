@@ -36,7 +36,12 @@ public:
     void MoveToDeltaFacing(Transform&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharServoBone)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharServoBone)
+    }
 
     RndTransformable* mPelvis; // 0x74
     float* mFacingRotDelta; // 0x78

@@ -25,6 +25,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharWeightable)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharWeightable)
+    }
     
     float mWeight; // 0x8
     ObjOwnerPtr<CharWeightable, class ObjectDir> mWeightOwner; // 0xc

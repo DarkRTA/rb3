@@ -30,6 +30,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharFaceServo)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharFaceServo)
+    }
 
     ObjPtr<ObjectDir, ObjectDir> mClips; // 0x6c
     Symbol mClipType; // 0x78

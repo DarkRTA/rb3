@@ -94,6 +94,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharEyes)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharEyes)
+    }
 
     ObjVector<EyeDesc> mEyes; // 0x28
     ObjVector<CharInterestState> mInterests; // 0x34

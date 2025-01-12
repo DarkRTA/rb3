@@ -21,6 +21,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharWeightSetter)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharWeightSetter)
+    }
 
     ObjPtr<CharWeightable, ObjectDir> mBase; // 0x20
     ObjPtr<CharDriver, ObjectDir> mDriver; // 0x2c

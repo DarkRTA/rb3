@@ -5,6 +5,7 @@
 #include "rndobj/Trans.h"
 #include "char/CharCollide.h"
 #include "obj/ObjVector.h"
+#include "utl/MemMgr.h"
 
 // forward decs
 class Character;
@@ -84,7 +85,13 @@ public:
     void SimulateZeroTime();
     void SetManagedHookup(bool b){ mManagedHookup = b; }
 
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     DECLARE_REVS;
+    NEW_OBJ(CharHair)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharHair)
+    }
 
     float mStiffness; // 0x10
     float mTorsion; // 0x14
