@@ -48,6 +48,7 @@ int MemNumHeaps();
 int MemFindAddrHeap(void*);
 const char* MemHeapName(int);
 void MemFreeBlockStats(int, int&, int&, int&, int&);
+void* MemTruncate(void*, int);
 
 class MemTempHeap {
 public:
