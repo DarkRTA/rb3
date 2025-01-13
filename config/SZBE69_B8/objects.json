@@ -932,7 +932,7 @@
             },
             "system/char/CharBoneDir.cpp": "NonMatching",
             "system/char/CharBoneOffset.cpp": "Matching",
-            "system/char/CharBoneTwist.cpp": "NonMatching",
+            "system/char/CharBoneTwist.cpp": "Equivalent",
             "system/char/CharBones.cpp": "NonMatching",
             "system/char/CharBonesBlender.cpp": "Matching",
             "system/char/CharBonesMeshes.cpp": "NonMatching",

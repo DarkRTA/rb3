@@ -3,7 +3,7 @@
 
 INIT_REVS(CharBoneTwist);
 
-CharBoneTwist::CharBoneTwist() : mBone(this, 0), mTargets(this, kObjListNoNull) {
+CharBoneTwist::CharBoneTwist() : mBone(this), mTargets(this) {
 
 }
 

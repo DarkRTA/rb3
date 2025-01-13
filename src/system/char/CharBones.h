@@ -1,6 +1,4 @@
-#ifndef CHAR_CHARBONES_H
-#define CHAR_CHARBONES_H
-#include "obj/ObjMacros.h"
+#pragma once
 #include "obj/Object.h"
 #include <vector>
 
@@ -30,7 +28,10 @@ public:
     struct Bone {
         Bone() : name(), weight(1.0f) {}
         Bone(Symbol s, float w) : name(s), weight(w) {}
+
+        /** "Bone to blend into" */
         Symbol name;
+        /** "Weight to blend with" */
         float weight;
     };
 
@@ -64,6 +65,13 @@ public:
     }
     int TotalSize() const { return mTotalSize; }
     void ScaleDown(CharBones&, float) const;
+    char* Start() const { return mStart; }
+    char* ScaleOffset() const { return mStart + mScaleOffset; }
+    char* QuatOffset() const { return mStart + mQuatOffset; }
+    char* RotXOffset() const { return mStart + mRotXOffset; }
+    char* RotYOffset() const { return mStart + mRotYOffset; }
+    char* RotZOffset() const { return mStart + mRotZOffset; }
+    char* EndOffset() const { return mStart + mEndOffset; }
 
     static Type TypeOf(Symbol);
     static const char* SuffixOf(Type);
@@ -102,6 +110,7 @@ public:
     };
 };
 
+/** "Holds state for a set of bones" */
 class CharBonesObject : public CharBones, public virtual Hmx::Object {
 public:
     CharBonesObject(){}
@@ -116,6 +125,7 @@ public:
     }
 };
 
+/** "Holds state for a set of bones, and allocates own space" */
 class CharBonesAlloc : public CharBonesObject {
 public:
     CharBonesAlloc(){}
@@ -125,5 +135,3 @@ public:
 
 extern CharBones* gPropBones;
 bool PropSync(CharBones::Bone&, DataNode&, DataArray*, int, PropOp);
-
-#endif

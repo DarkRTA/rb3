@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARCLIP_H
-#define CHAR_CHARCLIP_H
+#pragma once
 #include "obj/Object.h"
 #include "rndobj/Anim.h"
 #include "obj/ObjPtr_p.h"
@@ -126,13 +125,11 @@ public:
     bool mDirty; // 0x40
     bool mDoNotCompress; // 0x41
     short unk42; // 0x42
-    ObjPtr<CharClip, ObjectDir> mRelative; // 0x44
+    ObjPtr<CharClip> mRelative; // 0x44
     std::vector<BeatEvent> mBeatEvents; // 0x50
-    ObjPtr<RndAnimatable, ObjectDir> mSyncAnim; // 0x58
+    ObjPtr<RndAnimatable> mSyncAnim; // 0x58
     CharBonesSamples mFull; // 0x64
     CharBonesSamples mOne; // 0xc4
     FacingSet mFacing; // 0x124
     std::vector<int> mZeros; // 0x130 - change vector type
 };
-
-#endif

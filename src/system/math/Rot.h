@@ -23,6 +23,8 @@ void RotateAboutX(const Hmx::Matrix3&, float, Hmx::Matrix3&);
 void RotateAboutZ(const Hmx::Matrix3&, float, Hmx::Matrix3&);
 void MakeRotQuat(const Vector3&, const Vector3&, Hmx::Quat&);
 void MakeRotQuatUnitX(const Vector3&, Hmx::Quat&);
+float GetXAngle(const Hmx::Matrix3&);
+float GetYAngle(const Hmx::Matrix3&);
 float GetZAngle(const Hmx::Matrix3&);
 
 TextStream& operator<<(TextStream& ts, const Hmx::Quat& v);
