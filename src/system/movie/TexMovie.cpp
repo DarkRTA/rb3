@@ -95,11 +95,11 @@ void TexMovie::DrawShowing() {
 }
 
 void TexMovie::DrawPreClear() {
-    if (TheRnd->unk_0xE4 != 4 && mShowing) DrawToTexture();
+    if (TheRnd->DrawMode() != 4 && mShowing) DrawToTexture();
 }
 
 void TexMovie::Poll() {
-    if (TheRnd->unk_0xE4 != 4) {
+    if (TheRnd->DrawMode() != 4) {
         if (mShowing) {
             mMovie.SetPaused(false);
             if(!mMovie.Poll())

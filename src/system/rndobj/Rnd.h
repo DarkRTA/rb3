@@ -24,6 +24,14 @@ enum ProcessCmd {
     kProcessAll = 7
 };
 
+enum Mode {
+    kDrawNormal = 0,
+    kDrawShadowDepth = 1,
+    kDrawExtrude = 2,
+    kDrawShadowColor = 3,
+    kDrawOcclusion = 4
+};
+
 class Rnd : public Hmx::Object, public RndOverlay::Callback {
 public:
     class CompressTextureCallback {
@@ -113,10 +121,9 @@ public:
     bool ProcAndLock() const;
     void DrawRectScreen(const Hmx::Rect&, const Hmx::Color&, RndMat*, const Hmx::Color*, const Hmx::Color*);
     void ResetProcCounter();
-    int DrawMode() const { return unk_0xE4; }
+    Mode DrawMode() const { return mDrawMode; }
     void PreClearDrawAddOrRemove(RndDrawable*, bool, bool);
     bool Unk130() const { return unk130; }
-    int UnkE4() const { return unk_0xE4; }
     bool Drawing() const { return mDrawing; }
     RndCam* DefaultCam(){ return mDefaultCam; }
     ProcessCmd ProcCmds() const { return mProcCmds; }
@@ -184,7 +191,7 @@ public:
     bool mDrawing; // 0xde
     bool unkdf; // 0xdf
     Aspect mAspect; // 0xE0
-    int unk_0xE4; // 0xe4 referenced in TexMovie
+    Mode mDrawMode; // 0xe4 referenced in TexMovie - draw mode enum?
     bool unke8; // 0xe8
     bool unke9; // 0xe9
     bool mShrinkToSafe; // 0xEA

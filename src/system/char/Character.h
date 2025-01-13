@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARACTER_H
-#define CHAR_CHARACTER_H
+#pragma once
 #include "rndobj/Dir.h"
 #include "obj/ObjVector.h"
 #include "rndobj/Group.h"
 #include "math/Sphere.h"
+#include "rndobj/Trans.h"
 
 class CharacterTest; // forward dec
 class Waypoint;
@@ -15,10 +15,13 @@ class CharServoBone;
 
 class ShadowBone : public RndTransformable {
 public:
-    ShadowBone() : mParent(this, 0) {}
+    ShadowBone() : mParent(this) {}
     virtual ~ShadowBone(){}
 
-    ObjPtr<RndTransformable> mParent;
+    RndTransformable* Parent() const { return mParent; }
+    void SetParent(RndTransformable* parent){ mParent = parent; }
+
+    ObjPtr<RndTransformable> mParent; // 0x90
 };
 
 /** "Base class for Character objects. Contains Geometry,
@@ -49,6 +52,7 @@ public:
         ~Lod(){}
 
         RndGroup* Group(){ return mGroup; }
+        RndGroup* TransGroup(){ return mTransGroup; }
         float ScreenSize() const { return mScreenSize; }
         void SetScreenSize(float size){ mScreenSize = size; }
 
@@ -100,7 +104,7 @@ public:
     void CopyBoundingSphere(Character*);
     void RepointSphereBase(ObjectDir*);
     void FindInterestObjects(ObjectDir*);
-    void SetFocusInterest(Symbol, int);
+    bool SetFocusInterest(Symbol, int);
     void EnableBlinks(bool, bool);
     void SetDebugDrawInterestObjects(bool);
     void SetSphereBase(RndTransformable*);
@@ -108,6 +112,9 @@ public:
     CharServoBone* BoneServo();
     void SetInterestObjects(const ObjPtrList<CharInterest>&, ObjectDir*);
     void ForceBlink();
+    void DrawLod(int);
+    void DrawShadow(const Transform&, const Plane&);
+
     void SetDrawMode(DrawMode m){ mDrawMode = m; }
     bool Teleported() const { return mTeleported; }
     PollState GetPollState() const { return mPollState; }
@@ -156,10 +163,8 @@ public:
     /** "select an interest object here and select 'force_interest' below to force the character to look at it." */
     Symbol mInterestToForce; // 0x1f8
     ObjPtr<RndEnviron> unk1fc; // 0x1fc
-    int unk208; // 0x208
+    Vector3* unk208; // 0x208
 #ifdef MILO_DEBUG
     bool mDebugDrawInterestObjects; // 0x20c
 #endif
 };
-
-#endif

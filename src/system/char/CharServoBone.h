@@ -3,13 +3,13 @@
 #include "rndobj/Highlightable.h"
 #include "char/CharPollable.h"
 #include "char/CharBonesMeshes.h"
+#include "char/Waypoint.h"
 #include "obj/ObjPtr_p.h"
 
 // forward decs
 class RndEnviron;
 class Vector3;
 class Character;
-class Waypoint;
 
 class CharServoBone : public RndHighlightable, public CharPollable, public CharBonesMeshes {
 public:
@@ -34,6 +34,7 @@ public:
     void ZeroDeltas();
     void MoveToFacing(Transform&);
     void MoveToDeltaFacing(Transform&);
+    void SetRegulateWaypoint(Waypoint* wp){ mRegulate = wp; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

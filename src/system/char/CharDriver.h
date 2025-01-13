@@ -55,7 +55,8 @@ public:
     void SetStarved(Symbol);
     Symbol ClipType() const { return mClipType; }
     ObjectDir* ClipDir() const { return mClips; }
-    float SetBlendWidth(float w){ mBlendWidth = w; }
+    void SetBlendWidth(float w){ mBlendWidth = w; }
+    CharBonesObject* GetBones() const { return mBones; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

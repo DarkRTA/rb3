@@ -1,11 +1,21 @@
 #include "char/Character.h"
+#include "char/CharUtl.h"
 #include "char/CharacterTest.h"
 #include "char/CharPollable.h"
 #include "decomp.h"
+#include "math/Mtx.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "os/Debug.h"
+#include "os/Timer.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Cam.h"
+#include "rndobj/Env.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Poll.h"
+#include "rndobj/Rnd.h"
+#include "rndobj/ShadowMap.h"
 #include "rndobj/Trans.h"
 #include "utl/Std.h"
 #include "rndobj/Utl.h"
@@ -15,6 +25,7 @@
 #include "char/CharInterest.h"
 #include "char/CharServoBone.h"
 #include "char/CharEyes.h"
+#include "utl/Str.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(Character)
@@ -201,13 +212,167 @@ void Character::Poll(){
     }
 }
 
+void Character::DrawLodOrShadow(int lod, Character::DrawMode mode){
+    bool oldUpdate = RndMesh::sUpdateApproxLight;
+    RndMesh::SetUpdateApproxLight(false);
+    if(mode & 1 && RndEnviron::sCurrent){
+        Sphere s48;
+        if(MakeWorldSphere(s48, false) && s48.GetRadius() > 0){
+            RndEnviron::sCurrent->UpdateApproxLighting(&s48.center, nullptr);
+        }
+    }
+    if(mode == 1){
+        unk1fc = RndEnviron::sCurrent;
+        unk208 = RndEnviron::CurrentPos();
+    }
+    mPollState = (PollState)5;
+    if(mode == 4 && mShadow){
+        mShadow->DrawShowing();
+    }
+    else {
+        mLastLod = Clamp<int>(0, mLods.size() - 1, lod);
+        Lod* curLod = mLods.size() != 0 ? &mLods[mLastLod] : nullptr;
+        if(mode & 5){
+            RndDir::DrawShowing();
+            if(curLod && curLod->Group()){
+                curLod->Group()->DrawShowing();
+            }
+        }
+        if(mode & 2 && (mTransGroup || (curLod && curLod->TransGroup()))){
+            if(mode == 2){
+                RndEnvironTracker tracker(unk1fc, unk208);
+                if(mTransGroup) mTransGroup->DrawShowing();
+                if(curLod && curLod->TransGroup()){
+                    curLod->TransGroup()->DrawShowing();
+                }
+            }
+            else {
+                if(mTransGroup) mTransGroup->DrawShowing();
+                if(curLod && curLod->TransGroup()){
+                    curLod->TransGroup()->DrawShowing();
+                }
+            }
+        }
+    }
+    RndMesh::SetUpdateApproxLight(oldUpdate);
+}
+
+void Character::DrawLod(int lod){
+    unsigned char drawMode = mDrawMode & 1;
+    if(TheRnd->DrawMode() != 4 && (TheRnd->DrawMode() != 2 || (mSpotCutout && drawMode)) && (TheRnd->DrawMode() != 3 || mFloorShadow && drawMode)){
+        DrawLodOrShadow(lod, 
+            TheRnd->DrawMode() == 2 || TheRnd->DrawMode() == 3 || TheRnd->DrawMode() == 1 ? (DrawMode)4 : mDrawMode);
+    }
+}
+
 CharEyes* Character::GetEyes(){
     return Find<CharEyes>("CharEyes.eyes", false);
 }
 
-CharServoBone* Character::BoneServo(){
-    if(mDriver) return dynamic_cast<CharServoBone*>(mDriver->mBones.Ptr());
-    else return 0;
+void Character::DrawShowing(){
+    START_AUTO_TIMER("char_draw");
+    float screenSize = ComputeScreenSize(RndCam::sCurrent);
+    int i7;
+    if(mMinLod < 0){
+        for(i7 = 0; i7 < (int)mLods.size() - 1; i7++){
+            float f1;
+            if(i7 < mLastLod) f1 = 0.09f;
+            else f1 = -0.09f;
+            if(screenSize >= (f1 + 1.0f) * mLods[i7].mScreenSize) break;
+        }
+    }
+    else {
+        i7 = Clamp<int>(0, mLods.size() - 1, mMinLod);
+    }
+    bool b2 = false;
+    if(mSelfShadow && TheRnd->DrawMode() == 0 && i7 <= 1 && mDrawMode & 1){
+        b2 = true;
+    }
+    if(b2){
+        int lastMinLod = mMinLod;
+        mMinLod = i7;
+        RndShadowMap::PrepShadow(this, mEnv);
+        mMinLod = lastMinLod;
+    }
+    DrawLod(i7);
+    if(b2) RndShadowMap::EndShadow();
+}
+
+DECOMP_FORCEACTIVE(Character, "character.show_name", "bone_head")
+
+void Character::UpdateSphere(){
+    Sphere s78 = mBounding;
+    Transform tf38;
+    FastInvert(WorldXfm(), tf38);
+    Transform tf68;
+    Multiply(mSphereBase->WorldXfm(), tf38, tf68);
+    FastInvert(tf68, tf68);
+    Multiply(s78, tf68, s78);
+    SetSphere(s78);
+}
+
+void Character::CalcBoundingSphere(){
+    Transform tf50(mLocalXfm);
+    DirtyLocalXfm().Reset();
+    mBounding.Zero();
+    static const char* boneNames[5] = {
+        "bone_head.mesh", "bone_R-ankle.mesh", "bone_L-ankle.mesh", "bone_R-toe.mesh", "bone_L-toe.mesh"
+    };
+    for(int i = 0; i < 5; i++){
+        RndTransformable* t = Find<RndTransformable>(boneNames[i], false);
+        if(t){
+            mBounding.GrowToContain(Sphere(t->WorldXfm().v, 0.1f));
+        }
+    }
+
+    RndTransformable* transLClavicle = CharUtlFindBoneTrans("bone_L-clavicle", this);
+    if(transLClavicle){
+        RndTransformable* transLHand = CharUtlFindBoneTrans("bone_L-hand", this);
+        if(transLHand){
+            Vector3 vClavicle = transLClavicle->WorldXfm().v;
+            vClavicle.z += Distance(vClavicle, transLHand->WorldXfm().v);
+            mBounding.GrowToContain(Sphere(vClavicle, 7.0f));
+        }
+    }
+    RndTransformable* transRClavicle = CharUtlFindBoneTrans("bone_R-clavicle", this);
+    if(transRClavicle){
+        RndTransformable* transRHand = CharUtlFindBoneTrans("bone_R-hand", this);
+        if(transRHand){
+            Vector3 vClavicle = transRClavicle->WorldXfm().v;
+            vClavicle.z += Distance(vClavicle, transRHand->WorldXfm().v);
+            mBounding.GrowToContain(Sphere(vClavicle, 7.0f));
+        }
+    }
+    if(mBounding.GetRadius() == 0){
+        for(ObjDirItr<RndTransformable> it(this, true); it != nullptr; ++it){
+            if(strncmp(it->Name(), "bone_", 5) == 0 || strncmp(it->Name(), "spot_", 5) == 0){
+                mBounding.GrowToContain(Sphere(it->WorldXfm().v, 0.1f));
+            }
+            RndMesh* mesh = dynamic_cast<RndMesh*>(&*it);
+            if(mesh && mesh->Showing()){
+                for(int i = 0; i < mesh->Verts().size(); i++){
+                    mBounding.GrowToContain(Sphere(mesh->SkinVertex(mesh->VertAt(i), nullptr), 0.001f));
+                }
+            }
+        }
+    }
+    UpdateSphere();
+    DirtyLocalXfm() = tf50;
+}
+
+bool Character::MakeWorldSphere(Sphere& s, bool b){
+    if(b){
+        s = mBounding;
+        return true;
+    }
+    else {
+        Sphere& mySphere = mSphere;
+        if(mySphere.GetRadius()){
+            Multiply(mySphere, mSphereBase->WorldXfm(), s);
+            return true;
+        }
+        else return false;
+    }
 }
 
 void Character::SetSphereBase(RndTransformable* trans){
@@ -219,11 +384,88 @@ void Character::SetSphereBase(RndTransformable* trans){
     mSphereBase = trans;
 }
 
+void Character::SetShadow(RndGroup* shadow){
+    if(shadow != mShadow){
+        MILO_ASSERT(!shadow || shadow->Dir() == this, 699);
+        if(mShadow){
+            mDraws.push_back(mShadow);
+        }
+        mShadow = shadow;
+        VectorRemove(mDraws, mShadow);
+    }
+}
+
+void Character::DrawShadow(const Transform& tf, const Plane& pl){
+    if(Showing() && mShadow && mShadow->Showing()){
+            MILO_ASSERT(GetGfxMode() == kOldGfx, 0x2CB);
+            Transform tf40;
+            Transpose(tf, tf40);
+            Plane plb0;
+            Multiply(pl, tf40, plb0);
+            Transform tf70;
+            tf70.m.Set(1, -plb0.a / plb0.b, 0, 0, 0, 0, 0, -plb0.c / plb0.b, 1);
+            tf70.v.Set(0, -plb0.d / plb0.b, 0);
+            Transform tfa0;
+            Multiply(tf40, tf70, tfa0);
+            Multiply(tfa0, tf, tfa0);
+            for(int i = 0; i < mShadowBones.size(); i++){
+                ShadowBone* cur = mShadowBones[i];
+                Multiply(cur->Parent()->WorldXfm(), tfa0, cur->DirtyLocalXfm());
+            }
+            mShadow->DrawShowing();
+    }
+}
+
+#pragma push
+#pragma force_active on
+inline CharServoBone* Character::BoneServo(){
+    if(mDriver) return dynamic_cast<CharServoBone*>(mDriver->GetBones());
+    else return nullptr;
+}
+#pragma pop
+
+void Character::Teleport(Waypoint* way){
+    if(way){
+        Transform tf38(way->WorldXfm());
+        Normalize(tf38.m, tf38.m);
+        SetLocalXfm(tf38);
+    }
+    if(BoneServo()){
+        BoneServo()->SetRegulateWaypoint(way);
+    }
+    mTeleported = true;
+}
+
+void Character::FindInterestObjects(ObjectDir* dir){
+    if(dir){
+        Timer timer;
+        timer.Restart();
+        CharEyes* eyes = GetEyes();
+        if(eyes){
+            eyes->ClearAllInterestObjects();
+            for(ObjDirItr<CharInterest> it(dir, true); it != nullptr; ++it){
+                if(ValidateInterest(it, dir)){
+                    eyes->AddInterestObject(it);
+                }
+            }
+            for(ObjDirItr<Character> it(dir, true); it != nullptr; ++it){
+                if(!streq(it->Name(), Name())){
+                    for(ObjDirItr<CharInterest> it2(it, true); it2 != nullptr; ++it2){
+                        if(ValidateInterest(it2, it)){
+                            eyes->AddInterestObject(it2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 void Character::SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>& oList, ObjectDir* dir){
     CharEyes* eyes = GetEyes();
     if(eyes){
         eyes->ClearAllInterestObjects();
-        for(ObjPtrList<CharInterest, ObjectDir>::iterator it = oList.begin(); it != oList.end(); ++it){
+        for(ObjPtrList<CharInterest, ObjectDir>::iterator it = oList.begin(); it != oList.end(); it++){
             if(ValidateInterest(*it, dir ? dir : (*it)->Dir())) eyes->AddInterestObject(*it);
         }
     }
@@ -245,18 +487,49 @@ bool Character::SetFocusInterest(CharInterest* interest, int i){
     else return false;
 }
 
+bool Character::SetFocusInterest(Symbol s, int iii){
+    CharEyes* eyes = GetEyes();
+    if(eyes){
+        CharInterest* interest = nullptr;
+        for(int i = 0; i < eyes->NumInterests(); i++){
+            if(s == eyes->GetInterest(i)->Name()){
+                interest = eyes->GetInterest(i);
+                break;
+            }
+        }
+        if(!s.Null() && !interest){
+            MILO_WARN("Couldn't find interest named %s to force on %s", s.Str(), Name());
+        }        
+        return SetFocusInterest(interest, iii);
+    }
+    else return false;
+}
+
 void Character::SetInterestFilterFlags(int flags){
     CharEyes* eyes = GetEyes();
     if(eyes){
-        eyes->mInterestFilterFlags = flags;
-        eyes->unk15c = true;
+        eyes->SetInterestFilterFlags(flags);
     }
 }
 
 void Character::ClearInterestFilterFlags(){
     CharEyes* eyes = GetEyes();
     if(eyes){
-        eyes->mInterestFilterFlags = eyes->mDefaultFilterFlags;
+        eyes->ClearInterestFilterFlags();
+    }
+}
+
+float Character::ComputeScreenSize(RndCam* cam){
+    Sphere sphere;
+    MakeWorldSphere(sphere, false);
+    if(cam && cam->CompareSphereToWorld(sphere)){
+        return 0;
+    }
+    else {
+        float ret = 1.0f;
+        sphere.radius = 1.0f;
+        if(cam) ret = cam->CalcScreenHeight(sphere);
+        return ret;
     }
 }
 
@@ -264,17 +537,22 @@ ShadowBone* Character::AddShadowBone(RndTransformable* trans){
     if(!trans) return 0;
     else {
         for(int i = 0; i < mShadowBones.size(); i++){
-            if(mShadowBones[i]->mParent == trans) return mShadowBones[i];
+            if(mShadowBones[i]->Parent() == trans) return mShadowBones[i];
         }
         mShadowBones.push_back(new ShadowBone());
-        mShadowBones.back()->mParent = trans;
+        mShadowBones.back()->SetParent(trans);
         return mShadowBones.back();
     }
 }
 
 void Character::UnhookShadow(){
     for(int i = 0; i < mShadowBones.size(); i++){
-
+        ShadowBone* cur = mShadowBones[i];
+        std::vector<ObjRef*>& refs = cur->mRefs;
+        while(!refs.empty()){
+            ObjRef* curRef = refs.back();
+            curRef->Replace(cur, cur->Parent());
+        }
     }
     DeleteAll(mShadowBones);
 }
@@ -290,21 +568,26 @@ void Character::Replace(Hmx::Object* from, Hmx::Object* to){
 void Character::SyncShadow(){
     UnhookShadow();
     if(mShadow){
+    #ifdef MILO_DEBUG
         if(GetGfxMode() == kOldGfx){
-            for(std::vector<RndDrawable*>::iterator it = mShadow->mDraws.begin(); it != mShadow->mDraws.end(); ++it){
+    #endif
+            std::vector<RndDrawable*>& draws = mShadow->mDraws;
+            for(std::vector<RndDrawable*>::iterator it = draws.begin(); it != draws.end(); ++it){
                 RndMesh* mesh = dynamic_cast<RndMesh*>(*it);
                 if(mesh){
-                    if(!mesh->mBones.empty()){
-                        for(int i = 0; i < mesh->mBones.size(); i++){
-                            mesh->SetBone(i, AddShadowBone(mesh->mBones[i].mBone), false);
+                    if(mesh->NumBones() != 0){
+                        for(int i = 0; i < mesh->NumBones(); i++){
+                            mesh->SetBone(i, AddShadowBone(mesh->BoneTransAt(i)), false);
                         }
                     }
                     else {
-                        mesh->SetTransParent(AddShadowBone(mesh), false);
+                        mesh->SetTransParent(AddShadowBone(mesh->TransParent()), false);
                     }
                 }
             }
+    #ifdef MILO_DEBUG
         }
+    #endif
         VectorRemove(mDraws, mShadow);
     }
 }
@@ -315,10 +598,8 @@ void Character::SyncObjects(){
     RndDir::SyncObjects();
     VectorRemove(mDraws, mTransGroup);
     for(int i = 0; i < mLods.size(); i++){
-        RndGroup* grp = mLods[i].mGroup;
-        VectorRemove(mDraws, grp);
-        RndGroup* grp2 = mLods[i].mTransGroup;
-        VectorRemove(mDraws, grp2);
+        VectorRemove(mDraws, mLods[i].Group());
+        VectorRemove(mDraws, mLods[i].TransGroup());
     }
     SyncShadow();
     CharPollableSorter sorter;
@@ -333,8 +614,7 @@ void Character::AddedObject(Hmx::Object* o){
     if(dynamic_cast<CharPollable*>(o)){
         CharDriver* driver = dynamic_cast<CharDriver*>(o);
         if(driver){
-            bool strsmatch = strcmp(driver->Name(), "main.drv") == 0;
-            if(strsmatch){
+            if(streq(driver->Name(), "main.drv")){
                 mDriver = driver;
             }
         }
@@ -368,7 +648,7 @@ void Character::PreLoad(BinStream& bs){
     ASSERT_REVS(0x11, 0);
     if(gRev > 1){
         RndDir::PreLoad(bs);
-        if(gRev < 7) mRate = k1_fpb;
+        if(gRev < 7) SetRate(k1_fpb);
     }
     else {
         int somerev;
@@ -526,19 +806,11 @@ DataNode Character::OnGetCurrentInterests(DataArray* da){
     if(eyes) size = eyes->mInterests.size();
     DataArrayPtr ptr;
     ptr->Resize(size + 1);
-    ptr->Node(0) = DataNode(Symbol());
+    ptr->Node(0) = Symbol();
     for(int i = 0; i < size; i++){
-        bool within = i < eyes->mInterests.size();
-        CharInterest* interest;
-        if(!within){
-            interest = ObjOwnerPtr<CharInterest, ObjectDir>(0, 0);
-        }
-        else {
-            interest = eyes->mInterests[i].mInterest;
-        }
-        ptr->Node(i + 1) = DataNode(Symbol(interest->Name()));
+        ptr->Node(i + 1) = Symbol(eyes->GetInterest(i)->Name());
     }
-    return DataNode(ptr);
+    return ptr;
 }
 
 BEGIN_CUSTOM_PROPSYNC(Character::Lod)

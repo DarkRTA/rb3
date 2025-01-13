@@ -317,6 +317,7 @@ public:
     static bool sRawCollide;
     static bool sUpdateApproxLight;
     static void SetRawCollide(bool b){ sRawCollide = b; }
+    static void SetUpdateApproxLight(bool b){ sUpdateApproxLight = b; }
 
     /** This mesh's vertices. */
     VertVector mVerts; // 0xB0
