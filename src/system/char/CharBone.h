@@ -43,6 +43,7 @@ public:
     void SetScaleContext(int c){ mScaleContext = c; }
     void SetRotationContext(int c){ mRotationContext = c; }
     void SetRotationType(CharBones::Type ty){ mRotation = ty; }
+    void SetTrans(RndTransformable* t){ mTrans = t; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

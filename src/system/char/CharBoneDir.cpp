@@ -1,7 +1,14 @@
 #include "char/CharBoneDir.h"
+#include "char/CharBones.h"
+#include "decomp.h"
 #include "obj/DataFunc.h"
 #include "char/CharUtl.h"
 #include "obj/ObjVersion.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
+#include "rndobj/Trans.h"
+#include "utl/MakeString.h"
+#include "utl/MemMgr.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharBoneDir)
@@ -26,27 +33,30 @@ void CharBoneDir::Init(){
             DataArray* foundarr = sCharClipTypes->Array(i)->FindArray("resource", false);
             if(foundarr){
                 Symbol foundsym = foundarr->Sym(1);
-                ObjectDir* thedir = dynamic_cast<ObjectDir*>(sResources->FindObject(foundsym.Str(), false));
+                ObjectDir* thedir = sResources->Find<ObjectDir>(foundsym.mStr, false);
+                // ObjectDir* thedir = dynamic_cast<ObjectDir*>(sResources->FindObject(foundsym.Str(), false));
                 if(!thedir){
                     const char* milostr = MakeString("%s/%s.milo", cc, foundsym);
                     static int _x = MemFindHeap("char");
-                    MemPushHeap(_x);
+                    MemTempHeap tmp(_x);
                     ObjectDir* loaded = DirLoader::LoadObjects(FilePath(milostr), 0, 0);
-                    if(loaded) loaded->SetName(foundsym.Str(), sResources);
-                    MemPopHeap();
+                    if(loaded) loaded->SetName(foundsym.mStr, sResources);
                 }
             }
         }
     }
-    // DataRegisterFunc("get_clip_types", GetClipTypes);
+    DataRegisterFunc("get_clip_types", ::GetClipTypes);
 }
 #pragma pop
 
 void CharBoneDir::Terminate(){ delete sResources; }
 
-CharBoneDir* CharBoneDir::FindResource(const char* cc){
+#pragma push
+#pragma force_active on
+inline CharBoneDir* CharBoneDir::FindResource(const char* cc){
     return sResources->Find<CharBoneDir>(cc, false);
 }
+#pragma pop
 
 CharBoneDir* CharBoneDir::FindResourceFromClipType(Symbol cliptype){
     DataArray* types = sCharClipTypes->FindArray(cliptype, false);
@@ -68,7 +78,7 @@ CharBoneDir* CharBoneDir::FindResourceFromClipType(Symbol cliptype){
     }
 }
 
-CharBoneDir::CharBoneDir() : mRecenter(this), mMoveContext(0), mBakeOutFacing(1), mContextFlags(0), mFilterContext(0), mFilterBones(this, kObjListNoNull) {
+CharBoneDir::CharBoneDir() : mRecenter(this), mMoveContext(0), mBakeOutFacing(1), mContextFlags(0), mFilterContext(0), mFilterBones(this) {
 
 }
 
@@ -82,6 +92,7 @@ void CharBoneDir::StuffBones(CharBones& bones, int i){
     bones.AddBones(blist);
 }
 
+// matches in retail
 void CharBoneDir::StuffBones(CharBones& bones, Symbol sym){
     DataArray* found = sCharClipTypes->FindArray(sym, false);
     if(!found) MILO_WARN("CharClip has no type %s", sym);
@@ -97,6 +108,8 @@ void CharBoneDir::StuffBones(CharBones& bones, Symbol sym){
         }
     }
 }
+
+DECOMP_FORCEACTIVE(CharBoneDir, __FILE__, "!mAverage.empty()", "CharBone %s has no associated RndTransformable")
 
 DataNode CharBoneDir::GetClipTypes(){
     DataArray* arr = new DataArray(sCharClipTypes->Size());
@@ -131,18 +144,60 @@ void CharBoneDir::MergeCharacter(const FilePath& fp){
     if(!dir) MILO_WARN("Could not load %s", fp);
     else {
         std::list<RndTransformable*> tlist;
-        for(ObjDirItr<RndTransformable> it(dir, true); it != 0; ++it){
-            if((Hmx::Object*)it != (Hmx::Object*)dir){
+        for(ObjDirItr<RndTransformable> it(dir, false); it != 0; ++it){
+            if(dir != (Hmx::Object*)it){
                 if(CharUtlIsAnimatable(it)){
-                    const char* name = it->Name();
-                    if(strncmp("bone_", name, 5) == 0 || strncmp("exo_", name, 4) == 0){
+                    if(strncmp(it->Name(), "bone_", 5) == 0 || strncmp(it->Name(), "exo_", 4) == 0){
                         tlist.push_back(it);
                     }
                 }
             }
         }
-        // ...
+        std::list<RndTransformable*> tlist60;
+        while(!tlist.empty()){
+            RndTransformable* backTrans = tlist.back();
+            RndTransformable* charTrans = CharUtlFindBoneTrans(backTrans->Name(), this);
+            if(!charTrans){
+                backTrans->SetName(backTrans->Name(), this);
+                charTrans = backTrans;
+            }
+            else {
+                charTrans->Copy(backTrans, Hmx::Object::kCopyDeep);
+                std::vector<ObjRef*>& refs = backTrans->mRefs;
+                while(!refs.empty()){
+                    refs.back()->Replace(backTrans, charTrans);
+                }
+            }
+            tlist60.push_back(charTrans);
+            char buf[256];
+            strcpy(buf, MakeString("%s.cb", FileGetBase(charTrans->Name(), nullptr)));
+            CharBone* bone = CharUtlFindBone(buf, this);
+            if(!bone) bone = New<CharBone>(buf);
+            bone->SetTrans(charTrans);
+            tlist.pop_back();
+        }
+
+        while(!tlist60.empty()){
+            RndTransformable* parent = tlist60.back()->TransParent();
+            if(parent){
+                if(strncmp(parent->Name(), "bone_", 5) != 0){
+                    if(strncmp(parent->Name(), "exo_", 4) != 0) goto pop;
+                }
+                if(parent->Dir() != this){
+                    parent->SetName(parent->Name(), this);
+                    parent->SetTransParent(nullptr, false);
+                }
+            }
+        pop:
+            tlist60.pop_back();
+        }
+
+        delete dir;
     }
+}
+
+inline bool SortBonesByName(CharBone* b1, CharBone* b2){
+    return strcmp(b1->Name(), b2->Name()) < 0;
 }
 
 // fn_804A9F54
@@ -150,21 +205,18 @@ DataNode CharBoneDir::GetContextFlags(){
     if(mContextFlags.Type() == kDataInt){
         DataArray* cfg = SystemConfig("objects", "CharClip", "types");
         DataArray* arr = new DataArray(cfg->Size() - 1);
-        Symbol name(Name());
         int count = 0;
-        for(int i = 1; i < arr->Size(); i++){
+        Symbol name(Name());
+        for(int i = 1; i < cfg->Size(); i++){
             DataArray* resourceArr = cfg->Array(i)->FindArray("resource", false);
-            bool b = false;
-            if(resourceArr && resourceArr->Sym(1) == name) b = true;
-            if(b){
+            if(resourceArr && resourceArr->Sym(1) == name){
                 const char* str = resourceArr->Str(2);
                 int j;
                 for(j = 0; j < count; j++){
-                    bool strsmatch = strcmp(str, arr->Str(j)) == 0;
-                    if(strsmatch) break;
+                    if(streq(str, arr->Str(j))) break;
                 }
                 if(j == count){
-                    arr->Node(count++) = DataNode(resourceArr->Str(2));
+                    arr->Node(count++) = resourceArr->Str(2);
                 }
             }
         }
@@ -173,21 +225,37 @@ DataNode CharBoneDir::GetContextFlags(){
         mContextFlags = DataNode(arr, kDataArray);
         arr->Release();
     }
-    return DataNode(mContextFlags);
+    return mContextFlags;
 }
 
 void CharBoneDir::SyncFilter(){
     mFilterBones.clear();
-    for(ObjDirItr<CharBone> it(this, true); it != 0; ++it){
+    for(ObjDirItr<CharBone> it(this, true); it != nullptr; ++it){
         if(mFilterContext & it->PositionContext() ||
             mFilterContext & it->ScaleContext() ||
             (it->RotationType() != CharBones::TYPE_END &&
             mFilterContext & it->RotationContext())
-        )
-        mFilterBones.push_back(it);
+        ){
+            mFilterBones.push_back(it);
+        }
+        else {
+            
+        }
     }
-    // new objptrlist method called here - takes in a fn ptr too (gross)
+    mFilterBones.sort(SortBonesByName);
+    mFilterNames.clear();
+    std::list<CharBones::Bone> bones;
+    ListBones(bones, mFilterContext, true);
+    for(std::list<CharBones::Bone>::iterator it = bones.begin(); it != bones.end(); ++it){
+        mFilterNames.push_back(it->name);
+    }
+    mFilterNames.sort();
+    for(std::list<String>::iterator it = mFilterNames.begin(); it != mFilterNames.end(); ++it){
+        MILO_LOG("%s\n", *it);
+    }
 }
+
+DECOMP_FORCEACTIVE(CharBoneDir, "ObjPtr_p.h", "c.Owner()")
 
 BinStream& operator>>(BinStream& bs, CharBoneDir::Recenter& rc){
     bs >> rc.mTargets;
