@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARBLENDBONE_H
-#define CHAR_CHARBLENDBONE_H
+#pragma once
 #include "char/CharPollable.h"
 #include "rndobj/Trans.h"
 #include "obj/ObjList.h"
 
+/** "Set up a constraint between a series of target bones" */
 class CharBlendBone : public CharPollable {
 public:
 
@@ -11,7 +11,10 @@ public:
     public:
         ConstraintSystem();
         ConstraintSystem(Hmx::Object*);
-        ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
+
+        /** "object to constrain" */
+        ObjPtr<RndTransformable> mTarget; // 0x0
+        /** "influence value, from 0 to 1" */
         float mWeight; // 0xc
     };
 
@@ -36,14 +39,18 @@ public:
     }
 
     ObjList<ConstraintSystem> mTargets; // 0x8
-    ObjPtr<RndTransformable, ObjectDir> mSrc1; // 0x14
-    ObjPtr<RndTransformable, ObjectDir> mSrc2; // 0x20
+    /** "Source object to drive constraint" */
+    ObjPtr<RndTransformable> mSrc1; // 0x14
+    /** "Source object to drive constraint" */
+    ObjPtr<RndTransformable> mSrc2; // 0x20
+    /** "Apply x translation?" */
     bool mTransX; // 0x2c
+    /** "Apply y translation?" */
     bool mTransY; // 0x2d
+    /** "Apply z translation?" */
     bool mTransZ; // 0x2e
+    /** "Apply rotation constraint?" */
     bool mRotation; // 0x2f
 };
 
 BinStream& operator>>(BinStream&, CharBlendBone::ConstraintSystem&);
-
-#endif

@@ -925,7 +925,7 @@
             "system/beatmatch/VocalNoteList.cpp": "NonMatching",
 
             "system/char/Char.cpp": "NonMatching",
-            "system/char/CharBlendBone.cpp": "NonMatching",
+            "system/char/CharBlendBone.cpp": "Equivalent",
             "system/char/CharBone.cpp": {
                 "status": "Equivalent",
                 "comment": "regswaps in standalone stlport functions"
