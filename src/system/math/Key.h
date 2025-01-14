@@ -273,6 +273,22 @@ public:
         }
     }
 
+    // the ref command could very well be a T instead of a float, but I've only seen this method called for Keys<float, float>
+    bool Linear(float f1, float& fref) const {
+        if(size() == 0) return false;
+        else {
+            if(size() == 1) fref = front().value;
+            else {
+                int numKeys = size();
+                int idx = Clamp<int>(0, numKeys - 2, KeyLessEq(f1));
+                const Key<T1>& keyNow = (*this)[idx];
+                const Key<T1>& keyNext = (*this)[idx + 1];
+                Interp(keyNow.value, keyNext.value, (f1 - keyNow.frame) / (keyNext.frame - keyNow.frame), fref);
+            }
+            return true;
+        }
+    }
+
     void KeysLessEq(float f, int& iref1, int& iref2) const {
         iref2 = -1;
         iref1 = -1;

@@ -6,6 +6,7 @@
 #include "obj/ObjPtr_p.h"
 #include "char/CharBonesSamples.h"
 #include "math/Key.h"
+#include "utl/BinStream.h"
 
 class CharBoneDir;
 
@@ -48,6 +49,8 @@ public:
             return (int)mNodeEnd - (int)mNodeStart;
         }
         NodeVector* GetNodes(int) const;
+        void Load(BinStream&);
+        void AddNode(CharClip*, const CharGraphNode&);
 
         NodeVector* mNodeStart; // 0x0
         NodeVector* mNodeEnd; // 0x4
@@ -77,20 +80,53 @@ public:
 
             void Set(bool);
 
-            Vector3 mDeltaPos;
-            float mDeltaAng;
+            Vector3 mDeltaPos; // 0x50
+            float mDeltaAng; // 0x5c
         };
 
         FacingSet();
         void ListBones(std::list<CharBones::Bone>&);
         void Set(CharBonesSamples&);
+        void ScaleDown(CharBones&, float);
+        void ScaleAddSample(CharBonesSamples&, CharBones&, float, int, float, int, float);
 
         static void Init();
+        static FacingBones sFacingPos;
+        static FacingBones sFacingRotAndPos;
         
         short mFullRot; // 0x0
         short mFullPos; // 0x2
         FacingBones* mFacingBones; // 0x4
         float mWeight; // 0x8
+    };
+
+    /** "Blend mode, if any, to use by default for this clip" */
+    enum DefaultBlend {
+        kPlayNoDefault = 0,
+        kPlayNow = 1,
+        kPlayNoBlend = 2,
+        kPlayFirst = 3,
+        kPlayLast = 4,
+        kPlayDirty = 8
+    };
+    
+    /** "Looping mode, if any, to use by default for this clip" */
+    enum DefaultLoop {
+        kPlayNoLoop = 0x10,
+        kPlayLoop = 0x20,
+        kPlayGraphLoop = 0x30,
+        kPlayNodeLoop = 0x40
+    };
+
+    /** "Time units/alignment, if any, for this clip" */
+    enum BeatAlignMode {
+        kPlayBeatTime = 0,
+        kPlayRealTime = 0x200,
+        kPlayUserTime = 0x400,
+        kPlayBeatAlign1 = 0x1000,
+        kPlayBeatAlign2 = 0x2000,
+        kPlayBeatAlign4 = 0x4000,
+        kPlayBeatAlign8 = 0x8000
     };
 
     CharClip();
@@ -135,7 +171,13 @@ public:
     void EvaluateChannel(void*, const void*, float);
     void LockAndDelete(CharClip**, int, int);
     void SortEvents();
+    CharGraphNode* FindFirstNode(CharClip*, float) const;
+    CharGraphNode* FindLastNode(CharClip*, float) const;
+    CharGraphNode* FindNode(CharClip*, float, int, float) const;
+    float FrameToBeat(float) const;
+
     int Flags() const { return mFlags; }
+    int PlayFlags() const { return mPlayFlags; }
     /** "Start beat, beat this clip starts at" */
     float StartBeat() const { return mBeatTrack.front().value; }
     /** "End beat, beat this clip ends at" */
@@ -148,7 +190,6 @@ public:
     }
     char* GetChannel(Symbol);
     int TransitionVersion();
-    int PlayFlags() const { return mPlayFlags; }
 
     DataNode OnGroups(DataArray*);
     DataNode OnHasGroup(DataArray*);
@@ -194,6 +235,4 @@ public:
     CharBonesSamples mOne; // 0xc4
     FacingSet mFacing; // 0x124
     std::vector<CharBones::Bone> mZeros; // 0x130 - change vector type
-
-    // default blend: "Blend mode, if any, to use by default for this clip"
 };

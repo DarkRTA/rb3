@@ -29,6 +29,7 @@ public:
     void Randomize();
     void RandomizeIndex();
     void Sort();
+    void MakeMRU(CharClip*);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
