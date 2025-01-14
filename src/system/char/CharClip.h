@@ -1,6 +1,7 @@
 #pragma once
 #include "char/CharBones.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "rndobj/Anim.h"
 #include "obj/ObjPtr_p.h"
@@ -175,6 +176,12 @@ public:
     CharGraphNode* FindLastNode(CharClip*, float) const;
     CharGraphNode* FindNode(CharClip*, float, int, float) const;
     float FrameToBeat(float) const;
+    float BeatToFrame(float) const;
+    float DeltaSecondsToDeltaBeat(float, float);
+    int BeatToSample(float, float*) const;
+    float SampleToBeat(int) const;
+    void RotateTo(CharBones&, float, float);
+    void Relativize();
 
     int Flags() const { return mFlags; }
     int PlayFlags() const { return mPlayFlags; }
@@ -188,12 +195,18 @@ public:
     int NumFrames() const {
         return Max<int>(Max<int>(1, mFull.mNumSamples), mFull.mFrames.size());
     }
-    char* GetChannel(Symbol);
+    void* GetChannel(Symbol);
     int TransitionVersion();
+    void EvaluateChannel(void*, const void*, int, float);
+    void ScaleAddSample(CharBones&, float, int, float, int, float);
+    void SetFacingFull(){
+        mFacing.Set(mFull);
+    }
 
     DataNode OnGroups(DataArray*);
     DataNode OnHasGroup(DataArray*);
 
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharClip)
@@ -224,7 +237,7 @@ public:
     /** "Indicates transition graph needs updating" */
     bool mDirty; // 0x40
     bool mDoNotCompress; // 0x41
-    short unk42; // 0x42 - transition version - mOldVer?
+    short mOldVer; // 0x42
     /** "Make the clip all relative to this other clip's first frame" */
     ObjPtr<CharClip> mRelative; // 0x44
     /** "Events that get triggered during play" */

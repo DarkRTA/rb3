@@ -2,23 +2,29 @@
 #include "char/CharBoneDir.h"
 #include "char/CharBones.h"
 #include "char/CharBonesMeshes.h"
+#include "char/CharBonesSamples.h"
 #include "char/CharClipGroup.h"
 #include "decomp.h"
 #include "math/Rot.h"
+#include "math/Utl.h"
 #include "obj/Data.h"
 #include "obj/DataUtl.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "stl/_algo.h"
+#include "utl/BinStream.h"
 #include "utl/MemMgr.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 #include "utl/TextStream.h"
 #include <vector>
 
-int gOldRev;
+INIT_REVS(CharClip);
+
 CharClip::FacingSet::FacingBones CharClip::FacingSet::sFacingPos;
 CharClip::FacingSet::FacingBones CharClip::FacingSet::sFacingRotAndPos;
+int gOldRev;
 
 const char* CharClip::BeatAlignString(int mask){
     switch(mask & 0xF600){
@@ -176,7 +182,7 @@ void CharClip::Init(){
 }
 
 CharClip::CharClip() : mTransitions(this), mFramesPerSec(30.0f), mBeatTrack(), mFlags(0), mPlayFlags(0), mRange(0.0f),
-    mDirty(1), mDoNotCompress(0), unk42(-1), mRelative(this, 0), mBeatEvents(), mSyncAnim(this, 0), mFull(), mOne(), mFacing() {
+    mDirty(1), mDoNotCompress(0), mOldVer(-1), mRelative(this, 0), mBeatEvents(), mSyncAnim(this, 0), mFull(), mOne(), mFacing() {
     mBeatTrack.resize(1);
     mBeatTrack[0].frame = 0.0f;
     mBeatTrack[0].value = 0.0f;
@@ -400,6 +406,135 @@ float CharClip::FrameToBeat(float frame) const {
     return ret;
 }
 
+float CharClip::BeatToFrame(float beat) const {
+    float ret = 0;
+    mBeatTrack.ReverseLinear(beat, ret);
+    return ret;
+}
+
+float CharClip::DeltaSecondsToDeltaBeat(float f1, float beat){
+    if(mBeatTrack.size() == 1) return f1;
+    else {
+        float ret = FrameToBeat(f1 * mBeatTrack.front().value + BeatToFrame(beat));
+        ret -= beat;
+        return ret;
+    }
+}
+
+float CharClip::AverageBeatsPerSecond() const {
+    if(LengthSeconds()){
+        return LengthBeats() / LengthSeconds();
+    }
+    else return 1;
+}
+
+int CharClip::BeatToSample(float f, float* fp) const {
+    float frame = BeatToFrame(f);
+    float f1 = 0;
+    if(mBeatTrack.back().frame != 0){
+        f1 = frame / mBeatTrack.back().frame;
+    }
+    *fp = f1;
+    return mFull.FracToSample(fp);
+}
+
+float CharClip::SampleToBeat(int sample) const {
+    if(mFull.mFrames.empty()){
+        return FrameToBeat(sample);
+    }
+    else {
+        const float* lower = std::lower_bound(mFull.mFrames.begin(), mFull.mFrames.end(), (float)sample);
+        return FrameToBeat(lower - mFull.mFrames.begin());
+    }
+}
+
+void* CharClip::GetChannel(Symbol s){
+    int off = mFull.FindOffset(s);
+    if(off > -1){
+        return (void*)(off + 1);
+    }
+    else {
+        off = mOne.FindOffset(s);
+        if(off > -1) return (void*)(off + mFull.TotalSize() + 1);
+        else return 0;
+    }
+}
+
+void CharClip::EvaluateChannel(void* v1, const void* v2, int iii, float f){
+    if(!v2){
+        MILO_FAIL("%s passed in NULL for evaluate channel", PathName(this));
+    }
+    int i3 = (int)v2 - 1;
+    if(i3 < mFull.TotalSize()){
+        mFull.EvaluateChannel(v1, i3, iii, f);
+    }
+    else {
+        int i2 = i3 - mFull.TotalSize();
+        if(i2 < mOne.TotalSize()){
+            mOne.EvaluateChannel(v1, i2, 0, 0);
+        }
+        else {
+            MILO_FAIL("%s could not find offset %d %d", i3, i2, PathName(this));
+        }
+    }
+}
+
+void CharClip::EvaluateChannel(void* v1, const void* v2, float f3){
+    float fp;
+    EvaluateChannel(v1, v2, BeatToSample(f3, &fp), fp);
+}
+
+void CharClip::ScaleDown(CharBones& bones, float f){
+    mFull.ScaleDown(bones, f);
+    mOne.ScaleDown(bones, f);
+    mFacing.ScaleDown(bones, f);
+}
+
+void CharClip::RotateBy(CharBones& bones, float f){
+    float frac;
+    int samp = BeatToSample(f, &frac);
+    MILO_ASSERT(frac == 0, 0x37D);
+    mFull.RotateBy(bones, samp);
+    mOne.RotateBy(bones, 0);
+}
+
+void CharClip::RotateTo(CharBones& bones, float f1, float f2){
+    float fp;
+    mFull.RotateTo(bones, f1, BeatToSample(f2, &fp), fp);
+    mOne.RotateTo(bones, f1, 0, 0);
+}
+
+void CharClip::ScaleAdd(CharBones& bones, float f1, float f2, float f3){
+    float fp;
+    float fp2;
+    int samp1 = BeatToSample(f2, &fp);
+    int samp2 = BeatToSample(f2 - f3, &fp2);
+    ScaleAddSample(bones, f1, samp1, fp, samp2, fp2);
+}
+
+void CharClip::ScaleAddSample(CharBones& bones, float f1, int i1, float f2, int i2, float f3){
+    mFull.ScaleAddSample(bones, f1, i1, f2);
+    mOne.ScaleAddSample(bones, f1, 0, 0);
+    mFacing.ScaleAddSample(mFull, bones, f1, i1, f2, i2, f3);
+}
+
+void CharClip::Relativize(){
+    if(mFull.mCompression != 0){
+        MILO_WARN("%s relativizing compressed clip, should reexport", PathName(this));
+    }
+    MILO_ASSERT(mRelative, 0x3B2);
+    mFull.Relativize(mRelative);
+    mOne.Relativize(mRelative);
+}
+
+void CharClip::SetRelative(CharClip* clip){
+    if(clip != mRelative){
+        mRelative = clip;
+        if(mRelative) Relativize();
+        else MILO_WARN("%s cannot de-relativize clip, must reexport", PathName(this));
+    }
+}
+
 void CharClip::Replace(Hmx::Object* from, Hmx::Object* to){
     Hmx::Object::Replace(from, to);
     mTransitions.Replace(from, to);
@@ -464,7 +599,7 @@ bool CharClip::InGroup(Hmx::Object* o){
 
 void CharClip::MakeMRU(){
     CharClipGroup* groups[128];
-    static int sMaxGroups = 0;
+    static int sMaxGroups = 10;
     static Symbol s("CharClipGroup");
     std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
     std::vector<ObjRef*>::const_reverse_iterator itEnd = Refs().rend();
@@ -557,7 +692,147 @@ void CharClip::Transitions::Load(BinStream& bs){
     }
 }
 
+DECOMP_FORCEACTIVE(CharClip, "ObjPtr_p.h", "f.Owner()", "")
+
 SAVE_OBJ(CharClip, 0x4F6)
+
+void CharClipDeadStrippedKeysRead(CharClip* clip, BinStream& bs){
+    bs << clip->mBeatTrack;
+}
+
+BEGIN_LOADS(CharClip)
+    static int _x = MemFindHeap("char");
+    MemTempHeap temp(_x);
+    LOAD_REVS(bs)
+    ASSERT_REVS(0x13, 0)
+    if(gRev < 0x10) bs >> gOldRev;
+    else gOldRev = 0xD;
+    MILO_ASSERT(gOldRev > 1, 0x523);
+    LOAD_SUPERCLASS(Hmx::Object)
+    if(gRev < 0x12){
+        int x, y;
+        bs >> x;
+        bs >> y;
+    }
+    bs >> mFramesPerSec;
+    bs >> mFlags;
+    bs >> mPlayFlags;
+    if(gOldRev < 0xD){
+        int x; bs >> x;
+    }
+    if(gOldRev > 3) bs >> mRange;
+    if(gOldRev > 5){
+        mRelative.Load(bs, false, nullptr);
+    }
+    else if(gOldRev > 4){
+        bool b117; bs >> b117;
+        mRelative = b117 ? this : nullptr;
+    }
+    else mRelative = nullptr;
+    if(gOldRev - 9U <= 1){
+        bool b118; bs >> b118;
+    }
+    if(gOldRev > 9){
+        int oldVer; bs >> oldVer;
+        MILO_ASSERT(oldVer < MAX_SHORT, 0x557);
+        mOldVer = oldVer;
+    }
+    if(gOldRev > 0xB){
+        bs >> mDoNotCompress;
+        if(mDoNotCompress) MILO_WARN("mDoNotCompress %s\n", PathName(this));
+    }
+    mTransitions.Load(bs);
+    if(gOldRev < 3){
+        int count;
+        bs >> count;
+        String str;
+        for(int i = 0; i < count; i++){
+            bs >> str;
+        }
+    }
+    if(gOldRev > 6){
+        int count; bs >> count;
+        mBeatEvents.resize(count);
+        for(int i = 0; i < mBeatEvents.size(); i++){
+            mBeatEvents[i].Load(bs);
+        }
+    }
+    else {
+        String str;
+        bs >> str;
+        if(!str.empty()){
+            MILO_WARN("%s has old enter event %s, must port", PathName(this), str);
+        }
+        bs >> str;
+        if(!str.empty()){
+            MILO_WARN("%s has old exit event %s, must port", PathName(this), str);
+        }
+        int count; bs >> count;
+        float f1 = -kHugeFloat;
+        for(int i = 0; i < count; i++){
+            float x; bs >> x;
+            bs >> str;
+            if(!str.empty()){
+                MILO_WARN("%s has old frame %.2f event %s, must port", PathName(this), x, str);
+            }
+            if(x < f1){
+                MILO_WARN("Keyframes in %s are out of order.", Name());
+            }
+            f1 = x;
+        }
+    }
+    mDirty = false;
+    int tv = TransitionVersion();
+    if(tv != mOldVer){
+        mDirty = true;
+        MILO_ASSERT(tv < MAX_SHORT, 0x5A3);
+        mOldVer = tv;
+    }
+    if(gRev > 0xC){
+        mFull.Load(bs);
+        mOne.Load(bs);
+    }
+    else {
+        CharBonesSamples::SetVer(gRev);
+        mFull.LoadHeader(bs);
+        mOne.Load(bs);
+        if(gRev > 7){
+            CharBonesSamples samps;
+            samps.LoadHeader(bs);
+        }
+        mFull.LoadData(bs);
+        mOne.LoadData(bs);
+    }
+    if(gRev > 0xE) bs >> mZeros;
+    SetFacingFull();
+    if(gRev > 0x11) bs >> mBeatTrack;
+    else {
+        if(NumFrames() > 1){
+            mBeatTrack.resize(2);
+            Key<float>& key0 = mBeatTrack[0];
+            key0 = Key<float>(key0.value, 0);
+            Key<float>& key1 = mBeatTrack[1];
+            key1 = Key<float>(key1.value, NumFrames() - 1);
+        }
+        else {
+            mBeatTrack.resize(1);
+            Key<float>& key0 = mBeatTrack[0];
+            key0 = Key<float>(key0.value, 0);
+
+        }
+        if(gRev < 0x11){
+            float oldFPS = mFramesPerSec;
+            if(LengthBeats() > 0){
+                mFramesPerSec = (NumFrames() - 1) * (oldFPS / LengthBeats());
+            }
+            else mFramesPerSec = 30.0f;
+        }
+    }
+    if(gRev > 0x12) bs >> mSyncAnim;
+    if(EndBeat() == StartBeat() && mFull.NumSamples() > 1){
+        MILO_WARN("%s has endframe == startframe == %.3f but %d samples!\n", Name(), StartBeat(), mFull.NumSamples());
+    }
+END_LOADS
 
 void CharClip::SetTypeDef(DataArray* arr){
     if(TypeDef() != arr){
@@ -589,7 +864,7 @@ BEGIN_COPYS(CharClip)
         mFull.Clone(c->mFull);
         mOne.Clone(c->mOne);
         COPY_MEMBER(mZeros)
-        mFacing.Set(mFull);
+        SetFacingFull();
         mDirty = true;
     END_COPYING_MEMBERS
 END_COPYS
@@ -613,12 +888,32 @@ BEGIN_HANDLERS(CharClip)
     HANDLE_CHECK(0x651)
 END_HANDLERS
 
-DataNode CharClip::OnGroups(DataArray* arr){
-
+DataNode CharClip::OnGroups(DataArray*){
+    DataArray* ret = new DataArray(0);
+    std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = Refs().rend();
+    for(; it != itEnd; ++it){
+        CharClipGroup* group = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
+        if(group){
+            ret->Insert(ret->Size(), group);
+        }
+    }
+    DataNode retNode(ret, kDataArray);
+    ret->Release();
+    return retNode;
 }
 
 DataNode CharClip::OnHasGroup(DataArray* arr){
-
+    const char* str = arr->Str(2);
+    std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = Refs().rend();
+    for(; it != itEnd; ++it){
+        CharClipGroup* group = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
+        if(group && streq(group->Name(), str)){
+            return 1;
+        }
+    }
+    return 0;
 }
 
 BEGIN_CUSTOM_PROPSYNC(CharGraphNode)
@@ -648,7 +943,6 @@ BEGIN_CUSTOM_PROPSYNC(CharClip::NodeVector)
     SYNC_PROP_SET(clip, o.clip, )
     {
         static Symbol _s("nodes");
-        // if(sym == symbol) return PropSync(member, _val, _prop, _i + 1, _op);
         if(sym == _s){
             PropSyncArray(o, _val, _prop, _i + 1, _op);
             return true;
@@ -656,16 +950,16 @@ BEGIN_CUSTOM_PROPSYNC(CharClip::NodeVector)
     }
 END_CUSTOM_PROPSYNC
 
-bool PropSync(CharClip::Transitions& o, DataNode& val, DataArray* prop, int i, PropOp op){
+bool PropSync(CharClip::Transitions& o, DataNode& val, DataArray* prop, int i, PropOp _op){
     if(i == prop->Size()){
-        MILO_ASSERT(op == kPropSize, 0x719);
+        MILO_ASSERT(_op == kPropSize, 0x719);
         val = DataNode(o.Size());
         return true;
     }
     else {
         int idx = prop->Int(i++);
-        if(i < prop->Size() || op & kPropSize|kPropGet){
-
+        if(i < prop->Size() || _op & kPropSize|kPropGet){
+            return PropSync(*o.GetNodes(idx), val, prop, i, _op);
         }
         else return false;
     }
@@ -689,7 +983,7 @@ BEGIN_PROPSYNCS(CharClip)
     SYNC_PROP_SET(beat_align, mPlayFlags & 0xF600, SetBeatAlignMode(_val.Int()))
     SYNC_PROP(range, mRange)
     SYNC_PROP_SET(relative, mRelative, SetRelative(_val.Obj<CharClip>()))
-    SYNC_PROP(events, mBeatEvents)
+    SYNC_PROP_MODIFY_ALT(events, mBeatEvents, SortEvents())
     SYNC_PROP_SET(dirty, mDirty, )
     SYNC_PROP_SET(size, AllocSize(), )
     SYNC_PROP(do_not_compress, mDoNotCompress)

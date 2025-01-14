@@ -24,6 +24,7 @@ public:
     int FracToSample(float*) const;
 
     static void SetVer(int);
+    int NumSamples() const { return mNumSamples; }
 
     short mNumSamples; // 0x50
     short mPreviewSample; // 0x52

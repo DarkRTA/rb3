@@ -1,5 +1,6 @@
 #pragma once
 #include "obj/Object.h"
+#include "utl/BinStream.h"
 #include <vector>
 
 class CharClip;
@@ -135,3 +136,4 @@ public:
 
 extern CharBones* gPropBones;
 bool PropSync(CharBones::Bone&, DataNode&, DataArray*, int, PropOp);
+BinStream& operator>>(BinStream& bs, CharBones::Bone& bone);
