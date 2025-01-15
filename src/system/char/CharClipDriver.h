@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARCLIPDRIVER_H
-#define CHAR_CHARCLIPDRIVER_H
+#pragma once
 #include "obj/Object.h"
 #include "char/CharClip.h"
 
@@ -13,6 +12,8 @@ public:
     CharClipDriver* Exit(bool);
     void ExecuteEvent(Symbol);
     void SetBeatOffset(float, TaskUnits, Symbol);
+    void ScaleAdd(CharBones&, float);
+    void RotateTo(CharBones&, float);
     CharClipDriver* DeleteClip(Hmx::Object*);
     CharClipDriver* Next() const { return mNext; }
     CharClip* GetClip() const { return mClip; }
@@ -29,11 +30,9 @@ public:
     float mBlendFrac; // 0x18
     float mAdvanceBeat; // 0x1c
     float mWeight; // 0x20
-    ObjOwnerPtr<CharClip, ObjectDir> mClip; // 0x24
+    ObjOwnerPtr<CharClip> mClip; // 0x24
     CharClipDriver* mNext; // 0x30
     int mNextEvent; // 0x34
     DataArray* mEventData; // 0x38
     bool mPlayMultipleClips; // 0x3c
 };
-
-#endif

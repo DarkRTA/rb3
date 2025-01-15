@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARCLIPDISPLAY_H
-#define CHAR_CHARCLIPDISPLAY_H
+#pragma once
 #include "obj/Object.h"
 #include "char/CharClip.h"
 
@@ -31,5 +30,3 @@ public:
     int unk20;
     char* unk24;
 };
-
-#endif

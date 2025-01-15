@@ -183,8 +183,10 @@ public:
     void RotateTo(CharBones&, float, float);
     void Relativize();
 
+    float Range() const { return mRange; }
     int Flags() const { return mFlags; }
     int PlayFlags() const { return mPlayFlags; }
+    RndAnimatable* SyncAnim() const { return mSyncAnim; }
     /** "Start beat, beat this clip starts at" */
     float StartBeat() const { return mBeatTrack.front().value; }
     /** "End beat, beat this clip ends at" */
