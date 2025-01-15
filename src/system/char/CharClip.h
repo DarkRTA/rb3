@@ -170,7 +170,6 @@ public:
     bool InGroup(Hmx::Object*);
     int InGroups();
     void EvaluateChannel(void*, const void*, float);
-    void LockAndDelete(CharClip**, int, int);
     void SortEvents();
     CharGraphNode* FindFirstNode(CharClip*, float) const;
     CharGraphNode* FindLastNode(CharClip*, float) const;
@@ -214,6 +213,7 @@ public:
     NEW_OBJ(CharClip)
     static void Init();
     static const char* BeatAlignString(int);
+    static void LockAndDelete(CharClip**, int, int);
     static void Register(){
         REGISTER_OBJ_FACTORY(CharClip);
     }
