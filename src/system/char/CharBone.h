@@ -44,6 +44,7 @@ public:
     void SetRotationContext(int c){ mRotationContext = c; }
     void SetRotationType(CharBones::Type ty){ mRotation = ty; }
     void SetTrans(RndTransformable* t){ mTrans = t; }
+    bool BakeOutAsTopLevel() const { return mBakeOutAsTopLevel; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

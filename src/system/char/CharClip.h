@@ -182,6 +182,7 @@ public:
     void RotateTo(CharBones&, float, float);
     void Relativize();
 
+    CharClip* Relative() const { return mRelative; }
     float Range() const { return mRange; }
     int Flags() const { return mFlags; }
     int PlayFlags() const { return mPlayFlags; }

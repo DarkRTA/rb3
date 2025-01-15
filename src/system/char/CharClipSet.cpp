@@ -1,16 +1,40 @@
 #include "char/CharClipSet.h"
+#include "char/CharBoneDir.h"
+#include "char/CharBonesMeshes.h"
+#include "char/CharClip.h"
 #include "char/CharClipGroup.h"
+#include "char/CharForeTwist.h"
+#include "char/CharNeckTwist.h"
+#include "char/CharPollable.h"
+#include "char/CharUpperTwist.h"
+#include "char/CharUtl.h"
 #include "char/Character.h"
+#include "math/Rand.h"
+#include "math/Rot.h"
+#include "math/Vec.h"
+#include "obj/Data.h"
+#include "obj/DataUtl.h"
+#include "obj/Dir.h"
 #include "obj/Msg.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjVersion.h"
+#include "obj/Object.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Trans.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols4.h"
 
 INIT_REVS(CharClipSet)
+const char* kHighThresholdGroups[] = { "close" };
+const char* kLowThresholdGroups[] = {
+    "fail", "revive", "ending", "lose", "win"
+};
 
-CharClipSet::CharClipSet() : mCharFilePath(), mPreviewChar(this, 0), mPreviewClip(this, 0), mStillClip(this, 0) {
+CharClipSet::CharClipSet() : mCharFilePath(), mPreviewChar(this), mPreviewClip(this), mStillClip(this) {
     ResetPreviewState();
-    mRate = k1_fpb;
+    SetRate(k1_fpb);
 }
 
 void CharClipSet::ResetPreviewState(){
@@ -84,10 +108,13 @@ void CharClipSet::PostLoad(BinStream& bs){
     gAltRev = getAltRev(revs);
     if(IsProxy()) return;
     if(gRev < 0x11){
-        bs.ReadInt();
-        bs.ReadInt();
+        int x, y;
+        bs >> x;
+        bs >> y;
     }
-    if(gRev == 0xF || gRev == 0x10) bs.ReadInt();
+    if(gRev == 0xF || gRev == 0x10){
+        int x; bs >> x;
+    }
     if(gRev < 9){
         FilePath fp;
         bs >> fp;
@@ -97,23 +124,27 @@ void CharClipSet::PostLoad(BinStream& bs){
         String str; bs >> str;
         MILO_WARN("You'll need to reexport some clips into this clipset");
     }
-    if(gRev < 7) bs.ReadInt();
+    if(gRev < 7){
+        int x; bs >> x;
+    }
     if(gRev < 0x18){
         int count = 0;
         for(ObjDirItr<CharClip> it(this, true); it != 0; ++it){
             count++;
         }
         for(int i = 0; i < count; i++){
-            ObjPtr<CharClip, ObjectDir> clipPtr(this, 0);
+            ObjPtr<CharClip> clipPtr(this);
             bs >> clipPtr;
-            bs.ReadInt();
-            bs.ReadInt();
+            int x, y;
+            bs >> x;
+            bs >> y;
         }
     }
     if(gRev > 0xD){
         if(gRev < 0x18){
-            bs.ReadBool();
-            if(gRev > 0x12) bs.ReadBool();
+            bool b1, b2;
+            bs >> b1;
+            if(gRev > 0x12) bs >> b2;
         }
     }
     else {
@@ -122,9 +153,7 @@ void CharClipSet::PostLoad(BinStream& bs){
             Symbol s; bs >> s;
         }
     }
-    if(gRev == 5 || gRev == 6 || gRev == 7 || gRev == 8 || gRev == 9 || gRev == 0xA || gRev == 0xB ||
-        gRev == 0xC || gRev == 0xD || gRev == 0xE || gRev == 0xF || gRev == 0x10 || gRev == 0x11 ||
-        gRev == 0x12 || gRev == 0x13 || gRev == 0x14 || gRev == 0x15 || gRev == 0x16 || gRev == 0x17){
+    if(gRev >= 5 && gRev <= 0x17){
         int count; bs >> count;
         char buf[0x100];
         for(int i = 0; i < count; i++){
@@ -134,20 +163,27 @@ void CharClipSet::PostLoad(BinStream& bs){
         for(int i = 0; i < count; i++){
             bs.ReadString(buf, 0x100);
         }
-        bs.ReadBool();
+        bool b; bs >> b;
     }
-    if(gRev == 10 || gRev == 11 || gRev == 12 || gRev == 13 || gRev == 14 || gRev == 15 || gRev == 16 ||
-        gRev == 17 || gRev == 18 || gRev == 19 || gRev == 20 || gRev == 21 || gRev == 22 || gRev == 23){
+    if(gRev >= 10 && gRev <= 23){
         Symbol s;
         bs >> s;
-        bs.ReadInt();
+        int x; bs >> x;
     }
-    if(gRev == 0xB) bs.ReadBool();
+    if(gRev == 0xB){
+        bool b; bs >> b;
+    }
+#ifdef MILO_DEBUG
     bool bugged = false;
     if(gRev < 0xC){
         if(!Type().Null()) bugged = true;
     }
     if(bugged) MILO_WARN("%s may have a bug in the transition graph, need to resave from milo", PathName(this));
+#else
+    if(gRev < 0xC && !Type().Null()){
+        MILO_WARN("%s may have a bug in the transition graph, need to resave from milo", PathName(this));
+    }
+#endif
     if(gRev < 0xD) Handle(filter_clips_msg, false);
     if(gRev > 0x11){
         bs >> mCharFilePath;
@@ -173,28 +209,50 @@ BEGIN_COPYS(CharClipSet)
 END_COPYS
 
 void CharClipSet::LoadCharacter(){
+#ifdef MILO_DEBUG
     MILO_ASSERT(TheLoadMgr.EditMode(), 0x156);
+#endif
     delete mPreviewChar;
     ObjectDir* loadedobj = DirLoader::LoadObjects(mCharFilePath, 0, 0);
     ObjectDir* dummy = dynamic_cast<RndDir*>(loadedobj);
-    RndDir* newchar = dynamic_cast<RndDir*>(dummy);
-    mPreviewChar = newchar;
+    mPreviewChar = dynamic_cast<RndDir*>(dummy);
     Character* theChar = dynamic_cast<Character*>(dummy);
     if(mPreviewChar && !theChar){
-        ObjDirItr<Character> it(mPreviewChar, true);
-        if(it) mPreviewChar = it;
+        for(ObjDirItr<Character> it(mPreviewChar, true); it != nullptr; ++it){
+            mPreviewChar = it;
+            break;
+        }
     }
     if(mPreviewChar){
         mPreviewChar->Enter();
         mPreviewChar->SetName("preview_character", this);
-        Hmx::Object* foundobj = ObjectDir::Main()->FindObject("milo", false);
+        Hmx::Object* foundobj = ObjectDir::sMainDir->FindObject("milo", false);
         if(foundobj) foundobj->Handle(Message("update_objects"), true);
     }
 }
 
+DataNode CharClipSet::OnListClips(DataArray*){
+    std::list<CharClip*> clips;
+    for(ObjDirItr<CharClip> it(this, true); it != nullptr; ++it){
+        int myFilterFlags = mFilterFlags;
+        if(myFilterFlags == (myFilterFlags & it->Flags())){
+            clips.push_back(it);
+        }
+    }
+    clips.sort(AlphaSort());
+    DataArray* arr = new DataArray(clips.size() + 1);
+    arr->Node(0) = NULL_OBJ;
+    int idx = 1;
+    for(std::list<CharClip*>::iterator it = clips.begin(); it != clips.end(); ++it){
+        arr->Node(idx++) = *it;
+    }
+    DataNode ret(arr, kDataArray);
+    arr->Release();
+    return ret;
+}
+
 void CharClipSet::DrawShowing(){
-    if(!mPreviewChar) return;
-    mPreviewChar->DrawShowing();
+    if(mPreviewChar) mPreviewChar->DrawShowing();
 }
 
 float CharClipSet::StartFrame(){
@@ -207,11 +265,155 @@ float CharClipSet::EndFrame(){
     else return 0;
 }
 
+// matches in retail
+void CharClipSet::SetFrame(float frame, float blend){
+    if(mPreviewClip && mPreviewChar){
+        RndAnimatable::SetFrame(frame, 1);
+        CharBonesMeshes mesh1;
+        CharBonesMeshes mesh2;
+        mesh1.SetName("preview_anim", mPreviewChar);
+        mPreviewClip->StuffBones(mesh1);
+        mesh2.SetName("preview", this);
+        mPreviewClip->StuffBones(mesh2);
+        mesh2.Zero();
+        mesh1.Zero();
+        CharClip* relative = mPreviewClip->Relative();
+        if(relative){
+            CharClip* theClip = mStillClip ? mStillClip : mPreviewClip;
+            theClip->ScaleAdd(mesh1, 1, frame, 0);
+            mPreviewClip->RotateTo(mesh1, 1, frame);
+            theClip->ScaleAdd(mesh2, 1, frame, 0);
+            mPreviewClip->RotateTo(mesh2, 1, frame);
+        }
+        else {
+            mPreviewClip->ScaleAdd(mesh1, 1, frame, 0);
+            mPreviewClip->ScaleAdd(mesh2, 1, frame, 0);
+        }
+        mesh1.PoseMeshes();
+        mesh2.PoseMeshes();
+        if(mPreviewWalk){
+            RndTransformable* pelvisTrans = CharUtlFindBoneTrans("bone_pelvis", mesh1.Dir());
+            float* rotZPtr = (float*)mesh1.FindPtr("bone_facing.rotz");
+            Vector3* posPtr = (Vector3*)mesh1.FindPtr("bone_facing.pos");
+            if(pelvisTrans && posPtr && rotZPtr){
+                Transform& pelvisXfm = pelvisTrans->DirtyLocalXfm();
+                if(rotZPtr){
+                    RotateAboutZ(pelvisXfm.m, *rotZPtr, pelvisXfm.m);
+                    RotateAboutZ(pelvisXfm.v, *rotZPtr, pelvisXfm.v);
+                    Normalize(pelvisXfm.m, pelvisXfm.m);
+                }
+                pelvisXfm.v += *posPtr;
+            }
+            for(ObjDirItr<CharBone> it(mPreviewClip->GetResource(), false); it != nullptr; ++it){
+                if(it->BakeOutAsTopLevel()){
+                    String str(it->Name());
+                    if(str.find(".cb") != String::npos){
+                        str = str.substr(0, str.length() - 3);
+                    }
+                    RndTransformable* t = CharUtlFindBoneTrans(str.c_str(), mesh1.Dir());
+                    if(t && posPtr && rotZPtr){
+                        Transform& xfm = t->DirtyLocalXfm();
+                        if(rotZPtr){
+                            RotateAboutZ(xfm.m, *rotZPtr, xfm.m);
+                            RotateAboutZ(xfm.v, *rotZPtr, xfm.v);
+                            Normalize(xfm.m, xfm.m);
+                        }
+                        xfm.v += *posPtr;
+                    }                    
+                }
+            }
+        }
+
+        for(ObjDirItr<CharPollable> it(mPreviewChar, true); it != nullptr; ++it){
+            if(dynamic_cast<CharForeTwist*>(&*it) || dynamic_cast<CharUpperTwist*>(&*it) || dynamic_cast<CharNeckTwist*>(&*it)){
+                it->Poll();
+            }
+        }
+    }
+}
+
 void CharClipSet::SetBpm(int bpm){
     static Symbol sBpm("bpm");
     Hmx::Object* obj = ObjectDir::Main()->FindObject("milo", false);
     if(obj) obj->SetProperty(sBpm, bpm);
     mBpm = bpm;
+}
+
+int GroupDeleteThreshold(const char* cc){
+    for(int i = 0; i < 1; i++) {
+        if(strstr(cc, kHighThresholdGroups[i]) != nullptr) {
+            return 2;
+        }
+    }    
+    for(int i = 0; i < 5; i++) {
+        if(strstr(cc, kLowThresholdGroups[i]) != nullptr) {
+            return 1;
+        }
+    }    
+    return 2;
+}
+
+void StuffGroups(CharClip* clip, ObjectDir* dir, std::vector<CharClipGroup*>& groups){
+    std::vector<ObjRef*>::const_reverse_iterator it = clip->Refs().rbegin();
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = clip->Refs().rend();
+    for(; it != itEnd; ++it){
+        CharClipGroup* grp = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
+        if(grp && grp->Dir() == dir){
+            groups.push_back(grp);
+        }
+    }
+
+}
+
+void CharClipSet::SyncObjects(){
+#ifdef MILO_DEBUG
+    if(!DataGetMacro("HX_SYSTEST")){
+#endif
+        std::vector<CharClip*> clips;
+        for(ObjDirItr<CharClip> it(this, false); it != nullptr; ++it){
+            if(it->Flags()){
+                clips.push_back(it);
+            }
+        }
+        if(clips.size() != 0){
+            std::vector<CharClipGroup*> groups;
+            groups.reserve(100);
+#ifdef MILO_DEBUG
+            if(!DataGetMacro("OVERRIDE_RANDOM_ANIM_DELETION")){
+#endif
+                for(int i = 0; i < clips.size(); i++){
+                    std::swap(clips[i], clips[RandomInt(i, clips.size())]);
+                }
+#ifdef MILO_DEBUG
+            }
+#endif
+            for(int i = 0; i < clips.size(); i++){
+                CharClip* curClip = clips[i];
+                groups.clear();
+                StuffGroups(curClip, this, groups);
+                bool b1 = true;
+                if(groups.size() != 0){
+                    curClip->Flags();
+                    for(int j = 0; j < groups.size(); j++){
+                        int thresh = GroupDeleteThreshold(groups[j]->Name());
+                        if(groups[j]->NumFlagDuplicates(curClip, 0x7F060) < thresh){
+                            b1 = false;
+                            break;
+                        }
+                    }
+                    if(b1){
+                        for(int j = 0; j < groups.size(); j++){
+                            groups[j]->RemoveClip(curClip);
+                        }
+                        delete curClip;
+                    }
+                }
+            }
+        }
+#ifdef MILO_DEBUG
+    }
+#endif
+    ObjectDir::SyncObjects();
 }
 
 BEGIN_HANDLERS(CharClipSet)
@@ -223,3 +425,13 @@ BEGIN_HANDLERS(CharClipSet)
     HANDLE_SUPERCLASS(ObjectDir)
     HANDLE_CHECK(0x2F0)
 END_HANDLERS
+
+BEGIN_PROPSYNCS(CharClipSet)
+    SYNC_PROP(char_file_path, mCharFilePath)
+    SYNC_PROP(preview_clip, mPreviewClip)
+    SYNC_PROP(still_clip, mStillClip)
+    SYNC_PROP(filter_flags, mFilterFlags)
+    SYNC_PROP_SET(bpm, mBpm, SetBpm(_val.Int()))
+    SYNC_PROP(preview_walk, mPreviewWalk)
+    SYNC_SUPERCLASS(ObjectDir)
+END_PROPSYNCS
