@@ -19,6 +19,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharInterest)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharInterest)
+    }
 
     int CategoryFlags() const { return mCategoryFlags; }
     void SyncMaxViewAngle();

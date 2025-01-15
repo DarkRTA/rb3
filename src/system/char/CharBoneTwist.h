@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARBONETWIST_H
-#define CHAR_CHARBONETWIST_H
+#pragma once
 #include "char/CharPollable.h"
 #include "char/CharWeightable.h"
 #include "obj/ObjMacros.h"
@@ -7,6 +6,7 @@
 #include "rndobj/Trans.h"
 #include "utl/MemMgr.h"
 
+/** "Rotate a bone to point towards targets" */
 class CharBoneTwist : public CharPollable, public CharWeightable {
 public:
     CharBoneTwist();
@@ -27,8 +27,8 @@ public:
     DELETE_OVERLOAD
     static void Init() { REGISTER_OBJ_FACTORY(CharBoneTwist) }
 
-    ObjPtr<RndTransformable, ObjectDir> mBone; // 0x20
-    ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x2c
+    /** "Bone to move" */
+    ObjPtr<RndTransformable> mBone; // 0x20
+    /** "Targets to average to point bone at" */
+    ObjPtrList<RndTransformable> mTargets; // 0x2c
 };
-
-#endif

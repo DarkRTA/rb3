@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARBONESBLENDER_H
-#define CHAR_CHARBONESBLENDER_H
+#pragma once
 #include "char/CharBones.h"
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 
+/** "Blends itself into another CharBones, clearing self each frame" */
 class CharBonesBlender : public CharPollable, public CharBonesAlloc {
 public:
     CharBonesBlender();
@@ -26,9 +26,13 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharBonesBlender)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharBonesBlender)
+    }
     
-    ObjPtr<CharBonesObject, ObjectDir> mDest; // 0x5c
+    /** "CharBones to blend into" */
+    ObjPtr<CharBonesObject> mDest; // 0x5c
+    /** "What type of clip we can accommodate" */
     Symbol mClipType; // 0x68
 };
-
-#endif

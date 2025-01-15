@@ -34,6 +34,10 @@ public:
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharMirror)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharMirror)
+    }
 
     ObjPtr<CharServoBone, class ObjectDir> mServo; // 0x20
     ObjPtr<CharServoBone, class ObjectDir> mMirrorServo; // 0x2c

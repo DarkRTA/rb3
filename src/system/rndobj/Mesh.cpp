@@ -990,7 +990,7 @@ void RndMesh::SetKeepMeshData(bool keep){
 }
 
 void RndMesh::UpdateApproxLighting(){
-    if(sUpdateApproxLight && !TheRnd->UnkE4()){
+    if(sUpdateApproxLight && !TheRnd->DrawMode()){
         RndEnviron* curEnv = RndEnviron::sCurrent;
         if(curEnv){
             mUseCachedBoxLightColors = !mUseCachedBoxLightColors;

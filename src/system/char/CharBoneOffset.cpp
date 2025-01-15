@@ -4,7 +4,7 @@
 
 INIT_REVS(CharBoneOffset)
 
-CharBoneOffset::CharBoneOffset() : mDest(this, 0), mOffset(0.0f, 0.0f, 0.0f) {
+CharBoneOffset::CharBoneOffset() : mDest(this), mOffset(0.0f, 0.0f, 0.0f) {
     
 }
 
@@ -20,7 +20,7 @@ void CharBoneOffset::Poll(){
 
 void CharBoneOffset::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     change.push_back(mDest);
-    if(mDest && mDest->mParent) changedBy.push_back(mDest->mParent);
+    if(mDest && mDest->TransParent()) changedBy.push_back(mDest->TransParent());
 }
 
 void CharBoneOffset::Highlight(){}

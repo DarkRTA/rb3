@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARBONESSAMPLES_H
-#define CHAR_CHARBONESSAMPLES_H
+#pragma once
 #include "char/CharBones.h"
 
 class CharBonesSamples : public CharBones {
@@ -11,7 +10,7 @@ public:
 
     void Set(const std::vector<CharBones::Bone>&, int, CharBones::CompressionType);
     void Clone(const CharBonesSamples&);
-    int AllocateSize(){ return mTotalSize * mNumSamples; }
+    int AllocateSize();
     void RotateBy(CharBones&, int);
     void RotateTo(CharBones&, float, int, float);
     void ScaleAddSample(CharBones&, float, int, float);
@@ -25,11 +24,10 @@ public:
     int FracToSample(float*) const;
 
     static void SetVer(int);
+    int NumSamples() const { return mNumSamples; }
 
     short mNumSamples; // 0x50
     short mPreviewSample; // 0x52
     char* mRawData; // 0x54
     std::vector<float> mFrames; // 0x58
 };
-
-#endif

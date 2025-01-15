@@ -20,7 +20,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharPosConstraint)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharPosConstraint)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mSrc; // 0x8
     ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x14

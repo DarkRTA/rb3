@@ -59,6 +59,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharCollide)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharCollide)
+    }
 
     Shape mShape; // 0x90
     int mFlags; // 0x94

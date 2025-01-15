@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARACTER_H
-#define CHAR_CHARACTER_H
+#pragma once
 #include "rndobj/Dir.h"
 #include "obj/ObjVector.h"
 #include "rndobj/Group.h"
 #include "math/Sphere.h"
+#include "rndobj/Trans.h"
 
 class CharacterTest; // forward dec
 class Waypoint;
@@ -15,12 +15,17 @@ class CharServoBone;
 
 class ShadowBone : public RndTransformable {
 public:
-    ShadowBone() : mParent(this, 0) {}
+    ShadowBone() : mParent(this) {}
     virtual ~ShadowBone(){}
 
-    ObjPtr<RndTransformable, ObjectDir> mParent;
+    RndTransformable* Parent() const { return mParent; }
+    void SetParent(RndTransformable* parent){ mParent = parent; }
+
+    ObjPtr<RndTransformable> mParent; // 0x90
 };
 
+/** "Base class for Character objects. Contains Geometry,
+ *  Outfit Loaders, and LOD + Sphere concepts." */
 class Character : public RndDir {
 public:
 
@@ -47,12 +52,16 @@ public:
         ~Lod(){}
 
         RndGroup* Group(){ return mGroup; }
+        RndGroup* TransGroup(){ return mTransGroup; }
         float ScreenSize() const { return mScreenSize; }
         void SetScreenSize(float size){ mScreenSize = size; }
 
+        /** "when the unit sphere centered on the bounding sphere is smaller than this screen height fraction, it will draw the next lod". Ranges from 0 to 10000. */
         float mScreenSize; // 0x0
-        ObjPtr<RndGroup, ObjectDir> mGroup; // 0x4
-        ObjPtr<RndGroup, ObjectDir> mTransGroup; // 0x10
+        /** "group to show at this LOD.  Drawables not in any lod group will be drawn at every LOD" */
+        ObjPtr<RndGroup> mGroup; // 0x4
+        /** "translucency group to show at this LOD.  Drawables in it are guaranteed to be drawn last." */
+        ObjPtr<RndGroup> mTransGroup; // 0x10
     };
 
     Character();
@@ -78,6 +87,7 @@ public:
     virtual void Exit();
     virtual void Teleport(Waypoint*);
     virtual void PreSave(BinStream&);
+    /** "Calculates a new bounding sphere" */
     virtual void CalcBoundingSphere();
     virtual float ComputeScreenSize(RndCam*);
     virtual void DrawLodOrShadow(int, DrawMode);
@@ -94,14 +104,17 @@ public:
     void CopyBoundingSphere(Character*);
     void RepointSphereBase(ObjectDir*);
     void FindInterestObjects(ObjectDir*);
-    void SetFocusInterest(Symbol, int);
+    bool SetFocusInterest(Symbol, int);
     void EnableBlinks(bool, bool);
     void SetDebugDrawInterestObjects(bool);
     void SetSphereBase(RndTransformable*);
     void SetShadow(RndGroup*);
     CharServoBone* BoneServo();
-    void SetInterestObjects(const ObjPtrList<CharInterest, ObjectDir>&, ObjectDir*);
+    void SetInterestObjects(const ObjPtrList<CharInterest>&, ObjectDir*);
     void ForceBlink();
+    void DrawLod(int);
+    void DrawShadow(const Transform&, const Plane&);
+
     void SetDrawMode(DrawMode m){ mDrawMode = m; }
     bool Teleported() const { return mTeleported; }
     PollState GetPollState() const { return mPollState; }
@@ -126,28 +139,32 @@ public:
     ObjVector<Lod> mLods; // 0x18c
     int mLastLod; // 0x198
     int mMinLod; // 0x19c
-    ObjPtr<RndGroup, ObjectDir> mShadow; // 0x1a0
-    ObjPtr<RndGroup, ObjectDir> mTransGroup; // 0x1ac
+    /** "Group containing shadow geometry" */
+    ObjPtr<RndGroup> mShadow; // 0x1a0
+    /** "translucency group to show independent of lod.  Drawables in it are guaranteed to be drawn last." */
+    ObjPtr<RndGroup> mTransGroup; // 0x1ac
     CharDriver* mDriver; // 0x1b8
+    /** "Whether this character should be self-shadowed." */
     bool mSelfShadow; // 0x1bc
     bool mSpotCutout; // 0x1bd
     bool mFloorShadow; // 0x1be
-    ObjOwnerPtr<RndTransformable, ObjectDir> mSphereBase; // 0x1c0
+    /** "Base for bounding sphere, such as bone_pelvis.mesh" */
+    ObjOwnerPtr<RndTransformable> mSphereBase; // 0x1c0
+    /** "bounding sphere for the character, fixed" */
     Sphere mBounding; // 0x1cc
     std::vector<ShadowBone*> mShadowBones; // 0x1dc
     PollState mPollState; // 0x1e4
+    /** "Test Character by animating it" */
     CharacterTest* mTest; // 0x1e8
+    /** "if true, is frozen in place, no polling happens" */
     bool mFrozen; // 0x1ec
     DrawMode mDrawMode; // 0x1f0
     bool mTeleported; // 0x1f4
+    /** "select an interest object here and select 'force_interest' below to force the character to look at it." */
     Symbol mInterestToForce; // 0x1f8
-    ObjPtr<RndEnviron, ObjectDir> unk1fc; // 0x1fc
-    int unk208; // 0x208
+    ObjPtr<RndEnviron> unk1fc; // 0x1fc
+    Vector3* unk208; // 0x208
 #ifdef MILO_DEBUG
     bool mDebugDrawInterestObjects; // 0x20c
 #endif
 };
-
-void CharacterInit();
-
-#endif

@@ -46,6 +46,11 @@ public:
     RndTex* TargetTex(){ return mTargetTex; }
     void SetZRange(float f1, float f2){ mZRange.Set(f1, f2); }
     const Transform& LocalProjectXfm() const { return mLocalProjectXfm; }
+    float CalcScreenHeight(const Sphere& s){
+        float r = s.GetRadius();
+        float dist = CalcDistTo(s.center);
+    }
+    float CalcDistTo(const Vector3&);
     
     bool CompareSphereToWorld(const Sphere& s) const {
         return s > mWorldFrustum;

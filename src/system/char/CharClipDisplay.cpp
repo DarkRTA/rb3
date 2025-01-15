@@ -11,7 +11,7 @@ void CharClipDisplay::Init(ObjectDir* dir){
 }
 
 MsgSource* CharClipDisplay::FindSource(Hmx::Object* o){
-    for(ObjDirItr<MsgSource> it(ObjectDir::Main(), false); it != 0; ++it){
+    for(ObjDirItr<MsgSource> it(ObjectDir::Main(), false); it != nullptr; ++it){
         for(std::list<MsgSource::Sink>::iterator lit = it->mSinks.begin(); lit != it->mSinks.end(); ++lit){
             if((*lit).obj == o) return it;
         }

@@ -273,6 +273,72 @@ public:
         }
     }
 
+    // the ref command could very well be a T instead of a float, but I've only seen this method called for Keys<float, float>
+    bool Linear(float f1, float& fref) const {
+        if(size() == 0) return false;
+        else {
+            if(size() == 1) fref = front().value;
+            else {
+                int numKeys = size();
+                int idx = Clamp<int>(0, numKeys - 2, KeyLessEq(f1));
+                const Key<T1>& keyNow = (*this)[idx];
+                const Key<T1>& keyNext = (*this)[idx + 1];
+                Interp(keyNow.value, keyNext.value, (f1 - keyNow.frame) / (keyNext.frame - keyNow.frame), fref);
+            }
+            return true;
+        }
+    }
+
+    // ditto
+    bool ReverseLinear(const float& fconst, float& fref) const {
+        if(size() == 0) return false;
+        else {
+            if(size() == 1) fref = front().frame;
+            else {
+                int numKeys = size();
+                int idx = Clamp<int>(0, numKeys - 2, ReverseKeyLessEq(fconst));
+                const Key<T1>& keyNow = (*this)[idx];
+                const Key<T1>& keyNext = (*this)[idx + 1];
+                Interp(keyNow.frame, keyNext.frame, (fconst - keyNow.value) / (keyNext.value - keyNow.value), fref);
+            }
+            return true;
+        }
+    }
+
+    // TODO: finish filling this out
+    int ReverseKeyLessEq(const float& fref) const {
+        if(empty() || fref < front().value) return -1;
+        else {
+
+        }
+//           iVar1 = stlpmtx_std::vector<>::empty();
+//   if ((iVar1 != 0) || (*param_1 < **this)) {
+//     iVar1 = -1;
+//   }
+//   else {
+//     iVar2 = stlpmtx_std::vector<>::size(this);
+//     iVar1 = 0;
+//     while (iVar1 + 1 < iVar2) {
+//       iVar6 = iVar1 + iVar2 >> 1;
+//       pfVar4 = DataArray::Node(this,iVar6);
+//       if (*param_1 < *pfVar4) {
+//         iVar2 = iVar6;
+//       }
+//       if (*pfVar4 <= *param_1) {
+//         iVar1 = iVar6;
+//       }
+//     }
+//     for (; uVar3 = stlpmtx_std::vector<>::size(this), iVar1 + 1U < uVar3; iVar1 = iVar1 + 1) {
+//       pfVar4 = DataArray::Node(this,iVar1);
+//       pfVar5 = DataArray::Node(this,iVar1 + 1);
+//       if (*pfVar5 != *pfVar4) {
+//         return iVar1;
+//       }
+//     }
+//   }
+//   return iVar1;
+    }
+
     void KeysLessEq(float f, int& iref1, int& iref2) const {
         iref2 = -1;
         iref1 = -1;

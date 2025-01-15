@@ -1,9 +1,11 @@
 #ifndef CHAR_CHAREYES_H
 #define CHAR_CHAREYES_H
+#include "obj/ObjPtr_p.h"
 #include "rndobj/Highlightable.h"
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "char/CharEyeDartRuleset.h"
+#include "char/CharInterest.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Overlay.h"
 
@@ -68,13 +70,17 @@ public:
     bool SetFocusInterest(CharInterest*, int);
     void ToggleInterestsDebugOverlay();
     CharInterest* GetCurrentInterest();
+    CharInterest* GetInterest(int idx){
+        return idx >= mInterests.size() ? ObjOwnerPtr<CharInterest>(nullptr) : mInterests[idx].mInterest;
+    }
     void EnforceMinimumTargetDistance(const Vector3&, const Vector3&, Vector3&);
     void UpdateOverlay();
     bool EitherEyeClamped();
+    int NumInterests() const { return mInterests.size(); }
 
     void SetInterestFilterFlags(int i){
         mInterestFilterFlags = i;
-        unk150 = true;
+        unk15c = true;
     }
 
     void ClearInterestFilterFlags(){
@@ -94,6 +100,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharEyes)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharEyes)
+    }
 
     ObjVector<EyeDesc> mEyes; // 0x28
     ObjVector<CharInterestState> mInterests; // 0x34

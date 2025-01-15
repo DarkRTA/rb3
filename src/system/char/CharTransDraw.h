@@ -19,8 +19,13 @@ public:
 
     void SetDrawModes(Character::DrawMode);
 
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
     DECLARE_REVS;
+    NEW_OBJ(CharTransDraw)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharTransDraw)
+    }
 
     ObjPtrList<Character, ObjectDir> mChars;
 };

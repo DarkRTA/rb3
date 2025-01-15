@@ -285,6 +285,24 @@ public:
         }
     }
 
+    typedef bool SortFunc(T1*, T1*);
+    bool sort(SortFunc* func){
+        if(mNodes && mNodes->next){
+            Node* last = mNodes->prev;
+            for(Node* n = last->prev; n != last; n = n->prev){
+                for(Node* x = n; x != last; x = x->next){
+                    Node* nextX = x->next;
+                    if(func(nextX->obj, x->obj)){
+                        T1* tmp = x->obj;
+                        x->obj = nextX->obj;
+                        nextX->obj = tmp;
+                    }
+                    else break;
+                }
+            }
+        }
+    }
+
     // unlink__36ObjPtrList<11RndDrawable,9ObjectDir>F P Q2 36ObjPtrList<11RndDrawable,9ObjectDir> 4Node
     // fn_80389E34 in RB3 retail
     Node* unlink(Node* n){

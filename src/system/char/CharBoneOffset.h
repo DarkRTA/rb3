@@ -1,11 +1,11 @@
-#ifndef CHAR_CHARBONEOFFSET_H
-#define CHAR_CHARBONEOFFSET_H
+#pragma once
 #include "char/CharPollable.h"
 #include "rndobj/Highlightable.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 #include "math/Vec.h"
 
+/** "Offsets a dest bone." */
 class CharBoneOffset : public CharPollable, public RndHighlightable {
 public:
     CharBoneOffset();
@@ -31,8 +31,8 @@ public:
         REGISTER_OBJ_FACTORY(CharBoneOffset)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mDest; // 0x10
+    /** "The bone to offset" */
+    ObjPtr<RndTransformable> mDest; // 0x10
+    /** "the offset" */
     Vector3 mOffset; // 0x1c
 };
-
-#endif

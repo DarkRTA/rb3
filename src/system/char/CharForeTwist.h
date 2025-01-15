@@ -23,6 +23,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharForeTwist)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharForeTwist)
+    }
     
     ObjPtr<RndTransformable, ObjectDir> mHand; // 0x10
     ObjPtr<RndTransformable, ObjectDir> mTwist2; // 0x1c

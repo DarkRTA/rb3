@@ -23,7 +23,12 @@ public:
     virtual void SetName(const char*, class ObjectDir*);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharSleeve)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharSleeve)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mSleeve; // 0x10
     ObjPtr<RndTransformable, ObjectDir> mTopSleeve; // 0x1c

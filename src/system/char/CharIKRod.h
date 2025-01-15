@@ -24,6 +24,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharIKRod)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKRod)
+    }
 
     ObjPtr<RndTransformable, ObjectDir> mLeftEnd; // 0x8
     ObjPtr<RndTransformable, ObjectDir> mRightEnd; // 0x14

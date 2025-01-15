@@ -6,6 +6,7 @@
 #include "rndobj/Trans.h"
 #include "rndobj/Highlightable.h"
 #include "char/Character.h"
+#include "utl/MemMgr.h"
 
 class CharIKMidi : public RndHighlightable, public CharPollable {
 public:
@@ -26,7 +27,12 @@ public:
     void NewSpot(RndTransformable*, float);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharIKMidi)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKMidi)
+    }
     
     ObjPtr<RndTransformable, ObjectDir> mBone; // 0x10
     ObjPtr<RndTransformable, ObjectDir> mCurSpot; // 0x1c

@@ -1,10 +1,10 @@
-#ifndef CHAR_CHARCLIPGROUP_H
-#define CHAR_CHARCLIPGROUP_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjVector.h"
 #include "obj/ObjPtr_p.h"
 #include "char/CharClip.h"
 
+/** "A related group of animations.  Gives you the lru one.  Usually no extension." */
 class CharClipGroup : public virtual Hmx::Object {
 public:
     CharClipGroup();
@@ -29,14 +29,23 @@ public:
     void Randomize();
     void RandomizeIndex();
     void Sort();
+    void MakeMRU(int);
+    void MakeMRU(CharClip*);
+    CharClip* FindClip(const char*) const;
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharClipGroup)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharClipGroup)
+    }
 
-    ObjVector<ObjOwnerPtr<CharClip, ObjectDir> > mClips; // 0x8
+    /** "LRU list of clips belonging to this group" */
+    ObjVector<ObjOwnerPtr<CharClip> > mClips; // 0x8
     int mWhich; // 0x14
     int mFlags; // 0x18
-};
 
-#endif
+    // total size: "Total size in bytes of clips"
+    // total seconds: "Total length in seconds of clips"
+};

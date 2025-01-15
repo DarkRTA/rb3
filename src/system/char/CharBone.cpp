@@ -6,7 +6,8 @@
 
 INIT_REVS(CharBone);
 
-CharBone::CharBone() : mPositionContext(0), mScaleContext(0), mRotation(CharBones::TYPE_END), mRotationContext(0), mTarget(this, 0), mWeights(), mTrans(this, 0), mBakeOutAsTopLevel(0) {
+CharBone::CharBone() : mPositionContext(0), mScaleContext(0), mRotation(CharBones::TYPE_END), mRotationContext(0),
+    mTarget(this), mWeights(), mTrans(this), mBakeOutAsTopLevel(0) {
 
 }
 
@@ -125,7 +126,7 @@ DataNode CharBone::OnGetContextFlags(DataArray* da){
     else {
         MILO_WARN("CharBone: No CharBoneDir for context flags.");
         DataArrayPtr ptr;
-        return DataNode(ptr);
+        return ptr;
     }
 }
 

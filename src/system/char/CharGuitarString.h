@@ -1,7 +1,9 @@
 #ifndef CHAR_CHARGUITARSTRING_H
 #define CHAR_CHARGUITARSTRING_H
 #include "char/CharPollable.h"
+#include "obj/ObjMacros.h"
 #include "obj/ObjPtr_p.h"
+#include "utl/MemMgr.h"
 #include <list>
 
 class RndTransformable;
@@ -20,10 +22,13 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
     
+    DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
-
-    static unsigned short gRev;
-    static unsigned short gAltRev;
+    NEW_OBJ(CharGuitarString)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharGuitarString)
+    }
 
     bool mOpen; // 0x8
     ObjPtr<RndTransformable, class ObjectDir> mNut; // 0xc

@@ -1,4 +1,5 @@
 #include "char/CharBonesSamples.h"
+#include "decomp.h"
 #include "utl/Symbols.h"
 
 int gVer;
@@ -29,6 +30,11 @@ void CharBonesSamples::Clone(const CharBonesSamples& samp){
     memcpy(mRawData, samp.mRawData, AllocateSize());
     mFrames = samp.mFrames;
 }
+
+#pragma push
+#pragma force_active on
+inline int CharBonesSamples::AllocateSize(){ return mTotalSize * mNumSamples; }
+#pragma pop
 
 void CharBonesSamples::RotateBy(CharBones& bones, int i){
     mStart = &mRawData[mTotalSize * i];

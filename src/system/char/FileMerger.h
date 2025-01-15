@@ -91,6 +91,10 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(FileMerger)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(FileMerger)
+    }
 
     ObjVector<Merger VECTOR_SIZE_LARGE> mMergers; // 0x30
     bool mAsyncLoad; // 0x40

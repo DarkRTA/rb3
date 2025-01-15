@@ -31,6 +31,11 @@ public:
         if(mOverrideOptions) return mOverrideOptions;
         else return ClipDir();
     }
+    
+    NEW_OBJ(CharLipSyncDriver)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharLipSyncDriver)
+    }
 
     ObjPtr<CharLipSync, ObjectDir> mLipSync; // 0x28
     ObjPtr<ObjectDir, ObjectDir> mClips; // 0x34

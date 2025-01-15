@@ -24,6 +24,10 @@ public:
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharIKScale)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharIKScale)
+    }
     
     ObjPtr<RndTransformable, ObjectDir> mDest; // 0x20
     float mScale; // 0x2c

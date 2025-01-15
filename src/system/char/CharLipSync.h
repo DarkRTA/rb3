@@ -39,7 +39,12 @@ public:
     virtual void Load(BinStream&);
 
     DECLARE_REVS;
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharLipSync)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharLipSync)
+    }
 
     ObjPtr<RndPropAnim, ObjectDir> mPropAnim;
     std::vector<String> mVisemes;

@@ -44,7 +44,7 @@ void Screenshot::Sync(){
 }
 
 void Screenshot::DrawShowing() {
-    if (!TheRnd->UnkE4() && LOADMGR_EDITMODE && mMat) {
+    if (!TheRnd->DrawMode() && LOADMGR_EDITMODE && mMat) {
         TheRnd->DrawRect(Hmx::Rect(0, 0, TheRnd->Width(), TheRnd->Height()), Hmx::Color(0, 0, 0), mMat, 0, 0);
     }
 }

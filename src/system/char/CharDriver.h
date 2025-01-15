@@ -55,10 +55,15 @@ public:
     void SetStarved(Symbol);
     Symbol ClipType() const { return mClipType; }
     ObjectDir* ClipDir() const { return mClips; }
-    float SetBlendWidth(float w){ mBlendWidth = w; }
+    void SetBlendWidth(float w){ mBlendWidth = w; }
+    CharBonesObject* GetBones() const { return mBones; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(CharDriver)
+    static void Init(){
+        REGISTER_OBJ_FACTORY(CharDriver)
+    }
 
     ObjPtr<CharBonesObject, ObjectDir> mBones; // 0x28
     ObjPtr<ObjectDir, ObjectDir> mClips; // 0x34
