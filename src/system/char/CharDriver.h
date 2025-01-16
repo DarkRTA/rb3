@@ -65,6 +65,16 @@ public:
     void SetBlendWidth(float w){ mBlendWidth = w; }
     CharBonesObject* GetBones() const { return mBones; }
 
+    DataNode OnPlay(const DataArray*);
+    DataNode OnPlayGroup(const DataArray*);
+    DataNode OnPlayGroupFlags(const DataArray*);
+    DataNode OnSetFirstBeatOffset(DataArray*);
+    DataNode OnGetFirstPlayingFlags(const DataArray*);
+    DataNode OnGetFirstFlags(const DataArray*);
+    DataNode OnPrint(const DataArray*);
+    DataNode OnSetDefaultClip(DataArray*);
+    DataNode OnGetClipOrGroupList(DataArray*);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;

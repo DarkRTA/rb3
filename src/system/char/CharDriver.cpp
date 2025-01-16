@@ -15,8 +15,14 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/Task.h"
+#include "obj/Utl.h"
 #include "os/Debug.h"
 #include "rndobj/Highlightable.h"
+#include "rndobj/Poll.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 INIT_REVS(CharDriver)
 
@@ -337,16 +343,19 @@ CharClipDriver* CharDriver::FirstPlaying(){
     return d;
 }
 
-CharClip* CharDriver::FirstClip(){
+#pragma push
+#pragma force_active on
+inline CharClip* CharDriver::FirstClip(){
     if(mFirst) return mFirst->GetClip();
     else return nullptr;
 }
 
-CharClip* CharDriver::FirstPlayingClip(){
+inline CharClip* CharDriver::FirstPlayingClip(){
     CharClipDriver* d = FirstPlaying();
     if(d) return d->GetClip();
     else return nullptr;
 }
+#pragma pop
 
 void CharDriver::Offset(float f1, float f2){
     if(mFirst) mFirst->mBeat += RandomFloat(f1, f2);
@@ -447,3 +456,121 @@ BEGIN_COPYS(CharDriver)
         SyncInternalBones();
     END_COPYING_MEMBERS
 END_COPYS
+
+BEGIN_HANDLERS(CharDriver)
+    HANDLE(play, OnPlay)
+    HANDLE(play_group, OnPlayGroup)
+    HANDLE(play_group_flags, OnPlayGroupFlags)
+    HANDLE_ACTION(offset, Offset(_msg->Float(2), _msg->Float(_msg->Size() - 1)))
+    HANDLE(get_first_playing_flags, OnGetFirstPlayingFlags)
+    HANDLE(get_first_flags, OnGetFirstFlags)
+    HANDLE_EXPR(first_clip, FirstClip())
+    HANDLE_ACTION(set_starved, SetStarved(_msg->Sym(2)))
+    HANDLE_ACTION(set_beat_scale, SetBeatScale(_msg->Float(2), true))
+    HANDLE_ACTION(transfer, Transfer(*_msg->Obj<CharDriver>(2)))
+    HANDLE(print, OnPrint)
+    HANDLE(set_default_clip, OnSetDefaultClip)
+    HANDLE(set_first_beat_offset, OnSetFirstBeatOffset)
+    HANDLE_ACTION(clear, Clear())
+    HANDLE(get_clip_or_group_list, OnGetClipOrGroupList)
+    HANDLE_SUPERCLASS(RndPollable)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x378)
+END_HANDLERS
+
+DataNode CharDriver::OnPlay(const DataArray* msg){
+    int i2 = msg->Size() > 3 ? msg->Int(3) : 4;
+    MILO_ASSERT(msg->Size()<=4, 0x381);
+    return Play(msg->Node(2), i2, -1, kHugeFloat, 0) != nullptr;
+}
+
+DataNode CharDriver::OnPlayGroup(const DataArray* msg){
+    MILO_ASSERT(msg->Size() <= 4, 0x387);
+    int i2 = msg->Size() > 3 ? msg->Int(3) : 4;
+    return PlayGroup(msg->Str(2), i2, -1, kHugeFloat, 0) != nullptr;
+}
+
+DataNode CharDriver::OnPlayGroupFlags(const DataArray* msg){
+    MILO_ASSERT(msg->Size() <= 5, 0x392);
+    CharClipGroup* group = mClips->Find<CharClipGroup>(msg->Str(2), false);
+    if(!group){
+        MILO_WARN("%s could not find group %s", PathName(this), msg->Str(2));
+        return 0;
+    }
+    else {
+        int clipIdx = msg->Int(3);
+        int i2 = msg->Size() > 4 ? msg->Int(4) : 4;
+        return Play(group->GetClip(clipIdx), i2, -1, kHugeFloat, 0) != nullptr;
+    }
+}
+
+DataNode CharDriver::OnSetFirstBeatOffset(DataArray* msg){
+    if(mFirst){
+        mFirst->SetBeatOffset(msg->Float(2), (TaskUnits)msg->Int(3), msg->Sym(4));
+    }
+    return 0;
+}
+
+DataNode CharDriver::OnGetFirstPlayingFlags(const DataArray*){
+    CharClip* clip = FirstPlayingClip();
+    return clip ? clip->Flags() : 0;
+}
+
+DataNode CharDriver::OnGetFirstFlags(const DataArray*){
+    CharClip* clip = FirstPlayingClip();
+    return clip ? clip->Flags() : 0;
+}
+
+DataNode CharDriver::OnPrint(const DataArray*){
+    MILO_LOG("%s\n", PathName(this));
+    for(CharClipDriver* it = mFirst; it != nullptr; it = it->Next()){
+        MILO_LOG("   clip %s blend %.3f\n", it->GetClip()->Name(), it->mBlendFrac);
+    }
+    return 0;
+}
+
+DataNode CharDriver::OnSetDefaultClip(DataArray* arr){
+    if(mClips){
+        mDefaultClip = FindClip(arr->Str(2), true);
+    }
+    return mDefaultClip.Ptr();
+}
+
+DataNode CharDriver::OnGetClipOrGroupList(DataArray*){
+    Symbol clipName = "CharClip";
+    Symbol clipGrpName = "CharClipGroup";
+    std::list<Hmx::Object*> objects;
+    if(mClips){
+        for(ObjDirItr<Hmx::Object> it(mClips, true); it != nullptr; ++it){
+            if(IsASubclass(it->ClassName(), clipName) || IsASubclass(it->ClassName(), clipGrpName)){
+                objects.push_back(it);
+            }
+        }
+    }
+    DataArrayPtr ptr;
+    ptr->Resize(objects.size() + 1);
+    int idx = 0;
+    ptr->Node(idx++) = NULL_OBJ;
+    for(std::list<Hmx::Object*>::iterator it = objects.begin(); it != objects.end(); ++it){
+        ptr->Node(idx++) = *it;
+    }
+    ptr->SortNodes();
+    return ptr;
+}
+
+BEGIN_PROPSYNCS(CharDriver)
+    SYNC_PROP(bones, mBones)
+    SYNC_PROP_SET(clips, mClips, SetClips(_val.Obj<ObjectDir>()))
+    SYNC_PROP_SET(clip_type, mClipType, SetClipType(_val.Sym()))
+    SYNC_PROP(realign, mRealign)
+    SYNC_PROP_SET(apply, mApply, SetApply((ApplyMode)_val.Int()))
+    SYNC_PROP_SET(first_playing_clip, FirstPlayingClip(), )
+    SYNC_PROP(beat_scale, mBeatScale)
+    SYNC_PROP(blend_width, mBlendWidth)
+    SYNC_PROP(default_clip_or_group, mDefaultClip)
+    SYNC_PROP(default_play_starved, mDefaultPlayStarved)
+    SYNC_PROP(test_clip, mTestClip)
+    SYNC_PROP(play_multiple_clips, mPlayMultipleClips)
+    SYNC_PROP(display_zoom, CharClipDisplay::sZoom)
+    SYNC_SUPERCLASS(CharWeightable)
+END_PROPSYNCS

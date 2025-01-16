@@ -1,7 +1,7 @@
-#ifndef CHAR_CHARDRIVERMIDI_H
-#define CHAR_CHARDRIVERMIDI_H
+#pragma once
 #include "char/CharDriver.h"
 
+/** "Uses an event list made from a parser to player animation on self." */
 class CharDriverMidi : public CharDriver {
 public:
     CharDriverMidi();
@@ -33,7 +33,6 @@ public:
     Symbol mParser; // 0x8c
     Symbol mFlagParser; // 0x90
     int mClipFlags; // 0x94
+    /** "Blend override- set between 0-1 to change clip blending strategy" */
     float mBlendOverridePct; // 0x98
 };
-
-#endif
