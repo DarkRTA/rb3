@@ -447,20 +447,20 @@ template <class T1> BinStream& operator>>(BinStream& bs, ObjPtrList<T1, class Ob
 #include "obj/Dir.h"
 
 template <class T1, class T2>
-inline bool ObjPtr<T1, T2>::Load(BinStream& bs, bool b, class ObjectDir* dir){
+inline bool ObjPtr<T1, T2>::Load(BinStream& bs, bool warn, class ObjectDir* dir){
     char buf[0x80];
     bs.ReadString(buf, 0x80);
     if(!dir && mOwner) dir = mOwner->Dir();
     if(mOwner && dir){
         *this = dynamic_cast<T1*>(dir->FindObject(buf, false));
-        if(mPtr == 0 && buf[0] != '\0' && b){
+        if(mPtr == 0 && buf[0] != '\0' && warn){
             MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
         }
         return false;
     }
     else {
         *this = 0;
-        if(buf[0] != '\0') MILO_WARN("No dir to find %s", buf);
+        if(buf[0] != '\0' && warn) MILO_WARN("No dir to find %s", buf);
     }
     return true;
 }

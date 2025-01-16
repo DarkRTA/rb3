@@ -4,10 +4,15 @@
 #include "char/CharClipDriver.h"
 #include "char/CharClipGroup.h"
 #include "char/Char.h"
+#include "decomp.h"
+#include "math/Utl.h"
+#include "obj/Data.h"
 #include "os/Debug.h"
 
-CharDriver::CharDriver() : mBones(this, 0), mClips(this, 0), mFirst(0), mTestClip(this, 0), mDefaultClip(this, 0),
-    mDefaultPlayStarved(0), mStarvedHandler(), mLastNode(0), mOldBeat(1e+30f), mRealign(0), mBeatScale(1.0f), mBlendWidth(1.0f),
+DECOMP_FORCEACTIVE(CharDriver, "%s %s, beat: %.2f")
+
+CharDriver::CharDriver() : mBones(this), mClips(this), mFirst(0), mTestClip(this), mDefaultClip(this),
+    mDefaultPlayStarved(0), mStarvedHandler(), mLastNode(0), mOldBeat(kHugeFloat), mRealign(0), mBeatScale(1.0f), mBlendWidth(1.0f),
     mClipType(), mApply(kApplyBlend), mInternalBones(0), mPlayMultipleClips(0) {
 
 }
@@ -18,24 +23,31 @@ CharDriver::~CharDriver(){
 }
 
 void CharDriver::Highlight(){
+#ifdef MILO_DEBUG
     if(gCharHighlightY == -1.0f) CharDeferHighlight(this);
     else gCharHighlightY = Display(gCharHighlightY);
+#endif
+}
+
+float CharDriver::Display(float f){
+    MakeString("%d");
+    MakeString("debug_draw");
 }
 
 void CharDriver::Enter(){
     Clear();
-    mLastNode = DataNode(0);
-    mOldBeat = 1e+30f;
+    mLastNode = 0;
+    mOldBeat = kHugeFloat;
     mBeatScale = 1.0f;
     RndPollable::Enter();
-    if(mDefaultClip) Play(DataNode(mDefaultClip), 1, -1.0f, 1e+30f, 0.0f);
+    if(mDefaultClip) Play(DataNode(mDefaultClip), 1, -1.0f, kHugeFloat, 0.0f);
 }
 
 void CharDriver::Exit(){ RndPollable::Exit(); }
 
 void CharDriver::Clear(){
     if(mFirst) mFirst->DeleteStack();
-    mFirst = 0;
+    mFirst = nullptr;
 }
 
 void CharDriver::Transfer(const CharDriver& driver){
@@ -50,7 +62,7 @@ void CharDriver::Transfer(const CharDriver& driver){
 
 void CharDriver::SetClips(ObjectDir* dir){
     if(dir != mClips){
-        mLastNode = DataNode((Hmx::Object*)0);
+        mLastNode = NULL_OBJ;
         mClips = dir;
     }
 }
@@ -75,10 +87,9 @@ void CharDriver::SetClipType(Symbol ty){
 
 void CharDriver::SyncInternalBones(){
     Clear();
-    mLastNode = DataNode((Hmx::Object*)0);
+    mLastNode = NULL_OBJ;
     if(mInternalBones && mClipType.Null()){
-        delete mInternalBones;
-        mInternalBones = 0;
+        RELEASE(mInternalBones);
     }
     else if(!mInternalBones && mApply == kApplyBlendWeights && !mClipType.Null()){
         mInternalBones = new CharBonesAlloc();
@@ -91,23 +102,62 @@ void CharDriver::SyncInternalBones(){
 
 bool CharDriver::Starved(){
     if(mFirst){
-        if(mFirst->mNext) return false;
+        if(mFirst->Next()) return false;
         if((mFirst->mPlayFlags & 0xF0) == 0x10) return false;
     }
     return true;
 }
 
+CharClip* MyFindClip(const DataNode& n, ObjectDir* dir){
+    DataNode& node = n.Evaluate();
+    Hmx::Object* obj;
+    if(node.Type() == kDataObject){
+        obj = node.mValue.object;
+    }
+    else {
+        MILO_ASSERT(node.Type() == kDataSymbol || node.Type() == kDataString, 0x12A);
+        obj = dir->FindObject(node.LiteralStr(), false);
+    }
+    if(!obj) return nullptr;
+    else {
+        CharClip* clip = dynamic_cast<CharClip*>(obj);
+        if(clip) return clip;
+        else {
+            CharClipGroup* group = dynamic_cast<CharClipGroup*>(obj);
+            if(!group){
+                MILO_NOTIFY_ONCE("%s: MyFindClip %s bad object type, not CharClip or CharClipGroup", PathName(dir), PathName(obj));
+                clip = nullptr;
+            }
+            else clip = group->GetClip();
+        }
+        return clip;
+    }
+}
+
+CharClip* CharDriver::FindClip(const DataNode& node, bool warn){
+    if(!mClips){
+        MILO_FAIL("%s: trying to FindClip with no mClips", PathName(this));
+    }
+    CharClip* clip = MyFindClip(node, mClips);
+    if(!clip && warn){
+        String str;
+        str << node;
+        MILO_NOTIFY_ONCE("%s: missing \"%s\" in %s", PathName(this), str, mClips->Name());
+    }
+    return clip;
+}
+
 CharClipDriver* CharDriver::Play(CharClip* clip, int i, float f1, float f2, float f3){
     if(!clip){
         MILO_NOTIFY_ONCE("%s: Could not find clip to play.", PathName(this));
-        return 0;
+        return nullptr;
     }
     else {
         mLastNode = DataNode(clip);
         if(f1 == -1.0f) f1 = mBlendWidth;
         if(mPlayMultipleClips){
-            for(CharClipDriver* it = mFirst; it != 0; it = it->mNext){
-                if(clip == it->mClip) return 0;
+            for(CharClipDriver* it = mFirst; it != nullptr; it = it->mNext){
+                if(clip == it->mClip) return nullptr;
             }
         }
         mFirst = new CharClipDriver(this, clip, i, f1, mFirst, f2, f3, mPlayMultipleClips);
@@ -126,13 +176,13 @@ CharClipDriver* CharDriver::Play(const DataNode& node, int i, float f1, float f2
 CharClipDriver* CharDriver::PlayGroup(const char* cc, int i, float f1, float f2, float f3){
     if(!mClips){
         MILO_WARN("%s has no clips", PathName(this));
-        return 0;
+        return nullptr;
     }
     else {
         CharClipGroup* grp = dynamic_cast<CharClipGroup*>(mClips->FindObject(cc, false));
         if(!grp){
             MILO_WARN("%s could not find group %s", PathName(this), cc);
-            return 0;
+            return nullptr;
         }
         else return Play(grp->GetClip(), i, f1, f2, f3);
     }
@@ -142,7 +192,7 @@ void CharDriver::SetStarved(Symbol starved){ mStarvedHandler = starved; }
 
 CharClipDriver* CharDriver::FirstPlaying(){
     CharClipDriver* d;
-    for(d = mFirst; d != 0 && !d->mBlendFrac; d = d->Next());
+    for(d = mFirst; d != nullptr && !d->mBlendFrac; d = d->Next());
     return d;
 }
 
