@@ -1,4 +1,5 @@
 #pragma once
+#include "obj/ObjMacros.h"
 #include "rndobj/Highlightable.h"
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
@@ -42,6 +43,8 @@ public:
     CharClip* FindClip(const DataNode&, bool);
     CharClip* FirstClip();
     CharClipDriver* FirstPlaying();
+    CharClipDriver* Last();
+    CharClipDriver* Before(CharClipDriver*);
     CharClip* FirstPlayingClip();
     CharClipDriver* Play(CharClip*, int, float, float, float);
     CharClipDriver* Play(const DataNode&, int, float, float, float);
@@ -54,11 +57,15 @@ public:
     void SetClipType(Symbol);
     bool Starved();
     void SetStarved(Symbol);
+    void SetBeatScale(float, bool);
+    void Offset(float, float);
+    float TopClipFrame();
     Symbol ClipType() const { return mClipType; }
     ObjectDir* ClipDir() const { return mClips; }
     void SetBlendWidth(float w){ mBlendWidth = w; }
     CharBonesObject* GetBones() const { return mBones; }
 
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharDriver)
