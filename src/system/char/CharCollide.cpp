@@ -46,7 +46,7 @@ void CharCollide::Highlight(){
     }
     if(mMesh){
         int numspheres = NumSpheres();
-        for(int i = 0; i < numspheres * 2; i++){
+        for(int i = 0; i < numspheres * 4; i++){
             UtilDrawSphere(mMesh->VertAt(unk_structs[i].unk0).pos, 0.1f, Hmx::Color(0.0f, 0.0f, 1.0f));
         }
     }
@@ -107,7 +107,22 @@ BEGIN_COPYS(CharCollide)
 END_COPYS
 
 void CharCollide::Deform(){
+    int numSpheres = NumSpheres();
+    if(mMesh){
+        for(int i = 0; i < 8; i++){
+            if(unk_structs[i].unk0 >= mMesh->Verts().size()){
+                mMesh->Verts().size();
+                PathName(mMesh);
+                PathName(this);
+                return;
+            }
+        }
+        Sphere sc8;
+        Sphere sb8;
+        for(int i = 0; i < numSpheres; i++){
 
+        }
+    }
 }
 
 int CharCollide::NumSpheres(){
@@ -123,7 +138,7 @@ void CharCollide::CopyOriginalToCur(){
 
 
 void CharCollide::SyncShape(){
-    f32 t = mCurLength[1];
+    float t = mCurLength[1];
     if(mCurLength[0] > t){
         mCurLength[0] = mCurLength[1];
     }

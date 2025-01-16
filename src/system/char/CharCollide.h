@@ -1,10 +1,10 @@
-#ifndef CHAR_CHARCOLLIDE_H
-#define CHAR_CHARCOLLIDE_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "rndobj/Mesh.h"
 #include "math/SHA1.h"
 #include "obj/ObjPtr_p.h"
 
+/** "Feeds the bones when executed." */
 class CharCollide : public RndTransformable {
 public:
     enum Shape {
@@ -17,7 +17,7 @@ public:
 
     struct CharCollideStruct {
         CharCollideStruct(){}
-        int unk0;
+        int unk0; // size?
         Vector3 vec;
     };
 
@@ -64,21 +64,26 @@ public:
         REGISTER_OBJ_FACTORY(CharCollide)
     }
 
+    /** "Type of collision" */
     Shape mShape; // 0x90
     int mFlags; // 0x94
-    ObjPtr<RndMesh, ObjectDir> mMesh; // 0x98
+    /** "Optional mesh that will deform, used to resize ourselves.  If this is set, make sure you are not parented to any bone with scale, such as an exo bone" */
+    ObjPtr<RndMesh> mMesh; // 0x98
     CSHA1::Digest mDigest; // 0xa4
     CharCollideStruct unk_structs[8]; // 0xb8 - 0x134, inclusive
+    // radius0: "Radius of the sphere, or of length0 hemisphere if cigar"
+    // radius1: "cigar: Radius of length1 hemisphere"
     float mOrigRadius[2]; // 0x138 - radius0 at 0x138, radius1 at 0x13c
+    // length0: "cigar: placement of radius0 hemisphere along X axis, must be < than length0, not used for sphere shapes"
+    // length1: "cigar: placement of radius1 hemisphere along X axis, must be >= length0"
     float mOrigLength[2]; // 0x140 - length0 at 0x140, length1 at 0x144
     Transform unk148; // 0x148
     float mCurRadius[2]; // 0x178
     float mCurLength[2]; // 0x180
+    /** "For spheres + cigars, finds mesh points along positive y axis (the green one), makes a better fit for spheres where only one side should be the fit, like for chest and back collision volumes" */
     bool mMeshYBias; // 0x188
     float unk18c;
     float unk190;
     Vector3 unk194;
     Vector3 unk1a0;
 };
-
-#endif
