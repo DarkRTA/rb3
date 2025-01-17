@@ -260,10 +260,10 @@ void CharEyes::AddInterestObject(CharInterest* interest){
 
 bool CharEyes::SetFocusInterest(CharInterest* interest, int i){
     if(unkd4 && unke0 > i) return false;
-    CharInterest* oldInterest = unkd4;
+    bool temp = interest != unkd4;
     unkd4 = interest;
     unke0 = i;
-    if(oldInterest != interest) unke4 = true;
+    if(temp) unke4 = true;
     if(!unkd4) unke0 = -1;
     return true;
 }

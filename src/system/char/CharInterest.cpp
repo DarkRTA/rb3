@@ -12,7 +12,8 @@
 
 INIT_REVS(CharInterest)
 
-CharInterest::CharInterest() : mMaxViewAngle(20.0f), mPriority(1.0f), mMinLookTime(1.0f), mMaxLookTime(3.0f), mRefractoryPeriod(6.1f), mDartOverride(this, 0), mCategoryFlags(0), mOverrideMinTargetDistance(0), mMinTargetDistanceOverride(35.0f) {
+CharInterest::CharInterest() : mMaxViewAngle(20.0f), mPriority(1.0f), mMinLookTime(1.0f), mMaxLookTime(3.0f), mRefractoryPeriod(6.1f),
+    mDartOverride(this), mCategoryFlags(0), mOverrideMinTargetDistance(0), mMinTargetDistanceOverride(35.0f) {
     SyncMaxViewAngle();
 }
 
@@ -59,11 +60,10 @@ BEGIN_LOADS(CharInterest)
     bs >> mMinLookTime;
     bs >> mMaxLookTime;
     bs >> mRefractoryPeriod;
-    u32 temp = gRev + 0x10000;
-    if (u16(temp - 2) <= 3) {
-        ObjPtr<Hmx::Object, ObjectDir> obj(this, NULL);
+    if (gRev >= 2 && gRev <= 5) {
+        ObjPtr<Hmx::Object> obj(this);
         bs >> obj;
-    } else if (temp > 5) { bs >> mDartOverride; }
+    } else if (gRev > 5) { bs >> mDartOverride; }
     if (gRev > 2) {
         bs >> mCategoryFlags;
         if (gRev == 3) {
@@ -137,6 +137,7 @@ float CharInterest::ComputeScore(const Vector3& v1, const Vector3& v2, const Vec
     float f7 = -(lensq * f - 1.0f);
     if(IsNaN(f7)){
         f7 = 0.2f;
+        MILO_FAIL("error scoring interest object: bad normalize factor gave score %f", f7);
     }
 
     float f4 = f7 + f1 + f2 + neg99;
