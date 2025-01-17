@@ -286,13 +286,32 @@ public:
     }
 
     typedef bool SortFunc(T1*, T1*);
-    bool sort(SortFunc* func){
+    void sort(SortFunc* func){
         if(mNodes && mNodes->next){
             Node* last = mNodes->prev;
             for(Node* n = last->prev; n != last; n = n->prev){
                 for(Node* x = n; x != last; x = x->next){
                     Node* nextX = x->next;
                     if(func(nextX->obj, x->obj)){
+                        T1* tmp = x->obj;
+                        x->obj = nextX->obj;
+                        nextX->obj = tmp;
+                    }
+                    else break;
+                }
+            }
+        }
+    }
+
+    template <class Cmp>
+    void sort(Cmp cmp){
+        if(!mNodes || !mNodes->next) return;
+        else {
+            Node* last = mNodes->prev;
+            for(Node* n = last->prev; n != last; n = n->prev){
+                for(Node* x = n; x != last; x = x->next){
+                    Node* nextX = x->next;
+                    if(cmp(nextX->obj, x->obj)){
                         T1* tmp = x->obj;
                         x->obj = nextX->obj;
                         nextX->obj = tmp;

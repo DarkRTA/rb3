@@ -34,7 +34,7 @@ public:
     virtual void Highlight();
 
     void CopyOriginalToCur();
-    float Radius() const;
+    float Radius() const { return mCurRadius[0]; }
     Shape GetShape() const { return mShape; }
     const Vector3& Axis() const;
     void SyncShape();
@@ -98,4 +98,8 @@ public:
     float unk190;
     Vector3 unk194;
     Vector3 unk1a0;
+};
+
+struct ByRadius {
+    bool operator()(CharCollide* c1, CharCollide* c2) const { return c2->Radius() > c1->Radius() ? true : false; }
 };

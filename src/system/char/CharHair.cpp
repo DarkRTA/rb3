@@ -1,6 +1,9 @@
 #include "char/CharHair.h"
 #include "char/CharCollide.h"
 #include "decomp.h"
+#include "math/Mtx.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Timer.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Wind.h"
@@ -343,6 +346,39 @@ void CharHair::SimulateInternal(float f){
 }
 #pragma pop
 
+void CharHair::SimulateZeroTime(){
+    if(mSimulate){
+        for(int i = 0; i < mStrands.size(); i++){
+            Strand& curStrand = mStrands[i];
+            RndTransformable* root = curStrand.Root();
+            if(root && curStrand.Root()->TransParent()){
+                Transform tf50;
+                Vector3 v2c = curStrand.Root()->WorldXfm().v;
+                Multiply(curStrand.mRootMat, curStrand.Root()->TransParent()->WorldXfm().m, tf50.m);
+                ObjVector<Point>& points = curStrand.mPoints;
+                for(int j = 0; j < points.size(); j++){
+                    Point& curPoint = points[j];
+                    Hmx::Matrix3 m78;
+                    Subtract(curPoint.pos, v2c, m78.y);
+                    m78.z = curPoint.lastZ;
+                    Normalize(m78, tf50.m);
+                    if(curPoint.bone){
+                        curPoint.bone->SetWorldXfm(tf50);
+                    }
+                    v2c = curPoint.pos;
+                }
+            }
+        }
+    }
+}
+
+void CharHair::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    for(int i = 0; i < mStrands.size(); i++){
+        changedBy.push_back(mStrands[i].Root());
+        change.push_back(mStrands[i].Root());
+    }
+}
+
 CharHair::Strand::Strand(Hmx::Object* o) : mShowSpheres(0), mShowCollide(0), mShowPose(0), mRoot(o, 0), mAngle(0.0f), mPoints(o), mHookupFlags(0) {
     mBaseMat.Identity();
     mRootMat.Identity();
@@ -350,11 +386,27 @@ CharHair::Strand::Strand(Hmx::Object* o) : mShowSpheres(0), mShowCollide(0), mSh
 
 void CharHair::Hookup(){
     if(mManagedHookup) return;
-    ObjPtrList<CharCollide> colList(this, kObjListNoNull);
-    for(ObjDirItr<CharCollide> it(Dir(), true); it != 0; ++it){
+    ObjPtrList<CharCollide> colList(this);
+    for(ObjDirItr<CharCollide> it(Dir(), true); it; ++it){
         colList.push_back(it);
     }
+    colList.sort(ByRadius());
     Hookup(colList);
+}
+
+void CharHair::Hookup(ObjPtrList<CharCollide>& collides){
+    mCollide.clear();
+    for(int i = 0; i < mStrands.size(); i++){
+        Strand& curStrand = mStrands[i];
+        if(curStrand.Root()){
+            for(int j = 0; j < curStrand.mPoints.size(); j++){
+                curStrand.mPoints[j].collides.clear();
+            }
+            for(ObjPtrList<CharCollide>::iterator it = collides.begin(); it != collides.end(); ++it){
+                // more...
+            }
+        }
+    }
 }
 
 BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
@@ -374,7 +426,7 @@ BinStream& operator>>(BinStream& bs, CharHair::Point& pt){
     bs >> pt.radius;
     if(CharHair::gRev > 1) bs >> pt.outerRadius;
     else pt.outerRadius = 0;
-    if(CharHair::gRev == 6 || CharHair::gRev == 7 || CharHair::gRev == 8){
+    if(CharHair::gRev >= 6 && CharHair::gRev <= 8){
         float f;
         bs >> f;
         pt.radius += f;
@@ -439,6 +491,24 @@ void CharHair::Load(BinStream& bs){
     bs >> mSimulate;
     if(gRev > 10) bs >> mWind;
 }
+
+BEGIN_COPYS(CharHair)
+    COPY_SUPERCLASS(Hmx::Object)
+    CREATE_COPY(CharHair)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mStiffness)
+        COPY_MEMBER(mInertia)
+        COPY_MEMBER(mGravity)
+        COPY_MEMBER(mWeight)
+        COPY_MEMBER(mFriction)
+        COPY_MEMBER(mTorsion)
+        COPY_MEMBER(mStrands)
+        COPY_MEMBER(mSimulate)
+        COPY_MEMBER(mMinSlack)
+        COPY_MEMBER(mMaxSlack)
+        COPY_MEMBER(mWind)
+    END_COPYING_MEMBERS
+END_COPYS
 
 BEGIN_HANDLERS(CharHair)
     HANDLE_ACTION(reset, mReset = _msg->Int(2))
