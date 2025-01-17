@@ -31,6 +31,7 @@ public:
         const ObjPtr<RndTransformable, ObjectDir>& ptr = mSource ? mSource : mPivot;
         return ptr;
     }
+    RndTransformable* GetDest() const { return mDest; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

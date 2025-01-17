@@ -1,12 +1,19 @@
 #include "char/CharEyes.h"
 #include "char/CharFaceServo.h"
+#include "char/CharPollable.h"
 #include "char/CharWeightSetter.h"
 #include "char/CharLookAt.h"
 #include "char/CharInterest.h"
+#include "char/CharWeightable.h"
+#include "decomp.h"
+#include "math/Rand.h"
+#include "math/Vec.h"
 #include "obj/DataUtl.h"
 #include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "obj/Task.h"
 #include "rndobj/Graph.h"
+#include "rndobj/Trans.h"
 #include "utl/Symbols.h"
 
 bool CharEyes::sDisableEyeDart;
@@ -17,7 +24,7 @@ bool CharEyes::sDisableEyeClamping;
 
 INIT_REVS(CharEyes)
 
-CharEyes::EyeDesc::EyeDesc(Hmx::Object* o) : mEye(o, 0), mUpperLid(o, 0), mLowerLid(o, 0), mLowerLidBlink(o, 0), mUpperLidBlink(o, 0) {
+CharEyes::EyeDesc::EyeDesc(Hmx::Object* o) : mEye(o), mUpperLid(o), mLowerLid(o), mLowerLidBlink(o), mUpperLidBlink(o) {
 
 }
 
@@ -37,7 +44,7 @@ CharEyes::EyeDesc& CharEyes::EyeDesc::operator=(const CharEyes::EyeDesc& desc){
 
 void CharEyes::CharInterestState::ResetState(){ unkc = -1.0f; }
 
-CharEyes::CharInterestState::CharInterestState(Hmx::Object* o) : mInterest(o, 0) {
+CharEyes::CharInterestState::CharInterestState(Hmx::Object* o) : mInterest(o) {
     ResetState();
 }
 
@@ -72,10 +79,13 @@ float CharEyes::CharInterestState::RefractoryTimeRemaining(){
     }
 }
 
-CharEyes::CharEyes() : mEyes(this), mInterests(this), mFaceServo(this, 0), mCamWeight(this, 0), unk58(0,0,0), mDefaultFilterFlags(0), mViewDirection(this, 0), mHeadLookAt(this, 0), mMaxExtrapolation(19.5f),
-    mMinTargetDist(35.0f), mUpperLidTrackUp(1.0f), mUpperLidTrackDown(1.0f), mLowerLidTrackUp(0.75f), mLowerLidTrackDown(0.75f), mLowerLidTrackRotate(0), mInterestFilterFlags(0),
-    unka4(0,0,0), unkb4(0), unkc0(0), unkc4(0), unkc5(0), unkc8(this, 0), unkd4(this, 0), unke0(-1), unke4(0), unke8(0), unkec(1.0F), unkf0(0), unkf4(0), unk124(0), unk128(-1.0f), unk12c(-1),
-    unk13c(0), unk140(-1.0f), unk144(0), unk148(-1.0f), unk14c(-1.0f), unk15c(0), unk15d(1) {
+CharEyes::CharEyes() : mEyes(this), mInterests(this), mFaceServo(this), mCamWeight(this), unk58(0,0,0), mDefaultFilterFlags(0), mViewDirection(this),
+    mHeadLookAt(this), mMaxExtrapolation(19.5f), mMinTargetDist(35.0f), mUpperLidTrackUp(1.0f), mUpperLidTrackDown(1.0f), mLowerLidTrackUp(0.75f), mLowerLidTrackDown(0.75f),
+    mLowerLidTrackRotate(0), mInterestFilterFlags(0), unka4(0,0,0), unkb4(0), unkc0(0), unkc4(0), unkc5(0), unkc8(this), unkd4(this), unke0(-1), unke4(0),
+#ifdef MILO_DEBUG
+    unke8(0), unkec(1.0f), unkf0(0),
+#endif
+    unkf4(0), unk124(0), unk128(-1.0f), unk12c(-1), unk13c(0), unk140(-1.0f), unk144(0), unk148(-1.0f), unk14c(-1.0f), unk15c(0), unk15d(1) {
     unkb8 = std::cos(0.52359879f);
     unk9c = RndOverlay::Find("eye_status", false);
 }
@@ -129,7 +139,7 @@ void CharEyes::Exit(){
 }
 
 void CharEyes::Highlight(){
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     if(GetHead()){
         RndGraph* oneframe = RndGraph::GetOneFrame();
         RndTransformable* trans = 0;
@@ -153,7 +163,7 @@ void CharEyes::Highlight(){
             float f1 = unkc8 ? unkc8->mMaxViewAngleCos : unkb8;
             float f2 = unkb0;
             if(unk124){
-                oneframe->AddSphere(unk58, unkf8.mMaxRadius, Hmx::Color(0.9f, 0.9f, 0.9f));
+                oneframe->AddSphere(unk58, mEyeDartRulesetData.mMaxRadius, Hmx::Color(0.9f, 0.9f, 0.9f));
                 Vector3 v118(unk58.x + unk130.x, unk58.y + unk130.y, unk58.z + unk130.z);
                 EnforceMinimumTargetDistance(v10c, v118, v118);
                 oneframe->AddSphere(v118, 0.5f, Hmx::Color(0.0f, 0.0f, 1.0f));
@@ -227,6 +237,10 @@ void CharEyes::UpdateOverlay(){
     }
 }
 
+DECOMP_FORCEACTIVE(CharEyes, "no_lids", "eyes.disable_clamping", "eyes.debug_clamping", "eyes.disable_llidnorm",
+    "cheat.disable_eye_darts", "cheat.disable_procedural_blinks", "cheat.disable_interest_objects",
+    "ObjPtr_p.h", "f.Owner()", "")
+
 bool CharEyes::EitherEyeClamped(){
     for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); ++it){
         if(it->mEye && it->mEye->unkb1) return true;
@@ -246,12 +260,116 @@ void CharEyes::AddInterestObject(CharInterest* interest){
 
 bool CharEyes::SetFocusInterest(CharInterest* interest, int i){
     if(unkd4 && unke0 > i) return false;
-    CharInterest* loc_interest = interest;
+    CharInterest* oldInterest = unkd4;
     unkd4 = interest;
     unke0 = i;
-    if(loc_interest != interest) unke4 = true;
+    if(oldInterest != interest) unke4 = true;
     if(!unkd4) unke0 = -1;
     return true;
+}
+
+bool CharEyes::EyesOnTarget(float f){
+    for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); ++it){
+        RndTransformable* src = it->mEye->GetSource();
+        if(src){
+            Vector3 v80;
+            Subtract(unk58, src->WorldXfm().v, v80);
+            Vector3 v8c(src->WorldXfm().m.y);
+            Vector3 v98(v80);
+            v98.z = 0;
+            v8c.z = 0;
+            float dot = Dot(v8c, v98);
+            if(std::acos(Clamp<float>(-1, 1, dot / (Length(v8c) * Length(v98)))) * 57.295776f > f){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void CharEyes::EnforceMinimumTargetDistance(const Vector3& v1, const Vector3& v2, Vector3& vout){
+    Vector3 v2c;
+    Subtract(v2, v1, v2c);
+    float vlen = Length(v2c);
+    bool b1 = false;
+    unkc5 = false;
+    if(unkc8 && unkc8->ShouldOverrideMinTargetDistance()) b1 = true;
+    float f4;
+    if(b1) f4 = unkc8->MinTargetDistanceOverride();
+    else f4 = mMinTargetDist;
+    if(vlen < f4){
+        Vector3 v38;
+        ScaleToMagnitude(v2c, f4, v38);
+        Add(v1, v38, vout);
+        unkc5 = true;
+    }
+}
+
+bool CharEyes::IsHeadIKWeightIncreasing(){
+    if(mHeadLookAt){
+        float weight = mHeadLookAt->Weight();
+        return (weight > 0 && weight - unkf4 > 0);
+    }
+    else return false;
+}
+
+RndTransformable* CharEyes::GetTarget(){
+    if(mEyes.empty() || !mEyes[0].mEye) return nullptr;
+    else {
+        return mEyes[0].mEye->GetDest();
+    }
+}
+
+Vector3 CharEyes::GenerateDartOffset(){
+    Vector3 vout;
+    float start = mEyeDartRulesetData.mMinRadius;
+    float end = mEyeDartRulesetData.mMaxRadius;
+    if(mEyeDartRulesetData.mScaleWithDistance && mEyeDartRulesetData.mReferenceDistance > 0.1f){
+        Vector3 v48;
+        Subtract(unk58, GetHead()->WorldXfm().v, v48);
+        float len = Length(v48);
+        start *= len / mEyeDartRulesetData.mReferenceDistance;
+        end *= len / mEyeDartRulesetData.mReferenceDistance;
+    }
+    float mult = RandomFloat(0, 1) > 0.5f ? 1.0f : -1.0f;
+    vout[0] = RandomFloat(start, end) * mult;
+    mult = RandomFloat(0, 1) > 0.5f ? 1.0f : -1.0f;
+    vout[1] = RandomFloat(start, end) * mult;
+    mult = RandomFloat(0, 1) > 0.5f ? 1.0f : -1.0f;
+    vout[2] = RandomFloat(start, end) * mult;
+    return vout;
+}
+
+void CharEyes::DartUpdate(){
+    unk128 -= TheTaskMgr.DeltaSeconds();
+    if(unk124){
+        if(unk128 < 0){
+            unk12c--;
+            if(unk12c < 0){
+                unk124 = false;
+                unk128 = RandomFloat(mEyeDartRulesetData.mMinSecsBetweenSequences, mEyeDartRulesetData.mMaxSecsBetweenSequences);
+            }
+            else {
+                unk128 = RandomFloat(mEyeDartRulesetData.mMinSecsBetweenDarts, mEyeDartRulesetData.mMaxSecsBetweenDarts);
+                unk130 = GenerateDartOffset();
+            }
+        }
+    }
+    else if(unk128 < 0 && EyesOnTarget(mEyeDartRulesetData.mOnTargetAngleThresh) && !unk13c){
+        unk124 = true;
+        unk12c = RandomInt(mEyeDartRulesetData.mMinDartsPerSequence, mEyeDartRulesetData.mMaxDartsPerSequence);
+        unk128 = RandomFloat(mEyeDartRulesetData.mMinSecsBetweenDarts, mEyeDartRulesetData.mMaxSecsBetweenDarts);
+        unk130 = GenerateDartOffset();
+    }
+}
+
+void CharEyes::SetEnableBlinks(bool b1, bool b2){
+    unk15d = b1;
+    if(b2 && !unk15d && unk13c && mFaceServo){
+        mFaceServo->SetProceduralBlinkWeight(0);
+        unk13c = false;
+        unk58 = unk150;
+    }
 }
 
 // fn_804CCF70
@@ -268,6 +386,26 @@ CharInterest* CharEyes::GetCurrentInterest(){
     if(unkd4) return unkd4;
     if(unkc8) return unkc8;
     return 0;
+}
+
+void CharEyes::Replace(Hmx::Object* from, Hmx::Object* to){
+    Hmx::Object::Replace(from, to);
+    CharWeightable::Replace(from, to);
+    CharPollable::Replace(from, to);
+    for(ObjVector<EyeDesc>::iterator it = mEyes.begin(); it != mEyes.end(); it){
+        if(it->mEye == from){
+            it->mEye = dynamic_cast<CharLookAt*>(to);
+        }
+        if(!it->mEye) it = mEyes.erase(it);
+        else ++it;
+    }
+    for(ObjVector<CharInterestState>::iterator it = mInterests.begin(); it != mInterests.end(); it){
+        if(it->mInterest == from){
+            it->mInterest = dynamic_cast<CharInterest*>(to);
+        }
+        if(!it->mInterest) it = mInterests.erase(it);
+        else ++it;
+    }
 }
 
 void CharEyes::ForceBlink(){
@@ -322,11 +460,11 @@ BEGIN_LOADS(CharEyes)
     if(gRev > 5) LOAD_SUPERCLASS(CharWeightable)
     if(gRev > 4) bs >> mEyes;
     else {
-        ObjPtrList<CharLookAt, ObjectDir> pList(this, kObjListNoNull);
+        ObjPtrList<CharLookAt> pList(this, kObjListNoNull);
         bs >> pList;
         mEyes.resize(pList.size());
         int idx = 0;
-        for(ObjPtrList<CharLookAt, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+        for(ObjPtrList<CharLookAt>::iterator it = pList.begin(); it != pList.end(); ++it){
             mEyes[idx].mEye = *it;
             mEyes[idx].mUpperLid = 0;
             mEyes[idx].mLowerLid = 0;
@@ -335,18 +473,18 @@ BEGIN_LOADS(CharEyes)
             idx++;
         }
     }
-    if(gRev - 3 <= 1U){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+    if(gRev == 3 || gRev == 4){
+        ObjPtr<RndTransformable> tPtr(this);
         bs >> tPtr;
     }
     mInterests.clear();
-    if(gRev - 4 < 5U){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+    if(gRev >= 4 && gRev <= 8){
+        ObjPtr<RndTransformable> tPtr(this);
         int cnt;
         bs >> cnt;
         for(int i = 0; i < cnt; i++){
             bs >> tPtr;
-            bs.ReadInt();
+            int x; bs >> x;
         }
     }
     else if(gRev > 8) bs >> mInterests;
@@ -363,9 +501,10 @@ BEGIN_LOADS(CharEyes)
         bs >> mUpperLidTrackDown;
         bs >> mLowerLidTrackUp;
         if(gRev < 0x11){
-            bs.ReadInt();
+            int x, y;
+            bs >> x;
             bs >> mLowerLidTrackDown;
-            bs.ReadInt();
+            bs >> y;
         }
         else bs >> mLowerLidTrackDown;
     }
@@ -399,31 +538,33 @@ END_COPYS
 DataNode CharEyes::OnToggleForceFocus(DataArray* da){
     if(unkd4) SetFocusInterest(0, 0);
     else SetFocusInterest(unkc8, 0);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CharEyes::OnToggleInterestOverlay(DataArray* da){
     ToggleInterestsDebugOverlay();
-    return DataNode(0);
+    return 0;
 }
 
 void CharEyes::ToggleInterestsDebugOverlay(){
-    RndOverlay* o = unk9c;
-    if(!o) return;
-    o->mShowing = o->mShowing == false;
-    o->mTimer.Restart();
+    if(unk9c) unk9c->SetOverlay(!unk9c->Showing());
 }
 
 BEGIN_HANDLERS(CharEyes)
     HANDLE(add_interest, OnAddInterest)
     HANDLE_ACTION(force_blink, ForceBlink())
-#ifdef VERSION_SZBE69_B8
+#ifdef MILO_DEBUG
     HANDLE(toggle_force_focus, OnToggleForceFocus)
     HANDLE(toggle_interest_overlay, OnToggleInterestOverlay)
 #endif
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x660)
 END_HANDLERS
+
+DataNode CharEyes::OnAddInterest(DataArray* arr){
+    mInterests.push_back(CharInterestState(arr->Obj<CharInterest>(1)));
+    return 0;
+}
 
 BEGIN_CUSTOM_PROPSYNC(CharEyes::EyeDesc)
     SYNC_PROP(eye, o.mEye)

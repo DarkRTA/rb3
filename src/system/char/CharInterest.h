@@ -25,6 +25,8 @@ public:
     }
 
     int CategoryFlags() const { return mCategoryFlags; }
+    bool ShouldOverrideMinTargetDistance() const { return mOverrideMinTargetDistance; }
+    float MinTargetDistanceOverride() const { return mMinTargetDistanceOverride; }
     void SyncMaxViewAngle();
     CharEyeDartRuleset* GetDartRulesetOverride() const;
     bool IsMatchingFilterFlags(int);

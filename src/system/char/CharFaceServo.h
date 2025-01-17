@@ -26,6 +26,7 @@ public:
     void SetClipType(Symbol);
     float BlinkWeightLeft() const;
     void ApplyProceduralWeights();
+    void SetProceduralBlinkWeight(float weight){ mProceduralBlinkWeight = weight; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
