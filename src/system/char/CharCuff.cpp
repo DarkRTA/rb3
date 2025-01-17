@@ -85,7 +85,7 @@ void AddBoneChildren(std::list<RndTransformable*>& tlist, RndTransformable* tran
     if(trans){
         if(strncmp(trans->Name(), "bone_", 5) == 0){
             tlist.push_back(trans);
-            for(std::vector<RndTransformable*>::iterator it = trans->TransChildren().begin(); it != trans->TransChildren().end(); ++it){
+            for(std::vector<RndTransformable*>::const_iterator it = trans->TransChildren().begin(); it != trans->TransChildren().end(); ++it){
                 AddBoneChildren(tlist, *it);
             }
         }

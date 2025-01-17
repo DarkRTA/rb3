@@ -1,4 +1,5 @@
 #pragma once
+#include "math/Vec.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Mesh.h"
 #include "math/SHA1.h"
@@ -54,6 +55,17 @@ public:
             Scale(unk194, ret, vout);
         }
         return ret;
+    }
+    
+    void SyncWorldState(){
+        unk1a0 = WorldXfm().v;
+        if(mShape >= 3 || mShape == 0){
+            unk194 = WorldXfm().m.x;
+            unk190 = 1.0f / LengthSquared(unk194);
+        }
+        if(mShape >= 3){
+            unk18c = 1.0f / (mCurLength[1] - mCurLength[0]);
+        }
     }
 
     DECLARE_REVS;

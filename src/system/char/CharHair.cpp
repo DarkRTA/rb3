@@ -1,11 +1,14 @@
 #include "char/CharHair.h"
 #include "char/CharCollide.h"
+#include "decomp.h"
+#include "os/Timer.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Wind.h"
 #include "rndobj/PostProc.h"
 #include "char/Character.h"
 #include "math/Utl.h"
 #include "math/Rot.h"
+#include "stl/_function_base.h"
 #include "world/Dir.h"
 #include <cmath>
 #include "utl/Symbols.h"
@@ -24,26 +27,20 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
         float len = mPoints.size() != 0 ? mPoints.back().length : 0;
         mBaseMat = mRoot->LocalXfm().m;
         SetAngle(mAngle);
-
-        // i hate the way these are structured, i'd rather just make for loops but nooo
+        
         int depth = 0;
-        RndTransformable* it = mRoot;
-        while(true){
+        for(RndTransformable* it = mRoot;  ; it = it->TransChildren().front()){
             depth++;
             if(it->TransChildren().empty()) break;
-            it = it->TransChildren().front();
         }
+        
         mPoints.resize(depth);
-
         depth = 0;
-        it = mRoot;
-        while(true){
+        for(RndTransformable* it = mRoot;  ; it = it->TransChildren().front(), depth++){
             mPoints[depth].bone = it;
             if(it->TransChildren().empty()) break;
-            it = it->TransChildren().front();
-            depth++;
         }
-
+        
         Point* pt = 0;
         for(int i = 1; i < mPoints.size(); i++){
             pt = &mPoints[i - 1];
@@ -51,14 +48,9 @@ void CharHair::Strand::SetRoot(RndTransformable* trans){
             pt->length = bone->LocalXfm().v.y;
             pt->pos = bone->WorldXfm().v;
         }
-
         Point* backpt = &mPoints.back();
-        if(!len){
-            if(pt) len = pt->length;
-            else len = 5.0f;
-        }
+        len = len ? len : (pt ? pt->length : 5.0f);
         backpt->length = len;
-
         ScaleAdd(backpt->bone->WorldXfm().v, backpt->bone->WorldXfm().m.y, backpt->length, backpt->pos);
     }
 }
@@ -78,6 +70,7 @@ void CharHair::SetCloth(bool b){
     }
 }
 
+// matches in retail
 void CharHair::Strand::SetAngle(float angle){
     mAngle = angle;
     Hmx::Matrix3 m38;
@@ -86,11 +79,7 @@ void CharHair::Strand::SetAngle(float angle){
 }
 
 CharHair::CharHair() : mStiffness(0.04f), mTorsion(0.1f), mInertia(0.7f), mGravity(1.0f), mWeight(0.5f), mFriction(0.3f), mMinSlack(0.0f), mMaxSlack(0.0f),
-    mStrands(this), mReset(1), mSimulate(1), mUsePostProc(1), mMe(this), mWind(this), mCollide(this, kObjListNoNull), mManagedHookup(0) {
-
-}
-
-CharHair::Strand::~Strand(){
+    mStrands(this), mReset(1), mSimulate(1), mUsePostProc(1), mMe(this), mWind(this), mCollide(this), mManagedHookup(0) {
 
 }
 
@@ -104,6 +93,7 @@ void CharHair::Enter(){
     Hookup();
 }
 
+// matches in retail
 void CharHair::FreezePoseRaw(){
     for(int i = 0; i < mStrands.size(); i++){
         Strand& strand = mStrands[i];
@@ -166,9 +156,7 @@ void CharHair::DoReset(int reset){
 void CharHair::SetName(const char* cc, ObjectDir* dir){
     Hmx::Object::SetName(cc, dir);
     mMe = dynamic_cast<Character*>(dir);
-    bool pp = false;
-    if(mMe || dynamic_cast<WorldDir*>(dir)) pp = true;
-    mUsePostProc = pp;
+    mUsePostProc = mMe || dynamic_cast<WorldDir*>(dir);
 }
 
 void CharHair::Poll(){
@@ -197,42 +185,17 @@ float CharHair::GetFPS(){
 }
 
 void CharHair::SimulateLoops(int count, float f){
-    if(mSimulate && mStrands.size() != 0){
-        for(ObjPtrList<CharCollide, ObjectDir>::iterator it = mCollide.begin(); it != mCollide.end(); ++it){
-            // mystery inlined CharCollide method
-        }
-        for(int n = 0; n < count; n++){
-            SimulateInternal(f);
-        }
+    if(!mSimulate || mStrands.size() == 0) return;
+    START_AUTO_TIMER("char_hair");
+    for(ObjPtrList<CharCollide>::iterator it = mCollide.begin(); it != mCollide.end(); ++it){
+        (*it)->SyncWorldState();
+    }
+    for(int n = 0; n < count; n++){
+        SimulateInternal(f);
     }
 }
 
-// void __thiscall CharHair::SimulateLoops(CharHair *this,int param_1,float param_2)
-
-// {
-//   int iVar1;
-//   undefined4 local_28;
-//   undefined4 local_24;
-//   Symbol aSStack_20 [12];
-
-//   if ((this[0x40] != (CharHair)0x0) &&
-//      (iVar1 = stlpmtx_std::vector<><>::size((vector<><> *)(this + 0x30)), iVar1 != 0)) {
-//     local_24 = ObjPtrList<>::begin((ObjPtrList<> *)(this + 0x5c));
-//     Symbol::Symbol(aSStack_20,(Symbol *)&local_24);
-//     while( true ) {
-//       local_28 = fn_803D0224(this + 0x5c);
-//       iVar1 = ObjPtrList<>::iterator::operator_!=((iterator *)aSStack_20,&local_28);
-//       if (iVar1 == 0) break;
-//       ObjPtrList<>::iterator::operator*((iterator *)aSStack_20);
-//       fn_804D64EC();
-//       ObjPtrList<>::iterator::operator_++((iterator *)aSStack_20);
-//     }
-//     for (iVar1 = 0; iVar1 < param_1; iVar1 = iVar1 + 1) {
-//       fn_804D6590((double)param_2,this);
-//     }
-//   }
-//   return;
-// }
+DECOMP_FORCEACTIVE(CharHair, "ObjPtr_p.h", "f.Owner()", "")
 
 #pragma push
 #pragma dont_inline on
@@ -302,7 +265,7 @@ void CharHair::SimulateInternal(float f){
                 if(thisPoint.collides.size() != 0){
                     float diffRad = thisPoint.outerRadius - thisPoint.radius;
                     float maxRad = Max(thisPoint.radius, thisPoint.outerRadius);
-                    for(ObjPtrList<CharCollide, ObjectDir>::iterator it = thisPoint.collides.begin(); it != thisPoint.collides.end(); ++it){
+                    for(ObjPtrList<CharCollide>::iterator it = thisPoint.collides.begin(); it != thisPoint.collides.end(); ++it){
                         CharCollide* thisCollide = *it;
                         Vector3 v164;
                         float collideRad = thisCollide->GetRadius(thisPoint.pos, v164);
@@ -387,7 +350,7 @@ CharHair::Strand::Strand(Hmx::Object* o) : mShowSpheres(0), mShowCollide(0), mSh
 
 void CharHair::Hookup(){
     if(mManagedHookup) return;
-    ObjPtrList<CharCollide, ObjectDir> colList(this, kObjListNoNull);
+    ObjPtrList<CharCollide> colList(this, kObjListNoNull);
     for(ObjDirItr<CharCollide> it(Dir(), true); it != 0; ++it){
         colList.push_back(it);
     }
