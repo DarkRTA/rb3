@@ -1,31 +1,56 @@
-#ifndef CHAR_CHARLIPSYNC_H
-#define CHAR_CHARLIPSYNC_H
+#pragma once
+#include "obj/Data.h"
+#include "obj/Dir.h"
 #include "obj/Object.h"
 #include "rndobj/PropAnim.h"
 #include "obj/ObjPtr_p.h"
 #include "utl/Std.h"
+#include "char/CharClip.h"
 
+/** "A full lipsync animation, basically a changing set of weights for a set of named visemes.  Sampled at 30hz" */
 class CharLipSync : public Hmx::Object {
 public:
-
     class Generator {
     public:
-        Generator();
+        struct Weight {
+            unsigned char unk0;
+            unsigned char unk1;
+        };
 
-        CharLipSync* mLipSync;
-        int mLastCount;
-        std::vector<int> mWeights;
+        Generator();
+        void Init(CharLipSync*);
+        void AddWeight(int, float);
+        void NextFrame();
+        void RemoveViseme(int);
+        void Finish();
+
+        CharLipSync* mLipSync; // 0x0
+        int mLastCount; // 0x4
+        std::vector<Weight> mWeights; // 0x8
     };
 
     class PlayBack {
     public:
-        std::vector<int> mWeights;
-        CharLipSync* mLipSync;
-        RndPropAnim* mPropAnim;
-        ObjectDir* mClips;
-        int mIndex;
-        int mOldIndex;
-        int mFrame;
+        struct Weight {
+            Weight() : unk0(0) {}
+            ObjPtr<CharClip> unk0;
+            float unkc;
+            float unk10;
+            float unk14;
+        };
+
+        PlayBack();
+        void Set(CharLipSync*, ObjectDir*);
+        void Reset();
+        void Poll(float);
+
+        std::vector<Weight> mWeights; // 0x0
+        CharLipSync* mLipSync; // 0x8
+        RndPropAnim* mPropAnim; // 0xc
+        ObjectDir* mClips; // 0x10
+        int mIndex; // 0x14
+        int mOldIndex; // 0x18
+        int mFrame; // 0x1c
     };
 
     CharLipSync();
@@ -38,6 +63,12 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    void Parse(DataArray*);
+    RndPropAnim* GetPropAnim() const { return mPropAnim; }
+
+    DataNode OnParse(DataArray*);
+    DataNode OnParseArray(DataArray*);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -46,10 +77,13 @@ public:
         REGISTER_OBJ_FACTORY(CharLipSync)
     }
 
-    ObjPtr<RndPropAnim, ObjectDir> mPropAnim;
-    std::vector<String> mVisemes;
-    int mFrames;
-    std::vector<unsigned char VECTOR_SIZE_LARGE> mData;
-};
+    /** "PropAnim to control this lipsync" */
+    ObjPtr<RndPropAnim> mPropAnim; // 0x1c
+    /** "viseme names" */
+    std::vector<String> mVisemes; // 0x28
+    /** "how many keyframes" */
+    int mFrames; // 0x30
+    std::vector<unsigned char VECTOR_SIZE_LARGE> mData; // 0x34
 
-#endif
+    // duration: "duration in seconds"
+};
