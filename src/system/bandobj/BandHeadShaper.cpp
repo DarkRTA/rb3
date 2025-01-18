@@ -183,7 +183,7 @@ void BandHeadShaper::AddChildBones(RndTransformable* t){
         std::vector<RndTransformable*>::iterator it = std::find(unk18.begin(), unk18.end(), t);
         if(it == unk18.end()){
             unk18.push_back(t);
-            for(std::vector<RndTransformable*>::iterator child = t->TransChildren().begin(); child != t->TransChildren().end(); ++child){
+            for(std::vector<RndTransformable*>::const_iterator child = t->TransChildren().begin(); child != t->TransChildren().end(); ++child){
                 AddChildBones(*child);
             }
         }

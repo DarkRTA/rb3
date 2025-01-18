@@ -92,7 +92,7 @@ public:
         return ret;
     }
 
-    std::vector<RndTransformable*>& TransChildren(){ return mChildren; }
+    const std::vector<RndTransformable*>& TransChildren(){ return mChildren; }
 
     void SetDirty(){
         if(mCache->mFlags & 1) return;

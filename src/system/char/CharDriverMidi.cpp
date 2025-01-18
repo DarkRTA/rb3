@@ -26,7 +26,7 @@ void CharDriverMidi::Exit(){
     CharDriver::Exit();
     MsgSource* msgParser = ObjectDir::Main()->Find<MsgSource>(mParser.Str(), false);
     if(msgParser) msgParser->RemoveSink(this);
-    MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(ObjectDir::Main()->FindObject(mFlagParser.Str(), false));
+    MsgSource* msgFlagParser = ObjectDir::Main()->Find<MsgSource>(mFlagParser.Str(), false);
     if(msgFlagParser) msgFlagParser->RemoveSink(this);
 }
 
@@ -80,10 +80,10 @@ DataNode CharDriverMidi::OnMidiParser(DataArray* da){
     if(!unk89 && mDefaultClip) b = true;
     if(b) clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
     else clip = FindClip(da->Node(2), false);
-    if(!clip) return DataNode(0);
+    if(!clip) return 0;
     if(clip || clip != FirstClip()){
         float somefloat = da->Float(3);
-        if(clip->mPlayFlags & 0x200){
+        if(clip->PlayFlags() & 0x200){
             float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
             float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat()) - secs;
             somefloat = bts * clip->AverageBeatsPerSecond();
@@ -91,12 +91,12 @@ DataNode CharDriverMidi::OnMidiParser(DataArray* da){
         MaxEq(somefloat, 0.0f);
         Play(clip, 0, somefloat * mBlendOverridePct, -somefloat, 0.0f);
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CharDriverMidi::OnMidiParserFlags(DataArray* da){
     mClipFlags = da->Int(2);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
@@ -104,7 +104,7 @@ DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
     CharClipGroup* grp = mClips->Find<CharClipGroup>(name, false);
     if(!grp){
         MILO_WARN("%s could not find group %s in %s", PathName(this), name, grp->Name());
-        return DataNode(0);
+        return 0;
     }
     else {
         CharClip* clip;
@@ -114,7 +114,7 @@ DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
         else clip = grp->GetClip(mClipFlags);
         if(!clip){
             MILO_WARN("%s could not find clip with flags %d in %s", PathName(this), mClipFlags, PathName(grp));
-            return DataNode(0);
+            return 0;
         }
         else {
             if(clip || clip != FirstClip()){
@@ -125,7 +125,7 @@ DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
                 MaxEq(somefloat, 0.0f);
                 Play(clip, 0, -somefloat, 1e+30f, 0.0f)->mBlendWidth = somefloat * mBlendOverridePct;
             }
-            return DataNode(0);
+            return 0;
         }
     }
 }

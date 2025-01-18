@@ -1,6 +1,7 @@
 #include "bandobj/BandCharacter.h"
 #include "bandobj/BandHeadShaper.h"
 #include "bandobj/BandWardrobe.h"
+#include "char/CharCollide.h"
 #include "char/CharServoBone.h"
 #include "char/CharClipDriver.h"
 #include "char/CharClipGroup.h"
@@ -385,6 +386,7 @@ void BandCharacter::SyncObjects(){
         }
     }
 
+    unk5e0.sort(ByRadius());
 //   iVar4 = *(int *)(this + 0x5e4);
 //   if ((iVar4 != 0) && (*(int *)(iVar4 + 4) != 0)) {
 //     piVar12 = *(int **)(iVar4 + 8);

@@ -1,11 +1,9 @@
 #include "char/CharEyeDartRuleset.h"
-#include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
-
+#include "utl/Symbols.h"
 #include "decomp.h"
 
-unsigned short CharEyeDartRuleset::gRev = 0;
-unsigned short CharEyeDartRuleset::gAltRev = 0;
+INIT_REVS(CharEyeDartRuleset);
 
 CharEyeDartRuleset::CharEyeDartRuleset(){
     

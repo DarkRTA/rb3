@@ -4,8 +4,11 @@
 
 class MsgSource;
 
-class CharClipDisplay {
+class CharClipDisplay { // size 0x68
 public:
+    CharClipDisplay() : unk0(0), unk4(0), unk8(0), unkc(0), unk10(0), unk14(0), unk18(0), unk1c(0), unk20(0), unk64(0) {
+
+    }
 
     MsgSource* FindSource(Hmx::Object*);
     void SetClip(CharClip*, bool);
@@ -25,8 +28,24 @@ public:
     float unkc;
     float unk10;
     float unk14;
-    int unk18;
-    int unk1c;
-    int unk20;
+    float unk18;
+    float unk1c;
+    float unk20;
     char* unk24;
+    int unk28;
+    int unk2c;
+    int unk30;
+    int unk34;
+    int unk38;
+    int unk3c;
+    int unk40;
+    int unk44;
+    int unk48;
+    int unk4c;
+    int unk50;
+    int unk54;
+    int unk58;
+    int unk5c;
+    int unk60;
+    float unk64;
 };

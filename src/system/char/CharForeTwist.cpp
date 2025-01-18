@@ -1,10 +1,12 @@
 #include "char/CharForeTwist.h"
 #include "math/Rot.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharForeTwist)
 
-CharForeTwist::CharForeTwist() : mHand(this, 0), mTwist2(this, 0), mOffset(0.0f), mBias(0.0f) {
+CharForeTwist::CharForeTwist() : mHand(this), mTwist2(this), mOffset(0.0f), mBias(0.0f) {
 
 }
 
@@ -37,7 +39,7 @@ void CharForeTwist::Poll(){
 void CharForeTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     changedBy.push_back(mHand);
     change.push_back(mTwist2);
-    if(mTwist2) change.push_back(mTwist2->mParent);
+    if(mTwist2) change.push_back(mTwist2->TransParent());
 }
 
 SAVE_OBJ(CharForeTwist, 0x79)
@@ -45,7 +47,7 @@ SAVE_OBJ(CharForeTwist, 0x79)
 void CharForeTwist::Load(BinStream& bs){
     LOAD_REVS(bs);
     ASSERT_REVS(4, 0);
-    Hmx::Object::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
     bs >> mOffset;
     bs >> mHand;
     bs >> mTwist2;

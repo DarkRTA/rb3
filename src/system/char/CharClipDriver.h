@@ -15,8 +15,14 @@ public:
     void ScaleAdd(CharBones&, float);
     void RotateTo(CharBones&, float);
     CharClipDriver* DeleteClip(Hmx::Object*);
+    CharClipDriver* PreEvaluate(float, float, float);
+    float Evaluate(float, float, float);
     CharClipDriver* Next() const { return mNext; }
     CharClip* GetClip() const { return mClip; }
+
+    static int GetUpperFlags(int flags){
+        return (flags >> 0xC) & 0xF;
+    }
 
     NEW_POOL_OVERLOAD(CharClipDriver)
     DELETE_POOL_OVERLOAD(CharClipDriver)

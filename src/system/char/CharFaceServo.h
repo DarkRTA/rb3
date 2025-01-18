@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARFACESERVO_H
-#define CHAR_CHARFACESERVO_H
+#pragma once
 #include "char/CharPollable.h"
 #include "char/CharBonesMeshes.h"
 #include "obj/ObjPtr_p.h"
 
+/** "BonesMeshes for facial blending" */
 class CharFaceServo : public CharPollable, public CharBonesMeshes {
 public:
     CharFaceServo();
@@ -26,6 +26,7 @@ public:
     void SetClipType(Symbol);
     float BlinkWeightLeft() const;
     void ApplyProceduralWeights();
+    void SetProceduralBlinkWeight(float weight){ mProceduralBlinkWeight = weight; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -35,22 +36,26 @@ public:
         REGISTER_OBJ_FACTORY(CharFaceServo)
     }
 
-    ObjPtr<ObjectDir, ObjectDir> mClips; // 0x6c
+    /** "pointer to visemes, must contain Blink and Base" */
+    ObjPtr<ObjectDir> mClips; // 0x6c
+    /** "Which clip type it can support" */
     Symbol mClipType; // 0x78
-    ObjPtr<CharClip, ObjectDir> mBaseClip; // 0x7c
+    ObjPtr<CharClip> mBaseClip; // 0x7c
+    /** "Blink clip, used to close the left eye" */
     Symbol mBlinkClipLeftName; // 0x88
+    /** "A second clip that contributes to closing the left eye" */
     Symbol mBlinkClipLeftName2; // 0x8c
+    /** "Blink clip, used to close the right eye" */
     Symbol mBlinkClipRightName; // 0x90
+    /** "A second clip that contributes to closing the right eye" */
     Symbol mBlinkClipRightName2; // 0x94
-    ObjPtr<CharClip, ObjectDir> mBlinkClipLeft; // 0x98
-    ObjPtr<CharClip, ObjectDir> mBlinkClipLeft2; // 0xa4
-    ObjPtr<CharClip, ObjectDir> mBlinkClipRight; // 0xb0
-    ObjPtr<CharClip, ObjectDir> mBlinkClipRight2; // 0xbc
+    ObjPtr<CharClip> mBlinkClipLeft; // 0x98
+    ObjPtr<CharClip> mBlinkClipLeft2; // 0xa4
+    ObjPtr<CharClip> mBlinkClipRight; // 0xb0
+    ObjPtr<CharClip> mBlinkClipRight2; // 0xbc
     float mBlinkWeightLeft; // 0xc8
     float mBlinkWeightRight; // 0xcc
     bool mNeedScaleDown; // 0xd0
     float mProceduralBlinkWeight; // 0xd4
     bool mAppliedProceduralBlink; // 0xd8
 };
-
-#endif

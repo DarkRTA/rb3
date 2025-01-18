@@ -6,7 +6,7 @@
 
 INIT_REVS(CharFaceServo)
 
-CharFaceServo::CharFaceServo() : mClips(this, 0), mBaseClip(this, 0), mBlinkClipLeft(this, 0), mBlinkClipLeft2(this, 0), mBlinkClipRight(this, 0), mBlinkClipRight2(this, 0),
+CharFaceServo::CharFaceServo() : mClips(this), mBaseClip(this), mBlinkClipLeft(this), mBlinkClipLeft2(this), mBlinkClipRight(this), mBlinkClipRight2(this),
     mBlinkWeightLeft(0.0f), mBlinkWeightRight(0.0f), mNeedScaleDown(0), mProceduralBlinkWeight(0.0f), mAppliedProceduralBlink(0) {
 
 }
@@ -54,6 +54,7 @@ void CharFaceServo::SetClipType(Symbol s){
 
 void CharFaceServo::ReallocateInternal(){ CharBonesMeshes::ReallocateInternal(); }
 
+// matches in retail
 void CharFaceServo::Poll(){
     START_AUTO_TIMER("faceservo");
     if(mBaseClip){
@@ -66,9 +67,9 @@ void CharFaceServo::Poll(){
     mAppliedProceduralBlink = false;
 }
 
-// fn_804D35EC
+// fn_804D35EC - matches in retail
 void CharFaceServo::ScaleAdd(CharClip* clip, float weight, float f2, float f3){
-    if(!clip->mRelative){
+    if(!clip->Relative()){
         MILO_NOTIFY_ONCE("%s playing non-relative clip %s, cut it out!", PathName(this), PathName(clip));
     }
     else {
@@ -112,15 +113,17 @@ BEGIN_LOADS(CharFaceServo)
     LOAD_REVS(bs)
     ASSERT_REVS(4, 0)
     LOAD_SUPERCLASS(Hmx::Object)
-    ObjPtr<ObjectDir, ObjectDir> oDirPtr(this, 0);
+    ObjPtr<ObjectDir> oDirPtr(this);
     bs >> oDirPtr;
     Symbol sym;
     if(gRev > 3) bs >> sym;
     else if(oDirPtr){
         sym = oDirPtr->Type();
         if(sym.Null()){
-            ObjDirItr<CharClip> it(oDirPtr, true);
-            if(it != 0) sym = it->Type();
+            for(ObjDirItr<CharClip> it(oDirPtr, true); it != nullptr; ++it){
+                sym = it->Type();
+                break;
+            }
         }
     }
     if(gRev != 0) bs >> mBlinkClipLeftName;
