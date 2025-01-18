@@ -1,11 +1,12 @@
 #include "char/CharIKFingers.h"
+#include "math/Mtx.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharIKFingers)
 
-CharIKFingers::CharIKFingers() : mHand(0, 0), mForeArm(0, 0), mUpperArm(0, 0), mBlendInFrames(0), mBlendOutFrames(0), mResetHandDest(1), mResetCurHandTrans(1),
+CharIKFingers::CharIKFingers() : mHand(0), mForeArm(0), mUpperArm(0), mBlendInFrames(0), mBlendOutFrames(0), mResetHandDest(1), mResetCurHandTrans(1),
     mFingerCurledLength(0.85f), mHandMoveForward(1.0f), mHandPinkyRotation(-0.06f), mHandThumbRotation(0.23f), mHandDestOffset(-0.4f),
-    mIsRightHand(1), mMoveHand(0), mIsSetup(0), mOutputTrans(this, 0), mKeyboardRefBone(this, 0) {
+    mIsRightHand(1), mMoveHand(0), mIsSetup(0), mOutputTrans(this), mKeyboardRefBone(this) {
     mFingers.resize(5, FingerDesc());
     mCurHandTrans.Zero();
     mDestHandTrans.Zero();
@@ -26,7 +27,9 @@ void CharIKFingers::SetFinger(Vector3 v1, Vector3 v2, CharIKFingers::FingerNum f
     finger.unk84 = true;
     Transform tf48;
     Multiply(finger.mFinger01->LocalXfm(), mCurHandTrans, tf48);
-    // some xfm math
+    if(Distance(tf48.v, v1) > finger.unk4 * mFingerCurledLength){
+        mMoveHand = true;
+    }
     mBlendInFrames = 5;
     finger.unk60 = 5;
     finger.unk64 = 0;
@@ -117,9 +120,122 @@ void CharIKFingers::SetName(const char* name, ObjectDir* dir){
 #pragma pop
 
 void CharIKFingers::Poll(){
-    Hmx::Matrix3 m;
-    Vector3 v;
-    mCurHandTrans.Set(m, v);
+    if(!mHand || !mIsSetup) return;
+    else {
+        Hmx::Matrix3 mtx58;
+        Hmx::Matrix3 mtx7c;
+        Invert(mKeyboardRefBone->WorldXfm().m, mtx58);
+        Multiply(mHand->WorldXfm().m, mtx58, mtx7c);
+        Vector3 v88;
+        Subtract(mKeyboardRefBone->WorldXfm().v, mHand->WorldXfm().v, v88);
+        float weight = Weight();
+        if(weight < 1.0){
+            if(mOutputTrans){
+                mOutputTrans->SetWorldXfm(mHand->WorldXfm());
+            }
+        }
+        else {
+            if(mResetCurHandTrans){
+                mCurHandTrans.Set(mHand->WorldXfm().m, mHand->WorldXfm().v);
+                mDestHandTrans.Set(mHand->WorldXfm().m, mHand->WorldXfm().v);
+                mResetCurHandTrans = false;
+            }
+            int i3 = 0;
+            float f8 = 1.0f;
+            int i1 = -1;
+            for(int i = 0; i < 5; i++){
+                if(mFingers[i].unk0){
+                    if(i1 == -1) i1 = i;
+                    i3++;
+                }
+            }
+            CalculateHandDest(i3, i1);
+            if(mBlendInFrames > 0){
+                f8 = 1.0f - mBlendInFrames / 5.0f;
+            }
+            else if(mBlendOutFrames > 0){
+                f8 = 1.0f - mBlendOutFrames / 5.0f;
+            }
+            Interp(mCurHandTrans.v, mDestHandTrans.v, f8, mCurHandTrans.v);
+            Interp(mCurHandTrans.m, mDestHandTrans.m, f8, mCurHandTrans.m);
+            if(mOutputTrans){
+                mOutputTrans->SetWorldXfm(mCurHandTrans);
+            }
+            for(int i = 0; i < 5; i++){
+                CalculateFingerDest((FingerNum)i);
+                MoveFinger((FingerNum)i);
+            }
+            if(i3 > 0){
+                for(int i = 2; i <= 4; i++){
+                    FingerDesc& prevFinger = mFingers[i - 1];
+                    FingerDesc& curFinger = mFingers[i];
+                    if(!curFinger.unk0){
+                        if(i == 4){
+                            FixSingleFinger(prevFinger.mFinger01, curFinger.mFinger01, nullptr);
+                        }
+                        else {
+                            FixSingleFinger(prevFinger.mFinger01, curFinger.mFinger01, mFingers[i + 1].mFinger01);
+                        }
+                    }
+                }
+            }
+            if(mBlendInFrames > 0) mBlendInFrames--;
+            if(mBlendOutFrames > 0) mBlendOutFrames--;
+        }        
+    }
+}
+
+void CharIKFingers::CalculateHandDest(int i1, int i2){
+    Transform tf110(mHand->WorldXfm()); // auStack_110
+    if(mMoveHand){
+        if(i1 > 0){
+            Vector3 v188(0,0,0);
+            FingerDesc desc(mFingers[i2]);
+            Vector3 v194; v194.Zero();
+            bool b1 = false;
+            Vector3 v1a0(mHandDestOffset, 0, 0);
+            if(!mIsRightHand){
+                Scale(v1a0, -1.0f, v1a0);
+            }
+            Multiply(v1a0, mKeyboardRefBone->WorldXfm().m, v1a0);
+            Hmx::Matrix3 m134;
+            Multiply(mtx, mKeyboardRefBone->WorldXfm().m, m134);
+            Normalize(m134, mDestHandTrans.m);
+            for(int i = 0; i < 5; i++){
+                FingerDesc& curDesc = mFingers[i];
+                if(curDesc.unk0){
+                    ::Add(curDesc.unk8, v194, v194);
+                    Vector3 v1ac;
+                    Scale(v1a0, i - 2.0, v1ac);
+                    ::Add(v1ac, v194, v194);
+                    if(i == 0){
+                        Hmx::Matrix3 m158;
+                        float f5 = mHandThumbRotation;
+                        if(!mIsRightHand) f5 *= -1.0f;
+                        m158.RotateAboutY(f5);
+                        Multiply(m158, m134, mDestHandTrans.m);
+                        b1 = true;
+                    }
+                    else if(i == 4){
+                        Hmx::Matrix3 m17c;
+                        float f5 = mHandPinkyRotation;
+                        if(!mIsRightHand) f5 *= -1.0f;
+                        m17c.RotateAboutY(f5);
+                        Multiply(m17c, m134, mDestHandTrans.m);
+                        b1 = true;
+                    }
+                }
+            }
+            Scale(v194, 1.0f / i1, v194);
+            if(b1) v188.y += mHandMoveForward;
+            ::Add(mHandKeyboardOffset, v188, v188);
+            Multiply(v188, mKeyboardRefBone->WorldXfm().m, v188);
+            Vector3 v1b8;
+            ::Add(v194, v188, v1b8);
+            mDestHandTrans.v.Set(v1b8.x, v1b8.y, v1b8.z);
+        }
+        mMoveHand = false;
+    }
 }
 
 SAVE_OBJ(CharIKFingers, 0x36A)

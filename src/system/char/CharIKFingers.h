@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARIKFINGERS_H
-#define CHAR_CHARIKFINGERS_H
+#pragma once
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
@@ -9,6 +8,7 @@
 #include "obj/ObjVector.h"
 #include "char/CharCollide.h"
 
+/** "Pins fingers to world positions" */
 class CharIKFingers : public RndHighlightable, public CharWeightable, public CharPollable {
 public:
 
@@ -29,10 +29,10 @@ public:
         float unk4;
         Vector3 unk8; // 0x8
         Vector3 unk14; // 0x14
-        ObjPtr<RndTransformable, ObjectDir> mFinger01; // 0x20
-        ObjPtr<RndTransformable, ObjectDir> mFinger02; // 0x2c
-        ObjPtr<RndTransformable, ObjectDir> mFinger03; // 0x38
-        ObjPtr<RndTransformable, ObjectDir> mFingertip; // 0x44
+        ObjPtr<RndTransformable> mFinger01; // 0x20
+        ObjPtr<RndTransformable> mFinger02; // 0x2c
+        ObjPtr<RndTransformable> mFinger03; // 0x38
+        ObjPtr<RndTransformable> mFingertip; // 0x44
         float unk50;
         float unk54;
         float unk58;
@@ -62,6 +62,10 @@ public:
     void MeasureLengths();
     void SetFinger(Vector3, Vector3, FingerNum);
     void ReleaseFinger(FingerNum);
+    void CalculateHandDest(int, int);
+    void CalculateFingerDest(FingerNum);
+    void MoveFinger(FingerNum);
+    void FixSingleFinger(RndTransformable*, RndTransformable*, RndTransformable*);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -71,9 +75,9 @@ public:
         REGISTER_OBJ_FACTORY(CharIKFingers)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mHand; // 0x28
-    ObjPtr<RndTransformable, ObjectDir> mForeArm; // 0x34
-    ObjPtr<RndTransformable, ObjectDir> mUpperArm; // 0x40
+    ObjPtr<RndTransformable> mHand; // 0x28
+    ObjPtr<RndTransformable> mForeArm; // 0x34
+    ObjPtr<RndTransformable> mUpperArm; // 0x40
     int mBlendInFrames; // 0x4c
     int mBlendOutFrames; // 0x50
     bool mResetHandDest; // 0x54
@@ -83,20 +87,26 @@ public:
     float mFingerCurledLength; // 0xb8
     Vector3 mDestForwardVector; // 0xbc
     Vector3 mCurForwardVector; // 0xc8
+    /** "Starting hand offset from keyboard." */
     Vector3 mHandKeyboardOffset; // 0xd4
     Hmx::Matrix3 mtx; // 0xe0
+    /** "how much to move forward when pinky or thumb is engaged" */
     float mHandMoveForward; // 0x104
+    /** "how much to rotate the hand (radians) when pinky is engaged" */
     float mHandPinkyRotation; // 0x108
+    /** "how much to rotate the hand (radians) when thumb is engaged" */
     float mHandThumbRotation; // 0x10c
+    /** "x offset for right/left hands from average destination position for fingers" */
     float mHandDestOffset; // 0x110
+    /** "Does this run the right or left hand?" */
     bool mIsRightHand; // 0x114
     bool mMoveHand; // 0x115
     bool mIsSetup; // 0x116
     std::vector<FingerDesc> mFingers; // 0x118
     float mInv2ab; // 0x120
     float mAAPlusBB; // 0x124
-    ObjPtr<RndTransformable, ObjectDir> mOutputTrans; // 0x128
-    ObjPtr<RndTransformable, ObjectDir> mKeyboardRefBone; // 0x134
+    /** "This trans will be set to the desired hand position." */
+    ObjPtr<RndTransformable> mOutputTrans; // 0x128
+    /** "A keyboard bone so we can calculate in local space. use rh/lh targets." */
+    ObjPtr<RndTransformable> mKeyboardRefBone; // 0x134
 };
-
-#endif
