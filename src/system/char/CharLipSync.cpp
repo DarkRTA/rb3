@@ -184,7 +184,7 @@ END_COPYS
 
 BEGIN_PROPSYNCS(CharLipSync)
     SYNC_PROP_STATIC(frames, mFrames)
-    SYNC_PROP_SET(duration, 0, )
+    SYNC_PROP_SET(duration, Duration(), )
     SYNC_PROP_MODIFY_STATIC(visemes, mVisemes, )
     SYNC_PROP(prop_anim, mPropAnim)
 END_PROPSYNCS

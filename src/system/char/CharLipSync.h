@@ -65,6 +65,7 @@ public:
 
     void Parse(DataArray*);
     RndPropAnim* GetPropAnim() const { return mPropAnim; }
+    float Duration(){ return (float)(mFrames - 1) / 30.0f;}
 
     DataNode OnParse(DataArray*);
     DataNode OnParseArray(DataArray*);
