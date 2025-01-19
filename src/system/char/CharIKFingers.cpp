@@ -1,5 +1,7 @@
 #include "char/CharIKFingers.h"
 #include "math/Mtx.h"
+#include "math/Rot.h"
+#include "rndobj/Trans.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharIKFingers)
@@ -235,6 +237,140 @@ void CharIKFingers::CalculateHandDest(int i1, int i2){
             mDestHandTrans.v.Set(v1b8.x, v1b8.y, v1b8.z);
         }
         mMoveHand = false;
+    }
+}
+
+void CharIKFingers::MoveFinger(FingerNum num){
+    FingerDesc& finger = mFingers[num];
+    if(finger.unk0 || finger.unk60 > 0 || finger.unk64 > 0){
+        Transform tf60;
+        Transform tf90(mDestHandTrans);
+        if(finger.mFinger01->TransParent() != mHand){
+            Multiply(finger.mFinger01->TransParent()->mLocalXfm, mDestHandTrans, tf90);
+        }
+        Multiply(finger.mFinger01->mLocalXfm, tf90, tf60);
+
+        float f5 = 1.0f;
+        if(finger.unk60 > 0 || finger.unk64 > 0){
+            if(finger.unk60 > 0){
+                f5 = 1.0f - finger.unk60 / 5.0f;
+            }
+            else if(finger.unk64 > 0){
+                f5 = 1.0f - finger.unk64 / 5.0f;
+            }
+        }
+
+        Interp(finger.unk58, finger.unk50, f5, finger.unk58);
+        Interp(finger.unk5c, finger.unk54, f5, finger.unk5c);
+        Hmx::Matrix3 mb8;
+        Vector3 v128(0, 0, finger.unk58);
+        MakeRotMatrix(v128, mb8, true);
+        finger.mFinger02->SetLocalRot(mb8);
+        v128.Set(0, 0, finger.unk5c);
+        MakeRotMatrix(v128, mb8, true);
+        finger.mFinger03->SetLocalRot(mb8);
+        Interp(finger.unk78, finger.unk6c, f5, finger.unk78);
+        Hmx::Quat q138;
+        MakeRotQuat(tf60.m.x, finger.unk78, q138);
+        Transform tfe8;
+        Multiply(tf60.m.x, q138, tfe8.m.x);
+        Multiply(tf60.m.y, q138, tfe8.m.y);
+        Multiply(tf60.m.z, q138, tfe8.m.z);
+        Normalize(tfe8.m, tfe8.m);
+        tfe8.v = tf60.v;
+        Transform tf118;
+        Invert(tf90, tf118);
+        Multiply(tfe8, tf118, finger.mFinger01->DirtyLocalXfm());
+        if(finger.unk64 > 0) finger.unk64--;
+        if(finger.unk60 > 0) finger.unk60--;
+    }
+}
+
+void CharIKFingers::CalculateFingerDest(FingerNum num){
+    if(mOutputTrans){
+        FingerDesc& finger = mFingers[num];
+        if(finger.unk68){
+            Transform tf78;
+            RndTransformable* fingerFinger = finger.mFinger01;
+            Multiply(fingerFinger->mLocalXfm, mOutputTrans->WorldXfm(), tf78);
+            finger.unk78 = tf78.m.x;
+            Vector3 v1cc;
+            fingerFinger = finger.mFinger02;
+            MakeEuler(fingerFinger->mLocalXfm.m, v1cc);
+            Vector3 v1d8;
+            fingerFinger = finger.mFinger03;
+            MakeEuler(fingerFinger->mLocalXfm.m, v1d8);
+            finger.unk58 = v1cc.z;
+            finger.unk5c = v1d8.z;
+            finger.unk68 = false;
+        }
+        if(finger.unk84){
+            if(finger.unk0){
+                Transform tfa8;
+                Transform tfd8;
+                Transform tf108;
+                Transform tf138;
+                if(finger.mFinger01->TransParent() != mHand){
+                    Transform tf168;
+                    Multiply(finger.mFinger01->TransParent()->mLocalXfm, mDestHandTrans, tf168);
+                    Multiply(finger.mFinger01->mLocalXfm, tf168, tfa8);
+                }
+                else {
+                    Multiply(finger.mFinger01->mLocalXfm, mDestHandTrans, tfa8);
+                }
+
+                Multiply(finger.mFinger02->mLocalXfm, tfa8, tfd8);
+                Multiply(finger.mFinger03->mLocalXfm, tfd8, tf108);
+                Multiply(finger.mFingertip->mLocalXfm, tf108, tf138);
+                Vector3 v1e4;
+                if(Distance(tf138.v, finger.unk14) < Distance(tf138.v, finger.unk8)){
+                    v1e4 = finger.unk8;
+                }
+                else v1e4 = finger.unk14;
+                
+                Hmx::Matrix3 m190;
+                Vector3 v1f0 = tfa8.m.y;
+                Vector3 v1fc = tfa8.m.x;
+                Vector3 v208 = tfa8.m.z;
+                Vector3 v214 = tfa8.v;
+                Vector3 v220;
+                Subtract(v1e4, v214, v220);
+
+                float len5 = Length(finger.mFinger02->mLocalXfm.v);
+                float len6 = Length(finger.mFingertip->mLocalXfm.v);
+                float len7 = Length(finger.mFinger03->mLocalXfm.v);
+                float len8 = Length(v220);
+                float f9 = std::acos(-((len8 - len7) * (len8 - len7) - (len5 * len5 + len6 * len6)) / (len5 * 2.0f * len6));
+                if(f9 < 0.87f) f9 = 0.87f;
+                float f5 = f9 * 0.5f + 1.5707964f;
+                if(IsNaN(f5)){
+                    f5 = 2.96f;
+                }
+                finger.unk50 = PI - f5;
+                finger.unk54 = PI - f5;
+                Hmx::Quat q230(v208, -(f5 * 2.0f - 2 * PI));
+                Multiply(v1fc, q230, v1fc);
+                Hmx::Quat q240;
+                MakeRotQuat(v1fc, v220, q240);
+                Multiply(tfa8.m.x, q240, finger.unk6c);
+                finger.unk84 = false;
+            }
+            else {
+                Transform tf1c0;
+                RndTransformable* fingerFinger = finger.mFinger01;
+                Multiply(fingerFinger->mLocalXfm, mOutputTrans->WorldXfm(), tf1c0);
+                finger.unk6c = tf1c0.m.x;
+                Vector3 v24c;
+                fingerFinger = finger.mFinger02;
+                MakeEuler(fingerFinger->mLocalXfm.m, v24c);
+                Vector3 v258;
+                fingerFinger = finger.mFinger03;
+                MakeEuler(fingerFinger->mLocalXfm.m, v258);
+                finger.unk50 = v24c.z;
+                finger.unk54 = v258.z;
+                finger.unk84 = false;
+            }
+        }
     }
 }
 

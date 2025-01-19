@@ -3,7 +3,7 @@
 #include "math/Vec.h"
 #include "math/Mtx.h"
 
-#define PI 3.14159265358979323846
+#define PI 3.1415927f
 #define RAD2DEG 57.2957763671875f
 #define DEG2RAD 0.01745329238474369049f
 
