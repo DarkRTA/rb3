@@ -80,13 +80,13 @@ void CharIKFoot::DoFSM(Transform& tf){
 void CharIKFoot::Poll(){
     if(!mFinger || !mHand || !mData) return;
     mTargets.clear();
-    mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(unk88), 0));
+    mTargets.push_back(IKTarget(ObjPtr<RndTransformable>(unk88), 0));
     DoFSM(unk88->DirtyLocalXfm());
     CharIKHand::Poll();
     mTargets.clear();
 }
 
-CharIKHand::IKTarget::IKTarget(ObjPtr<RndTransformable, ObjectDir> o, float f) : mTarget(o), mExtent(f) {}
+CharIKHand::IKTarget::IKTarget(ObjPtr<RndTransformable> o, float f) : mTarget(o), mExtent(f) {}
 
 void CharIKFoot::PollDeps(std::list<Hmx::Object*>& l1, std::list<Hmx::Object*>& l2){
     CharIKHand::PollDeps(l1, l2);

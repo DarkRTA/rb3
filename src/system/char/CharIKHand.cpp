@@ -22,7 +22,7 @@ CharIKHand::~CharIKHand(){
 
 #pragma push
 #pragma dont_inline on
-// fn_804E02E4
+// fn_804E02E4 - https://decomp.me/scratch/5zJNZ
 void CharIKHand::Poll(){
     float charWeight = Weight();
     RndTransformable* trans = mHand;
@@ -157,7 +157,7 @@ void CharIKHand::Poll(){
     }
 }
 
-// fn_804E09B4
+// fn_804E09B4 - https://decomp.me/scratch/X8Imr
 void CharIKHand::IKElbow(RndTransformable* trans1, RndTransformable* trans2){
     if(!trans1 || !trans2) return;
     Vector3 v100;
@@ -167,8 +167,8 @@ void CharIKHand::IKElbow(RndTransformable* trans1, RndTransformable* trans2){
     trans2->SetWorldXfm(tf78);
     float loc210 = unk64 * (DistanceSquared(trans2->WorldXfm().v, mWorldDst) - mInv2ab);
     ClampEq(loc210, -1.0f,1.0f);
-    float sqrted = std::sqrt(-(loc210 * loc210 - 1.0f));
-    trans1->DirtyLocalXfm().m.Set(0.0f, 0.0f, 0.0f, -sqrted, 0.0f, 0.0f, sqrted, 0.0f, 1.0f);
+    float sqrted = -std::sqrt(-(loc210 * loc210 - 1.0f));
+    trans1->DirtyLocalXfm().m.Set(loc210, sqrted, 0, -sqrted, loc210, 0, 0, 0, 1);
     Vector3 v10c, v118;
     Multiply(trans2->WorldXfm(), mHand->WorldXfm().v, v118);
     Multiply(trans2->WorldXfm(), mWorldDst, v10c);

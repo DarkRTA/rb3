@@ -1,9 +1,16 @@
-#ifndef CHAR_CHARIKROD_H
-#define CHAR_CHARIKROD_H
+#pragma once
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 
+/** "<p>Rigs a bone between two other bones and sets the
+ *  orientation from that.</p>
+ *
+ *  <p>When you set up all the bone pointers, the rig xfm will be
+ *  computed, an inverse from that to the dst bone will be computed,
+ *  and everything will come from that. So the dst bone will maintain
+ *  the exact same position in that pose. That makes it easy to author
+ *  the bones.</p>" */
 class CharIKRod : public CharPollable {
 public:
     CharIKRod();
@@ -29,13 +36,17 @@ public:
         REGISTER_OBJ_FACTORY(CharIKRod)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mLeftEnd; // 0x8
-    ObjPtr<RndTransformable, ObjectDir> mRightEnd; // 0x14
+    /** "Left end of the rod" */
+    ObjPtr<RndTransformable> mLeftEnd; // 0x8
+    /** "Right end of the rod" */
+    ObjPtr<RndTransformable> mRightEnd; // 0x14
+    /** "Fraction of the way dest is from left (0) to right(1)" */
     float mDestPos; // 0x20
-    ObjPtr<RndTransformable, ObjectDir> mSideAxis; // 0x24
+    /** "Take the z axis from this bone rather than from rod end delta" */
+    ObjPtr<RndTransformable> mSideAxis; // 0x24
+    /** "Force the dest to be vertically upright" */
     bool mVertical; // 0x30
-    ObjPtr<RndTransformable, ObjectDir> mDest; // 0x34
+    /** "The bone to set" */
+    ObjPtr<RndTransformable> mDest; // 0x34
     Transform mXfm; // 0x40
 };
-
-#endif
