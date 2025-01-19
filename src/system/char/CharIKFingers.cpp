@@ -1,7 +1,10 @@
 #include "char/CharIKFingers.h"
+#include "math/Color.h"
 #include "math/Mtx.h"
 #include "math/Rot.h"
+#include "rndobj/Rnd.h"
 #include "rndobj/Trans.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharIKFingers)
@@ -372,6 +375,98 @@ void CharIKFingers::CalculateFingerDest(FingerNum num){
             }
         }
     }
+}
+
+void CharIKFingers::FixSingleFinger(RndTransformable* t1, RndTransformable* t2, RndTransformable* t3){
+    Hmx::Matrix3 m38;
+    Vector3 va8;
+    if(t3){
+        ::Add(t1->WorldXfm().m.x, t3->WorldXfm().m.x, va8);
+        Scale(va8, 0.5f, va8);
+    }
+    else {
+        va8 = t1->WorldXfm().m.x;
+    }
+
+    Hmx::Quat qb8;
+    MakeRotQuat(t2->WorldXfm().m.x, va8, qb8);
+
+    Transform tf68;
+    Multiply(t2->WorldXfm().m.x, qb8, tf68.m.x);
+    Multiply(t2->WorldXfm().m.y, qb8, tf68.m.y);
+    Multiply(t2->WorldXfm().m.z, qb8, tf68.m.z);
+    tf68.v = t2->WorldXfm().v;
+
+    Transform tf98;
+    Invert(t2->TransParent()->WorldXfm(), tf98);
+    Multiply(tf68, tf98, t2->DirtyLocalXfm());
+}
+
+void CharIKFingers::MeasureLengths(){
+    for(int i = 0; i < 5; i++){
+        RndTransformable* t1 = mFingers[i].mFinger02;
+        RndTransformable* t2 = mFingers[i].mFinger03;
+        RndTransformable* t3 = mFingers[i].mFingertip;
+        if(t1 && t2 && t3){
+            float& len = mFingers[i].unk4;
+            len = Length(t1->mLocalXfm.v) + Length(t2->mLocalXfm.v) + Length(t3->mLocalXfm.v);
+        }
+    }
+
+    if(mHand && mHand->TransParent() && mHand->TransParent()->TransParent()){
+        mInv2ab = 2.0f;
+        mAAPlusBB = 0;
+        float handLen = Length(mHand->mLocalXfm.v);
+        mAAPlusBB += handLen * handLen;
+        mInv2ab *= handLen;
+        float handParentLen = Length(mHand->TransParent()->mLocalXfm.v);
+        mAAPlusBB += handParentLen * handParentLen;
+        mInv2ab = 1.0f / (mInv2ab * handParentLen);
+    }
+}
+
+void CharIKFingers::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    change.push_back(mHand);
+    changedBy.push_back(mHand);
+    for(int i = 0; i < 5; i++){
+        FingerDesc desc(mFingers[i]);
+        if(desc.mFinger01){
+            changedBy.push_back(desc.mFinger01);
+        }
+        if(desc.mFinger02){
+            changedBy.push_back(desc.mFinger02);
+        }
+        if(desc.mFinger03){
+            changedBy.push_back(desc.mFinger03);
+        }
+        if(desc.mFingertip){
+            changedBy.push_back(desc.mFingertip);
+        }
+    }
+    if(mForeArm){
+        change.push_back(mForeArm);
+        changedBy.push_back(mForeArm);
+    }
+    if(mUpperArm){
+        change.push_back(mUpperArm);
+        changedBy.push_back(mUpperArm);
+    }
+}
+
+void CharIKFingers::Highlight(){
+#ifdef MILO_DEBUG
+    for(int i = 0; i < 5; i++){
+        FingerDesc desc(mFingers[i]);
+        if(desc.unk0){
+            UtilDrawSphere(desc.unk8, 0.2f, Hmx::Color(1,0,0));
+            UtilDrawSphere(desc.unk14, 0.2f, Hmx::Color(0,1,0));
+            UtilDrawAxes(desc.mFinger01->WorldXfm(), 1.0f, Hmx::Color(1,1,1));
+            TheRnd->DrawLine(desc.mFinger01->WorldXfm().v, desc.mFinger02->WorldXfm().v, Hmx::Color(1,1,1), false);
+            TheRnd->DrawLine(desc.mFinger02->WorldXfm().v, desc.mFinger03->WorldXfm().v, Hmx::Color(1,1,1), false);
+            TheRnd->DrawLine(desc.mFinger03->WorldXfm().v, desc.mFingertip->WorldXfm().v, Hmx::Color(1,1,1), false);
+        }
+    }
+#endif
 }
 
 SAVE_OBJ(CharIKFingers, 0x36A)
