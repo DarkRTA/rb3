@@ -1,11 +1,18 @@
 #include "char/CharIKHand.h"
+#include "decomp.h"
+#include "math/Color.h"
 #include "math/Rot.h"
+#include "math/Vec.h"
+#include "obj/ObjMacros.h"
+#include "rndobj/Rnd.h"
+#include "rndobj/Trans.h"
+#include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharIKHand)
 
-CharIKHand::CharIKHand() : mHand(this, 0), mFinger(this, 0), mTargets(this), mOrientation(1), mStretch(1), mScalable(0), mMoveElbow(1),
-    mElbowSwing(0.0f), mAlwaysIKElbow(0), mAAPlusBB(0.0f), mConstrainWrist(0), mWristRadians(0.0f), mElbowCollide(this, 0), mClockwise(0) {
+CharIKHand::CharIKHand() : mHand(this), mFinger(this), mTargets(this), mOrientation(1), mStretch(1), mScalable(0), mMoveElbow(1),
+    mElbowSwing(0.0f), mAlwaysIKElbow(0), mAAPlusBB(0.0f), mConstrainWrist(0), mWristRadians(0.0f), mElbowCollide(this), mClockwise(0) {
 
 }
 
@@ -261,6 +268,16 @@ void CharIKHand::IKElbow(RndTransformable* trans1, RndTransformable* trans2){
 }
 #pragma pop
 
+void CharIKHand::PullShoulder(Vector3& v, const Transform& tf, const Vector3& vconst, float fff){
+    Subtract(vconst, tf.v, v);
+    float lensq = LengthSquared(v);
+    float f2 = fff * 0.95f;
+    if(lensq > f2 * f2){
+        v *= 1.0f - f2 / std::sqrt(lensq);
+    }
+    else v.Zero();
+}
+
 void CharIKHand::SetHand(RndTransformable* t){
     mHand = t;
     mHandChanged = true;
@@ -288,6 +305,72 @@ void CharIKHand::MeasureLengths(){
     }
 }
 
+void CharIKHand::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+    change.push_back(mHand);
+    changedBy.push_back(mHand);
+    change.push_back(mFinger);
+    changedBy.push_back(mFinger);
+    for(ObjVector<IKTarget>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+        changedBy.push_back(it->mTarget);
+    }
+    if(mMoveElbow && mHand){
+        RndTransformable* handParent = mHand->TransParent();
+        if(handParent){
+            change.push_back(handParent);
+            changedBy.push_back(handParent);
+            handParent = handParent->TransParent();
+            if(handParent){
+                change.push_back(handParent);
+                changedBy.push_back(handParent);
+            }
+        }
+    }
+}
+
+void CharIKHand::Highlight(){
+#ifdef MILO_DEBUG
+    float f2 = Weight();
+    float f1 = 0;
+    float floatArr[16];
+    if(f2 == 0 || !mHand || mTargets.empty()) return;
+    else {
+        if(mTargets.size() != 1){
+            float* fp = &floatArr[0];
+            for(ObjVector<IKTarget>::iterator it = mTargets.begin(); it != mTargets.end(); ++it, fp++){
+                RndTransformable* curTarget = it->mTarget;
+                if(curTarget){
+                    float f3 = 144.0f / LengthSquared(curTarget->mLocalXfm.v);
+                    *fp = f3;
+                    f1 += f3;
+                }
+            }
+            float f3 = 0;
+            if(f1 < 1.0f){
+                f3 = f2 * (1.0f - f1);
+                f2 -= f3;
+            }
+            TheRnd->DrawString(MakeString("weight %g", f2), Vector2(100.0f, 100.0f), Hmx::Color(1,1,1), true);
+            TheRnd->DrawString(MakeString("leftover %g", f3), Vector2(100.0f, 114.0f), Hmx::Color(1,1,1), true);
+            fp = &floatArr[0];
+            int idx = 0;
+            for(ObjVector<IKTarget>::iterator it = mTargets.begin(); it != mTargets.end(); ++it, fp++, idx++){
+                f3 = *fp;
+                float fdiv = f3 / f1;
+                if(it->mTarget){
+                    Transform& curWorld = it->mTarget->WorldXfm();
+                    TheRnd->DrawString(MakeString("%s %g", it->mTarget->Name(), f2 * fdiv), Vector2(100.0f, (idx + 2) * 14.0f + 100.0f), Hmx::Color(1,1,1), true);
+                    UtilDrawAxes(curWorld, 1.0f, Hmx::Color(1,1,1));
+                    UtilDrawSphere(curWorld.v, fdiv, Hmx::Color(1,0,0));
+                    TheRnd->DrawLine(curWorld.v, it->mTarget->TransParent()->WorldXfm().v, Hmx::Color(1,0,0), false);
+                }
+            }
+        }
+        UtilDrawAxes(mHand->WorldXfm(), 1.0f, Hmx::Color(1,1,1));
+        UtilDrawSphere(mHand->WorldXfm().v, 1.0f, Hmx::Color(0,1,0));
+    }
+#endif
+}
+
 SAVE_OBJ(CharIKHand, 0x2A8)
 
 BEGIN_LOADS(CharIKHand)
@@ -299,18 +382,18 @@ BEGIN_LOADS(CharIKHand)
     if(gRev > 4) bs >> mFinger;
     else mFinger = 0;
     if(gRev < 3){
-        ObjPtr<RndTransformable, ObjectDir> tPtr(this, 0);
+        ObjPtr<RndTransformable> tPtr(this, 0);
         bs >> tPtr;
         mTargets.clear();
-        mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(tPtr), 0));
+        mTargets.push_back(IKTarget(ObjPtr<RndTransformable>(tPtr), 0));
     }
     else if(gRev < 0xB){
-        ObjPtrList<RndTransformable, ObjectDir> tList(this, kObjListNoNull);
+        ObjPtrList<RndTransformable> tList(this, kObjListNoNull);
         bs >> tList;
         mTargets.clear();
-        for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = tList.begin(); it != tList.end(); ++it){
-            ObjPtr<RndTransformable, ObjectDir> tPtr(this, *it);
-            mTargets.push_back(IKTarget(ObjPtr<RndTransformable, ObjectDir>(tPtr), 0));
+        for(ObjPtrList<RndTransformable>::iterator it = tList.begin(); it != tList.end(); ++it){
+            ObjPtr<RndTransformable> tPtr(this, *it);
+            mTargets.push_back(IKTarget(ObjPtr<RndTransformable>(tPtr), 0));
         }
     }
     else bs >> mTargets;
@@ -344,13 +427,15 @@ BEGIN_LOADS(CharIKHand)
     SetHand(mHand);
 END_LOADS
 
+DECOMP_FORCEACTIVE(CharIKHand, "ObjPtr_p.h", "f.Owner()", "")
+
 BEGIN_COPYS(CharIKHand)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(CharWeightable)
     CREATE_COPY(CharIKHand)
     BEGIN_COPYING_MEMBERS
         SetHand(c->mHand);
-        COPY_MEMBER(mHand)
+        COPY_MEMBER(mFinger)
         COPY_MEMBER(mTargets)
         COPY_MEMBER(mOrientation)
         COPY_MEMBER(mStretch)
@@ -359,6 +444,7 @@ BEGIN_COPYS(CharIKHand)
         COPY_MEMBER(mElbowSwing)
         COPY_MEMBER(mAlwaysIKElbow)
         COPY_MEMBER(mConstrainWrist)
+        COPY_MEMBER(mWristRadians)
         COPY_MEMBER(mTargets)
         COPY_MEMBER(mElbowCollide)
         COPY_MEMBER(mClockwise)
