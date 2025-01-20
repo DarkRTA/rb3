@@ -350,11 +350,19 @@ TextStream& operator<<(TextStream&, RndMesh::Volume);
 
 class SyncMeshCB {
 public:
+    class Vert {
+    public:
+        Vert(){}
+
+        Vector3 pos; // 0x0
+        Vector3 norm; // 0xc
+    };
+
     SyncMeshCB(){}
     virtual ~SyncMeshCB(){}
     virtual void SyncMesh(RndMesh*, int) = 0;
     virtual bool HasMesh(RndMesh*) = 0;
-    virtual const std::vector<RndMesh::Vert>& GetVerts(RndMesh*) const = 0; // fix return type
+    virtual const std::vector<SyncMeshCB::Vert>& GetVerts(RndMesh*) const = 0; // fix return type
 };
 
 class PatchVerts {

@@ -1,17 +1,25 @@
 #include "char/CharLookAt.h"
+#include "math/Mtx.h"
 #include "math/Utl.h"
 #include "math/Rot.h"
 #include "math/Rand.h"
 #include "obj/Task.h"
+#include "rndobj/Graph.h"
 #include "utl/Symbols.h"
 
 bool CharLookAt::sDisableJitter;
 
 INIT_REVS(CharLookAt);
 
-CharLookAt::CharLookAt() : mSource(this, 0), mPivot(this, 0), mDest(this, 0), mHalfTime(0.0f), mMinYaw(-80.0f), mMaxYaw(80.0f), mMinPitch(-80.0f), mMaxPitch(80.0f),
-    mMinWeightYaw(-1.0f), mMaxWeightYaw(1.0f), mWeightYawSpeed(10000.0f), unk6c(1e+29f,0.0f,0.0f), unk78(1.0f), mSourceRadius(0.0f), vec80(0.0f, 0.0f, 0.0f),
-    mShowRange(0), mTestRange(0), mTestRangePitch(0.5f), mTestRangeYaw(0.5f), mAllowRoll(1), unkb1(0), mEnableJitter(0), mYawJitterLimit(0.0f), mPitchJitterLimit(0.0f) {
+void DrawBounds(Vector3, const Hmx::Matrix3&, const Vector3&, RndGraph*);
+
+CharLookAt::CharLookAt() : mSource(this), mPivot(this), mDest(this), mHalfTime(0.0f), mMinYaw(-80.0f), mMaxYaw(-mMinYaw), mMinPitch(-80.0f), mMaxPitch(-mMinPitch),
+    mMinWeightYaw(-1.0f), mMaxWeightYaw(-1.0f), mWeightYawSpeed(10000.0f), unk6c(1e+29f,0.0f,0.0f), unk78(1.0f), mSourceRadius(0.0f), vec80(0,0,0),
+    mShowRange(0),
+#ifdef MILO_DEBUG
+    mTestRange(0), mTestRangePitch(0.5f), mTestRangeYaw(0.5f),
+#endif
+    mAllowRoll(1), unkb1(0), mEnableJitter(0), mYawJitterLimit(0.0f), mPitchJitterLimit(0.0f) {
     SyncLimits();
 }
 
@@ -28,13 +36,29 @@ void CharLookAt::Enter(){
     RndPollable::Enter();
 }
 
+void CharLookAt::Highlight(){
+#ifdef MILO_DEBUG
+    if(mSource && mDest){
+        RndGraph* graph = RndGraph::GetOneFrame();
+        graph->AddLine(GetSource()->WorldXfm().v, mDest->WorldXfm().v, Hmx::Color(1,0,0), false);
+        Hmx::Matrix3 pivotMtx = mPivot->WorldXfm().m;
+        Vector3 pivotVec = mPivot->WorldXfm().v;
+        DrawBounds(Vector3(mBounds.mMin.x, mBounds.mMin.y, 0), pivotMtx, pivotVec, graph);
+        DrawBounds(Vector3(mBounds.mMax.x, mBounds.mMin.y, 0), pivotMtx, pivotVec, graph);
+        DrawBounds(Vector3(mBounds.mMin.y, mBounds.mMin.z, 0), pivotMtx, pivotVec, graph);
+        DrawBounds(Vector3(mBounds.mMin.y, mBounds.mMax.z, 0), pivotMtx, pivotVec, graph);
+    }
+#endif
+}
+
 #pragma push
 #pragma dont_inline on
 void CharLookAt::Poll(){
     RndTransformable* srcTrans = GetSource();
     float deltasecs = TheTaskMgr.DeltaSeconds();
     if(mDest && mPivot){
-        if(mPivot->TransParent() && srcTrans && deltasecs >= 0.0f){
+        if(!mPivot->TransParent() || !srcTrans || deltasecs < 0) return;
+        else {
             Vector3 ve4;
             Subtract(mDest->WorldXfm().v, srcTrans->WorldXfm().v, ve4);
             float charweight = Weight();
@@ -89,13 +113,16 @@ void CharLookAt::Poll(){
                     Interp(unk6c, ve4, deltasecs / (deltasecs + mHalfTime), ve4);
                 }
                 unk6c = ve4;
+            #ifdef MILO_DEBUG
                 if(mTestRange){
                     float loc140, loc144;
                     Interp(mBounds.mMin.z, mBounds.mMax.z, mTestRangeYaw, loc140);
                     Interp(mBounds.mMin.x, mBounds.mMax.x, mTestRangePitch, loc144);
                     ve4.Set(loc144, mBounds.mMin.y, loc140);
                 }
-                else if(mShowRange){
+                else
+            #endif
+                if(mShowRange){
                     charweight = 1.0f;
                     switch(((int)TheTaskMgr.Seconds(TaskMgr::kRealTime)) & 7){
                         case 0:
@@ -293,11 +320,13 @@ BEGIN_PROPSYNCS(CharLookAt)
     SYNC_PROP(allow_roll, mAllowRoll)
     SYNC_PROP(show_range, mShowRange)
     SYNC_PROP(source_radius, mSourceRadius)
+#ifdef MILO_DEBUG
     SYNC_PROP(enable_jitter, mEnableJitter)
     SYNC_PROP(yaw_jitter_limit, mYawJitterLimit)
     SYNC_PROP(pitch_jitter_limit, mPitchJitterLimit)
     SYNC_PROP(test_range, mTestRange)
     SYNC_PROP(test_range_pitch, mTestRangePitch)
     SYNC_PROP(test_range_yaw, mTestRangeYaw)
+#endif
     SYNC_SUPERCLASS(CharWeightable)
 END_PROPSYNCS

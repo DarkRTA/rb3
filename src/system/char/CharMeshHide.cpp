@@ -1,11 +1,13 @@
 #include "char/CharMeshHide.h"
 #include "decomp.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharMeshHide)
 DECOMP_FORCEACTIVE(CharMeshHide, "ObjPtr_p.h", "f.Owner()", "", __FILE__)
 
-CharMeshHide::Hide::Hide(Hmx::Object* o) : mDraw(o, 0), mFlags(0), mShow(0) {
+CharMeshHide::Hide::Hide(Hmx::Object* o) : mDraw(o), mFlags(0), mShow(0) {
 
 }
 
@@ -21,14 +23,14 @@ CharMeshHide::Hide& CharMeshHide::Hide::operator=(const CharMeshHide::Hide& hide
 }
 
 void CharMeshHide::Init(){
-    Hmx::Object::RegisterFactory(StaticClassName(), NewObject);
+    Register();
 }
 
-void CharMeshHide::HideAll(const ObjPtrList<CharMeshHide, ObjectDir>& pList, int i){
-    for(ObjPtrList<CharMeshHide, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
-        i |= (*it)->mFlags;
+void CharMeshHide::HideAll(const ObjPtrList<CharMeshHide>& pList, int i){
+    for(ObjPtrList<CharMeshHide>::iterator it = pList.begin(); it != pList.end(); ++it){
+        i |= (*it)->Flags();
     }
-    for(ObjPtrList<CharMeshHide, ObjectDir>::iterator it = pList.begin(); it != pList.end(); ++it){
+    for(ObjPtrList<CharMeshHide>::iterator it = pList.begin(); it != pList.end(); ++it){
         (*it)->HideDraws(i);
     }
 }
@@ -37,8 +39,8 @@ void CharMeshHide::HideDraws(int x){
     for(int i = 0; i < mHides.size(); i++){
         Hide& theHide = mHides[i];
         if(theHide.mDraw){
-            bool b = (x & theHide.mFlags) == 0;
-            theHide.mShow = b & theHide.mDraw->Showing();
+            bool b = !(x & theHide.mFlags);
+            theHide.mDraw->SetShowing(theHide.mShow != b);
         }
     }
 }
@@ -60,20 +62,19 @@ BinStream& operator>>(BinStream& bs, CharMeshHide::Hide& hide){
 
 SAVE_OBJ(CharMeshHide, 0x6A);
 
-void CharMeshHide::Load(BinStream& bs){
+BEGIN_LOADS(CharMeshHide)
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
-    Hmx::Object::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
     bs >> mFlags >> mHides;
-}
+END_LOADS
 
 BEGIN_COPYS(CharMeshHide)
     COPY_SUPERCLASS(Hmx::Object)
     CREATE_COPY(CharMeshHide)
     BEGIN_COPYING_MEMBERS
         COPY_MEMBER(mFlags)
-        if(&mHides != &c->mHides)
-            COPY_MEMBER(mHides)
+        COPY_MEMBER(mHides)
     END_COPYING_MEMBERS
 END_COPYS
 
