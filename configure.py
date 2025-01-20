@@ -116,6 +116,7 @@ args = parser.parse_args()
 
 config = ProjectConfig()
 config.version = str(args.version)
+version_num = VERSIONS.index(config.version)
 
 # Apply arguments
 config.build_dir = args.build_dir
@@ -136,10 +137,10 @@ if not config.non_matching:
 # Tool versions
 config.binutils_tag = "2.42-1"
 config.compilers_tag = "20240706"
-config.dtk_tag = "v1.1.4"
-config.objdiff_tag = "v2.3.3"
-config.sjiswrap_tag = "v1.1.1"
-config.wibo_tag = "0.6.11"
+config.dtk_tag = "v1.3.0"
+config.objdiff_tag = "v2.7.1"
+config.sjiswrap_tag = "v1.2.0"
+config.wibo_tag = "0.6.16"
 
 # Project
 config_dir = Path("config") / config.version
@@ -151,6 +152,12 @@ config.reconfig_deps = [
     config_json_path,
     objects_path,
 ]
+
+SCRATCH_PRESETS = [
+    114, # SZBE69 ("Rock Band 3")
+    123, # SZBE69_B8 ("Rock Band 3 (Debug)")
+]
+config.scratch_preset_id = SCRATCH_PRESETS[version_num]
 
 # Build flags
 flags = json.load(open(config_json_path, "r", encoding="utf-8"))
@@ -187,6 +194,7 @@ def apply_base_cflags(key: str):
 
 # Set up base flags
 base_cflags = get_cflags("base")
+base_cflags.append(f"-d BUILD_VERSION={version_num}")
 base_cflags.append(f"-d VERSION_{config.version}")
 
 # Set conditionally-added flags
@@ -210,6 +218,7 @@ for key in cflags.keys():
 
 config.asflags = [
     *asflags,
+    f"--defsym BUILD_VERSION={version_num}",
     f"--defsym VERSION_{config.version}",
 ]
 config.ldflags = ldflags
@@ -277,6 +286,14 @@ for (lib, lib_config) in objects.items():
     })
 
 config.libs = libs
+
+# def link_order_callback(module_id: int, objects: List[str]) -> List[str]:
+#     # Don't modify the link order for matching builds
+#     if not config.non_matching:
+#         return objects
+#     return objects
+
+# config.link_order_callback = link_order_callback
 
 # Progress tracking categories
 config.progress_categories = [ProgressCategory(name, desc) for (name, desc) in progress_categories.items()]
