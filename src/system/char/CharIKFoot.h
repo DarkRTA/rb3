@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARIKFOOT_H
-#define CHAR_CHARIKFOOT_H
+#pragma once
 #include "char/CharIKHand.h"
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
@@ -10,6 +9,7 @@
 #include "obj/ObjVector.h"
 #include "char/CharCollide.h"
 
+/** "Remedial foot skate ik, not yet ready for prime time." */
 class CharIKFoot : public CharIKHand {
 public:
     CharIKFoot();
@@ -36,13 +36,13 @@ public:
         REGISTER_OBJ_FACTORY(CharIKFoot)
     }
     
-    ObjPtr<RndTransformable, ObjectDir> unk88;
+    ObjPtr<RndTransformable> unk88;
     int unk94;
-    ObjPtr<RndTransformable, ObjectDir> mData; // 0x98
+    /** "which bone to use to get the IK data from" */
+    ObjPtr<RndTransformable> mData; // 0x98
+    /** "Which element index to use (x=0, y=1, z=2)" */
     int mDataIndex; // 0xa4
     Vector3 unka8; // 0xa8
     float unkb4; // 0xb4
-    ObjPtr<Character, ObjectDir> mMe; // 0xb8
+    ObjPtr<Character> mMe; // 0xb8
 };
-
-#endif

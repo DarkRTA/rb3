@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARIKMIDI_H
-#define CHAR_CHARIKMIDI_H
+#pragma once
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
@@ -8,6 +7,7 @@
 #include "char/Character.h"
 #include "utl/MemMgr.h"
 
+/** "Moves an RndTransformable (bone) to another RndTransformable (spot) over time, blending from where it was relative to the parent of the spot." */
 class CharIKMidi : public RndHighlightable, public CharPollable {
 public:
     CharIKMidi();
@@ -34,18 +34,20 @@ public:
         REGISTER_OBJ_FACTORY(CharIKMidi)
     }
     
-    ObjPtr<RndTransformable, ObjectDir> mBone; // 0x10
-    ObjPtr<RndTransformable, ObjectDir> mCurSpot; // 0x1c
-    ObjPtr<RndTransformable, ObjectDir> mNewSpot; // 0x28
+    /** "The bone to move" */
+    ObjPtr<RndTransformable> mBone; // 0x10
+    /** "Spot to go to, zero indexed" */
+    ObjPtr<RndTransformable> mCurSpot; // 0x1c
+    ObjPtr<RndTransformable> mNewSpot; // 0x28
     Transform mLocalXfm; // 0x34
     Transform mOldLocalXfm; // 0x64
     float mFrac; // 0x94
     float mFracPerBeat; // 0x98
     bool mSpotChanged; // 0x9c
-    ObjPtr<CharWeightable, ObjectDir> mAnimBlender; // 0xa0
+    /** "Weightable to change animation between frets" */
+    ObjPtr<CharWeightable> mAnimBlender; // 0xa0
+    /** "Max weight for animation change" */
     float mMaxAnimBlend; // 0xac
     float mAnimFracPerBeat; // 0xb0
     float mAnimFrac; // 0xb4
 };
-
-#endif

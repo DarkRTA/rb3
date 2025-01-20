@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARIKSLIDERMIDI_H
-#define CHAR_CHARIKSLIDERMIDI_H
+#pragma once
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
@@ -7,6 +6,7 @@
 #include "rndobj/Highlightable.h"
 #include "char/Character.h"
 
+/** "Moves an RndTransformable (bone) to a percentage of the way between two spots." */
 class CharIKSliderMidi : public RndHighlightable, public CharWeightable, public CharPollable {
 public:
     CharIKSliderMidi();
@@ -34,20 +34,22 @@ public:
         REGISTER_OBJ_FACTORY(CharIKSliderMidi)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mTarget;
-    ObjPtr<RndTransformable, ObjectDir> mFirstSpot;
-    ObjPtr<RndTransformable, ObjectDir> mSecondSpot;
-    Vector3 mDestPos;
-    Vector3 mOldPos;
-    Vector3 mCurPos;
-    float mTargetPercentage;
-    float mOldPercentage;
-    float mFrac;
-    float mFracPerBeat;
-    bool mPercentageChanged;
-    bool mResetAll;
-    ObjPtr<Character, ObjectDir> mMe;
-    float mTolerance;
+    /** "The bone to move" */
+    ObjPtr<RndTransformable> mTarget; // 0x28
+    /** "Spot at 0%" */
+    ObjPtr<RndTransformable> mFirstSpot; // 0x34
+    /** "Spot at 100%" */
+    ObjPtr<RndTransformable> mSecondSpot; // 0x40
+    Vector3 mDestPos; // 0x4c
+    Vector3 mOldPos; // 0x58
+    Vector3 mCurPos; // 0x64
+    float mTargetPercentage; // 0x70
+    float mOldPercentage; // 0x74
+    float mFrac; // 0x78
+    float mFracPerBeat; // 0x7c
+    bool mPercentageChanged; // 0x80
+    bool mResetAll; // 0x81
+    ObjPtr<Character> mMe; // 0x84
+    /** "Only move if percentage changes more than this (0.0 - 1.0)" */
+    float mTolerance; // 0x90
 };
-
-#endif
