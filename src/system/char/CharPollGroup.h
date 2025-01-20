@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARPOLLGROUP_H
-#define CHAR_CHARPOLLGROUP_H
+#pragma once
 #include "char/CharPollable.h"
 #include "char/CharWeightable.h"
 #include "obj/ObjPtr_p.h"
 
+/** "Group of Charpollable, polled in the order given, use when the automatic CharPollable sorting is not correct or sufficient." */
 class CharPollGroup : public CharPollable, public CharWeightable {
 public:
     CharPollGroup();
@@ -21,6 +21,7 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
+    /** "sort the pollables" */
     void SortPolls();
 
     DECLARE_REVS;
@@ -30,9 +31,10 @@ public:
         REGISTER_OBJ_FACTORY(CharPollGroup)
     }
 
-    ObjPtrList<CharPollable, ObjectDir> mPolls; // 0x20
-    ObjPtr<CharPollable, ObjectDir> mChangedBy; // 0x30
-    ObjPtr<CharPollable, ObjectDir> mChanges; // 0x3c
+    /** "Ordered list of CharPollables, will be polled in this order." */
+    ObjPtrList<CharPollable> mPolls; // 0x20
+    /** "Explicit thing I am changed by, to force sorting, if set, ignores polls" */
+    ObjPtr<CharPollable> mChangedBy; // 0x30
+    /** "Explicit thing I change, to force sorting, if set, ignores polls" */
+    ObjPtr<CharPollable> mChanges; // 0x3c
 };
-
-#endif

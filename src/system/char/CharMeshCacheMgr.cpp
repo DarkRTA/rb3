@@ -40,7 +40,7 @@ const std::vector<SyncMeshCB::Vert>& CharMeshCacheMgr::GetVerts(RndMesh* mesh) c
 void CharMeshCacheMgr::SyncMesh(RndMesh* mesh, int mask){
     int i = 0;
     for(; i < mCache.size(); i++){
-        if(mCache[i]->mMesh == mesh) break;
+        if(mesh == mCache[i]->mMesh) break;
     }
     if(i == mCache.size()){
         mCache.push_back(new MeshCacher(mesh, mDisabled));

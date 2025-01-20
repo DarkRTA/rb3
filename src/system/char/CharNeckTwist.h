@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARNECKTWIST_H
-#define CHAR_CHARNECKTWIST_H
+#pragma once
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 
+/** "Does all interpolation for the neck." */
 class CharNeckTwist : public CharPollable {
 public:
     CharNeckTwist();
@@ -26,8 +26,8 @@ public:
         REGISTER_OBJ_FACTORY(CharNeckTwist)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mTwist; // 0x8
-    ObjPtr<RndTransformable, ObjectDir> mHead; // 0x14
+    /** "The twist bone, neck must be parent of" */
+    ObjPtr<RndTransformable> mTwist; // 0x8
+    /** "The head bone, must be descendent of neck" */
+    ObjPtr<RndTransformable> mHead; // 0x14
 };
-
-#endif

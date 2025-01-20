@@ -62,7 +62,7 @@ public:
     }
 
     RndMesh* mMesh; // 0x0
-    int mFlags; // 0x4 - flags?
+    int mFlags; // 0x4
     bool mDisabled; // 0x8
     std::vector<SyncMeshCB::Vert> mVerts; // 0xc
     std::vector<RndMesh::Face> mFaces; // 0x14

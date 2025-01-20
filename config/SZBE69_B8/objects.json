@@ -976,10 +976,16 @@
             "system/char/CharLipSync.cpp": "NonMatching",
             "system/char/CharLipSyncDriver.cpp": "NonMatching",
             "system/char/CharLookAt.cpp": "NonMatching",
-            "system/char/CharMeshCacheMgr.cpp": "NonMatching",
+            "system/char/CharMeshCacheMgr.cpp": {
+                "status": "Equivalent",
+                "comment": "SyncMesh and StuffMeshes check out in retail"
+            },
             "system/char/CharMeshHide.cpp": "NonMatching",
             "system/char/CharMirror.cpp": "NonMatching",
-            "system/char/CharNeckTwist.cpp": "NonMatching",
+            "system/char/CharNeckTwist.cpp": {
+                "status": "Equivalent",
+                "comment": "Poll checks out in retail"
+            },
             "system/char/CharPollGroup.cpp": "Matching",
             "system/char/CharPosConstraint.cpp": "NonMatching",
             "system/char/CharServoBone.cpp": "NonMatching",
