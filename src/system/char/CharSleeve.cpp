@@ -5,8 +5,8 @@
 
 INIT_REVS(CharSleeve);
 
-CharSleeve::CharSleeve() : mSleeve(this, 0), mTopSleeve(this, 0), mPos(0.0f, 0.0f, 0.0f), mLastPos(0.0f, 0.0f, 0.0f),
-    mLastDT(0.0f), mInertia(0.5f), mGravity(1.0f), mRange(0.0f), mNegLength(0.0f), mPosLength(0.0f), mStiffness(0.02f), mMe(this, 0) {
+CharSleeve::CharSleeve() : mSleeve(this), mTopSleeve(this), mPos(0,0,0), mLastPos(0,0,0),
+    mLastDT(0.0f), mInertia(0.5f), mGravity(1.0f), mRange(0.0f), mNegLength(0.0f), mPosLength(0.0f), mStiffness(0.02f), mMe(this) {
 
 }
 

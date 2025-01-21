@@ -1,9 +1,12 @@
 #include "char/CharTransDraw.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
+#include "rndobj/Draw.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharTransDraw);
 
-CharTransDraw::CharTransDraw() : mChars(this, kObjListNoNull) {
+CharTransDraw::CharTransDraw() : mChars(this) {
 
 }
 
@@ -14,19 +17,19 @@ CharTransDraw::~CharTransDraw(){
 SAVE_OBJ(CharTransDraw, 0x23);
 
 void CharTransDraw::SetDrawModes(Character::DrawMode mode){
-    for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
+    for(ObjPtrList<Character>::iterator it = mChars.begin(); it != mChars.end(); ++it){
         (*it)->SetDrawMode(mode);
     }
 }
 
-void CharTransDraw::Load(BinStream& bs){
+BEGIN_LOADS(CharTransDraw)
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
-    Hmx::Object::Load(bs);
-    RndDrawable::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(RndDrawable)
     bs >> mChars;
     SetDrawModes(Character::kCharDrawOpaque);
-}
+END_LOADS
 
 BEGIN_COPYS(CharTransDraw)
     COPY_SUPERCLASS(Hmx::Object)
@@ -38,7 +41,7 @@ BEGIN_COPYS(CharTransDraw)
 END_COPYS
 
 void CharTransDraw::DrawShowing(){
-    for(ObjPtrList<Character, ObjectDir>::iterator it = mChars.begin(); it != mChars.end(); ++it){
+    for(ObjPtrList<Character>::iterator it = mChars.begin(); it != mChars.end(); ++it){
         Character* theChar = *it;
         if(theChar->Showing()){
             theChar->SetDrawMode(Character::kCharDrawTranslucent);

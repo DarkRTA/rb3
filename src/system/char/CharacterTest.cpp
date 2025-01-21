@@ -18,8 +18,8 @@
 Hmx::Object* gClick;
 INIT_REVS(CharacterTest)
 
-CharacterTest::CharacterTest(class Character* thechar) : mMe(thechar), mDriver(thechar, 0), mClip1(thechar, 0), mClip2(thechar, 0), mFilterGroup(thechar, 0),
-    mTeleportTo(thechar, 0), mWalkPath(thechar, kObjListNoNull), mShowDistMap(), mTransition(0), mCycleTransition(1), mMetronome(0), mZeroTravel(0),
+CharacterTest::CharacterTest(class Character* thechar) : mMe(thechar), mDriver(thechar), mClip1(thechar), mClip2(thechar), mFilterGroup(thechar),
+    mTeleportTo(thechar), mWalkPath(thechar), mShowDistMap(), mTransition(0), mCycleTransition(1), mMetronome(0), mZeroTravel(0),
     mShowScreenSize(0), mShowFootExtents(0), unk68(0), unk6c(0), mOverlay(RndOverlay::Find("char_test", true)) {
     mShowDistMap = none;
 }

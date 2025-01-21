@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARTASKMGR_H
-#define CHAR_CHARTASKMGR_H
+#pragma once
 
 class CharTaskMgr {
 public:
@@ -7,5 +6,3 @@ public:
     static bool sShowGraph;
     static void Init();
 };
-
-#endif
