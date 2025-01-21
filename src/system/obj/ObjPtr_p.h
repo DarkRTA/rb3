@@ -504,30 +504,30 @@ inline bool ObjOwnerPtr<T1, T2>::Load(BinStream& bs, bool b, class ObjectDir* di
 }
 
 template <class T1, class T2>
-inline bool ObjPtrList<T1, T2>::Load(BinStream& bs, bool b){
+inline bool ObjPtrList<T1, T2>::Load(BinStream& bs, bool warn){
     bool ret = true;
-        clear();
-        int count;
-        bs >> count;
-        class ObjectDir* dir = 0;
-        if(mOwner) dir = mOwner->Dir();
-        MILO_ASSERT(dir, 0x207);
-        while(count != 0){
-            char buf[0x80];
-            bs.ReadString(buf, 0x80);
-            if(dir){
-                T1* casted = dynamic_cast<T1*>(dir->FindObject(buf, false));
-                if(!casted && buf[0] != '\0'){
-                    if(b) MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
-                    ret = false;
-                }
-                else if(casted){
-                    push_back(casted);
-                }
+    clear();
+    int count;
+    bs >> count;
+    class ObjectDir* dir = 0;
+    if(mOwner) dir = mOwner->Dir();
+    if(warn) MILO_ASSERT(dir, 0x207);
+    while(count != 0){
+        char buf[0x80];
+        bs.ReadString(buf, 0x80);
+        if(dir){
+            T1* casted = dynamic_cast<T1*>(dir->FindObject(buf, false));
+            if(!casted && buf[0] != '\0'){
+                if(warn) MILO_WARN("%s couldn't find %s in %s", PathName(mOwner), buf, PathName(dir));
+                ret = false;
             }
-            count--;
+            else if(casted){
+                push_back(casted);
+            }
         }
-        return ret;
+        count--;
+    }
+    return ret;
 }
 
 // ObjPtrList work:
