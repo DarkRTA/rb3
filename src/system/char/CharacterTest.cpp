@@ -9,13 +9,16 @@
 #include "char/CharUpperTwist.h"
 #include "char/CharUtl.h"
 #include "char/ClipDistMap.h"
+#include "char/ClipGraphGen.h"
 #include "char/Waypoint.h"
 #include "decomp.h"
+#include "math/Utl.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "rndobj/Cam.h"
+#include "rndobj/Graph.h"
 #include "rndobj/Utl.h"
 #include "obj/DirLoader.h"
 #include "utl/Symbols.h"
@@ -107,9 +110,11 @@ void CharacterTest::AddDefaults(){
         }
     }
     if(!mMe->Find<CharForeTwist>("foreTwist_R.ik", false)){
-        RndTransformable* rhand = CharUtlFindBoneTrans("bone_R-hand", mMe);
+        RndTransformable* rtwist2;
+        RndTransformable* rhand;
+        rhand = CharUtlFindBoneTrans("bone_R-hand", mMe);
         if(rhand){
-            RndTransformable* rtwist2 = CharUtlFindBoneTrans("bone_R-foreTwist2", mMe);
+            rtwist2 = CharUtlFindBoneTrans("bone_R-foreTwist2", mMe);
             if(rtwist2){
                 CharForeTwist* rtwist = mMe->New<CharForeTwist>("foreTwist_R.ik");
                 rtwist->SetProperty(hand, rhand);
@@ -118,32 +123,36 @@ void CharacterTest::AddDefaults(){
             }
         }
     }
+    RndTransformable* utwist2;
+    RndTransformable* utwist1;
+    RndTransformable* uarm;
+    CharUpperTwist* twist;
     if(!mMe->Find<CharUpperTwist>("upperTwist_L.ik", false)){
-        RndTransformable* lutwist1 = CharUtlFindBoneTrans("bone_L-upperTwist1", mMe);
-        if(lutwist1){
-            RndTransformable* lutwist2 = CharUtlFindBoneTrans("bone_L-upperTwist2", mMe);
-            if(lutwist2){
-                RndTransformable* luarm = CharUtlFindBoneTrans("bone_L-upperArm", mMe);
-                if(luarm){
-                    CharUpperTwist* ltwist = mMe->New<CharUpperTwist>("upperTwist_L.ik");
-                    ltwist->SetProperty(twist1, lutwist1);
-                    ltwist->SetProperty(twist2, lutwist2);
-                    ltwist->SetProperty(upper_arm, luarm);
+        utwist1 = CharUtlFindBoneTrans("bone_L-upperTwist1", mMe);
+        if(utwist1){
+            utwist2 = CharUtlFindBoneTrans("bone_L-upperTwist2", mMe);
+            if(utwist2){
+                uarm = CharUtlFindBoneTrans("bone_L-upperArm", mMe);
+                if(uarm){
+                    twist = mMe->New<CharUpperTwist>("upperTwist_L.ik");
+                    twist->SetProperty(twist1, utwist1);
+                    twist->SetProperty(twist2, utwist2);
+                    twist->SetProperty(upper_arm, uarm);
                 }
             }
         }
     }
     if(!mMe->Find<CharUpperTwist>("upperTwist_R.ik", false)){
-        RndTransformable* rutwist1 = CharUtlFindBoneTrans("bone_R-upperTwist1", mMe);
-        if(rutwist1){
-            RndTransformable* rutwist2 = CharUtlFindBoneTrans("bone_R-upperTwist2", mMe);
-            if(rutwist2){
-                RndTransformable* ruarm = CharUtlFindBoneTrans("bone_R-upperArm", mMe);
-                if(ruarm){
-                    CharUpperTwist* rtwist = mMe->New<CharUpperTwist>("upperTwist_R.ik");
-                    rtwist->SetProperty(twist1, rutwist1);
-                    rtwist->SetProperty(twist2, rutwist2);
-                    rtwist->SetProperty(upper_arm, ruarm);
+        utwist1 = CharUtlFindBoneTrans("bone_R-upperTwist1", mMe);
+        if(utwist1){
+            utwist2 = CharUtlFindBoneTrans("bone_R-upperTwist2", mMe);
+            if(utwist2){
+                uarm = CharUtlFindBoneTrans("bone_R-upperArm", mMe);
+                if(uarm){
+                    twist = mMe->New<CharUpperTwist>("upperTwist_R.ik");
+                    twist->SetProperty(twist1, utwist1);
+                    twist->SetProperty(twist2, utwist2);
+                    twist->SetProperty(upper_arm, uarm);
                 }
             }
         }
@@ -153,25 +162,18 @@ void CharacterTest::AddDefaults(){
 void CharacterTest::SetDistMap(Symbol s){
     mShowDistMap = s;
     RELEASE(unk6c);
-    if(mShowDistMap != none){
+    if(s != none){
         mOverlay->SetCallback(this);
         mOverlay->SetOverlay(true);
         if(mClip1 && mClip2 && Clips()){
-    //     if (*param_1.mStr == raw) {
-    //       this_00 = operator_new(0x4c);
-    //       if (this_00 != 0x0) {
-    //         this_00 = ClipDistMap::ClipDistMap(this_00,*(this + 0x1c),*(this + 0x28),1.0,1.0,3,0x0 );
-    //       }
-    //       *(this + 0x6c) = this_00;
-    //       ClipDistMap::FindDists(this_00,0.0,0x0);
-    //     }
-    //     else {
-    //       ClipGraphGenerator::ClipGraphGenerator(aCStack_48);
-    //       uVar2 = ClipGraphGenerator::GeneratePair(aCStack_48,*(this + 0x1c),*(this + 0x28),0x0,0x 0)
-    //       ;
-    //       *(this + 0x6c) = uVar2;
-    //       ClipGraphGenerator::~ClipGraphGenerator(aCStack_48);
-    //     }
+            if(s == raw){
+                unk6c = new ClipDistMap(mClip1, mClip2, 1, 1, 3, nullptr);
+                unk6c->FindDists(0, nullptr);
+            }
+            else {
+                ClipGraphGenerator gen;
+                unk6c = gen.GeneratePair(mClip1, mClip2, nullptr, nullptr);
+            }
         }
     }
 }
@@ -197,11 +199,70 @@ void CharacterTest::SetStartEndBeat(float f1, float f2, int bpm){
             Hmx::Object* handledObj = milohandled.GetObj();
             if(handledObj == mMe){
                 mMe->mFrozen = 0; // i know this is wrong, just can't figure out the right member atm
-                miloObj->SetProperty("bpm", DataNode(bpm));
-                miloObj->Handle(Message("set_anim_frame", DataNode((f1 * 30.0f) / (bpm / 60.0f)), DataNode((f2 * 30.0f) / (bpm / 60.0f)), DataNode((float)bpm)), true);
+                miloObj->SetProperty("bpm", bpm);
+                miloObj->Handle(Message("set_anim_frame", (f1 * 30.0f) / (bpm / 60.0f), (f2 * 30.0f) / (bpm / 60.0f), (float)bpm), true);
             }
         }
     }
+}
+
+void CharacterTest::PlayNew(){
+    unk64 = kHugeFloat;
+}
+
+void CharacterTest::Sync(){
+    unk68 = 0;
+    if(!mDriver || (mClip1 && mClip1->Dir() != Clips())){
+        mClip1 = nullptr;
+    }
+    if(!mDriver || (mClip2 && mClip2->Dir() != Clips())){
+        mClip2 = nullptr;
+    }
+    if(!mDriver || (mFilterGroup && mFilterGroup->Dir() != Clips())){
+        mFilterGroup = nullptr;
+    }
+    if(mMe->BoneServo()){
+        mMe->BoneServo()->SetRegulateWaypoint(nullptr);
+    }
+    if(mClip1 || mClip2){
+        mOverlay->SetCallback(this);
+        mOverlay->SetOverlay(true);
+    }
+    else {
+        mOverlay->SetCallback(nullptr);
+        mOverlay->SetOverlay(false);
+    }
+
+    RndGraph::Get(0)->Reset();
+    if(!mClip2) mTransition = 0;
+    if(unk6c && (unk6c->unk0 != mClip1 || unk6c->unk4 != mClip2)){
+        SetDistMap(mShowDistMap);
+    }
+
+    if(mClip1){
+        float last = mClip1->EndBeat();
+        float bps = mClip1->AverageBeatsPerSecond();
+        if(mClip2){
+            CharClip::NodeVector* vec = mClip1->mTransitions.FindNodes(mClip2);
+            if(vec){
+                ClampEq(mTransition, 0, vec->size - 1);
+            }
+            else mTransition = 0;
+            MinEq(bps, mClip2->AverageBeatsPerSecond());
+            last += mClip2->LengthBeats();
+            int i4 = bps * 60.0f + 0.5f;
+            SetStartEndBeat(mClip1->StartBeat(), last, i4);
+        }
+    }
+    if(mClip1 || mClip2){
+        mDriver->Enter();
+    }    
+    unk68 = 0;
+}
+
+float CharacterTest::UpdateOverlay(RndOverlay* o, float f){
+    if(unk6c) unk6c->Draw(40.0f, 40.0f, mDriver);
+    return f;
 }
 
 DECOMP_FORCEACTIVE(CharacterTest, __FILE__, "0")
