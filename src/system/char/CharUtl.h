@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARUTL_H
-#define CHAR_CHARUTL_H
+#pragma once
 #include "obj/Dir.h"
 #include "rndobj/Trans.h"
 
@@ -40,5 +39,3 @@ public:
     Vector3 mLastPos; // 0x1c
     float mLastAng; // 0x28
 };
-
-#endif

@@ -1,4 +1,5 @@
 #include "char/CharWeightable.h"
+#include "obj/ObjMacros.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
@@ -20,12 +21,12 @@ void CharWeightable::Replace(Hmx::Object* o1, Hmx::Object* o2){
 
 SAVE_OBJ(CharWeightable, 0x21)
 
-void CharWeightable::Load(BinStream& bs){
+BEGIN_LOADS(CharWeightable)
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     bs >> mWeight;
     if(gRev > 1) bs >> mWeightOwner;
-}
+END_LOADS
 
 BEGIN_COPYS(CharWeightable)
     CREATE_COPY(CharWeightable)
@@ -46,24 +47,6 @@ BEGIN_HANDLERS(CharWeightable)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharWeightable)
-    if(sym == weight){
-        if(_op == kPropSet){
-            SetWeight(_val.Float());
-        }
-        else {
-            if((int)_op == 0x40) return false;
-            _val = DataNode(mWeight);
-        }
-        return true;
-    }
-    if(sym == weight_owner){
-        if(_op == kPropSet){
-            SetWeightOwner(_val.Obj<CharWeightable>());
-        }
-        else {
-            if((int)_op == 0x40) return false;
-            _val = DataNode(mWeightOwner);
-        }
-        return true;
-    }
+    SYNC_PROP_SET(weight, mWeight, SetWeight(_val.Float()))
+    SYNC_PROP_SET(weight_owner, mWeightOwner, SetWeightOwner(_val.Obj<CharWeightable>()))
 END_PROPSYNCS

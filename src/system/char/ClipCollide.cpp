@@ -1,14 +1,17 @@
 #include "char/ClipCollide.h"
+#include "obj/Object.h"
+#include "rndobj/Cam.h"
 #include "rndobj/Graph.h"
 #include "char/Character.h"
 #include "char/Waypoint.h"
 #include "char/CharClip.h"
 #include "char/CharDriver.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(ClipCollide)
 
-ClipCollide::ClipCollide() : mReports(), mGraph(0), mChar(this, 0), mCharPath(""), mWaypoint(this, 0), mPosition(Symbol("front")), mClip(this, 0), mWorldLines(0), mMoveCamera(1), mMode() {
+ClipCollide::ClipCollide() : mReports(), mGraph(0), mChar(this), mCharPath(""), mWaypoint(this), mPosition(Symbol("front")), mClip(this), mWorldLines(0), mMoveCamera(1), mMode() {
     mGraph = RndGraph::Get(this);
 }
 
@@ -27,6 +30,84 @@ void ClipCollide::SyncChar(){
         }
     }
     SyncWaypoint();
+}
+
+void ClipCollide::SyncWaypoint(){
+    if(mChar && mWaypoint){
+        mChar->Enter();
+        mChar->Teleport(mWaypoint);
+        float radius = mWaypoint->mYRadius;
+        Transform xfm = mWaypoint->WorldXfm();
+        if(radius <= 0) radius = mWaypoint->mRadius;
+        if(mPosition == front){
+            xfm.v.x += xfm.m.y.x * radius;
+            xfm.v.y += xfm.m.y.y * radius;
+            xfm.v.z += xfm.m.y.z * radius;
+        }
+        else if(mPosition == back){
+            radius = -radius;
+            xfm.v.x += xfm.m.y.x * radius;
+            xfm.v.y += xfm.m.y.y * radius;
+            xfm.v.z += xfm.m.y.z * radius;
+        }
+        else if(mPosition == left){
+            radius = mWaypoint->mRadius;
+            xfm.v.x += xfm.m.x.x * radius;
+            xfm.v.y += xfm.m.x.y * radius;
+            xfm.v.z += xfm.m.x.z * radius;
+        }
+        else {
+            radius = -mWaypoint->mRadius;
+            xfm.v.x += xfm.m.x.x * radius;
+            xfm.v.y += xfm.m.x.y * radius;
+            xfm.v.z += xfm.m.x.z * radius;
+        }
+        mChar->SetLocalXfm(xfm);
+    }
+}
+
+void ClipCollide::AddReport(Vector3 v){
+    Report report;
+    String proxy(mChar->ProxyFile());
+    strcpy(report.name, FileGetBase(proxy.c_str(), 0));
+    strcpy(report.clip, mClip->Name());
+    report.waypoint = mWaypoint;
+    report.position = mPosition;
+    report.pos = v;
+    strcpy(report.charPath, mCharPath.c_str());
+    mReports.push_back(report);
+    if(mGraph){
+        mGraph->AddSphere(v, 3.0f, Hmx::Color(0,0,1));
+        mGraph->AddString3D(MakeString("%d", mReports.size()), v, Hmx::Color(1,1,1));
+    }
+}
+
+void ClipCollide::PickReport(const char* cc){
+    mReportString = cc;
+    int idx = atoi(cc);
+    if(idx > 0){
+        Report& curReport = mReports[idx - 1];
+        mCharPath = curReport.charPath;
+        SyncChar();
+        mWaypoint = curReport.waypoint;
+        mClip = mChar->GetDriver()->ClipDir()->Find<CharClip>(curReport.clip, true);
+        mPosition = curReport.position;
+        if(mMoveCamera){
+            Hmx::Object* miloObj = ObjectDir::Main()->Find<Hmx::Object>("milo", true);
+            if(miloObj){
+                Message msg("cur_cam");
+                DataNode handled = miloObj->Handle(msg, true);
+                RndCam* cam = dynamic_cast<RndCam*>(handled.GetObj());
+                if(cam){
+                    Transform tf70;
+                    tf70.Reset();
+                    tf70.LookAt(Vector3(-1, 1, 1), Vector3(0,0,1));
+                    cam->SetLocalXfm(tf70);
+                }
+            }
+        }
+        Demonstrate();
+    }
 }
 
 void ClipCollide::ClearReport(){
@@ -55,14 +136,18 @@ void ClipCollide::SetTypeDef(DataArray* da){
     }
 }
 
+void ClipCollide::Collide(){
+
+}
+
 ObjectDir* ClipCollide::Clips(){
-    if(mChar) return mChar->mDriver->ClipDir();
-    else return 0;
+    if(mChar) return mChar->GetDriver()->ClipDir();
+    else return nullptr;
 }
 
 bool ClipCollide::ValidWaypoint(Waypoint* w){
-    static Message vw("valid_waypoint", DataNode(0));
-    vw[0] = DataNode(w);
+    static Message vw("valid_waypoint", 0);
+    vw[0] = w;
     DataNode handled = Handle(vw, true);
     if(handled.Type() == kDataUnhandled) return true;
     else return handled.Int();
@@ -71,9 +156,9 @@ bool ClipCollide::ValidWaypoint(Waypoint* w){
 bool ClipCollide::ValidClip(CharClip* clip){
     if(!mWaypoint) return true;
     else {
-        static Message vw("valid_clip", DataNode(0), DataNode(0));
-        vw[0] = DataNode(clip);
-        vw[1] = DataNode(mWaypoint);
+        static Message vw("valid_clip", 0,0);
+        vw[0] = clip;
+        vw[1] = mWaypoint.Ptr();
         DataNode handled = Handle(vw, true);
         if(handled.Type() == kDataUnhandled) return true;
         else return handled.Int();
@@ -109,18 +194,6 @@ void ClipCollide::TestWaypoints(){
         }
     }
 }
-
-// std::vector<Report> mReports; // 0x1c
-// RndGraph* mGraph; // 0x24
-// ObjPtr<Character, ObjectDir> mChar; // 0x28
-// String mCharPath; // 0x34
-// ObjPtr<Waypoint, ObjectDir> mWaypoint; // 0x40
-// Symbol mPosition; // 0x4c
-// ObjPtr<CharClip, ObjectDir> mClip; // 0x50
-// String mReportString; // 0x5c
-// bool mWorldLines; // 0x68
-// bool mMoveCamera; // 0x69
-// Symbol mMode; // 0x6c
 
 void ClipCollide::TestClips(){
     if(!mWaypoint || !mChar) return;
@@ -164,7 +237,7 @@ DataNode ClipCollide::OnVenueName(DataArray* da){
             }
         }
     }
-    return DataNode(str);
+    return str;
 }
 
 SAVE_OBJ(ClipCollide, 0x19D)
@@ -187,7 +260,7 @@ END_COPYS
 
 void ClipCollide::SyncMode(){
     if(!mMode.Null()){
-        Message msg("set_mode", DataNode(mMode));
+        Message msg("set_mode", mMode);
         Handle(msg, true);
     }
 }
@@ -214,15 +287,13 @@ DataNode ClipCollide::OnListClips(DataArray* da){
         for(ObjDirItr<CharClip> it(clipDir, true); it != 0; ++it){
             if(ValidClip(it)) cliplist.push_back(it);
         }
-        // sort
+        cliplist.sort(AlphaSort());
     }
-    int listsize = 0;
-    for(std::list<CharClip*>::iterator it = cliplist.begin(); it != cliplist.end(); it++) listsize++;
-    DataArray* arr = new DataArray(listsize);
-    arr->Node(0) = DataNode((Hmx::Object*)0);
+    DataArray* arr = new DataArray(cliplist.size() + 1);
+    arr->Node(0) = NULL_OBJ;
     int idx = 1;
     for(std::list<CharClip*>::iterator it = cliplist.begin(); it != cliplist.end(); it++){
-        arr->Node(idx++) = DataNode(*it);
+        arr->Node(idx++) = *it;
     }
     DataNode ret(arr, kDataArray);
     arr->Release();
@@ -234,14 +305,12 @@ DataNode ClipCollide::OnListWaypoints(DataArray* da){
     for(ObjDirItr<Waypoint> it(Dir(), true); it != 0; ++it){
         if(ValidWaypoint(it)) waylist.push_back(it);
     }
-    // sort
-    int listsize = 0;
-    for(std::list<Waypoint*>::iterator it = waylist.begin(); it != waylist.end(); it++) listsize++;
-    DataArray* arr = new DataArray(listsize);
-    arr->Node(0) = DataNode((Hmx::Object*)0);
+    waylist.sort(AlphaSort());
+    DataArray* arr = new DataArray(waylist.size() + 1);
+    arr->Node(0) = NULL_OBJ;
     int idx = 1;
     for(std::list<Waypoint*>::iterator it = waylist.begin(); it != waylist.end(); it++){
-        arr->Node(idx++) = DataNode(*it);
+        arr->Node(idx++) = *it;
     }
     DataNode ret(arr, kDataArray);
     arr->Release();
@@ -250,9 +319,9 @@ DataNode ClipCollide::OnListWaypoints(DataArray* da){
 
 DataNode ClipCollide::OnListReport(DataArray* da){
     DataArray* arr = new DataArray(mReports.size() + 1);
-    arr->Node(0) = DataNode("");
+    arr->Node(0) = "";
     for(int i = 0; i < mReports.size(); i++){
-        arr->Node(i + 1) = DataNode(MakeString("%d %s %s %s", i + 1, mReports[i].clip, mReports[i].waypoint->Name(), mReports[i].name));
+        arr->Node(i + 1) = MakeString("%d %s %s %s", i + 1, mReports[i].clip, mReports[i].waypoint->Name(), mReports[i].name);
     }
     DataNode ret(arr, kDataArray);
     arr->Release();

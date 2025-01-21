@@ -1,8 +1,9 @@
-#ifndef CHAR_CHARWEIGHTABLE_H
-#define CHAR_CHARWEIGHTABLE_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 
+/** "Base class for any object that can have weight set on it,
+ *  or have a Weightable parent from which it gets that state." */
 class CharWeightable : public virtual Hmx::Object {
 public:
     CharWeightable();
@@ -30,8 +31,8 @@ public:
         REGISTER_OBJ_FACTORY(CharWeightable)
     }
     
+    /** "Weight to blend in by" */
     float mWeight; // 0x8
-    ObjOwnerPtr<CharWeightable, class ObjectDir> mWeightOwner; // 0xc
+    /** "object to get weight from" */
+    ObjOwnerPtr<CharWeightable> mWeightOwner; // 0xc
 };
-
-#endif

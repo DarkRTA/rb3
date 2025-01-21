@@ -4,7 +4,7 @@
 
 INIT_REVS(CharWeightSetter)
 
-CharWeightSetter::CharWeightSetter() : mBase(this, 0), mDriver(this, 0), mMinWeights(this, kObjListNoNull), mMaxWeights(this, kObjListNoNull),
+CharWeightSetter::CharWeightSetter() : mBase(this), mDriver(this), mMinWeights(this), mMaxWeights(this),
     mFlags(0), mOffset(0.0f), mScale(1.0f), mBaseWeight(0.0f), mBeatsPerWeight(0.0f) {
 
 }
@@ -25,7 +25,7 @@ void CharWeightSetter::Poll(){
 
     if(mMinWeights.size() > 0){
         float newminweight = mBaseWeight;
-        for(ObjPtrList<CharWeightSetter, ObjectDir>::iterator it = mMinWeights.begin(); it != mMinWeights.end(); ++it){
+        for(ObjPtrList<CharWeightSetter>::iterator it = mMinWeights.begin(); it != mMinWeights.end(); ++it){
             MinEq(newminweight, (*it)->Weight());
         }
         mBaseWeight = newminweight;
@@ -33,7 +33,7 @@ void CharWeightSetter::Poll(){
 
     if(mMaxWeights.size() > 0){
         float newmaxweight = mBaseWeight;
-        for(ObjPtrList<CharWeightSetter, ObjectDir>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
+        for(ObjPtrList<CharWeightSetter>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
             MaxEq(newmaxweight, (*it)->Weight());
         }
         mBaseWeight = newmaxweight;
@@ -55,10 +55,10 @@ void CharWeightSetter::Poll(){
 void CharWeightSetter::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     changedBy.push_back(mDriver);
     changedBy.push_back(mBase);
-    for(ObjPtrList<CharWeightSetter, ObjectDir>::iterator it = mMinWeights.begin(); it != mMinWeights.end(); ++it){
+    for(ObjPtrList<CharWeightSetter>::iterator it = mMinWeights.begin(); it != mMinWeights.end(); ++it){
         changedBy.push_back(*it);
     }
-    for(ObjPtrList<CharWeightSetter, ObjectDir>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
+    for(ObjPtrList<CharWeightSetter>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
         changedBy.push_back(*it);
     }
     std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
@@ -117,12 +117,12 @@ BEGIN_LOADS(CharWeightSetter)
     }
     else {
         if(gRev > 6){
-            ObjPtr<CharWeightSetter, ObjectDir> ptrWS(this, 0);
+            ObjPtr<CharWeightSetter> ptrWS(this, 0);
             bs >> ptrWS;
             if(ptrWS) mMinWeights.push_back(ptrWS);
         }
         if(gRev > 7){
-            ObjPtr<CharWeightSetter, ObjectDir> ptrWS(this, 0);
+            ObjPtr<CharWeightSetter> ptrWS(this, 0);
             bs >> ptrWS;
             if(ptrWS) mMaxWeights.push_back(ptrWS);
         }

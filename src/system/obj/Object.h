@@ -398,6 +398,10 @@ struct ObjMatchPr {
     Hmx::Object* obj;
 };
 
+struct AlphaSort {
+    bool operator()(Hmx::Object* o1, Hmx::Object* o2) const { return strcmp(o1->Name(), o2->Name()) < 0; }
+};
+
 inline TextStream& operator<<(TextStream& ts, const Hmx::Object* obj){
     if(obj) ts << obj->Name();
     else ts << "<null>";
