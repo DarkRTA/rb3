@@ -235,7 +235,7 @@ void CharacterTest::Sync(){
 
     RndGraph::Get(0)->Reset();
     if(!mClip2) mTransition = 0;
-    if(unk6c && (unk6c->unk0 != mClip1 || unk6c->unk4 != mClip2)){
+    if(unk6c && (unk6c->ClipA() != mClip1 || unk6c->ClipB() != mClip2)){
         SetDistMap(mShowDistMap);
     }
 

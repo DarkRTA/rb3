@@ -1,5 +1,4 @@
-#ifndef CHAR_CLIPGRAPHGENERATOR_H
-#define CHAR_CLIPGRAPHGENERATOR_H
+#pragma once
 #include "obj/Object.h"
 #include "char/ClipDistMap.h"
 
@@ -17,5 +16,3 @@ public:
     CharClip* mClipA; // 0x24
     CharClip* mClipB; // 0x28
 };
-
-#endif

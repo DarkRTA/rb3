@@ -1,4 +1,5 @@
 #include "char/ClipGraphGen.h"
+#include "decomp.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 
@@ -38,6 +39,10 @@ ClipDistMap* ClipGraphGenerator::GeneratePair(CharClip* c1, CharClip* c2, ClipDi
     }
 }
 
+DECOMP_FORCEACTIVE(ClipGraphGen, "(%d %d)", " ", ") ", ":\n", "    -> ", ": ", "nodes ", " min ", " max ", " \n", "   -> ",
+    " got 0 nodes!\n", " %d) %s -> %d) %s has %d nodes", "\nReport:\ntotal nodes: ", "\n", "\nmost nodes:\n",
+    "\nBest 10:\n", "nWorst 10:\n", "\nWarnings:\n", "\nErrors:\n")
+
 BEGIN_HANDLERS(ClipGraphGenerator)
     HANDLE(generate_transitions, OnGenerateTransitions)
     HANDLE_CHECK(0xC0)
@@ -70,5 +75,5 @@ DataNode ClipGraphGenerator::OnGenerateTransitions(DataArray* da){
     mDmap = new ClipDistMap(mClipA, mClipB, beat_align, blend_width, 3, boneweightarr);
     mDmap->FindDists(max_facing * DEG2RAD, restrictArr);
     mDmap->FindNodes(max_error, max_dist, end_dist);
-    return DataNode(0);
+    return 0;
 }

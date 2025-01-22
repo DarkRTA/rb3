@@ -1007,7 +1007,7 @@
             "system/char/CharacterTest.cpp": "NonMatching",
             "system/char/ClipCollide.cpp": "NonMatching",
             "system/char/ClipCompressor.cpp": "Matching",
-            "system/char/ClipDistMap.cpp": "MISSING",
+            "system/char/ClipDistMap.cpp": "NonMatching",
             "system/char/ClipGraphGen.cpp": "NonMatching",
             "system/char/FileMerger.cpp": "NonMatching",
             "system/char/FileMergerOrganizer.cpp": "MISSING",
