@@ -1,4 +1,6 @@
 #pragma once
+#include "obj/Data.h"
+#include "obj/Dir.h"
 #include "obj/Object.h"
 #include "utl/FilePath.h"
 #include "utl/Loader.h"
@@ -25,7 +27,7 @@ public:
         Merger(const Merger& m) : mDir(m.mDir.Owner()), mLoadedObjects(m.mLoadedObjects.mOwner), mLoadedSubdirs(m.mLoadedSubdirs.mOwner){
             mName = m.mName;
             mSelected = m.mSelected;
-            unk10 = m.unk10;
+            loading = m.loading;
             mLoaded = m.mLoaded;
             mDir = m.mDir;
             mProxy = m.mProxy;
@@ -38,7 +40,7 @@ public:
         Merger& operator=(const Merger& m){
             mName = m.mName;
             mSelected = m.mSelected;
-            unk10 = m.unk10;
+            loading = m.loading;
             mLoaded = m.mLoaded;
             mDir = m.mDir;
             mProxy = m.mProxy;
@@ -65,9 +67,11 @@ public:
             unk29 = b;
         }
 
+        bool IsProxy() const { return mProxy; }
+
         Symbol mName; // 0x0
         FilePath mSelected; // 0x4
-        FilePath unk10; // 0x10
+        FilePath loading; // 0x10
         FilePath mLoaded; // 0x1c
         bool mProxy; // 0x28
         bool unk29; // 0x29
@@ -109,8 +113,15 @@ public:
     Merger* InMerger(Hmx::Object*);
     void DeleteCurLoader();
     void ClearSelections();
+    Action MergeAction(Hmx::Object*, Hmx::Object*, ObjectDir*);
+    void AddObject(Hmx::Object*);
+    void AddSubdir(ObjectDir*);
+    void PostMerge(Merger*, bool);
+    Merger* NotifyFileLoaded(Loader*, ObjectDir*);
 
     std::vector<Merger VECTOR_SIZE_LARGE>& Mergers(){ return mMergers; }
+    DataNode OnSelect(const DataArray*);
+    DataNode OnStartLoad(const DataArray*);
 
     static bool sDisableAll;
     static FileMerger* sFmDeleting;
@@ -126,9 +137,9 @@ public:
     ObjVector<Merger VECTOR_SIZE_LARGE> mMergers; // 0x30
     bool mAsyncLoad; // 0x40
     bool mLoadingLoad; // 0x41
-    int unk44; // 0x44
+    Loader* mCurLoader; // 0x44
     std::list<Merger*> mFilesPending; // 0x48
-    int unk50; // 0x50
+    MergeFilter* mFilter; // 0x50
     int mHeap; // 0x54
     Loader::Callback* mCoordinator; // 0x58
 };
