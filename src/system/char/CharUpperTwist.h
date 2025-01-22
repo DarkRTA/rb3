@@ -1,9 +1,12 @@
-#ifndef CHAR_CHARUPPERTWIST_H
-#define CHAR_CHARUPPERTWIST_H
+#pragma once
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 
+/** "<p>Does all interpolation for the upperarm, assuming
+ *      upperArm, upperTwist1 and 2 are under clavicle. Rotation about x is
+ *      evenly distributed from clavicle->twist1->twist2->upperarm</p>
+ *  Feeds the bones when executed." */
 class CharUpperTwist : public CharPollable {
 public:
     CharUpperTwist();
@@ -26,9 +29,10 @@ public:
         REGISTER_OBJ_FACTORY(CharUpperTwist)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mUpperArm; // 0x8
-    ObjPtr<RndTransformable, ObjectDir> mTwist1; // 0x14
-    ObjPtr<RndTransformable, ObjectDir> mTwist2; // 0x20
+    /** "The upper arm bone" */
+    ObjPtr<RndTransformable> mUpperArm; // 0x8
+    /** "The upper arm twist1 bone" */
+    ObjPtr<RndTransformable> mTwist1; // 0x14
+    /** "The upper arm twist2 bone" */
+    ObjPtr<RndTransformable> mTwist2; // 0x20
 };
-
-#endif

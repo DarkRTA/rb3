@@ -1,6 +1,7 @@
 #ifndef CHAR_CLIPDISTMAP_H
 #define CHAR_CLIPDISTMAP_H
 #include "char/CharClip.h"
+#include "char/CharDriver.h"
 #include <vector>
 
 class ClipDistMap {
@@ -13,6 +14,7 @@ public:
     void FindDists(float, DataArray*);
     void FindNodes(float, float, float);
     void SetNodes(Node*, Node*);
+    void Draw(float, float, CharDriver*);
 
     CharClip* unk0;
     CharClip* unk4;

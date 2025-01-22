@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARMIRROR_H
-#define CHAR_CHARMIRROR_H
+#pragma once
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
@@ -7,13 +6,14 @@
 #include "char/CharServoBone.h"
 #include <vector>
 
-class CharServoBone; // forward dec
-
+/** "Duplicates or mirrors another character's motions, given
+ *  the matching bone servo." */
 class CharMirror : public CharWeightable, public CharPollable {
 public:
 
     struct MirrorOp {
-        Symbol op;
+        void* ptr; // 0x0
+        Symbol op; // 0x4
     };
 
     CharMirror();
@@ -39,10 +39,10 @@ public:
         REGISTER_OBJ_FACTORY(CharMirror)
     }
 
-    ObjPtr<CharServoBone, class ObjectDir> mServo; // 0x20
-    ObjPtr<CharServoBone, class ObjectDir> mMirrorServo; // 0x2c
+    /** "The servo to change" */
+    ObjPtr<CharServoBone> mServo; // 0x20
+    /** "The servo we want to mirror" */
+    ObjPtr<CharServoBone> mMirrorServo; // 0x2c
     CharBonesAlloc mBones; // 0x38
     std::vector<MirrorOp> mOps; // 0xac
 };
-
-#endif

@@ -1,17 +1,50 @@
 #include "char/CharMirror.h"
+#include "char/CharBones.h"
+#include "char/CharWeightable.h"
+#include "math/Mtx.h"
+#include "obj/Data.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharMirror)
 
-CharMirror::CharMirror() : mServo(this, 0), mMirrorServo(this, 0), mBones(), mOps() {
+CharMirror::CharMirror() : mServo(this), mMirrorServo(this), mBones(), mOps() {
 
 }
 
 void CharMirror::Poll(){
     float weight = Weight();
-    if(weight && mBones.TotalSize() != 0){
-        mBones.ScaleDown(*mServo.Ptr(), 1.0f - weight);
+    if(weight == 0 || mBones.TotalSize() == 0) return;
+    mBones.ScaleDown(*mServo, 1.0f - weight);
+    MirrorOp* curMirrorOp = &mOps[0];
+    for(Vector3* it = (Vector3*)mBones.Start(); it < (Vector3*)mBones.ScaleOffset(); curMirrorOp++, it++){
+        *it = *(Vector3*)curMirrorOp->ptr;
+        if(!curMirrorOp->op.Null() && curMirrorOp->op == x){
+            it->x = -it->x;
+        }
     }
+    for(Hmx::Quat* it = (Hmx::Quat*)mBones.QuatOffset(); it < (Hmx::Quat*)mBones.RotXOffset(); curMirrorOp++, it++){
+        *it = *(Hmx::Quat*)curMirrorOp->ptr;
+        if(!curMirrorOp->op.Null()){
+            if(curMirrorOp->op == zw){
+                it->w = -it->w;
+                it->z = -it->z;
+            }
+            else if(curMirrorOp->op == xy){
+                it->x = -it->x;
+                it->y = -it->y;
+            }
+            else if(curMirrorOp->op == mirror_x){
+                it->Set(it->z, it->w, it->x, it->y);
+            }
+            else MILO_WARN("Unknown operation %s", curMirrorOp->op);
+        }
+    }
+    for(float* it = (float*)mBones.RotXOffset(); it < (float*)mBones.EndOffset(); curMirrorOp++, it++){
+        *it = *(float*)curMirrorOp->ptr;
+    }
+    mBones.ScaleAdd(*mServo, weight);
 }
 
 void CharMirror::SetServo(CharServoBone* bone){
@@ -28,21 +61,42 @@ void CharMirror::SetMirrorServo(CharServoBone* bone){
     }
 }
 
+void CharMirror::SyncBones(){
+    mBones.ClearBones();
+    if(!mServo || !mMirrorServo || !TypeDef()) return;
+    else {
+        std::list<CharBones::Bone> bones;
+        DataArray* mapArr = TypeDef()->FindArray("mappings", true);
+        for(int i = 1; i < mapArr->Size(); i++){
+            bones.push_back(CharBones::Bone(mapArr->Array(i)->Sym(0), 1));
+        }
+        mBones.AddBones(bones);
+        int numBones = mBones.mBones.size();
+        mOps.resize(numBones);
+        for(int i = 0; i < mOps.size(); i++){
+            Symbol boneName = mBones.mBones[i].name;
+            DataArray* boneArr = mapArr->FindArray(boneName, true);
+            mOps[i].ptr = mMirrorServo->FindPtr(boneArr->Sym(1));
+            mOps[i].op = boneArr->Size() > 2 ? boneArr->Sym(2) : Symbol();
+        }
+    }
+}
+
 void CharMirror::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
     change.push_back(mServo);
 }
 
 SAVE_OBJ(CharMirror, 0x90)
 
-void CharMirror::Load(BinStream& bs){
+BEGIN_LOADS(CharMirror)
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
-    Hmx::Object::Load(bs);
-    CharWeightable::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
+    LOAD_SUPERCLASS(CharWeightable)
     bs >> mMirrorServo;
     bs >> mServo;
     SyncBones();
-}
+END_LOADS
 
 BEGIN_COPYS(CharMirror)
     COPY_SUPERCLASS(Hmx::Object)

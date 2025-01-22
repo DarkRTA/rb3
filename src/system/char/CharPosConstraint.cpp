@@ -3,7 +3,7 @@
 
 INIT_REVS(CharPosConstraint)
 
-CharPosConstraint::CharPosConstraint() : mSrc(this, 0), mTargets(this, kObjListNoNull), mBox(Vector3(1.0f, 1.0f, 1.0f), Vector3(-1.0f, -1.0f, -1.0f)) {
+CharPosConstraint::CharPosConstraint() : mSrc(this), mTargets(this), mBox(Vector3(1.0f, 1.0f, 1.0f), Vector3(-1.0f, -1.0f, -1.0f)) {
     // mBox.mMin.Set(1.0f, 1.0f, 1.0f);
     // mBox.mMax.Set(-1.0f, -1.0f, -1.0f);
 }
@@ -16,7 +16,7 @@ CharPosConstraint::~CharPosConstraint(){
 void CharPosConstraint::Poll(){
     if(mSrc){
         Transform& srcTrans = mSrc->WorldXfm();
-        for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+        for(ObjPtrList<RndTransformable>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
             RndTransformable* curTrans = *it;
             Transform tf48(curTrans->WorldXfm());
             if(mBox.mMin.x <= mBox.mMax.x){

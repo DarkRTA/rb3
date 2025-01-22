@@ -1,10 +1,12 @@
 #include "char/CharTransCopy.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 #include "obj/PropSync_p.h"
 
 INIT_REVS(CharTransCopy);
 
-CharTransCopy::CharTransCopy() : mSrc(this, 0), mDest(this, 0) {
+CharTransCopy::CharTransCopy() : mSrc(this), mDest(this) {
 
 }
 
@@ -24,13 +26,13 @@ void CharTransCopy::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::
 
 SAVE_OBJ(CharTransCopy, 0x2D);
 
-void CharTransCopy::Load(BinStream& bs){
+BEGIN_LOADS(CharTransCopy)
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
-    Hmx::Object::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
     bs >> mSrc;
     bs >> mDest;
-}
+END_LOADS
 
 BEGIN_COPYS(CharTransCopy)
     COPY_SUPERCLASS(Hmx::Object)

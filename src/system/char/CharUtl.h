@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARUTL_H
-#define CHAR_CHARUTL_H
+#pragma once
 #include "obj/Dir.h"
 #include "rndobj/Trans.h"
 
@@ -30,6 +29,7 @@ public:
     ClipPredict(CharClip*, const Vector3&, float);
     void SetClip(CharClip*);
     void Predict(float, float);
+    float Angle() const { return mAng; }
 
     CharClip* mClip; // 0x0
     void* mAngChannel; // 0x4
@@ -39,5 +39,3 @@ public:
     Vector3 mLastPos; // 0x1c
     float mLastAng; // 0x28
 };
-
-#endif

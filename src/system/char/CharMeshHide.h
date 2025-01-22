@@ -1,10 +1,11 @@
-#ifndef CHAR_CHARMESHHIDE_H
-#define CHAR_CHARMESHHIDE_H
+#pragma once
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 #include "obj/ObjVector.h"
 #include "rndobj/Draw.h"
 
+/** "Hides meshes based on flags in other CharMeshHide." */
 class CharMeshHide : public Hmx::Object {
 public:
 
@@ -14,9 +15,9 @@ public:
         Hide(const Hide&);
         Hide& operator=(const Hide&);
 
-        ObjPtr<RndDrawable, ObjectDir> mDraw;
-        int mFlags;
-        bool mShow;
+        ObjPtr<RndDrawable> mDraw; // 0x0
+        int mFlags; // 0xc
+        bool mShow; // 0x10
     };
 
     CharMeshHide();
@@ -29,18 +30,20 @@ public:
     virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
     virtual void Load(BinStream&);
 
-    static void HideAll(const ObjPtrList<CharMeshHide, ObjectDir>&, int);
+    static void HideAll(const ObjPtrList<CharMeshHide>&, int);
     void HideDraws(int);
+    int Flags() const { return mFlags; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     static void Init();
+    static void Register(){
+        REGISTER_OBJ_FACTORY(CharMeshHide)
+    }
     NEW_OBJ(CharMeshHide);
 
     ObjVector<Hide> mHides; // 0x1c
     int mFlags; // 0x28
 };
-
-#endif

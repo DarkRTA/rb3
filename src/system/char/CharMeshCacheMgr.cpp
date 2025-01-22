@@ -1,7 +1,7 @@
 #include "char/CharMeshCacheMgr.h"
 #include "os/Debug.h"
 
-inline MeshCacher::MeshCacher(RndMesh* mesh, bool b) : mMesh(mesh), unk4(0), mDisabled(b) {
+inline MeshCacher::MeshCacher(RndMesh* mesh, bool b) : mMesh(mesh), mFlags(0), mDisabled(b) {
     MILO_ASSERT(mMesh, 0x10E);
 }
 
@@ -10,7 +10,9 @@ CharMeshCacheMgr::CharMeshCacheMgr() : mCache(), mDisabled(0) {
 }
 
 CharMeshCacheMgr::~CharMeshCacheMgr(){
-
+    for(int i = 0; i < mCache.size(); i++){
+        delete mCache[i];
+    }
 }
 
 void CharMeshCacheMgr::Disable(bool disable){
@@ -25,28 +27,28 @@ bool CharMeshCacheMgr::HasMesh(RndMesh* mesh){
     return false;
 }
 
-const std::vector<RndMesh::Vert>& CharMeshCacheMgr::GetVerts(RndMesh* mesh) const {
+const std::vector<SyncMeshCB::Vert>& CharMeshCacheMgr::GetVerts(RndMesh* mesh) const {
     for(int i = 0; i < mCache.size(); i++){
         if(mesh == mCache[i]->mMesh){
-            return mCache[i]->unkc;
+            return mCache[i]->mVerts;
         }
     }
-    return *(std::vector<RndMesh::Vert>*)0;
+    return *(std::vector<SyncMeshCB::Vert>*)0;
 }
 
 // 804f0f10 - syncmesh
 void CharMeshCacheMgr::SyncMesh(RndMesh* mesh, int mask){
-    int idx = 0;
-    for(int i = 0; i < mCache.size(); i++){
-        if(mCache[idx++]->mMesh == mesh) break;
+    int i = 0;
+    for(; i < mCache.size(); i++){
+        if(mesh == mCache[i]->mMesh) break;
     }
-    if(idx == mCache.size()){
+    if(i == mCache.size()){
         mCache.push_back(new MeshCacher(mesh, mDisabled));
     }
-    // mCache[idx].somemethodthatsinlined - fn_804F0FD0
+    mCache[i]->Sync(mask);
 }
 
-void CharMeshCacheMgr::StuffMeshes(ObjPtrList<RndMesh, ObjectDir>& meshlist){
+void CharMeshCacheMgr::StuffMeshes(ObjPtrList<RndMesh>& meshlist){
     for(int i = 0; i < mCache.size(); i++){
         meshlist.push_back(mCache[i]->mMesh);
     }

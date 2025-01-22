@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARTRANSCOPY_H
-#define CHAR_CHARTRANSCOPY_H
+#pragma once
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 
+/** "Copies local xfm from one bone to another at poll time" */
 class CharTransCopy : public CharPollable {
 public:
     CharTransCopy();
@@ -26,8 +26,8 @@ public:
         REGISTER_OBJ_FACTORY(CharTransCopy)
     }
 
-    ObjPtr<RndTransformable, class ObjectDir> mSrc; // 0x8
-    ObjPtr<RndTransformable, class ObjectDir> mDest; // 0x14
+    /** "Object to copy the local xfm from" */
+    ObjPtr<RndTransformable> mSrc; // 0x8
+    /** "Object to copy the local xfm to" */
+    ObjPtr<RndTransformable> mDest; // 0x14
 };
-
-#endif

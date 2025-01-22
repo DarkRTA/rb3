@@ -1,10 +1,11 @@
 #pragma once
+#include "obj/Data.h"
 #include "rndobj/Overlay.h"
+#include "char/CharDriver.h"
 #include "obj/ObjPtr_p.h"
 
 // forward decs
 class Character;
-class CharDriver;
 class CharClip;
 class CharClipGroup;
 class ClipDistMap;
@@ -28,6 +29,11 @@ public:
     void TeleportTo(Waypoint*);
     void SetStartEndBeat(float, float, int);
     void SetMoveSelf(bool);
+    void Sync();
+    void SetDistMap(Symbol);
+    ObjectDir* Clips() const { return mDriver ? mDriver->ClipDir() : nullptr; }
+
+    DataNode OnGetFilteredClips(DataArray*);
 
     NEW_POOL_OVERLOAD(CharacterTest)
     DELETE_POOL_OVERLOAD(CharacterTest)

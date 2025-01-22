@@ -1,10 +1,10 @@
-#ifndef CHAR_CHARPOSCONSTRAINT_H
-#define CHAR_CHARPOSCONSTRAINT_H
+#pragma once
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Trans.h"
 #include "math/Geo.h"
 
+/** "Forces the targets to be within a world space bounding box relative to source." */
 class CharPosConstraint : public CharPollable {
 public:
     CharPosConstraint();
@@ -27,9 +27,10 @@ public:
         REGISTER_OBJ_FACTORY(CharPosConstraint)
     }
 
-    ObjPtr<RndTransformable, ObjectDir> mSrc; // 0x8
-    ObjPtrList<RndTransformable, ObjectDir> mTargets; // 0x14
+    /** "Bone to be higher than" */
+    ObjPtr<RndTransformable> mSrc; // 0x8
+    /** "Bones to constrain" */
+    ObjPtrList<RndTransformable> mTargets; // 0x14
+    /** "Bounding box, make min > max to ignore that dimension" */
     Box mBox; // 0x24
 };
-
-#endif

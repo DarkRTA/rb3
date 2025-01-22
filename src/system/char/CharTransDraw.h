@@ -1,9 +1,9 @@
-#ifndef CHAR_CHARTRANSDRAW_H
-#define CHAR_CHARTRANSDRAW_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "obj/ObjPtr_p.h"
 #include "char/Character.h"
 
+/** "Defers drawing translucent parts of characters until this object is drawn" */
 class CharTransDraw : public RndDrawable {
 public:
     CharTransDraw();
@@ -27,7 +27,6 @@ public:
         REGISTER_OBJ_FACTORY(CharTransDraw)
     }
 
-    ObjPtrList<Character, ObjectDir> mChars;
+    /** "The Characters whose translucent bits we will draw" */
+    ObjPtrList<Character> mChars; // 0x20
 };
-
-#endif

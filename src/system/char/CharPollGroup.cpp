@@ -3,7 +3,7 @@
 
 INIT_REVS(CharPollGroup);
 
-CharPollGroup::CharPollGroup() : mPolls(this, kObjListNoNull), mChangedBy(this, 0), mChanges(this, 0) {
+CharPollGroup::CharPollGroup() : mPolls(this), mChangedBy(this), mChanges(this) {
 
 }
 
@@ -12,28 +12,28 @@ CharPollGroup::~CharPollGroup(){
 }
 
 void CharPollGroup::Enter(){
-    for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+    for(ObjPtrList<CharPollable>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
         (*it)->Enter();
     }
 }
 
 void CharPollGroup::Exit(){
-    for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+    for(ObjPtrList<CharPollable>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
         (*it)->Exit();
     }
 }
 
 void CharPollGroup::Poll(){
     if(mWeightOwner->mWeight != 0.0f){
-        for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        for(ObjPtrList<CharPollable>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
             (*it)->Poll();
         }
     }
 }
 
 void CharPollGroup::ListPollChildren(std::list<RndPollable*>& l) const {
-    ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin();
-    ObjPtrList<CharPollable, ObjectDir>::iterator itEnd = mPolls.end();
+    ObjPtrList<CharPollable>::iterator it = mPolls.begin();
+    ObjPtrList<CharPollable>::iterator itEnd = mPolls.end();
     for(; it != itEnd; ++it){
         l.push_back(*it);
     }
@@ -45,7 +45,7 @@ void CharPollGroup::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::
         change.push_back(mChanges);
     }
     else {
-        for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+        for(ObjPtrList<CharPollable>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
             (*it)->PollDeps(changedBy, change);
         }
     }
@@ -71,7 +71,7 @@ BEGIN_COPYS(CharPollGroup)
     CREATE_COPY(CharPollGroup)
     BEGIN_COPYING_MEMBERS
         if(ty == kCopyFromMax){
-            for(ObjPtrList<CharPollable, ObjectDir>::iterator it = c->mPolls.begin(); it != c->mPolls.end(); ++it){
+            for(ObjPtrList<CharPollable>::iterator it = c->mPolls.begin(); it != c->mPolls.end(); ++it){
                 if(!mPolls.find(*it)){
                     mPolls.push_back(*it);
                 }
@@ -90,7 +90,7 @@ void CharPollGroup::SortPolls(){
     CharPollableSorter sorter;
     std::vector<RndPollable*> polls;
     polls.reserve(mPolls.size());
-    for(ObjPtrList<CharPollable, ObjectDir>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
+    for(ObjPtrList<CharPollable>::iterator it = mPolls.begin(); it != mPolls.end(); ++it){
         polls.push_back(*it);
     }
     sorter.Sort(polls);

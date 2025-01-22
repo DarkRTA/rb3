@@ -1,10 +1,12 @@
 #include "char/CharUpperTwist.h"
 #include "math/Rot.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(CharUpperTwist)
 
-CharUpperTwist::CharUpperTwist() : mUpperArm(this, 0), mTwist1(this, 0), mTwist2(this, 0) {
+CharUpperTwist::CharUpperTwist() : mUpperArm(this), mTwist1(this), mTwist2(this) {
 
 }
 
@@ -41,14 +43,14 @@ void CharUpperTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx:
 
 SAVE_OBJ(CharUpperTwist, 0x5D)
 
-void CharUpperTwist::Load(BinStream& bs){
+BEGIN_LOADS(CharUpperTwist)
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
-    Hmx::Object::Load(bs);
+    LOAD_SUPERCLASS(Hmx::Object)
     bs >> mTwist2;
     bs >> mUpperArm;
     bs >> mTwist1;
-}
+END_LOADS
 
 BEGIN_COPYS(CharUpperTwist)
     COPY_SUPERCLASS(Hmx::Object)

@@ -1,5 +1,4 @@
-#ifndef CHAR_CHARSERVOBONE_H
-#define CHAR_CHARSERVOBONE_H
+#pragma once
 #include "rndobj/Highlightable.h"
 #include "char/CharPollable.h"
 #include "char/CharBonesMeshes.h"
@@ -10,7 +9,9 @@
 class RndEnviron;
 class Vector3;
 class Character;
+class CharClipDriver;
 
+/** "Sets bone transforms and regulates Character center to a spot." */
 class CharServoBone : public RndHighlightable, public CharPollable, public CharBonesMeshes {
 public:
     CharServoBone();
@@ -34,6 +35,8 @@ public:
     void ZeroDeltas();
     void MoveToFacing(Transform&);
     void MoveToDeltaFacing(Transform&);
+    void Regulate();
+    void DoRegulate(Waypoint*, CharClipDriver*, float, float);
     void SetRegulateWaypoint(Waypoint* wp){ mRegulate = wp; }
 
     DECLARE_REVS;
@@ -49,11 +52,12 @@ public:
     Vector3* mFacingPosDelta; // 0x7c
     float* mFacingRot; // 0x80
     Vector3* mFacingPos; // 0x84
+    /** "Move ourselves around when playing animations" */
     bool mMoveSelf; // 0x88
     bool mDeltaChanged; // 0x89
     Character* mMe; // 0x8c
+    /** "What degrees of freedom we can accomodate" */
     Symbol mClipType; // 0x90
-    ObjPtr<Waypoint, ObjectDir> mRegulate; // 0x94
+    /** "Waypoint to regulate to" */
+    ObjPtr<Waypoint> mRegulate; // 0x94
 };
-
-#endif

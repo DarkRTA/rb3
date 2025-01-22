@@ -1,5 +1,4 @@
-#ifndef CHAR_CLIPCOLLIDE_H
-#define CHAR_CLIPCOLLIDE_H
+#pragma once
 #include "obj/Object.h"
 #include <vector>
 #include "obj/ObjPtr_p.h"
@@ -10,6 +9,7 @@ class Character;
 class Waypoint;
 class CharClip;
 
+/** "Analyzes character clips in a venue" */
 class ClipCollide : public Hmx::Object {
 public:
 
@@ -39,14 +39,20 @@ public:
     void SyncWaypoint();
     void ClearReport();
     void SyncMode();
+    /** "Run the animation" */
     void Demonstrate();
     bool ValidWaypoint(Waypoint*);
     bool ValidClip(CharClip*);
+    /** "Test all the characters against all the waypoints in this venue" */
     void TestChars();
+    /** "Test the current character against all the waypoints in the venue" */
     void TestWaypoints();
+    /** "Test all clips for the current character and waypoint" */
     void TestClips();
     ObjectDir* Clips();
+    /** "Run the collision" */
     void Collide();
+    void AddReport(Vector3);
     void PickReport(const char*);
 
     DataNode OnVenueName(DataArray*);
@@ -64,15 +70,23 @@ public:
 
     std::vector<Report> mReports; // 0x1c
     RndGraph* mGraph; // 0x24
-    ObjPtr<Character, ObjectDir> mChar; // 0x28
+    /** "Pointer to the character to move around" */
+    ObjPtr<Character> mChar; // 0x28
     String mCharPath; // 0x34
-    ObjPtr<Waypoint, ObjectDir> mWaypoint; // 0x40
+    /** "Waypoint to stand at" */
+    ObjPtr<Waypoint> mWaypoint; // 0x40
+    /** "Where in the waypoint to stand". Options are: front, back, left, right */
     Symbol mPosition; // 0x4c
-    ObjPtr<CharClip, ObjectDir> mClip; // 0x50
+    /** "Clip to test" */
+    ObjPtr<CharClip> mClip; // 0x50
     String mReportString; // 0x5c
+    /** "show red world lines" */
     bool mWorldLines; // 0x68
+    /** "move the camera when you pick a report" */
     bool mMoveCamera; // 0x69
+    /** "mode to run in" */
     Symbol mMode; // 0x6c
-};
 
-#endif
+    // pick character: "Changes the character to one of the listed ones"
+    // pick report: "Pick a report entry to look at"
+};

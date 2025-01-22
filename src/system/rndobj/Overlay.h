@@ -31,6 +31,7 @@ public:
     }
 
     int NumLines() const { return mLines.size(); }
+    Callback* GetCallback() const { return mCallback; }
 
     void SetTimeout(float);
     void SetLines(int);

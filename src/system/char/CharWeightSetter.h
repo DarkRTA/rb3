@@ -1,10 +1,11 @@
-#ifndef CHAR_CHARWEIGHTSETTER_H
-#define CHAR_CHARWEIGHTSETTER_H
+#pragma once
 #include "char/CharWeightable.h"
 #include "char/CharPollable.h"
 #include "obj/ObjPtr_p.h"
 #include "char/CharDriver.h"
 
+/** "Sets its own weight by pushing flags through a driver to
+ *  see what fraction of them it has." */
 class CharWeightSetter : public CharWeightable, public CharPollable {
 public:
     CharWeightSetter();
@@ -26,10 +27,10 @@ public:
         REGISTER_OBJ_FACTORY(CharWeightSetter)
     }
 
-    ObjPtr<CharWeightable, ObjectDir> mBase; // 0x20
-    ObjPtr<CharDriver, ObjectDir> mDriver; // 0x2c
-    ObjPtrList<CharWeightSetter, ObjectDir> mMinWeights; // 0x38
-    ObjPtrList<CharWeightSetter, ObjectDir> mMaxWeights; // 0x48
+    ObjPtr<CharWeightable> mBase; // 0x20
+    ObjPtr<CharDriver> mDriver; // 0x2c
+    ObjPtrList<CharWeightSetter> mMinWeights; // 0x38
+    ObjPtrList<CharWeightSetter> mMaxWeights; // 0x48
     int mFlags; // 0x58
     float mOffset; // 0x5c
     float mScale; // 0x60
@@ -40,5 +41,3 @@ public:
     OBJ_CLASSNAME(CharWeightSetter);
     OBJ_SET_TYPE(CharWeightSetter);
 };
-
-#endif
