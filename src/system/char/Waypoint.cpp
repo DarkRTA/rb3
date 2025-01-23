@@ -21,25 +21,24 @@ void Waypoint::Init() {
 }
 
 void Waypoint::Terminate() {
-    delete sWaypoints;
-    sWaypoints = 0;
+    RELEASE(sWaypoints);
 }
 
 Waypoint* Waypoint::Find(int flags2) {
-    for (std::list<Waypoint*>::iterator i = sWaypoints->begin(); i != sWaypoints->end(); i++) {
+    for (std::list<Waypoint*>::iterator i = sWaypoints->begin(); i != sWaypoints->end(); ++i) {
         if ((*i)->mFlags & flags2) return *i;
     } return NULL;
 }
 
 DataNode Waypoint::OnWaypointFind(DataArray* da) {
-    return DataNode(Waypoint::Find(da->Int(1)));
+    return Waypoint::Find(da->Int(1));
 }
 
 Waypoint::Waypoint() : mFlags(0), mRadius(12.0f), mYRadius(0), mAngRadius(0), pad(0), mStrictAngDelta(0), mStrictRadiusDelta(0), mConnections(this) {
     if(RandomFloat() < 0.5f){
         sWaypoints->push_back(this);
     }
-    else sWaypoints->push_back(this);
+    else sWaypoints->push_front(this);
 }
 
 Waypoint::~Waypoint() {

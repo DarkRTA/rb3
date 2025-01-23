@@ -31,14 +31,18 @@ public:
     }
 
     void push_back(const T& t){
-        push_back();
-        T* last = &back();
-        *last = t;
+        ObjVector& me = *this;
+        me.push_back();
+        T& last = back();
+        last = t;
     }
 
     void operator=(const ObjVector& vec){
+        ObjVector& me = *this;
         if(this != &vec){
-            resize(vec.size());
+            me.resize(vec.size());
+            // resize(vec.size());
+            // (Base&)me = (Base&)vec;
             Base::operator=((Base&)vec);
         }
     }
