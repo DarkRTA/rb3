@@ -141,5 +141,5 @@ public:
     std::list<Merger*> mFilesPending; // 0x48
     MergeFilter* mFilter; // 0x50
     int mHeap; // 0x54
-    Loader::Callback* mCoordinator; // 0x58
+    Loader::Callback* mOrganizer; // 0x58
 };

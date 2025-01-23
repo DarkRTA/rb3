@@ -537,7 +537,7 @@
             "system/char/CharWeightable.cpp": "NonMatching",
             "system/char/CharWeightSetter.cpp": "NonMatching",
             "system/char/FileMerger.cpp": "NonMatching",
-            "system/char/FileMergerOrganizer.cpp": "MISSING",
+            "system/char/FileMergerOrganizer.cpp": "NonMatching",
             "system/char/Waypoint.cpp": "NonMatching",
 
             "system/dsp/IIRFilter.cpp": "NonMatching",

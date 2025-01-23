@@ -13,14 +13,10 @@
 #include "rndobj/Group.h"
 #include "rndobj/Mat.h"
 #include "rndobj/Tex.h"
-#include "rndobj/Text.h"
 #include "utl/BinStream.h"
 #include "utl/Loader.h"
 #include "utl/MemMgr.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 #define kNoHeap -3
 #define kSystemHeap -1
@@ -56,7 +52,7 @@ void FileMerger::Merger::Clear(){
 }
 #pragma pop
 
-FileMerger::FileMerger() : mMergers(this), mAsyncLoad(0), mLoadingLoad(0), mCurLoader(0), mFilter(0), mHeap(GetCurrentHeapNum()), mCoordinator(this) {
+FileMerger::FileMerger() : mMergers(this), mAsyncLoad(0), mLoadingLoad(0), mCurLoader(0), mFilter(0), mHeap(GetCurrentHeapNum()), mOrganizer(this) {
     MILO_ASSERT(MemNumHeaps() == 0 || (mHeap != kNoHeap && mHeap != kSystemHeap), 0x73);
 }
 
@@ -113,7 +109,7 @@ bool FileMerger::StartLoadInternal(bool b1, bool b2){
     mAsyncLoad = b1;
     mLoadingLoad = b2;
 
-    if(mFilesPending.empty() || mCurLoader || mCoordinator != this) return false;
+    if(mFilesPending.empty() || mCurLoader || mOrganizer != this) return false;
     else {
         if(b1) TheFileMergerOrganizer->AddFileMerger(this);
         else {
@@ -174,25 +170,24 @@ void FileMerger::AppendLoader(FileMerger::Merger& merger){
     for(std::list<Merger*>::iterator it = mFilesPending.begin(); it != mFilesPending.end(); ++it){
         if(*it == &merger){
             if(mCurLoader){
-                MILO_WARN("check_sync");
+                if(it == mFilesPending.begin()){
+                    DeleteCurLoader();
+                    break;
+                }
             }
-//       if (*(param_1 + 0x44) != 0) {
-//         fn_804FFCA0(auStack_18,param_1 + 0x48);
-//         uVar2 = stlpmtx_std::_List_iterator<>::_List_iterator(auStack_14,auStack_18);
-//         iVar3 = Symbol::operator==(auStack_10,uVar2);
-//         if (iVar3 != 0) {
-//           DeleteCurLoader(param_1);
-//           goto LAB_80500120;
-//         }
-//       }
-//       uVar2 = stlpmtx_std::_List_iterator<>::_List_iterator(auStack_20,auStack_10);
-//       fn_80500164(auStack_1c,param_1 + 0x48,uVar2);
-//       goto LAB_80500120;
+            mFilesPending.erase(it);
+            break;
         }
     }
     merger.loading = merger.mSelected;
     if(merger.mPreClear) merger.Clear();
     mFilesPending.push_back(&merger);
+    if(LOADMGR_EDITMODE){
+        static Message checkSync("check_sync", "", "");
+        checkSync[0] = merger.loading;
+        checkSync[1] = merger.mName;
+        HandleType(checkSync);
+    }
 }
 
 void FileMerger::DeleteCurLoader(){
@@ -220,10 +215,10 @@ next:
     FilePath& fp = mFilesPending.front()->loading;
     MemTempHeap tmp(mHeap);
     if(fp.empty()){
-        mCurLoader = new NullLoader(fp, (LoaderPos)pos, mCoordinator);
+        mCurLoader = new NullLoader(fp, (LoaderPos)pos, mOrganizer);
     }
     else {
-        mCurLoader = new DirLoader(fp, (LoaderPos)pos, mCoordinator, 0, 0, 0);
+        mCurLoader = new DirLoader(fp, (LoaderPos)pos, mOrganizer, 0, 0, 0);
     }
 }
 
@@ -376,7 +371,7 @@ void FileMerger::PostMerge(FileMerger::Merger* merger, bool b){
             miloObj->Handle(Message("update_objects", 1), true);
         }
     }
-    if(!b && mCoordinator != this) return;
+    if(!b && mOrganizer != this) return;
     if(mFilesPending.empty()){
         MILO_ASSERT(!mCurLoader, 0x24F);
     }
