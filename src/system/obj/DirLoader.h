@@ -34,6 +34,7 @@ public:
     void LoadObjs();
     void DoneLoading();
     void ResolveEndianness();
+    void SetDeleteSelf(){ mDeleteSelf = true; }
 
     NEW_POOL_OVERLOAD(DirLoader);
     DELETE_POOL_OVERLOAD(DirLoader);

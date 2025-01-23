@@ -1,9 +1,10 @@
-#ifndef CHAR_WAYPOINT_H
-#define CHAR_WAYPOINT_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "obj/ObjVector.h"
 #include <list>
 
+/** "A waypoint for character movement. Characters walk to
+ *  these, start themselves out from these, etc." */
 class Waypoint : public RndTransformable { // 0xe4
 public:
     Waypoint();
@@ -32,26 +33,29 @@ public:
     static DataNode OnWaypointNearest(DataArray*);
     static DataNode OnWaypointLast(DataArray*);
     static Waypoint* Find(int);
-
-    int mFlags; // 0x90
-    float mRadius; // 0x94
-    float mYRadius; // 0x98
-    float mAngRadius; // 0x9c
-    int pad; // 0xa0
-    float mStrictAngDelta; // 0xa4
-    float mStrictRadiusDelta; // 0xa8
-    ObjVector<ObjOwnerPtr<Waypoint, ObjectDir> > mConnections; // 0xac
+    static std::list<Waypoint*>* sWaypoints;
 
     static void Init();
     static void Terminate();
     static void Register(){
         REGISTER_OBJ_FACTORY(Waypoint);
     }
-
     NEW_OBJ(Waypoint)
-
-    static std::list<Waypoint*>* sWaypoints;
     DECLARE_REVS
-};
 
-#endif // CHAR_WAYPOINT_H
+    /** "Flags for this waypoint, should be a bitfield per app" */
+    int mFlags; // 0x90
+    /** "Radius within we can stop from a walk, or be tethered to" */
+    float mRadius; // 0x94
+    /** "If positive, makes this shape a box with radius the x axis X half width, and y_radius the Y axis half width" */
+    float mYRadius; // 0x98
+    /** "Angular slop in degrees away from y axis" */
+    float mAngRadius; // 0x9c
+    int pad; // 0xa0
+    /** "degrees beyond ang radius you can never rotate past, if >= 0" */
+    float mStrictAngDelta; // 0xa4
+    /** "how much beyond radius you will never leave, it will forcibly pull you back, ignored if <= 0" */
+    float mStrictRadiusDelta; // 0xa8
+    /** "Waypoints we can walk to" */
+    ObjVector<ObjOwnerPtr<Waypoint> > mConnections; // 0xac
+};
