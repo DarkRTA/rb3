@@ -44,7 +44,7 @@ jobs:
         python tools/upload_progress.py -b https://progress.decomp.club/ -p rb3 -v ${{matrix.version}} \
           build/${{matrix.version}}/progress.json
     - name: Upload map
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{matrix.version}}_maps
         path: build/${{matrix.version}}/**/*.MAP
@@ -77,7 +77,7 @@ jobs:
           --non-matching
         ninja
     - name: Upload map
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: SZBE69_B8_maps
         path: build/SZBE69_B8/**/*.MAP
