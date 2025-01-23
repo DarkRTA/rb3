@@ -23,7 +23,8 @@ public:
     Hmx::Object* Owner(){ return mOwner; }
 
     void resize(unsigned long ul){
-        Base::resize(ul, T(mOwner));
+        Base& me = *this;
+        me.resize(ul, T(mOwner));
     }
 
     void push_back(){
@@ -40,8 +41,8 @@ public:
     void operator=(const ObjVector& vec){
         ObjVector& me = *this;
         if(this != &vec){
-            me.resize(vec.size());
-            // resize(vec.size());
+            // me.resize(vec.size());
+            resize(vec.size());
             // (Base&)me = (Base&)vec;
             Base::operator=((Base&)vec);
         }
