@@ -76,8 +76,3 @@ jobs:
           --binutils /binutils --compilers /compilers --wrapper wibo \
           --non-matching
         ninja
-    - name: Upload map
-      uses: actions/upload-artifact@v4
-      with:
-        name: SZBE69_B8_maps
-        path: build/SZBE69_B8/**/*.MAP
