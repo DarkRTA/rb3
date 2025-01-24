@@ -106,23 +106,15 @@ void RndTexRenderer::DrawToTexture(){
                     RndMesh* mesh5 = nullptr;
                     if(mMirrorCam){
                         RndMat* mat4 = nullptr;
-                        {
-                            std::vector<ObjRef*>::const_reverse_iterator it = mOutputTexture->Refs().rbegin();
-                            std::vector<ObjRef*>::const_reverse_iterator itEnd = mOutputTexture->Refs().rend();
-                            for(; it != itEnd; ++it){
-                                mat4 = dynamic_cast<RndMat*>((*it)->RefOwner());
-                                if(mat4) break;
-                            }
-                        }
+                        FOREACH_OBJREF(mOutputTexture, 
+                            mat4 = dynamic_cast<RndMat*>((*it)->RefOwner());
+                            if(mat4) break;
+                        )
                         if(mat4){
-                            {
-                                std::vector<ObjRef*>::const_reverse_iterator it = mat4->Refs().rbegin();
-                                std::vector<ObjRef*>::const_reverse_iterator itEnd = mat4->Refs().rend();
-                                for(; it != itEnd; ++it){
-                                    mesh5 = dynamic_cast<RndMesh*>((*it)->RefOwner());
-                                    if(mesh5) break;
-                                }
-                            }
+                            FOREACH_OBJREF(mat4, 
+                                mesh5 = dynamic_cast<RndMesh*>((*it)->RefOwner());
+                                if(mesh5) break;
+                            )
                         }
                         if(!mesh5){
                             MILO_NOTIFY_ONCE("%s could not find mesh to mirror about. Is %s not being mapped onto a mesh?",

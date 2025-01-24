@@ -52,8 +52,8 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
                 std::vector<ObjRef*>::const_reverse_iterator rit = filter->Refs().rbegin();
                 std::vector<ObjRef*>::const_reverse_iterator rEnd = filter->Refs().rend();
                 for(; rit != rEnd; ++rit){
-                    if((*rit)->RefOwner()){
-                        if((*rit)->RefOwner() != iter) break;
+                    if((*rit)->RefOwner() && (*rit)->RefOwner() != iter){
+                        break;
                     }
                 }
                 if(!(rit != rEnd) && filter->GetType() != RndAnimFilter::kShuttle){

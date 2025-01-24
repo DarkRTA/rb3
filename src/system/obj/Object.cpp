@@ -1,4 +1,5 @@
 #include "obj/Object.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"

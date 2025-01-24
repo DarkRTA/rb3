@@ -65,14 +65,12 @@ SplashFunc gSplashResume;
 DECOMP_FORCEACTIVE(Utl, __FILE__, "i->from->Dir()")
 
 RndGroup* GroupOwner(Hmx::Object* o) {
-    std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator ritEnd = o->Refs().rend();
-    for(; rit != ritEnd; ++rit){
-        RndGroup* grp = dynamic_cast<RndGroup*>((*rit)->RefOwner());
+    FOREACH_OBJREF(o,
+        RndGroup* grp = dynamic_cast<RndGroup*>((*it)->RefOwner());
         if(grp){
             if(grp->mObjects.find(o) != grp->mObjects.end()) return grp;
         }
-    }
+    )
     return nullptr;
 }
 
@@ -127,12 +125,10 @@ bool AnimContains(const RndAnimatable* anim1, const RndAnimatable* anim2){
 }
 
 RndAnimatable* AnimController(Hmx::Object* o){
-    std::vector<ObjRef*>::const_reverse_iterator rit = o->Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator ritEnd = o->Refs().rend();
-    for(; rit != ritEnd; ++rit){
-        RndAnimatable* a = dynamic_cast<RndAnimatable*>((*rit)->RefOwner());
+    FOREACH_OBJREF(o,
+        RndAnimatable* a = dynamic_cast<RndAnimatable*>((*it)->RefOwner());
         if(a && a->AnimTarget() == o) return a;
-    }
+    )
     return nullptr;
 }
 

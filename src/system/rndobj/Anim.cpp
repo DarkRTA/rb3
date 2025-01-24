@@ -1,4 +1,5 @@
 #include "rndobj/Anim.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "rndobj/AnimFilter.h"
 #include "rndobj/Group.h"
@@ -118,12 +119,10 @@ void RndAnimatable::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 }
 
 bool RndAnimatable::IsAnimating(){
-    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
-    for(; rit != ritEnd; ++rit){
-        Hmx::Object* owner = (*rit)->RefOwner();
+    FOREACH_OBJREF(this,
+        Hmx::Object* owner = (*it)->RefOwner();
         if(dynamic_cast<AnimTask*>(owner)) return true;
-    }
+    )
     return false;
 }
 
@@ -285,15 +284,14 @@ AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool 
     }
     Hmx::Object* target = anim->AnimTarget();
     if(target){
-        std::vector<ObjRef*>::const_reverse_iterator rit = target->Refs().rbegin();
-        std::vector<ObjRef*>::const_reverse_iterator ritEnd = target->Refs().rend();
-        for(; rit != ritEnd; ++rit){
-            Hmx::Object* owner = (*rit)->RefOwner();
+        FOREACH_OBJREF(target,
+            Hmx::Object* owner = (*it)->RefOwner();
             if(owner != NULL && owner->ClassName() == AnimTask::StaticClassName()){
                 mBlendTask = (AnimTask*)owner;
                 break;
             }
-        }
+        
+        )
     }
     if(mBlendPeriod && mBlendTask){
         mBlendTask->mBlending = true;

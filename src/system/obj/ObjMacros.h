@@ -466,7 +466,7 @@ void objType::Load(BinStream& bs){
     std::vector<ObjRef*>::const_reverse_iterator it = obj->Refs().rbegin(); \
     std::vector<ObjRef*>::const_reverse_iterator itEnd = obj->Refs().rend(); \
     for(; it != itEnd; ++it){ \
-        (code_block); \
+        {code_block}; \
     } \
 }
 
