@@ -1,6 +1,7 @@
 #pragma once
 #include "math/Color.h"
 #include "math/Vec.h"
+#include "obj/ObjMacros.h"
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
@@ -49,6 +50,7 @@ class ParticleCommonPool {
 public:
     ParticleCommonPool() : mPoolParticles(0), mPoolFreeParticles(0), mNumActiveParticles(0), mHighWaterMark(0) {}
     void InitPool();
+    RndParticle* FreeParticle(RndParticle*);
 
     RndFancyParticle* mPoolParticles; // 0x0
     RndFancyParticle* mPoolFreeParticles; // 0x4
@@ -88,6 +90,9 @@ struct PartOverride {
     Box box; // 0x58
 };
 
+/** "A ParticleSys object generates, animates, and draws large
+ *  numbers of similar sprites. Currently particles are rendered only
+ *  as points on the PC." */
 class RndParticleSys : public RndAnimatable, public RndPollable, public RndTransformable, public RndDrawable {
 public:
     enum Type {
@@ -133,6 +138,8 @@ public:
     void ExplicitParticles(int, bool, PartOverride&);
     void FreeAllParticles();
     int MaxParticles() const;
+    RndParticle* FreeParticle(RndParticle*);
+    void MoveParticles(float, float);
 
     DataNode OnSetStartColor(const DataArray*);
     DataNode OnSetStartColorInt(const DataArray*);
@@ -205,6 +212,7 @@ public:
     Type GetType() const { return mType; }
     RndMat* GetMat() const { return mMat; }
 
+    DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSys)
@@ -212,10 +220,11 @@ public:
     static RndParticle* AllocParticle();
 
     Type mType; // fancy?
+    /** "maximum number of particles". Ranges from 0 to 3072. */
     int mMaxParticles; // 0xcc
     int unkd0;
-    int unkd4;
-    int unkd8;
+    RndParticle* unkd4;
+    RndParticle* unkd8;
     int unkdc;
     float unke0;
     float unke4;
@@ -223,27 +232,41 @@ public:
     float unkec;
     Vector2 mBubblePeriod; // 0xf0
     Vector2 mBubbleSize; // 0xf8
+    /** "Frame range of particle life." */
     Vector2 mLife; // 0x100
+    /** "Min point and max point, in object coordinates, of box region that particles are emitted from." */
     Vector3 mBoxExtent1; // 0x108
+    /** "Min point and max point, in object coordinates, of box region that particles are emitted from." */
     Vector3 mBoxExtent2; // 0x114
+    /** "Speed range, in world units per frame, of particles." */
     Vector2 mSpeed; // 0x120
     Vector2 mPitch; // 0x128
     Vector2 mYaw; // 0x130
+    /** "Frame range to generate particles." */
     Vector2 mEmitRate; // 0x138
+    /** "Size range, in world units, of particles." */
     Vector2 mStartSize; // 0x140
+    /** "Change in size of particles, in world units." */
     Vector2 mDeltaSize; // 0x148
+    /** "Random color ranges for start and end color of particles." */
     Hmx::Color mStartColorLow; // 0x150
+    /** "Random color ranges for start and end color of particles." */
     Hmx::Color mStartColorHigh; // 0x160
+    /** "Random color ranges for start and end color of particles." */
     Hmx::Color mEndColorLow; // 0x170
+    /** "Random color ranges for start and end color of particles." */
     Hmx::Color mEndColorHigh; // 0x180
     ObjPtr<RndMesh> mMesh; // 0x190
+    /** "material for particle system" */
     ObjPtr<RndMat> mMat; // 0x19c
     bool mPreserveParticles; // 0x1a8
     Transform mRelativeXfm; // 0x1ac
     Transform mLastWorldXfm; // 0x1ec
     float mRelativeMotion; // 0x20c
     ObjOwnerPtr<RndTransformable> mRelativeParent; // 0x210
+    /** "Specify a collide plane to reflect particles. Used to bounce particles off surfaces." */
     ObjPtr<RndTransformable> mBounce; // 0x21c
+    /** "Force direction in world coordinates, in units per frame added to each particle's velocity. Can be used for gravity." */
     Vector3 mForceDir; // 0x228
     float mDrag; // 0x234
     Vector2 mRPM; // 0x238
@@ -251,6 +274,7 @@ public:
     Vector2 mStartOffset; // 0x244
     Vector2 mEndOffset; // 0x24c
     float mStretchScale; // 0x254
+    /** "Ratio of screen height to width" */
     float mScreenAspect; // 0x258
     int mSubSamples; // 0x25c
     Transform mSubSampleXfm; // 0x260

@@ -1,6 +1,16 @@
 #include "rndobj/Part.h"
+#include "obj/Data.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
+#include "os/Debug.h"
+#include "os/System.h"
+#include "os/Timer.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Draw.h"
 #include "rndobj/Mesh.h"
 #include "rndobj/Mat.h"
+#include "rndobj/Poll.h"
+#include "rndobj/Trans.h"
 #include "rndobj/Utl.h"
 #include "utl/MemMgr.h"
 #include "obj/DataFunc.h"
@@ -8,6 +18,7 @@
 
 PartOverride gNoPartOverride;
 ParticleCommonPool* gParticlePool;
+INIT_REVS(RndParticleSys)
 
 namespace {
     int ParticlePoolSize(){
@@ -44,9 +55,97 @@ void ParticleCommonPool::InitPool(){
     mPoolParticles = new RndFancyParticle[0xb0];
 }
 
+void RndParticleSys::SetPool(int max, RndParticleSys::Type ty){
+    mMaxParticles = max;
+    DataArray* cfg = SystemConfig("rnd", "particlesys", "local_limit");
+}
+
+BEGIN_COPYS(RndParticleSys)
+    CREATE_COPY_AS(RndParticleSys, f)
+    MILO_ASSERT(f, 0xD6);
+    COPY_SUPERCLASS(Hmx::Object)
+    COPY_SUPERCLASS(RndPollable)
+    COPY_SUPERCLASS(RndAnimatable)
+    COPY_SUPERCLASS(RndTransformable)
+    COPY_SUPERCLASS(RndDrawable)
+    COPY_MEMBER_FROM(f, mPreserveParticles)
+    if(mPreserveParticles){
+        SetPool(mMaxParticles, mType);
+    }
+    COPY_MEMBER_FROM(f, unkdc)
+    unke4 = GetFrame();
+    if(ty != kCopyFromMax){
+        COPY_MEMBER_FROM(f, mLife)
+        COPY_MEMBER_FROM(f, mScreenAspect)
+        COPY_MEMBER_FROM(f, mBoxExtent1)
+        COPY_MEMBER_FROM(f, mBoxExtent2)
+        COPY_MEMBER_FROM(f, mSpeed)
+        COPY_MEMBER_FROM(f, mPitch)
+        COPY_MEMBER_FROM(f, mYaw)
+        COPY_MEMBER_FROM(f, mEmitRate)
+        COPY_MEMBER_FROM(f, mMaxBurst)
+        COPY_MEMBER_FROM(f, mTimeBetween)
+        COPY_MEMBER_FROM(f, mPeakRate)
+        COPY_MEMBER_FROM(f, mDuration)
+        COPY_MEMBER_FROM(f, mStartSize)
+        COPY_MEMBER_FROM(f, mDeltaSize)
+        COPY_MEMBER_FROM(f, mStartColorLow)
+        COPY_MEMBER_FROM(f, mStartColorHigh)
+        COPY_MEMBER_FROM(f, mEndColorLow)
+        COPY_MEMBER_FROM(f, mEndColorHigh)
+        COPY_MEMBER_FROM(f, mBounce)
+        COPY_MEMBER_FROM(f, mForceDir)
+        COPY_MEMBER_FROM(f, mMat)
+        COPY_MEMBER_FROM(f, mBubblePeriod)
+        COPY_MEMBER_FROM(f, mBubbleSize)
+        // bitfield shenanigans here
+    }
+END_COPYS
+
 SAVE_OBJ(RndParticleSys, 0x13D)
 
+BEGIN_LOADS(RndParticleSys)
+    LOAD_REVS(bs)
+    ASSERT_REVS(0x25, 0)
+    MILO_LOG("%s_bounce.trans");
+    MILO_LOG("Unable to allocate all particles for %s\n");
+END_LOADS
+
+RndParticle* RndParticleSys::FreeParticle(RndParticle* p){
+    if(!p) return nullptr;
+    else {
+        if(p == unkd8){
+            unkd8 = p->next;
+        }
+        else {
+            p->prev->next = p->next;
+        }
+        if(p->next){
+            p->next->prev = p->prev;
+        }
+        if(!p->prev){
+            MILO_FAIL("Already deallocated particle");
+        }
+        p->prev = nullptr;
+        RndParticle* ret = nullptr;
+        if(mPreserveParticles){
+            ret = p->next;
+            p->next = unkd4;
+            unkd4 = p;
+        }
+        else {
+            ret = gParticlePool->FreeParticle(p);
+        }
+        unkdc--;
+        return ret;
+    }
+}
+
 BinStream& operator>>(BinStream&, RndParticle&);
+
+void RndParticleSys::MoveParticles(float, float){
+    START_AUTO_TIMER("psysmove");
+}
 
 RndParticleSys::~RndParticleSys(){
 
@@ -55,7 +154,7 @@ RndParticleSys::~RndParticleSys(){
 RndParticleSys::RndParticleSys() : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f), unke4(0.0f), unke8(0), unkec(0.0f),
     mBubblePeriod(10.0f, 10.0f), mBubbleSize(1.0f, 1.0f), mLife(100.0f, 100.0f), mBoxExtent1(0.0f, 0.0f, 0.0f), mBoxExtent2(0.0f, 0.0f, 0.0f),
     mSpeed(1.0f, 1.0f), mPitch(0.0f, 0.0f), mYaw(0.0f, 0.0f), mEmitRate(1.0f, 1.0f), mStartSize(1.0f, 1.0f), mDeltaSize(0.0f, 0.0f),
-    mMesh(this, 0), mMat(this, 0), mPreserveParticles(0), mRelativeParent(this, 0), mBounce(this, 0), mForceDir(0.0f, 0.0f, 0.0f), mDrag(0.0f),
+    mMesh(this), mMat(this), mPreserveParticles(0), mRelativeParent(this), mBounce(this), mForceDir(0.0f, 0.0f, 0.0f), mDrag(0.0f),
     mRPM(0.0f, 0.0f), mRPMDrag(0.0f), mStartOffset(0.0f, 0.0f), mEndOffset(0.0f, 0.0f), mStretchScale(1.0f), mScreenAspect(1.0f), mSubSamples(0),
     mGrowRatio(0.0f), mShrinkRatio(1.0f), mMidColorRatio(0.5f), mMaxBurst(0), unk2c8(0.0f), mTimeBetween(15.0f, 35.0f), mPeakRate(4.0f, 8.0f),
     mDuration(20.0f, 30.0f), unk2e4(0), unk2e8(0.0f) {
