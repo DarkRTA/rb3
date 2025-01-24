@@ -1,4 +1,5 @@
 #include "char/CharWeightSetter.h"
+#include "obj/ObjMacros.h"
 #include "obj/Task.h"
 #include "utl/Symbols.h"
 
@@ -61,12 +62,10 @@ void CharWeightSetter::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hm
     for(ObjPtrList<CharWeightSetter>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
         changedBy.push_back(*it);
     }
-    std::vector<ObjRef*>::const_reverse_iterator it = Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator itEnd = Refs().rend();
-    for(; it != itEnd; ++it){
+    FOREACH_OBJREF(this,
         CharWeightable* weightowner = dynamic_cast<CharWeightable*>((*it)->RefOwner());
         if(weightowner && weightowner->mWeightOwner == this) change.push_back(weightowner);
-    }
+    )
 }
 
 SAVE_OBJ(CharWeightSetter, 0x73)

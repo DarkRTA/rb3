@@ -1,4 +1,5 @@
 #include "ui/UIFontImporter.h"
+#include "obj/ObjMacros.h"
 #include "ui/UILabel.h"
 #include "ui/UILabelDir.h"
 #include "utl/UTF8.h"
@@ -172,34 +173,30 @@ RndFont* UIFontImporter::GetGennedFont(unsigned int ui) const {
 
 RndText* UIFontImporter::FindTextForFont(RndFont* font) const {
     if(font){
-        std::vector<ObjRef*>::const_reverse_iterator it = font->Refs().rbegin();
-        std::vector<ObjRef*>::const_reverse_iterator itEnd = font->Refs().rend();
-        for(; it != itEnd; ++it){
+        FOREACH_OBJREF(font,
             Hmx::Object* owner = (*it)->RefOwner();
             if(owner){
                 if(owner->ClassName() == Text){
                     return dynamic_cast<RndText*>(owner);
                 }
             }
-        }
+        )
     }
-    return 0;
+    return nullptr;
 }
 
 RndFont* UIFontImporter::FindFontForMat(RndMat* mat) const {
     if(mat){
-        std::vector<ObjRef*>::const_reverse_iterator it = mat->Refs().rbegin();
-        std::vector<ObjRef*>::const_reverse_iterator itEnd = mat->Refs().rend();
-        for(; it != itEnd; ++it){
+        FOREACH_OBJREF(mat,
             Hmx::Object* owner = (*it)->RefOwner();
             if(owner){
                 if(owner->ClassName() == Font){
                     return dynamic_cast<RndFont*>(owner);
                 }
             }
-        }
+        )
     }
-    return 0;
+    return nullptr;
 }
 
 DataNode UIFontImporter::OnAttachToImportFont(DataArray* da){

@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_GROUP_H
-#define RNDOBJ_GROUP_H
+#pragma once
 #include "rndobj/Trans.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Anim.h"
@@ -98,5 +97,3 @@ public:
     std::vector<RndDrawable*> mDraws; // 0x104
     RndDrawable** mDrawItr; // 0x10c
 };
-
-#endif

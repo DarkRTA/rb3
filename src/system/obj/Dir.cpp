@@ -3,6 +3,7 @@
 #include "obj/DirUnloader.h"
 #include "obj/MessageTimer.h"
 #include "obj/Msg.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/DataFunc.h"
 #include "obj/ObjVersion.h"
@@ -829,8 +830,7 @@ void ObjectDir::LoadSubDir(int i, const FilePath& fp, BinStream& bs, bool b){
     }
     else {
         FilePath subdirpath = GetSubDirPath(fp, bs);
-        bool matches = strcmp(mPathName, subdirpath.c_str()) == 0;
-        if(matches){
+        if(streq(mPathName, subdirpath.c_str())){
             MILO_WARN("%s trying to subdir self in slot %d, setting NULL", PathName(this), i);
             mSubDirs[i] = 0;
         }
@@ -838,15 +838,10 @@ void ObjectDir::LoadSubDir(int i, const FilePath& fp, BinStream& bs, bool b){
     }
 }
 
-// TODO: put this in LoadSubDir in the right spot
-DECOMP_FORCEACTIVE(Dir, "%s trying to subdir self in slot %d, setting NULL")
-
 bool ObjectDir::HasDirPtrs() const {
-    std::vector<ObjRef*>::const_reverse_iterator rit = Refs().rbegin();
-    std::vector<ObjRef*>::const_reverse_iterator ritEnd = Refs().rend();
-    for(; rit != ritEnd; ++rit){
-        if((*rit)->IsDirPtr()) return true;
-    }
+    FOREACH_OBJREF(this,
+        if((*it)->IsDirPtr()) return true;
+    )
     return false;
 }
 
@@ -855,10 +850,10 @@ BEGIN_HANDLERS(ObjectDir)
     HANDLE_ACTION(iterate_self, Iterate(_msg, false))
     HANDLE_ACTION(save_objects, DirLoader::SaveObjects(_msg->Str(2), this))
     HANDLE(find, OnFind)
-    HANDLE_EXPR(exists, FindObject(_msg->Str(2), false) != 0)
+    HANDLE_EXPR(exists, FindObject(_msg->Str(2), false) != nullptr)
     HANDLE_ACTION(sync_objects, SyncObjects())
     HANDLE_EXPR(is_proxy, IsProxy())
-    HANDLE_EXPR(proxy_dir, mLoader ? mLoader->mProxyDir : (Hmx::Object*)0)
+    HANDLE_EXPR(proxy_dir, mLoader ? mLoader->mProxyDir : NULL_OBJ)
     HANDLE_EXPR(proxy_name, mLoader ? (mLoader->mProxyName ? mLoader->mProxyName : "") : "")
     HANDLE_ACTION(add_names, Reserve(mHashTable.mSize + _msg->Int(2) * 2, mStringTable.Size() + _msg->Int(2) * 0x14))
     HANDLE_ACTION(override_proxy, SetProxyFile(FilePath(_msg->Str(2)), true))

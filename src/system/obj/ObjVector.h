@@ -1,5 +1,4 @@
-#ifndef OBJ_OBJVECTOR_H
-#define OBJ_OBJVECTOR_H
+#pragma once
 #include "types.h"
 #include <vector>
 #include "utl/BinStream.h"
@@ -61,5 +60,3 @@ BinStream& operator>>(BinStream& bs, ObjVector<T VECTOR_SIZE_ARG>& vec) {
 
     return bs;
 }
-
-#endif

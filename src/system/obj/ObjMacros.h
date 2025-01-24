@@ -1,6 +1,4 @@
-#ifndef OBJ_OBJMACROS_H
-#define OBJ_OBJMACROS_H
-
+#pragma once
 // These headers are prerequisites for the macros here to function correctly
 // #include "obj/Object.h" // We're included
 #include "os/System.h" /* IWYU pragma: keep */
@@ -461,4 +459,15 @@ void objType::Load(BinStream& bs){
 
 // END OBJ INITIALIZER MACROS --------------------------------------------------------------------------
 
-#endif
+// BEGIN OBJREF ITERATION MACROS -----------------------------------------------------------------------
+
+#define FOREACH_OBJREF(obj, code_block) \
+{ \
+    std::vector<ObjRef*>::const_reverse_iterator it = obj->Refs().rbegin(); \
+    std::vector<ObjRef*>::const_reverse_iterator itEnd = obj->Refs().rend(); \
+    for(; it != itEnd; ++it){ \
+        {code_block}; \
+    } \
+}
+
+// END OBJREF ITERATION MACROS -------------------------------------------------------------------------

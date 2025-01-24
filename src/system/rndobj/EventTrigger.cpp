@@ -52,8 +52,8 @@ DataNode EventTrigger::Cleanup(DataArray* arr){
                 std::vector<ObjRef*>::const_reverse_iterator rit = filter->Refs().rbegin();
                 std::vector<ObjRef*>::const_reverse_iterator rEnd = filter->Refs().rend();
                 for(; rit != rEnd; ++rit){
-                    if((*rit)->RefOwner()){
-                        if((*rit)->RefOwner() != iter) break;
+                    if((*rit)->RefOwner() && (*rit)->RefOwner() != iter){
+                        break;
                     }
                 }
                 if(!(rit != rEnd) && filter->GetType() != RndAnimFilter::kShuttle){
@@ -809,7 +809,7 @@ BEGIN_PROPSYNCS(EventTrigger)
         }
     }
     SYNC_PROP_SET(enabled, mEnabled, mEnabled = _val.Int())
-    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabledAtStart = _val.Int())
+    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabled = mEnabledAtStart = _val.Int())
     {
         static Symbol _s("wait_for_events");
         if(sym == _s){

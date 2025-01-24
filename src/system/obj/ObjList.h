@@ -1,11 +1,11 @@
-#ifndef OBJ_OBJLIST_H
-#define OBJ_OBJLIST_H
+#pragma once
 #include <list>
 #include "utl/BinStream.h"
 
 namespace Hmx { class Object; }
 
 template <class T> class ObjList : public std::list<T> {
+    typedef typename std::list<T> Base;
 public:
     ObjList(Hmx::Object* o) : mOwner(o) {}
     Hmx::Object* mOwner;
@@ -13,23 +13,24 @@ public:
     Hmx::Object* Owner(){ return mOwner; }
 
     void resize(unsigned long ul){
-        std::list<T>::resize(ul, T(mOwner));
+        Base& me = *this;
+        me.resize(ul, T(mOwner));
     }
 
     void push_back(){
         resize(size() + 1);
     }
 
-    void push_back(const T& t){
+    void push_back(const T& t){        
         push_back();
-        T* last = &back();
-        *last = t;
+        T& last = back();
+        last = t;
     }
 
     void operator=(const ObjList<T>& oList){
         if(this != &oList){
             resize(oList.size());
-            std::list<T>::operator=((std::list<T>&)oList);
+            Base::operator=((Base&)oList);
         }
     }
 };
@@ -44,5 +45,3 @@ template <class T> BinStream& operator>>(BinStream& bs, ObjList<T>& oList) {
     }
     return bs;
 }
-
-#endif

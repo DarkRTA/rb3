@@ -8,7 +8,7 @@ class MeshCacher {
 public:
     MeshCacher(RndMesh*, bool);
     ~MeshCacher(){
-        if(mMesh->KeepMeshData()){
+        if(mMesh->GetKeepMeshData()){
             SyncMesh();
             mMesh->SetKeepMeshData(!mDisabled);
             if(!mDisabled) PopulateMesh();
@@ -25,9 +25,9 @@ public:
                 mVerts.resize(mMesh->Verts().size());
                 for(int i = 0; i < mVerts.size(); i++){
                     SyncMeshCB::Vert& curVert = mVerts[i];
-                    curVert.pos = mMesh->VertAt(i).pos;
+                    curVert.pos = mMesh->Verts(i).pos;
                     SyncMeshCB::Vert& curVert2 = mVerts[i];
-                    curVert2.norm = mMesh->VertAt(i).norm;
+                    curVert2.norm = mMesh->Verts(i).norm;
                 }
             }
         }
@@ -41,14 +41,14 @@ public:
             mColors.resize(mMesh->Verts().size());
             for(int i = 0; i < mVerts.size(); i++){
                 Hmx::Color& curColor = mColors[i];
-                curColor = mMesh->VertAt(i).color;
+                curColor = mMesh->Verts(i).color;
             }
         }
     }
 
     void PopulateMesh(){
         for(int i = 0; i < mVerts.size(); i++){
-            RndMesh::Vert& curVert = mMesh->VertAt(i);
+            RndMesh::Vert& curVert = mMesh->Verts(i);
             curVert.pos = mVerts[i].pos;
             curVert.norm = mVerts[i].norm;
         }
@@ -56,7 +56,7 @@ public:
             mMesh->Faces() = mFaces;
         }
         for(int i = 0; i < mColors.size(); i++){
-            RndMesh::Vert& curVert = mMesh->VertAt(i);
+            RndMesh::Vert& curVert = mMesh->Verts(i);
             curVert.color = mColors[i];
         }
     }

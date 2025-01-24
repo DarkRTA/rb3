@@ -56,9 +56,9 @@ RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
             bool b1 = false;
             f = 1.0f;
             for(std::vector<Face>::iterator it = Faces().begin(); it != Faces().end(); ++it){
-                const Vert& vert0 = VertAt(it->v1);
-                const Vert& vert1 = VertAt(it->v2);
-                const Vert& vert2 = VertAt(it->v3);
+                const Vert& vert0 = Verts(it->v1);
+                const Vert& vert1 = Verts(it->v2);
+                const Vert& vert2 = Verts(it->v3);
                 Triangle tri;
                 if(IsSkinned() && !sRawCollide){
                     tri.Set(SkinVertex(vert0, 0), SkinVertex(vert1, 0), SkinVertex(vert2, 0));
@@ -83,9 +83,9 @@ RndDrawable* RndMesh::CollideShowing(const Segment& seg, float& f, Plane& pl){
 }
 
 int RndMesh::CollidePlane(const RndMesh::Face& face, const Plane& plane){
-    bool first = VertAt(face.v1).pos <= plane;
-    bool second = VertAt(face.v2).pos <= plane;
-    bool third = VertAt(face.v3).pos <= plane;
+    bool first = Verts(face.v1).pos <= plane;
+    bool second = Verts(face.v2).pos <= plane;
+    bool third = Verts(face.v3).pos <= plane;
     if(first == second && second == third){
         int ret = -1;
         if(first) ret = 1;
@@ -838,7 +838,7 @@ BinStream& operator>>(BinStream& bs, RndMesh::Face& f) {
 void FaceCenter(RndMesh* mesh, RndMesh::Face* face, Vector3& v){
     v.Set(0,0,0);
     for(int i = 0; i < 3; i++){
-        v += mesh->VertAt((*face)[i]).pos;
+        v += mesh->Verts((*face)[i]).pos;
     }
     v *= 0.33333333f;
 }

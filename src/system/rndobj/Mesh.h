@@ -212,15 +212,15 @@ public:
     void SetGeomOwner(RndMesh*);
     int NumBones() const { return mBones.size(); }
     RndMesh* GeometryOwner() const { return mGeomOwner; }
-    bool KeepMeshData() const { return mKeepMeshData; }
+    bool GetKeepMeshData() const { return mKeepMeshData; }
     int GetMutable() const { return mGeomOwner->mMutable; }
     Volume GetVolume() const { return mGeomOwner->mVolume; }
     BSPNode* GetBSPTree() const { return mGeomOwner->mBSPTree; }
     RndMat* Mat() const { return mMat; }
     VertVector& Verts(){ return mGeomOwner->mVerts; }
     std::vector<Face>& Faces(){ return mGeomOwner->mFaces; }
-    Vert& VertAt(int idx){ return mGeomOwner->mVerts[idx]; }
-    Face& FaceAt(int idx){ return mGeomOwner->mFaces[idx]; }
+    Vert& Verts(int idx){ return mGeomOwner->mVerts[idx]; }
+    Face& Faces(int idx){ return mGeomOwner->mFaces[idx]; }
     bool IsSkinned() const { return !mBones.empty(); }
     void SetMutable(int m){ mGeomOwner->mMutable = m; }
     bool HasAOCalc() const { return mHasAOCalc; }
