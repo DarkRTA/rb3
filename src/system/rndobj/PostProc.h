@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_POSTPROC_H
-#define RNDOBJ_POSTPROC_H
+#pragma once
 #include <revolution/OS.h>
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
@@ -96,60 +95,52 @@ public:
     bool mBloomStreak; // 0x3D
     float mBloomStreakAttenuation; // 0x40
     float mBloomStreakAngle; // 0x44
-    ObjPtr<RndTex, ObjectDir> mLuminanceMap; // 0x48
-    bool mForceCurrentInterp;
-    RndColorXfm mColorXfm; // 0x6c
-    float mPosterLevels;
-    float mPosterMin;
-    float mKaleidoscopeComplexity;
-    float mKaleidoscopeSize;
-    float mKaleidoscopeAngle;
-    float mKaleidoscopeRadius;
-    bool mKaleidoscopeFlipUVs;
+    ObjPtr<RndTex> mLuminanceMap; // 0x48
+    bool mForceCurrentInterp; // 0x54
+    RndColorXfm mColorXfm; // 0x58
+    float mPosterLevels; // 0xdc
+    float mPosterMin; // 0xe0
+    float mKaleidoscopeComplexity; // 0xe4
+    float mKaleidoscopeSize; // 0xe8
+    float mKaleidoscopeAngle; // 0xec
+    float mKaleidoscopeRadius; // 0xf0
+    bool mKaleidoscopeFlipUVs; // 0xf4
     Vector2 mFlickerModBounds; // 0xf8
     Vector2 mFlickerTimeBounds; // 0x100
-    Vector2 mFlickerSeconds;
-
-    float mColorModulation;
-
-    Vector2 mNoiseBaseScale;
-
-    float mNoiseTopScale;
-
-    float mNoiseIntensity;
-    bool mNoiseStationary;
-    bool mNoiseMidtone;
-    ObjPtr<RndTex, ObjectDir> mNoiseMap;
+    Vector2 mFlickerSeconds; // 0x108
+    float mColorModulation; // 0x110
+    Vector2 mNoiseBaseScale; // 0x114
+    float mNoiseTopScale; // 0x11c
+    float mNoiseIntensity; // 0x120
+    bool mNoiseStationary; // 0x124
+    bool mNoiseMidtone; // 0x125
+    ObjPtr<RndTex> mNoiseMap; // 0x128
     float mTrailThreshold; // 0x134
     float mTrailDuration; // 0x138
-
     Vector3 mBlendVec; // 0x13c
     float mEmulateFPS; // 0x148
-    float mLastRender;
-    float mDeltaSecs;
-
-    int mHallOfTimeType;
-    float mHallOfTimeRate;
-    Hmx::Color mHallOfTimeColor;
-    float mHallOfTimeMix;
-    Hmx::Color mMotionBlurWeight;
-    float mMotionBlurBlend;
-    bool mMotionBlurVelocity;
-    ObjPtr<RndTex, ObjectDir> mGradientMap;
-    float mGradientMapOpacity;
-    float mGradientMapIndex;
-    float mGradientMapStart;
-    float mGradientMapEnd;
-    ObjPtr<RndTex, ObjectDir> mRefractMap;
-    float mRefractDist;
-    Vector2 mRefractScale;
-    Vector2 mRefractPanning;
-    Vector2 mRefractVelocity;
-    float mRefractAngle;
-    float mChromaticAberrationOffset;
-    bool mChromaticSharpen;
-    Hmx::Color mVignetteColor;
-    float mVignetteIntensity;
+    float mLastRender; // 0x14c
+    float mDeltaSecs; // 0x150
+    int mHallOfTimeType; // 0x154
+    float mHallOfTimeRate; // 0x158
+    Hmx::Color mHallOfTimeColor; // 0x15c
+    float mHallOfTimeMix; // 0x16c
+    Hmx::Color mMotionBlurWeight; // 0x170
+    float mMotionBlurBlend; // 0x180
+    bool mMotionBlurVelocity; // 0x184
+    ObjPtr<RndTex> mGradientMap; // 0x188
+    float mGradientMapOpacity; // 0x194
+    float mGradientMapIndex; // 0x198
+    float mGradientMapStart; // 0x19c
+    float mGradientMapEnd; // 0x1a0
+    ObjPtr<RndTex> mRefractMap; // 0x1a4
+    float mRefractDist; // 0x1b0
+    Vector2 mRefractScale; // 0x1b4
+    Vector2 mRefractPanning; // 0x1bc
+    Vector2 mRefractVelocity; // 0x1c4
+    float mRefractAngle; // 0x1cc
+    float mChromaticAberrationOffset; // 0x1d0
+    bool mChromaticSharpen; // 0x1d4
+    Hmx::Color mVignetteColor; // 0x1d8
+    float mVignetteIntensity; // 0x1e8
 };
-
-#endif

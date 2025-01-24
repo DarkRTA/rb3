@@ -1,4 +1,5 @@
 #include "rndobj/PostProc.h"
+#include "decomp.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -7,8 +8,12 @@
 #include "math/Utl.h"
 #include "math/Rand.h"
 #include "obj/Task.h"
+#include "rndobj/Utl.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 RndPostProc *RndPostProc::sCurrent = 0;
 DOFOverrideParams RndPostProc::sDOFOverride;
@@ -150,9 +155,7 @@ void RndPostProc::UpdateColorModulation() {
 void RndPostProc::UpdateBlendPrevious() {
     bool shouldBlend = mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen.IsActive();
     if(shouldBlend) {
-        if(mTrailDuration <= 0.0f) {
-            MILO_ASSERT(mTrailDuration > 0.0f, 0xf6);
-        }
+        MILO_ASSERT(mTrailDuration > 0.f, 0xf6);
         mBlendVec.x = mTrailThreshold;
         mBlendVec.y = mDeltaSecs / mTrailDuration;
         mBlendVec.z = 0.3333333333f;
@@ -164,23 +167,86 @@ bool RndPostProc::BlendPrevious() const {
     return mTrailThreshold < 1.0f && mTrailDuration > 0.0f && !TheHiResScreen.IsActive();
 }
 
+DataNode RndPostProc::OnAllowedNormalMap(const DataArray*){
+    return GetNormalMapTextures(Dir());
+}
+
 SAVE_OBJ(RndPostProc, 524)
 
+BEGIN_COPYS(RndPostProc)
+    COPY_SUPERCLASS(Hmx::Object)
+    CREATE_COPY(RndPostProc)
+    BEGIN_COPYING_MEMBERS
+        COPY_MEMBER(mPriority)
+        COPY_MEMBER(mBloomIntensity)
+        COPY_MEMBER(mBloomColor)
+        COPY_MEMBER(mBloomThreshold)
+        COPY_MEMBER(mBloomGlare)
+        COPY_MEMBER(mBloomStreak)
+        COPY_MEMBER(mBloomStreakAttenuation)
+        COPY_MEMBER(mBloomStreakAngle)
+        COPY_MEMBER(mLuminanceMap)
+        COPY_MEMBER(mColorXfm)
+        COPY_MEMBER(mFlickerModBounds)
+        COPY_MEMBER(mFlickerTimeBounds)
+        COPY_MEMBER(mNoiseBaseScale)
+        COPY_MEMBER(mNoiseTopScale)
+        COPY_MEMBER(mNoiseIntensity)
+        COPY_MEMBER(mNoiseStationary)
+        COPY_MEMBER(mNoiseMap)
+        COPY_MEMBER(mNoiseMidtone)
+        COPY_MEMBER(mTrailDuration)
+        COPY_MEMBER(mTrailThreshold)
+        COPY_MEMBER(mEmulateFPS)
+        COPY_MEMBER(mPosterLevels)
+        COPY_MEMBER(mPosterMin)
+        COPY_MEMBER(mKaleidoscopeComplexity)
+        COPY_MEMBER(mKaleidoscopeSize)
+        COPY_MEMBER(mKaleidoscopeAngle)
+        COPY_MEMBER(mKaleidoscopeRadius)
+        COPY_MEMBER(mKaleidoscopeFlipUVs)
+        COPY_MEMBER(mHallOfTimeRate)
+        COPY_MEMBER(mHallOfTimeColor)
+        COPY_MEMBER(mHallOfTimeMix)
+        COPY_MEMBER(mHallOfTimeType)
+        COPY_MEMBER(mMotionBlurBlend)
+        COPY_MEMBER(mMotionBlurWeight)
+        COPY_MEMBER(mMotionBlurVelocity)
+        COPY_MEMBER(mGradientMap)
+        COPY_MEMBER(mGradientMapIndex)
+        COPY_MEMBER(mGradientMapOpacity)
+        COPY_MEMBER(mGradientMapStart)
+        COPY_MEMBER(mGradientMapEnd)
+        COPY_MEMBER(mRefractMap)
+        COPY_MEMBER(mRefractDist)
+        COPY_MEMBER(mRefractScale)
+        COPY_MEMBER(mRefractPanning)
+        COPY_MEMBER(mRefractVelocity)
+        COPY_MEMBER(mRefractAngle)
+        COPY_MEMBER(mChromaticAberrationOffset)
+        COPY_MEMBER(mChromaticSharpen)
+        COPY_MEMBER(mVignetteColor)
+        COPY_MEMBER(mVignetteIntensity)
+    END_COPYING_MEMBERS
+END_COPYS
+
 BEGIN_LOADS(RndPostProc)
-LOAD_REVS(bs)
-ASSERT_REVS(37, 0)
-if (gRev == 16) {
-    int dRev;
-    bs >> dRev;
-    MILO_ASSERT(dRev == 3, 667);
-    bool x;
-    bs >> x;
-    int a, b, c, d, e;
-    bs >> a >> b >> c >> d >> e;
-} else
-    Hmx::Object::Load(bs);
-LoadRev(bs, gRev);
+    LOAD_REVS(bs)
+    ASSERT_REVS(37, 0)
+    if (gRev == 16) {
+        int dRev;
+        bs >> dRev;
+        MILO_ASSERT(dRev == 3, 667);
+        bool x;
+        Sphere s; 
+        int i;
+        bs >> x >> s >> i;
+    }
+    else LOAD_SUPERCLASS(Hmx::Object)
+    LoadRev(bs, gRev);
 END_LOADS
+
+DECOMP_FORCEACTIVE(PostProc, "%s can't load new %s version")
 
 void RndPostProc::LoadRev(BinStream &bs, int rev) {
     if (rev > 4) {
@@ -235,6 +301,71 @@ BEGIN_HANDLERS(RndPostProc)
     HANDLE(allowed_normal_map, OnAllowedNormalMap)
     HANDLE_CHECK(0x3BB)
 END_HANDLERS
+
+#pragma push
+#pragma dont_inline on
+BEGIN_PROPSYNCS(RndPostProc)
+    SYNC_PROP(priority, mPriority)
+    SYNC_PROP(bloom_color, mBloomColor)
+    SYNC_PROP(bloom_threshold, mBloomThreshold)
+    SYNC_PROP(bloom_intensity, mBloomIntensity)
+    SYNC_PROP(bloom_glare, mBloomGlare)
+    SYNC_PROP(bloom_streak, mBloomStreak)
+    SYNC_PROP(bloom_streak_attenuation, mBloomStreakAttenuation)
+    SYNC_PROP(bloom_streak_angle, mBloomStreakAngle)
+    SYNC_PROP(luminance_map, mLuminanceMap)
+    SYNC_PROP_MODIFY_ALT(hue, mColorXfm.mHue, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(saturation, mColorXfm.mSaturation, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(lightness, mColorXfm.mLightness, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(brightness, mColorXfm.mBrightness, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(contrast, mColorXfm.mContrast, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(in_lo, mColorXfm.mLevelInLo, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(in_hi, mColorXfm.mLevelInHi, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(out_lo, mColorXfm.mLevelOutLo, mColorXfm.AdjustColorXfm())
+    SYNC_PROP_MODIFY_ALT(out_hi, mColorXfm.mLevelOutHi, mColorXfm.AdjustColorXfm())
+    SYNC_PROP(num_levels, mPosterLevels)
+    SYNC_PROP(min_intensity, mPosterMin)
+    SYNC_PROP(kaleidoscope_complexity, mKaleidoscopeComplexity)
+    SYNC_PROP(kaleidoscope_size, mKaleidoscopeSize)
+    SYNC_PROP(kaleidoscope_angle, mKaleidoscopeAngle)
+    SYNC_PROP(kaleidoscope_radius, mKaleidoscopeRadius)
+    SYNC_PROP(kaleidoscope_flipUVs, mKaleidoscopeFlipUVs)
+    SYNC_PROP(flicker_intensity, mFlickerModBounds)
+    SYNC_PROP(flicker_secs_range, mFlickerTimeBounds)
+    SYNC_PROP(noise_base_scale, mNoiseBaseScale)
+    SYNC_PROP(noise_intensity, mNoiseIntensity)
+    SYNC_PROP(noise_stationary, mNoiseStationary)
+    SYNC_PROP(noise_midtone, mNoiseMidtone)
+    SYNC_PROP(noise_map, mNoiseMap)
+    SYNC_PROP(threshold, mTrailThreshold)
+    SYNC_PROP(duration, mTrailDuration)
+    SYNC_PROP(emulate_fps, mEmulateFPS)
+    SYNC_PROP(hall_of_time_type, mHallOfTimeType)
+    SYNC_PROP(hall_of_time_rate, mHallOfTimeRate)
+    SYNC_PROP(hall_of_time_color, mHallOfTimeColor)
+    SYNC_PROP(hall_of_time_mix, mHallOfTimeMix)
+    SYNC_PROP(motion_blur_blend, mMotionBlurBlend)
+    SYNC_PROP(motion_blur_weight, mMotionBlurWeight)
+    SYNC_PROP(motion_blur_exposure, mMotionBlurWeight.alpha)
+    SYNC_PROP(motion_blur_velocity, mMotionBlurVelocity)
+    SYNC_PROP(gradient_map, mGradientMap)
+    SYNC_PROP(gradient_map_opacity, mGradientMapOpacity)
+    SYNC_PROP(gradient_map_index, mGradientMapIndex)
+    SYNC_PROP(gradient_map_start, mGradientMapStart)
+    SYNC_PROP(gradient_map_end, mGradientMapEnd)
+    SYNC_PROP(refract_map, mRefractMap)
+    SYNC_PROP(refract_dist, mRefractDist)
+    SYNC_PROP(refract_scale, mRefractScale)
+    SYNC_PROP(refract_panning, mRefractPanning)
+    SYNC_PROP(refract_velocity, mRefractVelocity)
+    SYNC_PROP(refract_angle, mRefractAngle)
+    SYNC_PROP(chromatic_aberration_offset, mChromaticAberrationOffset)
+    SYNC_PROP(chromatic_sharpen, mChromaticSharpen)
+    SYNC_PROP(vignette_color, mVignetteColor)
+    SYNC_PROP(vignette_intensity, mVignetteIntensity)
+    SYNC_PROP(force_current_interp, mForceCurrentInterp)
+END_PROPSYNCS
+#pragma pop
 
 ProcCounter::ProcCounter()
     : mProcAndLock(0), mCount(0), mSwitch(0), mOdd(0), mFPS(0), mEvenOddDisabled(0),
