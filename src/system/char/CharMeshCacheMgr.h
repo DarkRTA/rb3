@@ -8,7 +8,7 @@ class MeshCacher {
 public:
     MeshCacher(RndMesh*, bool);
     ~MeshCacher(){
-        if(mMesh->KeepMeshData()){
+        if(mMesh->GetKeepMeshData()){
             SyncMesh();
             mMesh->SetKeepMeshData(!mDisabled);
             if(!mDisabled) PopulateMesh();

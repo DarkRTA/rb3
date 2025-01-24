@@ -809,7 +809,7 @@ BEGIN_PROPSYNCS(EventTrigger)
         }
     }
     SYNC_PROP_SET(enabled, mEnabled, mEnabled = _val.Int())
-    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabledAtStart = _val.Int())
+    SYNC_PROP_SET(enabled_at_start, mEnabledAtStart, mEnabled = mEnabledAtStart = _val.Int())
     {
         static Symbol _s("wait_for_events");
         if(sym == _s){

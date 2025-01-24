@@ -77,7 +77,7 @@ void RndParticleSys::SetMesh(RndMesh* mesh){
     if(mesh){
         SetTransParent(mesh, false);
         SetTransConstraint(RndTransformable::kParentWorld, 0, false);
-        if(!mesh->KeepMeshData()){
+        if(!mesh->GetKeepMeshData()){
             MILO_WARN("keep_mesh_data should be checked for %s.  It's the mesh emitter for %s.\n", PathName(mesh), PathName(this));
         }
     }

@@ -1,5 +1,4 @@
-#ifndef OBJ_OBJVERSION_H
-#define OBJ_OBJVERSION_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
 
@@ -23,13 +22,11 @@ inline int PopRev(Hmx::Object* o){
     }
     int revs = back->revs;
     if(o != back->obj){
-        TheDebug << MakeString("rev stack $this mismatch (%08x != %08x\n", o, back->obj);
-        TheDebug << MakeString("curr obj: %s %s\n", o->ClassName(), PathName(o));
-        TheDebug << MakeString("stack obj: %s %s\n", back->obj->ClassName(), PathName(back->obj));
+        MILO_LOG("rev stack $this mismatch (%08x != %08x\n", o, back->obj);
+        MILO_LOG("curr obj: %s %s\n", o->ClassName(), PathName(o));
+        MILO_LOG("stack obj: %s %s\n", back->obj->ClassName(), PathName(back->obj));
         MILO_FAIL("rev stack (%08x %s %s != %08x %s %s)\n", o, o->ClassName(), PathName(o), back->obj, back->obj->ClassName(), PathName(back->obj));
     }
     sRevStack.pop_back();
     return revs;
 }
-
-#endif
