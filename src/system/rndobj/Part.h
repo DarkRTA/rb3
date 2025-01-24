@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_PART_H
-#define RNDOBJ_PART_H
+#pragma once
 #include "math/Color.h"
 #include "math/Vec.h"
 #include "rndobj/Trans.h"
@@ -237,14 +236,14 @@ public:
     Hmx::Color mStartColorHigh; // 0x160
     Hmx::Color mEndColorLow; // 0x170
     Hmx::Color mEndColorHigh; // 0x180
-    ObjPtr<RndMesh, ObjectDir> mMesh; // 0x190
-    ObjPtr<RndMat, ObjectDir> mMat; // 0x19c
+    ObjPtr<RndMesh> mMesh; // 0x190
+    ObjPtr<RndMat> mMat; // 0x19c
     bool mPreserveParticles; // 0x1a8
     Transform mRelativeXfm; // 0x1ac
     Transform mLastWorldXfm; // 0x1ec
     float mRelativeMotion; // 0x20c
-    ObjOwnerPtr<RndTransformable, ObjectDir> mRelativeParent; // 0x210
-    ObjPtr<RndTransformable, ObjectDir> mBounce; // 0x21c
+    ObjOwnerPtr<RndTransformable> mRelativeParent; // 0x210
+    ObjPtr<RndTransformable> mBounce; // 0x21c
     Vector3 mForceDir; // 0x228
     float mDrag; // 0x234
     Vector2 mRPM; // 0x238
@@ -275,5 +274,3 @@ extern PartOverride gNoPartOverride;
 
 void InitParticleSystem();
 int GetParticleHighWaterMark();
-
-#endif // RNDOBJ_PART_H
