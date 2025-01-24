@@ -146,7 +146,7 @@ public:
     std::vector<DrumMixDB*> mDrumMixDBs; // 0x7c
     std::vector<GameGemDB*> mGemDBs; // 0x84
     std::vector<PhraseDB*> mPhraseDBs; // 0x8c
-    PhraseAnalyzer* unk94; // 0x94
+    PhraseAnalyzer* mPhraseAnalyzer; // 0x94
     int unk98; // 0x98
     std::vector<VocalNoteList*> mVocalNoteLists; // 0x9c
     std::vector<BackupTrack*> mBackupTracks; // 0xa4

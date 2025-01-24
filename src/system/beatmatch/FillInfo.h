@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_FILLINFO_H
-#define BEATMATCH_FILLINFO_H
+#pragma once
 #include "utl/TickedInfo.h"
 #include <vector>
 
@@ -26,5 +25,3 @@ public:
     TickedInfoCollection<int> mLanes; // 0x4
     std::vector<FillExtent> mFills; // 0xc
 };
-
-#endif

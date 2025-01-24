@@ -3,6 +3,10 @@
 #include "beatmatch/VocalNote.h"
 #include "beatmatch/SongParserSink.h"
 #include "beatmatch/PlayerTrackConfig.h"
+#include "beatmatch/TuningOffsetList.h"
+#include "beatmatch/DrumMixDB.h"
+#include "beatmatch/DrumMap.h"
+#include "macros.h"
 #include "utl/BeatMap.h"
 
 SongData::TrackInfo::TrackInfo(Symbol sym, SongInfoAudioType audioty, AudioTrackNum num, TrackType trackty, bool bb) :
@@ -12,11 +16,10 @@ SongData::TrackInfo::TrackInfo(Symbol sym, SongInfoAudioType audioty, AudioTrack
 }
 
 SongData::TrackInfo::~TrackInfo(){
-    delete mLyrics;
-    mLyrics = 0;
+    RELEASE(mLyrics);
 }
 
-SongData::SongData() : unk10(0), unk14(0), unk18(0), unk1c(0), unk20(-1), unk24(-1), unk28(0), unk94(0), unk98(0), mTempoMap(0), mMeasureMap(0), mBeatMap(0), mTuningOffsetList(0),
+SongData::SongData() : unk10(0), unk14(0), unk18(0), unk1c(0), unk20(-1), unk24(-1), unk28(0), mPhraseAnalyzer(0), unk98(0), mTempoMap(0), mMeasureMap(0), mBeatMap(0), mTuningOffsetList(0),
     unkd4(0), unkd8(0), unkdc(0), unke0(0), unk118(0), unk11c(0), unk120(0) {
     mVocalNoteLists.reserve(4);
     mVocalNoteLists.push_back(new VocalNoteList(this));
@@ -25,6 +28,32 @@ SongData::SongData() : unk10(0), unk14(0), unk18(0), unk1c(0), unk20(-1), unk24(
 SongData::~SongData(){
     ResetTheTempoMap();
     ResetTheBeatMap();
+    for(int i = 0; i < mTrackInfos.size(); i++){
+        RELEASE(mTrackInfos[i]);
+        RELEASE(mFills[i]);
+        RELEASE(mDrumMaps[i]);
+        RELEASE(mRollInfos[i]);
+        RELEASE(mTrillInfos[i]);
+        RELEASE(mRGRollInfos[i]);
+        RELEASE(mRGTrillInfos[i]);
+        RELEASE(mDrumMixDBs[i]);
+        RELEASE(mGemDBs[i]);
+        RELEASE(mPhraseDBs[i]);
+    }
+    for(int i = 0; i < mBackupTracks.size(); i++){
+        RELEASE(mBackupTracks[i]);
+    }
+    for(int i = 0; i < mFakeTracks.size(); i++){
+        RELEASE(mFakeTracks[i]);
+    }
+    RELEASE(mPhraseAnalyzer);
+    RELEASE(mTempoMap);
+    RELEASE(mTuningOffsetList);
+    RELEASE(mMeasureMap);
+    RELEASE(mBeatMap);
+    for(int i = 0; i < mVocalNoteLists.size(); i++){
+        RELEASE(mVocalNoteLists[i]);
+    }
 }
 
 void SongData::AddSink(SongParserSink* sink){
