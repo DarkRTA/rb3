@@ -234,8 +234,8 @@ void AttachMesh(RndMesh* main, RndMesh* attach){
     main->Faces().resize(nummainfaces + numattachfaces);
     int numverts = main->Verts().size();
     for(int i = 0; i < numattachfaces; i++){
-        RndMesh::Face& curattachface = attach->FaceAt(i);
-        RndMesh::Face& mainface = main->FaceAt(i + nummainfaces);
+        RndMesh::Face& curattachface = attach->Faces(i);
+        RndMesh::Face& mainface = main->Faces(i + nummainfaces);
         mainface.Set(curattachface.v1 + numverts, curattachface.v2 + numverts, curattachface.v3 + numverts);
     }
     Transform tf50;
@@ -244,8 +244,8 @@ void AttachMesh(RndMesh* main, RndMesh* attach){
     int numattachverts = attach->Verts().size();
     main->Verts().resize(numverts + numattachverts, true);
     for(int i = 0; i < numattachverts; i++){
-        RndMesh::Vert& mainvert = main->VertAt(i + numverts);
-        RndMesh::Vert& attachvert = attach->VertAt(i);
+        RndMesh::Vert& mainvert = main->Verts(i + numverts);
+        RndMesh::Vert& attachvert = attach->Verts(i);
         Multiply(attachvert.pos, tf50, mainvert.pos);
         mainvert.color = attachvert.color;
         mainvert.boneWeights = attachvert.boneWeights;

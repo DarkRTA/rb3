@@ -351,7 +351,7 @@ void Character::CalcBoundingSphere(){
             RndMesh* mesh = dynamic_cast<RndMesh*>(&*it);
             if(mesh && mesh->Showing()){
                 for(int i = 0; i < mesh->Verts().size(); i++){
-                    mBounding.GrowToContain(Sphere(mesh->SkinVertex(mesh->VertAt(i), nullptr), 0.001f));
+                    mBounding.GrowToContain(Sphere(mesh->SkinVertex(mesh->Verts(i), nullptr), 0.001f));
                 }
             }
         }
