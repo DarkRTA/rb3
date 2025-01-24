@@ -32,8 +32,7 @@ public:
     }
 
     void push_back(const T& t){
-        ObjVector& me = *this;
-        me.push_back();
+        push_back();
         T& last = back();
         last = t;
     }
