@@ -307,19 +307,11 @@ BEGIN_LOADS(RndTexRenderer)
         if(gRev > 10) LOAD_SUPERCLASS(RndPollable)
     }
     if(gRev < 1){
-        char buf[0x100];
         FilePath fp;
-        bs.ReadString(buf, 0x100);
-        fp.SetRoot(buf);
+        bs >> fp;
     }
     else {
-        char buf[0x80];
-        bs.ReadString(buf, 0x80);
-        if(mDraw && mDraw->Dir()){
-            Hmx::Object* found = mDraw->Dir()->FindObject(buf, false);
-            mDraw = dynamic_cast<RndDrawable*>(found);
-        }
-        else mDraw = 0;
+        mDraw.Load(bs, false, nullptr);
     }
     if(gRev > 3) bs >> mCam;
     else mCam = 0;
