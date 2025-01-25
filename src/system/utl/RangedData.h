@@ -1,14 +1,17 @@
-#ifndef UTL_RANGEDDATA_H
-#define UTL_RANGEDDATA_H
+#pragma once
 #include <vector>
 
 template <class T> class RangedData {
+public:
     int mStartTick;
     int mEndTick;
     T data;
 };
 
 template <class T> class RangedDataCollection {
+public:
+    void Clear(){ mRangeDataArray.clear(); }
+
     std::vector<RangedData<T>*> mRangeDataArray;
 };
 
@@ -19,5 +22,3 @@ public:
     float unk8;
     float unkc;
 };
-
-#endif

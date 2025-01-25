@@ -97,7 +97,8 @@ public:
     void AddTambourineGem(int);
     void SetFreestyleSections(const std::vector<std::pair<float, float> >&);
 
-    const char* PrintTick(int tick) const ;
+    const char* PrintTick(int tick) const;
+    void SetTrackName(Symbol name){ mTrackName = name; }
 
     std::vector<VocalPhrase> mPhrases; // 0x0
     std::vector<VocalPhrase> mLyricPhrases; // 0x8

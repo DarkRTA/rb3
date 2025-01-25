@@ -12,5 +12,7 @@ public:
     DrumMap();
     virtual ~DrumMap(){}
 
+    void Clear(){ FillInfo::Clear(); }
+
     int mCurrentLanes;
 };

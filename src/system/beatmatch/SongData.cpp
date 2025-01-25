@@ -1,13 +1,20 @@
 #include "beatmatch/SongData.h"
+#include "beatmatch/GameGem.h"
 #include "beatmatch/GameGemDB.h"
+#include "beatmatch/Phrase.h"
+#include "beatmatch/TrackType.h"
 #include "beatmatch/VocalNote.h"
 #include "beatmatch/SongParserSink.h"
 #include "beatmatch/PlayerTrackConfig.h"
 #include "beatmatch/TuningOffsetList.h"
 #include "beatmatch/DrumMixDB.h"
 #include "beatmatch/DrumMap.h"
+#include "decomp.h"
 #include "macros.h"
 #include "utl/BeatMap.h"
+#include "utl/SongInfoAudioType.h"
+
+DECOMP_FORCEACTIVE(SongData, ".vfv")
 
 SongData::TrackInfo::TrackInfo(Symbol sym, SongInfoAudioType audioty, AudioTrackNum num, TrackType trackty, bool bb) :
     mName(sym), mLyrics(new TickedInfoCollection<String>()), mAudioType((BeatmatchAudioType)audioty), 
@@ -83,6 +90,61 @@ void SongData::UpdatePlayerTrackConfigList(PlayerTrackConfigList* plist){
     SetUpTrackDifficulties(plist);
     ComputeVocalRangeData();
 }
+
+void SongData::AddTrack(int, AudioTrackNum a, Symbol s, SongInfoAudioType songTy, TrackType trackTy, bool b){
+    if(songTy == kAudioTypeFake){
+        mFakeTracks.push_back(new FakeTrack(s));
+    }
+    else {
+        unk10++;
+        mTrackInfos.push_back(new TrackInfo(s, songTy, a, trackTy, b));
+        mFills.push_back(new DrumFillInfo());
+        mDrumMaps.push_back(new DrumMap());
+        mRollInfos.push_back(new RangedDataCollection<unsigned int>());
+        mTrillInfos.push_back(new RangedDataCollection<std::pair<int, int> >());
+        mRGRollInfos.push_back(new RangedDataCollection<RGRollChord>());
+        mRGTrillInfos.push_back(new RangedDataCollection<RGTrill>());
+        mDrumMixDBs.push_back(new DrumMixDB(unk14));
+        mGemDBs.push_back(new GameGemDB(unk14, unk11c));
+        mPhraseDBs.push_back(new PhraseDB(unk14));
+        if(trackTy == kTrackVocals){
+            int harmPartNum = 0;
+            if(strneq(s.mStr, "HARM", 4)){
+                harmPartNum = *(s.mStr + 4) - 0x31;
+                if(harmPartNum < 0) MILO_FAIL("Harmony part too low. Found part %d", harmPartNum);
+                if(harmPartNum >= 3) MILO_FAIL("Harmony part too high. Found part %d", harmPartNum);
+                harmPartNum++;
+            }
+            while(mVocalNoteLists.size() <= harmPartNum){
+                mVocalNoteLists.push_back(new VocalNoteList(this));
+            }
+            unk98 = harmPartNum;
+            mVocalNoteLists[unk98]->SetTrackName(s);
+        }
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+void SongData::ClearTrack(int idx){
+    mGemDBs[idx]->Clear();
+    mFills[idx]->Clear();
+    mDrumMaps[idx]->Clear();
+    mRollInfos[idx]->Clear();
+    mTrillInfos[idx]->Clear();
+    mRGRollInfos[idx]->Clear();
+    mRGTrillInfos[idx]->Clear();
+    mDrumMixDBs[idx]->Clear();
+    mPhraseDBs[idx]->Clear();
+    if(mTrackInfos[idx]->mType == kTrackVocals){
+        if(mVocalNoteLists.size() != 1){
+            MILO_FAIL("MIDI merge can't overwrite harmony parts");
+        }
+        mVocalNoteLists[0]->Clear();
+        unk98 = 0;
+    }
+}
+#pragma pop
 
 // fn_804855E4
 SongPos SongData::CalcSongPos(float f){

@@ -32,5 +32,9 @@ TickedInfoCollection<String>& DrumMixDB::GetMixList(int diff){
 }
 
 DrumMixDB* DrumMixDB::Duplicate() const {
-
+    DrumMixDB* db = new DrumMixDB(mMixLists.size());
+    for(int i = 0; i < mMixLists.size(); i++){
+        *db->mMixLists[i] = *mMixLists[i];
+    }
+    return db;
 }
