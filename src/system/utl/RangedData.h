@@ -1,19 +1,30 @@
 #pragma once
 #include <vector>
 
-template <class T> class RangedData {
-public:
-    int mStartTick;
-    int mEndTick;
-    T data;
-};
-
 template <class T> class RangedDataCollection {
 public:
-    void Clear(){ mRangeDataArray.clear(); }
-    void AddData(int, int, int, const T&);
+    template <class D> class RangedData {
+    public:
+        RangedData(int start, int end, T tData) : mStartTick(start), mEndTick(end), data(tData) {}
+        bool CompareRangeStarts(const RangedData& other){
+            return other.mStartTick < mStartTick;
+        }
 
-    std::vector<RangedData<T>*> mRangeDataArray;
+        int mStartTick;
+        int mEndTick;
+        T data;
+    };
+
+    void Clear(){ mRangeDataArray.clear(); }
+    void AddData(int idx, int startTick, int endTick, const T& item){
+        while(mRangeDataArray.size() <= idx){
+            std::vector<RangedData<T> > data;
+            mRangeDataArray.push_back(data);
+        }
+        mRangeDataArray[idx].push_back(RangedData<T> (startTick, endTick, item));
+    }
+
+    std::vector<std::vector<RangedData<T> > > mRangeDataArray;
 };
 
 class RangeSection {
