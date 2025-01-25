@@ -1,4 +1,4 @@
-#include "beatmatch/Phrase.h"
+#include "beatmatch/PhraseAnalyzer.h"
 #include "os/Debug.h"
 #include "utl/MemMgr.h"
 #include <algorithm>

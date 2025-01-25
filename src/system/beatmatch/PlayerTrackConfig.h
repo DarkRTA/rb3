@@ -58,6 +58,7 @@ public:
     const UserGuid &TrackPlayer(int) const;
     bool UserPresent(const UserGuid &);
     void RemoveConfig(const UserGuid &);
+    int NumConfigs() const { return mConfigs.size(); }
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8

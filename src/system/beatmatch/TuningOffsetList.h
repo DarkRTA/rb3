@@ -1,8 +1,11 @@
 #pragma once
 #include "utl/TickedInfo.h"
 
-class TuningOffsetList {
+class TuningOffsetList : public TickedInfoCollection<float> {
 public:
-    TuningOffsetList();
+    TuningOffsetList(){
+        mInfos.reserve(8);
+        mInfos.push_back(TickedInfo<float>(-1, 100.0f));
+    }
     ~TuningOffsetList(){}
 };

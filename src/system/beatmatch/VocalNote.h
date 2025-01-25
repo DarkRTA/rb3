@@ -96,6 +96,12 @@ public:
     void NotesDone(const TempoMap&, bool);
     void AddTambourineGem(int);
     void SetFreestyleSections(const std::vector<std::pair<float, float> >&);
+    void GenerateLegalFreestyleSections(std::vector<std::pair<float, float> >&) const;
+    void RemoveInvalidFreestyleSections();
+    void UpdatePitchRangeTickDelimited(int, int, float&, float&);
+    void AddLyricShift(float);
+    void StartPlayerPhrase(int, int);
+    void EndPlayerPhrase(int, int);
 
     const char* PrintTick(int tick) const;
     void SetTrackName(Symbol name){ mTrackName = name; }

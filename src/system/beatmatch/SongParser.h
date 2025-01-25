@@ -237,6 +237,7 @@ public:
         }
         return b2;
     }
+    bool NoMidiReader() const { return !mMidiReader; }
 
     int mNumSlots; // 0x8
     int mPlayerSlot; // 0xc
