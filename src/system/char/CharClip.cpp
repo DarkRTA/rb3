@@ -248,10 +248,10 @@ void CharClip::SetFlags(int i){
 }
 
 bool CharClip::SharesGroups(CharClip* clip){
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         CharClipGroup* grp = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(grp && grp->HasClip(clip)) return true;
-    )
+    }
     return false;
 }
 
@@ -578,16 +578,16 @@ void CharClip::SetBeatAlignMode(int align){
 
 int CharClip::InGroups(){
     int num = 0;
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         if(dynamic_cast<CharClipGroup*>((*it)->RefOwner())) num++;
-    )
+    }
     return num;
 }
 
 bool CharClip::InGroup(Hmx::Object* o){
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         if(o == (*it)->RefOwner()) return true;
-    )
+    }
     return false;
 }
 
@@ -596,7 +596,7 @@ void CharClip::MakeMRU(){
     static int sMaxGroups = 10;
     static Symbol s("CharClipGroup");
     int groupIdx = 0;
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         ObjRef* cur = *it;
         Hmx::Object* owner = cur->RefOwner();
         if(owner && owner->ClassName() == s){
@@ -606,7 +606,7 @@ void CharClip::MakeMRU(){
             groups[groupIdx++] = g;
             if(groupIdx == 128) break;
         }
-    )
+    }
     if(MaxEq(sMaxGroups, groupIdx)){
         MILO_WARN("%s refs %d groups", PathName(this), sMaxGroups);
     }
@@ -882,10 +882,10 @@ END_HANDLERS
 
 DataNode CharClip::OnGroups(DataArray*){
     DataArray* ret = new DataArray(0);
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         CharClipGroup* group = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(group) ret->Insert(ret->Size(), group);
-    )
+    }
     DataNode retNode(ret, kDataArray);
     ret->Release();
     return retNode;
@@ -893,12 +893,12 @@ DataNode CharClip::OnGroups(DataArray*){
 
 DataNode CharClip::OnHasGroup(DataArray* arr){
     const char* str = arr->Str(2);
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         CharClipGroup* group = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(group && streq(group->Name(), str)){
             return 1;
         }
-    )
+    }
     return 0;
 }
 

@@ -354,12 +354,12 @@ int GroupDeleteThreshold(const char* cc){
 }
 
 void StuffGroups(CharClip* clip, ObjectDir* dir, std::vector<CharClipGroup*>& groups){
-    FOREACH_OBJREF(clip,
+    FOREACH_OBJREF(clip){
         CharClipGroup* grp = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(grp && grp->Dir() == dir){
             groups.push_back(grp);
         }
-    )
+    }
 }
 
 void CharClipSet::SyncObjects(){
