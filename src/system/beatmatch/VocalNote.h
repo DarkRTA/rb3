@@ -102,8 +102,10 @@ public:
     void AddLyricShift(float);
     void StartPlayerPhrase(int, int);
     void EndPlayerPhrase(int, int);
+    VocalNote* NextNote(float) const;
 
     const char* PrintTick(int tick) const;
+    Symbol GetTrackName() const { return mTrackName; }
     void SetTrackName(Symbol name){ mTrackName = name; }
 
     std::vector<VocalPhrase> mPhrases; // 0x0

@@ -1,6 +1,5 @@
 #ifndef BEATMATCH_PHRASE_H
 #define BEATMATCH_PHRASE_H
-#include "beatmatch/SongData.h"
 #include <vector>
 #include "utl/Str.h"
 #include "beatmatch/TrackType.h"
@@ -14,6 +13,7 @@ struct Phrase {
     Phrase(float ms, float durms, int tick, int durticks) : mMs(ms), mDurationMs(durms), mTick(tick), mDurationTicks(durticks) {}
 
     float GetMs() const { return mMs; }
+    float GetDurationMs() const { return mDurationMs; }
     int GetTick() const { return mTick; }
     int GetDurationTicks() const { return mDurationTicks; }
 

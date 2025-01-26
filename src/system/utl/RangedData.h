@@ -31,9 +31,18 @@ public:
         }
         mRangeDataArray[idx].push_back(RangedData<T> (startTick, endTick, item));
     }
+    bool StartsAt(int idx, int start, int& end){
+        const RangedData<T>* data = GetRangeData(idx, start);
+        if(!data) return false;
+        else if(data->mStartTick == start){
+            end = data->mEndTick;
+            return true;
+        }
+        else return false;
+    }
     T GetData(int idx, int tick){
         const RangedData<T>* data = GetRangeData(idx, tick);
-        if(!data) return T();
+        if(data == nullptr) return T();
         else return data->mData;
     }
     const RangedData<T>* GetRangeData(int idx, int tick){

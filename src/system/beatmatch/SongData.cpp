@@ -4,6 +4,7 @@
 #include "beatmatch/GameGemDB.h"
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/InternalSongParserSink.h"
+#include "beatmatch/Phrase.h"
 #include "beatmatch/PhraseAnalyzer.h"
 #include "beatmatch/SongParser.h"
 #include "beatmatch/TimeSpanVector.h"
@@ -34,6 +35,8 @@
 #include "utl/SongInfoAudioType.h"
 #include "utl/SongInfoCopy.h"
 #include "utl/TickedInfo.h"
+
+const int kHarm3VocalNoteList = 3;
 
 DECOMP_FORCEACTIVE(SongData, ".vfv")
 
@@ -429,6 +432,96 @@ void SongData::RestoreGems(int i1, int i2, int i3){
     }
 }
 
+void SongData::TrimOverlappingGems(int, int, int){
+    MILO_WARN("Empty track found for SongData::TrimOverlappingGems!");
+    MILO_WARN("shortestDurationTick >= 0");
+    MILO_WARN("shortestDurationMs >= 0.0f");
+}
+
+void SongData::ValidateVocalSPPhrases(){
+    Symbol voxSym;
+    int i14;
+    bool harm = true;
+    if(mPlayerTrackConfigList->UseVocalHarmony()){
+        i14 = std::min<int>(kHarm3VocalNoteList, mVocalNoteLists.size() - 1);
+        voxSym = "HARM1";
+    }
+    else {
+        harm = false;
+        i14 = 0;
+        voxSym = "PART VOCALS";
+    }
+
+    int u15 = harm;
+    int trackIdx;
+    for(trackIdx = 0; trackIdx < mTrackInfos.size(); trackIdx++){
+        if(mTrackInfos[trackIdx]->mName == voxSym) break;
+    }
+
+    if(trackIdx == mTrackInfos.size() || mNumDifficulties <= 0) return;
+    else {
+        PhraseDB* curDB = mPhraseDBs[trackIdx];
+        const PhraseList& phrases = curDB->GetPhraseList(mTrackDifficulties[trackIdx], kCommonPhrase);
+        VocalNoteList* curVoxList = mVocalNoteLists[u15];
+        for(int i = 0; i < phrases.mPhrases.size(); i++){
+            float f20 = phrases.mPhrases[i].mMs;
+            float f1 = phrases.mPhrases[i].mMs;
+            float f18 = phrases.mPhrases[i].GetDurationMs();
+            int i13 = 0; // change type
+            bool b2 = false;
+            for(int j = u15; j <= i14; j++){
+                if(mVocalNoteLists[j]->NextNote(f20)){
+                    b2 = true;
+                    break;
+                }
+            }
+            if(!b2){
+                curVoxList->GetTrackName();
+                SongFullPath();
+            }
+            else {
+                VocalNote* next = curVoxList->NextNote(f20);
+                if(next){
+                    float f19 = next->GetMs();
+                    if(f20 > f19){
+                        curVoxList->GetTrackName();
+                        SongFullPath();
+                    }
+                }
+            }
+        }
+    }
+
+    MILO_WARN("NOTIFY %s %s : vocal overdrive phrase at %i ms is after all notes.\n");
+    MILO_WARN("NOTIFY %s %s : vocal overdrive phrase at %i ms begins during a note.\n");
+    MILO_WARN("NOTIFY %s %s : vocal overdrive phrase at %i ms starts mid-phrase.\n");
+    MILO_WARN("NOTIFY %s %s : vocal overdrive phrase at %i ms ends prematurely.\n");
+    MILO_WARN("NOTIFY %s %s : vocal overdrive phrase at %i ms cuts into next phrase.\n");
+}
+
+void SongData::AddBeatMatcher(BeatMatcher* bm){
+    mBeatMatchers.push_back(bm);
+}
+
+void SongData::PostDynamicAdd(BeatMatcher* bm, int trk){
+    if(HasBackupTrack(trk)){
+        RestoreTrackFromBackup(trk);
+    }
+    for(int i = 0; i < mNumTracks; i++){
+        TrackInfo* curTrackInfo = mTrackInfos[i];
+        bm->AddTrack(i, curTrackInfo->mName, (SongInfoAudioType)curTrackInfo->mAudioType, curTrackInfo->mType, curTrackInfo->mIndependentSlots);
+    }
+}
+
+void SongData::RemoveBeatMatcher(BeatMatcher* bm){
+    std::vector<BeatMatcher*>::iterator it = std::find(mBeatMatchers.begin(), mBeatMatchers.end(), bm);
+    mBeatMatchers.erase(it, mBeatMatchers.end());
+}
+
+const PhraseList& SongData::GetPhraseList(int i, BeatmatchPhraseType ty) const {
+    return mPhraseDBs[i]->GetPhraseList(mTrackDifficulties[i], ty);
+}
+
 void SongData::AddTrack(int, AudioTrackNum a, Symbol s, SongInfoAudioType songTy, TrackType trackTy, bool b){
     if(songTy == kAudioTypeFake){
         mFakeTracks.push_back(new FakeTrack(s));
@@ -627,8 +720,22 @@ void SongData::AddRGGem(int i, const RGGemInfo& info){
 void SongData::SetFakeHitGemsInFill(bool b){ mFakeHitGemsInFill = b; }
 bool SongData::GetFakeHitGemsInFill() const { return mFakeHitGemsInFill; }
 
-int SongData::GetRollingSlotsAtTick(int i1, int i2) const {
+unsigned int SongData::GetRollingSlotsAtTick(int i1, int i2) const {
+    RangedDataCollection<unsigned int>* pRollInfo = mRollInfos[i1];
+    MILO_ASSERT(pRollInfo, 0x5B4);
+    return pRollInfo->GetData(mTrackDifficulties[i1], i2);
+}
 
+bool SongData::RollStartsAt(int idx, int startTick, int& endTick) const {
+    RangedDataCollection<unsigned int>* pRollInfo = mRollInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x5C2);
+    return pRollInfo->StartsAt(mTrackDifficulties[idx], startTick, endTick);
+}
+
+bool SongData::TrillStartsAt(int idx, int startTick, int& endTick){
+    RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
+    MILO_ASSERT(pTrillInfo, 0x5F7);
+    return pTrillInfo->StartsAt(mTrackDifficulties[idx], startTick, endTick);
 }
 
 RangedDataCollection<unsigned int>* SongData::GetRollInfo(int idx) const {
@@ -641,6 +748,12 @@ RangedDataCollection<std::pair<int, int> >* SongData::GetTrillInfo(int idx) cons
     RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
     MILO_ASSERT(pTrillInfo, 0x605);
     return pTrillInfo;
+}
+
+bool SongData::RGRollStartsAt(int idx, int startTick, int& endTick) const {
+    RangedDataCollection<RGRollChord>* pRollInfo = mRGRollInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x60F);
+    return pRollInfo->StartsAt(mTrackDifficulties[idx], startTick, endTick);
 }
 
 RGRollChord SongData::GetRGRollingSlotsAtTick(int i, int j) const {
@@ -656,9 +769,9 @@ RangedDataCollection<RGRollChord>* SongData::GetRGRollInfo(int idx) const {
 }
 
 RangedDataCollection<RGTrill>* SongData::GetRGTrillInfo(int idx) const {
-    RangedDataCollection<RGTrill>* pRollInfo = mRGTrillInfos[idx];
-    MILO_ASSERT(pRollInfo, 0x64D);
-    return pRollInfo;
+    RangedDataCollection<RGTrill>* trillInfo = mRGTrillInfos[idx];
+    MILO_ASSERT(trillInfo, 0x64D);
+    return trillInfo;
 }
 
 void SongData::RecalculateGemTimes(int i){
@@ -689,8 +802,8 @@ SongPos SongData::CalcSongPos(float f){
     MILO_ASSERT(mBeatMap, 0x6BC);
     float tick = mTempoMap->TimeToTick(f);
     int itick = tick;
-    int m, b, t;
-    mMeasureMap->TickToMeasureBeatTick(itick, m, b, t);
+    int m, b, t, x;
+    mMeasureMap->TickToMeasureBeatTick(itick, m, b, t, x);
     return SongPos(tick, mBeatMap->Beat(itick), m, b, t);
 }
 

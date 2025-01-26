@@ -6,6 +6,7 @@
 #include "beatmatch/HxSongData.h"
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/BeatMatchUtl.h"
+#include "beatmatch/Phrase.h"
 #include "beatmatch/RGChords.h"
 #include "beatmatch/SongParser.h"
 #include "utl/MemStream.h"
@@ -108,7 +109,7 @@ public:
     virtual bool GetGem(int, int&, int&, int&);
 
     bool GetTrillSlotsAtTick(int, int, std::pair<int, int>&) const;
-    int GetRollingSlotsAtTick(int, int) const;
+    unsigned int GetRollingSlotsAtTick(int, int) const;
     bool GetNextRoll(int, int, unsigned int&, int&) const;
     const char* SongFullPath() const;
     void AddSink(SongParserSink*);
@@ -156,6 +157,10 @@ public:
     bool RGRollStartsAt(int, int, int&) const;
     bool RGTrillStartsAt(int, int, int&);
     RGRollChord GetRGRollingSlotsAtTick(int, int) const;
+    void AddBeatMatcher(BeatMatcher*);
+    void RemoveBeatMatcher(BeatMatcher*);
+    void PostDynamicAdd(BeatMatcher*, int);
+    const PhraseList& GetPhraseList(int, BeatmatchPhraseType) const;
     TrackType TrackTypeAt(int idx) const {
         return mTrackInfos[idx]->mType;
     }
