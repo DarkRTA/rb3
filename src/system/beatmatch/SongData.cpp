@@ -6,6 +6,7 @@
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/Phrase.h"
 #include "beatmatch/PhraseAnalyzer.h"
+#include "beatmatch/RGChords.h"
 #include "beatmatch/SongParser.h"
 #include "beatmatch/TimeSpanVector.h"
 #include "beatmatch/TrackType.h"
@@ -732,6 +733,13 @@ bool SongData::RollStartsAt(int idx, int startTick, int& endTick) const {
     return pRollInfo->StartsAt(mTrackDifficulties[idx], startTick, endTick);
 }
 
+bool SongData::GetNextRoll(int idx, int i2, unsigned int& roll, int& iref) const {
+    RangedDataCollection<unsigned int>* pRollInfo = mRollInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x5D0);
+    int iref_loc;
+    return pRollInfo->GetNext(mTrackDifficulties[idx], i2, roll, iref_loc, iref);
+}
+
 bool SongData::TrillStartsAt(int idx, int startTick, int& endTick){
     RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
     MILO_ASSERT(pTrillInfo, 0x5F7);
@@ -754,6 +762,13 @@ bool SongData::RGRollStartsAt(int idx, int startTick, int& endTick) const {
     RangedDataCollection<RGRollChord>* pRollInfo = mRGRollInfos[idx];
     MILO_ASSERT(pRollInfo, 0x60F);
     return pRollInfo->StartsAt(mTrackDifficulties[idx], startTick, endTick);
+}
+
+bool SongData::GetNextRGRoll(int idx, int i2, RGRollChord& cref, int& iref) const {
+    RangedDataCollection<RGRollChord>* pRollInfo = mRGRollInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x61C);
+    int iref_loc;
+    return pRollInfo->GetNext(mTrackDifficulties[idx], i2, cref, iref_loc, iref);
 }
 
 RGRollChord SongData::GetRGRollingSlotsAtTick(int i, int j) const {

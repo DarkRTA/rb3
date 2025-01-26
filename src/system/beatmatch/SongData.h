@@ -111,6 +111,7 @@ public:
     bool GetTrillSlotsAtTick(int, int, std::pair<int, int>&) const;
     unsigned int GetRollingSlotsAtTick(int, int) const;
     bool GetNextRoll(int, int, unsigned int&, int&) const;
+    bool GetNextRGRoll(int, int, RGRollChord&, int&) const;
     const char* SongFullPath() const;
     void AddSink(SongParserSink*);
     void FixUpTrackConfig(PlayerTrackConfigList*);

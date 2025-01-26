@@ -10,8 +10,8 @@ public:
         static bool CompareRangeStarts(int tick, const RangedData& data){
             return tick < data.mStartTick;
         }
-        bool CompareRangeEnds(const RangedData& other){
-            return other.mEndTick < mEndTick;
+        static bool CompareRangeEnds(int tick, const RangedData& data){
+            return data.mEndTick < tick;
         }
         bool CheckBounds(int tick) const {
             if(tick >= mStartTick && tick < mEndTick) return true;
@@ -57,6 +57,26 @@ public:
                 if(!before->CheckBounds(tick)) return nullptr; 
                 else return &data[-1];
             }
+        }
+    }
+    const RangedData<T>* RangeDataEnd(int idx, int tick){
+        if(idx >= mRangeDataArray.size()) return nullptr;
+        else if(mRangeDataArray[idx].empty()) return nullptr;
+        else {
+            const std::vector<RangedData<T> >& vec = mRangeDataArray[idx];
+            const RangedData<T>* data = std::upper_bound(vec.begin(), vec.end(), tick, RangedData<T>::CompareRangeEnds);
+            if(data == mRangeDataArray[idx].end()) return nullptr;
+            else return data;
+        }
+    }
+    bool GetNext(int idx, int tick, T& data, int& i1, int& i2){
+        const RangedData<T>* rangedData = RangeDataEnd(idx, tick);
+        if(rangedData == nullptr) return false;
+        else {
+            data = rangedData->mData;
+            i1 = rangedData->mStartTick;
+            i2 = rangedData->mEndTick;
+            return true;
         }
     }
 
