@@ -13,6 +13,8 @@ public:
     virtual ~DrumMap(){}
 
     void Clear(){ FillInfo::Clear(); }
+    bool LaneOn(int, int);
+    bool LaneOff(int, int);
 
     int mCurrentLanes;
 };

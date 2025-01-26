@@ -1,14 +1,11 @@
-#ifndef BEATMATCH_RGCHORDS_H
-#define BEATMATCH_RGCHORDS_H
+#pragma once
 
 class RGRollChord {
 public:
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkc;
-    int unk10;
-    int unk14;
+    RGRollChord(){
+        for(int i = 0; i < 6; i++) unk0[i] = -1;
+    }
+    int unk0[6];
 };
 
 class RGTrill {
@@ -17,5 +14,3 @@ public:
     int unk4;
     int unk8;
 };
-
-#endif

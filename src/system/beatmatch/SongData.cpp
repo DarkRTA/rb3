@@ -47,8 +47,8 @@ SongData::TrackInfo::~TrackInfo(){
     RELEASE(mLyrics);
 }
 
-SongData::SongData() : mNumTracks(0), mNumDifficulties(0), unk18(0), mSongInfo(0), unk20(-1), unk24(-1), unk28(0), mPhraseAnalyzer(0), mLoadingVocalNoteListIndex(0), mTempoMap(0), mMeasureMap(0), mBeatMap(0), mTuningOffsetList(0),
-    unkd4(0), mMemStream(0), mSongParser(0), mPlayerTrackConfigList(0), unk118(0), mHopoThreshold(0), unk120(0) {
+SongData::SongData() : mNumTracks(0), mNumDifficulties(0), mLoaded(0), mSongInfo(0), mSectionStartTick(-1), mSectionEndTick(-1), mFakeHitGemsInFill(0), mPhraseAnalyzer(0), mLoadingVocalNoteListIndex(0), mTempoMap(0), mMeasureMap(0), mBeatMap(0), mTuningOffsetList(0),
+    unkd4(0), mMemStream(0), mSongParser(0), mPlayerTrackConfigList(0), mGems(0), mHopoThreshold(0), mDetailedGrid(0) {
     mVocalNoteLists.reserve(4);
     mVocalNoteLists.push_back(new VocalNoteList(this));
 }
@@ -133,7 +133,7 @@ void SongData::Load(const char* midifile, SongInfo* info, int i, PlayerTrackConf
 #endif
     mSongInfo = info;
     mNumDifficulties = i;
-    unk120 = false;
+    mDetailedGrid = false;
     mHopoThreshold = mSongInfo->GetHopoThreshold();
     mKeyboardRangeSections.resize(mNumDifficulties);
     MILO_ASSERT(mTempoMap == NULL, 0xF5);
@@ -153,7 +153,7 @@ void SongData::Load(const char* midifile, SongInfo* info, int i, PlayerTrackConf
     unkc = 0;
     mPlayerTrackConfigList = pList;
     mSongParser->SetNumPlayers(mPlayerTrackConfigList->NumConfigs());
-    mSongParser->SetSectionBounds(unk20, unk24);
+    mSongParser->SetSectionBounds(mSectionStartTick, mSectionEndTick);
     mSongParser->ReadMidiFile(*mMemStream, midifile, mSongInfo);
     if(bb) while(!Poll());
 }
@@ -242,7 +242,7 @@ void SongData::PostLoad(PlayerTrackConfigList* pList){
         (*it)->PostLoad();
     }
     PostLoadVocals();
-    unk18 = true;
+    mLoaded = true;
 }
 
 void SongData::PostLoadTrack(int idx){
@@ -561,6 +561,125 @@ void SongData::AddRGRoll(int i1, int i2, const RGRollChord& chord, int i4, int i
 
 void SongData::AddRGTrill(int i1, int i2, const RGTrill& trill, int i4, int i5){
     mRGTrillInfos[i1]->AddData(i2, i4, i5, trill);
+}
+
+void SongData::AddMix(int i1, int i2, int diff, const char* cc){
+    if(diff < 0 || diff >= mNumDifficulties){
+        MILO_WARN("%s (%s): Error adding mix '%s' at %s; difficulty %d is out of range", SongFullPath(), mTrackInfos[i1]->mName, cc, TickFormat(i2, *mMeasureMap), diff);
+    }
+    else {
+        if(!mDrumMixDBs[i1]->AddMix(diff, i2, cc)){
+            MILO_WARN("%s (%s): Error adding mix '%s' at %s", SongFullPath(), mTrackInfos[i1]->mName, cc, TickFormat(i2, *mMeasureMap));
+        }
+    }
+}
+
+void SongData::AddLyricEvent(int i1, int i2, const char* cc){
+    if(mTrackInfos[i1]->mLyrics->AddInfo(i2, cc)) return;
+    else MILO_WARN("%s (%s): Error adding lyric event '%s' at %s", SongFullPath(), mTrackInfos[i1]->mName, cc, TickFormat(i2, *mMeasureMap));
+}
+
+void SongData::DrumMapLane(int i1, int i2, int i3, bool laneOn){
+    if(laneOn){
+        if(!mDrumMaps[i1]->LaneOn(i2, i3)){
+            MILO_WARN("%s (%s): Error adding drum lane %d at %s", SongFullPath(), mTrackInfos[i1]->mName, i3, TickFormat(i2, *mMeasureMap));
+        }
+    }
+    else {
+        if(!mDrumMaps[i1]->LaneOff(i2, i3)){
+            MILO_WARN("%s (%s): Error ending drum lane %d at %s", SongFullPath(), mTrackInfos[i1]->mName, i3, TickFormat(i2, *mMeasureMap));
+        }
+    }
+}
+
+void SongData::AddBeat(int i, int j){
+    if(!mBeatMap->AddBeat(i, j)){
+        MILO_WARN("%s (BEAT): Error adding beat at %s, probably double note", SongFullPath(), TickFormat(i, *mMeasureMap));
+    }
+}
+
+void SongData::SetDetailedGrid(bool b){ mDetailedGrid = b; }
+void SongData::AddRangeShift(int i, float f){ mRangeShifts[i] = f; }
+
+void SongData::AddKeyboardRangeShift(int i1, int i2, float f3, int i4, int i5){
+    RangeSection sect(i1, f3);
+    sect.unk8 = i4;
+    sect.unkc = i5;
+    std::vector<RangeSection>& curRanges = mKeyboardRangeSections[i1];
+    if(sect.unkc == -1.0f){
+        float fSpan = 16.0f;
+        if(curRanges.size() != 0){
+            fSpan = curRanges.back().unkc - curRanges.back().unk8;
+            MILO_ASSERT(fSpan > 0.0f, 0x589);
+        }
+        sect.unkc += fSpan;
+    }
+    curRanges.push_back(sect);
+}
+
+void SongData::AddRGGem(int i, const RGGemInfo& info){
+    unkd4 = Max(unkd4, info.ms + info.duration_ms);
+    if(!mGemDBs[info.track]->AddRGGem(i, info)){
+        MILO_WARN("%s, %s: Overlapping or too-close real guitar gems at tick %d (%s)", SongFullPath(), mTrackInfos[info.track]->mName, info.tick, TickFormat(info.tick, *mMeasureMap));
+    }
+}
+
+void SongData::SetFakeHitGemsInFill(bool b){ mFakeHitGemsInFill = b; }
+bool SongData::GetFakeHitGemsInFill() const { return mFakeHitGemsInFill; }
+
+int SongData::GetRollingSlotsAtTick(int i1, int i2) const {
+
+}
+
+RangedDataCollection<unsigned int>* SongData::GetRollInfo(int idx) const {
+    RangedDataCollection<unsigned int>* pRollInfo = mRollInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x5DE);
+    return pRollInfo;
+}
+
+RangedDataCollection<std::pair<int, int> >* SongData::GetTrillInfo(int idx) const {
+    RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
+    MILO_ASSERT(pTrillInfo, 0x605);
+    return pTrillInfo;
+}
+
+RGRollChord SongData::GetRGRollingSlotsAtTick(int i, int j) const {
+    RangedDataCollection<RGRollChord>* pRollInfo = mRGRollInfos[i];
+    MILO_ASSERT(pRollInfo, 0x62A);
+    return pRollInfo->GetData(mTrackDifficulties[i], j);
+}
+
+RangedDataCollection<RGRollChord>* SongData::GetRGRollInfo(int idx) const {
+    RangedDataCollection<RGRollChord>* pRollInfo = mRGRollInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x636);
+    return pRollInfo;
+}
+
+RangedDataCollection<RGTrill>* SongData::GetRGTrillInfo(int idx) const {
+    RangedDataCollection<RGTrill>* pRollInfo = mRGTrillInfos[idx];
+    MILO_ASSERT(pRollInfo, 0x64D);
+    return pRollInfo;
+}
+
+void SongData::RecalculateGemTimes(int i){
+    GameGemList* gemList = mGemDBs[i]->GetDiffGemList(mTrackDifficulties[i]);
+    gemList->RecalculateGemTimes(GetTempoMap());
+}
+
+void SongData::EnableGems(int, float, float){
+
+}
+
+GameGemList* SongData::GetGemListByDiff(int i, int diff){
+    return mGemDBs[i]->GetDiffGemList(diff);
+}
+
+GameGemList* SongData::GetGemList(int i){
+    return mGemDBs[i]->GetDiffGemList(mTrackDifficulties[i]);
+}
+
+TickedInfoCollection<String>& SongData::GetSubmixes(int i) const {
+    return mDrumMixDBs[i]->GetMixList(mTrackDifficulties[i]);
 }
 
 // fn_804855E4

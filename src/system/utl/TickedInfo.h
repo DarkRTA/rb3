@@ -23,7 +23,7 @@ public:
         else return false;
     }
     void SetInfo(int idx, const T& item){
-        MILO_ASSERT_RANGE(idx, 0, mInfos.size(), 0x52);
+        MILO_ASSERT(0 <= idx && idx < mInfos.size(), 0x52);
         mInfos[idx] = item;
     }
     bool Cmp(int tick, const TickedInfo<T>& info){

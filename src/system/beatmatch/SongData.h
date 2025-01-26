@@ -48,11 +48,11 @@ public:
         bool FakeAudio() const { return mAudioType == kAudioFake; }
 
         Symbol mName; // 0x0
-        TickedInfoCollection<String>* mLyrics; // fix type
+        TickedInfoCollection<String>* mLyrics; // 0x4
         BeatmatchAudioType mAudioType; // 0x8
         AudioTrackNum mAudioTrackNum; // 0xc
         TrackType mType; // 0x10
-        bool mIndependentSlots;
+        bool mIndependentSlots; // 0x14
     };
 
     class BackupTrack {
@@ -142,7 +142,20 @@ public:
     DrumFillInfo* GetDrumFillInfo(int);
     FillInfo* GetFillInfo(int);
     bool GetUsingRealDrums() const;
-
+    void SetFakeHitGemsInFill(bool);
+    bool GetFakeHitGemsInFill() const;
+    TickedInfoCollection<String>& GetSubmixes(int) const;
+    void EnableGems(int, float, float);
+    void RecalculateGemTimes(int);
+    RangedDataCollection<RGRollChord>* GetRGRollInfo(int) const;
+    RangedDataCollection<RGTrill>* GetRGTrillInfo(int) const;
+    RangedDataCollection<std::pair<int, int> >* GetTrillInfo(int) const;
+    RangedDataCollection<unsigned int>* GetRollInfo(int) const;
+    bool RollStartsAt(int, int, int&) const;
+    bool TrillStartsAt(int, int, int&);
+    bool RGRollStartsAt(int, int, int&) const;
+    bool RGTrillStartsAt(int, int, int&);
+    RGRollChord GetRGRollingSlotsAtTick(int, int) const;
     TrackType TrackTypeAt(int idx) const {
         return mTrackInfos[idx]->mType;
     }
@@ -151,11 +164,11 @@ public:
     int unkc; // 0xc
     int mNumTracks; // 0x10
     int mNumDifficulties; // 0x14
-    bool unk18; // 0x18
+    bool mLoaded; // 0x18
     SongInfo* mSongInfo; // 0x1c
-    int unk20; // 0x20
-    int unk24; // 0x24
-    bool unk28; // 0x28
+    int mSectionStartTick; // 0x20
+    int mSectionEndTick; // 0x24
+    bool mFakeHitGemsInFill; // 0x28
     std::vector<SongParserSink*> mSongParserSinks; // 0x2c
     std::vector<BeatMatcher*> mBeatMatchers; // 0x34
     std::vector<TrackInfo*> mTrackInfos; // 0x3c
@@ -188,9 +201,9 @@ public:
     std::map<int, float> mRangeShifts; // 0xf0
     std::vector<RangeSection> mRangeSections; // 0x108
     std::vector<std::vector<RangeSection> > mKeyboardRangeSections; // 0x110
-    int unk118; // 0x118
+    GameGemList* mGems; // 0x118
     int mHopoThreshold; // 0x11c
-    bool unk120; // 0x120
+    bool mDetailedGrid; // 0x120
 };
 
 #endif
