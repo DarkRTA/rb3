@@ -752,6 +752,12 @@ RangedDataCollection<unsigned int>* SongData::GetRollInfo(int idx) const {
     return pRollInfo;
 }
 
+bool SongData::GetTrillSlotsAtTick(int idx, int i2, std::pair<int, int>& p) const {
+    RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
+    MILO_ASSERT(pTrillInfo, 0x5E8);
+    return pTrillInfo->AtTick(mTrackDifficulties[idx], i2, p);
+}
+
 RangedDataCollection<std::pair<int, int> >* SongData::GetTrillInfo(int idx) const {
     RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
     MILO_ASSERT(pTrillInfo, 0x605);
@@ -783,10 +789,22 @@ RangedDataCollection<RGRollChord>* SongData::GetRGRollInfo(int idx) const {
     return pRollInfo;
 }
 
+bool SongData::GetRGTrillAtTick(int idx, int i2, RGTrill& trill) const {
+    RangedDataCollection<RGTrill>* pTrillInfo = mRGTrillInfos[idx];
+    MILO_ASSERT(pTrillInfo, 0x640);
+    return pTrillInfo->AtTick(mTrackDifficulties[idx], i2, trill);
+}
+
 RangedDataCollection<RGTrill>* SongData::GetRGTrillInfo(int idx) const {
     RangedDataCollection<RGTrill>* trillInfo = mRGTrillInfos[idx];
     MILO_ASSERT(trillInfo, 0x64D);
     return trillInfo;
+}
+
+bool SongData::RGTrillStartsAt(int idx, int i2, int& iref){
+    RangedDataCollection<RGTrill>* pTrillInfo = mRGTrillInfos[idx];
+    MILO_ASSERT(pTrillInfo, 0x656);
+    return pTrillInfo->StartsAt(mTrackDifficulties[idx], i2, iref);
 }
 
 void SongData::RecalculateGemTimes(int i){

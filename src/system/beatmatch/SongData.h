@@ -157,6 +157,7 @@ public:
     bool TrillStartsAt(int, int, int&);
     bool RGRollStartsAt(int, int, int&) const;
     bool RGTrillStartsAt(int, int, int&);
+    bool GetRGTrillAtTick(int, int, RGTrill&) const;
     RGRollChord GetRGRollingSlotsAtTick(int, int) const;
     void AddBeatMatcher(BeatMatcher*);
     void RemoveBeatMatcher(BeatMatcher*);

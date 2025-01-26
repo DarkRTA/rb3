@@ -11,7 +11,7 @@ public:
             return tick < data.mStartTick;
         }
         static bool CompareRangeEnds(int tick, const RangedData& data){
-            return data.mEndTick < tick;
+            return tick < data.mEndTick;
         }
         bool CheckBounds(int tick) const {
             if(tick >= mStartTick && tick < mEndTick) return true;
@@ -76,6 +76,16 @@ public:
             data = rangedData->mData;
             i1 = rangedData->mStartTick;
             i2 = rangedData->mEndTick;
+            return true;
+        }
+    }
+    bool AtTick(int i1, int i2, T& item){
+        const RangedData<T>* data = GetRangeData(i1, i2);
+        if(data == nullptr){
+            return false;
+        }
+        else {
+            item = data->mData;
             return true;
         }
     }
