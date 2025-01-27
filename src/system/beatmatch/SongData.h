@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_SONGDATA_H
-#define BEATMATCH_SONGDATA_H
+#pragma once
 #include "beatmatch/FillInfo.h"
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/GemListInterface.h"
@@ -163,10 +162,16 @@ public:
     void RemoveBeatMatcher(BeatMatcher*);
     void PostDynamicAdd(BeatMatcher*, int);
     const PhraseList& GetPhraseList(int, BeatmatchPhraseType) const;
+    void SetUseDiscoUnflip(bool);
+    void SetGameCymbalLanes(unsigned int);
+    VocalNoteList* GetVocalNoteList(int);
+    int GetVocalNoteListCount() const;
+    std::vector<RangeSection>& GetKeyRangeSections(int);
     TrackType TrackTypeAt(int idx) const {
         return mTrackInfos[idx]->mType;
     }
     bool HasTrackDiffs() const { return mTrackDifficulties.size(); }
+    int GetNumDifficulties() const { return mNumDifficulties; }
 
     int unkc; // 0xc
     int mNumTracks; // 0x10
@@ -212,5 +217,3 @@ public:
     int mHopoThreshold; // 0x11c
     bool mDetailedGrid; // 0x120
 };
-
-#endif

@@ -808,21 +808,26 @@ bool SongData::RGTrillStartsAt(int idx, int i2, int& iref){
 }
 
 void SongData::RecalculateGemTimes(int i){
-    GameGemList* gemList = mGemDBs[i]->GetDiffGemList(mTrackDifficulties[i]);
-    gemList->RecalculateGemTimes(GetTempoMap());
+    GetGemList(i)->RecalculateGemTimes(GetTempoMap());
 }
 
-void SongData::EnableGems(int, float, float){
+void SongData::EnableGems(int i1, float f1, float f2){
+    std::vector<GameGem>& gems = GetGemList(i1)->mGems;
+    for(int i = 0; i < gems.size(); i++){
 
+    }
 }
 
-GameGemList* SongData::GetGemListByDiff(int i, int diff){
+#pragma push
+#pragma force_active on
+inline GameGemList* SongData::GetGemListByDiff(int i, int diff){
     return mGemDBs[i]->GetDiffGemList(diff);
 }
 
-GameGemList* SongData::GetGemList(int i){
-    return mGemDBs[i]->GetDiffGemList(mTrackDifficulties[i]);
+inline GameGemList* SongData::GetGemList(int i){
+    return GetGemListByDiff(i, mTrackDifficulties[i]);
 }
+#pragma pop
 
 TickedInfoCollection<String>& SongData::GetSubmixes(int i) const {
     return mDrumMixDBs[i]->GetMixList(mTrackDifficulties[i]);
@@ -861,6 +866,83 @@ FillInfo* SongData::GetFillInfo(int idx){
 
 bool SongData::GetUsingRealDrums() const {
     return mPlayerTrackConfigList->UseRealDrums();
+}
+
+void SongData::SetUseDiscoUnflip(bool unflip){
+    if(mPlayerTrackConfigList->mDiscoUnflip != unflip){
+        mPlayerTrackConfigList->mDiscoUnflip = unflip;
+        RestoreAllTracksFromBackup();
+    }
+}
+
+void SongData::SetGameCymbalLanes(unsigned int ui){
+    MILO_ASSERT(mPlayerTrackConfigList, 0x714);
+    mPlayerTrackConfigList->SetGameCymbalLanes(ui);
+}
+
+unsigned int SongData::GetGameCymbalLanes() const {
+    MILO_ASSERT(mPlayerTrackConfigList, 0x71A);
+    return mPlayerTrackConfigList->GetGameCymbalLanes();
+}
+
+DECOMP_FORCEACTIVE(SongData, "tracks")
+
+const char* SongData::SongFullPath() const {
+    if(!unke4.empty()) return unke4.c_str();
+    else return FakeSongMgr::MidiFullPath(mSongInfo);
+}
+
+VocalNoteList* SongData::GetVocalNoteList(int idx){
+    if(mPlayerTrackConfigList->UseVocalHarmony()){
+        if(idx + 1U < mVocalNoteLists.size()){
+            return mVocalNoteLists[idx + 1U];
+        }
+        else return nullptr;
+    }
+    else if(idx != 0) return nullptr;
+    else return mVocalNoteLists.front();
+}
+
+int SongData::GetVocalNoteListCount() const {
+    if(mPlayerTrackConfigList->UseVocalHarmony()){
+        return mVocalNoteLists.size() - 1;
+    }
+    else return 1;
+}
+
+std::vector<RangeSection>& SongData::GetKeyRangeSections(int idx){
+    return mKeyboardRangeSections[idx];
+}
+
+AudioTrackNum SongData::GetAudioTrackNum(int track) const {
+    return mTrackInfos[track]->mAudioTrackNum;
+}
+
+bool SongData::GetGem(int i2, int& i3, int& i4, int& i5){
+    if(mGems && mGems->NumGems() > i2){
+        GameGem& curGem = mGems->GetGem(i2);
+        i3 = curGem.GetTick();
+        i4 = i3 + curGem.GetDurationTicks();
+        i5 = curGem.GetSlots();
+        return true;
+    }
+    else return false;
+}
+
+void SongData::SetTrack(Symbol s){
+    int trk = TrackNamed(s);
+    mGems = nullptr;
+    if(trk == -1){
+        int numFakeTracks = mFakeTracks.size();
+        for(int i = 0; i < numFakeTracks; i++){
+            if(mFakeTracks[i]->mName == s){
+                mGems = mFakeTracks[i]->mGems->GetDiffGemList(0);
+            }
+        }
+    }
+    else {
+        mGems = GetGemListByDiff(trk, GetNumDifficulties() - 1);
+    }
 }
 
 SongData::BackupTrack::~BackupTrack(){
