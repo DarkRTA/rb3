@@ -15,6 +15,7 @@ public:
     void Clear(){ FillInfo::Clear(); }
     bool LaneOn(int, int);
     bool LaneOff(int, int);
+    void UpdateLanes(int, int);
 
-    int mCurrentLanes;
+    int mCurrentLanes; // 0x14
 };

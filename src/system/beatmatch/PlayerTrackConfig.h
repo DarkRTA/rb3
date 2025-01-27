@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_PLAYERTRACKCONFIG_H
-#define BEATMATCH_PLAYERTRACKCONFIG_H
+#pragma once
 #include "beatmatch/TrackType.h"
 #include "utl/HxGuid.h"
 #include "utl/SongInfoAudioType.h"
@@ -76,5 +75,3 @@ public:
     bool mNeedsProcessing; // 0x3c
     bool mProcessed; // 0x3d
 };
-
-#endif

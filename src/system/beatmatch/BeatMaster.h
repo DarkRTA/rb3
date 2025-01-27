@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BEATMASTER_H
-#define BEATMATCH_BEATMASTER_H
+#pragma once
 #include "beatmatch/BeatMasterSink.h"
 #include "beatmatch/SongParserSink.h"
 #include "beatmatch/HxMaster.h"
@@ -64,5 +63,3 @@ public:
 
     BeatMaster* mBeatMaster; // 0x18
 };
-
-#endif

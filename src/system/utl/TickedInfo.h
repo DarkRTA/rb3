@@ -40,7 +40,7 @@ public:
         MILO_ASSERT(0 <= idx && idx < mInfos.size(), 0x52);
         mInfos[idx] = item;
     }
-    bool Cmp(int tick, const TickedInfo<T>& info){
+    static bool Cmp(int tick, const TickedInfo<T>& info){
         return tick < info.mTick;
     }
     void Clear(){ mInfos.clear(); }
