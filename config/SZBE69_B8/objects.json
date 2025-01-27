@@ -917,7 +917,7 @@
             "system/beatmatch/SlotChannelMapping.cpp": "NonMatching",
             "system/beatmatch/SongData.cpp": "NonMatching",
             "system/beatmatch/SongParser.cpp": "NonMatching",
-            "system/beatmatch/Submix.cpp": "NonMatching",
+            "system/beatmatch/Submix.cpp": "Matching",
             "system/beatmatch/TimeSpanVector.cpp": "NonMatching",
             "system/beatmatch/TrackType.cpp": "Matching",
             "system/beatmatch/TrackWatcher.cpp": "NonMatching",

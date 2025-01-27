@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_SUBMIX_H
-#define BEATMATCH_SUBMIX_H
+#pragma once
 #include "utl/Symbol.h"
 #include <vector>
 #include <list>
@@ -14,8 +13,8 @@ public:
     void FillChannelList(std::list<int>&) const;
     void FillChannelList(std::list<int>&, int) const;
 
-    Symbol mName;
-    std::vector<int> mChannelsPerSlot;
+    Symbol mName; // 0x0
+    std::vector<std::list<int> > mChannelsPerSlot; // 0x4
 };
 
 class SubmixCollection {
@@ -26,5 +25,3 @@ public:
     
     std::vector<Submix*> mSubmixes;
 };
-
-#endif
