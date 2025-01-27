@@ -173,7 +173,7 @@ public:
     bool HasTrackDiffs() const { return mTrackDifficulties.size(); }
     int GetNumDifficulties() const { return mNumDifficulties; }
 
-    int unkc; // 0xc
+    int mNumFilesLoaded; // 0xc
     int mNumTracks; // 0x10
     int mNumDifficulties; // 0x14
     bool mLoaded; // 0x18
@@ -203,13 +203,13 @@ public:
     MeasureMap* mMeasureMap; // 0xb8
     BeatMap* mBeatMap; // 0xbc
     TuningOffsetList* mTuningOffsetList; // 0xc0
-    std::vector<float> vecc4; // 0xc4
-    std::vector<float> veccc; // 0xcc
-    float unkd4; // 0xd4
+    std::vector<float> mVocalFeatureVectorTimes; // 0xc4
+    std::vector<float> mVocalFeatureVectorPeaks; // 0xcc
+    float mLastGemTime; // 0xd4
     MemStream* mMemStream; // 0xd8
     SongParser* mSongParser; // 0xdc
     PlayerTrackConfigList* mPlayerTrackConfigList; // 0xe0
-    String unke4; // 0xe4
+    String mSongPath; // 0xe4
     std::map<int, float> mRangeShifts; // 0xf0
     std::vector<RangeSection> mRangeSections; // 0x108
     std::vector<std::vector<RangeSection> > mKeyboardRangeSections; // 0x110

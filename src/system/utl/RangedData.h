@@ -2,8 +2,18 @@
 #include <algorithm>
 #include <vector>
 
+/**
+ * @brief A collection of RangedData.
+ * 
+ * @tparam T The data type.
+ */
 template <class T> class RangedDataCollection {
 public:
+    /**
+     * @brief Data that is relevant from a set range of ticks.
+     * 
+     * @tparam D The data type.
+     */
     template <class D> class RangedData {
     public:
         RangedData(int start, int end, T data) : mStartTick(start), mEndTick(end), mData(data) {}
@@ -13,6 +23,7 @@ public:
         static bool CompareRangeEnds(int tick, const RangedData& data){
             return tick < data.mEndTick;
         }
+        /** Check if a supplied tick is within the tick bounds of this RangedData. */
         bool CheckBounds(int tick) const {
             if(tick >= mStartTick && tick < mEndTick) return true;
             else return false;
@@ -24,13 +35,23 @@ public:
     };
 
     void Clear(){ mRangeDataArray.clear(); }
-    void AddData(int idx, int startTick, int endTick, const T& item){
-        while(mRangeDataArray.size() <= idx){
+    /** Add a new RangedData to a particular index's collection.
+     *  @param [in] dataIdx The index to add the RangedData to.
+     *  @param [in] startTick The starting tick of the RangedData.
+     *  @param [in] endTick The ending tick of the RangedData.
+     *  @param [in] item The item field of the RangedData.
+     */
+    void AddData(int dataIdx, int startTick, int endTick, const T& item){
+        while(mRangeDataArray.size() <= dataIdx){
             std::vector<RangedData<T> > data;
             mRangeDataArray.push_back(data);
         }
-        mRangeDataArray[idx].push_back(RangedData<T> (startTick, endTick, item));
+        mRangeDataArray[dataIdx].push_back(RangedData<T> (startTick, endTick, item));
     }
+    //
+    // TODO: these are all placeholder method names.
+    // RBVR and RB4 appear to have RangedData symbols - reference these to get the actual names.
+    //
     bool StartsAt(int idx, int start, int& end){
         const RangedData<T>* data = GetRangeData(idx, start);
         if(!data) return false;
@@ -45,13 +66,18 @@ public:
         if(data == nullptr) return T();
         else return data->mData;
     }
-    const RangedData<T>* GetRangeData(int idx, int tick){
-        if(idx >= mRangeDataArray.size()) return nullptr;
-        else if(mRangeDataArray[idx].empty()) return nullptr;
+    /** Get the last possible RangedData RD, such that RD's startTick <= the supplied tick.
+     * @param [in] dataIdx The index to add the RangedData to.
+     * @param [in] tick The supplied tick.
+     * @returns The RangedData with the above conditions.
+     */
+    const RangedData<T>* GetRangeData(int dataIdx, int tick){ // RangedDataLessEqStart?
+        if(dataIdx >= mRangeDataArray.size()) return nullptr;
+        else if(mRangeDataArray[dataIdx].empty()) return nullptr;
         else {
-            const std::vector<RangedData<T> >& vec = mRangeDataArray[idx];
+            const std::vector<RangedData<T> >& vec = mRangeDataArray[dataIdx];
             const RangedData<T>* data = std::upper_bound(vec.begin(), vec.end(), tick, RangedData<T>::CompareRangeStarts);
-            if(data == mRangeDataArray[idx].begin()) return nullptr;
+            if(data == mRangeDataArray[dataIdx].begin()) return nullptr;
             else {
                 const RangedData<T>* before = &data[-1];
                 if(!before->CheckBounds(tick)) return nullptr; 
@@ -59,23 +85,28 @@ public:
             }
         }
     }
-    const RangedData<T>* RangeDataEnd(int idx, int tick){
-        if(idx >= mRangeDataArray.size()) return nullptr;
-        else if(mRangeDataArray[idx].empty()) return nullptr;
+    /** Get the first possible RangedData RD, such that RD's endTick <= the supplied tick.
+     * @param [in] dataIdx The index to add the RangedData to.
+     * @param [in] tick The supplied tick.
+     * @returns The RangedData with the above conditions.
+     */
+    const RangedData<T>* RangeDataEnd(int dataIdx, int tick){
+        if(dataIdx >= mRangeDataArray.size()) return nullptr;
+        else if(mRangeDataArray[dataIdx].empty()) return nullptr;
         else {
-            const std::vector<RangedData<T> >& vec = mRangeDataArray[idx];
+            const std::vector<RangedData<T> >& vec = mRangeDataArray[dataIdx];
             const RangedData<T>* data = std::upper_bound(vec.begin(), vec.end(), tick, RangedData<T>::CompareRangeEnds);
-            if(data == mRangeDataArray[idx].end()) return nullptr;
+            if(data == mRangeDataArray[dataIdx].end()) return nullptr;
             else return data;
         }
     }
-    bool GetNext(int idx, int tick, T& data, int& i1, int& i2){
-        const RangedData<T>* rangedData = RangeDataEnd(idx, tick);
+    bool GetNext(int dataIdx, int tick, T& data, int& startTick, int& endTick){
+        const RangedData<T>* rangedData = RangeDataEnd(dataIdx, tick);
         if(rangedData == nullptr) return false;
         else {
             data = rangedData->mData;
-            i1 = rangedData->mStartTick;
-            i2 = rangedData->mEndTick;
+            startTick = rangedData->mStartTick;
+            endTick = rangedData->mEndTick;
             return true;
         }
     }
@@ -90,6 +121,7 @@ public:
         }
     }
 
+    /** An array of RangedData, laid out as a vector of vectors. */
     std::vector<std::vector<RangedData<T> > > mRangeDataArray;
 };
 
