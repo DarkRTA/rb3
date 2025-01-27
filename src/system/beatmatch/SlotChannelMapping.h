@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_SLOTCHANNELMAPPING_H
-#define BEATMATCH_SLOTCHANNELMAPPING_H
+#pragma once
 #include <vector>
 #include <list>
 #include "beatmatch/Submix.h"
@@ -23,7 +22,7 @@ public:
     virtual int GetNumSlots() const { return 1; }
     virtual int ChannelBitfield(int) const { return 1 << mChannel; }
 
-    int mChannel;
+    int mChannel; // 0x4
 };
 
 class MassChannelMapping : public SlotChannelMapping {
@@ -35,7 +34,7 @@ public:
     virtual int GetNumSlots() const { return 1; }
     virtual int ChannelBitfield(int) const;
 
-    std::list<int> mChannels; // list type could be wrong
+    std::list<int> mChannels; // 0x4
 };
 
 class MultiChannelMapping : public SlotChannelMapping {
@@ -47,9 +46,7 @@ public:
     virtual int GetNumSlots() const { return mChannelsPerSlot.size(); }
     virtual int ChannelBitfield(int slot) const;
 
-    std::vector<int> mChannelsPerSlot; // vector type could be wrong
+    std::vector<std::list<int> > mChannelsPerSlot; // 0x4
 };
 
 SlotChannelMapping* NewSlotChannelMapping(SubmixCollection*, const std::vector<int>&, bool);
-
-#endif

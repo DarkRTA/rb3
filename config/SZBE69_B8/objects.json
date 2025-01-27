@@ -914,7 +914,10 @@
             "system/beatmatch/RGGemMatcher.cpp": "NonMatching",
             "system/beatmatch/RGState.cpp": "Matching",
             "system/beatmatch/RGUtl.cpp": "NonMatching",
-            "system/beatmatch/SlotChannelMapping.cpp": "NonMatching",
+            "system/beatmatch/SlotChannelMapping.cpp": {
+                "status": "LinkIssues",
+                "comment": "The ordering of stlport funcs versus weak SlotChannelMapping funcs"
+            },
             "system/beatmatch/SongData.cpp": "NonMatching",
             "system/beatmatch/SongParser.cpp": "NonMatching",
             "system/beatmatch/Submix.cpp": "Matching",
