@@ -35,6 +35,7 @@ public:
     };
 
     void Clear(){ mRangeDataArray.clear(); }
+
     /** Add a new RangedData to a particular index's collection.
      *  @param [in] dataIdx The index to add the RangedData to.
      *  @param [in] startTick The starting tick of the RangedData.
@@ -49,11 +50,11 @@ public:
         mRangeDataArray[dataIdx].push_back(RangedData<T> (startTick, endTick, item));
     }
     
-    bool DataStartsAt(int idx, int start, int& end){
-        const RangedData<T>* data = FindRangeAtTick(idx, start);
+    bool DataStartsAt(int dataIdx, int startTick, int& endTick){
+        const RangedData<T>* data = FindRangeAtTick(dataIdx, startTick);
         if(!data) return false;
-        else if(data->mStartTick == start){
-            end = data->mEndTick;
+        else if(data->mStartTick == startTick){
+            endTick = data->mEndTick;
             return true;
         }
         else return false;
@@ -63,6 +64,28 @@ public:
         const RangedData<T>* data = FindRangeAtTick(idx, tick);
         if(data == nullptr) return T();
         else return data->mData;
+    }
+
+    bool GetDataAtTick(int i1, int i2, T& item){
+        const RangedData<T>* data = FindRangeAtTick(i1, i2);
+        if(data == nullptr){
+            return false;
+        }
+        else {
+            item = data->mData;
+            return true;
+        }
+    }
+
+    bool GetNextDataWithRange(int dataIdx, int tick, T& data, int& startTick, int& endTick){
+        const RangedData<T>* rangedData = FindRangeAtOrAfterTick(dataIdx, tick);
+        if(rangedData == nullptr) return false;
+        else {
+            data = rangedData->mData;
+            startTick = rangedData->mStartTick;
+            endTick = rangedData->mEndTick;
+            return true;
+        }
     }
 
     /** Get the last possible RangedData RD, such that RD's startTick <= the supplied tick.
@@ -98,28 +121,6 @@ public:
             const RangedData<T>* data = std::upper_bound(vec.begin(), vec.end(), tick, RangedData<T>::CompareRangeEnds);
             if(data == mRangeDataArray[dataIdx].end()) return nullptr;
             else return data;
-        }
-    }
-
-    bool GetNextDataWithRange(int dataIdx, int tick, T& data, int& startTick, int& endTick){
-        const RangedData<T>* rangedData = FindRangeAtOrAfterTick(dataIdx, tick);
-        if(rangedData == nullptr) return false;
-        else {
-            data = rangedData->mData;
-            startTick = rangedData->mStartTick;
-            endTick = rangedData->mEndTick;
-            return true;
-        }
-    }
-
-    bool GetDataAtTick(int i1, int i2, T& item){
-        const RangedData<T>* data = FindRangeAtTick(i1, i2);
-        if(data == nullptr){
-            return false;
-        }
-        else {
-            item = data->mData;
-            return true;
         }
     }
 
