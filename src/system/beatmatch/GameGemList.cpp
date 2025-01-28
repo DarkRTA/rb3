@@ -10,8 +10,9 @@ void GameGemList::Clear(){
 }
 
 void GameGemList::CopyFrom(const GameGemList* gList){
-    mHopoThreshold = gList->mHopoThreshold;
     mGems.clear();
+    // resize to gList->mGem's size
+    // mGems.insert(mGems.begin(), gList->mGems.begin(), gList->mGems.end())
 }
 
 bool GameGemList::AddMultiGem(const MultiGemInfo& info){
