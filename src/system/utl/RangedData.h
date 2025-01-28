@@ -24,7 +24,7 @@ public:
             return tick < data.mEndTick;
         }
         /** Check if a supplied tick is within the tick bounds of this RangedData. */
-        bool CheckBounds(int tick) const {
+        bool ContainsTick(int tick) const {
             if(tick >= mStartTick && tick < mEndTick) return true;
             else return false;
         }
@@ -48,12 +48,9 @@ public:
         }
         mRangeDataArray[dataIdx].push_back(RangedData<T> (startTick, endTick, item));
     }
-    //
-    // TODO: these are all placeholder method names.
-    // RBVR and RB4 appear to have RangedData symbols - reference these to get the actual names.
-    //
-    bool StartsAt(int idx, int start, int& end){
-        const RangedData<T>* data = GetRangeData(idx, start);
+    
+    bool DataStartsAt(int idx, int start, int& end){
+        const RangedData<T>* data = FindRangeAtTick(idx, start);
         if(!data) return false;
         else if(data->mStartTick == start){
             end = data->mEndTick;
@@ -61,17 +58,19 @@ public:
         }
         else return false;
     }
-    T GetData(int idx, int tick){
-        const RangedData<T>* data = GetRangeData(idx, tick);
+
+    T GetDataAtTick(int idx, int tick){
+        const RangedData<T>* data = FindRangeAtTick(idx, tick);
         if(data == nullptr) return T();
         else return data->mData;
     }
+
     /** Get the last possible RangedData RD, such that RD's startTick <= the supplied tick.
      * @param [in] dataIdx The index to add the RangedData to.
      * @param [in] tick The supplied tick.
      * @returns The RangedData with the above conditions.
      */
-    const RangedData<T>* GetRangeData(int dataIdx, int tick){ // RangedDataLessEqStart?
+    const RangedData<T>* FindRangeAtTick(int dataIdx, int tick){
         if(dataIdx >= mRangeDataArray.size()) return nullptr;
         else if(mRangeDataArray[dataIdx].empty()) return nullptr;
         else {
@@ -80,17 +79,18 @@ public:
             if(data == mRangeDataArray[dataIdx].begin()) return nullptr;
             else {
                 const RangedData<T>* before = &data[-1];
-                if(!before->CheckBounds(tick)) return nullptr; 
+                if(!before->ContainsTick(tick)) return nullptr; 
                 else return &data[-1];
             }
         }
     }
+
     /** Get the first possible RangedData RD, such that RD's endTick <= the supplied tick.
      * @param [in] dataIdx The index to add the RangedData to.
      * @param [in] tick The supplied tick.
      * @returns The RangedData with the above conditions.
      */
-    const RangedData<T>* RangeDataEnd(int dataIdx, int tick){
+    const RangedData<T>* FindRangeAtOrAfterTick(int dataIdx, int tick){
         if(dataIdx >= mRangeDataArray.size()) return nullptr;
         else if(mRangeDataArray[dataIdx].empty()) return nullptr;
         else {
@@ -100,8 +100,9 @@ public:
             else return data;
         }
     }
-    bool GetNext(int dataIdx, int tick, T& data, int& startTick, int& endTick){
-        const RangedData<T>* rangedData = RangeDataEnd(dataIdx, tick);
+
+    bool GetNextDataWithRange(int dataIdx, int tick, T& data, int& startTick, int& endTick){
+        const RangedData<T>* rangedData = FindRangeAtOrAfterTick(dataIdx, tick);
         if(rangedData == nullptr) return false;
         else {
             data = rangedData->mData;
@@ -110,8 +111,9 @@ public:
             return true;
         }
     }
-    bool AtTick(int i1, int i2, T& item){
-        const RangedData<T>* data = GetRangeData(i1, i2);
+
+    bool GetDataAtTick(int i1, int i2, T& item){
+        const RangedData<T>* data = FindRangeAtTick(i1, i2);
         if(data == nullptr){
             return false;
         }
