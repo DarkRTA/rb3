@@ -25,7 +25,7 @@ Playback::~Playback(){
 void Playback::Poll(float f){
     if(mCommands){
         int cmdSize = mCommands->Size();
-        if(mCommandIndex < mCommands->Size()){
+        if(mCommandIndex < cmdSize){
             DataArray* arr = mCommands->Array(mCommandIndex);
             float floc = 0.0f;
             if(1 < arr->Size()){
@@ -114,7 +114,7 @@ void Playback::Jump(float f){
                 DataNode& node = arr->Node(1);
                 if(node.Type() == kDataFloat){
                     if(node.Float() > f){
-                        mCommandIndex = (mCommandIndex - 1) > 0 ? (mCommandIndex - 1) : 0;
+                        mCommandIndex = Max(0, mCommandIndex - 1);
                         return;
                     }
                 }

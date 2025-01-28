@@ -63,7 +63,7 @@ public:
 
     // used in RemoveKey
     /** Remove the key at the given index.
-     * @param [in] The index in the vector to remove.
+     * @param [in] idx The index in the vector to remove.
      */
     void Remove(int idx){
         erase(begin() + idx);

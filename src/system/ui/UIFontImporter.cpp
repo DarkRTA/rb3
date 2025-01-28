@@ -173,28 +173,28 @@ RndFont* UIFontImporter::GetGennedFont(unsigned int ui) const {
 
 RndText* UIFontImporter::FindTextForFont(RndFont* font) const {
     if(font){
-        FOREACH_OBJREF(font,
+        FOREACH_OBJREF(font){
             Hmx::Object* owner = (*it)->RefOwner();
             if(owner){
                 if(owner->ClassName() == Text){
                     return dynamic_cast<RndText*>(owner);
                 }
             }
-        )
+        }
     }
     return nullptr;
 }
 
 RndFont* UIFontImporter::FindFontForMat(RndMat* mat) const {
     if(mat){
-        FOREACH_OBJREF(mat,
+        FOREACH_OBJREF(mat){
             Hmx::Object* owner = (*it)->RefOwner();
             if(owner){
                 if(owner->ClassName() == Font){
                     return dynamic_cast<RndFont*>(owner);
                 }
             }
-        )
+        }
     }
     return nullptr;
 }

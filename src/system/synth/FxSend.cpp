@@ -51,7 +51,7 @@ void FxSend::RebuildChain(){
 
 void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
     vec.push_back(this);
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         ObjRef* ref = *it;
         FxSend* rsend = dynamic_cast<FxSend*>(ref->RefOwner());
         if(rsend && rsend->NextSend() == this) {
@@ -61,7 +61,7 @@ void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
             Sfx* seq = dynamic_cast<Sfx*>(ref->RefOwner());
             if(seq) seq->Stop(false);
         }
-    )
+    }
 }
 
 bool FxSend::CheckChain(FxSend* send, int i){
@@ -76,13 +76,13 @@ bool FxSend::CheckChain(FxSend* send, int i){
         return false;
     }
     else {
-        FOREACH_OBJREF(this,
+        FOREACH_OBJREF(this){
             FxSend* rsend = dynamic_cast<FxSend*>((*it)->RefOwner());
             if(rsend && rsend->NextSend() == this && rsend->Stage() >= i){
                 MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", rsend->Name());
                 return false;
             }
-        )
+        }
         return true;
     }
 }

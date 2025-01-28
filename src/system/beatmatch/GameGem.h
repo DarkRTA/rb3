@@ -58,6 +58,7 @@ public:
     bool IgnoreDuration() const { return mIgnoreDuration; }
     unsigned int GetSlots() const { return mSlots; }
     bool GetForceStrum() const { return mForceStrum; }
+    int GetDurationTicks() const { return mDurationTicks; }
     
     bool CompareTimes(const GameGem& g1, const GameGem& g2){
         return g1.mMs < g2.mMs;

@@ -44,7 +44,7 @@ bool SongDB::IsInCoda(int i) const {
     return mCodaStartTick != -1 && i >= mCodaStartTick;
 }
 
-int SongDB::GetNumTracks() const { return mSongData->unk10; }
+int SongDB::GetNumTracks() const { return mSongData->mNumTracks; }
 int SongDB::GetNumTrackData() const { return mTrackData.size(); }
 
 int SongDB::GetBaseMaxPoints(const UserGuid& u) const {

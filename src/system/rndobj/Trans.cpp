@@ -43,12 +43,12 @@ RndTransformable::~RndTransformable() {
 }
 
 void RndTransformable::TransformTransAnims(const Transform& tf){
-    FOREACH_OBJREF(this,
+    FOREACH_OBJREF(this){
         RndTransAnim* trans = dynamic_cast<RndTransAnim*>((*it)->RefOwner());
         if(trans && trans->Trans() == this){
             TransformKeys(trans,tf);
         }
-    )
+    }
 }
 
 void RndTransformable::SetTransParent(RndTransformable* newParent, bool b){

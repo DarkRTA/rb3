@@ -96,8 +96,17 @@ public:
     void NotesDone(const TempoMap&, bool);
     void AddTambourineGem(int);
     void SetFreestyleSections(const std::vector<std::pair<float, float> >&);
+    void GenerateLegalFreestyleSections(std::vector<std::pair<float, float> >&) const;
+    void RemoveInvalidFreestyleSections();
+    void UpdatePitchRangeTickDelimited(int, int, float&, float&);
+    void AddLyricShift(float);
+    void StartPlayerPhrase(int, int);
+    void EndPlayerPhrase(int, int);
+    VocalNote* NextNote(float) const;
 
-    const char* PrintTick(int tick) const ;
+    const char* PrintTick(int tick) const;
+    Symbol GetTrackName() const { return mTrackName; }
+    void SetTrackName(Symbol name){ mTrackName = name; }
 
     std::vector<VocalPhrase> mPhrases; // 0x0
     std::vector<VocalPhrase> mLyricPhrases; // 0x8

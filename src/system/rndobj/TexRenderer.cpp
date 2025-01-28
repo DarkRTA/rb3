@@ -2,6 +2,7 @@
 #include "math/Color.h"
 #include "math/Mtx.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "revolution/gx/GXPixel.h"
@@ -106,15 +107,15 @@ void RndTexRenderer::DrawToTexture(){
                     RndMesh* mesh5 = nullptr;
                     if(mMirrorCam){
                         RndMat* mat4 = nullptr;
-                        FOREACH_OBJREF(mOutputTexture, 
+                        FOREACH_OBJREF(mOutputTexture){
                             mat4 = dynamic_cast<RndMat*>((*it)->RefOwner());
                             if(mat4) break;
-                        )
+                        }
                         if(mat4){
-                            FOREACH_OBJREF(mat4, 
+                            FOREACH_OBJREF(mat4){
                                 mesh5 = dynamic_cast<RndMesh*>((*it)->RefOwner());
                                 if(mesh5) break;
-                            )
+                            }
                         }
                         if(!mesh5){
                             MILO_NOTIFY_ONCE("%s could not find mesh to mirror about. Is %s not being mapped onto a mesh?",

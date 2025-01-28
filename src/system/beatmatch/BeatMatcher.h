@@ -54,6 +54,8 @@ public:
     void SetFillLogic(FillLogic);
     bool IsAutoplay();
     void SetAutoplay(bool);
+    void PostLoad();
+    void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
 
     int dummy;
 };

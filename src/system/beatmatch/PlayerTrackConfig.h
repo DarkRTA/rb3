@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_PLAYERTRACKCONFIG_H
-#define BEATMATCH_PLAYERTRACKCONFIG_H
+#pragma once
 #include "beatmatch/TrackType.h"
 #include "utl/HxGuid.h"
 #include "utl/SongInfoAudioType.h"
@@ -58,6 +57,7 @@ public:
     const UserGuid &TrackPlayer(int) const;
     bool UserPresent(const UserGuid &);
     void RemoveConfig(const UserGuid &);
+    int NumConfigs() const { return mConfigs.size(); }
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8
@@ -75,5 +75,3 @@ public:
     bool mNeedsProcessing; // 0x3c
     bool mProcessed; // 0x3d
 };
-
-#endif
