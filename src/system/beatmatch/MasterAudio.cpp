@@ -6,6 +6,7 @@
 #include "synth/Synth.h"
 #include "utl/SongInfoAudioType.h"
 #include "utl/SongInfoCopy.h"
+#include "utl/TimeConversion.h"
 #include "beatmatch/PlayerTrackConfig.h"
 #include "beatmatch/BeatMaster.h"
 
@@ -199,9 +200,7 @@ void MasterAudio::SetupTracks(SongInfo* info, PlayerTrackConfigList* pList){
                 // (func)(curChannels[j], info);
             }
             if(extraInfo.unka){
-                AudioTrackNum num;
-                num.mVal = i;
-                SetNonmutable(num);
+                SetNonmutable(AudioTrackNum(i));
             }
         }
     }
@@ -367,7 +366,7 @@ void MasterAudio::Poll(){
             (*it)->Poll();
         }
         float time = GetTime();
-        for(AudioTrackNum num(0); num.mVal < NumTrackDatas(); ++num){
+        for(AudioTrackNum num(0); num.Val() < NumPlayTracks(); ++num){
             if(mTrackData[num]->InButtonMashingMode() && (time > mTrackData[num]->LastMashTime() + 500.0f)){
                 SetTrackMuteFader(num, -1, -96.0f, 500.0f);
             }
@@ -380,7 +379,7 @@ void MasterAudio::Jump(float f) {
     mStreamEnabled = false;
     mSongStream->Resync(f);
     UnmuteAllTracks();
-    for(AudioTrackNum num(0); num.mVal < NumTrackDatas(); ++num){
+    for(AudioTrackNum num(0); num.Val() < NumPlayTracks(); ++num){
         mTrackData[num]->Reset();
         ResetSlipTrack(num, true);
     }
@@ -427,8 +426,61 @@ void MasterAudio::SetStereo(bool b) {
     }
 }
 
+void MasterAudio::SetSpeed(int idx, const UserGuid& u, float f){
+    SetSpeed(TrackNumAt(idx), u, f);
+}
+
+void MasterAudio::SetSpeed(AudioTrackNum num, const UserGuid& u, float f){
+    if(mStreamEnabled && mWhammyEnabled){
+        if(mTrackData[num]->mUserGuid == u){
+            std::list<int> chans;
+            mTrackData[num]->FillChannelList(chans);
+            for(std::list<int>::iterator it = chans.begin(); it != chans.end(); ++it){
+                mChannelData[*it]->SetSlipTrackSpeed(f);
+            }
+        }
+    }
+}
+
+void MasterAudio::SetVocalDuckFader(float val){
+    mVocalDuckFader->DoFade(val * mVocalMuteVolume, 250.0f);
+}
+
+void MasterAudio::SetVocalCueFader(float val){
+    mVocalCueFader->DoFade(val, 0);
+}
+
 void MasterAudio::SetVocalFailFader(float fader) {
-    mVocalFailFader->DoFade(fader, 0.0f);
+    mVocalFailFader->DoFade(fader, 0);
+}
+
+void MasterAudio::SetCrowdFader(float fader){
+    mCrowdFader->DoFade(fader, 4000.0f);
+}
+
+void MasterAudio::SetBaseCrowdFader(float fader){
+    mBaseCrowdFader->DoFade(fader, 0);
+}
+
+void MasterAudio::ResetSlipTrack(int i, bool b){
+    ResetSlipTrack(TrackNumAt(i), b);
+}
+
+void MasterAudio::ResetSlipTrack(AudioTrackNum num, bool b){
+    if(IsStreamPlaying()){
+        std::list<int> chans;
+        mTrackData[num]->FillChannelList(chans);
+        for(std::list<int>::iterator it = chans.begin(); it != chans.end(); ++it){
+            mChannelData[*it]->Reset(b);
+        }
+    }
+}
+
+void MasterAudio::SetFX(int channel, FXCore core, bool enabled) {
+    if (!mTrackData.mTrackData.empty()) {
+        SetFX(TrackNumAt(channel), core, enabled);
+    }
+    return;
 }
 
 void MasterAudio::SetFX(AudioTrackNum trackNum, FXCore core, bool enabled) {
@@ -437,18 +489,10 @@ void MasterAudio::SetFX(AudioTrackNum trackNum, FXCore core, bool enabled) {
     }
 
     std::list<int> iList;
-    mTrackData.mTrackData[trackNum.mVal]->FillChannelList(iList, -1);
-    for (std::list<int>::iterator it = iList.begin(); it != iList.end(); it++) {
+    mTrackData[trackNum]->FillChannelList(iList, -1);
+    for (std::list<int>::iterator it = iList.begin(); it != iList.end(); ++it) {
         mChannelData[*it]->SetFX(core, enabled);
     }
-}
-
-void MasterAudio::SetFX(int channel, FXCore core, bool enabled) {
-    if (mTrackData.mTrackData.size() != 0) {
-        AudioTrackNum trackNum = mSongData->GetAudioTrackNum(channel);
-        SetFX(trackNum, core, enabled);
-    }
-    return;
 }
 
 float MasterAudio::GetTime() const {
@@ -465,12 +509,164 @@ void MasterAudio::SetTimeOffset(float offset) {
     mTimeOffset = offset;
 }
 
+void MasterAudio::SetPaused(bool paused){
+    if(mSongStream){
+        if(paused) mSongStream->Stop();
+        else if(!mSongStream->IsPlaying()){
+            mSongStream->Play();
+        }
+        if(!paused){
+            for(int i = 0; i < mChannelData.size(); i++){
+                mChannelData[i]->ForceOn();
+            }
+        }
+    }
+}
+
+bool MasterAudio::Paused() const {
+    return !mSongStream->IsPlaying();
+}
+
 void MasterAudio::SetPracticeMode(bool enabled) {
     mPracticeFader->SetVal(enabled ? mPracticeVolume : 0.0f);
 }
 
 void MasterAudio::SetMuckWithPitch(bool enabled) {
     mMuckWithPitch = enabled;
+}
+
+void MasterAudio::SetRemoteTrack(int track){
+    mRemoteFader->SetVal(mRemoteVolume);
+    SetTrackFader(TrackNumAt(track), -1, "remote", mRemoteVolume, 0);
+}
+
+void MasterAudio::SetTrackFader(AudioTrackNum track, int i, Symbol s, float f1, float f2){
+    MILO_ASSERT_RANGE(track.Val(), 0, NumPlayTracks(), 0x457);
+    std::list<int> chans;
+    mTrackData[track]->FillChannelList(chans, i);
+    chans.size();
+    if(i != -1 && s == mute){
+        mTrackData[track]->FillChannelListWithInactiveSlots(chans, GetTime(), f1 == 0);
+    }
+    for(std::list<int>::iterator it = chans.begin(); it != chans.end(); ++it){
+        int cur = *it;
+        Fader* fader = mSongStream->ChannelFaders(cur)->FindLocal(s, true);
+        if(f2 > 0) fader->DoFade(f1, f2);
+        else fader->SetVal(f1);
+    }
+}
+
+void MasterAudio::SetTrackMuteFader(AudioTrackNum num, int i, float f1, float f2){
+    TrackData* data = mTrackData[num];
+    SetTrackFader(num, i, "mute", f1, f2);
+    data->unk48 = f1;
+}
+
+void MasterAudio::Hit(int i1, float f2, int i3, unsigned int ui, GemHitFlags flags){
+    int slot = GemSlot(i1, i3);
+    AudioTrackNum track = TrackNumAt(i1);
+    mTrackData[track]->Hit(i3, slot, f2);
+    UnmuteTrack(track, slot);
+}
+
+void MasterAudio::ReleaseGem(int i1, float f2, int i3, float f4){
+    AudioTrackNum num = TrackNumAt(i1);
+    GameGem& gem = mSongData->GetGemList(i1)->GetGem(i3);
+    bool b2 = false;
+    if(i3 == mTrackData[num]->LastPlayedGem() && !gem.IgnoreDuration()){
+        if(f4 > 0) b2 = true;
+    }
+    if(b2){
+        int slot = gem.GetSlot();
+        MuteTrack(num, slot, (DontPlayReason)1, 50.0f);
+        mTrackData[num]->Miss(slot, f2);
+        DontPlay(num, slot, (DontPlayReason)0);
+    }
+}
+
+void MasterAudio::Miss(int i1, int i2, float f1, int i3, int i4, GemHitFlags flags){
+    if(i3 == 0){
+        int tick = MsToTickInt(f1);
+        if(tick <= mSongData->GetGemList(i1)->GetGem(i3).GetTick() - 240) return;
+    }
+    AudioTrackNum num = TrackNumAt(i1);
+    int slot = GemSlot(i1, i3);
+    mTrackData[num]->Miss(slot, f1);
+    DontPlay(num, slot, (DontPlayReason)0);
+}
+
+void MasterAudio::Pass(int i1, float f2, int i3, bool b4){
+    AudioTrackNum num = TrackNumAt(i1);
+    if(b4 && !mTrackData[num]->AutoOn() && !mTrackData[num]->InButtonMashingMode() && !mTrackData[num]->InFill()){
+        int slot = GemSlot(i1, i3);
+        mTrackData[num]->Miss(slot, f2);
+        DontPlay(num, slot, (DontPlayReason)1);
+    }
+}
+
+void MasterAudio::Ignore(int i1, float f2, int i3, const UserGuid& u){
+    AudioTrackNum num = TrackNumAt(i1);
+    if(mTrackData[num]->mUserGuid == u){
+        Pass(i1, f2, i3, true);
+    }
+}
+
+void MasterAudio::ImplicitGem(int, float, int, const UserGuid&){}
+
+void MasterAudio::SeeGem(int i1, float f2, int i3){
+    AudioTrackNum num = TrackNumAt(i1);
+    if(!mTrackData[num]->InButtonMashingMode()){
+        int slot = GemSlot(i1, i3);
+        if(GetSucceeding(num, slot)){
+            UnmuteTrack(num, slot);
+        }
+        else {
+            MuteTrack(num, slot, (DontPlayReason)1, 50.0f);
+        }
+    }
+}
+
+void MasterAudio::FillSwing(int idx, int, int, int, bool){
+    AudioTrackNum num = TrackNumAt(idx);
+    if(mTrackData[num]->InButtonMashingMode()){
+        mTrackData[num]->SetLastMashTime(GetTime());
+        SetTrackMuteFader(num, -1, 0, 10.0f);
+    }
+}
+
+void MasterAudio::SetTrack(const UserGuid& u, int i){
+    AudioTrackNum num = TrackNumAt(i);
+    mTrackData[num]->SetUserGuid(u);
+}
+
+void MasterAudio::SetAutoOn(int i1, int i2){
+    SetAutoOn(TrackNumAt(i1), i2);
+}
+
+void MasterAudio::SetAutoOn(AudioTrackNum num, int on){
+    mTrackData[num]->SetAutoOn(on);
+    if(on) UnmuteTrack(num, -1);
+}
+
+void MasterAudio::DontPlay(AudioTrackNum num, int i, DontPlayReason reason){
+    MuteTrack(num, i, reason, 50.0f);
+}
+
+void MasterAudio::SetNonmutable(int iii){
+    SetNonmutable(TrackNumAt(iii));
+}
+
+void MasterAudio::SetNonmutable(AudioTrackNum num){
+    mTrackData[num]->SetNonmutable(true);
+    UnmuteTrack(num, -1);
+}
+
+void MasterAudio::MuteTrack(int i){
+    MuteTrack(TrackNumAt(i), -1, (DontPlayReason)1, 50.0f);
+}
+
+void MasterAudio::MuteTrack(AudioTrackNum, int, DontPlayReason, float){
+
 }
 
 void MasterAudio::UnmuteTrack(AudioTrackNum trackNum, int i) {

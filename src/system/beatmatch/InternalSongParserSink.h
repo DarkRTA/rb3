@@ -13,6 +13,7 @@ struct AudioTrackNum {
     AudioTrackNum operator++(){
         return AudioTrackNum(++mVal);
     }
+    int Val() const { return mVal; }
     int mVal;
 };
 
