@@ -250,46 +250,46 @@ void SongData::PostLoad(PlayerTrackConfigList* pList){
     mLoaded = true;
 }
 
-void SongData::PostLoadTrack(int idx){
-    TrackInfo* trackInfo = mTrackInfos[idx];
+void SongData::PostLoadTrack(int track){
+    TrackInfo* trackInfo = mTrackInfos[track];
     if(!trackInfo->FakeAudio()){
-        const PhraseList& phrases = mPhraseDBs[idx]->GetPhraseList(0, kCommonPhrase);
+        const PhraseList& phrases = mPhraseDBs[track]->GetPhraseList(0, kCommonPhrase);
         for(std::vector<Phrase>::const_iterator it = phrases.mPhrases.begin(); it != phrases.mPhrases.end(); ++it){
-            mPhraseAnalyzer->AddInfo(idx, trackInfo->mType, it->GetTick(), it->GetTick() + it->GetDurationTicks(), trackInfo->mAudioType == kAudioVocals);
+            mPhraseAnalyzer->AddInfo(track, trackInfo->mType, it->GetTick(), it->GetTick() + it->GetDurationTicks(), trackInfo->mAudioType == kAudioVocals);
         }
         for(std::vector<BeatMatcher*>::iterator it = mBeatMatchers.begin(); it != mBeatMatchers.end(); ++it){
-            (*it)->AddTrack(idx, trackInfo->mName, (SongInfoAudioType)trackInfo->mAudioType, trackInfo->mType, trackInfo->mIndependentSlots);
+            (*it)->AddTrack(track, trackInfo->mName, (SongInfoAudioType)trackInfo->mAudioType, trackInfo->mType, trackInfo->mIndependentSlots);
         }
         for(std::vector<SongParserSink*>::iterator it = mSongParserSinks.begin(); it != mSongParserSinks.end(); ++it){
-            (*it)->AddTrack(idx, trackInfo->mName, (SongInfoAudioType)trackInfo->mAudioType, trackInfo->mType, trackInfo->mIndependentSlots);
+            (*it)->AddTrack(track, trackInfo->mName, (SongInfoAudioType)trackInfo->mAudioType, trackInfo->mType, trackInfo->mIndependentSlots);
         }
         if(HasTrackDiffs()){
-            SendPhrases(idx);
-            SendGems(idx);
+            SendPhrases(track);
+            SendGems(track);
         }
     }
 }
 
-void SongData::SendPhrases(int idx){
-    int curTrackDiff = mTrackDifficulties[idx];
-    PhraseDB* curPhraseDB = mPhraseDBs[idx];
+void SongData::SendPhrases(int track){
+    int curTrackDiff = mTrackDifficulties[track];
+    PhraseDB* curPhraseDB = mPhraseDBs[track];
     for(int i = 0; i < kNumPhraseTypes; i++){
         const PhraseList& phrases = curPhraseDB->GetPhraseList(curTrackDiff, (BeatmatchPhraseType)i);
         for(std::vector<Phrase>::const_iterator it = phrases.mPhrases.begin(); it != phrases.mPhrases.end(); ++it){
             for(std::vector<SongParserSink*>::iterator sit = mSongParserSinks.begin(); sit != mSongParserSinks.end(); ++sit){
-                (*sit)->AddPhrase((BeatmatchPhraseType)i, idx, *it);
+                (*sit)->AddPhrase((BeatmatchPhraseType)i, track, *it);
             }
         }
     }
 }
 
-void SongData::SendGems(int idx){
-    int curTrackDiff = mTrackDifficulties[idx];
+void SongData::SendGems(int track){
+    int curTrackDiff = mTrackDifficulties[track];
     const GameGemDB* curDB = mGemDBs[curTrackDiff];
-    const std::vector<GameGem>& gems = curDB->GetDiffGemList(idx)->mGems;
+    const std::vector<GameGem>& gems = curDB->GetDiffGemList(track)->mGems;
     for(std::vector<GameGem>::const_iterator it = gems.begin(); it != gems.end(); ++it){
         for(std::vector<SongParserSink*>::iterator sit = mSongParserSinks.begin(); sit != mSongParserSinks.end(); ++sit){
-            (*sit)->AddMultiGem(idx, *it);
+            (*sit)->AddMultiGem(track, *it);
         }
     }
 }
@@ -385,11 +385,11 @@ void SongData::ComputeVocalRangeData(){
     }
 }
 
-void SongData::UnflipGems(int i1, int i2, int i3){
-    std::vector<GameGem>& backup_gems = mBackupTracks[i2]->mGems->GetDiffGemList(i3)->mGems;
-    TickedInfoCollection<String>& backup_mixes = mBackupTracks[i2]->mMixes->GetMixList(i3);
-    std::vector<GameGem>& gems = mGemDBs[i1]->GetDiffGemList(i3)->mGems;
-    TickedInfoCollection<String>& mixes = mDrumMixDBs[i1]->GetMixList(i3);
+void SongData::UnflipGems(int i1, int i2, int diff){
+    std::vector<GameGem>& backup_gems = mBackupTracks[i2]->mGems->GetDiffGemList(diff)->mGems;
+    TickedInfoCollection<String>& backup_mixes = mBackupTracks[i2]->mMixes->GetMixList(diff);
+    std::vector<GameGem>& gems = mGemDBs[i1]->GetDiffGemList(diff)->mGems;
+    TickedInfoCollection<String>& mixes = mDrumMixDBs[i1]->GetMixList(diff);
     MILO_ASSERT(backup_gems.size() == gems.size(), 0x2CE);
     MILO_ASSERT(backup_mixes.Size() == mixes.Size(), 0x2CF);
     DataArray* cfg = SystemConfig("beatmatcher", "audio");
@@ -423,18 +423,18 @@ void SongData::UnflipGems(int i1, int i2, int i3){
     }
 }
 
-void SongData::RestoreGems(int i1, int i2, int i3){
-    GameGemList* backup_gems = mBackupTracks[i2]->mGems->GetDiffGemList(i3);
-    GameGemList* gems = mGemDBs[i2]->GetDiffGemList(i3);
+void SongData::RestoreGems(int i1, int i2, int diff){
+    GameGemList* backup_gems = mBackupTracks[i2]->mGems->GetDiffGemList(diff);
+    GameGemList* gems = mGemDBs[i2]->GetDiffGemList(diff);
     // gems->mGems = backup_gems->mGems;
     if(mBackupTracks[i2]->mMixes){
-        TickedInfoCollection<String>& backup_mixes = mBackupTracks[i2]->mMixes->GetMixList(i3);
-        TickedInfoCollection<String>& mixes = mDrumMixDBs[i2]->GetMixList(i3);
+        TickedInfoCollection<String>& backup_mixes = mBackupTracks[i2]->mMixes->GetMixList(diff);
+        TickedInfoCollection<String>& mixes = mDrumMixDBs[i2]->GetMixList(diff);
         mixes = backup_mixes;
     }
 }
 
-void SongData::TrimOverlappingGems(int, int, int){
+void SongData::TrimOverlappingGems(int, int, int diff){
     MILO_WARN("Empty track found for SongData::TrimOverlappingGems!");
     MILO_WARN("shortestDurationTick >= 0");
     MILO_WARN("shortestDurationMs >= 0.0f");
@@ -559,17 +559,17 @@ void SongData::AddTrack(int, AudioTrackNum a, Symbol s, SongInfoAudioType songTy
 
 #pragma push
 #pragma dont_inline on
-void SongData::ClearTrack(int idx){
-    mGemDBs[idx]->Clear();
-    mFills[idx]->Clear();
-    mDrumMaps[idx]->Clear();
-    mRollInfos[idx]->Clear();
-    mTrillInfos[idx]->Clear();
-    mRGRollInfos[idx]->Clear();
-    mRGTrillInfos[idx]->Clear();
-    mDrumMixDBs[idx]->Clear();
-    mPhraseDBs[idx]->Clear();
-    if(mTrackInfos[idx]->mType == kTrackVocals){
+void SongData::ClearTrack(int track){
+    mGemDBs[track]->Clear();
+    mFills[track]->Clear();
+    mDrumMaps[track]->Clear();
+    mRollInfos[track]->Clear();
+    mTrillInfos[track]->Clear();
+    mRGRollInfos[track]->Clear();
+    mRGTrillInfos[track]->Clear();
+    mDrumMixDBs[track]->Clear();
+    mPhraseDBs[track]->Clear();
+    if(mTrackInfos[track]->mType == kTrackVocals){
         if(mVocalNoteLists.size() != 1){
             MILO_FAIL("MIDI merge can't overwrite harmony parts");
         }
@@ -646,16 +646,16 @@ void SongData::AddRoll(int rollIdx, int dataIdx, unsigned int roll, int startTic
     if(rollIdx < 100) mRollInfos[rollIdx]->AddData(dataIdx, startTick, endTick, roll);
 }
 
-void SongData::AddTrill(int i1, int i2, int t1, int t2, int startTick, int endTick){
-    if(i1 < 100) mTrillInfos[i1]->AddData(i2, startTick, endTick, std::make_pair(t1, t2));
+void SongData::AddTrill(int track, int dataIdx, int t1, int t2, int startTick, int endTick){
+    if(track < 100) mTrillInfos[track]->AddData(dataIdx, startTick, endTick, std::make_pair(t1, t2));
 }
 
-void SongData::AddRGRoll(int i1, int i2, const RGRollChord& chord, int startTick, int endTick){
-    mRGRollInfos[i1]->AddData(i2, startTick, endTick, chord);
+void SongData::AddRGRoll(int track, int dataIdx, const RGRollChord& chord, int startTick, int endTick){
+    mRGRollInfos[track]->AddData(dataIdx, startTick, endTick, chord);
 }
 
-void SongData::AddRGTrill(int i1, int i2, const RGTrill& trill, int startTick, int endTick){
-    mRGTrillInfos[i1]->AddData(i2, startTick, endTick, trill);
+void SongData::AddRGTrill(int track, int dataIdx, const RGTrill& trill, int startTick, int endTick){
+    mRGTrillInfos[track]->AddData(dataIdx, startTick, endTick, trill);
 }
 
 void SongData::AddMix(int track, int tick, int diff, const char* mixName){
@@ -669,9 +669,9 @@ void SongData::AddMix(int track, int tick, int diff, const char* mixName){
     }
 }
 
-void SongData::AddLyricEvent(int i1, int i2, const char* lyricEvent){
-    if(mTrackInfos[i1]->mLyrics->AddInfo(i2, lyricEvent)) return;
-    else MILO_WARN("%s (%s): Error adding lyric event '%s' at %s", SongFullPath(), mTrackInfos[i1]->mName, lyricEvent, TickFormat(i2, *mMeasureMap));
+void SongData::AddLyricEvent(int track, int tick, const char* lyricEvent){
+    if(mTrackInfos[track]->mLyrics->AddInfo(tick, lyricEvent)) return;
+    else MILO_WARN("%s (%s): Error adding lyric event '%s' at %s", SongFullPath(), mTrackInfos[track]->mName, lyricEvent, TickFormat(tick, *mMeasureMap));
 }
 
 void SongData::DrumMapLane(int track, int tick, int lane, bool laneOn){
@@ -722,10 +722,10 @@ void SongData::AddRGGem(int diff, const RGGemInfo& info){
 void SongData::SetFakeHitGemsInFill(bool b){ mFakeHitGemsInFill = b; }
 bool SongData::GetFakeHitGemsInFill() const { return mFakeHitGemsInFill; }
 
-unsigned int SongData::GetRollingSlotsAtTick(int i1, int i2) const {
+unsigned int SongData::GetRollingSlotsAtTick(int i1, int tick) const {
     RangedDataCollection<unsigned int>* pRollInfo = mRollInfos[i1];
     MILO_ASSERT(pRollInfo, 0x5B4);
-    return pRollInfo->GetDataAtTick(mTrackDifficulties[i1], i2);
+    return pRollInfo->GetDataAtTick(mTrackDifficulties[i1], tick);
 }
 
 bool SongData::RollStartsAt(int idx, int startTick, int& endTick) const {
@@ -734,11 +734,11 @@ bool SongData::RollStartsAt(int idx, int startTick, int& endTick) const {
     return pRollInfo->DataStartsAt(mTrackDifficulties[idx], startTick, endTick);
 }
 
-bool SongData::GetNextRoll(int idx, int i2, unsigned int& roll, int& iref) const {
+bool SongData::GetNextRoll(int idx, int tick, unsigned int& roll, int& endTick) const {
     RangedDataCollection<unsigned int>* pRollInfo = mRollInfos[idx];
     MILO_ASSERT(pRollInfo, 0x5D0);
-    int iref_loc;
-    return pRollInfo->GetNextDataWithRange(mTrackDifficulties[idx], i2, roll, iref_loc, iref);
+    int start;
+    return pRollInfo->GetNextDataWithRange(mTrackDifficulties[idx], tick, roll, start, endTick);
 }
 
 bool SongData::TrillStartsAt(int idx, int startTick, int& endTick){
@@ -753,10 +753,10 @@ RangedDataCollection<unsigned int>* SongData::GetRollInfo(int idx) const {
     return pRollInfo;
 }
 
-bool SongData::GetTrillSlotsAtTick(int idx, int i2, std::pair<int, int>& p) const {
+bool SongData::GetTrillSlotsAtTick(int idx, int tick, std::pair<int, int>& p) const {
     RangedDataCollection<std::pair<int, int> >* pTrillInfo = mTrillInfos[idx];
     MILO_ASSERT(pTrillInfo, 0x5E8);
-    return pTrillInfo->GetDataAtTick(mTrackDifficulties[idx], i2, p);
+    return pTrillInfo->GetDataAtTick(mTrackDifficulties[idx], tick, p);
 }
 
 RangedDataCollection<std::pair<int, int> >* SongData::GetTrillInfo(int idx) const {
@@ -771,11 +771,11 @@ bool SongData::RGRollStartsAt(int idx, int startTick, int& endTick) const {
     return pRollInfo->DataStartsAt(mTrackDifficulties[idx], startTick, endTick);
 }
 
-bool SongData::GetNextRGRoll(int idx, int i2, RGRollChord& cref, int& iref) const {
+bool SongData::GetNextRGRoll(int idx, int tick, RGRollChord& chord, int& endTick) const {
     RangedDataCollection<RGRollChord>* pRollInfo = mRGRollInfos[idx];
     MILO_ASSERT(pRollInfo, 0x61C);
-    int iref_loc;
-    return pRollInfo->GetNextDataWithRange(mTrackDifficulties[idx], i2, cref, iref_loc, iref);
+    int start;
+    return pRollInfo->GetNextDataWithRange(mTrackDifficulties[idx], tick, chord, start, endTick);
 }
 
 RGRollChord SongData::GetRGRollingSlotsAtTick(int i, int j) const {
@@ -919,23 +919,23 @@ AudioTrackNum SongData::GetAudioTrackNum(int track) const {
     return mTrackInfos[track]->mAudioTrackNum;
 }
 
-bool SongData::GetGem(int i2, int& i3, int& i4, int& i5){
-    if(mGems && mGems->NumGems() > i2){
-        GameGem& curGem = mGems->GetGem(i2);
-        i3 = curGem.GetTick();
-        i4 = i3 + curGem.GetDurationTicks();
-        i5 = curGem.GetSlots();
+bool SongData::GetGem(int gemId, int& startTick, int& endTick, int& slots){
+    if(mGems && mGems->NumGems() > gemId){
+        GameGem& curGem = mGems->GetGem(gemId);
+        startTick = curGem.GetTick();
+        endTick = startTick + curGem.GetDurationTicks();
+        slots = curGem.GetSlots();
         return true;
     }
     else return false;
 }
 
-void SongData::SetTrack(Symbol s){
-    int trk = TrackNamed(s);
+void SongData::SetTrack(Symbol name){
+    int trk = TrackNamed(name);
     mGems = nullptr;
     if(trk == -1){
         for(int i = 0; i < mFakeTracks.size(); i++){
-            if(mFakeTracks[i]->mName == s){
+            if(mFakeTracks[i]->mName == name){
                 mGems = mFakeTracks[i]->mGems->GetDiffGemList(0);
                 return;
             }
