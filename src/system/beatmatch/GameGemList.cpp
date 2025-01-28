@@ -11,7 +11,7 @@ void GameGemList::Clear(){
 
 void GameGemList::CopyFrom(const GameGemList* gList){
     mGems.clear();
-    // resize to gList->mGem's size
+    // mGems.reserve(gList->mGems.size()); // causes an error
     // mGems.insert(mGems.begin(), gList->mGems.begin(), gList->mGems.end())
 }
 

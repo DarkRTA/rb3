@@ -17,6 +17,7 @@ public:
         MILO_ASSERT(mSlot == slot, 0x34);
         MILO_ASSERT(mRemote == remote, 0x35);
     }
+    bool Remote() const { return mRemote; }
 
     UserGuid mUserGuid; // 0x0
     TrackType mTrackType; // 0x10
@@ -58,6 +59,9 @@ public:
     bool UserPresent(const UserGuid &);
     void RemoveConfig(const UserGuid &);
     int NumConfigs() const { return mConfigs.size(); }
+    bool IsUserRemote(const UserGuid& u) const {
+        return GetConfigByUserGuid(u).Remote();
+    }
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8

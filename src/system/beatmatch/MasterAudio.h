@@ -1,5 +1,5 @@
-#ifndef BEATMATCH_MASTERAUDIO_H
-#define BEATMATCH_MASTERAUDIO_H
+#pragma once
+#include "beatmatch/InternalSongParserSink.h"
 #include "obj/Data.h"
 #include "beatmatch/SongData.h"
 #include "beatmatch/BeatMasterSink.h"
@@ -29,6 +29,8 @@ public:
     void SetStereo(bool);
     void SetFaderVal(float);
     void SetPan(float);
+    float GetPan() const { return mPan; }
+    float GetVol() const { return mVolume; }
 
     Stream *mStream; // 0x0
     int mChannel; // 0x4
@@ -64,6 +66,9 @@ public:
     void FillChannelList(std::list<int> &) const;
     void FillChannelList(std::list<int> &, int) const;
     void Reset();
+    bool Vocals() const { return mVocals; }
+    bool InButtonMashingMode() const { return mButtonMashingMode; }
+    float LastMashTime() const { return mLastMashTime; }
 
     bool mSucceeding; // 0x0
     std::vector<bool> mSucceedingVec; // 0x4
@@ -87,6 +92,9 @@ public:
 class TrackDataCollection {
 public:
     TrackDataCollection() {}
+    TrackData*& operator[](AudioTrackNum num){
+        return mTrackData[num.mVal];
+    }
     std::vector<TrackData *> mTrackData; // 0x0
 };
 
@@ -95,6 +103,16 @@ class MasterAudio : public BeatMasterSink,
                     public Hmx::Object,
                     public HxAudio {
 public:
+    class ExtraTrackInfo {
+    public:
+        ExtraTrackInfo() : unk0(0), unk4(0), unk8(0), unk9(0), unka(0) {}
+        bool unk0;
+        float unk4;
+        bool unk8;
+        bool unk9;
+        bool unka;
+    };
+
     MasterAudio(DataArray *, int, BeatMaster *, SongData *);
     virtual ~MasterAudio();
     virtual void Beat(int, int) {}
@@ -165,6 +183,14 @@ public:
     void UpdateMasterFader();
     void ResetSlipTrack(AudioTrackNum, bool);
     void SetTimeOffset(float);
+    void GetExtraTrackInfo(PlayerTrackConfigList*, SongInfoAudioType, ExtraTrackInfo&);
+    void SetupBackgroundChannel_(int, ExtraTrackInfo&);
+    void SetupTrackChannel_(int, ExtraTrackInfo&);
+    void SetNonmutable(AudioTrackNum);
+    void FillChannelList(std::list<int> &, int);
+    AudioTrackNum TrackNumAt(int idx){ return mSongData->GetAudioTrackNum(idx); }
+    int NumTrackDatas() const { return mTrackData.mTrackData.size(); }
+    bool IsStreamPlaying() const { return mSongStream && mSongStream->IsPlaying(); }
 
     int mNumPlayers; // 0x28
     Stream *mSongStream; // 0x2c
@@ -208,5 +234,3 @@ public:
     bool mWhammyEnabled; // 0xc0
     float mTimeOffset; // 0xc4
 };
-
-#endif
