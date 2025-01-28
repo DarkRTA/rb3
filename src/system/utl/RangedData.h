@@ -49,7 +49,13 @@ public:
         }
         mRangeDataArray[dataIdx].push_back(RangedData<T> (startTick, endTick, item));
     }
-    
+   
+    /** Determine if a RangedData exists at the given start tick.
+     *  @param [in] dataIdx The index to search for the above RangedData.
+     *  @param [in] startTick The starting tick of the RangedData.
+     *  @param [out] endTick The ending tick of the RangedData.
+     *  @returns True if this RangedData exists, false if not.
+     */ 
     bool DataStartsAt(int dataIdx, int startTick, int& endTick){
         const RangedData<T>* data = FindRangeAtTick(dataIdx, startTick);
         if(!data) return false;
@@ -60,14 +66,25 @@ public:
         else return false;
     }
 
-    T GetDataAtTick(int idx, int tick){
-        const RangedData<T>* data = FindRangeAtTick(idx, tick);
+    /** Get the data associated with the given index and tick.
+     * @param [in] dataIdx The index to search for the RangedData.
+     * @param [in] tick The tick contained in the RangedData.
+     * @returns The data associated with the found RangedData.
+     */
+    T GetDataAtTick(int dataIdx, int tick){
+        const RangedData<T>* data = FindRangeAtTick(dataIdx, tick);
         if(data == nullptr) return T();
         else return data->mData;
     }
 
-    bool GetDataAtTick(int i1, int i2, T& item){
-        const RangedData<T>* data = FindRangeAtTick(i1, i2);
+    /** Get the data associated with the given index and tick.
+     * @param [in] dataIdx The index to search for the RangedData.
+     * @param [in] tick The tick contained in the RangedData.
+     * @param [out] item The data associated with the found RangedData.
+     * @returns True if a RangedData at the given index and tick was found, false if not.
+     */
+    bool GetDataAtTick(int dataIdx, int tick, T& item){
+        const RangedData<T>* data = FindRangeAtTick(dataIdx, tick);
         if(data == nullptr){
             return false;
         }
@@ -77,6 +94,14 @@ public:
         }
     }
 
+    /** Get the data associated with the given index and tick.
+     * @param [in] dataIdx The index to search for the RangedData.
+     * @param [in] tick The tick contained in the RangedData.
+     * @param [out] data The data associated with the found RangedData.
+     * @param [out] startTick The found RangedData's start tick.
+     * @param [out] endTick The found RangedData's end tick.
+     * @returns True if a RangedData at the given index and tick was found, false if not.
+     */
     bool GetNextDataWithRange(int dataIdx, int tick, T& data, int& startTick, int& endTick){
         const RangedData<T>* rangedData = FindRangeAtOrAfterTick(dataIdx, tick);
         if(rangedData == nullptr) return false;
