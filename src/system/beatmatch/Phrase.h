@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_PHRASE_H
-#define BEATMATCH_PHRASE_H
+#pragma once
 #include <vector>
 #include "utl/Str.h"
 #include "beatmatch/TrackType.h"
@@ -24,7 +23,7 @@ struct Phrase {
 };
 
 struct RawPhrase {
-    RawPhrase(int trk, TrackType type, int start, int end, int ind, int the_id) : track(trk), track_type(type), start_tick(start), end_tick(end), independent(ind), id(the_id) {}
+    RawPhrase(int trk, TrackType type, int start, int end, int ind) : track(trk), track_type(type), start_tick(start), end_tick(end), independent(ind), id(-1) {}
     
     int track; // 0x0
     TrackType track_type; // 0x4
@@ -68,5 +67,3 @@ public:
 
     std::vector<PhraseListCollection*> mPhraseListCollections; // 0x0
 };
-
-#endif

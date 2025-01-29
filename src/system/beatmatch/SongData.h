@@ -167,6 +167,7 @@ public:
     VocalNoteList* GetVocalNoteList(int);
     int GetVocalNoteListCount() const;
     std::vector<RangeSection>& GetKeyRangeSections(int);
+    int GetTrackTypes() const;
     TrackType TrackTypeAt(int idx) const {
         return mTrackInfos[idx]->mType;
     }
