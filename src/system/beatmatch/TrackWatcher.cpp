@@ -5,7 +5,7 @@
 
 Symbol ControllerTypeToTrackWatcherType(Symbol cntType){
     DataArray* cfg = SystemConfig("beatmatcher", "controllers", "beatmatch_controller_mapping");
-    Symbol watchType = cfg->FindArray(cntType, true)->Sym(1);
+    Symbol watchType = cfg->FindSym(cntType);
     if(watchType == joypad_guitar) return guitar;
     else return watchType;
 }
