@@ -10,6 +10,9 @@ public:
 
 class RGTrill {
 public:
+    RGTrill() : unk0(-1) {
+        unk4 = unk8 = -1;
+    }
     int unk0;
     int unk4;
     int unk8;

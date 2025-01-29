@@ -82,7 +82,7 @@ public:
     virtual void FillStop(){}
     virtual bool IsSwingInRoll(int, unsigned int);
     virtual bool AreSlotsInRoll(unsigned int, int) const;
-    virtual void GetNextRoll(int, unsigned int&, int&) const;
+    virtual bool GetNextRoll(int, unsigned int&, int&) const;
     virtual void CheckForTrills(float, int, unsigned int);
     virtual void PollHook(float);
     virtual void JumpHook(float);
@@ -129,6 +129,8 @@ public:
     void HitGem(float, int, unsigned int, GemHitFlags);
     void SendSwingAtHopo(float, int);
     void SendHopo(float, int);
+
+    int Track() const { return mTrack; }
 
     UserGuid mUserGuid; // 0x4
     bool mIsLocalUser; // 0x14

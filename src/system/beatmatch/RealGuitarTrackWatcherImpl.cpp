@@ -1,4 +1,6 @@
 #include "beatmatch/RealGuitarTrackWatcherImpl.h"
+#include "beatmatch/RGChords.h"
+#include "beatmatch/RGState.h"
 #include "beatmatch/SongData.h"
 #include "beatmatch/Output.h"
 #include "beatmatch/TrackWatcherParent.h"
@@ -169,6 +171,64 @@ bool RealGuitarTrackWatcherImpl::InGem(int i, const GameGem& gem) const {
 
 bool RealGuitarTrackWatcherImpl::AreSlotsInRoll(unsigned int i1, int i2) const {
     int tick = mSongData->GetTempoMap()->GetLoopTick(i2);
+    RGRollChord chord = mSongData->GetRGRollingSlotsAtTick(Track(), tick);
+    const RGState* state = mMatcher.GetState();
+    unsigned int mask = 1;
+    bool ret = false;
+    for(int i = 0; i < 6; i++, mask <<= 1){
+        if((i1 & mask) && chord.unk0[i] != -1){
+            if(chord.unk0[i] != (int)state->GetFret(i)){
+                return false;
+            }
+            ret = true;
+        }
+    }
+    return ret;
 }
 
 bool RealGuitarTrackWatcherImpl::IsSwingInRoll(int, unsigned int){ return false; }
+
+bool RealGuitarTrackWatcherImpl::GetNextRoll(int i1, unsigned int& uiRef, int& endTick) const {
+    int tick = mSongData->GetTempoMap()->GetLoopTick(i1);
+    RGRollChord chord;
+    if(mSongData->GetNextRGRoll(Track(), tick, chord, endTick)){
+        uiRef = 0;
+        for(int i = 0; i < 6; i++){
+            if(chord.unk0[i] != -1){
+                uiRef |= 1 << i;
+            }
+        }
+        return true;
+    }
+    else return false;
+}
+
+void RealGuitarTrackWatcherImpl::CheckForTrills(float fff, int iii, unsigned int ui){
+    RGTrill trill;
+    int track = Track();
+    int tick = mSongData->GetTempoMap()->GetLoopTick(iii);
+    int x, y;
+    if(mSongData->GetRGTrillAtTick(track, tick, trill)){
+        UnpackRGData(ui, x, y);
+        if(fff - mTrillLastFretMs < mTrillIntervalMs){
+            if(y == mTrillNextSlot){
+                mTrillNextSlot = GetNextTrillSlot(y, trill);
+                mTrillSucceeding = true;
+            }
+            else mTrillSucceeding = false;
+        }
+        else {
+            
+            mTrillNextSlot = GetNextTrillSlot(y, trill);
+            mTrillSucceeding = false;
+        }
+        mTrillLastFretMs = fff;
+    }
+}
+
+bool RealGuitarTrackWatcherImpl::InTrill(int i) const {
+    RGTrill trill;
+    int track = Track();
+    int tick = mSongData->GetTempoMap()->GetLoopTick(i);
+    return mSongData->GetRGTrillAtTick(track, tick, trill);
+}
