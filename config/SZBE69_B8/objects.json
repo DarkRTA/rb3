@@ -908,7 +908,10 @@
             "system/beatmatch/PhraseDB.cpp": "Matching",
             "system/beatmatch/PhraseList.cpp": "Matching",
             "system/beatmatch/Playback.cpp": "Equivalent",
-            "system/beatmatch/PlayerTrackConfigList.cpp": "NonMatching",
+            "system/beatmatch/PlayerTrackConfigList.cpp": {
+                "status": "Equivalent",
+                "comment": "regswaps in standalone stlport functions"
+            },
             "system/beatmatch/RealGuitarController.cpp": "Matching",
             "system/beatmatch/RealGuitarTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/RGGemMatcher.cpp": "NonMatching",
