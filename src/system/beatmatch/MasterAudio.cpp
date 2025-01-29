@@ -1,11 +1,17 @@
 #include "beatmatch/MasterAudio.h"
+#include "beatmatch/GameGem.h"
 #include "beatmatch/InternalSongParserSink.h"
+#include "beatmatch/SlotChannelMapping.h"
 #include "beatmatch/TrackType.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "synth/Faders.h"
 #include "synth/Synth.h"
 #include "utl/SongInfoAudioType.h"
 #include "utl/SongInfoCopy.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols4.h"
+#include "utl/TextStream.h"
 #include "utl/TimeConversion.h"
 #include "beatmatch/PlayerTrackConfig.h"
 #include "beatmatch/BeatMaster.h"
@@ -541,7 +547,7 @@ void MasterAudio::SetRemoteTrack(int track){
 }
 
 void MasterAudio::SetTrackFader(AudioTrackNum track, int i, Symbol s, float f1, float f2){
-    MILO_ASSERT_RANGE(track.Val(), 0, NumPlayTracks(), 0x457);
+    MILO_ASSERT(0 <= track.Val() && track.Val() < NumPlayTracks(), 0x457);
     std::list<int> chans;
     mTrackData[track]->FillChannelList(chans, i);
     chans.size();
@@ -665,8 +671,15 @@ void MasterAudio::MuteTrack(int i){
     MuteTrack(TrackNumAt(i), -1, (DontPlayReason)1, 50.0f);
 }
 
-void MasterAudio::MuteTrack(AudioTrackNum, int, DontPlayReason, float){
-
+void MasterAudio::MuteTrack(AudioTrackNum num, int i, DontPlayReason r, float f){
+    if(!mTrackData[num]->NonMutable() && !mTrackData[num]->AutoOn()){
+        float f1 = mUnplayedVolume;
+        if(mTrackData[num]->NonNullUser()){
+            if(r == 0) f1 = mMuteVolume;
+            else f1 = mPassVolume;
+        }
+        SetTrackMuteFader(num, i, f1, f);
+    }
 }
 
 void MasterAudio::UnmuteTrack(AudioTrackNum trackNum, int i) {
@@ -674,20 +687,21 @@ void MasterAudio::UnmuteTrack(AudioTrackNum trackNum, int i) {
 }
 
 void MasterAudio::UnmuteAllTracks() {
-    for (int i = 0; i < mTrackData.mTrackData.size(); i++) {
-        AudioTrackNum num;
-        num.mVal = i;
+    for(AudioTrackNum num(0); num.Val() < NumPlayTracks(); ++num){
         UnmuteTrack(num, -1);
     }
 }
 
 void MasterAudio::FadeOutDrums(int trackNum) {
-    // this is very close to being right not quite, can't figure out what is wrong
-    /*    AudioTrackNum audioTrackNum = mSongData->GetAudioTrackNum(trackNum);
-        mTrackData.mTrackData[audioTrackNum.mVal]->mInFill = 1;
-        Symbol drum_fill = Symbol("drum_fill");
-        SetTrackFader(audioTrackNum, -1, drum_fill, -96.0f, 1000.0f);
-        */
+    AudioTrackNum num = TrackNumAt(trackNum);
+    mTrackData[num]->SetInFill(true);
+    SetTrackFader(num, -1, "drum_fill", -96.0f, 1000.0f);
+}
+
+void MasterAudio::RestoreDrums(int trackNum){
+    AudioTrackNum num = TrackNumAt(trackNum);
+    mTrackData[num]->SetInFill(false);
+    SetTrackFader(num, -1, "drum_fill", 0, 250.0f);
 }
 
 void MasterAudio::SetVocalState(bool state) {
@@ -698,6 +712,44 @@ void MasterAudio::SetVocalState(bool state) {
         fader = mVocalMuteVolume;
     }
     SetVocalFailFader(fader);
+}
+
+void MasterAudio::HandleSubmix(int i, const char* cc){
+    AudioTrackNum num = TrackNumAt(i);
+    mTrackData[num]->SetMapping(cc);
+}
+
+void MasterAudio::SetButtonMashingMode(int i, bool b){
+    AudioTrackNum num = TrackNumAt(i);
+    mTrackData[num]->SetButtonMashingMode(b, GetTime());
+}
+
+int MasterAudio::GemSlot(int i1, int i2){
+    if(i2 == -1) return -1;
+    else {
+        return mSongData->GetGemList(i1)->GetGem(i2).GetSlot();
+    }
+}
+
+void MasterAudio::PrintFaders(){
+    MILO_LOG("MasterFader %.2f\n", mMasterFader->GetVal());
+    MILO_LOG("ForegroundFader %.2f\n", mForegroundFader->GetVal());
+    MILO_LOG("MultiplayerFader %.2f\n", mMultiplayerFader->GetVal());
+    MILO_LOG("BackgroundFader %.2f\n", mBackgroundFader->GetVal());
+    MILO_LOG("BackgroundAttenFader %.2f\n", mBackgroundAttenFader->GetVal());
+    MILO_LOG("CommonFader %.2f\n", mCommonFader->GetVal());
+    MILO_LOG("RemoteFader %.2f\n", mRemoteFader->GetVal());
+    MILO_LOG("PracticeFader %.2f\n", mPracticeFader->GetVal());
+    MILO_LOG("VocalDuckFader %.2f\n", mVocalDuckFader->GetVal());
+    MILO_LOG("VocalFailFader %.2f\n", mVocalFailFader->GetVal());
+    MILO_LOG("VocalCueFader %.2f\n", mVocalCueFader->GetVal());
+    MILO_LOG("CrowdFader %.2f\n", mCrowdFader->GetVal());
+    MILO_LOG("BaseCrowdFader %.2f\n", mBaseCrowdFader->GetVal());
+    for(int i = 0; i < mChannelData.size(); i++){
+        MILO_LOG("CHANNEL %d\n", i);
+        FaderGroup* grp = mSongStream->ChannelFaders(i);
+        grp->Print(TheDebug);
+    }
 }
 
 ChannelData::ChannelData(Stream *stream, int chan, float vol, float pan, FXCore core)
@@ -785,18 +837,65 @@ TrackData::TrackData(
     mVocals = b2;
 }
 
-void TrackData::FillChannelList(std::list<int> &list) const {
-    if (mChannelMapping == 0) {
-        return;
-    }
-    mChannelMapping->FillChannelList(list);
+void TrackData::Init(SubmixCollection *submixes, bool b) {
+    mSubmixes = submixes;
+    mMultiSlot = false;
+    mSucceeding = false;
+    mSucceedingVec.reserve(kMaxSlots);
+    mSucceedingVec.assign(kMaxSlots, false);
+    mLastGemTimes.reserve(kMaxSlots);
+    mLastGemTimes.assign(kMaxSlots, -10000.0f);
+    SetSucceeding(true, -1, -10000.0f);
+    mLastPlayedGem = -1;
+    mChannelMapping = 0;
+    mIndieSlots = b;
+    mOriginalChannels.clear();
+    mNonmutable = false;
+    mButtonMashingMode = false;
+    mInFill = false;
+    mAutoOn = false;
+    mVocals = false;
+    unk48 = 99.0f;
+    mUserGuid.Clear();
 }
 
-void TrackData::FillChannelList(std::list<int> &list, int i) const {
-    if (mMultiSlot == 0) {
-        return;
+void TrackData::SetMapping(const std::vector<int>& chans){
+    mOriginalChannels.clear();
+    mOriginalChannels.insert(mOriginalChannels.begin(), chans.begin(), chans.end());
+    if(mSubmixes){
+        RELEASE(mChannelMapping);
+        if(chans.size() == 1){
+            mChannelMapping = new SingleSlotChannelMapping(chans[0]);
+            mMultiSlot = false;
+        }
+        else {
+            mChannelMapping = NewSlotChannelMapping(mSubmixes, chans, !mIndieSlots);
+            mMultiSlot = chans.size() > 2;
+        }
     }
-    mChannelMapping->FillChannelList(list, i);
+}
+
+void TrackData::SetMapping(const char* cc){
+    if(mSubmixes){
+        char* p = (char*)cc;
+        for(; *p != '\0' && *p != ' '; p++);
+        int len = p - (char*)cc;
+        MILO_ASSERT(len < 64, 0x67B);
+        char buf[64];
+        strncpy(buf, cc, len);
+        buf[len] = '\0';
+        Submix* mix = mSubmixes->Find(buf);
+        if(mix){
+            RELEASE(mChannelMapping);
+            mChannelMapping = new MultiChannelMapping(mix, buf, mOriginalChannels);
+        }
+        else MILO_WARN("MIDI authoring error: submix %s is not defined\n", buf);
+        mMultiSlot = true;
+    }
+}
+
+TrackData::~TrackData(){
+    RELEASE(mChannelMapping);
 }
 
 int TrackData::GetSucceeding(int slot) const {
@@ -812,25 +911,32 @@ int TrackData::GetSucceeding(int slot) const {
     return ret;
 }
 
+void TrackData::FillChannelList(std::list<int> &list) const {
+    if (mChannelMapping == 0) {
+        return;
+    }
+    mChannelMapping->FillChannelList(list);
+}
+
+void TrackData::FillChannelList(std::list<int> &list, int i) const {
+    if(mChannelMapping) mChannelMapping->FillChannelList(list, i);
+}
+
 void TrackData::Hit(int gemID, int i, float f) {
     SetSucceeding(true, i, f);
     mLastPlayedGem = gemID;
-}
-
-bool TrackData::IsSlotActive(int i, float f) const {
-    if (mMultiSlot) {
-        return (f - mLastGemTimes[i] < 5000.0f);
-    }
-    return true;
 }
 
 void TrackData::Miss(int i, float f) {
     SetSucceeding(false, i, f);
 }
 
-void TrackData::Reset() {
-    SetSucceeding(true, -1, -10000.0f);
-    mInFill = 0;
+void TrackData::SetUserGuid(const UserGuid &guid) {
+    mUserGuid = guid;
+}
+
+void TrackData::SetNonmutable(bool nonmutable) {
+    mNonmutable = nonmutable;
 }
 
 void TrackData::SetButtonMashingMode(bool enabled, float lastMashTime) {
@@ -842,8 +948,9 @@ void TrackData::SetLastMashTime(float lastMashTime) {
     mLastMashTime = lastMashTime;
 }
 
-void TrackData::SetNonmutable(bool nonmutable) {
-    mNonmutable = nonmutable;
+void TrackData::Reset() {
+    SetSucceeding(true, -1, -10000.0f);
+    mInFill = 0;
 }
 
 void TrackData::SetSucceeding(bool succeeding, int gemId, float lastGemTime) {
@@ -865,26 +972,46 @@ void TrackData::SetSucceeding(bool succeeding, int gemId, float lastGemTime) {
     }
 }
 
-void TrackData::SetUserGuid(const UserGuid &guid) {
-    mUserGuid = guid;
+bool TrackData::IsSlotActive(int i, float f) const {
+    if (mMultiSlot) {
+        return (f - mLastGemTimes[i] < 5000.0f);
+    }
+    return true;
 }
 
-void TrackData::Init(SubmixCollection *submixes, bool b) {
-    mSubmixes = submixes;
-    mMultiSlot = false;
-    mSucceeding = false;
-    mSucceedingVec.reserve(kMaxSlots);
-    mLastGemTimes.reserve(kMaxSlots);
-    SetSucceeding(true, -1, -10000.0f);
-    mLastPlayedGem = -1;
-    mChannelMapping = 0;
-    mIndieSlots = false;
-    mOriginalChannels.clear();
-    mNonmutable = false;
-    mButtonMashingMode = false;
-    mInFill = false;
-    mAutoOn = false;
-    mVocals = false;
-    unk48 = 99.0f;
-    mUserGuid.Clear();
+void TrackData::FillChannelListWithInactiveSlots(std::list<int>& chans, float f, bool b) const {
+    if(mMultiSlot && mChannelMapping){
+        int i6 = 0;
+        int i5 = 0;
+        bool b4 = true;
+        for(int i = 0; i < mChannelMapping->GetNumSlots(); i++){
+            if(IsSlotActive(i, f)){
+                if(!GetSucceeding(i)) b4 = false;
+                i6 |= mChannelMapping->ChannelBitfield(i);
+            }
+            else {
+                i5 |= mChannelMapping->ChannelBitfield(i);
+            }
+        }
+        i5 &= ~i6;
+        if(b4 == b){
+            for(int i = 0; i5 != 0; i++){
+                i6 = 1 << i;
+                if(i6 & i5){
+                    i5 -= i6;
+                    chans.push_back(i);
+                }
+            }
+        }
+    }
 }
+
+BEGIN_HANDLERS(MasterAudio)
+    HANDLE_ACTION(set_vocal_cue_fader, SetVocalCueFader(_msg->Float(2)))
+    HANDLE_ACTION(set_crowd_fader, SetCrowdFader(_msg->Float(2)))
+    HANDLE_ACTION(toggle_mute_master, ToggleMuteMaster())
+    HANDLE_ACTION(set_mute_master, SetMuteMaster(_msg->Int(2)))
+    HANDLE_ACTION(set_base_crowd_fader, SetBaseCrowdFader(_msg->Float(2)))
+    HANDLE_ACTION(print_faders, PrintFaders())
+    HANDLE_CHECK(0x735)
+END_HANDLERS

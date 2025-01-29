@@ -35,7 +35,7 @@ public:
     void AddClient(FaderGroup*);
     void RemoveClient(FaderGroup*);
     void Check();
-    float GetVal() const { return mVal; }
+    float GetVal(){ return mVal; }
     Symbol LocalName() const { return mLocalName; }
     void SetLocalName(Symbol name){ mLocalName = name; }
 

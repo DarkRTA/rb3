@@ -75,6 +75,9 @@ public:
     bool InFill() const { return mInFill; }
     bool AutoOn() const { return mAutoOn; }
     void SetAutoOn(bool on){ mAutoOn = on; }
+    bool NonMutable() const { return mNonmutable; }
+    bool NonNullUser() const { return !mUserGuid.IsNull(); }
+    void SetInFill(bool fill){ mInFill = fill; }
 
     bool mSucceeding; // 0x0
     std::vector<bool> mSucceedingVec; // 0x4
@@ -215,6 +218,9 @@ public:
     void DontPlay(AudioTrackNum, int, DontPlayReason);
     void SetNonmutable(int);
     void MuteTrack(int);
+    void RestoreDrums(int);
+    void SetButtonMashingMode(int, bool);
+    void PrintFaders();
 
     AudioTrackNum TrackNumAt(int idx){ return mSongData->GetAudioTrackNum(idx); }
     int NumPlayTracks() const { return mTrackData.mTrackData.size(); }
