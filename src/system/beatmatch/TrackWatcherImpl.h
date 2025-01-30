@@ -139,6 +139,12 @@ public:
     void SendSwingAtHopo(float, int);
     void SendHopo(float, int);
     void SendReleaseGem(float, int, float);
+    void MaybeAutoplayFutureCymbal(int);
+    bool IsFillCompletion(float, int, int&);
+    void SendMiss(float, int, int, int, GemHitFlags);
+    void SendPass(float, int);
+    void SendImplicit(float, int);
+    void SendSpuriousMiss(float, int, int);
 
     int Track() const { return mTrack; }
     int GetFillLogic() const { return mParent->GetFillLogic(); }

@@ -172,7 +172,7 @@ bool GameGem::IsRealGuitarChord() const {
     return count > 1;
 }
 
-char GameGem::GetFret(unsigned int string) const {
+signed char GameGem::GetFret(unsigned int string) const {
     MILO_ASSERT(string < kMaxRGStrings, 0x10C);
     return mFrets[string];
 }
@@ -180,7 +180,7 @@ char GameGem::GetFret(unsigned int string) const {
 char GameGem::GetHighestFret() const {
     char fret = GetFret(0);
     for(unsigned int i = 1; i < 6; i++){
-        fret = std::max(fret, GetFret(i));
+        fret = std::max<char>(fret, GetFret(i));
     }
     return fret;
 }
