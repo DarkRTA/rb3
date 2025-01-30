@@ -1,5 +1,5 @@
-#ifndef BEATMATCH_MASTERAUDIO_H
-#define BEATMATCH_MASTERAUDIO_H
+#pragma once
+#include "beatmatch/InternalSongParserSink.h"
 #include "obj/Data.h"
 #include "beatmatch/SongData.h"
 #include "beatmatch/BeatMasterSink.h"
@@ -8,6 +8,7 @@
 #include "beatmatch/PitchMucker.h"
 #include "beatmatch/Submix.h"
 #include "obj/Object.h"
+#include "os/User.h"
 #include "synth/Faders.h"
 #include "synth/Stream.h"
 #include "synth/SlipTrack.h"
@@ -29,6 +30,8 @@ public:
     void SetStereo(bool);
     void SetFaderVal(float);
     void SetPan(float);
+    float GetPan() const { return mPan; }
+    float GetVol() const { return mVolume; }
 
     Stream *mStream; // 0x0
     int mChannel; // 0x4
@@ -64,6 +67,17 @@ public:
     void FillChannelList(std::list<int> &) const;
     void FillChannelList(std::list<int> &, int) const;
     void Reset();
+    void FillChannelListWithInactiveSlots(std::list<int>&, float, bool) const;
+    bool Vocals() const { return mVocals; }
+    bool InButtonMashingMode() const { return mButtonMashingMode; }
+    float LastMashTime() const { return mLastMashTime; }
+    int LastPlayedGem() const { return mLastPlayedGem; }
+    bool InFill() const { return mInFill; }
+    bool AutoOn() const { return mAutoOn; }
+    void SetAutoOn(bool on){ mAutoOn = on; }
+    bool NonMutable() const { return mNonmutable; }
+    bool NonNullUser() const { return !mUserGuid.IsNull(); }
+    void SetInFill(bool fill){ mInFill = fill; }
 
     bool mSucceeding; // 0x0
     std::vector<bool> mSucceedingVec; // 0x4
@@ -87,6 +101,12 @@ public:
 class TrackDataCollection {
 public:
     TrackDataCollection() {}
+    TrackData*& operator[](AudioTrackNum num){
+        return mTrackData[num.mVal];
+    }
+    const TrackData*& operator[](AudioTrackNum num) const {
+        return (const TrackData*&)(mTrackData[num.mVal]);
+    }
     std::vector<TrackData *> mTrackData; // 0x0
 };
 
@@ -95,6 +115,20 @@ class MasterAudio : public BeatMasterSink,
                     public Hmx::Object,
                     public HxAudio {
 public:
+    class ExtraTrackInfo {
+    public:
+        ExtraTrackInfo() : unk0(0), unk4(0), unk8(0), unk9(0), unka(0) {}
+        bool unk0;
+        float unk4;
+        bool unk8;
+        bool unk9;
+        bool unka;
+    };
+
+    enum DontPlayReason {
+
+    };
+
     MasterAudio(DataArray *, int, BeatMaster *, SongData *);
     virtual ~MasterAudio();
     virtual void Beat(int, int) {}
@@ -140,6 +174,7 @@ public:
     void ResetTrack(int, bool);
     void ResetTrack(AudioTrackNum, bool);
     void SetAutoOn(AudioTrackNum, int);
+    void SetAutoOn(int, int);
     void SetupTrackChannel(int, bool, float, bool, bool);
     void SetupBackgroundChannel(int, bool, float, bool, bool);
     void SetBackgroundVolume(float);
@@ -165,6 +200,34 @@ public:
     void UpdateMasterFader();
     void ResetSlipTrack(AudioTrackNum, bool);
     void SetTimeOffset(float);
+    void GetExtraTrackInfo(PlayerTrackConfigList*, SongInfoAudioType, ExtraTrackInfo&);
+    void SetupBackgroundChannel_(int, ExtraTrackInfo&);
+    void SetupTrackChannel_(int, ExtraTrackInfo&);
+    void SetNonmutable(AudioTrackNum);
+    void FillChannelList(std::list<int> &, int);
+    void SetSpeed(int, const UserGuid&, float);
+    void SetSpeed(AudioTrackNum, const UserGuid&, float);
+    void SetVocalDuckFader(float);
+    void SetVocalCueFader(float);
+    void SetCrowdFader(float);
+    void SetBaseCrowdFader(float);
+    void ResetSlipTrack(int, bool);
+    void SetRemoteTrack(int);
+    int GemSlot(int, int);
+    void MuteTrack(AudioTrackNum, int, DontPlayReason, float);
+    void DontPlay(AudioTrackNum, int, DontPlayReason);
+    void SetNonmutable(int);
+    void MuteTrack(int);
+    void RestoreDrums(int);
+    void SetButtonMashingMode(int, bool);
+    void PrintFaders();
+
+    AudioTrackNum TrackNumAt(int idx){ return mSongData->GetAudioTrackNum(idx); }
+    int NumPlayTracks() const { return mTrackData.mTrackData.size(); }
+    bool IsStreamPlaying() const { return mSongStream && mSongStream->IsPlaying(); }
+    int GetSucceeding(AudioTrackNum num, int slot) const {
+        return mTrackData[num]->GetSucceeding(slot);
+    }
 
     int mNumPlayers; // 0x28
     Stream *mSongStream; // 0x2c
@@ -208,5 +271,3 @@ public:
     bool mWhammyEnabled; // 0xc0
     float mTimeOffset; // 0xc4
 };
-
-#endif

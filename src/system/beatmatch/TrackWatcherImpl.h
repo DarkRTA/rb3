@@ -1,17 +1,22 @@
-#ifndef BEATMATCH_TRACKWATCHERIMPL_H
-#define BEATMATCH_TRACKWATCHERIMPL_H
+#pragma once
 #include "utl/HxGuid.h"
 #include "beatmatch/BeatMatchControllerSink.h"
+#include "beatmatch/TrackWatcherParent.h"
 #include <vector>
 
 // forward decs
 class SongData;
 class GameGemList;
-class TrackWatcherParent;
 class DataArray;
 class BeatMatchSink;
 
 struct GemInProgress {
+    GemInProgress() : mInUse(0), mGemID(-1), unk8(0) {}
+    void Reset(){
+        mInUse = false;
+        mGemID = -1;
+        unk8 = 0;
+    }
     // what RB2 has
     // int mTick; // offset 0x0, size 0x4
     // int mNoStrum; // offset 0x4, size 0x4
@@ -20,7 +25,7 @@ struct GemInProgress {
     // actually a byte, word, and float
     bool mInUse;
     int mGemID;
-    float unk8;
+    float unk8; // the endMs of this gem? i've seen ms + durationms assigned to it
 };
 
 class TrackWatcherState {
@@ -82,7 +87,7 @@ public:
     virtual void FillStop(){}
     virtual bool IsSwingInRoll(int, unsigned int);
     virtual bool AreSlotsInRoll(unsigned int, int) const;
-    virtual void GetNextRoll(int, unsigned int&, int&) const;
+    virtual bool GetNextRoll(int, unsigned int&, int&) const;
     virtual void CheckForTrills(float, int, unsigned int);
     virtual void PollHook(float);
     virtual void JumpHook(float);
@@ -125,10 +130,24 @@ public:
     void CheckForGemsSeen(float);
     void CheckForPitchBend(float);
     void CheckForCodaLanes(int);
-
+    int GetOtherTrillSlot(int, const std::pair<int, int>&) const;
+    void SendHit(float, int, unsigned int, GemHitFlags);
+    void SendIgnore(float, int);
+    void SendSeen(float, int);
+    void SendWhammy(float);
     void HitGem(float, int, unsigned int, GemHitFlags);
     void SendSwingAtHopo(float, int);
     void SendHopo(float, int);
+    void SendReleaseGem(float, int, float);
+    void MaybeAutoplayFutureCymbal(int);
+    bool IsFillCompletion(float, int, int&);
+    void SendMiss(float, int, int, int, GemHitFlags);
+    void SendPass(float, int);
+    void SendImplicit(float, int);
+    void SendSpuriousMiss(float, int, int);
+
+    int Track() const { return mTrack; }
+    int GetFillLogic() const { return mParent->GetFillLogic(); }
 
     UserGuid mUserGuid; // 0x4
     bool mIsLocalUser; // 0x14
@@ -177,5 +196,3 @@ public:
 };
 
 TrackWatcherImpl* NewTrackWatcherImpl(int, const UserGuid&, int, Symbol, SongData*, TrackWatcherParent*, DataArray*);
-
-#endif

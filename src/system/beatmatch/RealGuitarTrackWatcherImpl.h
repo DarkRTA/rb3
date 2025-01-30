@@ -1,5 +1,6 @@
 #pragma once
 #include "beatmatch/BaseGuitarTrackWatcherImpl.h"
+#include "beatmatch/RGChords.h"
 #include "beatmatch/RGGemMatcher.h"
 
 class RealGuitarTrackWatcherImpl : public BaseGuitarTrackWatcherImpl {
@@ -12,7 +13,7 @@ public:
     virtual void RGFretButtonDown(int);
     virtual bool IsSwingInRoll(int, unsigned int);
     virtual bool AreSlotsInRoll(unsigned int, int) const;
-    virtual void GetNextRoll(int, unsigned int&, int&) const;
+    virtual bool GetNextRoll(int, unsigned int&, int&) const;
     virtual void CheckForTrills(float, int, unsigned int);
     virtual void PollHook(float);
     virtual void JumpHook(float);
@@ -29,6 +30,9 @@ public:
     virtual bool IsCoreGuitar() const;
 
     bool StrumOK(int) const;
+    int GetNextTrillSlot(int i, RGTrill& trill){
+        return i == trill.unk4 ? trill.unk8 : trill.unk4;
+    }
 
     RGGemMatcher mMatcher; // 0xe8
     float unk1f0; // 0x1f0 - mLastMissTime

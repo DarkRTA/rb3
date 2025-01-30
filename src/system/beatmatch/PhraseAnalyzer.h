@@ -26,6 +26,7 @@ public:
     const std::vector<RawPhrase>& GetRawPhrases() const;
     int NumPhrases(int) const;
     void SetPhraseIDs(int, int, int, int);
+    void Verify() const;
 
     bool mPerformedAnalysis; // 0x0
     int mPhraseStartWindow; // 0x4

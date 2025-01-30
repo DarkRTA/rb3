@@ -7,6 +7,7 @@
 
 class PlayerTrackConfig {
 public:
+    PlayerTrackConfig() : mTrackType(kTrackNone), mDifficulty(-1), mSlot(-1), mRemote(0), mTrackNum(-1) {}
     PlayerTrackConfig(const UserGuid &u, TrackType ty, int i, int j, bool b)
         : mUserGuid(u), mTrackType(ty), mDifficulty(i), mSlot(j), mRemote(b),
           mTrackNum(-1) {}
@@ -17,6 +18,10 @@ public:
         MILO_ASSERT(mSlot == slot, 0x34);
         MILO_ASSERT(mRemote == remote, 0x35);
     }
+    bool Remote() const { return mRemote; }
+    int TrackNum() const { return mTrackNum; }
+    TrackType GetTrackType() const { return mTrackType; }
+    int Slot() const { return mSlot; }
 
     UserGuid mUserGuid; // 0x0
     TrackType mTrackType; // 0x10
@@ -32,7 +37,7 @@ public:
     ~PlayerTrackConfigList(){}
     void Reset();
     void AddPlaceholderConfig(const UserGuid &, int, bool);
-    void AddConfig(const UserGuid &, TrackType, int, int, bool);
+    int AddConfig(const UserGuid &, TrackType, int, int, bool);
     void UpdateConfig(const UserGuid &, TrackType, int, int, bool);
     void ChangeDifficulty(const UserGuid &, int);
     const UserGuid &GetUserGuidByIndex(int) const;
@@ -58,6 +63,12 @@ public:
     bool UserPresent(const UserGuid &);
     void RemoveConfig(const UserGuid &);
     int NumConfigs() const { return mConfigs.size(); }
+    bool IsUserRemote(const UserGuid& u) const {
+        return GetConfigByUserGuid(u).Remote();
+    }
+    const PlayerTrackConfig& ConfigAt(int idx) const {
+        return mConfigs[idx];
+    }
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8

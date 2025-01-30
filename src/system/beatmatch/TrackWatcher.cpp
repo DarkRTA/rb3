@@ -5,7 +5,7 @@
 
 Symbol ControllerTypeToTrackWatcherType(Symbol cntType){
     DataArray* cfg = SystemConfig("beatmatcher", "controllers", "beatmatch_controller_mapping");
-    Symbol watchType = cfg->FindArray(cntType, true)->Sym(1);
+    Symbol watchType = cfg->FindSym(cntType);
     if(watchType == joypad_guitar) return guitar;
     else return watchType;
 }
@@ -33,11 +33,9 @@ void TrackWatcher::ReplaceImpl(Symbol sym){
 }
 
 void TrackWatcher::SetImpl(){
-    // std::vector<int> vec;
     TrackWatcherState state;
     if(mImpl) mImpl->SaveState(state);
-    delete mImpl;
-    mImpl = 0;
+    RELEASE(mImpl);
     mImpl = NewTrackWatcherImpl(mTrack, mUserGuid, mPlayerSlot, mControllerType, mSongData, mParent, mCfg);
     mImpl->Init();
     for(int i = 0; i < mSinks.size(); i++){

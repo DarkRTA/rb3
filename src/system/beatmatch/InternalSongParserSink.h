@@ -8,6 +8,12 @@
 #include "beatmatch/RGChords.h"
 
 struct AudioTrackNum {
+    AudioTrackNum(){}
+    AudioTrackNum(int val) : mVal(val) {}
+    AudioTrackNum operator++(){
+        return AudioTrackNum(++mVal);
+    }
+    int Val() const { return mVal; }
     int mVal;
 };
 

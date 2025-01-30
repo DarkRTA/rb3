@@ -13,7 +13,7 @@ public:
     ~GameGem();
     GameGem& operator=(const GameGem&);
 
-    char GetFret(unsigned int) const;
+    signed char GetFret(unsigned int) const;
     char GetHighestFret() const;
     bool GetShowSlashes() const;
     unsigned char GetRootNote() const;
@@ -101,6 +101,11 @@ public:
     }
 
     bool GetPlayed(){ return mPlayed != 0; }
+    void SetPlayed(bool played){ mPlayed = played; }
+    float DurationMs(){ return mDurationMs; }
+    bool Unk10B1() const { return unk10b1; }
+    void SetUnk10B1(bool b){ unk10b1 = b; }
+    bool Unk10B4() const { return unk10b4; }
 
     float mMs; // 0x0
     int mTick; // 0x4
@@ -111,7 +116,7 @@ public:
     unsigned char mPlayed : 1;
     unsigned char mForceStrum : 1;
     unsigned char mIgnoreDuration : 1;
-    unsigned char unk10b4 : 1;
+    unsigned char unk10b4 : 1; // maybe cymbal related?
     unsigned char mShowChordNames : 1;
     unsigned char mShowSlashes : 1;
     unsigned char unk10b1 : 1;

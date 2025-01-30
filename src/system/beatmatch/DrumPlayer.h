@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_DRUMPLAYER_H
-#define BEATMATCH_DRUMPLAYER_H
+#pragma once
 #include "utl/SongInfoCopy.h"
 #include <vector>
 #include "obj/Dir.h"
@@ -16,5 +15,3 @@ public:
     std::vector<Symbol> v2; // 0xc
     ObjDirPtr<ObjectDir> mDrumKitBank; // 0x14
 };
-
-#endif

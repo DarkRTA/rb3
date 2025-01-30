@@ -1,5 +1,6 @@
 #include "beatmatch/PlayerTrackConfig.h"
 #include "beatmatch/BeatMatchUtl.h"
+#include "decomp.h"
 
 #define kMorePlayersThanWeWillEverNeed 8
 
@@ -13,6 +14,8 @@ PlayerTrackConfigList::PlayerTrackConfigList(int reserve_num_players) : mAutoVoc
     mTrackOccupied.reserve(kMorePlayersThanWeWillEverNeed);
     mConfigs.reserve(reserve_num_players);
 }
+
+DECOMP_FORCEACTIVE(PlayerTrackConfigList, "PlayerTrackConfigList: Asked for active UserGuid #%d, which doesn't exist")
 
 void PlayerTrackConfigList::Reset(){
     mTrackDiffs.clear();
@@ -29,9 +32,18 @@ void PlayerTrackConfigList::Reset(){
     mGameCymbalLanes = 0;
 }
 
-void PlayerTrackConfigList::AddConfig(const UserGuid& u, TrackType ty, int i, int j, bool b){
-    PlayerTrackConfig ptc(u, ty, i, j, b);
-    mConfigs.push_back(ptc);
+int PlayerTrackConfigList::AddConfig(const UserGuid& u, TrackType ty, int x, int j, bool b){
+    PlayerTrackConfig ptc(u, ty, x, j, b);
+    mConfigs.push_back(PlayerTrackConfig());
+    int i = 0;
+    for(; i < mConfigs.size() - 1; i++){
+        if(u < ConfigAt(i).mUserGuid) break;
+    }
+    for(int j = mConfigs.size() - 1; i < j; j--){
+        mConfigs[j] = mConfigs[j - 1];
+    }
+    mConfigs[i] = ptc;
+    return i;
 }
 
 void PlayerTrackConfigList::AddPlaceholderConfig(const UserGuid& u, int i, bool b){
@@ -47,19 +59,28 @@ void PlayerTrackConfigList::ProcessConfig(const UserGuid& u){
 }
 
 void PlayerTrackConfigList::RemoveConfig(const UserGuid& u){
-    
+    for(int i = 0; i < mConfigs.size(); i++){
+        if(ConfigAt(i).mUserGuid == u){
+            int tracknum = mConfigs[i].TrackNum();
+            if(tracknum != -1){
+                mTrackOccupied[tracknum] = 0;
+            }
+            mConfigs.erase(mConfigs.begin() + i);
+            return;
+        }
+    }
 }
 
 bool PlayerTrackConfigList::UserPresent(const UserGuid& u){
     for(int i = 0; i < mConfigs.size(); i++){
-        if(mConfigs[i].mUserGuid == u) return true;
+        if(ConfigAt(i).mUserGuid == u) return true;
     }
     return false;
 }
 
 const UserGuid& PlayerTrackConfigList::TrackPlayer(int trk) const {
     for(int i = 0; i < mConfigs.size(); i++){
-        if(trk == mConfigs[i].mTrackNum) return mConfigs[i].mUserGuid;
+        if(trk == mConfigs[i].TrackNum()) return ConfigAt(i).mUserGuid;
     }
     return gNullUserGuid;
 }
@@ -70,8 +91,8 @@ bool PlayerTrackConfigList::TrackUsed(int trk) const {
 
 void PlayerTrackConfigList::ChangeDifficulty(const UserGuid& u, int i){
     PlayerTrackConfig& cfg = GetConfigByUserGuid(u);
-    cfg.Update(cfg.mTrackType, i, cfg.mSlot, cfg.mRemote);
-    mTrackDiffs[cfg.mTrackNum] = i;
+    cfg.Update(cfg.GetTrackType(), i, cfg.Slot(), cfg.Remote());
+    mTrackDiffs[cfg.TrackNum()] = i;
 }
 
 const UserGuid& PlayerTrackConfigList::GetUserGuidByIndex(int idx) const {
@@ -108,9 +129,9 @@ unsigned int PlayerTrackConfigList::GetGameCymbalLanes() const { return mGameCym
 
 UserGuid& PlayerTrackConfigList::InstrumentPlayer(SongInfoAudioType ty, int i) const {
     for(int idx = 0; idx < mConfigs.size(); idx++){
-        TrackType trackty = mConfigs[idx].mTrackType;
+        TrackType trackty = mConfigs[idx].GetTrackType();
         if(trackty != kTrackNone && TrackTypeToAudioType(trackty) == ty){
-            if(i == 0) return (UserGuid&)mConfigs[idx].mUserGuid;
+            if(i == 0) return (UserGuid&)ConfigAt(idx).mUserGuid;
             i--;
         }
     }
@@ -150,7 +171,8 @@ int PlayerTrackConfigList::TrackNumOfType(TrackType ty){
         MILO_FAIL("Attempt to call PlayerTrackConfigList::TrackNumOfType before song is loaded");
     }
     int num = TrackNumOfExactType(ty);
-    if(num == -1){
+    if(num != -1) return num;
+    else {
         switch(ty){
             case kTrackRealGuitar22Fret:
                 num = TrackNumOfExactType(kTrackRealGuitar);
@@ -181,3 +203,5 @@ void PlayerTrackConfigList::ProcessConfig(PlayerTrackConfig& cfg){
         }
     }
 }
+
+DECOMP_FORCEACTIVE(PlayerTrackConfigList, "Player %s: ", "(remote) ", "%s, diff %d, track %d\n", "Track %d is diff %d, came from track %d\n")

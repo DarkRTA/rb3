@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_TRACKWATCHERPARENT_H
-#define BEATMATCH_TRACKWATCHERPARENT_H
+#pragma once
 
 class TrackWatcherParent {
 public:
@@ -23,5 +22,3 @@ public:
     virtual int GetVirtualSlot(int) = 0;
     virtual void PlayDrum(int, bool, float) = 0;
 };
-
-#endif
