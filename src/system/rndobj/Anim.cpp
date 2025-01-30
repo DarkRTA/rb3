@@ -119,7 +119,7 @@ void RndAnimatable::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
 }
 
 bool RndAnimatable::IsAnimating(){
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         Hmx::Object* owner = (*it)->RefOwner();
         if(dynamic_cast<AnimTask*>(owner)) return true;
     }
@@ -284,7 +284,7 @@ AnimTask::AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool 
     }
     Hmx::Object* target = anim->AnimTarget();
     if(target){
-        FOREACH_OBJREF(target){
+        FOREACH_OBJREF(it, target){
             Hmx::Object* owner = (*it)->RefOwner();
             if(owner != NULL && owner->ClassName() == AnimTask::StaticClassName()){
                 mBlendTask = (AnimTask*)owner;

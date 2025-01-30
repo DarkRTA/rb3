@@ -107,12 +107,12 @@ void RndTexRenderer::DrawToTexture(){
                     RndMesh* mesh5 = nullptr;
                     if(mMirrorCam){
                         RndMat* mat4 = nullptr;
-                        FOREACH_OBJREF(mOutputTexture){
+                        FOREACH_OBJREF(it, mOutputTexture){
                             mat4 = dynamic_cast<RndMat*>((*it)->RefOwner());
                             if(mat4) break;
                         }
                         if(mat4){
-                            FOREACH_OBJREF(mat4){
+                            FOREACH_OBJREF(it, mat4){
                                 mesh5 = dynamic_cast<RndMesh*>((*it)->RefOwner());
                                 if(mesh5) break;
                             }
