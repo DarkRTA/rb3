@@ -33,11 +33,9 @@ void TrackWatcher::ReplaceImpl(Symbol sym){
 }
 
 void TrackWatcher::SetImpl(){
-    // std::vector<int> vec;
     TrackWatcherState state;
     if(mImpl) mImpl->SaveState(state);
-    delete mImpl;
-    mImpl = 0;
+    RELEASE(mImpl);
     mImpl = NewTrackWatcherImpl(mTrack, mUserGuid, mPlayerSlot, mControllerType, mSongData, mParent, mCfg);
     mImpl->Init();
     for(int i = 0; i < mSinks.size(); i++){

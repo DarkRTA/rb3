@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_TRACKWATCHER_H
-#define BEATMATCH_TRACKWATCHER_H
+#pragma once
 #include "utl/HxGuid.h"
 #include "utl/Symbol.h"
 #include "beatmatch/BeatMatchControllerSink.h"
@@ -40,19 +39,17 @@ public:
     void E3CheatIncSlop();
     void E3CheatDecSlop();
 
-    TrackWatcherImpl* mImpl;
-    std::vector<BeatMatchSink*> mSinks;
-    int mTrack;
-    bool mIndependentSlots;
-    UserGuid mUserGuid;
-    int mPlayerSlot;
-    Symbol mControllerType;
-    SongData* mSongData;
-    TrackWatcherParent* mParent;
-    DataArray* mCfg;
-    DataArray* mSongCfg;
+    TrackWatcherImpl* mImpl; // 0x0
+    std::vector<BeatMatchSink*> mSinks; // 0x4
+    int mTrack; // 0xc
+    bool mIndependentSlots; // 0x10
+    UserGuid mUserGuid; // 0x14
+    int mPlayerSlot; // 0x24
+    Symbol mControllerType; // 0x28
+    SongData* mSongData; // 0x2c
+    TrackWatcherParent* mParent; // 0x30
+    DataArray* mCfg; // 0x34
+    DataArray* mSongCfg; // 0x38
 };
 
 Symbol ControllerTypeToTrackWatcherType(Symbol);
-
-#endif

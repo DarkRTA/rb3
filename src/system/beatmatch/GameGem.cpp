@@ -138,14 +138,14 @@ void GameGem::CopyGem(GameGem* gem, int i){
     mForceStrum = gem->mForceStrum;
     mIgnoreDuration = gem->IgnoreDuration();
     mSlots = gem->GetSlots();
-    mRealGuitar = gem->IsRealGuitar(); // this is gem->IsRealGuitar() but inlined
+    mRealGuitar = gem->IsRealGuitar();
 
     for(unsigned int ui = 0; ui < 6; ui++){
         mFrets[ui] = gem->GetFret(ui);
         SetRGNoteTypeEntry(ui, gem->GetRGNoteType(ui));
     }
 
-    mHandPosition = gem->GetHandPosition(); // this is gem->GetHandPosition() but inlined
+    mHandPosition = gem->GetHandPosition();
     mStrumType = gem->mStrumType;
     mRootNote = gem->mRootNote;
     mLoose = gem->mLoose;
