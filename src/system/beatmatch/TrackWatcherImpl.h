@@ -1,17 +1,22 @@
-#ifndef BEATMATCH_TRACKWATCHERIMPL_H
-#define BEATMATCH_TRACKWATCHERIMPL_H
+#pragma once
 #include "utl/HxGuid.h"
 #include "beatmatch/BeatMatchControllerSink.h"
+#include "beatmatch/TrackWatcherParent.h"
 #include <vector>
 
 // forward decs
 class SongData;
 class GameGemList;
-class TrackWatcherParent;
 class DataArray;
 class BeatMatchSink;
 
 struct GemInProgress {
+    GemInProgress() : mInUse(0), mGemID(-1), unk8(0) {}
+    void Reset(){
+        mInUse = false;
+        mGemID = -1;
+        unk8 = 0;
+    }
     // what RB2 has
     // int mTick; // offset 0x0, size 0x4
     // int mNoStrum; // offset 0x4, size 0x4
@@ -125,12 +130,18 @@ public:
     void CheckForGemsSeen(float);
     void CheckForPitchBend(float);
     void CheckForCodaLanes(int);
-
+    int GetOtherTrillSlot(int, const std::pair<int, int>&) const;
+    void SendHit(float, int, unsigned int, GemHitFlags);
+    void SendIgnore(float, int);
+    void SendSeen(float, int);
+    void SendWhammy(float);
     void HitGem(float, int, unsigned int, GemHitFlags);
     void SendSwingAtHopo(float, int);
     void SendHopo(float, int);
+    void SendReleaseGem(float, int, float);
 
     int Track() const { return mTrack; }
+    int GetFillLogic() const { return mParent->GetFillLogic(); }
 
     UserGuid mUserGuid; // 0x4
     bool mIsLocalUser; // 0x14
@@ -179,5 +190,3 @@ public:
 };
 
 TrackWatcherImpl* NewTrackWatcherImpl(int, const UserGuid&, int, Symbol, SongData*, TrackWatcherParent*, DataArray*);
-
-#endif

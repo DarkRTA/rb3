@@ -101,6 +101,9 @@ public:
     }
 
     bool GetPlayed(){ return mPlayed != 0; }
+    void SetPlayed(bool played){ mPlayed = played; }
+    float DurationMs(){ return mDurationMs; }
+    bool Unk10B1() const { return unk10b1; }
 
     float mMs; // 0x0
     int mTick; // 0x4

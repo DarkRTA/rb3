@@ -171,6 +171,9 @@ public:
     TrackType TrackTypeAt(int idx) const {
         return mTrackInfos[idx]->mType;
     }
+    int TrackDiffAt(int idx) const {
+        return mTrackDifficulties[idx];
+    }
     bool TrackHasIndependentSlots(int idx) const {
         return mTrackInfos[idx]->mIndependentSlots;
     }
