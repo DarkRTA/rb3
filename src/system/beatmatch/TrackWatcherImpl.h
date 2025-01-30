@@ -25,7 +25,7 @@ struct GemInProgress {
     // actually a byte, word, and float
     bool mInUse;
     int mGemID;
-    float unk8;
+    float unk8; // the endMs of this gem? i've seen ms + durationms assigned to it
 };
 
 class TrackWatcherState {
