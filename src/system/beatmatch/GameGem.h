@@ -116,7 +116,7 @@ public:
     unsigned char mPlayed : 1;
     unsigned char mForceStrum : 1;
     unsigned char mIgnoreDuration : 1;
-    unsigned char unk10b4 : 1;
+    unsigned char unk10b4 : 1; // maybe cymbal related?
     unsigned char mShowChordNames : 1;
     unsigned char mShowSlashes : 1;
     unsigned char unk10b1 : 1;

@@ -133,7 +133,7 @@ void TrackWatcherImpl::Poll(float time){
     }
 }
 
-void TrackWatcherImpl::PollHook(float){}
+void TrackWatcherImpl::PollHook(float ms){}
 
 void TrackWatcherImpl::Jump(float f){
     SetAllGemsUnplayed();
@@ -175,12 +175,12 @@ void TrackWatcherImpl::SetAutoplayAccuracy(float f){
 
 void TrackWatcherImpl::SetSyncOffset(float f){ mSyncOffset = f; }
 
-void TrackWatcherImpl::NoteSwing(unsigned int ui, int x){
+void TrackWatcherImpl::NoteSwing(unsigned int ui, int tick){
     float f6 = mParent->GetNow();
     unsigned int ui5 = 1;
     for(int i = 0; ui != 0; ui &= ~ui5, ui5 <<= 1, i++){
         if(ui & ui5){
-            if(AreSlotsInRoll(ui5, x)){
+            if(AreSlotsInRoll(ui5, tick)){
                 if(f6 < mRollIntervalMs + mRollSlotsLastSwingMs[i]){
                     mRollActiveSlots |= ui5;
                 }
@@ -192,16 +192,16 @@ void TrackWatcherImpl::NoteSwing(unsigned int ui, int x){
     }
 }
 
-bool TrackWatcherImpl::IsSwingInRoll(int id, unsigned int ui){
-    GameGem& gem = mGemList->GetGem(id);
+bool TrackWatcherImpl::IsSwingInRoll(int gemID, unsigned int ui){
+    GameGem& gem = mGemList->GetGem(gemID);
     int tick = gem.GetTick();
     unsigned int slots = gem.GetSlots();
     if(!AreSlotsInRoll(slots, tick)) return false;
     else return (slots == (slots & mRollActiveSlots)) && ((ui & mRollActiveSlots) == ui);
 }
 
-bool TrackWatcherImpl::AreSlotsInRoll(unsigned int ui, int i) const {
-    return (ui & mSongData->GetRollingSlotsAtTick(mTrack, mSongData->GetTempoMap()->GetLoopTick(i))) == ui;
+bool TrackWatcherImpl::AreSlotsInRoll(unsigned int slots, int tick) const {
+    return (slots & mSongData->GetRollingSlotsAtTick(mTrack, mSongData->GetTempoMap()->GetLoopTick(tick))) == slots;
 }
 
 void TrackWatcherImpl::CheckForTrills(float f, int i, unsigned int ui){
@@ -247,8 +247,8 @@ bool TrackWatcherImpl::InTrill(int i) const {
     return mSongData->GetTrillSlotsAtTick(Track(), tick, thePair);
 }
 
-bool TrackWatcherImpl::ShouldAutoplayGem(float f, int i){
-    GameGem& gem = mGemList->GetGem(i);
+bool TrackWatcherImpl::ShouldAutoplayGem(float f, int gemID){
+    GameGem& gem = mGemList->GetGem(gemID);
     return !InTrill(gem.GetTick()) ? false : mTrillSucceeding;
 }
 
@@ -285,9 +285,9 @@ void TrackWatcherImpl::SetGemsPlayedUntil(int thresh){
 
 void TrackWatcherImpl::SetAllGemsUnplayed(){ mGemList->Reset(); }
 
-void TrackWatcherImpl::FakeHitGem(float f, int i, GemHitFlags flags){
-    GameGem& gem = mGemList->GetGem(i);
-    HitGem(f, i, gem.GetSlots(), flags);
+void TrackWatcherImpl::FakeHitGem(float ms, int gemID, GemHitFlags flags){
+    GameGem& gem = mGemList->GetGem(gemID);
+    HitGem(ms, gemID, gem.GetSlots(), flags);
 }
 
 void TrackWatcherImpl::HitGem(float ms, int gemID, unsigned int slots, GemHitFlags flags){
@@ -340,19 +340,19 @@ void TrackWatcherImpl::CheckForPasses(float ms){
     }
 }
 
-void TrackWatcherImpl::CheckForSustainedNoteTimeout(float f){
+void TrackWatcherImpl::CheckForSustainedNoteTimeout(float ms){
     for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); ++iter){
         if(iter->mInUse){
             MILO_ASSERT(iter->mGemID != -1, 0x2AC);
-            if(iter->unk8 < f){
+            if(iter->unk8 < ms){
                 EndSustainedNote(*iter);
             }
         }
     }
 }
 
-bool TrackWatcherImpl::GetNextRoll(int i, unsigned int& uiref, int& iref) const {
-    return mSongData->GetNextRoll(mTrack, mSongData->GetTempoMap()->GetLoopTick(i), uiref, iref);
+bool TrackWatcherImpl::GetNextRoll(int i, unsigned int& roll, int& endTick) const {
+    return mSongData->GetNextRoll(mTrack, mSongData->GetTempoMap()->GetLoopTick(i), roll, endTick);
 }
 
 void TrackWatcherImpl::CheckForRolls(float ms, int tick){
@@ -479,8 +479,8 @@ void TrackWatcherImpl::CheckForCodaLanes(int tick){
     }
 }
 
-int TrackWatcherImpl::SustainedGemToKill(int iii){
-    GemInProgress* gem = GetGemInProgressWithSlot(iii);
+int TrackWatcherImpl::SustainedGemToKill(int slot){
+    GemInProgress* gem = GetGemInProgressWithSlot(slot);
     if(gem){
         int i4 = gem->mGemID;
         int i1 = 0;
@@ -488,33 +488,33 @@ int TrackWatcherImpl::SustainedGemToKill(int iii){
         unsigned int slots = activeGem.GetSlots();
         for(int i = 8, j = 7; i != 0; i--, j--){
             if(slots & (1 << j)){
-                if(j < iii || ++i1 >= 2) return i4;
+                if(j < slot || ++i1 >= 2) return i4;
             }
         }
     }
     return -1;
 }
 
-void TrackWatcherImpl::KillSustain(int iii){
-    GameGem& gem = mGemList->GetGem(iii);
+void TrackWatcherImpl::KillSustain(int gemID){
+    GameGem& gem = mGemList->GetGem(gemID);
     if(!gem.LeftHandSlide()){
         float ms = gem.mMs + gem.DurationMs();
         float now = mParent->GetNow();
-        SendReleaseGem(now, iii, ms - now);
-        GemInProgress* gemInProgress = GetGemInProgressWithID(iii);
+        SendReleaseGem(now, gemID, ms - now);
+        GemInProgress* gemInProgress = GetGemInProgressWithID(gemID);
         if(gemInProgress) EndSustainedNote(*gemInProgress);
     }
 }
 
-void TrackWatcherImpl::KillSustainForSlot(int iii){
-    GemInProgress* gemInProgress = GetGemInProgressWithSlot(iii);
+void TrackWatcherImpl::KillSustainForSlot(int slot){
+    GemInProgress* gemInProgress = GetGemInProgressWithSlot(slot);
     if(gemInProgress) KillSustain(gemInProgress->mGemID);
 }
 
-GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float f){
+GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float ms){
     for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){
         if(!iter->mInUse) return iter;
-        if(iter->unk8 < f){
+        if(iter->unk8 < ms){
             iter->Reset();
             return iter;
         }
@@ -581,12 +581,12 @@ void TrackWatcherImpl::MaybeAutoplayFutureCymbal(int gemID){
     }
 }
 
-void TrackWatcherImpl::OnHit(float f1, int i2, int gemID, unsigned int slots, GemHitFlags flags){
+void TrackWatcherImpl::OnHit(float ms, int i2, int gemID, unsigned int slots, GemHitFlags flags){
     GameGem& gem = mGemList->GetGem(gemID);
     int tick = gem.GetTick();
     int i38 = 0;
     GetFillLogic();
-    bool fillCompletion = IsFillCompletion(f1, tick, i38);
+    bool fillCompletion = IsFillCompletion(ms, tick, i38);
     if(gem.Unk10B4()){
         if(!(flags & kGemHitFlagAutoplay) && (flags & kGemHitFlagCymbal)){
             MaybeAutoplayFutureCymbal(gemID);
@@ -606,21 +606,21 @@ void TrackWatcherImpl::OnHit(float f1, int i2, int gemID, unsigned int slots, Ge
             }
             else {
                 FillStop();
-                HitGem(f1, gemID, slots, flags);
+                HitGem(ms, gemID, slots, flags);
             }
         }
     }
 }
 
-bool TrackWatcherImpl::IsFillCompletion(float fff, int iii, int& iref){
-    if(!mParent->FillsEnabled(iii)) return false;
+bool TrackWatcherImpl::IsFillCompletion(float ms, int tick, int& iref){
+    if(!mParent->FillsEnabled(tick)) return false;
     else {
         FillExtent extent(0,0,0);
         int i38 = 0;
-        int i1 = mSongData->GetTempoMap()->GetLoopTick(iii, i38);
-        if(mSongData->GetFillInfo(mTrack)->FillExtentAtOrBefore(i1, extent)){
+        int loopTick = mSongData->GetTempoMap()->GetLoopTick(tick, i38);
+        if(mSongData->GetFillInfo(mTrack)->FillExtentAtOrBefore(loopTick, extent)){
             float time = mSongData->GetTempoMap()->TickToTime(extent.end + i38);
-            if(InSlopWindow(time, fff)){
+            if(InSlopWindow(time, ms)){
                 iref = mSongData->GetTempoMap()->TimeToTick(time);
                 return true;
             }
@@ -629,18 +629,18 @@ bool TrackWatcherImpl::IsFillCompletion(float fff, int iii, int& iref){
     return false;
 }
 
-void TrackWatcherImpl::OnMiss(float f1, int i2, int i3, unsigned int ui, GemHitFlags flags){
-    int tick = mSongData->GetTempoMap()->TimeToTick(f1 + mSyncOffset);
+void TrackWatcherImpl::OnMiss(float ms, int i2, int gemID, unsigned int ui, GemHitFlags flags){
+    int tick = mSongData->GetTempoMap()->TimeToTick(ms + mSyncOffset);
     int i48 = 0;
     bool noFillLogic = GetFillLogic() == 0;
-    GameGem& gem = mGemList->GetGem(i3);
+    GameGem& gem = mGemList->GetGem(gemID);
     if(mParent->InCodaFreestyle(tick, true)){
         CodaSwing(tick, i2);
     }
     else if(mParent->InCoda(tick)){
-        SendMiss(f1, i2, i3, ui, flags);
+        SendMiss(ms, i2, gemID, ui, flags);
     }
-    else if(IsFillCompletion(f1, tick, i48)){
+    else if(IsFillCompletion(ms, tick, i48)){
         if(i2 == 4){
             FillSwing(tick, i2, -1, true);
             RegisterFill(i48);
@@ -649,7 +649,7 @@ void TrackWatcherImpl::OnMiss(float f1, int i2, int i3, unsigned int ui, GemHitF
             FillSwing(tick, i2, -1, true);
         }
         else {
-            SendMiss(f1, i2, i3, ui, flags);
+            SendMiss(ms, i2, gemID, ui, flags);
             ResetFill();
         }
     }
@@ -659,33 +659,33 @@ void TrackWatcherImpl::OnMiss(float f1, int i2, int i3, unsigned int ui, GemHitF
     else if(noFillLogic && mParent->InFill(tick + 120, true)){
         FillSwing(tick + 120, i2, -1, false);
     }
-    else if(!IsSwingInRoll(i3, ui) && !IsTrillActive()){
+    else if(!IsSwingInRoll(gemID, ui) && !IsTrillActive()){
         if(gem.Unk10B1() && gem.GetPlayed() && i2 == gem.GetSlot()){
             gem.SetUnk10B1(false);
         }
         else {
-            SendMiss(f1, i2, i3, ui, flags);
+            SendMiss(ms, i2, gemID, ui, flags);
             ResetFill();
         }
     }
 }
 
-void TrackWatcherImpl::OnPass(float f, int i){
-    int tick = mGemList->GetGem(i).GetTick();
+void TrackWatcherImpl::OnPass(float ms, int gemID){
+    int tick = mGemList->GetGem(gemID).GetTick();
     if(mParent->InFill(tick, true)){
         if(!GetFillLogic()){
-            SendIgnore(f, i);
+            SendIgnore(ms, gemID);
             return;
         }
         else {
             int iref;
             if(IsFillCompletion(mSongData->GetTempoMap()->TickToTime(tick), tick, iref)){
-                SendImplicit(f, i);
+                SendImplicit(ms, gemID);
                 return;
             }
         }
     }
-    SendPass(f, i);
+    SendPass(ms, gemID);
     ResetFill();
 }
 
@@ -746,13 +746,13 @@ void TrackWatcherImpl::SendPass(float ms, int gemID){
     }
 }
 
-void TrackWatcherImpl::SendReleaseGem(float f1, int i2, float f3){
+void TrackWatcherImpl::SendReleaseGem(float f1, int gemID, float f3){
     for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
-        (*it)->ReleaseGem(mTrack, f1, i2, f3);
+        (*it)->ReleaseGem(mTrack, f1, gemID, f3);
     }
 }
 
-void TrackWatcherImpl::SendSeen(float f1, int gemID){
+void TrackWatcherImpl::SendSeen(float ms, int gemID){
     if(mIsCurrentTrack && TheBeatMatchOutput.IsActive()){
         GameGem& gem = mGemList->GetGem(gemID);
         if(gem.IsRealGuitar()){
@@ -770,19 +770,19 @@ void TrackWatcherImpl::SendSeen(float f1, int gemID){
         }
     }
     for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
-        (*it)->SeeGem(mTrack, f1, gemID);
+        (*it)->SeeGem(mTrack, ms, gemID);
     }
 }
 
-void TrackWatcherImpl::SendIgnore(float f, int i){
+void TrackWatcherImpl::SendIgnore(float ms, int gemID){
     for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
-        (*it)->Ignore(mTrack, f, i, mUserGuid);
+        (*it)->Ignore(mTrack, ms, gemID, mUserGuid);
     }
 }
 
-void TrackWatcherImpl::SendImplicit(float f, int i){
+void TrackWatcherImpl::SendImplicit(float ms, int gemID){
     for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
-        (*it)->ImplicitGem(mTrack, f, i, mUserGuid);
+        (*it)->ImplicitGem(mTrack, ms, gemID, mUserGuid);
     }
 }
 
@@ -800,8 +800,8 @@ void TrackWatcherImpl::SendSwingAtHopo(float f, int i){
     }
 }
 
-void TrackWatcherImpl::SendHopo(float f, int i){
+void TrackWatcherImpl::SendHopo(float ms, int gemID){
     for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
-        (*it)->Hopo(mTrack, f, i);
+        (*it)->Hopo(mTrack, ms, gemID);
     }
 }
