@@ -248,7 +248,7 @@ void CharClip::SetFlags(int i){
 }
 
 bool CharClip::SharesGroups(CharClip* clip){
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         CharClipGroup* grp = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(grp && grp->HasClip(clip)) return true;
     }
@@ -578,14 +578,14 @@ void CharClip::SetBeatAlignMode(int align){
 
 int CharClip::InGroups(){
     int num = 0;
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         if(dynamic_cast<CharClipGroup*>((*it)->RefOwner())) num++;
     }
     return num;
 }
 
 bool CharClip::InGroup(Hmx::Object* o){
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         if(o == (*it)->RefOwner()) return true;
     }
     return false;
@@ -596,7 +596,7 @@ void CharClip::MakeMRU(){
     static int sMaxGroups = 10;
     static Symbol s("CharClipGroup");
     int groupIdx = 0;
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         ObjRef* cur = *it;
         Hmx::Object* owner = cur->RefOwner();
         if(owner && owner->ClassName() == s){
@@ -882,7 +882,7 @@ END_HANDLERS
 
 DataNode CharClip::OnGroups(DataArray*){
     DataArray* ret = new DataArray(0);
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         CharClipGroup* group = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(group) ret->Insert(ret->Size(), group);
     }
@@ -893,7 +893,7 @@ DataNode CharClip::OnGroups(DataArray*){
 
 DataNode CharClip::OnHasGroup(DataArray* arr){
     const char* str = arr->Str(2);
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         CharClipGroup* group = dynamic_cast<CharClipGroup*>((*it)->RefOwner());
         if(group && streq(group->Name(), str)){
             return 1;

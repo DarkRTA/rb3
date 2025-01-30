@@ -461,18 +461,14 @@ void objType::Load(BinStream& bs){
 
 // BEGIN OBJREF ITERATION MACROS -----------------------------------------------------------------------
 
-// #define FOREACH_OBJREF(obj, code_block) \
-// { \
-//     std::vector<ObjRef*>::const_reverse_iterator it = obj->Refs().rbegin(); \
-//     std::vector<ObjRef*>::const_reverse_iterator itEnd = obj->Refs().rend(); \
-//     for(; it != itEnd; ++it){ \
-//         {code_block}; \
-//     } \
-// }
-
-#define FOREACH_OBJREF(obj) \
+#define FOREACH_OBJREF(it, obj) \
     std::vector<ObjRef*>::const_reverse_iterator it = obj->Refs().rbegin(); \
-    std::vector<ObjRef*>::const_reverse_iterator itEnd = obj->Refs().rend(); \
+    std::vector<ObjRef*>::const_reverse_iterator it##End = obj->Refs().rend(); \
     for(; it != itEnd; ++it)
+
+#define FOREACH_OBJREF_POST(it, obj) \
+    std::vector<ObjRef*>::const_reverse_iterator it = obj->Refs().rbegin(); \
+    std::vector<ObjRef*>::const_reverse_iterator it##End = obj->Refs().rend(); \
+    for(; it != itEnd; it++)
 
 // END OBJREF ITERATION MACROS -------------------------------------------------------------------------

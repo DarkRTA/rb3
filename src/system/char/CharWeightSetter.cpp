@@ -62,7 +62,7 @@ void CharWeightSetter::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hm
     for(ObjPtrList<CharWeightSetter>::iterator it = mMaxWeights.begin(); it != mMaxWeights.end(); ++it){
         changedBy.push_back(*it);
     }
-    FOREACH_OBJREF(this){
+    FOREACH_OBJREF(it, this){
         CharWeightable* weightowner = dynamic_cast<CharWeightable*>((*it)->RefOwner());
         if(weightowner && weightowner->mWeightOwner == this) change.push_back(weightowner);
     }
