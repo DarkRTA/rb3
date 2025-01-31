@@ -33,6 +33,7 @@ jobs:
             exclude: '(json-c)'
           - check: 'src/system'
             exclude: '(stlport|sdk|zlib|strips|soundtouch|oggvorbis|tomcrypt|speex)'
+      fail-fast: false
     steps:
     - uses: actions/checkout@v4
     - uses: jidicula/clang-format-action@v4.14.0
