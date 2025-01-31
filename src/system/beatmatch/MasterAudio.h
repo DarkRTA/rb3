@@ -140,7 +140,7 @@ public:
     virtual void SetPaused(bool);
     virtual void Poll();
     virtual float GetTime() const;
-    virtual int GetSongStream();
+    virtual Stream* GetSongStream();
     virtual void SetMasterVolume(float);
 
     virtual void Hit(int, float, int, unsigned int, GemHitFlags);

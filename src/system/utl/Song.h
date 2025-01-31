@@ -1,4 +1,7 @@
 #pragma once
+#include "obj/Data.h"
+#include "obj/Dir.h"
+#include "obj/Object.h"
 #include "rndobj/Anim.h"
 #include "rndobj/Overlay.h"
 #include "midi/Midi.h"
@@ -9,6 +12,18 @@
 
 class HxSongData;
 class HxMaster;
+
+class SongCallback {
+public:
+    SongCallback(){}
+    virtual ~SongCallback(){}
+    virtual void SongSetFrame(class Song*, float) = 0;
+    virtual ObjectDir* SongMainDir() = 0;
+    virtual void SongPlay(bool) = 0;
+    virtual void UpdateObject(const Hmx::Object*, DataArray*) = 0;
+    virtual void Preload() = 0;
+    virtual void ProcessBookmarks(DataNode) = 0;
+};
 
 class Song : public RndAnimatable, public MidiReceiver, public RndOverlay::Callback {
 public:
@@ -61,7 +76,7 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
-    static Hmx::Object* sCallback;
+    static SongCallback* sCallback;
 
     HxMaster* mHxMaster; // 0x1c
     HxSongData* mHxSongData; // 0x20
