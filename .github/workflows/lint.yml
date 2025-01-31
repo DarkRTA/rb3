@@ -30,7 +30,7 @@ jobs:
     - uses: jidicula/clang-format-action@v4.14.0
       with:
         check-path: 'src'
-        exclude-regex: '(stlport|sdk)'
+        exclude-regex: '(stlport|sdk|json-c|zlib|strips|soundtouch|oggvorbis|tomcrypt)'
         clang-format-version: '17'
         fallback-style: 'none'
 
