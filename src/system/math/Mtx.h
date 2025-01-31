@@ -27,33 +27,24 @@ namespace Hmx {
         Matrix3(const Vector3 &v1, const Vector3 &v2, const Vector3 &v3)
             : x(v1), y(v2), z(v3) {}
 
+        // clang-format off
         Matrix3(
-            float f1,
-            float f2,
-            float f3,
-            float f4,
-            float f5,
-            float f6,
-            float f7,
-            float f8,
-            float f9
+            float f1, float f2, float f3,
+            float f4, float f5, float f6,
+            float f7, float f8, float f9
         )
             : x(f1, f2, f3), y(f4, f5, f6), z(f7, f8, f9) {}
 
-        void
-        Set(float f1,
-            float f2,
-            float f3,
-            float f4,
-            float f5,
-            float f6,
-            float f7,
-            float f8,
-            float f9) {
+        void Set(
+            float f1, float f2, float f3,
+            float f4, float f5, float f6,
+            float f7, float f8, float f9
+        ) {
             x.Set(f1, f2, f3);
             y.Set(f4, f5, f6);
             z.Set(f7, f8, f9);
         }
+        // clang-format on
         void Set(const Vector3 &v1, const Vector3 &v2, const Vector3 &v3) {
             x = v1;
             y = v2;
