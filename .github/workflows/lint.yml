@@ -22,7 +22,7 @@ permissions:
   contents: read
 
 jobs:
-  check-format-and-tidy:
+  check-format:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -30,8 +30,6 @@ jobs:
     - uses: jidicula/clang-format-action@v4.14.0
       with:
         check-path: 'src'
-        exclude-regex: '(stlport|sdk|json-c|zlib|strips|soundtouch|oggvorbis|tomcrypt)'
+        exclude-regex: '(stlport|sdk|json-c|zlib|strips|soundtouch|oggvorbis|tomcrypt|speex)'
         clang-format-version: '17'
         fallback-style: 'none'
-
-    # no tidy for now I'm too lazy sorry
