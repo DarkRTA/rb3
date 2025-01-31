@@ -1,4 +1,9 @@
+src/network/net/json-c
 src/system/stlport
 src/system/speex
 src/system/zlib
-src/network/net/json-c
+src/system/math/strips
+src/system/synthwii/soundtouch
+src/system/oggvorbis
+src/system/synth/tomcrypt
+src/sdk
