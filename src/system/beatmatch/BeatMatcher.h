@@ -1,4 +1,5 @@
 #pragma once
+#include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "beatmatch/BeatMatchSink.h"
 #include "beatmatch/DrumPlayer.h"
@@ -43,7 +44,7 @@ public:
     virtual void FretButtonDown(int, int);
     virtual void FretButtonUp(int);
     virtual void RGFretButtonDown(int);
-    virtual int Swing(int, bool, bool, bool, bool, GemHitFlags);
+    virtual bool Swing(int, bool, bool, bool, bool, GemHitFlags);
     virtual void ReleaseSwing();
     virtual void NonStrumSwing(int, bool, bool);
     virtual float MercurySwitch(float);
@@ -68,6 +69,11 @@ public:
     bool IsReady();
     void Start();
     void RegisterSink(BeatMatchSink&);
+    void Poll(float);
+    void SetNow(float);
+    void CheckMercurySwitch(float);
+    void Jump(float);
+    void Restart();
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc
@@ -79,7 +85,7 @@ public:
     int unk30; // 0x30
     BeatMatchSink* mSink; // 0x34
     MasterAudio* mAudio; // 0x38
-    int unk3c; // 0x3c
+    BeatMatchController* mController; // 0x3c
     MercurySwitchFilter* mMercurySwitchFilter; // 0x40
     TrackWatcher* mWatcher; // 0x44
     std::vector<TrackType> mTrackTypes; // 0x48
@@ -92,7 +98,7 @@ public:
     int unk7c; // 0x7c
     float unk80; // 0x80
     float unk84; // 0x84
-    int unk88; // 0x88
+    bool unk88; // 0x88
     int unk8c; // 0x8c
     float unk90; // 0x90
     bool unk94; // 0x94
