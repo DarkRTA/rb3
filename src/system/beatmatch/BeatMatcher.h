@@ -1,8 +1,9 @@
 #pragma once
 #include "beatmatch/BeatMatchControllerSink.h"
+#include "beatmatch/BeatMatchSink.h"
 #include "beatmatch/DrumPlayer.h"
 #include "beatmatch/MasterAudio.h"
-// #include "beatmatch/MercurySwitchFilter.h"
+#include "beatmatch/TrackType.h"
 #include "beatmatch/TrackWatcher.h"
 #include "beatmatch/TrackWatcherParent.h"
 #include "game/Player.h"
@@ -61,8 +62,14 @@ public:
     void SetAutoplay(bool);
     void PostLoad();
     void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
+    void PostDynamicAdd(int, float);
+    void ResetGemStates(float);
+    void Leave();
+    bool IsReady();
+    void Start();
+    void RegisterSink(BeatMatchSink&);
 
-    bool unk8; // 0x8
+    bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc
     int unk1c; // 0x1c
     int unk20; // 0x20
@@ -70,18 +77,18 @@ public:
     SongData* mSongData; // 0x28
     DataArray* mCfg; // 0x2c
     int unk30; // 0x30
-    int unk34; // 0x34
+    BeatMatchSink* mSink; // 0x34
     MasterAudio* mAudio; // 0x38
     int unk3c; // 0x3c
     MercurySwitchFilter* mMercurySwitchFilter; // 0x40
     TrackWatcher* mWatcher; // 0x44
-    std::vector<int> unk48; // 0x48
-    std::vector<int> unk50; // 0x50
+    std::vector<TrackType> mTrackTypes; // 0x48
+    std::vector<float> unk50; // 0x50
     DrumPlayer* mDrumPlayer; // 0x58
-    int unk5c; // 0x5c
+    int mCurTrack; // 0x5c
     bool unk60; // 0x60
     SongPos mSongPos; // 0x64
-    float unk78; // 0x78
+    float mNow; // 0x78
     int unk7c; // 0x7c
     float unk80; // 0x80
     float unk84; // 0x84
