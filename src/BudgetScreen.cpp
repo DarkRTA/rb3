@@ -16,10 +16,7 @@
 extern int gMainFree;
 bool gUseSsv;
 
-DECOMP_FORCEACTIVE(BudgetScreen,
-    " ",
-    "\n"
-)
+DECOMP_FORCEACTIVE(BudgetScreen, " ", "\n")
 
 Distribution::Distribution(float res) : mRes(res) {
     MILO_ASSERT(mRes > 0.0f, 70);
@@ -55,12 +52,14 @@ float Distribution::Pctile(float pct) {
     return 0.0f;
 }
 
-inline void Distribution::asdkjf(TextStream& stream, float min, float defaultMean, float max, const char* fmt) {
+inline void Distribution::asdkjf(
+    TextStream &stream, float min, float defaultMean, float max, const char *fmt
+) {
     float mean = mCount != 0 ? mTotal / mCount : defaultMean;
     stream << MakeString(fmt, min, mean, max);
 }
 
-void Distribution::Report(TextStream& stream, const char* tag) {
+void Distribution::Report(TextStream &stream, const char *tag) {
     MILO_ASSERT(tag || !gUseSsv, 103);
 
     if (!gUseSsv) {
@@ -83,9 +82,22 @@ void Distribution::Report(TextStream& stream, const char* tag) {
             continue;
 
         if (gUseSsv) {
-            stream << MakeString("%s;[%.1f,%.1f);%d;%3.1f\n", tag, start, start + res, hitCount, (float)(acc * 100) / mCount);
+            stream << MakeString(
+                "%s;[%.1f,%.1f);%d;%3.1f\n",
+                tag,
+                start,
+                start + res,
+                hitCount,
+                (float)(acc * 100) / mCount
+            );
         } else {
-            stream << MakeString(" [%.1f, %.1f): %5d (%3.1f%%)\n", start, start + res, hitCount, (float)(acc * 100) / mCount);
+            stream << MakeString(
+                " [%.1f, %.1f): %5d (%3.1f%%)\n",
+                start,
+                start + res,
+                hitCount,
+                (float)(acc * 100) / mCount
+            );
         }
 
         acc -= mDist[i];
@@ -124,7 +136,7 @@ void Distribution::operator<<(float value) {
     mTotal += value;
 }
 
-float Average(std::vector<float>& items, bool partial) {
+float Average(std::vector<float> &items, bool partial) {
     std::sort(items.begin(), items.end());
 
     // for whatever reason this needs to be up here to match?
@@ -141,20 +153,16 @@ float Average(std::vector<float>& items, bool partial) {
     return total / (size - endOffset);
 }
 
-BudgetScreen::BudgetScreen() :
-    mTestPanel(nullptr), mLastCpu(0.0), mLastGpu(0.0),
-    mCpuDist(0.1), mGsDist(0.1), mHudDist(0.1), mEtcDist(0.1),
-    mRecordStartTick(0), mRecordEndTick(1000000),
-    mTests(SystemConfig("tests")), mTestIdx(0),
-    mWorstOnly(OptionBool("worst_only", false)),
-    mWorstCpuPctile(0.0),
-    mWorstGsPctile(0.0),
-    mSampleCount(0)
-{
+BudgetScreen::BudgetScreen()
+    : mTestPanel(nullptr), mLastCpu(0.0), mLastGpu(0.0), mCpuDist(0.1), mGsDist(0.1),
+      mHudDist(0.1), mEtcDist(0.1), mRecordStartTick(0), mRecordEndTick(1000000),
+      mTests(SystemConfig("tests")), mTestIdx(0),
+      mWorstOnly(OptionBool("worst_only", false)), mWorstCpuPctile(0.0),
+      mWorstGsPctile(0.0), mSampleCount(0) {
     TheSongMgr->AddSongs(SystemConfig("songs"));
     TheContentMgr->UnregisterCallback(TheSongMgr, false);
 
-    const char* logFile = OptionStr("budget_log", SystemConfig("log_file")->Str(1));
+    const char *logFile = OptionStr("budget_log", SystemConfig("log_file")->Str(1));
     mLog = new TextFileStream(logFile, false);
 
     // yes there's just a random list here lol
@@ -165,7 +173,7 @@ BudgetScreen::BudgetScreen() :
     gUseSsv = useSsv;
 }
 
-void BudgetScreen::Enter(UIScreen* screen) {
+void BudgetScreen::Enter(UIScreen *screen) {
     mCpuDist.Reset();
     mGsDist.Reset();
     mHudDist.Reset();
@@ -211,12 +219,12 @@ void BudgetScreen::Enter(UIScreen* screen) {
     mLastCpu = 0;
     mSampleCount = 0;
 
-    DataArray* test = mTests->Array(mTestIdx)->FindArray("init", false);
+    DataArray *test = mTests->Array(mTestIdx)->FindArray("init", false);
     if (test != nullptr) {
         test->ExecuteScript(1, nullptr, nullptr, 1);
     }
 }
-inline float GetLastTimerMs(const char* name) {
+inline float GetLastTimerMs(const char *name) {
     return AutoTimer::GetTimer(name)->GetLastMs();
 }
 
@@ -224,14 +232,16 @@ void BudgetScreen::Poll() {
     UIScreen::Poll();
     START_AUTO_TIMER("budget_screen_poll");
 
-    static DataArray* timerScript = SystemConfig("rnd")->FindArray("timer_script", false);
+    static DataArray *timerScript = SystemConfig("rnd")->FindArray("timer_script", false);
     if (timerScript)
         timerScript->ExecuteScript(1, nullptr, nullptr, 1);
 
-    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f);
+    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(
+        TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f
+    );
 
     // needs to be used as a local variable
-    Timer* slowFrameTimer = &Timer::sSlowFrameTimer;
+    Timer *slowFrameTimer = &Timer::sSlowFrameTimer;
     float slowFrameTime = slowFrameTimer->SplitMs();
 
     bool b = slowFrameTime > 0;
@@ -272,7 +282,7 @@ void BudgetScreen::Poll() {
 
     if (tick >= mRecordEndTick) {
         if (!gUseSsv) {
-            const char* testName = mTests->Array(mTestIdx)->Str(0);
+            const char *testName = mTests->Array(mTestIdx)->Str(0);
             *mLog << "START TEST: " << testName;
 
             float gpuPctile = mGsDist.Pctile(0.99f);
@@ -284,10 +294,14 @@ void BudgetScreen::Poll() {
 
             mLog->mFile.Flush();
 
-            *mLog << "\nCpu "; mCpuDist.Report(*mLog, nullptr);
-            *mLog << "\nGpu "; mGsDist.Report(*mLog, nullptr);
-            *mLog << "\nHUD/Track "; mHudDist.Report(*mLog, nullptr);
-            *mLog << "\nGame Etc. "; mEtcDist.Report(*mLog, nullptr);
+            *mLog << "\nCpu ";
+            mCpuDist.Report(*mLog, nullptr);
+            *mLog << "\nGpu ";
+            mGsDist.Report(*mLog, nullptr);
+            *mLog << "\nHUD/Track ";
+            mHudDist.Report(*mLog, nullptr);
+            *mLog << "\nGame Etc. ";
+            mEtcDist.Report(*mLog, nullptr);
         }
 
         gMainFree = HeapFreeSize("main");
@@ -304,7 +318,7 @@ void BudgetScreen::Poll() {
             mWorstGsName = mTests->Array(mTestIdx)->Str(0);
         }
 
-        UIScreen* stopScreen = ObjectDir::Main()->Find<UIScreen>("stop_budget", true);
+        UIScreen *stopScreen = ObjectDir::Main()->Find<UIScreen>("stop_budget", true);
         TheUI->GotoScreen(stopScreen, false, false);
     }
 }

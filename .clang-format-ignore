@@ -1,1 +1,4 @@
 src/system/stlport
+src/system/speex
+src/system/zlib
+src/network/net/json-c

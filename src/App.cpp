@@ -18,8 +18,9 @@
 #include "utl/Option.h"
 #include <revolution/VI.h>
 
-App::App(int argc, char** argv) {
-    Timer init_time; init_time.Start();
+App::App(int argc, char **argv) {
+    Timer init_time;
+    init_time.Start();
     InitMakeString();
     class String s;
     if (argc == 0) {
@@ -32,7 +33,7 @@ App::App(int argc, char** argv) {
     SetFileChecksumData();
     SystemPreInit(argc, argv, "config/band_preinit_keep.dta");
     TheRnd->PreInit();
-    TheRnd->SetClearColor(Hmx::Color(1,0,0));
+    TheRnd->SetClearColor(Hmx::Color(1, 0, 0));
     TheRnd->Init();
     VISetBlack(true);
     VIFlush();
@@ -40,13 +41,13 @@ App::App(int argc, char** argv) {
     ObjDirPtr<ObjectDir> oPtr(0);
 }
 
-App::~App() {
-    TheDebug.Exit(0, true);
-}
+App::~App() { TheDebug.Exit(0, true); }
 
 #pragma pool_data off // TODO this is wrong, but without it it uses ...bss.0
 void App::DrawRegular() {
-    if (ThePlatformMgr.mConnected) ThePlatformMgr.Draw(); else {
+    if (ThePlatformMgr.mConnected)
+        ThePlatformMgr.Draw();
+    else {
         TIMER_ACTION("begin_draw", TheRnd->BeginDrawing())
         TIMER_ACTION("ui_draw", TheUI->Draw())
         TIMER_ACTION("platform_draw", ThePlatformMgr.Draw())
@@ -57,8 +58,10 @@ void App::DrawRegular() {
 
 void App::CaptureHiRes() {
     bool notPaused = false;
-    if (TheGame && !TheGame->mIsPaused) notPaused = true;
-    if (notPaused) TheGame->SetPaused(true, true, true);
+    if (TheGame && !TheGame->mIsPaused)
+        notPaused = true;
+    if (notPaused)
+        TheGame->SetPaused(true, true, true);
     DrawRegular();
     int max = TheHiResScreen.mTiling * TheHiResScreen.mTiling;
     for (int i = 0; i <= max; i++) {
@@ -67,29 +70,32 @@ void App::CaptureHiRes() {
     }
     TheHiResScreen.Finish();
 
-    if (notPaused) TheGame->SetPaused(false, true, true);
+    if (notPaused)
+        TheGame->SetPaused(false, true, true);
 }
 
 void App::Draw() {
-    if (TheHiResScreen.mActive) CaptureHiRes();
-    else DrawRegular();
+    if (TheHiResScreen.mActive)
+        CaptureHiRes();
+    else
+        DrawRegular();
 }
 
 void App::Run() { RunWithoutDebugging(); }
 
 void App::RunWithoutDebugging() {
-    Timer loop_timer; loop_timer.Restart();
+    Timer loop_timer;
+    loop_timer.Restart();
     int frameticker = 0;
     while (true) {
         frameticker++;
         TIMER_ACTION("poll", ;)
         TIMER_ACTION("system_poll", SystemPoll(false))
-        TIMER_ACTION("inclusive_ui_poll", {TheAchievements->Poll();})
+        TIMER_ACTION("inclusive_ui_poll", { TheAchievements->Poll(); })
         TIMER_ACTION("synth_poll", TheSynth->Poll())
         // net_poll
         TIMER_ACTION("inclusive_ui_poll", TheUI->Poll())
         Draw();
-
 
         loop_timer.Ms();
         loop_timer.Restart();
