@@ -29,7 +29,8 @@ jobs:
 
     - uses: jidicula/clang-format-action@v4.14.0
       with:
-        exclude-regex: '.*\/?doc\/.*'
+        check-path: 'src'
+        exclude-regex: '(stlport|sdk)'
         clang-format-version: '17'
         fallback-style: 'none'
 
