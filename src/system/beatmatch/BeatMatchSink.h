@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BEATMATCHSINK_H
-#define BEATMATCH_BEATMATCHSINK_H
+#pragma once
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "beatmatch/Phrase.h"
 #include "utl/HxGuid.h"
@@ -34,5 +33,3 @@ public:
     virtual void NoteOff(int){}
     virtual void PlayNote(int){}
 };
-
-#endif

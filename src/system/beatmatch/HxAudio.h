@@ -1,5 +1,6 @@
 #ifndef BEATMATCH_HXAUDIO_H
 #define BEATMATCH_HXAUDIO_H
+#include "synth/Stream.h"
 
 class HxAudio {
 public:
@@ -10,7 +11,7 @@ public:
     virtual void SetPaused(bool) = 0;
     virtual void Poll() = 0;
     virtual float GetTime() const = 0;
-    virtual int GetSongStream() = 0; // fix ret type
+    virtual Stream* GetSongStream() = 0; // fix ret type
     virtual void SetMasterVolume(float) = 0;
 };
 

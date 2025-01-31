@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BASEGUITARTRACKWATCHERIMPL_H
-#define BEATMATCH_BASEGUITARTRACKWATCHERIMPL_H
+#pragma once
 #include "beatmatch/TrackWatcherImpl.h"
 #include "beatmatch/GameGem.h"
 
@@ -29,7 +28,7 @@ public:
     virtual bool IsHighestFret(int) const = 0;
     virtual bool InGem(int, const GameGem&) const = 0;
     virtual bool HarmlessFretDown(int, int) const = 0;
-    virtual bool IsCoreGuitar(void) const = 0;
+    virtual bool IsCoreGuitar() const = 0;
 
     void CheckForFretTimeout(float);
     void CheckForHopoTimeout(float);
@@ -49,5 +48,3 @@ public:
     float mFretSlop; // 0xe0
     GemHitFlags mBaseGuitarFlags; // 0xe4 - change the name of this var cuz it probably ain't the clearest
 };
-
-#endif

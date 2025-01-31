@@ -1,4 +1,7 @@
 #include "utl/Song.h"
+#include "obj/Dir.h"
+#include "os/Debug.h"
+#include "os/System.h"
 #include "utl/FakeSongMgr.h"
 #include "utl/BeatMap.h"
 #include "obj/Msg.h"
@@ -7,15 +10,10 @@
 #include "synth/Synth.h"
 #include "midi/MidiParser.h"
 #include "midi/MidiParserMgr.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 
-Hmx::Object* Song::sCallback; // almost definitely some derivative of an Object, rather than an Object itself
-
-// (**(code **)(*sCallback + 0xc))((double)fVar1,sCallback,this);
-// (**(code **)(*sCallback + 0x10))(); - returns an ObjectDir*
-// (**(code **)(*sCallback + 0x14))(sCallback,1); - presumably the dtor
-// (**(code **)(*sCallback + 0x18))(sCallback,this,this_00);
-// (**(code **)(*sCallback + 0x1c))(); - returns void
+SongCallback* Song::sCallback;
 
 Song::Song() : mHxMaster(0), mHxSongData(0), mDebugParsers(this, kObjListNoNull), mSongEndFrame(0), mSpeed(1.0f), unk5c(0, 0), unk7c(1) {
     SetName("Song", ObjectDir::Main());
@@ -34,8 +32,11 @@ END_COPYS
 
 SAVE_OBJ(Song, 0x38)
 
+bool gSongLoadBool;
+
 BEGIN_LOADS(Song)
-    bs.ReadInt();
+    int x; bs >> x;
+    // bs.ReadInt();
     LOAD_SUPERCLASS(RndAnimatable)
     static Symbol sSongName;
     bs >> sSongName;
@@ -43,9 +44,8 @@ BEGIN_LOADS(Song)
         mSongName = sSongName;
         Load();
     }
-    bool b;
-    bs >> b;
-    if(b) unk7c = true;
+    bs >> gSongLoadBool;
+    if(gSongLoadBool) unk7c = true;
 END_LOADS
 
 float Song::GetBeat(){
@@ -104,11 +104,11 @@ float Song::EndFrame(){ return mSongEndFrame; }
 
 void Song::Load(){
     std::vector<Symbol> vec;
-    for(ObjPtrList<Hmx::Object, ObjectDir>::iterator it = mDebugParsers.begin(); it != mDebugParsers.end(); ++it){
+    FOREACH(it, mDebugParsers){
         vec.push_back((*it)->Name());
     }
     MILO_ASSERT(sCallback, 0xF8);
-//   (**(code **)(*sCallback + 0x1c))();
+    sCallback->Preload();
     Unload();
     if(mSongName.Null()) return;
     else LoadSong();
@@ -129,21 +129,25 @@ void Song::LoadSong(){
         if(unk5c.y > mSongEndFrame) SetLoopEnd(mSongEndFrame);
     }
     JumpTo(0);
+    sCallback->ProcessBookmarks(GetBookmarks());
+    if(SystemConfig("milo_tool")->FindInt("mute_song")){
+        mHxMaster->GetHxAudio()->SetMasterVolume(-96.0f);
+    }
+    unk50 = mSongName;
 }
 
 void Song::CreateSong(Symbol, DataArray*, HxSongData** d, HxMaster** m){ *d = 0; *m = 0; }
 
 void Song::Unload(){
-    delete mHxMaster;
-    mHxMaster = 0;
-    delete mHxSongData;
-    mHxSongData = 0;
+    RELEASE(mHxMaster);
+    RELEASE(mHxSongData);
     unk24.clear();
 }
 
 void Song::Play(){
     if(mHxMaster){
-        mHxMaster->Jump(mFrame * 1000.0f);
+        sCallback->SongPlay(true);
+        mHxMaster->Jump(GetFrame() * 1000.0f);
         while(!mHxMaster->GetHxAudio()->IsReady()){
             TheSynth->Poll();
             mHxMaster->GetHxAudio()->Poll();
@@ -154,6 +158,7 @@ void Song::Play(){
 
 void Song::Pause(){
     if(mHxMaster){
+        sCallback->SongPlay(true);
         if(mHxMaster){
             mHxMaster->GetHxAudio()->SetPaused(true);
         }
@@ -182,10 +187,10 @@ void Song::OnText(int i, const char* cc, unsigned char uc){
 
 DataNode Song::OnMBTFromSeconds(const DataArray* da){
     MBT mbt = GetMBTFromFrame(da->Float(2), 0);
-    *da->Var(3) = DataNode(mbt.measure);
-    *da->Var(4) = DataNode(mbt.beat);
-    *da->Var(5) = DataNode(mbt.tick);
-    return DataNode(0);
+    *da->Var(3) = mbt.measure;
+    *da->Var(4) = mbt.beat;
+    *da->Var(5) = mbt.tick;
+    return 0;
 }
 
 void Song::JumpTo(Symbol s){
@@ -205,7 +210,7 @@ void Song::JumpTo(int i){
         f = mHxSongData->GetTempoMap()->TickToTime(i) / 1000.0f;
     }
     MILO_ASSERT(sCallback, 0x19A);
-    // (**(code **)(*sCallback + 0xc))((double)fVar1,sCallback,this);
+    sCallback->SongSetFrame(this, f);
     SyncState();
 }
 
@@ -228,26 +233,30 @@ END_HANDLERS
 
 DataNode Song::GetBookmarks(){
     DataArrayPtr ptr(new DataArray(unk24.size() + 1));
-    ptr->Node(0) = DataNode("song_begin");
+    ptr->Node(0) = "song_begin";
     int idx = 1;
-    for(std::map<int, Symbol>::iterator it = unk24.begin(); it != unk24.end(); ++it){
-        ptr->Node(idx) = DataNode(it->second);
+    FOREACH(it, unk24){ // no const? how can we force const
+        ptr->Node(idx) = it->second;
         idx++;
     }
-    return DataNode(ptr);
+    // for(std::map<int, Symbol>::const_iterator it = unk24.begin(); it != unk24.end(); ++it){
+    //     ptr->Node(idx) = it->second;
+    //     idx++;
+    // }
+    return ptr;
 }
 
 DataNode Song::GetMidiParsers(){
     DataArrayPtr ptr(new DataArray(0));
     if(TheMidiParserMgr){
-        for(std::list<MidiParser*>::iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); ++it){
+        for(std::list<MidiParser*>::const_iterator it = MidiParser::sParsers.begin(); it != MidiParser::sParsers.end(); ++it){
             String str((*it)->Name());
             if(str != "events_parser"){
-                ptr->Insert(ptr->Size(), DataNode(*it));
+                ptr->Insert(ptr->Size(), *it);
             }
         }
     }
-    return DataNode(ptr);
+    return ptr;
 }
 
 void Song::UpdateDebugParsers(){
@@ -271,19 +280,25 @@ void Song::SetLoopEnd(float f){
 // fn_8035FC14
 void Song::SetStateDirty(bool dirty){
     unk7c = dirty;
-    DataArrayPtr ptr(DataNode(Symbol(Name())));
-//   (**(code **)(*sCallback + 0x18))(sCallback,this,this_00); sCallback->SomeMethod(this, (DataArray*)ptr);
+    DataNode name = Symbol(Name());
+    DataArrayPtr ptr(name);
+    sCallback->UpdateObject(this, ptr);
 }
 
 void Song::SetSpeed(){
     if(mHxMaster){
-        mHxMaster->GetHxAudio()->GetSongStream();
+        mHxMaster->GetHxAudio()->GetSongStream()->SetSpeed(mSpeed);
     }
 }
 
 void Song::AddSection(Symbol s, float f){
     int idx = GetBeatMap()->BeatToTick(f);
     unk24[idx] = s;
+}
+
+ObjectDir* Song::MainDir() const {
+    MILO_ASSERT(sCallback, 0x292);
+    return sCallback->SongMainDir();
 }
 
 BEGIN_CUSTOM_PROPSYNC(MBT)

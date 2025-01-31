@@ -1,13 +1,59 @@
 #include "beatmatch/TrackWatcher.h"
+#include "DrumFillTrackWatcherImpl.h"
+#include "KeyboardTrackWatcherImpl.h"
+#include "beatmatch/GameGemList.h"
+#include "beatmatch/GuitarTrackWatcherImpl.h"
+#include "beatmatch/JoypadTrackWatcherImpl.h"
+#include "beatmatch/RealGuitarTrackWatcherImpl.h"
+#include "beatmatch/TrackType.h"
 #include "beatmatch/TrackWatcherImpl.h"
+#include "beatmatch/SongData.h"
 #include "os/System.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols4.h"
 
 Symbol ControllerTypeToTrackWatcherType(Symbol cntType){
     DataArray* cfg = SystemConfig("beatmatcher", "controllers", "beatmatch_controller_mapping");
     Symbol watchType = cfg->FindSym(cntType);
     if(watchType == joypad_guitar) return guitar;
     else return watchType;
+}
+
+TrackWatcherImpl* NewTrackWatcherImpl(int track, const UserGuid& u, int slot, Symbol cntType, SongData* data, TrackWatcherParent* parent, DataArray* cfg){
+    Symbol watchType = ControllerTypeToTrackWatcherType(cntType);
+    TrackType trackType = data->TrackTypeAt(track);
+    GameGemList* gemList = data->GetGemList(track);
+    if(watchType == guitar){
+        return new GuitarTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg);
+    }
+    else if(watchType == joypad){
+        if(data->TrackHasIndependentSlots(track)){
+            return new DrumFillTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg);
+        }
+        else {
+            if(trackType - 4U <= 1){
+                return new KeyboardTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg);
+            }
+            else {
+                return new JoypadTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg, 2);
+            }
+        }
+    }
+    else if(watchType == real_guitar){
+        if(trackType - 1U <= 1){
+            return new GuitarTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg);
+        }
+        else {
+            return new RealGuitarTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg);
+        }
+    }
+    else if(watchType == keys){
+        return new KeyboardTrackWatcherImpl(track, u, slot, data, gemList, parent, cfg);
+    }
+    else {
+        MILO_FAIL("Bad TrackWatcher type: %s\n", watchType);
+        return nullptr;
+    }
 }
 
 TrackWatcher::TrackWatcher(int track, const UserGuid& u, int slot, Symbol cntType, SongData* data, TrackWatcherParent* parent, DataArray* cfg) : 
@@ -23,8 +69,7 @@ TrackWatcher::TrackWatcher(int track, const UserGuid& u, int slot, Symbol cntTyp
 }
 
 TrackWatcher::~TrackWatcher(){
-    delete mImpl;
-    mImpl = 0;
+    RELEASE(mImpl);
 }
 
 void TrackWatcher::ReplaceImpl(Symbol sym){
@@ -34,14 +79,18 @@ void TrackWatcher::ReplaceImpl(Symbol sym){
 
 void TrackWatcher::SetImpl(){
     TrackWatcherState state;
-    if(mImpl) mImpl->SaveState(state);
+    bool hasImpl = false;
+    if(mImpl){
+        hasImpl = true;
+        mImpl->SaveState(state);
+    }
     RELEASE(mImpl);
     mImpl = NewTrackWatcherImpl(mTrack, mUserGuid, mPlayerSlot, mControllerType, mSongData, mParent, mCfg);
     mImpl->Init();
     for(int i = 0; i < mSinks.size(); i++){
         mImpl->AddSink(mSinks[i]);
     }
-    if(mImpl) mImpl->LoadState(state);
+    if(hasImpl) mImpl->LoadState(state);
 }
 
 void TrackWatcher::RecalcGemList(){

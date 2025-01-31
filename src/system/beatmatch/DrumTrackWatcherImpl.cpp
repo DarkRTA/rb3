@@ -1,6 +1,9 @@
 #include "beatmatch/DrumTrackWatcherImpl.h"
+#include "beatmatch/GameGem.h"
 #include "beatmatch/SongData.h"
 #include "beatmatch/TrackWatcherParent.h"
+
+bool gKickAutoplay;
 
 DrumTrackWatcherImpl::DrumTrackWatcherImpl(int track, const UserGuid& u, int slot, SongData* song_data, GameGemList* gemlist, TrackWatcherParent* parent, DataArray* cfg) : 
     TrackWatcherImpl(track, u, slot, song_data, gemlist, parent, cfg, 2), mNextKickGemToAutoplay(0), mGameCymbalLanes(0) {
@@ -93,4 +96,36 @@ void DrumTrackWatcherImpl::JumpHook(float f){
     int idx = mGemList->ClosestMarkerIdxAtOrAfter(f + mSyncOffset);
     if(idx == -1) idx = mGemList->NumGems();
     mNextKickGemToAutoplay = idx;
+}
+
+void DrumTrackWatcherImpl::CheckForKickAutoplay(float f){
+    if(gKickAutoplay && mIsCurrentTrack && !IsCheating()){
+        float offset = f + mSyncOffset;
+        int i8;
+        int cap = mGemList->NumGems() - 1;
+        while(i8 = mNextKickGemToAutoplay, i8 <= cap){
+            float timeAt = mGemList->TimeAt(i8);
+            GameGem& curGem = mGemList->GetGem(i8);
+            int slot = curGem.GetSlot();
+            if(offset >= timeAt){
+                if(Playable(i8) && slot == 0){
+                    if(!mParent->InCodaFreestyle(curGem.GetTick(), true)){
+                        if(!mParent->InFill(curGem.GetTick(), true)){
+                            HitGem(f, i8, curGem.GetSlots(), kGemHitFlagNone);
+                        }
+                    }
+                }
+                mNextKickGemToAutoplay++;
+            }
+            else break;
+        }
+    }
+}
+
+bool DrumTrackWatcherImpl::CheckCymbal(const GameGem& gem, GemHitFlags flags) const {
+    if(
+        (1 << gem.GetSlot() & mGameCymbalLanes) && 
+        (gem.IsCymbal() != (unsigned int)(flags >> 2 & 1))
+    ) return false; // kGemHitFlagCymbal
+    else return true;
 }

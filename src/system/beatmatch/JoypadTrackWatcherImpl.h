@@ -19,11 +19,11 @@ public:
     void ResetChordInProgress();
     void TryToCompleteChord(float, int);
 
-    float mChordSlop;
-    int mChordGemInProgress;
-    int mChordSlotsInProgress;
-    int mChordLastSlot;
-    float mChordTimeout;
+    float mChordSlop; // 0xc0
+    int mChordGemInProgress; // 0xc4
+    int mChordSlotsInProgress; // 0xc8
+    int mChordLastSlot; // 0xcc
+    float mChordTimeout; // 0xd0
 };
 
 #endif

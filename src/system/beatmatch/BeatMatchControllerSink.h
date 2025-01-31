@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BEATMATCHCONTROLLERSINK_H
-#define BEATMATCH_BEATMATCHCONTROLLERSINK_H
+#pragma once
 
 enum GemHitFlags {
     kGemHitFlagNone = 0x0,
@@ -15,7 +14,7 @@ class BeatMatchControllerSink {
 public:
     BeatMatchControllerSink(){}
     virtual ~BeatMatchControllerSink(){}
-    virtual int Swing(int, bool, bool, bool, bool, GemHitFlags){ return 0; }
+    virtual bool Swing(int, bool, bool, bool, bool, GemHitFlags){ return false; }
     virtual void ReleaseSwing(){}
     virtual void NonStrumSwing(int, bool, bool){}
     virtual float MercurySwitch(float f){ return f; }
@@ -30,5 +29,3 @@ public:
     virtual void PlayNote(int){}
     virtual void OutOfRangeSwing(){}
 };
-
-#endif

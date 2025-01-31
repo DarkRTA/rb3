@@ -65,8 +65,8 @@ public:
     }
 
     int GetSlot() const {
-        for(unsigned int i = 0, ret = 0; i < 32; i++, ret++){
-            if(mSlots & 1 << ret) return ret;
+        for(unsigned int i = 0; i < 32; i++){
+            if(mSlots & 1 << i) return i;
         }
         MILO_FAIL("Bad slots %d\n", mSlots);
         return -1;
@@ -105,7 +105,7 @@ public:
     float DurationMs(){ return mDurationMs; }
     bool Unk10B1() const { return unk10b1; }
     void SetUnk10B1(bool b){ unk10b1 = b; }
-    bool Unk10B4() const { return unk10b4; }
+    bool IsCymbal() const { return mIsCymbal; }
 
     float mMs; // 0x0
     int mTick; // 0x4
@@ -116,7 +116,7 @@ public:
     unsigned char mPlayed : 1;
     unsigned char mForceStrum : 1;
     unsigned char mIgnoreDuration : 1;
-    unsigned char unk10b4 : 1; // maybe cymbal related?
+    unsigned char mIsCymbal : 1;
     unsigned char mShowChordNames : 1;
     unsigned char mShowSlashes : 1;
     unsigned char unk10b1 : 1;

@@ -7,7 +7,7 @@
 #define kMaxRGStrings 6
 
 GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
-    mSlots(info.slots), mPlayed(false), mForceStrum(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(info.is_cymbal),
+    mSlots(info.slots), mPlayed(false), mForceStrum(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), mIsCymbal(info.is_cymbal),
     unk10b1(false), mRealGuitar(false), mLoose(false), mShowChordNums(false), mLeftHandSlide(false),
     mReverseSlide(false), mEnharmonic(false), unk18(info.players), mChordNameOverride(), mImportantStrings(0) {
 
@@ -15,7 +15,7 @@ GameGem::GameGem(const MultiGemInfo& info) : mMs(info.ms), mTick(info.tick), mDu
 
 // fn_80460334
 GameGem::GameGem(const RGGemInfo& info) : mMs(info.ms), mTick(info.tick), mDurationMs(info.duration_ms), mDurationTicks(info.duration_ticks),
-    mSlots(0), mPlayed(false), mForceStrum(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), unk10b4(0), mShowChordNames(info.show_chord_names),
+    mSlots(0), mPlayed(false), mForceStrum(info.no_strum == kStrumForceOn), mIgnoreDuration(info.ignore_duration), mIsCymbal(0), mShowChordNames(info.show_chord_names),
     mShowSlashes(info.show_slashes), unk10b1(false), mRealGuitar(true), mLoose(info.loose), mShowChordNums(info.show_chord_nums), mLeftHandSlide(info.left_hand_slide),
     mReverseSlide(info.reverse_slide), mEnharmonic(info.enharmonic), mStrumType(info.strum_type), mHandPosition(info.hand_position), mRootNote(info.root_note),
     unk18(0), mChordNameOverride(), mImportantStrings(0) {
@@ -47,7 +47,7 @@ GameGem& GameGem::operator=(const GameGem& gem){
     mPlayed = gem.mPlayed;
     mForceStrum = gem.mForceStrum;
     mIgnoreDuration = gem.mIgnoreDuration;
-    unk10b4 = gem.unk10b4;
+    mIsCymbal = gem.mIsCymbal;
     mShowChordNames = gem.mShowChordNames;
     mShowSlashes = gem.mShowSlashes;
     unk10b1 = gem.unk10b1;
@@ -118,12 +118,12 @@ void GameGem::Flip(const GameGem& gem){
     unsigned int slot = gem.mSlots;
     if(slot == 2){
         mSlots = 4;
-        unk10b4 = true;
+        mIsCymbal = true;
         return;
     }
     if(slot != 4) return;
     mSlots = 2;
-    unk10b4 = false;
+    mIsCymbal = false;
 }
 
 void GameGem::RecalculateTimes(TempoMap* tmap){

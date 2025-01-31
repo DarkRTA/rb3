@@ -341,7 +341,7 @@ void TrackWatcherImpl::CheckForPasses(float ms){
 }
 
 void TrackWatcherImpl::CheckForSustainedNoteTimeout(float ms){
-    for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); ++iter){
+    FOREACH(iter, mGemsInProgress){
         if(iter->mInUse){
             MILO_ASSERT(iter->mGemID != -1, 0x2AC);
             if(iter->unk8 < ms){
@@ -512,7 +512,7 @@ void TrackWatcherImpl::KillSustainForSlot(int slot){
 }
 
 GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float ms){
-    for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){
+    FOREACH(iter, mGemsInProgress){
         if(!iter->mInUse) return iter;
         if(iter->unk8 < ms){
             iter->Reset();
@@ -524,25 +524,25 @@ GemInProgress* TrackWatcherImpl::GetUnusedGemInProgress(float ms){
 }
 
 GemInProgress* TrackWatcherImpl::GetGemInProgressWithSlot(int slot){
-    for(std::vector<GemInProgress>::iterator iter = mGemsInProgress.begin(); iter != mGemsInProgress.end(); iter++){
+    FOREACH(iter, mGemsInProgress){
         if(iter->mInUse){
             MILO_ASSERT(iter->mGemID != -1, 0x3FD);
             GameGem& gem = mGemList->GetGem(iter->mGemID);
             if(1 << slot & gem.GetSlots()) return iter;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 GemInProgress* TrackWatcherImpl::GetGemInProgressWithID(int id){
-    for(std::vector<GemInProgress>::iterator it = mGemsInProgress.begin(); it != mGemsInProgress.end(); it++){
+    FOREACH(it, mGemsInProgress){
         if(it->mInUse && it->mGemID == id) return it;
     }
     return 0;
 }
 
 bool TrackWatcherImpl::HasAnyGemInProgress() const {
-    for(std::vector<GemInProgress>::const_iterator it = mGemsInProgress.begin(); it != mGemsInProgress.end(); it++){
+    FOREACH(it, mGemsInProgress){
         if(it->mInUse) return true;
     }
     return false;
@@ -562,7 +562,7 @@ void TrackWatcherImpl::EndSustainedNote(GemInProgress& gem){
 }
 
 void TrackWatcherImpl::EndAllSustainedNotes(){
-    for(std::vector<GemInProgress>::iterator it = mGemsInProgress.begin(); it != mGemsInProgress.end(); it++){
+    FOREACH(it, mGemsInProgress){
         EndSustainedNote(*it);
     }
 }
@@ -587,7 +587,7 @@ void TrackWatcherImpl::OnHit(float ms, int i2, int gemID, unsigned int slots, Ge
     int i38 = 0;
     GetFillLogic();
     bool fillCompletion = IsFillCompletion(ms, tick, i38);
-    if(gem.Unk10B4()){
+    if(gem.IsCymbal()){
         if(!(flags & kGemHitFlagAutoplay) && (flags & kGemHitFlagCymbal)){
             MaybeAutoplayFutureCymbal(gemID);
         }
@@ -690,7 +690,7 @@ void TrackWatcherImpl::OnPass(float ms, int gemID){
 }
 
 void TrackWatcherImpl::CodaSwing(int i1, int i2){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->FillSwing(mTrack, 0, i2, i1, true);
     }
 }
@@ -703,7 +703,7 @@ void TrackWatcherImpl::SendHit(float ms, int gemID, unsigned int slots, GemHitFl
             TheBeatMatchOutput.Print(MakeString("(%2d%10.1f HIT\t%d %d)\n", 0, ms, gemID, isHopo));
         }
     }
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->Hit(mTrack, ms, gemID, slots, flags);
     }
 }
@@ -723,13 +723,13 @@ void TrackWatcherImpl::SendMiss(float ms, int i2, int gemID, int i4, GemHitFlags
     if(gemID == -1){
         gemID = mGemList->NumGems() - 1;
     }
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->Miss(mTrack, i2, ms, gemID, i4, flags);
     }
 }
 
 void TrackWatcherImpl::SendSpuriousMiss(float f1, int i2, int i3){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->SpuriousMiss(mTrack, i2, f1, i3);
     }
 }
@@ -741,13 +741,13 @@ void TrackWatcherImpl::SendPass(float ms, int gemID){
     }
     GemInProgress* gemInProg = GetGemInProgressWithID(gemID);
     if(gemInProg) EndSustainedNote(*gemInProg);
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->Pass(mTrack, ms, gemID, mIsCurrentTrack);
     }
 }
 
 void TrackWatcherImpl::SendReleaseGem(float f1, int gemID, float f3){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->ReleaseGem(mTrack, f1, gemID, f3);
     }
 }
@@ -769,39 +769,39 @@ void TrackWatcherImpl::SendSeen(float ms, int gemID){
             );
         }
     }
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->SeeGem(mTrack, ms, gemID);
     }
 }
 
 void TrackWatcherImpl::SendIgnore(float ms, int gemID){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->Ignore(mTrack, ms, gemID, mUserGuid);
     }
 }
 
 void TrackWatcherImpl::SendImplicit(float ms, int gemID){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->ImplicitGem(mTrack, ms, gemID, mUserGuid);
     }
 }
 
 void TrackWatcherImpl::SendWhammy(float f){
     if(mIsCurrentTrack){
-        for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+        FOREACH(it, mSinks){
             (*it)->FilteredWhammyBar(f);
         }
     }
 }
 
 void TrackWatcherImpl::SendSwingAtHopo(float f, int i){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->SwingAtHopo(mTrack, f, i);
     }
 }
 
 void TrackWatcherImpl::SendHopo(float ms, int gemID){
-    for(std::vector<BeatMatchSink*>::iterator it = mSinks.begin(); it != mSinks.end(); ++it){
+    FOREACH(it, mSinks){
         (*it)->Hopo(mTrack, ms, gemID);
     }
 }

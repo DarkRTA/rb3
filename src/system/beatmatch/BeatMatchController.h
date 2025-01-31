@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BEATMATCHCONTROLLER_H
-#define BEATMATCH_BEATMATCHCONTROLLER_H
+#pragma once
 #include "obj/Object.h"
 #include "obj/Data.h"
 #include "os/Joypad.h"
@@ -58,5 +57,3 @@ public:
 };
 
 BeatMatchController* NewController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool, TrackType);
-
-#endif

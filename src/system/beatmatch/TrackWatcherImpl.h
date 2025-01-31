@@ -91,11 +91,11 @@ public:
     virtual void CheckForTrills(float, int, unsigned int);
     virtual void PollHook(float);
     virtual void JumpHook(float);
-    virtual float HitGemHook(float, int, GemHitFlags);
+    virtual float HitGemHook(float, int, GemHitFlags){}
     virtual bool ShouldAutoplayGem(float, int);
-    virtual bool GemCanBePassed(int);
+    virtual bool GemCanBePassed(int){ return true; }
     virtual int NextGemAfter(int, bool);
-    virtual float Slop(int);
+    virtual float Slop(int){ return mSlop - mSyncOffset; }
     virtual int ClosestUnplayedGem(float, int);
     virtual int SustainedGemToKill(int);
     virtual bool InTrill(int) const;
@@ -194,5 +194,3 @@ public:
     DataArray* mTrillIntervalsConfig; // 0xbc
 
 };
-
-TrackWatcherImpl* NewTrackWatcherImpl(int, const UserGuid&, int, Symbol, SongData*, TrackWatcherParent*, DataArray*);

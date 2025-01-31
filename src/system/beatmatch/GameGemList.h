@@ -21,6 +21,7 @@ public:
     bool WillBeNoStrum(const GameGem&);
 
     int NumGems(){ return mGems.size(); }
+    bool Empty() const { return mGems.empty(); }
 
     GameGem& GetGem(int id){
         MILO_ASSERT(0 <= id && id < NumGems(), 0x3A);
