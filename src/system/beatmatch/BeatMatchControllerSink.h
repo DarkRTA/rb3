@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BEATMATCHCONTROLLERSINK_H
-#define BEATMATCH_BEATMATCHCONTROLLERSINK_H
+#pragma once
 
 enum GemHitFlags {
     kGemHitFlagNone = 0x0,
@@ -30,5 +29,3 @@ public:
     virtual void PlayNote(int){}
     virtual void OutOfRangeSwing(){}
 };
-
-#endif
