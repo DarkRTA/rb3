@@ -1,9 +1,13 @@
-#ifndef BEATMATCH_BEATMATCHER_H
-#define BEATMATCH_BEATMATCHER_H
+#pragma once
 #include "beatmatch/BeatMatchControllerSink.h"
+#include "beatmatch/DrumPlayer.h"
+#include "beatmatch/MasterAudio.h"
+// #include "beatmatch/MercurySwitchFilter.h"
+#include "beatmatch/TrackWatcher.h"
 #include "beatmatch/TrackWatcherParent.h"
 #include "game/Player.h"
 #include "utl/HxGuid.h"
+#include "utl/SongPos.h"
 #include "utl/Symbol.h"
 #include "utl/SongInfoCopy.h"
 
@@ -11,6 +15,7 @@
 class SongData;
 class DataArray;
 class BeatMaster;
+class MercurySwitchFilter;
 
 class BeatMatcher : public TrackWatcherParent, public BeatMatchControllerSink {
 public:
@@ -57,7 +62,45 @@ public:
     void PostLoad();
     void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
 
-    int dummy;
+    bool unk8; // 0x8
+    UserGuid mUserGuid; // 0xc
+    int unk1c; // 0x1c
+    int unk20; // 0x20
+    Symbol mControllerType; // 0x24
+    SongData* mSongData; // 0x28
+    DataArray* mCfg; // 0x2c
+    int unk30; // 0x30
+    int unk34; // 0x34
+    MasterAudio* mAudio; // 0x38
+    int unk3c; // 0x3c
+    MercurySwitchFilter* mMercurySwitchFilter; // 0x40
+    TrackWatcher* mWatcher; // 0x44
+    std::vector<int> unk48; // 0x48
+    std::vector<int> unk50; // 0x50
+    DrumPlayer* mDrumPlayer; // 0x58
+    int unk5c; // 0x5c
+    bool unk60; // 0x60
+    SongPos mSongPos; // 0x64
+    float unk78; // 0x78
+    int unk7c; // 0x7c
+    float unk80; // 0x80
+    float unk84; // 0x84
+    int unk88; // 0x88
+    int unk8c; // 0x8c
+    float unk90; // 0x90
+    bool unk94; // 0x94
+    bool unk95; // 0x95
+    float unk98; // 0x98
+    bool unk9c; // 0x9c
+    int unka0; // 0xa0
+    int unka4; // 0xa4
+    int unka8; // 0xa8
+    bool unkac; // 0xac
+    bool unkad; // 0xad
+    bool unkae; // 0xae
+    bool unkaf; // 0xaf
+    bool unkb0; // 0xb0
+    int unkb4; // 0xb4
+    bool unkb8; // 0xb8
+    bool unkb9; // 0xb9
 };
-
-#endif

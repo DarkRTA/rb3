@@ -43,15 +43,14 @@ bool BaseGuitarTrackWatcherImpl::Swing(int i1, bool b2, bool b3, GemHitFlags fla
     if(inCodaFreestyle){
         b3 = false;
     }
+
     bool b1 = false;
     if(!b2 && mParent->InCoda(tick) && !inCodaFreestyle) b1 = true;
     if(!b1 && mLastLateGemHit == now && !b2) b1 = true;
+
     int i5 = mGemList->ClosestMarkerIdx(now + mSyncOffset);
     int i4 = i5;
-    if(!b1){
-        if(Playable(i5)){
-            if(!mGemList->GetGem(i5).GetPlayed()) goto lab;
-        }
+    if(!b1 && (!Playable(i5) || mGemList->GetGem(i5).GetPlayed())){
         if(i5 + 1 < mGemList->NumGems()){
             if(!IsCoreGuitar()){
                 if(!InSlopWindow(mGemList->GetGem(i5 + 1).mMs, now + mSyncOffset)){
@@ -66,7 +65,7 @@ bool BaseGuitarTrackWatcherImpl::Swing(int i1, bool b2, bool b3, GemHitFlags fla
             b1 = true;
         }
     }
-lab:
+
     i5 = mGemList->GetGem(i4).GetTick();
     NoteSwing(GetFretButtonsDown(), i5);
     if(b1) return false;
@@ -82,9 +81,9 @@ lab:
             if(IsCoreGuitar()){
                 OnMiss(now, i1, i4, GetFretButtonsDown(), kGemHitFlagNone);
             }
-            return true;
         }
         else return false;
+        return true;
     }
 }
 
@@ -241,28 +240,11 @@ bool BaseGuitarTrackWatcherImpl::CanHopo(int i) const {
     bool ret;
     GameGem& gem = mGemList->GetGem(i);
     if(gem.IsRealGuitar()){
-        ret = false;
-        if (!gem.RightHandTap() && gem.GetForceStrum()) {
-            int i2 = i - 1;
-            if (mLastGemHit == i2 && mSucceeding){
-                if(i != 0){
-                    GameGem& gemgem = mGemList->GetGem(i2);
-                    if(gemgem.GetPlayed()) ret = true;
-                }
-            }
-        }
+        return gem.RightHandTap() || gem.GetForceStrum() && mLastGemHit == (i - 1) && mSucceeding && (i == 0 || mGemList->GetGem(i - 1).GetPlayed());
     }
     else {
-        ret = false;
-        if(gem.GetForceStrum() && (0 < i))  {
-            int i2 = i - 1;
-            if (mLastGemHit == i2 && mSucceeding) {
-                GameGem& gemgem = mGemList->GetGem(i2);
-                if(gemgem.GetPlayed()) ret = true;
-            }
-        }
+        return gem.GetForceStrum() && (i > 0) && mLastGemHit == (i - 1) && mSucceeding && mGemList->GetGem(i - 1).GetPlayed();
     }
-    return ret;
 }
 
 void BaseGuitarTrackWatcherImpl::SetLastNoStrumGem(float f, int i){

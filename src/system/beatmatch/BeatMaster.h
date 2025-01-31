@@ -37,6 +37,8 @@ public:
     void ResetAudio();
     void ExportInitialSubmixes();
 
+    MasterAudio* GetMasterAudio() const { return mAudio; }
+
     bool mRecording; // 0x8
     SongData* mSongData; // 0xc
     std::vector<BeatMasterSink*> mSinks; // 0x10
