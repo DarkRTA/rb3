@@ -22,38 +22,22 @@ permissions:
   contents: read
 
 jobs:
-  check-format-band3:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: jidicula/clang-format-action@v4.14.0
-      with:
-        check-path: 'src/band3'
-        exclude-regex: ''
-        clang-format-version: '17'
-        fallback-style: 'none'
-
-  check-format-net:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-
-    - uses: jidicula/clang-format-action@v4.14.0
-      with:
-        check-path: 'src/network'
-        exclude-regex: '(json-c)'
-        clang-format-version: '17'
-        fallback-style: 'none'
-
   check-format-system:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - check: 'src/band3'
+            exclude: ''
+          - check: 'src/network'
+            exclude: '(json-c)'
+          - check: 'src/system'
+            exclude: '(stlport|sdk|zlib|strips|soundtouch|oggvorbis|tomcrypt|speex)'
     steps:
     - uses: actions/checkout@v4
-
     - uses: jidicula/clang-format-action@v4.14.0
       with:
-        check-path: 'src/system'
-        exclude-regex: '(stlport|sdk|zlib|strips|soundtouch|oggvorbis|tomcrypt|speex)'
         clang-format-version: '17'
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['exclude'] }}
         fallback-style: 'none'
