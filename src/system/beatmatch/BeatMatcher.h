@@ -122,23 +122,23 @@ public:
     SongPos mSongPos; // 0x64
     float mNow; // 0x78
     int mTick; // 0x7c
-    float unk80; // 0x80
-    float unk84; // 0x84
+    float mLastSwing; // 0x80
+    float mLastReleaseSwing; // 0x84
     bool unk88; // 0x88
-    int unk8c; // 0x8c
-    float unk90; // 0x90
-    bool unk94; // 0x94
-    bool unk95; // 0x95
+    int mLastVelocityBucket; // 0x8c
+    float mRawMercurySwitchState; // 0x90
+    bool mMercurySwitchState; // 0x94
+    bool mForceMercurySwitch; // 0x95
     float mSyncOffset; // 0x98
     bool mDrivingPitchBendExternally; // 0x9c
-    int unka0; // 0xa0
-    int unka4; // 0xa4
+    int mFillStartTick; // 0xa0
+    int mLastFillEndTick; // 0xa4
     int mCodaStartTick; // 0xa8
     bool unkac; // 0xac
     bool mAutoplay; // 0xad
     bool mForceFill; // 0xae
-    bool unkaf; // 0xaf
-    bool unkb0; // 0xb0
+    bool mNoFills; // 0xaf
+    bool mFillAudio; // 0xb0
     FillLogic mFillLogic; // 0xb4
     bool mEnableWhammy; // 0xb8
     bool mEnableCapStrip; // 0xb9

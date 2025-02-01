@@ -33,10 +33,11 @@ BeatMatcher::BeatMatcher(
     : mWaitingForAudio(1), mUserGuid(u), unk1c(i1), unk20(i2), mControllerType(s),
       mSongData(data), mCfg(arr), mSink(0), mAudio(bm->GetMasterAudio()), mController(0),
       mMercurySwitchFilter(0), mWatcher(0), mDrumPlayer(new DrumPlayer(info)),
-      mCurTrack(-1), unk60(1), mNow(0), mTick(0), unk80(0), unk84(0), unk8c(0), unk90(0),
-      unk94(0), unk95(0), mSyncOffset(0), mDrivingPitchBendExternally(0),
-      unka0(0x7fffffff), unka4(-1), mCodaStartTick(-1), mAutoplay(0), mForceFill(0),
-      unkaf(0), unkb0(1), mEnableWhammy(1), mEnableCapStrip(1) {
+      mCurTrack(-1), unk60(1), mNow(0), mTick(0), mLastSwing(0), mLastReleaseSwing(0),
+      mLastVelocityBucket(0), mRawMercurySwitchState(0), mMercurySwitchState(0),
+      mForceMercurySwitch(0), mSyncOffset(0), mDrivingPitchBendExternally(0),
+      mFillStartTick(0x7fffffff), mLastFillEndTick(-1), mCodaStartTick(-1), mAutoplay(0),
+      mForceFill(0), mNoFills(0), mFillAudio(1), mEnableWhammy(1), mEnableCapStrip(1) {
     mSongData->AddBeatMatcher(this);
     DataArray *filterArr = arr->FindArray("mercury_switch_filter", false);
     if (filterArr) {
@@ -100,12 +101,12 @@ void BeatMatcher::Poll(float f) {
 void BeatMatcher::Jump(float f) {
     if (mNow != f) {
         SetNow(f);
-        unk80 = 0;
-        unk8c = 0;
-        unk84 = 0;
+        mLastSwing = 0;
+        mLastVelocityBucket = 0;
+        mLastReleaseSwing = 0;
         unk88 = false;
-        unka0 = 0x7FFFFFFF;
-        unka4 = -1;
+        mFillStartTick = 0x7FFFFFFF;
+        mLastFillEndTick = -1;
         mWatcher->Jump(f);
         if (mMercurySwitchFilter)
             mMercurySwitchFilter->Reset();
@@ -173,15 +174,17 @@ bool BeatMatcher::Swing(int i1, bool b2, bool b3, bool b4, bool b5, GemHitFlags 
     if (mAutoplay || mSongData->GetGemList(mCurTrack)->Empty())
         return false;
     else {
-        float f1 = unk80;
+        float f1 = mLastSwing;
         bool ret = false;
         int bucket = mController->GetVelocityBucket(i1);
-        if (bucket != 0 && (mNow - f1 <= 25.0f) && unk8c >= 2 && bucket == 1)
+        if (bucket != 0 && (mNow - f1 <= 25.0f) && mLastVelocityBucket >= 2
+            && bucket == 1)
             ret = true;
-        if (b5 && unk80 + 52.0f >= mNow)
+        if (b5 && mLastSwing + 52.0f >= mNow)
             ret = true;
         if (b2) {
-            if (unk80 + 150.0f >= mNow && unk88 == b3 && unk84 + 50.0f >= mNow)
+            if (mLastSwing + 150.0f >= mNow && unk88 == b3
+                && mLastReleaseSwing + 50.0f >= mNow)
                 ret = true;
             unk88 = b3;
         }
@@ -200,9 +203,9 @@ bool BeatMatcher::Swing(int i1, bool b2, bool b3, bool b4, bool b5, GemHitFlags 
             flags = (GemHitFlags)(flags | kGemHitFlagUpstrum);
         bool watcherSwing = mWatcher->Swing(i1, b2, ret, flags);
         if (watcherSwing) {
-            unk80 = mNow;
+            mLastSwing = mNow;
             if (bucket != 0) {
-                unk8c = bucket;
+                mLastVelocityBucket = bucket;
             }
         }
         if (!watcherSwing) {
@@ -220,7 +223,7 @@ bool BeatMatcher::Swing(int i1, bool b2, bool b3, bool b4, bool b5, GemHitFlags 
     }
 }
 
-void BeatMatcher::ReleaseSwing() { unk84 = mNow; }
+void BeatMatcher::ReleaseSwing() { mLastReleaseSwing = mNow; }
 void BeatMatcher::OutOfRangeSwing() { mSink->OutOfRangeSwing(); }
 
 void BeatMatcher::NonStrumSwing(int i1, bool b2, bool b3) {
@@ -240,7 +243,7 @@ void BeatMatcher::NonStrumSwing(int i1, bool b2, bool b3) {
 
 void BeatMatcher::MercurySwitch(float f1) {
     if (!mAutoplay) {
-        if (TheBeatMatchOutput.IsActive() && unk90 != f1) {
+        if (TheBeatMatchOutput.IsActive() && mRawMercurySwitchState != f1) {
             TheBeatMatchOutput.Print(MakeString(
                 "(%2d%10.1f FLIP\t%4.2f)\n",
                 TheBeatMatchPlayback.GetPlaybackNum(this),
@@ -248,14 +251,14 @@ void BeatMatcher::MercurySwitch(float f1) {
                 f1
             ));
         }
-        unk90 = f1;
+        mRawMercurySwitchState = f1;
     }
 }
 
 void BeatMatcher::ForceMercurySwitch(bool b) {
     if (!mAutoplay) {
-        unk95 = b;
-        unk94 = b;
+        mForceMercurySwitch = b;
+        mMercurySwitchState = b;
         UpdateMercurySwitch();
         if (TheBeatMatchOutput.IsActive()) {
             TheBeatMatchOutput.Print(MakeString(
@@ -311,7 +314,7 @@ void BeatMatcher::SetTrack(int track) {
 }
 
 void BeatMatcher::UpdateMercurySwitch() {
-    bool b = unk94;
+    bool b = mMercurySwitchState;
     MILO_ASSERT(mSink, 0x1ED);
     mSink->MercurySwitch(b, mNow);
 }
@@ -327,7 +330,7 @@ int BeatMatcher::GetVirtualSlot(int i) {
 }
 
 void BeatMatcher::PlayDrum(int i1, bool b2, float f3) {
-    if (!b2 || unkb0) {
+    if (!b2 || mFillAudio) {
         mDrumPlayer->Play(i1, f3);
     }
 }
@@ -444,20 +447,20 @@ bool BeatMatcher::FillsEnabled(int i) {
     if (mForceFill)
         return true;
     else
-        return !unkaf && (i >= unka0 || i <= unka4);
+        return !mNoFills && (i >= mFillStartTick || i <= mLastFillEndTick);
 }
 
 void BeatMatcher::SetFillsEnabled(bool b) {
     if (b)
         SetFillsEnabled(mTick, false);
     else {
-        int i2 = unka0;
+        int i2 = mFillStartTick;
         SetFillsEnabled(INT_MAX, false);
         if (i2 != INT_MAX) {
             int tick = mSongPos.GetTotalTick();
             FillExtent ext(-1, -1, false);
             if (mSongData->GetFillInfo(mCurTrack)->FillExtentAtOrBefore(tick, ext)) {
-                unka4 = ext.end;
+                mLastFillEndTick = ext.end;
             }
         }
     }
@@ -465,11 +468,11 @@ void BeatMatcher::SetFillsEnabled(bool b) {
 
 void BeatMatcher::DisableFillsCompletely() {
     SetFillsEnabled(0x7fffffff, false);
-    unka4 = -1;
+    mLastFillEndTick = -1;
 }
 
 void BeatMatcher::SetFillsEnabled(int i1, bool b2) {
-    unka0 = 0;
+    mFillStartTick = 0;
     if (i1 != INT_MAX && InFill(i1, true) && !b2) {
         FillExtent ext(0, 0, false);
         int i28 = 0;
@@ -478,7 +481,7 @@ void BeatMatcher::SetFillsEnabled(int i1, bool b2) {
             i1 = ext.start + i28;
         }
     }
-    unka0 = i1;
+    mFillStartTick = i1;
 }
 
 void BeatMatcher::ForceFill(bool b) { mForceFill = b; }
@@ -531,9 +534,10 @@ void BeatMatcher::E3CheatDecSlop() { mWatcher->E3CheatDecSlop(); }
 
 void BeatMatcher::CheckMercurySwitch(float f) {
     if (mMercurySwitchFilter) {
-        bool b1 = mMercurySwitchFilter->Poll(f, unk90) | unk95;
-        if (b1 != unk94) {
-            unk94 = b1;
+        bool b1 =
+            mMercurySwitchFilter->Poll(f, mRawMercurySwitchState) | mForceMercurySwitch;
+        if (b1 != mMercurySwitchState) {
+            mMercurySwitchState = b1;
             UpdateMercurySwitch();
         }
     }

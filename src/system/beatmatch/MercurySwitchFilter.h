@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_MERCURYSWITCHFILTER_H
-#define BEATMATCH_MERCURYSWITCHFILTER_H
+#pragma once
 #include "obj/Data.h"
 #include "rndobj/Overlay.h"
 #include "os/Debug.h"
@@ -8,8 +7,6 @@
 namespace {
     RndOverlay *gGuitarOverlay;
 }
-
-float LowPassFloat = 100.0f;
 
 class MercurySwitchFilter {
 public:
@@ -30,28 +27,26 @@ public:
 
     virtual ~LowPassMercurySwitchFilter() {}
     virtual bool Poll(float f1, float f2) {
-        float loc = f1 - mLastPoll;
-        float &loc2 = f2;
-        float &res = Min<float &>(LowPassFloat, loc);
-        ClampEq<float>(loc2, 0.0f, 1.0f);
-
-        for (; res > 0.0f; res -= 17.0f) {
-            mAccum = (1.0f - mSensitivity) * mAccum + mSensitivity * loc2;
+        float fvar1 = std::min(100.0f, f1 - mLastPoll);
+        ClampEq<float>(f2, 0, 1);
+        for (; fvar1 > 0; fvar1 -= 17.0f) {
+            mAccum = (1.0f - mSensitivity) * mAccum + mSensitivity * f2;
         }
-
         if (!mState) {
             if (mAccum > mOnThreshold)
                 mState = true;
         } else if (mAccum < mOffThreshold)
             mState = false;
-
+#ifdef MILO_DEBUG
         if (gGuitarOverlay->mShowing) {
             *gGuitarOverlay
-                << MakeString("    raw %4.2f avg %4.2f out %d\n", loc2, mAccum, mState);
+                << MakeString("    raw %4.2f avg %4.2f out %d\n", f2, mAccum, mState);
         }
+#endif
         mLastPoll = f1;
         return mState;
     }
+
     virtual void Reset() { mLastPoll = 0.0f; }
 
     float mSensitivity;
@@ -101,5 +96,3 @@ public:
 };
 
 MercurySwitchFilter *NewMercurySwitchFilter(DataArray *);
-
-#endif

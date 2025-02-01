@@ -46,15 +46,15 @@ public:
     bool IsOurPadNum(int) const;
     User *GetUser() const { return mUser; }
 
-    User *mUser;
-    int mForceMercuryBut;
-    bool mLefty;
-    bool unk25;
-    BeatMatchControllerGemMapping mGemMapping;
-    HitSink *mHitSink;
-    DataArray *mSlots;
-    DataArray *mLeftySlots;
-    DataArray *mRightySlots;
+    User *mUser; // 0x1c
+    int mForceMercuryBut; // 0x20
+    bool mLefty; // 0x24
+    bool unk25; // 0x25
+    BeatMatchControllerGemMapping mGemMapping; // 0x28
+    HitSink *mHitSink; // 0x2c
+    DataArray *mSlots; // 0x30
+    DataArray *mLeftySlots; // 0x34
+    DataArray *mRightySlots; // 0x38
 };
 
 BeatMatchController *

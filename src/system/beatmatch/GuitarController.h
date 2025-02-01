@@ -1,7 +1,7 @@
-#ifndef BEATMATCH_GUITARCONTROLLER_H
-#define BEATMATCH_GUITARCONTROLLER_H
+#pragma once
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
+#include "os/Joypad.h"
 #include "os/JoypadMsgs.h"
 #include "os/UsbMidiGuitarMsgs.h"
 #include <vector>
@@ -35,14 +35,12 @@ public:
     int OnMsg(const ButtonUpMsg &);
     void ReconcileFretState();
 
-    bool mDisabled;
-    bool mAutoSoloButtons;
-    int mFretMask;
-    int mShiftButtonMask;
-    BeatMatchControllerSink *mSink;
-    ControllerStyle mControllerStyle;
-    std::vector<int> mStrumBarButtons;
-    int unk58;
+    bool mDisabled; // 0x3c
+    bool mAutoSoloButtons; // 0x3d
+    int mFretMask; // 0x40
+    int mShiftButtonMask; // 0x44
+    BeatMatchControllerSink *mSink; // 0x48
+    ControllerStyle mControllerStyle; // 0x4c
+    std::vector<int> mStrumBarButtons; // 0x50
+    int unk58; // 0x58
 };
-
-#endif

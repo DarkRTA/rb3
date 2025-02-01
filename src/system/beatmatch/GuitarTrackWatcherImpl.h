@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_GUITARTRACKWATCHERIMPL_H
-#define BEATMATCH_GUITARTRACKWATCHERIMPL_H
+#pragma once
 #include "beatmatch/BaseGuitarTrackWatcherImpl.h"
 
 class GuitarTrackWatcherImpl : public BaseGuitarTrackWatcherImpl {
@@ -20,5 +19,3 @@ public:
 
     unsigned int mFretButtonsDown;
 };
-
-#endif
