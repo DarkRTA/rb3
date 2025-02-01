@@ -11,15 +11,10 @@
 #include "obj/Data.h"
 #include "obj/Msg.h"
 #include "utl/HxGuid.h"
+#include "beatmatch/FillInfo.h"
 
 class BeatMaster;
 class CommonPhraseCapturer;
-
-enum FillLogic {
-    kFillsRegular = 0,
-    kFillsDeployGemAndDim = 1,
-    kFillsDeployGemAndInvisible = 2
-};
 
 enum EnabledState {
     kPlayerEnabled = 0,

@@ -44,6 +44,7 @@ public:
     void RegisterRGFret(int, int) const;
     void RegisterRGStrum(int) const;
     bool IsOurPadNum(int) const;
+    User *GetUser() const { return mUser; }
 
     User *mUser;
     int mForceMercuryBut;

@@ -27,6 +27,7 @@ public:
     unsigned int GetMachineID() const { return mMachineID; }
     void SetUserGuid(const UserGuid &);
     bool ComesBefore(const User *u) { return (mUserGuid < u->mUserGuid); }
+    const UserGuid &GetUserGuid() const { return mUserGuid; }
 
     OnlineID *mOnlineID;
     UserGuid mUserGuid;
