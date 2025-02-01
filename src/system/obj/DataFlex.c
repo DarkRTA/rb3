@@ -510,8 +510,9 @@ char *yytext;
 #define TESTER_RETURN(value)
 #endif
 
-#define ECHO TESTER_RETURN(kDataTokenNotRecognized) /* don't echo unmatched characters   \
-                                                     */
+#define ECHO                                                                             \
+    TESTER_RETURN(kDataTokenNotRecognized) /* don't echo unmatched characters            \
+                                            */
 /* TODO: '-' has a significant usage outside of SIGN */
 #define BLOCK_COMMENT 1
 
