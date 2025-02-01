@@ -9,36 +9,36 @@ class NetSync : public Hmx::Object {
 public:
     NetSync();
     virtual ~NetSync();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     bool IsBlockingTransition() const;
     bool IsBlockingEvent(Symbol) const;
     bool IsEnabled() const;
     NetUIState GetUIState() const;
     void Poll();
-    void AttemptTransition(UIScreen*, int);
+    void AttemptTransition(UIScreen *, int);
     void Enable();
     void Disable();
     void SetUIState(NetUIState);
-    void SyncScreen(UIScreen*, int);
-    void SendNetFocus(User*, UIComponent*);
+    void SyncScreen(UIScreen *, int);
+    void SendNetFocus(User *, UIComponent *);
 
-    DataNode OnMsg(const UITransitionCompleteMsg&);
-    DataNode OnMsg(const UIComponentFocusChangeMsg&);
-    DataNode OnMsg(const UIComponentSelectMsg&);
-    DataNode OnMsg(const UIComponentScrollMsg&);
-    DataNode OnMsg(const LockStepStartMsg&);
-    DataNode OnMsg(const LockStepCompleteMsg&);
+    DataNode OnMsg(const UITransitionCompleteMsg &);
+    DataNode OnMsg(const UIComponentFocusChangeMsg &);
+    DataNode OnMsg(const UIComponentSelectMsg &);
+    DataNode OnMsg(const UIComponentScrollMsg &);
+    DataNode OnMsg(const LockStepStartMsg &);
+    DataNode OnMsg(const LockStepCompleteMsg &);
 
     static void Init();
     static void Terminate();
 
     bool unk1c; // 0x1c
-    UIScreen* mDestinationScreen; // 0x20
+    UIScreen *mDestinationScreen; // 0x20
     int mDestinationDepth; // 0x24
     bool unk28; // 0x28
     bool unk29; // 0x29
-    LockStepMgr* mUILockStep; // 0x2c
+    LockStepMgr *mUILockStep; // 0x2c
 };
 
-extern NetSync* TheNetSync;
+extern NetSync *TheNetSync;

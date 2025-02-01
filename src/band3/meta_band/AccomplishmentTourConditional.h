@@ -4,7 +4,7 @@
 #include "tour/TourGameRules.h"
 
 struct AccomplishmentTourCondition {
-    AccomplishmentTourCondition(){}
+    AccomplishmentTourCondition() {}
     Symbol mCondition;
     int mValue;
     TourGameType mGameType;
@@ -13,18 +13,20 @@ struct AccomplishmentTourCondition {
 
 class AccomplishmentTourConditional : public Accomplishment {
 public:
-    AccomplishmentTourConditional(DataArray*, int);
+    AccomplishmentTourConditional(DataArray *, int);
     virtual ~AccomplishmentTourConditional();
     virtual AccomplishmentType GetType() const;
-    virtual bool IsFulfilled(BandProfile*) const;
-    virtual bool InqProgressValues(BandProfile*, int&, int&);
+    virtual bool IsFulfilled(BandProfile *) const;
+    virtual bool InqProgressValues(BandProfile *, int &, int &);
     virtual bool CanBeLaunched() const;
 
-    void Configure(DataArray*);
-    bool IsConditionMet(BandProfile*, const AccomplishmentTourCondition&) const;
-    void UpdateConditionOptionalData(AccomplishmentTourCondition&, DataArray*);
-    bool InqBestProgressValues(BandProfile*, int&, int&);
-    bool InqConditionProgress(BandProfile*, const AccomplishmentTourCondition&, int&, int&) const;
+    void Configure(DataArray *);
+    bool IsConditionMet(BandProfile *, const AccomplishmentTourCondition &) const;
+    void UpdateConditionOptionalData(AccomplishmentTourCondition &, DataArray *);
+    bool InqBestProgressValues(BandProfile *, int &, int &);
+    bool
+    InqConditionProgress(BandProfile *, const AccomplishmentTourCondition &, int &, int &)
+        const;
     Symbol GetAssociatedTour() const;
     int GetTourValue() const;
 

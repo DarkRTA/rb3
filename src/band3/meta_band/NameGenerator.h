@@ -1,6 +1,4 @@
-#ifndef METABAND_NAMEGEN_H
-#define METABAND_NAMEGEN_H
-
+#pragma once
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "utl/Symbol.h"
@@ -9,17 +7,17 @@
 
 class NameGenerator : public Hmx::Object { // 0x34
 public:
-    NameGenerator(DataArray*);
+    NameGenerator(DataArray *);
     virtual ~NameGenerator();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void Cleanup();
-    void Init(DataArray*);
-    void ConfigureNameData(DataArray*);
-    DataArray* GetNameList(Symbol) const; // i think????
+    void Init(DataArray *);
+    void ConfigureNameData(DataArray *);
+    DataArray *GetNameList(Symbol) const; // i think????
     Symbol GetRandomNameFromList(Symbol);
 
-    std::map<Symbol, DataArray*> m_mapNameLists;
+    std::map<Symbol, DataArray *> m_mapNameLists;
 };
 
 // NOTE(AndrewB):
@@ -29,5 +27,3 @@ public:
 // issues in the future when that TU *is* matched
 // but it links fine like this right now, so...
 extern NameGenerator *TheNameGenerator;
-
-#endif // METABAND_NAMEGEN_H

@@ -5,9 +5,9 @@
 
 class PlayerLeaderboard : public Leaderboard {
 public:
-    PlayerLeaderboard(Profile*, Callback*);
-    virtual ~PlayerLeaderboard(){}
-    virtual Symbol OnSelectRow(int, BandUser*);
+    PlayerLeaderboard(Profile *, Callback *);
+    virtual ~PlayerLeaderboard() {}
+    virtual Symbol OnSelectRow(int, BandUser *);
     virtual bool CanRowsBeSelected() const;
     virtual bool IsRowFriend(int) const;
     virtual bool IsRowSelf(int) const;
@@ -15,8 +15,8 @@ public:
 
 class PlayerSongLeaderboard : public PlayerLeaderboard {
 public:
-    PlayerSongLeaderboard(Profile*, Callback*, ScoreType, int);
-    virtual ~PlayerSongLeaderboard(){}
+    PlayerSongLeaderboard(Profile *, Callback *, ScoreType, int);
+    virtual ~PlayerSongLeaderboard() {}
     virtual void EnumerateFromID();
     virtual void EnumerateRankRange(int, int);
     virtual void GetStats();
@@ -28,8 +28,8 @@ public:
 
 class PlayerBattleLeaderboard : public PlayerLeaderboard {
 public:
-    PlayerBattleLeaderboard(Profile*, Callback*, int);
-    virtual ~PlayerBattleLeaderboard(){}
+    PlayerBattleLeaderboard(Profile *, Callback *, int);
+    virtual ~PlayerBattleLeaderboard() {}
     virtual void EnumerateFromID();
     virtual void EnumerateRankRange(int, int);
     virtual void GetStats();

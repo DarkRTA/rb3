@@ -10,24 +10,24 @@ public:
     ChooseColorPanel();
     OBJ_CLASSNAME(ChooseColorPanel);
     OBJ_SET_TYPE(ChooseColorPanel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~ChooseColorPanel(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~ChooseColorPanel() {}
     virtual void Draw();
     virtual void Enter();
-    virtual void Exit();    
-    virtual void Poll();    
+    virtual void Exit();
+    virtual void Poll();
     virtual void Load();
     virtual void Unload();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
-    void AddColorOption(int, ColorPalette*);
+    void AddColorOption(int, ColorPalette *);
     int GetCurrentColor();
     void PreviewColor(int);
 
-    ClosetMgr* mClosetMgr; // 0x38
-    OutfitConfig* mCurrentOutfitConfig; // 0x3c
-    BandCharDesc::OutfitPiece* mCurrentOutfitPiece; // 0x40
-    std::map<int, ColorPalette*> mColorOptions; // 0x44
+    ClosetMgr *mClosetMgr; // 0x38
+    OutfitConfig *mCurrentOutfitConfig; // 0x3c
+    BandCharDesc::OutfitPiece *mCurrentOutfitPiece; // 0x40
+    std::map<int, ColorPalette *> mColorOptions; // 0x44
     int mNumOptions; // 0x5c
     int mCurrentOption; // 0x60
 };

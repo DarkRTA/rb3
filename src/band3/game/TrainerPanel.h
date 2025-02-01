@@ -10,8 +10,8 @@
 
 class TrainerChallenge : public Hmx::Object {
 public:
-    TrainerChallenge(){}
-    virtual ~TrainerChallenge(){}
+    TrainerChallenge() {}
+    virtual ~TrainerChallenge() {}
     OBJ_CLASSNAME(TrainerChallenge);
     OBJ_SET_TYPE(TrainerChallenge);
 
@@ -29,8 +29,8 @@ public:
     int GetEndTick() const;
     void SetEndTick(int);
     Symbol GetName() const;
-    void SetName(const Symbol&);
-    void SetChallengeName(const Symbol&);
+    void SetName(const Symbol &);
+    void SetChallengeName(const Symbol &);
     void SetStartEarly(bool);
     bool SanityCheck();
 
@@ -38,24 +38,24 @@ public:
     int mStartTick; // 0x4
     int mEndTick; // 0x8
     Symbol mChallengeName; // 0xc
-    TrainerChallenge* mChallenge; // 0x10
+    TrainerChallenge *mChallenge; // 0x10
     bool mStartEarly; // 0x14
 };
 
 class TrainerPanel : public UIPanel {
 public:
     TrainerPanel();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~TrainerPanel();
     virtual void Draw();
     virtual void Enter();
     virtual void Exit();
-    virtual void HandlePlayerDeleted(Player*);
+    virtual void HandlePlayerDeleted(Player *);
     virtual void StartSectionImpl() = 0;
     virtual void SetLessonComplete(int);
     virtual bool AllSectionsFinished() const;
     virtual bool ShouldStartEarly() const;
-    virtual bool IsSongSectionComplete(BandProfile*, int, Difficulty, int);
+    virtual bool IsSongSectionComplete(BandProfile *, int, Difficulty, int);
     virtual void UpdateProgressMeter();
     virtual void NewDifficulty(int, int);
 
@@ -66,9 +66,9 @@ public:
     int GetCurrentEndTick() const;
     int GetLoopTicks(int) const;
     void ClearSections();
-    void AddSection(const TrainerSection&);
-    TrainerSection& GetSection(int);
-    const TrainerSection& GetSection(int) const;
+    void AddSection(const TrainerSection &);
+    TrainerSection &GetSection(int);
+    const TrainerSection &GetSection(int) const;
     int GetCurrSection() const;
     int GetNumSections() const;
     void SetCurrentProgressSection(int);
@@ -80,22 +80,20 @@ public:
     void ResetChallenge();
     Symbol GetChallengeRestriction(int);
     void SetProgressMeterShowing(bool);
-    void InternalInitSections(const DataEventList*);
+    void InternalInitSections(const DataEventList *);
     void OnSuccess(int);
     Symbol GetNameForSection(int) const;
-    BandProfile* GetBandProfile() const;
+    BandProfile *GetBandProfile() const;
     int ModSectionNum(int) const;
     void SetCurrSection(int);
 
-    bool HasChallenge(int idx) const {
-        return mSections[idx].mChallenge;
-    }
+    bool HasChallenge(int idx) const { return mSections[idx].mChallenge; }
 
-    TrainerProgressMeter* mProgressMeter; // 0x38
+    TrainerProgressMeter *mProgressMeter; // 0x38
     std::vector<TrainerSection> mSections; // 0x3c
     int mCurrSection; // 0x44
     bool mShowProgressMeter; // 0x48
     std::vector<int> unk4c; // 0x4c
 };
 
-extern TrainerPanel* TheTrainerPanel;
+extern TrainerPanel *TheTrainerPanel;

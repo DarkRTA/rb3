@@ -29,18 +29,20 @@ namespace {
     class SyncMachineMsg : public NetMessage {
     public:
         SyncMachineMsg() : mMachineData(false) {}
-        SyncMachineMsg(unsigned int, unsigned char, BandMachine*);
-        virtual ~SyncMachineMsg(){}
+        SyncMachineMsg(unsigned int, unsigned char, BandMachine *);
+        virtual ~SyncMachineMsg() {}
         virtual void Save(BinStream &) const;
         virtual void Load(BinStream &);
         virtual void Dispatch();
-        virtual void Print(TextStream&) const;
-        virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncMachineMsg"); }
-        virtual const char* Name() const { return MakeString("SyncMachineMsg"); }
+        virtual void Print(TextStream &) const;
+        virtual unsigned char ByteCode() const {
+            return TheNetMessageFactory.GetNetMessageByteCode("SyncMachineMsg");
+        }
+        virtual const char *Name() const { return MakeString("SyncMachineMsg"); }
 
-        void GetMachineData(BinStream&) const;
+        void GetMachineData(BinStream &) const;
 
-        static NetMessage* NewNetMessage();
+        static NetMessage *NewNetMessage();
 
         unsigned int mMachineID; // 0x4
         unsigned char mDirtyMask; // 0x8
@@ -49,38 +51,39 @@ namespace {
 
     class SyncLocalMachineMsg : public NetMessage {
     public:
-        SyncLocalMachineMsg(){}
-        virtual ~SyncLocalMachineMsg(){}
+        SyncLocalMachineMsg() {}
+        virtual ~SyncLocalMachineMsg() {}
         virtual void Save(BinStream &) const {}
-        virtual void Load(BinStream &){}
-        virtual void Dispatch(){ TheSessionMgr->mMachineMgr->SyncLocalMachine(-1); }
-        virtual unsigned char ByteCode() const { return TheNetMessageFactory.GetNetMessageByteCode("SyncLocalMachineMsg"); }
-        virtual const char* Name() const { return MakeString("SyncLocalMachineMsg"); }
+        virtual void Load(BinStream &) {}
+        virtual void Dispatch() { TheSessionMgr->mMachineMgr->SyncLocalMachine(-1); }
+        virtual unsigned char ByteCode() const {
+            return TheNetMessageFactory.GetNetMessageByteCode("SyncLocalMachineMsg");
+        }
+        virtual const char *Name() const { return MakeString("SyncLocalMachineMsg"); }
 
-        static NetMessage* NewNetMessage();
+        static NetMessage *NewNetMessage();
     };
 
-    NetMessage* SyncMachineMsg::NewNetMessage(){
-        return new SyncMachineMsg();
-    }
+    NetMessage *SyncMachineMsg::NewNetMessage() { return new SyncMachineMsg(); }
 
-    SyncMachineMsg::SyncMachineMsg(unsigned int ui, unsigned char uc, BandMachine* machine) : mMachineID(ui), mDirtyMask(uc), mMachineData(false) {
+    SyncMachineMsg::SyncMachineMsg(unsigned int ui, unsigned char uc, BandMachine *machine)
+        : mMachineID(ui), mDirtyMask(uc), mMachineData(false) {
         machine->SyncSave(mMachineData, uc);
         mMachineData.Seek(0, BinStream::kSeekBegin);
     }
 
-    void SyncMachineMsg::GetMachineData(BinStream& bs) const {
+    void SyncMachineMsg::GetMachineData(BinStream &bs) const {
         bs.Write(&mMachineData.mBuffer[0], mMachineData.mBuffer.size());
     }
 
-    void SyncMachineMsg::Save(BinStream& bs) const {
+    void SyncMachineMsg::Save(BinStream &bs) const {
         bs << mMachineID;
         bs << mDirtyMask;
         bs << mMachineData.mBuffer.size();
         GetMachineData(bs);
     }
 
-    void SyncMachineMsg::Load(BinStream& bs){
+    void SyncMachineMsg::Load(BinStream &bs) {
         bs >> mMachineID;
         bs >> mDirtyMask;
         int size;
@@ -89,24 +92,26 @@ namespace {
         bs.Read(&mMachineData.mBuffer[0], size);
     }
 
-    void SyncMachineMsg::Dispatch(){
-        BandMachineMgr* mgr = TheSessionMgr->mMachineMgr;
-        RemoteBandMachine* machine = mgr->GetRemoteMachine(mMachineID, false);
-        if(machine){
+    void SyncMachineMsg::Dispatch() {
+        BandMachineMgr *mgr = TheSessionMgr->mMachineMgr;
+        RemoteBandMachine *machine = mgr->GetRemoteMachine(mMachineID, false);
+        if (machine) {
             static RemoteMachineUpdatedMsg msg(machine, mDirtyMask);
             msg[0] = machine;
             MemStream memstream(false);
             GetMachineData(memstream);
             memstream.Seek(0, BinStream::kSeekBegin);
             machine->SyncLoad(memstream, mDirtyMask);
-            if(TheSessionMgr->IsLeaderLocal()){
-                std::vector<RemoteBandUser*> remoteusers;
+            if (TheSessionMgr->IsLeaderLocal()) {
+                std::vector<RemoteBandUser *> remoteusers;
                 TheBandUserMgr->GetRemoteBandUsers(&remoteusers, 0x4000);
-                for(std::vector<RemoteBandUser*>::iterator it = remoteusers.begin(); it != remoteusers.end(); it){
-                    if(mMachineID == (*it)->mMachineID){
+                for (std::vector<RemoteBandUser *>::iterator it = remoteusers.begin();
+                     it != remoteusers.end();
+                     it) {
+                    if (mMachineID == (*it)->mMachineID) {
                         it = remoteusers.erase(it);
-                    }
-                    else ++it;
+                    } else
+                        ++it;
                 }
                 TheSessionMgr->SendMsg(remoteusers, *this, (PacketType)1);
             }
@@ -114,86 +119,94 @@ namespace {
         }
     }
 
-    void SyncMachineMsg::Print(TextStream& ts) const {
+    void SyncMachineMsg::Print(TextStream &ts) const {
         ts << MakeString("MachineID = %i, dirtyMask = %x\n", mMachineID, mDirtyMask);
     }
 
-    NetMessage* SyncLocalMachineMsg::NewNetMessage(){
-        return new SyncLocalMachineMsg();
-    }
+    NetMessage *SyncLocalMachineMsg::NewNetMessage() { return new SyncLocalMachineMsg(); }
 }
 
-void BandMachineMgr::Init(){
-    TheNetMessageFactory.RegisterNetMessage("SyncMachineMsg", SyncMachineMsg::NewNetMessage);
-    TheNetMessageFactory.RegisterNetMessage("SyncLocalMachineMsg", SyncLocalMachineMsg::NewNetMessage);
+void BandMachineMgr::Init() {
+    TheNetMessageFactory.RegisterNetMessage(
+        "SyncMachineMsg", SyncMachineMsg::NewNetMessage
+    );
+    TheNetMessageFactory.RegisterNetMessage(
+        "SyncLocalMachineMsg", SyncLocalMachineMsg::NewNetMessage
+    );
 }
 
-BandMachineMgr::BandMachineMgr(SessionMgr* smgr, BandUserMgr* umgr) : mSessionMgr(smgr), mUserMgr(umgr) {
+BandMachineMgr::BandMachineMgr(SessionMgr *smgr, BandUserMgr *umgr)
+    : mSessionMgr(smgr), mUserMgr(umgr) {
     ThePlatformMgr.AddSink(this);
     mSessionMgr->AddSink(this);
     SetName("machine_mgr", ObjectDir::Main());
     mLocalMachine = new LocalBandMachine(this);
-    for(int i = 0; i < 3; i++){
+    for (int i = 0; i < 3; i++) {
         mRemoteMachines.push_back(new RemoteBandMachine());
     }
 }
 
-BandMachineMgr::~BandMachineMgr(){
+BandMachineMgr::~BandMachineMgr() {
     ThePlatformMgr.RemoveSink(this);
     mSessionMgr->RemoveSink(this);
     RELEASE(mLocalMachine);
 }
 
-LocalBandMachine* BandMachineMgr::GetLocalMachine() const { return mLocalMachine; }
+LocalBandMachine *BandMachineMgr::GetLocalMachine() const { return mLocalMachine; }
 
-void BandMachineMgr::GetMachines(std::vector<BandMachine*>& machines) const {
+void BandMachineMgr::GetMachines(std::vector<BandMachine *> &machines) const {
     machines.push_back(mLocalMachine);
-    for(int i = 0; i < mRemoteMachines.size(); i++){
-        if(mRemoteMachines[i]->IsActive()){
+    for (int i = 0; i < mRemoteMachines.size(); i++) {
+        if (mRemoteMachines[i]->IsActive()) {
             machines.push_back(mRemoteMachines[i]);
         }
     }
 }
 
-RemoteBandMachine* BandMachineMgr::GetRemoteMachine(unsigned int id, bool fail) const {
-    for(int i = 0; i < mRemoteMachines.size(); i++){
-        if(mRemoteMachines[i]->IsActive() && mRemoteMachines[i]->GetMachineID() == id){
+RemoteBandMachine *BandMachineMgr::GetRemoteMachine(unsigned int id, bool fail) const {
+    for (int i = 0; i < mRemoteMachines.size(); i++) {
+        if (mRemoteMachines[i]->IsActive() && mRemoteMachines[i]->GetMachineID() == id) {
             return mRemoteMachines[i];
         }
     }
-    if(fail) MILO_FAIL("No RemoteMachine with ID %i", id);
+    if (fail)
+        MILO_FAIL("No RemoteMachine with ID %i", id);
     return nullptr;
 }
 
-BandMachine* BandMachineMgr::GetUserMachine(const User* user) const {
-    if(user->IsLocal()) return mLocalMachine;
-    else return GetRemoteMachine(user->mMachineID, true);
+BandMachine *BandMachineMgr::GetUserMachine(const User *user) const {
+    if (user->IsLocal())
+        return mLocalMachine;
+    else
+        return GetRemoteMachine(user->mMachineID, true);
 }
 
-DataNode BandMachineMgr::OnMsg(const ConnectionStatusChangedMsg&){
+DataNode BandMachineMgr::OnMsg(const ConnectionStatusChangedMsg &) {
     RefreshPrimaryProfileInfo();
     return 1;
 }
 
-DataNode BandMachineMgr::OnMsg(const NewRemoteUserMsg& msg){
-    RemoteUser* msgUser = msg.GetUser();
+DataNode BandMachineMgr::OnMsg(const NewRemoteUserMsg &msg) {
+    RemoteUser *msgUser = msg.GetUser();
     unsigned int userID = msgUser->mMachineID;
     bool found = false;
-    for(int i = 0; i < mRemoteMachines.size(); i++){
-        if(mRemoteMachines[i]->IsActive() && userID == mRemoteMachines[i]->GetMachineID()){
+    for (int i = 0; i < mRemoteMachines.size(); i++) {
+        if (mRemoteMachines[i]->IsActive()
+            && userID == mRemoteMachines[i]->GetMachineID()) {
             found = true;
             break;
         }
     }
-    if(!found) AddRemoteMachine(userID);
+    if (!found)
+        AddRemoteMachine(userID);
     return 1;
 }
 
-void BandMachineMgr::AddRemoteMachine(unsigned int id){
-    RemoteBandMachine* target = nullptr;
+void BandMachineMgr::AddRemoteMachine(unsigned int id) {
+    RemoteBandMachine *target = nullptr;
     bool found = false;
-    for(int i = 0; i < mRemoteMachines.size(); i++){
-        if(!mRemoteMachines[i]->IsActive()){
+    for (int i = 0; i < mRemoteMachines.size(); i++) {
+        if (!mRemoteMachines[i]->IsActive()) {
             mRemoteMachines[i]->Activate(id);
             found = true;
             target = mRemoteMachines[i];
@@ -206,96 +219,105 @@ void BandMachineMgr::AddRemoteMachine(unsigned int id){
     Export(msg, true);
 }
 
-DataNode BandMachineMgr::OnMsg(const RemoteUserLeftMsg& msg){
-    std::vector<BandUser*> bandusers;
+DataNode BandMachineMgr::OnMsg(const RemoteUserLeftMsg &msg) {
+    std::vector<BandUser *> bandusers;
     mUserMgr->GetBandUsersInSession(bandusers);
     bool remove = true;
-    RemoteUser* target = msg.GetUser();
+    RemoteUser *target = msg.GetUser();
     unsigned int targetID = target->mMachineID;
-    for(int i = 0; i < bandusers.size(); i++){
-        if(targetID == bandusers[i]->mMachineID){
+    for (int i = 0; i < bandusers.size(); i++) {
+        if (targetID == bandusers[i]->mMachineID) {
             remove = false;
             break;
         }
     }
-    if(remove){
+    if (remove) {
         RemoveRemoteMachine(targetID);
     }
     return 1;
 }
 
-void BandMachineMgr::RemoveRemoteMachine(unsigned int id){
-    RemoteBandMachine* target = nullptr;
-    for(int i = 0; i < mRemoteMachines.size(); i++){
-        if(mRemoteMachines[i]->IsActive() && mRemoteMachines[i]->GetMachineID() == id){
+void BandMachineMgr::RemoveRemoteMachine(unsigned int id) {
+    RemoteBandMachine *target = nullptr;
+    for (int i = 0; i < mRemoteMachines.size(); i++) {
+        if (mRemoteMachines[i]->IsActive() && mRemoteMachines[i]->GetMachineID() == id) {
             mRemoteMachines[i]->Deactivate();
             target = mRemoteMachines[i];
             break;
         }
     }
-    if(target){
+    if (target) {
         static RemoteMachineLeftMsg msg(target);
         msg[0] = target;
         Export(msg, true);
     }
 }
 
-void BandMachineMgr::SyncLocalMachine(unsigned char mask){
-    if(!mSessionMgr->IsLocal()){
-        std::vector<LocalBandUser*> locals;
+void BandMachineMgr::SyncLocalMachine(unsigned char mask) {
+    if (!mSessionMgr->IsLocal()) {
+        std::vector<LocalBandUser *> locals;
         mUserMgr->GetLocalBandUsersInSession(locals);
         MILO_ASSERT(!locals.empty(), 0x14B);
         SyncMachineMsg msg(locals.front()->mMachineID, mask, mLocalMachine);
-        if(mSessionMgr->IsLeaderLocal()){
+        if (mSessionMgr->IsLeaderLocal()) {
             mSessionMgr->SendMsgToAll(msg, (PacketType)1);
-        }
-        else if(mSessionMgr->GetLeaderUser()){
-            mSessionMgr->SendMsg(mSessionMgr->GetLeaderUser(),msg, (PacketType)1);
+        } else if (mSessionMgr->GetLeaderUser()) {
+            mSessionMgr->SendMsg(mSessionMgr->GetLeaderUser(), msg, (PacketType)1);
         }
     }
-    LocalBandMachine* machine = mLocalMachine;
+    LocalBandMachine *machine = mLocalMachine;
     MILO_ASSERT(machine, 0x15D);
     static LocalMachineUpdatedMsg msg(machine, mask);
     Export(msg, true);
 }
 
 bool BandMachineMgr::IsSongShared(int songid) const {
-    if(mSessionMgr->IsLocal()) return true;
+    if (mSessionMgr->IsLocal())
+        return true;
     else {
-        std::vector<BandMachine*> machines;
+        std::vector<BandMachine *> machines;
         GetMachines(machines);
-        for(std::vector<BandMachine*>::iterator it = machines.begin(); it != machines.end(); ++it){
-            if(!(*it)->HasSong(songid)) return false;
+        for (std::vector<BandMachine *>::iterator it = machines.begin();
+             it != machines.end();
+             ++it) {
+            if (!(*it)->HasSong(songid))
+                return false;
         }
     }
     return true;
 }
 
 bool BandMachineMgr::IsSongAllowedToHavePart(int songid, Symbol part) const {
-    if(part != real_guitar && part != real_bass) return true;
-    if(mSessionMgr->IsLocal()) return true;
-    BandSongMetadata* data = (BandSongMetadata*)TheSongMgr->Data(songid);
-    if(data && !data->IsDownload()) return true;
-    std::vector<BandMachine*> machines;
+    if (part != real_guitar && part != real_bass)
+        return true;
+    if (mSessionMgr->IsLocal())
+        return true;
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(songid);
+    if (data && !data->IsDownload())
+        return true;
+    std::vector<BandMachine *> machines;
     GetMachines(machines);
-    for(std::vector<BandMachine*>::iterator it = machines.begin(); it != machines.end(); ++it){
-        if(!(*it)->HasProGuitarOrBass(songid)) return false;
+    for (std::vector<BandMachine *>::iterator it = machines.begin(); it != machines.end();
+         ++it) {
+        if (!(*it)->HasProGuitarOrBass(songid))
+            return false;
     }
     return true;
 }
 
 bool BandMachineMgr::AllMachinesHaveSameNetUIState() const {
     NetUIState target = mLocalMachine->GetNetUIState();
-    std::vector<BandMachine*> machines;
+    std::vector<BandMachine *> machines;
     GetMachines(machines);
-    for(int i = 0; i < machines.size(); i++){
-        if(machines[i]->GetNetUIState() != target) return false;
+    for (int i = 0; i < machines.size(); i++) {
+        if (machines[i]->GetNetUIState() != target)
+            return false;
     }
     return true;
 }
 
-DataNode BandMachineMgr::OnMsg(const ProcessedJoinRequestMsg& msg){
-    if(msg.GetProcessed()){
+DataNode BandMachineMgr::OnMsg(const ProcessedJoinRequestMsg &msg) {
+    if (msg.GetProcessed()) {
         SyncLocalMachine(-1);
         SyncLocalMachineMsg msg;
         mSessionMgr->SendMsgToAll(msg, (PacketType)1);
@@ -303,14 +325,14 @@ DataNode BandMachineMgr::OnMsg(const ProcessedJoinRequestMsg& msg){
     return 1;
 }
 
-DataNode BandMachineMgr::ForEachMachine(const DataArray* arr){
-    DataNode* var = arr->Var(2);
+DataNode BandMachineMgr::ForEachMachine(const DataArray *arr) {
+    DataNode *var = arr->Var(2);
     DataNode local(*var);
-    std::vector<BandMachine*> machines;
+    std::vector<BandMachine *> machines;
     GetMachines(machines);
-    for(int i = 0; i < machines.size(); i++){
+    for (int i = 0; i < machines.size(); i++) {
         *var = machines[i];
-        for(int j = 3; j < arr->Size(); j++){
+        for (int j = 3; j < arr->Size(); j++) {
             arr->Command(j)->Execute();
         }
     }
@@ -319,55 +341,56 @@ DataNode BandMachineMgr::ForEachMachine(const DataArray* arr){
 }
 
 bool BandMachineMgr::IsLeaderMachineLocal() const {
-    BandMachine* pLeaderMachine = GetLeaderMachine();
+    BandMachine *pLeaderMachine = GetLeaderMachine();
     MILO_ASSERT(pLeaderMachine, 0x1C9);
-    LocalBandMachine* pLocalMachine = mLocalMachine;
+    LocalBandMachine *pLocalMachine = mLocalMachine;
     MILO_ASSERT(pLocalMachine, 0x1CC);
     return pLocalMachine == pLeaderMachine;
 }
 
-BandMachine* BandMachineMgr::GetLeaderMachine() const {
-    if(TheSessionMgr->HasLeaderUser()){
-        BandUser* pLeaderUser = TheSessionMgr->GetLeaderUser();
+BandMachine *BandMachineMgr::GetLeaderMachine() const {
+    if (TheSessionMgr->HasLeaderUser()) {
+        BandUser *pLeaderUser = TheSessionMgr->GetLeaderUser();
         MILO_ASSERT(pLeaderUser, 0x1D7);
-        BandMachine* pLeaderMachine = GetUserMachine(pLeaderUser);
+        BandMachine *pLeaderMachine = GetUserMachine(pLeaderUser);
         MILO_ASSERT(pLeaderMachine, 0x1DA);
         return pLeaderMachine;
-    }
-    else return mLocalMachine;
+    } else
+        return mLocalMachine;
 }
 
 String BandMachineMgr::GetLeaderPrimaryProfileName() const {
-    BandMachine* pLeaderMachine = GetLeaderMachine();
+    BandMachine *pLeaderMachine = GetLeaderMachine();
     MILO_ASSERT(pLeaderMachine, 0x1E8);
     return pLeaderMachine->GetPrimaryProfileName();
 }
 
 String BandMachineMgr::GetLeaderPrimaryBandName() const {
-    BandMachine* pLeaderMachine = GetLeaderMachine();
+    BandMachine *pLeaderMachine = GetLeaderMachine();
     MILO_ASSERT(pLeaderMachine, 0x1F0);
     return pLeaderMachine->GetPrimaryBandName();
 }
 
 int BandMachineMgr::GetLeaderPrimaryMetaScore() const {
-    BandMachine* pLeaderMachine = GetLeaderMachine();
+    BandMachine *pLeaderMachine = GetLeaderMachine();
     MILO_ASSERT(pLeaderMachine, 0x1F8);
     return pLeaderMachine->mPrimaryMetaScore;
 }
 
-void BandMachineMgr::RefreshPrimaryProfileInfo(){
-    BandProfile* profile = TheProfileMgr.GetPrimaryProfile();
-    if(profile){
-        LocalBandMachine* pLocalMachine = mLocalMachine;
+void BandMachineMgr::RefreshPrimaryProfileInfo() {
+    BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
+    if (profile) {
+        LocalBandMachine *pLocalMachine = mLocalMachine;
         MILO_ASSERT(pLocalMachine, 0x203);
         pLocalMachine->SetPrimaryProfileName(profile->GetName());
-        if(profile->IsBandNameProfanityChecked()){
+        if (profile->IsBandNameProfanityChecked()) {
             pLocalMachine->SetPrimaryBandName(profile->GetBandName());
-        }
-        else {
+        } else {
             pLocalMachine->SetPrimaryBandName("");
         }
-        pLocalMachine->SetPrimaryMetaScore(TheCampaign->GetCampaignMetaScoreForProfile(profile));
+        pLocalMachine->SetPrimaryMetaScore(
+            TheCampaign->GetCampaignMetaScoreForProfile(profile)
+        );
     }
 }
 

@@ -2,10 +2,10 @@
 
 #include "obj/Data.h"
 class TourProperty {
-    public:
-    TourProperty(const DataArray*);
+public:
+    TourProperty(const DataArray *);
     virtual ~TourProperty();
-    void Configure(const DataArray*);
+    void Configure(const DataArray *);
     Symbol GetName() const;
     float GetDefaultValue() const;
     float GetMinValue() const;

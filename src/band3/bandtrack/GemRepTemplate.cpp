@@ -11,35 +11,43 @@ enum {
     kNumGemSlotMats = 1
 };
 
-GemRepTemplate::GemRepTemplate(const TrackConfig& tc) : mConfig(SystemConfig("track_graphics", "gem")),
-    kTailPulseRate(mConfig->FindArray("tail_pulse_rate", true)->Float(1)),
-    kTailPulseSmoothing(mConfig->FindArray("tail_pulse_smoothing", true)->Float(1)),
-    kTailOffsetX(mConfig->FindArray("tail_offset_x", true)->Float(1)),
-    kTailMinAlpha(mConfig->FindArray("tail_min_alpha", true)->Float(1)),
-    kTailMaxAlpha(mConfig->FindArray("tail_max_alpha", true)->Float(1)),
-    kTailAlphaSmoothing(mConfig->FindArray("tail_alpha_smoothing", true)->Float(1)),
-    kTailFadeDistance(mConfig->FindArray("tail_fade_distance", true)->Float(1)),
-    kTailMaxLength(mConfig->FindArray("tail_max_length", true)->Float(1)),
-    kTailFrequencyRange(mConfig->FindArray("tail_min_freq", true)->Float(1), mConfig->FindArray("tail_max_freq", true)->Float(1)),
-    kTailAmplitudeRange(mConfig->FindArray("tail_min_amp", true)->Float(1), mConfig->FindArray("tail_max_amp", true)->Float(1)),
-    mTrackCfg(tc), unk_0x3C(0), unk_0x40(1.0f), mObjectDir(NULL) {
-    mSlots = (RndMat**)new void*[tc.GetMaxSlots()]; // it doesn't call the ctors, so i have to do This to just alloc
+GemRepTemplate::GemRepTemplate(const TrackConfig &tc)
+    : mConfig(SystemConfig("track_graphics", "gem")),
+      kTailPulseRate(mConfig->FindArray("tail_pulse_rate", true)->Float(1)),
+      kTailPulseSmoothing(mConfig->FindArray("tail_pulse_smoothing", true)->Float(1)),
+      kTailOffsetX(mConfig->FindArray("tail_offset_x", true)->Float(1)),
+      kTailMinAlpha(mConfig->FindArray("tail_min_alpha", true)->Float(1)),
+      kTailMaxAlpha(mConfig->FindArray("tail_max_alpha", true)->Float(1)),
+      kTailAlphaSmoothing(mConfig->FindArray("tail_alpha_smoothing", true)->Float(1)),
+      kTailFadeDistance(mConfig->FindArray("tail_fade_distance", true)->Float(1)),
+      kTailMaxLength(mConfig->FindArray("tail_max_length", true)->Float(1)),
+      kTailFrequencyRange(
+          mConfig->FindArray("tail_min_freq", true)->Float(1),
+          mConfig->FindArray("tail_max_freq", true)->Float(1)
+      ),
+      kTailAmplitudeRange(
+          mConfig->FindArray("tail_min_amp", true)->Float(1),
+          mConfig->FindArray("tail_max_amp", true)->Float(1)
+      ),
+      mTrackCfg(tc), unk_0x3C(0), unk_0x40(1.0f), mObjectDir(NULL) {
+    mSlots = (RndMat **)new void *[tc.GetMaxSlots()]; // it doesn't call the ctors, so i
+                                                      // have to do This to just alloc
 }
 
 GemRepTemplate::~GemRepTemplate() {
-    RndMesh* end = *mTails.end();
-    for (RndMesh* it = *mTails.begin(); it != end; it++) delete it; // i hate how well this matches
+    RndMesh *end = *mTails.end();
+    for (RndMesh *it = *mTails.begin(); it != end; it++)
+        delete it; // i hate how well this matches
     mTails.clear();
     delete[] mSlots;
 }
 
-void GemRepTemplate::Init(ObjectDir*) {
+void GemRepTemplate::Init(ObjectDir *) {}
 
-}
-
-RndMesh* GemRepTemplate::GetTail() {
-    RndMesh* m;
-    if (mTails.size() == 0) m = CreateTail();
+RndMesh *GemRepTemplate::GetTail() {
+    RndMesh *m;
+    if (mTails.size() == 0)
+        m = CreateTail();
     else {
         m = mTails.back();
         mTails.pop_back();
@@ -47,15 +55,15 @@ RndMesh* GemRepTemplate::GetTail() {
     return m;
 }
 
-void GemRepTemplate::ReturnTail(RndMesh* m) {
+void GemRepTemplate::ReturnTail(RndMesh *m) {
     if (m != NULL) {
         UnhookAllParents(m);
         mTails.push_back(m);
     }
 }
 
-RndMesh* GemRepTemplate::CreateTail() {
-    RndMesh* m = Hmx::Object::New<RndMesh>();
+RndMesh *GemRepTemplate::CreateTail() {
+    RndMesh *m = Hmx::Object::New<RndMesh>();
     m->SetMutable(0x3F);
     m->Verts().reserve(mTailVerts.size() * (1 + mNumTailSections), true);
     m->Faces().reserve((mTailVerts.size() - 1) * mNumTailSections * 2);
@@ -70,12 +78,20 @@ int GemRepTemplate::GetRequiredFaceCount(int i) const {
     return (mTailVerts.size() - 1) * i * 2;
 }
 
-RndMat* GemRepTemplate::GetMatByTag(const char* c, int slot) {
-    const char* s = mConfig->FindArray("mat_formats", true)->FindArray(c, true)->Str(1);
-    return mObjectDir->Find<RndMat>(MakeString("%s.mat", MakeString(s, slot < mTrackCfg.GetMaxSlots() ? mTrackCfg.GetSlotColor(slot) : "star")), true);
+RndMat *GemRepTemplate::GetMatByTag(const char *c, int slot) {
+    const char *s = mConfig->FindArray("mat_formats", true)->FindArray(c, true)->Str(1);
+    return mObjectDir->Find<RndMat>(
+        MakeString(
+            "%s.mat",
+            MakeString(
+                s, slot < mTrackCfg.GetMaxSlots() ? mTrackCfg.GetSlotColor(slot) : "star"
+            )
+        ),
+        true
+    );
 }
 
-bool VertLess(const RndMesh::Vert& v1, const RndMesh::Vert& v2) {
+bool VertLess(const RndMesh::Vert &v1, const RndMesh::Vert &v2) {
     if ((float)std::fabs(double(v1.pos.y - v2.pos.y)) < 0.1f) { // nonsense regswap
         return v1.pos.x < v2.pos.x;
     }
@@ -102,13 +118,13 @@ float GemRepTemplate::GetTailSectionLength(GemRepTemplate::TailType type) const 
     return this[type * 4].mTailSectionLen; // ????
 }
 
-RndMat* GemRepTemplate::GetSlotMat(int matIndex, int slotIndex) const {
+RndMat *GemRepTemplate::GetSlotMat(int matIndex, int slotIndex) const {
     MILO_ASSERT_RANGE(matIndex, 0, kNumGemSlotMats, 244);
     MILO_ASSERT_RANGE(slotIndex, 0, mTrackCfg.GetMaxSlots(), 245);
     return mSlots[matIndex + slotIndex];
 }
 
-void GemRepTemplate::SetSlotMat(int matIndex, int slotIndex, RndMat* mat) {
+void GemRepTemplate::SetSlotMat(int matIndex, int slotIndex, RndMat *mat) {
     MILO_ASSERT_RANGE(matIndex, 0, kNumGemSlotMats, 251);
     MILO_ASSERT_RANGE(slotIndex, 0, mTrackCfg.GetMaxSlots(), 252);
     mSlots[matIndex + slotIndex] = mat;

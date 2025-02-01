@@ -11,8 +11,8 @@ class GamerAwardStatus : public FixedSizeSaveable {
 public:
     GamerAwardStatus();
     virtual ~GamerAwardStatus();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     static int SaveSize(int);
 
@@ -23,11 +23,11 @@ public:
 
 class AccomplishmentProgress : public Hmx::Object, public FixedSizeSaveable {
 public:
-    AccomplishmentProgress(BandProfile*);
+    AccomplishmentProgress(BandProfile *);
     virtual ~AccomplishmentProgress();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void Clear();
     int GetToursPlayed(Symbol) const;
@@ -38,7 +38,7 @@ public:
     void SetQuestCompletedCount(TourGameType, int);
     bool AddAccomplishment(Symbol);
     bool IsAccomplished(Symbol) const;
-    void NotifyPlayerOfAccomplishment(Symbol, const char*);
+    void NotifyPlayerOfAccomplishment(Symbol, const char *);
     void NotifyPlayerOfCategoryComplete(Symbol);
     void NotifyPlayerOfGroupComplete(Symbol);
     bool AddAward(Symbol, Symbol);
@@ -122,7 +122,7 @@ public:
     void SetTourTotalSongsPlayed(int);
     void SetToursPlayed(Symbol, int);
     void SetMostStars(Symbol, int);
-    bool InqGoalLeaderboardData(std::map<Symbol, int>&) const;
+    bool InqGoalLeaderboardData(std::map<Symbol, int> &) const;
     void HandleUploadStarted();
     // // int GetTotalGemsSmashed() const;
     // // int GetTotalGuitarHopos() const;
@@ -159,14 +159,14 @@ public:
     // int GetBestScore(ScoreType) const;
     // int GetBestBandScore() const;
 
-    DataNode OnMsg(const RockCentralOpCompleteMsg&);
+    DataNode OnMsg(const RockCentralOpCompleteMsg &);
 
     static int SaveSize(int);
 
     std::map<Symbol, int> mStepTrackingMap; // 0x24
-    BandProfile* mParentProfile; // 0x3c
+    BandProfile *mParentProfile; // 0x3c
     bool mHardCoreStatusUpdatePending; // 0x40
-    std::list<GamerAwardStatus*> mGamerAwardStatusList; // 0x44
+    std::list<GamerAwardStatus *> mGamerAwardStatusList; // 0x44
     std::set<Symbol> mAccomplishments; // 0x4c
     std::set<Symbol> unk64; // 0x64
     std::vector<Symbol> unk7c; // 0x7c

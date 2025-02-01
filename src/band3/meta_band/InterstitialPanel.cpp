@@ -7,13 +7,11 @@
 #include "utl/Messages4.h"
 #include "utl/Symbols.h"
 
-InterstitialPanel::InterstitialPanel() : mCamshotDone(0), unk88(0), mShowing(1) {
+InterstitialPanel::InterstitialPanel() : mCamshotDone(0), unk88(0), mShowing(1) {}
 
-}
+void InterstitialPanel::Load() { UIPanel::Load(); }
 
-void InterstitialPanel::Load(){ UIPanel::Load(); }
-
-void InterstitialPanel::Enter(){
+void InterstitialPanel::Enter() {
     DeJitterPanel::Enter();
     mCamshotDone = 0;
     unk88 = 0;
@@ -23,21 +21,23 @@ bool InterstitialPanel::Exiting() const {
     return UIPanel::Exiting() || !mCamshotDone || unk88 < 3;
 }
 
-void InterstitialPanel::Unload(){
-    if(mLoader && mLoader->IsLoaded()){
-        mDir = dynamic_cast<PanelDir*>(mLoader->GetDir());
+void InterstitialPanel::Unload() {
+    if (mLoader && mLoader->IsLoaded()) {
+        mDir = dynamic_cast<PanelDir *>(mLoader->GetDir());
         MILO_ASSERT_FMT(mDir, "%s not PanelDir", mLoader->mFile);
         RELEASE(mLoader);
     }
     UIPanel::Unload();
 }
 
-void InterstitialPanel::Draw(){
-    if(mCamshotDone) unk88++;
-    else if(mShowing) UIPanel::Draw();
+void InterstitialPanel::Draw() {
+    if (mCamshotDone)
+        unk88++;
+    else if (mShowing)
+        UIPanel::Draw();
 }
 
-void InterstitialPanel::SetCamshotDone(){ mCamshotDone = true; }
+void InterstitialPanel::SetCamshotDone() { mCamshotDone = true; }
 
 BEGIN_HANDLERS(InterstitialPanel)
     HANDLE_ACTION(transition_camshot_done, SetCamshotDone())
@@ -46,26 +46,22 @@ BEGIN_HANDLERS(InterstitialPanel)
     HANDLE_CHECK(0x62)
 END_HANDLERS
 
-BackdropPanel::BackdropPanel() : mOutroDone(0) {
+BackdropPanel::BackdropPanel() : mOutroDone(0) {}
 
-}
-
-void BackdropPanel::Enter(){
+void BackdropPanel::Enter() {
     DeJitterPanel::Enter();
     mOutroDone = true;
 }
 
-void BackdropPanel::Exit(){
+void BackdropPanel::Exit() {
     mOutroDone = false;
     mDir->Handle(vignette_outro_msg, true);
     UIPanel::Exit();
 }
 
-bool BackdropPanel::Exiting() const {
-    return UIPanel::Exiting() || !mOutroDone;
-}
+bool BackdropPanel::Exiting() const { return UIPanel::Exiting() || !mOutroDone; }
 
-void BackdropPanel::SetOutroDone(){ mOutroDone = true; }
+void BackdropPanel::SetOutroDone() { mOutroDone = true; }
 
 BEGIN_HANDLERS(BackdropPanel)
     HANDLE_ACTION(vignette_outro_done, SetOutroDone())

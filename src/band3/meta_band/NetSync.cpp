@@ -19,62 +19,58 @@
 #include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 
-NetSync* TheNetSync;
+NetSync *TheNetSync;
 
 namespace {
-    void RegisterNetMessages(){
-
-    }
+    void RegisterNetMessages() {}
 }
 
-void NetSync::Init(){
+void NetSync::Init() {
     MILO_ASSERT(!TheNetSync, 0x37);
     TheNetSync = new NetSync();
     TheNetSync->SetName("net_sync", ObjectDir::Main());
     RegisterNetMessages();
 }
 
-void NetSync::Terminate(){
+void NetSync::Terminate() {
     MILO_ASSERT(TheNetSync, 0x40);
     RELEASE(TheNetSync);
 }
 
-NetSync::NetSync() : unk1c(1), mDestinationScreen(0), mDestinationDepth(-1), unk28(0), unk29(0), mUILockStep(new LockStepMgr("ui_lock_step", this)) {
+NetSync::NetSync()
+    : unk1c(1), mDestinationScreen(0), mDestinationDepth(-1), unk28(0), unk29(0),
+      mUILockStep(new LockStepMgr("ui_lock_step", this)) {}
 
-}
-
-NetSync::~NetSync(){
-    delete mUILockStep;
-}
+NetSync::~NetSync() { delete mUILockStep; }
 
 bool NetSync::IsBlockingTransition() const { return mUILockStep->InLock(); }
 
 bool NetSync::IsBlockingEvent(Symbol event) const {
-    if(!event.Null()){
+    if (!event.Null()) {
         static Message msg("block_event", gNullStr);
         msg[0] = event;
         DataNode n30;
-        for(ObjDirItr<UIPanel> it(ObjectDir::Main(), true); it != 0; ++it){
-            if(it->GetState() == UIPanel::kUp){
+        for (ObjDirItr<UIPanel> it(ObjectDir::Main(), true); it != 0; ++it) {
+            if (it->GetState() == UIPanel::kUp) {
                 n30 = it->Handle(msg, false);
-                if(n30 != DataNode(kDataUnhandled, 0) && n30.Int()){
+                if (n30 != DataNode(kDataUnhandled, 0) && n30.Int()) {
                     return true;
                 }
             }
         }
-        UIScreen* curscreen = TheUI->CurrentScreen();
-        if(curscreen){
+        UIScreen *curscreen = TheUI->CurrentScreen();
+        if (curscreen) {
             n30 = curscreen->Handle(msg, false);
-            if(n30 != DataNode(kDataUnhandled, 0) && n30.Int()){
+            if (n30 != DataNode(kDataUnhandled, 0) && n30.Int()) {
                 return true;
             }
         }
 
-        if(TheUI->PushDepth() > 0){
-            UIScreen* bottomscreen = TheUI->BottomScreen();
-            if(bottomscreen){
+        if (TheUI->PushDepth() > 0) {
+            UIScreen *bottomscreen = TheUI->BottomScreen();
+            if (bottomscreen) {
                 n30 = bottomscreen->Handle(msg, false);
-                if(n30 != DataNode(kDataUnhandled, 0) && n30.Int()){
+                if (n30 != DataNode(kDataUnhandled, 0) && n30.Int()) {
                     return true;
                 }
             }
@@ -89,45 +85,43 @@ NetUIState NetSync::GetUIState() const {
     return TheSessionMgr->mMachineMgr->GetLocalMachine()->GetNetUIState();
 }
 
-void NetSync::Poll(){
-    if(TheUI->InTransition()){
-        UIScreen* cur = TheUI->CurrentScreen();
-        if(!TheUI->TransitionScreen() || TheUI->TransitionScreen()->IsLoaded()){
-            if(!cur || !cur->Exiting()){
-                if(mUILockStep->InLock() && !mUILockStep->HasResponded()){
+void NetSync::Poll() {
+    if (TheUI->InTransition()) {
+        UIScreen *cur = TheUI->CurrentScreen();
+        if (!TheUI->TransitionScreen() || TheUI->TransitionScreen()->IsLoaded()) {
+            if (!cur || !cur->Exiting()) {
+                if (mUILockStep->InLock() && !mUILockStep->HasResponded()) {
                     mUILockStep->RespondToLock(true);
                 }
             }
         }
-    }
-    else {
-        if(mDestinationScreen && TheUI->CurrentScreen()){
+    } else {
+        if (mDestinationScreen && TheUI->CurrentScreen()) {
             AttemptTransition(mDestinationScreen, mDestinationDepth);
         }
     }
 }
 
-void NetSync::Enable(){ SetUIState(kNetUI_Synchronized); }
-void NetSync::Disable(){ SetUIState(kNetUI_None); }
+void NetSync::Enable() { SetUIState(kNetUI_Synchronized); }
+void NetSync::Disable() { SetUIState(kNetUI_None); }
 
-void NetSync::SetUIState(NetUIState state){
+void NetSync::SetUIState(NetUIState state) {
     TheSessionMgr->mMachineMgr->GetLocalMachine()->SetNetUIState(state);
 }
 
-DataNode NetSync::OnMsg(const UITransitionCompleteMsg&){
-    if(IsEnabled() && mUILockStep->InLock() && !mUILockStep->HasResponded()){
+DataNode NetSync::OnMsg(const UITransitionCompleteMsg &) {
+    if (IsEnabled() && mUILockStep->InLock() && !mUILockStep->HasResponded()) {
         mUILockStep->RespondToLock(true);
     }
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode NetSync::OnMsg(const UIComponentFocusChangeMsg& msg){
-    if(!IsEnabled() || TheUIEventMgr->HasActiveDialogEvent()){
+DataNode NetSync::OnMsg(const UIComponentFocusChangeMsg &msg) {
+    if (!IsEnabled() || TheUIEventMgr->HasActiveDialogEvent()) {
         return DataNode(kDataUnhandled, 0);
-    }
-    else {
-        BandUser* leader = TheSessionMgr->GetLeaderUser();
-        if(leader && TheNetSession->HasUser(leader) && leader->IsLocal()){
+    } else {
+        BandUser *leader = TheSessionMgr->GetLeaderUser();
+        if (leader && TheNetSession->HasUser(leader) && leader->IsLocal()) {
             SendNetFocus(leader, msg->Obj<UIComponent>(2));
         }
         return DataNode(kDataUnhandled, 0);

@@ -22,21 +22,21 @@ public:
     LessonMgr();
     virtual ~LessonMgr();
 
-    Lesson* GetLesson(Symbol) const;
+    Lesson *GetLesson(Symbol) const;
     TrackType GetTrackTypeFromTrainer(Symbol);
-    std::vector<Symbol>* GetLessonsFromCategory(Symbol) const;
-    std::vector<Symbol>* GetCategoriesFromTrainer(Symbol) const;
-    int GetCompletedCountFromTrainer(BandProfile*, Symbol);
+    std::vector<Symbol> *GetLessonsFromCategory(Symbol) const;
+    std::vector<Symbol> *GetCategoriesFromTrainer(Symbol) const;
+    int GetCompletedCountFromTrainer(BandProfile *, Symbol);
     int GetTotalCountFromTrainer(Symbol);
     Difficulty GetDifficulty() const;
     int GetTotalCountFromCategory(Symbol);
-    int GetCompletedCountFromCategory(BandProfile*, Symbol);
+    int GetCompletedCountFromCategory(BandProfile *, Symbol);
 
     static void Init();
-    static LessonMgr* GetLessonMgr();
+    static LessonMgr *GetLessonMgr();
 
     std::vector<Symbol> mTrainers; // 0x1c
-    std::map<Symbol, std::vector<Symbol>*> mTrainerToCategoriesMap; // 0x24
-    std::map<Symbol, std::vector<Symbol>*> mCategoryToLessonsMap; // 0x3c
-    std::map<Symbol, Lesson*> mLessonsMap; // 0x54
+    std::map<Symbol, std::vector<Symbol> *> mTrainerToCategoriesMap; // 0x24
+    std::map<Symbol, std::vector<Symbol> *> mCategoryToLessonsMap; // 0x3c
+    std::map<Symbol, Lesson *> mLessonsMap; // 0x54
 };

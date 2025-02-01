@@ -15,58 +15,57 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 
-inline void AwardAssetProvider::Update(Symbol s){
+inline void AwardAssetProvider::Update(Symbol s) {
     unk20 = s;
     unk24.clear();
-    Award* pAward = TheAccomplishmentMgr->GetAward(unk20);
+    Award *pAward = TheAccomplishmentMgr->GetAward(unk20);
     MILO_ASSERT(pAward, 0x31);
     pAward->InqAssets(unk24);
 }
 
-NewAwardPanel::NewAwardPanel() : mUser(0), mAwardName(gNullStr), mAwardReason(gNullStr), m_pAwardAssetProvider(0) {
+NewAwardPanel::NewAwardPanel()
+    : mUser(0), mAwardName(gNullStr), mAwardReason(gNullStr), m_pAwardAssetProvider(0) {}
 
-}
-
-void NewAwardPanel::Enter(){
+void NewAwardPanel::Enter() {
     UIPanel::Enter();
     PopAndShowFirstAward();
 }
 
-void NewAwardPanel::LoadIcons(){
-    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+void NewAwardPanel::LoadIcons() {
+    AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
     MILO_ASSERT(pAssetMgr, 0xAE);
-    const std::map<int, String>& icons = pAssetMgr->GetIconPaths();
-    for(std::map<int, String>::const_iterator it = icons.begin(); it != icons.end(); ++it){
+    const std::map<int, String> &icons = pAssetMgr->GetIconPaths();
+    for (std::map<int, String>::const_iterator it = icons.begin(); it != icons.end();
+         ++it) {
         Symbol sym = GetSymbolFromAssetType((AssetType)it->first);
         String path(it->second);
-        if(!path.empty()){
+        if (!path.empty()) {
             AddTex(path.c_str(), sym.Str(), true, false);
         }
     }
 }
 
-void NewAwardPanel::Load(){
+void NewAwardPanel::Load() {
     TexLoadPanel::Load();
     MILO_ASSERT(!m_pAwardAssetProvider, 0xC3);
     LoadIcons();
 }
 
-void NewAwardPanel::Unload(){
+void NewAwardPanel::Unload() {
     TexLoadPanel::Unload();
     RELEASE(m_pAwardAssetProvider);
 }
 
-void NewAwardPanel::FinishLoad(){
+void NewAwardPanel::FinishLoad() {
     TexLoadPanel::FinishLoad();
     MILO_ASSERT(!m_pAwardAssetProvider, 0xD5);
     m_pAwardAssetProvider = new AwardAssetProvider(mTexs);
 }
 
-void NewAwardPanel::PopAndShowFirstAward(){
-    if(!TheAccomplishmentMgr->HasNewAwards()){
+void NewAwardPanel::PopAndShowFirstAward() {
+    if (!TheAccomplishmentMgr->HasNewAwards()) {
         Handle(handle_continue_msg, true);
-    }
-    else {
+    } else {
         mUser = TheAccomplishmentMgr->GetUserForFirstNewAward();
         mAwardName = TheAccomplishmentMgr->GetNameForFirstNewAward(mUser);
         mAwardReason = TheAccomplishmentMgr->GetReasonForFirstNewAward(mUser);
@@ -100,41 +99,41 @@ inline Symbol AwardAssetProvider::DataSymbol(int i_iIndex) const {
     return unk24[i_iIndex];
 }
 
-inline RndMat* AwardAssetProvider::Mat(int, int i_iData, UIListMesh* slot) const {
+inline RndMat *AwardAssetProvider::Mat(int, int i_iData, UIListMesh *slot) const {
     MILO_ASSERT(i_iData < NumData(), 0x55);
     Symbol dataSym = DataSymbol(i_iData);
-    if(slot->Matches("icon")){
-        AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    if (slot->Matches("icon")) {
+        AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
         MILO_ASSERT(pAssetMgr, 0x5B);
-        String assetStr(GetSymbolFromAssetType(pAssetMgr->GetTypeFromName(dataSym)).Str());
-        return GetMatForName(assetStr);     
-    }
-    else if(slot->Matches("gender")){
-        AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+        String assetStr(GetSymbolFromAssetType(pAssetMgr->GetTypeFromName(dataSym)).Str()
+        );
+        return GetMatForName(assetStr);
+    } else if (slot->Matches("gender")) {
+        AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
         MILO_ASSERT(pAssetMgr, 0x65);
-        Asset* pAsset = pAssetMgr->GetAsset(dataSym);
+        Asset *pAsset = pAssetMgr->GetAsset(dataSym);
         MILO_ASSERT(pAsset, 0x68);
-        if(pAsset->mGender == 1){
+        if (pAsset->mGender == 1) {
             return mMaleMat;
-        }
-        else if(pAsset->mGender == 2){
+        } else if (pAsset->mGender == 2) {
             return mFemaleMat;
-        }
-        else return mUnisexMat;
-    }
-    else return slot->DefaultMat();
+        } else
+            return mUnisexMat;
+    } else
+        return slot->DefaultMat();
 }
 
-inline void AwardAssetProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+inline void
+AwardAssetProvider::Text(int, int i_iData, UIListLabel *slot, UILabel *label) const {
     MILO_ASSERT(i_iData < NumData(), 0x38);
     Symbol dataSym = DataSymbol(i_iData);
-    if(slot->Matches("name")){
+    if (slot->Matches("name")) {
         label->SetTextToken(dataSym);
-    }
-    else label->SetTextToken(gNullStr);
+    } else
+        label->SetTextToken(gNullStr);
 }
 
-inline void AwardAssetProvider::InitData(RndDir* rdir){
+inline void AwardAssetProvider::InitData(RndDir *rdir) {
     mMaleMat = rdir->Find<RndMat>("male.mat", false);
     mFemaleMat = rdir->Find<RndMat>("female.mat", false);
     mUnisexMat = rdir->Find<RndMat>("unisex.mat", false);

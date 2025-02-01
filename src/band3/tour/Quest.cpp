@@ -8,14 +8,17 @@
 
 #include "decomp.h"
 
-Quest::Quest(DataArray* da) : mName(""), mDisplayName(gNullStr), mDescription(gNullStr), mLongDescription(gNullStr), mIngameDesc(gNullStr),
-    mIntroVignette(""), mOutroVignette(""), mSuccess(""), mTier(-1), mGroup(""), mIsSpecial(0), mWeight(1), mIsUGCAllowed(1) {
+Quest::Quest(DataArray *da)
+    : mName(""), mDisplayName(gNullStr), mDescription(gNullStr),
+      mLongDescription(gNullStr), mIngameDesc(gNullStr), mIntroVignette(""),
+      mOutroVignette(""), mSuccess(""), mTier(-1), mGroup(""), mIsSpecial(0), mWeight(1),
+      mIsUGCAllowed(1) {
     Configure(da);
 }
 
 Quest::~Quest() {}
 
-void Quest::Configure(DataArray* i_pConfig) {
+void Quest::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 37);
     mName = i_pConfig->Sym(0);
     i_pConfig->FindData(name_override, mDisplayName, false);
@@ -39,42 +42,43 @@ void Quest::Configure(DataArray* i_pConfig) {
 Symbol Quest::GetName() const { return mName; }
 
 Symbol Quest::GetDisplayName() const {
-    if(mDisplayName != gNullStr) return mDisplayName;
-    else return mName;
+    if (mDisplayName != gNullStr)
+        return mDisplayName;
+    else
+        return mName;
 }
 
 Symbol Quest::GetLongDescription() const {
-    if(mLongDescription != gNullStr) return mLongDescription;
-    else return MakeString("%s_long_desc", mName);
+    if (mLongDescription != gNullStr)
+        return mLongDescription;
+    else
+        return MakeString("%s_long_desc", mName);
 }
 
 Symbol Quest::GetDescription() const {
-    if(mDescription != gNullStr) return mDescription;
-    else return MakeString("%s_desc", mName);
+    if (mDescription != gNullStr)
+        return mDescription;
+    else
+        return MakeString("%s_desc", mName);
 }
 
-DECOMP_FORCEACTIVE(Quest, "%s_ingame_desc") // it's so sad that GetIngameDesc died of ligma (got deadstripped)
+DECOMP_FORCEACTIVE(Quest, "%s_ingame_desc") // it's so sad that GetIngameDesc died of
+                                            // ligma (got deadstripped)
 
 int Quest::GetTier() const { return mTier; }
 float Quest::GetWeight() const { return mWeight; }
-const TourCondition* Quest::GetPrereqs() const { return &mPrerequisites; }
+const TourCondition *Quest::GetPrereqs() const { return &mPrerequisites; }
 
-static inline bool QuestEmptySymbolHack(const Symbol& s){
-    return s != "";
-}
+static inline bool QuestEmptySymbolHack(const Symbol &s) { return s != ""; }
 
 DECOMP_FORCEFUNC(Quest, Quest, HasCustomIntro())
 DECOMP_FORCEFUNC(Quest, Quest, HasCustomOutro())
 
 #pragma push
 #pragma force_active on
-inline bool Quest::HasCustomIntro() const {
-    return QuestEmptySymbolHack(mIntroVignette);
-}
+inline bool Quest::HasCustomIntro() const { return QuestEmptySymbolHack(mIntroVignette); }
 
-inline bool Quest::HasCustomOutro() const {
-    return QuestEmptySymbolHack(mOutroVignette);
-}
+inline bool Quest::HasCustomOutro() const { return QuestEmptySymbolHack(mOutroVignette); }
 #pragma pop
 
 Symbol Quest::GetCustomIntro() const {
@@ -88,8 +92,8 @@ Symbol Quest::GetCustomOutro() const {
 }
 
 Symbol Quest::GetSuccessSymbol() const { return mSuccess; }
-const TourQuestGameRules* Quest::GetGameRules() const { return &mGameRules; }
-const TourReward* Quest::GetSuccessReward() const { return &mSuccessReward; }
-const TourReward* Quest::GetFailureReward() const { return &mFailureReward; }
+const TourQuestGameRules *Quest::GetGameRules() const { return &mGameRules; }
+const TourReward *Quest::GetSuccessReward() const { return &mSuccessReward; }
+const TourReward *Quest::GetFailureReward() const { return &mFailureReward; }
 Symbol Quest::GetGroup() const { return mGroup; }
 bool Quest::IsUGCAllowed() const { return mIsUGCAllowed; }

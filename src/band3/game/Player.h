@@ -62,17 +62,17 @@ public:
 
 class Player : public Performer, public MsgSource {
 public:
-    Player(BandUser*, Band*, int, BeatMaster*);
-    virtual DataNode Handle(DataArray*, bool);
+    Player(BandUser *, Band *, int, BeatMaster *);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~Player();
     virtual int GetAccumulatedScore() const;
-    virtual int GetMultiplier(bool, int&, int&, int&) const;
+    virtual int GetMultiplier(bool, int &, int &, int &) const;
     virtual bool IsNet() const;
     virtual int GetNumStars() const;
     virtual float GetNumStarsFloat() const;
     virtual float GetTotalStars() const;
     virtual bool PastFinalNote() const = 0;
-    virtual void Poll(float, const SongPos&);
+    virtual void Poll(float, const SongPos &);
     virtual void AddPoints(float, bool, bool);
     virtual void Hit();
     virtual void Restart(bool);
@@ -99,12 +99,12 @@ public:
     virtual void Jump(float, bool) = 0;
     virtual void SetAutoplay(bool) = 0;
     virtual bool IsAutoplay() const = 0;
-    virtual void SetAutoOn(bool){}
+    virtual void SetAutoOn(bool) {}
     virtual void HookupTrack() = 0;
     virtual void UnHookTrack() = 0;
     virtual void EnableFills(float, bool) = 0;
     virtual void DisableFills() = 0;
-    virtual void EnableDrumFills(bool){}
+    virtual void EnableDrumFills(bool) {}
     virtual bool FillsEnabled(int) = 0;
     virtual bool AreFillsForced() const;
     virtual void EnterCoda();
@@ -117,8 +117,8 @@ public:
     virtual bool AllowWarningState() const;
     virtual bool RebuildPhrases();
     virtual void Rollback(float, float);
-    virtual void EnableController(){}
-    virtual void DisableController(){}
+    virtual void EnableController() {}
+    virtual void DisableController() {}
     virtual void ConfigureBehavior();
     virtual bool CanDeployOverdrive() const;
     virtual float GetOverdrive() const;
@@ -128,10 +128,10 @@ public:
     virtual int GetBaseMaxPoints() const = 0;
     virtual int GetBaseMaxStreakPoints() const = 0;
     virtual int GetBaseBonusPoints() const = 0;
-    virtual void SetSyncOffset(float){}
-    virtual void SavePersistentData(PersistentPlayerData&) const;
-    virtual void LoadPersistentData(const PersistentPlayerData&);
-    virtual int GetCodaFreestyleExtents(Extent&) const;
+    virtual void SetSyncOffset(float) {}
+    virtual void SavePersistentData(PersistentPlayerData &) const;
+    virtual void LoadPersistentData(const PersistentPlayerData &);
+    virtual int GetCodaFreestyleExtents(Extent &) const;
     virtual bool InTambourinePhrase() const;
     virtual bool InFreestyleSection() const;
     virtual void PopupHelp(Symbol, bool);
@@ -139,28 +139,28 @@ public:
     virtual void SetCodaEndMs(float);
     virtual bool NeedsToOverrideBasePoints() const;
     virtual bool NeedsToSetCodaEnd() const;
-    virtual void EnterAnnoyingMode(){}
+    virtual void EnterAnnoyingMode() {}
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);
-    virtual void HandleNewSection(const PracticeSection&, int, int) = 0;
-    virtual void SetEnabledState(EnabledState, BandUser*, bool);
-    virtual void LocalSetEnabledState(EnabledState, int, BandUser*, bool);
-    virtual void EnableSwings(bool){}
+    virtual void HandleNewSection(const PracticeSection &, int, int) = 0;
+    virtual void SetEnabledState(EnabledState, BandUser *, bool);
+    virtual void LocalSetEnabledState(EnabledState, int, BandUser *, bool);
+    virtual void EnableSwings(bool) {}
     virtual bool DeployBandEnergyIfPossible(bool);
     virtual int LocalDeployBandEnergy();
     virtual bool ShouldDrainEnergy() const;
     virtual void IgnoreUntilRollback(float);
-    virtual void UpdateLeftyFlip(){}
+    virtual void UpdateLeftyFlip() {}
     virtual void UpdateVocalStyle();
-    virtual void ResetController(bool){}
+    virtual void ResetController(bool) {}
 
     void DeterminePerformanceAwards();
     void DisableOverdrivePhrases();
-    BandTrack* GetBandTrack() const;
+    BandTrack *GetBandTrack() const;
     void PollMultiplier();
     void PollEnabledState(float);
     void PollTalking(int);
-    void UpdateEnergy(const SongPos&);
+    void UpdateEnergy(const SongPos &);
     void StopDeployingBandEnergy(bool);
     void BroadcastScore();
     void AddBonusPoints(int);
@@ -168,9 +168,9 @@ public:
     void SetEnergy(float);
     void DelayReturn(bool);
     bool Saveable() const;
-    void Save(BandUser*, bool);
+    void Save(BandUser *, bool);
     void DisablePlayer(int);
-    const UserGuid& GetUserGuid() const;
+    const UserGuid &GetUserGuid() const;
     int GetSlot() const;
     bool IsDeployingBandEnergy() const;
     void SetEnergyAutomatically(float);
@@ -189,17 +189,17 @@ public:
 
     int GetTrackNum() const { return mTrackNum; }
     TrackType GetTrackType() const { return mTrackType; }
-    BandUser* GetUser() const { return mUser; }
+    BandUser *GetUser() const { return mUser; }
     float GetBandEnergy() const { return mBandEnergy; }
 
-    DataNode OnGetOverdriveMeter(DataArray*);
-    DataNode OnSendNetGameplayMsg(DataArray*);
-    DataNode OnSendNetGameplayMsgToPlayer(DataArray*);
+    DataNode OnGetOverdriveMeter(DataArray *);
+    DataNode OnSendNetGameplayMsg(DataArray *);
+    DataNode OnSendNetGameplayMsgToPlayer(DataArray *);
 
-    PlayerParams* mParams; // 0x228
-    PlayerBehavior* mBehavior; // 0x22c
-    BandUser* mUser; // 0x230
-    CommonPhraseCapturer* mCommonPhraseCapturer; // 0x234
+    PlayerParams *mParams; // 0x228
+    PlayerBehavior *mBehavior; // 0x22c
+    BandUser *mUser; // 0x230
+    CommonPhraseCapturer *mCommonPhraseCapturer; // 0x234
     bool mRemote; // 0x238
     String mPlayerName; // 0x23c
     int mTrackNum; // 0x248
@@ -215,7 +215,7 @@ public:
     int unk274;
     int unk278;
     bool mPhraseBonus; // 0x27c
-    BeatMaster* mBeatMaster; // 0x280
+    BeatMaster *mBeatMaster; // 0x280
     float unk284;
     bool unk288;
     int unk28c;

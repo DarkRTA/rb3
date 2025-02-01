@@ -20,7 +20,7 @@ public:
     TrainingPanel();
     OBJ_CLASSNAME(TrainingPanel);
     OBJ_SET_TYPE(TrainingPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~TrainingPanel();
     virtual void Enter();
     virtual void Exit();
@@ -28,19 +28,19 @@ public:
     virtual void Unload();
 
     void SetTrainingState(TrainingState);
-    bool IsCorrectController(Symbol, LocalBandUser*) const;
+    bool IsCorrectController(Symbol, LocalBandUser *) const;
     void GotoTrainer(Symbol);
     TrainingState GetStateFromTrainer(Symbol);
     void UpdateLessonsProvider(Symbol);
     void RefreshLessonsList();
 
-    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const ButtonDownMsg &);
     DataNode LeaveState();
 
     static TrainingState sBackStates[kTrainingState_COUNT];
 
     TrainingState mTrainingState; // 0x38
     int unk3c;
-    TrainerProvider* mTrainerProvider; // 0x40
-    LessonProvider* mLessonProvider; // 0x44
+    TrainerProvider *mTrainerProvider; // 0x40
+    LessonProvider *mLessonProvider; // 0x44
 };

@@ -6,17 +6,15 @@
 #include "utl/HxGuid.h"
 #include "utl/Symbol.h"
 
-TrackerSource::TrackerSource(){
+TrackerSource::TrackerSource() {}
 
-}
+TrackerSource::~TrackerSource() {}
 
-TrackerSource::~TrackerSource(){
-
-}
-
-bool TrackerSource::HasPlayer(const TrackerPlayerID& pid) const {
-    for(TrackerPlayerID id = GetFirstPlayer(); !id.mGuid.Null(); id = GetNextPlayer(id)){
-        if(id.mGuid == pid.mGuid) return true;
+bool TrackerSource::HasPlayer(const TrackerPlayerID &pid) const {
+    for (TrackerPlayerID id = GetFirstPlayer(); !id.mGuid.Null();
+         id = GetNextPlayer(id)) {
+        if (id.mGuid == pid.mGuid)
+            return true;
     }
     return false;
 }
@@ -26,51 +24,56 @@ TrackerPlayerID TrackerSource::GetIDFromInstrument(Symbol s) const {
 }
 
 TrackerPlayerID TrackerSource::GetIDFromTrackType(TrackType ty) const {
-    for(TrackerPlayerID id = GetFirstPlayer(); !id.mGuid.Null(); id = GetNextPlayer(id)){
-        Player* pPlayer = GetPlayer(id);
+    for (TrackerPlayerID id = GetFirstPlayer(); !id.mGuid.Null();
+         id = GetNextPlayer(id)) {
+        Player *pPlayer = GetPlayer(id);
         MILO_ASSERT(pPlayer, 0x48);
-        if(ty == pPlayer->GetTrackType()){
+        if (ty == pPlayer->GetTrackType()) {
             return TrackerPlayerID(id);
         }
     }
     return TrackerPlayerID(gNullUserGuid);
 }
 
-TrackerPlayerID TrackerSource::FindPlayerID(const Player* p) const {
-    for(TrackerPlayerID id = GetFirstPlayer(); !id.mGuid.Null(); id = GetNextPlayer(id)){
-        if(GetPlayer(id) == p){
+TrackerPlayerID TrackerSource::FindPlayerID(const Player *p) const {
+    for (TrackerPlayerID id = GetFirstPlayer(); !id.mGuid.Null();
+         id = GetNextPlayer(id)) {
+        if (GetPlayer(id) == p) {
             return TrackerPlayerID(id);
         }
     }
     return TrackerPlayerID(gNullUserGuid);
 }
 
-bool TrackerSource::IsPlayerLocal(const TrackerPlayerID& pid) const {
-    if(!HasPlayer(pid)) return false;
+bool TrackerSource::IsPlayerLocal(const TrackerPlayerID &pid) const {
+    if (!HasPlayer(pid))
+        return false;
     else {
-        Player* pPlayer = GetPlayer(pid);
+        Player *pPlayer = GetPlayer(pid);
         MILO_ASSERT(pPlayer, 0x6E);
         return pPlayer->IsLocal();
     }
 }
 
-bool TrackerSource::IsPlayerEligible(const TrackerPlayerID& pid) const {
-    if(!HasPlayer(pid)) return false;
+bool TrackerSource::IsPlayerEligible(const TrackerPlayerID &pid) const {
+    if (!HasPlayer(pid))
+        return false;
     else {
-        Player* pPlayer = GetPlayer(pid);
+        Player *pPlayer = GetPlayer(pid);
         MILO_ASSERT(pPlayer, 0x7C);
         return PlayerIsEligible(pPlayer);
     }
 }
 
-bool TrackerSource::PlayerIsEligible(const Player* iPlayer) const {
+bool TrackerSource::PlayerIsEligible(const Player *iPlayer) const {
     MILO_ASSERT(iPlayer, 0x84);
-    if(iPlayer->GetQuarantined()) return false;
+    if (iPlayer->GetQuarantined())
+        return false;
     else {
-        MetaPerformer* pPerformer = MetaPerformer::Current();
+        MetaPerformer *pPerformer = MetaPerformer::Current();
         MILO_ASSERT(pPerformer, 0x8C);
-        if(pPerformer->Song() != gNullStr){
-            if(!pPerformer->PartPlaysInSong(iPlayer->GetUser()->GetTrackSym())){
+        if (pPerformer->Song() != gNullStr) {
+            if (!pPerformer->PartPlaysInSong(iPlayer->GetUser()->GetTrackSym())) {
                 return false;
             }
         }
@@ -78,28 +81,27 @@ bool TrackerSource::PlayerIsEligible(const Player* iPlayer) const {
     }
 }
 
-PlayerTrackerSource::PlayerTrackerSource(Player* p) : mPlayer(p) {
-    if(!PlayerIsEligible(p)) mPlayer = nullptr;
+PlayerTrackerSource::PlayerTrackerSource(Player *p) : mPlayer(p) {
+    if (!PlayerIsEligible(p))
+        mPlayer = nullptr;
 }
 
-PlayerTrackerSource::~PlayerTrackerSource(){
+PlayerTrackerSource::~PlayerTrackerSource() {}
 
-}
-
-void PlayerTrackerSource::HandleRemovePlayer(Player* p){
-    if(p == mPlayer) mPlayer = nullptr;
+void PlayerTrackerSource::HandleRemovePlayer(Player *p) {
+    if (p == mPlayer)
+        mPlayer = nullptr;
 }
 
 TrackerPlayerID PlayerTrackerSource::GetFirstPlayer() const {
-    if(!mPlayer){
+    if (!mPlayer) {
         return TrackerPlayerID(gNullUserGuid);
-    }
-    else {
+    } else {
         return TrackerPlayerID(mPlayer->GetUserGuid());
     }
 }
 
-TrackerPlayerID PlayerTrackerSource::GetNextPlayer(const TrackerPlayerID&) const {
+TrackerPlayerID PlayerTrackerSource::GetNextPlayer(const TrackerPlayerID &) const {
     return TrackerPlayerID(gNullUserGuid);
 }
 
@@ -107,22 +109,19 @@ int PlayerTrackerSource::GetPlayerCount() const {
     return !mPlayer ? 0 : PlayerIsEligible(mPlayer);
 }
 
-Player* PlayerTrackerSource::GetPlayer(const TrackerPlayerID& iID) const {
-    if(!mPlayer) return nullptr;
+Player *PlayerTrackerSource::GetPlayer(const TrackerPlayerID &iID) const {
+    if (!mPlayer)
+        return nullptr;
     else {
         MILO_ASSERT(mPlayer->GetUserGuid() == iID.GetGuid(), 0xE2);
         return mPlayer;
     }
 }
 
-bool PlayerTrackerSource::IsFinished() const {
-    return !mPlayer ? true : mPlayer->unk204;
-}
+bool PlayerTrackerSource::IsFinished() const { return !mPlayer ? true : mPlayer->unk204; }
 
-BandTrackerSource::BandTrackerSource(Band* band) : mBand(band) {
+BandTrackerSource::BandTrackerSource(Band *band) : mBand(band) {
     MILO_ASSERT(mBand, 0xFA);
 }
 
-BandTrackerSource::~BandTrackerSource(){
-
-}
+BandTrackerSource::~BandTrackerSource() {}

@@ -5,24 +5,24 @@
 
 class BandSongMetadata : public SongMetadata {
 public:
-    BandSongMetadata(BandSongMgr*);
-    BandSongMetadata(DataArray*, DataArray*, bool, BandSongMgr*);
-    virtual ~BandSongMetadata(){}
-    virtual DataNode Handle(DataArray*, bool);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
+    BandSongMetadata(BandSongMgr *);
+    BandSongMetadata(DataArray *, DataArray *, bool, BandSongMgr *);
+    virtual ~BandSongMetadata() {}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual void Save(BinStream &);
+    virtual void Load(BinStream &);
     virtual bool IsVersionOK() const;
 
     void InitBandSongMetadata();
-    const char* Title() const;
-    const char* Artist() const;
-    const char* Album() const;
+    const char *Title() const;
+    const char *Artist() const;
+    const char *Album() const;
     int AlbumTrackNum() const;
     Symbol Genre() const;
     int LengthMs() const;
     bool HasAlternatePath() const;
     bool MuteWinCues() const;
-    const std::map<Symbol, float>& Ranks() const;
+    const std::map<Symbol, float> &Ranks() const;
     int Rating() const;
     float GuidePitchVolume() const;
     int VocalTonicNote() const;
@@ -55,7 +55,7 @@ public:
     bool HasSolo(Symbol) const;
     Symbol HasSoloSym(Symbol) const;
     bool IsUGC() const;
-    const char* MidiUpdate() const;
+    const char *MidiUpdate() const;
     bool IsDownload() const;
 
     inline bool HasKeysDebug() const;
@@ -96,5 +96,5 @@ public:
     bool mIsMasterRecording; // 0xfa
     bool mIsTriFrame; // 0xfb
     bool mHasDiscUpdate; // 0xfc
-    BandSongMgr* mSongMgr; // 0x100
+    BandSongMgr *mSongMgr; // 0x100
 };

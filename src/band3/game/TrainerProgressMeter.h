@@ -8,18 +8,18 @@ class TrainerProgressMeter {
 public:
     TrainerProgressMeter();
     ~TrainerProgressMeter();
-    void Init(RndDir*, int);
+    void Init(RndDir *, int);
     void SetCompleted(int, bool);
     void SetCurrent(int);
     void Draw();
     void Hide();
 
     std::vector<bool> mCompleted; // 0x0
-    RndDir* mProgressMeter; // 0x8
-    RndMesh* mBar; // 0xc
+    RndDir *mProgressMeter; // 0x8
+    RndMesh *mBar; // 0xc
     Transform mBarTrans; // 0x10
-    RndMesh* mGlow; // 0x40
+    RndMesh *mGlow; // 0x40
     Transform mGlowTrans; // 0x44
-    RndMesh* mBoxes; // 0x74
+    RndMesh *mBoxes; // 0x74
     int mCurrent; // 0x78
 };

@@ -16,14 +16,14 @@ public:
 
 class ProfileChangedMsg : public Message {
 public:
-    ProfileChangedMsg(BandProfile* p) : Message(Type(), p) {}
+    ProfileChangedMsg(BandProfile *p) : Message(Type(), p) {}
     ProfileChangedMsg(DataArray *da) : Message(da) {}
     virtual ~ProfileChangedMsg() {}
     static Symbol Type() {
         static Symbol t("profile_changed_msg");
         return t;
     }
-    BandProfile* GetProfile() const { return mData->Obj<BandProfile>(2); }
+    BandProfile *GetProfile() const { return mData->Obj<BandProfile>(2); }
 };
 
 // turns out this was already implemented in os/ProfileSwappedMsg.h

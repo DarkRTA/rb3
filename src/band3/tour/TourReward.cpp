@@ -9,18 +9,20 @@ TourReward::TourReward() : mRewards(NULL) {}
 
 TourReward::~TourReward() {}
 
-void TourReward::Init(const DataArray* i_pConfig) { mRewards = const_cast<DataArray*>(i_pConfig); }
+void TourReward::Init(const DataArray *i_pConfig) {
+    mRewards = const_cast<DataArray *>(i_pConfig);
+}
 
-void TourReward::ApplyRewardEntry(TourProgress* tp, DataArray* da) const {
+void TourReward::ApplyRewardEntry(TourProgress *tp, DataArray *da) const {
     static class Symbol sym_band = "band";
     static class Symbol sym_perf = "perf";
     Symbol s = da->Sym(0);
     if (s == sym_band) {
-        DataArray* pEntryArray = da->Array(1);
+        DataArray *pEntryArray = da->Array(1);
         MILO_ASSERT(pEntryArray, 42);
         ApplyRewardEntry(tp, tp->GetTourProperties(), pEntryArray);
     } else if (s == sym_perf) {
-        DataArray* pEntryArray = da->Array(1);
+        DataArray *pEntryArray = da->Array(1);
         MILO_ASSERT(pEntryArray, 49);
         ApplyRewardEntry(tp, tp->GetPerformanceProperties(), pEntryArray);
     } else {
@@ -32,7 +34,9 @@ void TourReward::ApplyRewardEntry(TourProgress* tp, DataArray* da) const {
 #pragma pool_data off
 #endif
 
-void TourReward::ApplyRewardEntry(TourProgress* tp, TourPropertyCollection& tpc, DataArray* da) const {
+void TourReward::ApplyRewardEntry(
+    TourProgress *tp, TourPropertyCollection &tpc, DataArray *da
+) const {
     static class Symbol sym_add = "+";
     static class Symbol sym_subtract = "-";
     static class Symbol sym_multiply = "*";
@@ -54,20 +58,24 @@ void TourReward::ApplyRewardEntry(TourProgress* tp, TourPropertyCollection& tpc,
 #pragma pop
 #endif
 
-void TourReward::Apply(TourProgress* tp) const {
+void TourReward::Apply(TourProgress *tp) const {
     if (mRewards) {
-        for (int i = 1; i < mRewards->Size(); i++) 
+        for (int i = 1; i < mRewards->Size(); i++)
             ApplyRewardEntry(tp, mRewards->Array(i));
         tp->HandleTourRewardApplied();
     }
 }
 
-void TourReward::ApplyRewardValue(TourProgress*, TourPropertyCollection& pc, Symbol s, float f) const {
+void TourReward::ApplyRewardValue(
+    TourProgress *, TourPropertyCollection &pc, Symbol s, float f
+) const {
     pc.GetPropertyValue(s);
     pc.SetPropertyValue(s, f);
 }
 
-void TourReward::ApplyAddReward(TourProgress* tp, TourPropertyCollection& pc, DataArray* i_pArray) const {
+void TourReward::ApplyAddReward(
+    TourProgress *tp, TourPropertyCollection &pc, DataArray *i_pArray
+) const {
     MILO_ASSERT(i_pArray->Size() == 3, 129);
     Symbol s = i_pArray->Sym(1);
 #ifdef MILO_DEBUG
@@ -78,7 +86,9 @@ void TourReward::ApplyAddReward(TourProgress* tp, TourPropertyCollection& pc, Da
     ApplyRewardValue(tp, pc, s, f);
 }
 
-void TourReward::ApplySubtractReward(TourProgress* tp, TourPropertyCollection& pc, DataArray* i_pArray) const {
+void TourReward::ApplySubtractReward(
+    TourProgress *tp, TourPropertyCollection &pc, DataArray *i_pArray
+) const {
     MILO_ASSERT(i_pArray->Size() == 3, 149);
     Symbol s = i_pArray->Sym(1);
 #ifdef MILO_DEBUG
@@ -88,7 +98,9 @@ void TourReward::ApplySubtractReward(TourProgress* tp, TourPropertyCollection& p
     ApplyRewardValue(tp, pc, s, f);
 }
 
-void TourReward::ApplyMultiplyReward(TourProgress* tp, TourPropertyCollection& pc, DataArray* i_pArray) const {
+void TourReward::ApplyMultiplyReward(
+    TourProgress *tp, TourPropertyCollection &pc, DataArray *i_pArray
+) const {
     MILO_ASSERT(i_pArray->Size() == 3, 168);
     Symbol s = i_pArray->Sym(1);
 #ifdef MILO_DEBUG
@@ -99,7 +111,9 @@ void TourReward::ApplyMultiplyReward(TourProgress* tp, TourPropertyCollection& p
     ApplyRewardValue(tp, pc, s, f);
 }
 
-void TourReward::ApplyDivideReward(TourProgress* tp, TourPropertyCollection& pc, DataArray* i_pArray) const {
+void TourReward::ApplyDivideReward(
+    TourProgress *tp, TourPropertyCollection &pc, DataArray *i_pArray
+) const {
     MILO_ASSERT(i_pArray->Size() == 3, 187);
     Symbol s = i_pArray->Sym(1);
 #ifdef MILO_DEBUG
@@ -114,6 +128,10 @@ DECOMP_FORCEACTIVE(TourReward, "pProperty", "false\0", "o_rEntries.empty()")
 #endif
 
 void TourReward::ValidatePropertyModification(Symbol s) const {
-    TourProperty* t = TheTour->GetTourProperty(s);
-    if (t && t->IsAutomatic()) MILO_WARN("Trying to modify an automatic property with a reward! Property = %s\n", s.Str());
+    TourProperty *t = TheTour->GetTourProperty(s);
+    if (t && t->IsAutomatic())
+        MILO_WARN(
+            "Trying to modify an automatic property with a reward! Property = %s\n",
+            s.Str()
+        );
 }

@@ -21,9 +21,9 @@ public:
         int unk20;
     };
 
-    GemTrack(BandUser*);
+    GemTrack(BandUser *);
     virtual ~GemTrack();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Init();
     virtual void PlayerInit();
     virtual void PostInit();
@@ -33,7 +33,7 @@ public:
     virtual void SetGemsEnabledByPlayer();
     virtual void UpdateGems();
     virtual float NextKickNoteMs() const;
-    virtual Hmx::Object* GetSmasher(int);
+    virtual Hmx::Object *GetSmasher(int);
     virtual void ResetSmashers(bool);
     virtual bool Lefty() const { return mTrackConfig.IsLefty(); }
     virtual void RebuildBeats();
@@ -41,28 +41,28 @@ public:
     virtual void UpdateShifts();
     virtual void RefreshCurrentShift();
     virtual void PlayKeyIntros();
-    
+
     virtual void Poll(float);
     virtual void Jump(float);
-    virtual void SetDir(RndDir*);
-    virtual RndDir* GetDir();
-    virtual BandTrack* GetBandTrack();
+    virtual void SetDir(RndDir *);
+    virtual RndDir *GetDir();
+    virtual BandTrack *GetBandTrack();
     virtual void SetSmasherGlowing(int, bool);
     virtual void PopSmasher(int);
     virtual void OnMissPhrase(int);
     virtual void RemovePlayer();
     virtual void UpdateLeftyFlip();
 
-    GemManager* GetGemManager();
+    GemManager *GetGemManager();
     void HandleNewSong();
-    void ApplyShiftImmediately(const RangeShift&);
+    void ApplyShiftImmediately(const RangeShift &);
     void ResetFills(bool);
     void UpdateShiftsToTick(int);
     void UpdateFills();
     void ChangeDifficulty(Difficulty, int);
     void DropIn(int);
-    void SetPlayerState(const PlayerState&);
-    void DrawFill(FillInfo*, int, int);
+    void SetPlayerState(const PlayerState &);
+    void DrawFill(FillInfo *, int, int);
     void RedrawTrackElements(float);
     void DrawTrackElements(int, int);
     void See(float, int);
@@ -84,14 +84,14 @@ public:
     ObjPtr<GemTrackDir, ObjectDir> mTrackDir; // 0x6c
     int unk78; // 0x78
     int unk7c; // 0x7c
-    GemManager* mGemManager; // 0x80
+    GemManager *mGemManager; // 0x80
     PlayerState mPlayerState; // 0x84
     PlayerState unk9c; // 0x9c
     unsigned short unkb4; // 0xb4
     bool unkb6; // 0xb6
     bool unkb7; // 0xb7
     std::vector<RangeShift> mRangeShifts; // 0xb8
-    RangeShift* mCurrentRangeShift; // 0xc0
+    RangeShift *mCurrentRangeShift; // 0xc0
     float unkc4; // 0xc4
     float unkc8; // 0xc8
     ObjPtr<RndAnimatable, ObjectDir> mUpcomingShiftMaskAnim; // 0xcc

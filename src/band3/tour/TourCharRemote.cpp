@@ -5,29 +5,27 @@
 #include "os/PlatformMgr.h"
 #include "tour/TourChar.h"
 
-TourCharRemote::TourCharRemote(){
+TourCharRemote::TourCharRemote() {}
 
-}
+TourCharRemote::~TourCharRemote() {}
 
-TourCharRemote::~TourCharRemote(){
-
-}
-
-void TourCharRemote::SyncLoad(BinStream& bs){
+void TourCharRemote::SyncLoad(BinStream &bs) {
     bs >> mName;
     bs >> mGuid;
     mBandCharDesc->Load(bs);
 }
 
-RndTex* TourCharRemote::GetTexAtPatchIndex(int i, bool b) const {
-    BandUser* user = TheBandUserMgr->GetUserWithChar(this);
+RndTex *TourCharRemote::GetTexAtPatchIndex(int i, bool b) const {
+    BandUser *user = TheBandUserMgr->GetUserWithChar(this);
     MILO_ASSERT(user, 0x38);
-    if(b && !ThePlatformMgr.CanSeeUserCreatedContent(user->mOnlineID)) return nullptr;
-    else for(int n = 0; n < unk4c.size(); n++){
-        if(i == unk4c[n].index){
-            return unk4c[n].patch;
+    if (b && !ThePlatformMgr.CanSeeUserCreatedContent(user->mOnlineID))
+        return nullptr;
+    else
+        for (int n = 0; n < unk4c.size(); n++) {
+            if (i == unk4c[n].index) {
+                return unk4c[n].patch;
+            }
         }
-    }
     return nullptr;
 }
 

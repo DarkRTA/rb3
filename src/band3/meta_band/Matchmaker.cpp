@@ -12,16 +12,17 @@
 #include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
-MatchmakerPoolStats::MatchmakerPoolStats(){
-    DataArray* cfg = SystemConfig("net", "matchmaker", "pool_min_thresholds");
-    for(int i = 0; i < 3; i++){
+MatchmakerPoolStats::MatchmakerPoolStats() {
+    DataArray *cfg = SystemConfig("net", "matchmaker", "pool_min_thresholds");
+    for (int i = 0; i < 3; i++) {
         mRatingThresholds[i] = cfg->Int(i + 1);
     }
     ClearStats();
 }
 
-void MatchmakerPoolStats::ClearStats(){
-    for(int i = 0; i < 4; i++) mSlotRatings[i] = kRed;
+void MatchmakerPoolStats::ClearStats() {
+    for (int i = 0; i < 4; i++)
+        mSlotRatings[i] = kRed;
     mHasCurrentStats = false;
 }
 
@@ -40,27 +41,27 @@ Matchmaker::Matchmaker() : mMode(0), unk20(0) {
     mPoolStats = new MatchmakerPoolStats();
 }
 
-Matchmaker::~Matchmaker(){
+Matchmaker::~Matchmaker() {
     delete mPoolStats;
     delete mQuickFindingMode;
     delete mBandFindingMode;
 }
 
-void Matchmaker::SetQuickFindingMode(MatchmakerFindType type){
+void Matchmaker::SetQuickFindingMode(MatchmakerFindType type) {
     MILO_ASSERT(!IsFinding(), 0xD1);
     mQuickFindingMode->Init(type);
     mMode = mQuickFindingMode;
     UpdateMatchmakingSettings();
 }
 
-void Matchmaker::FindPlayers(MatchmakerFindType ty){
+void Matchmaker::FindPlayers(MatchmakerFindType ty) {
     SetQuickFindingMode(ty);
     FindPlayersImpl();
     static MatchmakerChangedMsg msg;
     Export(msg, true);
 }
 
-void Matchmaker::CancelFind(){
+void Matchmaker::CancelFind() {
     mPoolStats->ClearStats();
     CancelFindImpl();
     static MatchmakerChangedMsg msg;
@@ -86,16 +87,16 @@ BandMatchmaker::BandMatchmaker() : mSearching(0), unk32(0), unk6c(0), mDevChanne
     TheNetSession->AddSink(this, join_result);
     MILO_ASSERT(TheGameMode, 0x10C);
     TheGameMode->AddSink(this, mode_changed);
-    DataArray* cfg = SystemConfig("net", "matchmaker");
+    DataArray *cfg = SystemConfig("net", "matchmaker");
     cfg->FindData("searching_interval", mSearchingInterval, true);
 }
 
-BandMatchmaker::~BandMatchmaker(){
+BandMatchmaker::~BandMatchmaker() {
     TheNetSession->RemoveSink(this, join_result);
     TheGameMode->RemoveSink(this, mode_changed);
 }
 
-inline int QuickFinding::GetNextQueryType(){
+inline int QuickFinding::GetNextQueryType() {
     MILO_ASSERT(!mQueryTypes.empty(), 0xA0);
     int next = mQueryTypes.front();
     mQueryTypes.erase(mQueryTypes.begin());

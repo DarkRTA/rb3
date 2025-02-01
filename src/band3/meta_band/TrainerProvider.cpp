@@ -8,34 +8,31 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 
-TrainerProvider::TrainerProvider(){
-    LessonMgr* pLessonMgr = LessonMgr::GetLessonMgr();
+TrainerProvider::TrainerProvider() {
+    LessonMgr *pLessonMgr = LessonMgr::GetLessonMgr();
     MILO_ASSERT(pLessonMgr, 0x15);
     mTrainers = pLessonMgr->mTrainers;
 }
 
-TrainerProvider::~TrainerProvider(){
+TrainerProvider::~TrainerProvider() {}
 
-}
-
-void TrainerProvider::Text(int i1, int i2, UIListLabel* slot, UILabel* label) const {
+void TrainerProvider::Text(int i1, int i2, UIListLabel *slot, UILabel *label) const {
     MILO_ASSERT(slot, 0x20);
     MILO_ASSERT(label, 0x21);
-    if(slot->Matches("trainer")){
+    if (slot->Matches("trainer")) {
         label->SetTextToken(DataSymbol(i2));
-    }
-    else if(slot->Matches("progress")){
+    } else if (slot->Matches("progress")) {
         Symbol data = DataSymbol(i2);
-        LessonMgr* pLessonMgr = LessonMgr::GetLessonMgr();
+        LessonMgr *pLessonMgr = LessonMgr::GetLessonMgr();
         MILO_ASSERT(pLessonMgr, 0x2D);
-        BandProfile* profile = TheProfileMgr.GetPrimaryProfile();
-        if(profile){
+        BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
+        if (profile) {
             int count_completed = pLessonMgr->GetCompletedCountFromTrainer(profile, data);
             int count = pLessonMgr->GetTotalCountFromTrainer(data);
             label->SetTokenFmt(trainer_progress, count_completed, count);
         }
-    }
-    else label->SetTextToken(gNullStr);
+    } else
+        label->SetTextToken(gNullStr);
 }
 
 Symbol TrainerProvider::DataSymbol(int data) const {

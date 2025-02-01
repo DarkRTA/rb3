@@ -3,5 +3,5 @@
 
 class BandStoreOffer : public StoreOffer {
 public:
-    BandStoreOffer(const StorePackedOfferBase*, SongMgr*, bool);
+    BandStoreOffer(const StorePackedOfferBase *, SongMgr *, bool);
 };

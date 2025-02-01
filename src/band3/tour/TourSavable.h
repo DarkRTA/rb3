@@ -1,5 +1,4 @@
-#ifndef TOUR_TOURSAVABLE_H
-#define TOUR_TOURSAVABLE_H
+#pragma once
 #include "meta/Profile.h"
 #include "os/DateTime.h"
 #include "obj/Object.h"
@@ -7,7 +6,7 @@
 class TourSavable : public virtual Hmx::Object {
 public:
     TourSavable();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~TourSavable();
     virtual bool IsDirtySave() const;
     virtual bool IsUploadNeeded() const;
@@ -27,5 +26,3 @@ public:
     bool mNameUnchecked; // 0x11
     bool unk12; // 0x12
 };
-
-#endif // TOUR_TOURSAVABLE_H

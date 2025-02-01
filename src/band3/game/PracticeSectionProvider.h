@@ -17,18 +17,17 @@ public:
 
 class PracticeSectionProvider : public UIListProvider, public Hmx::Object {
 public:
-
     PracticeSectionProvider();
-    virtual ~PracticeSectionProvider(){}
-    virtual void Text(int, int, UIListLabel*, UILabel*) const;
+    virtual ~PracticeSectionProvider() {}
+    virtual void Text(int, int, UIListLabel *, UILabel *) const;
     virtual Symbol DataSymbol(int) const;
     virtual int DataIndex(Symbol) const;
     virtual int NumData() const;
     virtual bool IsActive(int) const;
-    virtual void InitData(RndDir*);
-    virtual UIColor* SlotColorOverride(int, int, class UIListWidget*, UIColor* c) const;
-    virtual DataNode Handle(DataArray*, bool);
-    
+    virtual void InitData(RndDir *);
+    virtual UIColor *SlotColorOverride(int, int, class UIListWidget *, UIColor *c) const;
+    virtual DataNode Handle(DataArray *, bool);
+
     std::vector<PracticeSection> unk20; // 0x20
     Symbol unk28; // 0x28
     int unk2c;

@@ -8,16 +8,16 @@
 
 class ShellInputInterceptor : public Hmx::Object {
 public:
-    ShellInputInterceptor(BandUserMgr*);
-    virtual ~ShellInputInterceptor(){}
-    virtual DataNode Handle(DataArray*, bool);
+    ShellInputInterceptor(BandUserMgr *);
+    virtual ~ShellInputInterceptor() {}
+    virtual DataNode Handle(DataArray *, bool);
 
-    DataNode OnMsg(const ButtonDownMsg&);
-    DataNode OnMsg(const ButtonUpMsg&);
-    JoypadAction FilterAction(LocalBandUser*, JoypadAction);
-    bool IsDoubleStrum(LocalBandUser*, int);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnMsg(const ButtonUpMsg &);
+    JoypadAction FilterAction(LocalBandUser *, JoypadAction);
+    bool IsDoubleStrum(LocalBandUser *, int);
 
-    BandUserMgr* mBandUserMgr; // 0x1c
+    BandUserMgr *mBandUserMgr; // 0x1c
     bool mButtonDownSwitch; // 0x20
     bool mButtonUpSwitch; // 0x21
     int unk24; // 0x24

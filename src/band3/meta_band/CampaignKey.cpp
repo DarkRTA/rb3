@@ -3,10 +3,10 @@
 
 #include "decomp.h"
 
-CampaignKey::CampaignKey(DataArray* da) : mName("") { Configure(da); }
-CampaignKey::~CampaignKey() { }
+CampaignKey::CampaignKey(DataArray *da) : mName("") { Configure(da); }
+CampaignKey::~CampaignKey() {}
 
-void CampaignKey::Configure(DataArray* i_pConfig) {
+void CampaignKey::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 25);
     mName = i_pConfig->Sym(0);
 }

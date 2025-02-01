@@ -8,73 +8,74 @@
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
-DECOMP_FORCEACTIVE(Performer, "points differ by %f", __FILE__, "abs(add_points - (points + individualContribution + overdriveContribution + bandContribution) < 0.01f)")
+DECOMP_FORCEACTIVE(
+    Performer,
+    "points differ by %f",
+    __FILE__,
+    "abs(add_points - (points + individualContribution + overdriveContribution + bandContribution) < 0.01f)"
+)
 
 #pragma push
 #pragma dont_inline on
-Performer::Performer(BandUser* user, Band* band) : mPollMs(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0), mScore(0), mQuarantined(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
-    unk204(0), mMultiplierActive(1), mNumRestarts(0) {
-    Difficulty diff = !user ? TheGameConfig->GetAverageDifficulty() : user->GetDifficulty();
+Performer::Performer(BandUser *user, Band *band)
+    : mPollMs(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0),
+      mScore(0), mQuarantined(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
+      unk204(0), mMultiplierActive(1), mNumRestarts(0) {
+    Difficulty diff =
+        !user ? TheGameConfig->GetAverageDifficulty() : user->GetDifficulty();
     mCrowd = new CrowdRating(user, diff);
 }
 #pragma pop
 
-Performer::~Performer(){
-    RELEASE(mCrowd);
-}
+Performer::~Performer() { RELEASE(mCrowd); }
 
 int Performer::GetScore() const {
-    if(mStats.FailedNoScore()) return 0;
-    else return mScore + 0.01;
+    if (mStats.FailedNoScore())
+        return 0;
+    else
+        return mScore + 0.01;
 }
 
 int Performer::GetIndividualScore() const {
     int score = GetScore();
-    if(score > 0) return score - (int)mStats.GetBandContribution();
-    else return 0;
+    if (score > 0)
+        return score - (int)mStats.GetBandContribution();
+    else
+        return 0;
 }
 
-int Performer::GetMultiplier(bool b, int& i1, int& i2, int& i3) const {
+int Performer::GetMultiplier(bool b, int &i1, int &i2, int &i3) const {
     i1 = 1;
     i2 = 1;
     i3 = 1;
-    if(mMultiplierActive){
+    if (mMultiplierActive) {
         i2 = mBand->EnergyMultiplier();
         return i2;
-    }
-    else return 1;
+    } else
+        return 1;
 }
 
-float Performer::GetCrowdRating() const {
-    return mCrowd->GetValue();
-}
+float Performer::GetCrowdRating() const { return mCrowd->GetValue(); }
 
-float Performer::GetCrowdWarningLevel() const {
-    return mCrowd->GetValue();
-}
+float Performer::GetCrowdWarningLevel() const { return mCrowd->GetValue(); }
 
-float Performer::GetRawCrowdRating() const {
-    return mCrowd->GetRawValue();
-}
+float Performer::GetRawCrowdRating() const { return mCrowd->GetRawValue(); }
 
-bool Performer::IsInCrowdWarning() const {
-    return mCrowd->IsInWarning();
-}
+bool Performer::IsInCrowdWarning() const { return mCrowd->IsInWarning(); }
 
 float Performer::PollMs() const { return mPollMs; }
 
-float Performer::GetCrowdBoost() const {
-    return mBand->EnergyCrowdBoost();
-}
+float Performer::GetCrowdBoost() const { return mBand->EnergyCrowdBoost(); }
 
 #pragma push
 #pragma dont_inline on
-void Performer::Restart(bool b){
+void Performer::Restart(bool b) {
     mPollMs = 0;
     mProgressMs = 0;
     mScore = 0;
     unk204 = false;
-    if(!b) mStats = Stats();
+    if (!b)
+        mStats = Stats();
     unk1e0 = 0;
     unk1e1 = 0;
     unk1e2 = 0;
@@ -83,91 +84,90 @@ void Performer::Restart(bool b){
 }
 #pragma pop
 
-ExcitementLevel Performer::GetExcitement() const {
-    return mCrowd->GetExcitement();
-}
+ExcitementLevel Performer::GetExcitement() const { return mCrowd->GetExcitement(); }
 
-void Performer::SetMultiplierActive(bool b){ mMultiplierActive = b; }
+void Performer::SetMultiplierActive(bool b) { mMultiplierActive = b; }
 bool Performer::GetMultiplierActive() const { return mMultiplierActive; }
-void Performer::SetCrowdMeterActive(bool b){ mCrowd->SetActive(b); }
-bool Performer::GetCrowdMeterActive(){ return mCrowd->IsActive(); }
+void Performer::SetCrowdMeterActive(bool b) { mCrowd->SetActive(b); }
+bool Performer::GetCrowdMeterActive() { return mCrowd->IsActive(); }
 
-void Performer::UpdateScore(int i){
-    if(IsNet()) mScore = i;
+void Performer::UpdateScore(int i) {
+    if (IsNet())
+        mScore = i;
 }
 
-void Performer::ForceScore(int i){ mScore = i; }
+void Performer::ForceScore(int i) { mScore = i; }
 
-void Performer::SetStats(int i, const Stats& stats){
+void Performer::SetStats(int i, const Stats &stats) {
     mStats = stats;
     mStats.SetFinalized(true);
     mScore = i;
 }
 
-void Performer::BuildHitStreak(int i, float f){
-    if(IsLocal()){
+void Performer::BuildHitStreak(int i, float f) {
+    if (IsLocal()) {
         mStats.BuildHitStreak(i, f);
         SendStreak();
     }
 }
 
-void Performer::EndHitStreak(){
-    if(IsLocal()){
+void Performer::EndHitStreak() {
+    if (IsLocal()) {
         mStats.EndHitStreak();
         SendStreak();
     }
 }
 
-void Performer::BuildMissStreak(int i){
-    if(IsLocal()){
+void Performer::BuildMissStreak(int i) {
+    if (IsLocal()) {
         mStats.BuildMissStreak(i);
     }
 }
 
-void Performer::EndMissStreak(){
-    if(IsLocal()){
+void Performer::EndMissStreak() {
+    if (IsLocal()) {
         mStats.EndMissStreak();
     }
 }
 
-void Performer::SendStreak(){
+void Performer::SendStreak() {
     MILO_ASSERT(IsLocal(), 0x170);
-    if(unk1fe){
+    if (unk1fe) {
         Handle(send_streak_msg, false);
     }
 }
 
-void Performer::SetRemoteStreak(int i){
-    if(IsNet()){
+void Performer::SetRemoteStreak(int i) {
+    if (IsNet()) {
         mStats.SetCurrentStreak(i);
     }
 }
 
-void Performer::TrulyWinGame(){
-    if(unk204 || !TheGameConfig->CanEndGame()) return;
+void Performer::TrulyWinGame() {
+    if (unk204 || !TheGameConfig->CanEndGame())
+        return;
     else {
         TheGame->SetGameOver(true);
         unk204 = true;
     }
 }
 
-void Performer::WinGame(int i){
-    if(i > 0){
+void Performer::WinGame(int i) {
+    if (i > 0) {
         mBand->ForceStars(i);
         TrulyWinGame();
     }
-    if(IsLocal()){
+    if (IsLocal()) {
         unk1e2 = true;
         Handle(send_finished_song_msg, false);
     }
 }
 
-void Performer::ForceStars(int i){
-    mScore = GetScoreForStars(i);
-}
+void Performer::ForceStars(int i) { mScore = GetScoreForStars(i); }
 
-bool Performer::LoseGame(){
-    if(unk204 || !TheGameConfig->CanEndGame() || !TheGame->mIsPaused) return false; // TODO: fix the variable pulled from TheGame
+bool Performer::LoseGame() {
+    if (unk204 || !TheGameConfig->CanEndGame() || !TheGame->mIsPaused)
+        return false; // TODO: fix the variable pulled from TheGame
     else {
         mCrowd->SetActive(false);
         TheGame->SetGameOver(false);
@@ -176,23 +176,21 @@ bool Performer::LoseGame(){
     }
 }
 
-void Performer::SetLost(){
+void Performer::SetLost() {
     unk1e0 = true;
     unk204 = true;
 }
 
-void Performer::RemoteUpdateCrowd(float f){
-    mCrowd->SetDisplayValue(f);
-}
+void Performer::RemoteUpdateCrowd(float f) { mCrowd->SetDisplayValue(f); }
 
-void Performer::RemoteFinishedSong(int i){
+void Performer::RemoteFinishedSong(int i) {
     UpdateScore(i);
     unk1e2 = true;
 }
 
 int Performer::GetNumRestarts() const { return mNumRestarts; }
 
-void Performer::SetNoScorePercent(float f){
+void Performer::SetNoScorePercent(float f) {
     mScore = 0;
     mStats.SetNoScorePercent(f);
 }
@@ -209,8 +207,13 @@ BEGIN_HANDLERS(Performer)
     HANDLE_EXPR(current_streak, mStats.GetCurrentStreak())
     HANDLE_EXPR(longest_streak, mStats.GetLongestStreak())
     HANDLE_EXPR(get_singer_count, mStats.GetNumberOfSingers())
-    HANDLE_EXPR(get_singer_ranked_percentage, mStats.GetSingerRankedPercentage(_msg->Int(2), _msg->Int(3)))
-    HANDLE_EXPR(get_singer_ranked_part, mStats.GetSingerRankedPart(_msg->Int(2), _msg->Int(3)))
+    HANDLE_EXPR(
+        get_singer_ranked_percentage,
+        mStats.GetSingerRankedPercentage(_msg->Int(2), _msg->Int(3))
+    )
+    HANDLE_EXPR(
+        get_singer_ranked_part, mStats.GetSingerRankedPart(_msg->Int(2), _msg->Int(3))
+    )
     HANDLE_EXPR(get_vocal_part_percentage, mStats.GetVocalPartPercentage(_msg->Int(2)))
     HANDLE_EXPR(get_double_harmony_hit, mStats.GetDoubleHarmonyHit())
     HANDLE_EXPR(get_double_harmony_total, mStats.GetDoubleHarmonyPhraseCount())
@@ -226,7 +229,9 @@ BEGIN_HANDLERS(Performer)
     HANDLE_EXPR(solo_percentage, mStats.GetSoloPercentage())
     HANDLE_EXPR(perfect_solo_with_solo_buttons, mStats.GetPerfectSoloWithSoloButtons())
     HANDLE_EXPR(notes_per_streak, GetNotesPerStreak())
-    HANDLE_EXPR(was_never_bad, mCrowd->GetMinValue() > mCrowd->GetThreshold(kExcitementBad))
+    HANDLE_EXPR(
+        was_never_bad, mCrowd->GetMinValue() > mCrowd->GetThreshold(kExcitementBad)
+    )
     HANDLE_EXPR(stats_finalized, mStats.GetFinalized())
     HANDLE_ACTION(win, WinGame(_msg->Int(2)))
     HANDLE_ACTION(lose, LoseGame())

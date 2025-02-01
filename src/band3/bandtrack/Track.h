@@ -10,9 +10,9 @@
 
 class Track : public TrackInterface {
 public:
-    Track(BandUser*);
-    virtual ~Track(){}
-    virtual DataNode Handle(DataArray*, bool);
+    Track(BandUser *);
+    virtual ~Track() {}
+    virtual DataNode Handle(DataArray *, bool);
 
     virtual bool ShouldDisablePopupHelp() const;
     virtual bool InGame() const;
@@ -21,11 +21,11 @@ public:
     virtual bool HasNetPlayer() const;
     virtual bool IsLocal() const;
     virtual bool PlayerDisabled() const;
-    virtual const char* GetTrackIcon() const;
-    virtual const char* GetPlayerName() const;
-    virtual const char* UserName() const;
+    virtual const char *GetTrackIcon() const;
+    virtual const char *GetPlayerName() const;
+    virtual const char *UserName() const;
 
-    virtual const User* GetUser() const; // fix ret type
+    virtual const User *GetUser() const; // fix ret type
     virtual Difficulty GetPlayerDifficulty() const;
     virtual Symbol GetPlayerDifficultySym() const;
     virtual bool PlayerDisconnected() const;
@@ -42,31 +42,31 @@ public:
     virtual bool IsGameOver() const;
     virtual bool IsGamePaused() const;
     virtual void SetPlayingIntro(float);
-    virtual void SetUserNameLabel(ObjectDir*, const char*);
+    virtual void SetUserNameLabel(ObjectDir *, const char *);
     virtual bool InGameMode(Symbol) const;
     virtual bool IsScoring() const;
-    
-    virtual void Load(){}
-    virtual void Unload(){}
-    virtual bool IsLoaded(){ return true; }
-    virtual void FinishLoad(){}
-    virtual void Draw(){}
+
+    virtual void Load() {}
+    virtual void Unload() {}
+    virtual bool IsLoaded() { return true; }
+    virtual void FinishLoad() {}
+    virtual void Draw() {}
     virtual void Poll(float);
-    virtual void Jump(float){}
-    virtual void SetShowing(bool){}
-    virtual bool Showing(){ return true; }
-    virtual void SetDir(RndDir*){}
-    virtual RndDir* GetDir() = 0;
-    virtual BandTrack* GetBandTrack() = 0;
-    virtual Hmx::Object* GetObj(Symbol);
-    virtual void SetSmasherGlowing(int, bool){}
-    virtual void PopSmasher(int){}
-    virtual void OnMissPhrase(int){}
-    virtual void RemovePlayer(){}
+    virtual void Jump(float) {}
+    virtual void SetShowing(bool) {}
+    virtual bool Showing() { return true; }
+    virtual void SetDir(RndDir *) {}
+    virtual RndDir *GetDir() = 0;
+    virtual BandTrack *GetBandTrack() = 0;
+    virtual Hmx::Object *GetObj(Symbol);
+    virtual void SetSmasherGlowing(int, bool) {}
+    virtual void PopSmasher(int) {}
+    virtual void OnMissPhrase(int) {}
+    virtual void RemovePlayer() {}
 
     Symbol GetType() const;
-    const BandUser* GetBandUser() const;
-    Player* GetPlayer() const;
+    const BandUser *GetBandUser() const;
+    Player *GetPlayer() const;
     void StartPulseAnims(float);
     int GetTrackNum() const;
 
@@ -76,9 +76,9 @@ public:
     bool unk50; // 0x50
     int unk54; // 0x54
     int unk58; // 0x58
-    GameplayOptions* unk5c; // 0x5c
+    GameplayOptions *unk5c; // 0x5c
     bool unk60; // 0x60
     float unk64; // 0x64
 };
 
-Track* NewTrack(BandUser*);
+Track *NewTrack(BandUser *);

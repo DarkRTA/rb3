@@ -4,9 +4,9 @@
 #include "ui/UIListLabel.h"
 #include "utl/Symbols.h"
 
-ModifierMgr* TheModifierMgr;
+ModifierMgr *TheModifierMgr;
 
-Modifier::Modifier(DataArray* da) : mData(da), mDefaultEnabled(0) {
+Modifier::Modifier(DataArray *da) : mData(da), mDefaultEnabled(0) {
     MILO_ASSERT(mData, 0x1B);
 }
 
@@ -19,90 +19,94 @@ bool Modifier::DelayedEffect() const { return mData->Contains(delayed_effect); }
 
 DECOMP_FORCEACTIVE(ModifierMgr, "!TheModifierMgr", "TheModifierMgr")
 
-void ModifierMgr::Init(){
+void ModifierMgr::Init() {
     MILO_ASSERT(!TheModifierMgr, 0x55);
     TheModifierMgr = new ModifierMgr();
 }
 
-ModifierMgr::ModifierMgr(){
+ModifierMgr::ModifierMgr() {
     MILO_ASSERT(!TheModifierMgr, 100);
     SetName("modifier_mgr", ObjectDir::sMainDir);
-    DataArray* allModifiersArray = SystemConfig(modifiers, modifiers);
+    DataArray *allModifiersArray = SystemConfig(modifiers, modifiers);
     MILO_ASSERT(allModifiersArray, 0x6A);
     mModifiers.reserve(allModifiersArray->Size() - 1);
-    for(int i = 1; i < allModifiersArray->Size(); i++){
-        DataArray* modifierArray = allModifiersArray->Array(i);
+    for (int i = 1; i < allModifiersArray->Size(); i++) {
+        DataArray *modifierArray = allModifiersArray->Array(i);
         MILO_ASSERT(modifierArray, 0x75);
-        Modifier* mod = new Modifier(modifierArray);
+        Modifier *mod = new Modifier(modifierArray);
         mModifiers.push_back(mod);
-        if(!mod->CustomLocation()){
+        if (!mod->CustomLocation()) {
             mModifiersList.push_back(mod);
         }
-        if(mod->DefaultEnabled()) mod->mDefaultEnabled = true;
+        if (mod->DefaultEnabled())
+            mod->mDefaultEnabled = true;
     }
 }
 
-ModifierMgr::~ModifierMgr(){
+ModifierMgr::~ModifierMgr() {
     mModifiersList.clear();
     DeleteAll(mModifiers);
 }
 
 Symbol ModifierMgr::DataSymbol(int idx) const {
-    Modifier* pModifier = GetModifierAtListData(idx);
+    Modifier *pModifier = GetModifierAtListData(idx);
     MILO_ASSERT(pModifier, 0x95);
     return pModifier->mData->Sym(0);
 }
 
 int ModifierMgr::NumData() const { return mModifiersList.size(); }
 
-void ModifierMgr::Text(int i1, int i2, UIListLabel* listlabel, UILabel* label) const {
-    Modifier* mod = GetModifierAtListData(i2);
-    if(listlabel->Matches("name")){
-        if(IsModifierUnlocked(mod)){
+void ModifierMgr::Text(int i1, int i2, UIListLabel *listlabel, UILabel *label) const {
+    Modifier *mod = GetModifierAtListData(i2);
+    if (listlabel->Matches("name")) {
+        if (IsModifierUnlocked(mod)) {
             label->SetTextToken(mod->mData->Sym(0));
-        }
-        else label->SetTextToken(modifier_locked_name);
-    }
-    else if(listlabel->Matches("status")){
-        if(IsModifierActive(mod)) label->SetIcon('+');
-        else if(IsModifierUnlocked(mod)) label->SetIcon('i');
-        else label->SetIcon('L');
-    }
-    else label->SetTextToken(gNullStr);
+        } else
+            label->SetTextToken(modifier_locked_name);
+    } else if (listlabel->Matches("status")) {
+        if (IsModifierActive(mod))
+            label->SetIcon('+');
+        else if (IsModifierUnlocked(mod))
+            label->SetIcon('i');
+        else
+            label->SetIcon('L');
+    } else
+        label->SetTextToken(gNullStr);
 }
 
 bool ModifierMgr::IsHidden(int idx) const {
-    Modifier* pModifier = GetModifierAtListData(idx);
+    Modifier *pModifier = GetModifierAtListData(idx);
     MILO_ASSERT(pModifier, 0xC2);
-    if(IsModifierUnlocked(pModifier)) return false;
-    else return pModifier->IsHidden();
+    if (IsModifierUnlocked(pModifier))
+        return false;
+    else
+        return pModifier->IsHidden();
 }
 
 bool ModifierMgr::IsActive(int idx) const {
-    if(idx == 0) return true;
+    if (idx == 0)
+        return true;
     else {
-        Modifier* pModifier = GetModifierAtListData(idx);
+        Modifier *pModifier = GetModifierAtListData(idx);
         MILO_ASSERT(pModifier, 0xD2);
         return IsModifierUnlocked(pModifier);
     }
 }
 
-bool ModifierMgr::HasModifier(Symbol s){
-    return GetModifier(s, false);
-}
+bool ModifierMgr::HasModifier(Symbol s) { return GetModifier(s, false); }
 
-bool ModifierMgr::IsModifierUnlocked(Modifier*) const { return true; }
+bool ModifierMgr::IsModifierUnlocked(Modifier *) const { return true; }
 
-void ModifierMgr::ToggleModifierEnabled(Symbol s){
-    Modifier* mod = GetModifier(s, true);
+void ModifierMgr::ToggleModifierEnabled(Symbol s) {
+    Modifier *mod = GetModifier(s, true);
     mod->mDefaultEnabled = mod->mDefaultEnabled == 0;
-    if(mod->UseSaveValue()){
+    if (mod->UseSaveValue()) {
         TheProfileMgr.mGlobalOptionsDirty = true;
     }
 }
 
 bool ModifierMgr::IsModifierActive(Symbol s) const {
-    Modifier* mod = GetModifier(s, false);
+    Modifier *mod = GetModifier(s, false);
     return mod && IsModifierActive(mod);
 }
 
@@ -110,58 +114,65 @@ bool ModifierMgr::IsModifierDelayedEffect(Symbol s) const {
     return GetModifier(s, true)->DelayedEffect();
 }
 
-bool ModifierMgr::IsModifierActive(Modifier* mod) const {
-    if(!mod || !mod->mDefaultEnabled) return false;
-    else if(IsModifierUnlocked(mod)) return true;
+bool ModifierMgr::IsModifierActive(Modifier *mod) const {
+    if (!mod || !mod->mDefaultEnabled)
+        return false;
+    else if (IsModifierUnlocked(mod))
+        return true;
     else {
         mod->mDefaultEnabled = false;
         return false;
     }
 }
 
-Modifier* ModifierMgr::GetModifier(Symbol s, bool fail) const {
-    for(std::vector<Modifier*>::const_iterator it = mModifiers.begin(); it != mModifiers.end(); ++it){
-        Modifier* ret = *it;
-        if(ret->mData->Sym(0) == s) return ret;
+Modifier *ModifierMgr::GetModifier(Symbol s, bool fail) const {
+    for (std::vector<Modifier *>::const_iterator it = mModifiers.begin();
+         it != mModifiers.end();
+         ++it) {
+        Modifier *ret = *it;
+        if (ret->mData->Sym(0) == s)
+            return ret;
     }
-    if(fail) MILO_FAIL("Couldn't find Modifier for %s.", s);
+    if (fail)
+        MILO_FAIL("Couldn't find Modifier for %s.", s);
     return 0;
 }
 
-Modifier* ModifierMgr::GetModifierAtListData(int data) const {
+Modifier *ModifierMgr::GetModifierAtListData(int data) const {
     MILO_ASSERT(data < mModifiersList.size(), 0x124);
     return mModifiersList[data];
 }
 
 void ModifierMgr::DisableAutoVocals() const {
-    Modifier* mod = GetModifier(mod_auto_vocals, true);
+    Modifier *mod = GetModifier(mod_auto_vocals, true);
     mod->mDefaultEnabled = false;
 }
 
-void ModifierMgr::Save(FixedSizeSaveableStream& bs){
-    for(int i = 0; i < mModifiers.size(); i++){
-        if(mModifiers[i]->SaveValue()){
+void ModifierMgr::Save(FixedSizeSaveableStream &bs) {
+    for (int i = 0; i < mModifiers.size(); i++) {
+        if (mModifiers[i]->SaveValue()) {
             bs << mModifiers[i]->mDefaultEnabled;
         }
     }
 }
 
-void ModifierMgr::Load(FixedSizeSaveableStream& bs, int rev){
+void ModifierMgr::Load(FixedSizeSaveableStream &bs, int rev) {
     bool b;
-    for(int i = 0; i < mModifiers.size(); i++){
-        if(mModifiers[i]->SaveValue()){
+    for (int i = 0; i < mModifiers.size(); i++) {
+        if (mModifiers[i]->SaveValue()) {
             bs >> b;
-            if(mModifiers[i]->UseSaveValue()){
+            if (mModifiers[i]->UseSaveValue()) {
                 mModifiers[i]->mDefaultEnabled = b;
             }
         }
     }
 }
 
-int ModifierMgr::SaveSize(int){
+int ModifierMgr::SaveSize(int) {
     int size = 0;
-    for(int i = 0; i < mModifiers.size(); i++){
-        if(mModifiers[i]->SaveValue()) size++;
+    for (int i = 0; i < mModifiers.size(); i++) {
+        if (mModifiers[i]->SaveValue())
+            size++;
     }
     return size;
 }
@@ -170,7 +181,9 @@ BEGIN_HANDLERS(ModifierMgr)
     HANDLE_ACTION(toggle_modifier_enabled, ToggleModifierEnabled(_msg->Sym(2)))
     HANDLE_EXPR(is_modifier_active, IsModifierActive(_msg->Sym(2)))
     HANDLE_EXPR(is_modifier_delayed_effect, IsModifierDelayedEffect(_msg->Sym(2)))
-    HANDLE_ACTION(enable_auto_vocals, GetModifier("mod_auto_vocals", true)->SetDefaultEnabled(true))
+    HANDLE_ACTION(
+        enable_auto_vocals, GetModifier("mod_auto_vocals", true)->SetDefaultEnabled(true)
+    )
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x162)
 END_HANDLERS

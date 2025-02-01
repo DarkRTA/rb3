@@ -9,21 +9,21 @@ class GuitarFx : public Hmx::Object {
 public:
     GuitarFx(TrackType);
     virtual ~GuitarFx();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void Load();
     void PostLoad();
     void Poll(int, bool, bool, float, float, float, bool, bool);
-    FxSend* GetFxSend();
+    FxSend *GetFxSend();
 
-    DataNode OnMidiParser(DataArray*);
+    DataNode OnMidiParser(DataArray *);
 
     int unk1c;
     bool unk20;
     bool unk21;
     TrackType mTrackType; // 0x24
     int unk28;
-    DataArray* mFxCfg; // 0x2c
+    DataArray *mFxCfg; // 0x2c
     ObjDirPtr<ObjectDir> mFxDir; // 0x30
     float unk3c;
     float unk40;

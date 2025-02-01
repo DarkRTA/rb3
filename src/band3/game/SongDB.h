@@ -1,5 +1,4 @@
-#ifndef GAME_SONGDB_H
-#define GAME_SONGDB_H
+#pragma once
 #include "system/beatmatch/SongData.h"
 #include "system/beatmatch/SongParserSink.h"
 #include "game/MultiplayerAnalyzer.h"
@@ -28,52 +27,50 @@ public:
     virtual ~SongDB();
     virtual void SetNumTracks(int);
     virtual void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
-    virtual void AddMultiGem(int, const GameGem&){}
-    virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase&);
+    virtual void AddMultiGem(int, const GameGem &) {}
+    virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase &);
 
     float GetSongDurationMs() const;
-    void ParseEvents(DataEventList*);
+    void ParseEvents(DataEventList *);
     void SpewAllVocalNotes() const;
     void SpewTrackSizes() const;
     void SetupPhrases();
     void DisableCodaGems();
     void RunMultiplayerAnalyzer();
     void SetupPracticeSections();
-    void PostLoad(DataEventList*);
+    void PostLoad(DataEventList *);
     void RebuildPhrases(int);
     void ClearTrackPhrases(int);
     void RebuildData();
-    void OverrideBasePoints(int, TrackType, const UserGuid&, int, int, int);
+    void OverrideBasePoints(int, TrackType, const UserGuid &, int, int, int);
     int TotalBasePoints();
     int GetCodaStartTick() const;
     bool IsInCoda(int) const;
     int GetNumTracks() const;
     int GetNumTrackData() const;
-    int GetBaseMaxPoints(const UserGuid&) const;
-    int GetBaseMaxStreakPoints(const UserGuid&) const;
-    int GetBaseBonusPoints(const UserGuid&) const;
-    GameGemList* GetGemList(int) const;
-    GameGemList* GetGemListByDiff(int, int) const;
-    const std::vector<GameGem>& GetGems(int) const;
-    std::vector<RangeSection>& GetRangeSections();
+    int GetBaseMaxPoints(const UserGuid &) const;
+    int GetBaseMaxStreakPoints(const UserGuid &) const;
+    int GetBaseBonusPoints(const UserGuid &) const;
+    GameGemList *GetGemList(int) const;
+    GameGemList *GetGemListByDiff(int, int) const;
+    const std::vector<GameGem> &GetGems(int) const;
+    std::vector<RangeSection> &GetRangeSections();
     void ChangeDifficulty(int, Difficulty);
     void SetTrainerGems(int, int);
     int GetBeatsPerMeasure(int) const;
     int NumCommonPhrases() const;
     int GetCommonPhraseTracks(int) const;
 
-    SongData* GetSongData() { return mSongData; }
+    SongData *GetSongData() { return mSongData; }
 
-    SongData* mSongData; // 0x4
+    SongData *mSongData; // 0x4
     std::vector<TrackData> mTrackData; // 0x8
     float mSongDurationMs; // 0x10
     int mCodaStartTick; // 0x14
-    MultiplayerAnalyzer* mMultiplayerAnalyzer; // 0x18
+    MultiplayerAnalyzer *mMultiplayerAnalyzer; // 0x18
     std::vector<int> mPracticeSections; // 0x1c
     int unk24; // 0x24
     int unk28; // 0x28
 };
 
-extern SongDB* TheSongDB;
-
-#endif
+extern SongDB *TheSongDB;

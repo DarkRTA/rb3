@@ -5,12 +5,12 @@
 
 class CrowdRating {
 public:
-    CrowdRating(BandUser*, Difficulty);
-    virtual ~CrowdRating(){}
+    CrowdRating(BandUser *, Difficulty);
+    virtual ~CrowdRating() {}
     virtual ExcitementLevel GetExcitement() const; // ExcitementLevel?
 
     void Reset();
-    void Configure(BandUser*, Difficulty);
+    void Configure(BandUser *, Difficulty);
     float GetThreshold(ExcitementLevel) const;
     void SetActive(bool);
     void SetValue(float);
@@ -22,7 +22,7 @@ public:
     void ChangeDifficulty(BandUser *, Difficulty);
     float GetLoseLevel() const { return mLoseLevel; }
     void SetLoseLevel(float level) { mLoseLevel = level; }
-    float GetMinValue(){ return mRunningMin; }
+    float GetMinValue() { return mRunningMin; }
     float GetValue() const { return mValue; }
     float GetRawValue() const { return mRawValue; }
     bool IsActive() const { return mActive; }

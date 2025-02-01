@@ -14,7 +14,7 @@ public:
     virtual ~PerformerStatsInfo();
 
     void Clear();
-    void Update(int, int, ScoreType, Difficulty, short, Performer*);
+    void Update(int, int, ScoreType, Difficulty, short, Performer *);
 
     short mInstrumentMask; // 0x4
     ScoreType mScoreType; // 0x8
@@ -39,18 +39,18 @@ public:
     virtual ~BandStatsInfo();
 
     void Clear();
-    void UpdateBandStats(Difficulty, short, Performer*);
-    const PerformerStatsInfo& GetBandStats() const;
-    BandProfile* GetSoloProfile(int) const;
-    const PerformerStatsInfo& GetSoloStats(int) const;
+    void UpdateBandStats(Difficulty, short, Performer *);
+    const PerformerStatsInfo &GetBandStats() const;
+    BandProfile *GetSoloProfile(int) const;
+    const PerformerStatsInfo &GetSoloStats(int) const;
 
     PerformerStatsInfo mBandStats; // 0x4
-    std::vector<std::pair<BandProfile*, PerformerStatsInfo> > mSoloStats; // 0x44
+    std::vector<std::pair<BandProfile *, PerformerStatsInfo> > mSoloStats; // 0x44
 };
 
 class PendingDataInfo {
 public:
-    PendingDataInfo(){}
+    PendingDataInfo() {}
 
     DataResultList ir_result; // 0x0
     bool friendMode; // 0x18
@@ -60,36 +60,36 @@ public:
 
 class MetaPerformerImpl : public Hmx::Object {
 public:
-    MetaPerformerImpl(){}
-    virtual void CompleteSong(std::vector<BandUser*>&, const BandStatsInfo*, bool){}
+    MetaPerformerImpl() {}
+    virtual void CompleteSong(std::vector<BandUser *> &, const BandStatsInfo *, bool) {}
     virtual bool IsRandomSetList() const = 0;
     virtual bool IsWinning() const { return false; }
-    virtual void RestartLastSong(){}
+    virtual void RestartLastSong() {}
     virtual bool HasSyncPermission() const = 0;
-    virtual void OnSynchronized(unsigned int){}
-    virtual void SyncSave(BinStream&, unsigned int) const {}
-    virtual void SyncLoad(BinStream&, unsigned int){}
+    virtual void OnSynchronized(unsigned int) {}
+    virtual void SyncSave(BinStream &, unsigned int) const {}
+    virtual void SyncLoad(BinStream &, unsigned int) {}
 };
 
 class QuickplayPerformerImpl : public MetaPerformerImpl {
 public:
     QuickplayPerformerImpl();
-    virtual ~QuickplayPerformerImpl(){}
+    virtual ~QuickplayPerformerImpl() {}
     virtual bool IsRandomSetList() const;
     virtual bool HasSyncPermission() const;
 };
 
 class MetaPerformer : public Synchronizable, public MsgSource {
 public:
-    MetaPerformer(const BandSongMgr&, const char*);
+    MetaPerformer(const BandSongMgr &, const char *);
     virtual ~MetaPerformer();
-    virtual void SyncSave(BinStream&, unsigned int) const;
-    virtual void SyncLoad(BinStream&, unsigned int);
+    virtual void SyncSave(BinStream &, unsigned int) const;
+    virtual void SyncLoad(BinStream &, unsigned int);
     virtual bool HasSyncPermission() const;
     virtual void OnSynchronized(unsigned int);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
-    QuickplayPerformerImpl* CurrentImpl() const;
+    QuickplayPerformerImpl *CurrentImpl() const;
     Symbol GetVenue() const;
     Symbol GetVenueClass() const;
     Symbol GetLastVenueClass() const;
@@ -101,15 +101,15 @@ public:
     Symbol Song() const;
     int SongsID() const;
     bool HasSong() const;
-    const char* GetSetlistName() const;
+    const char *GetSetlistName() const;
     bool HasSetlist() const;
-    void SetSongs(const std::vector<Symbol>&);
-    void SetSongs(const std::vector<int>&);
+    void SetSongs(const std::vector<Symbol> &);
+    void SetSongs(const std::vector<int> &);
     void SetSong(Symbol);
-    void SetSongs(DataArray*);
+    void SetSongs(DataArray *);
     void ResetSongs();
     Symbol GetCompletedSong() const;
-    const std::vector<Symbol>& GetSongs() const;
+    const std::vector<Symbol> &GetSongs() const;
     bool IsFirstSong() const;
     bool IsSetComplete() const;
     bool PartPlaysInSet(Symbol) const;
@@ -120,7 +120,7 @@ public:
     bool SetHasMissingPart(Symbol) const;
     bool SetHasMissingVocalHarmony() const;
     bool SongAllowsVocalHarmony() const;
-    ScoreType GetScoreTypeForUser(BandUser*);
+    ScoreType GetScoreTypeForUser(BandUser *);
     bool IsUsingRealDrums() const;
     bool IsNowUsingVocalHarmony() const;
     bool IsPlayingDemo() const;
@@ -134,11 +134,11 @@ public:
     ScoreType GetBattleInstrument() const;
 
     static void Init();
-    static MetaPerformer* Current();
-    static MetaPerformer* sMetaPerformer;
+    static MetaPerformer *Current();
+    static MetaPerformer *sMetaPerformer;
 
     bool unk38;
-    QuickplayPerformerImpl* mQpPerformer; // 0x3c
+    QuickplayPerformerImpl *mQpPerformer; // 0x3c
     bool unk40;
     Symbol mVenue; // 0x44
     Symbol unk48; // 0x48
@@ -152,7 +152,7 @@ public:
     int unk6c;
     std::vector<Symbol> mSongs; // 0x70
     std::vector<int> unk78;
-    BandSongMgr* mSongMgr; // 0x80
+    BandSongMgr *mSongMgr; // 0x80
     Instarank unk84;
     Instarank unkdc;
     Instarank unk134[4];

@@ -2,21 +2,19 @@
 
 #include "os/Debug.h"
 
-FretHand::FretHand() {
-    Reset();
-}
+FretHand::FretHand() { Reset(); }
 
 FretHand::~FretHand() {}
 
 void FretHand::SetFinger(uint finger, int fret, int lowstr, int highstr) {
     MILO_ASSERT(finger < kNumFingers, 24);
-    FretFinger& thefinger = mFinger[finger];
+    FretFinger &thefinger = mFinger[finger];
     thefinger.mFret = fret;
     thefinger.mLowString = lowstr;
     thefinger.mHighString = highstr;
 }
 
-void FretHand::GetFinger(uint finger, int& fret, int& lowstr, int& highstr) const {
+void FretHand::GetFinger(uint finger, int &fret, int &lowstr, int &highstr) const {
     MILO_ASSERT(finger < kNumFingers, 33);
     fret = mFinger[finger].mFret;
     lowstr = mFinger[finger].mLowString;
@@ -24,7 +22,8 @@ void FretHand::GetFinger(uint finger, int& fret, int& lowstr, int& highstr) cons
 }
 
 void FretHand::Reset() {
-    for (int i = 0; i < kNumFingers; i++) SetFinger(i, -1, -1, -1);
+    for (int i = 0; i < kNumFingers; i++)
+        SetFinger(i, -1, -1, -1);
 }
 
 int FretHand::GetFret(int x) const {

@@ -7,16 +7,17 @@ public:
     GigFilter();
     virtual ~GigFilter();
 
-    void Init(const DataArray*);
+    void Init(const DataArray *);
     Symbol GetName() const;
     bool IsInternal() const;
-    const SongSortMgr::SongFilter& GetFilter() const;
+    const SongSortMgr::SongFilter &GetFilter() const;
     Symbol GetFilteredPartSym() const;
-    // void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, int, Symbol) const;
+    // void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, int, Symbol)
+    // const;
     float GetWeight() const;
 
-    Symbol mName;       // 0x04
-    bool mIsInternal;   // 0x08
+    Symbol mName; // 0x04
+    bool mIsInternal; // 0x08
     SongSortMgr::SongFilter mFilter; // 0xc
     Symbol mFilteredPartSym; // 0x20
     float mWeight; // 0x24

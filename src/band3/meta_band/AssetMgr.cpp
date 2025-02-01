@@ -26,30 +26,25 @@ AssetMgr::AssetMgr() {
 }
 
 AssetMgr::~AssetMgr() {
-    for(std::map<Symbol, Asset*>::iterator it = mAssets.begin(); it != mAssets.end(); ++it){
+    for (std::map<Symbol, Asset *>::iterator it = mAssets.begin(); it != mAssets.end();
+         ++it) {
         RELEASE(it->second);
     }
     mAssets.clear();
     mIconPaths.clear();
 }
 
-void AssetMgr::Init() {
-    TheAssetMgr = new AssetMgr();
-}
+void AssetMgr::Init() { TheAssetMgr = new AssetMgr(); }
 
-AssetMgr* AssetMgr::GetAssetMgr() {
-    return TheAssetMgr;
-}
+AssetMgr *AssetMgr::GetAssetMgr() { return TheAssetMgr; }
 
-bool search(Asset* a) {
-    return false;
-}
+bool search(Asset *a) { return false; }
 
-Asset* AssetMgr::GetAsset(Symbol name) const {
-    std::map<Symbol, Asset*>::const_iterator asset = mAssets.find(name);
+Asset *AssetMgr::GetAsset(Symbol name) const {
+    std::map<Symbol, Asset *>::const_iterator asset = mAssets.find(name);
     if (asset != mAssets.end()) {
         return asset->second;
-    }  
+    }
     return NULL;
     // m_1.find(name);
 
@@ -62,18 +57,16 @@ Asset* AssetMgr::GetAsset(Symbol name) const {
     // return NULL;
 }
 
-bool AssetMgr::HasAsset(Symbol asset) const {
-    return GetAsset(asset) != NULL;
-}
+bool AssetMgr::HasAsset(Symbol asset) const { return GetAsset(asset) != NULL; }
 
 AssetType AssetMgr::GetTypeFromName(Symbol name) const {
     AssetType type;
     if (name == none_bandana) {
         return (AssetType)1;
-    } 
+    }
     if (name == none_earrings) {
         return (AssetType)4;
-    } 
+    }
     if (name == none_eyebrows) {
         return (AssetType)5;
     }
@@ -99,17 +92,17 @@ AssetType AssetMgr::GetTypeFromName(Symbol name) const {
         return (AssetType)0x13;
     }
 
-    Asset* pAsset = GetAsset(name);
+    Asset *pAsset = GetAsset(name);
     MILO_ASSERT(pAsset, 0x9f);
     return (AssetType)pAsset->mType;
 }
 
-void AssetMgr::GetEyebrows(std::vector<Symbol>& eyebrows, Symbol symbol) const {
+void AssetMgr::GetEyebrows(std::vector<Symbol> &eyebrows, Symbol symbol) const {
     AssetGender gender = GetAssetGenderFromSymbol(symbol);
 
-    std::map<Symbol, Asset*>::const_iterator it = mAssets.begin();
+    std::map<Symbol, Asset *>::const_iterator it = mAssets.begin();
     while (it != mAssets.end()) {
-        Asset* pAsset = it->second;
+        Asset *pAsset = it->second;
         MILO_ASSERT(pAsset, 0xaf);
         if (pAsset->mType == 5 && pAsset->mGender == gender) {
             eyebrows.push_back(pAsset->mName);
@@ -126,8 +119,8 @@ int AssetMgr::GetEyebrowsCount(Symbol symbol) const {
 }
 
 Symbol AssetMgr::StripFinish(Symbol symbol) {
-    Asset* pAsset = GetAsset(symbol);
-    
+    Asset *pAsset = GetAsset(symbol);
+
     if (pAsset == NULL) {
         String string = symbol;
         std::vector<String> subStrings;
@@ -137,18 +130,18 @@ Symbol AssetMgr::StripFinish(Symbol symbol) {
         MILO_ASSERT(pAsset, 0xd9);
         return s;
     }
-    
+
     return symbol;
 }
 
 void AssetMgr::ConfigureAssetTypeToIconPathMap() {
     Symbol assetType = "asset_type_icons";
-    DataArray* pAssetTypeIcons = SystemConfig();
+    DataArray *pAssetTypeIcons = SystemConfig();
     MILO_ASSERT(pAssetTypeIcons, 0x100);
 
     if (1 < pAssetTypeIcons->Size()) {
         for (int i = 0; i < pAssetTypeIcons->Size(); i++) {
-            DataArray* pEntry = pAssetTypeIcons->Array(i);
+            DataArray *pEntry = pAssetTypeIcons->Array(i);
             MILO_ASSERT(pEntry, 0x106);
             MILO_ASSERT(pEntry->Size() != 2, 0x107);
 
@@ -161,21 +154,21 @@ void AssetMgr::ConfigureAssetTypeToIconPathMap() {
 
 void AssetMgr::AddAssets() {
     Symbol("assets");
-    DataArray* pAssets = SystemConfig();
+    DataArray *pAssets = SystemConfig();
     MILO_ASSERT(pAssets, 0x114);
     for (int i = 1; i < pAssets->Size(); i++) {
-        DataArray* pConfig = pAssets->Array(i);
+        DataArray *pConfig = pAssets->Array(i);
         MILO_ASSERT(pConfig, 0x11a);
     }
 }
 
-void AssetMgr::VerifyAssets(const char* param1) {
+void AssetMgr::VerifyAssets(const char *param1) {
     VerifyAssets(param1, gNullStr);
     VerifyAssets(param1, "male");
     VerifyAssets(param1, "female");
 }
 
-void AssetMgr::VerifyAssets(const char* param1, const char* param2) {
+void AssetMgr::VerifyAssets(const char *param1, const char *param2) {
     String dir = MakeString("char/main/%s", param1);
     if (param2 != gNullStr) {
         dir += MakeString("/%s");
@@ -188,7 +181,7 @@ void AssetMgr::VerifyAssets(const char* param1, const char* param2) {
     }
 
     // MakeFileList(); param1 is DataArray* -> Char*
-    DataArray* pFiles = new DataArray(0); // temp
+    DataArray *pFiles = new DataArray(0); // temp
 
     MILO_ASSERT(pFiles, 0x152);
 
@@ -196,32 +189,28 @@ void AssetMgr::VerifyAssets(const char* param1, const char* param2) {
         for (int i = 1; i < pFiles->Size(); i++) {
             Symbol s = pFiles->Sym(i);
 
-            if (s != "female_torso_naked" 
-                && s != "male_legs_naked" 
-                && s != "female_legs_naked" 
-                && s != "male_feet_naked" 
+            if (s != "female_torso_naked" && s != "male_legs_naked"
+                && s != "female_legs_naked" && s != "male_feet_naked"
                 && s != "female_feet_naked") {
-
                 // if (mTest.find(s) == mTest.end()) {
-                //     TheDebug.Notify(MakeString("(%s/%s.milo) needs an entry in ui/customize/assets", param1, param2));
+                //     TheDebug.Notify(MakeString("(%s/%s.milo) needs an entry in
+                //     ui/customize/assets", param1, param2));
                 // }
             }
         }
     }
 }
 
+void AssetMgr::EquipAsset(BandCharDesc *, Symbol) {}
 
-void AssetMgr::EquipAsset(BandCharDesc*, Symbol) {
-
-}
-
-void AssetMgr::EquipAssets(LocalBandUser* user, const std::vector<Symbol>& assets) {
-    BandCharacter* pChar = user->GetCharLocal();
+void AssetMgr::EquipAssets(LocalBandUser *user, const std::vector<Symbol> &assets) {
+    BandCharacter *pChar = user->GetCharLocal();
     MILO_ASSERT(pChar, 0x1cb);
-    BandCharDesc* pBandCharDesc;
+    BandCharDesc *pBandCharDesc;
     MILO_ASSERT(pBandCharDesc, 0x1cf);
 
-    for (std::vector<Symbol>::const_iterator it = assets.begin(); it != assets.end(); it++) {
+    for (std::vector<Symbol>::const_iterator it = assets.begin(); it != assets.end();
+         it++) {
         EquipAsset(pBandCharDesc, *it);
     }
 }

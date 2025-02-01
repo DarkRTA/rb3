@@ -120,8 +120,8 @@ enum OvershellSlotStateID {
 
 class OvershellSlotState : public Hmx::Object {
 public:
-    OvershellSlotState(DataArray*, OvershellSlot*);
-    virtual ~OvershellSlotState(){}
+    OvershellSlotState(DataArray *, OvershellSlot *);
+    virtual ~OvershellSlotState() {}
 
     OvershellSlotStateID GetStateID() const;
     Symbol GetView();
@@ -143,18 +143,18 @@ public:
     bool IsRemoveUserPrompt();
     bool IsReadyToPlay();
 
-    DataNode HandleMsg(const Message&);
+    DataNode HandleMsg(const Message &);
 
     OvershellSlotStateID mStateID; // 0x1c
-    OvershellSlot* mSlot; // 0x20
+    OvershellSlot *mSlot; // 0x20
 };
 
 class OvershellSlotStateMgr {
 public:
     OvershellSlotStateMgr();
     ~OvershellSlotStateMgr();
-    void Init(DataArray*, OvershellSlot*);
-    OvershellSlotState* GetSlotState(OvershellSlotStateID);
+    void Init(DataArray *, OvershellSlot *);
+    OvershellSlotState *GetSlotState(OvershellSlotStateID);
 
-    std::vector<OvershellSlotState*> mStates; // 0x0
+    std::vector<OvershellSlotState *> mStates; // 0x0
 };

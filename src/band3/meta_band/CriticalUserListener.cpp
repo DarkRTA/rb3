@@ -11,48 +11,50 @@
 #include "utl/Symbols2.h"
 #include "utl/Symbols4.h"
 
-CriticalUserListener::CriticalUserListener(SessionMgr* mgr) : mCriticalUser(0), mSessionMgr(mgr), mCanSaveData(0) {
+CriticalUserListener::CriticalUserListener(SessionMgr *mgr)
+    : mCriticalUser(0), mSessionMgr(mgr), mCanSaveData(0) {
     SetName("critical_user_listener", ObjectDir::Main());
-    if(mSessionMgr){
+    if (mSessionMgr) {
         mSessionMgr->AddSink(this, LocalUserLeftMsg::Type());
         mSessionMgr->AddSink(this, SigninChangedMsg::Type());
     }
 }
 
-CriticalUserListener::~CriticalUserListener(){
-    if(mSessionMgr){
+CriticalUserListener::~CriticalUserListener() {
+    if (mSessionMgr) {
         mSessionMgr->RemoveSink(this, SigninChangedMsg::Type());
         mSessionMgr->RemoveSink(this, LocalUserLeftMsg::Type());
     }
 }
 
-void CriticalUserListener::SetCriticalUser(LocalBandUser* user){
+void CriticalUserListener::SetCriticalUser(LocalBandUser *user) {
     MILO_ASSERT(user, 0x2D);
     mCanSaveData = user->CanSaveData();
     mCriticalUser = user;
 }
 
-void CriticalUserListener::ClearCriticalUser(){
+void CriticalUserListener::ClearCriticalUser() {
     mCanSaveData = false;
     mCriticalUser = nullptr;
 }
 
-DataNode CriticalUserListener::OnMsg(const LocalUserLeftMsg& msg){
-    LocalUser* userleft = msg.GetUser();
-    if(userleft == mCriticalUser){
+DataNode CriticalUserListener::OnMsg(const LocalUserLeftMsg &msg) {
+    LocalUser *userleft = msg.GetUser();
+    if (userleft == mCriticalUser) {
         TheUIEventMgr->TriggerEvent(critical_user_drop_out, 0);
         mCanSaveData = false;
     }
     return 1;
 }
 
-DataNode CriticalUserListener::OnMsg(const SigninChangedMsg& msg){
-    if(!mCanSaveData) return 1;
+DataNode CriticalUserListener::OnMsg(const SigninChangedMsg &msg) {
+    if (!mCanSaveData)
+        return 1;
     else {
         int msgInt = msg->Int(3); // TODO: figure out what this int represents
-        if(mCriticalUser){
+        if (mCriticalUser) {
             int padnum = mCriticalUser->GetPadNum();
-            if(msgInt & (1 << padnum)){
+            if (msgInt & (1 << padnum)) {
                 static Message init("init", 0);
                 init[0] = 0;
                 TheUIEventMgr->TriggerEvent(sign_out, init);

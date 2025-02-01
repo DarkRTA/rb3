@@ -27,30 +27,35 @@
 bool sEnableShift = true;
 bool sUpdateShifting;
 
-DataNode ToggleShift(DataArray* arr){
+DataNode ToggleShift(DataArray *arr) {
     sUpdateShifting = true;
     sEnableShift = !sEnableShift;
     return sEnableShift;
 }
 
-GemTrack::GemTrack(BandUser* user) : Track(user), mResetFills(0), unk69(SystemConfig("scoring", "overdrive")->FindInt("fills")), mTrackDir(this, 0), unk78(-1), unk7c(-1), mGemManager(0),
-    unkb4(0), unkb6(0), unkb7(1), unkc4(-1.0f), unkc8(-1.0f), mUpcomingShiftMaskAnim(this, 0), mKeyIntroTasks(this, kObjListNoNull) {
+GemTrack::GemTrack(BandUser *user)
+    : Track(user), mResetFills(0),
+      unk69(SystemConfig("scoring", "overdrive")->FindInt("fills")), mTrackDir(this, 0),
+      unk78(-1), unk7c(-1), mGemManager(0), unkb4(0), unkb6(0), unkb7(1), unkc4(-1.0f),
+      unkc8(-1.0f), mUpcomingShiftMaskAnim(this, 0),
+      mKeyIntroTasks(this, kObjListNoNull) {
     DataRegisterFunc("toggle_key_shifting", ToggleShift);
 }
 
-GemTrack::~GemTrack(){
+GemTrack::~GemTrack() {
     RELEASE(mGemManager);
     mKeyIntroTasks.DeleteAll();
 }
 
-void GemTrack::Init(){
+void GemTrack::Init() {
     bool lefty = false;
-    BandUser* pUser = (BandUser*)mTrackConfig.GetBandUser();
+    BandUser *pUser = (BandUser *)mTrackConfig.GetBandUser();
     MILO_ASSERT(pUser, 0x5F);
-    GameplayOptions* options = pUser->GetGameplayOptions();
+    GameplayOptions *options = pUser->GetGameplayOptions();
     MILO_ASSERT(options, 0x61);
-    if(options) lefty = options->GetLefty();
-    PlayerTrackConfigList* pCfg = TheGameConfig->GetConfigList();
+    if (options)
+        lefty = options->GetLefty();
+    PlayerTrackConfigList *pCfg = TheGameConfig->GetConfigList();
     MILO_ASSERT(pCfg, 0x66);
     unsigned int cymlanes = pCfg->GetGameCymbalLanes();
     int tracknum = TheGameConfig->GetTrackNum(pUser->mUserGuid);
@@ -58,17 +63,18 @@ void GemTrack::Init(){
     mTrackConfig.SetLefty(lefty);
     mTrackConfig.SetGameCymbalLanes(cymlanes);
     mTrackConfig.SetTrackNum(tracknum);
-    if(pUser->GetPlayer()){
+    if (pUser->GetPlayer()) {
         PlayerInit();
     }
-    mUpcomingShiftMaskAnim = mTrackDir->Find<RndAnimatable>("keys_upcoming_shift.anim", true);
+    mUpcomingShiftMaskAnim =
+        mTrackDir->Find<RndAnimatable>("keys_upcoming_shift.anim", true);
 }
 
-void GemTrack::PlayerInit(){
-    BandUser* pUser = (BandUser*)mTrackConfig.GetBandUser();
+void GemTrack::PlayerInit() {
+    BandUser *pUser = (BandUser *)mTrackConfig.GetBandUser();
     MILO_ASSERT(pUser, 0x80);
-    GemPlayer* player = dynamic_cast<GemPlayer*>(pUser->GetPlayer());
-    if(player){
+    GemPlayer *player = dynamic_cast<GemPlayer *>(pUser->GetPlayer());
+    if (player) {
         mTrackConfig.SetTrackNum(TheGameConfig->GetTrackNum(pUser->mUserGuid));
         mTrackConfig.SetMaxSlots(player->GetMaxSlots());
         mTrackConfig.SetDisableHopos(pUser->GetControllerType() == kControllerKeys);
@@ -76,178 +82,190 @@ void GemTrack::PlayerInit(){
     }
 }
 
-void GemTrack::PostInit(){
+void GemTrack::PostInit() {
     UpdateShifts();
-    if(mCurrentRangeShift != mRangeShifts.end()){
+    if (mCurrentRangeShift != mRangeShifts.end()) {
         ApplyShiftImmediately(*mCurrentRangeShift);
         mCurrentRangeShift++;
     }
 }
 
-void GemTrack::ResetFills(bool reset){
-    mResetFills = reset;
-}
+void GemTrack::ResetFills(bool reset) { mResetFills = reset; }
 
-void GemTrack::RebuildBeats(){
+void GemTrack::RebuildBeats() {
     mTrackDir->ClearAllWidgets();
-    float secs = MsToTick((TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->BottomSeconds()) * 1000.0f);
+    float secs = MsToTick(
+        (TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->BottomSeconds()) * 1000.0f
+    );
     unk7c = unk78 = secs;
 }
 
-void GemTrack::ApplyShiftImmediately(const RangeShift& shift){
+void GemTrack::ApplyShiftImmediately(const RangeShift &shift) {
     float f1 = shift.unk14;
     float min = Min(shift.unkc, 15.0f - f1);
     MILO_ASSERT(mTrackDir, 0xB6);
-    if(f1 != unkc4){
+    if (f1 != unkc4) {
         mTrackDir->SetDisplayRange(f1);
         unkc4 = f1;
     }
-    if(min != unkc8){
+    if (min != unkc8) {
         mTrackDir->SetDisplayOffset(min, true);
         unkc8 = min;
     }
 }
 
-DECOMP_FORCEACTIVE(GemTrack, "set_drum_fill_complete.trig", "key_mash.wid", "deploy_beard.anim",
-    "Authored keyboard range section at tick %d is unexpected size: %d (should be %d)", "Authored range section exceeds displayable keyboard range: %.0f - %.0f @ tick %d",
-    "flip_shift_arrows", "key_shift_right.wid", "key_shift_left.wid", "startKey <= endKey", "bar_measure.wid", "bar_beat.wid", "bar_half_beat.wid", "mGemManager",
-    "guitar_solo_mask.wid", "bar_blue_beat.wid", "finish_line.wid", "keys_upcoming_shift.wid")
+DECOMP_FORCEACTIVE(
+    GemTrack,
+    "set_drum_fill_complete.trig",
+    "key_mash.wid",
+    "deploy_beard.anim",
+    "Authored keyboard range section at tick %d is unexpected size: %d (should be %d)",
+    "Authored range section exceeds displayable keyboard range: %.0f - %.0f @ tick %d",
+    "flip_shift_arrows",
+    "key_shift_right.wid",
+    "key_shift_left.wid",
+    "startKey <= endKey",
+    "bar_measure.wid",
+    "bar_beat.wid",
+    "bar_half_beat.wid",
+    "mGemManager",
+    "guitar_solo_mask.wid",
+    "bar_blue_beat.wid",
+    "finish_line.wid",
+    "keys_upcoming_shift.wid"
+)
 
-void GemTrack::UpdateShiftsToTick(int tick){
+void GemTrack::UpdateShiftsToTick(int tick) {
     UpdateShifts();
     std::vector<RangeShift>::iterator it = mRangeShifts.begin();
     mCurrentRangeShift = it;
-    for(; it != mRangeShifts.end(); ++it){
-        if(it->unk0 <= tick){
+    for (; it != mRangeShifts.end(); ++it) {
+        if (it->unk0 <= tick) {
             mCurrentRangeShift = it;
-        }
-        else break;
+        } else
+            break;
     }
-    if(mCurrentRangeShift != mRangeShifts.end()){
+    if (mCurrentRangeShift != mRangeShifts.end()) {
         ApplyShiftImmediately(*mCurrentRangeShift);
         mCurrentRangeShift++;
     }
 }
 
-void GemTrack::UpdateLeftyFlip(){
+void GemTrack::UpdateLeftyFlip() {
     bool lefty = false;
-    GameplayOptions* options = ((BandUser*)mTrackConfig.GetBandUser())->GetGameplayOptions();
+    GameplayOptions *options =
+        ((BandUser *)mTrackConfig.GetBandUser())->GetGameplayOptions();
     MILO_ASSERT(options, 0xEA);
-    if(options) lefty = options->GetLefty();
+    if (options)
+        lefty = options->GetLefty();
     mTrackConfig.SetLefty(lefty);
-    if(mGemManager) mGemManager->UpdateLeftyFlip(true);
+    if (mGemManager)
+        mGemManager->UpdateLeftyFlip(true);
     ResetFills(true);
     mTrackDir->UpdateLeftyFlip(lefty);
     unkb6 = true;
 }
 
-void GemTrack::UpdateFills(){
-    const BandUser* user = mTrackConfig.GetBandUser();
-    if(!user->GetPlayer() || !user->GetPlayer()->IsDeployingBandEnergy()) return;
+void GemTrack::UpdateFills() {
+    const BandUser *user = mTrackConfig.GetBandUser();
+    if (!user->GetPlayer() || !user->GetPlayer()->IsDeployingBandEnergy())
+        return;
     else {
         Symbol s;
-        for(int i = 0; i < mTrackConfig.GetMaxSlots(); i++){
-            if(mGemManager->GetWidgetName(s, i, fill)){
+        for (int i = 0; i < mTrackConfig.GetMaxSlots(); i++) {
+            if (mGemManager->GetWidgetName(s, i, fill)) {
                 mGemManager->GetWidgetByName(s)->Clear();
             }
         }
         Symbol symlist[3] = { crash, crash_cymbal, beard };
-        for(int i = 0; i < 3U; i++){
-            if(mGemManager->GetWidgetName(s, 4, symlist[i])){
+        for (int i = 0; i < 3U; i++) {
+            if (mGemManager->GetWidgetName(s, 4, symlist[i])) {
                 mGemManager->GetWidgetByName(s)->Clear();
             }
         }
     }
 }
 
-void GemTrack::ChangeDifficulty(Difficulty diff, int iii){
+void GemTrack::ChangeDifficulty(Difficulty diff, int iii) {
     mGemManager->ClearGems(true);
     mGemManager->SetupGems(iii);
     UpdateShiftsToTick(iii);
     mTrackDir->ClearAllWidgets();
-    float secs = MsToTick((TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->TopSeconds()) * 1000.0f);
+    float secs = MsToTick(
+        (TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->TopSeconds()) * 1000.0f
+    );
     unk7c = unk78 = secs;
 }
 
-void GemTrack::DropIn(int tick){
-    UpdateShiftsToTick(tick);
+void GemTrack::DropIn(int tick) { UpdateShiftsToTick(tick); }
+
+void GemTrack::SetPlayerState(const PlayerState &state) { mPlayerState = state; }
+
+void GemTrack::RedrawTrackElements(float f) {
+    DrawTrackElements(
+        MsToTick(mTrackDir->BottomSeconds() * 1000.0f + f),
+        MsToTick(mTrackDir->TopSeconds() * 1000.0f + f)
+    );
 }
 
-void GemTrack::SetPlayerState(const PlayerState& state){
-    mPlayerState = state;
-}
-
-void GemTrack::RedrawTrackElements(float f){
-    DrawTrackElements(MsToTick(mTrackDir->BottomSeconds() * 1000.0f + f), MsToTick(mTrackDir->TopSeconds() * 1000.0f + f));
-}
-
-void GemTrack::SetDir(RndDir* rdir){
-    mTrackDir = dynamic_cast<GemTrackDir*>(rdir);
+void GemTrack::SetDir(RndDir *rdir) {
+    mTrackDir = dynamic_cast<GemTrackDir *>(rdir);
     MILO_ASSERT(mTrackDir, 0x42A);
     mTrackDir->Enter();
     mTrackDir->SetShowing(true);
     Init();
 }
 
-void GemTrack::HandleNewSong(){
-    if(mGemManager){
+void GemTrack::HandleNewSong() {
+    if (mGemManager) {
         mGemManager->SetupGems(0);
-    }
-    else {
+    } else {
         mGemManager = new GemManager(mTrackConfig, mTrackDir);
     }
-    if(mTrackConfig.IsKeyboardTrack()){
+    if (mTrackConfig.IsKeyboardTrack()) {
         mGemManager->UpdateEnabledSlots();
     }
 }
 
-void GemTrack::See(float f, int i){
+void GemTrack::See(float f, int i) {
     int mask = mGemManager->GetSlotsForGem(i);
-    if(mTrackConfig.IsDrumTrack() && ((mask & 1) == 1)){
+    if (mTrackConfig.IsDrumTrack() && ((mask & 1) == 1)) {
         mTrackDir->SeeKick();
     }
 }
 
-void GemTrack::Hit(float f, int i1, int i2){
+void GemTrack::Hit(float f, int i1, int i2) {
     mGemManager->Hit(f, i1, i2);
     int slots = mGemManager->GetSlotsForGem(i1);
     mTrackDir->GemHit(slots);
 }
 
-void GemTrack::Miss(float f, int i1, int i2){
-    mGemManager->Miss(f, i1, i2);
-}
+void GemTrack::Miss(float f, int i1, int i2) { mGemManager->Miss(f, i1, i2); }
 
-void GemTrack::Pass(int i){
+void GemTrack::Pass(int i) {
     mGemManager->Pass(i);
     int slots = mGemManager->GetSlotsForGem(i);
     mTrackDir->GemPass(i, slots);
 }
 
-void GemTrack::Ignore(int i){
-    mGemManager->Ignore(i);
-}
+void GemTrack::Ignore(int i) { mGemManager->Ignore(i); }
 
-void GemTrack::PartialHit(float f, int i1, unsigned int ui, int i2){
+void GemTrack::PartialHit(float f, int i1, unsigned int ui, int i2) {
     mGemManager->PartialHit(f, i1, ui, i2);
 }
 
-void GemTrack::FillHit(int i1, int i2){
-    mGemManager->FillHit(i1, i2);
-}
+void GemTrack::FillHit(int i1, int i2) { mGemManager->FillHit(i1, i2); }
 
-void GemTrack::SetFretButtonPressed(int i1, bool b){
+void GemTrack::SetFretButtonPressed(int i1, bool b) {
     mGemManager->SetSmasherGlowing(i1, b);
 }
 
-void GemTrack::ReleaseGem(float f, int i){
-    mGemManager->Released(f, i);
-}
+void GemTrack::ReleaseGem(float f, int i) { mGemManager->Released(f, i); }
 
-void GemTrack::Jump(float f){
-    if(mGemManager){
+void GemTrack::Jump(float f) {
+    if (mGemManager) {
         mGemManager->Jump(f);
-        if(f <= 0 && mTrackDir){
+        if (f <= 0 && mTrackDir) {
             mTrackDir->ClearAllWidgets();
             mGemManager->SetGemsEnabled(0);
         }
@@ -255,32 +273,31 @@ void GemTrack::Jump(float f){
     }
 }
 
-GemManager* GemTrack::GetGemManager(){ return mGemManager; }
+GemManager *GemTrack::GetGemManager() { return mGemManager; }
 
-void GemTrack::OnMissPhrase(int i){
-    if(mGemManager->OnMissPhrase(i)){
-        BandTrack* track = GetBandTrack();
-        if(track){
+void GemTrack::OnMissPhrase(int i) {
+    if (mGemManager->OnMissPhrase(i)) {
+        BandTrack *track = GetBandTrack();
+        if (track) {
             GetBandTrack()->SpotlightFail(true);
         }
     }
 }
 
-BandTrack* GemTrack::GetBandTrack(){ return mTrackDir; }
+BandTrack *GemTrack::GetBandTrack() { return mTrackDir; }
 
 float GemTrack::NextKickNoteMs() const {
-    if(mTrackConfig.IsDrumTrack()){
+    if (mTrackConfig.IsDrumTrack()) {
         float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
-        BandUser* pUser = (BandUser*)mTrackConfig.GetBandUser();
+        BandUser *pUser = (BandUser *)mTrackConfig.GetBandUser();
         MILO_ASSERT(pUser, 0x4D1);
-
     }
-  return 3.402823466385289e+38f;
+    return 3.402823466385289e+38f;
 }
 
-void GemTrack::SetBonusGems(bool b){
-    if(mGemManager){
-        if(b){
+void GemTrack::SetBonusGems(bool b) {
+    if (mGemManager) {
+        if (b) {
             static Symbol unisonMask("unison_mask.wid");
             mGemManager->GetWidgetByName(unisonMask)->Clear();
         }
@@ -288,70 +305,70 @@ void GemTrack::SetBonusGems(bool b){
     }
 }
 
-void GemTrack::SetInCoda(bool b){
-    if(mGemManager) mGemManager->SetInCoda(b);
+void GemTrack::SetInCoda(bool b) {
+    if (mGemManager)
+        mGemManager->SetInCoda(b);
 }
 
-void GemTrack::UpdateEffects(int i){
+void GemTrack::UpdateEffects(int i) {
     MILO_ASSERT(mTrackDir, 0x503);
     mTrackDir->OnUpdateFx(i);
 }
 
-void GemTrack::SetSmasherGlowing(int i, bool b){
-    mGemManager->SetSmasherGlowing(i, b);
+void GemTrack::SetSmasherGlowing(int i, bool b) { mGemManager->SetSmasherGlowing(i, b); }
+
+void GemTrack::PopSmasher(int i) { mGemManager->PopSmasher(i); }
+
+void GemTrack::SetGemsEnabled(float f) {
+    if (mGemManager)
+        mGemManager->SetGemsEnabled(f);
 }
 
-void GemTrack::PopSmasher(int i){
-    mGemManager->PopSmasher(i);
-}
+void GemTrack::SetGemsEnabledByPlayer() { SetGemsEnabled(GetPlayer()->mEnableMs); }
 
-void GemTrack::SetGemsEnabled(float f){
-    if(mGemManager) mGemManager->SetGemsEnabled(f);
-}
-
-void GemTrack::SetGemsEnabledByPlayer(){
-    SetGemsEnabled(GetPlayer()->mEnableMs);
-}
-
-void GemTrack::UpdateGems(){
-    if(mGemManager){
+void GemTrack::UpdateGems() {
+    if (mGemManager) {
         mGemManager->UpdateGemStates();
         UpdateFills();
     }
 }
 
-Hmx::Object* GemTrack::GetSmasher(int i){
-    if(mGemManager) return mGemManager->GetSmasherObj(i);
-    else return nullptr;
+Hmx::Object *GemTrack::GetSmasher(int i) {
+    if (mGemManager)
+        return mGemManager->GetSmasherObj(i);
+    else
+        return nullptr;
 }
 
-void GemTrack::ResetSmashers(bool b){
-    if(mGemManager) mGemManager->ResetSmashers(b);
+void GemTrack::ResetSmashers(bool b) {
+    if (mGemManager)
+        mGemManager->ResetSmashers(b);
 }
 
-void GemTrack::UpdateSlotXfms(){
-    if(mGemManager) mGemManager->UpdateSlotPositions();
+void GemTrack::UpdateSlotXfms() {
+    if (mGemManager)
+        mGemManager->UpdateSlotPositions();
 }
 
-void GemTrack::RefreshCurrentShift(){
-    if(mCurrentRangeShift != mRangeShifts.end()){
+void GemTrack::RefreshCurrentShift() {
+    if (mCurrentRangeShift != mRangeShifts.end()) {
         mCurrentRangeShift->unk10 = -1.0f;
         mCurrentRangeShift->unk8 = -1.0f;
     }
 }
 
-void GemTrack::PlayKeyIntros(){
-    if(mGemManager){
-        DataArray* cfg = SystemConfig("track_graphics");
+void GemTrack::PlayKeyIntros() {
+    if (mGemManager) {
+        DataArray *cfg = SystemConfig("track_graphics");
         float f8 = cfg->FindFloat("key_intro_offset_ms");
         float f9 = cfg->FindFloat("key_intro_delay_ms");
-        if(mTrackConfig.IsKeyboardTrack()){
+        if (mTrackConfig.IsKeyboardTrack()) {
             mGemManager->UpdateEnabledSlots();
             mKeyIntroTasks.DeleteAll();
         }
         int taskidx = 1;
-        for(int i = 0; i < mTrackConfig.GetMaxSlots(); i++){
-            MessageTask* task = new MessageTask(mGemManager->GetSmasherObj(i), intro_msg);
+        for (int i = 0; i < mTrackConfig.GetMaxSlots(); i++) {
+            MessageTask *task = new MessageTask(mGemManager->GetSmasherObj(i), intro_msg);
             TheTaskMgr.Start(task, (TaskUnits)2, ((float)taskidx * f8 + f9) / 1000.0f);
             mKeyIntroTasks.push_back(task);
             taskidx++;
@@ -359,17 +376,18 @@ void GemTrack::PlayKeyIntros(){
     }
 }
 
-void GemTrack::RemovePlayer(){
-    if(mGemManager) mGemManager->HideGems();
+void GemTrack::RemovePlayer() {
+    if (mGemManager)
+        mGemManager->HideGems();
     mTrackDir->ClearAllWidgets();
 }
 
-void GemTrack::OverrideRangeShift(float f1, float f2){
-    if(f1 != unkc4){
+void GemTrack::OverrideRangeShift(float f1, float f2) {
+    if (f1 != unkc4) {
         mTrackDir->SetDisplayRange(f1);
         unkc4 = f1;
     }
-    if(f2 != unkc8){
+    if (f2 != unkc8) {
         mTrackDir->SetDisplayOffset(f2, false);
         unkc8 = f2;
     }
@@ -378,7 +396,9 @@ void GemTrack::OverrideRangeShift(float f1, float f2){
 BEGIN_HANDLERS(GemTrack)
     HANDLE_ACTION(on_miss_phrase, OnMissPhrase(_msg->Int(2)))
     HANDLE_ACTION(set_bonus_gems, SetBonusGems(_msg->Int(2)))
-    HANDLE_EXPR(get_smasher, mGemManager ? mGemManager->GetSmasherObj(_msg->Int(2)) : NULL_OBJ)
+    HANDLE_EXPR(
+        get_smasher, mGemManager ? mGemManager->GetSmasherObj(_msg->Int(2)) : NULL_OBJ
+    )
     HANDLE_ACTION(enable_slot, SetEnableSlot(_msg->Int(2), true))
     HANDLE_ACTION(disable_slot, SetEnableSlot(_msg->Int(2), false))
     HANDLE_ACTION(update_gems, UpdateGems())

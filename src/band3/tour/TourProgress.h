@@ -1,5 +1,4 @@
-#ifndef TOUR_TOURPROGRESS_H
-#define TOUR_TOURPROGRESS_H
+#pragma once
 #include "obj/Object.h"
 #include "tour/TourPropertyCollection.h"
 #include "tour/TourSavable.h"
@@ -14,24 +13,24 @@ enum {
 class TourProgress : public TourSavable, public FixedSizeSaveable {
 public:
     TourProgress();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~TourProgress();
     virtual int SecBetweenUploads() const { return 45; }
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void HandleTourRewardApplied();
     void SetOnTour(bool);
     void ClearQuestFilters();
-    void SyncSave(BinStream&);
-    void SyncLoad(BinStream&);
+    void SyncSave(BinStream &);
+    void SyncLoad(BinStream &);
     void HandleDirty(int);
     void UpdateLastTouchTime();
     String GetLastTouchedDateString() const;
-    TourPropertyCollection& GetTourProperties();
-    const TourPropertyCollection& GetTourProperties() const;
-    TourPropertyCollection& GetPerformanceProperties();
-    const TourPropertyCollection& GetPerformanceProperties() const;
+    TourPropertyCollection &GetTourProperties();
+    const TourPropertyCollection &GetTourProperties() const;
+    TourPropertyCollection &GetPerformanceProperties();
+    const TourPropertyCollection &GetPerformanceProperties() const;
     void ClearPerformanceState();
     void ClearPeformanceProperties();
     void HandleQuestFinished();
@@ -77,8 +76,8 @@ public:
     int GetToursPlayed(Symbol) const;
     int GetTourMostStars(Symbol) const;
     void SetMetaScore(int);
-    void SetToursPlayedMap(const std::map<Symbol, int>&);
-    void SetTourMostStarsMap(const std::map<Symbol, int>&);
+    void SetToursPlayedMap(const std::map<Symbol, int> &);
+    void SetTourMostStarsMap(const std::map<Symbol, int> &);
     void FakeFill();
     void DumpProperties();
 
@@ -101,5 +100,3 @@ public:
     int mCurrentGigNum; // 0xc4
     TourPropertyCollection mPerformanceProperties; // 0xc8
 };
-
-#endif // TOUR_TOURPROGRESS_H

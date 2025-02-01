@@ -9,44 +9,45 @@
 #include "os/Debug.h"
 #include "utl/Symbols.h"
 
-CharSync* TheCharSync;
+CharSync *TheCharSync;
 
-void CharSync::Init(BandUserMgr* mgr){
+void CharSync::Init(BandUserMgr *mgr) {
     mgr = mgr ? mgr : TheBandUserMgr;
     TheCharSync = new CharSync(mgr);
     TheCharSync->SetName("char_sync", ObjectDir::Main());
 }
 
-CharSync::CharSync(BandUserMgr* mgr) : mUserMgr(mgr) {
+CharSync::CharSync(BandUserMgr *mgr) : mUserMgr(mgr) {
     MILO_ASSERT(mUserMgr, 0x35);
     TheProfileMgr.AddSink(this, PrimaryProfileChangedMsg::Type());
     TheProfileMgr.AddSink(this, ProfileChangedMsg::Type());
 }
 
-CharSync::~CharSync(){
+CharSync::~CharSync() {
     TheProfileMgr.RemoveSink(this, ProfileChangedMsg::Type());
     TheProfileMgr.RemoveSink(this, PrimaryProfileChangedMsg::Type());
 }
 
 #pragma push
 #pragma dont_inline on
-void CharSync::UpdateCharCache(){
+void CharSync::UpdateCharCache() {
     // whoops depends on BandUI
 }
 #pragma pop
 
-DataNode CharSync::OnMsg(const PrimaryProfileChangedMsg&){
+DataNode CharSync::OnMsg(const PrimaryProfileChangedMsg &) {
     UpdateCharCache();
     return 1;
 }
 
-DataNode CharSync::OnMsg(const ProfileChangedMsg& msg){
-    BandProfile* p = msg.GetProfile();
-    if(p){
-        LocalBandUser* u = msg.GetProfile()->GetLocalBandUser();
-        CharData* data = nullptr;
-        if(p) data = p->GetLastCharUsed();
-        if(data && TheBandUserMgr->IsCharAvailable(data)){
+DataNode CharSync::OnMsg(const ProfileChangedMsg &msg) {
+    BandProfile *p = msg.GetProfile();
+    if (p) {
+        LocalBandUser *u = msg.GetProfile()->GetLocalBandUser();
+        CharData *data = nullptr;
+        if (p)
+            data = p->GetLastCharUsed();
+        if (data && TheBandUserMgr->IsCharAvailable(data)) {
             u->SetChar(data);
         }
     }

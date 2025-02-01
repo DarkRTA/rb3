@@ -9,21 +9,22 @@
 #include "utl/HxGuid.h"
 #include "game/Defines.h"
 
-TourChar::TourChar() : mIsFinalized(0), unk41(0), mPortraitTex(Hmx::Object::New<RndTex>()) {
+TourChar::TourChar()
+    : mIsFinalized(0), unk41(0), mPortraitTex(Hmx::Object::New<RndTex>()) {
     mSaveSizeMethod = &SaveSize;
     mPortraitTex->SetMipMapK(666.0f);
-    mBandCharDesc = dynamic_cast<BandCharDesc*>(BandCharDesc::NewObject());
+    mBandCharDesc = dynamic_cast<BandCharDesc *>(BandCharDesc::NewObject());
 }
 
-TourChar::~TourChar(){
+TourChar::~TourChar() {
     delete mBandCharDesc;
     delete mPortraitTex;
 }
 
-const char* TourChar::GetCharacterName() const { return mName.c_str(); }
-BandCharDesc* TourChar::GetBandCharDesc() const { return mBandCharDesc; }
+const char *TourChar::GetCharacterName() const { return mName.c_str(); }
+BandCharDesc *TourChar::GetBandCharDesc() const { return mBandCharDesc; }
 
-void TourChar::SaveFixed(FixedSizeSaveableStream& stream) const {
+void TourChar::SaveFixed(FixedSizeSaveableStream &stream) const {
     MILO_ASSERT(mIsFinalized, 0x51);
     MILO_ASSERT(mBandCharDesc, 0x52);
     FixedSizeSaveable::SaveFixedString(stream, mName);
@@ -35,16 +36,16 @@ void TourChar::SaveFixed(FixedSizeSaveableStream& stream) const {
     mPortraitTex->UnlockBitmap();
 }
 
-int TourChar::SaveSize(int i){
+int TourChar::SaveSize(int i) {
     int size = HxGuid::SaveSize() + 0x80;
     size += BandCharDesc::SaveSize(i);
-    if(FixedSizeSaveable::sPrintoutsEnabled){
+    if (FixedSizeSaveable::sPrintoutsEnabled) {
         MILO_LOG("* %s = %i\n", "TourChar", size + 0x4020);
     }
     return size + 0x4020;
 }
 
-void TourChar::LoadFixed(FixedSizeSaveableStream& stream, int rev){
+void TourChar::LoadFixed(FixedSizeSaveableStream &stream, int rev) {
     MILO_ASSERT(mBandCharDesc, 0x76);
     FixedSizeSaveable::LoadFixedString(stream, mName);
     stream >> mGuid;
@@ -55,8 +56,9 @@ void TourChar::LoadFixed(FixedSizeSaveableStream& stream, int rev){
     mIsFinalized = true;
 }
 
-void TourChar::SyncSave(BinStream& bs) const {
-    if(unk41) bs << mName;
+void TourChar::SyncSave(BinStream &bs) const {
+    if (unk41)
+        bs << mName;
     else {
         String censor(mName);
         CensorString(censor);
@@ -66,7 +68,7 @@ void TourChar::SyncSave(BinStream& bs) const {
     mBandCharDesc->Save(bs);
 }
 
-void TourChar::CachePortraitTex(RndTex* tex){
+void TourChar::CachePortraitTex(RndTex *tex) {
     MILO_ASSERT(tex->Width() > 0 && tex->Height() > 0, 0xCE);
     RndBitmap bmap;
     tex->LockBitmap(bmap, 1);

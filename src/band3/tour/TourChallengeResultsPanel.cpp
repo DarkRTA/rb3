@@ -11,11 +11,9 @@
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 
-TourChallengeResultsPanel::TourChallengeResultsPanel(){
+TourChallengeResultsPanel::TourChallengeResultsPanel() {}
 
-}
-
-void TourChallengeResultsPanel::Enter(){ UIPanel::Enter(); }
+void TourChallengeResultsPanel::Enter() { UIPanel::Enter(); }
 
 int TourChallengeResultsPanel::GetPreGigTotalStars() const {
     int iTotalTourStars = GetTotalTourStars();
@@ -25,83 +23,83 @@ int TourChallengeResultsPanel::GetPreGigTotalStars() const {
 }
 
 int TourChallengeResultsPanel::GetTotalTourStars() const {
-    TourProgress* pProgress = TheTour->GetTourProgress();
+    TourProgress *pProgress = TheTour->GetTourProgress();
     MILO_ASSERT(pProgress, 0x3F);
     return pProgress->GetNumStars();
 }
 
 int TourChallengeResultsPanel::GetGigTotalStars() const {
     MILO_ASSERT(TheTour, 0x47);
-    TourPerformerImpl* pPerformer = TheTour->m_pTourPerformer;
+    TourPerformerImpl *pPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pPerformer, 0x4A);
     return pPerformer->GetTotalGigStars();
 }
 
 int TourChallengeResultsPanel::GetGigMaxStars() const {
     MILO_ASSERT(TheTour, 0x52);
-    TourPerformerImpl* pPerformer = TheTour->m_pTourPerformer;
+    TourPerformerImpl *pPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pPerformer, 0x55);
     return pPerformer->GetTotalStarsPossibleForCurrentGig();
 }
 
 Symbol TourChallengeResultsPanel::GetChallengeName() const {
     MILO_ASSERT(TheTour, 0x5D);
-    Quest* pQuest = TheTour->GetQuest();
+    Quest *pQuest = TheTour->GetQuest();
     MILO_ASSERT(pQuest, 0x60);
     return pQuest->GetDisplayName();
 }
 
-void TourChallengeResultsPanel::UpdateSetlistLabel(UILabel* i_pLabel){
+void TourChallengeResultsPanel::UpdateSetlistLabel(UILabel *i_pLabel) {
     MILO_ASSERT(i_pLabel, 0x68);
-    TourPerformerImpl* pPerformer = TheTour->m_pTourPerformer;
+    TourPerformerImpl *pPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pPerformer, 0x6B);
     i_pLabel->SetTextToken(pPerformer->GetCurrentQuestFilter());
 }
 
-void TourChallengeResultsPanel::UpdateSongName(int ii, UILabel* i_pLabel){
+void TourChallengeResultsPanel::UpdateSongName(int ii, UILabel *i_pLabel) {
     MILO_ASSERT(i_pLabel, 0x74);
-    TourPerformerImpl* pTourPerformer = TheTour->m_pTourPerformer;
+    TourPerformerImpl *pTourPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pTourPerformer, 0x76);
-    if(ii < pTourPerformer->mGigData.size()){
-        AppLabel* pLabel = dynamic_cast<AppLabel*>(i_pLabel);
+    if (ii < pTourPerformer->mGigData.size()) {
+        AppLabel *pLabel = dynamic_cast<AppLabel *>(i_pLabel);
         MILO_ASSERT(pLabel, 0x7C);
         pLabel->SetSongName(pTourPerformer->mGigData[ii].unk0, true);
-    }
-    else i_pLabel->SetTextToken(gNullStr);
+    } else
+        i_pLabel->SetTextToken(gNullStr);
 }
 
-int TourChallengeResultsPanel::GetSongTotalStars(int i){
-    TourPerformerImpl* pTourPerformer = TheTour->m_pTourPerformer;
+int TourChallengeResultsPanel::GetSongTotalStars(int i) {
+    TourPerformerImpl *pTourPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pTourPerformer, 0x8B);
     int stars = 0;
-    if(i < pTourPerformer->mGigData.size()){
+    if (i < pTourPerformer->mGigData.size()) {
         stars = pTourPerformer->mGigData[i].unkc;
     }
     return stars;
 }
 
-int TourChallengeResultsPanel::GetSongStars(int i){
-    TourPerformerImpl* pTourPerformer = TheTour->m_pTourPerformer;
+int TourChallengeResultsPanel::GetSongStars(int i) {
+    TourPerformerImpl *pTourPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pTourPerformer, 0x9B);
     int stars = 0;
-    if(i < pTourPerformer->mGigData.size()){
+    if (i < pTourPerformer->mGigData.size()) {
         stars = pTourPerformer->mGigData[i].unk4;
     }
     return stars;
 }
 
-int TourChallengeResultsPanel::GetChallengeStars(int i){
-    TourPerformerImpl* pTourPerformer = TheTour->m_pTourPerformer;
+int TourChallengeResultsPanel::GetChallengeStars(int i) {
+    TourPerformerImpl *pTourPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pTourPerformer, 0xAB);
     int stars = 0;
-    if(i < pTourPerformer->mGigData.size()){
+    if (i < pTourPerformer->mGigData.size()) {
         stars = pTourPerformer->mGigData[i].unk8;
     }
     return stars;
 }
 
-int TourChallengeResultsPanel::GetSongCount(){
-    TourPerformerImpl* pTourPerformer = TheTour->m_pTourPerformer;
+int TourChallengeResultsPanel::GetSongCount() {
+    TourPerformerImpl *pTourPerformer = TheTour->m_pTourPerformer;
     MILO_ASSERT(pTourPerformer, 0xBB);
     return pTourPerformer->mGigData.size();
 }

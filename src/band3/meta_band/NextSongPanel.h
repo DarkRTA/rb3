@@ -6,11 +6,11 @@
 
 class NextSongPanel : public UIPanel {
 public:
-    NextSongPanel(){}
+    NextSongPanel() {}
     OBJ_CLASSNAME(NextSongPanel);
     OBJ_SET_TYPE(NextSongPanel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~NextSongPanel(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~NextSongPanel() {}
     virtual void Enter();
     virtual void Exit();
     virtual bool Exiting() const;
@@ -28,8 +28,8 @@ public:
     void SetReviewDisplayValue(int, int);
     void UpdateScrollArrows(int, bool);
     void SetScrollExpandedDetails(int, int);
-    int CountOrCreateExpandedDetails(int, DataArrayPtr&, bool);
-    void SetupDetailLine(DataArray*, int, const char*, float);
+    int CountOrCreateExpandedDetails(int, DataArrayPtr &, bool);
+    void SetupDetailLine(DataArray *, int, const char *, float);
     Symbol GetPerformanceAward(int);
 
     float mEnterTime; // 0x38
@@ -41,7 +41,7 @@ public:
     int unk70[4];
     bool unk80[4];
     bool unk84[4];
-    RndGroup* mScrollGroups[4]; // 0x88
+    RndGroup *mScrollGroups[4]; // 0x88
     bool unk98; // 0x98
-    std::vector<UILabel*> mDetailLabels; // 0x9c
+    std::vector<UILabel *> mDetailLabels; // 0x9c
 };

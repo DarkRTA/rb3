@@ -8,9 +8,9 @@ class TrainingMgr : public Hmx::Object {
 public:
     TrainingMgr();
     virtual ~TrainingMgr();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
-    void SetUser(LocalBandUser*);
+    void SetUser(LocalBandUser *);
     void ParticipateUsers();
     void UnparticipateUsers();
     void SetDifficulty(Difficulty);
@@ -27,9 +27,9 @@ public:
     Difficulty GetDifficultyFromLessonName(Symbol);
 
     static void Init();
-    static TrainingMgr* GetTrainingMgr();
+    static TrainingMgr *GetTrainingMgr();
 
-    LocalBandUser* mUser; // 0x1c
+    LocalBandUser *mUser; // 0x1c
     Difficulty mMinimumDifficulty; // 0x20
     Symbol mReturnScreen; // 0x24
     Symbol mQuitToken; // 0x28

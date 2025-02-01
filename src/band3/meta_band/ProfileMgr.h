@@ -1,5 +1,4 @@
-#ifndef METABAND_PROFILEMGR_H
-#define METABAND_PROFILEMGR_H
+#pragma once
 #include "obj/Msg.h"
 #include "os/Joypad.h"
 #include "meta/Profile.h"
@@ -20,13 +19,13 @@ enum LagContext {
 class ProfileMgr : public MsgSource {
 public:
     ProfileMgr();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~ProfileMgr(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~ProfileMgr() {}
     virtual void SetMicVol(int, int);
     virtual int GetMicVol(int) const;
 
     int GetSliderStepCount() const;
-    BandProfile* GetProfileForUser(const LocalUser*);
+    BandProfile *GetProfileForUser(const LocalUser *);
     void SetCymbalConfiguration(unsigned int);
     void UpdatePrimaryProfile();
     bool GetAllUnlocked();
@@ -36,12 +35,12 @@ public:
     void SetGlobalOptionsSaveState(ProfileSaveState);
     bool GlobalOptionsNeedsSave();
     int GetGlobalOptionsSize();
-    void SaveGlobalOptions(FixedSizeSaveableStream&);
-    void LoadGlobalOptions(FixedSizeSaveableStream&);
+    void SaveGlobalOptions(FixedSizeSaveableStream &);
+    void LoadGlobalOptions(FixedSizeSaveableStream &);
     void PushAllOptions();
     void InitSliders();
     float SliderIxToDb(int) const;
-    void GetMicGainInfo(const Symbol&, float&, float&, float&, float&) const;
+    void GetMicGainInfo(const Symbol &, float &, float &, float &, float &) const;
     bool GetBassBoost() const;
     void SetBackgroundVolume(int);
     void SetForegroundVolume(int);
@@ -104,12 +103,12 @@ public:
     int GetVoiceChatVolume() const;
     unsigned int GetCymbalConfiguration() const;
     bool HasLoaded();
-    BandProfile* FindTourProgressOwner(const TourProgress*);
-    BandProfile* GetProfileForChar(const TourCharLocal*);
-    std::vector<BandProfile*> GetSignedInProfiles();
-    BandProfile* GetPrimaryProfile() const;
-    BandProfile* GetProfileFromPad(int);
-    void SetPrimaryProfileByUser(const LocalUser*);
+    BandProfile *FindTourProgressOwner(const TourProgress *);
+    BandProfile *GetProfileForChar(const TourCharLocal *);
+    std::vector<BandProfile *> GetSignedInProfiles();
+    BandProfile *GetPrimaryProfile() const;
+    BandProfile *GetProfileFromPad(int);
+    void SetPrimaryProfileByUser(const LocalUser *);
 
     DECLARE_REVS;
 
@@ -150,15 +149,13 @@ public:
     bool mUsingWiiFriends; // 0x5b4
     int unk5b8;
     std::vector<int> unk5bc;
-    DataArray* mSliderConfig; // 0x5c4
-    DataArray* mVoiceChatSliderConfig; // 0x5c8
+    DataArray *mSliderConfig; // 0x5c4
+    DataArray *mVoiceChatSliderConfig; // 0x5c8
     unsigned int mCymbalConfiguration; // 0x5cc
-    std::vector<BandProfile*> mProfiles; // 0x5d0
+    std::vector<BandProfile *> mProfiles; // 0x5d0
     int unk5d8;
     bool mAllUnlocked; // 0x5dc
     std::vector<float> unk5e0;
 };
 
 extern ProfileMgr TheProfileMgr;
-
-#endif // METABAND_PROFILEMGR_H

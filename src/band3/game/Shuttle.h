@@ -1,5 +1,4 @@
-#ifndef GAME_SHUTTLE_H
-#define GAME_SHUTTLE_H
+#pragma once
 
 class Shuttle {
 public:
@@ -12,5 +11,3 @@ public:
     bool mActive;
     int mPadNum;
 };
-
-#endif // GAME_SHUTTLE_H

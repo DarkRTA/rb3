@@ -7,7 +7,7 @@ public:
     GameTimePanel();
     OBJ_CLASSNAME(GameTimePanel);
     OBJ_SET_TYPE(GameTimePanel);
-    virtual ~GameTimePanel(){}
+    virtual ~GameTimePanel() {}
     virtual void Enter();
     virtual void Exit();
     virtual void Poll();

@@ -5,8 +5,8 @@
 class InstrumentFinishProvider : public UIListProvider, public Hmx::Object {
 public:
     InstrumentFinishProvider();
-    virtual ~InstrumentFinishProvider(){}
-    virtual void Text(int, int, UIListLabel*, UILabel*) const;
+    virtual ~InstrumentFinishProvider() {}
+    virtual void Text(int, int, UIListLabel *, UILabel *) const;
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;
 

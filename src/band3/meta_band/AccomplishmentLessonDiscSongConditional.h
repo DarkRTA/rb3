@@ -4,11 +4,13 @@
 
 class AccomplishmentLessonDiscSongConditional : public AccomplishmentDiscSongConditional {
 public:
-    AccomplishmentLessonDiscSongConditional(DataArray*, int);
+    AccomplishmentLessonDiscSongConditional(DataArray *, int);
     virtual ~AccomplishmentLessonDiscSongConditional();
     virtual AccomplishmentType GetType() const;
-    virtual bool CheckConditionsForSong(SongStatusMgr*, Symbol) const;
+    virtual bool CheckConditionsForSong(SongStatusMgr *, Symbol) const;
 
-    void Configure(DataArray*);
-    bool CheckLessonCompleteCondition(SongStatusMgr*, Symbol, const AccomplishmentCondition&) const;
+    void Configure(DataArray *);
+    bool
+    CheckLessonCompleteCondition(SongStatusMgr *, Symbol, const AccomplishmentCondition &)
+        const;
 };

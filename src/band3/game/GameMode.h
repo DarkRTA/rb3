@@ -4,12 +4,12 @@
 class GameMode : public MsgSource {
 public:
     GameMode();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~GameMode();
 
     void SetMode(Symbol);
     bool InMode(Symbol);
-    DataNode OnSetMode(const DataArray*);
+    DataNode OnSetMode(const DataArray *);
 
     Symbol mMode; // 0x1c
     int mOverdriveEnabled; // 0x20
@@ -37,10 +37,11 @@ public:
 
 void GameModeInit();
 
-extern GameMode* TheGameMode;
+extern GameMode *TheGameMode;
 
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(ModeChangedMsg, "mode_changed")
-    ModeChangedMsg() : Message(Type()) {}
-END_MESSAGE;
+ModeChangedMsg() : Message(Type()) {}
+END_MESSAGE
+;

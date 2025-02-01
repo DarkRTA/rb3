@@ -8,14 +8,13 @@ int kMaxLyricPlateLines = 0x1E;
 LyricPlate::LyricPlate(RndText *param1, const RndText *param2, const RndText *param3)
     : mWidthX(0), mNumCharsUsed(0), mText(param1), mSyllables(), mPreviewColor(),
       mActiveColor(), mNowColor(), mPastColor(), mPreviewPhonemeColor(),
-      mActivePhonemeColor(), mNowPhonemeColor(), mPastPhonemeColor(), mPitchedStyle(0, 0, 0, 0, 0), mUnpitchedStyle(0, 0, 0, 0, 0) {
+      mActivePhonemeColor(), mNowPhonemeColor(), mPastPhonemeColor(),
+      mPitchedStyle(0, 0, 0, 0, 0), mUnpitchedStyle(0, 0, 0, 0, 0) {
     // param1->SetFixedLength(kMaxLyricPlateLines);
     param1->ReserveLines(kMaxLyricPlateLines);
 }
 
-void LyricPlate::SetShowing(bool show) {
-    mText->mShowing = show;
-}
+void LyricPlate::SetShowing(bool show) { mText->mShowing = show; }
 
 float LyricPlate::CurrentStartX(float start) const {
     return start + mText->mLocalXfm.v.x;
@@ -94,9 +93,7 @@ void LyricPlate::HookUpParents(RndGroup *group, RndTransformable *trans) {
     trans->SetTransParent(mText->mParent, false);
 }
 
-bool LyricPlate::Empty() const {
-    return mSyllables.empty();
-}
+bool LyricPlate::Empty() const { return mSyllables.empty(); }
 
 void LyricPlate::UpdateStaticTiming(float time) {
     MILO_ASSERT(mSyllables.size() != 0, 0xcf);
@@ -171,29 +168,17 @@ Lyric::Lyric(const VocalNote *vocalNote, bool param2, String param3, bool param4
     mVocalNotes.push_back(vocalNote);
 }
 
-int Lyric::StartTick() const {
-    return mVocalNotes[0]->mTick;
-}
+int Lyric::StartTick() const { return mVocalNotes[0]->mTick; }
 
-float Lyric::Width() const {
-    return mXWidth;
-}
+float Lyric::Width() const { return mXWidth; }
 
-float Lyric::EndPos() const {
-    return mXWidth + unk_0x48;
-}
+float Lyric::EndPos() const { return mXWidth + unk_0x48; }
 
-bool Lyric::PitchNote() const {
-    return !mVocalNotes[0]->mUnpitchedNote;
-}
+bool Lyric::PitchNote() const { return !mVocalNotes[0]->mUnpitchedNote; }
 
-void Lyric::SetChunkEnd(bool chunkEnd) {
-    mChunkEnd = chunkEnd;
-}
+void Lyric::SetChunkEnd(bool chunkEnd) { mChunkEnd = chunkEnd; }
 
-void Lyric::SetAfterDeploy(int deploy) {
-    mDeployIdx = deploy;
-}
+void Lyric::SetAfterDeploy(int deploy) { mDeployIdx = deploy; }
 
 void Lyric::SetAfterMidPhraseLyricShift(bool afterMidPhrase) {
     mAfterMidPhraseShift = afterMidPhrase;

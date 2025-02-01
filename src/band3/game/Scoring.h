@@ -1,5 +1,4 @@
-#ifndef GAME_SCORING_H
-#define GAME_SCORING_H
+#pragma once
 #include "beatmatch/TrackType.h"
 #include "game/Defines.h"
 #include "game/BandUser.h"
@@ -8,7 +7,7 @@
 
 class OverdriveConfig {
 public:
-    OverdriveConfig(DataArray*);
+    OverdriveConfig(DataArray *);
 
     float rechargeRate; // 0x0
     float starPhrase; // 0x4
@@ -23,7 +22,8 @@ public:
 // idk the name
 class PointInfo {
 public:
-    PointInfo(int x = 0, int y = 0, int z = 0) : headPoints(x), tailPoints(y), chordPoints(z) {}
+    PointInfo(int x = 0, int y = 0, int z = 0)
+        : headPoints(x), tailPoints(y), chordPoints(z) {}
     int headPoints; // 0x0
     int tailPoints; // 0x4
     int chordPoints; // 0x8
@@ -42,7 +42,7 @@ public:
     std::vector<StreakList> unk78; // 0x78
     std::vector<StreakList> unk80; // 0x80
     int unk88;
-    DataArray* unk8c;
+    DataArray *unk8c;
     OverdriveConfig unk90; // 0x90
     float unkb0; // 0xb0
     float unkb4; // 0xb4
@@ -52,17 +52,17 @@ public:
     int GetHeadPoints(TrackType) const;
     int GetTailPoints(TrackType, int) const;
     int GetChordPoints(TrackType) const;
-    void InitializeStreakList(std::vector<StreakList>&, DataArray*);
-    DataArray* GetCrowdConfig(Difficulty, BandUser*) const;
-    float GetStreakData(int, Symbol, const std::vector<StreakList>&) const;
+    void InitializeStreakList(std::vector<StreakList> &, DataArray *);
+    DataArray *GetCrowdConfig(Difficulty, BandUser *) const;
+    float GetStreakData(int, Symbol, const std::vector<StreakList> &) const;
     int GetStreakMult(int, Symbol) const;
     int GetBandNumStars(int) const;
     float GetBandNumStarsFloat(int) const;
-    float GetNumStarsFloat(int, std::vector<int>&) const;
+    float GetNumStarsFloat(int, std::vector<int> &) const;
     int GetBandScoreForStars(int) const;
     Symbol GetStarRating(int) const;
-    DataArray* GetSoloBlock(Symbol) const;
-    void GetSoloAward(int, Symbol, int&, Symbol&);
+    DataArray *GetSoloBlock(Symbol) const;
+    void GetSoloAward(int, Symbol, int &, Symbol &);
     float GetSoloGemReward(Symbol);
     float GetSoloGemPenalty(Symbol);
     void PrintStarThresholds() const;
@@ -71,6 +71,4 @@ public:
     int GetSoloScoreForStars(int, TrackType) const;
 };
 
-extern Scoring* TheScoring;
-
-#endif // GAME_SCORING_H
+extern Scoring *TheScoring;

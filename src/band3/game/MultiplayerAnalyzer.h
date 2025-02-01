@@ -1,5 +1,4 @@
-#ifndef GAME_MULTIPLAYERANALYZER_H
-#define GAME_MULTIPLAYERANALYZER_H
+#pragma once
 #include "beatmatch/SongData.h"
 #include "system/utl/HxGuid.h"
 
@@ -18,9 +17,7 @@ public:
         char unk_Stuff[24];
     };
 
-    class GemScore {
-
-    };
+    class GemScore {};
 
     MultiplayerAnalyzer(SongData *);
 
@@ -38,7 +35,7 @@ public:
     void GetCodaExtents(const UserGuid &, int &, int &);
     void AddGems();
     void AddCodas();
-    void OverrideBasePoints(int, TrackType, const UserGuid&, int, int, int);
+    void OverrideBasePoints(int, TrackType, const UserGuid &, int, int, int);
 
     const Data *GetData(const UserGuid &) const;
     Data *GetData(const UserGuid &);
@@ -51,5 +48,3 @@ public:
     std::vector<PlayerScoreInfo *> mUnk_0x10; // 0x10 - base scores
     int mUnk_0x18;
 };
-
-#endif // GAME_MULTIPLAYERANALYZER_H

@@ -1,5 +1,4 @@
-#ifndef BANDTRACK_LYRIC_H
-#define BANDTRACK_LYRIC_H
+#pragma once
 
 #include <vector>
 #include <float.h>
@@ -107,5 +106,3 @@ public:
     bool mNeedSync; // 0x119
     bool mPastNow; // 0x11a
 };
-
-#endif // BANDTRACK_LYRIC_H

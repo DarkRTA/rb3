@@ -1,5 +1,4 @@
-#ifndef METABAND_AWARD_H
-#define METABAND_AWARD_H
+#pragma once
 #include "system/obj/Data.h"
 
 class BandProfile;
@@ -33,5 +32,3 @@ public:
     std::vector<AwardEntry> mAwardEntries; // 0x14
     bool mIsBonus; // 0x1c
 };
-
-#endif // METABAND_AWARD_H

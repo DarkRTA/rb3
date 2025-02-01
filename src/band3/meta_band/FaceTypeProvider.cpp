@@ -5,24 +5,22 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols3.h"
 
-FaceTypeProvider::FaceTypeProvider(){
-    Update(male);
-}
+FaceTypeProvider::FaceTypeProvider() { Update(male); }
 
-void FaceTypeProvider::Update(Symbol genderSym){
+void FaceTypeProvider::Update(Symbol genderSym) {
     mFaceTypes.clear();
-    PrefabMgr* pPrefabMgr = PrefabMgr::GetPrefabMgr();
+    PrefabMgr *pPrefabMgr = PrefabMgr::GetPrefabMgr();
     MILO_ASSERT(pPrefabMgr, 0x1C);
     pPrefabMgr->GetFaceTypes(mFaceTypes, genderSym);
 }
 
-void FaceTypeProvider::Text(int, int idx, UIListLabel* slot, UILabel* label) const {
+void FaceTypeProvider::Text(int, int idx, UIListLabel *slot, UILabel *label) const {
     MILO_ASSERT(slot, 0x23);
     MILO_ASSERT(label, 0x24);
-    if(slot->Matches("option")){
+    if (slot->Matches("option")) {
         label->SetTextToken(DataSymbol(idx));
-    }
-    else label->SetTextToken(gNullStr);
+    } else
+        label->SetTextToken(gNullStr);
 }
 
 Symbol FaceTypeProvider::DataSymbol(int data) const {

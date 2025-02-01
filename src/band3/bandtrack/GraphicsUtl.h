@@ -1,9 +1,5 @@
-#ifndef BANDTRACK_GRAPHICSUTL_H
-#define BANDTRACK_GRAPHICSUTL_H
-
+#pragma once
 #include "obj/Object.h"
 
-void UnhookGroupParents(Hmx::Object*);
-void UnhookAllParents(Hmx::Object*);
-
-#endif // BANDTRACK_GRAPHICSUTL_H
+void UnhookGroupParents(Hmx::Object *);
+void UnhookAllParents(Hmx::Object *);

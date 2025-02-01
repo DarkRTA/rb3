@@ -8,12 +8,12 @@ class KeysFx : public Hmx::Object {
 public:
     KeysFx(TrackType);
     virtual ~KeysFx();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void Load();
     void PostLoad();
     void Poll(bool, bool, float, float, float);
-    FxSend* GetFxSend();
+    FxSend *GetFxSend();
 
     TrackType mTrackType; // 0x1c
     int unk20; // 0x20

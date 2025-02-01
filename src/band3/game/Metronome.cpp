@@ -2,13 +2,15 @@
 #include "os/Debug.h"
 #include "synth/Sfx.h"
 
-Metronome::Metronome() : mBeat(-1), mEnabled(false), mHiSfx(NULL), mLoSfx(NULL), mFader(0) {}
+Metronome::Metronome()
+    : mBeat(-1), mEnabled(false), mHiSfx(NULL), mLoSfx(NULL), mFader(0) {}
 Metronome::~Metronome() {}
 
-void Metronome::Enter(Sfx* hi, Sfx* lo) {
+void Metronome::Enter(Sfx *hi, Sfx *lo) {
     MILO_ASSERT(hi, 44);
     MILO_ASSERT(lo, 45);
-    mHiSfx = hi; mLoSfx = lo;
+    mHiSfx = hi;
+    mLoSfx = lo;
     mFader = Hmx::Object::New<Fader>();
     mFader->SetVal(0);
     mHiSfx->mFaders.Add(mFader);
@@ -21,8 +23,10 @@ void Metronome::Exit() {
 }
 
 void Metronome::PlayBeat(int) {
-    if (mBeat == 0) mHiSfx->Play(0, 0, 0);
-    else mLoSfx->Play(0, 0, 0);
+    if (mBeat == 0)
+        mHiSfx->Play(0, 0, 0);
+    else
+        mLoSfx->Play(0, 0, 0);
 }
 
 void Metronome::Enable(bool b) { mEnabled = b; }
@@ -37,5 +41,6 @@ void Metronome::SetVolume(int v, int steps) {
 int Metronome::GetVolume(int steps) const {
     if (mFader) {
         return (mFader->mVal - -20.0f) / 20.0f * (steps + -1);
-    } else return 0;
+    } else
+        return 0;
 }

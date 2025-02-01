@@ -1,6 +1,4 @@
-#ifndef METABAND_GAMEPLAYOPTIONS_H
-#define METABAND_GAMEPLAYOPTIONS_H
-
+#pragma once
 #include "obj/Object.h"
 #include "meta/FixedSizeSaveable.h"
 #include "types.h"
@@ -12,12 +10,12 @@ enum VocalStyle {
 };
 
 class GameplayOptions : public virtual Hmx::Object, public FixedSizeSaveable {
-    public:
+public:
     GameplayOptions();
     virtual ~GameplayOptions() {}
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void SetLefty(bool);
     virtual bool GetLefty() const { return mLefty; }
     virtual void SetVocalStyle(VocalStyle);
@@ -32,5 +30,3 @@ class GameplayOptions : public virtual Hmx::Object, public FixedSizeSaveable {
     VocalStyle mVocalStyle;
     mutable u8 mDirty;
 };
-
-#endif // METABAND_GAMEPLAYOPTIONS_H

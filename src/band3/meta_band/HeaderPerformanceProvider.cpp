@@ -13,19 +13,18 @@
 #include "utl/Symbols.h"
 #include "utl/Symbols4.h"
 
-SetlistScoresProvider::SetlistScoresProvider() : mProfile(0), mScoreType(kNumScoreTypes) {
+SetlistScoresProvider::SetlistScoresProvider()
+    : mProfile(0), mScoreType(kNumScoreTypes) {}
 
-}
-
-void SetlistScoresProvider::Custom(int, int data, UIListCustom* slot, Hmx::Object* obj) const {
-    if(slot->Matches("score")){
-        ScoreDisplay* sd = dynamic_cast<ScoreDisplay*>(obj);
+void SetlistScoresProvider::Custom(int, int data, UIListCustom *slot, Hmx::Object *obj)
+    const {
+    if (slot->Matches("score")) {
+        ScoreDisplay *sd = dynamic_cast<ScoreDisplay *>(obj);
         MILO_ASSERT(sd, 0x23);
         short val;
-        if(mScoreType == kScoreBand){
+        if (mScoreType == kScoreBand) {
             val = unk30[data];
-        }
-        else {
+        } else {
             val = 1 << mScoreType;
         }
         sd->SetValues(val, unk28[data], 0, false);
@@ -33,30 +32,34 @@ void SetlistScoresProvider::Custom(int, int data, UIListCustom* slot, Hmx::Objec
     }
 }
 
-void SetlistScoresProvider::Text(int, int data, UIListLabel* slot, UILabel* label) const {
-    if(slot->Matches("song")){
-        AppLabel* appLabel = dynamic_cast<AppLabel*>(label);
+void SetlistScoresProvider::Text(int, int data, UIListLabel *slot, UILabel *label) const {
+    if (slot->Matches("song")) {
+        AppLabel *appLabel = dynamic_cast<AppLabel *>(label);
         MILO_ASSERT(appLabel, 0x37);
-        appLabel->SetSongNameWithNumber(unk20[data], data + 1, unk38[data].empty() ? 0 : unk38[data].c_str());
-    }
-    else label->SetTextToken(gNullStr);
+        appLabel->SetSongNameWithNumber(
+            unk20[data], data + 1, unk38[data].empty() ? 0 : unk38[data].c_str()
+        );
+    } else
+        label->SetTextToken(gNullStr);
 }
 
-UIListWidgetState SetlistScoresProvider::ElementStateOverride(int, int data, UIListWidgetState state) const {
+UIListWidgetState
+SetlistScoresProvider::ElementStateOverride(int, int data, UIListWidgetState state) const {
     bool hassong = TheSongMgr->HasSong(unk20[data]);
     UIListWidgetState ret = kUIListWidgetInactive;
-    if(hassong) ret = state;
+    if (hassong)
+        ret = state;
     return ret;
 }
 
 int SetlistScoresProvider::NumData() const { return unk20.size(); }
 
-void SetlistScoresProvider::SetProfile(BandProfile* profile){
+void SetlistScoresProvider::SetProfile(BandProfile *profile) {
     MILO_ASSERT(profile, 0x65);
     mProfile = profile;
 }
 
-void SetlistScoresProvider::SetScoreType(ScoreType type){ mScoreType = type; }
+void SetlistScoresProvider::SetScoreType(ScoreType type) { mScoreType = type; }
 
 BEGIN_HANDLERS(SetlistScoresProvider)
     HANDLE_ACTION(set_score_type, SetScoreType(SymToScoreType(_msg->Sym(2))))

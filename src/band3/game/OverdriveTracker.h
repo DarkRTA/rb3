@@ -12,13 +12,13 @@ public:
         bool unk1;
     };
 
-    OverdriveTracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
+    OverdriveTracker(TrackerSource *, TrackerBandDisplay &, TrackerBroadcastDisplay &);
     virtual ~OverdriveTracker();
     virtual void TranslateRelativeTargets();
-    virtual void UpdateGoalValueLabel(UILabel&) const;
-    virtual void UpdateCurrentValueLabel(UILabel&) const;
+    virtual void UpdateGoalValueLabel(UILabel &) const;
+    virtual void UpdateCurrentValueLabel(UILabel &) const;
     virtual String GetPlayerContributionString(Symbol) const;
-    virtual void ConfigureTrackerSpecificData(const DataArray*);
+    virtual void ConfigureTrackerSpecificData(const DataArray *);
     virtual void FirstFrame_(float);
     virtual void Poll_(float);
     virtual void TargetSuccess(int) const;
@@ -26,13 +26,15 @@ public:
     virtual DataArrayPtr GetTargetDescription(int idx) const {
         return TrackerDisplay::MakeTimeTargetDescription(mTargets[idx]);
     }
-    virtual TrackerChallengeType GetChallengeType() const { return (TrackerChallengeType)2; }
+    virtual TrackerChallengeType GetChallengeType() const {
+        return (TrackerChallengeType)2;
+    }
     virtual float GetCurrentValue() const { return unka0; }
     virtual void SavePlayerStats() const;
 
     void UpdateTimeRemainingDisplay();
     void LocalEndDeployStreak(float);
-    void RemoteEndDeployStreak(Player*, int);
+    void RemoteEndDeployStreak(Player *, int);
 
     std::map<TrackerPlayerID, DeployData> unk58; // 0x58
     TrackerMultiplierMap unk70; // 0x70

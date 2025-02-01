@@ -11,8 +11,8 @@ public:
     ClosetPanel();
     OBJ_CLASSNAME(ClosetPanel);
     OBJ_SET_TYPE(ClosetPanel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~ClosetPanel(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~ClosetPanel() {}
     virtual void Draw();
     virtual void Enter();
     virtual void Exit();
@@ -22,17 +22,17 @@ public:
     virtual void Unload();
     virtual void FinishLoad();
 
-    CamShot* GetCurrentShot();
+    CamShot *GetCurrentShot();
     void CycleCamera();
     void GotoArtMakerShot();
     void LeaveArtMakerShot();
     void TakePortrait();
     void GotoShot(Symbol);
-    void SetPortraitRenderer(RndTexRenderer*);
-    LocalBandUser* GetUser() const { return mClosetMgr->GetUser(); }
+    void SetPortraitRenderer(RndTexRenderer *);
+    LocalBandUser *GetUser() const { return mClosetMgr->GetUser(); }
 
-    ClosetMgr* mClosetMgr; // 0x88
-    CameraManager* mCameraManager; // 0x8c
-    RndTexRenderer* mPortraitRenderer; // 0x90
+    ClosetMgr *mClosetMgr; // 0x88
+    CameraManager *mCameraManager; // 0x8c
+    RndTexRenderer *mPortraitRenderer; // 0x90
     int mPortraitState; // 0x94
 };

@@ -3,9 +3,9 @@
 
 class CampaignLevel {
 public:
-    CampaignLevel(DataArray*, int);
+    CampaignLevel(DataArray *, int);
     virtual ~CampaignLevel();
-    virtual void Configure(DataArray*);
+    virtual void Configure(DataArray *);
 
     Symbol GetName() const;
     int GetValue() const;
