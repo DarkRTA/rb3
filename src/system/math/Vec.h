@@ -454,7 +454,7 @@ inline void Normalize(register const Vector3 &v, register Vector3 &vout) {
         register __vec2x32float__ inv_half;
         register __vec2x32float__ total;
 
-        asm {
+        ASM_BLOCK(
             psq_l x, Vector3.x(v), 0, 0
             psq_l z, Vector3.z(v), 1, 0
             ps_mul x2, x, x
@@ -483,7 +483,7 @@ inline void Normalize(register const Vector3 &v, register Vector3 &vout) {
     
             psq_st x, Vector3.x(vout), 0, 0    
             psq_st z, Vector3.z(vout), 1, 0
-        }
+        )
     } else {
         vout.Set(0, 0, 0);
     }

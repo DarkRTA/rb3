@@ -17,7 +17,7 @@ static DataNode OnEnableDeltas(DataArray *array) {
 }
 
 static DataNode OnPrintDeltas(DataArray *array) {
-    { MILO_LOG("No samples to be had\n"); }
+    MILO_LOG("No samples to be had\n");
     return 0;
 }
 
