@@ -17,22 +17,22 @@ public:
 class GlitchPoker {
 public:
     GlitchPoker();
-    ~GlitchPoker(){}
+    ~GlitchPoker() {}
 
     void ClearData();
     bool OverBudget();
-    void PrintNestedStartTimes(TextStream&, float);
-    void PrintResult(TextStream&);
-    void Dump(TextStream&, int);
+    void PrintNestedStartTimes(TextStream &, float);
+    void PrintResult(TextStream &);
+    void Dump(TextStream &, int);
     void PollAveragesRecurse(bool);
 
     char mName[64]; // 0x0
     float mTime; // 0x40
     float mTimeEnd; // 0x44
-    std::vector<GlitchPoker*> mChildren; // 0x48
-    GlitchPoker* mParent; // 0x50
+    std::vector<GlitchPoker *> mChildren; // 0x48
+    GlitchPoker *mParent; // 0x50
     float mBudget; // 0x54
-    GlitchAverager* mAvg; // 0x58
+    GlitchAverager *mAvg; // 0x58
 
     static std::vector<float> smNestedStartTimes;
     static float smLastDumpTime;
@@ -47,15 +47,15 @@ public:
     ~GlitchFinder();
 
     static void Init();
-    static DataNode OnGlitchFind(DataArray*);
-    static DataNode OnGlitchFindBudget(DataArray*);
-    static DataNode OnGlitchFindLeaves(DataArray*);
-    static DataNode OnGlitchFindPoke(DataArray*);
-    
-    void Poke(const char*, unsigned int);
-    void PokeStart(const char*, unsigned int, float, float, GlitchAverager*);
+    static DataNode OnGlitchFind(DataArray *);
+    static DataNode OnGlitchFindBudget(DataArray *);
+    static DataNode OnGlitchFindLeaves(DataArray *);
+    static DataNode OnGlitchFindPoke(DataArray *);
+
+    void Poke(const char *, unsigned int);
+    void PokeStart(const char *, unsigned int, float, float, GlitchAverager *);
     void PokeEnd(unsigned int);
-    GlitchPoker* NewPoker();
+    GlitchPoker *NewPoker();
     void Reset();
     void CheckDump();
 
@@ -66,8 +66,8 @@ public:
     float mLastTime; // 0x40
     GlitchPoker mPokerPool[8]; // 0x44
     int mPokerIndex; // 0x324
-    GlitchPoker* mStartPoker; // 0x328
-    GlitchPoker* mCurPoker; // 0x32c
+    GlitchPoker *mStartPoker; // 0x328
+    GlitchPoker *mCurPoker; // 0x32c
     bool mActive; // 0x330
     bool mDumpLeavesOnly; // 0x331
     float mLeafThreshold; // 0x334

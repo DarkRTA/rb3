@@ -17,17 +17,11 @@ NetLoader::~NetLoader() {
     }
 }
 
-bool NetLoader::IsLoaded() {
-    return mIsLoaded;
-}
+bool NetLoader::IsLoaded() { return mIsLoaded; }
 
-const char *NetLoader::GetRemotePath() const {
-    return mStrRemotePath.c_str();
-}
+const char *NetLoader::GetRemotePath() const { return mStrRemotePath.c_str(); }
 
-int NetLoader::GetSize() {
-    return mSize;
-}
+int NetLoader::GetSize() { return mSize; }
 
 char *NetLoader::GetBuffer() {
     if (mIsLoaded != false) {
@@ -56,23 +50,15 @@ void NetLoader::AttachBuffer(char *pBuf) {
     mBuffer = pBuf;
 }
 
-void NetLoader::SetSize(int pSize) {
-    mSize = pSize;
-}
+void NetLoader::SetSize(int pSize) { mSize = pSize; }
 
-void NetLoader::PostDownload() {
-    mIsLoaded = mBuffer != 0;
-}
+void NetLoader::PostDownload() { mIsLoaded = mBuffer != 0; }
 
 NetLoaderStub::~NetLoaderStub() {}
 
-bool NetLoaderStub::HasFailed() {
-    return !mBuffer;
-}
+bool NetLoaderStub::HasFailed() { return !mBuffer; }
 
-bool NetLoaderStub::IsSafeToDelete() const {
-    return 1;
-}
+bool NetLoaderStub::IsSafeToDelete() const { return 1; }
 
 void NetLoaderStub::PollLoading() {
     MILO_ASSERT(mFileLoader, 0xb2);

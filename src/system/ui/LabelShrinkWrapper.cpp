@@ -5,18 +5,16 @@
 
 INIT_REVS(LabelShrinkWrapper)
 
-void LabelShrinkWrapper::Init(){
+void LabelShrinkWrapper::Init() {
     Register();
     TheUI->InitResources("LabelShrinkWrapper");
 }
 
-LabelShrinkWrapper::LabelShrinkWrapper() : m_pLabel(this, 0), m_pShow(0), m_pTopLeftBone(0), m_pTopRightBone(0), m_pBottomLeftBone(0), m_pBottomRightBone(0) {
+LabelShrinkWrapper::LabelShrinkWrapper()
+    : m_pLabel(this, 0), m_pShow(0), m_pTopLeftBone(0), m_pTopRightBone(0),
+      m_pBottomLeftBone(0), m_pBottomRightBone(0) {}
 
-}
-
-LabelShrinkWrapper::~LabelShrinkWrapper(){
-
-}
+LabelShrinkWrapper::~LabelShrinkWrapper() {}
 
 BEGIN_COPYS(LabelShrinkWrapper)
     CREATE_COPY_AS(LabelShrinkWrapper, p)
@@ -28,27 +26,27 @@ END_COPYS
 
 SAVE_OBJ(LabelShrinkWrapper, 0x3C)
 
-void LabelShrinkWrapper::Enter(){ UIComponent::Enter(); }
+void LabelShrinkWrapper::Enter() { UIComponent::Enter(); }
 
 BEGIN_LOADS(LabelShrinkWrapper)
     PreLoad(bs);
     PostLoad(bs);
 END_LOADS
 
-void LabelShrinkWrapper::PreLoad(BinStream& bs){
+void LabelShrinkWrapper::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(0, 0)
     bs >> m_pLabel >> m_pShow;
     UIComponent::PreLoad(bs);
 }
 
-void LabelShrinkWrapper::PostLoad(BinStream& bs){
+void LabelShrinkWrapper::PostLoad(BinStream &bs) {
     UIComponent::PostLoad(bs);
     Update();
 }
 
 // fn_8054A614
-void LabelShrinkWrapper::UpdateAndDrawWrapper(){
+void LabelShrinkWrapper::UpdateAndDrawWrapper() {
     MILO_ASSERT(m_pLabel, 0x62);
     Vector3 topleft, topright, bottomleft, bottomright;
     Vector3 vec1, vec2;
@@ -67,9 +65,9 @@ void LabelShrinkWrapper::UpdateAndDrawWrapper(){
     m_pBottomRightBone->SetLocalPos(v2x, 0.0f, v1z);
 }
 
-void LabelShrinkWrapper::DrawShowing(){
-    if(m_pLabel && m_pShow){
-        RndDir* pDir = mResource->Dir();
+void LabelShrinkWrapper::DrawShowing() {
+    if (m_pLabel && m_pShow) {
+        RndDir *pDir = mResource->Dir();
         MILO_ASSERT(pDir, 0x8B);
         UpdateAndDrawWrapper();
         pDir->SetWorldXfm(WorldXfm());
@@ -77,14 +75,14 @@ void LabelShrinkWrapper::DrawShowing(){
     }
 }
 
-void LabelShrinkWrapper::Poll(){ UIComponent::Poll(); }
+void LabelShrinkWrapper::Poll() { UIComponent::Poll(); }
 
 // fn_8054A82C
-void LabelShrinkWrapper::Update(){
+void LabelShrinkWrapper::Update() {
     UIComponent::Update();
-    const DataArray* pTypeDef = TypeDef();
+    const DataArray *pTypeDef = TypeDef();
     MILO_ASSERT(pTypeDef, 0xA3);
-    RndDir* pDir = mResource->Dir();
+    RndDir *pDir = mResource->Dir();
     MILO_ASSERT(pDir, 0xA6);
     m_pTopLeftBone = pDir->Find<RndMesh>(pTypeDef->FindStr(topleft_bone), true);
     MILO_ASSERT(m_pTopLeftBone, 0xAE);
@@ -96,8 +94,8 @@ void LabelShrinkWrapper::Update(){
     MILO_ASSERT(m_pBottomRightBone, 0xB4);
 }
 
-void LabelShrinkWrapper::SetShouldShow(bool b){ m_pShow = b; }
-void LabelShrinkWrapper::SetLabel(UILabel* l){ m_pLabel = l; }
+void LabelShrinkWrapper::SetShouldShow(bool b) { m_pShow = b; }
+void LabelShrinkWrapper::SetLabel(UILabel *l) { m_pLabel = l; }
 
 BEGIN_HANDLERS(LabelShrinkWrapper)
     HANDLE_SUPERCLASS(UIComponent)

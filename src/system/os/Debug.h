@@ -10,50 +10,47 @@
 #include <string.h>
 #include <setjmp.h>
 
-typedef void ModalCallbackFunc(bool&, char*, bool);
+typedef void ModalCallbackFunc(bool &, char *, bool);
 typedef void ExitCallbackFunc(void);
 
 class Debug : public TextStream {
 public:
-
     bool mNoDebug; // 0x4
     bool mFailing; // 0x5
     bool mExiting; // 0x6
     bool mNoTry; // 0x7
     bool mNoModal; // 0x8
     int mTry; // 0xc
-    TextFileStream* mLog; // 0x10
+    TextFileStream *mLog; // 0x10
     bool mAlwaysFlush; // 0x14
-    TextStream* mReflect; // 0x18
-    ModalCallbackFunc* mModalCallback; // 0x1c
-    std::list<ExitCallbackFunc*> mFailCallbacks; // 0x20
-    std::list<ExitCallbackFunc*> mExitCallbacks; // 0x28
+    TextStream *mReflect; // 0x18
+    ModalCallbackFunc *mModalCallback; // 0x1c
+    std::list<ExitCallbackFunc *> mFailCallbacks; // 0x20
+    std::list<ExitCallbackFunc *> mExitCallbacks; // 0x28
     unsigned int mFailThreadStack[50]; // starts at 0x30
-    const char* mFailThreadMsg; // 0xf8
-    const char* mNotifyThreadMsg; // 0xfc
+    const char *mFailThreadMsg; // 0xf8
+    const char *mNotifyThreadMsg; // 0xfc
 
     Debug();
     virtual ~Debug();
-    virtual void Print(const char*);
+    virtual void Print(const char *);
 
     void Poll();
     void SetDisabled(bool);
     void SetTry(bool);
-    void AddExitCallback(ExitCallbackFunc* func){
-        mExitCallbacks.push_front(func);
-    }
-    void RemoveExitCallback(ExitCallbackFunc*);
-    void StartLog(const char*, bool);
+    void AddExitCallback(ExitCallbackFunc *func) { mExitCallbacks.push_front(func); }
+    void RemoveExitCallback(ExitCallbackFunc *);
+    void StartLog(const char *, bool);
     void StopLog();
     void Init();
-    void* SetModalCallback(ModalCallbackFunc*);
+    void *SetModalCallback(ModalCallbackFunc *);
     void Exit(int, bool);
-    void Modal(bool&, const char*);
+    void Modal(bool &, const char *);
 
-    void Notify(const char* msg);
-    void Fail(const char* msg);
-    TextStream* SetReflect(TextStream* ts){
-        TextStream* ret = mReflect;
+    void Notify(const char *msg);
+    void Fail(const char *msg);
+    TextStream *SetReflect(TextStream *ts) {
+        TextStream *ret = mReflect;
         mReflect = ts;
         return ret;
     }
@@ -64,7 +61,7 @@ extern jmp_buf TheDebugJump;
 
 class DebugBeta {
 public:
-    DebugBeta& operator<<(const char* msg) {
+    DebugBeta &operator<<(const char *msg) {
         if (TheDebug.mModalCallback) {
             bool b = false;
             char buf[256];
@@ -81,16 +78,18 @@ public:
     }
 };
 
-extern const char* kAssertStr;
-extern int* gpDbgFrameID;
+extern const char *kAssertStr;
+extern int *gpDbgFrameID;
 
 #ifdef MILO_DEBUG
-#  define MILO_ASSERT(cond, line) ((cond) || (TheDebugFailer << (MakeString(kAssertStr, __FILE__, line, #cond)), 0))
-#  define MILO_ASSERT_FMT(cond, ...) ((cond) || (TheDebugFailer << (MakeString(__VA_ARGS__)), 0))
-#  define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
-#  define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
-#  define MILO_NOTIFY_BETA(...) DebugBeta() << MakeString(__VA_ARGS__)
-#  define MILO_LOG(...) TheDebug << MakeString(__VA_ARGS__)
+#define MILO_ASSERT(cond, line)                                                          \
+    ((cond) || (TheDebugFailer << (MakeString(kAssertStr, __FILE__, line, #cond)), 0))
+#define MILO_ASSERT_FMT(cond, ...)                                                       \
+    ((cond) || (TheDebugFailer << (MakeString(__VA_ARGS__)), 0))
+#define MILO_FAIL(...) TheDebugFailer << MakeString(__VA_ARGS__)
+#define MILO_WARN(...) TheDebugNotifier << MakeString(__VA_ARGS__)
+#define MILO_NOTIFY_BETA(...) DebugBeta() << MakeString(__VA_ARGS__)
+#define MILO_LOG(...) TheDebug << MakeString(__VA_ARGS__)
 
 // Usage:
 // MILO_TRY {
@@ -99,31 +98,33 @@ extern int* gpDbgFrameID;
 //     // Use errMsg here, e.g.:
 //     MILO_WARN("An unexpected thing happened: %s", errMsg);
 // }
-#  define MILO_TRY \
-    TheDebug.SetTry(true); \
-    /* Undefined behavior alert! \
-     * The return of setjmp should only be used in control flow, \
-     * but here it's used to propogate an error message. \
-     */ \
-    /* TODO: Only one MILO_TRY can be used within the same scope currently */ \
-    const char* _msg = (const char*)setjmp(TheDebugJump); \
-    if (_msg == nullptr) { \
+#define MILO_TRY                                                                         \
+    TheDebug.SetTry(true);                                                               \
+    /* Undefined behavior alert!                                                         \
+     * The return of setjmp should only be used in control flow,                         \
+     * but here it's used to propogate an error message.                                 \
+     */                                                                                  \
+    /* TODO: Only one MILO_TRY can be used within the same scope currently */            \
+    const char *_msg = (const char *)setjmp(TheDebugJump);                               \
+    if (_msg == nullptr) {                                                               \
         do
-#  define MILO_CATCH(msgName) \
-        while (false); \
-        TheDebug.SetTry(false); \
-    } else if (const char* msgName = _msg)
+#define MILO_CATCH(msgName)                                                              \
+    while (false)                                                                        \
+        ;                                                                                \
+    TheDebug.SetTry(false);                                                              \
+    }                                                                                    \
+    else if (const char *msgName = _msg)
 #else
-   // The actual conditions for asserts appear to still be evaluated in retail,
-   // various random calls are left over from asserts that exist in debug
-#  define MILO_ASSERT(cond, line) (void)(cond)
-#  define MILO_ASSERT_FMT(cond, ...) (void)(cond)
-#  define MILO_FAIL(...) (void)(__VA_ARGS__)
-#  define MILO_WARN(...) (void)(__VA_ARGS__)
-#  define MILO_LOG(...) (void)(__VA_ARGS__)
+// The actual conditions for asserts appear to still be evaluated in retail,
+// various random calls are left over from asserts that exist in debug
+#define MILO_ASSERT(cond, line) (void)(cond)
+#define MILO_ASSERT_FMT(cond, ...) (void)(cond)
+#define MILO_FAIL(...) (void)(__VA_ARGS__)
+#define MILO_WARN(...) (void)(__VA_ARGS__)
+#define MILO_LOG(...) (void)(__VA_ARGS__)
 
-#  define MILO_TRY if (true)
-#  define MILO_CATCH(msgName) else if (const char* msgName = nullptr)
+#define MILO_TRY if (true)
+#define MILO_CATCH(msgName) else if (const char *msgName = nullptr)
 #endif
 
 // Bounds checking asserts
@@ -132,16 +133,16 @@ extern int* gpDbgFrameID;
 // macro arguments during expansion.
 
 // ( min) <= (value) && (value) < ( max)
-#define MILO_ASSERT_RANGE(value, min, max, line) \
+#define MILO_ASSERT_RANGE(value, min, max, line)                                         \
     MILO_ASSERT((min) <= (value) && (value) < (max), line)
 
 // ( min) <= (value) && (value) <= ( max)
-#define MILO_ASSERT_RANGE_EQ(value, min, max, line) \
+#define MILO_ASSERT_RANGE_EQ(value, min, max, line)                                      \
     MILO_ASSERT((min) <= (value) && (value) <= (max), line)
 
 class DebugNotifier {
 public:
-    DebugNotifier& operator<<(const char* c){
+    DebugNotifier &operator<<(const char *c) {
         TheDebug.Notify(c);
         return *this;
     }
@@ -151,7 +152,7 @@ extern DebugNotifier TheDebugNotifier;
 
 class DebugFailer {
 public:
-    DebugFailer& operator<<(const char* cc){
+    DebugFailer &operator<<(const char *cc) {
         TheDebug.Fail(cc);
         return *this;
     }
@@ -160,12 +161,13 @@ public:
 extern DebugFailer TheDebugFailer;
 
 namespace {
-    bool AddToNotifies(const char* name, std::list<String>& notifies){
+    bool AddToNotifies(const char *name, std::list<String> &notifies) {
         if (notifies.size() > 16) {
             return false;
         }
 
-        for (std::list<String>::iterator it = notifies.begin(); it != notifies.end(); it++){ \
+        for (std::list<String>::iterator it = notifies.begin(); it != notifies.end();
+             it++) {
             bool equal = !strcmp(it->c_str(), name);
             if (equal) {
                 return false;
@@ -180,11 +182,11 @@ namespace {
 class DebugNotifyOncer {
 public:
     std::list<String> mNotifies;
-    DebugNotifyOncer(){}
-    ~DebugNotifyOncer(){}
+    DebugNotifyOncer() {}
+    ~DebugNotifyOncer() {}
 
-    DebugNotifyOncer& operator<<(const char* cc){
-        if(AddToNotifies(cc, mNotifies)){
+    DebugNotifyOncer &operator<<(const char *cc) {
+        if (AddToNotifies(cc, mNotifies)) {
             TheDebugNotifier << cc;
         }
         return *this;
@@ -194,11 +196,11 @@ public:
 class DebugNotifyOncerBeta {
 public:
     std::list<String> mNotifies;
-    DebugNotifyOncerBeta(){}
-    ~DebugNotifyOncerBeta(){}
+    DebugNotifyOncerBeta() {}
+    ~DebugNotifyOncerBeta() {}
 
-    DebugNotifyOncerBeta& operator<<(const char* cc){
-        if(AddToNotifies(cc, mNotifies)){
+    DebugNotifyOncerBeta &operator<<(const char *cc) {
+        if (AddToNotifies(cc, mNotifies)) {
             DebugBeta() << cc;
         }
         return *this;
@@ -206,26 +208,29 @@ public:
 };
 
 #ifdef MILO_DEBUG
-    #define MILO_NOTIFY_ONCE(...) { \
-            static DebugNotifyOncer _dw; \
-            _dw << MakeString(__VA_ARGS__); \
-        }
-    #define MILO_NOTIFY_ONCE_BETA(...) { \
-            static DebugNotifyOncer _dw; \
-            _dw << MakeString(__VA_ARGS__); \
-        }
-    #define MILO_LOG_ONCE(...){\
-        static char _dw[256];\
-        const char* str = MakeString(__VA_ARGS__);\
-        if (strcmp(_dw, str) != 0) {\
-            strcpy(_dw, str);\
-            TheDebug.Print(str);\
-        }\
+#define MILO_NOTIFY_ONCE(...)                                                            \
+    {                                                                                    \
+        static DebugNotifyOncer _dw;                                                     \
+        _dw << MakeString(__VA_ARGS__);                                                  \
+    }
+#define MILO_NOTIFY_ONCE_BETA(...)                                                       \
+    {                                                                                    \
+        static DebugNotifyOncer _dw;                                                     \
+        _dw << MakeString(__VA_ARGS__);                                                  \
+    }
+#define MILO_LOG_ONCE(...)                                                               \
+    {                                                                                    \
+        static char _dw[256];                                                            \
+        const char *str = MakeString(__VA_ARGS__);                                       \
+        if (strcmp(_dw, str) != 0) {                                                     \
+            strcpy(_dw, str);                                                            \
+            TheDebug.Print(str);                                                         \
+        }                                                                                \
     }
 #else
-    #define MILO_NOTIFY_ONCE(...) (void)(__VA_ARGS__)
-    #define MILO_NOTIFY_ONCE_BETA(...) (void)(__VA_ARGS__)
-    #define MILO_LOG_ONCE(...) (void)(__VA_ARGS__)
+#define MILO_NOTIFY_ONCE(...) (void)(__VA_ARGS__)
+#define MILO_NOTIFY_ONCE_BETA(...) (void)(__VA_ARGS__)
+#define MILO_LOG_ONCE(...) (void)(__VA_ARGS__)
 #endif
 
 #endif

@@ -11,29 +11,39 @@
 #include "synth/tomcrypt/mycrypt.h"
 
 static unsigned char gHvKeyGreen[64] = {
-    0x01,0x22,0x00,0x38,0xd2,0x01,0x78,0x8b,0xdd,0xcd,0xd0,0xf0,0xfe,0x3e,0x24,0x7f,
-    0x51,0x73,0xad,0xe5,0xb3,0x99,0xb8,0x61,0x58,0x1a,0xf9,0xb8,0x1e,0xa7,0xbe,0xbf,
-    0xc6,0x22,0x94,0x30,0xd8,0x3c,0x84,0x14,0x08,0x73,0x7c,0xf2,0x23,0xf6,0xeb,0x5a,
-    0x02,0x1a,0x83,0xf3,0x97,0xe9,0xd4,0xb8,0x06,0x74,0x14,0x6b,0x30,0x4c,0x00,0x91
+    0x01, 0x22, 0x00, 0x38, 0xd2, 0x01, 0x78, 0x8b, 0xdd, 0xcd, 0xd0, 0xf0, 0xfe,
+    0x3e, 0x24, 0x7f, 0x51, 0x73, 0xad, 0xe5, 0xb3, 0x99, 0xb8, 0x61, 0x58, 0x1a,
+    0xf9, 0xb8, 0x1e, 0xa7, 0xbe, 0xbf, 0xc6, 0x22, 0x94, 0x30, 0xd8, 0x3c, 0x84,
+    0x14, 0x08, 0x73, 0x7c, 0xf2, 0x23, 0xf6, 0xeb, 0x5a, 0x02, 0x1a, 0x83, 0xf3,
+    0x97, 0xe9, 0xd4, 0xb8, 0x06, 0x74, 0x14, 0x6b, 0x30, 0x4c, 0x00, 0x91
 };
 
 namespace {
-    int GetEncMethod(int ver){
+    int GetEncMethod(int ver) {
         int ret = 0;
-        switch(ver){
-            case 0xc: case 0xd: ret = 0; break;
-            case 0xe: ret = 1; break;
-            case 0xf: ret = 2; break;
-            case 0x10: ret = 3; break;
-            default:
-                MILO_WARN(" Wrong encryption version passed to ByteGrinder: [%d] !\n", ver);
-                break;
+        switch (ver) {
+        case 0xc:
+        case 0xd:
+            ret = 0;
+            break;
+        case 0xe:
+            ret = 1;
+            break;
+        case 0xf:
+            ret = 2;
+            break;
+        case 0x10:
+            ret = 3;
+            break;
+        default:
+            MILO_WARN(" Wrong encryption version passed to ByteGrinder: [%d] !\n", ver);
+            break;
         }
         return ret;
     }
 }
 
-DataNode hashTo5Bits(DataArray* da) {
+DataNode hashTo5Bits(DataArray *da) {
     static unsigned long hashMapping[0x100];
     unsigned long seed = da->Int(1) & 0xFF;
     unsigned long ret = hashMapping[seed];
@@ -50,7 +60,7 @@ DataNode hashTo5Bits(DataArray* da) {
     return DataNode(kDataInt, ret);
 }
 
-DataNode hashTo6Bits(DataArray* da) {
+DataNode hashTo6Bits(DataArray *da) {
     static unsigned long hashMapping[0x100];
     unsigned long seed = da->Int(1) & 0xFF;
     unsigned long ret = hashMapping[seed];
@@ -67,25 +77,24 @@ DataNode hashTo6Bits(DataArray* da) {
     return DataNode(kDataInt, ret);
 }
 
-DataNode getRandomSequence32A(DataArray* da){
+DataNode getRandomSequence32A(DataArray *da) {
     static unsigned long s_seed = 0x521;
     static bool usedUp[0x20];
 
-    if(da->Size() > 1){
+    if (da->Size() > 1) {
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
-        if(dataint != 0){
+        if (dataint != 0) {
             s_seed = dataint;
         }
         return DataNode(kDataInt, 0x610A660F);
-    }
-    else {
+    } else {
         bool loop = true;
         int idx = 0;
-        while(loop){
+        while (loop) {
             s_seed = s_seed * 0x19660D + 0x3C6EF35F;
             idx = (s_seed >> 2 & 0x1F);
-            if(usedUp[idx] == false){
+            if (usedUp[idx] == false) {
                 loop = false;
                 usedUp[idx] = true;
             }
@@ -94,25 +103,24 @@ DataNode getRandomSequence32A(DataArray* da){
     }
 }
 
-DataNode getRandomSequence32B(DataArray* da){
+DataNode getRandomSequence32B(DataArray *da) {
     static unsigned long s_seed = 0x303F;
     static bool usedUp[0x20];
 
-    if(da->Size() > 1){
+    if (da->Size() > 1) {
         int dataint = da->Int(1);
         memset(usedUp, 0, 0x20);
-        if(dataint != 0){
+        if (dataint != 0) {
             s_seed = dataint;
         }
         return DataNode(kDataInt, 0x610A660F);
-    }
-    else {
+    } else {
         bool loop = true;
         int idx = 0;
-        while(loop){
+        while (loop) {
             s_seed = s_seed * 0x19660D + 0x3C6EF35F;
             idx = (s_seed >> 2 & 0x1F);
-            if(usedUp[idx] == false){
+            if (usedUp[idx] == false) {
                 loop = false;
                 usedUp[idx] = true;
             }
@@ -121,32 +129,35 @@ DataNode getRandomSequence32B(DataArray* da){
     }
 }
 
-#define OP_ROT_L(byte, dist) (unsigned char)((byte << (dist & 31) | byte >> (8 - dist & 31)) & 255)
-#define OP_ROT_R(byte, dist) (unsigned char)((byte >> (dist & 31) | byte << (8 - dist & 31)) & 255)
+#define OP_ROT_L(byte, dist)                                                             \
+    (unsigned char)((byte << (dist & 31) | byte >> (8 - dist & 31)) & 255)
+#define OP_ROT_R(byte, dist)                                                             \
+    (unsigned char)((byte >> (dist & 31) | byte << (8 - dist & 31)) & 255)
 
-DataNode op0(DataArray* msg){
+DataNode op0(DataArray *msg) {
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
     return DataNode(kDataInt, u8(w ^ operand));
 }
 
-DataNode op1(DataArray* msg){
+DataNode op1(DataArray *msg) {
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
     return DataNode(kDataInt, u8(u8(w) + u8(operand)));
 }
 
-DataNode op2(DataArray* msg){
+DataNode op2(DataArray *msg) {
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
     unsigned long ret = u8(w) | ((w << 8) & 0xFF00);
     ret >>= u8(operand & 7);
     return DataNode(kDataInt, u8(ret));
-    // can we put the return value directly in the DataNode and still have the function match?
-    // return DataNode(kDataInt, (BYTE(w) | ((w << 8) & 0xFF00)) >> BYTE(operand & 7));
+    // can we put the return value directly in the DataNode and still have the function
+    // match? return DataNode(kDataInt, (BYTE(w) | ((w << 8) & 0xFF00)) >> BYTE(operand &
+    // 7));
 }
 
-DataNode op3(DataArray* msg){
+DataNode op3(DataArray *msg) {
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
     bool b = (operand == 0);
@@ -155,7 +166,7 @@ DataNode op3(DataArray* msg){
     return DataNode(kDataInt, u8(ret));
 }
 
-DataNode op4(DataArray* msg){
+DataNode op4(DataArray *msg) {
     unsigned long operand = msg->Int(1);
     unsigned long w = msg->Int(2);
     // w & 0xFF = clrlwi r0, r3, 24
@@ -179,7 +190,7 @@ DataNode op4(DataArray* msg){
     return DataNode(kDataInt, u8(ret));
 }
 
-DataNode op5(DataArray* msg) {
+DataNode op5(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u32 ret;
@@ -195,26 +206,26 @@ DataNode op5(DataArray* msg) {
     return DataNode(kDataInt, u8(ret));
 }
 
-DataNode op6(DataArray* msg) {
+DataNode op6(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     return DataNode(kDataInt, u8(!w ^ operand));
 }
 
-DataNode op7(DataArray* msg) {
+DataNode op7(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u32 ret = !w + u8(operand);
     return DataNode(kDataInt, u8(ret));
 }
 
-DataNode op8(DataArray* msg) {
+DataNode op8(DataArray *msg) {
     u32 op = msg->Int(1);
     u8 ret = u8(op) + u8(msg->Int(2));
     return DataNode(kDataInt, ret ^ u8(op));
 }
 
-DataNode op9(DataArray* msg) {
+DataNode op9(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 a = w;
@@ -223,7 +234,7 @@ DataNode op9(DataArray* msg) {
     return DataNode(kDataInt, u8(b + a));
 }
 
-DataNode op10(DataArray* msg) {
+DataNode op10(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -231,7 +242,7 @@ DataNode op10(DataArray* msg) {
 
     return DataNode(kDataInt, u8(operand ^ u32(w2 >> !operand)));
 }
-DataNode op11(DataArray* msg) {
+DataNode op11(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -239,7 +250,7 @@ DataNode op11(DataArray* msg) {
 
     return DataNode(kDataInt, u8(u32(w2 >> !operand) + operand));
 }
-DataNode op12(DataArray* msg) {
+DataNode op12(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -247,7 +258,7 @@ DataNode op12(DataArray* msg) {
 
     return DataNode(kDataInt, u8(u32(w2 >> !operand) + operand));
 }
-DataNode op13(DataArray* msg) {
+DataNode op13(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -255,7 +266,7 @@ DataNode op13(DataArray* msg) {
 
     return DataNode(kDataInt, u8(u32(w2 >> !operand) + operand));
 }
-DataNode op14(DataArray* msg) {
+DataNode op14(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -263,7 +274,7 @@ DataNode op14(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 1) + operand));
 }
-DataNode op15(DataArray* msg) {
+DataNode op15(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -271,7 +282,7 @@ DataNode op15(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 2) + operand));
 }
-DataNode op16(DataArray* msg) {
+DataNode op16(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -279,7 +290,7 @@ DataNode op16(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 3) + operand));
 }
-DataNode op17(DataArray* msg) {
+DataNode op17(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -287,7 +298,7 @@ DataNode op17(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 4) + operand));
 }
-DataNode op18(DataArray* msg) {
+DataNode op18(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -295,7 +306,7 @@ DataNode op18(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 5) + operand));
 }
-DataNode op19(DataArray* msg) {
+DataNode op19(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -303,7 +314,7 @@ DataNode op19(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 6) + operand));
 }
-DataNode op20(DataArray* msg) {
+DataNode op20(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
     u8 w2 = (w & 0xFF) << 8;
@@ -311,177 +322,115 @@ DataNode op20(DataArray* msg) {
 
     return DataNode(kDataInt, u8((w3 >> 7) + operand));
 }
-DataNode op21(DataArray* msg) {
+DataNode op21(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 1 ^ l));
 }
-DataNode op22(DataArray* msg) {
+DataNode op22(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 2 ^ l));
 }
-DataNode op23(DataArray* msg) {
+DataNode op23(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 3 ^ l));
 }
-DataNode op24(DataArray* msg) {
+DataNode op24(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 4 ^ l));
 }
-DataNode op25(DataArray* msg) {
+DataNode op25(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 5 ^ l));
 }
-DataNode op26(DataArray* msg) {
+DataNode op26(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 6 ^ l));
 }
-DataNode op27(DataArray* msg) {
+DataNode op27(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(w3 >> 7 ^ l));
 }
-DataNode op28(DataArray* msg) {
+DataNode op28(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8((w3 >> 5) + l ^ l));
 }
-DataNode op29(DataArray* msg) {
+DataNode op29(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8((w3 >> 3) + l ^ l));
 }
-DataNode op30(DataArray* msg) {
+DataNode op30(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(((w3 >> 3) ^ l) + l));
 }
-DataNode op31(DataArray* msg) {
+DataNode op31(DataArray *msg) {
     u32 l = msg->Int(1);
     u32 r = msg->Int(2);
     u32 w2 = (r & 0xFF) << 8;
     u32 w3 = (w2 & 0xFFFFFF00) | (r & 0xFF);
     return DataNode(kDataInt, u8(((w3 >> 5) ^ l) + l));
 }
-DataNode op32(DataArray* msg) {
-
-}
-DataNode op33(DataArray* msg) {
-
-}
-DataNode op34(DataArray* msg) {
-
-}
-DataNode op35(DataArray* msg) {
-
-}
-DataNode op36(DataArray* msg) {
-
-}
-DataNode op37(DataArray* msg) {
-
-}
-DataNode op38(DataArray* msg) {
-
-}
-DataNode op39(DataArray* msg) {
-
-}
-DataNode op40(DataArray* msg) {
-
-}
-DataNode op41(DataArray* msg) {
-
-}
-DataNode op42(DataArray* msg) {
-
-}
-DataNode op43(DataArray* msg) {
-
-}
-DataNode op44(DataArray* msg) {
-
-}
-DataNode op45(DataArray* msg) {
-
-}
-DataNode op46(DataArray* msg) {
-
-}
-DataNode op47(DataArray* msg) {
-
-}
-DataNode op48(DataArray* msg) {
-
-}
-DataNode op49(DataArray* msg) {
-
-}
-DataNode op50(DataArray* msg) {
-
-}
-DataNode op51(DataArray* msg) {
-
-}
-DataNode op52(DataArray* msg) {
-
-}
-DataNode op53(DataArray* msg) {
-
-}
-DataNode op54(DataArray* msg) {
-
-}
-DataNode op55(DataArray* msg) {
-
-}
-DataNode op56(DataArray* msg) {
-
-}
-DataNode op57(DataArray* msg) {
-
-}
-DataNode op58(DataArray* msg) {
-
-}
-DataNode op59(DataArray* msg) {
-
-}
-DataNode op60(DataArray* msg) {
-
-}
-DataNode op61(DataArray* msg) {
-
-}
-DataNode op62(DataArray* msg) {
-
-}
-DataNode op63(DataArray* msg) {
+DataNode op32(DataArray *msg) {}
+DataNode op33(DataArray *msg) {}
+DataNode op34(DataArray *msg) {}
+DataNode op35(DataArray *msg) {}
+DataNode op36(DataArray *msg) {}
+DataNode op37(DataArray *msg) {}
+DataNode op38(DataArray *msg) {}
+DataNode op39(DataArray *msg) {}
+DataNode op40(DataArray *msg) {}
+DataNode op41(DataArray *msg) {}
+DataNode op42(DataArray *msg) {}
+DataNode op43(DataArray *msg) {}
+DataNode op44(DataArray *msg) {}
+DataNode op45(DataArray *msg) {}
+DataNode op46(DataArray *msg) {}
+DataNode op47(DataArray *msg) {}
+DataNode op48(DataArray *msg) {}
+DataNode op49(DataArray *msg) {}
+DataNode op50(DataArray *msg) {}
+DataNode op51(DataArray *msg) {}
+DataNode op52(DataArray *msg) {}
+DataNode op53(DataArray *msg) {}
+DataNode op54(DataArray *msg) {}
+DataNode op55(DataArray *msg) {}
+DataNode op56(DataArray *msg) {}
+DataNode op57(DataArray *msg) {}
+DataNode op58(DataArray *msg) {}
+DataNode op59(DataArray *msg) {}
+DataNode op60(DataArray *msg) {}
+DataNode op61(DataArray *msg) {}
+DataNode op62(DataArray *msg) {}
+DataNode op63(DataArray *msg) {
     u32 operand = msg->Int(1);
     u32 w = msg->Int(2);
 
@@ -490,16 +439,15 @@ DataNode op63(DataArray* msg) {
     return u8(operand ^ ((working2 | (working3 & 0xAF)) >> 6));
 }
 
-extern DataArray* DataReadString(const char*);
+extern DataArray *DataReadString(const char *);
 
-unsigned long ByteGrinder::pickOneOf32A(bool b, long l){
-    DataArray* a;
+unsigned long ByteGrinder::pickOneOf32A(bool b, long l) {
+    DataArray *a;
     char script[256];
-    if(b){
+    if (b) {
         sprintf(script, "{xa %d}");
         a = DataReadString(script);
-    }
-    else {
+    } else {
         a = DataReadString("{xa}");
     }
     unsigned long result = a->Evaluate(0).Int();
@@ -507,14 +455,13 @@ unsigned long ByteGrinder::pickOneOf32A(bool b, long l){
     return result;
 }
 
-unsigned long ByteGrinder::pickOneOf32B(bool b, long l){
-    DataArray* a;
+unsigned long ByteGrinder::pickOneOf32B(bool b, long l) {
+    DataArray *a;
     char script[256];
-    if(b){
+    if (b) {
         sprintf(script, "{ya %d}");
         a = DataReadString(script);
-    }
-    else {
+    } else {
         a = DataReadString("{ya}");
     }
     unsigned long result = a->Evaluate(0).Int();
@@ -522,29 +469,29 @@ unsigned long ByteGrinder::pickOneOf32B(bool b, long l){
     return result;
 }
 
-DataNode getRandomLong(DataArray* da){
+DataNode getRandomLong(DataArray *da) {
     static unsigned long s_seed = 0x521;
-    if(da->Size() > 1){
+    if (da->Size() > 1) {
         s_seed = s_seed * 0x19660D + 0x3C6EF35F;
     }
     return DataNode(kDataInt, s_seed);
 }
 
-DataNode magicNumberGenerator(DataArray* da){
+DataNode magicNumberGenerator(DataArray *da) {
     long magic = 0x5c5c5c5c;
-    if(da->Int(2) == 2){
+    if (da->Int(2) == 2) {
         magic = 0x36363636;
     }
     int idx = da->Int(1);
     long v = ((idx ^ magic) * 0x19660d + 0x3c6ef35f);
-    if(da->Int(2) == 1){
+    if (da->Int(2) == 1) {
         v = (v * 0x19660d + 0x3c6ef35f);
     }
     return DataNode(kDataInt, v);
 }
 
 #pragma dont_inline on
-void ByteGrinder::Init(){
+void ByteGrinder::Init() {
     char functionName[0x100];
     // This *must* be written out in reverse to match
     functionName[2] = '\0';
@@ -561,7 +508,7 @@ void ByteGrinder::Init(){
     DataRegisterFunc(functionName, getRandomSequence32A);
     functionName[0] = 'y';
     DataRegisterFunc(functionName, getRandomSequence32B);
-    std::vector<DataFunc*> funPtrs;
+    std::vector<DataFunc *> funPtrs;
     funPtrs.push_back(op0);
     funPtrs.push_back(op1);
     funPtrs.push_back(op2);
@@ -595,7 +542,7 @@ void ByteGrinder::Init(){
     funPtrs.push_back(op30);
     funPtrs.push_back(op31);
     pickOneOf32A(true, 0xD5);
-    for(int i = 0; i < funPtrs.size(); i++){
+    for (int i = 0; i < funPtrs.size(); i++) {
         sprintf(functionName, "O%d", pickOneOf32A(false, 0));
         DataRegisterFunc(functionName, funPtrs[i]);
     }
@@ -633,16 +580,18 @@ void ByteGrinder::Init(){
     funPtrs.push_back(op62);
     funPtrs.push_back(op63);
     pickOneOf32A(true, 0x23E);
-    for(int i = 0; i < funPtrs.size(); i++){
+    for (int i = 0; i < funPtrs.size(); i++) {
         sprintf(functionName, "O%d", pickOneOf32A(false, 0) + 32);
         DataRegisterFunc(functionName, funPtrs[i]);
     }
 }
 #pragma dont_inline reset
 
-void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind, int arrayLen, int moggVersion){
+void ByteGrinder::GrindArray(
+    long seedA, long seedB, unsigned char *arrayToGrind, int arrayLen, int moggVersion
+) {
     char script[256];
-    DataArray* mainScriptArray;
+    DataArray *mainScriptArray;
 
     sprintf(script, "{ma %d 2}", seedA);
     mainScriptArray = DataReadString(script);
@@ -657,12 +606,12 @@ void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind
     String mainScript;
     int encMethod = GetEncMethod(moggVersion);
     mainScript = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{ma{O67 $bar $ix}}";
-    if(encMethod != 0){
+    if (encMethod != 0) {
         mainScript = "($foo $bar){O68($ix 0){O64{>{O65 $bar}$ix}{O66{za{O67 $bar $ix}}";
     }
 
     pickOneOf32B(true, seedB);
-    for(int i = 0; i < 0x20; i++){
+    for (int i = 0; i < 0x20; i++) {
         char block[256];
         char callName[16];
         sprintf(callName, "O%d", pickOneOf32B(false, 0));
@@ -670,9 +619,9 @@ void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind
         mainScript += block;
     }
 
-    if(encMethod != 0){
+    if (encMethod != 0) {
         pickOneOf32B(true, seedA);
-        for(int i = 0x20; i < 0x40; i++){
+        for (int i = 0x20; i < 0x40; i++) {
             char block[256];
             char callName[16];
             sprintf(callName, "O%d", pickOneOf32B(false, 0) + 0x20);
@@ -683,30 +632,30 @@ void ByteGrinder::GrindArray(long seedA, long seedB, unsigned char* arrayToGrind
 
     mainScript += "}{O70 $ix}}}$foo";
     mainScriptArray = DataReadString(mainScript.c_str());
-    for(int i = 0; i < arrayLen; i++){
+    for (int i = 0; i < arrayLen; i++) {
         char itoaBuffer[32];
         unsigned char w = arrayToGrind[i];
         String stringArgs("");
         snprintf(itoaBuffer, sizeof(itoaBuffer), "%d", w);
         stringArgs += itoaBuffer;
         stringArgs += " (";
-        for(int j = 0; j < 0x10; j++){
+        for (int j = 0; j < 0x10; j++) {
             snprintf(itoaBuffer, sizeof(itoaBuffer), "%d", arrayToGrind[j]);
             stringArgs += itoaBuffer;
             stringArgs += " ";
         }
         stringArgs += ")";
-        DataArray* args = DataReadString(stringArgs.c_str());
+        DataArray *args = DataReadString(stringArgs.c_str());
         arrayToGrind[i] = mainScriptArray->ExecuteScript(0, nullptr, args, 0).Int();
         args->Release();
     }
     mainScriptArray->Release();
 }
 
-void ByteGrinder::HvDecrypt(unsigned char* inBlock, unsigned char* outBlock, int moggVer){
+void ByteGrinder::HvDecrypt(unsigned char *inBlock, unsigned char *outBlock, int moggVer) {
     symmetric_key key;
     int enc_method = GetEncMethod(moggVer);
-    void* placeholder = operator new(0x20C);
+    void *placeholder = operator new(0x20C);
     rijndael_setup(&gHvKeyGreen[enc_method * 0x10], 0x10, 0, &key);
     rijndael_ecb_decrypt(inBlock, outBlock, &key);
     delete placeholder;

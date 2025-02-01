@@ -3,23 +3,24 @@
 #include "char/CharWeightable.h"
 #include "obj/ObjPtr_p.h"
 
-/** "Group of Charpollable, polled in the order given, use when the automatic CharPollable sorting is not correct or sufficient." */
+/** "Group of Charpollable, polled in the order given, use when the automatic CharPollable
+ * sorting is not correct or sufficient." */
 class CharPollGroup : public CharPollable, public CharWeightable {
 public:
     CharPollGroup();
     OBJ_CLASSNAME(CharPollGroup);
     OBJ_SET_TYPE(CharPollGroup);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
-    virtual void ListPollChildren(std::list<RndPollable*>&) const;
+    virtual void ListPollChildren(std::list<RndPollable *> &) const;
     virtual ~CharPollGroup();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     /** "sort the pollables" */
     void SortPolls();
@@ -27,9 +28,7 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
     NEW_OBJ(CharPollGroup)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharPollGroup)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharPollGroup) }
 
     /** "Ordered list of CharPollables, will be polled in this order." */
     ObjPtrList<CharPollable> mPolls; // 0x20

@@ -8,9 +8,9 @@
 
 class KeyboardController : public BeatMatchController {
 public:
-    KeyboardController(User*, const DataArray*, BeatMatchControllerSink*, bool);
+    KeyboardController(User *, const DataArray *, BeatMatchControllerSink *, bool);
     virtual ~KeyboardController();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Disable(bool);
     virtual bool IsDisabled() const { return mDisabled; }
@@ -18,19 +18,18 @@ public:
     virtual float GetCapStrip() const;
     virtual int GetFretButtons() const { return mFretButtons; }
 
-    int OnMsg(const KeyboardKeyPressedMsg&);
-    int OnMsg(const KeyboardKeyReleasedMsg&);
-    int OnMsg(const KeyboardSustainMsg&);
-    int OnMsg(const KeyboardModMsg&);
-    int OnMsg(const ButtonDownMsg&);
+    int OnMsg(const KeyboardKeyPressedMsg &);
+    int OnMsg(const KeyboardKeyReleasedMsg &);
+    int OnMsg(const KeyboardSustainMsg &);
+    int OnMsg(const KeyboardModMsg &);
+    int OnMsg(const ButtonDownMsg &);
 
     int MidiNoteToSlot(int) const;
 
     bool mDisabled;
     int mFretButtons;
     float mWhammy;
-    BeatMatchControllerSink* mSink;
-
+    BeatMatchControllerSink *mSink;
 };
 
 #endif

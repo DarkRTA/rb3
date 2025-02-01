@@ -22,23 +22,23 @@ public:
 
     MicClientMapper();
     ~MicClientMapper();
-    void SetMicManager(MicManagerInterface*);
+    void SetMicManager(MicManagerInterface *);
     void HandleMicsChanged();
     void RefreshMics();
-    int GetMicIDForClientID(const MicClientID&) const;
+    int GetMicIDForClientID(const MicClientID &) const;
     int GetMicIDForPlayerID(int) const;
     int GetPlayerIDForMicID(int) const;
     bool HasMicID(int) const;
-    void GetAllConnectedMics(std::vector<int>&) const;
+    void GetAllConnectedMics(std::vector<int> &) const;
     void SetNumberOfPlayers(int);
     void UnlockAllMicIDs();
     void RefreshPlayerMapping();
     void LockMicID(int);
     void UnlockMicID(int);
     bool IsMicIDLocked(int) const;
-    bool GetFirstUnlockedMicID(int&) const;
+    bool GetFirstUnlockedMicID(int &) const;
 
-    MicManagerInterface* mMicManager; // 0x0
+    MicManagerInterface *mMicManager; // 0x0
     std::vector<MicMappingData> mMappingData; // 0x4
     std::vector<PlayerMappingData> mPlayers; // 0xc
     int mNumPlayers; // 0x14

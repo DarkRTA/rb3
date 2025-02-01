@@ -42,7 +42,7 @@ public:
     int NearestSustainRate(float) const;
     int NearestReleaseRate(float) const;
 
-    void Set(const ADSR&);
+    void Set(const ADSR &);
 
     unsigned short mReg1;
     unsigned short mReg2;
@@ -53,7 +53,7 @@ public:
     ADSR();
     float GetAttackRate() const;
     float GetReleaseRate() const;
-    void Load(BinStream&);
+    void Load(BinStream &);
     void SyncPacked();
 
     /** "Duration of attack in seconds" */
@@ -76,7 +76,7 @@ public:
     bool mSynced; // 0x24
 };
 
-BinStream& operator>>(BinStream&, ADSR&);
+BinStream &operator>>(BinStream &, ADSR &);
 
 #include "obj/PropSync_p.h"
-bool PropSync(ADSR&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(ADSR &, DataNode &, DataArray *, int, PropOp);

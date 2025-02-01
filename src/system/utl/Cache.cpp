@@ -8,21 +8,13 @@ int CacheID::GetDeviceID() const {
     return -1;
 }
 
-Cache::Cache() : mOpCur(kOpNone), mLastResult(kCache_NoError) {
+Cache::Cache() : mOpCur(kOpNone), mLastResult(kCache_NoError) {}
 
-}
+Cache::~Cache() {}
 
-Cache::~Cache(){
+bool Cache::IsDone() { return mOpCur == kOpNone; }
 
-}
-
-bool Cache::IsDone(){
-    return mOpCur == kOpNone;
-}
-
-CacheResult Cache::GetLastResult(){
-    return mLastResult;
-}
+CacheResult Cache::GetLastResult() { return mLastResult; }
 
 CacheResult Cache::WaitForResult() {
     while (mOpCur != kOpNone) {

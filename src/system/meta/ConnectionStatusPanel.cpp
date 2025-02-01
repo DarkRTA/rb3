@@ -3,32 +3,28 @@
 #include "utl/Messages.h"
 #include "os/PlatformMgr.h"
 
-ConnectionStatusPanel::ConnectionStatusPanel(){
+ConnectionStatusPanel::ConnectionStatusPanel() {}
 
-}
+ConnectionStatusPanel::~ConnectionStatusPanel() {}
 
-ConnectionStatusPanel::~ConnectionStatusPanel(){
-
-}
-
-void ConnectionStatusPanel::Enter(){
+void ConnectionStatusPanel::Enter() {
     UIPanel::Enter();
     ThePlatformMgr.AddSink(this, connection_status_changed);
     CheckForLostConnection();
 }
 
-void ConnectionStatusPanel::Exit(){
+void ConnectionStatusPanel::Exit() {
     ThePlatformMgr.RemoveSink(this, connection_status_changed);
     UIPanel::Exit();
 }
 
-DataNode ConnectionStatusPanel::OnMsg(const ConnectionStatusChangedMsg& msg){
+DataNode ConnectionStatusPanel::OnMsg(const ConnectionStatusChangedMsg &msg) {
     CheckForLostConnection();
     return 0;
 }
 
-void ConnectionStatusPanel::CheckForLostConnection(){
-    if(!ThePlatformMgr.IsConnected()){
+void ConnectionStatusPanel::CheckForLostConnection() {
+    if (!ThePlatformMgr.IsConnected()) {
         Handle(on_connection_lost_msg, true);
     }
 }

@@ -7,11 +7,11 @@
 class AnimTask;
 
 /**
-* @brief: An object that can be animated.
-* Original _objects description:
-* "Base class for animatable objects. Anim objects change
-* their state or other objects."
-*/
+ * @brief: An object that can be animated.
+ * Original _objects description:
+ * "Base class for animatable objects. Anim objects change
+ * their state or other objects."
+ */
 class RndAnimatable : public virtual Hmx::Object {
 public:
     enum Rate {
@@ -25,29 +25,30 @@ public:
     RndAnimatable();
     OBJ_CLASSNAME(Anim);
     OBJ_SET_TYPE(Anim);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~RndAnimatable(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~RndAnimatable() {}
     /** Determine whether or not this animation should loop. */
-    virtual bool Loop(){ return false; }
+    virtual bool Loop() { return false; }
     /** Start the animation. */
-    virtual void StartAnim(){}
+    virtual void StartAnim() {}
     /** End the animation. */
-    virtual void EndAnim(){}
-    virtual void SetFrame(float frame, float blend){ mFrame = frame; }
+    virtual void EndAnim() {}
+    virtual void SetFrame(float frame, float blend) { mFrame = frame; }
     /** Get this animatable's first frame. */
-    virtual float StartFrame(){ return 0; }
+    virtual float StartFrame() { return 0; }
     /** Get this animatable's last frame. */
-    virtual float EndFrame(){ return 0; }
+    virtual float EndFrame() { return 0; }
     /** The actual target Object we want to animate. */
-    virtual Hmx::Object* AnimTarget(){ return this; }
-    /** Set any of this Anim's keys values to any relevant anim target properties at the given frame. */
-    virtual void SetKey(float frame){}
+    virtual Hmx::Object *AnimTarget() { return this; }
+    /** Set any of this Anim's keys values to any relevant anim target properties at the
+     * given frame. */
+    virtual void SetKey(float frame) {}
     /** Get the list of this Object's children that are animatable. */
-    virtual void ListAnimChildren(std::list<RndAnimatable*>&) const {}
+    virtual void ListAnimChildren(std::list<RndAnimatable *> &) const {}
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
@@ -62,7 +63,7 @@ public:
      * @param [in] delay How long to wait before the task should begin.
      * @returns The newly created task.
      */
-    Task* Animate(float blend, bool wait, float delay);
+    Task *Animate(float blend, bool wait, float delay);
     /** Create a new task to animate this.
      * @param [in] blend The animatable's desired blend.
      * @param [in] wait If true, wait until blending finishes before animating.
@@ -72,10 +73,21 @@ public:
      * @param [in] end The last frame to animate.
      * @param [in] period Alternative to scale, overridden period of animation.
      * @param [in] scale Multiplier to speed of animation.
-     * @param [in] type How to treat the frame outside of start and end (range, loop, shuttle)
+     * @param [in] type How to treat the frame outside of start and end (range, loop,
+     * shuttle)
      * @returns The newly created task.
      */
-    Task* Animate(float blend, bool wait, float delay, Rate rate, float start, float end, float period, float scale, Symbol type);
+    Task *Animate(
+        float blend,
+        bool wait,
+        float delay,
+        Rate rate,
+        float start,
+        float end,
+        float period,
+        float scale,
+        Symbol type
+    );
     /** Create a new task to animate this.
      * @param [in] start The first frame to animate.
      * @param [in] end The last frame to animate.
@@ -84,15 +96,15 @@ public:
      * @param [in] blend The animatable's desired blend.
      * @returns The newly created task.
      */
-    Task* Animate(float start, float end, TaskUnits units, float period, float blend);
+    Task *Animate(float start, float end, TaskUnits units, float period, float blend);
     TaskUnits Units() const;
     float FramesPerUnit();
-    bool ConvertFrames(float& frames);
+    bool ConvertFrames(float &frames);
 
     /** Create a new AnimTask using the configuration in the supplied DataArray.
      * @param [in] arr The supplied DataArray.
      * @returns A DataNode housing the newly created task.
-     * Expected DataArray contents: 
+     * Expected DataArray contents:
      *     No specific node ordering, but the DataArray can optionally have:
      *     - data for symbols: blend, delay, units, name, wait
      *     - a DataArray for symbol range with floats at nodes 1 and 2
@@ -101,12 +113,12 @@ public:
      *     - a DataArray for symbol period with a float at node 1
      * Example usage: {$this on_animate}
      */
-    DataNode OnAnimate(DataArray* arr);
-    DataNode OnConvertFrames(DataArray*);
+    DataNode OnAnimate(DataArray *arr);
+    DataNode OnConvertFrames(DataArray *);
 
     // weak getters and setters
-    Rate GetRate(){ return mRate; }
-    void SetRate(Rate r){ mRate = r; }
+    Rate GetRate() { return mRate; }
+    void SetRate(Rate r) { mRate = r; }
     float GetFrame() const { return mFrame; }
 
     static TaskUnits RateToTaskUnits(Rate);
@@ -120,15 +132,17 @@ public:
 /** A task meant for animating. */
 class AnimTask : public Task {
 public:
-    AnimTask(RndAnimatable* anim, float start, float end, float fpu, bool loop, float blend);
+    AnimTask(
+        RndAnimatable *anim, float start, float end, float fpu, bool loop, float blend
+    );
     virtual ~AnimTask();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     OBJ_CLASSNAME(AnimTask);
     virtual void Poll(float);
 
     float TimeUntilEnd();
-    AnimTask* BlendTask() const { return mBlendTask; }
-    RndAnimatable* Anim() const { return mAnim; }
+    AnimTask *BlendTask() const { return mBlendTask; }
+    RndAnimatable *Anim() const { return mAnim; }
 
     NEW_POOL_OVERLOAD(AnimTask);
     DELETE_POOL_OVERLOAD(AnimTask);

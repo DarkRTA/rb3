@@ -14,7 +14,8 @@ public:
         bool mUnison; // 0x6
     };
 
-    PhraseAnalyzer(SongData* sd) : mPerformedAnalysis(0), mPhraseStartWindow(480), mSongData(sd), mNotify(true) {
+    PhraseAnalyzer(SongData *sd)
+        : mPerformedAnalysis(0), mPhraseStartWindow(480), mSongData(sd), mNotify(true) {
         MILO_ASSERT(mSongData, 0x3D);
     }
 
@@ -23,7 +24,7 @@ public:
     void Analyze();
     int GetPhraseTracks(int) const;
     bool IsUnisonPhrase(int) const;
-    const std::vector<RawPhrase>& GetRawPhrases() const;
+    const std::vector<RawPhrase> &GetRawPhrases() const;
     int NumPhrases(int) const;
     void SetPhraseIDs(int, int, int, int);
     void Verify() const;
@@ -32,7 +33,7 @@ public:
     int mPhraseStartWindow; // 0x4
     std::vector<PhraseData> mPhrases; // 0x8
     std::vector<RawPhrase> mRawPhrases; // 0x10
-    class SongData* mSongData; // 0x18
+    class SongData *mSongData; // 0x18
     // String mSong; // 0x1c
     bool mNotify; // 0x1c
 };

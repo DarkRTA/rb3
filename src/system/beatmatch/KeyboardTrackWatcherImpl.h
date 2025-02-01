@@ -3,7 +3,7 @@
 
 class KeyboardTrackWatcherImpl : public JoypadTrackWatcherImpl {
 public:
-    KeyboardTrackWatcherImpl(int, const UserGuid&, int, SongData*, GameGemList*, TrackWatcherParent*, DataArray*);
+    KeyboardTrackWatcherImpl(int, const UserGuid &, int, SongData *, GameGemList *, TrackWatcherParent *, DataArray *);
 
     int unkd4;
     int unkd8;

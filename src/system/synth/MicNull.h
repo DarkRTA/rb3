@@ -6,29 +6,29 @@
 class MicNull : public Mic {
 public:
     MicNull();
-    virtual ~MicNull(){}
-    virtual void Start(){}
-    virtual void Stop(){}
+    virtual ~MicNull() {}
+    virtual void Start() {}
+    virtual void Stop() {}
     virtual bool IsRunning() const { return true; }
     virtual int GetType() const { return 2; }
-    virtual void SetDMA(bool){}
+    virtual void SetDMA(bool) {}
     virtual bool GetDMA() const { return false; }
-    virtual void SetGain(float){}
+    virtual void SetGain(float) {}
     virtual float GetGain() const { return 0.0f; }
-    virtual void SetOutputGain(float){}
+    virtual void SetOutputGain(float) {}
     virtual float GetSensitivity() const { return 0.0f; }
-    virtual void SetSensitivity(float){}
+    virtual void SetSensitivity(float) {}
     virtual float GetOutputGain() const { return 0.0f; }
-    virtual void SetEarpiece(bool){}
+    virtual void SetEarpiece(bool) {}
     virtual bool GetEarpiece() const { return false; }
-    virtual void SetEarpieceVolume(float){}
+    virtual void SetEarpieceVolume(float) {}
     virtual float GetEarpieceVolume() const { return 0.0f; }
-    virtual void SetCompressor(bool){}
+    virtual void SetCompressor(bool) {}
     virtual bool GetCompressor() const { return false; }
-    virtual void SetCompressorParam(float){}
+    virtual void SetCompressorParam(float) {}
     virtual float GetCompressorParam() const { return 0.0f; }
-    virtual char* GetRecentBuf(int&);
-    virtual char* GetContinuousBuf(int&);
+    virtual char *GetRecentBuf(int &);
+    virtual char *GetContinuousBuf(int &);
     virtual int GetSampleRate() const;
     virtual int GetClipping() const { return 0; }
 

@@ -8,13 +8,9 @@
 
 INIT_REVS(LightHue)
 
-LightHue::LightHue() : mLoader(0), mPath(), mKeys() {
+LightHue::LightHue() : mLoader(0), mPath(), mKeys() {}
 
-}
-
-LightHue::~LightHue(){
-    delete mLoader;
-}
+LightHue::~LightHue() { delete mLoader; }
 
 BEGIN_COPYS(LightHue)
     COPY_SUPERCLASS(Hmx::Object)
@@ -32,51 +28,59 @@ BEGIN_LOADS(LightHue)
     PostLoad(bs);
 END_LOADS
 
-void LightHue::PreLoad(BinStream& bs){
+void LightHue::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(0, 0);
     LOAD_SUPERCLASS(Hmx::Object)
     bs >> mPath;
-    if(bs.Cached()){
+    if (bs.Cached()) {
         bs >> mKeys;
-    }
-    else if(!mPath.empty()){
+    } else if (!mPath.empty()) {
         mLoader = new FileLoader(mPath, mPath.c_str(), kLoadFront, 0, false, true, 0);
     }
 }
 
-void LightHue::PostLoad(BinStream& bs){
-    if(!bs.Cached()) Sync();
+void LightHue::PostLoad(BinStream &bs) {
+    if (!bs.Cached())
+        Sync();
 }
 
 // matches in retail
-void LightHue::Sync(){
+void LightHue::Sync() {
     mKeys.clear();
-    if(!mPath.empty()){
-        if(!mLoader){
-            mLoader = new FileLoader(mPath, mPath.c_str(), kLoadFront, 0, false, true, nullptr);
+    if (!mPath.empty()) {
+        if (!mLoader) {
+            mLoader =
+                new FileLoader(mPath, mPath.c_str(), kLoadFront, 0, false, true, nullptr);
         }
         TheLoadMgr.PollUntilLoaded(mLoader, nullptr);
         int ibuf;
-        void* buffer = (void*)mLoader->GetBuffer(&ibuf);
+        void *buffer = (void *)mLoader->GetBuffer(&ibuf);
         RELEASE(mLoader);
-        if(buffer){
+        if (buffer) {
             RndBitmap bmap;
             BufStream bs(buffer, ibuf, true);
-            if(bmap.LoadBmp(&bs)){
+            if (bmap.LoadBmp(&bs)) {
                 mKeys.resize(bmap.Width());
-                for(int i = 0; i < bmap.Width(); i++){
+                for (int i = 0; i < bmap.Width(); i++) {
                     unsigned char r, g, b, a;
                     bmap.PixelColor(i, 0, r, g, b, a);
                     float h, s, l;
-                    MakeHSL(Hmx::Color((float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f), h, s, l);
-                    Key<Vector3>& curKey = mKeys[i];
+                    MakeHSL(
+                        Hmx::Color(
+                            (float)r / 255.0f, (float)g / 255.0f, (float)b / 255.0f
+                        ),
+                        h,
+                        s,
+                        l
+                    );
+                    Key<Vector3> &curKey = mKeys[i];
                     curKey.frame = (float)i / (float)bmap.Width();
-                    float& x = mKeys[i].value.x;
+                    float &x = mKeys[i].value.x;
                     x = h;
-                    float& y = mKeys[i].value.y;
+                    float &y = mKeys[i].value.y;
                     y = s;
-                    float& z = mKeys[i].value.z;
+                    float &z = mKeys[i].value.z;
                     z = l;
                 }
             }
@@ -86,8 +90,8 @@ void LightHue::Sync(){
 }
 
 // matches in retail
-void LightHue::TranslateColor(const Hmx::Color& col, Hmx::Color& res){
-    if(!mKeys.empty()){
+void LightHue::TranslateColor(const Hmx::Color &col, Hmx::Color &res) {
+    if (!mKeys.empty()) {
         float maxcol = Max(1.0f, Max(col.red, col.green, col.blue));
         Hmx::Color col30;
         Multiply(col, 1.0f / maxcol, col30);
@@ -98,8 +102,8 @@ void LightHue::TranslateColor(const Hmx::Color& col, Hmx::Color& res){
         float clamped = Clamp(0.0f, 1.0f, l * vec.z * 2.0f);
         MakeColor(vec.x, s * vec.y, clamped, res);
         Multiply(res, maxcol, res);
-    }
-    else res = col;
+    } else
+        res = col;
 }
 
 BEGIN_HANDLERS(LightHue)
@@ -108,17 +112,17 @@ BEGIN_HANDLERS(LightHue)
     HANDLE_CHECK(0x97)
 END_HANDLERS
 
-DataNode LightHue::OnSaveDefault(DataArray* da){
+DataNode LightHue::OnSaveDefault(DataArray *da) {
     RndBitmap bmap;
     bmap.Create(0x100, 8, 0, 0x18, 0, 0, 0, 0);
-    for(int i = 0; i < 0x100; i++){
+    for (int i = 0; i < 0x100; i++) {
         Hmx::Color color;
         MakeColor((float)i / 255.0f, 1.0f, 0.5f, color);
         unsigned char red = color.red * 255.0f;
         unsigned char green = color.green * 255.0f;
         unsigned char blue = color.blue * 255.0f;
         int j = 0;
-        for(; j < 8; j++){
+        for (; j < 8; j++) {
             bmap.SetPixelColor(i, j, red, green, blue, 0xff);
         }
     }

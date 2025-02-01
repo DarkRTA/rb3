@@ -8,48 +8,45 @@
 
 unsigned short RndTexBlendController::gRev = 0;
 
-RndTexBlendController::RndTexBlendController() : mMesh(this, 0), mObject1(this, 0), mObject2(this, 0), mReferenceDistance(0.0f), mMinDistance(0.0f), mMaxDistance(0.0f), mTex(this, 0) {
-    
-}
+RndTexBlendController::RndTexBlendController()
+    : mMesh(this, 0), mObject1(this, 0), mObject2(this, 0), mReferenceDistance(0.0f),
+      mMinDistance(0.0f), mMaxDistance(0.0f), mTex(this, 0) {}
 
-RndTexBlendController::~RndTexBlendController(){
-    
-}
+RndTexBlendController::~RndTexBlendController() {}
 
 // fn_806413C4
-bool RndTexBlendController::GetCurrentDistance(float& dist) const {
-    if(mObject1 && mObject2){
-        #ifdef MILO_DEBUG
+bool RndTexBlendController::GetCurrentDistance(float &dist) const {
+    if (mObject1 && mObject2) {
+#ifdef MILO_DEBUG
         dist = Distance(mObject1->WorldXfm().v, mObject2->WorldXfm().v);
-        #else
-        Transform& t = mObject1->WorldXfm();
+#else
+        Transform &t = mObject1->WorldXfm();
         dist = Distance(t.v, mObject2->WorldXfm().v);
-        #endif
+#endif
         return true;
-    }
-    else {
+    } else {
         dist = 0;
         return false;
     }
 }
 
-void RndTexBlendController::UpdateReferenceDistance(){
+void RndTexBlendController::UpdateReferenceDistance() {
     GetCurrentDistance(mReferenceDistance);
     mMinDistance = Min(mMinDistance, mReferenceDistance);
     mMaxDistance = Max(mMaxDistance, mReferenceDistance);
 }
 
-void RndTexBlendController::UpdateMinDistance(){
+void RndTexBlendController::UpdateMinDistance() {
     GetCurrentDistance(mMinDistance);
     mMinDistance = Min(mMinDistance, mReferenceDistance);
 }
 
-void RndTexBlendController::UpdateMaxDistance(){
+void RndTexBlendController::UpdateMaxDistance() {
     GetCurrentDistance(mMaxDistance);
     mMaxDistance = Max(mMaxDistance, mReferenceDistance);
 }
 
-void RndTexBlendController::UpdateAllDistances(){
+void RndTexBlendController::UpdateAllDistances() {
     UpdateReferenceDistance();
     mMinDistance = mReferenceDistance * 0.5f;
     mMaxDistance = mReferenceDistance * 1.5f;
@@ -71,14 +68,20 @@ END_COPYS
 
 SAVE_OBJ(RndTexBlendController, 0xF5)
 
-void RndTexBlendController::Load(BinStream& bs){
+void RndTexBlendController::Load(BinStream &bs) {
     int rev;
     bs >> rev;
-    #ifdef MILO_DEBUG
-    if (rev > 2){
-        MILO_FAIL("%s can't load new %s version %d > %d", PathName(this), ClassName(), rev, (unsigned short)2);
+#ifdef MILO_DEBUG
+    if (rev > 2) {
+        MILO_FAIL(
+            "%s can't load new %s version %d > %d",
+            PathName(this),
+            ClassName(),
+            rev,
+            (unsigned short)2
+        );
     }
-    #endif
+#endif
     Hmx::Object::Load(bs);
     bs >> mMesh;
     bs >> mObject1;
@@ -90,7 +93,8 @@ void RndTexBlendController::Load(BinStream& bs){
     bs >> mMinDistance;
     bs >> mMaxDistance;
 #endif
-    if(gRev > 1) bs >> mTex;
+    if (gRev > 1)
+        bs >> mTex;
 }
 
 BEGIN_HANDLERS(RndTexBlendController)

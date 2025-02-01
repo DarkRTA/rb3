@@ -4,24 +4,23 @@
 
 INIT_REVS(FxSendEQ);
 
-FxSendEQ::FxSendEQ() : mHighFreqCutoff(12000.0f), mHighFreqGain(0.0f), 
-    mMidFreqCutoff(8000.0f), mMidFreqBandwidth(1000.0f), mMidFreqGain(0.0f), mLowFreqCutoff(2000.0f), mLowFreqGain(0.0f), 
-    mLowPassCutoff(20000.0f), mLowPassReso(0.0f), mHighPassCutoff(20.0f), mHighPassReso(0.0f) {
+FxSendEQ::FxSendEQ()
+    : mHighFreqCutoff(12000.0f), mHighFreqGain(0.0f), mMidFreqCutoff(8000.0f),
+      mMidFreqBandwidth(1000.0f), mMidFreqGain(0.0f), mLowFreqCutoff(2000.0f),
+      mLowFreqGain(0.0f), mLowPassCutoff(20000.0f), mLowPassReso(0.0f),
+      mHighPassCutoff(20.0f), mHighPassReso(0.0f) {}
 
-}
-
-FxSendEQ::~FxSendEQ(){
-
-}
+FxSendEQ::~FxSendEQ() {}
 
 SAVE_OBJ(FxSendEQ, 0x22);
 
-void FxSendEQ::Load(BinStream& bs){
+void FxSendEQ::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     FxSend::Load(bs);
-    bs >> mHighFreqCutoff >> mHighFreqGain >> mMidFreqCutoff >> mMidFreqBandwidth >> mMidFreqGain >> mLowFreqCutoff >> mLowFreqGain;
-    if(gRev >= 2){
+    bs >> mHighFreqCutoff >> mHighFreqGain >> mMidFreqCutoff >> mMidFreqBandwidth
+        >> mMidFreqGain >> mLowFreqCutoff >> mLowFreqGain;
+    if (gRev >= 2) {
         bs >> mLowPassCutoff >> mLowPassReso >> mHighPassCutoff >> mHighPassReso;
     }
     OnParametersChanged();

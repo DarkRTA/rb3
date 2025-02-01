@@ -13,19 +13,23 @@
 
 INIT_REVS(UIListCustom)
 
-DECOMP_FORCEACTIVE(UIListCustom, __FILE__, "( 0) <= (display) && (display) < ( mElements.size())", "le")
+DECOMP_FORCEACTIVE(
+    UIListCustom, __FILE__, "( 0) <= (display) && (display) < ( mElements.size())", "le"
+)
 
-inline void UIListCustomElement::Draw(const Transform& tf, float f, UIColor* col, Box* box) {
-    RndTransformable* t = dynamic_cast<RndTransformable*>(mPtr);
+inline void
+UIListCustomElement::Draw(const Transform &tf, float f, UIColor *col, Box *box) {
+    RndTransformable *t = dynamic_cast<RndTransformable *>(mPtr);
     MILO_ASSERT(t, 34);
     t->SetWorldXfm(tf);
-    UIListCustomTemplate* temp = dynamic_cast<UIListCustomTemplate*>(mPtr);
-    if(box){
-        if(temp) temp->GrowBoundingBox(*box);
-    }
-    else {
-        if(temp) temp->SetAlphaColor(f, col);
-        RndDrawable* d = dynamic_cast<RndDrawable*>(mPtr);
+    UIListCustomTemplate *temp = dynamic_cast<UIListCustomTemplate *>(mPtr);
+    if (box) {
+        if (temp)
+            temp->GrowBoundingBox(*box);
+    } else {
+        if (temp)
+            temp->SetAlphaColor(f, col);
+        RndDrawable *d = dynamic_cast<RndDrawable *>(mPtr);
         MILO_ASSERT(d, 49);
         d->Draw();
     }
@@ -33,29 +37,34 @@ inline void UIListCustomElement::Draw(const Transform& tf, float f, UIColor* col
 
 UIListCustom::UIListCustom() : mObject(this, NULL) {}
 
-void UIListCustom::SetObject(Hmx::Object* o) {
+void UIListCustom::SetObject(Hmx::Object *o) {
     if (o) {
-        RndTransformable* is_t = dynamic_cast<RndTransformable*>(o);
-        RndDrawable* is_d = dynamic_cast<RndDrawable*>(o);
-        if (!is_t) MILO_WARN("Object is not transformable");
-        if (!is_d) MILO_WARN("Object is not drawable");
-        if (!is_t || !is_d) o = NULL;
+        RndTransformable *is_t = dynamic_cast<RndTransformable *>(o);
+        RndDrawable *is_d = dynamic_cast<RndDrawable *>(o);
+        if (!is_t)
+            MILO_WARN("Object is not transformable");
+        if (!is_d)
+            MILO_WARN("Object is not drawable");
+        if (!is_t || !is_d)
+            o = NULL;
     }
     mObject = o;
 }
 
-UIListSlotElement* UIListCustom::CreateElement(UIList*) {
+UIListSlotElement *UIListCustom::CreateElement(UIList *) {
     MILO_ASSERT(mObject, 105);
-    Hmx::Object* c = Hmx::Object::NewObject(mObject->ClassName());
-    if (UIComponent* d = dynamic_cast<UIComponent*>(c)) {
-        d->ResourceCopy(dynamic_cast<UIComponent*>(mObject.mPtr));
+    Hmx::Object *c = Hmx::Object::NewObject(mObject->ClassName());
+    if (UIComponent *d = dynamic_cast<UIComponent *>(c)) {
+        d->ResourceCopy(dynamic_cast<UIComponent *>(mObject.mPtr));
     } else {
         c->Copy(mObject.mPtr, kCopyDeep);
     }
     return new UIListCustomElement(this, c);
 }
 
-RndTransformable* UIListCustom::RootTrans() { return dynamic_cast<RndTransformable*>(mObject.Ptr()); }
+RndTransformable *UIListCustom::RootTrans() {
+    return dynamic_cast<RndTransformable *>(mObject.Ptr());
+}
 
 SAVE_OBJ(UIListCustom, 127)
 
@@ -83,4 +92,5 @@ BEGIN_PROPSYNCS(UIListCustom)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
 
-// DECOMP_FORCEBLOCK(UIListCustom, (UIListCustomElement* ce), ce->Draw(Transform(), 0, NULL, NULL); ce->Poll();)
+// DECOMP_FORCEBLOCK(UIListCustom, (UIListCustomElement* ce), ce->Draw(Transform(), 0,
+// NULL, NULL); ce->Poll();)

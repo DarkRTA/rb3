@@ -25,19 +25,22 @@ bool UILabel::sDebugHighlight;
 bool UILabel::sDeferUpdate;
 INIT_REVS(UILabel)
 
-UILabel::UILabel() : mLabelDir(0), mText(Hmx::Object::New<RndText>()), unk114(), mFont(this, 0), unk12c(), mTextToken(), mIcon(),
-    mTextSize(30.0f), mLeading(1.0f), mKerning(0.0f), mItalics(0.0f), mWidth(0.0f), mHeight(0.0f), mFixedLength(0), mReservedLine(0),
-    mPreserveTruncText(), mAlpha(1.0f), mColorOverride(this, 0), mFontMatVariation(), mAltMatVariation(), mAltTextSize(mTextSize), mAltKerning(mKerning),
-    mAltTextColor(this, 0), mAltZOffset(0.0f), mAltItalics(0.0f), mAltAlpha(1.0f), mFitType(0), mAlignment(0x22), mCapsMode(0), mMarkup(0), mUseHighlightMesh(0), mAltStyleEnabled(0) {
+UILabel::UILabel()
+    : mLabelDir(0), mText(Hmx::Object::New<RndText>()), unk114(), mFont(this, 0),
+      unk12c(), mTextToken(), mIcon(), mTextSize(30.0f), mLeading(1.0f), mKerning(0.0f),
+      mItalics(0.0f), mWidth(0.0f), mHeight(0.0f), mFixedLength(0), mReservedLine(0),
+      mPreserveTruncText(), mAlpha(1.0f), mColorOverride(this, 0), mFontMatVariation(),
+      mAltMatVariation(), mAltTextSize(mTextSize), mAltKerning(mKerning),
+      mAltTextColor(this, 0), mAltZOffset(0.0f), mAltItalics(0.0f), mAltAlpha(1.0f),
+      mFitType(0), mAlignment(0x22), mCapsMode(0), mMarkup(0), mUseHighlightMesh(0),
+      mAltStyleEnabled(0) {
     mText->SetTransParent(this, false);
     mResourcePath = GetResourcesPath();
 }
 
-UILabel::~UILabel() {
-    delete mText;
-}
+UILabel::~UILabel() { delete mText; }
 
-void UILabel::Init(){
+void UILabel::Init() {
     TheUI->InitResources("UILabel");
     Register();
     UILabelDir::Init();
@@ -52,7 +55,7 @@ BEGIN_COPYS(UILabel)
     Update();
 END_COPYS
 
-void UILabel::CopyMembers(const UIComponent* o, Hmx::Object::CopyType ty){
+void UILabel::CopyMembers(const UIComponent *o, Hmx::Object::CopyType ty) {
     UIComponent::CopyMembers(o, ty);
     CREATE_COPY_AS(UILabel, l)
     MILO_ASSERT(l, 0x6A);
@@ -72,9 +75,11 @@ void UILabel::CopyMembers(const UIComponent* o, Hmx::Object::CopyType ty){
     COPY_MEMBER_FROM(l, mAlpha)
     COPY_MEMBER_FROM(l, mColorOverride)
     COPY_MEMBER_FROM(l, mPreserveTruncText)
-    if(mFixedLength != 0) mText->SetFixedLength(mFixedLength);
+    if (mFixedLength != 0)
+        mText->SetFixedLength(mFixedLength);
     COPY_MEMBER_FROM(l, mReservedLine)
-    if(mReservedLine != 0) mText->ReserveLines(mReservedLine);
+    if (mReservedLine != 0)
+        mText->ReserveLines(mReservedLine);
     COPY_MEMBER_FROM(l, unk114)
     COPY_MEMBER_FROM(l, mUseHighlightMesh)
     COPY_MEMBER_FROM(l, mAltTextSize)
@@ -92,185 +97,215 @@ void UILabel::CopyMembers(const UIComponent* o, Hmx::Object::CopyType ty){
 
 SAVE_OBJ(UILabel, 173)
 
-void UILabel::Load(BinStream& bs) { PreLoad(bs); PostLoad(bs); }
+void UILabel::Load(BinStream &bs) {
+    PreLoad(bs);
+    PostLoad(bs);
+}
 
-void UILabel::PreLoad(BinStream& bs){
+void UILabel::PreLoad(BinStream &bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(0x18, 0)
     UIComponent::PreLoad(bs);
-    if(gRev != 0 && gRev < 0xE){
-        bool b; bs >> b;
+    if (gRev != 0 && gRev < 0xE) {
+        bool b;
+        bs >> b;
     }
     bs >> mTextToken;
-    if(gRev > 0xD){
-        String s; bs >> s;
+    if (gRev > 0xD) {
+        String s;
+        bs >> s;
     }
-    if(gRev > 0xE) bs >> mIcon;
-    if(gRev > 1){
+    if (gRev > 0xE)
+        bs >> mIcon;
+    if (gRev > 1) {
         int alignment, capsMode;
         bs >> mTextSize >> alignment >> capsMode;
         MILO_ASSERT(alignment < 255, 0xFF);
         MILO_ASSERT(capsMode < 255, 0x100);
         mAlignment = alignment;
         mCapsMode = capsMode;
-        if(gRev > 7){
+        if (gRev > 7) {
             LOAD_BITFIELD(bool, mMarkup)
         }
         bs >> mLeading >> mKerning;
     }
-    if(gRev > 4) bs >> mItalics;
-    if(gRev > 2){
+    if (gRev > 4)
+        bs >> mItalics;
+    if (gRev > 2) {
         int fitType;
         bs >> fitType;
         MILO_ASSERT(fitType < 255, 0x113);
         mFitType = fitType;
         bs >> mWidth >> mHeight;
     }
-    if(gRev < 4){
+    if (gRev < 4) {
         Transform xfm = LocalXfm();
-        if(mAlignment & 1){
+        if (mAlignment & 1) {
             xfm.v.x -= mWidth / 2.0f;
-        }
-        else if(mAlignment & 4){
+        } else if (mAlignment & 4) {
             xfm.v.x += mWidth / 2.0f;
         }
-        if(mAlignment & 0x10){
+        if (mAlignment & 0x10) {
             xfm.v.z += mHeight / 2.0f;
-        }
-        else if(mAlignment & 0x40){
+        } else if (mAlignment & 0x40) {
             xfm.v.z -= mHeight / 2.0f;
         }
         SetLocalXfm(xfm);
     }
-    if(gRev > 5){
+    if (gRev > 5) {
         int fixedLength;
         bs >> fixedLength;
         MILO_ASSERT(fixedLength < 32767, 0x12F);
         MILO_ASSERT(fixedLength >= 0, 0x130);
         mFixedLength = fixedLength;
     }
-    if(gRev > 6){
+    if (gRev > 6) {
         int reserveLines;
         bs >> reserveLines;
         MILO_ASSERT(reserveLines < 32767, 0x138);
         MILO_ASSERT(reserveLines >= 0, 0x139);
         mReservedLine = reserveLines;
     }
-    if(gRev >= 9 && gRev <= 15){
+    if (gRev >= 9 && gRev <= 15) {
         bool b;
         int a, c, d;
         bs >> b >> a >> c >> d;
     }
-    if(gRev > 9) bs >> mPreserveTruncText;
-    if(gRev > 10) bs >> mAlpha;
-    if(gRev > 0xC) bs >> mColorOverride;
-    if(gRev > 0x10){
+    if (gRev > 9)
+        bs >> mPreserveTruncText;
+    if (gRev > 10)
+        bs >> mAlpha;
+    if (gRev > 0xC)
+        bs >> mColorOverride;
+    if (gRev > 0x10) {
         LOAD_BITFIELD(bool, mUseHighlightMesh)
     }
-    if(gRev > 0x11){
+    if (gRev > 0x11) {
         bs >> mAltTextSize >> mAltTextColor;
         LOAD_BITFIELD(bool, mAltStyleEnabled)
     }
-    if(gRev > 0x12) bs >> mAltKerning;
-    else mAltKerning = mKerning;
-    if(gRev > 0x13) bs >> mAltZOffset;
-    if(gRev > 0x14) bs >> mFontMatVariation;
-    if(gRev > 0x15){
+    if (gRev > 0x12)
+        bs >> mAltKerning;
+    else
+        mAltKerning = mKerning;
+    if (gRev > 0x13)
+        bs >> mAltZOffset;
+    if (gRev > 0x14)
+        bs >> mFontMatVariation;
+    if (gRev > 0x15) {
         bs >> mAltFontResourceName;
         AltFontResourceFileUpdated(true);
     }
-    if(gRev > 0x16) bs >> mAltMatVariation;
-    if(gRev > 0x17){
+    if (gRev > 0x16)
+        bs >> mAltMatVariation;
+    if (gRev > 0x17) {
         bs >> mAltItalics >> mAltAlpha;
     }
 }
 
-void UILabel::PostLoad(BinStream& bs){
+void UILabel::PostLoad(BinStream &bs) {
     UIComponent::PostLoad(bs);
     LabelUpdate(false, true);
     sDeferUpdate = true;
-    if(!mIcon.empty()) unk114 = mIcon;
-    else SetTextToken(mTextToken);
-    if(TheUI->RequireFixedText()){
-        if(mFixedLength == 0){
-            MILO_WARN("%s: %s is preloaded, but doesn't have fixed length", PathName(Dir()), Name());
+    if (!mIcon.empty())
+        unk114 = mIcon;
+    else
+        SetTextToken(mTextToken);
+    if (TheUI->RequireFixedText()) {
+        if (mFixedLength == 0) {
+            MILO_WARN(
+                "%s: %s is preloaded, but doesn't have fixed length",
+                PathName(Dir()),
+                Name()
+            );
         }
-        if(mReservedLine == 0){
-            MILO_WARN("%s: %s is preloaded, but doesn't have reserve lines", PathName(Dir()), Name());
+        if (mReservedLine == 0) {
+            MILO_WARN(
+                "%s: %s is preloaded, but doesn't have reserve lines",
+                PathName(Dir()),
+                Name()
+            );
         }
     }
     sDeferUpdate = false;
-    if(!mTextToken.Null() || !mIcon.empty() || !ResourceDir() || mFixedLength != 0 || mReservedLine != 0) Update();
-    else mText->SetFont(0);
-    if(!mAltFontResourceName.empty()) mObjDirPtr.PostLoad(0);
+    if (!mTextToken.Null() || !mIcon.empty() || !ResourceDir() || mFixedLength != 0
+        || mReservedLine != 0)
+        Update();
+    else
+        mText->SetFont(0);
+    if (!mAltFontResourceName.empty())
+        mObjDirPtr.PostLoad(0);
 }
 
-void UILabel::Poll(){
-    RndGroup* grp = mLabelDir->HighlighMeshGroup();
-    if(mUseHighlightMesh && grp && GetState() == UIComponent::kFocused){
+void UILabel::Poll() {
+    RndGroup *grp = mLabelDir->HighlighMeshGroup();
+    if (mUseHighlightMesh && grp && GetState() == UIComponent::kFocused) {
         mLabelDir->Poll();
     }
     UIComponent::Poll();
 }
 
 void UILabel::Draw() {
-    if (!(mAlpha <= 0)) RndDrawable::Draw();
+    if (!(mAlpha <= 0))
+        RndDrawable::Draw();
 }
 
-void UILabel::DrawShowing(){
-    if(mAlpha <= 0) return;
-    if(mText->GetFont()){
+void UILabel::DrawShowing() {
+    if (mAlpha <= 0)
+        return;
+    if (mText->GetFont()) {
         mText->GetFont()->GetMat()->SetAlpha(mAlpha);
-        if(mAltStyleEnabled && AltFont()){
-            RndMat* fontMat = AltFont()->GetMat();
-            if(fontMat) fontMat->SetAlpha(mAltAlpha);
+        if (mAltStyleEnabled && AltFont()) {
+            RndMat *fontMat = AltFont()->GetMat();
+            if (fontMat)
+                fontMat->SetAlpha(mAltAlpha);
         }
-    }
-    else Update();
+    } else
+        Update();
 
-    if(mColorOverride){
-        RndMat* fontMat = mText->GetFont()->GetMat();
-        if(fontMat){
+    if (mColorOverride) {
+        RndMat *fontMat = mText->GetFont()->GetMat();
+        if (fontMat) {
             fontMat->SetColor(mColorOverride->GetColor());
         }
-    }
-    else {
+    } else {
         Hmx::Color color;
         mLabelDir->GetStateColor((UIComponent::State)mState, color);
-        RndMat* fontMat = mText->GetFont()->GetMat();
-        if(fontMat) fontMat->SetColor(color);
+        RndMat *fontMat = mText->GetFont()->GetMat();
+        if (fontMat)
+            fontMat->SetColor(color);
     }
 
-    if(mAltStyleEnabled && AltFont()){
-        if(mAltTextColor){
-            RndMat* fontMat = AltFont()->GetMat();
-            if(fontMat){
+    if (mAltStyleEnabled && AltFont()) {
+        if (mAltTextColor) {
+            RndMat *fontMat = AltFont()->GetMat();
+            if (fontMat) {
                 fontMat->SetColor(mAltTextColor->GetColor());
             }
-        }
-        else {
+        } else {
             Hmx::Color color;
             mLabelDir->GetStateColor((UIComponent::State)mState, color);
-            RndMat* fontMat = AltFont()->GetMat();
-            if(fontMat) fontMat->SetColor(color);
+            RndMat *fontMat = AltFont()->GetMat();
+            if (fontMat)
+                fontMat->SetColor(color);
         }
     }
 
     UpdateAndDrawHighlightMesh();
     mText->DrawShowing();
-    if(sDebugHighlight){
+    if (sDebugHighlight) {
         Highlight();
     }
 }
 
-float UILabel::GetDrawWidth(){
+float UILabel::GetDrawWidth() {
     float w = 0.0f;
     float h = 0.0f;
     mText->GetCurrentStringDimensions(w, h);
     return w;
 }
 
-float UILabel::GetDrawHeight(){
+float UILabel::GetDrawHeight() {
     float w = 0.0f;
     float h = 0.0f;
     mText->GetCurrentStringDimensions(w, h);
@@ -278,14 +313,14 @@ float UILabel::GetDrawHeight(){
 }
 
 // matches on retail with the right inline settings: https://decomp.me/scratch/UdK2F
-void UILabel::UpdateAndDrawHighlightMesh(){
-    RndGroup* meshgroup = mLabelDir->HighlighMeshGroup();
-    if(mUseHighlightMesh && meshgroup && GetState() == UIComponent::kFocused){
-        RndMesh* topleft = mLabelDir->TopLeftHighlightBone();
-        RndMesh* topright = mLabelDir->TopRightHighlightBone();
-        RndMesh* botleft = mLabelDir->BottomLeftHighlightBone();
-        RndMesh* botright = mLabelDir->BottomRightHighlightBone();
-        if(topleft && topright && botleft && botright){
+void UILabel::UpdateAndDrawHighlightMesh() {
+    RndGroup *meshgroup = mLabelDir->HighlighMeshGroup();
+    if (mUseHighlightMesh && meshgroup && GetState() == UIComponent::kFocused) {
+        RndMesh *topleft = mLabelDir->TopLeftHighlightBone();
+        RndMesh *topright = mLabelDir->TopRightHighlightBone();
+        RndMesh *botleft = mLabelDir->BottomLeftHighlightBone();
+        RndMesh *botright = mLabelDir->BottomRightHighlightBone();
+        if (topleft && topright && botleft && botright) {
             RndGxDrawDone();
             float f1 = 0;
             float f2 = 0;
@@ -306,59 +341,57 @@ void UILabel::UpdateAndDrawHighlightMesh(){
             botleft->SetLocalPos(va4);
             botright->SetLocalPos(vb0);
         }
-        RndEnviron* env = meshgroup->GetEnv();
-        if(env){
+        RndEnviron *env = meshgroup->GetEnv();
+        if (env) {
             env->SetAmbientAlpha(mAlpha);
         }
         meshgroup->Draw();
     }
 }
 
-void UILabel::SetUseHighlightMesh(bool b){
+void UILabel::SetUseHighlightMesh(bool b) {
     mUseHighlightMesh = b;
     Update();
 }
 
-int UILabel::InqMinMaxFromWidthAndHeight(float f1, float f2, RndText::Alignment a, Vector3& v1, Vector3& v2){
+int UILabel::InqMinMaxFromWidthAndHeight(
+    float f1, float f2, RndText::Alignment a, Vector3 &v1, Vector3 &v2
+) {
     v1.Zero();
     v2.Zero();
-    if(a & 1){ // aligns left
+    if (a & 1) { // aligns left
         v1.x = 0;
         v2.x = f1;
-    }
-    else if(a & 2){ // aligns center
+    } else if (a & 2) { // aligns center
         v1.x = -f1 / 2.0f;
         v2.x = f1 / 2.0f;
-    }
-    else if(a & 4){ // aligns right
+    } else if (a & 4) { // aligns right
         v1.x = -f1;
         v2.x = 0;
     }
 
-    if(a & 0x10){ // aligns top
+    if (a & 0x10) { // aligns top
         v1.z = -f2;
         v2.z = 0;
-    }
-    else if(a & 0x20){ // aligns middle
+    } else if (a & 0x20) { // aligns middle
         v1.z = -f2 / 2.0f;
         v2.z = f2 / 2.0f;
-    }
-    else if(a & 0x40){ // aligns bottom
+    } else if (a & 0x40) { // aligns bottom
         v1.z = 0;
         v2.z = f2;
     }
     return 1;
 }
 
-void UILabel::Highlight(){
+void UILabel::Highlight() {
     RndTransformable::Highlight();
     Vector3 v3c, v48;
     InqMinMaxFromWidthAndHeight(mWidth, mHeight, Alignment(), v3c, v48);
     Box box(v3c, v48);
-    Hmx::Color color(1,1,0.5f,1);
-    if(!CheckValid(false)){
+    Hmx::Color color(1, 1, 0.5f, 1);
+    if (!CheckValid(false)) {
         int secs = TheTaskMgr.UISeconds() * 2.0f;
-        if(!(secs % 2)){
+        if (!(secs % 2)) {
             color.Set(1.0f, 0.2f, 0.2f, 1.0f);
         }
     }
@@ -366,15 +399,13 @@ void UILabel::Highlight(){
     UtilDrawBox(WorldXfm(), box, color, false);
 }
 
-RndDrawable* UILabel::CollideShowing(const Segment& s, float& f, Plane& pl){
+RndDrawable *UILabel::CollideShowing(const Segment &s, float &f, Plane &pl) {
     return mText->Collide(s, f, pl) ? this : 0;
 }
 
-int UILabel::CollidePlane(const Plane& p){
-    return mText->CollidePlane(p);
-}
+int UILabel::CollidePlane(const Plane &p) { return mText->CollidePlane(p); }
 
-float UILabel::GetDistanceToPlane(const Plane& p, Vector3& v){
+float UILabel::GetDistanceToPlane(const Plane &p, Vector3 &v) {
     return mText->GetDistanceToPlane(p, v);
 }
 
@@ -383,396 +414,446 @@ Symbol UILabel::TextToken() const { return mTextToken; }
 DECOMP_FORCEFUNC(UILabel, UILabel, TextObj())
 #pragma push
 #pragma force_active on
-inline RndText* UILabel::TextObj(){ return mText; }
+inline RndText *UILabel::TextObj() { return mText; }
 #pragma pop
 
-const char* UILabel::GetDefaultText() const {
-    if(!mIcon.empty()) return mIcon.c_str();
-    else return Localize(mTextToken, nullptr);
+const char *UILabel::GetDefaultText() const {
+    if (!mIcon.empty())
+        return mIcon.c_str();
+    else
+        return Localize(mTextToken, nullptr);
 }
 
-void UILabel::SetEditText(const char*){}
+void UILabel::SetEditText(const char *) {}
 
-void UILabel::SetTextToken(Symbol s){
+void UILabel::SetTextToken(Symbol s) {
     mTextToken = s;
     SetTokenFmtImp(mTextToken, 0, 0, 0, true);
 }
 
-void UILabel::SetInt(int i, bool b){
-    if(b){
+void UILabel::SetInt(int i, bool b) {
+    if (b) {
         SetDisplayText(LocalizeSeparatedInt(i), true);
-    }
-    else SetDisplayText(MakeString("%d", i), true);
+    } else
+        SetDisplayText(MakeString("%d", i), true);
 }
 
-void UILabel::SetFloat(const char* cc, float f){
+void UILabel::SetFloat(const char *cc, float f) {
     SetDisplayText(LocalizeFloat(cc, f), true);
 }
 
-void UILabel::SetIcon(char c){
+void UILabel::SetIcon(char c) {
     mIcon = MakeString("%c", c);
-    if(!mIcon.empty() || !LOADMGR_EDITMODE){
+    if (!mIcon.empty() || !LOADMGR_EDITMODE) {
         SetDisplayText(mIcon.c_str(), !LOADMGR_EDITMODE);
     }
 }
 
-void UILabel::AppendIcon(char c){
-    SetDisplayText(MakeString("%s%c", unk114, c), true);
-}
+void UILabel::AppendIcon(char c) { SetDisplayText(MakeString("%s%c", unk114, c), true); }
 
-DECOMP_FORCEACTIVE(UILabel, "LabelDir is not yet loaded, can't tell if edit text is allowed")
+DECOMP_FORCEACTIVE(
+    UILabel, "LabelDir is not yet loaded, can't tell if edit text is allowed"
+)
 
-void UILabel::SetDateTime(const DateTime& dt, Symbol s){
+void UILabel::SetDateTime(const DateTime &dt, Symbol s) {
     String str(Localize(s, false));
     dt.Format(str);
     SetDisplayText(str.c_str(), true);
 }
 
-void UILabel::SetSubtitle(const DataArray* da){
-    SetDisplayText(da->Str(2), true);
-}
+void UILabel::SetSubtitle(const DataArray *da) { SetDisplayText(da->Str(2), true); }
 
-void UILabel::SetTokenFmt(const DataArray* da){
-    DataNode& n = da->Evaluate(0);
+void UILabel::SetTokenFmt(const DataArray *da) {
+    DataNode &n = da->Evaluate(0);
     bool b = false;
-    if(da->Size() > 1){
-        if(da->Evaluate(1).Type() == kDataArray) b = true;
+    if (da->Size() > 1) {
+        if (da->Evaluate(1).Type() == kDataArray)
+            b = true;
     }
-    if(b){
+    if (b) {
         SetTokenFmtImp(da->ForceSym(0), da->Array(1), da, 2, false);
-    }
-    else {
+    } else {
         SetTokenFmtImp(da->ForceSym(0), 0, da, 1, false);
     }
 }
 
-void UILabel::SetDisplayText(const char* cc, bool b){
-    if(b) mTextToken = gNullStr;
+void UILabel::SetDisplayText(const char *cc, bool b) {
+    if (b)
+        mTextToken = gNullStr;
     unk114 = cc;
     Update();
 }
 
-void UILabel::SetColorOverride(UIColor* col){
-    mColorOverride = col;
-}
+void UILabel::SetColorOverride(UIColor *col) { mColorOverride = col; }
 
-bool UILabel::CheckValid(bool warn){
-    if(mFixedLength != 0 && unk114.length() > mFixedLength){
-        if(warn){
-            MILO_WARN("%s: %s has fixed length of %i but text is %i long (%s)", PathName(Dir()), Name(), mFixedLength, unk114.length(), unk114);
+bool UILabel::CheckValid(bool warn) {
+    if (mFixedLength != 0 && unk114.length() > mFixedLength) {
+        if (warn) {
+            MILO_WARN(
+                "%s: %s has fixed length of %i but text is %i long (%s)",
+                PathName(Dir()),
+                Name(),
+                mFixedLength,
+                unk114.length(),
+                unk114
+            );
         }
         return false;
-    }
-    else if(mFitType == kFitWrap && mReservedLine != 0 && mReservedLine < mText->NumLines()){
-        if(warn){
-            MILO_WARN("%s: %s has reserve lines of %i, but text has %i lines (%s)", PathName(Dir()), Name(), mReservedLine, mText->NumLines(), unk114);
+    } else if (mFitType == kFitWrap && mReservedLine != 0
+               && mReservedLine < mText->NumLines()) {
+        if (warn) {
+            MILO_WARN(
+                "%s: %s has reserve lines of %i, but text has %i lines (%s)",
+                PathName(Dir()),
+                Name(),
+                mReservedLine,
+                mText->NumLines(),
+                unk114
+            );
         }
         return false;
-    }
-    else return true;
+    } else
+        return true;
 }
 
 void UILabel::Update() {
-    if (!sDeferUpdate) LabelUpdate(false, false);
+    if (!sDeferUpdate)
+        LabelUpdate(false, false);
 }
 
 void UILabel::LabelUpdate(bool b1, bool b2) {
     UIComponent::Update();
     MILO_ASSERT(ResourceDir(), 0x3CE);
-    mLabelDir = dynamic_cast<UILabelDir*>(ResourceDir());
+    mLabelDir = dynamic_cast<UILabelDir *>(ResourceDir());
     MILO_ASSERT(mLabelDir, 0x3D1);
-    if(!b2){
-        if(mReservedLine != 0){
+    if (!b2) {
+        if (mReservedLine != 0) {
             mText->ReserveLines(mReservedLine);
         }
-        RndFont* mainfont = Font();
-        RndFont* altfont = AltFont();
+        RndFont *mainfont = Font();
+        RndFont *altfont = AltFont();
         float basekern = mainfont->TextureOwner()->BaseKerning();
         mainfont->TextureOwner()->SetBaseKerning(mKerning + basekern);
         float altkern = 0;
-        if(altfont && altfont != mainfont){
+        if (altfont && altfont != mainfont) {
             altkern = altfont->TextureOwner()->BaseKerning();
             altfont->TextureOwner()->SetBaseKerning(mAltKerning + altkern);
         }
         {
             RndTextUpdateDeferrer yuh(mText);
-            mText->SetData(Alignment(), unk114.c_str(), mainfont, mLeading, mWidth, mTextSize, mItalics, mText->mStyle.color, mMarkup, (RndText::CapsMode)mCapsMode, mFixedLength);
+            mText->SetData(
+                Alignment(),
+                unk114.c_str(),
+                mainfont,
+                mLeading,
+                mWidth,
+                mTextSize,
+                mItalics,
+                mText->mStyle.color,
+                mMarkup,
+                (RndText::CapsMode)mCapsMode,
+                mFixedLength
+            );
             Hmx::Color32 color;
 
-            Hmx::Color32* cPtr = nullptr;
-            if(mAltTextColor){
+            Hmx::Color32 *cPtr = nullptr;
+            if (mAltTextColor) {
                 color = mAltTextColor->GetColor();
                 cPtr = &color;
             }
-            mText->SetAltStyle(altfont, mAltTextSize, cPtr, mAltZOffset, mAltItalics, mAltStyleEnabled);
+            mText->SetAltStyle(
+                altfont, mAltTextSize, cPtr, mAltZOffset, mAltItalics, mAltStyleEnabled
+            );
             FitText();
-            if(b1){
+            if (b1) {
                 mText->UpdateText(true);
             }
         }
         mainfont->TextureOwner()->SetBaseKerning(basekern);
-        if(altfont && altfont != mainfont){
+        if (altfont && altfont != mainfont) {
             altfont->TextureOwner()->SetBaseKerning(altkern);
         }
         CheckValid(!LOADMGR_EDITMODE);
     }
 }
 
-RndFont* UILabel::AltFont(){
-    if(mObjDirPtr){
-        UILabelDir* ldir = dynamic_cast<UILabelDir*>(mObjDirPtr.Ptr());
-        if(!ldir) MILO_FAIL("bad UILabel alt font resource dir type!");
-        RndText* t = ldir->TextObj(mAltMatVariation);
-        if(!t){
-            MILO_WARN("Label %s's alt font is referencing a mat variation '%s' that no longer exists, setting to default...", Name(), mAltMatVariation.Str());
+RndFont *UILabel::AltFont() {
+    if (mObjDirPtr) {
+        UILabelDir *ldir = dynamic_cast<UILabelDir *>(mObjDirPtr.Ptr());
+        if (!ldir)
+            MILO_FAIL("bad UILabel alt font resource dir type!");
+        RndText *t = ldir->TextObj(mAltMatVariation);
+        if (!t) {
+            MILO_WARN(
+                "Label %s's alt font is referencing a mat variation '%s' that no longer exists, setting to default...",
+                Name(),
+                mAltMatVariation.Str()
+            );
             mAltMatVariation = Symbol();
             t = ldir->TextObj(mAltMatVariation);
         }
         MILO_ASSERT(t, 0x430);
-        RndFont* font = t->mFont;
+        RndFont *font = t->mFont;
         MILO_ASSERT(font, 0x432);
         return font;
-    }
-    else return 0;
+    } else
+        return 0;
 }
 
-RndFont* UILabel::Font(){
+RndFont *UILabel::Font() {
     MILO_ASSERT(mLabelDir, 0x43B);
-    if(mFont && mFontMatVariation == unk12c) return mFont;
-    RndText* t = mLabelDir->TextObj(mFontMatVariation);
-    if(!t){
-        MILO_WARN("Label %s is referencing a mat variation '%s' that no longer exists, setting to default...", Name(), mFontMatVariation.Str());
+    if (mFont && mFontMatVariation == unk12c)
+        return mFont;
+    RndText *t = mLabelDir->TextObj(mFontMatVariation);
+    if (!t) {
+        MILO_WARN(
+            "Label %s is referencing a mat variation '%s' that no longer exists, setting to default...",
+            Name(),
+            mFontMatVariation.Str()
+        );
         mFontMatVariation = Symbol();
         t = mLabelDir->TextObj(mFontMatVariation);
     }
     MILO_ASSERT(t, 0x448);
-    RndFont* font = t->mFont;
+    RndFont *font = t->mFont;
     MILO_ASSERT(font, 0x44A);
     mFont = font;
     unk12c = mFontMatVariation;
     return mFont;
 }
 
-void UILabel::AltFontResourceFileUpdated(bool b){
-    if(!mAltFontResourceName.empty()){
-        const char* miloPath = MakeString("%s/%s.milo", GetResourcesPath(), mAltFontResourceName);
+void UILabel::AltFontResourceFileUpdated(bool b) {
+    if (!mAltFontResourceName.empty()) {
+        const char *miloPath =
+            MakeString("%s/%s.milo", GetResourcesPath(), mAltFontResourceName);
         mObjDirPtr.LoadFile(FilePath(FileRoot(), miloPath), b, true, kLoadFront, false);
-        if(!b){
+        if (!b) {
             mObjDirPtr.PostLoad(nullptr);
         }
-    }
-    else mObjDirPtr = nullptr;
-    if(!b){
+    } else
+        mObjDirPtr = nullptr;
+    if (!b) {
         Update();
     }
 }
 
-void UILabel::AdjustHeight(bool b){
-    if(mFitType == kFitWrap && mText->GetFont()){
+void UILabel::AdjustHeight(bool b) {
+    if (mFitType == kFitWrap && mText->GetFont()) {
         std::vector<RndText::Line> lines;
         float f24;
         mText->GetStringDimensions(f24, mHeight, lines, "", mTextSize);
         int numlines;
         bool b1 = false;
-        if(b && mReservedLine > 0) b1 = true;
-        if(b1){
+        if (b && mReservedLine > 0)
+            b1 = true;
+        if (b1) {
             numlines = mReservedLine;
-        }
-        else numlines = mText->NumLines();
+        } else
+            numlines = mText->NumLines();
         mHeight *= numlines;
         mHeight = (1.0f - mLeading) * mTextSize * mText->GetFont()->CellDiff() + mHeight;
     }
 }
 
-void UILabel::SetAlignment(RndText::Alignment a){
+void UILabel::SetAlignment(RndText::Alignment a) {
     mAlignment = a;
     Update();
 }
 
-void UILabel::SetCapsMode(RndText::CapsMode c){
+void UILabel::SetCapsMode(RndText::CapsMode c) {
     mCapsMode = c;
     Update();
 }
 
-void UILabel::SetFitType(UILabel::FitType f){
+void UILabel::SetFitType(UILabel::FitType f) {
     mFitType = f;
     Update();
 }
 
-void UILabel::FitText(){
+void UILabel::FitText() {
     RndTextUpdateDeferrer deferrer(mText);
-    if(mFitType == kFitStretch){
+    if (mFitType == kFitStretch) {
         float linewidth = mText->MaxLineWidth();
-        if(linewidth != 0){
+        if (linewidth != 0) {
             Transform tf;
             tf.Reset();
             float f1, f2;
             mText->GetVerticalBounds(f1, f2);
             float fabs = std::fabs(f2 - f1);
             float fvec;
-            if(fabs > 0 && mHeight > 0){
+            if (fabs > 0 && mHeight > 0) {
                 fvec = mHeight / fabs;
-            }
-            else fvec = 1.0f;
+            } else
+                fvec = 1.0f;
             float diff = mText->GetFont()->CellDiff();
             Vector3 v98(mWidth / linewidth, 1.0f, fvec / diff);
             Scale(v98, tf.m, tf.m);
             mText->SetLocalXfm(tf);
         }
-    }
-    else if(mFitType == kFitJust){
-//     pcVar6 = fn_800EEFE8(*(this + 0x110)); text.mtext
-//     fVar4 = *(this + 0x140);
-//     fn_8051B76C(avStack_b8,auStack_e4);
-//     MergedGenericDtor(auStack_e4,0xffffffff);
-//     while (dVar13 = fVar4, dVar12 = 0.0, dVar13 >= 0.0) {
-//       RndText::GetStringDimensions(*(this + 0x110),&local_d0,&local_d4,avStack_b8,pcVar6,fVar4);
-//       if (((*(this + 0x150) == 0.0) || (local_d0 <= *(this + 0x150))) &&
-//          ((dVar12 = dVar13, *(this + 0x154) == 0.0 || (local_d4 <= *(this + 0x154))))) break;
-//       fVar4 = dVar13 - 0.2000000029802322;
-//     }
-//     dVar13 = MergedGetF0xDC(*(this + 0x110));
-//     if (dVar12 == dVar13) {
-//       RndText::SetText(*(this + 0x110),pcVar6);
-//     }
-//     else {
-//       RndTextUpdateDeferrer::RndTextUpdateDeferrer(aRStack_d8,*(this + 0x110));
-//       fVar4 = *(this + 0x140);
-//       RndText::SetSize(*(this + 0x110),dVar12);
-//       RndText::SetAltSizeAndZOffset
-//                 (*(this + 0x110),*(this + 0x180) * (dVar12 / fVar4),
-//                  *(this + 0x194) * (dVar12 / fVar4));
-//       RndTextUpdateDeferrer::~RndTextUpdateDeferrer(aRStack_d8);
-//     }
-//     fn_8051B3F4(avStack_b8,0xffffffff);
+    } else if (mFitType == kFitJust) {
+        //     pcVar6 = fn_800EEFE8(*(this + 0x110)); text.mtext
+        //     fVar4 = *(this + 0x140);
+        //     fn_8051B76C(avStack_b8,auStack_e4);
+        //     MergedGenericDtor(auStack_e4,0xffffffff);
+        //     while (dVar13 = fVar4, dVar12 = 0.0, dVar13 >= 0.0) {
+        //       RndText::GetStringDimensions(*(this +
+        //       0x110),&local_d0,&local_d4,avStack_b8,pcVar6,fVar4); if (((*(this +
+        //       0x150) == 0.0) || (local_d0 <= *(this + 0x150))) &&
+        //          ((dVar12 = dVar13, *(this + 0x154) == 0.0 || (local_d4 <= *(this +
+        //          0x154))))) break;
+        //       fVar4 = dVar13 - 0.2000000029802322;
+        //     }
+        //     dVar13 = MergedGetF0xDC(*(this + 0x110));
+        //     if (dVar12 == dVar13) {
+        //       RndText::SetText(*(this + 0x110),pcVar6);
+        //     }
+        //     else {
+        //       RndTextUpdateDeferrer::RndTextUpdateDeferrer(aRStack_d8,*(this + 0x110));
+        //       fVar4 = *(this + 0x140);
+        //       RndText::SetSize(*(this + 0x110),dVar12);
+        //       RndText::SetAltSizeAndZOffset
+        //                 (*(this + 0x110),*(this + 0x180) * (dVar12 / fVar4),
+        //                  *(this + 0x194) * (dVar12 / fVar4));
+        //       RndTextUpdateDeferrer::~RndTextUpdateDeferrer(aRStack_d8);
+        //     }
+        //     fn_8051B3F4(avStack_b8,0xffffffff);
 
-    }
-    else if(mFitType == kFitEllipsis){
+    } else if (mFitType == kFitEllipsis) {
         String ellipsis("...");
-//     String::String(aSStack_a4,&DAT_80890ab9);
-//     pcVar6 = fn_800EEFE8(*(this + 0x110));
-//     String::String(aSStack_b0,pcVar6);
-//     uVar7 = String::length(aSStack_b0);
-//     fn_8051B76C(avStack_c0,auStack_e8);
-//     MergedGenericDtor(auStack_e8,0xffffffff);
-//     pcVar6 = MergedGet0x8(this + 0x15c);
-//     iVar8 = String::rfind(aSStack_b0,pcVar6);
-//     iVar9 = String::length(this + 0x15c);
-//     if (iVar8 == uVar7 - iVar9) {
-//       String::operator_+=(aSStack_a4,this + 0x15c);
-//     }
-//     iVar8 = String::length(aSStack_a4);
-//     pcVar6 = MergedGet0x8(aSStack_b0);
-//     RndText::GetStringDimensions
-//               (*(this + 0x110),&local_dc,&fStack_e0,avStack_c0,pcVar6,*(this + 0x140));
-//     if (((*(this + 0x140) > 0.0) && (*(this + 0x150) > 0.0)) &&
-//        ((*(this + 0x150) < local_dc ||
-//         (uVar10 = stlpmtx_std::vector<><>::size(avStack_c0), uVar10 > 1)))) {
-//       String::insert(aSStack_b0,uVar7,aSStack_a4);
-//       uVar7 = uVar7 + iVar8;
-//       while (uVar7 > 1) {
-//         uVar10 = stlpmtx_std::vector<><>::size(avStack_c0);
-//         if ((uVar10 < 2) && (local_dc < *(this + 0x150))) {
-//           uVar10 = (uVar7 - iVar8) - 1;
-//           pcVar6 = String::operator_[](aSStack_b0,uVar10);
-//           if ((*pcVar6 != ' ') &&
-//              ((pcVar6 = String::operator_[](aSStack_b0,uVar10), *pcVar6 != '.' &&
-//               (pcVar6 = String::operator_[](aSStack_b0,uVar10), *pcVar6 != ',')))) break;
-//         }
-//         iVar9 = String::find_last_of(aSStack_b0,' ');
-//         if ((iVar9 == -1) || (iVar9 * 10 < uVar7 * 9)) {
-//           uVar7 = uVar7 - 1;
-//           String::erase(aSStack_b0,uVar7);
-//         }
-//         else {
-//           uVar7 = iVar9 + iVar8;
-//           String::erase(aSStack_b0,uVar7);
-//         }
-//         for (uVar10 = 0; uVar10 < iVar8; uVar10 = uVar10 + 1) {
-//           puVar11 = String::operator_[](aSStack_a4,uVar10);
-//           uVar3 = *puVar11;
-//           puVar11 = String::operator_[](aSStack_b0,uVar10 + (uVar7 - iVar8));
-//           *puVar11 = uVar3;
-//         }
-//         pcVar6 = MergedGet0x8(aSStack_b0);
-//         RndText::GetStringDimensions
-//                   (*(this + 0x110),&local_dc,&fStack_e0,avStack_c0,pcVar6,*(this + 0x140));
-//       }
-//     }
-//     pcVar6 = MergedGet0x8(aSStack_b0);
-//     RndText::SetText(*(this + 0x110),pcVar6);
-//     fn_8051B3F4(avStack_c0,0xffffffff);
-//     String::~String(aSStack_b0);
-//     String::~String(aSStack_a4);
-
+        //     String::String(aSStack_a4,&DAT_80890ab9);
+        //     pcVar6 = fn_800EEFE8(*(this + 0x110));
+        //     String::String(aSStack_b0,pcVar6);
+        //     uVar7 = String::length(aSStack_b0);
+        //     fn_8051B76C(avStack_c0,auStack_e8);
+        //     MergedGenericDtor(auStack_e8,0xffffffff);
+        //     pcVar6 = MergedGet0x8(this + 0x15c);
+        //     iVar8 = String::rfind(aSStack_b0,pcVar6);
+        //     iVar9 = String::length(this + 0x15c);
+        //     if (iVar8 == uVar7 - iVar9) {
+        //       String::operator_+=(aSStack_a4,this + 0x15c);
+        //     }
+        //     iVar8 = String::length(aSStack_a4);
+        //     pcVar6 = MergedGet0x8(aSStack_b0);
+        //     RndText::GetStringDimensions
+        //               (*(this + 0x110),&local_dc,&fStack_e0,avStack_c0,pcVar6,*(this +
+        //               0x140));
+        //     if (((*(this + 0x140) > 0.0) && (*(this + 0x150) > 0.0)) &&
+        //        ((*(this + 0x150) < local_dc ||
+        //         (uVar10 = stlpmtx_std::vector<><>::size(avStack_c0), uVar10 > 1)))) {
+        //       String::insert(aSStack_b0,uVar7,aSStack_a4);
+        //       uVar7 = uVar7 + iVar8;
+        //       while (uVar7 > 1) {
+        //         uVar10 = stlpmtx_std::vector<><>::size(avStack_c0);
+        //         if ((uVar10 < 2) && (local_dc < *(this + 0x150))) {
+        //           uVar10 = (uVar7 - iVar8) - 1;
+        //           pcVar6 = String::operator_[](aSStack_b0,uVar10);
+        //           if ((*pcVar6 != ' ') &&
+        //              ((pcVar6 = String::operator_[](aSStack_b0,uVar10), *pcVar6 != '.'
+        //              &&
+        //               (pcVar6 = String::operator_[](aSStack_b0,uVar10), *pcVar6 !=
+        //               ',')))) break;
+        //         }
+        //         iVar9 = String::find_last_of(aSStack_b0,' ');
+        //         if ((iVar9 == -1) || (iVar9 * 10 < uVar7 * 9)) {
+        //           uVar7 = uVar7 - 1;
+        //           String::erase(aSStack_b0,uVar7);
+        //         }
+        //         else {
+        //           uVar7 = iVar9 + iVar8;
+        //           String::erase(aSStack_b0,uVar7);
+        //         }
+        //         for (uVar10 = 0; uVar10 < iVar8; uVar10 = uVar10 + 1) {
+        //           puVar11 = String::operator_[](aSStack_a4,uVar10);
+        //           uVar3 = *puVar11;
+        //           puVar11 = String::operator_[](aSStack_b0,uVar10 + (uVar7 - iVar8));
+        //           *puVar11 = uVar3;
+        //         }
+        //         pcVar6 = MergedGet0x8(aSStack_b0);
+        //         RndText::GetStringDimensions
+        //                   (*(this +
+        //                   0x110),&local_dc,&fStack_e0,avStack_c0,pcVar6,*(this +
+        //                   0x140));
+        //       }
+        //     }
+        //     pcVar6 = MergedGet0x8(aSStack_b0);
+        //     RndText::SetText(*(this + 0x110),pcVar6);
+        //     fn_8051B3F4(avStack_c0,0xffffffff);
+        //     String::~String(aSStack_b0);
+        //     String::~String(aSStack_a4);
     }
 }
 
-void UILabel::OnSetIcon(const char* cc){
-    if(strlen(cc) > 1) MILO_WARN("%s is not a valid icon, must be one character", cc);
+void UILabel::OnSetIcon(const char *cc) {
+    if (strlen(cc) > 1)
+        MILO_WARN("%s is not a valid icon, must be one character", cc);
     SetIcon(*cc);
 }
 
-DataNode UILabel::OnSetTokenFmt(const DataArray* da){
-    DataNode& n = da->Evaluate(2);
-    if(n.Type() == kDataArray){
-        DataArray* arr = n.Array();
+DataNode UILabel::OnSetTokenFmt(const DataArray *da) {
+    DataNode &n = da->Evaluate(2);
+    if (n.Type() == kDataArray) {
+        DataArray *arr = n.Array();
         bool b = arr->Size() > 1 && arr->Evaluate(1).Type() == kDataArray;
-        if(b){
+        if (b) {
             SetTokenFmtImp(arr->ForceSym(0), arr->Array(1), arr, 2, false);
-        }
-        else SetTokenFmtImp(arr->ForceSym(0), 0, arr, 1, false);
-    }
-    else {
+        } else
+            SetTokenFmtImp(arr->ForceSym(0), 0, arr, 1, false);
+    } else {
         bool b = da->Size() > 3 && da->Evaluate(3).Type() == kDataArray;
-        if(b){
+        if (b) {
             SetTokenFmtImp(da->ForceSym(2), da->Array(3), da, 4, false);
-        }
-        else {
+        } else {
             SetTokenFmtImp(da->ForceSym(2), 0, da, 3, false);
         }
     }
     return 1;
 }
 
-void UILabel::SetTokenFmtImp(Symbol s, const DataArray* da1, const DataArray* da2, int i, bool b){
+void UILabel::SetTokenFmtImp(
+    Symbol s, const DataArray *da1, const DataArray *da2, int i, bool b
+) {
     mTextToken = s;
-    if(mTextToken.Null()) SetDisplayText(gNullStr, true);
+    if (mTextToken.Null())
+        SetDisplayText(gNullStr, true);
     else {
         bool b2;
-        const char* localized = Localize(mTextToken, &b2);
-        if(b2){
+        const char *localized = Localize(mTextToken, &b2);
+        if (b2) {
             SuperFormatString str(localized, da1, b);
-            if(da2){
-                for(; i < da2->Size(); i++){
-                    DataNode& n = da2->Evaluate(i);
-                    if(n.Type() == kDataSymbol){
+            if (da2) {
+                for (; i < da2->Size(); i++) {
+                    DataNode &n = da2->Evaluate(i);
+                    if (n.Type() == kDataSymbol) {
                         str << Localize(n.Sym(), 0);
-                    }
-                    else str << n;
+                    } else
+                        str << n;
                 }
             }
-            const char* text;
-            if(b) text = str.RawFmt();
-            else text = str.Str();
+            const char *text;
+            if (b)
+                text = str.RawFmt();
+            else
+                text = str.Str();
             SetDisplayText(text, false);
-        }
-        else SetDisplayText(localized, false);
+        } else
+            SetDisplayText(localized, false);
     }
 }
 
-DataNode UILabel::OnSetInt(const DataArray* da){
+DataNode UILabel::OnSetInt(const DataArray *da) {
     int i = da->Int(2);
     bool b = false;
-    if(da->Size() > 3) b = da->Int(3);
+    if (da->Size() > 3)
+        b = da->Int(3);
     SetInt(i, b);
     return DataNode(1);
 }
 
-void UILabel::CenterWithLabel(UILabel* label, bool b, float f){
+void UILabel::CenterWithLabel(UILabel *label, bool b, float f) {
     MILO_ASSERT(TextObj()->GetAlignment() == RndText::kTopCenter || TextObj()->GetAlignment() == RndText::kMiddleCenter || TextObj()->GetAlignment() == RndText::kBottomCenter || label->TextObj()->GetAlignment() == RndText::kTopCenter || label->TextObj()->GetAlignment() == RndText::kMiddleCenter || label->TextObj()->GetAlignment() == RndText::kBottomCenter, 0x592);
     int num = 1;
-    if(b) num = -1;
+    if (b)
+        num = -1;
     Transform xfm = LocalXfm();
     float width = mText->MaxLineWidth();
     Transform otherxfm = label->LocalXfm();
@@ -781,8 +862,8 @@ void UILabel::CenterWithLabel(UILabel* label, bool b, float f){
     label->SetLocalXfm(otherxfm);
 }
 
-float GetTextSizeFromPctHeight(float f){
-    if(LOADMGR_EDITMODE){
+float GetTextSizeFromPctHeight(float f) {
+    if (LOADMGR_EDITMODE) {
         float transnum = -TheUI->GetCam()->mLocalXfm.v.Y();
         Vector2 vec2_1(0.0f, 0.0f);
         Vector3 vec3_1;
@@ -791,12 +872,12 @@ float GetTextSizeFromPctHeight(float f){
         Vector3 vec3_2;
         TheUI->GetCam()->ScreenToWorld(vec2_2, transnum, vec3_2);
         return std::fabs(vec3_1.z - vec3_2.z);
-    }
-    else return f;
+    } else
+        return f;
 }
 
-float GetPctHeightFromTextSize(float f){
-    if(LOADMGR_EDITMODE){
+float GetPctHeightFromTextSize(float f) {
+    if (LOADMGR_EDITMODE) {
         Vector3 vec3_1(0.0f, 0.0f, 0.0f);
         Vector2 vec2_1;
         TheUI->GetCam()->WorldToScreen(vec3_1, vec2_1);
@@ -804,15 +885,15 @@ float GetPctHeightFromTextSize(float f){
         Vector2 vec2_2;
         TheUI->GetCam()->WorldToScreen(vec3_2, vec2_2);
         return std::fabs(vec2_1.y - vec2_2.y);
-    }
-    else return f;
+    } else
+        return f;
 }
 
-DataNode UILabel::OnGetMaterialVariations(const DataArray* da){
+DataNode UILabel::OnGetMaterialVariations(const DataArray *da) {
     int count = mLabelDir->NumMatVariations();
-    DataArray* arr = new DataArray(count + 1);
+    DataArray *arr = new DataArray(count + 1);
     arr->Node(0) = DataNode(Symbol());
-    for(int i = 1; i <= count; i++){
+    for (int i = 1; i <= count; i++) {
         arr->Node(i) = DataNode(mLabelDir->GetMatVariationName(i - 1));
     }
     DataNode ret = DataNode(arr, kDataArray);
@@ -820,21 +901,20 @@ DataNode UILabel::OnGetMaterialVariations(const DataArray* da){
     return ret;
 }
 
-DataNode UILabel::OnGetAltMaterialVariations(const DataArray* da){
-    if(mObjDirPtr){
-        UILabelDir* labeldir = dynamic_cast<UILabelDir*>(mObjDirPtr.Ptr());
+DataNode UILabel::OnGetAltMaterialVariations(const DataArray *da) {
+    if (mObjDirPtr) {
+        UILabelDir *labeldir = dynamic_cast<UILabelDir *>(mObjDirPtr.Ptr());
         int count = labeldir->NumMatVariations();
-        DataArray* arr = new DataArray(count + 1);
+        DataArray *arr = new DataArray(count + 1);
         arr->Node(0) = DataNode(Symbol());
-        for(int i = 1; i <= count; i++){
+        for (int i = 1; i <= count; i++) {
             arr->Node(i) = DataNode(labeldir->GetMatVariationName(i - 1));
         }
         DataNode ret = DataNode(arr, kDataArray);
         arr->Release();
         return ret;
-    }
-    else {
-        DataArray* arr = new DataArray(1);
+    } else {
+        DataArray *arr = new DataArray(1);
         arr->Node(0) = DataNode(Symbol());
         DataNode ret = DataNode(arr, kDataArray);
         arr->Release();
@@ -843,12 +923,17 @@ DataNode UILabel::OnGetAltMaterialVariations(const DataArray* da){
 }
 
 BEGIN_HANDLERS(UILabel)
-    HANDLE_EXPR(get_string_width, mText->GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL))
+    HANDLE_EXPR(
+        get_string_width, mText->GetStringWidthUTF8(_msg->Str(2), NULL, false, NULL)
+    )
     HANDLE_ACTION(adjust_height, AdjustHeight(true))
     HANDLE(set_token_fmt, OnSetTokenFmt)
     HANDLE(set_int, OnSetInt)
     HANDLE_ACTION(set_float, SetFloat(_msg->Str(2), _msg->Float(3)))
-    HANDLE_ACTION(center_with_label, CenterWithLabel(_msg->Obj<UILabel>(2), _msg->Int(3), _msg->Float(4)))
+    HANDLE_ACTION(
+        center_with_label,
+        CenterWithLabel(_msg->Obj<UILabel>(2), _msg->Int(3), _msg->Float(4))
+    )
     HANDLE_EXPR(has_highlight_mesh, HasHighlightMesh())
     HANDLE(get_material_variations, OnGetMaterialVariations)
     HANDLE(get_altmaterial_variations, OnGetAltMaterialVariations)
@@ -859,7 +944,10 @@ END_HANDLERS
 BEGIN_PROPSYNCS(UILabel)
     SYNC_PROP_SET(text_token, mTextToken, SetTextToken(_val.ForceSym()))
     SYNC_PROP_SET(icon, mIcon.c_str(), OnSetIcon(_val.Str()))
-    SYNC_PROP_SET(text_size, GetPctHeightFromTextSize(mTextSize), mTextSize = GetTextSizeFromPctHeight(_val.Float()); Update())
+    SYNC_PROP_SET(text_size,
+                  GetPctHeightFromTextSize(mTextSize),
+                  mTextSize = GetTextSizeFromPctHeight(_val.Float());
+                  Update())
     SYNC_PROP_SET(alignment, mAlignment, SetAlignment((RndText::Alignment)_val.Int()))
     SYNC_PROP_SET(caps_mode, mCapsMode, SetCapsMode((RndText::CapsMode)_val.Int()))
     SYNC_PROP_SET(markup, mMarkup, mMarkup = _val.Int(); Update())
@@ -875,14 +963,20 @@ BEGIN_PROPSYNCS(UILabel)
     SYNC_PROP_SET(use_highlight_mesh, mUseHighlightMesh, SetUseHighlightMesh(_val.Int()))
     SYNC_PROP(color_override, mColorOverride)
     SYNC_PROP(alpha, mAlpha)
-    SYNC_PROP_MODIFY_ALT(alt_font_resource_name, mAltFontResourceName, AltFontResourceFileUpdated(false))
-    SYNC_PROP_SET(alt_text_size, GetPctHeightFromTextSize(mAltTextSize), mAltTextSize = GetTextSizeFromPctHeight(_val.Float()); Update())
+    SYNC_PROP_MODIFY_ALT(
+        alt_font_resource_name, mAltFontResourceName, AltFontResourceFileUpdated(false)
+    )
+    SYNC_PROP_SET(alt_text_size,
+                  GetPctHeightFromTextSize(mAltTextSize),
+                  mAltTextSize = GetTextSizeFromPctHeight(_val.Float());
+                  Update())
     SYNC_PROP_MODIFY(alt_kerning, mAltKerning, Update())
     SYNC_PROP_MODIFY_ALT(alt_text_color, mAltTextColor, Update())
     SYNC_PROP_MODIFY(alt_z_offset, mAltZOffset, Update())
     SYNC_PROP_MODIFY(alt_italics, mAltItalics, Update())
     SYNC_PROP_MODIFY(alt_alpha, mAltAlpha, Update())
-    SYNC_PROP_SET(alt_style_enabled, mAltStyleEnabled, mAltStyleEnabled = _val.Int(); Update())
+    SYNC_PROP_SET(alt_style_enabled, mAltStyleEnabled, mAltStyleEnabled = _val.Int();
+                  Update())
     SYNC_PROP_MODIFY(font_mat_variation, mFontMatVariation, LabelUpdate(false, false))
     SYNC_PROP_MODIFY(alt_mat_variation, mAltMatVariation, Update())
     SYNC_SUPERCLASS(UIComponent)

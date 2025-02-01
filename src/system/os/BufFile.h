@@ -4,7 +4,9 @@
 
 class BufFile : public File {
 public:
-    BufFile(const void* buf, int size) : mBuf((unsigned char*)buf), mSize(size), mPos((unsigned char*)buf), mBytesRead(0){
+    BufFile(const void *buf, int size)
+        : mBuf((unsigned char *)buf), mSize(size), mPos((unsigned char *)buf),
+          mBytesRead(0) {
         MILO_ASSERT(buf, 0x20);
     }
     virtual ~BufFile();
@@ -20,10 +22,10 @@ public:
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual int GetFileHandle(DVDFileInfo*&);
+    virtual int GetFileHandle(DVDFileInfo *&);
 
-    unsigned char* mBuf; // 0x4
+    unsigned char *mBuf; // 0x4
     int mSize; // 0x8
-    unsigned char* mPos; // 0xc
+    unsigned char *mPos; // 0xc
     int mBytesRead; // 0x10
 };

@@ -1,6 +1,8 @@
 #include "os/ContentMgr_Wii.h"
 
-WiiContent::WiiContent(Symbol s, unsigned long long ux, unsigned int ui, bool b1, bool b2){
+WiiContent::WiiContent(
+    Symbol s, unsigned long long ux, unsigned int ui, bool b1, bool b2
+) {
     mName = s;
     mTitleId = ux;
     mContentId = ui;
@@ -14,23 +16,20 @@ WiiContent::WiiContent(Symbol s, unsigned long long ux, unsigned int ui, bool b1
     unk1c = 0;
 }
 
-WiiContent::~WiiContent(){
+WiiContent::~WiiContent() {
     int oldState = unk8;
     // switch/case for unk8
-    if(oldState > 1 && oldState - 9U > 1){
-        if(oldState == 2 || oldState == 4){
+    if (oldState > 1 && oldState - 9U > 1) {
+        if (oldState == 2 || oldState == 4) {
             Unmount();
-            while(unk8 == 2){
+            while (unk8 == 2) {
                 Timer::Sleep(2);
                 Poll();
             }
-        }
-        else if(oldState != 5){
+        } else if (oldState != 5) {
             MILO_LOG("Unknown state: %d", oldState);
         }
     }
 }
 
-WiiContentMgr::WiiContentMgr(){
-    
-}
+WiiContentMgr::WiiContentMgr() {}

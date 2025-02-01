@@ -10,12 +10,12 @@ public:
     OnlineID();
     void SetPrincipalID(int);
     int GetPrincipalID() const;
-    const char* ToString() const;
+    const char *ToString() const;
     bool IsInvalid() const { return !mValid; }
-    bool operator==(const OnlineID&) const;
+    bool operator==(const OnlineID &) const;
 };
 
-BinStream& operator<<(BinStream&, const OnlineID&);
-BinStream& operator>>(BinStream&, OnlineID&);
+BinStream &operator<<(BinStream &, const OnlineID &);
+BinStream &operator>>(BinStream &, OnlineID &);
 
 #endif

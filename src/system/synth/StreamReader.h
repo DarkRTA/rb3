@@ -2,8 +2,8 @@
 
 class StreamReader {
 public:
-    StreamReader(){}
-    virtual ~StreamReader(){}
+    StreamReader() {}
+    virtual ~StreamReader() {}
     virtual void Poll(float) = 0;
     virtual void Seek(int) = 0;
     virtual void EnableReads(bool) = 0;

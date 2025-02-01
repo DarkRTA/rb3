@@ -8,8 +8,8 @@ INIT_REVS(BandTrack);
 
 BandTrack::BandTrack(Hmx::Object *o)
     : mDisabled(0), mSimulatedNet(0), mInstrument(""), unk14(4), unk18(0), unk19(0),
-      unk1a(0), unk1b(0), unk1c(0), mInUse(0), unk1e(0), mSoloDisplay(0), mPlayerIntro(o, 0),
-      mStarPowerMeter(o, 0), mStreakMeter(o, 0), mPopupObject(o, 0),
+      unk1a(0), unk1b(0), unk1c(0), mInUse(0), unk1e(0), mSoloDisplay(0),
+      mPlayerIntro(o, 0), mStarPowerMeter(o, 0), mStreakMeter(o, 0), mPopupObject(o, 0),
       mPlayerFeedback(o, 0), mFailedFeedback(o, 0), mUnisonIcon(o, 0), unk74(""),
       unk78(0), mEndgameFeedback(o, 0), unk88(0), unk8c(0), mParent(o, 0),
       mRetractTrig(o, 0), mResetTrig(o, 0), mDeployTrig(o, 0), mStopDeployTrig(o, 0),
@@ -159,7 +159,7 @@ void BandTrack::Reset() {
     ResetEffectSelector();
 }
 
-RndDir* BandTrack::AsRndDir() {
+RndDir *BandTrack::AsRndDir() {
     TheDebug.Fail(MakeString("BandTrack::AsRndDir() base impl should never be called"));
     return 0;
 }
@@ -343,7 +343,7 @@ void BandTrack::GameOver() {
 BandCrowdMeter *BandTrack::GetCrowdMeter() {
     BandCrowdMeter *meter;
     if (mShowCrowdMeter != false) {
-        ObjectDir* objDir = ThisDir()->mDir;
+        ObjectDir *objDir = ThisDir()->mDir;
         TrackPanelDirBase *tpDirBase = dynamic_cast<TrackPanelDirBase *>(objDir);
         meter = tpDirBase->GetCrowdMeter();
     } else {
@@ -353,9 +353,7 @@ BandCrowdMeter *BandTrack::GetCrowdMeter() {
     return meter;
 }
 
-void BandTrack::SetSuppressSoloDisplay(bool b) {
-    mSoloDisplay = b;
-}
+void BandTrack::SetSuppressSoloDisplay(bool b) { mSoloDisplay = b; }
 
 void BandTrack::SoloHide() {
     if (mPlayerFeedback != 0) {
@@ -404,23 +402,23 @@ void BandTrack::UnisonStart() {
 }
 
 BEGIN_PROPSYNCS(BandTrack)
-SYNC_PROP_MODIFY(instrument, mInstrument, SyncInstrument())
-SYNC_PROP(disabled, mDisabled)
-SYNC_PROP(simulated_net, mSimulatedNet)
-SYNC_PROP(player_intro, mPlayerIntro)
-SYNC_PROP(star_power_meter, mStarPowerMeter)
-SYNC_PROP(streak_meter, mStreakMeter)
-SYNC_PROP(popup_object, mPopupObject)
-SYNC_PROP(player_feedback, mPlayerFeedback)
-SYNC_PROP(failed_feedback, mFailedFeedback)
-SYNC_PROP(endgame_feedback, mEndgameFeedback)
-SYNC_PROP(parent, mParent)
-SYNC_PROP(retract_trig, mRetractTrig)
-SYNC_PROP(reset_trig, mResetTrig)
-SYNC_PROP(deploy_trig, mDeployTrig)
-SYNC_PROP(stop_deploy_trig, mStopDeployTrig)
-SYNC_PROP(intro_trig, mIntroTrig)
-SYNC_PROP(in_use, mInUse)
+    SYNC_PROP_MODIFY(instrument, mInstrument, SyncInstrument())
+    SYNC_PROP(disabled, mDisabled)
+    SYNC_PROP(simulated_net, mSimulatedNet)
+    SYNC_PROP(player_intro, mPlayerIntro)
+    SYNC_PROP(star_power_meter, mStarPowerMeter)
+    SYNC_PROP(streak_meter, mStreakMeter)
+    SYNC_PROP(popup_object, mPopupObject)
+    SYNC_PROP(player_feedback, mPlayerFeedback)
+    SYNC_PROP(failed_feedback, mFailedFeedback)
+    SYNC_PROP(endgame_feedback, mEndgameFeedback)
+    SYNC_PROP(parent, mParent)
+    SYNC_PROP(retract_trig, mRetractTrig)
+    SYNC_PROP(reset_trig, mResetTrig)
+    SYNC_PROP(deploy_trig, mDeployTrig)
+    SYNC_PROP(stop_deploy_trig, mStopDeployTrig)
+    SYNC_PROP(intro_trig, mIntroTrig)
+    SYNC_PROP(in_use, mInUse)
 END_PROPSYNCS
 
 #pragma push

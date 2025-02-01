@@ -3,33 +3,21 @@
 // this is actually a NetCacheMgrWii so change this when that is implemented
 NetCacheMgr *TheNetCacheMgr = 0;
 
-NetCacheMgr::NetCacheMgr() {
-    SetName("net_cache_mgr", ObjectDir::sMainDir);
-}
+NetCacheMgr::NetCacheMgr() { SetName("net_cache_mgr", ObjectDir::sMainDir); }
 
 void NetCacheMgr::Unload() {
     // impl
 }
 
-bool NetCacheMgr::IsDoneLoading() const {
-    return 1;
-}
+bool NetCacheMgr::IsDoneLoading() const { return 1; }
 
-bool NetCacheMgr::IsDoneUnloading() const {
-    return 1;
-}
+bool NetCacheMgr::IsDoneUnloading() const { return 1; }
 
-void NetCacheMgr::LoadInit() {
-    return;
-}
+void NetCacheMgr::LoadInit() { return; }
 
-void NetCacheMgr::ReadyInit() {
-    return;
-}
+void NetCacheMgr::ReadyInit() { return; }
 
-NetCacheMgrFailType NetCacheMgr::GetFailType() const {
-    return mFailType;
-}
+NetCacheMgrFailType NetCacheMgr::GetFailType() const { return mFailType; }
 
 #pragma push
 #pragma dont_inline on

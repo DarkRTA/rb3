@@ -16,52 +16,54 @@ class MidiReceiver;
 
 class BeatMaster : public SongParserSink, public HxMaster {
 public:
-    BeatMaster(SongData*, int);
+    BeatMaster(SongData *, int);
     virtual ~BeatMaster();
     virtual void AddTrack(int, Symbol, SongInfoAudioType, TrackType, bool);
-    virtual void AddMultiGem(int, const GameGem&){}
-    virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase&){}
+    virtual void AddMultiGem(int, const GameGem &) {}
+    virtual void AddPhrase(BeatmatchPhraseType, int, const Phrase &) {}
     virtual void Poll(float);
     virtual void Jump(float);
     virtual void Reset();
-    virtual class HxAudio* GetHxAudio(){ return mAudio; }
+    virtual class HxAudio *GetHxAudio() { return mAudio; }
     virtual float SongDurationMs();
 
-    void RegisterSink(BeatMasterSink&);
+    void RegisterSink(BeatMasterSink &);
     void HandleBeatCallback(Symbol);
     void LoaderPoll();
-    void Load(SongInfo*, int, PlayerTrackConfigList*, bool, SongDataValidate, std::vector<MidiReceiver*>*);
+    void
+    Load(SongInfo *, int, PlayerTrackConfigList *, bool, SongDataValidate, std::vector<MidiReceiver *> *);
     bool IsLoaded();
     void CheckBeat();
     void CheckSubmixes(int);
     void ResetAudio();
     void ExportInitialSubmixes();
 
-    MasterAudio* GetMasterAudio() const { return mAudio; }
+    MasterAudio *GetMasterAudio() const { return mAudio; }
 
     bool mRecording; // 0x8
-    SongData* mSongData; // 0xc
-    std::vector<BeatMasterSink*> mSinks; // 0x10
-    MasterAudio* mAudio; // 0x18
-    MidiParserMgr* mMidiParserMgr; // 0x1c
-    SongInfo* mSongInfo; // 0x20
-    PlayerTrackConfigList* mPtCfg; // 0x24
-    BeatMasterLoader* mLoader; // 0x28
+    SongData *mSongData; // 0xc
+    std::vector<BeatMasterSink *> mSinks; // 0x10
+    MasterAudio *mAudio; // 0x18
+    MidiParserMgr *mMidiParserMgr; // 0x1c
+    SongInfo *mSongInfo; // 0x20
+    PlayerTrackConfigList *mPtCfg; // 0x24
+    BeatMasterLoader *mLoader; // 0x28
     bool mLoaded; // 0x2c
     bool unk2d; // 0x2d
     SongPos mSongPos; // 0x30
     SongPos mLastSongPos; // 0x44
     std::vector<int> mSubmixIdxs; // 0x58
-    DataArray* mHandlers; // 0x60
+    DataArray *mHandlers; // 0x60
 };
 
 class BeatMasterLoader : public Loader {
 public:
-    BeatMasterLoader(BeatMaster* bm) : Loader(FilePath(""), kLoadFrontStayBack), mBeatMaster(bm) {}
-    virtual ~BeatMasterLoader(){}
+    BeatMasterLoader(BeatMaster *bm)
+        : Loader(FilePath(""), kLoadFrontStayBack), mBeatMaster(bm) {}
+    virtual ~BeatMasterLoader() {}
     virtual bool IsLoaded() const { return false; }
-    virtual const char* StateName() const { return "BeatMasterLoader"; }
-    virtual void PollLoading(){ mBeatMaster->LoaderPoll(); }
+    virtual const char *StateName() const { return "BeatMasterLoader"; }
+    virtual void PollLoading() { mBeatMaster->LoaderPoll(); }
 
-    BeatMaster* mBeatMaster; // 0x18
+    BeatMaster *mBeatMaster; // 0x18
 };

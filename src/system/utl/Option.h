@@ -2,7 +2,7 @@
 #define UTL_OPTION_H
 
 void OptionInit();
-bool OptionBool(const char*, bool);
-const char* OptionStr(const char*, const char*);
+bool OptionBool(const char *, bool);
+const char *OptionStr(const char *, const char *);
 
 #endif

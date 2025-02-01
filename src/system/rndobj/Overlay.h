@@ -8,35 +8,34 @@
 
 class RndOverlay : public TextStream {
 public:
-
     class Callback {
     public:
-        Callback(){}
-        virtual ~Callback(){}
-        virtual float UpdateOverlay(RndOverlay*, float){}
+        Callback() {}
+        virtual ~Callback() {}
+        virtual float UpdateOverlay(RndOverlay *, float) {}
     };
 
-    RndOverlay(const DataArray*);
+    RndOverlay(const DataArray *);
     virtual ~RndOverlay();
     virtual void Print(const char *);
 
-    void SetCallback(Callback* cb){ mCallback = cb; }
+    void SetCallback(Callback *cb) { mCallback = cb; }
     bool Showing() const { return mShowing; }
-    void SetCursorChar(int cursChar){ mCursorChar = cursChar; }
+    void SetCursorChar(int cursChar) { mCursorChar = cursChar; }
     void SetDumpCount(int dump_count) { mDumpCount = dump_count; }
 
-    void SetOverlay(bool b){
+    void SetOverlay(bool b) {
         mShowing = b;
         mTimer.Restart();
     }
 
     int NumLines() const { return mLines.size(); }
-    Callback* GetCallback() const { return mCallback; }
+    Callback *GetCallback() const { return mCallback; }
 
     void SetTimeout(float);
     void SetLines(int);
     void Clear();
-    String& CurrentLine();
+    String &CurrentLine();
     float Draw(float);
 
     static void Init();
@@ -44,18 +43,18 @@ public:
     static void TogglePosition();
     static void DrawAll(bool);
 
-    static RndOverlay* Find(Symbol, bool);
+    static RndOverlay *Find(Symbol, bool);
     static bool sTopAligned;
-    static std::list<RndOverlay*> sOverlays;
+    static std::list<RndOverlay *> sOverlays;
 
-    const char* mName; // 0x4
+    const char *mName; // 0x4
     bool mShowing; // 0x8
     std::list<String> mLines; // 0xc
     std::list<String>::iterator mLine; // 0x14
     Hmx::Color mBackColor; // 0x18
     Hmx::Color mTextColor; // 0x28
     int mCursorChar; // 0x38
-    Callback* mCallback; // 0x3c
+    Callback *mCallback; // 0x3c
     Timer mTimer; // 0x40
     float mTimeout; // 0x70
     bool mModal; // 0x74

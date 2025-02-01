@@ -15,67 +15,73 @@ public:
     TrackDir();
     OBJ_CLASSNAME(TrackDir)
     OBJ_SET_TYPE(TrackDir)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
     virtual ~TrackDir();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void DrawShowing();
     virtual void Poll();
     virtual void SyncFingerFeedback();
-    virtual void SetDisplayRange(float){}
-    virtual void SetDisplayOffset(float, bool){}
-    virtual RndDir* SmasherPlate();
+    virtual void SetDisplayRange(float) {}
+    virtual void SetDisplayOffset(float, bool) {}
+    virtual RndDir *SmasherPlate();
     virtual float GetFretPosOffset(int) const;
     virtual int GetNumFretPosOffsets() const { return 0; }
     virtual float GetCurrentChordLabelPosOffset() const;
     virtual int PrepareChordMesh(unsigned int);
     virtual int GetChordMesh(unsigned int, bool);
-    virtual void SetUnisonProgress(float){}
+    virtual void SetUnisonProgress(float) {}
     virtual void ClearChordMeshRefCounts();
     virtual void DeleteUnusedChordMeshes();
-    virtual void AddChordImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, class String);
-    virtual ArpeggioShapePool* GetArpeggioShapePool();
+    virtual void AddChordImpl(
+        RndMesh *,
+        TrackWidget *,
+        TrackWidget *,
+        TrackWidget *,
+        float,
+        const std::vector<int> &,
+        class String
+    );
+    virtual ArpeggioShapePool *GetArpeggioShapePool();
     virtual bool IsBlackKey(int) const;
     virtual void KeyMissLeft();
     virtual void KeyMissRight();
     virtual bool IsActiveInSession() const { return false; }
-    virtual void PreDraw(){}
-    virtual void PostDraw(){}
+    virtual void PreDraw() {}
+    virtual void PostDraw() {}
 
-    void AddActiveWidget(class TrackWidget*);
-    void AddTestWidget(class TrackWidget*, int);
+    void AddActiveWidget(class TrackWidget *);
+    void AddTestWidget(class TrackWidget *, int);
     void ClearAllWidgets();
     void ClearAllGemWidgets();
     void ToggleRunning();
     float CutOffY() const;
-    void SetupKeyShifting(RndDir*);
+    void SetupKeyShifting(RndDir *);
     void ResetKeyShifting();
     void PollActiveWidgets();
     float TopSeconds() const;
     float BottomSeconds() const;
     float SecondsToY(float) const;
     float YToSeconds(float) const;
-    void SetSlotXfm(int, const Transform&);
-    void MakeSecondsXfm(float, Transform&) const;
-    void MakeWidgetXfm(int, float, Transform&) const;
-    void MakeSlotXfm(int, Transform&) const;
+    void SetSlotXfm(int, const Transform &);
+    void MakeSecondsXfm(float, Transform &) const;
+    void MakeWidgetXfm(int, float, Transform &) const;
+    void MakeSlotXfm(int, Transform &) const;
     void SetScrollSpeed(float);
     float ViewTimeSeconds() const;
     void SetRunning(bool);
     bool WarnOnResort() const { return mWarnOnResort; }
-    const Transform& SlotAt(int idx) const { return mSlots[idx]; }
+    const Transform &SlotAt(int idx) const { return mSlots[idx]; }
 
     DECLARE_REVS;
     NEW_OBJ(TrackDir)
 
-    static void Register(){
-        REGISTER_OBJ_FACTORY(TrackDir);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(TrackDir); }
 
     bool mRunning; // 0x1d6
     ObjPtr<RndGroup, ObjectDir> mDrawGroup; // 0x1d8
@@ -86,7 +92,7 @@ public:
     std::vector<Transform> mSlots; // 0x1fc
     std::vector<Transform> vec2; // 0x204
     bool mWarnOnResort; // 0x20c
-    std::vector<TrackWidget*> mActiveWidgets; // 0x210
+    std::vector<TrackWidget *> mActiveWidgets; // 0x210
     ObjPtr<RndGroup, ObjectDir> mShowingWhenEnabled; // 0x218
     ObjPtr<RndGroup, ObjectDir> mStationaryBack; // 0x224
     ObjPtr<RndGroup, ObjectDir> mKeyShiftStationaryBack; // 0x230
@@ -108,7 +114,7 @@ public:
     Transform unk338;
     float unk368;
 #ifdef MILO_DEBUG
-    TrackTest* mTest; // 0x36c
+    TrackTest *mTest; // 0x36c
 #endif
 };
 

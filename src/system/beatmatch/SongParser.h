@@ -18,12 +18,13 @@ enum ReadingState {
 };
 
 struct PartInfo {
-
-    bool ContainsTrackName(const char* track_name){
-        const char* orig = original_name.Str();
+    bool ContainsTrackName(const char *track_name) {
+        const char *orig = original_name.Str();
         int origlen = strlen(orig);
-        if(strlen(track_name) > origlen + 2) return false;
-        else return strneq(orig, track_name, origlen);
+        if (strlen(track_name) > origlen + 2)
+            return false;
+        else
+            return strneq(orig, track_name, origlen);
     }
 
     bool NoSongDataTrack() const { return song_data_track == -1; }
@@ -49,10 +50,10 @@ class SongParser : public MidiReceiver {
 public:
     class GemInProgress {
     public:
-        GemInProgress(int tick = -1, int players = 0, unsigned int cymbalslots = 28) :
-            mTick(tick), mPlayers(players), mCymbalSlots(cymbalslots) {}
+        GemInProgress(int tick = -1, int players = 0, unsigned int cymbalslots = 28)
+            : mTick(tick), mPlayers(players), mCymbalSlots(cymbalslots) {}
 
-        void SetNegTick(int tick){
+        void SetNegTick(int tick) {
             mTick = -tick;
             mPlayers = 0;
         }
@@ -65,8 +66,8 @@ public:
 
     class RGGemInfo {
     public:
-        RGGemInfo(int tick = -1, int players = 0, int fret = 0, int channel = 0) :
-            mGem(tick, players, 28), mFret(fret), mChannel(channel), unk18(-1) {}
+        RGGemInfo(int tick = -1, int players = 0, int fret = 0, int channel = 0)
+            : mGem(tick, players, 28), mFret(fret), mChannel(channel), unk18(-1) {}
 
         GemInProgress mGem; // 0x0
         int mFret; // 0x10
@@ -77,12 +78,17 @@ public:
     // size: 0x13C holy moly
     class DifficultyInfo {
     public:
-        DifficultyInfo(int num_gems) : mActivePlayers(0), mForceHopoOnStart(-1), mForceHopoOnEnd(-1),
-            mForceHopoOffStart(-1), mForceHopoOffEnd(-1), mRGArpeggioStartTick(-1), unkc8(-1), mRGAreaStrumType(kRGNoStrum),
-            mRGAreaStrumStartTick(-1), mRGAreaStrumEndTick(-1), mRGLooseStrumStartTick(-1), mRGLooseStrumEndTick(-1),
-            mRGChordTextTick(-1), mRGChordNumsStartTick(-1), mRGChordNumsEndTick(-1), mRGLeftHandSlideStartTick(-1), mRGLeftHandSlideEndTick(-1) {
+        DifficultyInfo(int num_gems)
+            : mActivePlayers(0), mForceHopoOnStart(-1), mForceHopoOnEnd(-1),
+              mForceHopoOffStart(-1), mForceHopoOffEnd(-1), mRGArpeggioStartTick(-1),
+              unkc8(-1), mRGAreaStrumType(kRGNoStrum), mRGAreaStrumStartTick(-1),
+              mRGAreaStrumEndTick(-1), mRGLooseStrumStartTick(-1),
+              mRGLooseStrumEndTick(-1), mRGChordTextTick(-1), mRGChordNumsStartTick(-1),
+              mRGChordNumsEndTick(-1), mRGLeftHandSlideStartTick(-1),
+              mRGLeftHandSlideEndTick(-1) {
             mGemsInProgress.reserve(num_gems);
-            for(int i = 0; i < num_gems; i++) mGemsInProgress.push_back(GemInProgress());
+            for (int i = 0; i < num_gems; i++)
+                mGemsInProgress.push_back(GemInProgress());
         }
 
         std::vector<GemInProgress> mGemsInProgress; // 0x0
@@ -103,7 +109,7 @@ public:
         int mRGAreaStrumEndTick; // 0xd8
         int mRGLooseStrumStartTick; // 0xdc
         int mRGLooseStrumEndTick; // 0xe0
-        const char* mRGChordText; // 0xe4
+        const char *mRGChordText; // 0xe4
 
         int unke8, unkec;
         int unkf0, unkf4, unkf8, unkfc;
@@ -111,7 +117,7 @@ public:
         int unk110, unk114, unk118, unk11c;
         int unk120;
 
-        int mRGChordTextTick; // 0x124        
+        int mRGChordTextTick; // 0x124
         int mRGChordNumsStartTick; // 0x128
         int mRGChordNumsEndTick; // 0x12c
         int mRGLeftHandSlideStartTick; // 0x130
@@ -119,19 +125,19 @@ public:
         bool mRGFlipSlideDirection; // 0x138
     };
 
-    SongParser(InternalSongParserSink&, int, TempoMap*&, MeasureMap*&, int);
-    virtual ~SongParser(){}
+    SongParser(InternalSongParserSink &, int, TempoMap *&, MeasureMap *&, int);
+    virtual ~SongParser() {}
     virtual void OnNewTrack(int);
     virtual void OnEndOfTrack();
     virtual void OnAllTracksRead();
     virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char);
-    virtual void OnText(int, const char*, unsigned char);
-    virtual bool OnAcceptMaps(TempoMap*, MeasureMap*);
-    virtual void SetMidiReader(MidiReader*);
+    virtual void OnText(int, const char *, unsigned char);
+    virtual bool OnAcceptMaps(TempoMap *, MeasureMap *);
+    virtual void SetMidiReader(MidiReader *);
 
-    void ReadMidiFile(BinStream&, const char*, SongInfo*);
-    void MergeMidiFile(BinStream&, const char*);
-    void AddReceiver(MidiReceiver*);
+    void ReadMidiFile(BinStream &, const char *, SongInfo *);
+    void MergeMidiFile(BinStream &, const char *);
+    void AddReceiver(MidiReceiver *);
     void CheckDrumSubmixes();
     bool TrackAllowsOverlappingNotes(TrackType) const;
     bool CheckDrumMapMarker(int, int, bool);
@@ -147,8 +153,8 @@ public:
     void OnGemEnd(int, unsigned char);
     void OnCommonPhraseEnd(int);
     void OnSoloPhraseEnd(int);
-    void AddPhrase(BeatmatchPhraseType, int, int&, int);
-    TempoMap* GetTempoMap();
+    void AddPhrase(BeatmatchPhraseType, int, int &, int);
+    TempoMap *GetTempoMap();
     void OnFillEnd(int, unsigned char);
     bool CheckFillMarker(int, bool);
     void AnalyzeTrackList();
@@ -159,22 +165,22 @@ public:
     void SetNumPlayers(int);
     bool CheckRollMarker(int, int, bool);
     bool CheckTrillMarker(int, bool);
-    int PitchToSlot(int, int&, int) const;
-    bool OnTrackName(int, const char*);
+    int PitchToSlot(int, int &, int) const;
+    bool OnTrackName(int, const char *);
     bool ShouldReadTrack(Symbol);
-    bool IsPartTrackName(const char*, const char**) const;
-    void PrepareTrack(const char*, PartInfo*);
-    PartInfo* UsePartTrack(const char*);
-    int PartNumThatMatchesTrackName(const char*) const;
+    bool IsPartTrackName(const char *, const char **) const;
+    void PrepareTrack(const char *, PartInfo *);
+    PartInfo *UsePartTrack(const char *);
+    int PartNumThatMatchesTrackName(const char *) const;
     void SetSectionBounds(int, int);
-    NoStrumState GetNoStrumState(int, DifficultyInfo&);
-    unsigned int ComputeSlots(int, int, int, std::vector<GemInProgress>&);
-    bool ParseAndStripLyricText(const char*, VocalNote&);
-    void ParseText(int, const char*);
-    void ParseRGText(int, const char*);
+    NoStrumState GetNoStrumState(int, DifficultyInfo &);
+    unsigned int ComputeSlots(int, int, int, std::vector<GemInProgress> &);
+    bool ParseAndStripLyricText(const char *, VocalNote &);
+    void ParseText(int, const char *);
+    void ParseRGText(int, const char *);
 
     void HandlePitchOffsetCC(int, unsigned char);
-    void StartVocalNote(int, unsigned char, const char*);
+    void StartVocalNote(int, unsigned char, const char *);
     void EndVocalNote(int);
 
     void OnMidiMessageGem(int, unsigned char, unsigned char, unsigned char);
@@ -197,30 +203,30 @@ public:
     bool HandleRGChordMarkup(int, unsigned char);
     bool HandleRGRollStart(int, unsigned char, unsigned char);
     bool HandleRGTrillStart(int, unsigned char, unsigned char);
-    bool HandleRGHopoStart(int, DifficultyInfo&, unsigned char, unsigned char);
-    bool HandleRGGemStart(int, DifficultyInfo&, unsigned char, unsigned char, unsigned char, int);
-    bool HandleRGArpeggioStart(int, DifficultyInfo&, unsigned char);
-    bool HandleRGAreaStrumStart(int, DifficultyInfo&, unsigned char, unsigned char);
-    bool HandleRGLooseStrumStart(int, DifficultyInfo&, unsigned char);
-    bool HandleRGChordNumsStart(int, DifficultyInfo&, unsigned char);
-    bool HandleRGLeftHandSlide(int, DifficultyInfo&, unsigned char, unsigned char);
+    bool HandleRGHopoStart(int, DifficultyInfo &, unsigned char, unsigned char);
+    bool HandleRGGemStart(
+        int, DifficultyInfo &, unsigned char, unsigned char, unsigned char, int
+    );
+    bool HandleRGArpeggioStart(int, DifficultyInfo &, unsigned char);
+    bool HandleRGAreaStrumStart(int, DifficultyInfo &, unsigned char, unsigned char);
+    bool HandleRGLooseStrumStart(int, DifficultyInfo &, unsigned char);
+    bool HandleRGChordNumsStart(int, DifficultyInfo &, unsigned char);
+    bool HandleRGLeftHandSlide(int, DifficultyInfo &, unsigned char, unsigned char);
     bool HandleRGChordNamingStop(int, unsigned char);
     bool HandleRGEnharmonicStop(int, unsigned char);
     bool HandleRGSlashesStop(int, unsigned char);
     bool HandleRGChordMarkupStop(int, unsigned char);
     bool HandleRGRollStop(int, unsigned char);
     bool HandleRGTrillStop(int, unsigned char);
-    bool HandleRGLooseStrumStop(int, DifficultyInfo&, unsigned char);
-    bool HandleRGAreaStrumStop(int, DifficultyInfo&, unsigned char, unsigned char);
-    bool HandleRGHopoStop(int, DifficultyInfo&, unsigned char, unsigned char);
-    bool HandleRGGemStop(int, DifficultyInfo&, unsigned char, int);
-    bool HandleRGArpeggioStop(int, DifficultyInfo&, unsigned char, int);
-    bool HandleRGChordNumsStop(int, DifficultyInfo&, unsigned char);
-    bool HandleRGLeftHandSlideStop(int, DifficultyInfo&, unsigned char);
+    bool HandleRGLooseStrumStop(int, DifficultyInfo &, unsigned char);
+    bool HandleRGAreaStrumStop(int, DifficultyInfo &, unsigned char, unsigned char);
+    bool HandleRGHopoStop(int, DifficultyInfo &, unsigned char, unsigned char);
+    bool HandleRGGemStop(int, DifficultyInfo &, unsigned char, int);
+    bool HandleRGArpeggioStop(int, DifficultyInfo &, unsigned char, int);
+    bool HandleRGChordNumsStop(int, DifficultyInfo &, unsigned char);
+    bool HandleRGLeftHandSlideStop(int, DifficultyInfo &, unsigned char);
 
-    const char* PrintTick(int tick) const {
-        return TickFormat(tick, *mMeasureMap);
-    }
+    const char *PrintTick(int tick) const { return TickFormat(tick, *mMeasureMap); }
 
     unsigned char GetFret(unsigned char pitch) const { return pitch - 100; }
 
@@ -228,12 +234,13 @@ public:
     bool IsSolo(int pitch) const { return pitch == mSoloPitch; }
     bool IsInSection(int tick) const {
         bool b2 = true;
-        if(mSectionStartTick != -1){
+        if (mSectionStartTick != -1) {
             bool b1 = false;
-            if(tick >= mSectionStartTick && tick < mSectionEndTick){
+            if (tick >= mSectionStartTick && tick < mSectionEndTick) {
                 b1 = true;
             }
-            if(!b1) b2 = false;
+            if (!b1)
+                b2 = false;
         }
         return b2;
     }
@@ -243,16 +250,16 @@ public:
     int mPlayerSlot; // 0xc
     int mLowVocalPitch; // 0x10
     int mHighVocalPitch; // 0x14
-    TempoMap*& mTempoMap; // 0x18
-    MeasureMap*& mMeasureMap; // 0x1c
-    MidiReader* mMidiReader; // 0x20
-    BinStream* mFile; // 0x24
+    TempoMap *&mTempoMap; // 0x18
+    MeasureMap *&mMeasureMap; // 0x1c
+    MidiReader *mMidiReader; // 0x20
+    BinStream *mFile; // 0x24
     String mFilename; // 0x28
     bool mMerging; // 0x34
-    std::vector<MidiReceiver*> mReceivers; // 0x38
-    InternalSongParserSink* mSink; // 0x40
-    SongInfo* mSongInfo; // 0x44
-    DataArray* mTrackNameMapping; // 0x48
+    std::vector<MidiReceiver *> mReceivers; // 0x38
+    InternalSongParserSink *mSink; // 0x40
+    SongInfo *mSongInfo; // 0x44
+    DataArray *mTrackNameMapping; // 0x48
     int mNumPlayers; // 0x4c
     int mNumDifficulties; // 0x50
     int mTrack; // 0x54
@@ -260,9 +267,9 @@ public:
     int mTrackPartNum; // 0x5c
     int mNextRealTrack; // 0x60
     int mNextFakeTrack; // 0x64
-    DataArray* mSubMixes; // 0x68
-    DataArray* mRollIntervals; // 0x6c
-    DataArray* mTrillIntervals; // 0x70
+    DataArray *mSubMixes; // 0x68
+    DataArray *mRollIntervals; // 0x6c
+    DataArray *mTrillIntervals; // 0x70
     std::vector<PartInfo> mParts; // 0x74
     std::vector<DifficultyInfo> mDifficultyInfos; // 0x7c
     int mCommonPhraseInProgress; // 0x84
@@ -291,7 +298,7 @@ public:
     } mState; // 0xd4
     Symbol mTrackName; // 0xd8
     TrackType mTrackType; // 0xdc
-    PartInfo* mTrackPart; // 0xe0
+    PartInfo *mTrackPart; // 0xe0
     bool mTrackAllowsHopos; // 0xe4
     int mKeyboardDifficulty; // 0xe8
     int mKeyboardRangeFirstPitch; // 0xec
@@ -344,6 +351,6 @@ public:
     int mRGEnharmonicEndTick; // 0x20c
 };
 
-void FillTrackList(std::vector<Symbol>&, BinStream&);
+void FillTrackList(std::vector<Symbol> &, BinStream &);
 
 #endif

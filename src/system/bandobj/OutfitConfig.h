@@ -13,7 +13,7 @@ public:
     public:
         class Piece {
         public:
-            Piece(Hmx::Object* o) : mAttachment(o, 0), mHighlight(0), mVert(-1) {}
+            Piece(Hmx::Object *o) : mAttachment(o, 0), mHighlight(0), mVert(-1) {}
 
             ObjPtr<RndTransformable, ObjectDir> mAttachment; // 0x0
             bool mHighlight; // 0xc
@@ -21,9 +21,9 @@ public:
             std::vector<unsigned short> unk14; // 0x14
         };
 
-        Piercing(Hmx::Object*);
-        RndMesh* GetHeadMesh();
-        void Deform(SyncMeshCB*);
+        Piercing(Hmx::Object *);
+        RndMesh *GetHeadMesh();
+        void Deform(SyncMeshCB *);
 
         ObjPtr<RndTransformable, ObjectDir> mPiercing; // 0x0
         Transform unkc; // 0xc
@@ -33,13 +33,13 @@ public:
 
     class MatSwap {
     public:
-        MatSwap(Hmx::Object*);
+        MatSwap(Hmx::Object *);
         void SyncTwoColor();
-        bool MatchesPatchCategory(int, ObjVector<BandPatchMesh>&);
+        bool MatchesPatchCategory(int, ObjVector<BandPatchMesh> &);
         void SwapResource();
         void UnSwapResource();
-        void Compose(int*, ObjVector<BandPatchMesh>&, int);
-        bool Compress(BandCharDesc*);
+        void Compose(int *, ObjVector<BandPatchMesh> &, int);
+        bool Compress(BandCharDesc *);
 
         ObjPtr<RndMat, ObjectDir> mMat; // 0x0
         ObjPtr<RndMat, ObjectDir> mResourceMat; // 0xc
@@ -62,7 +62,7 @@ public:
             int mCoeff; // 0x4
         };
 
-        void Apply(OutfitConfig*, SyncMeshCB*);
+        void Apply(OutfitConfig *, SyncMeshCB *);
 
         String mMeshName; // 0x0
         String unkc; // 0xc
@@ -72,7 +72,7 @@ public:
 
     class Overlay {
     public:
-        Overlay(Hmx::Object*);
+        Overlay(Hmx::Object *);
 
         int mCategory; // 0x0
         ObjPtr<RndTex, ObjectDir> mTexture; // 0x4
@@ -81,18 +81,18 @@ public:
     OutfitConfig();
     OBJ_CLASSNAME(OutfitConfig);
     OBJ_SET_TYPE(OutfitConfig);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Mats(std::list<class RndMat*>&, bool);
-    virtual void ListDrawChildren(std::list<RndDrawable*>&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Mats(std::list<class RndMat *> &, bool);
+    virtual void ListDrawChildren(std::list<RndDrawable *> &);
     virtual void DrawPreClear();
     virtual void UpdatePreClearState();
-    virtual ~OutfitConfig(){}
-    virtual void PreSave(BinStream&);
-    virtual void PostSave(BinStream&);
+    virtual ~OutfitConfig() {}
+    virtual void PreSave(BinStream &);
+    virtual void PostSave(BinStream &);
 
     unsigned int OverlayFlags() const;
     int NumColorOptions() const;
@@ -100,20 +100,18 @@ public:
     void Recompose();
     void RecomposePatches(int);
     void Randomize();
-    void SetColors(const int*);
-    BandCharDesc* FindBandCharDesc();
-    void ApplyAO(SyncMeshCB*);
+    void SetColors(const int *);
+    BandCharDesc *FindBandCharDesc();
+    void ApplyAO(SyncMeshCB *);
     int NumIndices(int) const;
     void SetSkinTextures();
 
-    static RndMat* sMat;
-    static RndCam* sCam;
-    static BandCharDesc* sBandCharDesc;
-    static void SetSkinTextures(ObjectDir*, ObjectDir*, BandCharDesc*);
+    static RndMat *sMat;
+    static RndCam *sCam;
+    static BandCharDesc *sBandCharDesc;
+    static void SetSkinTextures(ObjectDir *, ObjectDir *, BandCharDesc *);
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(OutfitConfig);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(OutfitConfig); }
     NEW_OBJ(OutfitConfig);
     static void Terminate();
 
@@ -139,7 +137,8 @@ public:
 
 class OldMatOption {
 public:
-    OldMatOption(Hmx::Object* o) : mMat(o, 0), mPrimaryPalette(o, 0), mSecondaryPalette(o, 0), mTexs(o) {}
+    OldMatOption(Hmx::Object *o)
+        : mMat(o, 0), mPrimaryPalette(o, 0), mSecondaryPalette(o, 0), mTexs(o) {}
 
     ObjPtr<RndMat, ObjectDir> mMat; // 0x0
     ObjPtr<ColorPalette, ObjectDir> mPrimaryPalette; // 0xc
@@ -149,7 +148,7 @@ public:
 
 class OldColorOption {
 public:
-    OldColorOption(Hmx::Object* o) : mColorIndex(0), mMatOptions(o) {}
+    OldColorOption(Hmx::Object *o) : mColorIndex(0), mMatOptions(o) {}
 
     int mColorIndex; // 0x0
     ObjList<OldMatOption> mMatOptions; // 0x4

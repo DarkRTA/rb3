@@ -21,171 +21,208 @@ enum PropOp {
 };
 
 // forward declarations
-template<class T1, class T2> class ObjPtr;
-template<class T1, class T2> class ObjOwnerPtr;
-template<class T1, class T2> class ObjPtrList;
-template<class T> class ObjDirPtr;
+template <class T1, class T2>
+class ObjPtr;
+template <class T1, class T2>
+class ObjOwnerPtr;
+template <class T1, class T2>
+class ObjPtrList;
+template <class T>
+class ObjDirPtr;
 
-bool PropSync(class String&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(FilePath&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Hmx::Color&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Hmx::Matrix3&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(class Sphere&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Vector2&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Vector3&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Transform&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Hmx::Rect&, DataNode&, DataArray*, int, PropOp);
-bool PropSync(Box&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(class String &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(FilePath &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Hmx::Color &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Hmx::Matrix3 &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(class Sphere &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Vector2 &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Vector3 &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Transform &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Hmx::Rect &, DataNode &, DataArray *, int, PropOp);
+bool PropSync(Box &, DataNode &, DataArray *, int, PropOp);
 
-inline bool PropSync(float& f, DataNode& node, DataArray* prop, int i, PropOp op){
+inline bool PropSync(float &f, DataNode &node, DataArray *prop, int i, PropOp op) {
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x17);
-    if(op == kPropGet) node = DataNode(f);
-    else f = node.Float();
+    if (op == kPropGet)
+        node = DataNode(f);
+    else
+        f = node.Float();
     return true;
 }
 
-inline bool PropSync(unsigned char& uc, DataNode& node, DataArray* prop, int i, PropOp op){
+inline bool
+PropSync(unsigned char &uc, DataNode &node, DataArray *prop, int i, PropOp op) {
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x21);
-    if(op == kPropGet) node = DataNode(uc);
-    else uc = node.Int();
+    if (op == kPropGet)
+        node = DataNode(uc);
+    else
+        uc = node.Int();
     return true;
 }
 
-inline bool PropSync(int& iref, DataNode& node, DataArray* prop, int i, PropOp op){
+inline bool PropSync(int &iref, DataNode &node, DataArray *prop, int i, PropOp op) {
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x2C);
-    if(op == kPropGet) node = DataNode(iref);
-    else iref = node.Int();
+    if (op == kPropGet)
+        node = DataNode(iref);
+    else
+        iref = node.Int();
     return true;
 }
 
-inline bool PropSync(short& s, DataNode& node, DataArray* prop, int i, PropOp op){
+inline bool PropSync(short &s, DataNode &node, DataArray *prop, int i, PropOp op) {
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x36);
-    if(op == kPropGet) node = DataNode(s);
-    else s = node.Int();
+    if (op == kPropGet)
+        node = DataNode(s);
+    else
+        s = node.Int();
     return true;
 }
 
-inline bool PropSync(bool& b, DataNode& node, DataArray* prop, int i, PropOp op){
+inline bool PropSync(bool &b, DataNode &node, DataArray *prop, int i, PropOp op) {
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x40);
-    if(op == kPropGet) node = DataNode(b);
-    else b = node.Int() != 0;
+    if (op == kPropGet)
+        node = DataNode(b);
+    else
+        b = node.Int() != 0;
     return true;
 }
 
-inline bool PropSync(Symbol& sym, DataNode& node, DataArray* prop, int i, PropOp op){
+inline bool PropSync(Symbol &sym, DataNode &node, DataArray *prop, int i, PropOp op) {
     MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x4A);
-    if(op == kPropGet) node = DataNode(sym);
-    else sym = node.Str();
+    if (op == kPropGet)
+        node = DataNode(sym);
+    else
+        sym = node.Str();
     return true;
 }
 
-template <class T> inline bool PropSync(T*& obj, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropUnknown0x40) return false;
+template <class T>
+inline bool PropSync(T *&obj, DataNode &node, DataArray *prop, int i, PropOp op) {
+    if (op == kPropUnknown0x40)
+        return false;
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x58);
-        if(op == kPropGet) node = DataNode((Hmx::Object*)obj);
-        else obj = dynamic_cast<T*>(node.GetObj());
+        if (op == kPropGet)
+            node = DataNode((Hmx::Object *)obj);
+        else
+            obj = dynamic_cast<T *>(node.GetObj());
         return true;
     }
 }
 
-template <class T> bool PropSync(ObjPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropUnknown0x40) return false;
+template <class T>
+bool PropSync(
+    ObjPtr<T, class ObjectDir> &ptr, DataNode &node, DataArray *prop, int i, PropOp op
+) {
+    if (op == kPropUnknown0x40)
+        return false;
     else {
         MILO_ASSERT(i == prop->Size() && op <= kPropInsert, 0x125);
-        if(op == kPropGet) node = DataNode(ptr.Ptr());
-        else ptr = dynamic_cast<T*>(node.GetObj());
+        if (op == kPropGet)
+            node = DataNode(ptr.Ptr());
+        else
+            ptr = dynamic_cast<T *>(node.GetObj());
         return true;
     }
 }
 
-template <class T> bool PropSync(ObjOwnerPtr<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropUnknown0x40) return false;
+template <class T>
+bool PropSync(
+    ObjOwnerPtr<T, class ObjectDir> &ptr, DataNode &node, DataArray *prop, int i, PropOp op
+) {
+    if (op == kPropUnknown0x40)
+        return false;
     else {
         MILO_ASSERT(op <= kPropInsert, 0x132);
-        if(op == kPropGet) node = DataNode(ptr.Ptr());
-        else ptr = dynamic_cast<T*>(node.GetObj());
+        if (op == kPropGet)
+            node = DataNode(ptr.Ptr());
+        else
+            ptr = dynamic_cast<T *>(node.GetObj());
         return true;
     }
 }
 
 // fn_805E3988 - PropSync(ObjPtrList<Sequence>&) - used in EventTrigger.cpp
 // fn_80642860 - PropSync(ObjPtrList&, ...)
-template <class T> bool PropSync(ObjPtrList<T, class ObjectDir>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropUnknown0x40) return ptr.Mode() == kObjListNoNull;
-    else if(i == prop->Size()){
+template <class T>
+bool PropSync(
+    ObjPtrList<T, class ObjectDir> &ptr, DataNode &node, DataArray *prop, int i, PropOp op
+) {
+    if (op == kPropUnknown0x40)
+        return ptr.Mode() == kObjListNoNull;
+    else if (i == prop->Size()) {
         MILO_ASSERT(op == kPropSize, 0x146);
         node = DataNode(ptr.size());
         return true;
-    }
-    else {
+    } else {
         typename ObjPtrList<T, class ObjectDir>::iterator it = ptr.begin();
-        for(int cnt = prop->Int(i++); cnt > 0; cnt--) it++;
+        for (int cnt = prop->Int(i++); cnt > 0; cnt--)
+            it++;
         MILO_ASSERT(i == prop->Size(), 0x150);
-        switch(op){
-            case kPropGet: {
-                T* item = *it;
-                return PropSync(item, node, prop, i, op);
-            }
-            case kPropSet: {
-                T* objToSet = 0;
-                if(PropSync(objToSet, node, prop, i, op)){
-                    ptr.Set(it, objToSet);
-                    return true;
-                }
-                break;
-            }
-            case kPropRemove: {
-                ptr.erase(it);
+        switch (op) {
+        case kPropGet: {
+            T *item = *it;
+            return PropSync(item, node, prop, i, op);
+        }
+        case kPropSet: {
+            T *objToSet = 0;
+            if (PropSync(objToSet, node, prop, i, op)) {
+                ptr.Set(it, objToSet);
                 return true;
             }
-            case kPropInsert: {
-                T* objToInsert = 0;
-                if(PropSync(objToInsert, node, prop, i, op)){
-                    ptr.insert(it, objToInsert);
-                    return true;
-                }
-                break;
+            break;
+        }
+        case kPropRemove: {
+            ptr.erase(it);
+            return true;
+        }
+        case kPropInsert: {
+            T *objToInsert = 0;
+            if (PropSync(objToInsert, node, prop, i, op)) {
+                ptr.insert(it, objToInsert);
+                return true;
             }
+            break;
+        }
         }
         return false;
     }
 }
 
 // fn_805C3A80 - PropSync for ObjDirPtr
-template <class T> inline bool PropSync(ObjDirPtr<T>& ptr, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropGet){
+template <class T>
+inline bool
+PropSync(ObjDirPtr<T> &ptr, DataNode &node, DataArray *prop, int i, PropOp op) {
+    if (op == kPropGet) {
         node = DataNode(ptr.GetFile());
-    }
-    else {
+    } else {
         FilePath fp(node.Str());
         ptr.LoadFile(fp, false, true, kLoadFront, false);
     }
     return true;
 }
 
-template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray* prop, int i, PropOp op)  {
-    if(op == kPropUnknown0x40) return false;
-    else if(i == prop->Size()){
+template <class T>
+bool PropSync(std::list<T> &pList, DataNode &node, DataArray *prop, int i, PropOp op) {
+    if (op == kPropUnknown0x40)
+        return false;
+    else if (i == prop->Size()) {
         MILO_ASSERT(op == kPropSize, 146);
         node = DataNode((int)pList.size());
         return true;
-    }
-    else {
+    } else {
         typename std::list<T>::iterator it = pList.begin();
-        for(int count = prop->Int(i++); count > 0; count--){
+        for (int count = prop->Int(i++); count > 0; count--) {
             it++;
         }
-        if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
+        if (i < prop->Size() || op & (kPropGet | kPropSet | kPropSize)) {
             return PropSync(*it, node, prop, i, op);
-        }
-        else if(op == kPropRemove){
+        } else if (op == kPropRemove) {
             pList.erase(it);
             return true;
-        }
-        else if(op == kPropInsert){
+        } else if (op == kPropInsert) {
             T item;
-            if(PropSync(item, node, prop, i, op)){
+            if (PropSync(item, node, prop, i, op)) {
                 pList.insert(it, item);
                 return true;
             }
@@ -195,25 +232,26 @@ template <class T> bool PropSync(std::list<T>& pList, DataNode& node, DataArray*
 }
 
 template <class T VECTOR_SIZE_PARAM>
-bool PropSync(std::vector<T VECTOR_SIZE_ARG>& vec, DataNode& node, DataArray* prop, int i, PropOp op)  {
-    if(op == kPropUnknown0x40) return false;
-    else if(i == prop->Size()){
+bool PropSync(
+    std::vector<T VECTOR_SIZE_ARG> &vec, DataNode &node, DataArray *prop, int i, PropOp op
+) {
+    if (op == kPropUnknown0x40)
+        return false;
+    else if (i == prop->Size()) {
         MILO_ASSERT(op == kPropSize, 0xB9);
         node = DataNode((int)vec.size());
         return true;
-    }
-    else {
-        typename std::vector<T VECTOR_SIZE_ARG>::iterator it = vec.begin() + prop->Int(i++);
-        if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
+    } else {
+        typename std::vector<T VECTOR_SIZE_ARG>::iterator it =
+            vec.begin() + prop->Int(i++);
+        if (i < prop->Size() || op & (kPropGet | kPropSet | kPropSize)) {
             return PropSync(*it, node, prop, i, op);
-        }
-        else if(op == kPropRemove){
+        } else if (op == kPropRemove) {
             vec.erase(it);
             return true;
-        }
-        else if(op == kPropInsert){
+        } else if (op == kPropInsert) {
             T item;
-            if(PropSync(item, node, prop, i, op)){
+            if (PropSync(item, node, prop, i, op)) {
                 vec.insert(it, item);
                 return true;
             }
@@ -224,25 +262,26 @@ bool PropSync(std::vector<T VECTOR_SIZE_ARG>& vec, DataNode& node, DataArray* pr
 
 #include "obj/ObjVector.h"
 template <class T VECTOR_SIZE_PARAM>
-bool PropSync(ObjVector<T VECTOR_SIZE_ARG>& objVec, DataNode& node, DataArray* prop, int i, PropOp op)  {
-    if(op == kPropUnknown0x40) return false;
-    else if(i == prop->Size()){
+bool PropSync(
+    ObjVector<T VECTOR_SIZE_ARG> &objVec, DataNode &node, DataArray *prop, int i, PropOp op
+) {
+    if (op == kPropUnknown0x40)
+        return false;
+    else if (i == prop->Size()) {
         MILO_ASSERT(op == kPropSize, 0x17F);
         node = DataNode((int)objVec.size());
         return true;
-    }
-    else {
-        typename ObjVector<T VECTOR_SIZE_ARG>::iterator it = objVec.begin() + prop->Int(i++);
-        if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
+    } else {
+        typename ObjVector<T VECTOR_SIZE_ARG>::iterator it =
+            objVec.begin() + prop->Int(i++);
+        if (i < prop->Size() || op & (kPropGet | kPropSet | kPropSize)) {
             return PropSync(*it, node, prop, i, op);
-        }
-        else if(op == kPropRemove){
+        } else if (op == kPropRemove) {
             objVec.erase(it);
             return true;
-        }
-        else if(op == kPropInsert){
+        } else if (op == kPropInsert) {
             T item(objVec.Owner());
-            if(PropSync(item, node, prop, i, kPropInsert)){
+            if (PropSync(item, node, prop, i, kPropInsert)) {
                 objVec.insert(it, item);
                 return true;
             }
@@ -252,26 +291,25 @@ bool PropSync(ObjVector<T VECTOR_SIZE_ARG>& objVec, DataNode& node, DataArray* p
 }
 
 #include "obj/ObjList.h"
-template <class T> bool PropSync(ObjList<T>& objList, DataNode& node, DataArray* prop, int i, PropOp op){
-    if(op == kPropUnknown0x40) return false;
-    else if(i == prop->Size()){
+template <class T>
+bool PropSync(ObjList<T> &objList, DataNode &node, DataArray *prop, int i, PropOp op) {
+    if (op == kPropUnknown0x40)
+        return false;
+    else if (i == prop->Size()) {
         MILO_ASSERT(op == kPropSize, 0x1A6);
         node = DataNode((int)objList.size());
         return true;
-    }
-    else {
+    } else {
         int count = prop->Int(i++);
         typename std::list<T>::iterator it = NextItr(objList.begin(), count);
-        if(i < prop->Size() || op & (kPropGet|kPropSet|kPropSize)){
+        if (i < prop->Size() || op & (kPropGet | kPropSet | kPropSize)) {
             return PropSync(*it, node, prop, i, op);
-        }
-        else if(op == kPropRemove){
+        } else if (op == kPropRemove) {
             objList.erase(it);
             return true;
-        }
-        else if(op == kPropInsert){
+        } else if (op == kPropInsert) {
             T item(objList.Owner());
-            if(PropSync(item, node, prop, i, kPropInsert)){
+            if (PropSync(item, node, prop, i, kPropInsert)) {
                 objList.insert(it, item);
                 return true;
             }

@@ -37,51 +37,51 @@ public:
     };
 
     CharBones();
-    virtual ~CharBones(){}
-    virtual void ScaleAdd(CharClip*, float, float, float);
+    virtual ~CharBones() {}
+    virtual void ScaleAdd(CharClip *, float, float, float);
     virtual void Print();
     virtual void ReallocateInternal();
 
     void ClearBones();
     void Zero();
     void SetWeights(float);
-    void AddBoneInternal(const Bone&);
-    void AddBones(const std::vector<Bone>&);
-    void AddBones(const std::list<Bone>&);
-    void ListBones(std::list<Bone>&) const;
+    void AddBoneInternal(const Bone &);
+    void AddBones(const std::vector<Bone> &);
+    void AddBones(const std::list<Bone> &);
+    void ListBones(std::list<Bone> &) const;
     int TypeSize(int) const;
     int FindOffset(Symbol) const;
-    void* FindPtr(Symbol) const;
+    void *FindPtr(Symbol) const;
     void RecomputeSizes();
     void SetCompression(CompressionType);
-    const char* StringVal(Symbol);
+    const char *StringVal(Symbol);
     void ScaleAddIdentity();
-    void Blend(CharBones&) const;
-    void RotateBy(CharBones&) const;
-    void RotateTo(CharBones&, float) const;
-    void ScaleAdd(CharBones&, float) const;
-    void Enter(){
+    void Blend(CharBones &) const;
+    void RotateBy(CharBones &) const;
+    void RotateTo(CharBones &, float) const;
+    void ScaleAdd(CharBones &, float) const;
+    void Enter() {
         Zero();
         SetWeights(0);
     }
     int TotalSize() const { return mTotalSize; }
-    void ScaleDown(CharBones&, float) const;
-    char* Start() const { return mStart; }
-    char* ScaleOffset() const { return mStart + mScaleOffset; }
-    char* QuatOffset() const { return mStart + mQuatOffset; }
-    char* RotXOffset() const { return mStart + mRotXOffset; }
-    char* RotYOffset() const { return mStart + mRotYOffset; }
-    char* RotZOffset() const { return mStart + mRotZOffset; }
-    char* EndOffset() const { return mStart + mEndOffset; }
+    void ScaleDown(CharBones &, float) const;
+    char *Start() const { return mStart; }
+    char *ScaleOffset() const { return mStart + mScaleOffset; }
+    char *QuatOffset() const { return mStart + mQuatOffset; }
+    char *RotXOffset() const { return mStart + mRotXOffset; }
+    char *RotYOffset() const { return mStart + mRotYOffset; }
+    char *RotZOffset() const { return mStart + mRotZOffset; }
+    char *EndOffset() const { return mStart + mEndOffset; }
 
     static Type TypeOf(Symbol);
-    static const char* SuffixOf(Type);
-    static Symbol ChannelName(const char*, Type);
-    static void SetWeights(float, std::vector<Bone>&);
+    static const char *SuffixOf(Type);
+    static Symbol ChannelName(const char *, Type);
+    static void SetWeights(float, std::vector<Bone> &);
 
     CompressionType mCompression; // 0x4
     std::vector<Bone> mBones; // 0x8
-    char* mStart; // 0x10
+    char *mStart; // 0x10
     union {
         struct {
             int mPosCount; // 0x14
@@ -114,26 +114,24 @@ public:
 /** "Holds state for a set of bones" */
 class CharBonesObject : public CharBones, public virtual Hmx::Object {
 public:
-    CharBonesObject(){}
-    virtual ~CharBonesObject(){}
+    CharBonesObject() {}
+    virtual ~CharBonesObject() {}
     OBJ_CLASSNAME(CharBonesObject);
     OBJ_SET_TYPE(CharBonesObject);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
     NEW_OBJ(CharBonesObject)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharBonesObject)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharBonesObject) }
 };
 
 /** "Holds state for a set of bones, and allocates own space" */
 class CharBonesAlloc : public CharBonesObject {
 public:
-    CharBonesAlloc(){}
+    CharBonesAlloc() {}
     virtual ~CharBonesAlloc();
     virtual void ReallocateInternal();
 };
 
-extern CharBones* gPropBones;
-bool PropSync(CharBones::Bone&, DataNode&, DataArray*, int, PropOp);
-BinStream& operator>>(BinStream& bs, CharBones::Bone& bone);
+extern CharBones *gPropBones;
+bool PropSync(CharBones::Bone &, DataNode &, DataArray *, int, PropOp);
+BinStream &operator>>(BinStream &bs, CharBones::Bone &bone);

@@ -15,11 +15,6 @@ namespace {
     CriticalSection g_AutoHelpHangerCrit;
 }
 
-DECOMP_FORCEACTIVE(HangBlock_Wii,
-    gHangMs,
-    gHangFrac
-)
+DECOMP_FORCEACTIVE(HangBlock_Wii, gHangMs, gHangFrac)
 
-void AutoHangHelper::Init(){
-
-}
+void AutoHangHelper::Init() {}

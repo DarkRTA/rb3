@@ -5,8 +5,8 @@
 
 class SuperFormatString : public FormatString {
 public:
-    SuperFormatString(const char*, const DataArray*, bool);
-    const char* RawFmt() const;
+    SuperFormatString(const char *, const DataArray *, bool);
+    const char *RawFmt() const;
 };
 
 #endif

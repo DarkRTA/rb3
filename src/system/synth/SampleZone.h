@@ -7,8 +7,8 @@
 
 class SampleZone {
 public:
-    SampleZone(Hmx::Object*);
-    void Load(BinStream&);
+    SampleZone(Hmx::Object *);
+    void Load(BinStream &);
     bool Includes(unsigned char, unsigned char);
 
     static int gRev;
@@ -34,5 +34,5 @@ public:
     ADSR mADSR; // 0x2c
 };
 
-BinStream& operator>>(BinStream&, SampleZone&);
-bool PropSync(SampleZone&, DataNode&, DataArray*, int, PropOp);
+BinStream &operator>>(BinStream &, SampleZone &);
+bool PropSync(SampleZone &, DataNode &, DataArray *, int, PropOp);

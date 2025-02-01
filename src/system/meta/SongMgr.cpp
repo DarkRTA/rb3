@@ -3,40 +3,44 @@
 #include "utl/MemStream.h"
 #include "utl/Symbols.h"
 
-SongMgr* TheBaseSongManger;
-const char* SONG_CACHE_CONTAINER_NAME = "songcache_bb";
+SongMgr *TheBaseSongManger;
+const char *SONG_CACHE_CONTAINER_NAME = "songcache_bb";
 
-int GetSongID(DataArray* main_arr, DataArray* backup_arr){
+int GetSongID(DataArray *main_arr, DataArray *backup_arr) {
     static int sDebugSongID = 99000001;
     int theID = 0;
     main_arr->FindData(song_id, theID, false);
-    if(theID == 0 && backup_arr){
+    if (theID == 0 && backup_arr) {
         backup_arr->FindData(song_id, theID, false);
     }
-    if(theID == 0){
+    if (theID == 0) {
         theID = TheBaseSongManger->GetSongIDFromShortName(main_arr->Sym(0), false);
     }
-    if(theID == 0){
-        while(TheBaseSongManger->HasSong(sDebugSongID)) sDebugSongID++;
+    if (theID == 0) {
+        while (TheBaseSongManger->HasSong(sDebugSongID))
+            sDebugSongID++;
         theID = sDebugSongID++;
         main_arr->Insert(main_arr->Size(), DataArrayPtr(song_id, theID));
-        MILO_LOG("The song %s has an invalid songID, assigning temp id %d.\n", main_arr->Sym(0).Str(), theID);
+        MILO_LOG(
+            "The song %s has an invalid songID, assigning temp id %d.\n",
+            main_arr->Sym(0).Str(),
+            theID
+        );
     }
     return theID;
 }
 
-int CountSongsInArray(DataArray* arr){
+int CountSongsInArray(DataArray *arr) {
     int i = 0;
     int size = arr->Size();
-    for(; i < size && arr->Node(i).Type() != kDataArray; i++);
+    for (; i < size && arr->Node(i).Type() != kDataArray; i++)
+        ;
     return size - i;
 }
 
-SongMgr::~SongMgr(){
+SongMgr::~SongMgr() {}
 
-}
-
-void SongMgr::Init(){
+void SongMgr::Init() {
     mState = kSongMgr_Nil;
     mSongCacheID = 0;
     mSongCache = 0;
@@ -55,18 +59,23 @@ inline bool SongMgr::HasSong(int id) const {
 bool SongMgr::HasSong(Symbol s, bool b) const {
     int songid = GetSongIDFromShortName(s, b);
     bool ret = songid != 0;
-    if(ret) ret = HasSong(songid);
+    if (ret)
+        ret = HasSong(songid);
     return ret;
 }
 
-SongMetadata* SongMgr::Data(int id) const {
-    if(!HasSong(id)) return 0;
+SongMetadata *SongMgr::Data(int id) const {
+    if (!HasSong(id))
+        return 0;
     else {
-        std::map<int, SongMetadata*>::const_iterator it = mUncachedSongMetadata.find(id);
-        if(it != mUncachedSongMetadata.end()) return it->second;
+        std::map<int, SongMetadata *>::const_iterator it = mUncachedSongMetadata.find(id);
+        if (it != mUncachedSongMetadata.end())
+            return it->second;
         else {
-            std::map<int, SongMetadata*>::const_iterator cit = mCachedSongMetadata.find(id);
-            if(cit != mCachedSongMetadata.end()) return cit->second;
+            std::map<int, SongMetadata *>::const_iterator cit =
+                mCachedSongMetadata.find(id);
+            if (cit != mCachedSongMetadata.end())
+                return cit->second;
             else {
                 MILO_ASSERT(false, 0x98);
                 return 0;
@@ -75,24 +84,28 @@ SongMetadata* SongMgr::Data(int id) const {
     }
 }
 
-void SongMgr::ContentStarted(){
+void SongMgr::ContentStarted() {
     mAvailableSongs.clear();
-    for(std::map<int,SongMetadata*>::iterator it = mCachedSongMetadata.begin(); it != mCachedSongMetadata.end(); ++it){
+    for (std::map<int, SongMetadata *>::iterator it = mCachedSongMetadata.begin();
+         it != mCachedSongMetadata.end();
+         ++it) {
         it->second->IncrementAge();
     }
     mContentUsedForSong.clear();
 }
 
-bool SongMgr::ContentDiscovered(Symbol s){
-    if(SongIDInContent(s)){
+bool SongMgr::ContentDiscovered(Symbol s) {
+    if (SongIDInContent(s)) {
         std::vector<int> vec;
         GetSongsInContent(s, vec);
-        for(std::vector<int>::const_iterator vit = vec.begin(); vit != vec.end(); ++vit){
+        for (std::vector<int>::const_iterator vit = vec.begin(); vit != vec.end();
+             ++vit) {
             int curInt = *vit;
-            std::map<int, SongMetadata*>::iterator found = mCachedSongMetadata.find(curInt);
-            if(found != mCachedSongMetadata.end()){
+            std::map<int, SongMetadata *>::iterator found =
+                mCachedSongMetadata.find(curInt);
+            if (found != mCachedSongMetadata.end()) {
                 found->second->ResetAge();
-                if(!HasSong(curInt)){
+                if (!HasSong(curInt)) {
                     mAvailableSongs.insert(curInt);
                     mContentUsedForSong[curInt] = s;
                     AddSongIDMapping(curInt, Data(curInt)->ShortName());
@@ -100,98 +113,100 @@ bool SongMgr::ContentDiscovered(Symbol s){
             }
         }
         return true;
-    }
-    else return false;
+    } else
+        return false;
 }
 
-void SongMgr::ContentLoaded(Loader* loader, ContentLocT loct, Symbol s){
-    DataLoader* d = dynamic_cast<DataLoader*>(loader);
+void SongMgr::ContentLoaded(Loader *loader, ContentLocT loct, Symbol s) {
+    DataLoader *d = dynamic_cast<DataLoader *>(loader);
     MILO_ASSERT(d, 0xEB);
-    DataArray* data = d->Data();
-    if(data){
-        if(AllowContentToBeAdded(data, loct)){
-            if(!streq(s.mStr, ".")){
+    DataArray *data = d->Data();
+    if (data) {
+        if (AllowContentToBeAdded(data, loct)) {
+            if (!streq(s.mStr, ".")) {
                 CacheSongData(data, d, loct, s);
-            }
-            else {
+            } else {
                 AddSongData(data, d, loct);
             }
-        }
-        else {
+        } else {
             std::vector<int> somevecidk;
             int datasize = data->Size();
-            for(int i = datasize - CountSongsInArray(data); i < datasize; i++){
+            for (int i = datasize - CountSongsInArray(data); i < datasize; i++) {
                 int songID = GetSongID(data->Array(i), 0);
                 std::set<int>::iterator idIt = mAvailableSongs.find(songID);
-                if(idIt != mAvailableSongs.end()){
+                if (idIt != mAvailableSongs.end()) {
                     mAvailableSongs.erase(idIt);
                 }
-                std::map<int, Symbol>::iterator contentIt = mContentUsedForSong.find(songID);
-                if(contentIt != mContentUsedForSong.end()){
+                std::map<int, Symbol>::iterator contentIt =
+                    mContentUsedForSong.find(songID);
+                if (contentIt != mContentUsedForSong.end()) {
                     mContentUsedForSong.erase(contentIt);
                 }
             }
             ClearFromCache(s);
             TheContentMgr->UpdateShouldCreateCache();
         }
-    }
-    else ClearFromCache(s);
+    } else
+        ClearFromCache(s);
 }
 
-void SongMgr::ContentDone(){
-    if(!unkbc) return;
+void SongMgr::ContentDone() {
+    if (!unkbc)
+        return;
     mSongCacheNeedsWrite = true;
 }
 
-void SongMgr::ContentMounted(const char* cc1, const char* cc2){
+void SongMgr::ContentMounted(const char *cc1, const char *cc2) {
     unkmap5[cc1] = cc2;
-    if(TheContentMgr->InDiscoveryState()){
-        if(!SongIDInContent(cc1)){
+    if (TheContentMgr->InDiscoveryState()) {
+        if (!SongIDInContent(cc1)) {
             std::vector<int> vec;
             mSongIDsInContent[cc1] = vec;
-        }   
+        }
     }
 }
 
-void SongMgr::ContentUnmounted(const char* cc){
+void SongMgr::ContentUnmounted(const char *cc) {
     std::map<Symbol, String>::iterator it;
     it = unkmap5.find(cc);
-    if(it != unkmap5.end()){
+    if (it != unkmap5.end()) {
         unkmap5.erase(it);
     }
 }
 
-const char* SongMgr::ContentName(int i) const {
+const char *SongMgr::ContentName(int i) const {
     char buf[128];
-    SongMetadata* metadata = Data(i);
-    if(metadata){
-        if(metadata->IsOnDisc()) return 0;
+    SongMetadata *metadata = Data(i);
+    if (metadata) {
+        if (metadata->IsOnDisc())
+            return 0;
         else {
-            const char* filename = metadata->SongBlock()->GetBaseFileName();
-            strcpy(buf, filename+4);
-            char* str1 = strchr(buf, '/');
-            if(str1 != 0){
-                char* str2 = strchr(str1 + 1, '/');
-                if(str2 != 0) *str2 = '\0';
+            const char *filename = metadata->SongBlock()->GetBaseFileName();
+            strcpy(buf, filename + 4);
+            char *str1 = strchr(buf, '/');
+            if (str1 != 0) {
+                char *str2 = strchr(str1 + 1, '/');
+                if (str2 != 0)
+                    *str2 = '\0';
             }
             return MakeString("%s", buf);
         }
-    }
-    else return 0;
+    } else
+        return 0;
 }
 
-SongInfo* SongMgr::SongAudioData(Symbol s) const {
+SongInfo *SongMgr::SongAudioData(Symbol s) const {
     return SongAudioData(GetSongIDFromShortName(s, true));
 }
 
-const char* SongMgr::ContentName(Symbol s, bool b) const {
+const char *SongMgr::ContentName(Symbol s, bool b) const {
     return ContentName(GetSongIDFromShortName(s, b));
 }
 
-void SongMgr::GetContentNames(Symbol s, std::vector<Symbol>& vec) const {
-    const char* cntName = ContentName(s, false);
-    if(cntName){
-        Symbol sym = MakeString("%s_song",cntName);
+void SongMgr::GetContentNames(Symbol s, std::vector<Symbol> &vec) const {
+    const char *cntName = ContentName(s, false);
+    if (cntName) {
+        Symbol sym = MakeString("%s_song", cntName);
         vec.push_back(sym);
     }
 }
@@ -205,37 +220,40 @@ bool SongMgr::IsSongCacheWriteDone() const {
 }
 
 bool SongMgr::IsSongMounted(Symbol s) const {
-    const char* cntName = ContentName(s, true);
-    if(cntName) return TheContentMgr->IsMounted(cntName);
-    else return true;
+    const char *cntName = ContentName(s, true);
+    if (cntName)
+        return TheContentMgr->IsMounted(cntName);
+    else
+        return true;
 }
 
-void SongMgr::ClearSongCacheNeedsWrite(){ mSongCacheNeedsWrite = false; }
+void SongMgr::ClearSongCacheNeedsWrite() { mSongCacheNeedsWrite = false; }
 
-void SongMgr::StartSongCacheWrite(){
-    if(SongCacheNeedsWrite()){
+void SongMgr::StartSongCacheWrite() {
+    if (SongCacheNeedsWrite()) {
         ClearSongCacheNeedsWrite();
-        if(mState == kSongMgr_SaveUnmount && mSongCache){
+        if (mState == kSongMgr_SaveUnmount && mSongCache) {
             SetState(kSongMgr_SaveWrite);
-        }
-        else SetState(kSongMgr_SaveMount);
+        } else
+            SetState(kSongMgr_SaveMount);
     }
 }
 
 int gSongCacheSaveVer = 0xB;
 
-bool SongMgr::SaveCachedSongInfo(BufStream& bs){
+bool SongMgr::SaveCachedSongInfo(BufStream &bs) {
     bs << gSongCacheSaveVer << mSongIDsInContent;
     WriteCachedMetadataFromStream(bs);
     return true;
 }
 
-bool SongMgr::LoadCachedSongInfo(BufStream& bs){
+bool SongMgr::LoadCachedSongInfo(BufStream &bs) {
     int rev;
     ClearCachedContent();
     bs >> rev >> mSongIDsInContent;
     ReadCachedMetadataFromStream(bs, rev);
-    if(rev < gSongCacheSaveVer) ClearCachedContent();
+    if (rev < gSongCacheSaveVer)
+        ClearCachedContent();
     return true;
 }
 
@@ -248,51 +266,67 @@ int SongMgr::GetCachedSongInfoSize() const {
     return ms.Tell();
 }
 
-const char* SongMgr::GetCachedSongInfoName() const { return SONG_CACHE_CONTAINER_NAME; }
+const char *SongMgr::GetCachedSongInfoName() const { return SONG_CACHE_CONTAINER_NAME; }
 
-void SongMgr::ClearCachedContent(){
+void SongMgr::ClearCachedContent() {
     mSongIDsInContent.clear();
-    for(std::map<int, SongMetadata*>::iterator it = mCachedSongMetadata.begin(); it != mCachedSongMetadata.end(); ++it){
+    for (std::map<int, SongMetadata *>::iterator it = mCachedSongMetadata.begin();
+         it != mCachedSongMetadata.end();
+         ++it) {
         delete it->second;
     }
     mCachedSongMetadata.clear();
 }
 
-void SongMgr::ClearFromCache(Symbol s){
+void SongMgr::ClearFromCache(Symbol s) {
     std::map<Symbol, std::vector<int> >::iterator it;
     it = mSongIDsInContent.find(s);
     MILO_ASSERT_FMT(it != mSongIDsInContent.end(), "Content %s isn't cached!", s);
-    if(it != mSongIDsInContent.end()){
+    if (it != mSongIDsInContent.end()) {
         mSongIDsInContent.erase(it);
     }
 }
 
-void SongMgr::SetState(SongMgrState state){
-    if(mState == state) return;
+void SongMgr::SetState(SongMgrState state) {
+    if (mState == state)
+        return;
     mState = state;
-    switch(mState){
-        case kSongMgr_SaveMount: SaveMount(); break;
-        case kSongMgr_SaveWrite: SaveWrite(); break;
-        case kSongMgr_SaveUnmount: SaveUnmount(); break;
-        default: break;
+    switch (mState) {
+    case kSongMgr_SaveMount:
+        SaveMount();
+        break;
+    case kSongMgr_SaveWrite:
+        SaveWrite();
+        break;
+    case kSongMgr_SaveUnmount:
+        SaveUnmount();
+        break;
+    default:
+        break;
     }
 }
 
-void SongMgr::CacheSongData(DataArray* arr, DataLoader* loader, ContentLocT loct, Symbol s){
+void SongMgr::CacheSongData(
+    DataArray *arr, DataLoader *loader, ContentLocT loct, Symbol s
+) {
     std::vector<int> vec;
     GetSongsInContent(s, vec);
-    if(!vec.empty()) return;
+    if (!vec.empty())
+        return;
     else {
         std::vector<int> otherIntVec;
         AddSongData(arr, mCachedSongMetadata, ".", loct, otherIntVec);
         std::vector<int> songIDs;
-        for(int i = 0; i < arr->Size(); i++){
+        for (int i = 0; i < arr->Size(); i++) {
             Symbol curSym = arr->Array(i)->Sym(0);
             int songID = GetSongIDFromShortName(curSym, false);
-            if(songID != 0) songIDs.push_back(songID);
+            if (songID != 0)
+                songIDs.push_back(songID);
         }
         mSongIDsInContent[s] = songIDs;
-        for(std::vector<int>::const_iterator it = otherIntVec.begin(); it != otherIntVec.end(); ++it){
+        for (std::vector<int>::const_iterator it = otherIntVec.begin();
+             it != otherIntVec.end();
+             ++it) {
             int id = *it;
             MILO_ASSERT(mContentUsedForSong.find(id) == mContentUsedForSong.end(), 0x2BE);
             mContentUsedForSong[id] = s;
@@ -301,137 +335,168 @@ void SongMgr::CacheSongData(DataArray* arr, DataLoader* loader, ContentLocT loct
     }
 }
 
-void SongMgr::SaveMount(){
-    if(!mSongCacheID){
+void SongMgr::SaveMount() {
+    if (!mSongCacheID) {
         mSongCacheID = TheCacheMgr->GetCacheID(SONG_CACHE_CONTAINER_NAME);
     }
-    if(mSongCacheID){
-        if(!TheCacheMgr->MountAsync(mSongCacheID, &mSongCache, this)){
+    if (mSongCacheID) {
+        if (!TheCacheMgr->MountAsync(mSongCacheID, &mSongCache, this)) {
             CacheResult res = TheCacheMgr->GetLastResult();
-            if(res == kCache_ErrorBusy) SetState(kSongMgr_Ready); // maybe take another look at the cache enums?
-            else MILO_FAIL("SongMgr: Error %d while mounting.\n",res);
+            if (res == kCache_ErrorBusy)
+                SetState(kSongMgr_Ready); // maybe take another look at the cache enums?
+            else
+                MILO_FAIL("SongMgr: Error %d while mounting.\n", res);
         }
-    }
-    else SetState(kSongMgr_Ready);
+    } else
+        SetState(kSongMgr_Ready);
 }
 
-void SongMgr::SaveWrite(){
+void SongMgr::SaveWrite() {
     int size = GetCachedSongInfoSize();
-    void* mem = _MemAllocTemp(size, 0);
+    void *mem = _MemAllocTemp(size, 0);
     BufStream bs(mem, size, true);
-    if(SaveCachedSongInfo(bs)){
+    if (SaveCachedSongInfo(bs)) {
         bool ret = mSongCache->WriteAsync(SONG_CACHE_CONTAINER_NAME, mem, size, this);
         MILO_ASSERT(ret, 0x2F2);
-    }
-    else {
+    } else {
         MILO_LOG("SongMgr: Failed to save cached song info - write aborted.\n");
         SetState(kSongMgr_Ready);
     }
 }
 
-void SongMgr::SaveUnmount(){
-    if(mSongCache){
-        if(!TheCacheMgr->UnmountAsync(&mSongCache, this)){
+void SongMgr::SaveUnmount() {
+    if (mSongCache) {
+        if (!TheCacheMgr->UnmountAsync(&mSongCache, this)) {
             CacheResult res = TheCacheMgr->GetLastResult();
-            if(res != kCache_ErrorBusy) MILO_FAIL("SongMgr: Error %d while unmounting.\n", res);
+            if (res != kCache_ErrorBusy)
+                MILO_FAIL("SongMgr: Error %d while unmounting.\n", res);
         }
-    }
-    else MILO_LOG("SongMgr: Failed to unmount NULL song info cache.\n");
+    } else
+        MILO_LOG("SongMgr: Failed to unmount NULL song info cache.\n");
 }
 
-void SongMgr::OnCacheMountResult(int i){
-    if(mState != kSongMgr_SaveMount){
+void SongMgr::OnCacheMountResult(int i) {
+    if (mState != kSongMgr_SaveMount) {
         MILO_LOG("SongMgr: Mount result received in state %d.\n", mState);
-    }
-    else if(i != 0){
+    } else if (i != 0) {
         MILO_LOG("SongMgr: Mount result error %d - aborting cache write.\n", i);
         SetState(kSongMgr_Ready);
-    }
-    else SetState(kSongMgr_SaveWrite);
+    } else
+        SetState(kSongMgr_SaveWrite);
 }
 
-void SongMgr::OnCacheWriteResult(int i){
-    if(mState != kSongMgr_SaveWrite){
+void SongMgr::OnCacheWriteResult(int i) {
+    if (mState != kSongMgr_SaveWrite) {
         MILO_LOG("SongMgr: Write result received in state %d.\n", mState);
-    }
-    else {
-        if(i != 0) MILO_LOG("SongMgr: Write result error %d - cache write failed.\n", i);
+    } else {
+        if (i != 0)
+            MILO_LOG("SongMgr: Write result error %d - cache write failed.\n", i);
         SetState(kSongMgr_SaveUnmount);
     }
 }
 
-void SongMgr::OnCacheUnmountResult(int i){
-    if(mState != kSongMgr_SaveUnmount){
+void SongMgr::OnCacheUnmountResult(int i) {
+    if (mState != kSongMgr_SaveUnmount) {
         MILO_LOG("SongMgr: Unmount result received in state %d.\n", mState);
-    }
-    else {
-        if(i != 0) MILO_LOG("SongMgr: Unmount result error %d - aborting cache unmount.\n", i);
+    } else {
+        if (i != 0)
+            MILO_LOG("SongMgr: Unmount result error %d - aborting cache unmount.\n", i);
         unkbc = false;
         mSongCache = 0;
         SetState(kSongMgr_Ready);
     }
 }
 
-void SongMgr::GetSongsInContent(Symbol s, std::vector<int>& vec) const {
+void SongMgr::GetSongsInContent(Symbol s, std::vector<int> &vec) const {
     std::map<Symbol, std::vector<int> >::const_iterator it = mSongIDsInContent.find(s);
-    if(it != mSongIDsInContent.end()) vec = it->second;
+    if (it != mSongIDsInContent.end())
+        vec = it->second;
 }
 
 int SongMgr::NumSongsInContent(int i) const {
     Symbol key = ContentName(i);
     std::map<Symbol, std::vector<int> >::const_iterator it = mSongIDsInContent.find(key);
-    if(it != mSongIDsInContent.end()) return it->second.size();
-    else return 0;
+    if (it != mSongIDsInContent.end())
+        return it->second.size();
+    else
+        return 0;
 }
 
-void SongMgr::DumpSongMgrContents(bool all){
+void SongMgr::DumpSongMgrContents(bool all) {
     MILO_LOG("--------------------\n");
     int idx = 0;
     int skipped = 0;
     MILO_LOG("mAvailableSongs:\n");
-    for(std::set<int>::iterator it = mAvailableSongs.begin(); it != mAvailableSongs.end(); ++it){
+    for (std::set<int>::iterator it = mAvailableSongs.begin();
+         it != mAvailableSongs.end();
+         ++it) {
         int id = *it;
-        if(all || id > 1000000){
+        if (all || id > 1000000) {
             MILO_LOG(" %d. ID: %d\n", idx, id);
-        }
-        else skipped++;
+        } else
+            skipped++;
         idx++;
     }
-    if(skipped > 0) MILO_LOG(" skipped %d non-DLC songs\n", skipped);
+    if (skipped > 0)
+        MILO_LOG(" skipped %d non-DLC songs\n", skipped);
     MILO_LOG(" Total Count: %d\n", idx);
-    idx = 0; skipped = 0;
+    idx = 0;
+    skipped = 0;
     MILO_LOG("mUncachedSongMetadata:\n");
-    for(std::map<int, SongMetadata*>::iterator it = mUncachedSongMetadata.begin(); it != mUncachedSongMetadata.end(); ++it){
-        SongMetadata* meta = it->second;
+    for (std::map<int, SongMetadata *>::iterator it = mUncachedSongMetadata.begin();
+         it != mUncachedSongMetadata.end();
+         ++it) {
+        SongMetadata *meta = it->second;
         int id = meta->ID();
-        if(all || id > 1000000){
-            MILO_LOG(" %d. ID: %d, Short Name: %s, Age: %d\n", idx, meta->ID(), meta->ShortName(), meta->Age());
-        }
-        else skipped++;
+        if (all || id > 1000000) {
+            MILO_LOG(
+                " %d. ID: %d, Short Name: %s, Age: %d\n",
+                idx,
+                meta->ID(),
+                meta->ShortName(),
+                meta->Age()
+            );
+        } else
+            skipped++;
         idx++;
     }
-    if(skipped > 0) MILO_LOG(" skipped %d non-DLC songs\n", skipped);
+    if (skipped > 0)
+        MILO_LOG(" skipped %d non-DLC songs\n", skipped);
     MILO_LOG(" Total Count: %d\n", idx);
     idx = 0;
     MILO_LOG("mCachedSongMetadata:\n");
-    for(std::map<int, SongMetadata*>::iterator it = mCachedSongMetadata.begin(); it != mCachedSongMetadata.end(); ++it){
-        SongMetadata* meta = it->second;
-        MILO_LOG(" %d. ID: %d, Short Name: %s, Age: %d\n", idx, meta->ID(), meta->ShortName(), meta->Age());
+    for (std::map<int, SongMetadata *>::iterator it = mCachedSongMetadata.begin();
+         it != mCachedSongMetadata.end();
+         ++it) {
+        SongMetadata *meta = it->second;
+        MILO_LOG(
+            " %d. ID: %d, Short Name: %s, Age: %d\n",
+            idx,
+            meta->ID(),
+            meta->ShortName(),
+            meta->Age()
+        );
         idx++;
     }
     MILO_LOG(" Total Count: %d\n", idx);
     idx = 0;
     MILO_LOG("mSongIDsInContent:\n");
-    for(std::map<Symbol, std::vector<int> >::iterator it = mSongIDsInContent.begin(); it != mSongIDsInContent.end(); ++it){
+    for (std::map<Symbol, std::vector<int> >::iterator it = mSongIDsInContent.begin();
+         it != mSongIDsInContent.end();
+         ++it) {
         MILO_LOG(" %d. Content: %s\n", idx, it->first);
         idx++;
-        for(std::vector<int>::iterator intIt = it->second.begin(); intIt != it->second.end(); ++intIt){
+        for (std::vector<int>::iterator intIt = it->second.begin();
+             intIt != it->second.end();
+             ++intIt) {
             MILO_LOG("  SongID: %d\n", *intIt);
         }
     }
     MILO_LOG(" Total Count: %d\n", idx);
     MILO_LOG("mContentUsedForSong:\n");
-    for(std::map<int, Symbol>::iterator it = mContentUsedForSong.begin(); it != mContentUsedForSong.end(); ++it){
+    for (std::map<int, Symbol>::iterator it = mContentUsedForSong.begin();
+         it != mContentUsedForSong.end();
+         ++it) {
         MILO_LOG(" %d. ID: %d, Content: %s\n", 0, it->first, it->second);
     }
     MILO_LOG(" Total Count: %d\n", 0);

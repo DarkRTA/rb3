@@ -6,27 +6,29 @@
 #include "os/NetStream.h"
 #include "os/Debug.h"
 
-AppChild* TheAppChild;
+AppChild *TheAppChild;
 
-
-static DataNode EnableAppChild(DataArray*){
-    if(TheAppChild) TheAppChild->SetEnabled(true);
+static DataNode EnableAppChild(DataArray *) {
+    if (TheAppChild)
+        TheAppChild->SetEnabled(true);
     return DataNode(0);
 }
 
-static DataNode DisableAppChild(DataArray*){
-    if(TheAppChild) TheAppChild->SetEnabled(false);
+static DataNode DisableAppChild(DataArray *) {
+    if (TheAppChild)
+        TheAppChild->SetEnabled(false);
     return DataNode(0);
 }
 
-static DataNode SyncAppChild(DataArray*){
-    if(TheAppChild) TheAppChild->Sync();
+static DataNode SyncAppChild(DataArray *) {
+    if (TheAppChild)
+        TheAppChild->Sync();
     return DataNode(0);
 }
 
-void AppChild::Init(){
+void AppChild::Init() {
     bool appchildbool = OptionBool("app_child", false);
-    if(appchildbool){
+    if (appchildbool) {
         MILO_ASSERT(!TheAppChild, 0x3B);
         TheAppChild = new AppChild(OptionStr("pipe_name", 0));
     }
@@ -36,14 +38,14 @@ void AppChild::Init(){
     DataRegisterFunc("sync_app_child", SyncAppChild);
 }
 
-void AppChild::Terminate(){
+void AppChild::Terminate() {
     delete TheAppChild;
     TheAppChild = 0;
 }
 
-AppChild::AppChild(const char* str) : mEnabled(1), mStream(0), mSync(0) {
+AppChild::AppChild(const char *str) : mEnabled(1), mStream(0), mSync(0) {
     NetAddress addr(HolmesResolveIP().mIP, 0x11BF);
-    NetStream* net = new NetStream();
+    NetStream *net = new NetStream();
     net->ClientConnect(addr);
     mStream = net;
     MILO_LOG("AppChild::Connect\n");
@@ -55,26 +57,25 @@ NetAddress HolmesResolveIP() { // why
 }
 #endif
 
-AppChild::~AppChild(){
-    delete mStream;
-}
+AppChild::~AppChild() { delete mStream; }
 
-void AppChild::Sync(){
+void AppChild::Sync() {
     short lol = 1;
     *mStream << lol;
     mStream->Flush();
     mSync = true;
 }
 
-void AppChild::Sync(unsigned short sh){
+void AppChild::Sync(unsigned short sh) {
     *mStream << sh;
     mStream->Flush();
     mSync = true;
 }
 
-void AppChild::Poll(){
-    if(!mStream) return;
-    while(mEnabled && !mSync){
+void AppChild::Poll() {
+    if (!mStream)
+        return;
+    while (mEnabled && !mSync) {
         DataArrayPtr cmd;
         *mStream >> cmd;
         cmd.mData->Execute();

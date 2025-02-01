@@ -4,10 +4,10 @@
 
 class Interpolator {
 public:
-    Interpolator(){}
+    Interpolator() {}
     virtual float Eval(float) = 0;
     virtual void Reset(const DataArray *) = 0;
-    virtual ~Interpolator(){} // generic dtor
+    virtual ~Interpolator() {} // generic dtor
 
     float Y0() const { return mY0; }
     float Y1() const { return mY1; }
@@ -21,11 +21,9 @@ class LinearInterpolator : public Interpolator {
 public:
     LinearInterpolator(float, float, float, float); // fn_802DCEDC
     LinearInterpolator(); // fn_802DCF60
-    virtual float Eval(float f){
-        return mSlope * f + mB;
-    } // fn_802DD994 - weak
+    virtual float Eval(float f) { return mSlope * f + mB; } // fn_802DD994 - weak
     virtual void Reset(const DataArray *); // fn_802DD05C
-    virtual ~LinearInterpolator(){} // fn_800E0DEC - weak
+    virtual ~LinearInterpolator() {} // fn_800E0DEC - weak
 
     void Reset(float, float, float, float); // fn_802DCF9C
 
@@ -38,10 +36,10 @@ public:
 
     virtual float Eval(float); // fn_802DD32C
     virtual void Reset(const DataArray *); // fn_802DD238
-    virtual ~ExpInterpolator(){} // fn_800E0DEC
+    virtual ~ExpInterpolator() {} // fn_800E0DEC
 
     void Reset(float, float, float, float, float); // fn_802DD16C
-    
+
     float mPower;
     float mRise;
     float mInvRun;
@@ -53,10 +51,10 @@ public:
 
     virtual float Eval(float); // fn_802DD5B8
     virtual void Reset(const DataArray *); // fn_802DD4C4
-    virtual ~InvExpInterpolator(){} // fn_800E0DEC
+    virtual ~InvExpInterpolator() {} // fn_800E0DEC
 
     void Reset(float, float, float, float, float); // fn_802DD3F8
-    
+
     float mPower;
     float mRise;
     float mInvRun;
@@ -68,10 +66,10 @@ public:
     ATanInterpolator(); // fn_802DD6F4
     virtual float Eval(float); // fn_802DD944
     virtual void Reset(const DataArray *); // fn_802DD850
-    virtual ~ATanInterpolator(){} // fn_800E0D84
+    virtual ~ATanInterpolator() {} // fn_800E0D84
 
     void Reset(float, float, float, float, float); // fn_802DD738
-    
+
     LinearInterpolator mXMapping;
     float mScale;
     float mOffset;

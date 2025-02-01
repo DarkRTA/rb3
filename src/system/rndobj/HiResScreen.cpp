@@ -4,9 +4,9 @@
 #include "os/File.h"
 
 HiResScreen gHiResScreen;
-HiResScreen& TheHiResScreen = gHiResScreen;
+HiResScreen &TheHiResScreen = gHiResScreen;
 
-HiResScreen::BmpCache::BmpCache(unsigned int ui1, unsigned int ui2){
+HiResScreen::BmpCache::BmpCache(unsigned int ui1, unsigned int ui2) {
     mRowsPerCacheLine = ui2 + 1;
     mPixelsPerRow = ui1;
     mTotalRows = ui2;
@@ -16,41 +16,41 @@ HiResScreen::BmpCache::BmpCache(unsigned int ui1, unsigned int ui2){
     MILO_ASSERT(mTotalRows % mRowsPerCacheLine == 0, 0x3B);
     mTotalNumCacheLines = mTotalRows / mRowsPerCacheLine;
     mFileNames = new String[mTotalNumCacheLines];
-    for (uint i = 0; i < mTotalNumCacheLines; i++){
+    for (uint i = 0; i < mTotalNumCacheLines; i++) {
         mFileNames[i] = MakeString("_hires_cache_%.2d.dat", i);
     }
-    mBuffer = (unsigned char*)_MemAlloc(mByteSize, 0);
+    mBuffer = (unsigned char *)_MemAlloc(mByteSize, 0);
     mCurrLoadedIndex = ui2;
     DeleteCache();
 }
 
-HiResScreen::BmpCache::~BmpCache(){
+HiResScreen::BmpCache::~BmpCache() {
     DeleteCache();
-    delete [] mFileNames;
+    delete[] mFileNames;
     mFileNames = 0;
     delete mBuffer;
     mBuffer = 0;
 }
 
-void HiResScreen::BmpCache::DeleteCache(){
-    for(unsigned int i = 0; i < mTotalNumCacheLines; i++){
+void HiResScreen::BmpCache::DeleteCache() {
+    for (unsigned int i = 0; i < mTotalNumCacheLines; i++) {
         FileDelete(mFileNames[i].c_str());
     }
 }
 
-void HiResScreen::BmpCache::GetLoadedRange(unsigned int& ui1, unsigned int& ui2) const {
+void HiResScreen::BmpCache::GetLoadedRange(unsigned int &ui1, unsigned int &ui2) const {
     ui1 = mCurrLoadedIndex * mRowsPerCacheLine;
     ui2 = ui1 + mRowsPerCacheLine - 1;
 }
 
-HiResScreen::HiResScreen() : mActive(0), mTiling(3), mFileBase("urhigh"), mAccumWidth(0), mAccumHeight(0),
-    mCurrTile(0), mEvenOddDisabled(0), mShrinkToSafe(1), mConsoleShowing(0), mCache(NULL) { }
+HiResScreen::HiResScreen()
+    : mActive(0), mTiling(3), mFileBase("urhigh"), mAccumWidth(0), mAccumHeight(0),
+      mCurrTile(0), mEvenOddDisabled(0), mShrinkToSafe(1), mConsoleShowing(0),
+      mCache(NULL) {}
 
-HiResScreen::~HiResScreen(){
+HiResScreen::~HiResScreen() {}
 
-}
-
-void HiResScreen::TakeShot(const char* c, int i) {
+void HiResScreen::TakeShot(const char *c, int i) {
 #ifdef VERSION_SZBE69_B8
     mFileBase = c;
     mTiling = i;
@@ -79,13 +79,15 @@ Hmx::Rect HiResScreen::ScreenRect() const {
     return ScreenRect(RndCam::sCurrent, r);
 }
 
-Hmx::Rect HiResScreen::ScreenRect(const RndCam* cam, const Hmx::Rect& r) const {
+Hmx::Rect HiResScreen::ScreenRect(const RndCam *cam, const Hmx::Rect &r) const {
     int a, b, c, d;
     Hmx::Rect x, y, ret = r;
-    if ((cam->mTargetTex != NULL && !mOverride) || !mActive || mCurrTile < mTiling * mTiling) {
+    if ((cam->mTargetTex != NULL && !mOverride) || !mActive
+        || mCurrTile < mTiling * mTiling) {
         CurrentTileRect(x, y, ret);
         int tile_nonsense = mCurrTile / mTiling;
         GetBorderForTile(tile_nonsense * mTiling - mCurrTile, tile_nonsense, a, c, b, d);
         return ret;
-    } else return r;
+    } else
+        return r;
 }

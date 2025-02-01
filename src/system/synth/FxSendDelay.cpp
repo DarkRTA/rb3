@@ -4,26 +4,26 @@
 
 INIT_REVS(FxSendDelay);
 
-FxSendDelay::FxSendDelay() : mDelayTime(0.2f), mGain(-6.0f), mPingPongPct(0.0f), mTempoSync(0), mSyncType(), mTempo(120.0f) {
+FxSendDelay::FxSendDelay()
+    : mDelayTime(0.2f), mGain(-6.0f), mPingPongPct(0.0f), mTempoSync(0), mSyncType(),
+      mTempo(120.0f) {
     mSyncType = eighth;
 }
 
-FxSendDelay::~FxSendDelay(){
-
-}
+FxSendDelay::~FxSendDelay() {}
 
 SAVE_OBJ(FxSendDelay, 0x1E);
 
-void FxSendDelay::Load(BinStream& bs){
+void FxSendDelay::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(3, 0);
     FxSend::Load(bs);
     bs >> mDelayTime >> mGain;
-    if(gRev >= 2){
+    if (gRev >= 2) {
         bs >> mTempoSync >> mSyncType;
         bs >> mTempo;
     }
-    if(gRev >= 3){
+    if (gRev >= 3) {
         bs >> mPingPongPct;
     }
     OnParametersChanged();

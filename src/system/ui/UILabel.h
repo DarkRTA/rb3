@@ -14,14 +14,13 @@
 
 class UILabelDir;
 
- /**
+/**
  * @brief A label.
  * Original _objects description:
  * "Simple label, provides localization of tokens"
  */
 class UILabel : public UIComponent {
 public:
-
     enum FitType {
         kFitWrap = 0,
         kFitStretch = 1,
@@ -32,26 +31,28 @@ public:
     UILabel();
     OBJ_CLASSNAME(UILabel);
     OBJ_SET_TYPE(UILabel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual float GetDistanceToPlane(const Plane&, Vector3&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual float GetDistanceToPlane(const Plane &, Vector3 &);
     virtual void Draw();
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
     virtual void Highlight();
     virtual ~UILabel();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Poll();
     virtual bool CanHaveFocus();
-    virtual void CopyMembers(const UIComponent*, Hmx::Object::CopyType);
+    virtual void CopyMembers(const UIComponent *, Hmx::Object::CopyType);
     virtual void Update();
-    virtual void SetCreditsText(DataArray*, class UIListSlot*) {MILO_ASSERT(false, 78);}
-    virtual void SetDisplayText(const char*, bool);
+    virtual void SetCreditsText(DataArray *, class UIListSlot *) {
+        MILO_ASSERT(false, 78);
+    }
+    virtual void SetDisplayText(const char *, bool);
 
     DECLARE_REVS
     NEW_OVERLOAD
@@ -59,73 +60,73 @@ public:
 
     NEW_OBJ(UILabel)
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(UILabel)
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(UILabel) }
     static void Terminate();
     static bool sDebugHighlight;
     static bool sDeferUpdate;
 
-    const char* GetDefaultText() const;
-    int InqMinMaxFromWidthAndHeight(float, float, RndText::Alignment, Vector3&, Vector3&);
+    const char *GetDefaultText() const;
+    int
+    InqMinMaxFromWidthAndHeight(float, float, RndText::Alignment, Vector3 &, Vector3 &);
     void LabelUpdate(bool, bool);
     void AdjustHeight(bool);
-    void SetFloat(const char*, float);
+    void SetFloat(const char *, float);
     void SetTextToken(Symbol);
-    void CenterWithLabel(UILabel*, bool, float);
-    void SetEditText(const char*);
+    void CenterWithLabel(UILabel *, bool, float);
+    void SetEditText(const char *);
     void SetUseHighlightMesh(bool);
     Symbol TextToken() const;
-    RndText* TextObj();
-    void SetColorOverride(UIColor*);
+    RndText *TextObj();
+    void SetColorOverride(UIColor *);
     float GetDrawWidth();
     float GetDrawHeight();
-    float Alpha(){ return mAlpha; }
-    float AltAlpha(){ return mAltAlpha; }
-    void SetAlpha(float f){ mAlpha = f; }
-    void SetAltAlpha(float f){ mAltAlpha = f; }
-    void SetTokenFmt(const DataArray*);
-    void SetTokenFmtImp(Symbol, const DataArray*, const DataArray*, int, bool);
+    float Alpha() { return mAlpha; }
+    float AltAlpha() { return mAltAlpha; }
+    void SetAlpha(float f) { mAlpha = f; }
+    void SetAltAlpha(float f) { mAltAlpha = f; }
+    void SetTokenFmt(const DataArray *);
+    void SetTokenFmtImp(Symbol, const DataArray *, const DataArray *, int, bool);
     void SetInt(int, bool);
     void SetIcon(char);
     void AppendIcon(char);
-    void SetDateTime(const DateTime&, Symbol);
-    void SetSubtitle(const DataArray*);
+    void SetDateTime(const DateTime &, Symbol);
+    void SetSubtitle(const DataArray *);
     RndText::Alignment Alignment() const { return (RndText::Alignment)mAlignment; }
     void SetAlignment(RndText::Alignment);
     void SetCapsMode(RndText::CapsMode);
     void SetFitType(FitType);
-    void OnSetIcon(const char*);
+    void OnSetIcon(const char *);
     void AltFontResourceFileUpdated(bool);
-    RndFont* AltFont();
-    RndFont* Font();
+    RndFont *AltFont();
+    RndFont *Font();
     void FitText();
     void UpdateAndDrawHighlightMesh();
     bool CheckValid(bool);
 
-    template <class T1> void SetTokenFmt(Symbol s, T1 t1) {
+    template <class T1>
+    void SetTokenFmt(Symbol s, T1 t1) {
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(t1)));
     }
 
-    template <class T1, class T2> void SetTokenFmt(Symbol s, T1 t1, T2 t2) {
+    template <class T1, class T2>
+    void SetTokenFmt(Symbol s, T1 t1, T2 t2) {
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(t1), DataNode(t2)));
     }
 
-    template <class T1, class T2, class T3> void SetTokenFmt(Symbol s, T1 t1, T2 t2, T3 t3) {
+    template <class T1, class T2, class T3>
+    void SetTokenFmt(Symbol s, T1 t1, T2 t2, T3 t3) {
         SetTokenFmt(DataArrayPtr(DataNode(s), DataNode(t1), DataNode(t2), DataNode(t3)));
     }
 
-    bool HasHighlightMesh() const {
-        return mLabelDir->HighlighMeshGroup() != 0;
-    }
+    bool HasHighlightMesh() const { return mLabelDir->HighlighMeshGroup() != 0; }
 
-    DataNode OnSetTokenFmt(const DataArray*);
-    DataNode OnSetInt(const DataArray*);
-    DataNode OnGetMaterialVariations(const DataArray*);
-    DataNode OnGetAltMaterialVariations(const DataArray*);
+    DataNode OnSetTokenFmt(const DataArray *);
+    DataNode OnSetInt(const DataArray *);
+    DataNode OnGetMaterialVariations(const DataArray *);
+    DataNode OnGetAltMaterialVariations(const DataArray *);
 
-    UILabelDir* mLabelDir; // 0x10c
-    RndText* mText; // 0x110 - TrackWidget* in bank 5
+    UILabelDir *mLabelDir; // 0x10c
+    RndText *mText; // 0x110 - TrackWidget* in bank 5
     class String unk114; // 0x114
     ObjPtr<RndFont> mFont; // 0x120
     Symbol unk12c;
@@ -133,7 +134,8 @@ public:
     Symbol mTextToken; // 0x130
     /** "Single-character icon" */
     String mIcon; // 0x134
-    /** "Text size in percentage of screen height (i.e. 50% is half the screen height for the largest glyph)". Range is 1E-3 to 5 */
+    /** "Text size in percentage of screen height (i.e. 50% is half the screen height for
+     * the largest glyph)". Range is 1E-3 to 5 */
     float mTextSize; // 0x140
     /** "Space between lines" */
     float mLeading; // 0x144
@@ -155,11 +157,14 @@ public:
     float mAlpha; // 0x168
     /** "Color override for this instance" */
     ObjPtr<UIColor> mColorOverride; // 0x16c
-    /** "the material variation to use, populated from those setup in the resource file.  selecting none gives you the default material." */
+    /** "the material variation to use, populated from those setup in the resource file.
+     * selecting none gives you the default material." */
     Symbol mFontMatVariation; // 0x178
-    /** "the material variation to use from the alternate font. selecting none gives you the default material." */
+    /** "the material variation to use from the alternate font. selecting none gives you
+     * the default material." */
     Symbol mAltMatVariation; // 0x17c
-    /** "Text size of alternate style in percentage of screen height (i.e. 50% is half the screen height for the largest glyph)" */
+    /** "Text size of alternate style in percentage of screen height (i.e. 50% is half the
+     * screen height for the largest glyph)" */
     float mAltTextSize; // 0x180
     /** "Additional kerning applied to alt text object" */
     float mAltKerning; // 0x184

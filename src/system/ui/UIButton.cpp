@@ -7,14 +7,14 @@
 
 INIT_REVS(UIButton)
 
-UIButton::UIButton() { }
+UIButton::UIButton() {}
 
 void UIButton::Init() {
     TheUI->InitResources("UIButton");
     Register();
 }
 
-Hmx::Object* UIButton::NewObject() {return new UIButton;}
+Hmx::Object *UIButton::NewObject() { return new UIButton; }
 
 BEGIN_COPYS(UIButton)
     CREATE_COPY_AS(UIButton, f);
@@ -24,18 +24,18 @@ END_COPYS
 
 SAVE_OBJ(UIButton, 54)
 
-void UIButton::Load(BinStream& bs) {
+void UIButton::Load(BinStream &bs) {
     PreLoad(bs);
     PostLoad(bs);
 }
 
-void UIButton::PreLoad(BinStream& bs) {
+void UIButton::PreLoad(BinStream &bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(0, 0)
     UILabel::PreLoad(bs);
 }
 
-void UIButton::PostLoad(BinStream& bs) { UILabel::PostLoad(bs);}
+void UIButton::PostLoad(BinStream &bs) { UILabel::PostLoad(bs); }
 
 BEGIN_HANDLERS(UIButton)
     HANDLE_MESSAGE(ButtonDownMsg)
@@ -43,7 +43,7 @@ BEGIN_HANDLERS(UIButton)
     HANDLE_CHECK(87)
 END_HANDLERS
 
-DataNode UIButton::OnMsg(const ButtonDownMsg& msg) {
+DataNode UIButton::OnMsg(const ButtonDownMsg &msg) {
     if (msg.GetAction() == 1 && GetState() == UIComponent::kFocused) {
         SendSelect(msg.GetUser());
         return DataNode(1);

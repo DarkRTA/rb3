@@ -29,7 +29,8 @@ enum ZMode {
     kZModeDisable = 0,
     /** "draw and update z-buffer if closer than z-buffer" */
     kZModeNormal = 1,
-    /** "draw if closer than or equal z-buffer but don't update z-buffer. Often used with SrcAlpha or Add blending so those objects don't occlude other similar objects" */
+    /** "draw if closer than or equal z-buffer but don't update z-buffer. Often used with
+     * SrcAlpha or Add blending so those objects don't occlude other similar objects" */
     kZModeTransparent = 2,
     /** "always draw and update z-buffer" */
     kZModeForce = 3,
@@ -46,13 +47,15 @@ enum TexGen {
     kTexGenNone = 0,
     /** "transform vertex UV about center with stage xfm" */
     kTexGenXfm = 1,
-    /** "sphere map that rotates around object with camera, xfm is direction of map, fast on gs slow on cpu, flips at poles" */
+    /** "sphere map that rotates around object with camera, xfm is direction of map, fast
+     * on gs slow on cpu, flips at poles" */
     kTexGenSphere = 2,
     /** "project from direction of stage xfm in world coords" */
     kTexGenProjected = 3,
     /** "like Xfm but about origin rather than center" */
     kTexGenXfmOrigin = 4,
-    /** "reflection map, like sphere map but perspective correct and does not flip, fast on cpu but slow on gs" */
+    /** "reflection map, like sphere map but perspective correct and does not flip, fast
+     * on cpu but slow on gs" */
     kTexGenEnviron = 5,
 };
 enum TexWrap {
@@ -76,14 +79,13 @@ enum ShaderVariation {
 /** Toggles pertaining to RndMat performance. */
 struct MatPerfSettings {
     MatPerfSettings();
-    void Load(BinStream&);
-    void SetPS3ForceTrilinear(bool set){
-        mPS3ForceTrilinear = set;
-    }
-    
+    void Load(BinStream &);
+    void SetPS3ForceTrilinear(bool set) { mPS3ForceTrilinear = set; }
+
     /** "Check this option to allow the material to receive projected lighting" */
     bool mRecvProjLights : 1;
-    /** "Check this option to allow the material to receive projected cube maps from a point light" */
+    /** "Check this option to allow the material to receive projected cube maps from a
+     * point light" */
     bool mRecvPointCubeTex : 1;
     /** "Force trilinear filtering of diffuse map (PS3 only)" */
     bool mPS3ForceTrilinear : 1;
@@ -124,16 +126,14 @@ struct MatShaderOptions {
     bool mTempMat; // 0x4
 
     // TODO: rename this once you have a better idea of what it does
-    void SetLast5(int mask){
-        pack = (pack & ~0x1f) | (mask & 0x1f);
-    }
+    void SetLast5(int mask) { pack = (pack & ~0x1f) | (mask & 0x1f); }
 
-    void SetHasBones(bool bones){    
+    void SetHasBones(bool bones) {
         shader_struct.mHasBones = 0;
         shader_struct.mHasBones = bones;
     }
 
-    void SetHasAOCalc(bool calc){
+    void SetHasAOCalc(bool calc) {
         shader_struct.mHasAOCalc = 0;
         shader_struct.mHasAOCalc = calc;
     }
@@ -156,112 +156,106 @@ public:
     };
 
     RndMat();
-    virtual ~RndMat(){}
+    virtual ~RndMat() {}
     OBJ_CLASSNAME(Mat);
     OBJ_SET_TYPE(Mat);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
-    /** Determine whether the supplied Mat is in the collection of Mats pertaining to this Object.
+    /** Determine whether the supplied Mat is in the collection of Mats pertaining to this
+     * Object.
      * @param [in] mat The Mat to search for.
      */
-    bool IsNextPass(RndMat* mat);
+    bool IsNextPass(RndMat *mat);
     /** Set the color mod at the supplied index.
      * @param [in] col The color to apply.
      * @param [in] idx The index of the color mod.
      */
-    void SetColorMod(const Hmx::Color& col, int idx);
+    void SetColorMod(const Hmx::Color &col, int idx);
     // getters and setters
     bool GetRefractEnabled(bool);
-    RndTex* GetRefractNormalMap();
+    RndTex *GetRefractNormalMap();
     float GetRefractStrength();
     TexWrap GetTexWrap() const { return mTexWrap; }
     Blend GetBlend() const { return mBlend; }
     ZMode GetZMode() const { return mZMode; }
-    RndMat* NextPass() const { return mNextPass; }
-    const Transform& TexXfm() const { return mTexXfm; }
-    void SetTexXfm(const Transform& tf){
+    RndMat *NextPass() const { return mNextPass; }
+    const Transform &TexXfm() const { return mTexXfm; }
+    void SetTexXfm(const Transform &tf) {
         mTexXfm = tf;
         mDirty |= 2;
     }
-    void SetZMode(ZMode mode){
+    void SetZMode(ZMode mode) {
         mZMode = mode;
         mDirty |= 2;
     }
-    void SetDiffuseTex(RndTex* tex){
+    void SetDiffuseTex(RndTex *tex) {
         mDiffuseTex = tex;
         mDirty |= 2;
     }
-    RndTex* GetDiffuseTex() const { return mDiffuseTex; }
-    const Hmx::Color& GetColor() const { return mColor; }
+    RndTex *GetDiffuseTex() const { return mDiffuseTex; }
+    const Hmx::Color &GetColor() const { return mColor; }
     float Alpha() const { return mColor.alpha; }
-    void SetAlpha(float f){
+    void SetAlpha(float f) {
         mColor.alpha = f;
         mDirty |= 1;
     }
-    void SetColor(const Hmx::Color& col){
+    void SetColor(const Hmx::Color &col) {
         mColor.Set(col.red, col.green, col.blue);
         mDirty |= 1;
     }
-    void SetUseEnv(bool use_env){
+    void SetUseEnv(bool use_env) {
         mUseEnviron = use_env;
         mDirty |= 2;
     }
-    void SetPreLit(bool lit){
+    void SetPreLit(bool lit) {
         mPreLit = lit;
         mDirty |= 2;
     }
-    void SetBlend(Blend blend){
+    void SetBlend(Blend blend) {
         mBlend = blend;
         mDirty |= 2;
     }
-    void SetAlphaCut(bool cut){
+    void SetAlphaCut(bool cut) {
         mAlphaCut = cut;
         mDirty |= 2;
     }
-    void SetCull(bool cull){
+    void SetCull(bool cull) {
         mCull = cull;
         mDirty |= 2;
     }
-    void SetAlphaThreshold(int thresh){
-        mAlphaThresh = thresh;
-    }
-    void SetTexWrap(TexWrap wrap){
+    void SetAlphaThreshold(int thresh) { mAlphaThresh = thresh; }
+    void SetTexWrap(TexWrap wrap) {
         mTexWrap = wrap;
         mDirty |= 2;
     }
-    void SetPerPixelLit(bool lit){
+    void SetPerPixelLit(bool lit) {
         mPerPixelLit = lit;
         mDirty |= 2;
     }
-    void SetPointLights(bool lit){
-        mPointLights = lit;
-    }
-    void SetShaderOpts(const MatShaderOptions& opts){
-        mShaderOptions = opts;
-    }
+    void SetPointLights(bool lit) { mPointLights = lit; }
+    void SetShaderOpts(const MatShaderOptions &opts) { mShaderOptions = opts; }
 
-    void SetColorModFlags(ColorModFlags flags){
+    void SetColorModFlags(ColorModFlags flags) {
         mColorModFlags = flags;
         mDirty |= 2;
     }
 
-    /** Handler to get all Mats in this Object's Dir that are NOT part of the material list.
+    /** Handler to get all Mats in this Object's Dir that are NOT part of the material
+     * list.
      * @returns a DataArray of all Mats that satisfy the above condition.
      * Example usage: {$this allowed_next_pass}
      */
-    DataNode OnAllowedNextPass(const DataArray*);
-    DataNode OnAllowedNormalMap(const DataArray*);
+    DataNode OnAllowedNextPass(const DataArray *);
+    DataNode OnAllowedNormalMap(const DataArray *);
 
     DECLARE_REVS
     NEW_OVERLOAD
     NEW_OBJ(RndMat)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndMat)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndMat) }
 
     /** "Base material color" */
     Hmx::Color mColor; // 0x1c
@@ -285,9 +279,11 @@ public:
     /* Refraction Settings:
      * "Settings for applying refraction to the material"
      */
-    /** "The scale of the refraction of the screen under the material." Ranges from 0 to 100. */
+    /** "The scale of the refraction of the screen under the material." Ranges from 0 to
+     * 100. */
     float mRefractStrength; // 0x88
-    /** "This is a normal map used to distort the screen under the material. If none is specified, the regular normal map will be used." */
+    /** "This is a normal map used to distort the screen under the material. If none is
+     * specified, the regular normal map will be used." */
     ObjPtr<RndTex> mRefractNormalMap; // 0x8c
     /* ------------------------------------------------------------------------ */
     std::vector<Hmx::Color> mColorMod; // 0x98
@@ -336,7 +332,7 @@ public:
     /** "Texture mapping mode" */
     TexWrap mTexWrap : 8;
     /** "How to read and write z-buffer" */
-    ZMode mZMode : 8;    
+    ZMode mZMode : 8;
     // 0xb4
     /** "How to read and write the stencil buffer" */
     StencilMode mStencilMode : 8;
@@ -346,4 +342,4 @@ public:
     int mDirty : 8;
 };
 
-RndMat* LookupOrCreateMat(const char*, ObjectDir*);
+RndMat *LookupOrCreateMat(const char *, ObjectDir *);

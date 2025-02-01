@@ -12,7 +12,7 @@ class CharIKHead : public RndHighlightable, public CharWeightable, public CharPo
 public:
     class Point {
     public:
-        Point(Hmx::Object* o) : unk0(o), unkc(0,0,0), unk18(0), unk1c(0) {}
+        Point(Hmx::Object *o) : unk0(o), unkc(0, 0, 0), unk18(0), unk1c(0) {}
 
         ObjPtr<RndTransformable> unk0; // 0x0
         Vector3 unkc; // 0xc
@@ -26,15 +26,15 @@ public:
     virtual ~CharIKHead();
     virtual void Highlight();
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     OBJ_CLASSNAME(CharIKHead);
     OBJ_SET_TYPE(CharIKHead);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void SetName(const char *, class ObjectDir *);
 
     void UpdatePoints(bool);
 
@@ -42,10 +42,8 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharIKHead)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharIKHead)
-    }
-    
+    static void Init() { REGISTER_OBJ_FACTORY(CharIKHead) }
+
     ObjVector<Point> mPoints; // 0x28
     /** "The head bone which will be moved to the target" */
     ObjPtr<RndTransformable> mHead; // 0x34

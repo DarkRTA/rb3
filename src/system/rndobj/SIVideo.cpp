@@ -3,9 +3,9 @@
 #include "os/Debug.h"
 #include "utl/MemMgr.h"
 
-void SIVideo::Reset(){
+void SIVideo::Reset() {
     mMagic = mWidth = mHeight = mBpp = 0;
-    if(mData){
+    if (mData) {
         _MemFree(mData);
         mData = 0;
     }
@@ -14,12 +14,12 @@ void SIVideo::Reset(){
 inline int SIVideo::Bpp() const { return mBpp == 8 ? 4 : 8; }
 inline int SIVideo::FrameSize() const { return (mMagic * mWidth * Bpp()) >> 3; }
 
-void SIVideo::Load(BinStream& bs, bool load_data) {
+void SIVideo::Load(BinStream &bs, bool load_data) {
     int magic, dump, unused;
     bs >> magic;
     if (magic != 'SIV_') {
         mMagic = magic;
-        #ifdef MILO_DEBUG
+#ifdef MILO_DEBUG
         bs >> mWidth;
         bs >> mHeight;
         bs >> dump;
@@ -27,35 +27,36 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
         bs >> unused;
         bs >> unused;
         bs >> unused;
-        #else 
+#else
         bs >> mWidth >> mHeight >> dump >> unused >> unused >> unused >> unused;
-        #endif
+#endif
         mBpp = 8;
     } else {
         uint x;
         bs >> x;
-        if (x > 1) MILO_FAIL("Can't load new SIVideo.\n");
-        #ifdef MILO_DEBUG
+        if (x > 1)
+            MILO_FAIL("Can't load new SIVideo.\n");
+#ifdef MILO_DEBUG
         bs >> mMagic;
         bs >> mWidth;
         bs >> mHeight;
         bs >> mBpp;
-        #else
+#else
         bs >> mMagic >> mWidth >> mHeight >> mBpp;
-        #endif
+#endif
     }
     if (mData) {
         _MemFree(mData);
         mData = 0;
     }
     if (!load_data) {
-    #ifdef VERSION_SZBE69_B8
-        mData = (char*)_MemAlloc(mHeight * (mMagic * mWidth * Bpp() >> 3), 0);
+#ifdef VERSION_SZBE69_B8
+        mData = (char *)_MemAlloc(mHeight * (mMagic * mWidth * Bpp() >> 3), 0);
         bs.Read(mData, mHeight * (mMagic * mWidth * Bpp() >> 3));
-    #else
-        mData = (char*)_MemAlloc(mHeight * FrameSize(), 0);
+#else
+        mData = (char *)_MemAlloc(mHeight * FrameSize(), 0);
         bs.Read(mData, mHeight * FrameSize());
-    #endif
+#endif
     }
 }
 
@@ -64,9 +65,9 @@ void SIVideo::Load(BinStream& bs, bool load_data) {
 DECOMP_FORCEBLOCK(SIVideo, (const SIVideo* s), s->Bpp(); s->FrameSize();)
 #pragma pop
 
-char* SIVideo::Frame(int i) {
+char *SIVideo::Frame(int i) {
     if (mData) {
         return &mData[FrameSize() * i];
-    }
-    else return NULL;
+    } else
+        return NULL;
 }

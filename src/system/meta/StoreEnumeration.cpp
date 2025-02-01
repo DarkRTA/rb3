@@ -1,17 +1,15 @@
 #include "StoreEnumeration.h"
 
 WiiEnumeration::WiiEnumeration(int i) : mLoading(true) {
-    if (i != 0) mState = kEnumWaiting;
-    else mState = kPreSuccess;
+    if (i != 0)
+        mState = kEnumWaiting;
+    else
+        mState = kPreSuccess;
 }
 
-void WiiEnumeration::Start() {
+void WiiEnumeration::Start() {}
 
-}
-
-bool WiiEnumeration::IsSuccess() const {
-    return mState == kSuccess;
-}
+bool WiiEnumeration::IsSuccess() const { return mState == kSuccess; }
 
 bool WiiEnumeration::IsEnumerating() const {
     return (mState != kSuccess && mState != kFail) ? true : false;
@@ -19,6 +17,5 @@ bool WiiEnumeration::IsEnumerating() const {
 
 void WiiEnumeration::Poll() {
     if (mState == kEnumWaiting) {
-        
     }
 }

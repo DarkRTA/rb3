@@ -24,7 +24,10 @@
 #include "rndobj/Rnd.h"
 #include "rndobj/MeshDeform.h"
 
-class BandCharacter : public Character, public BandCharDesc, public MergeFilter, public Rnd::CompressTextureCallback {
+class BandCharacter : public Character,
+                      public BandCharDesc,
+                      public MergeFilter,
+                      public Rnd::CompressTextureCallback {
 public:
     class BoneState {
     public:
@@ -33,116 +36,112 @@ public:
     BandCharacter();
     OBJ_CLASSNAME(BandCharacter);
     OBJ_SET_TYPE(BandCharacter);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~BandCharacter();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
-    virtual bool AllowsInlineProxy(){ return false; }
-    virtual void AddedObject(Hmx::Object*);
-    virtual void RemovingObject(Hmx::Object*);
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual bool AllowsInlineProxy() { return false; }
+    virtual void AddedObject(Hmx::Object *);
+    virtual void RemovingObject(Hmx::Object *);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual void CollideList(const Segment&, std::list<Collision>&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual void CollideList(const Segment &, std::list<Collision> &);
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
-    virtual void Teleport(Waypoint*);
+    virtual void Teleport(Waypoint *);
     virtual void CalcBoundingSphere();
-    virtual float ComputeScreenSize(RndCam*);
+    virtual float ComputeScreenSize(RndCam *);
     virtual void DrawLodOrShadow(int, DrawMode);
-    virtual CharEyes* GetEyes(){ return mEyes; }
-    virtual bool ValidateInterest(CharInterest*, ObjectDir*);
-    virtual bool SetFocusInterest(CharInterest*, int);
+    virtual CharEyes *GetEyes() { return mEyes; }
+    virtual bool ValidateInterest(CharInterest *, ObjectDir *);
+    virtual bool SetFocusInterest(CharInterest *, int);
     virtual void SetInterestFilterFlags(int);
     virtual void ClearInterestFilterFlags();
     virtual void TextureCompressed(int);
-    virtual RndTex* GetPatchTex(Patch&);
-    virtual RndMesh* GetPatchMesh(Patch&);
-    virtual RndTex* GetBandLogo();
-    virtual void Compress(RndTex*, bool);
-    virtual ObjectDir* GetPatchDir(){}
-    virtual void AddOverlays(BandPatchMesh&);
+    virtual RndTex *GetPatchTex(Patch &);
+    virtual RndMesh *GetPatchMesh(Patch &);
+    virtual RndTex *GetBandLogo();
+    virtual void Compress(RndTex *, bool);
+    virtual ObjectDir *GetPatchDir() {}
+    virtual void AddOverlays(BandPatchMesh &);
     virtual void MiloReload();
-    virtual Action Filter(Hmx::Object*, Hmx::Object*, ObjectDir*);
-    virtual Action FilterSubdir(ObjectDir* o1, ObjectDir*);
+    virtual Action Filter(Hmx::Object *, Hmx::Object *, ObjectDir *);
+    virtual Action FilterSubdir(ObjectDir *o1, ObjectDir *);
 
     void DrawLodOrShadowMode(int, DrawMode);
-    void AddObject(Hmx::Object*);
+    void AddObject(Hmx::Object *);
     void ClearGroup();
     void StartLoad(bool, bool, bool);
     bool IsLoading();
-    const char* FlagString(int);
+    const char *FlagString(int);
     void SetContext(Symbol);
     void SavePrefabFromCloset();
     void SetSingalong(float);
     void GameOver();
     void ClearDircuts();
     void SetInstrumentType(Symbol);
-    void SetGroupName(const char*);
+    void SetGroupName(const char *);
     void SetHeadLookatWeight(float);
-    CharClipDriver* SetState(const char*, int, int, bool, bool);
+    CharClipDriver *SetState(const char *, int, int, bool, bool);
     bool InVignetteOrCloset() const;
-    void RemoveDrawAndPoll(Character*);
+    void RemoveDrawAndPoll(Character *);
     void SetClipTypes(Symbol, Symbol);
-    void SetTempoGenreVenue(Symbol, Symbol, const char*);
-    void DeformHead(SyncMeshCB*);
-    void SyncOutfitConfig(OutfitConfig*);
+    void SetTempoGenreVenue(Symbol, Symbol, const char *);
+    void DeformHead(SyncMeshCB *);
+    void SyncOutfitConfig(OutfitConfig *);
     void SetDeformation();
-    void PlayGroup(const char*, bool, int, float, TaskUnits, Symbol);
-    bool AllowOverride(const char*);
-    bool SetPrefab(BandCharDesc*);
+    void PlayGroup(const char *, bool, int, float, TaskUnits, Symbol);
+    bool AllowOverride(const char *);
+    bool SetPrefab(BandCharDesc *);
     bool AddDircut(Symbol, Symbol, int);
-    bool AddDircut(const FilePath&);
-    CharLipSyncDriver* GetLipSyncDriver();
+    bool AddDircut(const FilePath &);
+    CharLipSyncDriver *GetLipSyncDriver();
     int GetShotFlags(Symbol);
     void SetVisemes();
-    void RecomposePatches(BandCharDesc*, int);
-    OutfitConfig* GetOutfitConfig(const char*);
-    void SetLipSync(CharLipSync*);
-    void SetSongOwner(CharLipSyncDriver*);
+    void RecomposePatches(BandCharDesc *, int);
+    OutfitConfig *GetOutfitConfig(const char *);
+    void SetLipSync(CharLipSync *);
+    void SetSongOwner(CharLipSyncDriver *);
     void PlayFaceClip();
     void UpdateOverlay();
     void SetDircuts();
-    CharClipDriver* PlayMainClip(int, bool);
+    CharClipDriver *PlayMainClip(int, bool);
     Symbol InstrumentType() const { return mInstrumentType; }
-    bool AddDriverClipDir(){
-        return mAddDriver && mAddDriver->ClipDir();
-    }
+    bool AddDriverClipDir() { return mAddDriver && mAddDriver->ClipDir(); }
 
     DataNode OnListDircuts();
     DataNode ListAnimGroups(int);
-    DataNode OnPlayGroup(DataArray*);
-    DataNode OnGroupOverride(DataArray*);
-    DataNode OnChangeFaceGroup(DataArray*);
-    DataNode OnSetPlay(DataArray*);
-    DataNode OnCamTeleport(DataArray*);
-    DataNode OnClosetTeleport(DataArray*);
-    DataNode OnInstallFilter(DataArray*);
-    DataNode OnPreClear(DataArray*);
-    DataNode OnCopyPrefab(DataArray*);
-    DataNode OnSavePrefab(DataArray*);
-    DataNode OnSetFileMerger(DataArray*);
-    DataNode OnLoadDircut(DataArray*);
-    DataNode OnPostMerge(DataArray*);
-    DataNode OnHideCategories(DataArray*);
-    DataNode OnRestoreCategories(DataArray*);
-    DataNode OnToggleInterestDebugOverlay(DataArray*);
-    DataNode OnListDrumVenues(DataArray*);
-    DataNode OnPortraitBegin(DataArray*);
-    DataNode OnPortraitEnd(DataArray*);
+    DataNode OnPlayGroup(DataArray *);
+    DataNode OnGroupOverride(DataArray *);
+    DataNode OnChangeFaceGroup(DataArray *);
+    DataNode OnSetPlay(DataArray *);
+    DataNode OnCamTeleport(DataArray *);
+    DataNode OnClosetTeleport(DataArray *);
+    DataNode OnInstallFilter(DataArray *);
+    DataNode OnPreClear(DataArray *);
+    DataNode OnCopyPrefab(DataArray *);
+    DataNode OnSavePrefab(DataArray *);
+    DataNode OnSetFileMerger(DataArray *);
+    DataNode OnLoadDircut(DataArray *);
+    DataNode OnPostMerge(DataArray *);
+    DataNode OnHideCategories(DataArray *);
+    DataNode OnRestoreCategories(DataArray *);
+    DataNode OnToggleInterestDebugOverlay(DataArray *);
+    DataNode OnListDrumVenues(DataArray *);
+    DataNode OnPortraitBegin(DataArray *);
+    DataNode OnPortraitEnd(DataArray *);
 
-    static void MakeMRU(BandCharacter*, CharClip*);
-    static Symbol NameToDrumVenue(const char*);
+    static void MakeMRU(BandCharacter *, CharClip *);
+    static Symbol NameToDrumVenue(const char *);
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(BandCharacter);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(BandCharacter); }
     static void Terminate();
     DECLARE_REVS;
     NEW_OBJ(BandCharacter);
@@ -151,8 +150,8 @@ public:
 
     int mPlayFlags; // 0x450
     ObjPtr<CharDriver, ObjectDir> unk454; // 0x454
-    CharDriver* mAddDriver; // 0x460
-    CharDriver* mFaceDriver; // 0x464
+    CharDriver *mAddDriver; // 0x460
+    CharDriver *mFaceDriver; // 0x464
     char mGroupName[64]; // 0x468
     char mFaceGroupName[64]; // 0x4a8
     char mOverrideGroup[64]; // 0x4e8
@@ -161,8 +160,8 @@ public:
     ObjPtr<Character, ObjectDir> mOutfitDir; // 0x52c
     ObjPtr<Character, ObjectDir> mInstDir; // 0x538
     Symbol mTempo; // 0x544
-    FileMerger* mFileMerger; // 0x548
-    RndOverlay* mOverlay; // 0x54c
+    FileMerger *mFileMerger; // 0x548
+    RndOverlay *mOverlay; // 0x54c
     ObjPtr<CharLookAt, ObjectDir> mHeadLookAt; // 0x550
     ObjPtr<CharLookAt, ObjectDir> mNeckLookAt; // 0x55c
     ObjPtr<CharEyes, ObjectDir> mEyes; // 0x568
@@ -206,7 +205,7 @@ public:
     std::list<BoneState> unk6e4; // 0x6e4
     int unk6ec; // 0x6ec
     char filler2[0x44];
-    Waypoint* unk734; // 0x734
+    Waypoint *unk734; // 0x734
     unsigned int unk738; // 0x738
     ObjPtrList<RndMesh, ObjectDir> unk73c; // 0x73c
     ObjPtrList<RndMesh, ObjectDir> unk74c; // 0x74c

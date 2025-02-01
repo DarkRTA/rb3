@@ -4,25 +4,24 @@
 
 #include "decomp.h"
 
-void ChunkHeader::Read(BinStream& bs){
-    bs.Read((void*)mID.Str(), 4);
+void ChunkHeader::Read(BinStream &bs) {
+    bs.Read((void *)mID.Str(), 4);
     bs >> mLength;
-    if(CheckChunkID(mID.Str(), kListChunkID.Str()) || CheckChunkID(mID.Str(), kRiffChunkID.Str())){
-        bs.Read((void*)mID.Str(), 4);
+    if (CheckChunkID(mID.Str(), kListChunkID.Str())
+        || CheckChunkID(mID.Str(), kRiffChunkID.Str())) {
+        bs.Read((void *)mID.Str(), 4);
         mIsList = true;
         mLength -= 4;
         MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
-    }
-    else mIsList = false;
+    } else
+        mIsList = false;
 }
 
-DECOMP_FORCEACTIVE(Chunks,
-    "LIST:",
-    "<",
-    ">"
-)
+DECOMP_FORCEACTIVE(Chunks, "LIST:", "<", ">")
 
-IDataChunk::IDataChunk(IListChunk& chunk) : BinStream(true), mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mFailed(0), mEof(0) {
+IDataChunk::IDataChunk(IListChunk &chunk)
+    : BinStream(true), mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0),
+      mFailed(0), mEof(0) {
     MILO_ASSERT(mParent->CurSubChunkHeader(), 0x47);
     mHeader = new ChunkHeader(*mParent->CurSubChunkHeader());
     MILO_ASSERT(!mHeader->IsList(), 0x49);
@@ -32,55 +31,60 @@ IDataChunk::IDataChunk(IListChunk& chunk) : BinStream(true), mParent(&chunk), mB
     mParent->Lock();
 }
 
-IDataChunk::~IDataChunk(){
-    if(mParent) mParent->UnLock();
+IDataChunk::~IDataChunk() {
+    if (mParent)
+        mParent->UnLock();
     delete mHeader;
 }
 
-void IDataChunk::SeekImpl(int iOffset, SeekType t){
-    if(!Fail()){
-        switch(t){
-            case BinStream::kSeekBegin:
-                MILO_ASSERT(iOffset >= 0, 0x79);
-                if(iOffset > mHeader->Length()) mFailed = true;
-                mBaseBinStream.Seek(iOffset + mStartMarker, kSeekBegin);
-                break;
-            case BinStream::kSeekCur:
-                mBaseBinStream.Seek(iOffset, kSeekCur);
-                break;
-            case BinStream::kSeekEnd:
-                MILO_ASSERT(iOffset <= 0, 0x8A);
-                if(iOffset < -mHeader->Length()) mFailed = true;
-                mBaseBinStream.Seek(iOffset + mEndMarker, kSeekBegin);
-                break;
-            default: break;
+void IDataChunk::SeekImpl(int iOffset, SeekType t) {
+    if (!Fail()) {
+        switch (t) {
+        case BinStream::kSeekBegin:
+            MILO_ASSERT(iOffset >= 0, 0x79);
+            if (iOffset > mHeader->Length())
+                mFailed = true;
+            mBaseBinStream.Seek(iOffset + mStartMarker, kSeekBegin);
+            break;
+        case BinStream::kSeekCur:
+            mBaseBinStream.Seek(iOffset, kSeekCur);
+            break;
+        case BinStream::kSeekEnd:
+            MILO_ASSERT(iOffset <= 0, 0x8A);
+            if (iOffset < -mHeader->Length())
+                mFailed = true;
+            mBaseBinStream.Seek(iOffset + mEndMarker, kSeekBegin);
+            break;
+        default:
+            break;
         }
         mEof = mBaseBinStream.Eof() != 0;
     }
 }
 
-int IDataChunk::Tell(){
-    if(Fail()) return -1;
-    else return mBaseBinStream.Tell() - mStartMarker;
+int IDataChunk::Tell() {
+    if (Fail())
+        return -1;
+    else
+        return mBaseBinStream.Tell() - mStartMarker;
 }
 
-void IDataChunk::ReadImpl(void* data, int bytes){
+void IDataChunk::ReadImpl(void *data, int bytes) {
     int tell = mBaseBinStream.Tell();
-    if(bytes < mEndMarker - tell){
+    if (bytes < mEndMarker - tell) {
         mBaseBinStream.Read(data, bytes);
-    }
-    else {
+    } else {
         mBaseBinStream.Read(data, mEndMarker - tell);
         mEof = true;
     }
 }
 
-IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), mHeader(0),
-    mLocked(0), mSubHeader(), mRecentlyReset(1) {
-    if(b){
+IListChunk::IListChunk(BinStream &bs, bool b)
+    : mParent(0), mBaseBinStream(bs), mHeader(0), mLocked(0), mSubHeader(),
+      mRecentlyReset(1) {
+    if (b) {
         mHeader = new ChunkHeader(mBaseBinStream);
-    }
-    else {
+    } else {
         int tell1 = bs.Tell();
         bs.Seek(0, BinStream::kSeekEnd);
         int tell2 = bs.Tell();
@@ -91,25 +95,29 @@ IListChunk::IListChunk(BinStream& bs, bool b) : mParent(0), mBaseBinStream(bs), 
     Init();
 }
 
-IListChunk::IListChunk(IListChunk& chunk) : mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mLocked(0), mSubHeader(), mRecentlyReset(1) {
+IListChunk::IListChunk(IListChunk &chunk)
+    : mParent(&chunk), mBaseBinStream(chunk.mBaseBinStream), mHeader(0), mLocked(0),
+      mSubHeader(), mRecentlyReset(1) {
     mHeader = new ChunkHeader(*mParent->CurSubChunkHeader());
     mStartMarker = mBaseBinStream.Tell();
     Init();
 }
 
-IListChunk::~IListChunk(){
-    if(mParent) mParent->UnLock();
+IListChunk::~IListChunk() {
+    if (mParent)
+        mParent->UnLock();
     delete mHeader;
 }
 
-void IListChunk::Init(){
+void IListChunk::Init() {
     MILO_ASSERT(mHeader->IsList(), 0x100);
     mEndMarker = mStartMarker + mHeader->Length();
-    if(mParent) mParent->Lock();
+    if (mParent)
+        mParent->Lock();
     Reset();
 }
 
-void IListChunk::Reset(){
+void IListChunk::Reset() {
     MILO_ASSERT(!mLocked, 0x111);
     mBaseBinStream.Seek(mStartMarker, BinStream::kSeekBegin);
     mSubChunkMarker = mStartMarker;
@@ -117,27 +125,28 @@ void IListChunk::Reset(){
     mRecentlyReset = true;
 }
 
-const ChunkHeader* IListChunk::CurSubChunkHeader() const {
+const ChunkHeader *IListChunk::CurSubChunkHeader() const {
     MILO_ASSERT(mRecentlyReset == false, 0x121);
-    if(!mSubChunkValid) return 0;
-    else return &mSubHeader;
+    if (!mSubChunkValid)
+        return 0;
+    else
+        return &mSubHeader;
 }
 
-ChunkHeader* IListChunk::Next(){
+ChunkHeader *IListChunk::Next() {
     MILO_ASSERT(!mLocked, 0x133);
     mRecentlyReset = false;
-    if(mSubChunkMarker >= mEndMarker){
+    if (mSubChunkMarker >= mEndMarker) {
         mSubChunkValid = false;
         return 0;
-    }
-    else {
+    } else {
         mSubChunkValid = true;
         mBaseBinStream.Seek(mSubChunkMarker, BinStream::kSeekBegin);
         mSubHeader.Read(mBaseBinStream);
 
         unsigned int newlen = mSubHeader.GetNewLength();
         ChunkID theID = mSubHeader.mID;
-        if(!CheckChunkID(theID.Str(), kMidiTrackChunkID.Str())){
+        if (!CheckChunkID(theID.Str(), kMidiTrackChunkID.Str())) {
             // probably a branchless comparison
             unsigned int tmp = newlen >> 0x1FU;
             newlen += ((newlen & 1) ^ tmp) - tmp;
@@ -148,21 +157,22 @@ ChunkHeader* IListChunk::Next(){
     }
 }
 
-ChunkHeader* IListChunk::Next(ChunkID id){
+ChunkHeader *IListChunk::Next(ChunkID id) {
     MILO_ASSERT(!mLocked, 0x155);
-    while(Next()){
+    while (Next()) {
         ChunkID theID = mSubHeader.mID;
-        if(CheckChunkID(id.Str(), theID.Str())) return &mSubHeader;
+        if (CheckChunkID(id.Str(), theID.Str()))
+            return &mSubHeader;
     }
     return 0;
 }
 
-void IListChunk::Lock(){
+void IListChunk::Lock() {
     MILO_ASSERT(mLocked == false, 0x165);
     mLocked = true;
 }
 
-void IListChunk::UnLock(){
+void IListChunk::UnLock() {
     MILO_ASSERT(mLocked == true, 0x16F);
     mLocked = false;
 }

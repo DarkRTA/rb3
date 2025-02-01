@@ -8,29 +8,37 @@
 
 INIT_REVS(CrowdAudio);
 
-CrowdAudio* TheCrowdAudio;
+CrowdAudio *TheCrowdAudio;
 
 void CrowdAudio::Init() { Register(); }
 
-CrowdAudio::CrowdAudio() : mCurrentMogg(0, 0), mOldMogg(0, 0), mFadingMogg(0, 0), mMainFader(Hmx::Object::New<Fader>()), mWantDuck(0), mResultsDuck(0),
-    mResultsFadeDuration(1000.0f), mResultsFader(Hmx::Object::New<Fader>()), mFadeInFromLoadingDuration(1000.0f), mEntryFader(Hmx::Object::New<Fader>()), mVenueChangeFadeDuration(1000.0f), mLevel(kExcitementBad),
-    mLoopChangeTime(1e+30f), mIntro(0), mVenueIntro(0), mLevels(0), mVenueOutro(0), mState(0), mCrowdVol(0), mCamShotVol(0), mEnabled(1), mCrowdReacts(1), mLastClapBeat(0), mClapAllowed(1),
-    mBank(0, 0), mCurrentBankFader(0), mOtherBankFader(0), mReleaseFader(Hmx::Object::New<Fader>()), mCrossfadeDuration(1000.0f), mReleaseTime(5000.0f), mPaused(0),
-    mShouldPlayVenueIntro(0), mShouldPlayVenueOutro(0), mWon(0), mRestarting(1), mCloseupFader(Hmx::Object::New<Fader>()), mCloseupFadeDuration(1000.0f) {
+CrowdAudio::CrowdAudio()
+    : mCurrentMogg(0, 0), mOldMogg(0, 0), mFadingMogg(0, 0),
+      mMainFader(Hmx::Object::New<Fader>()), mWantDuck(0), mResultsDuck(0),
+      mResultsFadeDuration(1000.0f), mResultsFader(Hmx::Object::New<Fader>()),
+      mFadeInFromLoadingDuration(1000.0f), mEntryFader(Hmx::Object::New<Fader>()),
+      mVenueChangeFadeDuration(1000.0f), mLevel(kExcitementBad), mLoopChangeTime(1e+30f),
+      mIntro(0), mVenueIntro(0), mLevels(0), mVenueOutro(0), mState(0), mCrowdVol(0),
+      mCamShotVol(0), mEnabled(1), mCrowdReacts(1), mLastClapBeat(0), mClapAllowed(1),
+      mBank(0, 0), mCurrentBankFader(0), mOtherBankFader(0),
+      mReleaseFader(Hmx::Object::New<Fader>()), mCrossfadeDuration(1000.0f),
+      mReleaseTime(5000.0f), mPaused(0), mShouldPlayVenueIntro(0),
+      mShouldPlayVenueOutro(0), mWon(0), mRestarting(1),
+      mCloseupFader(Hmx::Object::New<Fader>()), mCloseupFadeDuration(1000.0f) {
     mOverrideExcitementLevel = (ExcitementLevel)-1;
     mOverrideExcitementLevelPrev = (ExcitementLevel)-1;
-    if(!TheCrowdAudio){
+    if (!TheCrowdAudio) {
         TheCrowdAudio = this;
-        static DataNode& crowd_audio = DataVariable("crowd_audio");
+        static DataNode &crowd_audio = DataVariable("crowd_audio");
         crowd_audio = DataNode(this);
     }
     mEntryFader->SetMode(Fader::kInvExp);
 }
 
-CrowdAudio::~CrowdAudio(){
-    if(TheCrowdAudio == this){
+CrowdAudio::~CrowdAudio() {
+    if (TheCrowdAudio == this) {
         TheCrowdAudio = 0;
-        static DataNode& crowd_audio = DataVariable("crowd_audio");
+        static DataNode &crowd_audio = DataVariable("crowd_audio");
         crowd_audio = DataNode(0);
     }
     StopAllMoggs();
@@ -43,7 +51,7 @@ CrowdAudio::~CrowdAudio(){
     RELEASE(mEntryFader);
 }
 
-void CrowdAudio::Enter(){
+void CrowdAudio::Enter() {
     RndPollable::Enter();
     mState = 0;
     mWon = false;
@@ -54,7 +62,7 @@ void CrowdAudio::Enter(){
     SetPaused(false);
 }
 
-void CrowdAudio::Exit(){
+void CrowdAudio::Exit() {
     RndPollable::Exit();
     SetEnabled(false);
     StopAllMoggs();
@@ -63,28 +71,32 @@ void CrowdAudio::Exit(){
     mRestarting = true;
 }
 
-void CrowdAudio::Poll(){
-    static DataNode& override_crowd_audio_level = DataVariable("override_crowd_audio_level");
-    if(override_crowd_audio_level.Int()){
+void CrowdAudio::Poll() {
+    static DataNode &override_crowd_audio_level =
+        DataVariable("override_crowd_audio_level");
+    if (override_crowd_audio_level.Int()) {
         mOverrideExcitementLevel = (ExcitementLevel)override_crowd_audio_level.Int();
-        if(mOverrideExcitementLevelPrev != mOverrideExcitementLevel) SetExcitement(mOverrideExcitementLevel);
-    }
-    else mOverrideExcitementLevel = (ExcitementLevel)-1;
+        if (mOverrideExcitementLevelPrev != mOverrideExcitementLevel)
+            SetExcitement(mOverrideExcitementLevel);
+    } else
+        mOverrideExcitementLevel = (ExcitementLevel)-1;
     mOverrideExcitementLevelPrev = mOverrideExcitementLevel;
-    if(mEnabled){
+    if (mEnabled) {
         float secs = TheTaskMgr.Seconds(TaskMgr::kDelayedTime);
         float othersecs = secs * 1000.0f;
-        if(secs > mLoopChangeTime) PlayExcitementLoop();
-        if(mOldMogg && mReleaseFader->mVal == -96.0f){
+        if (secs > mLoopChangeTime)
+            PlayExcitementLoop();
+        if (mOldMogg && mReleaseFader->mVal == -96.0f) {
             mOldMogg->Stop();
             mOldMogg = 0;
         }
-        if(mCurrentMogg && mCurrentMogg->IsStreaming() && mOldMogg && !mReleaseFader->IsFading()){
+        if (mCurrentMogg && mCurrentMogg->IsStreaming() && mOldMogg
+            && !mReleaseFader->IsFading()) {
             mReleaseFader->CancelFade();
             mReleaseFader->SetMode(Fader::kInvExp);
             mReleaseFader->DoFade(-96.0f, mReleaseTime);
         }
-        if(mFadingMogg && mOtherBankFader->mVal == -96.0f){
+        if (mFadingMogg && mOtherBankFader->mVal == -96.0f) {
             mFadingMogg->Stop();
             mFadingMogg = 0;
         }
@@ -92,40 +104,52 @@ void CrowdAudio::Poll(){
     }
 }
 
-void CrowdAudio::SetPaused(bool b){
-    if(b != mPaused){
-        if(mState < 4){
+void CrowdAudio::SetPaused(bool b) {
+    if (b != mPaused) {
+        if (mState < 4) {
             mPaused = b;
-            if(mPaused && mOldMogg){
+            if (mPaused && mOldMogg) {
                 mOldMogg->Stop();
                 mOldMogg = 0;
             }
-            if(mCurrentMogg) mCurrentMogg->Pause(mPaused);
-            if(mFadingMogg){
+            if (mCurrentMogg)
+                mCurrentMogg->Pause(mPaused);
+            if (mFadingMogg) {
                 mFadingMogg->Pause(mPaused);
-                if(mPaused){
+                if (mPaused) {
                     mCurrentBankFader->CancelFade();
                     mOtherBankFader->CancelFade();
                     mReleaseFader->CancelFade();
-                }
-                else {
+                } else {
                     mCurrentBankFader->DoFade(0.0f, mCrossfadeDuration);
                     mOtherBankFader->DoFade(-96.0f, mCrossfadeDuration);
                     mReleaseFader->DoFade(-96.0f, mCrossfadeDuration);
                 }
             }
-            if(!mPaused) UpdateVolume();
+            if (!mPaused)
+                UpdateVolume();
         }
     }
 }
 
-void CrowdAudio::SetExcitement(ExcitementLevel level){
-    if(mOverrideExcitementLevel != (ExcitementLevel)-1) level = mOverrideExcitementLevel;
-    if(level >= kNumExcitements) MILO_FAIL("Invalid excitement level: %d", level);
-    if(mState != 2) mLevel = level;
+void CrowdAudio::SetExcitement(ExcitementLevel level) {
+    if (mOverrideExcitementLevel != (ExcitementLevel)-1)
+        level = mOverrideExcitementLevel;
+    if (level >= kNumExcitements)
+        MILO_FAIL("Invalid excitement level: %d", level);
+    if (mState != 2)
+        mLevel = level;
     else {
-        static const char* upSfx[5] = { "crowd_upto_poor", "crowd_upto_poor", "crowd_upto_norm", "crowd_upto_good", "crowd_upto_peak" };
-        static const char* downSfx[5] = { "crowd_dnto_danger", "crowd_dnto_poor", "crowd_dnto_norm", "crowd_dnto_good", "crowd_dnto_good" };
+        static const char *upSfx[5] = { "crowd_upto_poor",
+                                        "crowd_upto_poor",
+                                        "crowd_upto_norm",
+                                        "crowd_upto_good",
+                                        "crowd_upto_peak" };
+        static const char *downSfx[5] = { "crowd_dnto_danger",
+                                          "crowd_dnto_poor",
+                                          "crowd_dnto_norm",
+                                          "crowd_dnto_good",
+                                          "crowd_dnto_good" };
         PlaySequence(((level > mLevel) ? upSfx : downSfx)[level]);
 
         mLevel = level;
@@ -133,50 +157,51 @@ void CrowdAudio::SetExcitement(ExcitementLevel level){
     }
 }
 
-bool CrowdAudio::PlayExcitementLoop(){
+bool CrowdAudio::PlayExcitementLoop() {
     mLoopChangeTime = 1e+30f;
     return PlayLoop(mLevels->Array(mLevel + 1), false);
 }
 
-bool CrowdAudio::PlayLoop(const DataArray* loopInfo, bool force){
+bool CrowdAudio::PlayLoop(const DataArray *loopInfo, bool force) {
     MILO_ASSERT(loopInfo != NULL, 0x163);
-    BinkClip* clip = 0;
-    const char* clipname = loopInfo->Str(1);
-    if(mBank){
+    BinkClip *clip = 0;
+    const char *clipname = loopInfo->Str(1);
+    if (mBank) {
         clip = mBank->Find<BinkClip>(clipname, false);
-        if(!clip){
+        if (!clip) {
             MILO_WARN("%s not found in %s_bank.milo", clipname, mBank->Name());
         }
     }
-    if(!clip) return false;
+    if (!clip)
+        return false;
     else {
         bool b2 = false;
-        if(clip != mCurrentMogg){
-            if(clip != mOldMogg){
+        if (clip != mCurrentMogg) {
+            if (clip != mOldMogg) {
                 b2 = true;
             } else {
-                if(mCurrentMogg) mCurrentMogg->Stop();
+                if (mCurrentMogg)
+                    mCurrentMogg->Stop();
                 mOldMogg->RemoveFader(mReleaseFader);
                 mCurrentMogg = mOldMogg;
                 mOldMogg = 0;
             }
         }
-        if(b2 || force){
-            if(mOldMogg) {
-                if(mCurrentMogg) mCurrentMogg->Stop();
-            }
-            else if(clip == mCurrentMogg){
+        if (b2 || force) {
+            if (mOldMogg) {
+                if (mCurrentMogg)
+                    mCurrentMogg->Stop();
+            } else if (clip == mCurrentMogg) {
                 MILO_ASSERT(force, 0x1AA);
-            }
-            else {
+            } else {
                 mOldMogg = mCurrentMogg;
-                if(mOldMogg){
+                if (mOldMogg) {
                     mOldMogg->AddFader(mReleaseFader);
                     mReleaseFader->SetVal(0.0f);
                 }
             }
             mCurrentMogg = clip;
-            DataArray* loopArr = loopInfo->Array(2);
+            DataArray *loopArr = loopInfo->Array(2);
             float pan = (loopArr->Float(1) + loopArr->Float(2)) * 0.5f;
             mCurrentMogg->SetPan(0, pan);
             mCurrentMogg->SetPan(1, pan);
@@ -193,33 +218,37 @@ bool CrowdAudio::PlayLoop(const DataArray* loopInfo, bool force){
     }
 }
 
-void CrowdAudio::PlaySequence(const char* cc){
-    Sequence* seq = 0;
-    if(mBank){
+void CrowdAudio::PlaySequence(const char *cc) {
+    Sequence *seq = 0;
+    if (mBank) {
         seq = mBank->Find<Sequence>(cc, false);
-        if(!seq) MILO_WARN("%s not found in %s_bank.milo", cc, mBank->Name());
+        if (!seq)
+            MILO_WARN("%s not found in %s_bank.milo", cc, mBank->Name());
     }
-    if(seq){
+    if (seq) {
         seq->mFaders.Add(mMainFader);
         seq->mFaders.Add(mEntryFader);
         seq->mFaders.Add(mResultsFader);
         seq->mFaders.Add(mCurrentBankFader);
         seq->mFaders.Remove(mOtherBankFader);
-        seq->Play(0,0,0);
+        seq->Play(0, 0, 0);
     }
 }
 
-void CrowdAudio::StopSequence(const char* cc){
-    Sequence* seq = 0;
-    if(mBank) seq = mBank->Find<Sequence>(cc, false);
-    if(seq) seq->Stop(true);
+void CrowdAudio::StopSequence(const char *cc) {
+    Sequence *seq = 0;
+    if (mBank)
+        seq = mBank->Find<Sequence>(cc, false);
+    if (seq)
+        seq->Stop(true);
 }
 
-void CrowdAudio::PlayCloseupAudio(){
-    const char* cue_name = "crowd_closeup.cue";
-    Sequence* seq = 0;
-    if(mBank) seq = mBank->Find<Sequence>(cue_name, false);
-    if(seq){
+void CrowdAudio::PlayCloseupAudio() {
+    const char *cue_name = "crowd_closeup.cue";
+    Sequence *seq = 0;
+    if (mBank)
+        seq = mBank->Find<Sequence>(cue_name, false);
+    if (seq) {
         seq->Stop(false);
         seq->mFaders.Add(mCloseupFader);
     }
@@ -227,47 +256,49 @@ void CrowdAudio::PlayCloseupAudio(){
     PlaySequence(cue_name);
 }
 
-void CrowdAudio::StopCloseupAudio(){
+void CrowdAudio::StopCloseupAudio() {
     mCloseupFader->DoFade(-96.0f, mCloseupFadeDuration);
 }
 
-void CrowdAudio::UpdateVolume(){
-    static DataNode& volumeSetting = DataVariable("crowd_audio.volume");
+void CrowdAudio::UpdateVolume() {
+    static DataNode &volumeSetting = DataVariable("crowd_audio.volume");
     float f1 = mCrowdVol + mCamShotVol + volumeSetting.Float();
-    if(f1 > 3.0f){
+    if (f1 > 3.0f) {
         MILO_WARN("Excessive crowd audio volume!\n");
         f1 = 3.0f;
     }
     mMainFader->SetVal(f1);
 }
 
-void CrowdAudio::SetEnabled(bool b){
-    MsgSource* src = dynamic_cast<MsgSource*>(Dir());
-    if(src) src->RemoveSink(this);
+void CrowdAudio::SetEnabled(bool b) {
+    MsgSource *src = dynamic_cast<MsgSource *>(Dir());
+    if (src)
+        src->RemoveSink(this);
     mEnabled = b;
-    if(mEnabled){
-        if(src) src->AddSink(this);
+    if (mEnabled) {
+        if (src)
+            src->AddSink(this);
         SetExcitement(mLevel);
     }
 }
 
-void CrowdAudio::StopAllMoggs(){
-    if(mCurrentMogg){
+void CrowdAudio::StopAllMoggs() {
+    if (mCurrentMogg) {
         mCurrentMogg->Stop();
         mCurrentMogg = 0;
     }
-    if(mOldMogg){
+    if (mOldMogg) {
         mOldMogg->Stop();
         mOldMogg = 0;
     }
-    if(mFadingMogg){
+    if (mFadingMogg) {
         mFadingMogg->Stop();
         mFadingMogg = 0;
     }
 }
 
-void CrowdAudio::SetTypeDef(DataArray* arr){
-    if(TypeDef() != arr){
+void CrowdAudio::SetTypeDef(DataArray *arr) {
+    if (TypeDef() != arr) {
         Hmx::Object::SetTypeDef(arr);
         mIntro = 0;
         mLevels = 0;
@@ -283,11 +314,11 @@ void CrowdAudio::SetTypeDef(DataArray* arr){
         mCrossfadeDuration = 1000.0f;
         mReleaseTime = 5000.0f;
         mFadeInFromLoadingDuration = 1000.0f;
-        if(arr){
+        if (arr) {
             arr->FindData("clap_early_amount_ms", mClapOffsetMs, false);
             arr->FindData("crowd_volume", mCrowdVol, false);
-            DataArray* streamArr = arr->FindArray("streams", false);
-            if(streamArr){
+            DataArray *streamArr = arr->FindArray("streams", false);
+            if (streamArr) {
                 mIntro = streamArr->FindArray("intro", true);
                 mLevels = streamArr->FindArray("levels", true);
                 mVenueIntro = streamArr->FindArray("venue_intro", true);
@@ -305,49 +336,46 @@ void CrowdAudio::SetTypeDef(DataArray* arr){
     }
 }
 
-void CrowdAudio::SetBank(ObjectDir* dir){
-    if(mBank != dir){
+void CrowdAudio::SetBank(ObjectDir *dir) {
+    if (mBank != dir) {
         mBank = dir;
-        if(!mCurrentBankFader || !mOtherBankFader){
-            Fader* newf = Hmx::Object::New<Fader>();
-            if(!mCurrentBankFader){
+        if (!mCurrentBankFader || !mOtherBankFader) {
+            Fader *newf = Hmx::Object::New<Fader>();
+            if (!mCurrentBankFader) {
                 mCurrentBankFader = newf;
                 mCurrentBankFader->SetVal(0.0f);
-            }
-            else if(!mOtherBankFader){
+            } else if (!mOtherBankFader) {
                 mOtherBankFader = mCurrentBankFader;
                 mCurrentBankFader = newf;
                 mCurrentBankFader->SetVal(-96.0f);
             }
-        }
-        else {
-            Fader* tmp = mCurrentBankFader;
+        } else {
+            Fader *tmp = mCurrentBankFader;
             mCurrentBankFader = mOtherBankFader;
             mOtherBankFader = tmp;
         }
-        if(mCurrentBankFader){
+        if (mCurrentBankFader) {
             mCurrentBankFader->CancelFade();
             mCurrentBankFader->SetMode(Fader::kInvExp);
             mCurrentBankFader->DoFade(0.0f, mCrossfadeDuration);
         }
-        if(mOtherBankFader){
+        if (mOtherBankFader) {
             mOtherBankFader->CancelFade();
             mOtherBankFader->SetMode(Fader::kExp);
             mOtherBankFader->DoFade(-96.0f, mCrossfadeDuration);
         }
-        if(mState == 2){
-            if(mFadingMogg){
+        if (mState == 2) {
+            if (mFadingMogg) {
                 mFadingMogg->Stop();
                 mFadingMogg = 0;
             }
-            if(PlayExcitementLoop()){
+            if (PlayExcitementLoop()) {
                 mFadingMogg = mOldMogg;
-            }
-            else {
+            } else {
                 mFadingMogg = mCurrentMogg;
-                if(mOldMogg){
+                if (mOldMogg) {
                     mFadingMogg = mOldMogg;
-                    if(mCurrentMogg){
+                    if (mCurrentMogg) {
                         mCurrentMogg->Stop();
                     }
                 }
@@ -365,18 +393,21 @@ BEGIN_LOADS(CrowdAudio)
     ASSERT_REVS(5, 0)
     LOAD_SUPERCLASS(Hmx::Object)
     LOAD_SUPERCLASS(RndPollable)
-    switch((unsigned int)gRev){
-        case 4:
-            int i; bs >> i >> i >> i;
-            break;
-        case 3:
-            int j; bs >> j;
-            break;
-        case 2: {
-            String str; bs >> str;
-        } break;
-        default:
-            break;
+    switch ((unsigned int)gRev) {
+    case 4:
+        int i;
+        bs >> i >> i >> i;
+        break;
+    case 3:
+        int j;
+        bs >> j;
+        break;
+    case 2: {
+        String str;
+        bs >> str;
+    } break;
+    default:
+        break;
     }
 END_LOADS
 
@@ -385,11 +416,12 @@ BEGIN_COPYS(CrowdAudio)
     COPY_SUPERCLASS(RndPollable)
 END_COPYS
 
-void CrowdAudio::MaybeClap(float f){
-    if(mState < 3){
+void CrowdAudio::MaybeClap(float f) {
+    if (mState < 3) {
         int beat = MsToLastClapBeat(f + mClapOffsetMs);
-        if(beat != mLastClapBeat){
-            if(mCrowdReacts && mClapAllowed && mLevel == kExcitementPeak && beat > mLastClapBeat){
+        if (beat != mLastClapBeat) {
+            if (mCrowdReacts && mClapAllowed && mLevel == kExcitementPeak
+                && beat > mLastClapBeat) {
                 PlaySequence("claps");
             }
             mLastClapBeat = beat;
@@ -397,31 +429,32 @@ void CrowdAudio::MaybeClap(float f){
     }
 }
 
-void CrowdAudio::OnIntro(){
-    if(mRestarting || mShouldPlayVenueIntro){
-        DataArray* arr = mIntro;
-        if(mShouldPlayVenueIntro) arr = mVenueIntro;
+void CrowdAudio::OnIntro() {
+    if (mRestarting || mShouldPlayVenueIntro) {
+        DataArray *arr = mIntro;
+        if (mShouldPlayVenueIntro)
+            arr = mVenueIntro;
         PlayLoop(arr, mShouldPlayVenueIntro);
         mShouldPlayVenueIntro = false;
     }
     mState = 1;
     mRestarting = false;
-    mResultsFader->DoFade(0,1000.0f);
+    mResultsFader->DoFade(0, 1000.0f);
 }
 
-void CrowdAudio::OnLose(){
+void CrowdAudio::OnLose() {
     mState = 4;
     mWantDuck = true;
 }
 
-void CrowdAudio::OnOutro(){
-    if(mWantDuck){
+void CrowdAudio::OnOutro() {
+    if (mWantDuck) {
         mResultsFader->DoFade(mResultsDuck, mResultsFadeDuration);
     }
 }
 
-void CrowdAudio::OnMusicStart(){
-    if(mState != 4){
+void CrowdAudio::OnMusicStart() {
+    if (mState != 4) {
         ExcitementLevel old = mLevel;
         mState = 2;
         mLevel = (ExcitementLevel)-1;
@@ -429,22 +462,20 @@ void CrowdAudio::OnMusicStart(){
     }
 }
 
-void CrowdAudio::OnWin(){
+void CrowdAudio::OnWin() {
     bool b1 = false;
-    if(mShouldPlayVenueOutro){
+    if (mShouldPlayVenueOutro) {
         b1 = PlayLoop(mVenueOutro, false);
         mShouldPlayVenueOutro = false;
     }
-    if(!b1 && mLevel < kExcitementOkay){
+    if (!b1 && mLevel < kExcitementOkay) {
         SetExcitement(kExcitementOkay);
     }
     mState = 3;
     mWon = true;
 }
 
-void CrowdAudio::OnEnd(){
-    mState = 4;
-}
+void CrowdAudio::OnEnd() { mState = 4; }
 
 BEGIN_HANDLERS(CrowdAudio)
     HANDLE_ACTION(play_intro, OnIntro())

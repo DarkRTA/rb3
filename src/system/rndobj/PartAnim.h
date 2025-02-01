@@ -9,34 +9,32 @@ public:
     RndParticleSysAnim();
     OBJ_CLASSNAME(ParticleSysAnim);
     OBJ_SET_TYPE(ParticleSysAnim);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~RndParticleSysAnim(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~RndParticleSysAnim() {}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget(){ return mParticleSys; }
+    virtual Hmx::Object *AnimTarget() { return mParticleSys; }
     virtual void SetKey(float);
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     virtual void Print();
 
-    void SetParticleSys(RndParticleSys*);
-    Keys<Hmx::Color, Hmx::Color>& StartColorKeys(){ return mKeysOwner->mStartColorKeys; }
-    Keys<Hmx::Color, Hmx::Color>& EndColorKeys(){ return mKeysOwner->mEndColorKeys; }
-    Keys<Vector2, Vector2>& EmitRateKeys(){ return mKeysOwner->mEmitRateKeys; }
-    Keys<Vector2, Vector2>& SpeedKeys(){ return mKeysOwner->mSpeedKeys; }
-    Keys<Vector2, Vector2>& LifeKeys(){ return mKeysOwner->mLifeKeys; }
-    Keys<Vector2, Vector2>& StartSizeKeys(){ return mKeysOwner->mStartSizeKeys; }
-    RndParticleSysAnim* KeysOwner() const { return mKeysOwner; }
+    void SetParticleSys(RndParticleSys *);
+    Keys<Hmx::Color, Hmx::Color> &StartColorKeys() { return mKeysOwner->mStartColorKeys; }
+    Keys<Hmx::Color, Hmx::Color> &EndColorKeys() { return mKeysOwner->mEndColorKeys; }
+    Keys<Vector2, Vector2> &EmitRateKeys() { return mKeysOwner->mEmitRateKeys; }
+    Keys<Vector2, Vector2> &SpeedKeys() { return mKeysOwner->mSpeedKeys; }
+    Keys<Vector2, Vector2> &LifeKeys() { return mKeysOwner->mLifeKeys; }
+    Keys<Vector2, Vector2> &StartSizeKeys() { return mKeysOwner->mStartSizeKeys; }
+    RndParticleSysAnim *KeysOwner() const { return mKeysOwner; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSysAnim)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndParticleSysAnim)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndParticleSysAnim) }
 
     ObjPtr<RndParticleSys, ObjectDir> mParticleSys; // 0x10
     Keys<Hmx::Color, Hmx::Color> mStartColorKeys; // 0x1c

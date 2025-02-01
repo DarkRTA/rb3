@@ -3,41 +3,39 @@
 #include "obj/Dir.h"
 #include "utl/Symbols.h"
 
-UserMgr* TheUserMgr = 0;
+UserMgr *TheUserMgr = 0;
 
-void SetTheUserMgr(UserMgr* mgr){
+void SetTheUserMgr(UserMgr *mgr) {
     TheUserMgr = mgr;
     JoypadReset();
 }
 
-UserMgr::UserMgr(){
-    SetName("user_mgr", ObjectDir::sMainDir);
-}
+UserMgr::UserMgr() { SetName("user_mgr", ObjectDir::sMainDir); }
 
-LocalUser* UserMgr::GetLocalUser(const UserGuid& ug, bool b) const { return 0; }
-RemoteUser* UserMgr::GetRemoteUser(const UserGuid& ug, bool b) const { return 0; }
+LocalUser *UserMgr::GetLocalUser(const UserGuid &ug, bool b) const { return 0; }
+RemoteUser *UserMgr::GetRemoteUser(const UserGuid &ug, bool b) const { return 0; }
 
-void UserMgr::GetLocalUsers(std::vector<LocalUser*>& lUsers) const {
-    std::vector<User*> users;
+void UserMgr::GetLocalUsers(std::vector<LocalUser *> &lUsers) const {
+    std::vector<User *> users;
     GetUsers(users);
-    for(int i = 0; i < users.size(); i++){
-        if(users[i]->IsLocal()){
+    for (int i = 0; i < users.size(); i++) {
+        if (users[i]->IsLocal()) {
             lUsers.push_back(users[i]->GetLocalUser());
         }
     }
 }
 
-void UserMgr::GetRemoteUsers(std::vector<RemoteUser*>& rUsers) const {
-    std::vector<User*> users;
+void UserMgr::GetRemoteUsers(std::vector<RemoteUser *> &rUsers) const {
+    std::vector<User *> users;
     GetUsers(users);
-    for(int i = 0; i < users.size(); i++){
-        if(!users[i]->IsLocal()){
+    for (int i = 0; i < users.size(); i++) {
+        if (!users[i]->IsLocal()) {
             rUsers.push_back(users[i]->GetRemoteUser());
         }
     }
 }
 
-LocalUser* UserMgr::GetLocalUserFromPadNum(int padnum) const {
+LocalUser *UserMgr::GetLocalUserFromPadNum(int padnum) const {
     return JoypadGetUserFromPadNum(padnum);
 }
 

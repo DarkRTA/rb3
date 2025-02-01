@@ -24,53 +24,57 @@ namespace Hmx {
         Color(float r, float g, float b) : red(r), green(g), blue(b), alpha(1.0f) {}
         Color(float r, float g, float b, float a) : red(r), green(g), blue(b), alpha(a) {}
         Color(int packed) : alpha(1.0f) { Unpack(packed); }
-        Color(const Color32&);
+        Color(const Color32 &);
 
-        Color& operator=(const Color32& c32);
+        Color &operator=(const Color32 &c32);
 
         // copy ctor uses asm magic
-        Color(const Color& color){
-            typedef struct{
+        Color(const Color &color) {
+            typedef struct {
                 __vec2x32float__ a, b;
             } Color_psq;
-            
+
             *(Color_psq *)this = *(Color_psq *)&color;
         }
 
-        void Set(float f1, float f2, float f3, float f4){
-            red = f1; green = f2; blue = f3; alpha = f4;
+        void Set(float f1, float f2, float f3, float f4) {
+            red = f1;
+            green = f2;
+            blue = f3;
+            alpha = f4;
         }
 
         // all weak
         // bool operator==(const Color &) const;
         // bool operator!=(const Color &) const;
 
-        void Set(float f){ red = green = blue = alpha = f; } // may go unused
-        void Reset(){ red = green = blue = alpha = 1.0f; }
+        void Set(float f) { red = green = blue = alpha = f; } // may go unused
+        void Reset() { red = green = blue = alpha = 1.0f; }
 
-        void Set(float r, float g, float b){
-            red = r; green = g; blue = b;
+        void Set(float r, float g, float b) {
+            red = r;
+            green = g;
+            blue = b;
         }
 
         int Pack() const {
-            return (((int)(blue * 255.0f) & 0xFF) << 16) | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
+            return (((int)(blue * 255.0f) & 0xFF) << 16)
+                | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
         }
 
         int PackAlpha() const {
-            return 
-                ((int)(alpha * 255.0f) & 0xFF) << 24 | 
-                ((int)(blue * 255.0f) & 0xFF) << 16 |
-                ((int)(green * 255.0f) & 0xFF) << 8 |
-                ((int)(red * 255.0f) & 0xFF);
+            return ((int)(alpha * 255.0f) & 0xFF) << 24
+                | ((int)(blue * 255.0f) & 0xFF) << 16
+                | ((int)(green * 255.0f) & 0xFF) << 8 | ((int)(red * 255.0f) & 0xFF);
         }
 
-        void Unpack(int packed){
+        void Unpack(int packed) {
             red = (packed & 255) / 255.0f;
             green = ((packed >> 8) & 255) / 255.0f;
             blue = ((packed >> 0x10) & 255) / 255.0f;
         }
 
-        void UnpackAlpha(int packed){
+        void UnpackAlpha(int packed) {
             red = (packed & 255) / 255.0f;
             green = ((packed >> 8) & 255) / 255.0f;
             blue = ((packed >> 0x10) & 255) / 255.0f;
@@ -87,67 +91,61 @@ namespace Hmx {
             };
         };
 
-        Color32(){ Clear(); }
-        Color32(int i){ color = i; }
-        Color32(const Color32& other) {
-            color = other.color;
-        }
-        Color32(const Hmx::Color& col){ color = col.PackAlpha(); }
+        Color32() { Clear(); }
+        Color32(int i) { color = i; }
+        Color32(const Color32 &other) { color = other.color; }
+        Color32(const Hmx::Color &col) { color = col.PackAlpha(); }
         Color32(float r, float g, float b, float a);
         void Clear() { color = -1; }
-        void Set(Hmx::Color& col){
-            color = col.PackAlpha();
-        }
+        void Set(Hmx::Color &col) { color = col.PackAlpha(); }
         void Set(float r, float g, float b, float a);
-        Color32& operator=(const Color32& other) {
+        Color32 &operator=(const Color32 &other) {
             color = other.color;
             return *this;
         }
-        bool operator==(const Color32& other) const { return color == other.color; }
-        bool operator!=(const Color32& other) const { return color != other.color; }
-        void SetAlpha(float f){ a = f * 255.0f; }
+        bool operator==(const Color32 &other) const { return color == other.color; }
+        bool operator!=(const Color32 &other) const { return color != other.color; }
+        void SetAlpha(float f) { a = f * 255.0f; }
         int FullColor() const { return color; }
         int Opaque() const { return color | 0xFF000000; }
 
-        float fr() const { return r * 0.0039215688593685627f;}
-        float fg() const { return g * 0.0039215688593685627f;}
-        float fb() const { return b * 0.0039215688593685627f;}
-        float fa() const { return a * 0.0039215688593685627f;}
+        float fr() const { return r * 0.0039215688593685627f; }
+        float fg() const { return g * 0.0039215688593685627f; }
+        float fb() const { return b * 0.0039215688593685627f; }
+        float fa() const { return a * 0.0039215688593685627f; }
     };
 
-    inline Color::Color(const Color32& c32){
-        UnpackAlpha(c32.color);
-    }
+    inline Color::Color(const Color32 &c32) { UnpackAlpha(c32.color); }
 
-    inline Color& Color::operator=(const Color32& c32){
+    inline Color &Color::operator=(const Color32 &c32) {
         UnpackAlpha(c32.color);
         return *this;
     }
 
 }
 
-void MakeHSL(const Hmx::Color&, float&, float&, float&);
-void MakeColor(float, float, float, Hmx::Color&);
-TextStream& operator<<(TextStream&, const Hmx::Color&);
+void MakeHSL(const Hmx::Color &, float &, float &, float &);
+void MakeColor(float, float, float, Hmx::Color &);
+TextStream &operator<<(TextStream &, const Hmx::Color &);
 
-inline BinStream& operator<<(BinStream& bs, const Hmx::Color& color){
+inline BinStream &operator<<(BinStream &bs, const Hmx::Color &color) {
     bs << color.red << color.green << color.blue << color.alpha;
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, Hmx::Color& color){
+inline BinStream &operator>>(BinStream &bs, Hmx::Color &color) {
     bs >> color.red >> color.green >> color.blue >> color.alpha;
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, Hmx::Color32& color){
+inline BinStream &operator>>(BinStream &bs, Hmx::Color32 &color) {
     Hmx::Color regcolor;
     bs >> regcolor;
     color.Set(regcolor);
     return bs;
 }
 
-inline void Add(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
+inline void Add(const Hmx::Color &c1, const Hmx::Color &c2, Hmx::Color &res) {
     float alpha = c1.alpha + c2.alpha;
     res.blue = c1.blue + c2.blue;
     res.green = c1.green + c2.green;
@@ -155,7 +153,7 @@ inline void Add(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
     res.alpha = alpha;
 }
 
-inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res){
+inline void Subtract(const Hmx::Color &c1, const Hmx::Color &c2, Hmx::Color &res) {
     float alpha = c1.alpha - c2.alpha;
     res.blue = c1.blue - c2.blue;
     res.green = c1.green - c2.green;
@@ -163,7 +161,7 @@ inline void Subtract(const Hmx::Color& c1, const Hmx::Color& c2, Hmx::Color& res
     res.alpha = alpha;
 }
 
-inline void Multiply(const Hmx::Color& c1, float f, Hmx::Color& res){
+inline void Multiply(const Hmx::Color &c1, float f, Hmx::Color &res) {
 #ifdef VERSION_SZBE69_B8
     res.red = c1.red * f;
     res.green = c1.green * f;
@@ -174,13 +172,23 @@ inline void Multiply(const Hmx::Color& c1, float f, Hmx::Color& res){
 #endif
 }
 
-inline Hmx::Color& Average(Hmx::Color& res, const Hmx::Color& c1, const Hmx::Color& c2){
-    res.Set((c1.red + c2.red) / 2, (c1.green + c2.green) / 2, (c1.blue + c2.blue) / 2, (c1.alpha + c2.alpha) / 2);
+inline Hmx::Color &Average(Hmx::Color &res, const Hmx::Color &c1, const Hmx::Color &c2) {
+    res.Set(
+        (c1.red + c2.red) / 2,
+        (c1.green + c2.green) / 2,
+        (c1.blue + c2.blue) / 2,
+        (c1.alpha + c2.alpha) / 2
+    );
     return res;
 }
 
-inline void Interp(const Hmx::Color& c1, const Hmx::Color& c2, float f, Hmx::Color& res){
-    res.Set(Interp(c1.red,c2.red,f), Interp(c1.green,c2.green,f), Interp(c1.blue,c2.blue,f), Interp(c1.alpha,c2.alpha,f));
+inline void Interp(const Hmx::Color &c1, const Hmx::Color &c2, float f, Hmx::Color &res) {
+    res.Set(
+        Interp(c1.red, c2.red, f),
+        Interp(c1.green, c2.green, f),
+        Interp(c1.blue, c2.blue, f),
+        Interp(c1.alpha, c2.alpha, f)
+    );
 }
 
-void Interp(const Hmx::Color32&, const Hmx::Color32&, float, Hmx::Color32&);
+void Interp(const Hmx::Color32 &, const Hmx::Color32 &, float, Hmx::Color32 &);

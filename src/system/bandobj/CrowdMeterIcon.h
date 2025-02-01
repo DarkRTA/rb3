@@ -17,13 +17,13 @@ public:
     CrowdMeterIcon();
     OBJ_CLASSNAME(CrowdMeterIcon)
     OBJ_SET_TYPE(CrowdMeterIcon)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~CrowdMeterIcon(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream& bs);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~CrowdMeterIcon() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &bs);
     virtual void SyncObjects();
 
     void Deploy();
@@ -35,16 +35,14 @@ public:
     void SetState(CrowdMeterState, bool);
     void ArrowShow(bool);
     void SetGlowing(bool);
-    void SetIcon(const char*);
+    void SetIcon(const char *);
     bool HasIcon() const;
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CrowdMeterIcon)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(CrowdMeterIcon)
 
     ObjPtr<EventTrigger, ObjectDir> mResetTrig; // 0x18c
@@ -62,7 +60,7 @@ public:
     ObjPtr<EventTrigger, ObjectDir> mDropOutTrig; // 0x21c
     ObjPtr<BandLabel, ObjectDir> mIconLabel; // 0x228
     ObjPtr<RndAnimatable, ObjectDir> mIconStateAnim; // 0x234
-    TrackPanelDirBase* unk240; // 0x240
+    TrackPanelDirBase *unk240; // 0x240
     CrowdMeterState mState; // 0x244
     bool mQuarantined; // 0x248
 };

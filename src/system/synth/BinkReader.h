@@ -15,13 +15,13 @@ enum BinkReaderState {
 
 class BinkReader : public StreamReader {
 public:
-    BinkReader(File*, StandardStream*);
+    BinkReader(File *, StandardStream *);
     virtual ~BinkReader();
     virtual void Poll(float);
     virtual void Seek(int);
-    virtual void EnableReads(bool){}
-    virtual bool Done(){ return mState == kDone; }
-    virtual bool Fail(){ return mState == kFailure; }
+    virtual void EnableReads(bool) {}
+    virtual bool Done() { return mState == kDone; }
+    virtual bool Fail() { return mState == kFailure; }
     virtual void Init();
 
     void PollOpenTracks();
@@ -31,12 +31,12 @@ public:
     static int sHeap;
     static int mPlaying;
 
-    File* mFile; // 0x4
-    StandardStream* mStream; // 0x8
-    BINK* mBink; // 0xc
-    BINKTRACK* mBinkTracks[16]; // 0x10
-    unsigned char* mPCMBuffers[16]; // 0x50
-    unsigned char* mPCMOffsets[16]; // 0x90
+    File *mFile; // 0x4
+    StandardStream *mStream; // 0x8
+    BINK *mBink; // 0xc
+    BINKTRACK *mBinkTracks[16]; // 0x10
+    unsigned char *mPCMBuffers[16]; // 0x50
+    unsigned char *mPCMOffsets[16]; // 0x90
     unsigned char mDecodeTrack; // 0xd0
     int mSamplesReady; // 0xd4
     unsigned int mSampleCurrent; // 0xd8

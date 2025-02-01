@@ -4,8 +4,8 @@
 
 class RndHighlightable : public virtual Hmx::Object {
 public:
-    RndHighlightable(){}
-    virtual ~RndHighlightable(){}
+    RndHighlightable() {}
+    virtual ~RndHighlightable() {}
     virtual void Highlight() = 0;
 };
 

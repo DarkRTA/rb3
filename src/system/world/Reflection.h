@@ -10,13 +10,13 @@ public:
     WorldReflection();
     OBJ_CLASSNAME(WorldReflection);
     OBJ_SET_TYPE(WorldReflection);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
-    virtual void Highlight(){ RndDrawable::Highlight(); }
+    virtual void Highlight() { RndDrawable::Highlight(); }
     virtual ~WorldReflection();
 
     void DoHide();
@@ -28,15 +28,13 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(WorldReflection)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(WorldReflection)
-    }
-    
+    static void Init() { REGISTER_OBJ_FACTORY(WorldReflection) }
+
     ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0xb0
     ObjPtrList<Character, ObjectDir> mLodChars; // 0xc0
     float mVerticalStretch; // 0xd0
-    std::list<void*> unkd4; // 0xd4
-    RndCam* unkdc; // 0xdc
+    std::list<void *> unkd4; // 0xd4
+    RndCam *unkdc; // 0xdc
     bool unke0; // 0xe0
     ObjPtrList<RndDrawable, ObjectDir> mHideList; // 0xe4
     ObjPtrList<RndDrawable, ObjectDir> mShowList; // 0xf4

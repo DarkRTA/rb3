@@ -10,14 +10,14 @@ public:
     CharBonesMeshes();
     virtual ~CharBonesMeshes();
     virtual void ReallocateInternal();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
 
     void AcquirePose();
     void PoseMeshes();
-    void StuffMeshes(std::list<Hmx::Object*>&);
+    void StuffMeshes(std::list<Hmx::Object *> &);
 
     /** "Transes we will change" */
     ObjVector<ObjOwnerPtr<RndTransformable> > mMeshes; // 0x54
-    RndTransformable* mDummyMesh; // 0x60
+    RndTransformable *mDummyMesh; // 0x60
 };

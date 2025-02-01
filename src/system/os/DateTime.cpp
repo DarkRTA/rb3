@@ -10,9 +10,9 @@
 
 #include "decomp.h"
 
-void DateTimeInit(){}
+void DateTimeInit() {}
 
-void GetDateAndTime(DateTime& dt){
+void GetDateAndTime(DateTime &dt) {
     OSCalendarTime os_struct;
     OSTicksToCalendarTime(OSGetTime(), &os_struct);
     dt.mSec = os_struct.sec;
@@ -23,7 +23,7 @@ void GetDateAndTime(DateTime& dt){
     dt.mYear = os_struct.year - 1900;
 }
 
-DateTime::DateTime(unsigned int code){
+DateTime::DateTime(unsigned int code) {
     mYear = (code / 0x1FA4000) + 100;
     mMonth = (code % 0x1FA4000) / 0x2A3000;
 }
@@ -47,8 +47,14 @@ DateTime::DateTime(unsigned int code){
 //   return;
 // }
 
-DateTime::DateTime(unsigned short year, unsigned char month, unsigned char day,
-    unsigned char hr, unsigned char min, unsigned char sec) {
+DateTime::DateTime(
+    unsigned short year,
+    unsigned char month,
+    unsigned char day,
+    unsigned char hr,
+    unsigned char min,
+    unsigned char sec
+) {
     mYear = year - 1900;
     mMonth = month - 1;
     mDay = day;
@@ -58,7 +64,9 @@ DateTime::DateTime(unsigned short year, unsigned char month, unsigned char day,
 }
 
 unsigned int DateTime::ToCode() const {
-    return ((unsigned int)mDay * 0x15180) + ((unsigned int)mMonth * 0x2A3000) + (mYear - 100)*0x1FA4000 + ((unsigned int)mHour * 0xE10) + ((unsigned int)mMin * 0x3C) + (unsigned int)mSec;
+    return ((unsigned int)mDay * 0x15180) + ((unsigned int)mMonth * 0x2A3000)
+        + (mYear - 100) * 0x1FA4000 + ((unsigned int)mHour * 0xE10)
+        + ((unsigned int)mMin * 0x3C) + (unsigned int)mSec;
 }
 
 // uint __thiscall DateTime::ToCode(DateTime *this)
@@ -69,86 +77,88 @@ unsigned int DateTime::ToCode() const {
 //          (uint)this->mMonth * 0x2a3000 + (uint)this->mDay * 0x15180;
 // }
 
-void DateTime::ToString(class String& str) const {
+void DateTime::ToString(class String &str) const {
     ToDateString(str);
     str += MakeString(" %02d:%02d:%02d", mHour, mMin, mSec);
 }
 
-void DateTime::ToDateString(class String& str) const {
+void DateTime::ToDateString(class String &str) const {
     ToMiniDateString(str);
     str += MakeString("/%04d", mYear + 1900);
 }
 
-void DateTime::ToMiniDateString(class String& str) const {
+void DateTime::ToMiniDateString(class String &str) const {
     str += MakeString("%02d/%02d", mMonth + 1, mDay);
 }
 
-int DateTime::Year() const {
-    return mYear + 1900;
-}
+int DateTime::Year() const { return mYear + 1900; }
 
 DECOMP_FORCEACTIVE(DateTime, "%02d")
 
 namespace {
-    Symbol MonthToken(int month){
+    Symbol MonthToken(int month) {
         MILO_ASSERT_RANGE_EQ(month, 0, 11, 0xF5);
         static Symbol month_symbols[12] = {
-            "month_january", "month_february", "month_march", "month_april",
-            "month_may", "month_june", "month_july", "month_august",
-            "month_september", "month_october", "month_november", "month_december"
+            "month_january",   "month_february", "month_march",    "month_april",
+            "month_may",       "month_june",     "month_july",     "month_august",
+            "month_september", "month_october",  "month_november", "month_december"
         };
         return month_symbols[month];
     }
 }
 
-void DateTime::Format(class String& str) const {
+void DateTime::Format(class String &str) const {
     char buf[256];
 
-    if(SearchReplace(str.c_str(), "%d", MakeString("%02d", mDay), buf)){
+    if (SearchReplace(str.c_str(), "%d", MakeString("%02d", mDay), buf)) {
         str = buf;
     }
 
     Symbol lang = SystemLanguage();
-    if(lang == fre || lang == ita || lang == esl){
-        if(SearchReplace(str.c_str(), "%e", MakeString("%02d", mDay), buf)){
+    if (lang == fre || lang == ita || lang == esl) {
+        if (SearchReplace(str.c_str(), "%e", MakeString("%02d", mDay), buf)) {
             str = buf;
         }
-    }
-    else {
-        if(SearchReplace(str.c_str(), "%e", LocalizeOrdinal(mDay, LocaleGenderMasculine, LocaleSingular, false), buf)){
-            str = buf;
-        }
-    }
-
-    if(SearchReplace(str.c_str(), "%m", MakeString("%02d", mMonth + 1), buf)){
-        str = buf;
-    }
-    if(strstr(str.c_str(), "%M")){
-        if(SearchReplace(str.c_str(), "%M", Localize(MonthToken(mMonth), false), buf)){
+    } else {
+        if (SearchReplace(
+                str.c_str(),
+                "%e",
+                LocalizeOrdinal(mDay, LocaleGenderMasculine, LocaleSingular, false),
+                buf
+            )) {
             str = buf;
         }
     }
 
-    if(SearchReplace(str.c_str(), "%Y", MakeString("%04d", mYear + 1900), buf)){
+    if (SearchReplace(str.c_str(), "%m", MakeString("%02d", mMonth + 1), buf)) {
         str = buf;
     }
-    if(SearchReplace(str.c_str(), "%H", MakeString("%02d", mHour), buf)){
+    if (strstr(str.c_str(), "%M")) {
+        if (SearchReplace(str.c_str(), "%M", Localize(MonthToken(mMonth), false), buf)) {
+            str = buf;
+        }
+    }
+
+    if (SearchReplace(str.c_str(), "%Y", MakeString("%04d", mYear + 1900), buf)) {
         str = buf;
     }
-    if(SearchReplace(str.c_str(), "%i", MakeString("%02d", mMin), buf)){
+    if (SearchReplace(str.c_str(), "%H", MakeString("%02d", mHour), buf)) {
         str = buf;
     }
-    if(SearchReplace(str.c_str(), "%s", MakeString("%02d", mSec), buf)){
+    if (SearchReplace(str.c_str(), "%i", MakeString("%02d", mMin), buf)) {
+        str = buf;
+    }
+    if (SearchReplace(str.c_str(), "%s", MakeString("%02d", mSec), buf)) {
         str = buf;
     }
 }
 
-BinStream& operator<<(BinStream& bs, const DateTime& dt){
+BinStream &operator<<(BinStream &bs, const DateTime &dt) {
     bs << dt.mSec << dt.mMin << dt.mHour << dt.mDay << dt.mMonth << dt.mYear;
     return bs;
 }
 
-BinStream& operator>>(BinStream& bs, DateTime& dt){
+BinStream &operator>>(BinStream &bs, DateTime &dt) {
     bs >> dt.mSec >> dt.mMin >> dt.mHour >> dt.mDay >> dt.mMonth >> dt.mYear;
     return bs;
 }

@@ -16,15 +16,15 @@ class Profile : public FixedSizeSaveable, public virtual Hmx::Object {
 public:
     Profile(int);
     virtual ~Profile();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const = 0;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int) = 0;
-    virtual DataNode Handle(DataArray*, bool);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const = 0;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int) = 0;
+    virtual DataNode Handle(DataArray *, bool);
     virtual bool HasCheated() const;
     virtual bool IsUnsaved() const;
     virtual void SaveLoadComplete(ProfileSaveState);
     virtual bool HasSomethingToUpload();
     virtual void DeleteAll();
-    virtual void PreLoad(){}
+    virtual void PreLoad() {}
 
     bool IsAutosaveEnabled() const;
     bool HasValidSaveData() const;
@@ -33,8 +33,8 @@ public:
     void MakeDirty();
 
     int GetPadNum() const;
-    const char* GetName() const;
-    LocalUser* GetLocalUser() const {
+    const char *GetName() const;
+    LocalUser *GetLocalUser() const {
         return TheUserMgr->GetLocalUserFromPadNum(mPadNum);
     }
 
@@ -46,12 +46,14 @@ public:
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(ProfileSwappedMsg, "profile_swapped")
-    ProfileSwappedMsg(LocalUser* u1, LocalUser* u2) : Message(Type(), u1, u2) {}
-    LocalUser* GetUser1() const;
-    LocalUser* GetUser2() const;
-END_MESSAGE;
+ProfileSwappedMsg(LocalUser *u1, LocalUser *u2) : Message(Type(), u1, u2) {}
+LocalUser *GetUser1() const;
+LocalUser *GetUser2() const;
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(SigninChangedMsg, "signin_changed")
-    SigninChangedMsg() : Message(Type()) {}
-    SigninChangedMsg(int mask, int changed_mask) : Message(Type(), mask, changed_mask) {}
-END_MESSAGE;
+SigninChangedMsg() : Message(Type()) {}
+SigninChangedMsg(int mask, int changed_mask) : Message(Type(), mask, changed_mask) {}
+END_MESSAGE
+;

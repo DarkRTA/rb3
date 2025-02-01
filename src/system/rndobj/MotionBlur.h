@@ -8,24 +8,22 @@ public:
     RndMotionBlur();
     OBJ_CLASSNAME(MotionBlur);
     OBJ_SET_TYPE(MotionBlur);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
-    virtual ~RndMotionBlur(){}
+    virtual ~RndMotionBlur() {}
 
-    bool CanMotionBlur(RndDrawable*);
-    DataNode OnAllowedDrawable(const DataArray*);
+    bool CanMotionBlur(RndDrawable *);
+    DataNode OnAllowedDrawable(const DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndMotionBlur)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndMotionBlur)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndMotionBlur) }
 
     ObjPtrList<RndDrawable, class ObjectDir> mDrawList;
 };

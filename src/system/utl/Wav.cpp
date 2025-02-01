@@ -5,13 +5,13 @@
 #include <cstring>
 
 namespace {
-    const char* riffID = "RIFF";
-    const char* waveID = "WAVE";
-    const char* formatID = "fmt ";
-    const char* dataID = "data";
+    const char *riffID = "RIFF";
+    const char *waveID = "WAVE";
+    const char *formatID = "fmt ";
+    const char *dataID = "data";
 }
 
-void WriteWav(const char* fname, int, const void *, int) {
+void WriteWav(const char *fname, int, const void *, int) {
     int buf[8];
     int fd = FileOpen(fname, 0xA04);
     MILO_ASSERT(fd >= 0, 87);

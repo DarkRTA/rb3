@@ -5,22 +5,22 @@
 
 INIT_REVS(FxSendWah);
 
-FxSendWah::FxSendWah() : mResonance(7.0f), mUpperFreq(5000.0f), mLowerFreq(1000.0f), mLfoFreq(1.35f),
-    mMagic(0.3f), mDistAmount(0.5f), mAutoWah(0), mFrequency(0.5f), mTempoSync(0), mSyncType("quarter"), mTempo(120.0f), mBeatFrac(0.0f) {
-
-}
+FxSendWah::FxSendWah()
+    : mResonance(7.0f), mUpperFreq(5000.0f), mLowerFreq(1000.0f), mLfoFreq(1.35f),
+      mMagic(0.3f), mDistAmount(0.5f), mAutoWah(0), mFrequency(0.5f), mTempoSync(0),
+      mSyncType("quarter"), mTempo(120.0f), mBeatFrac(0.0f) {}
 
 SAVE_OBJ(FxSendWah, 0x20);
 
-void FxSendWah::Load(BinStream& bs){
+void FxSendWah::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(3, 0);
     FxSend::Load(bs);
     bs >> mResonance >> mLowerFreq >> mUpperFreq >> mLfoFreq >> mMagic;
-    if(gRev >= 2){
+    if (gRev >= 2) {
         bs >> mTempoSync >> mTempo >> mSyncType;
     }
-    if(gRev >= 3){
+    if (gRev >= 3) {
         bs >> mDistAmount >> mAutoWah >> mFrequency;
     }
     OnParametersChanged();

@@ -12,29 +12,29 @@ public:
     RndTexRenderer();
     OBJ_CLASSNAME(TexRenderer);
     OBJ_SET_TYPE(TexRenderer);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
-    virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual void DrawPreClear(){ DrawToTexture(); }
+    virtual void ListDrawChildren(std::list<RndDrawable *> &);
+    virtual void DrawPreClear() { DrawToTexture(); }
     virtual void UpdatePreClearState();
     virtual ~RndTexRenderer();
     virtual void Enter();
     virtual void SetFrame(float, float);
     virtual float StartFrame();
     virtual float EndFrame();
-    virtual void ListAnimChildren(std::list<RndAnimatable*>&) const;
-    virtual void ListPollChildren(std::list<RndPollable*>&) const;
-    virtual void DrawBefore(){}
-    virtual void DrawAfter(){}
+    virtual void ListAnimChildren(std::list<RndAnimatable *> &) const;
+    virtual void ListPollChildren(std::list<RndPollable *> &) const;
+    virtual void DrawBefore() {}
+    virtual void DrawAfter() {}
 
     void DrawToTexture();
     void InitTexture();
-    DataNode OnGetRenderTextures(DataArray*);
-    void SetDraw(RndDrawable* draw){
+    DataNode OnGetRenderTextures(DataArray *);
+    void SetDraw(RndDrawable *draw) {
         mDraw = draw;
         mDirty = true;
     }
@@ -43,9 +43,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndTexRenderer)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndTexRenderer)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndTexRenderer) }
 
     bool mDirty; // 0x38
     bool mForce; // 0x39

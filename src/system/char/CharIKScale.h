@@ -10,27 +10,26 @@ public:
     CharIKScale();
     OBJ_CLASSNAME(CharIKScale);
     OBJ_SET_TYPE(CharIKScale);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~CharIKScale();
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
 
     /** "Call after posing normally, captures data with which to auto compute scale" */
     void CaptureBefore();
-    /** "Call after posing deformed, computes scale based on ratio of capture_before capture to now." */
+    /** "Call after posing deformed, computes scale based on ratio of capture_before
+     * capture to now." */
     void CaptureAfter();
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
     NEW_OBJ(CharIKScale)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharIKScale)
-    }
-    
+    static void Init() { REGISTER_OBJ_FACTORY(CharIKScale) }
+
     /** "The bone to be scaled" */
     ObjPtr<RndTransformable> mDest; // 0x20
     /** "Scale to apply" */

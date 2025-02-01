@@ -31,7 +31,7 @@ BEGIN_COPYS(RndFlare)
 END_COPYS
 
 void RndFlare::Print() {
-    TextStream& ts = TheDebug;
+    TextStream &ts = TheDebug;
     ts << "   mat: " << mMat << "\n";
     ts << "   sizes: " << mSizes << "\n";
     ts << "   range: " << mRange << "\n";
@@ -45,7 +45,8 @@ SAVE_OBJ(RndFlare, 60)
 BEGIN_LOADS(RndFlare)
     LOAD_REVS(bs)
     ASSERT_REVS(7, 0)
-    if (gRev > 3) Hmx::Object::Load(bs);
+    if (gRev > 3)
+        Hmx::Object::Load(bs);
     RndTransformable::Load(bs);
     RndDrawable::Load(bs);
     if (gRev != 0) {
@@ -62,29 +63,34 @@ BEGIN_LOADS(RndFlare)
         bs >> mSteps;
     }
     if (gRev > 4) {
-        bool b; bs >> b;
+        bool b;
+        bs >> b;
         mPointTest = b;
     }
-    if (gRev > 6) bs >> mOffset;
+    if (gRev > 6)
+        bs >> mOffset;
     mLastDone = 0;
     mTestDone = mLastDone;
     CalcScale();
 END_LOADS
 
-RndFlare::RndFlare() : mPointTest(1), mAreaTest(1), mVisible(0), mSizes(0.1f, 0.1f), mMat(this, 0), 
-    mRange(0.0f, 0.0f), mOffset(0.0f), mSteps(1), mStep(0), unkec(0.0f), unk114(1.0f, 1.0f) {
+RndFlare::RndFlare()
+    : mPointTest(1), mAreaTest(1), mVisible(0), mSizes(0.1f, 0.1f), mMat(this, 0),
+      mRange(0.0f, 0.0f), mOffset(0.0f), mSteps(1), mStep(0), unkec(0.0f),
+      unk114(1.0f, 1.0f) {
     mTestDone = 0;
     mLastDone = 0;
     mMatrix.Identity();
 }
 
 RndFlare::~RndFlare() {
-    if (!gSuppressPointTest) MILO_FAIL("Async point tests not disabled while destroying flares!\n"); 
+    if (!gSuppressPointTest)
+        MILO_FAIL("Async point tests not disabled while destroying flares!\n");
     TheRnd->RemovePointTest(this);
 }
 
-void RndFlare::CalcScale(){
-    if(mMatrix != WorldXfm().m){
+void RndFlare::CalcScale() {
+    if (mMatrix != WorldXfm().m) {
         Vector3 v28;
         mMatrix = WorldXfm().m;
         float len = Length(mMatrix.z);
@@ -94,18 +100,19 @@ void RndFlare::CalcScale(){
 }
 
 void RndFlare::SetPointTest(bool b) {
-    if (!b && mPointTest) TheRnd->RemovePointTest(this);
-    mPointTest = b; 
+    if (!b && mPointTest)
+        TheRnd->RemovePointTest(this);
+    mPointTest = b;
 }
 
-void RndFlare::Mats(std::list<RndMat*>& list, bool) {
+void RndFlare::Mats(std::list<RndMat *> &list, bool) {
     if (mMat) {
         mMat.mPtr->mShaderOptions = GetDefaultMatShaderOpts(this, mMat);
         list.push_back(mMat);
     }
 }
 
-void RndFlare::SetMat(RndMat* m) { mMat = m; }
+void RndFlare::SetMat(RndMat *m) { mMat = m; }
 
 BEGIN_HANDLERS(RndFlare)
     HANDLE_ACTION(set_steps, SetSteps(_msg->Int(2)))

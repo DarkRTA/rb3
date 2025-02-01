@@ -3,6 +3,6 @@
 #include "utl/TextStream.h"
 #include "obj/Data.h"
 
-void LogColumnInfo(TextStream*, DataArray*, bool);
+void LogColumnInfo(TextStream *, DataArray *, bool);
 
 #endif

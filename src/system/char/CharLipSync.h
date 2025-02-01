@@ -7,7 +7,8 @@
 #include "utl/Std.h"
 #include "char/CharClip.h"
 
-/** "A full lipsync animation, basically a changing set of weights for a set of named visemes.  Sampled at 30hz" */
+/** "A full lipsync animation, basically a changing set of weights for a set of named
+ * visemes.  Sampled at 30hz" */
 class CharLipSync : public Hmx::Object {
 public:
     class Generator {
@@ -18,13 +19,13 @@ public:
         };
 
         Generator();
-        void Init(CharLipSync*);
+        void Init(CharLipSync *);
         void AddWeight(int, float);
         void NextFrame();
         void RemoveViseme(int);
         void Finish();
 
-        CharLipSync* mLipSync; // 0x0
+        CharLipSync *mLipSync; // 0x0
         int mLastCount; // 0x4
         std::vector<Weight> mWeights; // 0x8
     };
@@ -40,14 +41,14 @@ public:
         };
 
         PlayBack();
-        void Set(CharLipSync*, ObjectDir*);
+        void Set(CharLipSync *, ObjectDir *);
         void Reset();
         void Poll(float);
 
         std::vector<Weight> mWeights; // 0x0
-        CharLipSync* mLipSync; // 0x8
-        RndPropAnim* mPropAnim; // 0xc
-        ObjectDir* mClips; // 0x10
+        CharLipSync *mLipSync; // 0x8
+        RndPropAnim *mPropAnim; // 0xc
+        ObjectDir *mClips; // 0x10
         int mIndex; // 0x14
         int mOldIndex; // 0x18
         int mFrame; // 0x1c
@@ -57,26 +58,24 @@ public:
     virtual ~CharLipSync();
     OBJ_CLASSNAME(CharLipSync);
     OBJ_SET_TYPE(CharLipSync);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
-    void Parse(DataArray*);
-    RndPropAnim* GetPropAnim() const { return mPropAnim; }
-    float Duration(){ return (float)(mFrames - 1) / 30.0f;}
+    void Parse(DataArray *);
+    RndPropAnim *GetPropAnim() const { return mPropAnim; }
+    float Duration() { return (float)(mFrames - 1) / 30.0f; }
 
-    DataNode OnParse(DataArray*);
-    DataNode OnParseArray(DataArray*);
+    DataNode OnParse(DataArray *);
+    DataNode OnParseArray(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharLipSync)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharLipSync)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharLipSync) }
 
     /** "PropAnim to control this lipsync" */
     ObjPtr<RndPropAnim> mPropAnim; // 0x1c

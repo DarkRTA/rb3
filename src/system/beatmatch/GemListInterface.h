@@ -4,10 +4,10 @@
 
 class GemListInterface {
 public:
-    GemListInterface(){}
-    virtual ~GemListInterface(){}
+    GemListInterface() {}
+    virtual ~GemListInterface() {}
     virtual void SetTrack(Symbol) = 0;
-    virtual bool GetGem(int, int&, int&, int&) = 0;
+    virtual bool GetGem(int, int &, int &, int &) = 0;
 };
 
 #endif

@@ -14,13 +14,13 @@ public:
     virtual ~RndTexBlendController();
     OBJ_CLASSNAME(TexBlendController);
     OBJ_SET_TYPE(TexBlendController);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
-    bool GetCurrentDistance(float&) const;
+    bool GetCurrentDistance(float &) const;
     void UpdateReferenceDistance();
     void UpdateMinDistance();
     void UpdateMaxDistance();
@@ -29,9 +29,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndTexBlendController)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndTexBlendController)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndTexBlendController) }
 
     static unsigned short gRev;
 

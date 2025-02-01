@@ -4,10 +4,10 @@
 
 class FixedSizeSaveableStream : public BufStream {
 public:
-    FixedSizeSaveableStream(void*, int, bool);
+    FixedSizeSaveableStream(void *, int, bool);
     virtual ~FixedSizeSaveableStream();
-    virtual bool FinishWrite(){ return 0; }
-    virtual bool FinishStream(){ return 0; }
+    virtual bool FinishWrite() { return 0; }
+    virtual bool FinishStream() { return 0; }
 
     bool HasSymbol(Symbol) const;
     bool HasID(int) const;
@@ -22,7 +22,7 @@ public:
     int GetSymbolTableSize(int);
     void LoadTable(int);
 
-    std::map<Symbol, int>& GetSymbolToIDMap();
+    std::map<Symbol, int> &GetSymbolToIDMap();
 
     std::map<Symbol, int> m_mapSymbolToID; // 0x30
     std::map<int, Symbol> m_mapIDToSymbol; // 0x48

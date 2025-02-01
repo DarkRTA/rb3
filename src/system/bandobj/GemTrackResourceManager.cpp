@@ -1,15 +1,13 @@
 #include "bandobj/GemTrackResourceManager.h"
 #include "obj/Msg.h"
 
-GemTrackResourceManager::GemTrackResourceManager(ObjectDir* dir) : unk1c(this, dir) {
+GemTrackResourceManager::GemTrackResourceManager(ObjectDir *dir) : unk1c(this, dir) {
     InitSmasherPlates();
 }
 
-GemTrackResourceManager::~GemTrackResourceManager(){
-    
-}
+GemTrackResourceManager::~GemTrackResourceManager() {}
 
-void GemTrackResourceManager::InitSmasherPlates(){
+void GemTrackResourceManager::InitSmasherPlates() {
     SmasherPlateInfo info(this);
     unk28.reserve(7);
     info.mSmasherPlate = unk1c->Find<RndDir>("smasher_plate_guitar", true);
@@ -33,18 +31,19 @@ void GemTrackResourceManager::InitSmasherPlates(){
     info.mSmasherPlate = unk1c->Find<RndDir>("smasher_plate_real_keys", true);
     info.mTrackInst = kInstRealKeys;
     unk28.push_back(info);
-    for(int i = 0; i < unk28.size(); i++){
+    for (int i = 0; i < unk28.size(); i++) {
         static Message setup_draworder("setup_draworder", 0);
         unk28[i].mSmasherPlate->HandleType(setup_draworder);
     }
 }
 
-RndDir* GemTrackResourceManager::GetFreeSmasherPlate(TrackInstrument inst){
-    if(inst == kInstPending) return 0;
+RndDir *GemTrackResourceManager::GetFreeSmasherPlate(TrackInstrument inst) {
+    if (inst == kInstPending)
+        return 0;
     else {
-        for(int i = 0; i < unk28.size(); i++){
-            SmasherPlateInfo& curinfo = unk28[i];
-            if(curinfo.mTrackInst == inst && !curinfo.mInUse){
+        for (int i = 0; i < unk28.size(); i++) {
+            SmasherPlateInfo &curinfo = unk28[i];
+            if (curinfo.mTrackInst == inst && !curinfo.mInUse) {
                 curinfo.mInUse = true;
                 return curinfo.mSmasherPlate;
             }
@@ -54,10 +53,10 @@ RndDir* GemTrackResourceManager::GetFreeSmasherPlate(TrackInstrument inst){
     return 0;
 }
 
-void GemTrackResourceManager::ReleaseSmasherPlate(RndDir* plate){
-    for(int i = 0; i < unk28.size(); i++){
-        SmasherPlateInfo& info = unk28[i];
-        if(info.mSmasherPlate == plate){
+void GemTrackResourceManager::ReleaseSmasherPlate(RndDir *plate) {
+    for (int i = 0; i < unk28.size(); i++) {
+        SmasherPlateInfo &info = unk28[i];
+        if (info.mSmasherPlate == plate) {
             MILO_ASSERT(info.mInUse, 0x60);
             info.mInUse = false;
             info.mSmasherPlate = plate;

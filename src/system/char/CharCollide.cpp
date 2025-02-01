@@ -5,49 +5,50 @@
 INIT_REVS(CharCollide)
 
 CharCollide::CharCollide() : mShape(kSphere), mFlags(0), mMesh(this, 0), mMeshYBias(0) {
-    for(int i = 0; i < 2; i++){
+    for (int i = 0; i < 2; i++) {
         mOrigLength[i] = 0;
         mOrigRadius[i] = 0;
     }
     CopyOriginalToCur();
-    for(int i = 0; i < 8; i++){
+    for (int i = 0; i < 8; i++) {
         unk_structs[i].unk0 = 0;
         unk_structs[i].vec.Zero();
     }
     unk148.Reset();
 }
 
-CharCollide::~CharCollide(){
+CharCollide::~CharCollide() {}
 
-}
-
-void CharCollide::Highlight(){
+void CharCollide::Highlight() {
     Hmx::Color black(1.0f, 1.0f, 1.0f);
     Hmx::Color red(1.0f, 0.0f, 0.0f);
-    switch(mShape){
-        case kPlane: {
-            Plane p(WorldXfm().v, WorldXfm().m.x);
-            UtilDrawPlane(p, WorldXfm().v, red, 1, 12.0f);
-            break;
-        }
-        case kSphere:
-        case kInsideSphere: {
-            UtilDrawSphere(WorldXfm().v, mOrigRadius[0], red);
-            UtilDrawSphere(WorldXfm().v, mCurRadius[0], black);
-            break;
-        }
-        case kCigar:
-        case kInsideCigar: {
-            UtilDrawCigar(WorldXfm(), mOrigRadius, mOrigLength, red, 8);
-            UtilDrawCigar(WorldXfm(), mCurRadius, mCurLength, black, 8);
-            break;
-        }
-        default: break;
+    switch (mShape) {
+    case kPlane: {
+        Plane p(WorldXfm().v, WorldXfm().m.x);
+        UtilDrawPlane(p, WorldXfm().v, red, 1, 12.0f);
+        break;
     }
-    if(mMesh){
+    case kSphere:
+    case kInsideSphere: {
+        UtilDrawSphere(WorldXfm().v, mOrigRadius[0], red);
+        UtilDrawSphere(WorldXfm().v, mCurRadius[0], black);
+        break;
+    }
+    case kCigar:
+    case kInsideCigar: {
+        UtilDrawCigar(WorldXfm(), mOrigRadius, mOrigLength, red, 8);
+        UtilDrawCigar(WorldXfm(), mCurRadius, mCurLength, black, 8);
+        break;
+    }
+    default:
+        break;
+    }
+    if (mMesh) {
         int numspheres = NumSpheres();
-        for(int i = 0; i < numspheres * 4; i++){
-            UtilDrawSphere(mMesh->Verts(unk_structs[i].unk0).pos, 0.1f, Hmx::Color(0.0f, 0.0f, 1.0f));
+        for (int i = 0; i < numspheres * 4; i++) {
+            UtilDrawSphere(
+                mMesh->Verts(unk_structs[i].unk0).pos, 0.1f, Hmx::Color(0.0f, 0.0f, 1.0f)
+            );
         }
     }
 }
@@ -59,31 +60,37 @@ BEGIN_LOADS(CharCollide)
     ASSERT_REVS(7, 0)
     LOAD_SUPERCLASS(Hmx::Object)
     LOAD_SUPERCLASS(RndTransformable)
-    bs >> (int&)mShape;
+    bs >> (int &)mShape;
     bs >> mOrigRadius[0];
-    if(gRev > 4) bs >> mOrigLength[0];
-    if(gRev > 2) bs >> mOrigLength[1];
-    if(gRev > 1) bs >> mFlags;
-    else mFlags = 0;
-    if(gRev > 3) bs >> mCurRadius[0];
-    else mCurRadius[0] = mOrigRadius[0];
+    if (gRev > 4)
+        bs >> mOrigLength[0];
+    if (gRev > 2)
+        bs >> mOrigLength[1];
+    if (gRev > 1)
+        bs >> mFlags;
+    else
+        mFlags = 0;
+    if (gRev > 3)
+        bs >> mCurRadius[0];
+    else
+        mCurRadius[0] = mOrigRadius[0];
 
-    if(gRev > 5){
+    if (gRev > 5) {
         bs >> mOrigRadius[1];
         bs >> mCurRadius[1];
         bs >> mCurLength[0];
         bs >> mCurLength[1];
         bs >> unk148;
         bs >> mMesh;
-        for(int i = 0; i < 8; i++){
+        for (int i = 0; i < 8; i++) {
             bs >> unk_structs[i].unk0;
             bs >> unk_structs[i].vec;
         }
         bs >> mDigest;
         bs >> mMeshYBias;
-        if(gRev < 7) CopyOriginalToCur();
-    }
-    else {
+        if (gRev < 7)
+            CopyOriginalToCur();
+    } else {
         mOrigRadius[1] = mOrigRadius[0];
         CopyOriginalToCur();
     }
@@ -106,11 +113,11 @@ BEGIN_COPYS(CharCollide)
     END_COPYING_MEMBERS
 END_COPYS
 
-void CharCollide::Deform(){
+void CharCollide::Deform() {
     int numSpheres = NumSpheres();
-    if(mMesh){
-        for(int i = 0; i < 8; i++){
-            if(unk_structs[i].unk0 >= mMesh->Verts().size()){
+    if (mMesh) {
+        for (int i = 0; i < 8; i++) {
+            if (unk_structs[i].unk0 >= mMesh->Verts().size()) {
                 mMesh->Verts().size();
                 PathName(mMesh);
                 PathName(this);
@@ -119,27 +126,28 @@ void CharCollide::Deform(){
         }
         Sphere sc8;
         Sphere sb8;
-        for(int i = 0; i < numSpheres; i++){
-
+        for (int i = 0; i < numSpheres; i++) {
         }
     }
 }
 
-int CharCollide::NumSpheres(){
-    if(mShape == kCigar || mShape == kInsideCigar) return 2;
-    else if (mShape == kSphere || mShape == kInsideSphere) return 1;
-    else return 0;
+int CharCollide::NumSpheres() {
+    if (mShape == kCigar || mShape == kInsideCigar)
+        return 2;
+    else if (mShape == kSphere || mShape == kInsideSphere)
+        return 1;
+    else
+        return 0;
 }
 
-void CharCollide::CopyOriginalToCur(){
+void CharCollide::CopyOriginalToCur() {
     memcpy(mCurRadius, mOrigRadius, 8);
     memcpy(mCurLength, mOrigLength, 8);
 }
 
-
-void CharCollide::SyncShape(){
+void CharCollide::SyncShape() {
     float t = mCurLength[1];
-    if(mCurLength[0] > t){
+    if (mCurLength[0] > t) {
         mCurLength[0] = mCurLength[1];
     }
     CopyOriginalToCur();
@@ -152,7 +160,7 @@ BEGIN_HANDLERS(CharCollide)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(CharCollide)
-    SYNC_PROP_MODIFY(shape, (int&)mShape, SyncShape())
+    SYNC_PROP_MODIFY(shape, (int &)mShape, SyncShape())
     SYNC_PROP(flags, mFlags)
     SYNC_PROP_MODIFY(radius0, mOrigRadius[0], SyncShape())
     SYNC_PROP_MODIFY(radius1, mOrigRadius[1], SyncShape())

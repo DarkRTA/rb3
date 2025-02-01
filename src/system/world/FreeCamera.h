@@ -7,16 +7,16 @@ class RndTransformable;
 
 class FreeCamera : public Hmx::Object {
 public:
-    FreeCamera(WorldDir*, float, float, int);
+    FreeCamera(WorldDir *, float, float, int);
     virtual ~FreeCamera();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void UpdateFromCamera();
     void SetParentDof(bool, bool, bool);
     void Poll();
-    void SetPadNum(int p){ mPadNum = p; }
+    void SetPadNum(int p) { mPadNum = p; }
 
-    RndTransformable* mParent; // 0x1c
+    RndTransformable *mParent; // 0x1c
     Vector3 mRot; // 0x20
     Transform mXfm; // 0x2c
     float mFov; // 0x5c
@@ -28,7 +28,7 @@ public:
     bool mUseParentRotateX; // 0x74
     bool mUseParentRotateY; // 0x75
     bool mUseParentRotateZ; // 0x76
-    WorldDir* mWorld; // 0x78
+    WorldDir *mWorld; // 0x78
 };
 
 #endif

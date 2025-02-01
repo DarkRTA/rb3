@@ -4,18 +4,15 @@
 
 INIT_REVS(DialogDisplay);
 
-void DialogDisplay::Init(){
+void DialogDisplay::Init() {
     Register();
     TheUI->InitResources("DialogDisplay");
 }
 
-DialogDisplay::DialogDisplay() : mDialogLabel(this, 0), mTopBone(this, 0), mBottomBone(this, 0) {
+DialogDisplay::DialogDisplay()
+    : mDialogLabel(this, 0), mTopBone(this, 0), mBottomBone(this, 0) {}
 
-}
-
-DialogDisplay::~DialogDisplay(){
-
-}
+DialogDisplay::~DialogDisplay() {}
 
 BEGIN_COPYS(DialogDisplay)
     COPY_SUPERCLASS(Hmx::Object)
@@ -37,23 +34,24 @@ BEGIN_LOADS(DialogDisplay)
     LOAD_SUPERCLASS(Hmx::Object)
 END_LOADS
 
-float DialogDisplay::GetLabelHeight(){
+float DialogDisplay::GetLabelHeight() {
     float height = 0;
-    if(mDialogLabel) height = mDialogLabel->GetDrawHeight();
+    if (mDialogLabel)
+        height = mDialogLabel->GetDrawHeight();
     return height;
 }
 
-void DialogDisplay::Poll(){
-    if(mTopBone && mBottomBone && mDialogLabel){
+void DialogDisplay::Poll() {
+    if (mTopBone && mBottomBone && mDialogLabel) {
         Vector3 pos = mTopBone->LocalXfm().v;
         pos.z -= GetLabelHeight();
         mBottomBone->SetLocalPos(pos);
     }
 }
 
-void DialogDisplay::SetLabel(UILabel* lbl){ mDialogLabel = lbl; }
-void DialogDisplay::SetTopBone(RndMesh* mesh){ mTopBone = mesh; }
-void DialogDisplay::SetBottomBone(RndMesh* mesh){ mBottomBone = mesh; }
+void DialogDisplay::SetLabel(UILabel *lbl) { mDialogLabel = lbl; }
+void DialogDisplay::SetTopBone(RndMesh *mesh) { mTopBone = mesh; }
+void DialogDisplay::SetBottomBone(RndMesh *mesh) { mBottomBone = mesh; }
 
 BEGIN_HANDLERS(DialogDisplay)
     HANDLE_SUPERCLASS(RndPollable)

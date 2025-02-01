@@ -4,14 +4,14 @@
 
 class NetCacheLoader {
 public:
-    NetCacheLoader(FileCache*, const String&);
+    NetCacheLoader(FileCache *, const String &);
 
     bool IsLoaded() const;
     int GetSize();
-    void* GetBuffer();
+    void *GetBuffer();
     bool HasFailed() const;
-    const char* GetRemotePath() const;
+    const char *GetRemotePath() const;
 
     int mState;
-    FileCache* unk4;
+    FileCache *unk4;
 };

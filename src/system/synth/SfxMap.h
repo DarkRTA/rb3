@@ -7,8 +7,8 @@
 
 class SfxMap {
 public:
-    SfxMap(Hmx::Object*);
-    void Load(BinStream&);
+    SfxMap(Hmx::Object *);
+    void Load(BinStream &);
 
     static int gRev;
 
@@ -25,4 +25,4 @@ public:
     ADSR mADSR; // 0x1c
 };
 
-BinStream& operator>>(BinStream&, SfxMap&);
+BinStream &operator>>(BinStream &, SfxMap &);

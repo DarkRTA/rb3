@@ -548,7 +548,8 @@ Symbol show_range("show_range");
 Symbol show_register_wiiprofile("show_register_wiiprofile");
 Symbol show_safe_area("show_safe_area");
 
-// Symbol show_save_icon("show_save_icon"); // goes unused in bank 8, but appears in retail? weird
+// Symbol show_save_icon("show_save_icon"); // goes unused in bank 8, but appears in
+// retail? weird
 
 Symbol show_saveloadmgr_autosave_confirm("show_saveloadmgr_autosave_confirm");
 Symbol show_saveloadmgr_not_idle("show_saveloadmgr_not_idle");
@@ -639,7 +640,9 @@ Symbol snap_values("snap_values");
 Symbol snapshot_tex("snapshot_tex");
 Symbol solo("solo");
 Symbol solo_button_percent("solo_button_percent");
-Symbol solo_buttoned_solo_stat_tracker_contribution("solo_buttoned_solo_stat_tracker_contribution");
+Symbol solo_buttoned_solo_stat_tracker_contribution(
+    "solo_buttoned_solo_stat_tracker_contribution"
+);
 Symbol solo_hit_trig("solo_hit_trig");
 Symbol solo_instarank_group("solo_instarank_group");
 Symbol solo_percent("solo_percent");
@@ -662,7 +665,8 @@ Symbol song_groupings("song_groupings");
 Symbol song_id("song_id");
 Symbol song_ids("song_ids");
 Symbol song_info_cache_button_cancel("song_info_cache_button_cancel");
-Symbol song_info_cache_button_corrupt_overwrite("song_info_cache_button_corrupt_overwrite");
+Symbol song_info_cache_button_corrupt_overwrite("song_info_cache_button_corrupt_overwrite"
+);
 Symbol song_info_cache_button_create("song_info_cache_button_create");
 Symbol song_info_cache_corrupt("song_info_cache_corrupt");
 Symbol song_info_cache_create("song_info_cache_create");
@@ -1269,16 +1273,28 @@ Symbol tour_finished_no_medal("tour_finished_no_medal");
 Symbol tour_finished_silver_medal("tour_finished_silver_medal");
 Symbol tour_gig_total("tour_gig_total");
 Symbol tour_goal_accuracy_goal_format("tour_goal_accuracy_goal_format");
-Symbol tour_goal_accuracy_player_contribution_format("tour_goal_accuracy_player_contribution_format");
+Symbol tour_goal_accuracy_player_contribution_format(
+    "tour_goal_accuracy_player_contribution_format"
+);
 Symbol tour_goal_accuracy_result_format("tour_goal_accuracy_result_format");
-Symbol tour_goal_band_perfect_section_goal_format("tour_goal_band_perfect_section_goal_format");
-Symbol tour_goal_band_perfect_section_result_format("tour_goal_band_perfect_section_result_format");
-Symbol tour_goal_band_perfect_section_result_format_1("tour_goal_band_perfect_section_result_format_1");
+Symbol tour_goal_band_perfect_section_goal_format(
+    "tour_goal_band_perfect_section_goal_format"
+);
+Symbol tour_goal_band_perfect_section_result_format(
+    "tour_goal_band_perfect_section_result_format"
+);
+Symbol tour_goal_band_perfect_section_result_format_1(
+    "tour_goal_band_perfect_section_result_format_1"
+);
 Symbol tour_goal_band_streak_goal_format("tour_goal_band_streak_goal_format");
-Symbol tour_goal_band_streak_player_contribution_format("tour_goal_band_streak_player_contribution_format");
+Symbol tour_goal_band_streak_player_contribution_format(
+    "tour_goal_band_streak_player_contribution_format"
+);
 Symbol tour_goal_band_streak_result_format("tour_goal_band_streak_result_format");
 Symbol tour_goal_focus_goal_format("tour_goal_focus_goal_format");
-Symbol tour_goal_focus_player_contribution_format("tour_goal_focus_player_contribution_format");
+Symbol tour_goal_focus_player_contribution_format(
+    "tour_goal_focus_player_contribution_format"
+);
 Symbol tour_goal_focus_result_format("tour_goal_focus_result_format");
 Symbol tour_goal_od_timer_goal_format("tour_goal_od_timer_goal_format");
 Symbol tour_goal_od_timer_result_format("tour_goal_od_timer_result_format");
@@ -1468,9 +1484,15 @@ Symbol update("update");
 Symbol update_all("update_all");
 Symbol update_all_mic_levels("update_all_mic_levels");
 Symbol update_asset_provider("update_asset_provider");
-Symbol update_battle_instarank_highscore_1_label("update_battle_instarank_highscore_1_label");
-Symbol update_battle_instarank_highscore_2_label("update_battle_instarank_highscore_2_label");
-Symbol update_battle_instarank_highscore_3_label("update_battle_instarank_highscore_3_label");
+Symbol
+    update_battle_instarank_highscore_1_label("update_battle_instarank_highscore_1_label"
+    );
+Symbol
+    update_battle_instarank_highscore_2_label("update_battle_instarank_highscore_2_label"
+    );
+Symbol
+    update_battle_instarank_highscore_3_label("update_battle_instarank_highscore_3_label"
+    );
 Symbol update_battle_type_label("update_battle_type_label");
 Symbol update_camera_buttons("update_camera_buttons");
 Symbol update_char_cache("update_char_cache");
@@ -1572,7 +1594,9 @@ Symbol upper_freq("upper_freq");
 Symbol upper_lid("upper_lid");
 Symbol upper_lid_blink("upper_lid_blink");
 Symbol upstrum_percent("upstrum_percent");
-Symbol upstrum_percent_stat_tracker_contribution("upstrum_percent_stat_tracker_contribution");
+Symbol
+    upstrum_percent_stat_tracker_contribution("upstrum_percent_stat_tracker_contribution"
+    );
 Symbol upstrum_stat_tracker_contribution("upstrum_stat_tracker_contribution");
 Symbol use_alternate_slide_sound("use_alternate_slide_sound");
 Symbol use_color_adjust("use_color_adjust");
@@ -1884,7 +1908,9 @@ Symbol hours("hours");
 Symbol minutes("minutes");
 Symbol set_expiration_units_cheat("set_expiration_units_cheat");
 Symbol set_expiration_val_cheat("set_expiration_val_cheat");
-Symbol tour_goal_band_streak_player_contribution_format_1("tour_goal_band_streak_player_contribution_format_1");
+Symbol tour_goal_band_streak_player_contribution_format_1(
+    "tour_goal_band_streak_player_contribution_format_1"
+);
 Symbol tick_every("tick_every");
 Symbol tick_trigger("tick_trigger");
 Symbol set_player_movement("set_player_movement");
@@ -2101,13 +2127,11 @@ Symbol object("object");
 Symbol text("text");
 static EndLiteralSymbols gEndLiteralSymbols;
 
-BeginLiteralSymbols::BeginLiteralSymbols(){
-    if(gStringTable == 0){
+BeginLiteralSymbols::BeginLiteralSymbols() {
+    if (gStringTable == 0) {
         Symbol::PreInit(0x81700, 0x13c00);
     }
     gLiteralSymbolStaticInitialization = true;
 }
 
-EndLiteralSymbols::EndLiteralSymbols(){
-    gLiteralSymbolStaticInitialization = false;
-}
+EndLiteralSymbols::EndLiteralSymbols() { gLiteralSymbolStaticInitialization = false; }

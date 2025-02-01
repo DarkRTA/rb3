@@ -200,7 +200,9 @@ Symbol get_current_goal_description("get_current_goal_description");
 Symbol get_current_goal_icon("get_current_goal_icon");
 Symbol get_current_lesson("get_current_lesson");
 Symbol get_current_makeup("get_current_makeup");
-Symbol get_current_points_for_next_campaign_level("get_current_points_for_next_campaign_level");
+Symbol get_current_points_for_next_campaign_level(
+    "get_current_points_for_next_campaign_level"
+);
 Symbol get_current_quest_success_msg("get_current_quest_success_msg");
 Symbol get_current_shortcut("get_current_shortcut");
 Symbol get_current_should_show_denominator("get_current_should_show_denominator");
@@ -594,13 +596,15 @@ Symbol get_total("get_total");
 Symbol get_total_gigs("get_total_gigs");
 Symbol get_total_ms("get_total_ms");
 Symbol get_total_phrases_float("get_total_phrases_float");
-Symbol get_total_points_for_next_campaign_level("get_total_points_for_next_campaign_level");
+Symbol get_total_points_for_next_campaign_level("get_total_points_for_next_campaign_level"
+);
 Symbol get_total_quest_stars("get_total_quest_stars");
 Symbol get_total_score("get_total_score");
 Symbol get_total_song_stars("get_total_song_stars");
 Symbol get_total_stars_capped("get_total_stars_capped");
 Symbol get_total_stars_for_tour("get_total_stars_for_tour");
-Symbol get_total_stars_possible_for_current_gig("get_total_stars_possible_for_current_gig");
+Symbol get_total_stars_possible_for_current_gig("get_total_stars_possible_for_current_gig"
+);
 Symbol get_tour_conclusion_text("get_tour_conclusion_text");
 Symbol get_tour_gigguide_map("get_tour_gigguide_map");
 Symbol get_tour_leaderboard_goal("get_tour_leaderboard_goal");
@@ -765,7 +769,9 @@ Symbol handle_leader_toggled_filters("handle_leader_toggled_filters");
 Symbol handle_new_song("handle_new_song");
 Symbol handle_quest_finished("handle_quest_finished");
 Symbol handle_sign_outs("handle_sign_outs");
-Symbol handle_song_completion_with_invalid_score("handle_song_completion_with_invalid_score");
+Symbol
+    handle_song_completion_with_invalid_score("handle_song_completion_with_invalid_score"
+    );
 Symbol handmade_font("handmade_font");
 Symbol hands("hands");
 Symbol hard("hard");
@@ -875,7 +881,9 @@ Symbol has_performer("has_performer");
 Symbol has_preview_art("has_preview_art");
 Symbol has_preview_audio("has_preview_audio");
 Symbol has_primary_profile("has_primary_profile");
-Symbol has_primary_profile_reached_campaign_level("has_primary_profile_reached_campaign_level");
+Symbol has_primary_profile_reached_campaign_level(
+    "has_primary_profile_reached_campaign_level"
+);
 Symbol has_rating("has_rating");
 Symbol has_registry("has_registry");
 Symbol has_role_info("has_role_info");
@@ -1172,7 +1180,9 @@ Symbol is_accomplishment_secret("is_accomplishment_secret");
 Symbol is_active("is_active");
 Symbol is_active_user("is_active_user");
 Symbol is_animating("is_animating");
-Symbol is_any_local_slot_allowing_input_to_shell("is_any_local_slot_allowing_input_to_shell");
+Symbol
+    is_any_local_slot_allowing_input_to_shell("is_any_local_slot_allowing_input_to_shell"
+    );
 Symbol is_any_slot_allowing_input_to_shell("is_any_slot_allowing_input_to_shell");
 Symbol is_any_slot_joinable("is_any_slot_joinable");
 Symbol is_any_user_signed_in_and_connected("is_any_user_signed_in_and_connected");

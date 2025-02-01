@@ -3,7 +3,7 @@
 #include "synth/SampleInst.h"
 
 class StreamReceiver;
-typedef StreamReceiver* StreamReceiverFactoryFunc(int, int, bool, int);
+typedef StreamReceiver *StreamReceiverFactoryFunc(int, int, bool, int);
 
 class StreamReceiver {
 public:
@@ -19,24 +19,24 @@ public:
     virtual void SetVolume(float) = 0;
     virtual void SetPan(float) = 0;
     virtual void SetSpeed(float) = 0;
-    virtual void SetADSR(const ADSR&){}
-    virtual void SetFXCore(FXCore){}
-    virtual FXCore GetFXCore(){ return kFXCoreNone; }
-    virtual void SetFX(bool){}
-    virtual bool GetFX(){ return false; }
-    virtual void SetPitchShift(bool){}
-    virtual void Tag(){}
+    virtual void SetADSR(const ADSR &) {}
+    virtual void SetFXCore(FXCore) {}
+    virtual FXCore GetFXCore() { return kFXCoreNone; }
+    virtual void SetFX(bool) {}
+    virtual bool GetFX() { return false; }
+    virtual void SetPitchShift(bool) {}
+    virtual void Tag() {}
     virtual void Poll();
     virtual void SetSlipOffset(float) = 0;
     virtual void SlipStop() = 0;
     virtual void SetSlipSpeed(float) = 0;
     virtual float GetSlipOffset() = 0;
-    virtual void SetFXSend(FxSend*){}
+    virtual void SetFXSend(FxSend *) {}
     virtual void PauseImpl(bool) = 0;
     virtual void PlayImpl() = 0;
     virtual int GetPlayCursor() = 0;
-    virtual void StartSendImpl(unsigned char*, int, int) = 0;
-    virtual void StartSendImpl(unsigned char*, unsigned char*, int, int, int) = 0;
+    virtual void StartSendImpl(unsigned char *, int, int) = 0;
+    virtual void StartSendImpl(unsigned char *, unsigned char *, int, int, int) = 0;
     virtual bool SendDoneImpl() = 0;
 
     int BytesWriteable();
@@ -44,12 +44,12 @@ public:
     void Stop();
     void EndData();
     bool Ready();
-    void WriteData(const void*, int);
+    void WriteData(const void *, int);
     void ClearAtEndData();
     int GetBytesPlayed();
 
-    static StreamReceiver* New(int, int, bool, int);
-    static StreamReceiverFactoryFunc* sFactory;
+    static StreamReceiver *New(int, int, bool, int);
+    static StreamReceiverFactoryFunc *sFactory;
 
     bool mSlipEnabled; // 0x4
     unsigned char mBuffer[0x18000]; // 0x5

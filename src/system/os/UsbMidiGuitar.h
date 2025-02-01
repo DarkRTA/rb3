@@ -15,7 +15,7 @@ public:
     static void Init();
     static void Terminate();
     static void Poll();
-    static void SendMessage(const Message& msg){ JoypadPushThroughMsg(msg); }
+    static void SendMessage(const Message &msg) { JoypadPushThroughMsg(msg); }
 
     static int E3CheatGetMinVelocity();
     static void E3CheatSetMinVelocity(int);
@@ -52,7 +52,6 @@ public:
     int mProgramChange[4]; // 0x150
     int mLastSixStringsStrummed[4][6]; // 0x160
     int mPadNum; // 0x1c0
-
 };
 
 class Queue {
@@ -61,10 +60,10 @@ public:
     ~Queue();
     void Initialize(int);
 
-    MidiMessage* mArrayStart;
-    MidiMessage* mArrayEnd;
-    MidiMessage* mQueueStart;
-    MidiMessage* mQueueEnd;
+    MidiMessage *mArrayStart;
+    MidiMessage *mArrayEnd;
+    MidiMessage *mQueueStart;
+    MidiMessage *mQueueEnd;
     int mUsurpedFret[6];
     int mUsurpedTime[6];
 };

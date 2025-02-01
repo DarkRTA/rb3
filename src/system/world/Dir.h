@@ -16,10 +16,9 @@ class WorldCrowd;
  */
 class WorldDir : public PanelDir {
 public:
-
     class PresetOverride {
     public:
-        PresetOverride(Hmx::Object* o) : preset(o), hue(o) {}
+        PresetOverride(Hmx::Object *o) : preset(o), hue(o) {}
         void Sync(bool);
 
         /** "Subdir preset to modify" */
@@ -30,7 +29,7 @@ public:
 
     class BitmapOverride {
     public:
-        BitmapOverride(Hmx::Object* o) : original(o), replacement(o) {}
+        BitmapOverride(Hmx::Object *o) : original(o), replacement(o) {}
         void Sync(bool);
 
         /** "Subdir texture to replace" */
@@ -41,7 +40,7 @@ public:
 
     class MatOverride {
     public:
-        MatOverride(Hmx::Object* o) : mesh(o), mat(o), mat2(o) {}
+        MatOverride(Hmx::Object *o) : mesh(o), mat(o), mat2(o) {}
         void Sync(bool);
 
         /** "Subdir mesh to modify" */
@@ -54,13 +53,13 @@ public:
     WorldDir();
     OBJ_CLASSNAME(WorldDir);
     OBJ_SET_TYPE(WorldDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
     virtual ~WorldDir();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void DrawShowing();
     virtual void Poll();
@@ -68,9 +67,9 @@ public:
     virtual bool DrawShowingBudget(float);
 
     void ClearDeltas();
-    void AccumulateDeltas(float*);
+    void AccumulateDeltas(float *);
     void ExtendDeltas();
-    void RestoreDeltas(float*);
+    void RestoreDeltas(float *);
     void SyncHides(bool);
     void SyncBitmaps(bool);
     void SyncMats(bool);
@@ -78,8 +77,8 @@ public:
     void SyncCamShots(bool);
     void SyncHUD();
     void DrawSplitWorld();
-    void SetCrowds(ObjVector<CamShotCrowd>&);
-    CameraManager& CamManager(){ return mCameraManager; }
+    void SetCrowds(ObjVector<CamShotCrowd> &);
+    CameraManager &CamManager() { return mCameraManager; }
 
     DECLARE_REVS;
 
@@ -87,9 +86,7 @@ public:
     DELETE_OVERLOAD
     NEW_OBJ(WorldDir)
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(WorldDir)
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(WorldDir) }
 
     ObjList<PresetOverride> mPresetOverrides; // 0x1d8
     ObjList<BitmapOverride> mBitmapOverrides; // 0x1e4
@@ -103,11 +100,11 @@ public:
     /** "Things to hide when ps3_per_pixel on CamShot" */
     ObjPtrList<RndDrawable> mPS3PerPixelHides; // 0x22c
     ObjPtrList<WorldCrowd> mCrowds; // 0x23c
-    RndMat* mGlowMat; // 0x24c
+    RndMat *mGlowMat; // 0x24c
     /** "HUD Preview Dir" */
     FilePath mFakeHudFilename; // 0x250
     /** "hud to be drawn last" */
-    RndDir* mFakeHudDir; // 0x25c
+    RndDir *mFakeHudDir; // 0x25c
     /** "Whether to draw the HUD preview" */
     bool mShowFakeHud; // 0x260
     ObjPtr<RndDir> mHud; // 0x264
@@ -122,20 +119,20 @@ public:
     float mTestAnimationTime; // 0x324
     float mLastRndTimeWorld; // 0x328
     float mLastRndTimeChar; // 0x32c
-    RndDrawable** mDrawItr; // 0x330
+    RndDrawable **mDrawItr; // 0x330
 };
 
-BinStream& operator>>(BinStream&, WorldDir::BitmapOverride&);
+BinStream &operator>>(BinStream &, WorldDir::BitmapOverride &);
 
-inline BinStream& operator>>(BinStream& bs, WorldDir::MatOverride& o){
+inline BinStream &operator>>(BinStream &bs, WorldDir::MatOverride &o) {
     bs >> o.mesh >> o.mat;
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, WorldDir::PresetOverride& o){
+inline BinStream &operator>>(BinStream &bs, WorldDir::PresetOverride &o) {
     bs >> o.preset >> o.hue;
     return bs;
 }
 
-extern WorldDir* TheWorld;
-void SetTheWorld(WorldDir*);
+extern WorldDir *TheWorld;
+void SetTheWorld(WorldDir *);

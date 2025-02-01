@@ -6,32 +6,39 @@
 bool gDebugArkOrder = false;
 int kArkBlockSize = 0x10000;
 
-ArkHash::ArkHash() : mHeap(0), mHeapEnd(0), mFree(0), mTable(0), mTableSize(0) {
+ArkHash::ArkHash() : mHeap(0), mHeapEnd(0), mFree(0), mTable(0), mTableSize(0) {}
 
-}
-
-int ArkHash::GetHashValue(const char* c) const {
+int ArkHash::GetHashValue(const char *c) const {
     int hashIdx = HashString(c, mTableSize);
     MILO_ASSERT(hashIdx < mTableSize, 0x107);
-    while(mTable[hashIdx]){
-        if(strcmp(mTable[hashIdx], c) == 0) return hashIdx;
-        if(++hashIdx == mTableSize) hashIdx = 0;
+    while (mTable[hashIdx]) {
+        if (strcmp(mTable[hashIdx], c) == 0)
+            return hashIdx;
+        if (++hashIdx == mTableSize)
+            hashIdx = 0;
     }
     return -1;
 }
 
-Archive::Archive(const char* c, int i) : mBasename(c), mMode(kRead), mIsPatched(false){
+Archive::Archive(const char *c, int i) : mBasename(c), mMode(kRead), mIsPatched(false) {
     Read(i);
 }
 
-bool Archive::GetFileInfo(const char* file, int& arkfileNum, unsigned long long& byteOffset, int& fileSize, int& fileUCSize) {
-    
-}
+bool Archive::GetFileInfo(
+    const char *file,
+    int &arkfileNum,
+    unsigned long long &byteOffset,
+    int &fileSize,
+    int &fileUCSize
+) {}
 
-BinStream& operator>>(BinStream& bs, FileEntry& f) {
+BinStream &operator>>(BinStream &bs, FileEntry &f) {
     bs >> f.mOffset >> f.mHashedName >> f.mHashedPath >> f.mSize >> f.mUCSize;
-    if(f.mOffset != 0){
-        MILO_FAIL("operator>>(BinStream&,FileEntry&): file offset > 32 bits. will overflow FileEntryWiiShip::mOffset. high dword:0x%08x)\n", f.mOffset);
+    if (f.mOffset != 0) {
+        MILO_FAIL(
+            "operator>>(BinStream&,FileEntry&): file offset > 32 bits. will overflow FileEntryWiiShip::mOffset. high dword:0x%08x)\n",
+            f.mOffset
+        );
     }
     return bs;
 }
@@ -43,24 +50,24 @@ void Archive::Read(int heap_headroom) {
     arkhdr.EnableReadEncryption();
     int version;
     arkhdr >> version;
-    if(version != 6){
+    if (version != 6) {
         MILO_FAIL(" ERROR: %s  unsupported archive version %d", mBasename, version);
         return;
-    }
-    else {
+    } else {
         arkhdr >> mGuid;
         arkhdr >> mNumArkfiles >> mArkfileSizes;
 
-        if(version == 3){
-            for(int i = 0; i < mArkfileSizes.size(); i++){
+        if (version == 3) {
+            for (int i = 0; i < mArkfileSizes.size(); i++) {
                 mArkfileNames.push_back(String(MakeString("%s_%d.ark", mBasename, i)));
             }
-        }
-        else arkhdr >> mArkfileNames;
+        } else
+            arkhdr >> mArkfileNames;
 
-        if(version > 5) arkhdr >> mArkfileCachePriority;
+        if (version > 5)
+            arkhdr >> mArkfileCachePriority;
         else {
-            for(int i = 0; i < mArkfileSizes.size(); i++){
+            for (int i = 0; i < mArkfileSizes.size(); i++) {
                 mArkfileCachePriority.push_back(-1);
             }
         }
@@ -71,16 +78,17 @@ void Archive::Read(int heap_headroom) {
     }
 }
 
-bool Archive::DebugArkOrder(){ return gDebugArkOrder; }
+bool Archive::DebugArkOrder() { return gDebugArkOrder; }
 
 bool Archive::HasArchivePermission(int i) const {
-    for(int x = unk64, idx = 0; x > 0; x--, idx++){
-        if(i == unk60[idx]) return true;
+    for (int x = unk64, idx = 0; x > 0; x--, idx++) {
+        if (i == unk60[idx])
+            return true;
     }
     return false;
 }
 
-void Archive::SetArchivePermission(int i, const int* ci){
+void Archive::SetArchivePermission(int i, const int *ci) {
     unk64 = i;
     unk60 = ci;
 }
@@ -94,11 +102,9 @@ int Archive::GetArkfileNumBlocks(int file) const {
     return (mArkfileSizes[file] - 1) / kArkBlockSize + 1;
 }
 
-void Archive::GetGuid(HxGuid& g) const {
-    g = mGuid;
-}
+void Archive::GetGuid(HxGuid &g) const { g = mGuid; }
 
-const char* Archive::GetArkfileName(int filenum) const {
+const char *Archive::GetArkfileName(int filenum) const {
     MILO_ASSERT(filenum < mArkfileNames.size(), 1227);
     return mArkfileNames[filenum].c_str();
 }

@@ -34,8 +34,8 @@ public:
         kSuccess = 4,
         kFail = 5,
     };
-    StoreEnumeration(){}
-    virtual ~StoreEnumeration(){}
+    StoreEnumeration() {}
+    virtual ~StoreEnumeration() {}
     virtual void Start() = 0;
     virtual bool IsEnumerating() const = 0;
     virtual bool IsSuccess() const = 0;
@@ -47,7 +47,7 @@ public:
 class WiiEnumeration : public StoreEnumeration { // 0x1c
 public:
     WiiEnumeration(int);
-    virtual ~WiiEnumeration(){}
+    virtual ~WiiEnumeration() {}
     virtual void Start();
     virtual bool IsEnumerating() const;
     virtual bool IsSuccess() const;

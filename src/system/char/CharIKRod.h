@@ -16,25 +16,23 @@ public:
     CharIKRod();
     OBJ_CLASSNAME(CharIKRod);
     OBJ_SET_TYPE(CharIKRod);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual ~CharIKRod();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
-    bool ComputeRod(Transform&);
+    bool ComputeRod(Transform &);
     void SyncBones();
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharIKRod)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharIKRod)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharIKRod) }
 
     /** "Left end of the rod" */
     ObjPtr<RndTransformable> mLeftEnd; // 0x8

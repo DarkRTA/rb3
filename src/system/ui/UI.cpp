@@ -73,9 +73,9 @@ BEGIN_HANDLERS(Automator)
 END_HANDLERS
 #pragma pop
 
-inline void Automator::FillButtonMsg(ButtonDownMsg& msg, int idx){
+inline void Automator::FillButtonMsg(ButtonDownMsg &msg, int idx) {
     MILO_ASSERT(mCurScript, 0x145);
-    DataArray* b = mCurScript->Array(idx);
+    DataArray *b = mCurScript->Array(idx);
     MILO_ASSERT(b->Sym(0) == button_down, 0x148);
     int padnum = b->Int(3);
     msg[0] = TheUserMgr->GetLocalUserFromPadNum(padnum);
@@ -84,24 +84,22 @@ inline void Automator::FillButtonMsg(ButtonDownMsg& msg, int idx){
     msg[3] = padnum;
 }
 
-inline void Automator::Poll(){
+inline void Automator::Poll() {
     static ButtonDownMsg b_msg(nullptr, kPad_NumButtons, kAction_None, -1);
-    if(mCurScript){
+    if (mCurScript) {
         mFramesSinceAdvance++;
         Symbol sym = mCurScript->Array(mCurMsgIndex)->Sym(0);
-        if(sym == button_down){
+        if (sym == button_down) {
             FillButtonMsg(b_msg, mCurMsgIndex);
             AdvanceScript(b_msg.Message::Type());
             TheUI->Handle(b_msg, false);
-        }
-        else if(sym == quick_cheat){
-            DataArray* cheatArr = mCurScript->Array(1);
+        } else if (sym == quick_cheat) {
+            DataArray *cheatArr = mCurScript->Array(1);
             AdvanceScript(quick_cheat);
             CallQuickCheat(cheatArr, nullptr);
-        }
-        else if(mCurMsgIndex > 1 && mFramesSinceAdvance > 0x1e){
+        } else if (mCurMsgIndex > 1 && mFramesSinceAdvance > 0x1e) {
             mCurMsgIndex--;
-            if(mCurScript->Array(mCurMsgIndex)->Sym(0) == button_down){
+            if (mCurScript->Array(mCurMsgIndex)->Sym(0) == button_down) {
                 FillButtonMsg(b_msg, mCurMsgIndex);
                 TheUI->Handle(b_msg, false);
             }
@@ -109,41 +107,40 @@ inline void Automator::Poll(){
     }
 }
 
-inline void Automator::FinishRecord(){
-    if(mRecord){
+inline void Automator::FinishRecord() {
+    if (mRecord) {
         MILO_ASSERT(!mRecordPath.empty(), 0x166);
         DataWriteFile(mRecordPath.c_str(), mRecord, 0);
     }
 }
 
-inline const char* Automator::ToggleAuto(){
+inline const char *Automator::ToggleAuto() {
     mCurScript = 0;
-    if(mScreenScripts){
+    if (mScreenScripts) {
         mScreenScripts->Release();
         mScreenScripts = 0;
-    }
-    else {
-        Loader* ldr = TheLoadMgr.AddLoader(FilePath(mAutoPath.c_str()), kLoadFront);
-        DataLoader* dl = dynamic_cast<DataLoader*>(ldr);
+    } else {
+        Loader *ldr = TheLoadMgr.AddLoader(FilePath(mAutoPath.c_str()), kLoadFront);
+        DataLoader *dl = dynamic_cast<DataLoader *>(ldr);
         MILO_ASSERT(dl, 0x94);
         TheLoadMgr.PollUntilLoaded(dl, 0);
         mScreenScripts = dl->Data();
         mCurScreenIndex = 0;
-        if(mScreenScripts){
+        if (mScreenScripts) {
             StartAuto(TheUI->CurrentScreen());
         }
     }
     return AutoScript();
 }
 
-inline void Automator::StartAuto(UIScreen* screen){
+inline void Automator::StartAuto(UIScreen *screen) {
     MILO_ASSERT(mScreenScripts, 0xC4);
     mCurScript = 0;
-    if(screen){
+    if (screen) {
         mCurMsgIndex = 1;
-        for(int i = mCurScreenIndex; i < mScreenScripts->Size(); i++){
-            DataArray* arr = mScreenScripts->Array(i);
-            if(arr->Sym(0) == screen->Name()){
+        for (int i = mCurScreenIndex; i < mScreenScripts->Size(); i++) {
+            DataArray *arr = mScreenScripts->Array(i);
+            if (arr->Sym(0) == screen->Name()) {
                 mCurScript = arr;
                 mCurScreenIndex++;
                 break;
@@ -152,30 +149,30 @@ inline void Automator::StartAuto(UIScreen* screen){
     }
 }
 
-DataNode Automator::OnMsg(const UITransitionCompleteMsg& msg){
-    if(mScreenScripts && !mRecord) StartAuto(msg.GetScreen1());
+DataNode Automator::OnMsg(const UITransitionCompleteMsg &msg) {
+    if (mScreenScripts && !mRecord)
+        StartAuto(msg.GetScreen1());
     return DataNode(kDataUnhandled, 0);
 }
 
-inline Symbol Automator::CurScreenName(){
-    UIScreen* curScreen = TheUI->CurrentScreen();
-    if(curScreen){
+inline Symbol Automator::CurScreenName() {
+    UIScreen *curScreen = TheUI->CurrentScreen();
+    if (curScreen) {
         DataNode handled = curScreen->Handle(is_system_cheat_msg, false);
-        if(handled == DataNode(kDataUnhandled, 0) || handled.Int() == 0){
+        if (handled == DataNode(kDataUnhandled, 0) || handled.Int() == 0) {
             return curScreen->Name();
         }
     }
     return gNullStr;
 }
 
-inline void Automator::AddRecord(Symbol s, DataArray* arr){
+inline void Automator::AddRecord(Symbol s, DataArray *arr) {
     MILO_ASSERT(mRecord, 0x153);
     int recordSize = mRecord->Size();
-    DataArray* addArr;
-    if(CurRecordScreen() == s){
+    DataArray *addArr;
+    if (CurRecordScreen() == s) {
         addArr = mRecord->Array(recordSize - 1);
-    }
-    else {
+    } else {
         addArr = new DataArray(1);
         addArr->Node(0) = s;
         mRecord->Insert(recordSize, DataNode(addArr, kDataArray));
@@ -183,38 +180,42 @@ inline void Automator::AddRecord(Symbol s, DataArray* arr){
     addArr->Insert(addArr->Size(), DataNode(arr, kDataArray));
 }
 
-inline DataNode Automator::OnMsg(const ButtonDownMsg& msg){
+inline DataNode Automator::OnMsg(const ButtonDownMsg &msg) {
     Symbol screenName = CurScreenName();
-    if(mRecord && !screenName.Null()){
-        DataArrayPtr ptr(button_down, DataGetMacroByInt(msg.GetButton(), "kPad_"), DataGetMacroByInt(msg.GetAction(), "kAction_"), msg.GetPadNum());
+    if (mRecord && !screenName.Null()) {
+        DataArrayPtr ptr(
+            button_down,
+            DataGetMacroByInt(msg.GetButton(), "kPad_"),
+            DataGetMacroByInt(msg.GetAction(), "kAction_"),
+            msg.GetPadNum()
+        );
         AddRecord(screenName, ptr);
     }
     return DataNode(kDataUnhandled, 0);
 }
 
-inline void Automator::HandleMessage(Symbol msgType){
-    if(!TheUI->InTransition()){
-        if(mRecord){
+inline void Automator::HandleMessage(Symbol msgType) {
+    if (!TheUI->InTransition()) {
+        if (mRecord) {
             Symbol screenName = CurScreenName();
-            if(!screenName.Null()){
+            if (!screenName.Null()) {
                 DataArrayPtr ptr(msgType);
                 AddRecord(screenName, ptr);
             }
-        }
-        else if(mScreenScripts){
+        } else if (mScreenScripts) {
             AdvanceScript(msgType);
         }
     }
 }
 
-inline void Automator::AdvanceScript(Symbol msg){
-    if(mCurScript){
-        if(mCurScript->Array(mCurMsgIndex)->Sym(0) == msg){
+inline void Automator::AdvanceScript(Symbol msg) {
+    if (mCurScript) {
+        if (mCurScript->Array(mCurMsgIndex)->Sym(0) == msg) {
             mFramesSinceAdvance = 0;
             mCurMsgIndex++;
-            if(mCurMsgIndex >= mCurScript->Size()){
+            if (mCurMsgIndex >= mCurScript->Size()) {
                 mCurScript = 0;
-                if(mCurScreenIndex == mScreenScripts->Size()){
+                if (mCurScreenIndex == mScreenScripts->Size()) {
                     TheUI->Handle(auto_script_done_msg, false);
                 }
             }
@@ -222,69 +223,70 @@ inline void Automator::AdvanceScript(Symbol msg){
     }
 }
 
-DataNode Automator::OnMsg(const UIComponentSelectMsg& msg){
+DataNode Automator::OnMsg(const UIComponentSelectMsg &msg) {
     HandleMessage(msg.Message::Type());
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode Automator::OnMsg(const UIComponentScrollMsg& msg){
+DataNode Automator::OnMsg(const UIComponentScrollMsg &msg) {
     HandleMessage(msg.Message::Type());
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode Automator::OnMsg(const UIComponentFocusChangeMsg& msg){
+DataNode Automator::OnMsg(const UIComponentFocusChangeMsg &msg) {
     HandleMessage(msg.Message::Type());
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode Automator::OnMsg(const UIScreenChangeMsg& msg){
+DataNode Automator::OnMsg(const UIScreenChangeMsg &msg) {
     HandleMessage(msg.Message::Type());
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode Automator::OnCheatInvoked(const DataArray* arr){
-    if(!mRecord) goto ret;
-    if(mSkipNextQuickCheat){
+DataNode Automator::OnCheatInvoked(const DataArray *arr) {
+    if (!mRecord)
+        goto ret;
+    if (mSkipNextQuickCheat) {
         mSkipNextQuickCheat = false;
         goto ret;
     }
-    if(arr->Int(2) == 0) goto ret;
+    if (arr->Int(2) == 0)
+        goto ret;
     Symbol screenName = CurScreenName();
-    if(TheUI->CurrentScreen() && screenName.Null()){
+    if (TheUI->CurrentScreen() && screenName.Null()) {
         screenName = CurRecordScreen();
     }
-    if(!screenName.Null()){
+    if (!screenName.Null()) {
         DataArrayPtr ptr(quick_cheat, DataNode(arr->Array(3), kDataArray));
-        AddRecord(screenName, ptr);      
+        AddRecord(screenName, ptr);
     }
 ret:
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode Automator::OnCustomMsg(const Message& msg){
+DataNode Automator::OnCustomMsg(const Message &msg) {
     Symbol key = msg.Type();
     std::list<Symbol>::iterator it = mCustomMsgs.begin();
-    for(; it != mCustomMsgs.end() && *it != key; ++it);
-    if(it != mCustomMsgs.end()) HandleMessage(key);
+    for (; it != mCustomMsgs.end() && *it != key; ++it)
+        ;
+    if (it != mCustomMsgs.end())
+        HandleMessage(key);
     return DataNode(kDataUnhandled, 0);
 }
 
-UIManager::UIManager() : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0), mOverloadHorizontalNav(0), mCancelTransitionNotify(0), mDefaultAllowEditText(1), mOverlay(0), mRequireFixedText(0), mAutomator(0), unkb5(0) {
+UIManager::UIManager()
+    : mWentBack(0), mMaxPushDepth(100), mJoyClient(0), mSink(0),
+      mOverloadHorizontalNav(0), mCancelTransitionNotify(0), mDefaultAllowEditText(1),
+      mOverlay(0), mRequireFixedText(0), mAutomator(0), unkb5(0) {}
 
-}
+UIManager::~UIManager() {}
 
-UIManager::~UIManager(){
+void UITerminateCallback() { TheUI->Terminate(); }
 
-}
-
-void UITerminateCallback(){
-    TheUI->Terminate();
-}
-
-void UIManager::Init(){
+void UIManager::Init() {
     mAutomator = new Automator();
     SetName("ui", ObjectDir::Main());
-    DataArray* cfg = SystemConfig("ui");
+    DataArray *cfg = SystemConfig("ui");
     SetTypeDef(SystemConfig("ui"));
     UseJoypad(cfg->FindInt("use_joypad"), cfg->FindInt("enable_auto_repeat"));
     KeyboardSubscribe(this);
@@ -293,10 +295,15 @@ void UIManager::Init(){
     mTransitionScreen = nullptr;
     mWentBack = false;
     mCam = ObjectDir::Main()->New<RndCam>("[ui.cam]");
-    DataArray* camCfg = cfg->FindArray("cam", true);
-    mCam->SetFrustum(camCfg->FindFloat("near"), camCfg->FindFloat("far"), camCfg->FindFloat("fov") * DEG2RAD, 1.0f);
+    DataArray *camCfg = cfg->FindArray("cam", true);
+    mCam->SetFrustum(
+        camCfg->FindFloat("near"),
+        camCfg->FindFloat("far"),
+        camCfg->FindFloat("fov") * DEG2RAD,
+        1.0f
+    );
     mCam->SetLocalPos(0, camCfg->FindFloat("y"), 0);
-    DataArray* zArr = camCfg->FindArray("z-range", true);
+    DataArray *zArr = camCfg->FindArray("z-range", true);
     mCam->SetZRange(zArr->Float(1), zArr->Float(2));
     mEnv = Hmx::Object::New<RndEnviron>();
     Hmx::Color envAmbientColor;
@@ -328,15 +335,15 @@ void UIManager::Init(){
     TheDebug.AddExitCallback(UITerminateCallback);
 
     std::vector<ObjDirPtr<ObjectDir> > dirPtrs;
-    DataArray* frontloadArr = cfg->FindArray("frontload_subdirs", false);
-    if(frontloadArr){
+    DataArray *frontloadArr = cfg->FindArray("frontload_subdirs", false);
+    if (frontloadArr) {
         dirPtrs.resize(frontloadArr->Size() - 1);
-        for(int i = 1; i < frontloadArr->Size(); i++){
+        for (int i = 1; i < frontloadArr->Size(); i++) {
             String curStr = frontloadArr->Str(i);
             dirPtrs[i - 1].LoadFile(curStr.c_str(), false, true, kLoadFront, false);
         }
     }
-    
+
     CheatProvider::Init();
     LocalePanel::Init();
     Hmx::Object::Handle(cheat_init_msg, false);
@@ -348,7 +355,7 @@ void UIManager::Init(){
     cfg->FindData("overload_horizontal_nav", mOverloadHorizontalNav, false);
 }
 
-void UIManager::Terminate(){
+void UIManager::Terminate() {
     CheatProvider::Terminate();
     UILabel::Terminate();
     SetName(0, 0);
@@ -356,75 +363,84 @@ void UIManager::Terminate(){
     RELEASE(mCam);
     RELEASE(mEnv);
     RELEASE(mJoyClient);
-    for(std::vector<UIResource*>::iterator it = mResources.begin(); it != mResources.end(); ++it){
+    for (std::vector<UIResource *>::iterator it = mResources.begin();
+         it != mResources.end();
+         ++it) {
         (*it)->ForceRelease();
     }
-    for(std::vector<UIResource*>::iterator it = mResources.begin(); it != mResources.end(); ++it){
+    for (std::vector<UIResource *>::iterator it = mResources.begin();
+         it != mResources.end();
+         ++it) {
         delete *it;
     }
     TheDebug.RemoveExitCallback(UITerminateCallback);
     RELEASE(mAutomator);
 }
 
-void UIManager::Poll(){
+void UIManager::Poll() {
     UIList::CollectGarbage();
     mAutomator->Poll();
     TheTaskMgr.SetUISeconds(mTimer.SplitMs() / 1000.0f, false);
-    for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+    for (std::vector<UIScreen *>::iterator it = mPushedScreens.begin();
+         it != mPushedScreens.end();
+         ++it) {
         (*it)->Poll();
     }
-    if(mCurrentScreen) mCurrentScreen->Poll();
-    if(mTransitionState == kTransitionTo){
+    if (mCurrentScreen)
+        mCurrentScreen->Poll();
+    if (mTransitionState == kTransitionTo) {
         START_AUTO_TIMER("ui_transition_to_poll");
-        if(
-            (!mTransitionScreen || mTransitionScreen->CheckIsLoaded()) && 
-            (!mCurrentScreen || !mCurrentScreen->Exiting()) && !IsBlockingTransition()
-        ){
-            UIScreen* trans = mTransitionScreen;
+        if ((!mTransitionScreen || mTransitionScreen->CheckIsLoaded())
+            && (!mCurrentScreen || !mCurrentScreen->Exiting())
+            && !IsBlockingTransition()) {
+            UIScreen *trans = mTransitionScreen;
             mTransitionState = kTransitionFrom;
             mTransitionScreen = mCurrentScreen;
             mCurrentScreen = trans;
-            if(trans){
-                if(trans->AllPanelsDown() && mPushedScreens.empty() && IsTimelineResetAllowed()){
+            if (trans) {
+                if (trans->AllPanelsDown() && mPushedScreens.empty()
+                    && IsTimelineResetAllowed()) {
                     mTimer.Restart();
                     TheTaskMgr.SetUISeconds(0, true);
                 }
                 TheLoadMgr.SetLoaderPeriod(10.0f);
                 mCurrentScreen->Enter(mTransitionScreen);
             }
-        }
-        else if(
-            (mTransitionScreen && !mTransitionScreen->CheckIsLoaded()) &&
-            (!mCurrentScreen || !mCurrentScreen->Exiting())
-        ){
+        } else if ((mTransitionScreen && !mTransitionScreen->CheckIsLoaded())
+                   && (!mCurrentScreen || !mCurrentScreen->Exiting())) {
             TheLoadMgr.SetLoaderPeriod(26.67f);
         }
     }
-    if(mTransitionState == kTransitionPop){
+    if (mTransitionState == kTransitionPop) {
         START_AUTO_TIMER("ui_transition_pop_poll");
-        if(!mCurrentScreen || !mCurrentScreen->Exiting()){
-            if(mCurrentScreen) mCurrentScreen->UnloadPanels();
-            UIScreen* oldCurScreen = mCurrentScreen;
+        if (!mCurrentScreen || !mCurrentScreen->Exiting()) {
+            if (mCurrentScreen)
+                mCurrentScreen->UnloadPanels();
+            UIScreen *oldCurScreen = mCurrentScreen;
             MILO_ASSERT(!mPushedScreens.empty(), 0x2AF);
             mCurrentScreen = mPushedScreens.back();
             mPushedScreens.pop_back();
             mTransitionState = kTransitionNone;
-            if(mTransitionScreen == mCurrentScreen){
+            if (mTransitionScreen == mCurrentScreen) {
                 SendTransitionComplete(mCurrentScreen, oldCurScreen);
-            }
-            else GotoScreenImpl(mTransitionScreen, false, false);
+            } else
+                GotoScreenImpl(mTransitionScreen, false, false);
         }
     }
-    if(mTransitionState == kTransitionFrom){
+    if (mTransitionState == kTransitionFrom) {
         START_AUTO_TIMER("ui_transition_from_poll");
-        if(!mCurrentScreen || !mCurrentScreen->Entering()){
-            if(mOverlay->Showing() && mLoadTimer.Running()){
-                if(mCurrentScreen){
-                    mOverlay->CurrentLine() = MakeString("%s entered in %f seconds", mCurrentScreen->Name(), mLoadTimer.SplitMs() / 1000.0f);
+        if (!mCurrentScreen || !mCurrentScreen->Entering()) {
+            if (mOverlay->Showing() && mLoadTimer.Running()) {
+                if (mCurrentScreen) {
+                    mOverlay->CurrentLine() = MakeString(
+                        "%s entered in %f seconds",
+                        mCurrentScreen->Name(),
+                        mLoadTimer.SplitMs() / 1000.0f
+                    );
                     MILO_LOG("%s\n", mOverlay->CurrentLine());
                 }
             }
-            UIScreen* oldTrans = mTransitionScreen;
+            UIScreen *oldTrans = mTransitionScreen;
             mTransitionState = kTransitionNone;
             mTransitionScreen = nullptr;
             SendTransitionComplete(mCurrentScreen, oldTrans);
@@ -432,47 +448,53 @@ void UIManager::Poll(){
     }
 }
 
-void UIManager::SendTransitionComplete(UIScreen* scr1, UIScreen* scr2){
+void UIManager::SendTransitionComplete(UIScreen *scr1, UIScreen *scr2) {
     Handle(UITransitionCompleteMsg(scr1, scr2), false);
 }
 
-void UIManager::Draw(){
-    for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+void UIManager::Draw() {
+    for (std::vector<UIScreen *>::iterator it = mPushedScreens.begin();
+         it != mPushedScreens.end();
+         ++it) {
         (*it)->Draw();
     }
-    if(mCurrentScreen) mCurrentScreen->Draw();
+    if (mCurrentScreen)
+        mCurrentScreen->Draw();
 }
 
-void UIManager::CancelTransition(){
-    if(mCancelTransitionNotify && mTransitionState != kTransitionNone && mTransitionState != kTransitionFrom){
+void UIManager::CancelTransition() {
+    if (mCancelTransitionNotify && mTransitionState != kTransitionNone
+        && mTransitionState != kTransitionFrom) {
         MILO_WARN("Cancelled transition");
     }
     TransitionState oldState = mTransitionState;
-    UIScreen* oldScreen = mTransitionScreen;
+    UIScreen *oldScreen = mTransitionScreen;
     mTransitionState = kTransitionNone;
     mTransitionScreen = nullptr;
-    if(oldState == kTransitionTo){
-        if(mCurrentScreen){
+    if (oldState == kTransitionTo) {
+        if (mCurrentScreen) {
             TheLoadMgr.SetLoaderPeriod(10.0f);
             mCurrentScreen->Enter(oldScreen);
-        }
-        else if(oldScreen) oldScreen->UnloadPanels();
-    }
-    else if(oldState == kTransitionPop && mCurrentScreen){
+        } else if (oldScreen)
+            oldScreen->UnloadPanels();
+    } else if (oldState == kTransitionPop && mCurrentScreen) {
         TheLoadMgr.SetLoaderPeriod(10.0f);
         mCurrentScreen->Enter(nullptr);
     }
 }
 
-void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
-    if(b1 || mTransitionState != kTransitionNone || mCurrentScreen != scr &&
-        (mTransitionState != kTransitionTo && mTransitionState != kTransitionPop) ||
-        mTransitionScreen != scr){
+void UIManager::GotoScreenImpl(UIScreen *scr, bool b1, bool b2) {
+    if (b1 || mTransitionState != kTransitionNone
+        || mCurrentScreen != scr
+            && (mTransitionState != kTransitionTo && mTransitionState != kTransitionPop)
+        || mTransitionScreen != scr) {
         CancelTransition();
 #ifdef MILO_DEBUG
-        if(scr){
-            for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
-                if(scr->SharesPanels(*it)){
+        if (scr) {
+            for (std::vector<UIScreen *>::iterator it = mPushedScreens.begin();
+                 it != mPushedScreens.end();
+                 ++it) {
+                if (scr->SharesPanels(*it)) {
                     MILO_FAIL("%s shares panels with %s", scr->Name(), (*it)->Name());
                 }
             }
@@ -483,10 +505,12 @@ void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
         Handle(msg, false);
         mTransitionState = kTransitionTo;
         mTransitionScreen = scr;
-        if(mCurrentScreen) mCurrentScreen->Exit(scr);
-        else if(scr) scr->LoadPanels();
+        if (mCurrentScreen)
+            mCurrentScreen->Exit(scr);
+        else if (scr)
+            scr->LoadPanels();
 #ifdef MILO_DEBUG
-        if(mTransitionScreen){
+        if (mTransitionScreen) {
             mOverlay->CurrentLine() = gNullStr;
             mLoadTimer.Restart();
         }
@@ -494,30 +518,36 @@ void UIManager::GotoScreenImpl(UIScreen* scr, bool b1, bool b2){
     }
 }
 
-void UIManager::GotoScreen(const char* name, bool b2, bool b3){
-    UIScreen* screen = ObjectDir::Main()->Find<UIScreen>(name, true);
+void UIManager::GotoScreen(const char *name, bool b2, bool b3) {
+    UIScreen *screen = ObjectDir::Main()->Find<UIScreen>(name, true);
     MILO_ASSERT(screen, 0x348);
     GotoScreen(screen, b2, b3);
 }
 
-void UIManager::GotoScreen(UIScreen* scr, bool b1, bool b2){
+void UIManager::GotoScreen(UIScreen *scr, bool b1, bool b2) {
     GotoScreenImpl(scr, b1, b2);
 }
 
-void UIManager::PushScreen(UIScreen* screen){
+void UIManager::PushScreen(UIScreen *screen) {
     CancelTransition();
     MILO_ASSERT(mCurrentScreen, 0x358);
     MILO_ASSERT(screen, 0x359);
-    for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
-        if(screen == *it){
+    for (std::vector<UIScreen *>::iterator it = mPushedScreens.begin();
+         it != mPushedScreens.end();
+         ++it) {
+        if (screen == *it) {
             MILO_WARN("Don't push %s, it is already there!\n", screen->Name());
         }
     }
     mPushedScreens.push_back(mCurrentScreen);
-    if(mPushedScreens.size() >= mMaxPushDepth){
-        MILO_WARN("Exceeded max push depth of %i, pushing %s", mMaxPushDepth, screen->Name());
+    if (mPushedScreens.size() >= mMaxPushDepth) {
+        MILO_WARN(
+            "Exceeded max push depth of %i, pushing %s", mMaxPushDepth, screen->Name()
+        );
         MILO_LOG("mPushedScreens:\n");
-        for(std::vector<UIScreen*>::iterator it = mPushedScreens.begin(); it != mPushedScreens.end(); ++it){
+        for (std::vector<UIScreen *>::iterator it = mPushedScreens.begin();
+             it != mPushedScreens.end();
+             ++it) {
             MILO_LOG("%s\n", (*it)->Name());
         }
     }
@@ -525,62 +555,68 @@ void UIManager::PushScreen(UIScreen* screen){
     GotoScreenImpl(screen, false, false);
 }
 
-void UIManager::PopScreen(UIScreen* screen){
-    if(mPushedScreens.empty()){
+void UIManager::PopScreen(UIScreen *screen) {
+    if (mPushedScreens.empty()) {
         MILO_WARN("No screen to pop\n");
-    }
-    else {
+    } else {
         GotoScreenImpl(nullptr, false, false);
         mTransitionState = kTransitionPop;
-        if(screen) mTransitionScreen = screen;
-        else mTransitionScreen = mPushedScreens.back();
+        if (screen)
+            mTransitionScreen = screen;
+        else
+            mTransitionScreen = mPushedScreens.back();
     }
 }
 
-void UIManager::ResetScreen(UIScreen* screen){
-    if(mTransitionState != kTransitionNone && mTransitionState != kTransitionFrom){
+void UIManager::ResetScreen(UIScreen *screen) {
+    if (mTransitionState != kTransitionNone && mTransitionState != kTransitionFrom) {
         bool old = mCancelTransitionNotify;
         mCancelTransitionNotify = false;
         CancelTransition();
         mCancelTransitionNotify = old;
     }
-    if(mPushedScreens.empty()){
+    if (mPushedScreens.empty()) {
         GotoScreen(screen, false, false);
-    }
-    else {
+    } else {
         MILO_ASSERT(mPushedScreens.size() == 1, 0x3A7);
         PopScreen(screen);
     }
 }
 
-bool UIManager::InComponentSelect(){
-    if(mCurrentScreen) return mCurrentScreen->InComponentSelect();
-    else return false;
+bool UIManager::InComponentSelect() {
+    if (mCurrentScreen)
+        return mCurrentScreen->InComponentSelect();
+    else
+        return false;
 }
 
-UIPanel* UIManager::FocusPanel(){
-    if(mCurrentScreen) return mCurrentScreen->FocusPanel();
-    else return nullptr;
+UIPanel *UIManager::FocusPanel() {
+    if (mCurrentScreen)
+        return mCurrentScreen->FocusPanel();
+    else
+        return nullptr;
 }
 
-UIComponent* UIManager::FocusComponent(){
-    UIPanel* focusPanel = FocusPanel();
-    if(focusPanel) return focusPanel->FocusComponent();
-    else return nullptr;
+UIComponent *UIManager::FocusComponent() {
+    UIPanel *focusPanel = FocusPanel();
+    if (focusPanel)
+        return focusPanel->FocusComponent();
+    else
+        return nullptr;
 }
 
-UIResource* UIManager::Resource(const UIComponent* comp){
+UIResource *UIManager::Resource(const UIComponent *comp) {
     return FindResource(comp->TypeDef());
 }
 
-void UIManager::InitResources(Symbol s){
-    DataArray* cfg = SystemConfig("objects", s);
-    DataArray* typesArr = cfg->FindArray(types, true);
-    if(typesArr){
-        for(int i = 1; i < typesArr->Size(); i++){
-            DataArray* curArr = typesArr->Array(i);
-            DataArray* rsrcsArr = curArr->FindArray(resource_file, false);
-            if(rsrcsArr && !FindResource(curArr)){
+void UIManager::InitResources(Symbol s) {
+    DataArray *cfg = SystemConfig("objects", s);
+    DataArray *typesArr = cfg->FindArray(types, true);
+    if (typesArr) {
+        for (int i = 1; i < typesArr->Size(); i++) {
+            DataArray *curArr = typesArr->Array(i);
+            DataArray *rsrcsArr = curArr->FindArray(resource_file, false);
+            if (rsrcsArr && !FindResource(curArr)) {
                 FilePath fp(FileGetPath(rsrcsArr->File(), 0), rsrcsArr->Str(1));
                 mResources.push_back(new UIResource(fp));
             }
@@ -589,19 +625,17 @@ void UIManager::InitResources(Symbol s){
     std::sort(mResources.begin(), mResources.end(), UIResource::Compare());
 }
 
-UIResource* UIManager::FindResource(const DataArray* array) {
+UIResource *UIManager::FindResource(const DataArray *array) {
     if (!array) {
         return nullptr;
     }
 
-    DataArray* fileArray = array->FindArray(resource_file, false);
+    DataArray *fileArray = array->FindArray(resource_file, false);
     if (fileArray) {
         FilePath path(FileGetPath(fileArray->mFile.Str(), nullptr), fileArray->Str(1));
 
-        std::pair<UIResource**, UIResource**> asdf = std::equal_range(
-            mResources.begin(),
-            mResources.end(),
-            path.c_str(), UIResource::Compare()
+        std::pair<UIResource **, UIResource **> asdf = std::equal_range(
+            mResources.begin(), mResources.end(), path.c_str(), UIResource::Compare()
         );
 
         if (asdf.first != asdf.second) {
@@ -612,15 +646,15 @@ UIResource* UIManager::FindResource(const DataArray* array) {
     return nullptr;
 }
 
-DataNode UIManager::OnIsResource(DataArray* arr){
+DataNode UIManager::OnIsResource(DataArray *arr) {
     FilePath fp(FileRoot(), arr->Str(2));
     Symbol sym = arr->Sym(3);
-    DataArray* cfg = SystemConfig(objects, sym, types);
-    for(int i = 1; i < cfg->Size(); i++){
-        DataArray* curArr = cfg->Array(i);
-        DataArray* rsrcArr = curArr->FindArray(resource_file, false);
-        if(rsrcArr){
-            if(FilePath(FileGetPath(rsrcArr->File(), 0), rsrcArr->Str(1)) == fp){
+    DataArray *cfg = SystemConfig(objects, sym, types);
+    for (int i = 1; i < cfg->Size(); i++) {
+        DataArray *curArr = cfg->Array(i);
+        DataArray *rsrcArr = curArr->FindArray(resource_file, false);
+        if (rsrcArr) {
+            if (FilePath(FileGetPath(rsrcArr->File(), 0), rsrcArr->Str(1)) == fp) {
                 return 1;
             }
         }
@@ -628,100 +662,112 @@ DataNode UIManager::OnIsResource(DataArray* arr){
     return 0;
 }
 
-void UIManager::UseJoypad(bool useJoypad, bool enableAutoRepeat){
-    if(useJoypad && !mJoyClient){
+void UIManager::UseJoypad(bool useJoypad, bool enableAutoRepeat) {
+    if (useJoypad && !mJoyClient) {
         mJoyClient = new JoypadClient(this);
         mJoyClient->SetVirtualDpad(true);
-        if(enableAutoRepeat){
+        if (enableAutoRepeat) {
             mJoyClient->SetRepeatMask(0xf000);
         }
-    }
-    else if(!useJoypad){
-        if(mJoyClient){
+    } else if (!useJoypad) {
+        if (mJoyClient) {
             RELEASE(mJoyClient);
-        }        
+        }
     }
 }
 
 namespace {
-    JoypadAction NavButtonToNavAction(JoypadButton btn){
-        switch(btn){
-            case kPad_DLeft: return kAction_Left;
-            case kPad_DRight: return kAction_Right;
-            case kPad_DDown: return kAction_Down;
-            case kPad_DUp: return kAction_Up;
-            default: return kAction_None;
+    JoypadAction NavButtonToNavAction(JoypadButton btn) {
+        switch (btn) {
+        case kPad_DLeft:
+            return kAction_Left;
+        case kPad_DRight:
+            return kAction_Right;
+        case kPad_DDown:
+            return kAction_Down;
+        case kPad_DUp:
+            return kAction_Up;
+        default:
+            return kAction_None;
         }
     }
 }
 
 bool UIManager::OverloadHorizontalNav(JoypadAction act, JoypadButton btn, Symbol s) const {
     bool ret = false;
-    if(mOverloadHorizontalNav){
+    if (mOverloadHorizontalNav) {
         bool b2 = true;
-        if(act == NavButtonToNavAction(btn)){
+        if (act == NavButtonToNavAction(btn)) {
             bool b1 = false;
-            if(s != none){
-                if(JoypadTypeHasLeftyFlip(s)) b1 = true;
+            if (s != none) {
+                if (JoypadTypeHasLeftyFlip(s))
+                    b1 = true;
             }
-            if(!b1) b2 = false;
+            if (!b1)
+                b2 = false;
         }
-        if(b2) ret = true;
+        if (b2)
+            ret = true;
     }
     return ret;
 }
 
 bool UIManager::RequireFixedText() const { return mRequireFixedText; }
-void UIManager::SetRequireFixedText(bool req){ mRequireFixedText = req; }
+void UIManager::SetRequireFixedText(bool req) { mRequireFixedText = req; }
 
-UIScreen* UIManager::BottomScreen(){
-    if(mPushedScreens.empty()) return mCurrentScreen;
-    else return mPushedScreens.front();
+UIScreen *UIManager::BottomScreen() {
+    if (mPushedScreens.empty())
+        return mCurrentScreen;
+    else
+        return mPushedScreens.front();
 }
 
 int UIManager::PushDepth() const { return mPushedScreens.size(); }
 
-UIScreen* UIManager::ScreenAtDepth(int depth){
+UIScreen *UIManager::ScreenAtDepth(int depth) {
     MILO_ASSERT(depth < mPushedScreens.size(), 0x478);
     return mPushedScreens[depth];
 }
 
-void UIManager::ToggleLoadTimes(){
+void UIManager::ToggleLoadTimes() {
     mOverlay->CurrentLine() = gNullStr;
     mOverlay->SetOverlay(!mOverlay->Showing());
 }
 
-bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray* da){
-    if(s == KeyboardKeyMsg::Type()) return true;
-    else if(ButtonDownMsg::Type() != s){
-        if(ButtonUpMsg::Type() == s){
-            UIPanel* focus = FocusPanel();
-            if(focus){
-                DataArray* arr;
-                DataNode* prop = focus->Property(allowed_transition_actions, false);
-                if(prop) arr = prop->Array();
-                else arr = nullptr;
-                if(arr){
-                    for(int i = 0; i < arr->Size(); i++){
-                        if(arr->Int(i) == da->Int(4)) return false;
+bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray *da) {
+    if (s == KeyboardKeyMsg::Type())
+        return true;
+    else if (ButtonDownMsg::Type() != s) {
+        if (ButtonUpMsg::Type() == s) {
+            UIPanel *focus = FocusPanel();
+            if (focus) {
+                DataArray *arr;
+                DataNode *prop = focus->Property(allowed_transition_actions, false);
+                if (prop)
+                    arr = prop->Array();
+                else
+                    arr = nullptr;
+                if (arr) {
+                    for (int i = 0; i < arr->Size(); i++) {
+                        if (arr->Int(i) == da->Int(4))
+                            return false;
                     }
                 }
             }
-            return true;                
-        }
-        else return false;
+            return true;
+        } else
+            return false;
     }
 }
 
-void UIManager::EnableInputPerformanceMode(bool b){
-    if(mJoyClient) mJoyClient->SetFilterAllButStart(b);
+void UIManager::EnableInputPerformanceMode(bool b) {
+    if (mJoyClient)
+        mJoyClient->SetFilterAllButStart(b);
 }
 
-void UIManager::PrintLoadedDirs(const char* cc){
-    DirLoader::PrintLoaded(cc);
-}
+void UIManager::PrintLoadedDirs(const char *cc) { DirLoader::PrintLoaded(cc); }
 
-void UIManager::ShowNetError(){
+void UIManager::ShowNetError() {
     Message msg("show_net_error", ThePlatformMgr.GetNetErrorString(false));
     Handle(msg, true);
     ThePlatformMgr.ClearNetError();
@@ -730,14 +776,17 @@ void UIManager::ShowNetError(){
 #pragma push
 #pragma dont_inline on
 BEGIN_HANDLERS(UIManager)
-    HANDLE_CONDITION((InTransition() || InComponentSelect()) && BlockHandlerDuringTransition(sym, _msg), 0)
+    HANDLE_CONDITION(
+        (InTransition() || InComponentSelect())
+            && BlockHandlerDuringTransition(sym, _msg),
+        0
+    )
     HANDLE_MEMBER_PTR(mSink);
     HANDLE_ACTION(use_joypad, UseJoypad(_msg->Int(2), true))
     HANDLE_ACTION(set_virtual_dpad, mJoyClient->SetVirtualDpad(_msg->Int(2)))
     HANDLE_ACTION(push_screen, PushScreen(_msg->Obj<UIScreen>(2)))
-    HANDLE_ACTION_IF_ELSE(pop_screen, _msg->Size() > 2,
-        PopScreen(_msg->Obj<UIScreen>(2)),
-        PopScreen(0)
+    HANDLE_ACTION_IF_ELSE(
+        pop_screen, _msg->Size() > 2, PopScreen(_msg->Obj<UIScreen>(2)), PopScreen(0)
     )
     HANDLE_EXPR(pushed_screens, (int)mPushedScreens.size())
     HANDLE(goto_screen, OnGotoScreen)
@@ -762,46 +811,48 @@ BEGIN_HANDLERS(UIManager)
 END_HANDLERS
 #pragma pop
 
-DataNode UIManager::OnGotoScreen(const DataArray* arr){
-    Hmx::Object* obj = arr->GetObj(2);
-    UIScreen* screen = dynamic_cast<UIScreen*>(obj);
+DataNode UIManager::OnGotoScreen(const DataArray *arr) {
+    Hmx::Object *obj = arr->GetObj(2);
+    UIScreen *screen = dynamic_cast<UIScreen *>(obj);
     bool isscreen = false;
-    if(screen || !obj) isscreen = true;
-    if(!isscreen){
+    if (screen || !obj)
+        isscreen = true;
+    if (!isscreen) {
         MILO_FAIL("%s is not a screen", obj->Name());
     }
-    if(arr->Size() > 4){
+    if (arr->Size() > 4) {
         GotoScreen(screen, arr->Int(3), arr->Int(4));
-    }
-    else if(arr->Size() > 3){
+    } else if (arr->Size() > 3) {
         GotoScreen(screen, arr->Int(3), false);
-    }
-    else {
+    } else {
         GotoScreen(screen, false, false);
     }
     return 0;
 }
 
-DataNode UIManager::OnGoBackScreen(const DataArray* arr){
-    Hmx::Object* obj = arr->GetObj(2);
-    UIScreen* screen = dynamic_cast<UIScreen*>(obj);
+DataNode UIManager::OnGoBackScreen(const DataArray *arr) {
+    Hmx::Object *obj = arr->GetObj(2);
+    UIScreen *screen = dynamic_cast<UIScreen *>(obj);
     bool isscreen = false;
-    if(screen || !obj) isscreen = true;
-    if(!isscreen){
+    if (screen || !obj)
+        isscreen = true;
+    if (!isscreen) {
         MILO_FAIL("%s is not a screen", obj->Name());
     }
     GotoScreen(screen, false, true);
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode UIManager::ForeachScreen(const DataArray* arr){
-    DataNode* var = arr->Var(2);
+DataNode UIManager::ForeachScreen(const DataArray *arr) {
+    DataNode *var = arr->Var(2);
     DataNode node(*var);
-    std::vector<UIScreen*> screens(mPushedScreens);
-    if(mCurrentScreen) screens.push_back(mCurrentScreen);
-    for(std::vector<UIScreen*>::iterator it = screens.begin(); it != screens.end(); ++it){
+    std::vector<UIScreen *> screens(mPushedScreens);
+    if (mCurrentScreen)
+        screens.push_back(mCurrentScreen);
+    for (std::vector<UIScreen *>::iterator it = screens.begin(); it != screens.end();
+         ++it) {
         *var = *it;
-        for(int i = 3; i < arr->Size(); i++){
+        for (int i = 3; i < arr->Size(); i++) {
             arr->Command(i)->Execute();
         }
     }

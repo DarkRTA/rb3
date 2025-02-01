@@ -8,12 +8,12 @@
 class AsyncFile : public File {
 public:
     AsyncFile(const char *, int);
-    virtual ~AsyncFile(){}
+    virtual ~AsyncFile() {}
     virtual String Filename() const { return String(mFilename); }
     virtual int Read(void *, int);
     virtual bool ReadAsync(void *, int);
     virtual int Write(const void *, int);
-    virtual bool WriteAsync(const void*, int);
+    virtual bool WriteAsync(const void *, int);
     virtual int Seek(int, int);
     virtual int Tell();
     virtual void Flush();
@@ -23,21 +23,21 @@ public:
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
     virtual bool WriteDone(int &);
-    virtual int GetFileHandle(DVDFileInfo*&) = 0;
+    virtual int GetFileHandle(DVDFileInfo *&) = 0;
     // File::Truncate goes here
     virtual void _OpenAsync() = 0;
     virtual bool _OpenDone() = 0;
-    virtual void _WriteAsync(const void*, int) = 0;
+    virtual void _WriteAsync(const void *, int) = 0;
     virtual bool _WriteDone() = 0;
     virtual void _SeekToTell() = 0;
-    virtual void _ReadAsync(void*, int) = 0;
+    virtual void _ReadAsync(void *, int) = 0;
     virtual bool _ReadDone() = 0;
     virtual void _Close() = 0;
 
     void FillBuffer();
     void Terminate();
 
-    static AsyncFile* New(const char *, int);
+    static AsyncFile *New(const char *, int);
     void Init();
 
     int mMode;

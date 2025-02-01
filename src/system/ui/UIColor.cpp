@@ -5,21 +5,15 @@
 
 INIT_REVS(UIColor);
 
-UIColor::UIColor() : mColor(1.0f,1.0f,1.0f,1.0f) {
-    
-}
+UIColor::UIColor() : mColor(1.0f, 1.0f, 1.0f, 1.0f) {}
 
-const Hmx::Color& UIColor::GetColor() const {
-    return mColor;
-}
+const Hmx::Color &UIColor::GetColor() const { return mColor; }
 
-void UIColor::SetColor(const Hmx::Color& color){
-    mColor = color;
-}
+void UIColor::SetColor(const Hmx::Color &color) { mColor = color; }
 
 SAVE_OBJ(UIColor, 0x24)
 
-void UIColor::Load(BinStream& bs){
+void UIColor::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(0, 0);
     Hmx::Object::Load(bs);
@@ -33,11 +27,13 @@ BEGIN_COPYS(UIColor)
     COPY_MEMBER(mColor)
 END_COPYS
 
-BEGIN_HANDLERS(UIColor);
+BEGIN_HANDLERS(UIColor)
+    ;
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x3A);
 END_HANDLERS;
 
-BEGIN_PROPSYNCS(UIColor);
+BEGIN_PROPSYNCS(UIColor)
+    ;
     SYNC_PROP(color, mColor);
 END_PROPSYNCS;

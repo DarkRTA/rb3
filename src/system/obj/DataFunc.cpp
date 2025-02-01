@@ -21,29 +21,30 @@
 
 #include "decomp.h"
 
-std::map<Symbol, DataFunc*> gDataFuncs;
+std::map<Symbol, DataFunc *> gDataFuncs;
 DataThisPtr gDataThisPtr;
 
-static DataArray* sFileMsg;
+static DataArray *sFileMsg;
 bool sOldNoModal;
-ModalCallbackFunc* sOldModalCallback;
-DataArray* sNotifyMsg;
+ModalCallbackFunc *sOldModalCallback;
+DataArray *sNotifyMsg;
 
 // Force ~MergeFilter() to generate here
 DECOMP_FORCEDTOR(DataFunc, MergeFilter);
 
-void DataRegisterFunc(Symbol s, DataFunc* func){
+void DataRegisterFunc(Symbol s, DataFunc *func) {
 #ifdef MILO_DEBUG
-    const std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(s);
-    if(it != gDataFuncs.end() && it->second != func)
+    const std::map<Symbol, DataFunc *>::iterator it = gDataFuncs.find(s);
+    if (it != gDataFuncs.end() && it->second != func)
         MILO_FAIL("Can't register different func %s", s);
 #endif
     gDataFuncs[s] = func;
 }
 
-DataNode DataFuncObj::New(DataArray* arr){
-    Hmx::Object* o = ObjectDir::Main()->FindObject(arr->Str(1), false);
-    if(o) delete o;
+DataNode DataFuncObj::New(DataArray *arr) {
+    Hmx::Object *o = ObjectDir::Main()->FindObject(arr->Str(1), false);
+    if (o)
+        delete o;
     return new DataFuncObj(arr);
 }
 
@@ -65,7 +66,7 @@ DEF_DATA_FUNC(DataPrintf) {
 }
 
 DEF_DATA_FUNC(DataPrint) {
-    for (int i = 1; i < array->Size(); i++){
+    for (int i = 1; i < array->Size(); i++) {
         array->Evaluate(i).Print(TheDebug, true);
     }
     return 0;
@@ -73,20 +74,20 @@ DEF_DATA_FUNC(DataPrint) {
 
 DEF_DATA_FUNC(DataSprint) {
     class String str;
-    for (int i = 1; i < array->Size(); i++){
+    for (int i = 1; i < array->Size(); i++) {
         array->Evaluate(i).Print(str, true);
     }
     return str.c_str();
 }
 
 DEF_DATA_FUNC(DataSet) {
-    const DataArray* a = array;
+    const DataArray *a = array;
     DataNode ret(a->Evaluate(2));
     if (a->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x9D);
         gDataThis->SetProperty(a->Node(1).mValue.array, ret);
-    }
-    else *a->Var(1) = ret;
+    } else
+        *a->Var(1) = ret;
     return ret;
 }
 
@@ -98,11 +99,17 @@ DEF_DATA_FUNC(DataSetVar) {
 
 DEF_DATA_FUNC(DataIfElse) {
 #ifdef MILO_DEBUG
-    if(array->Size() != 4) MILO_FAIL("One condition and two alternatives expected (file %s, line %d)", array->File(), array->Line());
+    if (array->Size() != 4)
+        MILO_FAIL(
+            "One condition and two alternatives expected (file %s, line %d)",
+            array->File(),
+            array->Line()
+        );
 #endif
-    if(array->Node(1).NotNull())
+    if (array->Node(1).NotNull())
         return array->Evaluate(2);
-    else return array->Evaluate(3);
+    else
+        return array->Evaluate(3);
 }
 
 DEF_DATA_FUNC(DataIf) {
@@ -115,10 +122,10 @@ DEF_DATA_FUNC(DataIf) {
         return 0;
 }
 
-DEF_DATA_FUNC(DataUnless){
+DEF_DATA_FUNC(DataUnless) {
     // bool fart = !array->Node(1).NotNull();
-    if(!array->Node(1)){
-        for(int i = 2; i < array->Size(); i++){
+    if (!array->Node(1)) {
+        for (int i = 2; i < array->Size(); i++) {
             array->Command(i)->Execute();
         }
         return 0;
@@ -151,29 +158,17 @@ DEF_DATA_FUNC(DataFindElem) {
 }
 
 /** Verifies if two DataNodes are NOT equivalent. */
-DEF_DATA_FUNC(DataNe){
-    return DataEq(array).UncheckedInt() == 0;
-}
+DEF_DATA_FUNC(DataNe) { return DataEq(array).UncheckedInt() == 0; }
 
-DEF_DATA_FUNC(DataLe) {
-    return array->Float(1) <= array->Float(2);
-}
+DEF_DATA_FUNC(DataLe) { return array->Float(1) <= array->Float(2); }
 
-DEF_DATA_FUNC(DataLt) {
-    return array->Float(1) < array->Float(2);
-}
+DEF_DATA_FUNC(DataLt) { return array->Float(1) < array->Float(2); }
 
-DEF_DATA_FUNC(DataGe) {
-    return array->Float(1) >= array->Float(2);
-}
+DEF_DATA_FUNC(DataGe) { return array->Float(1) >= array->Float(2); }
 
-DEF_DATA_FUNC(DataGt) {
-    return array->Float(1) > array->Float(2);
-}
+DEF_DATA_FUNC(DataGt) { return array->Float(1) > array->Float(2); }
 
-DEF_DATA_FUNC(DataNot) {
-    return !array->Node(1);
-}
+DEF_DATA_FUNC(DataNot) { return !array->Node(1); }
 
 DEF_DATA_FUNC(DataAnd) {
     for (int i = 1; i < array->Size(); i++) {
@@ -186,15 +181,13 @@ DEF_DATA_FUNC(DataAnd) {
 
 DEF_DATA_FUNC(DataOr) {
     for (int i = 1; i < array->Size(); i++) {
-        if(array->Node(i).NotNull())
+        if (array->Node(i).NotNull())
             return 1;
     }
     return 0;
 }
 
-DEF_DATA_FUNC(DataXor) {
-    return array->Node(1).NotNull() != array->Node(2).NotNull();
-}
+DEF_DATA_FUNC(DataXor) { return array->Node(1).NotNull() != array->Node(2).NotNull(); }
 
 DEF_DATA_FUNC(DataBitAnd) {
 #ifdef MILO_DEBUG
@@ -207,98 +200,85 @@ DEF_DATA_FUNC(DataBitAnd) {
     return res;
 }
 
-DEF_DATA_FUNC(DataAndEqual){
+DEF_DATA_FUNC(DataAndEqual) {
 #ifdef MILO_DEBUG
     MILO_ASSERT(array->Size() == 3, 0x13C);
 #endif
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x141);
-        DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
+        DataArray *arr = ((const DataArray *)array)->Node(1).mValue.array;
         int res = gDataThis->Property(arr, true)->Int() & array->Int(2);
         gDataThis->SetProperty(arr, DataNode(res));
         return res;
-    }
-    else {
-        DataNode* var = array->Var(1);
+    } else {
+        DataNode *var = array->Var(1);
         int res = var->Int() & array->Int(2);
         return (*var = DataNode(res));
     }
 }
 
-DEF_DATA_FUNC(DataMaskEqual){
+DEF_DATA_FUNC(DataMaskEqual) {
 #ifdef MILO_DEBUG
     MILO_ASSERT(array->Size() == 3, 0x152);
 #endif
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x157);
-        DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
+        DataArray *arr = ((const DataArray *)array)->Node(1).mValue.array;
         int res = gDataThis->Property(arr, true)->Int() & ~array->Int(2);
         gDataThis->SetProperty(arr, DataNode(res));
         return res;
-    }
-    else {
-        DataNode* var = array->Var(1);
+    } else {
+        DataNode *var = array->Var(1);
         int res = var->Int() & ~array->Int(2);
         return (*var = DataNode(res));
     }
 }
 
-DEF_DATA_FUNC(DataOrEqual){
+DEF_DATA_FUNC(DataOrEqual) {
 #ifdef MILO_DEBUG
     MILO_ASSERT(array->Size() == 3, 0x169);
 #endif
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x16E);
-        DataArray* arr = ((const DataArray*)array)->Node(1).mValue.array;
+        DataArray *arr = ((const DataArray *)array)->Node(1).mValue.array;
         int res = gDataThis->Property(arr, true)->Int() | array->Int(2);
         gDataThis->SetProperty(arr, DataNode(res));
         return res;
-    }
-    else {
-        DataNode* var = array->Var(1);
+    } else {
+        DataNode *var = array->Var(1);
         int res = var->Int() | array->Int(2);
         return (*var = DataNode(res));
     }
 }
 
-DEF_DATA_FUNC(DataBitOr){
+DEF_DATA_FUNC(DataBitOr) {
 #ifdef MILO_DEBUG
     MILO_ASSERT(array->Size() >= 3, 0x180);
 #endif
     int res = array->Int(1);
-    for(int i = 2; i < array->Size(); i++)
+    for (int i = 2; i < array->Size(); i++)
         res |= array->Int(i);
     return res;
 }
 
-DEF_DATA_FUNC(DataBitXor){
-    return array->Int(1) ^ array->Int(2);
-}
+DEF_DATA_FUNC(DataBitXor) { return array->Int(1) ^ array->Int(2); }
 
-DEF_DATA_FUNC(DataBitNot){
-    return ~array->Int(1);
-}
+DEF_DATA_FUNC(DataBitNot) { return ~array->Int(1); }
 
-DEF_DATA_FUNC(DataLowestBit) {
-    return LowestBit(array->Int(1));
-}
+DEF_DATA_FUNC(DataLowestBit) { return LowestBit(array->Int(1)); }
 
-DEF_DATA_FUNC(DataCountBits) {
-    return CountBits(array->Int(1));
-}
+DEF_DATA_FUNC(DataCountBits) { return CountBits(array->Int(1)); }
 
-DEF_DATA_FUNC(DataWhile){
-    while(array->Node(1).NotNull()){
-        for(int i = 2; i < array->Size(); i++){
+DEF_DATA_FUNC(DataWhile) {
+    while (array->Node(1).NotNull()) {
+        for (int i = 2; i < array->Size(); i++) {
             array->Command(i)->Execute();
         }
     }
     return 0;
 }
 
-DEF_DATA_FUNC(DataVar){
-    return &DataVariable(array->ForceSym(1));
-}
+DEF_DATA_FUNC(DataVar) { return &DataVariable(array->ForceSym(1)); }
 
 DEF_DATA_FUNC(DataPackColor) {
     // don't question the ordering here lol, it matches
@@ -322,15 +302,15 @@ DEF_DATA_FUNC(DataUnpackColor) {
     return 0;
 }
 
-DEF_DATA_FUNC(DataDo){
+DEF_DATA_FUNC(DataDo) {
     int size = array->Size(); // this needs to be up here to match
 
     int i;
-    for (i = 1; array->Type(i) == kDataArray; i++){
-        DataArray* binding = CONST_ARRAY(array)->Node(i).mValue.array;
-        DataNode* n = binding->Var(0);
+    for (i = 1; array->Type(i) == kDataArray; i++) {
+        DataArray *binding = CONST_ARRAY(array)->Node(i).mValue.array;
+        DataNode *n = binding->Var(0);
         DataPushVar(n);
-        if(binding->Size() == 2){
+        if (binding->Size() == 2) {
             *n = binding->Evaluate(1);
         } else {
             MILO_ASSERT_FMT(binding->Size() == 1, "do var has more than one initializer");
@@ -350,38 +330,33 @@ DEF_DATA_FUNC(DataDo){
     return ret;
 }
 
-DEF_DATA_FUNC(DataMin){
-    DataNode& n1 = array->Evaluate(1);
-    DataNode& n2 = array->Evaluate(2);
-    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
-        return Min<float>(
-            n1.LiteralFloat(array),
-            n2.LiteralFloat(array)
-        );
+DEF_DATA_FUNC(DataMin) {
+    DataNode &n1 = array->Evaluate(1);
+    DataNode &n2 = array->Evaluate(2);
+    if (n1.Type() == kDataFloat || n2.Type() == kDataFloat) {
+        return Min<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
     } else {
-        return Min<int>(
-            n1.LiteralInt(array),
-            n2.LiteralInt(array)
-        );
+        return Min<int>(n1.LiteralInt(array), n2.LiteralInt(array));
     }
 }
 
-DEF_DATA_FUNC(DataMax){
-    DataNode& n1 = array->Evaluate(1);
-    DataNode& n2 = array->Evaluate(2);
-    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat){
+DEF_DATA_FUNC(DataMax) {
+    DataNode &n1 = array->Evaluate(1);
+    DataNode &n2 = array->Evaluate(2);
+    if (n1.Type() == kDataFloat || n2.Type() == kDataFloat) {
         return Max<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
     } else {
         return Max<int>(n1.LiteralInt(array), n2.LiteralInt(array));
     }
 }
 
-DEF_DATA_FUNC(DataAbs){
-    DataNode& n = array->Evaluate(1);
+DEF_DATA_FUNC(DataAbs) {
+    DataNode &n = array->Evaluate(1);
     float f = std::fabs(n.LiteralFloat(array));
-    if(n.Type() == kDataInt)
+    if (n.Type() == kDataInt)
         return (int)f;
-    else return f;
+    else
+        return f;
 }
 
 DEF_DATA_FUNC(DataAdd) {
@@ -390,8 +365,8 @@ DEF_DATA_FUNC(DataAdd) {
     int cnt = array->Size();
     int i;
     for (i = 1; i < cnt; i++) {
-        DataNode& n = array->Evaluate(i);
-        if(n.Type() != kDataInt){
+        DataNode &n = array->Evaluate(i);
+        if (n.Type() != kDataInt) {
             sum_f = sum_int + n.LiteralFloat(array);
             break;
         }
@@ -405,25 +380,25 @@ DEF_DATA_FUNC(DataAdd) {
     return sum_f;
 }
 
-DEF_DATA_FUNC(DataAddEq){
+DEF_DATA_FUNC(DataAddEq) {
     DataNode ret = DataAdd(array);
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x223);
         gDataThis->SetProperty(array->UncheckedArray(1), ret);
-    }
-    else *array->Var(1) = ret;
+    } else
+        *array->Var(1) = ret;
     return ret;
 }
 
 DEF_DATA_FUNC(DataSub) {
-    DataNode& dn = array->Evaluate(1);
+    DataNode &dn = array->Evaluate(1);
     if (array->Size() == 2) {
         if (dn.Type() == kDataFloat) {
             return -dn.LiteralFloat(array);
         } else
             return -dn.LiteralInt(array);
     } else {
-        DataNode& dn2 = array->Evaluate(2);
+        DataNode &dn2 = array->Evaluate(2);
         if (dn.Type() == kDataFloat || dn2.Type() == kDataFloat) {
             return dn.LiteralFloat(array) - dn2.LiteralFloat(array);
         } else {
@@ -442,80 +417,72 @@ DEF_DATA_FUNC(DataMean) {
 }
 
 DEF_DATA_FUNC(DataClamp) {
-    DataNode& n1 = array->Evaluate(1);
-    DataNode& n2 = array->Evaluate(2);
-    DataNode& n3 = array->Evaluate(3);
-    if(n1.Type() == kDataFloat || n2.Type() == kDataFloat || n3.Type() == kDataFloat){
+    DataNode &n1 = array->Evaluate(1);
+    DataNode &n2 = array->Evaluate(2);
+    DataNode &n3 = array->Evaluate(3);
+    if (n1.Type() == kDataFloat || n2.Type() == kDataFloat || n3.Type() == kDataFloat) {
         return Clamp<float>(
-            n2.LiteralFloat(array),
-            n3.LiteralFloat(array),
-            n1.LiteralFloat(array)
+            n2.LiteralFloat(array), n3.LiteralFloat(array), n1.LiteralFloat(array)
         );
     } else {
         return Clamp<int>(
-            n2.LiteralInt(array),
-            n3.LiteralInt(array),
-            n1.LiteralInt(array)
+            n2.LiteralInt(array), n3.LiteralInt(array), n1.LiteralInt(array)
         );
     }
 }
 
-DEF_DATA_FUNC(DataSubEq){
+DEF_DATA_FUNC(DataSubEq) {
     DataNode ret = DataSub(array);
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x259);
         gDataThis->SetProperty(array->UncheckedArray(1), ret);
-    }
-    else *array->Var(1) = ret;
+    } else
+        *array->Var(1) = ret;
     return ret;
 }
 
-DEF_DATA_FUNC(DataClampEq){
+DEF_DATA_FUNC(DataClampEq) {
     DataNode ret = DataClamp(array);
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x260);
         gDataThis->SetProperty(array->UncheckedArray(1), ret);
-    }
-    else *array->Var(1) = ret;
+    } else
+        *array->Var(1) = ret;
     return ret;
 }
 
-DEF_DATA_FUNC(DataMultiply){
-    DataNode& dn1 = array->Evaluate(1);
-    DataNode& dn2 = array->Evaluate(2);
-    if(dn1.Type() == kDataFloat || dn2.Type() == kDataFloat){
+DEF_DATA_FUNC(DataMultiply) {
+    DataNode &dn1 = array->Evaluate(1);
+    DataNode &dn2 = array->Evaluate(2);
+    if (dn1.Type() == kDataFloat || dn2.Type() == kDataFloat) {
         return dn1.LiteralFloat(array) * dn2.LiteralFloat(array);
-    }
-    else return dn1.LiteralInt(array) * dn2.LiteralInt(array);
+    } else
+        return dn1.LiteralInt(array) * dn2.LiteralInt(array);
 }
 
-DEF_DATA_FUNC(DataMultiplyEq){
+DEF_DATA_FUNC(DataMultiplyEq) {
     DataNode ret = DataMultiply(array);
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x272);
         gDataThis->SetProperty(array->UncheckedArray(1), ret);
-    }
-    else *array->Var(1) = ret;
+    } else
+        *array->Var(1) = ret;
     return ret;
 }
 
-DEF_DATA_FUNC(DataDivide){
-    return array->Float(1) / array->Float(2);
-}
+DEF_DATA_FUNC(DataDivide) { return array->Float(1) / array->Float(2); }
 
-DEF_DATA_FUNC(DataDivideEq){
+DEF_DATA_FUNC(DataDivideEq) {
     DataNode ret = DataDivide(array);
-    if(array->Type(1) == kDataProperty){
+    if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x27E);
         gDataThis->SetProperty(array->UncheckedArray(1), ret);
-    }
-    else *array->Var(1) = ret;
+    } else
+        *array->Var(1) = ret;
     return ret;
 }
 
-DEF_DATA_FUNC(DataSqrt){
-    return std::sqrt(array->Float(1));
-}
+DEF_DATA_FUNC(DataSqrt) { return std::sqrt(array->Float(1)); }
 
 DEF_DATA_FUNC(DataMod) {
     DataNode &n1 = array->Evaluate(1);
@@ -532,60 +499,51 @@ DEF_DATA_FUNC(DataDist) {
     z = array->Float(3) - array->Float(6);
     y = array->Float(2) - array->Float(5);
     x = array->Float(1) - array->Float(4);
-    return std::sqrt(x*x+y*y+z*z);
+    return std::sqrt(x * x + y * y + z * z);
 }
 
-DEF_DATA_FUNC(DataSymbol){
-    return array->ForceSym(1);
-}
+DEF_DATA_FUNC(DataSymbol) { return array->ForceSym(1); }
 
-DEF_DATA_FUNC(DataChar){
+DEF_DATA_FUNC(DataChar) {
     static char newChar[2];
-    DataNode& n = array->Evaluate(1);
+    DataNode &n = array->Evaluate(1);
     newChar[0] = n.Int();
     newChar[1] = '\0';
     return newChar;
 }
 
-DEF_DATA_FUNC(DataInt){
-    DataNode& n = array->Evaluate(1);
-    if(n.Type() == kDataSymbol)
+DEF_DATA_FUNC(DataInt) {
+    DataNode &n = array->Evaluate(1);
+    if (n.Type() == kDataSymbol)
         return atoi(n.UncheckedStr());
-    else if(n.Type() == kDataObject || n.Type() == kDataInt)
+    else if (n.Type() == kDataObject || n.Type() == kDataInt)
         return n.UncheckedInt();
-    else return (int)n.LiteralFloat(array);
+    else
+        return (int)n.LiteralFloat(array);
 }
 
-DEF_DATA_FUNC(DataRound){
-    return Round(array->Evaluate(1).LiteralFloat());
-}
+DEF_DATA_FUNC(DataRound) { return Round(array->Evaluate(1).LiteralFloat()); }
 
-DEF_DATA_FUNC(DataFloor){
-    return std::floor(array->Float(1));
-}
+DEF_DATA_FUNC(DataFloor) { return std::floor(array->Float(1)); }
 
-DEF_DATA_FUNC(DataCeil){
-    return std::ceil(array->Float(1));
-}
+DEF_DATA_FUNC(DataCeil) { return std::ceil(array->Float(1)); }
 
-DEF_DATA_FUNC(DataDelete){
+DEF_DATA_FUNC(DataDelete) {
     delete array->Obj<Hmx::Object>(1);
     return 0;
 }
 
-DEF_DATA_FUNC(DataNew){
-    Hmx::Object* obj = Hmx::Object::NewObject(array->Sym(1));
-    if(array->Size() > 2){
-        if(array->Type(2) == kDataArray){
+DEF_DATA_FUNC(DataNew) {
+    Hmx::Object *obj = Hmx::Object::NewObject(array->Sym(1));
+    if (array->Size() > 2) {
+        if (array->Type(2) == kDataArray) {
             obj->SetTypeDef(array);
-        }
-        else {
+        } else {
             obj->SetName(array->Str(2), gDataDir);
-            if(array->Size() > 3){
-                if(array->Type(3) == kDataArray){
+            if (array->Size() > 3) {
+                if (array->Type(3) == kDataArray) {
                     obj->SetTypeDef(array);
-                }
-                else {
+                } else {
                     obj->SetType(array->Sym(3));
                 }
             }
@@ -644,61 +602,65 @@ DEF_DATA_FUNC(DataGetLastElem) {
 }
 
 DEF_DATA_FUNC(DataObject) {
-    DataNode& n = array->Evaluate(1);
-    if (n.Type() == kDataObject) return n;
+    DataNode &n = array->Evaluate(1);
+    if (n.Type() == kDataObject)
+        return n;
     else {
-        const char* s = n.LiteralStr(array);
-        Hmx::Object* o = gDataDir->FindObject(s, true);
+        const char *s = n.LiteralStr(array);
+        Hmx::Object *o = gDataDir->FindObject(s, true);
         if (!o && s[0]) {
-            MILO_FAIL(kNotObjectMsg, s, PathName(gDataDir) ? PathName(gDataDir) : "**no file**");
+            MILO_FAIL(
+                kNotObjectMsg, s, PathName(gDataDir) ? PathName(gDataDir) : "**no file**"
+            );
         }
         return o;
     }
 }
 
-DEF_DATA_FUNC(DataExists){
-    const char* s = array->Str(1);
+DEF_DATA_FUNC(DataExists) {
+    const char *s = array->Str(1);
     bool does_exist = gDataDir->FindObject(s, true);
     if (!does_exist) {
         Symbol sym(s);
-        std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.find(sym);
+        std::map<Symbol, DataFunc *>::iterator it = gDataFuncs.find(sym);
         does_exist = it != gDataFuncs.end();
     }
     return does_exist;
 }
 
-DEF_DATA_FUNC(DataLocalize){
-    const char* loc = Localize(array->ForceSym(1), nullptr);
-    const char* ret = (loc) ? loc : gNullStr;
+DEF_DATA_FUNC(DataLocalize) {
+    const char *loc = Localize(array->ForceSym(1), nullptr);
+    const char *ret = (loc) ? loc : gNullStr;
     return ret;
 }
 
-DEF_DATA_FUNC(DataLocalizeSeparatedInt){
-    return LocalizeSeparatedInt(array->Int(1));
-}
+DEF_DATA_FUNC(DataLocalizeSeparatedInt) { return LocalizeSeparatedInt(array->Int(1)); }
 
-DEF_DATA_FUNC(DataLocalizeFloat){
-    return LocalizeFloat(array->Str(1), array->Float(2));
-}
+DEF_DATA_FUNC(DataLocalizeFloat) { return LocalizeFloat(array->Str(1), array->Float(2)); }
 
-DEF_DATA_FUNC(DataSyncReloadLocale){
+DEF_DATA_FUNC(DataSyncReloadLocale) {
     SyncReloadLocale();
     return 1;
 }
 
-DEF_DATA_FUNC(DataPrintUnused){
+DEF_DATA_FUNC(DataPrintUnused) {
     return SystemConfig(array->Sym(1))->PrintUnused(TheDebug, kDataArray, true);
 }
 
 DEF_DATA_FUNC(DataStartsWith) {
-    return !strncmp(array->Str(1), array->Str(2), (array->Size() > 3) ? array->Int(3) : strlen(array->Str(2)));
+    return !strncmp(
+        array->Str(1),
+        array->Str(2),
+        (array->Size() > 3) ? array->Int(3) : strlen(array->Str(2))
+    );
 }
 
 DEF_DATA_FUNC(DataTime) {
     int i;
     for (i = 1; i < array->Size(); i++) {
-        DataNode& eval = array->Node(i);
-        if (eval.Type() == kDataCommand) break;
+        DataNode &eval = array->Node(i);
+        if (eval.Type() == kDataCommand)
+            break;
         eval.Print(TheDebug, true);
     }
 
@@ -717,9 +679,7 @@ DEF_DATA_FUNC(DataTime) {
     return time.Ms();
 };
 
-DEF_DATA_FUNC(DataRandomInt) {
-    return RandomInt(array->Int(1), array->Int(2));
-}
+DEF_DATA_FUNC(DataRandomInt) { return RandomInt(array->Int(1), array->Int(2)); }
 
 DEF_DATA_FUNC(DataRandomFloat) {
     if (array->Size() > 1) {
@@ -731,23 +691,23 @@ DEF_DATA_FUNC(DataRandomFloat) {
 
 DEF_DATA_FUNC(DataRandomElem) {
     DataArray *a = array->Array(1);
-    MILO_ASSERT_FMT(a->Size() != 0, "Empty array (file %s, line %d)", array->File(), array->Line());
+    MILO_ASSERT_FMT(
+        a->Size() != 0, "Empty array (file %s, line %d)", array->File(), array->Line()
+    );
     return a->Node(RandomInt(0, a->Size()));
 }
 
-DEF_DATA_FUNC(DataRandom) {
-    return array->Evaluate(RandomInt(1, array->Size()));
-}
+DEF_DATA_FUNC(DataRandom) { return array->Evaluate(RandomInt(1, array->Size())); }
 
 DEF_DATA_FUNC(DataRandomSeed) {
     SeedRand(array->Int(1));
     return 0;
 }
 
-DEF_DATA_FUNC(DataNotify){
+DEF_DATA_FUNC(DataNotify) {
 #ifdef MILO_DEBUG
     class String str;
-    for (int i = 1; i < array->Size(); i++){
+    for (int i = 1; i < array->Size(); i++) {
         array->Evaluate(i).Print(str, true);
     }
     TheDebug.Notify(str.c_str());
@@ -758,7 +718,7 @@ DEF_DATA_FUNC(DataNotify){
 DEF_DATA_FUNC(DataNotifyBeta) {
 #ifdef MILO_DEBUG
     class String str;
-    for (int i = 1; i < array->Size(); i++){
+    for (int i = 1; i < array->Size(); i++) {
         array->Evaluate(i).Print(str, true);
     }
     MILO_NOTIFY_BETA(str.c_str());
@@ -766,10 +726,10 @@ DEF_DATA_FUNC(DataNotifyBeta) {
     return 0;
 }
 
-DEF_DATA_FUNC(DataFail){
+DEF_DATA_FUNC(DataFail) {
 #ifdef MILO_DEBUG
     class String str;
-    for (int i = 1; i < array->Size(); i++){
+    for (int i = 1; i < array->Size(); i++) {
         array->Evaluate(i).Print(str, true);
     }
     TheDebug << MakeString("%d\n", array->Line());
@@ -781,7 +741,7 @@ DEF_DATA_FUNC(DataFail){
 DEF_DATA_FUNC(DataNotifyOnce) {
 #ifdef MILO_DEBUG
     class String str;
-    for (int i = 1; i < array->Size(); i++){
+    for (int i = 1; i < array->Size(); i++) {
         array->Evaluate(i).Print(str, true);
     }
     MILO_NOTIFY_ONCE(str.c_str())
@@ -789,23 +749,23 @@ DEF_DATA_FUNC(DataNotifyOnce) {
     return 0;
 }
 
-DEF_DATA_FUNC(DataCond){
-    for(int i = 1; i < array->Size(); i++){
-        DataNode& node = array->Node(i);
-        if(node.Type() == kDataArray){
-            DataArray* arr = node.mValue.array;
-            if(arr->Node(0).NotNull()){
+DEF_DATA_FUNC(DataCond) {
+    for (int i = 1; i < array->Size(); i++) {
+        DataNode &node = array->Node(i);
+        if (node.Type() == kDataArray) {
+            DataArray *arr = node.mValue.array;
+            if (arr->Node(0).NotNull()) {
                 return arr->ExecuteScript(1, gDataThis, 0, 1);
             }
-        }
-        else return array->ExecuteScript(i, gDataThis, 0, 1);
+        } else
+            return array->ExecuteScript(i, gDataThis, 0, 1);
     }
     return 0;
 }
 
 // naming from RBVR PDB build
 namespace {
-    inline bool SwitchMatch(DataNode& dn1, DataNode& dn2) {
+    inline bool SwitchMatch(DataNode &dn1, DataNode &dn2) {
         if (dn1.Type() == kDataArray) {
             DataArray *arr = dn1.mValue.array;
             for (int i = 0; i < arr->Size(); i++) {
@@ -820,18 +780,18 @@ namespace {
     }
 }
 
-DEF_DATA_FUNC(DataSwitch){
-    DataNode& n = array->Evaluate(1);
+DEF_DATA_FUNC(DataSwitch) {
+    DataNode &n = array->Evaluate(1);
     for (int i = 2; i < array->Size(); i++) {
-        DataNode& work = array->Node(i);
-        if(work.Type() == kDataArray){
-            DataArray* nextarr = work.mValue.array;
-            DataNode& next = nextarr->Node(0);
-            if(SwitchMatch(next, n)){
+        DataNode &work = array->Node(i);
+        if (work.Type() == kDataArray) {
+            DataArray *nextarr = work.mValue.array;
+            DataNode &next = nextarr->Node(0);
+            if (SwitchMatch(next, n)) {
                 return nextarr->ExecuteScript(1, gDataThis, 0, 1);
             }
-        }
-        else return array->ExecuteScript(i, gDataThis, 0, 1);
+        } else
+            return array->ExecuteScript(i, gDataThis, 0, 1);
     }
     return 0;
 }
@@ -839,11 +799,10 @@ DEF_DATA_FUNC(DataSwitch){
 DEF_DATA_FUNC(DataInsertElems) {
     array->Array(1)->InsertNodes(array->Int(2), array->Array(3));
     return 0;
-
 }
 
 DEF_DATA_FUNC(DataInsertElem) {
-    DataArray* a = array->Array(1);
+    DataArray *a = array->Array(1);
     int idx = array->Int(2);
     a->Insert(idx, array->Evaluate(3));
     return 0;
@@ -857,13 +816,14 @@ DEF_DATA_FUNC(DataPrintArray) {
 DEF_DATA_FUNC(DataSize) {
     if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 1213); // dammit hmx why couldn't it've been 1312
-        return gDataThis->PropertySize(array->UncheckedArray(1)); // TODO figure out what this actually is
+        return gDataThis->PropertySize(array->UncheckedArray(1)); // TODO figure out what
+                                                                  // this actually is
     }
     return array->Array(1)->Size();
 }
 
 DEF_DATA_FUNC(DataRemoveElem) {
-    DataArray* a = array->Array(1);
+    DataArray *a = array->Array(1);
     a->Remove(array->Evaluate(2));
     return 0;
 }
@@ -873,36 +833,30 @@ DEF_DATA_FUNC(DataResize) {
     return 0;
 }
 
-DEF_DATA_FUNC(DataNewArray){
-    DataNode& n = array->Evaluate(1);
+DEF_DATA_FUNC(DataNewArray) {
+    DataNode &n = array->Evaluate(1);
     DataArrayPtr ptr;
-    if(n.Type() == kDataInt){
+    if (n.Type() == kDataInt) {
         ptr->Resize(n.LiteralInt());
-    }
-    else if(n.Type() == kDataArray){
+    } else if (n.Type() == kDataArray) {
         ptr = n.LiteralArray()->Clone(true, true, 0);
-    }
-    else MILO_FAIL("DataNewArray wrong argument for %s %d", array->File(), array->Line());
+    } else
+        MILO_FAIL("DataNewArray wrong argument for %s %d", array->File(), array->Line());
     return ptr;
 }
 
 DEF_DATA_FUNC(DataSetElem) {
-    DataArray* aaaa = array->Array(1);
+    DataArray *aaaa = array->Array(1);
     int i = array->Int(2);
-    DataNode& n = array->Evaluate(3);
+    DataNode &n = array->Evaluate(3);
     return aaaa->Node(i) = n;
-
 }
 
-DEF_DATA_FUNC(DataQuote) {
-    return array->Node(1);
-}
+DEF_DATA_FUNC(DataQuote) { return array->Node(1); }
 
-DEF_DATA_FUNC(DataEval) {
-    return array->Evaluate(1).Evaluate();
-}
+DEF_DATA_FUNC(DataEval) { return array->Evaluate(1).Evaluate(); }
 
-DEF_DATA_FUNC(DataReverseInterp){
+DEF_DATA_FUNC(DataReverseInterp) {
     float value = InverseLerp(array->Float(1), array->Float(2), array->Float(3));
     return Clamp(0.0f, 1.0f, value);
 }
@@ -918,81 +872,98 @@ DEF_DATA_FUNC(DataInterp) {
 DEF_DATA_FUNC(DataInc) {
     if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 1286);
-        DataArray* a = CONST_ARRAY(array)->Node(1).mValue.array;
+        DataArray *a = CONST_ARRAY(array)->Node(1).mValue.array;
         int x = gDataThis->Property(a, true)->Int() + 1;
         gDataThis->SetProperty(a, x);
         return x;
 
     } else {
-        DataNode* Pn = array->Var(1);
+        DataNode *Pn = array->Var(1);
         int i = Pn->Int();
-        return *Pn = DataNode(i+1);
+        return *Pn = DataNode(i + 1);
     }
 }
 
 DEF_DATA_FUNC(DataDec) {
     if (array->Type(1) == kDataProperty) {
         MILO_ASSERT(gDataThis, 1303);
-        DataArray* a = CONST_ARRAY(array)->Node(1).mValue.array;
+        DataArray *a = CONST_ARRAY(array)->Node(1).mValue.array;
         int x = gDataThis->Property(a, true)->Int() - 1;
         gDataThis->SetProperty(a, x);
         return x;
 
     } else {
-        DataNode* Pn = array->Var(1);
+        DataNode *Pn = array->Var(1);
         int i = Pn->Int();
-        return *Pn = DataNode(i-1);
+        return *Pn = DataNode(i - 1);
     }
 }
 
 DEF_DATA_FUNC(DataHandleType) {
     for (int i = 1; i < array->Size(); i++) {
-        DataArray* a = array->Array(i);
-        Hmx::Object* o;
-        DataNode& n = a->Evaluate(0);
-        if (n.Type() == kDataObject) o = n.UncheckedObj();
-        else o = gDataDir->FindObject(n.LiteralStr(array), true);
-        if (o) o->HandleType(a);
+        DataArray *a = array->Array(i);
+        Hmx::Object *o;
+        DataNode &n = a->Evaluate(0);
+        if (n.Type() == kDataObject)
+            o = n.UncheckedObj();
+        else
+            o = gDataDir->FindObject(n.LiteralStr(array), true);
+        if (o)
+            o->HandleType(a);
     }
     return 0;
 }
 
 DEF_DATA_FUNC(DataHandleTypeRet) {
-    DataArray* a = array->Array(1);
-    Hmx::Object* o;
-    DataNode& n = a->Evaluate(0);
-    if (n.Type() == kDataObject) o = n.UncheckedObj();
-    else o = gDataDir->FindObject(n.LiteralStr(array), true);
+    DataArray *a = array->Array(1);
+    Hmx::Object *o;
+    DataNode &n = a->Evaluate(0);
+    if (n.Type() == kDataObject)
+        o = n.UncheckedObj();
+    else
+        o = gDataDir->FindObject(n.LiteralStr(array), true);
 #ifdef MILO_DEBUG
     if (!o) {
         class String str;
         n.Print(str, true);
-        MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), array->File(), array->Line());
+        MILO_FAIL(
+            "Object %s not found (file %s, line %d)",
+            str.c_str(),
+            array->File(),
+            array->Line()
+        );
     }
 #endif
     return o->HandleType(a);
 }
 
 DEF_DATA_FUNC(DataExport) {
-    DataArray* a = array->Array(1);
+    DataArray *a = array->Array(1);
     bool i = array->Int(2);
-    DataNode& n = a->Evaluate(0);
-    Hmx::Object* obj;
-    if (n.Type() == kDataObject) obj = n.UncheckedObj();
-    else obj = gDataDir->FindObject(n.LiteralStr(array), true);
-    if (obj) obj->Export(a, i);
+    DataNode &n = a->Evaluate(0);
+    Hmx::Object *obj;
+    if (n.Type() == kDataObject)
+        obj = n.UncheckedObj();
+    else
+        obj = gDataDir->FindObject(n.LiteralStr(array), true);
+    if (obj)
+        obj->Export(a, i);
     return 0;
 }
 
 DEF_DATA_FUNC(DataHandle) {
     for (int i = 1; i < array->Size(); i++) {
-        DataArray* handlo = array->Array(i);
-        DataNode& n = handlo->Evaluate(0);
-        Hmx::Object* obj;
-        if (n.Type() == kDataObject) obj = n.UncheckedObj();
-        else if (n.Type() == kDataInt) obj = NULL;
-        else obj = gDataDir->FindObject(n.LiteralStr(array), true);
-        if (obj) obj->Handle(handlo, false);
+        DataArray *handlo = array->Array(i);
+        DataNode &n = handlo->Evaluate(0);
+        Hmx::Object *obj;
+        if (n.Type() == kDataObject)
+            obj = n.UncheckedObj();
+        else if (n.Type() == kDataInt)
+            obj = NULL;
+        else
+            obj = gDataDir->FindObject(n.LiteralStr(array), true);
+        if (obj)
+            obj->Handle(handlo, false);
         // read->mRefs -= 1; if (read->mRefs == 0) delete read;
     }
     return 0;
@@ -1002,21 +973,28 @@ DEF_DATA_FUNC(DataHandleRet) {
     DataArray *a = array->Array(1);
     Hmx ::Object *o;
     DataNode &n = a->Evaluate(0);
-    if (n.Type() == kDataObject) o = n.UncheckedObj();
-    else o = gDataDir->FindObject(n.LiteralStr(array), true);
+    if (n.Type() == kDataObject)
+        o = n.UncheckedObj();
+    else
+        o = gDataDir->FindObject(n.LiteralStr(array), true);
 #ifdef MILO_DEBUG
     if (!o) {
         class String str;
         n.Print(str, true);
-        MILO_FAIL("Object %s not found (file %s, line %d)", str.c_str(), array->File(), array->Line());
+        MILO_FAIL(
+            "Object %s not found (file %s, line %d)",
+            str.c_str(),
+            array->File(),
+            array->Line()
+        );
     }
 #endif
     return o->Handle(a, false);
 }
 
 DEF_DATA_FUNC(DataRun) {
-    const char* e = FileMakePath(FileExecRoot(), array->Str(1), NULL);
-    DataArray* read = DataReadFile(e, true);
+    const char *e = FileMakePath(FileExecRoot(), array->Str(1), NULL);
+    DataArray *read = DataReadFile(e, true);
     DataNode ret;
     if (read) {
         ret = read->ExecuteScript(0, gDataThis, NULL, 1);
@@ -1026,7 +1004,7 @@ DEF_DATA_FUNC(DataRun) {
 }
 
 DEF_DATA_FUNC(OnReadFile) {
-    DataArray* read = DataReadFile(array->Str(1), true);
+    DataArray *read = DataReadFile(array->Str(1), true);
     if (read == 0) {
         return 0;
     } else {
@@ -1037,18 +1015,14 @@ DEF_DATA_FUNC(OnReadFile) {
 }
 
 DEF_DATA_FUNC(OnWriteFile) {
-    DataArray* write_me = array->Array(2);
+    DataArray *write_me = array->Array(2);
     DataWriteFile(array->Str(1), write_me, false);
     return 0;
 }
 
-DEF_DATA_FUNC(OnFileExists) {
-    return FileExists(array->Str(1), 0);
-}
+DEF_DATA_FUNC(OnFileExists) { return FileExists(array->Str(1), 0); }
 
-DEF_DATA_FUNC(OnFileReadOnly) {
-    return FileReadOnly(array->Str(1));
-}
+DEF_DATA_FUNC(OnFileReadOnly) { return FileReadOnly(array->Str(1)); }
 
 DEF_DATA_FUNC(DataExit) {
     TheDebug.Exit(0, true);
@@ -1056,27 +1030,30 @@ DEF_DATA_FUNC(DataExit) {
 }
 
 DEF_DATA_FUNC(DataContains) {
-    DataArray* w = array->Array(1);
-    DataNode& n = array->Evaluate(2);
+    DataArray *w = array->Array(1);
+    DataNode &n = array->Evaluate(2);
     bool b = !w->Contains(n.UncheckedInt());
-    if (b) return DataNode(kDataUnhandled, 0);
-    else return 1;
+    if (b)
+        return DataNode(kDataUnhandled, 0);
+    else
+        return 1;
 }
 
-DEF_DATA_FUNC(DataFindExists){
-    DataArray* a = array->Array(1);
+DEF_DATA_FUNC(DataFindExists) {
+    DataArray *a = array->Array(1);
     for (int i = 2; i < array->Size(); i++) {
-        DataNode& n = array->Evaluate(i);
+        DataNode &n = array->Evaluate(i);
         if (n.Type() == kDataInt || n.Type() == kDataSymbol) {
             a = a->FindArray(n.mValue.integer, false);
-            if(!a){
+            if (!a) {
                 return DataNode(kDataUnhandled, 0);
             }
-        }
-        else {
+        } else {
             class String str;
             n.Print(str, true);
-            MILO_FAIL("Bad key %s (file %s, line %d)", str.c_str(), array->File(), array->Line());
+            MILO_FAIL(
+                "Bad key %s (file %s, line %d)", str.c_str(), array->File(), array->Line()
+            );
         }
     }
     return DataNode(a, kDataArray);
@@ -1084,43 +1061,43 @@ DEF_DATA_FUNC(DataFindExists){
 
 DEF_DATA_FUNC(DataFind) {
     DataNode ret = DataFindExists(array);
-    if(ret == DataNode(kDataUnhandled, 0)){
+    if (ret == DataNode(kDataUnhandled, 0)) {
         MILO_FAIL("Couldn't find key (file %s, line %d)", array->File(), array->Line());
     }
     return ret;
 }
 
-DEF_DATA_FUNC(DataFindObj){
-    class ObjectDir* d = ObjectDir::sMainDir;
+DEF_DATA_FUNC(DataFindObj) {
+    class ObjectDir *d = ObjectDir::sMainDir;
     int i;
     for (i = 1; i < array->Size() - 1; i++) {
-        DataNode& n = array->Evaluate(i);
-        if(n.Type() == kDataObject) d = n.Obj<class ObjectDir>();
-        else d = d->Find<ObjectDir>(n.LiteralStr(), false);
-        if(!d) return d;
+        DataNode &n = array->Evaluate(i);
+        if (n.Type() == kDataObject)
+            d = n.Obj<class ObjectDir>();
+        else
+            d = d->Find<ObjectDir>(n.LiteralStr(), false);
+        if (!d)
+            return d;
     }
     return d->Find<Hmx::Object>(array->Str(i), false);
 }
 
-DEF_DATA_FUNC(DataBasename) {
-    return FileGetBase(array->Str(1), NULL);
-}
+DEF_DATA_FUNC(DataBasename) { return FileGetBase(array->Str(1), NULL); }
 
 DEF_DATA_FUNC(DataDirname) {
-    const char* s = FileGetPath(array->Str(1), NULL);
+    const char *s = FileGetPath(array->Str(1), NULL);
     uint x = String(s).find_last_of("/");
     return s + (x == String::npos ? 0 : x + 1);
 }
 
-DEF_DATA_FUNC(DataHasSubStr) {
-    return (int)strstr(array->Str(1), array->Str(2));
-}
+DEF_DATA_FUNC(DataHasSubStr) { return (int)strstr(array->Str(1), array->Str(2)); }
 
 DEF_DATA_FUNC(DataHasAnySubStr) {
-    DataArray* a = array->Array(2);
+    DataArray *a = array->Array(2);
     for (int i = 0; i < a->Size(); i++) {
-        const char* haystack = a->Str(i);
-        if (strstr(array->Str(1), haystack)) return 1;
+        const char *haystack = a->Str(i);
+        if (strstr(array->Str(1), haystack))
+            return 1;
     }
     return 0;
 }
@@ -1131,7 +1108,7 @@ DEF_DATA_FUNC(DataFindSubStr) {
 }
 
 DEF_DATA_FUNC(DataStrElem) {
-    char s[2] = {'A'};
+    char s[2] = { 'A' };
     int off = array->Int(2);
     s[0] = array->Str(1)[off];
     return (Symbol)s;
@@ -1144,9 +1121,8 @@ DEF_DATA_FUNC(DataSubStr) {
     return s.substr(i1, i2);
 }
 
-
 DEF_DATA_FUNC(DataStrCat) {
-    DataNode& n = *array->Var(1);
+    DataNode &n = *array->Var(1);
     class String s(n.Str());
     for (int i = 2; i < array->Size(); i++) {
         s += array->Str(i);
@@ -1155,15 +1131,15 @@ DEF_DATA_FUNC(DataStrCat) {
     return n.Str();
 }
 
-DEF_DATA_FUNC(DataStringFlags){
+DEF_DATA_FUNC(DataStringFlags) {
     int x = array->Int(1);
-    DataArray* arr = array->Array(2);
+    DataArray *arr = array->Array(2);
     class String s("");
     for (int i = 0; i < arr->Size(); i++) {
-        DataArray* macro = DataGetMacro(arr->Str(i));
+        DataArray *macro = DataGetMacro(arr->Str(i));
         MILO_ASSERT(macro && macro->Size() == 1, 1626);
-        if(x & macro->Int(0)){
-            if(s != ""){
+        if (x & macro->Int(0)) {
+            if (s != "") {
                 s += "|";
             }
             s += arr->Str(i);
@@ -1184,18 +1160,14 @@ DEF_DATA_FUNC(DataStrToUpper) {
     return s;
 }
 
-DEF_DATA_FUNC(DataStrlen) {
-    return (int)strlen(array->Str(1));
-}
+DEF_DATA_FUNC(DataStrlen) { return (int)strlen(array->Str(1)); }
 
-DEF_DATA_FUNC(DataStrieq) {
-    return strieq(array->Str(1), array->Str(2));
-}
+DEF_DATA_FUNC(DataStrieq) { return strieq(array->Str(1), array->Str(2)); }
 
-DEF_DATA_FUNC(DataSearchReplace){
-    const char* s3 = array->Str(3);
-    const char* s2 = array->Str(2);
-    const char* s1 = array->Str(1);
+DEF_DATA_FUNC(DataSearchReplace) {
+    const char *s3 = array->Str(3);
+    const char *s2 = array->Str(2);
+    const char *s1 = array->Str(1);
     char beeg[0x800];
     bool ret = SearchReplace(s1, s2, s3, beeg);
     *array->Var(4) = DataNode(beeg);
@@ -1203,7 +1175,7 @@ DEF_DATA_FUNC(DataSearchReplace){
 }
 
 DEF_DATA_FUNC(DataPushBack) {
-    DataArray* work = array->Array(1);
+    DataArray *work = array->Array(1);
     int nu_size = work->Size();
     work->Resize(nu_size + 1);
     work->Node(nu_size) = array->Evaluate(2);
@@ -1215,43 +1187,45 @@ DEF_DATA_FUNC(DataSort) {
     return 0;
 }
 
-DEF_DATA_FUNC(DataGetType) {
-    return array->Evaluate(1).Type();
-}
+DEF_DATA_FUNC(DataGetType) { return array->Evaluate(1).Type(); }
 
 DEF_DATA_FUNC(DataWith) {
     return array->ExecuteScript(2, array->Obj<Hmx::Object>(1), NULL, 1);
 }
 
 DEF_DATA_FUNC(OnSetThis) {
-    Hmx::Object* new_this = array->Obj<Hmx::Object>(1);
+    Hmx::Object *new_this = array->Obj<Hmx::Object>(1);
     gDataThisPtr = new_this;
     DataSetThis(new_this);
     return 0;
 }
 
-DEF_DATA_FUNC(DataMacroElem){
-    DataArray* macro = DataGetMacro(array->Str(1));
+DEF_DATA_FUNC(DataMacroElem) {
+    DataArray *macro = DataGetMacro(array->Str(1));
     int i = array->Size() > 2 ? array->Int(2) : 0;
     MILO_ASSERT(macro && macro->Size() > i, 1748);
     return macro->Node(i);
 }
 
-DataMergeFilter::DataMergeFilter(const DataNode& node, Subdirs subs) : MergeFilter(kMerge, subs), mType(node.Type()) {
-    if(mType == kDataInt) mInt = node.Int();
-    else if(mType == kDataFunc) mFunc = node.Func();
-    else if(mType == kDataObject) mObj = node.GetObj();
-    else if(mType == kDataSymbol){
-        const char* _name = node.UncheckedStr();
+DataMergeFilter::DataMergeFilter(const DataNode &node, Subdirs subs)
+    : MergeFilter(kMerge, subs), mType(node.Type()) {
+    if (mType == kDataInt)
+        mInt = node.Int();
+    else if (mType == kDataFunc)
+        mFunc = node.Func();
+    else if (mType == kDataObject)
+        mObj = node.GetObj();
+    else if (mType == kDataSymbol) {
+        const char *_name = node.UncheckedStr();
         Symbol name = STR_TO_SYM(_name);
         mObj = gDataDir->FindObject(name.Str(), true);
-        if(!mObj){
-            const std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(name);
+        if (!mObj) {
+            const std::map<Symbol, DataFunc *>::iterator func = gDataFuncs.find(name);
             MILO_ASSERT(func != gDataFuncs.end(), 0x6ED);
             mFunc = func->second;
             mType = kDataFunc;
-        }
-        else mType = kDataObject;
+        } else
+            mType = kDataObject;
     }
 }
 
@@ -1266,41 +1240,35 @@ DEF_DATA_FUNC(DataReplaceObject) {
     bool deleteFrom = array->Size() > 4 ? array->Int(4) : true;
     bool setProxyFile = array->Size() > 5 ? array->Int(5) : true;
 
-    ReplaceObject(
-        array->GetObj(1),
-        array->GetObj(2),
-        copyDeep,
-        deleteFrom,
-        setProxyFile
-    );
+    ReplaceObject(array->GetObj(1), array->GetObj(2), copyDeep, deleteFrom, setProxyFile);
 
     return 0;
 }
 
 DEF_DATA_FUNC(DataNextName) {
-    class ObjectDir* d = gDataDir;
+    class ObjectDir *d = gDataDir;
     if (array->Size() > 2) {
         d = array->Obj<class ObjectDir>(2);
     }
     return NextName(array->Str(1), d);
 }
 
-DataNode Quasiquote(const DataNode& node) {
+DataNode Quasiquote(const DataNode &node) {
     static Symbol unquoteAbbrev(",");
     DataType nodeType = node.Type();
-    if(nodeType == kDataArray || nodeType == kDataCommand){
-        DataArray* nodeArr = node.UncheckedArray();
+    if (nodeType == kDataArray || nodeType == kDataCommand) {
+        DataArray *nodeArr = node.UncheckedArray();
 
-        if(nodeType == kDataCommand && nodeArr->Type(0) == kDataSymbol){
-            char* str = (char*)nodeArr->Node(0).UncheckedStr();
+        if (nodeType == kDataCommand && nodeArr->Type(0) == kDataSymbol) {
+            char *str = (char *)nodeArr->Node(0).UncheckedStr();
             Symbol sym = STR_TO_SYM(str);
-            if(sym == unquote || sym == unquoteAbbrev){
+            if (sym == unquote || sym == unquoteAbbrev) {
                 return nodeArr->Evaluate(1);
             }
         }
 
         DataArrayPtr ptr(new DataArray(nodeArr->Size()));
-        for(int i = 0; i < nodeArr->Size(); i++){
+        for (int i = 0; i < nodeArr->Size(); i++) {
             ptr.Node(i) = Quasiquote(nodeArr->Node(i));
         }
 
@@ -1310,43 +1278,43 @@ DataNode Quasiquote(const DataNode& node) {
     }
 }
 
-DEF_DATA_FUNC(DataQuasiquote) {
-    return Quasiquote(array->Node(1));
-}
+DEF_DATA_FUNC(DataQuasiquote) { return Quasiquote(array->Node(1)); }
 
-DEF_DATA_FUNC(DataUnquote) {
-    return array->Evaluate(1);
-}
+DEF_DATA_FUNC(DataUnquote) { return array->Evaluate(1); }
 
 DEF_DATA_FUNC(DataGetDateTime) {
     DateTime dt;
     GetDateAndTime(dt);
-    if(array->Size() > 1){
+    if (array->Size() > 1) {
         *array->Var(1) = DataNode(dt.mYear + 1900);
     }
-    if(array->Size() > 2){
+    if (array->Size() > 2) {
         *array->Var(2) = DataNode(dt.mMonth + 1);
     }
-    if(array->Size() > 3){
+    if (array->Size() > 3) {
         *array->Var(3) = DataNode(dt.mDay);
     }
-    if(array->Size() > 4){
+    if (array->Size() > 4) {
         *array->Var(4) = DataNode(dt.mHour);
     }
-    if(array->Size() > 5){
+    if (array->Size() > 5) {
         *array->Var(5) = DataNode(dt.mMin);
     }
-    if(array->Size() > 6){
+    if (array->Size() > 6) {
         *array->Var(6) = DataNode(dt.mSec);
     }
     return (int)dt.ToCode();
 }
 
-bool FileListCallBack(char* s) {
+bool FileListCallBack(char *s) {
     bool ret;
-    DataArray* array = sFileMsg;
-    DataNode* n = array->Var(3);
-    DataNode n2 = *n; {DataNode n3 = s; *n = n3;}
+    DataArray *array = sFileMsg;
+    DataNode *n = array->Var(3);
+    DataNode n2 = *n;
+    {
+        DataNode n3 = s;
+        *n = n3;
+    }
     ret = (bool)sFileMsg->ExecuteBlock(4).Int();
     if (ret) {
         strcpy(s, n->Str());
@@ -1357,10 +1325,14 @@ bool FileListCallBack(char* s) {
 
 DEF_DATA_FUNC(DataFileList) {
     sFileMsg = array;
-    bool (*x)(char*) = NULL;
+    bool (*x)(char *) = NULL;
     int i, s = array->Size();
-    if (s > 3) x = (&FileListCallBack);
-    if (s > 2) i = array->Int(2); else i = 1;
+    if (s > 3)
+        x = (&FileListCallBack);
+    if (s > 2)
+        i = array->Int(2);
+    else
+        i = 1;
     return MakeFileList(array->Str(1), i, x);
 }
 
@@ -1370,14 +1342,17 @@ DEF_DATA_FUNC(DataFileListPaths) {
 }
 
 DEF_DATA_FUNC(DataObjectList) {
-    class ObjectDir* dir = array->Obj<class ObjectDir>(1);
+    class ObjectDir *dir = array->Obj<class ObjectDir>(1);
     Symbol s = array->Sym(2);
     int x;
-    if (array->Size() > 3) x = (bool)array->Int(3); else x = 1;
+    if (array->Size() > 3)
+        x = (bool)array->Int(3);
+    else
+        x = 1;
     return ObjectList(dir, s, x);
 }
 
-void ScriptDebugModal(bool&, char*, bool) { }
+void ScriptDebugModal(bool &, char *, bool) {}
 
 DECOMP_FORCEACTIVE(DataFunc, ",")
 
@@ -1555,9 +1530,12 @@ void DataInitFuncs() {
     DataRegisterFunc("set_this", OnSetThis);
     DataRegisterFunc("macro_elem", DataMacroElem);
     DataRegisterFunc("merge_dirs", DataMergeDirs);
-    DataRegisterFunc("quote", DataQuote); DataRegisterFunc("'", DataQuote);
-    DataRegisterFunc("quasiquote", DataQuasiquote); DataRegisterFunc("`", DataQuasiquote);
-    DataRegisterFunc("unquote", DataUnquote); DataRegisterFunc(",", DataUnquote);
+    DataRegisterFunc("quote", DataQuote);
+    DataRegisterFunc("'", DataQuote);
+    DataRegisterFunc("quasiquote", DataQuasiquote);
+    DataRegisterFunc("`", DataQuasiquote);
+    DataRegisterFunc("unquote", DataUnquote);
+    DataRegisterFunc(",", DataUnquote);
     DataRegisterFunc("get_date_time", DataGetDateTime);
     DataRegisterFunc("with", DataWith);
     DataRegisterFunc("type", DataGetType);
@@ -1588,13 +1566,13 @@ void DataInitFuncs() {
     DataRegisterFunc(magic, DataInc);
 }
 
-void DataTermFuncs(){
-    gDataFuncs.clear();
-}
+void DataTermFuncs() { gDataFuncs.clear(); }
 
-Symbol DataFuncName(DataFunc* func){
-    for(std::map<Symbol, DataFunc*>::iterator it = gDataFuncs.begin(); it != gDataFuncs.end(); it++ ){
-        if(it->second == func){
+Symbol DataFuncName(DataFunc *func) {
+    for (std::map<Symbol, DataFunc *>::iterator it = gDataFuncs.begin();
+         it != gDataFuncs.end();
+         it++) {
+        if (it->second == func) {
             return it->first;
         }
     }
@@ -1604,17 +1582,17 @@ Symbol DataFuncName(DataFunc* func){
 // Force FilterSubdir to generate here
 DECOMP_FORCEFUNC(DataFunc, MergeFilter, FilterSubdir(0, 0))
 
-MergeFilter::Action DataMergeFilter::Filter(Hmx::Object* from, Hmx::Object* to, class ObjectDir* dir){
-    if(mType == kDataInt){
+MergeFilter::Action
+DataMergeFilter::Filter(Hmx::Object *from, Hmx::Object *to, class ObjectDir *dir) {
+    if (mType == kDataInt) {
         return (MergeFilter::Action)mInt;
-    }
-    else {
+    } else {
         static DataArrayPtr d(new DataArray(3));
         d.Node(1) = DataNode(from);
         d.Node(2) = DataNode(to);
-        if(mType == kDataFunc){
-            return (MergeFilter::Action) mFunc(UNCONST_ARRAY(d)).Int();
-        }
-        else return (MergeFilter::Action) mObj->Handle(UNCONST_ARRAY(d), true).Int();
+        if (mType == kDataFunc) {
+            return (MergeFilter::Action)mFunc(UNCONST_ARRAY(d)).Int();
+        } else
+            return (MergeFilter::Action)mObj->Handle(UNCONST_ARRAY(d), true).Int();
     }
 }

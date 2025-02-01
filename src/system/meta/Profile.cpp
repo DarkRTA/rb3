@@ -5,24 +5,18 @@
 
 #include "decomp.h"
 
-Profile::Profile(int pnum) : mDirty(0), mPadNum(pnum), mState(kMetaProfileUnloaded) {
+Profile::Profile(int pnum) : mDirty(0), mPadNum(pnum), mState(kMetaProfileUnloaded) {}
 
-}
+Profile::~Profile() { DeleteAll(); }
 
-Profile::~Profile(){
-    DeleteAll();
-}
-
-bool Profile::IsAutosaveEnabled() const {
-    return mState != kMetaProfileError;
-}
+bool Profile::IsAutosaveEnabled() const { return mState != kMetaProfileError; }
 
 bool Profile::HasValidSaveData() const {
-    if(mState == kMetaProfileLoaded || mState == kMetaProfileError){
+    if (mState == kMetaProfileLoaded || mState == kMetaProfileError) {
         int padIdx = TheWiiProfileMgr.GetIndexForPad(mPadNum);
         return TheWiiProfileMgr.IsIndexValid(padIdx);
-    }
-    else return false;
+    } else
+        return false;
 }
 
 DECOMP_FORCEFUNC(Profile, Profile, GetName())
@@ -30,50 +24,36 @@ DECOMP_FORCEFUNC(Profile, Profile, GetPadNum())
 
 #pragma push
 #pragma force_active on
-inline const char* Profile::GetName() const {
-    return GetLocalUser()->UserName();
-}
+inline const char *Profile::GetName() const { return GetLocalUser()->UserName(); }
 
-inline int Profile::GetPadNum() const {
-    return mPadNum;
-}
+inline int Profile::GetPadNum() const { return mPadNum; }
 #pragma pop
 
-DECOMP_FORCEACTIVE(Profile,
-    __FILE__,
-    "user"
-)
+DECOMP_FORCEACTIVE(Profile, __FILE__, "user")
 
-ProfileSaveState Profile::GetSaveState() const {
-    return mState;
-}
+ProfileSaveState Profile::GetSaveState() const { return mState; }
 
-void Profile::SetSaveState(ProfileSaveState state){
+void Profile::SetSaveState(ProfileSaveState state) {
     MILO_ASSERT(mState != kMetaProfileUnchanged, 0x88);
-    if(state != kMetaProfileUnchanged) mState = state;
+    if (state != kMetaProfileUnchanged)
+        mState = state;
 }
 
 bool Profile::IsUnsaved() const {
     bool cheated = HasCheated();
-    if(!cheated) return mDirty;
-    else return false;
+    if (!cheated)
+        return mDirty;
+    else
+        return false;
 }
 
-void Profile::SaveLoadComplete(ProfileSaveState state){
-    SetSaveState(state);
-}
+void Profile::SaveLoadComplete(ProfileSaveState state) { SetSaveState(state); }
 
-bool Profile::HasSomethingToUpload(){
-    return false;
-}
+bool Profile::HasSomethingToUpload() { return false; }
 
-void Profile::DeleteAll(){
-    mDirty = true;
-}
+void Profile::DeleteAll() { mDirty = true; }
 
-void Profile::MakeDirty(){
-    mDirty = true;
-}
+void Profile::MakeDirty() { mDirty = true; }
 
 BEGIN_HANDLERS(Profile)
     HANDLE_EXPR(get_pad_num, mPadNum)

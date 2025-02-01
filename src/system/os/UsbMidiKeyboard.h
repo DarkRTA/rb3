@@ -11,9 +11,9 @@ public:
     static void Init();
     static void Terminate();
     static void Poll();
-    static void SendMessage(const Message& msg){ JoypadPushThroughMsg(msg); }
+    static void SendMessage(const Message &msg) { JoypadPushThroughMsg(msg); }
 
-    int GetSlottedKeyVelocityFromExtended(int, unsigned char*);
+    int GetSlottedKeyVelocityFromExtended(int, unsigned char *);
     int GetAccelAxisVal(int, int);
     bool GetKeyPressed(int, int);
     int GetKeyVelocity(int, int);
@@ -53,5 +53,5 @@ class StaticCriticalSection : public CriticalSection {
 public:
     StaticCriticalSection();
     ~StaticCriticalSection();
-    static StaticCriticalSection* Instance();
+    static StaticCriticalSection *Instance();
 };

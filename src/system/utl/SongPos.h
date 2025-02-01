@@ -3,8 +3,9 @@
 class SongPos {
 public:
     SongPos() : mTotalTick(0), mMeasure(0), mBeat(0), mTick(0) {}
-    SongPos(float tt, float tb, int m, int b, int t) : mTotalTick(tt), mTotalBeat(tb), mMeasure(m), mBeat(b), mTick(t) {}
-    
+    SongPos(float tt, float tb, int m, int b, int t)
+        : mTotalTick(tt), mTotalBeat(tb), mMeasure(m), mBeat(b), mTick(t) {}
+
     float GetTotalTick() const { return mTotalTick; }
     float GetTotalBeat() const { return mTotalBeat; }
     int GetMeasure() const { return mMeasure; }

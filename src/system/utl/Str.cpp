@@ -12,25 +12,16 @@ const unsigned int String::npos = -1;
 
 char gEmpty = 0;
 #ifdef VERSION_SZBE69_B8
-DECOMP_FORCEACTIVE(Str,
-    __FILE__,
-    "i < mCap + 1"
-)
+DECOMP_FORCEACTIVE(Str, __FILE__, "i < mCap + 1")
 #endif
 
 String::String() : mCap(0), mStr(&gEmpty) {}
 
-String::String(const char* str) : mCap(0), mStr(&gEmpty) {
-    *this = str;
-}
+String::String(const char *str) : mCap(0), mStr(&gEmpty) { *this = str; }
 
-String::String(Symbol s) : mCap(0), mStr(&gEmpty) {
-    *this = s.mStr;
-}
+String::String(Symbol s) : mCap(0), mStr(&gEmpty) { *this = s.mStr; }
 
-String::String(const String& str) : mCap(0), mStr(&gEmpty) {
-    *this = str.c_str();
-}
+String::String(const String &str) : mCap(0), mStr(&gEmpty) { *this = str.c_str(); }
 
 // rk wanted to call this MemmyUppies but i had to put a stop to it
 // -- dark
@@ -42,7 +33,7 @@ void String::reserve(unsigned int arg) {
         *((char *)dest + arg) = 0;
 
         if (mCap != 0) {
-            _MemOrPoolFree(mCap + 1, FastPool, (void*)mStr);
+            _MemOrPoolFree(mCap + 1, FastPool, (void *)mStr);
         }
 
         mCap = arg;
@@ -52,18 +43,17 @@ void String::reserve(unsigned int arg) {
 
 String::String(unsigned int arg, char charg) : mCap(0), mStr(&gEmpty) {
     reserve(arg);
-    for(unsigned int i = 0; i < arg; i++) mStr[i] = charg;
+    for (unsigned int i = 0; i < arg; i++)
+        mStr[i] = charg;
     mStr[arg] = '\0';
 }
 
-String::~String(){
-    if(mCap != 0)
-        _MemOrPoolFree(mCap + 1, FastPool, (void*)mStr);
+String::~String() {
+    if (mCap != 0)
+        _MemOrPoolFree(mCap + 1, FastPool, (void *)mStr);
 }
 
-void String::Print(const char* c){
-    *this += c;
-}
+void String::Print(const char *c) { *this += c; }
 
 String String::operator+(const char *chrstr) const {
     String ret(*this);
@@ -77,33 +67,30 @@ String String::operator+(char c) const {
     return ret;
 }
 
-String String::operator+(const String& str) const {
+String String::operator+(const String &str) const {
     String ret(*this);
-    #ifdef VERSION_SZBE69_B8
+#ifdef VERSION_SZBE69_B8
     ret += str.c_str();
-    #else
+#else
     ret += str;
-    #endif
+#endif
     return ret;
 }
 
-String& String::operator+=(const char* str){
-    if(str == 0 || *str == '\0') return *this;
+String &String::operator+=(const char *str) {
+    if (str == 0 || *str == '\0')
+        return *this;
     int len = length();
     reserve(len + strlen(str));
     strcpy(&mStr[len], str);
     return *this;
 }
 
-String& String::operator+=(Symbol s){
-    return *this += s.mStr;
-}
+String &String::operator+=(Symbol s) { return *this += s.mStr; }
 
-String& String::operator+=(const String& str){
-    return *this += str.c_str();
-}
+String &String::operator+=(const String &str) { return *this += str.c_str(); }
 
-String& String::operator+=(char c){
+String &String::operator+=(char c) {
     int len = length();
     reserve(len + 1);
     mStr[len] = c;
@@ -111,29 +98,27 @@ String& String::operator+=(char c){
     return *this;
 }
 
-String& String::operator=(const char* str){
-    if(str == mStr) return *this;
-    if(str == 0 || *str == '\0'){
+String &String::operator=(const char *str) {
+    if (str == mStr)
+        return *this;
+    if (str == 0 || *str == '\0') {
         resize(0);
-    }
-    else {
+    } else {
         reserve(strlen(str));
         strcpy(mStr, str);
     }
     return *this;
 }
 
-String& String::operator=(Symbol s){
-    return *this = s.mStr;
-}
+String &String::operator=(Symbol s) { return *this = s.mStr; }
 
-String& String::operator=(const String& str){
+String &String::operator=(const String &str) {
     reserve(str.mCap);
     strcpy(mStr, str.c_str());
     return *this;
 }
 
-char& String::operator[](unsigned int i){
+char &String::operator[](unsigned int i) {
     MILO_ASSERT(i < mCap, 0xB6);
     return mStr[i];
 }
@@ -143,7 +128,7 @@ char String::rindex(int i) const {
     return mStr[mCap + i];
 }
 
-char& String::rindex(int i) {
+char &String::rindex(int i) {
     MILO_ASSERT(i < 0 && uint(-i) <= mCap, 0xC2);
     return mStr[mCap + i];
 }
@@ -155,9 +140,7 @@ bool String::operator!=(const char *str) const {
         return strcmp(str, mStr);
 }
 
-bool String::operator!=(const String &str) const {
-    return strcmp(str.mStr, mStr);
-}
+bool String::operator!=(const String &str) const { return strcmp(str.mStr, mStr); }
 
 bool String::operator==(const char *str) const {
     if (str == 0)
@@ -166,13 +149,9 @@ bool String::operator==(const char *str) const {
         return strcmp(str, mStr) == 0;
 }
 
-bool String::operator==(const String &str) const {
-    return strcmp(str.mStr, mStr) == 0;
-}
+bool String::operator==(const String &str) const { return strcmp(str.mStr, mStr) == 0; }
 
-bool String::operator<(const String &str) const {
-    return (strcmp(mStr, str.mStr) < 0);
-}
+bool String::operator<(const String &str) const { return (strcmp(mStr, str.mStr) < 0); }
 
 void String::resize(unsigned int arg) {
     reserve(arg);
@@ -181,70 +160,83 @@ void String::resize(unsigned int arg) {
 
 unsigned int String::find(char c, unsigned int pos) const {
     MILO_ASSERT(pos <= mCap, 0xF3);
-    char* p = &mStr[pos];
-    while((*p != '\0') && (*p != c)) p++;
-    if(*p != '\0') return p - mStr;
-    else return -1;
+    char *p = &mStr[pos];
+    while ((*p != '\0') && (*p != c))
+        p++;
+    if (*p != '\0')
+        return p - mStr;
+    else
+        return -1;
 }
 
-unsigned int String::find(char c) const {
-    return find(c, 0);
-}
+unsigned int String::find(char c) const { return find(c, 0); }
 
-unsigned int String::find(const char* c) const {
-    return find(c, 0);
-}
+unsigned int String::find(const char *c) const { return find(c, 0); }
 
-unsigned int String::find(const char* str, unsigned int pos) const {
+unsigned int String::find(const char *str, unsigned int pos) const {
     MILO_ASSERT(pos <= mCap, 0x10A);
-    char* found = strstr(&mStr[pos], str);
-    if(found != 0) return found - mStr;
-    else return -1;
+    char *found = strstr(&mStr[pos], str);
+    if (found != 0)
+        return found - mStr;
+    else
+        return -1;
 }
 
-unsigned int String::find_first_of(const char* str, unsigned int pos) const {
+unsigned int String::find_first_of(const char *str, unsigned int pos) const {
     char *p1;
     char *p2;
-    if(str == 0) return -1;
+    if (str == 0)
+        return -1;
     MILO_ASSERT(pos <= mCap, 0x115);
-    for(p1 = &mStr[pos]; *p1 != '\0'; p1++){
-        for(p2 = (char*)str; *p2 != '\0'; p2++){
-            if(*p1 == *p2) return p1 - mStr;
+    for (p1 = &mStr[pos]; *p1 != '\0'; p1++) {
+        for (p2 = (char *)str; *p2 != '\0'; p2++) {
+            if (*p1 == *p2)
+                return p1 - mStr;
         }
     }
     return -1;
 }
 
 unsigned int String::find_last_of(char c) const {
-    char* found = strrchr(mStr, c);
-    if(found != 0) return found - mStr;
-    else return -1;
+    char *found = strrchr(mStr, c);
+    if (found != 0)
+        return found - mStr;
+    else
+        return -1;
 }
 
-unsigned int String::find_last_of(const char* str) const {
-    if(str == 0) return -1;
+unsigned int String::find_last_of(const char *str) const {
+    if (str == 0)
+        return -1;
     int a = -1;
-    for(char* tmp = (char*)str; *tmp != '\0'; tmp++){
+    for (char *tmp = (char *)str; *tmp != '\0'; tmp++) {
         int lastIdx = find_last_of(*tmp);
-        if((lastIdx != -1U) && (lastIdx > a)) a = lastIdx;
+        if ((lastIdx != -1U) && (lastIdx > a))
+            a = lastIdx;
     }
     return (a != -1) ? a : -1;
 }
 
-unsigned int String::rfind(const char* str) const {
+unsigned int String::rfind(const char *str) const {
     int rv;
-    if(str == 0) return -1;
+    if (str == 0)
+        return -1;
     else {
         rv = -1;
-        for(char *p4 = (char*)str; *p4 != '\0'; p4++){
+        for (char *p4 = (char *)str; *p4 != '\0'; p4++) {
             int x = find_last_of(*p4);
-            if(x == -1U) return -1;
-            if(rv == -1) rv = x;
-            else if(x != p4 - str + rv) return -1;
+            if (x == -1U)
+                return -1;
+            if (rv == -1)
+                rv = x;
+            else if (x != p4 - str + rv)
+                return -1;
         }
     }
-    if(rv == -1) return -1;
-    else return rv;
+    if (rv == -1)
+        return -1;
+    else
+        return rv;
 }
 
 bool String::contains(const char *str) const {
@@ -252,7 +244,7 @@ bool String::contains(const char *str) const {
     return (index != -1);
 }
 
-int String::split(const char *token, std::vector<String>& subStrings) const {
+int String::split(const char *token, std::vector<String> &subStrings) const {
     MILO_ASSERT(subStrings.empty(), 345);
 
     int lastIndex = 0;
@@ -293,14 +285,14 @@ String String::substr(unsigned int pos, unsigned int len) const {
     }
 }
 
-void String::ToLower(){
+void String::ToLower() {
     char *p;
     for (p = mStr; *p != '\0'; p++) {
         *p = tolower(*p);
     }
 }
 
-void String::ToUpper(){
+void String::ToUpper() {
     char *p;
     for (p = mStr; *p != '\0'; p++) {
         *p = toupper(*p);
@@ -331,7 +323,7 @@ void String::swap(String &s) {
 // pos: the starting index of the text you want to replace
 // length: how many chars you want the replacement to be
 // buffer: the replacement chars
-String& String::replace(unsigned int pos, unsigned int n, const char *buffer) {
+String &String::replace(unsigned int pos, unsigned int n, const char *buffer) {
     char *text_offsetted;
     char *var_r4;
     char *var_r5;
@@ -369,32 +361,27 @@ String& String::replace(unsigned int pos, unsigned int n, const char *buffer) {
     return *this;
 }
 
-String& String::erase(){
+String &String::erase() {
     mStr[0] = '\0';
     return *this;
 }
 
-String& String::erase(unsigned int idx){
-    if(idx >= mCap) return *this;
+String &String::erase(unsigned int idx) {
+    if (idx >= mCap)
+        return *this;
     mStr[idx] = '\0';
     return *this;
 }
 
-String& String::erase(unsigned int start, unsigned int len){
+String &String::erase(unsigned int start, unsigned int len) {
     return replace(start, len, "");
 }
 #ifdef VERSION_SZBE69_B8
-DECOMP_FORCEACTIVE(Str,
-    "strlen( format ) < 30",
-    "out",
-    "in",
-    "len > 0",
-    "allowed"
-)
+DECOMP_FORCEACTIVE(Str, "strlen( format ) < 30", "out", "in", "len > 0", "allowed")
 #endif
 
 // inserts the char c into this->text at index pos, cnt times
-String& String::insert(unsigned int pos, unsigned int cnt, char c){
+String &String::insert(unsigned int pos, unsigned int cnt, char c) {
     MILO_ASSERT(pos <= mCap, 0x1FC);
     String sp8;
     char *temp_r0;
@@ -411,11 +398,9 @@ String& String::insert(unsigned int pos, unsigned int cnt, char c){
     return *this;
 }
 
-String& String::insert(unsigned int ui, const char* str){
-    return replace(ui, 0, str);
-}
+String &String::insert(unsigned int ui, const char *str) { return replace(ui, 0, str); }
 
-String& String::insert(unsigned int ui, const String& str){
+String &String::insert(unsigned int ui, const String &str) {
     return replace(ui, 0, str.c_str());
 }
 
@@ -453,7 +438,7 @@ bool SearchReplace(
 bool StrNCopy(char *dest, const char *src, int n) {
     MILO_ASSERT(n, 0x278);
 
-    for(n = n - 1; *src != '\0' && n != 0; n--){
+    for (n = n - 1; *src != '\0' && n != 0; n--) {
         *dest++ = *src++;
     }
     *dest = '\0';

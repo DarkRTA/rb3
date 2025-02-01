@@ -14,7 +14,7 @@
 
 static int LINE_REV = 4;
 
-void RndLine::SetMat(RndMat* mat) {
+void RndLine::SetMat(RndMat *mat) {
     mMat = mat;
     mMesh->SetMat(mat);
 }
@@ -27,7 +27,7 @@ void RndLine::UpdateInternal() {
     SetNumPoints(mPoints.size());
 }
 
-BinStream& operator>>(BinStream& bs, RndLine::Point point) {
+BinStream &operator>>(BinStream &bs, RndLine::Point point) {
     bs >> point.v >> point.c;
     return bs;
 }
@@ -57,11 +57,9 @@ BEGIN_LOADS(RndLine)
     UpdateInternal();
 END_LOADS
 
-TextStream& operator<<(TextStream&, const RndLine::Point&){
+TextStream &operator<<(TextStream &, const RndLine::Point &) {}
 
-}
-
-void RndLine::Print(){
+void RndLine::Print() {
     TheDebug << "   points: " << mPoints << "\n";
     TheDebug << "   width: " << mWidth << "\n";
     TheDebug << "   foldAngle: " << mFoldAngle << "\n";
@@ -79,12 +77,10 @@ RndLine::RndLine() : mWidth(1.0f), mFoldAngle(1.570796f), mMat(this, 0) {
     UpdateInternal();
 }
 
-RndLine::~RndLine(){
+RndLine::~RndLine() {}
 
-}
-
-DataNode RndLine::OnSetMat(const DataArray* array) {
-    RndMat* mat = array->Obj<RndMat>(2);
+DataNode RndLine::OnSetMat(const DataArray *array) {
+    RndMat *mat = array->Obj<RndMat>(2);
     SetMat(mat);
     mShowing = mat;
     return 0;
@@ -93,9 +89,9 @@ DataNode RndLine::OnSetMat(const DataArray* array) {
 BEGIN_HANDLERS(RndLine)
     HANDLE_EXPR(num_points, (int)mPoints.size())
     HANDLE_ACTION(set_point_pos, {
-        Vector3 v(_msg->Float(2),_msg->Float(3),_msg->Float(4));
+        Vector3 v(_msg->Float(2), _msg->Float(3), _msg->Float(4));
         SetPointPos(_msg->Int(1), v);
-        })
+    })
     HANDLE_ACTION(set_update, SetUpdate(_msg->Int(2)))
     HANDLE(set_mat, OnSetMat)
     HANDLE_SUPERCLASS(RndDrawable)

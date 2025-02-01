@@ -37,12 +37,11 @@ enum LoadState {
 class NetCacheMgr : public Hmx::Object {
 public:
     enum CacheSize {
-
     };
 
     NetCacheMgr();
     virtual ~NetCacheMgr();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void LoadInit();
     virtual bool IsDoneLoading() const;
@@ -55,20 +54,21 @@ public:
     NetCacheMgrFailType GetFailType() const;
     void SetState(NetCacheMgrState);
     void Unload();
-    bool IsLocalFile(const char*) const;
+    bool IsLocalFile(const char *) const;
     void OnInit();
     void CheatNextServer();
     void DebugClearCache();
-    void DeleteNetCacheLoader(NetCacheLoader*);
+    void DeleteNetCacheLoader(NetCacheLoader *);
     void Load(CacheSize);
     bool IsUnloaded() const;
     bool IsReady() const;
-    NetCacheLoader* AddNetCacheLoader(const char*, NetLoaderPos);
+    NetCacheLoader *AddNetCacheLoader(const char *, NetLoaderPos);
 
     NetCacheMgrState mState; // 0x1c
     bool unk_0x20; // 0x20
     NetCacheMgrFailType mFailType; // 0x24
-    String mStrXLSPFilter; // 0x28 unsure if this name is still correct, but there is indeed a String here
+    String mStrXLSPFilter; // 0x28 unsure if this name is still correct, but there is
+                           // indeed a String here
     std::list<int> mServers; // 0x34
     Symbol mServerType; // 0x40
     unsigned int mLoadCacheSize; // 0x44

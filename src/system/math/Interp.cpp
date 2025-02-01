@@ -5,18 +5,13 @@
 
 #include "decomp.h"
 
-DECOMP_FORCEACTIVE(Interp,
-    "exp",
-    "atan",
-    "unknown interpolator type: %s\nat %d in %s"
-)
+DECOMP_FORCEACTIVE(Interp, "exp", "atan", "unknown interpolator type: %s\nat %d in %s")
 
 LinearInterpolator::LinearInterpolator(float y0, float y1, float x0, float x1) {
     Reset(y0, y1, x0, x1);
 }
 
-LinearInterpolator::LinearInterpolator() {
-}
+LinearInterpolator::LinearInterpolator() {}
 
 void LinearInterpolator::Reset(float y0, float y1, float x0, float x1) {
     float run = x1 - x0;
@@ -32,12 +27,7 @@ void LinearInterpolator::Reset(float y0, float y1, float x0, float x1) {
 }
 
 void LinearInterpolator::Reset(const DataArray *data) {
-    Reset(
-        data->Float(1),
-        data->Float(2),
-        data->Float(3),
-        data->Float(4)
-    );
+    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4));
 }
 
 ExpInterpolator::ExpInterpolator(float f1, float f2, float f3, float f4, float f5) {
@@ -60,7 +50,13 @@ void ExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5) {
 
 // fn_802DD238
 void ExpInterpolator::Reset(const DataArray *data) {
-    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4), (data->Size() > 5) ? data->Float(5) : 2.0f);
+    Reset(
+        data->Float(1),
+        data->Float(2),
+        data->Float(3),
+        data->Float(4),
+        (data->Size() > 5) ? data->Float(5) : 2.0f
+    );
 }
 
 // fn_802DD32C
@@ -71,10 +67,9 @@ float ExpInterpolator::Eval(float f) {
     // mPower is also implicitly casted from float to double
 
     // float pow_f(double x, double y) => double pow(double x, double y)
-    //pow_res = pow_f(mInvRun * (f - mX0), mPower);
+    // pow_res = pow_f(mInvRun * (f - mX0), mPower);
     return (float)pow_res * mRise + mY0;
 }
-
 
 // fn_802DD37C
 InvExpInterpolator::InvExpInterpolator(float f1, float f2, float f3, float f4, float f5) {
@@ -98,7 +93,13 @@ void InvExpInterpolator::Reset(float f1, float f2, float f3, float f4, float f5)
 
 // fn_802DD4C4
 void InvExpInterpolator::Reset(const DataArray *data) {
-    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4), (data->Size() > 5) ? data->Float(5) : 2.0f);
+    Reset(
+        data->Float(1),
+        data->Float(2),
+        data->Float(3),
+        data->Float(4),
+        (data->Size() > 5) ? data->Float(5) : 2.0f
+    );
 }
 
 // fn_802DD5B8
@@ -118,8 +119,7 @@ ATanInterpolator::ATanInterpolator(float y0, float y1, float x0, float x1, float
 }
 
 // fn_802DD6F4
-ATanInterpolator::ATanInterpolator() {
-}
+ATanInterpolator::ATanInterpolator() {}
 
 // fn_802DD738
 void ATanInterpolator::Reset(float y0, float y1, float x0, float x1, float severity) {
@@ -132,7 +132,8 @@ void ATanInterpolator::Reset(float y0, float y1, float x0, float x1, float sever
     mY0 = y0;
     mY1 = y1;
 
-    if(!(severity > 0.001f)) MILO_FAIL("ATanInterpolator: severity (%f) too small.", severity);
+    if (!(severity > 0.001f))
+        MILO_FAIL("ATanInterpolator: severity (%f) too small.", severity);
 
     float ftan = std::atan(f31);
 
@@ -146,7 +147,13 @@ void ATanInterpolator::Reset(float y0, float y1, float x0, float x1, float sever
 
 // fn_802DD850
 void ATanInterpolator::Reset(const DataArray *data) {
-    Reset(data->Float(1), data->Float(2), data->Float(3), data->Float(4), (data->Size() > 5) ? data->Float(5) : 10.0f);
+    Reset(
+        data->Float(1),
+        data->Float(2),
+        data->Float(3),
+        data->Float(4),
+        (data->Size() > 5) ? data->Float(5) : 10.0f
+    );
 }
 
 // fn_802DD944
@@ -156,7 +163,8 @@ float ATanInterpolator::Eval(float f) {
     return ret + mOffset;
 }
 
-DECOMP_FORCEACTIVE(Interp,
+DECOMP_FORCEACTIVE(
+    Interp,
     __FILE__,
     "source",
     "numEntries > 1",

@@ -16,7 +16,7 @@ public:
     class TargTransforms {
     public:
         TargTransform xfms[3];
-        Waypoint* mWay;
+        Waypoint *mWay;
 
         static int sNumPlayModes;
     };
@@ -25,25 +25,23 @@ public:
     virtual ~BandConfiguration();
     OBJ_CLASSNAME(BandConfiguration);
     OBJ_SET_TYPE(BandConfiguration);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void SyncPlayMode();
     int ConfigIndex();
 
-    DataNode OnStoreConfiguration(DataArray*);
-    DataNode OnReleaseConfiguration(DataArray*);
+    DataNode OnStoreConfiguration(DataArray *);
+    DataNode OnReleaseConfiguration(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(BandConfiguration)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandConfiguration)
 
     TargTransforms mXfms[4]; // 0x1c, 0xbc, 0x15c, 0x1fc

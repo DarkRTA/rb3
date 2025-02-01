@@ -6,7 +6,6 @@
 #include "rndobj/Mat.h"
 #include "math/Mtx.h"
 
-
 /**
  * @brief Class for all types of position-depends lighting flares.
  * Original _objects description:
@@ -25,26 +24,26 @@ public:
     RndFlare();
     OBJ_CLASSNAME(Flare)
     OBJ_SET_TYPE(Flare)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
     virtual ~RndFlare();
     virtual void Highlight() { RndDrawable::Highlight(); }
     virtual void Print();
     virtual void DrawShowing();
-    virtual void Mats(std::list<class RndMat*>&, bool);
+    virtual void Mats(std::list<class RndMat *> &, bool);
 
     void CalcScale();
-    void SetMat(RndMat*);
+    void SetMat(RndMat *);
     void SetPointTest(bool);
     void SetSteps(int);
-    void SetTestDone(){ mTestDone = true; }
-    RndMat* GetMat() const { return mMat; }
+    void SetTestDone() { mTestDone = true; }
+    RndMat *GetMat() const { return mMat; }
     int GetSteps() const { return mSteps; }
 
-    void SetVisible(bool b){
+    void SetVisible(bool b) {
         SetTestDone();
         mVisible = b;
     }
@@ -53,9 +52,7 @@ public:
     DELETE_OVERLOAD;
     DECLARE_REVS
     NEW_OBJ(RndFlare)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndFlare)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndFlare) }
 
     bool mPointTest; // 0xB0
     bool mAreaTest; // 0xB1

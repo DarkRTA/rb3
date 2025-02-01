@@ -1,9 +1,5 @@
 #include "utl/Spew.h"
 
-void SpewInit(){
+void SpewInit() {}
 
-}
-
-void SpewTerminate(){
-  
-}
+void SpewTerminate() {}

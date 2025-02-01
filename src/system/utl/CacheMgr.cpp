@@ -1,7 +1,7 @@
 #include "CacheMgr.h"
 #include "CacheMgr_Wii.h"
 
-CacheMgr* TheCacheMgr;
+CacheMgr *TheCacheMgr;
 
 void CacheMgrInit() {
     MILO_ASSERT(TheCacheMgr == NULL, 0x12);
@@ -18,45 +18,44 @@ CacheMgr::CacheMgr() : mOp((CacheMgr::OpType)0), mLastResult(kCache_NoError) {}
 
 CacheMgr::~CacheMgr() {}
 
-bool CacheMgr::SearchAsync(const char*, CacheID**) {
+bool CacheMgr::SearchAsync(const char *, CacheID **) {
     MILO_FAIL("CacheMgr::SearchAsync() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
 
     return 0;
 }
 
-bool CacheMgr::ShowUserSelectUIAsync(LocalUser*, unsigned long long, const char*, const char*, CacheID**) {
+bool CacheMgr::
+    ShowUserSelectUIAsync(LocalUser *, unsigned long long, const char *, const char *, CacheID **) {
     MILO_FAIL("CacheMgr::ShowUserSelectUIAsync() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
 
     return 0;
 }
 
-bool CacheMgr::CreateCacheIDFromDeviceID(unsigned int, const char*, const char*, CacheID**) {
+bool CacheMgr::
+    CreateCacheIDFromDeviceID(unsigned int, const char *, const char *, CacheID **) {
     MILO_FAIL("CacheMgr::SetDeviceID() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
 
     return 0;
 }
 
-bool CacheMgr::CreateCacheID(const char*, const char*, const char*, const char*, const char*, int, CacheID**) {
+bool CacheMgr::
+    CreateCacheID(const char *, const char *, const char *, const char *, const char *, int, CacheID **) {
     MILO_FAIL("CacheMgr::CreateCacheID() not supported by this platform.\n");
     SetLastResult(kCache_ErrorUnknown);
     return 0;
 }
 
-bool CacheMgr::IsDone() {
-    return mOp == 0;
-}
+bool CacheMgr::IsDone() { return mOp == 0; }
 
-CacheResult CacheMgr::GetLastResult() {
-    return mLastResult;
-}
+CacheResult CacheMgr::GetLastResult() { return mLastResult; }
 
-void CacheMgr::AddCacheID(CacheID* id, Symbol symbol) {
+void CacheMgr::AddCacheID(CacheID *id, Symbol symbol) {
     std::vector<CacheMgr::CacheIDStoreEntry>::iterator it = mCacheIDStore.begin();
     while (it != mCacheIDStore.end()) {
-        CacheMgr::CacheIDStoreEntry& entry = (*it);
+        CacheMgr::CacheIDStoreEntry &entry = (*it);
         if (entry.symbol == symbol) {
             entry.id = id;
             return;
@@ -68,7 +67,7 @@ void CacheMgr::AddCacheID(CacheID* id, Symbol symbol) {
     mCacheIDStore.push_back(e);
 }
 
-void CacheMgr::RemoveCacheID(CacheID* id) {
+void CacheMgr::RemoveCacheID(CacheID *id) {
     std::vector<CacheMgr::CacheIDStoreEntry>::iterator it = mCacheIDStore.begin();
     while (it != mCacheIDStore.end()) {
         CacheMgr::CacheIDStoreEntry entry = (*it);
@@ -80,7 +79,7 @@ void CacheMgr::RemoveCacheID(CacheID* id) {
     }
 }
 
-CacheID* CacheMgr::GetCacheID(Symbol symbol) {
+CacheID *CacheMgr::GetCacheID(Symbol symbol) {
     std::vector<CacheMgr::CacheIDStoreEntry>::iterator it = mCacheIDStore.begin();
     while (it != mCacheIDStore.end()) {
         CacheMgr::CacheIDStoreEntry entry = (*it);
@@ -92,14 +91,8 @@ CacheID* CacheMgr::GetCacheID(Symbol symbol) {
     return NULL;
 }
 
-void CacheMgr::SetOp(CacheMgr::OpType opType) {
-    mOp = opType;
-}
+void CacheMgr::SetOp(CacheMgr::OpType opType) { mOp = opType; }
 
-enum CacheMgr::OpType CacheMgr::GetOp() {
-    return mOp;
-}
+enum CacheMgr::OpType CacheMgr::GetOp() { return mOp; }
 
-void CacheMgr::SetLastResult(CacheResult result) {
-    mLastResult = result;
-}
+void CacheMgr::SetLastResult(CacheResult result) { mLastResult = result; }

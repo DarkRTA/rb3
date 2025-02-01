@@ -20,9 +20,9 @@ public:
 
 class CritSecTracker {
 public:
-    CriticalSection* mCritSec;
+    CriticalSection *mCritSec;
 
-    CritSecTracker(CriticalSection* section) {
+    CritSecTracker(CriticalSection *section) {
         mCritSec = section;
         if (section != 0) {
             section->Enter();

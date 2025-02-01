@@ -13,12 +13,12 @@ class Waypoint;
 
 class CharacterTest : public RndOverlay::Callback {
 public:
-    CharacterTest(Character*);
+    CharacterTest(Character *);
     virtual ~CharacterTest();
-    virtual float UpdateOverlay(RndOverlay*, float);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual float UpdateOverlay(RndOverlay *, float);
+    virtual DataNode Handle(DataArray *, bool);
 
-    void Load(BinStream&);
+    void Load(BinStream &);
     void Poll();
     void Draw();
     void PlayNew();
@@ -26,20 +26,20 @@ public:
     void Recenter();
     void AddDefaults();
     void Walk();
-    void TeleportTo(Waypoint*);
+    void TeleportTo(Waypoint *);
     void SetStartEndBeat(float, float, int);
     void SetMoveSelf(bool);
     void Sync();
     void SetDistMap(Symbol);
-    ObjectDir* Clips() const { return mDriver ? mDriver->ClipDir() : nullptr; }
+    ObjectDir *Clips() const { return mDriver ? mDriver->ClipDir() : nullptr; }
 
-    DataNode OnGetFilteredClips(DataArray*);
+    DataNode OnGetFilteredClips(DataArray *);
 
     NEW_POOL_OVERLOAD(CharacterTest)
     DELETE_POOL_OVERLOAD(CharacterTest)
     DECLARE_REVS;
 
-    Character* mMe; // 0x4
+    Character *mMe; // 0x4
     /** "The driver to animate" */
     ObjPtr<CharDriver> mDriver; // 0x8
     /** "Clip to play" */
@@ -51,7 +51,8 @@ public:
     /** "Teleport to this Waypoint" */
     ObjPtr<Waypoint> mTeleportTo; // 0x38
     ObjPtrList<Waypoint> mWalkPath; // 0x44
-    /** "Displays the transition distance map between clip1 and clip2, raw means the raw graph, no nodes". Options are: none, nodes, raw */
+    /** "Displays the transition distance map between clip1 and clip2, raw means the raw
+     * graph, no nodes". Options are: none, nodes, raw */
     Symbol mShowDistMap; // 0x54
     /** "Which transition to use between clip1 and clip2" */
     int mTransition; // 0x58
@@ -66,12 +67,12 @@ public:
     bool mShowFootExtents; // 0x60
     float unk64; // 0x64
     int unk68; // 0x68
-    ClipDistMap* unk6c; // 0x6c
-    RndOverlay* mOverlay; // 0x70
+    ClipDistMap *unk6c; // 0x6c
+    RndOverlay *mOverlay; // 0x70
 
-    // bool move_self: "Move ourselves around when playing animations, if true, the anim bar won't work backwards"
-    // script zero: "Teleports character to the origin"
-    // script add default rigging: "Adds default objects like main drivers and twist servos"
+    // bool move_self: "Move ourselves around when playing animations, if true, the anim
+    // bar won't work backwards" script zero: "Teleports character to the origin" script
+    // add default rigging: "Adds default objects like main drivers and twist servos"
 };
 
-bool PropSync(CharacterTest&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(CharacterTest &, DataNode &, DataArray *, int, PropOp);

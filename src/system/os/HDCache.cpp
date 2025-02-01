@@ -53,10 +53,8 @@ bool HDCache::ReadFail() {
 void HDCache::WriteDone() {
     ArkFile *writeArkFile = mWriteArkFiles[mWriteFileIdx];
     if (writeArkFile != nullptr) {
-        
     }
 }
-
 
 bool HDCache::LockCache() {
     CritSecTracker cst(mCritSec);
@@ -75,11 +73,11 @@ void HDCache::UnlockCache() {
         mLockId = 0;
 }
 
-FileStream* HDCache::OpenHeader() {
+FileStream *HDCache::OpenHeader() {
     if (mHdrFmt.mStr[0] == '\0') {
         return nullptr;
     } else {
-        const char* str;
+        const char *str;
         for (int i = 0; i < 2; ++i) {
             str = MakeString(mHdrFmt.mStr, 0);
             if (FileExists(str, 0x10000) != 0) {

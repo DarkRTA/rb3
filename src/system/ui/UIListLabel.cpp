@@ -5,37 +5,36 @@
 
 INIT_REVS(UIListLabel)
 
-UIListLabel::UIListLabel() : mLabel(this, 0) {
+UIListLabel::UIListLabel() : mLabel(this, 0) {}
 
+const char *UIListLabel::GetDefaultText() const {
+    if (mLabel)
+        return mLabel->GetDefaultText();
+    else
+        return gNullStr;
 }
 
-const char* UIListLabel::GetDefaultText() const {
-    if(mLabel) return mLabel->GetDefaultText();
-    else return gNullStr;
-}
-
-UILabel* UIListLabel::ElementLabel(int display) const {
-    if(mElements.empty()) return 0;
+UILabel *UIListLabel::ElementLabel(int display) const {
+    if (mElements.empty())
+        return 0;
     else {
         MILO_ASSERT_RANGE(display, 0, mElements.size(), 0x6E);
-        UIListLabelElement* le = dynamic_cast<UIListLabelElement*>(mElements[display]);
+        UIListLabelElement *le = dynamic_cast<UIListLabelElement *>(mElements[display]);
         MILO_ASSERT(le, 0x71);
         return le->mLabel;
     }
 }
 
-UIListSlotElement* UIListLabel::CreateElement(UIList* uilist){
+UIListSlotElement *UIListLabel::CreateElement(UIList *uilist) {
     MILO_ASSERT(mLabel, 0x80);
-    UILabel* l = dynamic_cast<UILabel*>(Hmx::Object::NewObject(mLabel->ClassName()));
+    UILabel *l = dynamic_cast<UILabel *>(Hmx::Object::NewObject(mLabel->ClassName()));
     MILO_ASSERT(l, 0x83);
     l->ResourceCopy(mLabel);
     l->SetTextToken(gNullStr);
     return new UIListLabelElement(this, l);
 }
 
-RndTransformable* UIListLabel::RootTrans(){
-    return mLabel;
-}
+RndTransformable *UIListLabel::RootTrans() { return mLabel; }
 
 SAVE_OBJ(UIListLabel, 0x9A)
 
@@ -63,13 +62,14 @@ BEGIN_PROPSYNCS(UIListLabel)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
 
-inline void UIListLabelElement::Draw(const Transform& tf, float f, UIColor* col, Box* box){
+inline void
+UIListLabelElement::Draw(const Transform &tf, float f, UIColor *col, Box *box) {
     mLabel->SetWorldXfm(tf);
-    if(box){
+    if (box) {
         Box localbox = *box;
-        std::vector<RndMesh*> vec;
+        std::vector<RndMesh *> vec;
         mLabel->TextObj()->GetMeshes(vec);
-        for(int i = 0; i < vec.size(); i++){
+        for (int i = 0; i < vec.size(); i++) {
             Box vecbox;
             CalcBox(vec[i], vecbox);
             localbox.GrowToContain(vecbox.mMin, false);
@@ -77,8 +77,7 @@ inline void UIListLabelElement::Draw(const Transform& tf, float f, UIColor* col,
         }
         box->GrowToContain(localbox.mMin, false);
         box->GrowToContain(localbox.mMax, false);
-    }
-    else {
+    } else {
         float oldalpha = mLabel->Alpha();
         float oldaltalpha = mLabel->AltAlpha();
         mLabel->SetColorOverride(col);

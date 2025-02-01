@@ -4,36 +4,36 @@
 #include "rndobj/Highlightable.h"
 #include "char/CharIKFingers.h"
 
-class CharKeyHandMidi : public RndHighlightable, public CharWeightable, public CharPollable {
+class CharKeyHandMidi : public RndHighlightable,
+                        public CharWeightable,
+                        public CharPollable {
 public:
     CharKeyHandMidi();
     virtual ~CharKeyHandMidi();
     virtual void Highlight();
     OBJ_CLASSNAME(CharKeyHandMidi);
     OBJ_SET_TYPE(CharKeyHandMidi);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     virtual void Enter();
-    virtual void SetName(const char*, ObjectDir*);
+    virtual void SetName(const char *, ObjectDir *);
 
     void RunTest();
     void EndTest();
 
-    DataNode OnFingersUp(DataArray*);
-    DataNode OnFingersDown(DataArray*);
+    DataNode OnFingersUp(DataArray *);
+    DataNode OnFingersDown(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharKeyHandMidi)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(CharKeyHandMidi)
 
     ObjPtr<CharIKFingers, ObjectDir> mIKObject; // 0x28

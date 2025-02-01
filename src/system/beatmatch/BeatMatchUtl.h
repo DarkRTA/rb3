@@ -15,9 +15,9 @@ enum BeatmatchAudioType {
 
 bool GemPlayableBy(int, int);
 int GemNumSlots(int);
-int ConsumeNumber(const char*&);
+int ConsumeNumber(const char *&);
 float VelocityBucketToDb(int);
 BeatmatchAudioType TrackTypeToAudioType(TrackType);
-float GetRollIntervalMs(const DataArray*, TrackType, int, bool);
+float GetRollIntervalMs(const DataArray *, TrackType, int, bool);
 
 #endif

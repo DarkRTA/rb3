@@ -11,35 +11,33 @@ int gREV = 9;
 #define HEIGHT_SD 480.0f
 #define HEIGHT_HD 720.0f
 
-inline float FontSizeToPercentSD(int i){
-    return std::fabs(i / HEIGHT_SD);
-}
+inline float FontSizeToPercentSD(int i) { return std::fabs(i / HEIGHT_SD); }
 
-inline float FontSizeToPercentHD(int i){
-    return std::fabs(i / HEIGHT_HD);
-}
+inline float FontSizeToPercentHD(int i) { return std::fabs(i / HEIGHT_HD); }
 
-inline int FontPercentToSizeSD(float f){
-    return -Round(f * HEIGHT_SD);
-}
+inline int FontPercentToSizeSD(float f) { return -Round(f * HEIGHT_SD); }
 
-inline int FontPercentToSizeHD(float f){
-    return -Round(f * HEIGHT_HD);
-}
+inline int FontPercentToSizeHD(float f) { return -Round(f * HEIGHT_HD); }
 
-UIFontImporter::UIFontImporter() : mUpperCaseAthroughZ(1), mLowerCaseAthroughZ(1), mNumbers0through9(1), mPunctuation(1), mUpperEuro(1), mLowerEuro(1),
-    mPlus(""), mMinus(""), mFontName("Arial"), mFontPctSize(FontSizeToPercentHD(-12)), mItalics(0), mFontQuality(kFontQuality_AntiAliased), mFontWeight(400),
-    mPitchAndFamily(0x22), mFontCharset(0), mFontSupersample(kFontSuperSample_None), mLeft(0), mRight(0), mTop(0), mBottom(0), mFillWithSafeWhite(0),
-    mFontToImportFrom(this), mBitmapSavePath("ui/image/"), mBitMapSaveName("temp.BMP"), mGennedFonts(this, kObjListNoNull), mReferenceKerning(this),
-    mMatVariations(this), mDefaultMat(this), mHandmadeFont(this), mCheckNG(0), mSyncResource(), mLastGenWasNG(1) {
-    DataArray* cfg = SystemConfig(objects, StaticClassName())->FindArray(default_bitmap_path, false);
-    if(cfg) mBitmapSavePath = cfg->Str(1);
+UIFontImporter::UIFontImporter()
+    : mUpperCaseAthroughZ(1), mLowerCaseAthroughZ(1), mNumbers0through9(1),
+      mPunctuation(1), mUpperEuro(1), mLowerEuro(1), mPlus(""), mMinus(""),
+      mFontName("Arial"), mFontPctSize(FontSizeToPercentHD(-12)), mItalics(0),
+      mFontQuality(kFontQuality_AntiAliased), mFontWeight(400), mPitchAndFamily(0x22),
+      mFontCharset(0), mFontSupersample(kFontSuperSample_None), mLeft(0), mRight(0),
+      mTop(0), mBottom(0), mFillWithSafeWhite(0), mFontToImportFrom(this),
+      mBitmapSavePath("ui/image/"), mBitMapSaveName("temp.BMP"),
+      mGennedFonts(this, kObjListNoNull), mReferenceKerning(this), mMatVariations(this),
+      mDefaultMat(this), mHandmadeFont(this), mCheckNG(0), mSyncResource(),
+      mLastGenWasNG(1) {
+    DataArray *cfg =
+        SystemConfig(objects, StaticClassName())->FindArray(default_bitmap_path, false);
+    if (cfg)
+        mBitmapSavePath = cfg->Str(1);
     GenerateBitmapFilename();
 }
 
-UIFontImporter::~UIFontImporter(){
-
-}
+UIFontImporter::~UIFontImporter() {}
 
 BEGIN_COPYS(UIFontImporter)
     CREATE_COPY(UIFontImporter)
@@ -84,73 +82,81 @@ BEGIN_LOADS(UIFontImporter)
     int rev;
     bs >> rev;
     ASSERT_GLOBAL_REV(rev, gREV);
-    bs >> mLowerCaseAthroughZ >> mUpperCaseAthroughZ >> mNumbers0through9 >> mPunctuation >> mUpperEuro >> mLowerEuro;
+    bs >> mLowerCaseAthroughZ >> mUpperCaseAthroughZ >> mNumbers0through9 >> mPunctuation
+        >> mUpperEuro >> mLowerEuro;
     bs >> mPlus;
     bs >> mMinus;
     bs >> mFontName;
-    if(rev <= 4){
+    if (rev <= 4) {
         int i;
         bs >> i;
         mFontPctSize = FontSizeToPercentHD(-i);
-    }
-    else bs >> mFontPctSize;
-    bs >> mFontWeight >> mItalics >> mPitchAndFamily >> (int&)mFontQuality >> mFontCharset;
-    if(rev > 1) bs >> (int&)mFontSupersample;
+    } else
+        bs >> mFontPctSize;
+    bs >> mFontWeight >> mItalics >> mPitchAndFamily >> (int &)mFontQuality
+        >> mFontCharset;
+    if (rev > 1)
+        bs >> (int &)mFontSupersample;
     bs >> mBitmapSavePath;
     bs >> mBitMapSaveName;
     bs >> mLeft >> mRight >> mTop >> mBottom >> mFillWithSafeWhite;
-    if(rev < 8) bs >> mFontToImportFrom;
-    if(rev > 2){
+    if (rev < 8)
+        bs >> mFontToImportFrom;
+    if (rev > 2) {
         bs >> mGennedFonts;
         bs >> mReferenceKerning;
     }
-    if(rev == 3){
+    if (rev == 3) {
         ObjPtr<RndMat> o(this, 0);
         bs >> o;
     }
-    if(rev > 3) bs >> mMatVariations;
-    if(rev > 5) bs >> mDefaultMat;
-    if(rev > 6) bs >> mHandmadeFont;
-    if(rev > 7) bs >> mSyncResource;
-    if(rev > 8) bs >> mLastGenWasNG;
+    if (rev > 3)
+        bs >> mMatVariations;
+    if (rev > 5)
+        bs >> mDefaultMat;
+    if (rev > 6)
+        bs >> mHandmadeFont;
+    if (rev > 7)
+        bs >> mSyncResource;
+    if (rev > 8)
+        bs >> mLastGenWasNG;
 END_LOADS
 
 // matches in retail
-void UIFontImporter::FontImporterSyncObjects(){
-    if(!mDefaultMat && mMatVariations.size() > 0 && mGennedFonts.size() > 0){
+void UIFontImporter::FontImporterSyncObjects() {
+    if (!mDefaultMat && mMatVariations.size() > 0 && mGennedFonts.size() > 0) {
         ObjPtrList<RndMat>::iterator mit;
-        for(mit = mMatVariations.begin(); mit != mMatVariations.end();){
-            RndMat* old = *mit;
+        for (mit = mMatVariations.begin(); mit != mMatVariations.end();) {
+            RndMat *old = *mit;
             mit = mMatVariations.erase(mit);
             delete old;
         }
         ObjPtrList<RndFont>::iterator it;
         int idx = 0;
-        for(it = mGennedFonts.begin(); it != mGennedFonts.end(); it++, idx++){
-            RndFont* font = *it;
-            RndMat* mat = font->GetMat();
-            if(idx == 0){
+        for (it = mGennedFonts.begin(); it != mGennedFonts.end(); it++, idx++) {
+            RndFont *font = *it;
+            RndMat *mat = font->GetMat();
+            if (idx == 0) {
                 class String name = GetBaseName();
                 class String matname = name + ".mat";
                 mat->SetName(matname.c_str(), Dir());
                 mDefaultMat = mat;
                 class String fontname = name + ".font";
                 font->SetName(fontname.c_str(), Dir());
-                RndText* text = FindTextForFont(font);
-                if(text){
+                RndText *text = FindTextForFont(font);
+                if (text) {
                     class String textname = name + ".txt";
                     text->SetName(textname.c_str(), Dir());
                     class String textstr(text->RawText());
-                    if(textstr.find("_default") != String::npos){
+                    if (textstr.find("_default") != String::npos) {
                         textstr = textstr.substr(0, textstr.find("_default"));
                         text->SetText(textstr.c_str());
                     }
                 }
-            }
-            else {
+            } else {
                 class String name = GetBaseName();
                 class String matname = mat->Name();
-                if(matname.find(name.c_str()) == 0){
+                if (matname.find(name.c_str()) == 0) {
                     int nameLen = name.length();
                     int matLen = matname.length();
                     matname = matname.substr(name.length() + 1, matLen - nameLen - 1);
@@ -159,25 +165,30 @@ void UIFontImporter::FontImporterSyncObjects(){
                 mMatVariations.push_back(mat);
             }
         }
-        MILO_WARN(MakeString("Upgraded font resource to new material variation setup.  Please resave %s", Dir()->GetPathName()));
+        MILO_WARN(MakeString(
+            "Upgraded font resource to new material variation setup.  Please resave %s",
+            Dir()->GetPathName()
+        ));
     }
 }
 
 // fn_8055B9E4 - get genned font
-RndFont* UIFontImporter::GetGennedFont(unsigned int ui) const {
-    if(ui >= NumGennedFonts()) return 0;
+RndFont *UIFontImporter::GetGennedFont(unsigned int ui) const {
+    if (ui >= NumGennedFonts())
+        return 0;
     ObjPtrList<RndFont>::iterator it = mGennedFonts.begin();
-    for (int i = 0; i < ui; i++) it++;
+    for (int i = 0; i < ui; i++)
+        it++;
     return *it;
 }
 
-RndText* UIFontImporter::FindTextForFont(RndFont* font) const {
-    if(font){
-        FOREACH_OBJREF(it, font){
-            Hmx::Object* owner = (*it)->RefOwner();
-            if(owner){
-                if(owner->ClassName() == Text){
-                    return dynamic_cast<RndText*>(owner);
+RndText *UIFontImporter::FindTextForFont(RndFont *font) const {
+    if (font) {
+        FOREACH_OBJREF(it, font) {
+            Hmx::Object *owner = (*it)->RefOwner();
+            if (owner) {
+                if (owner->ClassName() == Text) {
+                    return dynamic_cast<RndText *>(owner);
                 }
             }
         }
@@ -185,13 +196,13 @@ RndText* UIFontImporter::FindTextForFont(RndFont* font) const {
     return nullptr;
 }
 
-RndFont* UIFontImporter::FindFontForMat(RndMat* mat) const {
-    if(mat){
-        FOREACH_OBJREF(it, mat){
-            Hmx::Object* owner = (*it)->RefOwner();
-            if(owner){
-                if(owner->ClassName() == Font){
-                    return dynamic_cast<RndFont*>(owner);
+RndFont *UIFontImporter::FindFontForMat(RndMat *mat) const {
+    if (mat) {
+        FOREACH_OBJREF(it, mat) {
+            Hmx::Object *owner = (*it)->RefOwner();
+            if (owner) {
+                if (owner->ClassName() == Font) {
+                    return dynamic_cast<RndFont *>(owner);
                 }
             }
         }
@@ -199,55 +210,64 @@ RndFont* UIFontImporter::FindFontForMat(RndMat* mat) const {
     return nullptr;
 }
 
-DataNode UIFontImporter::OnAttachToImportFont(DataArray* da){
+DataNode UIFontImporter::OnAttachToImportFont(DataArray *da) {
     AttachImporterToFont(mFontToImportFrom);
     return 0;
 }
 
-DataNode UIFontImporter::OnImportSettings(DataArray* da){
+DataNode UIFontImporter::OnImportSettings(DataArray *da) {
     ImportSettingsFromFont(mFontToImportFrom);
     return 0;
 }
 
-const char* UIFontImporter::GetResourcesPath(){
-    DataArray* arr = SystemConfig(objects, UILabel::StaticClassName())->FindArray(resources_path, false);
-    if(!arr) return 0;
+const char *UIFontImporter::GetResourcesPath() {
+    DataArray *arr = SystemConfig(objects, UILabel::StaticClassName())
+                         ->FindArray(resources_path, false);
+    if (!arr)
+        return 0;
     else {
-        const char* str = arr->Str(1);
-        if(*str == '\0') return 0;
+        const char *str = arr->Str(1);
+        if (*str == '\0')
+            return 0;
         else {
             return FileMakePath(MakeString("%s/%s", FileRoot(), "ui/"), str, 0);
         }
     }
 }
 
-DataNode UIFontImporter::OnGetResourcesPath(DataArray* da){
-    const char* path = GetResourcesPath();
-    if(path) return DataNode(FileRelativePath(FileRoot(), path));
-    else return DataNode("");
+DataNode UIFontImporter::OnGetResourcesPath(DataArray *da) {
+    const char *path = GetResourcesPath();
+    if (path)
+        return DataNode(FileRelativePath(FileRoot(), path));
+    else
+        return DataNode("");
 }
 
-DataNode UIFontImporter::OnGetGennedBitmapPath(DataArray* da){
-    RndFont* font = GetGennedFont(0);
-    RndTex* tex = 0;
-    if(font){
-        RndMat* mat = font->mMat;
-        if(mat){
-            RndTex* thetex = mat->mDiffuseTex;
-            if(thetex) tex = thetex;
+DataNode UIFontImporter::OnGetGennedBitmapPath(DataArray *da) {
+    RndFont *font = GetGennedFont(0);
+    RndTex *tex = 0;
+    if (font) {
+        RndMat *mat = font->mMat;
+        if (mat) {
+            RndTex *thetex = mat->mDiffuseTex;
+            if (thetex)
+                tex = thetex;
         }
     }
-    if(tex) return DataNode(tex->mFilepath.c_str());
-    else return DataNode("");
+    if (tex)
+        return DataNode(tex->mFilepath.c_str());
+    else
+        return DataNode("");
 }
 
-DataNode UIFontImporter::OnSyncWithResourceFile(DataArray* da){
-    if(!mSyncResource.empty()){
-        const char* milopath = MakeString("%s/%s.milo", GetResourcesPath(), mSyncResource);
+DataNode UIFontImporter::OnSyncWithResourceFile(DataArray *da) {
+    if (!mSyncResource.empty()) {
+        const char *milopath =
+            MakeString("%s/%s.milo", GetResourcesPath(), mSyncResource);
         ObjDirPtr<UILabelDir> labelDir(0);
         labelDir.LoadFile(FilePath(FileRoot(), milopath), false, true, kLoadFront, false);
         labelDir.PostLoad(0);
-        if(labelDir.IsLoaded()){
+        if (labelDir.IsLoaded()) {
             mLowerCaseAthroughZ = labelDir->mLowerCaseAthroughZ;
             mUpperCaseAthroughZ = labelDir->mUpperCaseAthroughZ;
             mNumbers0through9 = labelDir->mNumbers0through9;
@@ -272,61 +292,76 @@ DataNode UIFontImporter::OnSyncWithResourceFile(DataArray* da){
             mTop = labelDir->mTop;
             mBottom = labelDir->mBottom;
             mFillWithSafeWhite = labelDir->mFillWithSafeWhite;
-            if(mReferenceKerning && labelDir->mReferenceKerning){
+            if (mReferenceKerning && labelDir->mReferenceKerning) {
                 std::vector<RndFont::KernInfo> kerninfo;
                 labelDir->mReferenceKerning->GetKerning(kerninfo);
                 mReferenceKerning->SetKerning(kerninfo);
-                mReferenceKerning->SetBaseKerning(labelDir->mReferenceKerning->mBaseKerning);
+                mReferenceKerning->SetBaseKerning(
+                    labelDir->mReferenceKerning->mBaseKerning
+                );
             }
         }
     }
     return 0;
 }
 
-void UIFontImporter::GenerateBitmapFilename(){
-    const char* mult = "";
-    if(mFontSupersample == kFontSuperSample_2x) mult = "2x";
-    else if(mFontSupersample == kFontSuperSample_4x) mult = "4x";
-    const char* b = "";
+void UIFontImporter::GenerateBitmapFilename() {
+    const char *mult = "";
+    if (mFontSupersample == kFontSuperSample_2x)
+        mult = "2x";
+    else if (mFontSupersample == kFontSuperSample_4x)
+        mult = "4x";
+    const char *b = "";
     class String s28(MakeString("%.2f", mFontPctSize * 100.0f));
     s28.ReplaceAll('.', '_');
-    if(mFontWeight > 400) b = "B";
-    const char* i = mItalics ? "I" : "";
-    mBitMapSaveName = MakeString("%s(%s)%s%s%s.BMP", mFontName.c_str(), s28.c_str(), i, b, mult);
+    if (mFontWeight > 400)
+        b = "B";
+    const char *i = mItalics ? "I" : "";
+    mBitMapSaveName =
+        MakeString("%s(%s)%s%s%s.BMP", mFontName.c_str(), s28.c_str(), i, b, mult);
     mBitMapSaveName.ReplaceAll(' ', '_');
 }
 
-DataNode UIFontImporter::OnShowFontPicker(DataArray*){ return 0; }
-DataNode UIFontImporter::OnGenerate(DataArray*){ return 0; }
-DataNode UIFontImporter::OnGenerateOG(DataArray*){ return 0; }
+DataNode UIFontImporter::OnShowFontPicker(DataArray *) { return 0; }
+DataNode UIFontImporter::OnGenerate(DataArray *) { return 0; }
+DataNode UIFontImporter::OnGenerateOG(DataArray *) { return 0; }
 
-DataNode UIFontImporter::OnForgetGened(DataArray* da){
+DataNode UIFontImporter::OnForgetGened(DataArray *da) {
     mGennedFonts.clear();
     return 0;
 }
 
-void UIFontImporter::ImportSettingsFromFont(RndFont* font){
+void UIFontImporter::ImportSettingsFromFont(RndFont *font) {
     bool has_import_font = false;
-    if(font){
+    if (font) {
         Symbol imported_font("imported_font");
-        if(font->Type() == imported_font) has_import_font = true;
+        if (font->Type() == imported_font)
+            has_import_font = true;
     }
-    if(has_import_font){
+    if (has_import_font) {
         SetProperty("font_name", DataNode(font->Property("font_name", true)->Str()));
-        SetProperty("font_size", DataNode(FontSizeToPercentHD(-font->Property("font_size", true)->Int())));
+        SetProperty(
+            "font_size",
+            DataNode(FontSizeToPercentHD(-font->Property("font_size", true)->Int()))
+        );
         SetProperty("bold", DataNode(font->Property("bold", true)->Int()));
         SetProperty("italics", DataNode(font->Property("italics", true)->Int()));
         SetProperty("left", DataNode(font->Property("left", true)->Int()));
         SetProperty("right", DataNode(font->Property("right", true)->Int()));
         SetProperty("top", DataNode(font->Property("top", true)->Int()));
         SetProperty("bottom", DataNode(font->Property("bottom", true)->Int()));
-    }
-    else MILO_WARN("Can't import settings from Font because it doesnt have import_font type");
+    } else
+        MILO_WARN(
+            "Can't import settings from Font because it doesnt have import_font type"
+        );
 }
 
-void UIFontImporter::AttachImporterToFont(RndFont* font){
-    if(font){
-        if(font->Dir() != Dir()) MILO_WARN("Cannot attach font %s to font resource %s because its in a different dir.  Notify a programmer!");
+void UIFontImporter::AttachImporterToFont(RndFont *font) {
+    if (font) {
+        if (font->Dir() != Dir())
+            MILO_WARN(
+                "Cannot attach font %s to font resource %s because its in a different dir.  Notify a programmer!"
+            );
         else {
             mGennedFonts.clear();
             mMatVariations.clear();
@@ -338,32 +373,39 @@ void UIFontImporter::AttachImporterToFont(RndFont* font){
     }
 }
 
-RndFont* UIFontImporter::GetGennedFont(Symbol s) const {
-    if(s.Null()) return *mGennedFonts.begin();
+RndFont *UIFontImporter::GetGennedFont(Symbol s) const {
+    if (s.Null())
+        return *mGennedFonts.begin();
     else {
         int idx = GetMatVariationIdx(s);
-        if(idx == -1) return 0;
-        else return FindFontForMat(GetMatVariation(idx));
+        if (idx == -1)
+            return 0;
+        else
+            return FindFontForMat(GetMatVariation(idx));
     }
 }
 
-RndText* UIFontImporter::GetGennedText(Symbol s) const {
+RndText *UIFontImporter::GetGennedText(Symbol s) const {
     return FindTextForFont(GetGennedFont(s));
 }
 
-RndMat* UIFontImporter::GetMatVariation(unsigned int ui) const {
-    if(ui >= NumMatVariations()) return 0;
+RndMat *UIFontImporter::GetMatVariation(unsigned int ui) const {
+    if (ui >= NumMatVariations())
+        return 0;
     ObjPtrList<RndMat>::iterator it = mMatVariations.begin();
-    for (int i = 0; i < ui; i++) it++;
+    for (int i = 0; i < ui; i++)
+        it++;
     return *it;
 }
 
 Symbol UIFontImporter::GetMatVariationName(unsigned int ui) const {
-    if(ui >= NumMatVariations()) return Symbol();
+    if (ui >= NumMatVariations())
+        return Symbol();
     ObjPtrList<RndMat>::iterator it = mMatVariations.begin();
-    for (int i = 0; i < ui; i++) it++;
+    for (int i = 0; i < ui; i++)
+        it++;
     class String s18((*it)->Name());
-    if(s18.rfind(".") != String::npos){
+    if (s18.rfind(".") != String::npos) {
         s18 = s18.substr(0, s18.rfind("."));
     }
     return Symbol(s18.c_str());
@@ -371,31 +413,35 @@ Symbol UIFontImporter::GetMatVariationName(unsigned int ui) const {
 
 int UIFontImporter::GetMatVariationIdx(Symbol s) const {
     int size = NumMatVariations();
-    for(int ret = 0; ret < size; ret++){
-        if(GetMatVariationName(ret) == s) return ret;
+    for (int ret = 0; ret < size; ret++) {
+        if (GetMatVariationName(ret) == s)
+            return ret;
     }
     return -1;
 }
 
 // fn_8055D7F8
-void UIFontImporter::HandmadeFontChanged(){
-    if(mHandmadeFont){
-        if(mGennedFonts.size() > 0){
-            RndFont* frontfont = *mGennedFonts.begin();
-            if(frontfont != mHandmadeFont){
-                RndText* text = FindTextForFont(frontfont);
+void UIFontImporter::HandmadeFontChanged() {
+    if (mHandmadeFont) {
+        if (mGennedFonts.size() > 0) {
+            RndFont *frontfont = *mGennedFonts.begin();
+            if (frontfont != mHandmadeFont) {
+                RndText *text = FindTextForFont(frontfont);
                 delete frontfont;
-                if(text) delete text;
+                if (text)
+                    delete text;
             }
             mGennedFonts.Set(mGennedFonts.begin(), mHandmadeFont);
-            for(ObjPtrList<RndFont>::iterator it = ++mGennedFonts.begin(); it != mGennedFonts.end(); it++){
-                if(*it == mHandmadeFont){
+            for (ObjPtrList<RndFont>::iterator it = ++mGennedFonts.begin();
+                 it != mGennedFonts.end();
+                 it++) {
+                if (*it == mHandmadeFont) {
                     mGennedFonts.erase(it);
                     break;
                 }
             }
-        }
-        else mGennedFonts.push_back(mHandmadeFont);
+        } else
+            mGennedFonts.push_back(mHandmadeFont);
         mReferenceKerning = mHandmadeFont;
         mLowerEuro = false;
         mUpperEuro = false;
@@ -410,33 +456,38 @@ void UIFontImporter::HandmadeFontChanged(){
 }
 
 // fn_8055DA08
-void UIFontImporter::SyncWithGennedFonts(){
-    for(ObjPtrList<RndFont>::iterator it = mGennedFonts.begin(); it != mGennedFonts.end();){
-        RndFont* font = *it;
+void UIFontImporter::SyncWithGennedFonts() {
+    for (ObjPtrList<RndFont>::iterator it = mGennedFonts.begin();
+         it != mGennedFonts.end();) {
+        RndFont *font = *it;
         bool matfound = false;
-        for(ObjPtrList<RndMat>::iterator mit = mMatVariations.begin(); mit != mMatVariations.end(); ++mit){
-            if(font->mMat == *mit) matfound = true;
+        for (ObjPtrList<RndMat>::iterator mit = mMatVariations.begin();
+             mit != mMatVariations.end();
+             ++mit) {
+            if (font->mMat == *mit)
+                matfound = true;
         }
-        if(font->mMat == mDefaultMat) matfound = true;
-        if(!matfound){
-            RndText* text = FindTextForFont(font);
+        if (font->mMat == mDefaultMat)
+            matfound = true;
+        if (!matfound) {
+            RndText *text = FindTextForFont(font);
             it = mGennedFonts.erase(it);
             delete font;
-            if(text) delete text;
-        }
-        else it++;
+            if (text)
+                delete text;
+        } else
+            it++;
     }
 }
 
 class String UIFontImporter::GetBaseName() const {
-    if(HandMadeFontExists()){
+    if (HandMadeFontExists()) {
         class String str(mHandmadeFont->Name());
-        if(str.find(".") != String::npos){
+        if (str.find(".") != String::npos) {
             str = str.substr(0, str.rfind("."));
         }
         return str;
-    }
-    else {
+    } else {
         return mBitMapSaveName.substr(0, mBitMapSaveName.rfind("."));
     }
 }
@@ -466,18 +517,29 @@ BEGIN_PROPSYNCS(UIFontImporter)
     SYNC_PROP(minus, mMinus)
     SYNC_PROP(font_name, mFontName)
     SYNC_PROP_MODIFY(font_pct_size, mFontPctSize, GenerateBitmapFilename())
-    SYNC_PROP_SET(font_point_size,
-        mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize) : FontPercentToSizeSD(mFontPctSize),
-        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int()) : FontSizeToPercentSD(-_val.Int()))
-    SYNC_PROP_SET(font_pixel_size,
-        std::abs(mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize) : FontPercentToSizeSD(mFontPctSize)),
-        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int()) : FontSizeToPercentSD(-_val.Int()))
-    SYNC_PROP_SET(bold, std::abs(mFontWeight), mFontWeight = _val.Int() ? 800 : 400; GenerateBitmapFilename())
+    SYNC_PROP_SET(
+        font_point_size,
+        mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize)
+                      : FontPercentToSizeSD(mFontPctSize),
+        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int())
+                                     : FontSizeToPercentSD(-_val.Int())
+    )
+    SYNC_PROP_SET(
+        font_pixel_size,
+        std::abs(
+            mLastGenWasNG ? FontPercentToSizeHD(mFontPctSize)
+                          : FontPercentToSizeSD(mFontPctSize)
+        ),
+        mFontPctSize = mLastGenWasNG ? FontSizeToPercentHD(-_val.Int())
+                                     : FontSizeToPercentSD(-_val.Int())
+    )
+    SYNC_PROP_SET(bold, std::abs(mFontWeight), mFontWeight = _val.Int() ? 800 : 400;
+                  GenerateBitmapFilename())
     SYNC_PROP_MODIFY(italics, mItalics, GenerateBitmapFilename())
-    SYNC_PROP(font_quality, (int&)mFontQuality)
+    SYNC_PROP(font_quality, (int &)mFontQuality)
     SYNC_PROP(pitch_and_family, mPitchAndFamily)
     SYNC_PROP(font_charset, mFontCharset)
-    SYNC_PROP_MODIFY(font_supersample, (int&)mFontSupersample, GenerateBitmapFilename())
+    SYNC_PROP_MODIFY(font_supersample, (int &)mFontSupersample, GenerateBitmapFilename())
     SYNC_PROP(left, mLeft)
     SYNC_PROP(right, mRight)
     SYNC_PROP(top, mTop)

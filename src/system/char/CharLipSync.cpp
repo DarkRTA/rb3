@@ -12,15 +12,13 @@
 
 INIT_REVS(CharLipSync)
 
-CharLipSync::Generator::Generator() : mLipSync(0), mLastCount(0), mWeights() {
+CharLipSync::Generator::Generator() : mLipSync(0), mLastCount(0), mWeights() {}
 
-}
-
-void CharLipSync::Generator::Init(CharLipSync* sync){
+void CharLipSync::Generator::Init(CharLipSync *sync) {
     mLipSync = sync;
     mLipSync->mData.resize(0);
     mWeights.resize(mLipSync->mVisemes.size());
-    for(int i = 0; i < mWeights.size(); i++){
+    for (int i = 0; i < mWeights.size(); i++) {
         mWeights[i].unk0 = 0;
         mWeights[i].unk1 = 0;
     }
@@ -29,11 +27,9 @@ void CharLipSync::Generator::Init(CharLipSync* sync){
     mLipSync->mFrames = 0;
 }
 
-void CharLipSync::Generator::AddWeight(int i, float f){
-    Clamp<float>(0, 255, f);
-}
+void CharLipSync::Generator::AddWeight(int i, float f) { Clamp<float>(0, 255, f); }
 
-void CharLipSync::Generator::NextFrame(){
+void CharLipSync::Generator::NextFrame() {
     int count = mLipSync->mData.size() - mLastCount;
     MILO_ASSERT(count >= 0 && count < 256, 0x40);
     mLipSync->mData[mLastCount] = count;
@@ -42,101 +38,96 @@ void CharLipSync::Generator::NextFrame(){
     mLipSync->mFrames++;
 }
 
-void CharLipSync::Generator::Finish(){
+void CharLipSync::Generator::Finish() {
     mLipSync->mData.pop_back();
     std::vector<bool> bools;
     bools.resize(mLipSync->mVisemes.size());
-    for(int i = 0; i < bools.size(); i++) bools[i] = false;
+    for (int i = 0; i < bools.size(); i++)
+        bools[i] = false;
 
     int idx = 0;
-    for(int i = 0; i < mLipSync->mFrames; i++){
+    for (int i = 0; i < mLipSync->mFrames; i++) {
         int count = mLipSync->mData[idx++];
         MILO_ASSERT(count <= mLipSync->mVisemes.size(), 0x57);
-        for(int j = 0; j < count; j++){
+        for (int j = 0; j < count; j++) {
             int viseme = mLipSync->mData[idx++];
             MILO_ASSERT(viseme < mLipSync->mVisemes.size(), 0x5B);
-            if(mLipSync->mData[idx] != 0){
+            if (mLipSync->mData[idx] != 0) {
                 bools[viseme] = true;
             }
         }
     }
 
-    for(int i = 0; i < bools.size(); i){
-        if(!bools[i]){
+    for (int i = 0; i < bools.size(); i) {
+        if (!bools[i]) {
             bools.erase(bools.begin() + i);
             RemoveViseme(i);
-        }
-        else i++;
+        } else
+            i++;
     }
 }
 
-void CharLipSync::Generator::RemoveViseme(int visemeIdx){
+void CharLipSync::Generator::RemoveViseme(int visemeIdx) {
     mLipSync->mVisemes.erase(mLipSync->mVisemes.begin() + visemeIdx);
 
     int idx = 0;
-    for(int i = 0; i < mLipSync->mFrames; i++){
+    for (int i = 0; i < mLipSync->mFrames; i++) {
         int count = mLipSync->mData[idx++];
-        for(int j = 0; j < count; j++){
+        for (int j = 0; j < count; j++) {
             MILO_WARN("data[cur] < mLipSync->mVisemes.size()");
         }
     }
 }
 
-CharLipSync::PlayBack::PlayBack() : mLipSync(0), mPropAnim(0), mClips(0), mIndex(0), mOldIndex(0), mFrame(-1) {
-    
-}
+CharLipSync::PlayBack::PlayBack()
+    : mLipSync(0), mPropAnim(0), mClips(0), mIndex(0), mOldIndex(0), mFrame(-1) {}
 
-void CharLipSync::PlayBack::Set(CharLipSync* lipsync, ObjectDir* dir){
+void CharLipSync::PlayBack::Set(CharLipSync *lipsync, ObjectDir *dir) {
     mClips = dir;
-    if(lipsync->GetPropAnim()){
+    if (lipsync->GetPropAnim()) {
         mPropAnim = lipsync->GetPropAnim();
         MILO_ASSERT(mPropAnim->GetRate() == RndAnimatable::k30_fps, 0xA4);
-        std::vector<PropKeys*>& keys = mPropAnim->mPropKeys;
+        std::vector<PropKeys *> &keys = mPropAnim->mPropKeys;
         mWeights.resize(keys.size());
         int idx = 0;
-        for(std::vector<PropKeys*>::iterator it = keys.begin(); it != keys.end(); ++it){
+        for (std::vector<PropKeys *>::iterator it = keys.begin(); it != keys.end();
+             ++it) {
             String str((*it)->mProp->Str(0));
-            ObjPtr<CharClip>& clip = mWeights[idx].unk0;
+            ObjPtr<CharClip> &clip = mWeights[idx].unk0;
             clip = mClips->Find<CharClip>(str.c_str(), false);
-            if(!clip) MILO_WARN("could not find %s", str.c_str());
+            if (!clip)
+                MILO_WARN("could not find %s", str.c_str());
             idx++;
         }
-    }
-    else {
+    } else {
         mLipSync = lipsync;
         mWeights.resize(mLipSync->mVisemes.size());
-        for(int i = 0; i < mWeights.size(); i++){
-            ObjPtr<CharClip>& clip = mWeights[i].unk0;
+        for (int i = 0; i < mWeights.size(); i++) {
+            ObjPtr<CharClip> &clip = mWeights[i].unk0;
             clip = mClips->Find<CharClip>(mLipSync->mVisemes[i].c_str(), false);
-            if(!clip){
+            if (!clip) {
                 MILO_WARN("could not find %s", mLipSync->mVisemes[i].c_str());
             }
         }
     }
 }
 
-void CharLipSync::PlayBack::Reset(){
+void CharLipSync::PlayBack::Reset() {
     mIndex = 0;
     mFrame = -1;
-    for(int i = 0; i < mWeights.size(); i++){
-        Weight& weight = mWeights[i];
+    for (int i = 0; i < mWeights.size(); i++) {
+        Weight &weight = mWeights[i];
         weight.unk10 = 0;
         weight.unk14 = 0;
         weight.unkc = 0;
     }
 }
 
-void CharLipSync::PlayBack::Poll(float f){
+void CharLipSync::PlayBack::Poll(float f) {}
 
-}
+CharLipSync::CharLipSync() : mPropAnim(this), mFrames(0) {}
 
-CharLipSync::CharLipSync() : mPropAnim(this), mFrames(0) {
-
-}
-
-CharLipSync::~CharLipSync(){
-
-}
+CharLipSync::~CharLipSync() {}
 
 SAVE_OBJ(CharLipSync, 0x155)
 
@@ -147,23 +138,34 @@ BEGIN_LOADS(CharLipSync)
     bs >> mVisemes;
     bs >> mFrames;
     bs >> mData;
-    if(gRev != 0) bs >> mPropAnim;
+    if (gRev != 0)
+        bs >> mPropAnim;
 END_LOADS
 
-DECOMP_FORCEACTIVE(CharLipSync, "; song: ", "\n", "(visemes\n", "   ", ")\n", "(frames ; @ 30fps\n", "   ( ", " ")
+DECOMP_FORCEACTIVE(
+    CharLipSync,
+    "; song: ",
+    "\n",
+    "(visemes\n",
+    "   ",
+    ")\n",
+    "(frames ; @ 30fps\n",
+    "   ( ",
+    " "
+)
 
-void CharLipSync::Parse(DataArray* arr){
-    DataArray* visemesArr = arr->FindArray("visemes", true);
+void CharLipSync::Parse(DataArray *arr) {
+    DataArray *visemesArr = arr->FindArray("visemes", true);
     mVisemes.resize(visemesArr->Size() - 1);
-    for(int i = 1; i < visemesArr->Size(); i++){
+    for (int i = 1; i < visemesArr->Size(); i++) {
         mVisemes[i - 1] = visemesArr->Str(i);
     }
     Generator gen;
     gen.Init(this);
-    DataArray* framesArr = arr->FindArray("frames", true);
-    for(int i = 1; i < framesArr->Size(); i++){
-        DataArray* innerArr = framesArr->Array(i);
-        for(int j = 0; j < innerArr->Size(); j++){
+    DataArray *framesArr = arr->FindArray("frames", true);
+    for (int i = 1; i < framesArr->Size(); i++) {
+        DataArray *innerArr = framesArr->Array(i);
+        for (int j = 0; j < innerArr->Size(); j++) {
             gen.AddWeight(j, innerArr->Float(j));
         }
         gen.NextFrame();
@@ -196,19 +198,19 @@ BEGIN_HANDLERS(CharLipSync)
     HANDLE_CHECK(0x1E3)
 END_HANDLERS
 
-DataNode CharLipSync::OnParse(DataArray* arr){
+DataNode CharLipSync::OnParse(DataArray *arr) {
     FilePath fp(arr->Str(2));
-    DataArray* read = DataReadFile(fp.c_str(), true);
-    if(read){
+    DataArray *read = DataReadFile(fp.c_str(), true);
+    if (read) {
         Parse(read);
         read->Release();
     }
     return 0;
 }
 
-DataNode CharLipSync::OnParseArray(DataArray* arr){
-    DataArray* read = arr->Array(2);
-    if(read){
+DataNode CharLipSync::OnParseArray(DataArray *arr) {
+    DataArray *read = arr->Array(2);
+    if (read) {
         Parse(read);
         read->Release();
     }

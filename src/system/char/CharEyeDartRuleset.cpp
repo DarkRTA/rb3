@@ -5,15 +5,11 @@
 
 INIT_REVS(CharEyeDartRuleset);
 
-CharEyeDartRuleset::CharEyeDartRuleset(){
-    
-}
+CharEyeDartRuleset::CharEyeDartRuleset() {}
 
-CharEyeDartRuleset::~CharEyeDartRuleset(){
+CharEyeDartRuleset::~CharEyeDartRuleset() {}
 
-}
-
-void CharEyeDartRuleset::EyeDartRulesetData::ClearToDefaults(){
+void CharEyeDartRuleset::EyeDartRulesetData::ClearToDefaults() {
     mMinRadius = 0.5f;
     mMaxRadius = 3.0f;
     mOnTargetAngleThresh = 5.0f;
@@ -29,12 +25,15 @@ void CharEyeDartRuleset::EyeDartRulesetData::ClearToDefaults(){
 
 SAVE_OBJ(CharEyeDartRuleset, 0x2B)
 
-void CharEyeDartRuleset::Load(BinStream& bs){
+void CharEyeDartRuleset::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
-    bs >> mData.mMinRadius >> mData.mMaxRadius >> mData.mOnTargetAngleThresh >> mData.mMinDartsPerSequence >> mData.mMaxDartsPerSequence >>
-        mData.mMinSecsBetweenDarts >> mData.mMaxSecsBetweenDarts >> mData.mMinSecsBetweenSequences >> mData.mMaxSecsBetweenSequences >> mData.mScaleWithDistance >> mData.mReferenceDistance;
+    bs >> mData.mMinRadius >> mData.mMaxRadius >> mData.mOnTargetAngleThresh
+        >> mData.mMinDartsPerSequence >> mData.mMaxDartsPerSequence
+        >> mData.mMinSecsBetweenDarts >> mData.mMaxSecsBetweenDarts
+        >> mData.mMinSecsBetweenSequences >> mData.mMaxSecsBetweenSequences
+        >> mData.mScaleWithDistance >> mData.mReferenceDistance;
 }
 
 BEGIN_COPYS(CharEyeDartRuleset)
@@ -70,11 +69,16 @@ BEGIN_PROPSYNCS(CharEyeDartRuleset)
     SYNC_PROP(reference_distance, mData.mReferenceDistance)
 END_PROPSYNCS
 
-DECOMP_FORCEACTIVE(CharEyeDartRuleset,
-    "min_radius", "max_radius",
-    "min_darts_per_sequence", "max_darts_per_sequence",
-    "min_time_between_darts", "max_time_between_darts",
-    "min_time_between_sequences", "max_time_between_sequences",
+DECOMP_FORCEACTIVE(
+    CharEyeDartRuleset,
+    "min_radius",
+    "max_radius",
+    "min_darts_per_sequence",
+    "max_darts_per_sequence",
+    "min_time_between_darts",
+    "max_time_between_darts",
+    "min_time_between_sequences",
+    "max_time_between_sequences",
     "scale_with_distance",
     "reference_distance"
 )

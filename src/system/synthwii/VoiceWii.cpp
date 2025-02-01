@@ -26,9 +26,7 @@ Voice::Voice(const void *buffer, int bufBytes, bool bUseInPlace, bool bUseMEM2) 
     // TODO IMPL THE REST
 }
 
-bool Voice::IsPaused() {
-    return mState == 3;
-}
+bool Voice::IsPaused() { return mState == 3; }
 
 bool Voice::IsPlaying() {
     if (mVoice == 0) {
@@ -60,9 +58,7 @@ void Voice::SetFX(bool enabled) {
     mMixDirty = true;
 }
 
-void Voice::SetFormat(SampleData::Format format) {
-    mFormat = format;
-}
+void Voice::SetFormat(SampleData::Format format) { mFormat = format; }
 
 void Voice::SetLoopSamp(int samp) {
     int byte = SampToByte(samp, false);
@@ -74,6 +70,4 @@ void Voice::SetStartSamp(int samp) {
     mStartByte = byte;
 }
 
-void Voice::SetVolume(float volume) {
-    SetVolume(volume, true);
-}
+void Voice::SetVolume(float volume) { SetVolume(volume, true); }

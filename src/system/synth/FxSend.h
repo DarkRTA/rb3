@@ -14,29 +14,29 @@ class FxSend : public Hmx::Object {
 public:
     FxSend();
     virtual ~FxSend();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     OBJ_CLASSNAME(FxSend);
     OBJ_SET_TYPE(FxSend);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void SetNextSend(FxSend*);
-    virtual void Recreate(std::vector<FxSend*>&){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void SetNextSend(FxSend *);
+    virtual void Recreate(std::vector<FxSend *> &) {}
     virtual void RebuildChain();
-    virtual void BuildChainVector(std::vector<FxSend*>&);
-    virtual bool CanPushParameters(){ return true; }
-    virtual void UpdateMix(){}
-    virtual void OnParametersChanged(){}
+    virtual void BuildChainVector(std::vector<FxSend *> &);
+    virtual bool CanPushParameters() { return true; }
+    virtual void UpdateMix() {}
+    virtual void OnParametersChanged() {}
 
-    bool CheckChain(FxSend*, int);
+    bool CheckChain(FxSend *, int);
     void SetStage(int);
     void SetChannels(SendChannels);
     /** "Attach microphone to this send, for testing" */
     void TestWithMic();
     void EnableUpdates(bool);
-    FxSend* NextSend() const { return mNextSend; }
+    FxSend *NextSend() const { return mNextSend; }
     int Stage() const { return mStage; }
 
     DECLARE_REVS;
@@ -45,7 +45,8 @@ public:
 
     /** "The next effect in the chain" */
     ObjOwnerPtr<FxSend> mNextSend; // 0x1c
-    /** "The relative order that this send is processed compared to other sends." Ranges from 0 to 9. */
+    /** "The relative order that this send is processed compared to other sends." Ranges
+     * from 0 to 9. */
     int mStage; // 0x28
     /** "Bypass the effect and stop it from processing" */
     bool mBypass; // 0x2c

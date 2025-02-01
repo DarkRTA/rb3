@@ -8,11 +8,9 @@
 
 INIT_REVS(UISlider)
 
-UISlider::UISlider() : mCurrent(0), mNumSteps(10), mVertical(0) {
+UISlider::UISlider() : mCurrent(0), mNumSteps(10), mVertical(0) {}
 
-}
-
-void UISlider::Init(){
+void UISlider::Init() {
     TheUI->InitResources("UISlider");
     Register();
 }
@@ -31,42 +29,42 @@ BEGIN_LOADS(UISlider)
     PostLoad(bs);
 END_LOADS
 
-void UISlider::PreLoad(BinStream& bs){
+void UISlider::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     UIComponent::PreLoad(bs);
 }
 
-void UISlider::PostLoad(BinStream& bs){
+void UISlider::PostLoad(BinStream &bs) {
     UIComponent::PostLoad(bs);
-    if(gRev != 0){
+    if (gRev != 0) {
         bs >> mSelectToScroll;
     }
     Update();
 }
 
-void UISlider::Enter(){
+void UISlider::Enter() {
     UIComponent::Enter();
     Reset();
 }
 
-void UISlider::DrawShowing(){
+void UISlider::DrawShowing() {
     SyncSlider();
     UpdateMeshes(DrawState(this));
-    RndDir* dir = mResource->Dir();
+    RndDir *dir = mResource->Dir();
     dir->DrawShowing();
 }
 
 // fn_80578C5C
-RndDrawable* UISlider::CollideShowing(const Segment& seg, float& f, Plane& pl){
+RndDrawable *UISlider::CollideShowing(const Segment &seg, float &f, Plane &pl) {
     SyncSlider();
-    RndDir* dir = mResource->Dir();
+    RndDir *dir = mResource->Dir();
     return dir->CollideShowing(seg, f, pl) ? this : nullptr;
 }
 
-int UISlider::CollidePlane(const Plane& pl){
+int UISlider::CollidePlane(const Plane &pl) {
     SyncSlider();
-    RndDir* dir = mResource->Dir();
+    RndDir *dir = mResource->Dir();
     return dir->CollidePlane(pl);
 }
 
@@ -78,43 +76,43 @@ inline int UISlider::Current() const { return mCurrent; }
 #pragma pop
 
 float UISlider::Frame() const {
-    if(mNumSteps == 1) return 0.0f;
-    else return (float)(mCurrent) / (float)(mNumSteps - 1);
+    if (mNumSteps == 1)
+        return 0.0f;
+    else
+        return (float)(mCurrent) / (float)(mNumSteps - 1);
 }
 
-void UISlider::SetCurrent(int i){
-    if(i < 0 || i >= mNumSteps){
+void UISlider::SetCurrent(int i) {
+    if (i < 0 || i >= mNumSteps) {
         MILO_FAIL("Can't set slider to %i (%i steps)", i, mNumSteps);
-    }
-    else mCurrent = i;
+    } else
+        mCurrent = i;
 }
 
-void UISlider::SetNumSteps(int i){
-    if(i < 1) MILO_FAIL("Can't set num steps to %i (must be >= 1)", i);
-    else mNumSteps = i;
+void UISlider::SetNumSteps(int i) {
+    if (i < 1)
+        MILO_FAIL("Can't set num steps to %i (must be >= 1)", i);
+    else
+        mNumSteps = i;
 }
 
-void UISlider::Update(){
+void UISlider::Update() {
     UIComponent::Update();
     TypeDef()->FindData("vertical", mVertical, false);
 }
 
-void UISlider::SyncSlider(){
+void UISlider::SyncSlider() {
     mResource->Dir()->SetFrame(Frame(), 1.0f);
     mResource->Dir()->SetWorldXfm(WorldXfm());
 }
 
-void UISlider::SetFrame(float frame){
+void UISlider::SetFrame(float frame) {
     MILO_ASSERT(frame >= 0 && frame <= 1.0f, 0xAE);
     mCurrent = frame * (mNumSteps - 1) + 0.5f;
 }
 
-int UISlider::SelectedAux() const {
-    return Current();
-}
-void UISlider::SetSelectedAux(int i){
-    SetCurrent(i);
-}
+int UISlider::SelectedAux() const { return Current(); }
+void UISlider::SetSelectedAux(int i) { SetCurrent(i); }
 
 BEGIN_HANDLERS(UISlider)
     HANDLE_MESSAGE(ButtonDownMsg)
@@ -126,37 +124,40 @@ BEGIN_HANDLERS(UISlider)
     HANDLE_ACTION(set_frame, SetFrame(_msg->Float(2)))
     HANDLE_ACTION(store, Store())
     HANDLE_ACTION(undo, RevertScrollSelect(this, _msg->Obj<LocalUser>(2), 0))
-    HANDLE_ACTION(undo_handled_by, RevertScrollSelect(this, _msg->Obj<LocalUser>(2), _msg->Obj<UIPanel>(3)))
+    HANDLE_ACTION(
+        undo_handled_by,
+        RevertScrollSelect(this, _msg->Obj<LocalUser>(2), _msg->Obj<UIPanel>(3))
+    )
     HANDLE_ACTION(confirm, Reset())
     HANDLE_SUPERCLASS(ScrollSelect)
     HANDLE_SUPERCLASS(UIComponent)
     HANDLE_CHECK(0xDA)
 END_HANDLERS
 
-DataNode UISlider::OnMsg(const ButtonDownMsg& msg){
+DataNode UISlider::OnMsg(const ButtonDownMsg &msg) {
     Symbol cnttype = JoypadControllerTypePadNum(msg.GetPadNum());
-    if(CanScroll()){
+    if (CanScroll()) {
         int act = ScrollDirection(msg, cnttype, mVertical, 1);
-        if(act != kAction_None){
-            if(mVertical) act = (JoypadAction)-act;
+        if (act != kAction_None) {
+            if (mVertical)
+                act = (JoypadAction)-act;
             int step = mCurrent + act;
-            if(step >= 0 && step < mNumSteps){
+            if (step >= 0 && step < mNumSteps) {
                 SetCurrent(step);
                 UIComponentScrollMsg scroll_msg(this, msg.GetUser());
                 TheUI->Handle(scroll_msg, 0);
             }
             return DataNode(1);
         }
-        if(CatchNavAction(msg.GetAction())){
+        if (CatchNavAction(msg.GetAction())) {
             return DataNode(1);
         }
     }
     JoypadAction thisAct = msg.GetAction();
-    LocalUser* user = msg.GetUser();
-    if(thisAct == kAction_Confirm && SelectScrollSelect(this, user)){
+    LocalUser *user = msg.GetUser();
+    if (thisAct == kAction_Confirm && SelectScrollSelect(this, user)) {
         return DataNode(1);
-    }
-    else if(thisAct == kAction_Cancel && RevertScrollSelect(this, user, 0)){
+    } else if (thisAct == kAction_Cancel && RevertScrollSelect(this, user, 0)) {
         return DataNode(1);
     }
     return DataNode(kDataUnhandled, 0);

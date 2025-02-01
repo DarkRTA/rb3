@@ -2,15 +2,17 @@
 #include "math/Utl.h"
 #include "os/Debug.h"
 
-float DbToRatio(float db){
+float DbToRatio(float db) {
     float ratio;
-    if(db <= -96.0f) ratio = 0.0f;
-    else ratio = std::pow(10.0f, db / 20.0f);
+    if (db <= -96.0f)
+        ratio = 0.0f;
+    else
+        ratio = std::pow(10.0f, db / 20.0f);
     return ratio;
 }
 
-float RatioToDb(float ratio){
-    if(ratio < 0.0f){
+float RatioToDb(float ratio) {
+    if (ratio < 0.0f) {
         ratio = 0.0f;
         MILO_LOG("Got a BAD Decibel ratio\n");
     }

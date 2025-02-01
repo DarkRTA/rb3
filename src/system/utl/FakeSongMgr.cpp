@@ -4,10 +4,11 @@
 #include "os/System.h"
 #include "utl/SongInfoCopy.h"
 
-FakeSongMgr* TheFakeSongMgr = 0;
-DataArray* gSongs = 0;
+FakeSongMgr *TheFakeSongMgr = 0;
+DataArray *gSongs = 0;
 
-DECOMP_FORCEACTIVE(FakeSongMgr,
+DECOMP_FORCEACTIVE(
+    FakeSongMgr,
     "fake_song_mgr_init",
     "%s/songs/song*.dt?",
     "%s/songs_download/song*.dt?",
@@ -15,31 +16,27 @@ DECOMP_FORCEACTIVE(FakeSongMgr,
     "fake_songmgr"
 )
 
-DataArray* FakeSongMgr::GetSongConfig(Symbol sym){
+DataArray *FakeSongMgr::GetSongConfig(Symbol sym) {
     return gSongs->FindArray(sym, true)->FindArray("song", true);
 }
 
 DECOMP_FORCEACTIVE(FakeSongMgr, "name")
 
-const char* FakeSongMgr::GetPath(const SongInfo* sinfo, const char* cc){
-    const char* sname = sinfo->GetBaseFileName();
-    if(*cc == '\0' || *cc == '.')
+const char *FakeSongMgr::GetPath(const SongInfo *sinfo, const char *cc) {
+    const char *sname = sinfo->GetBaseFileName();
+    if (*cc == '\0' || *cc == '.')
         return MakeString("%s%s", sname, cc);
     else {
         return MakeString("%s/%s", FileGetPath(sname, 0), cc);
     }
 }
 
-const char* FakeSongMgr::MidiFullPath(const SongInfo* sinfo){
+const char *FakeSongMgr::MidiFullPath(const SongInfo *sinfo) {
     return FileMakePath(FileRoot(), GetPath(sinfo, ".mid"), 0);
 }
 
-const char* FakeSongMgr::MidiFile(const SongInfo* sinfo){
+const char *FakeSongMgr::MidiFile(const SongInfo *sinfo) {
     return GetPath(sinfo, ".mid");
 }
 
-DECOMP_FORCEACTIVE(FakeSongMgr,
-    "",
-    "%s(%d): %s unhandled msg: %s",
-    __FILE__
-)
+DECOMP_FORCEACTIVE(FakeSongMgr, "", "%s(%d): %s unhandled msg: %s", __FILE__)

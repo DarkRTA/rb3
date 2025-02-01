@@ -56,16 +56,14 @@
 
 CharDebug TheCharDebug;
 
-DataNode CharDebug::OnSetObjects(DataArray* a){
+DataNode CharDebug::OnSetObjects(DataArray *a) {
     TheCharDebug.SetObjects(a);
     return 0;
 }
 
-void CharDeferHighlight(Hmx::Object* obj){
-    TheCharDebug.Once(obj);
-}
+void CharDeferHighlight(Hmx::Object *obj) { TheCharDebug.Once(obj); }
 
-inline void CharDebug::Init(){
+inline void CharDebug::Init() {
     DataRegisterFunc("char_debug", OnSetObjects);
     mOverlay = RndOverlay::Find("char_debug", true);
     mOverlay->SetCallback(this);
@@ -137,6 +135,4 @@ void CharTerminate() {
     CharBoneDir::Terminate();
 }
 
-float CharDebug::UpdateOverlay(RndOverlay*, float){
-
-}
+float CharDebug::UpdateOverlay(RndOverlay *, float) {}

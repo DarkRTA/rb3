@@ -5,30 +5,30 @@
 #include "rndobj/Trans.h"
 #include "char/Character.h"
 
-/** "Animates top and bottom sleeve bones. Both must have the same local xfm when transformed, and the parent bone must point along the X axis.  The local positions of both bones must only have z be non null." */
+/** "Animates top and bottom sleeve bones. Both must have the same local xfm when
+ * transformed, and the parent bone must point along the X axis.  The local positions of
+ * both bones must only have z be non null." */
 class CharSleeve : public RndHighlightable, public CharPollable {
 public:
     CharSleeve();
     virtual ~CharSleeve();
     virtual void Highlight();
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     OBJ_CLASSNAME(CharSleeve);
     OBJ_SET_TYPE(CharSleeve);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void SetName(const char *, class ObjectDir *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharSleeve)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharSleeve)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharSleeve) }
 
     /** "The sleeve bone" */
     ObjPtr<RndTransformable> mSleeve; // 0x10

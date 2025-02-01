@@ -15,14 +15,15 @@ BEGIN_COPYS(Screenshot)
     COPY_SUPERCLASS(RndDrawable)
     CREATE_COPY(Screenshot)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax) COPY_MEMBER(mTexPath)
+        if (ty != kCopyFromMax)
+            COPY_MEMBER(mTexPath)
     END_COPYING_MEMBERS
     Sync();
 END_COPYS
 
 SAVE_OBJ(Screenshot, 0x2D)
 
-void Screenshot::Load(BinStream& bs){
+void Screenshot::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
@@ -31,8 +32,8 @@ void Screenshot::Load(BinStream& bs){
     Sync();
 }
 
-void Screenshot::Sync(){
-    if(LOADMGR_EDITMODE){
+void Screenshot::Sync() {
+    if (LOADMGR_EDITMODE) {
         delete mTex;
         delete mMat;
         mTex = Hmx::Object::New<RndTex>();
@@ -45,18 +46,22 @@ void Screenshot::Sync(){
 
 void Screenshot::DrawShowing() {
     if (!TheRnd->DrawMode() && LOADMGR_EDITMODE && mMat) {
-        TheRnd->DrawRect(Hmx::Rect(0, 0, TheRnd->Width(), TheRnd->Height()), Hmx::Color(0, 0, 0), mMat, 0, 0);
+        TheRnd->DrawRect(
+            Hmx::Rect(0, 0, TheRnd->Width(), TheRnd->Height()),
+            Hmx::Color(0, 0, 0),
+            mMat,
+            0,
+            0
+        );
     }
 }
 
-Screenshot::~Screenshot(){
+Screenshot::~Screenshot() {
     delete mTex;
     delete mMat;
 }
 
-Screenshot::Screenshot() : mTex(0), mMat(0) {
-
-}
+Screenshot::Screenshot() : mTex(0), mMat(0) {}
 
 BEGIN_HANDLERS(Screenshot)
     HANDLE_SUPERCLASS(RndDrawable)

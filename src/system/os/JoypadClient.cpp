@@ -13,25 +13,28 @@ std::vector<JoypadClient *> gClients;
 namespace {
     bool gInited = false;
 
-    JoypadButton LeftStickToDpad(JoypadButton btn){
+    JoypadButton LeftStickToDpad(JoypadButton btn) {
         JoypadButton ret;
-        switch(btn){
-            case kPad_LStickUp: return kPad_DUp;
-            case kPad_LStickDown: return kPad_DDown;
-            case kPad_LStickLeft: return kPad_DLeft;
-            case kPad_LStickRight: return kPad_DRight;
-            default:
-                MILO_FAIL("illegal button");
-                return kPad_NumButtons;
+        switch (btn) {
+        case kPad_LStickUp:
+            return kPad_DUp;
+        case kPad_LStickDown:
+            return kPad_DDown;
+        case kPad_LStickLeft:
+            return kPad_DLeft;
+        case kPad_LStickRight:
+            return kPad_DRight;
+        default:
+            MILO_FAIL("illegal button");
+            return kPad_NumButtons;
         }
     }
 }
 
-JoypadRepeat::JoypadRepeat() : mLastBtn(kPad_NumButtons), mLastAction(kAction_None), mLastPad(-1) {
-    
-}
+JoypadRepeat::JoypadRepeat()
+    : mLastBtn(kPad_NumButtons), mLastAction(kAction_None), mLastPad(-1) {}
 
-void JoypadRepeat::Start(JoypadButton btn, JoypadAction act, int pad){
+void JoypadRepeat::Start(JoypadButton btn, JoypadAction act, int pad) {
     mHoldTimer.Reset();
     mRepeatTimer.Reset();
     mHoldTimer.Start();
@@ -40,42 +43,42 @@ void JoypadRepeat::Start(JoypadButton btn, JoypadAction act, int pad){
     mLastPad = pad;
 }
 
-void JoypadRepeat::Reset(JoypadButton btn){
-    if(mLastBtn == btn){
+void JoypadRepeat::Reset(JoypadButton btn) {
+    if (mLastBtn == btn) {
         mHoldTimer.Reset();
         mRepeatTimer.Reset();
     }
 }
 
-    // Timer mHoldTimer; // 0x10
-    // Timer mRepeatTimer; // 0x40
+// Timer mHoldTimer; // 0x10
+// Timer mRepeatTimer; // 0x40
 
-void JoypadRepeat::Poll(float f1, float f2, Hmx::Object* o, int i4){
+void JoypadRepeat::Poll(float f1, float f2, Hmx::Object *o, int i4) {
     mHoldTimer.Pause();
     mRepeatTimer.Pause();
     float holdMs = mHoldTimer.Ms();
     float repeatMs = mRepeatTimer.Ms();
     mHoldTimer.Resume();
     mRepeatTimer.Resume();
-    if(holdMs >= f1){
+    if (holdMs >= f1) {
         SendRepeat(o, i4);
         mHoldTimer.Reset();
         mRepeatTimer.Start();
-    }
-    else if(repeatMs >= f2){
+    } else if (repeatMs >= f2) {
         SendRepeat(o, i4);
         mRepeatTimer.Reset();
         mRepeatTimer.Start();
     }
 }
 
-void JoypadRepeat::SendRepeat(Hmx::Object* o, int i){
-    LocalUser* user = TheUserMgr ? TheUserMgr->GetLocalUserFromPadNum(i) : nullptr;
+void JoypadRepeat::SendRepeat(Hmx::Object *o, int i) {
+    LocalUser *user = TheUserMgr ? TheUserMgr->GetLocalUserFromPadNum(i) : nullptr;
     o->Handle(ButtonDownMsg(user, mLastBtn, mLastAction, mLastPad), false);
 }
 
 JoypadClient::JoypadClient(Hmx::Object *sink)
-    : mUser(NULL), mSink(sink), mBtnMask(0), mHoldMs(-1.0f), mRepeatMs(-1.0f), mVirtualDpad(false), mFilterAllButStart(false) {
+    : mUser(NULL), mSink(sink), mBtnMask(0), mHoldMs(-1.0f), mRepeatMs(-1.0f),
+      mVirtualDpad(false), mFilterAllButStart(false) {
     MILO_ASSERT(sink, 148);
     Init();
 }
@@ -85,7 +88,7 @@ JoypadClient::~JoypadClient() {
     gClients.erase(std::find(gClients.begin(), gClients.end(), this));
 }
 
-static inline void InitClients(){
+static inline void InitClients() {
     if (!gInited) {
         gClients.clear();
         gInited = true;
@@ -123,9 +126,7 @@ void JoypadClient::SetFilterAllButStart(bool ShouldWe) {
 }
 
 void JoypadClient::SetRepeatMask(int NewBtnMask) { mBtnMask = NewBtnMask; }
-void JoypadClient::SetVirtualDpad(bool NewVirtualDpad) {
-    mVirtualDpad = NewVirtualDpad;
-}
+void JoypadClient::SetVirtualDpad(bool NewVirtualDpad) { mVirtualDpad = NewVirtualDpad; }
 
 void JoypadClient::Poll() {
     for (int i = 0; i < 4; i++) {
@@ -146,26 +147,32 @@ BEGIN_HANDLERS(JoypadClient)
     HANDLE_CHECK(0x106)
 END_HANDLERS
 
-bool JoypadClient::OnMsg(const ButtonDownMsg& msg){
-    if(mFilterAllButStart && msg.GetAction() != kAction_Start) return 0;
-    LocalUser* btnUser = msg.GetUser();
-    if(mUser && btnUser != mUser) return 0;
+bool JoypadClient::OnMsg(const ButtonDownMsg &msg) {
+    if (mFilterAllButStart && msg.GetAction() != kAction_Start)
+        return 0;
+    LocalUser *btnUser = msg.GetUser();
+    if (mUser && btnUser != mUser)
+        return 0;
 
     JoypadButton btn = msg.GetButton();
-    if(mVirtualDpad && MovedLeftStick(btn)){
+    if (mVirtualDpad && MovedLeftStick(btn)) {
         JoypadButton dpadbtn = LeftStickToDpad(btn);
-        mSink->Handle(ButtonDownMsg(btnUser, dpadbtn, msg.GetAction(), msg.GetPadNum()), false);
-    }
-    else {
+        mSink->Handle(
+            ButtonDownMsg(btnUser, dpadbtn, msg.GetAction(), msg.GetPadNum()), false
+        );
+    } else {
         mSink->Handle(msg, false);
     }
-    if(!btnUser) return 0;
-    if(((1 << btn) & mBtnMask)){
+    if (!btnUser)
+        return 0;
+    if (((1 << btn) & mBtnMask)) {
         mRepeats[btnUser->GetPadNum()].Start(btn, msg.GetAction(), msg.GetPadNum());
-        if(msg.GetAction() - 6U <= 3){
-            for(int i = 0; i < 4; i++){
-                if(i != btnUser->GetPadNum()){
-                    if(ButtonToAction(mRepeats[i].mLastBtn, JoypadControllerTypePadNum(i)) - 6U <= 3){
+        if (msg.GetAction() - 6U <= 3) {
+            for (int i = 0; i < 4; i++) {
+                if (i != btnUser->GetPadNum()) {
+                    if (ButtonToAction(mRepeats[i].mLastBtn, JoypadControllerTypePadNum(i))
+                            - 6U
+                        <= 3) {
                         mRepeats[i].mHoldTimer.Reset();
                         mRepeats[i].mRepeatTimer.Reset();
                     }
@@ -176,21 +183,25 @@ bool JoypadClient::OnMsg(const ButtonDownMsg& msg){
     return 0;
 }
 
-bool JoypadClient::OnMsg(const ButtonUpMsg& msg){
-    if(mFilterAllButStart && msg.GetAction() != kAction_Start) return 0;
-    if(msg.GetUser()){
-        LocalUser* btnUser = msg.GetUser();
-        if(mUser && btnUser != mUser) return 0;
+bool JoypadClient::OnMsg(const ButtonUpMsg &msg) {
+    if (mFilterAllButStart && msg.GetAction() != kAction_Start)
+        return 0;
+    if (msg.GetUser()) {
+        LocalUser *btnUser = msg.GetUser();
+        if (mUser && btnUser != mUser)
+            return 0;
         JoypadButton btn = msg.GetButton();
-        if(mVirtualDpad && MovedLeftStick(btn)){
+        if (mVirtualDpad && MovedLeftStick(btn)) {
             JoypadButton dpadbtn = LeftStickToDpad(btn);
-            mSink->Handle(ButtonUpMsg(btnUser, dpadbtn, msg.GetAction(), msg.GetPadNum()), false);
-        }
-        else {
+            mSink->Handle(
+                ButtonUpMsg(btnUser, dpadbtn, msg.GetAction(), msg.GetPadNum()), false
+            );
+        } else {
             mSink->Handle(msg, false);
         }
-        if(!btnUser) return 0;
-        if(((1 << btn) & mBtnMask)){
+        if (!btnUser)
+            return 0;
+        if (((1 << btn) & mBtnMask)) {
             mRepeats[btnUser->GetPadNum()].Reset(btn);
         }
     }

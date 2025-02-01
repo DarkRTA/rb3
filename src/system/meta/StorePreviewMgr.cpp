@@ -4,66 +4,67 @@
 #include "ui/UI.h"
 #include "utl/Symbols.h"
 
-StorePreviewMgr::StorePreviewMgr() : mStreamPlayer(0), mNetCacheLoader(0), mRequestedPreview(0), mIsPreviewPlaying(0) {
+StorePreviewMgr::StorePreviewMgr()
+    : mStreamPlayer(0), mNetCacheLoader(0), mRequestedPreview(0), mIsPreviewPlaying(0) {
     mStreamPlayer = new StreamPlayer();
     MILO_ASSERT(mStreamPlayer, 0x22);
     SetName("store_preview_mgr", ObjectDir::Main());
 }
 
-StorePreviewMgr::~StorePreviewMgr(){
+StorePreviewMgr::~StorePreviewMgr() {
     RELEASE(mStreamPlayer);
-    if(mNetCacheLoader){
+    if (mNetCacheLoader) {
         TheNetCacheMgr->DeleteNetCacheLoader(mNetCacheLoader);
         mNetCacheLoader = 0;
     }
 }
 
-void StorePreviewMgr::ClearCurrentPreview(){
-    if(mNetCacheLoader){
+void StorePreviewMgr::ClearCurrentPreview() {
+    if (mNetCacheLoader) {
         TheNetCacheMgr->DeleteNetCacheLoader(mNetCacheLoader);
         mNetCacheLoader = 0;
     }
-    if(!mStrPathCur.empty()){
+    if (!mStrPathCur.empty()) {
         mStrPathCur = gNullStr;
         PlayCurrentPreview();
     }
 }
 
-void StorePreviewMgr::SetCurrentPreviewFile(const String& str){
-    if(mStrPathCur == str) return;
+void StorePreviewMgr::SetCurrentPreviewFile(const String &str) {
+    if (mStrPathCur == str)
+        return;
     mStrPathCur = str;
     mRequestedPreview = false;
     PlayCurrentPreview();
 }
 
-void StorePreviewMgr::DownloadPreviewFile(const String& str){
-    AddToDownloadQueue(str);
-}
+void StorePreviewMgr::DownloadPreviewFile(const String &str) { AddToDownloadQueue(str); }
 
-bool StorePreviewMgr::IsDownloadingFile(const String& str){
-    if(mNetCacheLoader){
-        if(str == mNetCacheLoader->GetRemotePath()){
+bool StorePreviewMgr::IsDownloadingFile(const String &str) {
+    if (mNetCacheLoader) {
+        if (str == mNetCacheLoader->GetRemotePath()) {
             return true;
         }
     }
-    return mDownloadQueue.end() != std::find(mDownloadQueue.begin(), mDownloadQueue.end(), str);
+    return mDownloadQueue.end()
+        != std::find(mDownloadQueue.begin(), mDownloadQueue.end(), str);
 }
 
-void StorePreviewMgr::Poll(){
+void StorePreviewMgr::Poll() {
     MILO_ASSERT(mStreamPlayer, 0x89);
     mStreamPlayer->Poll();
-    if(mRequestedPreview) PlayCurrentPreview();
-    if(mNetCacheLoader){
+    if (mRequestedPreview)
+        PlayCurrentPreview();
+    if (mNetCacheLoader) {
         static PreviewDownloadCompleteMsg msg(true);
-        if(mNetCacheLoader->IsLoaded()){
+        if (mNetCacheLoader->IsLoaded()) {
             TheNetCacheMgr->DeleteNetCacheLoader(mNetCacheLoader);
             mNetCacheLoader = nullptr;
             mRequestedPreview = false;
             PlayCurrentPreview();
             msg[0] = true;
             MsgSource::Handle(msg, false);
-        }
-        else if(mNetCacheLoader->HasFailed()){
+        } else if (mNetCacheLoader->HasFailed()) {
             TheNetCacheMgr->DeleteNetCacheLoader(mNetCacheLoader);
             mNetCacheLoader = nullptr;
             msg[0] = false;
@@ -71,64 +72,68 @@ void StorePreviewMgr::Poll(){
             TheUI->ShowNetError();
         }
     }
-    while(!mDownloadQueue.empty()){
-        if(!TheNetCacheMgr->IsLocalFile(mDownloadQueue.front().c_str())) break;
+    while (!mDownloadQueue.empty()) {
+        if (!TheNetCacheMgr->IsLocalFile(mDownloadQueue.front().c_str()))
+            break;
         mDownloadQueue.pop_front();
     }
-    if(!mNetCacheLoader && !mDownloadQueue.empty()){
+    if (!mNetCacheLoader && !mDownloadQueue.empty()) {
         mStrPathCur = mDownloadQueue.front().c_str();
         MILO_ASSERT(!TheNetCacheMgr->IsLocalFile(mStrPathCur.c_str()), 0xD1);
-        mNetCacheLoader = TheNetCacheMgr->AddNetCacheLoader(mStrPathCur.c_str(), (NetLoaderPos)0);
+        mNetCacheLoader =
+            TheNetCacheMgr->AddNetCacheLoader(mStrPathCur.c_str(), (NetLoaderPos)0);
         mDownloadQueue.pop_front();
     }
 }
 
-bool StorePreviewMgr::AllowPreviewDownload(const String& str){
-    if(mNetCacheLoader){
-        if(str == mNetCacheLoader->GetRemotePath()){
+bool StorePreviewMgr::AllowPreviewDownload(const String &str) {
+    if (mNetCacheLoader) {
+        if (str == mNetCacheLoader->GetRemotePath()) {
             return false;
         }
     }
-    if(TheNetCacheMgr->IsLocalFile(str.c_str())) return false;
-    else return std::find(mDownloadQueue.begin(), mDownloadQueue.end(), str) == mDownloadQueue.end();
+    if (TheNetCacheMgr->IsLocalFile(str.c_str()))
+        return false;
+    else
+        return std::find(mDownloadQueue.begin(), mDownloadQueue.end(), str)
+            == mDownloadQueue.end();
 }
 
-void StorePreviewMgr::PlayCurrentPreview(){
+void StorePreviewMgr::PlayCurrentPreview() {
     MILO_ASSERT(mStreamPlayer, 0xFE);
-    if(mStrPathCur.empty() || !TheNetCacheMgr->IsLocalFile(mStrPathCur.c_str())){
+    if (mStrPathCur.empty() || !TheNetCacheMgr->IsLocalFile(mStrPathCur.c_str())) {
         mStreamPlayer->StopPlaying();
-    }
-    else {
-        if(mIsPreviewPlaying){
+    } else {
+        if (mIsPreviewPlaying) {
             mIsPreviewPlaying = false;
             mStreamPlayer->StopPlaying();
         }
-        if(!mRequestedPreview){
+        if (!mRequestedPreview) {
             mRequestedPreview = true;
             mPreviewRequestedSeconds = TheTaskMgr.UISeconds();
-        }
-        else if(TheTaskMgr.UISeconds() - mPreviewRequestedSeconds < 1.5f) return;
+        } else if (TheTaskMgr.UISeconds() - mPreviewRequestedSeconds < 1.5f)
+            return;
         mRequestedPreview = false;
         String str(mStrPathCur.c_str());
         int len = str.length();
-        if(str.find(".mogg", len - 5) != String::npos){
+        if (str.find(".mogg", len - 5) != String::npos) {
             str.erase(len - 5);
-        }
-        else if(str.find(".bik", len - 4) != String::npos){
+        } else if (str.find(".bik", len - 4) != String::npos) {
             str.erase(len - 4);
         }
         mStreamPlayer->PlayFile(str.c_str(), -3.0f, 0, true);
     }
 }
 
-void StorePreviewMgr::AddToDownloadQueue(const String& str){
-    if(mNetCacheLoader){
-        if(str == mNetCacheLoader->GetRemotePath()){
+void StorePreviewMgr::AddToDownloadQueue(const String &str) {
+    if (mNetCacheLoader) {
+        if (str == mNetCacheLoader->GetRemotePath()) {
             return;
         }
     }
-    if(!TheNetCacheMgr->IsLocalFile(str.c_str())){
-        if(std::find(mDownloadQueue.begin(), mDownloadQueue.end(), str) == mDownloadQueue.end()){
+    if (!TheNetCacheMgr->IsLocalFile(str.c_str())) {
+        if (std::find(mDownloadQueue.begin(), mDownloadQueue.end(), str)
+            == mDownloadQueue.end()) {
             mDownloadQueue.push_back(str);
         }
     }

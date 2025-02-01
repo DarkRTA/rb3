@@ -13,26 +13,28 @@ class Sequence : public Hmx::Object, public SynthPollable {
 public:
     Sequence();
     virtual ~Sequence();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    
-    virtual const char* GetSoundDisplayName(){ return MakeString("Sequence: %s", Name()); }
-    virtual SeqInst* MakeInstImpl() = 0;
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+
+    virtual const char *GetSoundDisplayName() {
+        return MakeString("Sequence: %s", Name());
+    }
+    virtual SeqInst *MakeInstImpl() = 0;
     virtual void SynthPoll();
 
     static void Init();
 
-    SeqInst* MakeInst();
+    SeqInst *MakeInst();
     /** "Play the sequence" */
-    SeqInst* Play(float, float, float);
-    DataNode OnPlay(DataArray*);
+    SeqInst *Play(float, float, float);
+    DataNode OnPlay(DataArray *);
     void OnTriggerSound(int);
     /** "Stop all instances of this sequence" */
     void Stop(bool);
-    
+
     ObjPtrList<SeqInst> mInsts; // 0x28
     /** "Average volume this sequence will be played at, in dB" */
     float mAvgVol; // 0x38
@@ -56,22 +58,20 @@ public:
 class WaitSeq : public Sequence {
 public:
     WaitSeq();
-    virtual ~WaitSeq(){}
+    virtual ~WaitSeq() {}
     OBJ_CLASSNAME(WaitSeq);
     OBJ_SET_TYPE(WaitSeq);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual SeqInst* MakeInstImpl();
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual SeqInst *MakeInstImpl();
 
     float AvgWaitSecs() const { return mAvgWaitSecs; }
     float WaitSpread() const { return mWaitSpread; }
 
     NEW_OBJ(WaitSeq)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(WaitSeq)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(WaitSeq) }
 
     /** "Average wait time, in seconds" */
     float mAvgWaitSecs; // 0x68
@@ -83,13 +83,13 @@ public:
 class GroupSeq : public Sequence {
 public:
     GroupSeq();
-    virtual ~GroupSeq(){}
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual ~GroupSeq() {}
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
-    ObjPtrList<Sequence>& Children(){ return mChildren; }
+    ObjPtrList<Sequence> &Children() { return mChildren; }
 
     /** "The children of this sequence" */
     ObjPtrList<Sequence> mChildren; // 0x68
@@ -99,28 +99,28 @@ public:
 class RandomGroupSeq : public GroupSeq {
 public:
     RandomGroupSeq();
-    virtual ~RandomGroupSeq(){}
+    virtual ~RandomGroupSeq() {}
     OBJ_CLASSNAME(RandomGroupSeq);
     OBJ_SET_TYPE(RandomGroupSeq);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual SeqInst* MakeInstImpl();
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual SeqInst *MakeInstImpl();
 
     int NextIndex();
     void PickNextIndex();
     void ForceNextIndex(int);
-    int GetNumSimul(){ return mNumSimul; }
-    void AddToPlayedHistory(int idx){
-        if(!mAllowRepeats){
-            if(mPlayHistory.size() != 0){
+    int GetNumSimul() { return mNumSimul; }
+    void AddToPlayedHistory(int idx) {
+        if (!mAllowRepeats) {
+            if (mPlayHistory.size() != 0) {
                 unsigned int plays = mPlayHistory.size();
                 int cap = mChildren.size() - 1;
-                if(plays == cap){
+                if (plays == cap) {
                     int numChildren = mChildren.size();
-                    for(int i = 0; i < numChildren / 2; i++){
+                    for (int i = 0; i < numChildren / 2; i++) {
                         mPlayHistory.pop_front();
                     }
                 }
@@ -131,20 +131,20 @@ public:
     bool AllowRepeats() const { return mAllowRepeats; }
     bool InPlayedHistory(int idx) const {
         std::list<int>::const_reverse_iterator it;
-        for(it = mPlayHistory.rbegin(); it != mPlayHistory.rend(); it++){
-            if(*it == idx) return true;
+        for (it = mPlayHistory.rbegin(); it != mPlayHistory.rend(); it++) {
+            if (*it == idx)
+                return true;
         }
         return false;
     }
 
     NEW_OBJ(RandomGroupSeq)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RandomGroupSeq)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RandomGroupSeq) }
 
     /** "Number of children to play simultaneously" */
     int mNumSimul; // 0x78
-    /** "If false, you will never hear the same sequence again until all have played (only if num_simul is 1)" */
+    /** "If false, you will never hear the same sequence again until all have played (only
+     * if num_simul is 1)" */
     bool mAllowRepeats; // 0x7c
     int mNextIndex; // 0x80
     int mForceChooseIndex; // 0x84
@@ -155,23 +155,22 @@ public:
 class RandomIntervalGroupSeq : public GroupSeq {
 public:
     RandomIntervalGroupSeq();
-    virtual ~RandomIntervalGroupSeq(){}
+    virtual ~RandomIntervalGroupSeq() {}
     OBJ_CLASSNAME(RandomIntervalGroupSeq);
     OBJ_SET_TYPE(RandomIntervalGroupSeq);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual SeqInst* MakeInstImpl();
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual SeqInst *MakeInstImpl();
 
     NEW_OBJ(RandomIntervalGroupSeq)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RandomIntervalGroupSeq)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RandomIntervalGroupSeq) }
 
     /** "the number of seconds on average we wait to play a child cue again" */
     float mAvgIntervalSecs; // 0x78
-    /** "We randomly deviate + or - this many seconds from the average when picking our wait interval" */
+    /** "We randomly deviate + or - this many seconds from the average when picking our
+     * wait interval" */
     float mIntervalSpread; // 0x7c
     /** "the maximum number of sounds we allow at one time" */
     int mMaxSimultaneous; // 0x80
@@ -181,48 +180,42 @@ public:
  *  before moving on to the next." */
 class SerialGroupSeq : public GroupSeq {
 public:
-    SerialGroupSeq(){}
-    virtual ~SerialGroupSeq(){}
+    SerialGroupSeq() {}
+    virtual ~SerialGroupSeq() {}
     OBJ_CLASSNAME(SerialGroupSeq);
     OBJ_SET_TYPE(SerialGroupSeq);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
-    virtual SeqInst* MakeInstImpl();
+    virtual void Save(BinStream &);
+    virtual void Load(BinStream &);
+    virtual SeqInst *MakeInstImpl();
 
     NEW_OBJ(SerialGroupSeq)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(SerialGroupSeq)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(SerialGroupSeq) }
 };
 
 /** "Plays all of its child sequences at the same time." */
 class ParallelGroupSeq : public GroupSeq {
 public:
-    ParallelGroupSeq(){}
-    virtual ~ParallelGroupSeq(){}
+    ParallelGroupSeq() {}
+    virtual ~ParallelGroupSeq() {}
     OBJ_CLASSNAME(ParallelGroupSeq);
     OBJ_SET_TYPE(ParallelGroupSeq);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
-    virtual SeqInst* MakeInstImpl();
+    virtual void Save(BinStream &);
+    virtual void Load(BinStream &);
+    virtual SeqInst *MakeInstImpl();
 
     NEW_OBJ(ParallelGroupSeq)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(ParallelGroupSeq)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(ParallelGroupSeq) }
 };
 
 class SfxSeq : public SerialGroupSeq {
 public:
     SfxSeq();
-    virtual ~SfxSeq(){}
+    virtual ~SfxSeq() {}
     OBJ_CLASSNAME(SfxSeq);
     OBJ_SET_TYPE(SfxSeq);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
+    virtual void Save(BinStream &);
+    virtual void Load(BinStream &);
 
     NEW_OBJ(SfxSeq)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(SfxSeq)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(SfxSeq) }
 };

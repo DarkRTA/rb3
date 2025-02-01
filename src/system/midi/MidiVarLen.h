@@ -6,8 +6,8 @@ class MidiVarLenNumber {
 public:
     int mValue;
 
-    MidiVarLenNumber(BinStream&);
-    BinStream& Read(BinStream&);
+    MidiVarLenNumber(BinStream &);
+    BinStream &Read(BinStream &);
 };
 
 #endif // MIDI_MIDIVARLEN_H

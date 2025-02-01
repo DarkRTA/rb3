@@ -10,31 +10,30 @@ enum VocalHUDColor;
 class VocalTrackDir : public RndDir, public BandTrack {
 public:
     enum HarmonyShowingState {
-
     };
 
     VocalTrackDir();
     OBJ_CLASSNAME(VocalTrackDir)
     OBJ_SET_TYPE(VocalTrackDir)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~VocalTrackDir(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~VocalTrackDir() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void TrackReset();
     virtual void ResetSmashers(bool);
     virtual void PlayIntro();
     virtual void Deploy();
     virtual void SetPlayerLocal(float);
-    virtual ObjectDir* ThisDir(){}
-    virtual ObjectDir* ThisDir() const {}
+    virtual ObjectDir *ThisDir() {}
+    virtual ObjectDir *ThisDir() const {}
     virtual void SpotlightPhraseSuccess();
-    virtual VocalTrackDir* AsVocalTrackDir(){}
-    virtual RndDir* AsRndDir(){ return AsVocalTrackDir(); }
+    virtual VocalTrackDir *AsVocalTrackDir() {}
+    virtual RndDir *AsRndDir() { return AsVocalTrackDir(); }
     virtual void Reset();
     virtual void Retract(bool);
     virtual void Extend(bool);
@@ -43,45 +42,43 @@ public:
     virtual void SetTambourine(bool);
     virtual void TutorialReset();
 
-    void SetConfiguration(Hmx::Object*, HarmonyShowingState);
+    void SetConfiguration(Hmx::Object *, HarmonyShowingState);
     void UpdateConfiguration();
     void ShowPhraseFeedback(int, int, int, bool);
     void SetStreakPct(float);
     void SetEnableVocalsOptions(bool);
-    void ApplyFontStyle(Hmx::Object*);
-    void ApplyArrowStyle(Hmx::Object*);
+    void ApplyFontStyle(Hmx::Object *);
+    void ApplyArrowStyle(Hmx::Object *);
     void SetIsolatedPart(int);
     int NumVocalParts();
     void SetRange(float, float, int, bool);
     void UpdateTubeStyle();
     void ConfigPanels();
-    PitchArrow* GetPitchArrow(int);
+    PitchArrow *GetPitchArrow(int);
     void Tambourine(Symbol);
     void TambourineNote();
-    void SetVocalLineColors(VocalHUDColor*);
+    void SetVocalLineColors(VocalHUDColor *);
     void UpdateVocalMeters(bool, bool, bool, bool);
     void ShowMicDisplay(bool);
     void SetMicDisplayLabel(Symbol);
     void SetMissingMicsForDisplay(bool, bool, bool);
     void CanChat(bool);
-    void RecalculateLyricZ(bool*, bool*);
+    void RecalculateLyricZ(bool *, bool *);
     void SetupNetVocals();
     void UpdatePartIsolation();
     void SortArrowFx();
 
-    DataNode DataForEachConfigObj(DataArray*);
-    DataNode OnGetDisplayMode(DataArray*);
-    DataNode OnSetDisplayMode(DataArray*);
-    DataNode OnSetLyricColor(const DataArray*);
-    DataNode OnIsolatePart(DataArray*);
+    DataNode DataForEachConfigObj(DataArray *);
+    DataNode OnGetDisplayMode(DataArray *);
+    DataNode OnSetDisplayMode(DataArray *);
+    DataNode OnSetLyricColor(const DataArray *);
+    DataNode OnIsolatePart(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(VocalTrackDir)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(VocalTrackDir)
 
     float mHiddenPartAlpha; // 0x2a0
@@ -150,14 +147,14 @@ public:
     ObjPtr<RndAnimatable, ObjectDir> mRangeOffsetAnim; // 0x4a4
     bool unk4b0; // 0x4b0
     int unk4b4; // 0x4b4
-    RndTransformable* mLeftTrans; // 0x4b8
-    RndTransformable* mRightTrans; // 0x4bc
-    RndTransformable* mBottomTrans; // 0x4c0
-    RndTransformable* mTopTrans; // 0x4c4
-    RndTransformable* mPitchBottomTrans; // 0x4c8
-    RndTransformable* mPitchTopTrans; // 0x4cc
-    RndTransformable* mPitchMidTrans; // 0x4d0
-    RndTransformable* mNowTrans; // 0x4d4
+    RndTransformable *mLeftTrans; // 0x4b8
+    RndTransformable *mRightTrans; // 0x4bc
+    RndTransformable *mBottomTrans; // 0x4c0
+    RndTransformable *mTopTrans; // 0x4c4
+    RndTransformable *mPitchBottomTrans; // 0x4c8
+    RndTransformable *mPitchTopTrans; // 0x4cc
+    RndTransformable *mPitchMidTrans; // 0x4d0
+    RndTransformable *mNowTrans; // 0x4d4
     ObjPtr<RndGroup, ObjectDir> mTubeRangeGrp; // 0x4d8
     ObjPtr<RndGroup, ObjectDir> mTubeSpotlightGrp; // 0x4e4
     ObjPtr<RndGroup, ObjectDir> mTubeBack0Grp; // 0x4f0

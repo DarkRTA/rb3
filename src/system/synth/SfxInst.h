@@ -7,7 +7,7 @@ class Sfx;
 
 class SfxInst : public SeqInst {
 public:
-    SfxInst(Sfx*);
+    SfxInst(Sfx *);
     virtual ~SfxInst();
     virtual void Stop();
     virtual bool IsRunning();
@@ -16,7 +16,7 @@ public:
     virtual void SetTranspose(float);
     virtual void StartImpl();
 
-    void SetSend(FxSend*);
+    void SetSend(FxSend *);
     void SetReverbMixDb(float);
     void SetReverbEnable(bool);
     void SetSpeed(float);
@@ -26,7 +26,7 @@ public:
     NEW_POOL_OVERLOAD(SfxInst);
     DELETE_POOL_OVERLOAD(SfxInst);
 
-    std::vector<SampleInst*> mSamples; // 0x34
+    std::vector<SampleInst *> mSamples; // 0x34
     ObjPtrList<MoggClipMap> mMoggClips; // 0x3c
     float mStartProgress; // 0x4c
 };

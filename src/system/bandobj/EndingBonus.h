@@ -10,7 +10,8 @@ class EndingBonus : public RndDir {
 public:
     class MiniIconData {
     public:
-        MiniIconData(EndingBonus* b, UnisonIcon* u) : mIcon(b, u), mFailed(0), mSucceeded(0), mDisabled(0), mUsed(0) {}
+        MiniIconData(EndingBonus *b, UnisonIcon *u)
+            : mIcon(b, u), mFailed(0), mSucceeded(0), mDisabled(0), mUsed(0) {}
 
         void Reset();
         void SetUsed(bool);
@@ -28,13 +29,13 @@ public:
     EndingBonus();
     OBJ_CLASSNAME(EndingBonusDir);
     OBJ_SET_TYPE(EndingBonusDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~EndingBonus(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~EndingBonus() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
 
     void Start(bool);
@@ -45,7 +46,7 @@ public:
     void UnisonEnd();
     void Reset();
     void SetupEnding(bool);
-    void SetIconText(int, const char*);
+    void SetIconText(int, const char *);
     void PlayerSuccess(int);
     void PlayerFailure(int);
     void SetSuppressUnisonDisplay(bool);
@@ -56,15 +57,13 @@ public:
     void EnablePlayer(int);
     void SetProgress(int, float);
 
-    DataNode OnReset(DataArray*);
+    DataNode OnReset(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(EndingBonus)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(EndingBonus)
 
     bool mSuppressUnisonDisplay; // 0x18c

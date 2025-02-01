@@ -7,27 +7,25 @@ public:
     BandRetargetVignette();
     OBJ_CLASSNAME(BandRetargetVignette);
     OBJ_SET_TYPE(BandRetargetVignette);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
-    virtual void ListPollChildren(std::list<RndPollable*>&) const;
+    virtual void ListPollChildren(std::list<RndPollable *> &) const;
     virtual ~BandRetargetVignette();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void EnterDir() const;
 
-    static const char* sIkfs[];
+    static const char *sIkfs[];
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(BandRetargetVignette)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandRetargetVignette)
 
     std::list<String> mEffectors; // 0x8

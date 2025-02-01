@@ -11,8 +11,8 @@ class CSHA1 {
 public:
     struct Digest {
         unsigned char digits[20];
-        void Copy(unsigned char*) const;
-        void ReportHash(char*, unsigned char) const;
+        void Copy(unsigned char *) const;
+        void ReportHash(char *, unsigned char) const;
     };
 
     unsigned long m_state[5];
@@ -22,16 +22,16 @@ public:
     Digest m_digest;
     unsigned long m_reserved2[3];
     unsigned char m_workspace[64];
-    SHA1_WORKSPACE_BLOCK* m_block;
+    SHA1_WORKSPACE_BLOCK *m_block;
 
     CSHA1();
     ~CSHA1();
     void Reset();
-    void Transform(unsigned long*, const unsigned char*);
-    void Update(const unsigned char*, unsigned long);
-    Digest* Final();
+    void Transform(unsigned long *, const unsigned char *);
+    void Update(const unsigned char *, unsigned long);
+    Digest *Final();
 };
 
-BinStream& operator>>(BinStream&, CSHA1::Digest&);
+BinStream &operator>>(BinStream &, CSHA1::Digest &);
 
 #endif

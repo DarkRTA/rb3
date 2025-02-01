@@ -8,10 +8,10 @@ MemStream::MemStream(bool b) : BinStream(b) {
     mTell = 0;
 }
 
-void MemStream::ReadImpl(void* data, int bytes){
+void MemStream::ReadImpl(void *data, int bytes) {
     int tell = mTell;
     unsigned int size = mBuffer.size();
-    if(tell + bytes > size){
+    if (tell + bytes > size) {
         mFail = true;
         bytes = size - tell;
     }
@@ -19,49 +19,50 @@ void MemStream::ReadImpl(void* data, int bytes){
     mTell += bytes;
 }
 
-void MemStream::WriteImpl(const void* data, int bytes){
+void MemStream::WriteImpl(const void *data, int bytes) {
     int toReserve = mBuffer.capacity();
-    while(mTell + bytes > toReserve) toReserve += toReserve;
+    while (mTell + bytes > toReserve)
+        toReserve += toReserve;
     mBuffer.reserve(toReserve);
-    if(mTell + bytes > mBuffer.size()){
+    if (mTell + bytes > mBuffer.size()) {
         mBuffer.resize(mTell + bytes);
     }
     memcpy(&mBuffer[mTell], data, bytes);
     mTell += bytes;
 }
 
-void MemStream::WriteStream(BinStream& bs, int bytes){
+void MemStream::WriteStream(BinStream &bs, int bytes) {
     int toReserve = mBuffer.capacity();
-    while(mTell + bytes > toReserve) toReserve += toReserve;
+    while (mTell + bytes > toReserve)
+        toReserve += toReserve;
     mBuffer.reserve(toReserve);
-    if(mTell + bytes > mBuffer.size()){
+    if (mTell + bytes > mBuffer.size()) {
         mBuffer.resize(mTell + bytes);
     }
     bs.Read(&mBuffer[mTell], bytes);
     mTell += bytes;
 }
 
-void MemStream::SeekImpl(int offset, SeekType t){
+void MemStream::SeekImpl(int offset, SeekType t) {
     int pos;
 
-    switch(t){
-        case kSeekBegin:
-            pos = offset;
-            break;
-        case kSeekCur:
-            pos = mTell + offset;
-            break;
-        case kSeekEnd:
-            pos = mBuffer.size() + offset;
-            break;
-        default:
-            return;
+    switch (t) {
+    case kSeekBegin:
+        pos = offset;
+        break;
+    case kSeekCur:
+        pos = mTell + offset;
+        break;
+    case kSeekEnd:
+        pos = mBuffer.size() + offset;
+        break;
+    default:
+        return;
     }
 
-    if(pos < 0 || pos > mBuffer.size()){
+    if (pos < 0 || pos > mBuffer.size()) {
         mFail = true;
-    }
-    else {
+    } else {
         mTell = pos;
     }
 
@@ -70,7 +71,7 @@ void MemStream::SeekImpl(int offset, SeekType t){
     // case 2: offset += mSize, then case 0's logic
 }
 
-void MemStream::Compact(){
+void MemStream::Compact() {
     mBuffer.erase(mBuffer.begin(), mBuffer.begin() + mTell);
     mTell = 0;
 }

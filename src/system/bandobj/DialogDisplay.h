@@ -8,27 +8,25 @@ public:
     DialogDisplay();
     OBJ_CLASSNAME(DialogDisplay);
     OBJ_SET_TYPE(DialogDisplay);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual ~DialogDisplay();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     float GetLabelHeight();
-    void SetLabel(UILabel*);
-    void SetTopBone(RndMesh*);
-    void SetBottomBone(RndMesh*);
+    void SetLabel(UILabel *);
+    void SetTopBone(RndMesh *);
+    void SetBottomBone(RndMesh *);
 
-    UILabel* GetLabel() const { return mDialogLabel.Ptr() ? mDialogLabel.Ptr() : 0; }
-    RndMesh* GetTopBone() const { return mTopBone.Ptr() ? mTopBone.Ptr() : 0; }
-    RndMesh* GetBottomBone() const { return mBottomBone.Ptr() ? mBottomBone.Ptr() : 0; }
+    UILabel *GetLabel() const { return mDialogLabel.Ptr() ? mDialogLabel.Ptr() : 0; }
+    RndMesh *GetTopBone() const { return mTopBone.Ptr() ? mTopBone.Ptr() : 0; }
+    RndMesh *GetBottomBone() const { return mBottomBone.Ptr() ? mBottomBone.Ptr() : 0; }
 
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(DialogDisplay);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(DialogDisplay); }
     NEW_OBJ(DialogDisplay);
 
     DECLARE_REVS;

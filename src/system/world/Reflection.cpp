@@ -4,57 +4,67 @@
 
 INIT_REVS(WorldReflection)
 
-WorldReflection::WorldReflection() : mDraws(this, kObjListNoNull), mLodChars(this, kObjListNoNull), mVerticalStretch(1.0f), unke0(0), mHideList(this, kObjListNoNull),
-    mShowList(this, kObjListNoNull), unk104(this, kObjListNoNull), unk114(this, kObjListNoNull) {
+WorldReflection::WorldReflection()
+    : mDraws(this, kObjListNoNull), mLodChars(this, kObjListNoNull),
+      mVerticalStretch(1.0f), unke0(0), mHideList(this, kObjListNoNull),
+      mShowList(this, kObjListNoNull), unk104(this, kObjListNoNull),
+      unk114(this, kObjListNoNull) {
     unkdc = ObjectDir::Main()->New<RndCam>("");
 }
 
-WorldReflection::~WorldReflection(){
-    delete unkdc;
-}
+WorldReflection::~WorldReflection() { delete unkdc; }
 
-void WorldReflection::DoHide(){
+void WorldReflection::DoHide() {
     unk104.clear();
     unk114.clear();
-    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = mHideList.begin(); it != mHideList.end(); ++it){
-        RndDrawable* cur = *it;
-        if(cur->Showing()){
+    for (ObjPtrList<RndDrawable, ObjectDir>::iterator it = mHideList.begin();
+         it != mHideList.end();
+         ++it) {
+        RndDrawable *cur = *it;
+        if (cur->Showing()) {
             cur->SetShowing(false);
             unk114.push_back(cur);
         }
     }
-    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = mShowList.begin(); it != mShowList.end(); ++it){
-        RndDrawable* cur = *it;
-        if(!cur->Showing()){
+    for (ObjPtrList<RndDrawable, ObjectDir>::iterator it = mShowList.begin();
+         it != mShowList.end();
+         ++it) {
+        RndDrawable *cur = *it;
+        if (!cur->Showing()) {
             cur->SetShowing(true);
             unk104.push_back(cur);
         }
     }
 }
 
-void WorldReflection::UnHide(){
-    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = unk104.begin(); it != unk104.end(); ++it){
-        RndDrawable* cur = *it;
+void WorldReflection::UnHide() {
+    for (ObjPtrList<RndDrawable, ObjectDir>::iterator it = unk104.begin();
+         it != unk104.end();
+         ++it) {
+        RndDrawable *cur = *it;
         cur->SetShowing(false);
     }
-    for(ObjPtrList<RndDrawable, ObjectDir>::iterator it = unk114.begin(); it != unk114.end(); ++it){
-        RndDrawable* cur = *it;
+    for (ObjPtrList<RndDrawable, ObjectDir>::iterator it = unk114.begin();
+         it != unk114.end();
+         ++it) {
+        RndDrawable *cur = *it;
         cur->SetShowing(true);
     }
     unk104.clear();
     unk114.clear();
 }
 
-void WorldReflection::DoLOD(int i){
-    for(ObjPtrList<Character, ObjectDir>::iterator it = mLodChars.begin(); it != mLodChars.end(); ++it){
-        Character* c = *it;
-        if(c) c->SetMinLod(i);
+void WorldReflection::DoLOD(int i) {
+    for (ObjPtrList<Character, ObjectDir>::iterator it = mLodChars.begin();
+         it != mLodChars.end();
+         ++it) {
+        Character *c = *it;
+        if (c)
+            c->SetMinLod(i);
     }
 }
 
-void WorldReflection::DrawShowing(){
-    START_AUTO_TIMER("world_reflect");
-}
+void WorldReflection::DrawShowing() { START_AUTO_TIMER("world_reflect"); }
 
 SAVE_OBJ(WorldReflection, 0xA0)
 
@@ -66,8 +76,10 @@ BEGIN_LOADS(WorldReflection)
     LOAD_SUPERCLASS(RndDrawable)
     bs >> mVerticalStretch;
     bs >> mDraws;
-    if(gRev > 1) bs >> mHideList >> mShowList;
-    if(gRev > 2) bs >> mLodChars;
+    if (gRev > 1)
+        bs >> mHideList >> mShowList;
+    if (gRev > 2)
+        bs >> mLodChars;
 END_LOADS
 
 BEGIN_COPYS(WorldReflection)

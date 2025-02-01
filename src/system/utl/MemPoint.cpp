@@ -2,11 +2,9 @@
 #include "utl/MemMgr.h"
 #include <string.h>
 
-MemPointDelta::MemPointDelta() {
-    memset(unk_0x0, 0, 0x44);
-}
+MemPointDelta::MemPointDelta() { memset(unk_0x0, 0, 0x44); }
 
-MemPointDelta& MemPointDelta::operator+=(const MemPointDelta& mpd) {
+MemPointDelta &MemPointDelta::operator+=(const MemPointDelta &mpd) {
     for (int i = 0; i < MemNumHeaps(); i++) {
         unk_0x0[i] += mpd.unk_0x0[i];
     }
@@ -14,12 +12,11 @@ MemPointDelta& MemPointDelta::operator+=(const MemPointDelta& mpd) {
     return *this;
 }
 
-
 MemPoint::MemPoint(eInitType t) {
 #ifdef MILO_DEBUG
     if (t == kInitType1) {
         for (int i = 0; i < MemNumHeaps(); i++) {
-            int a,b,c;
+            int a, b, c;
             MemFreeBlockStats(i, a, b, unk0[i], c);
         }
         unk40 = 0;
@@ -31,9 +28,9 @@ MemPoint::MemPoint(eInitType t) {
 #endif
 }
 
-MemPointDelta MemPoint::operator-(const MemPoint& mp) const {
+MemPointDelta MemPoint::operator-(const MemPoint &mp) const {
     MemPointDelta mpd;
-    for(int i = 0; i < MemNumHeaps(); i++){
+    for (int i = 0; i < MemNumHeaps(); i++) {
         mpd.unk_0x0[i] = mp.unk0[i] - unk0[i];
     }
     mpd.unk40 = unk40 - mp.unk40;

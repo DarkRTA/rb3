@@ -8,23 +8,23 @@ public:
     class ArtEntry {
     public:
         String unk0;
-        NetCacheLoader* unkc;
-        RndBitmap* unk10;
+        NetCacheLoader *unkc;
+        RndBitmap *unk10;
     };
 
     StoreArtLoaderPanel();
     OBJ_CLASSNAME(StoreArtLoaderPanel);
     OBJ_SET_TYPE(StoreArtLoaderPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~StoreArtLoaderPanel();
     virtual void Poll();
     virtual void Load();
     virtual void Unload();
 
     void ClearArt();
-    void EnsureArtLoader(const String&);
+    void EnsureArtLoader(const String &);
     bool IsAllArtLoadedOrFailed();
-    RndBitmap* GetBmp(const String&);
+    RndBitmap *GetBmp(const String &);
 
     std::vector<ArtEntry> mArtList; // 0x38
 };

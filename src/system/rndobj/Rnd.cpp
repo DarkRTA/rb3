@@ -75,29 +75,28 @@ BEGIN_HANDLERS(ModalKeyListener)
     HANDLE_CHECK(0xF8)
 END_HANDLERS
 
-DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg& k){
-    if(k.GetKey() == 0x12e){
-        if(!GetEnabledKeyCheats() && !TheRnd->ConsoleShowing()){
+DataNode ModalKeyListener::OnMsg(const KeyboardKeyMsg &k) {
+    if (k.GetKey() == 0x12e) {
+        if (!GetEnabledKeyCheats() && !TheRnd->ConsoleShowing()) {
             TheRnd->ShowConsole(true);
             return DataNode(0);
-        }
-        else return DataNode(kDataUnhandled, 0);
-    }
-    else {
-        if(!TheRnd->ConsoleShowing()){
+        } else
+            return DataNode(kDataUnhandled, 0);
+    } else {
+        if (!TheRnd->ConsoleShowing()) {
             gNotifyKeepGoing = true;
             return DataNode(0);
-        }
-        else return DataNode(kDataUnhandled, 0);
+        } else
+            return DataNode(kDataUnhandled, 0);
     }
 }
 
-static DataNode FailKeepGoing(DataArray*) {
+static DataNode FailKeepGoing(DataArray *) {
     gFailKeepGoing = true;
     return 0;
 }
 
-static DataNode FailRestartConsole(DataArray*) {
+static DataNode FailRestartConsole(DataArray *) {
     gFailRestartConsole = true;
     return 0;
 }
@@ -105,48 +104,54 @@ static DataNode FailRestartConsole(DataArray*) {
 void Rnd::ShowConsole(bool b) { mConsole->SetShowing(b); }
 bool Rnd::ConsoleShowing() { return mConsole->Showing(); }
 
-void WordWrap(const char*, int, char*, int){
+void WordWrap(const char *, int, char *, int) {}
 
-}
-
-void Rnd::Modal(bool& b, char* c, bool bb){
-    if(bb) TheDebug << MakeString("%s\n", c);
-    if(CanModal(b)){
-        if(MainThread()){
+void Rnd::Modal(bool &b, char *c, bool bb) {
+    if (bb)
+        TheDebug << MakeString("%s\n", c);
+    if (CanModal(b)) {
+        if (MainThread()) {
             // timer stuff
             strcat(c, "Rnd::Modal");
         }
         char buf[0x1000];
         WordWrap(c, 0x5a, buf, 0x1000);
-        if(!bb){
+        if (!bb) {
             strcat(buf, "\n\n-- Waiting on Stack Trace --\n");
-        }
-        else if(!b){
+        } else if (!b) {
             strcat(buf, "\n\n-- Press any button to continue --\n");
-        }
-        else strcat(buf, "\n\n-- Program ended --\n");
+        } else
+            strcat(buf, "\n\n-- Program ended --\n");
 
         strcat(c, ""); // only here to generate the string in the pool
     }
 }
 
-Rnd::Rnd() : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16), mDrawCount(0), mDrawTimer(),
-    mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0), mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), mDefaultCam(0), unk94(0), unk98(0), unk9c(0),
-    unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), mGsTiming(0), mShowSafeArea(0), mDrawing(0), unkdf(1), mAspect(kWidescreen), mDrawMode(kDrawNormal),
-    unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0), mPostProcOverride(0),
-    unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(), mProcCmds(kProcessAll), mLastProcCmds(kProcessAll)
+Rnd::Rnd()
+    : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16),
+      mDrawCount(0), mDrawTimer(), mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0),
+      mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), mDefaultCam(0), unk94(0), unk98(0),
+      unk9c(0), unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), mGsTiming(0),
+      mShowSafeArea(0), mDrawing(0), unkdf(1), mAspect(kWidescreen),
+      mDrawMode(kDrawNormal), unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0),
+      mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0),
+      mPostProcOverride(0), unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull),
+      unk130(0), unk131(1), mProcCounter(), mProcCmds(kProcessAll),
+      mLastProcCmds(kProcessAll)
 #ifdef MILO_DEBUG
-    , mForceCharLod(-1) // jank it up!
+      ,
+      mForceCharLod(-1) // jank it up!
 #endif
-    {
-    for(int i = 0; i < 8; i++) unk_arr[i] = 0;
+{
+    for (int i = 0; i < 8; i++)
+        unk_arr[i] = 0;
 #ifdef MILO_DEBUG
-    gpDbgFrameID = (int*)&mFrameID;
+    gpDbgFrameID = (int *)&mFrameID;
 #endif
 }
 
 float Rnd::YRatio() {
-    static const float kRatio[4] = {1.0f, 0.75f, 0.5625f, 0.5625f}; // qualifiers :)
+    static const float kRatio[4] = { 1.0f, 0.75f, 0.5625f, 0.5625f }; // qualifiers :)
     return kRatio[mAspect];
 }
 
@@ -155,23 +160,29 @@ void TerminateCallback() {
     TheRnd->Terminate();
 }
 
-void Rnd::DrawRectScreen(const Hmx::Rect& r, const Hmx::Color& c1, RndMat* m, const Hmx::Color* c2, const Hmx::Color* c3){
+void Rnd::DrawRectScreen(
+    const Hmx::Rect &r,
+    const Hmx::Color &c1,
+    RndMat *m,
+    const Hmx::Color *c2,
+    const Hmx::Color *c3
+) {
     DrawRect(r, c1, m, c2, c3);
 }
 
-Vector2& Rnd::DrawString(const char*, const Vector2& v, const Hmx::Color&, bool){
+Vector2 &Rnd::DrawString(const char *, const Vector2 &v, const Hmx::Color &, bool) {
     static Vector2 s;
     s = v;
     return s;
 }
 
-void Rnd::SetupFont(){
+void Rnd::SetupFont() {
     mFont = SystemConfig("rnd", "font");
-    for(int i = 0; i < 0x1a; i++){
-        DataArray* cloned = mFont->Array(i + 0x42)->Clone(true, false, 0);
-        for(int j = 0; j < cloned->Size(); j++){
-            DataArray* jArr = cloned->Array(j);
-            for(int k = 1; k < jArr->Size(); k += 2){
+    for (int i = 0; i < 0x1a; i++) {
+        DataArray *cloned = mFont->Array(i + 0x42)->Clone(true, false, 0);
+        for (int j = 0; j < cloned->Size(); j++) {
+            DataArray *jArr = cloned->Array(j);
+            for (int k = 1; k < jArr->Size(); k += 2) {
                 CONST_ARRAY(jArr)->Node(k) = DataNode(0.7f * jArr->Float(k) + 0.3f);
             }
         }
@@ -183,13 +194,14 @@ void Rnd::SetupFont(){
 void Rnd::PreInit() {
     SetName("rnd", ObjectDir::sMainDir);
     TheDebug.AddExitCallback(TerminateCallback);
-    DataArray* rndcfg = SystemConfig("rnd");
+    DataArray *rndcfg = SystemConfig("rnd");
     rndcfg->FindData("bpp", mScreenBpp, true);
     rndcfg->FindData("height", mHeight, true);
     rndcfg->FindData("clear_color", mClearColor, true);
     rndcfg->FindData("sync", mSync, true);
-    rndcfg->FindData("aspect", (int&)mAspect, true);
-    if(OptionBool("widescreen", false)) mAspect = kWidescreen;
+    rndcfg->FindData("aspect", (int &)mAspect, true);
+    if (OptionBool("widescreen", false))
+        mAspect = kWidescreen;
 
     // some other code
     mWidth = YRatio();
@@ -268,8 +280,8 @@ void Rnd::PreInit() {
 }
 
 void Rnd::Init() {
-    DataArray* syscfg = SystemConfig("rnd");
-    DataArray* da = syscfg->FindArray("timer_stats", false);
+    DataArray *syscfg = SystemConfig("rnd");
+    DataArray *da = syscfg->FindArray("timer_stats", false);
     if (da) {
         if (da->Int(1)) {
             MILO_LOG("config showing timers\n");
@@ -279,9 +291,9 @@ void Rnd::Init() {
 }
 
 void Rnd::Terminate() {
-    #ifdef MILO_DEBUG
+#ifdef MILO_DEBUG
     gpDbgFrameID = 0;
-    #endif
+#endif
     delete mConsole;
     mConsole = NULL;
     TheDebug.RemoveExitCallback(TerminateCallback);
@@ -291,75 +303,91 @@ void Rnd::Terminate() {
     SetName(NULL, NULL);
 }
 
-void Rnd::RegisterPostProcessor(PostProcessor* p){
-    mPostProcessors.push_back(p);
-}
+void Rnd::RegisterPostProcessor(PostProcessor *p) { mPostProcessors.push_back(p); }
 
-void Rnd::UnregisterPostProcessor(PostProcessor* p){
-    for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
-        if(p == *it) mPostProcessors.erase(it);
+void Rnd::UnregisterPostProcessor(PostProcessor *p) {
+    for (std::list<PostProcessor *>::iterator it = mPostProcessors.begin();
+         it != mPostProcessors.end();
+         it++) {
+        if (p == *it)
+            mPostProcessors.erase(it);
     }
 }
 
-void Rnd::SetPostProcOverride(RndPostProc* pp){
-    mPostProcOverride = pp;
-}
+void Rnd::SetPostProcOverride(RndPostProc *pp) { mPostProcOverride = pp; }
 
-PostProcessor* Rnd::GetPostProcOverride() const { return mPostProcOverride; }
+PostProcessor *Rnd::GetPostProcOverride() const { return mPostProcOverride; }
 
-void Rnd::EndWorld(){
-    if(!unkdf){
+void Rnd::EndWorld() {
+    if (!unkdf) {
         // function ptr stuff here?
         unkdf = true;
     }
 }
 
-void Rnd::DoWorldBegin(){
-    if(mPostProcOverride) mPostProcOverride->BeginWorld();
-    else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
-        (*it)->BeginWorld();
-    }
+void Rnd::DoWorldBegin() {
+    if (mPostProcOverride)
+        mPostProcOverride->BeginWorld();
+    else
+        for (std::list<PostProcessor *>::iterator it = mPostProcessors.begin();
+             it != mPostProcessors.end();
+             it++) {
+            (*it)->BeginWorld();
+        }
 }
 
-void Rnd::CopyWorldCam(RndCam* cam){
-    if(mProcCmds & 1){
-        if(!cam) cam = RndCam::sCurrent;
+void Rnd::CopyWorldCam(RndCam *cam) {
+    if (mProcCmds & 1) {
+        if (!cam)
+            cam = RndCam::sCurrent;
         unk94->Copy(cam, Hmx::Object::kCopyShallow);
         unk94->SetTransParent(0, false);
         unkef = true;
     }
 }
 
-void Rnd::DoWorldEnd(){
-    if(!unkef) CopyWorldCam(0);
+void Rnd::DoWorldEnd() {
+    if (!unkef)
+        CopyWorldCam(0);
     unkef = false;
-    if(mPostProcOverride) mPostProcOverride->EndWorld();
-    else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
-        (*it)->EndWorld();
-    }
-}
-
-void Rnd::DoPostProcess(){
-    if(!mDisablePostProc){
-        if(mPostProcOverride) mPostProcOverride->DoPost();
-        else for(std::list<PostProcessor*>::iterator it = mPostProcessors.begin(); it != mPostProcessors.end(); it++){
-            (*it)->DoPost();
+    if (mPostProcOverride)
+        mPostProcOverride->EndWorld();
+    else
+        for (std::list<PostProcessor *>::iterator it = mPostProcessors.begin();
+             it != mPostProcessors.end();
+             it++) {
+            (*it)->EndWorld();
         }
+}
+
+void Rnd::DoPostProcess() {
+    if (!mDisablePostProc) {
+        if (mPostProcOverride)
+            mPostProcOverride->DoPost();
+        else
+            for (std::list<PostProcessor *>::iterator it = mPostProcessors.begin();
+                 it != mPostProcessors.end();
+                 it++) {
+                (*it)->DoPost();
+            }
     }
 }
 
-void Rnd::SetShowTimers(bool b1, bool b2){
-    RndOverlay* o = mTimersOverlay;
+void Rnd::SetShowTimers(bool b1, bool b2) {
+    RndOverlay *o = mTimersOverlay;
     o->mShowing = b1;
     o->mTimer.Restart();
     unkec = b2;
     SetGSTiming(b1);
 }
 
-float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
-    if (ovl == mRateOverlay) UpdateRate();
-    else if (ovl == mHeapOverlay) UpdateHeap();
-    else if (ovl == mTimersOverlay) f = DrawTimers(f);
+float Rnd::UpdateOverlay(RndOverlay *ovl, float f) {
+    if (ovl == mRateOverlay)
+        UpdateRate();
+    else if (ovl == mHeapOverlay)
+        UpdateHeap();
+    else if (ovl == mTimersOverlay)
+        f = DrawTimers(f);
     return f;
 }
 
@@ -368,24 +396,50 @@ float Rnd::UpdateOverlay(RndOverlay* ovl, float f) {
 BEGIN_HANDLERS(Rnd)
     HANDLE_ACTION(reset_postproc, RndPostProc::Reset())
     HANDLE_ACTION(set_postproc_override, SetPostProcOverride(_msg->Obj<RndPostProc>(2)))
-    HANDLE_ACTION(set_dof_depth_scale, RndPostProc::DOFOverrides().SetDepthScale(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_depth_offset, RndPostProc::DOFOverrides().SetDepthOffset(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_min_scale, RndPostProc::DOFOverrides().SetMinBlurScale(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_min_offset, RndPostProc::DOFOverrides().SetMinBlurOffset(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_max_scale, RndPostProc::DOFOverrides().SetMaxBlurScale(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_max_offset, RndPostProc::DOFOverrides().SetMaxBlurOffset(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_width_scale, RndPostProc::DOFOverrides().SetBlurWidthScale(_msg->Float(2)))
-    HANDLE_ACTION(set_dof_tint, DOFProc::SetDepthOfFieldTint(_msg->Int(2), Hmx::Color(_msg->Float(3), _msg->Float(4), _msg->Float(5))))
+    HANDLE_ACTION(
+        set_dof_depth_scale, RndPostProc::DOFOverrides().SetDepthScale(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_depth_offset, RndPostProc::DOFOverrides().SetDepthOffset(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_min_scale, RndPostProc::DOFOverrides().SetMinBlurScale(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_min_offset, RndPostProc::DOFOverrides().SetMinBlurOffset(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_max_scale, RndPostProc::DOFOverrides().SetMaxBlurScale(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_max_offset, RndPostProc::DOFOverrides().SetMaxBlurOffset(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_width_scale, RndPostProc::DOFOverrides().SetBlurWidthScale(_msg->Float(2))
+    )
+    HANDLE_ACTION(
+        set_dof_tint,
+        DOFProc::SetDepthOfFieldTint(
+            _msg->Int(2), Hmx::Color(_msg->Float(3), _msg->Float(4), _msg->Float(5))
+        )
+    )
     HANDLE_ACTION(set_aspect, SetAspect((Aspect)_msg->Int(2)))
     HANDLE_EXPR(aspect, mAspect)
     HANDLE_EXPR(screen_width, mWidth)
     HANDLE_EXPR(screen_height, mHeight)
     HANDLE_EXPR(highlight_style, RndDrawable::GetHighlightStyle())
-    HANDLE_ACTION(set_highlight_style, RndDrawable::SetHighlightStyle((HighlightStyle)_msg->Int(2)))
+    HANDLE_ACTION(
+        set_highlight_style, RndDrawable::SetHighlightStyle((HighlightStyle)_msg->Int(2))
+    )
     HANDLE_EXPR(get_normal_display_length, RndDrawable::GetNormalDisplayLength())
-    HANDLE_ACTION(set_normal_display_length, RndDrawable::SetNormalDisplayLength(_msg->Float(2)))
+    HANDLE_ACTION(
+        set_normal_display_length, RndDrawable::SetNormalDisplayLength(_msg->Float(2))
+    )
     HANDLE_EXPR(get_force_select_proxied_subparts, RndDrawable::GetForceSubpartSelection())
-    HANDLE_ACTION(set_force_select_proxied_subparts, RndDrawable::SetForceSubpartSelection(_msg->Int(2)))
+    HANDLE_ACTION(
+        set_force_select_proxied_subparts,
+        RndDrawable::SetForceSubpartSelection(_msg->Int(2))
+    )
     HANDLE_ACTION(set_sync, SetSync(_msg->Int(2)))
     HANDLE_ACTION(set_shrink_to_safe, SetShrinkToSafeArea(_msg->Int(2)))
     HANDLE(show_console, OnShowConsole)
@@ -414,7 +468,17 @@ BEGIN_HANDLERS(Rnd)
     HANDLE(reflect, OnReflect)
     HANDLE(toggle_heap, OnToggleHeap)
     HANDLE(test_draw_groups, OnTestDrawGroups)
-    HANDLE_ACTION(test_texture_size, TestTextureSize(_msg->Obj<ObjectDir>(2), _msg->Int(3), _msg->Int(4), _msg->Int(5), _msg->Int(6), _msg->Int(7)))
+    HANDLE_ACTION(
+        test_texture_size,
+        TestTextureSize(
+            _msg->Obj<ObjectDir>(2),
+            _msg->Int(3),
+            _msg->Int(4),
+            _msg->Int(5),
+            _msg->Int(6),
+            _msg->Int(7)
+        )
+    )
     HANDLE_ACTION(test_texture_paths, TestTexturePaths(_msg->Obj<ObjectDir>(2)))
     HANDLE_ACTION(test_material_textures, TestMaterialTextures(_msg->Obj<ObjectDir>(2)))
     HANDLE_ACTION(set_gfx_mode, SetGfxMode((GfxMode)_msg->Int(2)))
@@ -428,38 +492,36 @@ BEGIN_HANDLERS(Rnd)
 END_HANDLERS
 #pragma pop
 
-DataNode Rnd::OnShowOverlay(const DataArray* da){
-    RndOverlay* o = RndOverlay::Find(da->Str(2), true);
+DataNode Rnd::OnShowOverlay(const DataArray *da) {
+    RndOverlay *o = RndOverlay::Find(da->Str(2), true);
     o->SetOverlay(da->Int(3));
-    if(da->Size() > 4){
+    if (da->Size() > 4) {
         o->SetTimeout(da->Float(4));
     }
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleHeap(const DataArray*){
+DataNode Rnd::OnToggleHeap(const DataArray *) {
     int num = MemNumHeaps();
-    if(!mHeapOverlay->Showing()){
+    if (!mHeapOverlay->Showing()) {
         mHeapOverlay->SetOverlay(true);
-    }
-    else {
+    } else {
         gCurHeap++;
-        if(gCurHeap >= num){
+        if (gCurHeap >= num) {
             gCurHeap = -1;
             mHeapOverlay->SetOverlay(false);
-        }
-        else {
+        } else {
             mHeapOverlay->SetOverlay(true);
         }
     }
     return DataNode(0);
 }
 
-DataNode Rnd::OnReflect(const DataArray* da){
-    RndOverlay* o = RndOverlay::Find(da->Sym(2), true);
-    if(o->Showing()){
-        TextStream* idk = TheDebug.SetReflect(o);
-        for(int i = 3; i < da->Size(); i++){
+DataNode Rnd::OnReflect(const DataArray *da) {
+    RndOverlay *o = RndOverlay::Find(da->Sym(2), true);
+    if (o->Showing()) {
+        TextStream *idk = TheDebug.SetReflect(o);
+        for (int i = 3; i < da->Size(); i++) {
             da->Command(i)->Execute();
         }
         TheDebug.SetReflect(idk);
@@ -467,92 +529,82 @@ DataNode Rnd::OnReflect(const DataArray* da){
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleOverlay(const DataArray* da){
-    RndOverlay* o = RndOverlay::Find(da->Str(2), true);
+DataNode Rnd::OnToggleOverlay(const DataArray *da) {
+    RndOverlay *o = RndOverlay::Find(da->Str(2), true);
     o->SetOverlay(!o->Showing());
-    if(o->Showing()){
+    if (o->Showing()) {
         o->SetDumpCount(1);
     }
     return DataNode(o->Showing());
 }
 
-DataNode Rnd::OnToggleOverlayPosition(const DataArray*){
+DataNode Rnd::OnToggleOverlayPosition(const DataArray *) {
     RndOverlay::TogglePosition();
     return DataNode(0);
 }
 
-void Rnd::SetProcAndLock(bool b){
-    mProcCounter.SetProcAndLock(b);
-}
+void Rnd::SetProcAndLock(bool b) { mProcCounter.SetProcAndLock(b); }
 
 bool Rnd::ProcAndLock() const { return mProcCounter.mProcAndLock; }
 
-void Rnd::ResetProcCounter(){
-    if(mDrawing){
+void Rnd::ResetProcCounter() {
+    if (mDrawing) {
         mProcCounter.mCount = -1;
-    }
-    else mLastProcCmds = ProcessCmd(mLastProcCmds | kProcessWorld);
+    } else
+        mLastProcCmds = ProcessCmd(mLastProcCmds | kProcessWorld);
 }
 
 bool Rnd::GetEvenOddDisabled() const { return mProcCounter.mEvenOddDisabled; }
-void Rnd::SetEvenOddDisabled(bool b){ mProcCounter.SetEvenOddDisabled(b); }
+void Rnd::SetEvenOddDisabled(bool b) { mProcCounter.SetEvenOddDisabled(b); }
 
-String UniqueFileName(const char*){
+String UniqueFileName(const char *) {}
 
-}
-
-void Rnd::ScreenDump(const char* cc){
-    RndTex* tex = Hmx::Object::New<RndTex>();
+void Rnd::ScreenDump(const char *cc) {
+    RndTex *tex = Hmx::Object::New<RndTex>();
     RndBitmap bmap;
     tex->SetBitmap(0, 0, 0, RndTex::kFrontBuffer, 0, 0);
     tex->LockBitmap(bmap, true);
     FileStream fs(cc, FileStream::kWrite, true);
-    if(fs.Fail()) MILO_WARN("Screenshot failed; could not open destination file (%s).", cc);
-    else bmap.SaveBmp(&fs);
+    if (fs.Fail())
+        MILO_WARN("Screenshot failed; could not open destination file (%s).", cc);
+    else
+        bmap.SaveBmp(&fs);
     delete tex;
 }
 
-void Rnd::ScreenDumpUnique(const char* cc){
-    ScreenDump(UniqueFileName(cc).c_str());
-}
+void Rnd::ScreenDumpUnique(const char *cc) { ScreenDump(UniqueFileName(cc).c_str()); }
 
-DataNode Rnd::OnShowConsole(const DataArray*){
+DataNode Rnd::OnShowConsole(const DataArray *) {
     ShowConsole(true);
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleTimers(const DataArray*){
+DataNode Rnd::OnToggleTimers(const DataArray *) {
     SetShowTimers(unkec || !TimersShowing(), false);
     return DataNode(0);
 }
 
-DataNode Rnd::OnToggleTimersVerbose(const DataArray*){
+DataNode Rnd::OnToggleTimersVerbose(const DataArray *) {
     SetShowTimers(unkec == 0, unkec == 0);
     return DataNode(0);
 }
 
-DataNode Rnd::OnClearColorR(const DataArray*){
-    return DataNode(mClearColor.red);
-}
+DataNode Rnd::OnClearColorR(const DataArray *) { return DataNode(mClearColor.red); }
 
-DataNode Rnd::OnClearColorG(const DataArray*){
-    return DataNode(mClearColor.green);
-}
+DataNode Rnd::OnClearColorG(const DataArray *) { return DataNode(mClearColor.green); }
 
-DataNode Rnd::OnClearColorB(const DataArray*){
-    return DataNode(mClearColor.blue);
-}
+DataNode Rnd::OnClearColorB(const DataArray *) { return DataNode(mClearColor.blue); }
 
-DataNode Rnd::OnClearColorPacked(const DataArray*){
+DataNode Rnd::OnClearColorPacked(const DataArray *) {
     return DataNode((int)mClearColor.Pack());
 }
 
-DataNode Rnd::OnSetClearColor(const DataArray* da){
+DataNode Rnd::OnSetClearColor(const DataArray *da) {
     SetClearColor(Hmx::Color(da->Float(2), da->Float(3), da->Float(4)));
     return DataNode(0);
 }
 
-DataNode Rnd::OnSetClearColorPacked(const DataArray* da){
+DataNode Rnd::OnSetClearColorPacked(const DataArray *da) {
     float red = (da->Int(2) & 255) / 255.0f;
     float green = ((da->Int(2) >> 8) & 255) / 255.0f;
     float blue = ((da->Int(2) >> 0x10) & 255) / 255.0f;
@@ -560,22 +612,22 @@ DataNode Rnd::OnSetClearColorPacked(const DataArray* da){
     return DataNode(0);
 }
 
-DataNode Rnd::OnScreenDump(const DataArray* da){
+DataNode Rnd::OnScreenDump(const DataArray *da) {
     ScreenDump(da->Str(2));
     return DataNode(0);
 }
 
-DataNode Rnd::OnScreenDumpUnique(const DataArray* da){
+DataNode Rnd::OnScreenDumpUnique(const DataArray *da) {
     ScreenDumpUnique(da->Str(2));
     return DataNode(0);
 }
 
-DataNode Rnd::OnScaleObject(const DataArray* da){
+DataNode Rnd::OnScaleObject(const DataArray *da) {
     RndScaleObject(da->GetObj(2), da->Float(3), da->Float(4));
     return DataNode(0);
 }
 
-DataNode Rnd::OnSetSphereTest(const DataArray* da){
+DataNode Rnd::OnSetSphereTest(const DataArray *da) {
     unk131 = da->Int(2);
     return DataNode(0);
 }

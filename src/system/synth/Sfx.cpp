@@ -8,12 +8,15 @@
 #include "synth/Utl.h"
 #include "utl/Symbols.h"
 
-SfxInst::SfxInst(Sfx* sfx) : SeqInst(sfx), mMoggClips(this, kObjListNoNull), mStartProgress(0.0f) {
-    for(ObjVector<SfxMap>::iterator it = sfx->mMaps.begin(); it != sfx->mMaps.end(); it++){
-        SampleInst* inst = 0;
-        SynthSample* smp = (*it).mSample;
-        if(smp) inst = smp->NewInst();
-        if(inst){
+SfxInst::SfxInst(Sfx *sfx)
+    : SeqInst(sfx), mMoggClips(this, kObjListNoNull), mStartProgress(0.0f) {
+    for (ObjVector<SfxMap>::iterator it = sfx->mMaps.begin(); it != sfx->mMaps.end();
+         it++) {
+        SampleInst *inst = 0;
+        SynthSample *smp = (*it).mSample;
+        if (smp)
+            inst = smp->NewInst();
+        if (inst) {
             inst->SetBankVolume((*it).mVolume + mRandVol);
             inst->SetBankPan((*it).mPan + mRandPan);
             inst->SetBankSpeed(CalcSpeedFromTranspose((*it).mTranspose + mRandTp));
@@ -25,132 +28,160 @@ SfxInst::SfxInst(Sfx* sfx) : SeqInst(sfx), mMoggClips(this, kObjListNoNull), mSt
             mSamples.push_back(inst);
         }
     }
-    for(ObjVector<MoggClipMap>::iterator it = sfx->mMoggClipMaps.begin(); it != sfx->mMoggClipMaps.end(); it++){
+    for (ObjVector<MoggClipMap>::iterator it = sfx->mMoggClipMaps.begin();
+         it != sfx->mMoggClipMaps.end();
+         it++) {
         mMoggClips.push_back(&*it);
     }
 }
 
-SfxInst::~SfxInst(){
-    DeleteAll(mSamples);
-}
+SfxInst::~SfxInst() { DeleteAll(mSamples); }
 
-void SfxInst::StartImpl(){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::StartImpl() {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetStartProgress(mStartProgress);
         (*it)->Start();
     }
-    for(ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
-        MoggClipMap* moggClipMap = *it;
+    for (ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin();
+         it != mMoggClips.end();
+         ++it) {
+        MoggClipMap *moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x53);
-        MoggClip* clp = moggClipMap->GetMoggClip();
-        if(clp){
+        MoggClip *clp = moggClipMap->GetMoggClip();
+        if (clp) {
             clp->SetVolume(moggClipMap->mVolume);
-            clp->SetupPanInfo(moggClipMap->mPan, moggClipMap->mPanWidth, moggClipMap->mIsStereo);
+            clp->SetupPanInfo(
+                moggClipMap->mPan, moggClipMap->mPanWidth, moggClipMap->mIsStereo
+            );
             clp->Play();
         }
     }
 }
 
-void SfxInst::Stop(){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::Stop() {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->Stop();
     }
-    for(ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
-        MoggClipMap* moggClipMap = *it;
+    for (ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin();
+         it != mMoggClips.end();
+         ++it) {
+        MoggClipMap *moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x68);
-        MoggClip* clp = moggClipMap->GetMoggClip();
-        if(clp) clp->Stop();
+        MoggClip *clp = moggClipMap->GetMoggClip();
+        if (clp)
+            clp->Stop();
     }
 }
 
-bool SfxInst::IsRunning(){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
-        if((*it)->IsPlaying()) return true;
+bool SfxInst::IsRunning() {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
+        if ((*it)->IsPlaying())
+            return true;
     }
-    for(ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
-        MoggClipMap* moggClipMap = *it;
+    for (ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin();
+         it != mMoggClips.end();
+         ++it) {
+        MoggClipMap *moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x7F);
-        MoggClip* clp = moggClipMap->GetMoggClip();
-        if(clp){
-            if(clp->HasStream()) return true;
+        MoggClip *clp = moggClipMap->GetMoggClip();
+        if (clp) {
+            if (clp->HasStream())
+                return true;
         }
     }
     return false;
 }
 
-void SfxInst::Pause(bool b){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::Pause(bool b) {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->Pause(b);
     }
-    for(ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
-        MoggClipMap* moggClipMap = *it;
+    for (ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin();
+         it != mMoggClips.end();
+         ++it) {
+        MoggClipMap *moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0x95);
-        MoggClip* clp = moggClipMap->GetMoggClip();
-        if(clp) clp->Pause(b);
+        MoggClip *clp = moggClipMap->GetMoggClip();
+        if (clp)
+            clp->Pause(b);
     }
 }
 
-void SfxInst::SetSend(FxSend* send){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::SetSend(FxSend *send) {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetSend(send);
     }
 }
 
-void SfxInst::SetReverbMixDb(float f){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::SetReverbMixDb(float f) {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetReverbMixDb(f);
     }
 }
 
-void SfxInst::SetReverbEnable(bool b){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::SetReverbEnable(bool b) {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetReverbEnable(b);
     }
 }
 
-void SfxInst::SetSpeed(float f){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::SetSpeed(float f) {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetSpeed(f);
     }
 }
 
-void SfxInst::SetTranspose(float f){
-    SetSpeed(CalcSpeedFromTranspose(f));
-}
+void SfxInst::SetTranspose(float f) { SetSpeed(CalcSpeedFromTranspose(f)); }
 
-void SfxInst::UpdateVolume(){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::UpdateVolume() {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetVolume(mVolume + mOwner->mFaders.GetVal());
     }
-    for(ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin(); it != mMoggClips.end(); ++it){
-        MoggClipMap* moggClipMap = *it;
+    for (ObjPtrList<MoggClipMap>::iterator it = mMoggClips.begin();
+         it != mMoggClips.end();
+         ++it) {
+        MoggClipMap *moggClipMap = *it;
         MILO_ASSERT(moggClipMap, 0xCB);
-        MoggClip* clp = moggClipMap->GetMoggClip();
-        if(clp) clp->SetControllerVolume(mRandVol + mVolume + mOwner->mFaders.GetVal());
+        MoggClip *clp = moggClipMap->GetMoggClip();
+        if (clp)
+            clp->SetControllerVolume(mRandVol + mVolume + mOwner->mFaders.GetVal());
     }
 }
 
-void SfxInst::SetPan(float f){
-    for(std::vector<SampleInst*>::iterator it = mSamples.begin(); it != mSamples.end(); it++){
+void SfxInst::SetPan(float f) {
+    for (std::vector<SampleInst *>::iterator it = mSamples.begin(); it != mSamples.end();
+         it++) {
         (*it)->SetPan(f);
     }
 }
 
-Sfx::Sfx() : mMaps(this), mMoggClipMaps(this), mSend(this), mReverbMixDb(-96.0f), mReverbEnable(0), mSfxInsts(this, kObjListNoNull) {
+Sfx::Sfx()
+    : mMaps(this), mMoggClipMaps(this), mSend(this), mReverbMixDb(-96.0f),
+      mReverbEnable(0), mSfxInsts(this, kObjListNoNull) {
     mFaders.Add(TheSynth->mMasterFader);
     mFaders.Add(TheSynth->mSfxFader);
 }
 
-void Sfx::SynthPoll(){ Sequence::SynthPoll(); }
+void Sfx::SynthPoll() { Sequence::SynthPoll(); }
 
-void Sfx::Pause(bool b){
-    for(ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+void Sfx::Pause(bool b) {
+    for (ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end();
+         ++it) {
         (*it)->Pause(b);
     }
 }
 
-SeqInst* Sfx::MakeInstImpl(){
-    SfxInst* inst = new SfxInst(this);
+SeqInst *Sfx::MakeInstImpl() {
+    SfxInst *inst = new SfxInst(this);
     mSfxInsts.push_back(inst);
     return inst;
 }
@@ -164,13 +195,13 @@ BEGIN_HANDLERS(Sfx)
 END_HANDLERS
 
 BEGIN_CUSTOM_PROPSYNC(ADSR)
-    SYNC_PROP(attack_mode, (int&)o.mAttackMode)
+    SYNC_PROP(attack_mode, (int &)o.mAttackMode)
     SYNC_PROP(attack_rate, o.mAttackRate)
     SYNC_PROP(decay_rate, o.mDecayRate)
-    SYNC_PROP(sustain_mode, (int&)o.mSustainMode)
+    SYNC_PROP(sustain_mode, (int &)o.mSustainMode)
     SYNC_PROP(sustain_rate, o.mSustainRate)
     SYNC_PROP(sustain_level, o.mSustainLevel)
-    SYNC_PROP(release_mode, (int&)o.mReleaseMode)
+    SYNC_PROP(release_mode, (int &)o.mReleaseMode)
     SYNC_PROP(release_rate, o.mReleaseRate)
 END_CUSTOM_PROPSYNC
 
@@ -179,7 +210,7 @@ BEGIN_CUSTOM_PROPSYNC(SfxMap)
     SYNC_PROP(volume, o.mVolume)
     SYNC_PROP(pan, o.mPan)
     SYNC_PROP(transpose, o.mTranspose)
-    SYNC_PROP(fx_core, (int&)o.mFXCore)
+    SYNC_PROP(fx_core, (int &)o.mFXCore)
     SYNC_PROP(adsr, o.mADSR)
 END_CUSTOM_PROPSYNC
 
@@ -206,25 +237,29 @@ SAVE_OBJ(Sfx, 0x17C)
 BEGIN_LOADS(Sfx)
     int rev;
     bs >> rev;
-    if(rev > 0xC) MILO_WARN("Can't load new Sfx");
+    if (rev > 0xC)
+        MILO_WARN("Can't load new Sfx");
     else {
-        if(rev >= 6) LOAD_SUPERCLASS(Sequence)
-        else if(rev >= 2) LOAD_SUPERCLASS(Hmx::Object)
+        if (rev >= 6)
+            LOAD_SUPERCLASS(Sequence)
+        else if (rev >= 2)
+            LOAD_SUPERCLASS(Hmx::Object)
         SfxMap::gRev = rev;
         bs >> mMaps;
-        if(rev >= 10){
+        if (rev >= 10) {
             MoggClipMap::sRev = rev;
             bs >> mMoggClipMaps;
         }
-        if(rev > 4){
+        if (rev > 4) {
             bs >> mSend;
-            if(rev <= 7){
+            if (rev <= 7) {
                 int i;
                 bs >> i;
             }
         }
-        if(rev >= 9) mFaders.Load(bs);
-        if(rev >= 0xC){
+        if (rev >= 9)
+            mFaders.Load(bs);
+        if (rev >= 0xC) {
             bs >> mReverbMixDb >> mReverbEnable;
         }
     }
@@ -234,7 +269,7 @@ BEGIN_COPYS(Sfx)
     COPY_SUPERCLASS(Sequence)
     CREATE_COPY(Sfx)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mMaps)
             COPY_MEMBER(mMoggClipMaps)
         }
@@ -244,23 +279,26 @@ BEGIN_COPYS(Sfx)
     END_COPYING_MEMBERS
 END_COPYS
 
-void Sfx::SetSend(FxSend* send){
+void Sfx::SetSend(FxSend *send) {
     mSend = send;
-    for(ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+    for (ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end();
+         ++it) {
         (*it)->SetSend(mSend);
     }
 }
 
-void Sfx::SetReverbMixDb(float f){
+void Sfx::SetReverbMixDb(float f) {
     mReverbMixDb = f;
-    for(ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+    for (ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end();
+         ++it) {
         (*it)->SetReverbMixDb(mReverbMixDb);
     }
 }
 
-void Sfx::SetReverbEnable(bool b){
+void Sfx::SetReverbEnable(bool b) {
     mReverbEnable = b;
-    for(ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end(); ++it){
+    for (ObjPtrList<SfxInst>::iterator it = mSfxInsts.begin(); it != mSfxInsts.end();
+         ++it) {
         (*it)->SetReverbEnable(mReverbEnable);
     }
 }

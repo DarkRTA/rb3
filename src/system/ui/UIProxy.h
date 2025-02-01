@@ -11,39 +11,37 @@ public:
     UIProxy();
     OBJ_CLASSNAME(UIProxy)
     OBJ_SET_TYPE(UIProxy)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
-    virtual ~UIProxy(){}
-    virtual void SetTypeDef(DataArray*);
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
+    virtual ~UIProxy() {}
+    virtual void SetTypeDef(DataArray *);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Poll();
 
     void UpdateDir();
     void SyncDir();
-    void SetProxyDir(const FilePath&, bool);
-    void SetProxyDir(RndDir*);
-    DataNode OnSetProxyDir(DataArray*);
-    RndDir* ProxyDir() const { return mDir; }
+    void SetProxyDir(const FilePath &, bool);
+    void SetProxyDir(RndDir *);
+    DataNode OnSetProxyDir(DataArray *);
+    RndDir *ProxyDir() const { return mDir; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD
     NEW_OBJ(UIProxy);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UIProxy);
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UIProxy); }
 
     ObjDirPtr<RndDir> mDir; // 0x10c
     /** "environment to use on it" */
     ObjPtr<RndEnviron> mEnv; // 0x118
-    RndTransformable* mMainTrans; // 0x124
+    RndTransformable *mMainTrans; // 0x124
     Transform mOldXfm; // 0x128
     bool mSyncOnMove; // 0x158
     bool mPolled; // 0x159

@@ -12,26 +12,28 @@ public:
     LabelNumberTicker();
     OBJ_CLASSNAME(LabelNumberTicker)
     OBJ_SET_TYPE(LabelNumberTicker)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~LabelNumberTicker();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Enter();
     virtual void Poll();
 
     void UpdateDisplay();
-    void SetLabel(UILabel*);
+    void SetLabel(UILabel *);
     void SnapToValue(int);
     void CountUp();
     void SetDesiredValue(int);
 
-    UILabel* Label() const {
-        if(!mLabel) return 0;
-        else return mLabel;
+    UILabel *Label() const {
+        if (!mLabel)
+            return 0;
+        else
+            return mLabel;
     }
 
     DECLARE_REVS;
@@ -40,7 +42,7 @@ public:
     NEW_OBJ(LabelNumberTicker)
     static void Init();
 
-    static void Register(){ REGISTER_OBJ_FACTORY(LabelNumberTicker); }
+    static void Register() { REGISTER_OBJ_FACTORY(LabelNumberTicker); }
 
     /** "label to be shrink wrapped" */
     ObjPtr<UILabel> mLabel; // 0x10c

@@ -17,18 +17,18 @@ public:
     RndLine();
     OBJ_CLASSNAME(Line);
     OBJ_SET_TYPE(Line);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void UpdateSphere();
-    virtual float GetDistanceToPlane(const Plane&, Vector3&);
-    virtual bool MakeWorldSphere(Sphere&, bool);
-    virtual void Mats(std::list<class RndMat*>&, bool);
+    virtual float GetDistanceToPlane(const Plane &, Vector3 &);
+    virtual bool MakeWorldSphere(Sphere &, bool);
+    virtual void Mats(std::list<class RndMat *> &, bool);
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
     virtual void Highlight();
     virtual ~RndLine();
     virtual int Mesh() const; // fix return type
@@ -36,24 +36,24 @@ public:
 
     void UpdateInternal();
     void SetNumPoints(int);
-    void SetPointPos(int, const Vector3&);
+    void SetPointPos(int, const Vector3 &);
     void SetUpdate(bool);
-    void SetMat(RndMat*);
-    DataNode OnSetMat(const DataArray*);
+    void SetMat(RndMat *);
+    DataNode OnSetMat(const DataArray *);
 
     int NumPoints() const { return mPoints.size(); }
-    Point& PointAt(int idx){ return mPoints[idx]; }
+    Point &PointAt(int idx) { return mPoints[idx]; }
     float GetWidth() const { return mWidth; }
-    void SetWidth(float w){ mWidth = w; }
+    void SetWidth(float w) { mWidth = w; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndLine)
-    static void Init(){ REGISTER_OBJ_FACTORY(RndLine) }
+    static void Init() { REGISTER_OBJ_FACTORY(RndLine) }
 
     float mWidth; // 0xb0
     std::vector<Point> mPoints; // 0xb4
-    RndMesh* mMesh; // 0xbc
+    RndMesh *mMesh; // 0xbc
     float mFoldAngle; // 0xc0
     float mFoldCos; // 0xc4
     ObjPtr<RndMat, ObjectDir> mMat; // 0xc8

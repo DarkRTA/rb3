@@ -6,25 +6,24 @@
 
 INIT_REVS(CharFaceServo)
 
-CharFaceServo::CharFaceServo() : mClips(this), mBaseClip(this), mBlinkClipLeft(this), mBlinkClipLeft2(this), mBlinkClipRight(this), mBlinkClipRight2(this),
-    mBlinkWeightLeft(0.0f), mBlinkWeightRight(0.0f), mNeedScaleDown(0), mProceduralBlinkWeight(0.0f), mAppliedProceduralBlink(0) {
+CharFaceServo::CharFaceServo()
+    : mClips(this), mBaseClip(this), mBlinkClipLeft(this), mBlinkClipLeft2(this),
+      mBlinkClipRight(this), mBlinkClipRight2(this), mBlinkWeightLeft(0.0f),
+      mBlinkWeightRight(0.0f), mNeedScaleDown(0), mProceduralBlinkWeight(0.0f),
+      mAppliedProceduralBlink(0) {}
 
-}
+CharFaceServo::~CharFaceServo() {}
 
-CharFaceServo::~CharFaceServo(){
-
-}
-
-void CharFaceServo::Enter(){
+void CharFaceServo::Enter() {
     RndPollable::Enter();
     mNeedScaleDown = true;
     mProceduralBlinkWeight = 0.0f;
 }
 
-void CharFaceServo::TryScaleDown(){
-    if(mNeedScaleDown){
+void CharFaceServo::TryScaleDown() {
+    if (mNeedScaleDown) {
         mNeedScaleDown = false;
-        if(mBaseClip && !mClipType.Null()){
+        if (mBaseClip && !mClipType.Null()) {
             mBaseClip->ScaleDown(*this, 0.0f);
         }
         mBlinkWeightRight = 0.0f;
@@ -32,9 +31,9 @@ void CharFaceServo::TryScaleDown(){
     }
 }
 
-void CharFaceServo::SetClips(ObjectDir* dir){
+void CharFaceServo::SetClips(ObjectDir *dir) {
     mClips = dir;
-    if(mClips){
+    if (mClips) {
         mBaseClip = mClips->Find<CharClip>("Base", false);
         mBlinkClipLeft = mClips->Find<CharClip>(mBlinkClipLeftName.mStr, false);
         mBlinkClipLeft2 = mClips->Find<CharClip>(mBlinkClipLeftName2.mStr, false);
@@ -43,8 +42,8 @@ void CharFaceServo::SetClips(ObjectDir* dir){
     }
 }
 
-void CharFaceServo::SetClipType(Symbol s){
-    if(s != mClipType){
+void CharFaceServo::SetClipType(Symbol s) {
+    if (s != mClipType) {
         mClipType = s;
         ClearBones();
         CharBoneDir::StuffBones(*this, mClipType);
@@ -52,12 +51,12 @@ void CharFaceServo::SetClipType(Symbol s){
     }
 }
 
-void CharFaceServo::ReallocateInternal(){ CharBonesMeshes::ReallocateInternal(); }
+void CharFaceServo::ReallocateInternal() { CharBonesMeshes::ReallocateInternal(); }
 
 // matches in retail
-void CharFaceServo::Poll(){
+void CharFaceServo::Poll() {
     START_AUTO_TIMER("faceservo");
-    if(mBaseClip){
+    if (mBaseClip) {
         TryScaleDown();
         ScaleAddIdentity();
         mBaseClip->RotateBy(*this, mBaseClip->StartBeat());
@@ -68,18 +67,18 @@ void CharFaceServo::Poll(){
 }
 
 // fn_804D35EC - matches in retail
-void CharFaceServo::ScaleAdd(CharClip* clip, float weight, float f2, float f3){
-    if(!clip->Relative()){
-        MILO_NOTIFY_ONCE("%s playing non-relative clip %s, cut it out!", PathName(this), PathName(clip));
-    }
-    else {
+void CharFaceServo::ScaleAdd(CharClip *clip, float weight, float f2, float f3) {
+    if (!clip->Relative()) {
+        MILO_NOTIFY_ONCE(
+            "%s playing non-relative clip %s, cut it out!", PathName(this), PathName(clip)
+        );
+    } else {
         MILO_ASSERT(weight >= 0, 0x88);
         TryScaleDown();
-        if(clip == mBlinkClipLeft || clip == mBlinkClipLeft2){
+        if (clip == mBlinkClipLeft || clip == mBlinkClipLeft2) {
             mBlinkWeightLeft += weight;
             mBlinkWeightLeft = Clamp(0.0f, 1.0f, mBlinkWeightLeft);
-        }
-        else if(clip == mBlinkClipRight || clip == mBlinkClipRight2){
+        } else if (clip == mBlinkClipRight || clip == mBlinkClipRight2) {
             mBlinkWeightRight += weight;
             mBlinkWeightRight = Clamp(0.0f, 1.0f, mBlinkWeightRight);
         }
@@ -89,20 +88,32 @@ void CharFaceServo::ScaleAdd(CharClip* clip, float weight, float f2, float f3){
 
 float CharFaceServo::BlinkWeightLeft() const { return mBlinkWeightLeft; }
 
-void CharFaceServo::ApplyProceduralWeights(){
-    if(mProceduralBlinkWeight > 0.0f && !mAppliedProceduralBlink){
+void CharFaceServo::ApplyProceduralWeights() {
+    if (mProceduralBlinkWeight > 0.0f && !mAppliedProceduralBlink) {
         TryScaleDown();
-        if(mBlinkClipLeft){
-            mBlinkClipLeft->ScaleAdd(*this, Interp(0.0f, 1.0f - mBlinkWeightLeft, mProceduralBlinkWeight), mBlinkClipLeft->StartBeat(), 0.0f);
+        if (mBlinkClipLeft) {
+            mBlinkClipLeft->ScaleAdd(
+                *this,
+                Interp(0.0f, 1.0f - mBlinkWeightLeft, mProceduralBlinkWeight),
+                mBlinkClipLeft->StartBeat(),
+                0.0f
+            );
         }
-        if(mBlinkClipRight && mBlinkClipRight != mBlinkClipLeft){
-            mBlinkClipRight->ScaleAdd(*this, Interp(0.0f, 1.0f - mBlinkWeightRight, mProceduralBlinkWeight), mBlinkClipRight->StartBeat(), 0.0f);
+        if (mBlinkClipRight && mBlinkClipRight != mBlinkClipLeft) {
+            mBlinkClipRight->ScaleAdd(
+                *this,
+                Interp(0.0f, 1.0f - mBlinkWeightRight, mProceduralBlinkWeight),
+                mBlinkClipRight->StartBeat(),
+                0.0f
+            );
         }
         mAppliedProceduralBlink = true;
     }
 }
 
-void CharFaceServo::PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>& change){
+void CharFaceServo::PollDeps(
+    std::list<Hmx::Object *> &, std::list<Hmx::Object *> &change
+) {
     StuffMeshes(change);
 }
 
@@ -116,19 +127,22 @@ BEGIN_LOADS(CharFaceServo)
     ObjPtr<ObjectDir> oDirPtr(this);
     bs >> oDirPtr;
     Symbol sym;
-    if(gRev > 3) bs >> sym;
-    else if(oDirPtr){
+    if (gRev > 3)
+        bs >> sym;
+    else if (oDirPtr) {
         sym = oDirPtr->Type();
-        if(sym.Null()){
-            for(ObjDirItr<CharClip> it(oDirPtr, true); it != nullptr; ++it){
+        if (sym.Null()) {
+            for (ObjDirItr<CharClip> it(oDirPtr, true); it != nullptr; ++it) {
                 sym = it->Type();
                 break;
             }
         }
     }
-    if(gRev != 0) bs >> mBlinkClipLeftName;
-    if(gRev > 1) bs >> mBlinkClipRightName;
-    if(gRev > 2){
+    if (gRev != 0)
+        bs >> mBlinkClipLeftName;
+    if (gRev > 1)
+        bs >> mBlinkClipRightName;
+    if (gRev > 2) {
         bs >> mBlinkClipLeftName2;
         bs >> mBlinkClipRightName2;
     }

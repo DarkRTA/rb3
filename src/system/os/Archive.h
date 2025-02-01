@@ -10,17 +10,17 @@
 class ArkHash {
 public:
     ArkHash();
-    int GetHashValue(const char*) const;
-    int Read(BinStream&, int);
-    char* operator[](int idx) const {
+    int GetHashValue(const char *) const;
+    int Read(BinStream &, int);
+    char *operator[](int idx) const {
         MILO_ASSERT(idx < mTableSize, 0x99);
         return mTable[idx];
     }
 
-    char* mHeap;
-    char* mHeapEnd;
-    char* mFree;
-    char** mTable;
+    char *mHeap;
+    char *mHeapEnd;
+    char *mFree;
+    char **mTable;
     int mTableSize;
 };
 
@@ -33,7 +33,7 @@ public:
     int mUCSize;
 };
 
-BinStream& operator>>(BinStream&, FileEntry&);
+BinStream &operator>>(BinStream &, FileEntry &);
 
 const int preinitArk = 1;
 
@@ -43,16 +43,17 @@ enum Mode {
 };
 
 class Archive {
-    public:
-    Archive(const char*, int);
-    bool GetFileInfo(const char*, int&, unsigned long long&, int&, int&);
+public:
+    Archive(const char *, int);
+    bool GetFileInfo(const char *, int &, unsigned long long &, int &, int &);
     void Read(int);
-    void Enumerate(const char*, void (*)(const char*, const char*), bool, const char*);
-    const char* GetArkfileName(int) const;
-    void GetGuid(HxGuid&) const;
+    void
+    Enumerate(const char *, void (*)(const char *, const char *), bool, const char *);
+    const char *GetArkfileName(int) const;
+    void GetGuid(HxGuid &) const;
     static bool DebugArkOrder();
     bool HasArchivePermission(int) const;
-    void SetArchivePermission(int, const int*);
+    void SetArchivePermission(int, const int *);
     int GetArkfileCachePriority(int) const;
     int GetArkfileNumBlocks(int) const;
 
@@ -67,11 +68,10 @@ class Archive {
     uint mMaxArkfileSize;
     bool mIsPatched;
     HxGuid mGuid;
-    const int* unk60;
+    const int *unk60;
     int unk64;
-
 };
 
-extern Archive* TheArchive;
+extern Archive *TheArchive;
 
 #endif // OS_ARCHIVE_H

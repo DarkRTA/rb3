@@ -6,7 +6,8 @@
 
 class WaveFileMarker {
 public:
-    WaveFileMarker(int frame, int id, const String& name) : mFrame(frame), mID(id), mName(name) {}
+    WaveFileMarker(int frame, int id, const String &name)
+        : mFrame(frame), mID(id), mName(name) {}
     // total size: 0x14
     int mFrame; // offset 0x0, size 0x4
     int mID; // offset 0x4, size 0x4
@@ -15,12 +16,12 @@ public:
 
 class WaveFile {
 public:
-    WaveFile(BinStream&);
+    WaveFile(BinStream &);
     ~WaveFile();
     void ReadFormat();
     void ReadMarkers();
     void ReadNumSamples();
-    IListChunk& PrepareToProvideData();
+    IListChunk &PrepareToProvideData();
     int NumChannels() const { return mNumChannels; }
     int BitsPerSample() const { return mBitsPerSample; }
     int SamplesPerSec() const { return mSamplesPerSec; }
@@ -41,10 +42,10 @@ public:
 
 class WaveFileData : public IDataChunk {
 public:
-    WaveFileData(WaveFile&);
+    WaveFileData(WaveFile &);
     virtual ~WaveFileData();
 
-    WaveFile* mWaveFile;
+    WaveFile *mWaveFile;
 };
 
 #endif

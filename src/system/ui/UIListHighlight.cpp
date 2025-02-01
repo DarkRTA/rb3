@@ -4,9 +4,7 @@
 
 INIT_REVS(UIListHighlight)
 
-UIListHighlight::UIListHighlight() : mMesh(this, 0) {
-
-}
+UIListHighlight::UIListHighlight() : mMesh(this, 0) {}
 
 SAVE_OBJ(UIListHighlight, 0x28)
 
@@ -24,12 +22,20 @@ BEGIN_COPYS(UIListHighlight)
     COPY_MEMBER_FROM(h, mMesh)
 END_COPYS
 
-void UIListHighlight::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& tf, UIComponent::State compstate, Box* box, DrawCommand cmd){
-    if(!mMesh || cmd == kDrawFirst) return;
-    Transform& worldxfm = mMesh->WorldXfm();
+void UIListHighlight::Draw(
+    const UIListWidgetDrawState &drawstate,
+    const UIListState &liststate,
+    const Transform &tf,
+    UIComponent::State compstate,
+    Box *box,
+    DrawCommand cmd
+) {
+    if (!mMesh || cmd == kDrawFirst)
+        return;
+    Transform &worldxfm = mMesh->WorldXfm();
     Transform xfm1 = worldxfm;
     Transform xfm2 = xfm1;
-    if(ParentList()){
+    if (ParentList()) {
         ParentList()->AdjustTransSelected(xfm2);
     }
     CalcXfm(tf, drawstate.mHighlightPos, xfm2);

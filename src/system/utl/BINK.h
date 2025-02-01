@@ -14,7 +14,7 @@ struct BINKRECT {
 struct BINKPLANE {
     // total size: 0xC
     int Allocate; // offset 0x0, size 0x4
-    void * Buffer; // offset 0x4, size 0x4
+    void *Buffer; // offset 0x4, size 0x4
     unsigned int BufferPitch; // offset 0x8, size 0x4
 };
 
@@ -39,13 +39,13 @@ struct BINKFRAMEBUFFERS {
 
 struct BINKSND {
     // total size: 0x180
-    unsigned char * sndwritepos; // offset 0x0, size 0x4
+    unsigned char *sndwritepos; // offset 0x0, size 0x4
     unsigned int audiodecompsize; // offset 0x4, size 0x4
     unsigned int sndbufsize; // offset 0x8, size 0x4
-    unsigned char * sndbuf; // offset 0xC, size 0x4
-    unsigned char * sndend; // offset 0x10, size 0x4
+    unsigned char *sndbuf; // offset 0xC, size 0x4
+    unsigned char *sndend; // offset 0x10, size 0x4
     unsigned int sndcomp; // offset 0x14, size 0x4
-    unsigned char * sndreadpos; // offset 0x18, size 0x4
+    unsigned char *sndreadpos; // offset 0x18, size 0x4
     unsigned int orig_freq; // offset 0x1C, size 0x4
     unsigned int freq; // offset 0x20, size 0x4
     int bits; // offset 0x24, size 0x4
@@ -62,41 +62,50 @@ struct BINKSND {
     unsigned int SoundDroppedOut; // offset 0x50, size 0x4
     unsigned int sndconvert8; // offset 0x54, size 0x4
     unsigned char snddata[256]; // offset 0x58, size 0x100
-    int (* Ready)(struct BINKSND *); // offset 0x158, size 0x4
-    int (* Lock)(struct BINKSND *, unsigned char * *, unsigned int *); // offset 0x15C, size 0x4
-    int (* Unlock)(struct BINKSND *, unsigned int); // offset 0x160, size 0x4
-    void (* Volume)(struct BINKSND *, int); // offset 0x164, size 0x4
-    void (* Pan)(struct BINKSND *, int); // offset 0x168, size 0x4
-    int (* Pause)(struct BINKSND *, int); // offset 0x16C, size 0x4
-    int (* SetOnOff)(struct BINKSND *, int); // offset 0x170, size 0x4
-    void (* Close)(struct BINKSND *); // offset 0x174, size 0x4
-    void (* MixBins)(struct BINKSND *, unsigned int *, unsigned int); // offset 0x178, size 0x4
-    void (* MixBinVols)(struct BINKSND *, unsigned int *, int *, unsigned int); // offset 0x17C, size 0x4
+    int (*Ready)(struct BINKSND *); // offset 0x158, size 0x4
+    int (*Lock)(struct BINKSND *, unsigned char **, unsigned int *); // offset 0x15C, size
+                                                                     // 0x4
+    int (*Unlock)(struct BINKSND *, unsigned int); // offset 0x160, size 0x4
+    void (*Volume)(struct BINKSND *, int); // offset 0x164, size 0x4
+    void (*Pan)(struct BINKSND *, int); // offset 0x168, size 0x4
+    int (*Pause)(struct BINKSND *, int); // offset 0x16C, size 0x4
+    int (*SetOnOff)(struct BINKSND *, int); // offset 0x170, size 0x4
+    void (*Close)(struct BINKSND *); // offset 0x174, size 0x4
+    void (*MixBins)(struct BINKSND *, unsigned int *, unsigned int); // offset 0x178, size
+                                                                     // 0x4
+    void (*MixBinVols)(struct BINKSND *, unsigned int *, int *, unsigned int); // offset
+                                                                               // 0x17C,
+                                                                               // size 0x4
 };
 
 struct BUNDLEPOINTERS {
     // total size: 0x24
-    void * typeptr; // offset 0x0, size 0x4
-    void * type16ptr; // offset 0x4, size 0x4
-    void * colorptr; // offset 0x8, size 0x4
-    void * bits2ptr; // offset 0xC, size 0x4
-    void * motionXptr; // offset 0x10, size 0x4
-    void * motionYptr; // offset 0x14, size 0x4
-    void * dctptr; // offset 0x18, size 0x4
-    void * mdctptr; // offset 0x1C, size 0x4
-    void * patptr; // offset 0x20, size 0x4
+    void *typeptr; // offset 0x0, size 0x4
+    void *type16ptr; // offset 0x4, size 0x4
+    void *colorptr; // offset 0x8, size 0x4
+    void *bits2ptr; // offset 0xC, size 0x4
+    void *motionXptr; // offset 0x10, size 0x4
+    void *motionYptr; // offset 0x14, size 0x4
+    void *dctptr; // offset 0x18, size 0x4
+    void *mdctptr; // offset 0x1C, size 0x4
+    void *patptr; // offset 0x20, size 0x4
 };
 
 struct BINKIO {
     // total size: 0x144
-    unsigned int (* ReadHeader)(struct BINKIO *, int, void *, unsigned int); // offset 0x0, size 0x4
-    unsigned int (* ReadFrame)(struct BINKIO *, unsigned int, int, void *, unsigned int); // offset 0x4, size 0x4
-    unsigned int (* GetBufferSize)(struct BINKIO *, unsigned int); // offset 0x8, size 0x4
-    void (* SetInfo)(struct BINKIO *, void *, unsigned int, unsigned int, unsigned int); // offset 0xC, size 0x4
-    unsigned int (* Idle)(struct BINKIO *); // offset 0x10, size 0x4
-    void (* Close)(struct BINKIO *); // offset 0x14, size 0x4
-    int (* BGControl)(struct BINKIO *, unsigned int); // offset 0x18, size 0x4
-    struct BINK * bink; // offset 0x1C, size 0x4
+    unsigned int (*ReadHeader)(struct BINKIO *, int, void *, unsigned int); // offset 0x0,
+                                                                            // size 0x4
+    unsigned int (*ReadFrame)(
+        struct BINKIO *, unsigned int, int, void *, unsigned int
+    ); // offset 0x4, size 0x4
+    unsigned int (*GetBufferSize)(struct BINKIO *, unsigned int); // offset 0x8, size 0x4
+    void (*SetInfo)(
+        struct BINKIO *, void *, unsigned int, unsigned int, unsigned int
+    ); // offset 0xC, size 0x4
+    unsigned int (*Idle)(struct BINKIO *); // offset 0x10, size 0x4
+    void (*Close)(struct BINKIO *); // offset 0x14, size 0x4
+    int (*BGControl)(struct BINKIO *, unsigned int); // offset 0x18, size 0x4
+    struct BINK *bink; // offset 0x1C, size 0x4
     unsigned int ReadError; // offset 0x20, size 0x4
     unsigned int DoingARead; // offset 0x24, size 0x4
     unsigned int BytesRead; // offset 0x28, size 0x4
@@ -111,10 +120,10 @@ struct BINKIO {
     unsigned int CurBufUsed; // offset 0x4C, size 0x4
     unsigned int Suspended; // offset 0x50, size 0x4
     unsigned char iodata[160]; // offset 0x54, size 0xA0
-    void (* suspend_callback)(struct BINKIO *); // offset 0xF4, size 0x4
-    int (* try_suspend_callback)(struct BINKIO *); // offset 0xF8, size 0x4
-    void (* resume_callback)(struct BINKIO *); // offset 0xFC, size 0x4
-    void (* idle_on_callback)(struct BINKIO *); // offset 0x100, size 0x4
+    void (*suspend_callback)(struct BINKIO *); // offset 0xF4, size 0x4
+    int (*try_suspend_callback)(struct BINKIO *); // offset 0xF8, size 0x4
+    void (*resume_callback)(struct BINKIO *); // offset 0xFC, size 0x4
+    void (*idle_on_callback)(struct BINKIO *); // offset 0x100, size 0x4
     unsigned int callback_control[16]; // offset 0x104, size 0x40
 };
 
@@ -136,13 +145,13 @@ struct BINK {
     unsigned int FrameChangePercent; // offset 0x34, size 0x4
     struct BINKRECT FrameRects[8]; // offset 0x38, size 0x80
     int NumRects; // offset 0xB8, size 0x4
-    struct BINKFRAMEBUFFERS * FrameBuffers; // offset 0xBC, size 0x4
-    void * MaskPlane; // offset 0xC0, size 0x4
+    struct BINKFRAMEBUFFERS *FrameBuffers; // offset 0xBC, size 0x4
+    void *MaskPlane; // offset 0xC0, size 0x4
     unsigned int MaskPitch; // offset 0xC4, size 0x4
     unsigned int MaskLength; // offset 0xC8, size 0x4
-    void * AsyncMaskPlane; // offset 0xCC, size 0x4
-    void * InUseMaskPlane; // offset 0xD0, size 0x4
-    void * LastMaskPlane; // offset 0xD4, size 0x4
+    void *AsyncMaskPlane; // offset 0xCC, size 0x4
+    void *InUseMaskPlane; // offset 0xD0, size 0x4
+    void *LastMaskPlane; // offset 0xD4, size 0x4
     unsigned int LargestFrameSize; // offset 0xD8, size 0x4
     unsigned int InternalFrames; // offset 0xDC, size 0x4
     int NumTracks; // offset 0xE0, size 0x4
@@ -152,26 +161,26 @@ struct BINK {
     int async_in_progress[2]; // offset 0xF0, size 0x8
     unsigned int soundon; // offset 0xF8, size 0x4
     unsigned int videoon; // offset 0xFC, size 0x4
-    void * compframe; // offset 0x100, size 0x4
+    void *compframe; // offset 0x100, size 0x4
     unsigned int compframesize; // offset 0x104, size 0x4
     unsigned int compframeoffset; // offset 0x108, size 0x4
     unsigned int compframekey; // offset 0x10C, size 0x4
     unsigned int skippedlastblit; // offset 0x110, size 0x4
     unsigned int playingtracks; // offset 0x114, size 0x4
-    struct BINKSND * bsnd; // offset 0x118, size 0x4
-    int * trackindexes; // offset 0x11C, size 0x4
+    struct BINKSND *bsnd; // offset 0x118, size 0x4
+    int *trackindexes; // offset 0x11C, size 0x4
     struct BUNDLEPOINTERS bunp; // offset 0x120, size 0x24
     unsigned int changepercent; // offset 0x144, size 0x4
-    void * preloadptr; // offset 0x148, size 0x4
-    unsigned int * frameoffsets; // offset 0x14C, size 0x4
+    void *preloadptr; // offset 0x148, size 0x4
+    unsigned int *frameoffsets; // offset 0x14C, size 0x4
     struct BINKIO bio; // offset 0x150, size 0x144
-    unsigned char * ioptr; // offset 0x294, size 0x4
+    unsigned char *ioptr; // offset 0x294, size 0x4
     unsigned int iosize; // offset 0x298, size 0x4
     unsigned int decompwidth; // offset 0x29C, size 0x4
     unsigned int decompheight; // offset 0x2A0, size 0x4
-    unsigned int * tracksizes; // offset 0x2A4, size 0x4
-    unsigned int * tracktypes; // offset 0x2A8, size 0x4
-    int * trackIDs; // offset 0x2AC, size 0x4
+    unsigned int *tracksizes; // offset 0x2A4, size 0x4
+    unsigned int *tracktypes; // offset 0x2A8, size 0x4
+    int *trackIDs; // offset 0x2AC, size 0x4
     unsigned int numrects; // offset 0x2B0, size 0x4
     unsigned int playedframes; // offset 0x2B4, size 0x4
     unsigned int firstframetime; // offset 0x2B8, size 0x4
@@ -192,13 +201,13 @@ struct BINK {
     unsigned int fileframeratediv; // offset 0x2F4, size 0x4
     unsigned int runtimeframes; // offset 0x2F8, size 0x4
     int rtindex; // offset 0x2FC, size 0x4
-    unsigned int * rtframetimes; // offset 0x300, size 0x4
-    unsigned int * rtadecomptimes; // offset 0x304, size 0x4
-    unsigned int * rtvdecomptimes; // offset 0x308, size 0x4
-    unsigned int * rtblittimes; // offset 0x30C, size 0x4
-    unsigned int * rtreadtimes; // offset 0x310, size 0x4
-    unsigned int * rtidlereadtimes; // offset 0x314, size 0x4
-    unsigned int * rtthreadreadtimes; // offset 0x318, size 0x4
+    unsigned int *rtframetimes; // offset 0x300, size 0x4
+    unsigned int *rtadecomptimes; // offset 0x304, size 0x4
+    unsigned int *rtvdecomptimes; // offset 0x308, size 0x4
+    unsigned int *rtblittimes; // offset 0x30C, size 0x4
+    unsigned int *rtreadtimes; // offset 0x310, size 0x4
+    unsigned int *rtidlereadtimes; // offset 0x314, size 0x4
+    unsigned int *rtthreadreadtimes; // offset 0x318, size 0x4
     unsigned int lastblitflags; // offset 0x31C, size 0x4
     unsigned int lastdecompframe; // offset 0x320, size 0x4
     unsigned int lastfinisheddoframe; // offset 0x324, size 0x4
@@ -215,27 +224,27 @@ struct BINK {
     unsigned int last_sound_count; // offset 0x350, size 0x4
     unsigned int snd_callback_buffer[16]; // offset 0x354, size 0x40
     int allkeys; // offset 0x394, size 0x4
-    struct BINKFRAMEBUFFERS * allocatedframebuffers; // offset 0x398, size 0x4
+    struct BINKFRAMEBUFFERS *allocatedframebuffers; // offset 0x398, size 0x4
 };
 
 struct BINKFRAMETEXTURES {
-    struct _GXTexObj Ytexture; 
-    struct _GXTexObj cRtexture; 
-    struct _GXTexObj cBtexture; 
-    struct _GXTexObj Atexture; 
+    struct _GXTexObj Ytexture;
+    struct _GXTexObj cRtexture;
+    struct _GXTexObj cBtexture;
+    struct _GXTexObj Atexture;
 };
 
 struct BINKTEXTURESET {
     struct BINKFRAMEBUFFERS bink_buffers;
-    struct BINKFRAMETEXTURES textures[2]; 
-    void * base_ptr; 
-    unsigned int framesize; 
+    struct BINKFRAMETEXTURES textures[2];
+    void *base_ptr;
+    unsigned int framesize;
     unsigned int YAdeswizzle_width;
-    unsigned int YAdeswizzle_height; 
-    unsigned int cRcBdeswizzle_width; 
-    unsigned int cRcBdeswizzle_height; 
-    struct _GXTexObj YAdeswizzle; 
-    struct _GXTexObj cRcBdeswizzle; 
+    unsigned int YAdeswizzle_height;
+    unsigned int cRcBdeswizzle_width;
+    unsigned int cRcBdeswizzle_height;
+    struct _GXTexObj YAdeswizzle;
+    struct _GXTexObj cRcBdeswizzle;
     int drawing[2];
 };
 
@@ -280,7 +289,7 @@ struct BINKTRACK {
     unsigned int Bits; // offset 0x4, size 0x4
     unsigned int Channels; // offset 0x8, size 0x4
     unsigned int MaxSize; // offset 0xC, size 0x4
-    struct BINK * bink; // offset 0x10, size 0x4
+    struct BINK *bink; // offset 0x10, size 0x4
     unsigned int sndcomp; // offset 0x14, size 0x4
     int trackindex; // offset 0x18, size 0x4
 };

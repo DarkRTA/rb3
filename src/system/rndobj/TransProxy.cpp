@@ -9,58 +9,53 @@
 
 INIT_REVS(RndTransProxy)
 
-RndTransProxy::RndTransProxy() : mProxy(this), mPart() {
+RndTransProxy::RndTransProxy() : mProxy(this), mPart() {}
 
-}
-
-void RndTransProxy::SetProxy(class ObjectDir* dir){
-    if(mProxy != dir){
+void RndTransProxy::SetProxy(class ObjectDir *dir) {
+    if (mProxy != dir) {
         mProxy = dir;
         Sync();
     }
 }
 
-void RndTransProxy::SetPart(Symbol sym){
-    if(mPart != sym){
+void RndTransProxy::SetPart(Symbol sym) {
+    if (mPart != sym) {
         mPart = sym;
         Sync();
     }
 }
 
-void RndTransProxy::Sync(){
+void RndTransProxy::Sync() {
     SetTransParent(0, false);
-    if(mProxy && mPart.Null()){
-        RndTransformable* trans = dynamic_cast<RndTransformable*>(mProxy.Ptr());
-        if(trans){
+    if (mProxy && mPart.Null()) {
+        RndTransformable *trans = dynamic_cast<RndTransformable *>(mProxy.Ptr());
+        if (trans) {
             SetTransParent(trans, false);
             return;
         }
     }
-    if(mProxy){
-        RndTransformable* trans = mProxy->Find<RndTransformable>(mPart.mStr, false);
-        if(trans){
-            SetTransParent(dynamic_cast<RndTransformable*>(trans), false);
+    if (mProxy) {
+        RndTransformable *trans = mProxy->Find<RndTransformable>(mPart.mStr, false);
+        if (trans) {
+            SetTransParent(dynamic_cast<RndTransformable *>(trans), false);
             return;
         }
     }
     SetTransParent(0, 0);
 }
 
-void RndTransProxy::PreSave(BinStream& bs){
-    SetTransParent(0, false);
-}
+void RndTransProxy::PreSave(BinStream &bs) { SetTransParent(0, false); }
 
-void RndTransProxy::PostSave(BinStream& bs){
-    Sync();
-}
+void RndTransProxy::PostSave(BinStream &bs) { Sync(); }
 
 SAVE_OBJ(RndTransProxy, 0x44);
 
-void RndTransProxy::Load(BinStream& bs){
+void RndTransProxy::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     LOAD_SUPERCLASS(Hmx::Object)
-    if(gRev != 0) LOAD_SUPERCLASS(RndTransformable)
+    if (gRev != 0)
+        LOAD_SUPERCLASS(RndTransformable)
     bs >> mProxy;
     bs >> mPart;
     Sync();

@@ -4,13 +4,12 @@
 
 INIT_REVS(CharBoneOffset)
 
-CharBoneOffset::CharBoneOffset() : mDest(this), mOffset(0.0f, 0.0f, 0.0f) {
-    
-}
+CharBoneOffset::CharBoneOffset() : mDest(this), mOffset(0.0f, 0.0f, 0.0f) {}
 
 // fn_804AF7B4
-void CharBoneOffset::Poll(){
-    if(!mDest || !mDest->TransParent()) return;
+void CharBoneOffset::Poll() {
+    if (!mDest || !mDest->TransParent())
+        return;
     Transform tf(mDest->LocalXfm());
     tf.v += mOffset;
     Transform tRes;
@@ -18,20 +17,24 @@ void CharBoneOffset::Poll(){
     mDest->SetWorldXfm(tRes);
 }
 
-void CharBoneOffset::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharBoneOffset::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mDest);
-    if(mDest && mDest->TransParent()) changedBy.push_back(mDest->TransParent());
+    if (mDest && mDest->TransParent())
+        changedBy.push_back(mDest->TransParent());
 }
 
-void CharBoneOffset::Highlight(){}
+void CharBoneOffset::Highlight() {}
 
-void CharBoneOffset::ApplyToLocal(){
-    if(mDest) mDest->DirtyLocalXfm().v += mOffset;
+void CharBoneOffset::ApplyToLocal() {
+    if (mDest)
+        mDest->DirtyLocalXfm().v += mOffset;
 }
 
 SAVE_OBJ(CharBoneOffset, 0x5E)
 
-void CharBoneOffset::Load(BinStream& bs){
+void CharBoneOffset::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);

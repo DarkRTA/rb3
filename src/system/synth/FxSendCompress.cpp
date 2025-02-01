@@ -4,29 +4,30 @@
 
 INIT_REVS(FxSendCompress);
 
-FxSendCompress::FxSendCompress() : mThresholdDB(-12.0f), mRatio(3.0f), mOutputLevel(0.0f), mAttack(0.005f), mRelease(0.12f), mExpRatio(1.0f), mExpAttack(0.12f), mExpRelease(0.005f) {
+FxSendCompress::FxSendCompress()
+    : mThresholdDB(-12.0f), mRatio(3.0f), mOutputLevel(0.0f), mAttack(0.005f),
+      mRelease(0.12f), mExpRatio(1.0f), mExpAttack(0.12f), mExpRelease(0.005f) {}
 
-}
-
-FxSendCompress::~FxSendCompress(){
-
-}
+FxSendCompress::~FxSendCompress() {}
 
 SAVE_OBJ(FxSendCompress, 0x1F);
 
-void FxSendCompress::Load(BinStream& bs){
+void FxSendCompress::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(4, 0);
     FxSend::Load(bs);
     bs >> mThresholdDB >> mRatio >> mOutputLevel;
-    if(gRev < 2) mOutputLevel = 0.0f;
+    if (gRev < 2)
+        mOutputLevel = 0.0f;
     bs >> mAttack >> mRelease;
     int dummy;
-    if(gRev < 2) bs >> dummy;
-    if(gRev >= 3){
+    if (gRev < 2)
+        bs >> dummy;
+    if (gRev >= 3) {
         bs >> mExpRatio >> mExpAttack >> mExpRelease;
     }
-    if(gRev >= 4) bs >> mGateThresholdDB;
+    if (gRev >= 4)
+        bs >> mGateThresholdDB;
     OnParametersChanged();
 }
 

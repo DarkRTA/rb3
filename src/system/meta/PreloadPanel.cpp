@@ -4,18 +4,19 @@
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
 
-FileCache* PreloadPanel::sCache;
+FileCache *PreloadPanel::sCache;
 
-PreloadPanel::PreloadPanel() : mPreloadResult(kPreloadInProgress), mMounted(0), mAppReadFailureHandler(0), unk58(0), unk68(0) {
-    if(!sCache) sCache = new FileCache(0x500000, kLoadBack, true);
+PreloadPanel::PreloadPanel()
+    : mPreloadResult(kPreloadInProgress), mMounted(0), mAppReadFailureHandler(0),
+      unk58(0), unk68(0) {
+    if (!sCache)
+        sCache = new FileCache(0x500000, kLoadBack, true);
 }
 
-PreloadPanel::~PreloadPanel(){
+PreloadPanel::~PreloadPanel() {}
 
-}
-
-void PreloadPanel::SetTypeDef(DataArray* da){
-    if(TypeDef() != da){
+void PreloadPanel::SetTypeDef(DataArray *da) {
+    if (TypeDef() != da) {
         UIPanel::SetTypeDef(da);
 #ifdef MILO_DEBUG
         CheckTypeDef("song_mgr");
@@ -26,13 +27,13 @@ void PreloadPanel::SetTypeDef(DataArray* da){
     }
 }
 
-void PreloadPanel::CheckTypeDef(Symbol s){
-    if(!TypeDef()->FindArray(s, false)){
+void PreloadPanel::CheckTypeDef(Symbol s) {
+    if (!TypeDef()->FindArray(s, false)) {
         MILO_WARN("PreloadPanel %s missing %s handler (%s)", Name(), s, TypeDef()->File());
     }
 }
 
-void PreloadPanel::Load(){
+void PreloadPanel::Load() {
     UIPanel::Load();
     mPreloadResult = kPreloadInProgress;
     TheContentMgr->RegisterCallback(this, false);
@@ -41,19 +42,23 @@ void PreloadPanel::Load(){
     unk58 = false;
     unk5c = gNullStr;
     Symbol curSong = CurrentSong();
-    if(curSong.Null()) MILO_WARN("Trying to preload null song");
-    class SongMgr* song_mgr = SongMgr();
+    if (curSong.Null())
+        MILO_WARN("Trying to preload null song");
+    class SongMgr *song_mgr = SongMgr();
     MILO_ASSERT(song_mgr, 0x67);
     mContentNames.clear();
     unk68 = false;
-    if(!song_mgr->HasSong(curSong, false)) unk68 = true;
+    if (!song_mgr->HasSong(curSong, false))
+        unk68 = true;
     else {
         song_mgr->GetContentNames(curSong, mContentNames);
         bool b1 = true;
-        for(std::vector<Symbol>::iterator it = mContentNames.begin(); it != mContentNames.end(); ++it){
+        for (std::vector<Symbol>::iterator it = mContentNames.begin();
+             it != mContentNames.end();
+             ++it) {
             Symbol cur = *it;
-            WiiContent* cnt = TheWiiContentMgr.ContentOf(cur);
-            if(!cnt){
+            WiiContent *cnt = TheWiiContentMgr.ContentOf(cur);
+            if (!cnt) {
                 b1 = false;
                 MILO_WARN("PreloadPanel: content %s not found.\n", (*it).mStr);
                 TheWiiContentMgr.UnmountContents("");
@@ -62,75 +67,83 @@ void PreloadPanel::Load(){
                 mPreloadResult = kPreloadFailure;
                 break;
             }
-            if(cnt->GetState() != 4){
+            if (cnt->GetState() != 4) {
                 b1 = false;
                 TheWiiContentMgr.UnmountContents("");
                 break;
             }
         }
-        if(b1){
+        if (b1) {
             mContentNames.clear();
         }
-        for(std::vector<Symbol>::iterator it = mContentNames.begin(); it != mContentNames.end(); it){
+        for (std::vector<Symbol>::iterator it = mContentNames.begin();
+             it != mContentNames.end();
+             it) {
             Symbol cur = *it;
-            if(!TheContentMgr->MountContent(cur)){
+            if (!TheContentMgr->MountContent(cur)) {
                 mMounted = false;
                 ++it;
-            }
-            else it = mContentNames.erase(it);
-        }        
+            } else
+                it = mContentNames.erase(it);
+        }
     }
-    if(mContentNames.empty()){
+    if (mContentNames.empty()) {
         StartCache();
     }
 }
 
-inline SongMgr* PreloadPanel::SongMgr() const {
+inline SongMgr *PreloadPanel::SongMgr() const {
     return TypeDef()->FindArray(song_mgr, true)->Obj<class SongMgr>(1);
 }
 
-void PreloadPanel::PollForLoading(){
+void PreloadPanel::PollForLoading() {
     UIPanel::PollForLoading();
-    if(UIPanel::IsLoaded()){
-        if(!mMounted && mContentNames.empty()){
+    if (UIPanel::IsLoaded()) {
+        if (!mMounted && mContentNames.empty()) {
             StartCache();
         }
-        if(mPreloadResult == 0 && mMounted && sCache->DoneCaching()){
-            if(unk68) mPreloadResult = kPreloadFailure;
+        if (mPreloadResult == 0 && mMounted && sCache->DoneCaching()) {
+            if (unk68)
+                mPreloadResult = kPreloadFailure;
             else {
-                for(std::vector<String>::iterator it = mPreloadedFiles.begin(); it != mPreloadedFiles.end(); ++it){
-                    if(!CheckFileCached(it->c_str())){
+                for (std::vector<String>::iterator it = mPreloadedFiles.begin();
+                     it != mPreloadedFiles.end();
+                     ++it) {
+                    if (!CheckFileCached(it->c_str())) {
                         mPreloadResult = kPreloadFailure;
                     }
                 }
             }
-            if(mPreloadResult != 2) mPreloadResult = kPreloadSuccess;
+            if (mPreloadResult != 2)
+                mPreloadResult = kPreloadSuccess;
         }
     }
 }
 
 bool PreloadPanel::IsLoaded() const {
-    if(UIPanel::IsLoaded()) return mPreloadResult != kPreloadInProgress;
-    else return false;
+    if (UIPanel::IsLoaded())
+        return mPreloadResult != kPreloadInProgress;
+    else
+        return false;
 }
 
-void PreloadPanel::FinishLoad(){
+void PreloadPanel::FinishLoad() {
     UIPanel::FinishLoad();
     TheContentMgr->UnregisterCallback(this, true);
     ClearAndShrink(mPreloadedFiles);
     TheContentMgr->SetReadFailureHandler(mAppReadFailureHandler);
 }
 
-void PreloadPanel::Unload(){
+void PreloadPanel::Unload() {
     mContentNames.clear();
     UIPanel::Unload();
 }
 
-void PreloadPanel::ContentMounted(const char* cc, const char*){
+void PreloadPanel::ContentMounted(const char *cc, const char *) {
     OnContentMountedOrFailed(cc, true);
 }
 
-void PreloadPanel::ContentFailed(const char* cc){
+void PreloadPanel::ContentFailed(const char *cc) {
     OnContentMountedOrFailed(cc, false);
     MILO_LOG("PreloadPanel: setting fail state because of %s\n", cc);
     mPreloadResult = kPreloadFailure;
@@ -143,19 +156,20 @@ inline Symbol PreloadPanel::CurrentSong() const {
 }
 #pragma pop
 
-void PreloadPanel::StartCache(){
+void PreloadPanel::StartCache() {
     MILO_ASSERT(mContentNames.empty(), 0x10E);
     mMounted = true;
     MILO_ASSERT(sCache, 0x111);
     sCache->Clear();
     sCache->StartSet(0);
-    if(!unk68 && mPreloadResult != 2){
-        DataArray* preloadFilesArr = TypeDef()->FindArray(preload_files, true);
-        for(int i = 1; i < preloadFilesArr->Size(); i++){
-            DataArray* innerArr = preloadFilesArr->Array(i);
-            const char* path = innerArr->Str(0);
+    if (!unk68 && mPreloadResult != 2) {
+        DataArray *preloadFilesArr = TypeDef()->FindArray(preload_files, true);
+        for (int i = 1; i < preloadFilesArr->Size(); i++) {
+            DataArray *innerArr = preloadFilesArr->Array(i);
+            const char *path = innerArr->Str(0);
             MILO_ASSERT(path, 0x11E);
-            if(innerArr->Int(1) == 0 || FileExists(DirLoader::CachedPath(path, false), 0)){
+            if (innerArr->Int(1) == 0
+                || FileExists(DirLoader::CachedPath(path, false), 0)) {
                 sCache->Add(FilePath(path), 1, FilePath(path));
                 mPreloadedFiles.push_back(path);
             }
@@ -164,45 +178,46 @@ void PreloadPanel::StartCache(){
     sCache->EndSet();
 }
 
-void PreloadPanel::OnContentMountedOrFailed(const char* contentName, bool b){
-    if(!mContentNames.empty()){
+void PreloadPanel::OnContentMountedOrFailed(const char *contentName, bool b) {
+    if (!mContentNames.empty()) {
         MILO_ASSERT(contentName, 0x13F);
         bool b1 = false;
-        for(std::vector<Symbol>::iterator it = mContentNames.begin(); it != mContentNames.end(); ++it){
+        for (std::vector<Symbol>::iterator it = mContentNames.begin();
+             it != mContentNames.end();
+             ++it) {
             Symbol cur = *it;
-            if(cur == contentName){
+            if (cur == contentName) {
                 mContentNames.erase(it);
                 b1 = true;
                 break;
             }
         }
-        if(b1 && !b){
+        if (b1 && !b) {
             TheWiiContentMgr.UnmountContents(contentName);
         }
     }
 }
 
-bool PreloadPanel::CheckFileCached(const char* cc){
-    if(*cc != '\0' && !sCache->FileCached(cc)){
+bool PreloadPanel::CheckFileCached(const char *cc) {
+    if (*cc != '\0' && !sCache->FileCached(cc)) {
         MILO_WARN("Could not cache %s", cc);
         return false;
-    }
-    else return true;
+    } else
+        return true;
 }
 
-DataNode PreloadPanel::OnMsg(const ContentReadFailureMsg& msg){
+DataNode PreloadPanel::OnMsg(const ContentReadFailureMsg &msg) {
     unk58 = msg.GetBool();
     unk5c = msg.GetStr();
     return 1;
 }
 
-DataNode PreloadPanel::OnMsg(const UITransitionCompleteMsg& msg){
+DataNode PreloadPanel::OnMsg(const UITransitionCompleteMsg &msg) {
     MILO_ASSERT(mPreloadResult != kPreloadInProgress, 0x174);
-    if(mPreloadResult == kPreloadSuccess){
+    if (mPreloadResult == kPreloadSuccess) {
         HandleType(on_preload_ok_msg);
-    }
-    else {
-        if(HandleType(on_preload_failed_msg) == DataNode(kDataUnhandled, 0)){
+    } else {
+        if (HandleType(on_preload_failed_msg) == DataNode(kDataUnhandled, 0)) {
             MILO_ASSERT(mAppReadFailureHandler, 0x180);
             static ContentReadFailureMsg msg(0, gNullStr);
             msg[0] = unk58;

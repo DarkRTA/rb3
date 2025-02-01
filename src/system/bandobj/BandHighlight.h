@@ -7,17 +7,17 @@ public:
     BandHighlight();
     OBJ_CLASSNAME(BandHighlight);
     OBJ_SET_TYPE(BandHighlight);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
     virtual ~BandHighlight();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Enter();
     virtual void Exit();
     virtual void Poll();
@@ -25,16 +25,14 @@ public:
 
     void OnRegisterFocus();
     void OnUnregisterFocus();
-    void UpdateTargetEdge(RndTransformable*);
+    void UpdateTargetEdge(RndTransformable *);
     void SyncDir();
-    void SetTarget(UIComponent*, bool);
+    void SetTarget(UIComponent *, bool);
 
-    DataNode OnMsg(const UIComponentFocusChangeMsg&);
+    DataNode OnMsg(const UIComponentFocusChangeMsg &);
 
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(BandHighlight);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(BandHighlight); }
     NEW_OBJ(BandHighlight);
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -44,11 +42,11 @@ public:
     Vector3 unk118; // 0x118
     float unk124;
     float mAnimDuration; // 0x128
-    BandLabel* mHelpTextLabel; // 0x12c
+    BandLabel *mHelpTextLabel; // 0x12c
     Vector3 unk130; // 0x130
     Vector3 unk13c; // 0x13c
-    RndTransformable* unk148; // 0x148
-    std::vector<RndMat*> mMirrorMats; // 0x14c
-    UIComponent* unk154; // 0x154
+    RndTransformable *unk148; // 0x148
+    std::vector<RndMat *> mMirrorMats; // 0x14c
+    UIComponent *unk154; // 0x154
     int unk158; // 0x158
 };

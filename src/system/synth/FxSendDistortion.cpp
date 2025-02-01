@@ -4,17 +4,13 @@
 
 INIT_REVS(FxSendDistortion);
 
-FxSendDistortion::FxSendDistortion() : mDrive(0.0f) {
+FxSendDistortion::FxSendDistortion() : mDrive(0.0f) {}
 
-}
-
-FxSendDistortion::~FxSendDistortion(){
-
-}
+FxSendDistortion::~FxSendDistortion() {}
 
 SAVE_OBJ(FxSendDistortion, 0x18);
 
-void FxSendDistortion::Load(BinStream& bs){
+void FxSendDistortion::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     FxSend::Load(bs);

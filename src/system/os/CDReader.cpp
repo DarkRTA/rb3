@@ -9,9 +9,9 @@ namespace {
 
 int gRetryAttempts = 0x14;
 
-int CDGetError(){ return 0; }
+int CDGetError() { return 0; }
 
-int CDReadExternal(DVDFileInfo*& info, int, unsigned long long){
+int CDReadExternal(DVDFileInfo *&info, int, unsigned long long) {
     info = 0;
     return 0;
 }

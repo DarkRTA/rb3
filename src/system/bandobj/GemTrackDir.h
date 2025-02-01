@@ -21,20 +21,20 @@ public:
     GemTrackDir();
     OBJ_CLASSNAME(GemTrackDir)
     OBJ_SET_TYPE(GemTrackDir)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~GemTrackDir();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void Poll();
     virtual void SyncFingerFeedback();
     virtual void SetDisplayRange(float);
     virtual void SetDisplayOffset(float, bool);
-    virtual RndDir* SmasherPlate(){ return mSmasherPlate; }
+    virtual RndDir *SmasherPlate() { return mSmasherPlate; }
     virtual float GetFretPosOffset(int) const;
     virtual int GetNumFretPosOffsets() const { return mFretPosOffsets.size(); }
     virtual float GetCurrentChordLabelPosOffset() const;
@@ -43,8 +43,16 @@ public:
     virtual void SetUnisonProgress(float);
     virtual void ClearChordMeshRefCounts();
     virtual void DeleteUnusedChordMeshes();
-    virtual void AddChordImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, class String);
-    virtual ArpeggioShapePool* GetArpeggioShapePool(){ return mArpShapePool; }
+    virtual void AddChordImpl(
+        RndMesh *,
+        TrackWidget *,
+        TrackWidget *,
+        TrackWidget *,
+        float,
+        const std::vector<int> &,
+        class String
+    );
+    virtual ArpeggioShapePool *GetArpeggioShapePool() { return mArpShapePool; }
     virtual bool IsBlackKey(int) const;
     virtual void KeyMissLeft();
     virtual void KeyMissRight();
@@ -62,12 +70,12 @@ public:
     virtual void EnterCoda();
     virtual void DisablePlayer(int);
     virtual void SetPlayerLocal(float);
-    virtual ObjectDir* ThisDir(){}
-    virtual ObjectDir* ThisDir() const {}
+    virtual ObjectDir *ThisDir() {}
+    virtual ObjectDir *ThisDir() const {}
     virtual void RefreshStreakMeter(int, int, int);
     virtual void SpotlightPhraseSuccess();
-    virtual GemTrackDir* AsGemTrackDir(){}
-    virtual RndDir* AsRndDir(){ return AsGemTrackDir(); }
+    virtual GemTrackDir *AsGemTrackDir() {}
+    virtual RndDir *AsRndDir() { return AsGemTrackDir(); }
     virtual void SetPerformanceMode(bool);
     virtual void SetInstrument(TrackInstrument);
     virtual void SetupInstrument();
@@ -97,22 +105,28 @@ public:
     void ResetCoda();
     float GetKeyRange();
     float GetKeyOffset();
-    void UpdateFingerFeedback(const RGState&);
+    void UpdateFingerFeedback(const RGState &);
     void UpdateLeftyFlip(bool);
     bool KeyShifting();
     void FreeChordMeshes();
-    void AddChordRepImpl(RndMesh*, TrackWidget*, TrackWidget*, TrackWidget*, float, const std::vector<int>&, String);
-    void SetGemTrackID(int id){ mGemTrackDirID = id; }
+    void AddChordRepImpl(
+        RndMesh *,
+        TrackWidget *,
+        TrackWidget *,
+        TrackWidget *,
+        float,
+        const std::vector<int> &,
+        String
+    );
+    void SetGemTrackID(int id) { mGemTrackDirID = id; }
 
-    DataNode OnDrawSampleChord(DataArray*);
+    DataNode OnDrawSampleChord(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(GemTrackDir)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(GemTrackDir)
 
     int mNumTracks; // 0x484
@@ -144,8 +158,12 @@ public:
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mDrumMashAnims; // 0x578
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mFillLaneAnims; // 0x580
     std::vector<ObjPtr<RndPropAnim, ObjectDir> > mRealGuitarMashAnims; // 0x588
-    std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mDrumRollTrigs; // 0x590
-    std::vector<std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > > mTrillTrigs; // 0x598
+    std::vector<
+        std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > >
+        mDrumRollTrigs; // 0x590
+    std::vector<
+        std::pair<ObjPtr<EventTrigger, ObjectDir>, ObjPtr<EventTrigger, ObjectDir> > >
+        mTrillTrigs; // 0x598
     std::vector<ObjPtr<EventTrigger, ObjectDir> > mFillHitTrigs; // 0x5a0
     ObjPtr<EventTrigger, ObjectDir> mDrumFillResetTrig; // 0x5a8
     ObjPtr<RndPropAnim, ObjectDir> mDrumMash2ndPassActivateAnim; // 0x5b4
@@ -166,16 +184,16 @@ public:
     ObjPtr<RndPropAnim, ObjectDir> mKeysMashAnim; // 0x66c
     float mKeyRange; // 0x678
     float mKeyOffset; // 0x67c
-    std::vector<RndDir*> unk680; // 0x680
-    std::vector<EventTrigger*> unk688; // 0x688
-    std::vector<EventTrigger*> unk690; // 0x690
-    FingerShape* mFingerShape; // 0x698
+    std::vector<RndDir *> unk680; // 0x680
+    std::vector<EventTrigger *> unk688; // 0x688
+    std::vector<EventTrigger *> unk690; // 0x690
+    FingerShape *mFingerShape; // 0x698
     std::vector<float> mFretPosOffsets; // 0x69c
     float mChordLabelPosOffset; // 0x6a4
     ObjPtr<ChordShapeGenerator, ObjectDir> mChordShapeGen; // 0x6a8
-    std::map<unsigned int, std::pair<int, RndMesh*> > unk6b4; // 0x6b4
-    std::map<unsigned int, std::pair<int, RndMesh*> > unk6cc; // 0x6cc
-    ArpeggioShapePool* mArpShapePool; // 0x6e4
+    std::map<unsigned int, std::pair<int, RndMesh *> > unk6b4; // 0x6b4
+    std::map<unsigned int, std::pair<int, RndMesh *> > unk6cc; // 0x6cc
+    ArpeggioShapePool *mArpShapePool; // 0x6e4
     bool unk6e8; // 0x6e8
 #ifdef MILO_DEBUG
     bool mFakeFingerShape; // 0x6e9

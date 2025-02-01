@@ -10,21 +10,30 @@
 
 class OriginalPathable {
 public:
-    OriginalPathable(){}
-    virtual ~OriginalPathable(){}
-    virtual bool OriginalPath(Hmx::Object*, String&) = 0;
+    OriginalPathable() {}
+    virtual ~OriginalPathable() {}
+    virtual bool OriginalPath(Hmx::Object *, String &) = 0;
 };
 
-class FileMerger : public Hmx::Object, public Loader::Callback, public MergeFilter, public OriginalPathable {
+class FileMerger : public Hmx::Object,
+                   public Loader::Callback,
+                   public MergeFilter,
+                   public OriginalPathable {
 public:
     class Merger {
     public:
         struct SortBySelected {
-            bool operator()(const Merger& a, const Merger& b){ return stricmp(a.mSelected.c_str(), b.mSelected.c_str()) < 0; }
+            bool operator()(const Merger &a, const Merger &b) {
+                return stricmp(a.mSelected.c_str(), b.mSelected.c_str()) < 0;
+            }
         };
 
-        Merger(Hmx::Object* o) : mProxy(0), mPreClear(0), mSubdirs(4), mDir(o), mLoadedObjects(o), mLoadedSubdirs(o) {}
-        Merger(const Merger& m) : mDir(m.mDir.Owner()), mLoadedObjects(m.mLoadedObjects.mOwner), mLoadedSubdirs(m.mLoadedSubdirs.mOwner){
+        Merger(Hmx::Object *o)
+            : mProxy(0), mPreClear(0), mSubdirs(4), mDir(o), mLoadedObjects(o),
+              mLoadedSubdirs(o) {}
+        Merger(const Merger &m)
+            : mDir(m.mDir.Owner()), mLoadedObjects(m.mLoadedObjects.mOwner),
+              mLoadedSubdirs(m.mLoadedSubdirs.mOwner) {
             mName = m.mName;
             mSelected = m.mSelected;
             loading = m.loading;
@@ -36,8 +45,8 @@ public:
             mLoadedSubdirs = m.mLoadedSubdirs;
             mPreClear = m.mPreClear;
         }
-        ~Merger(){}
-        Merger& operator=(const Merger& m){
+        ~Merger() {}
+        Merger &operator=(const Merger &m) {
             mName = m.mName;
             mSelected = m.mSelected;
             loading = m.loading;
@@ -52,17 +61,19 @@ public:
 
         void Clear();
 
-        ObjectDir* MergerDir(){
-            if(mDir) return mDir;
-            else return mDir.Owner()->Dir();
+        ObjectDir *MergerDir() {
+            if (mDir)
+                return mDir;
+            else
+                return mDir.Owner()->Dir();
         }
 
         // gross and convoluted way to basically check if this object is in mLoadedObjects
-        bool IsObjectLoaded(Hmx::Object* obj){
+        bool IsObjectLoaded(Hmx::Object *obj) {
             return !mLoadedObjects.find(obj) == false;
         }
 
-        void SetSelected(const FilePath& fp, bool b){
+        void SetSelected(const FilePath &fp, bool b) {
             mSelected = fp;
             unk29 = b;
         }
@@ -86,60 +97,58 @@ public:
     virtual ~FileMerger();
     OBJ_CLASSNAME(FileMerger);
     OBJ_SET_TYPE(FileMerger);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void PreSave(BinStream&);
-    virtual void PostSave(BinStream&);
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
-    virtual bool OriginalPath(Hmx::Object*, String&);
-    virtual void FinishLoading(Loader*);
-    virtual void FailedLoading(Loader*);
-    virtual Action Filter(Hmx::Object*, Hmx::Object*, class ObjectDir*);
-    virtual Action FilterSubdir(class ObjectDir* o1, class ObjectDir*);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void PreSave(BinStream &);
+    virtual void PostSave(BinStream &);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
+    virtual bool OriginalPath(Hmx::Object *, String &);
+    virtual void FinishLoading(Loader *);
+    virtual void FailedLoading(Loader *);
+    virtual Action Filter(Hmx::Object *, Hmx::Object *, class ObjectDir *);
+    virtual Action FilterSubdir(class ObjectDir *o1, class ObjectDir *);
 
     void Clear();
     bool StartLoad(bool);
     bool StartLoadInternal(bool, bool);
-    void Select(Symbol, const FilePath&, bool);
+    void Select(Symbol, const FilePath &, bool);
     int FindMergerIndex(Symbol, bool);
-    Merger* FindMerger(Symbol, bool);
-    bool NeedsLoading(Merger&);
-    void AppendLoader(Merger&);
+    Merger *FindMerger(Symbol, bool);
+    bool NeedsLoading(Merger &);
+    void AppendLoader(Merger &);
     void LaunchNextLoader();
-    Merger* InMerger(Hmx::Object*);
+    Merger *InMerger(Hmx::Object *);
     void DeleteCurLoader();
     void ClearSelections();
-    Action MergeAction(Hmx::Object*, Hmx::Object*, ObjectDir*);
-    void AddObject(Hmx::Object*);
-    void AddSubdir(ObjectDir*);
-    void PostMerge(Merger*, bool);
-    Merger* NotifyFileLoaded(Loader*, ObjectDir*);
+    Action MergeAction(Hmx::Object *, Hmx::Object *, ObjectDir *);
+    void AddObject(Hmx::Object *);
+    void AddSubdir(ObjectDir *);
+    void PostMerge(Merger *, bool);
+    Merger *NotifyFileLoaded(Loader *, ObjectDir *);
 
-    std::vector<Merger VECTOR_SIZE_LARGE>& Mergers(){ return mMergers; }
-    DataNode OnSelect(const DataArray*);
-    DataNode OnStartLoad(const DataArray*);
+    std::vector<Merger VECTOR_SIZE_LARGE> &Mergers() { return mMergers; }
+    DataNode OnSelect(const DataArray *);
+    DataNode OnStartLoad(const DataArray *);
 
     static bool sDisableAll;
-    static FileMerger* sFmDeleting;
+    static FileMerger *sFmDeleting;
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(FileMerger)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(FileMerger)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(FileMerger) }
 
     ObjVector<Merger VECTOR_SIZE_LARGE> mMergers; // 0x30
     bool mAsyncLoad; // 0x40
     bool mLoadingLoad; // 0x41
-    Loader* mCurLoader; // 0x44
-    std::list<Merger*> mFilesPending; // 0x48
-    MergeFilter* mFilter; // 0x50
+    Loader *mCurLoader; // 0x44
+    std::list<Merger *> mFilesPending; // 0x48
+    MergeFilter *mFilter; // 0x50
     int mHeap; // 0x54
-    Loader::Callback* mOrganizer; // 0x58
+    Loader::Callback *mOrganizer; // 0x58
 };

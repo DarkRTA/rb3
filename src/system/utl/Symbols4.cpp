@@ -621,10 +621,16 @@ Symbol party_setlist("party_setlist");
 Symbol party_setlist_by_line("party_setlist_by_line");
 Symbol party_shuffle("party_shuffle");
 Symbol pass_trigger_seconds("pass_trigger_seconds");
-Symbol passive_message_accomplishment_notification("passive_message_accomplishment_notification");
+Symbol passive_message_accomplishment_notification(
+    "passive_message_accomplishment_notification"
+);
 Symbol passive_message_accomplishment_step("passive_message_accomplishment_step");
-Symbol passive_message_completed_accomplishment_category("passive_message_completed_accomplishment_category");
-Symbol passive_message_completed_accomplishment_group("passive_message_completed_accomplishment_group");
+Symbol passive_message_completed_accomplishment_category(
+    "passive_message_completed_accomplishment_category"
+);
+Symbol passive_message_completed_accomplishment_group(
+    "passive_message_completed_accomplishment_group"
+);
 Symbol passive_message_earned_accomplishment("passive_message_earned_accomplishment");
 Symbol passive_message_earned_accomplishments("passive_message_earned_accomplishments");
 Symbol passive_message_earned_avatarasset("passive_message_earned_avatarasset");
@@ -638,9 +644,15 @@ Symbol passive_message_mid_song_join("passive_message_mid_song_join");
 Symbol passive_message_new_remote_user("passive_message_new_remote_user");
 Symbol passive_message_remote_user_left("passive_message_remote_user_left");
 Symbol passive_message_wiispeak_fatal("passive_message_wiispeak_fatal");
-Symbol passive_message_wiispeak_please_use_headphones("passive_message_wiispeak_please_use_headphones");
-Symbol passive_message_wiispeak_starting_conversation("passive_message_wiispeak_starting_conversation");
-Symbol passive_message_wiispeak_starting_conversation_2("passive_message_wiispeak_starting_conversation_2");
+Symbol passive_message_wiispeak_please_use_headphones(
+    "passive_message_wiispeak_please_use_headphones"
+);
+Symbol passive_message_wiispeak_starting_conversation(
+    "passive_message_wiispeak_starting_conversation"
+);
+Symbol passive_message_wiispeak_starting_conversation_2(
+    "passive_message_wiispeak_starting_conversation_2"
+);
 Symbol passive_message_wiispeak_surround_1("passive_message_wiispeak_surround_1");
 Symbol passive_message_wiispeak_surround_2("passive_message_wiispeak_surround_2");
 Symbol passive_msg_channel("passive_msg_channel");
@@ -687,14 +699,23 @@ Symbol percentile_fmt("percentile_fmt");
 Symbol perfect_dist("perfect_dist");
 Symbol perfect_drum_rolls("perfect_drum_rolls");
 Symbol perfect_harmony("perfect_harmony");
-Symbol perfect_overdrive_tracker_contrib_format_vox("perfect_overdrive_tracker_contrib_format_vox");
-Symbol perfect_overdrive_tracker_contrib_format_vox_1("perfect_overdrive_tracker_contrib_format_vox_1");
-Symbol perfect_overdrive_tracker_contribution_format("perfect_overdrive_tracker_contribution_format");
-Symbol perfect_overdrive_tracker_contribution_format_1("perfect_overdrive_tracker_contribution_format_1");
+Symbol perfect_overdrive_tracker_contrib_format_vox(
+    "perfect_overdrive_tracker_contrib_format_vox"
+);
+Symbol perfect_overdrive_tracker_contrib_format_vox_1(
+    "perfect_overdrive_tracker_contrib_format_vox_1"
+);
+Symbol perfect_overdrive_tracker_contribution_format(
+    "perfect_overdrive_tracker_contribution_format"
+);
+Symbol perfect_overdrive_tracker_contribution_format_1(
+    "perfect_overdrive_tracker_contribution_format_1"
+);
 Symbol perfect_overdrive_tracker_deploy("perfect_overdrive_tracker_deploy");
 Symbol perfect_overdrive_tracker_description("perfect_overdrive_tracker_description");
 Symbol perfect_overdrive_tracker_gem_progress("perfect_overdrive_tracker_gem_progress");
-Symbol perfect_overdrive_tracker_vocal_progress("perfect_overdrive_tracker_vocal_progress");
+Symbol perfect_overdrive_tracker_vocal_progress("perfect_overdrive_tracker_vocal_progress"
+);
 Symbol perfect_section_band_tracker_success("perfect_section_band_tracker_success");
 Symbol perfect_section_tracker_description("perfect_section_tracker_description");
 Symbol perfect_section_tracker_explanation("perfect_section_tracker_explanation");
@@ -1354,7 +1375,9 @@ Symbol rotate_delay("rotate_delay");
 Symbol rotate_duration("rotate_duration");
 Symbol rotate_recommendation("rotate_recommendation");
 Symbol rotate_singer_autoplay_part("rotate_singer_autoplay_part");
-Symbol rotate_singer_autoplay_variation_magnitude("rotate_singer_autoplay_variation_magnitude");
+Symbol rotate_singer_autoplay_variation_magnitude(
+    "rotate_singer_autoplay_variation_magnitude"
+);
 Symbol rotater("rotater");
 Symbol rotation("rotation");
 Symbol rotation_context("rotation_context");

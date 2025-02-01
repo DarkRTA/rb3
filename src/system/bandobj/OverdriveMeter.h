@@ -6,19 +6,18 @@
 class OverdriveMeter : public RndDir {
 public:
     enum State {
-
     };
 
     OverdriveMeter();
     OBJ_CLASSNAME(OverdriveMeterDir);
     OBJ_SET_TYPE(OverdriveMeterDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
     virtual ~OverdriveMeter();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
 
     void Reset();
@@ -33,9 +32,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(OverdriveMeter)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(OverdriveMeter)
 
     State mState; // 0x18c

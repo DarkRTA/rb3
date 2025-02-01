@@ -20,55 +20,51 @@ public:
     RndCam();
     OBJ_CLASSNAME(Cam);
     OBJ_SET_TYPE(Cam);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~RndCam();
     virtual void UpdatedWorldXfm();
     virtual void Select();
-    virtual u32 ProjectZ(float){ return 0; }
+    virtual u32 ProjectZ(float) { return 0; }
 
     void SetFrustum(float, float, float, float);
-    void SetTargetTex(RndTex*);
-    float WorldToScreen(const Vector3&, Vector2&) const;
-    void ScreenToWorld(const Vector2&, float, Vector3&) const;
+    void SetTargetTex(RndTex *);
+    float WorldToScreen(const Vector3 &, Vector2 &) const;
+    void ScreenToWorld(const Vector2 &, float, Vector3 &) const;
     void UpdateLocal();
-    DataNode OnSetFrustum(const DataArray*);
-    DataNode OnSetZRange(const DataArray*);
-    DataNode OnSetScreenRect(const DataArray*);
-    DataNode OnFarPlane(const DataArray*);
-    
+    DataNode OnSetFrustum(const DataArray *);
+    DataNode OnSetZRange(const DataArray *);
+    DataNode OnSetScreenRect(const DataArray *);
+    DataNode OnFarPlane(const DataArray *);
+
     float NearPlane() const { return mNearPlane; }
     float FarPlane() const { return mFarPlane; }
     float YFov() const { return mYFov; }
-    RndTex* TargetTex(){ return mTargetTex; }
-    void SetZRange(float f1, float f2){ mZRange.Set(f1, f2); }
-    const Transform& LocalProjectXfm() const { return mLocalProjectXfm; }
-    float CalcScreenHeight(const Sphere& s){
+    RndTex *TargetTex() { return mTargetTex; }
+    void SetZRange(float f1, float f2) { mZRange.Set(f1, f2); }
+    const Transform &LocalProjectXfm() const { return mLocalProjectXfm; }
+    float CalcScreenHeight(const Sphere &s) {
         float r = s.GetRadius();
         float dist = CalcDistTo(s.center);
     }
-    float CalcDistTo(const Vector3&);
-    
-    bool CompareSphereToWorld(const Sphere& s) const {
-        return s > mWorldFrustum;
-    }
+    float CalcDistTo(const Vector3 &);
 
-    void SetScreenRect(const Hmx::Rect& rect){
+    bool CompareSphereToWorld(const Sphere &s) const { return s > mWorldFrustum; }
+
+    void SetScreenRect(const Hmx::Rect &rect) {
         mScreenRect = rect;
         UpdateLocal();
     }
 
-    static RndCam* sCurrent;
-    static RndCam* Current(){ return sCurrent; }
+    static RndCam *sCurrent;
+    static RndCam *Current() { return sCurrent; }
 
     NEW_OBJ(RndCam)
     DELETE_OVERLOAD;
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndCam)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndCam) }
 
     Transform mInvWorldXfm; // 0x90
     Transform mLocalProjectXfm; // 0xC0
@@ -96,12 +92,12 @@ public:
      * culled rather than clipped to the far plane."
      */
     float mFarPlane; // 0x244
-    
+
     float mYFov; // 0x248
     float mUnknownFloat; // 0x24C
 
     /**
-     * @brief 
+     * @brief
      * Original _objects description:
      * "The part of the Z-buffer to use, in normalized
      * coordinates. It can be useful to draw a scene where the near

@@ -7,9 +7,7 @@
 
 INIT_REVS(RndMotionBlur);
 
-RndMotionBlur::RndMotionBlur() : mDrawList(this, kObjListNoNull) {
-
-}
+RndMotionBlur::RndMotionBlur() : mDrawList(this, kObjListNoNull) {}
 
 BEGIN_COPYS(RndMotionBlur)
     COPY_SUPERCLASS(Hmx::Object)
@@ -22,7 +20,7 @@ END_COPYS
 
 SAVE_OBJ(RndMotionBlur, 0x2B)
 
-void RndMotionBlur::Load(BinStream& bs){
+void RndMotionBlur::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
@@ -30,22 +28,26 @@ void RndMotionBlur::Load(BinStream& bs){
     bs >> mDrawList;
 }
 
-void RndMotionBlur::DrawShowing(){}
+void RndMotionBlur::DrawShowing() {}
 
-bool RndMotionBlur::CanMotionBlur(RndDrawable* draw){
-    if(dynamic_cast<RndMesh*>(draw) || dynamic_cast<RndDir*>(draw) || dynamic_cast<RndGroup*>(draw)) return true;
-    else return false;
+bool RndMotionBlur::CanMotionBlur(RndDrawable *draw) {
+    if (dynamic_cast<RndMesh *>(draw) || dynamic_cast<RndDir *>(draw)
+        || dynamic_cast<RndGroup *>(draw))
+        return true;
+    else
+        return false;
 }
 
-DataNode RndMotionBlur::OnAllowedDrawable(const DataArray* da){
+DataNode RndMotionBlur::OnAllowedDrawable(const DataArray *da) {
     int allowcount = 0;
-    for(ObjDirItr<RndDrawable> it(Dir(), true); it != 0; ++it){
-        if(CanMotionBlur(it)) allowcount++;
+    for (ObjDirItr<RndDrawable> it(Dir(), true); it != 0; ++it) {
+        if (CanMotionBlur(it))
+            allowcount++;
     }
     DataArrayPtr ptr(new DataArray(allowcount));
     allowcount = 0;
-    for(ObjDirItr<RndDrawable> it(Dir(), true); it != 0; ++it){
-        if(CanMotionBlur(it)){
+    for (ObjDirItr<RndDrawable> it(Dir(), true); it != 0; ++it) {
+        if (CanMotionBlur(it)) {
             ptr.Node(allowcount++) = DataNode(it);
         }
     }

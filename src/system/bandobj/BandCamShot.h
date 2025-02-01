@@ -16,12 +16,13 @@ class BandCamShot : public CamShot {
 public:
     class Target {
     public:
-        Target(Hmx::Object* o) : mFastForward(0), mEnvOverride(o, 0), mForceLod(-1), mTeleport(1),
-            mReturn(1), mSelfShadow(1), unk1(0), unk2(1), mHide(0) {
+        Target(Hmx::Object *o)
+            : mFastForward(0), mEnvOverride(o, 0), mForceLod(-1), mTeleport(1),
+              mReturn(1), mSelfShadow(1), unk1(0), unk2(1), mHide(0) {
             mXfm.Reset();
         }
-        void Store(BandCamShot*);
-        void UpdateTarget(Symbol, BandCamShot*);
+        void Store(BandCamShot *);
+        void UpdateTarget(Symbol, BandCamShot *);
 
         Symbol mTarget; // 0x0
         TransformNoScale mXfm; // 0x4
@@ -43,7 +44,7 @@ public:
     class TargetCache {
     public:
         Symbol unk0;
-        RndTransformable* unk4;
+        RndTransformable *unk4;
         int unk8;
         TransformNoScale unkc;
     };
@@ -51,22 +52,22 @@ public:
     BandCamShot();
     OBJ_CLASSNAME(BandCamShot);
     OBJ_SET_TYPE(BandCamShot);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~BandCamShot(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~BandCamShot() {}
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);
     virtual float EndFrame();
     virtual void SetPreFrame(float, float);
-    virtual CamShot* CurrentShot(){ return mCurShot; }
+    virtual CamShot *CurrentShot() { return mCurShot; }
     virtual bool CheckShotStarted();
     virtual bool CheckShotOver(float);
 
-    RndTransformable* FindTarget(Symbol, bool);
+    RndTransformable *FindTarget(Symbol, bool);
     void CheckNextShots();
     void ResetNextShot();
     float GetTotalDuration();
@@ -74,23 +75,23 @@ public:
     void Store();
     void View();
     void Freeze();
-    void FreezeChar(Character*, bool);
+    void FreezeChar(Character *, bool);
     void ViewFreeze();
-    BandCamShot* InitialShot();
+    BandCamShot *InitialShot();
     int GetNumShots();
     bool IterateNextShot();
     void SetFrameEx(float, float);
     void AnimateShot(float, float);
-    void ListNextShots(std::list<BandCamShot*>&);
+    void ListNextShots(std::list<BandCamShot *> &);
     static void DeleteTargetCache(std::list<TargetCache>::iterator);
     std::list<TargetCache>::iterator CreateTargetCache(Symbol);
 
-    DataNode OnTestDelta(DataArray*);
-    DataNode AddTarget(DataArray*);
-    DataNode OnAllowableNextShots(const DataArray*);
-    DataNode OnListAllNextShots(const DataArray*);
-    DataNode OnListTargets(const DataArray*);
-    DataNode OnListAnimGroups(const DataArray*);
+    DataNode OnTestDelta(DataArray *);
+    DataNode AddTarget(DataArray *);
+    DataNode OnAllowableNextShots(const DataArray *);
+    DataNode OnListAllNextShots(const DataArray *);
+    DataNode OnListTargets(const DataArray *);
+    DataNode OnListAnimGroups(const DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -98,9 +99,7 @@ public:
     static std::list<TargetCache> sCache;
     static int sHideAllCharactersHack;
     NEW_OBJ(BandCamShot)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandCamShot)
 
     ObjVector<Target> mTargets; // 0x124

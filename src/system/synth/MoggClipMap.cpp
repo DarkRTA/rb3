@@ -3,18 +3,17 @@
 
 int MoggClipMap::sRev = 0;
 
-MoggClipMap::MoggClipMap(Hmx::Object* obj) : mMoggClip(obj), mPan(0.0f), mPanWidth(0.0f), mVolume(0.0f), mIsStereo(false) {
+MoggClipMap::MoggClipMap(Hmx::Object *obj)
+    : mMoggClip(obj), mPan(0.0f), mPanWidth(0.0f), mVolume(0.0f), mIsStereo(false) {}
 
-}
-
-BinStream& operator>>(BinStream& bs, MoggClipMap& mcmap){
+BinStream &operator>>(BinStream &bs, MoggClipMap &mcmap) {
     mcmap.myLoad(bs);
     return bs;
 }
 
-void MoggClipMap::myLoad(BinStream& bs){
+void MoggClipMap::myLoad(BinStream &bs) {
     bs >> mMoggClip;
-    if(sRev >= 11){
+    if (sRev >= 11) {
         bs >> mVolume >> mPan >> mPanWidth >> mIsStereo;
     }
 }

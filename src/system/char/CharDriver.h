@@ -26,32 +26,32 @@ public:
     virtual void Highlight();
     OBJ_CLASSNAME(CharDriver);
     OBJ_SET_TYPE(CharDriver);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Poll();    
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Poll();
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     virtual void Enter();
     virtual void Exit();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
 
     float EvaluateFlags(int);
     float Display(float);
     void Clear();
-    CharClip* FindClip(const DataNode&, bool);
-    CharClip* FirstClip();
-    CharClipDriver* FirstPlaying();
-    CharClipDriver* Last();
-    CharClipDriver* Before(CharClipDriver*);
-    CharClip* FirstPlayingClip();
-    CharClipDriver* Play(CharClip*, int, float, float, float);
-    CharClipDriver* Play(const DataNode&, int, float, float, float);
-    CharClipDriver* PlayGroup(const char*, int, float, float, float);
-    void Transfer(const CharDriver&);
-    void SetClips(ObjectDir*);
-    void SetBones(CharBonesObject*);
+    CharClip *FindClip(const DataNode &, bool);
+    CharClip *FirstClip();
+    CharClipDriver *FirstPlaying();
+    CharClipDriver *Last();
+    CharClipDriver *Before(CharClipDriver *);
+    CharClip *FirstPlayingClip();
+    CharClipDriver *Play(CharClip *, int, float, float, float);
+    CharClipDriver *Play(const DataNode &, int, float, float, float);
+    CharClipDriver *PlayGroup(const char *, int, float, float, float);
+    void Transfer(const CharDriver &);
+    void SetClips(ObjectDir *);
+    void SetBones(CharBonesObject *);
     void SetApply(ApplyMode);
     void SyncInternalBones();
     void SetClipType(Symbol);
@@ -61,33 +61,31 @@ public:
     void Offset(float, float);
     float TopClipFrame();
     Symbol ClipType() const { return mClipType; }
-    ObjectDir* ClipDir() const { return mClips; }
-    void SetBlendWidth(float w){ mBlendWidth = w; }
-    CharBonesObject* GetBones() const { return mBones; }
+    ObjectDir *ClipDir() const { return mClips; }
+    void SetBlendWidth(float w) { mBlendWidth = w; }
+    CharBonesObject *GetBones() const { return mBones; }
 
-    DataNode OnPlay(const DataArray*);
-    DataNode OnPlayGroup(const DataArray*);
-    DataNode OnPlayGroupFlags(const DataArray*);
-    DataNode OnSetFirstBeatOffset(DataArray*);
-    DataNode OnGetFirstPlayingFlags(const DataArray*);
-    DataNode OnGetFirstFlags(const DataArray*);
-    DataNode OnPrint(const DataArray*);
-    DataNode OnSetDefaultClip(DataArray*);
-    DataNode OnGetClipOrGroupList(DataArray*);
+    DataNode OnPlay(const DataArray *);
+    DataNode OnPlayGroup(const DataArray *);
+    DataNode OnPlayGroupFlags(const DataArray *);
+    DataNode OnSetFirstBeatOffset(DataArray *);
+    DataNode OnGetFirstPlayingFlags(const DataArray *);
+    DataNode OnGetFirstFlags(const DataArray *);
+    DataNode OnPrint(const DataArray *);
+    DataNode OnSetDefaultClip(DataArray *);
+    DataNode OnGetClipOrGroupList(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharDriver)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharDriver)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharDriver) }
 
     /** "The CharBones object to add or blend into." */
     ObjPtr<CharBonesObject> mBones; // 0x28
     /** "pointer to clips object" */
     ObjPtr<ObjectDir> mClips; // 0x34
-    CharClipDriver* mFirst; // 0x40
+    CharClipDriver *mFirst; // 0x40
     /** "Pick a clip to play" */
     ObjPtr<CharClip> mTestClip; // 0x44
     /** "Clip or Group played on enter by default" */
@@ -107,7 +105,7 @@ public:
     Symbol mClipType; // 0x7c
     /** "How to apply the driver to its bones" */
     ApplyMode mApply; // 0x80
-    CharBonesAlloc* mInternalBones; // 0x84
+    CharBonesAlloc *mInternalBones; // 0x84
     /** "Turn on to set this driver to play multiple clips" */
     bool mPlayMultipleClips; // 0x88
     bool unk89; // 0x89

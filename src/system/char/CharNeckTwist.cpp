@@ -5,19 +5,19 @@
 
 INIT_REVS(CharNeckTwist);
 
-CharNeckTwist::CharNeckTwist() : mTwist(this, 0), mHead(this, 0) {
-
-}
+CharNeckTwist::CharNeckTwist() : mTwist(this, 0), mHead(this, 0) {}
 
 void CharNeckTwist::Poll() {
-    if(!mHead || !mTwist || !mTwist->TransParent()) return;
-    RndTransformable* parent = mTwist->TransParent();
+    if (!mHead || !mTwist || !mTwist->TransParent())
+        return;
+    RndTransformable *parent = mTwist->TransParent();
     Transform tf58(mHead->mLocalXfm);
-    RndTransformable* trans;
-    for(trans = mHead->TransParent(); trans && trans != parent; trans = trans->TransParent()){
+    RndTransformable *trans;
+    for (trans = mHead->TransParent(); trans && trans != parent;
+         trans = trans->TransParent()) {
         Multiply(tf58, trans->mLocalXfm, tf58);
     }
-    if(trans){
+    if (trans) {
         Hmx::Quat q68;
         Vector3 v78;
         MakeRotQuatUnitX(tf58.m.x, q68);
@@ -26,14 +26,16 @@ void CharNeckTwist::Poll() {
     }
 }
 
-void CharNeckTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharNeckTwist::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     changedBy.push_back(mHead);
     change.push_back(mTwist);
 }
 
 SAVE_OBJ(CharNeckTwist, 0x4A);
 
-void CharNeckTwist::Load(BinStream& bs){
+void CharNeckTwist::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);

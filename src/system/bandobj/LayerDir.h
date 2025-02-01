@@ -6,8 +6,10 @@ class LayerDir : public RndDir {
 public:
     class Layer {
     public:
-        Layer(Hmx::Object* o) : mName(""), mMat(o, 0), mActive(1), mColorIdx(0), mAlpha(1.0f), mBitmap(""), unk40(""),
-            mLayerOptional(0), mAllowColor(1), mColorPalette(o, 0), mAllowAlpha(0), mAlphaMin(0.0f), mAlphaMax(1.0f), mProxy(o, 0) {}
+        Layer(Hmx::Object *o)
+            : mName(""), mMat(o, 0), mActive(1), mColorIdx(0), mAlpha(1.0f), mBitmap(""),
+              unk40(""), mLayerOptional(0), mAllowColor(1), mColorPalette(o, 0),
+              mAllowAlpha(0), mAlphaMin(0.0f), mAlphaMax(1.0f), mProxy(o, 0) {}
 
         String mName; // 0x0
         ObjPtr<RndMat, ObjectDir> mMat; // 0xc
@@ -30,26 +32,24 @@ public:
     LayerDir();
     OBJ_CLASSNAME(LayerDir);
     OBJ_SET_TYPE(LayerDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~LayerDir(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~LayerDir() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void DrawShowing();
-    virtual RndCam* CamOverride();
+    virtual RndCam *CamOverride();
 
-    void RefreshLayer(Layer&, bool);
+    void RefreshLayer(Layer &, bool);
 
-    DataNode GetBitmapList(DataArray*);
-    DataNode RandomizeColors(DataArray*);
+    DataNode GetBitmapList(DataArray *);
+    DataNode RandomizeColors(DataArray *);
 
-    static RndCam* sCam;
+    static RndCam *sCam;
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(LayerDir);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(LayerDir); }
     NEW_OBJ(LayerDir);
 
     DECLARE_REVS;

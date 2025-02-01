@@ -56,15 +56,17 @@
 #include "ui/UILabel.h"
 #include "world/ColorPalette.h"
 
-DataNode OnPaletteSync(DataArray* array) {
-    ColorPalette* colpal = array->Obj<ColorPalette>(1);
-    for (std::vector<ObjRef*>::reverse_iterator rit = colpal->mRefs.rbegin(); rit != colpal->mRefs.rend(); rit++) {
-        Hmx::Object* refowner = (*rit)->RefOwner();
-        OutfitConfig* outcfg = dynamic_cast<OutfitConfig*>(refowner);
+DataNode OnPaletteSync(DataArray *array) {
+    ColorPalette *colpal = array->Obj<ColorPalette>(1);
+    for (std::vector<ObjRef *>::reverse_iterator rit = colpal->mRefs.rbegin();
+         rit != colpal->mRefs.rend();
+         rit++) {
+        Hmx::Object *refowner = (*rit)->RefOwner();
+        OutfitConfig *outcfg = dynamic_cast<OutfitConfig *>(refowner);
         if (outcfg) {
             outcfg->Recompose();
         }
-        BandSwatch* swatch = dynamic_cast<BandSwatch*>(refowner);
+        BandSwatch *swatch = dynamic_cast<BandSwatch *>(refowner);
         if (swatch) {
             swatch->SetColors(colpal);
         }
@@ -126,7 +128,7 @@ void BandInit() {
         CrowdAudio::Init();
 
         TheDebug.AddExitCallback(BandTerminate);
-        static DataNode& mode = DataVariable("band.play_mode");
+        static DataNode &mode = DataVariable("band.play_mode");
         mode = DataNode(kDataSymbol, Symbol("coop_bg").Str());
         DataRegisterFunc("palette_sync", OnPaletteSync);
         PreloadSharedSubdirs("band");

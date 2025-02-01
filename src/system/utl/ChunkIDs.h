@@ -6,17 +6,11 @@
 class ChunkID {
 public:
     char mStr[4];
-    ChunkID(){
-        memcpy(mStr, "????", 4);
-    }
-    ChunkID(const char* str){
-        memcpy(mStr, str, 4);
-    }
-    ChunkID(BinStream& bs){
-        bs.Read(mStr, 4);
-    }
+    ChunkID() { memcpy(mStr, "????", 4); }
+    ChunkID(const char *str) { memcpy(mStr, str, 4); }
+    ChunkID(BinStream &bs) { bs.Read(mStr, 4); }
 
-    const char* Str() const { return mStr; }
+    const char *Str() const { return mStr; }
 };
 
 extern ChunkID kListChunkID;

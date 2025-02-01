@@ -4,29 +4,26 @@
 #include "os/Debug.h"
 
 // matches in retail with the right inline settings: https://decomp.me/scratch/xQcyC
-void SplineTangent(const Keys<Vector3, Vector3>& keys, int i, Vector3& vout){
+void SplineTangent(const Keys<Vector3, Vector3> &keys, int i, Vector3 &vout) {
     int size = keys.size();
     MILO_ASSERT(size > 1, 0x17);
-    if(size == 2){
+    if (size == 2) {
         Subtract(keys[1].value, keys[0].value, vout);
-    }
-    else if(i <= 0){
+    } else if (i <= 0) {
         Subtract(keys[1].value, keys[0].value, vout);
         Scale(vout, 1.5f, vout);
         Vector3 vtmp;
         Subtract(keys[2].value, keys[0].value, vtmp);
         Scale(vtmp, 0.25f, vtmp);
         Subtract(vout, vtmp, vout);
-    }
-    else if(i >= size - 1){
+    } else if (i >= size - 1) {
         Subtract(keys[size - 1].value, keys[size - 2].value, vout);
         Scale(vout, 1.5f, vout);
         Vector3 vtmp;
         Subtract(keys[size - 1].value, keys[size - 3].value, vtmp);
         Scale(vtmp, 0.25f, vtmp);
-        Subtract(vout, vtmp, vout);        
-    }
-    else {
+        Subtract(vout, vtmp, vout);
+    } else {
         Subtract(keys[i + 1].value, keys[i - 1].value, vout);
         Scale(vout, 0.5f, vout);
     }
@@ -34,7 +31,14 @@ void SplineTangent(const Keys<Vector3, Vector3>& keys, int i, Vector3& vout){
 
 // regswaps in retail with the right inline settings: https://decomp.me/scratch/lOd4o
 // i absolutely hate inlines
-void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector3& v4, float f, Vector3& vout){
+void InterpTangent(
+    const Vector3 &v1,
+    const Vector3 &v2,
+    const Vector3 &v3,
+    const Vector3 &v4,
+    float f,
+    Vector3 &vout
+) {
     float ftimes6;
     float scale3;
     float scale;
@@ -51,20 +55,32 @@ void InterpTangent(const Vector3& v1, const Vector3& v2, const Vector3& v3, cons
     Add(vout, vtmp, vout);
 }
 
-// fn_802E36D4 - InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const Key<Vector3>*, float, bool, Vector3&, Vector3*)
-// https://decomp.me/scratch/hblrn - retail
-void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* prev, const Key<Vector3>* next, float ref, bool spline, Vector3& vref, Vector3* vptr){
-    if(keys.size() < 3){
+// fn_802E36D4 - InterpVector(const Keys<Vector3, Vector3>&, const Key<Vector3>*, const
+// Key<Vector3>*, float, bool, Vector3&, Vector3*) https://decomp.me/scratch/hblrn -
+// retail
+void InterpVector(
+    const Keys<Vector3, Vector3> &keys,
+    const Key<Vector3> *prev,
+    const Key<Vector3> *next,
+    float ref,
+    bool spline,
+    Vector3 &vref,
+    Vector3 *vptr
+) {
+    if (keys.size() < 3) {
         spline = false;
-        if(keys.size() < 2){
-            if(vptr) vptr->Set(0.0f,1.0f,0.0f);
-            if(keys.size() != 0) vref = prev->value;
-            else vref.Set(0,0,0);
+        if (keys.size() < 2) {
+            if (vptr)
+                vptr->Set(0.0f, 1.0f, 0.0f);
+            if (keys.size() != 0)
+                vref = prev->value;
+            else
+                vref.Set(0, 0, 0);
             return;
         }
     }
     int idx = prev - keys.begin();
-    if(spline){
+    if (spline) {
         float fsq = ref * ref;
         float fcubed = fsq * ref;
         float fsq3 = fsq * 3.0f;
@@ -80,32 +96,43 @@ void InterpVector(const Keys<Vector3, Vector3>& keys, const Key<Vector3>* prev, 
         SplineTangent(keys, idx + 1, v7c);
         Scale(v7c, fcubed - fsq, v88);
         Add(vref, v88, vref);
-        if(vptr){
+        if (vptr) {
             InterpTangent(prev->value, v70, next->value, v7c, ref, *vptr);
-        }        
-    }
-    else {
+        }
+    } else {
         Interp(prev->value, next->value, ref, vref);
-        if(vptr){
-            if(idx == keys.size() - 1){
+        if (vptr) {
+            if (idx == keys.size() - 1) {
                 idx--;
             }
-            Subtract(keys[idx+1].value, keys[idx].value, *vptr);
-        }        
+            Subtract(keys[idx + 1].value, keys[idx].value, *vptr);
+        }
     }
 }
 
-void InterpVector(const Keys<Vector3, Vector3>& keys, bool spline, float frame, Vector3& vref, Vector3* vptr){
-    const Key<Vector3>* prev;
-    const Key<Vector3>* next;
+void InterpVector(
+    const Keys<Vector3, Vector3> &keys,
+    bool spline,
+    float frame,
+    Vector3 &vref,
+    Vector3 *vptr
+) {
+    const Key<Vector3> *prev;
+    const Key<Vector3> *next;
     float ref;
     keys.AtFrame(frame, prev, next, ref);
     InterpVector(keys, prev, next, ref, spline, vref, vptr);
 }
 
-void QuatSpline(const Keys<Hmx::Quat, Hmx::Quat>& keys, const Key<Hmx::Quat>* prev, const Key<Hmx::Quat>* next, float ref, Hmx::Quat& qout){
+void QuatSpline(
+    const Keys<Hmx::Quat, Hmx::Quat> &keys,
+    const Key<Hmx::Quat> *prev,
+    const Key<Hmx::Quat> *next,
+    float ref,
+    Hmx::Quat &qout
+) {
     MILO_ASSERT(keys.size(), 0x9B);
-    if(prev == next){
+    if (prev == next) {
         qout = prev->value;
     }
 }

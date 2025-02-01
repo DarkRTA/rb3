@@ -2,59 +2,61 @@
 #include "decomp.h"
 #include "utl/Symbols.h"
 
-EventAnim* gEventAnimOwner;
+EventAnim *gEventAnimOwner;
 
 INIT_REVS(EventAnim)
 
-EventAnim::EventAnim() : mStart(this), mEnd(this), mKeys(this), mResetStart(1), mLastFrame(-1e+30f) {
-    
-}
+EventAnim::EventAnim()
+    : mStart(this), mEnd(this), mKeys(this), mResetStart(1), mLastFrame(-1e+30f) {}
 
-EventAnim::EventCall::EventCall(Hmx::Object* o) : mDir(o, 0), mEvent(o, 0) {}
-EventAnim::KeyFrame::KeyFrame(Hmx::Object* o) : mTime(0), mCalls(o) {}
+EventAnim::EventCall::EventCall(Hmx::Object *o) : mDir(o, 0), mEvent(o, 0) {}
+EventAnim::KeyFrame::KeyFrame(Hmx::Object *o) : mTime(0), mCalls(o) {}
 
-void EventAnim::StartAnim(){
+void EventAnim::StartAnim() {
     mLastFrame = -1e+30f;
     TriggerEvents(mStart);
 }
 
-void EventAnim::EndAnim(){
+void EventAnim::EndAnim() {
     TriggerEvents(mEnd);
-    if(mResetStart){
+    if (mResetStart) {
         ResetEvents(mStart);
-        for(ObjList<KeyFrame>::iterator it = mKeys.begin(); it != mKeys.end(); it++){
+        for (ObjList<KeyFrame>::iterator it = mKeys.begin(); it != mKeys.end(); it++) {
             ResetEvents(it->mCalls);
         }
     }
 }
 
-float EventAnim::EndFrame(){
-    if(mKeys.size() == 0) return 0;
-    else return mKeys.back().mTime;
+float EventAnim::EndFrame() {
+    if (mKeys.size() == 0)
+        return 0;
+    else
+        return mKeys.back().mTime;
 }
 
-void EventAnim::SetFrame(float frame, float blend){
+void EventAnim::SetFrame(float frame, float blend) {
     RndAnimatable::SetFrame(frame, blend);
-    for(ObjList<KeyFrame>::iterator it = mKeys.begin(); it != mKeys.end(); ++it){
-        if(it->mTime > frame) break;
-        if(it->mTime >= mLastFrame){
+    for (ObjList<KeyFrame>::iterator it = mKeys.begin(); it != mKeys.end(); ++it) {
+        if (it->mTime > frame)
+            break;
+        if (it->mTime >= mLastFrame) {
             TriggerEvents(it->mCalls);
         }
     }
     mLastFrame = frame;
 }
 
-void EventAnim::TriggerEvents(ObjList<EventAnim::EventCall>& calls){
-    for(ObjList<EventCall>::iterator it = calls.begin(); it != calls.end(); ++it){
-        if((*it).mEvent){
+void EventAnim::TriggerEvents(ObjList<EventAnim::EventCall> &calls) {
+    for (ObjList<EventCall>::iterator it = calls.begin(); it != calls.end(); ++it) {
+        if ((*it).mEvent) {
             (*it).mEvent->Trigger();
         }
     }
 }
 
-void EventAnim::ResetEvents(ObjList<EventAnim::EventCall>& calls){
-    for(ObjList<EventCall>::iterator it = calls.begin(); it != calls.end(); ++it){
-        if((*it).mDir && (*it).mEvent){
+void EventAnim::ResetEvents(ObjList<EventAnim::EventCall> &calls) {
+    for (ObjList<EventCall>::iterator it = calls.begin(); it != calls.end(); ++it) {
+        if ((*it).mDir && (*it).mEvent) {
             (*it).mEvent->BasicReset();
         }
     }
@@ -80,7 +82,7 @@ BEGIN_LOADS(EventAnim)
     LOAD_SUPERCLASS(Hmx::Object)
     LOAD_SUPERCLASS(RndAnimatable)
     bs >> mKeys;
-    if(gRev != 0){
+    if (gRev != 0) {
         bs >> mStart;
         bs >> mResetStart;
         bs >> mEnd;
@@ -89,21 +91,19 @@ END_LOADS
 
 DECOMP_FORCEACTIVE(EventAnim, "ObjPtr_p.h", "f.Owner()", "")
 
-BinStream& operator>>(BinStream& bs, EventAnim::KeyFrame& k){
+BinStream &operator>>(BinStream &bs, EventAnim::KeyFrame &k) {
     bs >> k.mTime;
     bs >> k.mCalls;
     return bs;
 }
 
-BinStream& operator>>(BinStream& bs, EventAnim::EventCall& e){
+BinStream &operator>>(BinStream &bs, EventAnim::EventCall &e) {
     bs >> e.mDir;
     e.mEvent.Load(bs, true, e.mDir);
     return bs;
 }
 
-void EventAnim::RefreshKeys(){
-    mKeys.sort();
-}
+void EventAnim::RefreshKeys() { mKeys.sort(); }
 
 BEGIN_HANDLERS(EventAnim)
     HANDLE_SUPERCLASS(RndAnimatable)

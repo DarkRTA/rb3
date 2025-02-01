@@ -13,16 +13,20 @@ INIT_REVS(TrackPanelDirBase);
 
 bool gShowHUD = true;
 
-DataNode ToggleHUD(DataArray* da){
+DataNode ToggleHUD(DataArray *da) {
     gShowHUD = gShowHUD == 0;
     return gShowHUD;
 }
 
-TrackPanelDirBase::TrackPanelDirBase() : mViewTimeEasy(0), mViewTimeExpert(0), mNetTrackAlpha(0), mPulseOffset(0), mConfiguration(this, 0), mConfigurableObjects(this, kObjListNoNull),
-    mTracks(this), mGemTracks(this), unk224(0), mTrackPanel(0), mApplauseMeter(this, 0), mBandLogoRival(0), mBandLogo(0), mPerformanceMode(0), mDoubleSpeedActive(0), mIndependentTrackSpeeds(0) {
+TrackPanelDirBase::TrackPanelDirBase()
+    : mViewTimeEasy(0), mViewTimeExpert(0), mNetTrackAlpha(0), mPulseOffset(0),
+      mConfiguration(this, 0), mConfigurableObjects(this, kObjListNoNull), mTracks(this),
+      mGemTracks(this), unk224(0), mTrackPanel(0), mApplauseMeter(this, 0),
+      mBandLogoRival(0), mBandLogo(0), mPerformanceMode(0), mDoubleSpeedActive(0),
+      mIndependentTrackSpeeds(0) {
     DataRegisterFunc("toggle_hud", ToggleHUD);
-    if(SystemConfig()->FindArray("track_graphics", false)){
-        if(SystemConfig("track_graphics")->FindArray("pulse_offset", false)){
+    if (SystemConfig()->FindArray("track_graphics", false)) {
+        if (SystemConfig("track_graphics")->FindArray("pulse_offset", false)) {
             mPulseOffset = SystemConfig("track_graphics")->FindFloat("pulse_offset");
         }
     }
@@ -31,26 +35,31 @@ TrackPanelDirBase::TrackPanelDirBase() : mViewTimeEasy(0), mViewTimeExpert(0), m
 SAVE_OBJ(TrackPanelDirBase, 0x3F)
 
 float TrackPanelDirBase::GetPulseAnimStartDelay(bool b) const {
-    float beat = MsToBeat(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f + 16.70000076293945f);
-    if(b) beat = beat + mPulseOffset;
+    float beat =
+        MsToBeat(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f + 16.70000076293945f);
+    if (b)
+        beat = beat + mPulseOffset;
     return std::floor(beat) + 1.0f - beat;
 }
 
-void TrackPanelDirBase::PreLoad(BinStream& bs){
+void TrackPanelDirBase::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(0, 0);
     PushRev(packRevs(gAltRev, gRev), this);
     PanelDir::PreLoad(bs);
 }
 
-DECOMP_FORCEACTIVE(TrackPanelDirBase, "non-empty list passed to TrackPanelDirBase::GetConfigList, will be cleared")
+DECOMP_FORCEACTIVE(
+    TrackPanelDirBase,
+    "non-empty list passed to TrackPanelDirBase::GetConfigList, will be cleared"
+)
 
-void TrackPanelDirBase::PostLoad(BinStream& bs){
+void TrackPanelDirBase::PostLoad(BinStream &bs) {
     PanelDir::PostLoad(bs);
     int revs = PopRev(this);
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
-    if(!IsProxy()){
+    if (!IsProxy()) {
         bs >> mViewTimeEasy;
         bs >> mViewTimeExpert;
         bs >> mNetTrackAlpha;
@@ -69,37 +78,41 @@ BEGIN_COPYS(TrackPanelDirBase)
     END_COPYING_MEMBERS
 END_COPYS
 
-void TrackPanelDirBase::SetConfiguration(Hmx::Object* o, bool b){
-    if(o){
+void TrackPanelDirBase::SetConfiguration(Hmx::Object *o, bool b) {
+    if (o) {
         static Message apply("apply", b);
         apply[0] = b;
         mConfiguration = o;
         o->Handle(apply, true);
     }
-    if(!mPerformanceMode) SetShowing(gShowHUD);
+    if (!mPerformanceMode)
+        SetShowing(gShowHUD);
 }
 
-void TrackPanelDirBase::ReapplyConfiguration(bool b){
-    if(mConfiguration){
+void TrackPanelDirBase::ReapplyConfiguration(bool b) {
+    if (mConfiguration) {
         static Message apply("apply", b);
         apply[0] = b;
         mConfiguration->Handle(apply, true);
-        if(!mPerformanceMode) SetShowing(gShowHUD);
+        if (!mPerformanceMode)
+            SetShowing(gShowHUD);
     }
 }
 
-bool TrackPanelDirBase::ModifierActive(Symbol s){
-    Hmx::Object* gamemodeobj = FindObject("gamemode", true);
-    if(gamemodeobj){
-        if(gamemodeobj->Property("always_show_hud", true)->Int() == 0){
-            if(gamemodeobj->Property("is_practice", true)->Int() != 0) return false;
+bool TrackPanelDirBase::ModifierActive(Symbol s) {
+    Hmx::Object *gamemodeobj = FindObject("gamemode", true);
+    if (gamemodeobj) {
+        if (gamemodeobj->Property("always_show_hud", true)->Int() == 0) {
+            if (gamemodeobj->Property("is_practice", true)->Int() != 0)
+                return false;
             else {
-                Hmx::Object* modmgr = FindObject("modifier_mgr", true);
-                if(modmgr){
+                Hmx::Object *modmgr = FindObject("modifier_mgr", true);
+                if (modmgr) {
                     static Message active("is_modifier_active", "");
                     active[0] = s;
                     int ret = modmgr->Handle(active, true).Int();
-                    if(ret != 0) return true;
+                    if (ret != 0)
+                        return true;
                 }
             }
         }
@@ -107,63 +120,63 @@ bool TrackPanelDirBase::ModifierActive(Symbol s){
     return false;
 }
 
-void TrackPanelDirBase::Enter(){
+void TrackPanelDirBase::Enter() {
     PanelDir::Enter();
-    if(LOADMGR_EDITMODE){
-        if(Find<EventTrigger>("reset_all.trig", false)){
+    if (LOADMGR_EDITMODE) {
+        if (Find<EventTrigger>("reset_all.trig", false)) {
             ConfigureTracks(true);
             Reset();
         }
     }
 }
 
-float GetTrackViewTime(const Symbol& s1, Symbol s2){
-    DataArray* cfg = SystemConfig("objects", "view_times", s1);
+float GetTrackViewTime(const Symbol &s1, Symbol s2) {
+    DataArray *cfg = SystemConfig("objects", "view_times", s1);
     return cfg->FindFloat(s2);
 }
 
-void TrackPanelDirBase::UpdateTrackSpeed(){
-    if(!mTrackPanel || !mTrackPanel->ShouldUpdateScrollSpeed()) return;
+void TrackPanelDirBase::UpdateTrackSpeed() {
+    if (!mTrackPanel || !mTrackPanel->ShouldUpdateScrollSpeed())
+        return;
     else {
         mDoubleSpeedActive = ModifierActive(mod_doublespeed);
         mIndependentTrackSpeeds = ModifierActive(mod_independent_track_speeds);
         float f1 = mDoubleSpeedActive ? 1.5f : 1.0f;
-        if(mIndependentTrackSpeeds){
-            for(int i = 0; i < mGemTracks.size(); i++){
-                GemTrackDir* tdir = mGemTracks[i];
+        if (mIndependentTrackSpeeds) {
+            for (int i = 0; i < mGemTracks.size(); i++) {
+                GemTrackDir *tdir = mGemTracks[i];
                 TrackInstrument inst = tdir->GetInstrument();
                 Symbol diffsym = tdir->GetPlayerDifficultySym();
-                if(tdir->InUse() && inst >= kInstGuitar && diffsym != gNullStr){
+                if (tdir->InUse() && inst >= kInstGuitar && diffsym != gNullStr) {
                     Symbol instsym = tdir->GetInstrumentSymbol();
                     float viewtime = GetTrackViewTime(instsym, diffsym);
                     tdir->SetScrollSpeed(viewtime / f1);
                 }
             }
-        }
-        else {
+        } else {
             float f14 = 0;
             float f11 = f14;
             float f13 = f14;
             float f15 = f14;
-            for(int i = 0; i < mGemTracks.size(); i++){
-                GemTrackDir* tdir = mGemTracks[i];
+            for (int i = 0; i < mGemTracks.size(); i++) {
+                GemTrackDir *tdir = mGemTracks[i];
                 TrackInstrument inst = tdir->GetInstrument();
                 Symbol diffsym = tdir->GetPlayerDifficultySym();
-                if(tdir->InUse() && inst >= kInstGuitar && diffsym != gNullStr){
+                if (tdir->InUse() && inst >= kInstGuitar && diffsym != gNullStr) {
                     Symbol instsym = tdir->GetInstrumentSymbol();
                     float viewtime = GetTrackViewTime(instsym, diffsym);
                     f15 += 1.0f;
                     f11 += viewtime;
-                    if(!tdir->HasNetPlayer()){
+                    if (!tdir->HasNetPlayer()) {
                         f13 += 1.0f;
                         f14 += viewtime;
                     }
                 }
             }
-            if(f15 > 0){
+            if (f15 > 0) {
                 float speed = f13 == 0 ? f11 / f15 : f14 / f13;
                 speed /= f1;
-                for(int i = 0; i < mGemTracks.size(); i++){
+                for (int i = 0; i < mGemTracks.size(); i++) {
                     mGemTracks[i]->SetScrollSpeed(speed);
                 }
             }
@@ -171,55 +184,64 @@ void TrackPanelDirBase::UpdateTrackSpeed(){
     }
 }
 
-void TrackPanelDirBase::SetShowing(bool b){
+void TrackPanelDirBase::SetShowing(bool b) {
     Find<RndGroup>("draw_order.grp", true)->SetShowing(b);
 }
 
-void TrackPanelDirBase::UpdateJoinInProgress(bool b1, bool b2){
+void TrackPanelDirBase::UpdateJoinInProgress(bool b1, bool b2) {
     GetCrowdMeter()->UpdateJoinInProgress(b1, b2);
 }
 
-void TrackPanelDirBase::FailedJoinInProgress(){
+void TrackPanelDirBase::FailedJoinInProgress() {
     GetCrowdMeter()->FailedJoinInProgress();
 }
 
-void TrackPanelDirBase::ToggleSurface(){
-    for(int i = 0; i < mGemTracks.size(); i++){
-        RndMesh* d = mGemTracks[i]->mSurfaceMesh;
+void TrackPanelDirBase::ToggleSurface() {
+    for (int i = 0; i < mGemTracks.size(); i++) {
+        RndMesh *d = mGemTracks[i]->mSurfaceMesh;
         d->SetShowing(!d->Showing());
     }
 }
 
-void TrackPanelDirBase::ToggleNowbar(){
-    for(int i = 0; i < mGemTracks.size(); i++){
-        RndGroup* grp = mGemTracks[i]->Find<RndGroup>("now_bar.grp", true);
+void TrackPanelDirBase::ToggleNowbar() {
+    for (int i = 0; i < mGemTracks.size(); i++) {
+        RndGroup *grp = mGemTracks[i]->Find<RndGroup>("now_bar.grp", true);
         grp->SetShowing(!grp->Showing());
     }
 }
 
-void TrackPanelDirBase::SetPlayerLocal(BandTrack* track){
+void TrackPanelDirBase::SetPlayerLocal(BandTrack *track) {
     track->SetPlayerLocal(mNetTrackAlpha);
 }
 
-void TrackPanelDirBase::CodaSuccess(){
+void TrackPanelDirBase::CodaSuccess() {
     MILO_NOTIFY_ONCE("calling non-h2h coda success in h2h mode");
 }
 
-bool TrackPanelDirBase::ReservedVocalPlayerSlot(int i){
-    if(mTrackPanel) return mTrackPanel->SlotReservedForVocals(i);
-    else return i == 2;
+bool TrackPanelDirBase::ReservedVocalPlayerSlot(int i) {
+    if (mTrackPanel)
+        return mTrackPanel->SlotReservedForVocals(i);
+    else
+        return i == 2;
 }
 
-BandTrack* TrackPanelDirBase::GetBandTrackInSlot(int slot){
+BandTrack *TrackPanelDirBase::GetBandTrackInSlot(int slot) {
     MILO_ASSERT_RANGE(slot, 0, mTracks.size(), 0x180);
     return mTracks[slot];
 }
 
 BEGIN_HANDLERS(TrackPanelDirBase)
     HANDLE_EXPR(gem_tracks_size, (int)mGemTracks.size())
-    HANDLE_EXPR(get_gem_track, _msg->Int(2) < mGemTracks.size() ? mGemTracks[_msg->Int(2)].Ptr() : (GemTrackDir*)0)
+    HANDLE_EXPR(
+        get_gem_track,
+        _msg->Int(2) < mGemTracks.size() ? mGemTracks[_msg->Int(2)].Ptr()
+                                         : (GemTrackDir *)0
+    )
     HANDLE_ACTION(configure_tracks, ConfigureTracks(1))
-    HANDLE_ACTION(set_configuration, SetConfiguration(_msg->Obj<Hmx::Object>(2), _msg->Size() > 3 ? _msg->Int(3) : 1))
+    HANDLE_ACTION(
+        set_configuration,
+        SetConfiguration(_msg->Obj<Hmx::Object>(2), _msg->Size() > 3 ? _msg->Int(3) : 1)
+    )
     HANDLE_ACTION(enter, Enter())
     HANDLE_ACTION(reset, Reset())
     HANDLE_ACTION(set_multiplier, SetMultiplier(_msg->Int(2), false))
@@ -236,9 +258,9 @@ BEGIN_HANDLERS(TrackPanelDirBase)
     HANDLE_CHECK(0x1A7)
 END_HANDLERS
 
-void TrackPanelDirBase::PlayIntro(){}
-void TrackPanelDirBase::HideScore(){}
-void TrackPanelDirBase::GameOver(){}
+void TrackPanelDirBase::PlayIntro() {}
+void TrackPanelDirBase::HideScore() {}
+void TrackPanelDirBase::GameOver() {}
 
 BEGIN_PROPSYNCS(TrackPanelDirBase)
     SYNC_PROP(view_time_easy, mViewTimeEasy)
@@ -249,12 +271,15 @@ BEGIN_PROPSYNCS(TrackPanelDirBase)
     SYNC_SUPERCLASS(PanelDir)
 END_PROPSYNCS
 
-DataNode TrackPanelDirBase::DataForEachConfigObj(DataArray* da){
-    DataNode* var = da->Var(2);
+DataNode TrackPanelDirBase::DataForEachConfigObj(DataArray *da) {
+    DataNode *var = da->Var(2);
     DataNode dvar(*var);
-    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mConfigurableObjects.begin(); it != mConfigurableObjects.end(); ++it){
+    for (ObjPtrList<RndTransformable, ObjectDir>::iterator it =
+             mConfigurableObjects.begin();
+         it != mConfigurableObjects.end();
+         ++it) {
         *var = *it;
-        for(int i = 3; i < da->Size(); i++){
+        for (int i = 3; i < da->Size(); i++) {
             da->Command(i)->Execute();
         }
     }

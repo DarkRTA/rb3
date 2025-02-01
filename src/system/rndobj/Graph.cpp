@@ -5,12 +5,12 @@
 #include "rndobj/Utl.h"
 #include <list>
 
-RndGraph* sOneFrame;
-std::list<RndGraph>* sGraphs;
+RndGraph *sOneFrame;
+std::list<RndGraph> *sGraphs;
 std::list<FakeGraph> sFakes;
 ObjPtr<RndCam, ObjectDir> sCam(NULL, NULL);
 
-static DataNode OnGraphReset(DataArray*) {
+static DataNode OnGraphReset(DataArray *) {
     RndGraph::ResetAll();
     return DataNode(0);
 }
@@ -34,69 +34,83 @@ void RndGraph::ResetAll() {
     sGraphs->empty();
 }
 
-void RndGraph::SetCamera(RndCam* c) { sCam = c; }
+void RndGraph::SetCamera(RndCam *c) { sCam = c; }
 
-RndGraph* RndGraph::GetOneFrame() { 
-    if (sOneFrame == NULL) sOneFrame = new RndGraph(NULL);
-    return sOneFrame;    
+RndGraph *RndGraph::GetOneFrame() {
+    if (sOneFrame == NULL)
+        sOneFrame = new RndGraph(NULL);
+    return sOneFrame;
 }
 
-void RndGraph::Free(const void* id, bool b) {
-    if (sGraphs == NULL) return;
-    for (std::list<RndGraph>::reverse_iterator it = sGraphs->rbegin(); it != sGraphs->rend(); it++) {
+void RndGraph::Free(const void *id, bool b) {
+    if (sGraphs == NULL)
+        return;
+    for (std::list<RndGraph>::reverse_iterator it = sGraphs->rbegin();
+         it != sGraphs->rend();
+         it++) {
         if (it->mId == id) {
-            delete &(*it); return;
+            delete &(*it);
+            return;
         }
     }
     for (std::list<FakeGraph>::iterator it = sFakes.begin(); it != sFakes.end(); it++) {
         if (&(*it) == id) {
-            delete &(*it); return;
+            delete &(*it);
+            return;
         }
     }
-    if (b) MILO_WARN("could not find line graph %x to free\n", (int)id);
+    if (b)
+        MILO_WARN("could not find line graph %x to free\n", (int)id);
 }
 
-RndGraph::RndGraph(const void* cv) : mEnable(1), mDrawFixedZ(0), mZ(0.0f), mId((void*)cv) {
-    
-}
+RndGraph::RndGraph(const void *cv)
+    : mEnable(1), mDrawFixedZ(0), mZ(0.0f), mId((void *)cv) {}
 
-RndGraph::~RndGraph(){
+RndGraph::~RndGraph() {
     mEnable = true;
     Reset();
 }
 
-void RndGraph::Draw(){
-    for(int i = 0; i < mStuff.size(); i++){
-        if(mDrawFixedZ){
+void RndGraph::Draw() {
+    for (int i = 0; i < mStuff.size(); i++) {
+        if (mDrawFixedZ) {
             mStuff[i]->DrawFixedZ(mZ);
-        }
-        else mStuff[i]->Draw();
+        } else
+            mStuff[i]->Draw();
     }
 }
 
-void RndGraph::Reset(){
-    if(mEnable){
-        for(int i = 0; i < mStuff.size(); i++){
+void RndGraph::Reset() {
+    if (mEnable) {
+        for (int i = 0; i < mStuff.size(); i++) {
             delete mStuff[i];
         }
         mStuff.clear();
     }
 }
 
-void RndGraph::AddLine(const Vector3& a, const Vector3& b, const Hmx::Color& col, bool buf){
-    if(mEnable) mStuff.push_back(new Line(a, b, col, buf));
+void RndGraph::AddLine(
+    const Vector3 &a, const Vector3 &b, const Hmx::Color &col, bool buf
+) {
+    if (mEnable)
+        mStuff.push_back(new Line(a, b, col, buf));
 }
 
-void RndGraph::AddSphere(const Vector3& center, float radius, const Hmx::Color& col){
-    if(mEnable) mStuff.push_back(new DrawSphere(center, radius, col));
+void RndGraph::AddSphere(const Vector3 &center, float radius, const Hmx::Color &col) {
+    if (mEnable)
+        mStuff.push_back(new DrawSphere(center, radius, col));
 }
 
-void RndGraph::AddString(const char* cc, const Vector2& vec, const Hmx::Color& col){
-    if(mEnable) mStuff.push_back(new DrawString(cc, vec, col));
+void RndGraph::AddString(const char *cc, const Vector2 &vec, const Hmx::Color &col) {
+    if (mEnable)
+        mStuff.push_back(new DrawString(cc, vec, col));
 }
 
-void RndGraph::AddString3D(const char* text, const Vector3& worldPos, const Hmx::Color& col){
-    if(mEnable) mStuff.push_back(new DrawString3D(text, worldPos, col));
+void RndGraph::AddString3D(
+    const char *text, const Vector3 &worldPos, const Hmx::Color &col
+) {
+    if (mEnable)
+        mStuff.push_back(new DrawString3D(text, worldPos, col));
 }
 
 void DrawString3D::DrawFixedZ(float) { Draw(); }
@@ -107,11 +121,13 @@ void DrawString::DrawFixedZ(float) { Draw(); }
 
 void DrawString::Draw() { TheRnd->DrawString(mText.c_str(), mPos, mCol, true); }
 
-void DrawSphere::DrawFixedZ(float f) { UtilDrawSphere(Vector3(mCenter.x, mCenter.z, f), mRadius, mCol); }
+void DrawSphere::DrawFixedZ(float f) {
+    UtilDrawSphere(Vector3(mCenter.x, mCenter.z, f), mRadius, mCol);
+}
 
 void DrawSphere::Draw() { UtilDrawSphere(mCenter, mRadius, mCol); }
 
-void Line::DrawFixedZ(float f) { 
+void Line::DrawFixedZ(float f) {
     TheRnd->DrawLine(Vector3(mA.X(), mA.Y(), f), Vector3(mB.X(), mB.Y(), f), mCol, mZBuf);
 }
 

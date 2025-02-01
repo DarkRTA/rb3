@@ -15,12 +15,12 @@ class HxMaster;
 
 class SongCallback {
 public:
-    SongCallback(){}
-    virtual ~SongCallback(){}
-    virtual void SongSetFrame(class Song*, float) = 0;
-    virtual ObjectDir* SongMainDir() = 0;
+    SongCallback() {}
+    virtual ~SongCallback() {}
+    virtual void SongSetFrame(class Song *, float) = 0;
+    virtual ObjectDir *SongMainDir() = 0;
     virtual void SongPlay(bool) = 0;
-    virtual void UpdateObject(const Hmx::Object*, DataArray*) = 0;
+    virtual void UpdateObject(const Hmx::Object *, DataArray *) = 0;
     virtual void Preload() = 0;
     virtual void ProcessBookmarks(DataNode) = 0;
 };
@@ -30,36 +30,36 @@ public:
     Song();
     OBJ_CLASSNAME(Song);
     OBJ_SET_TYPE(Song);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~Song();
     virtual void SetFrame(float frame, float blend);
     virtual float EndFrame();
 
-    virtual float UpdateOverlay(RndOverlay*, float);
-    virtual void OnNewTrack(int){}
-    virtual void OnEndOfTrack(){}
-    virtual void OnAllTracksRead(){}
-    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char){}
-    virtual void OnText(int, const char*, unsigned char);
-    virtual DataNode OnMBTFromSeconds(const DataArray*);
-    virtual void CreateSong(Symbol, DataArray*, HxSongData**, HxMaster**);
+    virtual float UpdateOverlay(RndOverlay *, float);
+    virtual void OnNewTrack(int) {}
+    virtual void OnEndOfTrack() {}
+    virtual void OnAllTracksRead() {}
+    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char) {}
+    virtual void OnText(int, const char *, unsigned char);
+    virtual DataNode OnMBTFromSeconds(const DataArray *);
+    virtual void CreateSong(Symbol, DataArray *, HxSongData **, HxMaster **);
 
     void Unload();
     void Load();
     float GetBeat();
     void LoadSong();
-    TempoMap* GetTempoMap();
-    BeatMap* GetBeatMap();
-    MeasureMap* GetMeasureMap();
+    TempoMap *GetTempoMap();
+    BeatMap *GetBeatMap();
+    MeasureMap *GetMeasureMap();
     void SyncState();
     void SetStateDirty(bool);
-    MBT GetMBTFromFrame(float, int*);
-    MBT GetMBTFromTick(int, int*);
-    ObjectDir* MainDir() const;
+    MBT GetMBTFromFrame(float, int *);
+    MBT GetMBTFromTick(int, int *);
+    ObjectDir *MainDir() const;
     void SetLoopStart(float);
     void SetLoopEnd(float);
     void JumpTo(int);
@@ -76,10 +76,10 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
-    static SongCallback* sCallback;
+    static SongCallback *sCallback;
 
-    HxMaster* mHxMaster; // 0x1c
-    HxSongData* mHxSongData; // 0x20
+    HxMaster *mHxMaster; // 0x1c
+    HxSongData *mHxSongData; // 0x20
     std::map<int, Symbol> unk24; // 0x24
     ObjPtrList<Hmx::Object> mDebugParsers; // 0x3c
     Symbol mSongName; // 0x4c

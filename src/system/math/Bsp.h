@@ -7,11 +7,14 @@
 class BSPNode {
 public:
     BSPNode() : left(0), right(0) {}
-    ~BSPNode() { delete left; delete right; }
-    
+    ~BSPNode() {
+        delete left;
+        delete right;
+    }
+
     Plane plane; // 0x0
-    BSPNode* left; // 0x10 yes they're called front/back but BSP works L/R, not F/B
-    BSPNode* right; // 0x14
+    BSPNode *left; // 0x10 yes they're called front/back but BSP works L/R, not F/B
+    BSPNode *right; // 0x14
 
     NEW_POOL_OVERLOAD(BSPNode)
     DELETE_POOL_OVERLOAD(BSPNode)
@@ -19,9 +22,9 @@ public:
 
 class BSPFace {
 public:
-    BSPFace(){}
-    ~BSPFace(){}
-    void Set(const Vector3&, const Vector3&, const Vector3&);
+    BSPFace() {}
+    ~BSPFace() {}
+    void Set(const Vector3 &, const Vector3 &, const Vector3 &);
 
     Hmx::Polygon p;
     Transform t;
@@ -35,7 +38,7 @@ extern int gBSPMaxDepth;
 extern int gBSPMaxCandidates;
 extern float gBSPCheckScale;
 
-void NumNodes(const BSPNode*, int&, int&);
-BinStream& operator>>(BinStream&, BSPNode*&);
-bool MakeBSPTree(BSPNode*&, std::list<BSPFace>&, int);
-bool CheckBSPTree(const BSPNode*, const Box&);
+void NumNodes(const BSPNode *, int &, int &);
+BinStream &operator>>(BinStream &, BSPNode *&);
+bool MakeBSPTree(BSPNode *&, std::list<BSPFace> &, int);
+bool CheckBSPTree(const BSPNode *, const Box &);

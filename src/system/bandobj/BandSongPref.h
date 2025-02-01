@@ -9,19 +9,17 @@ public:
     virtual ~BandSongPref() {}
     OBJ_CLASSNAME(BandSongPref)
     OBJ_SET_TYPE(BandSongPref)
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Load(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
     DECLARE_REVS
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(BandSongPref)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandSongPref)
 
     Symbol Part2Inst() const { return mPart2Instrument; }

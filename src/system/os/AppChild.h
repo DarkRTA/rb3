@@ -5,10 +5,10 @@
 class AppChild {
 public:
     bool mEnabled;
-    BinStream* mStream;
+    BinStream *mStream;
     bool mSync;
 
-    AppChild(const char*);
+    AppChild(const char *);
     ~AppChild();
     void Sync();
     void Sync(unsigned short);
@@ -19,6 +19,6 @@ public:
     static void Terminate();
 };
 
-extern AppChild* TheAppChild;
+extern AppChild *TheAppChild;
 
 #endif

@@ -34,11 +34,11 @@ class WiiProfileMgr : public FixedSizeSaveable, public MsgSource {
 public:
     WiiProfileMgr();
     virtual ~WiiProfileMgr();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void SetProfileDirty(int);
-    int GetIndexForUser(const LocalUser*) const;
+    int GetIndexForUser(const LocalUser *) const;
     int GetIdForIndex(int) const;
     bool IsIndexValid(int) const;
     int GetIndexForPad(int) const;
@@ -46,10 +46,10 @@ public:
     void SetPadToGuest(int);
     void Init(int, int);
     void Clear(int, int);
-    WiiProfile* GetProfileForPad(int);
+    WiiProfile *GetProfileForPad(int);
     bool IsPadAGuest(int) const;
     bool IsPadRegistered(int) const;
-    const char* GetNameForPad(int) const;
+    const char *GetNameForPad(int) const;
     int Count(unsigned int) const;
     bool NeedsSave() const;
     bool NeedsLoading() const;
@@ -66,10 +66,10 @@ public:
     int GetNextEmptyIndex() const;
     void SetPadToIndex(int, int);
     void RemovePad(int);
-    WiiProfile* GetProfileForIndex(int);
-    const char* GetNameForIndex(int) const;
-    void SetIndexName(int, const char*);
-    int GetIndexForName(const char*, int) const;
+    WiiProfile *GetProfileForIndex(int);
+    const char *GetNameForIndex(int) const;
+    void SetIndexName(int, const char *);
+    int GetIndexForName(const char *, int) const;
     bool IsSlotAvailable() const;
     bool IsIndexSaved(int) const;
     bool IsIndexLoaded(int) const;
@@ -77,11 +77,11 @@ public:
     bool IsIndexSwapping(int) const;
     bool IsIndexLocked(int) const;
     void SetIndexLocked(int, bool);
-    void SetLocked(Profile*, bool);
-    void DoSignin(LocalUser*, int, int, int);
+    void SetLocked(Profile *, bool);
+    void DoSignin(LocalUser *, int, int, int);
     bool IsDeleteQueueFull() const;
-    int GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser*) const;
-    void SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser*, int, bool);
+    int GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser *) const;
+    void SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser *, int, bool);
 
     static int sSaveVersion;
     static int sSaveVersionWii;

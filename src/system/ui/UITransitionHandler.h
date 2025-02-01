@@ -14,20 +14,20 @@ enum UITransitionAnimationState {
 
 class UITransitionHandler {
 public:
-    UITransitionHandler(Hmx::Object*);
+    UITransitionHandler(Hmx::Object *);
     virtual ~UITransitionHandler();
     virtual void FinishValueChange();
     virtual void StartValueChange();
     virtual bool IsEmptyValue() const = 0;
 
-    void SetInAnim(RndAnimatable*);
-    void SetOutAnim(RndAnimatable*);
-    RndAnimatable* GetInAnim() const;
-    RndAnimatable* GetOutAnim() const;
+    void SetInAnim(RndAnimatable *);
+    void SetOutAnim(RndAnimatable *);
+    RndAnimatable *GetInAnim() const;
+    RndAnimatable *GetOutAnim() const;
     bool HasTransitions() const;
     void ClearAnimationState();
-    void CopyHandlerData(const UITransitionHandler*);
-    void LoadHandlerData(BinStream&);
+    void CopyHandlerData(const UITransitionHandler *);
+    void LoadHandlerData(BinStream &);
     void UpdateHandler();
     bool IsReadyToChange() const;
 

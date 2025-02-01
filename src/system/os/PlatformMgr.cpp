@@ -10,82 +10,84 @@
 
 PlatformMgr ThePlatformMgr;
 
-LocalUser* ProfileSwappedMsg::GetUser1() const {
-    return mData->Obj<LocalUser>(2);
-}
+LocalUser *ProfileSwappedMsg::GetUser1() const { return mData->Obj<LocalUser>(2); }
 
-LocalUser* ProfileSwappedMsg::GetUser2() const {
-    return mData->Obj<LocalUser>(3);
-}
+LocalUser *ProfileSwappedMsg::GetUser2() const { return mData->Obj<LocalUser>(3); }
 
-Symbol PlatformRegionToSymbol(PlatformRegion r){
+Symbol PlatformRegionToSymbol(PlatformRegion r) {
     MILO_ASSERT(r < kNumRegions, 0x29);
     static Symbol sym[4] = { "", "na", "europe", "japan" };
     return sym[r];
 }
 
-PlatformRegion SymbolToPlatformRegion(Symbol s){
-    for(int i = 0; i < 4; i++){
+PlatformRegion SymbolToPlatformRegion(Symbol s) {
+    for (int i = 0; i < 4; i++) {
         PlatformRegion r = (PlatformRegion)i;
-        if(PlatformRegionToSymbol(r) == s) return r;
+        if (PlatformRegionToSymbol(r) == s)
+            return r;
     }
     MILO_FAIL("Invalid region %s", s);
     return kNumRegions;
 }
 
-void UTF8FilterKeyboardString(char* c, int i, const char* cc){
-    static const char* allowed = SystemConfig(platform_mgr)->FindStr(keyboard_allowed_chars);
+void UTF8FilterKeyboardString(char *c, int i, const char *cc) {
+    static const char *allowed =
+        SystemConfig(platform_mgr)->FindStr(keyboard_allowed_chars);
     UTF8FilterString(c, i, cc, allowed, '?');
 }
 
 bool PlatformMgr::IsSignedIn(int padnum) const {
-    if(padnum < 0){
+    if (padnum < 0) {
         MILO_FAIL("PadNum = %d", padnum);
     }
     return 1 << padnum & mSigninMask;
 }
 
-bool PlatformMgr::IsUserSignedIn(const LocalUser* pUser) const {
+bool PlatformMgr::IsUserSignedIn(const LocalUser *pUser) const {
     MILO_ASSERT(pUser, 0x51);
     return IsSignedIn(pUser->GetPadNum());
 }
 
-bool PlatformMgr::HasUserSigninChanged(const LocalUser* pUser) const {
+bool PlatformMgr::HasUserSigninChanged(const LocalUser *pUser) const {
     MILO_ASSERT(pUser, 0x58);
     int padnum = pUser->GetPadNum();
-    if(padnum < 0) MILO_FAIL("PadNum = %d", padnum);
+    if (padnum < 0)
+        MILO_FAIL("PadNum = %d", padnum);
     return 1 << padnum & mSigninChangeMask;
 }
 
-bool PlatformMgr::IsUserSignedIntoLive(const LocalUser* pUser) const {
+bool PlatformMgr::IsUserSignedIntoLive(const LocalUser *pUser) const {
     MILO_ASSERT(pUser, 0x60);
     return IsSignedIntoLive(pUser->GetPadNum());
 }
 
 bool PlatformMgr::IsAnyUserSignedIntoLive() const {
-    for(int i = 0; i < 4; i++){
-        if(IsSignedIntoLive(i)) return true;
+    for (int i = 0; i < 4; i++) {
+        if (IsSignedIntoLive(i))
+            return true;
     }
     return false;
 }
 
-bool PlatformMgr::UserHasOnlinePrivilege(const LocalUser* pUser) const {
+bool PlatformMgr::UserHasOnlinePrivilege(const LocalUser *pUser) const {
     MILO_ASSERT(pUser, 0x70);
     return HasOnlinePrivilege(pUser->GetPadNum());
 }
 
-bool PlatformMgr::IsUserAGuest(const LocalUser*) const { return false; }
+bool PlatformMgr::IsUserAGuest(const LocalUser *) const { return false; }
 PlatformRegion PlatformMgr::GetRegion() const { return mRegion; }
 
-LocalUser* PlatformMgr::GetOwnerUserOfGuestUser(LocalUser* pUser){
+LocalUser *PlatformMgr::GetOwnerUserOfGuestUser(LocalUser *pUser) {
     MILO_ASSERT(pUser, 0xBA);
     return TheUserMgr->GetLocalUserFromPadNum(GetOwnerOfGuest(pUser->GetPadNum()));
 }
 
-void PlatformMgr::SetRegion(PlatformRegion region){
-    const char* regionStr = OptionStr("region", 0);
-    if(regionStr) mRegion = SymbolToPlatformRegion(regionStr);
-    else mRegion = region;
+void PlatformMgr::SetRegion(PlatformRegion region) {
+    const char *regionStr = OptionStr("region", 0);
+    if (regionStr)
+        mRegion = SymbolToPlatformRegion(regionStr);
+    else
+        mRegion = region;
     MILO_ASSERT(mRegion != kRegionNone, 200);
     class String platRegion(PlatformRegionToSymbol(mRegion));
     platRegion.ToUpper();
@@ -110,10 +112,14 @@ BEGIN_HANDLERS(PlatformMgr)
     HANDLE_EXPR(user_has_online_privilege, UserHasOnlinePrivilege(_msg->Obj<LocalUser>(2)))
     HANDLE_EXPR(guide_showing, mGuideShowing)
     HANDLE_EXPR(is_user_a_guest, IsUserAGuest(_msg->Obj<LocalUser>(2)))
-    HANDLE_EXPR(get_owner_user_of_guest_user, GetOwnerUserOfGuestUser(_msg->Obj<LocalUser>(2)))
+    HANDLE_EXPR(
+        get_owner_user_of_guest_user, GetOwnerUserOfGuestUser(_msg->Obj<LocalUser>(2))
+    )
     HANDLE_ACTION(set_screen_saver, SetScreenSaver(_msg->Int(2)))
     HANDLE_ACTION(run_net_start_utility, RunNetStartUtility())
-    HANDLE_ACTION(set_notify_ui_location, SetNotifyUILocation((NotifyLocation)_msg->Int(2)))
+    HANDLE_ACTION(
+        set_notify_ui_location, SetNotifyUILocation((NotifyLocation)_msg->Int(2))
+    )
     HANDLE_EXPR(get_region, mRegion)
     HANDLE_EXPR(is_user_a_wiiguest, IsUserAWiiGuest(_msg->Obj<LocalUser>(2)))
     HANDLE_EXPR(init_nintendo_connection, InitNintendoConnection())
@@ -143,7 +149,10 @@ BEGIN_HANDLERS(PlatformMgr)
     HANDLE_MESSAGE(ButtonDownMsg)
     HANDLE_MESSAGE(ButtonUpMsg)
     HANDLE_ACTION(trigger_disk_error, SetDiskError(kFailedChecksum))
-    HANDLE_ACTION(debug_spam_profanity_check, (unkce69 = true, StartProfanity("This is a string", 0)))
+    HANDLE_ACTION(
+        debug_spam_profanity_check,
+        (unkce69 = true, StartProfanity("This is a string", 0))
+    )
     HANDLE_SUPERCLASS(MsgSource)
     HANDLE_CHECK(0x1BA)
 END_HANDLERS

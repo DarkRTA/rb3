@@ -4,13 +4,11 @@
 #include "utl/Symbols.h"
 
 INIT_REVS(RndWind)
-float sWindField[0x401] = {0}, sWhiteField[0x400] = {0};
-Rand* sRand;
+float sWindField[0x401] = { 0 }, sWhiteField[0x400] = { 0 };
+Rand *sRand;
 Vector3 sOffset(0.0f, 0.3384f, 0.66843998f);
 
-void SetWind(int, int, float, float, float) {
-
-}
+void SetWind(int, int, float, float, float) {}
 
 void RndWind::Init() {
     Register();
@@ -19,39 +17,39 @@ void RndWind::Init() {
     sWindField[0x400] = sWindField[0];
     int i = 0;
     do {
-        sWhiteField[i] = RandomFloat(0,1);
+        sWhiteField[i] = RandomFloat(0, 1);
         i++;
     } while (i < 0x400);
     delete sRand;
     sRand = 0;
 }
 
-RndWind::RndWind() : mPrevailing(0.0f, 0.0f, 0.0f), mRandom(0.0f, 0.0f, 0.0f), mTimeLoop(100.0f), mSpaceLoop(100.0f), mWindOwner(this, this) {
+RndWind::RndWind()
+    : mPrevailing(0.0f, 0.0f, 0.0f), mRandom(0.0f, 0.0f, 0.0f), mTimeLoop(100.0f),
+      mSpaceLoop(100.0f), mWindOwner(this, this) {
     SyncLoops();
 }
 
-RndWind::~RndWind(){
+RndWind::~RndWind() {}
 
-}
-
-void RndWind::SetWindOwner(RndWind* wind){
+void RndWind::SetWindOwner(RndWind *wind) {
     // RndWind* toSet = (wind) ? wind : this;
     mWindOwner = (wind) ? wind : this;
 }
 
-void RndWind::Zero(){
+void RndWind::Zero() {
     mRandom.Set(0.0f, 0.0f, 0.0f);
     mPrevailing.Set(0.0f, 0.0f, 0.0f);
 }
 
-void RndWind::SetDefaults(){
+void RndWind::SetDefaults() {
     mPrevailing.Set(0.0f, 0.0f, 0.0f);
     mRandom.Set(17.0f, 17.0f, 0.0f);
     mTimeLoop = 100.0f;
     mSpaceLoop = 100.0f;
 }
 
-void RndWind::SyncLoops(){
+void RndWind::SyncLoops() {
     float f1 = (mTimeLoop == 0.0f) ? 0.0f : 1.0f / mTimeLoop;
     mTimeRate.Set(f1, f1 * 0.773437f, f1 * 1.38484f);
     f1 = (mSpaceLoop == 0.0f) ? 0.0f : 1.0f / mSpaceLoop;
@@ -65,7 +63,7 @@ BEGIN_LOADS(RndWind)
     ASSERT_REVS(2, 0);
     LOAD_SUPERCLASS(Hmx::Object)
     bs >> mPrevailing >> mRandom >> mTimeLoop >> mSpaceLoop;
-    if(gRev > 1){
+    if (gRev > 1) {
         bs >> mWindOwner;
         SetWindOwner(mWindOwner);
     }
@@ -76,7 +74,8 @@ BEGIN_COPYS(RndWind)
     COPY_SUPERCLASS(Hmx::Object)
     CREATE_COPY(RndWind)
     BEGIN_COPYING_MEMBERS
-        if(ty == kCopyShallow) mWindOwner = c->mWindOwner;
+        if (ty == kCopyShallow)
+            mWindOwner = c->mWindOwner;
         else {
             mWindOwner = this;
             COPY_MEMBER(mWindOwner)
@@ -89,10 +88,10 @@ BEGIN_COPYS(RndWind)
     END_COPYING_MEMBERS
 END_COPYS
 
-void RndWind::Replace(Hmx::Object* from, Hmx::Object* to){
+void RndWind::Replace(Hmx::Object *from, Hmx::Object *to) {
     Hmx::Object::Replace(from, to);
-    if(mWindOwner == from){
-        SetWindOwner(dynamic_cast<RndWind*>(to));
+    if (mWindOwner == from) {
+        SetWindOwner(dynamic_cast<RndWind *>(to));
     }
 }
 

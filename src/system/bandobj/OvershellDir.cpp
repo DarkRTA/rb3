@@ -5,21 +5,21 @@
 
 INIT_REVS(OvershellDir)
 
-OvershellDir::OvershellDir() : mSlotView("joined_default"), mInTrackMode(0), mControllerType("guitar"), mOnlineEnabled(0),
-    mIsLocal(1), mPadNum(1), mPlatform("xbox"), mDefaultOption(gNullStr), mDefaultOptionIndex(0) {
-
-}
+OvershellDir::OvershellDir()
+    : mSlotView("joined_default"), mInTrackMode(0), mControllerType("guitar"),
+      mOnlineEnabled(0), mIsLocal(1), mPadNum(1), mPlatform("xbox"),
+      mDefaultOption(gNullStr), mDefaultOptionIndex(0) {}
 
 SAVE_OBJ(OvershellDir, 0x1E)
 
-void OvershellDir::PreLoad(BinStream& bs){
+void OvershellDir::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     PushRev(packRevs(gAltRev, gRev), this);
     PanelDir::PreLoad(bs);
 }
 
-void OvershellDir::PostLoad(BinStream& bs){
+void OvershellDir::PostLoad(BinStream &bs) {
     PanelDir::PostLoad(bs);
     int revs = PopRev(this);
     gRev = getHmxRev(revs);
@@ -30,22 +30,30 @@ BEGIN_COPYS(OvershellDir)
     COPY_SUPERCLASS(PanelDir)
 END_COPYS
 
-void OvershellDir::CacheLists(){
+void OvershellDir::CacheLists() {
     mBandLists.clear();
-    for(ObjDirItr<BandList> it(this, false); it != 0; ++it){
+    for (ObjDirItr<BandList> it(this, false); it != 0; ++it) {
         mBandLists.push_back(it);
     }
 }
 
-void OvershellDir::ConcealAllLists(bool now){
-    for(int i = 0; i < mBandLists.size(); i++){
-        if(now) mBandLists[i]->ConcealNow();
-        else mBandLists[i]->Conceal();
+void OvershellDir::ConcealAllLists(bool now) {
+    for (int i = 0; i < mBandLists.size(); i++) {
+        if (now)
+            mBandLists[i]->ConcealNow();
+        else
+            mBandLists[i]->Conceal();
     }
 }
 
-void OvershellDir::ViewChanged(){
-    static Message msgShowView("show_view", DataNode(mSlotView), DataNode(mInTrackMode), DataNode(mDefaultOption), DataNode(mDefaultOptionIndex));
+void OvershellDir::ViewChanged() {
+    static Message msgShowView(
+        "show_view",
+        DataNode(mSlotView),
+        DataNode(mInTrackMode),
+        DataNode(mDefaultOption),
+        DataNode(mDefaultOptionIndex)
+    );
     msgShowView[0] = DataNode(mSlotView);
     msgShowView[1] = DataNode(mInTrackMode);
     msgShowView[2] = DataNode(mDefaultOption);

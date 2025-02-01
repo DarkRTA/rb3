@@ -10,34 +10,31 @@
  *  the matching bone servo." */
 class CharMirror : public CharWeightable, public CharPollable {
 public:
-
     struct MirrorOp {
-        void* ptr; // 0x0
+        void *ptr; // 0x0
         Symbol op; // 0x4
     };
 
     CharMirror();
     OBJ_CLASSNAME(CharMirror);
     OBJ_SET_TYPE(CharMirror);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~CharMirror(){}
-    virtual void Poll();    
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~CharMirror() {}
+    virtual void Poll();
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
 
-    void SetServo(CharServoBone*);
-    void SetMirrorServo(CharServoBone*);
+    void SetServo(CharServoBone *);
+    void SetMirrorServo(CharServoBone *);
     void SyncBones();
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
     NEW_OBJ(CharMirror)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharMirror)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharMirror) }
 
     /** "The servo to change" */
     ObjPtr<CharServoBone> mServo; // 0x20

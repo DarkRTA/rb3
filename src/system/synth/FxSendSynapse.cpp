@@ -5,31 +5,32 @@
 
 INIT_REVS(FxSendSynapse);
 
-FxSendSynapse::FxSendSynapse() : mAmount(0.0f), mProximityEffect(0.5f), mProximityFocus(0.5f), mNote1Hz(200.0f), mNote2Hz(0.0f), mNote3Hz(0.0f), mUnisonTrio(0), mAttackSmoothing(30.0f), mReleaseSmoothing(60.0f) {
+FxSendSynapse::FxSendSynapse()
+    : mAmount(0.0f), mProximityEffect(0.5f), mProximityFocus(0.5f), mNote1Hz(200.0f),
+      mNote2Hz(0.0f), mNote3Hz(0.0f), mUnisonTrio(0), mAttackSmoothing(30.0f),
+      mReleaseSmoothing(60.0f) {}
 
-}
-
-void FxSendSynapse::SetAttackSmoothing(float as){
+void FxSendSynapse::SetAttackSmoothing(float as) {
     mAttackSmoothing = as;
     OnParametersChanged();
 }
 
-void FxSendSynapse::SetReleaseSmoothing(float rs){
+void FxSendSynapse::SetReleaseSmoothing(float rs) {
     mReleaseSmoothing = rs;
     OnParametersChanged();
 }
 
-void FxSendSynapse::SetAmount(float amt){
+void FxSendSynapse::SetAmount(float amt) {
     mAmount = amt;
     OnParametersChanged();
 }
 
-void FxSendSynapse::SetProximityEffect(float pe){
+void FxSendSynapse::SetProximityEffect(float pe) {
     mProximityEffect = pe;
     OnParametersChanged();
 }
 
-void FxSendSynapse::SetProximityFocus(float pf){
+void FxSendSynapse::SetProximityFocus(float pf) {
     mProximityFocus = pf;
     OnParametersChanged();
 }
@@ -54,17 +55,22 @@ END_PROPSYNCS
 
 SAVE_OBJ(FxSendSynapse, 0x68);
 
-void FxSendSynapse::Load(BinStream& bs){
+void FxSendSynapse::Load(BinStream &bs) {
     int rev;
     bs >> rev;
-    if(rev > 5) MILO_WARN("Can't load new FxSendSynapse");
+    if (rev > 5)
+        MILO_WARN("Can't load new FxSendSynapse");
     else {
         FxSend::Load(bs);
         bs >> mAmount >> mProximityEffect >> mNote1Hz;
-        if(rev > 1) bs >> mAttackSmoothing;
-        if(rev > 2) bs >> mProximityFocus;
-        if(rev > 3) bs >> mReleaseSmoothing;
-        if(rev > 4) bs >> mNote2Hz >> mNote3Hz >> mUnisonTrio;
+        if (rev > 1)
+            bs >> mAttackSmoothing;
+        if (rev > 2)
+            bs >> mProximityFocus;
+        if (rev > 3)
+            bs >> mReleaseSmoothing;
+        if (rev > 4)
+            bs >> mNote2Hz >> mNote3Hz >> mUnisonTrio;
         OnParametersChanged();
     }
 }
@@ -81,6 +87,6 @@ BEGIN_COPYS(FxSendSynapse)
         COPY_MEMBER(mNote3Hz)
         COPY_MEMBER(mUnisonTrio)
         COPY_MEMBER(mAttackSmoothing)
-        COPY_MEMBER(mReleaseSmoothing)   
+        COPY_MEMBER(mReleaseSmoothing)
     END_COPYING_MEMBERS
 END_COPYS

@@ -2,26 +2,23 @@
 #include "os/Debug.h"
 #include "milo_types.h"
 
-DOFProc* TheDOFProc;
+DOFProc *TheDOFProc;
 
-DOFProc::DOFProc(){
+DOFProc::DOFProc() {}
 
+DOFProc::~DOFProc() {}
+
+void DOFProc::Init() {
+    if (!TheDOFProc)
+        TheDOFProc = Hmx::Object::New<DOFProc>();
 }
 
-DOFProc::~DOFProc(){
-
-}
-
-void DOFProc::Init(){
-    if(!TheDOFProc) TheDOFProc = Hmx::Object::New<DOFProc>();
-}
-
-void DOFProc::Terminate(){
+void DOFProc::Terminate() {
     delete TheDOFProc;
     TheDOFProc = 0;
 }
 
-DOFProc& DOFProc::Params(){
+DOFProc &DOFProc::Params() {
     MILO_ASSERT(TheDOFProc != NULL, 0x28);
     return *TheDOFProc;
 }

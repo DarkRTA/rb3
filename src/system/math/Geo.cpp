@@ -10,13 +10,13 @@ int gBSPMaxDepth = 20;
 int gBSPMaxCandidates = 40;
 float gBSPCheckScale = 1.1f;
 
-static DataNode SetBSPParams(DataArray* da) {
+static DataNode SetBSPParams(DataArray *da) {
     SetBSPParams(da->Float(1), da->Float(2), da->Int(3), da->Int(4), da->Float(5));
     return DataNode();
 }
 
 void GeoInit() {
-    DataArray* cfg = SystemConfig("math");
+    DataArray *cfg = SystemConfig("math");
     float scale = cfg->FindArray("bsp_check_scale", true)->Float(1);
     int candidates = cfg->FindArray("bsp_max_candidates", true)->Int(1);
     int depth = cfg->FindArray("bsp_max_depth", true)->Int(1);
@@ -28,69 +28,66 @@ void GeoInit() {
 
 DECOMP_FORCEACTIVE(Geo, "points:");
 
-TextStream& deadstrippedVec2Read(TextStream& ts, const std::vector<Vector2>& vec){
+TextStream &deadstrippedVec2Read(TextStream &ts, const std::vector<Vector2> &vec) {
     return ts << vec;
 }
 
-BinStream& operator>>(BinStream& bs, BSPNode*& bsp) {
+BinStream &operator>>(BinStream &bs, BSPNode *&bsp) {
     bool exists;
     bs >> exists;
-    if(exists){
+    if (exists) {
         bsp = new BSPNode();
         bs >> bsp->plane >> bsp->left >> bsp->right;
-    }
-    else bsp = 0;
+    } else
+        bsp = 0;
     return bs;
 }
 
-void Box::GrowToContain(const Vector3& vec, bool b){
-    if(b){
+void Box::GrowToContain(const Vector3 &vec, bool b) {
+    if (b) {
         mMin = mMax = vec;
-    }
-    else for(int i = 0; i < 3; i++){
-        if(vec[i] < mMin[i]){
-            mMin[i] = vec[i];
+    } else
+        for (int i = 0; i < 3; i++) {
+            if (vec[i] < mMin[i]) {
+                mMin[i] = vec[i];
+            } else if (vec[i] > mMax[i]) {
+                mMax[i] = vec[i];
+            }
         }
-        else if(vec[i] > mMax[i]){
-            mMax[i] = vec[i];
-        }
-    }
 }
 
-void Intersect(const Hmx::Ray& r1, const Hmx::Ray& r2, Vector2& out) {
-      float fVar1;
-  float fVar2;
-  float fVar3;
-  float fVar4;
-  float fVar5;
-  float fVar6;
-  float fVar7;
-  float fVar8;
-  float a;
-  
-  fVar1 = (r1.dir).x;
-  fVar2 = (r2.dir).y;
-  fVar3 = (r2.dir).x;
-  fVar4 = (r1.dir).y;
-  fVar5 = (r1.base).x;
-  a = fVar3 * fVar4 - fVar1 * fVar2;
-  fVar6 = (r2.base).x;
-  fVar7 = (r1.base).y;
-  fVar8 = (r2.base).y;
-  if (0.0f != a) {
-    a = (fVar4 * (fVar5 - fVar6) + fVar1 * (fVar8 - fVar7)) / a;
-    out.x = a * fVar3 + fVar6;
-    out.y = a * fVar2 + fVar8;
+void Intersect(const Hmx::Ray &r1, const Hmx::Ray &r2, Vector2 &out) {
+    float fVar1;
+    float fVar2;
+    float fVar3;
+    float fVar4;
+    float fVar5;
+    float fVar6;
+    float fVar7;
+    float fVar8;
+    float a;
+
+    fVar1 = (r1.dir).x;
+    fVar2 = (r2.dir).y;
+    fVar3 = (r2.dir).x;
+    fVar4 = (r1.dir).y;
+    fVar5 = (r1.base).x;
+    a = fVar3 * fVar4 - fVar1 * fVar2;
+    fVar6 = (r2.base).x;
+    fVar7 = (r1.base).y;
+    fVar8 = (r2.base).y;
+    if (0.0f != a) {
+        a = (fVar4 * (fVar5 - fVar6) + fVar1 * (fVar8 - fVar7)) / a;
+        out.x = a * fVar3 + fVar6;
+        out.y = a * fVar2 + fVar8;
+        return;
+    }
+    out.x = fVar5;
+    out.y = fVar7;
     return;
-  }
-  out.x = fVar5;
-  out.y = fVar7;
-  return;
 }
 
-bool Intersect(const Transform&, const Hmx::Polygon&, const BSPNode*) {
-
-}
+bool Intersect(const Transform &, const Hmx::Polygon &, const BSPNode *) {}
 
 void SetBSPParams(float f1, float f2, int r3, int r4, float f3) {
     gBSPPosTol = f1;
@@ -102,8 +99,9 @@ void SetBSPParams(float f1, float f2, int r3, int r4, float f3) {
 
 #pragma push
 #pragma dont_inline on
-bool CheckBSPTree(const BSPNode* node, const Box& box){
-    if(!gBSPCheckScale) return true;
+bool CheckBSPTree(const BSPNode *node, const Box &box) {
+    if (!gBSPCheckScale)
+        return true;
     Box box68;
     Multiply(box, gBSPCheckScale, box68);
     Hmx::Polygon polygon70;
@@ -114,8 +112,9 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     polygon70.mPoints[2] = Vector2(box68.mMax.x, box68.mMax.y);
     polygon70.mPoints[3] = Vector2(box68.mMin.x, box68.mMax.y);
     tf50.m.Identity();
-    tf50.v.Set(0,0,box68.mMin.z);
-    if(Intersect(tf50, polygon70, node)) return false;
+    tf50.v.Set(0, 0, box68.mMin.z);
+    if (Intersect(tf50, polygon70, node))
+        return false;
     // first intersect check
 
     polygon70.mPoints.clear();
@@ -125,9 +124,10 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     polygon70.mPoints[2] = Vector2(box68.mMax.x, -box68.mMin.y);
     polygon70.mPoints[3] = Vector2(box68.mMin.x, -box68.mMin.y);
     float negone = -1.0f;
-    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,negone,0.0f,0.0f,0.0f,0.0f);
+    tf50.m.Set(1.0f, 0.0f, 0.0f, 0.0f, negone, 0.0f, 0.0f, 0.0f, 0.0f);
     tf50.v.Set(0, 0, box68.mMax.z);
-    if(Intersect(tf50, polygon70, node)) return false;
+    if (Intersect(tf50, polygon70, node))
+        return false;
     // second intersect check
 
     polygon70.mPoints.clear();
@@ -136,9 +136,10 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     polygon70.mPoints[1] = Vector2(box68.mMax.y, box68.mMin.z);
     polygon70.mPoints[2] = Vector2(box68.mMax.y, box68.mMax.z);
     polygon70.mPoints[3] = Vector2(box68.mMin.y, box68.mMax.z);
-    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.m.Set(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     tf50.v.Set(box68.mMin.x, 0, 0);
-    if(Intersect(tf50, polygon70, node)) return false;
+    if (Intersect(tf50, polygon70, node))
+        return false;
     // third intersect check
 
     polygon70.mPoints.clear();
@@ -147,9 +148,10 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     polygon70.mPoints[1] = Vector2(-box68.mMin.y, box68.mMin.z);
     polygon70.mPoints[2] = Vector2(-box68.mMin.y, box68.mMax.z);
     polygon70.mPoints[3] = Vector2(-box68.mMax.y, box68.mMax.z);
-    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,-1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.m.Set(1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     tf50.v.Set(box68.mMax.x, 0, 0);
-    if(Intersect(tf50, polygon70, node)) return false;
+    if (Intersect(tf50, polygon70, node))
+        return false;
     // fourth intersect check
 
     polygon70.mPoints.clear();
@@ -158,9 +160,10 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     polygon70.mPoints[1] = Vector2(box68.mMax.x, box68.mMin.z);
     polygon70.mPoints[2] = Vector2(box68.mMax.x, box68.mMax.z);
     polygon70.mPoints[3] = Vector2(box68.mMin.x, box68.mMax.z);
-    tf50.m.Set(1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.m.Set(1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     tf50.v.Set(0, box68.mMax.y, 0);
-    if(Intersect(tf50, polygon70, node)) return false;
+    if (Intersect(tf50, polygon70, node))
+        return false;
     // fifth intersect check
 
     polygon70.mPoints.clear();
@@ -169,23 +172,23 @@ bool CheckBSPTree(const BSPNode* node, const Box& box){
     polygon70.mPoints[1] = Vector2(-box68.mMin.x, box68.mMin.z);
     polygon70.mPoints[2] = Vector2(-box68.mMin.x, box68.mMax.z);
     polygon70.mPoints[3] = Vector2(-box68.mMax.x, box68.mMax.z);
-    tf50.m.Set(-1.0f,0.0f,0.0f,0.0f,1.0f,0.0f,0.0f,0.0f,0.0f);
+    tf50.m.Set(-1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
     tf50.v.Set(0, box68.mMin.y, 0);
-    if(Intersect(tf50, polygon70, node)) return false;
+    if (Intersect(tf50, polygon70, node))
+        return false;
     return true;
     // sixth and final intersect check
 }
 #pragma pop
 
-void NumNodes(const BSPNode* node, int& num, int& maxDepth){
+void NumNodes(const BSPNode *node, int &num, int &maxDepth) {
     static int depth = 0;
-    if(node){
+    if (node) {
         depth++;
-        if(depth == 1){
+        if (depth == 1) {
             num = 0;
             maxDepth = 1;
-        }
-        else if(depth > maxDepth){
+        } else if (depth > maxDepth) {
             maxDepth = depth;
         }
         NumNodes(node->left, num, maxDepth);
@@ -195,4 +198,4 @@ void NumNodes(const BSPNode* node, int& num, int& maxDepth){
     }
 }
 
-void Clip(const Hmx::Polygon&, const Hmx::Ray&, Hmx::Polygon&) {}
+void Clip(const Hmx::Polygon &, const Hmx::Ray &, Hmx::Polygon &) {}

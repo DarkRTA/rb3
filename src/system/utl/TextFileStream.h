@@ -6,7 +6,7 @@
 class TextFileStream : public TextStream {
 public:
     TextFileStream(const char *, bool);
-    virtual ~TextFileStream(){}
+    virtual ~TextFileStream() {}
     virtual void Print(const char *);
 
     FileStream mFile;

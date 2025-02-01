@@ -8,21 +8,23 @@
 
 INIT_REVS(UIListArrow)
 
-UIListArrow::UIListArrow() : mMesh(this, 0), mScrollAnim(this, 0), mPosition(kUIListArrowBack), mShowOnlyScroll(0), mOnHighlight(0) {
-
-}
+UIListArrow::UIListArrow()
+    : mMesh(this, 0), mScrollAnim(this, 0), mPosition(kUIListArrowBack),
+      mShowOnlyScroll(0), mOnHighlight(0) {}
 
 SAVE_OBJ(UIListArrow, 0x47);
 
-void UIListArrow::Load(BinStream& bs) {
+void UIListArrow::Load(BinStream &bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(1, 0)
     UIListWidget::Load(bs);
-    int dump; bool tmp;
+    int dump;
+    bool tmp;
     bs >> mMesh >> dump >> mShowOnlyScroll >> tmp;
     mOnHighlight = tmp;
     mPosition = (UIListArrowPosition)dump;
-    if (gRev != 0) bs >> mScrollAnim;
+    if (gRev != 0)
+        bs >> mScrollAnim;
 }
 
 BEGIN_COPYS(UIListArrow)
@@ -37,18 +39,29 @@ BEGIN_COPYS(UIListArrow)
 END_COPYS
 
 // fn_805681EC
-void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& tf, UIComponent::State compstate, Box* box, DrawCommand cmd){
-    if(!mMesh || cmd == kDrawFirst) return;
-    const Vector3* vec = mOnHighlight ? &drawstate.mHighlightPos : (mPosition == kUIListArrowBack ? &drawstate.mFirstPos : &drawstate.mLastPos);
+void UIListArrow::Draw(
+    const UIListWidgetDrawState &drawstate,
+    const UIListState &liststate,
+    const Transform &tf,
+    UIComponent::State compstate,
+    Box *box,
+    DrawCommand cmd
+) {
+    if (!mMesh || cmd == kDrawFirst)
+        return;
+    const Vector3 *vec = mOnHighlight
+        ? &drawstate.mHighlightPos
+        : (mPosition == kUIListArrowBack ? &drawstate.mFirstPos : &drawstate.mLastPos);
     bool onhighlight = mOnHighlight;
 
-    if(box || !mShowOnlyScroll ||
-        ((mPosition != kUIListArrowBack || liststate.CanScrollBack(onhighlight)) &&
-        (mPosition != kUIListArrowNext || liststate.CanScrollNext(mOnHighlight)))){
-        Transform& worldxfm = mMesh->WorldXfm();
+    if (box || !mShowOnlyScroll
+        || ((mPosition != kUIListArrowBack || liststate.CanScrollBack(onhighlight))
+            && (mPosition != kUIListArrowNext || liststate.CanScrollNext(mOnHighlight))
+        )) {
+        Transform &worldxfm = mMesh->WorldXfm();
         Transform xfm1 = worldxfm;
         Transform xfm2 = xfm1;
-        if(ParentList()){
+        if (ParentList()) {
             ParentList()->AdjustTransSelected(xfm2);
         }
         CalcXfm(tf, *vec, xfm2);
@@ -58,13 +71,17 @@ void UIListArrow::Draw(const UIListWidgetDrawState& drawstate, const UIListState
 }
 
 void UIListArrow::StartScroll(int i, bool) { // holy fakematch
-    if (mScrollAnim == NULL) return;
+    if (mScrollAnim == NULL)
+        return;
     if (i < 0) {
-        if (!mPosition) goto a;
+        if (!mPosition)
+            goto a;
     }
-    if (0 >= i) return;
-    if (mPosition != 1) return;
-    a:
+    if (0 >= i)
+        return;
+    if (mPosition != 1)
+        return;
+a:
     mScrollAnim->Animate(0, false, 0);
 }
 

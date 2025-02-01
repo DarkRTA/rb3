@@ -6,7 +6,7 @@
 #include "utl/Symbols.h"
 
 namespace {
-    static RndDir* gIconDir;
+    static RndDir *gIconDir;
 }
 int kEmitterRev = 3;
 
@@ -40,60 +40,62 @@ BEGIN_LOADS(SynthEmitter)
     bool b;
     bs >> b;
     mSynthEmitterEnabled = b;
-    if(rev >= 2) bs >> mRadOuter >> mRadInner;
-    if(rev >= 3) bs >> mVolOuter >> mVolInner;
+    if (rev >= 2)
+        bs >> mRadOuter >> mRadInner;
+    if (rev >= 3)
+        bs >> mVolOuter >> mVolInner;
     delete mInst;
 END_LOADS
 
-void SynthEmitter::DrawShowing(){
-    if(LOADMGR_EDITMODE){
+void SynthEmitter::DrawShowing() {
+    if (LOADMGR_EDITMODE) {
         CheckLoadResources();
-        Transform& xfm = WorldXfm();
+        Transform &xfm = WorldXfm();
         gIconDir->SetLocalXfm(xfm);
         gIconDir->DrawShowing();
     }
 }
 
-RndDrawable* SynthEmitter::CollideShowing(const Segment& s, float& dist, Plane& plane){
-    if(LOADMGR_EDITMODE){
+RndDrawable *SynthEmitter::CollideShowing(const Segment &s, float &dist, Plane &plane) {
+    if (LOADMGR_EDITMODE) {
         CheckLoadResources();
-        RndDrawable* dirDraw = gIconDir->CollideShowing(s, dist, plane);
-        if(dirDraw){
+        RndDrawable *dirDraw = gIconDir->CollideShowing(s, dist, plane);
+        if (dirDraw) {
             return this;
         }
     }
     return 0;
 }
 
-int SynthEmitter::CollidePlane(const Plane& plane){
-    if(LOADMGR_EDITMODE){
+int SynthEmitter::CollidePlane(const Plane &plane) {
+    if (LOADMGR_EDITMODE) {
         CheckLoadResources();
         return gIconDir->CollidePlane(plane);
-    }
-    else return 0;
+    } else
+        return 0;
 }
 
-void SynthEmitter::CheckLoadResources(){
+void SynthEmitter::CheckLoadResources() {
     MILO_ASSERT(TheLoadMgr.EditMode(), 0x8B);
-    if(!gIconDir){
+    if (!gIconDir) {
         FilePath fp(FileSystemRoot(), "milo/emitter.milo");
-        gIconDir = dynamic_cast<RndDir*>(DirLoader::LoadObjects(fp, 0, 0));
+        gIconDir = dynamic_cast<RndDir *>(DirLoader::LoadObjects(fp, 0, 0));
         MILO_ASSERT(gIconDir, 0x93);
     }
 }
 
 // fn_8066E758 in retail
-void SynthEmitter::Poll(){
-    if(mSfx && mListener && mSynthEmitterEnabled){
-        Transform& xfm = mListener->WorldXfm();
+void SynthEmitter::Poll() {
+    if (mSfx && mListener && mSynthEmitterEnabled) {
+        Transform &xfm = mListener->WorldXfm();
     }
 }
 
-SynthEmitter::~SynthEmitter(){
-    delete mInst;
-}
+SynthEmitter::~SynthEmitter() { delete mInst; }
 
-SynthEmitter::SynthEmitter() : mSfx(this, 0), mInst(this, 0), mListener(this, 0), mRadInner(10.0f), mRadOuter(100.0f), mVolInner(0.0f), mVolOuter(-40.0f) {
+SynthEmitter::SynthEmitter()
+    : mSfx(this, 0), mInst(this, 0), mListener(this, 0), mRadInner(10.0f),
+      mRadOuter(100.0f), mVolInner(0.0f), mVolOuter(-40.0f) {
     mSynthEmitterEnabled = true;
 }
 
@@ -106,17 +108,18 @@ END_HANDLERS
 
 BEGIN_PROPSYNCS(SynthEmitter)
     SYNC_PROP_MODIFY_ALT(sfx, mSfx, delete mInst)
-    SYNC_PROP_MODIFY_ALT(listener, mListener, delete mInst)
-    { 
-        static Symbol _s("enabled"); 
+    SYNC_PROP_MODIFY_ALT(listener, mListener, delete mInst) {
+        static Symbol _s("enabled");
         bool b = mSynthEmitterEnabled;
-        if(sym == _s){
+        if (sym == _s) {
             bool synced = PropSync(b, _val, _prop, _i + 1, _op);
-            if(!synced) return false;
+            if (!synced)
+                return false;
             else {
                 mSynthEmitterEnabled = b;
-                if(!(_op & (kPropSize|kPropGet))) delete mInst;
-                return true; 
+                if (!(_op & (kPropSize | kPropGet)))
+                    delete mInst;
+                return true;
             }
         }
     }

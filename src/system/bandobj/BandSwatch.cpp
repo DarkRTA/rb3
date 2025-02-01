@@ -3,31 +3,27 @@
 #include "ui/UI.h"
 #include "utl/Symbols.h"
 
-ColorPalette* BandSwatch::sDummyPalette;
+ColorPalette *BandSwatch::sDummyPalette;
 INIT_REVS(BandSwatch);
 
-void BandSwatch::Init(){
+void BandSwatch::Init() {
     TheUI->InitResources("BandSwatch");
     Register();
     sDummyPalette = Hmx::Object::New<ColorPalette>();
-    if(LOADMGR_EDITMODE){
-        for(int i = 0; i < 10; i++){
-            sDummyPalette->mColors.push_back(Hmx::Color(RandomFloat(), RandomFloat(), RandomFloat()));
+    if (LOADMGR_EDITMODE) {
+        for (int i = 0; i < 10; i++) {
+            sDummyPalette->mColors.push_back(
+                Hmx::Color(RandomFloat(), RandomFloat(), RandomFloat())
+            );
         }
     }
 }
 
-void BandSwatch::Terminate(){
-    RELEASE(sDummyPalette);
-}
+void BandSwatch::Terminate() { RELEASE(sDummyPalette); }
 
-BandSwatch::BandSwatch() : mColorPalette(this, 0) {
-    MILO_ASSERT(sDummyPalette, 0x30);
-}
+BandSwatch::BandSwatch() : mColorPalette(this, 0) { MILO_ASSERT(sDummyPalette, 0x30); }
 
-BandSwatch::~BandSwatch(){
-    DeleteAll(unk1e8);
-}
+BandSwatch::~BandSwatch() { DeleteAll(unk1e8); }
 
 BEGIN_COPYS(BandSwatch)
     CREATE_COPY_AS(BandSwatch, s)
@@ -43,41 +39,44 @@ BEGIN_LOADS(BandSwatch)
     PostLoad(bs);
 END_LOADS
 
-void BandSwatch::PreLoad(BinStream& bs){
+void BandSwatch::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
-    if(gRev != 0) bs >> mColorPalette;
+    if (gRev != 0)
+        bs >> mColorPalette;
     UIList::PreLoad(bs);
 }
 
-RndMat* BandSwatch::Mat(int, int, UIListMesh*) const {
+RndMat *BandSwatch::Mat(int, int, UIListMesh *) const {
     return mResource->Dir()->Find<RndMat>("color.mat", true);
 }
 
 int BandSwatch::NumData() const { return unk1e8.size(); }
 
-UIColor* BandSwatch::SlotColorOverride(int, int idx, UIListWidget*, UIColor* col) const {
-    if(unk1e8.empty()) return col;
-    else return unk1e8[idx];
+UIColor *BandSwatch::SlotColorOverride(int, int idx, UIListWidget *, UIColor *col) const {
+    if (unk1e8.empty())
+        return col;
+    else
+        return unk1e8[idx];
 }
 
-void BandSwatch::SetColors(ColorPalette* palette){
-    mColorPalette = palette;
-}
+void BandSwatch::SetColors(ColorPalette *palette) { mColorPalette = palette; }
 
-void BandSwatch::UpdateColors(){
+void BandSwatch::UpdateColors() {
     DeleteAll(unk1e8);
-    std::vector<Hmx::Color>& colors = mColorPalette.Ptr() ? mColorPalette->mColors : sDummyPalette->mColors;
-    for(std::vector<Hmx::Color>::iterator it = colors.begin(); it != colors.end(); ++it){
+    std::vector<Hmx::Color> &colors =
+        mColorPalette.Ptr() ? mColorPalette->mColors : sDummyPalette->mColors;
+    for (std::vector<Hmx::Color>::iterator it = colors.begin(); it != colors.end();
+         ++it) {
         Hmx::Color hmxcol(*it);
-        UIColor* newcol = Hmx::Object::New<UIColor>();
+        UIColor *newcol = Hmx::Object::New<UIColor>();
         newcol->SetColor(hmxcol);
         unk1e8.push_back(newcol);
     }
     Refresh(false);
 }
 
-void BandSwatch::Enter(){
+void BandSwatch::Enter() {
     UIList::SetProvider(this);
     UpdateColors();
 }

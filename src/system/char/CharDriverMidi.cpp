@@ -9,30 +9,38 @@
 
 INIT_REVS(CharDriverMidi)
 
-CharDriverMidi::CharDriverMidi() : mParser(), mFlagParser(), mClipFlags(0), mBlendOverridePct(1.0f) {
-    
-}
+CharDriverMidi::CharDriverMidi()
+    : mParser(), mFlagParser(), mClipFlags(0), mBlendOverridePct(1.0f) {}
 
-void CharDriverMidi::Enter(){
+void CharDriverMidi::Enter() {
     unk89 = true;
     CharDriver::Enter();
-    MsgSource* msgParser = dynamic_cast<MsgSource*>(Dir()->FindObject(mParser.Str(), true));
-    if(msgParser) msgParser->AddSink(this);
-    MsgSource* msgFlagParser = dynamic_cast<MsgSource*>(Dir()->FindObject(mFlagParser.Str(), true));
-    if(msgFlagParser) msgFlagParser->AddSink(this);
+    MsgSource *msgParser =
+        dynamic_cast<MsgSource *>(Dir()->FindObject(mParser.Str(), true));
+    if (msgParser)
+        msgParser->AddSink(this);
+    MsgSource *msgFlagParser =
+        dynamic_cast<MsgSource *>(Dir()->FindObject(mFlagParser.Str(), true));
+    if (msgFlagParser)
+        msgFlagParser->AddSink(this);
 }
 
-void CharDriverMidi::Exit(){
+void CharDriverMidi::Exit() {
     CharDriver::Exit();
-    MsgSource* msgParser = ObjectDir::Main()->Find<MsgSource>(mParser.Str(), false);
-    if(msgParser) msgParser->RemoveSink(this);
-    MsgSource* msgFlagParser = ObjectDir::Main()->Find<MsgSource>(mFlagParser.Str(), false);
-    if(msgFlagParser) msgFlagParser->RemoveSink(this);
+    MsgSource *msgParser = ObjectDir::Main()->Find<MsgSource>(mParser.Str(), false);
+    if (msgParser)
+        msgParser->RemoveSink(this);
+    MsgSource *msgFlagParser =
+        ObjectDir::Main()->Find<MsgSource>(mFlagParser.Str(), false);
+    if (msgFlagParser)
+        msgFlagParser->RemoveSink(this);
 }
 
-void CharDriverMidi::Poll(){ CharDriver::Poll(); }
+void CharDriverMidi::Poll() { CharDriver::Poll(); }
 
-void CharDriverMidi::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharDriverMidi::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     CharDriver::PollDeps(changedBy, change);
 }
 
@@ -43,15 +51,18 @@ BEGIN_LOADS(CharDriverMidi)
     LOAD_REVS(bs)
     ASSERT_REVS(7, 0)
     LOAD_SUPERCLASS(CharDriver)
-    if(gRev < 7){
+    if (gRev < 7) {
         mDefaultClip.Load(bs, false, mClips);
     }
-    if(gRev == 2){
-        String str; bs >> str;
-    }
-    else if(gRev > 3) bs >> mParser;
-    if(gRev > 4) bs >> mFlagParser;
-    if(gRev > 5) bs >> mBlendOverridePct;
+    if (gRev == 2) {
+        String str;
+        bs >> str;
+    } else if (gRev > 3)
+        bs >> mParser;
+    if (gRev > 4)
+        bs >> mFlagParser;
+    if (gRev > 5)
+        bs >> mBlendOverridePct;
 END_LOADS
 
 BEGIN_COPYS(CharDriverMidi)
@@ -74,16 +85,20 @@ BEGIN_HANDLERS(CharDriverMidi)
 END_HANDLERS
 
 // fn_804C945C
-DataNode CharDriverMidi::OnMidiParser(DataArray* da){
-    CharClip* clip;
+DataNode CharDriverMidi::OnMidiParser(DataArray *da) {
+    CharClip *clip;
     bool b = false;
-    if(!unk89 && mDefaultClip) b = true;
-    if(b) clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
-    else clip = FindClip(da->Node(2), false);
-    if(!clip) return 0;
-    if(clip || clip != FirstClip()){
+    if (!unk89 && mDefaultClip)
+        b = true;
+    if (b)
+        clip = dynamic_cast<CharClip *>(mDefaultClip.Ptr());
+    else
+        clip = FindClip(da->Node(2), false);
+    if (!clip)
+        return 0;
+    if (clip || clip != FirstClip()) {
         float somefloat = da->Float(3);
-        if(clip->PlayFlags() & 0x200){
+        if (clip->PlayFlags() & 0x200) {
             float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
             float bts = BeatToSeconds(somefloat + TheTaskMgr.Beat()) - secs;
             somefloat = bts * clip->AverageBeatsPerSecond();
@@ -94,36 +109,43 @@ DataNode CharDriverMidi::OnMidiParser(DataArray* da){
     return 0;
 }
 
-DataNode CharDriverMidi::OnMidiParserFlags(DataArray* da){
+DataNode CharDriverMidi::OnMidiParserFlags(DataArray *da) {
     mClipFlags = da->Int(2);
     return 0;
 }
 
-DataNode CharDriverMidi::OnMidiParserGroup(DataArray* da){
-    const char* name = da->Str(2);
-    CharClipGroup* grp = mClips->Find<CharClipGroup>(name, false);
-    if(!grp){
+DataNode CharDriverMidi::OnMidiParserGroup(DataArray *da) {
+    const char *name = da->Str(2);
+    CharClipGroup *grp = mClips->Find<CharClipGroup>(name, false);
+    if (!grp) {
         MILO_WARN("%s could not find group %s in %s", PathName(this), name, grp->Name());
         return 0;
-    }
-    else {
-        CharClip* clip;
+    } else {
+        CharClip *clip;
         bool b = false;
-        if(!unk89 && mDefaultClip) b = true;
-        if(b) clip = dynamic_cast<CharClip*>(mDefaultClip.Ptr());
-        else clip = grp->GetClip(mClipFlags);
-        if(!clip){
-            MILO_WARN("%s could not find clip with flags %d in %s", PathName(this), mClipFlags, PathName(grp));
+        if (!unk89 && mDefaultClip)
+            b = true;
+        if (b)
+            clip = dynamic_cast<CharClip *>(mDefaultClip.Ptr());
+        else
+            clip = grp->GetClip(mClipFlags);
+        if (!clip) {
+            MILO_WARN(
+                "%s could not find clip with flags %d in %s",
+                PathName(this),
+                mClipFlags,
+                PathName(grp)
+            );
             return 0;
-        }
-        else {
-            if(clip || clip != FirstClip()){
+        } else {
+            if (clip || clip != FirstClip()) {
                 float somefloat = da->Float(3);
-                if(clip->PlayFlags() & 0x200){
+                if (clip->PlayFlags() & 0x200) {
                     somefloat *= clip->AverageBeatsPerSecond();
                 }
                 MaxEq(somefloat, 0.0f);
-                Play(clip, 0, -somefloat, 1e+30f, 0.0f)->mBlendWidth = somefloat * mBlendOverridePct;
+                Play(clip, 0, -somefloat, 1e+30f, 0.0f)->mBlendWidth =
+                    somefloat * mBlendOverridePct;
             }
             return 0;
         }

@@ -19,35 +19,33 @@ public:
     UILabelDir();
     OBJ_CLASSNAME(UILabelDir)
     OBJ_SET_TYPE(UILabelDir)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
-    virtual ~UILabelDir(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
+    virtual ~UILabelDir() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
-    
-    RndText* TextObj(Symbol) const;
-    RndAnimatable* FocusAnim() const;
-    RndAnimatable* PulseAnim() const;
-    RndGroup* HighlighMeshGroup() const;
-    RndMesh* TopLeftHighlightBone() const;
-    RndMesh* TopRightHighlightBone() const;
-    RndMesh* BottomLeftHighlightBone() const;
-    RndMesh* BottomRightHighlightBone() const;
-    void SetColor(UIComponent::State, UIColor*);
-    void GetStateColor(UIComponent::State, Hmx::Color&) const;
+
+    RndText *TextObj(Symbol) const;
+    RndAnimatable *FocusAnim() const;
+    RndAnimatable *PulseAnim() const;
+    RndGroup *HighlighMeshGroup() const;
+    RndMesh *TopLeftHighlightBone() const;
+    RndMesh *TopRightHighlightBone() const;
+    RndMesh *BottomLeftHighlightBone() const;
+    RndMesh *BottomRightHighlightBone() const;
+    void SetColor(UIComponent::State, UIColor *);
+    void GetStateColor(UIComponent::State, Hmx::Color &) const;
 
     DECLARE_REVS;
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
     NEW_OBJ(UILabelDir)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UILabelDir)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UILabelDir) }
 
     /** "color to use when no other color is defined for a state" */
     ObjPtr<UIColor> mDefaultColor; // 0x26c

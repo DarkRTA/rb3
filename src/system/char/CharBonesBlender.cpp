@@ -4,46 +4,45 @@
 
 INIT_REVS(CharBonesBlender)
 
-CharBonesBlender::CharBonesBlender() : mDest(this, 0), mClipType("") {
+CharBonesBlender::CharBonesBlender() : mDest(this, 0), mClipType("") {}
 
-}
+CharBonesBlender::~CharBonesBlender() {}
 
-CharBonesBlender::~CharBonesBlender(){
+void CharBonesBlender::Enter() { CharBones::Enter(); }
 
-}
-
-void CharBonesBlender::Enter(){
-    CharBones::Enter();
-}
-
-void CharBonesBlender::Poll(){
-    if(mBones.empty() || !mDest) return;
+void CharBonesBlender::Poll() {
+    if (mBones.empty() || !mDest)
+        return;
     Blend(*mDest);
     CharBones::Enter();
 }
 
-void CharBonesBlender::SetDest(CharBonesObject* obj){
-    if(obj != mDest){
+void CharBonesBlender::SetDest(CharBonesObject *obj) {
+    if (obj != mDest) {
         mDest = obj;
-        if(mDest) mDest->AddBones(mBones);
+        if (mDest)
+            mDest->AddBones(mBones);
     }
 }
 
-void CharBonesBlender::SetClipType(Symbol s){
-    if(s != mClipType){
+void CharBonesBlender::SetClipType(Symbol s) {
+    if (s != mClipType) {
         mClipType = s;
         ClearBones();
         CharBoneDir::StuffBones(*this, mClipType);
     }
 }
 
-void CharBonesBlender::ReallocateInternal(){
+void CharBonesBlender::ReallocateInternal() {
     CharBonesAlloc::ReallocateInternal();
-    if(mDest) mDest->AddBones(mBones);
+    if (mDest)
+        mDest->AddBones(mBones);
     CharBones::Enter();
 }
 
-void CharBonesBlender::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharBonesBlender::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mDest);
 }
 
@@ -56,7 +55,8 @@ BEGIN_LOADS(CharBonesBlender)
     ObjPtr<CharBonesObject, ObjectDir> boneObjPtr(this, 0);
     bs >> boneObjPtr;
     Symbol s;
-    if(gRev > 1) bs >> s;
+    if (gRev > 1)
+        bs >> s;
     SetClipType(s);
     SetDest(boneObjPtr);
 END_LOADS

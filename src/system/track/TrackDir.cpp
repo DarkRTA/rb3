@@ -12,14 +12,20 @@
 
 INIT_REVS(TrackDir)
 
-TrackDir::TrackDir() : mRunning(!LOADMGR_EDITMODE), mDrawGroup(this, 0), mAnimGroup(this, 0), mYPerSecond(10.0f), 
-    mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false), mShowingWhenEnabled(this, 0), mStationaryBack(this, 0), mKeyShiftStationaryBack(this, 0), 
-    mStationaryBackAfterKeyShift(this, 0), mMovingBack(this, 0), mKeyShiftMovingBack(this, 0), mKeyShiftStationaryMiddle(this, 0),
-    mStationaryMiddle(this, 0), mMovingFront(this, 0), mKeyShiftMovingFront(this, 0), mKeyShiftStationaryFront(this, 0),
-    mStationaryFront(this, 0), mAlwaysShowing(this, 0), mRotatorCam(this, 0), mTrack(this, 0), 
-    mTrackGems(this, 0), unk368(1.0f)
+TrackDir::TrackDir()
+    : mRunning(!LOADMGR_EDITMODE), mDrawGroup(this, 0), mAnimGroup(this, 0),
+      mYPerSecond(10.0f), mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false),
+      mShowingWhenEnabled(this, 0), mStationaryBack(this, 0),
+      mKeyShiftStationaryBack(this, 0), mStationaryBackAfterKeyShift(this, 0),
+      mMovingBack(this, 0), mKeyShiftMovingBack(this, 0),
+      mKeyShiftStationaryMiddle(this, 0), mStationaryMiddle(this, 0),
+      mMovingFront(this, 0), mKeyShiftMovingFront(this, 0),
+      mKeyShiftStationaryFront(this, 0), mStationaryFront(this, 0),
+      mAlwaysShowing(this, 0), mRotatorCam(this, 0), mTrack(this, 0), mTrackGems(this, 0),
+      unk368(1.0f)
 #ifdef MILO_DEBUG
-        , mTest(new TrackTest(this))
+      ,
+      mTest(new TrackTest(this))
 #endif
 {
     mActiveWidgets.reserve(0x32);
@@ -28,7 +34,7 @@ TrackDir::TrackDir() : mRunning(!LOADMGR_EDITMODE), mDrawGroup(this, 0), mAnimGr
     unk338.Reset();
 }
 
-TrackDir::~TrackDir(){
+TrackDir::~TrackDir() {
 #ifdef MILO_DEBUG
     delete mTest;
 #endif
@@ -37,28 +43,46 @@ TrackDir::~TrackDir(){
 // fn_8053E7D4
 void TrackDir::SyncObjects() {
     PanelDir::SyncObjects();
-    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
+    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
         it->Init();
         it->Clear();
     }
-    if(!mTrack) mTrack = Find<RndEnviron>("track.env", false);
-    if(!mTrackGems) mTrackGems = Find<RndEnviron>("track_gems.env", false);
-    if(!mShowingWhenEnabled) mShowingWhenEnabled = Find<RndGroup>("showing_when_enabled.grp", false);
-    if(!mStationaryBack) mStationaryBack = Find<RndGroup>("stationary_back.grp", false);
-    if(!mKeyShiftStationaryBack) mKeyShiftStationaryBack = Find<RndGroup>("key_shift_stationary_back.grp", false);
-    if(!mStationaryBackAfterKeyShift) mStationaryBackAfterKeyShift = Find<RndGroup>("stationary_back_after_key_shift.grp", false);
-    if(!mMovingBack) mMovingBack = Find<RndGroup>("moving_back.grp", false);
-    if(!mKeyShiftMovingBack) mKeyShiftMovingBack = Find<RndGroup>("key_shift_moving_back.grp", false);
-    if(!mKeyShiftStationaryMiddle) mKeyShiftStationaryMiddle = Find<RndGroup>("key_shift_stationary_middle.grp", false);
-    if(!mStationaryMiddle) mStationaryMiddle = Find<RndGroup>("stationary_middle.grp", false);
-    if(!mMovingFront) mMovingFront = Find<RndGroup>("moving_front.grp", false);
-    if(!mKeyShiftMovingFront) mKeyShiftMovingFront = Find<RndGroup>("key_shift_moving_front.grp", false);
-    if(!mKeyShiftStationaryFront) mKeyShiftStationaryFront = Find<RndGroup>("key_shift_stationary_front.grp", false);
-    if(!mStationaryFront) mStationaryFront = Find<RndGroup>("stationary_front.grp", false);
-    if(!mAlwaysShowing) mAlwaysShowing = Find<RndGroup>("always_showing.grp", false);
+    if (!mTrack)
+        mTrack = Find<RndEnviron>("track.env", false);
+    if (!mTrackGems)
+        mTrackGems = Find<RndEnviron>("track_gems.env", false);
+    if (!mShowingWhenEnabled)
+        mShowingWhenEnabled = Find<RndGroup>("showing_when_enabled.grp", false);
+    if (!mStationaryBack)
+        mStationaryBack = Find<RndGroup>("stationary_back.grp", false);
+    if (!mKeyShiftStationaryBack)
+        mKeyShiftStationaryBack = Find<RndGroup>("key_shift_stationary_back.grp", false);
+    if (!mStationaryBackAfterKeyShift)
+        mStationaryBackAfterKeyShift =
+            Find<RndGroup>("stationary_back_after_key_shift.grp", false);
+    if (!mMovingBack)
+        mMovingBack = Find<RndGroup>("moving_back.grp", false);
+    if (!mKeyShiftMovingBack)
+        mKeyShiftMovingBack = Find<RndGroup>("key_shift_moving_back.grp", false);
+    if (!mKeyShiftStationaryMiddle)
+        mKeyShiftStationaryMiddle =
+            Find<RndGroup>("key_shift_stationary_middle.grp", false);
+    if (!mStationaryMiddle)
+        mStationaryMiddle = Find<RndGroup>("stationary_middle.grp", false);
+    if (!mMovingFront)
+        mMovingFront = Find<RndGroup>("moving_front.grp", false);
+    if (!mKeyShiftMovingFront)
+        mKeyShiftMovingFront = Find<RndGroup>("key_shift_moving_front.grp", false);
+    if (!mKeyShiftStationaryFront)
+        mKeyShiftStationaryFront =
+            Find<RndGroup>("key_shift_stationary_front.grp", false);
+    if (!mStationaryFront)
+        mStationaryFront = Find<RndGroup>("stationary_front.grp", false);
+    if (!mAlwaysShowing)
+        mAlwaysShowing = Find<RndGroup>("always_showing.grp", false);
 }
 
-void TrackDir::SetupKeyShifting(RndDir* rnddir){
+void TrackDir::SetupKeyShifting(RndDir *rnddir) {
     mRotatorCam = rnddir->Find<RndTransformable>("rotator_cam.trans", true);
     unk2d8.Reset();
     Scale(unk2d8.m, Vector3(1.0f / rnddir->mOrder, 1.0f, 1.0f), unk2d8.m);
@@ -68,7 +92,7 @@ void TrackDir::SetupKeyShifting(RndDir* rnddir){
     Invert(unk308, unk338);
 }
 
-void TrackDir::ResetKeyShifting(){
+void TrackDir::ResetKeyShifting() {
     mRotatorCam = 0;
     unk2d8.Reset();
     unk308.Reset();
@@ -100,117 +124,113 @@ BEGIN_LOADS(TrackDir)
     PostLoad(bs);
 END_LOADS
 
-void TrackDir::PreLoad(BinStream& bs){
+void TrackDir::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(6, 0);
     PushRev(packRevs(gAltRev, gRev), this);
     PanelDir::PreLoad(bs);
 }
 
-void TrackDir::PostLoad(BinStream& bs){
+void TrackDir::PostLoad(BinStream &bs) {
     PanelDir::PostLoad(bs);
     int revs = PopRev(this);
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
-    if(!IsProxy()){
-        if(gRev != 0){
+    if (!IsProxy()) {
+        if (gRev != 0) {
             bs >> mDrawGroup;
-            if(gRev > 1) bs >> mAnimGroup;
+            if (gRev > 1)
+                bs >> mAnimGroup;
             bs >> mYPerSecond >> mTopY >> mBottomY;
         }
-        if(gRev > 2){
-            if(gRev > 5) bs >> mSlots;
+        if (gRev > 2) {
+            if (gRev > 5)
+                bs >> mSlots;
             else {
                 unsigned int num = 0;
                 bs >> num;
                 mSlots.resize(num, Transform());
-                for(int i = 0; i < num; i++){
+                for (int i = 0; i < num; i++) {
                     mSlots[i].Reset();
                     bs >> mSlots[i].v.x >> mSlots[i].v.z;
                 }
             }
         }
-        if(gRev > 4) bs >> mWarnOnResort;
+        if (gRev > 4)
+            bs >> mWarnOnResort;
 #ifdef MILO_DEBUG
-        if(gRev > 3){
+        if (gRev > 3) {
             bs >> mTest->mWidget >> mTest->mSlot;
         }
 #else
         if (gRev > 3) {
-            String s; int x;
+            String s;
+            int x;
             bs >> s >> x;
         }
 #endif
     }
-    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
+    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
         it->SetTrackDir(this);
     }
 }
 
-void TrackDir::DrawShowing(){
-    MILO_ASSERT(TheLoadMgr.EditMode(), 0x109);
-}
+void TrackDir::DrawShowing() { MILO_ASSERT(TheLoadMgr.EditMode(), 0x109); }
 
-void TrackDir::Poll(){
+void TrackDir::Poll() {
     bool b = false;
-    if(IsActiveInSession() || mShowingWhenEnabled->Showing()){
+    if (IsActiveInSession() || mShowingWhenEnabled->Showing()) {
         b = true;
     }
-    if(b){
+    if (b) {
         RndDir::Poll();
         float secs = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::kRealTime);
-        if(mAnimGroup && mRunning){
+        if (mAnimGroup && mRunning) {
             mAnimGroup->SetFrame(secs, 1.0f);
         }
         PollActiveWidgets();
     }
 }
 
-void TrackDir::PollActiveWidgets(){
+void TrackDir::PollActiveWidgets() {
     int count = 0;
-    for(int i = 0; i < mActiveWidgets.size(); i++){
-        TrackWidget* widget = mActiveWidgets[i];
+    for (int i = 0; i < mActiveWidgets.size(); i++) {
+        TrackWidget *widget = mActiveWidgets[i];
         MILO_ASSERT(widget, 0x1B3);
-        if(!widget->Empty()) widget->Poll();
-        if(widget->Empty()){
+        if (!widget->Empty())
+            widget->Poll();
+        if (widget->Empty()) {
             widget->SetInactive();
             count++;
             mActiveWidgets[i] = 0;
-        }
-        else {
-            if(count > 0){
+        } else {
+            if (count > 0) {
                 mActiveWidgets[i - count] = widget;
                 mActiveWidgets[i] = 0;
             }
         }
     }
-    if(count > 0){
+    if (count > 0) {
         mActiveWidgets.resize(mActiveWidgets.size() - count);
     }
 }
 
-float TrackDir::TopSeconds() const {
-    return mTopY / mYPerSecond;
-}
+float TrackDir::TopSeconds() const { return mTopY / mYPerSecond; }
 
-float TrackDir::BottomSeconds() const {
-    return mBottomY / mYPerSecond;
-}
+float TrackDir::BottomSeconds() const { return mBottomY / mYPerSecond; }
 
 RETAIL_DONT_INLINE_FUNC float TrackDir::SecondsToY(float f) const {
     return f * mYPerSecond;
 }
 #pragma push
 #pragma dont_inline on
-DECOMP_FORCELITERAL(TrackDir, ((TrackDir*)NULL)->SecondsToY(3))
+DECOMP_FORCELITERAL(TrackDir, ((TrackDir *)NULL)->SecondsToY(3))
 #pragma pop
 
-float TrackDir::YToSeconds(float f) const {
-    return f / mYPerSecond;
-}
+float TrackDir::YToSeconds(float f) const { return f / mYPerSecond; }
 
 float TrackDir::CutOffY() const {
-    if(LOADMGR_EDITMODE){
+    if (LOADMGR_EDITMODE) {
         return mBottomY;
     } else {
         float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
@@ -220,82 +240,93 @@ float TrackDir::CutOffY() const {
 }
 
 // fn_8053FC48
-void TrackDir::SetSlotXfm(int i, const Transform& tf){
-    if(i >= mSlots.size()){
+void TrackDir::SetSlotXfm(int i, const Transform &tf) {
+    if (i >= mSlots.size()) {
         Transform t48;
         t48.Reset();
-        while(i >= mSlots.size()) mSlots.push_back(t48);
-    }
-    else {
-        if(i >= vec2.size()){
+        while (i >= mSlots.size())
+            mSlots.push_back(t48);
+    } else {
+        if (i >= vec2.size()) {
             Transform t78;
             t78.Reset();
-            while(i >= vec2.size()) vec2.push_back(t78);
+            while (i >= vec2.size())
+                vec2.push_back(t78);
         }
         vec2[i] = mSlots[i];
     }
     mSlots[i] = tf;
 }
 
-void TrackDir::MakeSecondsXfm(float f, Transform& tf) const {
+void TrackDir::MakeSecondsXfm(float f, Transform &tf) const {
     tf.Reset();
     tf.v.y = SecondsToY(f);
 }
 
-void TrackDir::MakeWidgetXfm(int i, float f, Transform& tf) const {
+void TrackDir::MakeWidgetXfm(int i, float f, Transform &tf) const {
     MakeSlotXfm(i, tf);
     tf.v.y = SecondsToY(f);
 }
 
-void TrackDir::MakeSlotXfm(int slot, Transform& tf) const {
+void TrackDir::MakeSlotXfm(int slot, Transform &tf) const {
     MILO_ASSERT(slot < mSlots.size(), 0x220);
     tf = mSlots[slot];
 }
 
 DECOMP_FORCEACTIVE(TrackDir, "gem_mash", "drum_mash")
 
-void TrackDir::SetScrollSpeed(float f){
-    if(f > 0) mYPerSecond = mTopY / f;
+void TrackDir::SetScrollSpeed(float f) {
+    if (f > 0)
+        mYPerSecond = mTopY / f;
 }
 
 float TrackDir::ViewTimeSeconds() const {
-    if(mYPerSecond > 0) return mTopY / mYPerSecond;
-    else return 0;
+    if (mYPerSecond > 0)
+        return mTopY / mYPerSecond;
+    else
+        return 0;
 }
 
-void TrackDir::ClearAllWidgets(){
-    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
+void TrackDir::ClearAllWidgets() {
+    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
         it->Clear();
     }
 }
 
 // fn_8053FED4
-void TrackDir::ClearAllGemWidgets(){
-    for(ObjDirItr<TrackWidget> it(this, true); it != 0; ++it){
-        if(strncmp(it->Name(), "gem_", 4) == 0) it->Clear();
-        else if(strncmp(it->Name(), "drum_", 5) == 0) it->Clear();
-        else if(strncmp(it->Name(), "rg_", 3) == 0) it->Clear();
-        else if(strncmp(it->Name(), "real_", 5) == 0) it->Clear();
-        else if(strncmp(it->Name(), "fret_", 5) == 0) it->Clear();
-        else if(strncmp(it->Name(), "chord_", 5) == 0) it->Clear();
+void TrackDir::ClearAllGemWidgets() {
+    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
+        if (strncmp(it->Name(), "gem_", 4) == 0)
+            it->Clear();
+        else if (strncmp(it->Name(), "drum_", 5) == 0)
+            it->Clear();
+        else if (strncmp(it->Name(), "rg_", 3) == 0)
+            it->Clear();
+        else if (strncmp(it->Name(), "real_", 5) == 0)
+            it->Clear();
+        else if (strncmp(it->Name(), "fret_", 5) == 0)
+            it->Clear();
+        else if (strncmp(it->Name(), "chord_", 5) == 0)
+            it->Clear();
     }
 }
 
-void TrackDir::ToggleRunning(){
-    SetRunning(mRunning == 0);
-}
+void TrackDir::ToggleRunning() { SetRunning(mRunning == 0); }
 
-void TrackDir::SetRunning(bool b){
-    if(mRunning && !b){
+void TrackDir::SetRunning(bool b) {
+    if (mRunning && !b) {
         mAnimGroup->SetFrame(0.0f, 1.0f);
     }
     mRunning = b;
 }
 
-void TrackDir::AddTestWidget(TrackWidget* widget, int i){
-    if(!mRunning) MILO_WARN("Track is not running");
-    else if(!widget) MILO_WARN("No test widget selected");
-    else if(i >= mSlots.size()) MILO_WARN("Can't add widget on slot %i, only %i slots", i, mSlots.size());
+void TrackDir::AddTestWidget(TrackWidget *widget, int i) {
+    if (!mRunning)
+        MILO_WARN("Track is not running");
+    else if (!widget)
+        MILO_WARN("No test widget selected");
+    else if (i >= mSlots.size())
+        MILO_WARN("Can't add widget on slot %i, only %i slots", i, mSlots.size());
     else {
         Transform tf;
         MakeWidgetXfm(i, TheTaskMgr.Seconds(TaskMgr::kRealTime), tf);
@@ -304,11 +335,15 @@ void TrackDir::AddTestWidget(TrackWidget* widget, int i){
     }
 }
 
-void TrackDir::AddActiveWidget(TrackWidget* widget){
-    std::vector<TrackWidget*>::iterator it = std::find(mActiveWidgets.begin(), mActiveWidgets.end(), widget);
+void TrackDir::AddActiveWidget(TrackWidget *widget) {
+    std::vector<TrackWidget *>::iterator it =
+        std::find(mActiveWidgets.begin(), mActiveWidgets.end(), widget);
     MILO_ASSERT(it == mActiveWidgets.end(), 0x2A5);
-    if(mActiveWidgets.size() == mActiveWidgets.capacity() && mActiveWidgets.size() == mActiveWidgets.capacity()){
-        MILO_FAIL("Number of active widgets exceeds capacity %d", mActiveWidgets.capacity());
+    if (mActiveWidgets.size() == mActiveWidgets.capacity()
+        && mActiveWidgets.size() == mActiveWidgets.capacity()) {
+        MILO_FAIL(
+            "Number of active widgets exceeds capacity %d", mActiveWidgets.capacity()
+        );
     }
     mActiveWidgets.push_back(widget);
 }

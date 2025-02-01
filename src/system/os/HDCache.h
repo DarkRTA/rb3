@@ -16,17 +16,17 @@ public:
     void UnlockCache();
     void Poll();
     int HdrSize();
-    bool WriteAsync(int, int, const void*);
+    bool WriteAsync(int, int, const void *);
     void WriteDone();
     void WriteHdr();
-    bool ReadAsync(int, int, void*);
+    bool ReadAsync(int, int, void *);
     bool ReadFail();
     bool ReadDone();
-    FileStream* OpenHeader();
+    FileStream *OpenHeader();
 
-    int** mBlockState; // 0x0
-    std::vector<ArkFile*> mReadArkFiles; // 0x4
-    std::vector<ArkFile*> mWriteArkFiles; // 0xc
+    int **mBlockState; // 0x0
+    std::vector<ArkFile *> mReadArkFiles; // 0x4
+    std::vector<ArkFile *> mWriteArkFiles; // 0xc
     int mWriteFileIdx; // 0x14
     int unk18; // 0x18
     int unk1c;
@@ -34,12 +34,12 @@ public:
     int unk24;
     int unk28;
     int unk2c;
-    OSThread* mLockId; // 0x30
+    OSThread *mLockId; // 0x30
     int unk34;
-    CriticalSection* mCritSec; // 0x38
+    CriticalSection *mCritSec; // 0x38
     int mHdrIdx; // 0x3c
-    File* mHdr[2]; // 0x40
-    MemStream* mHdrBuf; // 0x48
+    File *mHdr[2]; // 0x40
+    MemStream *mHdrBuf; // 0x48
     String mHdrFmt; // 0x4c
     String mFileFmt; // 0x58
     bool unk64; // 0x64
