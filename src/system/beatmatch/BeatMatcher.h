@@ -98,6 +98,8 @@ public:
     void EnableCapStrip(bool);
     void E3CheatIncSlop();
     void E3CheatDecSlop();
+    bool IsFillCompletion(int);
+    unsigned int GetRGRollSlots(int) const;
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc

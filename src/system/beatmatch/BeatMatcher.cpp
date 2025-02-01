@@ -3,18 +3,22 @@
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "beatmatch/DrumMap.h"
 #include "beatmatch/DrumPlayer.h"
+#include "beatmatch/FillInfo.h"
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/MercurySwitchFilter.h"
 #include "beatmatch/Output.h"
 #include "beatmatch/Playback.h"
+#include "beatmatch/RGChords.h"
 #include "beatmatch/TrackType.h"
 #include "beatmatch/TrackWatcher.h"
+#include "decomp.h"
 #include "game/Player.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "os/Debug.h"
 #include "utl/MakeString.h"
+#include <climits>
 
 BeatMatcher::BeatMatcher(
     const UserGuid &u,
@@ -333,6 +337,8 @@ void BeatMatcher::SetDrumKitBank(ObjectDir *bank) {
     mDrumPlayer->mDrumKitBank = bank;
 }
 
+DECOMP_FORCEACTIVE(BeatMatcher, "seq_list")
+
 float BeatMatcher::GetWhammyBar() const {
     MILO_ASSERT(mController, 0x21B);
     if (mEnableWhammy)
@@ -441,18 +447,65 @@ bool BeatMatcher::FillsEnabled(int i) {
         return !unkaf && (i >= unka0 || i <= unka4);
 }
 
-void BeatMatcher::SetFillsEnabled(bool) {}
+void BeatMatcher::SetFillsEnabled(bool b) {
+    if (b)
+        SetFillsEnabled(mTick, false);
+    else {
+        int i2 = unka0;
+        SetFillsEnabled(INT_MAX, false);
+        if (i2 != INT_MAX) {
+            int tick = mSongPos.GetTotalTick();
+            FillExtent ext(-1, -1, false);
+            if (mSongData->GetFillInfo(mCurTrack)->FillExtentAtOrBefore(tick, ext)) {
+                unka4 = ext.end;
+            }
+        }
+    }
+}
 
 void BeatMatcher::DisableFillsCompletely() {
     SetFillsEnabled(0x7fffffff, false);
     unka4 = -1;
 }
 
-void BeatMatcher::SetFillsEnabled(int, bool) {}
+void BeatMatcher::SetFillsEnabled(int i1, bool b2) {
+    unka0 = 0;
+    if (i1 != INT_MAX && InFill(i1, true) && !b2) {
+        FillExtent ext(0, 0, false);
+        int i28 = 0;
+        i1 = mSongData->GetTempoMap()->GetLoopTick(i1, i28);
+        if (mSongData->GetFillInfo(mCurTrack)->NextFillExtents(i1, ext)) {
+            i1 = ext.start + i28;
+        }
+    }
+    unka0 = i1;
+}
+
 void BeatMatcher::ForceFill(bool b) { mForceFill = b; }
+
+bool BeatMatcher::IsFillCompletion(int i1) {
+    if (!FillsEnabled(i1))
+        return false;
+    else {
+        FillExtent ext(0, 0, false);
+        return mSongData->GetFillInfo(mCurTrack)->FillAt(i1, ext, true) && ext.end == i1;
+    }
+}
 
 void BeatMatcher::SetFillLogic(FillLogic logic) { mFillLogic = logic; }
 FillLogic BeatMatcher::GetFillLogic() const { return mFillLogic; }
+
+unsigned int BeatMatcher::GetRGRollSlots(int i1) const {
+    MILO_ASSERT(mSongData, 0x366);
+    RGRollChord chord = mSongData->GetRGRollingSlotsAtTick(mCurTrack, i1);
+    unsigned int slots = 0;
+    for (int i = 0, mask = 1; i < 6; i++, mask <<= 1) {
+        if (chord.unk0[i] != -1) {
+            slots |= mask;
+        }
+    }
+    return slots;
+}
 
 void BeatMatcher::SetSyncOffset(float offset) {
     mSyncOffset = offset;
@@ -486,4 +539,8 @@ void BeatMatcher::CheckMercurySwitch(float f) {
     }
 }
 
-void BeatMatcher::SetNow(float) {}
+void BeatMatcher::SetNow(float f) {
+    mNow = f;
+    mSongPos = mSongData->CalcSongPos(f);
+    mTick = mSongPos.GetTotalTick();
+}
