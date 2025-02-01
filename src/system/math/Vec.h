@@ -223,6 +223,7 @@ inline float Distance(const Vector3 &v1, const Vector3 &v2) {
     register float half = 0.5;
     register float zero;
 
+    // clang-format off
     asm {
         // load x (also loads y, but we can ignore that)
         psq_l single1, Vector3.x(_v1), 0, 0
@@ -279,6 +280,7 @@ inline float Distance(const Vector3 &v1, const Vector3 &v2) {
 
         _done:
     }
+    // clang-format on
 
     return total;
 }
@@ -475,13 +477,13 @@ inline void Normalize(register const Vector3 &v, register Vector3 &vout) {
 
                 // beyond this point, I'm not really sure what we're doing,
                 // as a best guess, it would be a newton iteration?
-    
+
             fmuls x2, inv_sq, half
 
             ps_muls0 x, x, x2
             ps_muls0 z, z, x2
-    
-            psq_st x, Vector3.x(vout), 0, 0    
+
+            psq_st x, Vector3.x(vout), 0, 0
             psq_st z, Vector3.z(vout), 1, 0
         )
     } else {

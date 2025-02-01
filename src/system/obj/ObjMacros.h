@@ -142,16 +142,10 @@ const char *PathName(const class Hmx::Object *obj);
     }
 
 #define HANDLE_EXPR_STATIC(symbol, expr)                                                 \
-    {                                                                                    \
-        _NEW_STATIC_SYMBOL(symbol)                                                       \
-        HANDLE_EXPR(_s, expr)                                                            \
-    }
+    { _NEW_STATIC_SYMBOL(symbol) HANDLE_EXPR(_s, expr) }
 
 #define HANDLE_ACTION_STATIC(symbol, expr)                                               \
-    {                                                                                    \
-        _NEW_STATIC_SYMBOL(symbol)                                                       \
-        HANDLE_ACTION(_s, expr)                                                          \
-    }
+    { _NEW_STATIC_SYMBOL(symbol) HANDLE_ACTION(_s, expr) }
 
 #define HANDLE_METHOD(func) _HANDLE_CHECKED(func(_msg))
 
@@ -320,28 +314,16 @@ const char *PathName(const class Hmx::Object *obj);
     }
 
 #define SYNC_PROP_STATIC(symbol, member)                                                 \
-    {                                                                                    \
-        _NEW_STATIC_SYMBOL(symbol)                                                       \
-        SYNC_PROP(_s, member)                                                            \
-    }
+    { _NEW_STATIC_SYMBOL(symbol) SYNC_PROP(_s, member) }
 
 #define SYNC_PROP_SET_STATIC(symbol, member, func)                                       \
-    {                                                                                    \
-        _NEW_STATIC_SYMBOL(symbol)                                                       \
-        SYNC_PROP_SET(_s, member, func)                                                  \
-    }
+    { _NEW_STATIC_SYMBOL(symbol) SYNC_PROP_SET(_s, member, func) }
 
 #define SYNC_PROP_MODIFY_STATIC(symbol, member, func)                                    \
-    {                                                                                    \
-        _NEW_STATIC_SYMBOL(symbol)                                                       \
-        SYNC_PROP_MODIFY(_s, member, func)                                               \
-    }
+    { _NEW_STATIC_SYMBOL(symbol) SYNC_PROP_MODIFY(_s, member, func) }
 
 #define SYNC_PROP_BITFIELD_STATIC(symbol, mask_member, line_num)                         \
-    {                                                                                    \
-        _NEW_STATIC_SYMBOL(symbol)                                                       \
-        SYNC_PROP_BITFIELD(_s, mask_member, line_num)                                    \
-    }
+    { _NEW_STATIC_SYMBOL(symbol) SYNC_PROP_BITFIELD(_s, mask_member, line_num) }
 
 #define SYNC_SUPERCLASS(parent)                                                          \
     if (parent::SyncProperty(_val, _prop, _i, _op))                                      \
