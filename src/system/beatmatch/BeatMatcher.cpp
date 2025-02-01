@@ -369,7 +369,7 @@ void BeatMatcher::DrivePitchBendExternally(bool b) { mDrivingPitchBendExternally
 void BeatMatcher::SetPitchBend(int i1, float f2, bool b3) {
     if (mTrackTypes[i1] != kTrackDrum && b3 == mDrivingPitchBendExternally
         && f2 != unk50[i1] && !b3) {
-        mAudio->SetSpeed(i1, mUserGuid, pow(1.059463143348694, f2));
+        mAudio->SetSpeed(i1, mUserGuid, powf(1.059463143348694, f2));
     }
     unk50[i1] = f2;
 }
