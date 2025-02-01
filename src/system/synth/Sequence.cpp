@@ -9,29 +9,31 @@
 bool sForceSerialSequences;
 
 namespace {
-    float RandomVal(float f1, float f2){
-        if(f2 == 0.0f) return f1;
-        else return RandomFloat(f1 - f2, f1 + f2);
+    float RandomVal(float f1, float f2) {
+        if (f2 == 0.0f)
+            return f1;
+        else
+            return RandomFloat(f1 - f2, f1 + f2);
     }
 }
 
-Sequence::Sequence() : mInsts(this), mAvgVol(0.0f), mVolSpread(0.0f), mAvgTranspose(0.0f),
-    mTransposeSpread(0.0f), mAvgPan(0.0f), mPanSpread(0.0f), mFaders(this), mCanStop(true) {
+Sequence::Sequence()
+    : mInsts(this), mAvgVol(0.0f), mVolSpread(0.0f), mAvgTranspose(0.0f),
+      mTransposeSpread(0.0f), mAvgPan(0.0f), mPanSpread(0.0f), mFaders(this),
+      mCanStop(true) {}
 
-}
-
-SeqInst* Sequence::MakeInst(){
-    SeqInst* seq = MakeInstImpl();
-    if(seq){
+SeqInst *Sequence::MakeInst() {
+    SeqInst *seq = MakeInstImpl();
+    if (seq) {
         mInsts.push_back(seq);
         StartPolling();
     }
     return seq;
 }
 
-SeqInst* Sequence::Play(float f1, float f2, float f3){
-    SeqInst* seq = MakeInst();
-    if(seq){
+SeqInst *Sequence::Play(float f1, float f2, float f3) {
+    SeqInst *seq = MakeInst();
+    if (seq) {
         seq->SetVolume(f1);
         seq->SetPan(f2);
         seq->SetTranspose(f3);
@@ -40,44 +42,50 @@ SeqInst* Sequence::Play(float f1, float f2, float f3){
     return seq;
 }
 
-void Sequence::Stop(bool b){
-    if(mCanStop || b){
+void Sequence::Stop(bool b) {
+    if (mCanStop || b) {
         std::for_each(mInsts.begin(), mInsts.end(), std::mem_fun(&SeqInst::Stop));
     }
 }
 
-Sequence::~Sequence(){
-    while(!mInsts.empty()){
+Sequence::~Sequence() {
+    while (!mInsts.empty()) {
         delete mInsts.front();
     }
 }
 
-void Sequence::SynthPoll(){
-    for(ObjPtrList<SeqInst>::iterator it = mInsts.begin(); it != mInsts.end(); it){
-        SeqInst* curSeq = *it++;
+void Sequence::SynthPoll() {
+    for (ObjPtrList<SeqInst>::iterator it = mInsts.begin(); it != mInsts.end(); it) {
+        SeqInst *curSeq = *it++;
         curSeq->Poll();
-        if(curSeq->Started() && !curSeq->IsRunning()){
+        if (curSeq->Started() && !curSeq->IsRunning()) {
             delete curSeq;
         }
     }
-    if(mFaders.Dirty()){
-        for(ObjPtrList<SeqInst>::iterator it = mInsts.begin(); it != mInsts.end(); ++it){
+    if (mFaders.Dirty()) {
+        for (ObjPtrList<SeqInst>::iterator it = mInsts.begin(); it != mInsts.end();
+             ++it) {
             (*it)->UpdateVolume();
         }
     }
-    if(mInsts.empty()) CancelPolling();
+    if (mInsts.empty())
+        CancelPolling();
 }
 
 SAVE_OBJ(Sequence, 0xCF)
 
-void Sequence::Load(BinStream& bs){
+void Sequence::Load(BinStream &bs) {
     int rev;
     bs >> rev;
-    if(rev > 3) MILO_WARN("Can't load new Sequence");
+    if (rev > 3)
+        MILO_WARN("Can't load new Sequence");
     else {
-        if(rev > 2) Hmx::Object::Load(bs);
-        bs >> mAvgVol >> mVolSpread >> mAvgTranspose >> mTransposeSpread >> mAvgPan >> mPanSpread;
-        if(rev >= 2) bs >> mCanStop;
+        if (rev > 2)
+            Hmx::Object::Load(bs);
+        bs >> mAvgVol >> mVolSpread >> mAvgTranspose >> mTransposeSpread >> mAvgPan
+            >> mPanSpread;
+        if (rev >= 2)
+            bs >> mCanStop;
     }
 }
 
@@ -85,7 +93,7 @@ BEGIN_COPYS(Sequence)
     COPY_SUPERCLASS(Hmx::Object)
     CREATE_COPY(Sequence)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mAvgVol)
             COPY_MEMBER(mVolSpread)
             COPY_MEMBER(mAvgTranspose)
@@ -97,7 +105,7 @@ BEGIN_COPYS(Sequence)
     END_COPYING_MEMBERS
 END_COPYS
 
-DataNode Sequence::OnPlay(DataArray* arr){
+DataNode Sequence::OnPlay(DataArray *arr) {
     float fvol = 0.0f;
     float fpan = 0.0f;
     float ftrans = 0.0f;
@@ -108,26 +116,28 @@ DataNode Sequence::OnPlay(DataArray* arr){
     return DataNode(0);
 }
 
-void Sequence::OnTriggerSound(int i){
-    switch(i){
-        case 0: {
-            Stop(false);
-            break;
+void Sequence::OnTriggerSound(int i) {
+    switch (i) {
+    case 0: {
+        Stop(false);
+        break;
+    }
+    case 1: {
+        Play(0.0f, 0.0f, 0.0f);
+        break;
+    }
+    case 2: {
+        ObjPtrList<SeqInst>::iterator it = mInsts.begin();
+        for (; it != mInsts.end(); ++it) {
+            if ((*it)->IsRunning())
+                break;
         }
-        case 1: {
+        if (it == mInsts.end())
             Play(0.0f, 0.0f, 0.0f);
-            break;
-        }
-        case 2: {
-
-            ObjPtrList<SeqInst>::iterator it = mInsts.begin();
-            for(; it != mInsts.end(); ++it){
-                if((*it)->IsRunning()) break;
-            }
-            if(it == mInsts.end()) Play(0.0f, 0.0f, 0.0f);
-            break;
-        }
-        default: break;
+        break;
+    }
+    default:
+        break;
     }
 }
 
@@ -150,24 +160,22 @@ BEGIN_PROPSYNCS(Sequence)
     SYNC_PROP_SET(trigger_sound, 0, OnTriggerSound(_val.Int()))
 END_PROPSYNCS
 
-WaitSeq::WaitSeq() : mAvgWaitSecs(0.0f), mWaitSpread(0.0f) {
+WaitSeq::WaitSeq() : mAvgWaitSecs(0.0f), mWaitSpread(0.0f) {}
 
-}
-
-SeqInst* WaitSeq::MakeInstImpl(){
-    return new WaitSeqInst(this);
-}
+SeqInst *WaitSeq::MakeInstImpl() { return new WaitSeqInst(this); }
 
 SAVE_OBJ(WaitSeq, 0x166)
 
-void WaitSeq::Load(BinStream& bs){
+void WaitSeq::Load(BinStream &bs) {
     int rev;
     bs >> rev;
-    if(rev > 2) MILO_WARN("Can't load new WaitSeq");
+    if (rev > 2)
+        MILO_WARN("Can't load new WaitSeq");
     else {
         Sequence::Load(bs);
         bs >> mAvgWaitSecs;
-        if(rev >= 2) bs >> mWaitSpread;
+        if (rev >= 2)
+            bs >> mWaitSpread;
     }
 }
 
@@ -175,7 +183,7 @@ BEGIN_COPYS(WaitSeq)
     COPY_SUPERCLASS(Sequence)
     CREATE_COPY(WaitSeq)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mAvgWaitSecs)
             COPY_MEMBER(mWaitSpread)
         }
@@ -188,50 +196,49 @@ BEGIN_PROPSYNCS(WaitSeq)
     SYNC_SUPERCLASS(Sequence)
 END_PROPSYNCS
 
-RandomGroupSeq::RandomGroupSeq() : mNumSimul(1), mAllowRepeats(0), mNextIndex(-1), mForceChooseIndex(-1) {
+RandomGroupSeq::RandomGroupSeq()
+    : mNumSimul(1), mAllowRepeats(0), mNextIndex(-1), mForceChooseIndex(-1) {}
 
-}
+SeqInst *RandomGroupSeq::MakeInstImpl() { return new RandomGroupSeqInst(this); }
 
-SeqInst* RandomGroupSeq::MakeInstImpl(){
-    return new RandomGroupSeqInst(this);
-}
-
-int RandomGroupSeq::NextIndex(){
-    if(mNextIndex == -1 && mChildren.size() != 0) PickNextIndex();
+int RandomGroupSeq::NextIndex() {
+    if (mNextIndex == -1 && mChildren.size() != 0)
+        PickNextIndex();
     return mNextIndex;
 }
 
-void RandomGroupSeq::PickNextIndex(){
+void RandomGroupSeq::PickNextIndex() {
 #ifdef MILO_DEBUG
     MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1C0);
 #else
-    if(GetNumSimul() != 1) mChildren.size();
+    if (GetNumSimul() != 1)
+        mChildren.size();
 #endif
-    if(!sForceSerialSequences){
+    if (!sForceSerialSequences) {
         mNextIndex = RandomInt(0, mChildren.size());
-    }
-    else mNextIndex = (mNextIndex + 1) % mChildren.size();
+    } else
+        mNextIndex = (mNextIndex + 1) % mChildren.size();
 
-    if(mChildren.size() > 1 && !AllowRepeats()){
-        if(mForceChooseIndex > 0) mNextIndex = mForceChooseIndex; 
+    if (mChildren.size() > 1 && !AllowRepeats()) {
+        if (mForceChooseIndex > 0)
+            mNextIndex = mForceChooseIndex;
         else {
-            while(InPlayedHistory(mNextIndex)){
-                if(!sForceSerialSequences){
+            while (InPlayedHistory(mNextIndex)) {
+                if (!sForceSerialSequences) {
                     mNextIndex = RandomInt(0, mChildren.size());
-                }
-                else mNextIndex = (mNextIndex + 1) % mChildren.size();
+                } else
+                    mNextIndex = (mNextIndex + 1) % mChildren.size();
             }
         }
     }
     AddToPlayedHistory(mNextIndex);
 }
 
-void RandomGroupSeq::ForceNextIndex(int i){
+void RandomGroupSeq::ForceNextIndex(int i) {
     MILO_ASSERT(GetNumSimul() == 1 || Children().size() == 1, 0x1EE);
-    if(i < 0 || i > Children().size() - 1){
+    if (i < 0 || i > Children().size() - 1) {
         MILO_WARN("index out of bounds for ForceNextIndex (index = %d)", i);
-    }
-    else {
+    } else {
         mPlayHistory.remove(mNextIndex);
         mNextIndex = i;
     }
@@ -241,7 +248,7 @@ BEGIN_COPYS(RandomGroupSeq)
     COPY_SUPERCLASS(GroupSeq)
     CREATE_COPY(RandomGroupSeq)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mNumSimul)
             COPY_MEMBER(mAllowRepeats)
         }
@@ -253,11 +260,13 @@ SAVE_OBJ(RandomGroupSeq, 0x217)
 BEGIN_LOADS(RandomGroupSeq)
     int rev;
     bs >> rev;
-    if(rev > 2) MILO_WARN("Can't load new RandomGroupSeq");
+    if (rev > 2)
+        MILO_WARN("Can't load new RandomGroupSeq");
     else {
         LOAD_SUPERCLASS(GroupSeq)
         bs >> mNumSimul;
-        if(rev >= 2) bs >> mAllowRepeats;
+        if (rev >= 2)
+            bs >> mAllowRepeats;
     }
 END_LOADS
 
@@ -275,11 +284,10 @@ BEGIN_HANDLERS(RandomGroupSeq)
     HANDLE_CHECK(0x241)
 END_HANDLERS
 
-RandomIntervalGroupSeq::RandomIntervalGroupSeq() : mAvgIntervalSecs(4.0f), mIntervalSpread(2.0f), mMaxSimultaneous(8) {
+RandomIntervalGroupSeq::RandomIntervalGroupSeq()
+    : mAvgIntervalSecs(4.0f), mIntervalSpread(2.0f), mMaxSimultaneous(8) {}
 
-}
-
-SeqInst* RandomIntervalGroupSeq::MakeInstImpl(){
+SeqInst *RandomIntervalGroupSeq::MakeInstImpl() {
     return new RandomIntervalGroupSeqInst(this);
 }
 
@@ -287,7 +295,7 @@ BEGIN_COPYS(RandomIntervalGroupSeq)
     COPY_SUPERCLASS(GroupSeq)
     CREATE_COPY(RandomIntervalGroupSeq)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mAvgIntervalSecs)
             COPY_MEMBER(mIntervalSpread)
             COPY_MEMBER(mMaxSimultaneous)
@@ -300,7 +308,8 @@ SAVE_OBJ(RandomIntervalGroupSeq, 0x266)
 BEGIN_LOADS(RandomIntervalGroupSeq)
     int rev;
     bs >> rev;
-    if(rev > 1) MILO_WARN("Can't load new RandomGroupSeq");
+    if (rev > 1)
+        MILO_WARN("Can't load new RandomGroupSeq");
     else {
         LOAD_SUPERCLASS(GroupSeq)
         bs >> mAvgIntervalSecs >> mIntervalSpread >> mMaxSimultaneous;
@@ -314,41 +323,39 @@ BEGIN_PROPSYNCS(RandomIntervalGroupSeq)
     SYNC_SUPERCLASS(GroupSeq)
 END_PROPSYNCS
 
-SeqInst* SerialGroupSeq::MakeInstImpl(){
-    return new SerialGroupSeqInst(this);
-}
+SeqInst *SerialGroupSeq::MakeInstImpl() { return new SerialGroupSeqInst(this); }
 
 SAVE_OBJ(SerialGroupSeq, 0x299)
 
 BEGIN_LOADS(SerialGroupSeq)
     int rev;
     bs >> rev;
-    if(rev > 1) MILO_WARN("Can't load new SerialGroupSeq");
-    else LOAD_SUPERCLASS(GroupSeq)
+    if (rev > 1)
+        MILO_WARN("Can't load new SerialGroupSeq");
+    else
+        LOAD_SUPERCLASS(GroupSeq)
 END_LOADS
 
-SeqInst* ParallelGroupSeq::MakeInstImpl(){
-    return new ParallelGroupSeqInst(this);
-}
+SeqInst *ParallelGroupSeq::MakeInstImpl() { return new ParallelGroupSeqInst(this); }
 
 SAVE_OBJ(ParallelGroupSeq, 0x2BC)
 
 BEGIN_LOADS(ParallelGroupSeq)
     int rev;
     bs >> rev;
-    if(rev > 1) MILO_WARN("Can't load new ParallelGroupSeq");
-    else LOAD_SUPERCLASS(GroupSeq)
+    if (rev > 1)
+        MILO_WARN("Can't load new ParallelGroupSeq");
+    else
+        LOAD_SUPERCLASS(GroupSeq)
 END_LOADS
 
-GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {
-
-}
+GroupSeq::GroupSeq() : mChildren(this, kObjListNoNull) {}
 
 BEGIN_COPYS(GroupSeq)
     COPY_SUPERCLASS(Sequence)
     CREATE_COPY(GroupSeq)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mChildren)
         }
     END_COPYING_MEMBERS
@@ -356,21 +363,23 @@ END_COPYS
 
 SAVE_OBJ(GroupSeq, 0x322)
 
-void GroupSeq::Load(BinStream& bs){
+void GroupSeq::Load(BinStream &bs) {
     int rev;
     bs >> rev;
-    if(rev > 3) MILO_WARN("Can't load new SfxSeq");
+    if (rev > 3)
+        MILO_WARN("Can't load new SfxSeq");
     else {
-        if(rev >= 2) Sequence::Load(bs);
-        if(rev < 3){
+        if (rev >= 2)
+            Sequence::Load(bs);
+        if (rev < 3) {
             mChildren.clear();
             ObjVector<ObjPtr<Sequence, ObjectDir> > oVec(this);
             bs >> oVec;
-            for(int i = 0; i < oVec.size(); i++){
+            for (int i = 0; i < oVec.size(); i++) {
                 mChildren.push_back(oVec[i]);
             }
-        }
-        else bs >> mChildren;
+        } else
+            bs >> mChildren;
     }
 }
 
@@ -379,212 +388,214 @@ BEGIN_PROPSYNCS(GroupSeq)
     SYNC_SUPERCLASS(Sequence)
 END_PROPSYNCS
 
-SeqInst::SeqInst(Sequence* seq) : mOwner(seq), mVolume(0.0f), mStarted(false) {
+SeqInst::SeqInst(Sequence *seq) : mOwner(seq), mVolume(0.0f), mStarted(false) {
     mRandVol = RandomVal(mOwner->mAvgVol, mOwner->mVolSpread);
     mRandPan = RandomVal(mOwner->mAvgPan, mOwner->mPanSpread);
     mRandTp = RandomVal(mOwner->mAvgTranspose, mOwner->mTransposeSpread);
 }
 
-SeqInst::~SeqInst(){
+SeqInst::~SeqInst() {}
 
-}
-
-void SeqInst::Start(){
+void SeqInst::Start() {
     mStarted = true;
     StartImpl();
 }
 
-void SeqInst::SetVolume(float f){
+void SeqInst::SetVolume(float f) {
     mVolume = f;
     UpdateVolume();
 }
 
-WaitSeqInst::WaitSeqInst(WaitSeq* seq) : SeqInst(seq), mEndTime(-1.0f) {
+WaitSeqInst::WaitSeqInst(WaitSeq *seq) : SeqInst(seq), mEndTime(-1.0f) {
     float rand = RandomVal(seq->mAvgWaitSecs, seq->mWaitSpread);
     mWaitMs = rand * 1000.0f;
 }
 
-void WaitSeqInst::StartImpl(){
+void WaitSeqInst::StartImpl() {
     mEndTime = TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f + mWaitMs;
 }
 
-void WaitSeqInst::Stop(){
-    mEndTime = -1.0f;
-}
+void WaitSeqInst::Stop() { mEndTime = -1.0f; }
 
-bool WaitSeqInst::IsRunning(){
+bool WaitSeqInst::IsRunning() {
     return TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f < mEndTime;
 }
 
-GroupSeqInst::GroupSeqInst(GroupSeq* seq, bool b) : SeqInst(seq), mSeqs(this) {
-    if(b){
-        ObjPtrList<Sequence>& children = seq->mChildren;
-        for(ObjPtrList<Sequence>::iterator it = children.begin(); it != children.end(); ++it){
-            SeqInst* inst = (*it)->MakeInst();
+GroupSeqInst::GroupSeqInst(GroupSeq *seq, bool b) : SeqInst(seq), mSeqs(this) {
+    if (b) {
+        ObjPtrList<Sequence> &children = seq->mChildren;
+        for (ObjPtrList<Sequence>::iterator it = children.begin(); it != children.end();
+             ++it) {
+            SeqInst *inst = (*it)->MakeInst();
             mSeqs.push_back();
             mSeqs.back() = inst;
         }
     }
 }
 
-GroupSeqInst::~GroupSeqInst(){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
+GroupSeqInst::~GroupSeqInst() {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end();
+         it++) {
         delete *it;
     }
 }
 
-void GroupSeqInst::UpdateVolume(){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
-        if(*it){
+void GroupSeqInst::UpdateVolume() {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end();
+         it++) {
+        if (*it) {
             (*it)->SetVolume(mVolume + mRandVol + mOwner->mFaders.GetVal());
         }
     }
 }
 
-void GroupSeqInst::SetPan(float f){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
-        if(*it){
+void GroupSeqInst::SetPan(float f) {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end();
+         it++) {
+        if (*it) {
             (*it)->SetPan(f + mRandPan);
         }
     }
 }
 
-void GroupSeqInst::SetTranspose(float f){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
-        if(*it){
+void GroupSeqInst::SetTranspose(float f) {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end();
+         it++) {
+        if (*it) {
             (*it)->SetTranspose(f + mRandTp);
         }
     }
 }
 
-SerialGroupSeqInst::SerialGroupSeqInst(SerialGroupSeq* seq) : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
+SerialGroupSeqInst::SerialGroupSeqInst(SerialGroupSeq *seq)
+    : GroupSeqInst(seq, true), mIt(mSeqs.end()) {}
 
-}
-
-void SerialGroupSeqInst::StartImpl(){
+void SerialGroupSeqInst::StartImpl() {
     mIt = mSeqs.begin();
-    if(*mIt) (*mIt)->Start();
+    if (*mIt)
+        (*mIt)->Start();
 }
 
-void SerialGroupSeqInst::Stop(){
-    if(mIt != mSeqs.end()){
-        if(*mIt) (*mIt)->Stop();
+void SerialGroupSeqInst::Stop() {
+    if (mIt != mSeqs.end()) {
+        if (*mIt)
+            (*mIt)->Stop();
     }
     ObjVector<ObjPtr<SeqInst> >::iterator curIt = mIt;
-    if(curIt != mSeqs.end()) curIt++;
-    while(curIt != mSeqs.end()){
+    if (curIt != mSeqs.end())
+        curIt++;
+    while (curIt != mSeqs.end()) {
         delete *curIt++;
     }
 }
 
-bool SerialGroupSeqInst::IsRunning(){
-    return mIt != mSeqs.end();
-}
+bool SerialGroupSeqInst::IsRunning() { return mIt != mSeqs.end(); }
 
-void SerialGroupSeqInst::Poll(){
-    while(mIt != mSeqs.end()){
-        if((*mIt) && (*mIt)->IsRunning()) return;
-        if(mIt++ != mSeqs.end()){
-            SeqInst* si = (*mIt);
-            if(si) si->Start();
+void SerialGroupSeqInst::Poll() {
+    while (mIt != mSeqs.end()) {
+        if ((*mIt) && (*mIt)->IsRunning())
+            return;
+        if (mIt++ != mSeqs.end()) {
+            SeqInst *si = (*mIt);
+            if (si)
+                si->Start();
         }
     }
 }
 
-ParallelGroupSeqInst::ParallelGroupSeqInst(ParallelGroupSeq* seq) : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
+ParallelGroupSeqInst::ParallelGroupSeqInst(ParallelGroupSeq *seq)
+    : GroupSeqInst(seq, true), mIt(mSeqs.end()) {}
 
-}
+ParallelGroupSeqInst::~ParallelGroupSeqInst() {}
 
-ParallelGroupSeqInst::~ParallelGroupSeqInst(){
-
-}
-
-void ParallelGroupSeqInst::StartImpl(){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end(); it++){
-        if(*it) (*it)->Start();
+void ParallelGroupSeqInst::StartImpl() {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mSeqs.begin(); it != mSeqs.end();
+         it++) {
+        if (*it)
+            (*it)->Start();
     }
-    for(mIt = mSeqs.begin(); mIt != mSeqs.end(); mIt++){
-        if((*mIt) && (*mIt)->IsRunning()) return;
-    }
-}
-
-void ParallelGroupSeqInst::Stop(){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++){
-        if(*it) (*it)->Stop();
+    for (mIt = mSeqs.begin(); mIt != mSeqs.end(); mIt++) {
+        if ((*mIt) && (*mIt)->IsRunning())
+            return;
     }
 }
 
-bool ParallelGroupSeqInst::IsRunning(){
-    return mIt != mSeqs.end();
-}
-
-void ParallelGroupSeqInst::Poll(){
-    for(; mIt != mSeqs.end(); mIt++){
-        if((*mIt) && (*mIt)->IsRunning()) return;
+void ParallelGroupSeqInst::Stop() {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++) {
+        if (*it)
+            (*it)->Stop();
     }
 }
 
-RandomGroupSeqInst::RandomGroupSeqInst(RandomGroupSeq* seq) : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
+bool ParallelGroupSeqInst::IsRunning() { return mIt != mSeqs.end(); }
+
+void ParallelGroupSeqInst::Poll() {
+    for (; mIt != mSeqs.end(); mIt++) {
+        if ((*mIt) && (*mIt)->IsRunning())
+            return;
+    }
+}
+
+RandomGroupSeqInst::RandomGroupSeqInst(RandomGroupSeq *seq)
+    : GroupSeqInst(seq, true), mIt(mSeqs.end()) {
     mNumSeqs = seq->GetNumSimul();
     int childrenSize = seq->Children().size();
-    if(childrenSize < mNumSeqs) mNumSeqs = childrenSize;
-    if(mNumSeqs == 1){
+    if (childrenSize < mNumSeqs)
+        mNumSeqs = childrenSize;
+    if (mNumSeqs == 1) {
         int next = seq->NextIndex();
         seq->PickNextIndex();
         int n = 0;
-        for(ObjPtrList<Sequence>::iterator it = seq->Children().begin(); it != seq->Children().end(); ++it){
-            if(n == next % childrenSize){
-                SeqInst* si = (*it)->MakeInst();
-                if(si) mSeqs.push_back(ObjPtr<SeqInst, ObjectDir>(si, 0));
+        for (ObjPtrList<Sequence>::iterator it = seq->Children().begin();
+             it != seq->Children().end();
+             ++it) {
+            if (n == next % childrenSize) {
+                SeqInst *si = (*it)->MakeInst();
+                if (si)
+                    mSeqs.push_back(ObjPtr<SeqInst, ObjectDir>(si, 0));
                 break;
             }
             n++;
         }
         mIt = mSeqs.begin();
-    }
-    else {
-        if(mNumSeqs != 0){
-
+    } else {
+        if (mNumSeqs != 0) {
         }
         mIt = mSeqs.begin();
     }
 }
 
-RandomGroupSeqInst::~RandomGroupSeqInst(){
+RandomGroupSeqInst::~RandomGroupSeqInst() {}
 
-}
-
-void RandomGroupSeqInst::StartImpl(){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++){
-        if(*it) (*it)->Start();
+void RandomGroupSeqInst::StartImpl() {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++) {
+        if (*it)
+            (*it)->Start();
     }
 }
 
-void RandomGroupSeqInst::Stop(){
-    for(ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++){
-        if(*it) (*it)->Stop();
+void RandomGroupSeqInst::Stop() {
+    for (ObjVector<ObjPtr<SeqInst> >::iterator it = mIt; it != mSeqs.end(); it++) {
+        if (*it)
+            (*it)->Stop();
     }
 }
 
-bool RandomGroupSeqInst::IsRunning(){
-    return mIt != mSeqs.end();
-}
+bool RandomGroupSeqInst::IsRunning() { return mIt != mSeqs.end(); }
 
-void RandomGroupSeqInst::Poll(){
-    for(; mIt != mSeqs.end(); mIt++){
-        if((*mIt) && (*mIt)->IsRunning()) return;
+void RandomGroupSeqInst::Poll() {
+    for (; mIt != mSeqs.end(); mIt++) {
+        if ((*mIt) && (*mIt)->IsRunning())
+            return;
     }
 }
 
-RandomIntervalGroupSeqInst::RandomIntervalGroupSeqInst(RandomIntervalGroupSeq* seq) : GroupSeqInst(seq, true) {
+RandomIntervalGroupSeqInst::RandomIntervalGroupSeqInst(RandomIntervalGroupSeq *seq)
+    : GroupSeqInst(seq, true) {}
 
-}
+RandomIntervalGroupSeqInst::~RandomIntervalGroupSeqInst() {}
 
-RandomIntervalGroupSeqInst::~RandomIntervalGroupSeqInst(){
-
-}
-
-void Sequence::Init(){
+void Sequence::Init() {
     SfxSeq::Init();
     WaitSeq::Init();
     RandomGroupSeq::Init();
@@ -593,6 +604,6 @@ void Sequence::Init(){
     RandomIntervalGroupSeq::Init();
 }
 
-SfxSeq::SfxSeq(){}
+SfxSeq::SfxSeq() {}
 
 SAVE_OBJ(SfxSeq, 0x511)

@@ -21,15 +21,15 @@ public:
     StreakMeter();
     OBJ_CLASSNAME(StreakMeterDir);
     OBJ_SET_TYPE(StreakMeterDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~StreakMeter(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~StreakMeter() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
-    
+
     void Reset();
     bool SetMultiplier(int);
     void SetBandMultiplier(int);
@@ -57,9 +57,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(StreakMeter)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(StreakMeter)
 
     int mStreakMultiplier; // 0x18c

@@ -5,30 +5,28 @@
 class CharDriverMidi : public CharDriver {
 public:
     CharDriverMidi();
-    virtual ~CharDriverMidi(){}
+    virtual ~CharDriverMidi() {}
     OBJ_CLASSNAME(CharDriverMidi);
     OBJ_SET_TYPE(CharDriverMidi);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Poll();    
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Poll();
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     virtual void Enter();
     virtual void Exit();
 
-    DataNode OnMidiParser(DataArray*);
-    DataNode OnMidiParserFlags(DataArray*);
-    DataNode OnMidiParserGroup(DataArray*);
+    DataNode OnMidiParser(DataArray *);
+    DataNode OnMidiParserFlags(DataArray *);
+    DataNode OnMidiParserGroup(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharDriverMidi)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharDriverMidi)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharDriverMidi) }
 
     Symbol mParser; // 0x8c
     Symbol mFlagParser; // 0x90

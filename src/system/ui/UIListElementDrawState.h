@@ -5,7 +5,8 @@
 
 class UIListElementDrawState {
 public:
-    // got this entirely from bank 5 - courtesy of UIListSubList::Draw, we know the size of this is 0x28 total
+    // got this entirely from bank 5 - courtesy of UIListSubList::Draw, we know the size
+    // of this is 0x28 total
     bool unk0; // 0x0
     Vector3 mPos; // 0x4
     float mAlpha; // 0x10

@@ -42,9 +42,7 @@ unsigned int HeldNote::GetGemSlots() const {
     return mGameGem->mSlots;
 }
 
-bool HeldNote::IsDone() const {
-    return unk_0xc == unk_0x10;
-}
+bool HeldNote::IsDone() const { return unk_0xc == unk_0x10; }
 
 bool HeldNote::HeldCompletely() const {
     bool complete = false;
@@ -131,9 +129,7 @@ float HeldNote::GetAwardedPercent() const {
     return x;
 }
 
-float HeldNote::GetAwardedPoints() const {
-    return unk_0x14;
-}
+float HeldNote::GetAwardedPoints() const { return unk_0x14; }
 
 void HeldNote::ReleaseSlot(int slot) {
     unsigned int mask = 1 << slot;

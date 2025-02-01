@@ -8,14 +8,14 @@ public:
     BandLeadMeter();
     OBJ_CLASSNAME(BandLeadMeter);
     OBJ_SET_TYPE(BandLeadMeter);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~BandLeadMeter(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
-    virtual void SetFrame(float, float){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~BandLeadMeter() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
+    virtual void SetFrame(float, float) {}
     virtual void Poll();
     virtual void Enter();
 
@@ -26,9 +26,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(BandLeadMeter)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandLeadMeter)
 
     ObjPtr<RndAnimatable, ObjectDir> mNeedleAnim; // 0x18c

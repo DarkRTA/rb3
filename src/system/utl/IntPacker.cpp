@@ -5,54 +5,50 @@
 #include "utl/MakeString.h"
 #include "milo_types.h"
 
-IntPacker::IntPacker(void* buf, unsigned int size){
-    mBuffer = (unsigned char*)buf;
+IntPacker::IntPacker(void *buf, unsigned int size) {
+    mBuffer = (unsigned char *)buf;
     mPos = 0;
     mSize = size;
     memset(buf, 0, size);
 }
 
-void IntPacker::AddBool(bool b){
-    Add(b, 1);
-}
+void IntPacker::AddBool(bool b) { Add(b, 1); }
 
-void IntPacker::AddS(int num, unsigned int bits){
+void IntPacker::AddS(int num, unsigned int bits) {
     int max = 1 << bits - 1;
     MILO_ASSERT_RANGE( num, -max, max, 0x21);
     Add(num, bits);
 }
 
-void IntPacker::AddU(unsigned int num, unsigned int bits){
+void IntPacker::AddU(unsigned int num, unsigned int bits) {
     MILO_ASSERT(num < uint(1 << bits), 0x28);
     Add(num, bits);
 }
 
-void IntPacker::Add(unsigned int num, unsigned int bits){
-    for(unsigned int u = 0; u < bits; u++){
+void IntPacker::Add(unsigned int num, unsigned int bits) {
+    for (unsigned int u = 0; u < bits; u++) {
         mBuffer[mPos >> 3] |= ((num >> u) & 1) << (mPos & 7);
         mPos++;
     }
     MILO_ASSERT(mPos <= mSize*8, 0x36);
 }
 
-bool IntPacker::ExtractBool(){
-    return ExtractU(1) != 0;
-}
+bool IntPacker::ExtractBool() { return ExtractU(1) != 0; }
 
-int IntPacker::ExtractS(unsigned int ui){
+int IntPacker::ExtractS(unsigned int ui) {
     int ex, i;
 
     i = 1 << ui - 1;
     ex = ExtractU(ui);
-    if(ex >= i){
+    if (ex >= i) {
         ex -= i * 2;
     }
     return ex;
 }
 
-unsigned int IntPacker::ExtractU(unsigned int ui){
+unsigned int IntPacker::ExtractU(unsigned int ui) {
     unsigned int ret = 0;
-    for(unsigned int cnt = 0; cnt < ui; cnt++){
+    for (unsigned int cnt = 0; cnt < ui; cnt++) {
         ret |= ((mBuffer[mPos >> 3] >> (mPos & 7)) & 1) << cnt;
         mPos++;
     }
@@ -60,6 +56,4 @@ unsigned int IntPacker::ExtractU(unsigned int ui){
     return ret;
 }
 
-void IntPacker::SetPos(unsigned int ui){
-    mPos = ui;
-}
+void IntPacker::SetPos(unsigned int ui) { mPos = ui; }

@@ -9,13 +9,13 @@ class Band;
 
 class Performer : public virtual Hmx::Object {
 public:
-    Performer(BandUser*, Band*);
-    virtual DataNode Handle(DataArray*, bool);
+    Performer(BandUser *, Band *);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~Performer();
     virtual int GetScore() const;
     virtual int GetAccumulatedScore() const;
     virtual int CodaScore() const;
-    virtual int GetMultiplier(bool, int&, int&, int&) const;
+    virtual int GetMultiplier(bool, int &, int &, int &) const;
     virtual float GetCrowdRating() const;
     virtual float GetCrowdWarningLevel() const;
     virtual float GetRawCrowdRating() const;
@@ -26,7 +26,7 @@ public:
     virtual float GetTotalStars() const;
     virtual bool PastFinalNote() const = 0;
     virtual ExcitementLevel GetExcitement() const;
-    virtual void Poll(float, const SongPos&);
+    virtual void Poll(float, const SongPos &);
     virtual void AddPoints(float, bool, bool);
     virtual void Hit();
     virtual void BuildHitStreak(int, float);
@@ -39,7 +39,7 @@ public:
     virtual float GetPartialStreakFraction() const;
     virtual bool IsInCrowdWarning() const;
     virtual void ForceScore(int);
-    virtual float GetNotesHitFraction(bool*) const = 0;
+    virtual float GetNotesHitFraction(bool *) const = 0;
     virtual void SetQuarantined(bool);
     virtual Symbol GetStreakType() const { return "default"; }
     virtual float GetCrowdBoost() const;
@@ -57,7 +57,7 @@ public:
     float GetRawValue() const;
     float GetDisplayValue() const;
     void UpdateScore(int);
-    void SendRemoteStats(BandUser*);
+    void SendRemoteStats(BandUser *);
     void SetRemoteStreak(int);
     void RemoteFinishedSong(int);
     void SetLost();
@@ -65,22 +65,22 @@ public:
     float PollMs() const;
     void SetCrowdMeterActive(bool);
     bool GetCrowdMeterActive();
-    void SetStats(int, const Stats&);
+    void SetStats(int, const Stats &);
     void SendStreak();
     void TrulyWinGame();
     void ForceStars(int);
     int GetNumRestarts() const;
     void SetNoScorePercent(float);
     bool IsLocal() const { return !IsNet(); }
-    Band* GetBand() const { return mBand; }
+    Band *GetBand() const { return mBand; }
     bool GetQuarantined() const { return mQuarantined; }
-    const Stats& GetStats() const { return mStats; }
-    CrowdRating* Crowd() const { return mCrowd; }
+    const Stats &GetStats() const { return mStats; }
+    CrowdRating *Crowd() const { return mCrowd; }
 
     float mPollMs; // 0x8
-    CrowdRating* mCrowd; // 0xc
+    CrowdRating *mCrowd; // 0xc
     Stats mStats; // 0x10
-    Band* mBand; // 0x1dc
+    Band *mBand; // 0x1dc
     bool unk1e0;
     bool unk1e1;
     bool unk1e2;

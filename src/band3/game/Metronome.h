@@ -6,11 +6,10 @@
 class Metronome {
 public:
     enum OverrideEnabled {
-
     };
     Metronome();
     virtual ~Metronome();
-    void Enter(Sfx*, Sfx*);
+    void Enter(Sfx *, Sfx *);
     void Exit();
     void Poll(int, OverrideEnabled);
     void PlayBeat(int);
@@ -21,7 +20,7 @@ public:
 
     int mBeat;
     bool mEnabled; // 0x8
-    Sfx* mHiSfx;
-    Sfx* mLoSfx;
-    Fader* mFader;
+    Sfx *mHiSfx;
+    Sfx *mLoSfx;
+    Fader *mFader;
 };

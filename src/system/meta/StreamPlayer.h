@@ -8,10 +8,10 @@ class StreamPlayer : public Hmx::Object {
 public:
     StreamPlayer();
     virtual ~StreamPlayer();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void Delete();
-    void PlayFile(const char*, float, float, bool);
+    void PlayFile(const char *, float, float, bool);
     void Poll();
     void Init();
     void StopPlaying();
@@ -25,9 +25,8 @@ public:
     bool mLoop;
     bool mStarted;
     bool mPaused;
-    Stream* mStream;
-    void* mSongBuf;
-
+    Stream *mStream;
+    void *mSongBuf;
 };
 
 // float StreamPlayer::kStreamEndMs = -1.1920929E-7f;

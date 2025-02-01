@@ -3,9 +3,9 @@
 
 class TuningOffsetList : public TickedInfoCollection<float> {
 public:
-    TuningOffsetList(){
+    TuningOffsetList() {
         mInfos.reserve(8);
         mInfos.push_back(TickedInfo<float>(-1, 100.0f));
     }
-    ~TuningOffsetList(){}
+    ~TuningOffsetList() {}
 };

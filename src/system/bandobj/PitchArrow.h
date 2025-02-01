@@ -10,18 +10,18 @@ public:
     PitchArrow();
     OBJ_CLASSNAME(PitchArrowDir);
     OBJ_SET_TYPE(PitchArrowDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~PitchArrow(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~PitchArrow() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void Poll();
 
     void SetArrowStyle(int);
-    void Reset(RndGroup*);
+    void Reset(RndGroup *);
     void SetPitched(bool);
     void SetSpotlight(bool);
     void SetDeploying(bool);
@@ -33,17 +33,15 @@ public:
     void PollHelix();
     void SetGhostFade(float);
 
-    DataNode OnSyncColor(DataArray*);
-    DataNode OnSetupFx(DataArray*);
-    
-    static bool NeedSort(PitchArrow*);
+    DataNode OnSyncColor(DataArray *);
+    DataNode OnSetupFx(DataArray *);
+
+    static bool NeedSort(PitchArrow *);
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(PitchArrow)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(PitchArrow)
 
     bool unk18c; // 0x18c

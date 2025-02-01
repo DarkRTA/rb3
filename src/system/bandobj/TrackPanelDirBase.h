@@ -12,55 +12,55 @@ class BandCrowdMeter;
 class TrackPanelDirBase : public PanelDir {
 public:
     TrackPanelDirBase();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual ~TrackPanelDirBase(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream& bs);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual ~TrackPanelDirBase() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &bs);
     virtual void Enter();
     virtual void ConfigureTracks(bool) = 0;
     virtual void ConfigureTrack(int) = 0;
     virtual void AssignTracks() = 0;
     virtual void AssignTrack(int, TrackInstrument, bool) = 0;
     virtual void RemoveTrack(int) = 0;
-    virtual void SetConfiguration(Hmx::Object*, bool);
+    virtual void SetConfiguration(Hmx::Object *, bool);
     virtual void ReapplyConfiguration(bool);
     virtual void Reset() = 0;
-    virtual void ResetAll(){}
+    virtual void ResetAll() {}
     virtual void PlayIntro();
     virtual bool TracksExtended() const { return false; }
     virtual void GameOver();
     virtual void HideScore();
     virtual void Coda() = 0;
     virtual void CodaEnd() = 0;
-    virtual void SetCodaScore(int){}
-    virtual void SoloEnd(BandTrack*, int, Symbol) = 0;
-    virtual void SetTrackPanel(TrackPanelInterface* panel){ mTrackPanel = panel; }
-    virtual void ResetPlayers(){}
-    virtual void StartFinale(){}
-    virtual void SetMultiplier(int, bool){}
-    virtual void SetCrowdRating(float){}
+    virtual void SetCodaScore(int) {}
+    virtual void SoloEnd(BandTrack *, int, Symbol) = 0;
+    virtual void SetTrackPanel(TrackPanelInterface *panel) { mTrackPanel = panel; }
+    virtual void ResetPlayers() {}
+    virtual void StartFinale() {}
+    virtual void SetMultiplier(int, bool) {}
+    virtual void SetCrowdRating(float) {}
     virtual void CodaSuccess();
-    virtual void UnisonStart(int){}
+    virtual void UnisonStart(int) {}
     virtual void UnisonEnd();
     virtual void UnisonSucceed();
-    virtual EndingBonus* GetEndingBonus(){ return nullptr; }
-    virtual BandCrowdMeter* GetCrowdMeter(); // ptr
-    virtual void SetupApplauseMeter(int, const char*, const char*, RndDir*, RndDir*, bool, Symbol){}
+    virtual EndingBonus *GetEndingBonus() { return nullptr; }
+    virtual BandCrowdMeter *GetCrowdMeter(); // ptr
+    virtual void SetupApplauseMeter(
+        int, const char *, const char *, RndDir *, RndDir *, bool, Symbol
+    ) {}
     virtual void DisablePlayer(int, bool);
     virtual void EnablePlayer(int);
-    virtual void FadeBotbBandNames(bool){}
-    virtual void CleanUpChordMeshes(){}
-    virtual void SetApplauseMeterScale(int, int){}
-    virtual void StartPulseAnims(float){}
+    virtual void FadeBotbBandNames(bool) {}
+    virtual void CleanUpChordMeshes() {}
+    virtual void SetApplauseMeterScale(int, int) {}
+    virtual void StartPulseAnims(float) {}
     virtual float GetPulseAnimStartDelay(bool) const;
-    virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return 0; }
+    virtual GemTrackResourceManager *GetGemTrackResourceManager() const { return 0; }
 
-    bool Showing(){
-        return Find<RndGroup>("draw_order.grp", true)->Showing();
-    }
+    bool Showing() { return Find<RndGroup>("draw_order.grp", true)->Showing(); }
 
     void SetShowing(bool);
     void UpdateTrackSpeed();
@@ -69,11 +69,11 @@ public:
     bool ModifierActive(Symbol);
     void ToggleSurface();
     void ToggleNowbar();
-    void SetPlayerLocal(BandTrack*);
+    void SetPlayerLocal(BandTrack *);
     bool ReservedVocalPlayerSlot(int);
-    BandTrack* GetBandTrackInSlot(int);
+    BandTrack *GetBandTrackInSlot(int);
 
-    DataNode DataForEachConfigObj(DataArray*);
+    DataNode DataForEachConfigObj(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
@@ -89,10 +89,10 @@ public:
     ObjVector<ObjPtr<BandTrack, ObjectDir> > mTracks; // 0x20c
     ObjVector<ObjPtr<GemTrackDir, ObjectDir> > mGemTracks; // 0x218
     bool unk224; // 0x224
-    TrackPanelInterface* mTrackPanel; // 0x228
+    TrackPanelInterface *mTrackPanel; // 0x228
     ObjPtr<RndDir, ObjectDir> mApplauseMeter; // 0x22c
-    RndDir* mBandLogoRival; // 0x238
-    RndDir* mBandLogo; // 0x23c
+    RndDir *mBandLogoRival; // 0x238
+    RndDir *mBandLogo; // 0x23c
     bool mPerformanceMode; // 0x240
     bool mDoubleSpeedActive; // 0x241
     bool mIndependentTrackSpeeds; // 0x242

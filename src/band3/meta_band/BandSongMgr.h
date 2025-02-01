@@ -1,5 +1,4 @@
-#ifndef META_BAND_BANDSONGMGR_H
-#define META_BAND_BANDSONGMGR_H
+#pragma once
 #include "beatmatch/TrackType.h"
 #include "system/meta/SongMgr.h"
 #include "meta_band/SongUpgradeMgr.h"
@@ -20,46 +19,47 @@ public:
     };
 
     BandSongMgr();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~BandSongMgr(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~BandSongMgr() {}
     virtual void Init();
     virtual void Terminate();
-    virtual SongMetadata* Data(int) const; // fix return type
-    virtual SongInfo* SongAudioData(int) const;
+    virtual SongMetadata *Data(int) const; // fix return type
+    virtual SongInfo *SongAudioData(int) const;
     virtual void ContentDone();
-    virtual void ContentMounted(const char*, const char*);
-    virtual void GetContentNames(Symbol, std::vector<Symbol>&) const;
+    virtual void ContentMounted(const char *, const char *);
+    virtual void GetContentNames(Symbol, std::vector<Symbol> &) const;
     virtual bool SongCacheNeedsWrite() const;
     virtual void ClearSongCacheNeedsWrite();
     virtual void AllowCacheWrite(bool);
     virtual void ClearCachedContent();
     virtual Symbol GetShortNameFromSongID(int, bool) const;
     virtual int GetSongIDFromShortName(Symbol, bool) const;
-    virtual const char* SongName(int) const;
+    virtual const char *SongName(int) const;
     virtual bool CanAddSong() const;
-    virtual bool AllowContentToBeAdded(DataArray*, ContentLocT);
-    virtual void AddSongData(DataArray*, DataLoader*, ContentLocT);
-    virtual void AddSongData(DataArray*, std::map<int, SongMetadata*>&, const char*, ContentLocT, std::vector<int>&);
+    virtual bool AllowContentToBeAdded(DataArray *, ContentLocT);
+    virtual void AddSongData(DataArray *, DataLoader *, ContentLocT);
+    virtual void
+    AddSongData(DataArray *, std::map<int, SongMetadata *> &, const char *, ContentLocT, std::vector<int> &);
     virtual void AddSongIDMapping(int, Symbol);
-    virtual void ReadCachedMetadataFromStream(BinStream&, int);
-    virtual void WriteCachedMetadataFromStream(BinStream&) const;
-    virtual const char* ContentPattern();
-    virtual const char* ContentDir();
-    virtual bool HasContentAltDirs(){ return !mContentAltDirs.empty(); }
-    virtual std::vector<String>* ContentAltDirs(){ return &mContentAltDirs; }
+    virtual void ReadCachedMetadataFromStream(BinStream &, int);
+    virtual void WriteCachedMetadataFromStream(BinStream &) const;
+    virtual const char *ContentPattern();
+    virtual const char *ContentDir();
+    virtual bool HasContentAltDirs() { return !mContentAltDirs.empty(); }
+    virtual std::vector<String> *ContentAltDirs() { return &mContentAltDirs; }
 
-    void AddSongs(DataArray* songs);
-    const char* UpgradeMidiFile(int) const;
-    const char* MidiFile(Symbol) const;
-    const char* SongName(Symbol) const;
-    SongUpgradeData* GetUpgradeData(int) const;
-    const char* SongFilePath(Symbol, const char*, bool) const;
-    const char* GetAlbumArtPath(Symbol) const;
-    const char* SongPath(Symbol) const;
+    void AddSongs(DataArray *songs);
+    const char *UpgradeMidiFile(int) const;
+    const char *MidiFile(Symbol) const;
+    const char *SongName(Symbol) const;
+    SongUpgradeData *GetUpgradeData(int) const;
+    const char *SongFilePath(Symbol, const char *, bool) const;
+    const char *GetAlbumArtPath(Symbol) const;
+    const char *SongPath(Symbol) const;
     int NumRankTiers(Symbol) const;
     Symbol RankTierToken(int) const;
-    void GetRankedSongs(std::vector<int>&, bool, bool) const;
-    int GetValidSongCount(const std::map<int, SongMetadata*>&) const;
+    void GetRankedSongs(std::vector<int> &, bool, bool) const;
+    int GetValidSongCount(const std::map<int, SongMetadata *> &) const;
     bool IsRestricted(int) const;
     int RankTier(float, Symbol) const;
     int GetNumVocalParts(Symbol) const;
@@ -69,14 +69,14 @@ public:
     void SyncSharedSongs();
     int GetMaxSongCount() const;
     void CheatToggleMaxSongCount();
-    bool InqAvailableSongSources(std::set<Symbol>&);
+    bool InqAvailableSongSources(std::set<Symbol> &);
     int NumRankedSongs(TrackType, bool, Symbol) const;
 
     static bool GetFakeSongsAllowed();
     static void SetFakeSongsAllowed(bool);
     static bool sFakeSongsAllowed;
 
-    mutable DataArraySongInfo* unkc0; // 0xc0
+    mutable DataArraySongInfo *unkc0; // 0xc0
     std::map<int, Symbol> mSongNameLookup; // 0xc4
     std::map<Symbol, int> mSongIDLookup; // 0xdc
     std::map<int, Symbol> mExtraSongIDMap; // 0xf4
@@ -84,15 +84,12 @@ public:
     std::list<int> unk114; // 0x114
     std::vector<Symbol> unk11c; // 0x11c
     bool unk124; // 0x124
-    SongUpgradeMgr* mUpgradeMgr; // 0x128
-    LicenseMgr* mLicenseMgr; // 0x12c
+    SongUpgradeMgr *mUpgradeMgr; // 0x128
+    LicenseMgr *mLicenseMgr; // 0x12c
     std::vector<String> mContentAltDirs; // 0x130
     int mMaxSongCount; // 0x138
     bool unk13c; // 0x13c
     int unk140; // 0x140
 };
 
-extern BandSongMgr* TheSongMgr;
-// extern BandSongMgr* TheBaseSongManger;
-
-#endif
+extern BandSongMgr *TheSongMgr;

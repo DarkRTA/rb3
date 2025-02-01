@@ -7,19 +7,17 @@
 
 INIT_REVS(LabelNumberTicker)
 
-void LabelNumberTicker::Init(){
+void LabelNumberTicker::Init() {
     Register();
     TheUI->InitResources("LabelNumberTicker");
 }
 
-LabelNumberTicker::LabelNumberTicker() : mLabel(this), mDesiredValue(0), mAnimTime(0.0f), mAnimDelay(0.0f), mWrapperText(gNullStr),
-    mAcceleration(0.0f), unk12c(0), unk130(0), mTickTrigger(this), mTickEvery(0) {
+LabelNumberTicker::LabelNumberTicker()
+    : mLabel(this), mDesiredValue(0), mAnimTime(0.0f), mAnimDelay(0.0f),
+      mWrapperText(gNullStr), mAcceleration(0.0f), unk12c(0), unk130(0),
+      mTickTrigger(this), mTickEvery(0) {}
 
-}
-
-LabelNumberTicker::~LabelNumberTicker(){
-
-}
+LabelNumberTicker::~LabelNumberTicker() {}
 
 BEGIN_COPYS(LabelNumberTicker)
     CREATE_COPY_AS(LabelNumberTicker, p)
@@ -37,7 +35,7 @@ END_COPYS
 
 SAVE_OBJ(LabelNumberTicker, 0x46)
 
-void LabelNumberTicker::Enter(){
+void LabelNumberTicker::Enter() {
     UIComponent::Enter();
     UpdateDisplay();
 }
@@ -47,49 +45,50 @@ BEGIN_LOADS(LabelNumberTicker)
     PostLoad(bs);
 END_LOADS
 
-void LabelNumberTicker::PreLoad(BinStream& bs){
+void LabelNumberTicker::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     bs >> mLabel >> mDesiredValue >> mAnimTime >> mAnimDelay >> mWrapperText;
-    if(gRev >= 1) bs >> mAcceleration;
-    if(gRev >= 2){
+    if (gRev >= 1)
+        bs >> mAcceleration;
+    if (gRev >= 2) {
         bs >> mTickTrigger >> mTickEvery;
     }
     UIComponent::PreLoad(bs);
 }
 
-void LabelNumberTicker::PostLoad(BinStream& bs){
+void LabelNumberTicker::PostLoad(BinStream &bs) {
     UIComponent::PostLoad(bs);
     Update();
 }
 
-void LabelNumberTicker::UpdateDisplay(){
-    if(mLabel){
-        if(mWrapperText != gNullStr){
+void LabelNumberTicker::UpdateDisplay() {
+    if (mLabel) {
+        if (mWrapperText != gNullStr) {
             mLabel->SetTokenFmt(mWrapperText, LocalizeSeparatedInt(unk130));
         }
     }
 }
 
 // fn_80549740
-void LabelNumberTicker::Poll(){
+void LabelNumberTicker::Poll() {
     UIComponent::Poll();
-    if(mTimer.Running()){
+    if (mTimer.Running()) {
         float split = mTimer.SplitMs();
         float animtime = mAnimTime * 1000.0f;
         float animdelay = mAnimDelay * 1000.0f;
         float animsum = animdelay + animtime;
-        if(split >= animdelay){
+        if (split >= animdelay) {
             float quotient = (split - animdelay) / animtime;
             quotient *= std::pow(quotient, mAcceleration);
             int somenum = unk12c + (int)(quotient * (mDesiredValue - unk12c));
-            if(mTickTrigger && mTickEvery != 0){
-                if((somenum / mTickEvery) > (unk130 / mTickEvery)){
+            if (mTickTrigger && mTickEvery != 0) {
+                if ((somenum / mTickEvery) > (unk130 / mTickEvery)) {
                     mTickTrigger->Trigger();
                 }
             }
             unk130 = somenum;
-            if(unk130 == mDesiredValue || (split >= animsum)){
+            if (unk130 == mDesiredValue || (split >= animsum)) {
                 unk130 = mDesiredValue;
                 mTimer.Stop();
             }
@@ -98,32 +97,33 @@ void LabelNumberTicker::Poll(){
     }
 }
 
-void LabelNumberTicker::SetLabel(UILabel* l){
+void LabelNumberTicker::SetLabel(UILabel *l) {
     mLabel = l;
     UpdateDisplay();
 }
 
-void LabelNumberTicker::SetDesiredValue(int i){
+void LabelNumberTicker::SetDesiredValue(int i) {
     unk12c = unk130;
     mDesiredValue = i;
-    if(mAnimTime + mAnimDelay <= 0.0f) unk130 = i;
+    if (mAnimTime + mAnimDelay <= 0.0f)
+        unk130 = i;
     else {
         mTimer.Reset();
         mTimer.Start();
     }
-    if(mTickTrigger && i > 0){
+    if (mTickTrigger && i > 0) {
         mTickTrigger->Trigger();
     }
     UpdateDisplay();
 }
 
-void LabelNumberTicker::SnapToValue(int i){
+void LabelNumberTicker::SnapToValue(int i) {
     unk130 = i;
     mDesiredValue = i;
     UpdateDisplay();
 }
 
-void LabelNumberTicker::CountUp(){
+void LabelNumberTicker::CountUp() {
     int val = mDesiredValue;
     SnapToValue(0);
     SetDesiredValue(val);

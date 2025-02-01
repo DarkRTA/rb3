@@ -2,9 +2,9 @@
 #define UTL_MBT_H
 #include "utl/MeasureMap.h"
 
-void ParseMBT(const char*, int&, int&, int&);
-const char* TickFormat(int, const MeasureMap&);
-const char* FormatTimeMSH(float);
+void ParseMBT(const char *, int &, int &, int &);
+const char *TickFormat(int, const MeasureMap &);
+const char *FormatTimeMSH(float);
 
 struct MBT {
     MBT() : measure(0), beat(0), tick(0) {}

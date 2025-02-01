@@ -5,8 +5,8 @@ class StandIn : public FixedSizeSaveable {
 public:
     StandIn();
     virtual ~StandIn();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void SetNone();
     void SetName(Symbol);

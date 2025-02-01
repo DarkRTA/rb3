@@ -3,4 +3,4 @@
 class BandUser;
 
 void InitJunkMsg();
-void SendJunkPatchesToUser(BandUser*);
+void SendJunkPatchesToUser(BandUser *);

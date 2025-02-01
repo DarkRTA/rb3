@@ -24,43 +24,44 @@ enum SongMgrState {
 
 class SongMgr : public MsgSource, public ContentMgr::Callback {
 public:
-    SongMgr(){}
-    
-    virtual DataNode Handle(DataArray*, bool);
+    SongMgr() {}
+
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~SongMgr();
     virtual void Init();
-    virtual void Terminate(){}
-    virtual SongMetadata* Data(int) const;
-    virtual SongInfo* SongAudioData(int) const = 0;
+    virtual void Terminate() {}
+    virtual SongMetadata *Data(int) const;
+    virtual SongInfo *SongAudioData(int) const = 0;
     virtual void ContentStarted();
     virtual bool ContentDiscovered(Symbol);
-    virtual void ContentLoaded(class Loader*, ContentLocT, Symbol);
+    virtual void ContentLoaded(class Loader *, ContentLocT, Symbol);
     virtual void ContentDone();
-    virtual void ContentMounted(const char*, const char*);
-    virtual void ContentUnmounted(const char*);
-    virtual void GetContentNames(Symbol, std::vector<Symbol>&) const;
+    virtual void ContentMounted(const char *, const char *);
+    virtual void ContentUnmounted(const char *);
+    virtual void GetContentNames(Symbol, std::vector<Symbol> &) const;
     virtual bool SongCacheNeedsWrite() const;
     virtual void ClearSongCacheNeedsWrite();
-    virtual void AllowCacheWrite(bool b){ mSongCacheWriteAllowed = b; }
+    virtual void AllowCacheWrite(bool b) { mSongCacheWriteAllowed = b; }
     virtual void ClearCachedContent();
     virtual Symbol GetShortNameFromSongID(int, bool) const = 0;
     virtual int GetSongIDFromShortName(Symbol, bool) const = 0;
-    virtual const char* SongName(int) const = 0;
+    virtual const char *SongName(int) const = 0;
     virtual bool CanAddSong() const = 0;
-    virtual bool AllowContentToBeAdded(DataArray*, ContentLocT){ return true; }
-    virtual void AddSongData(DataArray*, DataLoader*, ContentLocT) = 0;
-    virtual void AddSongData(DataArray*, std::map<int, SongMetadata*>&, const char*, ContentLocT, std::vector<int>&) = 0;
+    virtual bool AllowContentToBeAdded(DataArray *, ContentLocT) { return true; }
+    virtual void AddSongData(DataArray *, DataLoader *, ContentLocT) = 0;
+    virtual void
+    AddSongData(DataArray *, std::map<int, SongMetadata *> &, const char *, ContentLocT, std::vector<int> &) = 0;
     virtual void AddSongIDMapping(int, Symbol) = 0;
-    virtual void ReadCachedMetadataFromStream(BinStream&, int) = 0;
-    virtual void WriteCachedMetadataFromStream(BinStream&) const = 0;
+    virtual void ReadCachedMetadataFromStream(BinStream &, int) = 0;
+    virtual void WriteCachedMetadataFromStream(BinStream &) const = 0;
 
     bool HasSong(int) const;
     bool HasSong(Symbol, bool) const;
 
-    SongInfo* SongAudioData(Symbol) const;
-    
-    const char* ContentName(int) const;
-    const char* ContentName(Symbol, bool) const;
+    SongInfo *SongAudioData(Symbol) const;
+
+    const char *ContentName(int) const;
+    const char *ContentName(Symbol, bool) const;
     bool IsSongCacheWriteDone() const;
     bool IsSongMounted(Symbol) const;
     void ClearFromCache(Symbol);
@@ -71,36 +72,36 @@ public:
     void DumpSongMgrContents(bool);
     void SetState(SongMgrState);
     void StartSongCacheWrite();
-    bool SaveCachedSongInfo(BufStream&);
-    bool LoadCachedSongInfo(BufStream&);
+    bool SaveCachedSongInfo(BufStream &);
+    bool LoadCachedSongInfo(BufStream &);
     int GetCachedSongInfoSize() const;
-    const char* GetCachedSongInfoName() const;
-    void GetSongsInContent(Symbol, std::vector<int>&) const;
-    void CacheSongData(DataArray*, DataLoader*, ContentLocT, Symbol);
+    const char *GetCachedSongInfoName() const;
+    void GetSongsInContent(Symbol, std::vector<int> &) const;
+    void CacheSongData(DataArray *, DataLoader *, ContentLocT, Symbol);
 
     void SaveWrite();
     void SaveMount();
     void SaveUnmount();
 
-    bool SongIDInContent(Symbol key){
+    bool SongIDInContent(Symbol key) {
         return mSongIDsInContent.find(key) != mSongIDsInContent.end();
     }
 
     std::set<int> mAvailableSongs; // 0x20
-    std::map<int, SongMetadata*> mUncachedSongMetadata; // 0x38
+    std::map<int, SongMetadata *> mUncachedSongMetadata; // 0x38
     SongMgrState mState; // 0x50
-    std::map<int, SongMetadata*> mCachedSongMetadata; // 0x54
+    std::map<int, SongMetadata *> mCachedSongMetadata; // 0x54
     std::map<Symbol, std::vector<int> > mSongIDsInContent; // 0x6c
     std::map<int, Symbol> mContentUsedForSong; // 0x84
     std::map<Symbol, String> unkmap5; // 0x9c
-    CacheID* mSongCacheID; // 0xb4
-    Cache* mSongCache; // 0xb8
+    CacheID *mSongCacheID; // 0xb4
+    Cache *mSongCache; // 0xb8
     bool unkbc; // 0xbc
     bool mSongCacheNeedsWrite; // 0xbd
     bool mSongCacheWriteAllowed; // 0xbe
 };
 
-int GetSongID(DataArray*, DataArray*);
-int CountSongsInArray(DataArray*);
+int GetSongID(DataArray *, DataArray *);
+int CountSongsInArray(DataArray *);
 
-extern SongMgr* TheBaseSongManger;
+extern SongMgr *TheBaseSongManger;

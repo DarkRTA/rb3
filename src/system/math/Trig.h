@@ -8,24 +8,18 @@ float Sine(float); // fn_802E2F38
 float FastSin(float); // fn_802E2FE8
 
 // fn_802DE4D4
-inline float Cosine(float f){
-    return Sine(f + 1.5707964f);
-}
+inline float Cosine(float f) { return Sine(f + 1.5707964f); }
 
-inline float DegreesToRadians(float deg) {
-    return 0.017453292f * deg;
-}
+inline float DegreesToRadians(float deg) { return 0.017453292f * deg; }
 
-inline float RadiansToDegrees(float rad) {
-    return 57.295776f * rad;
-}
+inline float RadiansToDegrees(float rad) { return 57.295776f * rad; }
 
 float LimitAng(float);
 
-DataNode DataSin(DataArray*);
-DataNode DataCos(DataArray*);
-DataNode DataTan(DataArray*);
-DataNode DataASin(DataArray*);
-DataNode DataACos(DataArray*);
-DataNode DataATan(DataArray*);
+DataNode DataSin(DataArray *);
+DataNode DataCos(DataArray *);
+DataNode DataTan(DataArray *);
+DataNode DataASin(DataArray *);
+DataNode DataACos(DataArray *);
+DataNode DataATan(DataArray *);
 void TrigInit();

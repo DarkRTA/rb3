@@ -7,8 +7,8 @@
 
 class DistEntry {
 public:
-    DistEntry(){}
-    ~DistEntry(){}
+    DistEntry() {}
+    ~DistEntry() {}
 
     float beat; // 0x0
     std::vector<Vector3> bones; // 0x4
@@ -23,13 +23,13 @@ public:
         void Resize(int, int);
         int CalcWidth();
         int CalcHeight();
-        int Width(){ return mWidth; }
-        int Height(){ return mHeight; }
-        float& operator()(int i, int j){ return mData[i + j * mWidth]; }
+        int Width() { return mWidth; }
+        int Height() { return mHeight; }
+        float &operator()(int i, int j) { return mData[i + j * mWidth]; }
 
         int mWidth; // 0x0
         int mHeight; // 0x4
-        float* mData; // 0x8
+        float *mData; // 0x8
     };
 
     class Node {
@@ -39,21 +39,22 @@ public:
         float unk8;
     };
 
-    ClipDistMap(CharClip*, CharClip*, float, float, int, const DataArray*);
-    void FindDists(float, DataArray*);
+    ClipDistMap(CharClip *, CharClip *, float, float, int, const DataArray *);
+    void FindDists(float, DataArray *);
     void FindNodes(float, float, float);
-    void SetNodes(Node*, Node*);
-    void Draw(float, float, CharDriver*);
+    void SetNodes(Node *, Node *);
+    void Draw(float, float, CharDriver *);
     float BeatA(int);
     float BeatB(int);
     bool BeatAligned(int, int);
-    void GenerateDistEntry(CharBonesMeshes&, DistEntry&, float, CharClip*, const std::vector<RndTransformable*>&);
-    CharClip* ClipA() const { return mClipA; }
-    CharClip* ClipB() const { return mClipB; }
+    void
+    GenerateDistEntry(CharBonesMeshes &, DistEntry &, float, CharClip *, const std::vector<RndTransformable *> &);
+    CharClip *ClipA() const { return mClipA; }
+    CharClip *ClipB() const { return mClipB; }
 
-    CharClip* mClipA; // 0x0
-    CharClip* mClipB; // 0x4
-    const DataArray* mWeightData; // 0x8
+    CharClip *mClipA; // 0x0
+    CharClip *mClipB; // 0x4
+    const DataArray *mWeightData; // 0x8
     float mAStart; // 0xc
     float mAEnd; // 0x10
     float mBStart; // 0x14
@@ -70,5 +71,7 @@ public:
 };
 
 struct DistMapNodeSort {
-    bool operator()(const ClipDistMap::Node& n1, const ClipDistMap::Node& n2) const { return n1.unk0 < n2.unk0 ? true : false; }
+    bool operator()(const ClipDistMap::Node &n1, const ClipDistMap::Node &n2) const {
+        return n1.unk0 < n2.unk0 ? true : false;
+    }
 };

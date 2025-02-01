@@ -8,9 +8,9 @@ public:
     DrumMixDB(int);
     ~DrumMixDB();
     void Clear();
-    bool AddMix(int, int, const char*);
-    TickedInfoCollection<String>& GetMixList(int);
-    DrumMixDB* Duplicate() const;
+    bool AddMix(int, int, const char *);
+    TickedInfoCollection<String> &GetMixList(int);
+    DrumMixDB *Duplicate() const;
 
-    std::vector<TickedInfoCollection<String>*> mMixLists; // 0x0
+    std::vector<TickedInfoCollection<String> *> mMixLists; // 0x0
 };

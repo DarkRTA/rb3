@@ -3,17 +3,11 @@
 
 INIT_REVS(SpotlightEnder)
 
-SpotlightEnder::SpotlightEnder(){
-    SetOrder(-900.0f);
-}
+SpotlightEnder::SpotlightEnder() { SetOrder(-900.0f); }
 
-SpotlightEnder::~SpotlightEnder(){
+SpotlightEnder::~SpotlightEnder() {}
 
-}
-
-void SpotlightEnder::DrawShowing(){
-    SpotlightDrawer::sCurrent->UpdateBoxMap();
-}
+void SpotlightEnder::DrawShowing() { SpotlightDrawer::sCurrent->UpdateBoxMap(); }
 
 BEGIN_LOADS(SpotlightEnder)
     LOAD_REVS(bs)

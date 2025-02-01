@@ -2,7 +2,7 @@
 #define OS_OSFUNCS_H
 #include <revolution/OS.h>
 
-extern OSThread* gMainThreadID;
+extern OSThread *gMainThreadID;
 
 inline bool MainThread() {
     bool ret = true;
@@ -11,7 +11,6 @@ inline bool MainThread() {
     return ret;
 }
 
-inline OSThread* CurrentThreadId() { return OSGetCurrentThread(); }
-
+inline OSThread *CurrentThreadId() { return OSGetCurrentThread(); }
 
 #endif

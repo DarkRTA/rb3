@@ -20,15 +20,22 @@ enum UIListArrowPosition {
 class UIListArrow : public UIListWidget {
 public:
     UIListArrow();
-    virtual ~UIListArrow(){}
+    virtual ~UIListArrow() {}
     OBJ_CLASSNAME(UIListArrow);
     OBJ_SET_TYPE(UIListArrow);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Draw(
+        const UIListWidgetDrawState &,
+        const UIListState &,
+        const Transform &,
+        UIComponent::State,
+        Box *,
+        DrawCommand
+    );
     void StartScroll(int, bool);
 
     /** "arrow mesh to draw/transform" */
@@ -50,7 +57,5 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(UIListArrow)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UIListArrow)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UIListArrow) }
 };

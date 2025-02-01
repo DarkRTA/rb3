@@ -17,23 +17,23 @@ int gIndent;
 std::list<bool> gDataArrayConditional;
 
 Symbol DataArray::gFile;
-DataFunc* DataArray::sDefaultHandler;
+DataFunc *DataArray::sDefaultHandler;
 
-DataFunc* gPreExecuteFunc;
+DataFunc *gPreExecuteFunc;
 int gPreExecuteLevel;
 
-DataArray* gCallStack[HANDLE_STACK_SIZE];
-DataArray** gCallStackPtr = gCallStack;
+DataArray *gCallStack[HANDLE_STACK_SIZE];
+DataArray **gCallStackPtr = gCallStack;
 
-char* gLinearNodesMem;
-char* gLinearNodesMemPos;
+char *gLinearNodesMem;
+char *gLinearNodesMemPos;
 int gNumLinearAllocs;
 int gLinearNodesMemSize;
 bool gNodesLinearAlloc;
 
 class DataCallStackFrame {
 public:
-    DataCallStackFrame(DataArray* arr) {
+    DataCallStackFrame(DataArray *arr) {
         MILO_ASSERT(gCallStackPtr - gCallStack < HANDLE_STACK_SIZE, 48);
         *gCallStackPtr++ = arr;
 
@@ -56,18 +56,18 @@ DECOMP_FORCEBLOCK(DataArray, (std::vector<Vector3>& v),
     v.erase(v.begin(), v.end());
 )
 
-bool strncat_tofit(char* c, int& ri, const char* cc, int i){
+bool strncat_tofit(char *c, int &ri, const char *cc, int i) {
     int len = strlen(cc);
-    if(ri + len < i){
+    if (ri + len < i) {
         strcat(&c[ri], cc);
         ri += len;
         return true;
-    }
-    else return false;
+    } else
+        return false;
 }
 
-void DataAppendStackTrace(char* msg){
-    if(gCallStackPtr <= gCallStack){
+void DataAppendStackTrace(char *msg) {
+    if (gCallStackPtr <= gCallStack) {
         return;
     }
 
@@ -76,44 +76,61 @@ void DataAppendStackTrace(char* msg){
     bool msg_full = false;
     int msg_len = strlen(msg);
 
-    for (DataArray **ptr = gCallStackPtr - 1; ptr >= gCallStack; ptr--){
-        DataArray* a = *ptr;
+    for (DataArray **ptr = gCallStackPtr - 1; ptr >= gCallStack; ptr--) {
+        DataArray *a = *ptr;
 
         String s;
-        if(a->Size() > 0){
+        if (a->Size() > 0) {
             a->Node(0).Print(s, true);
         }
 
         char visualStudioFmt[] = "\n   %s(%d):%s";
-        if(!msg_full){
-            if(!strncat_tofit(msg, msg_len, MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()), 0x400)){
+        if (!msg_full) {
+            if (!strncat_tofit(
+                    msg,
+                    msg_len,
+                    MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()),
+                    0x400
+                )) {
                 TheDebug << MakeString("%s", msg);
                 msg_full = true;
-                strcat(msg, MakeString("\n   ... %d omitted stack frames", (ptr - gCallStack) + 1));
+                strcat(
+                    msg,
+                    MakeString("\n   ... %d omitted stack frames", (ptr - gCallStack) + 1)
+                );
             }
         }
 
-        if(msg_full){
-            TheDebug << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
+        if (msg_full) {
+            TheDebug
+                << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
         }
     }
 
-    if(msg_full){
+    if (msg_full) {
         TheDebug << MakeString("\n");
     }
 }
 
-DataNode& DataArray::Node(int i) const {
+DataNode &DataArray::Node(int i) const {
     bool allgood = false;
-    if(i >= 0 && i < mSize) allgood = true;
-    if(!allgood) MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine);
+    if (i >= 0 && i < mSize)
+        allgood = true;
+    if (!allgood)
+        MILO_FAIL(
+            "Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine
+        );
     return mNodes[i];
 }
 
-DataNode& DataArray::Node(int i) {
+DataNode &DataArray::Node(int i) {
     bool allgood = false;
-    if(i >= 0 && i < mSize) allgood = true;
-    if(!allgood) MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine);
+    if (i >= 0 && i < mSize)
+        allgood = true;
+    if (!allgood)
+        MILO_FAIL(
+            "Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine
+        );
     return mNodes[i];
 }
 
@@ -173,37 +190,37 @@ void DataArray::Print(TextStream &ts, DataType type, bool b) const {
     }
 }
 
-bool DataArray::PrintUnused(TextStream& ts, DataType ty, bool b) const {
+bool DataArray::PrintUnused(TextStream &ts, DataType ty, bool b) const {
     bool ret = false;
-    for(int i = 0; i < mSize; i++){
+    for (int i = 0; i < mSize; i++) {
         ret |= mNodes[i].PrintUnused(ts, b);
     }
     return ret;
 }
 
-DECOMP_FORCEACTIVE(DataArray,
-    "gLinearNodesMemSize == 0"
-)
+DECOMP_FORCEACTIVE(DataArray, "gLinearNodesMemSize == 0")
 
-void* NodesLinearAlloc(int i){
+void *NodesLinearAlloc(int i) {
     MILO_ASSERT(gLinearNodesMemSize > 0, 264);
     gNumLinearAllocs++;
-    void* oldpos = gLinearNodesMemPos;
+    void *oldpos = gLinearNodesMemPos;
     gLinearNodesMemPos += i;
     MILO_ASSERT((gLinearNodesMemPos - &gLinearNodesMem[0]) <= gLinearNodesMemSize, 268);
     return oldpos;
 }
 
-void* NodesAlloc(int i){
-    if(gNodesLinearAlloc) return NodesLinearAlloc(i);
-    else return _MemOrPoolAlloc(i, FastPool);
+void *NodesAlloc(int i) {
+    if (gNodesLinearAlloc)
+        return NodesLinearAlloc(i);
+    else
+        return _MemOrPoolAlloc(i, FastPool);
 }
 
-inline bool AddrIsInLinearMem(void* mem) {
+inline bool AddrIsInLinearMem(void *mem) {
     return mem >= gLinearNodesMem && mem < gLinearNodesMem + gLinearNodesMemSize;
 }
 
-void NodesFree(int i, DataNode* mem){
+void NodesFree(int i, DataNode *mem) {
     MILO_ASSERT(!AddrIsInLinearMem(mem), 0x13D);
     _MemOrPoolFree(i, FastPool, mem);
 }
@@ -213,7 +230,7 @@ void DataArray::Insert(int count, const DataNode &dn) {
     int newNodeCount = mSize + 1;
     DataNode *oldNodes = mNodes; // Save all nodes pointer
     // allocate new nodes
-    mNodes = (DataNode*)NodesAlloc(newNodeCount * sizeof(DataNode));
+    mNodes = (DataNode *)NodesAlloc(newNodeCount * sizeof(DataNode));
 
     for (i = 0; i < count; i++) {
         new (&mNodes[i]) DataNode(oldNodes[i]);
@@ -241,7 +258,7 @@ void DataArray::InsertNodes(int count, const DataArray *da) {
     int newNodeCount = mSize + dacnt;
     DataNode *oldNodes = mNodes; // Save all nodes pointer
     // allocate new nodes
-    mNodes = (DataNode*)NodesAlloc(newNodeCount * sizeof(DataNode));
+    mNodes = (DataNode *)NodesAlloc(newNodeCount * sizeof(DataNode));
 
     for (i = 0; i < count; i++) {
         new (&mNodes[i]) DataNode(oldNodes[i]);
@@ -264,7 +281,7 @@ void DataArray::InsertNodes(int count, const DataArray *da) {
 // fn_80315F74
 void DataArray::Resize(int i) {
     DataNode *oldNodes = mNodes;
-    mNodes = (DataNode*)NodesAlloc(i * sizeof(DataNode));
+    mNodes = (DataNode *)NodesAlloc(i * sizeof(DataNode));
     int min = Min<int>(mSize, i);
     int cnt = 0;
     for (cnt = 0; cnt < min; cnt++) {
@@ -285,7 +302,7 @@ void DataArray::Remove(int index) {
     MILO_ASSERT(index < mSize, 0x1B0);
     DataNode *oldNodes = mNodes;
     int newCnt = mSize - 1;
-    mNodes = (DataNode*)NodesAlloc(newCnt * sizeof(DataNode));
+    mNodes = (DataNode *)NodesAlloc(newCnt * sizeof(DataNode));
     int cnt = 0;
     for (cnt = 0; cnt < index; cnt++) {
         new (&mNodes[cnt]) DataNode(oldNodes[cnt]);
@@ -320,37 +337,38 @@ bool DataArray::Contains(const DataNode &dn) const {
     return false;
 }
 
-DataArray* DataArray::FindArray(int tag, bool fail) const {
-    DataNode* dn;
-    DataNode* dn_end = &mNodes[mSize];
-    for(dn = mNodes; dn < dn_end; dn++){
-        if(dn->Type() == kDataArray){
-            const DataArray* arr = dn->mValue.array;
-            if(arr->UncheckedInt(0) == tag){
-                return (DataArray*)arr;
+DataArray *DataArray::FindArray(int tag, bool fail) const {
+    DataNode *dn;
+    DataNode *dn_end = &mNodes[mSize];
+    for (dn = mNodes; dn < dn_end; dn++) {
+        if (dn->Type() == kDataArray) {
+            const DataArray *arr = dn->mValue.array;
+            if (arr->UncheckedInt(0) == tag) {
+                return (DataArray *)arr;
             }
         }
     }
-    if(fail) MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
+    if (fail)
+        MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
     return 0;
 }
 
-DataArray* DataArray::FindArray(Symbol tag, bool fail) const {
-    DataArray* found = FindArray((int)tag.mStr, false);
-    if(found == 0 && fail) MILO_FAIL("Couldn't find '%s' in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine);
+DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
+    DataArray *found = FindArray((int)tag.mStr, false);
+    if (found == 0 && fail)
+        MILO_FAIL(
+            "Couldn't find '%s' in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine
+        );
     return found;
 }
 
 #ifdef VERSION_SZBE69_B8
-DECOMP_FORCEACTIVE(DataArray,
-    "a->Size()==3",
-    "AddrIsInLinearMem!\n"
-)
+DECOMP_FORCEACTIVE(DataArray, "a->Size()==3", "AddrIsInLinearMem!\n")
 #endif
 
 #pragma push
 #pragma force_active on
-static DataArray* FindArrayTwoSyms(DataArray* a, Symbol s1, Symbol s2){
+static DataArray *FindArrayTwoSyms(DataArray *a, Symbol s1, Symbol s2) {
     return a->FindArray(s1, s2);
 }
 
@@ -458,13 +476,13 @@ bool DataArray::FindData(Symbol s, Hmx::Color &ret, bool b) const {
     }
 }
 
-DataArray* DataArray::Clone(bool deep, bool eval, int extra){
-    DataArray* da = new DataArray(mSize + extra);
-    for(int i = 0; i < mSize; i++){
+DataArray *DataArray::Clone(bool deep, bool eval, int extra) {
+    DataArray *da = new DataArray(mSize + extra);
+    for (int i = 0; i < mSize; i++) {
         da->mNodes[i] = (eval) ? mNodes[i].Evaluate() : mNodes[i];
-        if(deep){
-            if(da->mNodes[i].Type() == kDataArray){
-                DataArray* cloned = da->mNodes[i].LiteralArray()->Clone(true, eval, 0);
+        if (deep) {
+            if (da->mNodes[i].Type() == kDataArray) {
+                DataArray *cloned = da->mNodes[i].LiteralArray()->Clone(true, eval, 0);
                 da->mNodes[i] = DataNode(cloned, kDataArray);
                 cloned->Release();
             }
@@ -475,7 +493,7 @@ DataArray* DataArray::Clone(bool deep, bool eval, int extra){
 
 DataArray::DataArray(int size)
     : mFile(), mSize(size), mRefs(1), mLine(0), mDeprecated(0) {
-    mNodes = (DataNode*)NodesAlloc(size * sizeof(DataNode));
+    mNodes = (DataNode *)NodesAlloc(size * sizeof(DataNode));
     for (int n = 0; n < size; n++) {
         new (&mNodes[n]) DataNode();
     }
@@ -483,7 +501,7 @@ DataArray::DataArray(int size)
 
 DataArray::DataArray(const void *glob, int size)
     : mFile(), mSize(-size), mRefs(1), mLine(0), mDeprecated(0) {
-    mNodes = (DataNode*)NodesAlloc(size);
+    mNodes = (DataNode *)NodesAlloc(size);
     memcpy(mNodes, glob, size);
 }
 
@@ -503,30 +521,31 @@ void DataArray::SetFileLine(Symbol s, int i) {
     mLine = i;
 }
 
-int DataArray::NodeCmp(const void* a, const void* b){
-    const DataNode* anode = (const DataNode*)a;
-    const DataNode* bnode = (const DataNode*)b;
-    switch(anode->Type()){
-        case kDataFloat:
-        case kDataInt: {
-            float a = anode->LiteralFloat();
-            float b = bnode->LiteralFloat();
-            if(a < b) return -1;
-            return a != b;
-        }
-        case kDataString:
-        case kDataSymbol:
-            return stricmp(anode->Str(), bnode->Str());
-        case kDataArray:
-            return NodeCmp(&anode->Array()->Node(0), &bnode->Array()->Node(0));
-        case kDataObject: {
-            const char* a = anode->GetObj() ? anode->GetObj()->Name() : "";
-            const char* b = bnode->GetObj() ? bnode->GetObj()->Name() : "";
-            return stricmp(a, b);
-        }
-        default:
-            MILO_WARN("could not sort array, bad type");
-            return 0;
+int DataArray::NodeCmp(const void *a, const void *b) {
+    const DataNode *anode = (const DataNode *)a;
+    const DataNode *bnode = (const DataNode *)b;
+    switch (anode->Type()) {
+    case kDataFloat:
+    case kDataInt: {
+        float a = anode->LiteralFloat();
+        float b = bnode->LiteralFloat();
+        if (a < b)
+            return -1;
+        return a != b;
+    }
+    case kDataString:
+    case kDataSymbol:
+        return stricmp(anode->Str(), bnode->Str());
+    case kDataArray:
+        return NodeCmp(&anode->Array()->Node(0), &bnode->Array()->Node(0));
+    case kDataObject: {
+        const char *a = anode->GetObj() ? anode->GetObj()->Name() : "";
+        const char *b = bnode->GetObj() ? bnode->GetObj()->Name() : "";
+        return stricmp(a, b);
+    }
+    default:
+        MILO_WARN("could not sort array, bad type");
+        return 0;
     }
 }
 
@@ -536,10 +555,11 @@ void DataArray::SortNodes() {
     qsort(mNodes, mSize, 8, NodeCmp);
 }
 
-void DataArrayGlitchCB(float f, void* v){
-    DataArray* arr = (DataArray*)v;
+void DataArrayGlitchCB(float f, void *v) {
+    DataArray *arr = (DataArray *)v;
     arr->Node(0).Print(TheDebug, true);
-    TheDebug << MakeString(" took %.2f ms (File: %s Line: %d)\n", f, arr->File(), arr->Line());
+    TheDebug
+        << MakeString(" took %.2f ms (File: %s Line: %d)\n", f, arr->File(), arr->Line());
 }
 
 DataNode DataArray::Execute() {
@@ -548,41 +568,46 @@ DataNode DataArray::Execute() {
 #endif
     START_AUTO_TIMER_CALLBACK("array_exec", DataArrayGlitchCB, this);
 
-    DataNode& node = Evaluate(0);
+    DataNode &node = Evaluate(0);
     switch (node.Type()) {
-        case kDataFunc:
-            return node.mValue.func(this);
-        case kDataSymbol: {
-            Hmx::Object* object = gDataDir->FindObject(node.mValue.symbol, true);
-            if (object) {
-                return object->Handle(this, true);
-            }
+    case kDataFunc:
+        return node.mValue.func(this);
+    case kDataSymbol: {
+        Hmx::Object *object = gDataDir->FindObject(node.mValue.symbol, true);
+        if (object) {
+            return object->Handle(this, true);
+        }
 
-            std::map<Symbol, DataFunc*>::iterator func = gDataFuncs.find(STR_TO_SYM(node.mValue.symbol));
-            if (func != gDataFuncs.end()) {
-                // Cache the function into the array to optimize repeat calls
-                node = func->second;
-                return func->second(this);
-            }
+        std::map<Symbol, DataFunc *>::iterator func =
+            gDataFuncs.find(STR_TO_SYM(node.mValue.symbol));
+        if (func != gDataFuncs.end()) {
+            // Cache the function into the array to optimize repeat calls
+            node = func->second;
+            return func->second(this);
+        }
+        break;
+    }
+    case kDataObject: {
+        if (!node.mValue.object) {
+            MILO_WARN(
+                "###BAD THING HAPPENING###\n%s line %d: Trying to make a NULL object handle a message!\n###\n",
+                File(),
+                Line()
+            );
             break;
         }
-        case kDataObject: {
-            if (!node.mValue.object) {
-                MILO_WARN("###BAD THING HAPPENING###\n%s line %d: Trying to make a NULL object handle a message!\n###\n", File(), Line());
-                break;
-            }
 
-            return node.mValue.object->Handle(this, true);
+        return node.mValue.object->Handle(this, true);
+    }
+    case kDataString: {
+        Hmx::Object *object = gDataDir->FindObject(node.mValue.symbol, true);
+        if (object) {
+            return object->Handle(this, true);
         }
-        case kDataString: {
-            Hmx::Object* object = gDataDir->FindObject(node.mValue.symbol, true);
-            if (object) {
-                return object->Handle(this, true);
-            }
-            break;
-        }
-        default:
-            break;
+        break;
+    }
+    default:
+        break;
     }
 
     if (sDefaultHandler) {
@@ -596,12 +621,18 @@ DataNode DataArray::Execute() {
     Node(0).Print(s, true);
 
     String sn;
-    node.Print(sn,  true);
+    node.Print(sn, true);
 
     if (s == sn) {
         MILO_WARN("%s not function or object (file %s, line %d)", s.c_str(), mFile, mLine);
     } else {
-        MILO_WARN("%s = %s not function or object (file %s, line %d)", s.c_str(), sn.c_str(), mFile, mLine);
+        MILO_WARN(
+            "%s = %s not function or object (file %s, line %d)",
+            s.c_str(),
+            sn.c_str(),
+            mFile,
+            mLine
+        );
     }
 
     return 0;
@@ -615,13 +646,16 @@ void DataArray::Save(BinStream &bs) const {
 }
 
 bool DataArrayDefined() {
-    for (std::list<bool>::iterator it = gDataArrayConditional.begin(); it != gDataArrayConditional.end(); it++) {
-        if (*it == false) return false;
+    for (std::list<bool>::iterator it = gDataArrayConditional.begin();
+         it != gDataArrayConditional.end();
+         it++) {
+        if (*it == false)
+            return false;
     }
     return true;
 }
 
-void DataArray::Load(BinStream& bs) {
+void DataArray::Load(BinStream &bs) {
     mFile = gFile;
 
     short size;
@@ -632,17 +666,20 @@ void DataArray::Load(BinStream& bs) {
     bs >> mDeprecated;
 
     for (int i = 0; i < size;) {
-        DataNode& node = mNodes[i];
+        DataNode &node = mNodes[i];
         bs >> node;
-        if (!DataArrayDefined() && (node.Type() < kDataIfdef || node.Type() > kDataEndif || node.Type() > kDataIfndef)) {
+        if (!DataArrayDefined()
+            && (node.Type() < kDataIfdef || node.Type() > kDataEndif
+                || node.Type() > kDataIfndef)) {
             if (node.Type() != kDataIfndef) {
                 size--;
                 continue;
             }
         }
 
-        DataArray* array = nullptr;
-        if (node.Type() == kDataSymbol && (array = DataGetMacro(STR_TO_SYM(node.mValue.symbol))) != 0) {
+        DataArray *array = nullptr;
+        if (node.Type() == kDataSymbol
+            && (array = DataGetMacro(STR_TO_SYM(node.mValue.symbol))) != 0) {
             size += array->Size() - 1;
             MemDoTempAllocations(true, false), Resize(size);
 
@@ -654,92 +691,101 @@ void DataArray::Load(BinStream& bs) {
         }
 
         switch (node.Type()) {
-            case kDataAutorun: {
-                DataNode command;
-                bs >> command;
-                command.Command(this)->Execute();
-                size -= 2;
-                break;
-            }
-            case kDataDefine: {
-                DataNode macro;
-                bs >> macro;
-                DataSetMacro(STR_TO_SYM(node.mValue.symbol), macro.Array(this));
-                size -= 2;
-                break;
-            }
-            case kDataUndef: {
-                DataSetMacro(STR_TO_SYM(node.mValue.symbol), nullptr);
-                size -= 1;
-                break;
-            }
+        case kDataAutorun: {
+            DataNode command;
+            bs >> command;
+            command.Command(this)->Execute();
+            size -= 2;
+            break;
+        }
+        case kDataDefine: {
+            DataNode macro;
+            bs >> macro;
+            DataSetMacro(STR_TO_SYM(node.mValue.symbol), macro.Array(this));
+            size -= 2;
+            break;
+        }
+        case kDataUndef: {
+            DataSetMacro(STR_TO_SYM(node.mValue.symbol), nullptr);
+            size -= 1;
+            break;
+        }
 
-            case kDataIfdef: {
-                gDataArrayConditional.push_back(DataGetMacro(STR_TO_SYM(node.mValue.symbol)) != nullptr);
-                size -= 1;
-                break;
-            }
-            case kDataIfndef: {
-                gDataArrayConditional.push_back(DataGetMacro(STR_TO_SYM(node.mValue.symbol)) == nullptr);
-                size -= 1;
-                break;
-            }
-            case kDataElse: {
-                gDataArrayConditional.back() = !gDataArrayConditional.back();
-                size -= 1;
-                break;
-            }
-            case kDataEndif: {
-                gDataArrayConditional.pop_back();
-                size -= 1;
-                break;
-            }
+        case kDataIfdef: {
+            gDataArrayConditional.push_back(
+                DataGetMacro(STR_TO_SYM(node.mValue.symbol)) != nullptr
+            );
+            size -= 1;
+            break;
+        }
+        case kDataIfndef: {
+            gDataArrayConditional.push_back(
+                DataGetMacro(STR_TO_SYM(node.mValue.symbol)) == nullptr
+            );
+            size -= 1;
+            break;
+        }
+        case kDataElse: {
+            gDataArrayConditional.back() = !gDataArrayConditional.back();
+            size -= 1;
+            break;
+        }
+        case kDataEndif: {
+            gDataArrayConditional.pop_back();
+            size -= 1;
+            break;
+        }
 
-            case kDataInclude:
-            case kDataMerge: {
-                const char* path = node.mValue.symbol;
-                bool readFile = false;
-                DataArray* macro = DataGetMacro(path);
+        case kDataInclude:
+        case kDataMerge: {
+            const char *path = node.mValue.symbol;
+            bool readFile = false;
+            DataArray *macro = DataGetMacro(path);
+            if (!macro) {
+                path = FileMakePath(FileGetPath(mFile.mStr, nullptr), path, nullptr);
+                macro = DataReadFile(path, true);
+                readFile = true;
                 if (!macro) {
-                    path = FileMakePath(FileGetPath(mFile.mStr, nullptr), path, nullptr);
-                    macro = DataReadFile(path, true);
-                    readFile = true;
-                    if (!macro) {
-                        MILO_FAIL("Couldn't open embedded file: %s (file %s, line %d)", path, mFile.Str(), mLine);
-                    }
+                    MILO_FAIL(
+                        "Couldn't open embedded file: %s (file %s, line %d)",
+                        path,
+                        mFile.Str(),
+                        mLine
+                    );
                 }
-
-                if (node.Type() == kDataInclude) {
-                    size += macro->Size() - 1;
-                    MemDoTempAllocations(true, false), Resize(size);
-                    for (int j = 0; j < array->Size(); j++) {
-                        mNodes[i++] = array->Node(j);
-                    }
-                } else {
-                    if (macro->Size() == 0) {
-                        MILO_FAIL("Empty merge file (possibly a re-included file): %s", path);
-                    }
-
-                    int remaining = size - i - 1;
-                    MemDoTempAllocations(true, false), Resize(i);
-                    DataMergeTags(this, macro);
-
-                    i = mSize;
-                    size = mSize + remaining;
-                    MemDoTempAllocations(true, false), Resize(size);
-                }
-
-                if (readFile) {
-                    macro->Release();
-                }
-
-                gFile = mFile;
-                break;
             }
 
-            default:
-                i++;
-                break;
+            if (node.Type() == kDataInclude) {
+                size += macro->Size() - 1;
+                MemDoTempAllocations(true, false), Resize(size);
+                for (int j = 0; j < array->Size(); j++) {
+                    mNodes[i++] = array->Node(j);
+                }
+            } else {
+                if (macro->Size() == 0) {
+                    MILO_FAIL("Empty merge file (possibly a re-included file): %s", path);
+                }
+
+                int remaining = size - i - 1;
+                MemDoTempAllocations(true, false), Resize(i);
+                DataMergeTags(this, macro);
+
+                i = mSize;
+                size = mSize + remaining;
+                MemDoTempAllocations(true, false), Resize(size);
+            }
+
+            if (readFile) {
+                macro->Release();
+            }
+
+            gFile = mFile;
+            break;
+        }
+
+        default:
+            i++;
+            break;
         }
     }
 
@@ -765,28 +811,28 @@ void DataArray::LoadGlob(BinStream &bs, bool b) {
     if (b) {
         bs >> v;
         mSize = -(v + 1);
-        mNodes = (DataNode*)NodesAlloc(-mSize);
+        mNodes = (DataNode *)NodesAlloc(-mSize);
         bs.Read(mNodes, v);
-        ((unsigned char*)mNodes)[v] = 0;
+        ((unsigned char *)mNodes)[v] = 0;
     } else {
         bs >> mSize;
-        mNodes = (DataNode*)NodesAlloc(-mSize);
+        mNodes = (DataNode *)NodesAlloc(-mSize);
         bs.Read(mNodes, -mSize);
     }
 }
 
-void DataArray::SetFile(Symbol s){
-    gFile = s;
-}
+void DataArray::SetFile(Symbol s) { gFile = s; }
 
-DataNode DataArray::ExecuteBlock(int len){
-    for(; len < mSize - 1; len++){
+DataNode DataArray::ExecuteBlock(int len) {
+    for (; len < mSize - 1; len++) {
         Command(len)->Execute();
     }
     return Evaluate(len);
 }
 
-DataNode DataArray::ExecuteScript(int index, Hmx::Object *obj, const DataArray *_args, int _argStart) {
+DataNode DataArray::ExecuteScript(
+    int index, Hmx::Object *obj, const DataArray *_args, int _argStart
+) {
 #ifdef MILO_DEBUG
     DataCallStackFrame frame(this);
 #endif
@@ -795,7 +841,7 @@ DataNode DataArray::ExecuteScript(int index, Hmx::Object *obj, const DataArray *
     int size = mSize;
 
     if (index < (size - 1) && mNodes[index].Type() == kDataArray) {
-        DataArray* arr = mNodes[index].mValue.array;
+        DataArray *arr = mNodes[index].mValue.array;
         numVars = arr->Size();
         MILO_ASSERT(_args != NULL || numVars == 0, 0x565);
 
@@ -824,9 +870,11 @@ DataNode DataArray::ExecuteScript(int index, Hmx::Object *obj, const DataArray *
     return ret;
 }
 
-TextStream& operator<<(TextStream& ts, const DataArray* da){
-    if(da) da->Print(ts, kDataArray, false);
-    else ts << "<null>";
+TextStream &operator<<(TextStream &ts, const DataArray *da) {
+    if (da)
+        da->Print(ts, kDataArray, false);
+    else
+        ts << "<null>";
     return ts;
 }
 

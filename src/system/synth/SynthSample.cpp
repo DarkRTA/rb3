@@ -6,54 +6,51 @@
 
 INIT_REVS(SynthSample)
 
-void* SynthSample::SampleAlloc(int i, const char*){
-    return _MemAlloc(i, 0x20);
-}
+void *SynthSample::SampleAlloc(int i, const char *) { return _MemAlloc(i, 0x20); }
 
-void SynthSample::SampleFree(void* v){ _MemFree(v); }
+void SynthSample::SampleFree(void *v) { _MemFree(v); }
 
-void SynthSample::Init(){
+void SynthSample::Init() {
     Register();
     SampleData::SetAllocator(SampleAlloc, SampleFree);
 }
 
-SynthSample::SynthSample() : mIsLooped(0), mLoopStartSamp(0), mLoopEndSamp(-1), mFileLoader(0) {
+SynthSample::SynthSample()
+    : mIsLooped(0), mLoopStartSamp(0), mLoopEndSamp(-1), mFileLoader(0) {}
 
-}
-
-SynthSample::~SynthSample(){
-    RELEASE(mFileLoader);
-}
+SynthSample::~SynthSample() { RELEASE(mFileLoader); }
 
 int SynthSample::GetSampleRate() const { return mSampleData.GetSampleRate(); }
 SampleData::Format SynthSample::GetFormat() const { return mSampleData.GetFormat(); }
 bool SynthSample::GetIsLooped() const { return mIsLooped; }
 int SynthSample::GetLoopStartSamp() const { return mLoopStartSamp; }
 
-void SynthSample::Sync(SynthSample::SyncType ty){
-    if(ty == sync3){
-        void* buf = (void*)mFileLoader->GetBuffer(0);
+void SynthSample::Sync(SynthSample::SyncType ty) {
+    if (ty == sync3) {
+        void *buf = (void *)mFileLoader->GetBuffer(0);
         int size = mFileLoader->GetSize();
         RELEASE(mFileLoader);
         BufStream bufs(buf, size, true);
         mSampleData.Load(bufs, mFile);
-        if(buf) _MemFree(buf);
-    }
-    else if(ty == sync0){
+        if (buf)
+            _MemFree(buf);
+    } else if (ty == sync0) {
         mSampleData.Reset();
-        if(!mFile.empty()){
-            FileLoader* fl = dynamic_cast<FileLoader*>(TheLoadMgr.ForceGetLoader(mFile));
-            const char* buf;
+        if (!mFile.empty()) {
+            FileLoader *fl = dynamic_cast<FileLoader *>(TheLoadMgr.ForceGetLoader(mFile));
+            const char *buf;
             int size;
-            if(fl) buf = fl->GetBuffer(&size);
-            else buf = 0;
+            if (fl)
+                buf = fl->GetBuffer(&size);
+            else
+                buf = 0;
             delete fl;
-            if(buf){
-                BufStream bufs((void*)buf, size, true);
-                if(TheLoadMgr.GetPlatform() == kPlatformPC){
+            if (buf) {
+                BufStream bufs((void *)buf, size, true);
+                if (TheLoadMgr.GetPlatform() == kPlatformPC) {
                     mSampleData.LoadWAV(bufs, mFile);
-                }
-                else mSampleData.Load(bufs, mFile);
+                } else
+                    mSampleData.Load(bufs, mFile);
                 delete buf;
             }
         }
@@ -67,37 +64,41 @@ BEGIN_LOADS(SynthSample)
     PostLoad(bs);
 END_LOADS
 
-void SynthSample::PreLoad(BinStream& bs){
+void SynthSample::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(5, 1)
-    if(gRev > 1) LOAD_SUPERCLASS(Hmx::Object)
+    if (gRev > 1)
+        LOAD_SUPERCLASS(Hmx::Object)
     bs >> mFile;
     bs >> mIsLooped;
     bs >> mLoopStartSamp;
-    if(gRev >= 3) bs >> mLoopEndSamp;
-    if(!bs.Cached() || gRev < 5){
+    if (gRev >= 3)
+        bs >> mLoopEndSamp;
+    if (!bs.Cached() || gRev < 5) {
         if (gRev > 3) {
-            mFileLoader = dynamic_cast<FileLoader*>(TheLoadMgr.AddLoader(mFile, kLoadFront));
+            mFileLoader =
+                dynamic_cast<FileLoader *>(TheLoadMgr.AddLoader(mFile, kLoadFront));
         }
-    }
-    else if (gAltRev != 0) {
+    } else if (gAltRev != 0) {
         CacheResourceResult res;
-        mFileLoader = new FileLoader(mFile, CacheWav(mFile.c_str(), res), kLoadFront, 0, false, true, &bs);
-    }
-    else mSampleData.Load(bs, mFile);
+        mFileLoader = new FileLoader(
+            mFile, CacheWav(mFile.c_str(), res), kLoadFront, 0, false, true, &bs
+        );
+    } else
+        mSampleData.Load(bs, mFile);
     PushRev(packRevs(gAltRev, gRev), this);
 }
 
-void SynthSample::PostLoad(BinStream& bs){
+void SynthSample::PostLoad(BinStream &bs) {
     int revs = PopRev(this);
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
     SyncType ty;
-    if(bs.Cached()){
+    if (bs.Cached()) {
         ty = sync2;
-        if(gAltRev != 0) ty = sync3;
-    }
-    else {
+        if (gAltRev != 0)
+            ty = sync3;
+    } else {
         mFileLoader = 0;
         ty = sync0;
     }
@@ -108,7 +109,7 @@ BEGIN_COPYS(SynthSample)
     COPY_SUPERCLASS(Hmx::Object)
     CREATE_COPY(SynthSample)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mFile)
             COPY_MEMBER(mIsLooped)
             COPY_MEMBER(mLoopStartSamp)
@@ -138,11 +139,15 @@ BEGIN_PROPSYNCS(SynthSample)
     SYNC_PROP_MODIFY(looped, mIsLooped, Sync(sync1))
     SYNC_PROP_MODIFY(loop_start_sample, mLoopStartSamp, Sync(sync1))
     SYNC_PROP_MODIFY(loop_end_sample, mLoopEndSamp, Sync(sync1))
-    SYNC_PROP_SET(sample_rate, mSampleData.GetSampleRate(), MILO_WARN("can't set property %s", "sample_rate"))
+    SYNC_PROP_SET(
+        sample_rate,
+        mSampleData.GetSampleRate(),
+        MILO_WARN("can't set property %s", "sample_rate")
+    )
     SYNC_PROP(markers, mSampleData.mMarkers)
 END_PROPSYNCS
 
-int SynthSample::GetPlatformSize(Platform plat){
+int SynthSample::GetPlatformSize(Platform plat) {
     return mSampleData.SizeAs(SampleData::kPCM);
 }
 

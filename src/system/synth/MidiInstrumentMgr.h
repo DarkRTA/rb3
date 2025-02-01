@@ -8,7 +8,7 @@ public:
     MidiInstrumentMgr();
     ~MidiInstrumentMgr();
     void Init();
-    void SetInstrument(MidiInstrument*);
+    void SetInstrument(MidiInstrument *);
     void UnloadInstrument();
     void Poll();
 

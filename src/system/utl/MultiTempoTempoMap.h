@@ -6,8 +6,9 @@
 class MultiTempoTempoMap : public TempoMap {
 public:
     struct TempoInfoPoint {
-        TempoInfoPoint(){}
-        TempoInfoPoint(float ms, int tick, int tempo) : mMs(ms), mTick(tick), mTempo(tempo) {}
+        TempoInfoPoint() {}
+        TempoInfoPoint(float ms, int tick, int tempo)
+            : mMs(ms), mTick(tick), mTempo(tempo) {}
         // total size: 0xC
         float mMs; // offset 0x0, size 0x4
         int mTick; // offset 0x4, size 0x4
@@ -26,15 +27,15 @@ public:
     virtual void Finalize();
     virtual void ClearLoopPoints();
     virtual void SetLoopPoints(int, int);
-    virtual int GetLoopTick(int, int&) const;
+    virtual int GetLoopTick(int, int &) const;
     virtual int GetLoopTick(int) const;
     virtual float GetTimeInLoop(float);
 
     bool AddTempoInfoPoint(int, int);
-    const TempoInfoPoint* PointForTick(float) const;
-    const TempoInfoPoint* PointForTime(float) const;
-    static bool CompareTick(float, const TempoInfoPoint&);
-    static bool CompareTime(float, const TempoInfoPoint&);
+    const TempoInfoPoint *PointForTick(float) const;
+    const TempoInfoPoint *PointForTime(float) const;
+    static bool CompareTick(float, const TempoInfoPoint &);
+    static bool CompareTime(float, const TempoInfoPoint &);
 
     std::vector<TempoInfoPoint> mTempoPoints; // 0x4
     float mStartLoopTick; // 0xc

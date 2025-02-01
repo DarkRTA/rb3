@@ -3,9 +3,7 @@
 #include <stdio.h>
 #define SNPRINTF snprintf
 
-TextStream::TextStream() {
-
-}
+TextStream::TextStream() {}
 
 TextStream &TextStream::operator<<(char i) {
     char buf[1024];

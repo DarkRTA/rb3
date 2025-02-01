@@ -1,11 +1,11 @@
-#ifndef HX_APP_H
-#define HX_APP_H
+#pragma once
 
 /**
  * @brief Base class for all Milo engine executables.
  */
-class App { public:
-    App(int, char**);
+class App {
+public:
+    App(int, char **);
     ~App();
 
     void Run();
@@ -14,5 +14,3 @@ class App { public:
     void DrawRegular();
     void CaptureHiRes();
 };
-
-#endif // HX_APP_H

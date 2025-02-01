@@ -5,13 +5,11 @@
 
 INIT_REVS(FxSendMeterEffect);
 
-FxSendMeterEffect::FxSendMeterEffect() : mResetPeaks(0) {
-    
-}
+FxSendMeterEffect::FxSendMeterEffect() : mResetPeaks(0) {}
 
 SAVE_OBJ(FxSendMeterEffect, 0x15);
 
-void FxSendMeterEffect::Load(BinStream& bs){
+void FxSendMeterEffect::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     FxSend::Load(bs);
@@ -23,8 +21,9 @@ BEGIN_COPYS(FxSendMeterEffect)
     CREATE_COPY(FxSendMeterEffect)
 END_COPYS
 
-float FxSendMeterEffect::ChannelData(int idx){
-    if(mChannels.size() == 0) return 0.0f;
+float FxSendMeterEffect::ChannelData(int idx) {
+    if (mChannels.size() == 0)
+        return 0.0f;
     return mChannels[Min<int>(idx, mChannels.size() - 1)].unk4;
 }
 

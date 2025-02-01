@@ -1,11 +1,8 @@
-#ifndef BANDTRACK_TAIL_H
-#define BANDTRACK_TAIL_H
+#pragma once
 
 class Tail {
-    public:
+public:
     void Hit();
     void Release();
     void Done();
 };
-
-#endif // BANDTRACK_TAIL_H

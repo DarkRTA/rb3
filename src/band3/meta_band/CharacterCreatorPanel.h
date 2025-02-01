@@ -39,7 +39,7 @@ public:
     CharacterCreatorPanel();
     OBJ_CLASSNAME(CharacterCreatorPanel);
     OBJ_SET_TYPE(CharacterCreatorPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~CharacterCreatorPanel();
     virtual void Enter();
     virtual void Exit();
@@ -47,7 +47,7 @@ public:
     virtual void Load();
     virtual void Unload();
     virtual void FinishLoad();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
     void CreateNewCharacter();
     void AddGridThumbnails(Symbol);
@@ -56,11 +56,11 @@ public:
     void SetProviders();
     void HandleGenderChanged();
     void SetCharCreatorState(CharCreatorState);
-    LocalBandUser* GetUser();
-    void SetName(const char*);
+    LocalBandUser *GetUser();
+    void SetName(const char *);
     void UpdateNameLabel();
-    const char* GetName();
-    const char* GetDefaultVKName();
+    const char *GetName();
+    const char *GetDefaultVKName();
     void SetOutfit(Symbol);
     void SetEyeColor(int);
     int GetEyeColor();
@@ -93,28 +93,28 @@ public:
     void SetIsWaitingToFinalize(bool);
     void SetFocusComponent(CharCreatorState, Symbol);
     void StoreFocusComponent();
-    UIComponent* GetFocusComponent();
+    UIComponent *GetFocusComponent();
     Symbol GetGender() const { return mGender; }
-    Symbol GetOutfit(){ return mOutfit; }
+    Symbol GetOutfit() { return mOutfit; }
     CharCreatorState GetCharCreatorState() const { return mCharCreatorState; }
 
-    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const ButtonDownMsg &);
     DataNode LeaveState();
 
     static CharCreatorState sCancelStates[18];
 
     CharCreatorState mCharCreatorState; // 0x4C
-    std::map<int, UIComponent*> mFocusComponents; // 0x50
-    ClosetMgr* mClosetMgr; // 0x68
-    TourCharLocal* mCharacter; // 0x6c
-    BandCharDesc* mPreviewDesc; // 0x70
-    FaceTypeProvider* mFaceTypeProvider; // 0x74
-    OutfitProvider* mOutfitProvider; // 0x78
-    FaceHairProvider* mFaceHairProvider; // 0x7c
-    FaceOptionsProvider* mFaceOptionsProvider; // 0x80
-    UIGridProvider* mFaceOptionsGridProvider; // 0x84
-    EyebrowsProvider* mEyebrowsProvider; // 0x88
-    UIGridProvider* mEyebrowsGridProvider; // 0x8c
+    std::map<int, UIComponent *> mFocusComponents; // 0x50
+    ClosetMgr *mClosetMgr; // 0x68
+    TourCharLocal *mCharacter; // 0x6c
+    BandCharDesc *mPreviewDesc; // 0x70
+    FaceTypeProvider *mFaceTypeProvider; // 0x74
+    OutfitProvider *mOutfitProvider; // 0x78
+    FaceHairProvider *mFaceHairProvider; // 0x7c
+    FaceOptionsProvider *mFaceOptionsProvider; // 0x80
+    UIGridProvider *mFaceOptionsGridProvider; // 0x84
+    EyebrowsProvider *mEyebrowsProvider; // 0x88
+    UIGridProvider *mEyebrowsGridProvider; // 0x8c
     Symbol mGender; // 0x90
     Symbol mOutfit; // 0x94
     bool mGenderChanged; // 0x98

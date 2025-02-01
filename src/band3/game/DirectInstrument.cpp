@@ -3,10 +3,11 @@
 #include "synth/MidiInstrument.h"
 #include "synth/Synth.h"
 
-DirectInstrument::DirectInstrument() : mVolume(127), mInstrument(nullptr), mFader(nullptr) {
-    DataArray* sounddotinstruments = SystemConfig("sound", "instruments");
+DirectInstrument::DirectInstrument()
+    : mVolume(127), mInstrument(nullptr), mFader(nullptr) {
+    DataArray *sounddotinstruments = SystemConfig("sound", "instruments");
     Symbol chamberlin("chamberlin");
-    const char* path = sounddotinstruments->FindArray(chamberlin, true)->Str(1);
+    const char *path = sounddotinstruments->FindArray(chamberlin, true)->Str(1);
     Symbol s("direct_instrument_volume");
     mVolume = SystemConfig("sound")->FindArray(s, true)->Int(1);
     FilePath fp(".", path);
@@ -15,13 +16,9 @@ DirectInstrument::DirectInstrument() : mVolume(127), mInstrument(nullptr), mFade
 
 DirectInstrument::~DirectInstrument() { Disable(); }
 
-bool DirectInstrument::IsLoaded() {
-    return mDir.IsLoaded();
-}
+bool DirectInstrument::IsLoaded() { return mDir.IsLoaded(); }
 
-void DirectInstrument::PostLoad() {
-    mDir.PostLoad(NULL);
-}
+void DirectInstrument::PostLoad() { mDir.PostLoad(NULL); }
 
 void DirectInstrument::Enable() {
     if (mInstrument == 0) {
@@ -42,21 +39,15 @@ void DirectInstrument::Disable() {
     mInstrument = nullptr;
 }
 
-bool DirectInstrument::Enabled() const {
-    return mInstrument;
-}
+bool DirectInstrument::Enabled() const { return mInstrument; }
 
-void DirectInstrument::SetVolume(int vol) {
-    mVolume = vol;
-}
+void DirectInstrument::SetVolume(int vol) { mVolume = vol; }
 
 void DirectInstrument::NoteOn(int note_id) {
     mInstrument->PressNote(note_id, mVolume, -1, -1);
 }
 
-void DirectInstrument::NoteOff(int note_id) {
-    mInstrument->ReleaseNote(note_id);
-}
+void DirectInstrument::NoteOff(int note_id) { mInstrument->ReleaseNote(note_id); }
 
 void DirectInstrument::PlayNote(int note_id, int duration) {
     mInstrument->PlayNote(note_id, mVolume, duration);

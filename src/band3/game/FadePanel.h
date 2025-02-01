@@ -7,18 +7,18 @@
 class FadePanel : public UIPanel {
 public:
     FadePanel();
-    virtual ~FadePanel(){}
+    virtual ~FadePanel() {}
     OBJ_CLASSNAME(FadePanel)
     OBJ_SET_TYPE(FadePanel)
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     virtual void Unload();
     virtual void Enter();
     virtual void Poll();
     virtual void Draw();
 
-    void StartFade(float, const Hmx::Color& color, bool fade_synth, bool fade_out);
-    DataNode OnStartFade(DataArray*);
+    void StartFade(float, const Hmx::Color &color, bool fade_synth, bool fade_out);
+    DataNode OnStartFade(DataArray *);
 
     u8 unk_0x38;
     Timer mTimer; // 0x40

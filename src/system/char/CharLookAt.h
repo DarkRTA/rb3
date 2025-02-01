@@ -11,15 +11,15 @@ public:
     CharLookAt();
     virtual ~CharLookAt();
     virtual void Highlight();
-    virtual void Poll();    
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void Poll();
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     OBJ_CLASSNAME(CharLookAt);
     OBJ_SET_TYPE(CharLookAt);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void Enter();
 
     void SyncLimits();
@@ -27,22 +27,20 @@ public:
     void SetMaxYaw(float);
     void SetMinPitch(float);
     void SetMaxPitch(float);
-    RndTransformable* GetSource() const {
-        const ObjPtr<RndTransformable>& ptr = mSource ? mSource : mPivot;
+    RndTransformable *GetSource() const {
+        const ObjPtr<RndTransformable> &ptr = mSource ? mSource : mPivot;
         return ptr;
     }
-    RndTransformable* GetDest() const { return mDest; }
+    RndTransformable *GetDest() const { return mDest; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharLookAt)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharLookAt)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharLookAt) }
 
     static bool sDisableJitter;
-    
+
     ObjPtr<RndTransformable> mSource; // 0x28
     ObjPtr<RndTransformable> mPivot; // 0x34
     ObjPtr<RndTransformable> mDest; // 0x40
@@ -70,5 +68,4 @@ public:
     bool mEnableJitter; // 0xb2
     float mYawJitterLimit; // 0xb4
     float mPitchJitterLimit; // 0xb8
-
 };

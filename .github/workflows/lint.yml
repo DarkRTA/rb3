@@ -1,0 +1,50 @@
+name: lint
+
+on:
+  pull_request:
+    paths:
+      - '**.hpp'
+      - '**.cpp'
+      - '**.h'
+      - '**.c'
+      - '**.clang-format'
+      - '**.clang-tidy'
+  push:
+    paths:
+      - '**.hpp'
+      - '**.cpp'
+      - '**.h'
+      - '**.c'
+      - '**.clang-format'
+      - '**.clang-tidy'
+
+permissions:
+  contents: read
+
+jobs:
+  check-format:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        path:
+          - check: 'src/band3'
+            exclude: ''
+          - check: 'src/network'
+            exclude: '(json-c)'
+          - check: 'src/system/bandobj'
+            exclude: ''
+          - check: 'src/system/char'
+            exclude: ''
+          - check: 'src/system/rndobj'
+            exclude: ''
+          - check: 'src/system'
+            exclude: '(stlport|sdk|zlib|strips|soundtouch|oggvorbis|tomcrypt|speex|bandobj|char|rndobj)'
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v4
+    - uses: jidicula/clang-format-action@v4.14.0
+      with:
+        clang-format-version: '19'
+        check-path: ${{ matrix.path['check'] }}
+        exclude-regex: ${{ matrix.path['exclude'] }}
+        fallback-style: 'none'

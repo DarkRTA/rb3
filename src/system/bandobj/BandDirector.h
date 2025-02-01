@@ -16,37 +16,37 @@ public:
     public:
         VenueLoader();
         virtual ~VenueLoader();
-        virtual void FinishLoading(Loader*);
-        virtual const char* StateName() const { return "VenueLoader"; }
+        virtual void FinishLoading(Loader *);
+        virtual const char *StateName() const { return "VenueLoader"; }
 
         void Unload(bool);
-        void Load(const FilePath&, LoaderPos, bool);
+        void Load(const FilePath &, LoaderPos, bool);
         Symbol Name() const { return mName; }
-        WorldDir* Dir() const { return mDir; }
+        WorldDir *Dir() const { return mDir; }
 
-        WorldDir* mDir; // 0x4
-        DirLoader* mLoader; // 0x8
+        WorldDir *mDir; // 0x4
+        DirLoader *mLoader; // 0x8
         Symbol mName; // 0xc
     };
     BandDirector();
     OBJ_CLASSNAME(BandDirector);
     OBJ_SET_TYPE(BandDirector);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
-    virtual void ListPollChildren(std::list<RndPollable*>&) const;
+    virtual void ListPollChildren(std::list<RndPollable *> &) const;
     virtual ~BandDirector();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     virtual void DrawShowing();
-    virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual void CollideList(const Segment&, std::list<Collision>&);
+    virtual void ListDrawChildren(std::list<RndDrawable *> &);
+    virtual void CollideList(const Segment &, std::list<Collision> &);
 
-    void VenueLoaded(WorldDir*);
+    void VenueLoaded(WorldDir *);
     void OnMidiAddPostProc(Symbol, float, float);
     bool FacingCamera(Symbol) const;
     bool BehindCamera(Symbol) const;
@@ -64,27 +64,28 @@ public:
     void SetCrowd(Symbol);
     void SetCharSpot(Symbol, Symbol);
     void SetFog(Symbol);
-    WorldDir* GetWorld();
+    WorldDir *GetWorld();
     void EnterVenue();
     void PickIntroShot();
     void FindNextShot();
     void ClearLighting();
-    bool PostProcsFromPresets(const RndPostProc*&, const RndPostProc*&, float&);
-    void UpdatePostProcOverlay(const char*, const RndPostProc*, const RndPostProc*, float);
+    bool PostProcsFromPresets(const RndPostProc *&, const RndPostProc *&, float &);
+    void
+    UpdatePostProcOverlay(const char *, const RndPostProc *, const RndPostProc *, float);
     bool ReadyForMidiParsers();
-    class BandCharacter* GetCharacter(int) const;
-    void ForceShot(BandCamShot*);
+    class BandCharacter *GetCharacter(int) const;
+    void ForceShot(BandCamShot *);
     void AddDircut(Symbol, float);
-    void FilterShot(int&);
+    void FilterShot(int &);
     Symbol GetModeInst(Symbol);
     void UnloadVenue(bool);
-    BandCamShot* FindNextDircut();
+    BandCamShot *FindNextDircut();
     void FindNextPstKeyframe(float, float, Symbol);
     void SendCurWorldMsg(Symbol, bool);
     void PlayNextShot();
 
     bool IsMusicVideo();
-    LightPresetManager* LightPresetMgr(){
+    LightPresetManager *LightPresetMgr() {
         return mCurWorld ? &mCurWorld->mPresetManager : 0;
     }
 
@@ -92,59 +93,59 @@ public:
     bool BFTB(Symbol s) const;
 
     // TODO: find a better name for this
-    bool NoWorlds(){
+    bool NoWorlds() {
         bool b1;
         bool ret;
         bool b2;
-        
+
         ret = true;
         b2 = true;
         b1 = false;
-        if(mDisablePicking || !GetWorld()) b1 = true;
-        if(!b1 && !GetWorld()->mCameraManager.HasFreeCam()){
+        if (mDisablePicking || !GetWorld())
+            b1 = true;
+        if (!b1 && !GetWorld()->mCameraManager.HasFreeCam()) {
             b2 = false;
         }
-        if(!b2 && mVenue.Dir()) ret = false;
+        if (!b2 && mVenue.Dir())
+            ret = false;
         return ret;
     }
 
-    DataNode OnFirstShotOK(DataArray*);
-    DataNode OnShotOver(DataArray*);
-    DataNode OnPostProcInterp(DataArray*);
-    DataNode OnSaveSong(DataArray*);
-    DataNode OnFileLoaded(DataArray*);
-    DataNode OnSelectCamera(DataArray*);
-    DataNode OnLightPresetInterp(DataArray*);
-    DataNode OnLightPresetKeyframeInterp(DataArray*);
-    DataNode OnCycleShot(DataArray*);
-    DataNode OnForceShot(DataArray*);
-    DataNode OnGetFaceOverrideClips(DataArray*);
-    DataNode OnDebugInterestsForNextCharacter(DataArray*);
-    DataNode OnToggleInterestDebugOverlay(DataArray*);
-    DataNode OnShotAnnotate(DataArray*);
-    DataNode OnPostProcs(DataArray*);
-    DataNode OnSetDircut(DataArray*);
-    DataNode OnForcePreset(DataArray*);
-    DataNode OnStompPresets(DataArray*);
-    DataNode OnMidiAddPreset(DataArray*);
-    DataNode OnGetCatList(DataArray*);
-    DataNode OnCopyCats(DataArray*);
-    DataNode OnLoadSong(DataArray*);
-    DataNode OnMidiShotCategory(DataArray*);
+    DataNode OnFirstShotOK(DataArray *);
+    DataNode OnShotOver(DataArray *);
+    DataNode OnPostProcInterp(DataArray *);
+    DataNode OnSaveSong(DataArray *);
+    DataNode OnFileLoaded(DataArray *);
+    DataNode OnSelectCamera(DataArray *);
+    DataNode OnLightPresetInterp(DataArray *);
+    DataNode OnLightPresetKeyframeInterp(DataArray *);
+    DataNode OnCycleShot(DataArray *);
+    DataNode OnForceShot(DataArray *);
+    DataNode OnGetFaceOverrideClips(DataArray *);
+    DataNode OnDebugInterestsForNextCharacter(DataArray *);
+    DataNode OnToggleInterestDebugOverlay(DataArray *);
+    DataNode OnShotAnnotate(DataArray *);
+    DataNode OnPostProcs(DataArray *);
+    DataNode OnSetDircut(DataArray *);
+    DataNode OnForcePreset(DataArray *);
+    DataNode OnStompPresets(DataArray *);
+    DataNode OnMidiAddPreset(DataArray *);
+    DataNode OnGetCatList(DataArray *);
+    DataNode OnCopyCats(DataArray *);
+    DataNode OnLoadSong(DataArray *);
+    DataNode OnMidiShotCategory(DataArray *);
 
     static Symbol RemapCat(Symbol, Symbol);
-    static const char* PickDist(float*, char*, char*);
+    static const char *PickDist(float *, char *, char *);
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(BandDirector);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(BandDirector); }
     static void Terminate();
 
     DECLARE_REVS;
     NEW_OBJ(BandDirector);
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
-    static DataArray* sPropArr;
+    static DataArray *sPropArr;
     static float sMotionBlurBlendAmount;
 
     ObjDirPtr<RndDir> mChars; // 0x28
@@ -173,13 +174,13 @@ public:
     float unke0; // 0xe0
     bool mDisablePicking; // 0xe4
     bool unke5; // 0xe5
-    Keys<BandCamShot*, BandCamShot*> mDircuts; // 0xe8 - Keys<BandCamShot*>
+    Keys<BandCamShot *, BandCamShot *> mDircuts; // 0xe8 - Keys<BandCamShot*>
     VenueLoader mVenue; // 0xf0
     Keys<Symbol, Symbol> unk100; // 0x100
     float unk108; // 0x108
     float mEndOfSongSec; // 0x10c
     bool unk110; // 0x110
-    BandSongPref* mSongPref; // 0x114
+    BandSongPref *mSongPref; // 0x114
 };
 
-extern BandDirector* TheBandDirector;
+extern BandDirector *TheBandDirector;

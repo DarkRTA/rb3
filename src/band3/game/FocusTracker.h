@@ -7,17 +7,16 @@
 class FocusTracker : public Tracker {
 public:
     enum FocusFlags {
-
     };
 
-    FocusTracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
+    FocusTracker(TrackerSource *, TrackerBandDisplay &, TrackerBroadcastDisplay &);
     virtual ~FocusTracker();
-    virtual void UpdateGoalValueLabel(UILabel&) const;
-    virtual void UpdateCurrentValueLabel(UILabel&) const;
+    virtual void UpdateGoalValueLabel(UILabel &) const;
+    virtual void UpdateCurrentValueLabel(UILabel &) const;
     virtual String GetPlayerContributionString(Symbol) const;
-    virtual void ConfigureTrackerSpecificData(const DataArray*);
-    virtual void HandleRemovePlayer_(Player*);
-    virtual void HandlePlayerSaved_(const TrackerPlayerID&);
+    virtual void ConfigureTrackerSpecificData(const DataArray *);
+    virtual void HandleRemovePlayer_(Player *);
+    virtual void HandlePlayerSaved_(const TrackerPlayerID &);
     virtual void HandleGameOver_(float);
     virtual void Restart_();
     virtual void FirstFrame_(float);
@@ -26,23 +25,24 @@ public:
     virtual DataArrayPtr GetTargetDescription(int) const;
     virtual float GetCurrentValue() const { return unk84; }
     virtual void SavePlayerStats() const;
-    virtual void PlayerAddEnergy(Player*, float){}
-    virtual TrackerPlayerID GetNextFocusPlayer(const TrackerPlayerID&, float, bool&) const;
-    virtual bool PlayerWantsFocus(const TrackerPlayerID&, float) const { return true; }
-    virtual void CheckCondition(float, bool, bool&, bool&) = 0;
-    virtual void FocusLeaving(FocusFlags){}
-    virtual void HandleFocusSwitch(float){}
+    virtual void PlayerAddEnergy(Player *, float) {}
+    virtual TrackerPlayerID
+    GetNextFocusPlayer(const TrackerPlayerID &, float, bool &) const;
+    virtual bool PlayerWantsFocus(const TrackerPlayerID &, float) const { return true; }
+    virtual void CheckCondition(float, bool, bool &, bool &) = 0;
+    virtual void FocusLeaving(FocusFlags) {}
+    virtual void HandleFocusSwitch(float) {}
     virtual void BroadcastFocusSuccess() const {}
     virtual void BroadcastSuccess(int) const {}
     virtual Symbol GetContributionToken(int) const;
 
-    void RemoteSetFocusPlayer(Player*, int, int, FocusFlags);
-    void SetFocusPlayer(const TrackerPlayerID&, float, FocusFlags);
-    TrackerPlayerID GetFirstFocusPlayer(bool&) const;
-    bool PlayerCanHaveFocus(const TrackerPlayerID&) const;
+    void RemoteSetFocusPlayer(Player *, int, int, FocusFlags);
+    void SetFocusPlayer(const TrackerPlayerID &, float, FocusFlags);
+    TrackerPlayerID GetFirstFocusPlayer(bool &) const;
+    bool PlayerCanHaveFocus(const TrackerPlayerID &) const;
     void ActivateFocus(float);
-    void LocalSetFocusPlayer(const TrackerPlayerID&, float, int, float, FocusFlags);
-    void SetTrackFocus(const TrackerPlayerID&, bool, FocusFlags);
+    void LocalSetFocusPlayer(const TrackerPlayerID &, float, int, float, FocusFlags);
+    void SetTrackFocus(const TrackerPlayerID &, bool, FocusFlags);
 
     float mFocusDelayMs; // 0x58
     bool mInFocusDelay; // 0x5c
@@ -63,21 +63,26 @@ public:
 
 class StreakFocusTracker : public FocusTracker {
 public:
-    StreakFocusTracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
-    virtual ~StreakFocusTracker(){}
+    StreakFocusTracker(TrackerSource *, TrackerBandDisplay &, TrackerBroadcastDisplay &);
+    virtual ~StreakFocusTracker() {}
     virtual void TranslateRelativeTargets();
-    virtual void ConfigureTrackerSpecificData(const DataArray*);
+    virtual void ConfigureTrackerSpecificData(const DataArray *);
     virtual DataArrayPtr GetBroadcastDescription() const;
-    virtual TrackerChallengeType GetChallengeType() const { return (TrackerChallengeType)3; }
-    virtual TrackerPlayerID GetNextFocusPlayer(const TrackerPlayerID&, float, bool&) const;
-    virtual bool PlayerWantsFocus(const TrackerPlayerID&, float) const;
-    virtual void CheckCondition(float, bool, bool&, bool&);
+    virtual TrackerChallengeType GetChallengeType() const {
+        return (TrackerChallengeType)3;
+    }
+    virtual TrackerPlayerID
+    GetNextFocusPlayer(const TrackerPlayerID &, float, bool &) const;
+    virtual bool PlayerWantsFocus(const TrackerPlayerID &, float) const;
+    virtual void CheckCondition(float, bool, bool &, bool &);
     virtual void HandleFocusSwitch(float);
     virtual void BroadcastFocusSuccess() const;
     virtual void BroadcastSuccess(int) const;
     virtual Symbol GetContributionToken(int fmt) const {
-        if(fmt == 1) return tour_goal_band_streak_player_contribution_format_1;
-        else return tour_goal_band_streak_player_contribution_format;
+        if (fmt == 1)
+            return tour_goal_band_streak_player_contribution_format_1;
+        else
+            return tour_goal_band_streak_player_contribution_format;
     }
 
     float unkcc;
@@ -92,14 +97,16 @@ public:
 
 class AccuracyFocusTracker : public FocusTracker {
 public:
-    AccuracyFocusTracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
-    virtual ~AccuracyFocusTracker(){}
+    AccuracyFocusTracker(TrackerSource *, TrackerBandDisplay &, TrackerBroadcastDisplay &);
+    virtual ~AccuracyFocusTracker() {}
     virtual void TranslateRelativeTargets();
-    virtual void ConfigureTrackerSpecificData(const DataArray*);
+    virtual void ConfigureTrackerSpecificData(const DataArray *);
     virtual DataArrayPtr GetBroadcastDescription() const;
-    virtual TrackerChallengeType GetChallengeType() const { return (TrackerChallengeType)1; }
-    virtual bool PlayerWantsFocus(const TrackerPlayerID&, float) const;
-    virtual void CheckCondition(float, bool, bool&, bool&);
+    virtual TrackerChallengeType GetChallengeType() const {
+        return (TrackerChallengeType)1;
+    }
+    virtual bool PlayerWantsFocus(const TrackerPlayerID &, float) const;
+    virtual void CheckCondition(float, bool, bool &, bool &);
     virtual void FocusLeaving(FocusFlags);
     virtual void HandleFocusSwitch(float);
     virtual void BroadcastFocusSuccess() const;

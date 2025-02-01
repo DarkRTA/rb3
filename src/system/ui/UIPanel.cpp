@@ -11,44 +11,50 @@
 
 int UIPanel::sMaxPanelId = 0;
 
-UIPanel::UIPanel() : mDir(0), mLoader(0), mFocusName(), mState(kUnloaded), mLoaded(0), mPaused(0), mShowing(1), mForceExit(0), mLoadRefs(0), mFilePath(), mPanelId(sMaxPanelId++) {
+UIPanel::UIPanel()
+    : mDir(0), mLoader(0), mFocusName(), mState(kUnloaded), mLoaded(0), mPaused(0),
+      mShowing(1), mForceExit(0), mLoadRefs(0), mFilePath(), mPanelId(sMaxPanelId++) {
     MILO_ASSERT(sMaxPanelId < 0x8000, 0x24);
 }
 
-class ObjectDir* UIPanel::DataDir() {
+class ObjectDir *UIPanel::DataDir() {
     if (mDir) {
         return mDir->DataDir();
     }
     return Hmx::Object::DataDir();
 }
 
-void UIPanel::SetTypeDef(DataArray* data){
-    if(TypeDef() != data){
+void UIPanel::SetTypeDef(DataArray *data) {
+    if (TypeDef() != data) {
         Hmx::Object::SetTypeDef(data);
-        if(data != 0){
+        if (data != 0) {
             data->FindData(focus, mFocusName, false);
             data->FindData(force_exit, mForceExit, false);
         }
     }
 }
 
-void UIPanel::CheckLoad(){
-    if(++mLoadRefs == 1) Load();
+void UIPanel::CheckLoad() {
+    if (++mLoadRefs == 1)
+        Load();
 }
 
-void UIPanel::CheckUnload(){
-    if(mLoadRefs >= 1){
-        if(mState == kDown){
+void UIPanel::CheckUnload() {
+    if (mLoadRefs >= 1) {
+        if (mState == kDown) {
             Handle(exit_complete_msg, false);
         }
-        if(--mLoadRefs == 0) Unload();
+        if (--mLoadRefs == 0)
+            Unload();
     }
 }
 
-void UIPanel::SetLoadedDir(class PanelDir* dir, bool b) {
+void UIPanel::SetLoadedDir(class PanelDir *dir, bool b) {
     MILO_ASSERT(!mLoader, 106);
     MILO_ASSERT(dir, 107);
-    if (mDir) { mDir->SetOwnerPanel(0); }
+    if (mDir) {
+        mDir->SetOwnerPanel(0);
+    }
     mDir = dir;
     mLoaded = b;
     mDir->SetOwnerPanel(this);
@@ -56,33 +62,36 @@ void UIPanel::SetLoadedDir(class PanelDir* dir, bool b) {
 
 void UIPanel::UnsetLoadedDir() {
     MILO_ASSERT(!mLoader, 120);
-    if (mDir) { mDir->SetOwnerPanel(0); }
+    if (mDir) {
+        mDir->SetOwnerPanel(0);
+    }
     mDir = NULL;
     mLoaded = false;
 }
 
-void UIPanel::Load(){
-    if(mState != kUnloaded) MILO_FAIL("Can't load a panel already in state %i", mState);
+void UIPanel::Load() {
+    if (mState != kUnloaded)
+        MILO_FAIL("Can't load a panel already in state %i", mState);
     HandleType(load_msg);
-    if(TypeDef()){
+    if (TypeDef()) {
         static Symbol fileSym("file");
         FilePath fp;
         LoaderPos pos = kLoadBack;
-        DataArray* found = TypeDef()->FindArray(fileSym, false);
-        if(found){
-            Hmx::Object* thisObj = DataSetThis(this);
+        DataArray *found = TypeDef()->FindArray(fileSym, false);
+        if (found) {
+            Hmx::Object *thisObj = DataSetThis(this);
             fp.Set(FileGetPath(found->File(), 0), found->Str(1));
-            if(found->Size() == 3){
+            if (found->Size() == 3) {
                 pos = (LoaderPos)found->Int(2);
             }
             DataSetThis(thisObj);
         }
         int heapInt = GetCurrentHeapNum();
-        DataArray* heapArr = TypeDef()->FindArray(heap, false);
-        if(heapArr){
+        DataArray *heapArr = TypeDef()->FindArray(heap, false);
+        if (heapArr) {
             heapInt = MemFindHeap(heapArr->Str(1));
         }
-        if(!fp.empty()){
+        if (!fp.empty()) {
             MemPushHeap(heapInt);
             MILO_ASSERT(!mLoader, 0xAD);
             mLoader = new DirLoader(fp, pos, 0, 0, 0, false);
@@ -93,25 +102,27 @@ void UIPanel::Load(){
     }
 }
 
-void UIPanel::Unload(){
+void UIPanel::Unload() {
     HandleType(unload_msg);
-    if(UIPanel::IsLoaded()){
+    if (UIPanel::IsLoaded()) {
         bool b = false;
-        if(TypeDef()){
-            DataArray* unloadArr = TypeDef()->FindArray(unload_async, false);
-            if(unloadArr){
-                if(unloadArr->Int(1) != 0) b = true;
+        if (TypeDef()) {
+            DataArray *unloadArr = TypeDef()->FindArray(unload_async, false);
+            if (unloadArr) {
+                if (unloadArr->Int(1) != 0)
+                    b = true;
             }
         }
-        if(b){
+        if (b) {
             TheLoadMgr.StartAsyncUnload();
             mFilePath.SetRoot(mDir->GetPathName());
-        }
-        else mFilePath.SetRoot(gNullStr);
+        } else
+            mFilePath.SetRoot(gNullStr);
 
         delete mDir;
         mDir = 0;
-        if(b) TheLoadMgr.FinishAsyncUnload();
+        if (b)
+            TheLoadMgr.FinishAsyncUnload();
     }
     delete mLoader;
     mLoader = 0;
@@ -120,10 +131,10 @@ void UIPanel::Unload(){
     mState = kUnloaded;
 }
 
-void UIPanel::PollForLoading(){
+void UIPanel::PollForLoading() {
     MILO_ASSERT(mState == kUnloaded, 0xE0);
-    if(mLoader && mLoader->IsLoaded()){
-        class PanelDir* pDir = dynamic_cast<class PanelDir*>(mLoader->GetDir());
+    if (mLoader && mLoader->IsLoaded()) {
+        class PanelDir *pDir = dynamic_cast<class PanelDir *>(mLoader->GetDir());
         MILO_ASSERT_FMT(pDir, "%s not PanelDir", mLoader->mFile);
         delete mLoader;
         mLoader = 0;
@@ -132,107 +143,118 @@ void UIPanel::PollForLoading(){
 }
 
 bool UIPanel::IsLoaded() const {
-    if(mState != kUnloaded) return true;
-    if(mLoader && !mLoader->IsLoaded()) return false;
-    DataNode node = const_cast<UIPanel*>(this)->HandleType(is_loaded_msg);
-    if(node.Type() != kDataUnhandled) return node.Int();
-    else return true;
+    if (mState != kUnloaded)
+        return true;
+    if (mLoader && !mLoader->IsLoaded())
+        return false;
+    DataNode node = const_cast<UIPanel *>(this)->HandleType(is_loaded_msg);
+    if (node.Type() != kDataUnhandled)
+        return node.Int();
+    else
+        return true;
 }
 
-bool UIPanel::CheckIsLoaded(){
-    if(mState != kUnloaded) return true;
+bool UIPanel::CheckIsLoaded() {
+    if (mState != kUnloaded)
+        return true;
     else {
         PollForLoading();
-        if(IsLoaded()){
+        if (IsLoaded()) {
             FinishLoad();
             return true;
-        }
-        else return false;
+        } else
+            return false;
     }
 }
 
-void UIPanel::FinishLoad(){
+void UIPanel::FinishLoad() {
     HandleType(finish_load_msg);
     MILO_ASSERT(mLoadRefs > 0, 0x118);
     mState = kDown;
 }
 
-UIComponent* UIPanel::FocusComponent(){
-    if(mDir) return mDir->FocusComponent();
-    else return 0;
+UIComponent *UIPanel::FocusComponent() {
+    if (mDir)
+        return mDir->FocusComponent();
+    else
+        return 0;
 }
 
-UIPanel::~UIPanel(){
-    Unload();
-}
+UIPanel::~UIPanel() { Unload(); }
 
 bool UIPanel::Entering() const {
-    if(mDir && !mLoaded) return mDir->Entering();
-    else return false;
+    if (mDir && !mLoaded)
+        return mDir->Entering();
+    else
+        return false;
 }
 
 bool UIPanel::Exiting() const {
-    if(mDir && !mLoaded) return mDir->Exiting();
-    else return false;
+    if (mDir && !mLoaded)
+        return mDir->Exiting();
+    else
+        return false;
 }
 
 bool UIPanel::Unloading() const {
-    if(!mFilePath.empty()){
-        if(TheLoadMgr.GetLoader(mFilePath)){
+    if (!mFilePath.empty()) {
+        if (TheLoadMgr.GetLoader(mFilePath)) {
             return true;
         }
-        const_cast<UIPanel*>(this)->mFilePath.SetRoot(gNullStr);
+        const_cast<UIPanel *>(this)->mFilePath.SetRoot(gNullStr);
     }
     return false;
 }
 
-void UIPanel::Enter(){
+void UIPanel::Enter() {
     MILO_ASSERT(mState == kDown, 0x14E);
-    if(!mFocusName.empty() && mDir){
+    if (!mFocusName.empty() && mDir) {
         SetFocusComponent(mDir->FindComponent(mFocusName.c_str()));
     }
     MILO_ASSERT(mLoadRefs > 0, 0x154);
     mState = kUp;
-    if(mDir && !mLoaded){
+    if (mDir && !mLoaded) {
         mDir->Enter();
     }
     HandleType(enter_msg);
 }
 
-void UIPanel::Exit(){
+void UIPanel::Exit() {
     MILO_ASSERT(mState == kUp, 0x165);
     bool theBool = false;
-    const DataArray* td = TypeDef();
-    if(td){
+    const DataArray *td = TypeDef();
+    if (td) {
         td->FindData("reset_focus", theBool, false);
     }
-    if(!theBool && FocusComponent()){
+    if (!theBool && FocusComponent()) {
         mFocusName = FocusComponent()->Name();
     }
     MILO_ASSERT(mLoadRefs > 0, 0x16E);
     mState = kDown;
     HandleType(exit_msg);
-    if(mDir && !mLoaded){
+    if (mDir && !mLoaded) {
         mDir->Exit();
     }
 }
 
-void UIPanel::Poll(){
+void UIPanel::Poll() {
     HandleType(poll_msg);
-    if(mDir && !mLoaded){
+    if (mDir && !mLoaded) {
         mDir->Poll();
     }
 }
 
-void UIPanel::Draw(){
-    class PanelDir* pDir = mDir;
-    if(!pDir) return;
-    if(mLoaded) return;
+void UIPanel::Draw() {
+    class PanelDir *pDir = mDir;
+    if (!pDir)
+        return;
+    if (mLoaded)
+        return;
     pDir->DrawShowing();
 }
 
-void UIPanel::SetFocusComponent(UIComponent* comp){
-    if(mDir){
+void UIPanel::SetFocusComponent(UIComponent *comp) {
+    if (mDir) {
         mDir->SetFocusComponent(comp, gNullStr);
     }
 }
@@ -261,10 +283,10 @@ BEGIN_HANDLERS(UIPanel)
     HANDLE_CHECK(450)
 END_HANDLERS
 
-DataNode UIPanel::OnLoad(DataArray* da){
+DataNode UIPanel::OnLoad(DataArray *da) {
     CheckLoad();
-    if(da->Size() > 2){
-        if(da->Int(2) && mLoader){
+    if (da->Size() > 2) {
+        if (da->Int(2) && mLoader) {
             TheLoadMgr.PollUntilLoaded(mLoader, 0);
             bool bLoaded = CheckIsLoaded();
             MILO_ASSERT(bLoaded, 0x1D1);

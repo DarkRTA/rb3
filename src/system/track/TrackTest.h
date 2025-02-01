@@ -7,13 +7,13 @@
 
 class TrackTest {
 public:
-    TrackTest(TrackDir*);
+    TrackTest(TrackDir *);
 
-    TrackDir* mDir;    
+    TrackDir *mDir;
     ObjPtr<TrackWidget, class ObjectDir> mWidget;
     int mSlot;
 };
 
-bool PropSync(TrackTest&, DataNode&, DataArray*, int, PropOp);
+bool PropSync(TrackTest &, DataNode &, DataArray *, int, PropOp);
 
 #endif // TRACK_TRACKTEST_H

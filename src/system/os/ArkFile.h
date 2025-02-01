@@ -12,21 +12,19 @@ public:
     virtual int Write(const void *, int);
     virtual int Seek(int, int);
     virtual int Tell();
-    virtual void Flush(){}
+    virtual void Flush() {}
     virtual bool Eof();
     virtual bool Fail();
     virtual int Size();
     virtual int UncompressedSize();
     virtual bool ReadDone(int &);
-    virtual int GetFileHandle(DVDFileInfo*&);
+    virtual int GetFileHandle(DVDFileInfo *&);
 
     void TaskDone(int);
-    
-    void* operator new(size_t t) {return _MemAllocTemp(t, 0);}
 
-    void operator delete(void* v){
-        _MemFree(v);
-    }
+    void *operator new(size_t t) { return _MemAllocTemp(t, 0); }
+
+    void operator delete(void *v) { _MemFree(v); }
 
     int mArkfileNum; // 0x4
     u64 mByteStart; // 0x8

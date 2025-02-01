@@ -19,6 +19,6 @@ class DirectInstrument {
 
     int mVolume;
     ObjDirPtr<ObjectDir> mDir;
-    MidiInstrument* mInstrument;
-    Fader* mFader;
+    MidiInstrument *mInstrument;
+    Fader *mFader;
 };

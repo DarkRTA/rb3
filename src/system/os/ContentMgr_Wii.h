@@ -2,7 +2,7 @@
 #include "os/ContentMgr.h"
 #include "os/ThreadCall.h"
 
-bool CntSdRsoInit(struct RSOObjectHeader*);
+bool CntSdRsoInit(struct RSOObjectHeader *);
 void CntSdRsoTerminate();
 
 // RootContent : Content
@@ -11,7 +11,7 @@ class WiiContent : public Content, public ThreadCallback {
 public:
     WiiContent(Symbol, unsigned long long, unsigned int, bool, bool);
     virtual ~WiiContent();
-    virtual const char* Root();
+    virtual const char *Root();
     virtual int OnMemcard();
     virtual ContentLocT Location();
     virtual State GetState();
@@ -24,7 +24,8 @@ public:
     virtual int ThreadStart();
     virtual void ThreadDone(int);
 
-    void Enumerate(const char*, void(*)(const char*, const char*), bool, const char*);
+    void
+    Enumerate(const char *, void (*)(const char *, const char *), bool, const char *);
 
     int unk8; // 0x8 - mState?
     Symbol mName; // 0xc
@@ -44,26 +45,26 @@ class WiiContentMgr : public ContentMgr {
 public:
     WiiContentMgr();
     virtual ~WiiContentMgr();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void PreInit();
     virtual void Init();
     virtual void Terminate();
     virtual void StartRefresh();
     virtual void PollRefresh();
     virtual bool CanRefreshOnDone();
-    virtual bool ShowCurRefreshProgress();  
+    virtual bool ShowCurRefreshProgress();
     virtual bool MountContent(Symbol);
     virtual bool IsMounted(Symbol);
     virtual bool DeleteContent(Symbol);
     virtual bool IsDeleteDone(Symbol);
-    virtual void NotifyMounted(Content*);
-    virtual void NotifyUnmounted(Content*);
-    virtual void NotifyDeleted(Content*);
-    virtual void NotifyFailed(Content*);
+    virtual void NotifyMounted(Content *);
+    virtual void NotifyUnmounted(Content *);
+    virtual void NotifyDeleted(Content *);
+    virtual void NotifyFailed(Content *);
 
     void UnmountContents(Symbol);
-    WiiContent* ContentOf(Symbol);
+    WiiContent *ContentOf(Symbol);
 };
 
 extern WiiContentMgr TheWiiContentMgr;
-extern const char* gCurContentName;
+extern const char *gCurContentName;

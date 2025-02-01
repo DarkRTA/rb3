@@ -8,23 +8,23 @@
 #include <vector>
 #include <map>
 
-#define BS_WRITE_OP(var) \
-    BinStream& operator<<(var x){ \
-        WriteEndian(&x, sizeof(var)); \
-        return *this; \
+#define BS_WRITE_OP(var)                                                                 \
+    BinStream &operator<<(var x) {                                                       \
+        WriteEndian(&x, sizeof(var));                                                    \
+        return *this;                                                                    \
     }
 
-#define BS_READ_OP(var) \
-    BinStream& operator>>(var& x){ \
-        ReadEndian(&x, sizeof(var)); \
-        return *this; \
+#define BS_READ_OP(var)                                                                  \
+    BinStream &operator>>(var &x) {                                                      \
+        ReadEndian(&x, sizeof(var));                                                     \
+        return *this;                                                                    \
     }
 
-#define BS_READ_FUNC(var, name) \
-    var Read##name(){ \
-        var val; \
-        *this >> val; \
-        return val; \
+#define BS_READ_FUNC(var, name)                                                          \
+    var Read##name() {                                                                   \
+        var val;                                                                         \
+        *this >> val;                                                                    \
+        return val;                                                                      \
     }
 
 enum EofType {
@@ -36,7 +36,7 @@ enum EofType {
 /** A stream of raw bytes. Can be read from or written to. */
 class BinStream {
 public:
-    /** 
+    /**
      * @brief The three seek types for BinStream::Seek.
      * @see Seek()
      */
@@ -57,21 +57,23 @@ public:
     /** Get whether or not the BinStream has failed. */
     virtual bool Fail() = 0;
     /** Get this BinStream's name. */
-    virtual const char* Name() const;
-    /** Get whether or not this BinStream is cached. Interestingly only overwritten in ChunkStream. */
+    virtual const char *Name() const;
+    /** Get whether or not this BinStream is cached. Interestingly only overwritten in
+     * ChunkStream. */
     virtual bool Cached() const { return false; }
-    /** Get this BinStream's current platform (Xbox, PS3, etc). Interestingly only overwritten in ChunkStream. */
+    /** Get this BinStream's current platform (Xbox, PS3, etc). Interestingly only
+     * overwritten in ChunkStream. */
     virtual Platform GetPlatform() const { return kPlatformNone; }
     /** The specific implementation for reading from byte data.
      *  @param [in] data The data to read from.
      *  @param [in] bytes The number of bytes to read.
      */
-    virtual void ReadImpl(void* data, int bytes) = 0;
+    virtual void ReadImpl(void *data, int bytes) = 0;
     /** The specific implementation for writing to byte data.
      *  @param [in] data The data to write to.
      *  @param [in] bytes The number of bytes to read.
      */
-    virtual void WriteImpl(const void* data, int bytes) = 0;
+    virtual void WriteImpl(const void *data, int bytes) = 0;
     /** The specific implementation for seeking within this BinStream.
      *  @param [in] offset The offset in the data to seek to.
      *  @param [in] type The Seek type.
@@ -94,7 +96,7 @@ public:
      * @param [out] out The pointer to read the string into.
      * @param [in] len The length of text to read.
      */
-    void ReadString(char * out, int len);
+    void ReadString(char *out, int len);
 
     BinStream &operator>>(Symbol &);
     BinStream &operator>>(class String &);
@@ -115,13 +117,13 @@ public:
      * @param [out] out The pointer to read data into.
      * @param [in] len The length of data to read.
      */
-    void Read(void * out, int len);
+    void Read(void *out, int len);
 
     /** Write `len` bytes from the current BinStream position, into the `data` buffer.
      * @param [out] data The pointer to write data into.
      * @param [in] len The length of data to write.
      */
-    void Write(const void * data, int len);
+    void Write(const void *data, int len);
 
     /** Seeks to `offset` using `mode`. */
     void Seek(int offset, SeekType mode);
@@ -134,17 +136,20 @@ public:
      * @param [out] out The pointer to read data into.
      * @param [in] len The length of data to read.
      */
-    void ReadEndian(void * out, int len);
+    void ReadEndian(void *out, int len);
 
     /** Writes `len` bytes of data into `data`, reversed if mLittleEndian is true.
      *
      * @param [out] out The pointer to write data into.
      * @param [in] len The length of data to write.
      */
-    void WriteEndian(const void * data, int len);
+    void WriteEndian(const void *data, int len);
 
     bool LittleEndian() const { return mLittleEndian; }
-    bool UseLittleEndian(bool use){ mLittleEndian = use; return mLittleEndian; }
+    bool UseLittleEndian(bool use) {
+        mLittleEndian = use;
+        return mLittleEndian;
+    }
 
     BS_WRITE_OP(short);
     BS_WRITE_OP(unsigned short);
@@ -156,17 +161,17 @@ public:
     BS_WRITE_OP(unsigned long long);
     BS_WRITE_OP(float);
 
-    BinStream& operator<<(char c){
+    BinStream &operator<<(char c) {
         Write(&c, 1);
         return *this;
     }
 
-    BinStream& operator<<(unsigned char uc){
+    BinStream &operator<<(unsigned char uc) {
         Write(&uc, 1);
         return *this;
     }
 
-    BinStream& operator<<(bool b){
+    BinStream &operator<<(bool b) {
         unsigned char uc = (b) ? 1 : 0;
         Write(&uc, 1);
         return *this;
@@ -185,24 +190,24 @@ public:
     BS_READ_OP(unsigned long long);
     BS_READ_OP(float);
 
-    BinStream& operator>>(char& out) {
+    BinStream &operator>>(char &out) {
         Read(&out, 1);
         return *this;
     }
 
-    BinStream& operator>>(unsigned char& out) {
+    BinStream &operator>>(unsigned char &out) {
         Read(&out, 1);
         return *this;
     }
 
-    BinStream& operator>>(bool& b){
+    BinStream &operator>>(bool &b) {
         unsigned char uc;
         *this >> uc;
         b = (uc != 0);
         return *this;
     }
 
-    BinStream& operator>>(long& l){
+    BinStream &operator>>(long &l) {
         long long ll;
         ReadEndian(&ll, sizeof(ll));
         l = ll;
@@ -225,55 +230,60 @@ public:
 
 // Note: `Allocator` here is actually the size/capacity type parameter on Wii.
 // The name is based on Xbox 360 symbols, which show the allocator type instead.
-template<class T, class Allocator>
-BinStream& operator<<(BinStream& bs, const std::vector<T, Allocator>& vec){
+template <class T, class Allocator>
+BinStream &operator<<(BinStream &bs, const std::vector<T, Allocator> &vec) {
     bs << (int)vec.size();
-    for(typename std::vector<T, Allocator>::const_iterator it = vec.begin(); it != vec.end(); it++){
+    for (typename std::vector<T, Allocator>::const_iterator it = vec.begin();
+         it != vec.end();
+         it++) {
         bs << *it;
     }
     return bs;
 }
 
-template<class T, class Allocator>
-BinStream& operator>>(BinStream& bs, std::vector<T, Allocator>& vec){
+template <class T, class Allocator>
+BinStream &operator>>(BinStream &bs, std::vector<T, Allocator> &vec) {
     unsigned int length;
     bs >> length;
     vec.resize(length);
 
-    for(typename std::vector<T, Allocator>::iterator it = vec.begin(); it != vec.end(); it++){
+    for (typename std::vector<T, Allocator>::iterator it = vec.begin(); it != vec.end();
+         it++) {
         bs >> *it;
     }
 
     return bs;
 }
 
-template<class T, class Allocator>
-BinStream& operator>>(BinStream& bs, std::list<T, Allocator>& list){
+template <class T, class Allocator>
+BinStream &operator>>(BinStream &bs, std::list<T, Allocator> &list) {
     unsigned int length;
     bs >> length;
     list.resize(length);
 
-    for(typename std::list<T, Allocator>::iterator it = list.begin(); it != list.end(); it++){
+    for (typename std::list<T, Allocator>::iterator it = list.begin(); it != list.end();
+         it++) {
         bs >> *it;
     }
 
     return bs;
 }
 
-template<class T1, class T2>
-BinStream& operator<<(BinStream& bs, const std::map<T1, T2>& map){
+template <class T1, class T2>
+BinStream &operator<<(BinStream &bs, const std::map<T1, T2> &map) {
     bs << map.size();
-    for(typename std::map<T1, T2>::const_iterator it = map.begin(); it != map.end(); ++it){
+    for (typename std::map<T1, T2>::const_iterator it = map.begin(); it != map.end();
+         ++it) {
         bs << it->first << it->second;
     }
     return bs;
 }
 
-template<class T1, class T2>
-BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
+template <class T1, class T2>
+BinStream &operator>>(BinStream &bs, std::map<T1, T2> &map) {
     int size;
     bs >> size;
-    for(; size != 0; size--){
+    for (; size != 0; size--) {
         T1 key;
         bs >> key;
         bs >> map[key];
@@ -282,12 +292,12 @@ BinStream& operator>>(BinStream& bs, std::map<T1, T2>& map){
 }
 
 template <class T1, class T2>
-BinStream& operator>>(BinStream& bs, std::pair<T1, T2>& p) {
+BinStream &operator>>(BinStream &bs, std::pair<T1, T2> &p) {
     bs >> p.first >> p.second;
     return bs;
 }
 
 template <class T>
-BinStream& operator>>(BinStream& bs, T* t) {
+BinStream &operator>>(BinStream &bs, T *t) {
     t->Load(bs);
 }

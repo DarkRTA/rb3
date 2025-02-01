@@ -5,8 +5,8 @@ class Stream;
 
 class SlipTrack {
 public:
-    SlipTrack(Stream*, int);
-    void Init(Stream*);
+    SlipTrack(Stream *, int);
+    void Init(Stream *);
     void ForceOn();
     void VolumeOn(float);
     void Poll();
@@ -15,7 +15,7 @@ public:
     void SetSpeed(float);
     float GetCurrentOffset();
 
-    Stream* mStream;
+    Stream *mStream;
     std::vector<int> mChannels;
     float mOffMs;
     float mMaxSlip;

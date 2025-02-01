@@ -9,11 +9,11 @@ public:
     CharTransDraw();
     OBJ_CLASSNAME(CharTransDraw);
     OBJ_SET_TYPE(CharTransDraw);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
     virtual ~CharTransDraw();
 
@@ -23,9 +23,7 @@ public:
     DELETE_OVERLOAD;
     DECLARE_REVS;
     NEW_OBJ(CharTransDraw)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharTransDraw)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharTransDraw) }
 
     /** "The Characters whose translucent bits we will draw" */
     ObjPtrList<Character> mChars; // 0x20

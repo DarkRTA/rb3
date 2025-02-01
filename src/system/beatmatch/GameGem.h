@@ -8,10 +8,10 @@ class TempoMap; // forward dec
 
 class GameGem {
 public:
-    GameGem(const MultiGemInfo&);
-    GameGem(const RGGemInfo&);
+    GameGem(const MultiGemInfo &);
+    GameGem(const RGGemInfo &);
     ~GameGem();
-    GameGem& operator=(const GameGem&);
+    GameGem &operator=(const GameGem &);
 
     signed char GetFret(unsigned int) const;
     char GetHighestFret() const;
@@ -38,8 +38,8 @@ public:
     bool PlayableBy(int) const;
     static int CountBitsInSlotType(unsigned int);
     int NumSlots() const;
-    void Flip(const GameGem&);
-    void RecalculateTimes(TempoMap*);
+    void Flip(const GameGem &);
+    void RecalculateTimes(TempoMap *);
     bool IsMuted() const;
     int GetFret() const;
     int GetNumStrings() const;
@@ -47,64 +47,81 @@ public:
     void PackRealGuitarData();
     static int GetHighestSlot(unsigned int);
     bool IsRealGuitarChord() const;
-    void CopyGem(GameGem*, int);
+    void CopyGem(GameGem *, int);
 
     NEW_POOL_OVERLOAD(GameGem);
     DELETE_POOL_OVERLOAD(GameGem);
 
-    bool operator<(const GameGem& g) const { return mMs < g.mMs; }
+    bool operator<(const GameGem &g) const { return mMs < g.mMs; }
 
     int GetTick() const { return mTick; }
     bool IgnoreDuration() const { return mIgnoreDuration; }
     unsigned int GetSlots() const { return mSlots; }
     bool GetForceStrum() const { return mForceStrum; }
     int GetDurationTicks() const { return mDurationTicks; }
-    
-    bool CompareTimes(const GameGem& g1, const GameGem& g2){
-        return g1.mMs < g2.mMs;
-    }
+
+    bool CompareTimes(const GameGem &g1, const GameGem &g2) { return g1.mMs < g2.mMs; }
 
     int GetSlot() const {
-        for(unsigned int i = 0; i < 32; i++){
-            if(mSlots & 1 << i) return i;
+        for (unsigned int i = 0; i < 32; i++) {
+            if (mSlots & 1 << i)
+                return i;
         }
         MILO_FAIL("Bad slots %d\n", mSlots);
         return -1;
     }
 
     RGNoteType GetRGNoteTypeEntry(int string) const {
-        switch(string){
-            case 0: return (RGNoteType)mRGNoteTypeStr0;
-            case 1: return (RGNoteType)mRGNoteTypeStr1;
-            case 2: return (RGNoteType)mRGNoteTypeStr2;
-            case 3: return (RGNoteType)mRGNoteTypeStr3;
-            case 4: return (RGNoteType)mRGNoteTypeStr4;
-            case 5: return (RGNoteType)mRGNoteTypeStr5;
-            default:
-                MILO_ASSERT(0, 0xEE);
-                return kRGNormal;
+        switch (string) {
+        case 0:
+            return (RGNoteType)mRGNoteTypeStr0;
+        case 1:
+            return (RGNoteType)mRGNoteTypeStr1;
+        case 2:
+            return (RGNoteType)mRGNoteTypeStr2;
+        case 3:
+            return (RGNoteType)mRGNoteTypeStr3;
+        case 4:
+            return (RGNoteType)mRGNoteTypeStr4;
+        case 5:
+            return (RGNoteType)mRGNoteTypeStr5;
+        default:
+            MILO_ASSERT(0, 0xEE);
+            return kRGNormal;
         }
     }
 
-    void SetRGNoteTypeEntry(int x, RGNoteType ty){
-        switch(x){
-            case 0: mRGNoteTypeStr0 = ty; break;
-            case 1: mRGNoteTypeStr1 = ty; break;
-            case 2: mRGNoteTypeStr2 = ty; break;
-            case 3: mRGNoteTypeStr3 = ty; break;
-            case 4: mRGNoteTypeStr4 = ty; break;
-            case 5: mRGNoteTypeStr5 = ty; break;
-            default:
-                MILO_ASSERT(0, 0xFC);
-                break;
+    void SetRGNoteTypeEntry(int x, RGNoteType ty) {
+        switch (x) {
+        case 0:
+            mRGNoteTypeStr0 = ty;
+            break;
+        case 1:
+            mRGNoteTypeStr1 = ty;
+            break;
+        case 2:
+            mRGNoteTypeStr2 = ty;
+            break;
+        case 3:
+            mRGNoteTypeStr3 = ty;
+            break;
+        case 4:
+            mRGNoteTypeStr4 = ty;
+            break;
+        case 5:
+            mRGNoteTypeStr5 = ty;
+            break;
+        default:
+            MILO_ASSERT(0, 0xFC);
+            break;
         }
     }
 
-    bool GetPlayed(){ return mPlayed != 0; }
-    void SetPlayed(bool played){ mPlayed = played; }
-    float DurationMs(){ return mDurationMs; }
+    bool GetPlayed() { return mPlayed != 0; }
+    void SetPlayed(bool played) { mPlayed = played; }
+    float DurationMs() { return mDurationMs; }
     bool Unk10B1() const { return unk10b1; }
-    void SetUnk10B1(bool b){ unk10b1 = b; }
+    void SetUnk10B1(bool b) { unk10b1 = b; }
     bool IsCymbal() const { return mIsCymbal; }
 
     float mMs; // 0x0

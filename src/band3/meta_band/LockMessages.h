@@ -8,20 +8,20 @@
 
 class LockData : public virtual Hmx::Object {
 public:
-    LockData(){}
-    virtual ~LockData(){}
+    LockData() {}
+    virtual ~LockData() {}
 };
 
 class StartLockMsg : public NetMessage {
 public:
-    StartLockMsg(){}
-    virtual ~StartLockMsg(){}
+    StartLockMsg() {}
+    virtual ~StartLockMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
-    virtual LockData* GetLockData() = 0;
+    virtual LockData *GetLockData() = 0;
 
-    void SetLockInfo(LocalBandMachine*, const char*);
+    void SetLockInfo(LocalBandMachine *, const char *);
 
     unsigned int mLockMachineID; // 0x4
     String mLockStepName; // 0x8
@@ -29,20 +29,20 @@ public:
 
 class BasicStartLockMsg : public StartLockMsg {
 public:
-    BasicStartLockMsg(){}
-    virtual ~BasicStartLockMsg(){}
+    BasicStartLockMsg() {}
+    virtual ~BasicStartLockMsg() {}
     NETMSG_BYTECODE(BasicStartLockMsg);
     NETMSG_NAME(BasicStartLockMsg);
-    virtual LockData* GetLockData(){ return nullptr; }
+    virtual LockData *GetLockData() { return nullptr; }
 
     NETMSG_NEWNETMSG(BasicStartLockMsg);
 };
 
 class LockResponseMsg : public NetMessage {
 public:
-    LockResponseMsg(){}
-    LockResponseMsg(bool, LocalBandMachine*, const char*);
-    virtual ~LockResponseMsg(){}
+    LockResponseMsg() {}
+    LockResponseMsg(bool, LocalBandMachine *, const char *);
+    virtual ~LockResponseMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -58,9 +58,9 @@ public:
 
 class EndLockMsg : public NetMessage {
 public:
-    EndLockMsg(){}
-    EndLockMsg(const char*, bool);
-    virtual ~EndLockMsg(){}
+    EndLockMsg() {}
+    EndLockMsg(const char *, bool);
+    virtual ~EndLockMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();

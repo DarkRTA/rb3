@@ -6,8 +6,8 @@
 #include <vector>
 #include "decomp.h"
 
-#define TIMER_GET_CYCLES(name) \
-    register int name; \
+#define TIMER_GET_CYCLES(name)                                                           \
+    register int name;                                                                   \
     ASM_BLOCK(mftb name)
 
 class Timer {
@@ -34,7 +34,7 @@ public:
 
     static Timer sSlowFrameTimer;
     static float sSlowFrameWaiver;
-    static const char* sSlowFrameReason;
+    static const char *sSlowFrameReason;
 
     static void Init();
     static void Sleep(int);
@@ -46,7 +46,7 @@ public:
     }
 
     Timer();
-    Timer(DataArray*);
+    Timer(DataArray *);
 
     void Start() {
         if (mRunning++ != 0)
@@ -92,9 +92,7 @@ public:
         mStart = cycle;
     }
 
-    bool Running() const {
-        return mRunning > 0;
-    }
+    bool Running() const { return mRunning > 0; }
 
     void Split() {
         if (mRunning <= 0)
@@ -123,11 +121,11 @@ public:
 
 class TimerStats {
 public:
-    TimerStats(DataArray*);
+    TimerStats(DataArray *);
 
     void CollectStats(float, bool, int);
     void PrintPctile(float);
-    void Dump(const char*, int);
+    void Dump(const char *, int);
     void Clear();
 
     int mCount; // 0x0
@@ -142,54 +140,57 @@ public:
     float mTopValues[MAX_TOP_VALS]; // 0x24
 };
 
-typedef void (*AutoTimerCallback)(float elapsed, void* context);
+typedef void (*AutoTimerCallback)(float elapsed, void *context);
 
 class AutoTimer {
 public:
-
-    AutoTimer(Timer* t, float limit, AutoTimerCallback callback, void* context) {
+    AutoTimer(Timer *t, float limit, AutoTimerCallback callback, void *context) {
         mTimer = t;
-        if (!t) return;
+        if (!t)
+            return;
         mTimeLimit = limit;
         mCallback = callback;
         mContext = context;
         mTimer->Start();
     }
 
-    ~AutoTimer() { if (mTimer) mTimer->Stop(); }
+    ~AutoTimer() {
+        if (mTimer)
+            mTimer->Stop();
+    }
 
-    Timer* mTimer;
+    Timer *mTimer;
     float mTimeLimit;
     AutoTimerCallback mCallback;
-    void* mContext;
+    void *mContext;
 
     static int sCritFrameCount;
     static std::vector<std::pair<Timer, TimerStats> > sTimers;
 
-    static Timer* GetTimer(Symbol);
+    static Timer *GetTimer(Symbol);
 };
 
 #ifdef VERSION_SZBE69_B8
-#define START_AUTO_TIMER_CALLBACK(name, func, context) \
-    static Timer* _t = AutoTimer::GetTimer(name); \
+#define START_AUTO_TIMER_CALLBACK(name, func, context)                                   \
+    static Timer *_t = AutoTimer::GetTimer(name);                                        \
     AutoTimer _at(_t, 50.0f, func, context)
 #else
 #define START_AUTO_TIMER_CALLBACK(name, func, context) (void)0
 #endif
 
-#define START_AUTO_TIMER(name) \
-    START_AUTO_TIMER_CALLBACK(name, NULL, NULL)
+#define START_AUTO_TIMER(name) START_AUTO_TIMER_CALLBACK(name, NULL, NULL)
 
-#define TIMER_ACTION(name, action) { \
-    START_AUTO_TIMER(name); \
-    action; \
-}
+#define TIMER_ACTION(name, action)                                                       \
+    {                                                                                    \
+        START_AUTO_TIMER(name);                                                          \
+        action;                                                                          \
+    }
 
 class AutoSlowFrame {
 public:
     static int sDepth;
 
-    AutoSlowFrame(const char* reason) {
+    AutoSlowFrame(const char *reason) {
         if (!MainThread()) {
             return;
         }

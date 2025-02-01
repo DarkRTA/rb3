@@ -9,23 +9,21 @@
 class CharWeightSetter : public CharWeightable, public CharPollable {
 public:
     CharWeightSetter();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void SetWeight(float);
-    virtual ~CharWeightSetter(){}
+    virtual ~CharWeightSetter() {}
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharWeightSetter)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharWeightSetter)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharWeightSetter) }
 
     ObjPtr<CharWeightable> mBase; // 0x20
     ObjPtr<CharDriver> mDriver; // 0x2c

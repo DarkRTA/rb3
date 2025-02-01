@@ -9,19 +9,19 @@ struct CWnd {
 
 class HolmesInput : public Hmx::Object {
 public:
-    HolmesInput(CWnd*);
+    HolmesInput(CWnd *);
     virtual ~HolmesInput();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
-    void LoadKeyboard(BinStream&);
-    void LoadJoypad(BinStream&);
+    void LoadKeyboard(BinStream &);
+    void LoadJoypad(BinStream &);
     void SendKeyboardMessages();
     int SendJoypadMessages();
 
     bool mSubscribe;
-    MemStream* mJoypadBuffer;
-    MemStream* mKeyboardBuffer;
-    CWnd* mOwner;
+    MemStream *mJoypadBuffer;
+    MemStream *mKeyboardBuffer;
+    CWnd *mOwner;
 };
 
 #endif

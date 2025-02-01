@@ -33,7 +33,8 @@ float MultiplayerAnalyzer::GetBonusPoints(const UserGuid &userGuid) const {
     return data->unk_0x20 + data->unk_0x24;
 }
 
-const MultiplayerAnalyzer::Data *MultiplayerAnalyzer::GetData(const UserGuid &userGuid) const {
+const MultiplayerAnalyzer::Data *MultiplayerAnalyzer::GetData(const UserGuid &userGuid
+) const {
     for (int i = 0; i < mUnk_0x8.size(); i++) {
         if (mUnk_0x8[i].mGuid == userGuid) {
             return &mUnk_0x8[i];

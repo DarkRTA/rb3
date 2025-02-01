@@ -4,43 +4,42 @@
 
 #include "decomp.h"
 
-class MsgSource* gSource;
+class MsgSource *gSource;
 ObjPtr<Hmx::Object, ObjectDir> gObjOverride(0, 0);
 
-void KeyboardInitCommon(){
+void KeyboardInitCommon() {
     MILO_ASSERT(!gSource, 0x12);
     gSource = Hmx::Object::New<MsgSource>();
 }
 
-void KeyboardTerminateCommon(){
+void KeyboardTerminateCommon() {
     delete gSource;
     gSource = 0;
 }
 
-void KeyboardSubscribe(Hmx::Object* o){
-    if(gSource){
+void KeyboardSubscribe(Hmx::Object *o) {
+    if (gSource) {
         gSource->AddSink(o, Symbol(), Symbol(), MsgSource::kHandle);
     }
 }
 
-void KeyboardUnsubscribe(Hmx::Object* o){
-    if(gSource){
+void KeyboardUnsubscribe(Hmx::Object *o) {
+    if (gSource) {
         gSource->RemoveSink(o, Symbol());
     }
 }
 
-Hmx::Object* KeyboardOverride(Hmx::Object* o){
-    Hmx::Object* d = gObjOverride;
+Hmx::Object *KeyboardOverride(Hmx::Object *o) {
+    Hmx::Object *d = gObjOverride;
     gObjOverride = o;
     return d;
 }
 
-void KeyboardSendMsg(int i, bool b1, bool b2, bool b3){
+void KeyboardSendMsg(int i, bool b1, bool b2, bool b3) {
     KeyboardKeyMsg msg(i, b1, b2, b3);
-    if(gObjOverride.mPtr){
+    if (gObjOverride.mPtr) {
         gObjOverride.mPtr->Handle(msg, false);
-    }
-    else {
+    } else {
         gSource->Handle(msg, false);
     }
 }

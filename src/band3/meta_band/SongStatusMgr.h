@@ -1,6 +1,4 @@
-#ifndef METAGAME_SONGSTATUSMGR_H
-#define METAGAME_SONGSTATUSMGR_H
-
+#pragma once
 #include "game/Defines.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta_band/MetaPerformer.h"
@@ -11,8 +9,8 @@
 
 class PlayerScore {
 public:
-    PlayerScore(){}
-    virtual ~PlayerScore(){}
+    PlayerScore() {}
+    virtual ~PlayerScore() {}
 
     ScoreType mScoreType; // 0x4
     int mScore; // 0x8
@@ -39,7 +37,8 @@ enum SongStatusFlagType {
 };
 
 // i got this from bank 5 don't get mad at me about the union implementation
-// personally i would've rather made this an anonymous union with the SongStatusData class declaration
+// personally i would've rather made this an anonymous union with the SongStatusData class
+// declaration
 union SongStatusInstrumentUnion {
     struct {
         unsigned char mHoposPercentage;
@@ -56,8 +55,8 @@ union SongStatusInstrumentUnion {
 class SongStatusData {
 public:
     void Clear(ScoreType);
-    void SaveToStream(BinStream&, ScoreType) const;
-    void LoadFromStream(BinStream&, ScoreType);
+    void SaveToStream(BinStream &, ScoreType) const;
+    void LoadFromStream(BinStream &, ScoreType);
 
     static int SaveSize(int);
 
@@ -72,14 +71,14 @@ class SongStatus : public FixedSizeSaveable {
 public:
     SongStatus();
     virtual ~SongStatus();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void Clear();
     void SetLastPlayed(int);
     int GetLastPlayed() const;
     void SetPlayCount(int);
-    void SetBitmapLessonComplete(unsigned int&, int, bool);
+    void SetBitmapLessonComplete(unsigned int &, int, bool);
     void SetProGuitarLessonSectionComplete(Difficulty, int, bool);
     void SetProBassLessonSectionComplete(Difficulty, int, bool);
     void SetProKeyboardLessonSectionComplete(Difficulty, int, bool);
@@ -111,22 +110,26 @@ public:
     Difficulty GetHighScoreDifficulty(ScoreType ty) const { return mHighScoreDiffs[ty]; }
     unsigned char GetReview() const { return mReview; }
     unsigned short GetInstrumentMask() const { return mBandScoreInstrumentMask; }
-    unsigned char GetStars(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mStars; }
-    unsigned char GetAccuracy(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mAccuracy; }
-    unsigned short GetStreak(ScoreType ty, Difficulty diff) const { return mSongData[ty][diff].mStreak; }
+    unsigned char GetStars(ScoreType ty, Difficulty diff) const {
+        return mSongData[ty][diff].mStars;
+    }
+    unsigned char GetAccuracy(ScoreType ty, Difficulty diff) const {
+        return mSongData[ty][diff].mAccuracy;
+    }
+    unsigned short GetStreak(ScoreType ty, Difficulty diff) const {
+        return mSongData[ty][diff].mStreak;
+    }
 
     bool CheckFlag(SongStatusFlagType flag, ScoreType ty, Difficulty diff) const {
         return mSongData[ty][diff].mFlags & flag;
     }
 
-    bool CheckLessonBit(unsigned int part, int bit) const {
-        return part & (1 << bit);
-    }
+    bool CheckLessonBit(unsigned int part, int bit) const { return part & (1 << bit); }
 
     bool CheckProGuitarLessonBit(Difficulty diff, int bit) const {
         return CheckLessonBit(mProGuitarLessonParts[diff], bit);
     }
-    
+
     bool CheckProBassLessonBit(Difficulty diff, int bit) const {
         return CheckLessonBit(mProBassLessonParts[diff], bit);
     }
@@ -155,11 +158,11 @@ public:
     SongStatusLookup();
     ~SongStatusLookup();
     void Clear();
-    void Save(FixedSizeSaveableStream&) const;
-    void Load(FixedSizeSaveableStream&, int);
+    void Save(FixedSizeSaveableStream &) const;
+    void Load(FixedSizeSaveableStream &, int);
     bool Empty() const { return mSongID == 0; }
-    void SetSongID(int id){ mSongID = id; }
-    void SetLastPlayed(int played){ mLastPlayed = played; }
+    void SetSongID(int id) { mSongID = id; }
+    void SetLastPlayed(int played) { mLastPlayed = played; }
 
     int mSongID; // 0x0
     int mLastPlayed; // 0x4
@@ -167,31 +170,31 @@ public:
 
 class SongStatusCacheMgr : public FixedSizeSaveable {
 public:
-    SongStatusCacheMgr(const LocalBandUser**);
+    SongStatusCacheMgr(const LocalBandUser **);
     virtual ~SongStatusCacheMgr();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void Clear();
-    SongStatus** GetFullCachePtr();
+    SongStatus **GetFullCachePtr();
     int GetSongID(int);
     int GetSongStatusIndex(int);
-    SongStatus* GetSongStatusPtrForIndex(int);
+    SongStatus *GetSongStatusPtrForIndex(int);
     void SetLastPlayed(int);
     bool HasSongStatus(int);
-    SongStatus* AccessSongStatus(int);
-    SongStatus* CreateOrAccessSongStatus(int);
+    SongStatus *AccessSongStatus(int);
+    SongStatus *CreateOrAccessSongStatus(int);
     int GetEmptyIndex();
     int ClearLeastImportantSongStatusEntry();
     void ClearIndex(int);
-    SongStatus* GetSongStatus(int);
+    SongStatus *GetSongStatus(int);
 
     static int SaveSize(int);
 
     SongStatusLookup mLookups[1000];
-    SongStatus* mpSongStatusFull; // 0x1f48
+    SongStatus *mpSongStatusFull; // 0x1f48
     int mCurrentIndex; // 0x1f4c
-    const LocalBandUser** mUser; // 0x1f50
+    const LocalBandUser **mUser; // 0x1f50
     bool unk1f54; // 0x1f54
 };
 
@@ -199,11 +202,11 @@ class BandSongMgr;
 
 class SongStatusMgr : public Hmx::Object, public FixedSizeSaveable {
 public:
-    SongStatusMgr(LocalBandUser*, BandSongMgr*);
+    SongStatusMgr(LocalBandUser *, BandSongMgr *);
     virtual ~SongStatusMgr();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     void Clear();
     int GetScore(int, ScoreType) const;
@@ -227,9 +230,9 @@ public:
     int GetCompletedSongs(ScoreType, Difficulty, Symbol) const;
     int GetPossibleStars(ScoreType, Symbol) const;
     int GetTotalBestStars(ScoreType, Difficulty, Symbol) const;
-    bool UpdateSongStats(ScoreType, Difficulty, const PerformerStatsInfo&, SongStatus*);
+    bool UpdateSongStats(ScoreType, Difficulty, const PerformerStatsInfo &, SongStatus *);
     void UpdateCachedTotalStars(ScoreType);
-    bool UpdateSong(int, const PerformerStatsInfo&, bool);
+    bool UpdateSong(int, const PerformerStatsInfo &, bool);
     void UpdateCachedTotalDiscScore(ScoreType);
     void UpdateCachedTotalScore(ScoreType);
     unsigned short GetBandInstrumentMask(int) const;
@@ -261,28 +264,30 @@ public:
     bool SetSongReview(int, unsigned char);
     void SetSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty);
     bool GetSongStatusFlag(Symbol, SongStatusFlagType, ScoreType, Difficulty) const;
-    void PopulatePlayerScore(SongStatus*, ScoreType, Difficulty, PlayerScore&);
+    void PopulatePlayerScore(SongStatus *, ScoreType, Difficulty, PlayerScore &);
     void UploadDirtyScores();
     void FakeFill();
 
     bool HasSongStatus(int songID) const { return mCacheMgr.HasSongStatus(songID); }
-    SongStatus* GetSongStatus(int songID) const { return mCacheMgr.GetSongStatus(songID); }
-    SongStatus* CreateOrAccessSongStatus(int songID) const { return mCacheMgr.CreateOrAccessSongStatus(songID); }
+    SongStatus *GetSongStatus(int songID) const {
+        return mCacheMgr.GetSongStatus(songID);
+    }
+    SongStatus *CreateOrAccessSongStatus(int songID) const {
+        return mCacheMgr.CreateOrAccessSongStatus(songID);
+    }
 
-    DataNode OnMsg(const RockCentralOpCompleteMsg&);
+    DataNode OnMsg(const RockCentralOpCompleteMsg &);
 
     static int SaveSize(int);
     static bool sFakeLeaderboardUploadFailure;
 
-    LocalBandUser* mLocalUser; // 0x24
-    BandSongMgr* mSongMgr; // 0x28
+    LocalBandUser *mLocalUser; // 0x24
+    BandSongMgr *mSongMgr; // 0x28
     mutable SongStatusCacheMgr mCacheMgr; // 0x2c
     int mCachedTotalScores[11]; // 0x1f84
     int mCachedTotalDiscScores[11]; // 0x1fb0
     int mCachedTotalStars[11]; // 0x1fdc
-    SongStatus* mUpdatingStatus; // 0x2008
+    SongStatus *mUpdatingStatus; // 0x2008
     ScoreType mUpdatingScoreType; // 0x200c
     Difficulty mUpdatingDifficulty; // 0x2010
 };
-
-#endif // METAGAME_SONGSTATUSMGR_H

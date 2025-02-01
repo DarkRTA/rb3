@@ -7,7 +7,7 @@ class UIListStateCallback;
 
 class UIListState { // 0x48
 public:
-    UIListState(class UIListProvider*, UIListStateCallback*);
+    UIListState(class UIListProvider *, UIListStateCallback *);
 
     int Display2Showing(int) const;
     int Display2Data(int) const;
@@ -22,8 +22,8 @@ public:
     bool CanScrollBack(bool) const;
     bool CanScrollNext(bool) const;
     float StepPercent() const;
-    UIListProvider* Provider();
-    UIListProvider* Provider() const;
+    UIListProvider *Provider();
+    UIListProvider *Provider() const;
     int WrapShowing(int) const;
     int NumDisplayWithData() const;
     void SetScrollPastMinDisplay(bool);
@@ -38,7 +38,7 @@ public:
     void SetCircular(bool, bool);
     void SetSpeed(float);
     void SetSelectedSimulateScroll(int);
-    void SetProvider(UIListProvider*, RndDir*);
+    void SetProvider(UIListProvider *, RndDir *);
     void Scroll(int, bool);
     int SnappedDataForDisplay(int) const;
     void Poll(float);
@@ -51,12 +51,12 @@ public:
     bool ShouldHoldDisplayInPlace(int) const;
 
     int NumShowing() const {
-    #ifdef MILO_DEBUG
+#ifdef MILO_DEBUG
         return mProvider->NumData() - mHiddenData.size();
-    #else
+#else
         int hiddenCnt = mHiddenData.size();
         return mProvider->NumData() - hiddenCnt;
-    #endif
+#endif
     }
     int NumDisplay() const { return mNumDisplay; }
     int FirstShowing() const { return mFirstShowing; }
@@ -70,24 +70,25 @@ public:
     /** "How far from top of list to start scrolling". Range from 0 to 50 */
     int mMinDisplay; // 0x10
     bool mScrollPastMinDisplay; // 0x14
-    /** "How far down can the highlight travel before scoll? Use -1 for no limit". Range from -1 to 50 */
+    /** "How far down can the highlight travel before scoll? Use -1 for no limit". Range
+     * from -1 to 50 */
     int mMaxDisplay; // 0x18
     /** "Allow selected data to move beyond max highlight?" */
     bool mScrollPastMaxDisplay; // 0x1c
-    UIListProvider* mProvider; // 0x20
+    UIListProvider *mProvider; // 0x20
     std::vector<int> mHiddenData; // 0x24
     int mFirstShowing; // 0x2c
     int mTargetShowing; // 0x30
     int mSelectedDisplay; // 0x34
     float mStepPercent; // 0x38
     float mStepTime; // 0x3c
-    UIListStateCallback* mCallback; // 0x40
+    UIListStateCallback *mCallback; // 0x40
 };
 
 class UIListStateCallback {
 public:
     UIListStateCallback() {}
     virtual ~UIListStateCallback() {}
-    virtual void StartScroll(const UIListState&, int, bool) = 0;
-    virtual void CompleteScroll(const UIListState&) = 0;
+    virtual void StartScroll(const UIListState &, int, bool) = 0;
+    virtual void CompleteScroll(const UIListState &) = 0;
 };

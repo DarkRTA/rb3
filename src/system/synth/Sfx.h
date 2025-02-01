@@ -8,34 +8,33 @@
 
 class FxSend;
 
-/** "Basic sound effect object.  Plays several samples with a given volume, pan, transpose, and envelope settings." */
+/** "Basic sound effect object.  Plays several samples with a given volume, pan,
+ * transpose, and envelope settings." */
 class Sfx : public Sequence {
 public:
     Sfx();
-    virtual ~Sfx(){}
+    virtual ~Sfx() {}
     OBJ_CLASSNAME(Sfx);
     OBJ_SET_TYPE(Sfx);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual SeqInst* MakeInstImpl();
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual SeqInst *MakeInstImpl();
     virtual void SynthPoll();
 
-    void SetSend(FxSend*);
+    void SetSend(FxSend *);
     void SetReverbMixDb(float);
     void SetReverbEnable(bool);
-    FxSend* GetSend() const { return mSend; }
+    FxSend *GetSend() const { return mSend; }
     float GetReverbMixDb() const { return mReverbMixDb; }
     bool GetReverbEnable() const { return mReverbEnable; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(Sfx);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(Sfx)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(Sfx) }
 
     void Pause(bool);
 

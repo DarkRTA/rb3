@@ -13,14 +13,14 @@ class ParallelGroupSeq;
 
 class SeqInst : public Hmx::Object {
 public:
-    SeqInst(Sequence*);
+    SeqInst(Sequence *);
     virtual ~SeqInst();
     virtual void Stop() = 0;
     virtual bool IsRunning() = 0;
     virtual void UpdateVolume() = 0;
     virtual void SetPan(float) = 0;
     virtual void SetTranspose(float) = 0;
-    virtual void Poll(){}
+    virtual void Poll() {}
     virtual void StartImpl() = 0;
 
     void Start();
@@ -30,7 +30,7 @@ public:
     NEW_POOL_OVERLOAD(SeqInst);
     DELETE_POOL_OVERLOAD(SeqInst);
 
-    Sequence* mOwner; // 0x1c
+    Sequence *mOwner; // 0x1c
     float mRandVol; // 0x20
     float mRandPan; // 0x24
     float mRandTp; // 0x28
@@ -40,13 +40,13 @@ public:
 
 class WaitSeqInst : public SeqInst {
 public:
-    WaitSeqInst(WaitSeq*);
-    virtual ~WaitSeqInst(){}
+    WaitSeqInst(WaitSeq *);
+    virtual ~WaitSeqInst() {}
     virtual void Stop();
     virtual bool IsRunning();
-    virtual void UpdateVolume(){}
-    virtual void SetPan(float){}
-    virtual void SetTranspose(float){}
+    virtual void UpdateVolume() {}
+    virtual void SetPan(float) {}
+    virtual void SetTranspose(float) {}
     virtual void StartImpl();
 
     NEW_POOL_OVERLOAD(WaitSeqInst);
@@ -58,19 +58,19 @@ public:
 
 class GroupSeqInst : public SeqInst {
 public:
-    GroupSeqInst(GroupSeq*, bool);
+    GroupSeqInst(GroupSeq *, bool);
     virtual ~GroupSeqInst();
     virtual void UpdateVolume();
     virtual void SetPan(float);
     virtual void SetTranspose(float);
-    virtual void Poll(){}
+    virtual void Poll() {}
 
     ObjVector<ObjPtr<SeqInst> > mSeqs; // 0x34
 };
 
 class RandomGroupSeqInst : public GroupSeqInst {
 public:
-    RandomGroupSeqInst(RandomGroupSeq*);
+    RandomGroupSeqInst(RandomGroupSeq *);
     virtual ~RandomGroupSeqInst();
     virtual void Stop();
     virtual bool IsRunning();
@@ -86,7 +86,7 @@ public:
 
 class RandomIntervalGroupSeqInst : public GroupSeqInst {
 public:
-    RandomIntervalGroupSeqInst(RandomIntervalGroupSeq*);
+    RandomIntervalGroupSeqInst(RandomIntervalGroupSeq *);
     virtual ~RandomIntervalGroupSeqInst();
     virtual void Stop();
     virtual bool IsRunning();
@@ -107,8 +107,8 @@ public:
 
 class SerialGroupSeqInst : public GroupSeqInst {
 public:
-    SerialGroupSeqInst(SerialGroupSeq*);
-    virtual ~SerialGroupSeqInst(){}
+    SerialGroupSeqInst(SerialGroupSeq *);
+    virtual ~SerialGroupSeqInst() {}
     virtual void Stop();
     virtual bool IsRunning();
     virtual void Poll();
@@ -122,7 +122,7 @@ public:
 
 class ParallelGroupSeqInst : public GroupSeqInst {
 public:
-    ParallelGroupSeqInst(ParallelGroupSeq*);
+    ParallelGroupSeqInst(ParallelGroupSeq *);
     virtual ~ParallelGroupSeqInst();
     virtual void Stop();
     virtual bool IsRunning();

@@ -1,11 +1,13 @@
 {
   "[c]": {
     "files.encoding": "utf8",
-    "editor.defaultFormatter": "xaver.clang-format"
+    "editor.defaultFormatter": "xaver.clang-format",
+    "editor.formatOnSave": "true"
   },
   "[cpp]": {
     "files.encoding": "utf8",
-    "editor.defaultFormatter": "xaver.clang-format"
+    "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd",
+    "editor.formatOnSave": "true"
   },
   "[python]":{
     "editor.defaultFormatter": "ms-python.black-formatter"

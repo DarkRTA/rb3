@@ -6,7 +6,7 @@
 TourQuestGameRules::TourQuestGameRules() : mModifier() {}
 TourQuestGameRules::~TourQuestGameRules() {}
 
-void TourQuestGameRules::Init(const DataArray* i_pConfig) {
+void TourQuestGameRules::Init(const DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 23);
     TourGameRules::Init(i_pConfig);
     mModifier.Init(i_pConfig->FindArray(modifiers, false));

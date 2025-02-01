@@ -7,8 +7,7 @@ namespace {
 }
 
 TextFileStream::TextFileStream(const char *file, bool append)
-    : mFile(file, append ? FileStream::kAppend : FileStream::kWrite, true) {
-}
+    : mFile(file, append ? FileStream::kAppend : FileStream::kWrite, true) {}
 
 void TextFileStream::Print(const char *c) {
     char *p = (char *)c;

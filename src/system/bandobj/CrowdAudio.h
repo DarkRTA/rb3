@@ -22,27 +22,27 @@ public:
     CrowdAudio();
     OBJ_CLASSNAME(CrowdAudio)
     OBJ_SET_TYPE(CrowdAudio)
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
     virtual ~CrowdAudio();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void SetTypeDef(DataArray*);
-    virtual void Save(BinStream&);
-    virtual void Load(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void SetTypeDef(DataArray *);
+    virtual void Save(BinStream &);
+    virtual void Load(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
 
     void StopAllMoggs();
     void SetEnabled(bool);
     void SetPaused(bool);
-    void PlaySequence(const char*);
-    void StopSequence(const char*);
+    void PlaySequence(const char *);
+    void StopSequence(const char *);
     void SetExcitement(ExcitementLevel);
     bool PlayExcitementLoop();
     void MaybeClap(float);
     void UpdateVolume();
-    bool PlayLoop(const DataArray*, bool);
+    bool PlayLoop(const DataArray *, bool);
     void PlayCloseupAudio();
     void StopCloseupAudio();
     void OnIntro();
@@ -51,36 +51,33 @@ public:
     void OnMusicStart();
     void OnWin();
     void OnEnd();
-    void SetBank(ObjectDir*);
+    void SetBank(ObjectDir *);
 
-    int MsToLastClapBeat(float f){ return MsToBeat(f); }
+    int MsToLastClapBeat(float f) { return MsToBeat(f); }
 
     DECLARE_REVS;
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(CrowdAudio)
-    }
-    NEW_OBJ(CrowdAudio);
+    static void Register() { REGISTER_OBJ_FACTORY(CrowdAudio) } NEW_OBJ(CrowdAudio);
 
     ObjPtr<BinkClip, ObjectDir> mCurrentMogg; // 0x8
     ObjPtr<BinkClip, ObjectDir> mOldMogg; // 0x14
     ObjPtr<BinkClip, ObjectDir> mFadingMogg; // 0x20
-    Fader* mMainFader; // 0x2c
+    Fader *mMainFader; // 0x2c
     bool mWantDuck; // 0x30
     float mResultsDuck; // 0x34
     float mResultsFadeDuration; // 0x38
-    Fader* mResultsFader; // 0x3c
+    Fader *mResultsFader; // 0x3c
     float mFadeInFromLoadingDuration; // 0x40
-    Fader* mEntryFader; // 0x44
+    Fader *mEntryFader; // 0x44
     float mVenueChangeFadeDuration; // 0x48
     ExcitementLevel mLevel; // 0x4c
     ExcitementLevel mOverrideExcitementLevel; // 0x50
     ExcitementLevel mOverrideExcitementLevelPrev; // 0x54
     float mLoopChangeTime; // 0x58
-    DataArray* mIntro; // 0x5c
-    DataArray* mVenueIntro; // 0x60
-    DataArray* mLevels; // 0x64
-    DataArray* mVenueOutro; // 0x68
+    DataArray *mIntro; // 0x5c
+    DataArray *mVenueIntro; // 0x60
+    DataArray *mLevels; // 0x64
+    DataArray *mVenueOutro; // 0x68
     int mState; // 0x6c - should be enum State?
     float mCrowdVol; // 0x70
     float mCamShotVol; // 0x74
@@ -90,9 +87,9 @@ public:
     int mLastClapBeat; // 0x80
     bool mClapAllowed; // 0x84
     ObjPtr<ObjectDir, ObjectDir> mBank; // 0x88
-    Fader* mCurrentBankFader; // 0x94
-    Fader* mOtherBankFader; // 0x98
-    Fader* mReleaseFader; // 0x9c
+    Fader *mCurrentBankFader; // 0x94
+    Fader *mOtherBankFader; // 0x98
+    Fader *mReleaseFader; // 0x9c
     float mCrossfadeDuration; // 0xa0
     float mReleaseTime; // 0xa4
     bool mPaused; // 0xa8
@@ -100,10 +97,10 @@ public:
     bool mShouldPlayVenueOutro; // 0xaa
     bool mWon; // 0xab
     bool mRestarting; // 0xac
-    Fader* mCloseupFader; // 0xb0
+    Fader *mCloseupFader; // 0xb0
     float mCloseupFadeDuration; // 0xb4
 };
 
-extern CrowdAudio* TheCrowdAudio;
+extern CrowdAudio *TheCrowdAudio;
 
 #endif // BANDOBJ_CROWDAUDIO_H

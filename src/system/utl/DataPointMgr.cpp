@@ -4,8 +4,7 @@
 DataPointMgr gDataPointMgr;
 DataPointMgr &TheDataPointMgr = gDataPointMgr;
 
-DataPoint::DataPoint() {
-}
+DataPoint::DataPoint() {}
 DataPoint::DataPoint(const char *type) {
     // someone forgot their initializer lists at home
     mType = type;
@@ -19,8 +18,7 @@ void DataPoint::AddPair(Symbol name, DataNode value) {
     mNameValPairs.insert(std::make_pair(name, value));
 }
 
-DataPointMgr::DataPointMgr() : mDataPointRecorder(nullptr) {
-}
+DataPointMgr::DataPointMgr() : mDataPointRecorder(nullptr) {}
 
 DataPointRecordFunc *DataPointMgr::SetDataPointRecorder(DataPointRecordFunc *recorder) {
     DataPointRecordFunc *old = mDataPointRecorder;

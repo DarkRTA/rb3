@@ -5,10 +5,10 @@
 class MakeupProvider : public UIListProvider, public Hmx::Object {
 public:
     MakeupProvider(Symbol);
-    virtual ~MakeupProvider(){}
-    virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual RndMat* Mat(int, int, UIListMesh*) const;
-    virtual void UpdateExtendedText(int, int, UILabel*) const;
+    virtual ~MakeupProvider() {}
+    virtual void Text(int, int, UIListLabel *, UILabel *) const;
+    virtual RndMat *Mat(int, int, UIListMesh *) const;
+    virtual void UpdateExtendedText(int, int, UILabel *) const;
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;
 
@@ -16,5 +16,5 @@ public:
 
     std::vector<Symbol> mMakeupEyes; // 0x20
     std::vector<Symbol> mMakeupLips; // 0x28
-    std::vector<Symbol>* mCurrentMakeupList; // 0x30
+    std::vector<Symbol> *mCurrentMakeupList; // 0x30
 };

@@ -2,9 +2,9 @@
 #include "obj/Task.h"
 #include "ui/UIPanel.h"
 
-DeJitterPanel::DeJitterPanel() : unk_0x84(true) { }
+DeJitterPanel::DeJitterPanel() : unk_0x84(true) {}
 
-DeJitterPanel::~DeJitterPanel() { }
+DeJitterPanel::~DeJitterPanel() {}
 
 void DeJitterPanel::Enter() {
     float f[2];

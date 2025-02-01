@@ -13,13 +13,9 @@ Stream::Stream() : mFaders(new FaderGroup(0)) {
     mFaders->Add(TheSynth->mMasterFader);
 }
 
-Stream::~Stream(){
-    delete mFaders;
-}
+Stream::~Stream() { delete mFaders; }
 
-void Stream::SetVolume(float f){
-    mFaders->FindLocal(_default, true)->SetVal(f);
-}
+void Stream::SetVolume(float f) { mFaders->FindLocal(_default, true)->SetVal(f); }
 
 // Force inline generation
 DECOMP_FORCEBLOCK(Stream, (Stream* strm),

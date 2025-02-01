@@ -12,21 +12,20 @@
 #include "utl/Symbols.h"
 #include <vector>
 
-AccomplishmentDiscSongConditional::AccomplishmentDiscSongConditional(DataArray* arr, int i) : AccomplishmentSongConditional(arr, i), mPartDifficultySym("") {
+AccomplishmentDiscSongConditional::AccomplishmentDiscSongConditional(DataArray *arr, int i)
+    : AccomplishmentSongConditional(arr, i), mPartDifficultySym("") {
     Configure(arr);
 }
 
-AccomplishmentDiscSongConditional::~AccomplishmentDiscSongConditional(){
+AccomplishmentDiscSongConditional::~AccomplishmentDiscSongConditional() {}
 
-}
-
-void AccomplishmentDiscSongConditional::Configure(DataArray* i_pConfig){
+void AccomplishmentDiscSongConditional::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1F);
     i_pConfig->FindData(part_difficulty_sym, mPartDifficultySym, false);
-    DataArray* pFilterArray = i_pConfig->FindArray(filter, false);
-    if(pFilterArray){
-        for(int i = 1; i < pFilterArray->Size(); i++){
-            DataArray* pEntry = pFilterArray->Array(i);
+    DataArray *pFilterArray = i_pConfig->FindArray(filter, false);
+    if (pFilterArray) {
+        for (int i = 1; i < pFilterArray->Size(); i++) {
+            DataArray *pEntry = pFilterArray->Array(i);
             MILO_ASSERT(pEntry, 0x2C);
             MILO_ASSERT(pEntry->Size() == 2, 0x2D);
             FilterType ty = (FilterType)pEntry->Int(0);
@@ -36,51 +35,64 @@ void AccomplishmentDiscSongConditional::Configure(DataArray* i_pConfig){
     }
 }
 
-AccomplishmentType AccomplishmentDiscSongConditional::GetType() const { return kAccomplishmentTypeDiscSongConditional; }
+AccomplishmentType AccomplishmentDiscSongConditional::GetType() const {
+    return kAccomplishmentTypeDiscSongConditional;
+}
 
 bool AccomplishmentDiscSongConditional::IsRelevantForSong(Symbol s) const {
     int id = TheSongMgr->GetSongIDFromShortName(s, true);
-    SongMetadata* pData = TheSongMgr->Data(id);
+    SongMetadata *pData = TheSongMgr->Data(id);
     MILO_ASSERT(pData, 0x43);
     return pData->IsOnDisc();
 }
 
-bool AccomplishmentDiscSongConditional::IsFulfilled(BandProfile* profile) const {
+bool AccomplishmentDiscSongConditional::IsFulfilled(BandProfile *profile) const {
     std::vector<Symbol> songs;
     InqSongs(songs, false);
-    SongStatusMgr* mgr = profile->GetSongStatusMgr();
-    for(std::vector<Symbol>::const_iterator it = songs.begin(); it != songs.end(); ++it){
-        if(!CheckConditionsForSong(mgr, *it)) return false;
+    SongStatusMgr *mgr = profile->GetSongStatusMgr();
+    for (std::vector<Symbol>::const_iterator it = songs.begin(); it != songs.end();
+         ++it) {
+        if (!CheckConditionsForSong(mgr, *it))
+            return false;
     }
     return true;
 }
 
-int AccomplishmentDiscSongConditional::GetNumCompletedSongs(BandProfile* profile) const {
+int AccomplishmentDiscSongConditional::GetNumCompletedSongs(BandProfile *profile) const {
     std::vector<Symbol> songs;
     InqSongs(songs, false);
-    SongStatusMgr* mgr = profile->GetSongStatusMgr();
+    SongStatusMgr *mgr = profile->GetSongStatusMgr();
     int num = 0;
-    for(std::vector<Symbol>::const_iterator it = songs.begin(); it != songs.end(); ++it){
+    for (std::vector<Symbol>::const_iterator it = songs.begin(); it != songs.end();
+         ++it) {
         Symbol cur = *it;
-        if(!TheSongMgr->HasSong(cur, false)) continue;
-        if(!CheckConditionsForSong(mgr, cur)) continue;
+        if (!TheSongMgr->HasSong(cur, false))
+            continue;
+        if (!CheckConditionsForSong(mgr, cur))
+            continue;
         num++;
     }
     return num;
 }
 
-bool AccomplishmentDiscSongConditional::InqSongs(std::vector<Symbol>& o_rSymbols, bool shouldsort) const {
+bool AccomplishmentDiscSongConditional::InqSongs(
+    std::vector<Symbol> &o_rSymbols, bool shouldsort
+) const {
     MILO_ASSERT(o_rSymbols.empty(), 0x86);
-    const std::vector<Symbol>& discsongs = TheAccomplishmentMgr->GetDiscSongs();
-    for(std::vector<Symbol>::const_iterator it = discsongs.begin(); it != discsongs.end(); ++it){
+    const std::vector<Symbol> &discsongs = TheAccomplishmentMgr->GetDiscSongs();
+    for (std::vector<Symbol>::const_iterator it = discsongs.begin();
+         it != discsongs.end();
+         ++it) {
         Symbol cur = *it;
         int songid = TheSongMgr->GetSongIDFromShortName(cur, true);
-        if(TheSongSortMgr->DoesSongMatchFilter(songid, &mFilter, mPartDifficultySym)){
+        if (TheSongSortMgr->DoesSongMatchFilter(songid, &mFilter, mPartDifficultySym)) {
             o_rSymbols.push_back(cur);
         }
     }
-    if(shouldsort){
-        std::stable_sort(o_rSymbols.begin(), o_rSymbols.end(), SongDifficultyCmp(mPartDifficultySym));
+    if (shouldsort) {
+        std::stable_sort(
+            o_rSymbols.begin(), o_rSymbols.end(), SongDifficultyCmp(mPartDifficultySym)
+        );
     }
     return !o_rSymbols.empty();
 }
@@ -91,7 +103,9 @@ int AccomplishmentDiscSongConditional::GetTotalNumSongs() const {
     return songs.size();
 }
 
-bool AccomplishmentDiscSongConditional::InqIncrementalSymbols(BandProfile*, std::vector<Symbol>& songs) const {
+bool AccomplishmentDiscSongConditional::InqIncrementalSymbols(
+    BandProfile *, std::vector<Symbol> &songs
+) const {
     return InqSongs(songs, true);
 }
 

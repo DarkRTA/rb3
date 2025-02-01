@@ -17,44 +17,43 @@ public:
     RndLight();
     OBJ_CLASSNAME(Light)
     OBJ_SET_TYPE(Light)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
-    virtual ~RndLight(){}
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
-    virtual void SetColor(const Hmx::Color&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
+    virtual ~RndLight() {}
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
+    virtual void SetColor(const Hmx::Color &);
     virtual void SetLightType(Type);
     virtual void SetRange(float);
     virtual void SetFalloffStart(float);
 
     void SetTopRadius(float);
     void SetBotRadius(float);
-    void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir>*);
+    void SetShadowOverride(ObjPtrList<RndDrawable, class ObjectDir> *);
     float Range() const { return mRange; }
     float FalloffStart() const { return mFalloffStart; }
-    const Hmx::Color& GetColor() const { return mColorOwner->mColor; }
+    const Hmx::Color &GetColor() const { return mColorOwner->mColor; }
     Type GetType() const { return mType; }
-    void SetShowing(bool b){ mShowing = b; }
+    void SetShowing(bool b) { mShowing = b; }
     void SetPackedColor(int, float);
     int PackedColor() const;
     float Intensity() const;
-    void SetProjectedBlend(int i){ mProjectedBlend = i; }
+    void SetProjectedBlend(int i) { mProjectedBlend = i; }
     bool GetAnimateFromPreset() const {
-        return mAnimateColorFromPreset || mAnimatePositionFromPreset || mAnimateRangeFromPreset;
+        return mAnimateColorFromPreset || mAnimatePositionFromPreset
+            || mAnimateRangeFromPreset;
     }
     bool Showing() const { return mShowing; }
 
-    static const char* TypeToStr(Type);
+    static const char *TypeToStr(Type);
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     DECLARE_REVS
     NEW_OBJ(RndLight)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndLight)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(RndLight) }
 
     Hmx::Color mColor; // 0x90
     ObjOwnerPtr<RndLight, class ObjectDir> mColorOwner; // 0xA0
@@ -66,7 +65,8 @@ public:
     bool mAnimateRangeFromPreset; // 0xBA
     bool mShowing; // 0xBB
     ObjPtr<RndTex, class ObjectDir> mTexture; // 0xBC
-    ObjPtrList<RndDrawable, class ObjectDir>* mShadowOverride; // figure this out too - 0xC8
+    ObjPtrList<RndDrawable, class ObjectDir> *mShadowOverride; // figure this out too -
+                                                               // 0xC8
     ObjPtrList<RndDrawable, class ObjectDir> mShadowObjects; // 0xCC
     Transform mTextureXfm; // 0xDC
     float mTopRadius; // 0x10C

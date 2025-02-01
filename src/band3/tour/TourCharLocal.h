@@ -6,15 +6,15 @@
 class TourCharLocal : public TourChar {
 public:
     TourCharLocal();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual RndTex* GetTexAtPatchIndex(int, bool) const;
+    virtual DataNode Handle(DataArray *, bool);
+    virtual RndTex *GetTexAtPatchIndex(int, bool) const;
     virtual ~TourCharLocal();
     virtual void SetDirty(bool, int);
 
     void GenerateGUID();
-    void SetCharacterName(const char*);
+    void SetCharacterName(const char *);
     void SetFinalized(bool);
-    void SaveDb(BinStream&);
+    void SaveDb(BinStream &);
 
-    std::map<int, PatchDir*> unk4c;
+    std::map<int, PatchDir *> unk4c;
 };

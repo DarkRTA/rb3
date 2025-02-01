@@ -6,35 +6,33 @@ class FixedSizeAlloc;
 
 class ChunkAllocator {
 public:
-    FixedSizeAlloc* mAllocs[32];
+    FixedSizeAlloc *mAllocs[32];
 
     ChunkAllocator(int, int, int);
-    void* Alloc(int);
-    void Free(void*, int);
+    void *Alloc(int);
+    void Free(void *, int);
     void UploadDebugStats();
 
     // *might* be wrong
-    operator bool(){
-        return mAllocs != 0;
-    }
+    operator bool() { return mAllocs != 0; }
 };
 
 class FixedSizeAlloc {
 public:
-    FixedSizeAlloc(int, ChunkAllocator*, int);
+    FixedSizeAlloc(int, ChunkAllocator *, int);
     virtual ~FixedSizeAlloc();
-    virtual void* RawAlloc(int);
+    virtual void *RawAlloc(int);
 
     int mAllocSizeWords;
     int mNumAllocs;
     int mMaxAllocs;
     int mNumChunks;
-    int* mFreeList;
+    int *mFreeList;
     int mNodesPerChunk;
-    ChunkAllocator* mAlloc;
+    ChunkAllocator *mAlloc;
 
-    void* Alloc();
-    void Free(void*);
+    void *Alloc();
+    void Free(void *);
     void Refill();
 };
 
@@ -43,18 +41,14 @@ enum PoolType {
     FastPool
 };
 
-bool AddrIsInPool(void*, PoolType);
-void* _PoolAlloc(int, int, PoolType);
-void _PoolFree(int, PoolType, void*);
+bool AddrIsInPool(void *, PoolType);
+void *_PoolAlloc(int, int, PoolType);
+void _PoolFree(int, PoolType, void *);
 
-#define NEW_POOL_OVERLOAD(obj) \
-    void* operator new(size_t s){ \
-        return _PoolAlloc(s, sizeof(obj), FastPool); \
-    }
+#define NEW_POOL_OVERLOAD(obj)                                                           \
+    void *operator new(size_t s) { return _PoolAlloc(s, sizeof(obj), FastPool); }
 
-#define DELETE_POOL_OVERLOAD(obj) \
-    void operator delete(void* v){ \
-        _PoolFree(sizeof(obj), FastPool, v); \
-    }
+#define DELETE_POOL_OVERLOAD(obj)                                                        \
+    void operator delete(void *v) { _PoolFree(sizeof(obj), FastPool, v); }
 
 #endif

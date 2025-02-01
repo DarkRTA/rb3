@@ -21,7 +21,7 @@ class MercurySwitchFilter;
 
 class BeatMatcher : public TrackWatcherParent, public BeatMatchControllerSink {
 public:
-    BeatMatcher(const UserGuid&, int, int, Symbol, SongData*, SongInfo&, DataArray*, BeatMaster*);
+    BeatMatcher(const UserGuid &, int, int, Symbol, SongData *, SongInfo &, DataArray *, BeatMaster *);
     virtual ~BeatMatcher();
     virtual float GetNow() const;
     virtual int GetTick() const;
@@ -49,7 +49,7 @@ public:
     virtual void NonStrumSwing(int, bool, bool);
     virtual float MercurySwitch(float);
     virtual void ForceMercurySwitch(bool);
-    virtual void SetController(class BeatMatchController*);
+    virtual void SetController(class BeatMatchController *);
     virtual void NoteOn(int);
     virtual void NoteOff(int);
     virtual void PlayNote(int);
@@ -68,7 +68,7 @@ public:
     void Leave();
     bool IsReady();
     void Start();
-    void RegisterSink(BeatMatchSink&);
+    void RegisterSink(BeatMatchSink &);
     void Poll(float);
     void SetNow(float);
     void CheckMercurySwitch(float);
@@ -80,17 +80,17 @@ public:
     int unk1c; // 0x1c
     int unk20; // 0x20
     Symbol mControllerType; // 0x24
-    SongData* mSongData; // 0x28
-    DataArray* mCfg; // 0x2c
+    SongData *mSongData; // 0x28
+    DataArray *mCfg; // 0x2c
     int unk30; // 0x30
-    BeatMatchSink* mSink; // 0x34
-    MasterAudio* mAudio; // 0x38
-    BeatMatchController* mController; // 0x3c
-    MercurySwitchFilter* mMercurySwitchFilter; // 0x40
-    TrackWatcher* mWatcher; // 0x44
+    BeatMatchSink *mSink; // 0x34
+    MasterAudio *mAudio; // 0x38
+    BeatMatchController *mController; // 0x3c
+    MercurySwitchFilter *mMercurySwitchFilter; // 0x40
+    TrackWatcher *mWatcher; // 0x44
     std::vector<TrackType> mTrackTypes; // 0x48
     std::vector<float> unk50; // 0x50
-    DrumPlayer* mDrumPlayer; // 0x58
+    DrumPlayer *mDrumPlayer; // 0x58
     int mCurTrack; // 0x5c
     bool unk60; // 0x60
     SongPos mSongPos; // 0x64

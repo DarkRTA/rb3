@@ -11,34 +11,34 @@
 #include "utl/MemMgr.h"
 
 class TexMovie : public RndDrawable, public RndPollable {
-    public:
+public:
     TexMovie();
     virtual ~TexMovie();
     OBJ_CLASSNAME(TexMovie)
     OBJ_SET_TYPE(TexMovie)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
     virtual void UpdatePreClearState();
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
 
-    void BeginMovie(BinStream*);
+    void BeginMovie(BinStream *);
     void DrawToTexture();
     void DrawPreClear();
-    void SetFile(const FilePath&);
+    void SetFile(const FilePath &);
 
-    DataNode OnGetRenderTextures(DataArray*);
-    DataNode OnPlayMovie(DataArray*);
+    DataNode OnGetRenderTextures(DataArray *);
+    DataNode OnPlayMovie(DataArray *);
 
     ObjOwnerPtr<RndTex, ObjectDir> mTex; // 0x28
     bool mLoop; // 0x34
-    u8 unk_0x35; 
+    u8 unk_0x35;
     bool mFillWidth; // 0x36
     FilePath unk_0x38;
     Movie mMovie; // 0x44

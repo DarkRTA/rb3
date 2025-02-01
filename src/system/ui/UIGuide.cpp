@@ -4,21 +4,17 @@
 
 INIT_REVS(UIGuide);
 
-UIGuide::UIGuide() : mType(kGuideVertical), mPos(0.5f) {
-    
-}
+UIGuide::UIGuide() : mType(kGuideVertical), mPos(0.5f) {}
 
-UIGuide::~UIGuide(){
-    
-}
+UIGuide::~UIGuide() {}
 
 SAVE_OBJ(UIGuide, 0x21);
 
-void UIGuide::Load(BinStream& bs){
+void UIGuide::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
-    bs >> (int&)mType >> mPos;
+    bs >> (int &)mType >> mPos;
 }
 
 BEGIN_COPYS(UIGuide)
@@ -30,12 +26,14 @@ BEGIN_COPYS(UIGuide)
     END_COPYING_MEMBERS
 END_COPYS
 
-BEGIN_PROPSYNCS(UIGuide);
+BEGIN_PROPSYNCS(UIGuide)
+    ;
     SYNC_PROP(pos, mPos);
-    SYNC_PROP(type, (int&)mType);
+    SYNC_PROP(type, (int &)mType);
 END_PROPSYNCS;
 
-BEGIN_HANDLERS(UIGuide);
+BEGIN_HANDLERS(UIGuide)
+    ;
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x47);
 END_HANDLERS;

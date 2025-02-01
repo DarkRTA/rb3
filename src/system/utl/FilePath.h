@@ -8,30 +8,28 @@ public:
     static FilePath sRoot;
     static FilePath sNull;
 
-    FilePath(const String & str) : String(str) { }
-    FilePath(const char* str){
-        Set(sRoot.c_str(), str);
-    }
-    FilePath(const char* cc, const char* cc2){ Set(cc, cc2); }
-    FilePath(){ }
-    virtual ~FilePath(){ }
+    FilePath(const String &str) : String(str) {}
+    FilePath(const char *str) { Set(sRoot.c_str(), str); }
+    FilePath(const char *cc, const char *cc2) { Set(cc, cc2); }
+    FilePath() {}
+    virtual ~FilePath() {}
 
     void Set(const char *, const char *); // fn_8034C91C - the only not-weak method here
 
-    const char* FilePathRelativeToRoot(){ return FileRelativePath(sRoot.c_str(), this->c_str()); }
-    void SetRoot(const char* str){ Set(sRoot.c_str(), str); }
+    const char *FilePathRelativeToRoot() {
+        return FileRelativePath(sRoot.c_str(), this->c_str());
+    }
+    void SetRoot(const char *str) { Set(sRoot.c_str(), str); }
 };
 
-inline TextStream& operator<<(TextStream& ts, FilePath& fp){
+inline TextStream &operator<<(TextStream &ts, FilePath &fp) {
     return ts << fp.FilePathRelativeToRoot();
     // return ts; // commented out to get RndTex::Print to match
 }
 
-inline void ResetRoot(const char* path){
-    FilePath::sRoot.Set(FileRoot(), path);
-}
+inline void ResetRoot(const char *path) { FilePath::sRoot.Set(FileRoot(), path); }
 
-inline BinStream& operator>>(BinStream& bs, FilePath& fp){
+inline BinStream &operator>>(BinStream &bs, FilePath &fp) {
     char buf[0x100];
     bs.ReadString(buf, 0x100);
     fp.SetRoot(buf);
@@ -40,14 +38,12 @@ inline BinStream& operator>>(BinStream& bs, FilePath& fp){
 
 class FilePathTracker {
 public:
-    FilePathTracker(const char* root) {
+    FilePathTracker(const char *root) {
         mOldRoot = FilePath::sRoot;
         ResetRoot(root);
     }
 
-    ~FilePathTracker(){
-        FilePath::sRoot = mOldRoot;
-    }
+    ~FilePathTracker() { FilePath::sRoot = mOldRoot; }
 
     FilePath mOldRoot;
 };

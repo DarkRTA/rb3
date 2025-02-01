@@ -14,7 +14,7 @@ public:
     void AdjustBrightness();
     void AdjustLevels();
     void AdjustColorXfm();
-    bool Load(BinStream&);
+    bool Load(BinStream &);
 
     float mHue; // 0x0
     float mSaturation; // 0x4
@@ -28,7 +28,7 @@ public:
     Transform mColorXfm; // 0x54
 };
 
-inline BinStream& operator>>(BinStream& bs, RndColorXfm& xfm){
+inline BinStream &operator>>(BinStream &bs, RndColorXfm &xfm) {
     xfm.Load(bs);
     return bs;
 }

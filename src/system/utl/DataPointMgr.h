@@ -30,7 +30,8 @@ public:
 
 extern DataPointMgr &TheDataPointMgr;
 
-template <class N1, class V1> void SendDataPoint(const char *type, N1 name1, V1 value1) {
+template <class N1, class V1>
+void SendDataPoint(const char *type, N1 name1, V1 value1) {
     DataPoint point(type);
     point.AddPair(name1, value1);
     TheDataPointMgr.RecordDataPoint(point, 1);

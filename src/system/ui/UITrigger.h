@@ -8,14 +8,14 @@ public:
     UITrigger();
     OBJ_CLASSNAME(UITrigger);
     OBJ_SET_TYPE(UITrigger);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~UITrigger(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~UITrigger() {}
     virtual void Trigger();
-    virtual DataArray* SupportedEvents();
+    virtual DataArray *SupportedEvents();
     virtual void CheckAnims();
     virtual void Enter();
     virtual void Poll();
@@ -30,9 +30,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD
     NEW_OBJ(UITrigger);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UITrigger);
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UITrigger); }
 
     ObjPtr<Hmx::Object> mCallbackObject; // 0xe8
     float mStartTime; // 0xf4
@@ -45,6 +43,6 @@ public:
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(UITriggerCompleteMsg, "ui_trigger_complete");
-    UITriggerCompleteMsg(UITrigger* trig) : 
-        Message(Type(), trig){}
-END_MESSAGE;
+UITriggerCompleteMsg(UITrigger *trig) : Message(Type(), trig) {}
+END_MESSAGE
+;

@@ -15,25 +15,23 @@ public:
     SynthEmitter();
     OBJ_CLASSNAME(SynthEmitter);
     OBJ_SET_TYPE(SynthEmitter);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~SynthEmitter();
-    virtual void Highlight(){ RndDrawable::Highlight(); }
+    virtual void Highlight() { RndDrawable::Highlight(); }
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
     virtual void Poll();
 
     void CheckLoadResources();
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(SynthEmitter);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(SynthEmitter)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(SynthEmitter) }
 
     /** "sfx this emitter should play" */
     ObjPtr<Sfx> mSfx; // 0xb8

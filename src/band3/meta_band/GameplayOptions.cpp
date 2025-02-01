@@ -4,30 +4,44 @@
 #include "obj/Object.h"
 #include "utl/Symbols.h"
 
-GameplayOptions::GameplayOptions() : mVocalVolume(11), mLefty(false), mVocalStyle(kVocStyle1), mDirty(false) { mSaveSizeMethod = SaveSize; }
+GameplayOptions::GameplayOptions()
+    : mVocalVolume(11), mLefty(false), mVocalStyle(kVocStyle1), mDirty(false) {
+    mSaveSizeMethod = SaveSize;
+}
 
 int GameplayOptions::GetVocalVolume(int) const { return mVocalVolume; }
 
 void GameplayOptions::SetVocalVolume(int, int i) {
-    if (i < 0 || TheProfileMgr.GetSliderStepCount() <= i) return;
-    if (mVocalVolume == i) return;
+    if (i < 0 || TheProfileMgr.GetSliderStepCount() <= i)
+        return;
+    if (mVocalVolume == i)
+        return;
     mDirty = true;
     mVocalVolume = i;
-    
 }
 
-void GameplayOptions::SetLefty(bool b) { if (mLefty == b) return; mDirty = true; mLefty = b; }
+void GameplayOptions::SetLefty(bool b) {
+    if (mLefty == b)
+        return;
+    mDirty = true;
+    mLefty = b;
+}
 
-void GameplayOptions::SetVocalStyle(VocalStyle v) { if (mVocalStyle == v) return; mDirty = true; mVocalStyle = v; }
+void GameplayOptions::SetVocalStyle(VocalStyle v) {
+    if (mVocalStyle == v)
+        return;
+    mDirty = true;
+    mVocalStyle = v;
+}
 
-void GameplayOptions::SaveFixed(FixedSizeSaveableStream& fsss) const {
+void GameplayOptions::SaveFixed(FixedSizeSaveableStream &fsss) const {
     fsss << mLefty;
     fsss << mVocalVolume;
     fsss << mVocalStyle;
     mDirty = false;
 }
 
-void GameplayOptions::LoadFixed(FixedSizeSaveableStream& fsss, int) {
+void GameplayOptions::LoadFixed(FixedSizeSaveableStream &fsss, int) {
     fsss >> mLefty;
     fsss >> mVocalVolume;
     int x;
@@ -37,7 +51,8 @@ void GameplayOptions::LoadFixed(FixedSizeSaveableStream& fsss, int) {
 }
 
 int GameplayOptions::SaveSize(int) {
-    if (FixedSizeSaveable::sPrintoutsEnabled) TheDebug << MakeString("* %s = %i\n", "GameplayOptions", 9);
+    if (FixedSizeSaveable::sPrintoutsEnabled)
+        TheDebug << MakeString("* %s = %i\n", "GameplayOptions", 9);
     return 9;
 }
 

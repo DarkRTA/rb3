@@ -13,29 +13,26 @@ public:
     CharGuitarString();
     OBJ_CLASSNAME(CharGuitarString);
     OBJ_SET_TYPE(CharGuitarString);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual ~CharGuitarString();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharGuitarString)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharGuitarString)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharGuitarString) }
 
     bool mOpen; // 0x8
     ObjPtr<RndTransformable, class ObjectDir> mNut; // 0xc
     ObjPtr<RndTransformable, class ObjectDir> mBridge; // 0x18
     ObjPtr<RndTransformable, class ObjectDir> mBend; // 0x24
     ObjPtr<RndTransformable, class ObjectDir> mTarget; // 0x30
-
 };
 
 #endif

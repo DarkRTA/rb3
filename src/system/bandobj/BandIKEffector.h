@@ -5,13 +5,15 @@
 #include "char/CharPollable.h"
 #include "rndobj/Trans.h"
 
-class BandIKEffector : public RndHighlightable, public CharWeightable, public CharPollable {
+class BandIKEffector : public RndHighlightable,
+                       public CharWeightable,
+                       public CharPollable {
 public:
     class Constraint {
     public:
-        Constraint(Hmx::Object*);
-        Constraint(const Constraint&);
-        Constraint& operator=(const Constraint&);
+        Constraint(Hmx::Object *);
+        Constraint(const Constraint &);
+        Constraint &operator=(const Constraint &);
 
         ObjPtr<RndTransformable, ObjectDir> mTarget; // 0x0
         ObjPtr<RndTransformable, ObjectDir> mFinger; // 0xc
@@ -22,29 +24,27 @@ public:
     virtual ~BandIKEffector();
     virtual void Highlight();
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     OBJ_CLASSNAME(BandIKEffector);
     OBJ_SET_TYPE(BandIKEffector);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void SetName(const char*, ObjectDir*);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void SetName(const char *, ObjectDir *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(BandIKEffector)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandIKEffector)
 
-    static CharClip* sDeformClip;
-    static void SetDeformClip(Hmx::Object*);
-    static void NeutralLocalXfm(RndTransformable*, Transform&);
-    static void NeutralWorldXfm(RndTransformable*, Transform&);
+    static CharClip *sDeformClip;
+    static void SetDeformClip(Hmx::Object *);
+    static void NeutralLocalXfm(RndTransformable *, Transform &);
+    static void NeutralWorldXfm(RndTransformable *, Transform &);
 
     ObjPtr<RndTransformable, ObjectDir> mEffector; // 0x28
     ObjPtr<RndTransformable, ObjectDir> mGround; // 0x34

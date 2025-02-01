@@ -29,8 +29,8 @@ enum HitType {
 
 class HitSink {
 public:
-    HitSink(){}
-    virtual ~HitSink(){}
+    HitSink() {}
+    virtual ~HitSink() {}
     virtual void Hit(HitType) = 0;
     virtual void Key(int) = 0;
     virtual void RGFret(int, int) = 0;

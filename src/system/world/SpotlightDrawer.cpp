@@ -4,13 +4,13 @@
 #include "utl/Std.h"
 #include "utl/Symbols.h"
 
-RndEnviron* SpotlightDrawer::sEnviron;
-RndMat* SpotlightDrawer::sEditorMat;
-SpotlightDrawer* SpotlightDrawer::sCurrent;
-SpotlightDrawer* SpotlightDrawer::sDefault;
+RndEnviron *SpotlightDrawer::sEnviron;
+RndMat *SpotlightDrawer::sEditorMat;
+SpotlightDrawer *SpotlightDrawer::sCurrent;
+SpotlightDrawer *SpotlightDrawer::sDefault;
 std::vector<SpotlightDrawer::SpotlightEntry> SpotlightDrawer::sLights;
 std::vector<SpotlightDrawer::SpotMeshEntry> SpotlightDrawer::sCans;
-std::vector<class Spotlight*> SpotlightDrawer::sShadowSpots;
+std::vector<class Spotlight *> SpotlightDrawer::sShadowSpots;
 int SpotlightDrawer::sNeedBoxMap = -1;
 bool SpotlightDrawer::sNeedDraw;
 bool SpotlightDrawer::sHaveAdditionals;
@@ -18,12 +18,10 @@ bool SpotlightDrawer::sHaveLenses;
 bool SpotlightDrawer::sHaveFlares;
 bool SpotlightDrawer::sNoBeams;
 
-SpotlightDrawer::SpotlightDrawer() : mParams(this) {
-    SetOrder(-100000.f);
-}
+SpotlightDrawer::SpotlightDrawer() : mParams(this) { SetOrder(-100000.f); }
 
-SpotlightDrawer::~SpotlightDrawer(){
-    if(sCurrent == this){
+SpotlightDrawer::~SpotlightDrawer() {
+    if (sCurrent == this) {
         DeSelect();
         ClearAndShrink(sLights);
         ClearAndShrink(sShadowSpots);
@@ -31,11 +29,11 @@ SpotlightDrawer::~SpotlightDrawer(){
     }
 }
 
-void SpotlightDrawer::OnGPHangRecover(){}
+void SpotlightDrawer::OnGPHangRecover() {}
 
-void SpotlightDrawer::Select(){
-    if(sCurrent != this){
-        if(sCurrent){
+void SpotlightDrawer::Select() {
+    if (sCurrent != this) {
+        if (sCurrent) {
             TheRnd->UnregisterPostProcessor(sCurrent);
         }
         sCurrent = this;
@@ -44,34 +42,40 @@ void SpotlightDrawer::Select(){
     sNeedBoxMap = -1;
 }
 
-void SpotlightDrawer::DeSelect(){
-    if(sCurrent != this) return;
-    if(sDefault == this) return;
+void SpotlightDrawer::DeSelect() {
+    if (sCurrent != this)
+        return;
+    if (sDefault == this)
+        return;
     sDefault->Select();
 }
 
-void SpotlightDrawer::SortLights(){
-    if(sLights.size() > 2){
+void SpotlightDrawer::SortLights() {
+    if (sLights.size() > 2) {
         std::sort(sLights.begin(), sLights.end(), ByColor());
     }
-    if(sCans.size() > 2){
+    if (sCans.size() > 2) {
         std::sort(sCans.begin(), sCans.end(), ByEnvMesh());
     }
 }
 
-void SpotlightDrawer::DrawShowing(){
-    if(sCurrent && sCurrent != sDefault && sCurrent != this){
-        MILO_NOTIFY_ONCE("Drawing 2 spotlightdrawers in one frame, %s and %s", PathName(sCurrent), PathName(this));
-    }
-    else Select();
+void SpotlightDrawer::DrawShowing() {
+    if (sCurrent && sCurrent != sDefault && sCurrent != this) {
+        MILO_NOTIFY_ONCE(
+            "Drawing 2 spotlightdrawers in one frame, %s and %s",
+            PathName(sCurrent),
+            PathName(this)
+        );
+    } else
+        Select();
 }
 
-void SpotlightDrawer::ClearPostDraw(){
+void SpotlightDrawer::ClearPostDraw() {
     ClearLights();
     sNeedDraw = false;
 }
 
-void SpotlightDrawer::ClearLights(){
+void SpotlightDrawer::ClearLights() {
     sLights.clear();
     sShadowSpots.clear();
     sCans.clear();
@@ -93,21 +97,26 @@ END_COPYS
 BEGIN_LOADS(SpotlightDrawer)
     int rev;
     bs >> rev;
-    if(rev > 5) MILO_FAIL("DxSpotlightDrawer: not forward compatable!");
+    if (rev > 5)
+        MILO_FAIL("DxSpotlightDrawer: not forward compatable!");
     else {
-        if(rev > 0) LOAD_SUPERCLASS(RndDrawable)
-        else LOAD_SUPERCLASS(Hmx::Object)
+        if (rev > 0)
+            LOAD_SUPERCLASS(RndDrawable)
+        else
+            LOAD_SUPERCLASS(Hmx::Object)
         SetOrder(-100000.f);
         mParams.Load(bs, rev);
     }
 END_LOADS
 
-SpotDrawParams::SpotDrawParams(SpotlightDrawer* owner) : mIntensity(1.0f), mColor(1.0f,1.0f,1.0f), mBaseIntensity(0.1f), mSmokeIntensity(0.5f), mHalfDistance(250.0f), mLightingInfluence(1.0f),
-    mTexture(owner, 0), mProxy(owner, 0), mOwner(owner) {
+SpotDrawParams::SpotDrawParams(SpotlightDrawer *owner)
+    : mIntensity(1.0f), mColor(1.0f, 1.0f, 1.0f), mBaseIntensity(0.1f),
+      mSmokeIntensity(0.5f), mHalfDistance(250.0f), mLightingInfluence(1.0f),
+      mTexture(owner, 0), mProxy(owner, 0), mOwner(owner) {
     MILO_ASSERT(owner, 0x37C);
 }
 
-SpotDrawParams& SpotDrawParams::operator=(const SpotDrawParams& params){
+SpotDrawParams &SpotDrawParams::operator=(const SpotDrawParams &params) {
     mIntensity = params.mIntensity;
     mBaseIntensity = params.mBaseIntensity;
     mSmokeIntensity = params.mSmokeIntensity;
@@ -119,37 +128,37 @@ SpotDrawParams& SpotDrawParams::operator=(const SpotDrawParams& params){
     return *this;
 }
 
-void SpotDrawParams::Load(BinStream& bs, int rev){
-    if(rev > 5) MILO_WARN("Can't load new Params");
+void SpotDrawParams::Load(BinStream &bs, int rev) {
+    if (rev > 5)
+        MILO_WARN("Can't load new Params");
     else {
         bs >> mIntensity;
-        if(rev > 3){
+        if (rev > 3) {
             bs >> mSmokeIntensity >> mHalfDistance >> mLightingInfluence;
-        }
-        else {
+        } else {
             float i, j, k, l;
             bs >> i >> j >> k >> l;
-            if(k < 0.5f){
+            if (k < 0.5f) {
                 mSmokeIntensity = 0.5f;
                 mBaseIntensity = 0.1f;
-            }
-            else {
+            } else {
                 mBaseIntensity = 0.15f;
                 mSmokeIntensity = 1.0f;
             }
         }
         bs >> mColor;
-        if(rev < 4){
+        if (rev < 4) {
             int a, b, c, d, e;
             bs >> a >> b >> c >> d >> e;
         }
         bs >> mTexture;
         bs >> mProxy;
-        if(rev < 3){
+        if (rev < 3) {
             bool b;
             bs >> b;
         }
-        if(rev > 4) bs >> mLightingInfluence;
+        if (rev > 4)
+            bs >> mLightingInfluence;
     }
 }
 

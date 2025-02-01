@@ -4,9 +4,9 @@
 
 class TrackPanelInterface : public UIPanel {
 public:
-    TrackPanelInterface(){}
-    virtual ~TrackPanelInterface(){}
-    virtual void GetTrackOrder(std::vector<TrackInstrument>*, bool) const = 0;
+    TrackPanelInterface() {}
+    virtual ~TrackPanelInterface() {}
+    virtual void GetTrackOrder(std::vector<TrackInstrument> *, bool) const = 0;
     virtual int GetTrackCount() const = 0;
     virtual int GetNumPlayers() const = 0;
     virtual bool InGame() const = 0;

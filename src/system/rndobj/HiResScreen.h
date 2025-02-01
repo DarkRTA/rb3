@@ -6,19 +6,18 @@
 
 class HiResScreen {
 public:
-
     class BmpCache {
     public:
         BmpCache(unsigned int, unsigned int);
         virtual ~BmpCache();
 
         void DeleteCache();
-        void GetLoadedRange(uint&, uint&) const;
+        void GetLoadedRange(uint &, uint &) const;
         void LoadCache(uint);
         void FlushCache();
 
-        String* mFileNames; // 0x4
-        unsigned char* mBuffer; // 0x8
+        String *mFileNames; // 0x4
+        unsigned char *mBuffer; // 0x8
         unsigned int mPixelsPerRow; // 0xc
         unsigned int mRowsPerCacheLine; // 0x10
         unsigned int mTotalNumCacheLines; // 0x14
@@ -31,13 +30,15 @@ public:
 
     HiResScreen();
     virtual ~HiResScreen();
-    void TakeShot(const char*, int);
-    void GetBorderForTile(int, int, int&, int&, int&, int&) const;
+    void TakeShot(const char *, int);
+    void GetBorderForTile(int, int, int &, int &, int &, int &) const;
     void Accumulate();
     void Finish();
-    int GetPaddingX() const; int GetPaddingY() const;
-    Hmx::Rect CurrentTileRect(const Hmx::Rect&, Hmx::Rect&, Hmx::Rect&) const;
-    Hmx::Rect ScreenRect(const RndCam*, const Hmx::Rect&) const; Hmx::Rect ScreenRect() const;
+    int GetPaddingX() const;
+    int GetPaddingY() const;
+    Hmx::Rect CurrentTileRect(const Hmx::Rect &, Hmx::Rect &, Hmx::Rect &) const;
+    Hmx::Rect ScreenRect(const RndCam *, const Hmx::Rect &) const;
+    Hmx::Rect ScreenRect() const;
     void InvScreenRect() const;
     bool IsActive() const { return mActive; }
 
@@ -51,9 +52,9 @@ public:
     bool mEvenOddDisabled; // 0x25
     bool mShrinkToSafe; // 0x26
     bool mConsoleShowing; // 0x27
-    BmpCache* mCache; // 0x28
+    BmpCache *mCache; // 0x28
 };
 
-extern HiResScreen& TheHiResScreen;
+extern HiResScreen &TheHiResScreen;
 
 #endif

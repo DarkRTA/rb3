@@ -7,7 +7,7 @@ class SongSectionController : public RndPollable {
 public:
     class PracticeSectionMapping {
     public:
-        PracticeSectionMapping(Hmx::Object*);
+        PracticeSectionMapping(Hmx::Object *);
         Symbol mPoolCategory; // 0x0
         std::list<String> mValidPracticeSections; // 0x4
         std::list<String> mInvalidPracticeSections; // 0xc
@@ -21,7 +21,9 @@ public:
 
     class ContentPoolMapping {
     public:
-        ContentPoolMapping(Hmx::Object* o) : mContentPools(o, kObjListNoNull), mTriggerOrder(kPoolTriggerSequence), mLastActivatedIdx(-1) {}
+        ContentPoolMapping(Hmx::Object *o)
+            : mContentPools(o, kObjListNoNull), mTriggerOrder(kPoolTriggerSequence),
+              mLastActivatedIdx(-1) {}
         Symbol mPoolCategory; // 0x0
         ObjPtrList<EventTrigger, ObjectDir> mContentPools; // 0x4
         PoolTriggerOrder mTriggerOrder; // 0x14
@@ -31,15 +33,15 @@ public:
     SongSectionController();
     OBJ_CLASSNAME(SongSectionController);
     OBJ_SET_TYPE(SongSectionController);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Enter();
     virtual void Exit();
     virtual ~SongSectionController();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void RegisterEvents();
     void UnregisterEvents();
@@ -48,22 +50,20 @@ public:
     void ActivatePool(Symbol, bool);
     bool UpdatePoolCategory();
     void UpdateOverlay();
-    ContentPoolMapping* GetContentPoolMapping(Symbol);
+    ContentPoolMapping *GetContentPoolMapping(Symbol);
     Symbol FindPoolCategoryForPracSession(Symbol);
     void OnToggleOverlay();
     void DebugActivate();
 
-    DataNode OnFindPools(const DataArray*);
-    DataNode OnAddTriggerPool(const DataArray*);
-    DataNode OnWaitForEventReceived(const DataArray*);
+    DataNode OnFindPools(const DataArray *);
+    DataNode OnAddTriggerPool(const DataArray *);
+    DataNode OnWaitForEventReceived(const DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(SongSectionController)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(SongSectionController)
 
     Symbol mMidiSection; // 0x8
@@ -76,7 +76,7 @@ public:
     Symbol mDebugSectionName; // 0x4c
     Symbol mDebugPoolCategory; // 0x50
     Symbol mLastDebugPoolActivated; // 0x54
-    RndOverlay* mOverlay; // 0x58
+    RndOverlay *mOverlay; // 0x58
     Symbol mWaitForEvent; // 0x5c
     Symbol mCreatePoolCategory; // 0x60
     ObjPtr<EventTrigger, ObjectDir> mCreateContentForPool; // 0x64

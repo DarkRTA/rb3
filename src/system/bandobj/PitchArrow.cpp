@@ -3,15 +3,19 @@
 
 INIT_REVS(PitchArrow)
 
-PitchArrow::PitchArrow() : unk18c(0), mScore(0), mHarmonyFX(0), mVolume(1.0f), mTilt(0), mVocalHUDColor(kVocalColorInvalid), mColorFade(0), mSpotlight(0), mDeploying(0), mPitched(1), unk1ab(0),
-    mTestColor("white"), mArrowStyle(0), mScoreAnim(this, 0), mHarmonyFXAnim(this, 0), mVolumeAnim(this, 0), mTiltAnim(this, 0), mColorAnim(this, 0), mColorFadeAnim(this, 0),
-    mSplitAnim(this, 0), mArrowStyleAnim(this, 0), mSetPitchedTrig(this, 0), mSetUnpitchedTrig(this, 0), mSpotlightStartTrig(this, 0), mSpotlightEndTrig(this, 0),
-    mDeployStartTrig(this, 0), mDeployEndTrig(this, 0), mGhostGrp(this, 0), mGhostFadeAnim(this, 0), mArrowFXGrp(this, 0),
-    unk280(0), mSpinSpeed(0), mSpinAnim(this, 0), mSpinRestFrame(0), mSpinBeginFrame(0), mSpinEndFrame(0) {
+PitchArrow::PitchArrow()
+    : unk18c(0), mScore(0), mHarmonyFX(0), mVolume(1.0f), mTilt(0),
+      mVocalHUDColor(kVocalColorInvalid), mColorFade(0), mSpotlight(0), mDeploying(0),
+      mPitched(1), unk1ab(0), mTestColor("white"), mArrowStyle(0), mScoreAnim(this, 0),
+      mHarmonyFXAnim(this, 0), mVolumeAnim(this, 0), mTiltAnim(this, 0),
+      mColorAnim(this, 0), mColorFadeAnim(this, 0), mSplitAnim(this, 0),
+      mArrowStyleAnim(this, 0), mSetPitchedTrig(this, 0), mSetUnpitchedTrig(this, 0),
+      mSpotlightStartTrig(this, 0), mSpotlightEndTrig(this, 0), mDeployStartTrig(this, 0),
+      mDeployEndTrig(this, 0), mGhostGrp(this, 0), mGhostFadeAnim(this, 0),
+      mArrowFXGrp(this, 0), unk280(0), mSpinSpeed(0), mSpinAnim(this, 0),
+      mSpinRestFrame(0), mSpinBeginFrame(0), mSpinEndFrame(0) {}
 
-}
-
-void PitchArrow::SyncObjects(){
+void PitchArrow::SyncObjects() {
     mScoreAnim = Find<RndPropAnim>("score.anim", false);
     mHarmonyFXAnim = Find<RndPropAnim>("harmony_fx.anim", false);
     mVolumeAnim = Find<RndPropAnim>("volume.anim", false);
@@ -29,100 +33,124 @@ void PitchArrow::SyncObjects(){
     mArrowFXGrp = Find<RndGroup>("arrow_fx.grp", false);
     mSplitAnim = Find<RndPropAnim>("split.anim", false);
     mArrowStyleAnim = Find<RndPropAnim>("arrow_style.anim", false);
-    if(!mScoreAnim || !mHarmonyFXAnim || !mVolumeAnim || !mTiltAnim || !mColorAnim || !mColorFadeAnim ||
-        !mSetPitchedTrig || !mSetUnpitchedTrig || !mSpotlightStartTrig || !mSpotlightEndTrig || !mDeployStartTrig || !mDeployEndTrig){
+    if (!mScoreAnim || !mHarmonyFXAnim || !mVolumeAnim || !mTiltAnim || !mColorAnim
+        || !mColorFadeAnim || !mSetPitchedTrig || !mSetUnpitchedTrig
+        || !mSpotlightStartTrig || !mSpotlightEndTrig || !mDeployStartTrig
+        || !mDeployEndTrig) {
         MILO_WARN("Some expected rnd objects are missing from pitch arrow");
     }
     RndDir::SyncObjects();
 }
 
-void PitchArrow::Reset(RndGroup* grp){
-    if(mPitched) mSetPitchedTrig->Trigger();
-    else mSetUnpitchedTrig->Trigger();
-    if(mDeploying) mDeployStartTrig->Trigger();
-    else mDeployEndTrig->Trigger();
-    if(mSpotlight) mSpotlightStartTrig->Trigger();
-    else mSpotlightEndTrig->Trigger();
+void PitchArrow::Reset(RndGroup *grp) {
+    if (mPitched)
+        mSetPitchedTrig->Trigger();
+    else
+        mSetUnpitchedTrig->Trigger();
+    if (mDeploying)
+        mDeployStartTrig->Trigger();
+    else
+        mDeployEndTrig->Trigger();
+    if (mSpotlight)
+        mSpotlightStartTrig->Trigger();
+    else
+        mSpotlightEndTrig->Trigger();
     mTiltAnim->SetFrame(mTilt / 90.0f + 1.0f, 1.0f);
     float score = mScore;
     mScoreAnim->Animate(score, score, mScoreAnim->Units(), 0, 0);
     mHarmonyFXAnim->SetFrame(mHarmonyFX, 1.0f);
-    if(mVocalHUDColor != kVocalColorInvalid){
+    if (mVocalHUDColor != kVocalColorInvalid) {
         mColorFadeAnim->SetFrame(0, 1.0f);
         mColorAnim->SetFrame(mVocalHUDColor, 1.0f);
         mColorFadeAnim->SetKey(0);
     }
     mColorFadeAnim->SetFrame(mColorFade, 1.0f);
-    if(grp && !ObjectDir::Main()->FindObject("milo", false)){
-        RndGroup* tiltgrp = Find<RndGroup>("tilt.grp", true);
+    if (grp && !ObjectDir::Main()->FindObject("milo", false)) {
+        RndGroup *tiltgrp = Find<RndGroup>("tilt.grp", true);
         tiltgrp->RemoveObject(mArrowFXGrp);
         grp->AddObject(mArrowFXGrp, 0);
     }
-    if(mSplitAnim) mSplitAnim->SetFrame(0, 1.0f);
-    if(mGhostGrp){
+    if (mSplitAnim)
+        mSplitAnim->SetFrame(0, 1.0f);
+    if (mGhostGrp) {
         mGhostGrp->SetTransParent(TransParent(), false);
         mGhostGrp->SetLocalXfm(LocalXfm());
     }
     SetArrowStyle(mArrowStyle);
-    if(LOADMGR_EDITMODE){
+    if (LOADMGR_EDITMODE) {
         SetColor(GetVocalHUDColor(mTestColor));
-        if(mColorFadeAnim) mColorFadeAnim->SetFrame(mColorFade, 1.0f);
+        if (mColorFadeAnim)
+            mColorFadeAnim->SetFrame(mColorFade, 1.0f);
     }
     mVolume = 0;
     mVolumeAnim->SetFrame(0, 1.0f);
 }
 
-void PitchArrow::SetPitched(bool b){
-    if(b != mPitched && mSetPitchedTrig && mSetUnpitchedTrig){
-        if(b) mSetPitchedTrig->Trigger();
-        else mSetUnpitchedTrig->Trigger();
+void PitchArrow::SetPitched(bool b) {
+    if (b != mPitched && mSetPitchedTrig && mSetUnpitchedTrig) {
+        if (b)
+            mSetPitchedTrig->Trigger();
+        else
+            mSetUnpitchedTrig->Trigger();
         mPitched = b;
     }
 }
 
-void PitchArrow::SetSpotlight(bool b){
-    if(b != mSpotlight && mSpotlightStartTrig && mSpotlightEndTrig){
-        if(b) mSpotlightStartTrig->Trigger();
-        else mSpotlightEndTrig->Trigger();
+void PitchArrow::SetSpotlight(bool b) {
+    if (b != mSpotlight && mSpotlightStartTrig && mSpotlightEndTrig) {
+        if (b)
+            mSpotlightStartTrig->Trigger();
+        else
+            mSpotlightEndTrig->Trigger();
         mSpotlight = b;
     }
 }
 
-void PitchArrow::SetDeploying(bool b){
-    if(b != mDeploying && mDeployStartTrig && mDeployEndTrig){
-        if(b) mDeployStartTrig->Trigger();
-        else mDeployEndTrig->Trigger();
+void PitchArrow::SetDeploying(bool b) {
+    if (b != mDeploying && mDeployStartTrig && mDeployEndTrig) {
+        if (b)
+            mDeployStartTrig->Trigger();
+        else
+            mDeployEndTrig->Trigger();
         mDeploying = b;
     }
 }
 
-void PitchArrow::SetTiltDegrees(float f){
-    if(mTilt != f && mTiltAnim){
+void PitchArrow::SetTiltDegrees(float f) {
+    if (mTilt != f && mTiltAnim) {
         mTiltAnim->SetFrame(f / 90.0f + 1.0f, 1.0f);
         mTilt = f;
     }
 }
 
-VocalHUDColor GetVocalHUDColor(Symbol s){
-    if(s == green) return kVocalColorGreen;
-    else if(s == yellow) return kVocalColorYellow;
-    else if(s == orange) return kVocalColorOrange;
-    else if(s == brown) return kVocalColorBrown;
-    else if(s == purple) return kVocalColorPurple;
-    else if(s == blue) return kVocalColorBlue;
-    else if(s == white) return kVocalColorWhite;
+VocalHUDColor GetVocalHUDColor(Symbol s) {
+    if (s == green)
+        return kVocalColorGreen;
+    else if (s == yellow)
+        return kVocalColorYellow;
+    else if (s == orange)
+        return kVocalColorOrange;
+    else if (s == brown)
+        return kVocalColorBrown;
+    else if (s == purple)
+        return kVocalColorPurple;
+    else if (s == blue)
+        return kVocalColorBlue;
+    else if (s == white)
+        return kVocalColorWhite;
     else {
         MILO_NOTIFY_ONCE("Unhandled vocal HUD color %s\n", s.Str());
         return kVocalColorInvalid;
     }
 }
 
-void PitchArrow::SetColor(VocalHUDColor col){
-    if(col != kVocalColorInvalid && col != mVocalHUDColor && mColorAnim && mColorFadeAnim){
+void PitchArrow::SetColor(VocalHUDColor col) {
+    if (col != kVocalColorInvalid && col != mVocalHUDColor && mColorAnim
+        && mColorFadeAnim) {
         mColorAnim->SetFrame(col, 1.0f);
         mVocalHUDColor = col;
-        if(col != kVocalColorWhite){
-            if((float)col != mArrowFXGrp->mOrder){
+        if (col != kVocalColorWhite) {
+            if ((float)col != mArrowFXGrp->mOrder) {
                 mArrowFXGrp->SetOrder(col);
                 unk280 = true;
             }
@@ -130,7 +158,7 @@ void PitchArrow::SetColor(VocalHUDColor col){
     }
 }
 
-void PitchArrow::Clear(){
+void PitchArrow::Clear() {
     mPitched = true;
     mDeploying = false;
     mSpotlight = false;
@@ -142,27 +170,27 @@ void PitchArrow::Clear(){
     Reset(0);
 }
 
-void PitchArrow::ClearParticles(){
-    for(ObjDirItr<RndParticleSys> it(this, false); it != 0; ++it){
+void PitchArrow::ClearParticles() {
+    for (ObjDirItr<RndParticleSys> it(this, false); it != 0; ++it) {
         it->FreeAllParticles();
     }
 }
 
-void PitchArrow::Poll(){
-    if(mSpinAnim) PollHelix();
+void PitchArrow::Poll() {
+    if (mSpinAnim)
+        PollHelix();
     RndDir::Poll();
 }
 
-void PitchArrow::SetGhostFade(float f){
-    if(mGhostFadeAnim) mGhostFadeAnim->SetFrame(f * 10.0f, 1.0f);
+void PitchArrow::SetGhostFade(float f) {
+    if (mGhostFadeAnim)
+        mGhostFadeAnim->SetFrame(f * 10.0f, 1.0f);
 }
 
-bool PitchArrow::NeedSort(PitchArrow* arrow){
-    return arrow && arrow->unk280;
-}
+bool PitchArrow::NeedSort(PitchArrow *arrow) { return arrow && arrow->unk280; }
 
-void PitchArrow::SetArrowStyle(int i){
-    if(mArrowStyleAnim){
+void PitchArrow::SetArrowStyle(int i) {
+    if (mArrowStyleAnim) {
         mArrowStyleAnim->SetFrame(i, 1.0f);
         mArrowStyle = i;
     }
@@ -203,15 +231,16 @@ BEGIN_HANDLERS(PitchArrow)
     HANDLE_CHECK(0x195)
 END_HANDLERS
 
-DataNode PitchArrow::OnSyncColor(DataArray* da){
+DataNode PitchArrow::OnSyncColor(DataArray *da) {
     SetColor(GetVocalHUDColor(mTestColor));
-    if(mColorFadeAnim) mColorFadeAnim->SetFrame(mColorFade, 1.0f);
+    if (mColorFadeAnim)
+        mColorFadeAnim->SetFrame(mColorFade, 1.0f);
     return DataNode(0);
 }
 
 SAVE_OBJ(PitchArrow, 0x1A1)
 
-void PitchArrow::PreLoad(BinStream& bs){
+void PitchArrow::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     bs >> mPitched;
@@ -221,21 +250,23 @@ void PitchArrow::PreLoad(BinStream& bs){
     bs >> mHarmonyFX;
     bs >> mVolume;
     bs >> mTilt;
-    if(gRev < 2) bs >> mTestColor;
+    if (gRev < 2)
+        bs >> mTestColor;
     bs >> mColorFade;
-    if(gRev >= 1 && !IsProxy()){
+    if (gRev >= 1 && !IsProxy()) {
         bs >> mSpinSpeed;
         bs >> mSpinAnim;
         bs >> mSpinBeginFrame;
         bs >> mSpinEndFrame;
         bs >> mSpinRestFrame;
     }
-    if(gRev >= 2){
-        if(gLoadingProxyFromDisk){
-            Symbol s; int i;
-            bs >> i; bs >> s;
-        }
-        else {
+    if (gRev >= 2) {
+        if (gLoadingProxyFromDisk) {
+            Symbol s;
+            int i;
+            bs >> i;
+            bs >> s;
+        } else {
             bs >> mArrowStyle;
             bs >> mTestColor;
         }
@@ -243,7 +274,7 @@ void PitchArrow::PreLoad(BinStream& bs){
     RndDir::PreLoad(bs);
 }
 
-void PitchArrow::PostLoad(BinStream& bs){ RndDir::PostLoad(bs); }
+void PitchArrow::PostLoad(BinStream &bs) { RndDir::PostLoad(bs); }
 
 BEGIN_COPYS(PitchArrow)
     CREATE_COPY(PitchArrow)
@@ -267,11 +298,11 @@ BEGIN_COPYS(PitchArrow)
     COPY_SUPERCLASS(RndDir)
 END_COPYS
 
-DataNode PitchArrow::OnSetupFx(DataArray* da){
-    RndGroup* grp = da->Obj<RndGroup>(2);
-    if(grp){
-        RndGroup* arrowgrp = Find<RndGroup>("arrow_fx.grp", true);
-        RndGroup* tiltgrp = Find<RndGroup>("tilt.grp", true);
+DataNode PitchArrow::OnSetupFx(DataArray *da) {
+    RndGroup *grp = da->Obj<RndGroup>(2);
+    if (grp) {
+        RndGroup *arrowgrp = Find<RndGroup>("arrow_fx.grp", true);
+        RndGroup *tiltgrp = Find<RndGroup>("tilt.grp", true);
         tiltgrp->RemoveObject(arrowgrp);
         grp->AddObject(arrowgrp, 0);
     }

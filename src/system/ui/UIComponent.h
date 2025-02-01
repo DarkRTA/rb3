@@ -13,15 +13,14 @@
 #include "utl/FilePath.h"
 #include <vector>
 
- /**
+/**
  * @brief A base implementation of a UI object.
  * Original _objects description:
- * "Base class of all UI components, 
+ * "Base class of all UI components,
  * defines navigation and component state"
  */
 class UIComponent : public RndDrawable, public RndTransformable, public RndPollable {
-    public:
-
+public:
     enum State {
         kNormal = 0,
         kFocused = 1,
@@ -38,24 +37,24 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
         // UIMesh(RndMesh* mesh) : mMesh(mesh) {
         //     for(int i = 0; i < kNumStates; i++) mMats[i] = 0;
         // }
-        RndMesh* mMesh;
-        RndMat* mMats[kNumStates];
+        RndMesh *mMesh;
+        RndMat *mMats[kNumStates];
     };
 
     UIComponent();
     OBJ_CLASSNAME(UIComponent)
     OBJ_SET_TYPE(UIComponent)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Highlight(){ RndDrawable::Highlight(); }
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Highlight() { RndDrawable::Highlight(); }
     virtual ~UIComponent();
-    virtual void SetTypeDef(DataArray*);
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
-    virtual void ResourceCopy(const UIComponent*);
+    virtual void SetTypeDef(DataArray *);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
+    virtual void ResourceCopy(const UIComponent *);
     virtual void SetState(UIComponent::State);
     virtual Symbol StateSym() const;
     virtual bool Entering() const { return false; }
@@ -63,33 +62,33 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
     virtual void Enter();
     virtual void Exit();
     virtual void Poll();
-    virtual bool CanHaveFocus() {return true;}
-    virtual void CopyMembers(const UIComponent*, CopyType);
+    virtual bool CanHaveFocus() { return true; }
+    virtual void CopyMembers(const UIComponent *, CopyType);
     virtual void Update();
 
     void FinishSelecting();
-    void SendSelect(LocalUser*);
-    const char* GetResourcesPath();
+    void SendSelect(LocalUser *);
+    const char *GetResourcesPath();
     void ResourceFileUpdated(bool);
-    DataNode OnGetResourcesPath(DataArray*);
-    class ObjectDir* ResourceDir();
+    DataNode OnGetResourcesPath(DataArray *);
+    class ObjectDir *ResourceDir();
     void UpdateResource();
     void UpdateMeshes(State);
     void MockSelect();
 
-    UIComponent* NavRight(){ return mNavRight; }
-    UIComponent* NavDown(){ return mNavDown; }
+    UIComponent *NavRight() { return mNavRight; }
+    UIComponent *NavDown() { return mNavDown; }
     bool Loading() const { return mLoading; }
-    State GetState(){ return (State)mState; }
+    State GetState() { return (State)mState; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
     ObjPtr<UIComponent> mNavRight; // 0xB8
     ObjPtr<UIComponent> mNavDown; // 0xC4
-    LocalUser* mSelectingUser; // 0xD0
-    UIScreen* mSelectScreen; // 0xD4
-    UIResource* mResource; // 0xD8
+    LocalUser *mSelectingUser; // 0xD0
+    UIScreen *mSelectScreen; // 0xD4
+    UIResource *mResource; // 0xD8
     std::vector<UIMesh> mMeshes; // 0xDC
     /** "path to resource file for this component" */
     String mResourceName; // 0xE4
@@ -102,11 +101,12 @@ class UIComponent : public RndDrawable, public RndTransformable, public RndPolla
 
     NEW_OBJ(UIComponent)
     static void Init();
-    static void Register(){ REGISTER_OBJ_FACTORY(UIComponent); }
+    static void Register() { REGISTER_OBJ_FACTORY(UIComponent); }
     static int sSelectFrames;
     DECLARE_REVS
 
-    // open resource: "opens the current resource file for this component - will open in a new milo window"
+    // open resource: "opens the current resource file for this component - will open in a
+    // new milo window"
 };
 
 Symbol UIComponentStateToSym(UIComponent::State);
@@ -115,32 +115,36 @@ UIComponent::State SymToUIComponentState(Symbol);
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(UIComponentScrollMsg, "component_scroll");
-    UIComponentScrollMsg(UIComponent* comp, LocalUser* user) : 
-        Message(Type(), comp, user){}
-    UIComponent* GetUIComponent() const { return mData->Obj<UIComponent>(2); }
-END_MESSAGE;
+UIComponentScrollMsg(UIComponent *comp, LocalUser *user) : Message(Type(), comp, user) {}
+UIComponent *GetUIComponent() const { return mData->Obj<UIComponent>(2); }
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(UIComponentSelectMsg, "component_select");
-    UIComponentSelectMsg(UIComponent* comp, LocalUser* user) : 
-        Message(Type(), comp, user){}
-END_MESSAGE;
+UIComponentSelectMsg(UIComponent *comp, LocalUser *user) : Message(Type(), comp, user) {}
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(UIComponentSelectDoneMsg, "component_select_done");
-    UIComponentSelectDoneMsg(UIComponent* comp, LocalUser* user) : 
-        Message(Type(), comp, user){}
-END_MESSAGE;
+UIComponentSelectDoneMsg(UIComponent *comp, LocalUser *user)
+    : Message(Type(), comp, user) {}
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select");
-    UIComponentScrollSelectMsg(UIComponent* comp, LocalUser* user, bool b) : 
-        Message(Type(), comp, user, b){}
-END_MESSAGE;
+UIComponentScrollSelectMsg(UIComponent *comp, LocalUser *user, bool b)
+    : Message(Type(), comp, user, b) {}
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(UIComponentFocusChangeMsg, "component_focus");
-    UIComponentFocusChangeMsg(UIComponent* comp1, UIComponent* comp2, PanelDir* dir, Symbol s) : 
-        Message(Type(), comp1, comp2, dir, s){}
-END_MESSAGE;
+UIComponentFocusChangeMsg(UIComponent *comp1, UIComponent *comp2, PanelDir *dir, Symbol s)
+    : Message(Type(), comp1, comp2, dir, s) {}
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(UIComponentScrollStartMsg, "component_scroll_start");
-    UIComponentScrollStartMsg(UIComponent* comp, LocalUser* user) :
-        Message(Type(), DataNode(comp), DataNode(user)){}
-END_MESSAGE;
+UIComponentScrollStartMsg(UIComponent *comp, LocalUser *user)
+    : Message(Type(), DataNode(comp), DataNode(user)) {}
+END_MESSAGE
+;

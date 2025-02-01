@@ -10,31 +10,31 @@ public:
     RndEnvAnim();
     OBJ_CLASSNAME(EnvAnim);
     OBJ_SET_TYPE(EnvAnim);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual ~RndEnvAnim(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual ~RndEnvAnim() {}
     virtual void SetFrame(float, float);
     virtual float EndFrame();
-    virtual Hmx::Object* AnimTarget(){ return mEnviron; }
+    virtual Hmx::Object *AnimTarget() { return mEnviron; }
     virtual void SetKey(float);
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     virtual void Print();
 
-    Keys<Hmx::Color, Hmx::Color>& AmbientColorKeys(){ return mKeysOwner->mAmbientColorKeys; }
-    Keys<Hmx::Color, Hmx::Color>& FogColorKeys(){ return mKeysOwner->mFogColorKeys; }
-    Keys<Vector2, Vector2>& FogRangeKeys(){ return mKeysOwner->mFogRangeKeys; }
-    RndEnvAnim* KeysOwner() const { return mKeysOwner; }
+    Keys<Hmx::Color, Hmx::Color> &AmbientColorKeys() {
+        return mKeysOwner->mAmbientColorKeys;
+    }
+    Keys<Hmx::Color, Hmx::Color> &FogColorKeys() { return mKeysOwner->mFogColorKeys; }
+    Keys<Vector2, Vector2> &FogRangeKeys() { return mKeysOwner->mFogRangeKeys; }
+    RndEnvAnim *KeysOwner() const { return mKeysOwner; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndEnvAnim)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(RndEnvAnim)
-    }
-    
+    static void Init() { REGISTER_OBJ_FACTORY(RndEnvAnim) }
+
     ObjPtr<RndEnviron, ObjectDir> mEnviron; // 0x10
     Keys<Hmx::Color, Hmx::Color> mFogColorKeys; // 0x1c
     Keys<Vector2, Vector2> mFogRangeKeys; // 0x24

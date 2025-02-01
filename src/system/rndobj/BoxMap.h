@@ -3,15 +3,16 @@
 #include "math/Color.h"
 #include "rndobj/Lit.h"
 
-template <class T1, int T2> class BoxLightArray {
+template <class T1, int T2>
+class BoxLightArray {
 public:
     BoxLightArray() : mNumElements(0) {}
-    void Clear(){ mNumElements = 0; }
+    void Clear() { mNumElements = 0; }
     bool CanAddEntry() const { return mNumElements < T2; }
-    T1* AddEntry(){ return &mArray[mNumElements++]; }
-    void RemoveEntry(){ mNumElements--; }
+    T1 *AddEntry() { return &mArray[mNumElements++]; }
+    void RemoveEntry() { mNumElements--; }
     unsigned int NumElements() const { return mNumElements; }
-    const T1& operator[](int idx) const { return mArray[idx]; }
+    const T1 &operator[](int idx) const { return mArray[idx]; }
 
     T1 mArray[T2]; // 0x0
     unsigned int mNumElements;
@@ -50,27 +51,29 @@ public:
 
     BoxMapLighting();
     void Clear();
-    bool QueueLight(RndLight*, float);
-    bool CacheData(LightParams_Spot&);
-    void ApplyQueuedLights(Hmx::Color*, const Vector3*) const;
+    bool QueueLight(RndLight *, float);
+    bool CacheData(LightParams_Spot &);
+    void ApplyQueuedLights(Hmx::Color *, const Vector3 *) const;
 
-    void ApplyLight(Hmx::Color*, const LightParams_Directional&) const;
-    void ApplyLight(Hmx::Color*, const LightParams_Point&, const Vector3&) const;
-    void ApplyLight(Hmx::Color*, const BoxLightArray<BoxMapLighting::LightParams_Spot, 50>&, const Vector3&) const;
+    void ApplyLight(Hmx::Color *, const LightParams_Directional &) const;
+    void ApplyLight(Hmx::Color *, const LightParams_Point &, const Vector3 &) const;
+    void
+    ApplyLight(Hmx::Color *, const BoxLightArray<BoxMapLighting::LightParams_Spot, 50> &, const Vector3 &)
+        const;
 
-    bool ParamsAt(LightParams_Directional*& pd){
-        if(mQueued_Directional.CanAddEntry()){
+    bool ParamsAt(LightParams_Directional *&pd) {
+        if (mQueued_Directional.CanAddEntry()) {
             pd = mQueued_Directional.AddEntry();
             return true;
-        }
-        else return false;
+        } else
+            return false;
     }
-    bool ParamsAt(LightParams_Point*& pt){
-        if(mQueued_Point.CanAddEntry()){
+    bool ParamsAt(LightParams_Point *&pt) {
+        if (mQueued_Point.CanAddEntry()) {
             pt = mQueued_Point.AddEntry();
             return true;
-        }
-        else return false;
+        } else
+            return false;
     }
 
     static Vector3 sAxisDir[6];

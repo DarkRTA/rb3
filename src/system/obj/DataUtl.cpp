@@ -12,18 +12,18 @@
 
 #define VAR_STACK_SIZE 100
 
-std::map<Symbol, DataArray*> gMacroTable;
-class ObjectDir* gDataDir;
-Hmx::Object* gDataThis;
+std::map<Symbol, DataArray *> gMacroTable;
+class ObjectDir *gDataDir;
+Hmx::Object *gDataThis;
 static bool gDataMacroWarning = true;
 struct VarStack {
-    DataNode* var;
+    DataNode *var;
     DataNode value;
 };
 VarStack gVarStack[VAR_STACK_SIZE];
-VarStack* gVarStackPtr = gVarStack;
+VarStack *gVarStackPtr = gVarStack;
 
-Loader* DataFactory(const FilePath& f, LoaderPos l) { return new DataLoader(f, l, true); }
+Loader *DataFactory(const FilePath &f, LoaderPos l) { return new DataLoader(f, l, true); }
 
 void DataInit() {
     DataInitFuncs();
@@ -35,10 +35,13 @@ void DataInit() {
 }
 
 void DataTerminate() {
-    for (std::map<Symbol, DataArray*>::iterator i = gMacroTable.begin(); i != gMacroTable.end(); i++) {
-        DataArray* x = i->second;
+    for (std::map<Symbol, DataArray *>::iterator i = gMacroTable.begin();
+         i != gMacroTable.end();
+         i++) {
+        DataArray *x = i->second;
         if (i->second) {
-            if (!--i->second->mRefs) delete x;
+            if (!--i->second->mRefs)
+                delete x;
             i->second = NULL;
         }
     }
@@ -48,36 +51,42 @@ void DataTerminate() {
     DataTermFuncs();
 }
 
-void DataMacroWarning(bool b){
-    gDataMacroWarning = b;
-}
+void DataMacroWarning(bool b) { gDataMacroWarning = b; }
 
-void DataSetMacro(Symbol key, DataArray* macro){
-    DataArray*& val = gMacroTable[key];
-    if(val) val->Release();
-    if(macro){
-        if(val && gDataMacroWarning) MILO_WARN("Resetting macro %s (file %s, line %d)", key, macro->File(), macro->Line());
+void DataSetMacro(Symbol key, DataArray *macro) {
+    DataArray *&val = gMacroTable[key];
+    if (val)
+        val->Release();
+    if (macro) {
+        if (val && gDataMacroWarning)
+            MILO_WARN(
+                "Resetting macro %s (file %s, line %d)", key, macro->File(), macro->Line()
+            );
         val = macro;
         macro->AddRef();
-    }
-    else val = 0;
+    } else
+        val = 0;
 }
 
-DataArray* DataGetMacro(Symbol s){
-    const std::map<Symbol, DataArray*>::iterator it = gMacroTable.find(s);
-    if(it == gMacroTable.end()) return 0;
-    else return it->second;
+DataArray *DataGetMacro(Symbol s) {
+    const std::map<Symbol, DataArray *>::iterator it = gMacroTable.find(s);
+    if (it == gMacroTable.end())
+        return 0;
+    else
+        return it->second;
 }
 
-Symbol DataGetMacroByInt(int value, const char* prefix){
-    for(std::map<Symbol, DataArray*>::iterator it = gMacroTable.begin(); it != gMacroTable.end(); it++){
-        DataArray* macro_array = (*it).second;
-        if(macro_array->Size() != 0){
-            DataNode& node = (*it).second->Node(0);
-            if(node.Type() == kDataInt){
-                if(node.Int() == value){
+Symbol DataGetMacroByInt(int value, const char *prefix) {
+    for (std::map<Symbol, DataArray *>::iterator it = gMacroTable.begin();
+         it != gMacroTable.end();
+         it++) {
+        DataArray *macro_array = (*it).second;
+        if (macro_array->Size() != 0) {
+            DataNode &node = (*it).second->Node(0);
+            if (node.Type() == kDataInt) {
+                if (node.Int() == value) {
                     String name((*it).first);
-                    if(name.find(prefix) == 0){
+                    if (name.find(prefix) == 0) {
                         return (*it).first;
                     }
                 }
@@ -89,21 +98,24 @@ Symbol DataGetMacroByInt(int value, const char* prefix){
 
 void DataMergeTags(DataArray *dest, DataArray *src) {
     MILO_ASSERT(dest, 200);
-    if(dest == 0 || src == 0 || src == dest) return;
-    else for(int i = 0; i < src->Size(); i++){
-        DataNode* node = &src->Node(i);
-        if(node->Type() == kDataArray){
-            DataArray* arr = node->mValue.array;
-            if(arr->Size() != 0){
-                DataArray* found = dest->FindArray(CONST_ARRAY(arr)->Node(0).mValue.integer, false);
-                if(found == 0){
-                    dest->Resize(dest->Size() + 1);
-                    dest->Node(dest->Size() - 1) = DataNode(arr, kDataArray);
+    if (dest == 0 || src == 0 || src == dest)
+        return;
+    else
+        for (int i = 0; i < src->Size(); i++) {
+            DataNode *node = &src->Node(i);
+            if (node->Type() == kDataArray) {
+                DataArray *arr = node->mValue.array;
+                if (arr->Size() != 0) {
+                    DataArray *found =
+                        dest->FindArray(CONST_ARRAY(arr)->Node(0).mValue.integer, false);
+                    if (found == 0) {
+                        dest->Resize(dest->Size() + 1);
+                        dest->Node(dest->Size() - 1) = DataNode(arr, kDataArray);
+                    } else
+                        DataMergeTags(found, arr);
                 }
-                else DataMergeTags(found, arr);
             }
         }
-    }
 }
 
 void DataReplaceTags(DataArray *dest, DataArray *src) {
@@ -134,34 +146,35 @@ void DataReplaceTags(DataArray *dest, DataArray *src) {
 
 #pragma push
 #pragma pool_data off
-Hmx::Object* DataSetThis(Hmx::Object* o){
-    Hmx::Object* old;
-    ObjectDir* dir;
-    if(o == gDataThis) return o;
-    if(o) dir = o->DataDir();
-    else dir = ObjectDir::Main();
+Hmx::Object *DataSetThis(Hmx::Object *o) {
+    Hmx::Object *old;
+    ObjectDir *dir;
+    if (o == gDataThis)
+        return o;
+    if (o)
+        dir = o->DataDir();
+    else
+        dir = ObjectDir::Main();
     gDataDir = dir;
     old = gDataThis;
     gDataThis = o;
-    static DataNode& thisVar = DataVariable("this");
+    static DataNode &thisVar = DataVariable("this");
     thisVar = DataNode(o);
     o = old;
     return o;
 }
 #pragma pop
 
-Hmx::Object *DataThis() {
-    return gDataThis;
-}
+Hmx::Object *DataThis() { return gDataThis; }
 
-void DataPushVar(DataNode* var){
+void DataPushVar(DataNode *var) {
     gVarStackPtr++;
     MILO_ASSERT(gVarStackPtr - gVarStack < VAR_STACK_SIZE, 0x137);
     gVarStackPtr->var = var;
     gVarStackPtr->value = *var;
 }
 
-void DataPopVar(){
+void DataPopVar() {
     MILO_ASSERT(gVarStackPtr > gVarStack, 0x13E);
     *gVarStackPtr->var = gVarStackPtr->value;
     gVarStackPtr->value = DataNode(0);

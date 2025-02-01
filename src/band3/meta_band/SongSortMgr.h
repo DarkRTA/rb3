@@ -21,12 +21,10 @@ class SongSortMgr {
 public:
     class SongFilter {
     public:
-        SongFilter() : requiredTrackType(kTrackNone) {
-            filters.resize(0xB);
-        }
-        ~SongFilter(){}
+        SongFilter() : requiredTrackType(kTrackNone) { filters.resize(0xB); }
+        ~SongFilter() {}
 
-        void AddFilter(FilterType type, Symbol s){
+        void AddFilter(FilterType type, Symbol s) {
             MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x5E);
             filters[type].insert(s);
         }
@@ -36,8 +34,7 @@ public:
         std::vector<int> excludedSongs; // 0xc
     };
 
-    bool DoesSongMatchFilter(int, const SongFilter*, Symbol) const;
-
+    bool DoesSongMatchFilter(int, const SongFilter *, Symbol) const;
 };
 
-extern SongSortMgr* TheSongSortMgr;
+extern SongSortMgr *TheSongSortMgr;

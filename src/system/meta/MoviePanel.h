@@ -6,13 +6,15 @@
 #include "obj/DataFile.h"
 #include "ui/UILabel.h"
 
-class MoviePanel : public UIPanel, public DiscErrorMgrWii::Callback, public HomeMenu::Callback {
+class MoviePanel : public UIPanel,
+                   public DiscErrorMgrWii::Callback,
+                   public HomeMenu::Callback {
 public:
     MoviePanel();
     OBJ_CLASSNAME(MoviePanel);
     OBJ_SET_TYPE(MoviePanel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~MoviePanel(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~MoviePanel() {}
     virtual void SetTypeDef(DataArray *);
     virtual void Draw();
     virtual void Enter();
@@ -23,7 +25,7 @@ public:
     virtual void Unload();
     virtual bool IsLoaded() const;
     virtual void FinishLoad();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual void DiscErrorStart();
     virtual void DiscErrorEnd();
     virtual void HomeMenuOpen(bool);
@@ -43,16 +45,16 @@ public:
     bool mLoop; // 0x42
     bool mFillWidth; // 0x43
     int mLanguage; // 0x44
-    const char* mCurrentMovie; // 0x48
-    std::vector<const char*> mMovies; // 0x4c
-    std::list<const char*> mRecent; // 0x54
+    const char *mCurrentMovie; // 0x48
+    std::vector<const char *> mMovies; // 0x4c
+    std::list<const char *> mRecent; // 0x54
     Movie mMovie; // 0x5c
-    DataLoader* mSubtitlesLoader; // 0x60
-    DataArray* mSubtitles; // 0x64
+    DataLoader *mSubtitlesLoader; // 0x60
+    DataArray *mSubtitles; // 0x64
     int mCurrentSubtitleIndex; // 0x68
     bool mSubtitleCleared; // 0x6c
-    UILabel* mSubtitleLabel; // 0x70
-    RndAnimatable* mPauseHintAnim; // 0x74
+    UILabel *mSubtitleLabel; // 0x70
+    RndAnimatable *mPauseHintAnim; // 0x74
     bool mShowHint; // 0x78
     float mTimeShowHintStarted; // 0x7c
     bool mShowMenu; // 0x80

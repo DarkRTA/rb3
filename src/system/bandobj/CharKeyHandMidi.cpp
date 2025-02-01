@@ -1,13 +1,10 @@
 #include "bandobj/CharKeyHandMidi.h"
 #include "utl/Symbols.h"
 
-CharKeyHandMidi::CharKeyHandMidi() : mIKObject(this, 0), mFirstSpot(this, 0), mSecondSpot(this, 0), unk7c(this, 0) {
+CharKeyHandMidi::CharKeyHandMidi()
+    : mIKObject(this, 0), mFirstSpot(this, 0), mSecondSpot(this, 0), unk7c(this, 0) {}
 
-}
-
-CharKeyHandMidi::~CharKeyHandMidi(){
-    
-}
+CharKeyHandMidi::~CharKeyHandMidi() {}
 
 BEGIN_HANDLERS(CharKeyHandMidi)
     HANDLE(fingers_up, OnFingersUp)

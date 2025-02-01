@@ -6,9 +6,9 @@
 
 class CampaignSourceProvider : public UIListProvider, public Hmx::Object {
 public:
-    CampaignSourceProvider(){}
-    virtual ~CampaignSourceProvider(){}
-    virtual void Text(int, int, UIListLabel*, UILabel*) const;
+    CampaignSourceProvider() {}
+    virtual ~CampaignSourceProvider() {}
+    virtual void Text(int, int, UIListLabel *, UILabel *) const;
     virtual Symbol DataSymbol(int) const;
     virtual int NumData() const;
 
@@ -22,8 +22,8 @@ public:
     CampaignSongInfoPanel();
     OBJ_CLASSNAME(CampaignSongInfoPanel);
     OBJ_SET_TYPE(CampaignSongInfoPanel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~CampaignSongInfoPanel(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~CampaignSongInfoPanel() {}
     virtual void Enter();
     virtual void Load();
     virtual void Unload();
@@ -37,11 +37,11 @@ public:
     int GetSongsCompleted(Difficulty) const;
     int GetStarCount() const;
     int GetStarsEarned(Difficulty) const;
-    const char* GetInstrumentIcon();
+    const char *GetInstrumentIcon();
     Symbol GetMusicLibraryBackScreen();
     Symbol GetMusicLibraryNextScreen();
     void CreateAndSubmitMusicLibraryTask();
     void Launch();
 
-    CampaignSourceProvider* mCampaignSourceProvider; // 0x38
+    CampaignSourceProvider *mCampaignSourceProvider; // 0x38
 };

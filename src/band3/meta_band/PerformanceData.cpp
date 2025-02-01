@@ -3,21 +3,31 @@
 #include "os/DateTime.h"
 #include "network/net/NetSession.h"
 
-PerformanceData::PerformanceData() : m0x24(-1), m0x28(false), mIsOnline(false), mIsPlaytest(false), mIsCheating(false), 
-mScoreType(kScoreBand), mDifficulty(kDifficultyEasy), mStars(0), mBattleId(0), mTimestamp(0), mMode(gNullStr), mStats() {
+PerformanceData::PerformanceData()
+    : m0x24(-1), m0x28(false), mIsOnline(false), mIsPlaytest(false), mIsCheating(false),
+      mScoreType(kScoreBand), mDifficulty(kDifficultyEasy), mStars(0), mBattleId(0),
+      mTimestamp(0), mMode(gNullStr), mStats() {
     mSaveSizeMethod = SaveSize;
     InitializeStatsVectors();
 }
 
-PerformanceData::~PerformanceData() {
-
-}
+PerformanceData::~PerformanceData() {}
 
 #pragma push
 #pragma dont_inline on
-void PerformanceData::Initialize(const Stats& stats, int songId, ScoreType scoreType, Difficulty difficulty, Symbol mode, int stars, int battleId, bool b) {
+void PerformanceData::Initialize(
+    const Stats &stats,
+    int songId,
+    ScoreType scoreType,
+    Difficulty difficulty,
+    Symbol mode,
+    int stars,
+    int battleId,
+    bool b
+) {
     m0x24 = 0;
-    if(MetaPanel::sIsPlaytest) mIsPlaytest = true;
+    if (MetaPanel::sIsPlaytest)
+        mIsPlaytest = true;
     mIsOnline = !TheNetSession->IsLocal();
     m0x28 = true;
     mMode = mode;
@@ -36,7 +46,7 @@ void PerformanceData::Initialize(const Stats& stats, int songId, ScoreType score
 }
 #pragma pop
 
-void PerformanceData::SaveFixed(FixedSizeSaveableStream& stream) const {
+void PerformanceData::SaveFixed(FixedSizeSaveableStream &stream) const {
     stream << m0x24;
     stream << m0x28;
     stream << mIsPlaytest;
@@ -75,10 +85,12 @@ void PerformanceData::SaveFixed(FixedSizeSaveableStream& stream) const {
 
 int PerformanceData::SaveSize(int i) {
     int savesize = 6;
-    if(i >= 0x97) savesize = 7;
-    if(i >= 0x94) savesize++;
+    if (i >= 0x97)
+        savesize = 7;
+    if (i >= 0x94)
+        savesize++;
     savesize += 0x31e;
-    if(FixedSizeSaveable::sPrintoutsEnabled){
+    if (FixedSizeSaveable::sPrintoutsEnabled) {
         MILO_LOG("* %s = %i\n", "PerformanceData", savesize);
     }
     return savesize;
@@ -86,12 +98,14 @@ int PerformanceData::SaveSize(int i) {
 
 #pragma push
 #pragma dont_inline on
-void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
+void PerformanceData::LoadFixed(FixedSizeSaveableStream &stream, int rev) {
     stream >> m0x24;
     stream >> m0x28;
     stream >> mIsPlaytest;
-    if(rev >= 0x97) stream >> mIsOnline;
-    if(rev >= 0x94) stream >> mIsCheating;
+    if (rev >= 0x97)
+        stream >> mIsOnline;
+    if (rev >= 0x94)
+        stream >> mIsCheating;
     FixedSizeSaveable::LoadFixedSymbol(stream, mMode);
     stream >> mSongId;
     int scoretype = 0;
@@ -108,13 +122,13 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
     mStats.SetNotesHitFraction(stream.ReadFloat());
     mStats.SetHitCount(stream.ReadInt());
     mStats.SetMissCount(stream.ReadInt());
-    std::vector<float>& failpoints = mStats.AccessFailurePoints();
+    std::vector<float> &failpoints = mStats.AccessFailurePoints();
     failpoints.clear();
-    std::vector<float>& savepoints = mStats.AccessSavedPoints();
+    std::vector<float> &savepoints = mStats.AccessSavedPoints();
     savepoints.clear();
-    std::vector<float>& closesttimessaved = mStats.AccessClosestTimesSaved();
+    std::vector<float> &closesttimessaved = mStats.AccessClosestTimesSaved();
     closesttimessaved.clear();
-    std::vector<float>& closestplayerssaved = mStats.AccessClosestPlayersSaved();
+    std::vector<float> &closestplayerssaved = mStats.AccessClosestPlayersSaved();
     closestplayerssaved.clear();
     FixedSizeSaveable::LoadStd(stream, failpoints, 3, 4);
     FixedSizeSaveable::LoadStd(stream, savepoints, 3, 4);
@@ -122,7 +136,7 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
     FixedSizeSaveable::LoadStd(stream, closestplayerssaved, 3, 4);
     mStats.SetTimesSaved(stream.ReadInt());
     mStats.SetPlayersSaved(stream.ReadInt());
-    Stats::StreakInfo& info = mStats.AccessCurrentStreakInfo();
+    Stats::StreakInfo &info = mStats.AccessCurrentStreakInfo();
     stream >> info.mStart;
     stream >> info.mDuration;
     mStats.SetEndGameOverdrive(stream.ReadFloat());
@@ -132,47 +146,44 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
     mStats.SetOverdrivePhraseCount(stream.ReadInt());
     mStats.SetUnisonPhrasesCompleted(stream.ReadInt());
     mStats.SetUnisonPhraseCount(stream.ReadInt());
-    std::vector<int>& bestsolos = mStats.AccessBestSolos();
+    std::vector<int> &bestsolos = mStats.AccessBestSolos();
     bestsolos.clear();
     FixedSizeSaveable::LoadStd(stream, bestsolos, 3, 4);
     int hitcount = stream.ReadInt();
     mStats.SetHitStreakCount(hitcount);
-    for(int i = 0; i < 3; i++){
-        if(i < hitcount){
-            Stats::StreakInfo& info = mStats.AccessHitStreak(i);
+    for (int i = 0; i < 3; i++) {
+        if (i < hitcount) {
+            Stats::StreakInfo &info = mStats.AccessHitStreak(i);
             stream >> info.mStart;
             stream >> info.mDuration;
-        }
-        else {
+        } else {
             stream.ReadInt();
             stream.ReadInt();
         }
     }
     int misscount = stream.ReadInt();
     mStats.SetMissStreakCount(misscount);
-    for(int i = 0; i < 3; i++){
-        if(i < misscount){
-            Stats::StreakInfo& info = mStats.AccessMissStreak(i);
+    for (int i = 0; i < 3; i++) {
+        if (i < misscount) {
+            Stats::StreakInfo &info = mStats.AccessMissStreak(i);
             stream >> info.mStart;
             stream >> info.mDuration;
-        }
-        else {
+        } else {
             stream.ReadInt();
             stream.ReadInt();
         }
     }
     int oddeploycount = stream.ReadInt();
     mStats.SetBestOverdriveDeploymentsCount(oddeploycount);
-    for(int i = 0; i < 3; i++){
-        if(i < oddeploycount){
-            Stats::MultiplierInfo& info = mStats.AccessBestOverdriveDeployment(i);
+    for (int i = 0; i < 3; i++) {
+        if (i < oddeploycount) {
+            Stats::MultiplierInfo &info = mStats.AccessBestOverdriveDeployment(i);
             stream >> info.mStartMs;
             stream >> info.mDurationMs;
             stream >> info.mStartingMultiplier;
             stream >> info.mEndingMultiplier;
             stream >> info.mPoints;
-        }
-        else {
+        } else {
             stream.ReadInt();
             stream.ReadInt();
             stream.ReadFloat();
@@ -182,16 +193,15 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
     }
     int multcount = stream.ReadInt();
     mStats.SetBestStreakMultipliersCount(multcount);
-    for(int i = 0; i < 3; i++){
-        if(i < multcount){
-            Stats::MultiplierInfo& info = mStats.AccessBestStreakMultiplier(i);
+    for (int i = 0; i < 3; i++) {
+        if (i < multcount) {
+            Stats::MultiplierInfo &info = mStats.AccessBestStreakMultiplier(i);
             stream >> info.mStartMs;
             stream >> info.mDurationMs;
             stream >> info.mStartingMultiplier;
             stream >> info.mEndingMultiplier;
             stream >> info.mPoints;
-        }
-        else {
+        } else {
             stream.ReadInt();
             stream.ReadInt();
             stream.ReadFloat();
@@ -221,22 +231,20 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
     int vocsingercount = stream.ReadInt();
     int vocpartcount = stream.ReadInt();
     mStats.SetVocalSingerAndPartCounts(vocsingercount, vocpartcount);
-    for(int i = 0; i < 3; i++){
-        if(i < vocsingercount){
-            SingerStats& stats = mStats.AccessSingerStats(i);
-            for(int j = 0; j < 3; j++){
-                if(j < vocpartcount){
+    for (int i = 0; i < 3; i++) {
+        if (i < vocsingercount) {
+            SingerStats &stats = mStats.AccessSingerStats(i);
+            for (int j = 0; j < 3; j++) {
+                if (j < vocpartcount) {
                     stats.SetPartPercentage(stream.ReadInt(), stream.ReadFloat());
-                }
-                else {
+                } else {
                     stream.ReadInt();
                     stream.ReadFloat();
                 }
             }
             stats.SetPitchDeviationInfo(stream.ReadFloat(), stream.ReadFloat());
-        }
-        else {
-            for(int j = 0; j < 3; j++){
+        } else {
+            for (int j = 0; j < 3; j++) {
                 stream.ReadInt();
                 stream.ReadFloat();
             }
@@ -247,16 +255,21 @@ void PerformanceData::LoadFixed(FixedSizeSaveableStream& stream, int rev) {
 }
 #pragma pop
 
-void PerformanceData::Prune(Stats& stats){
-    while(stats.mFailurePoints.size() > 3) stats.mFailurePoints.pop_back();
-    while(stats.mSavedPoints.size() > 3) stats.mSavedPoints.pop_back();
-    while(stats.mClosestTimesSaved.size() > 3) stats.mClosestTimesSaved.pop_back();
-    while(stats.mClosestPlayersSaved.size() > 3) stats.mClosestPlayersSaved.pop_back();
-    while(stats.mBestSolos.size() > 3) stats.mBestSolos.pop_back();
+void PerformanceData::Prune(Stats &stats) {
+    while (stats.mFailurePoints.size() > 3)
+        stats.mFailurePoints.pop_back();
+    while (stats.mSavedPoints.size() > 3)
+        stats.mSavedPoints.pop_back();
+    while (stats.mClosestTimesSaved.size() > 3)
+        stats.mClosestTimesSaved.pop_back();
+    while (stats.mClosestPlayersSaved.size() > 3)
+        stats.mClosestPlayersSaved.pop_back();
+    while (stats.mBestSolos.size() > 3)
+        stats.mBestSolos.pop_back();
     stats.mSections.resize(0);
 }
 
-void PerformanceData::InitializeStatsVectors(){
+void PerformanceData::InitializeStatsVectors() {
     mStats.mFailurePoints.resize(3);
     mStats.mSavedPoints.resize(3);
     mStats.mClosestTimesSaved.resize(3);

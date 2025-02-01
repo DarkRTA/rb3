@@ -3,26 +3,24 @@
 
 bool gTempDOFEnabled;
 
-WiiDOFProc::WiiDOFProc(){
+WiiDOFProc::WiiDOFProc() {
     TheRnd->RegisterPostProcessor(this);
     mEnabled = false;
 }
 
-WiiDOFProc::~WiiDOFProc(){
-    TheRnd->UnregisterPostProcessor(this);
-}
+WiiDOFProc::~WiiDOFProc() { TheRnd->UnregisterPostProcessor(this); }
 
-void WiiDOFProc::Set(RndCam*, float, float, float, float){}
+void WiiDOFProc::Set(RndCam *, float, float, float, float) {}
 
-void WiiDOFProc::SetTint(bool b, Hmx::Color col){
+void WiiDOFProc::SetTint(bool b, Hmx::Color col) {
     unk44 = b;
     color = col;
 }
 
-void WiiDOFProc::UnSet(){ mEnabled = false; }
-void WiiDOFProc::EndWorld(){}
-void WiiDOFProc::OnGPHangRecover(){ 
+void WiiDOFProc::UnSet() { mEnabled = false; }
+void WiiDOFProc::EndWorld() {}
+void WiiDOFProc::OnGPHangRecover() {
 #ifdef MILO_DEBUG
-    gTempDOFEnabled = false; 
+    gTempDOFEnabled = false;
 #endif
 }

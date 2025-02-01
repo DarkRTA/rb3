@@ -115,8 +115,9 @@ enum JoypadType {
     kJoypadNumTypes = 47
 };
 
-inline bool MovedLeftStick(JoypadButton btn){
-    return btn == kPad_LStickUp || btn == kPad_LStickRight || btn == kPad_LStickDown || btn == kPad_LStickLeft;
+inline bool MovedLeftStick(JoypadButton btn) {
+    return btn == kPad_LStickUp || btn == kPad_LStickRight || btn == kPad_LStickDown
+        || btn == kPad_LStickLeft;
 }
 
 struct ProGuitarStringInfo {
@@ -157,7 +158,7 @@ struct ProGuitarData {
         struct {
             ProGuitarStringInfo mStringInfos[6];
         };
-    };   
+    };
 
     bool unkabool : 1;
     unsigned char unkachar : 7;
@@ -178,7 +179,8 @@ struct ProGuitarData {
 };
 
 struct ProKeysData {
-    unsigned char unk0[8]; // an array of bitfielded uchars? 1 for bool, 7 for actual uchar data
+    unsigned char unk0[8]; // an array of bitfielded uchars? 1 for bool, 7 for actual
+                           // uchar data
     // used in GetSlottedKeyVelocityFromExtended
 
     bool mSustain : 1;
@@ -188,7 +190,8 @@ struct ProKeysData {
     unsigned char mExpressionPedal : 7;
 
     bool unkabool : 1;
-    unsigned char unkachar : 7; // used for both mModVal and accelerometer axis val at index 0?
+    unsigned char unkachar : 7; // used for both mModVal and accelerometer axis val at
+                                // index 0?
 
     bool unkbbool : 1;
     unsigned char unkbchar : 7;
@@ -204,7 +207,6 @@ struct ProKeysData {
     unsigned char mLowHandPlacement : 5; // bits 0-4
 
     unsigned char mConnectedAccessories;
-
 };
 
 class JoypadData {
@@ -222,7 +224,7 @@ public:
         ProKeysData mProKeysData;
     }; // 0x50
 
-    class LocalUser* mUser; // 0x60
+    class LocalUser *mUser; // 0x60
     bool mConnected; // 0x64
     bool mVibrateEnabled; // 0x65
 
@@ -274,13 +276,13 @@ struct WaitInfo {
 class LocalUser; // forward dec
 
 extern "C" bool JoypadIsCalbertGuitar(int);
-extern "C" int ButtonToVelocityBucket(JoypadData*, JoypadButton);
-extern "C" void JoypadInitCommon(class DataArray*);
-extern "C" void AssociateUserAndPad(LocalUser*, int);
+extern "C" int ButtonToVelocityBucket(JoypadData *, JoypadButton);
+extern "C" void JoypadInitCommon(class DataArray *);
+extern "C" void AssociateUserAndPad(LocalUser *, int);
 extern "C" void ResetAllUsersPads();
-extern "C" int GetUsersPadNum(LocalUser*);
-extern "C" LocalUser* JoypadGetUserFromPadNum(int);
-extern "C" int JoypadGetUsersPadNum(LocalUser*);
+extern "C" int GetUsersPadNum(LocalUser *);
+extern "C" LocalUser *JoypadGetUserFromPadNum(int);
+extern "C" int JoypadGetUsersPadNum(LocalUser *);
 extern "C" void JoypadSetCalbertMode(int, int);
 extern "C" void JoypadSetActuatorsImp(int, int, int);
 extern "C" void JoypadKeepEverythingAlive();
@@ -289,7 +291,7 @@ extern "C" void JoypadPollCommon();
 void JoypadSetVibrate(int, bool);
 Symbol JoypadControllerTypePadNum(int padNum);
 bool JoypadIsConnectedPadNum(int);
-class JoypadData* JoypadGetPadData(int);
+class JoypadData *JoypadGetPadData(int);
 void JoypadReset();
 bool JoypadIsControllerTypePadNum(int, Symbol);
 bool JoypadTypeHasLeftyFlip(Symbol);
@@ -297,20 +299,22 @@ int JoypadTypePadShiftButton(Symbol);
 int JoypadTypeCymbalShiftButton(Symbol);
 bool JoypadIsShiftButton(int, JoypadButton);
 JoypadAction ButtonToAction(JoypadButton, Symbol);
-const char* JoypadGetBreedString(int);
+const char *JoypadGetBreedString(int);
 float JoypadGetCalbertValue(int, bool);
 bool JoypadVibrate(int);
 unsigned int JoypadPollForButton(int);
 void JoypadPoll();
 
-bool UserHasController(LocalUser*);
-bool UserHasGHDrums(LocalUser*);
-bool UserHas22FretGuitar(LocalUser*);
-bool UserHasButtonGuitar(LocalUser*);
+bool UserHasController(LocalUser *);
+bool UserHasGHDrums(LocalUser *);
+bool UserHas22FretGuitar(LocalUser *);
+bool UserHasButtonGuitar(LocalUser *);
 
 // forward dec
-namespace Hmx { class Object; }
+namespace Hmx {
+    class Object;
+}
 
-void JoypadSubscribe(Hmx::Object*);
-void JoypadUnsubscribe(Hmx::Object*);
-void JoypadPushThroughMsg(const Message&);
+void JoypadSubscribe(Hmx::Object *);
+void JoypadUnsubscribe(Hmx::Object *);
+void JoypadPushThroughMsg(const Message &);

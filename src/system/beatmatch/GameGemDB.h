@@ -8,14 +8,14 @@ public:
     GameGemDB(int, int);
     ~GameGemDB();
     void Clear();
-    bool AddMultiGem(int, const MultiGemInfo&);
-    bool AddRGGem(int, const RGGemInfo&);
+    bool AddMultiGem(int, const MultiGemInfo &);
+    bool AddRGGem(int, const RGGemInfo &);
     void MergeChordGems();
-    const GameGemList* GetDiffGemList(int) const;
-    GameGemList* GetDiffGemList(int);
+    const GameGemList *GetDiffGemList(int) const;
+    GameGemList *GetDiffGemList(int);
     void Finalize();
-    GameGemDB* Duplicate() const;
+    GameGemDB *Duplicate() const;
 
-    std::vector<GameGemList*> mGameGemLists;
+    std::vector<GameGemList *> mGameGemLists;
     int mHopoThreshold;
 };

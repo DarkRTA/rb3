@@ -5,7 +5,7 @@
 class HitTracker : public HitSink {
 public:
     HitTracker();
-    virtual ~HitTracker(){}
+    virtual ~HitTracker() {}
     virtual void Hit(HitType);
     virtual void Key(int);
     virtual void RGFret(int, int);

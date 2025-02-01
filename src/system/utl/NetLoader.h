@@ -6,7 +6,6 @@
 #include "utl/Loader.h"
 
 enum NetLoaderPos {
-
 };
 
 class NetLoader {

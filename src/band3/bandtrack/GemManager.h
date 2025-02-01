@@ -1,5 +1,4 @@
-#ifndef BANDTRACK_GEMMANAGER_H
-#define BANDTRACK_GEMMANAGER_H
+#pragma once
 #include "obj/Object.h"
 #include "utl/Symbol.h"
 #include "system/track/TrackDir.h"
@@ -16,7 +15,9 @@ enum PhraseState {
 
 class PlayerState {
 public:
-    PlayerState() : warning(0), overdriveReady(0), whammy(0), whammyActive(0), phraseState(kPhraseNone), fillState(0), streak(0) {}
+    PlayerState()
+        : warning(0), overdriveReady(0), whammy(0), whammyActive(0),
+          phraseState(kPhraseNone), fillState(0), streak(0) {}
 
     bool warning; // 0x0
     bool overdriveReady; // 0x1
@@ -29,10 +30,10 @@ public:
 
 class GemManager {
 public:
-    GemManager(const TrackConfig&, TrackDir*);
+    GemManager(const TrackConfig &, TrackDir *);
     ~GemManager();
 
-    bool GetChordWidgetName(class Symbol, class Symbol, class Symbol&);
+    bool GetChordWidgetName(class Symbol, class Symbol, class Symbol &);
     bool GetWidgetName(class Symbol &, int, class Symbol);
     TrackWidget *GetWidgetByName(Symbol);
 
@@ -55,17 +56,15 @@ public:
     void Jump(float);
     void SetGemsEnabled(float);
     bool OnMissPhrase(int);
-    void SetBonusGems(bool, const PlayerState&);
+    void SetBonusGems(bool, const PlayerState &);
     void SetInCoda(bool);
     void PopSmasher(int);
     void UpdateGemStates();
     void ResetSmashers(bool);
     void UpdateSlotPositions();
-    Hmx::Object* GetSmasherObj(int);
+    Hmx::Object *GetSmasherObj(int);
     void HideGems();
 
     TrackDir *mTrackDir;
     TrackConfig *mTrackConfig;
 };
-
-#endif // BANDTRACK_GEMMANAGER_H

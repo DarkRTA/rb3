@@ -7,15 +7,15 @@
 
 #include "decomp.h"
 
-AccomplishmentGroup::AccomplishmentGroup(DataArray* i_pConfig, int index) : mName(""), mIndex(index), mInstrumentIcon(0x47), mScoreType((ScoreType)10), mAward("") {
+AccomplishmentGroup::AccomplishmentGroup(DataArray *i_pConfig, int index)
+    : mName(""), mIndex(index), mInstrumentIcon(0x47), mScoreType((ScoreType)10),
+      mAward("") {
     Configure(i_pConfig);
 }
 
-AccomplishmentGroup::~AccomplishmentGroup() {
+AccomplishmentGroup::~AccomplishmentGroup() {}
 
-}
-
-void AccomplishmentGroup::Configure(DataArray* i_pConfig) {
+void AccomplishmentGroup::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1d);
 
     mName = i_pConfig->Sym(0);
@@ -27,38 +27,32 @@ void AccomplishmentGroup::Configure(DataArray* i_pConfig) {
     i_pConfig->FindData(preferred_scoretype, scoreType, true);
     mScoreType = (ScoreType)scoreType;
     if (1 < instrumentIcon.length()) {
-        TheDebug.Notify(MakeString("Accomplishment Group has an instrument icon that is more than 1 character long! GROUP: %s\n", mName.Str()));
+        TheDebug.Notify(MakeString(
+            "Accomplishment Group has an instrument icon that is more than 1 character long! GROUP: %s\n",
+            mName.Str()
+        ));
         instrumentIcon = instrumentIcon.substr(0, 1);
     }
     if (instrumentIcon.length() == 0) {
-        TheDebug.Notify(MakeString("Accomplishment Group has an instrument icon that is 0 characters long! GROUP: %s\n", mName.Str()));
+        TheDebug.Notify(MakeString(
+            "Accomplishment Group has an instrument icon that is 0 characters long! GROUP: %s\n",
+            mName.Str()
+        ));
     } else {
         mInstrumentIcon = instrumentIcon[0];
     }
 }
 
-int AccomplishmentGroup::GetIndex() const {
-    return mIndex;
-}
+int AccomplishmentGroup::GetIndex() const { return mIndex; }
 
-Symbol AccomplishmentGroup::GetName() const {
-    return mName;
-}
+Symbol AccomplishmentGroup::GetName() const { return mName; }
 
-char AccomplishmentGroup::GetInstrumentIcon() {
-    return mInstrumentIcon;
-}
+char AccomplishmentGroup::GetInstrumentIcon() { return mInstrumentIcon; }
 
-Symbol AccomplishmentGroup::GetAward() const {
-    return mAward;
-}
+Symbol AccomplishmentGroup::GetAward() const { return mAward; }
 
-bool AccomplishmentGroup::HasAward() const {
-    return !(mAward == "");
-}
+bool AccomplishmentGroup::HasAward() const { return !(mAward == ""); }
 
-DECOMP_FORCEACTIVE(AccomplishmentGroup,
-    "%s_desc",
-    "ui/accomplishments/group_art/%s_keep.png",
-    "%s_gray"
+DECOMP_FORCEACTIVE(
+    AccomplishmentGroup, "%s_desc", "ui/accomplishments/group_art/%s_keep.png", "%s_gray"
 )

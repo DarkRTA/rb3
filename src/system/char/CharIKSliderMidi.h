@@ -7,22 +7,24 @@
 #include "char/Character.h"
 
 /** "Moves an RndTransformable (bone) to a percentage of the way between two spots." */
-class CharIKSliderMidi : public RndHighlightable, public CharWeightable, public CharPollable {
+class CharIKSliderMidi : public RndHighlightable,
+                         public CharWeightable,
+                         public CharPollable {
 public:
     CharIKSliderMidi();
     virtual ~CharIKSliderMidi();
     virtual void Highlight();
     OBJ_CLASSNAME(CharIKSliderMidi);
     OBJ_SET_TYPE(CharIKSliderMidi);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     virtual void Enter();
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual void SetName(const char *, class ObjectDir *);
 
     void SetupTransforms();
     void SetFraction(float, float);
@@ -30,9 +32,7 @@ public:
     DECLARE_REVS;
     DELETE_OVERLOAD;
     NEW_OBJ(CharIKSliderMidi)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharIKSliderMidi)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharIKSliderMidi) }
 
     /** "The bone to move" */
     ObjPtr<RndTransformable> mTarget; // 0x28

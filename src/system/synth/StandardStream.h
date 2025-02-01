@@ -35,7 +35,7 @@ public:
 
     static bool sReportLargeTimerErrors;
 
-    StandardStream(File*, float, float, Symbol, bool, bool);
+    StandardStream(File *, float, float, Symbol, bool, bool);
     virtual ~StandardStream();
     virtual bool Fail();
     virtual bool IsReady() const;
@@ -47,7 +47,7 @@ public:
     virtual bool IsPlaying() const;
     virtual bool IsPaused() const;
     virtual void Resync(float);
-    virtual void Fill(){}
+    virtual void Fill() {}
     virtual bool FillDone() const { return true; }
     virtual void EnableReads(bool);
     virtual float GetTime();
@@ -64,35 +64,35 @@ public:
     virtual bool GetFX(int) const;
     virtual void SetFXCore(int, FXCore);
     virtual FXCore GetFXCore(int) const;
-    virtual void SetFXSend(int, FxSend*);
-    virtual void SetADSR(int, const ADSR&);
+    virtual void SetFXSend(int, FxSend *);
+    virtual void SetADSR(int, const ADSR &);
     virtual void SetSpeed(float);
     virtual float GetSpeed() const;
-    virtual void LoadMarkerList(const char*);
+    virtual void LoadMarkerList(const char *);
     virtual void ClearMarkerList();
     virtual void AddMarker(Marker);
     virtual int MarkerListSize() const;
-    virtual bool MarkerAt(int, Marker&) const;
-    virtual void SetLoop(String&, String&);
-    virtual bool CurrentLoopPoints(Marker&, Marker&);
+    virtual bool MarkerAt(int, Marker &) const;
+    virtual void SetLoop(String &, String &);
+    virtual bool CurrentLoopPoints(Marker &, Marker &);
     virtual void AbandonLoop();
-    virtual void SetJump(float, float, const char*);
+    virtual void SetJump(float, float, const char *);
     virtual void ClearJump();
     virtual void EnableSlipStreaming(int);
     virtual void SetSlipOffset(int, float);
     virtual void SlipStop(int);
     virtual float GetSlipOffset(int);
     virtual void SetSlipSpeed(int, float);
-    virtual FaderGroup* ChannelFaders(int);
+    virtual FaderGroup *ChannelFaders(int);
     virtual void AddVirtualChannels(int);
     virtual void RemapChannel(int, int);
 
-    virtual const char* GetSoundDisplayName();
+    virtual const char *GetSoundDisplayName();
     virtual void UpdateTime();
     virtual void UpdateTimeByFiltering();
     virtual float GetRawTime();
-    virtual void SetJumpSamples(int, int, const char*);
-    virtual int GetSampleRate(){ return mSampleRate; }
+    virtual void SetJumpSamples(int, int, const char *);
+    virtual int GetSampleRate() { return mSampleRate; }
     virtual void SynthPoll();
 
     void PollStream();
@@ -108,13 +108,13 @@ public:
     void UpdateFXSends();
     bool StuffChannels();
     void DoJump();
-    int ConsumeData(void**, int, int);
+    int ConsumeData(void **, int, int);
     void SetPitchShift(int, bool);
 
     State mState; // 0x14
-    File* mFile; // 0x18
-    StreamReader* mRdr; // 0x1c
-    std::vector<StreamReceiver*> mChannels; // 0x20
+    File *mFile; // 0x18
+    StreamReader *mRdr; // 0x1c
+    std::vector<StreamReceiver *> mChannels; // 0x20
     int mSampleRate; // 0x28
     float mBufSecs; // 0x2c
     float mFileStartMs; // 0x30
@@ -122,7 +122,7 @@ public:
     float mLastStreamTime; // 0x38
     int unk3c; // 0x3c
     VarTimer mTimer; // 0x40
-    std::vector<ChannelParams*> mChanParams; // 0x78
+    std::vector<ChannelParams *> mChanParams; // 0x78
     int mJumpFromSamples; // 0x80
     int mJumpToSamples; // 0x84
     float mJumpFromMs; // 0x88
@@ -139,7 +139,7 @@ public:
     int mInfoChannels; // 0xe8
     float unkec; // 0xec
     bool mGetInfoOnly; // 0xf0
-    std::vector<void*> unkf4; // 0xf4
+    std::vector<void *> unkf4; // 0xf4
     std::vector<std::pair<int, int> > mChanMaps; // 0xfc
     std::vector<int> unk104; // 0x104
     std::vector<Marker> mMarkerList; // 0x10c

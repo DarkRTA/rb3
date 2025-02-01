@@ -1,6 +1,3 @@
-#ifndef CHECKSUMDATA_WII_H
-#define CHECKSUMDATA_WII_H
+#pragma once
 
 void SetFileChecksumData();
-
-#endif // CHECKSUMDATA_WII_H

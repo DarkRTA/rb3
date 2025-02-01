@@ -3,7 +3,9 @@
 #include "beatmatch/GameGem.h"
 
 enum RGMatchType {
-    i, d, k
+    i,
+    d,
+    k
 };
 
 // no clue what this is
@@ -21,10 +23,13 @@ public:
     void Swing(int, float);
     void FretDown(int, float);
     void FretUp(int, float);
-    bool FretMatch(const GameGem&, float, float, float, float, bool, bool, RGMatchType) const;
-    bool FretMatchImpl(const GameGem&, float, float, float, float, bool, bool, RGMatchType) const;
-    RGState* GetState();
-    const RGState* GetState() const;
+    bool
+    FretMatch(const GameGem &, float, float, float, float, bool, bool, RGMatchType) const;
+    bool FretMatchImpl(
+        const GameGem &, float, float, float, float, bool, bool, RGMatchType
+    ) const;
+    RGState *GetState();
+    const RGState *GetState() const;
     void ClearStringSwings();
     void ClearNonStrums();
     bool FretHistoryMatch(int, int, float, float, RGMatchType) const;

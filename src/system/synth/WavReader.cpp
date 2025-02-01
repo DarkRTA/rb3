@@ -48,11 +48,14 @@ void WavReader::Poll(float) {
         mInitted = true;
         Init();
     }
-    if (mBufNumSamples != 0) {  
-        ConsumeData((void**)(mInputBuffers + (mBufOffset * 2)), mBufNumSamples, mTotalSamplesConsumed);
+    if (mBufNumSamples != 0) {
+        ConsumeData(
+            (void **)(mInputBuffers + (mBufOffset * 2)),
+            mBufNumSamples,
+            mTotalSamplesConsumed
+        );
 
         while (mSamplesLeft != 0) {
-            
         }
     }
 }

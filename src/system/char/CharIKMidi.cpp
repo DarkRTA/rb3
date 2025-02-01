@@ -9,15 +9,15 @@
 
 INIT_REVS(CharIKMidi)
 
-CharIKMidi::CharIKMidi() : mBone(this), mCurSpot(this), mNewSpot(this), mSpotChanged(0), mAnimBlender(this), mMaxAnimBlend(1.0f), mAnimFracPerBeat(0.0f), mAnimFrac(0.0f) {
+CharIKMidi::CharIKMidi()
+    : mBone(this), mCurSpot(this), mNewSpot(this), mSpotChanged(0), mAnimBlender(this),
+      mMaxAnimBlend(1.0f), mAnimFracPerBeat(0.0f), mAnimFrac(0.0f) {
     Enter();
 }
 
-CharIKMidi::~CharIKMidi(){
+CharIKMidi::~CharIKMidi() {}
 
-}
-
-void CharIKMidi::Enter(){
+void CharIKMidi::Enter() {
     mCurSpot = 0;
     mNewSpot = 0;
     mSpotChanged = false;
@@ -28,14 +28,15 @@ void CharIKMidi::Enter(){
     RndPollable::Enter();
 }
 
-void CharIKMidi::NewSpot(RndTransformable* t, float f){
+void CharIKMidi::NewSpot(RndTransformable *t, float f) {
     float f18 = f;
-    if(mNewSpot != t){
-        if(!mNewSpot && f18 <= 0) mFracPerBeat = kHugeFloat;
+    if (mNewSpot != t) {
+        if (!mNewSpot && f18 <= 0)
+            mFracPerBeat = kHugeFloat;
         else {
             MaxEq(f18, 0.1f);
             mFracPerBeat = 1.0f / f18;
-            if(f18 > 0.2){
+            if (f18 > 0.2) {
                 mAnimFracPerBeat = mMaxAnimBlend / f18;
             }
         }
@@ -46,15 +47,15 @@ void CharIKMidi::NewSpot(RndTransformable* t, float f){
     }
 }
 
-void CharIKMidi::Poll(){
-    if(mBone){
-        if(mSpotChanged){
+void CharIKMidi::Poll() {
+    if (mBone) {
+        if (mSpotChanged) {
             mSpotChanged = false;
-            if(!mCurSpot){
+            if (!mCurSpot) {
                 mCurSpot = mBone;
                 mOldLocalXfm.Reset();
             }
-            if(mNewSpot){
+            if (mNewSpot) {
                 Transform tf48;
                 FastInvert(mNewSpot->WorldXfm(), tf48);
                 Multiply(mCurSpot->WorldXfm(), tf48, tf48);
@@ -62,16 +63,16 @@ void CharIKMidi::Poll(){
             }
             mCurSpot = mNewSpot;
         }
-        if(mCurSpot){
+        if (mCurSpot) {
             mFrac += mFracPerBeat * TheTaskMgr.DeltaBeat();
-            if(IsNaN(mFrac)) mFrac = 0;
+            if (IsNaN(mFrac))
+                mFrac = 0;
             ClampEq<float>(mFrac, 0, 1);
             float sigmoid = Sigmoid(mFrac);
-            if(mAnimFracPerBeat > 0 && mAnimBlender){
-                if(mFrac < 0.5){
+            if (mAnimFracPerBeat > 0 && mAnimBlender) {
+                if (mFrac < 0.5) {
                     mAnimFrac += mAnimFracPerBeat * TheTaskMgr.DeltaBeat();
-                }
-                else {
+                } else {
                     mAnimFrac -= mAnimFracPerBeat * TheTaskMgr.DeltaBeat();
                 }
                 ClampEq<float>(mAnimFrac, 0, mMaxAnimBlend);
@@ -88,11 +89,13 @@ void CharIKMidi::Poll(){
     }
 }
 
-void DoDebugDraws(CharIKMidi* mid, float f){
-    for(ObjDirItr<MsgSource> it(ObjectDir::Main(), true); it != nullptr; ++it){
-        if(it){
-            for(std::list<MsgSource::Sink>::iterator sit = it->mSinks.begin(); sit != it->mSinks.end(); ++sit){
-                if(sit->obj == mid){
+void DoDebugDraws(CharIKMidi *mid, float f) {
+    for (ObjDirItr<MsgSource> it(ObjectDir::Main(), true); it != nullptr; ++it) {
+        if (it) {
+            for (std::list<MsgSource::Sink>::iterator sit = it->mSinks.begin();
+                 sit != it->mSinks.end();
+                 ++sit) {
+                if (sit->obj == mid) {
                     static Message msg("debug_draw", 2.0f, 2.0f);
                     msg[0] = f;
                     msg[1] = TheTaskMgr.Beat();
@@ -104,17 +107,21 @@ void DoDebugDraws(CharIKMidi* mid, float f){
     }
 }
 
-void CharIKMidi::Highlight(){
+void CharIKMidi::Highlight() {
 #ifdef MILO_DEBUG
-    if(gCharHighlightY == -1.0f){
+    if (gCharHighlightY == -1.0f) {
         CharDeferHighlight(this);
-    }
-    else {
-        Hmx::Color white(1,1,1);
+    } else {
+        Hmx::Color white(1, 1, 1);
         Vector2 v2(5.0f, gCharHighlightY);
         TheRnd->DrawString(MakeString("%s:", PathName(this)), v2, white, true);
         v2.y += 16.0f;
-        TheRnd->DrawString(MakeString("frac %.3f new:%s", mFrac, mCurSpot ? mCurSpot->Name() : "NULL"), v2, white, true);
+        TheRnd->DrawString(
+            MakeString("frac %.3f new:%s", mFrac, mCurSpot ? mCurSpot->Name() : "NULL"),
+            v2,
+            white,
+            true
+        );
         v2.y += 16.0f;
         DoDebugDraws(this, (v2.y + 24.0f) - 12.0f);
         gCharHighlightY += 112.0f;
@@ -122,7 +129,9 @@ void CharIKMidi::Highlight(){
 #endif
 }
 
-void CharIKMidi::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharIKMidi::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mBone);
     changedBy.push_back(mBone);
     changedBy.push_back(mCurSpot);
@@ -135,15 +144,15 @@ BEGIN_LOADS(CharIKMidi)
     ASSERT_REVS(5, 0)
     LOAD_SUPERCLASS(Hmx::Object)
     bs >> mBone;
-    if(gRev < 3){
+    if (gRev < 3) {
         ObjVector<ObjPtr<RndTransformable> > vec(this);
         bs >> vec;
     }
-    if(gRev == 2 || gRev == 3){
+    if (gRev == 2 || gRev == 3) {
         String asdf;
         bs >> asdf;
     }
-    if(gRev > 4){
+    if (gRev > 4) {
         bs >> mAnimBlender;
         bs >> mMaxAnimBlend;
     }
@@ -160,7 +169,10 @@ BEGIN_COPYS(CharIKMidi)
 END_COPYS
 
 BEGIN_HANDLERS(CharIKMidi)
-    HANDLE_ACTION(new_spot, NewSpot(Dir()->Find<RndTransformable>(_msg->Str(2), true), _msg->Float(3)))
+    HANDLE_ACTION(
+        new_spot,
+        NewSpot(Dir()->Find<RndTransformable>(_msg->Str(2), true), _msg->Float(3))
+    )
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x11C)
 END_HANDLERS

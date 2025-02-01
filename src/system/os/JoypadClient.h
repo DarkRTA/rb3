@@ -16,7 +16,7 @@ public:
     void Start(JoypadButton, JoypadAction, int);
     void Reset(JoypadButton);
     void Poll(float, float, Hmx::Object *, int);
-    void SendRepeat(Hmx::Object*, int);
+    void SendRepeat(Hmx::Object *, int);
 };
 
 class JoypadClient : public Hmx::Object {
@@ -25,7 +25,7 @@ public:
     ~JoypadClient();
 
     LocalUser *mUser; // 0x1C
-    Hmx::Object* mSink; // 0x20
+    Hmx::Object *mSink; // 0x20
     int mBtnMask; // 0x24
     float mHoldMs; // 0x28
     float mRepeatMs; // 0x2C

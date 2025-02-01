@@ -9,9 +9,12 @@
 
 INIT_REVS(CharIKFingers)
 
-CharIKFingers::CharIKFingers() : mHand(0), mForeArm(0), mUpperArm(0), mBlendInFrames(0), mBlendOutFrames(0), mResetHandDest(1), mResetCurHandTrans(1),
-    mFingerCurledLength(0.85f), mHandMoveForward(1.0f), mHandPinkyRotation(-0.06f), mHandThumbRotation(0.23f), mHandDestOffset(-0.4f),
-    mIsRightHand(1), mMoveHand(0), mIsSetup(0), mOutputTrans(this), mKeyboardRefBone(this) {
+CharIKFingers::CharIKFingers()
+    : mHand(0), mForeArm(0), mUpperArm(0), mBlendInFrames(0), mBlendOutFrames(0),
+      mResetHandDest(1), mResetCurHandTrans(1), mFingerCurledLength(0.85f),
+      mHandMoveForward(1.0f), mHandPinkyRotation(-0.06f), mHandThumbRotation(0.23f),
+      mHandDestOffset(-0.4f), mIsRightHand(1), mMoveHand(0), mIsSetup(0),
+      mOutputTrans(this), mKeyboardRefBone(this) {
     mFingers.resize(5, FingerDesc());
     mCurHandTrans.Zero();
     mDestHandTrans.Zero();
@@ -19,20 +22,18 @@ CharIKFingers::CharIKFingers() : mHand(0), mForeArm(0), mUpperArm(0), mBlendInFr
     mtx = Hmx::Matrix3();
 }
 
-CharIKFingers::~CharIKFingers(){
+CharIKFingers::~CharIKFingers() {}
 
-}
-
-void CharIKFingers::SetFinger(Vector3 v1, Vector3 v2, CharIKFingers::FingerNum fingerNum){
+void CharIKFingers::SetFinger(Vector3 v1, Vector3 v2, CharIKFingers::FingerNum fingerNum) {
     MILO_ASSERT(fingerNum >= 0 && fingerNum < kFingerNone, 0x37);
-    FingerDesc& finger = mFingers[fingerNum];
+    FingerDesc &finger = mFingers[fingerNum];
     finger.unk8 = v1;
     finger.unk14 = v2;
     finger.unk0 = true;
     finger.unk84 = true;
     Transform tf48;
     Multiply(finger.mFinger01->LocalXfm(), mCurHandTrans, tf48);
-    if(Distance(tf48.v, v1) > finger.unk4 * mFingerCurledLength){
+    if (Distance(tf48.v, v1) > finger.unk4 * mFingerCurledLength) {
         mMoveHand = true;
     }
     mBlendInFrames = 5;
@@ -40,7 +41,7 @@ void CharIKFingers::SetFinger(Vector3 v1, Vector3 v2, CharIKFingers::FingerNum f
     finger.unk64 = 0;
 }
 
-void CharIKFingers::ReleaseFinger(FingerNum finger){
+void CharIKFingers::ReleaseFinger(FingerNum finger) {
     MILO_ASSERT(finger >= 0 && finger < kFingerNone, 0x57);
     mFingers[finger].unk0 = false;
     mFingers[finger].unk84 = true;
@@ -50,71 +51,130 @@ void CharIKFingers::ReleaseFinger(FingerNum finger){
 
 #pragma push
 #pragma dont_inline on
-void CharIKFingers::SetName(const char* name, ObjectDir* dir){
+void CharIKFingers::SetName(const char *name, ObjectDir *dir) {
     Hmx::Object::SetName(name, dir);
-    if(dir){
-        for(int i = 0; i < 5; i++){
+    if (dir) {
+        for (int i = 0; i < 5; i++) {
             mFingers[i] = FingerDesc();
         }
-        if(mIsRightHand){
+        if (mIsRightHand) {
             mHand = dir->Find<RndTransformable>("bone_R-hand.mesh", false);
             mForeArm = dir->Find<RndTransformable>("bone_R-foreArm.mesh", false);
             mUpperArm = dir->Find<RndTransformable>("bone_R-upperArm.mesh", false);
-            mFingers[kFingerThumb].mFinger01 = dir->Find<RndTransformable>("bone_R-thumb01.mesh", false);
-            mFingers[kFingerThumb].mFinger02 = dir->Find<RndTransformable>("bone_R-thumb02.mesh", false);
-            mFingers[kFingerThumb].mFinger03 = dir->Find<RndTransformable>("bone_R-thumb03.mesh", false);
-            mFingers[kFingerThumb].mFingertip = dir->Find<RndTransformable>("spot_R-thumb_tip.mesh", false);
-            mFingers[kFingerIndex].mFinger01 = dir->Find<RndTransformable>("bone_R-index01.mesh", false);
-            mFingers[kFingerIndex].mFinger02 = dir->Find<RndTransformable>("bone_R-index02.mesh", false);
-            mFingers[kFingerIndex].mFinger03 = dir->Find<RndTransformable>("bone_R-index03.mesh", false);
-            mFingers[kFingerIndex].mFingertip = dir->Find<RndTransformable>("spot_R-index_tip.mesh", false);
-            mFingers[kFingerMiddle].mFinger01 = dir->Find<RndTransformable>("bone_R-middlefinger01.mesh", false);
-            mFingers[kFingerMiddle].mFinger02 = dir->Find<RndTransformable>("bone_R-middlefinger02.mesh", false);
-            mFingers[kFingerMiddle].mFinger03 = dir->Find<RndTransformable>("bone_R-middlefinger03.mesh", false);
-            mFingers[kFingerMiddle].mFingertip = dir->Find<RndTransformable>("spot_R-middlefinger_tip.mesh", false);
-            mFingers[kFingerRing].mFinger01 = dir->Find<RndTransformable>("bone_R-ringfinger01.mesh", false);
-            mFingers[kFingerRing].mFinger02 = dir->Find<RndTransformable>("bone_R-ringfinger02.mesh", false);
-            mFingers[kFingerRing].mFinger03 = dir->Find<RndTransformable>("bone_R-ringfinger03.mesh", false);
-            mFingers[kFingerRing].mFingertip = dir->Find<RndTransformable>("spot_R-ringfinger_tip.mesh", false);
-            mFingers[kFingerPinky].mFinger01 = dir->Find<RndTransformable>("bone_R-pinky01.mesh", false);
-            mFingers[kFingerPinky].mFinger02 = dir->Find<RndTransformable>("bone_R-pinky02.mesh", false);
-            mFingers[kFingerPinky].mFinger03 = dir->Find<RndTransformable>("bone_R-pinky03.mesh", false);
-            mFingers[kFingerPinky].mFingertip = dir->Find<RndTransformable>("spot_R-pinky_tip.mesh", false);
-            mtx = Hmx::Matrix3(-0.023f, 0.97899997f, 0.201f, -0.228f, 0.191f, -0.95499998f, -0.972, -0.068f, 0.21799999f);
+            mFingers[kFingerThumb].mFinger01 =
+                dir->Find<RndTransformable>("bone_R-thumb01.mesh", false);
+            mFingers[kFingerThumb].mFinger02 =
+                dir->Find<RndTransformable>("bone_R-thumb02.mesh", false);
+            mFingers[kFingerThumb].mFinger03 =
+                dir->Find<RndTransformable>("bone_R-thumb03.mesh", false);
+            mFingers[kFingerThumb].mFingertip =
+                dir->Find<RndTransformable>("spot_R-thumb_tip.mesh", false);
+            mFingers[kFingerIndex].mFinger01 =
+                dir->Find<RndTransformable>("bone_R-index01.mesh", false);
+            mFingers[kFingerIndex].mFinger02 =
+                dir->Find<RndTransformable>("bone_R-index02.mesh", false);
+            mFingers[kFingerIndex].mFinger03 =
+                dir->Find<RndTransformable>("bone_R-index03.mesh", false);
+            mFingers[kFingerIndex].mFingertip =
+                dir->Find<RndTransformable>("spot_R-index_tip.mesh", false);
+            mFingers[kFingerMiddle].mFinger01 =
+                dir->Find<RndTransformable>("bone_R-middlefinger01.mesh", false);
+            mFingers[kFingerMiddle].mFinger02 =
+                dir->Find<RndTransformable>("bone_R-middlefinger02.mesh", false);
+            mFingers[kFingerMiddle].mFinger03 =
+                dir->Find<RndTransformable>("bone_R-middlefinger03.mesh", false);
+            mFingers[kFingerMiddle].mFingertip =
+                dir->Find<RndTransformable>("spot_R-middlefinger_tip.mesh", false);
+            mFingers[kFingerRing].mFinger01 =
+                dir->Find<RndTransformable>("bone_R-ringfinger01.mesh", false);
+            mFingers[kFingerRing].mFinger02 =
+                dir->Find<RndTransformable>("bone_R-ringfinger02.mesh", false);
+            mFingers[kFingerRing].mFinger03 =
+                dir->Find<RndTransformable>("bone_R-ringfinger03.mesh", false);
+            mFingers[kFingerRing].mFingertip =
+                dir->Find<RndTransformable>("spot_R-ringfinger_tip.mesh", false);
+            mFingers[kFingerPinky].mFinger01 =
+                dir->Find<RndTransformable>("bone_R-pinky01.mesh", false);
+            mFingers[kFingerPinky].mFinger02 =
+                dir->Find<RndTransformable>("bone_R-pinky02.mesh", false);
+            mFingers[kFingerPinky].mFinger03 =
+                dir->Find<RndTransformable>("bone_R-pinky03.mesh", false);
+            mFingers[kFingerPinky].mFingertip =
+                dir->Find<RndTransformable>("spot_R-pinky_tip.mesh", false);
+            mtx = Hmx::Matrix3(
+                -0.023f,
+                0.97899997f,
+                0.201f,
+                -0.228f,
+                0.191f,
+                -0.95499998f,
+                -0.972,
+                -0.068f,
+                0.21799999f
+            );
             Normalize(mtx, mtx);
             mIsSetup = true;
-        }
-        else {
+        } else {
             mHand = dir->Find<RndTransformable>("bone_L-hand.mesh", false);
             mForeArm = dir->Find<RndTransformable>("bone_L-foreArm.mesh", false);
             mUpperArm = dir->Find<RndTransformable>("bone_L-upperArm.mesh", false);
-            mFingers[kFingerThumb].mFinger01 = dir->Find<RndTransformable>("bone_L-thumb01.mesh", false);
-            mFingers[kFingerThumb].mFinger02 = dir->Find<RndTransformable>("bone_L-thumb02.mesh", false);
-            mFingers[kFingerThumb].mFinger03 = dir->Find<RndTransformable>("bone_L-thumb03.mesh", false);
-            mFingers[kFingerThumb].mFingertip = dir->Find<RndTransformable>("spot_L-thumb_tip.mesh", false);
-            mFingers[kFingerIndex].mFinger01 = dir->Find<RndTransformable>("bone_L-index01.mesh", false);
-            mFingers[kFingerIndex].mFinger02 = dir->Find<RndTransformable>("bone_L-index02.mesh", false);
-            mFingers[kFingerIndex].mFinger03 = dir->Find<RndTransformable>("bone_L-index03.mesh", false);
-            mFingers[kFingerIndex].mFingertip = dir->Find<RndTransformable>("spot_L-index_tip.mesh", false);
-            mFingers[kFingerMiddle].mFinger01 = dir->Find<RndTransformable>("bone_L-middlefinger01.mesh", false);
-            mFingers[kFingerMiddle].mFinger02 = dir->Find<RndTransformable>("bone_L-middlefinger02.mesh", false);
-            mFingers[kFingerMiddle].mFinger03 = dir->Find<RndTransformable>("bone_L-middlefinger03.mesh", false);
-            mFingers[kFingerMiddle].mFingertip = dir->Find<RndTransformable>("spot_L-middlefinger_tip.mesh", false);
-            mFingers[kFingerRing].mFinger01 = dir->Find<RndTransformable>("bone_L-ringfinger01.mesh", false);
-            mFingers[kFingerRing].mFinger02 = dir->Find<RndTransformable>("bone_L-ringfinger02.mesh", false);
-            mFingers[kFingerRing].mFinger03 = dir->Find<RndTransformable>("bone_L-ringfinger03.mesh", false);
-            mFingers[kFingerRing].mFingertip = dir->Find<RndTransformable>("spot_L-ringfinger_tip.mesh", false);
-            mFingers[kFingerPinky].mFinger01 = dir->Find<RndTransformable>("bone_L-pinky01.mesh", false);
-            mFingers[kFingerPinky].mFinger02 = dir->Find<RndTransformable>("bone_L-pinky02.mesh", false);
-            mFingers[kFingerPinky].mFinger03 = dir->Find<RndTransformable>("bone_L-pinky03.mesh", false);
-            mFingers[kFingerPinky].mFingertip = dir->Find<RndTransformable>("spot_L-pinky_tip.mesh", false);
-            mtx = Hmx::Matrix3(-0.067f, 0.985f, 0.156f, 0.224f, 0.167f, -0.95999998f, -0.972f, -0.028999999f, -0.23199999f);
+            mFingers[kFingerThumb].mFinger01 =
+                dir->Find<RndTransformable>("bone_L-thumb01.mesh", false);
+            mFingers[kFingerThumb].mFinger02 =
+                dir->Find<RndTransformable>("bone_L-thumb02.mesh", false);
+            mFingers[kFingerThumb].mFinger03 =
+                dir->Find<RndTransformable>("bone_L-thumb03.mesh", false);
+            mFingers[kFingerThumb].mFingertip =
+                dir->Find<RndTransformable>("spot_L-thumb_tip.mesh", false);
+            mFingers[kFingerIndex].mFinger01 =
+                dir->Find<RndTransformable>("bone_L-index01.mesh", false);
+            mFingers[kFingerIndex].mFinger02 =
+                dir->Find<RndTransformable>("bone_L-index02.mesh", false);
+            mFingers[kFingerIndex].mFinger03 =
+                dir->Find<RndTransformable>("bone_L-index03.mesh", false);
+            mFingers[kFingerIndex].mFingertip =
+                dir->Find<RndTransformable>("spot_L-index_tip.mesh", false);
+            mFingers[kFingerMiddle].mFinger01 =
+                dir->Find<RndTransformable>("bone_L-middlefinger01.mesh", false);
+            mFingers[kFingerMiddle].mFinger02 =
+                dir->Find<RndTransformable>("bone_L-middlefinger02.mesh", false);
+            mFingers[kFingerMiddle].mFinger03 =
+                dir->Find<RndTransformable>("bone_L-middlefinger03.mesh", false);
+            mFingers[kFingerMiddle].mFingertip =
+                dir->Find<RndTransformable>("spot_L-middlefinger_tip.mesh", false);
+            mFingers[kFingerRing].mFinger01 =
+                dir->Find<RndTransformable>("bone_L-ringfinger01.mesh", false);
+            mFingers[kFingerRing].mFinger02 =
+                dir->Find<RndTransformable>("bone_L-ringfinger02.mesh", false);
+            mFingers[kFingerRing].mFinger03 =
+                dir->Find<RndTransformable>("bone_L-ringfinger03.mesh", false);
+            mFingers[kFingerRing].mFingertip =
+                dir->Find<RndTransformable>("spot_L-ringfinger_tip.mesh", false);
+            mFingers[kFingerPinky].mFinger01 =
+                dir->Find<RndTransformable>("bone_L-pinky01.mesh", false);
+            mFingers[kFingerPinky].mFinger02 =
+                dir->Find<RndTransformable>("bone_L-pinky02.mesh", false);
+            mFingers[kFingerPinky].mFinger03 =
+                dir->Find<RndTransformable>("bone_L-pinky03.mesh", false);
+            mFingers[kFingerPinky].mFingertip =
+                dir->Find<RndTransformable>("spot_L-pinky_tip.mesh", false);
+            mtx = Hmx::Matrix3(
+                -0.067f,
+                0.985f,
+                0.156f,
+                0.224f,
+                0.167f,
+                -0.95999998f,
+                -0.972f,
+                -0.028999999f,
+                -0.23199999f
+            );
             Normalize(mtx, mtx);
             mIsSetup = true;
         }
-        for(int i = 0; i < 5; i++){
+        for (int i = 0; i < 5; i++) {
             FingerDesc cur = mFingers[i];
-            if(!cur.mFinger01 || !cur.mFinger02 || !cur.mFinger03 || !cur.mFingertip){
+            if (!cur.mFinger01 || !cur.mFinger02 || !cur.mFinger03 || !cur.mFingertip) {
                 mIsSetup = false;
                 break;
             }
@@ -124,8 +184,9 @@ void CharIKFingers::SetName(const char* name, ObjectDir* dir){
 }
 #pragma pop
 
-void CharIKFingers::Poll(){
-    if(!mHand || !mIsSetup) return;
+void CharIKFingers::Poll() {
+    if (!mHand || !mIsSetup)
+        return;
     else {
         Hmx::Matrix3 mtx58;
         Hmx::Matrix3 mtx7c;
@@ -134,13 +195,12 @@ void CharIKFingers::Poll(){
         Vector3 v88;
         Subtract(mKeyboardRefBone->WorldXfm().v, mHand->WorldXfm().v, v88);
         float weight = Weight();
-        if(weight < 1.0){
-            if(mOutputTrans){
+        if (weight < 1.0) {
+            if (mOutputTrans) {
                 mOutputTrans->SetWorldXfm(mHand->WorldXfm());
             }
-        }
-        else {
-            if(mResetCurHandTrans){
+        } else {
+            if (mResetCurHandTrans) {
                 mCurHandTrans.Set(mHand->WorldXfm().m, mHand->WorldXfm().v);
                 mDestHandTrans.Set(mHand->WorldXfm().m, mHand->WorldXfm().v);
                 mResetCurHandTrans = false;
@@ -148,83 +208,92 @@ void CharIKFingers::Poll(){
             int i3 = 0;
             float f8 = 1.0f;
             int i1 = -1;
-            for(int i = 0; i < 5; i++){
-                if(mFingers[i].unk0){
-                    if(i1 == -1) i1 = i;
+            for (int i = 0; i < 5; i++) {
+                if (mFingers[i].unk0) {
+                    if (i1 == -1)
+                        i1 = i;
                     i3++;
                 }
             }
             CalculateHandDest(i3, i1);
-            if(mBlendInFrames > 0){
+            if (mBlendInFrames > 0) {
                 f8 = 1.0f - mBlendInFrames / 5.0f;
-            }
-            else if(mBlendOutFrames > 0){
+            } else if (mBlendOutFrames > 0) {
                 f8 = 1.0f - mBlendOutFrames / 5.0f;
             }
             Interp(mCurHandTrans.v, mDestHandTrans.v, f8, mCurHandTrans.v);
             Interp(mCurHandTrans.m, mDestHandTrans.m, f8, mCurHandTrans.m);
-            if(mOutputTrans){
+            if (mOutputTrans) {
                 mOutputTrans->SetWorldXfm(mCurHandTrans);
             }
-            for(int i = 0; i < 5; i++){
+            for (int i = 0; i < 5; i++) {
                 CalculateFingerDest((FingerNum)i);
                 MoveFinger((FingerNum)i);
             }
-            if(i3 > 0){
-                for(int i = 2; i <= 4; i++){
-                    FingerDesc& prevFinger = mFingers[i - 1];
-                    FingerDesc& curFinger = mFingers[i];
-                    if(!curFinger.unk0){
-                        if(i == 4){
-                            FixSingleFinger(prevFinger.mFinger01, curFinger.mFinger01, nullptr);
-                        }
-                        else {
-                            FixSingleFinger(prevFinger.mFinger01, curFinger.mFinger01, mFingers[i + 1].mFinger01);
+            if (i3 > 0) {
+                for (int i = 2; i <= 4; i++) {
+                    FingerDesc &prevFinger = mFingers[i - 1];
+                    FingerDesc &curFinger = mFingers[i];
+                    if (!curFinger.unk0) {
+                        if (i == 4) {
+                            FixSingleFinger(
+                                prevFinger.mFinger01, curFinger.mFinger01, nullptr
+                            );
+                        } else {
+                            FixSingleFinger(
+                                prevFinger.mFinger01,
+                                curFinger.mFinger01,
+                                mFingers[i + 1].mFinger01
+                            );
                         }
                     }
                 }
             }
-            if(mBlendInFrames > 0) mBlendInFrames--;
-            if(mBlendOutFrames > 0) mBlendOutFrames--;
-        }        
+            if (mBlendInFrames > 0)
+                mBlendInFrames--;
+            if (mBlendOutFrames > 0)
+                mBlendOutFrames--;
+        }
     }
 }
 
-void CharIKFingers::CalculateHandDest(int i1, int i2){
+void CharIKFingers::CalculateHandDest(int i1, int i2) {
     Transform tf110(mHand->WorldXfm()); // auStack_110
-    if(mMoveHand){
-        if(i1 > 0){
-            Vector3 v188(0,0,0);
+    if (mMoveHand) {
+        if (i1 > 0) {
+            Vector3 v188(0, 0, 0);
             FingerDesc desc(mFingers[i2]);
-            Vector3 v194; v194.Zero();
+            Vector3 v194;
+            v194.Zero();
             bool b1 = false;
             Vector3 v1a0(mHandDestOffset, 0, 0);
-            if(!mIsRightHand){
+            if (!mIsRightHand) {
                 Scale(v1a0, -1.0f, v1a0);
             }
             Multiply(v1a0, mKeyboardRefBone->WorldXfm().m, v1a0);
             Hmx::Matrix3 m134;
             Multiply(mtx, mKeyboardRefBone->WorldXfm().m, m134);
             Normalize(m134, mDestHandTrans.m);
-            for(int i = 0; i < 5; i++){
-                FingerDesc& curDesc = mFingers[i];
-                if(curDesc.unk0){
+            for (int i = 0; i < 5; i++) {
+                FingerDesc &curDesc = mFingers[i];
+                if (curDesc.unk0) {
                     ::Add(curDesc.unk8, v194, v194);
                     Vector3 v1ac;
                     Scale(v1a0, i - 2.0, v1ac);
                     ::Add(v1ac, v194, v194);
-                    if(i == 0){
+                    if (i == 0) {
                         Hmx::Matrix3 m158;
                         float f5 = mHandThumbRotation;
-                        if(!mIsRightHand) f5 *= -1.0f;
+                        if (!mIsRightHand)
+                            f5 *= -1.0f;
                         m158.RotateAboutY(f5);
                         Multiply(m158, m134, mDestHandTrans.m);
                         b1 = true;
-                    }
-                    else if(i == 4){
+                    } else if (i == 4) {
                         Hmx::Matrix3 m17c;
                         float f5 = mHandPinkyRotation;
-                        if(!mIsRightHand) f5 *= -1.0f;
+                        if (!mIsRightHand)
+                            f5 *= -1.0f;
                         m17c.RotateAboutY(f5);
                         Multiply(m17c, m134, mDestHandTrans.m);
                         b1 = true;
@@ -232,7 +301,8 @@ void CharIKFingers::CalculateHandDest(int i1, int i2){
                 }
             }
             Scale(v194, 1.0f / i1, v194);
-            if(b1) v188.y += mHandMoveForward;
+            if (b1)
+                v188.y += mHandMoveForward;
             ::Add(mHandKeyboardOffset, v188, v188);
             Multiply(v188, mKeyboardRefBone->WorldXfm().m, v188);
             Vector3 v1b8;
@@ -243,22 +313,21 @@ void CharIKFingers::CalculateHandDest(int i1, int i2){
     }
 }
 
-void CharIKFingers::MoveFinger(FingerNum num){
-    FingerDesc& finger = mFingers[num];
-    if(finger.unk0 || finger.unk60 > 0 || finger.unk64 > 0){
+void CharIKFingers::MoveFinger(FingerNum num) {
+    FingerDesc &finger = mFingers[num];
+    if (finger.unk0 || finger.unk60 > 0 || finger.unk64 > 0) {
         Transform tf60;
         Transform tf90(mDestHandTrans);
-        if(finger.mFinger01->TransParent() != mHand){
+        if (finger.mFinger01->TransParent() != mHand) {
             Multiply(finger.mFinger01->TransParent()->mLocalXfm, mDestHandTrans, tf90);
         }
         Multiply(finger.mFinger01->mLocalXfm, tf90, tf60);
 
         float f5 = 1.0f;
-        if(finger.unk60 > 0 || finger.unk64 > 0){
-            if(finger.unk60 > 0){
+        if (finger.unk60 > 0 || finger.unk64 > 0) {
+            if (finger.unk60 > 0) {
                 f5 = 1.0f - finger.unk60 / 5.0f;
-            }
-            else if(finger.unk64 > 0){
+            } else if (finger.unk64 > 0) {
                 f5 = 1.0f - finger.unk64 / 5.0f;
             }
         }
@@ -284,17 +353,19 @@ void CharIKFingers::MoveFinger(FingerNum num){
         Transform tf118;
         Invert(tf90, tf118);
         Multiply(tfe8, tf118, finger.mFinger01->DirtyLocalXfm());
-        if(finger.unk64 > 0) finger.unk64--;
-        if(finger.unk60 > 0) finger.unk60--;
+        if (finger.unk64 > 0)
+            finger.unk64--;
+        if (finger.unk60 > 0)
+            finger.unk60--;
     }
 }
 
-void CharIKFingers::CalculateFingerDest(FingerNum num){
-    if(mOutputTrans){
-        FingerDesc& finger = mFingers[num];
-        if(finger.unk68){
+void CharIKFingers::CalculateFingerDest(FingerNum num) {
+    if (mOutputTrans) {
+        FingerDesc &finger = mFingers[num];
+        if (finger.unk68) {
             Transform tf78;
-            RndTransformable* fingerFinger = finger.mFinger01;
+            RndTransformable *fingerFinger = finger.mFinger01;
             Multiply(fingerFinger->mLocalXfm, mOutputTrans->WorldXfm(), tf78);
             finger.unk78 = tf78.m.x;
             Vector3 v1cc;
@@ -307,18 +378,19 @@ void CharIKFingers::CalculateFingerDest(FingerNum num){
             finger.unk5c = v1d8.z;
             finger.unk68 = false;
         }
-        if(finger.unk84){
-            if(finger.unk0){
+        if (finger.unk84) {
+            if (finger.unk0) {
                 Transform tfa8;
                 Transform tfd8;
                 Transform tf108;
                 Transform tf138;
-                if(finger.mFinger01->TransParent() != mHand){
+                if (finger.mFinger01->TransParent() != mHand) {
                     Transform tf168;
-                    Multiply(finger.mFinger01->TransParent()->mLocalXfm, mDestHandTrans, tf168);
+                    Multiply(
+                        finger.mFinger01->TransParent()->mLocalXfm, mDestHandTrans, tf168
+                    );
                     Multiply(finger.mFinger01->mLocalXfm, tf168, tfa8);
-                }
-                else {
+                } else {
                     Multiply(finger.mFinger01->mLocalXfm, mDestHandTrans, tfa8);
                 }
 
@@ -326,11 +398,11 @@ void CharIKFingers::CalculateFingerDest(FingerNum num){
                 Multiply(finger.mFinger03->mLocalXfm, tfd8, tf108);
                 Multiply(finger.mFingertip->mLocalXfm, tf108, tf138);
                 Vector3 v1e4;
-                if(Distance(tf138.v, finger.unk14) < Distance(tf138.v, finger.unk8)){
+                if (Distance(tf138.v, finger.unk14) < Distance(tf138.v, finger.unk8)) {
                     v1e4 = finger.unk8;
-                }
-                else v1e4 = finger.unk14;
-                
+                } else
+                    v1e4 = finger.unk14;
+
                 Hmx::Matrix3 m190;
                 Vector3 v1f0 = tfa8.m.y;
                 Vector3 v1fc = tfa8.m.x;
@@ -343,10 +415,14 @@ void CharIKFingers::CalculateFingerDest(FingerNum num){
                 float len6 = Length(finger.mFingertip->mLocalXfm.v);
                 float len7 = Length(finger.mFinger03->mLocalXfm.v);
                 float len8 = Length(v220);
-                float f9 = std::acos(-((len8 - len7) * (len8 - len7) - (len5 * len5 + len6 * len6)) / (len5 * 2.0f * len6));
-                if(f9 < 0.87f) f9 = 0.87f;
+                float f9 = std::acos(
+                    -((len8 - len7) * (len8 - len7) - (len5 * len5 + len6 * len6))
+                    / (len5 * 2.0f * len6)
+                );
+                if (f9 < 0.87f)
+                    f9 = 0.87f;
                 float f5 = f9 * 0.5f + 1.5707964f;
-                if(IsNaN(f5)){
+                if (IsNaN(f5)) {
                     f5 = 2.96f;
                 }
                 finger.unk50 = PI - f5;
@@ -357,10 +433,9 @@ void CharIKFingers::CalculateFingerDest(FingerNum num){
                 MakeRotQuat(v1fc, v220, q240);
                 Multiply(tfa8.m.x, q240, finger.unk6c);
                 finger.unk84 = false;
-            }
-            else {
+            } else {
                 Transform tf1c0;
-                RndTransformable* fingerFinger = finger.mFinger01;
+                RndTransformable *fingerFinger = finger.mFinger01;
                 Multiply(fingerFinger->mLocalXfm, mOutputTrans->WorldXfm(), tf1c0);
                 finger.unk6c = tf1c0.m.x;
                 Vector3 v24c;
@@ -377,14 +452,15 @@ void CharIKFingers::CalculateFingerDest(FingerNum num){
     }
 }
 
-void CharIKFingers::FixSingleFinger(RndTransformable* t1, RndTransformable* t2, RndTransformable* t3){
+void CharIKFingers::FixSingleFinger(
+    RndTransformable *t1, RndTransformable *t2, RndTransformable *t3
+) {
     Hmx::Matrix3 m38;
     Vector3 va8;
-    if(t3){
+    if (t3) {
         ::Add(t1->WorldXfm().m.x, t3->WorldXfm().m.x, va8);
         Scale(va8, 0.5f, va8);
-    }
-    else {
+    } else {
         va8 = t1->WorldXfm().m.x;
     }
 
@@ -402,18 +478,19 @@ void CharIKFingers::FixSingleFinger(RndTransformable* t1, RndTransformable* t2, 
     Multiply(tf68, tf98, t2->DirtyLocalXfm());
 }
 
-void CharIKFingers::MeasureLengths(){
-    for(int i = 0; i < 5; i++){
-        RndTransformable* t1 = mFingers[i].mFinger02;
-        RndTransformable* t2 = mFingers[i].mFinger03;
-        RndTransformable* t3 = mFingers[i].mFingertip;
-        if(t1 && t2 && t3){
-            float& len = mFingers[i].unk4;
-            len = Length(t1->mLocalXfm.v) + Length(t2->mLocalXfm.v) + Length(t3->mLocalXfm.v);
+void CharIKFingers::MeasureLengths() {
+    for (int i = 0; i < 5; i++) {
+        RndTransformable *t1 = mFingers[i].mFinger02;
+        RndTransformable *t2 = mFingers[i].mFinger03;
+        RndTransformable *t3 = mFingers[i].mFingertip;
+        if (t1 && t2 && t3) {
+            float &len = mFingers[i].unk4;
+            len = Length(t1->mLocalXfm.v) + Length(t2->mLocalXfm.v)
+                + Length(t3->mLocalXfm.v);
         }
     }
 
-    if(mHand && mHand->TransParent() && mHand->TransParent()->TransParent()){
+    if (mHand && mHand->TransParent() && mHand->TransParent()->TransParent()) {
         mInv2ab = 2.0f;
         mAAPlusBB = 0;
         float handLen = Length(mHand->mLocalXfm.v);
@@ -425,45 +502,62 @@ void CharIKFingers::MeasureLengths(){
     }
 }
 
-void CharIKFingers::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharIKFingers::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mHand);
     changedBy.push_back(mHand);
-    for(int i = 0; i < 5; i++){
+    for (int i = 0; i < 5; i++) {
         FingerDesc desc(mFingers[i]);
-        if(desc.mFinger01){
+        if (desc.mFinger01) {
             changedBy.push_back(desc.mFinger01);
         }
-        if(desc.mFinger02){
+        if (desc.mFinger02) {
             changedBy.push_back(desc.mFinger02);
         }
-        if(desc.mFinger03){
+        if (desc.mFinger03) {
             changedBy.push_back(desc.mFinger03);
         }
-        if(desc.mFingertip){
+        if (desc.mFingertip) {
             changedBy.push_back(desc.mFingertip);
         }
     }
-    if(mForeArm){
+    if (mForeArm) {
         change.push_back(mForeArm);
         changedBy.push_back(mForeArm);
     }
-    if(mUpperArm){
+    if (mUpperArm) {
         change.push_back(mUpperArm);
         changedBy.push_back(mUpperArm);
     }
 }
 
-void CharIKFingers::Highlight(){
+void CharIKFingers::Highlight() {
 #ifdef MILO_DEBUG
-    for(int i = 0; i < 5; i++){
+    for (int i = 0; i < 5; i++) {
         FingerDesc desc(mFingers[i]);
-        if(desc.unk0){
-            UtilDrawSphere(desc.unk8, 0.2f, Hmx::Color(1,0,0));
-            UtilDrawSphere(desc.unk14, 0.2f, Hmx::Color(0,1,0));
-            UtilDrawAxes(desc.mFinger01->WorldXfm(), 1.0f, Hmx::Color(1,1,1));
-            TheRnd->DrawLine(desc.mFinger01->WorldXfm().v, desc.mFinger02->WorldXfm().v, Hmx::Color(1,1,1), false);
-            TheRnd->DrawLine(desc.mFinger02->WorldXfm().v, desc.mFinger03->WorldXfm().v, Hmx::Color(1,1,1), false);
-            TheRnd->DrawLine(desc.mFinger03->WorldXfm().v, desc.mFingertip->WorldXfm().v, Hmx::Color(1,1,1), false);
+        if (desc.unk0) {
+            UtilDrawSphere(desc.unk8, 0.2f, Hmx::Color(1, 0, 0));
+            UtilDrawSphere(desc.unk14, 0.2f, Hmx::Color(0, 1, 0));
+            UtilDrawAxes(desc.mFinger01->WorldXfm(), 1.0f, Hmx::Color(1, 1, 1));
+            TheRnd->DrawLine(
+                desc.mFinger01->WorldXfm().v,
+                desc.mFinger02->WorldXfm().v,
+                Hmx::Color(1, 1, 1),
+                false
+            );
+            TheRnd->DrawLine(
+                desc.mFinger02->WorldXfm().v,
+                desc.mFinger03->WorldXfm().v,
+                Hmx::Color(1, 1, 1),
+                false
+            );
+            TheRnd->DrawLine(
+                desc.mFinger03->WorldXfm().v,
+                desc.mFingertip->WorldXfm().v,
+                Hmx::Color(1, 1, 1),
+                false
+            );
         }
     }
 #endif
@@ -476,10 +570,13 @@ BEGIN_LOADS(CharIKFingers)
     ASSERT_REVS(5, 0)
     LOAD_SUPERCLASS(Hmx::Object)
     LOAD_SUPERCLASS(CharWeightable)
-    if(gRev > 1) bs >> mIsRightHand;
-    if(gRev > 2) bs >> mOutputTrans;
-    if(gRev > 3) bs >> mKeyboardRefBone;
-    if(gRev > 4){
+    if (gRev > 1)
+        bs >> mIsRightHand;
+    if (gRev > 2)
+        bs >> mOutputTrans;
+    if (gRev > 3)
+        bs >> mKeyboardRefBone;
+    if (gRev > 4) {
         bs >> mHandKeyboardOffset;
         bs >> mHandThumbRotation;
         bs >> mHandPinkyRotation;

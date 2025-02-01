@@ -10,6 +10,4 @@ float TickToBeat(int);
 float SecondsToBeat(float);
 float TickToSeconds(float);
 float BeatToSeconds(float);
-inline int MsToTickInt(float f){
-    return MsToTick(f);
-}
+inline int MsToTickInt(float f) { return MsToTick(f); }

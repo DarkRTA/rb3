@@ -14,36 +14,38 @@
 
 INIT_REVS(CharLipSyncDriver)
 
-CharLipSyncDriver::CharLipSyncDriver() : mLipSync(this), mClips(this), mBlinkClip(this), mSongOwner(this), mSongOffset(0.0f),
-    mLoop(0), mSongPlayer(0), mBones(this), mTestClip(this), mTestWeight(1.0f), mOverrideClip(this), mOverrideWeight(0.0f),
-    mOverrideOptions(this), mApplyOverrideAdditively(0), mAlternateDriver(this) {
+CharLipSyncDriver::CharLipSyncDriver()
+    : mLipSync(this), mClips(this), mBlinkClip(this), mSongOwner(this), mSongOffset(0.0f),
+      mLoop(0), mSongPlayer(0), mBones(this), mTestClip(this), mTestWeight(1.0f),
+      mOverrideClip(this), mOverrideWeight(0.0f), mOverrideOptions(this),
+      mApplyOverrideAdditively(0), mAlternateDriver(this) {}
 
-}
+CharLipSyncDriver::~CharLipSyncDriver() { RELEASE(mSongPlayer); }
 
-CharLipSyncDriver::~CharLipSyncDriver(){
-    RELEASE(mSongPlayer);
-}
-
-void CharLipSyncDriver::Highlight(){
+void CharLipSyncDriver::Highlight() {
 #ifdef MILO_DEBUG
-    if(gCharHighlightY == -1.0f){
+    if (gCharHighlightY == -1.0f) {
         CharDeferHighlight(this);
-    }
-    else {
-        Hmx::Color white(1,1,1);
+    } else {
+        Hmx::Color white(1, 1, 1);
         Vector2 v2(5.0f, gCharHighlightY);
-        float y = TheRnd->DrawString(MakeString("%s:", PathName(this)), v2, white, true).y;
+        float y =
+            TheRnd->DrawString(MakeString("%s:", PathName(this)), v2, white, true).y;
         v2.y += y;
-        if(mSongPlayer){
-            TheRnd->DrawString(MakeString("frame %d", mSongPlayer->mFrame), v2, white, true);
+        if (mSongPlayer) {
+            TheRnd->DrawString(
+                MakeString("frame %d", mSongPlayer->mFrame), v2, white, true
+            );
             v2.y += y;
-            std::vector<CharLipSync::PlayBack::Weight>& weights = mSongPlayer->mWeights;
-            for(int i = 0; i < weights.size(); i++){
-                CharLipSync::PlayBack::Weight& curWeight = weights[i];
+            std::vector<CharLipSync::PlayBack::Weight> &weights = mSongPlayer->mWeights;
+            for (int i = 0; i < weights.size(); i++) {
+                CharLipSync::PlayBack::Weight &curWeight = weights[i];
                 float f14 = curWeight.unk14;
-                CharClip* clip = curWeight.unk0;
-                if(f14 != 0 && clip){
-                    TheRnd->DrawString(MakeString("%s %.4f", clip->Name(), f14), v2, white, true);
+                CharClip *clip = curWeight.unk0;
+                if (f14 != 0 && clip) {
+                    TheRnd->DrawString(
+                        MakeString("%s %.4f", clip->Name(), f14), v2, white, true
+                    );
                     v2.y += y;
                 }
             }
@@ -53,19 +55,20 @@ void CharLipSyncDriver::Highlight(){
 #endif
 }
 
-void CharLipSyncDriver::Enter(){
+void CharLipSyncDriver::Enter() {
     RndPollable::Enter();
     mOverrideWeight = 0;
-    if(mLipSync) Sync();
+    if (mLipSync)
+        Sync();
 }
 
-void CharLipSyncDriver::SetClips(ObjectDir* clipDir){
+void CharLipSyncDriver::SetClips(ObjectDir *clipDir) {
     mClips = clipDir;
     Sync();
 }
 
-void CharLipSyncDriver::SetLipSync(CharLipSync* sync){
-    if(sync != mLipSync){
+void CharLipSyncDriver::SetLipSync(CharLipSync *sync) {
+    if (sync != mLipSync) {
         mLipSync = sync;
         mLoop = false;
         mSongOffset = 0;
@@ -73,24 +76,24 @@ void CharLipSyncDriver::SetLipSync(CharLipSync* sync){
     }
 }
 
-void CharLipSyncDriver::Sync(){
-    if(mClips){
+void CharLipSyncDriver::Sync() {
+    if (mClips) {
         mBlinkClip = mClips->Find<CharClip>("Blink", false);
-    }
-    else mBlinkClip = nullptr;
+    } else
+        mBlinkClip = nullptr;
     RELEASE(mSongPlayer);
-    if(mLipSync && mClips){
+    if (mLipSync && mClips) {
         mSongPlayer = new CharLipSync::PlayBack();
         mSongPlayer->Set(mLipSync, mClips);
         mSongPlayer->Reset();
     }
 }
 
-void CharLipSyncDriver::Poll(){
-    START_AUTO_TIMER("lipsyncdriver");
-}
+void CharLipSyncDriver::Poll() { START_AUTO_TIMER("lipsyncdriver"); }
 
-void CharLipSyncDriver::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharLipSyncDriver::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mBones);
 }
 
@@ -103,28 +106,32 @@ BEGIN_LOADS(CharLipSyncDriver)
     LOAD_SUPERCLASS(CharWeightable)
     bs >> mBones;
     bs >> mClips;
-    if(gRev < 1){
+    if (gRev < 1) {
         FilePath fp;
         bs >> fp;
         MILO_WARN("%s old version, won't load %s", PathName(this), fp);
         String str;
         bs >> str;
-    }
-    else bs >> mLipSync;
-    if(gRev > 1){
+    } else
+        bs >> mLipSync;
+    if (gRev > 1) {
         mTestClip.Load(bs, true, mClips);
         bs >> mTestWeight;
     }
-    if(gRev > 2){
+    if (gRev > 2) {
         mOverrideClip.Load(bs, true, mClips);
-        if(gRev < 5){
-            int x; bs >> x;
+        if (gRev < 5) {
+            int x;
+            bs >> x;
         }
         bs >> mOverrideOptions;
     }
-    if(gRev > 3) bs >> mApplyOverrideAdditively;
-    if(gRev > 5) bs >> mOverrideWeight;
-    if(gRev > 6) bs >> mAlternateDriver;
+    if (gRev > 3)
+        bs >> mApplyOverrideAdditively;
+    if (gRev > 5)
+        bs >> mOverrideWeight;
+    if (gRev > 6)
+        bs >> mAlternateDriver;
     Sync();
 END_LOADS
 

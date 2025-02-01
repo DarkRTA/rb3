@@ -5,8 +5,8 @@
 
 class HighlightObject {
 public:
-    HighlightObject(Hmx::Object*);
-    void Load(BinStream&);
+    HighlightObject(Hmx::Object *);
+    void Load(BinStream &);
 
     static int sRev;
 
@@ -41,34 +41,34 @@ public:
     BandList();
     OBJ_CLASSNAME(BandList)
     OBJ_SET_TYPE(BandList)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
     virtual ~BandList();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Enter();
     virtual void Exit();
-    virtual void AdjustTrans(Transform&, const UIListElementDrawState&);
-    virtual void AdjustTransSelected(Transform&);
+    virtual void AdjustTrans(Transform &, const UIListElementDrawState &);
+    virtual void AdjustTransSelected(Transform &);
 
     void StartPulseAnim(int);
     void StartFocusAnim(int, AnimState);
-    void StartRevealAnim(int, Transform&);
-    void RevealAnimPoll(int, Transform&);
-    void UpdateFocusAndPulseAnims(int, Transform&);
-    void UpdateRevealState(int, Transform&);
-    void UpdateConcealState(int, Transform&);
-    void UpdateRevealConcealState(int, Transform&);
-    void UpdatePulseAnim(int, Transform&);
+    void StartRevealAnim(int, Transform &);
+    void RevealAnimPoll(int, Transform &);
+    void UpdateFocusAndPulseAnims(int, Transform &);
+    void UpdateRevealState(int, Transform &);
+    void UpdateConcealState(int, Transform &);
+    void UpdateRevealConcealState(int, Transform &);
+    void UpdatePulseAnim(int, Transform &);
     void ForceConcealedStateOnAllEntries();
-    void StartConcealAnim(int, Transform&);
-    void ForceConcealed(int, Transform&);
-    void ForceRevealed(int, Transform&);
-    void ConcealAnimPoll(int, Transform&);
+    void StartConcealAnim(int, Transform &);
+    void ForceConcealed(int, Transform &);
+    void ForceRevealed(int, Transform &);
+    void ConcealAnimPoll(int, Transform &);
     void ConcealNow();
     void Conceal();
     void Reveal();
@@ -88,15 +88,13 @@ public:
     bool IsAnimating();
     bool IsRevealAnimFinished(float) const;
     bool IsConcealAnimFinished(float) const;
-    void MakeRevealTransform(float, Transform&);
-    void MakeConcealTransform(float, Transform&);
+    void MakeRevealTransform(float, Transform &);
+    void MakeConcealTransform(float, Transform &);
     bool SupportsRevealConcealAnim() const { return mRevealAnim || mConcealAnim; }
-    bool IsRevealed(){ return mBandListState == kReveal && !IsAnimating(); }
+    bool IsRevealed() { return mBandListState == kReveal && !IsAnimating(); }
 
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(BandList);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(BandList); }
     NEW_OBJ(BandList);
     DECLARE_REVS;
     NEW_OVERLOAD;

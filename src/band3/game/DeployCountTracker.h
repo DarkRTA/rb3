@@ -14,22 +14,24 @@ public:
         int unk4;
     };
 
-    DeployCountTracker(TrackerSource*, TrackerBandDisplay&, TrackerBroadcastDisplay&);
+    DeployCountTracker(TrackerSource *, TrackerBandDisplay &, TrackerBroadcastDisplay &);
     virtual ~DeployCountTracker();
     virtual void TranslateRelativeTargets();
-    virtual void UpdateGoalValueLabel(UILabel&) const;
-    virtual void UpdateCurrentValueLabel(UILabel&) const;
+    virtual void UpdateGoalValueLabel(UILabel &) const;
+    virtual void UpdateCurrentValueLabel(UILabel &) const;
     virtual String GetPlayerContributionString(Symbol) const;
-    virtual void ConfigureTrackerSpecificData(const DataArray*);
+    virtual void ConfigureTrackerSpecificData(const DataArray *);
     virtual void FirstFrame_(float);
     virtual void Poll_(float);
     virtual DataArrayPtr GetTargetDescription(int) const;
-    virtual TrackerChallengeType GetChallengeType() const { return (TrackerChallengeType)2; }
+    virtual TrackerChallengeType GetChallengeType() const {
+        return (TrackerChallengeType)2;
+    }
     virtual float GetCurrentValue() const { return mDeployCount; }
     virtual void SavePlayerStats() const;
 
-    void RemoteDeploy(Player*);
-    void LocalDeploy(const TrackerPlayerID&);
+    void RemoteDeploy(Player *);
+    void LocalDeploy(const TrackerPlayerID &);
 
     std::map<TrackerPlayerID, PlayerDeployData> mDeployDataMap; // 0x58
     int mDeployCount; // 0x70

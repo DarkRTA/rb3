@@ -9,50 +9,52 @@
 
 class InputMgr : public MsgSource {
 public:
-    InputMgr(BandUserMgr*, UIEventMgr*, NetSync*, SessionMgr*);
-    virtual DataNode Handle(DataArray*, bool);
+    InputMgr(BandUserMgr *, UIEventMgr *, NetSync *, SessionMgr *);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~InputMgr();
 
-    BandUser* GetUser();
+    BandUser *GetUser();
     bool IsActiveAndConnected(ControllerType) const;
     bool AllowRemoteExit() const;
-    bool HasValidController(LocalBandUser*, ControllerType) const;
-    bool AllowInput(BandUser*) const;
+    bool HasValidController(LocalBandUser *, ControllerType) const;
+    bool AllowInput(BandUser *) const;
     void CheckTriggerAutoVocalsConfirm();
-    void SetUser(BandUser*);
+    void SetUser(BandUser *);
     void ExportStatusChangedMsg();
-    LocalBandUser* GetUserWithInvalidController() const;
-    void SetInvalidMessageSink(Hmx::Object*);
+    LocalBandUser *GetUserWithInvalidController() const;
+    void SetInvalidMessageSink(Hmx::Object *);
     void ClearInvalidMessageSink();
     void ExportUserLeftMsg();
-    bool IsValidButtonForShell(JoypadButton, LocalBandUser*);
+    bool IsValidButtonForShell(JoypadButton, LocalBandUser *);
 
-    DataNode OnMsg(const LocalUserLeftMsg&);
-    DataNode OnMsg(const SigninChangedMsg&);
-    DataNode OnMsg(const JoypadConnectionMsg&);
-    DataNode OnMsg(const ButtonDownMsg&);
-    DataNode OnMsg(const ButtonUpMsg&);
+    DataNode OnMsg(const LocalUserLeftMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const JoypadConnectionMsg &);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnMsg(const ButtonUpMsg &);
 
     static void Init();
     static void Terminate();
 
-    BandUserMgr* mBandUserMgr; // 0x1c
-    UIEventMgr* mEventMgr; // 0x20
-    NetSync* mNetSync; // 0x24
-    SessionMgr* mSessionMgr; // 0x28
+    BandUserMgr *mBandUserMgr; // 0x1c
+    UIEventMgr *mEventMgr; // 0x20
+    NetSync *mNetSync; // 0x24
+    SessionMgr *mSessionMgr; // 0x28
     bool mAutoVocalsConfirmAllowed; // 0x2c
     bool unk2d; // 0x2d
-    BandUser* mUser; // 0x30
+    BandUser *mUser; // 0x30
 };
 
-extern InputMgr* TheInputMgr;
+extern InputMgr *TheInputMgr;
 
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(InputStatusChangedMsg, "input_status_changed")
-    InputStatusChangedMsg() : Message(Type()) {}
-END_MESSAGE;
+InputStatusChangedMsg() : Message(Type()) {}
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(InputUserLeftMsg, "input_user_left")
-    InputUserLeftMsg() : Message(Type()) {}
-END_MESSAGE;
+InputUserLeftMsg() : Message(Type()) {}
+END_MESSAGE
+;

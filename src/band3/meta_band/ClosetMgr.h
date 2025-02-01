@@ -14,7 +14,7 @@ class ClosetPanel;
 class ClosetMgr : public MsgSource {
 public:
     ClosetMgr();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~ClosetMgr();
 
     void Poll();
@@ -22,7 +22,7 @@ public:
     bool IsCurrentCharacterFinalized();
     void UpdateCurrentCharacter();
     void SetCurrentOutfitPiece(Symbol);
-    void UpdateBandCharDesc(BandCharDesc*);
+    void UpdateBandCharDesc(BandCharDesc *);
     void FinalizeCharCreatorChanges();
     void FinalizeChanges(bool, bool);
     void ResetCharacterPreview();
@@ -31,11 +31,11 @@ public:
     void CharacterFinishedLoading();
     bool InNoUserMode() const;
     void SetNoUserMode(bool);
-    void SetUser(LocalBandUser*);
+    void SetUser(LocalBandUser *);
     void UpdatePreviousCharacter();
     void ClearUser();
     Symbol GetAssetFromAssetType(AssetType);
-    void SetCurrentClosetPanel(ClosetPanel*);
+    void SetCurrentClosetPanel(ClosetPanel *);
     void ClearCurrentClosetPanel();
     void ResetNewCharacterPreview(Symbol);
     void FinalizeBodyChanges(Symbol);
@@ -44,8 +44,8 @@ public:
     void TakePortrait();
     void UpdateCurrentOutfitConfig();
     void FinalizedColors();
-    void SetCurrentCharacterPatch(BandCharDesc::Patch::Category, const char*);
-    void UpdateCharacterPatch(BandCharDesc::Patch::Category, const char*);
+    void SetCurrentCharacterPatch(BandCharDesc::Patch::Category, const char *);
+    void UpdateCharacterPatch(BandCharDesc::Patch::Category, const char *);
     void RecomposePatches(int);
     void SetPatches();
     void ResetPatches();
@@ -53,35 +53,35 @@ public:
     void SetDefaultColors();
     void HideClothes();
     void ShowClothes();
-    CamShot* GetCurrentShot();
+    CamShot *GetCurrentShot();
     void CycleCamera();
     void GotoArtMakerShot();
     void LeaveArtMakerShot();
     void SetInstrumentType(Symbol);
     void ClearInstrument();
     void SetReturnScreen(Symbol);
-    bool IsCharacterLoading(){ return mCharacterLoading; }
+    bool IsCharacterLoading() { return mCharacterLoading; }
     Symbol GetReturnScreen() const { return mReturnScreen; }
-    LocalBandUser* GetUser() const { return mUser; }
+    LocalBandUser *GetUser() const { return mUser; }
 
-    DataNode OnMsg(const ProfileSwappedMsg&);
+    DataNode OnMsg(const ProfileSwappedMsg &);
 
     static void Init();
-    static ClosetMgr* GetClosetMgr();
+    static ClosetMgr *GetClosetMgr();
 
-    LocalBandUser* mUser; // 0x1c
+    LocalBandUser *mUser; // 0x1c
     int mSlot; // 0x20
     bool mNoUserMode; // 0x24
-    BandProfile* unk28; // 0x28
-    CharData* mCurrentCharacter; // 0x2c
-    CharData* mPreviousCharacter; // 0x30
-    BandCharacter* mBandCharacter; // 0x34
-    BandCharDesc* mBandCharDesc; // 0x38
-    BandCharDesc* unk3c; // 0x3c
-    ClosetPanel* mCurrentClosetPanel; // 0x40
+    BandProfile *unk28; // 0x28
+    CharData *mCurrentCharacter; // 0x2c
+    CharData *mPreviousCharacter; // 0x30
+    BandCharacter *mBandCharacter; // 0x34
+    BandCharDesc *mBandCharDesc; // 0x38
+    BandCharDesc *unk3c; // 0x3c
+    ClosetPanel *mCurrentClosetPanel; // 0x40
     Symbol unk44;
-    BandCharDesc::OutfitPiece* mCurrentOutfitPiece; // 0x48
-    OutfitConfig* mCurrentOutfitConfig; // 0x4c
+    BandCharDesc::OutfitPiece *mCurrentOutfitPiece; // 0x48
+    OutfitConfig *mCurrentOutfitConfig; // 0x4c
     int unk50;
     int unk54;
     Symbol mReturnScreen; // 0x58
@@ -93,9 +93,11 @@ public:
 #include "obj/Msg.h"
 
 DECLARE_MESSAGE(CharacterFinishedLoadingMsg, "character_finished_loading_msg")
-    CharacterFinishedLoadingMsg() : Message(Type()) {}
-END_MESSAGE;
+CharacterFinishedLoadingMsg() : Message(Type()) {}
+END_MESSAGE
+;
 
 DECLARE_MESSAGE(FinalizedColorsMsg, "finalized_colors_msg")
-    FinalizedColorsMsg() : Message(Type()) {}
-END_MESSAGE;
+FinalizedColorsMsg() : Message(Type()) {}
+END_MESSAGE
+;

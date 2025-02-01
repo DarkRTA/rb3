@@ -2,8 +2,8 @@
 
 class TrackWatcherParent {
 public:
-    TrackWatcherParent(){}
-    virtual ~TrackWatcherParent(){}
+    TrackWatcherParent() {}
+    virtual ~TrackWatcherParent() {}
     virtual float GetNow() const = 0;
     virtual int GetTick() const = 0;
     virtual float GetWhammyBar() const = 0;

@@ -3,13 +3,13 @@
 
 float DeJitter::sTimeScale = 1;
 
-DeJitter::DeJitter() { 
+DeJitter::DeJitter() {
     Reset();
     unk_0x0.resize(32);
 }
 
-float DeJitter::Apply(float, float&) {
-    static DataNode& dejitter_disable = DataVariable("dejitter_disable");
+float DeJitter::Apply(float, float &) {
+    static DataNode &dejitter_disable = DataVariable("dejitter_disable");
 }
 
 void DeJitter::Reset() {

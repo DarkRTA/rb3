@@ -4,11 +4,20 @@
 
 class JoypadTrackWatcherImpl : public TrackWatcherImpl {
 public:
-    JoypadTrackWatcherImpl(int, const UserGuid&, int, SongData*, GameGemList*, TrackWatcherParent*, DataArray*, int);
+    JoypadTrackWatcherImpl(
+        int,
+        const UserGuid &,
+        int,
+        SongData *,
+        GameGemList *,
+        TrackWatcherParent *,
+        DataArray *,
+        int
+    );
     virtual ~JoypadTrackWatcherImpl();
     virtual bool Swing(int, bool, bool, GemHitFlags);
-    virtual void NonStrumSwing(int, bool, bool){}
-    virtual void FretButtonDown(int){}
+    virtual void NonStrumSwing(int, bool, bool) {}
+    virtual void FretButtonDown(int) {}
     virtual void FretButtonUp(int);
     virtual void PollHook(float);
     virtual void JumpHook(float);

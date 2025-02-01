@@ -4,7 +4,7 @@
 
 class BaseGuitarTrackWatcherImpl : public TrackWatcherImpl {
 public:
-    BaseGuitarTrackWatcherImpl(int, const UserGuid&, int, SongData*, GameGemList*, TrackWatcherParent*, DataArray*);
+    BaseGuitarTrackWatcherImpl(int, const UserGuid &, int, SongData *, GameGemList *, TrackWatcherParent *, DataArray *);
     virtual ~BaseGuitarTrackWatcherImpl();
     virtual void HandleDifficultyChange();
     virtual bool Swing(int, bool, bool, GemHitFlags);
@@ -26,7 +26,7 @@ public:
     virtual bool FretMatch(int, bool, bool) const = 0;
     virtual bool IsChordSubset(int) const = 0;
     virtual bool IsHighestFret(int) const = 0;
-    virtual bool InGem(int, const GameGem&) const = 0;
+    virtual bool InGem(int, const GameGem &) const = 0;
     virtual bool HarmlessFretDown(int, int) const = 0;
     virtual bool IsCoreGuitar() const = 0;
 
@@ -46,5 +46,6 @@ public:
     float mFretWaitTimeout; // 0xd8
     bool mHarmlessSwing; // 0xdc
     float mFretSlop; // 0xe0
-    GemHitFlags mBaseGuitarFlags; // 0xe4 - change the name of this var cuz it probably ain't the clearest
+    GemHitFlags mBaseGuitarFlags; // 0xe4 - change the name of this var cuz it probably
+                                  // ain't the clearest
 };

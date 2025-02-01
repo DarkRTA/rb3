@@ -4,33 +4,39 @@
 
 INIT_REVS(UIListMesh)
 
-UIListMesh::UIListMesh() : mMesh(this, 0), mDefaultMat(this, 0) {
+UIListMesh::UIListMesh() : mMesh(this, 0), mDefaultMat(this, 0) {}
 
-}
+RndMat *UIListMesh::DefaultMat() const { return mDefaultMat; }
 
-RndMat* UIListMesh::DefaultMat() const { return mDefaultMat; }
-
-UIListSlotElement* UIListMesh::CreateElement(UIList* uilist){
+UIListSlotElement *UIListMesh::CreateElement(UIList *uilist) {
     MILO_ASSERT(mMesh, 0x5B);
     return new UIListMeshElement(this);
 }
 
-RndTransformable* UIListMesh::RootTrans(){ return mMesh; }
+RndTransformable *UIListMesh::RootTrans() { return mMesh; }
 
-void UIListMesh::Draw(const UIListWidgetDrawState& drawstate, const UIListState& liststate, const Transform& tf, UIComponent::State compstate, Box* box, DrawCommand cmd){
-    if(mMesh){
+void UIListMesh::Draw(
+    const UIListWidgetDrawState &drawstate,
+    const UIListState &liststate,
+    const Transform &tf,
+    UIComponent::State compstate,
+    Box *box,
+    DrawCommand cmd
+) {
+    if (mMesh) {
         float somefloat = 1.0f;
-        RndMat* themat = 0;
-        if(LOADMGR_EDITMODE){
+        RndMat *themat = 0;
+        if (LOADMGR_EDITMODE) {
             themat = mMesh->mMat;
-            if(themat) somefloat = themat->mColor.alpha;
+            if (themat)
+                somefloat = themat->mColor.alpha;
         }
         Transform xfm1 = mMesh->mLocalXfm;
         UIListSlot::Draw(drawstate, liststate, tf, compstate, box, cmd);
         mMesh->SetLocalXfm(xfm1);
-        if(LOADMGR_EDITMODE){
+        if (LOADMGR_EDITMODE) {
             mMesh->SetMat(themat);
-            if(themat){
+            if (themat) {
                 themat->mColor.alpha = somefloat;
                 themat->mDirty |= 1;
             }
@@ -66,22 +72,22 @@ BEGIN_PROPSYNCS(UIListMesh)
     SYNC_SUPERCLASS(UIListSlot)
 END_PROPSYNCS
 
-inline void UIListMeshElement::Draw(const Transform& tf, float f, UIColor* col, Box* box){
-    RndMesh* mesh = mListMesh->Mesh();
+inline void
+UIListMeshElement::Draw(const Transform &tf, float f, UIColor *col, Box *box) {
+    RndMesh *mesh = mListMesh->Mesh();
     MILO_ASSERT(mesh, 0x1B);
     mesh->SetWorldXfm(tf);
-    if(box){
+    if (box) {
         Box localbox = *box;
         CalcBox(mesh, localbox);
         box->GrowToContain(localbox.mMin, false);
         box->GrowToContain(localbox.mMax, false);
-    }
-    else {
-        if(mMat){
+    } else {
+        if (mMat) {
             float alpha = mMat->Alpha();
             mesh->SetMat(mMat);
             mMat->SetAlpha(f * alpha);
-            if(col){
+            if (col) {
                 mMat->SetColor(col->GetColor());
             }
             mesh->DrawShowing();

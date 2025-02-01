@@ -14,7 +14,7 @@ class Stream {
 public:
     Stream();
     virtual ~Stream();
-    virtual bool Fail(){ return false; }
+    virtual bool Fail() { return false; }
     virtual bool IsReady() const = 0;
     virtual bool IsFinished() const = 0;
     virtual int GetNumChannels() const = 0;
@@ -41,35 +41,35 @@ public:
     virtual bool GetFX(int) const = 0;
     virtual void SetFXCore(int, FXCore) = 0;
     virtual FXCore GetFXCore(int) const = 0;
-    virtual void SetFXSend(int, FxSend*){}
-    virtual void SetADSR(int, const ADSR&){}
+    virtual void SetFXSend(int, FxSend *) {}
+    virtual void SetADSR(int, const ADSR &) {}
     virtual void SetSpeed(float) = 0;
     virtual float GetSpeed() const = 0;
-    virtual void LoadMarkerList(const char*) = 0;
-    virtual void ClearMarkerList(){}
-    virtual void AddMarker(Marker){}
+    virtual void LoadMarkerList(const char *) = 0;
+    virtual void ClearMarkerList() {}
+    virtual void AddMarker(Marker) {}
     virtual int MarkerListSize() const { return 0; }
-    virtual bool MarkerAt(int, Marker&) const { return 0; }
-    virtual void SetLoop(class String&, class String&) = 0;
-    virtual bool CurrentLoopPoints(Marker&, Marker&){ return 0; }
+    virtual bool MarkerAt(int, Marker &) const { return 0; }
+    virtual void SetLoop(class String &, class String &) = 0;
+    virtual bool CurrentLoopPoints(Marker &, Marker &) { return 0; }
     virtual void AbandonLoop() = 0;
-    virtual void SetJump(float, float, const char*) = 0;
+    virtual void SetJump(float, float, const char *) = 0;
     virtual void ClearJump() = 0;
     virtual void EnableSlipStreaming(int) = 0;
     virtual void SetSlipOffset(int, float) = 0;
     virtual void SlipStop(int) = 0;
     virtual float GetSlipOffset(int) = 0;
     virtual void SetSlipSpeed(int, float) = 0;
-    virtual void SetStereoPair(int, int){}
-    virtual FaderGroup* ChannelFaders(int) = 0;
-    virtual void AddVirtualChannels(int){}
-    virtual void RemapChannel(int, int){}
+    virtual void SetStereoPair(int, int) {}
+    virtual FaderGroup *ChannelFaders(int) = 0;
+    virtual void AddVirtualChannels(int) {}
+    virtual void RemapChannel(int, int) {}
 
     void SetVolume(float);
-    FaderGroup* Faders() const { return mFaders; }
+    FaderGroup *Faders() const { return mFaders; }
 
     static const float kStreamEndMs;
     static const int kStreamEndSamples;
 
-    FaderGroup* mFaders; // 0x4
+    FaderGroup *mFaders; // 0x4
 };

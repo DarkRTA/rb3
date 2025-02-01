@@ -8,27 +8,22 @@
 
 BandUser::BandUser()
     : mDifficulty(DefaultDifficulty()), unk_0xC(0), mTrackType(kTrackNone),
-      mControllerType(kControllerNone), mHasButtonGuitar(0), mHas22FretGuitar(0), mPreferredScoreType(kScoreBand),
-      mOvershellState(kState_JoinedDefault), mChar(0), mAutoplay(0), mLastHitFraction(0), mTrack(0), mPlayer(0),
-      mParticipating(0), mIsWiiRemoteController(0), mJustDisconnected(0) {
+      mControllerType(kControllerNone), mHasButtonGuitar(0), mHas22FretGuitar(0),
+      mPreferredScoreType(kScoreBand), mOvershellState(kState_JoinedDefault), mChar(0),
+      mAutoplay(0), mLastHitFraction(0), mTrack(0), mPlayer(0), mParticipating(0),
+      mIsWiiRemoteController(0), mJustDisconnected(0) {
     mPreviousAward = none;
 }
 
 BandUser::~BandUser() {}
 
-LocalBandUser* BandUser::NewLocalBandUser(){
-    return new LocalBandUser();
-}
+LocalBandUser *BandUser::NewLocalBandUser() { return new LocalBandUser(); }
 
-RemoteBandUser* BandUser::NewRemoteBandUser(){
-    return new RemoteBandUser();
-}
+RemoteBandUser *BandUser::NewRemoteBandUser() { return new RemoteBandUser(); }
 
-NullLocalBandUser* BandUser::NewNullLocalBandUser(){
-    return new NullLocalBandUser();
-}
+NullLocalBandUser *BandUser::NewNullLocalBandUser() { return new NullLocalBandUser(); }
 
-void BandUser::Reset(){
+void BandUser::Reset() {
     User::Reset();
     mOvershellState = kState_JoinedDefault;
     mDifficulty = DefaultDifficulty();
@@ -44,21 +39,17 @@ void BandUser::Reset(){
     mHas22FretGuitar = 0;
 }
 
-Difficulty BandUser::GetDifficulty() const {
-    return mDifficulty;
-}
+Difficulty BandUser::GetDifficulty() const { return mDifficulty; }
 
-Symbol BandUser::GetDifficultySym() const {
-    return DifficultyToSym(mDifficulty);
-}
+Symbol BandUser::GetDifficultySym() const { return DifficultyToSym(mDifficulty); }
 
-void BandUser::SetDifficulty(Difficulty d){
+void BandUser::SetDifficulty(Difficulty d) {
     MILO_ASSERT(IsLocal(), 0x74);
     MILO_ASSERT_RANGE(d, 0, kNumDifficulties, 0x75);
     Difficulty old = mDifficulty;
     unk_0xC = true;
     mDifficulty = d;
-    if(old != d && mPlayer != nullptr) {
+    if (old != d && mPlayer != nullptr) {
         mPlayer->ChangeDifficulty(d);
     }
     UpdateData(1);
@@ -66,84 +57,68 @@ void BandUser::SetDifficulty(Difficulty d){
 
 bool BandUser::IsFullyInGame() const {
     bool ret = false;
-    if(unk_0xC && mTrackType != kTrackPending && mTrackType != kTrackPendingVocals){
+    if (unk_0xC && mTrackType != kTrackPending && mTrackType != kTrackPendingVocals) {
         ret = true;
     }
     return ret;
 }
 
-void BandUser::SetDifficulty(Symbol s){
-    SetDifficulty(SymToDifficulty(s));
-}
+void BandUser::SetDifficulty(Symbol s) { SetDifficulty(SymToDifficulty(s)); }
 
-TrackType BandUser::GetTrackType() const {
-    return mTrackType;
-}
+TrackType BandUser::GetTrackType() const { return mTrackType; }
 
-Symbol BandUser::GetTrackSym() const {
-    return TrackTypeToSym(mTrackType);
-}
+Symbol BandUser::GetTrackSym() const { return TrackTypeToSym(mTrackType); }
 
-void BandUser::SetOvershellSlotState(OvershellSlotStateID id){
+void BandUser::SetOvershellSlotState(OvershellSlotStateID id) {
     mOvershellState = id;
     UpdateData(1);
 }
 
-const char* BandUser::GetOvershellFocus(){ return mOvershellFocus.c_str(); }
+const char *BandUser::GetOvershellFocus() { return mOvershellFocus.c_str(); }
 
-void BandUser::SetTrackType(TrackType ty){
+void BandUser::SetTrackType(TrackType ty) {
     MILO_ASSERT(IsLocal(), 0xC1);
     mTrackType = ty;
     UpdateData(1);
 }
 
-void BandUser::SetTrackType(Symbol s){
-    SetTrackType(SymToTrackType(s));
-}
+void BandUser::SetTrackType(Symbol s) { SetTrackType(SymToTrackType(s)); }
 
-ScoreType BandUser::GetPreferredScoreType() const {
-    return mPreferredScoreType;
-}
+ScoreType BandUser::GetPreferredScoreType() const { return mPreferredScoreType; }
 
-void BandUser::SetPreferredScoreType(ScoreType ty){
+void BandUser::SetPreferredScoreType(ScoreType ty) {
     MILO_ASSERT(IsLocal(), 0xD2);
     mPreferredScoreType = ty;
     UpdateData(1);
 }
 
-ControllerType BandUser::GetControllerType() const {
-    return mControllerType;
-}
+ControllerType BandUser::GetControllerType() const { return mControllerType; }
 
-Symbol BandUser::GetControllerSym() const {
-    return ControllerTypeToSym(mControllerType);
-}
+Symbol BandUser::GetControllerSym() const { return ControllerTypeToSym(mControllerType); }
 
-void BandUser::SetControllerType(ControllerType ty){
+void BandUser::SetControllerType(ControllerType ty) {
     MILO_ASSERT(IsLocal(), 0xE4);
     mControllerType = ty;
     UpdateData(1);
 }
 
-void BandUser::SetControllerType(Symbol s){
-    SetControllerType(SymToControllerType(s));
-}
+void BandUser::SetControllerType(Symbol s) { SetControllerType(SymToControllerType(s)); }
 
-void BandUser::SetHasButtonGuitar(bool b){
+void BandUser::SetHasButtonGuitar(bool b) {
     MILO_ASSERT(IsLocal(), 0xF0);
     mHasButtonGuitar = b;
     UpdateData(1);
 }
 
-void BandUser::BandUser::SetHas22FretGuitar(bool b){
+void BandUser::BandUser::SetHas22FretGuitar(bool b) {
     MILO_ASSERT(IsLocal(), 0xF0);
     mHas22FretGuitar = b;
     UpdateData(1);
 }
 
-bool BandUser::HasChar(){ return mChar; }
+bool BandUser::HasChar() { return mChar; }
 
-CharData* BandUser::GetChar(){ return mChar; }
+CharData *BandUser::GetChar() { return mChar; }
 
 void BandUser::UpdateData(unsigned int data) {
     if (TheNetSession->HasUser(this)) {
@@ -151,60 +126,56 @@ void BandUser::UpdateData(unsigned int data) {
     }
 }
 
-DataNode BandUser::OnSetDifficulty(DataArray* da){
-    DataNode& eval = da->Node(2).Evaluate();
-    if(eval.Type() == kDataInt){
+DataNode BandUser::OnSetDifficulty(DataArray *da) {
+    DataNode &eval = da->Node(2).Evaluate();
+    if (eval.Type() == kDataInt) {
         SetDifficulty((Difficulty)eval.Int());
-    }
-    else if(eval.Type() == kDataSymbol){
+    } else if (eval.Type() == kDataSymbol) {
         SetDifficulty(eval.Sym());
-    }
-    else if(eval.Type() == kDataString){
+    } else if (eval.Type() == kDataString) {
         SetDifficulty(eval.ForceSym());
-    }
-    else MILO_FAIL("bad difficulty arg");
+    } else
+        MILO_FAIL("bad difficulty arg");
     return 1;
 }
 
-DataNode BandUser::OnSetTrackType(DataArray* da){
-    DataNode& eval = da->Node(2).Evaluate();
-    if(eval.Type() == kDataInt){
+DataNode BandUser::OnSetTrackType(DataArray *da) {
+    DataNode &eval = da->Node(2).Evaluate();
+    if (eval.Type() == kDataInt) {
         SetTrackType((TrackType)eval.Int());
-    }
-    else if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
+    } else if (eval.Type() == kDataSymbol || eval.Type() == kDataString) {
         SetTrackType(eval.ForceSym());
-    }
-    else MILO_FAIL("bad TrackType arg");
+    } else
+        MILO_FAIL("bad TrackType arg");
     return 1;
 }
 
-DataNode BandUser::OnSetHas22FretGuitar(DataArray* da){
-    DataNode& eval = da->Node(2).Evaluate();
-    if(eval.Type() == kDataInt){
+DataNode BandUser::OnSetHas22FretGuitar(DataArray *da) {
+    DataNode &eval = da->Node(2).Evaluate();
+    if (eval.Type() == kDataInt) {
         SetHas22FretGuitar(eval.Int());
-    }
-    else MILO_FAIL("bad bool arg");
+    } else
+        MILO_FAIL("bad bool arg");
     return 1;
 }
 
-DataNode BandUser::OnSetPreferredScoreType(DataArray* da){
-    DataNode& eval = da->Node(2).Evaluate();
-    if(eval.Type() == kDataInt){
+DataNode BandUser::OnSetPreferredScoreType(DataArray *da) {
+    DataNode &eval = da->Node(2).Evaluate();
+    if (eval.Type() == kDataInt) {
         SetPreferredScoreType((ScoreType)eval.Int());
-    }
-    else MILO_FAIL("bad ScoreType arg");
+    } else
+        MILO_FAIL("bad ScoreType arg");
     return 1;
 }
 
-DataNode BandUser::OnSetControllerType(DataArray* da){
-    DataNode& eval = da->Node(2).Evaluate();
-    if(eval.Type() == kDataInt){
+DataNode BandUser::OnSetControllerType(DataArray *da) {
+    DataNode &eval = da->Node(2).Evaluate();
+    if (eval.Type() == kDataInt) {
         SetControllerType((ControllerType)eval.Int());
-    }
-    else if(eval.Type() == kDataSymbol || eval.Type() == kDataString){
+    } else if (eval.Type() == kDataSymbol || eval.Type() == kDataString) {
         SetControllerType(eval.ForceSym());
-    }
-    else MILO_FAIL("bad ControllerType arg");
+    } else
+        MILO_FAIL("bad ControllerType arg");
     return 1;
 }
 
@@ -253,20 +224,20 @@ LocalBandUser::LocalBandUser() : mControllerTypeOverride(kControllerNone) {
     mHasSeenRealGuitarPrompt = 0;
 }
 
-LocalBandUser* LocalBandUser::GetLocalBandUser(){}
-LocalBandUser* LocalBandUser::GetLocalBandUser() const {}
+LocalBandUser *LocalBandUser::GetLocalBandUser() {}
+LocalBandUser *LocalBandUser::GetLocalBandUser() const {}
 
-RemoteBandUser* LocalBandUser::GetRemoteBandUser(){
+RemoteBandUser *LocalBandUser::GetRemoteBandUser() {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-RemoteBandUser* LocalBandUser::GetRemoteBandUser() const {
+RemoteBandUser *LocalBandUser::GetRemoteBandUser() const {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-void LocalBandUser::Reset(){
+void LocalBandUser::Reset() {
     BandUser::Reset();
     LocalUser::Reset();
     mShownIntrosSet.clear();
@@ -275,16 +246,18 @@ void LocalBandUser::Reset(){
 }
 
 bool LocalBandUser::HasSeenRealGuitarPrompt() const { return mHasSeenRealGuitarPrompt; }
-void LocalBandUser::SetHasSeenRealGuitarPrompt(){ mHasSeenRealGuitarPrompt = true; }
+void LocalBandUser::SetHasSeenRealGuitarPrompt() { mHasSeenRealGuitarPrompt = true; }
 
-void LocalBandUser::SetOvershellFocus(const char* cc){
+void LocalBandUser::SetOvershellFocus(const char *cc) {
     mOvershellFocus = cc;
     UpdateData(1);
 }
 
-ControllerType LocalBandUser::DebugGetControllerTypeOverride() const { return mControllerTypeOverride; }
+ControllerType LocalBandUser::DebugGetControllerTypeOverride() const {
+    return mControllerTypeOverride;
+}
 
-void LocalBandUser::DebugSetControllerTypeOverride(ControllerType ct){
+void LocalBandUser::DebugSetControllerTypeOverride(ControllerType ct) {
     MILO_ASSERT_RANGE_EQ(ct, 0, kNumControllerTypes, 0x3B2);
     mControllerTypeOverride = ct;
 }
@@ -305,19 +278,17 @@ RemoteBandUser::RemoteBandUser() : unk19(), unk1a(), unk1c(), unk20(), unk24() {
     mRemoteChar = new TourCharRemote;
 }
 
-RemoteBandUser::~RemoteBandUser(){
+RemoteBandUser::~RemoteBandUser() {}
 
-}
-
-LocalBandUser* RemoteBandUser::GetLocalBandUser(){
+LocalBandUser *RemoteBandUser::GetLocalBandUser() {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-LocalBandUser* RemoteBandUser::GetLocalBandUser() const {
+LocalBandUser *RemoteBandUser::GetLocalBandUser() const {
     MILO_FAIL("Bad Conversion");
     return 0;
 }
 
-RemoteBandUser* RemoteBandUser::GetRemoteBandUser(){}
-RemoteBandUser* RemoteBandUser::GetRemoteBandUser() const {}
+RemoteBandUser *RemoteBandUser::GetRemoteBandUser() {}
+RemoteBandUser *RemoteBandUser::GetRemoteBandUser() const {}

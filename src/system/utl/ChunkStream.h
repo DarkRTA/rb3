@@ -7,9 +7,9 @@
 #include "utl/Str.h"
 #include "milo_types.h"
 
-BinStream& MarkChunk(BinStream&);
-BinStream& ReadChunks(BinStream&, void*, int, int);
-BinStream& WriteChunks(BinStream&, const void*, int, int);
+BinStream &MarkChunk(BinStream &);
+BinStream &ReadChunks(BinStream &, void *, int, int);
+BinStream &WriteChunks(BinStream &, const void *, int, int);
 
 #define kChunkSizeMask 0x00ffffff
 #define kChunkUnusedMask 0xfe000000
@@ -24,15 +24,18 @@ enum BufferState {
 };
 
 struct DecompressTask {
-    DecompressTask(int* size, char* data, BufferState* state, int out, int id, const char* name) : 
-        mChunkSize(size), out_data(data), mState(state), mOutLen(out), mID(id), mFilename(name) {}
+    DecompressTask(
+        int *size, char *data, BufferState *state, int out, int id, const char *name
+    )
+        : mChunkSize(size), out_data(data), mState(state), mOutLen(out), mID(id),
+          mFilename(name) {}
     DecompressTask() {}
-    int* mChunkSize;
-    char* out_data;
-    BufferState* mState;
+    int *mChunkSize;
+    char *out_data;
+    BufferState *mState;
     int mOutLen;
     int mID;
-    const char* mFilename;
+    const char *mFilename;
 };
 
 /**
@@ -61,23 +64,23 @@ public:
     virtual int Tell();
     virtual EofType Eof();
     virtual bool Fail();
-    virtual const char* Name() const;
+    virtual const char *Name() const;
     virtual bool Cached() const;
     virtual Platform GetPlatform() const;
-    virtual void ReadImpl(void*, int);
-    virtual void WriteImpl(const void*, int);
+    virtual void ReadImpl(void *, int);
+    virtual void WriteImpl(const void *, int);
     virtual void SeekImpl(int, SeekType);
 
     void SetPlatform(Platform);
-    static void DecompressChunk(DecompressTask&);
+    static void DecompressChunk(DecompressTask &);
     void MaybeWriteChunk(bool);
     void ReadChunkAsync();
     int WriteChunk();
     void DecompressChunkAsync();
-    
+
     static bool PollDecompressionWorker();
 
-    File* mFile; // 0xc
+    File *mFile; // 0xc
     String mFilename; // 0x10
     bool mFail; // 0x1c
     FileType mType; // 0x20
@@ -85,24 +88,22 @@ public:
     bool mIsCached; // 0x834
     Platform mPlatform; // 0x838
     int mBufSize; // 0x83c
-    char* mBuffers[2]; // 0x840, 0x844
-    char* mCurReadBuffer; // 0x848
+    char *mBuffers[2]; // 0x840, 0x844
+    char *mCurReadBuffer; // 0x848
     Timer mStartTime; // 0x84c
     int mRecommendedChunkSize; // 0x880
     int mLastWriteMarker; // 0x884
     int mCurBufferIdx; // 0x888
     BufferState mBuffersState[2]; // 0x88c, 0x890
-    int* mBuffersOffset[2]; // 0x894, 0x898
+    int *mBuffersOffset[2]; // 0x894, 0x898
     int mCurBufOffset; // 0x89c
     bool mChunkInfoPending; // 0x8a0
-    int* mCurChunk; // 0x8a4
-    int* mChunkEnd; // 0x8a8
+    int *mCurChunk; // 0x8a4
+    int *mChunkEnd; // 0x8a8
     int mTell; // 0x8ac
 
-    void* operator new(size_t t) {
-        return _MemAllocTemp(t, 0);
-    }
+    void *operator new(size_t t) { return _MemAllocTemp(t, 0); }
     DELETE_OVERLOAD
 };
 
-void DecompressMemHelper(const void*, int, void*, int&, const char*);
+void DecompressMemHelper(const void *, int, void *, int &, const char *);

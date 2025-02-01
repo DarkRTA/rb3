@@ -9,9 +9,10 @@
 #include "char/CharCollide.h"
 
 /** "Pins fingers to world positions" */
-class CharIKFingers : public RndHighlightable, public CharWeightable, public CharPollable {
+class CharIKFingers : public RndHighlightable,
+                      public CharWeightable,
+                      public CharPollable {
 public:
-
     enum FingerNum {
         kFingerThumb,
         kFingerIndex,
@@ -23,8 +24,10 @@ public:
 
     class FingerDesc {
     public:
-        FingerDesc() : unk0(0), unk8(0,0,0), unk14(0,0,0), mFinger01(0), mFinger02(0), mFinger03(0), mFingertip(0), unk60(0), unk64(0), unk68(1) {}
-        ~FingerDesc(){}
+        FingerDesc()
+            : unk0(0), unk8(0, 0, 0), unk14(0, 0, 0), mFinger01(0), mFinger02(0),
+              mFinger03(0), mFingertip(0), unk60(0), unk64(0), unk68(1) {}
+        ~FingerDesc() {}
         bool unk0;
         float unk4;
         Vector3 unk8; // 0x8
@@ -49,15 +52,15 @@ public:
     virtual ~CharIKFingers();
     virtual void Highlight();
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     OBJ_CLASSNAME(CharIKFingers);
     OBJ_SET_TYPE(CharIKFingers);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void SetName(const char *, class ObjectDir *);
 
     void MeasureLengths();
     void SetFinger(Vector3, Vector3, FingerNum);
@@ -65,15 +68,13 @@ public:
     void CalculateHandDest(int, int);
     void CalculateFingerDest(FingerNum);
     void MoveFinger(FingerNum);
-    void FixSingleFinger(RndTransformable*, RndTransformable*, RndTransformable*);
+    void FixSingleFinger(RndTransformable *, RndTransformable *, RndTransformable *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharIKFingers)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharIKFingers)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharIKFingers) }
 
     ObjPtr<RndTransformable> mHand; // 0x28
     ObjPtr<RndTransformable> mForeArm; // 0x34

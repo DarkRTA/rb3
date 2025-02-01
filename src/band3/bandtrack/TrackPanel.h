@@ -16,7 +16,7 @@ public:
     public:
         TrackSlot() : mTrack(0), mInstrument(kInstNone) {}
 
-        Track* mTrack; // 0x0
+        Track *mTrack; // 0x0
         TrackInstrument mInstrument; // 0x4
     };
 
@@ -32,15 +32,15 @@ public:
     TrackPanel();
     OBJ_CLASSNAME(TrackPanel);
     OBJ_SET_TYPE(TrackPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~TrackPanel();
     virtual void Draw();
-    virtual void Enter();    
-    virtual void Exit();    
-    virtual void Poll();    
-    virtual void Unload();    
+    virtual void Enter();
+    virtual void Exit();
+    virtual void Poll();
+    virtual void Unload();
     virtual void FinishLoad();
-    virtual void GetTrackOrder(std::vector<TrackInstrument>*, bool) const;
+    virtual void GetTrackOrder(std::vector<TrackInstrument> *, bool) const;
     virtual int GetTrackCount() const;
     virtual int GetNumPlayers() const;
     virtual bool InGame() const;
@@ -56,10 +56,10 @@ public:
     virtual bool AutoVocals() const { return mAutoVocals; }
 
     void CleanUpReloadChecks();
-    Track* GetTrack();
-    Track* GetTrack(Player*, bool);
-    Track* GetTrack(BandUser*, bool);
-    const BandUser* GetUserFromTrackNum(int);
+    Track *GetTrack();
+    Track *GetTrack(Player *, bool);
+    Track *GetTrack(BandUser *, bool);
+    const BandUser *GetUserFromTrackNum(int);
     void Reload();
     void CleanUpTracks();
     void UpdateReservedVocalSlot();
@@ -71,35 +71,35 @@ public:
     void TrackerDisplayReset();
     void SetSuppressTambourineDisplay(bool);
     void AssignTrack(int);
-    void HandleAddUser(BandUser*);
-    void HandleAddPlayer(Player*);
-    void DoHandleAddPlayer(BandUser*);
-    void PostHandleAddPlayer(Player*);
-    void DoPostHandleAddPlayer(BandUser*);
-    void HandleRemoveUser(BandUser*);
-    void PostHandleRemoveUser(BandUser*);
-    void PlaySequence(const char*, float, float, float);
-    void StopSequence(const char*, bool);
+    void HandleAddUser(BandUser *);
+    void HandleAddPlayer(Player *);
+    void DoHandleAddPlayer(BandUser *);
+    void PostHandleAddPlayer(Player *);
+    void DoPostHandleAddPlayer(BandUser *);
+    void HandleRemoveUser(BandUser *);
+    void PostHandleRemoveUser(BandUser *);
+    void PlaySequence(const char *, float, float, float);
+    void StopSequence(const char *, bool);
     void ShowMainGoalInfo(bool);
-    void SendTrackerDisplayMessage(const Message&) const;
-    void SendTrackerBroadcastDisplayMessage(const Message&) const;
+    void SendTrackerDisplayMessage(const Message &) const;
+    void SendTrackerBroadcastDisplayMessage(const Message &) const;
     void TrackerDisplayReset() const;
     void StartPulseAnims();
     void SetSmasherGlowing(int, bool);
     void PopSmasher(int);
-    int GetTrackSlot(Player*);
+    int GetTrackSlot(Player *);
     void UpdateJoinInProgress(bool, bool);
     void FailedJoinInProgress();
     void SetSuppressUnisonDisplay(bool);
     void UnisonStart(int);
-    void UnisonPlayerSuccess(Player*);
-    void UnisonPlayerFailure(Player*);
+    void UnisonPlayerSuccess(Player *);
+    void UnisonPlayerFailure(Player *);
     void SetSuppressPlayerFeedback(bool);
 
-    DataNode ForEachTrack(const DataArray*);
+    DataNode ForEachTrack(const DataArray *);
 
-    DataArray* mConfig; // 0x38
-    std::vector<Track*> mTracks; // 0x3c
+    DataArray *mConfig; // 0x38
+    std::vector<Track *> mTracks; // 0x3c
     std::vector<TrackSlot> mTrackSlots; // 0x44
     int mReservedVocalSlot; // 0x4c
     ObjPtr<BandScoreboard, ObjectDir> mScoreboard; // 0x50
@@ -111,15 +111,15 @@ public:
     bool unk61; // 0x61
     bool unk62; // 0x62
     bool mAutoVocals; // 0x63
-    std::map<Symbol, DepChecker*> unk64; // 0x64
+    std::map<Symbol, DepChecker *> unk64; // 0x64
     float unk7c;
-    TrackPanelDirBase* mTrackPanelDir; // 0x80
+    TrackPanelDirBase *mTrackPanelDir; // 0x80
     int unk84;
     TourGoalConfig mTourGoalConfig; // 0x88
     float unk8c;
 };
 
-TrackPanel* GetTrackPanel();
-TrackPanelDirBase* GetTrackPanelDir();
+TrackPanel *GetTrackPanel();
+TrackPanelDirBase *GetTrackPanelDir();
 
-extern TrackPanel* TheTrackPanel;
+extern TrackPanel *TheTrackPanel;

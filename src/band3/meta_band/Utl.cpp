@@ -20,9 +20,10 @@
 static int kMinContentLevel = 2;
 
 static DataNode OnToggleFakeLeaderboardUploadFailure(DataArray *da) {
-    SongStatusMgr::sFakeLeaderboardUploadFailure = !SongStatusMgr::sFakeLeaderboardUploadFailure;
-    Hmx::Object* cheatObj = ObjectDir::Main()->Find<Hmx::Object>("cheat_display", true);
-    if(cheatObj){
+    SongStatusMgr::sFakeLeaderboardUploadFailure =
+        !SongStatusMgr::sFakeLeaderboardUploadFailure;
+    Hmx::Object *cheatObj = ObjectDir::Main()->Find<Hmx::Object>("cheat_display", true);
+    if (cheatObj) {
         static Message msg("show_bool", "Fake leaderboard upload failure", 0);
         msg[1] = SongStatusMgr::sFakeLeaderboardUploadFailure;
         cheatObj->Handle(msg, false);
@@ -30,15 +31,15 @@ static DataNode OnToggleFakeLeaderboardUploadFailure(DataArray *da) {
     return 0;
 }
 
-static DataNode OnGetFontCharFromInstrument(DataArray*);
-static DataNode OnGetFontCharFromControllerType(DataArray*);
-static DataNode OnGetFontCharFromTrackType(DataArray*);
-static DataNode OnGetFontCharFromScoreType(DataArray*);
-static DataNode OnGetFontCharForHarmonyMics(DataArray*);
-static DataNode OnIsLeaderLocal(DataArray*);
-static DataNode OnIsVignette(DataArray*);
-static DataNode OnSafeName(DataArray*);
-static DataNode OnAllowedToAccessContent(DataArray*);
+static DataNode OnGetFontCharFromInstrument(DataArray *);
+static DataNode OnGetFontCharFromControllerType(DataArray *);
+static DataNode OnGetFontCharFromTrackType(DataArray *);
+static DataNode OnGetFontCharFromScoreType(DataArray *);
+static DataNode OnGetFontCharForHarmonyMics(DataArray *);
+static DataNode OnIsLeaderLocal(DataArray *);
+static DataNode OnIsVignette(DataArray *);
+static DataNode OnSafeName(DataArray *);
+static DataNode OnAllowedToAccessContent(DataArray *);
 
 void UtlInit() {
     DataRegisterFunc("cnv_instrumenttoicon", OnGetFontCharFromInstrument);
@@ -58,23 +59,24 @@ void UtlInit() {
 }
 
 bool IsLeaderLocal() {
-    if(TheSessionMgr) return TheSessionMgr->IsLeaderLocal();
-    else return true;
+    if (TheSessionMgr)
+        return TheSessionMgr->IsLeaderLocal();
+    else
+        return true;
 }
 
-static DataNode OnIsLeaderLocal(DataArray*) {
-    return IsLeaderLocal();
-}
+static DataNode OnIsLeaderLocal(DataArray *) { return IsLeaderLocal(); }
 
-bool IsVignette(UIPanel* panel){
-    if(!panel) return false;
+bool IsVignette(UIPanel *panel) {
+    if (!panel)
+        return false;
     else {
-        Hmx::Object* old_this = DataSetThis(panel);
+        Hmx::Object *old_this = DataSetThis(panel);
         bool ret = false;
-        if(panel->TypeDef()){
-            DataArray* fileArr = panel->TypeDef()->FindArray(file, false);
-            if(fileArr){
-                if(strstr(fileArr->Str(1), "world/vignette/")){
+        if (panel->TypeDef()) {
+            DataArray *fileArr = panel->TypeDef()->FindArray(file, false);
+            if (fileArr) {
+                if (strstr(fileArr->Str(1), "world/vignette/")) {
                     ret = true;
                 }
             }
@@ -84,13 +86,9 @@ bool IsVignette(UIPanel* panel){
     }
 }
 
-static DataNode OnIsVignette(DataArray *da) {
-    return IsVignette(da->Obj<UIPanel>(1));
-}
+static DataNode OnIsVignette(DataArray *da) { return IsVignette(da->Obj<UIPanel>(1)); }
 
-static DataNode OnSafeName(DataArray *da) {
-    return SafeName(da->Obj<Hmx::Object>(1));
-}
+static DataNode OnSafeName(DataArray *da) { return SafeName(da->Obj<Hmx::Object>(1)); }
 
 static DataNode OnGetFontCharFromInstrument(DataArray *da) {
     Symbol inst = da->Sym(1);
@@ -116,56 +114,56 @@ static DataNode OnGetFontCharFromScoreType(DataArray *da) {
     return GetFontCharFromScoreType(sty, idx);
 }
 
-const char* GetFontCharFromInstrument(Symbol instrument, int idx){
+const char *GetFontCharFromInstrument(Symbol instrument, int idx) {
     MILO_ASSERT(!instrument.Null(), 0xB7);
     return GetFontCharFromTrackType(SymToTrackType(instrument), idx);
 }
 
-const char* GetFontCharFromScoreType(ScoreType scoreType, int idx){
-    switch(scoreType){
-        case kScoreBand:
-            return "j";
-        case kScoreDrum:
-        case kScoreBass:
-        case kScoreGuitar:
-        case kScoreVocals:
-        case kScoreKeys:
-        case kScoreRealGuitar:
-        case kScoreRealBass:
-        case kScoreRealKeys:
-            return GetFontCharFromTrackType(ScoreTypeToTrackType(scoreType), idx);
-        case kScoreRealDrum:
-            return GetFontCharForProDrums(idx);
-        case kScoreHarmony:
-            return GetFontCharForHarmonyMics(3, idx);
-        default:
-            MILO_WARN("Invalid ScoreType\n");
-            return gNullStr;
+const char *GetFontCharFromScoreType(ScoreType scoreType, int idx) {
+    switch (scoreType) {
+    case kScoreBand:
+        return "j";
+    case kScoreDrum:
+    case kScoreBass:
+    case kScoreGuitar:
+    case kScoreVocals:
+    case kScoreKeys:
+    case kScoreRealGuitar:
+    case kScoreRealBass:
+    case kScoreRealKeys:
+        return GetFontCharFromTrackType(ScoreTypeToTrackType(scoreType), idx);
+    case kScoreRealDrum:
+        return GetFontCharForProDrums(idx);
+    case kScoreHarmony:
+        return GetFontCharForHarmonyMics(3, idx);
+    default:
+        MILO_WARN("Invalid ScoreType\n");
+        return gNullStr;
     }
 }
 
-const char* GetFontCharFromTrackType(TrackType trackType, int idx){
+const char *GetFontCharFromTrackType(TrackType trackType, int idx) {
     MILO_ASSERT_RANGE(trackType, 0, kNumTrackTypes + 1, 0xD9);
-    switch(trackType){
-        case kTrackDrum:
-        case kTrackGuitar:
-        case kTrackBass:
-        case kTrackVocals:
-        case kTrackKeys:
-        case kTrackRealKeys:
-        case kTrackRealGuitar:
-        case kTrackRealBass:
-            return SystemConfig(instrument_icons, TrackTypeToSym(trackType))->Str(idx + 1);
-        case kTrackNone:
-            MILO_WARN("GetFontCharFromTrackType passed kTrackNone\n");
-            return "_";
-        default:
-            MILO_FAIL("Invalid TrackType specified: %d", (int)trackType);
-            return nullptr;
+    switch (trackType) {
+    case kTrackDrum:
+    case kTrackGuitar:
+    case kTrackBass:
+    case kTrackVocals:
+    case kTrackKeys:
+    case kTrackRealKeys:
+    case kTrackRealGuitar:
+    case kTrackRealBass:
+        return SystemConfig(instrument_icons, TrackTypeToSym(trackType))->Str(idx + 1);
+    case kTrackNone:
+        MILO_WARN("GetFontCharFromTrackType passed kTrackNone\n");
+        return "_";
+    default:
+        MILO_FAIL("Invalid TrackType specified: %d", (int)trackType);
+        return nullptr;
     }
 }
 
-const char* GetFontCharFromControllerType(ControllerType controllerType, int idx){
+const char *GetFontCharFromControllerType(ControllerType controllerType, int idx) {
     MILO_ASSERT_RANGE(controllerType, 0, kNumControllerTypes, 0xFB);
     return GetFontCharFromTrackType(ControllerTypeToTrackType(controllerType, false), idx);
 }
@@ -176,21 +174,21 @@ static DataNode OnGetFontCharForHarmonyMics(DataArray *da) {
     return GetFontCharForHarmonyMics(i1, idx);
 }
 
-const char* GetFontCharForHarmonyMics(int num_mics, int idx){
-    switch(num_mics){
-        case 2:
-            return SystemConfig(instrument_icons, harmony_2)->Str(idx + 1);
-        case 3:
-            return SystemConfig(instrument_icons, harmony_3)->Str(idx + 1);
-        default:
-            MILO_FAIL("Invalid number of mics: %i", num_mics);
-            return nullptr;
+const char *GetFontCharForHarmonyMics(int num_mics, int idx) {
+    switch (num_mics) {
+    case 2:
+        return SystemConfig(instrument_icons, harmony_2)->Str(idx + 1);
+    case 3:
+        return SystemConfig(instrument_icons, harmony_3)->Str(idx + 1);
+    default:
+        MILO_FAIL("Invalid number of mics: %i", num_mics);
+        return nullptr;
     }
 }
 
 #pragma push
 #pragma force_active on
-inline const char* GetFontCharForProDrums(int idx){
+inline const char *GetFontCharForProDrums(int idx) {
     return SystemConfig(instrument_icons, drum_pro)->Str(idx + 1);
 }
 #pragma pop
@@ -212,31 +210,32 @@ inline const char* GetFontCharForProDrums(int idx){
 //     kTrackPendingVocals = 12
 // };
 
-const char* GetUserFontChar(BandUser* user, MetaPerformer* perf, int idx){
+const char *GetUserFontChar(BandUser *user, MetaPerformer *perf, int idx) {
     Symbol inst(gNullStr);
     TrackType ty = user->GetTrackType();
-    if(ty == kTrackNone || ty == kTrackPending || ty == kTrackPendingVocals){
+    if (ty == kTrackNone || ty == kTrackPending || ty == kTrackPendingVocals) {
         ty = ControllerTypeToTrackType(user->GetControllerType(), false);
     }
-    switch(ty){
-        case kTrackVocals:
-            if(perf && !perf->IsSetComplete() && perf->IsNowUsingVocalHarmony()){
-                int parts = perf->GetSetlistMaxVocalParts();
-                if(parts == 2) inst = harmony_2;
-                else inst = harmony_3;
-            }
-            break;
-        case kTrackDrum:
-            if(user->GetPreferredScoreType() == 6){
-                inst = drum_pro;
-            }
-        default:
-            break;
+    switch (ty) {
+    case kTrackVocals:
+        if (perf && !perf->IsSetComplete() && perf->IsNowUsingVocalHarmony()) {
+            int parts = perf->GetSetlistMaxVocalParts();
+            if (parts == 2)
+                inst = harmony_2;
+            else
+                inst = harmony_3;
+        }
+        break;
+    case kTrackDrum:
+        if (user->GetPreferredScoreType() == 6) {
+            inst = drum_pro;
+        }
+    default:
+        break;
     }
-    if(inst == gNullStr){
+    if (inst == gNullStr) {
         return GetFontCharFromTrackType(ty, idx);
-    }
-    else {
+    } else {
         return SystemConfig(instrument_icons, inst)->Str(idx + 1);
     }
 }

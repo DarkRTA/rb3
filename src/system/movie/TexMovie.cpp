@@ -34,11 +34,11 @@ BEGIN_COPYS(TexMovie)
     END_COPYING_MEMBERS
 END_COPYS
 
-void TexMovie::Replace(Hmx::Object* a, Hmx::Object* b) {
+void TexMovie::Replace(Hmx::Object *a, Hmx::Object *b) {
     Hmx::Object::Replace(a, b);
     if (mTex == a) {
         mMovie.End();
-        mTex = dynamic_cast<RndTex*>(b);
+        mTex = dynamic_cast<RndTex *>(b);
     }
 }
 
@@ -51,7 +51,8 @@ BEGIN_LOADS(TexMovie) // retail matches, still some clownery afoot
     RndDrawable::Load(bs);
     RndPollable::Load(bs);
 
-    if (gAltRev != 0) bs >> mFillWidth;
+    if (gAltRev != 0)
+        bs >> mFillWidth;
     bs >> mTex >> mLoop;
     if (gRev < 4) {
         bs.ReadByte();
@@ -68,7 +69,7 @@ BEGIN_LOADS(TexMovie) // retail matches, still some clownery afoot
     BeginMovie(gRev > 4 ? &bs : NULL);
 END_LOADS
 
-void TexMovie::BeginMovie(BinStream* bs) {
+void TexMovie::BeginMovie(BinStream *bs) {
     mMovie.End();
     if (!unk_0x38.empty()) {
         if (mTex) {
@@ -76,7 +77,9 @@ void TexMovie::BeginMovie(BinStream* bs) {
             int y = mTex->mHeight;
             mMovie.SetWidthHeight(mTex->mWidth, y);
         }
-        mMovie.Begin(FileRelativePath(FileRoot(), unk_0x38.c_str()), 0, 0, mLoop, 1, mFillWidth, 0, bs);
+        mMovie.Begin(
+            FileRelativePath(FileRoot(), unk_0x38.c_str()), 0, 0, mLoop, 1, mFillWidth, 0, bs
+        );
     }
 }
 
@@ -90,21 +93,24 @@ void TexMovie::DrawToTexture() {
 }
 
 void TexMovie::DrawShowing() {
-    if (mTex) return;
+    if (mTex)
+        return;
     mMovie.Draw();
 }
 
 void TexMovie::DrawPreClear() {
-    if (TheRnd->DrawMode() != 4 && mShowing) DrawToTexture();
+    if (TheRnd->DrawMode() != 4 && mShowing)
+        DrawToTexture();
 }
 
 void TexMovie::Poll() {
     if (TheRnd->DrawMode() != 4) {
         if (mShowing) {
             mMovie.SetPaused(false);
-            if(!mMovie.Poll())
-            mMovie.End();
-        } else mMovie.SetPaused(true);
+            if (!mMovie.Poll())
+                mMovie.End();
+        } else
+            mMovie.SetPaused(true);
     }
 }
 
@@ -113,8 +119,9 @@ void TexMovie::Enter() {
     RndPollable::Enter();
     if (mTex) {
         mTex->MakeDrawTarget();
-        Hmx::Rect r(0,0,1,1); Hmx::Color c(0,0,0,1);
-        TheRnd->DrawRectScreen(r,c, NULL, NULL, NULL);
+        Hmx::Rect r(0, 0, 1, 1);
+        Hmx::Color c(0, 0, 0, 1);
+        TheRnd->DrawRectScreen(r, c, NULL, NULL, NULL);
         mTex->FinishDrawTarget();
         TheRnd->MakeDrawTarget();
     }
@@ -127,24 +134,25 @@ void TexMovie::Exit() {
     RndPollable::Exit();
 }
 
-void TexMovie::SetFile(const FilePath& fp) {
+void TexMovie::SetFile(const FilePath &fp) {
     mMovie.End();
     unk_0x38 = fp;
     BeginMovie(NULL);
 }
 
 void TexMovie::UpdatePreClearState() {
-    if (unk_0x35) TheRnd->PreClearDrawAddOrRemove(this, mTex, TheRnd->Unk130());
+    if (unk_0x35)
+        TheRnd->PreClearDrawAddOrRemove(this, mTex, TheRnd->Unk130());
 }
 
-DataNode TexMovie::OnGetRenderTextures(DataArray*) {
-    return GetRenderTextures(mDir);
-}
+DataNode TexMovie::OnGetRenderTextures(DataArray *) { return GetRenderTextures(mDir); }
 
-DataNode TexMovie::OnPlayMovie(DataArray* da) {
+DataNode TexMovie::OnPlayMovie(DataArray *da) {
     if (da->Int(2)) {
-        if (!mMovie.IsLoading() && !mMovie.IsOpen()) BeginMovie(NULL);
-    } else mMovie.End();
+        if (!mMovie.IsLoading() && !mMovie.IsOpen())
+            BeginMovie(NULL);
+    } else
+        mMovie.End();
     return DataNode();
 }
 
@@ -164,7 +172,8 @@ BEGIN_PROPSYNCS(TexMovie)
             FilePath fp(_val.Str());
             SetFile(fp);
         } else {
-            if (_op == kPropUnknown0x40) return false;
+            if (_op == kPropUnknown0x40)
+                return false;
             _val = FileRelativePath(FilePath::sRoot.c_str(), unk_0x38.c_str());
         }
         return true;

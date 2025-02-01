@@ -15,7 +15,7 @@ enum State {
 
 class ProfilePicture {
 public:
-    ProfilePicture(int, Hmx::Object*);
+    ProfilePicture(int, Hmx::Object *);
     ~ProfilePicture() {}
 
     void FetchUserData();
@@ -29,13 +29,14 @@ public:
 
     State mState;
     OnlineID mUserID;
-    RndTex* mUserPicture;
+    RndTex *mUserPicture;
     int mPadNum;
-    Hmx::Object* mCallback;
+    Hmx::Object *mCallback;
 };
 
 DECLARE_MESSAGE(ProfilePictureFetchedMsg, "profile_picture_fetched_msg")
-    ProfilePictureFetchedMsg(int i) : Message(Type(), i) {}
-END_MESSAGE;
+ProfilePictureFetchedMsg(int i) : Message(Type(), i) {}
+END_MESSAGE
+;
 
 #endif

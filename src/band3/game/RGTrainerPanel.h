@@ -19,20 +19,20 @@ public:
     RGTrainerPanel();
     OBJ_CLASSNAME(RGTrainerPanel);
     OBJ_SET_TYPE(RGTrainerPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~RGTrainerPanel();
     virtual void Enter();
     virtual void Exit();
     virtual void Poll();
     virtual void StartSectionImpl();
-    virtual bool IsSongSectionComplete(BandProfile*, int, Difficulty, int);
+    virtual bool IsSongSectionComplete(BandProfile *, int, Difficulty, int);
     virtual void NewDifficulty(int, int);
     virtual void HitNotify(int);
     virtual void MissNotify(int);
     virtual void Looped();
     virtual bool ShouldDrawTab() const;
     virtual void PostCopyGems();
-    virtual void SetSongSectionComplete(BandProfile*, int, Difficulty, int);
+    virtual void SetSongSectionComplete(BandProfile *, int, Difficulty, int);
 
     void SetupIsBass();
     void SetLegendModeImpl(bool);
@@ -43,12 +43,12 @@ public:
     void SetLegendMode(bool);
     bool GetLegendMode() const;
     void SetLegendGemID(int);
-    void PickFretboardView(const GameGem&);
-    void InitFretSteps(const GameGem&);
-    void UpdateStepText(int, FingerStep&);
+    void PickFretboardView(const GameGem &);
+    void InitFretSteps(const GameGem &);
+    void UpdateStepText(int, FingerStep &);
     Symbol RGStringToken(int, bool);
     void HandleLegendLefty(bool);
-    bool TestFingers(const GameGem&);
+    bool TestFingers(const GameGem &);
     void Swing(int);
     void FretButtonUp(int);
     int GetFret(int, int) const;
@@ -61,9 +61,9 @@ public:
     bool mLefty; // 0xf0
     RGGemMatcher mMatcher; // 0xf4
     RGTutor mTutor; // 0x1fc
-    RndDir* mChordLegend; // 0x218
+    RndDir *mChordLegend; // 0x218
     FretHand mFretHand; // 0x21c
     bool mIsBass; // 0x24c
 };
 
-extern RGTrainerPanel* TheRGTrainerPanel;
+extern RGTrainerPanel *TheRGTrainerPanel;

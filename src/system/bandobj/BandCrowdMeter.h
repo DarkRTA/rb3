@@ -12,8 +12,8 @@ class BandCrowdMeter : public RndDir {
 public:
     class IconData {
     public:
-        IconData(BandCrowdMeter*, CrowdMeterIcon*, RndGroup*);
-        ~IconData(){}
+        IconData(BandCrowdMeter *, CrowdMeterIcon *, RndGroup *);
+        ~IconData() {}
 
         void Reset();
         void SetUsed(bool);
@@ -33,13 +33,13 @@ public:
     BandCrowdMeter();
     OBJ_CLASSNAME(BandCrowdMeterDir);
     OBJ_SET_TYPE(BandCrowdMeterDir);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
     virtual ~BandCrowdMeter();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void Poll();
 
@@ -67,18 +67,16 @@ public:
     bool Deploying() const;
     void UpdateJoinInProgress(bool, bool);
     void FailedJoinInProgress();
-    void UpdatePlayers(const std::vector<TrackInstrument>&);
+    void UpdatePlayers(const std::vector<TrackInstrument> &);
     float InitialCrowdRating() const;
-    CrowdMeterIcon* PlayerIcon(int);
-    void SetTrackPanel(TrackPanelInterface* panel){ mTrackPanel = panel; }
+    CrowdMeterIcon *PlayerIcon(int);
+    void SetTrackPanel(TrackPanelInterface *panel) { mTrackPanel = panel; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(BandCrowdMeter)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(BandCrowdMeter)
 
     std::vector<IconData> mIconData; // 0x18c
@@ -87,7 +85,7 @@ public:
     bool mDisabled; // 0x19c
     std::vector<Hmx::Color> mLevelColors; // 0x1a0
     int unk1a8; // 0x1a8 - excitementlevel mexcitement?
-    TrackPanelInterface* mTrackPanel; // 0x1ac
+    TrackPanelInterface *mTrackPanel; // 0x1ac
     ObjPtrList<RndGroup, ObjectDir> mOrderedPeaks; // 0x1b0
     ObjPtr<EventTrigger, ObjectDir> mBandEnergyDeployTrig; // 0x1c0
     ObjPtr<EventTrigger, ObjectDir> mBandEnergyStopTrig; // 0x1cc

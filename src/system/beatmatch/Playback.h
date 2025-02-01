@@ -11,15 +11,15 @@ public:
     Playback();
     virtual ~Playback();
     void Poll(float);
-    void DoCommand(DataArray*);
-    bool LoadFile(const class String&);
-    void AddSink(BeatMatcher*);
+    void DoCommand(DataArray *);
+    bool LoadFile(const class String &);
+    void AddSink(BeatMatcher *);
     void Jump(float);
-    int GetPlaybackNum(BeatMatcher*);
+    int GetPlaybackNum(BeatMatcher *);
 
     int mPlayerIndex;
-    BeatMatcher* mPlayerSinks[8];
-    DataArray* mCommands;
+    BeatMatcher *mPlayerSinks[8];
+    DataArray *mCommands;
     int mCommandIndex;
     float mTime;
 };

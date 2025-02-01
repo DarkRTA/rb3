@@ -6,14 +6,13 @@
 
 INIT_REVS(CharForeTwist)
 
-CharForeTwist::CharForeTwist() : mHand(this), mTwist2(this), mOffset(0.0f), mBias(0.0f) {
+CharForeTwist::CharForeTwist() : mHand(this), mTwist2(this), mOffset(0.0f), mBias(0.0f) {}
 
-}
-
-void CharForeTwist::Poll(){
-    if(!mHand || !mTwist2 || !mHand->TransParent() || !mTwist2->TransParent()) return;
-    Transform& parentxfm = mHand->TransParent()->WorldXfm();
-    Transform& handxfm = mHand->WorldXfm();
+void CharForeTwist::Poll() {
+    if (!mHand || !mTwist2 || !mHand->TransParent() || !mTwist2->TransParent())
+        return;
+    Transform &parentxfm = mHand->TransParent()->WorldXfm();
+    Transform &handxfm = mHand->WorldXfm();
     float clamped = Clamp(-1.0f, 1.0f, Dot(handxfm.m.z, parentxfm.m.y));
     Vector3 v98;
     Cross(parentxfm.m.y, handxfm.m.z, v98);
@@ -24,38 +23,42 @@ void CharForeTwist::Poll(){
     float finalfloat = angle - newbias;
     Hmx::Matrix3 m58;
     m58.RotateAboutX(finalfloat * 0.33333f);
-    RndTransformable* twistparent = mTwist2->TransParent();
+    RndTransformable *twistparent = mTwist2->TransParent();
     Transform tf88;
     tf88.v = parentxfm.v;
     Multiply(m58, parentxfm.m, tf88.m);
     twistparent->SetWorldXfm(tf88);
-    RndTransformable* hand = mHand;
-    RndTransformable* twist2 = mTwist2;
+    RndTransformable *hand = mHand;
+    RndTransformable *twist2 = mTwist2;
     Interp(tf88.v, handxfm.v, twist2->mLocalXfm.v.x / hand->mLocalXfm.v.x, tf88.v);
     Multiply(m58, tf88.m, tf88.m);
     mTwist2->SetWorldXfm(tf88);
 }
 
-void CharForeTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharForeTwist::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     changedBy.push_back(mHand);
     change.push_back(mTwist2);
-    if(mTwist2) change.push_back(mTwist2->TransParent());
+    if (mTwist2)
+        change.push_back(mTwist2->TransParent());
 }
 
 SAVE_OBJ(CharForeTwist, 0x79)
 
-void CharForeTwist::Load(BinStream& bs){
+void CharForeTwist::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(4, 0);
     LOAD_SUPERCLASS(Hmx::Object)
     bs >> mOffset;
     bs >> mHand;
     bs >> mTwist2;
-    if(gRev == 2){
+    if (gRev == 2) {
         int dummy;
         bs >> dummy;
     }
-    if(gRev > 3) bs >> mBias;
+    if (gRev > 3)
+        bs >> mBias;
 }
 
 BEGIN_COPYS(CharForeTwist)

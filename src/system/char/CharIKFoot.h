@@ -14,28 +14,26 @@ class CharIKFoot : public CharIKHand {
 public:
     CharIKFoot();
     virtual ~CharIKFoot();
-    virtual void Highlight(){}
+    virtual void Highlight() {}
     virtual void Poll();
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     OBJ_CLASSNAME(CharIKHand);
     OBJ_SET_TYPE(CharIKHand);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void Enter();
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual void SetName(const char *, class ObjectDir *);
 
-    void DoFSM(Transform&);
+    void DoFSM(Transform &);
 
     DECLARE_REVS;
     DELETE_OVERLOAD;
     NEW_OBJ(CharIKFoot)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharIKFoot)
-    }
-    
+    static void Init() { REGISTER_OBJ_FACTORY(CharIKFoot) }
+
     ObjPtr<RndTransformable> unk88;
     int unk94;
     /** "which bone to use to get the IK data from" */

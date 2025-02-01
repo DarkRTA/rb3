@@ -16,32 +16,32 @@ public:
         kFadingOutSong = 5,
     };
 
-    SongPreview(const SongMgr&);
+    SongPreview(const SongMgr &);
     virtual ~SongPreview();
-    virtual void ContentMounted(const char*, const char*);
-    virtual void ContentFailed(const char*);
-    virtual const char* ContentDir(){ return 0; }
-    virtual DataNode Handle(DataArray*, bool);
+    virtual void ContentMounted(const char *, const char *);
+    virtual void ContentFailed(const char *);
+    virtual const char *ContentDir() { return 0; }
+    virtual DataNode Handle(DataArray *, bool);
 
     void Init();
     void Terminate();
-    void DetachFader(Fader*);
+    void DetachFader(Fader *);
     void DetachFaders();
     void Start(Symbol);
     void PreparePreview();
     void Poll();
-    void PrepareFaders(const SongInfo*);
+    void PrepareFaders(const SongInfo *);
     void PrepareSong(Symbol);
 
-    DataNode OnStart(DataArray*);
+    DataNode OnStart(DataArray *);
     void SetMusicVol(float);
     void SetCrowdSingVol(float);
 
-    const SongMgr& mSongMgr; // 0x20
-    Stream* mStream; // 0x24
-    Fader* mFader; // 0x28
-    Fader* mMusicFader; // 0x2c
-    Fader* mCrowdSingFader; // 0x30
+    const SongMgr &mSongMgr; // 0x20
+    Stream *mStream; // 0x24
+    Fader *mFader; // 0x28
+    Fader *mMusicFader; // 0x2c
+    Fader *mCrowdSingFader; // 0x30
     int unk34; // 0x34
     float mAttenuation; // 0x38
     float mFadeTime; // 0x3c

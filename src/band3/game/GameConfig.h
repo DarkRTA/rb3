@@ -10,18 +10,18 @@ class GameConfig : public Hmx::Object {
 public:
     GameConfig();
     virtual ~GameConfig();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
     Difficulty GetAverageDifficulty() const;
     bool CanEndGame() const;
-    int GetTrackNum(const UserGuid&) const;
-    Symbol GetController(BandUser*) const;
-    void ChangeDifficulty(BandUser*, int);
-    PlayerTrackConfigList* GetConfigList() const { return mPlayerTrackConfigList; }
+    int GetTrackNum(const UserGuid &) const;
+    Symbol GetController(BandUser *) const;
+    void ChangeDifficulty(BandUser *, int);
+    PlayerTrackConfigList *GetConfigList() const { return mPlayerTrackConfigList; }
 
-    PlayerTrackConfigList* mPlayerTrackConfigList; // 0x1c
-    PracticeSectionProvider* mPracticeSectionProvider; // 0x20
+    PlayerTrackConfigList *mPlayerTrackConfigList; // 0x1c
+    PracticeSectionProvider *mPracticeSectionProvider; // 0x20
     float mSongLimitMs; // 0x24
     // 0x28 and 0x2c - int[2] mPracticeSections?
     int unk28; // 0x28
@@ -30,4 +30,4 @@ public:
     bool mPracticeMode; // 0x34
 };
 
-extern GameConfig* TheGameConfig;
+extern GameConfig *TheGameConfig;

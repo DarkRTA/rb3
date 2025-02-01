@@ -31,17 +31,15 @@ public:
     void StartChecksum();
     bool ValidateChecksum();
 
-    int Size(){
-        return (mFile) ? mFile->Size() : 0;
-    }
+    int Size() { return (mFile) ? mFile->Size() : 0; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
-    File* mFile;
+    File *mFile;
     class String mFilename;
     bool mFail;
-    StreamChecksumValidator* mChecksumValidator;
+    StreamChecksumValidator *mChecksumValidator;
     int mBytesChecksummed;
 };
 

@@ -8,15 +8,16 @@
 #include "utl/Loader.h"
 
 class MetaMusicLoader;
-typedef void(MetaMusicLoader::*MetaMusicLoaderStateFunc)(void);
+typedef void (MetaMusicLoader::*MetaMusicLoaderStateFunc)(void);
 
 class MetaMusicLoader : public Loader {
 public:
-    MetaMusicLoader(File *f, int & bytes, unsigned char * buf, int size);
+    MetaMusicLoader(File *f, int &bytes, unsigned char *buf, int size);
     virtual ~MetaMusicLoader() {}
     virtual bool IsLoaded() const { return mState == DoneLoading; }
-    virtual void PollLoading(){
-        while(!TheLoadMgr.CheckSplit() && TheLoadMgr.GetFirstLoading() == this && !IsLoaded()){
+    virtual void PollLoading() {
+        while (!TheLoadMgr.CheckSplit() && TheLoadMgr.GetFirstLoading() == this
+               && !IsLoaded()) {
             (this->*mState)();
         }
     }
@@ -27,9 +28,9 @@ public:
     void LoadFile();
     void OpenFile();
 
-    File* mFile; // 0x18
-    int& mBytesRead; // 0x1c
-    unsigned char* mBuf; // 0x20
+    File *mFile; // 0x18
+    int &mBytesRead; // 0x1c
+    unsigned char *mBuf; // 0x20
     int mBufSize; // 0x24
     MetaMusicLoaderStateFunc mState; // 0x28
 };
@@ -49,15 +50,15 @@ public:
     void UnMute();
     void Stop();
     void Start();
-    void AddFader(Fader*);
-    void SetScene(MetaMusicScene*);
+    void AddFader(Fader *);
+    void SetScene(MetaMusicScene *);
     void LoadStreamFx();
-    void Load(const char*, float, bool, bool);
+    void Load(const char *, float, bool, bool);
     void Poll();
     void UpdateMix();
 
-    float SomeMinusFunc(){ return 1.0f - (float)unk84 / 90.0f; }
-    float SomePlusFunc(){ return (float)unk84 / 90.0f; }
+    float SomeMinusFunc() { return 1.0f - (float)unk84 / 90.0f; }
+    float SomePlusFunc() { return (float)unk84 / 90.0f; }
 
     Stream *mStream; // 0x1c
     bool mLoop; // 0x20
@@ -78,8 +79,8 @@ public:
     MetaMusicLoader *mLoader; // 0x6c
     std::vector<ObjDirPtr<ObjectDir> > unk70; // 0x70
     bool unk78; // 0x78
-    DataArray* m_CurrentFxConfig; // 0x7c
-    DataArray* unk80; // 0x80
+    DataArray *m_CurrentFxConfig; // 0x7c
+    DataArray *unk80; // 0x80
     int unk84; // 0x84
     const char *unk88; // 0x88
     bool unk8c; // 0x8c

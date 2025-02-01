@@ -4,11 +4,11 @@
 #include "milo_types.h"
 
 class Profiler { // total size: 0x4C
-    Profiler(const char*, int);
+    Profiler(const char *, int);
     void Start();
     void Stop();
 
-    const char * mName; // offset 0x0, size 0x4
+    const char *mName; // offset 0x0, size 0x4
     Timer mTimer; // offset 0x8, size 0x30
     float mMin; // offset 0x38, size 0x4
     float mMax; // offset 0x3C, size 0x4

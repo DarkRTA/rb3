@@ -13,13 +13,15 @@ class SampleInst;
 
 class NoteVoiceInst : public Hmx::Object {
 public:
-    NoteVoiceInst(MidiInstrument*, SampleZone*, unsigned char, unsigned char, int, int, float);
+    NoteVoiceInst(
+        MidiInstrument *, SampleZone *, unsigned char, unsigned char, int, int, float
+    );
     virtual ~NoteVoiceInst();
     virtual void Start();
     virtual void Stop();
     virtual bool IsRunning();
-    virtual bool Started(){ return mStarted; }
-    virtual bool Stopped(){ return mStopped; }
+    virtual bool Started() { return mStarted; }
+    virtual bool Stopped() { return mStopped; }
     virtual void SetTranspose(float);
     virtual void UpdateVolume();
     virtual void SetPan(float);
@@ -27,7 +29,7 @@ public:
 
     void Poll();
     void Pause(bool);
-    void SetSend(FxSend*);
+    void SetSend(FxSend *);
     void SetReverbMixDb(float);
     void SetReverbEnable(bool);
     void SetSpeed(float);
@@ -36,14 +38,14 @@ public:
     int GlideID() const { return mGlideID; }
     unsigned char TriggerNote() const { return mTriggerNote; }
 
-    float CalcBankSpeed(float trigNote){
+    float CalcBankSpeed(float trigNote) {
         return CalcSpeedFromTranspose(mFineTune / 100.0f + (trigNote - mCenterNote));
     }
 
     NEW_POOL_OVERLOAD(NoteVoiceInst)
     DELETE_POOL_OVERLOAD(NoteVoiceInst)
 
-    SampleInst* mSample; // 0x1c
+    SampleInst *mSample; // 0x1c
     float mVolume; // 0x20
     float mStartProgress; // 0x24
     unsigned char mTriggerNote; // 0x28
@@ -57,45 +59,44 @@ public:
     int mGlideFramesLeft; // 0x3c
     float mFineTune; // 0x40
     int mDurationFramesLeft; // 0x44
-    MidiInstrument* mOwner; // 0x48
+    MidiInstrument *mOwner; // 0x48
 };
 
-/** "Basic sound effect object.  Plays several samples with a given volume, pan, transpose, and envelope settings." */
+/** "Basic sound effect object.  Plays several samples with a given volume, pan,
+ * transpose, and envelope settings." */
 class MidiInstrument : public Hmx::Object {
 public:
     MidiInstrument();
-    virtual ~MidiInstrument(){}
+    virtual ~MidiInstrument() {}
     OBJ_CLASSNAME(MidiInstrument);
     OBJ_SET_TYPE(MidiInstrument);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void Poll();
     void Pause(bool);
     void SetFineTune(float);
     void KillAllVoices();
-    void SetSend(FxSend*);
+    void SetSend(FxSend *);
     void SetReverbMixDb(float);
     void SetReverbEnable(bool);
     void PressNote(unsigned char, unsigned char, int, int);
     void StartSample(unsigned char, unsigned char, int, int);
     void ReleaseNote(unsigned char);
     void PlayNote(unsigned char, unsigned char, int);
-    NoteVoiceInst* MakeNoteInst(SampleZone*, unsigned char, unsigned char, int, int);
+    NoteVoiceInst *MakeNoteInst(SampleZone *, unsigned char, unsigned char, int, int);
 
-    FxSend* GetSend() const { return mSend; }
+    FxSend *GetSend() const { return mSend; }
     float GetReverbMixDb() const { return mReverbMixDb; }
     bool GetReverbEnable() const { return mReverbEnable; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(MidiInstrument);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(MidiInstrument)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(MidiInstrument) }
 
     ObjVector<SampleZone> mMultiSampleMap; // 0x1c
     int mPatchNumber; // 0x28

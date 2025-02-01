@@ -4,7 +4,9 @@
 
 INIT_REVS(BandSongPref)
 
-BandSongPref::BandSongPref() : mPart2Instrument("guitar"), mPart3Instrument("bass"), mPart4Instrument("drum"), mAnimGenre("rocker") {}
+BandSongPref::BandSongPref()
+    : mPart2Instrument("guitar"), mPart3Instrument("bass"), mPart4Instrument("drum"),
+      mAnimGenre("rocker") {}
 
 SAVE_OBJ(BandSongPref, 24)
 
@@ -15,8 +17,12 @@ BEGIN_LOADS(BandSongPref)
     bs >> mPart2Instrument;
     bs >> mPart3Instrument;
     bs >> mPart4Instrument;
-    if (gRev != 0 && gRev < 3) { u8 dump; bs >> dump; }
-    if (gRev > 1) bs >> mAnimGenre;
+    if (gRev != 0 && gRev < 3) {
+        u8 dump;
+        bs >> dump;
+    }
+    if (gRev > 1)
+        bs >> mAnimGenre;
 END_LOADS
 
 BEGIN_COPYS(BandSongPref)

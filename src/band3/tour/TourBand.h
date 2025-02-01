@@ -6,23 +6,23 @@
 
 class TourBand : public TourSavable, public FixedSizeSaveable {
 public:
-    TourBand(BandProfile*);
-    virtual DataNode Handle(DataArray*, bool);
+    TourBand(BandProfile *);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~TourBand();
     virtual bool IsUploadNeeded() const;
     virtual int SecBetweenUploads() const { return 5; }
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
-    void SetBandName(const char*);
+    void SetBandName(const char *);
     void ChooseBandLogo(int, int);
     int GetBandID() const;
     void ProcessRetCode(int);
 
     static int SaveSize(int);
 
-    BandProfile* unk1c; // 0x1c
+    BandProfile *unk1c; // 0x1c
     String unk20; // 0x20
-    PatchDescriptor* unk2c; // ptr to some struct
+    PatchDescriptor *unk2c; // ptr to some struct
     int unk30; // 0x30
 };

@@ -11,24 +11,26 @@
 #include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
-TourDesc::TourDesc(DataArray* arr, int i) : mName(""), mIndex(i), mRequiredCampaignLevel(gNullStr), mLeaderboardGoal(gNullStr), mDifficulty(gNullStr), mGigGuideMap(gNullStr) {
+TourDesc::TourDesc(DataArray *arr, int i)
+    : mName(""), mIndex(i), mRequiredCampaignLevel(gNullStr), mLeaderboardGoal(gNullStr),
+      mDifficulty(gNullStr), mGigGuideMap(gNullStr) {
     Configure(arr);
 }
 
-TourDesc::~TourDesc(){
-    Cleanup();
-}
+TourDesc::~TourDesc() { Cleanup(); }
 
-void TourDesc::Cleanup(){
-    for(std::vector<TourDescEntry*>::iterator it = m_vEntries.begin(); it != m_vEntries.end(); ++it){
-        TourDescEntry* pEntry = *it;
+void TourDesc::Cleanup() {
+    for (std::vector<TourDescEntry *>::iterator it = m_vEntries.begin();
+         it != m_vEntries.end();
+         ++it) {
+        TourDescEntry *pEntry = *it;
         MILO_ASSERT(pEntry, 0x2A);
         delete pEntry;
     }
     m_vEntries.clear();
 }
 
-void TourDesc::Configure(DataArray* i_pConfig){
+void TourDesc::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x33);
     mName = i_pConfig->Sym(0);
     MILO_ASSERT(m_vEntries.empty(), 0x38);
@@ -39,15 +41,15 @@ void TourDesc::Configure(DataArray* i_pConfig){
     i_pConfig->FindData(tour_stars_bronze_goal, mTourStarsBronzeGoal, true);
     i_pConfig->FindData(tour_stars_silver_goal, mTourStarsSilverGoal, true);
     i_pConfig->FindData(tour_stars_gold_goal, mTourStarsGoldGoal, true);
-    DataArray* pGigArray = i_pConfig->FindArray(gigs, true);
+    DataArray *pGigArray = i_pConfig->FindArray(gigs, true);
     MILO_ASSERT(pGigArray, 0x51);
 
-    for(int i = 1; i < pGigArray->Size(); i++){
-        DataArray* pGigEntry = pGigArray->Array(i);
+    for (int i = 1; i < pGigArray->Size(); i++) {
+        DataArray *pGigEntry = pGigArray->Array(i);
         MILO_ASSERT(pGigEntry, 0x55);
-        TourDescEntry* entry = new TourDescEntry();
-        if(!pGigEntry->FindData(gig_tier, entry->mTier, false)){
-            if(!pGigEntry->FindData(gig_group, entry->mGroup, false)){
+        TourDescEntry *entry = new TourDescEntry();
+        if (!pGigEntry->FindData(gig_tier, entry->mTier, false)) {
+            if (!pGigEntry->FindData(gig_group, entry->mGroup, false)) {
                 pGigEntry->FindData(gig, entry->mQuest, true);
             }
         }
@@ -58,11 +60,11 @@ void TourDesc::Configure(DataArray* i_pConfig){
         pGigEntry->FindData(flavor, entry->mFlavor, false);
         pGigEntry->FindData(map, entry->mMapScreen, true);
         pGigEntry->FindData(venue, entry->mVenue, false);
-        std::vector<Symbol>& setlistTypes = entry->mSetlistTypes;
-        DataArray* pSetlistTypeArray = pGigEntry->FindArray(setlist_type, true);
+        std::vector<Symbol> &setlistTypes = entry->mSetlistTypes;
+        DataArray *pSetlistTypeArray = pGigEntry->FindArray(setlist_type, true);
         MILO_ASSERT(pSetlistTypeArray, 0x79);
         MILO_ASSERT(pSetlistTypeArray->Size() == 4, 0x7C);
-        for(int j = 1; j < pSetlistTypeArray->Size(); j++){
+        for (int j = 1; j < pSetlistTypeArray->Size(); j++) {
             Symbol sym = pSetlistTypeArray->Node(j).Sym();
             setlistTypes.push_back(sym);
         }
@@ -72,42 +74,36 @@ void TourDesc::Configure(DataArray* i_pConfig){
 
 Symbol TourDesc::GetName() const { return mName; }
 
-Symbol TourDesc::GetDescription() const {
-    return MakeString("%s_desc", mName);
-}
+Symbol TourDesc::GetDescription() const { return MakeString("%s_desc", mName); }
 
-Symbol TourDesc::GetWelcome() const {
-    return MakeString("%s_welcome", mName);
-}
+Symbol TourDesc::GetWelcome() const { return MakeString("%s_welcome", mName); }
 
-Symbol TourDesc::GetConclusionText() const {
-    return MakeString("%s_conclusion", mName);
-}
+Symbol TourDesc::GetConclusionText() const { return MakeString("%s_conclusion", mName); }
 
 int TourDesc::GetIndex() const { return mIndex; }
 int TourDesc::GetNumGigs() const { return m_vEntries.size(); }
 
-TourDescEntry* TourDesc::GetTourDescEntryForGigNum(int i_iGigNum) const {
+TourDescEntry *TourDesc::GetTourDescEntryForGigNum(int i_iGigNum) const {
     MILO_ASSERT_RANGE( i_iGigNum, 0, m_vEntries.size(), 0xB0);
     return m_vEntries[i_iGigNum];
 }
 
 int TourDesc::GetNumSongsForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0xB9);
     return pEntry->mNumSongs;
 }
 
 Symbol TourDesc::GetFilterForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0xC2);
     return pEntry->mFilter;
 }
 
 Symbol TourDesc::GetSetlistTypeForGigNum(int num, int i_iIndex) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0xCB);
-    std::vector<Symbol>& rSetlistTypeVector = pEntry->mSetlistTypes;
+    std::vector<Symbol> &rSetlistTypeVector = pEntry->mSetlistTypes;
     MILO_ASSERT(i_iIndex < rSetlistTypeVector.size(), 0xCE);
     return rSetlistTypeVector[i_iIndex];
 }
@@ -116,62 +112,58 @@ bool TourDesc::HasSpecificQuest(int num) const {
     return GetSpecificQuestForGigNum(num) != "";
 }
 
-bool TourDesc::HasQuestGroup(int num) const {
-    return GetQuestGroupForGigNum(num) != "";
-}
+bool TourDesc::HasQuestGroup(int num) const { return GetQuestGroupForGigNum(num) != ""; }
 
-bool TourDesc::HasQuestTier(int num) const {
-    return GetQuestTierForGigNum(num) != -1;
-}
+bool TourDesc::HasQuestTier(int num) const { return GetQuestTierForGigNum(num) != -1; }
 
 bool TourDesc::HasAnnouncementScreen(int num) const {
     return GetAnnouncementScreenForGigNum(num) != "";
 }
 
 int TourDesc::GetQuestTierForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0xF0);
     return pEntry->mTier;
 }
 
 Symbol TourDesc::GetQuestGroupForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0xF9);
     return pEntry->mGroup;
 }
 
 Symbol TourDesc::GetSpecificQuestForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0x102);
     return pEntry->mQuest;
 }
 
 Symbol TourDesc::GetCityForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0x10B);
     return pEntry->mCity;
 }
 
 Symbol TourDesc::GetAnnouncementScreenForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0x114);
     return pEntry->mAnnouncementScreen;
 }
 
 Symbol TourDesc::GetFlavorForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0x11D);
     return pEntry->mFlavor;
 }
 
 Symbol TourDesc::GetMapScreenForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0x126);
     return pEntry->mMapScreen;
 }
 
 Symbol TourDesc::GetVenueForGigNum(int num) const {
-    TourDescEntry* pEntry = GetTourDescEntryForGigNum(num);
+    TourDescEntry *pEntry = GetTourDescEntryForGigNum(num);
     MILO_ASSERT(pEntry, 0x12F);
     return pEntry->mVenue;
 }
@@ -179,7 +171,7 @@ Symbol TourDesc::GetVenueForGigNum(int num) const {
 int TourDesc::GetNumStarsPossibleForTour() const {
     int size = m_vEntries.size();
     int stars = 0;
-    for(int i = 0; i < size; i++){
+    for (int i = 0; i < size; i++) {
         stars += GetNumSongsForGigNum(i) * 10;
     }
     return stars;
@@ -188,35 +180,41 @@ int TourDesc::GetNumStarsPossibleForTour() const {
 int TourDesc::GetNumSongs() const {
     int size = m_vEntries.size();
     int songs = 0;
-    for(int i = 0; i < size; i++){
+    for (int i = 0; i < size; i++) {
         songs += GetNumSongsForGigNum(i);
     }
     return songs;
 }
 
 int TourDesc::GetTourStarsBronzeGoalValue() const {
-    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(mTourStarsBronzeGoal);
+    Accomplishment *pAccomplishment =
+        TheAccomplishmentMgr->GetAccomplishment(mTourStarsBronzeGoal);
     MILO_ASSERT(pAccomplishment, 0x157);
     MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional, 0x158);
-    AccomplishmentTourConditional* pTourGoal = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+    AccomplishmentTourConditional *pTourGoal =
+        dynamic_cast<AccomplishmentTourConditional *>(pAccomplishment);
     MILO_ASSERT(pTourGoal, 0x15A);
     return pTourGoal->GetTourValue();
 }
 
 int TourDesc::GetTourStarsSilverGoalValue() const {
-    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(mTourStarsSilverGoal);
+    Accomplishment *pAccomplishment =
+        TheAccomplishmentMgr->GetAccomplishment(mTourStarsSilverGoal);
     MILO_ASSERT(pAccomplishment, 0x163);
     MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional, 0x164);
-    AccomplishmentTourConditional* pTourGoal = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+    AccomplishmentTourConditional *pTourGoal =
+        dynamic_cast<AccomplishmentTourConditional *>(pAccomplishment);
     MILO_ASSERT(pTourGoal, 0x166);
     return pTourGoal->GetTourValue();
 }
 
 int TourDesc::GetTourStarsGoldGoalValue() const {
-    Accomplishment* pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(mTourStarsGoldGoal);
+    Accomplishment *pAccomplishment =
+        TheAccomplishmentMgr->GetAccomplishment(mTourStarsGoldGoal);
     MILO_ASSERT(pAccomplishment, 0x16F);
     MILO_ASSERT(pAccomplishment->GetType() == kAccomplishmentTypeTourConditional, 0x170);
-    AccomplishmentTourConditional* pTourGoal = dynamic_cast<AccomplishmentTourConditional*>(pAccomplishment);
+    AccomplishmentTourConditional *pTourGoal =
+        dynamic_cast<AccomplishmentTourConditional *>(pAccomplishment);
     MILO_ASSERT(pTourGoal, 0x172);
     return pTourGoal->GetTourValue();
 }
@@ -238,15 +236,13 @@ bool TourDesc::HasLeaderboardGoal() const {
     return goal != gNullStr;
 }
 
-const char* TourDesc::GetArt() const {
+const char *TourDesc::GetArt() const {
     return MakeString("ui/tour/tour_art/%s_keep.png", mName.Str());
 }
 
-const char* TourDesc::GetGrayArt() const {
-    const char* gray = MakeString("%s_gray", mName.Str());
+const char *TourDesc::GetGrayArt() const {
+    const char *gray = MakeString("%s_gray", mName.Str());
     return MakeString("ui/tour/tour_art/%s_keep.png", gray);
 }
 
-Symbol TourDesc::GetGigGuideMap() const {
-    return mGigGuideMap;
-}
+Symbol TourDesc::GetGigGuideMap() const { return mGigGuideMap; }

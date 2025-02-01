@@ -12,7 +12,7 @@ class BeatMatchSink;
 
 struct GemInProgress {
     GemInProgress() : mInUse(0), mGemID(-1), unk8(0) {}
-    void Reset(){
+    void Reset() {
         mInUse = false;
         mGemID = -1;
         unk8 = 0;
@@ -55,12 +55,21 @@ public:
 
 class TrackWatcherImpl {
 public:
-    TrackWatcherImpl(int, const UserGuid&, int, SongData*, GameGemList*, TrackWatcherParent*, DataArray*, int);
+    TrackWatcherImpl(
+        int,
+        const UserGuid &,
+        int,
+        SongData *,
+        GameGemList *,
+        TrackWatcherParent *,
+        DataArray *,
+        int
+    );
     virtual ~TrackWatcherImpl();
     virtual void Init();
     virtual void HandleDifficultyChange();
     virtual void SetIsCurrentTrack(bool);
-    virtual void AddSink(BeatMatchSink*);
+    virtual void AddSink(BeatMatchSink *);
     virtual void Jump(float);
     virtual void Restart();
     virtual void Poll(float);
@@ -68,8 +77,8 @@ public:
     virtual void NonStrumSwing(int, bool, bool) = 0;
     virtual void FretButtonDown(int) = 0;
     virtual void FretButtonUp(int) = 0;
-    virtual void RGFretButtonDown(int){}
-    virtual void OutOfRangeSwing(){}
+    virtual void RGFretButtonDown(int) {}
+    virtual void OutOfRangeSwing() {}
     virtual void SetGemsPlayedUntil(int);
     virtual void Enable(bool);
     virtual bool IsCheating() const;
@@ -80,29 +89,29 @@ public:
     virtual void OnMiss(float, int, int, unsigned int, GemHitFlags);
     virtual void OnPass(float, int);
     virtual void FakeHitGem(float, int, GemHitFlags);
-    virtual void RegisterFill(int){}
-    virtual void ResetFill(){}
-    virtual void FillSwing(int, int, int, bool){}
+    virtual void RegisterFill(int) {}
+    virtual void ResetFill() {}
+    virtual void FillSwing(int, int, int, bool) {}
     virtual void CodaSwing(int, int);
-    virtual void FillStop(){}
+    virtual void FillStop() {}
     virtual bool IsSwingInRoll(int, unsigned int);
     virtual bool AreSlotsInRoll(unsigned int, int) const;
-    virtual bool GetNextRoll(int, unsigned int&, int&) const;
+    virtual bool GetNextRoll(int, unsigned int &, int &) const;
     virtual void CheckForTrills(float, int, unsigned int);
     virtual void PollHook(float);
     virtual void JumpHook(float);
-    virtual float HitGemHook(float, int, GemHitFlags){}
+    virtual float HitGemHook(float, int, GemHitFlags) {}
     virtual bool ShouldAutoplayGem(float, int);
-    virtual bool GemCanBePassed(int){ return true; }
+    virtual bool GemCanBePassed(int) { return true; }
     virtual int NextGemAfter(int, bool);
-    virtual float Slop(int){ return mSlop - mSyncOffset; }
+    virtual float Slop(int) { return mSlop - mSyncOffset; }
     virtual int ClosestUnplayedGem(float, int);
     virtual int SustainedGemToKill(int);
     virtual bool InTrill(int) const;
 
     void EndAllSustainedNotes();
-    void LoadState(TrackWatcherState&);
-    void SaveState(TrackWatcherState&);
+    void LoadState(TrackWatcherState &);
+    void SaveState(TrackWatcherState &);
     void RecalcGemList();
     void SetAutoplayCoda(bool);
     float CycleAutoplayAccuracy();
@@ -116,11 +125,11 @@ public:
     bool Playable(int);
     bool IsTrillActive() const;
     void SetAllGemsUnplayed();
-    void EndSustainedNote(GemInProgress&);
+    void EndSustainedNote(GemInProgress &);
     bool HasAnyGemInProgress() const;
-    GemInProgress* GetGemInProgressWithID(int);
-    GemInProgress* GetGemInProgressWithSlot(int);
-    GemInProgress* GetUnusedGemInProgress(float);
+    GemInProgress *GetGemInProgressWithID(int);
+    GemInProgress *GetGemInProgressWithSlot(int);
+    GemInProgress *GetUnusedGemInProgress(float);
 
     void CheckForSustainedNoteTimeout(float);
     void CheckForRolls(float, int);
@@ -130,7 +139,7 @@ public:
     void CheckForGemsSeen(float);
     void CheckForPitchBend(float);
     void CheckForCodaLanes(int);
-    int GetOtherTrillSlot(int, const std::pair<int, int>&) const;
+    int GetOtherTrillSlot(int, const std::pair<int, int> &) const;
     void SendHit(float, int, unsigned int, GemHitFlags);
     void SendIgnore(float, int);
     void SendSeen(float, int);
@@ -140,7 +149,7 @@ public:
     void SendHopo(float, int);
     void SendReleaseGem(float, int, float);
     void MaybeAutoplayFutureCymbal(int);
-    bool IsFillCompletion(float, int, int&);
+    bool IsFillCompletion(float, int, int &);
     void SendMiss(float, int, int, int, GemHitFlags);
     void SendPass(float, int);
     void SendImplicit(float, int);
@@ -152,8 +161,8 @@ public:
     UserGuid mUserGuid; // 0x4
     bool mIsLocalUser; // 0x14
     int mPlayerSlot; // 0x18
-    GameGemList* mGemList; // 0x1c
-    TrackWatcherParent* mParent; // 0x20
+    GameGemList *mGemList; // 0x1c
+    TrackWatcherParent *mParent; // 0x20
     float mSlop; // 0x24
     int mLastGemHit; // 0x28
     bool mIsCurrentTrack; // 0x2c
@@ -161,13 +170,13 @@ public:
     float mSyncOffset; // 0x38
     bool mSucceeding; // 0x3c
     bool mEnabled; // 0x3d
-    std::vector<BeatMatchSink*> mSinks; // 0x40
-    SongData* mSongData; // 0x48
+    std::vector<BeatMatchSink *> mSinks; // 0x40
+    SongData *mSongData; // 0x48
     bool mTrillSucceeding; // 0x4c
     int mTrillNextSlot; // 0x50
     float mTrillLastFretMs; // 0x54
     float mTrillIntervalMs; // 0x58
-    DataArray* mRollIntervalsConfig; // 0x5c
+    DataArray *mRollIntervalsConfig; // 0x5c
     int mTrack; // 0x60
     bool mButtonMashingMode; // 0x64
     int mLastGemPassed; // 0x68
@@ -191,6 +200,5 @@ public:
     int mRollActiveSlots; // 0xb0
     float mRollIntervalMs; // 0xb4
     int mRollEndTick; // 0xb8
-    DataArray* mTrillIntervalsConfig; // 0xbc
-
+    DataArray *mTrillIntervalsConfig; // 0xbc
 };

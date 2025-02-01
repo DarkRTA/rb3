@@ -11,14 +11,15 @@
 #include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 
-AccomplishmentOneShot::AccomplishmentOneShot(DataArray* i_pConfig, int i) : AccomplishmentConditional(i_pConfig, i), mOneShotSong(gNullStr), mOneShotPlayerMin(0) {
+AccomplishmentOneShot::AccomplishmentOneShot(DataArray *i_pConfig, int i)
+    : AccomplishmentConditional(i_pConfig, i), mOneShotSong(gNullStr),
+      mOneShotPlayerMin(0) {
     AccomplishmentOneShot::Configure(i_pConfig);
 }
 
-AccomplishmentOneShot::~AccomplishmentOneShot() {
-}
+AccomplishmentOneShot::~AccomplishmentOneShot() {}
 
-void AccomplishmentOneShot::Configure(DataArray* i_pConfig) {
+void AccomplishmentOneShot::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x23);
 
     i_pConfig->FindData(oneshot_song, mOneShotSong, false);
@@ -29,56 +30,68 @@ AccomplishmentType AccomplishmentOneShot::GetType() const {
     return kAccomplishmentTypeOneShot;
 }
 
-bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty diff, Performer* i_pPerformer, Symbol s, int i) {
+bool AccomplishmentOneShot::AreOneShotConditionsMet(
+    ScoreType score, Difficulty diff, Performer *i_pPerformer, Symbol s, int i
+) {
     MILO_ASSERT(i_pPerformer, 0x3c);
-    const Stats& stats = i_pPerformer->GetStats();
-    for(std::vector<AccomplishmentCondition>::iterator it = m_lConditions.begin(); it != m_lConditions.end(); ++it){
+    const Stats &stats = i_pPerformer->GetStats();
+    for (std::vector<AccomplishmentCondition>::iterator it = m_lConditions.begin();
+         it != m_lConditions.end();
+         ++it) {
         Symbol sym = it->mCondition;
         int iii = it->mValue;
-        if((mOneShotSong == gNullStr || mOneShotSong == s) && i >= mOneShotPlayerMin && diff >= it->mDifficulty){
-            if(sym == stars){
-                if(it->mScoreType == score && i_pPerformer->GetNumStars() >= iii) return true;
-            }
-            else if(sym == unison_percent){
-                if(stats.GetUnisonPhrasePercent() >= iii) return true;
-            }
-            else if(sym == unison_phrases){
-                if(stats.mUnisonPhraseCount >= iii) return true;
-            }
-            else if(sym == upstrum_percent){
-                if(it->mScoreType == score){
+        if ((mOneShotSong == gNullStr || mOneShotSong == s) && i >= mOneShotPlayerMin
+            && diff >= it->mDifficulty) {
+            if (sym == stars) {
+                if (it->mScoreType == score && i_pPerformer->GetNumStars() >= iii)
+                    return true;
+            } else if (sym == unison_percent) {
+                if (stats.GetUnisonPhrasePercent() >= iii)
+                    return true;
+            } else if (sym == unison_phrases) {
+                if (stats.mUnisonPhraseCount >= iii)
+                    return true;
+            } else if (sym == upstrum_percent) {
+                if (it->mScoreType == score) {
                     int i4 = stats.mHitCount + stats.m0x08;
-                    if(i4 > 0) i4 = (float)stats.mUpstrumCount * 100.0f / (float)i4;
-                    else i4 = 0;
-                    if(i4 >= iii) return true;
+                    if (i4 > 0)
+                        i4 = (float)stats.mUpstrumCount * 100.0f / (float)i4;
+                    else
+                        i4 = 0;
+                    if (i4 >= iii)
+                        return true;
                 }
-            }
-            else if(sym == times_revived){
-                if(stats.mTimesSaved >= iii) return true;
-            }
-            else if(sym == saves){
-                if(stats.mPlayersSaved >= iii) return true;
-            }
-            else if(sym == awesomes){
-                if((score - 3 <= 1U) && it->mScoreType == score && stats.mHitCount >= iii) return true;
-            }
-            else if(sym == double_awesomes){
-                if(it->mScoreType == score && stats.mDoubleHarmonyHit >= iii) return true;
-            }
-            else if(sym == all_double_awesomes){
-                if(it->mScoreType == score && stats.mDoubleHarmonyHit >= stats.mDoubleHarmonyPhraseCount) return true;
-            }
-            else if(sym == triple_awesomes){
-                if(it->mScoreType == score && stats.mTripleHarmonyHit >= iii) return true;
-            }
-            else if(sym == all_triple_awesomes){
-                if(it->mScoreType == score && stats.mTripleHarmonyHit >= stats.mTripleHarmonyPhraseCount) return true;
-            }
-            else if(sym == full_combo){
-                if(it->mScoreType == score && stats.mFullCombo) return true;
-            }
-            else {
-                MILO_WARN("GOAL: %s - Condition is not currently supported: %s \n", mName, sym);
+            } else if (sym == times_revived) {
+                if (stats.mTimesSaved >= iii)
+                    return true;
+            } else if (sym == saves) {
+                if (stats.mPlayersSaved >= iii)
+                    return true;
+            } else if (sym == awesomes) {
+                if ((score - 3 <= 1U) && it->mScoreType == score
+                    && stats.mHitCount >= iii)
+                    return true;
+            } else if (sym == double_awesomes) {
+                if (it->mScoreType == score && stats.mDoubleHarmonyHit >= iii)
+                    return true;
+            } else if (sym == all_double_awesomes) {
+                if (it->mScoreType == score
+                    && stats.mDoubleHarmonyHit >= stats.mDoubleHarmonyPhraseCount)
+                    return true;
+            } else if (sym == triple_awesomes) {
+                if (it->mScoreType == score && stats.mTripleHarmonyHit >= iii)
+                    return true;
+            } else if (sym == all_triple_awesomes) {
+                if (it->mScoreType == score
+                    && stats.mTripleHarmonyHit >= stats.mTripleHarmonyPhraseCount)
+                    return true;
+            } else if (sym == full_combo) {
+                if (it->mScoreType == score && stats.mFullCombo)
+                    return true;
+            } else {
+                MILO_WARN(
+                    "GOAL: %s - Condition is not currently supported: %s \n", mName, sym
+                );
                 return false;
             }
         }
@@ -86,23 +99,23 @@ bool AccomplishmentOneShot::AreOneShotConditionsMet(ScoreType score, Difficulty 
     return false;
 }
 
-void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& desc) const {
+void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc &desc) const {
     Accomplishment::InitializeTrackerDesc(desc);
     MILO_ASSERT(!m_lConditions.empty(), 0xe6);
-    const AccomplishmentCondition& condition = m_lConditions[0];
+    const AccomplishmentCondition &condition = m_lConditions[0];
     MILO_ASSERT(TheCampaign, 0xe9);
-    LocalBandUser* pUser = TheCampaign->GetUser();
+    LocalBandUser *pUser = TheCampaign->GetUser();
     MILO_ASSERT(pUser, 0xeb);
-    Profile* pProfile = TheProfileMgr.GetProfileForUser(pUser);
+    Profile *pProfile = TheProfileMgr.GetProfileForUser(pUser);
     MILO_ASSERT(pProfile, 0xee);
 
     Symbol cond = condition.mCondition;
-    if(cond == upstrum_percent){
+    if (cond == upstrum_percent) {
         desc.mType = kTrackerType_UpstrumPercent;
         desc.unk18.push_back(condition.mValue);
-    }
-    else if(cond == stars) desc.unkc = TrackPanel::kConfigScoreStars;
-    else if(cond == unison_phrases){
+    } else if (cond == stars)
+        desc.unkc = TrackPanel::kConfigScoreStars;
+    else if (cond == unison_phrases) {
         desc.mType = kTrackerType_UnisonCount;
         desc.unk18.push_back(condition.mValue);
     }
@@ -111,4 +124,3 @@ void AccomplishmentOneShot::InitializeTrackerDesc(TrackerDesc& desc) const {
 bool AccomplishmentOneShot::HasSpecificSongsToLaunch() const {
     return mOneShotSong != gNullStr;
 }
-

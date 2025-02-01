@@ -4,25 +4,25 @@
 
 class CharClipDriver {
 public:
-    CharClipDriver(Hmx::Object*, const CharClipDriver&);
-    CharClipDriver(Hmx::Object*, CharClip*, int, float, CharClipDriver*, float, float, bool);
+    CharClipDriver(Hmx::Object *, const CharClipDriver &);
+    CharClipDriver(
+        Hmx::Object *, CharClip *, int, float, CharClipDriver *, float, float, bool
+    );
     ~CharClipDriver();
 
     void DeleteStack();
-    CharClipDriver* Exit(bool);
+    CharClipDriver *Exit(bool);
     void ExecuteEvent(Symbol);
     void SetBeatOffset(float, TaskUnits, Symbol);
-    void ScaleAdd(CharBones&, float);
-    void RotateTo(CharBones&, float);
-    CharClipDriver* DeleteClip(Hmx::Object*);
-    CharClipDriver* PreEvaluate(float, float, float);
+    void ScaleAdd(CharBones &, float);
+    void RotateTo(CharBones &, float);
+    CharClipDriver *DeleteClip(Hmx::Object *);
+    CharClipDriver *PreEvaluate(float, float, float);
     float Evaluate(float, float, float);
-    CharClipDriver* Next() const { return mNext; }
-    CharClip* GetClip() const { return mClip; }
+    CharClipDriver *Next() const { return mNext; }
+    CharClip *GetClip() const { return mClip; }
 
-    static int GetUpperFlags(int flags){
-        return (flags >> 0xC) & 0xF;
-    }
+    static int GetUpperFlags(int flags) { return (flags >> 0xC) & 0xF; }
 
     NEW_POOL_OVERLOAD(CharClipDriver)
     DELETE_POOL_OVERLOAD(CharClipDriver)
@@ -37,8 +37,8 @@ public:
     float mAdvanceBeat; // 0x1c
     float mWeight; // 0x20
     ObjOwnerPtr<CharClip> mClip; // 0x24
-    CharClipDriver* mNext; // 0x30
+    CharClipDriver *mNext; // 0x30
     int mNextEvent; // 0x34
-    DataArray* mEventData; // 0x38
+    DataArray *mEventData; // 0x38
     bool mPlayMultipleClips; // 0x3c
 };

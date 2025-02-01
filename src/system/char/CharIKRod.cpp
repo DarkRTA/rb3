@@ -3,17 +3,15 @@
 
 INIT_REVS(CharIKRod)
 
-CharIKRod::CharIKRod() : mLeftEnd(this), mRightEnd(this), mDestPos(0.5f), mSideAxis(this), mVertical(0), mDest(this) {
+CharIKRod::CharIKRod()
+    : mLeftEnd(this), mRightEnd(this), mDestPos(0.5f), mSideAxis(this), mVertical(0),
+      mDest(this) {}
 
-}
+CharIKRod::~CharIKRod() {}
 
-CharIKRod::~CharIKRod(){
-
-}
-
-void CharIKRod::Poll(){
+void CharIKRod::Poll() {
     Transform tf38;
-    if(ComputeRod(tf38)){
+    if (ComputeRod(tf38)) {
         Transform tf68;
         Multiply(mXfm, tf38, tf68);
         mDest->SetWorldXfm(tf68);
@@ -21,31 +19,37 @@ void CharIKRod::Poll(){
 }
 
 // fn_804E6ACC - compute rod
-bool CharIKRod::ComputeRod(Transform& tf){
-    if(mDest == 0 || mLeftEnd == 0 || mRightEnd == 0) return false;
+bool CharIKRod::ComputeRod(Transform &tf) {
+    if (mDest == 0 || mLeftEnd == 0 || mRightEnd == 0)
+        return false;
     Interp(mLeftEnd->WorldXfm().v, mRightEnd->WorldXfm().v, mDestPos, tf.v);
-    if(mVertical) tf.m.x.Set(0.0f, 0.0f, -1.0f);
+    if (mVertical)
+        tf.m.x.Set(0.0f, 0.0f, -1.0f);
     else {
         Interp(mLeftEnd->WorldXfm().m.x, mRightEnd->WorldXfm().m.x, mDestPos, tf.m.x);
         Normalize(tf.m.x, tf.m.x);
     }
-    if(mSideAxis) tf.m.z = mSideAxis->WorldXfm().m.z;
-    else Subtract(mLeftEnd->WorldXfm().v, mRightEnd->WorldXfm().v, tf.m.z);
+    if (mSideAxis)
+        tf.m.z = mSideAxis->WorldXfm().m.z;
+    else
+        Subtract(mLeftEnd->WorldXfm().v, mRightEnd->WorldXfm().v, tf.m.z);
     Cross(tf.m.z, tf.m.x, tf.m.y);
     Normalize(tf.m.y, tf.m.y);
     Cross(tf.m.x, tf.m.y, tf.m.z);
     return true;
 }
 
-void CharIKRod::SyncBones(){
+void CharIKRod::SyncBones() {
     Transform tf38;
-    if(ComputeRod(tf38)){
+    if (ComputeRod(tf38)) {
         Invert(tf38, tf38);
         Multiply(mDest->WorldXfm(), tf38, mXfm);
     }
 }
 
-void CharIKRod::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharIKRod::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mDest);
     changedBy.push_back(mLeftEnd);
     changedBy.push_back(mRightEnd);

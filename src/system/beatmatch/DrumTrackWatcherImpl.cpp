@@ -5,38 +5,47 @@
 
 bool gKickAutoplay;
 
-DrumTrackWatcherImpl::DrumTrackWatcherImpl(int track, const UserGuid& u, int slot, SongData* song_data, GameGemList* gemlist, TrackWatcherParent* parent, DataArray* cfg) : 
-    TrackWatcherImpl(track, u, slot, song_data, gemlist, parent, cfg, 2), mNextKickGemToAutoplay(0), mGameCymbalLanes(0) {
+DrumTrackWatcherImpl::DrumTrackWatcherImpl(
+    int track,
+    const UserGuid &u,
+    int slot,
+    SongData *song_data,
+    GameGemList *gemlist,
+    TrackWatcherParent *parent,
+    DataArray *cfg
+)
+    : TrackWatcherImpl(track, u, slot, song_data, gemlist, parent, cfg, 2),
+      mNextKickGemToAutoplay(0), mGameCymbalLanes(0) {
     MILO_ASSERT(song_data, 0x25);
     mGameCymbalLanes = song_data->GetGameCymbalLanes();
 }
 
-DrumTrackWatcherImpl::~DrumTrackWatcherImpl(){
+DrumTrackWatcherImpl::~DrumTrackWatcherImpl() {}
 
-}
-
-void DrumTrackWatcherImpl::Restart(){
+void DrumTrackWatcherImpl::Restart() {
     MILO_ASSERT(mSongData, 0x2F);
     mGameCymbalLanes = mSongData->GetGameCymbalLanes();
 }
 
 // fn_8045ED64 - relevantgem
-int DrumTrackWatcherImpl::RelevantGem(int i1, int i2, int i3){
+int DrumTrackWatcherImpl::RelevantGem(int i1, int i2, int i3) {
     int count = 0;
     int closest_gem = i1;
-    for(; closest_gem < i2; closest_gem++){
-        GameGem& gem = mGemList->GetGem(closest_gem);
+    for (; closest_gem < i2; closest_gem++) {
+        GameGem &gem = mGemList->GetGem(closest_gem);
         int slot = gem.GetSlot();
-        if(i3 == slot) return closest_gem;
-        if(!gem.GetPlayed()) count++;
+        if (i3 == slot)
+            return closest_gem;
+        if (!gem.GetPlayed())
+            count++;
     }
     closest_gem = -1;
     count = 999;
-    for(; i1 <= i2; i1++){
-        GameGem& gem = mGemList->GetGem(i1);
-        if(count != 0 || !gem.GetPlayed()){
+    for (; i1 <= i2; i1++) {
+        GameGem &gem = mGemList->GetGem(i1);
+        if (count != 0 || !gem.GetPlayed()) {
             int absval = abs(i3 - gem.GetSlot());
-            if(absval < count){
+            if (absval < count) {
                 closest_gem = i1;
                 count = absval;
             }
@@ -47,85 +56,89 @@ int DrumTrackWatcherImpl::RelevantGem(int i1, int i2, int i3){
 }
 
 // fn_8045EE58 - swing
-bool DrumTrackWatcherImpl::Swing(int slot, bool b1, bool b2, GemHitFlags flags){
+bool DrumTrackWatcherImpl::Swing(int slot, bool b1, bool b2, GemHitFlags flags) {
     KillSustainForSlot(slot);
     float now = mParent->GetNow();
     int idx = mGemList->ClosestMarkerIdx(now + mSyncOffset);
     float timeat = mGemList->TimeAt(idx);
     float timeatplus20 = timeat + 20.0f;
     int i3 = idx;
-    for(; mGemList->NumGems() >= i3 + 1 || timeatplus20 <= mGemList->TimeAt(i3 + 1); i3++);
+    for (; mGemList->NumGems() >= i3 + 1 || timeatplus20 <= mGemList->TimeAt(i3 + 1);
+         i3++)
+        ;
     float timeatminus20 = timeat - 20.0f;
-    for(; idx >= 0; idx--){
-        if(mGemList->TimeAt(idx - 1) >= timeatminus20) break;
+    for (; idx >= 0; idx--) {
+        if (mGemList->TimeAt(idx - 1) >= timeatminus20)
+            break;
     }
     int relevant = RelevantGem(idx, i3, slot);
     bool inslop = InSlopWindow(mGemList->TimeAt(relevant), now);
     unsigned int mask = 1 << slot;
     NoteSwing(mask, mGemList->GetGem(relevant).GetTick());
-    if(inslop){
-        GameGem& gem = mGemList->GetGem(relevant);
-        if(!gem.GetPlayed() || Playable(relevant)){
+    if (inslop) {
+        GameGem &gem = mGemList->GetGem(relevant);
+        if (!gem.GetPlayed() || Playable(relevant)) {
             MILO_ASSERT(gem.NumSlots() == 1, 0x8D);
-            if(slot == gem.GetSlot()){
-                if(CheckCymbal(gem, flags)) OnHit(now, slot, relevant, gem.GetSlots(), flags);
-                else OnMiss(now, slot, relevant, mask, kGemHitFlagNone);
-            }
-            else {
-                if(b2) return false;
+            if (slot == gem.GetSlot()) {
+                if (CheckCymbal(gem, flags))
+                    OnHit(now, slot, relevant, gem.GetSlots(), flags);
+                else
+                    OnMiss(now, slot, relevant, mask, kGemHitFlagNone);
+            } else {
+                if (b2)
+                    return false;
                 OnMiss(now, slot, relevant, mask, kGemHitFlagNone);
             }
-        }
-        else {
-            if(b2) return false;
+        } else {
+            if (b2)
+                return false;
             OnMiss(now, slot, relevant, mask, kGemHitFlagNone);
         }
-    }
-    else {
-        if(b2) return false;
+    } else {
+        if (b2)
+            return false;
         OnMiss(now, slot, relevant, mask, kGemHitFlagNone);
     }
     return true;
 }
 
-void DrumTrackWatcherImpl::PollHook(float f){
-    CheckForKickAutoplay(f);
-}
+void DrumTrackWatcherImpl::PollHook(float f) { CheckForKickAutoplay(f); }
 
-void DrumTrackWatcherImpl::JumpHook(float f){
+void DrumTrackWatcherImpl::JumpHook(float f) {
     int idx = mGemList->ClosestMarkerIdxAtOrAfter(f + mSyncOffset);
-    if(idx == -1) idx = mGemList->NumGems();
+    if (idx == -1)
+        idx = mGemList->NumGems();
     mNextKickGemToAutoplay = idx;
 }
 
-void DrumTrackWatcherImpl::CheckForKickAutoplay(float f){
-    if(gKickAutoplay && mIsCurrentTrack && !IsCheating()){
+void DrumTrackWatcherImpl::CheckForKickAutoplay(float f) {
+    if (gKickAutoplay && mIsCurrentTrack && !IsCheating()) {
         float offset = f + mSyncOffset;
         int i8;
         int cap = mGemList->NumGems() - 1;
-        while(i8 = mNextKickGemToAutoplay, i8 <= cap){
+        while (i8 = mNextKickGemToAutoplay, i8 <= cap) {
             float timeAt = mGemList->TimeAt(i8);
-            GameGem& curGem = mGemList->GetGem(i8);
+            GameGem &curGem = mGemList->GetGem(i8);
             int slot = curGem.GetSlot();
-            if(offset >= timeAt){
-                if(Playable(i8) && slot == 0){
-                    if(!mParent->InCodaFreestyle(curGem.GetTick(), true)){
-                        if(!mParent->InFill(curGem.GetTick(), true)){
+            if (offset >= timeAt) {
+                if (Playable(i8) && slot == 0) {
+                    if (!mParent->InCodaFreestyle(curGem.GetTick(), true)) {
+                        if (!mParent->InFill(curGem.GetTick(), true)) {
                             HitGem(f, i8, curGem.GetSlots(), kGemHitFlagNone);
                         }
                     }
                 }
                 mNextKickGemToAutoplay++;
-            }
-            else break;
+            } else
+                break;
         }
     }
 }
 
-bool DrumTrackWatcherImpl::CheckCymbal(const GameGem& gem, GemHitFlags flags) const {
-    if(
-        (1 << gem.GetSlot() & mGameCymbalLanes) && 
-        (gem.IsCymbal() != (unsigned int)(flags >> 2 & 1))
-    ) return false; // kGemHitFlagCymbal
-    else return true;
+bool DrumTrackWatcherImpl::CheckCymbal(const GameGem &gem, GemHitFlags flags) const {
+    if ((1 << gem.GetSlot() & mGameCymbalLanes)
+        && (gem.IsCymbal() != (unsigned int)(flags >> 2 & 1)))
+        return false; // kGemHitFlagCymbal
+    else
+        return true;
 }

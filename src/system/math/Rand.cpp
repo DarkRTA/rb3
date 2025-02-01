@@ -5,7 +5,8 @@
 
 Rand gRand(0x29A);
 
-Rand::Rand(int i) : mRandIndex1(0), mRandIndex2(0), mRandTable(), mSpareGaussianAvailable(0) {
+Rand::Rand(int i)
+    : mRandIndex1(0), mRandIndex2(0), mRandTable(), mSpareGaussianAvailable(0) {
     Seed(i);
 }
 
@@ -24,14 +25,9 @@ int Rand::Int(int low, int high) {
     return low + Int() % (high - low);
 }
 
-inline float Rand::Float(float f1, float f2) {
-    return ((f2 - f1) * Float() + f1);
-}
+inline float Rand::Float(float f1, float f2) { return ((f2 - f1) * Float() + f1); }
 
-float Rand::Float() {
-    return ((Int() & 0xFFFF) / 65536.0f);
-}
-
+float Rand::Float() { return ((Int() & 0xFFFF) / 65536.0f); }
 
 int Rand::Int() {
     unsigned int u3 = mRandTable[mRandIndex1];
@@ -66,9 +62,7 @@ float Rand::Gaussian() {
     }
 }
 
-void SeedRand(int seed) {
-    gRand.Seed(seed);
-}
+void SeedRand(int seed) { gRand.Seed(seed); }
 
 int RandomInt() {
     MILO_ASSERT(MainThread(), 0x6C);

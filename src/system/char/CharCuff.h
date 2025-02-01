@@ -9,29 +9,28 @@ struct Shape {
     float radius;
 };
 
-/** "A cuff used to constrain colliding outfits against each other.\n      for example boots against pants.  The widest cuff wins" */
+/** "A cuff used to constrain colliding outfits against each other.\n      for example
+ * boots against pants.  The widest cuff wins" */
 class CharCuff : public RndTransformable {
 public:
     CharCuff();
     OBJ_CLASSNAME(CharCuff)
     OBJ_SET_TYPE(CharCuff)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
     virtual ~CharCuff();
     virtual void Highlight();
 
-    void Deform(SyncMeshCB*, FileMerger*);
-    float Eccentricity(const Vector2&) const;
-    void DeformMesh(RndMesh*, int, SyncMeshCB*);
+    void Deform(SyncMeshCB *, FileMerger *);
+    float Eccentricity(const Vector2 &) const;
+    void DeformMesh(RndMesh *, int, SyncMeshCB *);
 
     DECLARE_REVS;
     NEW_OBJ(CharCuff)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharCuff)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharCuff) }
 
     // offset0, radius0, offset1, radius1, offset2, radius2, outer_radius
     // offset0: "Inner offset, usually negative, the inside of the cuff"
@@ -41,9 +40,9 @@ public:
     // offset2: "Outer offset, usually positive, the outside of the cuff"
     // radius2: "Outer radius, usually the largest, the outside of the cuff"
     Shape mShape[3]; // 0x90, 0x98, 0xa0
-    /** "Outside radius, should encompass the biggest thing on the outside, biggest one wins.
-     *  For incompressible things like big boots should be the biggest part.
-     *  For soft things like cloth should just be radius1" */
+    /** "Outside radius, should encompass the biggest thing on the outside, biggest one
+     * wins. For incompressible things like big boots should be the biggest part. For soft
+     * things like cloth should just be radius1" */
     float mOuterRadius; // 0xa8
     /** "Is the inside open or closed, open is good for things like gauntlets" */
     bool mOpenEnd; // 0xac

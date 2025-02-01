@@ -4,7 +4,7 @@
 class MemPointDelta {
 public:
     MemPointDelta();
-    MemPointDelta& operator+=(const MemPointDelta&);
+    MemPointDelta &operator+=(const MemPointDelta &);
 
     int unk_0x0[16];
     int unk40;
@@ -18,7 +18,7 @@ public:
     };
 
     MemPoint(eInitType = kInitType1);
-    MemPointDelta operator-(const MemPoint&) const;
+    MemPointDelta operator-(const MemPoint &) const;
 
     int unk0[16];
     int unk40;

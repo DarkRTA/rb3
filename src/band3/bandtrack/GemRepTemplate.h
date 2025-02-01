@@ -12,22 +12,22 @@ class GemRepTemplate {
         kNumTailTypes
     };
 
-    GemRepTemplate(const TrackConfig&);
+    GemRepTemplate(const TrackConfig &);
     ~GemRepTemplate();
-    void Init(ObjectDir*);
-    RndMesh* GetTail();
-    void ReturnTail(RndMesh*);
-    RndMesh* CreateTail();
+    void Init(ObjectDir *);
+    RndMesh *GetTail();
+    void ReturnTail(RndMesh *);
+    RndMesh *CreateTail();
     int GetRequiredVertCount(int) const;
     int GetRequiredFaceCount(int) const;
-    RndMat* GetMatByTag(const char*, int);
+    RndMat *GetMatByTag(const char *, int);
     void SetupTailVerts();
     int GetNumTailSections(TailType) const;
     float GetTailSectionLength(TailType) const;
-    RndMat* GetSlotMat(int, int) const;
-    void SetSlotMat(int, int, RndMat*);
+    RndMat *GetSlotMat(int, int) const;
+    void SetSlotMat(int, int, RndMat *);
 
-    DataArray* mConfig; // 0x0
+    DataArray *mConfig; // 0x0
     float kTailPulseRate; // 0x4 // why is it k. why
     float kTailPulseSmoothing; // 0x8
     float kTailOffsetX; // 0xC
@@ -37,12 +37,12 @@ class GemRepTemplate {
     float kTailFadeDistance; // 0x1C
     float kTailMaxLength; // 0x20
     Vector2 kTailFrequencyRange; // 0x24
-    Vector2 kTailAmplitudeRange; // 0x2C  
-    const TrackConfig& mTrackCfg; // 0x34
-    RndMat** mSlots; // 0x38
+    Vector2 kTailAmplitudeRange; // 0x2C
+    const TrackConfig &mTrackCfg; // 0x34
+    RndMat **mSlots; // 0x38
     float unk_0x3C;
     float unk_0x40;
-    ObjectDir* mObjectDir; // 0x44
+    ObjectDir *mObjectDir; // 0x44
     uint mNumTailSections;
     u32 pad1;
     float mTailSectionLen;
@@ -53,5 +53,5 @@ class GemRepTemplate {
 
     int pad[3];
 
-    std::vector<RndMesh*> mTails; // 0x7C
+    std::vector<RndMesh *> mTails; // 0x7C
 };

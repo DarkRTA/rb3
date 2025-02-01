@@ -6,9 +6,9 @@
 
 class DirUnloader : public Loader, public Hmx::Object {
 public:
-    DirUnloader(ObjectDir*);
+    DirUnloader(ObjectDir *);
     virtual ~DirUnloader();
-    virtual const char* DebugText();
+    virtual const char *DebugText();
     virtual bool IsLoaded() const;
     virtual void PollLoading();
 

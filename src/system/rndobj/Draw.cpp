@@ -10,48 +10,47 @@ bool RndDrawable::sForceSubpartSelection;
 float RndDrawable::sNormalDisplayLength = 1.0f;
 int DRAW_REV = 3;
 
-RndDrawable::RndDrawable() : mShowing(1), mSphere(), mOrder(0.0f) {
-    mSphere.Zero();
-}
+RndDrawable::RndDrawable() : mShowing(1), mSphere(), mOrder(0.0f) { mSphere.Zero(); }
 
-void RndDrawable::Draw(){
-    if(mShowing){
+void RndDrawable::Draw() {
+    if (mShowing) {
         Sphere sphere;
         int worldSphere = MakeWorldSphere(sphere, false);
-        if(worldSphere == 0 || !RndCam::sCurrent->CompareSphereToWorld(sphere)){
+        if (worldSphere == 0 || !RndCam::sCurrent->CompareSphereToWorld(sphere)) {
             DrawShowing();
         }
     }
 }
 
-bool RndDrawable::DrawBudget(float f){
-    if(!mShowing) return true;
+bool RndDrawable::DrawBudget(float f) {
+    if (!mShowing)
+        return true;
     else {
         Sphere sphere;
         int worldSphere = MakeWorldSphere(sphere, false);
-        if(worldSphere != 0 && RndCam::sCurrent->CompareSphereToWorld(sphere)){
+        if (worldSphere != 0 && RndCam::sCurrent->CompareSphereToWorld(sphere)) {
             return true;
-        }
-        else return DrawShowingBudget(f);
+        } else
+            return DrawShowingBudget(f);
     }
 }
 
-bool RndDrawable::DrawShowingBudget(float f){
+bool RndDrawable::DrawShowingBudget(float f) {
     DrawShowing();
     return true;
 }
 
-void RndDrawable::Highlight(){
-    if(sHighlightStyle != kHighlightNone){
+void RndDrawable::Highlight() {
+    if (sHighlightStyle != kHighlightNone) {
         Sphere s;
-        if(!MakeWorldSphere(s, false) || !RndCam::sCurrent->CompareSphereToWorld(s)){
+        if (!MakeWorldSphere(s, false) || !RndCam::sCurrent->CompareSphereToWorld(s)) {
             bool showing = mShowing;
             mShowing = true;
-            #ifdef MILO_DEBUG
-                UtilDrawSphere(s.center, s.radius, Hmx::Color(1.0f, 1.0f, 0.0f));
-            #else
-                UtilDrawSphere(s.center, s.GetRadius(), Hmx::Color(1.0f, 1.0f, 0.0f));
-            #endif
+#ifdef MILO_DEBUG
+            UtilDrawSphere(s.center, s.radius, Hmx::Color(1.0f, 1.0f, 0.0f));
+#else
+            UtilDrawSphere(s.center, s.GetRadius(), Hmx::Color(1.0f, 1.0f, 0.0f));
+#endif
             mShowing = showing;
         }
     }
@@ -60,83 +59,83 @@ void RndDrawable::Highlight(){
 BEGIN_COPYS(RndDrawable)
     CREATE_COPY(RndDrawable)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mShowing)
             COPY_MEMBER(mOrder)
             COPY_MEMBER(mSphere)
-        }
-        else {
-        #ifdef MILO_DEBUG
+        } else {
+#ifdef MILO_DEBUG
             float zero = 0.0f;
             float rad = mSphere.GetRadius();
-            if(rad != zero){
+            if (rad != zero) {
                 rad = c->mSphere.GetRadius();
-                if(rad != zero){
+                if (rad != zero) {
                     COPY_MEMBER(mSphere)
                 }
             }
-        #else
-            if(mSphere.GetRadius() && c->mSphere.GetRadius()){
+#else
+            if (mSphere.GetRadius() && c->mSphere.GetRadius()) {
                 COPY_MEMBER(mSphere);
             }
-        #endif
+#endif
         }
     END_COPYING_MEMBERS
 END_COPYS
 
 SAVE_OBJ(RndDrawable, 0xAE)
 
-void RndDrawable::Load(BinStream& bs){
+void RndDrawable::Load(BinStream &bs) {
     int rev;
     bs >> rev;
     ASSERT_GLOBAL_REV(rev, DRAW_REV);
-    if(gLoadingProxyFromDisk){
+    if (gLoadingProxyFromDisk) {
         bool dummy;
         bs >> dummy;
-    }
-    else {
+    } else {
         bool bs_showing;
         bs >> bs_showing;
         mShowing = bs_showing;
     }
-    if(rev < 2){
+    if (rev < 2) {
         int count;
         bs >> count;
-        RndGroup* grp = dynamic_cast<RndGroup*>(this);
-        if(count != 0){
-            for(; count != 0; count--){
+        RndGroup *grp = dynamic_cast<RndGroup *>(this);
+        if (count != 0) {
+            for (; count != 0; count--) {
                 char buf[0x80];
                 bs.ReadString(buf, 0x80);
-                if(grp){
-                    Hmx::Object* found = Dir()->Find<Hmx::Object>(buf, true);
-                    RndEnviron* env = dynamic_cast<RndEnviron*>(found);
-                    if(env){
-                        if(grp->GetEnv()) MILO_WARN("%s won't set %s", grp->Name(), buf);
-                        else grp->SetEnv(env);
-                    }
-                    else {
-                        RndCam* cam = dynamic_cast<RndCam*>(found);
-                        if(!cam){
+                if (grp) {
+                    Hmx::Object *found = Dir()->Find<Hmx::Object>(buf, true);
+                    RndEnviron *env = dynamic_cast<RndEnviron *>(found);
+                    if (env) {
+                        if (grp->GetEnv())
+                            MILO_WARN("%s won't set %s", grp->Name(), buf);
+                        else
+                            grp->SetEnv(env);
+                    } else {
+                        RndCam *cam = dynamic_cast<RndCam *>(found);
+                        if (!cam) {
                             grp->RemoveObject(found);
                             grp->AddObject(found, 0);
                         }
                     }
-                }
-                else MILO_WARN("%s not in group", buf);
+                } else
+                    MILO_WARN("%s not in group", buf);
             }
         }
     }
-    if(rev > 0) bs >> mSphere;
-    if(rev > 2){
-        if(gLoadingProxyFromDisk){
+    if (rev > 0)
+        bs >> mSphere;
+    if (rev > 2) {
+        if (gLoadingProxyFromDisk) {
             float dummy;
             bs >> dummy;
-        }
-        else bs >> mOrder;
+        } else
+            bs >> mOrder;
     }
 }
 
-void RndDrawable::DumpLoad(BinStream& bs){
+void RndDrawable::DumpLoad(BinStream &bs) {
     unsigned char dummy;
     int y, x, w;
     int rev;
@@ -145,64 +144,74 @@ void RndDrawable::DumpLoad(BinStream& bs){
     bs >> rev;
     MILO_ASSERT(rev < 4, 0xFD);
     bs >> dummy;
-    if(rev < 2){
+    if (rev < 2) {
         char buf[0x80];
         bs >> i;
-        for(; i != 0; i--){
+        for (; i != 0; i--) {
             bs.ReadString(buf, 0x80);
         }
     }
-    if(rev > 0){
-    #ifdef MILO_DEBUG
+    if (rev > 0) {
+#ifdef MILO_DEBUG
         bs >> w >> x >> y >> z;
-    #else
+#else
         Sphere s;
         bs >> s;
-    #endif
+#endif
     }
-    if(rev > 2){
+    if (rev > 2) {
         bs >> j;
     }
-    if(rev > 3){
+    if (rev > 3) {
         ObjPtr<RndDrawable> ptr(nullptr);
         bs >> ptr;
     }
 }
 
-bool RndDrawable::CollideSphere(const Segment& seg){
-    if(!mShowing) return false;
+bool RndDrawable::CollideSphere(const Segment &seg) {
+    if (!mShowing)
+        return false;
     else {
         Sphere sphere;
-        if(MakeWorldSphere(sphere, false) && !Intersect(seg, sphere)) return false;
-        else return true;
+        if (MakeWorldSphere(sphere, false) && !Intersect(seg, sphere))
+            return false;
+        else
+            return true;
     }
 }
 
-RndDrawable* RndDrawable::Collide(const Segment& seg, float& f, Plane& plane){
+RndDrawable *RndDrawable::Collide(const Segment &seg, float &f, Plane &plane) {
     START_AUTO_TIMER("collide");
-    if(!CollideSphere(seg)) return nullptr;
-    else return CollideShowing(seg, f, plane);
+    if (!CollideSphere(seg))
+        return nullptr;
+    else
+        return CollideShowing(seg, f, plane);
 }
 
 // retail: https://decomp.me/scratch/X3MyB
 // debug: https://decomp.me/scratch/rLOfM
-int RndDrawable::CollidePlane(const Plane& plane){
-    if(!mShowing) return -1;
+int RndDrawable::CollidePlane(const Plane &plane) {
+    if (!mShowing)
+        return -1;
     else {
         Sphere sphere;
-        if(MakeWorldSphere(sphere, false)){
-            if(sphere >= plane) return 1;
-            else return -(sphere < plane);
-        }
-        else return -1;
+        if (MakeWorldSphere(sphere, false)) {
+            if (sphere >= plane)
+                return 1;
+            else
+                return -(sphere < plane);
+        } else
+            return -1;
     }
 }
 
-void RndDrawable::CollideList(const Segment& seg, std::list<RndDrawable::Collision>& collisions){
+void RndDrawable::CollideList(
+    const Segment &seg, std::list<RndDrawable::Collision> &collisions
+) {
     float f;
     Plane pl;
-    RndDrawable* draw = Collide(seg, f, pl);
-    if(draw){
+    RndDrawable *draw = Collide(seg, f, pl);
+    if (draw) {
         RndDrawable::Collision coll;
         coll.object = draw;
         coll.distance = f;
@@ -221,13 +230,14 @@ BEGIN_HANDLERS(RndDrawable)
     HANDLE_CHECK(0x168)
 END_HANDLERS
 
-DataNode RndDrawable::OnCopySphere(const DataArray* da){
-    RndDrawable* draw = da->Obj<RndDrawable>(2);
-    if(draw) mSphere = draw->mSphere;
+DataNode RndDrawable::OnCopySphere(const DataArray *da) {
+    RndDrawable *draw = da->Obj<RndDrawable>(2);
+    if (draw)
+        mSphere = draw->mSphere;
     return 0;
 }
 
-DataNode RndDrawable::OnGetSphere(const DataArray* da){
+DataNode RndDrawable::OnGetSphere(const DataArray *da) {
     *da->Var(2) = mSphere.center.X();
     *da->Var(3) = mSphere.center.Y();
     *da->Var(4) = mSphere.center.Z();
@@ -235,16 +245,14 @@ DataNode RndDrawable::OnGetSphere(const DataArray* da){
     return 0;
 }
 
-DataNode RndDrawable::OnSetShowing(const DataArray* da){
+DataNode RndDrawable::OnSetShowing(const DataArray *da) {
     SetShowing(da->Int(2));
     return 0;
 }
 
-DataNode RndDrawable::OnShowing(const DataArray*){
-    return mShowing;
-}
+DataNode RndDrawable::OnShowing(const DataArray *) { return mShowing; }
 
-DataNode RndDrawable::OnZeroSphere(const DataArray*){
+DataNode RndDrawable::OnZeroSphere(const DataArray *) {
     mSphere.Zero();
     return 0;
 }
@@ -252,11 +260,10 @@ DataNode RndDrawable::OnZeroSphere(const DataArray*){
 BEGIN_PROPSYNCS(RndDrawable)
     SYNC_PROP(draw_order, mOrder)
     static Symbol _s("showing");
-    if(sym == _s){
-        if(_op == kPropSet){
+    if (sym == _s) {
+        if (_op == kPropSet) {
             mShowing = _val.Int();
-        }
-        else {
+        } else {
             _val = mShowing;
         }
         return true;

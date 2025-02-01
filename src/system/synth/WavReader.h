@@ -7,16 +7,16 @@
 
 class WavReader : public StreamReader {
 public:
-    WavReader(File*, bool, StandardStream*);
+    WavReader(File *, bool, StandardStream *);
     ~WavReader();
     virtual void Poll(float);
     virtual void Seek(int);
-    virtual void EnableReads(bool enable){ mEnableReads = enable; }
-    virtual bool Done(){ return mSamplesLeft == 0; }
-    virtual bool Fail(){ return false; }
+    virtual void EnableReads(bool enable) { mEnableReads = enable; }
+    virtual bool Done() { return mSamplesLeft == 0; }
+    virtual bool Fail() { return false; }
     virtual void Init();
-    virtual void ConsumeData(void**, int, int);
-    virtual void EndData(){}
+    virtual void ConsumeData(void **, int, int);
+    virtual void EndData() {}
 
     int mNumChannels; // 0x4
     int mSampleRate; // 0x8

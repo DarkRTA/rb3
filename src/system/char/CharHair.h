@@ -13,9 +13,9 @@ class RndWind;
 /** "Hair physics, deals with strands of hair" */
 class CharHair : public RndHighlightable, public CharPollable {
 public:
-
     struct Point {
-        Point(Hmx::Object* o) : bone(o), length(0.0f), collides(o), radius(0.0f), outerRadius(-1.0f){
+        Point(Hmx::Object *o)
+            : bone(o), length(0.0f), collides(o), radius(0.0f), outerRadius(-1.0f) {
             pos.Zero();
             force.Zero();
             lastFriction.Zero();
@@ -35,7 +35,9 @@ public:
         ObjPtrList<CharCollide> collides; // 0x40
         /** "collision radius" */
         float radius; // 0x50
-        /** "if > radius, is the distance the hair bone should start aligning itself with the collision primitive, so that once touching it, it will be totally flattened against it." */
+        /** "if > radius, is the distance the hair bone should start aligning itself with
+         * the collision primitive, so that once touching it, it will be totally flattened
+         * against it." */
         float outerRadius; // 0x54
         /** "if >= 0 the base length to the side modified by min_slack and max_slack" */
         float sideLength; // 0x58
@@ -44,20 +46,21 @@ public:
 
     class Strand {
     public:
-        Strand(Hmx::Object*);
-        ~Strand(){}
-        void Load(BinStream&);
-        void SetRoot(RndTransformable*);
+        Strand(Hmx::Object *);
+        ~Strand() {}
+        void Load(BinStream &);
+        void SetRoot(RndTransformable *);
         void SetAngle(float);
-        RndTransformable* Root(){ return mRoot; }
-        Hmx::Matrix3& RootMat(){ return mRootMat; }
-        ObjVector<Point>& Points(){ return mPoints; }
+        RndTransformable *Root() { return mRoot; }
+        Hmx::Matrix3 &RootMat() { return mRootMat; }
+        ObjVector<Point> &Points() { return mPoints; }
 
         /** "show the points as spheres" */
         bool mShowSpheres; // 0x0
         /** "show the collision shapes" */
         bool mShowCollide; // 0x1
-        /** "Show the original pose when hilit, good for adjusting angle to match the pose" */
+        /** "Show the original pose when hilit, good for adjusting angle to match the
+         * pose" */
         bool mShowPose; // 0x2
         /** "The root Trans for the hair strand" */
         ObjPtr<RndTransformable> mRoot; // 0x4
@@ -71,23 +74,23 @@ public:
 
     CharHair();
     virtual ~CharHair();
-    virtual void Highlight(){}
+    virtual void Highlight() {}
     OBJ_CLASSNAME(CharHair);
     OBJ_SET_TYPE(CharHair);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual void Poll();    
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual void Poll();
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
     virtual void Enter();
-    virtual void SetName(const char*, class ObjectDir*);
+    virtual void SetName(const char *, class ObjectDir *);
 
     void SimulateInternal(float);
     /** "Re-hookup the hair to the collision volumes" */
     void Hookup();
-    void Hookup(ObjPtrList<CharCollide>&);
+    void Hookup(ObjPtrList<CharCollide> &);
     /** "Sets this as cloth, all sides true." */
     void SetCloth(bool);
     /** "freeze the current pose for resetting" */
@@ -97,15 +100,13 @@ public:
     void DoReset(int);
     float GetFPS();
     void SimulateZeroTime();
-    void SetManagedHookup(bool b){ mManagedHookup = b; }
+    void SetManagedHookup(bool b) { mManagedHookup = b; }
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     DECLARE_REVS;
     NEW_OBJ(CharHair)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharHair)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharHair) }
 
     /** "stiffness of each strand". Ranges from 0 to 1. */
     float mStiffness; // 0x10
@@ -135,5 +136,5 @@ public:
     bool mManagedHookup; // 0x6c
 };
 
-BinStream& operator>>(BinStream& bs, CharHair::Point& pt);
-BinStream& operator>>(BinStream& bs, CharHair::Strand& strand);
+BinStream &operator>>(BinStream &bs, CharHair::Point &pt);
+BinStream &operator>>(BinStream &bs, CharHair::Strand &strand);

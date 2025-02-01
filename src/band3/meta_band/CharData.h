@@ -7,14 +7,14 @@
 class CharData : public virtual Hmx::Object {
 public:
     CharData();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual const char* GetCharacterName() const = 0;
-    virtual BandCharDesc* GetBandCharDesc() const = 0;
-    virtual RndTex* GetPortraitTex() const = 0;
-    virtual void CachePortraitTex(RndTex*) = 0;
+    virtual DataNode Handle(DataArray *, bool);
+    virtual const char *GetCharacterName() const = 0;
+    virtual BandCharDesc *GetBandCharDesc() const = 0;
+    virtual RndTex *GetPortraitTex() const = 0;
+    virtual void CachePortraitTex(RndTex *) = 0;
     virtual bool IsFinalized() const = 0;
     virtual bool IsCustomizable() const = 0;
-    virtual RndTex* GetTexAtPatchIndex(int, bool) const = 0;
+    virtual RndTex *GetTexAtPatchIndex(int, bool) const = 0;
     virtual ~CharData();
 
     HxGuid mGuid; // 0x8
@@ -22,14 +22,14 @@ public:
 
 class PrefabChar : public CharData {
 public:
-    PrefabChar(BandCharDesc*);
-    virtual const char* GetCharacterName() const;
-    virtual BandCharDesc* GetBandCharDesc() const;
-    virtual RndTex* GetPortraitTex() const;
-    virtual void CachePortraitTex(RndTex*);
+    PrefabChar(BandCharDesc *);
+    virtual const char *GetCharacterName() const;
+    virtual BandCharDesc *GetBandCharDesc() const;
+    virtual RndTex *GetPortraitTex() const;
+    virtual void CachePortraitTex(RndTex *);
     virtual bool IsFinalized() const;
     virtual bool IsCustomizable() const;
-    virtual RndTex* GetTexAtPatchIndex(int, bool) const;
+    virtual RndTex *GetTexAtPatchIndex(int, bool) const;
     virtual ~PrefabChar();
 
     Symbol GetPrefabName() const;
@@ -38,8 +38,8 @@ public:
     bool IsPortraitLoaded();
     void UnloadPortrait();
 
-    BandCharDesc* mBandCharDesc; // 0x18
-    RndTex* mTexPortrait; // 0x1c
-    FileLoader* mLoader; // 0x20
+    BandCharDesc *mBandCharDesc; // 0x18
+    RndTex *mTexPortrait; // 0x1c
+    FileLoader *mLoader; // 0x20
     String unk24; // 0x24
 };

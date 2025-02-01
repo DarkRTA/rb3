@@ -1,20 +1,19 @@
 #include "synth/VoiceBeat.h"
 
-VoiceBeat::VoiceBeat(){
+VoiceBeat::VoiceBeat() {
     mEnabled = true;
     Reset();
 }
 
-void VoiceBeat::SetEnable(bool enable){
-    if(enable && !mEnabled) Reset();
+void VoiceBeat::SetEnable(bool enable) {
+    if (enable && !mEnabled)
+        Reset();
     mEnabled = enable;
 }
 
-void VoiceBeat::Analyze(float*, int, bool, bool, float){
+void VoiceBeat::Analyze(float *, int, bool, bool, float) {}
 
-}
-
-void VoiceBeat::Reset(){
+void VoiceBeat::Reset() {
     memset(mXVVoice, 0, sizeof(mXVVoice));
     memset(mYVVoice, 0, sizeof(mYVVoice));
     memset(mXVEnvAntiAlias, 0, sizeof(mXVEnvAntiAlias));
@@ -37,25 +36,19 @@ void VoiceBeat::Reset(){
     mTriggered = false;
 }
 
-void VoiceBeat::ClearTrigger(){
-    mTriggered = false;
-}
+void VoiceBeat::ClearTrigger() { mTriggered = false; }
 
-void VoiceBeat::ClearEventList(){
+void VoiceBeat::ClearEventList() {
     mPeaks.clear();
     mTimes.clear();
 }
 
-EventTracker::EventTracker() : mSelFrom(-1), mSelTo(-1), mAvgHitTime(0) {
+EventTracker::EventTracker() : mSelFrom(-1), mSelTo(-1), mAvgHitTime(0) {}
 
-}
+TalkyMatcher::TalkyMatcher() { memset(mBuffer, 0, sizeof(mBuffer)); }
 
-TalkyMatcher::TalkyMatcher(){
-    memset(mBuffer, 0, sizeof(mBuffer));
-}
-
-void TalkyMatcher::updateScoring(float f){
-    if(mVoiceBeat.mTriggered){
+void TalkyMatcher::updateScoring(float f) {
+    if (mVoiceBeat.mTriggered) {
         mRefEvents.Hit(f - 180.0f, f + 180.0f, f);
         mVoiceBeat.ClearEventList();
     }
@@ -63,16 +56,14 @@ void TalkyMatcher::updateScoring(float f){
     mVoiceBeat.ClearTrigger();
 }
 
-void TalkyMatcher::LoadEvents(const std::vector<float>& times, const std::vector<float>& peaks){
+void TalkyMatcher::LoadEvents(
+    const std::vector<float> &times, const std::vector<float> &peaks
+) {
     mRefEvents.mTimes = times;
     mRefEvents.mPeaks = peaks;
     mRefEvents.Reset();
 }
 
-void TalkyMatcher::Reset(){
-    mVoiceBeat.Reset();
-}
+void TalkyMatcher::Reset() { mVoiceBeat.Reset(); }
 
-void TalkyMatcher::SetEnableTalkyMatcher(bool enable){
-    mVoiceBeat.SetEnable(enable);
-}
+void TalkyMatcher::SetEnableTalkyMatcher(bool enable) { mVoiceBeat.SetEnable(enable); }

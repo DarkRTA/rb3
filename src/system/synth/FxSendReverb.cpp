@@ -4,25 +4,26 @@
 
 INIT_REVS(FxSendReverb);
 
-FxSendReverb::FxSendReverb() : mEnvironmentPreset(), mPreDelayMs(50.0f), mHighCut(5000.0f), mLowCut(100.0f), mRoomSize(0.5f), mDamping(0.5f), mDiffusion(0.5f), mEarlyLate(0.5f) {
+FxSendReverb::FxSendReverb()
+    : mEnvironmentPreset(), mPreDelayMs(50.0f), mHighCut(5000.0f), mLowCut(100.0f),
+      mRoomSize(0.5f), mDamping(0.5f), mDiffusion(0.5f), mEarlyLate(0.5f) {
     mEnvironmentPreset = generic;
     mDryGain = 0.0f;
     mWetGain = -6.0f;
 }
 
-FxSendReverb::~FxSendReverb(){
-
-}
+FxSendReverb::~FxSendReverb() {}
 
 SAVE_OBJ(FxSendReverb, 0x23);
 
-void FxSendReverb::Load(BinStream& bs){
+void FxSendReverb::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
     FxSend::Load(bs);
     bs >> mEnvironmentPreset;
-    if(gRev >= 2){
-        bs >> mPreDelayMs >> mHighCut >> mLowCut >> mRoomSize >> mDamping >> mDiffusion >> mEarlyLate;
+    if (gRev >= 2) {
+        bs >> mPreDelayMs >> mHighCut >> mLowCut >> mRoomSize >> mDamping >> mDiffusion
+            >> mEarlyLate;
     }
     OnParametersChanged();
 }
@@ -46,7 +47,6 @@ BEGIN_HANDLERS(FxSendReverb)
     HANDLE_SUPERCLASS(FxSend)
     HANDLE_CHECK(0x5B)
 END_HANDLERS
-
 
 BEGIN_PROPSYNCS(FxSendReverb)
     SYNC_PROP_MODIFY(environment, mEnvironmentPreset, OnParametersChanged())

@@ -1,5 +1,4 @@
-#ifndef GAME_NETGAMEMSGS_H
-#define GAME_NETGAMEMSGS_H
+#pragma once
 #include "utl/HxGuid.h"
 #include <os/User.h>
 #include "Stats.h"
@@ -27,8 +26,8 @@ enum NetUIState {
 
 class PlayerGameplayMsg : public NetMessage {
 public:
-    PlayerGameplayMsg(User*, int, int, int, int);
-    virtual ~PlayerGameplayMsg(){}
+    PlayerGameplayMsg(User *, int, int, int, int);
+    virtual ~PlayerGameplayMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -46,8 +45,8 @@ public:
 
 class RestartGameMsg : public NetMessage {
 public:
-    RestartGameMsg(){}
-    virtual ~RestartGameMsg(){}
+    RestartGameMsg() {}
+    virtual ~RestartGameMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -63,7 +62,7 @@ class ResumeNoScoreGameMsg : public NetMessage {
 public:
     ResumeNoScoreGameMsg();
     ResumeNoScoreGameMsg(float);
-    virtual ~ResumeNoScoreGameMsg(){}
+    virtual ~ResumeNoScoreGameMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -78,7 +77,7 @@ public:
 class PlayerStatsMsg : public NetMessage {
 public:
     PlayerStatsMsg(User *, int, const Stats &);
-    virtual ~PlayerStatsMsg(){}
+    virtual ~PlayerStatsMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -94,8 +93,8 @@ public:
 
 class SetUserTrackTypeMsg : public NetMessage {
 public:
-    SetUserTrackTypeMsg(User*, String);
-    virtual ~SetUserTrackTypeMsg(){}
+    SetUserTrackTypeMsg(User *, String);
+    virtual ~SetUserTrackTypeMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -110,8 +109,8 @@ public:
 
 class SetUserDifficultyMsg : public NetMessage {
 public:
-    SetUserDifficultyMsg(User*, String);
-    virtual ~SetUserDifficultyMsg(){}
+    SetUserDifficultyMsg(User *, String);
+    virtual ~SetUserDifficultyMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -126,8 +125,8 @@ public:
 
 class SetlistSubmissionMsg : public NetMessage {
 public:
-    SetlistSubmissionMsg(const std::vector<int>&, int);
-    virtual ~SetlistSubmissionMsg(){}
+    SetlistSubmissionMsg(const std::vector<int> &, int);
+    virtual ~SetlistSubmissionMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -143,7 +142,7 @@ public:
 class TourMostStarsMsg : public NetMessage {
 public:
     TourMostStarsMsg(Symbol, int);
-    virtual ~TourMostStarsMsg(){}
+    virtual ~TourMostStarsMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -159,7 +158,7 @@ public:
 class TourPlayedMsg : public NetMessage {
 public:
     TourPlayedMsg(Symbol);
-    virtual ~TourPlayedMsg(){}
+    virtual ~TourPlayedMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -174,7 +173,7 @@ public:
 class AccomplishmentMsg : public NetMessage {
 public:
     AccomplishmentMsg(Symbol);
-    virtual ~AccomplishmentMsg(){}
+    virtual ~AccomplishmentMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -189,7 +188,7 @@ public:
 class AccomplishmentEarnedMsg : public NetMessage {
 public:
     AccomplishmentEarnedMsg(Symbol, const char *, Symbol);
-    virtual ~AccomplishmentEarnedMsg(){}
+    virtual ~AccomplishmentEarnedMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -206,7 +205,7 @@ public:
 class SetPartyShuffleModeMsg : public NetMessage {
 public:
     SetPartyShuffleModeMsg();
-    virtual ~SetPartyShuffleModeMsg(){}
+    virtual ~SetPartyShuffleModeMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -219,7 +218,7 @@ public:
 class TourHideShowFiltersMsg : public NetMessage {
 public:
     TourHideShowFiltersMsg(bool);
-    virtual ~TourHideShowFiltersMsg(){}
+    virtual ~TourHideShowFiltersMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -234,7 +233,7 @@ public:
 class SongResultsScrollMsg : public NetMessage {
 public:
     SongResultsScrollMsg(int, int);
-    virtual ~SongResultsScrollMsg(){}
+    virtual ~SongResultsScrollMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -249,8 +248,8 @@ public:
 
 class SetUpMicsMsg : public NetMessage {
 public:
-    SetUpMicsMsg(){}
-    virtual ~SetUpMicsMsg(){}
+    SetUpMicsMsg() {}
+    virtual ~SetUpMicsMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
@@ -263,5 +262,3 @@ public:
     bool mHasMic2;
     bool mHasMic3;
 };
-
-#endif // GAME_NETGAMEMSGS_H

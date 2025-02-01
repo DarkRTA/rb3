@@ -5,11 +5,11 @@
 
 class MoggClipMap : public Hmx::Object {
 public:
-    MoggClipMap(Hmx::Object*);
-    virtual ~MoggClipMap(){}
-    void myLoad(BinStream&);
+    MoggClipMap(Hmx::Object *);
+    virtual ~MoggClipMap() {}
+    void myLoad(BinStream &);
 
-    MoggClip* GetMoggClip() const { return mMoggClip; }
+    MoggClip *GetMoggClip() const { return mMoggClip; }
 
     static int sRev;
 
@@ -25,4 +25,4 @@ public:
     bool mIsStereo; // 0x34
 };
 
-BinStream& operator>>(BinStream&, MoggClipMap&);
+BinStream &operator>>(BinStream &, MoggClipMap &);

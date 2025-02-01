@@ -7,23 +7,22 @@
 #include "AccomplishmentManager.h"
 #include "system/ui/UIComponent.h"
 
-AssetProvider::AssetProvider(BandProfile* profile, AssetGender gender) : mProfile(profile), mGender(gender) {
+AssetProvider::AssetProvider(BandProfile *profile, AssetGender gender)
+    : mProfile(profile), mGender(gender) {
     MILO_ASSERT(mProfile, 0x1d);
     mAssets.push_back(none);
 }
 
-AssetProvider::~AssetProvider() {
-
-}
+AssetProvider::~AssetProvider() {}
 
 bool AssetProvider::SortAssetsByIndex(Symbol symbol1, Symbol symbol2) {
-    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
     MILO_ASSERT(pAssetMgr, 0x24);
 
-    Asset* pAsset1 = pAssetMgr->GetAsset(symbol1);
+    Asset *pAsset1 = pAssetMgr->GetAsset(symbol1);
     MILO_ASSERT(pAsset1, 0x30);
 
-    Asset* pAsset2 = pAssetMgr->GetAsset(symbol2);
+    Asset *pAsset2 = pAssetMgr->GetAsset(symbol2);
     MILO_ASSERT(pAsset2, 0x32);
 
     if (pAsset1->mIndex < pAsset2->mIndex) {
@@ -33,20 +32,24 @@ bool AssetProvider::SortAssetsByIndex(Symbol symbol1, Symbol symbol2) {
 }
 
 void AssetProvider::Update(AssetType, AssetBoutique) {
-    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
     MILO_ASSERT(pAssetMgr, 0x3d);
 
     std::vector<Symbol> symbols;
 
-    for (std::map<Symbol, Asset*>::const_iterator it = pAssetMgr->mAssets.begin(); it != pAssetMgr->mAssets.end(); it++) {
-        Asset* pAsset = it->second;
+    for (std::map<Symbol, Asset *>::const_iterator it = pAssetMgr->mAssets.begin();
+         it != pAssetMgr->mAssets.end();
+         it++) {
+        Asset *pAsset = it->second;
         MILO_ASSERT(pAsset, 0x46);
     }
 
     std::sort(symbols.begin(), symbols.end());
 }
 
-UIComponent::State AssetProvider::ComponentStateOverride(int param_1, int param_2, UIComponent::State param_3) const {
+UIComponent::State AssetProvider::ComponentStateOverride(
+    int param_1, int param_2, UIComponent::State param_3
+) const {
     Symbol s; // TODO: Get symbol from profile, don't know which method is being used
     // bool hasAsset = mProfile.mProfileAssets->HasAsset(s);
 
@@ -57,7 +60,7 @@ UIComponent::State AssetProvider::ComponentStateOverride(int param_1, int param_
     return param_3;
 }
 
-void AssetProvider::Text(int, int, UIListLabel* slot, UILabel* label) const {
+void AssetProvider::Text(int, int, UIListLabel *slot, UILabel *label) const {
     MILO_ASSERT(slot, 200);
     MILO_ASSERT(label, 0xc9);
 
@@ -65,18 +68,14 @@ void AssetProvider::Text(int, int, UIListLabel* slot, UILabel* label) const {
 
     // AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
     // MILO_ASSERT(pAssetMgr, 0xd0);
-
-
 }
 
-RndMat* AssetProvider::Mat(int, int, UIListMesh*) const {
+RndMat *AssetProvider::Mat(int, int, UIListMesh *) const {}
 
-}
-
-void AssetProvider::UpdateExtendedText(int, int i_iData, UILabel* label) const {
+void AssetProvider::UpdateExtendedText(int, int i_iData, UILabel *label) const {
     MILO_ASSERT(i_iData < NumData(), 0x12c);
 
-    AssetMgr* pAssetMgr = AssetMgr::GetAssetMgr();
+    AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
     MILO_ASSERT(pAssetMgr, 0x132);
 
     Symbol asset = label->Name();
@@ -86,14 +85,15 @@ void AssetProvider::UpdateExtendedText(int, int i_iData, UILabel* label) const {
         if (!hasAsset) {
             label->SetTextToken(gNullStr);
         } else {
-            Asset* pAsset = pAssetMgr->GetAsset(asset);
+            Asset *pAsset = pAssetMgr->GetAsset(asset);
             MILO_ASSERT(pAsset, 0x139);
             if (TheWiiRnd.mShowAssetName == '\0') {
                 // hasAsset = pAssetMgr->HasAsset();
                 if (!hasAsset) {
                     MILO_ASSERT(TheAccomplishmentMgr, 0x14b);
                 }
-                // TheAccomplishmentMgr->UpdateAssetHintLabel(pAsset->GetDescription(), label);
+                // TheAccomplishmentMgr->UpdateAssetHintLabel(pAsset->GetDescription(),
+                // label);
             }
         }
     } else {
@@ -110,9 +110,7 @@ Symbol AssetProvider::DataSymbol(int data) const {
     return mAssets[data];
 }
 
-int AssetProvider::NumData() const {
-    return mAssets.size();
-}
+int AssetProvider::NumData() const { return mAssets.size(); }
 
 bool AssetProvider::HasAsset(Symbol s) {
     for (size_t i = 0; i < mAssets.size(); i++) {

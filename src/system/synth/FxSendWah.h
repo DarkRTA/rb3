@@ -5,14 +5,14 @@
 class FxSendWah : public FxSend {
 public:
     FxSendWah();
-    virtual ~FxSendWah(){}
+    virtual ~FxSendWah() {}
     OBJ_CLASSNAME(FxSendWah);
     OBJ_SET_TYPE(FxSendWah);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void SetAttackSmoothing(float);
     void SetReleaseSmoothing(float);
@@ -24,9 +24,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(FxSendWah);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(FxSendWah)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(FxSendWah) }
 
     /** "amount of resonance (1-10)" */
     float mResonance; // 0x48
@@ -46,7 +44,8 @@ public:
     float mDump; // 0x68
     /** "Sync wah to song tempo?" */
     bool mTempoSync; // 0x6c
-    /** "Note value of delay". Sync type options: (sixteenth eighth dotted_eighth quarter dotted_quarter half whole) */
+    /** "Note value of delay". Sync type options: (sixteenth eighth dotted_eighth quarter
+     * dotted_quarter half whole) */
     Symbol mSyncType; // 0x70
     /** "Tempo for delay; can be driven by game code". Ranges from 20 to 300. */
     float mTempo; // 0x74

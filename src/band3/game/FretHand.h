@@ -1,5 +1,4 @@
-#ifndef GAME_FRETHAND_H
-#define GAME_FRETHAND_H
+#pragma once
 #include "types.h"
 
 #define kNumFingers 4
@@ -18,13 +17,11 @@ public:
     ~FretHand();
 
     void Reset();
-    void GetFinger(uint finger, int& fret, int& lowstr, int& highstr) const;
+    void GetFinger(uint finger, int &fret, int &lowstr, int &highstr) const;
     void SetFinger(uint finger, int fret, int lowstr, int highstr);
-    void SetFingers(const GameGem&);
+    void SetFingers(const GameGem &);
     int GetFret(int) const;
-    bool BarAll(const GameGem&);
+    bool BarAll(const GameGem &);
 
     FretFinger mFinger[4]; // 0x0, 0xc, 0x18, 0x24
 };
-
-#endif // GAME_FRETHAND_H

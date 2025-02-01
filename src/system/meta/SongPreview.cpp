@@ -7,23 +7,21 @@
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 
-SongPreview::SongPreview(const SongMgr& mgr) : mSongMgr(mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0),
-    unk34(0), mAttenuation(0.0f), mState(kIdle), mStartMs(0.0f), mEndMs(0.0f), mStartPreviewMs(0.0f), mEndPreviewMs(0.0f),
-    unk64(0), mPreviewRequestedMs(0.0f), unk70(0), unk71(0), unk72(0), mSecurePreview(0) {
+SongPreview::SongPreview(const SongMgr &mgr)
+    : mSongMgr(mgr), mStream(0), mFader(0), mMusicFader(0), mCrowdSingFader(0), unk34(0),
+      mAttenuation(0.0f), mState(kIdle), mStartMs(0.0f), mEndMs(0.0f),
+      mStartPreviewMs(0.0f), mEndPreviewMs(0.0f), unk64(0), mPreviewRequestedMs(0.0f),
+      unk70(0), unk71(0), unk72(0), mSecurePreview(0) {}
 
-}
+SongPreview::~SongPreview() { Terminate(); }
 
-SongPreview::~SongPreview(){
-    Terminate();
-}
-
-void SongPreview::Init(){
+void SongPreview::Init() {
     mSong = Symbol(0);
     mSongContent = Symbol(0);
     RELEASE(mStream);
     mState = kIdle;
     mRestart = true;
-    DataArray* cfg = SystemConfig("sound", "song_select");
+    DataArray *cfg = SystemConfig("sound", "song_select");
     cfg->FindData("loop_forever", mLoopForever, true);
     cfg->FindData("fade_time", mFadeTime, true);
     cfg->FindData("attenuation", mAttenuation, true);
@@ -34,7 +32,7 @@ void SongPreview::Init(){
     mCrowdSingFader->SetVal(-96.0f);
 }
 
-void SongPreview::Terminate(){
+void SongPreview::Terminate() {
     DetachFaders();
     mSong = Symbol(0);
     mSongContent = Symbol(0);
@@ -42,65 +40,40 @@ void SongPreview::Terminate(){
     RELEASE(mFader);
     RELEASE(mMusicFader);
     RELEASE(mCrowdSingFader);
-    if(unk72){
+    if (unk72) {
         TheContentMgr->UnregisterCallback(this, true);
         unk72 = 0;
     }
 }
 
-void SongPreview::Start(Symbol sym){
+void SongPreview::Start(Symbol sym) {
     MILO_ASSERT(mFader && mMusicFader && mCrowdSingFader, 0x65);
-    if(sym.Null()){
+    if (sym.Null()) {
         unk70 = false;
         unk64 = false;
         mPreviewRequestedMs = 0.0f;
     }
-    if(!sym.Null()){
-        if(!mSongMgr.HasSong(sym, true)) return;
-        SongMetadata* data = mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true));
-        if(data && !data->IsVersionOK()){
+    if (!sym.Null()) {
+        if (!mSongMgr.HasSong(sym, true))
+            return;
+        SongMetadata *data = mSongMgr.Data(mSongMgr.GetSongIDFromShortName(sym, true));
+        if (data && !data->IsVersionOK()) {
             sym = gNullStr;
         }
-        if(!unk72){
+        if (!unk72) {
             TheContentMgr->RegisterCallback(this, false);
             unk72 = true;
         }
         MILO_LOG("Preview: Requesting %s...\n", sym.Str());
     }
     mPreviewRequestedMs = TheTaskMgr.UISeconds();
-    if(unk64){
+    if (unk64) {
         unk6c = sym;
         unk70 = true;
-        if(unk64){
+        if (unk64) {
             mMusicFader->SetVal(0.0f);
             mCrowdSingFader->SetVal(-96.0f);
-            switch(mState){
-                case kIdle:
-                case kMountingSong:
-                    delete mStream;
-                    mStream = 0;
-                    mState = kIdle;
-                    break;
-                case kPreparingSong:
-                    mState = kDeletingSong;
-                    break;
-                case kPlayingSong:
-                    mFader->DoFade(-48.0f, mFadeTime);
-                    mState = kFadingOutSong;
-                    break;
-                default: break;
-            }
-            unk64 = false;
-        }
-    }
-    else {
-        unk70 = false;
-        unk64 = true;
-        mSong = sym;
-        mRestart = true;
-        mMusicFader->SetVal(0.0f);
-        mCrowdSingFader->SetVal(-96.0f);
-        switch(mState){
+            switch (mState) {
             case kIdle:
             case kMountingSong:
                 delete mStream;
@@ -114,127 +87,156 @@ void SongPreview::Start(Symbol sym){
                 mFader->DoFade(-48.0f, mFadeTime);
                 mState = kFadingOutSong;
                 break;
-            default: break;
+            default:
+                break;
+            }
+            unk64 = false;
+        }
+    } else {
+        unk70 = false;
+        unk64 = true;
+        mSong = sym;
+        mRestart = true;
+        mMusicFader->SetVal(0.0f);
+        mCrowdSingFader->SetVal(-96.0f);
+        switch (mState) {
+        case kIdle:
+        case kMountingSong:
+            delete mStream;
+            mStream = 0;
+            mState = kIdle;
+            break;
+        case kPreparingSong:
+            mState = kDeletingSong;
+            break;
+        case kPlayingSong:
+            mFader->DoFade(-48.0f, mFadeTime);
+            mState = kFadingOutSong;
+            break;
+        default:
+            break;
         }
     }
 }
 
-void SongPreview::ContentMounted(const char* contentName, const char* cc2){
+void SongPreview::ContentMounted(const char *contentName, const char *cc2) {
     MILO_ASSERT(contentName, 0xE9);
     Symbol sym = Symbol(contentName);
-    if(sym == mSongContent){
+    if (sym == mSongContent) {
         mSongContent = Symbol(0);
     }
 }
 
-void SongPreview::ContentFailed(const char* contentName){
+void SongPreview::ContentFailed(const char *contentName) {
     MILO_ASSERT(contentName, 0xF5);
     Symbol sym = Symbol(contentName);
-    if(sym == mSongContent){
+    if (sym == mSongContent) {
         mSong = Symbol(0);
         mSongContent = Symbol(0);
         mState = kIdle;
     }
 }
 
-void SongPreview::PreparePreview(){
-    if(TheTaskMgr.UISeconds() - mPreviewRequestedMs < 1.0f) return;
+void SongPreview::PreparePreview() {
+    if (TheTaskMgr.UISeconds() - mPreviewRequestedMs < 1.0f)
+        return;
     MILO_LOG("Preview: Preparing %s\n", mSong.mStr);
     float previewstart = 0.0f;
     float previewend = 15000.0f;
     float startms = mStartPreviewMs;
-    if(startms != 0 || mEndPreviewMs != 0){
+    if (startms != 0 || mEndPreviewMs != 0) {
         previewstart = startms;
         previewend = mEndPreviewMs;
-    }
-    else {
+    } else {
         int songid = mSongMgr.GetSongIDFromShortName(mSong, true);
         mSongMgr.Data(songid)->PreviewTimes(previewstart, previewend);
     }
     mStartMs = previewstart;
     mEndMs = previewend;
     PrepareSong(mSong);
-    if(!mLoopForever) mRestart = false;
+    if (!mLoopForever)
+        mRestart = false;
 }
 
-void SongPreview::Poll(){
-    if(unk70) Start(unk6c);
-    switch(mState){
-        case kIdle:
-            if(!mSong.Null() && mRestart){
-                const char* name = mSongMgr.ContentName(mSong, true);
-                if(name){
-                    mSongContent = MakeString("%s_song", name);
-                    WiiContent* content = TheWiiContentMgr.ContentOf(mSongContent);
-                    if(content && content->GetState() == 4){
-                        mSongContent = 0;
-                        unk71 = true;
-                    }
-                    else {
-                        unk71 = false;
-                        mSongContent = name;
-                        TheWiiContentMgr.UnmountContents(mSongContent);
-                        if(TheContentMgr->MountContent(mSongContent)){
-                            mSongContent = 0;
-                        }
-                    }
-                    mState = kMountingSong;
-                }
-                else {
+void SongPreview::Poll() {
+    if (unk70)
+        Start(unk6c);
+    switch (mState) {
+    case kIdle:
+        if (!mSong.Null() && mRestart) {
+            const char *name = mSongMgr.ContentName(mSong, true);
+            if (name) {
+                mSongContent = MakeString("%s_song", name);
+                WiiContent *content = TheWiiContentMgr.ContentOf(mSongContent);
+                if (content && content->GetState() == 4) {
+                    mSongContent = 0;
                     unk71 = true;
-                    PreparePreview();
+                } else {
+                    unk71 = false;
+                    mSongContent = name;
+                    TheWiiContentMgr.UnmountContents(mSongContent);
+                    if (TheContentMgr->MountContent(mSongContent)) {
+                        mSongContent = 0;
+                    }
                 }
+                mState = kMountingSong;
+            } else {
+                unk71 = true;
+                PreparePreview();
             }
-            break;
-        case kMountingSong: {
-            bool b = true;
-            if(!mSongContent.Null()){
-                if(!TheContentMgr->IsMounted(mSongContent)) b = false;
-            }
-            if(b) PreparePreview();
-            break;
         }
-        case kPreparingSong:
-            if(mStream->IsReady()){
-                mFader->SetVal(-48.0f);
-                mFader->DoFade(0.0f, mFadeTime);
-                mStream->Play();
-                mState = kPlayingSong;
-            }
-            break;
-        case kDeletingSong:
+        break;
+    case kMountingSong: {
+        bool b = true;
+        if (!mSongContent.Null()) {
+            if (!TheContentMgr->IsMounted(mSongContent))
+                b = false;
+        }
+        if (b)
+            PreparePreview();
+        break;
+    }
+    case kPreparingSong:
+        if (mStream->IsReady()) {
+            mFader->SetVal(-48.0f);
+            mFader->DoFade(0.0f, mFadeTime);
+            mStream->Play();
+            mState = kPlayingSong;
+        }
+        break;
+    case kDeletingSong:
+        delete mStream;
+        mStream = 0;
+        mState = kIdle;
+        break;
+    case kPlayingSong:
+        if (mStream->GetTime() >= mEndMs) {
+            mState = kFadingOutSong;
+            mFader->DoFade(-48.0f, mFadeTime);
+        }
+        break;
+    case kFadingOutSong:
+        if (!mFader->IsFading()) {
             delete mStream;
             mStream = 0;
             mState = kIdle;
-            break;
-        case kPlayingSong:
-            if(mStream->GetTime() >= mEndMs){
-                mState = kFadingOutSong;
-                mFader->DoFade(-48.0f, mFadeTime);
-            }
-            break;
-        case kFadingOutSong:
-            if(!mFader->IsFading()){
-                delete mStream;
-                mStream = 0;
-                mState = kIdle;
-            }
-            break;
-        default: break;
+        }
+        break;
+    default:
+        break;
     }
 }
 
-DataNode SongPreview::OnStart(DataArray* arr){
+DataNode SongPreview::OnStart(DataArray *arr) {
     mSecurePreview = false;
-    if(arr->Size() == 3){
+    if (arr->Size() == 3) {
         mStartPreviewMs = 0.0f;
         mEndPreviewMs = 0.0f;
         Start(arr->ForceSym(2));
-    }
-    else {
+    } else {
         mStartPreviewMs = arr->Float(3);
         mEndPreviewMs = arr->Float(4);
-        if(arr->Size() >= 6){
+        if (arr->Size() >= 6) {
             mSecurePreview = arr->Int(5);
         }
         mSong = Symbol(gNullStr);
@@ -243,72 +245,75 @@ DataNode SongPreview::OnStart(DataArray* arr){
     return DataNode(1);
 }
 
-void SongPreview::SetMusicVol(float f){
-    if(f < mMusicFader->GetTargetDb()){
+void SongPreview::SetMusicVol(float f) {
+    if (f < mMusicFader->GetTargetDb()) {
         mMusicFader->DoFade(f, 250.0f);
-    }
-    else mMusicFader->DoFade(f, 1000.0f);
+    } else
+        mMusicFader->DoFade(f, 1000.0f);
 }
 
-void SongPreview::SetCrowdSingVol(float f){
-    mCrowdSingFader->DoFade(f, 0.0f);
-}
+void SongPreview::SetCrowdSingVol(float f) { mCrowdSingFader->DoFade(f, 0.0f); }
 
-void SongPreview::DetachFader(Fader* fader){
-    if(mStream && fader){
-        for(int i = 0; i < unk34; i++){
+void SongPreview::DetachFader(Fader *fader) {
+    if (mStream && fader) {
+        for (int i = 0; i < unk34; i++) {
             mStream->ChannelFaders(i)->Remove(fader);
         }
     }
 }
 
-void SongPreview::DetachFaders(){
+void SongPreview::DetachFaders() {
     DetachFader(mMusicFader);
     DetachFader(mCrowdSingFader);
 }
 
 // fn_80517CFC
-void SongPreview::PrepareFaders(const SongInfo* info){
-    const std::vector<int>& crowdchans = info->GetCrowdChannels();
-    for(int i = 0; i < unk34; i++){
-        FaderGroup* grp = mStream->ChannelFaders(i);
-        if(std::find(crowdchans.begin(), crowdchans.end(), i) != crowdchans.end()) grp->Add(mCrowdSingFader);
-        else grp->Add(mMusicFader);
+void SongPreview::PrepareFaders(const SongInfo *info) {
+    const std::vector<int> &crowdchans = info->GetCrowdChannels();
+    for (int i = 0; i < unk34; i++) {
+        FaderGroup *grp = mStream->ChannelFaders(i);
+        if (std::find(crowdchans.begin(), crowdchans.end(), i) != crowdchans.end())
+            grp->Add(mCrowdSingFader);
+        else
+            grp->Add(mMusicFader);
     }
 }
 
 // fn_80517DC8
-void SongPreview::PrepareSong(Symbol s){
+void SongPreview::PrepareSong(Symbol s) {
     mState = kPreparingSong;
     RELEASE(mStream);
-    SongInfo* data = mSongMgr.SongAudioData(s);
-    const char* filename = data->GetBaseFileName();
-    if(!unk71){
+    SongInfo *data = mSongMgr.SongAudioData(s);
+    const char *filename = data->GetBaseFileName();
+    if (!unk71) {
         String str(filename);
-        if(str.find("dlc/") == 0){
+        if (str.find("dlc/") == 0) {
             str.erase(0xc, 5);
-            UIPanel* panel = ObjectDir::Main()->Find<UIPanel>("song_select_panel", false);
-            if(panel) panel->Handle(refresh_top_msg, false);
+            UIPanel *panel = ObjectDir::Main()->Find<UIPanel>("song_select_panel", false);
+            if (panel)
+                panel->Handle(refresh_top_msg, false);
         }
         str = str + "_prev";
         mStream = TheSynth->NewStream(str.c_str(), 0.0f, 0.0f, mSecurePreview);
-        if(mStream) mEndMs -= mStartMs;
-    }
-    else mStream = TheSynth->NewStream(filename, mStartMs, 0.0f, mSecurePreview);
+        if (mStream)
+            mEndMs -= mStartMs;
+    } else
+        mStream = TheSynth->NewStream(filename, mStartMs, 0.0f, mSecurePreview);
 
-    if(!mStream) mState = kIdle;
+    if (!mStream)
+        mState = kIdle;
     else {
-        const std::vector<float>& pans = data->GetPans();
-        const std::vector<float>& vols = data->GetVols();
+        const std::vector<float> &pans = data->GetPans();
+        const std::vector<float> &vols = data->GetVols();
         unk34 = pans.size();
-        for(int i = 0; i < unk34; i++){
+        for (int i = 0; i < unk34; i++) {
             mStream->SetVolume(i, vols[i]);
             mStream->SetPan(i, pans[i]);
         }
 
-        const TrackChannels* tracks = data->FindTrackChannel(kAudioTypeMulti);
-        if(tracks != 0){
-            for(int i = 0; i < tracks->mChannels.size(); i++){
+        const TrackChannels *tracks = data->FindTrackChannel(kAudioTypeMulti);
+        if (tracks != 0) {
+            for (int i = 0; i < tracks->mChannels.size(); i++) {
                 mStream->SetVolume(tracks->mChannels[i], -96.0f);
             }
         }

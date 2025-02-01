@@ -3,9 +3,9 @@
 
 class AppScoreDisplay : public ScoreDisplay {
 public:
-    AppScoreDisplay(){}
+    AppScoreDisplay() {}
     OBJ_CLASSNAME(ScoreDisplay);
     OBJ_SET_TYPE(AppScoreDisplay);
-    virtual ~AppScoreDisplay(){}
+    virtual ~AppScoreDisplay() {}
     virtual void UpdateDisplay();
 };

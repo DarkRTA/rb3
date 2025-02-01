@@ -14,13 +14,13 @@ class TrackWatcherImpl;
 
 class TrackWatcher {
 public:
-    TrackWatcher(int, const UserGuid&, int, Symbol, SongData*, TrackWatcherParent*, DataArray*);
+    TrackWatcher(int, const UserGuid &, int, Symbol, SongData *, TrackWatcherParent *, DataArray *);
     ~TrackWatcher();
     void SetImpl();
     void ReplaceImpl(Symbol);
     void RecalcGemList();
     void SetIsCurrentTrack(bool);
-    void AddSink(BeatMatchSink*);
+    void AddSink(BeatMatchSink *);
     void Poll(float);
     void Jump(float);
     void Restart();
@@ -39,17 +39,17 @@ public:
     void E3CheatIncSlop();
     void E3CheatDecSlop();
 
-    TrackWatcherImpl* mImpl; // 0x0
-    std::vector<BeatMatchSink*> mSinks; // 0x4
+    TrackWatcherImpl *mImpl; // 0x0
+    std::vector<BeatMatchSink *> mSinks; // 0x4
     int mTrack; // 0xc
     bool mIndependentSlots; // 0x10
     UserGuid mUserGuid; // 0x14
     int mPlayerSlot; // 0x24
     Symbol mControllerType; // 0x28
-    SongData* mSongData; // 0x2c
-    TrackWatcherParent* mParent; // 0x30
-    DataArray* mCfg; // 0x34
-    DataArray* mSongCfg; // 0x38
+    SongData *mSongData; // 0x2c
+    TrackWatcherParent *mParent; // 0x30
+    DataArray *mCfg; // 0x34
+    DataArray *mSongCfg; // 0x38
 };
 
 Symbol ControllerTypeToTrackWatcherType(Symbol);

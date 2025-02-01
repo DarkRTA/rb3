@@ -7,37 +7,40 @@
 
 INIT_REVS(RndMovie);
 
-RndMovie::RndMovie() : mFile(), mStream(0), mLoop(1), mTex(this, 0) {
-
-}
+RndMovie::RndMovie() : mFile(), mStream(0), mLoop(1), mTex(this, 0) {}
 
 SAVE_OBJ(RndMovie, 0x1F);
 
-void RndMovie::Load(BinStream& bs){
+void RndMovie::Load(BinStream &bs) {
     PreLoad(bs);
     PostLoad(bs);
 }
 
-void RndMovie::PreLoad(BinStream& bs){
+void RndMovie::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(8, 0);
-    if(gRev > 6) Hmx::Object::Load(bs);
+    if (gRev > 6)
+        Hmx::Object::Load(bs);
     RndAnimatable::Load(bs);
     bs >> mFile;
-    if(gRev > 3) bs >> mTex;
-    if(gRev > 4) bs >> mStream;
-    if(gRev > 7 && !mStream){
+    if (gRev > 3)
+        bs >> mTex;
+    if (gRev > 4)
+        bs >> mStream;
+    if (gRev > 7 && !mStream) {
         TheLoadMgr.AddLoader(mFile, kLoadFront);
     }
 }
 
-void RndMovie::PostLoad(BinStream& bs){
-    if(gRev > 5) bs >> mLoop;
-    else if(gRev == 5) mLoop = (mStream == 0);
+void RndMovie::PostLoad(BinStream &bs) {
+    if (gRev > 5)
+        bs >> mLoop;
+    else if (gRev == 5)
+        mLoop = (mStream == 0);
     SetFile(mFile, mStream);
 }
 
-void RndMovie::SetFile(const FilePath& fp, bool b){
+void RndMovie::SetFile(const FilePath &fp, bool b) {
     mFile = fp;
     mStream = b;
 }
@@ -52,16 +55,14 @@ BEGIN_COPYS(RndMovie)
     SetFile(t->mFile, t->mStream);
 END_COPYS
 
-void RndMovie::Replace(Hmx::Object* from, Hmx::Object* to){
+void RndMovie::Replace(Hmx::Object *from, Hmx::Object *to) {
     Hmx::Object::Replace(from, to);
-    if(mTex == from){
-        SetTex(dynamic_cast<RndTex*>(to));
+    if (mTex == from) {
+        SetTex(dynamic_cast<RndTex *>(to));
     }
 }
 
-void RndMovie::SetTex(RndTex* tex){
-    mTex = tex;
-}
+void RndMovie::SetTex(RndTex *tex) { mTex = tex; }
 
 BEGIN_HANDLERS(RndMovie)
     HANDLE_SUPERCLASS(RndAnimatable)
@@ -70,35 +71,35 @@ BEGIN_HANDLERS(RndMovie)
 END_HANDLERS
 
 BEGIN_PROPSYNCS(RndMovie)
-    if(sym == movie_file){
-        if(_op == kPropSet){
-            const char* str = _val.Str();
+    if (sym == movie_file) {
+        if (_op == kPropSet) {
+            const char *str = _val.Str();
             FilePath fp(str);
             SetFile(fp, mStream);
-        }
-        else {
-            if(_op == (PropOp)0x40) return false;
+        } else {
+            if (_op == (PropOp)0x40)
+                return false;
             _val = DataNode(mFile.FilePathRelativeToRoot());
         }
         return true;
     }
-    if(sym == stream){
-        if(_op == kPropSet){
+    if (sym == stream) {
+        if (_op == kPropSet) {
             SetFile(mFile, _val.Int() != 0);
-        }
-        else {
-            if(_op == (PropOp)0x40) return false;
+        } else {
+            if (_op == (PropOp)0x40)
+                return false;
             _val = DataNode(mStream);
         }
         return true;
     }
     SYNC_PROP(loop, mLoop)
-    if(sym == tex){
-        if(_op == kPropSet){
+    if (sym == tex) {
+        if (_op == kPropSet) {
             SetTex(_val.Obj<RndTex>());
-        }
-        else {
-            if(_op == (PropOp)0x40) return false;
+        } else {
+            if (_op == (PropOp)0x40)
+                return false;
             _val = DataNode(mTex);
         }
         return true;

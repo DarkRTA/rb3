@@ -6,7 +6,7 @@
 #include "utl/UTF8.h"
 #include "utl/Symbols.h"
 
-void BandSongMetadata::InitBandSongMetadata(){
+void BandSongMetadata::InitBandSongMetadata() {
     mTitle = 0;
     mArtist = 0;
     mAlbum = 0;
@@ -33,147 +33,154 @@ void BandSongMetadata::InitBandSongMetadata(){
     mHasAlbumArt = 0;
     mIsMasterRecording = 0;
     mIsTriFrame = 0;
-    for(int i = 0; i < 6; i++) mRealGuitarTuning[i] = 0;
-    for(int i = 0; i < 4; i++) mRealBassTuning[i] = 0;
+    for (int i = 0; i < 6; i++)
+        mRealGuitarTuning[i] = 0;
+    for (int i = 0; i < 4; i++)
+        mRealBassTuning[i] = 0;
     mHasDiscUpdate = 0;
 }
 
-BandSongMetadata::BandSongMetadata(BandSongMgr* mgr) : mSongMgr(mgr) {
+BandSongMetadata::BandSongMetadata(BandSongMgr *mgr) : mSongMgr(mgr) {
     InitBandSongMetadata();
 }
 
-BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, bool onDisc, BandSongMgr* mgr) : SongMetadata(main_arr, backup_arr, onDisc), mSongMgr(mgr) {
+BandSongMetadata::BandSongMetadata(
+    DataArray *main_arr, DataArray *backup_arr, bool onDisc, BandSongMgr *mgr
+)
+    : SongMetadata(main_arr, backup_arr, onDisc), mSongMgr(mgr) {
     InitBandSongMetadata();
-    DataArray* member_arr;
-    if(FIND_WITH_BACKUP(name)){
+    DataArray *member_arr;
+    if (FIND_WITH_BACKUP(name)) {
         mTitle = member_arr->Str(1);
     }
-    if(FIND_WITH_BACKUP(artist)){
+    if (FIND_WITH_BACKUP(artist)) {
         mArtist = member_arr->Str(1);
     }
-    if(FIND_WITH_BACKUP(album_name)){
+    if (FIND_WITH_BACKUP(album_name)) {
         mAlbum = member_arr->Str(1);
     }
-    if(FIND_WITH_BACKUP(album_track_number)){
+    if (FIND_WITH_BACKUP(album_track_number)) {
         mAlbumTrackNum = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(year_released)){
+    if (FIND_WITH_BACKUP(year_released)) {
         mDateReleased = DateTime(member_arr->Int(1), 1, 1, 0, 0, 0);
     }
-    if(FIND_WITH_BACKUP(year_recorded)){
+    if (FIND_WITH_BACKUP(year_recorded)) {
         mDateRecorded = DateTime(member_arr->Int(1), 1, 1, 0, 0, 0);
-    }
-    else mDateRecorded = mDateReleased;
-    if(FIND_WITH_BACKUP(genre)){
+    } else
+        mDateRecorded = mDateReleased;
+    if (FIND_WITH_BACKUP(genre)) {
         mGenre = member_arr->Sym(1);
     }
-    if(FIND_WITH_BACKUP(anim_tempo)){
+    if (FIND_WITH_BACKUP(anim_tempo)) {
         mAnimTempo = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(vocal_gender)){
+    if (FIND_WITH_BACKUP(vocal_gender)) {
         mVocalGender = member_arr->Sym(1);
     }
-    if(FIND_WITH_BACKUP(song_length)){
+    if (FIND_WITH_BACKUP(song_length)) {
         mLengthMs = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(alternate_path)){
+    if (FIND_WITH_BACKUP(alternate_path)) {
         mHasAlternatePath = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(base_points)){
+    if (FIND_WITH_BACKUP(base_points)) {
         mBasePoints = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(bonus)){
+    if (FIND_WITH_BACKUP(bonus)) {
         mIsBonus = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(fake)){
+    if (FIND_WITH_BACKUP(fake)) {
         bool ret = false;
-        DataNode& node = CONST_ARRAY(member_arr)->Node(1);
-        if(node.Type() == kDataInt){
-            if(CONST_ARRAY(member_arr)->Node(1).LiteralInt()) ret = true;
+        DataNode &node = CONST_ARRAY(member_arr)->Node(1);
+        if (node.Type() == kDataInt) {
+            if (CONST_ARRAY(member_arr)->Node(1).LiteralInt())
+                ret = true;
         }
         mIsFake = ret;
     }
-    if(FIND_WITH_BACKUP(tutorial)){
+    if (FIND_WITH_BACKUP(tutorial)) {
         mIsTutorial = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(mute_win_cues)){
+    if (FIND_WITH_BACKUP(mute_win_cues)) {
         mMuteWinCues = true;
     }
-    if(FIND_WITH_BACKUP(rank)){
-        for(int i = 1; i < member_arr->Size(); i++){
-            DataArray* arr = member_arr->Array(i);
+    if (FIND_WITH_BACKUP(rank)) {
+        for (int i = 1; i < member_arr->Size(); i++) {
+            DataArray *arr = member_arr->Array(i);
             mRanks[arr->Sym(0)] = arr->Float(1);
         }
     }
-    if(FIND_WITH_BACKUP(rating)){
+    if (FIND_WITH_BACKUP(rating)) {
         mRating = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(guide_pitch_volume)){
+    if (FIND_WITH_BACKUP(guide_pitch_volume)) {
         mGuidePitchVolume = member_arr->Float(1);
     }
-    if(FIND_WITH_BACKUP(vocal_tonic_note)){
+    if (FIND_WITH_BACKUP(vocal_tonic_note)) {
         mVocalTonicNote = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(song_key)){
+    if (FIND_WITH_BACKUP(song_key)) {
         mSongKey = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(song_tonality)){
+    if (FIND_WITH_BACKUP(song_tonality)) {
         mSongTonality = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(song_scroll_speed)){
+    if (FIND_WITH_BACKUP(song_scroll_speed)) {
         mSongScrollSpeed = member_arr->Float(1);
     }
-    if(FIND_WITH_BACKUP(tuning_offset_cents)){
+    if (FIND_WITH_BACKUP(tuning_offset_cents)) {
         mTuningOffsetCents = member_arr->Float(1);
     }
-    if(FIND_WITH_BACKUP(bank)){
+    if (FIND_WITH_BACKUP(bank)) {
         mVocalPercussionBank = member_arr->Str(1);
     }
-    if(FIND_WITH_BACKUP(drum_bank)){
+    if (FIND_WITH_BACKUP(drum_bank)) {
         mDrumKitBank = member_arr->Str(1);
     }
-    if(FIND_WITH_BACKUP(band_fail_cue)){
+    if (FIND_WITH_BACKUP(band_fail_cue)) {
         mBandFailCue = member_arr->Str(1);
     }
-    if(FIND_WITH_BACKUP(album_art)){
+    if (FIND_WITH_BACKUP(album_art)) {
         mHasAlbumArt = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(master)){
+    if (FIND_WITH_BACKUP(master)) {
         mIsMasterRecording = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(tri_frame)){
+    if (FIND_WITH_BACKUP(tri_frame)) {
         mIsTriFrame = member_arr->Int(1);
     }
-    if(FIND_WITH_BACKUP(real_guitar_tuning)){
-        for(int i = 0; i < 6; i++){
-            DataArray* arr = member_arr->Array(1);
+    if (FIND_WITH_BACKUP(real_guitar_tuning)) {
+        for (int i = 0; i < 6; i++) {
+            DataArray *arr = member_arr->Array(1);
             mRealGuitarTuning[i] = arr->Int(i);
         }
     }
-    if(FIND_WITH_BACKUP(real_bass_tuning)){
-        for(int i = 0; i < 4; i++){
-            DataArray* arr = member_arr->Array(1);
+    if (FIND_WITH_BACKUP(real_bass_tuning)) {
+        for (int i = 0; i < 4; i++) {
+            DataArray *arr = member_arr->Array(1);
             mRealBassTuning[i] = arr->Int(i);
         }
     }
-    if(FIND_WITH_BACKUP(extra_authoring)){
+    if (FIND_WITH_BACKUP(extra_authoring)) {
         mHasDiscUpdate = member_arr->Contains(disc_update);
     }
-    if(FIND_WITH_BACKUP(solo)){
-        DataArray* arr = member_arr->Array(1);
-        for(int i = 0; i < arr->Size(); i++){
+    if (FIND_WITH_BACKUP(solo)) {
+        DataArray *arr = member_arr->Array(1);
+        for (int i = 0; i < arr->Size(); i++) {
             Symbol solosym = arr->Sym(i);
-            if(solosym != vocals){
-                if(solosym == vocal_percussion) solosym = vocals;
+            if (solosym != vocals) {
+                if (solosym == vocal_percussion)
+                    solosym = vocals;
                 mSolos.push_back(solosym);
             }
         }
     }
     bool islatin1 = false;
-    if(FIND_WITH_BACKUP(encoding)){
+    if (FIND_WITH_BACKUP(encoding)) {
         islatin1 = member_arr->Sym(1) == latin1;
     }
-    if(islatin1){
+    if (islatin1) {
         char buf[0x100];
         ASCIItoUTF8(buf, 0x100, mTitle.c_str());
         mTitle = buf;
@@ -186,15 +193,15 @@ BandSongMetadata::BandSongMetadata(DataArray* main_arr, DataArray* backup_arr, b
 
 int BandSongMetadata::sBandSaveVer = 0x11; // put here to get this damn TU to link
 
-const char* BandSongMetadata::Title() const { return mTitle.c_str(); }
-const char* BandSongMetadata::Artist() const { return mArtist.c_str(); }
-const char* BandSongMetadata::Album() const { return mAlbum.c_str(); }
+const char *BandSongMetadata::Title() const { return mTitle.c_str(); }
+const char *BandSongMetadata::Artist() const { return mArtist.c_str(); }
+const char *BandSongMetadata::Album() const { return mAlbum.c_str(); }
 int BandSongMetadata::AlbumTrackNum() const { return mAlbumTrackNum; }
 Symbol BandSongMetadata::Genre() const { return mGenre; }
 int BandSongMetadata::LengthMs() const { return mLengthMs; }
 bool BandSongMetadata::HasAlternatePath() const { return mHasAlternatePath; }
 bool BandSongMetadata::MuteWinCues() const { return mMuteWinCues; }
-const std::map<Symbol, float>& BandSongMetadata::Ranks() const { return mRanks; }
+const std::map<Symbol, float> &BandSongMetadata::Ranks() const { return mRanks; }
 int BandSongMetadata::Rating() const { return mRating; }
 float BandSongMetadata::GuidePitchVolume() const { return mGuidePitchVolume; }
 int BandSongMetadata::VocalTonicNote() const { return mVocalTonicNote; }
@@ -213,15 +220,19 @@ bool BandSongMetadata::IsMasterRecording() const { return mIsMasterRecording; }
 Symbol BandSongMetadata::BandFailCue() const { return mBandFailCue; }
 
 int BandSongMetadata::RealGuitarTuning(int i) const {
-    SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
-    if(data) return data->RealGuitarTuning(i);
-    else return mRealGuitarTuning[i];
+    SongUpgradeData *data = mSongMgr->GetUpgradeData(ID());
+    if (data)
+        return data->RealGuitarTuning(i);
+    else
+        return mRealGuitarTuning[i];
 }
 
 int BandSongMetadata::RealBassTuning(int i) const {
-    SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
-    if(data) return data->RealBassTuning(i);
-    else return mRealBassTuning[i];
+    SongUpgradeData *data = mSongMgr->GetUpgradeData(ID());
+    if (data)
+        return data->RealBassTuning(i);
+    else
+        return mRealBassTuning[i];
 }
 
 Symbol BandSongMetadata::Decade() const {
@@ -231,29 +242,28 @@ Symbol BandSongMetadata::Decade() const {
 }
 
 bool BandSongMetadata::HasPart(Symbol s, bool b) const {
-    BandMachineMgr* mgr = TheSessionMgr ? TheSessionMgr->mMachineMgr : nullptr;
-    if(mgr && !b && !mgr->IsSongAllowedToHavePart(ID(), s)){
+    BandMachineMgr *mgr = TheSessionMgr ? TheSessionMgr->mMachineMgr : nullptr;
+    if (mgr && !b && !mgr->IsSongAllowedToHavePart(ID(), s)) {
         return false;
-    }
-    else {
-        if(s == real_guitar || s == real_bass){
-            SongUpgradeData* upgradeData = mSongMgr->GetUpgradeData(ID());
-            if(upgradeData){
+    } else {
+        if (s == real_guitar || s == real_bass) {
+            SongUpgradeData *upgradeData = mSongMgr->GetUpgradeData(ID());
+            if (upgradeData) {
                 return upgradeData->HasPart(s);
             }
         }
         std::map<Symbol, float>::const_iterator it = mRanks.find(s);
-        if(it != mRanks.end() && it->second > 0){
+        if (it != mRanks.end() && it->second > 0) {
             return true;
-        }
-        else return false;
+        } else
+            return false;
     }
 }
 
 float BandSongMetadata::Rank(Symbol s) const {
-    if(s == real_guitar || s == real_bass){
-        SongUpgradeData* data = mSongMgr->GetUpgradeData(ID());
-        if(data) {
+    if (s == real_guitar || s == real_bass) {
+        SongUpgradeData *data = mSongMgr->GetUpgradeData(ID());
+        if (data) {
             return data->Rank(s);
         }
     }
@@ -277,17 +287,17 @@ bool BandSongMetadata::IsRanked() const { return !mRanks.empty(); }
 bool BandSongMetadata::IsVersionOK() const {
     bool ret = false;
     u32 version = (mVersion & 0xffff);
-    if(version <= 30) { 
+    if (version <= 30) {
         ret = true;
-    }    
+    }
     return ret;
 }
 
 Symbol BandSongMetadata::LengthSym() const {
-    DataArray* cfg = SystemConfig(song_select, song_lengths);
-    for(int i = 1; i < cfg->Size(); i++){
-        DataArray* arr = cfg->Array(i);
-        if(arr->Size() == 1 || mLengthMs <= arr->Int(1)){
+    DataArray *cfg = SystemConfig(song_select, song_lengths);
+    for (int i = 1; i < cfg->Size(); i++) {
+        DataArray *arr = cfg->Array(i);
+        if (arr->Size() == 1 || mLengthMs <= arr->Int(1)) {
             return arr->Sym(0);
         }
     }
@@ -301,8 +311,10 @@ Symbol BandSongMetadata::RatingSym() const {
 
 Symbol BandSongMetadata::SourceSym() const {
     bool official_dlc = GameOrigin() == rb3_dlc || GameOrigin() == rb1_dlc;
-    if(official_dlc) return dlc;
-    else return GameOrigin() == ugc_plus ? ugc : GameOrigin();
+    if (official_dlc)
+        return dlc;
+    else
+        return GameOrigin() == ugc_plus ? ugc : GameOrigin();
 }
 
 Symbol BandSongMetadata::VocalPartsSym() const {
@@ -336,10 +348,14 @@ Symbol BandSongMetadata::HasKeysSym() const {
 }
 
 bool BandSongMetadata::HasSolo(Symbol s) const {
-    if(s == real_guitar) s = guitar;
-    else if(s == real_bass) s = bass;
-    else if(s == real_keys) s = keys;
-    else if(s == real_drum) s = drum;
+    if (s == real_guitar)
+        s = guitar;
+    else if (s == real_bass)
+        s = bass;
+    else if (s == real_keys)
+        s = keys;
+    else if (s == real_drum)
+        s = drum;
     return std::find(mSolos.begin(), mSolos.end(), s) != mSolos.end();
 }
 
@@ -351,16 +367,16 @@ bool BandSongMetadata::IsUGC() const {
     return GameOrigin() == ugc || GameOrigin() == ugc_plus;
 }
 
-const char* BandSongMetadata::MidiUpdate() const {
-    if(mHasDiscUpdate) return MakeString("./songs/updates/%s/%s_update.mid", mShortName, mShortName);
-    else return 0;
+const char *BandSongMetadata::MidiUpdate() const {
+    if (mHasDiscUpdate)
+        return MakeString("./songs/updates/%s/%s_update.mid", mShortName, mShortName);
+    else
+        return 0;
 }
 
-bool BandSongMetadata::IsDownload() const {
-    return GameOrigin() != rb3;
-}
+bool BandSongMetadata::IsDownload() const { return GameOrigin() != rb3; }
 
-void BandSongMetadata::Save(BinStream& bs){
+void BandSongMetadata::Save(BinStream &bs) {
     bs << sBandSaveVer;
     SongMetadata::Save(bs);
     bs << mTitle;
@@ -392,13 +408,15 @@ void BandSongMetadata::Save(BinStream& bs){
     bs << mIsTriFrame;
     bs << mAnimTempo;
     bs << mVocalGender;
-    for(int i = 0; i < 6; i++) bs << mRealGuitarTuning[i];
-    for(int i = 0; i < 4; i++) bs << mRealBassTuning[i];
+    for (int i = 0; i < 6; i++)
+        bs << mRealGuitarTuning[i];
+    for (int i = 0; i < 4; i++)
+        bs << mRealBassTuning[i];
     bs << mHasDiscUpdate;
     bs << mSolos;
 }
 
-void BandSongMetadata::Load(BinStream& bs){
+void BandSongMetadata::Load(BinStream &bs) {
     int rev;
     bs >> rev;
     SongMetadata::Load(bs);
@@ -409,7 +427,10 @@ void BandSongMetadata::Load(BinStream& bs){
     bs >> mDateRecorded;
     bs >> mDateReleased;
     bs >> mGenre;
-    if(rev < 0xD){ String s; bs >> s; }
+    if (rev < 0xD) {
+        String s;
+        bs >> s;
+    }
     bs >> mBasePoints;
     bs >> mIsBonus;
     bs >> mIsFake;
@@ -417,42 +438,59 @@ void BandSongMetadata::Load(BinStream& bs){
     bs >> mMuteWinCues;
     bs >> mRanks;
     bs >> mRating;
-    if(rev < 0xC){ short s; bs >> s; }
+    if (rev < 0xC) {
+        short s;
+        bs >> s;
+    }
     bs >> mGuidePitchVolume;
-    if(rev < 0xF){ String s; bs >> s; }
+    if (rev < 0xF) {
+        String s;
+        bs >> s;
+    }
     bs >> mSongScrollSpeed;
     bs >> mTuningOffsetCents;
     bs >> mVocalPercussionBank;
-    if(rev >= 9) bs >> mDrumKitBank;
-    if(rev >= 1) bs >> mVocalTonicNote;
-    if(rev >= 11){
+    if (rev >= 9)
+        bs >> mDrumKitBank;
+    if (rev >= 1)
+        bs >> mVocalTonicNote;
+    if (rev >= 11) {
         bs >> mSongKey;
         bs >> mSongTonality;
     }
-    if(rev - 2U <= 11){
+    if (rev - 2U <= 11) {
         std::vector<std::map<Symbol, String> > gross;
         bs >> gross;
     }
-    if(rev >= 3) bs >> mLengthMs;
-    if(rev >= 4){
+    if (rev >= 3)
+        bs >> mLengthMs;
+    if (rev >= 4) {
         bs >> mHasAlbumArt;
         bs >> mIsMasterRecording;
     }
-    if(rev >= 5){
+    if (rev >= 5) {
         bs >> mHasAlternatePath;
-        if(rev < 8){
-            bool b, c; bs >> b; bs >> c;
+        if (rev < 8) {
+            bool b, c;
+            bs >> b;
+            bs >> c;
         }
         bs >> mIsTriFrame;
     }
-    if(rev >= 6) bs >> mAnimTempo;
-    if(rev >= 16) bs >> mVocalGender;
-    if(rev >= 7){
-        for(int i = 0; i < 6; i++) bs >> mRealGuitarTuning[i];
-        for(int i = 0; i < 4; i++) bs >> mRealBassTuning[i];
+    if (rev >= 6)
+        bs >> mAnimTempo;
+    if (rev >= 16)
+        bs >> mVocalGender;
+    if (rev >= 7) {
+        for (int i = 0; i < 6; i++)
+            bs >> mRealGuitarTuning[i];
+        for (int i = 0; i < 4; i++)
+            bs >> mRealBassTuning[i];
     }
-    if(rev >= 10) bs >> mHasDiscUpdate;
-    if(rev >= 0x11) bs >> mSolos;
+    if (rev >= 10)
+        bs >> mHasDiscUpdate;
+    if (rev >= 0x11)
+        bs >> mSolos;
 }
 
 BEGIN_HANDLERS(BandSongMetadata)

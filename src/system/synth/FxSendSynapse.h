@@ -5,14 +5,14 @@
 class FxSendSynapse : public FxSend {
 public:
     FxSendSynapse();
-    virtual ~FxSendSynapse(){}
+    virtual ~FxSendSynapse() {}
     OBJ_CLASSNAME(FxSendSynapse);
     OBJ_SET_TYPE(FxSendSynapse);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void SetAttackSmoothing(float);
     void SetReleaseSmoothing(float);
@@ -24,9 +24,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(FxSendSynapse);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(FxSendSynapse)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(FxSendSynapse) }
 
     /** "amount of correction". Ranges from 0 to 1. */
     float mAmount; // 0x48

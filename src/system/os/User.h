@@ -12,25 +12,23 @@ class RemoteUser;
 class User : public Hmx::Object {
 public:
     User();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~User(){}
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~User() {}
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual void Reset();
-    virtual void SyncSave(BinStream&, unsigned int) const;
+    virtual void SyncSave(BinStream &, unsigned int) const;
     virtual bool IsLocal() const = 0;
-    virtual LocalUser* GetLocalUser() = 0;
-    virtual const LocalUser* GetLocalUser() const = 0;
-    virtual RemoteUser* GetRemoteUser() = 0;
-    virtual const RemoteUser* GetRemoteUser() const = 0;
-    virtual const char* UserName() const = 0;
+    virtual LocalUser *GetLocalUser() = 0;
+    virtual const LocalUser *GetLocalUser() const = 0;
+    virtual RemoteUser *GetRemoteUser() = 0;
+    virtual const RemoteUser *GetRemoteUser() const = 0;
+    virtual const char *UserName() const = 0;
 
     unsigned int GetMachineID() const { return mMachineID; }
-    void SetUserGuid(const UserGuid&);
-    bool ComesBefore(const User* u){
-        return (mUserGuid < u->mUserGuid);
-    }
+    void SetUserGuid(const UserGuid &);
+    bool ComesBefore(const User *u) { return (mUserGuid < u->mUserGuid); }
 
-    OnlineID* mOnlineID;
+    OnlineID *mOnlineID;
     UserGuid mUserGuid;
     unsigned int mMachineID;
 };
@@ -38,8 +36,8 @@ public:
 class LocalUser : public virtual User {
 public:
     LocalUser();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~LocalUser(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~LocalUser() {}
     virtual int GetPadNum() const;
     virtual int GetPadType() const;
     virtual bool IsJoypadConnected() const;
@@ -48,12 +46,12 @@ public:
     virtual bool IsSignedIn() const;
     virtual bool IsSignedInOnline() const;
     virtual bool CanSaveData() const;
-    virtual const char* UserName() const;
+    virtual const char *UserName() const;
     virtual bool IsLocal() const;
-    virtual LocalUser* GetLocalUser();
-    virtual const LocalUser* GetLocalUser() const;
-    virtual RemoteUser* GetRemoteUser();
-    virtual const RemoteUser* GetRemoteUser() const;
+    virtual LocalUser *GetLocalUser();
+    virtual const LocalUser *GetLocalUser() const;
+    virtual RemoteUser *GetRemoteUser();
+    virtual const RemoteUser *GetRemoteUser() const;
 
     void UpdateOnlineID();
 
@@ -63,14 +61,14 @@ public:
 class RemoteUser : public virtual User {
 public:
     RemoteUser();
-    virtual ~RemoteUser(){}
+    virtual ~RemoteUser() {}
     virtual bool IsLocal() const;
-    virtual LocalUser* GetLocalUser();
-    virtual const LocalUser* GetLocalUser() const;
-    virtual RemoteUser* GetRemoteUser();
-    virtual const RemoteUser* GetRemoteUser() const;
-    virtual const char* UserName() const;
-    virtual void SyncLoad(BinStream&, unsigned int);
+    virtual LocalUser *GetLocalUser();
+    virtual const LocalUser *GetLocalUser() const;
+    virtual RemoteUser *GetRemoteUser();
+    virtual const RemoteUser *GetRemoteUser() const;
+    virtual const char *UserName() const;
+    virtual void SyncLoad(BinStream &, unsigned int);
 
     class String mUserName;
 };

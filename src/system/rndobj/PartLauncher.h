@@ -9,26 +9,24 @@ public:
     RndPartLauncher();
     OBJ_CLASSNAME(PartLauncher);
     OBJ_SET_TYPE(PartLauncher);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
-    virtual ~RndPartLauncher(){}
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual ~RndPartLauncher() {}
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     void LaunchParticles();
     void SetBit(unsigned int, bool);
     void CopyPropsFromPart();
-    bool CheckPartBit(int bit){
-        return mPartOverride->mask >> bit;
-    }
+    bool CheckPartBit(int bit) { return mPartOverride->mask >> bit; }
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndPartLauncher)
-    static void Init(){ REGISTER_OBJ_FACTORY(RndPartLauncher) }
+    static void Init() { REGISTER_OBJ_FACTORY(RndPartLauncher) }
 
     ObjPtr<RndParticleSys, ObjectDir> mPart; // 0x8
     ObjPtr<RndTransformable, ObjectDir> mTrans; // 0x14
@@ -36,7 +34,7 @@ public:
     int mNumParts; // 0x2c
     Vector2 mEmitRate; // 0x30
     float mEmitCount; // 0x38
-    PartOverride* mPartOverride; // 0x3c
+    PartOverride *mPartOverride; // 0x3c
 };
 
 #endif

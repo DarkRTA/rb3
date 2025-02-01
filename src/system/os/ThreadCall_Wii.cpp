@@ -18,9 +18,7 @@ namespace {
     void *MyThreadFunc(void *arg);
 }
 
-void ThreadCallPreInit() {
-    gMainThreadID = OSGetCurrentThread();
-}
+void ThreadCallPreInit() { gMainThreadID = OSGetCurrentThread(); }
 
 void ThreadCallInit() {
     gCurCall = 0;
@@ -44,9 +42,7 @@ void ThreadCallTerminate() {
     OSResumeThread(&gThread);
 }
 
-inline void AdvanceIdx(int& idx){
-    idx = (idx + 1) % 12;
-}
+inline void AdvanceIdx(int &idx) { idx = (idx + 1) % 12; }
 
 void ThreadCall(int (*Func)(void), void (*Callback)(int)) {
     ThreadCallData &data = gData[gFreeCall];
@@ -54,7 +50,7 @@ void ThreadCall(int (*Func)(void), void (*Callback)(int)) {
     data.mType = kTCDT_Func;
     data.mFunc = Func;
     data.mCallback = Callback;
-    data.mClass = NULL;    
+    data.mClass = NULL;
     AdvanceIdx(gFreeCall);
     OSResumeThread(&gThread);
 }
@@ -71,25 +67,25 @@ void ThreadCall(ThreadCallback *CB) {
 }
 
 void ThreadCallPoll() {
-    if(gCallDone){
+    if (gCallDone) {
         ThreadCallData &data = gData[gCurCall];
-        if(data.mType){
+        if (data.mType) {
             gCallDone = false;
             AdvanceIdx(gCurCall);
             ThreadCallDataType oldType = data.mType;
             data.mType = kTCDT_None;
-            switch(oldType){
-                case kTCDT_Func:
-                    data.mCallback(data.mArg);
-                    break;
-                case kTCDT_Class:
-                    data.mClass->ThreadDone(data.mArg);
-                    break;
-                default:
-                    MILO_ASSERT(false, 0x8D);
-                    break;
+            switch (oldType) {
+            case kTCDT_Func:
+                data.mCallback(data.mArg);
+                break;
+            case kTCDT_Class:
+                data.mClass->ThreadDone(data.mArg);
+                break;
+            default:
+                MILO_ASSERT(false, 0x8D);
+                break;
             }
-            if(gData[gCurCall].mType != kTCDT_None){
+            if (gData[gCurCall].mType != kTCDT_None) {
                 OSResumeThread(&gThread);
             }
         }
@@ -103,16 +99,16 @@ namespace {
             MILO_ASSERT(data.mType != kTCDT_None, 165);
 
             switch (data.mType) {
-                case kTCDT_Func:
-                    data.mArg = data.mFunc();
-                    gCallDone = true;
-                    break;
-                case kTCDT_Class:
-                    data.mArg = data.mClass->ThreadStart();
-                    gCallDone = true;
-                    break;
-                default:
-                    MILO_ASSERT(false, 180);
+            case kTCDT_Func:
+                data.mArg = data.mFunc();
+                gCallDone = true;
+                break;
+            case kTCDT_Class:
+                data.mArg = data.mClass->ThreadStart();
+                gCallDone = true;
+                break;
+            default:
+                MILO_ASSERT(false, 180);
             }
             OSSuspendThread(&gThread);
         }

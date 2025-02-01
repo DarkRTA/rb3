@@ -28,7 +28,7 @@ enum JoinState {
 
 class PotentialUserEntry {
 public:
-    LocalBandUser* mUser; // 0x0
+    LocalBandUser *mUser; // 0x0
     JoinState mJoinState; // 0x4
 };
 
@@ -40,16 +40,16 @@ enum OvershellOverrideFlow {
 
 class OvershellSlot : public Hmx::Object {
 public:
-    OvershellSlot(int, OvershellPanel*, OvershellDir*, BandUserMgr*, SessionMgr*);
+    OvershellSlot(int, OvershellPanel *, OvershellDir *, BandUserMgr *, SessionMgr *);
     virtual ~OvershellSlot();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual void SetTypeDef(DataArray*);
-    virtual class ObjectDir* DataDir();
+    virtual DataNode Handle(DataArray *, bool);
+    virtual void SetTypeDef(DataArray *);
+    virtual class ObjectDir *DataDir();
 
     void Enter();
     void Poll();
     int GetSlotNum();
-    PanelDir* GetPanelDir();
+    PanelDir *GetPanelDir();
     bool IsHidden() const;
     bool IsLeavingOptions() const;
     Symbol GetCurrentView() const;
@@ -57,10 +57,10 @@ public:
     void ClearPotentialUsers();
     void AddPotentialUser(PotentialUserEntry);
     int NumPotentialUsers() const;
-    bool LookupUserInJoinList(const LocalBandUser*, JoinState*);
+    bool LookupUserInJoinList(const LocalBandUser *, JoinState *);
     bool IsValidControllerType(ControllerType);
-    BandUser* GetUser() const;
-    OvershellSlotState* GetState();
+    BandUser *GetUser() const;
+    OvershellSlotState *GetState();
     void ShowState(OvershellSlotStateID);
     void LeaveOptions();
     bool InGame() const;
@@ -134,7 +134,7 @@ public:
     void SetOverrideType(OvershellOverrideFlow, bool);
     void UpdateState();
     void UpdateView();
-    void CheckViewOverride(Symbol, bool, Symbol&);
+    void CheckViewOverride(Symbol, bool, Symbol &);
     void UpdateMuteUsersList();
     void UpdateKickUsersList();
     void UpdateProfilesList();
@@ -156,40 +156,41 @@ public:
     bool ConfirmSwapUserProfile();
     void AttemptToggleAutoVocals();
     void ConfirmChooseDiff();
-    void RenameCharacter(const char*);
+    void RenameCharacter(const char *);
     void DeleteCharacter();
     bool CanEditCharacter(int) const;
     bool IsWiiProfileFull() const;
     bool IsWiiProfileDeleteQueueFull() const;
-    const char* GetWiiProfileListSelectedName() const;
-    bool SwapUserProfile(LocalBandUser*);
+    const char *GetWiiProfileListSelectedName() const;
+    bool SwapUserProfile(LocalBandUser *);
     void AddValidController(ControllerType);
     void AddAutoVocalsValidController(ControllerType);
     void ToggleWiiSpeak();
-    Hmx::Object* GetUserWiiProfile(); // TODO: change the return type once this is implemented
+    Hmx::Object *GetUserWiiProfile(); // TODO: change the return type once this is
+                                      // implemented
 
-    DataNode OnMsg(const AddLocalUserResultMsg&);
-    DataNode OnMsg(const LocalUserLeftMsg&);
-    DataNode OnMsg(const RockCentralOpCompleteMsg&);
-    DataNode OnMsg(const UIComponentScrollMsg&);
-    DataNode OnMsg(const UIComponentSelectMsg&);
-    DataNode OnMsg(const VirtualKeyboardResultMsg&);
-    DataNode OnMsg(const ButtonDownMsg&);
-    DataNode OnMsg(const ButtonUpMsg&);
-    DataNode OnMsg(const UserLoginMsg&);
+    DataNode OnMsg(const AddLocalUserResultMsg &);
+    DataNode OnMsg(const LocalUserLeftMsg &);
+    DataNode OnMsg(const RockCentralOpCompleteMsg &);
+    DataNode OnMsg(const UIComponentScrollMsg &);
+    DataNode OnMsg(const UIComponentSelectMsg &);
+    DataNode OnMsg(const VirtualKeyboardResultMsg &);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnMsg(const ButtonUpMsg &);
+    DataNode OnMsg(const UserLoginMsg &);
 
-    OvershellSlotStateMgr* mStateMgr; // 0x1c
-    OvershellSlotState* mState; // 0x20
+    OvershellSlotStateMgr *mStateMgr; // 0x1c
+    OvershellSlotState *mState; // 0x20
     OvershellSlotStateID mOverrideFlowReturnState; // 0x24
     int unk28; // 0x28 - OvershellSlotStateID
-    BandLabel* mUserNameLabel; // 0x2c
-    OvershellPanel* mOvershell; // 0x30
-    BandUserMgr* mBandUserMgr; // 0x34
-    SessionMgr* mSessionMgr; // 0x38
+    BandLabel *mUserNameLabel; // 0x2c
+    OvershellPanel *mOvershell; // 0x30
+    BandUserMgr *mBandUserMgr; // 0x34
+    SessionMgr *mSessionMgr; // 0x38
     int mSlotNum; // 0x3c
     std::vector<ControllerType> unk40;
     std::vector<ControllerType> unk48;
-    OvershellDir* mOvershellDir; // 0x50
+    OvershellDir *mOvershellDir; // 0x50
     bool mAutohideEnabled; // 0x54
     bool mIsLeavingOptions; // 0x55
     Symbol mCurrentView; // 0x58
@@ -200,14 +201,14 @@ public:
     DataResultList mLinkingCodeResultList; // 0x68
     bool unk80;
     bool unk81;
-    TourCharLocal* mCharForEdit; // 0x84 - TourCharLocal*
+    TourCharLocal *mCharForEdit; // 0x84 - TourCharLocal*
     unsigned int mCymbalConfiguration; // 0x88
-    PassiveMessageQueue* mMessageQueue; // 0x8c
+    PassiveMessageQueue *mMessageQueue; // 0x8c
     OvershellOverrideFlow mSlotOverrideFlow; // 0x90
-    CharProvider* mCharProvider; // 0x94
-    SessionUsersProvider* mKickUsersProvider; // 0x98
-    SessionUsersProvider* mMuteUsersProvider; // 0x9c
-    OvershellProfileProvider* mSwappableProfilesProvider; // 0xa0
-    OvershellPartSelectProvider* mPartSelectProvider; // 0xa4
-    CymbalSelectionProvider* mCymbalProvider; // 0xa8
+    CharProvider *mCharProvider; // 0x94
+    SessionUsersProvider *mKickUsersProvider; // 0x98
+    SessionUsersProvider *mMuteUsersProvider; // 0x9c
+    OvershellProfileProvider *mSwappableProfilesProvider; // 0xa0
+    OvershellPartSelectProvider *mPartSelectProvider; // 0xa4
+    CymbalSelectionProvider *mCymbalProvider; // 0xa8
 };

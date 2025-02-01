@@ -4,45 +4,45 @@
 
 INIT_REVS(BandStarDisplay);
 
-BandStarDisplay::BandStarDisplay() : mNumStars(0), mStars(this), mStarSweepAnims(this), mStarFullTriggers(this), mStarGoldTriggers(this), mStarOffsetAnim(this, 0), mEarnStarSfx(this, 0), mEarnSpadeSfx(this, 0), mStarType("normal") {
+BandStarDisplay::BandStarDisplay()
+    : mNumStars(0), mStars(this), mStarSweepAnims(this), mStarFullTriggers(this),
+      mStarGoldTriggers(this), mStarOffsetAnim(this, 0), mEarnStarSfx(this, 0),
+      mEarnSpadeSfx(this, 0), mStarType("normal") {}
 
-}
+BandStarDisplay::~BandStarDisplay() {}
 
-BandStarDisplay::~BandStarDisplay(){
-
-}
-
-void BandStarDisplay::SetNumStars(float f, bool b){
+void BandStarDisplay::SetNumStars(float f, bool b) {
     SetupStars();
-    if(f > 0){
+    if (f > 0) {
         float min = Min<float>(f, mStars.size() + 1);
-        if(min < mNumStars) ResetStars();
+        if (min < mNumStars)
+            ResetStars();
         // more...
     }
 }
 
-void BandStarDisplay::SyncObjects(){
+void BandStarDisplay::SyncObjects() {
     RndDir::SyncObjects();
     Reset();
 }
 
-void BandStarDisplay::Reset(){ ResetStars(); }
+void BandStarDisplay::Reset() { ResetStars(); }
 
-void BandStarDisplay::SetupStars(){
-    if(mStars.empty()){
+void BandStarDisplay::SetupStars() {
+    if (mStars.empty()) {
         mStarSweepAnims.clear();
         mStarFullTriggers.clear();
-        for(int i = 0; i < 5; i++){
-            RndDir* stardir = Find<RndDir>(MakeString("star%d", i), true);
+        for (int i = 0; i < 5; i++) {
+            RndDir *stardir = Find<RndDir>(MakeString("star%d", i), true);
             mStars.push_back(ObjPtr<RndDir, ObjectDir>(this, stardir));
 
-            RndAnimatable* anim = stardir->Find<RndAnimatable>("sweep.mnm", true);
+            RndAnimatable *anim = stardir->Find<RndAnimatable>("sweep.mnm", true);
             mStarSweepAnims.push_back(ObjPtr<RndAnimatable, ObjectDir>(this, anim));
 
-            EventTrigger* fulltrig = stardir->Find<EventTrigger>("full.trig", true);
+            EventTrigger *fulltrig = stardir->Find<EventTrigger>("full.trig", true);
             mStarFullTriggers.push_back(ObjPtr<EventTrigger, ObjectDir>(this, fulltrig));
 
-            EventTrigger* goldtrig = stardir->Find<EventTrigger>("gold.trig", true);
+            EventTrigger *goldtrig = stardir->Find<EventTrigger>("gold.trig", true);
             mStarGoldTriggers.push_back(ObjPtr<EventTrigger, ObjectDir>(this, goldtrig));
         }
         mStarOffsetAnim = Find<RndAnimatable>("stars_offset.tnm", true);
@@ -52,25 +52,29 @@ void BandStarDisplay::SetupStars(){
     }
 }
 
-void BandStarDisplay::ResetStars(){
+void BandStarDisplay::ResetStars() {
     SetupStars();
-    for(int i = 0; i < mStars.size(); i++){
-        RndDir* star = mStars[i];
+    for (int i = 0; i < mStars.size(); i++) {
+        RndDir *star = mStars[i];
         star->Find<EventTrigger>("reset.trig", true)->Trigger();
-        if(i > 0) star->SetShowing(false);
+        if (i > 0)
+            star->SetShowing(false);
     }
     mStarOffsetAnim->SetFrame(0, 1);
     mNumStars = 0;
 }
 
-void BandStarDisplay::SetStarType(Symbol s, bool b){
-    if(s == mStarType && !b) return;
+void BandStarDisplay::SetStarType(Symbol s, bool b) {
+    if (s == mStarType && !b)
+        return;
     float frame = -1.0f;
-    if(s == normal) frame = 0;
-    else if(s == tour) frame = 1;
-    if(frame != -1.0f){
+    if (s == normal)
+        frame = 0;
+    else if (s == tour)
+        frame = 1;
+    if (frame != -1.0f) {
         mStarType = s;
-        for(int i = 0; i < mStars.size(); i++){
+        for (int i = 0; i < mStars.size(); i++) {
             mStars[i]->Find<RndAnimatable>("config.anim", true)->SetFrame(frame, 1.0f);
         }
     }
@@ -85,21 +89,24 @@ BEGIN_COPYS(BandStarDisplay)
     COPY_SUPERCLASS(RndDir)
 END_COPYS
 
-void BandStarDisplay::PreLoad(BinStream& bs){
+void BandStarDisplay::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(2, 0);
-    if(gRev == 1){
-        if(IsProxy()) bs >> mStarType;
+    if (gRev == 1) {
+        if (IsProxy())
+            bs >> mStarType;
         else {
-            Symbol s; bs >> s;
+            Symbol s;
+            bs >> s;
         }
     }
-    if(gRev >= 2 && IsProxy()) bs >> mStarType;
+    if (gRev >= 2 && IsProxy())
+        bs >> mStarType;
     PushRev(packRevs(gAltRev, gRev), this);
     RndDir::PreLoad(bs);
 }
 
-void BandStarDisplay::PostLoad(BinStream& bs){
+void BandStarDisplay::PostLoad(BinStream &bs) {
     RndDir::PostLoad(bs);
     int revs = PopRev(this);
     gRev = getHmxRev(revs);

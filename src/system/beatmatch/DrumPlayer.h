@@ -6,7 +6,7 @@
 /** Controls sample playback for freestyle drums. */
 class DrumPlayer {
 public:
-    DrumPlayer(SongInfo&);
+    DrumPlayer(SongInfo &);
     ~DrumPlayer();
     void Play(int, float);
 

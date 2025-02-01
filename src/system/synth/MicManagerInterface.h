@@ -9,9 +9,9 @@ public:
 
 class MicManagerInterface {
 public:
-    MicManagerInterface(){}
-    virtual ~MicManagerInterface(){}
+    MicManagerInterface() {}
+    virtual ~MicManagerInterface() {}
     virtual void HandleMicsChanged() = 0;
     virtual void SetPlayback(bool) = 0;
-    virtual float GetEnergyForMic(const MicClientID&) = 0;
+    virtual float GetEnergyForMic(const MicClientID &) = 0;
 };

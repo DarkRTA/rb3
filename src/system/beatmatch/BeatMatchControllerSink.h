@@ -12,20 +12,20 @@ enum GemHitFlags {
 
 class BeatMatchControllerSink {
 public:
-    BeatMatchControllerSink(){}
-    virtual ~BeatMatchControllerSink(){}
-    virtual bool Swing(int, bool, bool, bool, bool, GemHitFlags){ return false; }
-    virtual void ReleaseSwing(){}
-    virtual void NonStrumSwing(int, bool, bool){}
-    virtual float MercurySwitch(float f){ return f; }
-    virtual void ForceMercurySwitch(bool){}
-    virtual void FretButtonDown(int, int){}
-    virtual void FretButtonUp(int){}
-    virtual void RGFretButtonDown(int){}
-    virtual void SetController(class BeatMatchController*){}
-    virtual void Sweep(unsigned char){}
-    virtual void NoteOn(int){}
-    virtual void NoteOff(int){}
-    virtual void PlayNote(int){}
-    virtual void OutOfRangeSwing(){}
+    BeatMatchControllerSink() {}
+    virtual ~BeatMatchControllerSink() {}
+    virtual bool Swing(int, bool, bool, bool, bool, GemHitFlags) { return false; }
+    virtual void ReleaseSwing() {}
+    virtual void NonStrumSwing(int, bool, bool) {}
+    virtual float MercurySwitch(float f) { return f; }
+    virtual void ForceMercurySwitch(bool) {}
+    virtual void FretButtonDown(int, int) {}
+    virtual void FretButtonUp(int) {}
+    virtual void RGFretButtonDown(int) {}
+    virtual void SetController(class BeatMatchController *) {}
+    virtual void Sweep(unsigned char) {}
+    virtual void NoteOn(int) {}
+    virtual void NoteOff(int) {}
+    virtual void PlayNote(int) {}
+    virtual void OutOfRangeSwing() {}
 };

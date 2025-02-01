@@ -10,12 +10,12 @@ public:
     void Generate();
     void Clear();
     bool IsNull() const;
-    bool IsNull() { return (mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0); }
-    bool operator==(const HxGuid&) const;
-
-    bool operator!=(const HxGuid& guid) const {
-        return !(*this == guid);
+    bool IsNull() {
+        return (mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0);
     }
+    bool operator==(const HxGuid &) const;
+
+    bool operator!=(const HxGuid &guid) const { return !(*this == guid); }
 
     // HxGuid& operator=(const HxGuid& u){
     //     mData[0] = u.mData[0];
@@ -25,20 +25,20 @@ public:
     //     return *this;
     // }
 
-    bool operator<(const HxGuid&) const;
+    bool operator<(const HxGuid &) const;
     int Chunk32(int) const;
-    const char* ToString() const;
+    const char *ToString() const;
     static int SaveSize();
 
     int mData[4];
 };
 
-BinStream& operator<<(BinStream&, const HxGuid&);
-BinStream& operator>>(BinStream&, HxGuid&);
+BinStream &operator<<(BinStream &, const HxGuid &);
+BinStream &operator>>(BinStream &, HxGuid &);
 
 class UserGuid : public HxGuid {
 public:
-    UserGuid(){}
+    UserGuid() {}
     // UserGuid& operator=(const UserGuid& u){
     //     mData[0] = u.mData[0];
     //     mData[1] = u.mData[1];
@@ -52,8 +52,6 @@ public:
 
 extern UserGuid gNullUserGuid;
 
-inline bool UserGuid::Null() const {
-    return *this == gNullUserGuid;
-}
+inline bool UserGuid::Null() const { return *this == gNullUserGuid; }
 
 #endif

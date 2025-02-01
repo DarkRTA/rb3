@@ -19,29 +19,32 @@
 
 #include "decomp.h"
 
-const char* kAssertStr = "File: %s Line: %d Error: %s\n";
+const char *kAssertStr = "File: %s Line: %d Error: %s\n";
 Debug TheDebug;
 jmp_buf TheDebugJump;
 DebugNotifier TheDebugNotifier;
 DebugFailer TheDebugFailer;
 
-int* gpDbgFrameID;
+int *gpDbgFrameID;
 std::vector<String> gNotifies;
 
 const GXColor DebugTextColor = { 255, 255, 255, 255 };
 const GXColor DebugBGColor = { 0x80, 0, 0, 255 };
 
 int DbgGetFrameID() {
-    if (gpDbgFrameID) return *gpDbgFrameID;
-    else return 0;
+    if (gpDbgFrameID)
+        return *gpDbgFrameID;
+    else
+        return 0;
 }
 
-void* Debug::SetModalCallback(ModalCallbackFunc* func){
-    if(mNoModal) return 0;
-    ModalCallbackFunc* oldFunc = mModalCallback;
+void *Debug::SetModalCallback(ModalCallbackFunc *func) {
+    if (mNoModal)
+        return 0;
+    ModalCallbackFunc *oldFunc = mModalCallback;
     mModalCallback = func;
-    if(!gNotifies.empty()){
-        for(int i = 0; i < gNotifies.size(); i++){
+    if (!gNotifies.empty()) {
+        for (int i = 0; i < gNotifies.size(); i++) {
             MILO_WARN("%s", gNotifies[i].c_str());
         }
         gNotifies.clear();
@@ -49,105 +52,114 @@ void* Debug::SetModalCallback(ModalCallbackFunc* func){
     return oldFunc;
 }
 
-void Debug::Init(){
+void Debug::Init() {
     mNoTry = OptionBool("no_try", false);
-    const char* logStr = OptionStr("log", 0);
-    if(logStr) StartLog(logStr, true);
-    if(OptionBool("no_modal", false)){
+    const char *logStr = OptionStr("log", 0);
+    if (logStr)
+        StartLog(logStr, true);
+    if (OptionBool("no_modal", false)) {
         SetModalCallback(0);
         mNoModal = true;
     }
-    if(OptionBool("no_notify", false)){
+    if (OptionBool("no_notify", false)) {
         SetDisabled(true);
     }
-    const char* logStr2 = OptionStr("log", 0);
-    if(logStr2) StartLog(logStr2, true);
+    const char *logStr2 = OptionStr("log", 0);
+    if (logStr2)
+        StartLog(logStr2, true);
 }
 
-void Debug::Poll(){
+void Debug::Poll() {
     MILO_ASSERT(MainThread(), 0xC5);
-    if(mTry != 0){
+    if (mTry != 0) {
         int tmp = mTry;
         mTry = 0;
         MILO_FAIL("TRY conditional not exited %d", tmp);
     }
-    if(mFailThreadMsg) Fail(mFailThreadMsg);
+    if (mFailThreadMsg)
+        Fail(mFailThreadMsg);
 }
 
-static void DebugModal(bool& fail, char* msg, bool wait){
-    if(fail) strcat(msg, "\n\n-- Program ended --\n");
+static void DebugModal(bool &fail, char *msg, bool wait) {
+    if (fail)
+        strcat(msg, "\n\n-- Program ended --\n");
     else {
         String str(msg);
         gNotifies.push_back(str);
     }
-    #ifdef MILO_DEBUG
+#ifdef MILO_DEBUG
     TheDebug << MakeString("%s\n", msg);
-    #endif
-    if(wait && fail){
+#endif
+    if (wait && fail) {
         OSFatal(DebugTextColor, DebugBGColor, msg);
     }
 }
 
-void Debug::SetTry(bool b){
+void Debug::SetTry(bool b) {
     MILO_ASSERT(MainThread(), 0x117);
-    if(!mNoTry){
-        if(b){
+    if (!mNoTry) {
+        if (b) {
             mTry++;
-        }
-        else mTry--;
+        } else
+            mTry--;
     }
 }
 
-void Debug::SetDisabled(bool b){
-    mNoDebug = b;
-}
+void Debug::SetDisabled(bool b) { mNoDebug = b; }
 
-void Debug::Notify(const char* msg){
-    if(!mNoDebug){
-        if(!MainThread())
+void Debug::Notify(const char *msg) {
+    if (!mNoDebug) {
+        if (!MainThread())
             TheDebug << MakeString("THREAD-NOTIFY not called in MainThread: %s\n", msg);
-        else TheDebug << MakeString("NOTIFY: %s\n", msg);
+        else
+            TheDebug << MakeString("NOTIFY: %s\n", msg);
     }
 }
 
 #pragma push
 #pragma pool_data off
-void Debug::Fail(const char* msg){
+void Debug::Fail(const char *msg) {
     static int x = MemFindHeap("main");
     MemPushHeap(x);
-    if(mNoDebug) MemPopHeap();
+    if (mNoDebug)
+        MemPopHeap();
     else {
-        if(!MainThread()){
+        if (!MainThread()) {
             CaptureStackTrace(0x32, mFailThreadStack);
             mFailThreadMsg = msg;
             TheDebug << MakeString("THREAD-FAIL: %s\n", msg);
             do {
                 Timer::Sleep(200);
                 PlatformDebugBreak();
-            } while(true);
+            } while (true);
         }
-        if(mTry != 0){
+        if (mTry != 0) {
             mTry--;
             longjmp(&TheDebugJump, (int)msg);
         }
-        if(mFailing) MemPopHeap();
+        if (mFailing)
+            MemPopHeap();
         else {
             mFailing = true;
-            for(std::list<ExitCallbackFunc*>::iterator it = mFailCallbacks.begin(); it != mFailCallbacks.end(); it++){
+            for (std::list<ExitCallbackFunc *>::iterator it = mFailCallbacks.begin();
+                 it != mFailCallbacks.end();
+                 it++) {
                 (*it)();
             }
             mFailCallbacks.clear();
             bool fail = true;
             Modal(fail, msg);
-            if(!fail) mFailing = false;
-            else PlatformDebugBreak();
+            if (!fail)
+                mFailing = false;
+            else
+                PlatformDebugBreak();
             MemPopHeap();
         }
     }
 }
 #pragma pop
 
-void Debug::Modal(bool& fail, const char* msg) {
+void Debug::Modal(bool &fail, const char *msg) {
     char modalMsg[4096];
     strcpy(modalMsg, msg);
 
@@ -189,20 +201,28 @@ void Debug::Modal(bool& fail, const char* msg) {
                 config = "<unknown>";
             }
 
-            strcat(modalMsg, MakeString("\n\nConsoleName: %s   %s   Plat: %s   ",
-                NetworkSocket::GetHostName(),
-                version,
-                PlatformSymbol(TheLoadMgr.GetPlatform())
-            ));
-            strcat(modalMsg, MakeString("\nLang: %s   SystemConfig: %s",
-                SystemLanguage(),
-                config
-            ));
-            strcat(modalMsg, MakeString("\nUptime: %.2f hrs   UsingCD: %s   SDK: %s",
-                SystemMs() * (1 / 3600000.0),
-                UsingCD() ? "true" : "false",
-                sdk
-            ));
+            strcat(
+                modalMsg,
+                MakeString(
+                    "\n\nConsoleName: %s   %s   Plat: %s   ",
+                    NetworkSocket::GetHostName(),
+                    version,
+                    PlatformSymbol(TheLoadMgr.GetPlatform())
+                )
+            );
+            strcat(
+                modalMsg,
+                MakeString("\nLang: %s   SystemConfig: %s", SystemLanguage(), config)
+            );
+            strcat(
+                modalMsg,
+                MakeString(
+                    "\nUptime: %.2f hrs   UsingCD: %s   SDK: %s",
+                    SystemMs() * (1 / 3600000.0),
+                    UsingCD() ? "true" : "false",
+                    sdk
+                )
+            );
 
             DataAppendStackTrace(dataCallstack);
             strncat(modalMsg, dataCallstack, sizeof(dataCallstack));
@@ -217,11 +237,16 @@ void Debug::Modal(bool& fail, const char* msg) {
         }
 
         if (UsingCD()) {
-            SendDataPoint("debug/fail",
-                "msg", shortMsg,
-                "callstack", callstack,
-                "dataCallstack", dataCallstack,
-                "cheatsMsg", cheatsMsg
+            SendDataPoint(
+                "debug/fail",
+                "msg",
+                shortMsg,
+                "callstack",
+                callstack,
+                "dataCallstack",
+                dataCallstack,
+                "cheatsMsg",
+                cheatsMsg
             );
         }
     }
@@ -229,7 +254,7 @@ void Debug::Modal(bool& fail, const char* msg) {
     if (mModalCallback) {
         mModalCallback(fail, modalMsg, true);
     } else {
-        if (fail)  {
+        if (fail) {
             TheDebug << MakeString("FAIL: %s\n", modalMsg);
         } else {
             if (!mNoDebug) {
@@ -248,24 +273,27 @@ void Debug::Modal(bool& fail, const char* msg) {
 
 void Debug::Exit(int status, bool actually_exit) {
     mExiting = true;
-    for(std::list<ExitCallbackFunc*>::iterator it = mExitCallbacks.begin(); it != mExitCallbacks.end(); it++){
+    for (std::list<ExitCallbackFunc *>::iterator it = mExitCallbacks.begin();
+         it != mExitCallbacks.end();
+         it++) {
         (*it)();
     }
     mExitCallbacks.clear();
     TheDebug << MakeString("APP EXITED, EXIT CODE %d\n", status);
     StopLog();
     HolmesClientTerminate();
-    if (actually_exit) exit(status);
+    if (actually_exit)
+        exit(status);
 }
 
-void Debug::RemoveExitCallback(ExitCallbackFunc* func){
-    if(!mExiting){
-        ExitCallbackFunc* toRemove = func;
+void Debug::RemoveExitCallback(ExitCallbackFunc *func) {
+    if (!mExiting) {
+        ExitCallbackFunc *toRemove = func;
         mExitCallbacks.remove(toRemove);
     }
 }
 
-void Debug::Print(const char* msg) {
+void Debug::Print(const char *msg) {
     AutoSlowFrame asf("Debug::Print");
 
     if (mLog && !mLog->mFile.Fail()) {
@@ -285,7 +313,7 @@ void Debug::Print(const char* msg) {
 
     char msgChunk[256];
     size_t msglen = strlen(msg);
-    const char* msgEnd = msg + msglen;
+    const char *msgEnd = msg + msglen;
     for (; msg + ARRAY_LENGTH(msgChunk) < msgEnd; msg += ARRAY_LENGTH(msgChunk)) {
         strncpy(msgChunk, msg, ARRAY_LENGTH(msgChunk));
         msgChunk[ARRAY_LENGTH(msgChunk) - 1] = 0;
@@ -294,38 +322,41 @@ void Debug::Print(const char* msg) {
     OSReport("%s", msg);
 }
 
-void Debug::StartLog(const char* file, bool always_flush){
-    #ifdef MILO_DEBUG
+void Debug::StartLog(const char *file, bool always_flush) {
+#ifdef MILO_DEBUG
     delete mLog;
     mLog = 0;
     mLog = new TextFileStream(file, false);
     mAlwaysFlush = always_flush;
-    if(mLog->mFile.Fail()){
+    if (mLog->mFile.Fail()) {
         MILO_WARN("Couldn't open log %s", file);
         delete mLog;
         mLog = 0;
     }
-    #endif
+#endif
 }
 
-void Debug::StopLog(){
-    #ifdef MILO_DEBUG
+void Debug::StopLog() {
+#ifdef MILO_DEBUG
     delete mLog;
     mLog = 0;
-    #endif
+#endif
 }
 
-Debug::Debug() : mNoDebug(0), mFailing(0), mExiting(0), mNoTry(0), mNoModal(0), mTry(0), mLog(0), mReflect(0), mModalCallback(DebugModal), mFailThreadMsg(0), mNotifyThreadMsg(0) {
+Debug::Debug()
+    : mNoDebug(0), mFailing(0), mExiting(0), mNoTry(0), mNoModal(0), mTry(0), mLog(0),
+      mReflect(0), mModalCallback(DebugModal), mFailThreadMsg(0), mNotifyThreadMsg(0) {}
 
-}
-
-Debug::~Debug(){
-    StopLog();
-}
+Debug::~Debug() { StopLog(); }
 
 // Declared in stlport/_vector.h since it's not relevant anywhere else
 void std_vec_range_assert(size_t value, size_t max, const char *func) {
     if (value > (max / 4)) {
-        MILO_FAIL("std::vector::%s: index range exceeded (0x%08x > 0x%08x)\n", func, value, (max / 4));
+        MILO_FAIL(
+            "std::vector::%s: index range exceeded (0x%08x > 0x%08x)\n",
+            func,
+            value,
+            (max / 4)
+        );
     }
 }

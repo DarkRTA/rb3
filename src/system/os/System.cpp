@@ -24,11 +24,11 @@
 #include "utl/Locale.h"
 #include "utl/Spew.h"
 
-const char* gNullStr = "";
+const char *gNullStr = "";
 
 Symbol gSystemLanguage;
-DataArray* gSystemConfig;
-DataArray* gSystemTitles;
+DataArray *gSystemConfig;
+DataArray *gSystemTitles;
 
 int gUsingCD;
 GfxMode gGfxMode;
@@ -38,11 +38,11 @@ float gSystemFrac;
 Timer gSystemTimer;
 bool gNetUseTimedSleep;
 
-std::vector<char*> TheSystemArgs;
-const char* gHostFile;
+std::vector<char *> TheSystemArgs;
+const char *gHostFile;
 
-unsigned char* g_pRSOReserveBuf;
-unsigned char* g_pDefaultRSOBuf;
+unsigned char *g_pRSOReserveBuf;
+unsigned char *g_pDefaultRSOBuf;
 
 DECOMP_FORCEACTIVE(System, "_unresolved func.\n", "gen/main_%s.hdr")
 
@@ -53,7 +53,11 @@ namespace {
     bool CheckForArchive() {
         SetUsingCD(true);
         FileStat stat;
-        if (FileGetStat(MakeString("gen/main_%s.hdr", PlatformSymbol(TheLoadMgr.GetPlatform())), &stat) < 0) {
+        if (FileGetStat(
+                MakeString("gen/main_%s.hdr", PlatformSymbol(TheLoadMgr.GetPlatform())),
+                &stat
+            )
+            < 0) {
             SetUsingCD(false);
         }
     }
@@ -69,30 +73,22 @@ void SetGfxMode(GfxMode mode) {
     DataVariable("gfx_mode") = DataNode((int)mode);
 }
 
-GfxMode GetGfxMode(){ return gGfxMode; }
+GfxMode GetGfxMode() { return gGfxMode; }
 
-DataNode OnSystemLanguage(DataArray* da){
-    return DataNode(gSystemLanguage);
-}
+DataNode OnSystemLanguage(DataArray *da) { return DataNode(gSystemLanguage); }
 
-DataNode OnSystemExec(DataArray* da){
-    return DataNode(SystemExec(da->Str(1)));
-}
+DataNode OnSystemExec(DataArray *da) { return DataNode(SystemExec(da->Str(1))); }
 
-DataNode OnUsingCD(DataArray* da){
-    return DataNode(gUsingCD != 0);
-}
+DataNode OnUsingCD(DataArray *da) { return DataNode(gUsingCD != 0); }
 
-DataNode OnSupportedLanguages(DataArray* da){
+DataNode OnSupportedLanguages(DataArray *da) {
     return DataNode(SupportedLanguages(false), kDataArray);
 }
 
-DataNode OnSystemMs(DataArray* da){
-    return DataNode(SystemMs());
-}
+DataNode OnSystemMs(DataArray *da) { return DataNode(SystemMs()); }
 
-DataNode OnSwitchSystemLanguage(DataArray* da){
-    DataArray* languages = SupportedLanguages(true);
+DataNode OnSwitchSystemLanguage(DataArray *da) {
+    DataArray *languages = SupportedLanguages(true);
 
     int i;
     for (i = 0; i < languages->Size(); i++) {
@@ -106,7 +102,12 @@ DataNode OnSwitchSystemLanguage(DataArray* da){
     return DataNode(1);
 }
 
-DECOMP_FORCEACTIVE(System, "LanguageInit called, but region has not been initialized", "language", "system")
+DECOMP_FORCEACTIVE(
+    System,
+    "LanguageInit called, but region has not been initialized",
+    "language",
+    "system"
+)
 
 void LanguageInit() {
     if (ThePlatformMgr.GetRegion() == kRegionNone) {
@@ -114,10 +115,10 @@ void LanguageInit() {
     }
 
     // TODO: SystemConfig inlines here; retail confirms its usage
-    DataArray* languageConfig = SystemConfig("system", "language");
+    DataArray *languageConfig = SystemConfig("system", "language");
     Symbol language = GetSystemLanguage("eng");
 
-    DataArray* remap = languageConfig->FindArray("remap", false);
+    DataArray *remap = languageConfig->FindArray("remap", false);
     if (remap != NULL) {
         remap->FindData(language, language, false);
     }
@@ -127,7 +128,7 @@ void LanguageInit() {
         language = force;
     }
 
-    const char* languageOption = OptionStr("lang", NULL);
+    const char *languageOption = OptionStr("lang", NULL);
     if (languageOption != NULL) {
         language = languageOption;
     }
@@ -140,35 +141,34 @@ void LanguageInit() {
     SetSystemLanguage(language, false);
 }
 
-Symbol PlatformSymbol(Platform pform){
-    static Symbol sym[6] = {
-        gNullStr, gNullStr, "xbox", "pc", "ps3", "wii"
-    };
+Symbol PlatformSymbol(Platform pform) {
+    static Symbol sym[6] = { gNullStr, gNullStr, "xbox", "pc", "ps3", "wii" };
     return sym[pform];
 }
 
-bool PlatformLittleEndian(Platform p){
+bool PlatformLittleEndian(Platform p) {
     MILO_ASSERT(p != kPlatformNone, 0x135);
     bool ret = false;
-    if(p == kPlatformPC || p == kPlatformNone) ret = true;
+    if (p == kPlatformPC || p == kPlatformNone)
+        ret = true;
     return ret;
 }
 
-Platform ConsolePlatform(){ return kPlatformWii; }
+Platform ConsolePlatform() { return kPlatformWii; }
 
 bool gReadingSystemConfig;
 
-DataArray* ReadSystemConfig(const char* path) {
+DataArray *ReadSystemConfig(const char *path) {
     gReadingSystemConfig = true;
-    DataArray* config = DataReadFile(path, true);
+    DataArray *config = DataReadFile(path, true);
     gReadingSystemConfig = false;
     return config;
 }
 
-void InitSystem(const char*);
+void InitSystem(const char *);
 
-void PreInitSystem(const char* path) {
-    Archive* archive = TheArchive;
+void PreInitSystem(const char *path) {
+    Archive *archive = TheArchive;
     bool usingCD = gUsingCD != 0;
 
     if (gHostConfig) {
@@ -179,12 +179,12 @@ void PreInitSystem(const char* path) {
     DataArrayPtr root(1);
 
     DataSetMacro("HX_WII", root.mData);
-    const char* macro;
+    const char *macro;
     while ((macro = OptionStr("define", NULL)) != NULL) {
         DataSetMacro(macro, root.mData);
     }
 
-    const char* config = OptionStr("config", NULL);
+    const char *config = OptionStr("config", NULL);
     if (config != NULL && !gHasPreconfig) {
         path = config;
     }
@@ -194,7 +194,7 @@ void PreInitSystem(const char* path) {
     MILO_ASSERT(gSystemConfig, 0x1AC);
     DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
 
-    DataArray* mem = gSystemConfig->FindArray("mem", true);
+    DataArray *mem = gSystemConfig->FindArray("mem", true);
 
     SetUsingCD(usingCD);
     TheArchive = archive;
@@ -215,27 +215,29 @@ void PreInitSystem(const char* path) {
     }
 }
 
-void StripEditorData(){
+void StripEditorData() {
     Symbol editor("editor");
     Symbol types("types");
-    DataArray* objectsCfg = SystemConfig("objects");
-    for(int i = 1; i < objectsCfg->Size(); i++){
-        DataArray* objectsArr = objectsCfg->Array(i);
-        DataArray* objEditorArr = objectsArr->FindArray(editor, false);
-        if(objEditorArr != 0) objEditorArr->Resize(1);
-        DataArray* typesArr = objectsArr->FindArray(types, false);
-        if(typesArr != 0){
-            for(int j = 1; j < typesArr->Size(); j++){
-                DataArray* typesEditorArr = typesArr->Array(j)->FindArray(editor, false);
-                if(typesEditorArr != 0) typesEditorArr->Resize(1);
+    DataArray *objectsCfg = SystemConfig("objects");
+    for (int i = 1; i < objectsCfg->Size(); i++) {
+        DataArray *objectsArr = objectsCfg->Array(i);
+        DataArray *objEditorArr = objectsArr->FindArray(editor, false);
+        if (objEditorArr != 0)
+            objEditorArr->Resize(1);
+        DataArray *typesArr = objectsArr->FindArray(types, false);
+        if (typesArr != 0) {
+            for (int j = 1; j < typesArr->Size(); j++) {
+                DataArray *typesEditorArr = typesArr->Array(j)->FindArray(editor, false);
+                if (typesEditorArr != 0)
+                    typesEditorArr->Resize(1);
             }
         }
     }
 }
 
-void InitSystem(const char* path) {
+void InitSystem(const char *path) {
     if (!gPreconfigOverride && path != NULL) {
-        Archive* archive = TheArchive;
+        Archive *archive = TheArchive;
         bool usingCD = gUsingCD != 0;
 
         if (gHostConfig) {
@@ -243,7 +245,7 @@ void InitSystem(const char* path) {
             TheArchive = NULL;
         }
 
-        DataArray* systemConfig = ReadSystemConfig(path);
+        DataArray *systemConfig = ReadSystemConfig(path);
         MILO_ASSERT(systemConfig, 0x22C);
         DataMergeTags(systemConfig, gSystemConfig);
         DataReplaceTags(systemConfig, gSystemConfig);
@@ -287,10 +289,7 @@ void SystemTerminate() {
     TerminateMakeString();
 }
 
-
-void SystemPreInit(const char* cc){
-    CheckForArchive();
-}
+void SystemPreInit(const char *cc) { CheckForArchive(); }
 
 int SystemMs() {
     gSystemTimer.Restart();
@@ -301,57 +300,55 @@ int SystemMs() {
     return gSystemMs;
 }
 
-bool UsingCD(){
-    return gUsingCD != 0;
-}
+bool UsingCD() { return gUsingCD != 0; }
 
-void SetUsingCD(bool b){
-    gUsingCD = b;
-}
+void SetUsingCD(bool b) { gUsingCD = b; }
 
-DataArray* SystemConfig(){
-    return gSystemConfig;
-}
+DataArray *SystemConfig() { return gSystemConfig; }
 
-static DataArray* GetSystemConfigWith3Syms(Symbol s1, Symbol s2, Symbol s3){
+static DataArray *GetSystemConfigWith3Syms(Symbol s1, Symbol s2, Symbol s3) {
     return SystemConfig(s1, s2, s3);
 }
 
 #pragma push
 #pragma force_active on
-inline DataArray* SystemConfig(Symbol s){
-    return gSystemConfig->FindArray(s, true);
-}
+inline DataArray *SystemConfig(Symbol s) { return gSystemConfig->FindArray(s, true); }
 
-inline DataArray* SystemConfig(Symbol s1, Symbol s2){
+inline DataArray *SystemConfig(Symbol s1, Symbol s2) {
     return gSystemConfig->FindArray(s1, true)->FindArray(s2, true);
 }
-inline DataArray* SystemConfig(Symbol s1, Symbol s2, Symbol s3){
+inline DataArray *SystemConfig(Symbol s1, Symbol s2, Symbol s3) {
     return gSystemConfig->FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
 }
 #pragma pop
 
-DataArray* SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4){
-    return gSystemConfig->FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true)->FindArray(s4, true);
+DataArray *SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4) {
+    return gSystemConfig->FindArray(s1, true)
+        ->FindArray(s2, true)
+        ->FindArray(s3, true)
+        ->FindArray(s4, true);
 }
 
-DataArray* SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4, Symbol s5){
-    return gSystemConfig->FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true)->FindArray(s4, true)->FindArray(s5, true);
+DataArray *SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4, Symbol s5) {
+    return gSystemConfig->FindArray(s1, true)
+        ->FindArray(s2, true)
+        ->FindArray(s3, true)
+        ->FindArray(s4, true)
+        ->FindArray(s5, true);
 }
 
-Symbol SystemLanguage(){
-    return gSystemLanguage;
-}
+Symbol SystemLanguage() { return gSystemLanguage; }
 
-DataArray* SupportedLanguages(bool b){
+DataArray *SupportedLanguages(bool b) {
     static Symbol system("system");
     return SystemConfig(system, language, b ? cheat_supported : supported)->Array(1);
 }
 
-bool IsSupportedLanguage(Symbol s, bool b){
-    DataArray* languages = SupportedLanguages(b);
-    for(int i = 0; i < languages->Size(); i++){
-        if(languages->Sym(i) == s) return true;
+bool IsSupportedLanguage(Symbol s, bool b) {
+    DataArray *languages = SupportedLanguages(b);
+    for (int i = 0; i < languages->Size(); i++) {
+        if (languages->Sym(i) == s)
+            return true;
     }
     return false;
 }

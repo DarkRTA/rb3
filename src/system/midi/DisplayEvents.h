@@ -1,4 +1,4 @@
 #pragma once
 #include "midi/DataEvent.h"
 
-float DisplayEvents(DataEventList*, float, float);
+float DisplayEvents(DataEventList *, float, float);

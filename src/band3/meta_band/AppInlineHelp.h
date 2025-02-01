@@ -9,17 +9,17 @@ public:
     AppInlineHelp();
     OBJ_CLASSNAME(AppInlineHelp)
     OBJ_SET_TYPE(AppInlineHelp)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~AppInlineHelp(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~AppInlineHelp() {}
     virtual void Enter();
     virtual void Exit();
     virtual void UpdateIconTypes(bool);
 
-    void SetOverrideUser(LocalBandUser*);
+    void SetOverrideUser(LocalBandUser *);
 
-    DataNode OnMsg(const InputStatusChangedMsg&);
-    DataNode OnMsg(const LocalUserLeftMsg&);
-    DataNode OnMsg(const AddLocalUserResultMsg&);
+    DataNode OnMsg(const InputStatusChangedMsg &);
+    DataNode OnMsg(const LocalUserLeftMsg &);
+    DataNode OnMsg(const AddLocalUserResultMsg &);
 
-    LocalBandUser* mOverrideUser; // 0x13c
+    LocalBandUser *mOverrideUser; // 0x13c
 };

@@ -11,20 +11,20 @@ public:
     TrackPanelDir();
     OBJ_CLASSNAME(TrackPanelDir)
     OBJ_SET_TYPE(TrackPanelDir)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
     virtual ~TrackPanelDir();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void ConfigureTracks(bool);
     virtual void ConfigureTrack(int);
     virtual void AssignTracks();
     virtual void AssignTrack(int, TrackInstrument, bool);
     virtual void RemoveTrack(int);
-    virtual void SetConfiguration(Hmx::Object*, bool);
+    virtual void SetConfiguration(Hmx::Object *, bool);
     virtual void ReapplyConfiguration(bool);
     virtual void Reset();
     virtual void ResetAll();
@@ -35,8 +35,8 @@ public:
     virtual void Coda();
     virtual void CodaEnd();
     virtual void SetCodaScore(int);
-    virtual void SoloEnd(BandTrack*, int, Symbol);
-    virtual void SetTrackPanel(TrackPanelInterface*);
+    virtual void SoloEnd(BandTrack *, int, Symbol);
+    virtual void SetTrackPanel(TrackPanelInterface *);
     virtual void ResetPlayers();
     virtual void StartFinale();
     virtual void SetMultiplier(int, bool);
@@ -45,31 +45,32 @@ public:
     virtual void UnisonStart(int);
     virtual void UnisonEnd();
     virtual void UnisonSucceed();
-    virtual EndingBonus* GetEndingBonus(){ return mEndingBonus; }
-    virtual BandCrowdMeter* GetCrowdMeter(){ return mCrowdMeter; }
-    virtual void SetupApplauseMeter(int, const char*, const char*, RndDir*, RndDir*, bool, Symbol);
+    virtual EndingBonus *GetEndingBonus() { return mEndingBonus; }
+    virtual BandCrowdMeter *GetCrowdMeter() { return mCrowdMeter; }
+    virtual void
+    SetupApplauseMeter(int, const char *, const char *, RndDir *, RndDir *, bool, Symbol);
     virtual void DisablePlayer(int, bool);
     virtual void EnablePlayer(int);
     virtual void FadeBotbBandNames(bool);
     virtual void CleanUpChordMeshes();
     virtual void SetApplauseMeterScale(int, int);
     virtual void StartPulseAnims(float);
-    virtual GemTrackResourceManager* GetGemTrackResourceManager() const { return mGemTrackRsrcMgr; }
+    virtual GemTrackResourceManager *GetGemTrackResourceManager() const {
+        return mGemTrackRsrcMgr;
+    }
 
     void GameWon();
     void GameLost();
     void ConfigureCrowdMeter();
     void ApplyVocalTrackShowingStatus();
     TrackInstrument GetInstrument(int) const;
-    void SetBotbBandIcon(ObjectDir*, RndDir*, bool);
+    void SetBotbBandIcon(ObjectDir *, RndDir *, bool);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(TrackPanelDir)
-    static void Init() {
-        Register();
-    }
+    static void Init() { Register(); }
     REGISTER_OBJ_FACTORY_FUNC(TrackPanelDir)
 
     int unk244; // 0x244

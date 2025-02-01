@@ -1,15 +1,12 @@
-#ifndef METABAND_CAMPAIGNKEY_H
-#define METABAND_CAMPAIGNKEY_H
-
+#pragma once
 #include "obj/Data.h"
 
 class CampaignKey {
-    public:
-    CampaignKey(DataArray*);
+public:
+    CampaignKey(DataArray *);
     virtual ~CampaignKey();
-    virtual void Configure(DataArray*);
+    virtual void Configure(DataArray *);
 
-    Symbol mName; Symbol GetName() const;
+    Symbol mName;
+    Symbol GetName() const;
 };
-
-#endif // METABAND_CAMPAIGNKEY_H

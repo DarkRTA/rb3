@@ -18,9 +18,9 @@ enum ControllerStyle {
 // for 5 lane guitars
 class GuitarController : public BeatMatchController {
 public:
-    GuitarController(User*, const DataArray*, BeatMatchControllerSink*, bool, bool);
+    GuitarController(User *, const DataArray *, BeatMatchControllerSink *, bool, bool);
     virtual ~GuitarController();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
     virtual void Disable(bool);
     virtual bool IsDisabled() const { return mDisabled; }
@@ -28,18 +28,18 @@ public:
     virtual float GetCapStrip() const;
     virtual int GetFretButtons() const { return mFretMask; }
     virtual bool IsShifted() const;
-    virtual void SetAutoSoloButtons(bool b){ mAutoSoloButtons = b; }
+    virtual void SetAutoSoloButtons(bool b) { mAutoSoloButtons = b; }
 
     int GetCurrentSlot() const;
-    int OnMsg(const ButtonDownMsg&);
-    int OnMsg(const ButtonUpMsg&);
+    int OnMsg(const ButtonDownMsg &);
+    int OnMsg(const ButtonUpMsg &);
     void ReconcileFretState();
-    
+
     bool mDisabled;
     bool mAutoSoloButtons;
     int mFretMask;
     int mShiftButtonMask;
-    BeatMatchControllerSink* mSink;
+    BeatMatchControllerSink *mSink;
     ControllerStyle mControllerStyle;
     std::vector<int> mStrumBarButtons;
     int unk58;

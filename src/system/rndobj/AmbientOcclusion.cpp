@@ -3,13 +3,11 @@
 
 INIT_REVS(RndAmbientOcclusion);
 
-RndAmbientOcclusion::RndAmbientOcclusion(){
-
-}
+RndAmbientOcclusion::RndAmbientOcclusion() {}
 
 SAVE_OBJ(RndAmbientOcclusion, 0x28);
 
-void RndAmbientOcclusion::Load(BinStream& bs){
+void RndAmbientOcclusion::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(4, 0);
     Hmx::Object::Load(bs);
@@ -19,34 +17,37 @@ void RndAmbientOcclusion::Load(BinStream& bs){
     bs >> pList;
     bs >> pList;
     bs >> pList;
-    #ifdef MILO_DEBUG
+#ifdef MILO_DEBUG
     bs >> c;
     bs >> d;
     bs >> e;
     bs >> f;
-    #else
+#else
     bs >> c;
     bs >> c;
     bs >> c;
     bs >> c;
-    #endif
-    if(gRev > 1){
+#endif
+    if (gRev > 1) {
         bs >> i;
         bs >> j;
         bs >> j;
         bs >> j;
     }
-    if(gRev > 2) bs >> i;
+    if (gRev > 2)
+        bs >> i;
 }
 
-void RndAmbientOcclusion::Copy(const Hmx::Object* o, Hmx::Object::CopyType ty){
+void RndAmbientOcclusion::Copy(const Hmx::Object *o, Hmx::Object::CopyType ty) {
     Hmx::Object::Copy(o, ty);
 }
 
-BEGIN_HANDLERS(RndAmbientOcclusion);
+BEGIN_HANDLERS(RndAmbientOcclusion)
+    ;
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x55);
 END_HANDLERS;
 
-BEGIN_PROPSYNCS(RndAmbientOcclusion);
+BEGIN_PROPSYNCS(RndAmbientOcclusion)
+    ;
 END_PROPSYNCS;

@@ -25,6 +25,6 @@ struct ThreadCallData {
 void ThreadCallPreInit();
 void ThreadCallInit();
 void ThreadCallTerminate();
-void ThreadCall(int(*)(void), void (*)(int));
-void ThreadCall(ThreadCallback*);
+void ThreadCall(int (*)(void), void (*)(int));
+void ThreadCall(ThreadCallback *);
 void ThreadCallPoll();

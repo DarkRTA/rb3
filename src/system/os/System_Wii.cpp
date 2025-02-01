@@ -9,9 +9,9 @@
 
 #include "decomp.h"
 
-bool (*ParseStack)(const char*, unsigned int*, int, char*) = WiiMapFile::ParseStack;
+bool (*ParseStack)(const char *, unsigned int *, int, char *) = WiiMapFile::ParseStack;
 
-void SystemPreInit(int argc, char** argv, const char* preinit) {
+void SystemPreInit(int argc, char **argv, const char *preinit) {
     ThePlatformMgr.InitGQR();
     SetSystemArgs(argc, argv);
     SystemPreInit(preinit);
@@ -20,31 +20,38 @@ void SystemPreInit(int argc, char** argv, const char* preinit) {
 
 Symbol GetSystemLanguage(Symbol fallback) {
     switch (SCGetLanguage()) {
-        case 1: return eng;
-        case 3: return fre;
-        case 5: return ita;
-        case 2: return deu;
-        case 4: return esl;
-        default: return fallback;
+    case 1:
+        return eng;
+    case 3:
+        return fre;
+    case 5:
+        return ita;
+    case 2:
+        return deu;
+    case 4:
+        return esl;
+    default:
+        return fallback;
     }
 }
 
-void CaptureStackTrace(int depth, unsigned int* trace) {
+void CaptureStackTrace(int depth, unsigned int *trace) {
     int i = -2;
 
     OSDisableInterrupts();
     OSReport("start stack trace\n");
 
-    unsigned int* sp = (unsigned int*)OSGetStackPointer();
-    for (; sp != NULL && sp != (void*)0xFFFFFFFF && i < depth; i++) {
+    unsigned int *sp = (unsigned int *)OSGetStackPointer();
+    for (; sp != NULL && sp != (void *)0xFFFFFFFF && i < depth; i++) {
         if (i >= 0) {
             trace[i] = sp[1];
         }
-        sp = (unsigned int*)*sp;
+        sp = (unsigned int *)*sp;
     }
 
     OSEnableInterrupts();
-    if (i < 0) i = 0;
+    if (i < 0)
+        i = 0;
     trace[i] = 0;
 }
 
@@ -58,14 +65,14 @@ bool PlatformDebugBreak() {
             mtmsr ogState
         )
         return true;
-    }
-    else return false;
+    } else
+        return false;
 }
 
 // Hack to match below; empty string must come first in the string pool
 DECOMP_FORCEACTIVE(System_Wii, "")
 
-void GetMapFileName(class String& s) {
+void GetMapFileName(class String &s) {
     if (TheSystemArgs.size() != 0) {
         s = TheSystemArgs.front();
         s = s.replace(s.find(".elf"), sizeof(".elf") - 1, ".MAP");

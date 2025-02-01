@@ -21,41 +21,45 @@ class UIListDir;
  * circularly, and can have any number of visible elements (even just
  * one, a.k.a. a spin button)."
  */
-class UIList : public UIComponent, public UIListProvider, public ScrollSelect, public UIListStateCallback, public UITransitionHandler {
+class UIList : public UIComponent,
+               public UIListProvider,
+               public ScrollSelect,
+               public UIListStateCallback,
+               public UITransitionHandler {
 public:
     UIList();
     OBJ_CLASSNAME(UIList)
     OBJ_SET_TYPE(UIList)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, CopyType);
-    virtual void Load(BinStream&);
-    virtual float GetDistanceToPlane(const Plane&, Vector3&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, CopyType);
+    virtual void Load(BinStream &);
+    virtual float GetDistanceToPlane(const Plane &, Vector3 &);
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
     virtual ~UIList();
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Enter();
     virtual void Poll();
     virtual void Update();
-    virtual void AdjustTrans(Transform&, const UIListElementDrawState&){}
-    virtual void AdjustTransSelected(Transform&){}
+    virtual void AdjustTrans(Transform &, const UIListElementDrawState &) {}
+    virtual void AdjustTransSelected(Transform &) {}
     virtual int NumData() const;
-    virtual void StartScroll(const UIListState&, int, bool);
-    virtual void CompleteScroll(const UIListState&);
-    virtual int SelectedAux() const; 
+    virtual void StartScroll(const UIListState &, int, bool);
+    virtual void CompleteScroll(const UIListState &);
+    virtual int SelectedAux() const;
     virtual void SetSelectedAux(int);
     virtual bool IsEmptyValue() const;
-    virtual void FinishValueChange();    
+    virtual void FinishValueChange();
 
-    void PreLoadWithRev(BinStream&, int);
+    void PreLoadWithRev(BinStream &, int);
     void Refresh(bool);
-    void SetParent(UIList*);
-    void CalcBoundingBox(Box&);
-    void SetProvider(UIListProvider*);
+    void SetParent(UIList *);
+    void CalcBoundingBox(Box &);
+    void SetProvider(UIListProvider *);
     void SetSelected(int, int);
     void SetNumDisplay(int);
     void SetGridSpan(int);
@@ -70,10 +74,10 @@ public:
     int SelectedPos() const;
     Symbol SelectedSym(bool) const;
     bool IsScrolling() const;
-    UIListState& GetListState();
-    UIList* ChildList();
-    UIList* ParentList();
-    UIListDir* GetUIListDir() const;
+    UIListState &GetListState();
+    UIList *ChildList();
+    UIList *ParentList();
+    UIListDir *GetUIListDir() const;
     bool SetSelected(Symbol, bool, int);
     void SetSelectedSimulateScroll(int);
     bool SetSelectedSimulateScroll(Symbol, bool);
@@ -82,38 +86,38 @@ public:
     void AutoScroll();
     void StopAutoScroll();
     int NumProviderData() const;
-    void BoundingBoxTriangles(std::vector<std::vector<Vector3> >&);
-    const std::vector<UIListWidget*>& GetWidgets() const;
+    void BoundingBoxTriangles(std::vector<std::vector<Vector3> > &);
+    const std::vector<UIListWidget *> &GetWidgets() const;
     void EnableData(Symbol);
     void DisableData(Symbol);
     void DimData(Symbol);
     void UnDimData(Symbol);
-    void UpdateExtendedEntries(const UIListState&);
-    void SetScrollUser(LocalUser*);
+    void UpdateExtendedEntries(const UIListState &);
+    void SetScrollUser(LocalUser *);
     void SetDrawManuallyControlledWidgets(bool);
-    int CollidePlane(const std::vector<Vector3>&, const Plane&);
+    int CollidePlane(const std::vector<Vector3> &, const Plane &);
 
     static void CollectGarbage();
 
-    DataNode OnMsg(const ButtonDownMsg&);
-    DataNode OnSetData(DataArray*);
-    DataNode OnSetSelected(DataArray*);
-    DataNode OnSetSelectedSimulateScroll(DataArray*);
-    DataNode OnScroll(DataArray*);
-    DataNode OnSelectedSym(DataArray*);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnSetData(DataArray *);
+    DataNode OnSetSelected(DataArray *);
+    DataNode OnSetSelectedSimulateScroll(DataArray *);
+    DataNode OnScroll(DataArray *);
+    DataNode OnSelectedSym(DataArray *);
 
     bool Circular() const { return mListState.mCircular; }
     int GridSpan() const { return mListState.GridSpan(); }
 
-    UIListDir* mListDir; // 0x140
-    std::vector<UIListWidget*> mWidgets; // 0x144
+    UIListDir *mListDir; // 0x140
+    std::vector<UIListWidget *> mWidgets; // 0x144
     UIListState mListState; // 0x14c
     int mUIListRev; // 0x190
-    DataProvider* mDataProvider; // 0x194
+    DataProvider *mDataProvider; // 0x194
     /** "Num data to show (only for milo)". Range from 1 to 1000 */
     int mNumData; // 0x198
-    LocalUser* mUser; // 0x19c
-    UIList* mParent; // 0x1a0
+    LocalUser *mUser; // 0x19c
+    UIList *mParent; // 0x1a0
     /** "labels to be filled in by list provider at runtime" */
     ObjPtrList<UILabel> mExtendedLabelEntries; // 0x1a4
     /** "meshes to be filled in by list provider at runtime" */
@@ -140,11 +144,9 @@ public:
     DECLARE_REVS
 
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(UIList)
-    }
-    NEW_OBJ(UIList)
+    static void Register() { REGISTER_OBJ_FACTORY(UIList) } NEW_OBJ(UIList)
 
     // display num: "Number of rows/columns". range is 1-50
-    // scroll time: "Time (seconds) to scroll one step - 0 for instant scrolling". Range from 0 to 5
+    // scroll time: "Time (seconds) to scroll one step - 0 for instant scrolling". Range
+    // from 0 to 5
 };

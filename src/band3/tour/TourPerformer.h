@@ -21,10 +21,10 @@ public:
 
 class TourPerformerImpl : public MetaPerformerImpl {
 public:
-    TourPerformerImpl(BandUserMgr&);
+    TourPerformerImpl(BandUserMgr &);
     virtual ~TourPerformerImpl();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual void CompleteSong(std::vector<BandUser*>&, const BandStatsInfo*, bool);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual void CompleteSong(std::vector<BandUser *> &, const BandStatsInfo *, bool);
     virtual bool IsRandomSetList() const;
     virtual bool IsWinning() const;
     virtual void RestartLastSong();
@@ -41,27 +41,27 @@ public:
     int GetGigSongCount() const;
     bool GetCurrentQuestFilterIsCustom() const;
     void CleanupGigData();
-    const GigData& GetMostRecentGigData() const;
+    const GigData &GetMostRecentGigData() const;
     int GetSongQuestStars() const;
-    void HandleSongCompleted(const BandStatsInfo*);
+    void HandleSongCompleted(const BandStatsInfo *);
     void UpdateGigDataForSong(Symbol, int);
-    void UpdateCompleteTourStats(TourProgress*);
+    void UpdateCompleteTourStats(TourProgress *);
     bool IsQuestWon(Symbol) const;
     int GetQuestSuccessfulSongCount() const;
     int GetBaseSongStars() const;
     int GetTotalSongStars() const;
     Symbol GetCurrentQuestSuccessMessage() const;
-    void UpdateTourStats(TourProgress*);
+    void UpdateTourStats(TourProgress *);
     int GetTotalStarsPossibleForCurrentGig();
     void HandleSongCompleteWithInvalidScore();
     void HandleCheatWinQuest(Symbol);
     int GetTotalGigStars() const;
-    void UpdateQuestGoalLabel(UILabel*);
-    void UpdateQuestResultLabel(UILabel*);
-    void UpdateTourPlayerContributionLabel(UILabel*, BandUser*);
+    void UpdateQuestGoalLabel(UILabel *);
+    void UpdateQuestResultLabel(UILabel *);
+    void UpdateTourPlayerContributionLabel(UILabel *, BandUser *);
 
-    const BandUserMgr& mUserMgr; // 0x1c
-    MetaPerformer* mMetaPerformer; // 0x20
+    const BandUserMgr &mUserMgr; // 0x1c
+    MetaPerformer *mMetaPerformer; // 0x20
     Symbol mQuestFilter; // 0x24
     TourSetlistType mFilterType; // 0x28
     std::vector<GigData> mGigData; // 0x2c

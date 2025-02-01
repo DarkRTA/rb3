@@ -5,11 +5,11 @@
 
 class ModalKeyListener : public Hmx::Object {
 public:
-    ModalKeyListener(){}
-    virtual ~ModalKeyListener(){}
-    virtual DataNode Handle(DataArray*, bool);
+    ModalKeyListener() {}
+    virtual ~ModalKeyListener() {}
+    virtual DataNode Handle(DataArray *, bool);
 
-    DataNode OnMsg(const KeyboardKeyMsg&);
+    DataNode OnMsg(const KeyboardKeyMsg &);
 };
 
 #endif

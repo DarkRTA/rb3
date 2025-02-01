@@ -5,18 +5,18 @@
 
 class CharSync : public Hmx::Object {
 public:
-    CharSync(BandUserMgr*);
+    CharSync(BandUserMgr *);
     virtual ~CharSync();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void UpdateCharCache();
 
-    DataNode OnMsg(const PrimaryProfileChangedMsg&);
-    DataNode OnMsg(const ProfileChangedMsg&);
+    DataNode OnMsg(const PrimaryProfileChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
 
-    static void Init(BandUserMgr*);
+    static void Init(BandUserMgr *);
 
-    BandUserMgr* mUserMgr; // 0x1c
+    BandUserMgr *mUserMgr; // 0x1c
 };
 
-extern CharSync* TheCharSync;
+extern CharSync *TheCharSync;

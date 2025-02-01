@@ -4,7 +4,9 @@
 
 INIT_REVS(FxSendChorus);
 
-FxSendChorus::FxSendChorus() : mDelayMs(50.0f), mRate(1.0f), mDepth(10.0f), mFeedbackPct(30), mOffsetPct(20), mTempoSync(0), mSyncType(), mTempo(120.0f) {
+FxSendChorus::FxSendChorus()
+    : mDelayMs(50.0f), mRate(1.0f), mDepth(10.0f), mFeedbackPct(30), mOffsetPct(20),
+      mTempoSync(0), mSyncType(), mTempo(120.0f) {
     mSyncType = quarter;
     mDryGain = -3.0f;
     mWetGain = -3.0f;
@@ -12,17 +14,17 @@ FxSendChorus::FxSendChorus() : mDelayMs(50.0f), mRate(1.0f), mDepth(10.0f), mFee
 
 SAVE_OBJ(FxSendChorus, 0x1F);
 
-void FxSendChorus::Load(BinStream& bs){
+void FxSendChorus::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(3, 0);
     FxSend::Load(bs);
-    if(gRev == 1){
+    if (gRev == 1) {
         mDryGain = -3.0f;
         mWetGain = -3.0f;
         UpdateMix();
     }
     bs >> mDelayMs >> mRate >> mDepth >> mFeedbackPct >> mOffsetPct;
-    if(gRev >= 3){
+    if (gRev >= 3) {
         bs >> mTempoSync >> mSyncType;
         bs >> mTempo;
     }

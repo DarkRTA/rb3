@@ -6,19 +6,16 @@
 
 INIT_REVS(CharUpperTwist)
 
-CharUpperTwist::CharUpperTwist() : mUpperArm(this), mTwist1(this), mTwist2(this) {
+CharUpperTwist::CharUpperTwist() : mUpperArm(this), mTwist1(this), mTwist2(this) {}
 
-}
-
-CharUpperTwist::~CharUpperTwist(){
-    
-}
+CharUpperTwist::~CharUpperTwist() {}
 
 // fn_804FAB0C - poll
-void CharUpperTwist::Poll(){
-    if(!mTwist2 || !mTwist1 || !mUpperArm) return;
-    Transform& twist2parentworld = mTwist2->TransParent()->WorldXfm();
-    Transform& twist2world = mTwist2->WorldXfm();
+void CharUpperTwist::Poll() {
+    if (!mTwist2 || !mTwist1 || !mUpperArm)
+        return;
+    Transform &twist2parentworld = mTwist2->TransParent()->WorldXfm();
+    Transform &twist2world = mTwist2->WorldXfm();
     Hmx::Quat q;
     MakeRotQuat(twist2parentworld.m.x, twist2world.m.x, q);
     Vector3 v68;
@@ -35,7 +32,9 @@ void CharUpperTwist::Poll(){
     mTwist1->SetWorldXfm(tf48);
 }
 
-void CharUpperTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharUpperTwist::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     changedBy.push_back(mTwist2);
     change.push_back(mUpperArm);
     change.push_back(mTwist1);

@@ -1,5 +1,4 @@
-#ifndef GAME_DEFINES_H
-#define GAME_DEFINES_H
+#pragma once
 #include "beatmatch/TrackType.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
@@ -54,5 +53,3 @@ ScoreType SymToScoreType(Symbol);
 void CensorString(String &);
 bool RepresentSamePart(TrackType, TrackType);
 Symbol DifficultyToShortSym(Difficulty);
-
-#endif // GAME_DEFINES_H

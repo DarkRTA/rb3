@@ -4,7 +4,7 @@
 class PitchMucker {
 public:
     PitchMucker() : mToggle(0), mFrames(0), mPeriod(60) {}
-    void UpdatePitch(Stream*);
+    void UpdatePitch(Stream *);
     bool mToggle; // 0x0
     float mMaxPitch; // 0x4
     float mMinPitch; // 0x8

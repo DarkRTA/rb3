@@ -11,21 +11,22 @@ UIProxy::UIProxy() : mDir(), mEnv(this, 0), mMainTrans(0), mSyncOnMove(0), mPoll
 }
 
 // fn_805757B8
-void UIProxy::SetTypeDef(DataArray* da){
-    if(TypeDef() != da){
+void UIProxy::SetTypeDef(DataArray *da) {
+    if (TypeDef() != da) {
         UIComponent::SetTypeDef(da);
         mDir = 0;
         mSyncOnMove = false;
-        if(da){
+        if (da) {
             da->FindData("sync_on_move", mSyncOnMove, false);
-            DataArray* fileArr = da->FindArray("file", false);
-            if(LOADMGR_EDITMODE || fileArr->Size() != 3 || fileArr->Int(2) != 0){
+            DataArray *fileArr = da->FindArray("file", false);
+            if (LOADMGR_EDITMODE || fileArr->Size() != 3 || fileArr->Int(2) != 0) {
                 bool shared = true;
                 da->FindData("share", shared, false);
                 FilePath fp(FileGetPath(da->File(), 0), fileArr->Str(1));
                 mDir.LoadFile(fp, Loading(), shared, kLoadFront, false);
                 mPolled = false;
-                if(!Loading()) UpdateDir();
+                if (!Loading())
+                    UpdateDir();
             }
         }
     }
@@ -35,7 +36,7 @@ BEGIN_COPYS(UIProxy)
     COPY_SUPERCLASS(UIComponent)
     CREATE_COPY(UIProxy)
     BEGIN_COPYING_MEMBERS
-        if(ty != kCopyFromMax){
+        if (ty != kCopyFromMax) {
             COPY_MEMBER(mEnv)
         }
     END_COPYING_MEMBERS
@@ -48,7 +49,7 @@ BEGIN_LOADS(UIProxy)
     PostLoad(bs);
 END_LOADS
 
-void UIProxy::PreLoad(BinStream& bs){
+void UIProxy::PreLoad(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(3, 0);
     PushRev(packRevs(gAltRev, gRev), this);
@@ -56,27 +57,29 @@ void UIProxy::PreLoad(BinStream& bs){
 }
 
 // fn_80575AB0
-void UIProxy::PostLoad(BinStream& bs){
+void UIProxy::PostLoad(BinStream &bs) {
     mDir.PostLoad(0);
     UIComponent::PostLoad(bs);
     int revs = PopRev(this);
     gRev = getHmxRev(revs);
     gAltRev = getAltRev(revs);
-    if(gRev == 1){
-        bool b; bs >> b;
+    if (gRev == 1) {
+        bool b;
+        bs >> b;
     }
-    if(gRev > 2) bs >> mEnv;
+    if (gRev > 2)
+        bs >> mEnv;
     UpdateDir();
 }
 
 // fn_80575B64 - poll
-void UIProxy::Poll(){
+void UIProxy::Poll() {
     UIComponent::Poll();
-    if(!Loading() && !mDir.Ptr() && mDir.IsLoaded()){
+    if (!Loading() && !mDir.Ptr() && mDir.IsLoaded()) {
         mDir.PostLoad(0);
         UpdateDir();
     }
-    if(mDir.Ptr() && Showing()){
+    if (mDir.Ptr() && Showing()) {
         SyncDir();
         mDir->Poll();
         mPolled = true;
@@ -84,9 +87,9 @@ void UIProxy::Poll(){
 }
 
 // fn_80575C1C
-void UIProxy::DrawShowing(){
-    if(mDir.Ptr() && mPolled){
-        RndEnviron* oldEnv = mDir->GetEnv();
+void UIProxy::DrawShowing() {
+    if (mDir.Ptr() && mPolled) {
+        RndEnviron *oldEnv = mDir->GetEnv();
         mDir->SetEnv(mEnv);
         mDir->DrawShowing();
         mDir->SetEnv(oldEnv);
@@ -94,16 +97,18 @@ void UIProxy::DrawShowing(){
 }
 
 // fn_80575CBC
-RndDrawable* UIProxy::CollideShowing(const Segment& seg, float& f, Plane& pl){
-    if(!mDir.Ptr()) return 0;
+RndDrawable *UIProxy::CollideShowing(const Segment &seg, float &f, Plane &pl) {
+    if (!mDir.Ptr())
+        return 0;
     else {
         SyncDir();
         return mDir->CollideShowing(seg, f, pl) ? this : 0;
     }
 }
 
-int UIProxy::CollidePlane(const Plane& pl){
-    if(!mDir.Ptr()) return -1;
+int UIProxy::CollidePlane(const Plane &pl) {
+    if (!mDir.Ptr())
+        return -1;
     else {
         SyncDir();
         return mDir->CollidePlane(pl);
@@ -111,60 +116,63 @@ int UIProxy::CollidePlane(const Plane& pl){
 }
 
 // fn_80575DC0
-void UIProxy::SetProxyDir(const FilePath& fp, bool b){
+void UIProxy::SetProxyDir(const FilePath &fp, bool b) {
     mMainTrans = 0;
     mDir.LoadFile(fp, true, b, kLoadFront, false);
     mPolled = 0;
 }
 
 // fn_80575E14
-void UIProxy::SetProxyDir(RndDir* dir){
+void UIProxy::SetProxyDir(RndDir *dir) {
     mDir = dir;
     mPolled = 0;
     UpdateDir();
 }
 
 // fn_80575E54
-void UIProxy::SyncDir(){
-    const Transform& world = WorldXfm();
-    if(mSyncOnMove && !LOADMGR_EDITMODE){
-        if(world == mOldXfm) return;
+void UIProxy::SyncDir() {
+    const Transform &world = WorldXfm();
+    if (mSyncOnMove && !LOADMGR_EDITMODE) {
+        if (world == mOldXfm)
+            return;
         mOldXfm = world;
     }
-    if(mMainTrans) mMainTrans->SetWorldXfm(world);
+    if (mMainTrans)
+        mMainTrans->SetWorldXfm(world);
     else {
-        if(mDir->TransParent()) mDir->SetWorldXfm(world);
-        else mDir->SetLocalXfm(world);
+        if (mDir->TransParent())
+            mDir->SetWorldXfm(world);
+        else
+            mDir->SetLocalXfm(world);
     }
     HandleType(sync_dir_msg);
 }
 
 // fn_80576014
-void UIProxy::UpdateDir(){
-    DataArray* transArr = TypeDef()->FindArray("main_trans", false);
-    if(transArr){
-        if(mDir.Ptr()){
+void UIProxy::UpdateDir() {
+    DataArray *transArr = TypeDef()->FindArray("main_trans", false);
+    if (transArr) {
+        if (mDir.Ptr()) {
             mMainTrans = mDir->Find<RndTransformable>(transArr->Str(1), true);
-        }
-        else {
+        } else {
             MILO_WARN("%s Couldn't load main_trans", PathName(this));
             mMainTrans = 0;
         }
-    }
-    else mMainTrans = 0;
+    } else
+        mMainTrans = 0;
     UpdateSphere();
-    if(mDir.Ptr()){
+    if (mDir.Ptr()) {
         mDir->Enter();
         mPolled = false;
         mOldXfm.v.x = -1e+30f;
     }
 }
 
-DataNode UIProxy::OnSetProxyDir(DataArray* da){
-    if(da->Size() == 2){
+DataNode UIProxy::OnSetProxyDir(DataArray *da) {
+    if (da->Size() == 2) {
         SetProxyDir(FilePath(da->Str(2)), da->Int(3));
-    }
-    else SetProxyDir(da->Obj<RndDir>(2));
+    } else
+        SetProxyDir(da->Obj<RndDir>(2));
     return DataNode(1);
 }
 

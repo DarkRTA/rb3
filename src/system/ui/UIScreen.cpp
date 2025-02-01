@@ -20,7 +20,7 @@ UIScreen::UIScreen()
     MILO_ASSERT(sMaxScreenId < 0x8000, 0x1C);
 }
 
-void UIScreen::SetTypeDef(DataArray* data) {
+void UIScreen::SetTypeDef(DataArray *data) {
     if (TypeDef() == data) {
         return;
     }
@@ -29,7 +29,7 @@ void UIScreen::SetTypeDef(DataArray* data) {
     mFocusPanel = NULL;
     mPanelList.clear();
 
-    DataArray* panelsArr = data->FindArray(panels, false);
+    DataArray *panelsArr = data->FindArray(panels, false);
     if (panelsArr != NULL) {
         for (int i = 1; i < panelsArr->Size(); i++) {
             PanelRef pr;
@@ -37,7 +37,7 @@ void UIScreen::SetTypeDef(DataArray* data) {
             pr.mAlwaysLoad = true;
 
             if (panelsArr->Node(i).Type() == kDataArray) {
-                DataArray* panelArray = panelsArr->Array(i);
+                DataArray *panelArray = panelsArr->Array(i);
                 pr.mPanel = panelArray->Obj<class UIPanel>(0);
                 MILO_ASSERT(pr.mPanel, 0x3E);
                 panelArray->FindData(active, pr.mActive, false);
@@ -51,7 +51,7 @@ void UIScreen::SetTypeDef(DataArray* data) {
         }
     }
 
-    DataArray* focusArr = data->FindArray(focus, false);
+    DataArray *focusArr = data->FindArray(focus, false);
     if (focusArr != NULL) {
         SetFocusPanel(focusArr->Obj<class UIPanel>(1));
     }
@@ -70,7 +70,9 @@ BEGIN_HANDLERS(UIScreen)
     HANDLE_ACTION(set_focus_panel, SetFocusPanel(_msg->Obj<class UIPanel>(2)))
     HANDLE_ACTION(print, Print(TheDebug))
     HANDLE_ACTION(reenter_screen, ReenterScreen())
-    HANDLE_ACTION(set_panel_active, SetPanelActive(_msg->Obj<class UIPanel>(2), _msg->Int(3)))
+    HANDLE_ACTION(
+        set_panel_active, SetPanelActive(_msg->Obj<class UIPanel>(2), _msg->Int(3))
+    )
     HANDLE_ACTION(set_showing, SetShowing(_msg->Int(2)))
     HANDLE_EXPR(has_panel, HasPanel(_msg->Obj<class UIPanel>(2)))
     HANDLE_EXPR(add_panel, AddPanel(_msg->Obj<class UIPanel>(2), _msg->Int(3)))
@@ -130,7 +132,7 @@ void UIScreen::Poll() {
 #pragma push
 #pragma pool_data off
 // Likely weak based on how bss gets used
-void UIScreen::Enter(UIScreen* from) {
+void UIScreen::Enter(UIScreen *from) {
     if (from != NULL) {
         sUnloadingScreen = from;
         from->UnloadPanels();
@@ -161,18 +163,20 @@ void UIScreen::Draw() {
     }
 }
 
-void UIScreen::SetFocusPanel(class UIPanel* panel) {
+void UIScreen::SetFocusPanel(class UIPanel *panel) {
     if (panel == mFocusPanel) {
         return;
     }
 
-    if (mFocusPanel != NULL) mFocusPanel->FocusIn();
+    if (mFocusPanel != NULL)
+        mFocusPanel->FocusIn();
     mFocusPanel = panel;
-    if (mFocusPanel != NULL) mFocusPanel->FocusOut();
+    if (mFocusPanel != NULL)
+        mFocusPanel->FocusOut();
 }
 
 bool UIScreen::InComponentSelect() const {
-    UIComponent* component = TheUI->FocusComponent();
+    UIComponent *component = TheUI->FocusComponent();
     if (component != NULL) {
         return component->GetState() == UIComponent::kSelecting;
     }
@@ -180,7 +184,7 @@ bool UIScreen::InComponentSelect() const {
     return false;
 }
 
-bool UIScreen::SharesPanels(UIScreen* screen) {
+bool UIScreen::SharesPanels(UIScreen *screen) {
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
         if (screen->HasPanel(it->mPanel)) {
             return true;
@@ -190,7 +194,7 @@ bool UIScreen::SharesPanels(UIScreen* screen) {
     return false;
 }
 
-bool UIScreen::HasPanel(class UIPanel* panel) {
+bool UIScreen::HasPanel(class UIPanel *panel) {
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
         if (it->mPanel == panel && it->mActive) {
             return true;
@@ -200,7 +204,7 @@ bool UIScreen::HasPanel(class UIPanel* panel) {
     return false;
 }
 
-bool UIScreen::AddPanel(class UIPanel* panel, bool alwaysLoad) {
+bool UIScreen::AddPanel(class UIPanel *panel, bool alwaysLoad) {
     if (HasPanel(panel)) {
         return false;
     }
@@ -215,7 +219,7 @@ bool UIScreen::AddPanel(class UIPanel* panel, bool alwaysLoad) {
     return true;
 }
 
-void UIScreen::Exit(UIScreen* to) {
+void UIScreen::Exit(UIScreen *to) {
     static Message msg("exit", 0);
     msg[0] = to;
     HandleType(msg);
@@ -250,7 +254,7 @@ void UIScreen::ReenterScreen() {
     }
 }
 
-void UIScreen::SetPanelActive(class UIPanel* panel, bool active) {
+void UIScreen::SetPanelActive(class UIPanel *panel, bool active) {
     bool found = false;
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
         if (it->mPanel == panel) {
@@ -260,13 +264,15 @@ void UIScreen::SetPanelActive(class UIPanel* panel, bool active) {
     }
 
     if (!found) {
-        MILO_WARN("UIScreen::SetPanelActive: not found\nscreen %s\npanel %s\n", PathName(this), PathName(panel));
+        MILO_WARN(
+            "UIScreen::SetPanelActive: not found\nscreen %s\npanel %s\n",
+            PathName(this),
+            PathName(panel)
+        );
     }
 }
 
-void UIScreen::SetShowing(bool show) {
-    mShowing = show;
-}
+void UIScreen::SetShowing(bool show) { mShowing = show; }
 
 void UIScreen::LoadPanels() {
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {
@@ -307,7 +313,7 @@ bool UIScreen::IsLoaded() const {
     }
 
     // please don't tell me const_cast is what they did lol
-    DataNode result = const_cast<UIScreen*>(this)->HandleType(is_loaded_msg);
+    DataNode result = const_cast<UIScreen *>(this)->HandleType(is_loaded_msg);
     if (result.Type() != kDataUnhandled) {
         return result.Int();
     }
@@ -325,7 +331,7 @@ bool UIScreen::AllPanelsDown() {
     return true;
 }
 
-void UIScreen::Print(TextStream& s) {
+void UIScreen::Print(TextStream &s) {
     s << "{UIScreen " << Name() << "\n";
 
     if (mPanelList.size() != 0) {
@@ -339,9 +345,9 @@ void UIScreen::Print(TextStream& s) {
                 s << "(always_load " << it->mAlwaysLoad << ") ";
             }
 
-            const DataArray* typeDef = it->mPanel->TypeDef();
+            const DataArray *typeDef = it->mPanel->TypeDef();
             if (typeDef != NULL) {
-                DataArray* fileArray = typeDef->FindArray(file, false);
+                DataArray *fileArray = typeDef->FindArray(file, false);
                 if (fileArray != NULL) {
                     DataNode type = fileArray->Node(1);
                     if (type.Type() == kDataString || type.Type() == kDataSymbol) {
@@ -365,7 +371,7 @@ void UIScreen::Print(TextStream& s) {
     s << "}\n";
 }
 
-DataNode UIScreen::OnMsg(const ButtonDownMsg& msg) {
+DataNode UIScreen::OnMsg(const ButtonDownMsg &msg) {
     if (mBack != NULL && msg.GetAction() == kAction_Cancel) {
         DataNode n = mBack->Evaluate(1);
         if (n.Type() != kDataUnhandled) {
@@ -377,10 +383,10 @@ DataNode UIScreen::OnMsg(const ButtonDownMsg& msg) {
     return DataNode(kDataUnhandled, 0);
 }
 
-DataNode UIScreen::ForeachPanel(const DataArray* da) {
+DataNode UIScreen::ForeachPanel(const DataArray *da) {
     // {$screen foreach_panel $panel ...}
 
-    DataNode* var = da->Var(2);
+    DataNode *var = da->Var(2);
     DataNode tmp = *var;
 
     for (iterator it = mPanelList.begin(); it != mPanelList.end(); it++) {

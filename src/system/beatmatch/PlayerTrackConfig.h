@@ -7,7 +7,8 @@
 
 class PlayerTrackConfig {
 public:
-    PlayerTrackConfig() : mTrackType(kTrackNone), mDifficulty(-1), mSlot(-1), mRemote(0), mTrackNum(-1) {}
+    PlayerTrackConfig()
+        : mTrackType(kTrackNone), mDifficulty(-1), mSlot(-1), mRemote(0), mTrackNum(-1) {}
     PlayerTrackConfig(const UserGuid &u, TrackType ty, int i, int j, bool b)
         : mUserGuid(u), mTrackType(ty), mDifficulty(i), mSlot(j), mRemote(b),
           mTrackNum(-1) {}
@@ -34,7 +35,7 @@ public:
 class PlayerTrackConfigList {
 public:
     PlayerTrackConfigList(int);
-    ~PlayerTrackConfigList(){}
+    ~PlayerTrackConfigList() {}
     void Reset();
     void AddPlaceholderConfig(const UserGuid &, int, bool);
     int AddConfig(const UserGuid &, TrackType, int, int, bool);
@@ -63,12 +64,8 @@ public:
     bool UserPresent(const UserGuid &);
     void RemoveConfig(const UserGuid &);
     int NumConfigs() const { return mConfigs.size(); }
-    bool IsUserRemote(const UserGuid& u) const {
-        return GetConfigByUserGuid(u).Remote();
-    }
-    const PlayerTrackConfig& ConfigAt(int idx) const {
-        return mConfigs[idx];
-    }
+    bool IsUserRemote(const UserGuid &u) const { return GetConfigByUserGuid(u).Remote(); }
+    const PlayerTrackConfig &ConfigAt(int idx) const { return mConfigs[idx]; }
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8

@@ -4,7 +4,9 @@
 
 INIT_REVS(FxSendFlanger);
 
-FxSendFlanger::FxSendFlanger() : mDelayMs(2.0f), mRate(0.5f), mDepthPct(50), mFeedbackPct(50), mOffsetPct(10), mTempoSync(0), mSyncType(), mTempo(120.0f) {
+FxSendFlanger::FxSendFlanger()
+    : mDelayMs(2.0f), mRate(0.5f), mDepthPct(50), mFeedbackPct(50), mOffsetPct(10),
+      mTempoSync(0), mSyncType(), mTempo(120.0f) {
     mSyncType = quarter;
     mDryGain = -3.0f;
     mWetGain = -3.0f;
@@ -12,11 +14,11 @@ FxSendFlanger::FxSendFlanger() : mDelayMs(2.0f), mRate(0.5f), mDepthPct(50), mFe
 
 SAVE_OBJ(FxSendFlanger, 0x1F);
 
-void FxSendFlanger::Load(BinStream& bs){
+void FxSendFlanger::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(6, 0);
     FxSend::Load(bs);
-    if(gRev <= 4){
+    if (gRev <= 4) {
         mDryGain = -3.0f;
         mWetGain = -3.0f;
         UpdateMix();
@@ -24,12 +26,16 @@ void FxSendFlanger::Load(BinStream& bs){
     bs >> mDelayMs >> mRate;
     int dummy;
 
-    if(gRev >= 4) bs >> mDepthPct;
-    else bs >> dummy;
-    if(gRev >= 2) bs >> mFeedbackPct;
-    if(gRev >= 3) bs >> mOffsetPct;
+    if (gRev >= 4)
+        bs >> mDepthPct;
+    else
+        bs >> dummy;
+    if (gRev >= 2)
+        bs >> mFeedbackPct;
+    if (gRev >= 3)
+        bs >> mOffsetPct;
 
-    if(gRev >= 6){
+    if (gRev >= 6) {
         bs >> mTempoSync >> mSyncType;
         bs >> mTempo;
     }
@@ -55,7 +61,6 @@ BEGIN_HANDLERS(FxSendFlanger)
     HANDLE_SUPERCLASS(FxSend)
     HANDLE_CHECK(0x67)
 END_HANDLERS
-
 
 BEGIN_PROPSYNCS(FxSendFlanger)
     SYNC_PROP_MODIFY(delay_ms, mDelayMs, OnParametersChanged())

@@ -5,66 +5,70 @@
 
 INIT_REVS(RndPollAnim)
 
-RndPollAnim::RndPollAnim() : mAnims(this, kObjListNoNull) {
-    
-}
+RndPollAnim::RndPollAnim() : mAnims(this, kObjListNoNull) {}
 
-void RndPollAnim::StartAnim(){}
-void RndPollAnim::EndAnim(){}
-void RndPollAnim::SetFrame(float, float){}
+void RndPollAnim::StartAnim() {}
+void RndPollAnim::EndAnim() {}
+void RndPollAnim::SetFrame(float, float) {}
 
-float RndPollAnim::EndFrame(){
+float RndPollAnim::EndFrame() {
     float frame = 0.0f;
-    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
+         ++it) {
         float thisendframe = (*it)->EndFrame();
-        if(frame < thisendframe) frame = thisendframe;
+        if (frame < thisendframe)
+            frame = thisendframe;
     }
     return frame;
 }
 
-void RndPollAnim::ListAnimChildren(std::list<RndAnimatable*>& children) const {
+void RndPollAnim::ListAnimChildren(std::list<RndAnimatable *> &children) const {
     ObjPtrList<RndAnimatable>::iterator it = mAnims.begin();
     ObjPtrList<RndAnimatable>::iterator itEnd = mAnims.end();
-    for(; it != itEnd; ++it){
+    for (; it != itEnd; ++it) {
         children.push_back(*it);
     }
 }
 
-void RndPollAnim::Enter(){
-    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+void RndPollAnim::Enter() {
+    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
+         ++it) {
         (*it)->StartAnim();
     }
 }
 
-void RndPollAnim::Poll(){
-    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
-        RndAnimatable* thisAnim = *it;
+void RndPollAnim::Poll() {
+    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
+         ++it) {
+        RndAnimatable *thisAnim = *it;
         float foureighty = 480.0f;
         float f = 0.0f;
-        switch(thisAnim->GetRate()){
-            case k30_fps:
-                f = 30.0f * TheTaskMgr.Seconds(TaskMgr::kRealTime);
-                break;
-            case k480_fpb:
-                f = foureighty * TheTaskMgr.Beat();
-                break;
-            case k30_fps_ui:
-                f = 30.0f * TheTaskMgr.UISeconds();
-                break;
-            case k1_fpb:
-                f = TheTaskMgr.Beat();
-                break;
-            case k30_fps_tutorial:
-                f = 30.0f * TheTaskMgr.TutorialSeconds();
-                break;
-            default: break;
+        switch (thisAnim->GetRate()) {
+        case k30_fps:
+            f = 30.0f * TheTaskMgr.Seconds(TaskMgr::kRealTime);
+            break;
+        case k480_fpb:
+            f = foureighty * TheTaskMgr.Beat();
+            break;
+        case k30_fps_ui:
+            f = 30.0f * TheTaskMgr.UISeconds();
+            break;
+        case k1_fpb:
+            f = TheTaskMgr.Beat();
+            break;
+        case k30_fps_tutorial:
+            f = 30.0f * TheTaskMgr.TutorialSeconds();
+            break;
+        default:
+            break;
         }
         thisAnim->SetFrame(f, 1.0f);
     }
 }
 
-void RndPollAnim::Exit(){
-    for(ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end(); ++it){
+void RndPollAnim::Exit() {
+    for (ObjPtrList<RndAnimatable>::iterator it = mAnims.begin(); it != mAnims.end();
+         ++it) {
         (*it)->EndAnim();
     }
 }

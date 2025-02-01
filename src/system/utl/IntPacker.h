@@ -3,7 +3,7 @@
 
 class IntPacker {
 public:
-    IntPacker(void*, unsigned int);
+    IntPacker(void *, unsigned int);
     void AddBool(bool);
     void AddS(int, unsigned int);
     void AddU(unsigned int, unsigned int);
@@ -13,10 +13,9 @@ public:
     unsigned int ExtractU(unsigned int);
     void SetPos(unsigned int);
 
-    unsigned char* mBuffer;
+    unsigned char *mBuffer;
     unsigned int mPos;
     unsigned int mSize;
-    
 };
 
 #endif

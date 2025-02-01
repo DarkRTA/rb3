@@ -14,8 +14,8 @@ class UIList;
 
 class UIListWidgetDrawState {
 public:
-    UIListWidgetDrawState(){}
-    ~UIListWidgetDrawState(){}
+    UIListWidgetDrawState() {}
+    ~UIListWidgetDrawState() {}
     Vector3 mFirstPos; // 0x0
     Vector3 mLastPos; // 0xc
     Vector3 mHighlightPos; // 0x18
@@ -28,45 +28,52 @@ public:
 class UIListWidget : public Hmx::Object {
 public:
     UIListWidget();
-    virtual ~UIListWidget(){}
+    virtual ~UIListWidget() {}
     OBJ_CLASSNAME(UIListWidget);
     OBJ_SET_TYPE(UIListWidget);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
-    virtual UIList* SubList(int){ return 0; }
-    virtual void ResourceCopy(const UIListWidget*);
-    virtual void CreateElements(UIList*, int){}
-    virtual void Draw(const UIListWidgetDrawState&, const UIListState&, const Transform&, UIComponent::State, Box*, DrawCommand){}
-    virtual void Fill(const class UIListProvider&, int, int, int){}
-    virtual void StartScroll(int, bool){}
-    virtual void CompleteScroll(const UIListState&, int){}
-    virtual void Poll(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
+    virtual UIList *SubList(int) { return 0; }
+    virtual void ResourceCopy(const UIListWidget *);
+    virtual void CreateElements(UIList *, int) {}
+    virtual void Draw(
+        const UIListWidgetDrawState &,
+        const UIListState &,
+        const Transform &,
+        UIComponent::State,
+        Box *,
+        DrawCommand
+    ) {}
+    virtual void Fill(const class UIListProvider &, int, int, int) {}
+    virtual void StartScroll(int, bool) {}
+    virtual void CompleteScroll(const UIListState &, int) {}
+    virtual void Poll() {}
 
     float DrawOrder() const;
     float DisabledAlphaScale() const;
     UIListWidgetDrawType WidgetDrawType() const;
-    UIList* ParentList();
-    void DrawMesh(RndMesh*, UIListWidgetState, UIComponent::State, const Transform&, Box*);
-    UIColor* DisplayColor(UIListWidgetState, UIComponent::State) const;
-    void SetColor(UIListWidgetState, UIComponent::State, UIColor*);
-    void SetParentList(UIList*);
-    void CalcXfm(const Transform&, const Vector3&, Transform&);
+    UIList *ParentList();
+    void
+    DrawMesh(RndMesh *, UIListWidgetState, UIComponent::State, const Transform &, Box *);
+    UIColor *DisplayColor(UIListWidgetState, UIComponent::State) const;
+    void SetColor(UIListWidgetState, UIComponent::State, UIColor *);
+    void SetParentList(UIList *);
+    void CalcXfm(const Transform &, const Vector3 &, Transform &);
 
     DECLARE_REVS
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(UIListWidget)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UIListWidget)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UIListWidget) }
 
     float mDrawOrder; // 0x1c
     float mDisabledAlphaScale; // 0x20
     ObjPtr<UIColor> mDefaultColor; // 0x24
-    std::vector< std::vector<ObjPtr<UIColor> > > mColors; // 0x30 - a vector of vectors of ObjPtrs...wonderful
+    std::vector<std::vector<ObjPtr<UIColor> > > mColors; // 0x30 - a vector of vectors of
+                                                         // ObjPtrs...wonderful
     UIListWidgetDrawType mWidgetDrawType; // 0x38
-    UIList* mParentList; // 0x3c
+    UIList *mParentList; // 0x3c
 };

@@ -11,24 +11,24 @@ public:
     UISlider();
     OBJ_CLASSNAME(UISlider)
     OBJ_SET_TYPE(UISlider)
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void DrawShowing();
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
-    virtual ~UISlider(){}
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
+    virtual ~UISlider() {}
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void Enter();
     virtual void Update();
     virtual void SetCurrent(int);
     virtual int SelectedAux() const;
     virtual void SetSelectedAux(int);
 
-    DataNode OnMsg(const ButtonDownMsg&);
+    DataNode OnMsg(const ButtonDownMsg &);
 
     void SyncSlider();
     float Frame() const;
@@ -41,11 +41,8 @@ public:
     DECLARE_REVS;
 
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(UISlider);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(UISlider); }
     NEW_OBJ(UISlider);
-
 
     int mCurrent; // 0x118
     int mNumSteps; // 0x11c

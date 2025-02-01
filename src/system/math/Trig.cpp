@@ -11,15 +11,14 @@ void TrigTableInit() {
     for (i = 0; i < 256; i++, temp_r30 += 2) {
         *temp_r30 = std::sin(0.024543693f * i);
         if (i != 0) {
-            *(temp_r30-1) = *temp_r30 - *(temp_r30-2);
+            *(temp_r30 - 1) = *temp_r30 - *(temp_r30 - 2);
         }
     }
     int tmp = (i - 1) * 2;
     *(gBigSinTable + tmp + 1) = std::sin(0.024543693f * i) - *(gBigSinTable + tmp);
 }
 
-void TrigTableTerminate() {
-}
+void TrigTableTerminate() {}
 
 inline float Lookup(float arg8) {
     float x = arg8 * 40.743664f;
@@ -58,20 +57,26 @@ DataNode DataTan(DataArray *da) {
 
 DataNode DataASin(DataArray *da) {
     float f = da->Float(1);
-    if(IsNaN(f)) return DataNode(0.0f);
-    else return DataNode(RadiansToDegrees(std::asin(f)));
+    if (IsNaN(f))
+        return DataNode(0.0f);
+    else
+        return DataNode(RadiansToDegrees(std::asin(f)));
 }
 
 DataNode DataACos(DataArray *da) {
     float f = da->Float(1);
-    if(IsNaN(f)) return DataNode(0.0f);
-    else return DataNode(RadiansToDegrees(std::acos(f)));
+    if (IsNaN(f))
+        return DataNode(0.0f);
+    else
+        return DataNode(RadiansToDegrees(std::acos(f)));
 }
 
 DataNode DataATan(DataArray *da) {
     float f = da->Float(1);
-    if(IsNaN(f)) return DataNode(0.0f);
-    else return DataNode(RadiansToDegrees(std::atan(f)));
+    if (IsNaN(f))
+        return DataNode(0.0f);
+    else
+        return DataNode(RadiansToDegrees(std::atan(f)));
 }
 
 void TrigInit() {

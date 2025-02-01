@@ -10,23 +10,22 @@
 
 INIT_REVS(UIPicture)
 
-UIPicture::UIPicture() : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile(),
-    mTex(Hmx::Object::New<RndTex>()), mLoader(0), mHookTex(true), mDelayedTexFile("") {
-
-}
+UIPicture::UIPicture()
+    : UITransitionHandler(this), mMesh(this, NULL), mTexFile(), mLoadedFile(),
+      mTex(Hmx::Object::New<RndTex>()), mLoader(0), mHookTex(true), mDelayedTexFile("") {}
 
 UIPicture::~UIPicture() {
     CancelLoading();
     delete mTex;
 }
 
-void UIPicture::SetTypeDef(DataArray* da) {
-    if(TypeDef() != da){
+void UIPicture::SetTypeDef(DataArray *da) {
+    if (TypeDef() != da) {
         UIComponent::SetTypeDef(da);
-        if(da){
-            DataArray* findtex = da->FindArray("tex_file", false);
-            if(findtex){
-                if(strlen(findtex->Str(1)) != 0){
+        if (da) {
+            DataArray *findtex = da->FindArray("tex_file", false);
+            if (findtex) {
+                if (strlen(findtex->Str(1)) != 0) {
                     FilePath fp(FileGetPath(findtex->File(), 0), findtex->Str(1));
                     SetTex(fp);
                 }
@@ -45,37 +44,37 @@ END_COPYS
 
 SAVE_OBJ(UIPicture, 79)
 
-void UIPicture::Load(BinStream& bs) {
+void UIPicture::Load(BinStream &bs) {
     PreLoad(bs);
     PostLoad(bs);
 }
 
-void UIPicture::PreLoad(BinStream& bs) {
+void UIPicture::PreLoad(BinStream &bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(2, 0)
-    if(gRev != 0){
-        if(LOADMGR_EDITMODE){
+    if (gRev != 0) {
+        if (LOADMGR_EDITMODE) {
             char buf[256];
             FilePath fp;
             bs.ReadString(buf, 0x100);
             fp.SetRoot(buf);
             SetTex(fp);
-        }
-        else {
+        } else {
             char buf[256];
             bs.ReadString(buf, 0x100);
             mTexFile.SetRoot(buf);
         }
         bs >> mMesh;
     }
-    if (gRev >= 2) UITransitionHandler::LoadHandlerData(bs);
+    if (gRev >= 2)
+        UITransitionHandler::LoadHandlerData(bs);
     UIComponent::PreLoad(bs);
 }
 
-void UIPicture::PostLoad(BinStream& bs) {
+void UIPicture::PostLoad(BinStream &bs) {
     UIComponent::PostLoad(bs);
     CancelLoading();
-    if(!LOADMGR_EDITMODE && mMesh){
+    if (!LOADMGR_EDITMODE && mMesh) {
         mMesh->mShowing = false;
     }
 }
@@ -94,32 +93,32 @@ void UIPicture::Exit() {
     CancelLoading();
 }
 
-bool UIPicture::IsEmptyValue() const {
-    return mTexFile == "";
-}
+bool UIPicture::IsEmptyValue() const { return mTexFile == ""; }
 
 void UIPicture::FinishValueChange() {
-    if(mLoader && mLoader->IsLoaded()){
+    if (mLoader && mLoader->IsLoaded()) {
         FinishLoading();
         UITransitionHandler::FinishValueChange();
-    }
-    else if(mMesh) mMesh->SetShowing(false);
+    } else if (mMesh)
+        mMesh->SetShowing(false);
 }
 
-void UIPicture::SetTex(const FilePath& p) {
+void UIPicture::SetTex(const FilePath &p) {
     if (HasTransitions() || (!(p == mLoadedFile) || !(p == mTexFile))) {
         if (LOADMGR_EDITMODE) {
             mDelayedTexFile = p;
-        } else UpdateTexture(p);
+        } else
+            UpdateTexture(p);
     }
 }
 
-void UIPicture::UpdateTexture(const FilePath& p) {
+void UIPicture::UpdateTexture(const FilePath &p) {
     mTexFile = p;
     CancelLoading();
     if (mTexFile != "") {
-        if (!strstr(mTexFile.c_str(), "_keep")) MILO_WARN("%s will not be included on a disc build", p);
-        mLoader = dynamic_cast<FileLoader*>(TheLoadMgr.AddLoader(mTexFile, kLoadFront));
+        if (!strstr(mTexFile.c_str(), "_keep"))
+            MILO_WARN("%s will not be included on a disc build", p);
+        mLoader = dynamic_cast<FileLoader *>(TheLoadMgr.AddLoader(mTexFile, kLoadFront));
         MILO_ASSERT(mLoader, 227);
     }
     UITransitionHandler::StartValueChange();
@@ -142,19 +141,17 @@ void UIPicture::CancelLoading() {
 }
 
 void UIPicture::HookupMesh() {
-    if(mMesh && mHookTex){
-        RndMat* mat = mMesh->mMat;
-        if(mat){
-            RndTex* tex = mTex;
-            if(tex && tex->mWidth != 0 && tex->mHeight != 0){
+    if (mMesh && mHookTex) {
+        RndMat *mat = mMesh->mMat;
+        if (mat) {
+            RndTex *tex = mTex;
+            if (tex && tex->mWidth != 0 && tex->mHeight != 0) {
                 mat->SetDiffuseTex(tex);
-            }
-            else {
+            } else {
                 mat->SetDiffuseTex(0);
             }
-        }
-        else {
-            if(mLoader || LOADMGR_EDITMODE){
+        } else {
+            if (mLoader || LOADMGR_EDITMODE) {
                 MILO_WARN("%s does not have material", mMesh->Name());
             }
         }
@@ -164,7 +161,8 @@ void UIPicture::HookupMesh() {
 
 void UIPicture::SetHookTex(bool b) {
     mHookTex = b;
-    if (b == 0) return;
+    if (b == 0)
+        return;
     mLoadedFile.SetRoot("");
 }
 

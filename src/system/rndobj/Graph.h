@@ -9,16 +9,17 @@
 
 class Drawable {
 public:
-    Drawable(){}
-    virtual ~Drawable(){}
+    Drawable() {}
+    virtual ~Drawable() {}
     virtual void Draw() = 0;
     virtual void DrawFixedZ(float) = 0;
 };
 
 class Line : public Drawable {
 public:
-    Line(const Vector3& va, const Vector3& vb, const Hmx::Color& clr, bool b) : mA(va), mB(vb), mCol(clr), mZBuf(b) {}
-    virtual ~Line(){}
+    Line(const Vector3 &va, const Vector3 &vb, const Hmx::Color &clr, bool b)
+        : mA(va), mB(vb), mCol(clr), mZBuf(b) {}
+    virtual ~Line() {}
     virtual void Draw();
     virtual void DrawFixedZ(float);
 
@@ -30,8 +31,9 @@ public:
 
 class DrawString : public Drawable {
 public:
-    DrawString(const char* cc, const Vector2& v, const Hmx::Color& clr) : mPos(v), mText(cc), mCol(clr) {}
-    virtual ~DrawString(){}
+    DrawString(const char *cc, const Vector2 &v, const Hmx::Color &clr)
+        : mPos(v), mText(cc), mCol(clr) {}
+    virtual ~DrawString() {}
     virtual void Draw();
     virtual void DrawFixedZ(float);
 
@@ -42,8 +44,9 @@ public:
 
 class DrawString3D : public Drawable {
 public:
-    DrawString3D(const char* cc, const Vector3& v, const Hmx::Color& clr) : mPos(v), mText(cc), mCol(clr) {}
-    virtual ~DrawString3D(){}
+    DrawString3D(const char *cc, const Vector3 &v, const Hmx::Color &clr)
+        : mPos(v), mText(cc), mCol(clr) {}
+    virtual ~DrawString3D() {}
     virtual void Draw();
     virtual void DrawFixedZ(float);
 
@@ -54,8 +57,9 @@ public:
 
 class DrawSphere : public Drawable {
 public:
-    DrawSphere(const Vector3& v, float r, const Hmx::Color& clr) : mCenter(v), mRadius(r), mCol(clr) {}
-    virtual ~DrawSphere(){}
+    DrawSphere(const Vector3 &v, float r, const Hmx::Color &clr)
+        : mCenter(v), mRadius(r), mCol(clr) {}
+    virtual ~DrawSphere() {}
     virtual void Draw();
     virtual void DrawFixedZ(float);
 
@@ -66,33 +70,31 @@ public:
 
 class RndGraph {
 public:
-    RndGraph(const void*);
+    RndGraph(const void *);
     ~RndGraph();
 
     void Draw();
     void Reset();
-    void AddLine(const Vector3&, const Vector3&, const Hmx::Color&, bool);
-    void AddSphere(const Vector3&, float, const Hmx::Color&);
-    void AddString(const char*, const Vector2&, const Hmx::Color&);
-    void AddString3D(const char*, const Vector3&, const Hmx::Color&);
+    void AddLine(const Vector3 &, const Vector3 &, const Hmx::Color &, bool);
+    void AddSphere(const Vector3 &, float, const Hmx::Color &);
+    void AddString(const char *, const Vector2 &, const Hmx::Color &);
+    void AddString3D(const char *, const Vector3 &, const Hmx::Color &);
 
     bool mEnable;
     bool mDrawFixedZ;
     float mZ;
-    void* mId;
-    std::vector<Drawable*> mStuff;
+    void *mId;
+    std::vector<Drawable *> mStuff;
 
     static void Init();
     static void Terminate();
     static void ResetAll();
-    static RndGraph* Get(const void*);
-    static void Free(const void*, bool);
-    static void SetCamera(RndCam*);
-    static RndGraph* GetOneFrame();
+    static RndGraph *Get(const void *);
+    static void Free(const void *, bool);
+    static void SetCamera(RndCam *);
+    static RndGraph *GetOneFrame();
 };
 
-class FakeGraph {
-
-};
+class FakeGraph {};
 
 #endif

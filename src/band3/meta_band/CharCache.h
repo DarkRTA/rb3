@@ -8,18 +8,18 @@ class CharCache : public Hmx::Object {
 public:
     CharCache();
     virtual ~CharCache();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     void InitMe();
-    void Request(int, const std::vector<BandCharDesc*>&, bool, bool);
-    BandCharacter* GetCharacter(int);
-    void RecomposePatches(int, BandCharDesc*, int);
+    void Request(int, const std::vector<BandCharDesc *> &, bool, bool);
+    BandCharacter *GetCharacter(int);
+    void RecomposePatches(int, BandCharDesc *, int);
     void RecomposeCharsWithPatchIx(int);
-    int FindSlot(BandCharacter*);
+    int FindSlot(BandCharacter *);
     bool CharactersAreLoading();
     void Lock(bool, bool);
 
-    DataNode OnGetPatchTex(DataArray*);
+    DataNode OnGetPatchTex(DataArray *);
 
     static void Init();
 
@@ -27,4 +27,4 @@ public:
     bool unk28; // 0x28
 };
 
-extern CharCache* TheCharCache;
+extern CharCache *TheCharCache;

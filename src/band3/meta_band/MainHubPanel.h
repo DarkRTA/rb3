@@ -29,7 +29,7 @@ public:
     MainHubPanel();
     OBJ_CLASSNAME(MainHubPanel);
     OBJ_SET_TYPE(MainHubPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~MainHubPanel();
     virtual void Enter();
     virtual void Exit();
@@ -38,12 +38,12 @@ public:
 
     MainHubState mHubState; // 0x38
     MainHubOverride mHubOverride; // 0x3c
-    MainHubMessageProvider* mMessageProvider; // 0x40
+    MainHubMessageProvider *mMessageProvider; // 0x40
     int mCurrentMessage; // 0x44
     float mMessageRotationMs; // 0x48
     Timer mMessageTimer; // 0x50
-    BandMachineMgr* mMachineMgr; // 0x80
-    LockStepMgr* mWaitingStateLock; // 0x84
+    BandMachineMgr *mMachineMgr; // 0x80
+    LockStepMgr *mWaitingStateLock; // 0x84
     String mMotd; // 0x88
     String unk94; // 0x94
     DataResultList mLabelUpdateResults; // 0xa0

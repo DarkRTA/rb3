@@ -20,13 +20,13 @@ public:
     CalibrationPanel();
     OBJ_CLASSNAME(CalibrationPanel);
     OBJ_SET_TYPE(CalibrationPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~CalibrationPanel();
     virtual void Draw();
     virtual void Enter();
     virtual void Exit();
     virtual void Poll();
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
     float GetAudioTimeMs() const;
     void SetTestState(TestState);
@@ -49,16 +49,16 @@ public:
     float GetSampleSpread() const;
     int GetTestQuality() const;
 
-    DataNode OnInitializeContent(DataArray*);
-    DataNode OnStartTest(DataArray*);
-    DataNode OnMsg(const ButtonDownMsg&);
-    DataNode OnMsg(const KeyboardKeyPressedMsg&);
-    
+    DataNode OnInitializeContent(DataArray *);
+    DataNode OnStartTest(DataArray *);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnMsg(const KeyboardKeyPressedMsg &);
+
     static float kAnimPerceptualOffset;
 
     float mCycleTimeMs; // 0x38
-    Stream* mStream; // 0x3c
-    Fader* mFader; // 0x40
+    Stream *mStream; // 0x3c
+    Fader *mFader; // 0x40
     bool unk44;
     std::vector<float> mTestSamples; // 0x48
     bool mHalfOffAnim; // 0x50
@@ -99,35 +99,35 @@ public:
 class CalibrationModesProvider : public UIListProvider, public Hmx::Object {
 public:
     CalibrationModesProvider();
-    virtual ~CalibrationModesProvider(){}
-    virtual void Text(int, int, UIListLabel*, UILabel*) const;
-    virtual RndMat* Mat(int, int, UIListMesh*) const;
+    virtual ~CalibrationModesProvider() {}
+    virtual void Text(int, int, UIListLabel *, UILabel *) const;
+    virtual RndMat *Mat(int, int, UIListMesh *) const;
     virtual int DataIndex(Symbol s) const;
     virtual int NumData() const;
-    virtual void InitData(RndDir*);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual void InitData(RndDir *);
+    virtual DataNode Handle(DataArray *, bool);
 
     void Cleanup();
     Symbol GetCalibrationMode(int);
 
     std::vector<Symbol> mModes; // 0x20
-    RndMat* mAutoCalibrateMat; // 0x28
-    RndMat* mAutoCalibrateDisabledMat; // 0x2c
-    RndMat* mManualCalibrateMat; // 0x30
-    RndMat* mEnterNumbersMat; // 0x34
+    RndMat *mAutoCalibrateMat; // 0x28
+    RndMat *mAutoCalibrateDisabledMat; // 0x2c
+    RndMat *mManualCalibrateMat; // 0x30
+    RndMat *mEnterNumbersMat; // 0x34
 };
 
 class CalibrationWelcomePanel : public UIPanel {
 public:
-    CalibrationWelcomePanel(){}
+    CalibrationWelcomePanel() {}
     OBJ_CLASSNAME(CalibrationWelcomePanel);
     OBJ_SET_TYPE(CalibrationWelcomePanel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual ~CalibrationWelcomePanel(){}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~CalibrationWelcomePanel() {}
     virtual void Enter();
     virtual void Exit();
 
-    DataNode OnMsg(const InputStatusChangedMsg&);
+    DataNode OnMsg(const InputStatusChangedMsg &);
 
     static bool HaveCalbertConnected();
 

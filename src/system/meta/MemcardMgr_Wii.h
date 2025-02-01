@@ -6,7 +6,7 @@
 class MemcardMgr : public MsgSource, public ThreadCallback {
 public:
     MemcardMgr();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~MemcardMgr();
     virtual int ThreadStart();
     virtual void ThreadDone(int);
@@ -29,7 +29,7 @@ public:
     int unkd0;
     int unkd4;
     int unkd8;
-    Profile* unkdc;
+    Profile *unkdc;
 };
 
 extern MemcardMgr TheMemcardMgr;

@@ -5,7 +5,7 @@
 
 Symbol sShaderTypes[26];
 
-void InitShaderOptions(){
+void InitShaderOptions() {
     sShaderTypes[0] = "bloom";
     sShaderTypes[25] = "bloom_glare";
     sShaderTypes[1] = "blur";
@@ -33,7 +33,8 @@ void InitShaderOptions(){
     sShaderTypes[24] = "playerdepth_shell";
 }
 
-DECOMP_FORCEACTIVE(ShaderOptions,
+DECOMP_FORCEACTIVE(
+    ShaderOptions,
     __FILE__,
     "shader >= ShaderType(0) && shader < kMaxShaderTypes",
     "Shader type name %s not found\n",

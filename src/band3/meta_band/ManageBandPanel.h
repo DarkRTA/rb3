@@ -12,15 +12,15 @@
 class VignetteViewerProvider : public UIListProvider, public Hmx::Object {
 public:
     VignetteViewerProvider() : unk20(0) {}
-    virtual ~VignetteViewerProvider(){}
-    virtual void Text(int, int, UIListLabel*, UILabel*) const;
+    virtual ~VignetteViewerProvider() {}
+    virtual void Text(int, int, UIListLabel *, UILabel *) const;
     virtual int NumData() const { return mEntries.size(); }
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
 
     bool IsLocked(int);
     Symbol GetScreen(int);
 
-    DataArray* unk20; // 0x20
+    DataArray *unk20; // 0x20
     std::vector<Symbol> mEntries; // 0x24
 };
 
@@ -35,7 +35,7 @@ public:
     ManageBandPanel();
     OBJ_CLASSNAME(ManageBandPanel);
     OBJ_SET_TYPE(ManageBandPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~ManageBandPanel();
     virtual void Enter();
     virtual void Exit();
@@ -46,12 +46,12 @@ public:
     void RefreshAll();
     void SetManageBandState(ManageBandState);
     void CheckForKickoutCondition();
-    void SetProfile(BandProfile*);
+    void SetProfile(BandProfile *);
     void ClearProfile();
-    RndTex* GetBandLogoTex();
-    StandInProvider* GetStandInProvider();
-    CharProvider* GetCharProvider();
-    VignetteViewerProvider* GetHistoryProvider();
+    RndTex *GetBandLogoTex();
+    StandInProvider *GetStandInProvider();
+    CharProvider *GetCharProvider();
+    VignetteViewerProvider *GetHistoryProvider();
     void UpdateCharacterFromStandInList(int);
     void UpdateCharacterFromCharList(int);
     void ShowCharacter();
@@ -60,18 +60,18 @@ public:
     void SetSelectedStandIn(int);
     void SetStandIn(int);
     void QueueRewardVignette(Symbol);
-    BandProfile* GetProfile(){ return mProfile; }
+    BandProfile *GetProfile() { return mProfile; }
     int GetSelectedStandIn() const { return mSelectedStandIn; }
-    ManageBandState GetManageBandState(){ return mManageBandState; }
+    ManageBandState GetManageBandState() { return mManageBandState; }
 
-    DataNode OnMsg(const SigninChangedMsg&);
-    DataNode OnMsg(const ProfileChangedMsg&);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
 
     ManageBandState mManageBandState; // 0x38
     int unk3c; // 0x3c
     int mSelectedStandIn; // 0x40
-    StandInProvider* mStandInProvider; // 0x44
-    CharProvider* mCharProvider; // 0x48
-    BandProfile* mProfile; // 0x4c
-    VignetteViewerProvider* mHistoryProvider; // 0x50
+    StandInProvider *mStandInProvider; // 0x44
+    CharProvider *mCharProvider; // 0x48
+    BandProfile *mProfile; // 0x4c
+    VignetteViewerProvider *mHistoryProvider; // 0x50
 };

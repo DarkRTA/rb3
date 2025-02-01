@@ -13,7 +13,6 @@ class RndLight;
 /** "Represents a beam and floorspot for venue modeling" */
 class Spotlight : public RndDrawable, public RndTransformable, public RndPollable {
 public:
-
     class BeamDef {
     public:
         enum Shape {
@@ -24,14 +23,14 @@ public:
             kBeamQuadZ = 4
         };
 
-        BeamDef(Hmx::Object*);
-        BeamDef(const BeamDef&);
+        BeamDef(Hmx::Object *);
+        BeamDef(const BeamDef &);
         ~BeamDef();
-        void OnSetMat(RndMat*);
-        void Load(BinStream&);
-        const Vector2& NGRadii() const;
-        
-        RndMesh* mBeam; // 0x0
+        void OnSetMat(RndMat *);
+        void Load(BinStream &);
+        const Vector2 &NGRadii() const;
+
+        RndMesh *mBeam; // 0x0
         /** "Whether this is a beam or a cone" */
         bool mIsCone; // 0x4
         /** "Length of the beam/cone" */
@@ -42,7 +41,8 @@ public:
         float mBottomRadius; // 0x10
         /** "For beams, length of the side transparency border at the top of the beam" */
         float mTopSideBorder; // 0x14
-        /** "For beams, length of the side transparency border at the bottom of the beam" */
+        /** "For beams, length of the side transparency border at the bottom of the beam"
+         */
         float mBottomSideBorder; // 0x18
         /** "Length of the bottom transparency border" */
         float mBottomBorder; // 0x1c
@@ -71,69 +71,70 @@ public:
     Spotlight();
     OBJ_CLASSNAME(Spotlight);
     OBJ_SET_TYPE(Spotlight);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void UpdateSphere();
-    virtual bool MakeWorldSphere(Sphere&, bool);
-    virtual void Mats(std::list<class RndMat*>&, bool);
+    virtual bool MakeWorldSphere(Sphere &, bool);
+    virtual void Mats(std::list<class RndMat *> &, bool);
     virtual void DrawShowing();
-    virtual void ListDrawChildren(std::list<RndDrawable*>&);
-    virtual RndDrawable* CollideShowing(const Segment&, float&, Plane&);
-    virtual int CollidePlane(const Plane&);
-    virtual void Highlight(){ RndDrawable::Highlight(); }
+    virtual void ListDrawChildren(std::list<RndDrawable *> &);
+    virtual RndDrawable *CollideShowing(const Segment &, float &, Plane &);
+    virtual int CollidePlane(const Plane &);
+    virtual void Highlight() { RndDrawable::Highlight(); }
     virtual ~Spotlight();
 
     virtual void UpdateBounds();
     virtual void Poll();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
-    
-    void BuildNGCone(BeamDef&, int);
-    void BuildNGSheet(BeamDef&);
-    void BuildNGQuad(BeamDef&, RndTransformable::Constraint);
-    void BuildNGShaft(BeamDef&);
-    void BuildShaft(BeamDef&);
-    void BuildCone(BeamDef&);
-    void BuildBeam(BeamDef&);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
+
+    void BuildNGCone(BeamDef &, int);
+    void BuildNGSheet(BeamDef &);
+    void BuildNGQuad(BeamDef &, RndTransformable::Constraint);
+    void BuildNGShaft(BeamDef &);
+    void BuildShaft(BeamDef &);
+    void BuildCone(BeamDef &);
+    void BuildBeam(BeamDef &);
 
     bool GetAnimateFromPreset() const {
         return mAnimateColorFromPreset || mAnimateOrientationFromPreset;
     }
-    void CalculateDirection(RndTransformable*, Hmx::Matrix3&);
+    void CalculateDirection(RndTransformable *, Hmx::Matrix3 &);
     void CloseSlaves();
     void UpdateSlaves();
     void SetFlareEnabled(bool);
     void UpdateFlare();
     void SetFlareIsBillboard(bool);
-    void ConvertGroupToMesh(RndGroup*);
+    void ConvertGroupToMesh(RndGroup *);
     void Generate();
     void PropogateToPresets(int);
     void UpdateTransforms();
     void SetColor(int);
     void SetIntensity(float);
-    void SetColorIntensity(const Hmx::Color&, float);
-    RndTransformable* ResolveTarget();
+    void SetColorIntensity(const Hmx::Color &, float);
+    RndTransformable *ResolveTarget();
     void CheckFloorSpotTransform();
-    void UpdateFloorSpotTransform(const Transform&);
+    void UpdateFloorSpotTransform(const Transform &);
     Hmx::Color32 Color() const { return mColorOwner->mColor; }
     float Intensity() const { return mColorOwner->mIntensity; }
     bool LightCanSort() const { return mLightCanSort; }
-    RndTransformable* Target() const { return mTarget; }
+    RndTransformable *Target() const { return mTarget; }
     bool IsFlareEnabled() const { return mFlareEnabled; }
     bool AnimateColorFromPreset() const { return mAnimateColorFromPreset; }
     bool AnimateOrientationFromPreset() const { return mAnimateOrientationFromPreset; }
-    RndFlare* GetFlare() const { return mFlare; }
+    RndFlare *GetFlare() const { return mFlare; }
 
-    RndTransformable* GetFloorSpotTarget() const {
+    RndTransformable *GetFloorSpotTarget() const {
         return mSpotTarget ? mSpotTarget : mTarget;
     }
 
     bool DoFloorSpot() const {
         bool ret = false;
-        if(mDiscMat && GetFloorSpotTarget()){
-            if(GetFloorSpotTarget()->WorldXfm().m.y.z != 0.0f) ret = true;
+        if (mDiscMat && GetFloorSpotTarget()) {
+            if (GetFloorSpotTarget()->WorldXfm().m.y.z != 0.0f)
+                ret = true;
         }
         return ret;
     }
@@ -142,17 +143,15 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(Spotlight)
-    static void Register(){
-        REGISTER_OBJ_FACTORY(Spotlight)
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(Spotlight) }
 
     static void Init();
     static void BuildBoard();
-    static RndEnviron* sEnviron;
-    static RndMesh* sDiskMesh;
+    static RndEnviron *sEnviron;
+    static RndMesh *sDiskMesh;
 
     ObjPtr<RndMat> mDiscMat; // 0xb8
-    RndFlare* mFlare; // 0xc4
+    RndFlare *mFlare; // 0xc4
     /** "Offset of flare along spotlight trajectory" */
     float mFlareOffset; // 0xc8
     /** "Scale of the floor disc" */
@@ -214,11 +213,12 @@ public:
     // flare size: "Size of the flare"
     // flare range: "Range of the flare"
     // flare steps: "Steps for the flare"
-    // propogate coloring to presets: "Propogate the spotlight's current color state to all light presets in the file."
-    // propogate targeting to presets: "Propogate the spotlight's current target/rotation state to all light presets in the file."
+    // propogate coloring to presets: "Propogate the spotlight's current color state to
+    // all light presets in the file." propogate targeting to presets: "Propogate the
+    // spotlight's current target/rotation state to all light presets in the file."
 };
 
-inline BinStream& operator>>(BinStream& bs, Spotlight::BeamDef& bd){
+inline BinStream &operator>>(BinStream &bs, Spotlight::BeamDef &bd) {
     bd.Load(bs);
     return bs;
 }

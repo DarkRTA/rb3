@@ -562,7 +562,9 @@ Symbol campaign_goalunits_default("campaign_goalunits_default");
 Symbol campaign_goalunits_singular_default("campaign_goalunits_singular_default");
 Symbol campaign_level("campaign_level");
 Symbol campaign_metascore("campaign_metascore");
-Symbol campaign_rewardvignette_festival_replay_screen("campaign_rewardvignette_festival_replay_screen");
+Symbol campaign_rewardvignette_festival_replay_screen(
+    "campaign_rewardvignette_festival_replay_screen"
+);
 Symbol campaignlevel_bus("campaignlevel_bus");
 Symbol campaignlevel_halloffame("campaignlevel_halloffame");
 Symbol campaignlevel_jet("campaignlevel_jet");

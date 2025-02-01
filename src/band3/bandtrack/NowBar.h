@@ -1,6 +1,4 @@
-#ifndef BANDTRACK_NOWBAR_H
-#define BANDTRACK_NOWBAR_H
-
+#pragma once
 #include "system/track/TrackDir.h"
 #include "TrackConfig.h"
 #include "GemSmasher.h"
@@ -29,5 +27,3 @@ public:
     TrackDir *mTrackDir;
     const TrackConfig *mTrackConfig;
 };
-
-#endif // BANDTRACK_NOWBAR_H

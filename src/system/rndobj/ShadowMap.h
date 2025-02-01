@@ -4,6 +4,6 @@
 
 class RndShadowMap {
 public:
-    static bool PrepShadow(RndDrawable*, RndEnviron*);
+    static bool PrepShadow(RndDrawable *, RndEnviron *);
     static void EndShadow();
 };

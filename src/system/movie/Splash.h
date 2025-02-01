@@ -16,19 +16,19 @@ public:
         s2,
         s3,
         kResuming,
-        kResumed, 
+        kResumed,
         kWaitingForTerminating,
         kTerminating,
         kTerminated
     };
 
     struct ScreenParams {
-        const char* unk_0x0;
+        const char *unk_0x0;
         int unk_0x4;
     };
 
     struct PreparedScreenParams {
-        RndDir* unk_0x0;
+        RndDir *unk_0x0;
         int unk_0x4;
     };
 
@@ -42,7 +42,7 @@ public:
     int SetMutableState(SplashState);
     int SetImmutableState(SplashState);
     void SetWaitForSplash(bool);
-    void AddScreen(const char*, int);
+    void AddScreen(const char *, int);
     int PrepareNext();
     void PrepareRemaining();
     void Poll();
@@ -54,15 +54,15 @@ public:
     void Show();
     void CheckHomeMenuButton();
 
-    static int ThreadStart(void*);
+    static int ThreadStart(void *);
 
     int mSplashTime; // 0x4
     bool mWaitForSplash; // 0x8
     std::list<ScreenParams> mScreens; // 0xC
     Timer unk_0x18;
-    RndDir* mLastSplash; // 0x48
+    RndDir *mLastSplash; // 0x48
     int unk_0x4C;
-    TexMovie* unk_0x50;
+    TexMovie *unk_0x50;
     int unk_0x54, unk_0x58;
     u8 unk_0x5C;
     int mSuspendCount; // 0x60
@@ -74,13 +74,13 @@ public:
     int mState; // 0xD0
     CriticalSection unk_0xD4;
     std::list<PreparedScreenParams> mPreparedScreens; // 0xF0
-    std::list<RndDir*> unk_0xF8;
+    std::list<RndDir *> unk_0xF8;
     Timer unk_0x100;
-    void* mThreadStack; // 0x130
+    void *mThreadStack; // 0x130
     OSThread mThread; // 0x138
 };
 
-extern Splash* TheSplasher;
+extern Splash *TheSplasher;
 
 void PollFunc();
 void SuspendFunc();

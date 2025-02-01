@@ -7,10 +7,10 @@ class TourWeightManager {
 public:
     TourWeightManager();
     virtual ~TourWeightManager();
-    virtual void Init(const DataArray*);
+    virtual void Init(const DataArray *);
 
     void Cleanup();
-    void ConfigureQuestWeightData(DataArray*);
+    void ConfigureQuestWeightData(DataArray *);
 
     std::map<Symbol, float> unk4;
 };

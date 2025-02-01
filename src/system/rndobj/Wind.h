@@ -9,29 +9,27 @@ class RndWind : public Hmx::Object {
 public:
     RndWind();
     virtual ~RndWind();
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
     OBJ_CLASSNAME(Wind);
     OBJ_SET_TYPE(Wind);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
-    void SetWindOwner(RndWind*);
+    void SetWindOwner(RndWind *);
     void Zero();
     void SetDefaults();
     void SyncLoops();
     float GetWind(float);
-    void GetWind(const Vector3& v, float f, Vector3& v2){
-        return mWindOwner->SelfGetWind(v,f,v2);
+    void GetWind(const Vector3 &v, float f, Vector3 &v2) {
+        return mWindOwner->SelfGetWind(v, f, v2);
     }
-    void SelfGetWind(const Vector3&, float, Vector3&);
+    void SelfGetWind(const Vector3 &, float, Vector3 &);
 
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(RndWind);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(RndWind); }
     NEW_OBJ(RndWind)
 
     DECLARE_REVS

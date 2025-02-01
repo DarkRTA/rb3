@@ -12,7 +12,7 @@
 class CharClipSet : public ObjectDir, public RndDrawable, public RndAnimatable {
 public:
     struct AlphaSort {
-        bool operator()(CharClip* c1, CharClip* c2) const {
+        bool operator()(CharClip *c1, CharClip *c2) const {
             return strcmp(c1->Name(), c2->Name()) < 0;
         }
     };
@@ -20,15 +20,15 @@ public:
     CharClipSet();
     OBJ_CLASSNAME(CharClipSet);
     OBJ_SET_TYPE(CharClipSet);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~CharClipSet();
-    virtual void PostSave(BinStream&);
-    virtual void PreLoad(BinStream&);
-    virtual void PostLoad(BinStream&);
+    virtual void PostSave(BinStream &);
+    virtual void PreLoad(BinStream &);
+    virtual void PostLoad(BinStream &);
     virtual void SyncObjects();
     virtual void ResetEditorState();
     virtual void DrawShowing();
@@ -36,24 +36,23 @@ public:
     virtual void SetFrame(float, float);
     virtual float StartFrame();
     virtual float EndFrame();
-    virtual void PreSave(BinStream&);
-    
+    virtual void PreSave(BinStream &);
+
     void ResetPreviewState();
     void RandomizeGroups();
     void SortGroups();
     void RecenterAll();
     void LoadCharacter();
-    DataNode OnListClips(DataArray*);
+    DataNode OnListClips(DataArray *);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharClipSet)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharClipSet)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharClipSet) }
 
-    /** "Preview base character to use- for example, char/male/male_guitar.milo for male guitarist" */
+    /** "Preview base character to use- for example, char/male/male_guitar.milo for male
+       guitarist" */
     FilePath mCharFilePath; // 0xb0
     ObjPtr<RndDir> mPreviewChar; // 0xbc
     /** "Pick a clip to play" */

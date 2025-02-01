@@ -17,11 +17,11 @@ public:
     UIPanel();
     OBJ_CLASSNAME(UIPanel);
     OBJ_SET_TYPE(UIPanel);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~UIPanel();
-    virtual void Load(BinStream& bs){ Hmx::Object::Load(bs); }
+    virtual void Load(BinStream &bs) { Hmx::Object::Load(bs); }
     virtual void SetTypeDef(DataArray *);
-    virtual class ObjectDir* DataDir();
+    virtual class ObjectDir *DataDir();
 
     virtual void Draw();
     virtual void Enter();
@@ -30,9 +30,9 @@ public:
     virtual bool Exiting() const;
     virtual bool Unloading() const;
     virtual void Poll();
-    virtual void SetPaused(bool paused){ mPaused = paused; }
-    virtual void FocusIn(){ }
-    virtual void FocusOut(){ }
+    virtual void SetPaused(bool paused) { mPaused = paused; }
+    virtual void FocusIn() {}
+    virtual void FocusOut() {}
     virtual void Load();
     virtual void Unload();
     virtual bool IsLoaded() const;
@@ -42,22 +42,22 @@ public:
     void CheckLoad();
     void CheckUnload();
     bool CheckIsLoaded();
-    void SetLoadedDir(class PanelDir*, bool);
+    void SetLoadedDir(class PanelDir *, bool);
     void UnsetLoadedDir();
-    UIComponent* FocusComponent();
-    void SetFocusComponent(UIComponent*);
-    DataNode OnLoad(DataArray*);
+    UIComponent *FocusComponent();
+    void SetFocusComponent(UIComponent *);
+    DataNode OnLoad(DataArray *);
 
     State GetState() const { return mState; }
     bool Paused() const { return mPaused; }
     bool Showing() const { return mShowing; }
-    void SetShowing(bool b){ mShowing = b; }
+    void SetShowing(bool b) { mShowing = b; }
     bool IsReferenced() const { return mLoadRefs != 0; }
     bool ForceExit() const { return mForceExit; }
-    PanelDir* GetPanelDir() const { return mDir; }
+    PanelDir *GetPanelDir() const { return mDir; }
 
-    class PanelDir* mDir; // 0x8
-    DirLoader* mLoader; // 0xc
+    class PanelDir *mDir; // 0x8
+    DirLoader *mLoader; // 0xc
     class String mFocusName; // 0x10
     mutable State mState; // 0x1c
     bool mLoaded; // 0x20
@@ -70,7 +70,5 @@ public:
 
     static int sMaxPanelId;
     NEW_OBJ(UIPanel);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UIPanel);
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UIPanel); }
 };

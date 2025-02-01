@@ -3,13 +3,11 @@
 
 INIT_REVS(RndSoftParticles)
 
-RndSoftParticles::RndSoftParticles(){
-
-}
+RndSoftParticles::RndSoftParticles() {}
 
 SAVE_OBJ(RndSoftParticles, 0x22)
 
-void RndSoftParticles::Load(BinStream& bs){
+void RndSoftParticles::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     int filler;

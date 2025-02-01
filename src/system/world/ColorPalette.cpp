@@ -3,30 +3,29 @@
 
 INIT_REVS(ColorPalette)
 
-ColorPalette::ColorPalette(){
+ColorPalette::ColorPalette() {}
 
-}
-
-BinStream& operator>>(BinStream& bs, ColorSet& cset){
+BinStream &operator>>(BinStream &bs, ColorSet &cset) {
     bs >> cset.mPrimary >> cset.mSecondary;
     return bs;
 }
 
 SAVE_OBJ(ColorPalette, 0x29);
 
-void ColorPalette::Load(BinStream& bs){
+void ColorPalette::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(1, 0);
     Hmx::Object::Load(bs);
-    if(gRev < 1){
+    if (gRev < 1) {
         std::vector<ColorSet> setvec;
         bs >> setvec;
         mColors.clear();
-        for(std::vector<ColorSet>::iterator it = setvec.begin(); it != setvec.end(); ++it){
+        for (std::vector<ColorSet>::iterator it = setvec.begin(); it != setvec.end();
+             ++it) {
             mColors.push_back(it->mPrimary);
         }
-    }
-    else bs >> mColors;
+    } else
+        bs >> mColors;
 }
 
 BEGIN_COPYS(ColorPalette)

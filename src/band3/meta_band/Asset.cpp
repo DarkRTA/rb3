@@ -6,8 +6,9 @@
 #include "utl/Symbols3.h"
 #include "AssetTypes.h"
 
-Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType(0), mBoutique(0), mPatchable(false),
-    mHidden(false), mIndex(index) {
+Asset::Asset(DataArray *pConfig, int index)
+    : mName(gNullStr), mGender(0), mType(0), mBoutique(0), mPatchable(false),
+      mHidden(false), mIndex(index) {
     MILO_ASSERT(pConfig, 21);
     Symbol name = pConfig->Sym(0);
     mName = name;
@@ -28,7 +29,7 @@ Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType
     pConfig->FindData(patchable, mPatchable, false);
     pConfig->FindData(hidden, mHidden, false);
 
-    DataArray* finishesArray = pConfig->FindArray(finishes, false);
+    DataArray *finishesArray = pConfig->FindArray(finishes, false);
     if (finishesArray != NULL) {
         if (assetType == 10 || (unsigned long)(assetType - 2) <= 1) {
             for (int i = 1; i < finishesArray->Size(); i++) {
@@ -36,24 +37,20 @@ Asset::Asset(DataArray* pConfig, int index) : mName(gNullStr), mGender(0), mType
                 mFinishes.push_back(finish);
             }
         } else {
-            MILO_WARN("(%s) should not have \"finishes\" in ui/customize/assets.dta", name.Str());
+            MILO_WARN(
+                "(%s) should not have \"finishes\" in ui/customize/assets.dta", name.Str()
+            );
         }
     }
 }
 
-Asset::~Asset() {
+Asset::~Asset() {}
 
-}
+Symbol Asset::GetDescription() const { return MakeString("%s_desc", mName); }
 
-Symbol Asset::GetDescription() const {
-    return MakeString("%s_desc", mName);
-}
+bool Asset::HasFinishes() { return mFinishes.size() != 0; }
 
-bool Asset::HasFinishes() {
-    return mFinishes.size() != 0;
-}
-
-void Asset::GetFinishes(std::vector<Symbol>& v) const {
+void Asset::GetFinishes(std::vector<Symbol> &v) const {
     for (int i = 0; i < mFinishes.size(); i++) {
         Symbol s = mFinishes[i];
         v.push_back(s);
@@ -65,6 +62,4 @@ Symbol Asset::GetFinish(int index) const {
     return mFinishes[index];
 }
 
-Symbol Asset::GetHint() const {
-    return MakeString("%s_hint", mName);
-}
+Symbol Asset::GetHint() const { return MakeString("%s_hint", mName); }

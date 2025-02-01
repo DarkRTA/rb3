@@ -2,75 +2,78 @@
 
 INIT_REVS(RndMatAnim)
 
-Hmx::Object* RndMatAnim::sOwner;
+Hmx::Object *RndMatAnim::sOwner;
 
 DECOMP_FORCEACTIVE(MatAnim, __FILE__, "o")
 
 RndMatAnim::TexPtr::TexPtr() : ObjPtr<RndTex, ObjectDir>(sOwner, 0) {}
-RndMatAnim::TexPtr::TexPtr(RndTex* tex) : ObjPtr<RndTex, ObjectDir>(sOwner, tex) {}
-RndMatAnim::TexKeys::TexKeys(Hmx::Object* o) : mOwner(o) {}
+RndMatAnim::TexPtr::TexPtr(RndTex *tex) : ObjPtr<RndTex, ObjectDir>(sOwner, tex) {}
+RndMatAnim::TexKeys::TexKeys(Hmx::Object *o) : mOwner(o) {}
 
 // fn_805FA384
-int RndMatAnim::TexKeys::Add(RndTex* tex, float frame, bool b){
+int RndMatAnim::TexKeys::Add(RndTex *tex, float frame, bool b) {
     sOwner = mOwner;
-    return Keys<TexPtr, RndTex*>::Add(TexPtr(tex), frame, b);
+    return Keys<TexPtr, RndTex *>::Add(TexPtr(tex), frame, b);
 }
 
 // matches in retail with the right inlining settings
-RndMatAnim::TexKeys& RndMatAnim::TexKeys::operator=(const RndMatAnim::TexKeys& keys){
-    if(this != &keys){
+RndMatAnim::TexKeys &RndMatAnim::TexKeys::operator=(const RndMatAnim::TexKeys &keys) {
+    if (this != &keys) {
         sOwner = mOwner;
         resize(keys.size());
         TexKeys::iterator it = begin();
         TexKeys::const_iterator otherIt = keys.begin();
-        for(; it != end(); ++it, ++otherIt){
+        for (; it != end(); ++it, ++otherIt) {
             *it = *otherIt;
         }
     }
 }
 
-RndMatAnim::RndMatAnim() : mMat(this), mKeysOwner(this, this), mTexKeys(this) {
+RndMatAnim::RndMatAnim() : mMat(this), mKeysOwner(this, this), mTexKeys(this) {}
 
-}
+void RndMatAnim::SetMat(RndMat *mat) { mMat = mat; }
 
-void RndMatAnim::SetMat(RndMat* mat){
-    mMat = mat;
-}
-
-void RndMatAnim::Replace(Hmx::Object* from, Hmx::Object* to){
+void RndMatAnim::Replace(Hmx::Object *from, Hmx::Object *to) {
     Hmx::Object::Replace(from, to);
-    if(mKeysOwner == from){
-        if(!to) mKeysOwner = this;
-        else mKeysOwner = dynamic_cast<RndMatAnim*>(to)->mKeysOwner;
+    if (mKeysOwner == from) {
+        if (!to)
+            mKeysOwner = this;
+        else
+            mKeysOwner = dynamic_cast<RndMatAnim *>(to)->mKeysOwner;
     }
 }
 
 SAVE_OBJ(RndMatAnim, 0x6C)
 
-void RndMatAnim::LoadStage(BinStream& bs){
-    if(gRev < 2) MILO_WARN("Can't convert old MatAnim stages");
-    if(gRev != 0){
+void RndMatAnim::LoadStage(BinStream &bs) {
+    if (gRev < 2)
+        MILO_WARN("Can't convert old MatAnim stages");
+    if (gRev != 0) {
         bs >> mTransKeys >> mScaleKeys >> mRotKeys;
     }
-    if(gRev > 1) bs >> mTexKeys;
+    if (gRev > 1)
+        bs >> mTexKeys;
 }
 
-void RndMatAnim::LoadStages(BinStream& bs){
+void RndMatAnim::LoadStages(BinStream &bs) {
     uint stageCount;
     bs >> stageCount;
-    if(stageCount != 0){
+    if (stageCount != 0) {
         bool oldeditmode = LOADMGR_EDITMODE;
         TheLoadMgr.SetEditMode(true);
-        RndMatAnim* it = this;
+        RndMatAnim *it = this;
         int i = 1;
-        while(true){
+        while (true) {
             it->LoadStage(bs);
-            if(i == stageCount) break;
-            else if(EndFrame()){
-                const char* mnm = MakeString("%s_%d.mnm", FileGetBase(Name(), 0), i);
+            if (i == stageCount)
+                break;
+            else if (EndFrame()) {
+                const char *mnm = MakeString("%s_%d.mnm", FileGetBase(Name(), 0), i);
                 MILO_WARN("Splitting out %s from %s", mnm, PathName(this));
                 it = Dir()->New<RndMatAnim>(mnm);
-                it->SetMat(LookupOrCreateMat(MakeString("%s_%d", FileGetBase(mMat->Name(), 0), i), Dir()));
+                it->SetMat(LookupOrCreateMat(
+                    MakeString("%s_%d", FileGetBase(mMat->Name(), 0), i), Dir()
+                ));
             }
             i++;
         }
@@ -81,30 +84,38 @@ void RndMatAnim::LoadStages(BinStream& bs){
 BEGIN_LOADS(RndMatAnim)
     LOAD_REVS(bs)
     ASSERT_REVS(7, 0)
-    if(gRev > 5) LOAD_SUPERCLASS(Hmx::Object)
+    if (gRev > 5)
+        LOAD_SUPERCLASS(Hmx::Object)
     LOAD_SUPERCLASS(RndAnimatable)
     sOwner = this;
     bs >> mMat;
-    if(gRev < 7) LoadStages(bs);
+    if (gRev < 7)
+        LoadStages(bs);
     bs >> mKeysOwner;
-    if(!mKeysOwner) mKeysOwner = this;
-    if(gRev > 1){
+    if (!mKeysOwner)
+        mKeysOwner = this;
+    if (gRev > 1) {
         Keys<Hmx::Color, Hmx::Color> k1;
         Keys<Hmx::Color, Hmx::Color> k2;
-        if(gRev < 5) bs >> k1;
-        if(gRev < 3) bs >> k2;
+        if (gRev < 5)
+            bs >> k1;
+        if (gRev < 3)
+            bs >> k2;
         bs >> mColorKeys;
-        if(gRev < 4){
+        if (gRev < 4) {
             Keys<Hmx::Color, Hmx::Color> k3;
             bs >> k3;
         }
         bs >> mAlphaKeys;
-        if(gRev < 5 && mColorKeys.empty()){
-            if(!k1.empty()) mColorKeys = k1;
-            else if(!k2.empty()) mColorKeys = k2;
+        if (gRev < 5 && mColorKeys.empty()) {
+            if (!k1.empty())
+                mColorKeys = k1;
+            else if (!k2.empty())
+                mColorKeys = k2;
         }
     }
-    if(gRev > 6) bs >> mTransKeys >> mScaleKeys >> mRotKeys >> mTexKeys;
+    if (gRev > 6)
+        bs >> mTransKeys >> mScaleKeys >> mRotKeys >> mTexKeys;
 END_LOADS
 
 BEGIN_COPYS(RndMatAnim)
@@ -113,7 +124,8 @@ BEGIN_COPYS(RndMatAnim)
     COPY_SUPERCLASS(Hmx::Object)
     COPY_SUPERCLASS(RndAnimatable)
     COPY_MEMBER_FROM(m, mMat)
-    if(ty == kCopyShallow || (ty == kCopyFromMax && m->mKeysOwner != m)) COPY_MEMBER_FROM(m, mKeysOwner)
+    if (ty == kCopyShallow || (ty == kCopyFromMax && m->mKeysOwner != m))
+        COPY_MEMBER_FROM(m, mKeysOwner)
     else {
         sOwner = this;
         mKeysOwner = this;
@@ -126,8 +138,8 @@ BEGIN_COPYS(RndMatAnim)
     }
 END_COPYS
 
-void RndMatAnim::Print(){
-    TextStream& ts = TheDebug;
+void RndMatAnim::Print() {
+    TextStream &ts = TheDebug;
     ts << "   mat: " << mMat << "\n";
     ts << "   transKeys: " << mTransKeys << "\n";
     ts << "   scaleKeys: " << mScaleKeys << "\n";
@@ -139,7 +151,7 @@ void RndMatAnim::Print(){
 }
 
 // fn_805FB82C - matches in retail
-float RndMatAnim::EndFrame(){
+float RndMatAnim::EndFrame() {
     float end = Max(TransKeys().LastFrame(), ScaleKeys().LastFrame());
     end = Max(end, GetTexKeys().LastFrame(), RotKeys().LastFrame());
     end = Max(end, AlphaKeys().LastFrame(), ColorKeys().LastFrame());
@@ -149,56 +161,60 @@ float RndMatAnim::EndFrame(){
 // fn_805FBA6C
 #pragma push
 #pragma dont_inline on
-void RndMatAnim::SetFrame(float f1, float f2){
+void RndMatAnim::SetFrame(float f1, float f2) {
     RndAnimatable::SetFrame(f1, f2);
-    if(mMat){
+    if (mMat) {
         Vector3 v68;
         Vector3 v74;
         Transform t58(mMat->TexXfm());
-        if(!TransKeys().empty()){
-            if(f2 != 1.0f){
+        if (!TransKeys().empty()) {
+            if (f2 != 1.0f) {
                 TransKeys().AtFrame(f1, v68);
                 Interp(t58.v, v68, f2, t58.v);
-            }
-            else TransKeys().AtFrame(f1, t58.v);
+            } else
+                TransKeys().AtFrame(f1, t58.v);
         }
-        if(!RotKeys().empty()){
+        if (!RotKeys().empty()) {
             RotKeys().AtFrame(f1, v68);
-            if(f2 != 1.0f){
+            if (f2 != 1.0f) {
                 Vector3 v80;
-                if(ScaleKeys().empty()) MakeEuler(t58.m, v80);
-                else MakeEulerScale(t58.m, v80, v74);
+                if (ScaleKeys().empty())
+                    MakeEuler(t58.m, v80);
+                else
+                    MakeEulerScale(t58.m, v80, v74);
                 Interp(v80, v68, f2, v68);
             }
             MakeRotMatrix(v68, t58.m, true);
         }
-        if(!ScaleKeys().empty()){
+        if (!ScaleKeys().empty()) {
             ScaleKeys().AtFrame(f1, v68);
-            if(f2 != 1.0f){
+            if (f2 != 1.0f) {
                 Interp(v74, v68, f2, v68);
             }
             Scale(v68, t58.m, t58.m);
         }
-        if(!TransKeys().empty() || !RotKeys().empty() || !ScaleKeys().empty()){
+        if (!TransKeys().empty() || !RotKeys().empty() || !ScaleKeys().empty()) {
             mMat->SetTexXfm(t58);
         }
-        if(!GetTexKeys().empty()){
-            RndTex* tex;
+        if (!GetTexKeys().empty()) {
+            RndTex *tex;
             GetTexKeys().AtFrame(f1, tex); // fn_805FBDAC - AtFrame for TexPtr, RndTex*
             mMat->SetDiffuseTex(tex);
         }
         Hmx::Color col(mMat->GetColor());
-        if(!ColorKeys().empty()){
+        if (!ColorKeys().empty()) {
             ColorKeys().AtFrame(f1, col);
-            if(f2 != 1.0f){
+            if (f2 != 1.0f) {
                 Interp(mMat->GetColor(), col, f2, col);
             }
             mMat->SetColor(col);
         }
-        if(!AlphaKeys().empty()){
+        if (!AlphaKeys().empty()) {
             float alpha = mMat->Alpha();
-            AlphaKeys().AtFrame(f1, alpha); // fn_803B1308 - Keys<float, float>::AtFrame, which calls another AtFrame method fn_803B1374
-            if(f2 != 1.0f){
+            AlphaKeys().AtFrame(f1, alpha); // fn_803B1308 - Keys<float, float>::AtFrame,
+                                            // which calls another AtFrame method
+                                            // fn_803B1374
+            if (f2 != 1.0f) {
                 Interp(mMat->Alpha(), alpha, f2, alpha);
             }
             mMat->SetAlpha(alpha);
@@ -207,8 +223,8 @@ void RndMatAnim::SetFrame(float f1, float f2){
 }
 #pragma pop
 
-void RndMatAnim::SetKey(float frame){
-    if(mMat){
+void RndMatAnim::SetKey(float frame) {
+    if (mMat) {
         Vector3 v28, v34;
         MakeEulerScale(mMat->mTexXfm.m, v28, v34);
         TransKeys().Add(mMat->mTexXfm.v, frame, true);
@@ -220,7 +236,9 @@ void RndMatAnim::SetKey(float frame){
     }
 }
 
-void Interp(const RndMatAnim::TexPtr& texPtr, const RndMatAnim::TexPtr&, float, RndTex*& tex){
+void Interp(
+    const RndMatAnim::TexPtr &texPtr, const RndMatAnim::TexPtr &, float, RndTex *&tex
+) {
     tex = texPtr;
 }
 

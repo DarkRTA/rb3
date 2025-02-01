@@ -123,9 +123,7 @@ void ArpeggioShape::SetYPos(float f) {
     unk0->SetWorldXfm(tf);
 }
 
-float ArpeggioShape::GetYPos() const {
-    return unk0->WorldXfm().v.y;
-}
+float ArpeggioShape::GetYPos() const { return unk0->WorldXfm().v.y; }
 
 ArpeggioShapePool::ArpeggioShapePool(ObjectDir *dir, RndGroup *shapes, int i)
     : mChordShapeMesh(dir->Find<RndMesh>("chord_shape.mesh", true)),

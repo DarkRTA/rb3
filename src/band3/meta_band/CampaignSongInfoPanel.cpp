@@ -19,47 +19,44 @@
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 
-CampaignSongInfoPanel::CampaignSongInfoPanel() : mCampaignSourceProvider(0) {
-
-}
+CampaignSongInfoPanel::CampaignSongInfoPanel() : mCampaignSourceProvider(0) {}
 
 Symbol CampaignSongInfoPanel::SelectedSource() const {
-    if(GetState() != kUp){
+    if (GetState() != kUp) {
         return "";
-    }
-    else {
-        UIList* pSourcesList = mDir->Find<UIList>("sources.lst", true);
+    } else {
+        UIList *pSourcesList = mDir->Find<UIList>("sources.lst", true);
         MILO_ASSERT(pSourcesList, 0x71);
         return pSourcesList->SelectedSym(true);
     }
 }
 
 ScoreType CampaignSongInfoPanel::SelectedScoreType() const {
-    if(GetState() != kUp){
+    if (GetState() != kUp) {
         return kScoreBand;
-    }
-    else {
-        UIList* pInstrumentsList = mDir->Find<UIList>("instruments.lst", true);
+    } else {
+        UIList *pInstrumentsList = mDir->Find<UIList>("instruments.lst", true);
         MILO_ASSERT(pInstrumentsList, 0x7F);
         return SymToScoreType(pInstrumentsList->SelectedSym(true));
     }
 }
 
-inline void CampaignSourceProvider::Update(){
+inline void CampaignSourceProvider::Update() {
     unk20.clear();
     std::set<Symbol> srcs;
     TheSongMgr->InqAvailableSongSources(srcs);
-    if(srcs.size() > 1) unk20.push_back(all);
-    for(std::set<Symbol>::iterator it = srcs.begin(); it != srcs.end(); ++it){
+    if (srcs.size() > 1)
+        unk20.push_back(all);
+    for (std::set<Symbol>::iterator it = srcs.begin(); it != srcs.end(); ++it) {
         Symbol cur = *it;
         unk20.push_back(cur);
     }
 }
 
-void CampaignSongInfoPanel::Refresh(){
+void CampaignSongInfoPanel::Refresh() {
     MILO_ASSERT(mCampaignSourceProvider, 0x88);
     mCampaignSourceProvider->Update();
-    UIList* pSourceList = mDir->Find<UIList>("sources.lst", true);
+    UIList *pSourceList = mDir->Find<UIList>("sources.lst", true);
     MILO_ASSERT(pSourceList, 0x8D);
     pSourceList->SetProvider(mCampaignSourceProvider);
     Handle(refresh_instrument_list_msg, true);
@@ -67,41 +64,42 @@ void CampaignSongInfoPanel::Refresh(){
     Handle(update_details_msg, true);
 }
 
-void CampaignSongInfoPanel::SelectDefaultInstrument(){
-    LocalBandUser* pUser = TheCampaign->GetUser();
+void CampaignSongInfoPanel::SelectDefaultInstrument() {
+    LocalBandUser *pUser = TheCampaign->GetUser();
     MILO_ASSERT(pUser, 0x9F);
-    Symbol scoreTypeSym = ScoreTypeToSym(TrackTypeToScoreType(ControllerTypeToTrackType(pUser->GetControllerType(), false), false, false));
-    UIList* pInstrumentList = mDir->Find<UIList>("instruments.lst", true);
+    Symbol scoreTypeSym = ScoreTypeToSym(TrackTypeToScoreType(
+        ControllerTypeToTrackType(pUser->GetControllerType(), false), false, false
+    ));
+    UIList *pInstrumentList = mDir->Find<UIList>("instruments.lst", true);
     MILO_ASSERT(pInstrumentList, 0xA6);
     pInstrumentList->SetSelected(scoreTypeSym, true, -1);
     Handle(update_details_msg, true);
 }
 
-void CampaignSongInfoPanel::Enter(){
+void CampaignSongInfoPanel::Enter() {
     UIPanel::Enter();
     MILO_ASSERT(!mCampaignSourceProvider, 0xB3);
     mCampaignSourceProvider = new CampaignSourceProvider();
     Refresh();
 }
 
-void CampaignSongInfoPanel::Unload(){
+void CampaignSongInfoPanel::Unload() {
     UIPanel::Unload();
-    RELEASE(mCampaignSourceProvider);   
+    RELEASE(mCampaignSourceProvider);
 }
 
-void CampaignSongInfoPanel::Load(){ UIPanel::Load(); }
+void CampaignSongInfoPanel::Load() { UIPanel::Load(); }
 
 int CampaignSongInfoPanel::GetCareerScore() const {
     ScoreType ty = SelectedScoreType();
     Symbol src = SelectedSource();
-    BandProfile* pProfile = TheCampaign->GetProfile();
+    BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0xCD);
-    SongStatusMgr* pSongStatusMgr = pProfile->GetSongStatusMgr();
+    SongStatusMgr *pSongStatusMgr = pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0xCF);
-    if(src == all){
+    if (src == all) {
         return pSongStatusMgr->CalculateTotalScore(ty, gNullStr);
-    }
-    else {
+    } else {
         return pSongStatusMgr->CalculateTotalScore(ty, src);
     }
 }
@@ -109,14 +107,13 @@ int CampaignSongInfoPanel::GetCareerScore() const {
 int CampaignSongInfoPanel::GetSongCount() const {
     Symbol src = SelectedSource();
     ScoreType ty = SelectedScoreType();
-    BandProfile* pProfile = TheCampaign->GetProfile();
+    BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0xE3);
-    SongStatusMgr* pSongStatusMgr = pProfile->GetSongStatusMgr();
+    SongStatusMgr *pSongStatusMgr = pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0xE5);
-    if(src == all){
+    if (src == all) {
         return pSongStatusMgr->GetTotalSongs(ty, gNullStr);
-    }
-    else {
+    } else {
         return pSongStatusMgr->GetTotalSongs(ty, src);
     }
 }
@@ -124,14 +121,13 @@ int CampaignSongInfoPanel::GetSongCount() const {
 int CampaignSongInfoPanel::GetSongsCompleted(Difficulty diff) const {
     ScoreType ty = SelectedScoreType();
     Symbol src = SelectedSource();
-    BandProfile* pProfile = TheCampaign->GetProfile();
+    BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0xF9);
-    SongStatusMgr* pSongStatusMgr = pProfile->GetSongStatusMgr();
+    SongStatusMgr *pSongStatusMgr = pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0xFB);
-    if(src == all){
+    if (src == all) {
         return pSongStatusMgr->GetCompletedSongs(ty, diff, gNullStr);
-    }
-    else {
+    } else {
         return pSongStatusMgr->GetCompletedSongs(ty, diff, src);
     }
 }
@@ -139,14 +135,13 @@ int CampaignSongInfoPanel::GetSongsCompleted(Difficulty diff) const {
 int CampaignSongInfoPanel::GetStarCount() const {
     Symbol src = SelectedSource();
     ScoreType ty = SelectedScoreType();
-    BandProfile* pProfile = TheCampaign->GetProfile();
+    BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0x10F);
-    SongStatusMgr* pSongStatusMgr = pProfile->GetSongStatusMgr();
+    SongStatusMgr *pSongStatusMgr = pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0x111);
-    if(src == all){
+    if (src == all) {
         return pSongStatusMgr->GetPossibleStars(ty, gNullStr);
-    }
-    else {
+    } else {
         return pSongStatusMgr->GetPossibleStars(ty, src);
     }
 }
@@ -154,39 +149,36 @@ int CampaignSongInfoPanel::GetStarCount() const {
 int CampaignSongInfoPanel::GetStarsEarned(Difficulty diff) const {
     ScoreType ty = SelectedScoreType();
     Symbol src = SelectedSource();
-    BandProfile* pProfile = TheCampaign->GetProfile();
+    BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0x125);
-    SongStatusMgr* pSongStatusMgr = pProfile->GetSongStatusMgr();
+    SongStatusMgr *pSongStatusMgr = pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0x127);
-    if(src == all){
+    if (src == all) {
         return pSongStatusMgr->GetTotalBestStars(ty, diff, gNullStr);
-    }
-    else {
+    } else {
         return pSongStatusMgr->GetTotalBestStars(ty, diff, src);
     }
 }
 
-const char* CampaignSongInfoPanel::GetInstrumentIcon(){
+const char *CampaignSongInfoPanel::GetInstrumentIcon() {
     return GetFontCharFromScoreType(SelectedScoreType(), 0);
 }
 
-Symbol CampaignSongInfoPanel::GetMusicLibraryBackScreen(){
+Symbol CampaignSongInfoPanel::GetMusicLibraryBackScreen() {
     MILO_ASSERT(GetState() == kUp, 0x13E);
     DataNode handled = Handle(get_musiclibrary_backscreen_msg, true);
     return handled.Sym();
 }
 
-Symbol CampaignSongInfoPanel::GetMusicLibraryNextScreen(){
+Symbol CampaignSongInfoPanel::GetMusicLibraryNextScreen() {
     MILO_ASSERT(GetState() == kUp, 0x14A);
     DataNode handled = Handle(get_musiclibrary_nextscreen_msg, true);
     return handled.Sym();
 }
 
-void CampaignSongInfoPanel::CreateAndSubmitMusicLibraryTask(){
+void CampaignSongInfoPanel::CreateAndSubmitMusicLibraryTask() {}
 
-}
-
-void CampaignSongInfoPanel::Launch(){
+void CampaignSongInfoPanel::Launch() {
     CreateAndSubmitMusicLibraryTask();
     Handle(handle_goto_musiclibrary_msg, true);
 }
@@ -210,13 +202,13 @@ inline Symbol CampaignSourceProvider::DataSymbol(int i_iData) const {
 
 inline int CampaignSourceProvider::NumData() const { return unk20.size(); }
 
-inline void CampaignSourceProvider::Text(int, int i_iData, UIListLabel* slot, UILabel* label) const {
+inline void
+CampaignSourceProvider::Text(int, int i_iData, UIListLabel *slot, UILabel *label) const {
     MILO_ASSERT(i_iData < NumData(), 0x41);
     Symbol sym = DataSymbol(i_iData);
-    if(slot->Matches("name")){
+    if (slot->Matches("name")) {
         label->SetTextToken(sym);
-    }
-    else {
+    } else {
         label->SetTextToken(gNullStr);
     }
 }

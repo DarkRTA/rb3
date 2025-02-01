@@ -5,15 +5,15 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 
-CampaignLevel::CampaignLevel(DataArray* arr, int i) : mName(""), unk8(i), mPointValue(0), mAward(""), mAdvertisement(""), mRequirementToken(""), mIsMajorLevel(0) {
+CampaignLevel::CampaignLevel(DataArray *arr, int i)
+    : mName(""), unk8(i), mPointValue(0), mAward(""), mAdvertisement(""),
+      mRequirementToken(""), mIsMajorLevel(0) {
     Configure(arr);
 }
 
-CampaignLevel::~CampaignLevel(){
+CampaignLevel::~CampaignLevel() {}
 
-}
-
-void CampaignLevel::Configure(DataArray* i_pConfig){
+void CampaignLevel::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1F);
     mName = i_pConfig->Sym(0);
     i_pConfig->FindData(point_value, mPointValue, true);
@@ -27,7 +27,9 @@ DECOMP_FORCEACTIVE(CampaignLevel, "%s_desc")
 
 Symbol CampaignLevel::GetName() const { return mName; }
 Symbol CampaignLevel::GetEarnedText() const { return MakeString("%s_earned", mName); }
-String CampaignLevel::GetIconArt() const { return MakeString("ui/accomplishments/campaignlevel_art/%s_keep.bmp", mName.Str()); }
+String CampaignLevel::GetIconArt() const {
+    return MakeString("ui/accomplishments/campaignlevel_art/%s_keep.bmp", mName.Str());
+}
 int CampaignLevel::GetValue() const { return mPointValue; }
 Symbol CampaignLevel::GetAward() const { return mAward; }
 bool CampaignLevel::HasAward() const { return mAward != ""; }

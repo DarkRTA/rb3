@@ -15,8 +15,8 @@ class SpotlightDrawer;
 static bool sLoading;
 class AutoLoading {
 public:
-    AutoLoading(){ sLoading = true; }
-    ~AutoLoading(){ sLoading = false; }
+    AutoLoading() { sLoading = true; }
+    ~AutoLoading() { sLoading = false; }
 };
 
 /** "Represents an animated sequence of states of certain
@@ -28,8 +28,8 @@ public:
     class EnvironmentEntry {
     public:
         EnvironmentEntry();
-        void Load(BinStream&);
-        bool operator!=(const EnvironmentEntry&) const;
+        void Load(BinStream &);
+        bool operator!=(const EnvironmentEntry &) const;
 
         /** "Ambient color" */
         int mColor; // 0x0 - ambient color
@@ -49,9 +49,9 @@ public:
     class EnvLightEntry {
     public:
         EnvLightEntry();
-        void Load(BinStream&);
-        void Animate(const EnvLightEntry&, float);
-        bool operator!=(const EnvLightEntry&) const;
+        void Load(BinStream &);
+        void Animate(const EnvLightEntry &, float);
+        bool operator!=(const EnvLightEntry &) const;
 
         Hmx::Quat unk0; // 0x0
         /** "Light's position" */
@@ -70,11 +70,11 @@ public:
     // size 0x20
     class SpotlightEntry {
     public:
-        SpotlightEntry(Hmx::Object*);
-        void Load(BinStream&);
-        void CalculateDirection(Spotlight*, Hmx::Quat&) const;
-        void Animate(Spotlight*, const SpotlightEntry&, float);
-        bool operator!=(const SpotlightEntry&) const;
+        SpotlightEntry(Hmx::Object *);
+        void Load(BinStream &);
+        void CalculateDirection(Spotlight *, Hmx::Quat &) const;
+        void Animate(Spotlight *, const SpotlightEntry &, float);
+        bool operator!=(const SpotlightEntry &) const;
 
         float mIntensity; // 0x0
         int mColor; // 0x4 - packed color
@@ -86,7 +86,7 @@ public:
         bool unk8p2 : 1;
         bool unk8p1 : 1;
         bool mFlareEnabled : 1; // 0x8 & 1
-        RndTransformable* mTarget; // 0xc
+        RndTransformable *mTarget; // 0xc
         Hmx::Quat unk10;
 
         // String spotlight: "Spotlight name"
@@ -96,10 +96,10 @@ public:
     class SpotlightDrawerEntry {
     public:
         SpotlightDrawerEntry();
-        void Load(BinStream&);
-        void Animate(const SpotlightDrawerEntry&, float);
-        bool operator!=(const SpotlightDrawerEntry&) const;
-    
+        void Load(BinStream &);
+        void Animate(const SpotlightDrawerEntry &, float);
+        bool operator!=(const SpotlightDrawerEntry &) const;
+
         /** "Global intensity scale" */
         float mTotalIntensity; // 0x0
         /** "Intensity of smokeless beam" */
@@ -114,12 +114,12 @@ public:
 
     class Keyframe {
     public:
-        Keyframe(Hmx::Object*);
-        ~Keyframe(){}
+        Keyframe(Hmx::Object *);
+        ~Keyframe() {}
 
-        void Load(BinStream&);
-        void LoadP9(BinStream&);
-        void LoadStageKit(BinStream&);
+        void Load(BinStream &);
+        void LoadP9(BinStream &);
+        void LoadStageKit(BinStream &);
 
         ObjVector<SpotlightEntry> mSpotlightEntries; // 0x0
         std::vector<EnvironmentEntry> mEnvironmentEntries; // 0xc
@@ -157,16 +157,16 @@ public:
     LightPreset();
     OBJ_CLASSNAME(LightPreset);
     OBJ_SET_TYPE(LightPreset);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~LightPreset();
     virtual void StartAnim();
     virtual void SetFrame(float, float);
-    virtual float EndFrame(){ return mCachedDuration; }
-    virtual void Replace(Hmx::Object*, Hmx::Object*);
+    virtual float EndFrame() { return mCachedDuration; }
+    virtual void Replace(Hmx::Object *, Hmx::Object *);
 
     bool PlatformOk() const;
     Symbol Category() const { return mCategory; }
@@ -180,44 +180,46 @@ public:
     void SyncNewSpotlights();
     void CacheFrames();
     void OnKeyframeCmd(KeyframeCmd);
-    void SetKeyframe(Keyframe&);
-    void ApplyState(const Keyframe&);
+    void SetKeyframe(Keyframe &);
+    void ApplyState(const Keyframe &);
     void Animate(float);
     void SyncKeyframeTargets();
-    void TranslateColor(const Hmx::Color&, Hmx::Color&);
-    void GetKey(float, int&, int&, float&) const;
-    RndPostProc* GetCurrentPostProc() const;
+    void TranslateColor(const Hmx::Color &, Hmx::Color &);
+    void GetKey(float, int &, int &, float &) const;
+    RndPostProc *GetCurrentPostProc() const;
     void SetFrameEx(float, float, bool);
     int NextManualFrame(KeyframeCmd) const;
     void AdvanceManual(KeyframeCmd);
-    void FillSpotPresetData(Spotlight*, SpotlightEntry&, int);
-    void FillEnvPresetData(RndEnviron*, EnvironmentEntry&);
-    void FillLightPresetData(RndLight*, EnvLightEntry&);
-    void FillSpotlightDrawerPresetData(SpotlightDrawer*, SpotlightDrawerEntry&);
-    void SetSpotlight(Spotlight*, int);
-    void AddSpotlight(Spotlight*, bool);
-    void AddEnvironment(RndEnviron*);
-    void AddLight(RndLight*);
-    void AddSpotlightDrawer(SpotlightDrawer*);
-    void AnimateSpotFromPreset(Spotlight*, const SpotlightEntry&, float);
-    void AnimateEnvFromPreset(RndEnviron*, const EnvironmentEntry&, float);
-    void AnimateLightFromPreset(RndLight*, const EnvLightEntry&, float);
-    void AnimateSpotlightDrawerFromPreset(SpotlightDrawer*, const SpotlightDrawerEntry&, float);
-    void AnimateState(const Keyframe&, const Keyframe&, float);
-    void SetHue(LightHue* hue){ mHue = hue; }
+    void FillSpotPresetData(Spotlight *, SpotlightEntry &, int);
+    void FillEnvPresetData(RndEnviron *, EnvironmentEntry &);
+    void FillLightPresetData(RndLight *, EnvLightEntry &);
+    void FillSpotlightDrawerPresetData(SpotlightDrawer *, SpotlightDrawerEntry &);
+    void SetSpotlight(Spotlight *, int);
+    void AddSpotlight(Spotlight *, bool);
+    void AddEnvironment(RndEnviron *);
+    void AddLight(RndLight *);
+    void AddSpotlightDrawer(SpotlightDrawer *);
+    void AnimateSpotFromPreset(Spotlight *, const SpotlightEntry &, float);
+    void AnimateEnvFromPreset(RndEnviron *, const EnvironmentEntry &, float);
+    void AnimateLightFromPreset(RndLight *, const EnvLightEntry &, float);
+    void AnimateSpotlightDrawerFromPreset(
+        SpotlightDrawer *, const SpotlightDrawerEntry &, float
+    );
+    void AnimateState(const Keyframe &, const Keyframe &, float);
+    void SetHue(LightHue *hue) { mHue = hue; }
     float LegacyFadeIn() const { return mLegacyFadeIn; }
 
     static void ResetEvents();
     static std::deque<std::pair<KeyframeCmd, float> > sManualEvents;
 
-    DataNode OnSetKeyframe(DataArray*);
-    DataNode OnViewKeyframe(DataArray*);
+    DataNode OnSetKeyframe(DataArray *);
+    DataNode OnViewKeyframe(DataArray *);
 
     ObjVector<Keyframe> mKeyframes; // 0x10
-    std::vector<Spotlight*> mSpotlights; // 0x1c
-    std::vector<RndEnviron*> mEnvironments; // 0x24
-    std::vector<RndLight*> mLights; // 0x2c
-    std::vector<SpotlightDrawer*> mSpotlightDrawers; // 0x34
+    std::vector<Spotlight *> mSpotlights; // 0x1c
+    std::vector<RndEnviron *> mEnvironments; // 0x24
+    std::vector<RndLight *> mLights; // 0x2c
+    std::vector<SpotlightDrawer *> mSpotlightDrawers; // 0x34
     /** "Category for preset-picking" */
     Symbol mCategory; // 0x3c
     /** "Limit this shot to given platform" - the options are kPlatformNone/PS3/Xbox */
@@ -236,7 +238,7 @@ public:
     std::vector<EnvironmentEntry> mEnvironmentState; // 0x68
     std::vector<EnvLightEntry> mLightState; // 0x70
     std::vector<SpotlightDrawerEntry> mSpotlightDrawerState; // 0x78
-    Keyframe* mLastKeyframe; // 0x80
+    Keyframe *mLastKeyframe; // 0x80
     float mLastBlend; // 0x84
     float mStartBeat; // 0x88
     float mManualFrameStart; // 0x8c
@@ -244,38 +246,36 @@ public:
     int mLastManualFrame; // 0x94
     float mManualFadeTime; // 0x98
     float mCachedDuration; // 0x9c
-    LightHue* mHue; // 0xa0
+    LightHue *mHue; // 0xa0
 
     DECLARE_REVS
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(LightPreset)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(LightPreset)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(LightPreset) }
 };
 
-inline BinStream& operator>>(BinStream& bs, LightPreset::Keyframe& k){
+inline BinStream &operator>>(BinStream &bs, LightPreset::Keyframe &k) {
     k.Load(bs);
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, LightPreset::EnvLightEntry& l){
+inline BinStream &operator>>(BinStream &bs, LightPreset::EnvLightEntry &l) {
     l.Load(bs);
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, LightPreset::EnvironmentEntry& e){
+inline BinStream &operator>>(BinStream &bs, LightPreset::EnvironmentEntry &e) {
     e.Load(bs);
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightEntry& e){
+inline BinStream &operator>>(BinStream &bs, LightPreset::SpotlightEntry &e) {
     e.Load(bs);
     return bs;
 }
 
-inline BinStream& operator>>(BinStream& bs, LightPreset::SpotlightDrawerEntry& e){
+inline BinStream &operator>>(BinStream &bs, LightPreset::SpotlightDrawerEntry &e) {
     e.Load(bs);
     return bs;
 }

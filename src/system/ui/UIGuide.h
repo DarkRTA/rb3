@@ -14,22 +14,21 @@ public:
     virtual ~UIGuide();
     OBJ_CLASSNAME(UIGuide);
     OBJ_SET_TYPE(UIGuide);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
 
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD
     NEW_OBJ(UIGuide);
-    static void Init(){
-        REGISTER_OBJ_FACTORY(UIGuide);
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(UIGuide); }
 
     /** "Horizontal or vertical guide?" */
     Type mType;
-    /** "position in proportion to screen width (if vertical) or height (if horizontal)". Ranges from 0 to 1. */
+    /** "position in proportion to screen width (if vertical) or height (if horizontal)".
+     * Ranges from 0 to 1. */
     float mPos;
 };

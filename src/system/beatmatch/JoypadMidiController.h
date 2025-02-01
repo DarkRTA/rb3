@@ -8,18 +8,18 @@
 
 class JoypadMidiController : public JoypadController {
 public:
-    JoypadMidiController(User*, const DataArray*, BeatMatchControllerSink*, bool);
+    JoypadMidiController(User *, const DataArray *, BeatMatchControllerSink *, bool);
     virtual ~JoypadMidiController();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual float GetWhammyBar() const;
     virtual float GetCapStrip() const;
 
     JoypadButton MidiNoteToButton(int) const;
-    int OnMsg(const KeyboardKeyPressedMsg&);
-    int OnMsg(const KeyboardKeyReleasedMsg&);
-    int OnMsg(const KeyboardSustainMsg&);
-    int OnMsg(const KeyboardModMsg&);
-    int OnMsg(const ButtonDownMsg&);
+    int OnMsg(const KeyboardKeyPressedMsg &);
+    int OnMsg(const KeyboardKeyReleasedMsg &);
+    int OnMsg(const KeyboardSustainMsg &);
+    int OnMsg(const KeyboardModMsg &);
+    int OnMsg(const ButtonDownMsg &);
 
     float mWhammy;
 };

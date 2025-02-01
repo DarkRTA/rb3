@@ -3,17 +3,11 @@
 
 #include "decomp.h"
 
-DECOMP_FORCEACTIVE(MidiVarLen,
-    __FILE__,
-    "mValue<0x0fffffff",
-    "len < 5"
-)
+DECOMP_FORCEACTIVE(MidiVarLen, __FILE__, "mValue<0x0fffffff", "len < 5")
 
-MidiVarLenNumber::MidiVarLenNumber(BinStream& b) {
-    Read(b);
-}
+MidiVarLenNumber::MidiVarLenNumber(BinStream &b) { Read(b); }
 
-BinStream& MidiVarLenNumber::Read(BinStream& b) {
+BinStream &MidiVarLenNumber::Read(BinStream &b) {
     mValue = 0;
     unsigned char bVar3;
     do {

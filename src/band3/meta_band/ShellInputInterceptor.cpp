@@ -7,17 +7,19 @@
 #include "os/JoypadMsgs.h"
 #include "ui/UI.h"
 
-ShellInputInterceptor::ShellInputInterceptor(BandUserMgr* mgr) : mBandUserMgr(mgr), mButtonDownSwitch(1), mButtonUpSwitch(1) {
+ShellInputInterceptor::ShellInputInterceptor(BandUserMgr *mgr)
+    : mBandUserMgr(mgr), mButtonDownSwitch(1), mButtonUpSwitch(1) {
     mTime.Start();
-    for(int i = 0; i < 4; i++) mLastUpDown[i] = 0;
+    for (int i = 0; i < 4; i++)
+        mLastUpDown[i] = 0;
 }
 
-DataNode ShellInputInterceptor::OnMsg(const ButtonDownMsg& msg){
-    LocalBandUser* user = BandUserMgr::GetLocalBandUser(msg.GetUser());
-    if(mButtonDownSwitch){
+DataNode ShellInputInterceptor::OnMsg(const ButtonDownMsg &msg) {
+    LocalBandUser *user = BandUserMgr::GetLocalBandUser(msg.GetUser());
+    if (mButtonDownSwitch) {
         JoypadAction filteredAction = FilterAction(user, msg.GetAction());
         JoypadAction rawAction = msg.GetAction();
-        if(filteredAction != rawAction){
+        if (filteredAction != rawAction) {
             static ButtonDownMsg new_msg(nullptr, kPad_Xbox_A, kAction_Confirm, 0);
             new_msg[0] = user;
             new_msg[1] = msg.GetButton();
@@ -29,18 +31,18 @@ DataNode ShellInputInterceptor::OnMsg(const ButtonDownMsg& msg){
             return 0;
         }
     }
-    if(IsDoubleStrum(user, msg.GetButton())){
+    if (IsDoubleStrum(user, msg.GetButton())) {
         return 1;
-    }
-    else return DataNode(kDataUnhandled, 0);
+    } else
+        return DataNode(kDataUnhandled, 0);
 }
 
-DataNode ShellInputInterceptor::OnMsg(const ButtonUpMsg& msg){
-    LocalBandUser* user = BandUserMgr::GetLocalBandUser(msg.GetUser());
-    if(mButtonUpSwitch){
+DataNode ShellInputInterceptor::OnMsg(const ButtonUpMsg &msg) {
+    LocalBandUser *user = BandUserMgr::GetLocalBandUser(msg.GetUser());
+    if (mButtonUpSwitch) {
         JoypadAction filteredAction = FilterAction(user, msg.GetAction());
         JoypadAction rawAction = msg.GetAction();
-        if(filteredAction != rawAction){
+        if (filteredAction != rawAction) {
             static ButtonUpMsg new_msg(nullptr, kPad_Xbox_A, kAction_Confirm, 0);
             new_msg[0] = user;
             new_msg[1] = msg.GetButton();

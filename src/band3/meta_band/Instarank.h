@@ -5,7 +5,8 @@
 
 class Instarank : public virtual Hmx::Object {
 public:
-    // for SOME reason, for this specific TU, the class members are declared before the virtual funcs
+    // for SOME reason, for this specific TU, the class members are declared before the
+    // virtual funcs
     bool mIsValid; // 0x4
     int unk8;
     bool unkc;
@@ -16,12 +17,12 @@ public:
     String unk28;
 
     Instarank();
-    virtual ~Instarank(){}
+    virtual ~Instarank() {}
 
     void Clear();
     void Init(int, bool, ScoreType, int, bool, String, String);
-    void UpdateRankLabel(UILabel*);
+    void UpdateRankLabel(UILabel *);
     bool HasHighscore() const;
-    void UpdateString1Label(UILabel*);
-    void UpdateString2Label(UILabel*);
+    void UpdateString1Label(UILabel *);
+    void UpdateString2Label(UILabel *);
 };

@@ -11,14 +11,14 @@ public:
     CharBoneOffset();
     OBJ_CLASSNAME(CharBoneOffset);
     OBJ_SET_TYPE(CharBoneOffset);
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual void Poll();
-    virtual ~CharBoneOffset(){}
-    virtual void PollDeps(std::list<Hmx::Object*>&, std::list<Hmx::Object*>&);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual ~CharBoneOffset() {}
+    virtual void PollDeps(std::list<Hmx::Object *> &, std::list<Hmx::Object *> &);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual void Highlight();
 
     void ApplyToLocal();
@@ -27,9 +27,7 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(CharBoneOffset)
-    static void Init(){
-        REGISTER_OBJ_FACTORY(CharBoneOffset)
-    }
+    static void Init() { REGISTER_OBJ_FACTORY(CharBoneOffset) }
 
     /** "The bone to offset" */
     ObjPtr<RndTransformable> mDest; // 0x10

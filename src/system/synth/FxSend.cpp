@@ -8,78 +8,84 @@
 
 INIT_REVS(FxSend);
 
-FxSend::FxSend() : mNextSend(this), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f),
-    mInputGain(0.0f), mReverbMixDb(-96.0f), mReverbEnable(0), mEnableUpdates(1), mChannels(kSendAll) {
-}
+FxSend::FxSend()
+    : mNextSend(this), mStage(0), mBypass(0), mDryGain(-96.0f), mWetGain(0.0f),
+      mInputGain(0.0f), mReverbMixDb(-96.0f), mReverbEnable(0), mEnableUpdates(1),
+      mChannels(kSendAll) {}
 
-FxSend::~FxSend(){
+FxSend::~FxSend() {}
 
-}
-
-void FxSend::Replace(Hmx::Object* from, Hmx::Object* to){
+void FxSend::Replace(Hmx::Object *from, Hmx::Object *to) {
     Hmx::Object::Replace(from, to);
     MILO_ASSERT(from == mNextSend, 0x30);
     mNextSend = ObjOwnerPtr<FxSend>(to, 0);
     RebuildChain();
 }
 
-void FxSend::SetNextSend(FxSend* next){
-    if(next != mNextSend && CheckChain(next, mStage)){
+void FxSend::SetNextSend(FxSend *next) {
+    if (next != mNextSend && CheckChain(next, mStage)) {
         mNextSend = next;
         RebuildChain();
     }
 }
 
-void FxSend::SetStage(int stage){
-    if(stage != mStage && CheckChain(mNextSend, stage)){
+void FxSend::SetStage(int stage) {
+    if (stage != mStage && CheckChain(mNextSend, stage)) {
         mStage = stage;
         RebuildChain();
     }
 }
 
-void FxSend::SetChannels(SendChannels chans){
-    if(chans == mChannels) return;
+void FxSend::SetChannels(SendChannels chans) {
+    if (chans == mChannels)
+        return;
     mChannels = chans;
     RebuildChain();
 }
 
-void FxSend::RebuildChain(){
-    std::vector<FxSend*> vec;
+void FxSend::RebuildChain() {
+    std::vector<FxSend *> vec;
     BuildChainVector(vec);
     Recreate(vec);
 }
 
-void FxSend::BuildChainVector(std::vector<FxSend*>& vec){
+void FxSend::BuildChainVector(std::vector<FxSend *> &vec) {
     vec.push_back(this);
-    FOREACH_OBJREF(it, this){
-        ObjRef* ref = *it;
-        FxSend* rsend = dynamic_cast<FxSend*>(ref->RefOwner());
-        if(rsend && rsend->NextSend() == this) {
+    FOREACH_OBJREF(it, this) {
+        ObjRef *ref = *it;
+        FxSend *rsend = dynamic_cast<FxSend *>(ref->RefOwner());
+        if (rsend && rsend->NextSend() == this) {
             rsend->BuildChainVector(vec);
-        }
-        else {
-            Sfx* seq = dynamic_cast<Sfx*>(ref->RefOwner());
-            if(seq) seq->Stop(false);
+        } else {
+            Sfx *seq = dynamic_cast<Sfx *>(ref->RefOwner());
+            if (seq)
+                seq->Stop(false);
         }
     }
 }
 
-bool FxSend::CheckChain(FxSend* send, int i){
-    FxSend* cur;
-    for(cur = send; cur && cur != this; cur = cur->mNextSend);
-    if(cur == this){
+bool FxSend::CheckChain(FxSend *send, int i) {
+    FxSend *cur;
+    for (cur = send; cur && cur != this; cur = cur->mNextSend)
+        ;
+    if (cur == this) {
         MILO_WARN("Error: can't have loops in your FX chain.");
         return false;
-    }
-    else if(send && send->Stage() <= i){
-        MILO_WARN("Error: output send must be set to a higher stage (%d <= %d).", send->Stage(), i);
+    } else if (send && send->Stage() <= i) {
+        MILO_WARN(
+            "Error: output send must be set to a higher stage (%d <= %d).",
+            send->Stage(),
+            i
+        );
         return false;
-    }
-    else {
-        FOREACH_OBJREF(it, this){
-            FxSend* rsend = dynamic_cast<FxSend*>((*it)->RefOwner());
-            if(rsend && rsend->NextSend() == this && rsend->Stage() >= i){
-                MILO_WARN("Error: stage must be higher than all input sends' stages (see %s).", rsend->Name());
+    } else {
+        FOREACH_OBJREF(it, this) {
+            FxSend *rsend = dynamic_cast<FxSend *>((*it)->RefOwner());
+            if (rsend && rsend->NextSend() == this && rsend->Stage() >= i) {
+                MILO_WARN(
+                    "Error: stage must be higher than all input sends' stages (see %s).",
+                    rsend->Name()
+                );
                 return false;
             }
         }
@@ -87,45 +93,44 @@ bool FxSend::CheckChain(FxSend* send, int i){
     }
 }
 
-void FxSend::Save(BinStream&){
-    MILO_ASSERT(0, 0xA2);
-}
+void FxSend::Save(BinStream &) { MILO_ASSERT(0, 0xA2); }
 
-void FxSend::Load(BinStream& bs){
+void FxSend::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(7, 0);
     Hmx::Object::Load(bs);
-    FxSend* oldPtr = mNextSend;
+    FxSend *oldPtr = mNextSend;
     int oldStage = mStage;
     SendChannels oldchans = mChannels;
     bs >> mNextSend;
     bs >> mStage;
-    if(gRev < 5){
-        if(gRev >= 2){
+    if (gRev < 5) {
+        if (gRev >= 2) {
             float f;
             bs >> f;
             mDryGain = RatioToDb((100.0f - f) / 100.0f);
             mWetGain = RatioToDb(f / 100.0f);
         }
-        if(gRev >= 3){
+        if (gRev >= 3) {
             bs >> mBypass;
         }
     }
-    if(gRev >= 4){
+    if (gRev >= 4) {
         int chans;
         bs >> chans;
         mChannels = (SendChannels)chans;
     }
-    if(gRev >= 5){
+    if (gRev >= 5) {
         bs >> mDryGain >> mWetGain >> mInputGain;
     }
-    if(gRev >= 6){
+    if (gRev >= 6) {
         bs >> mBypass;
     }
-    if(gRev >= 7){
+    if (gRev >= 7) {
         bs >> mReverbMixDb >> mReverbEnable;
     }
-    if(mNextSend != oldPtr || mStage != oldStage || mChannels != oldchans) RebuildChain();
+    if (mNextSend != oldPtr || mStage != oldStage || mChannels != oldchans)
+        RebuildChain();
     UpdateMix();
 }
 
@@ -145,17 +150,18 @@ BEGIN_COPYS(FxSend)
     END_COPYING_MEMBERS
 END_COPYS
 
-void FxSend::TestWithMic(){
+void FxSend::TestWithMic() {
     MILO_ASSERT(TheLoadMgr.EditMode(), 0x10A);
-    Mic* mic = TheSynth->GetMic(0);
+    Mic *mic = TheSynth->GetMic(0);
     mic->Start();
     mic->StartPlayback();
     mic->SetFxSend(this);
 }
 
-void FxSend::EnableUpdates(bool b){
+void FxSend::EnableUpdates(bool b) {
     mEnableUpdates = b;
-    if(!b) return;
+    if (!b)
+        return;
     OnParametersChanged();
 }
 
@@ -173,6 +179,6 @@ BEGIN_PROPSYNCS(FxSend)
     SYNC_PROP_MODIFY(input_gain, mInputGain, UpdateMix())
     SYNC_PROP_MODIFY(reverb_mix_db, mReverbMixDb, UpdateMix())
     SYNC_PROP_MODIFY(reverb_enable, mReverbEnable, RebuildChain())
-    SYNC_PROP_MODIFY(channels, (int&)mChannels, RebuildChain())
+    SYNC_PROP_MODIFY(channels, (int &)mChannels, RebuildChain())
     SYNC_PROP_MODIFY(bypass, mBypass, UpdateMix())
 END_PROPSYNCS

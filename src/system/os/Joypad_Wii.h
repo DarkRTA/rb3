@@ -4,6 +4,6 @@
 int GetWiiJoypadType(int);
 int JoypadPollWiiRemotes();
 void JoypadWiiOnUserLeft(int, bool);
-int GetWiiJoypadDisconnectType(int, JoypadType*, JoypadType*); // change ret type
+int GetWiiJoypadDisconnectType(int, JoypadType *, JoypadType *); // change ret type
 void JoypadWiiInitCommon(bool);
 void DisableWiiJoypad(int);

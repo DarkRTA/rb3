@@ -26,10 +26,11 @@ END_COPYS
 SAVE_OBJ(MiniLeaderboardDisplay, 54)
 
 BEGIN_LOADS(MiniLeaderboardDisplay)
-    PreLoad(bs); PostLoad(bs);
+    PreLoad(bs);
+    PostLoad(bs);
 END_LOADS
 
-void MiniLeaderboardDisplay::PreLoad(BinStream& bs) {
+void MiniLeaderboardDisplay::PreLoad(BinStream &bs) {
     LOAD_REVS(bs)
     ASSERT_REVS(1, 0)
     if (gRev >= 1) {
@@ -38,15 +39,15 @@ void MiniLeaderboardDisplay::PreLoad(BinStream& bs) {
     UIComponent::PreLoad(bs);
 }
 
-void MiniLeaderboardDisplay::PostLoad(BinStream& bs) {
+void MiniLeaderboardDisplay::PostLoad(BinStream &bs) {
     UIComponent::PostLoad(bs);
     Update();
 }
 
 void MiniLeaderboardDisplay::DrawShowing() {
-    RndDir* d = mResource->Dir();
+    RndDir *d = mResource->Dir();
     MILO_ASSERT(d, 88);
-    d->SetWorldXfm(mCache->mFlags&1 ? WorldXfm_Force() : mWorldXfm);
+    d->SetWorldXfm(mCache->mFlags & 1 ? WorldXfm_Force() : mWorldXfm);
     d->Draw();
 }
 

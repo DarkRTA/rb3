@@ -4,8 +4,10 @@
 
 class TourDescEntry {
 public:
-    TourDescEntry() : mTier(-1), mGroup(""), mQuest(""), mNumSongs(0), mFilter(""), mVenue(""), mAnnouncementScreen(""), mMapScreen(""), mFlavor("") {}
-    virtual ~TourDescEntry(){}
+    TourDescEntry()
+        : mTier(-1), mGroup(""), mQuest(""), mNumSongs(0), mFilter(""), mVenue(""),
+          mAnnouncementScreen(""), mMapScreen(""), mFlavor("") {}
+    virtual ~TourDescEntry() {}
 
     int mTier; // 0x4
     Symbol mGroup; // 0x8
@@ -22,9 +24,9 @@ public:
 
 class TourDesc {
 public:
-    TourDesc(DataArray*, int);
+    TourDesc(DataArray *, int);
     virtual ~TourDesc();
-    virtual void Configure(DataArray*);
+    virtual void Configure(DataArray *);
 
     Symbol GetFilterForGigNum(int) const;
     Symbol GetSetlistTypeForGigNum(int, int) const;
@@ -41,7 +43,7 @@ public:
     Symbol GetDescription() const;
     Symbol GetConclusionText() const;
     int GetIndex() const;
-    TourDescEntry* GetTourDescEntryForGigNum(int) const;
+    TourDescEntry *GetTourDescEntryForGigNum(int) const;
     bool HasSpecificQuest(int) const;
     Symbol GetSpecificQuestForGigNum(int) const;
     Symbol GetQuestGroupForGigNum(int) const;
@@ -61,8 +63,8 @@ public:
     Symbol GetTourGoldGoal() const;
     bool HasRequiredCampaignLevel() const;
     Symbol GetRequiredCampaignLevel() const;
-    const char* GetArt() const;
-    const char* GetGrayArt() const;
+    const char *GetArt() const;
+    const char *GetGrayArt() const;
     Symbol GetGigGuideMap() const;
 
     Symbol mName; // 0x4
@@ -74,5 +76,5 @@ public:
     Symbol mLeaderboardGoal; // 0x1c
     Symbol mDifficulty; // 0x20
     Symbol mGigGuideMap; // 0x24
-    std::vector<TourDescEntry*> m_vEntries; // 0x28
+    std::vector<TourDescEntry *> m_vEntries; // 0x28
 };

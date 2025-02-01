@@ -22,61 +22,65 @@
 
 INIT_REVS(RndTexRenderer)
 
-RndTexRenderer::RndTexRenderer() : mDirty(1), mForce(0), mDrawPreClear(1), mDrawWorldOnly(0), mDrawResponsible(1),
-    mNoPoll(0), mPrimeDraw(0), mFirstDraw(1), mForceMips(0), mImposterHeight(0.0f),
-    mOutputTexture(this, 0), mDraw(this, 0), mCam(this, 0), mMirrorCam(this, 0) {
+RndTexRenderer::RndTexRenderer()
+    : mDirty(1), mForce(0), mDrawPreClear(1), mDrawWorldOnly(0), mDrawResponsible(1),
+      mNoPoll(0), mPrimeDraw(0), mFirstDraw(1), mForceMips(0), mImposterHeight(0.0f),
+      mOutputTexture(this, 0), mDraw(this, 0), mCam(this, 0), mMirrorCam(this, 0) {}
 
+RndTexRenderer::~RndTexRenderer() {}
+
+void RndTexRenderer::ListAnimChildren(std::list<RndAnimatable *> &children) const {
+    RndDrawable *draw = mDraw;
+    RndAnimatable *anim = dynamic_cast<RndAnimatable *>(draw);
+    if (anim)
+        children.push_back(anim);
 }
 
-RndTexRenderer::~RndTexRenderer(){
-
+void RndTexRenderer::ListDrawChildren(std::list<RndDrawable *> &children) {
+    if (mDraw && mDrawResponsible)
+        children.push_back(mDraw);
 }
 
-void RndTexRenderer::ListAnimChildren(std::list<RndAnimatable*>& children) const {
-    RndDrawable* draw = mDraw;
-    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(draw);
-    if(anim) children.push_back(anim);
-}
-
-void RndTexRenderer::ListDrawChildren(std::list<RndDrawable*>& children){
-    if(mDraw && mDrawResponsible) children.push_back(mDraw);
-}
-
-void RndTexRenderer::ListPollChildren(std::list<RndPollable*>& children) const {
-    RndDrawable* draw = mDraw;
-    if(draw && mNoPoll){
-        RndPollable* poll = dynamic_cast<RndPollable*>(draw);
-        if(poll) children.push_back(poll);
+void RndTexRenderer::ListPollChildren(std::list<RndPollable *> &children) const {
+    RndDrawable *draw = mDraw;
+    if (draw && mNoPoll) {
+        RndPollable *poll = dynamic_cast<RndPollable *>(draw);
+        if (poll)
+            children.push_back(poll);
     }
 }
 
-void RndTexRenderer::Enter(){ RndPollable::Enter(); }
+void RndTexRenderer::Enter() { RndPollable::Enter(); }
 
-void RndTexRenderer::DrawShowing(){
-    if(mDrawPreClear) return;
-    else DrawToTexture();
+void RndTexRenderer::DrawShowing() {
+    if (mDrawPreClear)
+        return;
+    else
+        DrawToTexture();
 }
 
-float ComputeAngle(const Vector3&, const Vector3&, const Vector3&);
+float ComputeAngle(const Vector3 &, const Vector3 &, const Vector3 &);
 
 #pragma push
 #pragma dont_inline on
-void RndTexRenderer::DrawToTexture(){
-    if(TheRnd->DrawMode() == 0){
-        if(((Hmx::Object*)Dir() == (RndDrawable*)mDraw) || !Showing()) return;
+void RndTexRenderer::DrawToTexture() {
+    if (TheRnd->DrawMode() == 0) {
+        if (((Hmx::Object *)Dir() == (RndDrawable *)mDraw) || !Showing())
+            return;
         else {
-            if(!mDrawWorldOnly || TheRnd->ProcCmds() & 1){
-                if(mDirty && mDraw && mOutputTexture){
-                    if(!(mOutputTexture->GetType() & 2)){
+            if (!mDrawWorldOnly || TheRnd->ProcCmds() & 1) {
+                if (mDirty && mDraw && mOutputTexture) {
+                    if (!(mOutputTexture->GetType() & 2)) {
                         MILO_NOTIFY_ONCE("%s not renderable", mOutputTexture->Name());
                         return;
                     }
                     Transform tf98;
                     float f33 = 0;
-                    if(!mForce) HandleType(pre_render_msg);
-                    RndDir* rdir = dynamic_cast<RndDir*>(mDraw.Ptr());
-                    RndCam* cam;
-                    if(mImposterHeight != 0 && rdir){
+                    if (!mForce)
+                        HandleType(pre_render_msg);
+                    RndDir *rdir = dynamic_cast<RndDir *>(mDraw.Ptr());
+                    RndCam *cam;
+                    if (mImposterHeight != 0 && rdir) {
                         cam = RndCam::Current();
                         tf98 = cam->WorldXfm();
                         f33 = cam->YFov();
@@ -85,52 +89,78 @@ void RndTexRenderer::DrawToTexture(){
                         Multiply(cam->WorldXfm(), tfc8, tfc8);
                         Subtract(cam->WorldXfm().v, rdir->WorldXfm().v, tfc8.v);
                         tfc8.v.z -= mImposterHeight * 0.5f;
-                        float f34 = Max(Length(tfc8.v), mImposterHeight * 0.5f + cam->NearPlane());
+                        float f34 =
+                            Max(Length(tfc8.v),
+                                mImposterHeight * 0.5f + cam->NearPlane());
                         Multiply(Vector3(0, -f34, 0), tfc8.m, tfc8.v);
                         tfc8.v.z += mImposterHeight * 0.5f;
                         cam->SetWorldXfm(tfc8);
-                        cam->SetFrustum(cam->NearPlane(), cam->FarPlane(), atanf(mImposterHeight * 0.5f / f34) * 2.0f, 1.0f);
-                    }
-                    else {
+                        cam->SetFrustum(
+                            cam->NearPlane(),
+                            cam->FarPlane(),
+                            atanf(mImposterHeight * 0.5f / f34) * 2.0f,
+                            1.0f
+                        );
+                    } else {
                         cam = mCam;
-                        if(!cam) cam = mDraw->CamOverride();
-                        if(rdir && !cam) cam = dynamic_cast<RndCam*>(rdir->CurCam());
-                        if(!cam) cam = TheRnd->DefaultCam();
-                        if(cam == TheRnd->DefaultCam()) tf98 = cam->WorldXfm();
+                        if (!cam)
+                            cam = mDraw->CamOverride();
+                        if (rdir && !cam)
+                            cam = dynamic_cast<RndCam *>(rdir->CurCam());
+                        if (!cam)
+                            cam = TheRnd->DefaultCam();
+                        if (cam == TheRnd->DefaultCam())
+                            tf98 = cam->WorldXfm();
                     }
-                    RndCam* current = RndCam::Current();
-                    RndTex* targetTex = current->TargetTex();
-                    if(targetTex){
-                        MILO_NOTIFY_ONCE("%s: Cannot render to texture (%s) while already rendering to texture (%s).",
-                            PathName(targetTex), PathName(this), PathName(targetTex));
+                    RndCam *current = RndCam::Current();
+                    RndTex *targetTex = current->TargetTex();
+                    if (targetTex) {
+                        MILO_NOTIFY_ONCE(
+                            "%s: Cannot render to texture (%s) while already rendering to texture (%s).",
+                            PathName(targetTex),
+                            PathName(this),
+                            PathName(targetTex)
+                        );
                     }
-                    RndMesh* mesh5 = nullptr;
-                    if(mMirrorCam){
-                        RndMat* mat4 = nullptr;
-                        FOREACH_OBJREF(it, mOutputTexture){
-                            mat4 = dynamic_cast<RndMat*>((*it)->RefOwner());
-                            if(mat4) break;
+                    RndMesh *mesh5 = nullptr;
+                    if (mMirrorCam) {
+                        RndMat *mat4 = nullptr;
+                        FOREACH_OBJREF(it, mOutputTexture) {
+                            mat4 = dynamic_cast<RndMat *>((*it)->RefOwner());
+                            if (mat4)
+                                break;
                         }
-                        if(mat4){
-                            FOREACH_OBJREF(it, mat4){
-                                mesh5 = dynamic_cast<RndMesh*>((*it)->RefOwner());
-                                if(mesh5) break;
+                        if (mat4) {
+                            FOREACH_OBJREF(it, mat4) {
+                                mesh5 = dynamic_cast<RndMesh *>((*it)->RefOwner());
+                                if (mesh5)
+                                    break;
                             }
                         }
-                        if(!mesh5){
-                            MILO_NOTIFY_ONCE("%s could not find mesh to mirror about. Is %s not being mapped onto a mesh?",
-                                Name(), mOutputTexture->Name());
+                        if (!mesh5) {
+                            MILO_NOTIFY_ONCE(
+                                "%s could not find mesh to mirror about. Is %s not being mapped onto a mesh?",
+                                Name(),
+                                mOutputTexture->Name()
+                            );
                             return;
                         }
-                        if(!mesh5->GetKeepMeshData()){
-                            MILO_NOTIFY_ONCE("%s could not do mirroring because the mesh %s doesn't have its keep_mesh_data flag turned on. ",
-                                Name(), mesh5->Name());
+                        if (!mesh5->GetKeepMeshData()) {
+                            MILO_NOTIFY_ONCE(
+                                "%s could not do mirroring because the mesh %s doesn't have its keep_mesh_data flag turned on. ",
+                                Name(),
+                                mesh5->Name()
+                            );
                             return;
                         }
-                        RndMesh::Face& curFace = mesh5->Faces(0);
-                        Transform& meshXfm = mesh5->WorldXfm();
-                        RndMesh::Vert* verts[3] = { &mesh5->Verts(curFace.v1), &mesh5->Verts(curFace.v2), &mesh5->Verts(curFace.v3) };
-                        Vector3 vertVectors[3] = { verts[0]->pos, verts[1]->pos, verts[2]->pos };
+                        RndMesh::Face &curFace = mesh5->Faces(0);
+                        Transform &meshXfm = mesh5->WorldXfm();
+                        RndMesh::Vert *verts[3] = { &mesh5->Verts(curFace.v1),
+                                                    &mesh5->Verts(curFace.v2),
+                                                    &mesh5->Verts(curFace.v3) };
+                        Vector3 vertVectors[3] = { verts[0]->pos,
+                                                   verts[1]->pos,
+                                                   verts[2]->pos };
                         Multiply(vertVectors[0], meshXfm, vertVectors[0]);
                         Multiply(vertVectors[1], meshXfm, vertVectors[1]);
                         Multiply(vertVectors[2], meshXfm, vertVectors[2]);
@@ -154,7 +184,7 @@ void RndTexRenderer::DrawToTexture(){
                         Multiply(mMirrorCam->WorldXfm(), tf180, cam->DirtyLocalXfm());
                         Hmx::Matrix3 m1a8;
                         Hmx::Matrix3 m1cc;
-                        for(int i = 0; i < 3; i++){
+                        for (int i = 0; i < 3; i++) {
                             m1a8[i].Set(verts[i]->uv.x, verts[i]->uv.y, 1.0f);
                             m1cc[i] = vertVectors[i];
                         }
@@ -169,28 +199,40 @@ void RndTexRenderer::DrawToTexture(){
                         Transform tf220(cam->WorldXfm());
                         Vector3 v2b8;
                         Multiply(Vector3(0.5f, 0.5f, 1.0f), m1f0, v2b8);
-                        tf220.LookAt(v2b8, Vector3(0,0,1));
+                        tf220.LookAt(v2b8, Vector3(0, 0, 1));
                         cam->SetWorldXfm(tf220);
-                        Vector3 vecs248[3] = { Vector3(0,0,1), Vector3(0,1,1), Vector3(1,0,1) };
-                        for(int i = 0; i < 3; i++){
+                        Vector3 vecs248[3] = { Vector3(0, 0, 1),
+                                               Vector3(0, 1, 1),
+                                               Vector3(1, 0, 1) };
+                        for (int i = 0; i < 3; i++) {
                             Multiply(vecs248[i], m1f0, vecs248[i]);
                         }
                         Vector3 v2c4;
                         Subtract(vecs248[2], vecs248[0], v2c4);
                         Vector3 va0;
                         Subtract(vecs248[1], vecs248[0], va0);
-                        cam->SetFrustum(cam->NearPlane(), cam->FarPlane(), f28, Length(va0) / Length(v2c4));
-                        if(DataVariable("rndtex.debug_mirror").Int()){
-                            RndGraph* graph = RndGraph::GetOneFrame();
-                            Vector3 vecs278[4] = { Vector3(0,0,1), Vector3(0,1,1), Vector3(1,0,1), Vector3(1,1,1) };
-                            for(int i = 0; i < 4; i++){
+                        cam->SetFrustum(
+                            cam->NearPlane(),
+                            cam->FarPlane(),
+                            f28,
+                            Length(va0) / Length(v2c4)
+                        );
+                        if (DataVariable("rndtex.debug_mirror").Int()) {
+                            RndGraph *graph = RndGraph::GetOneFrame();
+                            Vector3 vecs278[4] = { Vector3(0, 0, 1),
+                                                   Vector3(0, 1, 1),
+                                                   Vector3(1, 0, 1),
+                                                   Vector3(1, 1, 1) };
+                            for (int i = 0; i < 4; i++) {
                                 Multiply(vecs278[i], m1f0, vecs278[i]);
-                                graph->AddSphere(vecs278[i], 2.0f, Hmx::Color(1,1,1));
+                                graph->AddSphere(vecs278[i], 2.0f, Hmx::Color(1, 1, 1));
                             }
-                            graph->AddSphere(v2a0, 1.0f, Hmx::Color(0,0,1));
-                            graph->AddSphere(v2ac, 1.0f, Hmx::Color(0,0,1));
-                            for(int i = 0; i < 3; i++){
-                                graph->AddSphere(vertVectors[i], 1.0f, Hmx::Color(1,0,0));
+                            graph->AddSphere(v2a0, 1.0f, Hmx::Color(0, 0, 1));
+                            graph->AddSphere(v2ac, 1.0f, Hmx::Color(0, 0, 1));
+                            for (int i = 0; i < 3; i++) {
+                                graph->AddSphere(
+                                    vertVectors[i], 1.0f, Hmx::Color(1, 0, 0)
+                                );
                             }
                         }
                     }
@@ -200,22 +242,22 @@ void RndTexRenderer::DrawToTexture(){
                     GXSetPixelFmt(GX_PF_RGBA6_Z24, GX_ZC_LINEAR);
                     WiiMat::SetOverrideAlphaWrite(true);
                     bool b1 = false;
-                    if(mFirstDraw && mPrimeDraw) b1 = true;
-                    for(int i = 0; i < b1 + 1; i++){
+                    if (mFirstDraw && mPrimeDraw)
+                        b1 = true;
+                    for (int i = 0; i < b1 + 1; i++) {
                         DrawBefore();
-                        if(rdir && rdir->ClassName() == "WorldDir"){
+                        if (rdir && rdir->ClassName() == "WorldDir") {
                             rdir->RndDir::DrawShowing();
-                        }
-                        else mDraw->DrawShowing();
+                        } else
+                            mDraw->DrawShowing();
                         DrawAfter();
                     }
                     cam->SetTargetTex(nullptr);
-                    if(!mMirrorCam){
-                        if(mImposterHeight){
+                    if (!mMirrorCam) {
+                        if (mImposterHeight) {
                             cam->SetWorldXfm(tf98);
                             cam->SetFrustum(cam->NearPlane(), cam->FarPlane(), f33, 1.0f);
-                        }
-                        else if(cam == TheRnd->DefaultCam()){
+                        } else if (cam == TheRnd->DefaultCam()) {
                             cam->SetWorldXfm(tf98);
                         }
                     }
@@ -223,43 +265,45 @@ void RndTexRenderer::DrawToTexture(){
                     WiiMat::SetOverrideAlphaWrite(false);
                     current->Select();
                     mFirstDraw = false;
-                    if(!mForce) HandleType(post_render_msg);
+                    if (!mForce)
+                        HandleType(post_render_msg);
                 }
-                if(!mForce) mDirty = false;
+                if (!mForce)
+                    mDirty = false;
             }
         }
     }
 }
 #pragma pop
 
-float RndTexRenderer::StartFrame(){
-    RndDrawable* draw = mDraw;
-    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(draw);
-    if(anim){
+float RndTexRenderer::StartFrame() {
+    RndDrawable *draw = mDraw;
+    RndAnimatable *anim = dynamic_cast<RndAnimatable *>(draw);
+    if (anim) {
         return anim->StartFrame();
-    }
-    else return 0.0f;
+    } else
+        return 0.0f;
 }
 
-float RndTexRenderer::EndFrame(){
-    RndDrawable* draw = mDraw;
-    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(draw);
-    if(anim){
+float RndTexRenderer::EndFrame() {
+    RndDrawable *draw = mDraw;
+    RndAnimatable *anim = dynamic_cast<RndAnimatable *>(draw);
+    if (anim) {
         return anim->EndFrame();
-    }
-    else return 0.0f;
+    } else
+        return 0.0f;
 }
 
-void RndTexRenderer::SetFrame(float f1, float f2){
-    RndDrawable* draw = mDraw;
-    RndAnimatable* anim = dynamic_cast<RndAnimatable*>(draw);
-    if(anim){
+void RndTexRenderer::SetFrame(float f1, float f2) {
+    RndDrawable *draw = mDraw;
+    RndAnimatable *anim = dynamic_cast<RndAnimatable *>(draw);
+    if (anim) {
         anim->SetFrame(f1, f2);
         mDirty = true;
     }
 }
 
-void RndTexRenderer::UpdatePreClearState(){
+void RndTexRenderer::UpdatePreClearState() {
     TheRnd->PreClearDrawAddOrRemove(this, mDrawPreClear, false);
     mDirty = true;
 }
@@ -294,44 +338,57 @@ BEGIN_LOADS(RndTexRenderer)
     LOAD_REVS(bs)
     ASSERT_REVS(0xB, 0)
     LOAD_SUPERCLASS(Hmx::Object)
-    if(gRev > 2){
+    if (gRev > 2) {
         LOAD_SUPERCLASS(RndAnimatable)
         LOAD_SUPERCLASS(RndDrawable)
-        if(gRev > 10) LOAD_SUPERCLASS(RndPollable)
+        if (gRev > 10)
+            LOAD_SUPERCLASS(RndPollable)
     }
-    if(gRev < 1){
+    if (gRev < 1) {
         FilePath fp;
         bs >> fp;
-    }
-    else {
+    } else {
         mDraw.Load(bs, false, nullptr);
     }
-    if(gRev > 3) bs >> mCam;
-    else mCam = 0;
+    if (gRev > 3)
+        bs >> mCam;
+    else
+        mCam = 0;
     bs >> mOutputTexture;
     InitTexture();
-    if(gRev > 1) bs >> mForce >> mImposterHeight;
-    if(gRev > 4) bs >> mDrawResponsible;
-    else mDrawResponsible = true;
-    if(gRev > 5) bs >> mDrawPreClear;
-    else mDrawPreClear = false;
-    if(gRev > 6) bs >> mDrawWorldOnly;
-    if(gRev > 7) bs >> mPrimeDraw;
-    if(gRev > 8) bs >> mForceMips;
-    if(gRev > 9) bs >> mMirrorCam;
-    if(gRev > 10) bs >> mNoPoll;
+    if (gRev > 1)
+        bs >> mForce >> mImposterHeight;
+    if (gRev > 4)
+        bs >> mDrawResponsible;
+    else
+        mDrawResponsible = true;
+    if (gRev > 5)
+        bs >> mDrawPreClear;
+    else
+        mDrawPreClear = false;
+    if (gRev > 6)
+        bs >> mDrawWorldOnly;
+    if (gRev > 7)
+        bs >> mPrimeDraw;
+    if (gRev > 8)
+        bs >> mForceMips;
+    if (gRev > 9)
+        bs >> mMirrorCam;
+    if (gRev > 10)
+        bs >> mNoPoll;
     mDirty = true;
 END_LOADS
 
-void RndTexRenderer::InitTexture(){
-    if(mForceMips){
-        RndTex* tex = mOutputTexture;
-        if(tex) tex->SetBitmap(tex->mWidth, tex->mHeight, tex->mBpp, tex->mType, true, 0);
+void RndTexRenderer::InitTexture() {
+    if (mForceMips) {
+        RndTex *tex = mOutputTexture;
+        if (tex)
+            tex->SetBitmap(tex->mWidth, tex->mHeight, tex->mBpp, tex->mType, true, 0);
     }
     mDirty = true;
 }
 
-DataNode RndTexRenderer::OnGetRenderTextures(DataArray* da){
+DataNode RndTexRenderer::OnGetRenderTextures(DataArray *da) {
     return GetRenderTextures(Dir());
 }
 
@@ -347,33 +404,38 @@ END_HANDLERS
 #pragma push
 #pragma pool_data off
 BEGIN_PROPSYNCS(RndTexRenderer)
-    SYNC_PROP_MODIFY_ALT(draw, mDraw, mDirty = true; mFirstDraw = true; )
+    SYNC_PROP_MODIFY_ALT(draw, mDraw, mDirty = true; mFirstDraw = true;)
     SYNC_PROP_MODIFY_ALT(cam, mCam, mDirty = true)
     SYNC_PROP_MODIFY_ALT(output_texture, mOutputTexture, InitTexture())
     SYNC_PROP_MODIFY(force, mForce, mDirty = true)
     SYNC_PROP_MODIFY(imposter_height, mImposterHeight, mDirty = true)
-    SYNC_PROP_MODIFY(draw_pre_clear, mDrawPreClear, UpdatePreClearState())
-    {
+    SYNC_PROP_MODIFY(draw_pre_clear, mDrawPreClear, UpdatePreClearState()) {
         static Symbol _s("draw_world_only");
-        if(sym == _s){
-            if(_op == kPropSet) mDrawWorldOnly = _val.Int();
-            else _val = DataNode(mDrawWorldOnly);
+        if (sym == _s) {
+            if (_op == kPropSet)
+                mDrawWorldOnly = _val.Int();
+            else
+                _val = DataNode(mDrawWorldOnly);
             return true;
         }
     }
     {
         static Symbol _s("draw_responsible");
-        if(sym == _s){
-            if(_op == kPropSet) mDrawResponsible = _val.Int();
-            else _val = DataNode(mDrawResponsible);
+        if (sym == _s) {
+            if (_op == kPropSet)
+                mDrawResponsible = _val.Int();
+            else
+                _val = DataNode(mDrawResponsible);
             return true;
         }
     }
     {
         static Symbol _s("no_poll");
-        if(sym == _s){
-            if(_op == kPropSet) mNoPoll = _val.Int();
-            else _val = DataNode(mNoPoll);
+        if (sym == _s) {
+            if (_op == kPropSet)
+                mNoPoll = _val.Int();
+            else
+                _val = DataNode(mNoPoll);
             return true;
         }
     }

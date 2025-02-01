@@ -1,6 +1,4 @@
-#ifndef GAME_HELDNOTE_H
-#define GAME_HELDNOTE_H
-
+#pragma once
 #include "beatmatch/GameGem.h"
 #include "beatmatch/TrackType.h"
 
@@ -32,5 +30,3 @@ public:
     unsigned int unk_0x1c;
     bool unk_0x20;
 };
-
-#endif // GAME_HELDNOTE_H

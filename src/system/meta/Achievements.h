@@ -8,13 +8,12 @@ class LocalUser;
  */
 class Achievements : public Hmx::Object {
 public:
-
     Achievements();
-    virtual ~Achievements(){}
-    virtual DataNode Handle(DataArray*, bool);
+    virtual ~Achievements() {}
+    virtual DataNode Handle(DataArray *, bool);
 
     void Poll();
-    void Submit(LocalUser*, Symbol, int);
+    void Submit(LocalUser *, Symbol, int);
     void SetAllowAchievements(bool);
 
     int unk_1c; // if i had to guess, this would be a LocalUser*
@@ -24,4 +23,4 @@ public:
     static void Terminate();
 };
 
-extern Achievements* TheAchievements;
+extern Achievements *TheAchievements;

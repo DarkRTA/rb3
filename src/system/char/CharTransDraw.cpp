@@ -6,18 +6,14 @@
 
 INIT_REVS(CharTransDraw);
 
-CharTransDraw::CharTransDraw() : mChars(this) {
+CharTransDraw::CharTransDraw() : mChars(this) {}
 
-}
-
-CharTransDraw::~CharTransDraw(){
-    SetDrawModes(Character::kCharDrawAll);
-}
+CharTransDraw::~CharTransDraw() { SetDrawModes(Character::kCharDrawAll); }
 
 SAVE_OBJ(CharTransDraw, 0x23);
 
-void CharTransDraw::SetDrawModes(Character::DrawMode mode){
-    for(ObjPtrList<Character>::iterator it = mChars.begin(); it != mChars.end(); ++it){
+void CharTransDraw::SetDrawModes(Character::DrawMode mode) {
+    for (ObjPtrList<Character>::iterator it = mChars.begin(); it != mChars.end(); ++it) {
         (*it)->SetDrawMode(mode);
     }
 }
@@ -40,10 +36,10 @@ BEGIN_COPYS(CharTransDraw)
     END_COPYING_MEMBERS
 END_COPYS
 
-void CharTransDraw::DrawShowing(){
-    for(ObjPtrList<Character>::iterator it = mChars.begin(); it != mChars.end(); ++it){
-        Character* theChar = *it;
-        if(theChar->Showing()){
+void CharTransDraw::DrawShowing() {
+    for (ObjPtrList<Character>::iterator it = mChars.begin(); it != mChars.end(); ++it) {
+        Character *theChar = *it;
+        if (theChar->Showing()) {
             theChar->SetDrawMode(Character::kCharDrawTranslucent);
             theChar->Draw();
             theChar->SetDrawMode(Character::kCharDrawOpaque);

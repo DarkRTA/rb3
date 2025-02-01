@@ -2,24 +2,24 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 
-ScoreTracker::ScoreTracker(TrackerSource* src, TrackerBandDisplay& banddisp, TrackerBroadcastDisplay& bcdisp) : Tracker(src, banddisp, bcdisp) {
+ScoreTracker::ScoreTracker(
+    TrackerSource *src, TrackerBandDisplay &banddisp, TrackerBroadcastDisplay &bcdisp
+)
+    : Tracker(src, banddisp, bcdisp) {}
 
-}
+ScoreTracker::~ScoreTracker() {}
 
-ScoreTracker::~ScoreTracker(){
-
-}
-
-void ScoreTracker::FirstFrame_(float){
+void ScoreTracker::FirstFrame_(float) {
     mBandDisplay.Initialize(mDesc.mName);
     mBandDisplay.SetIntegerProgress(mTargets.front());
     mScoreTotal = 0;
 }
 
-void ScoreTracker::Poll_(float){
+void ScoreTracker::Poll_(float) {
     mScoreTotal = 0;
-    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
-        Player* p = mSource->GetPlayer(id);
+    for (TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull();
+         id = mSource->GetNextPlayer(id)) {
+        Player *p = mSource->GetPlayer(id);
         mScoreTotal += p->GetScore();
     }
 }
@@ -27,8 +27,9 @@ void ScoreTracker::Poll_(float){
 DataArrayPtr ScoreTracker::GetTargetDescription(int) const { return DataArrayPtr(); }
 
 void ScoreTracker::SavePlayerStats() const {
-    for(TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull(); id = mSource->GetNextPlayer(id)){
-        Player* pPlayer = mSource->GetPlayer(id);
+    for (TrackerPlayerID id = mSource->GetFirstPlayer(); id.NotNull();
+         id = mSource->GetNextPlayer(id)) {
+        Player *pPlayer = mSource->GetPlayer(id);
         MILO_ASSERT(pPlayer, 0x49);
         pPlayer->mStats.unk1c0 = mScoreTotal;
     }

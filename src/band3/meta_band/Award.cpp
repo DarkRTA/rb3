@@ -48,9 +48,7 @@ void Award::Configure(DataArray *i_pConfig) {
     }
 }
 
-Symbol Award::GetName() const {
-    return mName;
-}
+Symbol Award::GetName() const { return mName; }
 
 Symbol Award::GetDescription() const {
     if (HasAssets()) {
@@ -78,13 +76,9 @@ bool Award::HasIconArt() const {
     return !noIcon;
 }
 
-Symbol Award::GetIconArt() const {
-    return mIcon;
-}
+Symbol Award::GetIconArt() const { return mIcon; }
 
-bool Award::IsBonus() const {
-    return mIsBonus;
-}
+bool Award::IsBonus() const { return mIsBonus; }
 
 DECOMP_FORCEACTIVE(Award, "%s_howto", "%s_gray")
 
@@ -97,7 +91,10 @@ void Award::GrantAward(const AwardEntry &awardEntry, BandProfile *i_pProfile) {
     MILO_ASSERT(pPerformer, 0);
 
     if (mIndex) {
-        TheDebug.Fail(MakeString("Award Category is not currently supported: %s \n", awardEntry.m_symAwardCategory));
+        TheDebug.Fail(MakeString(
+            "Award Category is not currently supported: %s \n",
+            awardEntry.m_symAwardCategory
+        ));
     }
 }
 

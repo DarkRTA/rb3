@@ -5,7 +5,7 @@ class VoiceBeat {
 public:
     VoiceBeat();
     void SetEnable(bool);
-    void Analyze(float*, int, bool, bool, float);
+    void Analyze(float *, int, bool, bool, float);
     void Reset();
     void ClearTrigger();
     void ClearEventList();
@@ -60,7 +60,7 @@ class TalkyMatcher {
 public:
     TalkyMatcher();
     void updateScoring(float);
-    void LoadEvents(const std::vector<float>&, const std::vector<float>&);
+    void LoadEvents(const std::vector<float> &, const std::vector<float> &);
     void Reset();
     void SetEnableTalkyMatcher(bool);
 

@@ -4,32 +4,33 @@
 
 INIT_REVS(CharBlendBone)
 
-CharBlendBone::CharBlendBone() : mTargets(this), mSrc1(this), mSrc2(this), mTransX(0), mTransY(0), mTransZ(0), mRotation(0) {
-
-}
+CharBlendBone::CharBlendBone()
+    : mTargets(this), mSrc1(this), mSrc2(this), mTransX(0), mTransY(0), mTransZ(0),
+      mRotation(0) {}
 
 // fn_804A4D38 - poll
-void CharBlendBone::Poll(){
-    for(ObjList<ConstraintSystem>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
-        RndTransformable* target = (*it).mTarget;
-        if(target && mSrc1 && mSrc2){
-            Transform& xfm1 = mSrc1->WorldXfm();
-            Transform& xfm2 = mSrc2->WorldXfm();
+void CharBlendBone::Poll() {
+    for (ObjList<ConstraintSystem>::iterator it = mTargets.begin(); it != mTargets.end();
+         ++it) {
+        RndTransformable *target = (*it).mTarget;
+        if (target && mSrc1 && mSrc2) {
+            Transform &xfm1 = mSrc1->WorldXfm();
+            Transform &xfm2 = mSrc2->WorldXfm();
             Transform tf48(target->WorldXfm());
-            if(mTransX || mTransY || mTransZ){
-                if(mTransX){
+            if (mTransX || mTransY || mTransZ) {
+                if (mTransX) {
                     Interp(xfm1.v.x, xfm2.v.x, (*it).mWeight, tf48.v.x);
                 }
-                if(mTransY){
+                if (mTransY) {
                     float f24;
                     Interp(xfm1.v.y, xfm2.v.y, (*it).mWeight, tf48.v.y);
                 }
-                if(mTransZ){
+                if (mTransZ) {
                     float f24;
                     Interp(xfm1.v.z, xfm2.v.z, (*it).mWeight, tf48.v.z);
                 }
             }
-            if(mRotation){
+            if (mRotation) {
                 Interp(xfm1.m, xfm2.m, (*it).mWeight, tf48.m);
             }
             target->SetWorldXfm(tf48);
@@ -37,10 +38,13 @@ void CharBlendBone::Poll(){
     }
 }
 
-void CharBlendBone::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharBlendBone::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     changedBy.push_back(mSrc1);
     changedBy.push_back(mSrc2);
-    for(ObjList<ConstraintSystem>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+    for (ObjList<ConstraintSystem>::iterator it = mTargets.begin(); it != mTargets.end();
+         ++it) {
         change.push_back((*it).mTarget);
     }
 }
@@ -74,9 +78,10 @@ BEGIN_COPYS(CharBlendBone)
     END_COPYING_MEMBERS
 END_COPYS
 
-CharBlendBone::ConstraintSystem::ConstraintSystem(Hmx::Object* o) : mTarget(o), mWeight(0.5f) {}
+CharBlendBone::ConstraintSystem::ConstraintSystem(Hmx::Object *o)
+    : mTarget(o), mWeight(0.5f) {}
 
-BinStream& operator>>(BinStream& bs, CharBlendBone::ConstraintSystem& cs){
+BinStream &operator>>(BinStream &bs, CharBlendBone::ConstraintSystem &cs) {
     bs >> cs.mTarget;
     bs >> cs.mWeight;
     return bs;

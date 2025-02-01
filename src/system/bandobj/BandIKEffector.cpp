@@ -2,51 +2,48 @@
 #include "utl/Symbols.h"
 
 INIT_REVS(BandIKEffector);
-CharClip* BandIKEffector::sDeformClip;
+CharClip *BandIKEffector::sDeformClip;
 
-BandIKEffector::Constraint::Constraint(Hmx::Object* o) : mTarget(o, 0), mFinger(o, 0), mWeight(1.0f) {
+BandIKEffector::Constraint::Constraint(Hmx::Object *o)
+    : mTarget(o, 0), mFinger(o, 0), mWeight(1.0f) {}
 
-}
+BandIKEffector::Constraint::Constraint(const BandIKEffector::Constraint &c)
+    : mTarget(c.mTarget), mFinger(c.mFinger), mWeight(c.mWeight) {}
 
-BandIKEffector::Constraint::Constraint(const BandIKEffector::Constraint& c) : mTarget(c.mTarget), mFinger(c.mFinger), mWeight(c.mWeight) {
-
-}
-
-BandIKEffector::Constraint& BandIKEffector::Constraint::operator=(const BandIKEffector::Constraint& c){
+BandIKEffector::Constraint &
+BandIKEffector::Constraint::operator=(const BandIKEffector::Constraint &c) {
     mTarget = c.mTarget;
     mFinger = c.mFinger;
     mWeight = c.mWeight;
     return *this;
 }
 
-BandIKEffector::BandIKEffector() : mEffector(this, 0), mGround(this, 0), mMore(this, 0), mElbow(this, 0), mConstraints(this), unk64(this, 0) {
+BandIKEffector::BandIKEffector()
+    : mEffector(this, 0), mGround(this, 0), mMore(this, 0), mElbow(this, 0),
+      mConstraints(this), unk64(this, 0) {}
 
-}
+BandIKEffector::~BandIKEffector() {}
 
-BandIKEffector::~BandIKEffector(){
-    
-}
-
-void BandIKEffector::SetName(const char* cc, ObjectDir* dir){
+void BandIKEffector::SetName(const char *cc, ObjectDir *dir) {
     Hmx::Object::SetName(cc, dir);
-    unk64 = dynamic_cast<BandCharacter*>(dir);
+    unk64 = dynamic_cast<BandCharacter *>(dir);
 }
 
-void BandIKEffector::SetDeformClip(Hmx::Object* o){
+void BandIKEffector::SetDeformClip(Hmx::Object *o) {
     static Symbol bc("BandCharacter");
-    if(o->ClassName() == bc){
-        sDeformClip = BandCharDesc::GetDeformClip(dynamic_cast<BandCharacter*>(o)->mGender);
-    }
-    else sDeformClip = 0;
+    if (o->ClassName() == bc) {
+        sDeformClip =
+            BandCharDesc::GetDeformClip(dynamic_cast<BandCharacter *>(o)->mGender);
+    } else
+        sDeformClip = 0;
 }
 
-void BandIKEffector::NeutralWorldXfm(RndTransformable* trans, Transform& tf){
-    RndTransformable* parent = trans->TransParent();
-    if(!parent){
+void BandIKEffector::NeutralWorldXfm(RndTransformable *trans, Transform &tf) {
+    RndTransformable *parent = trans->TransParent();
+    if (!parent) {
         SetDeformClip(trans);
         NeutralLocalXfm(trans, tf);
-    }
-    else {
+    } else {
         Transform tf38;
         NeutralWorldXfm(parent, tf);
         NeutralLocalXfm(trans, tf38);
@@ -54,12 +51,13 @@ void BandIKEffector::NeutralWorldXfm(RndTransformable* trans, Transform& tf){
     }
 }
 
-void BandIKEffector::Highlight(){}
+void BandIKEffector::Highlight() {}
 
-BinStream& operator>>(BinStream& bs, BandIKEffector::Constraint& c){
+BinStream &operator>>(BinStream &bs, BandIKEffector::Constraint &c) {
     bs >> c.mTarget;
     bs >> c.mFinger;
-    if(BandIKEffector::gRev > 2) bs >> c.mWeight;
+    if (BandIKEffector::gRev > 2)
+        bs >> c.mWeight;
     return bs;
 }
 
@@ -72,10 +70,15 @@ BEGIN_LOADS(BandIKEffector)
     LOAD_SUPERCLASS(CharWeightable)
     bs >> mEffector;
     bs >> mMore;
-    if(gRev > 1) bs >> mElbow;
-    if(gRev < 1){ int i; bs >> i; }
+    if (gRev > 1)
+        bs >> mElbow;
+    if (gRev < 1) {
+        int i;
+        bs >> i;
+    }
     bs >> mConstraints;
-    if(gRev > 3) bs >> mGround;
+    if (gRev > 3)
+        bs >> mGround;
 END_LOADS
 
 BEGIN_COPYS(BandIKEffector)

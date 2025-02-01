@@ -67,17 +67,17 @@ public:
     void FillChannelList(std::list<int> &) const;
     void FillChannelList(std::list<int> &, int) const;
     void Reset();
-    void FillChannelListWithInactiveSlots(std::list<int>&, float, bool) const;
+    void FillChannelListWithInactiveSlots(std::list<int> &, float, bool) const;
     bool Vocals() const { return mVocals; }
     bool InButtonMashingMode() const { return mButtonMashingMode; }
     float LastMashTime() const { return mLastMashTime; }
     int LastPlayedGem() const { return mLastPlayedGem; }
     bool InFill() const { return mInFill; }
     bool AutoOn() const { return mAutoOn; }
-    void SetAutoOn(bool on){ mAutoOn = on; }
+    void SetAutoOn(bool on) { mAutoOn = on; }
     bool NonMutable() const { return mNonmutable; }
     bool NonNullUser() const { return !mUserGuid.IsNull(); }
-    void SetInFill(bool fill){ mInFill = fill; }
+    void SetInFill(bool fill) { mInFill = fill; }
 
     bool mSucceeding; // 0x0
     std::vector<bool> mSucceedingVec; // 0x4
@@ -101,11 +101,9 @@ public:
 class TrackDataCollection {
 public:
     TrackDataCollection() {}
-    TrackData*& operator[](AudioTrackNum num){
-        return mTrackData[num.mVal];
-    }
-    const TrackData*& operator[](AudioTrackNum num) const {
-        return (const TrackData*&)(mTrackData[num.mVal]);
+    TrackData *&operator[](AudioTrackNum num) { return mTrackData[num.mVal]; }
+    const TrackData *&operator[](AudioTrackNum num) const {
+        return (const TrackData *&)(mTrackData[num.mVal]);
     }
     std::vector<TrackData *> mTrackData; // 0x0
 };
@@ -126,7 +124,6 @@ public:
     };
 
     enum DontPlayReason {
-
     };
 
     MasterAudio(DataArray *, int, BeatMaster *, SongData *);
@@ -140,7 +137,7 @@ public:
     virtual void SetPaused(bool);
     virtual void Poll();
     virtual float GetTime() const;
-    virtual Stream* GetSongStream();
+    virtual Stream *GetSongStream();
     virtual void SetMasterVolume(float);
 
     virtual void Hit(int, float, int, unsigned int, GemHitFlags);
@@ -200,13 +197,13 @@ public:
     void UpdateMasterFader();
     void ResetSlipTrack(AudioTrackNum, bool);
     void SetTimeOffset(float);
-    void GetExtraTrackInfo(PlayerTrackConfigList*, SongInfoAudioType, ExtraTrackInfo&);
-    void SetupBackgroundChannel_(int, ExtraTrackInfo&);
-    void SetupTrackChannel_(int, ExtraTrackInfo&);
+    void GetExtraTrackInfo(PlayerTrackConfigList *, SongInfoAudioType, ExtraTrackInfo &);
+    void SetupBackgroundChannel_(int, ExtraTrackInfo &);
+    void SetupTrackChannel_(int, ExtraTrackInfo &);
     void SetNonmutable(AudioTrackNum);
     void FillChannelList(std::list<int> &, int);
-    void SetSpeed(int, const UserGuid&, float);
-    void SetSpeed(AudioTrackNum, const UserGuid&, float);
+    void SetSpeed(int, const UserGuid &, float);
+    void SetSpeed(AudioTrackNum, const UserGuid &, float);
     void SetVocalDuckFader(float);
     void SetVocalCueFader(float);
     void SetCrowdFader(float);
@@ -222,7 +219,7 @@ public:
     void SetButtonMashingMode(int, bool);
     void PrintFaders();
 
-    AudioTrackNum TrackNumAt(int idx){ return mSongData->GetAudioTrackNum(idx); }
+    AudioTrackNum TrackNumAt(int idx) { return mSongData->GetAudioTrackNum(idx); }
     int NumPlayTracks() const { return mTrackData.mTrackData.size(); }
     bool IsStreamPlaying() const { return mSongStream && mSongStream->IsPlaying(); }
     int GetSucceeding(AudioTrackNum num, int slot) const {

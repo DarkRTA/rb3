@@ -3,16 +3,17 @@
 
 INIT_REVS(CharBoneTwist);
 
-CharBoneTwist::CharBoneTwist() : mBone(this), mTargets(this) {
-
-}
+CharBoneTwist::CharBoneTwist() : mBone(this), mTargets(this) {}
 
 // fn_804B42D0 - poll
-void CharBoneTwist::Poll(){
-    if(!mBone || mTargets.size() == 0) return;
+void CharBoneTwist::Poll() {
+    if (!mBone || mTargets.size() == 0)
+        return;
     Vector3 v58;
     v58.Zero();
-    for(ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+    for (ObjPtrList<RndTransformable, ObjectDir>::iterator it = mTargets.begin();
+         it != mTargets.end();
+         ++it) {
         Vector3 v64((*it)->WorldXfm().v);
         Add(v64, v58, v58);
     }
@@ -33,16 +34,20 @@ void CharBoneTwist::Poll(){
     mBone->SetWorldXfm(tf48);
 }
 
-void CharBoneTwist::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharBoneTwist::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mBone);
-    for(ObjPtrList<RndTransformable, class ObjectDir>::iterator it = mTargets.begin(); it != mTargets.end(); ++it){
+    for (ObjPtrList<RndTransformable, class ObjectDir>::iterator it = mTargets.begin();
+         it != mTargets.end();
+         ++it) {
         changedBy.push_back(*it);
     }
 }
 
 SAVE_OBJ(CharBoneTwist, 0x59)
 
-void CharBoneTwist::Load(BinStream& bs){
+void CharBoneTwist::Load(BinStream &bs) {
     LOAD_REVS(bs);
     ASSERT_REVS(0, 0);
     Hmx::Object::Load(bs);

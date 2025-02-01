@@ -15,10 +15,10 @@ public:
     TrackerMultiplierMap();
     ~TrackerMultiplierMap();
 
-    void InitFromDataArray(const DataArray*);
+    void InitFromDataArray(const DataArray *);
     float GetMultiplier(float) const;
     int GetMultiplierIndex(float) const;
-    const MultiplierEntry& FindEntry(float) const;
+    const MultiplierEntry &FindEntry(float) const;
     float GetPercentOfMaxMultiplier(float) const;
 
     float unk0; // 0x0
@@ -40,10 +40,10 @@ public:
     ~TrackerSectionManager();
     bool TickAfterSection(int, int) const;
     int GetSectionEndTick(int) const;
-    void GetGemStatsInRange(const Player*, int, int, int&, int&) const;
+    void GetGemStatsInRange(const Player *, int, int, int &, int &) const;
     int FindSectionContainingTick(int) const;
-    int CountGemsInSection(const Player*, int) const;
-    int CountNonEmptySections(const TrackerSource*, bool) const;
+    int CountGemsInSection(const Player *, int) const;
+    int CountNonEmptySections(const TrackerSource *, bool) const;
     int GetSectionCount() const;
     void Init();
     void GatherSections();
@@ -55,7 +55,6 @@ public:
 
 class TrackerUtils {
 public:
-
     static int CountGemsInSong(int, TrackType);
     static float GetNextNoteMs(int, TrackType, float);
     static int CountVocalPhrasesInSong(int);

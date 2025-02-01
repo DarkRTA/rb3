@@ -39,10 +39,10 @@ struct CacheDirEntry {};
 
 class CacheID {
 public:
-    CacheID(){}
+    CacheID() {}
     virtual ~CacheID() = 0;
-    virtual const char* GetCachePath(const char*) = 0;
-    virtual const char* GetCacheSearchPath(const char*) = 0;
+    virtual const char *GetCachePath(const char *) = 0;
+    virtual const char *GetCacheSearchPath(const char *) = 0;
     virtual int GetDeviceID() const;
 };
 
@@ -50,24 +50,25 @@ class Cache {
 public:
     Cache();
     virtual ~Cache();
-    virtual const char* GetCacheName() = 0;
+    virtual const char *GetCacheName() = 0;
     virtual void Poll() = 0;
     virtual bool IsConnectedSync() = 0;
-    virtual int GetFreeSpaceSync(unsigned long long*) = 0;
-    virtual bool DeleteSync(const char*) = 0;
-    virtual bool GetDirectoryAsync(const char*, std::vector<CacheDirEntry>*, Hmx::Object*) = 0;
-    virtual bool GetFileSizeAsync(const char*, uint*, Hmx::Object*) = 0;
-    virtual bool ReadAsync(const char*, void*, uint, Hmx::Object*) = 0;
-    virtual bool WriteAsync(const char*, void*, uint, Hmx::Object*) = 0;
-    virtual bool DeleteAsync(const char*, Hmx::Object*) = 0;
+    virtual int GetFreeSpaceSync(unsigned long long *) = 0;
+    virtual bool DeleteSync(const char *) = 0;
+    virtual bool
+    GetDirectoryAsync(const char *, std::vector<CacheDirEntry> *, Hmx::Object *) = 0;
+    virtual bool GetFileSizeAsync(const char *, uint *, Hmx::Object *) = 0;
+    virtual bool ReadAsync(const char *, void *, uint, Hmx::Object *) = 0;
+    virtual bool WriteAsync(const char *, void *, uint, Hmx::Object *) = 0;
+    virtual bool DeleteAsync(const char *, Hmx::Object *) = 0;
     // more pure virtuals go here
     virtual CacheResult WaitForResult();
 
     bool IsDone();
     CacheResult GetLastResult();
 
-    OpType mOpCur;            // 0x04
-    CacheResult mLastResult;  // 0x08
+    OpType mOpCur; // 0x04
+    CacheResult mLastResult; // 0x08
 };
 
 #endif

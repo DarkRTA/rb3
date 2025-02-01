@@ -9,16 +9,16 @@ public:
     BandLabel();
     OBJ_CLASSNAME(BandLabel);
     OBJ_SET_TYPE(BandLabel);
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
-    virtual void Save(BinStream&);
-    virtual void Copy(const Hmx::Object*, Hmx::Object::CopyType);
-    virtual void Load(BinStream&);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
+    virtual void Save(BinStream &);
+    virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
+    virtual void Load(BinStream &);
     virtual ~BandLabel();
-    virtual void PreLoad(BinStream&);
+    virtual void PreLoad(BinStream &);
     virtual void Poll();
-    virtual void CopyMembers(const UIComponent*, CopyType);
-    virtual void SetDisplayText(const char*, bool);
+    virtual void CopyMembers(const UIComponent *, CopyType);
+    virtual void SetDisplayText(const char *, bool);
     virtual void Count(int, int, float, Symbol);
     virtual void FinishCount();
     virtual bool IsEmptyValue() const;
@@ -27,11 +27,9 @@ public:
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
-    static void LoadOldBandTextComp(BinStream&);
+    static void LoadOldBandTextComp(BinStream &);
     static void Init();
-    static void Register(){
-        REGISTER_OBJ_FACTORY(BandLabel);
-    }
+    static void Register() { REGISTER_OBJ_FACTORY(BandLabel); }
     NEW_OBJ(BandLabel);
 
     Keys<float, float> unk1dc; // 0x1dc
@@ -41,7 +39,8 @@ public:
 };
 
 DECLARE_MESSAGE(BandLabelCountDoneMsg, "count_done")
-    BandLabelCountDoneMsg(BandLabel* label) : Message(Type(), label) {}
-END_MESSAGE;
+BandLabelCountDoneMsg(BandLabel *label) : Message(Type(), label) {}
+END_MESSAGE
+;
 
 #endif // BANDOBJ_BANDLABEL_H

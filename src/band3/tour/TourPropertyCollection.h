@@ -6,8 +6,8 @@ class TourPropertyCollection : public FixedSizeSaveable {
 public:
     TourPropertyCollection();
     virtual ~TourPropertyCollection();
-    virtual void SaveFixed(FixedSizeSaveableStream&) const;
-    virtual void LoadFixed(FixedSizeSaveableStream&, int);
+    virtual void SaveFixed(FixedSizeSaveableStream &) const;
+    virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
     float GetPropertyValue(Symbol) const;
     void SetPropertyValue(Symbol, float);

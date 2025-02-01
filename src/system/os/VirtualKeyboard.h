@@ -8,19 +8,18 @@
 
 class VirtualKeyboard : public Hmx::Object {
 public:
-
     class Callback {
     public:
-        Callback(){}
-        virtual void KeyboardOpen(){}
-        virtual void KeyboardClose(){}
+        Callback() {}
+        virtual void KeyboardOpen() {}
+        virtual void KeyboardClose() {}
     };
 
     VirtualKeyboard();
     virtual ~VirtualKeyboard();
-    virtual DataNode Handle(DataArray*, bool);
-    std::list<Callback*> mCallbacks;
-    Hmx::Object* mPobjKeyboardCallback;
+    virtual DataNode Handle(DataArray *, bool);
+    std::list<Callback *> mCallbacks;
+    Hmx::Object *mPobjKeyboardCallback;
     bool mCallbackReady;
     bool mMsgOk;
     class String mCallbackMsg;
@@ -31,20 +30,23 @@ public:
     void Poll();
     void Terminate();
     bool IsKeyboardShowing();
-    void RegisterCallback(Callback*);
+    void RegisterCallback(Callback *);
     void NotifyCallbacksOpen();
     void NotifyCallbacksClose();
 
     void PlatformPoll();
     void PlatformTerminate();
-    DataNode OnShowKeyboardUI(const DataArray*);
-    DataNode ShowKeyboardUI(const LocalUser*, int, class String, class String, class String, int, int);
+    DataNode OnShowKeyboardUI(const DataArray *);
+    DataNode ShowKeyboardUI(
+        const LocalUser *, int, class String, class String, class String, int, int
+    );
 };
 
 DECLARE_MESSAGE(VirtualKeyboardResultMsg, "virtual_keyboard_result_msg");
-    VirtualKeyboardResultMsg(int i, const char* c) :
-        Message(Type(), DataNode(i), DataNode(c ? c : gNullStr)){}
-END_MESSAGE;
+VirtualKeyboardResultMsg(int i, const char *c)
+    : Message(Type(), DataNode(i), DataNode(c ? c : gNullStr)) {}
+END_MESSAGE
+;
 
 extern VirtualKeyboard TheVirtualKeyboard;
 

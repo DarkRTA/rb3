@@ -4,8 +4,8 @@
 
 class PlayerCampaignGoalLeaderboard : public PlayerLeaderboard {
 public:
-    PlayerCampaignGoalLeaderboard(Profile*, Callback*, Symbol);
-    virtual ~PlayerCampaignGoalLeaderboard(){}
+    PlayerCampaignGoalLeaderboard(Profile *, Callback *, Symbol);
+    virtual ~PlayerCampaignGoalLeaderboard() {}
     virtual void EnumerateFromID();
     virtual void EnumerateRankRange(int, int);
     virtual void GetStats();
@@ -15,8 +15,8 @@ public:
 
 class PlayerCampaignCareerLeaderboard : public PlayerLeaderboard {
 public:
-    PlayerCampaignCareerLeaderboard(Profile*, Callback*, ScoreType, bool);
-    virtual ~PlayerCampaignCareerLeaderboard(){}
+    PlayerCampaignCareerLeaderboard(Profile *, Callback *, ScoreType, bool);
+    virtual ~PlayerCampaignCareerLeaderboard() {}
     virtual void EnumerateFromID();
     virtual void EnumerateRankRange(int, int);
     virtual void GetStats();

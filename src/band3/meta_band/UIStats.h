@@ -10,21 +10,21 @@
 class UIStats : public Hmx::Object {
 public:
     UIStats();
-    virtual ~UIStats(){}
-    virtual DataNode Handle(DataArray*, bool);
+    virtual ~UIStats() {}
+    virtual DataNode Handle(DataArray *, bool);
 
     void Init();
     void Terminate();
     void Poll();
-    void DropScreen(UIScreen*);
-    void MaybePublish(UIScreen*);
+    void DropScreen(UIScreen *);
+    void MaybePublish(UIScreen *);
     void EventLog(unsigned int, unsigned int, unsigned int);
 
-    DataNode OnMsg(const ButtonDownMsg&);
-    DataNode OnMsg(const ButtonUpMsg&);
-    DataNode OnMsg(const JoypadConnectionMsg&);
-    DataNode OnMsg(const UIComponentFocusChangeMsg&);
-    DataNode OnMsg(const UIScreenChangeMsg&);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnMsg(const ButtonUpMsg &);
+    DataNode OnMsg(const JoypadConnectionMsg &);
+    DataNode OnMsg(const UIComponentFocusChangeMsg &);
+    DataNode OnMsg(const UIScreenChangeMsg &);
 
     bool unk1c; // 0x1c
     Symbol unk20; // 0x20
@@ -38,10 +38,10 @@ public:
     int unka4;
     int unka8;
     int unkac;
-    void* unkb0;
-    void* unkb4;
+    void *unkb0;
+    void *unkb4;
     int unkb8;
 };
 
 extern UIStats gUIStats;
-extern UIStats* TheUIStats;
+extern UIStats *TheUIStats;

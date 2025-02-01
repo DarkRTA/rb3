@@ -29,8 +29,8 @@ public:
 
 class MatchmakerMode {
 public:
-    MatchmakerMode(){}
-    virtual ~MatchmakerMode(){}
+    MatchmakerMode() {}
+    virtual ~MatchmakerMode() {}
     virtual bool ShouldSearch() const = 0;
     virtual bool ShouldHost() const = 0;
     virtual int GetNextQueryType() = 0; // might need to change ret type?
@@ -41,24 +41,24 @@ public:
     QuickFinding() : mFindType(kMatchmaker_Qp), mAlwaysHost(0), mJoinInProgress(0) {
         mQueryTypes.reserve(3);
     }
-    virtual ~QuickFinding(){}
+    virtual ~QuickFinding() {}
     virtual bool ShouldSearch() const { return !mAlwaysHost; }
     virtual bool ShouldHost() const { return true; }
     virtual int GetNextQueryType();
 
-    void Init(MatchmakerFindType ty){
+    void Init(MatchmakerFindType ty) {
         mQueryTypes.clear();
         mFindType = ty;
-        switch(ty){
-            case 0:
-                mQueryTypes.push_back(2);
-                break;
-            case 1:
-                mQueryTypes.push_back(3);
-                break;
-            default:
-                MILO_FAIL("Unknown MatcmakerFindType");
-                break;
+        switch (ty) {
+        case 0:
+            mQueryTypes.push_back(2);
+            break;
+        case 1:
+            mQueryTypes.push_back(3);
+            break;
+        default:
+            MILO_FAIL("Unknown MatcmakerFindType");
+            break;
         }
         std::random_shuffle(mQueryTypes.begin(), mQueryTypes.end());
     }
@@ -71,8 +71,8 @@ public:
 
 class BandFinding : public MatchmakerMode {
 public:
-    BandFinding(){}
-    virtual ~BandFinding(){}
+    BandFinding() {}
+    virtual ~BandFinding() {}
     virtual bool ShouldSearch() const { return true; }
     virtual bool ShouldHost() const { return false; }
     virtual int GetNextQueryType() { return 0; }
@@ -81,11 +81,11 @@ public:
 class Matchmaker : public MsgSource {
 public:
     Matchmaker();
-    virtual DataNode Handle(DataArray*, bool);
+    virtual DataNode Handle(DataArray *, bool);
     virtual ~Matchmaker();
-    virtual void Poll(){}
+    virtual void Poll() {}
     virtual bool IsFinding() const = 0;
-    virtual void UpdateMatchmakingSettings(){}
+    virtual void UpdateMatchmakingSettings() {}
     virtual void FindPlayersImpl() = 0;
     virtual void CancelFindImpl() = 0;
 
@@ -95,18 +95,18 @@ public:
     bool IsHostingQp() const;
     bool IsHostingTour() const;
 
-    MatchmakerMode* mMode; // 0x1c
+    MatchmakerMode *mMode; // 0x1c
     int unk20;
-    MatchmakerPoolStats* mPoolStats; // 0x24
-    QuickFinding* mQuickFindingMode; // 0x28
-    BandFinding* mBandFindingMode; // 0x2c
+    MatchmakerPoolStats *mPoolStats; // 0x24
+    QuickFinding *mQuickFindingMode; // 0x28
+    BandFinding *mBandFindingMode; // 0x2c
 };
 
 class BandMatchmaker : public Matchmaker {
 public:
     BandMatchmaker();
-    virtual DataNode Handle(DataArray*, bool);
-    virtual bool SyncProperty(DataNode&, DataArray*, int, PropOp);
+    virtual DataNode Handle(DataArray *, bool);
+    virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual ~BandMatchmaker();
     virtual void Poll();
     virtual bool IsFinding() const;

@@ -6,20 +6,19 @@
 
 INIT_REVS(CharTransCopy);
 
-CharTransCopy::CharTransCopy() : mSrc(this), mDest(this) {
+CharTransCopy::CharTransCopy() : mSrc(this), mDest(this) {}
 
-}
+CharTransCopy::~CharTransCopy() {}
 
-CharTransCopy::~CharTransCopy(){
-
-}
-
-void CharTransCopy::Poll(){
-    if(!mSrc || !mDest) return;
+void CharTransCopy::Poll() {
+    if (!mSrc || !mDest)
+        return;
     mDest->SetLocalXfm(mSrc->mLocalXfm);
 }
 
-void CharTransCopy::PollDeps(std::list<Hmx::Object*>& changedBy, std::list<Hmx::Object*>& change){
+void CharTransCopy::PollDeps(
+    std::list<Hmx::Object *> &changedBy, std::list<Hmx::Object *> &change
+) {
     change.push_back(mDest);
     changedBy.push_back(mSrc);
 }
