@@ -253,7 +253,7 @@ public:
     int FloatToBucket(float) const;
     int GetVelocityBucket(Symbol) const;
     int GetPressureBucket(JoypadButton) const;
-    bool IsButtonInMask(int i) const { return (mButtons & 1 << i); }
+    bool IsButtonInMask(int i) const { return (mButtons & 1 << i) ? true : false; }
     bool IsButtonNewlyPressed(int i) const { return (mNewPressed & 1 << i); }
 
     float GetLX() const { return mSticks[0][0]; }

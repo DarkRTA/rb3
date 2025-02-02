@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_KEYBOARDCONTROLLER_H
-#define BEATMATCH_KEYBOARDCONTROLLER_H
+#pragma once
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
@@ -31,5 +30,3 @@ public:
     float mWhammy;
     BeatMatchControllerSink *mSink;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_JOYPADTRACKWATCHERIMPL_H
-#define BEATMATCH_JOYPADTRACKWATCHERIMPL_H
+#pragma once
 #include "beatmatch/TrackWatcherImpl.h"
 
 class JoypadTrackWatcherImpl : public TrackWatcherImpl {
@@ -34,5 +33,3 @@ public:
     int mChordLastSlot; // 0xcc
     float mChordTimeout; // 0xd0
 };
-
-#endif

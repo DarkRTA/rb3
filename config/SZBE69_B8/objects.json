@@ -900,7 +900,7 @@
             "system/beatmatch/JoypadMidiController.cpp": "Matching",
             "system/beatmatch/JoypadTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/KeyboardController.cpp": "Matching",
-            "system/beatmatch/KeyboardTrackWatcherImpl.cpp": "MISSING",
+            "system/beatmatch/KeyboardTrackWatcherImpl.cpp": "NonMatching",
             "system/beatmatch/MasterAudio.cpp": "NonMatching",
             "system/beatmatch/MercurySwitchFilter.cpp": "NonMatching",
             "system/beatmatch/Output.cpp": "Matching",
