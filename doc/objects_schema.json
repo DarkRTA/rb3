@@ -20,6 +20,7 @@
               "properties": {
                 "status": { "$ref": "#/$defs/status" },
                 "progress_category": { "$ref": "#/$defs/progress_category" },
+                "scratch_preset_id": { "$ref": "#/$defs/scratch_preset_id" },
                 "mw_version": { "$ref": "#/$defs/mw_version" },
                 "asflags": { "$ref": "#/$defs/asflags" },
                 "cflags": { "$ref": "#/$defs/cflags" },
@@ -85,6 +86,10 @@
           "items": { "type": "string" }
         }
       ]
+    },
+    "scratch_preset_id": {
+      "description": "The scratch preset ID to use.",
+      "type": "integer"
     },
     "mw_version": {
       "description": "The version of MWCC to use, for example \"Wii/1.3\".",
