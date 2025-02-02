@@ -17,5 +17,5 @@ public:
     virtual bool HarmlessFretDown(int, int) const;
     virtual bool IsCoreGuitar(void) const;
 
-    unsigned int mFretButtonsDown;
+    unsigned int mFretButtonsDown; // 0xe8
 };
