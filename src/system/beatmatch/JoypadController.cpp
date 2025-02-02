@@ -120,43 +120,20 @@ bool JoypadController::IsCymbal(int i) const {
         bool ret = false;
         switch (i) {
         case 2:
-            ret = false;
-            if (thePadData->IsButtonInMask(mCymbalShiftButton)) {
-                bool b2 = true;
-                if (!thePadData->IsButtonInMask(0xC)
-                    && thePadData->IsButtonInMask(mPadShiftButton)) {
-                    b2 = false;
-                }
-                if (b2)
-                    ret = true;
-            }
+            ret = thePadData->IsButtonInMask(mCymbalShiftButton)
+                && (thePadData->IsButtonInMask(kPad_DUp)
+                    || !thePadData->IsButtonInMask(mPadShiftButton));
             break;
         case 3:
-            ret = false;
-            if (thePadData->IsButtonInMask(mCymbalShiftButton)) {
-                bool bvar3 = true;
-                if (!thePadData->IsButtonInMask(0xE)
-                    && thePadData->IsButtonInMask(mPadShiftButton)) {
-                    bvar3 = false;
-                }
-                if (bvar3)
-                    ret = true;
-            }
+            ret = thePadData->IsButtonInMask(mCymbalShiftButton)
+                && (thePadData->IsButtonInMask(kPad_DDown)
+                    || !thePadData->IsButtonInMask(mPadShiftButton));
             break;
         case 4:
-            ret = false;
-            if (thePadData->IsButtonInMask(mCymbalShiftButton)) {
-                bool bvar4_2 = false;
-                bool bvar4_1 = false;
-                if (thePadData->IsButtonInMask(0xC) || thePadData->IsButtonInMask(0xE)) {
-                    bvar4_1 = true;
-                }
-                if (bvar4_1 && thePadData->IsButtonInMask(mPadShiftButton)) {
-                    bvar4_2 = true;
-                }
-                if (!bvar4_2)
-                    ret = true;
-            }
+            ret = thePadData->IsButtonInMask(mCymbalShiftButton)
+                && ((!thePadData->IsButtonInMask(kPad_DUp)
+                     && !thePadData->IsButtonInMask(kPad_DDown))
+                    || !thePadData->IsButtonInMask(mPadShiftButton));
             break;
         default:
             break;
