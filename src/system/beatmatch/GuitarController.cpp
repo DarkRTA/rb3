@@ -231,49 +231,39 @@ int GuitarController::OnMsg(const ButtonUpMsg &msg) {
 void GuitarController::ReconcileFretState() {
     if (!mUser->IsLocal())
         return;
-    //       iVar3 = (**(**(this + 0x1c) + 100))();
-    //   if (iVar3 != 0) {
-    //     iVar3 = (**(**(this + 0x1c) + 0x68))();
-    //     iVar4 = UserHasController();
-    //     if (iVar4 != 0) {
-    //       (**(*(iVar3 + 4) + 0x10))(iVar3);
-    //       uVar5 = JoypadGetPadData();
-    //       uVar9 = 0;
-    //       uVar8 = 0;
-    //       do {
-    //         uVar10 = 1 << (uVar8 & 0x3f);
-    //         uVar2 = *(this + 0x40);
-    //         uVar6 = (**(*this + 0x60))(this,uVar8);
-    //         uVar7 = JoypadData::IsButtonInMask(uVar5,uVar6);
-    //         if (uVar7 != 0) {
-    //           uVar9 = uVar9 | uVar10;
-    //         }
-    //         if (((uVar2 & uVar10) != 0) != uVar7) {
-    //           if (uVar7 == 0) {
-    //             (**(**(this + 0x48) + 0x24))(*(this + 0x48),uVar8);
-    //           }
-    //           else {
-    //             (**(**(this + 0x48) + 0x20))(*(this + 0x48),uVar8,0xffffffff);
-    //           }
-    //         }
-    //         uVar8 = uVar8 + 1;
-    //       } while (uVar8 < 5);
-    //       *(this + 0x40) = uVar9;
-    //       uVar6 = JoypadData::IsButtonInMask(uVar5,*(this + 0x20));
-    //       (**(**(this + 0x48) + 0x1c))(*(this + 0x48),uVar6);
-    //       if (*(this + 0x4c) != 3) {
-    //         iVar3 = JoypadData::IsButtonInMask(uVar5,*(this + 0x58));
-    //         if (iVar3 == 0) {
-    //           fVar1 = 0.0;
-    //         }
-    //         else {
-    //           fVar1 = 1.0;
-    //         }
-    //         (**(**(this + 0x48) + 0x18))(fVar1);
-    //       }
-    //     }
-    //   }
-    //   return;
+    LocalUser *lUser = mUser->GetLocalUser();
+    if (UserHasController(lUser)) {
+        JoypadData *padData = JoypadGetPadData(lUser->GetPadNum());
+        int mask = 0;
+        for (int i = 0; i < 5; i++) {
+            int i10 = 1 << i;
+            int i2 = mFretMask;
+            bool inMask = padData->IsButtonInMask(SlotToButton(i));
+            if (inMask) {
+                mask |= i10;
+            }
+            if ((i2 & i10) != inMask) {
+                if (inMask) {
+                    mSink->FretButtonDown(i, -1);
+                } else
+                    mSink->FretButtonUp(i);
+            }
+        }
+        mFretMask = mask;
+        mSink->ForceMercurySwitch(padData->IsButtonInMask(mForceMercuryBut));
+        if (mControllerStyle != kRoXbox) {
+            mSink->MercurySwitch(padData->IsButtonInMask(unk58) ? 1.0f : 0.0f);
+        }
+    }
+}
+
+int GuitarController::GetCurrentSlot() const {
+    int ret = -1;
+    for (int i = 0; i < 5; i++) {
+        if (mFretMask & (1 << i))
+            ret = i;
+    }
+    return ret;
 }
 
 bool GuitarController::IsShifted() const {
