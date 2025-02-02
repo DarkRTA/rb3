@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_JOYPADCONTROLLER_H
-#define BEATMATCH_JOYPADCONTROLLER_H
+#pragma once
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
@@ -63,5 +62,3 @@ public:
     DataArray *mVelocityAxes;
     DataArray *mVelocityPressures;
 };
-
-#endif

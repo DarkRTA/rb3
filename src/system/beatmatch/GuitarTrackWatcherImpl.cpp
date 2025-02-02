@@ -88,7 +88,8 @@ bool GuitarTrackWatcherImpl::HarmlessFretDown(int i1, int i2) const {
     } else if (i2 == -1)
         return false;
     else {
-        if (mGemList->GetGem(i2).GetSlots() & slot_bit)
+        unsigned int slots = mGemList->GetGem(i2).GetSlots();
+        if (slots & slot_bit)
             return true;
         else
             return false;
