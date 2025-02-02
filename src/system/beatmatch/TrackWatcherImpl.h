@@ -70,44 +70,46 @@ public:
     virtual void HandleDifficultyChange();
     virtual void SetIsCurrentTrack(bool);
     virtual void AddSink(BeatMatchSink *);
-    virtual void Jump(float);
+    virtual void Jump(float ms);
     virtual void Restart();
-    virtual void Poll(float);
-    virtual bool Swing(int, bool, bool, GemHitFlags) = 0;
+    virtual void Poll(float ms);
+    virtual bool Swing(int slot, bool, bool, GemHitFlags flags) = 0;
     virtual void NonStrumSwing(int, bool, bool) = 0;
-    virtual void FretButtonDown(int) = 0;
-    virtual void FretButtonUp(int) = 0;
+    virtual void FretButtonDown(int slot) = 0;
+    virtual void FretButtonUp(int slot) = 0;
     virtual void RGFretButtonDown(int) {}
     virtual void OutOfRangeSwing() {}
-    virtual void SetGemsPlayedUntil(int);
+    virtual void SetGemsPlayedUntil(int end_gem);
     virtual void Enable(bool);
     virtual bool IsCheating() const;
     virtual void SetCheating(bool);
     virtual void SetAutoplayError(int);
     virtual void SetSyncOffset(float);
-    virtual void OnHit(float, int, int, unsigned int, GemHitFlags);
-    virtual void OnMiss(float, int, int, unsigned int, GemHitFlags);
-    virtual void OnPass(float, int);
-    virtual void FakeHitGem(float, int, GemHitFlags);
+    virtual void
+    OnHit(float ms, int slot, int gemID, unsigned int slots, GemHitFlags flags);
+    virtual void
+    OnMiss(float ms, int slot, int gemID, unsigned int slots, GemHitFlags flags);
+    virtual void OnPass(float ms, int gemID);
+    virtual void FakeHitGem(float ms, int gemID, GemHitFlags flags);
     virtual void RegisterFill(int) {}
     virtual void ResetFill() {}
     virtual void FillSwing(int, int, int, bool) {}
-    virtual void CodaSwing(int, int);
+    virtual void CodaSwing(int tick, int slot);
     virtual void FillStop() {}
-    virtual bool IsSwingInRoll(int, unsigned int);
-    virtual bool AreSlotsInRoll(unsigned int, int) const;
-    virtual bool GetNextRoll(int, unsigned int &, int &) const;
-    virtual void CheckForTrills(float, int, unsigned int);
-    virtual void PollHook(float);
-    virtual void JumpHook(float);
-    virtual float HitGemHook(float, int, GemHitFlags) {}
-    virtual bool ShouldAutoplayGem(float, int);
-    virtual bool GemCanBePassed(int) { return true; }
-    virtual int NextGemAfter(int, bool);
-    virtual float Slop(int) { return mSlop - mSyncOffset; }
-    virtual int ClosestUnplayedGem(float, int);
-    virtual int SustainedGemToKill(int);
-    virtual bool InTrill(int) const;
+    virtual bool IsSwingInRoll(int gemID, unsigned int);
+    virtual bool AreSlotsInRoll(unsigned int slots, int tick) const;
+    virtual bool GetNextRoll(int, unsigned int &roll, int &endTick) const;
+    virtual void CheckForTrills(float ms, int, unsigned int slots);
+    virtual void PollHook(float ms);
+    virtual void JumpHook(float ms);
+    virtual float HitGemHook(float ms, int gemID, GemHitFlags flags) {}
+    virtual bool ShouldAutoplayGem(float ms, int gemID);
+    virtual bool GemCanBePassed(int gemID) { return true; }
+    virtual int NextGemAfter(int gemID, bool timeout);
+    virtual float Slop(int gemID) { return mSlop - mSyncOffset; }
+    virtual int ClosestUnplayedGem(float ms, int slot);
+    virtual int SustainedGemToKill(int slot);
+    virtual bool InTrill(int tick) const;
 
     void EndAllSustainedNotes();
     void LoadState(TrackWatcherState &);

@@ -18,13 +18,14 @@ KeyboardTrackWatcherImpl::KeyboardTrackWatcherImpl(
     TrackWatcherParent *parent,
     DataArray *cfg
 )
-    : JoypadTrackWatcherImpl(track, u, slot, data, gemlist, parent, cfg, 5), unkd4(-1),
-      mHeldSlots(0), unkdc(0), mMissWindowMs(0), unke4(0), mFatFingerWindowMs(50) {
+    : JoypadTrackWatcherImpl(track, u, slot, data, gemlist, parent, cfg, 5), mHeldGem(-1),
+      mHeldSlots(0), mDownKeys(0), mMissWindowMs(0), mLastMissTimeMs(0),
+      mFatFingerWindowMs(50) {
     FatFingerData fingerData;
-    fingerData.unk0 = -1;
+    fingerData.gemID = -1;
     fingerData.unk8 = -1.0f;
-    fingerData.unk10 = 0;
-    fingerData.unk14 = kGemHitFlagNone;
+    fingerData.slots = 0;
+    fingerData.gemHitFlags = kGemHitFlagNone;
     for (int i = 0; i < 10; i++) {
         mFatFingerDatas.push_back(fingerData);
     }
@@ -36,54 +37,54 @@ KeyboardTrackWatcherImpl::KeyboardTrackWatcherImpl(
 
 KeyboardTrackWatcherImpl::~KeyboardTrackWatcherImpl() {}
 
-void KeyboardTrackWatcherImpl::Jump(float f) {
-    TrackWatcherImpl::Jump(f);
-    unkd4 = -1;
+void KeyboardTrackWatcherImpl::Jump(float ms) {
+    TrackWatcherImpl::Jump(ms);
+    mHeldGem = -1;
     mHeldSlots = 0;
-    unke4 = 0;
+    mLastMissTimeMs = 0;
 }
 
-void KeyboardTrackWatcherImpl::Poll(float f) {
-    TrackWatcherImpl::Poll(f);
+void KeyboardTrackWatcherImpl::Poll(float ms) {
+    TrackWatcherImpl::Poll(ms);
     for (int i = 0; i < mFatFingerDatas.size(); i++) {
         FatFingerData &curData = mFatFingerDatas[i];
-        if (curData.unk0 != -1 && f - curData.unk8 > mFatFingerWindowMs) {
+        if (curData.gemID != -1 && ms - curData.unk8 > mFatFingerWindowMs) {
             TrackWatcherImpl::OnMiss(
-                f, curData.unkc, curData.unk0, curData.unk10, curData.unk14
+                ms, curData.slot, curData.gemID, curData.slots, curData.gemHitFlags
             );
-            JoypadTrackWatcherImpl::FretButtonUp(curData.unkc);
-            curData.unk0 = -1;
+            JoypadTrackWatcherImpl::FretButtonUp(curData.slot);
+            curData.gemID = -1;
         }
     }
 }
 
-void KeyboardTrackWatcherImpl::FretButtonDown(int i) {
-    unkdc |= 1 << i;
-    SwingForTrill(i);
+void KeyboardTrackWatcherImpl::FretButtonDown(int slot) {
+    mDownKeys |= 1 << slot;
+    SwingForTrill(slot);
 }
 
-void KeyboardTrackWatcherImpl::FretButtonUp(int i) {
-    int mask = 1 << i;
-    unkdc &= ~mask;
-    if (unkd4 != -1) {
+void KeyboardTrackWatcherImpl::FretButtonUp(int slot) {
+    int mask = 1 << slot;
+    mDownKeys &= ~mask;
+    if (mHeldGem != -1) {
         MILO_ASSERT(mHeldSlots != 0, 0x89);
         if (mHeldSlots & mask) {
             mHeldSlots &= ~mask;
             if (mHeldSlots == 0) {
-                KillSustain(unkd4);
-                unkd4 = -1;
+                KillSustain(mHeldGem);
+                mHeldGem = -1;
             }
         }
     }
-    FatFingerData *data = FindFatFingerDataForSlot(i);
+    FatFingerData *data = FindFatFingerDataForSlot(slot);
     if (data) {
-        if (data->unk4) {
-            data->unk0 = -1;
+        if (data->gemPlayed) {
+            data->gemID = -1;
         } else {
             TrackWatcherImpl::OnMiss(
-                data->unk8, data->unkc, data->unk0, data->unk10, data->unk14
+                data->unk8, data->slot, data->gemID, data->slots, data->gemHitFlags
             );
-            data->unk0 = -1;
+            data->gemID = -1;
         }
     }
 }
@@ -92,8 +93,8 @@ void KeyboardTrackWatcherImpl::OutOfRangeSwing() {
     FOREACH(it, mSinks) { (*it)->OutOfRangeSwing(); }
 }
 
-int KeyboardTrackWatcherImpl::ClosestUnplayedGem(float f1, int i2) {
-    int i1 = mGemList->ClosestMarkerIdx(f1 + mSyncOffset);
+int KeyboardTrackWatcherImpl::ClosestUnplayedGem(float ms, int slot) {
+    int i1 = mGemList->ClosestMarkerIdx(ms + mSyncOffset);
     float f4 = mGemList->TimeAt(i1);
     int i3;
     for (i3 = i1; i3 + 1 < mGemList->NumGems() && mGemList->TimeAt(i3) <= f4 + 20.0f;
@@ -101,111 +102,113 @@ int KeyboardTrackWatcherImpl::ClosestUnplayedGem(float f1, int i2) {
         ;
     for (; i1 - 1 >= 0 && mGemList->TimeAt(i1) >= f4 - 20.0f; i1--)
         ;
-    return RelevantGem(i1, i3, i2);
+    return RelevantGem(i1, i3, slot);
 }
 
-int KeyboardTrackWatcherImpl::RelevantGem(int, int, int) {
+int KeyboardTrackWatcherImpl::RelevantGem(int, int, int slot) {
     MILO_WARN("closest_gem != -1");
 }
 
-void KeyboardTrackWatcherImpl::CheckForChordTimeout(float f) {
-    if (mChordGemInProgress != -1 && mChordTimeout < f) {
+void KeyboardTrackWatcherImpl::CheckForChordTimeout(float ms) {
+    if (mChordGemInProgress != -1 && mChordTimeout < ms) {
         MILO_ASSERT(mChordSlotsInProgress != 0, 0x12E);
-        unkd4 = mChordGemInProgress;
+        mHeldGem = mChordGemInProgress;
         mHeldSlots = mChordSlotsInProgress;
         OnHit(
-            f, mChordLastSlot, mChordGemInProgress, mChordSlotsInProgress, kGemHitFlagNone
+            ms, mChordLastSlot, mChordGemInProgress, mChordSlotsInProgress, kGemHitFlagNone
         );
         ResetChordInProgress();
     }
 }
 
-void KeyboardTrackWatcherImpl::CodaSwing(int i1, int i2) {
+void KeyboardTrackWatcherImpl::CodaSwing(int tick, int slot) {
     if (mSongData->TrackTypeAt(Track()) == 5) {
-        TrackWatcherImpl::CodaSwing(i1, 0);
+        TrackWatcherImpl::CodaSwing(tick, 0);
     } else
-        TrackWatcherImpl::CodaSwing(i1, i2);
+        TrackWatcherImpl::CodaSwing(tick, slot);
 }
 
 void KeyboardTrackWatcherImpl::OnHit(
-    float f1, int i2, int i3, unsigned int ui, GemHitFlags flags
+    float ms, int slot, int gemID, unsigned int slots, GemHitFlags flags
 ) {
-    TrackWatcherImpl::OnHit(f1, i2, i3, ui, flags);
-    unkd4 = i3;
-    mHeldSlots = ui;
-    FatFingerData *data = FindFatFingerData(i3);
+    TrackWatcherImpl::OnHit(ms, slot, gemID, slots, flags);
+    mHeldGem = gemID;
+    mHeldSlots = slots;
+    FatFingerData *data = FindFatFingerData(gemID);
     if (data)
-        data->unk4 = true;
+        data->gemPlayed = true;
 }
 
 void KeyboardTrackWatcherImpl::OnMiss(
-    float f1, int i2, int i3, unsigned int ui, GemHitFlags flags
+    float ms, int slot, int gemID, unsigned int slots, GemHitFlags flags
 ) {
-    float tick = mSongData->GetTempoMap()->TimeToTick(f1);
+    float tick = mSongData->GetTempoMap()->TimeToTick(ms);
     if (!mParent->InCodaFreestyle(tick, true)) {
-        if (f1 - unke4 < mMissWindowMs) {
-            SendSpuriousMiss(f1, i2, i3);
+        if (ms - mLastMissTimeMs < mMissWindowMs) {
+            SendSpuriousMiss(ms, slot, gemID);
             return;
         }
-        if (CheckForFatFinger(f1, i2, ui, flags))
+        if (CheckForFatFinger(ms, slot, slots, flags))
             return;
     }
-    unke4 = f1;
-    TrackWatcherImpl::OnMiss(f1, i2, i3, ui, flags);
+    mLastMissTimeMs = ms;
+    TrackWatcherImpl::OnMiss(ms, slot, gemID, slots, flags);
 }
 
-void KeyboardTrackWatcherImpl::OnPass(float f1, int i2) {
-    TrackWatcherImpl::OnPass(f1, i2);
-    FatFingerData *data = FindFatFingerData(i2);
+void KeyboardTrackWatcherImpl::OnPass(float ms, int gemID) {
+    TrackWatcherImpl::OnPass(ms, gemID);
+    FatFingerData *data = FindFatFingerData(gemID);
     if (data) {
-        TrackWatcherImpl::OnMiss(f1, data->unkc, data->unk0, data->unk10, data->unk14);
-        JoypadTrackWatcherImpl::FretButtonUp(data->unkc);
-        data->unk0 = -1;
+        TrackWatcherImpl::OnMiss(
+            ms, data->slot, data->gemID, data->slots, data->gemHitFlags
+        );
+        JoypadTrackWatcherImpl::FretButtonUp(data->slot);
+        data->gemID = -1;
     }
 }
 
-void KeyboardTrackWatcherImpl::SwingForTrill(int i1) {
+void KeyboardTrackWatcherImpl::SwingForTrill(int slot) {
     float now = mParent->GetNow();
-    int unplayed = ClosestUnplayedGem(now, i1);
+    int unplayed = ClosestUnplayedGem(now, slot);
     if (unplayed != -1) {
-        CheckForTrills(now, mGemList->GetGem(unplayed).GetTick(), 1 << i1);
+        CheckForTrills(now, mGemList->GetGem(unplayed).GetTick(), 1 << slot);
     }
 }
 
 bool KeyboardTrackWatcherImpl::CheckForFatFinger(
-    float f1, int i2, unsigned int ui, GemHitFlags flags
+    float ms, int slot, unsigned int slots, GemHitFlags flags
 ) {
     if (!TrackForgivesFatFingering())
         return false;
     else {
-        unsigned int neighborSlotMask = MakeNeighboringSlotMask(i2);
+        unsigned int neighborSlotMask = MakeNeighboringSlotMask(slot);
         MILO_ASSERT(neighborSlotMask != 0, 0x1BE);
-        int gem = GetFatFingerGem(f1);
+        int gem = GetFatFingerGem(ms);
         if (gem == -1)
             return false;
         else if (!Playable(gem))
             return false;
         else {
             GameGem &fatGem = mGemList->GetGem(gem);
-            unsigned int slots = fatGem.GetSlots();
-            if (!(slots & neighborSlotMask))
+            unsigned int fatSlots = fatGem.GetSlots();
+            if (!(fatSlots & neighborSlotMask))
                 return false;
             else {
                 FatFingerData *data = FindFatFingerData(gem);
                 if (data) {
                     TrackWatcherImpl::OnMiss(
-                        f1, data->unkc, data->unk0, data->unk10, data->unk14
+                        ms, data->slot, data->gemID, data->slots, data->gemHitFlags
                     );
-                    JoypadTrackWatcherImpl::FretButtonUp(data->unkc);
-                    data->unk0 = -1;
+                    JoypadTrackWatcherImpl::FretButtonUp(data->slot);
+                    data->gemID = -1;
                 }
                 FatFingerData *unused = FindUnusedFatFingerData();
-                unused->unk0 = gem;
-                unused->unk4 = fatGem.GetPlayed();
-                unused->unk8 = f1;
-                unused->unkc = i2;
-                unused->unk10 = ui;
-                unused->unk14 = flags;
+                unused->gemID = gem;
+                unused->gemPlayed = fatGem.GetPlayed();
+                unused->unk8 = ms;
+                unused->slot = slot;
+                unused->slots = slots;
+                unused->gemHitFlags = flags;
                 return true;
             }
         }
@@ -216,7 +219,7 @@ KeyboardTrackWatcherImpl::FatFingerData *
 KeyboardTrackWatcherImpl::FindFatFingerData(int gemID) {
     for (int i = 0; i < mFatFingerDatas.size(); i++) {
         FatFingerData *cur = &mFatFingerDatas[i];
-        if (cur->unk0 == gemID)
+        if (cur->gemID == gemID)
             return cur;
     }
     return nullptr;
@@ -226,7 +229,7 @@ KeyboardTrackWatcherImpl::FatFingerData *
 KeyboardTrackWatcherImpl::FindFatFingerDataForSlot(int slot) {
     for (int i = 0; i < mFatFingerDatas.size(); i++) {
         FatFingerData *cur = &mFatFingerDatas[i];
-        if (cur->unk0 != -1 && cur->unkc == slot)
+        if (cur->gemID != -1 && cur->slot == slot)
             return cur;
     }
     return nullptr;
@@ -236,61 +239,61 @@ KeyboardTrackWatcherImpl::FatFingerData *
 KeyboardTrackWatcherImpl::FindUnusedFatFingerData() {
     for (int i = 0; i < mFatFingerDatas.size(); i++) {
         FatFingerData *cur = &mFatFingerDatas[i];
-        if (cur->unk0 == -1)
+        if (cur->gemID == -1)
             return cur;
     }
     MILO_FAIL("Ran out of fat finger data!!!");
     return nullptr;
 }
 
-int KeyboardTrackWatcherImpl::GetFatFingerGem(float f) {
-    int idx = mGemList->ClosestMarkerIdxAtOrAfter(f + mSyncOffset - mFatFingerWindowMs);
+int KeyboardTrackWatcherImpl::GetFatFingerGem(float ms) {
+    int idx = mGemList->ClosestMarkerIdxAtOrAfter(ms + mSyncOffset - mFatFingerWindowMs);
     if (idx == -1)
         return -1;
-    else if (std::fabs(mGemList->GetGem(idx).mMs - f) > mFatFingerWindowMs)
+    else if (std::fabs(mGemList->GetGem(idx).mMs - ms) > mFatFingerWindowMs)
         return -1;
     return idx;
 }
 
-unsigned int KeyboardTrackWatcherImpl::MakeNeighboringSlotMask(int i1) const {
+unsigned int KeyboardTrackWatcherImpl::MakeNeighboringSlotMask(int slot) const {
     TrackType ty = mSongData->TrackTypeAt(Track());
     unsigned int mask = 0;
     if (ty == kTrackRealKeys) {
-        int slot = GetNeighboringWhiteKeySlot(i1, 1);
-        if (slot != -1)
-            mask = 1 << slot;
+        int neighboringSlot = GetNeighboringWhiteKeySlot(slot, 1);
+        if (neighboringSlot != -1)
+            mask = 1 << neighboringSlot;
 
-        slot = GetNeighboringWhiteKeySlot(i1, -1);
-        if (slot != -1)
-            mask |= 1 << slot;
+        neighboringSlot = GetNeighboringWhiteKeySlot(slot, -1);
+        if (neighboringSlot != -1)
+            mask |= 1 << neighboringSlot;
 
-        slot = GetNeighboringBlackKeySlot(i1, 1);
-        if (slot != -1)
-            mask |= 1 << slot;
+        neighboringSlot = GetNeighboringBlackKeySlot(slot, 1);
+        if (neighboringSlot != -1)
+            mask |= 1 << neighboringSlot;
 
-        slot = GetNeighboringBlackKeySlot(i1, -1);
-        if (slot != -1)
-            mask |= 1 << slot;
+        neighboringSlot = GetNeighboringBlackKeySlot(slot, -1);
+        if (neighboringSlot != -1)
+            mask |= 1 << neighboringSlot;
     } else {
-        int slot = GetNeighboring5LaneSlot(i1, 1);
-        if (slot != -1)
-            mask = 1 << slot;
+        int neighboringSlot = GetNeighboring5LaneSlot(slot, 1);
+        if (neighboringSlot != -1)
+            mask = 1 << neighboringSlot;
 
-        slot = GetNeighboring5LaneSlot(i1, -1);
-        if (slot != -1)
-            mask |= 1 << slot;
+        neighboringSlot = GetNeighboring5LaneSlot(slot, -1);
+        if (neighboringSlot != -1)
+            mask |= 1 << neighboringSlot;
     }
     return mask;
 }
 
-int KeyboardTrackWatcherImpl::GetNeighboringWhiteKeySlot(int i1, int direction) const {
+int KeyboardTrackWatcherImpl::GetNeighboringWhiteKeySlot(int slot, int direction) const {
     MILO_ASSERT(direction == 1 || direction == -1, 0x278);
-    if (i1 == 0 && direction == -1)
+    if (slot == 0 && direction == -1)
         return -1;
-    if (i1 == 0x18 && direction == 1)
+    if (slot == 0x18 && direction == 1)
         return -1;
     if (direction == -1) {
-        switch (i1 % 12) {
+        switch (slot % 12) {
         case 0:
         case 1:
         case 5:
@@ -298,12 +301,12 @@ int KeyboardTrackWatcherImpl::GetNeighboringWhiteKeySlot(int i1, int direction) 
         case 3:
         case 8:
         case 10:
-            return i1 - 1;
+            return slot - 1;
         default:
-            return i1 - 2;
+            return slot - 2;
         }
     } else {
-        switch (i1 % 12) {
+        switch (slot % 12) {
         case 3:
         case 4:
         case 10:
@@ -311,21 +314,21 @@ int KeyboardTrackWatcherImpl::GetNeighboringWhiteKeySlot(int i1, int direction) 
         case 1:
         case 6:
         case 8:
-            return i1 + 1;
+            return slot + 1;
         default:
-            return i1 + 2;
+            return slot + 2;
         }
     }
 }
 
-int KeyboardTrackWatcherImpl::GetNeighboringBlackKeySlot(int i1, int direction) const {
+int KeyboardTrackWatcherImpl::GetNeighboringBlackKeySlot(int slot, int direction) const {
     MILO_ASSERT(direction == 1 || direction == -1, 0x2A8);
-    if (i1 <= 1U && direction == -1)
+    if (slot <= 1U && direction == -1)
         return -1;
-    if ((i1 == 0x18 || i1 == 0x16) && direction == 1)
+    if ((slot == 0x18 || slot == 0x16) && direction == 1)
         return -1;
     if (direction == -1) {
-        switch (i1 % 12) {
+        switch (slot % 12) {
         case 0:
         case 1:
         case 5:
@@ -334,12 +337,12 @@ int KeyboardTrackWatcherImpl::GetNeighboringBlackKeySlot(int i1, int direction) 
         case 3:
         case 8:
         case 10:
-            return i1 - 2;
+            return slot - 2;
         default:
-            return i1 - 1;
+            return slot - 1;
         }
     } else {
-        switch (i1 % 12) {
+        switch (slot % 12) {
         case 3:
         case 4:
         case 10:
@@ -348,20 +351,20 @@ int KeyboardTrackWatcherImpl::GetNeighboringBlackKeySlot(int i1, int direction) 
         case 1:
         case 6:
         case 8:
-            return i1 + 2;
+            return slot + 2;
         default:
-            return i1 + 1;
+            return slot + 1;
         }
     }
 }
 
-int KeyboardTrackWatcherImpl::GetNeighboring5LaneSlot(int i1, int direction) const {
+int KeyboardTrackWatcherImpl::GetNeighboring5LaneSlot(int slot, int direction) const {
     MILO_ASSERT(direction == 1 || direction == -1, 0x2DD);
-    if (i1 == 0 && direction == -1)
+    if (slot == 0 && direction == -1)
         return -1;
-    if (i1 == 4 && direction == 1)
+    if (slot == 4 && direction == 1)
         return -1;
-    return i1 + direction;
+    return slot + direction;
 }
 
 bool KeyboardTrackWatcherImpl::TrackForgivesFatFingering() const {

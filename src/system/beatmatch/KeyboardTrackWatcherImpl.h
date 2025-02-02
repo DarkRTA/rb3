@@ -6,12 +6,12 @@ class KeyboardTrackWatcherImpl : public JoypadTrackWatcherImpl {
 public:
     class FatFingerData {
     public:
-        int unk0; // gem id?
-        bool unk4; // gem played?
+        int gemID; // 0x0
+        bool gemPlayed; //  0x4
         float unk8;
-        int unkc;
-        unsigned int unk10;
-        GemHitFlags unk14;
+        int slot; // 0xc
+        unsigned int slots; // 0x10
+        GemHitFlags gemHitFlags; // 0x14
     };
     KeyboardTrackWatcherImpl(int, const UserGuid &, int, SongData *, GameGemList *, TrackWatcherParent *, DataArray *);
     virtual ~KeyboardTrackWatcherImpl();
@@ -42,11 +42,11 @@ public:
     int GetNeighboringBlackKeySlot(int, int) const;
     int GetNeighboring5LaneSlot(int, int) const;
 
-    int unkd4; // 0xd4
+    int mHeldGem; // 0xd4
     unsigned int mHeldSlots; // 0xd8
-    unsigned int unkdc; // 0xdc
+    unsigned int mDownKeys; // 0xdc
     float mMissWindowMs; // 0xe0
-    float unke4; // 0xe4
+    float mLastMissTimeMs; // 0xe4
     float mFatFingerWindowMs; // 0xe8
     std::vector<FatFingerData> mFatFingerDatas; // 0xec
 };
