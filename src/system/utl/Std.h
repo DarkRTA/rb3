@@ -6,17 +6,24 @@
 #include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
 // C++11 feature replacement macros
-#if !defined(__cplusplus) || __cplusplus < 201103L
+#if defined(__MWERKS__) && !defined(DECOMP_IDE_FLAG)                                     \
+    && (!defined(__cplusplus) || __cplusplus < 201103L)
 #define AUTO(name, val) __decltype__(val) name = val
+#else
+// hack to prevent errors in clangd
+// clang-format off: really dropped the ball on this one lol
+#define AUTO(name, val)                                                                  \
+    _Pragma("clang diagnostic push")                                                     \
+    _Pragma("clang diagnostic ignored \"-Wc++11-extensions\"")                           \
+    auto name = val                                                                      \
+    _Pragma("clang diagnostic pop")
+// clang-format on
+#endif
+
 #define FOREACH_(it, container, inc)                                                     \
     for (AUTO(it, container.begin()); it != container.end(); inc)
 #define FOREACH_PTR_(it, container, inc)                                                 \
     for (AUTO(it, container->begin()); it != container->end(); inc)
-#else
-#define AUTO(name, val) auto name = val
-#define FOREACH_(it, container, inc) for (auto it : container)
-#define FOREACH_PTR_(it, container, inc) for (auto it : container)
-#endif
 
 #define FOREACH(it, container) FOREACH_(it, container, ++it)
 #define FOREACH_POST(it, container) FOREACH_(it, container, it++)
