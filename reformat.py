@@ -2,13 +2,6 @@ import glob
 import os
 import subprocess
 
-directories = [
-    os.path.join("src", "band3", "**"),
-    os.path.join("src", "system", "**"),
-    os.path.join("src", "network", "**"),
-    "src",
-]
-
 with open(".clang-format-ignore") as ignore_file:
     def read_ignore_line(line: str) -> str:
         if line.startswith("#"):
@@ -34,13 +27,11 @@ def format_file(file: str):
     subprocess.check_call(["clang-format", "-i", file])
 
 
-for directory in directories:
-    for file in glob.iglob(os.path.join(directory, "*.c")):
-        format_file(file)
-    for file in glob.iglob(os.path.join(directory, "*.cpp")):
-        format_file(file)
-    for file in glob.iglob(os.path.join(directory, "*.h")):
-        format_file(file)
-    for file in glob.iglob(os.path.join(directory, "*.hpp")):
-        format_file(file)
-    pass
+for file in glob.iglob("src/**/*.c", recursive=True):
+    format_file(file)
+for file in glob.iglob("src/**/*.cpp", recursive=True):
+    format_file(file)
+for file in glob.iglob("src/**/*.h", recursive=True):
+    format_file(file)
+for file in glob.iglob("src/**/*.hpp", recursive=True):
+    format_file(file)
