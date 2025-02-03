@@ -37,7 +37,7 @@ typedef double f64;
 typedef volatile f32 vf32;
 typedef volatile f64 vf64;
 
-typedef unsigned char	byte_t;
-typedef unsigned int	register_t;
+typedef unsigned char byte_t;
+typedef unsigned int register_t;
 
 #endif

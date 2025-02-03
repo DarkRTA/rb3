@@ -4,6 +4,8 @@ src/system/speex
 src/system/zlib
 src/system/math/strips
 src/system/synthwii/soundtouch
+src/system/obj/DataFlex.c
 src/system/oggvorbis
 src/system/synth/tomcrypt
+src/lib
 src/sdk

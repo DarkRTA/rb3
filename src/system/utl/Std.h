@@ -6,22 +6,41 @@
 #include "utl/VectorSizeDefs.h" /* IWYU pragma: export */
 
 // C++11 feature replacement macros
-#if !defined(__cplusplus) || __cplusplus < 201103L
+#if defined(__MWERKS__) && !defined(DECOMP_IDE_FLAG)                                     \
+    && (!defined(__cplusplus) || __cplusplus < 201103L)
 #define AUTO(name, val) __decltype__(val) name = val
-#define FOREACH_(it, container, inc)                                                     \
-    for (AUTO(it, container.begin()); it != container.end(); inc)
-#define FOREACH_PTR_(it, container, inc)                                                 \
-    for (AUTO(it, container->begin()); it != container->end(); inc)
 #else
-#define AUTO(name, val) auto name = val
-#define FOREACH_(it, container, inc) for (auto it : container)
-#define FOREACH_PTR_(it, container, inc) for (auto it : container)
+// hack to prevent errors in clangd
+// clang-format off: really dropped the ball on this one lol
+#define AUTO(name, val)                                                                  \
+    _Pragma("clang diagnostic push")                                                     \
+    _Pragma("clang diagnostic ignored \"-Wc++11-extensions\"")                           \
+    auto name = val                                                                      \
+    _Pragma("clang diagnostic pop")
+// clang-format on
 #endif
+
+#define FOREACH_(it, container, inc)                                                     \
+    for (AUTO(it, (container).begin()); it != (container).end(); (inc))
+#define FOREACH_PTR_(it, container, inc)                                                 \
+    for (AUTO(it, (container)->begin()); it != (container)->end(); (inc))
+
+#define FOREACH_CONST_(it, container, inc)                                               \
+    const AUTO(&container_##__LINE__, container);                                        \
+    FOREACH_(it, container_##__LINE__, inc)
+#define FOREACH_CONST_PTR_(it, container, inc)                                           \
+    const AUTO(&container_##__LINE__, *container);                                       \
+    FOREACH_(it, container_##__LINE__, inc)
 
 #define FOREACH(it, container) FOREACH_(it, container, ++it)
 #define FOREACH_POST(it, container) FOREACH_(it, container, it++)
 #define FOREACH_PTR(it, container) FOREACH_PTR_(it, container, ++it)
 #define FOREACH_PTR_POST(it, container) FOREACH_PTR_(it, container, it++)
+
+#define FOREACH_CONST(it, container) FOREACH_CONST_(it, container, ++it)
+#define FOREACH_CONST_POST(it, container) FOREACH_CONST_(it, container, it++)
+#define FOREACH_CONST_PTR(it, container) FOREACH_CONST_PTR_(it, container, ++it)
+#define FOREACH_CONST_PTR_POST(it, container) FOREACH_CONST_PTR_(it, container, it++)
 
 struct Delete {
     // not sure if this template is real, but it's required for

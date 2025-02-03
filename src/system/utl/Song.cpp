@@ -120,7 +120,9 @@ float Song::EndFrame() { return mSongEndFrame; }
 
 void Song::Load() {
     std::vector<Symbol> vec;
-    FOREACH(it, mDebugParsers) { vec.push_back((*it)->Name()); }
+    FOREACH (it, mDebugParsers) {
+        vec.push_back((*it)->Name());
+    }
     MILO_ASSERT(sCallback, 0xF8);
     sCallback->Preload();
     Unload();
@@ -262,7 +264,7 @@ DataNode Song::GetBookmarks() {
     DataArrayPtr ptr(new DataArray(unk24.size() + 1));
     ptr->Node(0) = "song_begin";
     int idx = 1;
-    FOREACH(it, unk24) { // no const? how can we force const
+    FOREACH (it, unk24) { // no const? how can we force const
         ptr->Node(idx) = it->second;
         idx++;
     }

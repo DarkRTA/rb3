@@ -90,7 +90,9 @@ void KeyboardTrackWatcherImpl::FretButtonUp(int slot) {
 }
 
 void KeyboardTrackWatcherImpl::OutOfRangeSwing() {
-    FOREACH(it, mSinks) { (*it)->OutOfRangeSwing(); }
+    FOREACH (it, mSinks) {
+        (*it)->OutOfRangeSwing();
+    }
 }
 
 int KeyboardTrackWatcherImpl::ClosestUnplayedGem(float ms, int slot) {

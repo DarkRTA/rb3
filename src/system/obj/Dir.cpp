@@ -862,7 +862,7 @@ void ObjectDir::LoadSubDir(int i, const FilePath &fp, BinStream &bs, bool b) {
 }
 
 bool ObjectDir::HasDirPtrs() const {
-    FOREACH_OBJREF(it, this) {
+    FOREACH_OBJREF (it, this) {
         if ((*it)->IsDirPtr())
             return true;
     }

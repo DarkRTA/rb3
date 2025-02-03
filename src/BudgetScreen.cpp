@@ -166,7 +166,7 @@ BudgetScreen::BudgetScreen()
     mLog = new TextFileStream(logFile, false);
 
     // yes there's just a random list here lol
-    { std::list<int> list(10000); }
+    std::list<int>(10000);
 
     int useSsv = SystemConfig("dump_scsv")->Int(1);
     StandardStream::sReportLargeTimerErrors = false;

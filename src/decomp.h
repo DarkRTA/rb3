@@ -22,33 +22,25 @@
 // (This version of CW does not support pragmas inside macros.)
 #else
 // Force reference specific data
-#define DECOMP_FORCEACTIVE(module, ...)                                        \
-    void fake_function(...);                                                   \
-    void CONCAT(FORCEACTIVE##module, __LINE__)(void);                          \
-    void CONCAT(FORCEACTIVE##module, __LINE__)(void) {                         \
-        fake_function(__VA_ARGS__);                                            \
-    }
+#define DECOMP_FORCEACTIVE(module, ...)                                                  \
+    void fake_function(...);                                                             \
+    void CONCAT(FORCEACTIVE##module, __LINE__)(void);                                    \
+    void CONCAT(FORCEACTIVE##module, __LINE__)(void) { fake_function(__VA_ARGS__); }
 
 // Force literal ordering, such as floats in sdata2
-#define DECOMP_FORCELITERAL(module, ...)                                       \
-    void CONCAT(FORCELITERAL##module, __LINE__)(void);                         \
-    void CONCAT(FORCELITERAL##module, __LINE__)(void) {                        \
-        (__VA_ARGS__);                                                         \
-    }
+#define DECOMP_FORCELITERAL(module, ...)                                                 \
+    void CONCAT(FORCELITERAL##module, __LINE__)(void);                                   \
+    void CONCAT(FORCELITERAL##module, __LINE__)(void) { (__VA_ARGS__); }
 
 // Force referenced functions
-#define DECOMP_FORCEFUNC(module, cls, func)                                    \
-    void CONCAT(FORCEFUNC##module, __LINE__) (cls* dummy);                     \
-    void CONCAT(FORCEFUNC##module, __LINE__) (cls* dummy) {                    \
-        dummy->func;                                                           \
-    }
+#define DECOMP_FORCEFUNC(module, cls, func)                                              \
+    void CONCAT(FORCEFUNC##module, __LINE__)(cls * dummy);                               \
+    void CONCAT(FORCEFUNC##module, __LINE__)(cls * dummy) { dummy->func; }
 
 // Force referenced functions using templates
-#define DECOMP_FORCEFUNC_TEMPL(module, cls, func, ...)                         \
-    void CONCAT(FORCEFUNC##module, __LINE__) (cls<__VA_ARGS__>* dummy);        \
-    void CONCAT(FORCEFUNC##module, __LINE__) (cls<__VA_ARGS__>* dummy) {       \
-        dummy->func;                                                           \
-    }
+#define DECOMP_FORCEFUNC_TEMPL(module, cls, func, ...)                                   \
+    void CONCAT(FORCEFUNC##module, __LINE__)(cls<__VA_ARGS__> * dummy);                  \
+    void CONCAT(FORCEFUNC##module, __LINE__)(cls<__VA_ARGS__> * dummy) { dummy->func; }
 
 // Force referenced destructor
 #define DECOMP_FORCEDTOR(module, cls) DECOMP_FORCEFUNC(module, cls, ~cls())
@@ -57,11 +49,9 @@
 // Example usage: DECOMP_FORCEBLOCK(Module, (Class* dummy, int arg),
 //     dummy->Method(arg);
 // )
-#define DECOMP_FORCEBLOCK(module, params, ...)                                 \
-    void CONCAT(FORCEBLOCK##module, __LINE__) params;                          \
-    void CONCAT(FORCEBLOCK##module, __LINE__) params {                         \
-        __VA_ARGS__                                                            \
-    }
+#define DECOMP_FORCEBLOCK(module, params, ...)                                           \
+    void CONCAT(FORCEBLOCK##module, __LINE__) params;                                    \
+    void CONCAT(FORCEBLOCK##module, __LINE__) params { __VA_ARGS__ }
 #endif
 
 /*
@@ -74,6 +64,5 @@
 #define ASM_DECL
 #define ASM_BLOCK(...)
 #endif
-
 
 #endif

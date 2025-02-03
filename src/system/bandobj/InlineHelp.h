@@ -68,10 +68,13 @@ public:
     ObjPtr<UIColor, ObjectDir> mTextColor; // 0x130
 
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(InlineHelp) } NEW_OBJ(InlineHelp
-    ) DECLARE_REVS NEW_OVERLOAD DELETE_OVERLOAD
+    static void Register() { REGISTER_OBJ_FACTORY(InlineHelp) }
+    NEW_OBJ(InlineHelp)
+    DECLARE_REVS
+    NEW_OVERLOAD
+    DELETE_OVERLOAD
 
-        static void SetLabelRotationPcts(float);
+    static void SetLabelRotationPcts(float);
     static void ResetRotation();
 
     static bool sHasFlippedTextThisRotation;

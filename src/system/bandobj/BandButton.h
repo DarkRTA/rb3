@@ -24,8 +24,9 @@ public:
 
     DECLARE_REVS;
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(BandButton) } NEW_OBJ(BandButton
-    ) NEW_OVERLOAD;
+    static void Register() { REGISTER_OBJ_FACTORY(BandButton) }
+    NEW_OBJ(BandButton)
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     RndAnimatable *mFocusAnim; // 0x1bc - might be a RndPropAnim* instead?

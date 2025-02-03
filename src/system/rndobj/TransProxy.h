@@ -28,7 +28,8 @@ public:
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
     NEW_OBJ(RndTransProxy)
-    static void Init() { REGISTER_OBJ_FACTORY(RndTransProxy) } DECLARE_REVS;
+    static void Init() { REGISTER_OBJ_FACTORY(RndTransProxy) }
+    DECLARE_REVS;
 
     /** "Proxy object this will look into." */
     ObjPtr<ObjectDir> mProxy; // 0x90

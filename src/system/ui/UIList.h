@@ -144,7 +144,8 @@ public:
     DECLARE_REVS
 
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(UIList) } NEW_OBJ(UIList)
+    static void Register() { REGISTER_OBJ_FACTORY(UIList) }
+    NEW_OBJ(UIList)
 
     // display num: "Number of rows/columns". range is 1-50
     // scroll time: "Time (seconds) to scroll one step - 0 for instant scrolling". Range
