@@ -49,7 +49,6 @@ public:
     SongData *mSongData; // 0x2c
     TrackWatcherParent *mParent; // 0x30
     DataArray *mCfg; // 0x34
-    DataArray *mSongCfg; // 0x38
 };
 
 Symbol ControllerTypeToTrackWatcherType(Symbol);

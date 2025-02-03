@@ -17,7 +17,7 @@ public:
     virtual bool Swing(int, bool, bool, bool, bool, GemHitFlags) { return false; }
     virtual void ReleaseSwing() {}
     virtual void NonStrumSwing(int, bool, bool) {}
-    virtual float MercurySwitch(float f) { return f; }
+    virtual void MercurySwitch(float f) {}
     virtual void ForceMercurySwitch(bool) {}
     virtual void FretButtonDown(int, int) {}
     virtual void FretButtonUp(int) {}

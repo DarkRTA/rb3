@@ -19,20 +19,28 @@ public:
     virtual int SustainedGemToKill(int);
     virtual void AutoCaptureHook();
     virtual void ResetGemNotFretted();
-    virtual bool HandleHitsAndMisses(int, int, float, bool, bool, bool, GemHitFlags) = 0;
-    virtual void RecordFretButtonDown(int) = 0;
-    virtual void RecordFretButtonUp(int) = 0;
+    virtual bool HandleHitsAndMisses(
+        int gemID,
+        int slot,
+        float ms,
+        bool guitar,
+        bool provisional,
+        bool inCodaFreestyle,
+        GemHitFlags flags
+    ) = 0;
+    virtual void RecordFretButtonDown(int slot) = 0;
+    virtual void RecordFretButtonUp(int slot) = 0;
     virtual unsigned int GetFretButtonsDown() const = 0;
-    virtual bool FretMatch(int, bool, bool) const = 0;
-    virtual bool IsChordSubset(int) const = 0;
-    virtual bool IsHighestFret(int) const = 0;
-    virtual bool InGem(int, const GameGem &) const = 0;
-    virtual bool HarmlessFretDown(int, int) const = 0;
+    virtual bool FretMatch(int gemID, bool, bool) const = 0;
+    virtual bool IsChordSubset(int gemID) const = 0;
+    virtual bool IsHighestFret(int slot) const = 0;
+    virtual bool InGem(int slot, const GameGem &gem) const = 0;
+    virtual bool HarmlessFretDown(int slot, int gemID) const = 0;
     virtual bool IsCoreGuitar() const = 0;
 
     void CheckForFretTimeout(float);
     void CheckForHopoTimeout(float);
-    void TryToHopo(float, int, bool, bool);
+    void TryToHopo(float ms, int slot, bool, bool);
     void TryToFinishSwing(float, int);
     void SetLastNoStrumGem(float, int);
     bool CanHopo(int) const;

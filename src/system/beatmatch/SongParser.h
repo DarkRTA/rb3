@@ -1,9 +1,10 @@
-#ifndef BEATMATCH_SONGPARSER_H
-#define BEATMATCH_SONGPARSER_H
+#pragma once
+#include "beatmatch/TrackType.h"
 #include "midi/Midi.h"
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "obj/Data.h"
+#include "utl/BinStream.h"
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
 #include "beatmatch/RGChords.h"
@@ -18,13 +19,20 @@ enum ReadingState {
 };
 
 struct PartInfo {
-    bool ContainsTrackName(const char *track_name) {
-        const char *orig = original_name.Str();
+    PartInfo(Symbol s1, BeatmatchAudioType i1, TrackType i2, Symbol s2)
+        : part(s1), audio_type(i1), original_name(s2), audio_track_num(AudioTrackNum(-1)),
+          type(i2), song_data_track(-1), overwritten(false) {}
+
+    bool ContainsTrackName(const char *track_name) const {
+        const char *orig = original_name.mStr;
         int origlen = strlen(orig);
         if (strlen(track_name) > origlen + 2)
             return false;
         else
             return strneq(orig, track_name, origlen);
+    }
+    bool operator==(const PartInfo &info) const {
+        return original_name == info.original_name;
     }
 
     bool NoSongDataTrack() const { return song_data_track == -1; }
@@ -38,13 +46,6 @@ struct PartInfo {
     int song_data_track; // 0x14
     bool overwritten; // 0x18
 };
-
-// struct GemInProgress {
-//     // total size: 0xC
-//     int mTick; // offset 0x0, size 0x4
-//     int mNoStrum; // offset 0x4, size 0x4
-//     int mPlayers; // offset 0x8, size 0x4
-// };
 
 class SongParser : public MidiReceiver {
 public:
@@ -109,14 +110,7 @@ public:
         int mRGAreaStrumEndTick; // 0xd8
         int mRGLooseStrumStartTick; // 0xdc
         int mRGLooseStrumEndTick; // 0xe0
-        const char *mRGChordText; // 0xe4
-
-        int unke8, unkec;
-        int unkf0, unkf4, unkf8, unkfc;
-        int unk100, unk104, unk108, unk10c;
-        int unk110, unk114, unk118, unk11c;
-        int unk120;
-
+        char mRGChordText[64]; // 0xe4
         int mRGChordTextTick; // 0x124
         int mRGChordNumsStartTick; // 0x128
         int mRGChordNumsEndTick; // 0x12c
@@ -225,6 +219,7 @@ public:
     bool HandleRGArpeggioStop(int, DifficultyInfo &, unsigned char, int);
     bool HandleRGChordNumsStop(int, DifficultyInfo &, unsigned char);
     bool HandleRGLeftHandSlideStop(int, DifficultyInfo &, unsigned char);
+    bool AudioTrackUsed(SongInfoAudioType);
 
     const char *PrintTick(int tick) const { return TickFormat(tick, *mMeasureMap); }
 
@@ -351,6 +346,17 @@ public:
     int mRGEnharmonicEndTick; // 0x20c
 };
 
-void FillTrackList(std::vector<Symbol> &, BinStream &);
+class MidiTrackLister : public MidiReceiver {
+public:
+    MidiTrackLister(std::vector<Symbol> &, BinStream &);
+    virtual ~MidiTrackLister();
+    virtual void OnNewTrack(int) {}
+    virtual void OnEndOfTrack() {}
+    virtual void OnAllTracksRead() {}
+    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char) {}
+    virtual void OnText(int, const char *, unsigned char);
 
-#endif
+    void FillTrackList(std::vector<Symbol> &, BinStream &);
+
+    std::vector<Symbol> *unk8; // 0x8
+};

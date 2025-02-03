@@ -40,20 +40,22 @@ void BaseGuitarTrackWatcherImpl::HandleDifficultyChange() {
     TrackWatcherImpl::HandleDifficultyChange();
 }
 
-bool BaseGuitarTrackWatcherImpl::Swing(int i1, bool b2, bool b3, GemHitFlags flags) {
+bool BaseGuitarTrackWatcherImpl::Swing(
+    int slot, bool guitar, bool provisional, GemHitFlags flags
+) {
     MILO_ASSERT(mParent, 0x47);
     MILO_ASSERT(mGemList, 0x48);
     float now = mParent->GetNow();
     int tick = mSongData->GetTempoMap()->TimeToTick(now + mSyncOffset);
     bool inCodaFreestyle = mParent->InCodaFreestyle(tick, true);
     if (inCodaFreestyle) {
-        b3 = false;
+        provisional = false;
     }
 
     bool b1 = false;
-    if (!b2 && mParent->InCoda(tick) && !inCodaFreestyle)
+    if (!guitar && mParent->InCoda(tick) && !inCodaFreestyle)
         b1 = true;
-    if (!b1 && mLastLateGemHit == now && !b2)
+    if (!b1 && mLastLateGemHit == now && !guitar)
         b1 = true;
 
     int i5 = mGemList->ClosestMarkerIdx(now + mSyncOffset);
@@ -67,7 +69,7 @@ bool BaseGuitarTrackWatcherImpl::Swing(int i1, bool b2, bool b3, GemHitFlags fla
             }
             i4 = i5 + 1;
         }
-        if (i5 == mLastNoStrumGemHit && b2) {
+        if (i5 == mLastNoStrumGemHit && guitar) {
             mLastNoStrumGemHit = -1;
             SendSwingAtHopo(now, i4);
             b1 = true;
@@ -78,19 +80,21 @@ bool BaseGuitarTrackWatcherImpl::Swing(int i1, bool b2, bool b3, GemHitFlags fla
     NoteSwing(GetFretButtonsDown(), i5);
     if (b1)
         return false;
-    else if (!b2 && !mParent->InSolo(i5) && !inCodaFreestyle)
+    else if (!guitar && !mParent->InSolo(i5) && !inCodaFreestyle)
         return false;
     else {
         mBaseGuitarFlags = (GemHitFlags)(flags & kGemHitFlagUpstrum);
         if (InSlopWindow(mGemList->TimeAt(i4), now)) {
-            return HandleHitsAndMisses(i4, i1, now, b2, b3, inCodaFreestyle, flags);
-        } else if (!b2 && !inCodaFreestyle && HarmlessFretDown(i1, i4))
+            return HandleHitsAndMisses(
+                i4, slot, now, guitar, provisional, inCodaFreestyle, flags
+            );
+        } else if (!guitar && !inCodaFreestyle && HarmlessFretDown(slot, i4))
             return false;
-        else if (!b2 && !mParent->InSolo(tick) && !inCodaFreestyle)
+        else if (!guitar && !mParent->InSolo(tick) && !inCodaFreestyle)
             return false;
-        else if (!b3) {
+        else if (!provisional) {
             if (IsCoreGuitar()) {
-                OnMiss(now, i1, i4, GetFretButtonsDown(), kGemHitFlagNone);
+                OnMiss(now, slot, i4, GetFretButtonsDown(), kGemHitFlagNone);
             }
         } else
             return false;
@@ -98,13 +102,13 @@ bool BaseGuitarTrackWatcherImpl::Swing(int i1, bool b2, bool b3, GemHitFlags fla
     }
 }
 
-void BaseGuitarTrackWatcherImpl::NonStrumSwing(int i, bool b1, bool b2) {
+void BaseGuitarTrackWatcherImpl::NonStrumSwing(int slot, bool button_down, bool solo) {
     float now = mParent->GetNow();
-    int uu = ClosestUnplayedGem(now, i);
+    int uu = ClosestUnplayedGem(now, slot);
     GameGem &gem = mGemList->GetGem(uu);
     CheckForTrills(now, gem.GetTick(), GetFretButtonsDown());
     if (!IsTrillActive())
-        TryToHopo(now, i, b1, b2);
+        TryToHopo(now, slot, button_down, solo);
 }
 
 void BaseGuitarTrackWatcherImpl::FretButtonDown(int i) {

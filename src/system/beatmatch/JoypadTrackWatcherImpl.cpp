@@ -1,7 +1,9 @@
 #include "beatmatch/JoypadTrackWatcherImpl.h"
+#include "beatmatch/GameGem.h"
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/TrackWatcherParent.h"
 #include "beatmatch/SongData.h"
+#include "os/Debug.h"
 #include "utl/TempoMap.h"
 #include "beatmatch/BeatMatchUtl.h"
 
@@ -25,54 +27,83 @@ JoypadTrackWatcherImpl::~JoypadTrackWatcherImpl() {}
 bool JoypadTrackWatcherImpl::Swing(int i1, bool b1, bool b2, GemHitFlags flags) {
     KillSustainForSlot(i1);
     float now = mParent->GetNow();
-    int idk = ClosestUnplayedGem(now, i1);
-    float timeat = mGemList->TimeAt(idk);
-    float timeatnext = mGemList->TimeAtNext(idk);
-    bool inslopwindow = InSlopWindow(timeat, now);
-    GameGem &gem = mGemList->GetGem(idk);
-    GameGem &gem2 = mGemList->GetGem(idk);
-    int tick = gem2.mTick;
-    if (gem.NumSlots() == 1) {
-        NoteSwing(1 << i1, tick);
+    int unplayedGem = ClosestUnplayedGem(now, i1);
+    float f15 = mGemList->TimeAt(unplayedGem);
+    mGemList->TimeAtNext(unplayedGem);
+    bool i4 = InSlopWindow(f15, now);
+    GameGem &gem5 = mGemList->GetGem(unplayedGem);
+    int i6 = mGemList->GetGem(unplayedGem).GetTick();
+    unsigned int u13;
+    if (gem5.NumSlots() == 1) {
+        u13 = 1 << i1;
+        NoteSwing(u13, i6);
     } else {
-        NoteSwing(mChordSlotsInProgress | 1 << i1, tick);
+        u13 = 1 << i1;
+        NoteSwing(mChordSlotsInProgress | u13, i6);
     }
-
-    bool somebool = false;
+    bool bvar2 = false;
     if (AllowAllInputInRolls()) {
-        int tick = mSongData->GetTempoMap()->TimeToTick(now + mSyncOffset);
-        int locInt = 0;
-        int loopTick = mSongData->GetTempoMap()->GetLoopTick(tick, locInt);
-        if (mSongData->GetRollingSlotsAtTick(mTrack, loopTick)) {
-            unsigned int roll1;
-            int roll2;
-            mSongData->GetNextRoll(mTrack, loopTick, roll1, roll2);
-            float rollInterval = GetRollIntervalMs(
+        int f6 = mSongData->GetTempoMap()->TimeToTick(now + mSyncOffset);
+        int i60 = 0;
+        int i9 = mSongData->GetTempoMap()->GetLoopTick(f6, i60);
+        if (mSongData->GetRollingSlotsAtTick(Track(), i9)) {
+            unsigned int i68;
+            int i64 = 0;
+            mSongData->GetNextRoll(Track(), i9, i68, i64);
+            bvar2 = true;
+            float f16 = GetRollIntervalMs(
                 mRollIntervalsConfig,
-                mSongData->mTrackInfos[mTrack]->mType,
-                mSongData->mTrackDifficulties[mTrack],
+                mSongData->TrackTypeAt(Track()),
+                mSongData->TrackDiffAt(Track()),
                 false
             );
+            for (int i = unplayedGem; i < mGemList->NumGems(); i++) {
+                GameGem &curGem = mGemList->GetGem(i);
+                if (curGem.mMs >= now + mSyncOffset + f16
+                    || curGem.GetTick() >= i64 + i60)
+                    break;
+                mGemList->GetGem(i).SetUnk10B1(true);
+            }
         }
-        mSongData->TrackTypeAt(0);
     }
-
     if (mChordGemInProgress != -1) {
-        if (mChordGemInProgress == idk) {
+        if (mChordGemInProgress != unplayedGem) {
+            OnMiss(now, mChordLastSlot, unplayedGem, 0, kGemHitFlagNone);
+            ResetChordInProgress();
+        } else {
             TryToCompleteChord(now, i1);
             return false;
         }
-        OnMiss(now, mChordLastSlot, idk, 0, kGemHitFlagNone);
-        ResetChordInProgress();
     }
-    if (!inslopwindow) {
-        if (!somebool) {
-            OnMiss(now, i1, idk, 0, kGemHitFlagNone);
-        }
-    } else if (!gem2.GetPlayed() || !Playable(idk)) {
-        OnMiss(now, mChordLastSlot, idk, 0, kGemHitFlagNone);
-    } else {
-    }
+    if (i4) {
+        if (!gem5.GetPlayed() && Playable(unplayedGem)) {
+            if (gem5.NumSlots() == 1) {
+                if (i1 == gem5.GetSlot() || i1 == -1 || bvar2) {
+                    OnHit(now, i1, unplayedGem, gem5.GetSlots(), flags);
+                } else {
+                    OnMiss(now, i1, unplayedGem, 0, flags);
+                }
+            }
+
+            else {
+                MILO_ASSERT(mChordGemInProgress == -1, 0x96);
+                if (bvar2) {
+                    OnHit(now, i1, unplayedGem, gem5.GetSlots(), flags);
+                } else {
+                    if (u13 & gem5.GetSlots()) {
+                        mChordGemInProgress = unplayedGem;
+                        mChordSlotsInProgress = u13;
+                        mChordLastSlot = i1;
+                        mChordTimeout = now + mChordSlop;
+                    } else {
+                        OnMiss(now, i1, unplayedGem, 0, kGemHitFlagNone);
+                    }
+                }
+            }
+        } else if (!bvar2)
+            OnMiss(now, mChordLastSlot, unplayedGem, 0, kGemHitFlagNone);
+    } else if (!bvar2)
+        OnMiss(now, mChordLastSlot, unplayedGem, 0, kGemHitFlagNone);
     return true;
 }
 
@@ -80,7 +111,7 @@ bool JoypadTrackWatcherImpl::AllowAllInputInRolls() const { return false; }
 
 void JoypadTrackWatcherImpl::TryToCompleteChord(float f, int i) {
     GameGem &gem = mGemList->GetGem(mChordGemInProgress);
-    int slots = gem.mSlots;
+    int slots = gem.GetSlots();
     if (1 << i & slots) {
         mChordSlotsInProgress |= 1 << i;
         if (mChordSlotsInProgress == slots) {

@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_JOYPADGUITARCONTROLLER_H
-#define BEATMATCH_JOYPADGUITARCONTROLLER_H
+#pragma once
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchControllerSink.h"
 #include "obj/Object.h"
@@ -26,5 +25,3 @@ public:
     int mFretMask;
     BeatMatchControllerSink *mSink;
 };
-
-#endif

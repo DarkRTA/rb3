@@ -1997,10 +1997,10 @@ system/beatmatch/SlotChannelMapping.cpp:
 	.text       start:0x804780B0 end:0x80479968
 
 system/beatmatch/SongData.cpp:
-	.text       start:0x80479968 end:0x80488788
+	.text       start:0x80479968 end:0x80488774
 
 system/beatmatch/SongParser.cpp:
-	.text       start:0x80488788 end:0x80492494
+	.text       start:0x80488774 end:0x80492494
 	.ctors      start:0x807EFFA4 end:0x807EFFA8
 
 system/beatmatch/Submix.cpp:

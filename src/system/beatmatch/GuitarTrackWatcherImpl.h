@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_GUITARTRACKWATCHERIMPL_H
-#define BEATMATCH_GUITARTRACKWATCHERIMPL_H
+#pragma once
 #include "beatmatch/BaseGuitarTrackWatcherImpl.h"
 
 class GuitarTrackWatcherImpl : public BaseGuitarTrackWatcherImpl {
@@ -18,7 +17,5 @@ public:
     virtual bool HarmlessFretDown(int, int) const;
     virtual bool IsCoreGuitar(void) const;
 
-    unsigned int mFretButtonsDown;
+    unsigned int mFretButtonsDown; // 0xe8
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_JOYPADTRACKWATCHERIMPL_H
-#define BEATMATCH_JOYPADTRACKWATCHERIMPL_H
+#pragma once
 #include "beatmatch/TrackWatcherImpl.h"
 
 class JoypadTrackWatcherImpl : public TrackWatcherImpl {
@@ -23,10 +22,10 @@ public:
     virtual void JumpHook(float);
     virtual float HitGemHook(float, int, GemHitFlags);
     virtual bool AllowAllInputInRolls() const;
-    virtual void CheckForChordTimeout(float);
+    virtual void CheckForChordTimeout(float ms);
 
     void ResetChordInProgress();
-    void TryToCompleteChord(float, int);
+    void TryToCompleteChord(float ms, int slot);
 
     float mChordSlop; // 0xc0
     int mChordGemInProgress; // 0xc4
@@ -34,5 +33,3 @@ public:
     int mChordLastSlot; // 0xcc
     float mChordTimeout; // 0xd0
 };
-
-#endif

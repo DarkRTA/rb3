@@ -1,4 +1,5 @@
 #pragma once
+#include "beatmatch/FillInfo.h"
 
 class TrackWatcherParent {
 public:
@@ -13,7 +14,7 @@ public:
     virtual bool InFillNow() = 0;
     virtual bool InFill(int, bool) = 0;
     virtual bool FillsEnabled(int) = 0;
-    virtual int GetFillLogic() const = 0;
+    virtual FillLogic GetFillLogic() const = 0;
     virtual bool InSolo(int) = 0;
     virtual bool InCoda(int) = 0;
     virtual bool InCodaFreestyle(int, bool) = 0;

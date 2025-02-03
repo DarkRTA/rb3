@@ -1,7 +1,5 @@
 #include "beatmatch/JoypadGuitarController.h"
 
-float JoypadGuitarControllerRX = 0.0f;
-
 JoypadGuitarController::JoypadGuitarController(
     User *user,
     const DataArray *cfg,
@@ -34,13 +32,7 @@ float JoypadGuitarController::GetWhammyBar() const {
             return 0.0f;
         else {
             JoypadData *thePadData = JoypadGetPadData(lUser->GetPadNum());
-            float stick = thePadData->mSticks[0][1];
-            float *ptr;
-            if (stick < JoypadGuitarControllerRX)
-                ptr = &stick;
-            else
-                ptr = &JoypadGuitarControllerRX;
-            return *ptr;
+            return std::min(0.0f, thePadData->GetLY());
         }
     }
 }

@@ -2,9 +2,6 @@
 #include "utl/Symbols.h"
 #include "os/Debug.h"
 
-float somefloatidk = 0.0f; // JoypadController's right stick X axis - possibly a resting
-                           // position for the whammy?
-
 JoypadController::JoypadController(
     User *user,
     const DataArray *cfg,
@@ -22,12 +19,9 @@ JoypadController::JoypadController(
         DataArray *sysConfig = SystemConfig(
             joypad, controllers, JoypadControllerTypePadNum(mLocalUser->GetPadNum())
         );
-        mPadShiftButton =
-            (JoypadButton)sysConfig->FindArray(pad_shift_button, true)->Int(1);
-        mCymbalShiftButton =
-            (JoypadButton)sysConfig->FindArray(cymbal_shift_button, true)->Int(1);
-        mSecondaryPedalButton =
-            (JoypadButton)sysConfig->FindArray(secondary_button, true)->Int(1);
+        mPadShiftButton = (JoypadButton)sysConfig->FindInt(pad_shift_button);
+        mCymbalShiftButton = (JoypadButton)sysConfig->FindInt(cymbal_shift_button);
+        mSecondaryPedalButton = (JoypadButton)sysConfig->FindInt(secondary_button);
 
     } else {
         mLocalUser = 0;
@@ -89,19 +83,11 @@ void JoypadController::Disable(bool b) {
 
 float JoypadController::GetWhammyBar() const {
     if (!mUser->IsLocal())
-        return 0.0f;
-    if (mLocalUser) {
-        JoypadData *thePadData = GetJoypadData();
-        float stick = thePadData->mSticks[0][1];
-        float *ptr;
-        if (stick < somefloatidk)
-            ptr = &stick;
-        else
-            ptr = &somefloatidk;
-        return *ptr;
-    } else {
-        return 0.0f;
-    }
+        return 0;
+    else if (mLocalUser) {
+        return std::min(0.0f, GetJoypadData()->GetLY());
+    } else
+        return 0;
 }
 
 int JoypadController::GetVelocityBucket(int i) const {
@@ -113,17 +99,15 @@ int JoypadController::GetVelocityBucket(int i) const {
         if (!findMapSlot) {
             return 0;
         } else {
-            return GetJoypadData()->GetVelocityBucket(findMapSlot->Sym(1));
+            Symbol sym = findMapSlot->Sym(1);
+            return GetJoypadData()->GetVelocityBucket(sym);
         }
     } else if (mVelocityPressures) {
         DataArray *findMapSlot = mVelocityPressures->FindArray(MapSlot(i), false);
-        if (!findMapSlot)
-            return 0;
-        else {
-            return GetJoypadData()->GetPressureBucket((JoypadButton)findMapSlot->Int(1));
-        }
+        return !findMapSlot
+            ? 0
+            : GetJoypadData()->GetPressureBucket((JoypadButton)findMapSlot->Int(1));
     }
-
     return 0;
 }
 
@@ -136,43 +120,20 @@ bool JoypadController::IsCymbal(int i) const {
         bool ret = false;
         switch (i) {
         case 2:
-            ret = false;
-            if (thePadData->IsButtonInMask(mCymbalShiftButton)) {
-                bool b2 = true;
-                if (!thePadData->IsButtonInMask(0xC)
-                    && thePadData->IsButtonInMask(mPadShiftButton)) {
-                    b2 = false;
-                }
-                if (b2)
-                    ret = true;
-            }
+            ret = thePadData->IsButtonInMask(mCymbalShiftButton)
+                && (thePadData->IsButtonInMask(kPad_DUp)
+                    || !thePadData->IsButtonInMask(mPadShiftButton));
             break;
         case 3:
-            ret = false;
-            if (thePadData->IsButtonInMask(mCymbalShiftButton)) {
-                bool bvar3 = true;
-                if (!thePadData->IsButtonInMask(0xE)
-                    && thePadData->IsButtonInMask(mPadShiftButton)) {
-                    bvar3 = false;
-                }
-                if (bvar3)
-                    ret = true;
-            }
+            ret = thePadData->IsButtonInMask(mCymbalShiftButton)
+                && (thePadData->IsButtonInMask(kPad_DDown)
+                    || !thePadData->IsButtonInMask(mPadShiftButton));
             break;
         case 4:
-            ret = false;
-            if (thePadData->IsButtonInMask(mCymbalShiftButton)) {
-                bool bvar4_2 = false;
-                bool bvar4_1 = false;
-                if (thePadData->IsButtonInMask(0xC) || thePadData->IsButtonInMask(0xE)) {
-                    bvar4_1 = true;
-                }
-                if (bvar4_1 && thePadData->IsButtonInMask(mPadShiftButton)) {
-                    bvar4_2 = true;
-                }
-                if (!bvar4_2)
-                    ret = true;
-            }
+            ret = thePadData->IsButtonInMask(mCymbalShiftButton)
+                && ((!thePadData->IsButtonInMask(kPad_DUp)
+                     && !thePadData->IsButtonInMask(kPad_DDown))
+                    || !thePadData->IsButtonInMask(mPadShiftButton));
             break;
         default:
             break;

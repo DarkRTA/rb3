@@ -2,6 +2,12 @@
 #include "utl/TickedInfo.h"
 #include <vector>
 
+enum FillLogic {
+    kFillsRegular = 0,
+    kFillsDeployGemAndDim = 1,
+    kFillsDeployGemAndInvisible = 2
+};
+
 /** Info for a single fill. */
 struct FillExtent {
     FillExtent(int s, int e, bool b) : start(s), end(e), bre(b) {}

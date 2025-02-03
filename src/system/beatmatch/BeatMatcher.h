@@ -23,8 +23,8 @@ class BeatMatcher : public TrackWatcherParent, public BeatMatchControllerSink {
 public:
     BeatMatcher(const UserGuid &, int, int, Symbol, SongData *, SongInfo &, DataArray *, BeatMaster *);
     virtual ~BeatMatcher();
-    virtual float GetNow() const;
-    virtual int GetTick() const;
+    virtual float GetNow() const { return mNow; }
+    virtual int GetTick() const { return mTick; }
     virtual float GetWhammyBar() const;
     virtual int GetMaxSlots() const;
     virtual void SetPitchBend(int, float, bool);
@@ -32,7 +32,7 @@ public:
     virtual bool InFillNow();
     virtual bool InFill(int, bool);
     virtual bool FillsEnabled(int);
-    virtual int GetFillLogic() const;
+    virtual FillLogic GetFillLogic() const;
     virtual bool InSolo(int);
     virtual bool InCoda(int);
     virtual bool InCodaFreestyle(int, bool);
@@ -47,7 +47,7 @@ public:
     virtual bool Swing(int, bool, bool, bool, bool, GemHitFlags);
     virtual void ReleaseSwing();
     virtual void NonStrumSwing(int, bool, bool);
-    virtual float MercurySwitch(float);
+    virtual void MercurySwitch(float);
     virtual void ForceMercurySwitch(bool);
     virtual void SetController(class BeatMatchController *);
     virtual void NoteOn(int);
@@ -74,6 +74,32 @@ public:
     void CheckMercurySwitch(float);
     void Jump(float);
     void Restart();
+    void UpdateMercurySwitch();
+    void SetDrumKitBank(ObjectDir *);
+    TrackType GetTrackType(int) const;
+    void AutoplayCoda(bool);
+    void SetAutoplayError(int);
+    void SetAutoOn(bool);
+    void CycleAutoplayAccuracy();
+    void SetAutoplayAccuracy(float);
+    void DrivePitchBendExternally(bool);
+    void SetCodaStartTick(int);
+    void EnterCoda();
+    void SetFillsEnabled(bool);
+    void Enable(bool);
+    void EnableController(bool);
+    void DisableFillsCompletely();
+    void SetFillsEnabled(int, bool);
+    void ForceFill(bool);
+    void SetSyncOffset(float);
+    void SetControllerType(Symbol);
+    bool UsingAlternateButtons() const;
+    void EnableWhammy(bool);
+    void EnableCapStrip(bool);
+    void E3CheatIncSlop();
+    void E3CheatDecSlop();
+    bool IsFillCompletion(int);
+    unsigned int GetRGRollSlots(int) const;
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc
@@ -95,25 +121,25 @@ public:
     bool unk60; // 0x60
     SongPos mSongPos; // 0x64
     float mNow; // 0x78
-    int unk7c; // 0x7c
-    float unk80; // 0x80
-    float unk84; // 0x84
+    int mTick; // 0x7c
+    float mLastSwing; // 0x80
+    float mLastReleaseSwing; // 0x84
     bool unk88; // 0x88
-    int unk8c; // 0x8c
-    float unk90; // 0x90
-    bool unk94; // 0x94
-    bool unk95; // 0x95
-    float unk98; // 0x98
-    bool unk9c; // 0x9c
-    int unka0; // 0xa0
-    int unka4; // 0xa4
-    int unka8; // 0xa8
+    int mLastVelocityBucket; // 0x8c
+    float mRawMercurySwitchState; // 0x90
+    bool mMercurySwitchState; // 0x94
+    bool mForceMercurySwitch; // 0x95
+    float mSyncOffset; // 0x98
+    bool mDrivingPitchBendExternally; // 0x9c
+    int mFillStartTick; // 0xa0
+    int mLastFillEndTick; // 0xa4
+    int mCodaStartTick; // 0xa8
     bool unkac; // 0xac
-    bool unkad; // 0xad
-    bool unkae; // 0xae
-    bool unkaf; // 0xaf
-    bool unkb0; // 0xb0
-    int unkb4; // 0xb4
-    bool unkb8; // 0xb8
-    bool unkb9; // 0xb9
+    bool mAutoplay; // 0xad
+    bool mForceFill; // 0xae
+    bool mNoFills; // 0xaf
+    bool mFillAudio; // 0xb0
+    FillLogic mFillLogic; // 0xb4
+    bool mEnableWhammy; // 0xb8
+    bool mEnableCapStrip; // 0xb9
 };
