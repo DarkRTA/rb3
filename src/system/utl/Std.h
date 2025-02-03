@@ -25,10 +25,22 @@
 #define FOREACH_PTR_(it, container, inc)                                                 \
     for (AUTO(it, (container)->begin()); it != (container)->end(); (inc))
 
+#define FOREACH_CONST_(it, container, inc)                                               \
+    const AUTO(&container_##__LINE__, container);                                        \
+    FOREACH_(it, container_##__LINE__, inc)
+#define FOREACH_CONST_PTR_(it, container, inc)                                           \
+    const AUTO(&container_##__LINE__, *container);                                       \
+    FOREACH_(it, container_##__LINE__, inc)
+
 #define FOREACH(it, container) FOREACH_(it, container, ++it)
 #define FOREACH_POST(it, container) FOREACH_(it, container, it++)
 #define FOREACH_PTR(it, container) FOREACH_PTR_(it, container, ++it)
 #define FOREACH_PTR_POST(it, container) FOREACH_PTR_(it, container, it++)
+
+#define FOREACH_CONST(it, container) FOREACH_CONST_(it, container, ++it)
+#define FOREACH_CONST_POST(it, container) FOREACH_CONST_(it, container, it++)
+#define FOREACH_CONST_PTR(it, container) FOREACH_CONST_PTR_(it, container, ++it)
+#define FOREACH_CONST_PTR_POST(it, container) FOREACH_CONST_PTR_(it, container, it++)
 
 struct Delete {
     // not sure if this template is real, but it's required for

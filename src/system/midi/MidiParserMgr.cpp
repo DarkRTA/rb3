@@ -8,10 +8,6 @@
 #include "beatmatch/GemListInterface.h"
 #include "utl/Symbols.h"
 
-#define FOREACH_MIDIPARSER(it)                                                           \
-    const std::list<MidiParser *> &parsers = MidiParser::sParsers;                       \
-    FOREACH (it, parsers)
-
 MidiParserMgr *TheMidiParserMgr;
 
 static inline const char *GetBeatMatcherStr() { return "beatmatcher"; }
@@ -49,7 +45,7 @@ MidiParserMgr::~MidiParserMgr() {
 void MidiParserMgr::Reset(int i) {
     if (mLoaded && unk59) {
         float beat = TickToBeat(i);
-        FOREACH_MIDIPARSER (it) {
+        FOREACH_CONST (it, MidiParser::sParsers) {
             (*it)->Reset(beat);
         }
     }
@@ -57,7 +53,7 @@ void MidiParserMgr::Reset(int i) {
 
 void MidiParserMgr::Reset() {
     if (mLoaded) {
-        FOREACH_MIDIPARSER (it) {
+        FOREACH_CONST (it, MidiParser::sParsers) {
             (*it)->Reset(-2 * kHugeFloat);
         }
     }
@@ -65,7 +61,7 @@ void MidiParserMgr::Reset() {
 
 void MidiParserMgr::Poll() {
     if (unk59) {
-        FOREACH_MIDIPARSER (it) {
+        FOREACH_CONST (it, MidiParser::sParsers) {
             (*it)->Poll();
         }
     }
@@ -98,7 +94,7 @@ void MidiParserMgr::OnEndOfTrack() {
         }
         if (mGems)
             mGems->SetTrack(mTrackName);
-        FOREACH_MIDIPARSER (it) {
+        FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == mTrackName) {
                 int numnotes = cur->ParseAll(mGems, unk30);
@@ -137,7 +133,7 @@ void MidiParserMgr::OnMidiMessage(
     int i28;
     bool created = CreateNote(tick, c1, c2, i28);
     if (created) {
-        FOREACH_MIDIPARSER (it) {
+        FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == mTrackName) {
                 cur->ParseNote(i28, tick, c2);
@@ -188,7 +184,7 @@ DataArray *MidiParserMgr::ParseText(const char *str, int tick) {
 
 void MidiParserMgr::OnTrackName(Symbol s) {
     if (std::find(unk50.begin(), unk50.end(), s) != unk50.end()) {
-        FOREACH_MIDIPARSER (it) {
+        FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == s) {
                 cur->Clear();
@@ -262,7 +258,7 @@ DataEventList *MidiParserMgr::GetEventsList() {
 }
 
 MidiParser *MidiParserMgr::GetParser(Symbol s) {
-    FOREACH_MIDIPARSER (it) {
+    FOREACH_CONST (it, MidiParser::sParsers) {
         if (s == (*it)->Name())
             return *it;
     }
