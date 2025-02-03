@@ -18,8 +18,8 @@ class BeatMatchController : public Hmx::Object {
 public:
     BeatMatchController(User *, const DataArray *, bool);
     virtual ~BeatMatchController() {}
-    virtual int ButtonToSlot(JoypadButton) const;
-    virtual int SlotToButton(int) const;
+    virtual int ButtonToSlot(JoypadButton button) const;
+    virtual int SlotToButton(int slot) const;
     virtual void Poll() {}
     virtual void Disable(bool) = 0;
     virtual bool IsDisabled() const = 0;
@@ -28,8 +28,8 @@ public:
     virtual int GetFretButtons() const = 0;
     virtual void EnableShift(bool) {}
     virtual bool IsShifted() const { return false; }
-    virtual int GetVelocityBucket(int) const;
-    virtual int GetVirtualSlot(int i) const;
+    virtual int GetVelocityBucket(int slot) const;
+    virtual int GetVirtualSlot(int slot) const;
     virtual void UseAlternateMapping(bool) {}
     virtual bool IsAlternateMapping() const { return false; }
     virtual void SetSecondPedalHiHat(bool) {}

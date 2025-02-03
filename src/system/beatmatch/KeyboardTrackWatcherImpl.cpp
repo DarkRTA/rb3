@@ -105,7 +105,7 @@ int KeyboardTrackWatcherImpl::ClosestUnplayedGem(float ms, int slot) {
     return RelevantGem(i1, i3, slot);
 }
 
-int KeyboardTrackWatcherImpl::RelevantGem(int, int, int slot) {
+int KeyboardTrackWatcherImpl::RelevantGem(int first_gem_id, int last_gem_id, int slot) {
     MILO_WARN("closest_gem != -1");
 }
 
