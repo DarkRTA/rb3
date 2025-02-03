@@ -10,8 +10,16 @@ directories = [
 ]
 
 with open(".clang-format-ignore") as ignore_file:
+    def read_ignore_line(line: str) -> str:
+        if line.startswith("#"):
+            return ""
+        return os.path.normpath(line.strip())
+
     ignore_directories = list(
-        map(lambda p: os.path.normpath(p.strip()), ignore_file.readlines())
+        filter(
+            lambda p: p != "",
+            map(read_ignore_line, ignore_file.readlines()),
+        )
     )
 
 
