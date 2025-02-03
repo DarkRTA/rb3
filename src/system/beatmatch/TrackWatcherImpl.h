@@ -73,8 +73,8 @@ public:
     virtual void Jump(float ms);
     virtual void Restart();
     virtual void Poll(float ms);
-    virtual bool Swing(int slot, bool, bool, GemHitFlags flags) = 0;
-    virtual void NonStrumSwing(int, bool, bool) = 0;
+    virtual bool Swing(int slot, bool guitar, bool provisional, GemHitFlags flags) = 0;
+    virtual void NonStrumSwing(int slot, bool button_down, bool solo) = 0;
     virtual void FretButtonDown(int slot) = 0;
     virtual void FretButtonUp(int slot) = 0;
     virtual void RGFretButtonDown(int) {}
@@ -93,7 +93,7 @@ public:
     virtual void FakeHitGem(float ms, int gemID, GemHitFlags flags);
     virtual void RegisterFill(int) {}
     virtual void ResetFill() {}
-    virtual void FillSwing(int, int, int, bool) {}
+    virtual void FillSwing(int tick, int slot, int gemID, bool at_end) {}
     virtual void CodaSwing(int tick, int slot);
     virtual void FillStop() {}
     virtual bool IsSwingInRoll(int gemID, unsigned int);

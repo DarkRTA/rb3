@@ -22,10 +22,10 @@ public:
     virtual void JumpHook(float);
     virtual float HitGemHook(float, int, GemHitFlags);
     virtual bool AllowAllInputInRolls() const;
-    virtual void CheckForChordTimeout(float);
+    virtual void CheckForChordTimeout(float ms);
 
     void ResetChordInProgress();
-    void TryToCompleteChord(float, int);
+    void TryToCompleteChord(float ms, int slot);
 
     float mChordSlop; // 0xc0
     int mChordGemInProgress; // 0xc4
