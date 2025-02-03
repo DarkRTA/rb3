@@ -12,6 +12,7 @@ struct AudioTrackNum {
     AudioTrackNum(int val) : mVal(val) {}
     AudioTrackNum operator++() { return AudioTrackNum(++mVal); }
     int Val() const { return mVal; }
+    void Set(int val) { mVal = val; }
     int mVal;
 };
 

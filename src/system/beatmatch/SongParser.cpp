@@ -1,8 +1,15 @@
 #include "beatmatch/SongParser.h"
+#include "beatmatch/BeatMatchUtl.h"
+#include "beatmatch/TrackType.h"
+#include "obj/Data.h"
+#include "os/Debug.h"
 #include "os/System.h"
 #include "midi/MidiConstants.h"
+#include "stl/_pair.h"
 #include "utl/FilePath.h"
 #include "beatmatch/GameGem.h"
+#include "utl/MakeString.h"
+#include "utl/SongInfoAudioType.h"
 #include "utl/TempoMap.h"
 #include "utl/TimeConversion.h"
 #include "utl/UTF8.h"
@@ -111,9 +118,8 @@ void SongParser::MergeMidiFile(BinStream &bs, const char *cc) {
 void SongParser::Poll() {
     if (mMidiReader && mMidiReader->ReadSomeEvents(20)) {
         UpdateReadingState();
-        bool failed = mMidiReader->mFail;
-        delete mMidiReader;
-        mMidiReader = 0;
+        bool failed = mMidiReader->Fail();
+        RELEASE(mMidiReader);
         if (mReadingState == kDoneReading || failed) {
             mFile = 0;
             mFilename = 0;
@@ -148,10 +154,12 @@ void SongParser::Reset() {
         mDifficultyInfos[i].mRGLooseStrumEndTick = NULL_TICK;
         mDifficultyInfos[i].mRGChordTextTick = NULL_TICK;
         for (int j = 0; j < 32; j++) {
-            mDifficultyInfos[i].mGemsInProgress[j] = GemInProgress();
+            GemInProgress &gem = mDifficultyInfos[i].mGemsInProgress[j];
+            gem = GemInProgress();
         }
-        for (int j = 0; j < 6; j++) {
-            mDifficultyInfos[i].mRGGemsInfo[j] = RGGemInfo();
+        for (int j = 0; j < 6U; j++) {
+            DifficultyInfo &diff = mDifficultyInfos[i];
+            diff.mRGGemsInfo[j] = RGGemInfo();
         }
     }
 
@@ -166,9 +174,13 @@ void SongParser::Reset() {
     mPlayerFocusInProgress[0] = -1;
     mPlayerFocusInProgress[1] = -1;
     mVocalRangeShiftStartTick = -1;
+    mRollSlotsArray.clear();
     mRollSlotsArray.resize(mNumDifficulties);
-    mTrillSlotsArray.resize(mNumDifficulties);
+    mTrillSlotsArray.clear();
+    mTrillSlotsArray.resize(mNumDifficulties, std::make_pair(-1, -1));
+    mRGRollArray.clear();
     mRGRollArray.resize(mNumDifficulties);
+    mRGTrillArray.clear();
     mRGTrillArray.resize(mNumDifficulties);
     mState = kIgnore;
     mKeyboardDifficulty = -1;
@@ -312,7 +324,7 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char pitch, unsigned char
                         mSoloGemDifficultyMask |= (1 << num);
                     }
                     if (mDrumStyleGems) {
-                        if ((mDrumSubmixDifficultyMask & (1 << num))
+                        if (!(mDrumSubmixDifficultyMask & (1 << num))
                             && !mReportedMissingDrumSubmix[num]) {
                             MILO_WARN(
                                 "%s (%s): No drum submix specified for difficulty %d before first gem at %s",
@@ -321,13 +333,12 @@ void SongParser::OnMidiMessageGemOn(int tick, unsigned char pitch, unsigned char
                                 num,
                                 PrintTick(tick)
                             );
+                            mReportedMissingDrumSubmix[num] = true;
                         }
                         int count = 0;
-                        if (mNumSlots > 1) {
-                            for (int i = 1; i < mNumSlots; i++) {
-                                if (mDifficultyInfos[num].mGemsInProgress[i].mTick >= 0) {
-                                    count++;
-                                }
+                        for (int i = 1; i < mNumSlots; i++) {
+                            if (mDifficultyInfos[num].mGemsInProgress[i].mTick >= 0) {
+                                count++;
                             }
                         }
 
@@ -670,9 +681,8 @@ bool SongParser::HandleTrillEnd(int tick, unsigned char pitch) {
         }
     }
     mTrillInProgress = -1;
-    mTrillSlotsArray.clear(); // some vector method is called here but i can't tell which
-                              // one it is
-    mTrillSlotsArray.resize(mNumDifficulties);
+    mTrillSlotsArray.clear();
+    mTrillSlotsArray.resize(mNumDifficulties, std::make_pair(-1, -1));
     return true;
 }
 
@@ -689,11 +699,12 @@ void SongParser::OnGemEnd(int tick, unsigned char pitch) {
                 geminfo.track = mTrack;
                 geminfo.ms = GetTempoMap()->TickToTime(infotick);
                 geminfo.duration_ticks = tick - infotick;
-                geminfo.ignore_duration = false;
+                bool ignore = false;
                 geminfo.duration_ms = ticktime - geminfo.ms;
-                if (mIgnoreGemDurations || geminfo.duration_ticks <= 160)
-                    geminfo.ignore_duration = true;
                 geminfo.tick = infotick;
+                if (mIgnoreGemDurations || geminfo.duration_ticks <= 160)
+                    ignore = true;
+                geminfo.ignore_duration = ignore;
                 geminfo.players = info.mGemsInProgress[slot].mPlayers;
                 geminfo.slots = ComputeSlots(slot, infotick, tick, info.mGemsInProgress);
                 geminfo.no_strum = GetNoStrumState(infotick, info);
@@ -735,7 +746,7 @@ void SongParser::OnGemEnd(int tick, unsigned char pitch) {
                         }
                     }
                 }
-                if (mSoloPhraseInProgress != -1 && mSoloPhraseInProgress <= infotick) {
+                if (mSoloPhraseInProgress != -1 && infotick >= mSoloPhraseInProgress) {
                     mSoloGemDifficultyMask |= (1 << num);
                 }
                 float tickms = TickToMs(infotick);
@@ -835,7 +846,7 @@ void SongParser::OnMidiMessageVocals(
                         );
                     }
                     mSink->OnTambourineGem(tick);
-                    mLastTambourineAutoTick = tick;
+                    mLastTambourineGemTick = tick;
                 } else if (data1 == 97) {
                     if (mLastTambourineGemTick != -1
                         && tick < mLastTambourineGemTick + 60) {
@@ -847,7 +858,7 @@ void SongParser::OnMidiMessageVocals(
                             PrintTick(mLastTambourineGemTick)
                         );
                     }
-                    if (mLastTambourineAutoTick != 1
+                    if (mLastTambourineAutoTick != -1
                         && tick < mLastTambourineAutoTick + 60) {
                         MILO_WARN(
                             "%s (%s): Automatic percussion hits at %s and %s are less than one 32nd note (60 ticks) apart",
@@ -1079,7 +1090,7 @@ void SongParser::OnMidiMessageBeat(
     int tick, unsigned char status, unsigned char data1, unsigned char data2
 ) {
     if (MidiGetType(status) == 0x90) {
-        if ((data1 + 0xF4 & 0xFF) <= 1) {
+        if ((data1 + 0xF4 & 0xFF) <= 1U) {
             mSink->AddBeat(tick, data1 == 0xC);
             if (mLastBeatTick != -1 && !mHaveBeatFailure) {
                 if (tick - mLastBeatTick < 0xF0) {
@@ -1112,7 +1123,7 @@ void SongParser::OnMidiMessageBeat(
 }
 
 void SongParser::OnText(int tick, const char *text, unsigned char pitch) {
-    while (isspace(*text))
+    while (isspace((unsigned char)*text))
         text++;
     if (pitch == 3) {
         if (!OnTrackName(tick, text))
@@ -1334,8 +1345,8 @@ void SongParser::OnMidiMessageRealGuitarOn(
                 pitch
             );
         } else {
-            unsigned char uc1 = pitch + difflevel * -0x18;
             DifficultyInfo &info = mDifficultyInfos[difflevel];
+            char uc1 = pitch - difflevel * 0x18;
             if (uc1 < 0
                 || (!HandleRGHopoStart(tick, info, uc1, channel)
                     && !HandleRGGemStart(tick, info, uc1, data2, channel, difflevel)
@@ -1373,8 +1384,8 @@ void SongParser::OnMidiMessageRealGuitarOff(
                 pitch
             );
         } else {
-            unsigned char uc1 = pitch + difflevel * -0x18;
             DifficultyInfo &info = mDifficultyInfos[difflevel];
+            char uc1 = pitch - difflevel * 0x18;
             if (uc1 < 0
                 || (!HandleRGLooseStrumStop(tick, info, uc1)
                     && !HandleRGAreaStrumStop(tick, info, uc1, channel)
@@ -1396,10 +1407,8 @@ void SongParser::OnMidiMessageRealGuitarOff(
 }
 
 bool SongParser::OnAcceptMaps(TempoMap *tmap, MeasureMap *mmap) {
-    delete mTempoMap;
-    mTempoMap = 0;
-    delete mMeasureMap;
-    mMeasureMap = 0;
+    RELEASE(mTempoMap);
+    RELEASE(mMeasureMap);
     mTempoMap = tmap;
     mMeasureMap = mmap;
     SetTheTempoMap(mTempoMap);
@@ -1407,7 +1416,7 @@ bool SongParser::OnAcceptMaps(TempoMap *tmap, MeasureMap *mmap) {
 }
 
 void SongParser::SetMidiReader(MidiReader *reader) {
-    mReader = reader;
+    MidiReceiver::SetMidiReader(reader);
     for (int i = 0; i < mReceivers.size(); i++) {
         mReceivers[i]->SetMidiReader(reader);
     }
@@ -1576,13 +1585,9 @@ bool SongParser::CheckKeyboardRangeMarker(int tick, int pitch, bool b) {
         }
     } else if (mKeyboardRangeStartTick != -1) {
         MILO_ASSERT(mKeyboardRangeFirstPitch != -1, 0x951);
-        // inline here that swaps elements
-        int old_2nd = mKeyboardRangeSecondPitch;
-        if (old_2nd != -1) {
-            int old_1st = mKeyboardRangeFirstPitch;
-            if (old_2nd < old_1st) {
-                mKeyboardRangeFirstPitch = old_2nd;
-                mKeyboardRangeSecondPitch = old_1st;
+        if (mKeyboardRangeSecondPitch != -1) {
+            if (mKeyboardRangeFirstPitch > mKeyboardRangeSecondPitch) {
+                std::swap(mKeyboardRangeFirstPitch, mKeyboardRangeSecondPitch);
             }
             mKeyboardRangeSecondPitch++;
         }
@@ -1684,9 +1689,82 @@ void SongParser::ParseRGText(int tick, const char *text) {
         strcpy((char *)mDifficultyInfos[idx].mRGChordText, text + 6);
         int len = strlen(mDifficultyInfos[idx].mRGChordText);
         if (mDifficultyInfos[idx].mRGChordText[len - 1] == ']') {
-            ((char *)mDifficultyInfos[idx].mRGChordText)[len - 1] = 0;
+            mDifficultyInfos[idx].mRGChordText[len - 1] = 0;
         }
     }
+}
+
+bool SongParser::AudioTrackUsed(SongInfoAudioType ty) {
+    if (ty == kAudioTypeFake)
+        return true;
+    else
+        return mSongInfo->NumChannelsOfTrack(ty) != 0;
+}
+
+void SongParser::AnalyzeTrackList() {
+    MILO_ASSERT(!mTrackNames.empty(), 0x9F8);
+    int i1 = mParts.size();
+    const char *c64;
+    for (int i = 0; i < mTrackNames.size(); i++) {
+        if (IsPartTrackName(mTrackNames[i].mStr, &c64)) {
+            Symbol s68 = c64;
+            DataArray *arr = mTrackNameMapping->FindArray(s68, false);
+            if (arr) {
+                int songTy = arr->Int(1);
+                if (AudioTrackUsed((SongInfoAudioType)songTy)) {
+                    TrackType trackTy = (TrackType)arr->Int(2);
+                    Symbol s = arr->Sym(3);
+                    PartInfo info(s68, (BeatmatchAudioType)songTy, trackTy, s);
+                    if (std::find(mParts.begin(), mParts.end(), info) == mParts.end()) {
+                        mParts.push_back(info);
+                    }
+                }
+            } else {
+                MILO_WARN("%s: bad track name: '%s'", mFilename, mTrackNames[i]);
+            }
+        }
+    }
+    for (; i1 < mParts.size(); i1++) {
+        int num = mSongInfo->TrackIndex((SongInfoAudioType)mParts[i1].audio_type);
+        if (num == -1) {
+            if (!mParts[i1].FakeAudio()) {
+                MILO_WARN(
+                    "%s: Couldn't find instrument for part %s", mFilename, mParts[i1].part
+                );
+            } else {
+                mParts[i1].audio_track_num.Set(num);
+            }
+        }
+    }
+    if (mParts.empty()) {
+        MILO_WARN("%s: None of the required PART tracks were found", mFilename);
+    }
+}
+
+bool SongParser::IsPartTrackName(const char *cc, const char **ccptr) const {
+    if (strneq(cc, "PART", 4)) {
+        if (ccptr)
+            *ccptr = cc + 5;
+        return true;
+    } else if (strneq(cc, "HARM", 4)) {
+        if (ccptr)
+            *ccptr = cc;
+        return true;
+    } else
+        return false;
+}
+
+PartInfo *SongParser::UsePartTrack(const char *cc) {
+    if (mParts.empty())
+        return nullptr;
+    else {
+        for (int i = 0; i < mParts.size(); i++) {
+            if (mParts[i].ContainsTrackName(cc)) {
+                return &mParts[i];
+            }
+        }
+    }
+    return nullptr;
 }
 
 void SongParser::InitReadingState() { mReadingState = kReadingBeat; }
@@ -1711,15 +1789,9 @@ void SongParser::UpdateReadingState() {
 int SongParser::PartNumThatMatchesTrackName(const char *name) const {
     int i;
     for (i = 0; i < mParts.size(); i++) {
-        const char *curname = mParts[i].original_name.Str();
-        int curnamelen = strlen(curname);
-        bool b2;
-        if (curnamelen + 2 < strlen(name))
-            b2 = false;
-        else
-            b2 = strncmp(curname, name, curnamelen) == 0;
-        if (b2)
+        if (mParts[i].ContainsTrackName(name)) {
             return i;
+        }
     }
     return -1;
 }
@@ -1728,22 +1800,17 @@ bool SongParser::ShouldReadTrack(Symbol s) {
     if (mCurTrackIndex == 0)
         return !mMerging;
     else {
-        bool isparttrackname = IsPartTrackName(s.Str(), 0);
+        bool isparttrackname = IsPartTrackName(s.mStr, 0);
         switch (mReadingState) {
         case kReadingBeat:
             return s == "BEAT";
-        case kReadingNonParts: {
-            bool nottrackname = !isparttrackname;
-            if (nottrackname) {
-                return s == "BEAT";
-            } else
-                return nottrackname;
-        }
+        case kReadingNonParts:
+            return !isparttrackname && s != "BEAT";
         case kReadingParts:
             if (isparttrackname)
                 return false;
             else
-                return PartNumThatMatchesTrackName(s.Str()) != -1;
+                return PartNumThatMatchesTrackName(s.mStr) != -1;
         case kDoneReading:
             MILO_FAIL("SongParser::ShouldReadTrack in wrong state");
             return false;
@@ -1850,8 +1917,8 @@ bool SongParser::HandleRGLooseStrumStart(
 }
 
 bool SongParser::HandleRGRootNote(unsigned char uc) {
-    if ((uc + 0xFC & 0xFF) <= 0xB) {
-        mRGRootNote = uc % 12;
+    if ((uc + 0xFC & 0xFF) <= 0xBU) {
+        mRGRootNote = (uc % 12) + 12;
         return true;
     }
     return false;
@@ -2082,7 +2149,7 @@ bool SongParser::HandleRGRollStart(int tick, unsigned char pitch, unsigned char 
         for (int i = 0; i < mNumDifficulties; i++) {
             if (GetRollIntervalMs(mRollIntervals, mTrackType, i, false) > 0.0f
                 && (i != 2 || data <= 0x32)) {
-                mRollMask |= (1 << (i & 0x3F));
+                mRollMask |= 1 << i;
             }
         }
         return true;

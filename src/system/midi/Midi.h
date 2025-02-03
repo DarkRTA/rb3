@@ -90,6 +90,7 @@ public:
     void ReadMetaEvent(int, unsigned char, BinStream &);
 
     void Error(const char *msg) { mRcvr.Error(msg, mCurTick); }
+    bool Fail() const { return mFail; }
 
     static bool sVerify;
 
