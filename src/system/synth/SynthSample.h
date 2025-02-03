@@ -33,7 +33,8 @@ public:
     static void *SampleAlloc(int, const char *);
     static void SampleFree(void *);
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(SynthSample) } NEW_OBJ(SynthSample);
+    static void Register() { REGISTER_OBJ_FACTORY(SynthSample) }
+    NEW_OBJ(SynthSample);
 
     int GetSampleRate() const;
     SampleData::Format GetFormat() const;

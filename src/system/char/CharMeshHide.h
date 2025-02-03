@@ -38,7 +38,8 @@ public:
     DELETE_OVERLOAD;
 
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(CharMeshHide) } NEW_OBJ(CharMeshHide);
+    static void Register() { REGISTER_OBJ_FACTORY(CharMeshHide) }
+    NEW_OBJ(CharMeshHide);
 
     ObjVector<Hide> mHides; // 0x1c
     int mFlags; // 0x28

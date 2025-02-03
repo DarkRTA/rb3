@@ -55,8 +55,9 @@ public:
     void StartLoad();
 
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(FileMergerOrganizer
-    ) } NEW_OBJ(FileMergerOrganizer) NEW_OVERLOAD;
+    static void Register() { REGISTER_OBJ_FACTORY(FileMergerOrganizer) }
+    NEW_OBJ(FileMergerOrganizer)
+    NEW_OVERLOAD;
     DELETE_OVERLOAD;
 
     std::list<OrganizedFileMerger> unk20; // 0x20

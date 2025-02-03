@@ -57,7 +57,8 @@ public:
 
     DECLARE_REVS;
     static void Init();
-    static void Register() { REGISTER_OBJ_FACTORY(CrowdAudio) } NEW_OBJ(CrowdAudio);
+    static void Register() { REGISTER_OBJ_FACTORY(CrowdAudio) }
+    NEW_OBJ(CrowdAudio);
 
     ObjPtr<BinkClip, ObjectDir> mCurrentMogg; // 0x8
     ObjPtr<BinkClip, ObjectDir> mOldMogg; // 0x14

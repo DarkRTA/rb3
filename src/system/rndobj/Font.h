@@ -83,9 +83,10 @@ public:
     NEW_OVERLOAD
     DELETE_OVERLOAD
     NEW_OBJ(RndFont)
-    static void Init() { REGISTER_OBJ_FACTORY(RndFont) } DECLARE_REVS
+    static void Init() { REGISTER_OBJ_FACTORY(RndFont) }
+    DECLARE_REVS
 
-        ObjPtr<RndMat> mMat; // 0x1c
+    ObjPtr<RndMat> mMat; // 0x1c
     ObjOwnerPtr<RndFont> mTextureOwner; // 0x28
     std::map<unsigned short, CharInfo> mCharInfoMap; // 0x34
     KerningTable *mKerningTable; // 0x4c
