@@ -64,7 +64,11 @@ public:
     void UpdateSlotPositions();
     Hmx::Object *GetSmasherObj(int);
     void HideGems();
+    bool SlotEnabled(int) const;
+    int GetSlotIntData(int, Symbol);
 
     TrackDir *mTrackDir;
     TrackConfig *mTrackConfig;
 };
+
+int GetBeardThreshold();

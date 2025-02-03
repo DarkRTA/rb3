@@ -12,3 +12,4 @@ float TickToSeconds(float);
 float BeatToSeconds(float);
 inline int MsToTickInt(float f) { return MsToTick(f); }
 inline float TickToMs(int i) { return TickToMs((float)i); }
+inline float TickToSeconds(int i) { return TickToSeconds((float)i); }

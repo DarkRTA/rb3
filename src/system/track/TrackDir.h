@@ -30,7 +30,7 @@ public:
     virtual void SetDisplayRange(float) {}
     virtual void SetDisplayOffset(float, bool) {}
     virtual RndDir *SmasherPlate();
-    virtual float GetFretPosOffset(int) const;
+    virtual float GetFretPosOffset(int) const { return 0; }
     virtual int GetNumFretPosOffsets() const { return 0; }
     virtual float GetCurrentChordLabelPosOffset() const;
     virtual int PrepareChordMesh(unsigned int);

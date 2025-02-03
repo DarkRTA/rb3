@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_VOCALNOTE_H
-#define BEATMATCH_VOCALNOTE_H
+#pragma once
 #include "utl/Str.h"
 #include "obj/Data.h"
 #include "utl/MBT.h"
@@ -123,5 +122,3 @@ public:
     DataArray *mFreestyleMinDuration; // 0x30
     DataArray *mFreestylePad; // 0x34
 };
-
-#endif
