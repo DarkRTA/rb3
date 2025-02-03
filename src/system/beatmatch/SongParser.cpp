@@ -1,15 +1,18 @@
 #include "beatmatch/SongParser.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "beatmatch/TrackType.h"
+#include "midi/Midi.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "os/System.h"
 #include "midi/MidiConstants.h"
 #include "stl/_pair.h"
+#include "utl/BinStream.h"
 #include "utl/FilePath.h"
 #include "beatmatch/GameGem.h"
 #include "utl/MakeString.h"
 #include "utl/SongInfoAudioType.h"
+#include "utl/Symbol.h"
 #include "utl/TempoMap.h"
 #include "utl/TimeConversion.h"
 #include "utl/UTF8.h"
@@ -19,6 +22,8 @@
 Timer gSongLoadTimer;
 
 #define NULL_TICK 0x10000000
+
+void FillTrackList(std::vector<Symbol> &, BinStream &);
 
 // fn_80488788
 SongParser::SongParser(
@@ -2165,4 +2170,28 @@ int SongParser::RGGetDifficultyLevel(unsigned char pitch) {
         return -1;
     else
         return diff;
+}
+
+MidiTrackLister::MidiTrackLister(std::vector<Symbol> &s, BinStream &bs) : unk8(0) {
+    FillTrackList(s, bs);
+}
+
+MidiTrackLister::~MidiTrackLister() {}
+
+void MidiTrackLister::FillTrackList(std::vector<Symbol> &syms, BinStream &bs) {
+    unk8 = &syms;
+    MidiReader reader(bs, *this, nullptr);
+    reader.ReadAllTracks();
+}
+
+void MidiTrackLister::OnText(int i1, const char *cc, unsigned char uc) {
+    if (uc == 3) {
+        unk8->push_back(cc);
+        SkipCurrentTrack();
+    }
+}
+
+void FillTrackList(std::vector<Symbol> &syms, BinStream &bs) {
+    MidiTrackLister lister(syms, bs);
+    bs.Seek(0, BinStream::kSeekBegin);
 }

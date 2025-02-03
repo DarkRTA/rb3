@@ -4,6 +4,7 @@
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "obj/Data.h"
+#include "utl/BinStream.h"
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
 #include "beatmatch/RGChords.h"
@@ -345,4 +346,17 @@ public:
     int mRGEnharmonicEndTick; // 0x20c
 };
 
-void FillTrackList(std::vector<Symbol> &, BinStream &);
+class MidiTrackLister : public MidiReceiver {
+public:
+    MidiTrackLister(std::vector<Symbol> &, BinStream &);
+    virtual ~MidiTrackLister();
+    virtual void OnNewTrack(int) {}
+    virtual void OnEndOfTrack() {}
+    virtual void OnAllTracksRead() {}
+    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char) {}
+    virtual void OnText(int, const char *, unsigned char);
+
+    void FillTrackList(std::vector<Symbol> &, BinStream &);
+
+    std::vector<Symbol> *unk8; // 0x8
+};
