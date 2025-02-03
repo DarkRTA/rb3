@@ -74,6 +74,13 @@ FixNamespaceComments: false
 ForEachMacros:
   - Q_FOREACH
   - BOOST_FOREACH
+  - FOREACH
+  - FOREACH_POST
+  - FOREACH_PTR
+  - FOREACH_PTR_POST
+  - FOREACH_OBJREF
+  - FOREACH_OBJREF_POST
+  - FOREACH_MIDIPARSER
 IfMacros:
   - KJ_IF_MAYBE
 IncludeBlocks: Preserve

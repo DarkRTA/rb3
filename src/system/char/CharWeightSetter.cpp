@@ -70,7 +70,7 @@ void CharWeightSetter::PollDeps(
          ++it) {
         changedBy.push_back(*it);
     }
-    FOREACH_OBJREF(it, this) {
+    FOREACH_OBJREF (it, this) {
         CharWeightable *weightowner = dynamic_cast<CharWeightable *>((*it)->RefOwner());
         if (weightowner && weightowner->mWeightOwner == this)
             change.push_back(weightowner);

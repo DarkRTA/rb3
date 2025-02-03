@@ -184,7 +184,7 @@ RndFont *UIFontImporter::GetGennedFont(unsigned int ui) const {
 
 RndText *UIFontImporter::FindTextForFont(RndFont *font) const {
     if (font) {
-        FOREACH_OBJREF(it, font) {
+        FOREACH_OBJREF (it, font) {
             Hmx::Object *owner = (*it)->RefOwner();
             if (owner) {
                 if (owner->ClassName() == Text) {
@@ -198,7 +198,7 @@ RndText *UIFontImporter::FindTextForFont(RndFont *font) const {
 
 RndFont *UIFontImporter::FindFontForMat(RndMat *mat) const {
     if (mat) {
-        FOREACH_OBJREF(it, mat) {
+        FOREACH_OBJREF (it, mat) {
             Hmx::Object *owner = (*it)->RefOwner();
             if (owner) {
                 if (owner->ClassName() == Font) {

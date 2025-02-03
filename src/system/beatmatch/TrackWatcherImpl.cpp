@@ -364,7 +364,7 @@ void TrackWatcherImpl::CheckForPasses(float ms) {
 }
 
 void TrackWatcherImpl::CheckForSustainedNoteTimeout(float ms) {
-    FOREACH(iter, mGemsInProgress) {
+    FOREACH (iter, mGemsInProgress) {
         if (iter->mInUse) {
             MILO_ASSERT(iter->mGemID != -1, 0x2AC);
             if (iter->unk8 < ms) {
@@ -551,7 +551,7 @@ void TrackWatcherImpl::KillSustainForSlot(int slot) {
 }
 
 GemInProgress *TrackWatcherImpl::GetUnusedGemInProgress(float ms) {
-    FOREACH(iter, mGemsInProgress) {
+    FOREACH (iter, mGemsInProgress) {
         if (!iter->mInUse)
             return iter;
         if (iter->unk8 < ms) {
@@ -564,7 +564,7 @@ GemInProgress *TrackWatcherImpl::GetUnusedGemInProgress(float ms) {
 }
 
 GemInProgress *TrackWatcherImpl::GetGemInProgressWithSlot(int slot) {
-    FOREACH(iter, mGemsInProgress) {
+    FOREACH (iter, mGemsInProgress) {
         if (iter->mInUse) {
             MILO_ASSERT(iter->mGemID != -1, 0x3FD);
             GameGem &gem = mGemList->GetGem(iter->mGemID);
@@ -576,7 +576,7 @@ GemInProgress *TrackWatcherImpl::GetGemInProgressWithSlot(int slot) {
 }
 
 GemInProgress *TrackWatcherImpl::GetGemInProgressWithID(int id) {
-    FOREACH(it, mGemsInProgress) {
+    FOREACH (it, mGemsInProgress) {
         if (it->mInUse && it->mGemID == id)
             return it;
     }
@@ -584,7 +584,7 @@ GemInProgress *TrackWatcherImpl::GetGemInProgressWithID(int id) {
 }
 
 bool TrackWatcherImpl::HasAnyGemInProgress() const {
-    FOREACH(it, mGemsInProgress) {
+    FOREACH (it, mGemsInProgress) {
         if (it->mInUse)
             return true;
     }
@@ -605,7 +605,9 @@ void TrackWatcherImpl::EndSustainedNote(GemInProgress &gem) {
 }
 
 void TrackWatcherImpl::EndAllSustainedNotes() {
-    FOREACH(it, mGemsInProgress) { EndSustainedNote(*it); }
+    FOREACH (it, mGemsInProgress) {
+        EndSustainedNote(*it);
+    }
 }
 
 void TrackWatcherImpl::MaybeAutoplayFutureCymbal(int gemID) {
@@ -725,7 +727,9 @@ void TrackWatcherImpl::OnPass(float ms, int gemID) {
 }
 
 void TrackWatcherImpl::CodaSwing(int tick, int slot) {
-    FOREACH(it, mSinks) { (*it)->FillSwing(mTrack, 0, slot, tick, true); }
+    FOREACH (it, mSinks) {
+        (*it)->FillSwing(mTrack, 0, slot, tick, true);
+    }
 }
 
 void TrackWatcherImpl::SendHit(
@@ -740,7 +744,9 @@ void TrackWatcherImpl::SendHit(
             );
         }
     }
-    FOREACH(it, mSinks) { (*it)->Hit(mTrack, ms, gemID, slots, flags); }
+    FOREACH (it, mSinks) {
+        (*it)->Hit(mTrack, ms, gemID, slots, flags);
+    }
 }
 
 void TrackWatcherImpl::SendMiss(float ms, int slot, int gemID, int i4, GemHitFlags flags) {
@@ -759,11 +765,15 @@ void TrackWatcherImpl::SendMiss(float ms, int slot, int gemID, int i4, GemHitFla
     if (gemID == -1) {
         gemID = mGemList->NumGems() - 1;
     }
-    FOREACH(it, mSinks) { (*it)->Miss(mTrack, slot, ms, gemID, i4, flags); }
+    FOREACH (it, mSinks) {
+        (*it)->Miss(mTrack, slot, ms, gemID, i4, flags);
+    }
 }
 
 void TrackWatcherImpl::SendSpuriousMiss(float ms, int slot, int gemID) {
-    FOREACH(it, mSinks) { (*it)->SpuriousMiss(mTrack, slot, ms, gemID); }
+    FOREACH (it, mSinks) {
+        (*it)->SpuriousMiss(mTrack, slot, ms, gemID);
+    }
 }
 
 void TrackWatcherImpl::SendPass(float ms, int gemID) {
@@ -774,11 +784,15 @@ void TrackWatcherImpl::SendPass(float ms, int gemID) {
     GemInProgress *gemInProg = GetGemInProgressWithID(gemID);
     if (gemInProg)
         EndSustainedNote(*gemInProg);
-    FOREACH(it, mSinks) { (*it)->Pass(mTrack, ms, gemID, mIsCurrentTrack); }
+    FOREACH (it, mSinks) {
+        (*it)->Pass(mTrack, ms, gemID, mIsCurrentTrack);
+    }
 }
 
 void TrackWatcherImpl::SendReleaseGem(float f1, int gemID, float f3) {
-    FOREACH(it, mSinks) { (*it)->ReleaseGem(mTrack, f1, gemID, f3); }
+    FOREACH (it, mSinks) {
+        (*it)->ReleaseGem(mTrack, f1, gemID, f3);
+    }
 }
 
 void TrackWatcherImpl::SendSeen(float ms, int gemID) {
@@ -805,27 +819,39 @@ void TrackWatcherImpl::SendSeen(float ms, int gemID) {
             );
         }
     }
-    FOREACH(it, mSinks) { (*it)->SeeGem(mTrack, ms, gemID); }
+    FOREACH (it, mSinks) {
+        (*it)->SeeGem(mTrack, ms, gemID);
+    }
 }
 
 void TrackWatcherImpl::SendIgnore(float ms, int gemID) {
-    FOREACH(it, mSinks) { (*it)->Ignore(mTrack, ms, gemID, mUserGuid); }
+    FOREACH (it, mSinks) {
+        (*it)->Ignore(mTrack, ms, gemID, mUserGuid);
+    }
 }
 
 void TrackWatcherImpl::SendImplicit(float ms, int gemID) {
-    FOREACH(it, mSinks) { (*it)->ImplicitGem(mTrack, ms, gemID, mUserGuid); }
+    FOREACH (it, mSinks) {
+        (*it)->ImplicitGem(mTrack, ms, gemID, mUserGuid);
+    }
 }
 
 void TrackWatcherImpl::SendWhammy(float f) {
     if (mIsCurrentTrack) {
-        FOREACH(it, mSinks) { (*it)->FilteredWhammyBar(f); }
+        FOREACH (it, mSinks) {
+            (*it)->FilteredWhammyBar(f);
+        }
     }
 }
 
 void TrackWatcherImpl::SendSwingAtHopo(float f, int i) {
-    FOREACH(it, mSinks) { (*it)->SwingAtHopo(mTrack, f, i); }
+    FOREACH (it, mSinks) {
+        (*it)->SwingAtHopo(mTrack, f, i);
+    }
 }
 
 void TrackWatcherImpl::SendHopo(float ms, int gemID) {
-    FOREACH(it, mSinks) { (*it)->Hopo(mTrack, ms, gemID); }
+    FOREACH (it, mSinks) {
+        (*it)->Hopo(mTrack, ms, gemID);
+    }
 }

@@ -46,7 +46,7 @@ RndTransformable::~RndTransformable() {
 }
 
 void RndTransformable::TransformTransAnims(const Transform &tf) {
-    FOREACH_OBJREF(it, this) {
+    FOREACH_OBJREF (it, this) {
         RndTransAnim *trans = dynamic_cast<RndTransAnim *>((*it)->RefOwner());
         if (trans && trans->Trans() == this) {
             TransformKeys(trans, tf);

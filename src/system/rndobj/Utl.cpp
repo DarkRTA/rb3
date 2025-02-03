@@ -65,7 +65,7 @@ SplashFunc gSplashResume;
 DECOMP_FORCEACTIVE(Utl, __FILE__, "i->from->Dir()")
 
 RndGroup *GroupOwner(Hmx::Object *o) {
-    FOREACH_OBJREF(it, o) {
+    FOREACH_OBJREF (it, o) {
         RndGroup *grp = dynamic_cast<RndGroup *>((*it)->RefOwner());
         if (grp) {
             if (grp->mObjects.find(o) != grp->mObjects.end())
@@ -133,7 +133,7 @@ bool AnimContains(const RndAnimatable *anim1, const RndAnimatable *anim2) {
 }
 
 RndAnimatable *AnimController(Hmx::Object *o) {
-    FOREACH_OBJREF(it, o) {
+    FOREACH_OBJREF (it, o) {
         RndAnimatable *a = dynamic_cast<RndAnimatable *>((*it)->RefOwner());
         if (a && a->AnimTarget() == o)
             return a;

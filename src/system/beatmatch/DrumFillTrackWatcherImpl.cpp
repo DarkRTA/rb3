@@ -32,20 +32,28 @@ void DrumFillTrackWatcherImpl::FillSwing(int i1, int i2, int i3, bool b4) {
         int slot = b4 && i2 == 4 ? 4 : mParent->GetVirtualSlot(i2);
         float db = VelocityBucketToDb(bucket);
         mParent->PlayDrum(slot, true, db);
-        FOREACH(it, mSinks) { (*it)->FillSwing(Track(), mFillNotes, i2, i1, false); }
+        FOREACH (it, mSinks) {
+            (*it)->FillSwing(Track(), mFillNotes, i2, i1, false);
+        }
     } else {
-        FOREACH(it, mSinks) { (*it)->FillSwing(Track(), mFillNotes, i2, i1, false); }
+        FOREACH (it, mSinks) {
+            (*it)->FillSwing(Track(), mFillNotes, i2, i1, false);
+        }
     }
 }
 
 void DrumFillTrackWatcherImpl::ResetFill() {
     if (mFillNotes != 0) {
-        FOREACH(it, mSinks) { (*it)->FillReset(); }
+        FOREACH (it, mSinks) {
+            (*it)->FillReset();
+        }
         mFillNotes = 0;
     }
 }
 
 void DrumFillTrackWatcherImpl::RegisterFill(int i1) {
-    FOREACH(it, mSinks) { (*it)->FillComplete(mFillNotes, i1); }
+    FOREACH (it, mSinks) {
+        (*it)->FillComplete(mFillNotes, i1);
+    }
     ResetFill();
 }

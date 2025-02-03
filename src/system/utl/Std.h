@@ -21,9 +21,9 @@
 #endif
 
 #define FOREACH_(it, container, inc)                                                     \
-    for (AUTO(it, container.begin()); it != container.end(); inc)
+    for (AUTO(it, (container).begin()); it != (container).end(); (inc))
 #define FOREACH_PTR_(it, container, inc)                                                 \
-    for (AUTO(it, container->begin()); it != container->end(); inc)
+    for (AUTO(it, (container)->begin()); it != (container)->end(); (inc))
 
 #define FOREACH(it, container) FOREACH_(it, container, ++it)
 #define FOREACH_POST(it, container) FOREACH_(it, container, it++)

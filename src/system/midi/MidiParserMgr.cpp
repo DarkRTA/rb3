@@ -8,13 +8,9 @@
 #include "beatmatch/GemListInterface.h"
 #include "utl/Symbols.h"
 
-#define FOREACH_MIDIPARSER(code)                                                         \
+#define FOREACH_MIDIPARSER(it)                                                           \
     const std::list<MidiParser *> &parsers = MidiParser::sParsers;                       \
-    for (std::list<MidiParser *>::const_iterator it = parsers.begin();                   \
-         it != parsers.end();                                                            \
-         ++it) {                                                                         \
-        code;                                                                            \
-    }
+    FOREACH (it, parsers)
 
 MidiParserMgr *TheMidiParserMgr;
 
@@ -53,19 +49,25 @@ MidiParserMgr::~MidiParserMgr() {
 void MidiParserMgr::Reset(int i) {
     if (mLoaded && unk59) {
         float beat = TickToBeat(i);
-        FOREACH_MIDIPARSER((*it)->Reset(beat);)
+        FOREACH_MIDIPARSER (it) {
+            (*it)->Reset(beat);
+        }
     }
 }
 
 void MidiParserMgr::Reset() {
     if (mLoaded) {
-        FOREACH_MIDIPARSER((*it)->Reset(-2 * kHugeFloat);)
+        FOREACH_MIDIPARSER (it) {
+            (*it)->Reset(-2 * kHugeFloat);
+        }
     }
 }
 
 void MidiParserMgr::Poll() {
     if (unk59) {
-        FOREACH_MIDIPARSER((*it)->Poll();)
+        FOREACH_MIDIPARSER (it) {
+            (*it)->Poll();
+        }
     }
 }
 
@@ -96,18 +98,21 @@ void MidiParserMgr::OnEndOfTrack() {
         }
         if (mGems)
             mGems->SetTrack(mTrackName);
-        FOREACH_MIDIPARSER(MidiParser *cur = *it; if (cur->TrackName() == mTrackName) {
-            int numnotes = cur->ParseAll(mGems, unk30);
-            if (numnotes > 20000) {
-                MILO_WARN(
-                    "%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize",
-                    mFilename,
-                    mTrackName,
-                    numnotes,
-                    20000
-                );
+        FOREACH_MIDIPARSER (it) {
+            MidiParser *cur = *it;
+            if (cur->TrackName() == mTrackName) {
+                int numnotes = cur->ParseAll(mGems, unk30);
+                if (numnotes > 20000) {
+                    MILO_WARN(
+                        "%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize",
+                        mFilename,
+                        mTrackName,
+                        numnotes,
+                        20000
+                    );
+                }
             }
-        })
+        }
         FreeAllData();
         mTrackName = Symbol("");
     }
@@ -132,9 +137,12 @@ void MidiParserMgr::OnMidiMessage(
     int i28;
     bool created = CreateNote(tick, c1, c2, i28);
     if (created) {
-        FOREACH_MIDIPARSER(MidiParser *cur = *it; if (cur->TrackName() == mTrackName) {
-            cur->ParseNote(i28, tick, c2);
-        })
+        FOREACH_MIDIPARSER (it) {
+            MidiParser *cur = *it;
+            if (cur->TrackName() == mTrackName) {
+                cur->ParseNote(i28, tick, c2);
+            }
+        }
     }
 }
 
@@ -180,8 +188,12 @@ DataArray *MidiParserMgr::ParseText(const char *str, int tick) {
 
 void MidiParserMgr::OnTrackName(Symbol s) {
     if (std::find(unk50.begin(), unk50.end(), s) != unk50.end()) {
-        FOREACH_MIDIPARSER(MidiParser *cur = *it;
-                           if (cur->TrackName() == s) { cur->Clear(); })
+        FOREACH_MIDIPARSER (it) {
+            MidiParser *cur = *it;
+            if (cur->TrackName() == s) {
+                cur->Clear();
+            }
+        }
     } else
         unk50.push_back(s);
     mTrackName = s;
@@ -250,7 +262,10 @@ DataEventList *MidiParserMgr::GetEventsList() {
 }
 
 MidiParser *MidiParserMgr::GetParser(Symbol s) {
-    FOREACH_MIDIPARSER(if (s == (*it)->Name()) return *it;)
+    FOREACH_MIDIPARSER (it) {
+        if (s == (*it)->Name())
+            return *it;
+    }
     return nullptr;
 }
 
