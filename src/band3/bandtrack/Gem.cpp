@@ -395,12 +395,16 @@ void Gem::RemoveAllInstances() {
     if (mGemManager && mGemManager->mTrackDir) {
         float f1 = mGameGem->mMs / 1000.0f;
         if (unk_0x44 != 0) {
-            FOREACH(it, mWidgets) { (*it)->RemoveAt(f1); }
+            FOREACH (it, mWidgets) {
+                (*it)->RemoveAt(f1);
+            }
         } else {
             int slots = mGemManager->GetMaxSlots();
             for (int i = 0; i < slots; i++) {
                 if (mSlots & 1 << i) {
-                    FOREACH(it, mWidgets) { (*it)->RemoveAt(f1, i); }
+                    FOREACH (it, mWidgets) {
+                        (*it)->RemoveAt(f1, i);
+                    }
                     if (mBeardTick != -1) {
                         Symbol s40;
                         if (mGemManager->GetWidgetName(s40, i, beard)) {
@@ -484,7 +488,7 @@ void Gem::PartialHit(unsigned int ui) {
         mBeard = false;
         float f1 = mGameGem->mMs / 1000.0f;
         int slots = mGemManager->GetMaxSlots();
-        FOREACH(it, mWidgets) {
+        FOREACH (it, mWidgets) {
             TrackWidget *cur = *it;
             for (int i = 0; i < slots; i++) {
                 int mask = 1 << i;
