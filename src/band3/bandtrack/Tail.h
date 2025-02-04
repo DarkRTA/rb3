@@ -18,6 +18,7 @@ public:
     void Done();
     void Poll(float, float, float);
     void SetDuration(float, float, float);
+    void SetType(Symbol, bool);
     void
     Init(int, const Transform &, bool, Symbol, RndGroup *, const SlideInfo &, Tail *);
 };

@@ -1050,7 +1050,7 @@ DataNode GemTrackDir::OnDrawSampleChord(DataArray *da) {
         else
             fretNums[i] = -1;
     }
-    AddChordImpl(mesh, widget1, widget2, widget3, 0, fretNums, str78);
+    AddChordRepImpl(mesh, widget1, widget2, widget3, 0, fretNums, str78);
     return 0;
 }
 

@@ -1,6 +1,7 @@
 #ifndef TRACK_TRACKDIR_H
 #define TRACK_TRACKDIR_H
 #include "obj/Object.h"
+#include "os/Debug.h"
 #include "ui/PanelDir.h"
 #include "obj/ObjPtr_p.h"
 
@@ -34,11 +35,11 @@ public:
     virtual int GetNumFretPosOffsets() const { return 0; }
     virtual float GetCurrentChordLabelPosOffset() const;
     virtual int PrepareChordMesh(unsigned int);
-    virtual int GetChordMesh(unsigned int, bool);
+    virtual RndMesh *GetChordMesh(unsigned int, bool) { return nullptr; }
     virtual void SetUnisonProgress(float) {}
     virtual void ClearChordMeshRefCounts();
     virtual void DeleteUnusedChordMeshes();
-    virtual void AddChordImpl(
+    virtual void AddChordRepImpl(
         RndMesh *,
         TrackWidget *,
         TrackWidget *,
@@ -46,7 +47,9 @@ public:
         float,
         const std::vector<int> &,
         class String
-    );
+    ) {
+        MILO_ASSERT(0, 0x68);
+    }
     virtual ArpeggioShapePool *GetArpeggioShapePool();
     virtual bool IsBlackKey(int) const;
     virtual void KeyMissLeft();

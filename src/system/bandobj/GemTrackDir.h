@@ -39,11 +39,11 @@ public:
     virtual int GetNumFretPosOffsets() const { return mFretPosOffsets.size(); }
     virtual float GetCurrentChordLabelPosOffset() const;
     virtual int PrepareChordMesh(unsigned int);
-    virtual int GetChordMesh(unsigned int, bool);
+    virtual RndMesh *GetChordMesh(unsigned int, bool);
     virtual void SetUnisonProgress(float);
     virtual void ClearChordMeshRefCounts();
     virtual void DeleteUnusedChordMeshes();
-    virtual void AddChordImpl(
+    virtual void AddChordRepImpl(
         RndMesh *,
         TrackWidget *,
         TrackWidget *,
@@ -109,15 +109,6 @@ public:
     void UpdateLeftyFlip(bool);
     bool KeyShifting();
     void FreeChordMeshes();
-    void AddChordRepImpl(
-        RndMesh *,
-        TrackWidget *,
-        TrackWidget *,
-        TrackWidget *,
-        float,
-        const std::vector<int> &,
-        String
-    );
     void SetGemTrackID(int id) { mGemTrackDirID = id; }
 
     DataNode OnDrawSampleChord(DataArray *);
