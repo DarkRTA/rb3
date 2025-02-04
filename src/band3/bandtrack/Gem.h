@@ -54,14 +54,14 @@ public:
     int mBeardTick; // 0x38
     float unk_0x3C; // 0x3c
     float unk_0x40; // 0x40
-    unsigned int unk_0x44; // 0x44
-    unsigned int unk_0x48; // 0x48
-    class String unk_0x4C; // 0x4c
+    unsigned int unk_0x44; // 0x44 - some RG chord shape
+    unsigned int unk_0x48; // 0x48 - some other RG chord shape
+    class String mChordLabel; // 0x4c
     bool unk_0x58; // 0x58
     int mFirstFret; // 0x5c
     int mFirstFretString; // 0x60
-    char mFretPos;
-    char unk_0x65;
+    char mFretPos; // 0x64
+    char unk_0x65; // 0x65
     bool mHit : 1;
     bool mMissed : 1;
     bool mReleased : 1;

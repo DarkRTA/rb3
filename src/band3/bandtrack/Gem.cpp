@@ -22,7 +22,7 @@ Gem::Gem(
     const GameGem &gg, unsigned int ui, float f1, float f2, bool b1, int i1, int i2, bool b2
 )
     : mGameGem(&gg), mStart(f1), mEnd(f2), mTailStart(0), mSlots(ui), mBeardTick(i1),
-      unk_0x3C(0), unk_0x40(0), unk_0x44(0), unk_0x48(0), unk_0x4C(""),
+      unk_0x3C(0), unk_0x40(0), unk_0x44(0), unk_0x48(0), mChordLabel(""),
       mFirstFretString(-1), mFretPos(0), unk_0x65(-1) {
     InitChordInfo(i2, b2);
 }
@@ -265,7 +265,7 @@ void Gem::AddChordInstance(Symbol s1) {
                 );
         }
 
-        if (!unk_0x67_2 && !unk_0x67_0 && !unk_0x4C.empty()) {
+        if (!unk_0x67_2 && !unk_0x67_0 && !mChordLabel.empty()) {
             Symbol s6c;
             if (mGemManager->GetChordWidgetName(s1, chord_label, s6c)) {
                 w10 = mGemManager->GetWidgetByName(s6c);
@@ -295,7 +295,7 @@ void Gem::AddChordInstance(Symbol s1) {
             }
         }
         mGemManager->mTrackDir->AddChordRepImpl(
-            mesh, w5c, w60, w10, f1, fretNums, unk_0x4C
+            mesh, w5c, w60, w10, f1, fretNums, mChordLabel
         );
     }
 }
@@ -560,11 +560,11 @@ void Gem::InitChordInfo(int i1, bool b2) {
             if (name[0] != '\0') {
                 char buf[32];
                 RGParseOverrideChord(buf, 32, name);
-                unk_0x4C = buf;
+                mChordLabel = buf;
             } else {
                 char buf[32];
                 RGGetChordName(buf, 32, *mGameGem, -1, i1, b2);
-                unk_0x4C = buf;
+                mChordLabel = buf;
             }
         }
         RGGetFretLabelInfo(*mGameGem, mFirstFretString, mFirstFret, true);

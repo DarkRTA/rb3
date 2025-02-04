@@ -314,7 +314,7 @@ unsigned int RGGetChordShapeID(const GameGem &gem, bool b) {
     unsigned int mask = 0;
     for (unsigned int i = 0; i < 6; i++) {
         int fret = gem.GetFret(i);
-        if (!b && gem.GetRGNoteType(i) == 1)
+        if (!b && gem.GetRGNoteType(i) == kRGGhost)
             fret = -1;
         MILO_ASSERT(fret > -2, 0x2B4);
         fret = fret < 1 ? fret + 1 : Min(fret + range, 7);
