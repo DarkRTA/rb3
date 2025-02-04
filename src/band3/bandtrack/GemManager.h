@@ -48,7 +48,7 @@ public:
         int unk0;
         int unk4;
         int unk8;
-        ArpeggioShape *unkc;
+        ArpeggioShape *mShape; // 0xc
         bool unk10;
     };
     GemManager(const TrackConfig &, TrackDir *);
@@ -89,6 +89,13 @@ public:
     int GetSlotIntData(int, Symbol);
     void ClearArpeggios();
     void InitRGTuning(BandUser *);
+    void DrawTrackMasks(int, int);
+    void ResetArpeggios(float);
+    void UpdateArpeggios(float, bool);
+    void ClearTrackMasks();
+    void SetupRealGuitarFretPos();
+    void ProcessRealGuitarRun(std::vector<GameGem> &, int &);
+    bool TrillStartsAt(int, const GameGem &, int &) const;
 
     TrackDir *mTrackDir; // 0x0
     const TrackConfig &mTrackConfig; // 0x4

@@ -27,8 +27,12 @@ public:
     void OnRemoteTrackerEndStreak(Player *, int, int);
     void OnPlayerQuarantined(Player *);
     Band *GetBand();
+    bool InTrainer() const { return unk24; }
 
-    u8 pad[0x4C];
+    int unk1c;
+    int unk20;
+    bool unk24;
+    u8 pad[0x40];
     bool mIsPaused; // 0x68 iunno
     u8 pad2[115];
     float unk_0xdc;

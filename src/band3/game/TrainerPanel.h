@@ -97,3 +97,6 @@ public:
 };
 
 extern TrainerPanel *TheTrainerPanel;
+
+int GetLoopTick(int, int &);
+int GetLoopTick(int);

@@ -43,6 +43,7 @@ public:
 
     bool CompareBounds() { return mStart < mEnd ? true : false; }
     bool Check66B0() const { return unk_0x66_7; }
+    const GameGem &GetGameGem() const { return mGameGem; }
 
     GemManager *mGemManager; // 0x0
     const GameGem &mGameGem; // 0x4

@@ -2,14 +2,24 @@
 #include "bandobj/ArpeggioShape.h"
 #include "bandtrack/NowBar.h"
 #include "bandtrack/Track.h"
+#include "beatmatch/GameGem.h"
 #include "beatmatch/RGUtl.h"
+#include "game/BandUser.h"
+#include "game/Game.h"
+#include "game/SongDB.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/MetaPerformer.h"
+#include "game/TrainerPanel.h"
+#include "obj/Data.h"
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "track/TrackWidget.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols4.h"
+#include "utl/TimeConversion.h"
 
 int sBeardThreshold = 480;
 
@@ -73,14 +83,210 @@ void GemManager::InitRGTuning(BandUser *bandUser) {
     }
 }
 
+void GemManager::DrawTrackMasks(int i1, int i2) {
+    for (int i = i2 != -1 ? i2 : i1; i <= i1; i += 0xf0) {
+        if (i > unk10c) {
+            int i174 = 0;
+            int i3 = i;
+            if (TheGame->InTrainer()) {
+                i3 = GetLoopTick(i, i174);
+            }
+            i3 = TheSongDB->GetCommonPhraseID(mTrackConfig.TrackNum(), i3);
+            Extent ext170(-1, -1);
+            if (i3 != -1 && TheSongDB->IsUnisonPhrase(i3)) {
+                if (TheSongDB->GetCommonPhraseExtent(
+                        mTrackConfig.TrackNum(), i3, ext170
+                    )) {
+                    Symbol nameSym = mGemData->FindArray(unison, false)->Sym(1);
+                    TrackWidget *w = GetWidgetByName(nameSym);
+                    Transform tf98;
+                    tf98.Reset();
+                    tf98.v.y = mTrackDir->SecondsToY(TickToSeconds(ext170.unk0 + i174));
+                    w->AddInstance(
+                        tf98, TickToSeconds(ext170.unk4) - TickToSeconds(ext170.unk0)
+                    );
+                    unk10c = ext170.unk4 + i174;
+                }
+            }
+        }
+    }
+
+    for (; unk118 < mArpeggioPhrases.size(); unk118++) {
+        ArpeggioPhrase *curPhrase = &mArpeggioPhrases[unk118];
+        if (curPhrase->unk4 >= i2)
+            continue;
+        if (curPhrase->unk0 > i1)
+            break;
+        Gem &curGem = mGems[curPhrase->unk8];
+        ArpeggioShapePool *pool = mTrackDir->GetArpeggioShapePool();
+        ArpeggioShape *poolShape = pool->GetArpeggioShape();
+        bool lefty = mTrackConfig.IsLefty();
+        float f11 = mTrackDir->SecondsToY(TickToSeconds(curPhrase->unk0));
+        if (curPhrase->unk10) {
+            poolShape->ShowChordShape(false);
+        } else {
+            Symbol nameSym = mGemData->FindArray(arpeggio, false)->Sym(1);
+            TrackWidget *w5 = GetWidgetByName(nameSym);
+            Transform tfc8;
+            tfc8.Reset();
+            tfc8.v.y = f11;
+            int i10 = curPhrase->unk4;
+            if (TheTrainerPanel && TheGame->InTrainer()) {
+                i10 = Min(
+                    curPhrase->unk4,
+                    (curPhrase->unk0
+                     - (GetLoopTick(curPhrase->unk0)
+                        - TheTrainerPanel->GetCurrentStartTick()))
+                        + TheTrainerPanel->GetLoopTicks(TheTrainerPanel->GetCurrSection())
+                );
+                curPhrase->unk4 = i10;
+            }
+            w5->AddInstance(tfc8, TickToSeconds(i10) - TickToSeconds(curPhrase->unk0));
+            RndMesh *mesh = mTrackDir->GetChordMesh(curGem.unk_0x48, lefty);
+            poolShape->SetChordShape(mesh);
+            poolShape->ShowChordShape(true);
+            String str168;
+            int i180 = -1;
+            curGem.GetChordFretLabelInfo(str168, i180);
+            Transform tff8;
+            mTrackDir->MakeSlotXfm(i180, tff8);
+            Symbol s184;
+            if (GetChordWidgetName(normal, chord_fret, s184)) {
+                TrackWidget *w10 = GetWidgetByName(s184);
+                if (w10)
+                    w10->ApplyOffsets(tff8);
+            }
+            poolShape->SetFretNumber(str168, tff8.v);
+        }
+        poolShape->SetYPos(f11);
+        poolShape->SetChordLabel(
+            curGem.mChordLabel, mTrackDir->GetCurrentChordLabelPosOffset(), lefty
+        );
+        poolShape->HookupToParentGroup();
+        curPhrase->mShape = poolShape;
+        mActiveArpeggios.push_back(curPhrase);
+    }
+}
+
 void GemManager::ClearArpeggios() {
     ArpeggioShapePool *pool = mTrackDir->GetArpeggioShapePool();
     while (!mActiveArpeggios.empty()) {
-        pool->ReleaseArpeggioShape(mActiveArpeggios.back()->unkc);
+        pool->ReleaseArpeggioShape(mActiveArpeggios.back()->mShape);
         mActiveArpeggios.pop_back();
     }
     while (!mExpiredArpeggios.empty()) {
-        pool->ReleaseArpeggioShape(mExpiredArpeggios.back()->unkc);
+        pool->ReleaseArpeggioShape(mExpiredArpeggios.back()->mShape);
         mExpiredArpeggios.pop_back();
+    }
+}
+
+void GemManager::ResetArpeggios(float f1) {
+    ClearArpeggios();
+    unk118 = 0;
+    int tick = MsToTickInt(f1);
+    for (; unk118 < mArpeggioPhrases.size() && mArpeggioPhrases[unk118].unk4 < tick;
+         unk118++)
+        ;
+}
+
+void GemManager::UpdateArpeggios(float f1, bool b2) {
+    float ms = mTrackDir->YToSeconds(unk12c) * 1000.0f + f1;
+    int i1 = MsToTickInt(ms);
+    while (!mActiveArpeggios.empty()) {
+        ArpeggioPhrase *currentArpeggio = mActiveArpeggios.front();
+        MILO_ASSERT(currentArpeggio->mShape, 0x185);
+        if (currentArpeggio->unk4 < i1) {
+            currentArpeggio->mShape->FadeOutChordShape();
+            mExpiredArpeggios.push_back(currentArpeggio);
+            mActiveArpeggios.erase(mActiveArpeggios.begin());
+        } else {
+            if (!b2 || !currentArpeggio->unk10) {
+                if (currentArpeggio->unk0 > i1) {
+                    ms = TickToMs(currentArpeggio->unk0);
+                }
+                currentArpeggio->mShape->SetYPos(mTrackDir->SecondsToY(ms / 1000.0f));
+            }
+            break;
+        }
+    }
+    ms = mTrackDir->SecondsToY((f1 / 1000.0f + mTrackDir->BottomSeconds()) - 0.5f);
+    while (!mExpiredArpeggios.empty() && mExpiredArpeggios.front()->mShape->GetYPos() < ms
+    ) {
+        MILO_ASSERT(mExpiredArpeggios.front()->mShape, 0x1A8);
+        mTrackDir->GetArpeggioShapePool()->ReleaseArpeggioShape(
+            mExpiredArpeggios.front()->mShape
+        );
+        mExpiredArpeggios.erase(mExpiredArpeggios.begin());
+    }
+}
+
+void GemManager::ClearTrackMasks() {
+    if (mGemData) {
+        DataArray *arpArr = mGemData->FindArray(arpeggio, false);
+        if (arpArr) {
+            Symbol name = arpArr->Sym(1);
+            GetWidgetByName(name)->Clear();
+        }
+        DataArray *unisonArr = mGemData->FindArray(unison, false);
+        if (unisonArr) {
+            Symbol name = unisonArr->Sym(1);
+            GetWidgetByName(name)->Clear();
+        }
+        unk10c = 0;
+    }
+}
+
+void GemManager::SetupRealGuitarFretPos() {
+    const BandUser *bandUser = mTrackConfig.GetBandUser();
+    bool isRG = bandUser->GetTrack()->GetType() == real_guitar;
+    bool isRB = bandUser->GetTrack()->GetType() == real_bass;
+    if (isRG || isRB) {
+        std::vector<GameGem> gameGems;
+        int i2 = -1;
+        int i38 = 0;
+        int i3c = -1;
+        for (int i = 0; i < mGems.size(); i++) {
+            const GameGem &curGameGem = mGems[i].GetGameGem();
+            if (i3c != -1 && curGameGem.GetTick() > i3c) {
+                ProcessRealGuitarRun(gameGems, i38);
+                i2 = curGameGem.GetLowestString();
+                i3c = -1;
+                if (!curGameGem.IsRealGuitarChord()) {
+                    gameGems.push_back(curGameGem);
+                }
+            } else if (curGameGem.IsRealGuitarChord()) {
+                ProcessRealGuitarRun(gameGems, i38);
+                i2 = -1;
+                i38++;
+            } else if (curGameGem.IsMuted()) {
+                ProcessRealGuitarRun(gameGems, i38);
+                i2 = curGameGem.GetLowestString();
+                i38++;
+            } else if (i2 != (int)curGameGem.GetLowestString()) {
+                ProcessRealGuitarRun(gameGems, i38);
+                i2 = curGameGem.GetLowestString();
+                gameGems.push_back(curGameGem);
+            } else {
+                if (!gameGems.empty()) {
+                    GameGem &last = gameGems.back();
+                    if (curGameGem.GetTick() - last.GetTick() > unk134) {
+                        ProcessRealGuitarRun(gameGems, i38);
+                        i2 = curGameGem.GetLowestString();
+                        gameGems.push_back(curGameGem);
+                        continue;
+                    }
+                }
+                if (i3c == -1) {
+                    if (TrillStartsAt(mTrackConfig.TrackNum(), curGameGem, i3c)) {
+                        ProcessRealGuitarRun(gameGems, i38);
+                        i2 = curGameGem.GetLowestString();
+                        gameGems.push_back(curGameGem);
+                        continue;
+                    }
+                }
+                gameGems.push_back(curGameGem);
+            }
+        }
+        ProcessRealGuitarRun(gameGems, i38);
     }
 }
