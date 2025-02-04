@@ -1,7 +1,9 @@
 #pragma once
 #include "Gem.h"
+#include "bandobj/ArpeggioShape.h"
 #include "bandtrack/GemRepTemplate.h"
 #include "bandtrack/NowBar.h"
+#include "game/Player.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "track/TrackWidget.h"
@@ -37,6 +39,17 @@ class GemManager {
 public:
     class HitGem {
     public:
+        int unk0;
+        int unk4;
+        int unk8;
+    };
+    class ArpeggioPhrase {
+    public:
+        int unk0;
+        int unk4;
+        int unk8;
+        ArpeggioShape *unkc;
+        bool unk10;
     };
     GemManager(const TrackConfig &, TrackDir *);
     ~GemManager();
@@ -75,38 +88,39 @@ public:
     bool SlotEnabled(int) const;
     int GetSlotIntData(int, Symbol);
     void ClearArpeggios();
+    void InitRGTuning(BandUser *);
 
     TrackDir *mTrackDir; // 0x0
     const TrackConfig &mTrackConfig; // 0x4
-    std::vector<Gem> unk8;
-    int unk10;
+    std::vector<Gem> mGems; // 0x8
+    DataArray *mGemData; // 0x10
     float unk14;
-    std::vector<int> unk18;
-    std::list<HitGem> unk20;
-    int unk28;
-    int unk2c;
+    std::vector<Extent> mMissedPhrases; // 0x18
+    std::list<HitGem> mHitGems; // 0x20
+    int mBegin; // 0x28
+    int mEnd; // 0x2c
     GemRepTemplate mTemplate; // 0x30
     DataArray *mConfig; // 0xb4
     bool unkb8; // 0xb8
     NowBar *mNowBar; // 0xbc
     bool unkc0;
-    bool unkc1;
+    bool mInCoda; // 0xc1
     float unkc4;
     float unkc8;
     float unkcc;
     std::list<int> unkd0;
-    std::vector<int> unkd8;
-    std::map<Symbol, TrackWidget *> unke0;
+    std::vector<TrackWidget *> unkd8;
+    std::map<Symbol, TrackWidget *> mWidgets; // 0xe0
     int unkf8;
     int unkfc;
     int unk100;
     int unk104;
     int unk108;
     int unk10c;
-    std::vector<int> unk110;
+    std::vector<ArpeggioPhrase> mArpeggioPhrases; // 0x110
     int unk118;
-    std::vector<int> unk11c;
-    std::vector<int> unk124;
+    std::vector<ArpeggioPhrase *> mActiveArpeggios; // 0x11c
+    std::vector<ArpeggioPhrase *> mExpiredArpeggios; // 0x124
     float unk12c;
     int unk130;
     int unk134;
