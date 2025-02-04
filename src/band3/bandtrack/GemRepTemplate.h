@@ -6,6 +6,7 @@
 #include <vector>
 
 class GemRepTemplate {
+public:
     enum TailType {
         type0,
         type1,

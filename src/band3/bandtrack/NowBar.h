@@ -6,7 +6,7 @@
 class NowBar {
 public:
     NowBar(TrackDir *, const TrackConfig &);
-
+    ~NowBar();
     void Poll(float, bool);
     void Reset(bool);
     void Hit(float, int, bool, int, bool);

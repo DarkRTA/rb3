@@ -1,5 +1,4 @@
 #pragma once
-#include "bandtrack/GemManager.h"
 #include "bandtrack/Tail.h"
 #include "beatmatch/GameGem.h"
 #include "track/TrackWidget.h"
@@ -7,6 +6,8 @@
 #include "system/utl/TimeConversion.h"
 #include "types.h"
 #include <functional>
+
+class GemManager;
 
 class Gem {
 public:
@@ -44,7 +45,7 @@ public:
     bool Check66B0() const { return unk_0x66_7; }
 
     GemManager *mGemManager; // 0x0
-    const GameGem *mGameGem; // 0x4
+    const GameGem &mGameGem; // 0x4
     std::set<TrackWidget *> mWidgets; // 0x8
     float mStart; // 0x20
     float mEnd; // 0x24

@@ -1,5 +1,10 @@
 #pragma once
+#include "Gem.h"
+#include "bandtrack/GemRepTemplate.h"
+#include "bandtrack/NowBar.h"
+#include "obj/Data.h"
 #include "obj/Object.h"
+#include "track/TrackWidget.h"
 #include "utl/Symbol.h"
 #include "system/track/TrackDir.h"
 #include "TrackConfig.h"
@@ -30,6 +35,9 @@ public:
 
 class GemManager {
 public:
+    class HitGem {
+    public:
+    };
     GemManager(const TrackConfig &, TrackDir *);
     ~GemManager();
 
@@ -66,9 +74,42 @@ public:
     void HideGems();
     bool SlotEnabled(int) const;
     int GetSlotIntData(int, Symbol);
+    void ClearArpeggios();
 
-    TrackDir *mTrackDir;
-    TrackConfig *mTrackConfig;
+    TrackDir *mTrackDir; // 0x0
+    const TrackConfig &mTrackConfig; // 0x4
+    std::vector<Gem> unk8;
+    int unk10;
+    float unk14;
+    std::vector<int> unk18;
+    std::list<HitGem> unk20;
+    int unk28;
+    int unk2c;
+    GemRepTemplate mTemplate; // 0x30
+    DataArray *mConfig; // 0xb4
+    bool unkb8; // 0xb8
+    NowBar *mNowBar; // 0xbc
+    bool unkc0;
+    bool unkc1;
+    float unkc4;
+    float unkc8;
+    float unkcc;
+    std::list<int> unkd0;
+    std::vector<int> unkd8;
+    std::map<Symbol, TrackWidget *> unke0;
+    int unkf8;
+    int unkfc;
+    int unk100;
+    int unk104;
+    int unk108;
+    int unk10c;
+    std::vector<int> unk110;
+    int unk118;
+    std::vector<int> unk11c;
+    std::vector<int> unk124;
+    float unk12c;
+    int unk130;
+    int unk134;
 };
 
 int GetBeardThreshold();

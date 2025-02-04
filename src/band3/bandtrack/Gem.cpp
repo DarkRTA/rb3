@@ -13,38 +13,36 @@
 #include "utl/MBT.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 #include "utl/TimeConversion.h"
 
 Gem::Gem(
     const GameGem &gg, unsigned int ui, float f1, float f2, bool b1, int i1, int i2, bool b2
 )
-    : mGameGem(&gg), mStart(f1), mEnd(f2), mTailStart(0), mSlots(ui), mBeardTick(i1),
+    : mGameGem(gg), mStart(f1), mEnd(f2), mTailStart(0), mSlots(ui), mBeardTick(i1),
       unk_0x3C(0), unk_0x40(0), unk_0x44(0), unk_0x48(0), mChordLabel(""),
-      mFirstFretString(-1), mFretPos(0), unk_0x65(-1) {
+      mFirstFretString(-1), mFretPos(0), unk_0x65(-1), mHit(0), mMissed(0), mReleased(0),
+      mHopo(0), mInvisible(0), mBeard(0), unk_0x67_0(0), unk_0x67_1(0), unk_0x67_2(0),
+      unk_0x67_3(0), unk_0x67_4(0) {
     InitChordInfo(i2, b2);
 }
 
 Gem::~Gem() { DeleteAll(mTails); }
 
 Gem &Gem::operator=(const Gem &g) {
-    (GameGem &)(*mGameGem) = *(g.mGameGem);
+    (GameGem &)mGameGem = g.mGameGem;
     mSlots = g.mSlots;
-
     mStart = g.mStart;
     mTailStart = g.mTailStart;
     mEnd = g.mEnd;
-
     mHopo = g.mHopo;
     mMissed = g.mMissed;
     mHit = g.mHit;
     mReleased = g.mReleased;
     mInvisible = g.mInvisible;
-
     mTails = g.mTails;
     mWidgets = g.mWidgets;
+    unk_0x3C = g.unk_0x3C;
+    unk_0x40 = g.unk_0x40;
 }
 
 bool Gem::OnScreen(float ms) {
@@ -79,7 +77,7 @@ void Gem::AddRep(
     static float startOffset = 1.5f;
     SetType(s);
     if (s != "invisible" && CompareBounds() && b5) {
-        float f9 = mGemManager->mTrackDir->SecondsToY(mGameGem->mMs / 1000.0f);
+        float f9 = mGemManager->mTrackDir->SecondsToY(mGameGem.mMs / 1000.0f);
         Tail *i1 = 0;
         if (mTailStart < 0)
             mTailStart = 0;
@@ -87,12 +85,12 @@ void Gem::AddRep(
         float f10 = mGemManager->mTrackDir->SecondsToY(mEnd - mStart);
         int i3 = mGemManager->GetMaxSlots();
         for (int i = 0; i < i3; i++) {
-            if ((mSlots & 1 << i) && (!rg || mGameGem->GetRGNoteType(i) != 1)) {
+            if ((mSlots & 1 << i) && (!rg || mGameGem.GetRGNoteType(i) != 1)) {
                 Tail *tail = new Tail(repTemp);
                 mTails.push_back(tail);
                 mTails.back()->SetDuration(0, 0, f10);
                 Tail::SlideInfo info;
-                if (mGameGem->LeftHandSlide()) {
+                if (mGameGem.LeftHandSlide()) {
                     info.unk0 = true;
                     if (unk_0x67_4) {
                         info.unk8 = startOffset;
@@ -117,7 +115,7 @@ void Gem::AddRep(
 #pragma force_active on
 inline bool Gem::UseRGChordStyle() const {
     bool r = false;
-    if (mGameGem->IsRealGuitarChord() || unk_0x67_1 || mGameGem->IsMuted())
+    if (mGameGem.IsRealGuitarChord() || unk_0x67_1 || mGameGem.IsMuted())
         r = true;
     return r;
 }
@@ -132,10 +130,10 @@ void Gem::RemoveRep() {
 
 void Gem::AddInstance(Symbol s1, int i2) {
     if (mGemManager && mGemManager->mTrackDir && mGemManager->SlotEnabled(i2)) {
-        TrackConfig *cfg = mGemManager->mTrackConfig;
+        const TrackConfig &cfg = mGemManager->mTrackConfig;
         Symbol s1b8;
         Symbol s1bc = s1.mStr;
-        if (mHopo && !cfg->GetDisableHopos()) {
+        if (mHopo && !cfg.GetDisableHopos()) {
             s1bc = MakeString("%s_hopo", s1bc.mStr);
         } else if (Check66B0()) {
             s1bc = MakeString("%s_cymbal", s1bc.mStr);
@@ -147,9 +145,9 @@ void Gem::AddInstance(Symbol s1, int i2) {
 
         if (mGemManager->GetWidgetName(s1b8, i2, s1bc)
             && mGemManager->GetWidgetName(s1b8, i2, s1bc)) {
-            if (mGameGem->IsRealGuitar()) {
+            if (mGameGem.IsRealGuitar()) {
                 int i6 = mFretPos;
-                if (cfg->IsLefty())
+                if (cfg.IsLefty())
                     i6 = 4 - i6;
                 s1b8 = MakeString("%s%02d.wid", s1b8.mStr, i6);
             }
@@ -177,7 +175,7 @@ void Gem::AddInstance(Symbol s1, int i2) {
             if (mGemManager->GetWidgetName(s1c4, i2, mash)) {
                 TrackWidget *w2 = mGemManager->GetWidgetByName(s1c4);
                 Transform tf98;
-                mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem->mMs / 1000.0f, tf98);
+                mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem.mMs / 1000.0f, tf98);
                 w2->AddInstance(tf98, unk_0x3C);
             }
         }
@@ -187,9 +185,9 @@ void Gem::AddInstance(Symbol s1, int i2) {
             if (mGemManager->GetWidgetName(s1c8, i2, fret_num)) {
                 TrackWidget *wcc = mGemManager->GetWidgetByName(s1c8);
                 Transform tfc8;
-                mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem->mMs / 1000.0f, tfc8);
+                mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem.mMs / 1000.0f, tfc8);
                 Vector3 v164(0, 0, 0);
-                if (cfg->IsLefty()) {
+                if (cfg.IsLefty()) {
                     v164.x = -v164.x;
                 }
                 Multiply(v164, tfc8, tfc8.v);
@@ -200,14 +198,14 @@ void Gem::AddInstance(Symbol s1, int i2) {
             }
         }
 
-        if (mGameGem->IsRealGuitar() && mGameGem->GetFret(i2) != -1) {
+        if (mGameGem.IsRealGuitar() && mGameGem.GetFret(i2) != -1) {
             Symbol s1d0;
             if (mGemManager->GetWidgetName(s1d0, i2, fret_num)) {
                 TrackWidget *w1d4 = mGemManager->GetWidgetByName(s1d0);
                 Transform tff8;
-                mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem->mMs / 1000.0f, tff8);
+                mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem.mMs / 1000.0f, tff8);
                 float offset = mGemManager->mTrackDir->GetFretPosOffset(mFretPos);
-                if (cfg->IsLefty())
+                if (cfg.IsLefty())
                     offset = -offset;
                 static DataNode &rg_widget_scale = DataVariable("rg_widget_scale");
                 float scaleFloat = rg_widget_scale.Float();
@@ -222,7 +220,7 @@ void Gem::AddInstance(Symbol s1, int i2) {
                         tff8.v
                     );
                 }
-                String str17c(RGFretNumberToString(mGameGem->GetFret(i2)));
+                String str17c(RGFretNumberToString(mGameGem.GetFret(i2)));
                 w1d4->AddTextInstance(tff8, str17c, false);
                 mWidgets.insert(w1d4);
             }
@@ -232,9 +230,9 @@ void Gem::AddInstance(Symbol s1, int i2) {
 
 void Gem::AddChordInstance(Symbol s1) {
     if (mGemManager && mGemManager->mTrackDir) {
-        float f1 = mGameGem->mMs / 1000.0f;
+        float f1 = mGameGem.mMs / 1000.0f;
         RndMesh *mesh = mGemManager->mTrackDir->GetChordMesh(
-            unk_0x44, mGemManager->mTrackConfig->IsLefty()
+            unk_0x44, mGemManager->mTrackConfig.IsLefty()
         );
         TrackWidget *w5c = nullptr;
         TrackWidget *w60 = nullptr;
@@ -284,12 +282,12 @@ void Gem::AddChordInstance(Symbol s1) {
 
         bool mod = TheModifierMgr->IsModifierActive("mod_chord_numbers");
         bool b2 = true;
-        if (!mGameGem->ShowChordNums() && !mod)
+        if (!mGameGem.ShowChordNums() && !mod)
             b2 = false;
 
         for (int i = 0; i < 6; i++) {
             if (i == mFirstFretString || b2) {
-                fretNums[i] = mGameGem->GetFret(i);
+                fretNums[i] = mGameGem.GetFret(i);
             } else {
                 fretNums[i] = -1;
             }
@@ -302,8 +300,8 @@ void Gem::AddChordInstance(Symbol s1) {
 
 void Gem::AddStrumInstance(Symbol s1, Symbol s2) {
     if (mGemManager && mGemManager->mTrackDir) {
-        int lowString = mGameGem->GetLowestString();
-        int highString = mGameGem->GetHighestString();
+        int lowString = mGameGem.GetLowestString();
+        int highString = mGameGem.GetHighestString();
         MILO_ASSERT(lowString != -1, 572);
         MILO_ASSERT(highString != -1, 573);
         Symbol s88;
@@ -316,11 +314,11 @@ void Gem::AddStrumInstance(Symbol s1, Symbol s2) {
             );
         } else {
             int range = (highString - lowString) + 1;
-            bool lefty = mGemManager->mTrackConfig->IsLefty();
+            bool lefty = mGemManager->mTrackConfig.IsLefty();
             if (s2 == area_strum) {
                 MILO_ASSERT_RANGE_EQ(range, 4, 6, 0x250);
                 char u6 = ' ';
-                switch (mGameGem->GetRGStrumType()) {
+                switch (mGameGem.GetRGStrumType()) {
                 case 3:
                     u6 = 'L';
                     if (lefty)
@@ -348,9 +346,7 @@ void Gem::AddStrumInstance(Symbol s1, Symbol s2) {
             if (lefty)
                 lowString = highString;
             Transform tf48;
-            mGemManager->mTrackDir->MakeWidgetXfm(
-                lowString, mGameGem->mMs / 1000.0f, tf48
-            );
+            mGemManager->mTrackDir->MakeWidgetXfm(lowString, mGameGem.mMs / 1000.0f, tf48);
             w8c->AddInstance(tf48, 0);
             mWidgets.insert(w8c);
         }
@@ -361,8 +357,8 @@ DECOMP_FORCEACTIVE(Gem, "mesh")
 
 void Gem::AddWidgetInstanceImpl(TrackWidget *w, int i) {
     Transform tf38;
-    mGemManager->mTrackDir->MakeWidgetXfm(i, mGameGem->mMs / 1000.0f, tf38);
-    if (mGemManager->mTrackConfig->IsRealGuitarTrack()) {
+    mGemManager->mTrackDir->MakeWidgetXfm(i, mGameGem.mMs / 1000.0f, tf38);
+    if (mGemManager->mTrackConfig.IsRealGuitarTrack()) {
         static DataNode &rg_widget_scale = DataVariable("rg_widget_scale");
         float rgFloat = rg_widget_scale.Float();
         if (rgFloat > 0) {
@@ -375,7 +371,7 @@ void Gem::AddWidgetInstanceImpl(TrackWidget *w, int i) {
 
 void Gem::AddHopoTails(Symbol s1) {
     if (!mGemManager || !mGemManager->mTrackDir
-        || !mGemManager->mTrackConfig->IsRealGuitarTrack() || !mHopo || unk_0x66_6)
+        || !mGemManager->mTrackConfig.IsRealGuitarTrack() || !mHopo || unk_0x66_6)
         return;
     else {
         Symbol hopoSym = s1 == miss ? hopo_tail_miss : hopo_tail;
@@ -393,7 +389,7 @@ void Gem::AddHopoTails(Symbol s1) {
 
 void Gem::RemoveAllInstances() {
     if (mGemManager && mGemManager->mTrackDir) {
-        float f1 = mGameGem->mMs / 1000.0f;
+        float f1 = mGameGem.mMs / 1000.0f;
         if (unk_0x44 != 0) {
             FOREACH (it, mWidgets) {
                 (*it)->RemoveAt(f1);
@@ -442,17 +438,17 @@ void Gem::UpdateTailPositions() {
 }
 
 void Gem::CreateWidgetInstances(Symbol s) {
-    if (mGameGem->IsRealGuitar() && mGameGem->IsMuted() && mSlots != 0) {
+    if (mGameGem.IsRealGuitar() && mGameGem.IsMuted() && mSlots != 0) {
         AddStrumInstance(s, muted_strum);
     } else {
-        if (mGameGem->IsRealGuitarChord() && mSlots != 0) {
+        if (mGameGem.IsRealGuitarChord() && mSlots != 0) {
             if (unk_0x44 != 0) {
                 AddChordInstance(s);
             } else {
                 MILO_WARN(
                     "RG chord gem at %s has only ghost notes; gem will be invisible",
                     TickFormat(
-                        mGameGem->GetTick(), *TheSongDB->GetSongData()->GetMeasureMap()
+                        mGameGem.GetTick(), *TheSongDB->GetSongData()->GetMeasureMap()
                     )
                 );
             }
@@ -486,7 +482,7 @@ void Gem::Hit() {
 void Gem::PartialHit(unsigned int ui) {
     if (!mInvisible) {
         mBeard = false;
-        float f1 = mGameGem->mMs / 1000.0f;
+        float f1 = mGameGem.mMs / 1000.0f;
         int slots = mGemManager->GetMaxSlots();
         FOREACH (it, mWidgets) {
             TrackWidget *cur = *it;
@@ -556,22 +552,22 @@ void Gem::Reset() {
 float Gem::GetStart() const { return mBeard ? TickToSeconds(mBeardTick) : mStart; }
 
 void Gem::InitChordInfo(int i1, bool b2) {
-    if (mGameGem->IsRealGuitarChord()) {
-        unk_0x44 = RGGetChordShapeID(*mGameGem, false);
-        unk_0x48 = RGGetChordShapeID(*mGameGem, true);
-        if (mGameGem->GetShowChordNames()) {
-            const char *name = mGameGem->GetChordNameOverride().mStr;
+    if (mGameGem.IsRealGuitarChord()) {
+        unk_0x44 = RGGetChordShapeID(mGameGem, false);
+        unk_0x48 = RGGetChordShapeID(mGameGem, true);
+        if (mGameGem.GetShowChordNames()) {
+            const char *name = mGameGem.GetChordNameOverride().mStr;
             if (name[0] != '\0') {
                 char buf[32];
                 RGParseOverrideChord(buf, 32, name);
                 mChordLabel = buf;
             } else {
                 char buf[32];
-                RGGetChordName(buf, 32, *mGameGem, -1, i1, b2);
+                RGGetChordName(buf, 32, mGameGem, -1, i1, b2);
                 mChordLabel = buf;
             }
         }
-        RGGetFretLabelInfo(*mGameGem, mFirstFretString, mFirstFret, true);
+        RGGetFretLabelInfo(mGameGem, mFirstFretString, mFirstFret, true);
     }
 }
 
