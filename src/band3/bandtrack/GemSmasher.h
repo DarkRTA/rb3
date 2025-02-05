@@ -56,7 +56,7 @@ public:
     EventTrigger *mReleaseTrig; // 0x5C
     EventTrigger *mMissAfterRelease; // 0x60
     RndMesh *mGemSmasherGlow; // 0x64
-    bool mGlowing, mBurning, unk_0x6A;
+    bool mGlowing, mBurning, unk_0x6A; // 0x6a - is keyboard track?
     bool Glowing() const;
     void SetGlowing(bool); // 0x68, 0x69, 0x6A
 };
