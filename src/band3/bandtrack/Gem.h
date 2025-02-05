@@ -46,6 +46,7 @@ public:
     const GameGem &GetGameGem() const { return mGameGem; }
     unsigned int Slots() const { return mSlots; }
     bool Released() const { return mReleased; }
+    bool GetHit() const { return mHit; }
 
     GemManager *mGemManager; // 0x0
     const GameGem &mGameGem; // 0x4

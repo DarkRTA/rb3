@@ -102,7 +102,7 @@ public:
     virtual void DisableFills() = 0;
     virtual void EnableDrumFills(bool) {}
     virtual bool FillsEnabled(int) = 0;
-    virtual bool AreFillsForced() const;
+    virtual bool AreFillsForced() const { return false; }
     virtual void EnterCoda();
     virtual void ResetCodaPoints();
     virtual void AddCodaPoints();

@@ -2,10 +2,12 @@
 #include "bandobj/ArpeggioShape.h"
 #include "bandtrack/NowBar.h"
 #include "bandtrack/Track.h"
+#include "beatmatch/FillInfo.h"
 #include "beatmatch/GameGem.h"
 #include "beatmatch/RGUtl.h"
 #include "game/BandUser.h"
 #include "game/Game.h"
+#include "game/Player.h"
 #include "game/SongDB.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
@@ -13,6 +15,7 @@
 #include "game/TrainerPanel.h"
 #include "obj/Data.h"
 #include "obj/DataFunc.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Group.h"
@@ -35,9 +38,9 @@ DataNode SetKeyGlow(DataArray *arr) {
 GemManager::GemManager(const TrackConfig &cfg, TrackDir *dir)
     : mTrackDir(dir), mTrackConfig(cfg), mTemplate(cfg),
       mConfig(SystemConfig("track_graphics")), mGemData(0), unk14(0), mBegin(0), mEnd(0),
-      unkb8(0), mNowBar(0), unkc0(0), mInCoda(0), unkc4(0),
+      unkb8(0), mNowBar(0), mBonusGems(0), mInCoda(0), unkc4(0),
       unkc8(dir->SecondsToY(dir->TopSeconds())),
-      unkcc(dir->SecondsToY(dir->BottomSeconds())), unkf8(0), unkfc(0), unk100(0),
+      unkcc(dir->SecondsToY(dir->BottomSeconds())), mTailsGrp(0), unkfc(0), unk100(0),
       unk104(0), unk108(0), unk10c(0), unk118(0), unk12c(0), unk130(-1), unk134(960) {
     mNowBar = new NowBar(mTrackDir, mTrackConfig);
     mTemplate.Init(mTrackDir->Find<ObjectDir>("gem_tail", true));
@@ -458,14 +461,14 @@ void GemManager::AdvanceBegin() {
 void GemManager::AdvanceEnd() {
     Gem &lastGem = mGems[mEnd];
     Symbol gemType = GetTypeForGem(mEnd);
-    if (!unkf8) {
+    if (!mTailsGrp) {
         if (mTrackConfig.IsKeyboardTrack()) {
-            unkf8 = mTrackDir->Find<RndGroup>("key_shift_tails.grp", true);
+            mTailsGrp = mTrackDir->Find<RndGroup>("key_shift_tails.grp", true);
         } else
-            unkf8 = mTrackDir->Find<RndGroup>("tails.grp", true);
+            mTailsGrp = mTrackDir->Find<RndGroup>("tails.grp", true);
     }
     unsigned int slots = lastGem.Slots();
-    lastGem.AddRep(mTemplate, unkf8, gemType, mTrackConfig, true);
+    lastGem.AddRep(mTemplate, mTailsGrp, gemType, mTrackConfig, true);
     mEnd++;
     if (mTrackConfig.IsKeyboardTrack()) {
         int tick = lastGem.GetGameGem().GetTick();
@@ -474,7 +477,7 @@ void GemManager::AdvanceEnd() {
             Symbol curGemType = GetTypeForGem(mEnd);
             Gem &curGem = mGems[mEnd];
             slots |= curGem.Slots();
-            curGem.AddRep(mTemplate, unkf8, curGemType, mTrackConfig, true);
+            curGem.AddRep(mTemplate, mTailsGrp, curGemType, mTrackConfig, true);
         }
         AddChordBracket(gemType, slots, lastGem.GetGameGem().GetMs());
     }
@@ -573,6 +576,204 @@ void GemManager::Released(float f1, int i2) {
         if (!gem.GetGameGem().LeftHandSlide() && !gem.Released()) {
             gem.Release();
         }
+    }
+}
+
+void GemManager::SetSmasherGlowing(int i1, bool b2) {
+    mNowBar->SetSmasherGlowing(i1, b2);
+}
+
+void GemManager::PopSmasher(int i1) { mNowBar->PopSmasher(i1); }
+
+void GemManager::ResetSmashers(bool b1) { mNowBar->Reset(b1); }
+
+void GemManager::Jump(float f1) {
+    while (mBegin < mEnd)
+        AdvanceBegin();
+    mHitGems.clear();
+    mMissedPhrases.clear();
+    ClearTrackMasks();
+    DrawTrackMasks(MsToTickInt(mTrackDir->TopSeconds() * 1000.0f + f1), MsToTickInt(f1));
+
+    float f5 = mTrackDir->BottomSeconds();
+    int i1 = -1;
+    for (int i = 0; i < mEnd; i++) {
+        if (mGems[i].GetStart() < f1 / 1000.0f + f5)
+            continue;
+        if (i1 < 0)
+            i1 = i;
+        mGems[i].Reset();
+    }
+    mBegin = i1;
+    mEnd = i1;
+    mBegin = Clamp(0, i1, i1);
+    mEnd = Clamp(0, mEnd, mEnd);
+    ResetArpeggios(f1);
+    PlayerState state;
+    PollHelper(f1, state);
+}
+
+void GemManager::SetBonusGems(bool gems, const PlayerState &state) {
+    mBonusGems = gems;
+    UpdateGemStates();
+}
+
+void GemManager::SetInCoda(bool coda) { mInCoda = coda; }
+
+bool GemManager::OnMissPhrase(int i1) {
+    bool ret = true;
+    int tracknum = mTrackConfig.TrackNum();
+    Extent ext18(0, 0);
+    if (TheSongDB->GetCommonPhraseExtent(tracknum, i1, ext18)) {
+        int i2 = MsToTickInt(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f);
+        if (!mMissedPhrases.empty()) {
+            Extent &back = mMissedPhrases.back();
+            ret = back.unk4 != ext18.unk4;
+            if (ret) {
+                mMissedPhrases.push_back(Extent(i2, ext18.unk4));
+            } else if (i2 != back.unk0)
+                return ret;
+            UpdateGemStates();
+        } else {
+            mMissedPhrases.push_back(Extent(i2, ext18.unk4));
+            UpdateGemStates();
+        }
+    }
+    return ret;
+}
+
+bool GemManager::GetWidgetName(Symbol &sref, int i2, Symbol s3) {
+    DataArray *arr = mGemData->FindArray(i2, false);
+    if (!arr)
+        return false;
+    else {
+        DataArray *symArr = arr->FindArray(s3, false);
+        if (!symArr)
+            return false;
+        else {
+            sref = symArr->Sym(1);
+            return true;
+        }
+    }
+}
+
+bool GemManager::GetChordWidgetName(Symbol s1, Symbol s2, Symbol &sref) {
+    DataArray *arr = mGemData->FindArray(s2, false);
+    if (!arr)
+        return false;
+    else {
+        DataArray *symArr = arr->FindArray(s1, false);
+        if (!symArr)
+            return false;
+        else {
+            sref = symArr->Sym(1);
+            return true;
+        }
+    }
+}
+
+int GemManager::GetSlotIntData(int i1, Symbol s2) {
+    DataArray *arr = mGemData->FindArray(i1, true);
+    return arr->FindInt(s2);
+}
+
+int GemManager::GetSlotsForGem(int gem) {
+    if (gem < 0 || gem >= mGems.size())
+        return 0;
+    else
+        return mGems[gem].Slots();
+}
+
+void GemManager::EnableSlot(int slot) {
+    if (!SlotEnabled(slot)) {
+        mDisabledSlotsList.remove(slot);
+    }
+}
+
+void GemManager::DisableSlot(int slot) {
+    if (SlotEnabled(slot)) {
+        mDisabledSlotsList.push_back(slot);
+    }
+}
+
+bool GemManager::SlotEnabled(int slot) const {
+    return std::find(mDisabledSlotsList.begin(), mDisabledSlotsList.end(), slot)
+        == mDisabledSlotsList.end();
+}
+
+void GemManager::ClearGems(bool b) {
+    for (int i = mBegin; i < mEnd; i++) {
+        Gem &curGem = mGems[i];
+        if (b || (!curGem.GetHit() || curGem.CompareBounds()) && !curGem.Released()) {
+            curGem.RemoveAllInstances();
+            curGem.RemoveRep();
+        }
+    }
+}
+
+void GemManager::ClearAllGems() {
+    for (int i = 0; i < mGems.size(); i++) {
+        Gem &curGem = mGems[i];
+        curGem.Release();
+        curGem.RemoveAllInstances();
+        curGem.RemoveRep();
+    }
+}
+
+void GemManager::HideGems() {
+    for (int i = 0; i < mGems.size(); i++) {
+        mGems[i].SetType(invisible);
+    }
+}
+
+void GemManager::ClearGem(int idx) {
+    Gem &curGem = mGems[idx];
+    curGem.Release();
+    curGem.RemoveAllInstances();
+    curGem.RemoveRep();
+}
+
+bool GemManager::GetFill(int i1, FillExtent &ext) {
+    Player *player = mTrackConfig.GetBandUser()->GetPlayer();
+    if (!player || !player->FillsEnabled(i1))
+        return false;
+    else {
+        FillInfo *info = TheSongDB->GetSongData()->GetFillInfo(mTrackConfig.TrackNum());
+        return !info ? false : info->FillAt(GetLoopTick(i1), ext, true);
+    }
+}
+
+bool GemManager::IsInFill(int idx) {
+    Player *player = mTrackConfig.GetBandUser()->GetPlayer();
+    if (player->AreFillsForced())
+        return true;
+    else {
+        FillExtent ext(0, 0, 0);
+        return GetFill(idx, ext);
+    }
+}
+
+bool GemManager::IsEndOfFill(int idx) {
+    bool ret = false;
+    FillExtent ext(0, 0, 0);
+    if (GetFill(idx, ext) && ext.end == idx)
+        ret = true;
+    return ret;
+}
+
+void GemManager::ClearMissedPhrases() {}
+
+TrackWidget *GemManager::GetWidgetByName(Symbol name) {
+    if (mWidgets.find(name) == mWidgets.end()) {
+        mWidgets[name] = mTrackDir->Find<TrackWidget>(name.mStr, true);
+    }
+    return mWidgets[name];
+}
+
+void GemManager::UpdateEnabledSlots() {
+    unk108 = 0;
+    for (int i = 0; i < mGems.size(); i++) {
+        unk108 |= mGems[i].Slots();
     }
 }
 

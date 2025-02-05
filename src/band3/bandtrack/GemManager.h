@@ -117,6 +117,13 @@ public:
     void CheckRemoveChordBracket(int);
     bool IsSpotlightGem(int, bool &);
     void PruneHitGems(float);
+    void PollHelper(float, const PlayerState &);
+    void EnableSlot(int);
+    void DisableSlot(int);
+    void ClearGem(int);
+    bool GetFill(int, FillExtent &);
+    bool IsInFill(int);
+    bool IsEndOfFill(int);
 
     TrackDir *mTrackDir; // 0x0
     const TrackConfig &mTrackConfig; // 0x4
@@ -131,19 +138,19 @@ public:
     DataArray *mConfig; // 0xb4
     bool unkb8; // 0xb8
     NowBar *mNowBar; // 0xbc
-    bool unkc0;
+    bool mBonusGems; // 0xc0
     bool mInCoda; // 0xc1
     float unkc4;
     float unkc8;
     float unkcc;
-    std::list<int> unkd0;
+    std::list<int> mDisabledSlotsList; // 0xd0
     std::vector<TrackWidget *> unkd8;
     std::map<Symbol, TrackWidget *> mWidgets; // 0xe0
-    RndGroup *unkf8; // 0xf8
+    RndGroup *mTailsGrp; // 0xf8
     int unkfc;
     int unk100;
     int unk104;
-    int unk108;
+    unsigned int unk108;
     int unk10c;
     std::vector<ArpeggioPhrase> mArpeggioPhrases; // 0x110
     int unk118;

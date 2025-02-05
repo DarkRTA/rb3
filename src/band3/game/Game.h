@@ -70,7 +70,7 @@ public:
     void OnRemoteTrackerEndStreak(Player *, int, int);
     void OnPlayerQuarantined(Player *);
     Band *GetBand();
-    bool InTrainer() const;
+    bool InTrainer() const { return mProperties.mInTrainer; }
 
     Properties mProperties; // 0x24
     SongPos mSongPos; // 0x40
