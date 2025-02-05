@@ -28,7 +28,7 @@ void OverdriveTimeTracker::FirstFrame_(float) {
 
 void OverdriveTimeTracker::Poll_(float f) {
     MILO_ASSERT(TheGame, 0x3E);
-    if (TheGame->unk_0xdc != -1 || mSource->IsFinished())
+    if (TheGame->unkdc != -1 || mSource->IsFinished())
         return;
     else {
         bool o2 = false;

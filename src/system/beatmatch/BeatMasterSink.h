@@ -1,5 +1,4 @@
-#ifndef BEATMATCH_BEATMASTERSINK_H
-#define BEATMATCH_BEATMASTERSINK_H
+#pragma once
 #include "utl/SongPos.h"
 
 class BeatMasterSink {
@@ -10,5 +9,3 @@ public:
     virtual void UpdateSongPos(const SongPos &) = 0;
     virtual void HandleSubmix(int, const char *) = 0;
 };
-
-#endif
