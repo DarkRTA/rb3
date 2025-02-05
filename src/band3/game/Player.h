@@ -34,6 +34,7 @@ public:
 
 class Extent {
 public:
+    Extent(int x, int y) : unk0(x), unk4(y) {}
     int unk0;
     int unk4;
 };
@@ -101,7 +102,7 @@ public:
     virtual void DisableFills() = 0;
     virtual void EnableDrumFills(bool) {}
     virtual bool FillsEnabled(int) = 0;
-    virtual bool AreFillsForced() const;
+    virtual bool AreFillsForced() const { return false; }
     virtual void EnterCoda();
     virtual void ResetCodaPoints();
     virtual void AddCodaPoints();

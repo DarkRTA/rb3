@@ -112,7 +112,7 @@ public:
         }
         ~VertVector() {
             mCapacity = 0;
-            resize(0, true);
+            clear();
         }
         int size() const { return mNumVerts; }
         bool empty() const { return mNumVerts == 0; }

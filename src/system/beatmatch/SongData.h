@@ -106,7 +106,7 @@ public:
     virtual SongPos CalcSongPos(float);
     virtual TempoMap *GetTempoMap() const { return mTempoMap; }
     virtual BeatMap *GetBeatMap() const;
-    virtual MeasureMap *GetMeasureMap() const;
+    virtual MeasureMap *GetMeasureMap() const { return mMeasureMap; }
     virtual void SetTrack(Symbol);
     virtual bool GetGem(int, int &, int &, int &);
 

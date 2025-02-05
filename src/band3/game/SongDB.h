@@ -4,6 +4,7 @@
 #include "game/MultiplayerAnalyzer.h"
 #include "game/Defines.h"
 #include "midi/DataEvent.h"
+#include "game/Player.h"
 #include <vector>
 
 class SongDB : public SongParserSink {
@@ -60,6 +61,9 @@ public:
     int GetBeatsPerMeasure(int) const;
     int NumCommonPhrases() const;
     int GetCommonPhraseTracks(int) const;
+    int GetCommonPhraseID(int, int) const;
+    bool IsUnisonPhrase(int) const;
+    bool GetCommonPhraseExtent(int, int, Extent &);
 
     SongData *GetSongData() { return mSongData; }
 

@@ -10,7 +10,7 @@ GemSmasher::GemSmasher(int slot, RndDir *dir, bool keys)
       mMissTrig(NULL), mBurnTrig(NULL), mBurnBonusTrig(NULL), mBurnChordTrig(NULL),
       mBREBurnTrig(NULL), mBREBurnChord(NULL), mStopBurnTrig(NULL), mPressTrig(NULL),
       mReleaseTrig(NULL), mMissAfterRelease(NULL), mGemSmasherGlow(NULL), mGlowing(false),
-      mBurning(false), unk_0x6A(keys) {
+      mBurning(false), mIsKeyboardTrack(keys) {
     if (mDir) {
         mHitSmashTrig = mDir->Find<EventTrigger>("hit.trig", false);
         if (mHitSmashTrig == NULL)
@@ -125,7 +125,7 @@ void GemSmasher::CodaHitChord() {
 }
 
 void GemSmasher::Miss() {
-    if (unk_0x6A && !mGlowing) {
+    if (mIsKeyboardTrack && !mGlowing) {
         if (mMissAfterRelease)
             mMissAfterRelease->Trigger();
     } else {
@@ -193,7 +193,7 @@ void GemSmasher::FillHit(int i) {
 }
 
 void GemSmasher::SetGlowing(bool b) {
-    if (unk_0x6A) {
+    if (mIsKeyboardTrack) {
         bool test;
         if (mDir)
             test = mDir->mShowing;

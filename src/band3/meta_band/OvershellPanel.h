@@ -62,3 +62,6 @@ public:
     bool unk4c8;
     int unk4cc;
 };
+
+DECLARE_MESSAGE(NewOvershellLocalUserMsg, "new_overshell_local_user_msg")
+END_MESSAGE

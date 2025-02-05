@@ -6,6 +6,7 @@
 #include <vector>
 
 class GemRepTemplate {
+public:
     enum TailType {
         type0,
         type1,
@@ -39,19 +40,16 @@ class GemRepTemplate {
     Vector2 kTailFrequencyRange; // 0x24
     Vector2 kTailAmplitudeRange; // 0x2C
     const TrackConfig &mTrackCfg; // 0x34
-    RndMat **mSlots; // 0x38
-    float unk_0x3C;
-    float unk_0x40;
+    RndMat **mSlotMats; // 0x38
+    float mTailClipY; // 0x3c
+    float mTailScaleX; // 0x40
     ObjectDir *mObjectDir; // 0x44
-    uint mNumTailSections;
-    u32 pad1;
-    float mTailSectionLen;
-    u32 pad2;
-
+    int mNumTailSections[2]; // 0x48
+    float mTailSectionLength[2]; // 0x50
     RndMesh::VertVector mTailVerts; // 0x58
-    RndMesh::VertVector mCapVerts;
-
-    int pad[3];
-
+    RndMesh::VertVector mCapVerts; // 0x64
+    RndMat *mTailMiss; // 0x70
+    RndMat *mTailBonus; // 0x74
+    RndMat *mTailChord; // 0x78
     std::vector<RndMesh *> mTails; // 0x7C
 };

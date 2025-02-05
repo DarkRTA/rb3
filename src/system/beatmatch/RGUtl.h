@@ -32,3 +32,6 @@ void RGGameGemToRGState(const GameGem &, RGState &, bool);
 const char *RGGetNoteName(unsigned char, int);
 bool RGGetHeldFretRange(const GameGem &, int &, int &, bool);
 unsigned int RGGetStrumBitMask(const GameGem &);
+unsigned int RGGetChordShapeID(const GameGem &gem, bool b);
+void RGGetChordName(char *, int, const GameGem &, int, int, bool);
+void RGGetFretLabelInfo(const GameGem &, int &, int &, bool);

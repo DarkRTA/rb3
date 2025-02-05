@@ -130,9 +130,10 @@ public:
     }
 
     void SetLocalPos(const Vector3 &vec) {
-        mLocalXfm.v.x = vec.x;
-        mLocalXfm.v.y = vec.y;
-        mLocalXfm.v.z = vec.z;
+        mLocalXfm.v = vec;
+        // mLocalXfm.v.x = vec.x;
+        // mLocalXfm.v.y = vec.y;
+        // mLocalXfm.v.z = vec.z;
         SetDirty();
     }
 

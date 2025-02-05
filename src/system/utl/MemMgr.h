@@ -57,10 +57,12 @@ public:
 };
 
 #define NEW_OVERLOAD                                                                     \
-    void *operator new(size_t t) { return _MemAlloc(t, 0); }
+    void *operator new(size_t t) { return _MemAlloc(t, 0); }                             \
+    void *operator new(size_t, void *place) { return place; }
 
 #define NEW_ARRAY_OVERLOAD                                                               \
-    void *operator new[](size_t t) { return _MemAlloc(t, 0); }
+    void *operator new[](size_t t) { return _MemAlloc(t, 0); }                           \
+    void *operator new[](size_t, void *place) { return place; }
 
 #define DELETE_OVERLOAD                                                                  \
     void operator delete(void *v) { _MemFree(v); }
