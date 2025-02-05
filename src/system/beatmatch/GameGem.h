@@ -59,6 +59,7 @@ public:
     unsigned int GetSlots() const { return mSlots; }
     bool GetForceStrum() const { return mForceStrum; }
     int GetDurationTicks() const { return mDurationTicks; }
+    float GetMs() const { return mMs; }
 
     bool CompareTimes(const GameGem &g1, const GameGem &g2) { return g1.mMs < g2.mMs; }
 

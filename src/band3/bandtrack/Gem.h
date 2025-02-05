@@ -41,9 +41,11 @@ public:
     void SetFretPos(int);
     void GetChordFretLabelInfo(String &, int &) const;
 
-    bool CompareBounds() { return mStart < mEnd ? true : false; }
+    bool CompareBounds() { return mEnd > mStart ? true : false; }
     bool Check66B0() const { return unk_0x66_7; }
     const GameGem &GetGameGem() const { return mGameGem; }
+    unsigned int Slots() const { return mSlots; }
+    bool Released() const { return mReleased; }
 
     GemManager *mGemManager; // 0x0
     const GameGem &mGameGem; // 0x4
@@ -51,7 +53,7 @@ public:
     float mStart; // 0x20
     float mEnd; // 0x24
     float mTailStart; // 0x28
-    int mSlots; // 0x2c
+    unsigned int mSlots; // 0x2c
     std::vector<Tail *> mTails; // 0x30
     int mBeardTick; // 0x38
     float unk_0x3C; // 0x3c

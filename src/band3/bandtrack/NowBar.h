@@ -15,6 +15,7 @@ public:
     void FillHit(int, int);
     void SetSmasherGlowing(int, bool);
     void StopBurning(unsigned int);
+    void PartialHit(int, unsigned int, bool, int);
 
     GemSmasher *FindSmasher(int) const;
 

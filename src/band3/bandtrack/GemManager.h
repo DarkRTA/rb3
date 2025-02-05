@@ -3,6 +3,7 @@
 #include "bandobj/ArpeggioShape.h"
 #include "bandtrack/GemRepTemplate.h"
 #include "bandtrack/NowBar.h"
+#include "beatmatch/InternalSongParserSink.h"
 #include "game/Player.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
@@ -39,12 +40,15 @@ class GemManager {
 public:
     class HitGem {
     public:
-        int unk0;
+        HitGem(float f, int x, int y) : unk0(f), unk4(x), unk8(y) {}
+        float unk0;
         int unk4;
-        int unk8;
+        unsigned int unk8;
     };
     class ArpeggioPhrase {
     public:
+        ArpeggioPhrase(int x, int y, int z)
+            : unk0(x), unk4(y), unk8(z), mShape(0), unk10(0) {}
         int unk0;
         int unk4;
         int unk8;
@@ -96,6 +100,23 @@ public:
     void SetupRealGuitarFretPos();
     void ProcessRealGuitarRun(std::vector<GameGem> &, int &);
     bool TrillStartsAt(int, const GameGem &, int &) const;
+    void SetupRealGuitarImportantStrings();
+    void EndRepeatedChordPhrase(int &, int &, int &);
+    bool RollStartsAt(int, const GameGem &, int &, unsigned int &) const;
+    int GetNumGems() const;
+    const Gem &GetGem(int) const;
+    void AdvanceBegin();
+    void AdvanceEnd();
+    Symbol GetTypeForGem(int);
+    void AddChordBracket(Symbol, unsigned int, float);
+    void PollVisibleGems(float, float);
+    void RememberChordWidget(TrackWidget *);
+    void AddWidgetInstanceImpl(TrackWidget *, int, float);
+    void ReleaseSlot(int, int);
+    void ReleaseHitGems();
+    void CheckRemoveChordBracket(int);
+    bool IsSpotlightGem(int, bool &);
+    void PruneHitGems(float);
 
     TrackDir *mTrackDir; // 0x0
     const TrackConfig &mTrackConfig; // 0x4
@@ -118,7 +139,7 @@ public:
     std::list<int> unkd0;
     std::vector<TrackWidget *> unkd8;
     std::map<Symbol, TrackWidget *> mWidgets; // 0xe0
-    int unkf8;
+    RndGroup *unkf8; // 0xf8
     int unkfc;
     int unk100;
     int unk104;

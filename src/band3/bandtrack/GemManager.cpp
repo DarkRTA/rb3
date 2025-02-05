@@ -15,6 +15,8 @@
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Group.h"
+#include "rndobj/Trans.h"
 #include "track/TrackWidget.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -290,3 +292,291 @@ void GemManager::SetupRealGuitarFretPos() {
         ProcessRealGuitarRun(gameGems, i38);
     }
 }
+
+void GemManager::ProcessRealGuitarRun(std::vector<GameGem> &gems, int &iref) {
+    if (!gems.empty()) {
+        if (gems.size() == 1) {
+            mGems[iref].SetFretPos(2);
+        } else {
+            int i3 = mGems[iref].GetGameGem().GetLowestString();
+            unsigned int u10 = 0;
+            for (int i = 0; i < gems.size(); i++) {
+                const GameGem &curGem = mGems[iref + i].GetGameGem();
+                u10 |= 1 << curGem.GetFret(i3);
+            }
+            int i2 = -1;
+            int i9 = 0;
+            int i5c = 100000;
+            int i60 = -1;
+            for (int i = 0; i < 0x16; i++) {
+                if (u10 & 1 << i) {
+                    i5c = std::min(i5c, i);
+                    i60 = std::max(i60, i);
+                    i9++;
+                }
+            }
+            if (i9 > 5) {
+                i2 = mGems[iref].GetGameGem().GetFret(i3);
+                if (i60 - i2 < 5) {
+                    i9 = 4 - (i60 - i2);
+                } else {
+                    i9 = 2;
+                    if (i2 - i5c < 5) {
+                        i9 = i2 - i5c;
+                    }
+                    mGems[iref].SetFretPos(i9);
+                    for (int i = 1; i < gems.size(); i++) {
+                        int i1 = mGems[iref + i].GetGameGem().GetFret(i3);
+                        if (i2 < i1) {
+                            i9 = (i9 + 1) % 5;
+                            i2 = i1;
+                        } else if (i1 < i2) {
+                            i9--;
+                            i2 = i1;
+                            if (i9 < 0) {
+                                i9 = 4;
+                            }
+                        }
+                        mGems[iref + i].SetFretPos(i9);
+                    }
+                }
+            } else {
+                if (i5c == i2) {
+                    for (int i = 0; i < gems.size(); i++) {
+                        mGems[iref + i].SetFretPos(2);
+                    }
+                } else {
+                    i2 -= i5c;
+                    for (int i = 0; i < gems.size(); i++) {
+                        float gemfloat = mGems[iref + i].GetGameGem().GetFret(i3) - i5c;
+                        int i68 = (5.0f / i2) * gemfloat;
+                        i68 = std::min(i68, 4);
+                        mGems[iref + i].SetFretPos(i68);
+                    }
+                }
+            }
+        }
+        iref += gems.size();
+        gems.clear();
+    }
+}
+
+void GemManager::SetupRealGuitarImportantStrings() {
+    const BandUser *bandUser = mTrackConfig.GetBandUser();
+    bool isRG = bandUser->GetTrack()->GetType() == real_guitar;
+    bool isRB = bandUser->GetTrack()->GetType() == real_bass;
+    if (isRG || isRB) {
+        for (int i = 1; i < mGems.size(); i++) {
+        }
+    }
+}
+
+void GemManager::EndRepeatedChordPhrase(
+    int &repeatedChordStartTick, int &repeatedChordEndTick, int &i3
+) {
+    if (i3 != -1) {
+        MILO_ASSERT(repeatedChordStartTick != -1, 0x56D);
+        MILO_ASSERT(repeatedChordEndTick != -1, 0x56E);
+        ArpeggioPhrase phrase(repeatedChordStartTick, repeatedChordEndTick, i3);
+        phrase.unk10 = true;
+        mArpeggioPhrases.push_back(phrase);
+        i3 = -1;
+        repeatedChordStartTick = -1;
+        repeatedChordEndTick = -1;
+    }
+}
+
+bool GemManager::RollStartsAt(int i1, const GameGem &gem, int &iref, unsigned int &uiref)
+    const {
+    int tick = GetLoopTick(gem.GetTick());
+    bool ret;
+    if (gem.IsRealGuitar()) {
+        ret = TheSongDB->GetSongData()->RGRollStartsAt(i1, tick, iref);
+    } else {
+        ret = TheSongDB->GetSongData()->RollStartsAt(i1, tick, iref);
+    }
+    if (ret) {
+        uiref = TheSongDB->GetSongData()->GetRollingSlotsAtTick(i1, tick);
+    }
+    iref += gem.GetTick() - tick;
+    return ret;
+}
+
+bool GemManager::TrillStartsAt(int i1, const GameGem &gem, int &iref) const {
+    int tick = GetLoopTick(gem.GetTick());
+    bool ret;
+    if (gem.IsRealGuitar()) {
+        ret = TheSongDB->GetSongData()->RGTrillStartsAt(i1, tick, iref);
+    } else {
+        ret = TheSongDB->GetSongData()->TrillStartsAt(i1, tick, iref);
+    }
+    if (ret) {
+        iref += gem.GetTick() - tick;
+    }
+    return ret;
+}
+
+void GemManager::SetGemsEnabled(float f) {
+    unk14 = f;
+    UpdateGemStates();
+}
+
+void GemManager::UpdateSlotPositions() {
+    Transform tf48;
+    for (int i = 0; i < GetMaxSlots(); i++) {
+        RndDir *dir = mNowBar->FindSmasher(i)->Dir();
+        RndTransformable *smashTrans =
+            dir->Find<RndTransformable>("smasher.trans", false);
+        if (smashTrans) {
+            tf48 = smashTrans->WorldXfm();
+        } else
+            tf48 = dir->WorldXfm();
+        mTrackDir->SetSlotXfm(i, tf48);
+    }
+    for (int i = mBegin; i < mEnd; i++) {
+        mGems[i].UpdateTailPositions();
+    }
+}
+
+int GemManager::GetNumGems() const { return mGems.size(); }
+const Gem &GemManager::GetGem(int idx) const { return mGems[idx]; }
+
+void GemManager::PollVisibleGems(float f1, float f2) {
+    float div = f1 / 1000.0f;
+    float top = mTrackDir->TopSeconds() + div;
+    float bot = mTrackDir->BottomSeconds() + div;
+    for (int i = mBegin; i < mEnd; i++) {
+        mGems[i].Poll(f1, f2, unkc4, top, bot);
+    }
+}
+
+void GemManager::AdvanceBegin() {
+    mGems[mBegin].RemoveRep();
+    mBegin++;
+}
+
+void GemManager::AdvanceEnd() {
+    Gem &lastGem = mGems[mEnd];
+    Symbol gemType = GetTypeForGem(mEnd);
+    if (!unkf8) {
+        if (mTrackConfig.IsKeyboardTrack()) {
+            unkf8 = mTrackDir->Find<RndGroup>("key_shift_tails.grp", true);
+        } else
+            unkf8 = mTrackDir->Find<RndGroup>("tails.grp", true);
+    }
+    unsigned int slots = lastGem.Slots();
+    lastGem.AddRep(mTemplate, unkf8, gemType, mTrackConfig, true);
+    mEnd++;
+    if (mTrackConfig.IsKeyboardTrack()) {
+        int tick = lastGem.GetGameGem().GetTick();
+        for (; mEnd < mGems.size() && tick == mGems[mEnd].GetGameGem().GetTick();
+             mEnd++) {
+            Symbol curGemType = GetTypeForGem(mEnd);
+            Gem &curGem = mGems[mEnd];
+            slots |= curGem.Slots();
+            curGem.AddRep(mTemplate, unkf8, curGemType, mTrackConfig, true);
+        }
+        AddChordBracket(gemType, slots, lastGem.GetGameGem().GetMs());
+    }
+}
+
+void GemManager::RememberChordWidget(TrackWidget *w) {
+    for (int i = 0; i < unkd8.size(); i++) {
+        if (unkd8[i] == w)
+            return;
+    }
+    unkd8.push_back(w);
+}
+
+void GemManager::AddWidgetInstanceImpl(TrackWidget *w, int ui, float f) {
+    Transform tf58;
+    mTrackDir->MakeWidgetXfm(ui, f / 1000.0f, tf58);
+    w->AddInstance(tf58, 0);
+}
+
+void GemManager::ReleaseSlot(int gem_id, int slot) {
+    MILO_ASSERT(gem_id < mGems.size(), 0x7C4);
+    mGems[gem_id].ReleaseSlot(slot);
+    mNowBar->StopBurning(1 << slot);
+}
+
+void GemManager::ReleaseHitGems() {
+    FOREACH (it, mHitGems) {
+        Gem &gem = mGems[it->unk4];
+        if (gem.CompareBounds() && !gem.Released()) {
+            gem.KillDuration();
+            gem.Release();
+        }
+        mNowBar->StopBurning(gem.Slots());
+    }
+}
+
+void GemManager::PruneHitGems(float f1) {
+    while (!mHitGems.empty()) {
+        if (mGems[mHitGems.front().unk4].OnScreen(f1))
+            break;
+        else
+            mHitGems.pop_front();
+    }
+}
+
+void GemManager::Hit(float f1, int i2, int i3) {
+    if (!mTrackConfig.AllowsOverlappingGems()) {
+        ReleaseHitGems();
+    }
+    mGems[i2].Hit();
+    mHitGems.push_back(HitGem(f1, i2, mGems[i2].Slots()));
+    if (mTrackConfig.IsKeyboardTrack()) {
+        CheckRemoveChordBracket(i2);
+    }
+    bool b28 = false;
+    if (IsSpotlightGem(i2, b28)) {
+        i3 |= 2;
+        if (!IsSpotlightGem(i2 + 1, b28)) {
+            i3 |= 4;
+        }
+    }
+    mNowBar->Hit(f1, i2, mInCoda, i3, mGems[i2].UseRGChordStyle());
+}
+
+void GemManager::Miss(float f1, int, int slot) {
+    if (slot != -1) {
+        MILO_ASSERT(slot >= 0 && slot < GetMaxSlots(), 0x81A);
+        if (!mTrackConfig.AllowsOverlappingGems() && mNowBar->unk_0x8 != -1) {
+            Released(f1, mNowBar->unk_0x8);
+        }
+        mNowBar->Miss(f1, slot);
+    }
+}
+
+void GemManager::Pass(int i1) { mGems[i1].Miss(); }
+void GemManager::Ignore(int) {}
+
+void GemManager::PartialHit(float f1, int i2, unsigned int ui, int i4) {
+    mGems[i2].PartialHit(ui);
+    bool b28 = false;
+    if (IsSpotlightGem(i2, b28)) {
+        i4 |= 2;
+        if (!IsSpotlightGem(i2 + 1, b28)) {
+            i4 |= 4;
+        }
+    }
+    mNowBar->PartialHit(i2, ui, mInCoda, i4);
+    mHitGems.push_back(HitGem(f1, i2, ui));
+}
+
+void GemManager::FillHit(int i1, int i2) { mNowBar->FillHit(i1, i2); }
+
+void GemManager::Released(float f1, int i2) {
+    Gem &gem = mGems[i2];
+    if (gem.CompareBounds()) {
+        if (!gem.GetGameGem().LeftHandSlide() && !gem.Released()) {
+            gem.Release();
+        }
+    }
+}
+
+#pragma push
+#pragma force_active on
+inline int GemManager::GetMaxSlots() const { return mTrackConfig.GetMaxSlots(); }
+#pragma pop

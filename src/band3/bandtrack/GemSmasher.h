@@ -9,6 +9,7 @@ public:
     GemSmasher(int, RndDir *, bool);
     ~GemSmasher();
     void Reset(bool);
+    RndDir *Dir() const { return mDir; }
 
     int mSlot; // 0x0
     RndDir *mDir;
