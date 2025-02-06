@@ -45,7 +45,7 @@ public:
     virtual void Poll(float);
     virtual void Jump(float);
     virtual void SetDir(RndDir *);
-    virtual RndDir *GetDir();
+    virtual RndDir *GetDir() { return mTrackDir; }
     virtual BandTrack *GetBandTrack();
     virtual void SetSmasherGlowing(int, bool);
     virtual void PopSmasher(int);
@@ -78,12 +78,13 @@ public:
     void UpdateEffects(int);
     void OverrideRangeShift(float, float);
     void SetEnableSlot(int, bool);
+    GemTrackDir *GetTrackDir() const { return mTrackDir; }
 
     bool mResetFills; // 0x68
-    bool unk69; // 0x69
-    ObjPtr<GemTrackDir, ObjectDir> mTrackDir; // 0x6c
-    int unk78; // 0x78
-    int unk7c; // 0x7c
+    bool mUseFills; // 0x69
+    ObjPtr<GemTrackDir> mTrackDir; // 0x6c
+    int mLastTopTick; // 0x78
+    int mLastBottomTick; // 0x7c
     GemManager *mGemManager; // 0x80
     PlayerState mPlayerState; // 0x84
     PlayerState unk9c; // 0x9c
@@ -94,7 +95,7 @@ public:
     RangeShift *mCurrentRangeShift; // 0xc0
     float unkc4; // 0xc4
     float unkc8; // 0xc8
-    ObjPtr<RndAnimatable, ObjectDir> mUpcomingShiftMaskAnim; // 0xcc
+    ObjPtr<RndAnimatable> mUpcomingShiftMaskAnim; // 0xcc
     int unkd8; // 0xd8
-    ObjPtrList<Task, ObjectDir> mKeyIntroTasks; // 0xdc
+    ObjPtrList<Task> mKeyIntroTasks; // 0xdc
 };

@@ -35,10 +35,9 @@ DataNode ToggleShift(DataArray *arr) {
 
 GemTrack::GemTrack(BandUser *user)
     : Track(user), mResetFills(0),
-      unk69(SystemConfig("scoring", "overdrive")->FindInt("fills")), mTrackDir(this, 0),
-      unk78(-1), unk7c(-1), mGemManager(0), unkb4(0), unkb6(0), unkb7(1), unkc4(-1.0f),
-      unkc8(-1.0f), mUpcomingShiftMaskAnim(this, 0),
-      mKeyIntroTasks(this, kObjListNoNull) {
+      mUseFills(SystemConfig("scoring", "overdrive")->FindInt("fills")), mTrackDir(this),
+      mLastTopTick(-1), mLastBottomTick(-1), mGemManager(0), unkb4(0), unkb6(0), unkb7(1),
+      unkc4(-1.0f), unkc8(-1.0f), mUpcomingShiftMaskAnim(this), mKeyIntroTasks(this) {
     DataRegisterFunc("toggle_key_shifting", ToggleShift);
 }
 
@@ -84,7 +83,8 @@ void GemTrack::PlayerInit() {
 
 void GemTrack::PostInit() {
     UpdateShifts();
-    if (mCurrentRangeShift != mRangeShifts.end()) {
+    RangeShift *shift = mRangeShifts.end();
+    if (mCurrentRangeShift != shift) {
         ApplyShiftImmediately(*mCurrentRangeShift);
         mCurrentRangeShift++;
     }
@@ -93,11 +93,11 @@ void GemTrack::PostInit() {
 void GemTrack::ResetFills(bool reset) { mResetFills = reset; }
 
 void GemTrack::RebuildBeats() {
-    mTrackDir->ClearAllWidgets();
-    float secs = MsToTick(
+    GetTrackDir()->ClearAllWidgets();
+    int secs = MsToTickInt(
         (TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->BottomSeconds()) * 1000.0f
     );
-    unk7c = unk78 = secs;
+    mLastBottomTick = mLastTopTick = secs;
 }
 
 void GemTrack::ApplyShiftImmediately(const RangeShift &shift) {
@@ -167,8 +167,8 @@ void GemTrack::UpdateLeftyFlip() {
 }
 
 void GemTrack::UpdateFills() {
-    const BandUser *user = mTrackConfig.GetBandUser();
-    if (!user->GetPlayer() || !user->GetPlayer()->IsDeployingBandEnergy())
+    Player *player = mTrackConfig.GetBandUser()->GetPlayer();
+    if (!player || !player->IsDeployingBandEnergy())
         return;
     else {
         Symbol s;
@@ -190,11 +190,11 @@ void GemTrack::ChangeDifficulty(Difficulty diff, int iii) {
     mGemManager->ClearGems(true);
     mGemManager->SetupGems(iii);
     UpdateShiftsToTick(iii);
-    mTrackDir->ClearAllWidgets();
-    float secs = MsToTick(
+    GetTrackDir()->ClearAllWidgets();
+    int secs = MsToTickInt(
         (TheTaskMgr.Seconds(TaskMgr::kRealTime) + mTrackDir->TopSeconds()) * 1000.0f
     );
-    unk7c = unk78 = secs;
+    mLastBottomTick = mLastTopTick = secs;
 }
 
 void GemTrack::DropIn(int tick) { UpdateShiftsToTick(tick); }
