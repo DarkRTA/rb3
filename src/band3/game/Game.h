@@ -71,6 +71,8 @@ public:
     void OnPlayerQuarantined(Player *);
     Band *GetBand();
     bool InTrainer() const { return mProperties.mInTrainer; }
+    bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
+    bool CodaEnabled() const { return mProperties.mEnableCoda; }
 
     Properties mProperties; // 0x24
     SongPos mSongPos; // 0x40

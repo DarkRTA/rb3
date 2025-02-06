@@ -10,13 +10,16 @@ class GemTrack : public Track {
 public:
     class RangeShift {
     public:
+        RangeShift(int i1, int i2, float f1, float f2)
+            : unk0(i1), unk4(i2), unk8(-1), unkc(f1), unk10(-1), unk14(f2), unk18(0),
+              unk1c(0), unk20(0) {}
         int unk0;
         int unk4;
         float unk8;
         float unkc;
         float unk10;
         float unk14;
-        int unk18;
+        bool unk18;
         int unk1c;
         int unk20;
     };
@@ -78,7 +81,10 @@ public:
     void UpdateEffects(int);
     void OverrideRangeShift(float, float);
     void SetEnableSlot(int, bool);
+    void DrawBeatLine(Symbol, int, int, bool);
+    void DrawBeatLines(int, int);
     GemTrackDir *GetTrackDir() const { return mTrackDir; }
+    bool ShiftsEnabled() const;
 
     bool mResetFills; // 0x68
     bool mUseFills; // 0x69
@@ -87,15 +93,15 @@ public:
     int mLastBottomTick; // 0x7c
     GemManager *mGemManager; // 0x80
     PlayerState mPlayerState; // 0x84
-    PlayerState unk9c; // 0x9c
+    PlayerState mLastPlayerState; // 0x9c
     unsigned short unkb4; // 0xb4
-    bool unkb6; // 0xb6
-    bool unkb7; // 0xb7
+    bool mUpdateShifting; // 0xb6
+    bool mEnableShifting; // 0xb7
     std::vector<RangeShift> mRangeShifts; // 0xb8
     RangeShift *mCurrentRangeShift; // 0xc0
-    float unkc4; // 0xc4
-    float unkc8; // 0xc8
+    float mRange; // 0xc4
+    float mOffset; // 0xc8
     ObjPtr<RndAnimatable> mUpcomingShiftMaskAnim; // 0xcc
-    int unkd8; // 0xd8
+    int unkd8; // 0xd8 - mBeatLineSubdivisionTicks?
     ObjPtrList<Task> mKeyIntroTasks; // 0xdc
 };

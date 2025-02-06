@@ -1,5 +1,4 @@
-#ifndef TRACK_TRACKWIDGET_H
-#define TRACK_TRACKWIDGET_H
+#pragma once
 #include "rndobj/Draw.h"
 #include "rndobj/Text.h"
 #include "obj/ObjPtr_p.h"
@@ -44,6 +43,7 @@ public:
     bool Empty();
 
     float NewYOffset(float secs) const { return mYOffset + mTrackDir->SecondsToY(secs); }
+    void SetBaseLength(float len) { mBaseLength = len; }
 
     DataNode OnSetMeshes(const DataArray *);
     DataNode OnAddInstance(const DataArray *);
@@ -57,11 +57,11 @@ public:
 
     static void Register() { REGISTER_OBJ_FACTORY(TrackWidget); }
 
-    ObjPtrList<RndMesh, class ObjectDir> mMeshes; // 0x20
-    ObjPtrList<RndMesh, class ObjectDir> mMeshesLeft; // 0x30
-    ObjPtrList<RndMesh, class ObjectDir> mMeshesSpan; // 0x40
-    ObjPtrList<RndMesh, class ObjectDir> mMeshesRight; // 0x50
-    ObjPtr<RndEnviron, class ObjectDir> mEnviron; // 0x60
+    ObjPtrList<RndMesh> mMeshes; // 0x20
+    ObjPtrList<RndMesh> mMeshesLeft; // 0x30
+    ObjPtrList<RndMesh> mMeshesSpan; // 0x40
+    ObjPtrList<RndMesh> mMeshesRight; // 0x50
+    ObjPtr<RndEnviron> mEnviron; // 0x60
     float mBaseLength; // 0x6c
     float mBaseWidth; // 0x70
     float mXOffset; // 0x74
@@ -69,12 +69,12 @@ public:
     float mZOffset; // 0x7c
     TrackDir *mTrackDir; // 0x80
     TrackWidgetImpBase *mImp; // 0x84
-    ObjPtr<RndFont, class ObjectDir> mFont; // 0x88
-    ObjPtr<RndText, class ObjectDir> mTextObj; // 0x94
+    ObjPtr<RndFont> mFont; // 0x88
+    ObjPtr<RndText> mTextObj; // 0x94
     RndText::Alignment mTextAlignment; // 0xa0
     Hmx::Color mTextColor; // 0xa4
     Hmx::Color mAltTextColor; // 0xb4
-    ObjPtr<RndMat, class ObjectDir> mMat; // 0xc4
+    ObjPtr<RndMat> mMat; // 0xc4
     // 0xd0
     bool mActive : 1; // 0xd0 >> 7 & 1
     bool mWideWidget : 1; // 0xd0 >> 6 & 1
@@ -86,5 +86,3 @@ public:
     int mCharsPerInst : 10;
     int mMaxTextInstances : 10;
 };
-
-#endif // TRACK_TRACKWIDGET_H

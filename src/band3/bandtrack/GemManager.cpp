@@ -41,7 +41,8 @@ GemManager::GemManager(const TrackConfig &cfg, TrackDir *dir)
       unkb8(0), mNowBar(0), mBonusGems(0), mInCoda(0), unkc4(0),
       unkc8(dir->SecondsToY(dir->TopSeconds())),
       unkcc(dir->SecondsToY(dir->BottomSeconds())), mTailsGrp(0), unkfc(0), unk100(0),
-      unk104(0), unk108(0), unk10c(0), unk118(0), unk12c(0), unk130(-1), unk134(960) {
+      unk104(0), mEnabledSlots(0), unk10c(0), unk118(0), unk12c(0), unk130(-1),
+      unk134(960) {
     mNowBar = new NowBar(mTrackDir, mTrackConfig);
     mTemplate.Init(mTrackDir->Find<ObjectDir>("gem_tail", true));
     static bool firstPass = true;
@@ -771,9 +772,9 @@ TrackWidget *GemManager::GetWidgetByName(Symbol name) {
 }
 
 void GemManager::UpdateEnabledSlots() {
-    unk108 = 0;
+    mEnabledSlots = 0;
     for (int i = 0; i < mGems.size(); i++) {
-        unk108 |= mGems[i].Slots();
+        mEnabledSlots |= mGems[i].Slots();
     }
 }
 

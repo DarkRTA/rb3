@@ -193,3 +193,6 @@ public:
     RGState mRGState; // 0x6f0
 #endif
 };
+
+int WhiteKeyToSemitone(int);
+int SemitoneToWhiteKey(int);

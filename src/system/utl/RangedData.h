@@ -183,6 +183,6 @@ public:
         : unk0(i), unk4(f), unk8(3.4028235E+38f), unkc(-3.4028235E+38f) {}
     int unk0; // tick
     float unk4;
-    float unk8;
-    float unkc;
+    float unk8; // start of displayable range
+    float unkc; // end of displayable range
 };

@@ -125,6 +125,8 @@ public:
     bool IsInFill(int);
     bool IsEndOfFill(int);
 
+    unsigned int EnabledSlots() const { return mEnabledSlots; }
+
     TrackDir *mTrackDir; // 0x0
     const TrackConfig &mTrackConfig; // 0x4
     std::vector<Gem> mGems; // 0x8
@@ -150,7 +152,7 @@ public:
     int unkfc;
     int unk100;
     int unk104;
-    unsigned int unk108;
+    unsigned int mEnabledSlots; // 0x108
     int unk10c;
     std::vector<ArpeggioPhrase> mArpeggioPhrases; // 0x110
     int unk118;

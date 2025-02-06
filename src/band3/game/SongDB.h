@@ -1,4 +1,5 @@
 #pragma once
+#include "beatmatch/FillInfo.h"
 #include "system/beatmatch/SongData.h"
 #include "system/beatmatch/SongParserSink.h"
 #include "game/MultiplayerAnalyzer.h"
@@ -64,6 +65,7 @@ public:
     int GetCommonPhraseID(int, int) const;
     bool IsUnisonPhrase(int) const;
     bool GetCommonPhraseExtent(int, int, Extent &);
+    FillInfo *GetFillInfo(int, int);
 
     SongData *GetSongData() { return mSongData; }
 
