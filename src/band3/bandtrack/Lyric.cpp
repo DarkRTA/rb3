@@ -75,7 +75,7 @@ void LyricPlate::Poll(float f) {
 }
 
 void LyricPlate::CheckSync() {
-    MILO_ASSERT(mText != 0, 0x76);
+    MILO_ASSERT(mText, 0x76);
     if (mNeedSync) {
         mText->SyncMeshes();
         mNeedSync = false;
@@ -83,94 +83,96 @@ void LyricPlate::CheckSync() {
 }
 
 void LyricPlate::Reset() {
-    mText->SetText(0);
+    mText->SetText("");
     mWidthX = 0;
     mNumCharsUsed = 0;
-    mPitchedStyle.zOffset = FLT_MAX;
-    mUnpitchedStyle.font = 0;
-
+    mInvalidateMs = FLT_MAX;
+    mBaked = false;
+    mPastNow = false;
+    for (int i = 0; i < mSyllables.size(); i++) {
+        RELEASE(mSyllables[i]);
+    }
     mSyllables.clear();
     SetShowing(false);
 }
 
 Lyric *LyricPlate::LatestLyric() {
-    int size = mSyllables.size();
-
-    if (size != 0) {
-        return mSyllables[size - 1];
+    if (mSyllables.size() != 0) {
+        return mSyllables[mSyllables.size() - 1];
     }
-
-    return 0;
+    return nullptr;
 }
 
 void LyricPlate::AddLyric(Lyric *lyric) {
-    int size = mSyllables.size();
-
     mSyllables.push_back(lyric);
-
-    float *end;
-
-    float end100 = lyric->mEndMs + 100;
-
-    if (mPitchedStyle.zOffset < end100) {
-        end = &end100;
-    } else {
-        end = &mPitchedStyle.zOffset;
-    }
-
-    mPitchedStyle.zOffset = *end;
+    mInvalidateMs = std::max(mInvalidateMs, lyric->mEndMs + 100.0f);
 }
 
 void LyricPlate::EstimateLyricWidth(const Lyric *lyric) {
-    RndText::Style *style;
-
-    if (!lyric->mPitched) {
-        style = &mUnpitchedStyle;
-    } else {
-        style = &mPitchedStyle;
-    }
-
-    mText->GetStringWidthUTF8(mText->mText.c_str(), 0, false, style);
+    mText->GetStringWidthUTF8(
+        lyric->mText.c_str(), 0, false, lyric->mPitched ? &mPitchedStyle : &mUnpitchedStyle
+    );
 }
 
 void LyricPlate::HookUpParents(RndGroup *group, RndTransformable *trans) {
-    group->AddObject(mText, 0);
-    trans->SetTransParent(mText->mParent, false);
+    group->AddObject(mText);
+    mText->SetTransParent(trans, false);
+}
+
+void LyricPlate::BakeLyric(Lyric *lyric) {
+    if (mWidthX < 0.01f) {
+        mText->SetLocalPos(lyric->unk48);
+    }
+    float f7 = lyric->unk48.x - mText->mLocalXfm.v.x;
+    float fsub = lyric->unk48.z - mText->mLocalXfm.v.z;
+    lyric->mXWidth = 0;
+    Transform tf68;
+    tf68.Reset();
+    tf68.v.Set(f7, 0, fsub);
+    lyric->mIdx = mText->AddLineUTF8(
+        lyric->mText,
+        tf68,
+        lyric->mPitched ? mPitchedStyle : mUnpitchedStyle,
+        &lyric->mXWidth,
+        &mNeedSync,
+        -1
+    );
+    if (lyric->mIdx == -1) {
+        MILO_WARN("Unable to add line for lyric %s", lyric->mText);
+    }
+    if (mText->NumLines() > kMaxLyricPlateLines) {
+        MILO_WARN(
+            "Lyric count %d exceeds max per plate %d; please alert Track/HUD coder",
+            mText->NumLines(),
+            kMaxLyricPlateLines
+        );
+    }
+    mWidthX = std::max(mWidthX, f7 + lyric->mXWidth);
 }
 
 bool LyricPlate::Empty() const { return mSyllables.empty(); }
 
 void LyricPlate::UpdateStaticTiming(float time) {
-    MILO_ASSERT(mSyllables.size() != 0, 0xcf);
+    MILO_ASSERT(mSyllables.size(), 0xcf);
 
-    float f = 0;
-    float fArr = 0;
+    float f1 = 0;
     for (int i = 0; i < mSyllables.size(); i++) {
-        Lyric *lyric = mSyllables[i];
-
-        if (i == 0 || lyric->mDeployIdx != -1) {
-            f = lyric->mActiveMs - time;
-        } else if (lyric->mAfterMidPhraseShift) {
-            f = lyric->mActiveMs;
+        Lyric *curLyric = mSyllables[i];
+        if (i == 0 || curLyric->mDeployIdx != -1) {
+            f1 = curLyric->mActiveMs - time;
+        } else if (curLyric->mAfterMidPhraseShift) {
+            f1 = curLyric->mActiveMs;
         }
-
-        lyric->mHighlightMs = f;
+        curLyric->mHighlightMs = f1;
     }
 
-    for (int i = 0; i < mSyllables.size(); i++) {
-        Lyric *lyric = mSyllables[i];
-
-        float validMs;
-        if (lyric->mChunkEnd) {
-            fArr = lyric->mEndMs + 100;
-
-            if (fArr <= lyric->mInvalidateMs) {
-                validMs = fArr;
-            } else {
-                validMs = lyric->mInvalidateMs;
-            }
+    float f2 = mInvalidateMs;
+    for (int i = mSyllables.size() - 1; i >= 0; i--) {
+        Lyric *curLyric = mSyllables[i];
+        if (curLyric->GetChunkEnd()) {
+            f2 = std::min(curLyric->mEndMs + 100.0f, curLyric->mInvalidateMs);
         }
-        lyric->mInvalidateMs = validMs;
+        curLyric->mInvalidateMs = f2;
     }
 }
 
@@ -183,25 +185,14 @@ float LyricPlate::GetBeginMs() const {
 }
 
 float LyricPlate::GetLastLyricXBeforeMS(float ms) const {
-    int size = mSyllables.size();
-
-    float last = 0;
-    Lyric *lyric;
-
-    for (int i = 0; i < size; i++) {
-        lyric = mSyllables[i];
-
-        if (lyric->mActiveMs > ms) {
-            last = ms;
-        }
-
-        float x = lyric->unk_0x48 + lyric->mXWidth;
-
-        if (last < x) {
-            last = x;
-        }
+    float f24 = 0;
+    for (int i = 0; i < mSyllables.size(); i++) {
+        Lyric *curLyric = mSyllables[i];
+        if (curLyric->mActiveMs > ms)
+            break;
+        MaxEq(f24, curLyric->unk48.x + curLyric->mXWidth);
     }
-    return last;
+    return f24;
 }
 
 Lyric::Lyric(const VocalNote *vocalNote, bool param2, String param3, bool param4)
@@ -217,7 +208,7 @@ int Lyric::StartTick() const { return mVocalNotes[0]->mTick; }
 
 float Lyric::Width() const { return mXWidth; }
 
-float Lyric::EndPos() const { return mXWidth + unk_0x48; }
+float Lyric::EndPos() const { return mXWidth + unk48.x; }
 
 bool Lyric::PitchNote() const { return !mVocalNotes[0]->mUnpitchedNote; }
 

@@ -13,17 +13,14 @@ public:
     virtual ~Lyric();
 
     int StartTick() const;
-
     float Width() const;
     float EndPos() const;
-
     bool PitchNote() const;
-
     void SetChunkEnd(bool);
     void SetAfterDeploy(int);
     void SetAfterMidPhraseLyricShift(bool);
-
     bool UpdateColor(Hmx::Color);
+    bool GetChunkEnd() const { return mChunkEnd; }
 
     int mIdx; // 0x1c
     String mText; // 0x20
@@ -34,9 +31,7 @@ public:
     bool mChunkEnd; // 0x3d
     int mDeployIdx; // 0x40
     bool mAfterMidPhraseShift; // 0x44
-    float unk_0x48; // 0x48
-    float unk_0x4c; // 0x4c
-    float unk_0x50; // 0x50
+    Vector3 unk48; // 0x48
     float mXWidth; // 0x54
     float mHighlightMs; // 0x58
     float mActiveMs; // 0x5c
@@ -65,6 +60,7 @@ public:
     float GetBeginMs() const;
     float GetLastLyricXBeforeMS(float) const;
     void Poll(float);
+    void BakeLyric(Lyric *);
 
     float mWidthX; // 0x1c
     int mNumCharsUsed; // 0x20
