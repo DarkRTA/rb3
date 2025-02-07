@@ -72,15 +72,14 @@ void GemSmasher::Reset(bool b) {
 
 DECOMP_FORCEFUNC(GemSmasher, GemSmasher, Showing())
 
-#pragma push
-#pragma force_active on
-inline bool GemSmasher::Showing() const {
+FORCE_LOCAL_INLINE
+bool GemSmasher::Showing() const {
     if (mDir)
         return mDir->Showing();
     else
         return 0;
 }
-#pragma pop
+END_FORCE_LOCAL_INLINE
 
 void GemSmasher::Hit() {
     if (mHitSmashTrig)
