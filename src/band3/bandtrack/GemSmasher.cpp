@@ -1,4 +1,5 @@
 #include "GemSmasher.h"
+#include "decomp.h"
 #include "os/Debug.h"
 #include "rndobj/EventTrigger.h"
 #include "utl/Messages.h"
@@ -46,13 +47,13 @@ GemSmasher::GemSmasher(int slot, RndDir *dir, bool keys)
                 (EventTrigger *)mDir->Find<EventTrigger>("hit_fill_hard.trig", false);
             MILO_ASSERT(hitFillMediumTrig, 87);
             MILO_ASSERT(hitFillHardTrig, 88);
-            mMoreTriggers.push_back(mHitFillTrig);
-            mMoreTriggers.push_back(hitFillLight);
-            mMoreTriggers.push_back(hitFillLight);
-            mMoreTriggers.push_back(hitFillMediumTrig);
-            mMoreTriggers.push_back(hitFillMediumTrig);
-            mMoreTriggers.push_back(hitFillHardTrig);
-            mMoreTriggers.push_back(hitFillHardTrig);
+            mHitTriggers.push_back(mHitFillTrig);
+            mHitTriggers.push_back(hitFillLight);
+            mHitTriggers.push_back(hitFillLight);
+            mHitTriggers.push_back(hitFillMediumTrig);
+            mHitTriggers.push_back(hitFillMediumTrig);
+            mHitTriggers.push_back(hitFillHardTrig);
+            mHitTriggers.push_back(hitFillHardTrig);
         }
     }
 }
@@ -62,19 +63,25 @@ GemSmasher::~GemSmasher() {}
 bool GemSmasher::Null() const { return !mDir; }
 
 void GemSmasher::Reset(bool b) {
-    mDir->HandleType(reset_msg.mData);
+    mDir->HandleType(reset_msg);
     if (b)
-        mDir->HandleType(reset_particles_msg.mData);
+        mDir->HandleType(reset_particles_msg);
     mBurning = false;
     SetGlowing(false);
 }
 
-bool GemSmasher::Showing() const {
+DECOMP_FORCEFUNC(GemSmasher, GemSmasher, Showing())
+
+#pragma push
+#pragma force_active on
+inline bool GemSmasher::Showing() const {
     if (mDir)
-        return mDir->mShowing;
+        return mDir->Showing();
     else
         return 0;
 }
+#pragma pop
+
 void GemSmasher::Hit() {
     if (mHitSmashTrig)
         mHitSmashTrig->Trigger();
@@ -182,11 +189,14 @@ void GemSmasher::StopBurn() {
 
 void GemSmasher::FillHit(int i) {
     if (i == 0)
-        i = mMoreTriggers.size();
+        i = mHitTriggers.size();
     bool in_range = false;
-    if (i < mMoreTriggers.size() && mMoreTriggers[i]) {
-        mMoreTriggers[i]->Trigger();
-        in_range = true;
+    if (i < mHitTriggers.size()) {
+        EventTrigger *theTrigger = mHitTriggers[i];
+        if (theTrigger) {
+            theTrigger->Trigger();
+            in_range = true;
+        }
     }
     if (!in_range && mHitFillTrig)
         mHitFillTrig->Trigger();
@@ -194,12 +204,7 @@ void GemSmasher::FillHit(int i) {
 
 void GemSmasher::SetGlowing(bool b) {
     if (mIsKeyboardTrack) {
-        bool test;
-        if (mDir)
-            test = mDir->mShowing;
-        else
-            test = false;
-        if (test) {
+        if (Showing()) {
             if (b == mGlowing)
                 return;
             mGlowing = b;
@@ -217,7 +222,7 @@ void GemSmasher::SetGlowing(bool b) {
         return;
     }
     if (mGemSmasherGlow) {
-        mGemSmasherGlow->mShowing = b;
+        mGemSmasherGlow->SetShowing(b);
     }
     mGlowing = b;
 }

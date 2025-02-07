@@ -1,37 +1,46 @@
 #include "NowBar.h"
 
+#include "GemSmasher.h"
 #include "game/FretHand.h"
+#include "obj/Data.h"
+#include "os/System.h"
+#include "rndobj/Dir.h"
 #include "system/beatmatch/GameGem.h"
+#include "utl/Std.h"
 
 NowBar::NowBar(TrackDir *trackDir, const TrackConfig &trackConfig)
     : mSmashers(), unk_0x8(-1), unk_0xc(0), mTrackDir(trackDir),
-      mTrackConfig(&trackConfig) {
-    MILO_ASSERT(trackDir != 0, 0x1e);
-    MILO_ASSERT(mSmashers[0] != 0, 0x21);
+      mTrackConfig(trackConfig) {
+    MILO_ASSERT(mTrackDir, 0x1e);
+    RndDir *smasherPlateDir = mTrackDir->SmasherPlate();
+    MILO_ASSERT(smasherPlateDir, 0x21);
 
-    Symbol type = mTrackConfig->Type();
-    Symbol symbol1 = ("smashers");
-    Symbol symbol2 = ("track_graphics");
+    DataArray *cfg = SystemConfig("track_graphics", "smashers", trackConfig.Type());
+    for (int i = 0; i < trackConfig.GetMaxSlots(); i++) {
+        RndDir *newDir = smasherPlateDir->Find<RndDir>(cfg->Str(i + 1), true);
+        mSmashers.push_back(new GemSmasher(i, newDir, mTrackConfig.IsKeyboardTrack()));
+    }
 }
+
+NowBar::~NowBar() { DeleteAll(mSmashers); }
 
 void NowBar::Poll(float, bool) {}
 
 void NowBar::Reset(bool reset) {
-    for (int i = 0; i < mSmashers.size(); i++) {
-        mSmashers[i]->Reset(reset);
+    FOREACH (it, mSmashers) {
+        (*it)->Reset(reset);
     }
-
     unk_0xc = 0;
 }
 
 void NowBar::Hit(float fParam1, int iParam2, bool bParam3, int iParam4, bool bParam5) {
-    int trackNum = mTrackConfig->TrackNum();
+    int trackNum = mTrackConfig.TrackNum();
 
     GameGem *gameGem = 0;
 
     uint slots = gameGem->mSlots;
 
-    int trackVar = mTrackConfig->IsDrumTrack();
+    int trackVar = mTrackConfig.IsDrumTrack();
     uint gameCymbalLanes;
 
     bool bVar = false;
@@ -39,26 +48,26 @@ void NowBar::Hit(float fParam1, int iParam2, bool bParam3, int iParam4, bool bPa
         bVar = true;
     }
 
-    int trackNum2 = mTrackConfig->TrackNum();
+    int trackNum2 = mTrackConfig.TrackNum();
     int totalGems = trackNum2;
     bool bVar2 = false;
     if (trackVar != 0) {
         if (gameGem->mShowChordNames
-            && ((gameCymbalLanes = mTrackConfig->GetGameCymbalLanes()) & slots) != 0) {
+            && ((gameCymbalLanes = mTrackConfig.GetGameCymbalLanes()) & slots) != 0) {
             bVar2 = true;
         } else {
             bVar = true;
         }
     }
 
-    trackVar = mTrackConfig->AllowsOverlappingGems();
+    trackVar = mTrackConfig.AllowsOverlappingGems();
 
     if (!trackVar != 0) {
         StopBurning(0xffffffff);
     }
 
-    for (int i = 0; i < mTrackConfig->GetMaxSlots(); i++) {
-        trackVar = mTrackConfig->GetMaxSlots();
+    for (int i = 0; i < mTrackConfig.GetMaxSlots(); i++) {
+        trackVar = mTrackConfig.GetMaxSlots();
         if (trackVar <= (int)i) {
             break;
         }
@@ -127,7 +136,7 @@ void NowBar::Hit(float fParam1, int iParam2, bool bParam3, int iParam4, bool bPa
 void NowBar::Miss(float param1, int param2) {
     bool inRange = false;
 
-    if (0 <= param2 && param2 < mTrackConfig->GetMaxSlots()) {
+    if (0 <= param2 && param2 < mTrackConfig.GetMaxSlots()) {
         inRange = true;
     }
 
@@ -138,7 +147,7 @@ void NowBar::Miss(float param1, int param2) {
     if (smasher != 0 && !HandleOutOfRangeKey(smasher, param2, false)) {
         smasher->Miss();
 
-        bool isKeyboard = mTrackConfig->IsKeyboardTrack();
+        bool isKeyboard = mTrackConfig.IsKeyboardTrack();
 
         if (!isKeyboard) {
             for (int i = 0; i < mSmashers.size(); i++) {
@@ -161,7 +170,7 @@ void NowBar::PopSmasher(int param1) {
     } else {
         bool inRange = false;
 
-        if (0 <= param1 && param1 < mTrackConfig->GetMaxSlots()) {
+        if (0 <= param1 && param1 < mTrackConfig.GetMaxSlots()) {
             inRange = true;
         }
 
@@ -190,7 +199,7 @@ void NowBar::SetSmasherGlowing(int param1, bool glowing) {
     } else {
         bool inRange = false;
 
-        if (0 <= param1 && param1 < mTrackConfig->GetMaxSlots()) {
+        if (0 <= param1 && param1 < mTrackConfig.GetMaxSlots()) {
             inRange = true;
         }
 
@@ -210,7 +219,7 @@ void NowBar::StopBurning(unsigned int index) {
     if (unk_0xc != 0) {
         int i = 0;
         while (true) {
-            int slots = mTrackConfig->GetMaxSlots();
+            int slots = mTrackConfig.GetMaxSlots();
 
             if (slots <= i) {
                 break;
@@ -237,7 +246,7 @@ GemSmasher *NowBar::FindSmasher(int index) const {
 }
 
 bool NowBar::HandleOutOfRangeKey(GemSmasher *smasher, int index, bool range) {
-    bool isKeyboard = mTrackConfig->IsKeyboardTrack();
+    bool isKeyboard = mTrackConfig.IsKeyboardTrack();
 
     bool outOfRange;
     if (!isKeyboard || smasher->Showing()) {

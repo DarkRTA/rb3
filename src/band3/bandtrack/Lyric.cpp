@@ -205,9 +205,14 @@ Lyric::Lyric(const VocalNote *vocalNote, bool lead, String text, bool wordEnd)
 }
 
 Lyric::~Lyric() {}
-int Lyric::StartTick() const { return mVocalNotes[0]->mTick; }
-float Lyric::Width() const { return mXWidth; }
-float Lyric::EndPos() const { return mXWidth + unk48.x; }
+int Lyric::StartTick() const { return mVocalNotes[0]->GetTick(); }
+
+#pragma push
+#pragma force_active on
+inline float Lyric::Width() const { return mXWidth; }
+#pragma pop
+
+float Lyric::EndPos() const { return Width() + unk48.x; }
 bool Lyric::PitchNote() const { return !mVocalNotes[0]->mUnpitchedNote; }
 void Lyric::SetChunkEnd(bool chunkEnd) { mChunkEnd = chunkEnd; }
 void Lyric::SetAfterDeploy(int deploy) { mDeployIdx = deploy; }
