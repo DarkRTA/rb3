@@ -36,6 +36,7 @@ public:
     int StartPitch() const { return mBeginPitch; }
     int EndPitch() const { return mEndPitch; }
     int EndTick() const { return mTick + mDurationTicks; }
+    float EndMs() const { return mMs + mDurationMs; }
 
     int mPhrase; // 0x0
     int mBeginPitch; // 0x4

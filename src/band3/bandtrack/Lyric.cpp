@@ -195,27 +195,22 @@ float LyricPlate::GetLastLyricXBeforeMS(float ms) const {
     return f24;
 }
 
-Lyric::Lyric(const VocalNote *vocalNote, bool param2, String param3, bool param4)
-    : mIdx(-1), mText(param3), mPitched(vocalNote->mUnpitchedNote), mLead(!param2),
-      mWordEnd(param4), mChunkEnd(false), mDeployIdx(-1), mAfterMidPhraseShift(false),
-      mXWidth(0), mHighlightMs(FLT_MAX), mInvalidateMs(FLT_MAX),
-      mEndMs(vocalNote->mMs + vocalNote->mDurationMs), mPhraseEnd(false),
-      mLastColor(0, 0, 0) {
+Lyric::Lyric(const VocalNote *vocalNote, bool lead, String text, bool wordEnd)
+    : mIdx(-1), mText(text), mPitched(!vocalNote->IsUnpitched()), mLead(lead),
+      mWordEnd(wordEnd), mChunkEnd(false), mDeployIdx(-1), mAfterMidPhraseShift(false),
+      mXWidth(0), mHighlightMs(-FLT_MAX), mActiveMs(vocalNote->GetMs()),
+      mEndMs(vocalNote->EndMs()), mInvalidateMs(FLT_MAX), mPhraseEnd(false),
+      mLastColor(0) {
     mVocalNotes.push_back(vocalNote);
 }
 
+Lyric::~Lyric() {}
 int Lyric::StartTick() const { return mVocalNotes[0]->mTick; }
-
 float Lyric::Width() const { return mXWidth; }
-
 float Lyric::EndPos() const { return mXWidth + unk48.x; }
-
 bool Lyric::PitchNote() const { return !mVocalNotes[0]->mUnpitchedNote; }
-
 void Lyric::SetChunkEnd(bool chunkEnd) { mChunkEnd = chunkEnd; }
-
 void Lyric::SetAfterDeploy(int deploy) { mDeployIdx = deploy; }
-
 void Lyric::SetAfterMidPhraseLyricShift(bool afterMidPhrase) {
     mAfterMidPhraseShift = afterMidPhrase;
 }
