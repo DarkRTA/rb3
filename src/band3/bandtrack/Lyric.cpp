@@ -1,39 +1,84 @@
 #include "Lyric.h"
+#include "math/Color.h"
+#include "rndobj/Group.h";
 
-#include "obj/ObjVersion.h"
-#include "system/rndobj/Group.h";
-
+int kMaxLyricPlateChars = 0x64;
 int kMaxLyricPlateLines = 0x1E;
 
-LyricPlate::LyricPlate(RndText *param1, const RndText *param2, const RndText *param3)
-    : mWidthX(0), mNumCharsUsed(0), mText(param1), mSyllables(), mPreviewColor(),
+LyricPlate::LyricPlate(RndText *t1, const RndText *t2, const RndText *t3)
+    : mWidthX(0), mNumCharsUsed(0), mText(t1), mSyllables(), mPreviewColor(),
       mActiveColor(), mNowColor(), mPastColor(), mPreviewPhonemeColor(),
-      mActivePhonemeColor(), mNowPhonemeColor(), mPastPhonemeColor(),
-      mPitchedStyle(0, 0, 0, 0, 0), mUnpitchedStyle(0, 0, 0, 0, 0) {
-    // param1->SetFixedLength(kMaxLyricPlateLines);
-    param1->ReserveLines(kMaxLyricPlateLines);
+      mActivePhonemeColor(), mNowPhonemeColor(), mPastPhonemeColor(), mPitchedStyle(),
+      mUnpitchedStyle(), mInvalidateMs(FLT_MAX), mBaked(0), mNeedSync(0), mPastNow(0) {
+    mText->SetFixedLength(kMaxLyricPlateChars);
+    mText->SetText("");
+    mPitchedStyle = t2->mStyle;
+    mUnpitchedStyle = t3->mStyle;
+    mText->ReserveLines(kMaxLyricPlateLines);
 }
 
-void LyricPlate::SetShowing(bool show) { mText->mShowing = show; }
+LyricPlate::~LyricPlate() {
+    RELEASE(mText);
+    for (int i = 0; i < mSyllables.size(); i++) {
+        RELEASE(mSyllables[i]);
+    }
+    mSyllables.clear();
+}
+
+void LyricPlate::SetShowing(bool show) { mText->SetShowing(show); }
 
 float LyricPlate::CurrentStartX(float start) const {
     return start + mText->mLocalXfm.v.x;
 }
 
 float LyricPlate::CurrentEndX(float end) const {
-    float order = end + mText->mOrder;
+    return end + mWidthX + mText->mLocalXfm.v.x;
+}
 
-    float pos = order + mText->mLocalXfm.v.x;
-
-    return pos;
+void LyricPlate::Poll(float f) {
+    bool b1 = false;
+    for (int i = mSyllables.size() - 1; i >= 0; i--) {
+        Lyric *curLyric = mSyllables[i];
+        if (curLyric->mIdx >= 0) {
+            if (curLyric->mWordEnd) {
+                b1 |= (curLyric->mEndMs < f);
+            }
+            if (curLyric->mInvalidateMs < f || (mPastNow && b1)) {
+                static Hmx::Color invis(0, 0, 0, 0);
+                mText->UpdateLineColor(curLyric->mIdx, invis, &mNeedSync);
+                curLyric->mIdx = -1;
+            } else if (curLyric->mEndMs < f) {
+                Hmx::Color &color = curLyric->mPitched ? mPastColor : mPastPhonemeColor;
+                if (curLyric->UpdateColor(color)) {
+                    mText->UpdateLineColor(curLyric->mIdx, color, &mNeedSync);
+                }
+            } else if (curLyric->mActiveMs < f) {
+                Hmx::Color &color = curLyric->mPitched ? mNowColor : mNowPhonemeColor;
+                if (curLyric->UpdateColor(color)) {
+                    mText->UpdateLineColor(curLyric->mIdx, color, &mNeedSync);
+                }
+            } else if (curLyric->mHighlightMs < f) {
+                Hmx::Color &color =
+                    curLyric->mPitched ? mActiveColor : mActivePhonemeColor;
+                curLyric->UpdateColor(color);
+                mText->UpdateLineColor(curLyric->mIdx, color, &mNeedSync);
+            } else {
+                Hmx::Color &color =
+                    curLyric->mPitched ? mPreviewColor : mPreviewPhonemeColor;
+                if (curLyric->UpdateColor(color)) {
+                    mText->UpdateLineColor(curLyric->mIdx, color, &mNeedSync);
+                }
+            }
+        }
+    }
+    CheckSync();
 }
 
 void LyricPlate::CheckSync() {
     MILO_ASSERT(mText != 0, 0x76);
-
-    if (mUnpitchedStyle.font != 0) {
+    if (mNeedSync) {
         mText->SyncMeshes();
-        mUnpitchedStyle.font = 0;
+        mNeedSync = false;
     }
 }
 
@@ -185,21 +230,9 @@ void Lyric::SetAfterMidPhraseLyricShift(bool afterMidPhrase) {
 }
 
 bool Lyric::UpdateColor(Hmx::Color color) {
-    bool same = false;
-
-    if (color.red == mLastColor.red && color.green == mLastColor.green
-        && color.blue == mLastColor.blue && color.alpha == mLastColor.alpha) {
-        same = true;
-    }
-
-    if (!same) {
-        mLastColor.red = color.red;
-        mLastColor.green = color.green;
-        mLastColor.blue = color.blue;
-        mLastColor.alpha = color.alpha;
-
+    if (color != mLastColor) {
+        mLastColor = color;
         return true;
-    }
-
-    return false;
+    } else
+        return false;
 }

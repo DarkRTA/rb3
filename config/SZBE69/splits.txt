@@ -153,10 +153,10 @@ band3/bandtrack/GemTrack.cpp:
 	.text       start:0x800DA08C end:0x800DEAD4
 
 band3/bandtrack/GraphicsUtl.cpp:
-	.text       start:0x800DEAD4 end:0x800DFD64
+	.text       start:0x800DEAD4 end:0x800DEFB4
 
 band3/bandtrack/Lyric.cpp:
-	.text       start:0x800DFD64 end:0x800E0170
+	.text       start:0x800DEFB4 end:0x800E0170
 
 band3/bandtrack/NowBar.cpp:
 	.text       start:0x800E0170 end:0x800E0C44
