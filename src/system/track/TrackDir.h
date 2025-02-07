@@ -51,8 +51,8 @@ public:
     }
     virtual ArpeggioShapePool *GetArpeggioShapePool() { return nullptr; }
     virtual bool IsBlackKey(int) const;
-    virtual void KeyMissLeft();
-    virtual void KeyMissRight();
+    virtual void KeyMissLeft() {}
+    virtual void KeyMissRight() {}
     virtual bool IsActiveInSession() const { return false; }
     virtual void PreDraw() {}
     virtual void PostDraw() {}

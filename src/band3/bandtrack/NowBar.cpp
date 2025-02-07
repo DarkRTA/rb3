@@ -2,15 +2,17 @@
 
 #include "GemSmasher.h"
 #include "game/FretHand.h"
+#include "game/SongDB.h"
 #include "obj/Data.h"
+#include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Dir.h"
 #include "system/beatmatch/GameGem.h"
 #include "utl/Std.h"
 
 NowBar::NowBar(TrackDir *trackDir, const TrackConfig &trackConfig)
-    : mSmashers(), unk_0x8(-1), unk_0xc(0), mTrackDir(trackDir),
-      mTrackConfig(trackConfig) {
+    : mSmashers(), mCurrentGem(-1), unk_0xc(0), mTrackDir(trackDir),
+      mTrackCfg(trackConfig) {
     MILO_ASSERT(mTrackDir, 0x1e);
     RndDir *smasherPlateDir = mTrackDir->SmasherPlate();
     MILO_ASSERT(smasherPlateDir, 0x21);
@@ -18,7 +20,7 @@ NowBar::NowBar(TrackDir *trackDir, const TrackConfig &trackConfig)
     DataArray *cfg = SystemConfig("track_graphics", "smashers", trackConfig.Type());
     for (int i = 0; i < trackConfig.GetMaxSlots(); i++) {
         RndDir *newDir = smasherPlateDir->Find<RndDir>(cfg->Str(i + 1), true);
-        mSmashers.push_back(new GemSmasher(i, newDir, mTrackConfig.IsKeyboardTrack()));
+        mSmashers.push_back(new GemSmasher(i, newDir, mTrackCfg.IsKeyboardTrack()));
     }
 }
 
@@ -33,206 +35,165 @@ void NowBar::Reset(bool reset) {
     unk_0xc = 0;
 }
 
-void NowBar::Hit(float fParam1, int iParam2, bool bParam3, int iParam4, bool bParam5) {
-    int trackNum = mTrackConfig.TrackNum();
-
-    GameGem *gameGem = 0;
-
-    uint slots = gameGem->mSlots;
-
-    int trackVar = mTrackConfig.IsDrumTrack();
-    uint gameCymbalLanes;
-
-    bool bVar = false;
-    if (trackNum == 0 && !gameGem->mShowSlashes && gameGem->LeftHandSlide()) {
-        bVar = true;
+void NowBar::Hit(float f1, int gemID, bool coda, int i4, bool chord) {
+    GameGem &curGem = TheSongDB->GetGem(mTrackCfg.TrackNum(), gemID);
+    unsigned int slots = curGem.GetSlots();
+    bool isDrum = mTrackCfg.IsDrumTrack();
+    bool burn = !isDrum && (!curGem.IgnoreDuration() || curGem.LeftHandSlide());
+    bool bonus = (i4 & 2) > 0;
+    TheSongDB->GetTotalGems(mTrackCfg.TrackNum());
+    bool drum = false;
+    bool cymbal = false;
+    if (isDrum) {
+        if (curGem.IsCymbal() && (slots & mTrackCfg.GetGameCymbalLanes()))
+            cymbal = true;
+        else
+            drum = true;
     }
-
-    int trackNum2 = mTrackConfig.TrackNum();
-    int totalGems = trackNum2;
-    bool bVar2 = false;
-    if (trackVar != 0) {
-        if (gameGem->mShowChordNames
-            && ((gameCymbalLanes = mTrackConfig.GetGameCymbalLanes()) & slots) != 0) {
-            bVar2 = true;
-        } else {
-            bVar = true;
-        }
+    if (!mTrackCfg.AllowsOverlappingGems()) {
+        StopBurning(-1);
     }
-
-    trackVar = mTrackConfig.AllowsOverlappingGems();
-
-    if (!trackVar != 0) {
-        StopBurning(0xffffffff);
-    }
-
-    for (int i = 0; i < mTrackConfig.GetMaxSlots(); i++) {
-        trackVar = mTrackConfig.GetMaxSlots();
-        if (trackVar <= (int)i) {
-            break;
-        }
-        if (((slots & 1 << i) != 0)
-            && ((!bParam5 || (trackVar = gameGem->GetRGNoteType(i), trackVar != 1)))) {
-            GemSmasher *gemSmasher = FindSmasher(i);
-            MILO_ASSERT(gemSmasher != 0, 0x71);
-
-            trackVar = gemSmasher->Null();
-            if (trackVar == 0) {
-                if (!bParam3) {
-                    if ((int)(-(iParam4 & 2U) & ~(iParam4 & 2U)) < 0) {
-                        if (!bParam5) {
-                            if (bVar2) {
-                                gemSmasher->HitDrumBonus();
-                            } else if (bVar2) {
-                                gemSmasher->HitCymbalBonus();
-                            } else {
-                                gemSmasher->HitBonus();
-                            }
-                        } else {
-                            gemSmasher->HitChordBonus();
-                        }
-                        if (bVar) {
-                            gemSmasher->BurnBonus();
-                        }
-                    } else if (!bParam5) {
-                        if (bVar2) {
-                            gemSmasher->HitDrum();
-                        } else if (bVar2) {
-                            gemSmasher->HitCymbal();
-                        } else {
-                            gemSmasher->Hit();
-                        }
-                        if (bVar) {
-                            gemSmasher->Burn();
-                        }
+    for (int i = 0; i < mTrackCfg.GetMaxSlots(); i++) {
+        if ((slots & 1 << i) && (!chord || curGem.GetRGNoteType(i) != 1)) {
+            GemSmasher *smasher = FindSmasher(i);
+            MILO_ASSERT(smasher, 0x71);
+            if (!smasher->Null()) {
+                if (coda) {
+                    if (chord) {
+                        smasher->CodaHitChord();
+                        if (burn)
+                            smasher->CodaBurnChord();
                     } else {
-                        gemSmasher->HitChord();
-                        if (bVar) {
-                            gemSmasher->BurnChord();
-                        }
+                        smasher->CodaHit();
+                        if (burn)
+                            smasher->CodaBurn();
                     }
-                } else if (!bParam5) {
-                    gemSmasher->CodaHit();
-                    if (bVar) {
-                        gemSmasher->CodaBurn();
-                    }
+                } else if (bonus) {
+                    if (chord)
+                        smasher->HitChordBonus();
+                    else if (drum)
+                        smasher->HitDrumBonus();
+                    else if (cymbal)
+                        smasher->HitCymbalBonus();
+                    else
+                        smasher->HitBonus();
+                    if (burn)
+                        smasher->BurnBonus();
+                } else if (chord) {
+                    smasher->HitChord();
+                    if (burn)
+                        smasher->BurnChord();
                 } else {
-                    gemSmasher->CodaHitChord();
-                    if (bVar) {
-                        gemSmasher->CodaBurnChord();
-                    }
+                    if (drum)
+                        smasher->HitDrum();
+                    else if (cymbal)
+                        smasher->HitCymbal();
+                    else
+                        smasher->Hit();
+                    if (burn)
+                        smasher->Burn();
                 }
             }
         }
     }
-
-    if (bVar) {
+    if (burn)
         unk_0xc |= slots;
-    }
-    unk_0x8 = iParam2;
-    return;
+    mCurrentGem = gemID;
 }
 
-void NowBar::Miss(float param1, int param2) {
-    bool inRange = false;
-
-    if (0 <= param2 && param2 < mTrackConfig.GetMaxSlots()) {
-        inRange = true;
-    }
-
-    MILO_ASSERT(inRange, 0xba);
-
-    GemSmasher *smasher = FindSmasher(param2);
-
-    if (smasher != 0 && !HandleOutOfRangeKey(smasher, param2, false)) {
+void NowBar::Miss(float param1, int slot) {
+    MILO_ASSERT_RANGE(slot, 0, mTrackCfg.GetMaxSlots(), 0xBA);
+    GemSmasher *smasher = FindSmasher(slot);
+    if (smasher != 0 && !HandleOutOfRangeKey(smasher, slot, false)) {
         smasher->Miss();
-
-        bool isKeyboard = mTrackConfig.IsKeyboardTrack();
-
-        if (!isKeyboard) {
+        if (!mTrackCfg.IsKeyboardTrack()) {
             for (int i = 0; i < mSmashers.size(); i++) {
                 GemSmasher *smasherVec = mSmashers[i];
-
                 if (smasherVec != smasher && smasherVec->Glowing()) {
                     smasherVec->Miss();
                 }
             }
         }
     }
-    unk_0x8 = -1;
+    mCurrentGem = -1;
 }
 
-void NowBar::PopSmasher(int param1) {
-    if (param1 == -1) {
-        for (int i = 0; i < mSmashers.size(); i++) {
-            mSmashers[i]->Miss();
+void NowBar::PartialHit(int gemID, unsigned int slots, bool b3, int i4) {
+    GameGem &curGem = TheSongDB->GetGem(mTrackCfg.TrackNum(), gemID);
+    curGem.GetSlots();
+    bool burn = !curGem.IgnoreDuration();
+    bool bonus = (i4 & 2) > 0;
+    StopBurning(-1);
+    for (int i = 0; i < mTrackCfg.GetMaxSlots(); i++) {
+        if (slots & 1 << i) {
+            GemSmasher *smasher = FindSmasher(i);
+            MILO_ASSERT(smasher, 0xEC);
+            if (!smasher->Null()) {
+                if (b3) {
+                    smasher->CodaHit();
+                    if (burn)
+                        smasher->CodaBurn();
+                } else if (bonus) {
+                    smasher->HitBonus();
+                    if (burn)
+                        smasher->BurnBonus();
+                } else {
+                    smasher->Hit();
+                    if (burn)
+                        smasher->Burn();
+                }
+            }
+        }
+    }
+    if (burn)
+        unk_0xc |= slots;
+    mCurrentGem = gemID;
+}
+
+void NowBar::FillHit(int param1, int param2) {
+    GemSmasher *smasher = FindSmasher(param1);
+    MILO_ASSERT(smasher, 0x114);
+    smasher->FillHit(param2);
+}
+
+void NowBar::PopSmasher(int slot) {
+    if (slot == -1) {
+        FOREACH (it, mSmashers) {
+            (*it)->Miss();
         }
     } else {
-        bool inRange = false;
-
-        if (0 <= param1 && param1 < mTrackConfig.GetMaxSlots()) {
-            inRange = true;
-        }
-
-        MILO_ASSERT(inRange, 0x126);
-
-        GemSmasher *smasher = FindSmasher(param1);
-
-        if (smasher != 0) {
+        MILO_ASSERT_RANGE(slot, 0, mTrackCfg.GetMaxSlots(), 0x126);
+        GemSmasher *smasher = FindSmasher(slot);
+        if (smasher) {
             smasher->Miss();
         }
     }
 }
 
-void NowBar::FillHit(int param1, int param2) {
-    GemSmasher *smasher = FindSmasher(param1);
-    MILO_ASSERT(smasher != 0, 0x114);
-
-    smasher->FillHit(param2);
-}
-
-void NowBar::SetSmasherGlowing(int param1, bool glowing) {
-    if (param1 == -1) {
-        for (int i = 0; i < mSmashers.size(); i++) {
-            mSmashers[i]->SetGlowing(glowing);
+void NowBar::SetSmasherGlowing(int slot, bool glowing) {
+    if (slot == -1) {
+        FOREACH (it, mSmashers) {
+            (*it)->SetGlowing(glowing);
         }
     } else {
-        bool inRange = false;
-
-        if (0 <= param1 && param1 < mTrackConfig.GetMaxSlots()) {
-            inRange = true;
-        }
-
-        MILO_ASSERT(inRange, 0x13a);
-
-        GemSmasher *smasher = FindSmasher(param1);
-
-        if (smasher != 0 && !HandleOutOfRangeKey(smasher, param1, glowing)) {
+        MILO_ASSERT_RANGE(slot, 0, mTrackCfg.GetMaxSlots(), 0x13A);
+        GemSmasher *smasher = FindSmasher(slot);
+        if (smasher && !HandleOutOfRangeKey(smasher, slot, glowing)) {
             smasher->SetGlowing(glowing);
         }
     }
 }
 
 void NowBar::StopBurning(unsigned int index) {
-    unk_0x8 = -1;
+    mCurrentGem = -1;
 
     if (unk_0xc != 0) {
-        int i = 0;
-        while (true) {
-            int slots = mTrackConfig.GetMaxSlots();
-
-            if (slots <= i) {
-                break;
-            }
-
-            if ((1 << i) & index != 0) {
+        for (int i = 0; i < mTrackCfg.GetMaxSlots(); i++) {
+            if (1 << i & index) {
                 GemSmasher *smasher = FindSmasher(i);
-                if (smasher != 0) {
+                if (smasher)
                     smasher->StopBurn();
-                }
             }
-
-            i++;
         }
         unk_0xc &= ~index;
     }
@@ -242,23 +203,19 @@ GemSmasher *NowBar::FindSmasher(int index) const {
     if (index < mSmashers.size()) {
         return mSmashers[index];
     }
-    return 0;
+    return nullptr;
 }
 
 bool NowBar::HandleOutOfRangeKey(GemSmasher *smasher, int index, bool range) {
-    bool isKeyboard = mTrackConfig.IsKeyboardTrack();
-
-    bool outOfRange;
-    if (!isKeyboard || smasher->Showing()) {
-        outOfRange = false;
-    } else {
+    if (mTrackCfg.IsKeyboardTrack() && !smasher->Showing()) {
         if (range) {
-            mTrackDir->KeyMissLeft();
-        } else {
-            mTrackDir->KeyMissRight();
+            if (index < mTrackCfg.GetMaxSlots() / 2) {
+                mTrackDir->KeyMissLeft();
+            } else {
+                mTrackDir->KeyMissRight();
+            }
         }
-        outOfRange = true;
-    }
-
-    return outOfRange;
+        return true;
+    } else
+        return false;
 }

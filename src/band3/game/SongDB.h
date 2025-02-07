@@ -66,6 +66,8 @@ public:
     bool IsUnisonPhrase(int) const;
     bool GetCommonPhraseExtent(int, int, Extent &);
     FillInfo *GetFillInfo(int, int);
+    GameGem &GetGem(int, int) const;
+    int GetTotalGems(int) const;
 
     SongData *GetSongData() { return mSongData; }
 

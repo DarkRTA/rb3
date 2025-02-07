@@ -22,8 +22,8 @@ public:
     bool HandleOutOfRangeKey(GemSmasher *, int, bool);
 
     std::vector<GemSmasher *> mSmashers; // 0x0
-    int unk_0x8; // 0x8
-    int unk_0xc; // 0xc
+    int mCurrentGem; // 0x8
+    unsigned int unk_0xc; // 0xc - slots?
     TrackDir *mTrackDir; // 0x10
-    const TrackConfig &mTrackConfig; // 0x14
+    const TrackConfig &mTrackCfg; // 0x14
 };

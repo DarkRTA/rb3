@@ -546,8 +546,8 @@ void GemManager::Hit(float f1, int i2, int i3) {
 void GemManager::Miss(float f1, int, int slot) {
     if (slot != -1) {
         MILO_ASSERT(slot >= 0 && slot < GetMaxSlots(), 0x81A);
-        if (!mTrackConfig.AllowsOverlappingGems() && mNowBar->unk_0x8 != -1) {
-            Released(f1, mNowBar->unk_0x8);
+        if (!mTrackConfig.AllowsOverlappingGems() && mNowBar->mCurrentGem != -1) {
+            Released(f1, mNowBar->mCurrentGem);
         }
         mNowBar->Miss(f1, slot);
     }
