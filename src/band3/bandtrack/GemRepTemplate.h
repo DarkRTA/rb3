@@ -28,6 +28,11 @@ public:
     RndMat *GetSlotMat(int, int) const;
     void SetSlotMat(int, int, RndMat *);
 
+    RndMat *GetTailMiss() const { return mTailMiss; }
+    RndMat *GetTailBonus() const { return mTailBonus; }
+    RndMat *GetTailChord() const { return mTailChord; }
+    float GetTailScaleX() const { return mTailScaleX; }
+
     DataArray *mConfig; // 0x0
     float kTailPulseRate; // 0x4 // why is it k. why
     float kTailPulseSmoothing; // 0x8

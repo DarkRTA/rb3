@@ -98,6 +98,8 @@ public:
     virtual void Print();
 
     NEW_OBJ(RndText)
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     float GetStringWidthUTF8(const char *, const char *, bool, Style *) const;
     void SyncMeshes();

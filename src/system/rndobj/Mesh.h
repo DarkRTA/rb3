@@ -244,6 +244,8 @@ public:
 
     DECLARE_REVS
     NEW_OBJ(RndMesh)
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
     static void Init() { REGISTER_OBJ_FACTORY(RndMesh) }
 
     DataNode OnCompareEdgeVerts(const DataArray *);
