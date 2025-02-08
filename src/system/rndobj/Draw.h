@@ -4,6 +4,7 @@
 #include "math/Sphere.h"
 #include "math/Mtx.h"
 #include "math/Geo.h"
+#include "utl/MemMgr.h"
 #include <list>
 
 class RndCam;
@@ -70,6 +71,9 @@ public:
     const Sphere &GetSphere() const { return mSphere; }
     void SetSphere(const Sphere &s) { mSphere = s; }
     float GetOrder() const { return mOrder; }
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     static void DumpLoad(BinStream &);
     static HighlightStyle sHighlightStyle;

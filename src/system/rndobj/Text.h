@@ -14,8 +14,7 @@ public:
     class Style {
     public:
         Style()
-            : font(0), size(0), italics(0), color(-1), brk(true), pre(false), zOffset(0) {
-        }
+            : font(0), size(0), italics(0), color(), brk(true), pre(false), zOffset(0) {}
         Style(RndFont *f, float sz, float ital, const Hmx::Color32 &col, float z)
             : font(f), size(sz), italics(ital), color(col), brk(true), pre(false),
               zOffset(z) {}
@@ -99,6 +98,8 @@ public:
     virtual void Print();
 
     NEW_OBJ(RndText)
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
 
     float GetStringWidthUTF8(const char *, const char *, bool, Style *) const;
     void SyncMeshes();

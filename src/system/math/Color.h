@@ -45,8 +45,10 @@ namespace Hmx {
         }
 
         // all weak
-        // bool operator==(const Color &) const;
-        // bool operator!=(const Color &) const;
+        bool operator==(const Color &c) const {
+            return red == c.red && green == c.green && blue == c.blue && alpha == c.alpha;
+        }
+        bool operator!=(const Color &c) const { return !(*this == c); }
 
         void Set(float f) { red = green = blue = alpha = f; } // may go unused
         void Reset() { red = green = blue = alpha = 1.0f; }

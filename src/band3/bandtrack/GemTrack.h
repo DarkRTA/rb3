@@ -10,13 +10,16 @@ class GemTrack : public Track {
 public:
     class RangeShift {
     public:
+        RangeShift(int i1, int i2, float f1, float f2)
+            : unk0(i1), unk4(i2), unk8(-1), unkc(f1), unk10(-1), unk14(f2), unk18(0),
+              unk1c(0), unk20(0) {}
         int unk0;
         int unk4;
         float unk8;
         float unkc;
         float unk10;
         float unk14;
-        int unk18;
+        bool unk18;
         int unk1c;
         int unk20;
     };
@@ -45,7 +48,7 @@ public:
     virtual void Poll(float);
     virtual void Jump(float);
     virtual void SetDir(RndDir *);
-    virtual RndDir *GetDir();
+    virtual RndDir *GetDir() { return mTrackDir; }
     virtual BandTrack *GetBandTrack();
     virtual void SetSmasherGlowing(int, bool);
     virtual void PopSmasher(int);
@@ -78,23 +81,27 @@ public:
     void UpdateEffects(int);
     void OverrideRangeShift(float, float);
     void SetEnableSlot(int, bool);
+    void DrawBeatLine(Symbol, int, int, bool);
+    void DrawBeatLines(int, int);
+    GemTrackDir *GetTrackDir() const { return mTrackDir; }
+    bool ShiftsEnabled() const;
 
     bool mResetFills; // 0x68
-    bool unk69; // 0x69
-    ObjPtr<GemTrackDir, ObjectDir> mTrackDir; // 0x6c
-    int unk78; // 0x78
-    int unk7c; // 0x7c
+    bool mUseFills; // 0x69
+    ObjPtr<GemTrackDir> mTrackDir; // 0x6c
+    int mLastTopTick; // 0x78
+    int mLastBottomTick; // 0x7c
     GemManager *mGemManager; // 0x80
     PlayerState mPlayerState; // 0x84
-    PlayerState unk9c; // 0x9c
+    PlayerState mLastPlayerState; // 0x9c
     unsigned short unkb4; // 0xb4
-    bool unkb6; // 0xb6
-    bool unkb7; // 0xb7
+    bool mUpdateShifting; // 0xb6
+    bool mEnableShifting; // 0xb7
     std::vector<RangeShift> mRangeShifts; // 0xb8
     RangeShift *mCurrentRangeShift; // 0xc0
-    float unkc4; // 0xc4
-    float unkc8; // 0xc8
-    ObjPtr<RndAnimatable, ObjectDir> mUpcomingShiftMaskAnim; // 0xcc
-    int unkd8; // 0xd8
-    ObjPtrList<Task, ObjectDir> mKeyIntroTasks; // 0xdc
+    float mRange; // 0xc4
+    float mOffset; // 0xc8
+    ObjPtr<RndAnimatable> mUpcomingShiftMaskAnim; // 0xcc
+    int unkd8; // 0xd8 - mBeatLineSubdivisionTicks?
+    ObjPtrList<Task> mKeyIntroTasks; // 0xdc
 };
