@@ -11,7 +11,11 @@
 #include <vector>
 
 class TambourineGem;
-class TambourineGemPool;
+class TambourineGemPool {
+public:
+    TambourineGemPool();
+    ~TambourineGemPool();
+};
 
 class VocalTrack : public Track {
 public:
@@ -56,6 +60,18 @@ public:
     void InitPlatePool();
     void DumpAllPlates();
     void DumpPlates(std::deque<TubePlate *> &, const char *);
+    void ClearLyrics();
+    void ClearMarkers();
+    void ClearAllTubePlates();
+    void InitPlateList(std::deque<TubePlate *> &, int, int);
+    void ReturnFirstMarker();
+    void UpdateMarkerVisibility(float, float);
+    void InvalidateMarkers(float);
+    void UpdateAllTubePlates(float);
+    void UpdateTubePlates(std::deque<TubePlate *> &, float, float, bool);
+    void ClearTubePlates(std::deque<TubePlate *> &);
+    void ResetAllTubePlates();
+    void ResetTubePlates(std::deque<TubePlate *> &);
 
     bool unk68; // 0x68
     int unk6c; // 0x6c

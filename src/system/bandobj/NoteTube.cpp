@@ -70,12 +70,12 @@ void NoteTube::CreateMeshes() {
             }
         }
         if (mFrontPlate && mFrontMat) {
-            if (!mFrontPlate->unk28)
+            if (mFrontPlate->mNumVerts == 0)
                 InitializePlate(mFrontPlate, mFrontMat, mFrontParent);
             DrawToPlate(mFrontPlate);
         }
         if (mBackPlate && mBackMat) {
-            if (!mBackPlate->unk28)
+            if (mBackPlate->mNumVerts == 0)
                 InitializePlate(mBackPlate, mBackMat, mBackParent);
             DrawToPlate(mBackPlate);
         }
@@ -172,7 +172,7 @@ void TubePlate::AllocateVerts(int num, bool warn) {
             );
     }
     verts.resize(newsize, true);
-    unk28 += num;
+    mNumVerts += num;
 }
 
 void TubePlate::AllocateFaces(int num, bool warn) {
@@ -227,7 +227,7 @@ void TubePlate::Reset() {
     mInvalidateMs = 3.4028235E+38f;
     mMatSize = 0;
     mDeploy = false;
-    unk28 = 0;
+    mNumVerts = 0;
 }
 
 String TubePlate::GetMatName() {
