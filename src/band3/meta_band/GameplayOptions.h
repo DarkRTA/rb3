@@ -1,13 +1,8 @@
 #pragma once
 #include "obj/Object.h"
 #include "meta/FixedSizeSaveable.h"
+#include "bandtrack/VocalStyle.h"
 #include "types.h"
-
-// i assume this would be scrolling vs static?
-enum VocalStyle {
-    kVocStyle0,
-    kVocStyle1
-};
 
 class GameplayOptions : public virtual Hmx::Object, public FixedSizeSaveable {
 public:
