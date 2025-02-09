@@ -26,6 +26,8 @@ public:
     bool Baked() const { return mBaked; }
     float InvalidateMs() const { return mInvalidateMs; }
     bool Deploy() const { return mDeploy; }
+    float GetWidthX() const { return mWidthX; }
+    float GetBeginX() const { return mBeginX; }
 
     RndMesh *mMesh; // 0x0
     RndGroup *mParent; // 0x4
@@ -56,6 +58,10 @@ public:
     void InitializePlate(TubePlate *, RndMat *, RndGroup *);
     void DrawToPlate(TubePlate *);
     void LookupPitchedUVCoordinates(float &, float &, float &, float &, bool);
+    bool Pitched() const { return mPitched; }
+    void SetBackPlate(TubePlate *plate) { mBackPlate = plate; }
+    void SetFrontPlate(TubePlate *plate) { mFrontPlate = plate; }
+    int Part() const { return mPart; }
 
     bool mPitched; // 0x1c
     int mPart; // 0x20

@@ -72,6 +72,8 @@ public:
     void ClearTubePlates(std::deque<TubePlate *> &);
     void ResetAllTubePlates();
     void ResetTubePlates(std::deque<TubePlate *> &);
+    void HookupTubePlates(NoteTube *);
+    TubePlate *GetCurrentPlate(std::deque<TubePlate *> &, int);
 
     bool unk68; // 0x68
     int unk6c; // 0x6c

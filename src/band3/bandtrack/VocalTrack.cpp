@@ -2,6 +2,7 @@
 #include "bandobj/NoteTube.h"
 #include "decomp.h"
 #include "game/Game.h"
+#include "math/Mtx.h"
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
 #include "utl/Std.h"
@@ -12,8 +13,6 @@ int maxFacesInPlate;
 int maxNumLyricPlates;
 bool sDumpPlateStates;
 bool gDebugSpew;
-
-DECOMP_FORCEACTIVE(VocalTrack, "popping unbaked plate")
 
 void VocalTrack::UpdateMarkerVisibility(float f1, float f2) {
     for (int i = 0; i < unk1a0.size(); i++) {
@@ -167,6 +166,33 @@ void VocalTrack::ResetAllTubePlates() {
 
 void VocalTrack::DumpPlates(std::deque<TubePlate *> &plates, const char *str) {
     MILO_LOG("dumping plates in %s\n", str);
+    int idx = 0;
+    FOREACH (it, plates) {
+        TubePlate *cur = *it;
+        if (!cur->NoVerts()) {
+            Transform &xfm = cur->mMesh->TransParent()->WorldXfm();
+            MILO_LOG(
+                "\t[%d] @ %x, xPos: %.2f, xStart: %.2f, XEnd: %.2f, verts: %d, faces: %d, baked: %d\n",
+                idx++,
+                cur,
+                -xfm.v.x,
+                cur->GetBeginX(),
+                cur->GetBeginX() + cur->GetWidthX(),
+                cur->mMesh->Verts().size(),
+                cur->mMesh->Faces().size(),
+                cur->Baked()
+            );
+        } else {
+            MILO_LOG(
+                "\t[%d] @ %x, <empty>, verts: %d, faces: %d, baked: %d\n",
+                idx++,
+                cur,
+                cur->mMesh->Verts().size(),
+                cur->mMesh->Faces().size(),
+                cur->Baked()
+            );
+        }
+    }
 }
 
 void VocalTrack::DumpAllPlates() {
@@ -177,6 +203,44 @@ void VocalTrack::DumpAllPlates() {
     }
     DumpPlates(mLeadDeployPlates, "lead deploy");
     DumpPlates(mHarmonyDeployPlates, "harmony deploy");
+}
+
+TubePlate *VocalTrack::GetCurrentPlate(std::deque<TubePlate *> &plates, int i2) {
+    FOREACH (it, plates) {
+        if (!(*it)->Baked())
+            return *it;
+    }
+    plates.push_back(new TubePlate(i2));
+#ifdef MILO_DEBUG
+    static Symbol leadDeployMat = "deploy_mask_lead.mat";
+    static Symbol harmDeployMat = "deploy_mask_harmony.mat";
+
+    String matName = plates.front()->GetMatName();
+    if (!unk60 && matName != leadDeployMat && matName != harmDeployMat) {
+        MILO_WARN(
+            "%s new plate added.  Please alert HUD/Track owner and include the Watson output.",
+            matName.c_str()
+        );
+        DumpPlates(plates, plates.front()->GetMatName().c_str());
+    }
+#endif
+    return plates.back();
+}
+
+void VocalTrack::HookupTubePlates(NoteTube *tube) {
+    if (tube->Pitched()) {
+        tube->SetFrontPlate(GetCurrentPlate(mFrontTubePlates[tube->Part()], 0x80));
+        tube->SetBackPlate(GetCurrentPlate(mBackTubePlates[tube->Part()], 0x80));
+    } else if (tube->unk_0x24) {
+        bool islead = tube->Part() == 0;
+        tube->SetFrontPlate(nullptr);
+        tube->SetBackPlate(
+            GetCurrentPlate(islead ? mLeadDeployPlates : mHarmonyDeployPlates, 0x20)
+        );
+    } else {
+        tube->SetFrontPlate(nullptr);
+        tube->SetBackPlate(GetCurrentPlate(mPhonemeTubePlates[tube->Part()], 0x40));
+    }
 }
 
 DataNode ToggleDebugSpew(DataArray *) {
