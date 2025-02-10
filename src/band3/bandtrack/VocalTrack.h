@@ -7,6 +7,7 @@
 #include "bandtrack/VocalStyle.h"
 #include "beatmatch/VocalNote.h"
 #include "game/BandUser.h"
+#include "game/TambourineManager.h"
 #include "game/VocalPlayer.h"
 #include "obj/Data.h"
 #include "rndobj/Group.h"
@@ -33,10 +34,11 @@ public:
             mUsedGems.pop_front();
         }
     }
+    void SetTambourineManager(TambourineManager *mgr) { mTambourineManager = mgr; }
 
     std::deque<TambourineGem *> mFreeGems; // 0x0
     std::deque<TambourineGem *> mUsedGems; // 0x28
-    int unk50; // 0x50 - TambourineManager*?
+    TambourineManager *mTambourineManager; // 0x50
 };
 
 class VocalTrack : public Track {
@@ -124,7 +126,7 @@ public:
     DataNode OnGetDisplayMode(const DataArray *);
 
     bool unk68; // 0x68
-    VocalStyle mVocalStyleOverride; // 0x6c - vocal style
+    VocalStyle mVocalStyleOverride; // 0x6c
     int unk70; // 0x70
     float unk74; // 0x74
     float unk78; // 0x78

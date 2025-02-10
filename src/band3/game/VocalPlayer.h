@@ -1,5 +1,7 @@
 #pragma once
+#include "game/Performer.h"
 #include "game/Player.h"
+#include "game/TambourineManager.h"
 #include "rndobj/Overlay.h"
 
 class VocalPlayer : public Player, public RndOverlay::Callback {
@@ -61,4 +63,56 @@ public:
     bool ShowPitchCorrectionNotice() const;
     int PhraseScore() const;
     bool CanDeployCoda() const;
+
+    Performer *unk2cc; // 0x2cc
+    bool unk2d0;
+    int unk2d4;
+    bool unk2d8;
+    float unk2dc;
+    int unk2e0;
+    int unk2e4;
+    int unk2e8;
+    float unk2ec;
+    float unk2f0;
+    int unk2f4;
+    int unk2f8;
+    int unk2fc;
+    float unk300;
+    float unk304;
+    float unk308;
+    int unk30c;
+    int unk310;
+    int unk314;
+    int unk318;
+    int unk31c;
+    int unk320;
+    int unk324;
+    int unk328;
+    int unk32c;
+    int unk330;
+    int unk334;
+    float unk338;
+    bool unk33c;
+    float unk340;
+    bool unk344;
+    float unk348;
+    float unk34c;
+    std::vector<int> unk350;
+    std::vector<int> unk358;
+    std::vector<int> unk360;
+    int unk368;
+    int unk36c;
+    int unk370;
+    int unk374;
+    float unk378;
+    int unk37c;
+    int unk380;
+    int unk384;
+    bool unk388;
+    TambourineManager mTambourineManager; // 0x38c
+    float unk414;
+    int unk418;
+    float unk41c;
+    int unk420;
+    int unk424;
 };

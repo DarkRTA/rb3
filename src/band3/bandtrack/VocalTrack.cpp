@@ -35,7 +35,7 @@ inline TambourineGemPool::TambourineGemPool() {
     for (int i = 0; i < 25; i++) {
         mFreeGems.push_back(new TambourineGem());
     }
-    unk50 = 0;
+    mTambourineManager = 0;
 }
 
 inline TambourineGemPool::~TambourineGemPool() {
@@ -335,7 +335,8 @@ void VocalTrack::Init() {
     unk74 = 3000.0f;
     RELEASE(mTambourineGemPool);
     mTambourineGemPool = new TambourineGemPool();
-
+    if (mPlayer)
+        mTambourineGemPool->SetTambourineManager(&mPlayer->mTambourineManager);
     BandUser *user = (BandUser *)mTrackConfig.GetBandUser();
     GameplayOptions *options = user->GetGameplayOptions();
     if (options) {
@@ -705,10 +706,7 @@ void VocalTrack::Restart(VocalPlayer *player, float f1, float f2) {
     unk2ac = unk23c;
     unk2b0 = unk240;
     mTambourineGemPool->FreeUsedGems();
-
-    // iVar2 = MergedGet0x8(this + 0x8c);
-    // fn_800ECF74(*(this + 0x1d4),iVar2 + 0x38c);
-
+    mTambourineGemPool->SetTambourineManager(&mPlayer->mTambourineManager);
     mDir->mBREGrp->SetShowing(true);
     mDir->mLeadBREGrp->SetShowing(true);
     mDir->mHarmonyBREGrp->SetShowing(true);

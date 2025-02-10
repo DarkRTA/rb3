@@ -88,7 +88,7 @@
             "band3/game/StreakTracker.cpp": "NonMatching",
             "band3/game/SyncGameStartPanel.cpp": "MISSING",
             "band3/game/TambourineDetector.cpp": "MISSING",
-            "band3/game/TambourineManager.cpp": "MISSING",
+            "band3/game/TambourineManager.cpp": "NonMatching",
             "band3/game/Tracker.cpp": "NonMatching",
             "band3/game/TrackerDisplay.cpp": "NonMatching",
             "band3/game/TrackerManager.cpp": "NonMatching",
@@ -102,7 +102,7 @@
             "band3/game/VocalGuidePitch.cpp": "MISSING",
             "band3/game/VocalOverlay.cpp": "MISSING",
             "band3/game/VocalPart.cpp": "MISSING",
-            "band3/game/VocalPlayer.cpp": "MISSING",
+            "band3/game/VocalPlayer.cpp": "NonMatching",
             "band3/game/VocalScoreHistory.cpp": "MISSING",
             "band3/game/VocalTrainerPanel.cpp": "MISSING",
 
