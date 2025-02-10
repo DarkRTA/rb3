@@ -24,6 +24,13 @@ class TambourineGemPool {
 public:
     TambourineGemPool();
     ~TambourineGemPool();
+    void FreeUsedGems() {
+        while (!mUsedGems.empty()) {
+            mFreeGems.push_back(mUsedGems.front());
+            mUsedGems.front()->unk8 = 2;
+            mUsedGems.pop_front();
+        }
+    }
 
     std::deque<TambourineGem *> mFreeGems; // 0x0
     std::deque<TambourineGem *> mUsedGems; // 0x28
@@ -92,6 +99,7 @@ public:
     void RebuildHUD();
     void CreateMarker(Symbol, float, bool);
     void CreateMarkers();
+    void ConfigNoteTube(bool, int, int, bool, float);
 
     bool unk68; // 0x68
     int unk6c; // 0x6c - vocal style

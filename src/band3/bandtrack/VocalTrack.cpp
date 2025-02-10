@@ -29,8 +29,7 @@ inline TambourineGemPool::TambourineGemPool() {
 }
 
 inline TambourineGemPool::~TambourineGemPool() {
-    mFreeGems.clear(); // there's a custom func here to transfer gems from mUsedGems to
-                       // mFreeGems
+    FreeUsedGems();
     MILO_ASSERT(mUsedGems.empty(), 0x1B6);
     for (int i = 0; i < mFreeGems.size(); i++) {
         RELEASE(mFreeGems[i]);
@@ -376,5 +375,68 @@ void VocalTrack::ReadTimingData(const DataArray *a) {
         MILO_LOG("\t lyric shift anticipation ms %.0f\n", mLyricShiftAnticipationMs);
         MILO_LOG("\t min lyric highlight ms %.0f\n", mMinLyricHighlightMs);
         MILO_LOG("\t phrase highlight anticipation ms %.0f\n", mMinPhraseHighlightMs);
+    }
+}
+
+bool VocalTrack::ShowPitchCorrectionNotice() const {
+    if (mPlayer)
+        return mPlayer->ShowPitchCorrectionNotice();
+    else
+        return false;
+}
+
+void VocalTrack::ConfigNoteTube(bool pitched, int pts, int part, bool b4, float alpha) {
+    mNoteTube->SetPitched(pitched);
+    mNoteTube->SetNumPoints(pts);
+    mNoteTube->SetPart(part);
+    mNoteTube->unk_0x24 = b4;
+    mNoteTube->SetAlpha(alpha);
+    if (pitched) {
+        switch (part) {
+        case 1:
+            mNoteTube->SetBackMat(mDir->mHarm1BackMat);
+            mNoteTube->SetBackParent(mDir->mTubeBack1Grp);
+            mNoteTube->SetFrontMat(mDir->mHarm1FrontMat);
+            mNoteTube->SetFrontParent(mDir->mTubeFront1Grp);
+            break;
+        case 2:
+            mNoteTube->SetBackMat(mDir->mHarm2BackMat);
+            mNoteTube->SetBackParent(mDir->mTubeBack2Grp);
+            mNoteTube->SetFrontMat(mDir->mHarm2FrontMat);
+            mNoteTube->SetFrontParent(mDir->mTubeFront2Grp);
+            break;
+        default:
+            mNoteTube->SetBackMat(mDir->mLeadBackMat);
+            mNoteTube->SetBackParent(mDir->mTubeBack0Grp);
+            mNoteTube->SetFrontMat(mDir->mLeadFrontMat);
+            mNoteTube->SetFrontParent(mDir->mTubeFront0Grp);
+            break;
+        }
+    } else if (!b4) {
+        mNoteTube->SetFrontMat(nullptr);
+        mNoteTube->SetFrontParent(nullptr);
+        switch (part) {
+        case 1:
+            mNoteTube->SetBackMat(mDir->mHarm1PhonemeMat);
+            mNoteTube->SetBackParent(mDir->mTubePhoneme1Grp);
+            break;
+        case 2:
+            mNoteTube->SetBackMat(mDir->mHarm2PhonemeMat);
+            mNoteTube->SetBackParent(mDir->mTubePhoneme2Grp);
+            break;
+        default:
+            mNoteTube->SetBackMat(mDir->mLeadPhonemeMat);
+            mNoteTube->SetBackParent(mDir->mTubePhoneme0Grp);
+            break;
+        }
+    } else {
+        MILO_ASSERT(part < 3, 0x30D);
+        mNoteTube->SetFrontMat(nullptr);
+        mNoteTube->SetFrontParent(nullptr);
+        mNoteTube->SetBackParent(nullptr);
+        if (part != 0)
+            mNoteTube->SetBackMat(mDir->mHarmDeployMat);
+        else
+            mNoteTube->SetBackMat(mDir->mLeadDeployMat);
     }
 }

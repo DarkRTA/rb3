@@ -1,6 +1,7 @@
 #ifndef BANDOBJ_NOTETUBE_H
 #define BANDOBJ_NOTETUBE_H
 #include "rndobj/Group.h"
+#include "rndobj/Mat.h"
 #include "rndobj/Mesh.h"
 #include "obj/Object.h"
 #include <vector>
@@ -62,6 +63,13 @@ public:
     void SetBackPlate(TubePlate *plate) { mBackPlate = plate; }
     void SetFrontPlate(TubePlate *plate) { mFrontPlate = plate; }
     int Part() const { return mPart; }
+    void SetPitched(bool pitched) { mPitched = pitched; }
+    void SetPart(int part) { mPart = part; }
+    void SetAlpha(float alpha) { mAlpha = alpha; }
+    void SetBackMat(RndMat *mat) { mBackMat = mat; }
+    void SetBackParent(RndGroup *grp) { mBackParent = grp; }
+    void SetFrontMat(RndMat *mat) { mFrontMat = mat; }
+    void SetFrontParent(RndGroup *grp) { mFrontParent = grp; }
 
     bool mPitched; // 0x1c
     int mPart; // 0x20

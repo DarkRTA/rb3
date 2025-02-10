@@ -57,4 +57,6 @@ public:
     virtual int LocalDeployBandEnergy();
     virtual bool ShouldDrainEnergy() const;
     virtual void UpdateVocalStyle();
+
+    bool ShowPitchCorrectionNotice() const;
 };
