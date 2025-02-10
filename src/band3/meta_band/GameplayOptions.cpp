@@ -5,7 +5,7 @@
 #include "utl/Symbols.h"
 
 GameplayOptions::GameplayOptions()
-    : mVocalVolume(11), mLefty(false), mVocalStyle(kVocStyle1), mDirty(false) {
+    : mVocalVolume(11), mLefty(false), mVocalStyle(kVocalStyleScrolling), mDirty(false) {
     mSaveSizeMethod = SaveSize;
 }
 

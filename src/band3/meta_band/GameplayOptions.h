@@ -14,7 +14,7 @@ public:
     virtual void SetLefty(bool);
     virtual bool GetLefty() const { return mLefty; }
     virtual void SetVocalStyle(VocalStyle);
-    virtual VocalStyle GetVocalStyle() const;
+    virtual VocalStyle GetVocalStyle() const { return mVocalStyle; }
     virtual void SetVocalVolume(int, int);
     virtual int GetVocalVolume(int) const;
 

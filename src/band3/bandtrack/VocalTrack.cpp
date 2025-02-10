@@ -1,10 +1,17 @@
 #include "bandtrack/VocalTrack.h"
 #include "bandobj/NoteTube.h"
+#include "bandtrack/VocalStyle.h"
 #include "decomp.h"
+#include "game/BandUser.h"
 #include "game/Game.h"
+#include "game/GameConfig.h"
 #include "math/Mtx.h"
+#include "meta_band/GameplayOptions.h"
+#include "obj/Data.h"
+#include "obj/DataFile.h"
 #include "obj/DataFunc.h"
 #include "os/Debug.h"
+#include "os/System.h"
 #include "utl/Std.h"
 
 int maxPlatesQueued;
@@ -13,6 +20,22 @@ int maxFacesInPlate;
 int maxNumLyricPlates;
 bool sDumpPlateStates;
 bool gDebugSpew;
+
+inline TambourineGemPool::TambourineGemPool() {
+    for (int i = 0; i < 25; i++) {
+        mFreeGems.push_back(new TambourineGem());
+    }
+    unk50 = 0;
+}
+
+inline TambourineGemPool::~TambourineGemPool() {
+    mFreeGems.clear(); // there's a custom func here to transfer gems from mUsedGems to
+                       // mFreeGems
+    MILO_ASSERT(mUsedGems.empty(), 0x1B6);
+    for (int i = 0; i < mFreeGems.size(); i++) {
+        RELEASE(mFreeGems[i]);
+    }
+}
 
 void VocalTrack::UpdateMarkerVisibility(float f1, float f2) {
     for (int i = 0; i < unk1a0.size(); i++) {
@@ -254,8 +277,10 @@ VocalTrack::VocalTrack(BandUser *u)
       unk100(0), unk104(1), unk108(0), unk128(0), unk19c(0), unk1c8(this),
       mTambourineGemPool(0), unk204(-1), unk208(60), unk20c(0), unk210(0), unk23c(0.1f),
       unk240(0.1f), unk294(0), unk298(0), unk2a4(-1.0f), unk2a8(0), unk2ac(0), unk2b0(0),
-      unk2c0(2.0f), unk2c4(0.5f), unk2c8(0.1f), unk2cc(100.0f), unk2d0(20.0f),
-      unk2d4(250.0f), unk2d8(100.0f), unk2dc(500.0f), unk2e0(100.0f), unk2e4(0),
+      mStaticDeployZoneXSize(2.0f), mStaticDeployBufferX(0.5f),
+      mStaticDeployMarginX(0.1f), mLyricShiftMs(100.0f), mLyricShiftQuickMs(20.0f),
+      mLyricShiftAnticipationMs(250.0f), mMinLyricHighlightMs(100.0f),
+      mMinPhraseHighlightMs(500.0f), mLyricOverlapWindowMs(100.0f), unk2e4(0),
       mNoteTube(new NoteTube()), unk2ec(1) {
     DataRegisterFunc("vocal_jitter_debug", ToggleDebugSpew);
     for (int i = 0; i < 3; i++) {
@@ -280,5 +305,76 @@ void VocalTrack::InitPlateList(std::deque<TubePlate *> &list, int i2, int i3) {
     MILO_ASSERT(list.empty(), 0x25C);
     for (int i = 0; i < i2; i++) {
         list.push_back(new TubePlate(i3));
+    }
+}
+
+void VocalTrack::InitPlatePool() {
+    for (int i = 0; i < 3; i++) {
+        InitPlateList(mFrontTubePlates[i], 4, 0x80);
+        InitPlateList(mBackTubePlates[i], 4, 0x80);
+        InitPlateList(mPhonemeTubePlates[i], 4, 0x40);
+    }
+    InitPlateList(mLeadDeployPlates, 4, 0x20);
+    InitPlateList(mHarmonyDeployPlates, 4, 0x20);
+}
+
+void VocalTrack::Init() {
+    const BandUser *pUser = mTrackConfig.GetBandUser();
+    MILO_ASSERT(pUser, 0x275);
+    mTrackConfig.SetTrackNum(TheGameConfig->GetTrackNum(pUser->mUserGuid));
+    unk74 = 3000.0f;
+    RELEASE(mTambourineGemPool);
+    mTambourineGemPool = new TambourineGemPool();
+
+    BandUser *user = (BandUser *)mTrackConfig.GetBandUser();
+    GameplayOptions *options = user->GetGameplayOptions();
+    if (options) {
+        DataArray *staticArr = SystemConfig()->FindArray("force_static_vocals", false);
+        if (staticArr) {
+            if (SystemConfig()->FindInt("force_static_vocals")) {
+                SetVocalStyle((VocalStyle)0);
+            }
+            goto next;
+        }
+        SetVocalStyle(options->GetVocalStyle());
+    }
+next:
+    ReadTimingData(SystemConfig()->FindArray("track_graphics", true));
+    unk1c8 = mDir->Find<RndGroup>("markers.grp", true);
+    unk19c = 0;
+    for (int i = 0; i < 0x20; i++) {
+        CreateMarker("beat_marker.mesh", 0, false);
+    }
+    ClearMarkers();
+}
+
+void VocalTrack::ResetTimingData() {
+    ReadTimingData(DataReadFile("config/track_graphics.dta", true));
+    RebuildHUD();
+}
+
+void VocalTrack::ReadTimingData(const DataArray *a) {
+    mLyricOverlapWindowMs = a->FindFloat("lyric_overlap_ms");
+    DataArray *staticCfg = a->FindArray("static_vocal_parameters", true);
+    mStaticDeployZoneXSize = staticCfg->FindFloat("static_deploy_x_size");
+    mStaticDeployBufferX = staticCfg->FindFloat("static_deploy_buffer_x");
+    mStaticDeployMarginX = staticCfg->FindFloat("static_phrase_margin_x");
+    mLyricShiftMs = staticCfg->FindArray("lyric_shift_ms", true)->Float(1);
+    mLyricShiftQuickMs = staticCfg->FindArray("lyric_shift_ms", true)->Float(2);
+    mLyricShiftAnticipationMs = staticCfg->FindFloat("lyric_shift_anticipation_ms");
+    mMinLyricHighlightMs = staticCfg->FindFloat("min_lyric_highlight_ms");
+    mMinPhraseHighlightMs = staticCfg->FindFloat("phrase_highlight_ms");
+    static bool sDump;
+    if (sDump) {
+        MILO_LOG("lyric timing data:\n");
+        MILO_LOG("\t overlap window ms %.0f\n", mLyricOverlapWindowMs);
+        MILO_LOG("\t static deploy size %.2f\n", mStaticDeployZoneXSize);
+        MILO_LOG("\t static deploy gap size %.2f\n", mStaticDeployBufferX);
+        MILO_LOG("\t now bar offset %.2f\n", mStaticDeployMarginX);
+        MILO_LOG("\t standard lyric shift ms %.0f\n", mLyricShiftMs);
+        MILO_LOG("\t fast lyric shift ms %.0f\n", mLyricShiftQuickMs);
+        MILO_LOG("\t lyric shift anticipation ms %.0f\n", mLyricShiftAnticipationMs);
+        MILO_LOG("\t min lyric highlight ms %.0f\n", mMinLyricHighlightMs);
+        MILO_LOG("\t phrase highlight anticipation ms %.0f\n", mMinPhraseHighlightMs);
     }
 }

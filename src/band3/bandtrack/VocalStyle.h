@@ -2,6 +2,8 @@
 
 // i assume this would be scrolling vs static?
 enum VocalStyle {
-    kVocStyle0,
-    kVocStyle1
+    kVocalStyleStatic = 0,
+    kVocalStyleScrolling = 1,
+    kVocalStyleInvalid = 2,
+    kNumVocalStyles = 3
 };

@@ -6,15 +6,28 @@
 #include "bandtrack/VocalStyle.h"
 #include "game/BandUser.h"
 #include "game/VocalPlayer.h"
+#include "obj/Data.h"
 #include "rndobj/Group.h"
 #include <deque>
 #include <vector>
 
-class TambourineGem;
+class TambourineGem {
+public:
+    TambourineGem() : unk0(0), unk4(-1), unk8(2) {}
+
+    float unk0;
+    int unk4;
+    int unk8;
+};
+
 class TambourineGemPool {
 public:
     TambourineGemPool();
     ~TambourineGemPool();
+
+    std::deque<TambourineGem *> mFreeGems; // 0x0
+    std::deque<TambourineGem *> mUsedGems; // 0x28
+    int unk50; // 0x50 - TambourineManager*?
 };
 
 class VocalTrack : public Track {
@@ -74,11 +87,16 @@ public:
     void ResetTubePlates(std::deque<TubePlate *> &);
     void HookupTubePlates(NoteTube *);
     TubePlate *GetCurrentPlate(std::deque<TubePlate *> &, int);
+    void ResetTimingData();
+    void ReadTimingData(const DataArray *);
+    void RebuildHUD();
+    void CreateMarker(Symbol, float, bool);
+    void CreateMarkers();
 
     bool unk68; // 0x68
-    int unk6c; // 0x6c
+    int unk6c; // 0x6c - vocal style
     int unk70; // 0x70
-    int unk74; // 0x74
+    float unk74; // 0x74
     float unk78; // 0x78
     int unk7c; // 0x7c
     ObjPtr<VocalTrackDir> mDir; // 0x80
@@ -128,15 +146,15 @@ public:
     float unk2ac;
     float unk2b0;
     int unk2b4[3]; // 0x2b4
-    float unk2c0;
-    float unk2c4;
-    float unk2c8;
-    float unk2cc;
-    float unk2d0;
-    float unk2d4;
-    float unk2d8;
-    float unk2dc;
-    float unk2e0;
+    float mStaticDeployZoneXSize; // 0x2c0
+    float mStaticDeployBufferX; // 0x2c4
+    float mStaticDeployMarginX; // 0x2c8
+    float mLyricShiftMs; // 0x2cc
+    float mLyricShiftQuickMs; // 0x2d0
+    float mLyricShiftAnticipationMs; // 0x2d4
+    float mMinLyricHighlightMs; // 0x2d8
+    float mMinPhraseHighlightMs; // 0x2dc
+    float mLyricOverlapWindowMs; // 0x2e0
     bool unk2e4;
     NoteTube *mNoteTube; // 0x2e8
     bool unk2ec;

@@ -870,10 +870,10 @@ void OvershellSlot::ToggleVocalStyle() {
     MILO_ASSERT(pUser->IsLocal(), 0x79E);
     MILO_ASSERT(pUser->GetControllerType() == kControllerVocals, 0x79F);
     GameplayOptions *options = pUser->GetGameplayOptions();
-    if (options->GetVocalStyle() == kVocStyle0) {
-        options->SetVocalStyle(kVocStyle1);
+    if (options->GetVocalStyle() == kVocalStyleStatic) {
+        options->SetVocalStyle(kVocalStyleScrolling);
     } else
-        options->SetVocalStyle(kVocStyle0);
+        options->SetVocalStyle(kVocalStyleStatic);
     Update();
 }
 
