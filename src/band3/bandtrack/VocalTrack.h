@@ -114,6 +114,12 @@ public:
     void SetAlternateNoteList(int, VocalNoteList *);
     Lyric *GetLastLyric(std::deque<LyricPlate *> &);
     Lyric *GetLastBakedLyric(std::deque<LyricPlate *> &);
+    void OnPhraseComplete(float, float, int);
+    void BuildPhrase(float, float);
+    void HitTambourineGem(int);
+    void MissTambourineGem(int, bool);
+    void Restart(VocalPlayer *, float, float);
+    void UpdateVocalStyle();
 
     DataNode OnGetDisplayMode(const DataArray *);
 
@@ -127,18 +133,18 @@ public:
     ObjPtr<VocalPlayer> mPlayer; // 0x8c
     std::deque<LyricPlate *> mLyricsLead; // 0x98
     std::deque<LyricPlate *> mLyricsHarmony; // 0xc0
-    float unke8;
-    float unkec;
-    float unkf0;
+    float mPhraseStartMs; // 0xe8
+    float mPhraseEndMs; // 0xec
+    float mNextPhraseEndMs; // 0xf0
     int unkf4;
     int unkf8;
     int unkfc;
     int unk100;
     int unk104;
     int unk108;
-    int unk10c[3];
-    int unk118[2];
-    int unk120[2];
+    int mNextScrollNote[3]; // 0x10c
+    int mNextDeployZone[2]; // 0x118
+    int mCurLyricPhrase[2]; // 0x120
     bool unk128; // 0x128
     std::vector<std::deque<TubePlate *> > mFrontTubePlates; // 0x12c
     std::vector<std::deque<TubePlate *> > mBackTubePlates; // 0x134

@@ -19,8 +19,9 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Mesh.h"
-#include "stl/_pair.h"
 #include "utl/Std.h"
+#include "utl/Symbols.h"
+#include <utility>
 
 int maxPlatesQueued;
 int maxVertsInPlate;
@@ -281,15 +282,16 @@ DataNode ToggleDebugSpew(DataArray *) {
 
 VocalTrack::VocalTrack(BandUser *u)
     : Track(u), unk68(0), mVocalStyleOverride(kVocalStyleScrolling), unk70(2),
-      unk78(24.0f), unk7c(0), mDir(this), mPlayer(this), unke8(0), unkec(0), unkf0(0),
-      unkf4(0), unkf8(0), unkfc(0), unk100(0), unk104(1), unk108(0), unk128(0), unk19c(0),
-      unk1c8(this), mTambourineGemPool(0), mCharOptMicID(-1), unk208(60), unk20c(0),
-      unk210(0), unk23c(0.1f), unk240(0.1f), unk294(0), unk298(0), unk2a4(-1.0f),
-      unk2a8(0), unk2ac(0), unk2b0(0), mStaticDeployZoneXSize(2.0f),
-      mStaticDeployBufferX(0.5f), mStaticDeployMarginX(0.1f), mLyricShiftMs(100.0f),
-      mLyricShiftQuickMs(20.0f), mLyricShiftAnticipationMs(250.0f),
-      mMinLyricHighlightMs(100.0f), mMinPhraseHighlightMs(500.0f),
-      mLyricOverlapWindowMs(100.0f), unk2e4(0), mNoteTube(new NoteTube()), unk2ec(1) {
+      unk78(24.0f), unk7c(0), mDir(this), mPlayer(this), mPhraseStartMs(0),
+      mPhraseEndMs(0), mNextPhraseEndMs(0), unkf4(0), unkf8(0), unkfc(0), unk100(0),
+      unk104(1), unk108(0), unk128(0), unk19c(0), unk1c8(this), mTambourineGemPool(0),
+      mCharOptMicID(-1), unk208(60), unk20c(0), unk210(0), unk23c(0.1f), unk240(0.1f),
+      unk294(0), unk298(0), unk2a4(-1.0f), unk2a8(0), unk2ac(0), unk2b0(0),
+      mStaticDeployZoneXSize(2.0f), mStaticDeployBufferX(0.5f),
+      mStaticDeployMarginX(0.1f), mLyricShiftMs(100.0f), mLyricShiftQuickMs(20.0f),
+      mLyricShiftAnticipationMs(250.0f), mMinLyricHighlightMs(100.0f),
+      mMinPhraseHighlightMs(500.0f), mLyricOverlapWindowMs(100.0f), unk2e4(0),
+      mNoteTube(new NoteTube()), unk2ec(1) {
     DataRegisterFunc("vocal_jitter_debug", ToggleDebugSpew);
     for (int i = 0; i < 3; i++) {
         mFrontTubePlates.push_back(std::deque<TubePlate *>());
@@ -676,6 +678,59 @@ void PrintLyricOneLine(const Lyric &lyric) {
     MILO_LOG("\n");
 }
 
+void VocalTrack::Restart(VocalPlayer *player, float f1, float f2) {
+    unk2a4 = -1.0f;
+    mPlayer = player;
+    mPhraseStartMs = 0;
+    mPhraseEndMs = 0;
+    mNextPhraseEndMs = 0;
+    for (int i = 0; i < 3; i++)
+        mNextScrollNote[i] = 0;
+    for (int i = 0; i < 2; i++)
+        mNextDeployZone[i] = 0;
+    for (int i = 0; i < 2; i++)
+        mCurLyricPhrase[i] = 0;
+    unk108 = 0;
+    unk104 = 1;
+    unk100 = 0;
+    unkf4 = 0;
+    unkf8 = 0;
+    unkfc = 0;
+    mLeadLyricShifts.clear();
+    mHarmonyLyricShifts.clear();
+    unk23c = mStaticDeployMarginX;
+    unk240 = unk23c;
+    mDir->mLeadLyricScroller->DirtyLocalXfm().v.x = unk23c;
+    mDir->mHarmonyLyricScroller->DirtyLocalXfm().v.x = unk240;
+    unk2ac = unk23c;
+    unk2b0 = unk240;
+    mTambourineGemPool->FreeUsedGems();
+
+    // iVar2 = MergedGet0x8(this + 0x8c);
+    // fn_800ECF74(*(this + 0x1d4),iVar2 + 0x38c);
+
+    mDir->mBREGrp->SetShowing(true);
+    mDir->mLeadBREGrp->SetShowing(true);
+    mDir->mHarmonyBREGrp->SetShowing(true);
+    unk2ec = true;
+    UpdateVocalStyle();
+}
+
+void VocalTrack::HitTambourineGem(int) {}
+
+void VocalTrack::MissTambourineGem(int, bool b) {
+    if (b)
+        mDir->Tambourine(miss);
+}
+
+void VocalTrack::OnPhraseComplete(float f1, float f2, int i3) {
+    BuildPhrase(f1, f2);
+    if (unk68) {
+        const char *txt = MakeString("last: %i\n", i3);
+        mDir->Find<RndText>("debug_score_current.txt", true)->SetText(txt);
+    }
+}
+
 void VocalTrack::ClearLyrics() {
     if (sDumpLyricPlates) {
         MILO_WARN("clearing all lyric plates\n");
@@ -690,6 +745,12 @@ void VocalTrack::ClearLyrics() {
         RELEASE(mLyricsHarmony.front());
         mLyricsHarmony.pop_front();
     }
+}
+
+void VocalTrack::BuildPhrase(float f1, float f2) {
+    mPhraseStartMs = mPhraseEndMs;
+    mPhraseEndMs = f1;
+    mNextPhraseEndMs = f2;
 }
 
 void VocalTrack::PushGameplayOptions(VocalParam p, int id) {
