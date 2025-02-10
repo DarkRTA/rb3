@@ -777,7 +777,7 @@ void RndMesh::SetZeroWeightBones() {
 }
 
 void RndMesh::CopyGeometryFromOwner() {
-    RndMesh *owner = GeometryOwner();
+    RndMesh *owner = GeomOwner();
     if (owner != this) {
         CopyGeometry(owner, true);
         Sync(0x3F);

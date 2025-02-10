@@ -1,9 +1,11 @@
 #pragma once
 #include "bandobj/NoteTube.h"
+#include "bandobj/TrackInterface.h"
 #include "bandobj/VocalTrackDir.h"
 #include "bandtrack/Lyric.h"
 #include "bandtrack/Track.h"
 #include "bandtrack/VocalStyle.h"
+#include "beatmatch/VocalNote.h"
 #include "game/BandUser.h"
 #include "game/VocalPlayer.h"
 #include "obj/Data.h"
@@ -97,12 +99,26 @@ public:
     void ResetTimingData();
     void ReadTimingData(const DataArray *);
     void RebuildHUD();
-    void CreateMarker(Symbol, float, bool);
+    RndMesh *CreateMarker(Symbol, float, bool);
     void CreateMarkers();
     void ConfigNoteTube(bool, int, int, bool, float);
+    LyricPlate *GetNextLyricPlate(std::deque<LyricPlate *> &, bool);
+    void DumpLyricPlates(std::deque<LyricPlate *> &, bool);
+    void UpdateScrolling(float);
+    void UpdateTambourineGems();
+    void PollLyricAnimations(std::deque<LyricPlate *> &, float, bool);
+    void PollKaraoke(float);
+    void HideCoda();
+    bool WantBeatLines(int);
+    VocalNoteList *GetVocalNoteList(int);
+    void SetAlternateNoteList(int, VocalNoteList *);
+    Lyric *GetLastLyric(std::deque<LyricPlate *> &);
+    Lyric *GetLastBakedLyric(std::deque<LyricPlate *> &);
+
+    DataNode OnGetDisplayMode(const DataArray *);
 
     bool unk68; // 0x68
-    int unk6c; // 0x6c - vocal style
+    VocalStyle mVocalStyleOverride; // 0x6c - vocal style
     int unk70; // 0x70
     float unk74; // 0x74
     float unk78; // 0x78
@@ -129,14 +145,14 @@ public:
     std::vector<std::deque<TubePlate *> > mPhonemeTubePlates; // 0x13c
     std::deque<TubePlate *> mLeadDeployPlates; // 0x144
     std::deque<TubePlate *> mHarmonyDeployPlates; // 0x16c
-    std::vector<RndMesh *> unk194; // 0x194
+    std::vector<RndMesh *> mMeshPool; // 0x194
     int unk19c; // 0x19c
     std::deque<std::pair<RndMesh *, float> > unk1a0; // 0x1a0
     ObjPtr<RndGroup> unk1c8; // 0x1c8
     TambourineGemPool *mTambourineGemPool; // 0x1d4
     std::deque<TambourineGem *> mTambourineGems; // 0x1d8
-    int unk200; // 0x200
-    int unk204; // 0x204
+    VocalParam mCharOptParam; // 0x200 - vocal param
+    int mCharOptMicID; // 0x204
     int unk208; // 0x208
     int unk20c; // 0x20c
     int unk210; // 0x210
@@ -153,7 +169,7 @@ public:
     float unk2a8;
     float unk2ac;
     float unk2b0;
-    int unk2b4[3]; // 0x2b4
+    VocalNoteList *mAlternateNoteList[3]; // 0x2b4
     float mStaticDeployZoneXSize; // 0x2c0
     float mStaticDeployBufferX; // 0x2c4
     float mStaticDeployMarginX; // 0x2c8

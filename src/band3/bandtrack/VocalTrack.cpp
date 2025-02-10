@@ -1,23 +1,32 @@
 #include "bandtrack/VocalTrack.h"
+#include "GraphicsUtl.h"
 #include "bandobj/NoteTube.h"
+#include "bandobj/VocalTrackDir.h"
+#include "bandtrack/Lyric.h"
 #include "bandtrack/VocalStyle.h"
+#include "beatmatch/VocalNote.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/Game.h"
 #include "game/GameConfig.h"
+#include "game/SongDB.h"
 #include "math/Mtx.h"
 #include "meta_band/GameplayOptions.h"
 #include "obj/Data.h"
 #include "obj/DataFile.h"
 #include "obj/DataFunc.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Mesh.h"
+#include "stl/_pair.h"
 #include "utl/Std.h"
 
 int maxPlatesQueued;
 int maxVertsInPlate;
 int maxFacesInPlate;
 int maxNumLyricPlates;
+bool sDumpLyricPlates;
 bool sDumpPlateStates;
 bool gDebugSpew;
 
@@ -101,7 +110,7 @@ void VocalTrack::UpdateTubePlates(
             DumpPlates(deque, cur->GetMatName().c_str());
         }
         cur->Bake();
-        if (unk6c == 0 && cur->Deploy()) {
+        if (mVocalStyleOverride == kVocalStyleScrolling && cur->Deploy()) {
             cur->PollDeploy(fvar1);
         }
     }
@@ -271,22 +280,22 @@ DataNode ToggleDebugSpew(DataArray *) {
 }
 
 VocalTrack::VocalTrack(BandUser *u)
-    : Track(u), unk68(0), unk6c(1), unk70(2), unk78(24.0f), unk7c(0), mDir(this),
-      mPlayer(this), unke8(0), unkec(0), unkf0(0), unkf4(0), unkf8(0), unkfc(0),
-      unk100(0), unk104(1), unk108(0), unk128(0), unk19c(0), unk1c8(this),
-      mTambourineGemPool(0), unk204(-1), unk208(60), unk20c(0), unk210(0), unk23c(0.1f),
-      unk240(0.1f), unk294(0), unk298(0), unk2a4(-1.0f), unk2a8(0), unk2ac(0), unk2b0(0),
-      mStaticDeployZoneXSize(2.0f), mStaticDeployBufferX(0.5f),
-      mStaticDeployMarginX(0.1f), mLyricShiftMs(100.0f), mLyricShiftQuickMs(20.0f),
-      mLyricShiftAnticipationMs(250.0f), mMinLyricHighlightMs(100.0f),
-      mMinPhraseHighlightMs(500.0f), mLyricOverlapWindowMs(100.0f), unk2e4(0),
-      mNoteTube(new NoteTube()), unk2ec(1) {
+    : Track(u), unk68(0), mVocalStyleOverride(kVocalStyleScrolling), unk70(2),
+      unk78(24.0f), unk7c(0), mDir(this), mPlayer(this), unke8(0), unkec(0), unkf0(0),
+      unkf4(0), unkf8(0), unkfc(0), unk100(0), unk104(1), unk108(0), unk128(0), unk19c(0),
+      unk1c8(this), mTambourineGemPool(0), mCharOptMicID(-1), unk208(60), unk20c(0),
+      unk210(0), unk23c(0.1f), unk240(0.1f), unk294(0), unk298(0), unk2a4(-1.0f),
+      unk2a8(0), unk2ac(0), unk2b0(0), mStaticDeployZoneXSize(2.0f),
+      mStaticDeployBufferX(0.5f), mStaticDeployMarginX(0.1f), mLyricShiftMs(100.0f),
+      mLyricShiftQuickMs(20.0f), mLyricShiftAnticipationMs(250.0f),
+      mMinLyricHighlightMs(100.0f), mMinPhraseHighlightMs(500.0f),
+      mLyricOverlapWindowMs(100.0f), unk2e4(0), mNoteTube(new NoteTube()), unk2ec(1) {
     DataRegisterFunc("vocal_jitter_debug", ToggleDebugSpew);
     for (int i = 0; i < 3; i++) {
         mFrontTubePlates.push_back(std::deque<TubePlate *>());
         mBackTubePlates.push_back(std::deque<TubePlate *>());
         mPhonemeTubePlates.push_back(std::deque<TubePlate *>());
-        unk2b4[i] = 0;
+        mAlternateNoteList[i] = 0;
     }
     InitPlatePool();
 }
@@ -296,7 +305,7 @@ VocalTrack::~VocalTrack() {
     ClearLyrics();
     ClearMarkers();
     ClearAllTubePlates();
-    DeleteAll(unk194);
+    DeleteAll(mMeshPool);
     RELEASE(mNoteTube);
 }
 
@@ -439,4 +448,259 @@ void VocalTrack::ConfigNoteTube(bool pitched, int pts, int part, bool b4, float 
         else
             mNoteTube->SetBackMat(mDir->mLeadDeployMat);
     }
+}
+
+LyricPlate *VocalTrack::GetNextLyricPlate(std::deque<LyricPlate *> &plates, bool b2) {
+    FOREACH (it, plates) {
+        if ((*it)->Empty())
+            return *it;
+    }
+    RndText *text = b2 ? mDir->mLeadText : mDir->mHarmText;
+    RndText *phonemeText = b2 ? mDir->mLeadPhonemeText : mDir->mHarmPhonemeText;
+    RndText *newText = NewRndCopy(text);
+    plates.push_back(new LyricPlate(newText, text, phonemeText));
+    if (sDumpLyricPlates) {
+        MILO_LOG("creating new %s lyric plate\n", b2 ? "lead" : "harmony");
+        DumpLyricPlates(plates, b2);
+    }
+    int numplates = plates.size();
+    if (maxNumLyricPlates < numplates) {
+        maxNumLyricPlates = numplates;
+        if (sDumpLyricPlates) {
+            MILO_LOG("Max Lyric Plates: %d\n", maxNumLyricPlates);
+        }
+    }
+    return plates.back();
+}
+
+Lyric *VocalTrack::GetLastLyric(std::deque<LyricPlate *> &plates) {
+    Lyric *last = nullptr;
+    FOREACH (it, plates) {
+        if ((*it)->Empty())
+            break;
+        last = (*it)->LatestLyric();
+    }
+    return last;
+}
+
+Lyric *VocalTrack::GetLastBakedLyric(std::deque<LyricPlate *> &plates) {
+    Lyric *last = nullptr;
+    FOREACH (it, plates) {
+        if (!(*it)->Baked())
+            break;
+        last = (*it)->LatestLyric();
+    }
+    return last;
+}
+
+RndMesh *VocalTrack::CreateMarker(Symbol s1, float f2, bool warn) {
+    RndMesh *mesh = nullptr;
+    if (mMeshPool.empty()) {
+        mesh = Hmx::Object::New<RndMesh>();
+        unk19c++;
+        if (warn) {
+            MILO_WARN(
+                "VocalTrack::CreateMarker() added new %s mesh at run-time (total %d); please alert HUD/Track owner",
+                s1.mStr,
+                unk19c
+            );
+        }
+    } else {
+        mesh = mMeshPool.back();
+        mMeshPool.pop_back();
+    }
+    RndMesh *found = mDir->Find<RndMesh>(s1.mStr, true);
+    mesh->SetGeomOwner(found->GeomOwner());
+    mesh->SetMat(found->Mat());
+    mesh->SetShowing(true);
+    mesh->SetTransParent(found->TransParent(), false);
+    mesh->SetLocalXfm(found->mLocalXfm);
+    mesh->SetTransParent(mDir->mScroller, true);
+    Vector3 v18 = mesh->mLocalXfm.v;
+    v18.x = unk78 * (f2 / unk74);
+    mesh->SetLocalPos(v18);
+    unk1c8->AddObject(mesh);
+    unk1a0.push_back(std::make_pair(mesh, f2));
+    return mesh;
+}
+
+void VocalTrack::ReturnFirstMarker() {
+    RndMesh *mesh = unk1a0.front().first;
+    MILO_ASSERT(mesh, 0x393);
+    MILO_ASSERT(mesh->GeomOwner() != mesh, 0x394);
+    mMeshPool.push_back(mesh);
+    unk1c8->RemoveObject(mesh);
+    unk1a0.pop_front();
+}
+
+void VocalTrack::SetDir(RndDir *dir) {
+    mDir = dynamic_cast<VocalTrackDir *>(dir);
+    Init();
+}
+
+bool VocalTrack::WantBeatLines(int i1) {
+    if (mPlayer->IsNet())
+        return false;
+    else {
+        VocalNoteList *notes = GetVocalNoteList(0);
+        std::vector<VocalPhrase> &phrases = notes->mPhrases;
+        FOREACH (it, phrases) {
+            if (i1 >= it->unk8 && (i1 <= it->unk8 + it->unkc)) {
+                return it->unk2d;
+            }
+        }
+        return false;
+    }
+}
+
+VocalNoteList *VocalTrack::GetVocalNoteList(int part) {
+    if (mAlternateNoteList[part])
+        return mAlternateNoteList[part];
+    else
+        return TheSongDB->GetVocalNoteList(part);
+}
+
+void VocalTrack::SetAlternateNoteList(int part, VocalNoteList *notes) {
+    MILO_ASSERT_RANGE(part, 0, 3, 0x53E);
+    mAlternateNoteList[part] = notes;
+}
+
+void VocalTrack::HideCoda() {
+    unk2ec = false;
+    mDir->mBREGrp->SetShowing(false);
+    mDir->mLeadBREGrp->SetShowing(false);
+    mDir->mHarmonyBREGrp->SetShowing(false);
+}
+
+void VocalTrack::DumpLyricPlates(std::deque<LyricPlate *> &plates, bool lead) {
+    MILO_LOG("Dumping %s lyric plates\n", lead ? "lead" : "harmony");
+    int idx = 0;
+    FOREACH (it, plates) {
+        LyricPlate *cur = *it;
+        MILO_LOG(
+            "[%d] %x (%.2f - %.2f) %s\n",
+            idx,
+            cur,
+            !cur->mSyllables.empty() ? (cur->mSyllables.front()->mHighlightMs) / 1000.0f
+                                     : -1.0f,
+            cur->mInvalidateMs / 1000.0f,
+            cur->mText->mText.c_str()
+        );
+        if (cur->Empty()) {
+            MILO_LOG("\t<empty>\n");
+        } else {
+            for (int i = 0; i < cur->mSyllables.size(); i++) {
+                Lyric *curLyric = cur->mSyllables[i];
+                MILO_LOG("\t[%d] %x", i, curLyric);
+                if (curLyric) {
+                    MILO_LOG(
+                        " %s x:%.2f (%.2f - %.2f)\n",
+                        curLyric->mText.c_str(),
+                        curLyric->unk48.x,
+                        curLyric->mActiveMs / 1000.0f,
+                        curLyric->mEndMs / 1000.0f
+                    );
+                } else
+                    MILO_LOG("\n");
+            }
+        }
+        idx++;
+    }
+    MILO_LOG("\n");
+}
+
+void VocalTrack::Poll(float f1) {
+    bool gamebool = TheGame->InTrainer();
+    if (f1 < unk2a4 && !gamebool) {
+        RebuildHUD();
+    }
+    float f6 = unk78 * -(f1 / unk74);
+    mDir->mScroller->SetLocalPos(Vector3(f6, 0, 0));
+    unk2a8 = f6 + mDir->mNowBarX;
+    Track::Poll(f1);
+    mDir->UpdatePartIsolation();
+    mDir->SortArrowFx();
+    UpdateScrolling(f1);
+    UpdateTambourineGems();
+    if (f1 > 0) {
+        PollLyricAnimations(mLyricsLead, f1, true);
+        PollLyricAnimations(mLyricsHarmony, f1, false);
+    }
+    PollKaraoke(f1);
+    if (unk68) {
+        const char *txt = MakeString("current: %i\n", mPlayer->PhraseScore());
+        mDir->Find<RndText>("debug_score_current.txt", true)->SetText(txt);
+    }
+    if (!gamebool)
+        unk2a4 = f1;
+    if (mPlayer && unk2ec) {
+        if (!mPlayer->CanDeployCoda()) {
+            HideCoda();
+        }
+    }
+}
+
+void VocalTrack::PollKaraoke(float f1) {}
+
+void UpdateSyllableText(String &str, bool b2, bool &bref) {
+    bref = false;
+    if (b2 && !str.empty() && str.rindex(-1) == '-') {
+        if (str.length() > 1) {
+            str = str.substr(0, str.length() - 1);
+            return;
+        }
+        str = "";
+        return;
+    }
+    if (!str.empty() && str.rindex(-1) == '=') {
+        str.rindex(-1) = '-';
+        if (!b2)
+            str += ' ';
+    } else {
+        str += ' ';
+        if (b2)
+            str += ' ';
+        bref = true;
+    }
+}
+
+void PrintLyricOneLine(const Lyric &lyric) {
+    MILO_LOG("\t%3.2f\t(%6.2fms)\t", lyric.unk48.x, lyric.mActiveMs);
+    if (lyric.mDeployIdx > -1) {
+        MILO_LOG("| ");
+    }
+    MILO_LOG("\"%s\"", lyric.mText.c_str());
+    if (lyric.mChunkEnd) {
+        MILO_LOG(" |");
+    }
+    MILO_LOG("\n");
+}
+
+void VocalTrack::ClearLyrics() {
+    if (sDumpLyricPlates) {
+        MILO_WARN("clearing all lyric plates\n");
+        DumpLyricPlates(mLyricsLead, true);
+        DumpLyricPlates(mLyricsHarmony, false);
+    }
+    while (mLyricsLead.size() != 0) {
+        RELEASE(mLyricsLead.front());
+        mLyricsLead.pop_front();
+    }
+    while (mLyricsHarmony.size() != 0) {
+        RELEASE(mLyricsHarmony.front());
+        mLyricsHarmony.pop_front();
+    }
+}
+
+void VocalTrack::PushGameplayOptions(VocalParam p, int id) {
+    Track::PushGameplayOptions(p, id);
+    mCharOptParam = p;
+    mCharOptMicID = id;
+}
+
+DataNode VocalTrack::OnGetDisplayMode(const DataArray *a) {
+    if (IsScrolling()) {
+        return "scrolling";
+    } else
+        return "static";
 }

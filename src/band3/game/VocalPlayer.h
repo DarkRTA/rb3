@@ -59,4 +59,6 @@ public:
     virtual void UpdateVocalStyle();
 
     bool ShowPitchCorrectionNotice() const;
+    int PhraseScore() const;
+    bool CanDeployCoda() const;
 };

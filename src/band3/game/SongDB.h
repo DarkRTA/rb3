@@ -68,6 +68,7 @@ public:
     FillInfo *GetFillInfo(int, int);
     GameGem &GetGem(int, int) const;
     int GetTotalGems(int) const;
+    VocalNoteList *GetVocalNoteList(int) const;
 
     SongData *GetSongData() { return mSongData; }
 
