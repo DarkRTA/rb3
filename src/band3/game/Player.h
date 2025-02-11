@@ -187,6 +187,7 @@ public:
     TrackType GetTrackType() const { return mTrackType; }
     BandUser *GetUser() const { return mUser; }
     float GetBandEnergy() const { return mBandEnergy; }
+    EnabledState GetEnabledState() const { return mEnabledState; }
 
     DataNode OnGetOverdriveMeter(DataArray *);
     DataNode OnSendNetGameplayMsg(DataArray *);

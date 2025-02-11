@@ -1,7 +1,9 @@
 #pragma once
 #include "game/Performer.h"
 #include "game/Player.h"
+#include "game/Singer.h"
 #include "game/TambourineManager.h"
+#include "obj/Data.h"
 #include "rndobj/Overlay.h"
 
 class VocalPlayer : public Player, public RndOverlay::Callback {
@@ -63,10 +65,17 @@ public:
     bool ShowPitchCorrectionNotice() const;
     int PhraseScore() const;
     bool CanDeployCoda() const;
+    void SetDifficultyVariables(int);
+    void RememberCurrentMics();
+    float FramePhraseMeterFrac(int) const;
+    int CalculatePhraseRating(float);
+
+    int NumSingers() const { return mSingers.size(); }
+    int NumParts() const { return unk358.size(); }
 
     Performer *unk2cc; // 0x2cc
     bool unk2d0;
-    int unk2d4;
+    int unk2d4; // 0x2d4 - vocaltrack*?
     bool unk2d8;
     float unk2dc;
     int unk2e0;
@@ -74,8 +83,8 @@ public:
     int unk2e8;
     float unk2ec;
     float unk2f0;
-    int unk2f4;
-    int unk2f8;
+    float unk2f4;
+    float unk2f8;
     int unk2fc;
     float unk300;
     float unk304;
@@ -85,20 +94,20 @@ public:
     int unk314;
     int unk318;
     int unk31c;
-    int unk320;
-    int unk324;
+    DataArray *unk320;
+    DataArray *unk324;
     int unk328;
     int unk32c;
-    int unk330;
-    int unk334;
+    DataArray *unk330;
+    DataArray *unk334;
     float unk338;
     bool unk33c;
     float unk340;
     bool unk344;
-    float unk348;
+    float mTuningOffset; // 0x348
     float unk34c;
-    std::vector<int> unk350;
-    std::vector<int> unk358;
+    std::vector<Singer *> mSingers; // 0x350
+    std::vector<int> unk358; // should be vec of VocalPart*s
     std::vector<int> unk360;
     int unk368;
     int unk36c;
@@ -106,7 +115,7 @@ public:
     int unk374;
     float unk378;
     int unk37c;
-    int unk380;
+    RndOverlay *mOverlay; // 0x380
     int unk384;
     bool unk388;
     TambourineManager mTambourineManager; // 0x38c

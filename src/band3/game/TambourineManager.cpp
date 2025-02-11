@@ -1,13 +1,17 @@
 #include "game/TambourineManager.h"
 #include "game/VocalPlayer.h"
+#include "midi/MidiParser.h"
 #include "obj/Data.h"
+#include "obj/Dir.h"
 #include "obj/Object.h"
 #include "os/System.h"
+#include "utl/Symbols.h"
 
 TambourineManager::TambourineManager(VocalPlayer &p)
-    : mPlayerRef(p), mIsLocal(p.IsLocal()), unk30(0), unk34(Hmx::Object::New<Fader>()),
-      unk38(0), unk44(0), unk48(1), unk4c(0), unk5c(0), unk60(0), unk68(0), unk74(0),
-      unk78(0), unk7c(0) {
+    : mPlayerRef(p), mIsLocal(p.IsLocal()), mTambourineSequence(0),
+      mTambourineFader(Hmx::Object::New<Fader>()), mTambourineParser(0), unk44(0),
+      unk48(1), unk4c(0), mTambourineActive(0), unk60(0), unk68(0), unk74(0), unk78(0),
+      unk7c(0) {
     DataArray *cfg = SystemConfig("scoring", "vocals");
     int diff = mPlayerRef.GetUser()->GetDifficulty();
     mTambourineWindowTicks = cfg->FindInt("tambourine_window_ticks");
@@ -19,6 +23,29 @@ TambourineManager::TambourineManager(VocalPlayer &p)
 }
 
 TambourineManager::~TambourineManager() {
-    RELEASE(unk34);
+    RELEASE(mTambourineFader);
+    RELEASE(mTambourineSequence);
     unk24 = nullptr;
+}
+
+void TambourineManager::PostLoad() {
+    mTambourineParser = ObjectDir::sMainDir->Find<MidiParser>("tambourine", true);
+    mTambourineParser->AddSink(this);
+    ComputeTambourinePoints();
+    mTambourineFader->DoFade(-96.0f, 0);
+}
+
+void TambourineManager::PostDynamicAdd() { Restart(); }
+
+void TambourineManager::Start() { mTambourineActive = true; }
+
+void TambourineManager::Restart() {
+    unk4c = 0;
+    unk44 = 0;
+    unk60 = 0;
+    unk68 = 0;
+    mPlayerRef.PopupHelp(tambourine, false);
+    unk48 = true;
+    mGemStates.clear();
+    // mgem states resize
 }

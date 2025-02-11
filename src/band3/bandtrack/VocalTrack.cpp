@@ -1,35 +1,50 @@
 #include "bandtrack/VocalTrack.h"
 #include "GraphicsUtl.h"
+#include "VocalStyle.h"
 #include "bandobj/NoteTube.h"
 #include "bandobj/VocalTrackDir.h"
 #include "bandtrack/Lyric.h"
+#include "bandtrack/TrackPanel.h"
 #include "bandtrack/VocalStyle.h"
 #include "beatmatch/VocalNote.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/Game.h"
 #include "game/GameConfig.h"
+#include "game/Player.h"
 #include "game/SongDB.h"
 #include "math/Mtx.h"
+#include "meta_band/BandSongMetadata.h"
+#include "meta_band/BandSongMgr.h"
 #include "meta_band/GameplayOptions.h"
+#include "meta_band/MetaPerformer.h"
 #include "obj/Data.h"
 #include "obj/DataFile.h"
 #include "obj/DataFunc.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "rndobj/Anim.h"
+#include "rndobj/Group.h"
 #include "rndobj/Mesh.h"
+#include "synth/MicManagerInterface.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols4.h"
+#include "utl/TimeConversion.h"
 #include <utility>
 
 int maxPlatesQueued;
 int maxVertsInPlate;
 int maxFacesInPlate;
 int maxNumLyricPlates;
+bool dumpLyricShifts;
 bool sDumpLyricPlates;
 bool sDumpPlateStates;
 bool gDebugSpew;
+
+MicClientID sNullMicClientID(-1, -1);
 
 inline TambourineGemPool::TambourineGemPool() {
     for (int i = 0; i < 25; i++) {
@@ -556,6 +571,119 @@ bool VocalTrack::WantBeatLines(int i1) {
     }
 }
 
+int VocalTrack::NumSingers() const {
+    if (mPlayer)
+        return mPlayer->NumSingers();
+    else
+        return 0;
+}
+
+bool VocalTrack::UseVocalHarmony() {
+    if (mPlayer)
+        return mPlayer->NumParts() > 1;
+    else
+        return 0;
+}
+
+void VocalTrack::SetVocalStyle(VocalStyle style) {
+    if (HasNetPlayer())
+        unk2e5 = true;
+    else
+        unk2e5 = false;
+    if (mVocalStyleOverride != style) {
+        mVocalStyleOverride = style;
+        UpdateVocalStyle();
+        TrackPanel *panel = GetTrackPanel();
+        panel->unk5f = false;
+    }
+}
+
+bool VocalTrack::IsScrolling() const {
+    if (unk70 == 2)
+        return mVocalStyleOverride == kVocalStyleScrolling;
+    else
+        return unk70 == 1;
+}
+
+void VocalTrack::UpdateVocalStyle() {
+    std::vector<Player *> &players = TheGame->GetActivePlayers();
+    if (mPlayer && mPlayer->IsLocal()) {
+        for (int i = 0; i < players.size(); i++) {
+            Player *cur = players[i];
+            if (cur && cur->GetTrackType() == kTrackVocals) {
+                if (cur->GetTrackNum() != mTrackConfig.TrackNum() && cur->IsNet()) {
+                    VocalTrack *track =
+                        dynamic_cast<VocalTrack *>(cur->GetUser()->GetTrack());
+                    if (track)
+                        track->SetVocalStyle(mVocalStyleOverride);
+                }
+            }
+        }
+    }
+    if (mDir) {
+        if (mPlayer) {
+            EnabledState estate = mPlayer->GetEnabledState();
+            if (estate == kPlayerDisabled || estate == kPlayerDisconnected)
+                return;
+        }
+        mDir->UpdateConfiguration();
+        unk78 = mDir->mTrackRightX - mDir->mTrackLeftX;
+        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
+            TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+        );
+        unk74 = data->ScrollSpeed() * (unk78 / 16.8f);
+        mDir->Find<RndAnimatable>("tambourine_preview.anim", true)->SetFrame(0, 1);
+        RebuildHUD();
+    }
+}
+
+void VocalTrack::RebuildHUD() {
+    for (int i = 0; i < 3; i++) {
+        mNextScrollNote[i] = 0;
+    }
+    for (int i = 0; i < 2; i++) {
+        mNextDeployZone[i] = 0;
+    }
+    for (int i = 0; i < 2; i++) {
+        mCurLyricPhrase[i] = 0;
+    }
+
+    unk108 = 0;
+    unk104 = 1;
+    unk100 = 0;
+    unkf4 = 0;
+    unkf8 = 0;
+    unkfc = 0;
+    unk23c = mStaticDeployMarginX;
+    unk240 = mStaticDeployMarginX;
+    mLeadLyricShifts.clear();
+    mHarmonyLyricShifts.clear();
+    mDir->mLeadLyricScroller->DirtyLocalXfm().v.x = unk23c;
+    mDir->mHarmonyLyricScroller->DirtyLocalXfm().v.x = unk240;
+    unk2ac = unk23c;
+    unk2b0 = unk240;
+    unk294 = 0;
+    unk298 = 0;
+    ClearLyrics();
+    ClearMarkers();
+    ResetAllTubePlates();
+    mTambourineGemPool->FreeUsedGems();
+}
+
+float VocalTrack::GetBottomDisplayPitch() const {
+    if (mDir)
+        return mDir->mLastMin;
+    else
+        return 0;
+}
+
+float VocalTrack::GetTopDisplayPitch() const {
+    if (mDir)
+        return mDir->mLastMax;
+    else
+        return 0;
+}
+
 VocalNoteList *VocalTrack::GetVocalNoteList(int part) {
     if (mAlternateNoteList[part])
         return mAlternateNoteList[part];
@@ -643,7 +771,27 @@ void VocalTrack::Poll(float f1) {
     }
 }
 
-void VocalTrack::PollKaraoke(float f1) {}
+void VocalTrack::PollKaraoke(float f1) {
+    if (mPlayer) {
+        int i1 = mPlayer->NumSingers();
+        if (!unk2e5) {
+            StartUpdateArrows();
+            for (int i = 0; i < i1; i++) {
+                UpdatePitchArrow(f1, i);
+            }
+            UpdateUnusedArrows();
+        }
+        float f7 = 0;
+        for (int i = i1; i < 3; i++) {
+            float clamped = Clamp<float>(0, 1, mPlayer->FramePhraseMeterFrac(i));
+            int rating = mPlayer->CalculatePhraseRating(clamped);
+            mDir->mStreakMeter->SetPartPct(i, clamped, rating <= 4);
+            if (clamped > f7)
+                f7 = clamped;
+        }
+        mDir->SetStreakPct(f7);
+    }
+}
 
 void UpdateSyllableText(String &str, bool b2, bool &bref) {
     bref = false;
@@ -677,6 +825,134 @@ void PrintLyricOneLine(const Lyric &lyric) {
         MILO_LOG(" |");
     }
     MILO_LOG("\n");
+}
+
+bool VocalTrack::CheckDeploySections(
+    Lyric *l1,
+    float f2,
+    int &i3,
+    const std::vector<std::pair<float, float> > &pairs,
+    bool b5,
+    Lyric *l2,
+    float &fref
+) {
+    bool ret = false;
+    while (i3 < pairs.size() && pairs[i3].first < f2) {
+        l1->SetAfterDeploy(i3);
+        if (b5) {
+            fref += mStaticDeployZoneXSize;
+            if (l2)
+                l2->SetChunkEnd(true);
+        }
+        ret = true;
+        i3++;
+    }
+    return ret;
+}
+
+bool VocalTrack::IdenticalLyric(const VocalNote &n1, const VocalNote &n2) const {
+    float f6 = Abs(n1.GetMs() - n2.GetMs());
+    if (f6 == 0)
+        return true;
+    else if (f6 > mLyricOverlapWindowMs)
+        return false;
+    else if (n1.mText.length() != n2.mText.length())
+        return false;
+    else if (n1.mText == n2.mText)
+        return true;
+    else {
+        String t1 = n1.mText;
+        String t2 = n2.mText;
+        t1.ToLower();
+        t2.ToLower();
+        return t1 == t2;
+    }
+}
+
+void VocalTrack::BuildStaticDeployZone(
+    int i1,
+    const std::pair<float, float> &fpair,
+    float f3,
+    float &fref,
+    std::deque<LyricShift> &shifts
+) {
+    ConfigNoteTube(false, 2, std::min(i1, 1), true, 1);
+    HookupTubePlates(mNoteTube);
+    float f10 = fref + mStaticDeployBufferX;
+    fref = (f10 + mStaticDeployZoneXSize) - mStaticDeployMarginX;
+    shifts.push_back(LyricShift(fpair.second, -fref));
+    if (f3 != -1.0f) {
+        float max = std::max<float>(mLyricShiftMs + fpair.second, f3);
+        shifts.push_back(
+            LyricShift(max, mStaticDeployMarginX + (-fref - mStaticDeployBufferX))
+        );
+    }
+    bool i6 = TheSongDB->IsInCoda(MsToTickInt(fpair.first));
+    bool i8 = i6 - 1 + !i6;
+    float f1;
+    RndGroup *u4;
+    float f2;
+    if (i1 == 0) {
+        f1 = mDir->mTrackBottomZ + mDir->mPitchBottomZ;
+        u4 = i6 == i8 ? mDir->mLeadLyricScrollGroup : mDir->mLeadBREGrp;
+        f2 = mDir->mLeadLyricHeight;
+    } else {
+        f1 = mDir->mTrackTopZ + mDir->mPitchTopZ;
+        u4 = i6 == i8 ? mDir->mHarmonyLyricScrollGroup : mDir->mHarmonyBREGrp;
+        f2 = mDir->mHarmLyricHeight;
+    }
+    mNoteTube->SetPointPos(0, Vector3(0, 0, f1 / 2.0f));
+    mNoteTube->SetPointPos(1, Vector3(fref - f10, 0, f1 / 2.0f));
+    mNoteTube->unk_0x30 = f2 / 2.0f;
+    mNoteTube->SetBackParent(u4);
+    mNoteTube->SetXPos(f10);
+    mNoteTube->CreateMeshes();
+    mNoteTube->SetDeployTiming(fpair.first, fpair.second);
+    mNoteTube->BakePlates();
+    if (gDebugSpew)
+        MILO_LOG("new final deploy section for part %d\n", i1);
+}
+
+void VocalTrack::ProcessStaticLyrics(
+    bool b1,
+    Lyric *l2,
+    float &f3,
+    float &f4,
+    Lyric *&l5,
+    Lyric *&l6,
+    float &f7,
+    bool b8,
+    LyricPlate *lp9
+) {
+    if (b1) {
+        if (b8) {
+            f3 = f4;
+            f7 = f4;
+            l5 = nullptr;
+            l6 = nullptr;
+        }
+        float d4 = mDir->unk42c;
+        float f1 = d4 - mDir->mNowBarX;
+        lp9->EstimateLyricWidth(l2);
+        float f2 = f4;
+        f4 += d4;
+        f2 = f4 - f3;
+        if (l5 && !l6)
+            l6 = l2;
+        if (l5 && f1 < f2) {
+            l5->SetChunkEnd(true);
+            l5 = nullptr;
+            f2 = f7;
+            f3 = f2;
+            f2 = f4 - f2;
+            l6->SetAfterMidPhraseLyricShift(true);
+            l6 = nullptr;
+        }
+        if (!l5 && (f1 / 2.0f < f2) && l2->mWordEnd) {
+            l5 = l2;
+            f7 = f4;
+        }
+    }
 }
 
 void VocalTrack::Restart(VocalPlayer *player, float f1, float f2) {
@@ -762,4 +1038,67 @@ DataNode VocalTrack::OnGetDisplayMode(const DataArray *a) {
         return "scrolling";
     } else
         return "static";
+}
+
+DataNode VocalTrack::OnSetDisplayMode(const DataArray *a) {
+    if (a->Sym(2) == "static") {
+        mVocalStyleOverride = kVocalStyleStatic;
+        return a->Node(2);
+    } else if (a->Sym(2) == "scrolling") {
+        mVocalStyleOverride = kVocalStyleScrolling;
+        return a->Node(2);
+    } else
+        return "unrecognized";
+}
+
+void VocalTrack::SetCanDeploy(bool can) {
+    if (mDir->mPitchScrollGroup) {
+        mDir->mPitchScrollGroup->SetShowing(can);
+    }
+    if (mDir->mLeadLyricScrollGroup) {
+        mDir->mLeadLyricScrollGroup->SetShowing(can);
+    }
+    if (mDir->mHarmonyLyricScrollGroup) {
+        mDir->mHarmonyLyricScrollGroup->SetShowing(can);
+    }
+}
+
+int VocalTrack::GetNumVocalParts() {
+    if (mPlayer)
+        return mPlayer->NumParts();
+    else {
+        MILO_NOTIFY_ONCE("invalid vocal player");
+        return 0;
+    }
+}
+
+BEGIN_HANDLERS(VocalTrack)
+    HANDLE_ACTION(initialize, Init())
+    HANDLE(set_display_mode, OnSetDisplayMode)
+    HANDLE(display_mode, OnGetDisplayMode)
+    HANDLE_ACTION(dump_plates, DumpAllPlates())
+    HANDLE_EXPR(set_verbose_plates, sDumpPlateStates = _msg->Int(2))
+    HANDLE_ACTION(reset_timing_data, ResetTimingData())
+    HANDLE_SUPERCLASS(Track)
+    HANDLE_CHECK(0xE6C)
+END_HANDLERS
+
+VocalTrack::LyricShift::LyricShift(float f1, float f2) : unk0(f2), unk4(f1), unk8(0) {
+    if (dumpLyricShifts) {
+        MILO_LOG(
+            "New LyricShift begin %.2f sec, end %.2f x, fast: %d\n",
+            f1 / 1000.0f,
+            f2,
+            false
+        );
+    }
+}
+
+VocalTrack::LyricShift::LyricShift(float f1, float f2, bool fast)
+    : unk0(f2), unk4(f1), unk8(fast) {
+    if (dumpLyricShifts) {
+        MILO_LOG(
+            "New LyricShift begin %.2f sec, end %.2f x, fast: %d\n", f1 / 1000.0f, f2, unk8
+        );
+    }
 }

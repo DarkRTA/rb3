@@ -45,9 +45,11 @@ class VocalTrack : public Track {
 public:
     class LyricShift {
     public:
-        int unk0;
-        int unk4;
-        int unk8;
+        LyricShift(float, float);
+        LyricShift(float, float, bool);
+        float unk0;
+        float unk4;
+        bool unk8;
     };
 
     class RangeShift {
@@ -68,8 +70,8 @@ public:
     virtual bool IsScrolling() const;
     virtual bool InTambourinePhrase() const;
     virtual int IncrementVolume(int);
-    virtual bool IsCurrentVocalParam(VocalParam);
-    virtual void RebuildVocalHUD();
+    virtual bool IsCurrentVocalParam(VocalParam p) { return mCharOptParam == p; }
+    virtual void RebuildVocalHUD() { RebuildHUD(); }
     virtual int NumSingers() const;
     virtual bool UseVocalHarmony();
     virtual void SetCanDeploy(bool);
@@ -77,8 +79,8 @@ public:
     virtual bool ShowPitchCorrectionNotice() const;
     virtual void Poll(float);
     virtual void SetDir(RndDir *);
-    virtual RndDir *GetDir();
-    virtual BandTrack *GetBandTrack();
+    virtual RndDir *GetDir() { return mDir; }
+    virtual BandTrack *GetBandTrack() { return mDir; }
     virtual void SetVocalStyle(VocalStyle);
 
     void InitPlatePool();
@@ -122,8 +124,21 @@ public:
     void MissTambourineGem(int, bool);
     void Restart(VocalPlayer *, float, float);
     void UpdateVocalStyle();
+    void StartUpdateArrows();
+    void UpdatePitchArrow(float, int);
+    void UpdateUnusedArrows();
+    float GetBottomDisplayPitch() const;
+    float GetTopDisplayPitch() const;
+    bool
+    CheckDeploySections(Lyric *, float, int &, const std::vector<std::pair<float, float> > &, bool, Lyric *, float &);
+    bool IdenticalLyric(const VocalNote &, const VocalNote &) const;
+    void
+    BuildStaticDeployZone(int, const std::pair<float, float> &, float, float &, std::deque<LyricShift> &);
+    void
+    ProcessStaticLyrics(bool, Lyric *, float &, float &, Lyric *&, Lyric *&, float &, bool, LyricPlate *);
 
     DataNode OnGetDisplayMode(const DataArray *);
+    DataNode OnSetDisplayMode(const DataArray *);
 
     bool unk68; // 0x68
     VocalStyle mVocalStyleOverride; // 0x6c
@@ -188,6 +203,7 @@ public:
     float mMinPhraseHighlightMs; // 0x2dc
     float mLyricOverlapWindowMs; // 0x2e0
     bool unk2e4;
+    bool unk2e5;
     NoteTube *mNoteTube; // 0x2e8
     bool unk2ec;
 };

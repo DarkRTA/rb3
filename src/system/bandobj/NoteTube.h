@@ -70,6 +70,7 @@ public:
     void SetBackParent(RndGroup *grp) { mBackParent = grp; }
     void SetFrontMat(RndMat *mat) { mFrontMat = mat; }
     void SetFrontParent(RndGroup *grp) { mFrontParent = grp; }
+    void SetXPos(float pos) { mXPos = pos; }
 
     bool mPitched; // 0x1c
     int mPart; // 0x20

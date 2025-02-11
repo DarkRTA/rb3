@@ -73,13 +73,14 @@ public:
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
     bool CodaEnabled() const { return mProperties.mEnableCoda; }
+    std::vector<Player *> &GetActivePlayers();
 
     Properties mProperties; // 0x24
     SongPos mSongPos; // 0x40
     SongDB *mSongDB; // 0x54
-    int unk58;
+    int unk58; // 0x58 - SongInfoCopy*
     BeatMaster *mMaster; // 0x5c
-    std::vector<int> unk60;
+    std::vector<Player *> unk60; // 0x60 - vector of Player*s
     bool mIsPaused; // 0x68
     bool unk69;
     bool unk6a;
