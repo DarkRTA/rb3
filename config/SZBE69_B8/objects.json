@@ -33,7 +33,7 @@
 
             "band3/game/AccuracyTracker.cpp": "Matching",
             "band3/game/Band.cpp": "NonMatching",
-            "band3/game/BandPerformer.cpp": "MISSING",
+            "band3/game/BandPerformer.cpp": "NonMatching",
             "band3/game/BandUser.cpp": "NonMatching",
             "band3/game/BandUserMgr.cpp": "NonMatching",
             "band3/game/ChordbookPanel.cpp": "MISSING",
