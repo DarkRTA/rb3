@@ -2,6 +2,8 @@
 #include "GraphicsUtl.h"
 #include "VocalStyle.h"
 #include "bandobj/NoteTube.h"
+#include "bandobj/PitchArrow.h"
+#include "bandobj/StreakMeter.h"
 #include "bandobj/VocalTrackDir.h"
 #include "bandtrack/Lyric.h"
 #include "bandtrack/TrackPanel.h"
@@ -668,6 +670,40 @@ void VocalTrack::RebuildHUD() {
     ClearMarkers();
     ResetAllTubePlates();
     mTambourineGemPool->FreeUsedGems();
+    VocalNoteList *notes = GetVocalNoteList(0);
+    if (mPlayer) {
+        VocalPhrase *cur = mPlayer->CurrentPhrase();
+        if (mPlayer->AtFirstPhrase()) {
+            mPhraseEndMs = 0;
+            BuildPhrase(cur->unk0, cur->unk0); // fix
+        } else {
+            // more stuff
+        }
+        if (mPlayer->InTambourinePhrase()) {
+            mDir->SetTambourine(true);
+        }
+        unk208 = -1;
+        if (mDir->Property(pitch_guides, true)->Sym() == harmonic) {
+            int tonic =
+                ((BandSongMetadata *)TheSongMgr->Data(TheSongMgr->GetSongIDFromShortName(
+                     MetaPerformer::Current()->Song(), true
+                 )))
+                    ->VocalTonicNote();
+            if (tonic != -1)
+                unk208 = tonic + 60;
+        }
+        VocalHUDColor colors[3] = { kVocalColorInvalid,
+                                    kVocalColorInvalid,
+                                    kVocalColorInvalid };
+        Hmx::Object *tubestyle = mDir->mTubeStyle;
+        colors[0] = GetVocalHUDColor(tubestyle->Property("lead_color", true)->Sym());
+        colors[1] = GetVocalHUDColor(tubestyle->Property("harmony_1_color", true)->Sym());
+        colors[2] = GetVocalHUDColor(tubestyle->Property("harmony_2_color", true)->Sym());
+        for (int i = 0; i < mPlayer->NumParts(); i++) {
+            // setting parts here
+        }
+        mDir->SetVocalLineColors(colors);
+    }
 }
 
 float VocalTrack::GetBottomDisplayPitch() const {

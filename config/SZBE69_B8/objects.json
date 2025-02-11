@@ -31,7 +31,7 @@
             "band3/bandtrack/TrackPanel.cpp": "NonMatching",
             "band3/bandtrack/VocalTrack.cpp": "NonMatching",
 
-            "band3/game/AccuracyTracker.cpp": "NonMatching",
+            "band3/game/AccuracyTracker.cpp": "Matching",
             "band3/game/Band.cpp": "NonMatching",
             "band3/game/BandPerformer.cpp": "MISSING",
             "band3/game/BandUser.cpp": "NonMatching",

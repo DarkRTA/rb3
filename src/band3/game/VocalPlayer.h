@@ -1,4 +1,5 @@
 #pragma once
+#include "beatmatch/VocalNote.h"
 #include "game/Performer.h"
 #include "game/Player.h"
 #include "game/Singer.h"
@@ -69,6 +70,8 @@ public:
     void RememberCurrentMics();
     float FramePhraseMeterFrac(int) const;
     int CalculatePhraseRating(float);
+    VocalPhrase *CurrentPhrase() const;
+    bool AtFirstPhrase() const;
 
     int NumSingers() const { return mSingers.size(); }
     int NumParts() const { return unk358.size(); }
