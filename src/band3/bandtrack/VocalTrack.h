@@ -47,9 +47,9 @@ public:
     public:
         LyricShift(float, float);
         LyricShift(float, float, bool);
-        float unk0;
-        float unk4;
-        bool unk8;
+        float unk0; // the distance the lyric shifts
+        float unk4; // the ms at which the lyric shifts
+        bool unk8; // gotta go fast or gotta go not fast
     };
 
     class RangeShift {
