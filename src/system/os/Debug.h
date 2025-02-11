@@ -144,7 +144,7 @@ class DebugNotifier {
 public:
     DebugNotifier &operator<<(const char *c) {
         TheDebug.Notify(c);
-        return *this;
+        // return *this;
     }
 };
 
