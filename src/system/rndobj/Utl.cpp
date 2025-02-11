@@ -726,7 +726,7 @@ void RndScaleObject(Hmx::Object *o, float f1, float f2) {
     }
     RndMesh *mesh = dynamic_cast<RndMesh *>(o);
     if (mesh) {
-        if (mesh->GeometryOwner() == mesh) {
+        if (mesh->GeomOwner() == mesh) {
             for (RndMesh::Vert *it = mesh->Verts().begin(); it != mesh->Verts().end();
                  ++it) {
                 it->pos *= f1;

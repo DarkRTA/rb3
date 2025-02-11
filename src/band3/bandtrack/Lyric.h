@@ -61,6 +61,7 @@ public:
     float GetLastLyricXBeforeMS(float) const;
     void Poll(float);
     void BakeLyric(Lyric *);
+    bool Baked() const { return mBaked; }
 
     float mWidthX; // 0x1c
     int mNumCharsUsed; // 0x20

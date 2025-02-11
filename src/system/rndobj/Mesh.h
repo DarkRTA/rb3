@@ -224,7 +224,7 @@ public:
     void SetMat(RndMat *);
     void SetGeomOwner(RndMesh *);
     int NumBones() const { return mBones.size(); }
-    RndMesh *GeometryOwner() const { return mGeomOwner; }
+    RndMesh *GeomOwner() const { return mGeomOwner; }
     bool GetKeepMeshData() const { return mKeepMeshData; }
     int GetMutable() const { return mGeomOwner->mMutable; }
     Volume GetVolume() const { return mGeomOwner->mVolume; }

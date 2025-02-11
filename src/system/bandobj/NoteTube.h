@@ -1,6 +1,7 @@
 #ifndef BANDOBJ_NOTETUBE_H
 #define BANDOBJ_NOTETUBE_H
 #include "rndobj/Group.h"
+#include "rndobj/Mat.h"
 #include "rndobj/Mesh.h"
 #include "obj/Object.h"
 #include <vector>
@@ -22,6 +23,12 @@ public:
     void SetParent(RndGroup *grp) { mParent = grp; }
     void SetBeginX(float x) { mBeginX = x; }
     void SetWidthX(float x) { mWidthX = x; }
+    bool NoVerts() const { return mNumVerts == 0; }
+    bool Baked() const { return mBaked; }
+    float InvalidateMs() const { return mInvalidateMs; }
+    bool Deploy() const { return mDeploy; }
+    float GetWidthX() const { return mWidthX; }
+    float GetBeginX() const { return mBeginX; }
 
     RndMesh *mMesh; // 0x0
     RndGroup *mParent; // 0x4
@@ -33,7 +40,7 @@ public:
     float mInvalidateMs; // 0x1c
     float mMatSize; // 0x20
     bool mDeploy; // 0x24
-    int unk28; // 0x28
+    int mNumVerts; // 0x28
 };
 
 class NoteTube : public Hmx::Object {
@@ -52,6 +59,18 @@ public:
     void InitializePlate(TubePlate *, RndMat *, RndGroup *);
     void DrawToPlate(TubePlate *);
     void LookupPitchedUVCoordinates(float &, float &, float &, float &, bool);
+    bool Pitched() const { return mPitched; }
+    void SetBackPlate(TubePlate *plate) { mBackPlate = plate; }
+    void SetFrontPlate(TubePlate *plate) { mFrontPlate = plate; }
+    int Part() const { return mPart; }
+    void SetPitched(bool pitched) { mPitched = pitched; }
+    void SetPart(int part) { mPart = part; }
+    void SetAlpha(float alpha) { mAlpha = alpha; }
+    void SetBackMat(RndMat *mat) { mBackMat = mat; }
+    void SetBackParent(RndGroup *grp) { mBackParent = grp; }
+    void SetFrontMat(RndMat *mat) { mFrontMat = mat; }
+    void SetFrontParent(RndGroup *grp) { mFrontParent = grp; }
+    void SetXPos(float pos) { mXPos = pos; }
 
     bool mPitched; // 0x1c
     int mPart; // 0x20

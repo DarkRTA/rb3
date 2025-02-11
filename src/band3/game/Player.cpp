@@ -61,9 +61,9 @@ inline void PlayerParams::SetVocals() {
     mMsToReturnFromBrink = crowdcfg->FindFloat("vocals_to_return_from_brink") * 1000.0f;
 }
 
-Player::Player(BandUser *user, Band *band, int i, BeatMaster *bmaster)
+Player::Player(BandUser *user, Band *band, int tracknum, BeatMaster *bmaster)
     : Performer(user, band), mParams(new PlayerParams()), mBehavior(new PlayerBehavior()),
-      mUser(user), mRemote(0), mTrackNum(i), mTrackType(kTrackNone),
+      mUser(user), mRemote(0), mTrackNum(tracknum), mTrackType(kTrackNone),
       mEnabledState(kPlayerEnabled), mTimesFailed(0), unk268(0), mBandEnergy(0),
       mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1),
       mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0), unk290(0), unk294(0),

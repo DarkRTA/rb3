@@ -39,9 +39,9 @@ void AccuracyTracker::Poll_(float) {
             mCurrentAccuracy = f1;
             ReachedAnyTarget();
             if (mCurrentAccuracy == -2.0f) {
-                mBandDisplay.SetProgressPercentage(TrackerDisplay::kMissingPercentage);
+                mBandDisplay.SetPercentageProgress(TrackerDisplay::kMissingPercentage);
             } else {
-                mBandDisplay.SetProgressPercentage(mCurrentAccuracy);
+                mBandDisplay.SetPercentageProgress(mCurrentAccuracy);
             }
         }
     }
@@ -52,15 +52,11 @@ DataArrayPtr AccuracyTracker::GetTargetDescription(int idx) const {
 }
 
 void AccuracyTracker::UpdateGoalValueLabel(UILabel &label) const {
-    label.SetTokenFmt(
-        DataArrayPtr(tour_goal_accuracy_goal_format, (int)(mTargets.front() * 100.0f))
-    );
+    label.SetTokenFmt(tour_goal_accuracy_goal_format, (int)(mTargets.front() * 100.0f));
 }
 
 void AccuracyTracker::UpdateCurrentValueLabel(UILabel &label) const {
-    label.SetTokenFmt(
-        DataArrayPtr(tour_goal_accuracy_result_format, (int)(mCurrentAccuracy * 100.0f))
-    );
+    label.SetTokenFmt(tour_goal_accuracy_result_format, (int)(mCurrentAccuracy * 100.0f));
 }
 
 String AccuracyTracker::GetPlayerContributionString(Symbol s) const {

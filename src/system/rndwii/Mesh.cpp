@@ -156,7 +156,7 @@ END_COPYS
 
 int WiiMesh::GetSomeSizeFactor() {
     int ret;
-    WiiMesh *own = (WiiMesh *)GeometryOwner();
+    WiiMesh *own = (WiiMesh *)GeomOwner();
     if (own->bitmask_2 && own->bitmask_1) {
         ret = 9;
     } else {
