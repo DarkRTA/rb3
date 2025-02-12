@@ -22,7 +22,7 @@ public:
     virtual DataNode Handle(DataArray *, bool);
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual ~BandUser();
-    virtual bool IsNullUser();
+    virtual bool IsNullUser() const { return false; }
     virtual bool IsParticipating() const { return mParticipating; }
     virtual int GetCurrentInstrumentCareerScore() const = 0;
     virtual int GetCurrentHardcoreIconLevel() const = 0;

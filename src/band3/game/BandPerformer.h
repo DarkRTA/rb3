@@ -18,7 +18,7 @@ public:
     virtual ExcitementLevel GetExcitement() const;
     virtual void ForceScore(int);
     virtual float GetNotesHitFraction(bool *) const;
-    virtual Symbol GetStreakType() const;
+    virtual Symbol GetStreakType() const { return "multi"; }
     virtual int GetScoreForStars(int) const;
     virtual void Lose();
 
@@ -26,8 +26,11 @@ public:
     void ComputeScoreData();
     void SetCrowdMeter();
     void Poll(float, SongPos &);
+    void ComputePoints();
+    float WeightedCrowdLevel() const;
+    bool NoOneContributingToCrowd() const;
 
-    DataArray *unk20c;
-    int unk210;
-    int unk214;
+    DataArray *unk20c; // 0x20c
+    int unk210; // 0x210
+    int unk214; // 0x214
 };

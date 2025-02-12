@@ -50,13 +50,15 @@ public:
     void CheckCoda(SongPos &);
     bool IsEndOfCoda(int);
     bool IsMultiplierActive() const { return mMultiplierActive; }
+    int AccumulatedScore() const { return mAccumulatedScore; }
+    float GetTotalStars() const { return mTotalStars; }
 
     BandPerformer *mBandPerformer; // 0x1c
     std::vector<Player *> mActivePlayers; // 0x20
     std::vector<float> mCrowdRatings; // 0x28
     float unk30; // 0x30
     int mAccumulatedScore; // 0x34
-    float unk38; // 0x38
+    float mTotalStars; // 0x38
     int unk3c; // 0x3c
     bool unk40; // 0x40
     int unk44; // 0x44

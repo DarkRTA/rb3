@@ -28,10 +28,10 @@ public:
     virtual ExcitementLevel GetExcitement() const;
     virtual void Poll(float, const SongPos &);
     virtual void AddPoints(float, bool, bool);
-    virtual void Hit();
+    virtual void Hit() {}
     virtual void BuildHitStreak(int, float);
     virtual void EndHitStreak();
-    virtual void Miss();
+    virtual void Miss() {}
     virtual void BuildMissStreak(int);
     virtual void EndMissStreak();
     virtual void Restart(bool);
@@ -40,12 +40,12 @@ public:
     virtual bool IsInCrowdWarning() const;
     virtual void ForceScore(int);
     virtual float GetNotesHitFraction(bool *) const = 0;
-    virtual void SetQuarantined(bool);
+    virtual void SetQuarantined(bool q) { mQuarantined = q; }
     virtual Symbol GetStreakType() const { return "default"; }
     virtual float GetCrowdBoost() const;
     virtual void RemoteUpdateCrowd(float);
     virtual int GetScoreForStars(int) const { return 0; }
-    virtual void FinalizeStats();
+    virtual void FinalizeStats() {}
     virtual bool CanStreak() const { return false; }
 
     int GetIndividualScore() const;
