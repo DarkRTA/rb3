@@ -1,5 +1,6 @@
 #include "AssetMgr.h"
 
+#include "tour/TourCharLocal.h"
 #include "utl/Std.h"
 #include <algorithm>
 #include "system/utl/Symbols.h"
@@ -204,7 +205,7 @@ void AssetMgr::VerifyAssets(const char *param1, const char *param2) {
 void AssetMgr::EquipAsset(BandCharDesc *, Symbol) {}
 
 void AssetMgr::EquipAssets(LocalBandUser *user, const std::vector<Symbol> &assets) {
-    BandCharacter *pChar = user->GetCharLocal();
+    TourCharLocal *pChar = user->GetCharLocal();
     MILO_ASSERT(pChar, 0x1cb);
     BandCharDesc *pBandCharDesc;
     MILO_ASSERT(pBandCharDesc, 0x1cf);

@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/GameplayOptions.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
 #include "meta/Profile.h"
@@ -109,6 +110,7 @@ public:
     BandProfile *GetPrimaryProfile() const;
     BandProfile *GetProfileFromPad(int);
     void SetPrimaryProfileByUser(const LocalUser *);
+    GameplayOptions *GetGameplayOptionsFromUser(LocalBandUser *);
 
     DECLARE_REVS;
 

@@ -5,6 +5,7 @@
 #include "meta_band/OvershellSlotState.h"
 #include "meta_band/CharData.h"
 #include "os/User.h"
+#include "tour/TourCharLocal.h"
 #include "tour/TourCharRemote.h"
 #include "types.h"
 #include "system/bandobj/BandCharacter.h"
@@ -33,7 +34,7 @@ public:
     virtual RemoteBandUser *GetRemoteBandUser() const = 0;
     virtual int GetFriendsConsoleCodes() const = 0;
     virtual void Reset();
-    virtual void SyncSave();
+    virtual void SyncSave(BinStream &, unsigned int) const;
 
     const char *ProfileName() const;
     bool IsFullyInGame() const;
@@ -42,7 +43,6 @@ public:
     Symbol GetDifficultySym() const;
     TrackType GetTrackType() const;
     Symbol GetTrackSym() const;
-    BandCharacter *GetCharLocal();
     bool HasChar();
     void SetDifficulty(Difficulty);
     void UpdateData(unsigned int);
@@ -66,6 +66,7 @@ public:
     GameplayOptions *GetGameplayOptions();
     void SetLoadedPrefabChar(int);
     void DeletePlayer();
+    TourCharLocal *GetCharLocal();
 
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f) { mLastHitFraction = f; }

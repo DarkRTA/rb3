@@ -38,6 +38,7 @@
 #include "stl/_algo.h"
 #include "stl/_pair.h"
 #include "tour/Tour.h"
+#include "tour/TourCharLocal.h"
 #include "utl/Locale.h"
 #include "utl/MakeString.h"
 #include "utl/Symbol.h"
@@ -1336,7 +1337,7 @@ bool AccomplishmentManager::CanEquipAward(LocalBandUser *i_pUser, Symbol i_symAw
     const {
     MILO_ASSERT(i_pUser, 0x9B0);
     MILO_ASSERT(i_symAward != gNullStr, 0x9B1);
-    BandCharacter *loc = i_pUser->GetCharLocal();
+    TourCharLocal *loc = i_pUser->GetCharLocal();
     if (!loc)
         return false;
     else {

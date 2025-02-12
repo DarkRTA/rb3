@@ -1,8 +1,24 @@
 #include "BandUser.h"
+#include "bandtrack/Track.h"
+#include "decomp.h"
+#include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "beatmatch/TrackType.h"
 #include "game/Player.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/CharData.h"
+#include "meta_band/CharSync.h"
+#include "meta_band/GameplayOptions.h"
+#include "meta_band/MetaNetMsgs.h"
+#include "meta_band/PrefabMgr.h"
+#include "meta_band/ProfileMgr.h"
+#include "meta_band/Utl.h"
 #include "net/NetSession.h"
+#include "obj/Data.h"
+#include "os/Debug.h"
+#include "os/User.h"
+#include "tour/TourChar.h"
+#include "tour/TourCharLocal.h"
 #include "tour/TourCharRemote.h"
 #include "utl/Symbols.h"
 
@@ -69,6 +85,31 @@ TrackType BandUser::GetTrackType() const { return mTrackType; }
 
 Symbol BandUser::GetTrackSym() const { return TrackTypeToSym(mTrackType); }
 
+const char *BandUser::GetTrackIcon() const {
+    switch (mTrackType) {
+    case kTrackNone:
+    case kTrackPending:
+    case kTrackPendingVocals:
+        return GetFontCharFromControllerType(
+            mControllerType, GetCurrentHardcoreIconLevel()
+        );
+    case kTrackVocals:
+        if (mPlayer && mPlayer->GetSongNumVocalParts() > 1) {
+            return GetFontCharForHarmonyMics(
+                mPlayer->GetSongNumVocalParts(), GetCurrentHardcoreIconLevel()
+            );
+        }
+    default:
+        break;
+    }
+
+    if (mTrackType == kTrackDrum && mPreferredScoreType == kScoreRealDrum) {
+        return GetFontCharForProDrums(GetCurrentHardcoreIconLevel());
+    } else {
+        return GetFontCharFromTrackType(mTrackType, GetCurrentHardcoreIconLevel());
+    }
+}
+
 void BandUser::SetOvershellSlotState(OvershellSlotStateID id) {
     mOvershellState = id;
     UpdateData(1);
@@ -111,7 +152,7 @@ void BandUser::SetHasButtonGuitar(bool b) {
 }
 
 void BandUser::BandUser::SetHas22FretGuitar(bool b) {
-    MILO_ASSERT(IsLocal(), 0xF0);
+    MILO_ASSERT(IsLocal(), 0xF7);
     mHas22FretGuitar = b;
     UpdateData(1);
 }
@@ -119,6 +160,111 @@ void BandUser::BandUser::SetHas22FretGuitar(bool b) {
 bool BandUser::HasChar() { return mChar; }
 
 CharData *BandUser::GetChar() { return mChar; }
+
+TourCharLocal *BandUser::GetCharLocal() {
+    MILO_ASSERT(IsLocal(), 0x108);
+    return dynamic_cast<TourCharLocal *>(mChar);
+}
+
+void BandUser::SetChar(CharData *cd) {
+    MILO_ASSERT(IsLocal(), 0x110);
+    if (mChar != cd) {
+        mChar = nullptr;
+        if (cd) {
+            mChar = cd;
+            if (TheCharSync && TheBandUserMgr->GetSlot(mUserGuid) != -1) {
+                TheCharSync->UpdateCharCache();
+            }
+            BandProfile *profile = TheProfileMgr.GetProfileForUser(GetLocalBandUser());
+            if (profile) {
+                CharData *lastdata = nullptr;
+                if (cd->IsCustomizable()) {
+                    lastdata = dynamic_cast<TourCharLocal *>(cd);
+                } else {
+                    PrefabChar *pc = dynamic_cast<PrefabChar *>(cd);
+                    if (pc) {
+                        profile->SetLastPrefabCharUsed(pc->GetPrefabName());
+                    }
+                }
+                profile->SetLastCharUsed(lastdata);
+            }
+        }
+        UpdateData(2);
+        if (DataVariable("send_fake_patches").Int()) {
+            SendJunkPatchesToAll();
+        }
+    }
+}
+
+void BandUser::SetLoadedPrefabChar(int i1) {
+    SetChar(PrefabMgr::GetPrefabMgr()->GetDefaultPrefab(i1));
+}
+
+int BandUser::GetSlot() const { return TheBandUserMgr->GetSlot(mUserGuid); }
+
+GameplayOptions *BandUser::GetGameplayOptions() {
+    if (!IsLocal())
+        return &mGameplayOptions;
+    else {
+        GameplayOptions *opts =
+            TheProfileMgr.GetGameplayOptionsFromUser(GetLocalBandUser());
+        if (!opts)
+            opts = &mGameplayOptions;
+        return opts;
+    }
+}
+
+const char *BandUser::IntroName() const { return UserName(); }
+
+const char *BandUser::ProfileName() const {
+    if (IsLocal()) {
+        const LocalBandUser *pLocalUser = GetLocalBandUser();
+        MILO_ASSERT(pLocalUser, 0x178);
+        BandProfile *p = TheProfileMgr.GetProfileForUser(pLocalUser);
+        if (p)
+            return p->GetName();
+    }
+    return "";
+}
+
+void BandUser::DeletePlayer() {
+    mPlayer = nullptr;
+    if (mTrack)
+        mTrack->RemovePlayer();
+}
+
+void BandUser::SyncSave(BinStream &bs, unsigned int flags) const {
+    User::SyncSave(bs, flags);
+    if (flags & 2) {
+        bool charDataExists = mChar;
+        bs << charDataExists;
+        if (charDataExists) {
+            PrefabChar *pChar = dynamic_cast<PrefabChar *>(mChar);
+            bool prefabExists = pChar;
+            bs << prefabExists;
+            if (prefabExists) {
+                bs << pChar->GetPrefabName();
+            } else {
+                TourChar *customChar = dynamic_cast<TourChar *>(mChar);
+                MILO_ASSERT(customChar, 0x1A7);
+                customChar->SyncSave(bs);
+            }
+        }
+    }
+    if (flags & 1) {
+        bs << (unsigned char)mDifficulty;
+        bs << (unsigned char)mTrackType;
+        bs << (unsigned char)mControllerType;
+        bs << mHasButtonGuitar;
+        bs << mHas22FretGuitar;
+        bs << GetCurrentInstrumentCareerScore();
+        bs << (unsigned char)mOvershellState;
+        bs << mOvershellFocus;
+        bs << (unsigned char)mPreferredScoreType;
+        bs << (unsigned char)GetCurrentHardcoreIconLevel();
+        bs << (unsigned char)GetCymbalConfiguration();
+    }
+}
 
 void BandUser::UpdateData(unsigned int data) {
     if (TheNetSession->HasUser(this)) {
@@ -176,6 +322,26 @@ DataNode BandUser::OnSetControllerType(DataArray *da) {
         SetControllerType(eval.ForceSym());
     } else
         MILO_FAIL("bad ControllerType arg");
+    return 1;
+}
+
+DECOMP_FORCEACTIVE(BandUser, "%d")
+
+DataNode BandUser::OnSetPrefabChar(DataArray *a) {
+    Symbol sym = a->Sym(2);
+    int i2 = a->Int(3);
+    bool b1 = false;
+    std::vector<PrefabChar *> prefabs;
+    PrefabMgr::GetPrefabMgr()->GetPrefabs(prefabs);
+    for (int i = 0; i < prefabs.size(); i++) {
+        if (prefabs[i]->GetPrefabName() == sym) {
+            b1 = true;
+            SetChar(prefabs[i]);
+            break;
+        }
+    }
+    if (!b1)
+        SetLoadedPrefabChar(i2);
     return 1;
 }
 
