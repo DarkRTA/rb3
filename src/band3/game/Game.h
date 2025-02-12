@@ -70,6 +70,7 @@ public:
     void OnRemoteTrackerEndStreak(Player *, int, int);
     void OnPlayerQuarantined(Player *);
     Band *GetBand();
+    void ForceTrackerStars(int);
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
     bool CodaEnabled() const { return mProperties.mEnableCoda; }

@@ -106,7 +106,7 @@ public:
     virtual void EnterCoda();
     virtual void ResetCodaPoints();
     virtual void AddCodaPoints();
-    virtual int GetCodaPoints();
+    virtual int GetCodaPoints() { return 0; }
     virtual bool InFill() const;
     virtual void SetFillLogic(FillLogic);
     virtual bool DoneWithSong() const = 0;
@@ -115,7 +115,7 @@ public:
     virtual void Rollback(float, float);
     virtual void EnableController() {}
     virtual void DisableController() {}
-    virtual void ConfigureBehavior();
+    virtual void ConfigureBehavior() {}
     virtual bool CanDeployOverdrive() const;
     virtual float GetOverdrive() const;
     virtual void CompleteCommonPhrase(bool, bool);
@@ -227,7 +227,7 @@ public:
     int unk2ac;
     bool unk2b0;
     bool mPermanentOverdrive; // 0x2b1
-    bool unk2b2;
+    bool mHasFinishedCoda; // 0x2b2
     bool mHasBlownCoda; // 0x2b3
     int unk2b4;
     int unk2b8;

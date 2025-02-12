@@ -68,7 +68,7 @@ Player::Player(BandUser *user, Band *band, int tracknum, BeatMaster *bmaster)
       mDeployingBandEnergy(0), unk274(1), unk278(0), mPhraseBonus(1),
       mBeatMaster(bmaster), unk284(5000.0f), unk288(0), unk28c(0), unk290(0), unk294(0),
       unk298(0), mDisconnectedAtStart(0), unk2a9(0), unk2ac(0), mPermanentOverdrive(0),
-      unk2b2(0), mHasBlownCoda(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1),
+      mHasFinishedCoda(0), mHasBlownCoda(0), unk2b4(0), unk2b8(0), unk2bc(0), unk2c0(-1),
       unk2c4(1) {
     if (user) {
         mRemote = !user->IsLocal();
@@ -160,7 +160,7 @@ void Player::Restart(bool b) {
         mCrowd->SetDisplayValue(0);
     }
     unk2ac = 0;
-    unk2b2 = 0;
+    mHasFinishedCoda = 0;
     mHasBlownCoda = 0;
     if (mUser) {
         Track *track = mUser->GetTrack();
@@ -675,7 +675,7 @@ void Player::UnisonHit() {
 
 void Player::SetFinishedCoda() {
     MILO_ASSERT(!mHasBlownCoda, 0x5A8);
-    unk2b2 = true;
+    mHasFinishedCoda = true;
 }
 
 void Player::ChangeDifficulty(Difficulty diff) {

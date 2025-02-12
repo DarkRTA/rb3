@@ -69,6 +69,7 @@ public:
     void SetLastHitFraction(float f) { mLastHitFraction = f; }
     Player *GetPlayer() const { return mPlayer; }
     Track *GetTrack() const { return mTrack; }
+    void SetPlayer(Player *p) { mPlayer = p; }
 
     static LocalBandUser *NewLocalBandUser();
     static RemoteBandUser *NewRemoteBandUser();
