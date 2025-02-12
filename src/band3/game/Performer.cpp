@@ -20,7 +20,7 @@ DECOMP_FORCEACTIVE(
 Performer::Performer(BandUser *user, Band *band)
     : mPollMs(0), mStats(Stats()), mBand(band), unk1e0(0), unk1e1(0), unk1e2(0),
       mScore(0), mQuarantined(0), unk1fd(1), unk1fe(1), unk1ff(1), mProgressMs(0),
-      unk204(0), mMultiplierActive(1), mNumRestarts(0) {
+      mGameOver(0), mMultiplierActive(1), mNumRestarts(0) {
     Difficulty diff =
         !user ? TheGameConfig->GetAverageDifficulty() : user->GetDifficulty();
     mCrowd = new CrowdRating(user, diff);
@@ -73,7 +73,7 @@ void Performer::Restart(bool b) {
     mPollMs = 0;
     mProgressMs = 0;
     mScore = 0;
-    unk204 = false;
+    mGameOver = false;
     if (!b)
         mStats = Stats();
     unk1e0 = 0;
@@ -144,11 +144,11 @@ void Performer::SetRemoteStreak(int i) {
 }
 
 void Performer::TrulyWinGame() {
-    if (unk204 || !TheGameConfig->CanEndGame())
+    if (mGameOver || !TheGameConfig->CanEndGame())
         return;
     else {
         TheGame->SetGameOver(true);
-        unk204 = true;
+        mGameOver = true;
     }
 }
 
@@ -166,7 +166,7 @@ void Performer::WinGame(int i) {
 void Performer::ForceStars(int i) { mScore = GetScoreForStars(i); }
 
 bool Performer::LoseGame() {
-    if (unk204 || !TheGameConfig->CanEndGame() || !TheGame->mIsPaused)
+    if (mGameOver || !TheGameConfig->CanEndGame() || !TheGame->mIsPaused)
         return false; // TODO: fix the variable pulled from TheGame
     else {
         mCrowd->SetActive(false);
@@ -178,7 +178,7 @@ bool Performer::LoseGame() {
 
 void Performer::SetLost() {
     unk1e0 = true;
-    unk204 = true;
+    mGameOver = true;
 }
 
 void Performer::RemoteUpdateCrowd(float f) { mCrowd->SetDisplayValue(f); }

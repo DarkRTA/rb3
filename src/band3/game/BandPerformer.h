@@ -22,7 +22,10 @@ public:
     virtual int GetScoreForStars(int) const;
     virtual void Lose();
 
+    void Restart();
     void ComputeScoreData();
+    void SetCrowdMeter();
+    void Poll(float, SongPos &);
 
     DataArray *unk20c;
     int unk210;

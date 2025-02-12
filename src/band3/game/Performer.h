@@ -76,6 +76,7 @@ public:
     bool GetQuarantined() const { return mQuarantined; }
     const Stats &GetStats() const { return mStats; }
     CrowdRating *Crowd() const { return mCrowd; }
+    void SetGameOver() { mGameOver = true; }
 
     float mPollMs; // 0x8
     CrowdRating *mCrowd; // 0xc
@@ -91,7 +92,7 @@ public:
     bool unk1fe;
     bool unk1ff;
     float mProgressMs; // 0x200
-    bool unk204;
+    bool mGameOver; // 0x204
     bool mMultiplierActive; // 0x205
     int mNumRestarts; // 0x208
 };

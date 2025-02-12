@@ -118,7 +118,9 @@ Player *PlayerTrackerSource::GetPlayer(const TrackerPlayerID &iID) const {
     }
 }
 
-bool PlayerTrackerSource::IsFinished() const { return !mPlayer ? true : mPlayer->unk204; }
+bool PlayerTrackerSource::IsFinished() const {
+    return !mPlayer ? true : mPlayer->mGameOver;
+}
 
 BandTrackerSource::BandTrackerSource(Band *band) : mBand(band) {
     MILO_ASSERT(mBand, 0xFA);

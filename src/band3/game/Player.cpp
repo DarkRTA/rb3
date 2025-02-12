@@ -642,7 +642,7 @@ void Player::CheckCrowdFailure() {
         if (!mCrowd->CantFailYet() && mUser->GetDifficulty() != kDifficultyEasy
             && !mUser->IsNullUser()) {
             if (!MetaPerformer::Current()->IsNoFailActive() && !mQuarantined
-                && !mBand->MainPerformer()->unk204) {
+                && !mBand->MainPerformer()->mGameOver) {
                 SetEnabledState(kPlayerDisabled, mUser, false);
             }
         }

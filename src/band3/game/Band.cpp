@@ -8,7 +8,10 @@
 #include "game/CommonPhraseCapturer.h"
 #include "game/Game.h"
 #include "game/GameConfig.h"
+#include "game/GameMode.h"
 #include "game/Player.h"
+#include "game/SongDB.h"
+#include "game/TrainerPanel.h"
 #include "meta_band/MetaPerformer.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
@@ -73,6 +76,31 @@ Band::~Band() {
     RELEASE(mCommonPhraseCapturer);
 }
 
+void Band::SetGameOver() {
+    for (int i = 0; i != mActivePlayers.size(); i++) {
+        mActivePlayers[i]->SetGameOver();
+    }
+}
+
+void Band::Restart(bool b1) {
+    for (int i = 0; i != mActivePlayers.size(); i++) {
+        mActivePlayers[i]->Restart(b1);
+    }
+    mBandPerformer->Restart();
+    mMaxMultiplier = 1;
+    mMsWithMultiplier = 0;
+    mMsWhenMultiplierStarted = 0;
+    unk40 = false;
+    unk44 = 0;
+    if (unk60 == 1) {
+        TheBandDirector->SetCharacterHideHackEnabled(false);
+    }
+    unk60 = 0;
+    if (mCommonPhraseCapturer)
+        mCommonPhraseCapturer->Reset();
+    UpdateBonusLevel(0);
+}
+
 Performer *Band::GetBand() const { return mBandPerformer; }
 
 Player *Band::GetActivePlayer(int player) const {
@@ -95,10 +123,98 @@ FORCE_LOCAL_INLINE
 Performer *Band::MainPerformer() const { return mBandPerformer; }
 END_FORCE_LOCAL_INLINE
 
+void Band::RemoveUser(BandUser *u) {
+    Player *p = u->GetPlayer();
+    if (p) {
+        p->Leave();
+        GetTrackPanel()->HandleRemoveUser(u);
+        TheGame->RemovePlayer(p);
+        u->DeletePlayer();
+        bool foundPlayer = false;
+        for (int i = 0; i < mActivePlayers.size(); i++) {
+            if (mActivePlayers[i] == p) {
+                mActivePlayers.erase(mActivePlayers.begin() + i);
+                mCrowdRatings.erase(mCrowdRatings.begin() + i);
+                foundPlayer = true;
+                break;
+            }
+        }
+        MILO_ASSERT(foundPlayer, 0x112);
+        mBandPerformer->SetCrowdMeter();
+        if (TheGameMode->InMode("trainer") && TheTrainerPanel) {
+            TheTrainerPanel->HandlePlayerDeleted(p);
+        }
+        TheGame->OnPlayerRemoved(p);
+        delete p;
+    } else {
+        GetTrackPanel()->HandleRemoveUser(u);
+    }
+    GetTrackPanel()->PostHandleRemoveUser(u);
+    u->SetTrack(nullptr);
+    UpdateBonusLevel(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f);
+}
+
 std::vector<Player *> &Band::GetActivePlayers() { return mActivePlayers; }
 void Band::SetAccumulatedScore(int score) { mAccumulatedScore = score; }
 
-bool Band::AnyoneSaveable() const {}
+int Band::GetLongestStreak() const {
+    int ret = unk3c;
+    FOREACH (it, mActivePlayers) {
+        int curStreak = (*it)->mStats.GetLongestStreak();
+        if (ret < curStreak)
+            ret = curStreak;
+    }
+    return ret;
+}
+
+void Band::Poll(float f1, SongPos &pos) {
+    for (int i = 0; i < mActivePlayers.size(); i++) {
+        mActivePlayers[i]->Poll(f1, pos);
+        float rating = mActivePlayers[i]->GetCrowdRating();
+        if (rating != mCrowdRatings[i]) {
+            mCrowdRatings[i] = rating;
+        }
+    }
+    mBandPerformer->Poll(f1, pos);
+    float rating = mBandPerformer->GetCrowdRating();
+    if (rating != unk30) {
+        unk30 = rating;
+    }
+    CheckCoda(pos);
+    UpdateBonusLevel(f1);
+}
+
+void Band::SetMultiplierActive(bool active) {
+    mMultiplierActive = active;
+    if (!active) {
+        mMaxMultiplier = 1;
+        mMsWithMultiplier = 0;
+        mMsWhenMultiplierStarted = 0;
+    }
+    for (int i = 0; i < mActivePlayers.size(); i++) {
+        mActivePlayers[i]->SetMultiplierActive(active);
+    }
+    mBandPerformer->SetMultiplierActive(active);
+}
+
+void Band::SetCrowdMeterActive(bool active) {
+    for (int i = 0; i < mActivePlayers.size(); i++) {
+        mActivePlayers[i]->SetCrowdMeterActive(active);
+    }
+    mBandPerformer->SetCrowdMeterActive(active);
+}
+
+bool Band::AnyoneSaveable() const {
+    if (mBandPerformer->mGameOver)
+        return false;
+    else {
+        for (int i = 0; i < mActivePlayers.size(); i++) {
+            if (mActivePlayers[i]->Saveable())
+                return true;
+        }
+    }
+    return false;
+}
 
 int Band::DeployBandEnergy(BandUser *u) {
     int numSaved = 0;
@@ -136,6 +252,24 @@ void Band::DealWithCodaGem(Player *p, int, bool b3, bool b4) {
         BlowCoda(p);
     else if (b4)
         FinishedCoda(p);
+}
+
+bool Band::IsEndOfCoda(int i1) {
+    if (unk40)
+        return false;
+    else {
+        int i8 = 0;
+        int i7 = 0;
+        for (int i = 0; i < mActivePlayers.size(); i++) {
+            int num = mActivePlayers[i]->GetTrackNum();
+            if (TheSongDB->GetTotalGems(num) != 0) {
+                i8 = TheSongDB->GetGem(num, TheSongDB->GetTotalGems(num) - 1).GetTick();
+            }
+            if (i8 > i7)
+                i7 = i8;
+        }
+        return i7 <= i1;
+    }
 }
 
 void Band::FinishedCoda(Player *p) {
@@ -185,7 +319,7 @@ Player *Band::AddPlayer(BeatMaster *m, BandUser *u) {
     mActivePlayers.push_back(p);
     u->SetPlayer(p);
     p->Crowd()->SetLoseLevel(mBandPerformer->Crowd()->GetLoseLevel());
-    unk28.push_back(0);
+    mCrowdRatings.push_back(0);
     p->ConfigureBehavior();
     return p;
 }

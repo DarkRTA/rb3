@@ -71,6 +71,8 @@ public:
     void OnPlayerQuarantined(Player *);
     Band *GetBand();
     void ForceTrackerStars(int);
+    void RemovePlayer(Player *);
+    void OnPlayerRemoved(Player *);
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
     bool CodaEnabled() const { return mProperties.mEnableCoda; }

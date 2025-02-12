@@ -10,6 +10,7 @@ public:
     void Enabled(Player *, int, int, bool);
     void LocalHitLastGem(Player *, int, int);
     void LocalFail(Player *, int, int);
+    void Reset();
 
     std::vector<int> unk0;
 };

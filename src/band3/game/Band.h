@@ -3,6 +3,7 @@
 #include "game/Performer.h"
 #include "game/Player.h"
 #include "obj/Object.h"
+#include "utl/SongPos.h"
 
 class BandPerformer;
 class BandUser;
@@ -42,12 +43,17 @@ public:
     bool EveryoneDoneWithSong() const;
     void DealWithCodaGem(Player *, int, bool, bool);
     bool AnyoneSaveable() const;
-
+    void SetGameOver();
+    void Restart(bool);
+    void RemoveUser(BandUser *);
+    void Poll(float, SongPos &);
+    void CheckCoda(SongPos &);
+    bool IsEndOfCoda(int);
     bool IsMultiplierActive() const { return mMultiplierActive; }
 
     BandPerformer *mBandPerformer; // 0x1c
     std::vector<Player *> mActivePlayers; // 0x20
-    std::vector<float> unk28; // 0x28
+    std::vector<float> mCrowdRatings; // 0x28
     float unk30; // 0x30
     int mAccumulatedScore; // 0x34
     float unk38; // 0x38

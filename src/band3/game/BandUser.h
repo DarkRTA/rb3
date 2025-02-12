@@ -65,11 +65,14 @@ public:
     void SetOvershellSlotState(OvershellSlotStateID);
     GameplayOptions *GetGameplayOptions();
     void SetLoadedPrefabChar(int);
+    void DeletePlayer();
+
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f) { mLastHitFraction = f; }
     Player *GetPlayer() const { return mPlayer; }
     Track *GetTrack() const { return mTrack; }
     void SetPlayer(Player *p) { mPlayer = p; }
+    void SetTrack(Track *trk) { mTrack = trk; }
 
     static LocalBandUser *NewLocalBandUser();
     static RemoteBandUser *NewRemoteBandUser();
