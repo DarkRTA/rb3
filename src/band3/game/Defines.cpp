@@ -4,6 +4,7 @@
 #include "meta_band/OvershellPanel.h"
 #include "obj/DataUtl.h"
 #include "os/Debug.h"
+#include "utl/Symbol.h"
 
 Symbol ControllerTypeToSym(ControllerType controllerType) {
     MILO_ASSERT_RANGE_EQ(controllerType, 0, kNumControllerTypes, 0xF);
@@ -120,6 +121,8 @@ static inline const char *ScoreSymbolsMacro() { return "SCORE_TYPE_SYMBOLS"; }
 FORCE_LOCAL_INLINE
 Symbol ScoreTypeToSym(ScoreType s) { return DataGetMacro(ScoreSymbolsMacro())->Sym(s); }
 END_FORCE_LOCAL_INLINE
+
+static Symbol ForceScoreTypeToSym(ScoreType s) { return ScoreTypeToSym(s); }
 
 ScoreType SymToScoreType(Symbol s) {
     for (int i = 0; i < kNumScoreTypes; i++) {
@@ -241,3 +244,22 @@ bool IsRepresentativePartPlayableByController(TrackType t, ControllerType c) {
     }
     return false;
 }
+
+bool ControllerHasRepresentativePartPriority(ControllerType c, TrackType t) {
+    switch (c) {
+    case kControllerGuitar:
+    case kControllerRealGuitar:
+        return (t - 1U <= 7) && ((1 << (t - 1U)) & 0xA3);
+    case kControllerKeys:
+        return t == kTrackKeys || t == kTrackRealKeys;
+    case kControllerDrum:
+        return t == kTrackDrum;
+    case kControllerVocals:
+        return t == kTrackVocals;
+    default:
+        MILO_WARN("No priority tracks for controller %i", c);
+        return false;
+    }
+}
+
+void CensorString(String &) {}
