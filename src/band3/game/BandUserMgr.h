@@ -37,9 +37,9 @@ public:
     int GetNumLocalPlayers() const;
     LocalBandUser *GetUserFromPad(int);
     bool AllLocalUsersInSessionAreGuests() const;
-    void GetBandUsers(std::vector<BandUser *> *, int) const;
-    void GetLocalBandUsers(std::vector<LocalBandUser *> *, int) const;
-    void GetRemoteBandUsers(std::vector<RemoteBandUser *> *, int) const;
+    int GetBandUsers(std::vector<BandUser *> *, int) const;
+    int GetLocalBandUsers(std::vector<LocalBandUser *> *, int) const;
+    int GetRemoteBandUsers(std::vector<RemoteBandUser *> *, int) const;
     bool IsCharAvailable(const CharData *) const;
     ControllerType DebugGetControllerTypeOverride(int);
 
@@ -59,7 +59,7 @@ public:
     std::vector<RemoteBandUser *> mRemoteUsers; // 0x2c
     NullLocalBandUser *mNullUser; // 0x34
     UserGuid mSlotMap[4]; // 0x38, 0x48, 0x58, 0x68
-    SessionMgr *unk78;
+    SessionMgr *mSessionMgr; // 0x78
 };
 
 void BandUserMgrInit();

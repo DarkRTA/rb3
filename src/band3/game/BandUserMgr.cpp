@@ -1,4 +1,15 @@
 #include "game/BandUserMgr.h"
+#include "game/BandUser.h"
+#include "meta_band/Matchmaker.h"
+#include "meta_band/ProfileMgr.h"
+#include "meta_band/SessionMgr.h"
+#include "obj/ObjMacros.h"
+#include "os/Debug.h"
+#include "os/PlatformMgr.h"
+#include "os/User.h"
+#include "utl/Std.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols3.h"
 
 BandUserMgr *TheBandUserMgr;
 
@@ -16,7 +27,7 @@ void BandUserMgrInit() {
     TheDebug.AddExitCallback(BandUserMgrTerminate);
 }
 
-BandUserMgr::BandUserMgr(int num_local, int num_remote) : mNullUser(0), unk78(0) {
+BandUserMgr::BandUserMgr(int num_local, int num_remote) : mNullUser(0), mSessionMgr(0) {
     mUsers.reserve(num_local + num_remote);
     mLocalUsers.reserve(num_local);
     mRemoteUsers.reserve(num_remote);
@@ -33,9 +44,20 @@ BandUserMgr::BandUserMgr(int num_local, int num_remote) : mNullUser(0), unk78(0)
     mNullUser = BandUser::NewNullLocalBandUser();
     for (int i = 0; i < 4; i++)
         mSlotMap[i].Clear();
+
+    TheProfileMgr.AddSink(this, profile_pre_delete_msg);
+    ThePlatformMgr.AddSink(this, signin_changed);
 }
 
-BandUserMgr::~BandUserMgr() {}
+BandUserMgr::~BandUserMgr() {
+    TheProfileMgr.RemoveSink(this, profile_pre_delete_msg);
+    ThePlatformMgr.RemoveSink(this, signin_changed);
+    TheBandUserMgr = nullptr;
+    mLocalUsers.clear();
+    mRemoteUsers.clear();
+    DeleteAll(mUsers);
+    RELEASE(mNullUser);
+}
 
 User *BandUserMgr::GetUser(const UserGuid &guid, bool fail) const {
     return GetBandUser(guid, fail);
@@ -120,6 +142,23 @@ int BandUserMgr::GetSlot(const UserGuid &userGuid) const {
     return -1;
 }
 
+void BandUserMgr::SetSlot(BandUser *pUser, int slot) {
+    MILO_ASSERT(( -1) <= (slot) && (slot) < ( kGameNumSlots), 0xE1);
+    MILO_ASSERT(pUser, 0xE2);
+    const UserGuid &userGuid = pUser->GetUserGuid();
+    if (slot == -1) {
+        slot = GetSlot(userGuid);
+        if (slot != -1) {
+            mSlotMap[slot].Clear();
+        }
+    } else
+        mSlotMap[slot] = userGuid;
+    if (mSessionMgr && mSessionMgr->HasSyncPermission()) {
+        mSessionMgr->SetSyncDirty(-1, false);
+        mSessionMgr->GetMatchmaker()->UpdateMatchmakingSettings();
+    }
+}
+
 void BandUserMgr::ClearSlot(BandUser *u) { SetSlot(u, -1); }
 
 const UserGuid &BandUserMgr::GetUserGuidFromSlot(int slotNum) const {
@@ -183,4 +222,31 @@ bool BandUserMgr::AllLocalUsersInSessionAreGuests() const {
     return true;
 }
 
-void BandUserMgr::GetBandUsers(std::vector<BandUser *> *users, int i) const {}
+int BandUserMgr::GetBandUsers(std::vector<BandUser *> *users, int mask) const {
+    int ret = 0;
+    if (!(mask & 1U)) {
+        std::vector<LocalBandUser *> localUsers;
+        ret = GetLocalBandUsers(!users ? nullptr : &localUsers, mask);
+        if (users) {
+            FOREACH (it, localUsers) {
+                users->push_back(*it);
+            }
+        }
+    }
+    if (!(mask & 2U)) {
+        std::vector<RemoteBandUser *> remoteUsers;
+        ret += GetRemoteBandUsers(!users ? nullptr : &remoteUsers, mask);
+        if (users) {
+            FOREACH (it, remoteUsers) {
+                users->push_back(*it);
+            }
+        }
+    }
+    return ret;
+}
+
+BEGIN_HANDLERS(BandUserMgr)
+    HANDLE_ACTION(set_slot, SetSlot(_msg->Obj<BandUser>(2), _msg->Int(3)))
+    HANDLE_EXPR(get_user_from_slot, GetUserFromSlot(_msg->Int(2)))
+
+END_HANDLERS

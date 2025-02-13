@@ -38,7 +38,7 @@ SessionMgr::SessionMgr(BandUserMgr *umgr, Matchmaker *mm)
     mNewPlayer.mCt = kControllerNone;
     mNewPlayer.mSlot = 0;
     SetName("session_mgr", ObjectDir::Main());
-    mBandUserMgr->unk78 = this;
+    mBandUserMgr->mSessionMgr = this;
     mSession = TheNetSession;
     mSession->AddSink(this, SessionDisconnectedMsg::Type());
     mSession->AddSink(this, SessionBusyMsg::Type());
