@@ -1,5 +1,6 @@
 #pragma once
 #include "game/Defines.h"
+#include "meta_band/BandProfile.h"
 #include "os/UserMgr.h"
 #include "utl/HxGuid.h"
 #include "game/BandUser.h"
@@ -42,6 +43,7 @@ public:
     int GetRemoteBandUsers(std::vector<RemoteBandUser *> *, int) const;
     bool IsCharAvailable(const CharData *) const;
     ControllerType DebugGetControllerTypeOverride(int);
+    void DebugSetControllerTypeOverride(int, ControllerType);
 
     int GetLocalParticipants(std::vector<LocalBandUser *> &) const;
     int GetLocalBandUsersInSession(std::vector<LocalBandUser *> &) const;
@@ -51,8 +53,11 @@ public:
     int GetBandUsersInSession(std::vector<BandUser *> &) const;
     int GetLocalBandUsers(std::vector<LocalBandUser *> &) const;
     int GetLocalUsersNotInSessionWithAnyController(std::vector<LocalBandUser *> &) const;
+    int GetBandUsers(int mask) const { return GetBandUsers(nullptr, mask); }
 
     DataNode ForEachUser(const DataArray *, int);
+    DataNode OnMsg(const ProfilePreDeleteMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
 
     static BandUser *GetBandUser(User *);
     static LocalBandUser *GetLocalBandUser(LocalUser *);

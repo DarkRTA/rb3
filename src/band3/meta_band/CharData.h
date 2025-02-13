@@ -16,6 +16,7 @@ public:
     virtual bool IsCustomizable() const = 0;
     virtual RndTex *GetTexAtPatchIndex(int, bool) const = 0;
     virtual ~CharData();
+    const HxGuid &GetGuid() const { return mGuid; }
 
     HxGuid mGuid; // 0x8
 };

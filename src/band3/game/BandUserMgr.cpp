@@ -1,14 +1,23 @@
 #include "game/BandUserMgr.h"
 #include "game/BandUser.h"
+#include "game/Defines.h"
+#include "meta/Profile.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/CharData.h"
+#include "meta_band/ClosetMgr.h"
 #include "meta_band/Matchmaker.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SessionMgr.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
+#include "os/Joypad.h"
 #include "os/PlatformMgr.h"
 #include "os/User.h"
+#include "os/UserMgr.h"
+#include "tour/TourCharLocal.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
 
 BandUserMgr *TheBandUserMgr;
@@ -314,8 +323,107 @@ DataNode BandUserMgr::ForEachUser(const DataArray *a, int mask) {
     return 0;
 }
 
+DataNode BandUserMgr::OnMsg(const ProfilePreDeleteMsg &msg) {
+    BandProfile *p = msg.GetProfile();
+    std::vector<LocalBandUser *> users;
+    GetLocalParticipants(users);
+    FOREACH (it, users) {
+        LocalBandUser *cur = *it;
+        if (cur->HasChar()) {
+            CharData *cd = cur->GetChar();
+            if (cd->IsCustomizable() && p->GetCharFromGuid(cd->GetGuid())) {
+                int slot = cur->GetSlot();
+                if (slot != -1) {
+                    cur->SetLoadedPrefabChar(slot);
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+DataNode BandUserMgr::OnMsg(const SigninChangedMsg &msg) {
+    std::vector<LocalBandUser *> users;
+    GetLocalParticipants(users);
+    FOREACH (it, users) {
+        LocalBandUser *cur = *it;
+        if (ThePlatformMgr.HasUserSigninChanged(cur)) {
+            if (ThePlatformMgr.IsUserSignedIn(cur)) {
+                TourCharLocal *tChar = dynamic_cast<TourCharLocal *>(cur->GetChar());
+                if (tChar) {
+                    int slot = cur->GetSlot();
+                    if (slot != -1) {
+                        cur->SetLoadedPrefabChar(slot);
+                    }
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+ControllerType BandUserMgr::DebugGetControllerTypeOverride(int padNum) {
+    MILO_ASSERT_RANGE(padNum, 0, kNumJoypads, 0x2B3);
+    LocalBandUser *local = GetUserFromPad(padNum);
+    MILO_ASSERT(local, 0x2B5);
+    return local->DebugGetControllerTypeOverride();
+}
+
+void BandUserMgr::DebugSetControllerTypeOverride(int padNum, ControllerType ct) {
+    MILO_ASSERT_RANGE_EQ(ct, 0, kNumControllerTypes, 0x2BB);
+    MILO_ASSERT_RANGE(padNum, 0, kNumJoypads, 0x2BC);
+    LocalBandUser *local = GetUserFromPad(padNum);
+    MILO_ASSERT(local, 0x2BE);
+    local->DebugSetControllerTypeOverride(ct);
+}
+
+bool BandUserMgr::IsCharAvailable(const CharData *cd) const {
+    std::vector<LocalBandUser *> users;
+    GetLocalBandUsersInSession(users);
+    FOREACH (it, users) {
+        LocalBandUser *pUser = *it;
+        MILO_ASSERT(pUser, 0x2D6);
+        if (pUser->GetChar() == cd)
+            return false;
+    }
+    ClosetMgr *mgr = ClosetMgr::GetClosetMgr();
+    if (mgr && mgr->mPreviousCharacter == cd)
+        return false;
+    else
+        return true;
+}
+
+BandUser *BandUserMgr::GetUserWithChar(const CharData *c) {
+    MILO_ASSERT(c, 0x2E9);
+    std::vector<BandUser *> users;
+    GetBandUsersInSession(users);
+    for (int i = 0; i < users.size(); i++) {
+        if (users[i]->GetChar() == c) {
+            return users[i];
+        }
+    }
+    return nullptr;
+}
+
 BEGIN_HANDLERS(BandUserMgr)
     HANDLE_ACTION(set_slot, SetSlot(_msg->Obj<BandUser>(2), _msg->Int(3)))
     HANDLE_EXPR(get_user_from_slot, GetUserFromSlot(_msg->Int(2)))
-
+    HANDLE_EXPR(is_any_user_signed_in_and_connected, GetBandUsers(0x882) != 0)
+    HANDLE_EXPR(does_any_user_have_online_privilege, GetBandUsers(0x1082) != 0)
+    HANDLE_EXPR(foreach_user, ForEachUser(_msg, 0x4000))
+    HANDLE_EXPR(foreach_local_user, ForEachUser(_msg, 0x4002))
+    HANDLE_EXPR(get_num_participants, GetNumParticipants())
+    HANDLE_EXPR(get_num_local_participants, GetNumLocalParticipants())
+    HANDLE_EXPR(debug_get_user_from_pad, GetUserFromPad(_msg->Int(2)))
+    HANDLE_EXPR(
+        debug_get_controller_type_override, DebugGetControllerTypeOverride(_msg->Int(2))
+    )
+    HANDLE_ACTION(
+        debug_set_controller_type_override,
+        DebugSetControllerTypeOverride(_msg->Int(2), (ControllerType)_msg->Int(3))
+    )
+    HANDLE_MESSAGE(ProfilePreDeleteMsg)
+    HANDLE_MESSAGE(SigninChangedMsg)
+    HANDLE_SUPERCLASS(UserMgr)
+    HANDLE_CHECK(0x31F)
 END_HANDLERS
