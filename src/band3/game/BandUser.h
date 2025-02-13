@@ -130,6 +130,7 @@ public:
     void DebugSetControllerTypeOverride(ControllerType);
     bool HasShownIntroHelp(TrackType) const;
     void SetShownIntroHelp(TrackType, bool);
+    bool CanGetAchievements() const { return CanSaveData(); }
 
     bool unkc; // 0xc
     bool mHasSeenRealGuitarPrompt; // 0xd

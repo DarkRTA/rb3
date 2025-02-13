@@ -6,6 +6,8 @@
 #include "beatmatch/TrackType.h"
 #include "game/Player.h"
 #include "meta_band/BandProfile.h"
+#include "meta_band/BandUI.h"
+#include "meta_band/SongStatusMgr.h"
 #include "meta_band/CharData.h"
 #include "meta_band/CharSync.h"
 #include "meta_band/GameplayOptions.h"
@@ -15,7 +17,10 @@
 #include "meta_band/Utl.h"
 #include "net/NetSession.h"
 #include "obj/Data.h"
+#include "os/ContentMgr.h"
 #include "os/Debug.h"
+#include "os/Joypad.h"
+#include "os/System.h"
 #include "os/User.h"
 #include "tour/TourChar.h"
 #include "tour/TourCharLocal.h"
@@ -403,6 +408,8 @@ RemoteBandUser *LocalBandUser::GetRemoteBandUser() const {
     return 0;
 }
 
+int LocalBandUser::GetFriendsConsoleCodes() const { return 0; }
+
 void LocalBandUser::Reset() {
     BandUser::Reset();
     LocalUser::Reset();
@@ -411,12 +418,82 @@ void LocalBandUser::Reset() {
     unkc = 1;
 }
 
+ControllerType LocalBandUser::ConnectedControllerType() const {
+    if (!IsJoypadConnected()) {
+        return kControllerNone;
+    } else {
+        ControllerType tyOverride =
+            TheBandUserMgr->DebugGetControllerTypeOverride(GetPadNum());
+        if (tyOverride != kControllerNone)
+            return tyOverride;
+        else {
+            Symbol joypadType = JoypadControllerTypePadNum(GetPadNum());
+            DataArray *cfg = SystemConfig(joypad, instrument_mapping);
+            int ct = cfg->FindArray(joypadType, true)->Int(1);
+            MILO_ASSERT_RANGE_EQ(ct, 0, kNumControllerTypes, 0x337);
+            static DataNode &fake_controllers = DataVariable("fake_controllers");
+            if (fake_controllers.Int() != 0 && ct == 5)
+                ct = 2;
+            return (ControllerType)ct;
+        }
+    }
+}
+
 bool LocalBandUser::HasSeenRealGuitarPrompt() const { return mHasSeenRealGuitarPrompt; }
 void LocalBandUser::SetHasSeenRealGuitarPrompt() { mHasSeenRealGuitarPrompt = true; }
 
 void LocalBandUser::SetOvershellFocus(const char *cc) {
     mOvershellFocus = cc;
     UpdateData(1);
+}
+
+int LocalBandUser::GetCurrentInstrumentCareerScore() const {
+    if (!TheContentMgr->RefreshDone())
+        return 0;
+    else {
+        ControllerType ct = ConnectedControllerType();
+        BandProfile *profile = TheProfileMgr.GetProfileForUser(this);
+        if (!profile)
+            return 0;
+        else {
+            SongStatusMgr *mgr = profile->GetSongStatusMgr();
+            if (!mgr)
+                return 0;
+            switch (ct) {
+            case kControllerGuitar:
+                return mgr->GetCachedTotalDiscScore(kScoreGuitar);
+            case kControllerDrum:
+                return mgr->GetCachedTotalDiscScore(kScoreDrum);
+            case kControllerVocals:
+                return mgr->GetCachedTotalDiscScore(kScoreVocals);
+            default:
+                return 0;
+            }
+        }
+    }
+}
+
+int LocalBandUser::GetCurrentHardcoreIconLevel() const {
+    BandProfile *profile = TheProfileMgr.GetProfileForUser(this);
+    if (!profile)
+        return 0;
+    else
+        return profile->GetHardcoreIconLevel();
+}
+
+int LocalBandUser::GetCymbalConfiguration() const {
+    return TheProfileMgr.GetCymbalConfiguration();
+}
+
+void LocalBandUser::SetShownIntroHelp(TrackType t, bool shown) {
+    if (shown)
+        mShownIntrosSet.insert(t);
+    else
+        mShownIntrosSet.erase(t);
+}
+
+bool LocalBandUser::HasShownIntroHelp(TrackType t) const {
+    return mShownIntrosSet.find(t) != mShownIntrosSet.end();
 }
 
 ControllerType LocalBandUser::DebugGetControllerTypeOverride() const {
@@ -430,7 +507,7 @@ void LocalBandUser::DebugSetControllerTypeOverride(ControllerType ct) {
 
 BEGIN_HANDLERS(LocalBandUser)
     HANDLE_EXPR(can_save_data, CanSaveData())
-    HANDLE_EXPR(can_get_achievements, CanSaveData())
+    HANDLE_EXPR(can_get_achievements, CanGetAchievements())
     HANDLE_EXPR(connected_controller_type, ConnectedControllerType())
     HANDLE_EXPR(connected_controller_sym, ControllerTypeToSym(ConnectedControllerType()))
     HANDLE_ACTION(set_contributes_song_progress, unkc = _msg->Int(2))
