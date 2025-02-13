@@ -8,7 +8,7 @@
 #include "tour/TourCharLocal.h"
 #include "tour/TourCharRemote.h"
 #include "types.h"
-#include "system/bandobj/BandCharacter.h"
+#include "net/WiiFriendMgr.h"
 
 class BandCharDesc;
 class LocalBandUser;
@@ -32,7 +32,7 @@ public:
     virtual LocalBandUser *GetLocalBandUser() const = 0;
     virtual RemoteBandUser *GetRemoteBandUser() = 0;
     virtual RemoteBandUser *GetRemoteBandUser() const = 0;
-    virtual int GetFriendsConsoleCodes() const = 0;
+    virtual const std::vector<unsigned long long> &GetFriendsConsoleCodes() const = 0;
     virtual void Reset();
     virtual void SyncSave(BinStream &, unsigned int) const;
 
@@ -116,7 +116,7 @@ public:
     virtual LocalBandUser *GetLocalBandUser() const;
     virtual RemoteBandUser *GetRemoteBandUser();
     virtual RemoteBandUser *GetRemoteBandUser() const;
-    virtual int GetFriendsConsoleCodes() const;
+    virtual const std::vector<unsigned long long> &GetFriendsConsoleCodes() const;
     virtual void Reset();
     virtual ControllerType ConnectedControllerType() const;
     virtual int GetCurrentInstrumentCareerScore() const;
@@ -147,21 +147,25 @@ public:
     virtual LocalBandUser *GetLocalBandUser() const;
     virtual RemoteBandUser *GetRemoteBandUser();
     virtual RemoteBandUser *GetRemoteBandUser() const;
-    virtual int GetFriendsConsoleCodes() const;
+    virtual const std::vector<unsigned long long> &GetFriendsConsoleCodes() const;
     virtual int GetCurrentInstrumentCareerScore() const;
     virtual int GetCurrentHardcoreIconLevel() const;
     virtual int GetCymbalConfiguration() const;
     virtual void Reset();
     virtual void SyncLoad(BinStream &, unsigned int);
 
-    TourCharRemote *mRemoteChar; // TourCharRemote*
-    std::vector<int> unk10; // 0x10
+    void ShowCustomCharacter();
+
+    DataNode OnMsg(const WiiFriendsListChangedMsg &);
+
+    TourCharRemote *mRemoteChar; // 0xc
+    std::vector<unsigned long long> mFriendsConsoleCodes; // 0x10
     bool unk18;
     bool unk19;
     bool unk1a;
-    int unk1c;
-    int unk20;
-    int unk24;
+    int mCurrentInstrumentCareerScore; // 0x1c
+    int mCurrentHardcoreIconLevel; // 0x20
+    unsigned int mCymbalConfiguration; // 0x24
 };
 
 class NullLocalBandUser : public LocalBandUser {

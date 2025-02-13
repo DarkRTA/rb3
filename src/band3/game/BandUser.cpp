@@ -7,6 +7,7 @@
 #include "game/Player.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandUI.h"
+#include "meta_band/OvershellSlotState.h"
 #include "meta_band/SongStatusMgr.h"
 #include "meta_band/CharData.h"
 #include "meta_band/CharSync.h"
@@ -16,7 +17,9 @@
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/Utl.h"
 #include "net/NetSession.h"
+#include "net/WiiFriendMgr.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
 #include "os/ContentMgr.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
@@ -395,8 +398,8 @@ LocalBandUser::LocalBandUser() : mControllerTypeOverride(kControllerNone) {
     mHasSeenRealGuitarPrompt = 0;
 }
 
-LocalBandUser *LocalBandUser::GetLocalBandUser() {}
-LocalBandUser *LocalBandUser::GetLocalBandUser() const {}
+LocalBandUser *LocalBandUser::GetLocalBandUser() { return this; }
+LocalBandUser *LocalBandUser::GetLocalBandUser() const { return (LocalBandUser *)this; }
 
 RemoteBandUser *LocalBandUser::GetRemoteBandUser() {
     MILO_FAIL("Bad Conversion");
@@ -408,7 +411,7 @@ RemoteBandUser *LocalBandUser::GetRemoteBandUser() const {
     return 0;
 }
 
-int LocalBandUser::GetFriendsConsoleCodes() const { return 0; }
+const std::vector<unsigned long long> &LocalBandUser::GetFriendsConsoleCodes() const {}
 
 void LocalBandUser::Reset() {
     BandUser::Reset();
@@ -517,11 +520,17 @@ BEGIN_HANDLERS(LocalBandUser)
     HANDLE_CHECK(0x3CC)
 END_HANDLERS
 
-RemoteBandUser::RemoteBandUser() : unk19(), unk1a(), unk1c(), unk20(), unk24() {
-    mRemoteChar = new TourCharRemote;
+RemoteBandUser::RemoteBandUser()
+    : unk19(), unk1a(), mCurrentInstrumentCareerScore(), mCurrentHardcoreIconLevel(),
+      mCymbalConfiguration() {
+    TheWiiFriendMgr.AddSink(this, WiiFriendsListChangedMsg::Type());
+    mRemoteChar = new TourCharRemote();
 }
 
-RemoteBandUser::~RemoteBandUser() {}
+RemoteBandUser::~RemoteBandUser() {
+    TheWiiFriendMgr.RemoveSink(this, WiiFriendsListChangedMsg::Type());
+    delete mRemoteChar;
+}
 
 LocalBandUser *RemoteBandUser::GetLocalBandUser() {
     MILO_FAIL("Bad Conversion");
@@ -533,5 +542,107 @@ LocalBandUser *RemoteBandUser::GetLocalBandUser() const {
     return 0;
 }
 
-RemoteBandUser *RemoteBandUser::GetRemoteBandUser() {}
-RemoteBandUser *RemoteBandUser::GetRemoteBandUser() const {}
+RemoteBandUser *RemoteBandUser::GetRemoteBandUser() { return this; }
+RemoteBandUser *RemoteBandUser::GetRemoteBandUser() const {
+    return (RemoteBandUser *)this;
+}
+
+int RemoteBandUser::GetCurrentInstrumentCareerScore() const {
+    return mCurrentInstrumentCareerScore;
+}
+int RemoteBandUser::GetCurrentHardcoreIconLevel() const {
+    return mCurrentHardcoreIconLevel;
+}
+int RemoteBandUser::GetCymbalConfiguration() const { return mCymbalConfiguration; }
+const std::vector<unsigned long long> &RemoteBandUser::GetFriendsConsoleCodes() const {
+    return mFriendsConsoleCodes;
+}
+
+void RemoteBandUser::Reset() {
+    BandUser::Reset();
+    mUserGuid.Generate();
+}
+
+void RemoteBandUser::SyncLoad(BinStream &bs, unsigned int mask) {
+    MILO_ASSERT(!TheNetSession->HasUser(this) || !IsLocal(), 0x420);
+    RemoteUser::SyncLoad(bs, mask);
+    if (mask & 2) {
+        bool b860;
+        bs >> b860;
+        if (b860) {
+            bool b79f;
+            bs >> b79f;
+            if (b79f) {
+                Symbol s;
+                bs >> s;
+                PrefabChar *pc = PrefabMgr::GetPrefabMgr()->GetPrefab(s);
+                mChar = pc;
+            } else {
+                mRemoteChar->SyncLoad(bs);
+                mChar = mRemoteChar;
+            }
+            if (TheCharSync)
+                TheCharSync->UpdateCharCache();
+        }
+    }
+    if (mask & 1) {
+        Difficulty curDiff = mDifficulty;
+        unsigned char diff;
+        bs >> diff;
+        mDifficulty = (Difficulty)diff;
+        unk_0xC = 1;
+        if (mDifficulty != curDiff && mPlayer) {
+            mPlayer->ChangeDifficulty(mDifficulty);
+        }
+        unsigned char trackTy;
+        bs >> trackTy;
+        mTrackType = (TrackType)trackTy;
+        unsigned char cntTy;
+        bs >> cntTy;
+        mControllerType = (ControllerType)cntTy;
+        bs >> mHasButtonGuitar;
+        bs >> mHas22FretGuitar;
+        bs >> mCurrentInstrumentCareerScore;
+        unsigned char oState;
+        bs >> oState;
+        mOvershellState = (OvershellSlotStateID)oState;
+        bs >> mOvershellFocus;
+        unsigned char scoreTy;
+        bs >> scoreTy;
+        mPreferredScoreType = (ScoreType)scoreTy;
+        unsigned char level;
+        bs >> level;
+        mCurrentHardcoreIconLevel = level;
+        unsigned char cymbalCfg;
+        bs >> cymbalCfg;
+        mCymbalConfiguration = cymbalCfg;
+    }
+    if (mask & 0x80) {
+        bs >> unk1a;
+        unsigned int count;
+        bs >> count;
+        mFriendsConsoleCodes.clear();
+        MILO_LOG("Remote console codes:\n");
+        for (int i = 0; i < count; i++) {
+            unsigned long long code;
+            bs >> code;
+            mFriendsConsoleCodes.push_back(code);
+            MILO_LOG("\t%llu\n", code);
+        }
+    }
+}
+
+DataNode RemoteBandUser::OnMsg(const WiiFriendsListChangedMsg &msg) {
+    // TODO: replace this with the proper WiiFriendsListChangedMsg getter
+    if (!msg->Int(2))
+        ShowCustomCharacter();
+    return 1;
+}
+
+void RemoteBandUser::ShowCustomCharacter() {}
+
+BEGIN_HANDLERS(RemoteBandUser)
+    HANDLE_MESSAGE(WiiFriendsListChangedMsg)
+    HANDLE_SUPERCLASS(BandUser)
+    HANDLE_CHECK(0x4AB)
+END_HANDLERS
