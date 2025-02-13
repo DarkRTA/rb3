@@ -42,7 +42,7 @@
             "band3/game/CrowdRating.cpp": "NonMatching",
             "band3/game/Defines.cpp": "MISSING",
             "band3/game/DeployCountTracker.cpp": "NonMatching",
-            "band3/game/DirectInstrument.cpp": "NonMatching",
+            "band3/game/DirectInstrument.cpp": "Matching",
             "band3/game/FadePanel.cpp": "NonMatching",
             "band3/game/FocusTracker.cpp": "NonMatching",
             "band3/game/FreestylePanel.cpp": "MISSING",

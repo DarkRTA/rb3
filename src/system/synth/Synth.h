@@ -137,6 +137,7 @@ public:
     DataNode OnPassthrough(DataArray *);
 
     int GetNumMics() const { return mNumMics; }
+    MidiInstrumentMgr *GetMidiInstrumentMgr() const { return mMidiInstrumentMgr; }
     static Synth *New();
 
     std::vector<LevelData> mLevelData; // 0x20
