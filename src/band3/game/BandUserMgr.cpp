@@ -245,6 +245,75 @@ int BandUserMgr::GetBandUsers(std::vector<BandUser *> *users, int mask) const {
     return ret;
 }
 
+int BandUserMgr::GetLocalBandUsers(std::vector<LocalBandUser *> *users, int mask) const {}
+
+int BandUserMgr::GetRemoteBandUsers(std::vector<RemoteBandUser *> *users, int mask) const {
+
+}
+
+int BandUserMgr::GetParticipatingBandUsers(std::vector<BandUser *> &users) const {
+    return GetBandUsers(&users, 8);
+}
+
+int BandUserMgr::GetParticipatingBandUsersInSession(std::vector<BandUser *> &users
+) const {
+    return GetBandUsers(&users, 0x4008);
+}
+
+int BandUserMgr::GetBandUsersInSession(std::vector<BandUser *> &users) const {
+    return GetBandUsers(&users, 0x4000);
+}
+
+int BandUserMgr::GetLocalParticipants(std::vector<LocalBandUser *> &users) const {
+    return GetLocalBandUsers(&users, 8);
+}
+
+int BandUserMgr::GetLocalBandUsers(std::vector<LocalBandUser *> &users) const {
+    return GetLocalBandUsers(&users, 2);
+}
+
+int BandUserMgr::GetLocalBandUsersInSession(std::vector<LocalBandUser *> &users) const {
+    return GetLocalBandUsers(&users, 0x4000);
+}
+
+int BandUserMgr::GetLocalUsersWithAnyController(std::vector<LocalBandUser *> &users
+) const {
+    return GetLocalBandUsers(&users, 0x80);
+}
+
+int BandUserMgr::GetLocalUsersNotInSessionWithAnyController(
+    std::vector<LocalBandUser *> &users
+) const {
+    return GetLocalBandUsers(&users, 0x2082);
+}
+
+LocalBandUser *BandUserMgr::GetUserFromPad(int pad) {
+    FOREACH (it, mLocalUsers) {
+        LocalBandUser *pLocalUser = *it;
+        MILO_ASSERT(pLocalUser, 0x23E);
+        if (pad == pLocalUser->GetPadNum())
+            return pLocalUser;
+    }
+    return nullptr;
+}
+
+DataNode BandUserMgr::ForEachUser(const DataArray *a, int mask) {
+    DataNode *var = a->Var(2);
+    DataNode tmp = *var;
+    std::vector<BandUser *> users;
+    TheBandUserMgr->GetBandUsers(&users, mask);
+    FOREACH (it, users) {
+        BandUser *pUser = *it;
+        MILO_ASSERT(pUser, 0x254);
+        *var = pUser;
+        for (int i = 3; i < a->Size(); i++) {
+            a->Command(i)->Execute();
+        }
+    }
+    *var = tmp;
+    return 0;
+}
+
 BEGIN_HANDLERS(BandUserMgr)
     HANDLE_ACTION(set_slot, SetSlot(_msg->Obj<BandUser>(2), _msg->Int(3)))
     HANDLE_EXPR(get_user_from_slot, GetUserFromSlot(_msg->Int(2)))

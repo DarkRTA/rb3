@@ -43,12 +43,16 @@ public:
     bool IsCharAvailable(const CharData *) const;
     ControllerType DebugGetControllerTypeOverride(int);
 
-    void GetLocalParticipants(std::vector<LocalBandUser *> &) const;
-    void GetLocalBandUsersInSession(std::vector<LocalBandUser *> &) const;
-    void GetParticipatingBandUsers(std::vector<BandUser *> &) const;
-    void GetParticipatingBandUsersInSession(std::vector<BandUser *> &) const;
-    void GetLocalUsersWithAnyController(std::vector<LocalBandUser *> &) const;
-    void GetBandUsersInSession(std::vector<BandUser *> &) const;
+    int GetLocalParticipants(std::vector<LocalBandUser *> &) const;
+    int GetLocalBandUsersInSession(std::vector<LocalBandUser *> &) const;
+    int GetParticipatingBandUsers(std::vector<BandUser *> &) const;
+    int GetParticipatingBandUsersInSession(std::vector<BandUser *> &) const;
+    int GetLocalUsersWithAnyController(std::vector<LocalBandUser *> &) const;
+    int GetBandUsersInSession(std::vector<BandUser *> &) const;
+    int GetLocalBandUsers(std::vector<LocalBandUser *> &) const;
+    int GetLocalUsersNotInSessionWithAnyController(std::vector<LocalBandUser *> &) const;
+
+    DataNode ForEachUser(const DataArray *, int);
 
     static BandUser *GetBandUser(User *);
     static LocalBandUser *GetLocalBandUser(LocalUser *);
