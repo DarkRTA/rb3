@@ -4,13 +4,21 @@
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/Game.h"
+#include "game/NetGameMsgs.h"
+#include "game/PracticeSectionProvider.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/SessionMgr.h"
 #include "net/NetSession.h"
+#include "obj/Data.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/Debug.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
+#include "utl/TimeConversion.h"
 
 GameConfig *TheGameConfig;
 
@@ -20,8 +28,7 @@ GameConfig::GameConfig()
     MILO_ASSERT(!TheGameConfig, 0x38);
     TheGameConfig = this;
     mPlayerTrackConfigList = new PlayerTrackConfigList(4);
-    unk2c = -1;
-    unk28 = -1;
+    mPracticeSections[0] = mPracticeSections[1] = -1;
 }
 
 GameConfig::~GameConfig() {
@@ -190,3 +197,118 @@ void GameConfig::ChangeDifficulty(BandUser *u, int i) {
 void GameConfig::RemoveUser(BandUser *u) {
     mPlayerTrackConfigList->RemoveConfig(u->GetUserGuid());
 }
+
+void GameConfig::OnSetRemoteUserTrackType(User *u, Symbol s) {
+    SetUserTrackTypeMsg msg(u, s);
+    TheNetSession->SendMsg(u, msg, kReliable);
+}
+
+void GameConfig::OnSetRemoteUserDifficulty(User *u, Symbol s) {
+    SetUserDifficultyMsg msg(u, s);
+    TheNetSession->SendMsg(u, msg, kReliable);
+}
+
+DataNode GameConfig::OnGetSectionBounds(DataArray *a) {
+    float f24, f28;
+    GetSectionBounds(a->Int(2), f24, f28);
+    *a->Var(3) = f24;
+    *a->Var(4) = f28;
+    return 0;
+}
+
+DataNode GameConfig::OnGetSectionBoundsTick(DataArray *a) {
+    const PracticeSection &sect = mPracticeSectionProvider->GetSection(a->Int(2));
+    if (!TheGame) {
+        *a->Var(3) = 0.0f;
+        *a->Var(4) = 1.0f;
+        return 0;
+    } else {
+        *a->Var(3) = (float)sect.unk4;
+        *a->Var(4) = (float)sect.unk8;
+        return 0;
+    }
+}
+
+void GameConfig::GetSectionBoundsTick(int i1, int &i2, int &i3) const {
+    const PracticeSection &sect = mPracticeSectionProvider->GetSection(i1);
+    i2 = sect.unk4;
+    i3 = sect.unk8;
+}
+
+DataNode GameConfig::OnGetSection(DataArray *a) {
+    int index = a->Int(2);
+    MILO_ASSERT(index < 2, 0x1F2);
+    return mPracticeSections[index];
+}
+
+DataNode GameConfig::OnSetSection(DataArray *a) {
+    int index = a->Int(2);
+    MILO_ASSERT(index < 2, 0x1FA);
+    mPracticeSections[index] = a->Int(3);
+    return 0;
+}
+
+DataNode GameConfig::ForEach(const DataArray *a, bool b2) {
+    DataNode *var = a->Var(2);
+    DataNode tmp(*var);
+    std::vector<BandUser *> users;
+    TheBandUserMgr->GetParticipatingBandUsers(users);
+    FOREACH (it, users) {
+        BandUser *pUser = *it;
+        MILO_ASSERT(pUser, 0x20C);
+        if (!b2 || pUser->IsLocal()) {
+            *var = pUser->GetPlayer();
+            for (int i = 3; i < a->Size(); i++) {
+                a->Command(i)->Execute();
+            }
+        }
+    }
+    *var = tmp;
+    return 0;
+}
+
+void GameConfig::ChangeRandomSeed() { TheSessionMgr->ChangeRandomSeed(); }
+
+void GameConfig::GetSectionBounds(int i1, float &f2, float &f3) const {
+    const PracticeSection &sect = mPracticeSectionProvider->GetSection(i1);
+    if (!TheGame) {
+        f3 = 0;
+        f2 = 0;
+    } else {
+        f2 = TickToMs(sect.unk4);
+        f3 = TickToMs(sect.unk8);
+    }
+}
+
+void GameConfig::GetPracticeSections(int &i1, int &i2) const {
+    i1 = mPracticeSections[0];
+    i2 = mPracticeSections[1];
+}
+
+BEGIN_HANDLERS(GameConfig)
+    HANDLE_EXPR(multiplayer, TheBandUserMgr->IsMultiplayerGame())
+    HANDLE_ACTION(auto_assign_missing_slots, AutoAssignMissingSlots())
+    HANDLE_ACTION(set_song_limit, mSongLimitMs = _msg->Float(2) * 1000.0f)
+    HANDLE_ACTION(
+        set_remote_user_track_type,
+        OnSetRemoteUserTrackType(_msg->Obj<User>(2), _msg->ForceSym(3))
+    )
+    HANDLE_ACTION(
+        set_remote_user_difficulty,
+        OnSetRemoteUserDifficulty(_msg->Obj<User>(2), _msg->ForceSym(3))
+    )
+    HANDLE_ACTION(foreach_player, ForEach(_msg, false))
+    HANDLE_ACTION(foreach_local_player, ForEach(_msg, true))
+    HANDLE(get_section_bounds, OnGetSectionBounds)
+    HANDLE(get_section_bounds_tick, OnGetSectionBoundsTick)
+    HANDLE(get_section, OnGetSection)
+    HANDLE(set_section, OnSetSection)
+    HANDLE_EXPR(want_coda, WantCoda())
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x2C7)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(GameConfig)
+    SYNC_PROP(practice_speed, mPracticeSpeed)
+    SYNC_PROP(practice_mode, mPracticeMode)
+END_PROPSYNCS
