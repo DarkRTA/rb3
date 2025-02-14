@@ -99,7 +99,7 @@ Game::Game()
       unkc8(0), unkcc(0), mBand(0), mShuttle(new Shuttle()), unkdc(-1), unk11c(-1),
       unk120(0), mSkippedSong(0), unk124(0), unk128(0), mInvalidScore(0), unk130(0),
       unk134(0), unk138(0), unk139(1), unk13c(-1), unk140(-1), mTrackerManager(0),
-      unk148(0), unk14c(-1), unk150(1) {
+      unk148(0), mDisablePauseMs(-1), unk150(1) {
     MILO_ASSERT(!TheSongDB, 0xCE);
     TheSongDB = mSongDB;
     TheGame = this;
@@ -294,7 +294,8 @@ void Game::SetPaused(bool b1, bool b2, bool b3) {
 }
 
 bool Game::CanUserPause() const {
-    return !mProperties.mEndWithSong || unkac < TheSongDB->GetSongDurationMs() - unk14c;
+    return !mProperties.mEndWithSong
+        || unkac < TheSongDB->GetSongDurationMs() - mDisablePauseMs;
 }
 
 void Game::DiscErrorEnd() { unk6b = true; }

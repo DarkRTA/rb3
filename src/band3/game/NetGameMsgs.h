@@ -47,6 +47,7 @@ public:
 class RestartGameMsg : public NetMessage {
 public:
     RestartGameMsg() : mFromWin(0) {}
+    RestartGameMsg(bool w) : mFromWin(w) {}
     virtual ~RestartGameMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);

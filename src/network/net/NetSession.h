@@ -1,5 +1,6 @@
 #pragma once
 #include "Platform/Time.h"
+#include "game/Game.h"
 #include "meta_band/BandNetGameData.h"
 #include "net/NetMessage.h"
 #include "net/SessionMessages.h"
@@ -71,17 +72,6 @@ public:
         kRequestingNewUser = 7,
         kClientsArbitrating = 8,
         kHostArbitrating = 9
-    };
-
-    enum GameState {
-        kInLobby = 0,
-        kGameNeedIntro = 0,
-        kStartingGame = 1,
-        kGameNeedStart = 1,
-        kInOnlineGame = 2,
-        kGamePlaying = 2,
-        kGameOver = 3,
-        kInLocalGame = 3
     };
 
     NetSession();

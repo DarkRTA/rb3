@@ -69,6 +69,7 @@ public:
     GameGem &GetGem(int, int) const;
     int GetTotalGems(int) const;
     VocalNoteList *GetVocalNoteList(int) const;
+    void GetBandFailCue(String &) const;
 
     SongData *GetSongData() { return mSongData; }
 

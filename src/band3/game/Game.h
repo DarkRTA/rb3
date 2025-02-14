@@ -16,6 +16,17 @@
 #include "utl/SongInfoCopy.h"
 #include "utl/SongPos.h"
 
+enum GameState {
+    kInLobby = 0,
+    kGameNeedIntro = 0,
+    kStartingGame = 1,
+    kGameNeedStart = 1,
+    kInOnlineGame = 2,
+    kGamePlaying = 2,
+    kGameOver = 3,
+    kInLocalGame = 3
+};
+
 class Game : public BeatMasterSink, public Hmx::Object, public DiscErrorMgrWii::Callback {
 public:
     struct Properties {
@@ -97,6 +108,11 @@ public:
     float GetSongMs() const;
     void UpdatePausedState(bool, bool);
     bool CanUserPause() const;
+    void Restart(bool);
+    void Poll();
+    ExcitementLevel GetCrowdExcitement();
+    void SetVocalPercussionBank(ObjectDir *);
+    void SetDrumKitBank(ObjectDir *);
 
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
@@ -151,7 +167,7 @@ public:
     float unk140;
     TrackerManager *mTrackerManager; // 0x144
     bool unk148;
-    float unk14c;
+    float mDisablePauseMs; // 0x14c - disable pause ms?
     bool unk150;
     std::vector<BandUser *> unk154;
 };
