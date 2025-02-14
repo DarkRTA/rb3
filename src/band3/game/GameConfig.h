@@ -19,6 +19,9 @@ public:
     Symbol GetController(BandUser *) const;
     void ChangeDifficulty(BandUser *, int);
     void AssignTracks();
+    bool IsInstrumentUsed(Symbol) const;
+    void AssignTrack(BandUser *);
+    void RemoveUser(BandUser *);
     PlayerTrackConfigList *GetConfigList() const { return mPlayerTrackConfigList; }
 
     PlayerTrackConfigList *mPlayerTrackConfigList; // 0x1c

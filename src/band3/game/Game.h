@@ -49,9 +49,9 @@ public:
     };
     Game();
     virtual ~Game();
-    virtual void Beat(int, int);
-    virtual void UpdateSongPos(const SongPos &);
-    virtual void HandleSubmix(int, const char *);
+    virtual void Beat(int, int) {}
+    virtual void UpdateSongPos(const SongPos &) {}
+    virtual void HandleSubmix(int, const char *) {}
     virtual DataNode Handle(DataArray *, bool);
     virtual void DiscErrorEnd();
 
