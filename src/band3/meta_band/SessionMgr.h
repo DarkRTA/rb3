@@ -93,6 +93,7 @@ public:
     void ClearWaitingUsers();
     void SetActiveRoster(bool);
     void ChangeRandomSeed();
+    Matchmaker *GetMatchmaker() const { return mMatchMaker; }
 
     static void Init();
 

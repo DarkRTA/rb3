@@ -81,8 +81,8 @@ public:
     virtual void DynamicAddBeatmatch();
     virtual void PostDynamicAdd();
     virtual void Leave();
-    virtual void SetTrack(int);
-    virtual void PostLoad(bool);
+    virtual void SetTrack(int trk) { mTrackNum = trk; }
+    virtual void PostLoad(bool) {}
     virtual bool IsReady() const = 0;
     virtual void Start() = 0;
     virtual void StartIntro();
@@ -106,7 +106,7 @@ public:
     virtual void EnterCoda();
     virtual void ResetCodaPoints();
     virtual void AddCodaPoints();
-    virtual int GetCodaPoints();
+    virtual int GetCodaPoints() { return 0; }
     virtual bool InFill() const;
     virtual void SetFillLogic(FillLogic);
     virtual bool DoneWithSong() const = 0;
@@ -115,7 +115,7 @@ public:
     virtual void Rollback(float, float);
     virtual void EnableController() {}
     virtual void DisableController() {}
-    virtual void ConfigureBehavior();
+    virtual void ConfigureBehavior() {}
     virtual bool CanDeployOverdrive() const;
     virtual float GetOverdrive() const;
     virtual void CompleteCommonPhrase(bool, bool);
@@ -127,14 +127,14 @@ public:
     virtual void SetSyncOffset(float) {}
     virtual void SavePersistentData(PersistentPlayerData &) const;
     virtual void LoadPersistentData(const PersistentPlayerData &);
-    virtual int GetCodaFreestyleExtents(Extent &) const;
+    virtual int GetCodaFreestyleExtents(Extent &) const { return 0; }
     virtual bool InTambourinePhrase() const;
     virtual bool InFreestyleSection() const;
     virtual void PopupHelp(Symbol, bool);
     virtual bool AutoplaysCoda() const;
-    virtual void SetCodaEndMs(float);
+    virtual void SetCodaEndMs(float) {}
     virtual bool NeedsToOverrideBasePoints() const;
-    virtual bool NeedsToSetCodaEnd() const;
+    virtual bool NeedsToSetCodaEnd() const { return false; }
     virtual void EnterAnnoyingMode() {}
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);
@@ -227,7 +227,7 @@ public:
     int unk2ac;
     bool unk2b0;
     bool mPermanentOverdrive; // 0x2b1
-    bool unk2b2;
+    bool mHasFinishedCoda; // 0x2b2
     bool mHasBlownCoda; // 0x2b3
     int unk2b4;
     int unk2b8;

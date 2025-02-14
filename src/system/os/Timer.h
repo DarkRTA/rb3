@@ -168,6 +168,7 @@ public:
     static std::vector<std::pair<Timer, TimerStats> > sTimers;
 
     static Timer *GetTimer(Symbol);
+    static void SetCollectStats(bool, bool);
 };
 
 #ifdef VERSION_SZBE69_B8

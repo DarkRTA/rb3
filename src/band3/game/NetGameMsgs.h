@@ -26,6 +26,7 @@ enum NetUIState {
 
 class PlayerGameplayMsg : public NetMessage {
 public:
+    PlayerGameplayMsg() {}
     PlayerGameplayMsg(User *, int, int, int, int);
     virtual ~PlayerGameplayMsg() {}
     virtual void Save(BinStream &) const;
@@ -45,7 +46,8 @@ public:
 
 class RestartGameMsg : public NetMessage {
 public:
-    RestartGameMsg() {}
+    RestartGameMsg() : mFromWin(0) {}
+    RestartGameMsg(bool w) : mFromWin(w) {}
     virtual ~RestartGameMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
@@ -76,6 +78,7 @@ public:
 
 class PlayerStatsMsg : public NetMessage {
 public:
+    PlayerStatsMsg() {}
     PlayerStatsMsg(User *, int, const Stats &);
     virtual ~PlayerStatsMsg() {}
     virtual void Save(BinStream &) const;
@@ -93,6 +96,7 @@ public:
 
 class SetUserTrackTypeMsg : public NetMessage {
 public:
+    SetUserTrackTypeMsg() {}
     SetUserTrackTypeMsg(User *, String);
     virtual ~SetUserTrackTypeMsg() {}
     virtual void Save(BinStream &) const;
@@ -109,6 +113,7 @@ public:
 
 class SetUserDifficultyMsg : public NetMessage {
 public:
+    SetUserDifficultyMsg() {}
     SetUserDifficultyMsg(User *, String);
     virtual ~SetUserDifficultyMsg() {}
     virtual void Save(BinStream &) const;
@@ -125,6 +130,7 @@ public:
 
 class SetlistSubmissionMsg : public NetMessage {
 public:
+    SetlistSubmissionMsg() {}
     SetlistSubmissionMsg(const std::vector<int> &, int);
     virtual ~SetlistSubmissionMsg() {}
     virtual void Save(BinStream &) const;
@@ -141,6 +147,7 @@ public:
 
 class TourMostStarsMsg : public NetMessage {
 public:
+    TourMostStarsMsg() {}
     TourMostStarsMsg(Symbol, int);
     virtual ~TourMostStarsMsg() {}
     virtual void Save(BinStream &) const;
@@ -157,6 +164,7 @@ public:
 
 class TourPlayedMsg : public NetMessage {
 public:
+    TourPlayedMsg() {}
     TourPlayedMsg(Symbol);
     virtual ~TourPlayedMsg() {}
     virtual void Save(BinStream &) const;
@@ -172,6 +180,7 @@ public:
 
 class AccomplishmentMsg : public NetMessage {
 public:
+    AccomplishmentMsg() {}
     AccomplishmentMsg(Symbol);
     virtual ~AccomplishmentMsg() {}
     virtual void Save(BinStream &) const;
@@ -187,6 +196,7 @@ public:
 
 class AccomplishmentEarnedMsg : public NetMessage {
 public:
+    AccomplishmentEarnedMsg() {}
     AccomplishmentEarnedMsg(Symbol, const char *, Symbol);
     virtual ~AccomplishmentEarnedMsg() {}
     virtual void Save(BinStream &) const;
@@ -217,6 +227,7 @@ public:
 
 class TourHideShowFiltersMsg : public NetMessage {
 public:
+    TourHideShowFiltersMsg() {}
     TourHideShowFiltersMsg(bool);
     virtual ~TourHideShowFiltersMsg() {}
     virtual void Save(BinStream &) const;
@@ -232,6 +243,7 @@ public:
 
 class SongResultsScrollMsg : public NetMessage {
 public:
+    SongResultsScrollMsg() {}
     SongResultsScrollMsg(int, int);
     virtual ~SongResultsScrollMsg() {}
     virtual void Save(BinStream &) const;

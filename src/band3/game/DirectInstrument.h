@@ -4,6 +4,7 @@
 #include "synth/MidiInstrument.h"
 
 class DirectInstrument {
+public:
     DirectInstrument();
     ~DirectInstrument();
 

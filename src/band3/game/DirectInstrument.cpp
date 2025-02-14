@@ -6,12 +6,10 @@
 DirectInstrument::DirectInstrument()
     : mVolume(127), mInstrument(nullptr), mFader(nullptr) {
     DataArray *sounddotinstruments = SystemConfig("sound", "instruments");
-    Symbol chamberlin("chamberlin");
-    const char *path = sounddotinstruments->FindArray(chamberlin, true)->Str(1);
-    Symbol s("direct_instrument_volume");
-    mVolume = SystemConfig("sound")->FindArray(s, true)->Int(1);
+    const char *path = sounddotinstruments->FindStr("chamberlin");
+    mVolume = SystemConfig("sound")->FindInt("direct_instrument_volume");
     FilePath fp(".", path);
-    mDir.LoadFile(fp, 1, true, kLoadFront, true);
+    mDir.LoadFile(fp, 1, true, kLoadFront, false);
 }
 
 DirectInstrument::~DirectInstrument() { Disable(); }
@@ -23,19 +21,17 @@ void DirectInstrument::PostLoad() { mDir.PostLoad(NULL); }
 void DirectInstrument::Enable() {
     if (mInstrument == 0) {
         mDir.PostLoad(NULL);
-        delete mFader;
-        mFader = nullptr;
+        RELEASE(mFader);
         mFader = Hmx::Object::New<Fader>();
         mInstrument = mDir->Find<MidiInstrument>("Chamberlin.inst", false);
         mInstrument->mFaders.Add(mFader);
-        TheSynth->mMidiInstrumentMgr->SetInstrument(mInstrument);
+        TheSynth->GetMidiInstrumentMgr()->SetInstrument(mInstrument);
     }
 }
 
 void DirectInstrument::Disable() {
-    TheSynth->mMidiInstrumentMgr->UnloadInstrument();
-    delete mFader;
-    mFader = nullptr;
+    TheSynth->GetMidiInstrumentMgr()->UnloadInstrument();
+    RELEASE(mFader);
     mInstrument = nullptr;
 }
 

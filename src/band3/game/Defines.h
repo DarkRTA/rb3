@@ -53,3 +53,11 @@ ScoreType SymToScoreType(Symbol);
 void CensorString(String &);
 bool RepresentSamePart(TrackType, TrackType);
 Symbol DifficultyToShortSym(Difficulty);
+void GetTracksPlayableByController(
+    ControllerType ct, std::vector<TrackType> &tracks, class OvershellPanel *panel
+);
+bool IsTrackPlayableByController(TrackType, ControllerType);
+void GetTracksRepresentativeOfPart(TrackType ty, std::vector<TrackType> &tracks);
+bool RepresentSamePart(TrackType t1, TrackType t2);
+bool IsRepresentativePartPlayableByController(TrackType t, ControllerType c);
+bool ControllerHasRepresentativePartPriority(ControllerType, TrackType);

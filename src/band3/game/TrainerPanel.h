@@ -50,7 +50,7 @@ public:
     virtual void Draw();
     virtual void Enter();
     virtual void Exit();
-    virtual void HandlePlayerDeleted(Player *);
+    virtual void HandlePlayerDeleted(Player *) {}
     virtual void StartSectionImpl() = 0;
     virtual void SetLessonComplete(int);
     virtual bool AllSectionsFinished() const;

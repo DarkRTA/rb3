@@ -5,9 +5,10 @@
 #include "meta_band/OvershellSlotState.h"
 #include "meta_band/CharData.h"
 #include "os/User.h"
+#include "tour/TourCharLocal.h"
 #include "tour/TourCharRemote.h"
 #include "types.h"
-#include "system/bandobj/BandCharacter.h"
+#include "net/WiiFriendMgr.h"
 
 class BandCharDesc;
 class LocalBandUser;
@@ -22,7 +23,7 @@ public:
     virtual DataNode Handle(DataArray *, bool);
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual ~BandUser();
-    virtual bool IsNullUser();
+    virtual bool IsNullUser() const { return false; }
     virtual bool IsParticipating() const { return mParticipating; }
     virtual int GetCurrentInstrumentCareerScore() const = 0;
     virtual int GetCurrentHardcoreIconLevel() const = 0;
@@ -31,9 +32,9 @@ public:
     virtual LocalBandUser *GetLocalBandUser() const = 0;
     virtual RemoteBandUser *GetRemoteBandUser() = 0;
     virtual RemoteBandUser *GetRemoteBandUser() const = 0;
-    virtual int GetFriendsConsoleCodes() const = 0;
+    virtual const std::vector<unsigned long long> &GetFriendsConsoleCodes() const = 0;
     virtual void Reset();
-    virtual void SyncSave();
+    virtual void SyncSave(BinStream &, unsigned int) const;
 
     const char *ProfileName() const;
     bool IsFullyInGame() const;
@@ -42,7 +43,6 @@ public:
     Symbol GetDifficultySym() const;
     TrackType GetTrackType() const;
     Symbol GetTrackSym() const;
-    BandCharacter *GetCharLocal();
     bool HasChar();
     void SetDifficulty(Difficulty);
     void UpdateData(unsigned int);
@@ -65,10 +65,15 @@ public:
     void SetOvershellSlotState(OvershellSlotStateID);
     GameplayOptions *GetGameplayOptions();
     void SetLoadedPrefabChar(int);
+    void DeletePlayer();
+    TourCharLocal *GetCharLocal();
+
     float GetLastHitFraction() const { return mLastHitFraction; }
     void SetLastHitFraction(float f) { mLastHitFraction = f; }
     Player *GetPlayer() const { return mPlayer; }
     Track *GetTrack() const { return mTrack; }
+    void SetPlayer(Player *p) { mPlayer = p; }
+    void SetTrack(Track *trk) { mTrack = trk; }
 
     static LocalBandUser *NewLocalBandUser();
     static RemoteBandUser *NewRemoteBandUser();
@@ -111,7 +116,7 @@ public:
     virtual LocalBandUser *GetLocalBandUser() const;
     virtual RemoteBandUser *GetRemoteBandUser();
     virtual RemoteBandUser *GetRemoteBandUser() const;
-    virtual int GetFriendsConsoleCodes() const;
+    virtual const std::vector<unsigned long long> &GetFriendsConsoleCodes() const;
     virtual void Reset();
     virtual ControllerType ConnectedControllerType() const;
     virtual int GetCurrentInstrumentCareerScore() const;
@@ -125,6 +130,7 @@ public:
     void DebugSetControllerTypeOverride(ControllerType);
     bool HasShownIntroHelp(TrackType) const;
     void SetShownIntroHelp(TrackType, bool);
+    bool CanGetAchievements() const { return CanSaveData(); }
 
     bool unkc; // 0xc
     bool mHasSeenRealGuitarPrompt; // 0xd
@@ -141,21 +147,25 @@ public:
     virtual LocalBandUser *GetLocalBandUser() const;
     virtual RemoteBandUser *GetRemoteBandUser();
     virtual RemoteBandUser *GetRemoteBandUser() const;
-    virtual int GetFriendsConsoleCodes() const;
+    virtual const std::vector<unsigned long long> &GetFriendsConsoleCodes() const;
     virtual int GetCurrentInstrumentCareerScore() const;
     virtual int GetCurrentHardcoreIconLevel() const;
     virtual int GetCymbalConfiguration() const;
     virtual void Reset();
     virtual void SyncLoad(BinStream &, unsigned int);
 
-    TourCharRemote *mRemoteChar; // TourCharRemote*
-    std::vector<int> unk10; // 0x10
+    void ShowCustomCharacter();
+
+    DataNode OnMsg(const WiiFriendsListChangedMsg &);
+
+    TourCharRemote *mRemoteChar; // 0xc
+    std::vector<unsigned long long> mFriendsConsoleCodes; // 0x10
     bool unk18;
     bool unk19;
     bool unk1a;
-    int unk1c;
-    int unk20;
-    int unk24;
+    int mCurrentInstrumentCareerScore; // 0x1c
+    int mCurrentHardcoreIconLevel; // 0x20
+    unsigned int mCymbalConfiguration; // 0x24
 };
 
 class NullLocalBandUser : public LocalBandUser {

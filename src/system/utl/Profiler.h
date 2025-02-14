@@ -4,6 +4,7 @@
 #include "milo_types.h"
 
 class Profiler { // total size: 0x4C
+public:
     Profiler(const char *, int);
     void Start();
     void Stop();

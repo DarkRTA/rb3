@@ -20,6 +20,11 @@ public:
     bool IsBelowLoseLevel() const;
     bool CantFailYet() const;
     void ChangeDifficulty(BandUser *, Difficulty);
+    void Poll(float);
+    void Update(float, float);
+    void CalculateValue();
+    void UpdatePhrase(float, float);
+
     float GetLoseLevel() const { return mLoseLevel; }
     void SetLoseLevel(float level) { mLoseLevel = level; }
     float GetMinValue() { return mRunningMin; }
@@ -33,6 +38,14 @@ public:
     float mRunningMin; // 0x10
     float mSongFraction; // 0x14
     float mLoseLevel; // 0x18
-    char unk1c[16];
-    float unk2c;
+    float kMin; // 0x1c
+    float kMax; // 0x20
+    float kNoteWeight; // 0x24
+    float kPhraseWeight; // 0x28
+    float kInitialDisplayLevel; // 0x2c
+    float kGreatLevel; // 0x30
+    float kOkayLevel; // 0x34
+    float kBadLevel; // 0x38
+    float kWarningLevel; // 0x3c
+    float kFreeRide; // 0x40
 };

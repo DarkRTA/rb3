@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/GameplayOptions.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
 #include "meta/Profile.h"
@@ -12,7 +13,7 @@ enum LagContext {
     kPractice90 = 3,
     kPractice80 = 4,
     kPractice70 = 5,
-    // where 6
+    kPractice60 = 6,
     kNumLagContexts = 7
 };
 
@@ -103,12 +104,14 @@ public:
     int GetVoiceChatVolume() const;
     unsigned int GetCymbalConfiguration() const;
     bool HasLoaded();
+    float GetSongToTaskMgrMs(LagContext) const;
     BandProfile *FindTourProgressOwner(const TourProgress *);
     BandProfile *GetProfileForChar(const TourCharLocal *);
     std::vector<BandProfile *> GetSignedInProfiles();
     BandProfile *GetPrimaryProfile() const;
     BandProfile *GetProfileFromPad(int);
     void SetPrimaryProfileByUser(const LocalUser *);
+    GameplayOptions *GetGameplayOptionsFromUser(LocalBandUser *);
 
     DECLARE_REVS;
 

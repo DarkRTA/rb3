@@ -1,5 +1,6 @@
 #pragma once
 #include "Platform/Time.h"
+#include "game/Game.h"
 #include "meta_band/BandNetGameData.h"
 #include "net/NetMessage.h"
 #include "net/SessionMessages.h"
@@ -73,17 +74,6 @@ public:
         kHostArbitrating = 9
     };
 
-    enum GameState {
-        kInLobby = 0,
-        kGameNeedIntro = 0,
-        kStartingGame = 1,
-        kGameNeedStart = 1,
-        kInOnlineGame = 2,
-        kGamePlaying = 2,
-        kGameOver = 3,
-        kInLocalGame = 3
-    };
-
     NetSession();
     virtual DataNode Handle(DataArray *, bool);
     virtual ~NetSession();
@@ -145,6 +135,7 @@ public:
     void GetLocalUserList(std::vector<LocalUser *> &) const;
     void GetRemoteUserList(std::vector<RemoteUser *> &) const;
     void GetUserList(std::vector<User *> &) const;
+    bool IsInGame() const;
 
     bool OnMsg(const JoinRequestMsg &);
     bool OnMsg(const JoinResponseMsg &);

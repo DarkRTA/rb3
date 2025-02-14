@@ -4,6 +4,7 @@
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "obj/Data.h"
+#include "os/Timer.h"
 #include "utl/BinStream.h"
 #include "utl/SongInfoCopy.h"
 #include "beatmatch/VocalNote.h"
@@ -360,3 +361,5 @@ public:
 
     std::vector<Symbol> *unk8; // 0x8
 };
+
+extern Timer gSongLoadTimer;

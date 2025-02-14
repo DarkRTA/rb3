@@ -28,6 +28,8 @@ public:
     virtual UIColor *SlotColorOverride(int, int, class UIListWidget *, UIColor *c) const;
     virtual DataNode Handle(DataArray *, bool);
 
+    const PracticeSection &GetSection(int) const;
+
     std::vector<PracticeSection> unk20; // 0x20
     Symbol unk28; // 0x28
     int unk2c;

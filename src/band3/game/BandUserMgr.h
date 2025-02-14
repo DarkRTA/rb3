@@ -1,5 +1,6 @@
 #pragma once
 #include "game/Defines.h"
+#include "meta_band/BandProfile.h"
 #include "os/UserMgr.h"
 #include "utl/HxGuid.h"
 #include "game/BandUser.h"
@@ -37,18 +38,26 @@ public:
     int GetNumLocalPlayers() const;
     LocalBandUser *GetUserFromPad(int);
     bool AllLocalUsersInSessionAreGuests() const;
-    void GetBandUsers(std::vector<BandUser *> *, int) const;
-    void GetLocalBandUsers(std::vector<LocalBandUser *> *, int) const;
-    void GetRemoteBandUsers(std::vector<RemoteBandUser *> *, int) const;
+    int GetBandUsers(std::vector<BandUser *> *, int) const;
+    int GetLocalBandUsers(std::vector<LocalBandUser *> *, int) const;
+    int GetRemoteBandUsers(std::vector<RemoteBandUser *> *, int) const;
     bool IsCharAvailable(const CharData *) const;
     ControllerType DebugGetControllerTypeOverride(int);
+    void DebugSetControllerTypeOverride(int, ControllerType);
 
-    void GetLocalParticipants(std::vector<LocalBandUser *> &) const;
-    void GetLocalBandUsersInSession(std::vector<LocalBandUser *> &) const;
-    void GetParticipatingBandUsers(std::vector<BandUser *> &) const;
-    void GetParticipatingBandUsersInSession(std::vector<BandUser *> &) const;
-    void GetLocalUsersWithAnyController(std::vector<LocalBandUser *> &) const;
-    void GetBandUsersInSession(std::vector<BandUser *> &) const;
+    int GetLocalParticipants(std::vector<LocalBandUser *> &) const;
+    int GetLocalBandUsersInSession(std::vector<LocalBandUser *> &) const;
+    int GetParticipatingBandUsers(std::vector<BandUser *> &) const;
+    int GetParticipatingBandUsersInSession(std::vector<BandUser *> &) const;
+    int GetLocalUsersWithAnyController(std::vector<LocalBandUser *> &) const;
+    int GetBandUsersInSession(std::vector<BandUser *> &) const;
+    int GetLocalBandUsers(std::vector<LocalBandUser *> &) const;
+    int GetLocalUsersNotInSessionWithAnyController(std::vector<LocalBandUser *> &) const;
+    int GetBandUsers(int mask) const { return GetBandUsers(nullptr, mask); }
+
+    DataNode ForEachUser(const DataArray *, int);
+    DataNode OnMsg(const ProfilePreDeleteMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
 
     static BandUser *GetBandUser(User *);
     static LocalBandUser *GetLocalBandUser(LocalUser *);
@@ -59,7 +68,7 @@ public:
     std::vector<RemoteBandUser *> mRemoteUsers; // 0x2c
     NullLocalBandUser *mNullUser; // 0x34
     UserGuid mSlotMap[4]; // 0x38, 0x48, 0x58, 0x68
-    SessionMgr *unk78;
+    SessionMgr *mSessionMgr; // 0x78
 };
 
 void BandUserMgrInit();

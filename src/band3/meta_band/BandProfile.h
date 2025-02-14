@@ -1,5 +1,6 @@
 #pragma once
 #include "meta_band/SavedSetlist.h"
+#include "obj/Msg.h"
 #include "rndobj/Tex.h"
 #include "system/meta/Profile.h"
 #include "game/Defines.h"
@@ -163,3 +164,8 @@ public:
     ProfilePicture *mProfilePicture; // 0x6fbc
     TourBand *unk6fc0; // TourBand*
 };
+
+DECLARE_MESSAGE(ProfilePreDeleteMsg, "profile_pre_delete_msg");
+BandProfile *GetProfile() const { return mData->Obj<BandProfile>(2); }
+END_MESSAGE
+;

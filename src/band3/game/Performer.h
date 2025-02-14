@@ -28,10 +28,10 @@ public:
     virtual ExcitementLevel GetExcitement() const;
     virtual void Poll(float, const SongPos &);
     virtual void AddPoints(float, bool, bool);
-    virtual void Hit();
+    virtual void Hit() {}
     virtual void BuildHitStreak(int, float);
     virtual void EndHitStreak();
-    virtual void Miss();
+    virtual void Miss() {}
     virtual void BuildMissStreak(int);
     virtual void EndMissStreak();
     virtual void Restart(bool);
@@ -40,12 +40,12 @@ public:
     virtual bool IsInCrowdWarning() const;
     virtual void ForceScore(int);
     virtual float GetNotesHitFraction(bool *) const = 0;
-    virtual void SetQuarantined(bool);
+    virtual void SetQuarantined(bool q) { mQuarantined = q; }
     virtual Symbol GetStreakType() const { return "default"; }
     virtual float GetCrowdBoost() const;
     virtual void RemoteUpdateCrowd(float);
     virtual int GetScoreForStars(int) const { return 0; }
-    virtual void FinalizeStats();
+    virtual void FinalizeStats() {}
     virtual bool CanStreak() const { return false; }
 
     int GetIndividualScore() const;
@@ -76,6 +76,7 @@ public:
     bool GetQuarantined() const { return mQuarantined; }
     const Stats &GetStats() const { return mStats; }
     CrowdRating *Crowd() const { return mCrowd; }
+    void SetGameOver() { mGameOver = true; }
 
     float mPollMs; // 0x8
     CrowdRating *mCrowd; // 0xc
@@ -91,7 +92,7 @@ public:
     bool unk1fe;
     bool unk1ff;
     float mProgressMs; // 0x200
-    bool unk204;
+    bool mGameOver; // 0x204
     bool mMultiplierActive; // 0x205
     int mNumRestarts; // 0x208
 };
