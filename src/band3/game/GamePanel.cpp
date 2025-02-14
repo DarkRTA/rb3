@@ -47,12 +47,12 @@ GamePanel *TheGamePanel;
 LatencyCallback gGamePanelCallback;
 
 GamePanel::GamePanel()
-    : mGame(0), unk58(RndOverlay::Find("time", true)),
-      unk5c(RndOverlay::Find("latency", true)),
-      unk60(RndOverlay::Find("delta_time", true)), unk64(1), unk68(0), unk6c(0), unk70(0),
-      unk8c(0), mGameState(kInLobby), unk94(0), mScoring(0),
+    : mGame(0), mTime(RndOverlay::Find("time", true)),
+      mLatency(RndOverlay::Find("latency", true)),
+      mDeltaTime(RndOverlay::Find("delta_time", true)), unk64(1), unk68(0), unk6c(0),
+      unk70(0), mStartPaused(0), mGameState(kInLobby), mMultiEvent(0), mScoring(0),
       mLoadProf("game_panel_load", 1), mExcitement(kNumExcitements),
-      mLastExcitement(kNumExcitements), unk131(0), unk150(1), unk151(0), unk154(0),
+      mLastExcitement(kNumExcitements), mReplay(0), unk150(1), unk151(0), unk154(0),
       mLoadingState(kLoadingState_NotReady), mHitTracker(new HitTracker()),
       mDirectInstrument(new DirectInstrument()) {
     MILO_ASSERT(!TheGamePanel, 0x6B);
@@ -79,7 +79,7 @@ void GamePanel::Reset() {
 }
 
 void GamePanel::Load() {
-    unk131 = false;
+    mReplay = false;
     mLoadProf.Start();
     BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
         TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
@@ -209,13 +209,13 @@ void GamePanel::Enter() {
 }
 
 void GamePanel::Exit() {
-    if (!unk94) {
+    if (!mMultiEvent) {
         TheTaskMgr.ClearTimelineTasks(kTaskSeconds);
         TheTaskMgr.ClearTimelineTasks(kTaskBeats);
         TheTaskMgr.ClearTimelineTasks(kTaskTutorialSeconds);
     }
     UIPanel::Exit();
-    unk131 = true;
+    mReplay = true;
     ThePlatformMgr.SetNotifyUILocation((NotifyLocation)1);
     if (TheRnd->GetAspect() != Rnd::kWidescreen && !TheGame->mProperties.mLetterbox) {
         TheRnd->SetAspect(Rnd::kLetterbox);
@@ -266,7 +266,7 @@ void GamePanel::SetPlayingTrackIntroUntil(float f1) {
 void GamePanel::StartIntro() {
     mGameState = kStartingGame;
     HandleType(pick_intro_msg);
-    if (unk8c) {
+    if (mStartPaused) {
         mGame->SetPaused(true, true, true);
     }
     SetExcitementLevel(mGame->GetCrowdExcitement());
@@ -282,7 +282,7 @@ void GamePanel::SetDejitteredTime(float f1) {
 }
 
 void GamePanel::UpdateDeltaTimeOverlay() {
-    *unk60 << MakeString("dt: %5.1f, ddt: %5.1f\n", unk70, unk70 - unk6c);
+    *mDeltaTime << MakeString("dt: %5.1f, ddt: %5.1f\n", unk70, unk70 - unk6c);
 }
 
 void GamePanel::FinishLoad() {
@@ -347,7 +347,7 @@ DataNode GamePanel::OnStartLoadSong(DataArray *a) {
 }
 
 BEGIN_HANDLERS(GamePanel)
-    HANDLE_ACTION(set_start_paused, unk8c = _msg->Int(2))
+    HANDLE_ACTION(set_start_paused, mStartPaused = _msg->Int(2))
     HANDLE_EXPR(lost, mGameState == kGameOver && mGame->unkcc == 1)
     HANDLE_EXPR(in_intro, mGameState == kStartingGame)
     HANDLE_EXPR(is_game_over, mGameState == kGameOver)
@@ -375,7 +375,7 @@ END_HANDLERS
 #pragma push
 #pragma pool_data off
 BEGIN_PROPSYNCS(GamePanel)
-    SYNC_PROP(multi_event, unk94)
+    SYNC_PROP(multi_event, mMultiEvent)
 
     {
         static Symbol _s("excitement");
@@ -390,7 +390,7 @@ BEGIN_PROPSYNCS(GamePanel)
     {
         static Symbol _s("replay");
         if (sym == _s && _op & kPropGet)
-            return PropSync(unk131, _val, _prop, _i + 1, _op);
+            return PropSync(mReplay, _val, _prop, _i + 1, _op);
     }
 
     if (&mConfig && mConfig.SyncProperty(_val, _prop, _i, _op)) {

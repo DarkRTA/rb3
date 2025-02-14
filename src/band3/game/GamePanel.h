@@ -56,25 +56,25 @@ public:
     DataNode OnStartLoadSong(DataArray *);
 
     Game *mGame; // 0x54
-    RndOverlay *unk58; // 0x58
-    RndOverlay *unk5c; // 0x5c
-    RndOverlay *unk60; // 0x60
+    RndOverlay *mTime; // 0x58
+    RndOverlay *mLatency; // 0x5c
+    RndOverlay *mDeltaTime; // 0x60
     bool unk64;
     float unk68;
     float unk6c;
     float unk70;
     ObjDirPtr<ObjectDir> mVocalPercussionBank; // 0x74
     ObjDirPtr<ObjectDir> mDrumKitBank; // 0x80
-    bool unk8c;
+    bool mStartPaused; // 0x8c
     GameState mGameState; // 0x90
-    bool unk94;
+    bool mMultiEvent; // 0x94
     GameConfig mConfig; // 0x98
     Scoring *mScoring; // 0xd0
     Profiler mLoadProf; // 0xd4
     ExcitementLevel mExcitement; // 0x128
     ExcitementLevel mLastExcitement; // 0x12c
     bool unk130;
-    bool unk131;
+    bool mReplay; // 0x131
     DeJitter mDeJitter; // 0x134
     bool unk150;
     bool unk151;
