@@ -71,6 +71,7 @@ public:
     void CheatToggleMaxSongCount();
     bool InqAvailableSongSources(std::set<Symbol> &);
     int NumRankedSongs(TrackType, bool, Symbol) const;
+    SongInfo *SongAudioData(Symbol s) const { return SongMgr::SongAudioData(s); }
 
     static bool GetFakeSongsAllowed();
     static void SetFakeSongsAllowed(bool);

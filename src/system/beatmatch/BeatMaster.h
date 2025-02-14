@@ -39,6 +39,7 @@ public:
     void ExportInitialSubmixes();
 
     MasterAudio *GetMasterAudio() const { return mAudio; }
+    MidiParserMgr *GetMidiParserMgr() const { return mMidiParserMgr; }
 
     bool mRecording; // 0x8
     SongData *mSongData; // 0xc

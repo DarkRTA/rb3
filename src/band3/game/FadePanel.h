@@ -1,7 +1,5 @@
 #pragma once
-
 #include "obj/Data.h"
-#include "obj/ObjMacros.h"
 #include "ui/UIPanel.h"
 
 class FadePanel : public UIPanel {
@@ -19,6 +17,10 @@ public:
 
     void StartFade(float, const Hmx::Color &color, bool fade_synth, bool fade_out);
     DataNode OnStartFade(DataArray *);
+
+    DECLARE_REVS;
+    NEW_OBJ(FadePanel)
+    static void Init() { REGISTER_OBJ_FACTORY(FadePanel) }
 
     u8 unk_0x38;
     Timer mTimer; // 0x40

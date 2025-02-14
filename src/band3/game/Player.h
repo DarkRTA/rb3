@@ -81,8 +81,8 @@ public:
     virtual void DynamicAddBeatmatch();
     virtual void PostDynamicAdd();
     virtual void Leave();
-    virtual void SetTrack(int);
-    virtual void PostLoad(bool);
+    virtual void SetTrack(int trk) { mTrackNum = trk; }
+    virtual void PostLoad(bool) {}
     virtual bool IsReady() const = 0;
     virtual void Start() = 0;
     virtual void StartIntro();
@@ -127,14 +127,14 @@ public:
     virtual void SetSyncOffset(float) {}
     virtual void SavePersistentData(PersistentPlayerData &) const;
     virtual void LoadPersistentData(const PersistentPlayerData &);
-    virtual int GetCodaFreestyleExtents(Extent &) const;
+    virtual int GetCodaFreestyleExtents(Extent &) const { return 0; }
     virtual bool InTambourinePhrase() const;
     virtual bool InFreestyleSection() const;
     virtual void PopupHelp(Symbol, bool);
     virtual bool AutoplaysCoda() const;
-    virtual void SetCodaEndMs(float);
+    virtual void SetCodaEndMs(float) {}
     virtual bool NeedsToOverrideBasePoints() const;
-    virtual bool NeedsToSetCodaEnd() const;
+    virtual bool NeedsToSetCodaEnd() const { return false; }
     virtual void EnterAnnoyingMode() {}
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);

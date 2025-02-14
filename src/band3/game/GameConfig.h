@@ -18,6 +18,7 @@ public:
     int GetTrackNum(const UserGuid &) const;
     Symbol GetController(BandUser *) const;
     void ChangeDifficulty(BandUser *, int);
+    void AssignTracks();
     PlayerTrackConfigList *GetConfigList() const { return mPlayerTrackConfigList; }
 
     PlayerTrackConfigList *mPlayerTrackConfigList; // 0x1c

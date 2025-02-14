@@ -136,7 +136,7 @@ public:
     DataNode OnSetFXVol(const DataArray *);
     DataNode OnPassthrough(DataArray *);
 
-    int GetNumMics() const { return mNumMics; }
+    int GetNumMics() const;
     MidiInstrumentMgr *GetMidiInstrumentMgr() const { return mMidiInstrumentMgr; }
     static Synth *New();
 
