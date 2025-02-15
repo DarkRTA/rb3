@@ -113,6 +113,7 @@ public:
     ExcitementLevel GetCrowdExcitement();
     void SetVocalPercussionBank(ObjectDir *);
     void SetDrumKitBank(ObjectDir *);
+    Player *GetPlayerFromTrack(int, bool) const;
 
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }

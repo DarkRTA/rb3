@@ -127,23 +127,32 @@ void CommonPhraseCapturer::Enabled(Player *p, int i2, int i3, bool b4) {
     }
 }
 
-// void __thiscall
-// CommonPhraseCapturer::Enabled
-//           (CommonPhraseCapturer *this,Player *param_1,int param_2,int param_3,bool
-//           param_4)
+void CommonPhraseCapturer::Fail(Player *p, int i2, int i3) {
+    if (p->IsLocal()) {
+        LocalFail(p, i2, i3);
+        static Message msg("send_fail_unison_phrase", 0, 0);
+        msg[0] = i2;
+        msg[1] = i3;
+        p->HandleType(msg);
+    }
+}
 
-// {
-//   int iVar1;
+void CommonPhraseCapturer::AllTracksCompletedPhrase(int n) {
+    int tracks = TheSongDB->GetCommonPhraseTracks(n);
+    tracks &= ~mDisabledTracks;
+    bool b4 = (tracks != 0 && (tracks & tracks - 1));
+    for (int i = 0; i < TheSongDB->GetNumTracks(); i++) {
+        if (tracks & (1 << i)) {
+            TheGame->GetPlayerFromTrack(i, true)->CompleteCommonPhrase(true, b4);
+        }
+    }
+    GetTrackPanelDir()->UnisonSucceed();
+    ExtendPhraseStates(n);
+    mPhraseStates[n].unk0 = 1;
+}
 
-//   if (param_4) {
-//     *(this + 8) = *(this + 8) & ~(1 << (param_2 & 0x3fU));
-//   }
-//   else {
-//     iVar1 = SongDB::GetCommonPhraseID(TheSongDB,param_2,param_3);
-//     if (iVar1 != -1) {
-//       Fail(this,param_1,iVar1,param_2);
-//     }
-//     *(this + 8) = *(this + 8) | 1 << (param_2 & 0x3fU);
-//   }
-//   return;
-// }
+void CommonPhraseCapturer::ExtendPhraseStates(int n) {
+    if (mPhraseStates.size() <= n) {
+        mPhraseStates.resize(n);
+    }
+}
