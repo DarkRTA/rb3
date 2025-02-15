@@ -45,7 +45,7 @@
             "band3/game/DirectInstrument.cpp": "Matching",
             "band3/game/FadePanel.cpp": "NonMatching",
             "band3/game/FocusTracker.cpp": "NonMatching",
-            "band3/game/FreestylePanel.cpp": "MISSING",
+            "band3/game/FreestylePanel.cpp": "NonMatching",
             "band3/game/FretHand.cpp": "NonMatching",
             "band3/game/Game.cpp": "NonMatching",
             "band3/game/GameConfig.cpp": "NonMatching",
