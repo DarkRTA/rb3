@@ -63,6 +63,7 @@ public:
     int NumCommonPhrases() const;
     int GetCommonPhraseTracks(int) const;
     int GetCommonPhraseID(int, int) const;
+    int GetPhraseID(int, int) const;
     bool IsUnisonPhrase(int) const;
     bool GetCommonPhraseExtent(int, int, Extent &);
     FillInfo *GetFillInfo(int, int);

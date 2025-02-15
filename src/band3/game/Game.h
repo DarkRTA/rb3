@@ -117,7 +117,7 @@ public:
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
     bool CodaEnabled() const { return mProperties.mEnableCoda; }
-    std::vector<Player *> &GetActivePlayers() { return mAllActivePlayers; }
+    std::vector<Player *> &GetActivePlayers();
     BeatMaster *GetBeatMaster() const { return mMaster; }
 
     Properties mProperties; // 0x24

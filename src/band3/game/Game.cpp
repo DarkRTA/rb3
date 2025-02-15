@@ -3,6 +3,7 @@
 #include "beatmatch/BeatMaster.h"
 #include "beatmatch/PlayerTrackConfig.h"
 #include "beatmatch/SongData.h"
+#include "decomp.h"
 #include "game/Band.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
@@ -299,6 +300,10 @@ bool Game::CanUserPause() const {
 }
 
 void Game::DiscErrorEnd() { unk6b = true; }
+
+FORCE_LOCAL_INLINE
+std::vector<Player *> &Game::GetActivePlayers() { return mAllActivePlayers; }
+END_FORCE_LOCAL_INLINE
 
 Game::Properties::Properties()
     : mInTrainer(TheGameMode->InMode("trainer")),
