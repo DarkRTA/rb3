@@ -51,9 +51,6 @@
 #include "utl/SongInfoCopy.h"
 #include "utl/SongPos.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 #include "utl/TempoMap.h"
 #include "utl/TimeConversion.h"
 
@@ -119,13 +116,14 @@ void GameInit() {
 void GameTerminate() { TheSongMgr->Terminate(); }
 
 Game::Game()
-    : mSongDB(new SongDB()), mSongInfo(0), mIsPaused(0), unk69(0), unk6a(0), unk6b(0),
-      unk6c(0), unk6d(0), mRealtime(0), unk6f(0), unk70(0), unkac(0), unkb0(0),
-      mMusicSpeed(1.0f), mNeverAllowInput(0), unkb9(1), unkbc(0), unkc0(0), unkc4(0),
-      unkc8(0), mResult(kRestart), mBand(0), mShuttle(new Shuttle()), unkdc(-1),
-      unk11c(-1), unk120(0), mSkippedSong(0), unk124(0), unk128(0), mInvalidScore(0),
-      unk130(0), unk134(0), unk138(0), unk139(1), unk13c(-1), unk140(-1),
-      mTrackerManager(0), unk148(0), mDisablePauseMs(-1), unk150(1) {
+    : mSongDB(new SongDB()), mSongInfo(0), mIsPaused(0), mGameWantsPause(0),
+      mOvershellWantsPause(0), unk6b(0), unk6c(0), mPauseTime(0), mRealtime(0), unk6f(0),
+      mTimeOffset(0), mLastPollMs(0), mMuckWithPitch(0), mMusicSpeed(1.0f),
+      mNeverAllowInput(0), unkb9(1), mDemoMaxPctComplete(0), mDemoMaxMs(0), unkc4(0),
+      mLoadState(kLoadingSong), mResult(kRestart), mBand(0), mShuttle(new Shuttle()),
+      unkdc(-1), unk11c(-1), unk120(0), mSkippedSong(0), unk124(0), mResumeTime(0),
+      mInvalidScore(0), unk130(0), unk134(0), unk138(0), mDrumFillsMod(1), unk13c(-1),
+      unk140(-1), mTrackerManager(0), unk148(0), mDisablePauseMs(-1), unk150(1) {
     MILO_ASSERT(!TheSongDB, 0xCE);
     TheSongDB = mSongDB;
     TheGame = this;
@@ -152,8 +150,8 @@ Game::Game()
     mBand = new Band(false, 0, BandUserMgr::GetBandUser(nullptr), mMaster);
     PopulatePlayerLists();
     mTrackerManager = new TrackerManager(mBand);
-    unkbc = SystemConfig(demo)->FindInt(max_pct_complete);
-    unkc0 = SystemConfig(demo)->FindFloat(max_ms);
+    mDemoMaxPctComplete = SystemConfig(demo)->FindInt(max_pct_complete);
+    mDemoMaxMs = SystemConfig(demo)->FindFloat(max_ms);
     LoadSong();
     ThePlatformMgr.GetDiscErrorMgrWii()->RegisterCallback(this);
 }
@@ -178,7 +176,7 @@ void Game::LoadSong() {
 }
 
 bool Game::IsLoaded() {
-    if (unkc8 == 2)
+    if (mLoadState == kReady)
         return true;
     else if (mMaster && mMaster->GetAudio()->GetSongStream()
              && mMaster->GetAudio()->Fail()) {
@@ -186,25 +184,25 @@ bool Game::IsLoaded() {
     } else if (mMaster && !mMaster->IsLoaded()) {
         return false;
     } else {
-        if (unkc8 == 0) {
+        if (mLoadState == kLoadingSong) {
             if (!mMaster->IsLoaded())
                 return false;
             TheSongDB->PostLoad(GetBeatMaster()->GetMidiParserMgr()->GetEventsList());
             PostLoad();
-            unkc8 = 1;
+            mLoadState = kWaitingForAudio;
         }
-        if (unkc8 == 1) {
+        if (mLoadState == kWaitingForAudio) {
             if (mMaster->GetAudio()->Fail())
                 return true;
             if (!mMaster->GetAudio()->IsReady()) {
                 TheSynth->Poll();
                 return false;
             }
-            unkc8 = 2;
+            mLoadState = kReady;
             TheProfileMgr.PushAllOptions();
             mTrackerManager->ConfigureGoals();
         }
-        return unkc8 == 2;
+        return mLoadState == kReady;
     }
 }
 
@@ -288,12 +286,12 @@ void Game::Reset() {
     TheTaskMgr.SetAVOffset(GetSongToTaskMgrMs() / 1000.0f);
     TheTaskMgr.SetSeconds(0, true);
     mRealtime = false;
-    unk70 = 0;
-    unk6d = 0;
+    mTimeOffset = 0;
+    mPauseTime = 0;
     mSongPos = SongPos();
     mResult = kRestart;
     unk124 = 0;
-    unk78.Restart();
+    mTime.Restart();
     mHasIntro = false;
     unk11c = -1.0f;
     unkdc = -1.0f;
@@ -341,13 +339,13 @@ void Game::RemovePlayer(Player *p) {
 }
 
 void Game::SetPaused(bool b1, bool b2, bool b3) {
-    unk69 = b1;
+    mGameWantsPause = b1;
     UpdatePausedState(b2, b3);
 }
 
 bool Game::CanUserPause() const {
     return !mProperties.mEndWithSong
-        || unkac < TheSongDB->GetSongDurationMs() - mDisablePauseMs;
+        || mLastPollMs < TheSongDB->GetSongDurationMs() - mDisablePauseMs;
 }
 
 void Game::DiscErrorEnd() { unk6b = true; }
@@ -361,7 +359,7 @@ void Game::SetMusicSpeed(float speed) {
 }
 
 void Game::SetPitchMucker(bool b1) {
-    unkb0 = true;
+    mMuckWithPitch = true;
     mMaster->GetAudio()->SetMuckWithPitch(b1);
 }
 
@@ -475,7 +473,7 @@ void Game::Rollback(float f1, float toMs) {
     }
     unkdc = f1;
     unk11c = 0;
-    mInterpolator.Reset(unkac / 1000.0f, toMs / 1000.0f, 0, 60.0f, 3.5f);
+    mInterpolator.Reset(mLastPollMs / 1000.0f, toMs / 1000.0f, 0, 60.0f, 3.5f);
     unkd8 = toMs;
     unk120 = true;
     if (mProperties.mInPracticeMode) {
@@ -502,7 +500,9 @@ void Game::EnableWorldPolling(bool b1) {
 
 void Game::ResetAudio() { mMaster->ResetAudio(); }
 
-void Game::Restart(bool) { unk139 = TheModifierMgr->IsModifierActive("mod_drum_fills"); }
+void Game::Restart(bool) {
+    mDrumFillsMod = TheModifierMgr->IsModifierActive("mod_drum_fills");
+}
 
 FORCE_LOCAL_INLINE
 std::vector<Player *> &Game::GetActivePlayers() { return mAllActivePlayers; }
@@ -554,7 +554,7 @@ ExcitementLevel Game::GetCrowdExcitement() {
     return mBand->MainPerformer()->GetExcitement();
 }
 
-bool Game::AllowInput() const { return !unk6d && !mRealtime && !mNeverAllowInput; }
+bool Game::AllowInput() const { return !mPauseTime && !mRealtime && !mNeverAllowInput; }
 void Game::SetKickAutoplay(bool autokick) { gKickAutoplay = autokick; }
 
 void Game::SetVocalPercussionBank(ObjectDir *dir) {
@@ -585,9 +585,9 @@ void Game::PrintBasePoints() {
 void Game::SetGameOver(bool over) {
     if (TheGamePanel->GetGameState() != kGameOver) {
         if (!over) {
-            unk124 = unkac;
+            unk124 = mLastPollMs;
         }
-        AutoTimer::SetCollectStats(false, TheRnd->unkec);
+        AutoTimer::SetCollectStats(false, TheRnd->mVerboseTimers);
         TheNetSession->EndGame(GetResult(over), false, unk124);
     }
 }
@@ -698,14 +698,16 @@ void Game::SetInvalidScore(bool score) { mInvalidScore = score; }
 
 void Game::SetSkippedSong(bool skipped) {
     mSkippedSong = skipped;
-    unk124 = unkac;
+    unk124 = mLastPollMs;
 }
 
-void Game::SetResumeFraction(float f1) { unk128 = f1 * mSongDB->GetSongDurationMs(); }
+void Game::SetResumeFraction(float f1) {
+    mResumeTime = f1 * mSongDB->GetSongDurationMs();
+}
 
 bool Game::IsInvalidScore() const { return mInvalidScore; }
 bool Game::SkippedSong() const { return mSkippedSong; }
-bool Game::ResumedNoScore() const { return unk128 != 0; }
+bool Game::ResumedNoScore() const { return mResumeTime != 0; }
 
 void Game::ForceTrackerStars(int i) { mTrackerManager->ForceStars(i); }
 void Game::OnPlayerAddEnergy(Player *p, float f) {

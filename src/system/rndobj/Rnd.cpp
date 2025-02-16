@@ -133,11 +133,11 @@ Rnd::Rnd()
       mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), mDefaultCam(0), unk94(0), unk98(0),
       unk9c(0), unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), mGsTiming(0),
       mShowSafeArea(0), mDrawing(0), unkdf(1), mAspect(kWidescreen),
-      mDrawMode(kDrawNormal), unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0), unkec(0),
-      mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0), unkf8(0),
-      mPostProcOverride(0), unk110(this, kObjListNoNull), mDraws(this, kObjListNoNull),
-      unk130(0), unk131(1), mProcCounter(), mProcCmds(kProcessAll),
-      mLastProcCmds(kProcessAll)
+      mDrawMode(kDrawNormal), unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0),
+      mVerboseTimers(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0),
+      unkf8(0), mPostProcOverride(0), unk110(this, kObjListNoNull),
+      mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(),
+      mProcCmds(kProcessAll), mLastProcCmds(kProcessAll)
 #ifdef MILO_DEBUG
       ,
       mForceCharLod(-1) // jank it up!
@@ -377,7 +377,7 @@ void Rnd::SetShowTimers(bool b1, bool b2) {
     RndOverlay *o = mTimersOverlay;
     o->mShowing = b1;
     o->mTimer.Restart();
-    unkec = b2;
+    mVerboseTimers = b2;
     SetGSTiming(b1);
 }
 
@@ -580,12 +580,12 @@ DataNode Rnd::OnShowConsole(const DataArray *) {
 }
 
 DataNode Rnd::OnToggleTimers(const DataArray *) {
-    SetShowTimers(unkec || !TimersShowing(), false);
+    SetShowTimers(mVerboseTimers || !TimersShowing(), false);
     return DataNode(0);
 }
 
 DataNode Rnd::OnToggleTimersVerbose(const DataArray *) {
-    SetShowTimers(unkec == 0, unkec == 0);
+    SetShowTimers(mVerboseTimers == 0, mVerboseTimers == 0);
     return DataNode(0);
 }
 

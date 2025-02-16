@@ -39,6 +39,12 @@ enum EndGameResult {
 
 class Game : public BeatMasterSink, public Hmx::Object, public DiscErrorMgrWii::Callback {
 public:
+    enum LoadState {
+        kLoadingSong = 0,
+        kWaitingForAudio = 1,
+        kReady = 2
+    };
+
     struct Properties {
         Properties();
 
@@ -191,27 +197,26 @@ public:
     BeatMaster *mMaster; // 0x5c
     std::vector<Player *> mAllActivePlayers; // 0x60
     bool mIsPaused; // 0x68
-    bool unk69;
-    bool unk6a;
+    bool mGameWantsPause; // 0x69
+    bool mOvershellWantsPause; // 0x6a
     bool unk6b;
-    bool unk6c;
-    bool unk6d;
+    bool unk6c; // 0x6c - screen saver?
+    bool mPauseTime; // 0x6d
     bool mRealtime; // 0x6e
     bool unk6f;
-    float unk70;
-    int unk74;
-    Timer unk78;
+    float mTimeOffset; // 0x70
+    Timer mTime; // 0x78
     bool mHasIntro; // 0xa8
-    float unkac;
-    bool unkb0;
+    float mLastPollMs; // 0xac
+    bool mMuckWithPitch; // 0xb0
     float mMusicSpeed; // 0xb4
     bool mNeverAllowInput; // 0xb8
     bool unkb9;
-    int unkbc;
-    float unkc0;
+    int mDemoMaxPctComplete; // 0xbc
+    float mDemoMaxMs; // 0xc0
     bool unkc4;
-    int unkc8;
-    EndGameResult mResult; // 0xcc - enum EndGameResult
+    LoadState mLoadState; // 0xc8
+    EndGameResult mResult; // 0xcc
     Band *mBand; // 0xd0
     Shuttle *mShuttle; // 0xd4
     float unkd8;
@@ -221,12 +226,12 @@ public:
     bool unk120;
     bool mSkippedSong; // 0x121
     float unk124;
-    float unk128;
+    float mResumeTime; // 0x128
     bool mInvalidScore; // 0x12c
     float unk130;
     float unk134;
     bool unk138;
-    bool unk139;
+    bool mDrumFillsMod; // 0x139
     int unk13c;
     float unk140;
     TrackerManager *mTrackerManager; // 0x144
