@@ -348,7 +348,7 @@ DataNode GamePanel::OnStartLoadSong(DataArray *a) {
 
 BEGIN_HANDLERS(GamePanel)
     HANDLE_ACTION(set_start_paused, mStartPaused = _msg->Int(2))
-    HANDLE_EXPR(lost, mGameState == kGameOver && mGame->unkcc == 1)
+    HANDLE_EXPR(lost, mGameState == kGameOver && mGame->mResult == kLost)
     HANDLE_EXPR(in_intro, mGameState == kStartingGame)
     HANDLE_EXPR(is_game_over, mGameState == kGameOver)
     HANDLE_EXPR(is_playing, mGameState == kGamePlaying)

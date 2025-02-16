@@ -213,6 +213,7 @@ public:
     void ClearTimelineTasks(TaskUnits);
 
     DataNode OnTimeTilNext(DataArray *);
+    const SongPos &GetSongPos() const { return mSongPos; }
 
     TaskTimeline *mTimelines; // 0x1c
     SongPos mSongPos; // 0x20

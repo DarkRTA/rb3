@@ -52,6 +52,7 @@ public:
     void SendResumeNoScoreGameNetMsg(float);
     void ToggleInstrumentSynth();
     void ClearDrawGlitch();
+    GameState GetGameState() const { return mGameState; }
 
     DataNode OnStartLoadSong(DataArray *);
 

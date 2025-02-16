@@ -71,6 +71,7 @@ public:
     int GetTotalGems(int) const;
     VocalNoteList *GetVocalNoteList(int) const;
     void GetBandFailCue(String &) const;
+    void SetFakeHitGemsInFill(bool);
 
     SongData *GetSongData() { return mSongData; }
 

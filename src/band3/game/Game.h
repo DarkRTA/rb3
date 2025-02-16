@@ -8,11 +8,12 @@
 #include "game/SongDB.h"
 #include "game/TrackerManager.h"
 #include "math/Interp.h"
+#include "obj/Data.h"
+#include "obj/Dir.h"
 #include "obj/Msg.h"
 #include "obj/Object.h"
 #include "os/DiscErrorMgr_Wii.h"
 #include "os/Timer.h"
-#include "types.h"
 #include "utl/SongInfoCopy.h"
 #include "utl/SongPos.h"
 
@@ -25,6 +26,15 @@ enum GameState {
     kGamePlaying = 2,
     kGameOver = 3,
     kInLocalGame = 3
+};
+
+enum EndGameResult {
+    kRestart = 0,
+    kLost = 1,
+    kWon = 2,
+    kWonFinale = 3,
+    kSkip = 4,
+    kQuit = 5
 };
 
 class Game : public BeatMasterSink, public Hmx::Object, public DiscErrorMgrWii::Callback {
@@ -114,12 +124,65 @@ public:
     void SetVocalPercussionBank(ObjectDir *);
     void SetDrumKitBank(ObjectDir *);
     Player *GetPlayerFromTrack(int, bool) const;
+    float GetMusicSpeed() const;
+    void SetMusicSpeed(float);
+    void SetPitchMucker(bool);
+    void SetMusicVolume(float);
+    void SetIntroRealTime(float);
+    int GetScoringTracks() const;
+    EndGameResult GetResult(bool);
+    EndGameResult GetResultForUser(BandUser *);
+    Player *GetActivePlayer(int) const;
+    void Jump(float, bool);
+    void CheckRollbackEnd(float);
+    void Replay();
+    void Rollback(float, float);
+    void EnableWorldPolling(bool);
+    bool HandleRollbackAnimation();
+    void ResetAudio();
+    void SetVocalCueVolume(float);
+    void AddMusicFader(Fader *);
+    Performer *GetMainPerformer();
+    bool AllowInput() const;
+    void SetKickAutoplay(bool);
+    void SetVocalPercussionBank(Player *, ObjectDir *);
+    void SetDrumKitBank(Player *, ObjectDir *);
+    void DropUser(BandUser *);
+    void AddUser(BandUser *);
+    void ReconcilePlayers();
+    void SetInvalidScore(bool);
+    void SetSkippedSong(bool);
+    void SetResumeFraction(float);
+    bool IsInvalidScore() const;
+    bool SkippedSong() const;
+    void OnPlayerSaved(Player *);
+    void OvershellSetPaused(bool);
+    Symbol GetSectionAtMs(float) const;
+    void NeverAllowInput(bool b) { mNeverAllowInput = b; }
+    float GetFractionCompleted() const;
+    void OnStatsSynced();
+    void ClearState();
+    void E3CheatAutoplayAccuracy();
+    const char *DebugCycleAutoplay();
+    const char *DebugCycleAutoplayAccuracy();
 
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
     bool CodaEnabled() const { return mProperties.mEnableCoda; }
     std::vector<Player *> &GetActivePlayers();
     BeatMaster *GetBeatMaster() const { return mMaster; }
+
+    DataNode OnJump(const DataArray *);
+    DataNode OnLocalUserReadyToPlay(const DataArray *);
+    DataNode OnSetShuttle(DataArray *);
+    DataNode ForEachActivePlayer(const DataArray *);
+    DataNode OnAdjustForVocalPhrases(DataArray *);
+    DataNode OnMsg(const LocalUserLeftMsg &);
+    DataNode OnMsg(const RemoteUserLeftMsg &);
+    DataNode OnMsg(const RemoteLeaderLeftMsg &);
+    DataNode OnMsg(const UIScreenChangeMsg &);
+    DataNode OnMsg(const class NewOvershellLocalUserMsg &);
+    DataNode OnMsg(const class GameEndedMsg &);
 
     Properties mProperties; // 0x24
     SongPos mSongPos; // 0x40
@@ -148,10 +211,10 @@ public:
     float unkc0;
     bool unkc4;
     int unkc8;
-    int unkcc;
+    EndGameResult mResult; // 0xcc - enum EndGameResult
     Band *mBand; // 0xd0
     Shuttle *mShuttle; // 0xd4
-    int unkd8;
+    float unkd8;
     float unkdc;
     ATanInterpolator mInterpolator; // 0xe0
     float unk11c;
@@ -168,12 +231,13 @@ public:
     float unk140;
     TrackerManager *mTrackerManager; // 0x144
     bool unk148;
-    float mDisablePauseMs; // 0x14c - disable pause ms?
+    float mDisablePauseMs; // 0x14c
     bool unk150;
     std::vector<BandUser *> unk154;
 };
 
 DECLARE_MESSAGE(GameEndedMsg, "game_ended");
+EndGameResult GetResult() const { return (EndGameResult)mData->Int(2); }
 END_MESSAGE
 ;
 

@@ -2,6 +2,7 @@
 #include "beatmatch/BeatMatchSink.h"
 #include "beatmatch/BeatMatcher.h"
 #include "game/Player.h"
+#include "obj/Dir.h"
 #include "obj/ObjMacros.h"
 
 class BandPerformer;
@@ -24,6 +25,7 @@ public:
     void SetFillLogic(FillLogic);
 
     void PrintMsg(const char *);
+    void SetDrumKitBank(ObjectDir *);
 
     Performer *unk_0x2cc;
     u8 pad[0x70];
