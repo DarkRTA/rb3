@@ -53,6 +53,8 @@ public:
     void ToggleInstrumentSynth();
     void ClearDrawGlitch();
     GameState GetGameState() const { return mGameState; }
+    bool IsGameOver() const { return mGameState == kGameOver; }
+    void SetGameOver() { mGameState = kGameOver; }
 
     DataNode OnStartLoadSong(DataArray *);
 

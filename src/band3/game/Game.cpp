@@ -2,6 +2,7 @@
 #include "Game.h"
 #include "bandobj/BandDirector.h"
 #include "bandobj/CrowdAudio.h"
+#include "bandobj/TrackPanelDirBase.h"
 #include "bandtrack/TrackPanel.h"
 #include "beatmatch/BeatMaster.h"
 #include "beatmatch/PlayerTrackConfig.h"
@@ -22,6 +23,7 @@
 #include "game/Shuttle.h"
 #include "game/SongDB.h"
 #include "game/TrackerManager.h"
+#include "game/TrainerChallenge.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/BandUI.h"
 #include "meta_band/MetaPerformer.h"
@@ -107,7 +109,7 @@ void GameInit() {
     // RKTrainerPanel::Init();
     // PracticePanel::Init();
     // ChordbookPanel::Init();
-    // TrainerChallenge::Init();
+    TrainerChallenge::Init();
     // VocalTrainerPanel::Init();
     // FreestylePanel::Init();
     TheDebug.AddExitCallback(GameTerminate);
@@ -156,7 +158,34 @@ Game::Game()
     ThePlatformMgr.GetDiscErrorMgrWii()->RegisterCallback(this);
 }
 
-Game::~Game() {}
+Game::~Game() {
+    ThePlatformMgr.GetDiscErrorMgrWii()->UnregisterCallback(this);
+    MetaPerformer::Current();
+    TheGameConfig->ChangeRandomSeed();
+    RELEASE(mShuttle);
+    TheGame = nullptr;
+    TheSongDB = nullptr;
+    RELEASE(mBand);
+    RELEASE(mMaster);
+    RELEASE(mSongDB);
+    RELEASE(mSongInfo);
+    RELEASE(mTrackerManager);
+    TrackPanelDirBase *dir = GetTrackPanelDir();
+    if (dir)
+        dir->CleanUpChordMeshes();
+
+    TheSynth->RequirePushToTalk(false, -1);
+    TheBandUI.RemoveSink(this, UIScreenChangeMsg::Type());
+    TheBandUI.RemoveSink(this, "required_song_options_chosen");
+    TheNetSession->RemoveSink(this, GameEndedMsg::Type());
+    TheSessionMgr->RemoveSink(this, LocalUserLeftMsg::Type());
+    TheSessionMgr->RemoveSink(this, RemoteUserLeftMsg::Type());
+    TheSessionMgr->RemoveSink(this, RemoteLeaderLeftMsg::Type());
+    if (TheNetSession->IsInGame()) {
+        TheNetSession->EndGame(5, false, 0);
+    }
+    MetaPerformer::Current()->UnlockBandOrSolo();
+}
 
 void Game::LoadSong() {
     gSongLoadTimer.Restart();
@@ -353,7 +382,8 @@ void Game::DiscErrorEnd() { unk6b = true; }
 void Game::SetMusicSpeed(float speed) {
     gDebugFullQuota = speed != 1;
     mMusicSpeed = speed;
-    FOREACH (it, mAllActivePlayers) {
+    std::vector<Player *> &players = GetActivePlayers();
+    FOREACH (it, players) {
         (*it)->SetMusicSpeed(speed);
     }
 }
@@ -439,7 +469,8 @@ void Game::Jump(float f1, bool b2) {
         unk120 = true;
     }
     mBand->Restart(false);
-    FOREACH (it, mAllActivePlayers) {
+    std::vector<Player *> &players = GetActivePlayers();
+    FOREACH (it, players) {
         (*it)->Jump(f1, b2);
     }
     unkd8 = f1;
@@ -468,7 +499,8 @@ void Game::Rollback(float f1, float toMs) {
     GetTrackPanelDir()->UpdateTrackSpeed();
     EnableWorldPolling(false);
     mMaster->Jump(toMs);
-    FOREACH (it, mAllActivePlayers) {
+    std::vector<Player *> &players = GetActivePlayers();
+    FOREACH (it, players) {
         (*it)->Rollback(f1, toMs);
     }
     unkdc = f1;
@@ -548,11 +580,11 @@ void Game::AddBonusPoints(BandUser *pUser, int i2, int) {
     pUser->GetPlayer()->AddPoints(i2, 0, 0);
 }
 
+FORCE_LOCAL_INLINE
 Performer *Game::GetMainPerformer() { return mBand->MainPerformer(); }
+END_FORCE_LOCAL_INLINE
 
-ExcitementLevel Game::GetCrowdExcitement() {
-    return mBand->MainPerformer()->GetExcitement();
-}
+ExcitementLevel Game::GetCrowdExcitement() { return GetMainPerformer()->GetExcitement(); }
 
 bool Game::AllowInput() const { return !mPauseTime && !mRealtime && !mNeverAllowInput; }
 void Game::SetKickAutoplay(bool autokick) { gKickAutoplay = autokick; }
@@ -583,11 +615,11 @@ void Game::PrintBasePoints() {
 }
 
 void Game::SetGameOver(bool over) {
-    if (TheGamePanel->GetGameState() != kGameOver) {
+    if (!TheGamePanel->IsGameOver()) {
         if (!over) {
             unk124 = mLastPollMs;
         }
-        AutoTimer::SetCollectStats(false, TheRnd->mVerboseTimers);
+        AutoTimer::SetCollectStats(false, TheRnd->UseVerboseTimers());
         TheNetSession->EndGame(GetResult(over), false, unk124);
     }
 }
@@ -600,7 +632,7 @@ DataNode Game::OnMsg(const GameEndedMsg &msg) {
         restart->Execute();
         return 1;
     } else {
-        TheGamePanel->mGameState = kGameOver;
+        TheGamePanel->SetGameOver();
         mResult = msg.GetResult();
         unk124 = msg->Float(3);
         switch (mResult) {
@@ -671,7 +703,7 @@ void Game::DropUser(BandUser *user) {
 }
 
 DataNode Game::OnMsg(const NewOvershellLocalUserMsg &msg) {
-    if (TheGamePanel->GetGameState() == kGameOver)
+    if (TheGamePanel->IsGameOver())
         return 0;
     else {
         BandUser *band_user = msg.GetBandUser();
@@ -802,6 +834,48 @@ BEGIN_HANDLERS(Game)
     HANDLE_CHECK(0xA10)
 END_HANDLERS
 #pragma pop
+
+DataNode Game::OnSetShuttle(DataArray *arr) {
+    if (arr->Size() > 3) {
+        mShuttle->mPadNum = arr->Int(3);
+    }
+    bool active = arr->Int(2);
+    if (active) {
+        mShuttle->unk_0x0 = mMaster->GetAudio()->GetTime();
+        mShuttle->unk_0x4 = mSongDB->GetSongDurationMs();
+    } else {
+        Jump(mShuttle->unk_0x0, true);
+        while (!IsReady())
+            TheSynth->Poll();
+    }
+    mShuttle->SetActive(active);
+    return 0;
+}
+
+DataNode Game::ForEachActivePlayer(const DataArray *a) {
+    DataNode *var = a->Var(2);
+    DataNode tmp = *var;
+    for (int i = 0; i < mAllActivePlayers.size(); i++) {
+        Player *p = mAllActivePlayers[i];
+        *var = p;
+        for (int j = 3; j < a->Size(); j++) {
+            a->Command(j)->Execute();
+        }
+    }
+    *var = tmp;
+    return 0;
+}
+
+DataNode Game::OnAdjustForVocalPhrases(DataArray *a) {
+    float f24 = a->Float(2);
+    float f28 = a->Float(3);
+    AdjustForVocalPhrases(f24, f28);
+    *a->Var(2) = f24;
+    *a->Var(3) = f28;
+    return 0;
+}
+
+void Game::OnStatsSynced() { mTrackerManager->OnStatsSynced(); }
 
 Game::Properties::Properties()
     : mInTrainer(TheGameMode->InMode("trainer")),

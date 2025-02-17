@@ -132,6 +132,7 @@ public:
     void SetVenue(Symbol);
     bool HasBattle() const;
     ScoreType GetBattleInstrument() const;
+    void UnlockBandOrSolo();
 
     static void Init();
     static MetaPerformer *Current();

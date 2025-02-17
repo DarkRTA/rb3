@@ -1,4 +1,5 @@
 #include "game/GameConfig.h"
+#include "Defines.h"
 #include "beatmatch/TrackType.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
@@ -6,6 +7,7 @@
 #include "game/Game.h"
 #include "game/NetGameMsgs.h"
 #include "game/PracticeSectionProvider.h"
+#include "meta_band/CharSync.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/SessionMgr.h"
@@ -196,6 +198,55 @@ void GameConfig::ChangeDifficulty(BandUser *u, int i) {
 
 void GameConfig::RemoveUser(BandUser *u) {
     mPlayerTrackConfigList->RemoveConfig(u->GetUserGuid());
+}
+
+void GameConfig::AutoAssignMissingSlots() {
+    std::vector<LocalBandUser *> &users = TheBandUserMgr->GetLocalBandUsers();
+    FOREACH (it, users) {
+        LocalBandUser *pUser = *it;
+        MILO_ASSERT(pUser, 0x178);
+        if (TheNetSession->HasUser(pUser) && pUser->GetSlot() == -1) {
+            ControllerType ct = TrackTypeToControllerType(pUser->GetTrackType());
+            if (ct == kControllerNone) {
+                ct = pUser->GetControllerType();
+            }
+            if (ct == kControllerNone) {
+                MILO_WARN("Why are we looking at the hardware to figure out the slot?\n");
+                ct = pUser->ConnectedControllerType();
+            }
+            switch (ct) {
+            case kControllerDrum:
+                if (!TheBandUserMgr->GetUserFromSlot(1)) {
+                    TheBandUserMgr->SetSlot(pUser, 1);
+                }
+                break;
+            case kControllerVocals:
+                if (!TheBandUserMgr->GetUserFromSlot(2)) {
+                    TheBandUserMgr->SetSlot(pUser, 2);
+                }
+                break;
+            case kControllerKeys:
+            case kControllerRealGuitar:
+            case kControllerGuitar:
+                if (ct == kControllerKeys) {
+                    if (TheModifierMgr->IsModifierActive("mod_auto_vocals")
+                        && !TheBandUserMgr->GetUserFromSlot(2)) {
+                        TheBandUserMgr->SetSlot(pUser, 2);
+                        continue;
+                    }
+                }
+                if (!TheBandUserMgr->GetUserFromSlot(0)) {
+                    TheBandUserMgr->SetSlot(pUser, 0);
+                } else if (!TheBandUserMgr->GetUserFromSlot(3)) {
+                    TheBandUserMgr->SetSlot(pUser, 3);
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    TheCharSync->UpdateCharCache();
 }
 
 void GameConfig::OnSetRemoteUserTrackType(User *u, Symbol s) {

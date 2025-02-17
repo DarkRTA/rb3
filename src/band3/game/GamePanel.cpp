@@ -223,7 +223,7 @@ void GamePanel::Exit() {
 }
 
 void GamePanel::StartGame() {
-    AutoTimer::SetCollectStats(true, TheRnd->mVerboseTimers);
+    AutoTimer::SetCollectStats(true, TheRnd->UseVerboseTimers());
     Export(on_extend_msg, true);
     if (mGame->HasIntro())
         mGame->Start();

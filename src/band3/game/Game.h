@@ -167,6 +167,7 @@ public:
     void NeverAllowInput(bool b) { mNeverAllowInput = b; }
     float GetFractionCompleted() const;
     void OnStatsSynced();
+    void AdjustForVocalPhrases(float &, float &) const;
     void ClearState();
     void E3CheatAutoplayAccuracy();
     const char *DebugCycleAutoplay();
