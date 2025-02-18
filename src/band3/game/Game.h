@@ -2,6 +2,7 @@
 #include "Shuttle.h"
 #include "beatmatch/BeatMaster.h"
 #include "beatmatch/BeatMasterSink.h"
+#include "beatmatch/FillInfo.h"
 #include "game/Band.h"
 #include "game/BandUser.h"
 #include "game/Player.h"
@@ -178,6 +179,9 @@ public:
     bool CodaEnabled() const { return mProperties.mEnableCoda; }
     std::vector<Player *> &GetActivePlayers();
     BeatMaster *GetBeatMaster() const { return mMaster; }
+    FillLogic GetFillLogic() const {
+        return mDrumFillsMod ? kFillsRegular : kFillsDeployGemAndInvisible;
+    }
 
     DataNode OnJump(const DataArray *);
     DataNode OnLocalUserReadyToPlay(const DataArray *);

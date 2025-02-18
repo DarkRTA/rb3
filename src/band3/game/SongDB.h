@@ -72,6 +72,7 @@ public:
     VocalNoteList *GetVocalNoteList(int) const;
     void GetBandFailCue(String &) const;
     void SetFakeHitGemsInFill(bool);
+    bool GetPhraseExtents(BeatmatchPhraseType, int, int, int &, int &);
 
     SongData *GetSongData() { return mSongData; }
 
