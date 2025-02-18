@@ -1,4 +1,6 @@
 #pragma once
+#include "bandtrack/GemTrack.h"
+#include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchSink.h"
 #include "beatmatch/BeatMatcher.h"
 #include "game/GuitarFx.h"
@@ -9,6 +11,7 @@
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "rndobj/Overlay.h"
+#include "synth/FxSendPitchShift.h"
 
 class BandPerformer;
 
@@ -41,15 +44,17 @@ public:
 class GemStatus {
 public:
     GemStatus() : mHits(0), mMisses(0) {}
-    std::vector<int> mGems;
-    int mHits;
-    int mMisses;
+    std::vector<unsigned char> mGems; // 0x0
+    int mHits; // 0x4
+    int mMisses; // 0x8
 };
 
 class GemPlayer : public Player, public BeatMatchSink {
 public:
     class UpcomingFretRelease {
     public:
+        int unk0;
+        int unk4;
     };
     GemPlayer(BandUser *, BeatMaster *, Band *, int, BandPerformer *);
     virtual ~GemPlayer();
@@ -157,56 +162,61 @@ public:
     void PrintMsg(const char *);
     void SetGuitarFx();
     void SetDrumKitBank(ObjectDir *);
+    void UpdateGameCymbalLanes();
+    void IgnoreGemsUntil(int);
+    void DropIn(int);
+    void InputReceived();
+
     void ToggleNoFills() { mBeatMatcher->mNoFills = !mBeatMatcher->mNoFills; }
 
     Performer *mBandPerformer; // 0x2cc
     GemStatus *mGemStatus; // 0x2d0
-    DataArray *unk2d4;
-    Symbol unk2d8;
-    DataArray *unk2dc;
-    int unk2e0;
-    std::vector<HeldNote> unk2e4;
+    DataArray *mDrumSlotWeights; // 0x2d4
+    Symbol mDrumSlotWeightMapping; // 0x2d8
+    DataArray *mDrumCymbalPointBonus; // 0x2dc
+    unsigned int mGameCymbalLanes; // 0x2e0
+    std::vector<HeldNote> mHeldNotes; // 0x2e4
     bool unk2ec;
     bool unk2ed;
     int unk2f0;
     int unk2f4;
     int unk2f8;
-    int unk2fc;
-    bool unk300;
+    int mNumCrashFillReadyHits; // 0x2fc
+    bool mUseFills; // 0x300
     bool unk301;
-    std::pair<int, int> unk304;
+    std::pair<int, int> mTrillSlots; // 0x304
     int unk30c;
     int unk310;
     bool unk314;
     bool unk315;
     bool unk316;
     int unk318;
-    float unk31c[6];
-    float unk334;
-    float unk338;
+    float mLastCodaSwing[6]; // 0x31c
+    float mCodaPointRate; // 0x334
+    float mCodaMashPeriod; // 0x338
     bool unk33c;
     bool unk33d;
     bool unk33e;
     RndOverlay *mOverlay; // 0x340
     RndOverlay *mGuitarOverlay; // 0x344
     bool unk348;
-    float unk34c;
-    float unk350;
+    float mWhammySpeedThreshold; // 0x34c
+    float mWhammySpeedTimeout; // 0x350
     float unk354;
     float unk358;
     float unk35c;
-    float unk360;
+    float mLastTimeWhammyVelWasHigh; // 0x360
     float unk364;
-    int unk368;
-    int unk36c;
+    GemTrack *unk368;
+    BeatMatchController *unk36c;
     Symbol unk370;
     BeatMatcher *mBeatMatcher; // 0x374
     float unk378;
     GuitarFx *mGuitarFx; // 0x37c
     KeysFx *mKeysFx; // 0x380
-    int unk384;
+    int mFxPos; // 0x384
     bool unk388;
-    int unk38c;
+    FxSendPitchShift *mPitchShift; // 0x38c
     float unk390;
     float unk394;
     int unk398;
@@ -218,14 +228,14 @@ public:
     bool unk3a7;
     bool unk3a8;
     float unk3ac;
-    float unk3b0;
+    float mAutoMissSoundTimeoutMs; // 0x3b0
     float unk3b4;
     bool unk3b8;
     bool unk3b9;
     int unk3bc;
     int unk3c0;
-    int unk3c4;
-    int unk3c8;
+    int mAutoMissSoundTimeoutGems; // 0x3c4
+    int mAutoMissSoundTimeoutGemsRemote; // 0x3c8
     StatCollector unk3cc;
     bool unk3d8;
     int unk3dc;
@@ -236,8 +246,8 @@ public:
     float unk3ec;
     int unk3f0;
     int unk3f4;
-    int unk3f8;
-    std::vector<UpcomingFretRelease> unk3fc;
+    int mSustainsReleasedBeforePopup; // 0x3f8
+    std::vector<UpcomingFretRelease> mUpcomingFretReleases; // 0x3fc
     int unk404;
     bool unk408;
 };

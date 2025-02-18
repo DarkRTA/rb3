@@ -304,6 +304,7 @@ float JoypadGetCalbertValue(int, bool);
 bool JoypadVibrate(int);
 unsigned int JoypadPollForButton(int);
 void JoypadPoll();
+void JoypadKeepAlive(int, bool);
 
 bool UserHasController(LocalUser *);
 bool UserHasGHDrums(LocalUser *);
