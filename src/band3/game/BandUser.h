@@ -74,6 +74,7 @@ public:
     Track *GetTrack() const { return mTrack; }
     void SetPlayer(Player *p) { mPlayer = p; }
     void SetTrack(Track *trk) { mTrack = trk; }
+    void SetAutoplay(bool play) { mAutoplay = play; }
 
     static LocalBandUser *NewLocalBandUser();
     static RemoteBandUser *NewRemoteBandUser();

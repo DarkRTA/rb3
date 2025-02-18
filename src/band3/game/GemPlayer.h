@@ -150,11 +150,11 @@ public:
     virtual void GetTrillInfo(int, int &, int &) const;
     virtual void FillInProgress(int, int);
     virtual int GetTrackSlot(int) const;
-    virtual void SwingHook(int, int, float, bool, bool);
-    virtual void HitHook(int, float, int, unsigned int, GemHitFlags);
-    virtual void MissHook(int, int, float, int, int);
-    virtual void PassHook(int, float, int, bool);
-    virtual void SeeGemHook(int, float, int);
+    virtual void SwingHook(int, int, float, bool, bool) {}
+    virtual void HitHook(int, float, int, unsigned int, GemHitFlags) {}
+    virtual void MissHook(int, int, float, int, int) {}
+    virtual void PassHook(int, float, int, bool) {}
+    virtual void SeeGemHook(int, float, int) {}
 
     int GetRGFret(int) const;
     int GetMaxSlots() const;
@@ -166,7 +166,15 @@ public:
     void IgnoreGemsUntil(int);
     void DropIn(int);
     void InputReceived();
-
+    void FinaleSwing(int);
+    void LocalFinaleSwing(int);
+    bool CanFlail(float);
+    bool HandleSpecialMissScenarios(int, float);
+    void PlayDrum(int, int, float, int);
+    void PlayMissSound(int);
+    void ShowFillHit(int);
+    void LocalShowFillHit(int, int, bool);
+    void OnRemoteFillHit(int, int, bool);
     void ToggleNoFills() { mBeatMatcher->mNoFills = !mBeatMatcher->mNoFills; }
 
     Performer *mBandPerformer; // 0x2cc
@@ -207,11 +215,11 @@ public:
     float unk35c;
     float mLastTimeWhammyVelWasHigh; // 0x360
     float unk364;
-    GemTrack *unk368;
-    BeatMatchController *unk36c;
-    Symbol unk370;
+    GemTrack *mTrack; // 0x368
+    BeatMatchController *mController; // 0x36c
+    Symbol mControllerType; // 0x370
     BeatMatcher *mBeatMatcher; // 0x374
-    float unk378;
+    float mSyncOffset; // 0x378
     GuitarFx *mGuitarFx; // 0x37c
     KeysFx *mKeysFx; // 0x380
     int mFxPos; // 0x384
@@ -236,7 +244,7 @@ public:
     int unk3c0;
     int mAutoMissSoundTimeoutGems; // 0x3c4
     int mAutoMissSoundTimeoutGemsRemote; // 0x3c8
-    StatCollector unk3cc;
+    StatCollector mStatCollector; // 0x3cc
     bool unk3d8;
     int unk3dc;
     bool unk3e0;

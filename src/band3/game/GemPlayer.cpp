@@ -1,4 +1,6 @@
 #include "GemPlayer.h"
+#include "bandtrack/TrackPanel.h"
+#include "beatmatch/BeatMatchUtl.h"
 #include "beatmatch/BeatMatcher.h"
 #include "beatmatch/FillInfo.h"
 #include "beatmatch/InternalSongParserSink.h"
@@ -20,15 +22,19 @@
 #include "obj/DataFunc.h"
 #include "obj/ObjMacros.h"
 #include "obj/Task.h"
+#include "os/Debug.h"
 #include "os/Joypad.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
 #include "synth/Synth.h"
 #include "synthwii/FXWii.h"
+#include "utl/Messages4.h"
 #include "utl/SongInfoCopy.h"
+#include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
 #include "utl/TimeConversion.h"
+#include "world/Dir.h"
 
 class DeltaTracker;
 DeltaTracker *sTracker = nullptr;
@@ -98,14 +104,14 @@ GemPlayer::GemPlayer(
       unk318(0), mCodaPointRate(200.0f), mCodaMashPeriod(500.0f), unk33c(1), unk33d(0),
       unk33e(1), mOverlay(RndOverlay::Find("score", true)),
       mGuitarOverlay(RndOverlay::Find("guitar", true)), unk348(0), unk354(0), unk358(0),
-      unk35c(0), mLastTimeWhammyVelWasHigh(-10000.0f), unk364(0), unk368(0), unk36c(0),
-      unk378(0), mGuitarFx(0), mKeysFx(0), mFxPos(4), unk388(0), mPitchShift(0),
-      unk390(0), unk394(0), unk398(0), unk39c(-1), unk3a0(-1), unk3a4(0), unk3a8(0),
-      unk3ac(0), mAutoMissSoundTimeoutMs(kHugeFloat), unk3b4(0), unk3b8(0), unk3b9(0),
-      unk3bc(0), unk3c0(0), mAutoMissSoundTimeoutGems(100000),
-      mAutoMissSoundTimeoutGemsRemote(100000), unk3cc(*this), unk3d8(0), unk3dc(-1),
-      unk3e0(0), unk3e1(0), unk3e4(0), unk3e8(0), unk3ec(0), unk3f0(0), unk3f4(1),
-      unk404(-1), unk408(1) {
+      unk35c(0), mLastTimeWhammyVelWasHigh(-10000.0f), unk364(0), mTrack(0),
+      mController(0), mSyncOffset(0), mGuitarFx(0), mKeysFx(0), mFxPos(4), unk388(0),
+      mPitchShift(0), unk390(0), unk394(0), unk398(0), unk39c(-1), unk3a0(-1), unk3a4(0),
+      unk3a8(0), unk3ac(0), mAutoMissSoundTimeoutMs(kHugeFloat), unk3b4(0), unk3b8(0),
+      unk3b9(0), unk3bc(0), unk3c0(0), mAutoMissSoundTimeoutGems(100000),
+      mAutoMissSoundTimeoutGemsRemote(100000), mStatCollector(*this), unk3d8(0),
+      unk3dc(-1), unk3e0(0), unk3e1(0), unk3e4(0), unk3e8(0), unk3ec(0), unk3f0(0),
+      unk3f4(1), unk404(-1), unk408(1) {
     for (int i = 0; i < 6; i++) {
         mLastCodaSwing[i] = 0;
     }
@@ -200,10 +206,10 @@ void GemPlayer::PostDynamicAdd() {
     Player::PostDynamicAdd();
     int tick = MsToTick(ms);
     IgnoreGemsUntil(tick);
-    if (unk368) {
-        unk368->GetGemManager()->SetupGems(0);
-        unk368->ResetFills(true);
-        unk368->DropIn(tick);
+    if (mTrack) {
+        mTrack->GetGemManager()->SetupGems(0);
+        mTrack->ResetFills(true);
+        mTrack->DropIn(tick);
     }
     if (GetUser()->IsLocal()) {
         JoypadKeepAlive(GetUser()->GetLocalUser()->GetPadNum(), true);
@@ -231,7 +237,7 @@ GemPlayer::~GemPlayer() {
         }
     }
     RELEASE(mBeatMatcher);
-    RELEASE(unk36c);
+    RELEASE(mController);
     RELEASE(mGuitarFx);
     RELEASE(mKeysFx);
     TheSynth->DestroyPitchShift(mPitchShift);
@@ -245,8 +251,8 @@ void GemPlayer::SeeGem(int i1, float f2, int i3) {
         InputReceived();
         unk3b4 = f2;
     }
-    if (mEnabledState == 0 && i1 == GetTrackNum() && unk368) {
-        unk368->See(f2, i3);
+    if (mEnabledState == 0 && i1 == GetTrackNum() && mTrack) {
+        mTrack->See(f2, i3);
     }
     if (unk3b8 && mEnabledState == 0) {
         static Message pass_msg("annoying_pass", 0, 0, 0);
@@ -259,6 +265,194 @@ void GemPlayer::SeeGem(int i1, float f2, int i3) {
     SeeGemHook(i1, f2, i3);
 }
 
+void GemPlayer::FinaleSwing(int i1) {
+    if (IsLocal()) {
+        LocalFinaleSwing(i1);
+        if (GetBandTrack()) {
+            GetBandTrack()->ClearFinaleHelp();
+        }
+        static Message msg("send_finale_hit", 0);
+        msg[0] = i1;
+        HandleType(msg);
+    }
+}
+
+void GemPlayer::LocalFinaleSwing(int i1) {
+    if (TheWorld) {
+        static Message msg("");
+        msg.SetType(
+            MakeString("endgame_swing_%s_%d", TrackTypeToSym(GetTrackType()).mStr, i1)
+        );
+        TheWorld->Handle(msg, false);
+    }
+}
+
+void GemPlayer::Swing(int i1, int i2, float f3, bool b4, bool b5) {
+    InputReceived();
+    if (unk1e1) {
+        FinaleSwing(GetTrackSlot(i2));
+    } else {
+        Export(swing_msg, true);
+        if (mTrack && GetUser()->GetTrackType() == 0 && i2 == 0) {
+            mTrack->GetTrackDir()->KickSwing();
+        }
+    }
+    SwingHook(i1, i2, f3, b4, b5);
+}
+
+bool GemPlayer::HandleSpecialMissScenarios(int i1, float f2) {
+    if (CanFlail(f2)) {
+        if (mUser->GetTrackType() == 0) {
+            int slot = mController->GetVirtualSlot(i1);
+            int bucket = mController->GetVelocityBucket(i1);
+            PlayDrum(slot, i1, VelocityBucketToDb(bucket), bucket);
+        } else {
+            static Message miss_msg("miss", 0, 0, 0);
+            miss_msg[0] = GetUser();
+            miss_msg[1] = i1;
+            miss_msg[2] = -1;
+            Export(miss_msg, true);
+        }
+        return true;
+    } else
+        return false;
+}
+
+void GemPlayer::SpuriousMiss(int i1, int i2, float f3, int i4) {
+    if (!CanFlail(f3) && mTrack) {
+        mTrack->Miss(f3, i4, i2);
+    }
+}
+
+void GemPlayer::FretButtonDown(int i1, float f2) {
+    if (mUser->GetTrackType()) {
+        int slot = GetTrackSlot(i1);
+        if (mTrack)
+            mTrack->SetFretButtonPressed(slot, true);
+        static Message msg("fret_down", 0);
+        msg[0] = slot;
+        Export(msg, false);
+    }
+}
+
+void GemPlayer::FretButtonUp(int i1, float f2) {
+    if (mUser->GetTrackType()) {
+        int slot = GetTrackSlot(i1);
+        if (mTrack)
+            mTrack->SetFretButtonPressed(slot, false);
+        static Message msg("fret_up", 0);
+        msg[0] = slot;
+        Export(msg, false);
+    }
+}
+
+void GemPlayer::PlayMissSound(int i1) {
+    if (unk408) {
+        const char *seq;
+        switch (GetTrackType()) {
+        case 1:
+        case 6:
+        case 7:
+            seq = "miss_gtr.cue";
+            break;
+        case 2:
+        case 8:
+        case 9:
+            seq = "miss_bass.cue";
+            break;
+        case 0:
+            seq = i1 == 0 ? "miss_kick.cue" : "miss_drum.cue";
+            break;
+        case 4:
+        case 5:
+            seq = "miss_keys.cue";
+            break;
+        default:
+            seq = gNullStr;
+            break;
+        }
+        if (seq != gNullStr) {
+            GetTrackPanel()->PlaySequence(seq, 0, 0, 0);
+        }
+    }
+}
+
+void GemPlayer::SwingAtHopo(int, float, int) {
+    HandleType(swingAtHopo_msg);
+    mStats.mHopoGemCount++;
+}
+
+void GemPlayer::FillSwing(int i1, int i2, int i3, int i4, bool b5) {
+    if (IsLocal()) {
+        if (b5 && !unk268) {
+            EnterCoda();
+        }
+        if (i2 >= 0) {
+            FillInProgress(i2, i3);
+        }
+        if (unk268) {
+            PopupHelp("rock_ending", false);
+        } else {
+            PopupHelp("fill", false);
+        }
+        int tick = TheSongDB->GetCodaStartTick();
+        if (!unk268 && (tick >= 0 && (tick - i4 < 0x1E0))) {
+            unk2f8 = 100;
+        }
+        unk2f0 = i4;
+        if (mTrack && i3 != -1) {
+            ShowFillHit(i3);
+        }
+    }
+}
+
+void GemPlayer::ShowFillHit(int i1) {
+    if (IsLocal()) {
+        unk2f8++;
+        LocalShowFillHit(i1, mController->GetVelocityBucket(i1), unk268);
+        static Message msg("send_fill_hit", 0, 0, 0);
+        msg[0] = i1;
+        msg[1] = unk2f8;
+        msg[2] = unk268;
+        HandleType(msg);
+    }
+}
+
+void GemPlayer::OnRemoteFillHit(int i1, int i2, bool b3) {
+    if (b3 && !unk268) {
+        EnterCoda();
+    }
+    unk2f8 = i2;
+    SetAutoplay(true);
+    LocalShowFillHit(i1, 0, b3);
+}
+
+void GemPlayer::LocalShowFillHit(int i1, int i2, bool b3) {
+    if (mTrack) {
+        GemTrackDir *dir = mTrack->GetTrackDir();
+        mTrack->FillHit(i1, i2);
+        if (unk268 || b3) {
+            dir->Mash(i1);
+        } else {
+            MILO_ASSERT(mTrackType == kTrackDrum, 0x5B6);
+            if (mTrackType == kTrackDrum) {
+                if (unk2f8 <= mNumCrashFillReadyHits) {
+                    dir->FillHit(unk2f8);
+                }
+                dir->FillMash(i1);
+            }
+        }
+    }
+}
+
+void GemPlayer::FillReset() {
+    FillInProgress(-1, 0);
+    for (int i = 0; i < 6; i++)
+        mLastCodaSwing[i] = 0;
+    if (mTrack)
+        mTrack->GetTrackDir()->FillReset();
+}
+
 void GemPlayer::SetFillLogic(FillLogic fl) {
     if (mBeatMatcher)
         mBeatMatcher->SetFillLogic(fl);
@@ -266,12 +460,15 @@ void GemPlayer::SetFillLogic(FillLogic fl) {
 
 bool GemPlayer::IsAutoplay() const { return mBeatMatcher->IsAutoplay(); }
 
-void GemPlayer::SetAutoplay(bool b) { mBeatMatcher->SetAutoplay(b); }
+void GemPlayer::SetAutoplay(bool b) {
+    GetUser()->SetAutoplay(b);
+    mBeatMatcher->SetAutoplay(b);
+}
 
 void GemPlayer::PrintMsg(const char *str) {
-    const char *prnt = MakeString("", 3, str);
+    const char *prnt = MakeString("", GetScore(), str);
     *mOverlay << prnt;
-    MILO_LOG(prnt);
+    TheDebug << prnt;
 }
 
 void GemPlayer::PrintAddHead(int mils, int idx, int pts, int ms_avg, int recent) {
