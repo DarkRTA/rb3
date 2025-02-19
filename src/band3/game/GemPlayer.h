@@ -27,7 +27,7 @@ public:
                 num = mCur;
             fvec.resize(num);
             memcpy(fvec.begin(), mDeltas, num * sizeof(float));
-            std::sort(fvec.begin(), fvec.end());
+            std::sort(fvec.begin(), fvec.begin() + num);
             for (int i = 0; i < num; i++) {
                 MILO_LOG("%d %.3f\n", i, fvec[i]);
             }
@@ -44,9 +44,42 @@ public:
 class GemStatus {
 public:
     GemStatus() : mHits(0), mMisses(0) {}
+
+    // is hit: 0x1
+    // is cymbal: 0x20
+    // is solo: 0x80
+
+    // 0x40? 0xe?
+
+    // from GDRB:
+    // missed: 0x2
+    // ignored: 0x8
+
+    bool GetEncountered(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 0xF;
+        }
+        return mask;
+    }
+
+    bool GetHopoed(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 0x10;
+        }
+        return mask;
+    }
+
+    float GetNotesHitFraction(bool *) const;
+
     std::vector<unsigned char> mGems; // 0x0
-    int mHits; // 0x4
-    int mMisses; // 0x8
+    int mHits; // 0x8
+    int mMisses; // 0xc
 };
 
 class GemPlayer : public Player, public BeatMatchSink {
@@ -54,12 +87,12 @@ public:
     class UpcomingFretRelease {
     public:
         int unk0;
-        int unk4;
+        float unk4;
     };
     GemPlayer(BandUser *, BeatMaster *, Band *, int, BandPerformer *);
     virtual ~GemPlayer();
     virtual DataNode Handle(DataArray *, bool);
-    virtual int CodaScore() const;
+    virtual int CodaScore() const { return unk318; }
     virtual Symbol GetStarRating() const;
     virtual int GetNumStars() const;
     virtual bool PastFinalNote() const;
@@ -90,12 +123,12 @@ public:
     virtual void DisableFills();
     virtual void EnableDrumFills(bool);
     virtual bool FillsEnabled(int);
-    virtual bool AreFillsForced() const;
+    virtual bool AreFillsForced() const { return unk2ed; }
     virtual void EnterCoda();
     virtual void ResetCodaPoints();
     virtual void AddCodaPoints();
-    virtual int GetCodaPoints();
-    virtual bool InFill() const;
+    virtual int GetCodaPoints() { return unk318; }
+    virtual bool InFill() const { return unk2ec; }
 
     virtual void SetFillLogic(FillLogic);
     virtual bool DoneWithSong() const;
@@ -108,7 +141,7 @@ public:
     virtual int GetBaseBonusPoints() const;
     virtual void SetSyncOffset(float);
     virtual int GetCodaFreestyleExtents(Extent &) const;
-    virtual void EnterAnnoyingMode();
+    virtual void EnterAnnoyingMode() { unk3b8 = true; }
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection &, int, int);
     virtual void LocalSetEnabledState(EnabledState, int, BandUser *, bool);
@@ -126,7 +159,7 @@ public:
     virtual void Ignore(int, float, int, const UserGuid &);
     virtual void ImplicitGem(int, float, int, const UserGuid &);
 
-    virtual void SetTrack(const UserGuid &, int);
+    virtual void SetTrack(const UserGuid &, int) {}
     virtual void FretButtonDown(int, float);
     virtual void FretButtonUp(int, float);
     virtual void MercurySwitch(bool, float);
@@ -134,8 +167,8 @@ public:
     virtual void SwingAtHopo(int, float, int);
     virtual void Hopo(int, float, int);
     virtual void ReleaseGem(int, float, int, float);
-    virtual void SetCurrentPhrase(int, const PhraseInfo &);
-    virtual void NoCurrentPhrase(int);
+    virtual void SetCurrentPhrase(int, const PhraseInfo &) {}
+    virtual void NoCurrentPhrase(int) {}
     virtual void FillSwing(int, int, int, int, bool);
     virtual void FillReset();
     virtual void FillComplete(int, int);
@@ -175,7 +208,39 @@ public:
     void ShowFillHit(int);
     void LocalShowFillHit(int, int, bool);
     void OnRemoteFillHit(int, int, bool);
-    void ToggleNoFills() { mBeatMatcher->mNoFills = !mBeatMatcher->mNoFills; }
+    void IgnoreGem(int);
+    void ForceFill(bool);
+    HeldNote *FindHeldNoteFromSlot(int);
+    void OnSetWhammyOverdriveEnabled(bool);
+    void OnSetMercurySwitchEnabled(bool);
+    void OnResetCodaPoints();
+    int OnGetPercentHit() const;
+    int OnGetGemResult(int);
+    bool OnGetGemIsSustained(int);
+    void OnGameOver();
+    void OnDisableController();
+    void OnRemoteHit(int, int, float);
+    void OnRemotePenalize(int, int, float);
+    void OnRemoteCodaHit(int, int);
+    void OnRemoteWhammy(float);
+    void OnRemoteFill(bool);
+    void OnRemoteHitLastCodaGem(int);
+    void OnRemoteBlowCoda();
+    void LocalSoloStart();
+    void LocalSoloHit(int);
+    void LocalSoloEnd(int, int);
+    void LocalSetGuitarFx(int);
+    void OnStartOverdrive();
+    void OnStopOverdrive();
+    void OnRefreshTrackButtons();
+    bool InFillNow();
+    bool InTrill(int) const;
+    bool InRGTrill(int) const;
+    bool InRoll(int) const;
+    bool InRGRoll(int) const;
+    void PrintHopoStats();
+    float OnGetPercentHitGemsPractice(int, float, float) const;
+    bool ToggleNoFills() { return mBeatMatcher->mNoFills = !mBeatMatcher->mNoFills; }
 
     Performer *mBandPerformer; // 0x2cc
     GemStatus *mGemStatus; // 0x2d0

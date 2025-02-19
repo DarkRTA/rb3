@@ -60,6 +60,7 @@ public:
     bool GetForceStrum() const { return mForceStrum; }
     int GetDurationTicks() const { return mDurationTicks; }
     float GetMs() const { return mMs; }
+    bool GetNoStrum() const { return mForceStrum; }
 
     bool CompareTimes(const GameGem &g1, const GameGem &g2) { return g1.mMs < g2.mMs; }
 
@@ -118,7 +119,7 @@ public:
         }
     }
 
-    bool GetPlayed() { return mPlayed != 0; }
+    bool GetPlayed() const { return mPlayed != 0; }
     void SetPlayed(bool played) { mPlayed = played; }
     float DurationMs() { return mDurationMs; }
     bool Unk10B1() const { return unk10b1; }

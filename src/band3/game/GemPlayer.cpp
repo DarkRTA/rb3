@@ -1,4 +1,5 @@
 #include "GemPlayer.h"
+#include "bandtrack/GemManager.h"
 #include "bandtrack/TrackPanel.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "beatmatch/BeatMatcher.h"
@@ -11,6 +12,7 @@
 #include "game/GameConfig.h"
 #include "game/GameMode.h"
 #include "game/GuitarFx.h"
+#include "game/HeldNote.h"
 #include "game/KeysFx.h"
 #include "game/Player.h"
 #include "game/SongDB.h"
@@ -33,6 +35,8 @@
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include "utl/TimeConversion.h"
 #include "world/Dir.h"
 
@@ -300,6 +304,10 @@ void GemPlayer::Swing(int i1, int i2, float f3, bool b4, bool b5) {
     SwingHook(i1, i2, f3, b4, b5);
 }
 
+void GemPlayer::Hit(int, float, int, unsigned int gem_hit_slots, GemHitFlags) {
+    MILO_ASSERT(gem_hit_slots != 0, 0x23F);
+}
+
 bool GemPlayer::HandleSpecialMissScenarios(int i1, float f2) {
     if (CanFlail(f2)) {
         if (mUser->GetTrackType() == 0) {
@@ -324,6 +332,15 @@ void GemPlayer::SpuriousMiss(int i1, int i2, float f3, int i4) {
     }
 }
 
+void GemPlayer::ImplicitGem(int i1, float f2, int i3, const UserGuid &u) {
+    if (!mGemStatus->GetEncountered(i3)) {
+        IgnoreGem(i3);
+    }
+    if (mTrack) {
+        mTrack->Ignore(i3);
+    }
+}
+
 void GemPlayer::FretButtonDown(int i1, float f2) {
     if (mUser->GetTrackType()) {
         int slot = GetTrackSlot(i1);
@@ -343,6 +360,24 @@ void GemPlayer::FretButtonUp(int i1, float f2) {
         static Message msg("fret_up", 0);
         msg[0] = slot;
         Export(msg, false);
+        HeldNote *note = FindHeldNoteFromSlot(i1);
+        if (note && note->HasGem()) {
+            float maxed = std::max(0.0f, note->SetHoldTime(f2));
+            AddPoints(maxed, true, true);
+            mStats.AddSustain(maxed);
+            note->ReleaseSlot(i1);
+            if (mTrack) {
+                GemManager *mgr = mTrack->GetGemManager();
+                if (mgr) {
+                    mgr->ReleaseSlot(note->unk_0x4, i1);
+                }
+            }
+            unk3f0++;
+            if (unk3f0 >= mSustainsReleasedBeforePopup && unk3f4 == 0) {
+                PopupHelp(hold_note, true);
+                unk3f0 = 0;
+            }
+        }
     }
 }
 
@@ -358,10 +393,10 @@ void GemPlayer::PlayMissSound(int i1) {
         case 2:
         case 8:
         case 9:
-            seq = "miss_bass.cue";
+            seq = "miss_bass";
             break;
         case 0:
-            seq = i1 == 0 ? "miss_kick.cue" : "miss_drum.cue";
+            seq = i1 == 0 ? "miss_kick.cue" : "miss_drum";
             break;
         case 4:
         case 5:
@@ -492,13 +527,74 @@ BEGIN_HANDLERS(GemPlayer)
     HANDLE_ACTION(
         enable_fills_deploy_band_energy, mBehavior->SetFillsDeployBandEnergy(true)
     )
-
+    HANDLE_ACTION(set_whammystarpowerenabled, OnSetWhammyOverdriveEnabled(_msg->Int(2)))
+    HANDLE_ACTION(set_mercuryswitchenabled, OnSetMercurySwitchEnabled(_msg->Int(2)))
+    HANDLE_ACTION(reset_coda_points, OnResetCodaPoints())
+    HANDLE_EXPR(score, GetScore())
+    HANDLE_EXPR(percent_hit, OnGetPercentHit())
+    HANDLE_EXPR(
+        percent_hit_gems_practice,
+        OnGetPercentHitGemsPractice(_msg->Int(2), _msg->Float(3), _msg->Float(4))
+    )
+    HANDLE_EXPR(get_gem_count, (int)TheSongDB->GetGems(mTrackNum).size())
+    HANDLE_EXPR(get_gem_result, OnGetGemResult(_msg->Int(2)))
+    HANDLE_EXPR(get_gem_is_sustained, OnGetGemIsSustained(_msg->Int(2)))
+    HANDLE_EXPR(
+        get_gem_is_no_strum,
+        TheSongDB->GetGemList(mTrackNum)->GetGem(_msg->Int(2)).GetNoStrum()
+    )
+    HANDLE_ACTION(on_game_over, OnGameOver())
+    HANDLE_ACTION(disable_controller, OnDisableController())
+    HANDLE_EXPR(num_stars, GetNumStars())
+    HANDLE_EXPR(star_rating, GetStarRating())
     HANDLE_ACTION(
         win,
         mBandPerformer ? mBandPerformer->WinGame(_msg->Int(2)) : WinGame(_msg->Int(2))
     )
     HANDLE_ACTION(lose, mBandPerformer ? mBandPerformer->LoseGame() : LoseGame())
-
+    HANDLE_ACTION(enable_fills, EnableFills(_msg->Float(2), false))
+    HANDLE_ACTION(disable_fills, DisableFills())
+    HANDLE_EXPR(are_fills_forced, unk2ed)
+    HANDLE_ACTION(force_fill, ForceFill(_msg->Int(2)))
+    HANDLE_EXPR(toggle_no_fills, ToggleNoFills() == 0)
+    HANDLE_ACTION(set_fill_audio, mBeatMatcher->SetFillAudio(_msg->Int(2)))
+    HANDLE_ACTION(
+        set_alternate_fill_mapping, mController->UseAlternateMapping(_msg->Int(2))
+    )
+    HANDLE_EXPR(auto_play, IsAutoplay())
+    HANDLE_ACTION(set_auto_play, SetAutoplay(_msg->Int(2)))
+    HANDLE_ACTION(set_auto_play_error, mBeatMatcher->SetAutoplayError(_msg->Int(2)))
+    HANDLE_ACTION(remote_hit, OnRemoteHit(_msg->Int(2), _msg->Int(3), _msg->Float(4)))
+    HANDLE_ACTION(
+        remote_penalize, OnRemotePenalize(_msg->Int(2), _msg->Int(3), _msg->Float(4))
+    )
+    HANDLE_ACTION(remote_coda_hit, OnRemoteCodaHit(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(remote_whammy, OnRemoteWhammy(_msg->Float(2)))
+    HANDLE_ACTION(remote_fill, OnRemoteFill(_msg->Int(2)))
+    HANDLE_ACTION(
+        remote_fill_hit, OnRemoteFillHit(_msg->Int(2), _msg->Int(3), _msg->Int(4))
+    )
+    HANDLE_ACTION(remote_hit_last_coda_gem, OnRemoteHitLastCodaGem(_msg->Int(2)))
+    HANDLE_ACTION(remote_blow_coda, OnRemoteBlowCoda())
+    HANDLE_ACTION(remote_solo_start, LocalSoloStart())
+    HANDLE_ACTION(remote_solo_hit, LocalSoloHit(_msg->Int(2)))
+    HANDLE_ACTION(remote_solo_end, LocalSoloEnd(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(remote_guitar_fx, LocalSetGuitarFx(_msg->Int(2)))
+    HANDLE_ACTION(remote_finale_hit, LocalFinaleSwing(_msg->Int(2)))
+    HANDLE_ACTION(remote_miss_noises, unk3b8 = _msg->Int(2))
+    HANDLE_ACTION(on_start_starpower, OnStartOverdrive())
+    HANDLE_ACTION(on_stop_starpower, OnStopOverdrive())
+    HANDLE_ACTION(on_new_track, HookupTrack())
+    HANDLE_ACTION(refresh_track_buttons, OnRefreshTrackButtons())
+    HANDLE_ACTION(update_guitar_fx, mFxPos = DataVariable("test_guitar_fx").Int())
+    HANDLE_EXPR(in_freestyle_section, InFillNow())
+    HANDLE_EXPR(in_trill, InTrill(_msg->Int(2)))
+    HANDLE_EXPR(in_rg_trill, InRGTrill(_msg->Int(2)))
+    HANDLE_EXPR(in_roll, InRoll(_msg->Int(2)))
+    HANDLE_EXPR(in_rg_roll, InRGRoll(_msg->Int(2)))
+    HANDLE_EXPR(get_notes_hit_fraction, mGemStatus->GetNotesHitFraction(nullptr))
+    HANDLE_ACTION(print_hopo_stats, PrintHopoStats())
+    HANDLE_ACTION(set_paused, SetPaused(_msg->Int(2)))
     HANDLE_SUPERCLASS(Player)
     HANDLE_CHECK(4668)
 END_HANDLERS

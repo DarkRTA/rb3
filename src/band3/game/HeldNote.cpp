@@ -54,7 +54,7 @@ bool HeldNote::HeldCompletely() const {
     return complete;
 }
 
-double HeldNote::SetHoldTime(float time) {
+float HeldNote::SetHoldTime(float time) {
     MILO_ASSERT(mGameGem != 0, 0x66);
 
     double x = 0;

@@ -20,11 +20,16 @@ public:
     void RecalculateGemTimes(TempoMap *);
     bool WillBeNoStrum(const GameGem &);
 
-    int NumGems() { return mGems.size(); }
+    int NumGems() const { return mGems.size(); }
     bool Empty() const { return mGems.empty(); }
 
     GameGem &GetGem(int id) {
         MILO_ASSERT(0 <= id && id < NumGems(), 0x3A);
+        return mGems[id];
+    }
+
+    const GameGem &GetGem(int id) const {
+        MILO_ASSERT(0 <= id && id < NumGems(), 0x40);
         return mGems[id];
     }
 

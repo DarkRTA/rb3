@@ -100,6 +100,7 @@ public:
     void E3CheatDecSlop();
     bool IsFillCompletion(int);
     unsigned int GetRGRollSlots(int) const;
+    void SetFillAudio(bool audio) { mFillAudio = audio; }
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc
