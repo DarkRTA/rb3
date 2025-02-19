@@ -14,6 +14,9 @@ public:
     void SetCanFreestyleBeforeGems(bool);
     void SetHasSolos(bool);
 
+    bool GetFillsDeployBandEnergy() const { return mFillsDeployBand; }
+    int GetMaxMultiplier() const { return mMaxMultiplier; }
+
     bool mCanDeployOverdrive; // 0x0
     bool mTiltDeployBand; // 0x1
     bool mFillsDeployBand; // 0x2

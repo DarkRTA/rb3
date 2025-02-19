@@ -1,4 +1,5 @@
 #pragma once
+#include "bandtrack/GemManager.h"
 #include "bandtrack/GemTrack.h"
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchSink.h"
@@ -65,6 +66,16 @@ public:
         return mask;
     }
 
+    bool Get0xD(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 0xD;
+        }
+        return mask;
+    }
+
     bool GetHopoed(int idx) {
         int mask;
         if (idx == -1)
@@ -73,6 +84,36 @@ public:
             mask = mGems[idx] & 0x10;
         }
         return mask;
+    }
+
+    bool GetIgnored(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 0x8;
+        }
+        return mask;
+    }
+
+    void SetIgnored(int idx) {
+        if (idx != -1) {
+            mGems[idx] |= 8;
+        }
+    }
+
+    void Set0x40(int idx) {
+        if (idx != -1) {
+            mGems[idx] |= 0x40;
+        }
+    }
+
+    void Clear() {
+        for (int i = 0; i < mGems.size(); i++) {
+            mGems[i] = 0;
+        }
+        mHits = 0;
+        mMisses = 0;
     }
 
     float GetNotesHitFraction(bool *) const;
@@ -92,7 +133,7 @@ public:
     GemPlayer(BandUser *, BeatMaster *, Band *, int, BandPerformer *);
     virtual ~GemPlayer();
     virtual DataNode Handle(DataArray *, bool);
-    virtual int CodaScore() const { return unk318; }
+    virtual int CodaScore() const { return mCodaPoints; }
     virtual Symbol GetStarRating() const;
     virtual int GetNumStars() const;
     virtual bool PastFinalNote() const;
@@ -123,12 +164,12 @@ public:
     virtual void DisableFills();
     virtual void EnableDrumFills(bool);
     virtual bool FillsEnabled(int);
-    virtual bool AreFillsForced() const { return unk2ed; }
+    virtual bool AreFillsForced() const { return mForceFill; }
     virtual void EnterCoda();
     virtual void ResetCodaPoints();
     virtual void AddCodaPoints();
-    virtual int GetCodaPoints() { return unk318; }
-    virtual bool InFill() const { return unk2ec; }
+    virtual int GetCodaPoints() { return mCodaPoints; }
+    virtual bool InFill() const { return mFill; }
 
     virtual void SetFillLogic(FillLogic);
     virtual bool DoneWithSong() const;
@@ -141,7 +182,7 @@ public:
     virtual int GetBaseBonusPoints() const;
     virtual void SetSyncOffset(float);
     virtual int GetCodaFreestyleExtents(Extent &) const;
-    virtual void EnterAnnoyingMode() { unk3b8 = true; }
+    virtual void EnterAnnoyingMode() { mAnnoyingMode = true; }
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection &, int, int);
     virtual void LocalSetEnabledState(EnabledState, int, BandUser *, bool);
@@ -239,7 +280,14 @@ public:
     bool InRoll(int) const;
     bool InRGRoll(int) const;
     void PrintHopoStats();
+    void SetFilling(bool, int);
+    void HandleCommonPhraseNote(int, int);
+    void JumpReset(float);
     float OnGetPercentHitGemsPractice(int, float, float) const;
+    void FinishAllHeldNotes(float);
+    void SetReverb(bool);
+    FxSendPitchShift *GetPitchShift();
+    void GetPlayerState(PlayerState &) const;
     bool ToggleNoFills() { return mBeatMatcher->mNoFills = !mBeatMatcher->mNoFills; }
 
     Performer *mBandPerformer; // 0x2cc
@@ -249,11 +297,11 @@ public:
     DataArray *mDrumCymbalPointBonus; // 0x2dc
     unsigned int mGameCymbalLanes; // 0x2e0
     std::vector<HeldNote> mHeldNotes; // 0x2e4
-    bool unk2ec;
-    bool unk2ed;
-    int unk2f0;
+    bool mFill; // 0x2ec
+    bool mForceFill; // 0x2ed
+    int mLastFillHitTick; // 0x2f0
     int unk2f4;
-    int unk2f8;
+    int mNumFillSwings; // 0x2f8
     int mNumCrashFillReadyHits; // 0x2fc
     bool mUseFills; // 0x300
     bool unk301;
@@ -263,7 +311,7 @@ public:
     bool unk314;
     bool unk315;
     bool unk316;
-    int unk318;
+    int mCodaPoints; // 0x318
     float mLastCodaSwing[6]; // 0x31c
     float mCodaPointRate; // 0x334
     float mCodaMashPeriod; // 0x338
@@ -302,8 +350,8 @@ public:
     bool unk3a8;
     float unk3ac;
     float mAutoMissSoundTimeoutMs; // 0x3b0
-    float unk3b4;
-    bool unk3b8;
+    float mFirstGemMs; // 0x3b4
+    bool mAnnoyingMode; // 0x3b8
     bool unk3b9;
     int unk3bc;
     int unk3c0;
@@ -317,8 +365,8 @@ public:
     int unk3e4;
     int unk3e8;
     float unk3ec;
-    int unk3f0;
-    int unk3f4;
+    int mSustainsReleased; // 0x3f0
+    int mSustainHeld; // 0x3f4
     int mSustainsReleasedBeforePopup; // 0x3f8
     std::vector<UpcomingFretRelease> mUpcomingFretReleases; // 0x3fc
     int unk404;

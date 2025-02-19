@@ -19,6 +19,7 @@ public:
     bool AddGameGem(const GameGem &, NoStrumState);
     void RecalculateGemTimes(TempoMap *);
     bool WillBeNoStrum(const GameGem &);
+    int ClosestMarkerIdxAtOrAfterTick(int) const;
 
     int NumGems() const { return mGems.size(); }
     bool Empty() const { return mGems.empty(); }

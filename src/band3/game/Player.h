@@ -188,6 +188,7 @@ public:
     BandUser *GetUser() const { return mUser; }
     float GetBandEnergy() const { return mBandEnergy; }
     EnabledState GetEnabledState() const { return mEnabledState; }
+    void SetTrackNum(int num) { mTrackNum = num; }
 
     DataNode OnGetOverdriveMeter(DataArray *);
     DataNode OnSendNetGameplayMsg(DataArray *);

@@ -55,6 +55,7 @@ public:
     GameState GetGameState() const { return mGameState; }
     bool IsGameOver() const { return mGameState == kGameOver; }
     void SetGameOver() { mGameState = kGameOver; }
+    DirectInstrument *GetDirectInstrument() const { return mDirectInstrument; }
 
     DataNode OnStartLoadSong(DataArray *);
 
