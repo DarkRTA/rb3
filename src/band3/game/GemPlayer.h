@@ -66,6 +66,16 @@ public:
         return mask;
     }
 
+    bool Get0x4(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 4;
+        }
+        return mask;
+    }
+
     bool GetEncountered(int idx) {
         int mask;
         if (idx == -1)
@@ -328,9 +338,23 @@ public:
     void GetGemsHit(int, int, int &, int &);
     void HandleFirstGemAfterRollback(int);
     bool HasAnyActiveHeldNotes() const;
+    bool InIgnorableFill(int);
+    bool IgnoreGemsAt(int);
+    void UpdateCrowdMeter(float, int);
+    void SendPenalize();
+    void Penalize(float, int, float);
+    void HandleSoloGem(int, bool, float, bool);
+    bool ShouldPenalizeGem(int) const;
+    void CheckHeldNotes(float);
+    void FinishHeldNote(float, HeldNote &);
+    void PrintFinishHeldNote();
+    HeldNote &GetUnusedHeldNote();
+    HeldNote *FindHeldNoteFromGemID(int);
+    HeldNote *FindFirstActiveHeldNote();
+    void AddHeadPoints(float, int, int, GemHitFlags);
+    bool ToggleNoFills();
 
     const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
-    bool ToggleNoFills() { return mMatcher->mNoFills = !mMatcher->mNoFills; }
 
     Performer *mBandPerformer; // 0x2cc
     GemStatus *mGemStatus; // 0x2d0

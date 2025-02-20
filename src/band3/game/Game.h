@@ -183,6 +183,7 @@ public:
     FillLogic GetFillLogic() const {
         return mDrumFillsMod ? kFillsRegular : kFillsDeployGemAndInvisible;
     }
+    bool DrumFillsMod() const { return mDrumFillsMod; }
 
     DataNode OnJump(const DataArray *);
     DataNode OnLocalUserReadyToPlay(const DataArray *);

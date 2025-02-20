@@ -5,6 +5,7 @@
 #include "bandobj/GemTrackDir.h"
 #include "bandtrack/GemManager.h"
 #include "bandtrack/TrackPanel.h"
+#include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "beatmatch/BeatMatcher.h"
 #include "beatmatch/FillInfo.h"
@@ -24,12 +25,14 @@
 #include "game/GuitarFx.h"
 #include "game/HeldNote.h"
 #include "game/KeysFx.h"
+#include "game/Performer.h"
 #include "game/Player.h"
 #include "game/ScoreUtl.h"
 #include "game/Scoring.h"
 #include "game/SongDB.h"
 #include "math/Utl.h"
 #include "meta_band/BandSongMgr.h"
+#include "meta_band/GameplayOptions.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/ProfileMgr.h"
@@ -1339,6 +1342,332 @@ void GemPlayer::OnRefreshTrackButtons() {
         }
     }
 }
+
+bool GemPlayer::InFillNow() {
+    int tick = GetSongPos().GetTotalTick();
+    return mUser->GetTrackType() == kTrackDrum
+        && (tick <= mLastFillHitTick || mMatcher->InFillNow());
+}
+
+bool GemPlayer::InIgnorableFill(int i1) {
+    FillLogic logic = TheGame->GetFillLogic();
+    return (
+        (logic == kFillsDeployGemAndDim || logic == kFillsDeployGemAndInvisible)
+        && mMatcher->FillsEnabled(i1) && mMatcher->InFill(i1, true)
+    );
+}
+
+bool GemPlayer::IgnoreGemsAt(int i1) {
+    FillLogic logic = TheGame->GetFillLogic();
+    return (
+        (logic == kFillsDeployGemAndDim || logic == kFillsDeployGemAndInvisible)
+        && mMatcher->IsFillCompletion(i1)
+    );
+}
+
+void GemPlayer::SetReverb(bool b1) {
+    mBeatMaster->GetAudio()->SetFX(mTrackNum, kFXCore1, b1);
+}
+
+void GemPlayer::ResetController(bool b1) {
+    Symbol controller = TheGameConfig->GetController(GetUser());
+    GameplayOptions *options = mUser->GetGameplayOptions();
+    MILO_ASSERT(options, 0xBCF);
+    bool leftyOptions = options->GetLefty();
+    if (controller != mControllerType || leftyOptions != mController->IsLefty()) {
+        bool alt = mController ? mController->IsAlternateMapping() : false;
+        RELEASE(mController);
+        DataArray *cfg = SystemConfig("beatmatcher", "controller", controller);
+        BandUser *user = TheBandUserMgr->GetBandUser(GetUserGuid(), true);
+        mController = NewController(
+            user, cfg, mMatcher, b1, alt, mMatcher->GetTrackType(mMatcher->CurrentTrack())
+        );
+        if (GetUser()->IsLocal()) {
+            if (GetUser()->GetLocalBandUser()->GetPadNum() == 0) {
+                mController->SetHitSink(TheGamePanel->GetHitTracker());
+            }
+        }
+        mControllerType = controller;
+        mMatcher->SetControllerType(mControllerType);
+        mController->SetMapping((BeatMatchControllerGemMapping)(mUser->GetTrackType()
+                                                                == kTrackDrum));
+        mController->UseAlternateMapping(alt);
+    } else {
+        mController->Disable(b1);
+    }
+    mController->SetSecondPedalHiHat(TheProfileMgr.GetSecondPedalHiHat());
+}
+
+void GemPlayer::GetPlayerState(PlayerState &state) const {
+    state = PlayerState(
+        IsInCrowdWarning(), false, unk358, 0, kPhraseNone, 0, mStats.GetCurrentStreak()
+    );
+}
+
+void GemPlayer::UpdateCrowdMeter(float noteScore, int) {
+    if (IsLocal()) {
+        MILO_ASSERT(noteScore >= 0 && noteScore <= 1, 0xC09);
+    }
+}
+
+#define kMaxTrackSlots 6
+
+void GemPlayer::FillInProgress(int i1, int slot) {
+    if (unk268 && i1 >= 0) {
+        if (!InRollback()) {
+            float ms = PollMs();
+            if (slot == -1)
+                return;
+            MILO_ASSERT(0 <= slot && slot < kMaxTrackSlots, 0xC48);
+            float f1 = mCodaPointRate;
+            if (!mBehavior->GetRequireAllCodaLanes()) {
+                slot = 0;
+                f1 *= 5.0f;
+            }
+            int i2 =
+                (f1 * std::min(mCodaMashPeriod, ms - mLastCodaSwing[slot])) / 1000.0f;
+            mCodaPoints += i2;
+            mLastCodaSwing[slot] = ms;
+        }
+        static Message msg("send_coda_hit", 0, 0);
+        msg[0] = mCodaPoints;
+        msg[1] = slot;
+        HandleType(msg);
+    } else {
+        int tick = mSongPos.GetTotalTick();
+        SetFilling(i1, tick);
+    }
+}
+
+void GemPlayer::SendPenalize() {
+    if (IsLocal()) {
+        static Message msg("send_penalize", 0, 0, 0);
+        msg[0] = mStats.GetCurrentStreak();
+        msg[1] = (int)mScore;
+        msg[2] = mCrowd->GetDisplayValue();
+        HandleType(msg);
+    }
+}
+
+void GemPlayer::Penalize(float f1, int i2, float f3) {
+    if (unk268)
+        SendPenalize();
+    else {
+        unk1fe = false;
+        unk1fd = false;
+        unk1ff = false;
+        FinalizeStats();
+        UpdateCrowdMeter(f3, i2);
+        unk3c0++;
+        if (i2 != -1
+            && TheSongDB->GetGem(mTrackNum, i2).GetMs() - (f1 + mSyncOffset) > 200.0f)
+            i2 = i2 - 1;
+        HandleCommonPhraseNote(0, i2);
+        FinishAllHeldNotes(f1);
+        SendPenalize();
+        unk1fe = true;
+        unk1fd = true;
+        unk1ff = true;
+        if (mBehavior->GetHasSolos()) {
+            HandleSoloGem(i2, false, f1, false);
+        }
+    }
+}
+
+bool GemPlayer::ShouldPenalizeGem(int gem) const {
+    if (mTrackType != 4 && mTrackType != 5)
+        return true;
+    const std::vector<GameGem> &gems = TheSongDB->GetGems(mTrackNum);
+    int tick = gems[gem].GetTick();
+    int startGemID;
+    for (startGemID = gem; startGemID >= 0 && tick == gems[startGemID].GetTick();
+         startGemID--)
+        ;
+    int endGemID;
+    for (endGemID = gem; endGemID < gems.size() && tick == gems[endGemID].GetTick();
+         endGemID++)
+        ;
+    startGemID++;
+    if (endGemID - startGemID == 1) {
+        MILO_ASSERT(startGemID == gem, 0xCCD);
+        MILO_ASSERT(endGemID - 1 == gem, 0xCCE);
+        return true;
+    } else {
+        for (; startGemID < endGemID; startGemID++) {
+            if (mGemStatus->GetHit(startGemID) || mGemStatus->Get0x4(startGemID)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void GemPlayer::CheckHeldNotes(float f1) {
+    FOREACH (it, mHeldNotes) {
+        if (it->HasGem()) {
+            if (!mGemStatus->GetIgnored(it->unk_0x4)) {
+                float max = std::max<float>(0, it->SetHoldTime(f1));
+                AddPoints(max, true, true);
+                mStats.AddSustain(max);
+            }
+            if (it->IsDone()) {
+                if (IsAutoplay()) {
+                    unsigned int slots = it->GetGemSlots();
+                    int i = 0;
+                    while (slots != 0) {
+                        int mask = 1 << i;
+                        if (slots & mask) {
+                            slots -= mask;
+                            FretButtonUp(i, f1);
+                        }
+                        i++;
+                    }
+                }
+                FinishHeldNote(f1, *it);
+            }
+        }
+    }
+}
+
+void GemPlayer::FinishHeldNote(float f1, HeldNote &note) {
+    if (note.HasGem()) {
+        mSustainHeld = 1;
+        PopupHelp(hold_note, false);
+        if (mTrack) {
+            mTrack->ReleaseGem(f1, note.unk_0x4);
+        }
+        float frac = note.GetPointFraction();
+        Message msg("held_note_released_callback", frac);
+        Export(msg, false);
+        UpdateCrowdMeter(frac, note.unk_0x4);
+        if (unk348) {
+            Handle(whammy_end_msg, false);
+        }
+        unk348 = false;
+        PrintFinishHeldNote();
+        mStats.IncrementSustainGemsHit(note.HeldCompletely());
+        note = HeldNote();
+    }
+}
+
+void GemPlayer::FinishAllHeldNotes(float f1) {
+    FOREACH (it, mHeldNotes) {
+        FinishHeldNote(f1, *it);
+    }
+}
+
+HeldNote &GemPlayer::GetUnusedHeldNote() {
+    FOREACH (it, mHeldNotes) {
+        if (!it->HasGem())
+            return *it;
+    }
+    MILO_FAIL("All held notes are used! How can this be?!");
+    return mHeldNotes.front();
+}
+
+HeldNote *GemPlayer::FindHeldNoteFromSlot(int slot) {
+    FOREACH (it, mHeldNotes) {
+        if (it->GetGemSlots() & (1 << slot))
+            return it;
+    }
+    return nullptr;
+}
+
+HeldNote *GemPlayer::FindHeldNoteFromGemID(int gemID) {
+    FOREACH (it, mHeldNotes) {
+        if (gemID == it->unk_0x4)
+            return it;
+    }
+    return nullptr;
+}
+
+HeldNote *GemPlayer::FindFirstActiveHeldNote() {
+    FOREACH (it, mHeldNotes) {
+        if (it->HasGem())
+            return it;
+    }
+    return nullptr;
+}
+
+bool GemPlayer::HasAnyActiveHeldNotes() const {
+    FOREACH (it, mHeldNotes) {
+        if (it->HasGem())
+            return true;
+    }
+    return false;
+}
+
+void GemPlayer::AddHeadPoints(float f1, int i2, int i3, GemHitFlags flags) {
+    GameGem &gem = TheSongDB->GetGem(mTrackNum, i2);
+    int i5 = 0;
+    if (mGameCymbalLanes != 0) {
+        MILO_ASSERT(mUser->GetTrackType() == kTrackDrum, 0xE43);
+        DataNode &node = mDrumCymbalPointBonus->Node(gem.GetSlot() + 1);
+        if (node.Type() == kDataInt)
+            i5 = node.Int();
+        else if (node.Type() == kDataArray) {
+            unsigned int gemSlots = gem.GetSlots();
+            MILO_ASSERT(GameGem::CountBitsInSlotType( gemSlots ) == 1, 0xE58);
+            if (gemSlots & mGameCymbalLanes) {
+                i5 = node.Array()->Int(0);
+            } else
+                i5 = node.Array()->Int(1);
+        } else
+            MILO_WARN("Unknown data in scoring.dta for pro_drum_bonus.");
+    }
+    int ivar2;
+    if (gem.NumSlots() == 1) {
+        ivar2 = i3 * TheScoring->GetHeadPoints(mUser->GetTrackType());
+    } else {
+        ivar2 = TheScoring->GetChordPoints(mUser->GetTrackType());
+        if (ivar2 < 0) {
+            ivar2 = i3 * TheScoring->GetHeadPoints(mUser->GetTrackType());
+        }
+    }
+    ivar2 += i5;
+    AddPoints(ivar2, true, true);
+    mStats.AddAccuracy(ivar2);
+    int rounded = Round(gem.GetMs() - (f1 + mSyncOffset));
+    unk394 += rounded;
+    unk398++;
+    unk390 -= rounded;
+    PrintAddHead(rounded, i3, ivar2, unk394 / unk398, unk390 + 0.5f);
+}
+
+void GemPlayer::SetFilling(bool b1, int i2) {
+    if (mFill != b1) {
+        if (IsLocal()) {
+            Message msg("send_fill", b1);
+            HandleType(msg);
+        }
+        mFill = b1;
+        if (mFill) {
+            if (mUseFills && Performer::IsLocal() && TheGame->DrumFillsMod()) {
+                mBeatMaster->GetAudio()->FadeOutDrums(mTrackNum);
+            }
+            if (i2 - unk2f4 > 0x1e0) {
+                mNumFillSwings = 0;
+            }
+        } else {
+            unk2f4 = i2;
+            if (mUseFills) {
+                if (Performer::IsLocal() && TheGame->DrumFillsMod()) {
+                    mBeatMaster->GetAudio()->FadeOutDrums(mTrackNum);
+                }
+                IgnoreGemsUntil(i2 + 0x1E);
+            }
+        }
+    }
+}
+
+void GemPlayer::ForceFill(bool force) {
+    mForceFill = force;
+    mMatcher->ForceFill(force);
+}
+
+FORCE_LOCAL_INLINE
+bool GemPlayer::ToggleNoFills() { return mMatcher->mNoFills = !mMatcher->mNoFills; }
+END_FORCE_LOCAL_INLINE
 
 void GemPlayer::PrintMsg(const char *str) {
     const char *prnt = MakeString("", GetScore(), str);

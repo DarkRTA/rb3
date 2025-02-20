@@ -102,6 +102,7 @@ public:
     unsigned int GetRGRollSlots(int) const;
     void SetFillAudio(bool audio) { mFillAudio = audio; }
     int GetFillStartTick() const { return mFillStartTick; }
+    int CurrentTrack() const { return mCurTrack; }
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc

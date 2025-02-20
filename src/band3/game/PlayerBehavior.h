@@ -16,6 +16,8 @@ public:
 
     bool GetFillsDeployBandEnergy() const { return mFillsDeployBand; }
     int GetMaxMultiplier() const { return mMaxMultiplier; }
+    bool GetRequireAllCodaLanes() const { return mRequireAllCodas; }
+    bool GetHasSolos() const { return mHasSolos; }
 
     bool mCanDeployOverdrive; // 0x0
     bool mTiltDeployBand; // 0x1
