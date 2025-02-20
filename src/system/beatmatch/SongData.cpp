@@ -32,7 +32,7 @@
 #include "utl/MBT.h"
 #include "utl/MemMgr.h"
 #include "utl/MemStream.h"
-#include "utl/RangedData.h"
+#include "utl/RangedDataCollection.h"
 #include "utl/SongInfoAudioType.h"
 #include "utl/SongInfoCopy.h"
 #include "utl/TickedInfo.h"

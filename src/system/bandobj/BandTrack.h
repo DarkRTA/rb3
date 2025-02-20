@@ -111,6 +111,7 @@ public:
     void SetNetTalking(bool);
     void SetControllerType(const Symbol &);
     void SetPlayerFeedbackShowing(bool) const;
+    void ResetPlayerFeedback();
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }

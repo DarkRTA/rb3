@@ -25,7 +25,7 @@
 #include "rndobj/EventTrigger.h"
 #include "rndobj/PropAnim.h"
 #include "track/TrackWidget.h"
-#include "utl/RangedData.h"
+#include "utl/RangedDataCollection.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 #include "utl/Symbols2.h"

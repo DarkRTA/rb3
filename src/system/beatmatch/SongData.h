@@ -9,7 +9,7 @@
 #include "beatmatch/RGChords.h"
 #include "beatmatch/SongParser.h"
 #include "utl/MemStream.h"
-#include "utl/RangedData.h"
+#include "utl/RangedDataCollection.h"
 #include "utl/TickedInfo.h"
 #include "utl/TempoMap.h"
 #include <vector>

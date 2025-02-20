@@ -182,6 +182,8 @@ public:
     void CheckCrowdFailure();
     void UnisonMiss(int) const;
     void UnisonHit();
+    void UpdateSectionStats(float, float);
+    bool InRollback() const;
 
     int GetTrackNum() const { return mTrackNum; }
     TrackType GetTrackType() const { return mTrackType; }

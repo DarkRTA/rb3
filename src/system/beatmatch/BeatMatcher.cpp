@@ -371,7 +371,7 @@ void BeatMatcher::SetAutoplay(bool autoplay) {
 void BeatMatcher::AutoplayCoda(bool b) { mWatcher->SetAutoplayCoda(b); }
 void BeatMatcher::SetAutoplayError(int err) { mWatcher->SetAutoplayError(err); }
 void BeatMatcher::SetAutoOn(bool b) { mAudio->SetAutoOn(mCurTrack, b); }
-void BeatMatcher::CycleAutoplayAccuracy() { mWatcher->CycleAutoplayAccuracy(); }
+float BeatMatcher::CycleAutoplayAccuracy() { return mWatcher->CycleAutoplayAccuracy(); }
 void BeatMatcher::SetAutoplayAccuracy(float f) { mWatcher->SetAutoplayAccuracy(f); }
 void BeatMatcher::DrivePitchBendExternally(bool b) { mDrivingPitchBendExternally = b; }
 

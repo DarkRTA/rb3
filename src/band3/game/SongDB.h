@@ -73,6 +73,10 @@ public:
     void GetBandFailCue(String &) const;
     void SetFakeHitGemsInFill(bool);
     bool GetPhraseExtents(BeatmatchPhraseType, int, int, int &, int &);
+    void ClearQuarantinedPhrases(int);
+    void SetupTrackPhrases(int);
+    int GetSoloGemCount(int) const;
+    int GetSustainGemCount(int) const;
 
     SongData *GetSongData() { return mSongData; }
 

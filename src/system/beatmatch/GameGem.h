@@ -121,7 +121,7 @@ public:
 
     bool GetPlayed() const { return mPlayed != 0; }
     void SetPlayed(bool played) { mPlayed = played; }
-    float DurationMs() { return mDurationMs; }
+    float DurationMs() const { return mDurationMs; }
     bool Unk10B1() const { return unk10b1; }
     void SetUnk10B1(bool b) { unk10b1 = b; }
     bool IsCymbal() const { return mIsCymbal; }

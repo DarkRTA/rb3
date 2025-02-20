@@ -56,6 +56,16 @@ public:
     // missed: 0x2
     // ignored: 0x8
 
+    bool GetHit(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 1;
+        }
+        return mask;
+    }
+
     bool GetEncountered(int idx) {
         int mask;
         if (idx == -1)
@@ -96,6 +106,16 @@ public:
         return mask;
     }
 
+    bool HasDealtWithGem(int idx) {
+        int mask;
+        if (idx == -1)
+            mask = 0;
+        else {
+            mask = mGems[idx] & 0x9;
+        }
+        return mask;
+    }
+
     void SetIgnored(int idx) {
         if (idx != -1) {
             mGems[idx] |= 8;
@@ -116,7 +136,16 @@ public:
         mMisses = 0;
     }
 
-    float GetNotesHitFraction(bool *) const;
+    float GetNotesHitFraction(bool *bptr) const {
+        float total = mHits + mMisses;
+        if (bptr)
+            *bptr = total > 0;
+        return total == 0 ? 0 : mHits / total;
+    }
+
+    void Resize(int num) { mGems.resize(num); }
+    int NumHits() const { return mHits; }
+    int NumMisses() const { return mMisses; }
 
     std::vector<unsigned char> mGems; // 0x0
     int mHits; // 0x8
@@ -288,7 +317,20 @@ public:
     void SetReverb(bool);
     FxSendPitchShift *GetPitchShift();
     void GetPlayerState(PlayerState &) const;
-    bool ToggleNoFills() { return mBeatMatcher->mNoFills = !mBeatMatcher->mNoFills; }
+    void DisableFillsCompletely();
+    void ResetGemStates(float);
+    void SetPitchShiftRatio(float);
+    float CycleAutoplayAccuracy();
+    void SetAutoplayAccuracy(float);
+    bool HasDealtWithGem(int);
+    void RecordTrillStats();
+    void UpdateSectionStats();
+    void GetGemsHit(int, int, int &, int &);
+    void HandleFirstGemAfterRollback(int);
+    bool HasAnyActiveHeldNotes() const;
+
+    const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
+    bool ToggleNoFills() { return mMatcher->mNoFills = !mMatcher->mNoFills; }
 
     Performer *mBandPerformer; // 0x2cc
     GemStatus *mGemStatus; // 0x2d0
@@ -315,9 +357,9 @@ public:
     float mLastCodaSwing[6]; // 0x31c
     float mCodaPointRate; // 0x334
     float mCodaMashPeriod; // 0x338
-    bool unk33c;
+    bool mMercurySwitchEnabled; // 0x33c
     bool unk33d;
-    bool unk33e;
+    bool mWhammyOverdriveEnabled; // 0x33e
     RndOverlay *mOverlay; // 0x340
     RndOverlay *mGuitarOverlay; // 0x344
     bool unk348;
@@ -331,7 +373,7 @@ public:
     GemTrack *mTrack; // 0x368
     BeatMatchController *mController; // 0x36c
     Symbol mControllerType; // 0x370
-    BeatMatcher *mBeatMatcher; // 0x374
+    BeatMatcher *mMatcher; // 0x374
     float mSyncOffset; // 0x378
     GuitarFx *mGuitarFx; // 0x37c
     KeysFx *mKeysFx; // 0x380
@@ -362,9 +404,9 @@ public:
     int unk3dc;
     bool unk3e0;
     bool unk3e1;
-    int unk3e4;
-    int unk3e8;
-    float unk3ec;
+    int mSectionStartHitCount; // 0x3e4
+    int mSectionStartMissCount; // 0x3e8
+    float mSectionStartScore; // 0x3ec
     int mSustainsReleased; // 0x3f0
     int mSustainHeld; // 0x3f4
     int mSustainsReleasedBeforePopup; // 0x3f8
