@@ -8,6 +8,7 @@
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/BeatMatchUtl.h"
 #include "beatmatch/BeatMatcher.h"
+#include "beatmatch/DrumMap.h"
 #include "beatmatch/FillInfo.h"
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/InternalSongParserSink.h"
@@ -42,6 +43,7 @@
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
+#include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
 #include "synth/FxSend.h"
@@ -50,6 +52,7 @@
 #include "synth/Synth.h"
 #include "synthwii/FXWii.h"
 #include "ui/UIPanel.h"
+#include "utl/Messages3.h"
 #include "utl/Messages4.h"
 #include "utl/SongInfoCopy.h"
 #include "utl/Symbol.h"
@@ -59,6 +62,7 @@
 #include "utl/Symbols4.h"
 #include "utl/TimeConversion.h"
 #include "world/Dir.h"
+#include <cstdio>
 
 class DeltaTracker;
 DeltaTracker *sTracker = nullptr;
@@ -1669,14 +1673,171 @@ FORCE_LOCAL_INLINE
 bool GemPlayer::ToggleNoFills() { return mMatcher->mNoFills = !mMatcher->mNoFills; }
 END_FORCE_LOCAL_INLINE
 
+void GemPlayer::HandleSoloGem(int i1, bool b2, float f3, bool b4) {
+    if (Performer::IsLocal() && TheSongDB->IsInPhrase(kSoloPhrase, mTrackNum, i1)) {
+        float f4c = 0;
+        float f50 = 0;
+        int i54 = 0;
+        GetSoloData(TheSongDB->GetGems(mTrackNum)[i1].GetTick(), f4c, f50, i54);
+        if (!unk314) {
+            if (!unk315) {
+                if (f4c == 0)
+                    return;
+                if (unk316)
+                    return;
+                unk404 = -1;
+                LocalSoloStart();
+                HandleType(send_solo_start_msg);
+            }
+            if (b2) {
+                unk3d8 &= b4;
+                int ivar1 = f4c;
+                if (ivar1 != unk404) {
+                    LocalSoloHit(ivar1);
+                    static Message send_solo_hit("send_solo_hit", 0);
+                    send_solo_hit[0] = ivar1;
+                    HandleType(send_solo_hit);
+                    unk404 = ivar1;
+                }
+                if (mTrackType == 1) {
+                    mStats.IncrementHighFretGemsHit(b4);
+                }
+            }
+            if (mTrackType - 1U <= 1) {
+                mStats.SetSoloButtonedSoloPercentage(f50);
+            }
+        }
+    }
+}
+
+int GemPlayer::GetRGFret(int x) const { return mController->GetRGFret(x); }
+
+void GemPlayer::LocalSoloStart() {
+    if (GetEnabledState() != kPlayerDisconnected) {
+        if (!mBand->MainPerformer()->IsGameOver() && !InRollback()) {
+            unk315 = true;
+            mStats.SetHasSolos(true);
+            unk3d8 = 1;
+            unk316 = false;
+            BandTrack *track = GetBandTrack();
+            if (track) {
+                track->SoloStart();
+            }
+        }
+    }
+}
+
+void GemPlayer::LocalSoloHit(int x) {
+    BandTrack *track = GetBandTrack();
+    if (track) {
+        track->SoloHit(x);
+    }
+}
+
+void GemPlayer::SoloEnd() {
+    if (IsLocal()) {
+        if (!InRollback()) {
+            float f4c = 0;
+            float f50 = 0;
+            int i54 = 0;
+            GetSoloData(unk310, f4c, f50, i54);
+            LocalSoloEnd(f4c, i54);
+            static Message send_solo_end("send_solo_end", 0, 0);
+            send_solo_end[0] = (int)f4c;
+            send_solo_end[1] = i54;
+            HandleType(send_solo_end);
+        }
+    }
+}
+
+void GemPlayer::SetGuitarFx() {
+    if (IsLocal() && !ThePlatformMgr.IsGuideShowing()
+        && GetEnabledState() != kPlayerDisconnected) {
+        int switchpos = TheGameConfig->GetFxSwitchPosition(GetUser()->GetLocalBandUser());
+        if (switchpos != -1 && switchpos != mFxPos) {
+            LocalSetGuitarFx(switchpos);
+            static Message msg("send_guitar_fx", 0);
+            msg[0] = switchpos;
+            HandleType(msg);
+        }
+    }
+}
+
+void GemPlayer::LocalSetGuitarFx(int i1) {
+    int old = mFxPos;
+    if (i1 != -1) {
+        mFxPos = i1;
+    }
+    if (mFxPos != old && mTrack && Performer::IsLocal()) {
+        mTrack->UpdateEffects(mFxPos);
+    }
+}
+
+void GemPlayer::SendWhammyBar(float f1) {
+    if ((f1 == 0 && unk364 != 0) || (f1 != 0 && unk364 == 0)
+        || (std::fabs(f1 - unk364) >= 0.07999999821186066f)) {
+        static int x;
+        static Message msg("send_whammy", 0.0f);
+        msg[0] = f1;
+        HandleType(msg);
+        unk364 = f1;
+    }
+}
+
+bool GemPlayer::AllCodaGemsHit() const {
+    int startTick = TheSongDB->GetCodaStartTick();
+    if (startTick == -1)
+        return false;
+    else {
+        const GameGemList *gems = TheSongDB->GetGemList(mTrackNum);
+        int i3 = TheSongDB->GetTotalGems(mTrackNum);
+        for (int i = i3 - 1; i >= 0; i--) {
+            int tick = gems->GetGem(i).GetTick();
+            if (tick < startTick)
+                return true;
+            if (TheSongDB->GetSongData()->GetDrumFillInfo(mTrackNum)->FillAt(tick, true)) {
+                return true;
+            }
+            if (!mGemStatus->GetHit(i))
+                return false;
+        }
+        return true;
+    }
+    return false;
+}
+
+void GemPlayer::CodaHit(float f1, int i2) {
+    if (IsLocal()) {
+        mBand->DealWithCodaGem(this, i2, true, AllCodaGemsHit());
+    }
+}
+
 void GemPlayer::PrintMsg(const char *str) {
-    const char *prnt = MakeString("", GetScore(), str);
+    const char *prnt = MakeString("%d %s\n", GetScore(), str);
     *mOverlay << prnt;
     TheDebug << prnt;
 }
 
+void GemPlayer::PrintFinishHeldNote() {
+    if (mOverlay->Showing()) {
+        char buffer[5] = { 0 };
+        FOREACH (it, mHeldNotes) {
+            if (it->HasGem()) {
+                int slots = it->GetGem()->NumSlots();
+                if (slots > 1) {
+                    sprintf(buffer, " X %d", slots);
+                }
+                float pct = it->GetAwardedPercent();
+                PrintMsg(MakeString(
+                    "held%s (%.2f) %.2f pts", buffer, pct, it->GetAwardedPoints()
+                ));
+            }
+        }
+    }
+}
+
 void GemPlayer::PrintAddHead(int mils, int idx, int pts, int ms_avg, int recent) {
-    if (unk2c4) {
+    if (mOverlay->Showing()) {
         char id[5] = { 0 };
         if (idx > 1) {
             sprintf(id, " X %d", idx);
@@ -1684,6 +1845,66 @@ void GemPlayer::PrintAddHead(int mils, int idx, int pts, int ms_avg, int recent)
         PrintMsg(MakeString(
             "%s (%dms) %d pts -- %dms avg  -- %d recent", id, mils, pts, ms_avg, recent
         ));
+    }
+}
+
+void GemPlayer::ConfigureBehavior() {
+    bool c1 = TheGame->mProperties.mEnableOverdrive;
+    bool single = !TheBandUserMgr->IsMultiplayerGame();
+    TrackType ty = mUser->GetTrackType();
+    mBehavior->SetMaxMultiplier(ty == kTrackBass || ty == kTrackRealBass ? 6 : 4);
+    mBehavior->SetCanDeployOverdrive(single && c1);
+    bool b = (ty - 1 <= 7U && (1 << (ty - 1)) & 0xBBU);
+    mBehavior->SetTiltDeploysBandEnergy(b && c1);
+    mBehavior->SetFillsDeployBandEnergy(ty == kTrackDrum && c1);
+    mBehavior->SetRequireAllCodaLanes(ty > 9U || !((1 << ty) & 0x3E1U));
+    mBehavior->SetCanFreestyleBeforeGems(false);
+    mBehavior->SetHasSolos(ty <= 8U && ((1 << ty) & 0x177U));
+    mBehavior->SetStreakType(mUser->GetTrackSym());
+}
+
+void GemPlayer::EnableController() {
+    if (mController)
+        mController->Disable(false);
+    if (GetUser()->IsLocal()) {
+        JoypadKeepAlive(GetUser()->GetLocalUser()->GetPadNum(), true);
+    }
+}
+
+void GemPlayer::DisableController() { OnDisableController(); }
+
+void GemPlayer::PrintHopoStats() {
+    const std::vector<GameGem> &gems = TheSongDB->GetGems(mTrackNum);
+    MILO_LOG("Hopoable gems not hopoed:\n");
+    for (int i = 0; i < gems.size(); i++) {
+        if (gems[i].GetNoStrum()) {
+            if (mGemStatus->GetEncountered(i) && !mGemStatus->GetHopoed(i)) {
+                MILO_LOG("  %d\n", i);
+            }
+        }
+    }
+}
+
+void GemPlayer::InputReceived() {
+    unk3ac = TheGame->mLastPollMs;
+    unk3bc = 0;
+    if (mAnnoyingMode) {
+        SetAnnoyingMode(false);
+    }
+}
+
+void GemPlayer::SetAnnoyingMode(bool b1) {
+    if (mAnnoyingMode != b1 && IsLocal()) {
+        mAnnoyingMode = b1;
+    }
+}
+
+void GemPlayer::SetRemoteAnnoyingMode(bool b1) {
+    if (unk3b9 != b1 && IsLocal()) {
+        unk3b9 = b1;
+        static Message msg("send_miss_noises", 0);
+        msg[0] = unk3b9;
+        HandleType(msg);
     }
 }
 

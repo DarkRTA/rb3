@@ -112,6 +112,8 @@ public:
     void SetControllerType(const Symbol &);
     void SetPlayerFeedbackShowing(bool) const;
     void ResetPlayerFeedback();
+    void SoloStart();
+    void SoloHit(int);
 
     TrackInstrument GetInstrument() const { return mTrackInstrument; }
     bool InUse() const { return mInUse; }

@@ -77,6 +77,7 @@ public:
     const Stats &GetStats() const { return mStats; }
     CrowdRating *Crowd() const { return mCrowd; }
     void SetGameOver() { mGameOver = true; }
+    bool IsGameOver() const { return mGameOver; }
 
     float mPollMs; // 0x8
     CrowdRating *mCrowd; // 0xc

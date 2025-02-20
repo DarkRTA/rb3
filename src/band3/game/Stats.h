@@ -276,6 +276,7 @@ public:
     int NumSections() const { return mSections.size(); }
     bool HasCoda() const { return mHasCoda; }
     bool HasSolos() const { return mHasSolos; }
+    void SetHasSolos(bool solos) { mHasSolos = solos; }
 
     int GetUpstrumPercent() const {
         int count = mHitCount + m0x08;

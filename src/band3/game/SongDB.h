@@ -77,6 +77,7 @@ public:
     void SetupTrackPhrases(int);
     int GetSoloGemCount(int) const;
     int GetSustainGemCount(int) const;
+    bool IsInPhrase(BeatmatchPhraseType, int, int) const;
 
     SongData *GetSongData() { return mSongData; }
 

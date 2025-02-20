@@ -353,6 +353,13 @@ public:
     HeldNote *FindFirstActiveHeldNote();
     void AddHeadPoints(float, int, int, GemHitFlags);
     bool ToggleNoFills();
+    void GetSoloData(int, float &, float &, int &);
+    void SoloEnd();
+    void SendWhammyBar(float);
+    bool AllCodaGemsHit() const;
+    void CodaHit(float, int);
+    void SetAnnoyingMode(bool);
+    void SetRemoteAnnoyingMode(bool);
 
     const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
 
