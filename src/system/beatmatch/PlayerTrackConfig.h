@@ -66,6 +66,9 @@ public:
     int NumConfigs() const { return mConfigs.size(); }
     bool IsUserRemote(const UserGuid &u) const { return GetConfigByUserGuid(u).Remote(); }
     const PlayerTrackConfig &ConfigAt(int idx) const { return mConfigs[idx]; }
+    int GetTrackNumByUserGuid(const UserGuid &u) const {
+        return GetConfigByUserGuid(u).TrackNum();
+    }
 
     std::vector<int> mTrackDiffs; // 0x0
     std::vector<int> mTrackNums; // 0x8

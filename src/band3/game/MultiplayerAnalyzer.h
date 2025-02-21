@@ -38,9 +38,9 @@ public:
         float mMaxPts; // 0x1c
         float unk_0x20; // 0x20
         float unk_0x24; // 0x24
-        int unk28;
-        int unk2c;
-        int unk30;
+        int mHeadPoints; // 0x28
+        int mTailPoints; // 0x2c
+        int mChordPoints; // 0x30
         int mMaxMultiplier; // 0x34
         std::vector<GemScore> mGemScores; // 0x38
     };
