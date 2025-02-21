@@ -19,38 +19,38 @@ OverdriveConfig::OverdriveConfig(DataArray *cfg) {
 }
 
 Scoring::Scoring()
-    : unk8c(SystemConfig("scoring")), unk90(unk8c->FindArray("overdrive", true)),
-      unkc0(0) {
+    : mConfig(SystemConfig("scoring")),
+      mOverdriveConfig(mConfig->FindArray("overdrive", true)), unkc0(0) {
     MILO_ASSERT(!TheScoring, 0x2C);
     TheScoring = this;
 
-    unk8c->FindArray("points", true);
-    DataArray *streakarr = unk8c->FindArray("streaks", true);
+    mConfig->FindArray("points", true);
+    DataArray *streakarr = mConfig->FindArray("streaks", true);
     DataArray *multarr = streakarr->FindArray("multipliers", true);
     DataArray *energyarr = streakarr->FindArray("energy", true);
 
-    unkb0 = unk8c->FindArray("unison_phrase", true)->FindFloat("reward");
-    unkb4 = unk8c->FindArray("unison_phrase", true)->FindFloat("penalty");
-    InitializeStreakList(unk78, multarr);
-    InitializeStreakList(unk80, energyarr);
+    mCommonPhraseReward = mConfig->FindArray("unison_phrase", true)->FindFloat("reward");
+    mCommonPhrasePenalty =
+        mConfig->FindArray("unison_phrase", true)->FindFloat("penalty");
+    InitializeStreakList(mStreakMultLists, multarr);
+    InitializeStreakList(mStreakEnergyLists, energyarr);
 
-    DataArray *pointarr = unk8c->FindArray("streaks", true);
+    DataArray *pointarr = mConfig->FindArray("points", true);
     for (int i = 1; i < pointarr->Size(); i++) {
         int idx = SymToTrackType(pointarr->Array(i)->Sym(0));
         int head = pointarr->Array(i)->FindInt("head");
         int tail = pointarr->Array(i)->FindInt("tail");
         int chord = pointarr->Array(i)->FindInt("chord");
-        PointInfo &info = mPointInfo[idx];
-        info.headPoints = head;
-        info.tailPoints = tail;
-        info.chordPoints = chord;
+        mPointInfo[idx] = PointInfo(head, tail, chord);
     }
 }
 
 Scoring::~Scoring() {
     MILO_ASSERT(TheScoring, 0x48);
-    TheScoring = 0;
+    TheScoring = nullptr;
 }
+
+void Scoring::ComputeStarThresholds(bool) const {}
 
 int Scoring::GetHeadPoints(TrackType instrument) const {
     MILO_ASSERT(instrument < kNumTrackTypes, 0xCA);
@@ -60,10 +60,7 @@ int Scoring::GetHeadPoints(TrackType instrument) const {
 int Scoring::GetTailPoints(TrackType instrument, int i) const {
     MILO_ASSERT(instrument < kNumTrackTypes, 0xD0);
     float f = ((float)i / 480.0f) * (float)mPointInfo[instrument].tailPoints;
-    if (f > 0)
-        return f + 0.5f;
-    else
-        return f - 0.5f;
+    return Round(f);
 }
 
 int Scoring::GetChordPoints(TrackType instrument) const {
@@ -71,10 +68,12 @@ int Scoring::GetChordPoints(TrackType instrument) const {
     return mPointInfo[instrument].chordPoints;
 }
 
-int Scoring::GetStreakMult(int i, Symbol s) const { return GetStreakData(i, s, unk78); }
+int Scoring::GetStreakMult(int i, Symbol s) const {
+    return GetStreakData(i, s, mStreakMultLists);
+}
 
 DataArray *Scoring::GetCrowdConfig(Difficulty diff, BandUser *user) const {
-    DataArray *diffarr = unk8c->FindArray("crowd", true)->FindArray(diff, true);
+    DataArray *diffarr = mConfig->FindArray("crowd", true)->FindArray(diff, true);
     Symbol key = user ? user->GetTrackSym() : "default";
     DataArray *ret = diffarr->FindArray(key, false);
     if (ret)
@@ -84,7 +83,7 @@ DataArray *Scoring::GetCrowdConfig(Difficulty diff, BandUser *user) const {
 }
 
 int Scoring::GetBandNumStars(int i) const {
-    int stars = GetNumStarsFloat(i, mStarThresholds);
+    int stars = GetNumStarsFloat(i, const_cast<Scoring *>(this)->mStarThresholds);
     if (stars < 0)
         return 0;
     else if (stars > 6)
@@ -94,7 +93,7 @@ int Scoring::GetBandNumStars(int i) const {
 }
 
 float Scoring::GetBandNumStarsFloat(int i) const {
-    return GetNumStarsFloat(i, mStarThresholds);
+    return GetNumStarsFloat(i, const_cast<Scoring *>(this)->mStarThresholds);
 }
 
 int Scoring::GetBandScoreForStars(int stars) const {
@@ -106,7 +105,7 @@ Symbol Scoring::GetStarRating(int numStars) const {
     if (numStars == 0)
         return gNullStr;
     else {
-        DataArray *ratings = unk8c->FindArray("star_ratings", "symbols")->Array(1);
+        DataArray *ratings = mConfig->FindArray("star_ratings", "symbols")->Array(1);
         MILO_ASSERT_RANGE_EQ(numStars, 1,  ratings->Size(), 0x1BE);
         return ratings->Sym(numStars - 1);
     }
@@ -127,7 +126,7 @@ void Scoring::GetSoloAward(int i, Symbol s, int &iref, Symbol &sref) {
 }
 
 DataArray *Scoring::GetSoloBlock(Symbol s) const {
-    DataArray *soloarr = unk8c->FindArray("solo", true);
+    DataArray *soloarr = mConfig->FindArray("solo", true);
     DataArray *blockarr = soloarr->FindArray(s, false);
     return blockarr ? blockarr : soloarr->FindArray("default", true);
 }
