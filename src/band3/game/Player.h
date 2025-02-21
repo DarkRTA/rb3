@@ -117,7 +117,7 @@ public:
     virtual void DisableController() {}
     virtual void ConfigureBehavior() {}
     virtual bool CanDeployOverdrive() const;
-    virtual float GetOverdrive() const;
+    virtual float GetOverdrive() const { return 0; }
     virtual void CompleteCommonPhrase(bool, bool);
     virtual int GetIndividualMultiplier() const;
     virtual int GetMaxIndividualMultipler() const;
@@ -133,10 +133,10 @@ public:
     virtual void PopupHelp(Symbol, bool);
     virtual bool AutoplaysCoda() const;
     virtual void SetCodaEndMs(float) {}
-    virtual bool NeedsToOverrideBasePoints() const;
+    virtual bool NeedsToOverrideBasePoints() const { return false; }
     virtual bool NeedsToSetCodaEnd() const { return false; }
     virtual void EnterAnnoyingMode() {}
-    virtual void ClearScoreHistories();
+    virtual void ClearScoreHistories() {}
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection &, int, int) = 0;
     virtual void SetEnabledState(EnabledState, BandUser *, bool);
@@ -147,7 +147,7 @@ public:
     virtual bool ShouldDrainEnergy() const;
     virtual void IgnoreUntilRollback(float);
     virtual void UpdateLeftyFlip() {}
-    virtual void UpdateVocalStyle();
+    virtual void UpdateVocalStyle() {}
     virtual void ResetController(bool) {}
 
     void DeterminePerformanceAwards();
@@ -182,12 +182,15 @@ public:
     void CheckCrowdFailure();
     void UnisonMiss(int) const;
     void UnisonHit();
+    void UpdateSectionStats(float, float);
+    bool InRollback() const;
 
     int GetTrackNum() const { return mTrackNum; }
     TrackType GetTrackType() const { return mTrackType; }
     BandUser *GetUser() const { return mUser; }
     float GetBandEnergy() const { return mBandEnergy; }
     EnabledState GetEnabledState() const { return mEnabledState; }
+    void SetTrackNum(int num) { mTrackNum = num; }
 
     DataNode OnGetOverdriveMeter(DataArray *);
     DataNode OnSendNetGameplayMsg(DataArray *);

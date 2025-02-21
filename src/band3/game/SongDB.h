@@ -53,8 +53,8 @@ public:
     int GetBaseMaxPoints(const UserGuid &) const;
     int GetBaseMaxStreakPoints(const UserGuid &) const;
     int GetBaseBonusPoints(const UserGuid &) const;
-    GameGemList *GetGemList(int) const;
-    GameGemList *GetGemListByDiff(int, int) const;
+    const GameGemList *GetGemList(int) const;
+    const GameGemList *GetGemListByDiff(int, int) const;
     const std::vector<GameGem> &GetGems(int) const;
     std::vector<RangeSection> &GetRangeSections();
     void ChangeDifficulty(int, Difficulty);
@@ -63,6 +63,7 @@ public:
     int NumCommonPhrases() const;
     int GetCommonPhraseTracks(int) const;
     int GetCommonPhraseID(int, int) const;
+    int GetPhraseID(int, int) const;
     bool IsUnisonPhrase(int) const;
     bool GetCommonPhraseExtent(int, int, Extent &);
     FillInfo *GetFillInfo(int, int);
@@ -70,6 +71,13 @@ public:
     int GetTotalGems(int) const;
     VocalNoteList *GetVocalNoteList(int) const;
     void GetBandFailCue(String &) const;
+    void SetFakeHitGemsInFill(bool);
+    bool GetPhraseExtents(BeatmatchPhraseType, int, int, int &, int &);
+    void ClearQuarantinedPhrases(int);
+    void SetupTrackPhrases(int);
+    int GetSoloGemCount(int) const;
+    int GetSustainGemCount(int) const;
+    bool IsInPhrase(BeatmatchPhraseType, int, int) const;
 
     SongData *GetSongData() { return mSongData; }
 

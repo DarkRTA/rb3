@@ -23,4 +23,5 @@ public:
     Sfx *mHiSfx;
     Sfx *mLoSfx;
     Fader *mFader;
+    int unk;
 };

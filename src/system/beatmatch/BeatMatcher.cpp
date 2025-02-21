@@ -31,7 +31,7 @@ BeatMatcher::BeatMatcher(
     BeatMaster *bm
 )
     : mWaitingForAudio(1), mUserGuid(u), unk1c(i1), unk20(i2), mControllerType(s),
-      mSongData(data), mCfg(arr), mSink(0), mAudio(bm->GetMasterAudio()), mController(0),
+      mSongData(data), mCfg(arr), mSink(0), mAudio(bm->GetAudio()), mController(0),
       mMercurySwitchFilter(0), mWatcher(0), mDrumPlayer(new DrumPlayer(info)),
       mCurTrack(-1), unk60(1), mNow(0), mTick(0), mLastSwing(0), mLastReleaseSwing(0),
       mLastVelocityBucket(0), mRawMercurySwitchState(0), mMercurySwitchState(0),
@@ -371,7 +371,7 @@ void BeatMatcher::SetAutoplay(bool autoplay) {
 void BeatMatcher::AutoplayCoda(bool b) { mWatcher->SetAutoplayCoda(b); }
 void BeatMatcher::SetAutoplayError(int err) { mWatcher->SetAutoplayError(err); }
 void BeatMatcher::SetAutoOn(bool b) { mAudio->SetAutoOn(mCurTrack, b); }
-void BeatMatcher::CycleAutoplayAccuracy() { mWatcher->CycleAutoplayAccuracy(); }
+float BeatMatcher::CycleAutoplayAccuracy() { return mWatcher->CycleAutoplayAccuracy(); }
 void BeatMatcher::SetAutoplayAccuracy(float f) { mWatcher->SetAutoplayAccuracy(f); }
 void BeatMatcher::DrivePitchBendExternally(bool b) { mDrivingPitchBendExternally = b; }
 

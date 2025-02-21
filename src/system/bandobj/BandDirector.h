@@ -173,7 +173,7 @@ public:
     Symbol mShotCategory; // 0xdc
     float unke0; // 0xe0
     bool mDisablePicking; // 0xe4
-    bool unke5; // 0xe5
+    bool unke5; // 0xe5 - enable world polling?
     Keys<BandCamShot *, BandCamShot *> mDircuts; // 0xe8 - Keys<BandCamShot*>
     VenueLoader mVenue; // 0xf0
     Keys<Symbol, Symbol> unk100; // 0x100

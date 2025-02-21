@@ -57,9 +57,9 @@ int SongDB::GetBaseBonusPoints(const UserGuid &u) const {
     return mMultiplayerAnalyzer->GetBonusPoints(u);
 }
 
-GameGemList *SongDB::GetGemList(int i) const { return mSongData->GetGemList(i); }
+const GameGemList *SongDB::GetGemList(int i) const { return mSongData->GetGemList(i); }
 
-GameGemList *SongDB::GetGemListByDiff(int i, int j) const {
+const GameGemList *SongDB::GetGemListByDiff(int i, int j) const {
     return mSongData->GetGemListByDiff(i, j);
 }
 

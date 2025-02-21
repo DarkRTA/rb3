@@ -45,6 +45,8 @@ public:
     void RegisterRGStrum(int) const;
     bool IsOurPadNum(int) const;
     User *GetUser() const { return mUser; }
+    bool IsLefty() const { return mLefty; }
+    void SetMapping(BeatMatchControllerGemMapping m) { mGemMapping = m; }
 
     User *mUser; // 0x1c
     int mForceMercuryBut; // 0x20

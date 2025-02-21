@@ -69,6 +69,7 @@ public:
     int GetSoloNumStars(int, TrackType) const;
     float GetSoloNumStarsFloat(int, TrackType) const;
     int GetSoloScoreForStars(int, TrackType) const;
+    void ComputeStarThresholds(bool) const;
 };
 
 extern Scoring *TheScoring;

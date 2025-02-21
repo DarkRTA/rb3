@@ -138,6 +138,7 @@ public:
 
     int GetNumMics() const;
     MidiInstrumentMgr *GetMidiInstrumentMgr() const { return mMidiInstrumentMgr; }
+    MicClientMapper *GetMicClientMapper() const { return mMicClientMapper; }
     static Synth *New();
 
     std::vector<LevelData> mLevelData; // 0x20

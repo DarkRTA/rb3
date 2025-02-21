@@ -44,8 +44,8 @@ public:
     virtual void SetCrowdRating(float) {}
     virtual void CodaSuccess();
     virtual void UnisonStart(int) {}
-    virtual void UnisonEnd();
-    virtual void UnisonSucceed();
+    virtual void UnisonEnd() {}
+    virtual void UnisonSucceed() {}
     virtual EndingBonus *GetEndingBonus() { return nullptr; }
     virtual BandCrowdMeter *GetCrowdMeter(); // ptr
     virtual void SetupApplauseMeter(

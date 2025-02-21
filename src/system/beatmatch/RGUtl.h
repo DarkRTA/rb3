@@ -10,7 +10,8 @@ enum RGString {
     kRGStringG = 3,
     kRGStringB = 4,
     kRGStringEHigh = 5,
-    kNumRGStrings = 6
+    kNumRGStrings = 6,
+    kNumStrings = 6
 };
 
 void RGSetTuning(const std::vector<int> &);

@@ -25,6 +25,7 @@ public:
     TrackType GetTrackTypeFromLessonName(Symbol);
     Symbol GetSongFromLessonName(Symbol);
     Difficulty GetDifficultyFromLessonName(Symbol);
+    LocalBandUser *GetUser() const { return mUser; }
 
     static void Init();
     static TrainingMgr *GetTrainingMgr();

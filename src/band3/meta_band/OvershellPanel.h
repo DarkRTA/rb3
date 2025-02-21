@@ -1,4 +1,5 @@
 #pragma once
+#include "game/BandUser.h"
 #include "meta_band/CharData.h"
 #include "ui/UIPanel.h"
 #include "net/Synchronize.h"
@@ -64,4 +65,5 @@ public:
 };
 
 DECLARE_MESSAGE(NewOvershellLocalUserMsg, "new_overshell_local_user_msg")
+LocalBandUser *GetBandUser() const;
 END_MESSAGE

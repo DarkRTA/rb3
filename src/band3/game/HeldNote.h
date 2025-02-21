@@ -11,7 +11,7 @@ public:
     unsigned int GetGemSlots() const;
     bool IsDone() const;
     bool HeldCompletely() const;
-    double SetHoldTime(float);
+    float SetHoldTime(float);
 
     float GetPointFraction();
 
@@ -19,9 +19,10 @@ public:
     float GetAwardedPoints() const;
 
     void ReleaseSlot(int);
+    bool HasGem() const { return mGameGem; }
 
     const GameGem *mGameGem;
-    int unk_0x4;
+    int unk_0x4; // 0x4 - gem ID?
     TrackType mTrackType;
     float unk_0xc;
     int unk_0x10;

@@ -1,7 +1,9 @@
 #pragma once
-#include "GemPlayer.h"
+#include "beatmatch/BeatMatchControllerSink.h"
 #include "beatmatch/GameGem.h"
 #include "game/Stats.h"
+
+class GemPlayer;
 
 class StatCollector {
 public:

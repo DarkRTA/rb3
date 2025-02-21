@@ -26,6 +26,11 @@ public:
     PlayerState()
         : warning(0), overdriveReady(0), whammy(0), whammyActive(0),
           phraseState(kPhraseNone), fillState(0), streak(0) {}
+    PlayerState(
+        bool w, bool od, float wham, bool whamActive, PhraseState ps, float fill, int strk
+    )
+        : warning(w), overdriveReady(od), whammy(wham), whammyActive(whamActive),
+          phraseState(ps), fillState(fill), streak(strk) {}
 
     bool warning; // 0x0
     bool overdriveReady; // 0x1

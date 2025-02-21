@@ -276,6 +276,7 @@ public:
     int NumSections() const { return mSections.size(); }
     bool HasCoda() const { return mHasCoda; }
     bool HasSolos() const { return mHasSolos; }
+    void SetHasSolos(bool solos) { mHasSolos = solos; }
 
     int GetUpstrumPercent() const {
         int count = mHitCount + m0x08;
@@ -284,6 +285,8 @@ public:
         else
             return 0;
     }
+
+    void AddFillHit() { mFillHitCount++; }
 
     template <class T>
     void SaveHighest(std::vector<T> &, const T &);
@@ -295,7 +298,7 @@ public:
     int mHitCount; // 0x000
     int mMissCount; // 0x004
     int m0x08; // 0x008
-    int m0x0c; // 0x00c
+    int m0x0c; // 0x00c - num ignored? mPassCount?
     int mPersistentStreak; // 0x010
     int mLongestPersistentStreak; // 0x014
     float mNotesHitFraction; // 0x018

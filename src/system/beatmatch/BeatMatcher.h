@@ -80,7 +80,7 @@ public:
     void AutoplayCoda(bool);
     void SetAutoplayError(int);
     void SetAutoOn(bool);
-    void CycleAutoplayAccuracy();
+    float CycleAutoplayAccuracy();
     void SetAutoplayAccuracy(float);
     void DrivePitchBendExternally(bool);
     void SetCodaStartTick(int);
@@ -100,6 +100,9 @@ public:
     void E3CheatDecSlop();
     bool IsFillCompletion(int);
     unsigned int GetRGRollSlots(int) const;
+    void SetFillAudio(bool audio) { mFillAudio = audio; }
+    int GetFillStartTick() const { return mFillStartTick; }
+    int CurrentTrack() const { return mCurTrack; }
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc

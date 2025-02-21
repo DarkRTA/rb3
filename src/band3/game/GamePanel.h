@@ -52,6 +52,11 @@ public:
     void SendResumeNoScoreGameNetMsg(float);
     void ToggleInstrumentSynth();
     void ClearDrawGlitch();
+    GameState GetGameState() const { return mGameState; }
+    bool IsGameOver() const { return mGameState == kGameOver; }
+    void SetGameOver() { mGameState = kGameOver; }
+    DirectInstrument *GetDirectInstrument() const { return mDirectInstrument; }
+    HitTracker *GetHitTracker() const { return mHitTracker; }
 
     DataNode OnStartLoadSong(DataArray *);
 

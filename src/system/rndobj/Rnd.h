@@ -138,6 +138,7 @@ public:
     bool TimersShowing() { return mTimersOverlay->Showing(); }
     Vector2 &DrawStringScreen(const char *, const Vector2 &, const Hmx::Color &, bool);
     void CompressTextureCancel(CompressTextureCallback *);
+    bool UseVerboseTimers() const { return mVerboseTimers; }
 
     DataNode OnShowConsole(const DataArray *);
     DataNode OnToggleTimers(const DataArray *);
@@ -203,7 +204,7 @@ public:
     bool unke9; // 0xe9
     bool mShrinkToSafe; // 0xEA
     bool mInGame; // 0xeb
-    bool unkec; // 0xec
+    bool mVerboseTimers; // 0xec
     bool mDisablePostProc; // 0xed
     bool unkee; // 0xee
     bool unkef; // 0xef

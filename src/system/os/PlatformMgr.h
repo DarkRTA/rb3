@@ -118,6 +118,7 @@ public:
     bool AreSFXEnabled() { return mEnableSFX; }
     void IgnoreWiiSpeakFriends() { unkce5a = true; }
     DiscErrorMgrWii *GetDiscErrorMgrWii() const { return mDiscErrorMgr; }
+    bool IsGuideShowing() const { return mGuideShowing; }
 
     LocalUser *GetOwnerUserOfGuestUser(LocalUser *);
     int GetOwnerOfGuest(int) const;
