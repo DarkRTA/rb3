@@ -166,8 +166,8 @@ class GemPlayer : public Player, public BeatMatchSink {
 public:
     class UpcomingFretRelease {
     public:
-        int unk0;
-        float unk4;
+        int unk0; // slot?
+        float unk4; // ms?
     };
     GemPlayer(BandUser *, BeatMaster *, Band *, int, BandPerformer *);
     virtual ~GemPlayer();
@@ -360,6 +360,8 @@ public:
     void CodaHit(float, int);
     void SetAnnoyingMode(bool);
     void SetRemoteAnnoyingMode(bool);
+    void CheckFretReleases(float);
+    void RemoveFretReleasesInSlot(int);
 
     const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
 

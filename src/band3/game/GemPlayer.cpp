@@ -13,6 +13,8 @@
 #include "beatmatch/GameGemList.h"
 #include "beatmatch/InternalSongParserSink.h"
 #include "beatmatch/MasterAudio.h"
+#include "beatmatch/RGChords.h"
+#include "beatmatch/SongData.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandPerformer.h"
@@ -46,6 +48,7 @@
 #include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
+#include "stl/_pair.h"
 #include "synth/FxSend.h"
 #include "synth/FxSendPitchShift.h"
 #include "synth/StandardStream.h"
@@ -1905,6 +1908,60 @@ void GemPlayer::SetRemoteAnnoyingMode(bool b1) {
         static Message msg("send_miss_noises", 0);
         msg[0] = unk3b9;
         HandleType(msg);
+    }
+}
+
+int GemPlayer::GetTrackSlot(int x) const { return x; }
+
+bool GemPlayer::InTrill(int idx) const {
+    std::pair<int, int> trill;
+    SongData *data = TheSongDB->GetSongData();
+    return data->GetTrillSlotsAtTick(
+        mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick(), trill
+    );
+}
+
+bool GemPlayer::InRGTrill(int idx) const {
+    RGTrill trill;
+    SongData *data = TheSongDB->GetSongData();
+    return data->GetRGTrillAtTick(
+        mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick(), trill
+    );
+}
+
+bool GemPlayer::InRoll(int idx) const {
+    SongData *data = TheSongDB->GetSongData();
+    return data->GetRollingSlotsAtTick(
+        mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick()
+    );
+}
+
+bool GemPlayer::InRGRoll(int idx) const {
+    SongData *data = TheSongDB->GetSongData();
+    RGRollChord chord = data->GetRGRollingSlotsAtTick(
+        mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick()
+    );
+    return chord.unk0[0] != -1;
+}
+
+void GemPlayer::CheckFretReleases(float f1) {
+    for (std::vector<UpcomingFretRelease>::iterator it = mUpcomingFretReleases.begin();
+         it != mUpcomingFretReleases.end();) {
+        if (f1 > it->unk4) {
+            FretButtonUp(it->unk0, f1);
+            it = mUpcomingFretReleases.erase(it);
+        } else
+            ++it;
+    }
+}
+
+void GemPlayer::RemoveFretReleasesInSlot(int slot) {
+    for (std::vector<UpcomingFretRelease>::iterator it = mUpcomingFretReleases.begin();
+         it != mUpcomingFretReleases.end();) {
+        if (slot == it->unk0) {
+            it = mUpcomingFretReleases.erase(it);
+        } else
+            ++it;
     }
 }
 
