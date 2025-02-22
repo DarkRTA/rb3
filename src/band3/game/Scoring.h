@@ -2,6 +2,7 @@
 #include "beatmatch/TrackType.h"
 #include "game/Defines.h"
 #include "game/BandUser.h"
+#include "game/MultiplayerAnalyzer.h"
 #include "obj/Data.h"
 #include <vector>
 
@@ -31,12 +32,19 @@ public:
 
 class Scoring {
 public:
-    class StreakList {
-    public:
-    };
-
     class StreakItem {
     public:
+        StreakItem(int i, float f) : unk0(i), unk4(f) {}
+        int unk0;
+        float unk4;
+    };
+
+    class StreakList {
+    public:
+        StreakList(Symbol s) : unk0(s) {}
+
+        Symbol unk0;
+        std::vector<StreakItem> unk4;
     };
 
     Scoring();
@@ -63,6 +71,13 @@ public:
     float GetSoloNumStarsFloat(int, TrackType) const;
     int GetSoloScoreForStars(int, TrackType) const;
     void ComputeStarThresholds(bool) const;
+    float GetPartialStreakFraction(int, Symbol) const;
+    const StreakList *GetStreakList(const std::vector<StreakList> &, Symbol) const;
+    PlayerScoreInfo *GetPlayerScoreInfo(TrackType) const;
+    int GetNotesPerMultiplier(Symbol) const;
+    const StreakList *GetStreakList(Symbol s) const {
+        return GetStreakList(mStreakMultLists, s);
+    }
 
     PointInfo mPointInfo[10]; // 0xc
     std::vector<StreakList> mStreakMultLists; // 0x78

@@ -14,7 +14,7 @@ public:
     int mMaxStreakPts; // 0x8 - max streak points?
     int mMaxPts; // 0xc - max points?
     int mBonusPts; // 0x10
-    std::vector<int> unk14; // 0x14
+    std::vector<int> mSoloStarThresholds; // 0x14
 };
 
 class MultiplayerAnalyzer {

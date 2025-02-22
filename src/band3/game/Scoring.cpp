@@ -1,5 +1,8 @@
 #include "Scoring.h"
+#include "Defines.h"
 #include "beatmatch/TrackType.h"
+#include "decomp.h"
+#include "game/MultiplayerAnalyzer.h"
 #include "game/SongDB.h"
 #include "obj/Data.h"
 #include "os/System.h"
@@ -105,9 +108,9 @@ void Scoring::ComputeStarThresholds(bool debug) const {
         DataArray *a = thresholds->FindArray(trackSym, true);
         MILO_ASSERT(a->Size() < DIM(thresholds), 0x8B);
         i12 = Min(i12, a->Size());
-        scoreinfos[i].unk14.clear();
-        scoreinfos[i].unk14.reserve(a->Size() + 1);
-        scoreinfos[i].unk14.push_back(0);
+        scoreinfos[i].mSoloStarThresholds.clear();
+        scoreinfos[i].mSoloStarThresholds.reserve(a->Size() + 1);
+        scoreinfos[i].mSoloStarThresholds.push_back(0);
         if (debug)
             MILO_LOG("%15s", trackSym);
         for (int j = 1; j < a->Size(); j++) {
@@ -121,7 +124,7 @@ void Scoring::ComputeStarThresholds(bool debug) const {
             if (debug)
                 MILO_LOG("%9d", (int)add);
             fb8[j] += add;
-            scoreinfos[i].unk14.push_back(ic8);
+            scoreinfos[i].mSoloStarThresholds.push_back(ic8);
         }
         if (debug)
             MILO_LOG("\n");
@@ -146,6 +149,17 @@ void Scoring::ComputeStarThresholds(bool debug) const {
 }
 #pragma pop
 
+void Scoring::InitializeStreakList(std::vector<StreakList> &streaks, DataArray *arr) {
+    for (int i = 1; i < arr->Size(); i++) {
+        DataArray *a = arr->Array(i);
+        streaks.push_back(StreakList(a->Sym(0)));
+        for (int j = 1; j < a->Size(); j++) {
+            DataArray *a2 = a->Array(j);
+            streaks.back().unk4.push_back(StreakItem(a2->Int(0), a2->Float(1)));
+        }
+    }
+}
+
 int Scoring::GetHeadPoints(TrackType instrument) const {
     MILO_ASSERT(instrument < kNumTrackTypes, 0xCA);
     return mPointInfo[instrument].headPoints;
@@ -162,8 +176,52 @@ int Scoring::GetChordPoints(TrackType instrument) const {
     return mPointInfo[instrument].chordPoints;
 }
 
+const Scoring::StreakList *
+Scoring::GetStreakList(const std::vector<StreakList> &streaks, Symbol s) const {
+    const StreakList *default_list = nullptr;
+    for (int i = 0; i < streaks.size(); i++) {
+        if (streaks[i].unk0 == s)
+            return &streaks[i];
+        else if (streaks[i].unk0 == "default") {
+            default_list = &streaks[i];
+        }
+    }
+    MILO_ASSERT(default_list, 0xEB);
+    return default_list;
+}
+
+float Scoring::GetStreakData(int i1, Symbol s2, const std::vector<StreakList> &streaks)
+    const {
+    float f1 = 0;
+    bool b2 = false;
+    const std::vector<StreakItem> &items = GetStreakList(streaks, s2)->unk4;
+    for (int i = 0; i < items.size(); i++) {
+        if (i1 < items[i].unk0)
+            break;
+        f1 = items[i].unk4;
+        b2 = true;
+    }
+
+    if (!b2) {
+        MILO_FAIL("Scoring::GetStreakData failed %s %d\n", s2, i1);
+    }
+    return f1;
+}
+
 int Scoring::GetStreakMult(int i, Symbol s) const {
     return GetStreakData(i, s, mStreakMultLists);
+}
+
+float Scoring::GetPartialStreakFraction(int i1, Symbol s2) const {
+    const std::vector<StreakItem> &items = GetStreakList(mStreakMultLists, s2)->unk4;
+    int i5 = 0;
+    for (int i = 0; i < items.size(); i++) {
+        if (i1 < items[i].unk0) {
+            return (float)(i1 - i5) / (float)(items[i].unk0 - i5);
+        }
+        i5 = items[i].unk0;
+    }
+    return 1;
 }
 
 DataArray *Scoring::GetCrowdConfig(Difficulty diff, BandUser *user) const {
@@ -177,7 +235,7 @@ DataArray *Scoring::GetCrowdConfig(Difficulty diff, BandUser *user) const {
 }
 
 int Scoring::GetBandNumStars(int i) const {
-    int stars = GetNumStarsFloat(i, const_cast<Scoring *>(this)->mStarThresholds);
+    int stars = GetBandNumStarsFloat(i);
     if (stars < 0)
         return 0;
     else if (stars > 6)
@@ -186,13 +244,76 @@ int Scoring::GetBandNumStars(int i) const {
         return stars;
 }
 
-float Scoring::GetBandNumStarsFloat(int i) const {
-    return GetNumStarsFloat(i, const_cast<Scoring *>(this)->mStarThresholds);
+DECOMP_FORCEACTIVE(Scoring, "symbols")
+
+float Scoring::GetNumStarsFloat(int i1, std::vector<int> &thresholds) const {
+    MILO_ASSERT(!thresholds.empty(), 0x16C);
+    if (i1 == 0)
+        return 0;
+    else {
+        int i = thresholds.size();
+        while (i >= 0) {
+            int prev = i--;
+            if (i1 >= thresholds[i]) {
+                if (i < thresholds.size() - 1U) {
+                    return i
+                        + (float)(i1 - thresholds[i])
+                        / (float)(thresholds[prev] / thresholds[i]);
+                } else {
+                    return i;
+                }
+            }
+        }
+        return 0;
+    }
 }
+
+FORCE_LOCAL_INLINE
+float Scoring::GetBandNumStarsFloat(int i) const {
+    return GetNumStarsFloat(i, mStarThresholds);
+}
+END_FORCE_LOCAL_INLINE
 
 int Scoring::GetBandScoreForStars(int stars) const {
     MILO_ASSERT(stars < mStarThresholds.size(), 0x18A);
     return mStarThresholds[stars];
+}
+
+int Scoring::GetSoloNumStars(int i1, TrackType ty) const {
+    return GetSoloNumStarsFloat(i1, ty);
+}
+
+float Scoring::GetSoloNumStarsFloat(int i1, TrackType ty) const {
+    PlayerScoreInfo *info = GetPlayerScoreInfo(ty);
+    if (!info)
+        return 0;
+    else {
+        float stars = GetNumStarsFloat(i1, info->mSoloStarThresholds);
+        if (stars > 5.0f && info->mDifficulty != kDifficultyExpert) {
+            stars = 5.0f;
+        }
+        return stars;
+    }
+}
+
+int Scoring::GetSoloScoreForStars(int stars, TrackType ty) const {
+    PlayerScoreInfo *info = GetPlayerScoreInfo(ty);
+    if (!info)
+        return 0;
+    else {
+        MILO_ASSERT(stars < info->mSoloStarThresholds.size(), 0x1A6);
+        return info->mSoloStarThresholds[stars];
+    }
+}
+
+PlayerScoreInfo *Scoring::GetPlayerScoreInfo(TrackType ty) const {
+    std::vector<PlayerScoreInfo> &scores = TheSongDB->GetBaseScores();
+    for (int i = 0; i < scores.size(); i++) {
+        if (ty == scores[i].mTrackType) {
+            return &scores[i];
+        }
+    }
+    return nullptr;
 }
 
 Symbol Scoring::GetStarRating(int numStars) const {
@@ -203,6 +324,14 @@ Symbol Scoring::GetStarRating(int numStars) const {
         MILO_ASSERT_RANGE_EQ(numStars, 1,  ratings->Size(), 0x1BE);
         return ratings->Sym(numStars - 1);
     }
+}
+
+int Scoring::GetNotesPerMultiplier(Symbol s) const {
+    const StreakList *streaks = GetStreakList(s);
+    if (!streaks || streaks->unk4.size() <= 1)
+        return 0;
+    else
+        return streaks->unk4[1].unk0;
 }
 
 void Scoring::GetSoloAward(int i, Symbol s, int &iref, Symbol &sref) {
@@ -225,10 +354,12 @@ DataArray *Scoring::GetSoloBlock(Symbol s) const {
     return blockarr ? blockarr : soloarr->FindArray("default", true);
 }
 
-float Scoring::GetSoloGemReward(Symbol s) { return GetSoloBlock(s)->FindFloat("reward"); }
+float Scoring::GetSoloGemReward(Symbol s) {
+    return GetSoloBlock(s)->FindArray("reward", true)->Float(1);
+}
 
 float Scoring::GetSoloGemPenalty(Symbol s) {
-    return GetSoloBlock(s)->FindFloat("penalty");
+    return GetSoloBlock(s)->FindArray("penalty", true)->Float(1);
 }
 
 void Scoring::PrintStarThresholds() const {}
