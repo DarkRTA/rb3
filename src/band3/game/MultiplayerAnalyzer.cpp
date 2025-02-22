@@ -16,7 +16,7 @@
 #include "utl/TempoMap.h"
 
 MultiplayerAnalyzer::MultiplayerAnalyzer(SongData *songData)
-    : mName(""), mSongData(songData), mScoreInfos(), mConfig() {}
+    : mName(""), mSongData(songData), mBaseScores(), mConfig() {}
 
 void MultiplayerAnalyzer::PostLoad() {
     AddSolos();
@@ -25,16 +25,25 @@ void MultiplayerAnalyzer::PostLoad() {
     for (int i = 0; i < mNumPlayers; i++) {
         Data &data = mDatas[i];
         if (data.mTrackType != kTrackNone) {
-            mScoreInfos.push_back(PlayerScoreInfo(
+            mBaseScores.push_back(PlayerScoreInfo(
                 data.mTrackType,
                 data.mDifficulty,
                 data.mMaxStreakPts,
                 data.mMaxPts,
-                data.unk_0x20
+                data.mBonusPts
             ));
         }
     }
     TheScoring->ComputeStarThresholds(false);
+}
+
+int MultiplayerAnalyzer::TotalBasePoints() const {
+    int points = 0;
+    for (int i = 0; i < mDatas.size(); i++) {
+        const Data &data = mDatas[i];
+        points += (int)(data.mMaxStreakPts + data.mBonusPts + data.unk_0x24);
+    }
+    return points;
 }
 
 void MultiplayerAnalyzer::AddUser(const UserGuid &u) {
@@ -46,7 +55,7 @@ void MultiplayerAnalyzer::AddUser(const UserGuid &u) {
     data.mDifficulty = user ? user->GetDifficulty() : kDifficultyEasy;
     data.mMaxStreakPts = 0;
     data.mMaxPts = 0;
-    data.unk_0x20 = 0;
+    data.mBonusPts = 0;
     data.unk_0x24 = 0;
     data.mHeadPoints = 0;
     data.mTailPoints = 0;
@@ -57,7 +66,7 @@ void MultiplayerAnalyzer::Configure(PlayerTrackConfigList *pList) {
     mConfig = pList;
     mNumPlayers = mConfig->NumConfigs();
     mDatas.clear();
-    mScoreInfos.clear();
+    mBaseScores.clear();
     for (int i = 0; i < mNumPlayers; i++) {
         AddUser(mConfig->GetUserGuidByIndex(i));
     }
@@ -75,11 +84,16 @@ float MultiplayerAnalyzer::GetMaxStreakPoints(const UserGuid &userGuid) const {
 
 float MultiplayerAnalyzer::GetBonusPoints(const UserGuid &userGuid) const {
     const Data *data = GetData(userGuid);
-    return !data ? 0 : data->unk_0x20 + data->unk_0x24;
+    return !data ? 0 : data->mBonusPts + data->unk_0x24;
 }
 
 void MultiplayerAnalyzer::OverrideBasePoints(
-    int i1, TrackType ty, const UserGuid &userGuid, int i4, int i5, int i6
+    int i1,
+    TrackType ty,
+    const UserGuid &userGuid,
+    int baseMaxPts,
+    int baseMaxStreakPts,
+    int baseBonusPts
 ) {
     MILO_ASSERT(!userGuid.IsNull(), 0xA1);
     Data *pData = GetData(userGuid);
@@ -89,15 +103,15 @@ void MultiplayerAnalyzer::OverrideBasePoints(
         pData = GetData(userGuid);
     }
     MILO_ASSERT(pData, 0xAA);
-    pData->mMaxPts = i4;
-    pData->mMaxStreakPts = i5;
-    pData->unk_0x20 = i6;
+    pData->mMaxPts = baseMaxPts;
+    pData->mMaxStreakPts = baseMaxStreakPts;
+    pData->mBonusPts = baseBonusPts;
     pData->unk_0x24 = 0;
-    for (int i = 0; i < mScoreInfos.size(); i++) {
-        if (ty == mScoreInfos[i].mTrackType) {
-            mScoreInfos[i].unkc = i4;
-            mScoreInfos[i].unk8 = i5;
-            mScoreInfos[i].unk10 = i6;
+    for (int i = 0; i < mBaseScores.size(); i++) {
+        if (ty == mBaseScores[i].mTrackType) {
+            mBaseScores[i].mMaxPts = baseMaxPts;
+            mBaseScores[i].mMaxStreakPts = baseMaxStreakPts;
+            mBaseScores[i].mBonusPts = baseBonusPts;
             break;
         }
     }
@@ -152,7 +166,7 @@ void MultiplayerAnalyzer::AddSolo(const UserGuid &u, int i) {
     Data *pData = GetData(u);
     MILO_ASSERT(pData, 0xFE);
     TheScoring->GetSoloAward(100, TrackTypeToSym(pData->mTrackType), iref, sref);
-    pData->unk_0x20 += i * iref;
+    pData->mBonusPts += i * iref;
 }
 
 void MultiplayerAnalyzer::AddSolos() {

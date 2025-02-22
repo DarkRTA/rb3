@@ -4,12 +4,14 @@
 
 class PracticeSection {
 public:
-    int unk0;
-    int unk4;
-    int unk8;
-    int unkc;
-    int unk10;
-    int unk14;
+    PracticeSection()
+        : unk4(0), unk8(0), unkc(0), unk10(0), unk14(1), unk18(0), unk1c(0), unk20(0) {}
+    Symbol unk0; // practice section name
+    int unk4; // tick
+    int unk8; // some other tick
+    float unkc;
+    float unk10;
+    bool unk14;
     int unk18;
     int unk1c;
     int unk20;

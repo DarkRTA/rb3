@@ -36,7 +36,7 @@ void NowBar::Reset(bool reset) {
 }
 
 void NowBar::Hit(float f1, int gemID, bool coda, int i4, bool chord) {
-    GameGem &curGem = TheSongDB->GetGem(mTrackCfg.TrackNum(), gemID);
+    const GameGem &curGem = TheSongDB->GetGem(mTrackCfg.TrackNum(), gemID);
     unsigned int slots = curGem.GetSlots();
     bool isDrum = mTrackCfg.IsDrumTrack();
     bool burn = !isDrum && (!curGem.IgnoreDuration() || curGem.LeftHandSlide());
@@ -119,7 +119,7 @@ void NowBar::Miss(float param1, int slot) {
 }
 
 void NowBar::PartialHit(int gemID, unsigned int slots, bool b3, int i4) {
-    GameGem &curGem = TheSongDB->GetGem(mTrackCfg.TrackNum(), gemID);
+    const GameGem &curGem = TheSongDB->GetGem(mTrackCfg.TrackNum(), gemID);
     curGem.GetSlots();
     bool burn = !curGem.IgnoreDuration();
     bool bonus = (i4 & 2) > 0;

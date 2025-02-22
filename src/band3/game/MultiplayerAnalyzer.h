@@ -8,12 +8,12 @@
 class PlayerScoreInfo {
 public:
     PlayerScoreInfo(TrackType a, Difficulty b, int c, int d, int e)
-        : mTrackType(a), mDifficulty(b), unk8(c), unkc(d), unk10(e) {}
+        : mTrackType(a), mDifficulty(b), mMaxStreakPts(c), mMaxPts(d), mBonusPts(e) {}
     TrackType mTrackType; // 0x0
     Difficulty mDifficulty; // 0x4
-    int unk8; // 0x8 - max streak points?
-    int unkc; // 0xc - max points?
-    int unk10; // 0x10
+    int mMaxStreakPts; // 0x8 - max streak points?
+    int mMaxPts; // 0xc - max points?
+    int mBonusPts; // 0x10
     std::vector<int> unk14; // 0x14
 };
 
@@ -36,7 +36,7 @@ public:
         Difficulty mDifficulty; // 0x14
         float mMaxStreakPts; // 0x18
         float mMaxPts; // 0x1c
-        float unk_0x20; // 0x20
+        float mBonusPts; // 0x20
         float unk_0x24; // 0x24
         int mHeadPoints; // 0x28
         int mTailPoints; // 0x2c
@@ -69,7 +69,7 @@ public:
     const char *mName; // 0x0
     SongData *mSongData; // 0x4
     std::vector<Data> mDatas; // 0x8
-    std::vector<PlayerScoreInfo> mScoreInfos; // 0x10 - base scores?
+    std::vector<PlayerScoreInfo> mBaseScores; // 0x10
     PlayerTrackConfigList *mConfig; // 0x18
     int mNumPlayers; // 0x1c
 };

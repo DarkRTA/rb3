@@ -1605,7 +1605,7 @@ bool GemPlayer::HasAnyActiveHeldNotes() const {
 }
 
 void GemPlayer::AddHeadPoints(float f1, int i2, int i3, GemHitFlags flags) {
-    GameGem &gem = TheSongDB->GetGem(mTrackNum, i2);
+    const GameGem &gem = TheSongDB->GetGem(mTrackNum, i2);
     int i5 = 0;
     if (mGameCymbalLanes != 0) {
         MILO_ASSERT(mUser->GetTrackType() == kTrackDrum, 0xE43);
