@@ -178,6 +178,7 @@ public:
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }
     bool CodaEnabled() const { return mProperties.mEnableCoda; }
     bool InPracticeMode() const { return mProperties.mInPracticeMode; }
+    bool AllowOverdrivePhrases() const { return mProperties.mAllowOverdrivePhrases; }
     std::vector<Player *> &GetActivePlayers();
     BeatMaster *GetBeatMaster() const { return mMaster; }
     FillLogic GetFillLogic() const {

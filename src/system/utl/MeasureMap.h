@@ -14,7 +14,9 @@ public:
 
     MeasureMap();
     void TickToMeasureBeatTick(int, int &, int &, int &) const;
-    void TickToMeasureBeatTick(int, int &, int &, int &, int &) const;
+    void TickToMeasureBeatTick(int, int &, int &, int &, int &) const; // last iref is
+                                                                       // beats per
+                                                                       // measure?
     bool AddTimeSignature(int, int, int, bool);
     int MeasureBeatTickToTick(int, int, int) const;
 

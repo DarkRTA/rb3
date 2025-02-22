@@ -1,28 +1,34 @@
 #pragma once
+#include "beatmatch/DrumMap.h"
 #include "beatmatch/FillInfo.h"
+#include "beatmatch/InternalSongParserSink.h"
+#include "beatmatch/VocalNote.h"
+#include "game/PracticeSectionProvider.h"
 #include "system/beatmatch/SongData.h"
 #include "system/beatmatch/SongParserSink.h"
 #include "game/MultiplayerAnalyzer.h"
 #include "game/Defines.h"
 #include "midi/DataEvent.h"
 #include "game/Player.h"
+#include "utl/MBT.h"
 #include <vector>
 
 class SongDB : public SongParserSink {
 public:
     class TrackData {
     public:
-        TrackData(TrackType ty) : unk0(ty) {}
+        TrackData(TrackType ty) : mTrackType(ty) {}
+        const std::vector<unsigned char> &GetGemStates(BeatmatchPhraseType) const;
 
-        TrackType unk0;
-        std::vector<int> unk4;
-        std::vector<int> unkc;
-        std::vector<int> unk14;
-        std::vector<int> unk1c;
-        std::vector<int> unk24;
-        std::vector<int> unk2c;
-        std::vector<int> unk34;
-        std::vector<int> unk3c;
+        TrackType mTrackType; // 0x0
+        std::vector<Extent> mSoloPhraseExtents; // 0x4
+        std::vector<Extent> mCommonPhraseExtents; // 0xc
+        std::vector<Extent> mArpeggioPhraseExtents; // 0x14
+        std::vector<Extent> mChordMarkupPhraseExtents; // 0x1c
+        std::vector<unsigned char> unk24; // 0x24
+        std::vector<unsigned char> unk2c; // 0x2c
+        std::vector<int> unk34; // 0x34
+        std::vector<int> unk3c; // 0x3c
     };
 
     SongDB();
@@ -67,7 +73,7 @@ public:
     bool IsUnisonPhrase(int) const;
     bool GetCommonPhraseExtent(int, int, Extent &);
     FillInfo *GetFillInfo(int, int);
-    GameGem &GetGem(int, int) const;
+    const GameGem &GetGem(int, int) const;
     int GetTotalGems(int) const;
     VocalNoteList *GetVocalNoteList(int) const;
     void GetBandFailCue(String &) const;
@@ -78,6 +84,21 @@ public:
     int GetSoloGemCount(int) const;
     int GetSustainGemCount(int) const;
     bool IsInPhrase(BeatmatchPhraseType, int, int) const;
+    std::vector<PlayerScoreInfo> &GetBaseScores();
+    DrumFillInfo *GetDrumFillInfo(int) const;
+    int GetVocalNoteListCount() const;
+    std::vector<Extent> &GetExtents(int, BeatmatchPhraseType);
+    int GetNumOverdrivePhrases(int) const;
+    int GetNumUnisonPhrases(int) const;
+    int GetNumPhraseIDs(int) const;
+    MBT GetMBT(int) const;
+    void SetupSoloPhrasesForTrack(int);
+    void SetupCommonPhrasesForTrack(int);
+    int NextPhraseIndexAfter(int, int);
+    void SetupPhrasesForTrack(int, std::vector<Extent> &, std::vector<unsigned char> &);
+    void RecalculateGemTimes(int);
+    void EnableGems(int, float, float);
+    float GetPitchOffsetForTick(int) const;
 
     SongData *GetSongData() { return mSongData; }
 
@@ -86,7 +107,7 @@ public:
     float mSongDurationMs; // 0x10
     int mCodaStartTick; // 0x14
     MultiplayerAnalyzer *mMultiplayerAnalyzer; // 0x18
-    std::vector<int> mPracticeSections; // 0x1c
+    std::vector<PracticeSection> mPracticeSections; // 0x1c
     int unk24; // 0x24
     int unk28; // 0x28
 };

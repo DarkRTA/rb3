@@ -192,6 +192,8 @@ public:
     }
     bool HasTrackDiffs() const { return mTrackDifficulties.size(); }
     int GetNumDifficulties() const { return mNumDifficulties; }
+    int GetNumTracks() const { return mNumTracks; }
+    PhraseAnalyzer *GetPhraseAnalyzer() const { return mPhraseAnalyzer; }
 
     int mNumFilesLoaded; // 0xc
     int mNumTracks; // 0x10

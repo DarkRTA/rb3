@@ -41,6 +41,7 @@ public:
     DataNode ForEach(const DataArray *, bool);
 
     PlayerTrackConfigList *GetConfigList() const { return mPlayerTrackConfigList; }
+    float GetSongLimitMs() const { return mSongLimitMs; }
 
     PlayerTrackConfigList *mPlayerTrackConfigList; // 0x1c
     PracticeSectionProvider *mPracticeSectionProvider; // 0x20
