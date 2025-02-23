@@ -33,6 +33,25 @@ public:
     bool InVocalMode() const;
     void PracticeMetronome(Symbol);
     void StopMics();
+    void SetUsesHarmony(bool);
+    bool GetUsesHarmony() const;
+    void EnableGuideTrack(int);
+    void IncScorePart();
+    void IncPart(int, int &, int &);
+    void SyncGuidePart();
+    int GetScorePart() const;
+    void IncGuidePart();
+    int GetGuidePart() const;
+    void ToggleGuidePart();
+    int GetNumVocalParts() const;
+    void SetGuidePitchPaused(bool);
+    void UpdateGuideTrack(const Symbol &);
+    void TrackIn();
+    void TrackOut();
+    void PauseGuideTrack();
+    void UnpauseGuideTrack();
+    void SetInVocalMode();
+    bool GetRestartAllowed();
 
     bool mInVocalMode; // 0x38
     Fader *mFader; // 0x3c
@@ -40,7 +59,7 @@ public:
     bool mPlayAllTracks; // 0x44
     VocalGuidePitch *mGuidePitch; // 0x48
     int unk4c;
-    int unk50;
+    int mScorePart; // 0x50
     bool unk54;
     bool unk55;
     bool unk56;

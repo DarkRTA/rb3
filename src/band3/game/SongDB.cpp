@@ -128,7 +128,7 @@ int SongDB::GetBaseBonusPoints(const UserGuid &u) const {
 
 const GameGemList *SongDB::GetGemList(int i) const { return mSongData->GetGemList(i); }
 
-const GameGemList *SongDB::GetGemListByDiff(int i, int j) const {
+GameGemList *SongDB::GetGemListByDiff(int i, int j) const {
     return mSongData->GetGemListByDiff(i, j);
 }
 

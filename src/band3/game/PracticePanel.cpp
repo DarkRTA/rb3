@@ -3,14 +3,21 @@
 #include "beatmatch/BeatMatchController.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
+#include "game/BandUser.h"
+#include "game/Defines.h"
 #include "game/Game.h"
 #include "game/GameConfig.h"
 #include "game/GemPlayer.h"
 #include "game/Metronome.h"
 #include "game/Player.h"
+#include "game/SongDB.h"
 #include "game/VocalGuidePitch.h"
 #include "game/VocalPlayer.h"
+#include "meta_band/BandSongMgr.h"
+#include "meta_band/MetaPerformer.h"
+#include "meta_band/TrainingMgr.h"
 #include "midi/MidiParser.h"
+#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
@@ -19,11 +26,17 @@
 #include "ui/UIPanel.h"
 #include "utl/Messages.h"
 #include "utl/Messages2.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include "utl/TimeConversion.h"
+
+PracticePanel *ThePracticePanel;
 
 PracticePanel::PracticePanel()
     : mInVocalMode(0), mFader(Hmx::Object::New<Fader>()), mPlayAllTracks(0),
-      mGuidePitch(0), unk4c(-1), unk50(-1), unk54(0), unk55(0), unk56(1), unk57(0),
+      mGuidePitch(0), unk4c(-1), mScorePart(-1), unk54(0), unk55(0), unk56(1), unk57(0),
       unk58(1), unk59(0), unk5c(0), unk60(1), mMetronome(0) {
     ThePracticePanel = this;
     mGuidePitch = new VocalGuidePitch();
@@ -51,7 +64,7 @@ void PracticePanel::Enter() {
         ObjectDir::sMainDir->Find<MidiParser>("practice_metronome", true)->AddSink(this);
     }
     unk54 = false;
-    unk50 = -1;
+    mScorePart = -1;
     unk55 = false;
     unk56 = true;
     unk5c = 1;
@@ -264,3 +277,201 @@ void PracticePanel::StopMics() {
         TheSynth->GetMic(i)->Stop();
     }
 }
+
+void PracticePanel::SetUsesHarmony(bool harms) {
+    TrainingMgr *pTrainingMgr = TrainingMgr::GetTrainingMgr();
+    MILO_ASSERT(pTrainingMgr, 0x1DA);
+    LocalBandUser *user = pTrainingMgr->GetUser();
+    MILO_ASSERT(user, 0x1DD);
+    if (user->GetTrackType() == kTrackVocals) {
+        user->SetPreferredScoreType(harms ? kScoreHarmony : kScoreVocals);
+    }
+}
+
+bool PracticePanel::GetUsesHarmony() const {
+    TrainingMgr *pTrainingMgr = TrainingMgr::GetTrainingMgr();
+    MILO_ASSERT(pTrainingMgr, 0x1E8);
+    LocalBandUser *user = pTrainingMgr->GetUser();
+    MILO_ASSERT(user, 0x1EB);
+    return user->GetPreferredScoreType() == kScoreHarmony;
+}
+
+void PracticePanel::EnableGuideTrack(int i1) {
+    if (!unk54)
+        mGuidePitch->EnableGuideTrack(i1);
+}
+
+void PracticePanel::IncScorePart() {
+    int i30, i34;
+    IncPart(mScorePart, i30, i34);
+    Message msg("isolate_vocal_track", i30);
+    Handle(msg, true);
+    VocalPlayer *player = dynamic_cast<VocalPlayer *>(TheGame->GetActivePlayer(0));
+    MILO_ASSERT(player, 0x202);
+    for (int i = 0; i < i34; i++) {
+        player->EnablePartScoring(i, i30 == -1 || i30 == i);
+    }
+    mScorePart = i30;
+    if (GetGuidePart() != -1)
+        SyncGuidePart();
+}
+
+FORCE_LOCAL_INLINE
+int PracticePanel::GetScorePart() const { return mScorePart; }
+END_FORCE_LOCAL_INLINE
+
+void PracticePanel::IncGuidePart() {
+    int i14, i18;
+    IncPart(mGuidePitch->GetGuideTrack(), i14, i18);
+    EnableGuideTrack(i14);
+    unk4c = i14;
+}
+
+FORCE_LOCAL_INLINE
+int PracticePanel::GetGuidePart() const { return mGuidePitch->GetGuideTrack(); }
+END_FORCE_LOCAL_INLINE
+
+void PracticePanel::ToggleGuidePart() {
+    if (mGuidePitch->GetGuideTrack() == -1) {
+        SyncGuidePart();
+    } else {
+        mGuidePitch->EnableGuideTrack(-1);
+        unk4c = -1;
+    }
+}
+
+void PracticePanel::SyncGuidePart() {
+    int track;
+    if (!GetUsesHarmony())
+        track = 0;
+    else if (GetScorePart() == -1)
+        track = 0;
+    else
+        track = GetScorePart();
+    mGuidePitch->EnableGuideTrack(track);
+    unk4c = track;
+}
+
+void PracticePanel::IncPart(int i1, int &i2, int &i3) {
+    int numParts = GetNumVocalParts();
+    i3 = numParts;
+    i2 = ((i1 + 2) % (numParts + 1)) - 1;
+}
+
+void PracticePanel::SetGuidePitchPaused(bool b) {
+    if (!unk54)
+        mGuidePitch->Pause(b);
+}
+
+void PracticePanel::UpdateGuideTrack(const Symbol &s) { mGuidePitch->SetSong(s); }
+
+void PracticePanel::TrackIn() {
+    SetRestartAllowed(true);
+    mGuidePitch->EnableGuideTrack(unk4c);
+    unk4c = -1;
+    if (unk55 && TheGame->GetActivePlayer(0)) {
+        if (TheGame->GetActivePlayer(0)->GetBandTrack()) {
+            TheGame->GetActivePlayer(0)->GetBandTrack()->PlayIntro();
+            unk55 = false;
+        }
+    }
+    unk56 = false;
+}
+
+void PracticePanel::TrackOut() {
+    unk4c = mGuidePitch->GetGuideTrack();
+    mGuidePitch->EnableGuideTrack(-1);
+    unk56 = true;
+    unk5c = 1;
+}
+
+int PracticePanel::GetNumVocalParts() const {
+    if (MetaPerformer::Current()->IsNowUsingVocalHarmony()) {
+        return TheSongMgr->GetNumVocalParts(MetaPerformer::Current()->Song());
+    } else
+        return 1;
+}
+
+void PracticePanel::PauseGuideTrack() { mGuidePitch->Pause(true); }
+void PracticePanel::UnpauseGuideTrack() { mGuidePitch->Pause(false); }
+
+void PracticePanel::SetInVocalMode() {
+    TrainingMgr *pTrainingMgr = TrainingMgr::GetTrainingMgr();
+    MILO_ASSERT(pTrainingMgr, 0x29C);
+    LocalBandUser *user = pTrainingMgr->GetUser();
+    MILO_ASSERT(user, 0x29F);
+    mInVocalMode = user->GetTrackType() == kTrackVocals;
+}
+
+void PracticePanel::MarkGemsAsProcessed() {
+    if (!IsVocals() && HasPlayer()) {
+        float f14, f18;
+        GetSectionBounds(f14, f18);
+        GemPlayer *player = dynamic_cast<GemPlayer *>(TheGame->GetActivePlayer(0));
+        if (player && player->GetTrackNum() >= 0) {
+            Difficulty diff = TrainingMgr::GetTrainingMgr()->GetUser()->GetDifficulty();
+            GameGemList *gems = TheSongDB->GetGemListByDiff(player->GetTrackNum(), diff);
+            for (int i = 0; i < gems->NumGems(); i++) {
+                if (gems->GetGem(i).GetMs() < f14) {
+                    player->GetGemStatus()->Set0x40(i);
+                    player->GetGemStatus()->SetHit(i);
+                }
+            }
+        }
+    }
+}
+
+void PracticePanel::SetRestartAllowed(bool b1) { unk60 = b1; }
+
+bool PracticePanel::GetRestartAllowed() {
+    if (ThePracticePanel && ThePracticePanel->Showing())
+        return unk60;
+    else
+        return true;
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(PracticePanel)
+    HANDLE_ACTION(set_pitch_shift_ratio, SetPitchShiftRatio(_msg->Float(2)))
+    HANDLE_ACTION(set_in_vocal_mode, SetInVocalMode())
+    HANDLE_EXPR(in_vocal_mode, InVocalMode())
+    HANDLE_ACTION(fade_song_out, OnFadeSongOut(_msg->Float(2)))
+    HANDLE_ACTION(fade_song_in, OnFadeSongIn(_msg->Float(2)))
+    HANDLE_ACTION(stop_mics, StopMics())
+    HANDLE_ACTION(practice_metronome, PracticeMetronome(_msg->Sym(2)))
+    HANDLE_ACTION(set_uses_harmony, SetUsesHarmony(_msg->Int(2)))
+    HANDLE_ACTION(set_play_all_tracks, SetPlayAllTracks(_msg->Int(2)))
+    HANDLE_EXPR(get_play_all_tracks, PlayAllTracks())
+    HANDLE_ACTION(enable_guide_track, EnableGuideTrack(_msg->Int(2)))
+    HANDLE_ACTION(inc_guide_part, IncGuidePart())
+    HANDLE_EXPR(get_guide_part, GetGuidePart())
+    HANDLE_ACTION(toggle_guide_part, ToggleGuidePart())
+    HANDLE_ACTION(inc_score_part, IncScorePart())
+    HANDLE_EXPR(get_score_part, GetScorePart())
+    HANDLE_ACTION(set_guide_pitch_paused, SetGuidePitchPaused(_msg->Int(2)))
+    HANDLE_ACTION(track_in, TrackIn())
+    HANDLE_ACTION(track_out, TrackOut())
+    HANDLE_ACTION(update_guide_track, UpdateGuideTrack(_msg->Sym(2)))
+    HANDLE_ACTION(pause_guide_track, PauseGuideTrack())
+    HANDLE_ACTION(unpause_guide_track, UnpauseGuideTrack())
+    HANDLE_ACTION(click_cheat, unk58 = _msg->Int(2))
+    HANDLE_EXPR(has_player, HasPlayer())
+    HANDLE_ACTION(mark_gems_as_processed, MarkGemsAsProcessed())
+    HANDLE_EXPR(get_restart_allowed, GetRestartAllowed())
+
+    {
+        const char *symStr = sym.Str();
+        if (strlen(symStr) >= 4 && strncmp(symStr, "prc_", 4) == 0) {
+            static Message msg("section", "");
+            msg[0] = Symbol(symStr);
+            Handle(msg, true);
+            return 0;
+        }
+    }
+
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_MEMBER_PTR(DataDir())
+    HANDLE_CHECK(0x323)
+END_HANDLERS
+#pragma pop

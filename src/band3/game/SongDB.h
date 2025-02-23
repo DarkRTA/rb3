@@ -60,7 +60,7 @@ public:
     int GetBaseMaxStreakPoints(const UserGuid &) const;
     int GetBaseBonusPoints(const UserGuid &) const;
     const GameGemList *GetGemList(int) const;
-    const GameGemList *GetGemListByDiff(int, int) const;
+    GameGemList *GetGemListByDiff(int, int) const;
     const std::vector<GameGem> &GetGems(int) const;
     std::vector<RangeSection> &GetRangeSections();
     void ChangeDifficulty(int, Difficulty);
