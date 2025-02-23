@@ -7,6 +7,7 @@
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/Game.h"
+#include "game/GameMode.h"
 #include "game/Metronome.h"
 #include "game/SongDB.h"
 #include "game/TrainerGemTab.h"
@@ -14,16 +15,21 @@
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/MetaPerformer.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "obj/Task.h"
 #include "os/Debug.h"
 #include "rndobj/Dir.h"
 #include "synth/Sfx.h"
+#include "track/TrackWidget.h"
 #include "ui/UI.h"
 #include "ui/UIPanel.h"
 #include "utl/DataPointMgr.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 #include "utl/TimeConversion.h"
 #include <cstddef>
@@ -363,55 +369,196 @@ const GameGem &GemTrainerPanel::GetLastGameGemInSection(int &gemID) const {
 }
 
 void GemTrainerPanel::HandleTrackShifting() {
-    if (!TheGame->IsPaused() && mTrack->GetType() == real_keys) {
-        TrainerSection &sect = GetSection(GetCurrSection());
-        float range = mTrack->GetRange();
-        MILO_ASSERT(range == 10.0f, 0x233);
-
-        // clang-format off
-        // iVar3 = TrainerPanel::GetCurrSection(this);
-        // this_00 = TrainerPanel::GetSection(this,iVar3);
-        // fVar2 = *(*(this + 0x70) + 0xc4);
-        // if (fVar2 != 10.0) {
-        //   pcVar4 = ::MakeString(kAssertStr,s_GemTrainerPanel.cpp_80b7ec04,0x233,
-        //                         s_range_==_10.0f_80b7ec47);
-        //   Debug::Fail(TheDebug,pcVar4);
-        // }
-        // iVar3 = TrainerPanel::GetTick(this);
-        // if ((*(this + 0xc4) < 0.0) || (iVar5 = TrainerSection::GetStartTick(this_00), iVar3 < iVar5)) {
-        //   GemTrack::OverrideRangeShift(*(this + 0x70),fVar2,*(this + 0xbc));
-        //   *(this + 0xc4) = *(*(this + 0x70) + 0xc8);
-        // }
-        // else {
-        //   iVar3 = GetLoopTick(iVar3);
-        //   iVar5 = TrainerSection::GetEndTick(this_00);
-        //   if (iVar5 < iVar3) {
-        //     if (*(this + 0xbc) <= *(this + 0xc4)) {
-        //       if (*(this + 0xbc) < *(this + 0xc4)) {
-        //         dVar6 = TaskMgr::DeltaSeconds(&TheTaskMgr);
-        //         fVar1 = -(dVar6 * 10.0 - *(this + 0xc4));
-        //         *(this + 0xc4) = fVar1;
-        //         if (fVar1 < *(this + 0xbc)) {
-        //           fVar1 = *(this + 0xbc);
-        //         }
-        //         *(this + 0xc4) = fVar1;
-        //       }
-        //     }
-        //     else {
-        //       dVar6 = TaskMgr::DeltaSeconds(&TheTaskMgr);
-        //       fVar1 = dVar6 * 10.0 + *(this + 0xc4);
-        //       *(this + 0xc4) = fVar1;
-        //       if (*(this + 0xbc) < fVar1) {
-        //         fVar1 = *(this + 0xbc);
-        //       }
-        //       *(this + 0xc4) = fVar1;
-        //     }
-        //     GemTrack::OverrideRangeShift(*(this + 0x70),fVar2,*(this + 0xc4));
-        //   }
-        //   else {
-        //     *(this + 0xc4) = *(*(this + 0x70) + 200);
-        //   }
-        // }
-        // clang-format on
+    if (TheGame->IsPaused())
+        return;
+    if (mTrack->GetType() != real_keys)
+        return;
+    TrainerSection &sect = GetSection(GetCurrSection());
+    float range = mTrack->GetRange();
+    MILO_ASSERT(range == 10.0f, 0x233);
+    int tick = GetTick();
+    if (unkc4 < 0 || tick < sect.GetStartTick()) {
+        mTrack->OverrideRangeShift(range, unkbc);
+        unkc4 = mTrack->GetOffset();
+    } else {
+        tick = GetLoopTick(tick);
+        if (tick > sect.GetEndTick()) {
+            if (unkc4 < unkbc) {
+                unkc4 += TheTaskMgr.DeltaSeconds() * 10.0f;
+                unkc4 = Min(unkc4, unkbc);
+            } else if (unkc4 > unkbc) {
+                unkc4 -= TheTaskMgr.DeltaSeconds() * 10.0f;
+                unkc4 = Max(unkc4, unkbc);
+            }
+            mTrack->OverrideRangeShift(range, unkc4);
+        } else {
+            unkc4 = mTrack->GetOffset();
+        }
     }
+}
+
+bool GemTrainerPanel::ShouldLoop(int i1) const {
+    if (!unkc9)
+        return false;
+    else {
+        const GameGem &gem = mGemManager->GetGem(unkcc).GetGameGem();
+        if (!gem.IgnoreDuration()) {
+            int i2 = GetTick();
+            int i4 = gem.GetTick() + gem.GetDurationTicks();
+            if (mGemManager->GetNumGems() > unkcc + 1) {
+                i4 = Min(i4, mGemManager->GetGem(unkcc + 1).GetGameGem().GetTick() - 120);
+            }
+            if (i2 < i4)
+                return false;
+        }
+        return true;
+    }
+}
+
+void GemTrainerPanel::ClearGems() {
+    if (mTrack && mGemManager) {
+        mGemManager->ClearAllGems();
+        mTrack->GetTrackDir()->ResetSmashers(true);
+        mTrack->RebuildBeats();
+    }
+}
+
+void GemTrainerPanel::SetSpeedRatio(float f1) {
+    TheGame->SetMusicSpeed(f1);
+    mGemPlayer->SetPitchShiftRatio(1.0f / f1);
+    SendDataPoint("trainers/speed", speed_ratio, f1);
+}
+
+void GemTrainerPanel::AddBeatMask(int i1) {
+    if (TheGame->mProperties.mHasBeatMask) {
+        int i2 = GetLoopTicks(GetCurrSection());
+        float f4 = TickToSeconds(i1);
+        float f5 = TickToSeconds(i1 + i2) - f4;
+        Transform tf60;
+        mTrack->GetTrackDir()->MakeSecondsXfm(f4, tf60);
+        tf60.m.y.y = mTrack->GetTrackDir()->SecondsToY(f5);
+        static Symbol beatMask = "beat_mask.wid";
+        TrackWidget *w = mGemManager->GetWidgetByName(beatMask);
+        w->AddInstance(tf60, f5);
+    }
+}
+
+void GemTrainerPanel::ScoreOnFinalGem(int i1) {
+    if (mPattern.empty() || i1 < 0)
+        return;
+    else {
+        if (i1 % mPattern.size() == mPattern.size() - 1) {
+            unkc9 = true;
+            unkcc = i1;
+        }
+    }
+}
+
+void GemTrainerPanel::SetTab(int i1) {
+    std::vector<GameGem> gems;
+    int i24 = -1;
+    int i20 = -1;
+    CopyGems(gems, i1, i24, i20);
+    mTab->SetPattern(&GetSection(i1), gems);
+}
+
+float GemTrainerPanel::GetLessonCompleteSpeed(int i1) const {
+    Symbol name = GetNameForSection(i1);
+    return GetBandProfile()->GetLessonCompleteSpeed(name);
+}
+
+bool GemTrainerPanel::ShouldDrawTab() const { return mDrawTab; }
+
+bool GemTrainerPanel::ShouldStartEarly() const {
+    return TrainerPanel::ShouldStartEarly() || (unkbc != unkc0);
+}
+
+void GemTrainerPanel::NewDifficulty(int i1, int i2) {
+    TrainerPanel::NewDifficulty(i1, i2);
+    SetTab(GetCurrSection());
+    mDifficulty = (Difficulty)i2;
+    UpdateProgressMeter();
+    TrainerPanel::RestartSection();
+}
+
+void GemTrainerPanel::EnableMetronome(bool b1) {
+    mMetronome->Enable(b1);
+    SendDataPoint("trainers/metronome", enable_metronome, b1);
+}
+
+void GemTrainerPanel::SetMetronomeVolume(int i1, int i2) {
+    mMetronome->SetVolume(i1, i2);
+}
+
+bool GemTrainerPanel::ShouldMissCauseFail() const {
+    if (GetCurrSection() < 0)
+        return false;
+    else {
+        int tick = GetTick();
+        const TrainerSection &sect = GetSection(GetCurrSection());
+        if (tick < sect.GetStartTick())
+            return false;
+        else {
+            int id;
+            return tick <= GetLastGameGemInSection(id).GetTick();
+        }
+    }
+}
+
+Difficulty GemTrainerPanel::GetDifficulty() const { return mLocalUser->GetDifficulty(); }
+int GemTrainerPanel::GetNumLoops() const { return mNumLoops; }
+
+void GemTrainerPanel::UpdateProgressMeter() {
+    if (mGemPlayer) {
+        if (!TheGameMode->Property("song_lessons", true)->Int()) {
+            for (int i = 0; i < GetNumSections(); i++) {
+                mProgressMeter->SetCompleted(
+                    i, GetBandProfile()->IsLessonComplete(GetNameForSection(i), 1.0f)
+                );
+            }
+        } else {
+            Difficulty diff = mGemPlayer->GetUser()->GetLocalBandUser()->GetDifficulty();
+            int songID = TheSongMgr->GetSongIDFromShortName(
+                MetaPerformer::Current()->Song(), true
+            );
+            for (int i = 0; i < GetNumSections(); i++) {
+                mProgressMeter->SetCompleted(
+                    i, IsSongSectionComplete(GetBandProfile(), songID, diff, i)
+                );
+            }
+        }
+    }
+}
+
+BEGIN_HANDLERS(GemTrainerPanel)
+    HANDLE_ACTION(clear_gems, ClearGems())
+    HANDLE_ACTION(set_speed_ratio, SetSpeedRatio(_msg->Float(2)))
+    HANDLE_EXPR(get_num_gems_float, (float)NumGems())
+    HANDLE_ACTION(score_on_final_gem, ScoreOnFinalGem(_msg->Int(2)))
+    HANDLE_ACTION(set_tab, SetTab(_msg->Int(2)))
+    HANDLE_ACTION(set_loop_points, SetLoopPoints())
+    HANDLE_EXPR(get_lesson_complete_speed, GetLessonCompleteSpeed(_msg->Int(2)))
+    HANDLE_ACTION(enable_metronome, EnableMetronome(_msg->Int(2)))
+    HANDLE_EXPR(metronome_enabled, mMetronome->Enabled())
+    HANDLE_ACTION(set_metronome_volume, SetMetronomeVolume(_msg->Int(2), _msg->Int(3)))
+    HANDLE_EXPR(get_metronome_volume, mMetronome->GetVolume(_msg->Int(2)))
+    HANDLE_EXPR(should_miss_cause_fail, ShouldMissCauseFail())
+    HANDLE_EXPR(get_player, mGemPlayer)
+    HANDLE_ACTION(hit_notify, HitNotify(_msg->Int(2)))
+    HANDLE_EXPR(miss_notify, MissNotify(_msg->Int(2)))
+    HANDLE_EXPR(lesson_complete_speed, GetLessonCompleteSpeed(_msg->Int(2)))
+    HANDLE_SUPERCLASS(TrainerPanel)
+    HANDLE_MEMBER_PTR(DataDir())
+    HANDLE_CHECK(0x35C)
+END_HANDLERS
+
+BEGIN_PROPSYNCS(GemTrainerPanel)
+    SYNC_PROP(draw_tab, mDrawTab)
+    SYNC_SUPERCLASS(Hmx::Object)
+END_PROPSYNCS
+
+void GemTrainerLoopPanel::Poll() {
+    UIPanel::Poll();
+    if (TheGemTrainerPanel)
+        TheGemTrainerPanel->HandleLooping();
 }

@@ -29,8 +29,8 @@ public:
     virtual void NewDifficulty(int, int);
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual float GetLessonCompleteSpeed(int) const;
-    virtual void HitNotify(int);
-    virtual void MissNotify(int);
+    virtual void HitNotify(int) {}
+    virtual bool MissNotify(int) { return false; }
     virtual void Looped() {}
     virtual bool ShouldDrawTab() const;
     virtual void PostCopyGems() {}
@@ -48,6 +48,14 @@ public:
     void ClearGems();
     void SetLoopPoints();
     const GameGem &GetLastGameGemInSection(int &) const;
+    void SetSpeedRatio(float);
+    void ScoreOnFinalGem(int);
+    void SetTab(int);
+    void EnableMetronome(bool);
+    void SetMetronomeVolume(int, int);
+    bool ShouldMissCauseFail() const;
+    int GetNumLoops() const;
+    int NumGems() const { return mPattern.size(); }
 
     std::vector<GameGem> mPattern; // 0x54
     GemPlayer *mGemPlayer; // 0x5c
@@ -81,6 +89,6 @@ public:
     GemTrainerLoopPanel() {}
     OBJ_CLASSNAME(GemTrainerLoopPanel);
     OBJ_SET_TYPE(GemTrainerLoopPanel);
-    virtual ~GemTrainerLoopPanel();
+    virtual ~GemTrainerLoopPanel() {}
     virtual void Poll();
 };

@@ -28,7 +28,7 @@ public:
     virtual bool IsSongSectionComplete(BandProfile *, int, Difficulty, int);
     virtual void NewDifficulty(int, int);
     virtual void HitNotify(int);
-    virtual void MissNotify(int);
+    virtual bool MissNotify(int);
     virtual void Looped();
     virtual bool ShouldDrawTab() const;
     virtual void PostCopyGems();

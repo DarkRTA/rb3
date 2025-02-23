@@ -1,6 +1,7 @@
 #pragma once
 #include "beatmatch/TrackType.h"
 #include "beatmatch/GameGem.h"
+#include "game/TrainerPanel.h"
 #include "math/Mtx.h"
 
 class BandLabel;
@@ -24,6 +25,7 @@ public:
     void Init(RndDir *, TrackType);
     void SetLefty(bool);
     void Draw(int);
+    void SetPattern(const TrainerSection *, const std::vector<GameGem> &);
 
     RndDir *mGemTab; // 0x0
     TrackType mTrackType; // 0x4

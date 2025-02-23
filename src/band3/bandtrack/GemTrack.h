@@ -87,6 +87,7 @@ public:
     bool ShiftsEnabled() const;
     float TickToOffset(int) const;
     float GetRange() const { return mRange; }
+    float GetOffset() const { return mOffset; }
 
     bool mResetFills; // 0x68
     bool mUseFills; // 0x69

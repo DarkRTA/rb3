@@ -564,9 +564,9 @@ bool RGTrainerPanel::IsSongSectionComplete(
 
 void RGTrainerPanel::HitNotify(int i) { mTutor.Hit(i, mPattern[i % mPattern.size()]); }
 
-void RGTrainerPanel::MissNotify(int i) {
+bool RGTrainerPanel::MissNotify(int i) {
     Difficulty diff = mGemPlayer->GetUser()->GetLocalBandUser()->GetDifficulty();
-    mTutor.Miss(i, mPattern[i % mPattern.size()], diff);
+    return mTutor.Miss(i, mPattern[i % mPattern.size()], diff);
 }
 
 void RGTrainerPanel::Looped() { mTutor.Loop(); }
