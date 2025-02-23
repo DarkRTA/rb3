@@ -33,11 +33,10 @@ public:
     virtual void MissNotify(int);
     virtual void Looped() {}
     virtual bool ShouldDrawTab() const;
-    virtual void PostCopyGems();
+    virtual void PostCopyGems() {}
 
     void AddBeatMask(int);
     void HandleTrackShifting();
-    int GetLoopTick(int);
     void HandleLooping();
     bool ShouldLoop(int) const;
     void CopyGems(int);
@@ -46,26 +45,29 @@ public:
     bool IsGemInFutureLoop(int) const;
     void CopyGems(std::vector<GameGem> &, int, int &, int &);
     Difficulty GetDifficulty() const;
+    void ClearGems();
+    void SetLoopPoints();
+    const GameGem &GetLastGameGemInSection(int &) const;
 
     std::vector<GameGem> mPattern; // 0x54
     GemPlayer *mGemPlayer; // 0x5c
-    GameGemList *unk60[4]; // 0x60
+    GameGemList *mGameGemLists[kNumDifficulties]; // 0x60
     GemTrack *mTrack; // 0x70
     GemManager *mGemManager; // 0x74
     Difficulty mDifficulty; // 0x78
     LocalBandUser *mLocalUser; // 0x7c
-    int unk80;
-    int unk84;
-    std::vector<GameGem> unk88[4];
-    bool unka8;
-    bool unka9;
-    int unkac;
+    int mWriteTick; // 0x80
+    int mScoreTick; // 0x84
+    std::vector<GameGem> mSongGems[kNumDifficulties]; // 0x88
+    bool mAddBeatMask; // 0x80
+    bool mAddBeatMaskImmediately; // 0xa9
+    int mNumLoops; // 0xac
     int unkb0;
     TrainerGemTab *mTab; // 0xb4
     Metronome *mMetronome; // 0xb8
     float unkbc;
     float unkc0;
-    int unkc4;
+    float unkc4;
     bool mDrawTab; // 0xc8
     bool unkc9;
     int unkcc;

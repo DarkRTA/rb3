@@ -1,10 +1,10 @@
 #include "HeldNote.h"
 #include "Scoring.h"
+#include "beatmatch/TrackType.h"
 
 HeldNote::HeldNote()
-    : mGameGem(0), unk_0x4(-1), mTrackType((TrackType)(kTrackBass | kTrackRealBass)),
-      unk_0xc(0.0f), unk_0x10(0), unk_0x14(0.0f), unk_0x18(0), unk_0x1c(0),
-      unk_0x20(false) {}
+    : mGameGem(0), unk_0x4(-1), mTrackType(kTrackNone), unk_0xc(0.0f), unk_0x10(0),
+      unk_0x14(0.0f), unk_0x18(0), unk_0x1c(0), unk_0x20(false) {}
 
 HeldNote::HeldNote(
     TrackType trackType, int param2, const GameGem &param3, unsigned int param4

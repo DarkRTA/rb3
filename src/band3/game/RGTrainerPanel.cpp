@@ -173,8 +173,8 @@ void RGTrainerPanel::HandleChordLegend(bool b) {
     GemTrack *track = dynamic_cast<GemTrack *>(mGemPlayer->GetUser()->mTrack);
     MILO_ASSERT(track, 0xEF);
     if (mLegendGemID >= 0) {
-        if (mLegendGemID < unk60[GetDifficulty()]->NumGems()) {
-            GameGem &gem = unk60[GetDifficulty()]->GetGem(mLegendGemID);
+        if (mLegendGemID < mGameGemLists[GetDifficulty()]->NumGems()) {
+            GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
             if (b) {
                 float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
                 //         dVar19 = (double)TaskMgr::Seconds((TaskMgr *)&TheTaskMgr,1);
@@ -276,7 +276,7 @@ void RGTrainerPanel::Swing(int i) {
                 false,
                 (RGMatchType)0
             )) {
-            GameGem &gem = unk60[GetDifficulty()]->GetGem(mLegendGemID);
+            GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
             gem.mPlayed = true;
             Handle(end_chord_legend_msg, true);
         }
@@ -336,8 +336,8 @@ void RGTrainerPanel::SetLegendModeImpl(bool mode) {
             // stuff happens here
         }
     } else if (mLegendGemID != -1) {
-        if (mLegendGemID < unk60[GetDifficulty()]->NumGems()) {
-            GameGem &gem = unk60[GetDifficulty()]->GetGem(mLegendGemID);
+        if (mLegendGemID < mGameGemLists[GetDifficulty()]->NumGems()) {
+            GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
             gem.mPlayed = true;
             mLegendGemID = -1;
         } else {
@@ -489,7 +489,7 @@ void RGTrainerPanel::HandleLegendLefty(bool b) {
         trig = mDir->Find<EventTrigger>("righty.trig", true);
     }
     trig->Trigger();
-    PickFretboardView(unk60[GetDifficulty()]->GetGem(mLegendGemID));
+    PickFretboardView(mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID));
 }
 
 bool RGTrainerPanel::TestFingers(const GameGem &gem) {

@@ -88,7 +88,6 @@ public:
     bool ResumedNoScore() const;
     bool IsActiveUser(BandUser *) const;
     bool IsWaiting();
-    float GetMusicSpeed();
     int NumActivePlayers() const;
     void AddBonusPoints(BandUser *, int, int);
     void OnPlayerAddEnergy(Player *, float);
@@ -185,6 +184,7 @@ public:
         return mDrumFillsMod ? kFillsRegular : kFillsDeployGemAndInvisible;
     }
     bool DrumFillsMod() const { return mDrumFillsMod; }
+    bool IsPaused() const { return mIsPaused; }
 
     DataNode OnJump(const DataArray *);
     DataNode OnLocalUserReadyToPlay(const DataArray *);

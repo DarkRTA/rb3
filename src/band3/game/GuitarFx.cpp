@@ -12,8 +12,9 @@
 #include "utl/Symbols4.h"
 
 GuitarFx::GuitarFx(TrackType ty)
-    : unk1c(-1), unk20(0), unk21(0), mTrackType(ty), unk28(0x78), mFxCfg(0), unk3c(-1.0f),
-      unk40(64.0f), unk44(0), unk4c(-1), unk50(-1), unk54(1), unk58(-1.0f) {}
+    : mLastSetting(-1), mLastGains(0), mLastReverb(0), mTrackType(ty),
+      mFramesWhammyIdle(0x78), mFxCfg(0), unk3c(-1.0f), mFbNote(64.0f), mFbEnd(0),
+      unk4c(-1), unk50(-1), mLastWhammying(1), mLastWhammyPos(-1.0f) {}
 
 GuitarFx::~GuitarFx() {}
 
@@ -61,7 +62,7 @@ void GuitarFx::Poll(
     int i1, bool b2, bool b3, float f4, float f5, float f6, bool b7, bool b8
 ) {
     int i8 = 3 - i1;
-    if (i8 != unk1c) {
+    if (i8 != mLastSetting) {
         const char *trigname = "fx_reset.trig";
         if (i8 != -1) {
             trigname = MakeString("fx_%i.trig", i8);
@@ -69,23 +70,23 @@ void GuitarFx::Poll(
         mFxDir->Find<EventTrigger>(trigname, true)->Trigger();
     }
     bool g7 = b2 || b3;
-    if (unk20 != g7) {
+    if (mLastGains != g7) {
         const char *gainname = g7 ? "gains_on.trig" : "gains_off.trig";
         mFxDir->Find<EventTrigger>(gainname, true)->Trigger();
     }
-    if (unk21 != b2) {
+    if (mLastReverb != b2) {
         const char *reverbname = b2 ? "reverb_on.trig" : "reverb_off.trig";
         mFxDir->Find<EventTrigger>(reverbname, true)->Trigger();
     }
-    unk1c = i8;
-    unk20 = g7;
-    unk21 = b2;
+    mLastSetting = i8;
+    mLastGains = g7;
+    mLastReverb = b2;
     if (f6 == 0)
-        unk28++;
+        mFramesWhammyIdle++;
     else
-        unk28 = 0;
+        mFramesWhammyIdle = 0;
     bool b54 = true;
-    if (unk28 >= 0x78)
+    if (mFramesWhammyIdle >= 120)
         b54 = false;
     ObjDirItr<FxSend> it(mFxDir, true);
     float negf6 = -f6;
@@ -98,12 +99,12 @@ void GuitarFx::Poll(
         if (it->Property(beat_frac, false)) {
             it->SetProperty(beat_frac, f5);
         }
-        if (unk54 != b54) {
+        if (mLastWhammying != b54) {
             if (it->Property(auto_wah, false)) {
                 it->SetProperty(auto_wah, !b54);
             }
         }
-        if (unk58 != f6) {
+        if (mLastWhammyPos != f6) {
             if (it->Property(frequency, false)) {
                 it->SetProperty(frequency, negf6);
             }
@@ -112,8 +113,8 @@ void GuitarFx::Poll(
             it->EnableUpdates(true);
         }
     }
-    unk54 = b54;
-    unk58 = f6;
+    mLastWhammying = b54;
+    mLastWhammyPos = f6;
 }
 
 FxSend *GuitarFx::GetFxSend() {
@@ -126,8 +127,8 @@ FxSend *GuitarFx::GetFxSend() {
 }
 
 DataNode GuitarFx::OnMidiParser(DataArray *arr) {
-    unk40 = (float)arr->Int(2) + 24.0f;
-    unk44 = arr->Float(3) + TheTaskMgr.Beat();
+    mFbNote = (float)arr->Int(2) + 24.0f;
+    mFbEnd = arr->Float(3) + TheTaskMgr.Beat();
     return DataNode(kDataUnhandled, 0);
 }
 

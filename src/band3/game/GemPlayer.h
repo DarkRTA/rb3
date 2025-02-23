@@ -132,6 +132,18 @@ public:
         }
     }
 
+    void SetHit(int idx) {
+        if (idx != -1) {
+            mGems[idx] |= 1;
+        }
+    }
+
+    void Set0x2(int idx) {
+        if (idx != -1) {
+            mGems[idx] |= 2;
+        }
+    }
+
     void Set0x40(int idx) {
         if (idx != -1) {
             mGems[idx] |= 0x40;
@@ -156,6 +168,7 @@ public:
     void Resize(int num) { mGems.resize(num); }
     int NumHits() const { return mHits; }
     int NumMisses() const { return mMisses; }
+    int GetSize() const { return mGems.size(); }
 
     std::vector<unsigned char> mGems; // 0x0
     int mHits; // 0x8
@@ -362,6 +375,7 @@ public:
     void SetRemoteAnnoyingMode(bool);
     void CheckFretReleases(float);
     void RemoveFretReleasesInSlot(int);
+    GemStatus *GetGemStatus() const { return mGemStatus; }
 
     const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
 
