@@ -9,6 +9,7 @@ public:
     };
     Metronome();
     virtual ~Metronome();
+
     void Enter(Sfx *, Sfx *);
     void Exit();
     void Poll(int, OverrideEnabled);
@@ -18,10 +19,10 @@ public:
     int GetVolume(int) const;
     void SetVolume(int, int);
 
-    int mBeat;
+    int mBeat; // 0x4
     bool mEnabled; // 0x8
-    Sfx *mHiSfx;
-    Sfx *mLoSfx;
-    Fader *mFader;
-    int unk;
+    Sfx *mHiSfx; // 0xc
+    Sfx *mLoSfx; // 0x10
+    Fader *mFader; // 0x14
+    int unk; // 0x18
 };
