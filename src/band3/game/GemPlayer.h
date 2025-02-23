@@ -376,6 +376,8 @@ public:
     void CheckFretReleases(float);
     void RemoveFretReleasesInSlot(int);
     GemStatus *GetGemStatus() const { return mGemStatus; }
+    BeatMatchController *GetController() const { return mController; }
+    Symbol GetControllerType() const { return mControllerType; }
 
     const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
 

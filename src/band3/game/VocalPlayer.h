@@ -72,6 +72,7 @@ public:
     int CalculatePhraseRating(float);
     VocalPhrase *CurrentPhrase() const;
     bool AtFirstPhrase() const;
+    bool ScoringEnabled() const;
 
     int NumSingers() const { return mSingers.size(); }
     int NumParts() const { return unk358.size(); }
