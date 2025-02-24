@@ -5,7 +5,9 @@
 #include "beatmatch/RGState.h"
 #include "beatmatch/RGUtl.h"
 #include "beatmatch/TrackType.h"
+#include "decomp.h"
 #include "game/Defines.h"
+#include "game/Game.h"
 #include "game/GameMode.h"
 #include "game/GemTrainerPanel.h"
 #include "game/ProTrainerPanel.h"
@@ -29,6 +31,7 @@
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
+#include "utl/TimeConversion.h"
 
 RGTrainerPanel *TheRGTrainerPanel;
 
@@ -170,70 +173,66 @@ void RGTrainerPanel::HandleChordLegend(bool b) {
     if (mLefty != mGemPlayer->GetUser()->GetGameplayOptions()->GetLefty()) {
         HandleLegendLefty(true);
     }
-    GemTrack *track = dynamic_cast<GemTrack *>(mGemPlayer->GetUser()->mTrack);
+    GemTrack *track = dynamic_cast<GemTrack *>(mGemPlayer->GetUser()->GetTrack());
     MILO_ASSERT(track, 0xEF);
-    if (mLegendGemID >= 0) {
-        if (mLegendGemID < mGameGemLists[GetDifficulty()]->NumGems()) {
-            GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
-            if (b) {
-                float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime);
-                //         dVar19 = (double)TaskMgr::Seconds((TaskMgr *)&TheTaskMgr,1);
-                //         fVar2 = *(float *)this_01;
-                //         if (fVar2 < (float)(dVar19 * 1000.0)) {
-                //           fVar3 = (float)(dVar19 * 1000.0) - 16.0;
-                //           if (fVar3 < fVar2) {
-                //             fVar3 = fVar2;
-                //           }
-                //           TaskMgr::SetSeconds((TaskMgr *)&TheTaskMgr,fVar3 /
-                //           1000.0,false);
-                //           (**(code **)(*(int *)(*(int *)(iVar7 + 0x74) + 4) +
-                //           0x1c4))();
-                //         }
+    if (mLegendGemID < 0 || mLegendGemID >= mGameGemLists[GetDifficulty()]->NumGems())
+        return;
+    else {
+        GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
+        if (b) {
+            float curMs = TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f;
+            float gemMs = gem.mMs;
+            if (curMs > gemMs) {
+                float f3 = curMs - 16.0f;
+                if (f3 < gemMs)
+                    f3 = gemMs;
+                TheTaskMgr.SetSeconds(f3 / 1000.0f, false);
+                track->GetTrackDir()->Poll();
             }
-            bool boolbuf[12];
-            bool masterbool = true;
+        }
+        bool boolbuf[4];
+        bool masterbool = true;
+        for (int i = 0; i < mFingerSteps.size(); i++) {
+            bool thisbool = mFingerSteps[i].unk10;
+            boolbuf[i] = thisbool;
+            masterbool &= thisbool;
+        }
+        bool fingertest = TestFingers(gem);
+        if (!gem.IsMuted()) {
             for (int i = 0; i < mFingerSteps.size(); i++) {
-                bool thisbool = mFingerSteps[i].unk10;
-                boolbuf[i] = thisbool;
-                masterbool &= thisbool;
-            }
-            bool fingertest = TestFingers(gem);
-            if (!gem.IsMuted()) {
-                for (int i = 0; i < mFingerSteps.size(); i++) {
-                    FingerStep &cur = mFingerSteps[i];
-                    if (boolbuf[i] != cur.unk10) {
-                        const char *stepproganimstr =
-                            MakeString("step_progress_%02d.anim", i + 1);
-                        RndAnimatable *stepproganim =
-                            mDir->Find<RndAnimatable>(stepproganimstr, true);
-
-                        if (cur.unk10) {
-                            stepproganim->SetFrame(19.0f, 1);
-                            mDir->Find<Sfx>("fret_success.cue", true)->Play(0, 0, 0);
-                        } else {
-                            if (cur.mHighString < 0) {
-                                if (mMatcher.GetState()->GetFret(cur.mLowString)) {
-                                    goto lol;
-                                }
-                                mDir->Find<Sfx>("fret_release.cue", true)->Play(0, 0, 0);
-                            } else {
-                            lol:
-                                mDir->Find<Sequence>("fret_fail.cue", true)->Play(0, 0, 0);
-                            }
-                            stepproganim->SetFrame(0, 1);
-                        }
-                    }
-                }
-                if (masterbool != fingertest) {
+                FingerStep &cur = mFingerSteps[i];
+                if (boolbuf[i] != cur.unk10) {
                     const char *stepproganimstr =
-                        MakeString("step_progress_%02d.anim", mFingerSteps.size() + 1);
+                        MakeString("step_progress_%02d.anim", i + 1);
                     RndAnimatable *stepproganim =
                         mDir->Find<RndAnimatable>(stepproganimstr, true);
-                    if (fingertest) {
+
+                    if (cur.unk10) {
                         stepproganim->SetFrame(19.0f, 1);
+                        mDir->Find<Sfx>("fret_success.cue", true)->Play(0, 0, 0);
                     } else {
+                        if (cur.mHighString < 0) {
+                            if (mMatcher.GetState()->GetFret(cur.mLowString)) {
+                                goto lol;
+                            }
+                            mDir->Find<Sfx>("fret_release.cue", true)->Play(0, 0, 0);
+                        } else {
+                        lol:
+                            mDir->Find<Sequence>("fret_fail.cue", true)->Play(0, 0, 0);
+                        }
                         stepproganim->SetFrame(0, 1);
                     }
+                }
+            }
+            if (masterbool != fingertest) {
+                const char *stepproganimstr =
+                    MakeString("step_progress_%02d.anim", mFingerSteps.size() + 1);
+                RndAnimatable *stepproganim =
+                    mDir->Find<RndAnimatable>(stepproganimstr, true);
+                if (fingertest) {
+                    stepproganim->SetFrame(19.0f, 1);
+                } else {
+                    stepproganim->SetFrame(0, 1);
                 }
             }
         }
@@ -286,6 +285,9 @@ void RGTrainerPanel::Swing(int i) {
 void RGTrainerPanel::FretButtonDown(int i) {
     if (mGemPlayer) {
         mMatcher.FretDown(i, TheTaskMgr.UISeconds() * 1000.0f);
+        if (TheGame->IsPaused() || TheGame->InRollback()) {
+            // RealGuitarGemPlayer::SetRGState(const RGState&)
+        }
     }
 }
 
@@ -302,14 +304,31 @@ int RGTrainerPanel::GetFret(int i, int string) const {
         return 0;
 }
 
+void RGTrainerPanel::PostCopyGems() {
+    if (mLegendMode) {
+        if (mLegendGemID % mPattern.size() == mPattern.size() - 1) {
+            if (GetNumLoops() > 1) {
+                mLegendGemID -= mPattern.size();
+            }
+            int id = mLegendGemID;
+            if (id >= 0) {
+                mGemPlayer->GetGemStatus()->Clear0xBF(id);
+                mGemManager->Jump(TickToMs(GetTick()));
+            }
+        }
+    }
+}
+
 void RGTrainerPanel::SetLegendMode(bool mode) {
     unke5 = true;
     mLegendMode = mode;
 }
 
+#pragma push
+#pragma pool_data off
 void RGTrainerPanel::SetLegendModeImpl(bool mode) {
     mLegendMode = mode;
-    if (mode) {
+    if (mLegendMode) {
         mMatcher.Reset();
         unkec = TheTaskMgr.UISeconds();
         GameGem &gem = mPattern[mLegendGemID % mPattern.size()];
@@ -332,20 +351,26 @@ void RGTrainerPanel::SetLegendModeImpl(bool mode) {
         HandleChordLegend(false);
         HandleLegendLefty(mLefty);
         TheSynth->StopAllSfx(false);
-        for (int i = 0; i < mLegendGemID - 1; i++) {
-            // stuff happens here
+        for (int i = mLegendGemID - 1; i >= 0; i--) {
+            GameGem &curGem = mGameGemLists[mDifficulty]->mGems[i];
+            mGemPlayer->GetGemStatus()->Set0x40(i);
+            curGem.SetPlayed(true);
         }
+
     } else if (mLegendGemID != -1) {
-        if (mLegendGemID < mGameGemLists[GetDifficulty()]->NumGems()) {
-            GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
-            gem.mPlayed = true;
+        if (mLegendGemID >= mGameGemLists[GetDifficulty()]->NumGems())
             mLegendGemID = -1;
-        } else {
+        else {
+            GameGem &gem = mGameGemLists[GetDifficulty()]->GetGem(mLegendGemID);
+            gem.SetPlayed(true);
+            mGemPlayer->GetGemStatus()->Set0x40(mLegendGemID);
+            mGemManager->ClearGem(mLegendGemID);
             mLegendGemID = -1;
         }
     }
     SendDataPoint("trainers/chord_legend", enter_legend, mode);
 }
+#pragma pop
 
 void RGTrainerPanel::InitFretSteps(const GameGem &gem) {
     mFretHand.SetFingers(gem);
@@ -467,8 +492,8 @@ void RGTrainerPanel::HandleLegendLefty(bool b) {
     mLefty = mGemPlayer->GetUser()->GetGameplayOptions()->GetLefty();
     float f2, f12;
     if (mLefty) {
-        f2 = 0.0f;
         f12 = 1.0f;
+        f2 = 0.0f;
     } else {
         f2 = 1.0f;
         f12 = 0.0f;
@@ -480,7 +505,7 @@ void RGTrainerPanel::HandleLegendLefty(bool b) {
     } else {
         leftyAnim->SetFrame(f12, f2);
     }
-    GemTrack *track = dynamic_cast<GemTrack *>(mGemPlayer->GetUser()->mTrack);
+    GemTrack *track = dynamic_cast<GemTrack *>(mGemPlayer->GetUser()->GetTrack());
     track->UpdateLeftyFlip();
     EventTrigger *trig;
     if (mLefty) {
@@ -511,7 +536,10 @@ bool RGTrainerPanel::TestFingers(const GameGem &gem) {
     return ret;
 }
 
+FORCE_LOCAL_INLINE
 bool RGTrainerPanel::GetLegendMode() const { return mLegendMode; }
+END_FORCE_LOCAL_INLINE
+
 void RGTrainerPanel::SetLegendGemID(int id) { mLegendGemID = id; }
 
 void RGTrainerPanel::PickFretboardView(const GameGem &gem) {
@@ -593,7 +621,7 @@ END_HANDLERS
 BEGIN_HANDLERS(RGTrainerPanel)
     HANDLE_EXPR(get_fret, GetFret(_msg->Int(2), _msg->Int(3)))
     HANDLE_ACTION(set_legend_mode, SetLegendMode(_msg->Int(2)))
-    HANDLE_EXPR(get_legend_mode, mLegendMode)
+    HANDLE_EXPR(get_legend_mode, GetLegendMode())
     HANDLE_ACTION(set_legend_gem_id, SetLegendGemID(_msg->Int(2)))
     HANDLE_SUPERCLASS(ProTrainerPanel)
     HANDLE_CHECK(0x365)

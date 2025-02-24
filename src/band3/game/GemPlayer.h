@@ -150,6 +150,12 @@ public:
         }
     }
 
+    void Clear0xBF(int idx) {
+        if (idx != -1) {
+            mGems[idx] &= 0xBF;
+        }
+    }
+
     void Clear() {
         for (int i = 0; i < mGems.size(); i++) {
             mGems[i] = 0;
