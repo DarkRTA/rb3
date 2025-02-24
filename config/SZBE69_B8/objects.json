@@ -72,7 +72,7 @@
             "band3/game/PracticePanel.cpp": "NonMatching",
             "band3/game/PracticeSectionProvider.cpp": "NonMatching",
             "band3/game/PresenceMgr.cpp": "MISSING",
-            "band3/game/RealGuitarGemPlayer.cpp": "MISSING",
+            "band3/game/RealGuitarGemPlayer.cpp": "Matching",
             "band3/game/RGTrainerPanel.cpp": "NonMatching",
             "band3/game/RGTutor.cpp": "Matching",
             "band3/game/RKTrainerPanel.cpp": "Matching",
