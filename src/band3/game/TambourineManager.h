@@ -16,6 +16,7 @@ public:
     void PostDynamicAdd();
     void Start();
     void Restart();
+    int TambourineSwing(int);
 
     class VocalPlayer &mPlayerRef; // 0x1c
     bool mIsLocal; // 0x20
