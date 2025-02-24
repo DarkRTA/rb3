@@ -2,6 +2,7 @@
 #include "bandobj/BandLabel.h"
 #include "bandobj/BandTrack.h"
 #include "game/BandUser.h"
+#include "game/PracticeSectionProvider.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/CharData.h"
@@ -39,4 +40,5 @@ public:
     void SetLeaderboardRankAndName(const LeaderboardRow &);
     void SetLeaderboardName(const LeaderboardRow &);
     void SetPitch(int, int);
+    void SetSectionName(const PracticeSection &);
 };
