@@ -841,10 +841,10 @@ DataNode Game::OnSetShuttle(DataArray *arr) {
     }
     bool active = arr->Int(2);
     if (active) {
-        mShuttle->unk_0x0 = mMaster->GetAudio()->GetTime();
-        mShuttle->unk_0x4 = mSongDB->GetSongDurationMs();
+        mShuttle->mMs = mMaster->GetAudio()->GetTime();
+        mShuttle->mEndMs = mSongDB->GetSongDurationMs();
     } else {
-        Jump(mShuttle->unk_0x0, true);
+        Jump(mShuttle->mMs, true);
         while (!IsReady())
             TheSynth->Poll();
     }

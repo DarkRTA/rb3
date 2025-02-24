@@ -8,8 +8,9 @@ public:
     bool IsActive() const;
     void SetActive(bool);
     void Poll();
-    float unk_0x0;
-    float unk_0x4;
-    bool mActive;
-    int mPadNum;
+
+    float mMs; // 0x0
+    float mEndMs; // 0x4
+    bool mActive; // 0x8
+    int mPadNum; // 0xc
 };
