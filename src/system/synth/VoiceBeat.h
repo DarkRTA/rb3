@@ -4,6 +4,7 @@
 class VoiceBeat {
 public:
     VoiceBeat();
+    ~VoiceBeat() {}
     void SetEnable(bool);
     void Analyze(float *, int, bool, bool, float);
     void Reset();
@@ -39,6 +40,7 @@ public:
 class EventTracker {
 public:
     EventTracker();
+    ~EventTracker() {}
     int findEarliest(float, int);
     int findLatest(float, int);
     bool Hit(float, float, float);
@@ -59,10 +61,12 @@ public:
 class TalkyMatcher {
 public:
     TalkyMatcher();
+    ~TalkyMatcher() {}
     void updateScoring(float);
     void LoadEvents(const std::vector<float> &, const std::vector<float> &);
     void Reset();
     void SetEnableTalkyMatcher(bool);
+    void Analyze(const short *, int, float);
 
     VoiceBeat mVoiceBeat; // 0x0
     EventTracker mRefEvents; // 0x168

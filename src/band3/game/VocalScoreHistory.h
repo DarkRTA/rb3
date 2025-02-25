@@ -27,6 +27,11 @@ public:
     VocalScoreHistory(int, int);
     ~VocalScoreHistory();
 
+    void AddScore(float, float);
+    void SetOctaveOffset(int);
+    float CalculateSum(float) const;
+    void Reset();
+
     float unk0;
     std::vector<float> unk4;
     int unkc;

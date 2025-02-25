@@ -74,6 +74,7 @@ public:
     bool AtFirstPhrase() const;
     bool ScoringEnabled() const;
     void EnablePartScoring(int, bool);
+    void HitCoda();
 
     int NumSingers() const { return mSingers.size(); }
     int NumParts() const { return unk358.size(); }

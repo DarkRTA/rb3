@@ -1,6 +1,7 @@
 #pragma once
 #include "VocalScoreHistory.h"
 #include "bandtrack/DelayLine.h"
+#include "game/GameMic.h"
 #include "game/TambourineDetector.h"
 #include "synth/MicManagerInterface.h"
 #include "dsp/VibratoDetector.h"
@@ -36,23 +37,63 @@ public:
 
 class Singer {
 public:
+    class AmbiguousData {
+    public:
+        int unk0;
+        int unk4;
+        bool unk8;
+        int unkc;
+        float unk10;
+    };
     Singer(VocalPlayer *, int);
     ~Singer();
 
     void NoteTambourineSwing(float);
     void CreateMicClientID();
     void PostLoad();
+    GameMic *GetGameMic() const;
+    MicClientID GetMicClientID() const;
+    void SetMicProcessing(bool, bool);
+    void Start();
+    void StartIntro();
+    void Restart(bool);
+    void CancelScream();
+    void ClearFreestyleDeployment();
+    void ClearScoreHistories();
+    void SetPaused(bool);
+    void Jump(float, bool);
+    void Rollback(float, float);
+    void ProcessTalkyData();
+    void DetectScream(float, float, float);
+    void SetIsSinging(bool);
+    void Detune(float);
+    void SetFrameMicPitch(float);
+    void EnableController();
+    void DisableController();
+    void SetOctaveOffset(int);
+    void AppendToScoreHistory(float, int, float, int);
+    float GetHistoricalScore(float, int) const;
+    VocalScoreHistory &AccessScoreHistory(int);
+    VocalScoreCache &AccessScoreCache(int);
+    const VocalScoreCache &AccessScoreCache(int) const;
+    void AllScoresAreIn(const std::vector<int> &);
+    void SetAutoplayToPart(int);
+    int GetAutoplayToPart() const;
+    void SetAutoplayVariationMagnitude(float);
+    float GetAutoplayVariationMagnitude() const;
+    void SetAutoplayOffset(float);
+    float GetAutoplayOffset() const;
 
     VocalPlayer *mPlayer; // 0x0
-    MicClientID unk4;
+    MicClientID mMicClientID; // 0x4
     bool unkc;
     int unk10; // 0x10
     bool unk14;
-    int unk18;
+    int unk18; // 0x18 - ptr to something
     int unk1c;
-    int unk20;
-    float unk24;
-    float unk28;
+    int mIsSinging; // 0x20
+    float mDetune; // 0x24
+    float mMaxDetune; // 0x28
     float unk2c;
     int unk30;
     int unk34;
@@ -61,7 +102,7 @@ public:
     float unk40;
     float unk44;
     float unk48;
-    float unk4c;
+    float mScreamEnergyThreshold; // 0x4c
     float unk50;
     int unk54;
     int unk58;
@@ -70,7 +111,7 @@ public:
     float unk64;
     int unk68;
     float unk6c;
-    int unk70;
+    int mFrameAssignedPart; // 0x70
     float unk74;
     int mOctaveOffset; // 0x78
     float unk7c;
@@ -84,15 +125,15 @@ public:
     DelayLine<int, 100> mPossibleVibratoPoints; // 0xac
     VibratoDetector *mVibrato; // 0x240
     float unk244;
-    float unk248;
+    float mVibratoFrameBonus; // 0x248
     float unk24c;
-    int unk250;
-    float unk254;
-    float unk258;
+    int mAutoplayPart; // 0x250
+    float mAutoplayVariationMagnitude; // 0x254
+    float mAutoplayOffset; // 0x258
     std::vector<VocalScoreHistory> mScoreHistories; // 0x25c
     std::vector<VocalScoreCache> mScoreCaches; // 0x264
     std::vector<SingerResultsData> mResultsData; // 0x26c
-    std::vector<int> unk274;
+    std::vector<AmbiguousData> mAmbiguousData; // 0x274
     TambourineDetector mTambourineDetector; // 0x27c
     float unk29c;
     float unk2a0;
