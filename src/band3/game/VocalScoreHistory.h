@@ -31,13 +31,15 @@ public:
     void SetOctaveOffset(int);
     float CalculateSum(float) const;
     void Reset();
+    void BiasLastScore(float);
+    int GetOctaveOffset() const;
 
     float unk0;
-    std::vector<float> unk4;
+    std::vector<float> mScores; // 0x4
     int unkc;
     int unk10;
     int unk14;
     float unk18;
-    int unk1c;
+    int mOctaveOffset; // 0x1c
     bool unk20;
 };
