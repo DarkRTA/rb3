@@ -1,5 +1,4 @@
 #pragma once
-#include "LockStepMgr.h"
 #include "game/NetGameMsgs.h"
 #include "meta_band/BandMachine.h"
 #include "net/NetMessage.h"
