@@ -51,6 +51,7 @@ public:
     // is solo: 0x80
 
     // 0x40? 0xe?
+    // 0x4 - processed?
 
     // from GDRB:
     // missed: 0x2

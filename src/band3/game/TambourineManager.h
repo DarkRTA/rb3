@@ -17,15 +17,16 @@ public:
     void Start();
     void Restart();
     int TambourineSwing(int);
+    void Jump(float);
 
     class VocalPlayer &mPlayerRef; // 0x1c
     bool mIsLocal; // 0x20
-    ObjDirPtr<ObjectDir> unk24; // 0x24
+    ObjDirPtr<ObjectDir> mBank; // 0x24
     Sequence *mTambourineSequence; // 0x30
     Fader *mTambourineFader; // 0x34
     MidiParser *mTambourineParser; // 0x38
     std::vector<int> unk3c; // 0x3c
-    int unk44; // 0x44
+    int mTambourineIdx; // 0x44
     bool unk48; // 0x48
     int unk4c; // 0x4c
     int mTambourineWindowTicks; // 0x50

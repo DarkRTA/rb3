@@ -97,7 +97,10 @@
             "band3/game/TrainerGemTab.cpp": "NonMatching",
             "band3/game/TrainerPanel.cpp": "NonMatching",
             "band3/game/TrainerProgressMeter.cpp": "NonMatching",
-            "band3/game/UISyncNetMsgs.cpp": "MISSING",
+            "band3/game/UISyncNetMsgs.cpp": {
+                "status": "LinkIssues",
+                "comment": "the bss meme strikes again"
+            },
             "band3/game/UITransitionNetMsgs.cpp": "MISSING",
             "band3/game/VocalGuidePitch.cpp": "NonMatching",
             "band3/game/VocalOverlay.cpp": "MISSING",
