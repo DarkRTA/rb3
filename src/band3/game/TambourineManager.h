@@ -18,6 +18,9 @@ public:
     void Restart();
     int TambourineSwing(int);
     void Jump(float);
+    void SetPaused(bool);
+    void SetTambourine(bool);
+    void SetBank(ObjectDir *bank) { mBank = bank; }
 
     class VocalPlayer &mPlayerRef; // 0x1c
     bool mIsLocal; // 0x20

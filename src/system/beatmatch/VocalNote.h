@@ -108,6 +108,7 @@ public:
     void StartPlayerPhrase(int, int);
     void EndPlayerPhrase(int, int);
     VocalNote *NextNote(float) const;
+    void CapLastFreestyleSection(float);
 
     const char *PrintTick(int tick) const;
     Symbol GetTrackName() const { return mTrackName; }
