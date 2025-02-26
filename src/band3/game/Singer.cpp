@@ -19,7 +19,7 @@
 MicClientID sNullClientID(-1, -1);
 
 Singer::Singer(VocalPlayer *vp, int n)
-    : mPlayer(vp), unkc(0), unk10(n), unk14(0), unk18(0), unk1c(0), mIsSinging(0),
+    : mPlayer(vp), unkc(0), mSingerIndex(n), unk14(0), unk18(0), unk1c(0), mIsSinging(0),
       mDetune(0), unk2c(0), unk30(0), unk38(100.0f), unk3c(0), unk40(0), unk44(0),
       unk48(-1.0f), mScreamEnergyThreshold(0.8f), unk50(500.0f), mFrameMicPitch(0),
       unk60(0), unk64(0), unk6c(0), mFrameAssignedPart(-1), unk74(0), mOctaveOffset(0),
@@ -61,7 +61,7 @@ Singer::~Singer() {
 void Singer::PostLoad() {
     int numParts = mPlayer->NumParts();
     for (int i = 0; i < numParts; i++) {
-        mScoreHistories.push_back(VocalScoreHistory(i, unk10));
+        mScoreHistories.push_back(VocalScoreHistory(i, mSingerIndex));
     }
     mScoreCaches.resize(numParts);
     mResultsData.resize(numParts);
@@ -77,7 +77,7 @@ void Singer::CreateMicClientID() {
     if ((!TheNet.GetNetSession()->HasUser(u) || !u->IsLocal()) && !u->IsNullUser()) {
         mMicClientID = sNullClientID;
     } else {
-        mMicClientID = MicClientID(unk10, -1);
+        mMicClientID = MicClientID(mSingerIndex, -1);
     }
 }
 

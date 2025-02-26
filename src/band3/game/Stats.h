@@ -290,6 +290,9 @@ public:
     }
 
     void AddFillHit() { mFillHitCount++; }
+    void SetVocalPartPercentage(int part, float pct) {
+        mVocalPartPercentages[part] = pct;
+    }
 
     template <class T>
     void SaveHighest(std::vector<T> &, const T &);

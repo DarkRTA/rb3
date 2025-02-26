@@ -83,11 +83,18 @@ public:
     float GetAutoplayVariationMagnitude() const;
     void SetAutoplayOffset(float);
     float GetAutoplayOffset() const;
+    void HandlePhraseEnd(float, const std::vector<float> &);
+    float GetPartPercentage(int) const;
+    void GetPitchDeviation(float &, float &) const;
+
+    float GetFrameMicPitch() const { return mFrameMicPitch; }
+    float GetFrameTargetPitch() const { return mFrameTargetPitch; }
+    int GetSingerIndex() const { return mSingerIndex; }
 
     VocalPlayer *mPlayer; // 0x0
     MicClientID mMicClientID; // 0x4
     bool unkc;
-    int unk10; // 0x10
+    int mSingerIndex; // 0x10
     bool unk14;
     int unk18; // 0x18 - ptr to something
     int unk1c;
@@ -109,7 +116,7 @@ public:
     float mFrameMicPitch; // 0x5c
     float unk60;
     float unk64;
-    int unk68;
+    float mFrameTargetPitch; // 0x68
     float unk6c;
     int mFrameAssignedPart; // 0x70
     float unk74;

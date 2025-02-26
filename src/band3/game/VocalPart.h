@@ -25,6 +25,20 @@ public:
     void SetRemotePhraseMeterFrac(float);
     bool InTambourinePhrase() const;
     void ForcePhrasePointDelta(float);
+    float FramePhraseMeterFrac() const;
+    int GetSpotlightPhrase() const;
+    void SetPhraseScoreMultiplier(float);
+    void SetPhraseRank(int);
+    bool InEmptyPhrase() const;
+    bool InPlayablePhrase() const;
+    void HandlePhraseEnd(int &, float &, float &, int &, float);
+    float GetOverallPartHitPercentage() const;
+    int CurrentPhraseIndex() const;
+
+    int PartIndex() const { return mPartIndex; }
+    float MaxPhraseScore() const { return mPhraseScoreMax; }
+
+    static bool FramePhraseMeterFracSorter(const VocalPart *, const VocalPart *);
 
     VocalPlayer *mPlayer; // 0x0
     int mPartIndex; // 0x4

@@ -148,7 +148,6 @@ public:
     int CalculatePhraseRating(float);
     VocalPhrase *CurrentPhrase() const;
     bool AtFirstPhrase() const;
-    bool ScoringEnabled() const;
     void EnablePartScoring(int, bool);
     void HitCoda();
     void BuildPhrases(bool);
@@ -165,6 +164,20 @@ public:
     void AddTambourineHit();
     void EndTambourineSection(int);
     void SwapAmbiguousPoints(float, int, int);
+    float RemoteVocalVolume() const;
+    void LocalEndgameEnergy(int);
+    void SendVocalState(float);
+    void RemoteVocalState(int, int, int);
+    unsigned int PackFloats(const std::vector<float> &, float, float) const;
+    unsigned int PackBools(const std::vector<int> &) const;
+    void UnpackFloats(int, float, float, std::vector<float> &) const;
+    void UnpackBools(int, std::vector<int> &) const;
+    int GetSpotlightPhraseID() const;
+    void HandlePhraseEnd(float);
+    bool ScoringEnabled() const;
+    void UpdateCrowdMeter(int, int);
+    void LocalScorePhrase(int, const std::vector<int> &, bool);
+    void UpdateSectionStats();
 
     int NumSingers() const { return mSingers.size(); }
     int NumParts() const { return mVocalParts.size(); }
@@ -173,51 +186,51 @@ public:
     bool unk2d0;
     VocalTrack *mTrack; // 0x2d4
     bool unk2d8;
-    float unk2dc;
+    float mVocalPartBias; // 0x2dc
     int unk2e0;
     int unk2e4;
     int unk2e8;
     float unk2ec;
-    float unk2f0;
-    float unk2f4;
-    float unk2f8;
+    float mNextPacketSendTime; // 0x2f0
+    float mMaxDetune; // 0x2f4
+    float mPacketPeriodMs; // 0x2f8
     int unk2fc;
     float unk300;
     float unk304;
-    float unk308;
+    float mTrackWrappingMargin; // 0x308
     float mPitchMaximumDistance; // 0x30c
     float mSynapseProximitySolo; // 0x310
     float mSynapseFocusSolo; // 0x314
     float mSynapseProximityHarmony; // 0x318
     float mSynapseFocusHarmony; // 0x31c
-    DataArray *unk320;
-    DataArray *unk324;
-    int unk328;
+    DataArray *mFreestyleDeploymentTimes; // 0x320
+    DataArray *mFreestyleMinDurations; // 0x324
+    int mLastDeploymentSinger; // 0x328
     int mPhraseValue; // 0x32c
-    DataArray *unk330;
-    DataArray *unk334;
-    float unk338;
-    bool unk33c;
+    DataArray *mPartScoreMultipliers; // 0x330
+    DataArray *mRatingThresholds; // 0x334
+    float mNonpitchStickiness; // 0x338
+    bool mCouldChat; // 0x33c
     float mCodaEndMs; // 0x340
     bool unk344;
     float mTuningOffset; // 0x348
     float unk34c;
     std::vector<Singer *> mSingers; // 0x350
     std::vector<VocalPart *> mVocalParts; // 0x358
-    std::vector<MicClientID> unk360;
+    std::vector<MicClientID> mInitialMicClientIDs; // 0x360
     int unk368;
     int unk36c;
     int unk370;
-    int unk374;
-    float unk378;
-    int unk37c;
+    int mPhraseActivePartCount; // 0x374
+    float mPhrasePercentageTotal; // 0x378
+    int mPhrasePercentageCount; // 0x37c
     RndOverlay *mOverlay; // 0x380
     int unk384;
-    bool unk388;
+    bool mScoringEnabled; // 0x388
     TambourineManager mTambourineManager; // 0x38c
-    float unk414;
-    int unk418;
-    float unk41c;
+    float mSectionStartPhrasePercentageTotal; // 0x414
+    int mSectionStartPhrasePercentageCount; // 0x418
+    float mSectionStartScore; // 0x41c
     VocalFrameSpewData *mFrameSpewData; // 0x420
     TextFileStream *mFrameSpewStream; // 0x424
 };
