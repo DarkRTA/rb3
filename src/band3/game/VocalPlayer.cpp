@@ -28,11 +28,15 @@
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
+#include "os/JoypadMsgs.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
 #include "synth/MicManagerInterface.h"
 #include "ui/UI.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include "utl/TextFileStream.h"
 #include "world/Dir.h"
 #include "utl/Messages.h"
@@ -43,7 +47,7 @@ MicClientID sNullMicClientID;
 VocalPlayer::VocalPlayer(
     BandUser *user, BeatMaster *bmaster, Band *band, int tracknum, Performer *perf, int i7
 )
-    : Player(user, band, tracknum, bmaster), mBandPerformer(perf), unk2d0(0), mTrack(0),
+    : Player(user, band, tracknum, bmaster), mBandPerformer(perf), mSpoofed(0), mTrack(0),
       mAutoPlay(0), mVocalPartBias(1.25f), unk2e8(0), unk2ec(0), mNextPacketSendTime(0),
       unk300(0), unk304(0), mTrackWrappingMargin(0), mLastDeploymentSinger(-1),
       mPhraseValue(0), mPartScoreMultipliers(0), mRatingThresholds(0),
@@ -145,7 +149,7 @@ void VocalPlayer::SetTrack(int trk) {
         mBeatMaster->GetAudio()->SetTrack(GetUserGuid(), trk);
         mTrackNum = trk;
         bool b1 = false;
-        if (IsNet() || unk2d0)
+        if (IsNet() || mSpoofed)
             b1 = true;
         if (b1) {
             mBeatMaster->GetAudio()->SetNonmutable(trk);
@@ -1101,5 +1105,70 @@ void VocalPlayer::EndTambourineSection(int i) { mStats.UpdateBestTambourineSecti
 #pragma dont_inline on
 BEGIN_HANDLERS(VocalPlayer)
     HANDLE_EXPR(in_star_mode, 0)
+    HANDLE_EXPR(score, GetScore())
+    HANDLE_EXPR(percent_hit, 0)
+    HANDLE_ACTION(toggle_overlay, ToggleOverlay())
+    HANDLE_ACTION(toggle_frame_spew, ToggleFrameSpew())
+    HANDLE_EXPR(num_stars, GetNumStars())
+    HANDLE_EXPR(star_rating, GetStarRating())
+    HANDLE_ACTION(set_spoofed, mSpoofed = _msg->Int(2))
+    HANDLE_EXPR(auto_play, IsAutoplay())
+    HANDLE_ACTION(set_auto_play, SetAutoplay(_msg->Int(2)))
+    HANDLE_ACTION(rotate_singer_autoplay_part, RotateSingerAutoplayPart(_msg->Int(2)))
+    HANDLE_EXPR(get_singer_autoplay_part, GetSingerAutoplayPart(_msg->Int(2)))
+    HANDLE_ACTION(
+        rotate_singer_autoplay_variation_magnitude,
+        RotateSingerAutoplayVariationMagnitude(_msg->Int(2))
+    )
+    HANDLE_EXPR(
+        get_singer_autoplay_variation_magnitude,
+        GetSingerAutoplayVariationMagnitude(_msg->Int(2))
+    )
+    HANDLE_ACTION(set_autoplay_offset, SetAutoplayOffset(_msg->Float(2)))
+    HANDLE_EXPR(get_autoplay_offset, GetAutoplayOffset())
+    HANDLE_ACTION(set_vocal_part_bias, SetVocalPartBias(_msg->Float(2)))
+    HANDLE_EXPR(get_vocal_part_bias, GetVocalPartBias())
+    HANDLE_EXPR(get_hit_percentage, GetHitPercentage(_msg->Int(2)))
+    HANDLE_EXPR(get_best_percentage, GetBestPercentage(_msg->Int(2)))
+    HANDLE_EXPR(
+        get_practice_hit_percentage,
+        GetPracticeHitPercentage(_msg->Int(2), _msg->Int(3), _msg->Int(4))
+    )
+    HANDLE_EXPR(get_num_phrases, GetNumPhrases(_msg->Int(2), _msg->Int(3), _msg->Int(4)))
+    HANDLE_ACTION(
+        remote_vocal_state, RemoteVocalState(_msg->Int(2), _msg->Int(3), _msg->Int(4))
+    )
+    HANDLE_ACTION(remote_phrase_over, unk2fc = 0)
+    HANDLE_ACTION(remote_hit, SetAutoplay(true))
+    HANDLE_ACTION(remote_penalize, SetAutoplay(false))
+    HANDLE_ACTION(
+        remote_score_phrase, RemoteScorePhrase(_msg->Int(2), _msg->Int(3), _msg->Int(4))
+    )
+    HANDLE_ACTION(remote_hit_last_coda_gem, LocalHitCoda())
+    HANDLE_ACTION(remote_blow_coda, LocalBlowCoda())
+    HANDLE_ACTION(remote_vocal_energy, LocalEndgameEnergy(_msg->Int(2)))
+    HANDLE_ACTION(on_new_track, HookupTrack())
+    HANDLE_ACTION(on_game_over, OnGameOver())
+    HANDLE_ACTION(disable_controller, OnDisableController())
+    HANDLE_ACTION(enable_part_scoring, EnablePartScoring(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(reset_scoring, ResetScoring())
+    HANDLE_EXPR(fill_star_power, 0)
+    HANDLE_EXPR(empty_star_power, 0)
+    HANDLE_EXPR(set_star_power, 0)
+    HANDLE_EXPR(set_star_power_deploy_rate, 0)
+    HANDLE_EXPR(set_star_power_phrase_boost, 0)
+    HANDLE_EXPR(on_downbeat, 0)
+    HANDLE_EXPR(set_auto_solo, 0)
+    HANDLE_EXPR(toggle_solo_quantize, 0)
+    HANDLE_EXPR(on_start_starpower, 0)
+    HANDLE_EXPR(on_stop_starpower, 0)
+    HANDLE_EXPR(refresh_track_buttons, 0)
+    HANDLE(midi_parser, OnMidiParser)
+    HANDLE_MESSAGE(GameMicsChangedMsg)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(ButtonUpMsg)
+    HANDLE_MEMBER_PTR((&mTambourineManager))
+    HANDLE_SUPERCLASS(Player)
+    HANDLE_CHECK(0xF30)
 END_HANDLERS
 #pragma pop

@@ -99,22 +99,22 @@ public:
     virtual void Leave();
     virtual void SetTrack(int);
     virtual void PostLoad(bool);
-    virtual bool IsReady() const;
+    virtual bool IsReady() const { return true; }
     virtual void Start();
     virtual void StartIntro();
-    virtual void PollTrack();
-    virtual void PollAudio();
+    virtual void PollTrack() {}
+    virtual void PollAudio() {}
     virtual void SetPaused(bool);
-    virtual void SetRealtime(bool);
+    virtual void SetRealtime(bool) {}
     virtual void SetMusicSpeed(float);
     virtual void Jump(float, bool);
     virtual void SetAutoplay(bool);
     virtual bool IsAutoplay() const;
     virtual void HookupTrack();
     virtual void UnHookTrack();
-    virtual void EnableFills(float, bool);
-    virtual void DisableFills();
-    virtual bool FillsEnabled(int);
+    virtual void EnableFills(float, bool) {}
+    virtual void DisableFills() {}
+    virtual bool FillsEnabled(int) { return false; }
     virtual bool DoneWithSong() const;
     virtual bool AllowWarningState() const;
     virtual bool RebuildPhrases();
@@ -128,9 +128,9 @@ public:
     virtual bool InTambourinePhrase() const;
     virtual bool InFreestyleSection() const;
     virtual bool AutoplaysCoda() const;
-    virtual void SetCodaEndMs(float);
+    virtual void SetCodaEndMs(float ms) { mCodaEndMs = ms; }
     virtual bool NeedsToOverrideBasePoints() const;
-    virtual bool NeedsToSetCodaEnd() const;
+    virtual bool NeedsToSetCodaEnd() const { return true; }
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection &, int, int);
@@ -208,6 +208,10 @@ public:
     bool SongSectionOnly(float &, float &) const;
     bool
     FindBestPart(float, float, std::vector<VocalPart *> &, Singer *, VocalPart *&, float &, float &);
+    void RotateSingerAutoplayVariationMagnitude(int);
+    float GetSingerAutoplayVariationMagnitude(int);
+    float GetNumPhrases(int, int, int);
+    void ResetScoring();
 
     int NumSingers() const { return mSingers.size(); }
     int NumVocalParts() const { return mVocalParts.size(); }
@@ -215,7 +219,7 @@ public:
     DataNode OnMidiParser(DataArray *);
 
     Performer *mBandPerformer; // 0x2cc
-    bool unk2d0;
+    bool mSpoofed; // 0x2d0
     VocalTrack *mTrack; // 0x2d4
     bool mAutoPlay; // 0x2d8
     float mVocalPartBias; // 0x2dc
@@ -226,7 +230,7 @@ public:
     float mNextPacketSendTime; // 0x2f0
     float mMaxDetune; // 0x2f4
     float mPacketPeriodMs; // 0x2f8
-    int unk2fc;
+    float unk2fc;
     float unk300;
     float unk304;
     float mTrackWrappingMargin; // 0x308
