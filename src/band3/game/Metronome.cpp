@@ -1,6 +1,9 @@
 #include "Metronome.h"
+#include "game/SongDB.h"
+#include "meta_band/ProfileMgr.h"
 #include "os/Debug.h"
 #include "synth/Sfx.h"
+#include "utl/TimeConversion.h"
 
 Metronome::Metronome()
     : mBeat(-1), mEnabled(false), mHiSfx(NULL), mLoSfx(NULL), mFader(0) {}
@@ -17,9 +20,17 @@ void Metronome::Enter(Sfx *hi, Sfx *lo) {
     mLoSfx->mFaders.Add(mFader);
 }
 
-void Metronome::Exit() {
-    delete mFader;
-    mFader = NULL;
+void Metronome::Exit() { RELEASE(mFader); }
+
+void Metronome::Poll(int i1, Metronome::OverrideEnabled oe) {
+    float tick = MsToTick(TickToMs(i1) - TheProfileMgr.GetSongToTaskMgrMs((LagContext)0));
+    MBT mbt = TheSongDB->GetMBT(tick);
+    if (mBeat != mbt.beat) {
+        mBeat = mbt.beat;
+        if (mbt.tick <= 0x64 && (mEnabled || oe == 1) && oe != 2) {
+            PlayBeat(mBeat);
+        }
+    }
 }
 
 void Metronome::PlayBeat(int) {

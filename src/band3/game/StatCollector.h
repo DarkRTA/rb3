@@ -17,8 +17,8 @@ public:
     void CheckRolls(int, bool);
     void CheckKickGem(const GameGem &, int, bool);
 
-    GemPlayer *mGemPlayer; // 0x0
-    Stats *mStats; // 0x4
+    GemPlayer &mGemPlayer; // 0x0
+    Stats &mStats; // 0x4
     bool unk0x8; // 0x8
     bool unk0x9; // 0x9
 };

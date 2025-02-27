@@ -19,9 +19,9 @@ public:
     float GetAwardedPoints() const;
 
     void ReleaseSlot(int);
-    bool HasGem() const { return mGameGem; }
+    bool HasGem() const { return mGem; }
 
-    const GameGem *mGameGem;
+    const GameGem *mGem; // 0x0
     int unk_0x4; // 0x4 - gem ID?
     TrackType mTrackType;
     float unk_0xc;

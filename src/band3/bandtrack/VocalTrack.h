@@ -137,6 +137,8 @@ public:
     void
     ProcessStaticLyrics(bool, Lyric *, float &, float &, Lyric *&, Lyric *&, float &, bool, LyricPlate *);
 
+    VocalTrackDir *GetVocalTrackDir() const { return mDir; }
+
     DataNode OnGetDisplayMode(const DataArray *);
     DataNode OnSetDisplayMode(const DataArray *);
 

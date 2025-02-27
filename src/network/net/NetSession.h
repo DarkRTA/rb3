@@ -136,6 +136,7 @@ public:
     void GetRemoteUserList(std::vector<RemoteUser *> &) const;
     void GetUserList(std::vector<User *> &) const;
     bool IsInGame() const;
+    bool IsStartingGame() const;
 
     bool OnMsg(const JoinRequestMsg &);
     bool OnMsg(const JoinResponseMsg &);

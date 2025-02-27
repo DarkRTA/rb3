@@ -74,8 +74,9 @@ public:
     //     mDoubleHarmonyPhraseCount(s.mDoubleHarmonyPhraseCount),
     //     mTripleHarmonyHit(s.mTripleHarmonyHit),
     //     mTripleHarmonyPhraseCount(s.mTripleHarmonyPhraseCount), m0x5c(s.m0x5c),
-    //     m0x60(s.m0x60), m0x64(s.m0x64), m0x68(s.m0x68), m0x6c(s.m0x6c),
-    //     mVocalPartPercentages(s.mVocalPartPercentages), mSingerStats(s.mSingerStats),
+    //     mTambourineCount(s.mTambourineCount), m0x64(s.m0x64), m0x68(s.m0x68),
+    //     m0x6c(s.m0x6c), mVocalPartPercentages(s.mVocalPartPercentages),
+    //     mSingerStats(s.mSingerStats),
     //     mAccessPerformanceAwards(s.mAccessPerformanceAwards), mAccuracy(s.mAccuracy),
     //     m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain),
     //     mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
@@ -277,6 +278,8 @@ public:
     bool HasCoda() const { return mHasCoda; }
     bool HasSolos() const { return mHasSolos; }
     void SetHasSolos(bool solos) { mHasSolos = solos; }
+    void AddTambourineSeen() { mTambourineCount++; }
+    void AddTambourineHit() { mTambourineHitCount++; }
 
     int GetUpstrumPercent() const {
         int count = mHitCount + m0x08;
@@ -287,6 +290,9 @@ public:
     }
 
     void AddFillHit() { mFillHitCount++; }
+    void SetVocalPartPercentage(int part, float pct) {
+        mVocalPartPercentages[part] = pct;
+    }
 
     template <class T>
     void SaveHighest(std::vector<T> &, const T &);
@@ -321,8 +327,8 @@ public:
     int mTripleHarmonyHit; // 0x054
     int mTripleHarmonyPhraseCount; // 0x058
     int m0x5c; // 0x05c
-    int m0x60; // 0x060
-    int m0x64; // 0x064
+    int mTambourineCount; // 0x060
+    int mTambourineHitCount; // 0x064
     int m0x68; // 0x068
     int m0x6c; // 0x06c
     std::vector<float> mVocalPartPercentages; // 0x070

@@ -24,23 +24,18 @@ public:
     virtual void Text(int, int, UIListLabel *, UILabel *) const;
     virtual Symbol DataSymbol(int) const;
     virtual int DataIndex(Symbol) const;
-    virtual int NumData() const;
+    virtual int NumData() const { return mSections.size() + 1; }
     virtual bool IsActive(int) const;
     virtual void InitData(RndDir *);
     virtual UIColor *SlotColorOverride(int, int, class UIListWidget *, UIColor *c) const;
     virtual DataNode Handle(DataArray *, bool);
 
     const PracticeSection &GetSection(int) const;
+    Symbol SectionAfterLast();
+    float GetSectionStartMs(int) const;
+    float GetSectionEndMs(int) const;
 
-    std::vector<PracticeSection> unk20; // 0x20
-    Symbol unk28; // 0x28
-    int unk2c;
-    int unk30;
-    float unk34;
-    float unk38;
-    bool unk3c;
-    int unk40;
-    int unk44;
-    int unk48;
-    int unk4c;
+    std::vector<PracticeSection> mSections; // 0x20
+    PracticeSection unk28; // 0x28
+    int unk4c; // 0x4c - start section?
 };

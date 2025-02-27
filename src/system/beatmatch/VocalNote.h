@@ -108,6 +108,8 @@ public:
     void StartPlayerPhrase(int, int);
     void EndPlayerPhrase(int, int);
     VocalNote *NextNote(float) const;
+    void CapLastFreestyleSection(float);
+    void GetPracticePhrases(std::vector<VocalPhrase> &, int, int) const;
 
     const char *PrintTick(int tick) const;
     Symbol GetTrackName() const { return mTrackName; }

@@ -58,8 +58,9 @@ public:
 
     void Error(const char *, int);
     void SkipCurrentTrack();
+    MidiReader *GetMidiReader() const { return mReader; }
 
-    MidiReader *mReader;
+    MidiReader *mReader; // 0x4
 };
 
 class MidiReader {
@@ -91,6 +92,8 @@ public:
 
     void Error(const char *msg) { mRcvr.Error(msg, mCurTick); }
     bool Fail() const { return mFail; }
+    class MultiTempoTempoMap *GetTempoMap() const { return mTempoMap; }
+    class MeasureMap *GetMeasureMap() const { return mMeasureMap; }
 
     static bool sVerify;
 
@@ -108,13 +111,13 @@ public:
     unsigned char mPrevStatus; // offset 0x30, size 0x1
     class String mCurTrackName; // offset 0x34, size 0xC
     std::vector<String> mTrackNames; // 0x40
-    std::vector<Midi> mMidiList;
-    int mMidiListTick;
-    bool (*mLessFunc)(const struct Midi &, const struct Midi &);
-    bool mOwnMaps;
-    class MultiTempoTempoMap *mTempoMap;
-    class MeasureMap *mMeasureMap;
-    bool mFail;
+    std::vector<Midi> mMidiList; // 0x48
+    int mMidiListTick; // 0x50
+    bool (*mLessFunc)(const struct Midi &, const struct Midi &); // 0x54
+    bool mOwnMaps; // 0x58
+    class MultiTempoTempoMap *mTempoMap; // 0x5c
+    class MeasureMap *mMeasureMap; // 0x60
+    bool mFail; // 0x64
 };
 
 #endif

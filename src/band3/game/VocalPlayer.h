@@ -1,4 +1,5 @@
 #pragma once
+#include "VocalOverlay.h"
 #include "beatmatch/VocalNote.h"
 #include "game/Performer.h"
 #include "game/Player.h"
@@ -6,6 +7,81 @@
 #include "game/TambourineManager.h"
 #include "obj/Data.h"
 #include "rndobj/Overlay.h"
+#include "game/VocalPart.h"
+#include "synth/MicManagerInterface.h"
+#include "utl/MakeString.h"
+#include "utl/TextFileStream.h"
+
+class VocalTrack;
+
+class VocalFrameSpewData {
+public:
+    class VocalFrameSingerData {
+    public:
+        VocalFrameSingerData() : unk0(0), unk4(0), unk8(-1) {}
+        float unk0;
+        float unk4;
+        int unk8;
+    };
+    class VocalFramePartData {
+    public:
+        VocalFramePartData()
+            : unk0(0), unk4(0), unk8(0), unkc(0), unk10(0), unk14(0), unk18(0), unk1c(0) {
+        }
+        float unk0;
+        float unk4;
+        float unk8;
+        float unkc;
+        float unk10;
+        float unk14;
+        int unk18;
+        int unk1c;
+    };
+
+    VocalFrameSpewData(int singers, int parts) : mMs(0), mCompMs(0) {
+        mSingerData.resize(singers);
+        mPartData.resize(parts);
+    }
+    ~VocalFrameSpewData() {}
+    void OutputHeader(TextFileStream &ts) const {
+        ts << "ms" << "\t";
+        ts << "comp ms" << "\t";
+        for (int i = 0; i < mSingerData.size(); i++) {
+            String str(MakeString("s%d", i));
+            ts.Print(str.c_str());
+            ts << " pitch (n)" << "\t";
+            ts.Print(str.c_str());
+            ts << " energy (%)" << "\t";
+            ts.Print(str.c_str());
+            ts << " matched part" << "\t";
+        }
+        for (int i = 0; i < mPartData.size(); i++) {
+            String str(MakeString("p%d", i));
+            ts.Print(str.c_str());
+            ts << " pitch (n)" << "\t";
+            ts.Print(str.c_str());
+            ts << " uncapped frame points (p)" << "\t";
+            ts.Print(str.c_str());
+            ts << " points cap (p)" << "\t";
+            ts.Print(str.c_str());
+            ts << " hit percentage (%)" << "\t";
+            ts.Print(str.c_str());
+            ts << " note weight slice" << "\t";
+            ts.Print(str.c_str());
+            ts << " note multiplier" << "\t";
+            ts.Print(str.c_str());
+            ts << " phrase points (p)" << "\t";
+            ts.Print(str.c_str());
+            ts << " phrase max points (p)" << "\t";
+        }
+        ts << "\n";
+    }
+
+    float mMs; // 0x0
+    float mCompMs; // 0x4
+    std::vector<VocalFrameSingerData> mSingerData; // 0x8
+    std::vector<VocalFramePartData> mPartData; // 0x10
+};
 
 class VocalPlayer : public Player, public RndOverlay::Callback {
 public:
@@ -23,22 +99,22 @@ public:
     virtual void Leave();
     virtual void SetTrack(int);
     virtual void PostLoad(bool);
-    virtual bool IsReady() const;
+    virtual bool IsReady() const { return true; }
     virtual void Start();
     virtual void StartIntro();
-    virtual void PollTrack();
-    virtual void PollAudio();
+    virtual void PollTrack() {}
+    virtual void PollAudio() {}
     virtual void SetPaused(bool);
-    virtual void SetRealtime(bool);
+    virtual void SetRealtime(bool) {}
     virtual void SetMusicSpeed(float);
     virtual void Jump(float, bool);
     virtual void SetAutoplay(bool);
     virtual bool IsAutoplay() const;
     virtual void HookupTrack();
     virtual void UnHookTrack();
-    virtual void EnableFills(float, bool);
-    virtual void DisableFills();
-    virtual bool FillsEnabled(int);
+    virtual void EnableFills(float, bool) {}
+    virtual void DisableFills() {}
+    virtual bool FillsEnabled(int) { return false; }
     virtual bool DoneWithSong() const;
     virtual bool AllowWarningState() const;
     virtual bool RebuildPhrases();
@@ -52,9 +128,9 @@ public:
     virtual bool InTambourinePhrase() const;
     virtual bool InFreestyleSection() const;
     virtual bool AutoplaysCoda() const;
-    virtual void SetCodaEndMs(float);
+    virtual void SetCodaEndMs(float ms) { mCodaEndMs = ms; }
     virtual bool NeedsToOverrideBasePoints() const;
-    virtual bool NeedsToSetCodaEnd() const;
+    virtual bool NeedsToSetCodaEnd() const { return true; }
     virtual void ClearScoreHistories();
     virtual void ChangeDifficulty(Difficulty);
     virtual void HandleNewSection(const PracticeSection &, int, int);
@@ -62,6 +138,7 @@ public:
     virtual int LocalDeployBandEnergy();
     virtual bool ShouldDrainEnergy() const;
     virtual void UpdateVocalStyle();
+    virtual float UpdateOverlay(RndOverlay *, float);
 
     bool ShowPitchCorrectionNotice() const;
     int PhraseScore() const;
@@ -72,59 +149,124 @@ public:
     int CalculatePhraseRating(float);
     VocalPhrase *CurrentPhrase() const;
     bool AtFirstPhrase() const;
+    void EnablePartScoring(int, bool);
+    void HitCoda();
+    void BuildPhrases(bool);
+    bool ToggleFrameSpew();
+    bool PressingToTalk();
+    void SendCanChat(bool);
+    void AddAccuracyStat(int);
+    void AddScoreStreakStat(float);
+    void AddBandContributionStat(float);
+    void AddOverdriveStat(float);
+    void AddTambourinePointsStat(float);
+    void AddHarmonyStat(int);
+    void AddTambourineSeen();
+    void AddTambourineHit();
+    void EndTambourineSection(int);
+    void SwapAmbiguousPoints(float, int, int);
+    float RemoteVocalVolume() const;
+    void LocalEndgameEnergy(int);
+    void SendVocalState(float);
+    void RemoteVocalState(int, int, int);
+    unsigned int PackFloats(const std::vector<float> &, float, float) const;
+    unsigned int PackBools(const std::vector<int> &) const;
+    void UnpackFloats(int, float, float, std::vector<float> &) const;
+    void UnpackBools(int, std::vector<int> &) const;
+    int GetSpotlightPhraseID() const;
+    void HandlePhraseEnd(float);
+    bool ScoringEnabled() const;
+    void UpdateCrowdMeter(int, int);
+    void LocalScorePhrase(int, const std::vector<int> &, bool);
+    void RemoteScorePhrase(int, int, bool);
+    void UpdateSectionStats();
+    bool AtLastPhrase() const;
+    void RotateSingerAutoplayPart(int);
+    int GetSingerAutoplayPart(int);
+    void SetAutoplayOffset(float);
+    float GetAutoplayOffset() const;
+    void SetVocalPartBias(float);
+    float GetVocalPartBias() const;
+    int OnMsg(const GameMicsChangedMsg &);
+    void UpdateMicDisplay();
+    bool HadMic(const MicClientID &) const;
+    int OnMsg(const ButtonDownMsg &);
+    int OnMsg(const ButtonUpMsg &);
+    bool AllowPitchCorrection() const;
+    void OnGameOver();
+    void OnDisableController();
+    bool GetFreestyleDeploymentRequiredMs(float &) const;
+    void LocalHitCoda();
+    float FrameOverallPhraseMeterFrac() const;
+    bool IgnorePhrase() const;
+    void LocalBlowCoda();
+    float GetHitPercentage(int);
+    float GetPracticeHitPercentage(int, int, int);
+    float GetBestPercentage(int);
+    bool Freestyling() const;
+    void ToggleOverlay();
+    bool SongSectionOnly(float &, float &) const;
+    bool
+    FindBestPart(float, float, std::vector<VocalPart *> &, Singer *, VocalPart *&, float &, float &);
+    void RotateSingerAutoplayVariationMagnitude(int);
+    float GetSingerAutoplayVariationMagnitude(int);
+    float GetNumPhrases(int, int, int);
+    void ResetScoring();
 
     int NumSingers() const { return mSingers.size(); }
-    int NumParts() const { return unk358.size(); }
+    int NumVocalParts() const { return mVocalParts.size(); }
 
-    Performer *unk2cc; // 0x2cc
-    bool unk2d0;
-    int unk2d4; // 0x2d4 - vocaltrack*?
-    bool unk2d8;
-    float unk2dc;
+    DataNode OnMidiParser(DataArray *);
+
+    Performer *mBandPerformer; // 0x2cc
+    bool mSpoofed; // 0x2d0
+    VocalTrack *mTrack; // 0x2d4
+    bool mAutoPlay; // 0x2d8
+    float mVocalPartBias; // 0x2dc
     int unk2e0;
     int unk2e4;
     int unk2e8;
     float unk2ec;
-    float unk2f0;
-    float unk2f4;
-    float unk2f8;
-    int unk2fc;
+    float mNextPacketSendTime; // 0x2f0
+    float mMaxDetune; // 0x2f4
+    float mPacketPeriodMs; // 0x2f8
+    float unk2fc;
     float unk300;
     float unk304;
-    float unk308;
-    int unk30c;
-    int unk310;
-    int unk314;
-    int unk318;
-    int unk31c;
-    DataArray *unk320;
-    DataArray *unk324;
-    int unk328;
-    int unk32c;
-    DataArray *unk330;
-    DataArray *unk334;
-    float unk338;
-    bool unk33c;
-    float unk340;
+    float mTrackWrappingMargin; // 0x308
+    float mPitchMaximumDistance; // 0x30c
+    float mSynapseProximitySolo; // 0x310
+    float mSynapseFocusSolo; // 0x314
+    float mSynapseProximityHarmony; // 0x318
+    float mSynapseFocusHarmony; // 0x31c
+    DataArray *mFreestyleDeploymentTimes; // 0x320
+    DataArray *mFreestyleMinDurations; // 0x324
+    int mLastDeploymentSinger; // 0x328
+    int mPhraseValue; // 0x32c
+    DataArray *mPartScoreMultipliers; // 0x330
+    DataArray *mRatingThresholds; // 0x334
+    float mNonpitchStickiness; // 0x338
+    bool mCouldChat; // 0x33c
+    float mCodaEndMs; // 0x340
     bool unk344;
     float mTuningOffset; // 0x348
     float unk34c;
     std::vector<Singer *> mSingers; // 0x350
-    std::vector<int> unk358; // should be vec of VocalPart*s
-    std::vector<int> unk360;
-    int unk368;
+    std::vector<VocalPart *> mVocalParts; // 0x358
+    std::vector<MicClientID> mInitialMicClientIDs; // 0x360
+    int mInitialMicCount; // 0x368
     int unk36c;
     int unk370;
-    int unk374;
-    float unk378;
-    int unk37c;
+    int mPhraseActivePartCount; // 0x374
+    float mPhrasePercentageTotal; // 0x378
+    int mPhrasePercentageCount; // 0x37c
     RndOverlay *mOverlay; // 0x380
-    int unk384;
-    bool unk388;
+    VocalOverlay *mVocalOverlay; // 0x384
+    bool mScoringEnabled; // 0x388
     TambourineManager mTambourineManager; // 0x38c
-    float unk414;
-    int unk418;
-    float unk41c;
-    int unk420;
-    int unk424;
+    float mSectionStartPhrasePercentageTotal; // 0x414
+    int mSectionStartPhrasePercentageCount; // 0x418
+    float mSectionStartScore; // 0x41c
+    VocalFrameSpewData *mFrameSpewData; // 0x420
+    TextFileStream *mFrameSpewStream; // 0x424
 };

@@ -20,6 +20,7 @@ public:
     void RecalculateGemTimes(TempoMap *);
     bool WillBeNoStrum(const GameGem &);
     int ClosestMarkerIdxAtOrAfterTick(int) const;
+    void SetGems(int, int, int, const std::vector<GameGem> &, int);
 
     int NumGems() const { return mGems.size(); }
     bool Empty() const { return mGems.empty(); }

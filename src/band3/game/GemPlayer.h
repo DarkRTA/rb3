@@ -51,6 +51,7 @@ public:
     // is solo: 0x80
 
     // 0x40? 0xe?
+    // 0x4 - processed?
 
     // from GDRB:
     // missed: 0x2
@@ -132,9 +133,27 @@ public:
         }
     }
 
+    void SetHit(int idx) {
+        if (idx != -1) {
+            mGems[idx] |= 1;
+        }
+    }
+
+    void Set0x2(int idx) {
+        if (idx != -1) {
+            mGems[idx] |= 2;
+        }
+    }
+
     void Set0x40(int idx) {
         if (idx != -1) {
             mGems[idx] |= 0x40;
+        }
+    }
+
+    void Clear0xBF(int idx) {
+        if (idx != -1) {
+            mGems[idx] &= 0xBF;
         }
     }
 
@@ -156,6 +175,7 @@ public:
     void Resize(int num) { mGems.resize(num); }
     int NumHits() const { return mHits; }
     int NumMisses() const { return mMisses; }
+    int GetSize() const { return mGems.size(); }
 
     std::vector<unsigned char> mGems; // 0x0
     int mHits; // 0x8
@@ -362,6 +382,9 @@ public:
     void SetRemoteAnnoyingMode(bool);
     void CheckFretReleases(float);
     void RemoveFretReleasesInSlot(int);
+    GemStatus *GetGemStatus() const { return mGemStatus; }
+    BeatMatchController *GetController() const { return mController; }
+    Symbol GetControllerType() const { return mControllerType; }
 
     const SongPos &GetSongPos() const { return mMatcher->mSongPos; }
 

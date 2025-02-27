@@ -88,7 +88,6 @@ public:
     bool ResumedNoScore() const;
     bool IsActiveUser(BandUser *) const;
     bool IsWaiting();
-    float GetMusicSpeed();
     int NumActivePlayers() const;
     void AddBonusPoints(BandUser *, int, int);
     void OnPlayerAddEnergy(Player *, float);
@@ -185,6 +184,8 @@ public:
         return mDrumFillsMod ? kFillsRegular : kFillsDeployGemAndInvisible;
     }
     bool DrumFillsMod() const { return mDrumFillsMod; }
+    bool IsPaused() const { return mIsPaused; }
+    bool InRollback() const { return unkdc != -1.0f ? true : false; }
 
     DataNode OnJump(const DataArray *);
     DataNode OnLocalUserReadyToPlay(const DataArray *);
@@ -228,7 +229,7 @@ public:
     Band *mBand; // 0xd0
     Shuttle *mShuttle; // 0xd4
     float unkd8;
-    float unkdc;
+    float unkdc; // 0xdc - mRollbackEndMs?
     ATanInterpolator mInterpolator; // 0xe0
     float unk11c;
     bool unk120;

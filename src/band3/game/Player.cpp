@@ -299,6 +299,8 @@ void Player::Rollback(float, float) {
     }
 }
 
+bool Player::InRollback() const { return TheGame->InRollback(); }
+
 int Player::GetAccumulatedScore() const { return mScore; }
 float Player::GetTotalStars() const { return GetNumStarsFloat(); }
 
