@@ -59,7 +59,7 @@ Singer::~Singer() {
 }
 
 void Singer::PostLoad() {
-    int numParts = mPlayer->NumParts();
+    int numParts = mPlayer->NumVocalParts();
     for (int i = 0; i < numParts; i++) {
         mScoreHistories.push_back(VocalScoreHistory(i, mSingerIndex));
     }

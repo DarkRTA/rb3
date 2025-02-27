@@ -10,8 +10,8 @@ VocalPart::VocalPart(VocalPlayer *vp, int idx)
       mRemotePhraseMeterFrac(0), mPhraseScorePartMultiplier(1.0f), mPhraseScoreMax(0),
       unk3c(0), mPhraseScore(0), unk44(0), unk48(0), unk4c(0), unk50(0), unk54(0),
       unk58(0), unk84(0), unk88(-1), mSpotlightPhraseID(-1), unk98(0), unk9c(FLT_MAX),
-      unka0(-FLT_MAX), unka4(0), unka8(0), unkac(0), unkad(0), unkb0(0), unkb4(0),
-      mFirstPhraseMsToScore(0), unkbc(-1.0f), mBestSinger(0),
+      unka0(-FLT_MAX), unka4(0), unka8(0), mInFreestyleSection(0), unkad(0), unkb0(0),
+      unkb4(0), mFirstPhraseMsToScore(0), unkbc(-1.0f), mBestSinger(0),
       mBestSingerPitchDistance(FLT_MAX), unkc8(6), mScoringEnabled(1), mPhraseRank(0) {
     SetDifficultyVariables(mPlayer->GetUser()->GetDifficulty());
 }
@@ -76,7 +76,7 @@ void VocalPart::Restart(bool b1) {
         unk20 = 0;
         unk4c = 0;
         unk50 = 0;
-        unkac = 0;
+        mInFreestyleSection = 0;
         unkad = 0;
         unkb4 = 0;
         mRemotePhraseMeterFrac = 0;
@@ -105,7 +105,7 @@ void VocalPart::Jump(float f1, bool) {
     unk20 = 0;
     unk4c = 0;
     unk50 = 0;
-    unkac = 0;
+    mInFreestyleSection = 0;
     unkad = 0;
     unkb4 = 0;
     mRemotePhraseMeterFrac = 0;
@@ -127,7 +127,7 @@ void VocalPart::Jump(float f1, bool) {
 }
 
 void VocalPart::LocalDeployBandEnergy() {
-    if (unkac)
+    if (mInFreestyleSection)
         unkad = true;
 }
 

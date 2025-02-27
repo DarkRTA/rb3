@@ -13,7 +13,7 @@ public:
         }
         return *this;
     }
-    int unk0; // mic id
+    int unk0; // mic id - 0, 1 or 2
     int mPlayerID; // 0x4
 };
 

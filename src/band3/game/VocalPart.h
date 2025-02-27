@@ -34,9 +34,17 @@ public:
     void HandlePhraseEnd(int &, float &, float &, int &, float);
     float GetOverallPartHitPercentage() const;
     int CurrentPhraseIndex() const;
+    void OnGameOver();
+    const VocalPhrase *GetFirstPhraseMarker() const;
+    const VocalPhrase *GetNextPhraseMarker(const VocalPhrase *const &) const;
+    bool IsPhraseMarkerAtEnd(const VocalPhrase *const &) const;
+    bool IsEmptyPhrase(const VocalPhrase *const &) const;
+    void Rollback(float, float);
+    float GetPartHitPercentage(const std::vector<VocalPhrase> &, int, int) const;
 
     int PartIndex() const { return mPartIndex; }
     float MaxPhraseScore() const { return mPhraseScoreMax; }
+    bool InFreestyleSection() const { return mInFreestyleSection; }
 
     static bool FramePhraseMeterFracSorter(const VocalPart *, const VocalPart *);
 
@@ -82,7 +90,7 @@ public:
     float unka0;
     float unka4;
     float unka8;
-    bool unkac;
+    bool mInFreestyleSection; // 0xac
     bool unkad;
     float unkb0;
     bool unkb4;

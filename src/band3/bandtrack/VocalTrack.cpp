@@ -582,7 +582,7 @@ int VocalTrack::NumSingers() const {
 
 bool VocalTrack::UseVocalHarmony() {
     if (mPlayer)
-        return mPlayer->NumParts() > 1;
+        return mPlayer->NumVocalParts() > 1;
     else
         return 0;
 }
@@ -699,7 +699,7 @@ void VocalTrack::RebuildHUD() {
         colors[0] = GetVocalHUDColor(tubestyle->Property("lead_color", true)->Sym());
         colors[1] = GetVocalHUDColor(tubestyle->Property("harmony_1_color", true)->Sym());
         colors[2] = GetVocalHUDColor(tubestyle->Property("harmony_2_color", true)->Sym());
-        for (int i = 0; i < mPlayer->NumParts(); i++) {
+        for (int i = 0; i < mPlayer->NumVocalParts(); i++) {
             // setting parts here
         }
         mDir->SetVocalLineColors(colors);
@@ -1101,7 +1101,7 @@ void VocalTrack::SetCanDeploy(bool can) {
 
 int VocalTrack::GetNumVocalParts() {
     if (mPlayer)
-        return mPlayer->NumParts();
+        return mPlayer->NumVocalParts();
     else {
         MILO_NOTIFY_ONCE("invalid vocal player");
         return 0;

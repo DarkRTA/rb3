@@ -20,6 +20,8 @@ public:
     void Jump(float);
     void SetPaused(bool);
     void SetTambourine(bool);
+    void GameOver();
+    void Rollback(float, float);
     void SetBank(ObjectDir *bank) { mBank = bank; }
 
     class VocalPlayer &mPlayerRef; // 0x1c

@@ -1,4 +1,5 @@
 #pragma once
+#include "VocalOverlay.h"
 #include "beatmatch/VocalNote.h"
 #include "game/Performer.h"
 #include "game/Player.h"
@@ -177,15 +178,46 @@ public:
     bool ScoringEnabled() const;
     void UpdateCrowdMeter(int, int);
     void LocalScorePhrase(int, const std::vector<int> &, bool);
+    void RemoteScorePhrase(int, int, bool);
     void UpdateSectionStats();
+    bool AtLastPhrase() const;
+    void RotateSingerAutoplayPart(int);
+    int GetSingerAutoplayPart(int);
+    void SetAutoplayOffset(float);
+    float GetAutoplayOffset() const;
+    void SetVocalPartBias(float);
+    float GetVocalPartBias() const;
+    int OnMsg(const GameMicsChangedMsg &);
+    void UpdateMicDisplay();
+    bool HadMic(const MicClientID &) const;
+    int OnMsg(const ButtonDownMsg &);
+    int OnMsg(const ButtonUpMsg &);
+    bool AllowPitchCorrection() const;
+    void OnGameOver();
+    void OnDisableController();
+    bool GetFreestyleDeploymentRequiredMs(float &) const;
+    void LocalHitCoda();
+    float FrameOverallPhraseMeterFrac() const;
+    bool IgnorePhrase() const;
+    void LocalBlowCoda();
+    float GetHitPercentage(int);
+    float GetPracticeHitPercentage(int, int, int);
+    float GetBestPercentage(int);
+    bool Freestyling() const;
+    void ToggleOverlay();
+    bool SongSectionOnly(float &, float &) const;
+    bool
+    FindBestPart(float, float, std::vector<VocalPart *> &, Singer *, VocalPart *&, float &, float &);
 
     int NumSingers() const { return mSingers.size(); }
-    int NumParts() const { return mVocalParts.size(); }
+    int NumVocalParts() const { return mVocalParts.size(); }
+
+    DataNode OnMidiParser(DataArray *);
 
     Performer *mBandPerformer; // 0x2cc
     bool unk2d0;
     VocalTrack *mTrack; // 0x2d4
-    bool unk2d8;
+    bool mAutoPlay; // 0x2d8
     float mVocalPartBias; // 0x2dc
     int unk2e0;
     int unk2e4;
@@ -218,14 +250,14 @@ public:
     std::vector<Singer *> mSingers; // 0x350
     std::vector<VocalPart *> mVocalParts; // 0x358
     std::vector<MicClientID> mInitialMicClientIDs; // 0x360
-    int unk368;
+    int mInitialMicCount; // 0x368
     int unk36c;
     int unk370;
     int mPhraseActivePartCount; // 0x374
     float mPhrasePercentageTotal; // 0x378
     int mPhrasePercentageCount; // 0x37c
     RndOverlay *mOverlay; // 0x380
-    int unk384;
+    VocalOverlay *mVocalOverlay; // 0x384
     bool mScoringEnabled; // 0x388
     TambourineManager mTambourineManager; // 0x38c
     float mSectionStartPhrasePercentageTotal; // 0x414

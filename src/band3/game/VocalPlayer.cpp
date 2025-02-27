@@ -1,14 +1,20 @@
 #include "game/VocalPlayer.h"
+#include "VocalOverlay.h"
 #include "bandobj/BandTrack.h"
+#include "bandobj/VocalTrackDir.h"
 #include "bandtrack/VocalTrack.h"
 #include "beatmatch/BeatMaster.h"
 #include "beatmatch/MasterAudio.h"
+#include "beatmatch/VocalNote.h"
 #include "decomp.h"
+#include "game/BandUser.h"
 #include "game/Game.h"
+#include "game/GameConfig.h"
 #include "game/GameMic.h"
 #include "game/GameMicManager.h"
 #include "game/GamePanel.h"
 #include "game/Performer.h"
+#include "game/PracticePanel.h"
 #include "game/Scoring.h"
 #include "game/SongDB.h"
 #include "game/VocalPart.h"
@@ -19,16 +25,18 @@
 #include "net/NetSession.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
 #include "os/System.h"
 #include "rndobj/Overlay.h"
 #include "synth/MicManagerInterface.h"
-#include "utl/Messages3.h"
-#include "utl/Messages4.h"
+#include "ui/UI.h"
+#include "utl/Symbols.h"
 #include "utl/TextFileStream.h"
 #include "world/Dir.h"
 #include "utl/Messages.h"
+#include <utility>
 
 MicClientID sNullMicClientID;
 
@@ -36,13 +44,13 @@ VocalPlayer::VocalPlayer(
     BandUser *user, BeatMaster *bmaster, Band *band, int tracknum, Performer *perf, int i7
 )
     : Player(user, band, tracknum, bmaster), mBandPerformer(perf), unk2d0(0), mTrack(0),
-      unk2d8(0), mVocalPartBias(1.25f), unk2e8(0), unk2ec(0), mNextPacketSendTime(0),
+      mAutoPlay(0), mVocalPartBias(1.25f), unk2e8(0), unk2ec(0), mNextPacketSendTime(0),
       unk300(0), unk304(0), mTrackWrappingMargin(0), mLastDeploymentSinger(-1),
       mPhraseValue(0), mPartScoreMultipliers(0), mRatingThresholds(0),
       mNonpitchStickiness(0.6f), mCouldChat(0), mCodaEndMs(0), unk344(0),
-      mTuningOffset(0), unk34c(-1.0f), unk368(0), unk36c(0), unk370(0),
+      mTuningOffset(0), unk34c(-1.0f), mInitialMicCount(0), unk36c(0), unk370(0),
       mPhraseActivePartCount(0), mPhrasePercentageTotal(0), mPhrasePercentageCount(0),
-      mOverlay(0), unk384(0), mScoringEnabled(1), mTambourineManager(*this),
+      mOverlay(0), mVocalOverlay(0), mScoringEnabled(1), mTambourineManager(*this),
       mSectionStartPhrasePercentageTotal(0), mSectionStartPhrasePercentageCount(0),
       mSectionStartScore(0), mFrameSpewData(0), mFrameSpewStream(0) {
     BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
@@ -297,6 +305,17 @@ float VocalPlayer::RemoteVocalVolume() const {
         return 1.0f - ret / 0.33f;
 }
 
+void VocalPlayer::Poll(float, const SongPos &) {
+    MILO_WARN("j != i");
+    MILO_WARN("pTrack");
+    MILO_WARN("mFrameSpewData");
+}
+
+bool VocalPlayer::
+    FindBestPart(float, float, std::vector<VocalPart *> &, Singer *i_pSinger, VocalPart *&, float &, float &) {
+    MILO_ASSERT(i_pSinger, 0x5DA);
+}
+
 void VocalPlayer::LocalEndgameEnergy(int x) {
     if (TheWorld) {
         if (x == 0) {
@@ -324,7 +343,7 @@ void VocalPlayer::SendVocalState(float f1) {
     FOREACH (it, mVocalParts) {
         VocalPart *cur = *it;
         float fPercentage = cur->FramePhraseMeterFrac();
-        MILO_ASSERT_RANGE_EQ(fPercentage, 0.0f, 1.0f, 0x63E);
+        MILO_ASSERT(( 0.0f) <= ( fPercentage) && ( fPercentage) <= ( 1.0f), 0x63E);
         framePercs[cur->PartIndex()] = fPercentage;
     }
     int packed = PackFloats(framePercs, 0, 1);
@@ -384,9 +403,9 @@ unsigned int VocalPlayer::PackFloats(
         } else
             f2ToUse = f2;
         float fNormalized = (f2ToUse - f1) / fDenominator;
-        MILO_ASSERT_RANGE_EQ(fNormalized, 0.0f, 1.0f, 0x6D9);
+        MILO_ASSERT(( 0.0f) <= ( fNormalized) && ( fNormalized) <= ( 1.0f), 0x6D9);
         int iByteValue = fNormalized * 255.0f;
-        MILO_ASSERT_RANGE_EQ(iByteValue, 0, 255, 0x6DC);
+        MILO_ASSERT(( 0) <= ( iByteValue) && ( iByteValue) <= ( 255), 0x6DC);
         packed |= iByteValue << (i * 8);
     }
     return packed;
@@ -544,9 +563,497 @@ void VocalPlayer::HandlePhraseEnd(float f1) {
         UpdateSectionStats();
 }
 
+void VocalPlayer::LocalScorePhrase(
+    int i1, const std::vector<int> &i_rNewPhraseActiveParts, bool b3
+) {
+    if (mTrack) {
+        int iActivePartCount =
+            std::count(i_rNewPhraseActiveParts.begin(), i_rNewPhraseActiveParts.end(), 0);
+        MILO_ASSERT(( 0) <= ( iActivePartCount) && ( iActivePartCount) <= ( i_rNewPhraseActiveParts.size()), 0x855);
+        VocalTrackDir *dir = mTrack->GetVocalTrackDir();
+        dir->ShowPhraseFeedback(i1, -1, -1, IsDeployingBandEnergy());
+        dir->UpdateVocalMeters(
+            i_rNewPhraseActiveParts[0],
+            i_rNewPhraseActiveParts[1],
+            i_rNewPhraseActiveParts[2],
+            false
+        );
+        if (b3 && ScoringEnabled()) {
+            dir->SpotlightPhraseSuccess();
+        }
+    }
+}
+
+void VocalPlayer::RemoteScorePhrase(int i1, int i2, bool b3) {
+    std::vector<int> bools;
+    UnpackBools(i2, bools);
+    LocalScorePhrase(i1, bools, b3);
+}
+
+void VocalPlayer::HookupTrack() {
+    mTrack = dynamic_cast<VocalTrack *>(GetUser()->GetTrack());
+    MILO_ASSERT(mTrack, 0x88A);
+}
+
+DECOMP_FORCEACTIVE(
+    VocalPlayer, "fast song scoring should only be done on PC.", "vocal_score_song_done"
+)
+
+void VocalPlayer::UnHookTrack() { mTrack = nullptr; }
+bool VocalPlayer::PastFinalNote() const { return AtLastPhrase(); }
+
+void VocalPlayer::SetMusicSpeed(float speed) {
+    mBeatMaster->GetAudio()->GetSongStream()->SetSpeed(speed);
+}
+
+void VocalPlayer::SetAutoplay(bool play) {
+    GetUser()->SetAutoplay(play);
+    mAutoPlay = play;
+    FOREACH (it, mSingers) {
+        Singer *cur = *it;
+        cur->SetAutoplayToPart(play ? cur->GetSingerIndex() : -1);
+    }
+}
+
+void VocalPlayer::RotateSingerAutoplayPart(int x) {
+    if (x < mSingers.size()) {
+        Singer *cur = mSingers[x];
+        int part = cur->GetAutoplayToPart();
+        if (part == -1)
+            part = 0;
+        else {
+            part++;
+            if (part >= NumVocalParts()) {
+                part = -1;
+            }
+        }
+        cur->SetAutoplayToPart(part);
+    }
+}
+
+int VocalPlayer::GetSingerAutoplayPart(int x) {
+    if (x < mSingers.size()) {
+        return mSingers[x]->GetAutoplayToPart();
+    } else
+        return -1;
+}
+
+void VocalPlayer::SetAutoplayOffset(float f1) {
+    FOREACH (it, mSingers) {
+        (*it)->SetAutoplayOffset(f1);
+    }
+}
+
+float VocalPlayer::GetAutoplayOffset() const {
+    return mSingers.front()->GetAutoplayOffset();
+}
+
+void VocalPlayer::SetVocalPartBias(float bias) { mVocalPartBias = bias; }
+float VocalPlayer::GetVocalPartBias() const { return mVocalPartBias; }
+
+DataNode VocalPlayer::OnMidiParser(DataArray *arr) {
+    Symbol sym = arr->Sym(2);
+    if (sym == "tambourine_gem" && mTrack) {
+        mTrack->GetVocalTrackDir()->TambourineNote();
+    }
+    return 0;
+}
+
+int VocalPlayer::OnMsg(const GameMicsChangedMsg &) {
+    UpdateMicDisplay();
+    return 1;
+}
+
+void VocalPlayer::UpdateMicDisplay() {
+    if (mTrack) {
+        VocalTrackDir *pTrackDir = mTrack->GetVocalTrackDir();
+        MILO_ASSERT(pTrackDir, 0x977);
+        MILO_ASSERT(TheGameMicManager, 0x979);
+        int numMics = TheGameMicManager->GetMicCount();
+        bool noMic0 = !TheGameMicManager->HasMic(MicClientID(0, -1));
+        bool noMic1 = !TheGameMicManager->HasMic(MicClientID(1, -1));
+        bool noMic2 = !TheGameMicManager->HasMic(MicClientID(2, -1));
+        bool hadMic0 = HadMic(MicClientID(0, -1));
+        bool hadMic1 = HadMic(MicClientID(1, -1));
+        bool hadMic2 = HadMic(MicClientID(2, -1));
+
+        bool hadAnyMic = hadMic0 || hadMic1 || hadMic2;
+        bool noLongerHasMic0 = noMic0 && hadMic0;
+        bool noLongerHasMic1 = noMic1 && hadMic1;
+        bool noLongerHasMic2 = noMic2 && hadMic2;
+        bool b15 = numMics == 0 || noLongerHasMic0 || noLongerHasMic1 || noLongerHasMic2;
+        if (!(b15 & GetUser()->IsLocal())) {
+            pTrackDir->ShowMicDisplay(false);
+        } else {
+            if (mVocalParts.size() == 1) {
+                pTrackDir->SetMicDisplayLabel(vocals_connect_a_mic);
+            } else {
+                pTrackDir->SetMicDisplayLabel(vocals_mics_disconnected);
+            }
+            if (hadAnyMic) {
+                pTrackDir->SetMissingMicsForDisplay(
+                    noLongerHasMic0, noLongerHasMic1, noLongerHasMic2
+                );
+            } else
+                pTrackDir->SetMissingMicsForDisplay(true, false, false);
+            pTrackDir->ShowMicDisplay(true);
+        }
+    }
+}
+
+void VocalPlayer::RememberCurrentMics() {
+    mInitialMicClientIDs.clear();
+    mInitialMicCount = 0;
+    MILO_ASSERT(TheGameMicManager, 0x9BE);
+    for (int i = 0; i < 4; i++) {
+        MicClientID id(i, -1);
+        if (TheGameMicManager->HasMic(id)) {
+            mInitialMicClientIDs.push_back(id);
+            mInitialMicCount++;
+        }
+    }
+}
+
+bool VocalPlayer::HadMic(const MicClientID &id) const {
+    FOREACH (it, mInitialMicClientIDs) {
+        if (it->unk0 == id.unk0)
+            return true;
+    }
+    return false;
+}
+
+int VocalPlayer::OnMsg(const ButtonDownMsg &msg) {
+    if ((User *)GetUser() != msg.GetUser())
+        return 0;
+    else {
+        bool b1 = false;
+        if (TheUI->FocusPanel()) {
+            b1 = strcmp(TheUI->FocusPanel()->Name(), "world_panel") == 0;
+        }
+        if (TheUI->FocusPanel() != TheGamePanel && !b1) {
+            if (!dynamic_cast<PracticePanel *>(TheUI->FocusPanel()))
+                return 0;
+        }
+    }
+    return 0;
+}
+
+DECOMP_FORCEACTIVE(
+    VocalPlayer,
+    "HandleActivateVolume: Couldn't get a VocalParam for supposed volume button %d!\n",
+    "HandleDeactivateVolume: Couldn't get a VocalParam for supposed volume button %d!\n",
+    "HandleChangeVolume got an unused button! Ignoring it.\n",
+    "( 0) <= ( o_rMicNumber) && ( o_rMicNumber) < ( 3)"
+)
+
+int VocalPlayer::OnMsg(const ButtonUpMsg &) { return 0; }
+
+bool VocalPlayer::AllowPitchCorrection() const {
+    MILO_ASSERT(TheGameMicManager, 0xA46);
+    return TheGameMicManager->GetMicCount() == 1 && mVocalParts.size() == 1;
+}
+
+bool VocalPlayer::AllowWarningState() const {
+    MILO_ASSERT(TheGameMicManager, 0xA56);
+    return !GetUser()->IsNullUser() || TheGameMicManager->GetMicCount() > 0;
+}
+
+void VocalPlayer::OnGameOver() {
+    if (!MetaPerformer::Current()->SongEndsWithEndgameSequence()) {
+        TheGameMicManager->SetPlayback(false);
+    }
+    mTambourineManager.GameOver();
+    FOREACH (it, mVocalParts) {
+        (*it)->OnGameOver();
+    }
+}
+
+void VocalPlayer::EnableController() {
+    TheGameMicManager->SetPlayback(true);
+    FOREACH (it, mSingers) {
+        (*it)->EnableController();
+    }
+    if (mUser->IsLocal()) {
+        JoypadKeepAlive(mUser->GetLocalUser()->GetPadNum(), true);
+    }
+}
+
+void VocalPlayer::DisableController() { OnDisableController(); }
+
+void VocalPlayer::OnDisableController() {
+    TheGameMicManager->SetPlayback(false);
+    FOREACH (it, mSingers) {
+        (*it)->DisableController();
+    }
+    if (mUser->IsLocal()) {
+        JoypadKeepAlive(mUser->GetLocalUser()->GetPadNum(), false);
+    }
+}
+
+bool VocalPlayer::ShouldDrainEnergy() const { return true; }
+
+bool VocalPlayer::InFreestyleSection() const {
+    FOREACH (it, mVocalParts) {
+        if ((*it)->InFreestyleSection())
+            return true;
+    }
+    return false;
+}
+
+void VocalPlayer::ChangeDifficulty(Difficulty diff) {
+    Player::ChangeDifficulty(diff);
+    TheSongDB->ChangeDifficulty(mTrackNum, diff);
+    mStats.SetVocalSingerAndPartCounts(mSingers.size(), mVocalParts.size());
+    SetDifficultyVariables(diff);
+}
+
+void VocalPlayer::BuildPhrases(bool b1) {
+    std::vector<std::pair<const VocalPhrase *, VocalPart *> > vec;
+    FOREACH (it, mVocalParts) {
+        vec.push_back(std::make_pair((*it)->GetFirstPhraseMarker(), *it));
+    }
+    unk36c = 0;
+    unk370 = 0;
+
+    bool b3;
+    do {
+        b3 = true;
+        bool bvar1 = false;
+        bool bvar2 = false;
+        FOREACH (it, vec) {
+            const VocalPhrase *curPhrase = it->first;
+            VocalPart *curPart = it->second;
+            if (!curPart->IsPhraseMarkerAtEnd(curPhrase)) {
+                b3 = false;
+                if (!curPart->IsEmptyPhrase(curPhrase))
+                    bvar1 = true;
+                if (curPhrase->unk2d)
+                    bvar2 = true;
+                it->first = curPart->GetNextPhraseMarker(curPhrase);
+            }
+        }
+        if (bvar1)
+            unk36c++;
+        if (bvar2)
+            unk370++;
+    } while (!b3);
+    mTambourineManager.PostLoad();
+    if (!b1 && NeedsToOverrideBasePoints()) {
+        TheSongDB->OverrideBasePoints(
+            mTrackNum,
+            mTrackType,
+            GetUserGuid(),
+            GetBaseMaxPoints(),
+            GetBaseMaxStreakPoints(),
+            GetBaseBonusPoints()
+        );
+    }
+}
+
+bool VocalPlayer::RebuildPhrases() {
+    BuildPhrases(false);
+    return Player::RebuildPhrases();
+}
+
+void VocalPlayer::Rollback(float f1, float f2) {
+    FOREACH (it, mVocalParts) {
+        (*it)->Rollback(f1, f2);
+    }
+    FOREACH (it, mSingers) {
+        (*it)->Rollback(f1, f2);
+    }
+    mTambourineManager.Rollback(f1, f2);
+    Player::Rollback(f1, f2);
+}
+
+bool VocalPlayer::DoneWithSong() const {
+    return mQuarantined || GetUser()->IsNullUser() || PastFinalNote();
+}
+
 FORCE_LOCAL_INLINE
 bool VocalPlayer::ScoringEnabled() const { return mScoringEnabled && !InRollback(); }
 END_FORCE_LOCAL_INLINE
+
+void VocalPlayer::HitCoda() {
+    if (IsLocal()) {
+        LocalHitCoda();
+        static Message msg("send_hit_last_coda_gem", 0);
+        HandleType(msg);
+    }
+}
+
+DECOMP_FORCEACTIVE(
+    VocalPlayer,
+    "**** NEW SONG MIN PITCH: %2.0f (was %2.0f)\n",
+    "**** NEW SONG MAX PITCH: %2.0f (was %2.0f)\n"
+)
+
+float VocalPlayer::FramePhraseMeterFrac(int idx) const {
+    if (idx >= mVocalParts.size())
+        return 0;
+    else
+        return mVocalParts[idx]->FramePhraseMeterFrac();
+}
+
+float VocalPlayer::FrameOverallPhraseMeterFrac() const {
+    float ret = 0;
+    for (int i = 0; i < mVocalParts.size(); i++) {
+        float frac = FramePhraseMeterFrac(i);
+        if (frac > ret) {
+            ret = frac;
+        }
+    }
+    return ret;
+}
+
+int VocalPlayer::CalculatePhraseRating(float f1) {
+    for (int i = mRatingThresholds->Size() - 1; i >= 1; i--) {
+        if (f1 > mRatingThresholds->Float(i)) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+int VocalPlayer::PhraseScore() const { return mVocalParts.front()->mPhraseScore; }
+bool VocalPlayer::IgnorePhrase() const { return false; }
+
+bool VocalPlayer::PressingToTalk() {
+    if (!IsLocal())
+        return false;
+    BandUser *u = GetUser();
+    if (!u->IsLocal())
+        return false;
+    else {
+        LocalBandUser *lu = u->GetLocalBandUser();
+        if (!UserHasController(lu))
+            return false;
+        else {
+            return JoypadGetPadData(lu->GetPadNum())->IsButtonInMask(0);
+        }
+    }
+}
+
+void VocalPlayer::LocalHitCoda() {
+    mBand->LocalFinishedCoda(this);
+    mTrack->HideCoda();
+    Deploy();
+}
+
+void VocalPlayer::LocalBlowCoda() { mBand->LocalBlowCoda(this); }
+
+float VocalPlayer::GetHitPercentage(int p) {
+    MILO_ASSERT(p < NumVocalParts(), 0xD18);
+    return mVocalParts[p]->GetOverallPartHitPercentage();
+}
+
+float VocalPlayer::GetPracticeHitPercentage(int p, int i2, int i3) {
+    MILO_ASSERT(p < NumVocalParts(), 0xD20);
+    std::vector<VocalPhrase> phrases;
+    mVocalParts.front()->mVocalNoteList->GetPracticePhrases(phrases, i2, i3);
+    if (p == -1) {
+        float f7 = 0;
+        for (int i = 0; i < (int)mVocalParts.size(); i++) {
+            VocalPart *cur = mVocalParts[i];
+            if (cur->ScoringEnabled()) {
+                float pct = cur->GetPartHitPercentage(phrases, i2, i3);
+                if (pct > f7)
+                    f7 = pct;
+            }
+        }
+        return f7;
+    } else
+        return mVocalParts[p]->GetPartHitPercentage(phrases, i2, i3);
+}
+
+float VocalPlayer::GetBestPercentage(int p) {
+    MILO_ASSERT(p < NumVocalParts(), 0xD79);
+    if (!ScoringEnabled())
+        return 0;
+    else if (p == -1) {
+        float f6 = 0;
+        for (int i = 0; i < NumVocalParts(); i++) {
+            VocalPart *cur = mVocalParts[i];
+            if (cur->ScoringEnabled()) {
+                if (cur->GetOverallPartHitPercentage() > f6) {
+                    f6 = cur->GetOverallPartHitPercentage();
+                }
+            }
+        }
+        return f6;
+    } else
+        return GetHitPercentage(p);
+}
+
+void VocalPlayer::UpdateSectionStats() {
+    float f1;
+    int diff = mPhrasePercentageCount - mSectionStartPhrasePercentageCount;
+    if (diff >= 1) {
+        f1 = (mPhrasePercentageTotal - mSectionStartPhrasePercentageTotal) / (float)diff;
+    } else {
+        f1 = -1;
+    }
+    Player::UpdateSectionStats(f1, mScore - mSectionStartScore);
+}
+
+void VocalPlayer::HandleNewSection(const PracticeSection &s, int i1, int i2) {
+    if (ScoringEnabled()) {
+        mSectionStartPhrasePercentageCount = mPhrasePercentageCount;
+        mSectionStartPhrasePercentageTotal = mPhrasePercentageTotal;
+        mSectionStartScore = mScore;
+        Player::HandleNewSection(s, i1, i2);
+    }
+}
+
+void VocalPlayer::UpdateVocalStyle() {
+    if (!mTrack || mGameOver)
+        return;
+    else {
+        mTrack->SetVocalStyle(mUser->GetGameplayOptions()->GetVocalStyle());
+    }
+}
+
+bool VocalPlayer::Freestyling() const {
+    bool insection = InFreestyleSection();
+    return unk268 || IsDeployingBandEnergy() && insection;
+}
+
+bool VocalPlayer::CanDeployCoda() const {
+    return mBand->NumNonQuarantinedPlayers() > 1 && !mQuarantined;
+}
+
+bool VocalPlayer::AutoplaysCoda() const { return mAutoPlay && !IsNet(); }
+bool VocalPlayer::NeedsToOverrideBasePoints() const { return !mUser->IsNullUser(); }
+
+void VocalPlayer::ToggleOverlay() {
+    MILO_ASSERT(mOverlay, 0xDF0);
+    mOverlay->SetOverlay(!mOverlay->Showing());
+    RELEASE(mVocalOverlay);
+    if (mOverlay->Showing())
+        mVocalOverlay = new VocalOverlay();
+}
+
+float VocalPlayer::UpdateOverlay(RndOverlay *o, float f2) {
+    o->Clear();
+    if (mVocalOverlay) {
+        o->Print(mVocalOverlay->mDisplayedString.c_str());
+    }
+    return f2;
+}
+
+bool VocalPlayer::SongSectionOnly(float &f1, float &f2) const {
+    if (!TheGame->mProperties.mHasSongSections) {
+        return false;
+    } else {
+        int i20, i24;
+        TheGameConfig->GetPracticeSections(i20, i24);
+        float f28;
+        TheGameConfig->GetSectionBounds(i20, f1, f28);
+        TheGameConfig->GetSectionBounds(i24, f28, f2);
+        TheGame->AdjustForVocalPhrases(f1, f2);
+        return true;
+    }
+}
 
 bool VocalPlayer::ToggleFrameSpew() {
     if (mFrameSpewData) {
@@ -589,3 +1096,10 @@ void VocalPlayer::AddHarmonyStat(int i) { mStats.AddHarmony(i); }
 void VocalPlayer::AddTambourineSeen() { mStats.AddTambourineSeen(); }
 void VocalPlayer::AddTambourineHit() { mStats.AddTambourineHit(); }
 void VocalPlayer::EndTambourineSection(int i) { mStats.UpdateBestTambourineSection(i); }
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(VocalPlayer)
+    HANDLE_EXPR(in_star_mode, 0)
+END_HANDLERS
+#pragma pop
