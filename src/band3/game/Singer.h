@@ -90,6 +90,7 @@ public:
     float GetFrameMicPitch() const { return mFrameMicPitch; }
     float GetFrameTargetPitch() const { return mFrameTargetPitch; }
     int GetSingerIndex() const { return mSingerIndex; }
+    int GetFrameAssignedPart() const { return mFrameAssignedPart; }
 
     VocalPlayer *mPlayer; // 0x0
     MicClientID mMicClientID; // 0x4

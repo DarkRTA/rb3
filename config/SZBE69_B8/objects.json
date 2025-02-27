@@ -103,7 +103,7 @@
             },
             "band3/game/UITransitionNetMsgs.cpp": "NonMatching",
             "band3/game/VocalGuidePitch.cpp": "NonMatching",
-            "band3/game/VocalOverlay.cpp": "MISSING",
+            "band3/game/VocalOverlay.cpp": "NonMatching",
             "band3/game/VocalPart.cpp": "NonMatching",
             "band3/game/VocalPlayer.cpp": "NonMatching",
             "band3/game/VocalScoreHistory.cpp": "Matching",
