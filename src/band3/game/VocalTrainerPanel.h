@@ -21,6 +21,8 @@ public:
     void Loop();
     void UpdateScore();
     void ClearTubes();
+    void
+    CopyPhrasesImp(const std::vector<VocalPhrase> &, std::vector<VocalPhrase> &, int, int, int &);
 
     std::vector<VocalPhrase> mPatternPhrases[3]; // 0x54
     std::vector<VocalPhrase> mPatternLyricPhrases[2]; // 0x6c

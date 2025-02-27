@@ -46,6 +46,7 @@ public:
     void AddScore(const VocalScoreCache &);
     void AddPhrasePoints(float);
     void SetFirstPhraseMsToScore(float);
+    void SetVocalNoteList(VocalNoteList *);
 
     int PartIndex() const { return mPartIndex; }
     float MaxPhraseScore() const { return mPhraseScoreMax; }

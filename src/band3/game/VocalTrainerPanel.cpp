@@ -5,10 +5,14 @@
 #include "game/Game.h"
 #include "game/SongDB.h"
 #include "game/TrainerPanel.h"
+#include "game/VocalPart.h"
 #include "game/VocalPlayer.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "ui/UIPanel.h"
 #include "utl/Messages.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/TimeConversion.h"
 
 VocalTrainerPanel::VocalTrainerPanel()
@@ -100,42 +104,47 @@ void VocalTrainerPanel::StartSectionImpl() {
     for (int i = 0; i < 3; i++) {
         mPatternNotes[i].clear();
         mPatternPhrases[i].clear();
-        std::vector<VocalNote> notes = unkb4[i]->GetNotes();
+        const std::vector<VocalNote> notes = unkb4[i]->GetNotes();
         int id4 = sect.GetEndTick();
         int id8 = sect.GetStartTick();
         int idc = notes.size();
         for (int j = 0; j < notes.size(); j++) {
             int tick = notes[j].GetTick();
-            if (sect.GetEndTick() <= tick)
+            if (tick >= sect.GetEndTick())
                 break;
-            if (sect.GetStartTick() <= tick) {
+            if (tick >= sect.GetStartTick()) {
                 mPatternNotes[i].push_back(notes[j]);
                 MinEq(id4, tick);
-                MinEq(id8, tick);
-                MaxEq(idc, j);
+                MaxEq(id8, tick);
+                MinEq(idc, j);
             }
         }
-        std::vector<VocalPhrase> &phrases = unkb4[i]->GetPhrases();
-        for (int j = 0; j < phrases.size() && phrases[j].unk8 <= id8; j++) {
+        const std::vector<VocalPhrase> &phrases = unkb4[i]->GetPhrases();
+        for (int j = 0; j < phrases.size(); j++) {
+            if (phrases[j].unk8 > id8)
+                break;
             int i12 = phrases[j].unk8 + phrases[j].unkc;
-            if (id4 < i12) {
+            if (i12 > id4) {
                 VocalPhrase curPhrase(phrases[j]);
                 curPhrase.unk10 -= idc;
                 curPhrase.unk14 -= idc;
-                if (sect.GetEndTick() < i12) {
+                if (i12 > sect.GetEndTick()) {
                     MILO_FAIL(
                         "Vocal trainer section %s: last phrase doesn't finish within the section\n",
                         sect.GetName()
                     );
                 }
+                mPatternPhrases[i].push_back(curPhrase);
             }
         }
 
         if (i < 2) {
             mPatternLyricPhrases[i].clear();
-            std::vector<VocalPhrase> &lyricPhrases = unkb4[i]->GetLyricPhrases();
-            for (int j = 0; j < lyricPhrases.size() && lyricPhrases[j].unk8 <= id8; j++) {
-                if (id4 < lyricPhrases[j].unk8 + lyricPhrases[j].unkc) {
+            const std::vector<VocalPhrase> &lyricPhrases = unkb4[i]->GetLyricPhrases();
+            for (int j = 0; j < lyricPhrases.size(); j++) {
+                if (lyricPhrases[j].unk8 > id8)
+                    break;
+                if (lyricPhrases[j].unk8 + lyricPhrases[j].unkc > id4) {
                     VocalPhrase curPhrase(lyricPhrases[j]);
                     curPhrase.unk10 -= idc;
                     curPhrase.unk14 -= idc;
@@ -168,3 +177,157 @@ void VocalTrainerPanel::StartSectionImpl() {
     UpdateScore();
 }
 #pragma pop
+
+void VocalTrainerPanel::CopyPhrasesImp(
+    const std::vector<VocalPhrase> &v1,
+    std::vector<VocalPhrase> &v2,
+    int i3,
+    int i4,
+    int &i5
+) {
+    for (int i = 0; i < v1.size(); i++) {
+        VocalPhrase curPhrase = v1[i];
+        curPhrase.unk10 += i3;
+        curPhrase.unk14 += i3;
+        int ivar3 = curPhrase.unk8 + i4;
+        curPhrase.unk8 = i5;
+        curPhrase.unkc += (ivar3 - curPhrase.unk8);
+        int tickSum = curPhrase.unk8 + curPhrase.unkc;
+        curPhrase.unk0 = TickToMs(tickSum);
+        curPhrase.unk4 = TickToMs(tickSum) - curPhrase.unk0;
+        i5 = curPhrase.unk8 + curPhrase.unkc;
+        v2.push_back(curPhrase);
+    }
+}
+
+void VocalTrainerPanel::CopyTubes(int i1) {
+    TrainerSection &sect = GetSection(GetCurrSection());
+    for (int part = 0; part < 3; part++) {
+        VocalNoteList *cur = unka8[part];
+        cur->mNotes.clear();
+        cur->mPhrases.clear();
+        cur->mLyricPhrases.clear();
+        int ic4 = 0;
+        int ic8 = 0;
+        MILO_ASSERT(mPatternPhrases[part].size(), 0x137);
+        VocalPhrase phrase;
+        ic4 = mPatternPhrases[part][0].unk8;
+        phrase.unk4 = mPatternPhrases[part][0].unk0;
+        cur->mPhrases.push_back(phrase);
+        std::vector<VocalNote> &notes = mPatternNotes[part];
+        for (int j = -1; j < 2; j++) {
+            int ivar1 = unk9c - sect.GetStartTick();
+            ivar1 += j * GetSectionTicks(GetCurrSection());
+            for (int k = 0; k < notes.size(); k++) {
+                VocalNote note = notes[k];
+                int ticksum = ivar1 + note.GetTick();
+                note.SetNoteTime(TickToMs(ticksum), ticksum);
+                unka8[part]->AddNote(note);
+            }
+            int ivar5 = (j + 1) * notes.size();
+            CopyPhrasesImp(mPatternPhrases[part], cur->mPhrases, ivar5, ivar1, ic4);
+            if (part < 2) {
+                CopyPhrasesImp(
+                    mPatternLyricPhrases[part], cur->mLyricPhrases, ivar5, ivar1, ic8
+                );
+            }
+        }
+    }
+    static bool dump;
+    if (dump) {
+        MILO_LOG("************ COPY GEMS\n");
+        MILO_LOG("jump tick: %d\n", i1);
+        MILO_LOG("write tick: %d\n", unk9c);
+        MILO_LOG("section (%d, %d)\n", sect.GetStartTick(), sect.GetEndTick());
+        for (int i = 0; i < 3; i++) {
+            MILO_LOG("PART %d\n", i);
+            VocalNoteList *curNoteList = unka8[i];
+            MILO_LOG("orig phrases [%d]\n", mPatternPhrases[i].size());
+            for (int j = 0; j < mPatternPhrases[i].size(); j++) {
+                MILO_LOG(
+                    "\t%d - %d\t(%f - %f)\n",
+                    mPatternPhrases[i][j].unk8,
+                    mPatternPhrases[i][j].unk8 + mPatternPhrases[i][j].unkc,
+                    mPatternPhrases[i][j].unk0,
+                    mPatternPhrases[i][j].unk0 + mPatternPhrases[i][j].unk4
+                );
+            }
+            MILO_LOG("add phrases [%d]\n", curNoteList->mPhrases.size());
+            for (int j = 0; j < curNoteList->mPhrases.size(); j++) {
+                MILO_LOG(
+                    "\t%d - %d\t(%f - %f)\n",
+                    curNoteList->mPhrases[j].unk8,
+                    curNoteList->mPhrases[j].unk8 + curNoteList->mPhrases[j].unkc,
+                    curNoteList->mPhrases[j].unk0,
+                    curNoteList->mPhrases[j].unk0 + curNoteList->mPhrases[j].unk4
+                );
+            }
+            MILO_LOG("orig lyric phrases [%d]\n", mPatternLyricPhrases[i].size());
+            for (int j = 0; j < mPatternLyricPhrases[i].size(); j++) {
+                MILO_LOG(
+                    "\t%d - %d\t(%f - %f)\n",
+                    mPatternLyricPhrases[i][j].unk8,
+                    mPatternLyricPhrases[i][j].unk8 + mPatternLyricPhrases[i][j].unkc,
+                    mPatternLyricPhrases[i][j].unk0,
+                    mPatternLyricPhrases[i][j].unk0 + mPatternLyricPhrases[i][j].unk4
+                );
+            }
+            MILO_LOG("add lyric phrases [%d]\n", curNoteList->mLyricPhrases.size());
+            for (int j = 0; j < curNoteList->mLyricPhrases.size(); j++) {
+                MILO_LOG(
+                    "\t%d - %d\t(%f - %f)\n",
+                    curNoteList->mLyricPhrases[j].unk8,
+                    curNoteList->mLyricPhrases[j].unk8
+                        + curNoteList->mLyricPhrases[j].unkc,
+                    curNoteList->mLyricPhrases[j].unk0,
+                    curNoteList->mLyricPhrases[j].unk0
+                        + curNoteList->mLyricPhrases[j].unk4
+                );
+            }
+        }
+        MILO_LOG("************\n");
+    }
+    if (i1 > unk9c) {
+        unk9c += GetSectionTicks(GetCurrSection());
+    }
+    if (mVocalPlayer) {
+        for (int i = 0; i < 3; i++) {
+            VocalPart *part = mVocalPlayer->mVocalParts[i];
+            VocalNoteList *list = nullptr;
+            if (part) {
+                list = unka8[i];
+                part->SetVocalNoteList(list);
+            }
+            mTrack->SetAlternateNoteList(i, list);
+        }
+        mVocalPlayer->Jump(TickToMs(i1), false);
+    }
+}
+
+void VocalTrainerPanel::ClearTubes() { mTrack->RebuildHUD(); }
+
+void VocalTrainerPanel::Loop() {
+    mVocalPlayer->EndHitStreak();
+    ResetChallenge();
+}
+
+void VocalTrainerPanel::AddBeatMask(int tick) {
+    int ticks = GetSectionTicks(GetCurrSection());
+    TickToSeconds(tick);
+    TickToSeconds(tick + ticks);
+}
+
+void VocalTrainerPanel::UpdateScore() {
+    static Message msg("update_score", 0, 0);
+    msg[0] = unkcc;
+    msg[1] = unkd0;
+    Handle(msg, true);
+}
+
+BEGIN_HANDLERS(VocalTrainerPanel)
+    HANDLE_ACTION(clear_tubes, ClearTubes())
+    HANDLE_EXPR(get_total_phrases_float, (float)mPatternPhrases[0].size())
+    HANDLE_SUPERCLASS(TrainerPanel)
+    HANDLE_MEMBER_PTR(DataDir())
+    HANDLE_CHECK(0x1C0)
+END_HANDLERS
