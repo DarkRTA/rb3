@@ -253,7 +253,7 @@ void GemTrainerPanel::CopyGems(
 }
 
 void GemTrainerPanel::StartSectionImpl() {
-    TheSongDB->GetSongData()->GetTempoMap()->ClearLoopPoints();
+    TheSongDB->GetData()->GetTempoMap()->ClearLoopPoints();
     ClearGems();
     mTrack->GetBandTrack()->PracticeReset();
     TrainerSection &sect = GetSection(GetCurrSection());
@@ -298,7 +298,7 @@ void GemTrainerPanel::StartSectionImpl() {
 
 void GemTrainerPanel::SetLoopPoints() {
     if (GetCurrSection() >= 0) {
-        TheSongDB->GetSongData()->GetTempoMap()->ClearLoopPoints();
+        TheSongDB->GetData()->GetTempoMap()->ClearLoopPoints();
         int start = GetSectionLoopStart(GetCurrSection());
         int end = GetSectionLoopEnd(GetCurrSection());
         TrainerSection &sect = GetSection(GetCurrSection());
@@ -308,7 +308,7 @@ void GemTrainerPanel::SetLoopPoints() {
         TheGame->GetBeatMaster()->GetAudio()->GetSongStream()->SetJump(
             endMs, startMs, nullptr
         );
-        TheSongDB->GetSongData()->GetTempoMap()->SetLoopPoints(start, end);
+        TheSongDB->GetData()->GetTempoMap()->SetLoopPoints(start, end);
     }
 }
 

@@ -479,8 +479,9 @@ void VocalPlayer::HandlePhraseEnd(float f1) {
         VocalPart *cur = *it;
         vec58.push_back(cur->MaxPhraseScore());
         float fd4 = FramePhraseMeterFrac(cur->PartIndex());
-        if (!cur->InEmptyPhrase() && cur->InPlayablePhrase() && !cur->mThisPhrase->unk2d
-            && cur->ScoringEnabled() && cur->ScoringEnabled()) {
+        if (!cur->InEmptyPhrase() && cur->InPlayablePhrase()
+            && !cur->mThisPhrase->mTambourinePhrase && cur->ScoringEnabled()
+            && cur->ScoringEnabled()) {
             MaxEq(fc4, fd4);
         }
 
@@ -831,7 +832,7 @@ void VocalPlayer::BuildPhrases(bool b1) {
                 b3 = false;
                 if (!curPart->IsEmptyPhrase(curPhrase))
                     bvar1 = true;
-                if (curPhrase->unk2d)
+                if (curPhrase->mTambourinePhrase)
                     bvar2 = true;
                 it->first = curPart->GetNextPhraseMarker(curPhrase);
             }

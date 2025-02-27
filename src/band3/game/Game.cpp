@@ -130,8 +130,7 @@ Game::Game()
     TheSongDB = mSongDB;
     TheGame = this;
     SetName("beatmatch", ObjectDir::sMainDir);
-    mMaster =
-        new BeatMaster(mSongDB->GetSongData(), TheBandUserMgr->GetNumParticipants());
+    mMaster = new BeatMaster(mSongDB->GetData(), TheBandUserMgr->GetNumParticipants());
     mMaster->RegisterSink(*this);
     TheNetSession->AddSink(this, GameEndedMsg::Type());
     TheSessionMgr->AddSink(this, LocalUserLeftMsg::Type());
@@ -331,9 +330,9 @@ void Game::Reset() {
     if (DataVarExists("beatmatch_start_mbt")) {
         int m, b, t;
         ParseMBT(DataVariable("beatmatch_start_mbt").Str(), m, b, t);
-        unk134 = TickToMs(
-            TheSongDB->GetSongData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t)
-        );
+        unk134 =
+            TickToMs(TheSongDB->GetData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t)
+            );
     }
 }
 
@@ -487,8 +486,7 @@ DataNode Game::OnJump(const DataArray *a) {
     } else if (ty == kDataSymbol || ty == kDataString) {
         int m, b, t;
         ParseMBT(node.Str(), m, b, t);
-        int tick =
-            TheSongDB->GetSongData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t);
+        int tick = TheSongDB->GetData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t);
         Jump(TickToMs(tick), true);
     }
     return 1;

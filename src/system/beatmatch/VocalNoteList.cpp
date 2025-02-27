@@ -10,7 +10,7 @@ inline const char *VocalNoteList::PrintTick(int tick) const {
 VocalPhrase::VocalPhrase()
     : unk0(0), unk4(0), unk8(-1), unkc(-1), unk10(-1), unk14(-1), unk18(0), unk19(0),
       unk1a(0), unk1c(0), unk20(0), unk24(3.4028235E+38f), unk28(-3.4028235E+38f),
-      unk2c(0), unk2d(0), unk30(0), unk34(0) {}
+      unk2c(0), mTambourinePhrase(0), unk30(0), unk34(0) {}
 
 VocalNoteList::VocalNoteList(SongData *data)
     : mSongData(data), mFreestyleMinDuration(0), mFreestylePad(0) {

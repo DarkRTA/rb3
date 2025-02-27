@@ -566,7 +566,7 @@ bool VocalTrack::WantBeatLines(int i1) {
         std::vector<VocalPhrase> &phrases = notes->mPhrases;
         FOREACH (it, phrases) {
             if (i1 >= it->unk8 && (i1 <= it->unk8 + it->unkc)) {
-                return it->unk2d;
+                return it->mTambourinePhrase;
             }
         }
         return false;

@@ -136,4 +136,22 @@ void VocalPart::CalcNoteWeights() { mNoteWeights.clear(); }
 void VocalPart::EnableScoring(bool b) { mScoringEnabled = b; }
 bool VocalPart::ScoringEnabled() const { return mScoringEnabled; }
 
+void VocalPart::ResetScoring() {
+    if (!IsEmptyPhrase(mThisPhrase)) {
+        mPhraseScoreMax = CalcPhraseScoreMax(mThisPhrase);
+    } else
+        mPhraseScoreMax = 0;
+}
+
+void VocalPart::AddScore(const VocalScoreCache &c) { AddPhrasePoints(c.unk4); }
+void VocalPart::ForcePhrasePointDelta(float f1) { mPhraseScore += f1; }
+
+void VocalPart::SetPhraseScoreMultiplier(float f1) { mPhraseScorePartMultiplier = f1; }
+void VocalPart::SetPhraseRank(int i) { mPhraseRank = i; }
+
 void VocalPart::SetRemotePhraseMeterFrac(float f1) { mRemotePhraseMeterFrac = f1; }
+void VocalPart::OnGameOver() {}
+
+int VocalPart::GetSpotlightPhrase() const { return mSpotlightPhraseID; }
+
+void VocalPart::SetFirstPhraseMsToScore(float f1) { mFirstPhraseMsToScore = f1; }

@@ -318,10 +318,9 @@ void GemTrack::UpdateShifts() {
         mCurrentRangeShift = mRangeShifts.end();
     } else {
         mRangeShifts.clear();
-        std::vector<RangeSection> &rangeSects =
-            TheSongDB->GetSongData()->GetKeyRangeSections(
-                mTrackConfig.GetBandUser()->GetDifficulty()
-            );
+        std::vector<RangeSection> &rangeSects = TheSongDB->GetData()->GetKeyRangeSections(
+            mTrackConfig.GetBandUser()->GetDifficulty()
+        );
         if (ShiftsEnabled()) {
             for (int i = 0; i < rangeSects.size(); i++) {
                 RangeSection &curSect = rangeSects[i];
@@ -421,7 +420,7 @@ void GemTrack::DrawBeatLines(int i1, int i2) {
     static Symbol downbeat_line("bar_measure.wid");
     static Symbol beat_line("bar_beat.wid");
     static Symbol offbeat_line("bar_half_beat.wid");
-    TheSongDB->GetSongData();
+    TheSongDB->GetData();
 }
 
 void GemTrack::Poll(float f) {}

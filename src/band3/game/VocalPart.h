@@ -41,6 +41,11 @@ public:
     bool IsEmptyPhrase(const VocalPhrase *const &) const;
     void Rollback(float, float);
     float GetPartHitPercentage(const std::vector<VocalPhrase> &, int, int) const;
+    void ResetScoring();
+    float CalcPhraseScoreMax(const VocalPhrase *const &) const;
+    void AddScore(const VocalScoreCache &);
+    void AddPhrasePoints(float);
+    void SetFirstPhraseMsToScore(float);
 
     int PartIndex() const { return mPartIndex; }
     float MaxPhraseScore() const { return mPhraseScoreMax; }

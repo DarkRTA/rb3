@@ -38,7 +38,7 @@ public:
     void ResetAudio();
     void ExportInitialSubmixes();
 
-    MasterAudio *GetAudio() const { return mAudio; }
+    MasterAudio *GetAudio() { return mAudio; }
     MidiParserMgr *GetMidiParserMgr() const { return mMidiParserMgr; }
 
     bool mRecording; // 0x8

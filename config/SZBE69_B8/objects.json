@@ -107,7 +107,7 @@
             "band3/game/VocalPart.cpp": "NonMatching",
             "band3/game/VocalPlayer.cpp": "NonMatching",
             "band3/game/VocalScoreHistory.cpp": "Matching",
-            "band3/game/VocalTrainerPanel.cpp": "MISSING",
+            "band3/game/VocalTrainerPanel.cpp": "NonMatching",
 
             "band3/meta_band/Accomplishment.cpp": "NonMatching",
             "band3/meta_band/AccomplishmentCategory.cpp": "Matching",

@@ -236,7 +236,7 @@ void BudgetScreen::Poll() {
     if (timerScript)
         timerScript->ExecuteScript(1, nullptr, nullptr, 1);
 
-    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(
+    float tick = TheSongDB->GetData()->GetTempoMap()->TimeToTick(
         TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f
     );
 
