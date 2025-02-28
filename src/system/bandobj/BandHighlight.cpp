@@ -56,7 +56,7 @@ void BandHighlight::Poll() {
         if (curscreen) {
             UIPanel *focuspanel = curscreen->FocusPanel();
             if (focuspanel) {
-                if (focuspanel->GetPanelDir() == Dir()) {
+                if (focuspanel->LoadedDir() == Dir()) {
                     SetState(kNormal);
                 }
             }

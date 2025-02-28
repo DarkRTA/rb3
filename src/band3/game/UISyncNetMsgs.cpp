@@ -75,7 +75,7 @@ void ComponentSelectNetMsg::Dispatch() {
         if (mShowSelect && handled == DataNode(kDataUnhandled, 0)) {
             UIScreen *screen = TheUI->CurrentScreen();
             if (screen) {
-                PanelDir *dir = screen->FocusPanel()->GetPanelDir();
+                PanelDir *dir = screen->FocusPanel()->LoadedDir();
                 if (dir) {
                     UIComponent *c = dir->FindComponent(mComponentName.c_str());
                     if (c)
@@ -130,7 +130,7 @@ void ComponentScrollNetMsg::Dispatch() {
         if (screen) {
             UIPanel *panel = screen->FocusPanel();
             if (panel) {
-                PanelDir *dir = screen->FocusPanel()->GetPanelDir();
+                PanelDir *dir = screen->FocusPanel()->LoadedDir();
                 if (dir) {
                     UIComponent *c = dir->FindComponent(mComponentName.c_str());
                     if (c) {

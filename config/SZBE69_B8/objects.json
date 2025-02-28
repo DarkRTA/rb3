@@ -155,7 +155,7 @@
             "band3/meta_band/BandStoreOffer.cpp": "NonMatching",
             "band3/meta_band/BandStorePanel.cpp": "MISSING",
             "band3/meta_band/BandStoreUIPanel.cpp": "MISSING",
-            "band3/meta_band/BandUI.cpp": "MISSING",
+            "band3/meta_band/BandUI.cpp": "NonMatching",
             "band3/meta_band/CalibrationPanel.cpp": "NonMatching",
             "band3/meta_band/Campaign.cpp": "MISSING",
             "band3/meta_band/CampaignCareerLeaderboardPanel.cpp": "NonMatching",

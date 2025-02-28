@@ -12,4 +12,5 @@ public:
         static Symbol t("rock_central_op_complete_msg");
         return t;
     }
+    bool Arg0() const { return mData->Int(2); }
 };
