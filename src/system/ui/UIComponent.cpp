@@ -199,11 +199,11 @@ void UIComponent::SendSelect(LocalUser *user) {
         static UIComponentSelectMsg select_msg(0, 0);
         select_msg[0] = DataNode(this);
         select_msg[1] = DataNode(user);
-        TheUI->Handle(select_msg, false);
+        TheUI.Handle(select_msg, false);
         if (mState != kSelecting)
             mSelectScreen = 0;
         else {
-            mSelectScreen = TheUI->mCurrentScreen;
+            mSelectScreen = TheUI.mCurrentScreen;
             mSelectingUser = user;
             MILO_ASSERT(sSelectFrames < 255, 0x137);
             MILO_ASSERT(sSelectFrames >= 0, 0x138);
@@ -344,7 +344,7 @@ ObjectDir *UIComponent::ResourceDir() {
 void UIComponent::UpdateResource() {
     if (mResource)
         mResource->Release();
-    mResource = TheUI->Resource(this);
+    mResource = TheUI.Resource(this);
     if (mResource) {
         mResource->Load(mLoading);
     }
@@ -399,11 +399,11 @@ DataNode UIComponent::OnGetResourcesPath(DataArray *da) {
 void UIComponent::FinishSelecting() {
     if (mState != kDisabled && mState != kNormal)
         SetState(kFocused);
-    if (!mMockSelect && mSelectScreen == TheUI->mCurrentScreen) {
+    if (!mMockSelect && mSelectScreen == TheUI.mCurrentScreen) {
         static UIComponentSelectDoneMsg select_msg(this, 0);
         select_msg[0] = DataNode(this);
         select_msg[1] = DataNode(mSelectingUser);
-        TheUI->Handle(select_msg, false);
+        TheUI.Handle(select_msg, false);
     } else
         mMockSelect = false;
 }

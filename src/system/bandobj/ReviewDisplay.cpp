@@ -6,7 +6,7 @@ INIT_REVS(ReviewDisplay);
 
 void ReviewDisplay::Init() {
     Register();
-    TheUI->InitResources("ReviewDisplay");
+    TheUI.InitResources("ReviewDisplay");
 }
 
 ReviewDisplay::ReviewDisplay() : mReviewAnim(0), mFocusAnim(0), mScore(0) {}

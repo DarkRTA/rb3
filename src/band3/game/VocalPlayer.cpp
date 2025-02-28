@@ -732,11 +732,11 @@ int VocalPlayer::OnMsg(const ButtonDownMsg &msg) {
         return 0;
     else {
         bool b1 = false;
-        if (TheUI->FocusPanel()) {
-            b1 = strcmp(TheUI->FocusPanel()->Name(), "world_panel") == 0;
+        if (TheUI.FocusPanel()) {
+            b1 = strcmp(TheUI.FocusPanel()->Name(), "world_panel") == 0;
         }
-        if (TheUI->FocusPanel() != TheGamePanel && !b1) {
-            if (!dynamic_cast<PracticePanel *>(TheUI->FocusPanel()))
+        if (TheUI.FocusPanel() != TheGamePanel && !b1) {
+            if (!dynamic_cast<PracticePanel *>(TheUI.FocusPanel()))
                 return 0;
         }
     }

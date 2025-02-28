@@ -6,7 +6,7 @@ INIT_REVS(InstrumentDifficultyDisplay);
 
 void InstrumentDifficultyDisplay::Init() {
     Register();
-    TheUI->InitResources("InstrumentDifficultyDisplay");
+    TheUI.InitResources("InstrumentDifficultyDisplay");
 }
 
 InstrumentDifficultyDisplay::InstrumentDifficultyDisplay()

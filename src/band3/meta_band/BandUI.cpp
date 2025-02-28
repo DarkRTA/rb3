@@ -38,24 +38,21 @@
 #include "ui/UIComponent.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
-#include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 MicClientID sNullMicClientID;
 BandUI TheBandUI;
-UIManager *TheUI = &TheBandUI;
+UIManager &TheUI = TheBandUI;
 
 CurrentScreenChangedMsg::CurrentScreenChangedMsg(Symbol s) : Message(Type(), s) {}
 Symbol CurrentScreenChangedMsg::GetScreen() const { return mData->Sym(2); }
 
 BandUI::BandUI()
-    : unkd4(1), mVignetteOverlay(0), mInviteAccepted(0), mDisbandStatus(kDisbandsEnabled),
-      mOvershell(0), mEventDialog(0), mContentLoadingPanel(0), mPassiveMessagesPanel(0),
-      mSaveLoadStatusPanel(0), mWaitingUserGate(0), mInterstitialMgr(0),
-      mInputInterceptor(0), mAbstractWipePanel(0), unk10c(0), unk10d(0) {}
+    : mShowVignettes(1), mVignetteOverlay(0), mInviteAccepted(0),
+      mDisbandStatus(kDisbandsEnabled), mOvershell(0), mEventDialog(0),
+      mContentLoadingPanel(0), mPassiveMessagesPanel(0), mSaveLoadStatusPanel(0),
+      mWaitingUserGate(0), mInterstitialMgr(0), mInputInterceptor(0),
+      mAbstractWipePanel(0), unk10c(0), unk10d(0) {}
 
 BandUI::~BandUI() {}
 
@@ -442,7 +439,7 @@ bool BandUI::InComponentSelect() {
 }
 
 UIScreen *BandUI::GetTargetScreen(UIScreen *screen) {
-    if (unkd4) {
+    if (mShowVignettes) {
         UIScreen *toScreen = mInterstitialMgr->CurrentInterstitialToScreen(screen);
         if (toScreen) {
             mInterstitialMgr->PrintOverlay(mCurrentScreen, screen);
@@ -572,8 +569,8 @@ BEGIN_HANDLERS(BandUI)
     HANDLE_ACTION(trigger_disband_event, TriggerDisbandEvent((DisbandError)_msg->Int(2)))
     HANDLE_ACTION(abstract_wipe, WipeOnNextTransition(false))
     HANDLE_ACTION(abstract_wipe_in, WipeOnNextTransition(true))
-    HANDLE_ACTION(set_vignettes_showing, unkd4 = _msg->Int(2))
-    HANDLE_EXPR(get_vignettes_showing, unkd4)
+    HANDLE_ACTION(set_vignettes_showing, mShowVignettes = _msg->Int(2))
+    HANDLE_EXPR(get_vignettes_showing, mShowVignettes)
     HANDLE_ACTION(cycle_vignette_override, mInterstitialMgr->CycleRandomOverride())
     HANDLE_EXPR(get_vignette_override, mInterstitialMgr->mRandomOverride)
     HANDLE_ACTION(write_to_vignette_overlay, WriteToVignetteOverlay(_msg->Str(2)))

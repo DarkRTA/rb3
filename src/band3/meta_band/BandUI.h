@@ -96,7 +96,7 @@ public:
     bool GetInviteAccepted() const { return mInviteAccepted; }
     void SetDisbandStatus(DisbandStatus s) { mDisbandStatus = s; }
 
-    bool unkd4; // 0xd4
+    bool mShowVignettes; // 0xd4
     RndOverlay *mVignetteOverlay; // 0xd8
     RndOverlay *mUIOverlay; // 0xdc
     bool mInviteAccepted; // 0xe0 - invite accepted

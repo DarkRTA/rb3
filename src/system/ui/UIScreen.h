@@ -9,10 +9,10 @@
 
 class PanelRef {
 public:
-    class UIPanel *mPanel;
-    bool mActive;
-    bool mAlwaysLoad;
-    bool mLoaded;
+    class UIPanel *mPanel; // 0x0
+    bool mActive; // 0x4
+    bool mAlwaysLoad; // 0x5
+    bool mLoaded; // 0x6
 
     friend class UIScreen;
 

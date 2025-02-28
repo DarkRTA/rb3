@@ -11,7 +11,7 @@ INIT_REVS(UISlider)
 UISlider::UISlider() : mCurrent(0), mNumSteps(10), mVertical(0) {}
 
 void UISlider::Init() {
-    TheUI->InitResources("UISlider");
+    TheUI.InitResources("UISlider");
     Register();
 }
 
@@ -145,7 +145,7 @@ DataNode UISlider::OnMsg(const ButtonDownMsg &msg) {
             if (step >= 0 && step < mNumSteps) {
                 SetCurrent(step);
                 UIComponentScrollMsg scroll_msg(this, msg.GetUser());
-                TheUI->Handle(scroll_msg, false);
+                TheUI.Handle(scroll_msg, false);
             }
             return DataNode(1);
         }

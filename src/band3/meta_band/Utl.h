@@ -8,3 +8,4 @@ const char *GetFontCharForProDrums(int);
 const char *GetFontCharForHarmonyMics(int, int);
 const char *GetFontCharFromScoreType(ScoreType, int);
 const char *GetFontCharFromControllerType(ControllerType, int);
+bool IsVignette(class UIPanel *);

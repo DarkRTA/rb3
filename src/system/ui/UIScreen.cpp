@@ -176,7 +176,7 @@ void UIScreen::SetFocusPanel(class UIPanel *panel) {
 }
 
 bool UIScreen::InComponentSelect() const {
-    UIComponent *component = TheUI->FocusComponent();
+    UIComponent *component = TheUI.FocusComponent();
     if (component != NULL) {
         return component->GetState() == UIComponent::kSelecting;
     }
@@ -376,7 +376,7 @@ DataNode UIScreen::OnMsg(const ButtonDownMsg &msg) {
         DataNode n = mBack->Evaluate(1);
         if (n.Type() != kDataUnhandled) {
             Message m(go_back_screen, n.Str(), msg.GetUser());
-            TheUI->Handle(m, true);
+            TheUI.Handle(m, true);
         }
     }
 

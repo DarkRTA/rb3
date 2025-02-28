@@ -11,7 +11,7 @@ INIT_REVS(StarDisplay)
 
 void StarDisplay::Init() {
     Register();
-    TheUI->InitResources("StarDisplay");
+    TheUI.InitResources("StarDisplay");
 }
 
 StarDisplay::StarDisplay()

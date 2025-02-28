@@ -319,7 +319,7 @@ void BudgetScreen::Poll() {
         }
 
         UIScreen *stopScreen = ObjectDir::Main()->Find<UIScreen>("stop_budget", true);
-        TheUI->GotoScreen(stopScreen, false, false);
+        TheUI.GotoScreen(stopScreen, false, false);
     }
 }
 

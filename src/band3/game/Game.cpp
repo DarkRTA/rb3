@@ -681,7 +681,7 @@ DataNode Game::OnMsg(const RemoteUserLeftMsg &msg) {
 
 DataNode Game::OnMsg(const RemoteLeaderLeftMsg &msg) {
     if (unkc4) {
-        if (!TheUI->InTransition()) {
+        if (!TheUI.InTransition()) {
             TheGamePanel->Handle(game_outro_msg, true);
         }
     }

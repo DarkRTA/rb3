@@ -10,7 +10,7 @@ INIT_REVS(UIButton)
 UIButton::UIButton() {}
 
 void UIButton::Init() {
-    TheUI->InitResources("UIButton");
+    TheUI.InitResources("UIButton");
     Register();
 }
 

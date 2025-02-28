@@ -58,7 +58,7 @@ bool NetSync::IsBlockingEvent(Symbol event) const {
                 }
             }
         }
-        UIScreen *curscreen = TheUI->CurrentScreen();
+        UIScreen *curscreen = TheUI.CurrentScreen();
         if (curscreen) {
             n30 = curscreen->Handle(msg, false);
             if (n30 != DataNode(kDataUnhandled, 0) && n30.Int()) {
@@ -66,8 +66,8 @@ bool NetSync::IsBlockingEvent(Symbol event) const {
             }
         }
 
-        if (TheUI->PushDepth() > 0) {
-            UIScreen *bottomscreen = TheUI->BottomScreen();
+        if (TheUI.PushDepth() > 0) {
+            UIScreen *bottomscreen = TheUI.BottomScreen();
             if (bottomscreen) {
                 n30 = bottomscreen->Handle(msg, false);
                 if (n30 != DataNode(kDataUnhandled, 0) && n30.Int()) {
@@ -86,9 +86,9 @@ NetUIState NetSync::GetUIState() const {
 }
 
 void NetSync::Poll() {
-    if (TheUI->InTransition()) {
-        UIScreen *cur = TheUI->CurrentScreen();
-        if (!TheUI->TransitionScreen() || TheUI->TransitionScreen()->IsLoaded()) {
+    if (TheUI.InTransition()) {
+        UIScreen *cur = TheUI.CurrentScreen();
+        if (!TheUI.TransitionScreen() || TheUI.TransitionScreen()->IsLoaded()) {
             if (!cur || !cur->Exiting()) {
                 if (mUILockStep->InLock() && !mUILockStep->HasResponded()) {
                     mUILockStep->RespondToLock(true);
@@ -96,7 +96,7 @@ void NetSync::Poll() {
             }
         }
     } else {
-        if (mDestinationScreen && TheUI->CurrentScreen()) {
+        if (mDestinationScreen && TheUI.CurrentScreen()) {
             AttemptTransition(mDestinationScreen, mDestinationDepth);
         }
     }

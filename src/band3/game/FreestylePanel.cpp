@@ -52,7 +52,7 @@ void FreestylePanel::Exit() {
 
 void FreestylePanel::Poll() {
     UIPanel::Poll();
-    if (TheUI->FocusPanel() == this && mUser && mController && !mFreestylePaused) {
+    if (TheUI.FocusPanel() == this && mUser && mController && !mFreestylePaused) {
         mController->SetSecondPedalHiHat(TheProfileMgr.GetSecondPedalHiHat());
         if (mMetronome->Enabled()) {
             unk48 -= TheTaskMgr.DeltaUISeconds();
@@ -100,7 +100,7 @@ void FreestylePanel::HandleSolo() {
 }
 
 bool FreestylePanel::Swing(int i1, bool, bool, bool, bool, GemHitFlags) {
-    if (TheUI->FocusPanel() != this || mFreestylePaused)
+    if (TheUI.FocusPanel() != this || mFreestylePaused)
         return false;
     int slot = mController->GetVirtualSlot(i1);
     if (slot == -1)

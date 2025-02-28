@@ -7,7 +7,7 @@ INIT_REVS(ScrollbarDisplay);
 
 void ScrollbarDisplay::Init() {
     Register();
-    TheUI->InitResources("ScrollbarDisplay");
+    TheUI.InitResources("ScrollbarDisplay");
 }
 
 ScrollbarDisplay::ScrollbarDisplay()

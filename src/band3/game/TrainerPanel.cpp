@@ -53,7 +53,7 @@ void TrainerPanel::Exit() {
 void TrainerPanel::Draw() {
     UIPanel::Draw();
     if (mShowProgressMeter) {
-        TheUI->GetCam()->Select();
+        TheUI.GetCam()->Select();
         mProgressMeter->Draw();
     } else {
         mProgressMeter->Hide();

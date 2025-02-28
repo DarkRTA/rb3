@@ -9,7 +9,7 @@ INIT_REVS(LabelNumberTicker)
 
 void LabelNumberTicker::Init() {
     Register();
-    TheUI->InitResources("LabelNumberTicker");
+    TheUI.InitResources("LabelNumberTicker");
 }
 
 LabelNumberTicker::LabelNumberTicker()

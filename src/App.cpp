@@ -49,7 +49,7 @@ void App::DrawRegular() {
         ThePlatformMgr.Draw();
     else {
         TIMER_ACTION("begin_draw", TheRnd->BeginDrawing())
-        TIMER_ACTION("ui_draw", TheUI->Draw())
+        TIMER_ACTION("ui_draw", TheUI.Draw())
         TIMER_ACTION("platform_draw", ThePlatformMgr.Draw())
         TIMER_ACTION("end_draw", TheRnd->EndDrawing())
     }
@@ -94,7 +94,7 @@ void App::RunWithoutDebugging() {
         TIMER_ACTION("inclusive_ui_poll", { TheAchievements->Poll(); })
         TIMER_ACTION("synth_poll", TheSynth->Poll())
         // net_poll
-        TIMER_ACTION("inclusive_ui_poll", TheUI->Poll())
+        TIMER_ACTION("inclusive_ui_poll", TheUI.Poll())
         Draw();
 
         loop_timer.Ms();

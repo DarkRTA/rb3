@@ -1,5 +1,7 @@
 #pragma once
+#include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
+#include "utl/MemMgr.h"
 
 class BandScreen : public UIScreen {
 public:
@@ -18,6 +20,11 @@ public:
 
     void LoadInterstitials();
     void UnloadInterstitials();
+
+    NEW_OVERLOAD;
+    DELETE_OVERLOAD;
+
+    std::vector<UIPanel *> mExtraPanels; // 0x34
 };
 
 #include "obj/Msg.h"

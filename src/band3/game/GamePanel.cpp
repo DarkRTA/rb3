@@ -148,8 +148,8 @@ void GamePanel::PollForLoading() {
     UIPanel::PollForLoading();
     if (UIPanel::IsLoaded()) {
         mLoadingState = kLoadingState_UILoaded;
-        if (TheUI->TransitionScreen()) {
-            if (TheUI->TransitionScreen()->HasPanel(
+        if (TheUI.TransitionScreen()) {
+            if (TheUI.TransitionScreen()->HasPanel(
                     ObjectDir::sMainDir->Find<UIPanel>("world_panel", true)
                 )) {
                 if (!TheBandDirector || !TheBandDirector->ReadyForMidiParsers())

@@ -125,7 +125,7 @@ RndCam *PanelDir::CamOverride() {
         return 0;
     if (mCam)
         return mCam;
-    return TheUI->GetCam();
+    return TheUI.GetCam();
 }
 
 void PanelDir::DrawShowing() {
@@ -137,7 +137,7 @@ void PanelDir::DrawShowing() {
         camOverride->Select();
     }
     if (!mEnv) {
-        RndEnviron *curEnv = TheUI->GetEnv();
+        RndEnviron *curEnv = TheUI.GetEnv();
         if (curEnv != RndEnviron::sCurrent) {
             curEnv->Select(0);
         }
@@ -179,7 +179,7 @@ void PanelDir::Exit() {
 // fn_8054C070
 void PanelDir::SendTransition(const Message &msg, Symbol s1, Symbol s2) {
     static Message dirMsg = Message("");
-    dirMsg.SetType(TheUI->WentBack() ? s2 : s1);
+    dirMsg.SetType(TheUI.WentBack() ? s2 : s1);
     RndDir::Handle(msg, false);
     RndDir::Handle(dirMsg, false);
 }
@@ -237,7 +237,7 @@ void PanelDir::SetFocusComponent(UIComponent *c, Symbol s) {
         mFocusComponent = c;
         UpdateFocusComponentState();
         if (gSendFocusMsg) {
-            TheUI->Handle(UIComponentFocusChangeMsg(c, focused, this, s), false);
+            TheUI.Handle(UIComponentFocusChangeMsg(c, focused, this, s), false);
         }
     }
 }
@@ -341,7 +341,7 @@ bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s) {
                 continue;
             }
             if (s != none) {
-                TheUI->Handle(panel_navigated_msg, false);
+                TheUI.Handle(panel_navigated_msg, false);
             }
             SetFocusComponent(comp, s);
             return true;
@@ -354,7 +354,7 @@ bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s) {
 UIComponent *
 PanelDir::ComponentNav(UIComponent *comp, JoypadAction act, JoypadButton btn, Symbol s) {
     UIComponent *compIt = 0;
-    bool overloaded = TheUI->OverloadHorizontalNav(act, btn, s);
+    bool overloaded = TheUI.OverloadHorizontalNav(act, btn, s);
     if (act == kAction_Down)
         compIt = comp->NavDown();
     if (!compIt && act == kAction_Right || (overloaded && act == kAction_Down)) {

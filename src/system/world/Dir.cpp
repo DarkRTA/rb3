@@ -376,7 +376,7 @@ void WorldDir::DrawShowing() {
             cam2->Select();
             cam7 = cam2;
         }
-        RndEnviron *env = GetEnv() ? GetEnv() : TheUI->GetEnv();
+        RndEnviron *env = GetEnv() ? GetEnv() : TheUI.GetEnv();
         env->Select(0);
         if (TheRnd->ProcCmds() & 1 && shot && !shot->mDrawOverrides.empty()) {
             for (ObjPtrList<RndDrawable>::iterator it = shot->mDrawOverrides.begin();

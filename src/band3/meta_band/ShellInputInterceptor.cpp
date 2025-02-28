@@ -26,7 +26,7 @@ DataNode ShellInputInterceptor::OnMsg(const ButtonDownMsg &msg) {
             new_msg[2] = filteredAction;
             new_msg[3] = msg.GetPadNum();
             mButtonDownSwitch = false;
-            TheUI->Handle(new_msg, false);
+            TheUI.Handle(new_msg, false);
             mButtonDownSwitch = true;
             return 0;
         }
@@ -49,7 +49,7 @@ DataNode ShellInputInterceptor::OnMsg(const ButtonUpMsg &msg) {
             new_msg[2] = filteredAction;
             new_msg[3] = msg.GetPadNum();
             mButtonUpSwitch = false;
-            TheUI->Handle(new_msg, false);
+            TheUI.Handle(new_msg, false);
             mButtonUpSwitch = true;
             return 0;
         }

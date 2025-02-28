@@ -100,7 +100,7 @@ NonDestructiveTransitionEvent::NonDestructiveTransitionEvent(
 Symbol NonDestructiveTransitionEvent::Type() const { return non_destructive_transition; }
 
 void NonDestructiveTransitionEvent::Poll() {
-    if (TheUI->GetTransitionState() == kTransitionNone)
+    if (TheUI.GetTransitionState() == kTransitionNone)
         AttemptNextTransition();
 }
 

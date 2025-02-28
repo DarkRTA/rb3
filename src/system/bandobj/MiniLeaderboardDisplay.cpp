@@ -9,7 +9,7 @@ INIT_REVS(MiniLeaderboardDisplay)
 
 void MiniLeaderboardDisplay::Init() {
     Register();
-    TheUI->InitResources("MiniLeaderboardDisplay");
+    TheUI.InitResources("MiniLeaderboardDisplay");
 }
 
 MiniLeaderboardDisplay::MiniLeaderboardDisplay() : mAllowSoloScores(true) {}

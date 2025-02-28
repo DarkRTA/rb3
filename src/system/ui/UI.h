@@ -197,4 +197,4 @@ public:
     bool unkb5; // 0xb5
 };
 
-extern UIManager *TheUI;
+extern UIManager &TheUI;

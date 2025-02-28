@@ -69,7 +69,7 @@ void StorePreviewMgr::Poll() {
             mNetCacheLoader = nullptr;
             msg[0] = false;
             MsgSource::Handle(msg, false);
-            TheUI->ShowNetError();
+            TheUI.ShowNetError();
         }
     }
     while (!mDownloadQueue.empty()) {

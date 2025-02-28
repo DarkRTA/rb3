@@ -159,7 +159,7 @@ void GemTrainerPanel::Poll() {
                 mNumLoops++;
             }
             int ooo = 0;
-            if (TheUI->FocusPanel() != this) {
+            if (TheUI.FocusPanel() != this) {
                 ooo = 2;
             } else if (TheGame->GetMusicSpeed() != 1.0f) {
                 ooo = 1;
@@ -180,7 +180,7 @@ void GemTrainerPanel::Poll() {
 void GemTrainerPanel::Draw() {
     TrainerPanel::Draw();
     if (mGemPlayer && ShouldDrawTab()) {
-        TheUI->GetCam()->Select();
+        TheUI.GetCam()->Select();
         mTab->SetLefty(mGemPlayer->GetUser()->GetGameplayOptions()->GetLefty());
         mTab->Draw(GetLoopTick(GetTick()));
     }

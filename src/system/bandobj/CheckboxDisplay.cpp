@@ -6,7 +6,7 @@ INIT_REVS(CheckboxDisplay)
 
 void CheckboxDisplay::Init() {
     Register();
-    TheUI->InitResources("CheckboxDisplay");
+    TheUI.InitResources("CheckboxDisplay");
 }
 
 CheckboxDisplay::CheckboxDisplay() : mChecked(1) {}

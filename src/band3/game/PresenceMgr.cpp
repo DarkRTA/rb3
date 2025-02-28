@@ -69,18 +69,18 @@ Symbol PresenceMgr::GetPresenceMode() {
                         int jSize = jArr->Size();
                         for (int k = 1; k < jSize; k++) {
                             Symbol s58 = jArr->Sym(k);
-                            int depth = TheUI->PushDepth();
+                            int depth = TheUI.PushDepth();
                             if (depth < 1) {
-                                if (TheUI->CurrentScreen()) {
-                                    if (s58 == TheUI->CurrentScreen()->Name()) {
+                                if (TheUI.CurrentScreen()) {
+                                    if (s58 == TheUI.CurrentScreen()->Name()) {
                                         b1 = true;
                                         break;
                                     }
                                 }
                             } else {
                                 for (int n = 0; n < depth; n++) {
-                                    if (TheUI->ScreenAtDepth(n)) {
-                                        if (s58 == TheUI->ScreenAtDepth(n)->Name()) {
+                                    if (TheUI.ScreenAtDepth(n)) {
+                                        if (s58 == TheUI.ScreenAtDepth(n)->Name()) {
                                             b1 = true;
                                             break;
                                         }

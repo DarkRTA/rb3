@@ -147,7 +147,7 @@ void MoviePanel::Poll() {
     UIPanel::Poll();
     if (GetState() == kUnloaded)
         return;
-    if (!mMovie.Poll() && !TheUI->InTransition()) {
+    if (!mMovie.Poll() && !TheUI.InTransition()) {
         DataNode handled = HandleType(movie_done_msg);
         if (handled == DataNode(kDataUnhandled, 0)) {
             mMovie.End();

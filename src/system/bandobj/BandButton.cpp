@@ -7,7 +7,7 @@
 INIT_REVS(BandButton);
 
 void BandButton::Init() {
-    TheUI->InitResources("BandButton");
+    TheUI.InitResources("BandButton");
     Register();
 }
 
@@ -165,7 +165,7 @@ void BandButton::SetState(UIComponent::State state) {
         UIComponent::State curstate = GetState();
         UIComponent::SetState(state);
         if (mState == kFocused && mFocusAnim) {
-            if (TheUI->InTransition())
+            if (TheUI.InTransition())
                 SkipToFocused();
             else {
                 mAnimTask = mFocusAnim->Animate(
@@ -181,7 +181,7 @@ void BandButton::SetState(UIComponent::State state) {
             if (mPulseAnim && mPulseAnim->IsAnimating())
                 mPulseAnim->StopAnimation();
             if (mFocusAnim) {
-                if (TheUI->InTransition())
+                if (TheUI.InTransition())
                     SkipToUnfocused();
                 else {
                     mAnimTask = mFocusAnim->Animate(

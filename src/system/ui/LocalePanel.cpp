@@ -53,7 +53,7 @@ float LocalePanel::GapSize(int, int i, int, int) const {
         return 0;
 }
 
-UIScreen *LocalePanel::Screen() { return TheUI->ScreenAtDepth(TheUI->PushDepth() - 1); }
+UIScreen *LocalePanel::Screen() { return TheUI.ScreenAtDepth(TheUI.PushDepth() - 1); }
 
 void LocalePanel::AddDirEntries(ObjectDir *dir, const char *cc) {
     std::vector<UILabel *> labels;

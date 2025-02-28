@@ -158,7 +158,7 @@ DataNode InputMgr::OnMsg(const ButtonDownMsg &msg) {
     LocalBandUser *pLocalBandUser = pUser->GetLocalBandUser();
     if (msg.GetAction() == kAction_Cancel && mEventMgr
         && !mEventMgr->HasActiveDialogEvent()
-        && TheUI->GetTransitionState() == kTransitionNone && !TheUI->InComponentSelect()
+        && TheUI.GetTransitionState() == kTransitionNone && !TheUI.InComponentSelect()
         && AllowRemoteExit()) {
         if (mSessionMgr->HasUser(pLocalBandUser)
             && pLocalBandUser->mOvershellState == 5) {
