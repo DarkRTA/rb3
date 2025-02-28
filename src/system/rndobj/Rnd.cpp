@@ -494,7 +494,7 @@ END_HANDLERS
 
 DataNode Rnd::OnShowOverlay(const DataArray *da) {
     RndOverlay *o = RndOverlay::Find(da->Str(2), true);
-    o->SetOverlay(da->Int(3));
+    o->SetShowing(da->Int(3));
     if (da->Size() > 4) {
         o->SetTimeout(da->Float(4));
     }
@@ -504,14 +504,14 @@ DataNode Rnd::OnShowOverlay(const DataArray *da) {
 DataNode Rnd::OnToggleHeap(const DataArray *) {
     int num = MemNumHeaps();
     if (!mHeapOverlay->Showing()) {
-        mHeapOverlay->SetOverlay(true);
+        mHeapOverlay->SetShowing(true);
     } else {
         gCurHeap++;
         if (gCurHeap >= num) {
             gCurHeap = -1;
-            mHeapOverlay->SetOverlay(false);
+            mHeapOverlay->SetShowing(false);
         } else {
-            mHeapOverlay->SetOverlay(true);
+            mHeapOverlay->SetShowing(true);
         }
     }
     return DataNode(0);
@@ -531,7 +531,7 @@ DataNode Rnd::OnReflect(const DataArray *da) {
 
 DataNode Rnd::OnToggleOverlay(const DataArray *da) {
     RndOverlay *o = RndOverlay::Find(da->Str(2), true);
-    o->SetOverlay(!o->Showing());
+    o->SetShowing(!o->Showing());
     if (o->Showing()) {
         o->SetDumpCount(1);
     }

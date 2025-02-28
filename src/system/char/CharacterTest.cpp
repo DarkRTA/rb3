@@ -44,7 +44,7 @@ CharacterTest::~CharacterTest() {
     if (mOverlay) {
         if (mOverlay->GetCallback() == this) {
             mOverlay->SetCallback(nullptr);
-            mOverlay->SetOverlay(false);
+            mOverlay->SetShowing(false);
         }
     }
 }
@@ -181,7 +181,7 @@ void CharacterTest::SetDistMap(Symbol s) {
     RELEASE(unk6c);
     if (s != none) {
         mOverlay->SetCallback(this);
-        mOverlay->SetOverlay(true);
+        mOverlay->SetShowing(true);
         if (mClip1 && mClip2 && Clips()) {
             if (s == raw) {
                 unk6c = new ClipDistMap(mClip1, mClip2, 1, 1, 3, nullptr);
@@ -251,10 +251,10 @@ void CharacterTest::Sync() {
     }
     if (mClip1 || mClip2) {
         mOverlay->SetCallback(this);
-        mOverlay->SetOverlay(true);
+        mOverlay->SetShowing(true);
     } else {
         mOverlay->SetCallback(nullptr);
-        mOverlay->SetOverlay(false);
+        mOverlay->SetShowing(false);
     }
 
     RndGraph::Get(0)->Reset();

@@ -24,8 +24,8 @@ public:
     void SetCursorChar(int cursChar) { mCursorChar = cursChar; }
     void SetDumpCount(int dump_count) { mDumpCount = dump_count; }
 
-    void SetOverlay(bool b) {
-        mShowing = b;
+    void SetShowing(bool show) {
+        mShowing = show;
         mTimer.Restart();
     }
 

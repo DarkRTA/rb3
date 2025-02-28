@@ -204,4 +204,6 @@ extern PlatformMgr ThePlatformMgr;
 DECLARE_MESSAGE(PlatformMgrOpCompleteMsg, "platform_mgr_op_complete")
 PlatformMgrOpCompleteMsg(int i) : Message(Type(), i) {}
 END_MESSAGE
-;
+
+DECLARE_MESSAGE(DiskErrorMsg, "disk_error")
+END_MESSAGE

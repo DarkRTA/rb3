@@ -657,7 +657,7 @@ DataNode CharEyes::OnToggleInterestOverlay(DataArray *da) {
 
 void CharEyes::ToggleInterestsDebugOverlay() {
     if (unk9c)
-        unk9c->SetOverlay(!unk9c->Showing());
+        unk9c->SetShowing(!unk9c->Showing());
 }
 
 BEGIN_HANDLERS(CharEyes)

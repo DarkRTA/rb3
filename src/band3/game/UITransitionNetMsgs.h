@@ -40,3 +40,19 @@ public:
 
     bool mDepth; // 0x28
 };
+
+class NetPushScreenMsg : public StartTransitionMsg {
+public:
+    NetPushScreenMsg(UIScreen *s) : StartTransitionMsg(s) {}
+    virtual ~NetPushScreenMsg() {}
+    NETMSG_BYTECODE(NetPushScreenMsg);
+    NETMSG_NAME(NetPushScreenMsg);
+};
+
+class NetPopScreenMsg : public StartTransitionMsg {
+public:
+    NetPopScreenMsg(UIScreen *s) : StartTransitionMsg(s) {}
+    virtual ~NetPopScreenMsg() {}
+    NETMSG_BYTECODE(NetPopScreenMsg);
+    NETMSG_NAME(NetPopScreenMsg);
+};

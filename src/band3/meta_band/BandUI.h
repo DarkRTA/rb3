@@ -1,12 +1,20 @@
 #pragma once
 #include "WaitingUserGate.h"
+#include "game/BandUser.h"
+#include "game/GameMic.h"
+#include "meta/ConnectionStatusPanel.h"
 #include "meta_band/InterstitialMgr.h"
 #include "meta_band/OvershellPanel.h"
 #include "meta_band/ShellInputInterceptor.h"
+#include "net/NetSession.h"
+#include "net/Server.h"
 #include "obj/Msg.h"
 #include "os/ContentMgr.h"
+#include "os/JoypadMsgs.h"
+#include "os/PlatformMgr.h"
 #include "rndobj/Overlay.h"
 #include "ui/UI.h"
+#include "ui/UIComponent.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
 
@@ -19,6 +27,11 @@ enum UIFlowType {
 
 class BandUI : public UIManager, public MsgSource {
 public:
+    enum DisbandStatus {
+        kDisbandsDisabled,
+        kDisbandsMessageOnly,
+        kDisbandsEnabled
+    };
     enum DisbandError {
         kNoLeader,
         kKicked,
@@ -51,15 +64,43 @@ public:
     void WipeOutIfNecessary();
     bool WipingIn() const;
     bool WipingOut() const;
+    void UpdateUIOverlay();
+    UIScreen *GetTargetScreen(UIScreen *);
+    void UpdateInputPerformanceMode();
 
     DataNode OnMsg(const ContentReadFailureMsg &);
     DataNode OnMsg(const UITransitionCompleteMsg &);
+    DataNode OnMsg(const UIScreenChangeMsg &);
+    DataNode OnMsg(const ProcessedJoinRequestMsg &);
+    DataNode OnMsg(const ConnectionStatusChangedMsg &);
+    DataNode OnMsg(const ServerStatusChangedMsg &);
+    DataNode OnMsg(const DiskErrorMsg &);
+    DataNode OnMsg(const JoypadConnectionMsg &);
+    DataNode OnMsg(const ButtonDownMsg &);
+    DataNode OnMsg(const ButtonUpMsg &);
+    DataNode OnMsg(const UIComponentSelectMsg &);
+    DataNode OnMsg(const UIComponentSelectDoneMsg &);
+    DataNode OnMsg(const UIComponentFocusChangeMsg &);
+    DataNode OnMsg(const UIComponentScrollMsg &);
+    DataNode OnMsg(const GameMicsChangedMsg &);
+    DataNode OnOvershellMsgCommon(const Message &, bool);
+    DataNode OnMsg(const NetErrorMsg &);
+    DataNode OnMsg(const OvershellActiveStatusChangedMsg &);
+    DataNode OnMsg(const OvershellAllowingInputChangedMsg &);
+    DataNode OnMsg(const EventDialogStartMsg &);
+    DataNode OnMsg(const EventDialogDismissMsg &);
+    DataNode OnMsg(const LocalUserLeftMsg &);
+
+    UIPanel *EventDialog() const { return mEventDialog; }
+    void SetInviteAccepted(bool b) { mInviteAccepted = b; }
+    bool GetInviteAccepted() const { return mInviteAccepted; }
+    void SetDisbandStatus(DisbandStatus s) { mDisbandStatus = s; }
 
     bool unkd4; // 0xd4
     RndOverlay *mVignetteOverlay; // 0xd8
     RndOverlay *mUIOverlay; // 0xdc
-    bool unke0; // 0xe0
-    int unke4; // 0xe4
+    bool mInviteAccepted; // 0xe0 - invite accepted
+    DisbandStatus mDisbandStatus; // 0xe4 - disband status
     OvershellPanel *mOvershell; // 0xe8
     UIPanel *mEventDialog; // 0xec
     UIPanel *mContentLoadingPanel; // 0xf0

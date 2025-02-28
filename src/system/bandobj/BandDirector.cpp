@@ -1324,7 +1324,7 @@ DataNode BandDirector::OnDebugInterestsForNextCharacter(DataArray *da) {
     } else if (curInterestDebugChar == 5) {
         RndOverlay *o = RndOverlay::Find("eye_status", false);
         if (o)
-            o->SetOverlay(false);
+            o->SetShowing(false);
         for (i4 = 0; i4 < 4; i4++) {
             BandCharacter *bc = GetCharacter(i4);
             if (bc)
@@ -1333,7 +1333,7 @@ DataNode BandDirector::OnDebugInterestsForNextCharacter(DataArray *da) {
     } else {
         RndOverlay *o = RndOverlay::Find("eye_status", false);
         if (o)
-            o->SetOverlay(true);
+            o->SetShowing(true);
         int c = curInterestDebugChar;
         BandCharacter *bc = GetCharacter(c);
         if (bc)
@@ -1350,7 +1350,7 @@ DataNode BandDirector::OnDebugInterestsForNextCharacter(DataArray *da) {
 DataNode BandDirector::OnToggleInterestDebugOverlay(DataArray *da) {
     RndOverlay *o = RndOverlay::Find("eye_status", false);
     if (o)
-        o->SetOverlay(o->Showing() == 0);
+        o->SetShowing(o->Showing() == 0);
     return DataNode(0);
 }
 

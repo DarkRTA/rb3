@@ -398,8 +398,8 @@ void RndConsole::SetShowing(bool show) {
             mDebugging = nullptr;
         }
         mShowing = show;
-        mOutput->SetOverlay(show);
-        mInput->SetOverlay(show);
+        mOutput->SetShowing(show);
+        mInput->SetShowing(show);
         Message msg("rnd_console_showing", show);
         HolmesClientSendMessage(msg);
     }

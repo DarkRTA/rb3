@@ -1,6 +1,7 @@
 #pragma once
 #include "LockStepMgr.h"
 #include "game/NetGameMsgs.h"
+#include "game/UITransitionNetMsgs.h"
 #include "obj/Object.h"
 #include "ui/UIComponent.h"
 #include "ui/UIScreen.h"
@@ -22,6 +23,8 @@ public:
     void SetUIState(NetUIState);
     void SyncScreen(UIScreen *, int);
     void SendNetFocus(User *, UIComponent *);
+    bool IsTransitionAllowed(UIScreen *) const;
+    void SendStartTransitionMsg(StartTransitionMsg &);
 
     DataNode OnMsg(const UITransitionCompleteMsg &);
     DataNode OnMsg(const UIComponentFocusChangeMsg &);

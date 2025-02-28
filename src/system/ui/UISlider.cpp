@@ -145,7 +145,7 @@ DataNode UISlider::OnMsg(const ButtonDownMsg &msg) {
             if (step >= 0 && step < mNumSteps) {
                 SetCurrent(step);
                 UIComponentScrollMsg scroll_msg(this, msg.GetUser());
-                TheUI->Handle(scroll_msg, 0);
+                TheUI->Handle(scroll_msg, false);
             }
             return DataNode(1);
         }

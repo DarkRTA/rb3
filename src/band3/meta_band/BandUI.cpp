@@ -1,11 +1,16 @@
 #include "meta_band/BandUI.h"
 #include "BandScreen.h"
+#include "MetaNetMsgs.h"
 #include "SaveLoadManager.h"
 #include "WaitingUserGate.h"
+#include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/GameMic.h"
 #include "game/GameMicManager.h"
+#include "game/GameMode.h"
+#include "game/UITransitionNetMsgs.h"
+#include "meta/ConnectionStatusPanel.h"
 #include "meta/HAQManager.h"
 #include "meta_band/BandScreen.h"
 #include "meta_band/CharSync.h"
@@ -20,27 +25,37 @@
 #include "meta_band/UIStats.h"
 #include "net/Net.h"
 #include "net/NetSession.h"
+#include "net/Server.h"
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "os/ContentMgr.h"
+#include "os/JoypadMsgs.h"
 #include "os/PlatformMgr.h"
 #include "rndobj/Overlay.h"
+#include "synth/MicManagerInterface.h"
 #include "ui/UI.h"
+#include "ui/UIComponent.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
+
+MicClientID sNullMicClientID;
+BandUI TheBandUI;
+UIManager *TheUI = &TheBandUI;
 
 CurrentScreenChangedMsg::CurrentScreenChangedMsg(Symbol s) : Message(Type(), s) {}
 Symbol CurrentScreenChangedMsg::GetScreen() const { return mData->Sym(2); }
 
 BandUI::BandUI()
-    : unkd4(1), mVignetteOverlay(0), unke0(0), unke4(2), mOvershell(0), mEventDialog(0),
-      mContentLoadingPanel(0), mPassiveMessagesPanel(0), mSaveLoadStatusPanel(0),
-      mWaitingUserGate(0), mInterstitialMgr(0), mInputInterceptor(0),
-      mAbstractWipePanel(0), unk10c(0), unk10d(0) {}
+    : unkd4(1), mVignetteOverlay(0), mInviteAccepted(0), mDisbandStatus(kDisbandsEnabled),
+      mOvershell(0), mEventDialog(0), mContentLoadingPanel(0), mPassiveMessagesPanel(0),
+      mSaveLoadStatusPanel(0), mWaitingUserGate(0), mInterstitialMgr(0),
+      mInputInterceptor(0), mAbstractWipePanel(0), unk10c(0), unk10d(0) {}
 
 BandUI::~BandUI() {}
 
@@ -89,11 +104,18 @@ void BandUI::Terminate() {
     UIEventMgr::Terminate();
     NetSync::Terminate();
     TheNet.GetNetSession()->RemoveSink(this);
-    TheNet.GetServer()->RemoveSink(this);
+    TheNet.GetSessionSearcher()->RemoveSink(this);
     ThePlatformMgr.RemoveSink(this);
     TheGameMicManager->RemoveSink(this);
+    TheSaveLoadMgr->RemoveSink(this);
     TheRockCentral.RemoveSink(this);
-    ThePlatformMgr.RemoveSink(this);
+    if (mOvershell) {
+        if (TheUIEventMgr) {
+            TheUIEventMgr->RemoveSink(this);
+        }
+        mOvershell->RemoveSink(this);
+    }
+    ThePlatformMgr.RemoveSink(this, NetErrorMsg::Type());
 }
 
 namespace {
@@ -162,57 +184,21 @@ void BandUI::Poll() {
             mSaveLoadStatusPanel->Poll();
         }
         mAbstractWipePanel->Poll();
+
+        // this part here is inlined, but idk what to name the func
+        bool b1 = false;
+        if ((unk10c && mTransitionState == kTransitionFrom)
+            || (unk10d && mTransitionState == kTransitionTo))
+            b1 = true;
+
+        if (b1) {
+            static Message msg("check_wipe_done");
+            mAbstractWipePanel->HandleType(msg);
+        }
+        mWaitingUserGate->Poll();
+        TheUIEventMgr->Poll();
+        UpdateUIOverlay();
     }
-
-    // clang-format off
-    // iVar3 = *(this + 0xe8);
-    // if (iVar3 != 0) {
-    
-    //   bVar1 = false;
-    //   if (((this[0x10c] != 0x0) && (*(this + 8) == 2)) || ((this[0x10d] != 0x0 && (*(this + 8) == 1) ))
-    //      ) {
-    //     bVar1 = true;
-    //   }
-    //   if (bVar1) {
-    //     if (@GUARD@Poll__6BandUIFv@msg == '\0') {
-    //       Symbol::Symbol(local_28,s_check_wipe_done_80b8f081);
-    //       @LOCAL@Poll__6BandUIFv@msg = Message::__vt;
-    //       this_00 = _PoolAlloc(0x10,0x10,1);
-    //       if (this_00 != 0x0) {
-    //         this_00 = DataArray::DataArray(this_00,2);
-    //       }
-    //       local_20.mType = kDataSymbol;
-    //       local_20.mValue.symbol = local_28[0].mStr;
-    //       DAT_80c8fa04 = this_00;
-    //       this_01 = DataArray::Node(this_00,1);
-    //       DataNode::operator_=(this_01,&local_20);
-    //       if ((local_20.mType & 0x10) != 0) {
-    //         sVar2 = *(local_20.mValue.symbol + 10);
-    //         *(local_20.mValue.symbol + 10) = sVar2 + -1;
-    //         if (sVar2 + -1 == 0) {
-    //           DataArray::~DataArray(local_20.mValue.symbol);
-    //         }
-    //       }
-    //       __register_global_object(&@LOCAL@Poll__6BandUIFv@msg,Message::~Message,@49524);
-    //       @GUARD@Poll__6BandUIFv@msg = '\x01';
-    //     }
-    //     Hmx::Object::HandleType(&local_18,**(this + 0x108));
-    //     if ((local_14 & 0x10) != 0) {
-    //       sVar2 = local_18->mRefs + -1;
-    //       local_18->mRefs = sVar2;
-    //       if (sVar2 == 0) {
-    //         DataArray::~DataArray(local_18);
-    //       }
-    //     }
-    //   }
-
-    //   WaitingUserGate::Poll(*(this + 0xfc));
-    //   UIEventMgr::Poll(TheUIEventMgr);
-    //   UpdateUIOverlay(this);
-
-    // }
-    // return;
-    // clang-format on
 }
 
 bool BandUI::IsBlockingTransition() { return TheNetSync->IsBlockingTransition(); }
@@ -239,9 +225,9 @@ DataNode BandUI::OnMsg(const ContentReadFailureMsg &msg) {
 void BandUI::TriggerDisbandEvent(BandUI::DisbandError err) {
     static Message init("init", -1);
     init[0] = err;
-    if (unke4 == 2) {
+    if (mDisbandStatus == kDisbandsEnabled) {
         TheUIEventMgr->TriggerEvent(disband, init);
-    } else if (unke4 == 1 || err == kKicked) {
+    } else if (mDisbandStatus == kDisbandsMessageOnly || err == kKicked) {
         TheUIEventMgr->TriggerEvent(disband_error, init);
     }
 }
@@ -254,6 +240,8 @@ void BandUI::GetCurrentScreenState(std::vector<UIScreen *> &screens) {
     if (cur)
         screens.push_back(cur);
 }
+
+DECOMP_FORCEACTIVE(BandUI, "qp_coop")
 
 UIScreen *BandUI::GetJoinEntryPointForFlowType(UIFlowType ft) const {
     DataArray *flowDef = TypeDef()->FindArray("ui_flows", true)->FindArray(ft, true);
@@ -335,3 +323,295 @@ DataNode BandUI::OnMsg(const UITransitionCompleteMsg &msg) {
     unkb5 = false;
     return DataNode(kDataUnhandled, 0);
 }
+
+DataNode BandUI::OnMsg(const UIScreenChangeMsg &msg) {
+    Export(msg, true);
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode BandUI::OnMsg(const ProcessedJoinRequestMsg &msg) {
+    if (msg.GetProcessed()) {
+        VerifyBuildVersionMsg msg;
+        TheNetSession->SendMsgToAll(msg, kReliable);
+    }
+    return 0;
+}
+
+DataNode BandUI::OnMsg(const ConnectionStatusChangedMsg &msg) {
+    if (msg->Int(2) == 0) {
+        TheRockCentral.ForceLogout();
+        TheSessionMgr->Disconnect();
+    }
+    return 1;
+}
+
+DataNode BandUI::OnMsg(const ServerStatusChangedMsg &msg) {
+    if (msg->Int(2) == 0) {
+        TheSessionMgr->Disconnect();
+    }
+    return 1;
+}
+
+DataNode BandUI::OnMsg(const DiskErrorMsg &msg) {
+    if (TheGameMode->Property("online_play_required", true)->Int()) {
+        TheNet.GetNetSession()->Disconnect();
+    }
+    TheUIEventMgr->TriggerEvent(disc_error, nullptr);
+    return 1;
+}
+
+DataNode BandUI::OnMsg(const JoypadConnectionMsg &msg) {
+    OnOvershellMsgCommon(msg, false);
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode BandUI::OnMsg(const ButtonDownMsg &msg) {
+    HAQManager::Print(kHAQType_Button);
+    return OnOvershellMsgCommon(msg, true);
+}
+
+DataNode BandUI::OnMsg(const ButtonUpMsg &msg) {
+    HAQManager::Print(kHAQType_Button);
+    return OnOvershellMsgCommon(msg, true);
+}
+
+DataNode BandUI::OnMsg(const UIComponentSelectMsg &msg) {
+    return OnOvershellMsgCommon(msg, true);
+}
+
+DataNode BandUI::OnMsg(const UIComponentSelectDoneMsg &msg) {
+    return OnOvershellMsgCommon(msg, true);
+}
+
+DataNode BandUI::OnMsg(const UIComponentFocusChangeMsg &msg) {
+    HAQManager::Print(kHAQType_Focus);
+    return OnOvershellMsgCommon(msg, true);
+}
+
+DataNode BandUI::OnMsg(const UIComponentScrollMsg &msg) {
+    DataNode ret = OnOvershellMsgCommon(msg, true);
+    HAQManager::HandleComponentScroll(msg.GetUIComponent());
+    return ret;
+}
+
+DataNode BandUI::OnMsg(const GameMicsChangedMsg &msg) {
+    return OnOvershellMsgCommon(msg, false);
+}
+
+DataNode BandUI::OnOvershellMsgCommon(const Message &msg, bool b2) {
+    if (TheUIEventMgr->HasActiveDialogEvent() && EventDialog()) {
+        if (EventDialog()->GetState() == UIPanel::kUp) {
+            DataNode handled = EventDialog()->Handle(msg, false);
+            if (b2 || handled.Type() != kDataUnhandled) {
+                return 1;
+            }
+        }
+    }
+    DataNode ret(kDataUnhandled, 0);
+
+    if (ret == DataNode(kDataUnhandled, 0) && mOvershell
+        && mOvershell->GetState() == UIPanel::kUp) {
+        ret = mOvershell->Handle(msg, false);
+    }
+
+    if (ret == DataNode(kDataUnhandled, 0) && TheNetSync->IsEnabled()) {
+        if (!TheSessionMgr->IsLeaderLocal()) {
+            ret = 0;
+        }
+    }
+
+    return ret;
+}
+
+DataNode BandUI::OnMsg(const NetErrorMsg &msg) {
+    if (TheNetSession->IsOnlineEnabled()) {
+        ShowNetError();
+    }
+    return 1;
+}
+
+bool BandUI::InComponentSelect() {
+    if (TheUIEventMgr->HasActiveDialogEvent() && mEventDialog
+        && mEventDialog->GetState() == UIPanel::kUp) {
+        UIComponent *c = mEventDialog->FocusComponent();
+        if (c) {
+            return c->GetState() == UIComponent::kSelecting;
+        }
+    }
+    return UIManager::InComponentSelect();
+}
+
+UIScreen *BandUI::GetTargetScreen(UIScreen *screen) {
+    if (unkd4) {
+        UIScreen *toScreen = mInterstitialMgr->CurrentInterstitialToScreen(screen);
+        if (toScreen) {
+            mInterstitialMgr->PrintOverlay(mCurrentScreen, screen);
+            toScreen->SetProperty(dest_screen, screen);
+            screen = toScreen;
+            mInterstitialMgr->RefreshRandomSelection();
+        }
+    }
+    return screen;
+}
+
+void BandUI::GotoScreen(UIScreen *s, bool b2, bool b3) {
+    if (TheNetSync->IsTransitionAllowed(s)) {
+        UIScreen *screen = GetTargetScreen(s);
+        if (b3) {
+            WipeOnNextTransition(false);
+        }
+        UIManager::GotoScreen(screen, b2, b3);
+        NetGotoScreenMsg msg(screen, b2, b3);
+        TheNetSync->SendStartTransitionMsg(msg);
+    }
+}
+
+void BandUI::PushScreen(UIScreen *screen) {
+    if (TheNetSync->IsTransitionAllowed(screen)) {
+        UIManager::PushScreen(screen);
+        NetPushScreenMsg msg(screen);
+        TheNetSync->SendStartTransitionMsg(msg);
+    }
+}
+
+void BandUI::PopScreen(UIScreen *screen) {
+    if (TheNetSync->IsTransitionAllowed(screen)) {
+        UIManager::PopScreen(screen);
+        NetPopScreenMsg msg(screen);
+        TheNetSync->SendStartTransitionMsg(msg);
+    }
+}
+
+void BandUI::WriteToVignetteOverlay(const char *str) {
+    if (mVignetteOverlay) {
+        mVignetteOverlay->Clear();
+        *mVignetteOverlay << str;
+    }
+}
+
+void BandUI::UpdateUIOverlay() {
+    if (mUIOverlay && mUIOverlay->Showing()) {
+        int lines = 0;
+        mUIOverlay->Clear();
+        std::vector<UIScreen *> screens;
+        GetCurrentScreenState(screens);
+        FOREACH (it, screens) {
+            *mUIOverlay << "screen " << (*it)->Name() << "\n";
+            lines++;
+            UIPanel *focusPanel = (*it)->FocusPanel();
+            FOREACH (ref, (*it)->GetPanelRefs()) {
+                const PanelRef &cur = *ref;
+                int refs = cur.mPanel->LoadRefs();
+                const char *name = cur.mPanel->Name();
+                const char *cc = focusPanel == cur.mPanel ? "* " : "  ";
+                bool b4 = cur.mPanel->IsLoaded();
+                *mUIOverlay << "panel " << b4 << cc << refs << " " << name << "\n";
+                lines++;
+            }
+        }
+        if (mTransitionScreen) {
+            *mUIOverlay << "going to screen " << mTransitionScreen->Name() << "\n";
+            UIPanel *focusPanel = mTransitionScreen->FocusPanel();
+            lines++;
+            FOREACH (ref, mTransitionScreen->GetPanelRefs()) {
+                const PanelRef &cur = *ref;
+                int refs = cur.mPanel->LoadRefs();
+                const char *name = cur.mPanel->Name();
+                const char *cc = focusPanel == cur.mPanel ? "* " : "  ";
+                bool b4 = cur.mPanel->IsLoaded();
+                *mUIOverlay << "panel " << b4 << cc << refs << " " << name << "\n";
+                lines++;
+            }
+        }
+        if (lines != 0) {
+            mUIOverlay->SetLines(lines);
+        }
+    }
+}
+
+DataNode BandUI::OnMsg(const OvershellActiveStatusChangedMsg &) {
+    UpdateInputPerformanceMode();
+    return 0;
+}
+
+DataNode BandUI::OnMsg(const OvershellAllowingInputChangedMsg &) {
+    UpdateInputPerformanceMode();
+    return 0;
+}
+
+DataNode BandUI::OnMsg(const EventDialogStartMsg &) {
+    UpdateInputPerformanceMode();
+    return 0;
+}
+
+DataNode BandUI::OnMsg(const EventDialogDismissMsg &) {
+    UpdateInputPerformanceMode();
+    return 0;
+}
+
+DataNode BandUI::OnMsg(const LocalUserLeftMsg &) {
+    UpdateInputPerformanceMode();
+    return 0;
+}
+
+void BandUI::UpdateInputPerformanceMode() {
+    bool inSong = mOvershell->InSong();
+    bool allowInput = mOvershell->AreAllLocalSlotsAllowingInputToShell();
+    bool noEvent = !TheUIEventMgr->HasActiveDialogEvent();
+    bool inMode = TheGameMode->Property(allow_input_performance_mode, true)->Int();
+    EnableInputPerformanceMode(inSong && allowInput && noEvent && inMode);
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(BandUI)
+    HANDLE_ACTION(init_panels, InitPanels())
+    HANDLE_ACTION(set_disband_status, SetDisbandStatus((DisbandStatus)_msg->Int(2)))
+    HANDLE_ACTION(set_invite_accepted, SetInviteAccepted(_msg->Int(2)))
+    HANDLE_EXPR(get_invite_accepted, GetInviteAccepted())
+    HANDLE_ACTION(trigger_disband_event, TriggerDisbandEvent((DisbandError)_msg->Int(2)))
+    HANDLE_ACTION(abstract_wipe, WipeOnNextTransition(false))
+    HANDLE_ACTION(abstract_wipe_in, WipeOnNextTransition(true))
+    HANDLE_ACTION(set_vignettes_showing, unkd4 = _msg->Int(2))
+    HANDLE_EXPR(get_vignettes_showing, unkd4)
+    HANDLE_ACTION(cycle_vignette_override, mInterstitialMgr->CycleRandomOverride())
+    HANDLE_EXPR(get_vignette_override, mInterstitialMgr->mRandomOverride)
+    HANDLE_ACTION(write_to_vignette_overlay, WriteToVignetteOverlay(_msg->Str(2)))
+    HANDLE_ACTION_IF(
+        toggle_vignette_overlay,
+        mVignetteOverlay,
+        mVignetteOverlay->SetShowing(!mVignetteOverlay->Showing())
+    )
+    HANDLE_EXPR(vignette_overlay_showing, mVignetteOverlay && mVignetteOverlay->Showing())
+    HANDLE_ACTION_IF(
+        toggle_ui_overlay, mUIOverlay, mUIOverlay->SetShowing(!mUIOverlay->Showing())
+    )
+    HANDLE_MESSAGE(UITransitionCompleteMsg)
+    HANDLE_MESSAGE(UIScreenChangeMsg)
+    HANDLE_MESSAGE(ProcessedJoinRequestMsg)
+    HANDLE_MESSAGE(ConnectionStatusChangedMsg)
+    HANDLE_MESSAGE(ServerStatusChangedMsg)
+    HANDLE_MESSAGE(DiskErrorMsg)
+    HANDLE_MESSAGE(ContentReadFailureMsg)
+    HANDLE_MESSAGE(UIComponentFocusChangeMsg)
+    HANDLE_MEMBER_PTR(TheUIStats)
+    HANDLE_MEMBER_PTR(TheNetSync)
+    HANDLE_MEMBER_PTR(mInputInterceptor)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(ButtonUpMsg)
+    HANDLE_MESSAGE(UIComponentSelectMsg)
+    HANDLE_MESSAGE(UIComponentSelectDoneMsg)
+    HANDLE_MESSAGE(UIComponentScrollMsg)
+    HANDLE_MESSAGE(JoypadConnectionMsg)
+    HANDLE_MESSAGE(GameMicsChangedMsg)
+    HANDLE_MESSAGE(OvershellActiveStatusChangedMsg)
+    HANDLE_MESSAGE(OvershellAllowingInputChangedMsg)
+    HANDLE_MESSAGE(EventDialogStartMsg)
+    HANDLE_MESSAGE(EventDialogDismissMsg)
+    HANDLE_MESSAGE(LocalUserLeftMsg)
+    HANDLE_MESSAGE(NetErrorMsg)
+    HANDLE_MEMBER_PTR(TheInputMgr)
+    HANDLE_SUPERCLASS(UIManager)
+    HANDLE_CHECK(0x3F0)
+END_HANDLERS
+#pragma pop

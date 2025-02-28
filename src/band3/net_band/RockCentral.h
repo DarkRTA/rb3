@@ -11,6 +11,8 @@ public:
     virtual DataNode Handle(DataArray *, bool);
     virtual ~RockCentral();
 
+    void ForceLogout();
+
     void CancelOutstandingCalls(Hmx::Object *);
     void
     GetLeaderboardByPlayer(std::vector<int> &, int, ScoreType, LeaderboardType, LeaderboardMode, int, DataResultList &, Hmx::Object *);

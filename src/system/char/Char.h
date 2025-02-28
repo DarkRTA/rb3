@@ -20,7 +20,7 @@ public:
                 onceList.erase(iter);
             }
         }
-        mOverlay->SetOverlay(!mObjects.empty() || !mOnce.empty());
+        mOverlay->SetShowing(!mObjects.empty() || !mOnce.empty());
     }
 
     void Init();

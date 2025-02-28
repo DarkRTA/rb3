@@ -42,6 +42,7 @@ public:
     OvershellSlot *GetSlot(int);
     void BeginOverrideFlow(OvershellOverrideFlow);
     bool IsAnySlotEditingChar(CharData *) const;
+    bool AreAllLocalSlotsAllowingInputToShell();
 
     std::vector<OvershellSlot *> mSlots; // 0x70
     std::vector<int> unk78; // 0x78

@@ -1032,7 +1032,7 @@ bool VocalPlayer::NeedsToOverrideBasePoints() const { return !mUser->IsNullUser(
 
 void VocalPlayer::ToggleOverlay() {
     MILO_ASSERT(mOverlay, 0xDF0);
-    mOverlay->SetOverlay(!mOverlay->Showing());
+    mOverlay->SetShowing(!mOverlay->Showing());
     RELEASE(mVocalOverlay);
     if (mOverlay->Showing())
         mVocalOverlay = new VocalOverlay();

@@ -6,7 +6,6 @@
 DECLARE_MESSAGE(ConnectionStatusChangedMsg, "connection_status_changed")
 ConnectionStatusChangedMsg(int);
 END_MESSAGE
-;
 
 /** A panel to convey the current network connection status. */
 class ConnectionStatusPanel : public UIPanel {

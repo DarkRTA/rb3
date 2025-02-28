@@ -348,7 +348,7 @@ void UIManager::Init() {
     LocalePanel::Init();
     Hmx::Object::Handle(cheat_init_msg, false);
     mOverlay = RndOverlay::Find("ui", true);
-    mOverlay->SetOverlay(false);
+    mOverlay->SetShowing(false);
     PreloadSharedSubdirs("ui");
     Hmx::Object::Handle(init_msg, false);
     mTimer.Restart();
@@ -731,7 +731,7 @@ UIScreen *UIManager::ScreenAtDepth(int depth) {
 
 void UIManager::ToggleLoadTimes() {
     mOverlay->CurrentLine() = gNullStr;
-    mOverlay->SetOverlay(!mOverlay->Showing());
+    mOverlay->SetShowing(!mOverlay->Showing());
 }
 
 bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray *da) {

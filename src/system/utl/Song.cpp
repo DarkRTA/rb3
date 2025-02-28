@@ -295,7 +295,7 @@ void Song::UpdateDebugParsers() {
     RndOverlay *o = RndOverlay::Find("song", true);
     if (o)
         o->SetCallback(this);
-    o->SetOverlay(mDebugParsers.size() > 0);
+    o->SetShowing(mDebugParsers.size() > 0);
 }
 
 void Song::SetLoopStart(float f) {

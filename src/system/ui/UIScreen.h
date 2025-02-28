@@ -64,6 +64,7 @@ public:
     DataNode ForeachPanel(const DataArray *);
     DataNode OnMsg(const ButtonDownMsg &);
     UIPanel *FocusPanel() const { return mFocusPanel; }
+    const std::vector<PanelRef> &GetPanelRefs() const { return mPanelList; }
 
     static int sMaxScreenId;
     static UIScreen *sUnloadingScreen;
