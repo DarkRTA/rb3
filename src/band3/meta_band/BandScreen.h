@@ -15,6 +15,9 @@ public:
     virtual bool Entering() const;
     virtual void Exit(UIScreen *);
     virtual bool Exiting() const;
+
+    void LoadInterstitials();
+    void UnloadInterstitials();
 };
 
 #include "obj/Msg.h"
