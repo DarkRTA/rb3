@@ -15,13 +15,13 @@ void StandInProvider::Text(int, int idx, UIListLabel *slot, UILabel *label) cons
     MILO_ASSERT(slot, 0x21);
     MILO_ASSERT(label, 0x22);
     if (slot->Matches("name")) {
-        StandIn *standin = mProfile->GetStandIn(idx);
-        if (standin->IsNone()) {
+        const StandIn &standin = mProfile->GetStandIn(idx);
+        if (standin.IsNone()) {
             label->SetTextToken(none);
-        } else if (standin->IsPrefabCharacter()) {
-            label->SetTextToken(standin->mName);
-        } else if (standin->IsCustomCharacter()) {
-            CharData *pCharacter = mProfile->GetCharFromGuid(standin->mGuid);
+        } else if (standin.IsPrefabCharacter()) {
+            label->SetTextToken(standin.mName);
+        } else if (standin.IsCustomCharacter()) {
+            CharData *pCharacter = mProfile->GetCharFromGuid(standin.mGuid);
             MILO_ASSERT(pCharacter, 0x36);
             AppLabel *pAppLabel = dynamic_cast<AppLabel *>(label);
             MILO_ASSERT(pAppLabel, 0x39);

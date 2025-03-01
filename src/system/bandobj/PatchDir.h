@@ -131,6 +131,8 @@ public:
     void SaveRemote(IntPacker &);
     void LoadRemote(IntPacker &);
 
+    RndTex *GetTex() const { return mTex; }
+
     static void Init();
     static void Terminate();
     static int SaveSize(int);

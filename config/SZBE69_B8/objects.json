@@ -238,7 +238,7 @@
             "band3/meta_band/RetryAudioPanel.cpp": "MISSING",
             "band3/meta_band/SaveLoadManager.cpp": "MISSING",
             "band3/meta_band/SaveLoadStatusPanel.cpp": "MISSING",
-            "band3/meta_band/SavedSetlist.cpp": "MISSING",
+            "band3/meta_band/SavedSetlist.cpp": "NonMatching",
             "band3/meta_band/SelectDifficultyPanel.cpp": "MISSING",
             "band3/meta_band/SessionMgr.cpp": "NonMatching",
             "band3/meta_band/SessionUsersProviders.cpp": "NonMatching",

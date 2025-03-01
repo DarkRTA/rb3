@@ -5,6 +5,9 @@
 #include "obj/Msg.h"
 #include "obj/Object.h"
 
+class PerformanceData;
+class AccomplishmentProgress;
+
 class RockCentral : public MsgSource {
 public:
     RockCentral();
@@ -30,6 +33,10 @@ public:
     void
     GetAccLeaderboardByRankRange(std::vector<int> &, Symbol &, int, int, DataResultList &, Hmx::Object *);
     void GetAccMaxRank(std::vector<int> &, Symbol &, DataResultList &, Hmx::Object *);
+    void
+    RecordPerformance(const Profile *, const PerformanceData *, int, Hmx::Object *, DataResultList &);
+    void
+    RecordAccomplishmentData(const Profile *, AccomplishmentProgress *, int, Hmx::Object *, DataResultList &);
 };
 
 extern RockCentral TheRockCentral;
