@@ -12,7 +12,7 @@ public:
     virtual ~RockCentral();
 
     void ForceLogout();
-
+    void FailAllOutstandingCalls();
     void CancelOutstandingCalls(Hmx::Object *);
     void
     GetLeaderboardByPlayer(std::vector<int> &, int, ScoreType, LeaderboardType, LeaderboardMode, int, DataResultList &, Hmx::Object *);
