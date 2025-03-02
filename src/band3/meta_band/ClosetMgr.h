@@ -63,6 +63,7 @@ public:
     bool IsCharacterLoading() { return mCharacterLoading; }
     Symbol GetReturnScreen() const { return mReturnScreen; }
     LocalBandUser *GetUser() const { return mUser; }
+    ClosetPanel *CurrentClosetPanel() const { return mCurrentClosetPanel; }
 
     DataNode OnMsg(const ProfileSwappedMsg &);
 

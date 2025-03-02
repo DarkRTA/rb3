@@ -29,7 +29,7 @@ public:
     void TakePortrait();
     void GotoShot(Symbol);
     void SetPortraitRenderer(RndTexRenderer *);
-    LocalBandUser *GetUser() const { return mClosetMgr->GetUser(); }
+    BandUser *GetUser() const { return mClosetMgr->GetUser(); }
 
     ClosetMgr *mClosetMgr; // 0x88
     CameraManager *mCameraManager; // 0x8c
