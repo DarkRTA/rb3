@@ -22,28 +22,28 @@ AccomplishmentSongConditional::~AccomplishmentSongConditional() {}
 bool AccomplishmentSongConditional::CheckStarsCondition(
     SongStatusMgr *mgr, Symbol s, const AccomplishmentCondition &cond
 ) const {
-    int id = TheSongMgr->GetSongIDFromShortName(s, true);
+    int id = TheSongMgr.GetSongIDFromShortName(s, true);
     return cond.mValue <= mgr->GetBestStars(id, cond.mScoreType, cond.mDifficulty);
 }
 
 bool AccomplishmentSongConditional::CheckScoreCondition(
     SongStatusMgr *mgr, Symbol s, const AccomplishmentCondition &cond
 ) const {
-    int id = TheSongMgr->GetSongIDFromShortName(s, true);
+    int id = TheSongMgr.GetSongIDFromShortName(s, true);
     return cond.mValue <= mgr->GetScore(id, cond.mScoreType);
 }
 
 bool AccomplishmentSongConditional::CheckAccuracyCondition(
     SongStatusMgr *mgr, Symbol s, const AccomplishmentCondition &cond
 ) const {
-    int id = TheSongMgr->GetSongIDFromShortName(s, true);
+    int id = TheSongMgr.GetSongIDFromShortName(s, true);
     return cond.mValue <= mgr->GetBestAccuracy(id, cond.mScoreType, cond.mDifficulty);
 }
 
 bool AccomplishmentSongConditional::CheckStreakCondition(
     SongStatusMgr *mgr, Symbol s, const AccomplishmentCondition &cond
 ) const {
-    int id = TheSongMgr->GetSongIDFromShortName(s, true);
+    int id = TheSongMgr.GetSongIDFromShortName(s, true);
     return cond.mValue <= mgr->GetBestStreak(id, cond.mScoreType, cond.mDifficulty);
 }
 
@@ -54,7 +54,7 @@ bool AccomplishmentSongConditional::CheckHoposPercentCondition(
         MILO_WARN("hopos percent condition can not be used with vocals or harmony!");
         return false;
     } else {
-        int id = TheSongMgr->GetSongIDFromShortName(s, true);
+        int id = TheSongMgr.GetSongIDFromShortName(s, true);
         return cond.mValue
             <= mgr->GetBestHOPOPercent(id, cond.mScoreType, cond.mDifficulty);
     }
@@ -67,7 +67,7 @@ bool AccomplishmentSongConditional::CheckSoloPercentCondition(
         MILO_WARN("solo percent condition can not be used with vocals or harmony!");
         return false;
     } else {
-        int id = TheSongMgr->GetSongIDFromShortName(s, true);
+        int id = TheSongMgr.GetSongIDFromShortName(s, true);
         return cond.mValue
             <= mgr->GetBestSoloPercent(id, cond.mScoreType, cond.mDifficulty);
     }
@@ -80,7 +80,7 @@ bool AccomplishmentSongConditional::CheckAwesomesCondition(
         MILO_WARN("awesome condition can only be used with vocals or harmony!");
         return false;
     } else {
-        int id = TheSongMgr->GetSongIDFromShortName(s, true);
+        int id = TheSongMgr.GetSongIDFromShortName(s, true);
         return cond.mValue <= mgr->GetBestAwesomes(id, cond.mScoreType, cond.mDifficulty);
     }
 }
@@ -92,7 +92,7 @@ bool AccomplishmentSongConditional::CheckDoubleAwesomesCondition(
         MILO_WARN("double_awesome condition can only be used with vocals or harmony!");
         return false;
     } else {
-        int id = TheSongMgr->GetSongIDFromShortName(s, true);
+        int id = TheSongMgr.GetSongIDFromShortName(s, true);
         return cond.mValue
             <= mgr->GetBestDoubleAwesomes(id, cond.mScoreType, cond.mDifficulty);
     }
@@ -105,7 +105,7 @@ bool AccomplishmentSongConditional::CheckTripleAwesomesCondition(
         MILO_WARN("triple awesome condition can only be used with vocals or harmony!");
         return false;
     } else {
-        int id = TheSongMgr->GetSongIDFromShortName(s, true);
+        int id = TheSongMgr.GetSongIDFromShortName(s, true);
         return cond.mValue
             <= mgr->GetBestTripleAwesomes(id, cond.mScoreType, cond.mDifficulty);
     }
@@ -153,7 +153,7 @@ bool AccomplishmentSongConditional::CheckFullComboCondition(
 
 bool AccomplishmentSongConditional::CheckConditionsForSong(SongStatusMgr *mgr, Symbol s)
     const {
-    if (!TheSongMgr->HasSong(s, false))
+    if (!TheSongMgr.HasSong(s, false))
         return false;
     else {
         for (std::vector<AccomplishmentCondition>::const_iterator it =

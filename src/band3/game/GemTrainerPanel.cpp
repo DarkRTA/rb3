@@ -84,8 +84,8 @@ void GemTrainerPanel::Enter() {
     unkcc = -1;
     if (mGemPlayer) {
         Symbol mpsong = MetaPerformer::Current()->Song();
-        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-            TheSongMgr->GetSongIDFromShortName(mpsong, true)
+        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+            TheSongMgr.GetSongIDFromShortName(mpsong, true)
         );
         int key = data->SongKey();
         int tone = data->SongTonality();
@@ -518,9 +518,8 @@ void GemTrainerPanel::UpdateProgressMeter() {
             }
         } else {
             Difficulty diff = mGemPlayer->GetUser()->GetLocalBandUser()->GetDifficulty();
-            int songID = TheSongMgr->GetSongIDFromShortName(
-                MetaPerformer::Current()->Song(), true
-            );
+            int songID =
+                TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
             for (int i = 0; i < GetNumSections(); i++) {
                 mProgressMeter->SetCompleted(
                     i, IsSongSectionComplete(GetBandProfile(), songID, diff, i)

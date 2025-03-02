@@ -43,7 +43,7 @@ void ProTrainerPanel::Enter() {
         if (!profile)
             return;
         int songID =
-            TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
+            TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
         Difficulty diff = localuser->GetDifficulty();
         mSpeedCompleted.resize(GetNumSections());
         for (int i = 0; i < GetNumSections(); i++) {
@@ -73,9 +73,8 @@ void ProTrainerPanel::SetLessonComplete(int lesson) {
         LocalBandUser *localuser = mGemPlayer->GetUser()->GetLocalBandUser();
         BandProfile *profile = TheProfileMgr.GetProfileForUser(localuser);
         if (profile) {
-            int songID = TheSongMgr->GetSongIDFromShortName(
-                MetaPerformer::Current()->Song(), true
-            );
+            int songID =
+                TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
             Difficulty diff = localuser->GetDifficulty();
             static Message msg("get_speed_modifier", 0);
             msg[0] = lesson;

@@ -44,7 +44,7 @@ AccomplishmentType AccomplishmentSongFilterConditional::GetType() const {
 }
 
 bool AccomplishmentSongFilterConditional::IsRelevantForSong(Symbol s) const {
-    int songid = TheSongMgr->GetSongIDFromShortName(s, true);
+    int songid = TheSongMgr.GetSongIDFromShortName(s, true);
     return TheSongSortMgr->DoesSongMatchFilter(songid, &mFilter, mPartDifficultySym);
 }
 
@@ -73,11 +73,11 @@ bool AccomplishmentSongFilterConditional::InqIncrementalSymbols(
     SongStatusMgr *pSongStatusMgr = i_pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0x75);
     std::vector<int> songs;
-    TheSongMgr->GetRankedSongs(songs, false, false);
+    TheSongMgr.GetRankedSongs(songs, false, false);
     for (std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it) {
         int curID = *it;
         if (TheSongSortMgr->DoesSongMatchFilter(curID, &mFilter, mPartDifficultySym)) {
-            Symbol shortname = TheSongMgr->GetShortNameFromSongID(curID, true);
+            Symbol shortname = TheSongMgr.GetShortNameFromSongID(curID, true);
             if (CheckConditionsForSong(pSongStatusMgr, shortname)) {
                 o_rSymbols.push_back(shortname);
             }
@@ -96,13 +96,13 @@ Symbol AccomplishmentSongFilterConditional::GetFirstUnfinishedAccomplishmentEntr
     SongStatusMgr *pSongStatusMgr = i_pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0x9D);
     std::vector<int> songs;
-    TheSongMgr->GetRankedSongs(songs, false, false);
+    TheSongMgr.GetRankedSongs(songs, false, false);
 
     Symbol symFirst = gNullStr;
     for (std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it) {
         int curID = *it;
         if (TheSongSortMgr->DoesSongMatchFilter(curID, &mFilter, mPartDifficultySym)) {
-            Symbol shortname = TheSongMgr->GetShortNameFromSongID(curID, true);
+            Symbol shortname = TheSongMgr.GetShortNameFromSongID(curID, true);
             if (!CheckConditionsForSong(pSongStatusMgr, shortname)) {
                 symFirst = shortname;
                 break;
@@ -127,11 +127,11 @@ bool AccomplishmentSongFilterConditional::InqCompletedSongs(
     SongStatusMgr *pSongStatusMgr = i_pProfile->GetSongStatusMgr();
     MILO_ASSERT(pSongStatusMgr, 0xCE);
     std::vector<int> songs;
-    TheSongMgr->GetRankedSongs(songs, false, false);
+    TheSongMgr.GetRankedSongs(songs, false, false);
     for (std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it) {
         int curID = *it;
         if (TheSongSortMgr->DoesSongMatchFilter(curID, &mFilter, mPartDifficultySym)) {
-            Symbol shortname = TheSongMgr->GetShortNameFromSongID(curID, true);
+            Symbol shortname = TheSongMgr.GetShortNameFromSongID(curID, true);
             if (CheckConditionsForSong(pSongStatusMgr, shortname)) {
                 vec.push_back(curID);
             }

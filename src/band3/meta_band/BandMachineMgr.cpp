@@ -292,7 +292,7 @@ bool BandMachineMgr::IsSongAllowedToHavePart(int songid, Symbol part) const {
         return true;
     if (mSessionMgr->IsLocal())
         return true;
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(songid);
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(songid);
     if (data && !data->IsDownload())
         return true;
     std::vector<BandMachine *> machines;

@@ -115,7 +115,7 @@ void GameInit() {
     TheDebug.AddExitCallback(GameTerminate);
 }
 
-void GameTerminate() { TheSongMgr->Terminate(); }
+void GameTerminate() { TheSongMgr.Terminate(); }
 
 Game::Game()
     : mSongDB(new SongDB()), mSongInfo(0), mIsPaused(0), mGameWantsPause(0),
@@ -191,7 +191,7 @@ void Game::LoadSong() {
     Symbol songSym = MetaPerformer::Current()->Song();
     PlayerTrackConfigList *cfgList = TheGameConfig->GetConfigList();
     SongDataValidate i2 =
-        TheSongMgr->Data(TheSongMgr->GetSongIDFromShortName(songSym, true))->IsOnDisc()
+        TheSongMgr.Data(TheSongMgr.GetSongIDFromShortName(songSym, true))->IsOnDisc()
         ? kSongData_Validate
         : kSongData_NoValidation;
     Fader *fader = TheSynth->Find<Fader>("per_song_sfx_level.fade", false);
@@ -199,7 +199,7 @@ void Game::LoadSong() {
         fader->SetVal(0);
     mMaster->GetAudio()->SetPracticeMode(TheGameMode->InMode("practice"));
     RELEASE(mSongInfo);
-    mSongInfo = new SongInfoCopy(TheSongMgr->SongAudioData(songSym));
+    mSongInfo = new SongInfoCopy(TheSongMgr.SongAudioData(songSym));
     mMaster->Load(mSongInfo, 4, cfgList, false, i2, nullptr);
 }
 

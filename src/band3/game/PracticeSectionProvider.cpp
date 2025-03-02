@@ -22,7 +22,7 @@ void PracticeSectionProvider::InitData(RndDir *) {
     mSections.clear();
     unk4c = 0;
     FileStream stream(
-        TheSongMgr->MidiFile(MetaPerformer::Current()->Song()), FileStream::kRead, false
+        TheSongMgr.MidiFile(MetaPerformer::Current()->Song()), FileStream::kRead, false
     );
     MidiSectionLister lister(&mSections, stream);
     unk28.unk0 = "full_song";

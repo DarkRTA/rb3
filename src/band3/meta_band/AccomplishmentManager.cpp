@@ -61,11 +61,11 @@ SongDifficultyCmp::SongDifficultyCmp(Symbol s) : mInst(s) {
 }
 
 bool SongDifficultyCmp::operator()(Symbol s1, Symbol s2) const {
-    int id1 = TheSongMgr->GetSongIDFromShortName(s1, true);
-    int id2 = TheSongMgr->GetSongIDFromShortName(s2, true);
-    BandSongMetadata *pDataLHS = (BandSongMetadata *)TheSongMgr->Data(id1);
+    int id1 = TheSongMgr.GetSongIDFromShortName(s1, true);
+    int id2 = TheSongMgr.GetSongIDFromShortName(s2, true);
+    BandSongMetadata *pDataLHS = (BandSongMetadata *)TheSongMgr.Data(id1);
     MILO_ASSERT(pDataLHS, 0x4E);
-    BandSongMetadata *pDataRHS = (BandSongMetadata *)TheSongMgr->Data(id2);
+    BandSongMetadata *pDataRHS = (BandSongMetadata *)TheSongMgr.Data(id2);
     MILO_ASSERT(pDataRHS, 0x50);
     float rank1 = pDataLHS->Rank(mInst);
     float rank2 = pDataRHS->Rank(mInst);
@@ -149,10 +149,10 @@ void AccomplishmentManager::Cleanup() {
 void AccomplishmentManager::InitializePrecachedFilters() {
     mPrecachedFilterCounts.clear();
     std::vector<int> songs;
-    TheSongMgr->GetRankedSongs(songs, false, false);
+    TheSongMgr.GetRankedSongs(songs, false, false);
     for (std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it) {
         int songid = *it;
-        BandSongMetadata *pSongData = (BandSongMetadata *)TheSongMgr->Data(songid);
+        BandSongMetadata *pSongData = (BandSongMetadata *)TheSongMgr.Data(songid);
         MILO_ASSERT(pSongData, 200);
         for (std::map<Symbol, SongSortMgr::SongFilter *>::iterator it =
                  mPrecachedFilters.begin();
@@ -172,13 +172,13 @@ void AccomplishmentManager::InitializePrecachedFilters() {
 void AccomplishmentManager::InitializeDiscSongs() {
     mDiscSongs.clear();
     std::vector<int> songs;
-    TheSongMgr->GetRankedSongs(songs, false, false);
+    TheSongMgr.GetRankedSongs(songs, false, false);
     for (std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it) {
         int songid = *it;
-        BandSongMetadata *pSongData = (BandSongMetadata *)TheSongMgr->Data(songid);
+        BandSongMetadata *pSongData = (BandSongMetadata *)TheSongMgr.Data(songid);
         MILO_ASSERT(pSongData, 0xEB);
         if (!pSongData->IsDownload()) {
-            mDiscSongs.push_back(TheSongMgr->GetShortNameFromSongID(songid, true));
+            mDiscSongs.push_back(TheSongMgr.GetShortNameFromSongID(songid, true));
         }
     }
     std::stable_sort(mDiscSongs.begin(), mDiscSongs.end(), SongDifficultyCmp(gNullStr));
@@ -187,10 +187,10 @@ void AccomplishmentManager::InitializeDiscSongs() {
 void AccomplishmentManager::InitializeTourSafeDiscSongs() {
     mTourSafeDiscSongs.clear();
     std::vector<int> songs;
-    TheSongMgr->GetRankedSongs(songs, false, false);
+    TheSongMgr.GetRankedSongs(songs, false, false);
     for (std::vector<int>::iterator it = songs.begin(); it != songs.end(); ++it) {
         int songid = *it;
-        BandSongMetadata *pSongData = (BandSongMetadata *)TheSongMgr->Data(songid);
+        BandSongMetadata *pSongData = (BandSongMetadata *)TheSongMgr.Data(songid);
         MILO_ASSERT(pSongData, 0x107);
         if (pSongData->IsDownload())
             continue;
@@ -210,7 +210,7 @@ void AccomplishmentManager::InitializeTourSafeDiscSongs() {
             continue;
         if (!pSongData->HasPart(real_keys, false))
             continue;
-        Symbol shortname = TheSongMgr->GetShortNameFromSongID(songid, true);
+        Symbol shortname = TheSongMgr.GetShortNameFromSongID(songid, true);
         mTourSafeDiscSongs.push_back(shortname);
     }
     std::stable_sort(
@@ -1494,7 +1494,7 @@ bool AccomplishmentManager::IsAvailable(Symbol s, bool b) const {
             MILO_ASSERT(iNumSongs <= rSongs.size(), 0xAD4);
             int i7 = 0;
             for (int i = 0; i < numrsongs; i++) {
-                if (TheSongMgr->HasSong(rSongs[i], false))
+                if (TheSongMgr.HasSong(rSongs[i], false))
                     i7++;
                 if (i7 >= iNumSongs)
                     return true;

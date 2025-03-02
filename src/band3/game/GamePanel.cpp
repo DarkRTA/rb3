@@ -81,8 +81,8 @@ void GamePanel::Reset() {
 void GamePanel::Load() {
     mReplay = false;
     mLoadProf.Start();
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-        TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+        TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
     );
     mVocalPercussionBank.LoadFile(
         FilePath(".", data->VocalPercussionBank().mStr), true, true, kLoadBack, false

@@ -96,7 +96,7 @@ bool QuickplayPerformerImpl::HasSyncPermission() const { return IsLeaderLocal();
 
 void MetaPerformer::Init() {
     MILO_ASSERT(!sMetaPerformer, 0xE9);
-    sMetaPerformer = new MetaPerformer(*TheSongMgr, "meta_performer");
+    sMetaPerformer = new MetaPerformer(TheSongMgr, "meta_performer");
 }
 
 MetaPerformer::MetaPerformer(const BandSongMgr &mgr, const char *cc)
@@ -173,7 +173,7 @@ Symbol MetaPerformer::Song() const {
 }
 
 int MetaPerformer::SongsID() const {
-    return TheSongMgr->GetSongIDFromShortName(Song(), true);
+    return TheSongMgr.GetSongIDFromShortName(Song(), true);
 }
 
 bool MetaPerformer::HasSong() const { return Song() != gNullStr; }
@@ -208,7 +208,7 @@ void MetaPerformer::SetSongs(const std::vector<Symbol> &songs) {
 void MetaPerformer::SetSongs(const std::vector<int> &vec) {
     std::vector<Symbol> songs;
     for (std::vector<int>::const_iterator it = vec.begin(); it != vec.end(); ++it) {
-        songs.push_back(TheSongMgr->GetShortNameFromSongID(*it, true));
+        songs.push_back(TheSongMgr.GetShortNameFromSongID(*it, true));
     }
     SetSongs(songs);
 }
@@ -360,7 +360,7 @@ bool MetaPerformer::IsPlayingDemo() const {
     if (thesong.Null())
         return false;
     else
-        return TheSongMgr->IsDemo(TheSongMgr->GetSongIDFromShortName(thesong, true));
+        return TheSongMgr.IsDemo(TheSongMgr.GetSongIDFromShortName(thesong, true));
 }
 
 bool MetaPerformer::IsNoFailActive() const {

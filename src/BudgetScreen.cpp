@@ -159,8 +159,8 @@ BudgetScreen::BudgetScreen()
       mTests(SystemConfig("tests")), mTestIdx(0),
       mWorstOnly(OptionBool("worst_only", false)), mWorstCpuPctile(0.0),
       mWorstGsPctile(0.0), mSampleCount(0) {
-    TheSongMgr->AddSongs(SystemConfig("songs"));
-    TheContentMgr->UnregisterCallback(TheSongMgr, false);
+    TheSongMgr.AddSongs(SystemConfig("songs"));
+    TheContentMgr->UnregisterCallback(&TheSongMgr, false);
 
     const char *logFile = OptionStr("budget_log", SystemConfig("log_file")->Str(1));
     mLog = new TextFileStream(logFile, false);

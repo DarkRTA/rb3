@@ -57,8 +57,8 @@ VocalPlayer::VocalPlayer(
       mOverlay(0), mVocalOverlay(0), mScoringEnabled(1), mTambourineManager(*this),
       mSectionStartPhrasePercentageTotal(0), mSectionStartPhrasePercentageCount(0),
       mSectionStartScore(0), mFrameSpewData(0), mFrameSpewStream(0) {
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-        TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+        TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
     );
     mTuningOffset = data->TuningOffset() / 100.0f;
     for (int i = 0; i < i7; i++) {

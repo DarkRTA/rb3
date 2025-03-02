@@ -28,13 +28,13 @@ AccomplishmentType AccomplishmentLessonDiscSongConditional::GetType() const {
 bool AccomplishmentLessonDiscSongConditional::CheckLessonCompleteCondition(
     SongStatusMgr *mgr, Symbol s, const AccomplishmentCondition &cond
 ) const {
-    if (!TheSongMgr->HasSong(s, false)) {
+    if (!TheSongMgr.HasSong(s, false)) {
         MILO_WARN(
             "Song: %s not available.  Dynamic Prereqs are probably missing!", s.Str()
         );
         return false;
     } else {
-        int songid = TheSongMgr->GetSongIDFromShortName(s, true);
+        int songid = TheSongMgr.GetSongIDFromShortName(s, true);
         ScoreType ty = cond.mScoreType;
         switch (ty) {
         case kScoreRealGuitar:

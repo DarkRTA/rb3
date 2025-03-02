@@ -165,7 +165,7 @@ GemPlayer::GemPlayer(
         mDrumCymbalPointBonus = drumCfg->FindArray("pro_drum_bonus", true);
     }
 
-    SongInfoCopy songInfo(TheSongMgr->SongAudioData(MetaPerformer::Current()->Song()));
+    SongInfoCopy songInfo(TheSongMgr.SongAudioData(MetaPerformer::Current()->Song()));
     mMatcher = new BeatMatcher(
         GetUserGuid(),
         GetSlot(),

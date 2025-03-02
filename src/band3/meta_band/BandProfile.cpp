@@ -53,7 +53,7 @@ BandProfile::BandProfile(int i)
       unk6fb4(0), unk6fb8(0) {
     mSaveSizeMethod = &SaveSize;
     LocalBandUser *user = GetAssociatedLocalBandUser();
-    mScores = new SongStatusMgr(user, TheSongMgr);
+    mScores = new SongStatusMgr(user, &TheSongMgr);
     mProfilePicture = new ProfilePicture(GetPadNum(), this);
     for (int n = 0; n < 8; n++)
         mPatches.push_back(new PatchDir());

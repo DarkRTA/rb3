@@ -40,8 +40,8 @@ AccomplishmentType AccomplishmentDiscSongConditional::GetType() const {
 }
 
 bool AccomplishmentDiscSongConditional::IsRelevantForSong(Symbol s) const {
-    int id = TheSongMgr->GetSongIDFromShortName(s, true);
-    SongMetadata *pData = TheSongMgr->Data(id);
+    int id = TheSongMgr.GetSongIDFromShortName(s, true);
+    SongMetadata *pData = TheSongMgr.Data(id);
     MILO_ASSERT(pData, 0x43);
     return pData->IsOnDisc();
 }
@@ -66,7 +66,7 @@ int AccomplishmentDiscSongConditional::GetNumCompletedSongs(BandProfile *profile
     for (std::vector<Symbol>::const_iterator it = songs.begin(); it != songs.end();
          ++it) {
         Symbol cur = *it;
-        if (!TheSongMgr->HasSong(cur, false))
+        if (!TheSongMgr.HasSong(cur, false))
             continue;
         if (!CheckConditionsForSong(mgr, cur))
             continue;
@@ -84,7 +84,7 @@ bool AccomplishmentDiscSongConditional::InqSongs(
          it != discsongs.end();
          ++it) {
         Symbol cur = *it;
-        int songid = TheSongMgr->GetSongIDFromShortName(cur, true);
+        int songid = TheSongMgr.GetSongIDFromShortName(cur, true);
         if (TheSongSortMgr->DoesSongMatchFilter(songid, &mFilter, mPartDifficultySym)) {
             o_rSymbols.push_back(cur);
         }

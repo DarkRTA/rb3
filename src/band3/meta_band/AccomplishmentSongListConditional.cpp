@@ -49,7 +49,7 @@ int AccomplishmentSongListConditional::GetNumCompletedSongs(BandProfile *profile
     for (std::vector<Symbol>::const_iterator it = unk7c.begin(); it != unk7c.end();
          ++it) {
         Symbol cur = *it;
-        if (TheSongMgr->HasSong(cur, false)) {
+        if (TheSongMgr.HasSong(cur, false)) {
             if (CheckConditionsForSong(mgr, cur)) {
                 num++;
             }

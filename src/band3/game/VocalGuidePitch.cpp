@@ -51,9 +51,9 @@ void VocalGuidePitch::Terminate() {
 }
 
 void VocalGuidePitch::SetSong(const Symbol &s) {
-    int songID = TheSongMgr->GetSongIDFromShortName(s, true);
-    UpdateTuning(((BandSongMetadata *)TheSongMgr->Data(songID))->TuningOffset());
-    SetVolume(((BandSongMetadata *)TheSongMgr->Data(songID))->GuidePitchVolume());
+    int songID = TheSongMgr.GetSongIDFromShortName(s, true);
+    UpdateTuning(((BandSongMetadata *)TheSongMgr.Data(songID))->TuningOffset());
+    SetVolume(((BandSongMetadata *)TheSongMgr.Data(songID))->GuidePitchVolume());
 }
 
 void VocalGuidePitch::UpdateTuning(float tuning) {

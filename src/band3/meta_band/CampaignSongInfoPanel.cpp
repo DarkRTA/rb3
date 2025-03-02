@@ -44,7 +44,7 @@ ScoreType CampaignSongInfoPanel::SelectedScoreType() const {
 inline void CampaignSourceProvider::Update() {
     unk20.clear();
     std::set<Symbol> srcs;
-    TheSongMgr->InqAvailableSongSources(srcs);
+    TheSongMgr.InqAvailableSongSources(srcs);
     if (srcs.size() > 1)
         unk20.push_back(all);
     for (std::set<Symbol>::iterator it = srcs.begin(); it != srcs.end(); ++it) {

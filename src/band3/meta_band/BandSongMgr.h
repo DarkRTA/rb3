@@ -93,4 +93,4 @@ public:
     int unk140; // 0x140
 };
 
-extern BandSongMgr *TheSongMgr;
+extern BandSongMgr &TheSongMgr;
