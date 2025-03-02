@@ -79,7 +79,7 @@ void CreditsPanel::Poll() {
             mStream->Play();
         }
     }
-    if (mAutoScroll && !TheUI->InTransition()) {
+    if (mAutoScroll && !TheUI.InTransition()) {
         if (!mList->IsScrolling()) {
             HandleType(credits_done_msg);
             SetAutoScroll(false);

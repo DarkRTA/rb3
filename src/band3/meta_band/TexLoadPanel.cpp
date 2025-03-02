@@ -43,7 +43,7 @@ bool operator==(const DynamicTex *tex, const String &str) { return tex->mMatName
 
 void DLCTex::StartLoading() {
     MILO_ASSERT(mState == kMounting, 0x46);
-    const char *path = TheSongMgr->GetAlbumArtPath(unk20);
+    const char *path = TheSongMgr.GetAlbumArtPath(unk20);
     MILO_ASSERT(path != gNullStr, 0x48);
     mLoader =
         dynamic_cast<FileLoader *>(TheLoadMgr.AddLoader(FilePath(path), kLoadFront));
@@ -96,7 +96,7 @@ void TexLoadPanel::Poll() {
         MILO_ASSERT(dlc->mState != DLCTex::kLoaded, 0x93);
         switch (dlc->mState) {
         case 0: {
-            const char *name = TheSongMgr->ContentName(dlc->unk20, true);
+            const char *name = TheSongMgr.ContentName(dlc->unk20, true);
             dlc->mState = 1;
             // WiiContentMgr stuff
             break;
@@ -131,7 +131,7 @@ void TexLoadPanel::Unload() {
 void TexLoadPanel::ContentMounted(const char *c1, const char *c2) {
     DLCTex *dlc = NextDLCTex();
     if (dlc) {
-        String name(TheSongMgr->ContentName(dlc->unk20, true));
+        String name(TheSongMgr.ContentName(dlc->unk20, true));
         if (name == c1)
             dlc->StartLoading();
         else
@@ -142,7 +142,7 @@ void TexLoadPanel::ContentMounted(const char *c1, const char *c2) {
 void TexLoadPanel::ContentFailed(const char *c1) {
     DLCTex *dlc = NextDLCTex();
     if (dlc) {
-        String name(TheSongMgr->ContentName(dlc->unk20, true));
+        String name(TheSongMgr.ContentName(dlc->unk20, true));
         if (name == c1) {
             dlc->mMat->SetDiffuseTex(dlc->unk28);
             dlc->mState = 3;

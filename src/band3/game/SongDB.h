@@ -100,7 +100,7 @@ public:
     void EnableGems(int, float, float);
     float GetPitchOffsetForTick(int) const;
 
-    SongData *GetSongData() { return mSongData; }
+    SongData *GetData() const { return mSongData; }
 
     SongData *mSongData; // 0x4
     std::vector<TrackData> mTrackData; // 0x8

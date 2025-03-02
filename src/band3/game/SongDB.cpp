@@ -543,8 +543,8 @@ void SongDB::ChangeDifficulty(int i, Difficulty diff) {
 }
 
 void SongDB::GetBandFailCue(String &str) const {
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-        TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+        TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
     );
     str = data->BandFailCue().mStr;
 }

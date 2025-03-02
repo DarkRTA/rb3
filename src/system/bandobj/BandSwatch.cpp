@@ -7,7 +7,7 @@ ColorPalette *BandSwatch::sDummyPalette;
 INIT_REVS(BandSwatch);
 
 void BandSwatch::Init() {
-    TheUI->InitResources("BandSwatch");
+    TheUI.InitResources("BandSwatch");
     Register();
     sDummyPalette = Hmx::Object::New<ColorPalette>();
     if (LOADMGR_EDITMODE) {

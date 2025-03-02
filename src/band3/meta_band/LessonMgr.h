@@ -31,6 +31,7 @@ public:
     Difficulty GetDifficulty() const;
     int GetTotalCountFromCategory(Symbol);
     int GetCompletedCountFromCategory(BandProfile *, Symbol);
+    const std::map<Symbol, Lesson *> &LessonsMap() const { return mLessonsMap; }
 
     static void Init();
     static LessonMgr *GetLessonMgr();

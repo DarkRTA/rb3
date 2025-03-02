@@ -22,8 +22,8 @@ public:
         : mIcons(vec) {
         mEntries.clear();
         std::map<Symbol, int> lbData;
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
-        prog->InqGoalLeaderboardData(lbData);
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
+        prog.InqGoalLeaderboardData(lbData);
         for (std::map<Symbol, int>::iterator it = lbData.begin(); it != lbData.end();
              ++it) {
             Symbol key = it->first;

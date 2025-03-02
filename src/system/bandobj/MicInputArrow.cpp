@@ -9,7 +9,7 @@ MicClientID sNullMicClientID(-1, -1);
 
 void MicInputArrow::Init() {
     Register();
-    TheUI->InitResources("MicInputArrow");
+    TheUI.InitResources("MicInputArrow");
 }
 
 DECOMP_FORCEACTIVE(

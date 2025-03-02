@@ -156,4 +156,3 @@ ContentReadFailureMsg(bool b, const char *cc) : Message(Type(), b, cc) {}
 bool GetBool() const { return mData->Int(2); }
 const char *GetStr() const { return mData->Str(3); }
 END_MESSAGE
-;

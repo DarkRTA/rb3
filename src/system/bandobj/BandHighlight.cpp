@@ -6,7 +6,7 @@
 INIT_REVS(BandHighlight);
 
 void BandHighlight::Init() {
-    TheUI->InitResources("BandHighlight");
+    TheUI.InitResources("BandHighlight");
     Register();
 }
 
@@ -52,11 +52,11 @@ void BandHighlight::Poll() {
     UIComponent::Poll();
     if (!LOADMGR_EDITMODE) {
         SetState(kDisabled);
-        UIScreen *curscreen = TheUI->CurrentScreen();
+        UIScreen *curscreen = TheUI.CurrentScreen();
         if (curscreen) {
             UIPanel *focuspanel = curscreen->FocusPanel();
             if (focuspanel) {
-                if (focuspanel->GetPanelDir() == Dir()) {
+                if (focuspanel->LoadedDir() == Dir()) {
                     SetState(kNormal);
                 }
             }

@@ -115,7 +115,7 @@ void GameInit() {
     TheDebug.AddExitCallback(GameTerminate);
 }
 
-void GameTerminate() { TheSongMgr->Terminate(); }
+void GameTerminate() { TheSongMgr.Terminate(); }
 
 Game::Game()
     : mSongDB(new SongDB()), mSongInfo(0), mIsPaused(0), mGameWantsPause(0),
@@ -130,8 +130,7 @@ Game::Game()
     TheSongDB = mSongDB;
     TheGame = this;
     SetName("beatmatch", ObjectDir::sMainDir);
-    mMaster =
-        new BeatMaster(mSongDB->GetSongData(), TheBandUserMgr->GetNumParticipants());
+    mMaster = new BeatMaster(mSongDB->GetData(), TheBandUserMgr->GetNumParticipants());
     mMaster->RegisterSink(*this);
     TheNetSession->AddSink(this, GameEndedMsg::Type());
     TheSessionMgr->AddSink(this, LocalUserLeftMsg::Type());
@@ -192,7 +191,7 @@ void Game::LoadSong() {
     Symbol songSym = MetaPerformer::Current()->Song();
     PlayerTrackConfigList *cfgList = TheGameConfig->GetConfigList();
     SongDataValidate i2 =
-        TheSongMgr->Data(TheSongMgr->GetSongIDFromShortName(songSym, true))->IsOnDisc()
+        TheSongMgr.Data(TheSongMgr.GetSongIDFromShortName(songSym, true))->IsOnDisc()
         ? kSongData_Validate
         : kSongData_NoValidation;
     Fader *fader = TheSynth->Find<Fader>("per_song_sfx_level.fade", false);
@@ -200,7 +199,7 @@ void Game::LoadSong() {
         fader->SetVal(0);
     mMaster->GetAudio()->SetPracticeMode(TheGameMode->InMode("practice"));
     RELEASE(mSongInfo);
-    mSongInfo = new SongInfoCopy(TheSongMgr->SongAudioData(songSym));
+    mSongInfo = new SongInfoCopy(TheSongMgr.SongAudioData(songSym));
     mMaster->Load(mSongInfo, 4, cfgList, false, i2, nullptr);
 }
 
@@ -331,9 +330,9 @@ void Game::Reset() {
     if (DataVarExists("beatmatch_start_mbt")) {
         int m, b, t;
         ParseMBT(DataVariable("beatmatch_start_mbt").Str(), m, b, t);
-        unk134 = TickToMs(
-            TheSongDB->GetSongData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t)
-        );
+        unk134 =
+            TickToMs(TheSongDB->GetData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t)
+            );
     }
 }
 
@@ -487,8 +486,7 @@ DataNode Game::OnJump(const DataArray *a) {
     } else if (ty == kDataSymbol || ty == kDataString) {
         int m, b, t;
         ParseMBT(node.Str(), m, b, t);
-        int tick =
-            TheSongDB->GetSongData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t);
+        int tick = TheSongDB->GetData()->GetMeasureMap()->MeasureBeatTickToTick(m, b, t);
         Jump(TickToMs(tick), true);
     }
     return 1;
@@ -683,7 +681,7 @@ DataNode Game::OnMsg(const RemoteUserLeftMsg &msg) {
 
 DataNode Game::OnMsg(const RemoteLeaderLeftMsg &msg) {
     if (unkc4) {
-        if (!TheUI->InTransition()) {
+        if (!TheUI.InTransition()) {
             TheGamePanel->Handle(game_outro_msg, true);
         }
     }

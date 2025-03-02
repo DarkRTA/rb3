@@ -67,8 +67,8 @@ void Singer::PostLoad() {
     mResultsData.resize(numParts);
     MILO_ASSERT(mTalkyMatcher, 0xB6);
     mTalkyMatcher->LoadEvents(
-        TheSongDB->GetSongData()->mVocalFeatureVectorTimes,
-        TheSongDB->GetSongData()->mVocalFeatureVectorPeaks
+        TheSongDB->GetData()->mVocalFeatureVectorTimes,
+        TheSongDB->GetData()->mVocalFeatureVectorPeaks
     );
 }
 

@@ -154,7 +154,7 @@ void ChordbookPanel::Exit() {
 
 void ChordbookPanel::Draw() {
     UIPanel::Draw();
-    TheUI->GetCam()->Select();
+    TheUI.GetCam()->Select();
     mProgressMeter->Draw();
 }
 

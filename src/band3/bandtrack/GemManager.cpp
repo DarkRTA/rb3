@@ -70,8 +70,8 @@ void GemManager::InitRGTuning(BandUser *bandUser) {
     bool isRG = bandUser->GetTrack()->GetType() == real_guitar;
     bool isRB = bandUser->GetTrack()->GetType() == real_bass;
     if (isRG || isRB) {
-        BandSongMetadata *metadata = (BandSongMetadata *)TheSongMgr->Data(
-            TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+        BandSongMetadata *metadata = (BandSongMetadata *)TheSongMgr.Data(
+            TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
         );
         std::vector<int> vec18;
         if (isRG) {
@@ -395,12 +395,12 @@ bool GemManager::RollStartsAt(int i1, const GameGem &gem, int &iref, unsigned in
     int tick = GetLoopTick(gem.GetTick());
     bool ret;
     if (gem.IsRealGuitar()) {
-        ret = TheSongDB->GetSongData()->RGRollStartsAt(i1, tick, iref);
+        ret = TheSongDB->GetData()->RGRollStartsAt(i1, tick, iref);
     } else {
-        ret = TheSongDB->GetSongData()->RollStartsAt(i1, tick, iref);
+        ret = TheSongDB->GetData()->RollStartsAt(i1, tick, iref);
     }
     if (ret) {
-        uiref = TheSongDB->GetSongData()->GetRollingSlotsAtTick(i1, tick);
+        uiref = TheSongDB->GetData()->GetRollingSlotsAtTick(i1, tick);
     }
     iref += gem.GetTick() - tick;
     return ret;
@@ -410,9 +410,9 @@ bool GemManager::TrillStartsAt(int i1, const GameGem &gem, int &iref) const {
     int tick = GetLoopTick(gem.GetTick());
     bool ret;
     if (gem.IsRealGuitar()) {
-        ret = TheSongDB->GetSongData()->RGTrillStartsAt(i1, tick, iref);
+        ret = TheSongDB->GetData()->RGTrillStartsAt(i1, tick, iref);
     } else {
-        ret = TheSongDB->GetSongData()->TrillStartsAt(i1, tick, iref);
+        ret = TheSongDB->GetData()->TrillStartsAt(i1, tick, iref);
     }
     if (ret) {
         iref += gem.GetTick() - tick;
@@ -739,7 +739,7 @@ bool GemManager::GetFill(int i1, FillExtent &ext) {
     if (!player || !player->FillsEnabled(i1))
         return false;
     else {
-        FillInfo *info = TheSongDB->GetSongData()->GetFillInfo(mTrackConfig.TrackNum());
+        FillInfo *info = TheSongDB->GetData()->GetFillInfo(mTrackConfig.TrackNum());
         return !info ? false : info->FillAt(GetLoopTick(i1), ext, true);
     }
 }

@@ -45,7 +45,7 @@ void SetlistScoresProvider::Text(int, int data, UIListLabel *slot, UILabel *labe
 
 UIListWidgetState
 SetlistScoresProvider::ElementStateOverride(int, int data, UIListWidgetState state) const {
-    bool hassong = TheSongMgr->HasSong(unk20[data]);
+    bool hassong = TheSongMgr.HasSong(unk20[data]);
     UIListWidgetState ret = kUIListWidgetInactive;
     if (hassong)
         ret = state;

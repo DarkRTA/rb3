@@ -159,8 +159,8 @@ BudgetScreen::BudgetScreen()
       mTests(SystemConfig("tests")), mTestIdx(0),
       mWorstOnly(OptionBool("worst_only", false)), mWorstCpuPctile(0.0),
       mWorstGsPctile(0.0), mSampleCount(0) {
-    TheSongMgr->AddSongs(SystemConfig("songs"));
-    TheContentMgr->UnregisterCallback(TheSongMgr, false);
+    TheSongMgr.AddSongs(SystemConfig("songs"));
+    TheContentMgr->UnregisterCallback(&TheSongMgr, false);
 
     const char *logFile = OptionStr("budget_log", SystemConfig("log_file")->Str(1));
     mLog = new TextFileStream(logFile, false);
@@ -236,7 +236,7 @@ void BudgetScreen::Poll() {
     if (timerScript)
         timerScript->ExecuteScript(1, nullptr, nullptr, 1);
 
-    float tick = TheSongDB->GetSongData()->GetTempoMap()->TimeToTick(
+    float tick = TheSongDB->GetData()->GetTempoMap()->TimeToTick(
         TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f
     );
 
@@ -319,7 +319,7 @@ void BudgetScreen::Poll() {
         }
 
         UIScreen *stopScreen = ObjectDir::Main()->Find<UIScreen>("stop_budget", true);
-        TheUI->GotoScreen(stopScreen, false, false);
+        TheUI.GotoScreen(stopScreen, false, false);
     }
 }
 

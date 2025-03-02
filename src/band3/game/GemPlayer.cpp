@@ -165,13 +165,13 @@ GemPlayer::GemPlayer(
         mDrumCymbalPointBonus = drumCfg->FindArray("pro_drum_bonus", true);
     }
 
-    SongInfoCopy songInfo(TheSongMgr->SongAudioData(MetaPerformer::Current()->Song()));
+    SongInfoCopy songInfo(TheSongMgr.SongAudioData(MetaPerformer::Current()->Song()));
     mMatcher = new BeatMatcher(
         GetUserGuid(),
         GetSlot(),
         TheBandUserMgr->GetNumParticipants(),
         TheGameConfig->GetController(GetUser()),
-        TheSongDB->GetSongData(),
+        TheSongDB->GetData(),
         songInfo,
         SystemConfig("beatmatcher"),
         bm
@@ -1094,25 +1094,25 @@ void GemPlayer::FinalizeStats() {
 }
 
 int GemPlayer::GetNumRolls() const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     return data->GetRollInfo(mTrackNum)->SizeAt(diff);
 }
 
 void GemPlayer::GetRollInfo(int i1, int &startTick, int &endTick) const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     data->GetRollInfo(mTrackNum)->GetNthStartEnd(diff, i1, startTick, endTick);
 }
 
 int GemPlayer::GetNumTrills() const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     return data->GetTrillInfo(mTrackNum)->SizeAt(diff);
 }
 
 void GemPlayer::GetTrillInfo(int i1, int &startTick, int &endTick) const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     data->GetTrillInfo(mTrackNum)->GetNthStartEnd(diff, i1, startTick, endTick);
 }
@@ -1257,7 +1257,7 @@ void GemPlayer::Rollback(float f1, float f2) {
 
         if (unk268) {
             FillExtent ext(0, 0, false);
-            TheSongDB->GetSongData()->GetFillInfo(mTrackNum)->FillAt(
+            TheSongDB->GetData()->GetFillInfo(mTrackNum)->FillAt(
                 MsToTickInt(f1), ext, false
             );
             float f6 = TickToMs(ext.start) - f2;
@@ -1269,7 +1269,7 @@ void GemPlayer::Rollback(float f1, float f2) {
                 float f6;
                 if (unk3e0) {
                     FillExtent ext(0, 0, false);
-                    TheSongDB->GetSongData()->GetFillInfo(mTrackNum)->FillAt(
+                    TheSongDB->GetData()->GetFillInfo(mTrackNum)->FillAt(
                         MsToTickInt(f1), ext, false
                     );
                     f6 = TickToMs(ext.start) - f2;
@@ -1798,7 +1798,7 @@ bool GemPlayer::AllCodaGemsHit() const {
             int tick = gems->GetGem(i).GetTick();
             if (tick < startTick)
                 return true;
-            if (TheSongDB->GetSongData()->GetDrumFillInfo(mTrackNum)->FillAt(tick, true)) {
+            if (TheSongDB->GetData()->GetDrumFillInfo(mTrackNum)->FillAt(tick, true)) {
                 return true;
             }
             if (!mGemStatus->GetHit(i))
@@ -1915,7 +1915,7 @@ int GemPlayer::GetTrackSlot(int x) const { return x; }
 
 bool GemPlayer::InTrill(int idx) const {
     std::pair<int, int> trill;
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     return data->GetTrillSlotsAtTick(
         mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick(), trill
     );
@@ -1923,21 +1923,21 @@ bool GemPlayer::InTrill(int idx) const {
 
 bool GemPlayer::InRGTrill(int idx) const {
     RGTrill trill;
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     return data->GetRGTrillAtTick(
         mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick(), trill
     );
 }
 
 bool GemPlayer::InRoll(int idx) const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     return data->GetRollingSlotsAtTick(
         mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick()
     );
 }
 
 bool GemPlayer::InRGRoll(int idx) const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     RGRollChord chord = data->GetRGRollingSlotsAtTick(
         mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick()
     );

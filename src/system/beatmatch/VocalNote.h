@@ -65,8 +65,8 @@ public:
           unk10(phrase.unk10), unk14(phrase.unk14), unk18(phrase.unk18),
           unk19(phrase.unk19), unk1a(phrase.unk1a), unk1c(phrase.unk1c),
           unk20(phrase.unk20), unk24(phrase.unk24), unk28(phrase.unk28),
-          unk2c(phrase.unk2c), unk2d(phrase.unk2d), unk30(phrase.unk30),
-          unk34(phrase.unk34) {}
+          unk2c(phrase.unk2c), mTambourinePhrase(phrase.mTambourinePhrase),
+          unk30(phrase.unk30), unk34(phrase.unk34) {}
 
     bool Diff() const { return (unk14 - unk10) == 0; }
 
@@ -84,7 +84,7 @@ public:
     float unk24;
     float unk28;
     bool unk2c;
-    bool unk2d;
+    bool mTambourinePhrase; // 0x2d
     float unk30;
     float unk34;
 };
@@ -114,6 +114,9 @@ public:
     const char *PrintTick(int tick) const;
     Symbol GetTrackName() const { return mTrackName; }
     void SetTrackName(Symbol name) { mTrackName = name; }
+    const std::vector<VocalNote> &GetNotes() const { return mNotes; }
+    std::vector<VocalPhrase> &GetPhrases() { return mPhrases; }
+    std::vector<VocalPhrase> &GetLyricPhrases() { return mLyricPhrases; }
 
     std::vector<VocalPhrase> mPhrases; // 0x0
     std::vector<VocalPhrase> mLyricPhrases; // 0x8

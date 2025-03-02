@@ -42,6 +42,7 @@ public:
     OvershellSlot *GetSlot(int);
     void BeginOverrideFlow(OvershellOverrideFlow);
     bool IsAnySlotEditingChar(CharData *) const;
+    bool AreAllLocalSlotsAllowingInputToShell();
 
     std::vector<OvershellSlot *> mSlots; // 0x70
     std::vector<int> unk78; // 0x78
@@ -66,4 +67,10 @@ public:
 
 DECLARE_MESSAGE(NewOvershellLocalUserMsg, "new_overshell_local_user_msg")
 LocalBandUser *GetBandUser() const;
+END_MESSAGE
+
+DECLARE_MESSAGE(OvershellAllowingInputChangedMsg, "overshell_allowing_input_changed_msg");
+END_MESSAGE
+
+DECLARE_MESSAGE(OvershellActiveStatusChangedMsg, "overshell_active_status_changed_msg");
 END_MESSAGE

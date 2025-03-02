@@ -84,8 +84,8 @@ void GemTrainerPanel::Enter() {
     unkcc = -1;
     if (mGemPlayer) {
         Symbol mpsong = MetaPerformer::Current()->Song();
-        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-            TheSongMgr->GetSongIDFromShortName(mpsong, true)
+        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+            TheSongMgr.GetSongIDFromShortName(mpsong, true)
         );
         int key = data->SongKey();
         int tone = data->SongTonality();
@@ -159,7 +159,7 @@ void GemTrainerPanel::Poll() {
                 mNumLoops++;
             }
             int ooo = 0;
-            if (TheUI->FocusPanel() != this) {
+            if (TheUI.FocusPanel() != this) {
                 ooo = 2;
             } else if (TheGame->GetMusicSpeed() != 1.0f) {
                 ooo = 1;
@@ -180,7 +180,7 @@ void GemTrainerPanel::Poll() {
 void GemTrainerPanel::Draw() {
     TrainerPanel::Draw();
     if (mGemPlayer && ShouldDrawTab()) {
-        TheUI->GetCam()->Select();
+        TheUI.GetCam()->Select();
         mTab->SetLefty(mGemPlayer->GetUser()->GetGameplayOptions()->GetLefty());
         mTab->Draw(GetLoopTick(GetTick()));
     }
@@ -253,7 +253,7 @@ void GemTrainerPanel::CopyGems(
 }
 
 void GemTrainerPanel::StartSectionImpl() {
-    TheSongDB->GetSongData()->GetTempoMap()->ClearLoopPoints();
+    TheSongDB->GetData()->GetTempoMap()->ClearLoopPoints();
     ClearGems();
     mTrack->GetBandTrack()->PracticeReset();
     TrainerSection &sect = GetSection(GetCurrSection());
@@ -298,7 +298,7 @@ void GemTrainerPanel::StartSectionImpl() {
 
 void GemTrainerPanel::SetLoopPoints() {
     if (GetCurrSection() >= 0) {
-        TheSongDB->GetSongData()->GetTempoMap()->ClearLoopPoints();
+        TheSongDB->GetData()->GetTempoMap()->ClearLoopPoints();
         int start = GetSectionLoopStart(GetCurrSection());
         int end = GetSectionLoopEnd(GetCurrSection());
         TrainerSection &sect = GetSection(GetCurrSection());
@@ -308,7 +308,7 @@ void GemTrainerPanel::SetLoopPoints() {
         TheGame->GetBeatMaster()->GetAudio()->GetSongStream()->SetJump(
             endMs, startMs, nullptr
         );
-        TheSongDB->GetSongData()->GetTempoMap()->SetLoopPoints(start, end);
+        TheSongDB->GetData()->GetTempoMap()->SetLoopPoints(start, end);
     }
 }
 
@@ -518,9 +518,8 @@ void GemTrainerPanel::UpdateProgressMeter() {
             }
         } else {
             Difficulty diff = mGemPlayer->GetUser()->GetLocalBandUser()->GetDifficulty();
-            int songID = TheSongMgr->GetSongIDFromShortName(
-                MetaPerformer::Current()->Song(), true
-            );
+            int songID =
+                TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true);
             for (int i = 0; i < GetNumSections(); i++) {
                 mProgressMeter->SetCompleted(
                     i, IsSongSectionComplete(GetBandProfile(), songID, diff, i)

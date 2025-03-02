@@ -148,7 +148,7 @@ void NextSongPanel::InitializeSongReviewDisplay(int i) {
             MetaPerformer *performer = MetaPerformer::Current();
             MILO_ASSERT(performer, 0xEF);
             int songID =
-                TheSongMgr->GetSongIDFromShortName(performer->GetCompletedSong(), true);
+                TheSongMgr.GetSongIDFromShortName(performer->GetCompletedSong(), true);
             BandProfile *profile = TheProfileMgr.GetProfileForUser(localUser);
             MILO_ASSERT(profile, 0xF5);
             reviewDisplay->SetValues(profile->GetSongReview(songID), false);
@@ -169,7 +169,7 @@ void NextSongPanel::IncrementSongReview(int i) {
     MILO_ASSERT(profile, 0x10B);
     MetaPerformer *performer = MetaPerformer::Current();
     MILO_ASSERT(performer, 0x10F);
-    int songID = TheSongMgr->GetSongIDFromShortName(performer->GetCompletedSong(), true);
+    int songID = TheSongMgr.GetSongIDFromShortName(performer->GetCompletedSong(), true);
     int review = profile->GetSongReview(songID);
     review++;
     if (review > 5)

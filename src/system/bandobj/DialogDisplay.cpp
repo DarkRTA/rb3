@@ -6,7 +6,7 @@ INIT_REVS(DialogDisplay);
 
 void DialogDisplay::Init() {
     Register();
-    TheUI->InitResources("DialogDisplay");
+    TheUI.InitResources("DialogDisplay");
 }
 
 DialogDisplay::DialogDisplay()

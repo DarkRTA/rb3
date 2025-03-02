@@ -18,11 +18,13 @@ public:
     void ChooseBandLogo(int, int);
     int GetBandID() const;
     void ProcessRetCode(int);
+    const char *GetName() const { return mBandName.c_str(); }
+    PatchDescriptor *GetLogo() const { return mBandLogo; }
 
     static int SaveSize(int);
 
     BandProfile *unk1c; // 0x1c
-    String unk20; // 0x20
-    PatchDescriptor *unk2c; // ptr to some struct
+    String mBandName; // 0x20
+    PatchDescriptor *mBandLogo; // ptr to some struct
     int unk30; // 0x30
 };

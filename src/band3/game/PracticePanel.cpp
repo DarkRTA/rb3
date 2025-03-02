@@ -138,7 +138,7 @@ void PracticePanel::Poll() {
     if (!unk54) {
         std::vector<Player *> &players = TheGame->GetActivePlayers();
         if (!players.empty()) {
-            if (TheUI->FocusPanel() != this || TheUI->InTransition()
+            if (TheUI.FocusPanel() != this || TheUI.InTransition()
                 || (TheGame->IsWaiting() && !TheGame->InRollback())) {
                 mGuidePitch->Pause(true);
                 setShowingMsg[0] = 0;
@@ -171,7 +171,7 @@ void PracticePanel::Poll() {
                 GetTrackPanel()->Handle(setShowingMsg, true);
                 if (mMetronome) {
                     int oe = 0;
-                    if (TheUI->FocusPanel() != this || !unk58) {
+                    if (TheUI.FocusPanel() != this || !unk58) {
                         oe = 2;
                     } else if (TheGame->GetMusicSpeed() != -1.0f) {
                         oe = 1;
@@ -387,7 +387,7 @@ void PracticePanel::TrackOut() {
 
 int PracticePanel::GetNumVocalParts() const {
     if (MetaPerformer::Current()->IsNowUsingVocalHarmony()) {
-        return TheSongMgr->GetNumVocalParts(MetaPerformer::Current()->Song());
+        return TheSongMgr.GetNumVocalParts(MetaPerformer::Current()->Song());
     } else
         return 1;
 }

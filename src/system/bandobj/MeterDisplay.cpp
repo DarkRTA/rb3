@@ -7,7 +7,7 @@ INIT_REVS(MeterDisplay);
 
 void MeterDisplay::Init() {
     Register();
-    TheUI->InitResources("MeterDisplay");
+    TheUI.InitResources("MeterDisplay");
 }
 
 MeterDisplay::MeterDisplay()

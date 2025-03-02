@@ -94,6 +94,7 @@ public:
     void SetActiveRoster(bool);
     void ChangeRandomSeed();
     Matchmaker *GetMatchmaker() const { return mMatchMaker; }
+    BandMachineMgr *GetMachineMgr() const { return mMachineMgr; }
 
     static void Init();
 

@@ -4,6 +4,7 @@
 #include "game/BandUser.h"
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/AccomplishmentProgress.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/CharData.h"
 #include "meta_band/CharProvider.h"
 #include "meta_band/CharSync.h"
@@ -159,17 +160,17 @@ void ManageBandPanel::SetManageBandState(ManageBandState state) {
 }
 
 void ManageBandPanel::UpdateCharacterFromStandInList(int i) {
-    StandIn *standin = mProfile->GetStandIn(i);
-    if (standin->IsNone()) {
+    const StandIn &standin = mProfile->GetStandIn(i);
+    if (standin.IsNone()) {
         HideCharacter();
     } else {
         CharData *pCharacter = nullptr;
-        if (standin->IsPrefabCharacter()) {
+        if (standin.IsPrefabCharacter()) {
             PrefabMgr *pPrefabMgr = PrefabMgr::GetPrefabMgr();
             MILO_ASSERT(pPrefabMgr, 0x14C);
-            pCharacter = pPrefabMgr->GetPrefab(standin->mName);
-        } else if (standin->IsCustomCharacter()) {
-            pCharacter = mProfile->GetCharFromGuid(standin->mGuid);
+            pCharacter = pPrefabMgr->GetPrefab(standin.mName);
+        } else if (standin.IsCustomCharacter()) {
+            pCharacter = mProfile->GetCharFromGuid(standin.mGuid);
         }
         MILO_ASSERT(pCharacter, 0x157);
         BandCharDesc *pStandInDesc = pCharacter->GetBandCharDesc();
@@ -217,15 +218,15 @@ void ManageBandPanel::RefreshStandinList() {
 void ManageBandPanel::SetSelectedStandIn(int i) { mSelectedStandIn = i; }
 
 void ManageBandPanel::SetStandIn(int i) {
-    StandIn *standin = mProfile->AccessStandIn(mSelectedStandIn);
+    StandIn &standin = mProfile->AccessStandIn(mSelectedStandIn);
     if (mCharProvider->IsIndexNone(i)) {
-        standin->SetNone();
+        standin.SetNone();
     } else if (mCharProvider->IsIndexPrefab(i)) {
-        standin->SetName(mCharProvider->DataSymbol(i));
+        standin.SetName(mCharProvider->DataSymbol(i));
     } else if (mCharProvider->IsIndexCustomChar(i)) {
         CharData *pCharacter = mCharProvider->GetCharData(i);
         MILO_ASSERT(pCharacter, 0x1AB);
-        standin->SetGuid(pCharacter->mGuid);
+        standin.SetGuid(pCharacter->mGuid);
     }
 
     if (mProfile->GetNumStandins() == 4) {
@@ -234,8 +235,8 @@ void ManageBandPanel::SetStandIn(int i) {
 }
 
 void ManageBandPanel::QueueRewardVignette(Symbol s) {
-    AccomplishmentProgress *prog = mProfile->AccessAccomplishmentProgress();
-    prog->AddNewRewardVignette(s);
+    AccomplishmentProgress &prog = mProfile->AccessAccomplishmentProgress();
+    prog.AddNewRewardVignette(s);
 }
 
 #pragma push

@@ -31,7 +31,7 @@ void HeldButtonPanel::Exit() {
 }
 
 void HeldButtonPanel::Poll() {
-    if (TheUI->FocusPanel() == this)
+    if (TheUI.FocusPanel() == this)
         mHolder->Poll();
     else
         mHolder->ClearHeldButtons();

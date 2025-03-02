@@ -51,7 +51,7 @@ UIList::~UIList() {
 }
 
 void UIList::Init() {
-    TheUI->InitResources("UIList");
+    TheUI.InitResources("UIList");
     UIList::Register();
     UIListArrow::Init();
     UIListCustom::Init();
@@ -641,7 +641,7 @@ void UIList::StartScroll(const UIListState &state, int i, bool b) {
     mListDir->StartScroll(state, mWidgets, i, b);
     if (state.Provider()->IsActive(state.SelectedData())
         && (!mAutoScrolling || mAutoScrollSendMessages)) {
-        TheUI->Handle(UIComponentScrollStartMsg(this, mUser), false);
+        TheUI.Handle(UIComponentScrollStartMsg(this, mUser), false);
     }
 }
 
@@ -660,7 +660,7 @@ void UIList::CompleteScroll(const UIListState &state) {
     }
     if (state.Provider()->IsActive(state.SelectedData())) {
         if (!mAutoScrolling || mAutoScrollSendMessages) {
-            TheUI->Handle(UIComponentScrollMsg(this, mUser), false);
+            TheUI.Handle(UIComponentScrollMsg(this, mUser), false);
         }
         HandleSelectionUpdated();
     }

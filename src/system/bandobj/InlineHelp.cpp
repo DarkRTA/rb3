@@ -69,7 +69,7 @@ void InlineHelp::ActionElement::SetConfig(DataNode &dn, bool b) {
 
 void InlineHelp::Init() {
     Register();
-    TheUI->InitResources("InlineHelp");
+    TheUI.InitResources("InlineHelp");
 }
 
 InlineHelp::InlineHelp()

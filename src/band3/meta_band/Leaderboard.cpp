@@ -282,7 +282,7 @@ void Leaderboard::Poll() {
 DataNode Leaderboard::OnMsg(const RockCentralOpCompleteMsg &msg) {
     switch (mEnumState) {
     case kEnumWaiting:
-        if (msg->Int(2)) {
+        if (msg.Arg0()) {
             mDataResultList.Update(0);
             if (mDataResultList.NumDataResults() != 0) {
                 DataResult *res = mDataResultList.GetDataResult(0);
@@ -300,7 +300,7 @@ DataNode Leaderboard::OnMsg(const RockCentralOpCompleteMsg &msg) {
         }
         break;
     case kEnumState2:
-        if (msg->Int(2)) {
+        if (msg.Arg0()) {
             mEnumState = kEnumSuccess;
         } else {
             mEnumState = kEnumFailure;
@@ -346,6 +346,18 @@ void Leaderboard::SetMode(Mode mode, bool restart) {
             CancelEnumerate();
             StartEnumerate();
         }
+    }
+}
+
+LeaderboardMode Leaderboard::ModeToLeaderboardMode(Mode mode) {
+    switch (mode) {
+    case 0:
+        return (LeaderboardMode)0;
+    case 1:
+        return (LeaderboardMode)1;
+    default:
+        MILO_FAIL("Bad Leaderboard::Mode in ModeToLeaderboardMode!");
+        return (LeaderboardMode)0;
     }
 }
 

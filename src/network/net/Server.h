@@ -77,3 +77,6 @@ public:
 };
 
 extern Server *TheServer;
+
+DECLARE_MESSAGE(ServerStatusChangedMsg, "server_status_changed");
+END_MESSAGE

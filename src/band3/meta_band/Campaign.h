@@ -104,6 +104,9 @@ public:
 
     DataNode OnMsg(const ProfileSwappedMsg &);
     DataNode OnMsg(const PrimaryProfileChangedMsg &);
+    const std::map<Symbol, CampaignKey *> &CampaignKeys() const {
+        return m_mapCampaignKeys;
+    }
 
     AccomplishmentManager *m_pAccomplishmentMgr; // 0x1c
     Symbol m_symCurrentAccomplishment; // 0x20

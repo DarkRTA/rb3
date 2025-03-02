@@ -79,12 +79,12 @@ void AppLabel::SetFormattedProfileName(Symbol s, BandUser *user) {
 
 void AppLabel::SetSongName(Symbol shortname, bool fail) {
     if (!shortname.Null()) {
-        SetSongNameWithNumber(TheSongMgr->GetSongIDFromShortName(shortname, fail), 0, 0);
+        SetSongNameWithNumber(TheSongMgr.GetSongIDFromShortName(shortname, fail), 0, 0);
     }
 }
 
 void AppLabel::SetSongNameWithNumber(int songID, int i2, const char *cc) {
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(songID);
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(songID);
     if (data)
         cc = data->Title();
     else if (!cc) {
@@ -97,10 +97,10 @@ void AppLabel::SetSongNameWithNumber(int songID, int i2, const char *cc) {
 }
 
 void AppLabel::SetSongAndArtistNameFromSymbol(Symbol shortname, int i) {
-    int songID = TheSongMgr->GetSongIDFromShortName(shortname, true);
+    int songID = TheSongMgr.GetSongIDFromShortName(shortname, true);
     String artistStr;
     String titleStr;
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(songID);
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(songID);
     if (!data) {
         titleStr = Localize(unknown_song, 0);
     } else {
@@ -135,8 +135,8 @@ void AppLabel::SetSongYear(int i1, int i2) {
 
 void AppLabel::SetArtistName(Symbol shortname) {
     if (!shortname.Null()) {
-        int songID = TheSongMgr->GetSongIDFromShortName(shortname, true);
-        SetArtistName((BandSongMetadata *)TheSongMgr->Data(songID));
+        int songID = TheSongMgr.GetSongIDFromShortName(shortname, true);
+        SetArtistName((BandSongMetadata *)TheSongMgr.Data(songID));
     }
 }
 

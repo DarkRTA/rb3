@@ -149,7 +149,7 @@ void SongSectionController::UpdateOverlay() {
     if (mOverlay) {
         if (!LOADMGR_EDITMODE) {
             static DataNode &disable = DataVariable("cheat.song_section_ctrl");
-            mOverlay->SetOverlay(disable.Int());
+            mOverlay->SetShowing(disable.Int());
         }
         if (mOverlay->Showing()) {
             String cursec(mMidiSection.Null() ? "<none>" : mMidiSection.Str());
@@ -211,7 +211,7 @@ void SongSectionController::UpdateOverlay() {
 
 void SongSectionController::DebugActivate() {
     if (mOverlay && !mOverlay->Showing()) {
-        mOverlay->SetOverlay(true);
+        mOverlay->SetShowing(true);
     }
     if (mDebugPoolCategory != mLastDebugPoolActivated) {
         ActivatePool(mDebugPoolCategory, true);
@@ -261,7 +261,7 @@ END_PROPSYNCS
 
 void SongSectionController::OnToggleOverlay() {
     if (mOverlay) {
-        mOverlay->SetOverlay(mOverlay->Showing() == 0);
+        mOverlay->SetShowing(mOverlay->Showing() == 0);
     }
 }
 

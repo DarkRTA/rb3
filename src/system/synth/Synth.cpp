@@ -256,7 +256,7 @@ void SynthTerminate() {
 }
 
 void Synth::ToggleHud() {
-    mHud->SetOverlay(!mHud->Showing());
+    mHud->SetShowing(!mHud->Showing());
     EnableLevels(mHud->Showing());
 }
 

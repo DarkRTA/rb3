@@ -459,14 +459,14 @@ void PatchDir::SaveRemote(IntPacker &packer) {
 }
 
 void PatchDir::DrawShowing() {
-    TheUI->GetCam()->Select();
+    TheUI.GetCam()->Select();
     for (std::vector<PatchLayer>::iterator it = mLayers.begin(); it != mLayers.end();
          ++it) {
         (*it).Draw();
     }
 }
 
-RndCam *PatchDir::CamOverride() { return TheUI->GetCam(); }
+RndCam *PatchDir::CamOverride() { return TheUI.GetCam(); }
 
 bool PatchDir::HasLayers() const {
     for (std::vector<PatchLayer>::const_iterator it = mLayers.begin();

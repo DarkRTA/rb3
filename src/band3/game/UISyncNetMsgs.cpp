@@ -31,7 +31,7 @@ void ComponentFocusNetMsg::Load(BinStream &bs) {
 
 void ComponentFocusNetMsg::Dispatch() {
     if (TheNetSync->IsEnabled()) {
-        UIScreen *screen = TheUI->CurrentScreen();
+        UIScreen *screen = TheUI.CurrentScreen();
         if (screen) {
             UIPanel *panel = screen->FocusPanel();
             if (panel) {
@@ -71,11 +71,11 @@ void ComponentSelectNetMsg::Dispatch() {
         MILO_ASSERT(user, 0x61);
         msg[0] = user;
         msg[1] = mComponentName;
-        DataNode handled = TheUI->Handle(msg, false);
+        DataNode handled = TheUI.Handle(msg, false);
         if (mShowSelect && handled == DataNode(kDataUnhandled, 0)) {
-            UIScreen *screen = TheUI->CurrentScreen();
+            UIScreen *screen = TheUI.CurrentScreen();
             if (screen) {
-                PanelDir *dir = screen->FocusPanel()->GetPanelDir();
+                PanelDir *dir = screen->FocusPanel()->LoadedDir();
                 if (dir) {
                     UIComponent *c = dir->FindComponent(mComponentName.c_str());
                     if (c)
@@ -124,13 +124,13 @@ void ComponentScrollNetMsg::Dispatch() {
     scrollMsg[1] = mComponentName;
     scrollMsg[2] = mPosition;
     scrollMsg[3] = mFirstShowing;
-    DataNode handleScrollMsg = TheUI->Handle(scrollMsg, false);
+    DataNode handleScrollMsg = TheUI.Handle(scrollMsg, false);
     if (handleScrollMsg == DataNode(kDataUnhandled, 0)) {
-        UIScreen *screen = TheUI->CurrentScreen();
+        UIScreen *screen = TheUI.CurrentScreen();
         if (screen) {
             UIPanel *panel = screen->FocusPanel();
             if (panel) {
-                PanelDir *dir = screen->FocusPanel()->GetPanelDir();
+                PanelDir *dir = screen->FocusPanel()->LoadedDir();
                 if (dir) {
                     UIComponent *c = dir->FindComponent(mComponentName.c_str());
                     if (c) {
@@ -153,7 +153,7 @@ void ComponentScrollNetMsg::Dispatch() {
     postScrollMsg[1] = mComponentName;
     postScrollMsg[2] = mPosition;
     postScrollMsg[3] = mFirstShowing;
-    TheUI->Handle(postScrollMsg, false);
+    TheUI.Handle(postScrollMsg, false);
 }
 #pragma pop
 

@@ -142,20 +142,14 @@ extern int *gpDbgFrameID;
 
 class DebugNotifier {
 public:
-    DebugNotifier &operator<<(const char *c) {
-        TheDebug.Notify(c);
-        // return *this;
-    }
+    void operator<<(const char *c) { TheDebug.Notify(c); }
 };
 
 extern DebugNotifier TheDebugNotifier;
 
 class DebugFailer {
 public:
-    DebugFailer &operator<<(const char *cc) {
-        TheDebug.Fail(cc);
-        return *this;
-    }
+    void operator<<(const char *cc) { TheDebug.Fail(cc); }
 };
 
 extern DebugFailer TheDebugFailer;

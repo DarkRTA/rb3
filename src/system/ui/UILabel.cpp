@@ -41,7 +41,7 @@ UILabel::UILabel()
 UILabel::~UILabel() { delete mText; }
 
 void UILabel::Init() {
-    TheUI->InitResources("UILabel");
+    TheUI.InitResources("UILabel");
     Register();
     UILabelDir::Init();
 }
@@ -211,7 +211,7 @@ void UILabel::PostLoad(BinStream &bs) {
         unk114 = mIcon;
     else
         SetTextToken(mTextToken);
-    if (TheUI->RequireFixedText()) {
+    if (TheUI.RequireFixedText()) {
         if (mFixedLength == 0) {
             MILO_WARN(
                 "%s: %s is preloaded, but doesn't have fixed length",
@@ -864,13 +864,13 @@ void UILabel::CenterWithLabel(UILabel *label, bool b, float f) {
 
 float GetTextSizeFromPctHeight(float f) {
     if (LOADMGR_EDITMODE) {
-        float transnum = -TheUI->GetCam()->mLocalXfm.v.Y();
+        float transnum = -TheUI.GetCam()->mLocalXfm.v.Y();
         Vector2 vec2_1(0.0f, 0.0f);
         Vector3 vec3_1;
-        TheUI->GetCam()->ScreenToWorld(vec2_1, transnum, vec3_1);
+        TheUI.GetCam()->ScreenToWorld(vec2_1, transnum, vec3_1);
         Vector2 vec2_2(0.0f, f);
         Vector3 vec3_2;
-        TheUI->GetCam()->ScreenToWorld(vec2_2, transnum, vec3_2);
+        TheUI.GetCam()->ScreenToWorld(vec2_2, transnum, vec3_2);
         return std::fabs(vec3_1.z - vec3_2.z);
     } else
         return f;
@@ -880,10 +880,10 @@ float GetPctHeightFromTextSize(float f) {
     if (LOADMGR_EDITMODE) {
         Vector3 vec3_1(0.0f, 0.0f, 0.0f);
         Vector2 vec2_1;
-        TheUI->GetCam()->WorldToScreen(vec3_1, vec2_1);
+        TheUI.GetCam()->WorldToScreen(vec3_1, vec2_1);
         Vector3 vec3_2(0.0f, 0.0f, -f);
         Vector2 vec2_2;
-        TheUI->GetCam()->WorldToScreen(vec3_2, vec2_2);
+        TheUI.GetCam()->WorldToScreen(vec3_2, vec2_2);
         return std::fabs(vec2_1.y - vec2_2.y);
     } else
         return f;

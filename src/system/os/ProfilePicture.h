@@ -1,20 +1,18 @@
-#ifndef OS_PROFILEPICTURE_H
-#define OS_PROFILEPICTURE_H
+#pragma once
 #include "obj/Object.h"
 #include "os/OnlineID.h"
 #include "obj/Msg.h"
 
 class RndTex; // forward dec
 
-enum State {
-    kIdle,
-    kFetchingUserData,
-    kFetchingUserPicture,
-    kComplete
-};
-
 class ProfilePicture {
 public:
+    enum State {
+        kIdle,
+        kFetchingUserData,
+        kFetchingUserPicture,
+        kComplete
+    };
     ProfilePicture(int, Hmx::Object *);
     ~ProfilePicture() {}
 
@@ -37,6 +35,3 @@ public:
 DECLARE_MESSAGE(ProfilePictureFetchedMsg, "profile_picture_fetched_msg")
 ProfilePictureFetchedMsg(int i) : Message(Type(), i) {}
 END_MESSAGE
-;
-
-#endif

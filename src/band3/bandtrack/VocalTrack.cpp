@@ -566,7 +566,7 @@ bool VocalTrack::WantBeatLines(int i1) {
         std::vector<VocalPhrase> &phrases = notes->mPhrases;
         FOREACH (it, phrases) {
             if (i1 >= it->unk8 && (i1 <= it->unk8 + it->unkc)) {
-                return it->unk2d;
+                return it->mTambourinePhrase;
             }
         }
         return false;
@@ -630,8 +630,8 @@ void VocalTrack::UpdateVocalStyle() {
         }
         mDir->UpdateConfiguration();
         unk78 = mDir->mTrackRightX - mDir->mTrackLeftX;
-        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-            TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+            TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
         );
         unk74 = data->ScrollSpeed() * (unk78 / 16.8f);
         mDir->Find<RndAnimatable>("tambourine_preview.anim", true)->SetFrame(0, 1);
@@ -685,7 +685,7 @@ void VocalTrack::RebuildHUD() {
         unk208 = -1;
         if (mDir->Property(pitch_guides, true)->Sym() == harmonic) {
             int tonic =
-                ((BandSongMetadata *)TheSongMgr->Data(TheSongMgr->GetSongIDFromShortName(
+                ((BandSongMetadata *)TheSongMgr.Data(TheSongMgr.GetSongIDFromShortName(
                      MetaPerformer::Current()->Song(), true
                  )))
                     ->VocalTonicNote();

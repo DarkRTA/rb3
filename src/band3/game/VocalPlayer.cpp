@@ -57,8 +57,8 @@ VocalPlayer::VocalPlayer(
       mOverlay(0), mVocalOverlay(0), mScoringEnabled(1), mTambourineManager(*this),
       mSectionStartPhrasePercentageTotal(0), mSectionStartPhrasePercentageCount(0),
       mSectionStartScore(0), mFrameSpewData(0), mFrameSpewStream(0) {
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-        TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+        TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
     );
     mTuningOffset = data->TuningOffset() / 100.0f;
     for (int i = 0; i < i7; i++) {
@@ -479,8 +479,9 @@ void VocalPlayer::HandlePhraseEnd(float f1) {
         VocalPart *cur = *it;
         vec58.push_back(cur->MaxPhraseScore());
         float fd4 = FramePhraseMeterFrac(cur->PartIndex());
-        if (!cur->InEmptyPhrase() && cur->InPlayablePhrase() && !cur->mThisPhrase->unk2d
-            && cur->ScoringEnabled() && cur->ScoringEnabled()) {
+        if (!cur->InEmptyPhrase() && cur->InPlayablePhrase()
+            && !cur->mThisPhrase->mTambourinePhrase && cur->ScoringEnabled()
+            && cur->ScoringEnabled()) {
             MaxEq(fc4, fd4);
         }
 
@@ -731,11 +732,11 @@ int VocalPlayer::OnMsg(const ButtonDownMsg &msg) {
         return 0;
     else {
         bool b1 = false;
-        if (TheUI->FocusPanel()) {
-            b1 = strcmp(TheUI->FocusPanel()->Name(), "world_panel") == 0;
+        if (TheUI.FocusPanel()) {
+            b1 = strcmp(TheUI.FocusPanel()->Name(), "world_panel") == 0;
         }
-        if (TheUI->FocusPanel() != TheGamePanel && !b1) {
-            if (!dynamic_cast<PracticePanel *>(TheUI->FocusPanel()))
+        if (TheUI.FocusPanel() != TheGamePanel && !b1) {
+            if (!dynamic_cast<PracticePanel *>(TheUI.FocusPanel()))
                 return 0;
         }
     }
@@ -831,7 +832,7 @@ void VocalPlayer::BuildPhrases(bool b1) {
                 b3 = false;
                 if (!curPart->IsEmptyPhrase(curPhrase))
                     bvar1 = true;
-                if (curPhrase->unk2d)
+                if (curPhrase->mTambourinePhrase)
                     bvar2 = true;
                 it->first = curPart->GetNextPhraseMarker(curPhrase);
             }
@@ -1031,7 +1032,7 @@ bool VocalPlayer::NeedsToOverrideBasePoints() const { return !mUser->IsNullUser(
 
 void VocalPlayer::ToggleOverlay() {
     MILO_ASSERT(mOverlay, 0xDF0);
-    mOverlay->SetOverlay(!mOverlay->Showing());
+    mOverlay->SetShowing(!mOverlay->Showing());
     RELEASE(mVocalOverlay);
     if (mOverlay->Showing())
         mVocalOverlay = new VocalOverlay();

@@ -6,7 +6,7 @@
 #include "utl/Symbols.h"
 
 BandSongMgr gSongMgr;
-BandSongMgr *TheSongMgr = &gSongMgr;
+BandSongMgr &TheSongMgr = gSongMgr;
 
 bool BandSongMgr::sFakeSongsAllowed;
 

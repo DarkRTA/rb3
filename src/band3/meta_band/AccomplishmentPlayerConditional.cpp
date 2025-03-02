@@ -89,85 +89,85 @@ bool AccomplishmentPlayerConditional::InqConditionProgress(
     Symbol sym = cond.mCondition;
     i1 = 0;
     if (profile) {
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
         SongStatusMgr *mgr = profile->GetSongStatusMgr();
         if (sym == career_score) {
             i1 = mgr->GetCachedTotalScore(cond.mScoreType);
         } else if (sym == career_score_capped) {
             i1 = mgr->GetCachedTotalDiscScore(cond.mScoreType);
         } else if (sym == total_gems) {
-            i1 = prog->GetTotalGemsSmashed();
+            i1 = prog.GetTotalGemsSmashed();
         } else if (sym == total_hopos) {
             if (cond.mScoreType == kScoreGuitar)
-                i1 = prog->GetTotalGuitarHopos();
+                i1 = prog.GetTotalGuitarHopos();
             else if (cond.mScoreType == kScoreBass)
-                i1 = prog->GetTotalBassHopos();
+                i1 = prog.GetTotalBassHopos();
             else
                 MILO_ASSERT(false, 0xC6);
         } else if (sym == total_upstrums) {
-            i1 = prog->GetTotalUpstrums();
+            i1 = prog.GetTotalUpstrums();
         } else if (sym == total_times_revived) {
-            i1 = prog->GetTotalTimesRevived();
+            i1 = prog.GetTotalTimesRevived();
         } else if (sym == total_saves) {
-            i1 = prog->GetTotalSaves();
+            i1 = prog.GetTotalSaves();
         } else if (sym == total_awesomes) {
-            i1 = prog->GetTotalAwesomes();
+            i1 = prog.GetTotalAwesomes();
         } else if (sym == total_double_awesomes) {
-            i1 = prog->GetTotalDoubleAwesomes();
+            i1 = prog.GetTotalDoubleAwesomes();
         } else if (sym == total_triple_awesomes) {
-            i1 = prog->GetTotalTripleAwesomes();
+            i1 = prog.GetTotalTripleAwesomes();
         } else if (sym == stars) {
-            i1 = prog->GetBestStarsAtMinDifficulty(cond.mScoreType, cond.mDifficulty);
+            i1 = prog.GetBestStarsAtMinDifficulty(cond.mScoreType, cond.mDifficulty);
         } else if (sym == best_solo) {
-            i1 = prog->GetBestSoloAtMinDifficulty(cond.mScoreType, cond.mDifficulty);
+            i1 = prog.GetBestSoloAtMinDifficulty(cond.mScoreType, cond.mDifficulty);
         } else if (sym == best_accuracy) {
-            i1 = prog->GetBestAccuracyAtMinDifficulty(cond.mScoreType, cond.mDifficulty);
+            i1 = prog.GetBestAccuracyAtMinDifficulty(cond.mScoreType, cond.mDifficulty);
         } else if (sym == best_streak) {
-            i1 = prog->GetBestStreak(cond.mScoreType);
+            i1 = prog.GetBestStreak(cond.mScoreType);
         } else if (sym == total_overdrive_deploys) {
-            i1 = prog->GetTotalOverdriveDeploys(cond.mScoreType);
+            i1 = prog.GetTotalOverdriveDeploys(cond.mScoreType);
         } else if (sym == total_overdrive_time) {
-            i1 = prog->GetTotalOverdriveTime(cond.mScoreType);
+            i1 = prog.GetTotalOverdriveTime(cond.mScoreType);
         } else if (sym == total_overdrive_phrases) {
-            i1 = prog->GetTotalOverdrivePhrases(cond.mScoreType);
+            i1 = prog.GetTotalOverdrivePhrases(cond.mScoreType);
         } else if (sym == total_unison_phrases) {
-            i1 = prog->GetTotalUnisonPhrases(cond.mScoreType);
+            i1 = prog.GetTotalUnisonPhrases(cond.mScoreType);
         } else if (sym == most_overdrive_deploys) {
-            i1 = prog->GetMostOverdriveDeploys(cond.mScoreType);
+            i1 = prog.GetMostOverdriveDeploys(cond.mScoreType);
         } else if (sym == most_overdrive_time) {
-            i1 = prog->GetMostOverdriveTime(cond.mScoreType);
+            i1 = prog.GetMostOverdriveTime(cond.mScoreType);
         } else if (sym == most_unison_phrases) {
-            i1 = prog->GetMostUnisonPhrases(cond.mScoreType);
+            i1 = prog.GetMostUnisonPhrases(cond.mScoreType);
         } else if (sym == total_bre_hits) {
-            i1 = prog->GetTotalBREsHit(cond.mScoreType);
+            i1 = prog.GetTotalBREsHit(cond.mScoreType);
         } else if (sym == total_songs_played) {
-            i1 = prog->GetTotalSongsPlayed();
+            i1 = prog.GetTotalSongsPlayed();
         } else if (sym == tour_total_songs_played) {
-            i1 = prog->GetTourTotalSongsPlayed();
+            i1 = prog.GetTourTotalSongsPlayed();
         } else if (sym == best_percussion_percent) {
-            i1 = prog->GetBestPercussionPercentAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetBestPercussionPercentAtMinDifficulty(cond.mDifficulty);
         } else if (sym == total_drumrolls) {
-            i1 = prog->GetTotalDrumRollCountAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetTotalDrumRollCountAtMinDifficulty(cond.mDifficulty);
         } else if (sym == total_pro_drumrolls) {
-            i1 = prog->GetTotalProDrumRollCountAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetTotalProDrumRollCountAtMinDifficulty(cond.mDifficulty);
         } else if (sym == best_kick_percent) {
-            i1 = prog->GetBestKickPercentAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetBestKickPercentAtMinDifficulty(cond.mDifficulty);
         } else if (sym == best_pro_kick_percent) {
-            i1 = prog->GetBestProKickPercentAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetBestProKickPercentAtMinDifficulty(cond.mDifficulty);
         } else if (sym == best_drumroll_percent) {
-            i1 = prog->GetBestDrumRollPercentAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetBestDrumRollPercentAtMinDifficulty(cond.mDifficulty);
         } else if (sym == solo_button_percent) {
-            i1 = prog->GetBestSoloButtonPercentAtMinDifficulty(cond.mDifficulty);
+            i1 = prog.GetBestSoloButtonPercentAtMinDifficulty(cond.mDifficulty);
         } else if (sym == best_hopos_percent) {
-            i1 = prog->GetBestHoposPercentAtMinDifficulty(
+            i1 = prog.GetBestHoposPercentAtMinDifficulty(
                 cond.mScoreType, cond.mDifficulty
             );
         } else if (sym == career_fills) {
-            i1 = prog->GetCareerFills();
+            i1 = prog.GetCareerFills();
         } else if (sym == best_score) {
-            i1 = prog->GetBestScore(cond.mScoreType);
+            i1 = prog.GetBestScore(cond.mScoreType);
         } else if (sym == best_band_score) {
-            i1 = prog->GetBestBandScore();
+            i1 = prog.GetBestBandScore();
         } else {
             MILO_WARN(
                 "GOAL: %s - Condition is not currently supported: %s \n", mName, sym

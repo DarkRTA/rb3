@@ -118,16 +118,16 @@ void AppInlineHelp::SetOverrideUser(LocalBandUser *user) {
 }
 
 DataNode AppInlineHelp::OnMsg(const InputStatusChangedMsg &) {
-    if (TheUI->GetTransitionState() == kTransitionNone
-        || TheUI->GetTransitionState() == kTransitionFrom) {
+    if (TheUI.GetTransitionState() == kTransitionNone
+        || TheUI.GetTransitionState() == kTransitionFrom) {
         UpdateIconTypes(true);
     }
     return 1;
 }
 
 DataNode AppInlineHelp::OnMsg(const LocalUserLeftMsg &) {
-    if (TheUI->GetTransitionState() == kTransitionNone
-        || TheUI->GetTransitionState() == kTransitionFrom) {
+    if (TheUI.GetTransitionState() == kTransitionNone
+        || TheUI.GetTransitionState() == kTransitionFrom) {
         UpdateIconTypes(true);
     }
     return 1;
@@ -136,8 +136,8 @@ DataNode AppInlineHelp::OnMsg(const LocalUserLeftMsg &) {
 DataNode AppInlineHelp::OnMsg(const AddLocalUserResultMsg &msg) {
     int result = msg.Success();
     if (result) {
-        if (TheUI->GetTransitionState() == kTransitionNone
-            || TheUI->GetTransitionState() == kTransitionFrom) {
+        if (TheUI.GetTransitionState() == kTransitionNone
+            || TheUI.GetTransitionState() == kTransitionFrom) {
             UpdateIconTypes(true);
         }
     }

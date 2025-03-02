@@ -112,27 +112,27 @@ bool AccomplishmentTourConditional::InqConditionProgress(
     }
     i1 = 0;
     if (profile) {
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
         if (symcond == tour_total_played) {
             if (desc != "")
-                i1 = prog->GetToursPlayed(desc);
+                i1 = prog.GetToursPlayed(desc);
             else
-                i1 = prog->GetToursPlayed();
+                i1 = prog.GetToursPlayed();
         } else if (symcond == tour_most_stars) {
             if (desc != "")
-                i1 = prog->GetTourMostStars(desc);
+                i1 = prog.GetTourMostStars(desc);
             else
                 MILO_WARN("Accomplishment for tour most stars is missing a tour desc.");
         } else if (symcond == tour_times_maxed_stars) {
             if (desc != "")
-                i1 = prog->GetToursGotAllStars(desc);
+                i1 = prog.GetToursGotAllStars(desc);
             else
-                i1 = prog->GetToursGotAllStars();
+                i1 = prog.GetToursGotAllStars();
         } else if (symcond == tour_quest_type_times_completed) {
             if (ty != 0)
-                i1 = prog->GetQuestCompletedCount(ty);
+                i1 = prog.GetQuestCompletedCount(ty);
             else
-                i1 = prog->GetQuestCompletedCount();
+                i1 = prog.GetQuestCompletedCount();
         } else {
             MILO_WARN(
                 "GOAL: %s - Condition is not currently supported: %s \n", mName, symcond

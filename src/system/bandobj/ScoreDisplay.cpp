@@ -8,7 +8,7 @@ INIT_REVS(ScoreDisplay)
 
 void ScoreDisplay::Init() {
     Register();
-    TheUI->InitResources("ScoreDisplay");
+    TheUI.InitResources("ScoreDisplay");
 }
 
 ScoreDisplay::ScoreDisplay()

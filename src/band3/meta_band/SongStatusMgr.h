@@ -275,6 +275,7 @@ public:
     SongStatus *CreateOrAccessSongStatus(int songID) const {
         return mCacheMgr.CreateOrAccessSongStatus(songID);
     }
+    void SetLocalUser(LocalBandUser *u) { mLocalUser = u; }
 
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
 

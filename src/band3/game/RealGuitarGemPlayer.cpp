@@ -86,28 +86,28 @@ unsigned int RealGuitarGemPlayer::GetRollSlots(int i) const {
 }
 
 int RealGuitarGemPlayer::GetNumRolls() const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     RangedDataCollection<RGRollChord> *rollInfo = data->GetRGRollInfo(mTrackNum);
     return rollInfo->SizeAt(diff);
 }
 
 void RealGuitarGemPlayer::GetRollInfo(int i1, int &start, int &end) const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     RangedDataCollection<RGRollChord> *rollInfo = data->GetRGRollInfo(mTrackNum);
     rollInfo->GetNthStartEnd(diff, i1, start, end);
 }
 
 int RealGuitarGemPlayer::GetNumTrills() const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     RangedDataCollection<RGTrill> *trillInfo = data->GetRGTrillInfo(mTrackNum);
     return trillInfo->SizeAt(diff);
 }
 
 void RealGuitarGemPlayer::GetTrillInfo(int i1, int &start, int &end) const {
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     int diff = data->TrackDiffAt(mTrackNum);
     RangedDataCollection<RGTrill> *trillInfo = data->GetRGTrillInfo(mTrackNum);
     trillInfo->GetNthStartEnd(diff, i1, start, end);
@@ -115,7 +115,7 @@ void RealGuitarGemPlayer::GetTrillInfo(int i1, int &start, int &end) const {
 
 bool RealGuitarGemPlayer::GetTrillSlots(int i2, std::pair<int, int> &slots) const {
     RGTrill trill;
-    SongData *data = TheSongDB->GetSongData();
+    SongData *data = TheSongDB->GetData();
     if (!data->GetRGTrillAtTick(mTrackNum, i2, trill)) {
         return false;
     } else {

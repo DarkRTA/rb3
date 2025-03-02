@@ -41,7 +41,7 @@ bool ScrollSelect::RevertScrollSelect(
         }
         if (somenum) {
             if (node.Type() == kDataUnhandled) {
-                TheUI->Handle(UIComponentScrollMsg(comp, user), false);
+                TheUI.Handle(UIComponentScrollMsg(comp, user), false);
             }
         }
         return true;
@@ -79,7 +79,7 @@ DataNode ScrollSelect::SendScrollSelected(UIComponent *comp, LocalUser *user) {
     scroll_select_msg->Node(2) = comp;
     scroll_select_msg->Node(3) = user;
     scroll_select_msg->Node(4) = mSelectedAux != -1;
-    return TheUI->Handle(scroll_select_msg, false);
+    return TheUI.Handle(scroll_select_msg, false);
 }
 #pragma pop
 

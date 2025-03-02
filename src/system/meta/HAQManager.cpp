@@ -50,7 +50,7 @@ String HAQManager::GetLabelForType(HAQType type) const {
 
 String HAQManager::GetScreenText() const {
     const char *cc;
-    UIScreen *screen = TheUI->CurrentScreen();
+    UIScreen *screen = TheUI.CurrentScreen();
     if (screen)
         cc = screen->Name();
     else
@@ -116,7 +116,7 @@ String HAQManager::GetButtonStatePressedString(int pad) const {
 
 UIComponent *HAQManager::GetUIFocusComponent() const {
     UIComponent *ret = 0;
-    UIScreen *screen = TheUI->CurrentScreen();
+    UIScreen *screen = TheUI.CurrentScreen();
     if (screen) {
         UIPanel *focus = screen->mFocusPanel;
         if (focus)

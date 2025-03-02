@@ -35,7 +35,7 @@ BandList::~BandList() {}
 DECOMP_FORCEACTIVE(BandList, "ObjPtr_p.h", "f.Owner()", "")
 
 void BandList::Init() {
-    TheUI->InitResources("BandList");
+    TheUI.InitResources("BandList");
     Register();
 }
 

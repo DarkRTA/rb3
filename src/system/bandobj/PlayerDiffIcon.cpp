@@ -6,7 +6,7 @@ INIT_REVS(PlayerDiffIcon)
 
 void PlayerDiffIcon::Init() {
     Register();
-    TheUI->InitResources("PlayerDiffIcon");
+    TheUI.InitResources("PlayerDiffIcon");
 }
 
 PlayerDiffIcon::PlayerDiffIcon()

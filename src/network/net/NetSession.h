@@ -16,27 +16,25 @@ DECLARE_MESSAGE(ProcessedJoinRequestMsg, "processed_join_request")
 ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 bool GetProcessed() const { return mData->Int(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(JoinResultMsg, "join_result")
 JoinResultMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(SyncStartGameMsg, "sync_start_game")
 SyncStartGameMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(SettingsChangedMsg, "settings_changed")
 SettingsChangedMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(InviteAcceptedMsg, "invite_accepted")
 InviteAcceptedMsg() : Message(Type()) {}
 END_MESSAGE
-;
+
+DECLARE_MESSAGE(NetErrorMsg, "net_error")
+END_MESSAGE
 
 enum PacketType {
     kUnreliable = 0,

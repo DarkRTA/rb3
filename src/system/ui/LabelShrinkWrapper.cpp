@@ -7,7 +7,7 @@ INIT_REVS(LabelShrinkWrapper)
 
 void LabelShrinkWrapper::Init() {
     Register();
-    TheUI->InitResources("LabelShrinkWrapper");
+    TheUI.InitResources("LabelShrinkWrapper");
 }
 
 LabelShrinkWrapper::LabelShrinkWrapper()

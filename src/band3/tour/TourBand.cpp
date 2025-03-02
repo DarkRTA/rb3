@@ -11,15 +11,15 @@
 
 TourBand::TourBand(BandProfile *pf) : unk1c(pf), unk30(0) {
     mSaveSizeMethod = &SaveSize;
-    unk2c = new PatchDescriptor();
+    mBandLogo = new PatchDescriptor();
     SetDirty(false, 0xFF);
 }
 
-TourBand::~TourBand() { RELEASE(unk2c); }
+TourBand::~TourBand() { RELEASE(mBandLogo); }
 
 void TourBand::SetBandName(const char *cc) {
-    if (unk20 != cc) {
-        unk20 = cc;
+    if (mBandName != cc) {
+        mBandName = cc;
         SetDirty(true, 7);
         BandMachineMgr *pMachineMgr = TheSessionMgr->mMachineMgr;
         MILO_ASSERT(pMachineMgr, 0x38);
@@ -28,10 +28,10 @@ void TourBand::SetBandName(const char *cc) {
 }
 
 void TourBand::ChooseBandLogo(int i, int j) {
-    if (unk2c->patchIndex == j && unk2c->patchType == i)
+    if (mBandLogo->patchIndex == j && mBandLogo->patchType == i)
         return;
-    unk2c->patchIndex = j;
-    unk2c->patchType = i;
+    mBandLogo->patchIndex = j;
+    mBandLogo->patchType = i;
     SetDirty(true, 3);
 }
 
@@ -41,39 +41,34 @@ void TourBand::ProcessRetCode(int code) {
     static Message msg("init", 0, 0);
     if (code == 2) {
         msg[0] = Symbol("upload_error_band_name_profane");
-        msg[1] = unk20;
+        msg[1] = mBandName;
         TheUIEventMgr->TriggerEvent(band_upload_event, msg);
     } else if (code == 5) {
         msg[0] = Symbol("upload_error_band_name_duplicate");
-        msg[1] = unk20;
+        msg[1] = mBandName;
         TheUIEventMgr->TriggerEvent(band_upload_event, msg);
     }
 }
 
 bool TourBand::IsUploadNeeded() const {
-    if (unk20.length() == 0)
+    if (mBandName.length() == 0)
         return false;
     else
         return TourSavable::IsUploadNeeded();
 }
 
-int TourBand::SaveSize(int size) {
-    if (FixedSizeSaveable::sPrintoutsEnabled) {
-        MILO_LOG("* %s = %i\n", "TourBand", 0x8A);
-    }
-    return 0x8A;
-}
+int TourBand::SaveSize(int size) { REPORT_SIZE("TourBand", 0x8A); }
 
 void TourBand::SaveFixed(FixedSizeSaveableStream &stream) const {
-    FixedSizeSaveable::SaveFixedString(stream, unk20);
-    stream << *unk2c;
+    FixedSizeSaveable::SaveFixedString(stream, mBandName);
+    stream << *mBandLogo;
     stream << IsDirtyUpload();
     stream << IsNameUnchecked();
 }
 
 void TourBand::LoadFixed(FixedSizeSaveableStream &stream, int rev) {
-    FixedSizeSaveable::LoadFixedString(stream, unk20);
-    stream >> *unk2c;
+    FixedSizeSaveable::LoadFixedString(stream, mBandName);
+    stream >> *mBandLogo;
     bool b1;
     stream >> b1;
     SetDirty(b1, 2);

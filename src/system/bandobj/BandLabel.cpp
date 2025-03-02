@@ -6,7 +6,7 @@
 INIT_REVS(BandLabel);
 
 void BandLabel::Init() {
-    TheUI->InitResources("BandLabel");
+    TheUI.InitResources("BandLabel");
     Register();
 }
 
@@ -178,7 +178,7 @@ void BandLabel::Poll() {
         SetTokenFmt(unk1e4, LocalizeSeparatedInt(val));
         if (uisecs > unk1dc.LastFrame()) {
             unk1dc.clear();
-            TheUI->Handle(BandLabelCountDoneMsg(this), false);
+            TheUI.Handle(BandLabelCountDoneMsg(this), false);
         }
     }
     UpdateHandler();

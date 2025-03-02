@@ -23,5 +23,5 @@ public:
     int mVocalVolume;
     bool mLefty;
     VocalStyle mVocalStyle;
-    mutable u8 mDirty;
+    mutable bool mDirty;
 };

@@ -424,7 +424,7 @@ int SongStatusCacheMgr::ClearLeastImportantSongStatusEntry() {
     int lowestlast = 0x7FFFFFFF; // isn't this just -1?
     int ret = 0;
     for (int i = 0; i < 1000; i++) {
-        if (!TheSongMgr->HasSong(mLookups[i].mSongID) || mLookups[i].mSongID == 0) {
+        if (!TheSongMgr.HasSong(mLookups[i].mSongID) || mLookups[i].mSongID == 0) {
             ClearIndex(i);
             return i;
         } else if (mLookups[i].mLastPlayed < lowestlast) {
@@ -819,7 +819,7 @@ int SongStatusMgr::GetPossibleStars(ScoreType ty, Symbol s) const {
 
 int SongStatusMgr::GetTotalSongs(ScoreType ty, Symbol s) const {
     TrackType trackty = ScoreTypeToTrackType(ty);
-    return TheSongMgr->NumRankedSongs(trackty, ty == kScoreHarmony, s);
+    return TheSongMgr.NumRankedSongs(trackty, ty == kScoreHarmony, s);
 }
 
 int SongStatusMgr::GetCompletedSongs(ScoreType, Difficulty, Symbol) const {}

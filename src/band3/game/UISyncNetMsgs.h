@@ -7,6 +7,7 @@
 
 class ComponentFocusNetMsg : public NetMessage {
 public:
+    ComponentFocusNetMsg() {}
     ComponentFocusNetMsg(User *, UIComponent *);
     virtual ~ComponentFocusNetMsg() {}
     virtual void Save(BinStream &) const;
@@ -23,6 +24,7 @@ public:
 
 class ComponentSelectNetMsg : public NetMessage {
 public:
+    ComponentSelectNetMsg() {}
     ComponentSelectNetMsg(User *, UIComponent *, bool);
     virtual ~ComponentSelectNetMsg() {}
     virtual void Save(BinStream &) const;
@@ -44,6 +46,7 @@ END_MESSAGE
 
 class ComponentScrollNetMsg : public NetMessage {
 public:
+    ComponentScrollNetMsg() {}
     ComponentScrollNetMsg(User *, UIComponent *);
     virtual ~ComponentScrollNetMsg() {}
     virtual void Save(BinStream &) const;

@@ -92,7 +92,7 @@ inline void Automator::Poll() {
         if (sym == button_down) {
             FillButtonMsg(b_msg, mCurMsgIndex);
             AdvanceScript(b_msg.Message::Type());
-            TheUI->Handle(b_msg, false);
+            TheUI.Handle(b_msg, false);
         } else if (sym == quick_cheat) {
             DataArray *cheatArr = mCurScript->Array(1);
             AdvanceScript(quick_cheat);
@@ -101,7 +101,7 @@ inline void Automator::Poll() {
             mCurMsgIndex--;
             if (mCurScript->Array(mCurMsgIndex)->Sym(0) == button_down) {
                 FillButtonMsg(b_msg, mCurMsgIndex);
-                TheUI->Handle(b_msg, false);
+                TheUI.Handle(b_msg, false);
             }
         }
     }
@@ -127,7 +127,7 @@ inline const char *Automator::ToggleAuto() {
         mScreenScripts = dl->Data();
         mCurScreenIndex = 0;
         if (mScreenScripts) {
-            StartAuto(TheUI->CurrentScreen());
+            StartAuto(TheUI.CurrentScreen());
         }
     }
     return AutoScript();
@@ -156,7 +156,7 @@ DataNode Automator::OnMsg(const UITransitionCompleteMsg &msg) {
 }
 
 inline Symbol Automator::CurScreenName() {
-    UIScreen *curScreen = TheUI->CurrentScreen();
+    UIScreen *curScreen = TheUI.CurrentScreen();
     if (curScreen) {
         DataNode handled = curScreen->Handle(is_system_cheat_msg, false);
         if (handled == DataNode(kDataUnhandled, 0) || handled.Int() == 0) {
@@ -195,7 +195,7 @@ inline DataNode Automator::OnMsg(const ButtonDownMsg &msg) {
 }
 
 inline void Automator::HandleMessage(Symbol msgType) {
-    if (!TheUI->InTransition()) {
+    if (!TheUI.InTransition()) {
         if (mRecord) {
             Symbol screenName = CurScreenName();
             if (!screenName.Null()) {
@@ -216,7 +216,7 @@ inline void Automator::AdvanceScript(Symbol msg) {
             if (mCurMsgIndex >= mCurScript->Size()) {
                 mCurScript = 0;
                 if (mCurScreenIndex == mScreenScripts->Size()) {
-                    TheUI->Handle(auto_script_done_msg, false);
+                    TheUI.Handle(auto_script_done_msg, false);
                 }
             }
         }
@@ -253,7 +253,7 @@ DataNode Automator::OnCheatInvoked(const DataArray *arr) {
     if (arr->Int(2) == 0)
         goto ret;
     Symbol screenName = CurScreenName();
-    if (TheUI->CurrentScreen() && screenName.Null()) {
+    if (TheUI.CurrentScreen() && screenName.Null()) {
         screenName = CurRecordScreen();
     }
     if (!screenName.Null()) {
@@ -281,7 +281,7 @@ UIManager::UIManager()
 
 UIManager::~UIManager() {}
 
-void UITerminateCallback() { TheUI->Terminate(); }
+void UITerminateCallback() { TheUI.Terminate(); }
 
 void UIManager::Init() {
     mAutomator = new Automator();
@@ -348,7 +348,7 @@ void UIManager::Init() {
     LocalePanel::Init();
     Hmx::Object::Handle(cheat_init_msg, false);
     mOverlay = RndOverlay::Find("ui", true);
-    mOverlay->SetOverlay(false);
+    mOverlay->SetShowing(false);
     PreloadSharedSubdirs("ui");
     Hmx::Object::Handle(init_msg, false);
     mTimer.Restart();
@@ -731,7 +731,7 @@ UIScreen *UIManager::ScreenAtDepth(int depth) {
 
 void UIManager::ToggleLoadTimes() {
     mOverlay->CurrentLine() = gNullStr;
-    mOverlay->SetOverlay(!mOverlay->Showing());
+    mOverlay->SetShowing(!mOverlay->Showing());
 }
 
 bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray *da) {

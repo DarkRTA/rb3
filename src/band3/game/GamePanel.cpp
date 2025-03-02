@@ -81,8 +81,8 @@ void GamePanel::Reset() {
 void GamePanel::Load() {
     mReplay = false;
     mLoadProf.Start();
-    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-        TheSongMgr->GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
+    BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(
+        TheSongMgr.GetSongIDFromShortName(MetaPerformer::Current()->Song(), true)
     );
     mVocalPercussionBank.LoadFile(
         FilePath(".", data->VocalPercussionBank().mStr), true, true, kLoadBack, false
@@ -148,8 +148,8 @@ void GamePanel::PollForLoading() {
     UIPanel::PollForLoading();
     if (UIPanel::IsLoaded()) {
         mLoadingState = kLoadingState_UILoaded;
-        if (TheUI->TransitionScreen()) {
-            if (TheUI->TransitionScreen()->HasPanel(
+        if (TheUI.TransitionScreen()) {
+            if (TheUI.TransitionScreen()->HasPanel(
                     ObjectDir::sMainDir->Find<UIPanel>("world_panel", true)
                 )) {
                 if (!TheBandDirector || !TheBandDirector->ReadyForMidiParsers())

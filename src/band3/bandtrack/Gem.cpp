@@ -447,9 +447,7 @@ void Gem::CreateWidgetInstances(Symbol s) {
             } else {
                 MILO_WARN(
                     "RG chord gem at %s has only ghost notes; gem will be invisible",
-                    TickFormat(
-                        mGameGem.GetTick(), *TheSongDB->GetSongData()->GetMeasureMap()
-                    )
+                    TickFormat(mGameGem.GetTick(), *TheSongDB->GetData()->GetMeasureMap())
                 );
             }
         } else {

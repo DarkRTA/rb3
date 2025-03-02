@@ -63,9 +63,9 @@ void CampaignGoalsLeaderboardChoicePanel::LoadIcons() {
     MILO_ASSERT(pUser, 0xB8);
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(pUser);
     MILO_ASSERT(pProfile, 0xBB);
-    AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
+    const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
     std::map<Symbol, int> lbData;
-    prog->InqGoalLeaderboardData(lbData);
+    prog.InqGoalLeaderboardData(lbData);
     std::vector<Symbol> syms;
     for (std::map<Symbol, int>::iterator it = lbData.begin(); it != lbData.end(); ++it) {
         Symbol key = it->first;

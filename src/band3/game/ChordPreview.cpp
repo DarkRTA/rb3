@@ -17,11 +17,11 @@ void ChordPreview::Start(Symbol s) {
     if (s == mSong)
         return;
     if (!s.Null()) {
-        if (!TheSongMgr->HasSong(s, true))
+        if (!TheSongMgr.HasSong(s, true))
             return;
-        BandSongMetadata *data = (BandSongMetadata *)TheSongMgr->Data(
-            TheSongMgr->GetSongIDFromShortName(s, true)
-        );
+        BandSongMetadata *data =
+            (BandSongMetadata *)TheSongMgr.Data(TheSongMgr.GetSongIDFromShortName(s, true)
+            );
         if (data && !data->IsVersionOK()) {
             s = gNullStr;
         }
