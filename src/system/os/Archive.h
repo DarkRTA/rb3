@@ -37,13 +37,12 @@ BinStream &operator>>(BinStream &, FileEntry &);
 
 const int preinitArk = 1;
 
-enum Mode {
-    kRead = 0,
-    kWrite = 1,
-};
-
 class Archive {
 public:
+    enum Mode {
+        kRead = 0,
+        kWrite = 1,
+    };
     Archive(const char *, int);
     bool GetFileInfo(const char *, int &, unsigned long long &, int &, int &);
     void Read(int);

@@ -6,16 +6,18 @@
 
 enum SongID {
     kSongID_Invalid = 0,
-    kSongID_Any,
-    kSongID_Random
+    kSongID_Any = 1,
+    kSongID_Random = 2
 };
 
 class BandSongMgr : public SongMgr {
 public:
     class SongRanking {
     public:
+        bool operator==(Symbol s) const { return mInstrument == s; }
+
         Symbol mInstrument; // 0x0
-        std::vector<int> mTierRanges; // 0x4
+        std::vector<std::pair<float, float> > mTierRanges; // 0x4
     };
 
     BandSongMgr();
@@ -71,6 +73,14 @@ public:
     void CheatToggleMaxSongCount();
     bool InqAvailableSongSources(std::set<Symbol> &);
     int NumRankedSongs(TrackType, bool, Symbol) const;
+    bool CreateSongCacheID(CacheID **);
+    int GetCurSongCount() const;
+    int GetPosInRecentList(int);
+    bool IsInExclusionList(const char *, int) const;
+    bool RemoveOldestCachedContent();
+    void WriteCachedMetadataToStream(BinStream &) const;
+    int GetPartDifficulty(Symbol, Symbol) const;
+
     SongInfo *SongAudioData(Symbol s) const { return SongMgr::SongAudioData(s); }
 
     static bool GetFakeSongsAllowed();
