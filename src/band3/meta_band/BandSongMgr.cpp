@@ -1,5 +1,6 @@
 #include "meta_band/BandSongMgr.h"
 #include "Utl.h"
+#include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "meta/SongMgr.h"
 #include "meta_band/BandSongMetadata.h"
@@ -8,18 +9,22 @@
 #include "meta_band/SongUpgradeMgr.h"
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
+#include "obj/DataFile.h"
 #include "obj/Dir.h"
 #include "game/GameMode.h"
 #include "obj/DirLoader.h"
 #include "os/Archive.h"
 #include "os/ContentMgr.h"
 #include "os/Debug.h"
+#include "os/File.h"
 #include "os/System.h"
 #include "stl/_pair.h"
 #include "utl/CacheMgr.h"
 #include "utl/FakeSongMgr.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
 BandSongMgr gSongMgr;
@@ -381,9 +386,108 @@ int BandSongMgr::GetValidSongCount(const std::map<int, SongMetadata *> &songs) c
     return count;
 }
 
+bool BandSongMgr::IsSongUnplayable(int songID, BandUserMgr &mgr, bool bvar3) const {
+    BandSongMetadata *data = (BandSongMetadata *)Data(songID);
+    Symbol shortname = GetShortNameFromSongID(songID, true);
+    if (data->IsPrivate()) {
+        MILO_WARN("%s is private!", shortname);
+        return false;
+    } else if (!data->IsRanked()) {
+        MILO_WARN("%s is not ranked!", shortname);
+        return false;
+    } else {
+        std::vector<BandUser *> users;
+        mgr.GetParticipatingBandUsers(users);
+        bool b5 = false;
+        bool b4 = false;
+        bool b3 = false;
+        int i12 = 0;
+        int i7 = 0;
+        FOREACH (it, users) {
+            Symbol controller = (*it)->GetControllerSym();
+            MILO_ASSERT(controller != none, 0x2E3);
+            if (controller == drum)
+                b5 = true;
+            else if (controller == vocals)
+                b4 = true;
+            else if (controller == keys)
+                b3 = true;
+            else if (controller == real_guitar)
+                i7++;
+            else
+                i12++;
+        }
+        bool b1 = false;
+        bool b11 = true;
+        if (i12 == 1) {
+            b1 = true;
+            if (!data->HasPart(guitar, false) && !data->HasPart(bass, false)) {
+                b1 = false;
+            }
+            if (!b1)
+                b11 = false;
+        }
+        if (i12 > 1) {
+            if (!data->HasPart(guitar, false) || !data->HasPart(bass, false)) {
+                b11 = false;
+            }
+            if (data->HasPart(guitar, false) || data->HasPart(bass, false)) {
+                b1 = true;
+            }
+        }
+        if (i7 == 1) {
+            if (data->HasPart(real_guitar, false) || data->HasPart(real_bass, false)) {
+                b11 = false;
+            } else
+                b1 = true;
+        }
+        if (i7 > 1) {
+            if (!data->HasPart(real_guitar, false) || !data->HasPart(real_bass, false)) {
+                b11 = false;
+            }
+            if (data->HasPart(real_guitar, false) || data->HasPart(real_bass, false)) {
+                b1 = true;
+            }
+        }
+        if (b3) {
+            if (data->HasPart(keys, false))
+                b1 = true;
+            else
+                b11 = false;
+        }
+        if (b4) {
+            if (data->HasPart(vocals, false))
+                b1 = true;
+            else
+                b11 = false;
+        }
+        if (b5) {
+            if (data->HasPart(drum, false))
+                b1 = true;
+            else
+                b11 = false;
+        }
+        if (bvar3)
+            return !b11;
+        else
+            return !b1;
+    }
+}
+
 int BandSongMgr::GetCurSongCount() const { return unk140 + mCachedSongMetadata.size(); }
 bool BandSongMgr::CanAddSong() const { return GetCurSongCount() + 1 < mMaxSongCount; }
 int BandSongMgr::GetMaxSongCount() const { return mMaxSongCount; }
+
+void BandSongMgr::AddSongData(DataArray *a, DataLoader *dl, ContentLocT lt) {
+    const char *cc;
+    for (int i = 0; i < 32; i++) {
+    }
+    if (dl) {
+    }
+    std::vector<int> vec;
+    AddSongData(a, mUncachedSongMetadata, cc, lt, vec);
+    unk140 = GetValidSongCount(mUncachedSongMetadata);
+}
 
 void BandSongMgr::AddSongData(
     DataArray *a,
@@ -516,6 +620,14 @@ void BandSongMgr::WriteCachedMetadataToStream(BinStream &bs) const {
     mLicenseMgr->WriteCachedMetadataToStream(bs);
 }
 
+bool BandSongMgr::RemoveOldestCachedContent() {
+    if (mCachedSongMetadata.size() == 0)
+        return false;
+    else {
+        MILO_WARN("Invalid SongID for song %s\n");
+    }
+}
+
 void BandSongMgr::ClearCachedContent() {
     SongMgr::ClearCachedContent();
     mUpgradeMgr->ClearCachedContent();
@@ -560,6 +672,34 @@ int BandSongMgr::GetNumVocalParts(Symbol s) const {
     MILO_ASSERT(songData, 0x5E4);
     return songData->NumVocalParts();
 }
+
+int BandSongMgr::NumRankedSongs(TrackType ty, bool b2, Symbol s3) const {
+    int num = 0;
+    std::vector<int> songs;
+    GetRankedSongs(songs, false, false);
+    FOREACH (it, songs) {
+        BandSongMetadata *data = (BandSongMetadata *)Data(*it);
+        MILO_ASSERT(data, 0x5F3);
+        if (b2) {
+            if (data->HasVocalHarmony()) {
+                goto checkSym;
+            }
+        } else {
+            if (ty != kNumTrackTypes) {
+                Symbol trackSym = TrackTypeToSym(ty);
+                if (!data->HasPart(trackSym, false))
+                    continue;
+            }
+        checkSym:
+            if (s3 == gNullStr || data->SourceSym() == s3) {
+                num++;
+            }
+        }
+    }
+    return num;
+}
+
+void BandSongMgr::SyncSharedSongs() { MILO_WARN("machine"); }
 
 bool BandSongMgr::GetFakeSongsAllowed() { return sFakeSongsAllowed; }
 void BandSongMgr::SetFakeSongsAllowed(bool b) { sFakeSongsAllowed = b; }

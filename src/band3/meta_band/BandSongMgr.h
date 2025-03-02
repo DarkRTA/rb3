@@ -1,5 +1,6 @@
 #pragma once
 #include "beatmatch/TrackType.h"
+#include "game/BandUserMgr.h"
 #include "system/meta/SongMgr.h"
 #include "meta_band/SongUpgradeMgr.h"
 #include "meta_band/LicenseMgr.h"
@@ -80,6 +81,7 @@ public:
     bool RemoveOldestCachedContent();
     void WriteCachedMetadataToStream(BinStream &) const;
     int GetPartDifficulty(Symbol, Symbol) const;
+    bool IsSongUnplayable(int, BandUserMgr &, bool) const;
 
     SongInfo *SongAudioData(Symbol s) const { return SongMgr::SongAudioData(s); }
 
@@ -100,7 +102,7 @@ public:
     std::vector<String> mContentAltDirs; // 0x130
     int mMaxSongCount; // 0x138
     bool unk13c; // 0x13c
-    int unk140; // 0x140
+    int unk140; // 0x140 - num valid songs
 };
 
 extern BandSongMgr &TheSongMgr;
