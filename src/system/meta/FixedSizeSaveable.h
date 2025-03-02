@@ -209,7 +209,6 @@ public:
         int maxsize,
         int savesize
     ) {
-        int max = maxsize;
         int lsize = vec.size();
         if (lsize > maxsize) {
             MILO_WARN(
@@ -220,7 +219,7 @@ public:
             lsize = maxsize;
         }
         stream << lsize;
-        for (int i = 0; i < max; i++) {
+        for (int i = 0; i < lsize; i++) {
             stream << *vec[i];
         }
         if (maxsize > lsize)
@@ -292,6 +291,45 @@ public:
         }
         if (maxsize > lsize)
             DepadStream(stream, (savesize * (maxsize - lsize)));
+    }
+
+    template <class T, class Allocator>
+    static void LoadStdPtr(
+        FixedSizeSaveableStream &stream,
+        std::vector<T *, Allocator> &vec,
+        int maxsize,
+        int savesize
+    ) {
+        if (vec.size() != 0) {
+            MILO_WARN("vector is not empty!");
+            DeleteAll(vec);
+        }
+        int vecsize;
+        stream >> vecsize;
+        vec.resize(vecsize);
+        for (int i = 0; i < vecsize; i++) {
+            T *obj = new T();
+            stream >> *obj;
+            vec[i] = obj;
+        }
+        if (maxsize > vecsize)
+            DepadStream(stream, savesize * (maxsize - vecsize));
+    }
+
+    template <class T, class Allocator>
+    static void LoadStdPtrReplace(
+        FixedSizeSaveableStream &stream,
+        std::vector<T *, Allocator> &v,
+        int max,
+        int savesize
+    ) {
+        int size;
+        stream >> size;
+        MILO_ASSERT(v.size() == size, 0x148);
+        MILO_ASSERT(size == max, 0x149);
+        for (int i = 0; i < size; i++) {
+            stream >> *v[i];
+        }
     }
 
     static int GetMaxSymbols() {

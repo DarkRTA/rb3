@@ -13,4 +13,5 @@ public:
         return t;
     }
     bool Arg0() const { return mData->Int(2); }
+    DataNode Arg2() const;
 };

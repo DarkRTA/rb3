@@ -235,8 +235,8 @@ void ManageBandPanel::SetStandIn(int i) {
 }
 
 void ManageBandPanel::QueueRewardVignette(Symbol s) {
-    AccomplishmentProgress *prog = mProfile->AccessAccomplishmentProgress();
-    prog->AddNewRewardVignette(s);
+    AccomplishmentProgress &prog = mProfile->AccessAccomplishmentProgress();
+    prog.AddNewRewardVignette(s);
 }
 
 #pragma push

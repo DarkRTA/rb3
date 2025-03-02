@@ -15,6 +15,8 @@
 #define kMaxCharacters 10
 #define kMaxPatchesPerProfile 8
 #define kMaxSavedSetlists 20
+#define kMaxSymbols_CampaignKeys 20
+#define kMaxSymbols_Modifiers 15
 
 class PatchDir;
 class CharData;
@@ -32,6 +34,9 @@ class LocalSavedSetlist;
 
 class BandProfile : public Profile {
 public:
+    enum ProfileLimits {
+        kMaxPerformances = 50
+    };
     BandProfile(int);
     virtual ~BandProfile();
     virtual void SaveFixed(FixedSizeSaveableStream &) const;
@@ -99,13 +104,13 @@ public:
     float GetLessonCompleteSpeed(const Symbol &) const;
     void SetLessonComplete(const Symbol &, float);
     void EarnAccomplishment(Symbol);
-    AccomplishmentProgress *GetAccomplishmentProgress() const;
-    AccomplishmentProgress *AccessAccomplishmentProgress();
+    const AccomplishmentProgress &GetAccomplishmentProgress() const;
+    AccomplishmentProgress &AccessAccomplishmentProgress();
     int GetHardcoreIconLevel() const;
     void SetHardcoreIconLevel(int);
-    void GetTourBand();
+    TourBand *GetTourBand();
     String GetBandName() const;
-    void HasBandNameBeenSet() const;
+    bool HasBandNameBeenSet() const;
     bool IsBandNameProfanityChecked() const;
     RndTex *GetBandLogoTex();
     void SendBandLogo();
@@ -128,7 +133,7 @@ public:
     void SetLastCharUsed(CharData *);
     void SetLastPrefabCharUsed(Symbol);
     void FakeProfileFill();
-    void GetPictureTex();
+    RndTex *GetPictureTex();
     void AutoFakeFill(int);
     int NumChars() const { return mCharacters.size(); }
 
@@ -144,9 +149,9 @@ public:
     std::vector<StandIn> mStandIns; // 0x54
     HxGuid unk5c; // 0x5c
     Symbol unk6c; // 0x6c
-    std::set<Symbol> unk70; // 0x70
+    std::set<Symbol> mCampaignKeys; // 0x70
     std::set<Symbol> unk88; // 0x88
-    std::set<Symbol> unka0; // 0xa0
+    std::set<Symbol> mUnlockedModifiers; // 0xa0
     GameplayOptions mGameplayOptions; // 0xb8
     AccomplishmentProgress mAccomplishmentProgress; // 0xf4
     int unk740;
@@ -164,7 +169,7 @@ public:
     int unk6fb4;
     int unk6fb8;
     ProfilePicture *mProfilePicture; // 0x6fbc
-    TourBand *unk6fc0; // TourBand*
+    TourBand *mTourBand; // 0x6fc0
 };
 
 DECLARE_MESSAGE(ProfilePreDeleteMsg, "profile_pre_delete_msg");

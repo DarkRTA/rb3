@@ -124,6 +124,8 @@ public:
     void SetMostStars(Symbol, int);
     bool InqGoalLeaderboardData(std::map<Symbol, int> &) const;
     void HandleUploadStarted();
+    void HandleSuccessfulUpload();
+    void FakeFill();
     // // int GetTotalGemsSmashed() const;
     // // int GetTotalGuitarHopos() const;
     // // int GetTotalBassHopos() const;

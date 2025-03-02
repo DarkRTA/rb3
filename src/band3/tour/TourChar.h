@@ -9,7 +9,7 @@ public:
     virtual DataNode Handle(DataArray *, bool);
     virtual const char *GetCharacterName() const;
     virtual BandCharDesc *GetBandCharDesc() const;
-    virtual RndTex *GetPortraitTex() const;
+    virtual RndTex *GetPortraitTex() const { return mPortraitTex; }
     virtual void CachePortraitTex(RndTex *);
     virtual bool IsFinalized() const;
     virtual bool IsCustomizable() const;

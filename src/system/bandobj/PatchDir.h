@@ -130,6 +130,7 @@ public:
     void LoadRemote(BinStream &);
     void SaveRemote(IntPacker &);
     void LoadRemote(IntPacker &);
+    void FakeFill(RndTex *);
 
     RndTex *GetTex() const { return mTex; }
 

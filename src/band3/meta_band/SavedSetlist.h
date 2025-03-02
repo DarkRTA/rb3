@@ -55,6 +55,8 @@ public:
     virtual void SaveFixed(FixedSizeSaveableStream &) const;
     virtual void LoadFixed(FixedSizeSaveableStream &, int);
 
+    void SetOwnerProfile(BandProfile *p) { mOwnerProfile = p; }
+
     static int SaveSize(int);
 
     BandProfile *mOwnerProfile; // 0x48

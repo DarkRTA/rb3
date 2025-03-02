@@ -26,9 +26,11 @@ void HxGuid::Generate() {
 
 void HxGuid::Clear() { mData[0] = mData[1] = mData[2] = mData[3] = 0; }
 
+FORCE_LOCAL_INLINE
 bool HxGuid::IsNull() const {
     return (mData[0] == 0 && mData[1] == 0 && mData[2] == 0 && mData[3] == 0);
 }
+END_FORCE_LOCAL_INLINE
 
 int HxGuid::Chunk32(int i) const {
     MILO_ASSERT_RANGE(i, 0, 4, 0x4F);

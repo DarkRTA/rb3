@@ -212,7 +212,7 @@ DECOMP_FORCEACTIVE(Campaign, "profile")
 
 int Campaign::GetCampaignMetaScoreForProfile(BandProfile *i_pProfile) const {
     MILO_ASSERT(i_pProfile, 0x14B);
-    int meta = i_pProfile->GetAccomplishmentProgress()->GetMetaScore();
+    int meta = i_pProfile->GetAccomplishmentProgress().GetMetaScore();
     if (unk88 != -1)
         meta = unk88;
     return meta;
@@ -703,7 +703,7 @@ Symbol Campaign::GetNextHintToShow() const {
     BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
     if (profile) {
         if (!profile->HasSeenHint(hint_goalcomplete_screen)) {
-            if (profile->GetAccomplishmentProgress()->GetNumCompleted() > 0) {
+            if (profile->GetAccomplishmentProgress().GetNumCompleted() > 0) {
                 return hint_goalcomplete_screen;
             }
         }
@@ -749,9 +749,9 @@ void Campaign::UpdateEndGameInfoForCurrentCampaignGoal(
         i_pStatusLabel->SetTokenFmt(campaign_endgame_goal_noprogress, goal);
     } else {
         MILO_ASSERT(pProfile, 0x560);
-        AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
+        const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
         unk28 = goal;
-        if (prog->IsAccomplished(goal)) {
+        if (prog.IsAccomplished(goal)) {
             int othergoals =
                 TheAccomplishmentMgr->GetNumOtherGoalsAcquired(pUser->Name(), goal);
             i_pPicture->SetTex(FilePath(pAccomplishment->GetIconArt()));

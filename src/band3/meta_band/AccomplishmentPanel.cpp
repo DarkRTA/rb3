@@ -120,8 +120,8 @@ bool IsAccomplishmentSecret(
 
 bool IsAccomplished(Symbol s, const BandProfile *profile) {
     if (profile) {
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
-        return prog->IsAccomplished(s);
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
+        return prog.IsAccomplished(s);
     } else
         return false;
 }
@@ -459,8 +459,8 @@ void AccomplishmentPanel::FillSetlistWithAccomplishmentSongs(Symbol s, int i) {
     MILO_ASSERT(pAccomplishment, 0x589);
     BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0x58C);
-    AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
-    bool accomplished = prog->IsAccomplished(s);
+    const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
+    bool accomplished = prog.IsAccomplished(s);
     std::vector<Symbol> vSongs;
     std::vector<Symbol> v40;
     bool bGotSymbols = pAccomplishment->InqIncrementalSymbols(pProfile, v40);
@@ -872,8 +872,8 @@ bool AccomplishmentPanel::ShouldShowProgress() const {
     BandProfile *pProfile = TheCampaign->GetProfile();
     MILO_ASSERT(pProfile, 0x82A);
     Symbol selacc = SelectedAccomplishment();
-    AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
-    if (prog->IsAccomplished(selacc))
+    const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
+    if (prog.IsAccomplished(selacc))
         return false;
     else
         return true;
@@ -960,8 +960,8 @@ bool AccomplishmentPanel::ShouldShowBest() const {
         BandProfile *pProfile = TheCampaign->GetProfile();
         MILO_ASSERT(pProfile, 0x8A7);
         Symbol selacc = SelectedAccomplishment();
-        AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
-        if (!prog->IsAccomplished(selacc)) {
+        const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
+        if (!prog.IsAccomplished(selacc)) {
             return false;
         } else {
             Accomplishment *acc = TheAccomplishmentMgr->GetAccomplishment(selacc);
@@ -1415,9 +1415,9 @@ inline void AccomplishmentCategoryProvider::Custom(
     if (slot->Matches("progress")) {
         Symbol sym = DataSymbol(data);
         BandProfile *profile = TheCampaign->GetProfile();
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
         int numaccs = TheAccomplishmentMgr->GetNumAccomplishmentsInCategory(sym);
-        int numcompleted = prog->GetNumCompletedInCategory(sym);
+        int numcompleted = prog.GetNumCompletedInCategory(sym);
         MeterDisplay *pMeter = dynamic_cast<MeterDisplay *>(obj);
         MILO_ASSERT(pMeter, 0x1B0);
         pMeter->SetShowText(true);
@@ -1453,9 +1453,9 @@ inline void AccomplishmentGroupProvider::Custom(
     if (slot->Matches("progress")) {
         Symbol sym = DataSymbol(data);
         BandProfile *profile = TheCampaign->GetProfile();
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
         int numaccs = TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(sym);
-        int numcompleted = prog->GetNumCompletedInGroup(sym);
+        int numcompleted = prog.GetNumCompletedInGroup(sym);
         MeterDisplay *pMeter = dynamic_cast<MeterDisplay *>(obj);
         MILO_ASSERT(pMeter, 0x12D);
         pMeter->SetShowText(true);
@@ -1504,9 +1504,9 @@ inline void AccomplishmentGroupProvider::Text(
     } else if (slot->Matches("career_level")) {
         Symbol sym = DataSymbol(i_iData);
         BandProfile *profile = TheCampaign->GetProfile();
-        AccomplishmentProgress *prog = profile->GetAccomplishmentProgress();
+        const AccomplishmentProgress &prog = profile->GetAccomplishmentProgress();
         int iNumTotal = TheAccomplishmentMgr->GetNumAccomplishmentsInGroup(sym);
-        int iNumCompleted = prog->GetNumCompletedInGroup(sym);
+        int iNumCompleted = prog.GetNumCompletedInGroup(sym);
         MILO_ASSERT(iNumCompleted <= iNumTotal, 0x115);
         float level = (float)iNumCompleted / (float)iNumTotal;
         label->SetTextToken(GetCareerLevel(level));

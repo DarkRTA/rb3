@@ -262,7 +262,7 @@ void AccomplishmentManager::Poll() {
          ++it) {
         BandProfile *pProfile = *it;
         MILO_ASSERT(pProfile, 0x16B);
-        pProfile->AccessAccomplishmentProgress()->Poll();
+        pProfile->AccessAccomplishmentProgress().Poll();
     }
 }
 
@@ -877,14 +877,14 @@ void AccomplishmentManager::UpdateTourPlayedForAllParticipants(Symbol s) {
             MILO_ASSERT(pUser, 0x526);
             BandProfile *p = TheProfileMgr.GetProfileForUser(pUser);
             if (p) {
-                AccomplishmentProgress *prog = p->AccessAccomplishmentProgress();
-                prog->UpdateTourPlayed(s);
+                AccomplishmentProgress &prog = p->AccessAccomplishmentProgress();
+                prog.UpdateTourPlayed(s);
             }
         }
         BandProfile *p = TheTour->GetProfile();
         if (p) {
-            AccomplishmentProgress *prog = p->AccessAccomplishmentProgress();
-            prog->UpdateTourPlayed(s);
+            AccomplishmentProgress &prog = p->AccessAccomplishmentProgress();
+            prog.UpdateTourPlayed(s);
         }
         if (IsLeaderLocal()) {
             UpdatePlayedTourForAllRemoteParticipants(s);
@@ -902,14 +902,14 @@ void AccomplishmentManager::UpdateMostStarsForAllParticipants(Symbol s, int i) {
             MILO_ASSERT(pUser, 0x54C);
             BandProfile *p = TheProfileMgr.GetProfileForUser(pUser);
             if (p) {
-                AccomplishmentProgress *prog = p->AccessAccomplishmentProgress();
-                prog->UpdateMostStars(s, i);
+                AccomplishmentProgress &prog = p->AccessAccomplishmentProgress();
+                prog.UpdateMostStars(s, i);
             }
         }
         BandProfile *p = TheTour->GetProfile();
         if (p) {
-            AccomplishmentProgress *prog = p->AccessAccomplishmentProgress();
-            prog->UpdateMostStars(s, i);
+            AccomplishmentProgress &prog = p->AccessAccomplishmentProgress();
+            prog.UpdateMostStars(s, i);
         }
         if (IsLeaderLocal()) {
             UpdateMostStarsForAllRemoteParticipants(s, i);
@@ -938,12 +938,12 @@ void AccomplishmentManager::CheckForFinishedTrainerAccomplishmentsForUser(LocalB
 ) {
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(u);
     MILO_ASSERT(pProfile, 0x5A1);
-    AccomplishmentProgress *prog = pProfile->AccessAccomplishmentProgress();
+    AccomplishmentProgress &prog = pProfile->AccessAccomplishmentProgress();
     for (std::map<Symbol, Accomplishment *>::iterator it = mAccomplishments.begin();
          it != mAccomplishments.end();
          ++it) {
         Symbol key = it->first;
-        if (!prog->IsAccomplished(key)) {
+        if (!prog.IsAccomplished(key)) {
             Accomplishment *pAccomplishment = it->second;
             MILO_ASSERT(pAccomplishment, 0x5B1);
             if (!IsAvailableToEarn(key))
@@ -970,11 +970,11 @@ void AccomplishmentManager::CheckForIncrementalProgressForUserGoal(
     MILO_ASSERT(pAccomplishment, 0x5D3);
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
     MILO_ASSERT(pProfile, 0x5D6);
-    AccomplishmentProgress *pProgress = pProfile->AccessAccomplishmentProgress();
+    AccomplishmentProgress &pProgress = pProfile->AccessAccomplishmentProgress();
     int i24 = 0;
     int i28 = 0;
     pAccomplishment->InqProgressValues(pProfile, i24, i28);
-    int val = pProgress->GetCurrentValue(s1);
+    int val = pProgress.GetCurrentValue(s1);
     if (i24 > val) {
         TheAccomplishmentMgr->AddGoalProgressionInfo(
             s1, i_pUser->ProfileName(), s2, i28 - i24
@@ -1006,12 +1006,12 @@ void AccomplishmentManager::CheckForFinishedTourAccomplishmentsForProfile(
     BandProfile *i_pProfile
 ) {
     MILO_ASSERT(i_pProfile, 0x64E);
-    AccomplishmentProgress *prog = i_pProfile->AccessAccomplishmentProgress();
+    AccomplishmentProgress &prog = i_pProfile->AccessAccomplishmentProgress();
     for (std::map<Symbol, Accomplishment *>::iterator it = mAccomplishments.begin();
          it != mAccomplishments.end();
          ++it) {
         Symbol key = it->first;
-        if (!prog->IsAccomplished(key)) {
+        if (!prog.IsAccomplished(key)) {
             Accomplishment *pAccomplishment = it->second;
             MILO_ASSERT(pAccomplishment, 0x65F);
             if (!IsAvailableToEarn(key))
@@ -1038,12 +1038,12 @@ void AccomplishmentManager::CheckForFinishedAccomplishmentsForUser(
 ) {
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(u);
     MILO_ASSERT(pProfile, 0x684);
-    AccomplishmentProgress *pProgress = pProfile->AccessAccomplishmentProgress();
+    AccomplishmentProgress &pProgress = pProfile->AccessAccomplishmentProgress();
     for (std::map<Symbol, Accomplishment *>::iterator it = mAccomplishments.begin();
          it != mAccomplishments.end();
          ++it) {
         Symbol key = it->first;
-        if (!pProgress->IsAccomplished(key)) {
+        if (!pProgress.IsAccomplished(key)) {
             Accomplishment *pAccomplishment = it->second;
             MILO_ASSERT(pAccomplishment, 0x694);
             if (pAccomplishment->GetType() == kAccomplishmentTypeTrainerListConditional)
@@ -1153,8 +1153,8 @@ void AccomplishmentManager::HandlePreSongCompletedForUser(Symbol s, LocalBandUse
     if (goal != gNullStr) {
         BandProfile *pProfile = TheProfileMgr.GetProfileForUser(u);
         MILO_ASSERT(pProfile, 0x75C);
-        AccomplishmentProgress *prog = pProfile->AccessAccomplishmentProgress();
-        prog->ClearStepTrackingMap();
+        AccomplishmentProgress &prog = pProfile->AccessAccomplishmentProgress();
+        prog.ClearStepTrackingMap();
         InitializeSongIncrementalDataForUserGoal(goal, u);
     }
 }
@@ -1184,13 +1184,13 @@ void AccomplishmentManager::InitializeSongIncrementalDataForUserGoal(
     MILO_ASSERT(i_pUser, 0x81B);
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
     MILO_ASSERT(pProfile, 0x81E);
-    AccomplishmentProgress *prog = pProfile->AccessAccomplishmentProgress();
+    AccomplishmentProgress &prog = pProfile->AccessAccomplishmentProgress();
     Accomplishment *pAccomplishment = TheAccomplishmentMgr->GetAccomplishment(s);
     MILO_ASSERT(pAccomplishment, 0x823);
     int i1c = 0;
     int i20 = 0;
     pAccomplishment->InqProgressValues(pProfile, i1c, i20);
-    prog->SetCurrentValue(s, i1c);
+    prog.SetCurrentValue(s, i1c);
 }
 
 int AccomplishmentManager::GetNumAccomplishments() const {
@@ -1207,8 +1207,8 @@ int AccomplishmentManager::GetNumAccomplishments() const {
 bool AccomplishmentManager::HasCompletedAccomplishment(LocalBandUser *u, Symbol s) const {
     BandProfile *p = TheProfileMgr.GetProfileForUser(u);
     if (p) {
-        AccomplishmentProgress *prog = p->GetAccomplishmentProgress();
-        return prog->IsAccomplished(s);
+        const AccomplishmentProgress &prog = p->GetAccomplishmentProgress();
+        return prog.IsAccomplished(s);
     } else
         return false;
 }
@@ -1217,8 +1217,8 @@ int AccomplishmentManager::GetNumCompletedAccomplishments(LocalBandUser *u) cons
     int ret = 0;
     BandProfile *p = TheProfileMgr.GetProfileForUser(u);
     if (p) {
-        AccomplishmentProgress *prog = p->GetAccomplishmentProgress();
-        ret = prog->GetNumCompleted();
+        const AccomplishmentProgress &prog = p->GetAccomplishmentProgress();
+        ret = prog.GetNumCompleted();
     }
     return ret;
 }
@@ -1232,8 +1232,8 @@ bool AccomplishmentManager::HasNewAwards() const {
         MILO_ASSERT(pUser, 0x907);
         BandProfile *p = TheProfileMgr.GetProfileForUser(pUser);
         if (p && p->HasValidSaveData() && pUser->CanSaveData()) {
-            AccomplishmentProgress *prog = p->GetAccomplishmentProgress();
-            if (prog->HasNewAwards())
+            const AccomplishmentProgress &prog = p->GetAccomplishmentProgress();
+            if (prog.HasNewAwards())
                 return true;
         }
     }
@@ -1249,8 +1249,8 @@ LocalBandUser *AccomplishmentManager::GetUserForFirstNewAward() {
         MILO_ASSERT(pUser, 0x923);
         BandProfile *p = TheProfileMgr.GetProfileForUser(pUser);
         if (p) {
-            AccomplishmentProgress *prog = p->GetAccomplishmentProgress();
-            if (prog->HasNewAwards())
+            const AccomplishmentProgress &prog = p->GetAccomplishmentProgress();
+            if (prog.HasNewAwards())
                 return pUser;
         }
     }
@@ -1262,9 +1262,9 @@ Symbol AccomplishmentManager::GetReasonForFirstNewAward(LocalBandUser *i_pUser) 
     MILO_ASSERT(i_pUser, 0x938);
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
     MILO_ASSERT(pProfile, 0x93B);
-    AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
-    if (prog->HasNewAwards())
-        return prog->GetFirstNewAwardReason();
+    const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
+    if (prog.HasNewAwards())
+        return prog.GetFirstNewAwardReason();
     else {
         MILO_ASSERT(false, 0x946);
         Symbol ret = "";
@@ -1276,9 +1276,9 @@ Symbol AccomplishmentManager::GetNameForFirstNewAward(LocalBandUser *i_pUser) co
     MILO_ASSERT(i_pUser, 0x950);
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
     MILO_ASSERT(pProfile, 0x953);
-    AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
-    if (prog->HasNewAwards())
-        return prog->GetFirstNewAward();
+    const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
+    if (prog.HasNewAwards())
+        return prog.GetFirstNewAward();
     else {
         MILO_ASSERT(false, 0x95E);
         Symbol ret = "";
@@ -1390,15 +1390,15 @@ void AccomplishmentManager::ClearFirstNewAward(LocalBandUser *i_pUser) {
     MILO_ASSERT(i_pUser, 0xA02);
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(i_pUser);
     MILO_ASSERT(pProfile, 0xA05);
-    pProfile->AccessAccomplishmentProgress()->ClearFirstNewAward();
+    pProfile->AccessAccomplishmentProgress().ClearFirstNewAward();
 }
 
 Symbol AccomplishmentManager::GetNameForFirstNewRewardVignette() const {
     BandProfile *pProfile = TheProfileMgr.GetPrimaryProfile();
     MILO_ASSERT(pProfile, 0xA31);
-    AccomplishmentProgress *prog = pProfile->GetAccomplishmentProgress();
-    if (prog->HasNewRewardVignettes())
-        return prog->GetFirstNewRewardVignette();
+    const AccomplishmentProgress &prog = pProfile->GetAccomplishmentProgress();
+    if (prog.HasNewRewardVignettes())
+        return prog.GetFirstNewRewardVignette();
     else {
         MILO_ASSERT(false, 0xA3B);
         return "";
@@ -1408,15 +1408,15 @@ Symbol AccomplishmentManager::GetNameForFirstNewRewardVignette() const {
 void AccomplishmentManager::ClearFirstNewRewardVignette() {
     BandProfile *pProfile = TheProfileMgr.GetPrimaryProfile();
     MILO_ASSERT(pProfile, 0xA46);
-    pProfile->AccessAccomplishmentProgress()->ClearFirstNewRewardVignette();
+    pProfile->AccessAccomplishmentProgress().ClearFirstNewRewardVignette();
 }
 
 bool AccomplishmentManager::HasNewRewardVignetteFestival() const {
     if (MetaPerformer::Current()->GetVenueClass() == festival) {
         BandProfile *p = TheProfileMgr.GetPrimaryProfile();
         if (p && p->HasValidSaveData()) {
-            AccomplishmentProgress *prog = p->GetAccomplishmentProgress();
-            if (prog->HasNewRewardVignetteFestival())
+            const AccomplishmentProgress &prog = p->GetAccomplishmentProgress();
+            if (prog.HasNewRewardVignetteFestival())
                 return true;
         }
     }
@@ -1426,21 +1426,21 @@ bool AccomplishmentManager::HasNewRewardVignetteFestival() const {
 void AccomplishmentManager::ClearNewRewardVignetteFestival() {
     BandProfile *pProfile = TheProfileMgr.GetPrimaryProfile();
     MILO_ASSERT(pProfile, 0xA65);
-    pProfile->AccessAccomplishmentProgress()->ClearNewRewardVignetteFestival();
+    pProfile->AccessAccomplishmentProgress().ClearNewRewardVignetteFestival();
 }
 
 bool AccomplishmentManager::IsCategoryComplete(BandProfile *i_pProfile, Symbol s) const {
     MILO_ASSERT(i_pProfile, 0xA6E);
-    AccomplishmentProgress *prog = i_pProfile->GetAccomplishmentProgress();
+    const AccomplishmentProgress &prog = i_pProfile->GetAccomplishmentProgress();
     int numincat = GetNumAccomplishmentsInCategory(s);
-    return numincat <= prog->GetNumCompletedInCategory(s);
+    return numincat <= prog.GetNumCompletedInCategory(s);
 }
 
 bool AccomplishmentManager::IsGroupComplete(BandProfile *i_pProfile, Symbol s) const {
     MILO_ASSERT(i_pProfile, 0xA7B);
-    AccomplishmentProgress *prog = i_pProfile->GetAccomplishmentProgress();
+    const AccomplishmentProgress &prog = i_pProfile->GetAccomplishmentProgress();
     int numincat = GetNumAccomplishmentsInGroup(s);
-    return numincat <= prog->GetNumCompletedInGroup(s);
+    return numincat <= prog.GetNumCompletedInGroup(s);
 }
 
 Symbol AccomplishmentManager::GetFirstUnfinishedAccomplishmentEntry(
@@ -1455,8 +1455,8 @@ Symbol AccomplishmentManager::GetFirstUnfinishedAccomplishmentEntry(
     bool bGotSymbols =
         pAccomplishment->InqIncrementalSymbols(i_pProfile, vAccomplishmentEntries);
     MILO_ASSERT(bGotSymbols, 0xA93);
-    AccomplishmentProgress *prog = i_pProfile->GetAccomplishmentProgress();
-    if (prog->IsAccomplished(s)) {
+    const AccomplishmentProgress &prog = i_pProfile->GetAccomplishmentProgress();
+    if (prog.IsAccomplished(s)) {
         MILO_ASSERT(!vAccomplishmentEntries.empty(), 0xA99);
         return vAccomplishmentEntries[0];
     } else {

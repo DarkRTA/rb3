@@ -88,14 +88,14 @@ void TourPerformerImpl::UpdateCompleteTourStats(TourProgress *i_pProgress) {
     MILO_ASSERT(i_pProgress, 0x10B);
     BandProfile *pf = TheProfileMgr.FindTourProgressOwner(i_pProgress);
     if (pf) {
-        AccomplishmentProgress *prog = pf->AccessAccomplishmentProgress();
+        AccomplishmentProgress &prog = pf->AccessAccomplishmentProgress();
         int numstars = i_pProgress->GetNumStars();
         Symbol desc = i_pProgress->GetTourDesc();
-        int toursplayed = prog->GetToursPlayed(desc);
+        int toursplayed = prog.GetToursPlayed(desc);
         TheAccomplishmentMgr->UpdateTourPlayedForAllParticipants(desc);
         if (numstars >= i_pProgress->GetTotalStarsForTour()) {
-            int tourstars = prog->GetToursGotAllStars(desc) + 1;
-            prog->SetToursGotAllStars(desc, tourstars);
+            int tourstars = prog.GetToursGotAllStars(desc) + 1;
+            prog.SetToursGotAllStars(desc, tourstars);
         }
         TheTour->UpdateProgressWithCareerData();
     }
@@ -107,13 +107,13 @@ void TourPerformerImpl::UpdateTourStats(TourProgress *i_pProgress) {
         const GigData &data = GetMostRecentGigData();
         BandProfile *pf = TheProfileMgr.FindTourProgressOwner(i_pProgress);
         if (pf) {
-            AccomplishmentProgress *prog = pf->AccessAccomplishmentProgress();
+            AccomplishmentProgress &prog = pf->AccessAccomplishmentProgress();
             Quest *curquest = TheQuestMgr.GetQuest(GetCurrentQuest());
             if (curquest) {
                 TourGameType ty = curquest->GetGameRules()->GetGameType();
                 if (data.unk8 > 0) {
-                    int qcount = prog->GetQuestCompletedCount(ty) + 1;
-                    prog->SetQuestCompletedCount(ty, qcount);
+                    int qcount = prog.GetQuestCompletedCount(ty) + 1;
+                    prog.SetQuestCompletedCount(ty, qcount);
                 }
             }
         }
