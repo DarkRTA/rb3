@@ -147,7 +147,10 @@
             "band3/meta_band/BandMachineMgr.cpp": "NonMatching",
             "band3/meta_band/BandMemcardAction_Wii.cpp": "MISSING",
             "band3/meta_band/BandNetGameData.cpp": "MISSING",
-            "band3/meta_band/BandPreloadPanel.cpp": "MISSING",
+            "band3/meta_band/BandPreloadPanel.cpp": {
+                "status": "LinkIssues",
+                "comment": "bss meme"
+            },
             "band3/meta_band/BandProfile.cpp": "NonMatching",
             "band3/meta_band/BandScreen.cpp": "Matching",
             "band3/meta_band/BandSongMetadata.cpp": "Matching",
