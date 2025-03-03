@@ -171,6 +171,7 @@ public:
     int FindPatchIndex(Patch::Category, const char *);
     Patch *GetPatch(int);
     void ClearPatch(Patch::Category, const char *);
+    Symbol Gender() const { return mGender; }
 
     DataNode ListOutfits(Symbol);
 
