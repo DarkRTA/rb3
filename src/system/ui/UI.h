@@ -168,7 +168,7 @@ public:
     DataNode OnIsResource(DataArray *);
     DataNode ForeachScreen(const DataArray *);
     TransitionState GetTransitionState() const { return mTransitionState; }
-    bool InTransition() const { return mTransitionState != kTransitionNone; }
+    bool InTransition() { return mTransitionState != kTransitionNone; }
     RndEnviron *GetEnv() const { return mEnv; }
     RndCam *GetCam() const { return mCam; }
 

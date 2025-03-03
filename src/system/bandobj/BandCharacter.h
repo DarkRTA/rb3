@@ -138,6 +138,8 @@ public:
     DataNode OnPortraitBegin(DataArray *);
     DataNode OnPortraitEnd(DataArray *);
 
+    bool InCloset() const { return mInCloset; }
+
     static void MakeMRU(BandCharacter *, CharClip *);
     static Symbol NameToDrumVenue(const char *);
     static void Init();

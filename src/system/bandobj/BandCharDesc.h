@@ -172,6 +172,7 @@ public:
     Patch *GetPatch(int);
     void ClearPatch(Patch::Category, const char *);
     Symbol Gender() const { return mGender; }
+    Head &GetHead() { return mHead; }
 
     DataNode ListOutfits(Symbol);
 
