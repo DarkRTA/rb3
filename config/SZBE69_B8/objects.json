@@ -189,7 +189,7 @@
             "band3/meta_band/ClosetMgr.cpp": "LinkIssues",
             "band3/meta_band/ClosetPanel.cpp": "NonMatching",
             "band3/meta_band/ContentDeletePanel.cpp": "NonMatching",
-            "band3/meta_band/ContentLoadingPanel.cpp": "MISSING",
+            "band3/meta_band/ContentLoadingPanel.cpp": "LinkIssues",
             "band3/meta_band/ContextChecker.cpp": "MISSING",
             "band3/meta_band/CriticalUserListener.cpp": "Matching",
             "band3/meta_band/CurrentOutfitProvider.cpp": "MISSING",
