@@ -68,6 +68,7 @@ public:
     BandCharDesc::OutfitPiece *GetCurrentOutfitPiece() const {
         return mCurrentOutfitPiece;
     }
+    BandCharDesc *GetPreviewDesc() const { return unk3c; }
 
     DataNode OnMsg(const ProfileSwappedMsg &);
 
@@ -82,7 +83,7 @@ public:
     CharData *mPreviousCharacter; // 0x30
     BandCharacter *mBandCharacter; // 0x34
     BandCharDesc *mBandCharDesc; // 0x38
-    BandCharDesc *unk3c; // 0x3c
+    BandCharDesc *unk3c; // 0x3c - preview desc
     ClosetPanel *mCurrentClosetPanel; // 0x40
     Symbol unk44;
     BandCharDesc::OutfitPiece *mCurrentOutfitPiece; // 0x48

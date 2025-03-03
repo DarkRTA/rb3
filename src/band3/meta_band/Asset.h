@@ -15,12 +15,16 @@ public:
     Symbol GetName() const { return mName; }
     AssetType GetType() const { return mType; }
     AssetGender GetGender() const { return mGender; }
+    int GetIndex() const { return mIndex; }
+    bool IsHidden() const { return mHidden; }
+    AssetBoutique GetBoutique() const { return mBoutique; }
 
     Symbol mName; // 0x04
     AssetType mType; // 0x08
     AssetGender mGender; // 0x0c
-    int mBoutique; // 0x10
+    AssetBoutique mBoutique; // 0x10
     std::vector<Symbol> mFinishes; // 0x14
-    bool mPatchable, mHidden;
-    int mIndex;
+    bool mPatchable; // 0x1c
+    bool mHidden; // 0x1d
+    int mIndex; // 0x20
 };

@@ -138,7 +138,7 @@
             "band3/meta_band/AppScoreDisplay.cpp": "Matching",
             "band3/meta_band/Asset.cpp": "Matching",
             "band3/meta_band/AssetMgr.cpp": "NonMatching",
-            "band3/meta_band/AssetOffer.cpp": "LinkIssues",
+            "band3/meta_band/AssetOffer.cpp": "Matching",
             "band3/meta_band/AssetProvider.cpp": "NonMatching",
             "band3/meta_band/AssetStore.cpp": "Matching",
             "band3/meta_band/AssetTypes.cpp": "Matching",
