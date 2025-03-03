@@ -95,12 +95,12 @@ BEGIN_HANDLERS(CampaignCareerLeaderboardPanel)
     HANDLE_ACTION(set_use_dlc, SetUseDLC(_msg->Int(2)))
     HANDLE_ACTION(cycle_mode, CycleMode())
     HANDLE_EXPR(get_mode_symbol, mCampaignCareerLeaderboardProvider->GetModeSymbol())
-    HANDLE_ACTION(
+    HANDLE_EXPR(
         scroll_lb_up,
         mCampaignCareerLeaderboardProvider
             && mCampaignCareerLeaderboardProvider->EnumerateLowerRankRange()
     )
-    HANDLE_ACTION(
+    HANDLE_EXPR(
         scroll_lb_down,
         mCampaignCareerLeaderboardProvider
             && mCampaignCareerLeaderboardProvider->EnumerateHigherRankRange()
