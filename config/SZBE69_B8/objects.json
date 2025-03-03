@@ -180,12 +180,15 @@
                 "comment": "bss meme"
             },
             "band3/meta_band/CharProvider.cpp": "NonMatching",
-            "band3/meta_band/CharSync.cpp": "NonMatching",
+            "band3/meta_band/CharSync.cpp": {
+                "status": "LinkIssues",
+                "comment": "function ordering"
+            },
             "band3/meta_band/CharacterCreatorPanel.cpp": "NonMatching",
             "band3/meta_band/ChooseColorPanel.cpp": "LinkIssues",
             "band3/meta_band/ClosetMgr.cpp": "LinkIssues",
             "band3/meta_band/ClosetPanel.cpp": "NonMatching",
-            "band3/meta_band/ContentDeletePanel.cpp": "MISSING",
+            "band3/meta_band/ContentDeletePanel.cpp": "NonMatching",
             "band3/meta_band/ContentLoadingPanel.cpp": "MISSING",
             "band3/meta_band/ContextChecker.cpp": "MISSING",
             "band3/meta_band/CriticalUserListener.cpp": "Matching",
