@@ -133,6 +133,7 @@ public:
     bool HasBattle() const;
     ScoreType GetBattleInstrument() const;
     void UnlockBandOrSolo();
+    void SetCreditsPending();
 
     static void Init();
     static MetaPerformer *Current();

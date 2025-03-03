@@ -64,6 +64,10 @@ public:
     Symbol GetReturnScreen() const { return mReturnScreen; }
     LocalBandUser *GetUser() const { return mUser; }
     ClosetPanel *CurrentClosetPanel() const { return mCurrentClosetPanel; }
+    OutfitConfig *GetCurrentOutfitConfig() const { return mCurrentOutfitConfig; }
+    BandCharDesc::OutfitPiece *GetCurrentOutfitPiece() const {
+        return mCurrentOutfitPiece;
+    }
 
     DataNode OnMsg(const ProfileSwappedMsg &);
 
