@@ -153,41 +153,42 @@ void CustomizePanel::SetPatchMenuReturnState(CustomizeState state) {
 }
 
 bool CustomizePanel::InPreviewState() const {
-    // i copy pasted this from ghidra i'm lazy lmao
     switch (mCustomizeState) {
     case 2:
-    case 5:
-    case 6:
-    case 7:
-    case 9:
-    case 10:
-    case 0xb:
-    case 0xc:
-    case 0xd:
-    case 0xe:
-    case 0xf:
-    case 0x10:
-    case 0x12:
-    case 0x13:
-    case 0x14:
-    case 0x15:
-    case 0x16:
-    case 0x18:
-    case 0x19:
-    case 0x1a:
-    case 0x1b:
-    case 0x1c:
+    case kCustomizeState_BrowseTorso:
+    case kCustomizeState_BrowseLegs:
+    case kCustomizeState_BrowseFeet:
+    case kCustomizeState_BrowseHats:
+    case kCustomizeState_BrowseEarrings:
+    case kCustomizeState_BrowsePiercings:
+    case kCustomizeState_BrowseGlassesAndMasks:
+    case kCustomizeState_BrowseBandanas:
+    case kCustomizeState_BrowseWrists:
+    case kCustomizeState_BrowseRings:
+    case kCustomizeState_BrowseGloves:
+    case kCustomizeState_BrowseHair:
+    case kCustomizeState_BrowseEyebrows:
+    case kCustomizeState_BrowseFaceHair:
+    case kCustomizeState_BrowseEyeMakeup:
+    case kCustomizeState_BrowseLipMakeup:
+    case kCustomizeState_BrowseGuitars:
+    case kCustomizeState_BrowseBasses:
+    case kCustomizeState_BrowseDrums:
+    case kCustomizeState_BrowseMicrophones:
+    case kCustomizeState_BrowseKeyboards:
     case 0x1d:
     case 0x1e:
     case 0x24:
-        return 1;
+        return true;
     default:
-        return 0;
+        return false;
     }
 }
 
 bool CustomizePanel::InClothingState() const {
-    return mCustomizeState >= 4 && mCustomizeState <= 0x15;
+    return mCustomizeState == kCustomizeState_BrowseTorso
+        || mCustomizeState == kCustomizeState_BrowseLegs
+        || mCustomizeState == kCustomizeState_BrowseFeet;
 }
 
 void CustomizePanel::UpdateNewAssetProvider() {
@@ -197,7 +198,7 @@ void CustomizePanel::UpdateNewAssetProvider() {
 
 void CustomizePanel::UpdateCurrentOutfitProvider() {
     mCurrentOutfitProvider->Update();
-    RefreshNewAssetsList();
+    RefreshCurrentOutfitList();
 }
 
 void CustomizePanel::UpdateAssetProvider() {
@@ -657,7 +658,7 @@ Symbol CustomizePanel::GetAssetShot(Symbol s) {
 
 AssetType CustomizePanel::GetAssetTypeFromCurrentState() {
     switch (mCustomizeState) {
-    case 0:
+    case kCustomizeState_Invalid:
         return kAssetType_None;
     case 1:
         return kAssetType_None;
@@ -667,53 +668,53 @@ AssetType CustomizePanel::GetAssetTypeFromCurrentState() {
         return kAssetType_None;
     case 4:
         return kAssetType_None;
-    case 5:
+    case kCustomizeState_BrowseTorso:
         return kAssetType_Torso;
-    case 6:
+    case kCustomizeState_BrowseLegs:
         return kAssetType_Legs;
-    case 7:
+    case kCustomizeState_BrowseFeet:
         return kAssetType_Feet;
     case 8:
         return kAssetType_None;
-    case 9:
+    case kCustomizeState_BrowseHats:
         return kAssetType_Hat;
-    case 10:
+    case kCustomizeState_BrowseEarrings:
         return kAssetType_Earrings;
-    case 11:
+    case kCustomizeState_BrowsePiercings:
         return kAssetType_Piercings;
-    case 12:
+    case kCustomizeState_BrowseGlassesAndMasks:
         return kAssetType_GlassesAndMasks;
-    case 13:
+    case kCustomizeState_BrowseBandanas:
         return kAssetType_Bandana;
-    case 14:
+    case kCustomizeState_BrowseWrists:
         return kAssetType_Wrists;
-    case 15:
+    case kCustomizeState_BrowseRings:
         return kAssetType_Rings;
-    case 16:
+    case kCustomizeState_BrowseGloves:
         return kAssetType_Gloves;
-    case 17:
+    case kCustomizeState_HairAndMakeup:
         return kAssetType_None;
-    case 18:
+    case kCustomizeState_BrowseHair:
         return kAssetType_Hair;
-    case 19:
+    case kCustomizeState_BrowseEyebrows:
         return kAssetType_Eyebrows;
-    case 20:
+    case kCustomizeState_BrowseFaceHair:
         return kAssetType_FaceHair;
-    case 21:
+    case kCustomizeState_BrowseEyeMakeup:
         return kAssetType_None;
-    case 22:
+    case kCustomizeState_BrowseLipMakeup:
         return kAssetType_None;
-    case 23:
+    case kCustomizeState_Instruments:
         return kAssetType_None;
-    case 24:
+    case kCustomizeState_BrowseGuitars:
         return kAssetType_Guitar;
-    case 25:
+    case kCustomizeState_BrowseBasses:
         return kAssetType_Bass;
-    case 26:
+    case kCustomizeState_BrowseDrums:
         return kAssetType_Drum;
-    case 27:
+    case kCustomizeState_BrowseMicrophones:
         return kAssetType_Mic;
-    case 28:
+    case kCustomizeState_BrowseKeyboards:
         return kAssetType_Keyboard;
     case 29:
         return kAssetType_Torso;
@@ -773,6 +774,8 @@ DataNode CustomizePanel::OnMsg(const ButtonDownMsg &msg) {
         case kAction_Left:
             MovePatch(-0.05f, 0);
             break;
+        default:
+            break;
         }
     } else if (mCustomizeState == 0x22) {
         switch (action) {
@@ -781,6 +784,8 @@ DataNode CustomizePanel::OnMsg(const ButtonDownMsg &msg) {
             break;
         case kAction_Left:
             RotatePatch(10);
+            break;
+        default:
             break;
         }
     } else if (mCustomizeState == 0x23) {
@@ -796,6 +801,8 @@ DataNode CustomizePanel::OnMsg(const ButtonDownMsg &msg) {
             break;
         case kAction_Left:
             ScalePatch(-0.05f, 0);
+            break;
+        default:
             break;
         }
     }
@@ -815,7 +822,7 @@ DataNode CustomizePanel::LeaveState(bool b1) {
         cMsg[0] = mUser;
         Handle(cMsg, true);
     }
-    if (mCustomizeState == 5 && mCurrentBoutique == 8) {
+    if (mCustomizeState == kCustomizeState_BrowseTorso && mCurrentBoutique == 8) {
         mClosetMgr->ResetCharacterPreview();
         SetPendingState((CustomizeState)3);
         return 1;
@@ -828,26 +835,26 @@ DataNode CustomizePanel::LeaveState(bool b1) {
             mClosetMgr->ResetCharacterPreview();
             SetPendingState((CustomizeState)1);
             return 1;
-        case 0x11:
+        case kCustomizeState_HairAndMakeup:
             GotoCustomizeClothingScreen();
             return 1;
-        case 0x15:
-        case 0x16:
+        case kCustomizeState_BrowseEyeMakeup:
+        case kCustomizeState_BrowseLipMakeup:
             ClearCurrentMakeupIndex();
             mClosetMgr->ResetPatches();
             mClosetMgr->RecomposePatches(0x20);
-            SetCustomizeState((CustomizeState)0x11);
+            SetCustomizeState(kCustomizeState_HairAndMakeup);
             return 1;
-        case 0x17:
+        case kCustomizeState_Instruments:
             GotoCustomizeClothingScreen();
             return 1;
-        case 0x18:
-        case 0x19:
-        case 0x1a:
-        case 0x1b:
-        case 0x1c:
+        case kCustomizeState_BrowseGuitars:
+        case kCustomizeState_BrowseBasses:
+        case kCustomizeState_BrowseDrums:
+        case kCustomizeState_BrowseMicrophones:
+        case kCustomizeState_BrowseKeyboards:
             mClosetMgr->ClearInstrument();
-            SetPendingState((CustomizeState)0x17);
+            SetPendingState(kCustomizeState_Instruments);
             return 1;
         case 0x1f:
             mClosetMgr->ResetCharacterPreview();

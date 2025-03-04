@@ -18,8 +18,30 @@ class CustomizePanel : public UIPanel, public ContentMgr::Callback {
 public:
     enum CustomizeState {
         kCustomizeState_Invalid = 0,
-        kCustomizeState_BrowseEyeMakeup = 0x15,
-        kCustomizeState_BrowseLipMakeup = 0x16
+        // 2 is a preview state, 1, 3 and 4 are not
+        kCustomizeState_BrowseTorso = 5,
+        kCustomizeState_BrowseLegs = 6,
+        kCustomizeState_BrowseFeet = 7,
+        kCustomizeState_BrowseHats = 9,
+        kCustomizeState_BrowseEarrings = 10,
+        kCustomizeState_BrowsePiercings = 11,
+        kCustomizeState_BrowseGlassesAndMasks = 12,
+        kCustomizeState_BrowseBandanas = 13,
+        kCustomizeState_BrowseWrists = 14,
+        kCustomizeState_BrowseRings = 15,
+        kCustomizeState_BrowseGloves = 16,
+        kCustomizeState_HairAndMakeup = 17,
+        kCustomizeState_BrowseHair = 18,
+        kCustomizeState_BrowseEyebrows = 19,
+        kCustomizeState_BrowseFaceHair = 20,
+        kCustomizeState_BrowseEyeMakeup = 21,
+        kCustomizeState_BrowseLipMakeup = 22,
+        kCustomizeState_Instruments = 23,
+        kCustomizeState_BrowseGuitars = 24,
+        kCustomizeState_BrowseBasses = 25,
+        kCustomizeState_BrowseDrums = 26,
+        kCustomizeState_BrowseMicrophones = 27,
+        kCustomizeState_BrowseKeyboards = 28
     };
     CustomizePanel();
     OBJ_CLASSNAME(CustomizePanel);
