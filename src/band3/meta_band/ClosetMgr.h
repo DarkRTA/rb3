@@ -69,6 +69,8 @@ public:
         return mCurrentOutfitPiece;
     }
     BandCharDesc *GetPreviewDesc() const { return unk3c; }
+    BandProfile *GetProfile() const { return unk28; }
+    Symbol GetGender() const { return mGender; }
 
     DataNode OnMsg(const ProfileSwappedMsg &);
 
@@ -101,9 +103,7 @@ public:
 DECLARE_MESSAGE(CharacterFinishedLoadingMsg, "character_finished_loading_msg")
 CharacterFinishedLoadingMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(FinalizedColorsMsg, "finalized_colors_msg")
 FinalizedColorsMsg() : Message(Type()) {}
 END_MESSAGE
-;

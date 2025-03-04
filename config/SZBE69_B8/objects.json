@@ -193,7 +193,7 @@
             "band3/meta_band/ContextChecker.cpp": "NonMatching",
             "band3/meta_band/CriticalUserListener.cpp": "Matching",
             "band3/meta_band/CurrentOutfitProvider.cpp": "Matching",
-            "band3/meta_band/CustomizePanel.cpp": "MISSING",
+            "band3/meta_band/CustomizePanel.cpp": "NonMatching",
             "band3/meta_band/CymbalSelectionProvider.cpp": "Matching",
             "band3/meta_band/EditSetlistPanel.cpp": "MISSING",
             "band3/meta_band/EventDialogPanel.cpp": "MISSING",
