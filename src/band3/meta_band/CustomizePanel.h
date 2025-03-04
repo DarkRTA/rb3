@@ -59,7 +59,7 @@ public:
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual void ContentStarted();
     virtual void ContentDone();
-    virtual const char *ContentDir();
+    virtual const char *ContentDir() { return nullptr; }
 
     void EnableFaceHair();
     void DisableFaceHair();
@@ -115,6 +115,11 @@ public:
     void FinishPatchEdit();
     void SavePrefab();
     bool CheatToggleAssetTokens();
+    void SetupAssetPatchData(Symbol);
+    bool IsAssetPatchable();
+    CharData *GetCharData() const { return mCharData; }
+    CustomizeState GetCustomizeState() const { return mCustomizeState; }
+    CustomizeState GetPatchMenuReturnState() const { return mPatchMenuReturnState; }
 
     DataNode LeaveState(bool);
     DataNode LeaveCustomizePanel();
@@ -127,7 +132,7 @@ public:
     CustomizeState mCustomizeState; // 0x3c
     CustomizeState mPendingState; // 0x40
     CustomizeState mPatchMenuReturnState; // 0x44
-    std::map<int, UIComponent *> unk48;
+    std::map<int, UIComponent *> unk48; // 0x48
     ClosetMgr *mClosetMgr; // 0x60
     LocalBandUser *mUser; // 0x64
     BandProfile *mProfile; // 0x68
@@ -136,15 +141,15 @@ public:
     NewAssetProvider *mNewAssetProvider; // 0x74
     CurrentOutfitProvider *mCurrentOutfitProvider; // 0x78
     AssetProvider *mAssetProvider; // 0x7c
-    int unk80;
+    AssetProvider *unk80; // 0x80
     MakeupProvider *mMakeupProvider; // 0x84
     InstrumentFinishProvider *mInstrumentFinishProvider; // 0x88
     AssetBoutique mCurrentBoutique; // 0x8c
-    Symbol unk90;
+    Symbol unk90; // 0x90
     int mCurrentMakeupIndex; // 0x94
     bool mUnlockedFacePaint; // 0x98
     bool mUnlockedTattoos; // 0x99
-    bool unk9a;
+    bool unk9a; // 0x9a
     bool mWaitingToLeave; // 0x9b
     BandCharDesc::Patch::Category mPatchCategory; // 0x9c
     String mPatchName; // 0xa0

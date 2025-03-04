@@ -20,9 +20,12 @@
 #include "meta_band/SessionMgr.h"
 #include "meta_band/UIEventMgr.h"
 #include "obj/Data.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/ContentMgr.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
+#include "os/JoypadMsgs.h"
 #include "ui/UIComponent.h"
 #include "ui/UIPanel.h"
 #include "utl/Messages3.h"
@@ -953,3 +956,79 @@ void CustomizePanel::SavePrefab() {
 }
 
 bool CustomizePanel::CheatToggleAssetTokens() { return mAssetTokens = !mAssetTokens; }
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(CustomizePanel)
+    HANDLE_EXPR(get_character, GetCharData())
+    HANDLE_ACTION(set_current_boutique, SetCurrentBoutique(_msg->Sym(2)))
+    HANDLE_EXPR(get_current_boutique, GetCurrentBoutique())
+    HANDLE_ACTION(clear_current_boutique, ClearCurrentBoutique())
+    HANDLE_EXPR(get_wearing, GetWearing())
+    HANDLE_ACTION(preview_asset, PreviewAsset(_msg->Sym(2)))
+    HANDLE_ACTION(preview_finish, PreviewFinish(_msg->Sym(2)))
+    HANDLE_ACTION(select_asset, SelectAsset(_msg->Sym(2)))
+    HANDLE_EXPR(asset_provider_has_asset, AssetProviderHasAsset(_msg->Sym(2)))
+    HANDLE_EXPR(get_asset_shot, GetAssetShot(_msg->Sym(2)))
+    HANDLE_ACTION(
+        set_focus_component, SetFocusComponent((CustomizeState)_msg->Int(2), _msg->Sym(3))
+    )
+    HANDLE_ACTION(store_focus_component, StoreFocusComponent())
+    HANDLE_EXPR(get_focus_component, GetFocusComponent())
+    HANDLE_ACTION(set_state, SetCustomizeState((CustomizeState)_msg->Int(2)))
+    HANDLE_EXPR(get_state, GetCustomizeState())
+    HANDLE_EXPR(leave_state, LeaveState(_msg->Int(2)))
+    HANDLE_EXPR(in_clothing_state, InClothingState())
+    HANDLE_ACTION(
+        set_patch_menu_return_state, SetPatchMenuReturnState((CustomizeState)_msg->Int(2))
+    )
+    HANDLE_EXPR(get_patch_menu_return_state, GetPatchMenuReturnState())
+    HANDLE_EXPR(is_refreshing_content, unk9a)
+    HANDLE_EXPR(has_license, HasLicense(_msg->Sym(2)))
+    HANDLE_EXPR(new_asset_provider, mNewAssetProvider)
+    HANDLE_EXPR(current_outfit_provider, mCurrentOutfitProvider)
+    HANDLE_EXPR(asset_provider, mAssetProvider)
+    HANDLE_EXPR(premium_asset_provider, unk80)
+    HANDLE_EXPR(makeup_provider, mMakeupProvider)
+    HANDLE_EXPR(instrument_finish_provider, mInstrumentFinishProvider)
+    HANDLE_ACTION(update_new_asset_provider, UpdateNewAssetProvider())
+    HANDLE_ACTION(update_current_outfit_provider, UpdateCurrentOutfitProvider())
+    HANDLE_ACTION(update_asset_provider, UpdateAssetProvider())
+    HANDLE_ACTION(update_makeup_provider, UpdateMakeupProvider(_msg->Sym(2)))
+    HANDLE_EXPR(get_current_makeup, GetCurrentMakeup(_msg->Sym(2)))
+    HANDLE_ACTION(preview_makeup, PreviewMakeup(_msg->Sym(2)))
+    HANDLE_EXPR(has_new_assets, HasNewAssets())
+    HANDLE_ACTION(setup_current_outfit, SetupCurrentOutfit(_msg->Sym(2)))
+    HANDLE_ACTION(setup_asset_patch_data, SetupAssetPatchData(_msg->Sym(2)))
+    HANDLE_EXPR(is_asset_patchable, IsAssetPatchable())
+    HANDLE_EXPR(is_current_asset_patchable, IsCurrentAssetPatchable())
+    HANDLE_ACTION(
+        prepare_patch_edit, PreparePatchEdit((BandCharDesc::Patch::Category)_msg->Int(2))
+    )
+    HANDLE_ACTION(prepare_asset_patch_edit, PrepareAssetPatchEdit())
+    HANDLE_ACTION(set_current_character_patch, SetCurrentCharacterPatch())
+    HANDLE_ACTION(finish_patch_edit, FinishPatchEdit())
+    HANDLE_ACTION(refresh_patch_edit, RefreshPatchEdit())
+    HANDLE_EXPR(has_patch, HasPatch())
+    HANDLE_ACTION(set_is_waiting_to_leave, SetIsWaitingToLeave(_msg->Int(2)))
+    HANDLE_EXPR(is_waiting_to_leave, mWaitingToLeave)
+    HANDLE_ACTION(take_portrait, mClosetMgr->TakePortrait())
+    HANDLE_ACTION(save_prefab, SavePrefab())
+    HANDLE_EXPR(cheat_toggle_asset_tokens, CheatToggleAssetTokens())
+    HANDLE_EXPR(show_asset_tokens, mAssetTokens)
+    HANDLE_MESSAGE(SigninChangedMsg)
+    HANDLE_MESSAGE(ButtonDownMsg)
+    HANDLE_MESSAGE(UIComponentScrollMsg)
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x786)
+END_HANDLERS
+#pragma pop
+
+BEGIN_PROPSYNCS(CustomizePanel)
+    SYNC_PROP_SET(
+        pending_state, (int &)mPendingState, SetPendingState((CustomizeState)_val.Int())
+    )
+    SYNC_PROP(unlocked_face_paint, mUnlockedFacePaint)
+    SYNC_PROP(unlocked_tattoos, mUnlockedTattoos)
+    SYNC_SUPERCLASS(Hmx::Object)
+END_PROPSYNCS

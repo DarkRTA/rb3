@@ -32,6 +32,39 @@ public:
             // 0x2000 - keyboard
         };
 
+        // #define kPatchNone (0)
+        // #define kPatchTorso (1)
+        // #define kPatchLeg (2)
+        // #define kPatchFeet (4)
+        // #define kPatchHair (8)
+        // #define kPatchTattoo (16)
+        // #define kPatchMakeup (32)
+        // #define kPatchFacepaint (64)
+        // #define kPatchTorsoOverlay (128)
+        // #define kPatchLegOverlay (256)
+        // #define kPatchGuitar (512)
+        // #define kPatchBass (1024)
+        // #define kPatchDrum (2048)
+        // #define kPatchMic (4096)
+        // #define kPatchKeyboard (8192)
+        // #define PATCH_CATEGORIES (
+        //    ("kPatchNone" "no patch, won't be used")
+        //    ("kPatchTorso" "patch torso outfit")
+        //    ("kPatchLeg" "patch on the leg outfit")
+        //    ("kPatchFeet" "patch on the shoes")
+        //    ("kPatchHair" "patch on the hat or hair")
+        //    ("kPatchTattoo" "tattoo art, goes on torso, legs, feet, head, all skin")
+        //    ("kPatchMakeup" "makeup art, goes on head")
+        //    ("kPatchFacepaint" "facepaint art, goes on head")
+        //    ("kPatchTorsoOverlay" "torso overlays, goes on the torso skin")
+        //    ("kPatchLegOverlay" "leg overlay, goes on the leg skin")
+        //    ("kPatchGuitar" "patch on the guitar")
+        //    ("kPatchBass" "patch on the bass")
+        //    ("kPatchDrum" "patch on the drum")
+        //    ("kPatchMic" "patch on the mic")
+        //    ("kPatchKeyboard" "patch on the keyboards")
+        // )
+
         Patch();
         virtual ~Patch() {}
         virtual void SaveFixed(FixedSizeSaveableStream &) const;
