@@ -19,6 +19,17 @@ public:
     class Patch : public FixedSizeSaveable {
     public:
         enum Category {
+            // 0x0 - none?
+            // 0x1 - legs
+            // 0x1 - torso
+            // 0x4 - feet
+            // 0x8 - hair
+            // 0x20 - unknown
+            // 0x200 - guitar
+            // 0x400 - bass
+            // 0x800 - drum
+            // 0x1000 - mic
+            // 0x2000 - keyboard
         };
 
         Patch();

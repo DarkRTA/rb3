@@ -42,10 +42,10 @@ CustomizePanel::CustomizePanel()
       mPatchMenuReturnState(kCustomizeState_Invalid), mClosetMgr(0), mUser(0),
       mProfile(0), mCharData(0), mPreviewDesc(0), mNewAssetProvider(0),
       mCurrentOutfitProvider(0), mAssetProvider(0), unk80(0), mMakeupProvider(0),
-      mInstrumentFinishProvider(0), mCurrentBoutique((AssetBoutique)0), unk90(gNullStr),
-      mCurrentMakeupIndex(-1), unk9a(0), mWaitingToLeave(0),
-      mPatchCategory((BandCharDesc::Patch::Category)0), unka0(gNullStr), mAssetTokens(0) {
-}
+      mInstrumentFinishProvider(0), mCurrentBoutique(kAssetBoutique_None),
+      unk90(gNullStr), mCurrentMakeupIndex(-1), unk9a(0), mWaitingToLeave(0),
+      mPatchCategory((BandCharDesc::Patch::Category)0), mPatchName(gNullStr),
+      mAssetTokens(0) {}
 
 CustomizePanel::~CustomizePanel() { unk48.clear(); }
 
@@ -469,7 +469,7 @@ void CustomizePanel::SelectAsset(Symbol s) {
                 if (pAsset->HasFinishes()) {
                     mInstrumentFinishProvider->Update(s);
                     ChooseFinish();
-                } else if (pAsset->GetBoutique() != 9) {
+                } else if (pAsset->GetBoutique() != kAssetBoutique_Premium) {
                     ChooseColors();
                 }
             } else
@@ -574,7 +574,7 @@ void CustomizePanel::SetupCurrentOutfit(Symbol s) {
 
 bool CustomizePanel::HasPatch() {
     return mPreviewDesc->FindPatchIndex(
-               (BandCharDesc::Patch::Category)mPatchCategory, unka0.c_str()
+               (BandCharDesc::Patch::Category)mPatchCategory, mPatchName.c_str()
            )
         != -1;
 }
@@ -822,7 +822,8 @@ DataNode CustomizePanel::LeaveState(bool b1) {
         cMsg[0] = mUser;
         Handle(cMsg, true);
     }
-    if (mCustomizeState == kCustomizeState_BrowseTorso && mCurrentBoutique == 8) {
+    if (mCustomizeState == kCustomizeState_BrowseTorso
+        && mCurrentBoutique == kAssetBoutique_TShirts) {
         mClosetMgr->ResetCharacterPreview();
         SetPendingState((CustomizeState)3);
         return 1;
@@ -910,19 +911,19 @@ const char *CustomizePanel::GetPlacementMeshFromCurrentCamShot() {
 
 void CustomizePanel::PreparePatchEdit(BandCharDesc::Patch::Category cat) {
     mPatchCategory = cat;
-    unka0 = GetPlacementMeshFromCurrentCamShot();
+    mPatchName = GetPlacementMeshFromCurrentCamShot();
 }
 
 void CustomizePanel::PrepareAssetPatchEdit() {
     switch (mPatchCategory) {
     case 0x400:
-        unka0 = "instrument_placement01.mesh";
+        mPatchName = "instrument_placement01.mesh";
         break;
     case 0x200:
-        unka0 = "instrument_placement01.mesh";
+        mPatchName = "instrument_placement01.mesh";
         break;
     case 1:
-        unka0 = GetPlacementMeshFromCurrentCamShot();
+        mPatchName = GetPlacementMeshFromCurrentCamShot();
         break;
     default:
         break;
@@ -930,11 +931,11 @@ void CustomizePanel::PrepareAssetPatchEdit() {
 }
 
 void CustomizePanel::SetCurrentCharacterPatch() {
-    mClosetMgr->SetCurrentCharacterPatch(mPatchCategory, unka0.c_str());
+    mClosetMgr->SetCurrentCharacterPatch(mPatchCategory, mPatchName.c_str());
 }
 
 void CustomizePanel::FinishPatchEdit() {
-    mClosetMgr->UpdateCharacterPatch(mPatchCategory, unka0.c_str());
+    mClosetMgr->UpdateCharacterPatch(mPatchCategory, mPatchName.c_str());
     mClosetMgr->SetPatches();
     RefreshPatchEdit();
 }

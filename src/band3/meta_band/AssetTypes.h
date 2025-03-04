@@ -30,7 +30,6 @@ enum AssetGender {
     kAssetGender_Female = 2
 };
 
-// these are as of bank 5, might need changing
 enum AssetBoutique {
     kAssetBoutique_None = 0,
     kAssetBoutique_Boss = 1,
@@ -39,7 +38,9 @@ enum AssetBoutique {
     kAssetBoutique_Sheathed = 4,
     kAssetBoutique_Showman = 5,
     kAssetBoutique_ThatStore = 6,
-    kAssetBoutique_Warrior = 7
+    kAssetBoutique_Warrior = 7,
+    kAssetBoutique_TShirts = 8,
+    kAssetBoutique_Premium = 9
 };
 
 Symbol GetSymbolFromAssetType(AssetType);

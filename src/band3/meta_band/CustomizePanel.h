@@ -147,6 +147,6 @@ public:
     bool unk9a;
     bool mWaitingToLeave; // 0x9b
     BandCharDesc::Patch::Category mPatchCategory; // 0x9c
-    String unka0;
+    String mPatchName; // 0xa0
     bool mAssetTokens; // 0xac
 };
