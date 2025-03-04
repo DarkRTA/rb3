@@ -132,7 +132,7 @@ public:
     CustomizeState mCustomizeState; // 0x3c
     CustomizeState mPendingState; // 0x40
     CustomizeState mPatchMenuReturnState; // 0x44
-    std::map<int, UIComponent *> unk48; // 0x48
+    std::map<int, UIComponent *> mFocusComponents; // 0x48
     ClosetMgr *mClosetMgr; // 0x60
     LocalBandUser *mUser; // 0x64
     BandProfile *mProfile; // 0x68
@@ -141,7 +141,7 @@ public:
     NewAssetProvider *mNewAssetProvider; // 0x74
     CurrentOutfitProvider *mCurrentOutfitProvider; // 0x78
     AssetProvider *mAssetProvider; // 0x7c
-    AssetProvider *unk80; // 0x80
+    AssetProvider *mPremiumAssetProvider; // 0x80
     MakeupProvider *mMakeupProvider; // 0x84
     InstrumentFinishProvider *mInstrumentFinishProvider; // 0x88
     AssetBoutique mCurrentBoutique; // 0x8c
@@ -149,9 +149,9 @@ public:
     int mCurrentMakeupIndex; // 0x94
     bool mUnlockedFacePaint; // 0x98
     bool mUnlockedTattoos; // 0x99
-    bool unk9a; // 0x9a
+    bool mRefreshingContent; // 0x9a
     bool mWaitingToLeave; // 0x9b
     BandCharDesc::Patch::Category mPatchCategory; // 0x9c
     String mPatchName; // 0xa0
-    bool mAssetTokens; // 0xac
+    bool mShowAssetTokens; // 0xac
 };

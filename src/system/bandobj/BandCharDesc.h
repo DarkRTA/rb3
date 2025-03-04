@@ -19,51 +19,37 @@ public:
     class Patch : public FixedSizeSaveable {
     public:
         enum Category {
-            // 0x0 - none?
-            // 0x1 - legs
-            // 0x1 - torso
-            // 0x4 - feet
-            // 0x8 - hair
-            // 0x20 - unknown
-            // 0x200 - guitar
-            // 0x400 - bass
-            // 0x800 - drum
-            // 0x1000 - mic
-            // 0x2000 - keyboard
+            /** "no patch, won't be used" */
+            kPatchNone = 0x0,
+            /** "patch torso outfit" */
+            kPatchTorso = 0x1,
+            /** "patch on the leg outfit" */
+            kPatchLeg = 0x2,
+            /** "patch on the shoes" */
+            kPatchFeet = 0x4,
+            /** "patch on the hat or hair" */
+            kPatchHair = 0x8,
+            /** "tattoo art, goes on torso, legs, feet, head, all skin" */
+            kPatchTattoo = 0x10,
+            /** "makeup art, goes on head" */
+            kPatchMakeup = 0x20,
+            /** "facepaint art, goes on head" */
+            kPatchFacepaint = 0x40,
+            /** "torso overlays, goes on the torso skin" */
+            kPatchTorsoOverlay = 0x80,
+            /** "leg overlay, goes on the leg skin" */
+            kPatchLegOverlay = 0x100,
+            /** "patch on the guitar" */
+            kPatchGuitar = 0x200,
+            /** "patch on the bass" */
+            kPatchBass = 0x400,
+            /** "patch on the drum" */
+            kPatchDrum = 0x800,
+            /** "patch on the mic" */
+            kPatchMic = 0x1000,
+            /** "patch on the keyboards" */
+            kPatchKeyboard = 0x2000
         };
-
-        // #define kPatchNone (0)
-        // #define kPatchTorso (1)
-        // #define kPatchLeg (2)
-        // #define kPatchFeet (4)
-        // #define kPatchHair (8)
-        // #define kPatchTattoo (16)
-        // #define kPatchMakeup (32)
-        // #define kPatchFacepaint (64)
-        // #define kPatchTorsoOverlay (128)
-        // #define kPatchLegOverlay (256)
-        // #define kPatchGuitar (512)
-        // #define kPatchBass (1024)
-        // #define kPatchDrum (2048)
-        // #define kPatchMic (4096)
-        // #define kPatchKeyboard (8192)
-        // #define PATCH_CATEGORIES (
-        //    ("kPatchNone" "no patch, won't be used")
-        //    ("kPatchTorso" "patch torso outfit")
-        //    ("kPatchLeg" "patch on the leg outfit")
-        //    ("kPatchFeet" "patch on the shoes")
-        //    ("kPatchHair" "patch on the hat or hair")
-        //    ("kPatchTattoo" "tattoo art, goes on torso, legs, feet, head, all skin")
-        //    ("kPatchMakeup" "makeup art, goes on head")
-        //    ("kPatchFacepaint" "facepaint art, goes on head")
-        //    ("kPatchTorsoOverlay" "torso overlays, goes on the torso skin")
-        //    ("kPatchLegOverlay" "leg overlay, goes on the leg skin")
-        //    ("kPatchGuitar" "patch on the guitar")
-        //    ("kPatchBass" "patch on the bass")
-        //    ("kPatchDrum" "patch on the drum")
-        //    ("kPatchMic" "patch on the mic")
-        //    ("kPatchKeyboard" "patch on the keyboards")
-        // )
 
         Patch();
         virtual ~Patch() {}
@@ -76,7 +62,7 @@ public:
         static int SaveSize(int);
 
         int mTexture; // 0x8
-        int mCategory; // 0xc
+        Category mCategory; // 0xc
         String mMeshName; // 0x10
         Vector2 mUV; // 0x1c
         float mRotation; // 0x24

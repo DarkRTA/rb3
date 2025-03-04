@@ -44,13 +44,14 @@ CustomizePanel::CustomizePanel()
     : mCustomizeState(kCustomizeState_Invalid), mPendingState(kCustomizeState_Invalid),
       mPatchMenuReturnState(kCustomizeState_Invalid), mClosetMgr(0), mUser(0),
       mProfile(0), mCharData(0), mPreviewDesc(0), mNewAssetProvider(0),
-      mCurrentOutfitProvider(0), mAssetProvider(0), unk80(0), mMakeupProvider(0),
-      mInstrumentFinishProvider(0), mCurrentBoutique(kAssetBoutique_None),
-      unk90(gNullStr), mCurrentMakeupIndex(-1), unk9a(0), mWaitingToLeave(0),
+      mCurrentOutfitProvider(0), mAssetProvider(0), mPremiumAssetProvider(0),
+      mMakeupProvider(0), mInstrumentFinishProvider(0),
+      mCurrentBoutique(kAssetBoutique_None), unk90(gNullStr), mCurrentMakeupIndex(-1),
+      mRefreshingContent(0), mWaitingToLeave(0),
       mPatchCategory((BandCharDesc::Patch::Category)0), mPatchName(gNullStr),
-      mAssetTokens(0) {}
+      mShowAssetTokens(0) {}
 
-CustomizePanel::~CustomizePanel() { unk48.clear(); }
+CustomizePanel::~CustomizePanel() { mFocusComponents.clear(); }
 
 void CustomizePanel::Load() {
     UIPanel::Load();
@@ -97,7 +98,7 @@ void CustomizePanel::FinishLoad() {
 void CustomizePanel::Enter() {
     UIPanel::Enter();
     mClosetMgr->PreviewCharacter(true, false);
-    unk9a = TheContentMgr->RefreshInProgress();
+    mRefreshingContent = TheContentMgr->RefreshInProgress();
     TheContentMgr->RegisterCallback(this, false);
     TheSessionMgr->AddSink(this, SigninChangedMsg::Type());
 }
@@ -132,15 +133,15 @@ void CustomizePanel::Unload() {
     mPreviewDesc = nullptr;
     RELEASE(mInstrumentFinishProvider);
     RELEASE(mMakeupProvider);
-    // release 0x80
+    RELEASE(mPremiumAssetProvider);
     RELEASE(mAssetProvider);
     RELEASE(mCurrentOutfitProvider);
     RELEASE(mNewAssetProvider);
 }
 
 bool CustomizePanel::Unloading() const { return !TheNetCacheMgr->IsUnloaded(); }
-void CustomizePanel::ContentStarted() { unk9a = true; }
-void CustomizePanel::ContentDone() { unk9a = false; }
+void CustomizePanel::ContentStarted() { mRefreshingContent = true; }
+void CustomizePanel::ContentDone() { mRefreshingContent = false; }
 
 void CustomizePanel::SetCustomizeState(CustomizeState state) {
     static Message msg("update_state", 0, 0);
@@ -493,7 +494,7 @@ Symbol CustomizePanel::GetCurrentMakeup(Symbol type) {
     BandCharDesc *desc = mPreviewDesc;
     for (int i = 0; i < desc->mPatches.size(); i++) {
         BandCharDesc::Patch &curPatch = desc->mPatches[i];
-        if (curPatch.mCategory == 0x20) {
+        if (curPatch.mCategory == BandCharDesc::Patch::kPatchMakeup) {
             String meshName = curPatch.mMeshName;
             Symbol s6;
             std::vector<String> subStrings;
@@ -531,7 +532,7 @@ void CustomizePanel::PreviewMakeup(Symbol s) {
             if (mCurrentMakeupIndex == -1) {
                 BandCharDesc::Patch patch;
                 patch.mTexture = -1;
-                patch.mCategory = 32;
+                patch.mCategory = BandCharDesc::Patch::kPatchMakeup;
                 patch.mMeshName = meshName;
                 rPatches.push_back(patch);
                 mCurrentMakeupIndex = rPatches.size() - 1;
@@ -733,16 +734,18 @@ AssetType CustomizePanel::GetAssetTypeFromCurrentState() {
 void CustomizePanel::SetFocusComponent(CustomizeState state, Symbol sym) {
     UIComponent *pComponent = mDir->Find<UIComponent>(sym.mStr, true);
     MILO_ASSERT(pComponent, 0x574);
-    unk48[state] = pComponent;
+    mFocusComponents[state] = pComponent;
 }
 
 void CustomizePanel::StoreFocusComponent() {
     UIComponent *pFocusComponent = FocusComponent();
     MILO_ASSERT(pFocusComponent, 0x57E);
-    unk48[mCustomizeState] = pFocusComponent;
+    mFocusComponents[mCustomizeState] = pFocusComponent;
 }
 
-UIComponent *CustomizePanel::GetFocusComponent() { return unk48[mCustomizeState]; }
+UIComponent *CustomizePanel::GetFocusComponent() {
+    return mFocusComponents[mCustomizeState];
+}
 
 DataNode CustomizePanel::OnMsg(const SigninChangedMsg &msg) {
     if (mProfile) {
@@ -895,7 +898,7 @@ void CustomizePanel::SetIsWaitingToLeave(bool b) { mWaitingToLeave = b; }
 
 void CustomizePanel::ClearAssetPatchData() {
     unk90 = gNullStr;
-    mPatchCategory = (BandCharDesc::Patch::Category)0;
+    mPatchCategory = BandCharDesc::Patch::kPatchNone;
 }
 
 bool CustomizePanel::IsCurrentAssetPatchable() {
@@ -919,13 +922,13 @@ void CustomizePanel::PreparePatchEdit(BandCharDesc::Patch::Category cat) {
 
 void CustomizePanel::PrepareAssetPatchEdit() {
     switch (mPatchCategory) {
-    case 0x400:
+    case BandCharDesc::Patch::kPatchBass:
         mPatchName = "instrument_placement01.mesh";
         break;
-    case 0x200:
+    case BandCharDesc::Patch::kPatchGuitar:
         mPatchName = "instrument_placement01.mesh";
         break;
-    case 1:
+    case BandCharDesc::Patch::kPatchTorso:
         mPatchName = GetPlacementMeshFromCurrentCamShot();
         break;
     default:
@@ -955,7 +958,9 @@ void CustomizePanel::SavePrefab() {
     }
 }
 
-bool CustomizePanel::CheatToggleAssetTokens() { return mAssetTokens = !mAssetTokens; }
+bool CustomizePanel::CheatToggleAssetTokens() {
+    return mShowAssetTokens = !mShowAssetTokens;
+}
 
 #pragma push
 #pragma dont_inline on
@@ -983,12 +988,12 @@ BEGIN_HANDLERS(CustomizePanel)
         set_patch_menu_return_state, SetPatchMenuReturnState((CustomizeState)_msg->Int(2))
     )
     HANDLE_EXPR(get_patch_menu_return_state, GetPatchMenuReturnState())
-    HANDLE_EXPR(is_refreshing_content, unk9a)
+    HANDLE_EXPR(is_refreshing_content, mRefreshingContent)
     HANDLE_EXPR(has_license, HasLicense(_msg->Sym(2)))
     HANDLE_EXPR(new_asset_provider, mNewAssetProvider)
     HANDLE_EXPR(current_outfit_provider, mCurrentOutfitProvider)
     HANDLE_EXPR(asset_provider, mAssetProvider)
-    HANDLE_EXPR(premium_asset_provider, unk80)
+    HANDLE_EXPR(premium_asset_provider, mPremiumAssetProvider)
     HANDLE_EXPR(makeup_provider, mMakeupProvider)
     HANDLE_EXPR(instrument_finish_provider, mInstrumentFinishProvider)
     HANDLE_ACTION(update_new_asset_provider, UpdateNewAssetProvider())
@@ -1015,7 +1020,7 @@ BEGIN_HANDLERS(CustomizePanel)
     HANDLE_ACTION(take_portrait, mClosetMgr->TakePortrait())
     HANDLE_ACTION(save_prefab, SavePrefab())
     HANDLE_EXPR(cheat_toggle_asset_tokens, CheatToggleAssetTokens())
-    HANDLE_EXPR(show_asset_tokens, mAssetTokens)
+    HANDLE_EXPR(show_asset_tokens, mShowAssetTokens)
     HANDLE_MESSAGE(SigninChangedMsg)
     HANDLE_MESSAGE(ButtonDownMsg)
     HANDLE_MESSAGE(UIComponentScrollMsg)

@@ -282,35 +282,36 @@ Symbol GetDefaultAssetFromAssetType(AssetType assetType, AssetGender assetGender
     return asset;
 }
 
-int GetPatchCategoryFromAssetType(AssetType assetType) {
-    int result = 0;
+BandCharDesc::Patch::Category GetPatchCategoryFromAssetType(AssetType assetType) {
+    BandCharDesc::Patch::Category result = BandCharDesc::Patch::kPatchNone;
     switch (assetType) {
     case kAssetType_Bass:
-        result = 0x400;
+        result = BandCharDesc::Patch::kPatchBass;
         break;
     case kAssetType_Drum:
-        result = 0x800;
+        result = BandCharDesc::Patch::kPatchDrum;
         break;
     case kAssetType_Feet:
-        result = 4;
+        result = BandCharDesc::Patch::kPatchFeet;
         break;
     case kAssetType_Guitar:
-        result = 0x200;
+        result = BandCharDesc::Patch::kPatchGuitar;
         break;
     case kAssetType_Hair:
-        result = 8;
+        result = BandCharDesc::Patch::kPatchHair;
         break;
     case kAssetType_Keyboard:
-        result = 0x2000;
+        result = BandCharDesc::Patch::kPatchKeyboard;
         break;
     case kAssetType_Legs:
-        result = 1;
+        result = BandCharDesc::Patch::kPatchTorso; // should be legs, i think this was a
+                                                   // bug
         break;
     case kAssetType_Mic:
-        result = 0x1000;
+        result = BandCharDesc::Patch::kPatchMic;
         break;
     case kAssetType_Torso:
-        result = 1;
+        result = BandCharDesc::Patch::kPatchTorso;
     }
     return result;
 }
