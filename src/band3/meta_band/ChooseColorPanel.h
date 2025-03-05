@@ -23,6 +23,7 @@ public:
     void AddColorOption(int, ColorPalette *);
     int GetCurrentColor();
     void PreviewColor(int);
+    ColorPalette *GetColorPalette() { return mColorOptions[mCurrentOption]; }
 
     ClosetMgr *mClosetMgr; // 0x38
     OutfitConfig *mCurrentOutfitConfig; // 0x3c

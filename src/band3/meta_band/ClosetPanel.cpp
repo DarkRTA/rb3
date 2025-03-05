@@ -5,13 +5,11 @@
 #include "meta_band/ClosetMgr.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
-#include "os/User.h"
 #include "rndobj/Tex.h"
 #include "rndobj/TexRenderer.h"
 #include "ui/UIPanel.h"
 #include "utl/MakeString.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols3.h"
 #include "world/CameraShot.h"
 #include "world/Dir.h"
 #include <cstdlib>

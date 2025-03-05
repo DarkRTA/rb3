@@ -19,6 +19,36 @@ public:
     class Patch : public FixedSizeSaveable {
     public:
         enum Category {
+            /** "no patch, won't be used" */
+            kPatchNone = 0x0,
+            /** "patch torso outfit" */
+            kPatchTorso = 0x1,
+            /** "patch on the leg outfit" */
+            kPatchLeg = 0x2,
+            /** "patch on the shoes" */
+            kPatchFeet = 0x4,
+            /** "patch on the hat or hair" */
+            kPatchHair = 0x8,
+            /** "tattoo art, goes on torso, legs, feet, head, all skin" */
+            kPatchTattoo = 0x10,
+            /** "makeup art, goes on head" */
+            kPatchMakeup = 0x20,
+            /** "facepaint art, goes on head" */
+            kPatchFacepaint = 0x40,
+            /** "torso overlays, goes on the torso skin" */
+            kPatchTorsoOverlay = 0x80,
+            /** "leg overlay, goes on the leg skin" */
+            kPatchLegOverlay = 0x100,
+            /** "patch on the guitar" */
+            kPatchGuitar = 0x200,
+            /** "patch on the bass" */
+            kPatchBass = 0x400,
+            /** "patch on the drum" */
+            kPatchDrum = 0x800,
+            /** "patch on the mic" */
+            kPatchMic = 0x1000,
+            /** "patch on the keyboards" */
+            kPatchKeyboard = 0x2000
         };
 
         Patch();
@@ -32,7 +62,7 @@ public:
         static int SaveSize(int);
 
         int mTexture; // 0x8
-        int mCategory; // 0xc
+        Category mCategory; // 0xc
         String mMeshName; // 0x10
         Vector2 mUV; // 0x1c
         float mRotation; // 0x24
@@ -171,6 +201,8 @@ public:
     int FindPatchIndex(Patch::Category, const char *);
     Patch *GetPatch(int);
     void ClearPatch(Patch::Category, const char *);
+    Symbol Gender() const { return mGender; }
+    Head &GetHead() { return mHead; }
 
     DataNode ListOutfits(Symbol);
 

@@ -7,8 +7,8 @@
 #include "AssetTypes.h"
 
 Asset::Asset(DataArray *pConfig, int index)
-    : mName(gNullStr), mGender(0), mType(0), mBoutique(0), mPatchable(false),
-      mHidden(false), mIndex(index) {
+    : mName(gNullStr), mGender((AssetGender)0), mType(kAssetType_None),
+      mBoutique((AssetBoutique)0), mPatchable(false), mHidden(false), mIndex(index) {
     MILO_ASSERT(pConfig, 21);
     Symbol name = pConfig->Sym(0);
     mName = name;

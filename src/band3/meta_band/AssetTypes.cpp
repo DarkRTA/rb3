@@ -6,63 +6,63 @@
 Symbol GetSymbolFromAssetType(AssetType asset_type) {
     Symbol symbol = gNullStr;
     switch (asset_type) {
-    case 0:
+    case kAssetType_None:
         break;
-    case 1:
+    case kAssetType_Bandana:
         symbol = bandana;
         break;
-    case 2:
+    case kAssetType_Bass:
         symbol = bass;
         break;
-    case 3:
+    case kAssetType_Drum:
         symbol = drum;
         break;
-    case 4:
+    case kAssetType_Earrings:
         symbol = earrings;
         break;
-    case 5:
+    case kAssetType_Eyebrows:
         symbol = eyebrows;
         break;
-    case 6:
+    case kAssetType_FaceHair:
         symbol = facehair;
         break;
-    case 7:
+    case kAssetType_Feet:
         symbol = feet;
         break;
-    case 8:
+    case kAssetType_GlassesAndMasks:
         symbol = glasses;
         break;
-    case 9:
+    case kAssetType_Gloves:
         symbol = hands;
         break;
-    case 10:
+    case kAssetType_Guitar:
         symbol = guitar;
         break;
-    case 11:
+    case kAssetType_Hair:
         symbol = hair;
         break;
-    case 12:
+    case kAssetType_Hat:
         symbol = hat;
         break;
-    case 13:
+    case kAssetType_Keyboard:
         symbol = keyboard;
         break;
-    case 14:
+    case kAssetType_Legs:
         symbol = legs;
         break;
-    case 15:
+    case kAssetType_Mic:
         symbol = mic;
         break;
-    case 16:
+    case kAssetType_Piercings:
         symbol = piercings;
         break;
-    case 17:
+    case kAssetType_Rings:
         symbol = rings;
         break;
-    case 18:
+    case kAssetType_Torso:
         symbol = torso;
         break;
-    case 19:
+    case kAssetType_Wrists:
         symbol = wrist;
         break;
     default:
@@ -84,49 +84,49 @@ AssetType GetAssetTypeFromSymbol(Symbol symbol) {
 
 AssetGender GetAssetGenderFromSymbol(Symbol symbol) {
     if (symbol == gNullStr) {
-        return (AssetGender)0;
+        return kAssetGender_None;
     }
 
     if (symbol == male) {
-        return (AssetGender)1;
+        return kAssetGender_Male;
     } else if (symbol == female) {
-        return (AssetGender)2;
+        return kAssetGender_Female;
     }
 
     MILO_WARN("AssetGender: (%s) not found.", symbol);
-    return (AssetGender)0;
+    return kAssetGender_None;
 }
 
 Symbol GetSymbolFromAssetBoutique(AssetBoutique boutique) {
     Symbol symbol = gNullStr;
     switch (boutique) {
-    case 0:
+    case kAssetBoutique_None:
         break;
-    case 1:
+    case kAssetBoutique_Boss:
         symbol = boutique_boss;
         break;
-    case 2:
+    case kAssetBoutique_Romantic:
         symbol = boutique_romantic;
         break;
-    case 3:
+    case kAssetBoutique_Scrapper:
         symbol = boutique_scrapper;
         break;
-    case 4:
+    case kAssetBoutique_Sheathed:
         symbol = boutique_sheathed;
         break;
-    case 5:
+    case kAssetBoutique_Showman:
         symbol = boutique_showman;
         break;
-    case 6:
+    case kAssetBoutique_ThatStore:
         symbol = boutique_thatstore;
         break;
-    case 7:
+    case kAssetBoutique_Warrior:
         symbol = boutique_warrior;
         break;
-    case 8:
+    case kAssetBoutique_TShirts:
         symbol = boutique_tshirts;
         break;
-    case 9:
+    case kAssetBoutique_Premium:
         symbol = boutique_premium;
         break;
     default:
@@ -143,69 +143,69 @@ AssetBoutique GetAssetBoutiqueFromSymbol(Symbol symbol) {
         }
     }
     MILO_WARN("AssetBoutique: (%s) not found.", symbol);
-    return (AssetBoutique)0;
+    return kAssetBoutique_None;
 }
 
 const char *GetConfigNameFromAssetType(AssetType assetType) {
     const char *name = gNullStr;
     switch (assetType) {
-    case 0:
+    case kAssetType_None:
         break;
-    case 1:
+    case kAssetType_Bandana:
         name = "facehair.cfg";
         break;
-    case 2:
+    case kAssetType_Bass:
         name = "bass.cfg";
         break;
-    case 3:
+    case kAssetType_Drum:
         name = "drum.cfg";
         break;
-    case 4:
+    case kAssetType_Earrings:
         name = "earrings.cfg";
         break;
-    case 5:
+    case kAssetType_Eyebrows:
         name = "eyebrows.cfg";
         break;
-    case 6:
+    case kAssetType_FaceHair:
         name = "facehair.cfg";
         break;
-    case 7:
+    case kAssetType_Feet:
         name = "feet.cfg";
         break;
-    case 8:
+    case kAssetType_GlassesAndMasks:
         name = "glasses.cfg";
         break;
-    case 9:
+    case kAssetType_Gloves:
         name = "hands.cfg";
         break;
-    case 10:
+    case kAssetType_Guitar:
         name = "guitar.cfg";
         break;
-    case 11:
+    case kAssetType_Hair:
         name = "hair.cfg";
         break;
-    case 12:
+    case kAssetType_Hat:
         name = "hair.cfg";
         break;
-    case 13:
+    case kAssetType_Keyboard:
         name = "keyboard.cfg";
         break;
-    case 14:
+    case kAssetType_Legs:
         name = "legs.cfg";
         break;
-    case 15:
+    case kAssetType_Mic:
         name = "mic.cfg";
         break;
-    case 16:
+    case kAssetType_Piercings:
         name = "piercings.cfg";
         break;
-    case 17:
+    case kAssetType_Rings:
         name = "rings.cfg";
         break;
-    case 18:
+    case kAssetType_Torso:
         name = "torso.cfg";
         break;
-    case 19:
+    case kAssetType_Wrists:
         name = "wrist.cfg";
         break;
     default:
@@ -217,63 +217,63 @@ const char *GetConfigNameFromAssetType(AssetType assetType) {
 Symbol GetDefaultAssetFromAssetType(AssetType assetType, AssetGender assetGender) {
     Symbol asset = gNullStr;
     switch (assetType) {
-    case 0:
-    case 2:
-    case 3:
-    case 10:
-    case 13:
-    case 14:
-    case 15:
+    case kAssetType_None:
+    case kAssetType_Bass:
+    case kAssetType_Drum:
+    case kAssetType_Guitar:
+    case kAssetType_Keyboard:
+    case kAssetType_Legs:
+    case kAssetType_Mic:
         break;
-    case 1:
+    case kAssetType_Bandana:
         asset = none_bandana;
         break;
-    case 4:
+    case kAssetType_Earrings:
         asset = none_earrings;
         break;
-    case 5:
+    case kAssetType_Eyebrows:
         asset = none_eyebrows;
         break;
-    case 6:
+    case kAssetType_FaceHair:
         asset = none_facehair;
         break;
-    case 7:
-        if (assetGender == 1) {
+    case kAssetType_Feet:
+        if (assetGender == kAssetGender_Male) {
             asset = male_feet_naked;
-        } else if (assetGender == 2) {
+        } else if (assetGender == kAssetGender_Female) {
             asset = female_feet_naked;
         }
         break;
-    case 8:
+    case kAssetType_GlassesAndMasks:
         asset = none_glasses;
         break;
-    case 9:
-        if (assetGender == 1) {
+    case kAssetType_Gloves:
+        if (assetGender == kAssetGender_Male) {
             asset = male_hands_naked;
-        } else if (assetGender == 2) {
+        } else if (assetGender == kAssetGender_Female) {
             asset = female_hands_naked;
         }
         break;
-    case 11:
+    case kAssetType_Hair:
         asset = none_hair;
         break;
-    case 12:
+    case kAssetType_Hat:
         asset = none_hat;
         break;
-    case 16:
+    case kAssetType_Piercings:
         asset = none_piercings;
         break;
-    case 17:
+    case kAssetType_Rings:
         asset = none_rings;
         break;
-    case 18:
-        if (assetGender == 1) {
+    case kAssetType_Torso:
+        if (assetGender == kAssetGender_Male) {
             asset = male_torso_naked;
-        } else if (assetGender == 2) {
+        } else if (assetGender == kAssetGender_Female) {
             asset = femalebra_cotton;
         }
         break;
-    case 19:
+    case kAssetType_Wrists:
         asset = none_wrists;
         break;
     default:
@@ -282,35 +282,36 @@ Symbol GetDefaultAssetFromAssetType(AssetType assetType, AssetGender assetGender
     return asset;
 }
 
-int GetPatchCategoryFromAssetType(AssetType assetType) {
-    int result = 0;
+BandCharDesc::Patch::Category GetPatchCategoryFromAssetType(AssetType assetType) {
+    BandCharDesc::Patch::Category result = BandCharDesc::Patch::kPatchNone;
     switch (assetType) {
-    case 2:
-        result = 0x400;
+    case kAssetType_Bass:
+        result = BandCharDesc::Patch::kPatchBass;
         break;
-    case 3:
-        result = 0x800;
+    case kAssetType_Drum:
+        result = BandCharDesc::Patch::kPatchDrum;
         break;
-    case 7:
-        result = 4;
+    case kAssetType_Feet:
+        result = BandCharDesc::Patch::kPatchFeet;
         break;
-    case 10:
-        result = 0x200;
+    case kAssetType_Guitar:
+        result = BandCharDesc::Patch::kPatchGuitar;
         break;
-    case 0xb:
-        result = 8;
+    case kAssetType_Hair:
+        result = BandCharDesc::Patch::kPatchHair;
         break;
-    case 0xd:
-        result = 0x2000;
+    case kAssetType_Keyboard:
+        result = BandCharDesc::Patch::kPatchKeyboard;
         break;
-    case 0xe:
-        result = 1;
+    case kAssetType_Legs:
+        result = BandCharDesc::Patch::kPatchTorso; // should be legs, i think this was a
+                                                   // bug
         break;
-    case 0xf:
-        result = 0x1000;
+    case kAssetType_Mic:
+        result = BandCharDesc::Patch::kPatchMic;
         break;
-    case 0x12:
-        result = 1;
+    case kAssetType_Torso:
+        result = BandCharDesc::Patch::kPatchTorso;
     }
     return result;
 }

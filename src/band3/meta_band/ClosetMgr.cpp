@@ -1,5 +1,6 @@
 #include "meta_band/ClosetMgr.h"
 #include "bandobj/BandCharDesc.h"
+#include "bandobj/BandCharacter.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
@@ -12,18 +13,13 @@
 #include "meta_band/ProfileMgr.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
-#include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/User.h"
 #include "synth/Synth.h"
 #include "tour/TourCharLocal.h"
-#include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 #include "world/CameraShot.h"
 
 namespace {
@@ -282,19 +278,18 @@ void ClosetMgr::FinalizeChanges(bool b1, bool b2) {
 }
 
 void ClosetMgr::PlayFinalizedSound(bool b) {
-    ClosetPanel *pClosetPanel = mCurrentClosetPanel;
+    ClosetPanel *pClosetPanel = CurrentClosetPanel();
     MILO_ASSERT(pClosetPanel, 0x198);
-    const char *name = pClosetPanel->Name();
-    if (strcmp(name, "customize_clothing_panel") == 0) {
+    if (strcmp(pClosetPanel->Name(), "customize_clothing_panel") == 0) {
         if (b) {
             TheSynth->Play("finish_clothes.cue", 0, 0, 0);
         } else
             TheSynth->Play("finish_accessories.cue", 0, 0, 0);
-    } else if (strcmp(name, "customize_salon_panel") == 0) {
+    } else if (strcmp(pClosetPanel->Name(), "customize_salon_panel") == 0) {
         TheSynth->Play("finish_hairmakeup.cue", 0, 0, 0);
-    } else if (strcmp(name, "customize_tattoo_panel") == 0) {
+    } else if (strcmp(pClosetPanel->Name(), "customize_tattoo_panel") == 0) {
         TheSynth->Play("finish_tattoo.cue", 0, 0, 0);
-    } else if (strcmp(name, "customize_instrument_panel") == 0) {
+    } else if (strcmp(pClosetPanel->Name(), "customize_instrument_panel") == 0) {
         TheSynth->Play("finish_instrument.cue", 0, 0, 0);
     }
 }
@@ -369,9 +364,12 @@ void ClosetMgr::ResetPatches() { unk3c->mPatches = mBandCharDesc->mPatches; }
 void ClosetMgr::SetCurrentOutfitPiece(Symbol s) {
     unk44 = s;
     if (IsInstrumentAssetType(unk44)) {
-        mCurrentOutfitPiece = unk3c->mInstruments.GetPiece(unk44);
-    } else
-        mCurrentOutfitPiece = unk3c->mOutfit.GetPiece(unk44);
+        BandCharDesc *desc = unk3c;
+        mCurrentOutfitPiece = desc->mInstruments.GetPiece(unk44);
+    } else {
+        BandCharDesc *desc = unk3c;
+        mCurrentOutfitPiece = desc->mOutfit.GetPiece(unk44);
+    }
     MILO_ASSERT(mCurrentOutfitPiece, 0x245);
     if (IsAlreadyLoaded())
         UpdateCurrentOutfitConfig();
@@ -485,7 +483,8 @@ int ClosetMgr::GetUserSlot() const {
 bool ClosetMgr::IsAlreadyLoaded() {
     if (IsInstrumentAssetType(unk44))
         return false;
-    BandCharDesc::OutfitPiece *pLoadedPiece = mBandCharacter->mOutfit.GetPiece(unk44);
+    BandCharacter *desc = mBandCharacter;
+    BandCharDesc::OutfitPiece *pLoadedPiece = desc->mOutfit.GetPiece(unk44);
     MILO_ASSERT(pLoadedPiece, 0x341);
     if (mCurrentOutfitPiece->mName == pLoadedPiece->mName)
         return true;

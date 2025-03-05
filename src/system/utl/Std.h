@@ -87,7 +87,7 @@ inline void TrimExcess(std::vector<T VECTOR_SIZE_ARG> &vec) {
 template <typename T VECTOR_SIZE_PARAM>
 inline void ClearAndShrink(std::vector<T VECTOR_SIZE_ARG> &vec) {
     std::vector<T VECTOR_SIZE_ARG> temp;
-    temp.swap(vec);
+    vec.swap(temp);
 }
 
 template <class T>

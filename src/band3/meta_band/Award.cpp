@@ -1,19 +1,19 @@
 #include "Award.h"
+#include "meta_band/AccomplishmentManager.h"
+#include "meta_band/AssetMgr.h"
+#include "meta_band/MetaPerformer.h"
+#include "obj/Data.h"
 #include "os/Debug.h"
-#include "system/utl/Symbols.h"
-#include "system/utl/Symbols2.h"
-#include "AccomplishmentManager.h"
-
+#include "utl/Symbol.h"
+#include "utl/Symbols.h"
 #include "decomp.h"
 
-Award::Award(DataArray *configure, int index)
+Award::Award(DataArray *cfg, int index)
     : mName(gNullStr), mIcon(gNullStr), mIsSecret(false), mIsBonus(false), mIndex(index) {
-
+    Configure(cfg);
 }
 
-Award::~Award() {}
-
-class AssetMgr {};
+Award::~Award() { mAwardEntries.clear(); }
 
 void Award::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x25);
@@ -23,28 +23,47 @@ void Award::Configure(DataArray *i_pConfig) {
     i_pConfig->FindData(is_bonus, mIsBonus, false);
     i_pConfig->FindData(icon, mIcon, false);
     DataArray *pAwardArray = i_pConfig->FindArray(awards, false);
-
-    MILO_ASSERT(pAwardArray->Size() > 1, 0x39);
-
-    int i;
-    for (i = 0; i < pAwardArray->Size(); i++) {
-        DataNode node = pAwardArray->Node(i);
-        DataArray *pAwardEntryArray = node.Array();
-
-        MILO_ASSERT(pAwardEntryArray, 0x3f);
-        MILO_ASSERT(pAwardEntryArray->Size() >= 1, 0x40);
-        DataNode assetMgr = pAwardEntryArray->Node(0);
-    }
-
-    // TODO: Temporary to match string pool
-    void *pAssetMgr;
-    MILO_ASSERT(pAssetMgr, 0);
-    TheDebug.Notify("Award: %s is granting unknown asset: %s\n");
-
-    if (i > 8) {
-        TheDebug.Notify(
-            MakeString("AWARD: %s is awarding too many assets!  count = %i\n", mName, i)
-        );
+    if (pAwardArray) {
+        MILO_ASSERT(pAwardArray->Size() > 1, 0x39);
+        int numAssets = 0;
+        for (int i = 1; i < pAwardArray->Size(); i++) {
+            DataArray *pAwardEntryArray = pAwardArray->Node(i).Array();
+            MILO_ASSERT(pAwardEntryArray, 0x3F);
+            MILO_ASSERT(pAwardEntryArray->Size() >= 1, 0x40);
+            AwardEntry entry;
+            entry.m_symAwardCategory = pAwardEntryArray->Node(0).Sym();
+            if (pAwardEntryArray->Size() >= 2)
+                entry.m_symAward = pAwardEntryArray->Node(1).Sym();
+            else
+                entry.m_symAward = gNullStr;
+            if (entry.m_symAwardCategory == asset) {
+                numAssets++;
+                if (numAssets <= 8) {
+                    AssetMgr *pAssetMgr = AssetMgr::GetAssetMgr();
+                    MILO_ASSERT(pAssetMgr, 0x59);
+                    Symbol curAsset = entry.m_symAward;
+                    if (pAssetMgr->HasAsset(curAsset)) {
+                        TheAccomplishmentMgr->AddAssetAward(entry.m_symAward, mName);
+                        goto push;
+                    }
+                    MILO_WARN(
+                        "Award: %s is granting unknown asset: %s\n",
+                        mName.mStr,
+                        curAsset.mStr
+                    );
+                }
+            } else {
+            push:
+                mAwardEntries.push_back(entry);
+            }
+        }
+        if (numAssets > 8) {
+            MILO_WARN(
+                "AWARD: %s is awarding too many assets!  count = %i\n",
+                mName.mStr,
+                numAssets
+            );
+        }
     }
 }
 
@@ -53,68 +72,63 @@ Symbol Award::GetName() const { return mName; }
 Symbol Award::GetDescription() const {
     if (HasAssets()) {
         return award_genericdesc;
-    }
-    return MakeString("%s_desc", mName);
+    } else
+        return MakeString("%s_desc", mName);
 }
 
 Symbol Award::GetDisplayName() const {
     if (HasAssets()) {
         return award_generic;
-    }
-    return mName;
+    } else
+        return mName;
 }
 
-bool Award::HasIconArt() const {
-    bool noIcon;
-
-    if (gNullStr) {
-        noIcon = !strcmp(mIcon.Str(), gNullStr);
-    } else {
-        noIcon = (mIcon.Str() == gNullStr);
-    }
-
-    return !noIcon;
-}
-
+bool Award::HasIconArt() const { return mIcon != gNullStr; }
 Symbol Award::GetIconArt() const { return mIcon; }
-
 bool Award::IsBonus() const { return mIsBonus; }
 
 DECOMP_FORCEACTIVE(Award, "%s_howto", "%s_gray")
 
 void Award::GrantAward(const AwardEntry &awardEntry, BandProfile *i_pProfile) {
     MILO_ASSERT(i_pProfile, 0xbd);
-
-    // TODO: Temporary to match string pool
-    // Requires BandProfile and ProfileAssets
-    void *pPerformer;
-    MILO_ASSERT(pPerformer, 0);
-
-    if (mIndex) {
-        TheDebug.Fail(MakeString(
-            "Award Category is not currently supported: %s \n",
-            awardEntry.m_symAwardCategory
-        ));
+    Symbol s1 = awardEntry.m_symAwardCategory;
+    Symbol s2 = awardEntry.m_symAward;
+    if (s1 == asset) {
+        i_pProfile->mProfileAssets.AddAsset(s2);
+    } else if (s1 == key) {
+        i_pProfile->GrantCampaignKey(s2);
+    } else if (s1 == vignette) {
+        AccomplishmentProgress &prog = i_pProfile->AccessAccomplishmentProgress();
+        prog.AddNewRewardVignette(s2);
+    } else if (s1 == credits) {
+        MetaPerformer *pPerformer = MetaPerformer::Current();
+        MILO_ASSERT(pPerformer, 0xD7);
+        pPerformer->SetCreditsPending();
+    } else {
+        MILO_WARN("Award Category is not currently supported: %s \n", s1);
     }
 }
 
-// void Award::InqAssets(std::vector<Symbol> &o_rAssets) {
-//     MILO_ASSERT(o_rAssets.empty(), 0xe5);
-// }
+bool Award::InqAssets(std::vector<Symbol> &o_rAssets) {
+    MILO_ASSERT(o_rAssets.empty(), 0xe5);
+    FOREACH (it, mAwardEntries) {
+        if (it->m_symAwardCategory == asset) {
+            o_rAssets.push_back(it->m_symAward);
+        }
+    }
+    return !o_rAssets.empty();
+}
 
 bool Award::HasAssets() const {
-    for (int i = 0; i < mAwardEntries.size(); i++) {
-        if (mAwardEntries[i].m_symAwardCategory == asset) {
+    FOREACH (it, mAwardEntries) {
+        if (it->m_symAwardCategory == asset)
             return true;
-        }
     }
     return false;
 }
 
 void Award::GrantAwards(BandProfile *bandProfile) {
-    for (std::vector<AwardEntry>::iterator it = mAwardEntries.begin();
-         it != mAwardEntries.end();
-         it++) {
+    FOREACH (it, mAwardEntries) {
         GrantAward(*it, bandProfile);
     }
 }

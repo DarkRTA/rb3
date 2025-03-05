@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/AccomplishmentManager.h"
 #include "meta_band/CampaignLeaderboards.h"
 #include "ui/UIPanel.h"
 
@@ -26,6 +27,8 @@ public:
     Symbol GetModeSymbol() const {
         return mCampaignGoalsLeaderboardProvider->GetModeSymbol();
     }
+    Symbol GetGoal() const { return mGoal; }
+    bool HasGoalIcon() const { return TheAccomplishmentMgr->HasAccomplishment(mGoal); }
 
     PlayerCampaignGoalLeaderboard *mCampaignGoalsLeaderboardProvider; // 0x3c
     Symbol mGoal; // 0x40

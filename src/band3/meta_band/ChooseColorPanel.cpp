@@ -15,14 +15,15 @@ ChooseColorPanel::ChooseColorPanel()
 
 void ChooseColorPanel::Load() {
     UIPanel::Load();
-    mCurrentOutfitConfig = mClosetMgr->mCurrentOutfitConfig;
+    mCurrentOutfitConfig = mClosetMgr->GetCurrentOutfitConfig();
     MILO_ASSERT(mCurrentOutfitConfig, 0x21);
-    mCurrentOutfitPiece = mClosetMgr->mCurrentOutfitPiece;
+    mCurrentOutfitPiece = mClosetMgr->GetCurrentOutfitPiece();
     MILO_ASSERT(mCurrentOutfitPiece, 0x24);
     mNumOptions = mCurrentOutfitConfig->NumColorOptions();
     OutfitConfig *cfg = mCurrentOutfitConfig;
-    for (int i = 0; i < cfg->mMats.size(); i++) {
-        OutfitConfig::MatSwap *pMatSwap = &cfg->mMats[i];
+    ObjVector<OutfitConfig::MatSwap> &mats = cfg->mMats;
+    for (int i = 0; i < mats.size(); i++) {
+        OutfitConfig::MatSwap *pMatSwap = &mats[i];
         MILO_ASSERT(pMatSwap, 0x2C);
         if (pMatSwap->mColor1Option != pMatSwap->mColor2Option) {
             AddColorOption(pMatSwap->mColor1Option, pMatSwap->mColor1Palette);
@@ -82,7 +83,7 @@ void ChooseColorPanel::PreviewColor(int color) {
 }
 
 BEGIN_HANDLERS(ChooseColorPanel)
-    HANDLE_EXPR(get_color_palette, mColorOptions[mCurrentOption])
+    HANDLE_EXPR(get_color_palette, GetColorPalette())
     HANDLE_EXPR(get_current_color, GetCurrentColor())
     HANDLE_ACTION(preview_color, PreviewColor(_msg->Int(2)))
     HANDLE_SUPERCLASS(UIPanel)

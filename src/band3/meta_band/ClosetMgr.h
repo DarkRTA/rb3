@@ -63,6 +63,14 @@ public:
     bool IsCharacterLoading() { return mCharacterLoading; }
     Symbol GetReturnScreen() const { return mReturnScreen; }
     LocalBandUser *GetUser() const { return mUser; }
+    ClosetPanel *CurrentClosetPanel() const { return mCurrentClosetPanel; }
+    OutfitConfig *GetCurrentOutfitConfig() const { return mCurrentOutfitConfig; }
+    BandCharDesc::OutfitPiece *GetCurrentOutfitPiece() const {
+        return mCurrentOutfitPiece;
+    }
+    BandCharDesc *GetPreviewDesc() const { return unk3c; }
+    BandProfile *GetProfile() const { return unk28; }
+    Symbol GetGender() const { return mGender; }
 
     DataNode OnMsg(const ProfileSwappedMsg &);
 
@@ -77,7 +85,7 @@ public:
     CharData *mPreviousCharacter; // 0x30
     BandCharacter *mBandCharacter; // 0x34
     BandCharDesc *mBandCharDesc; // 0x38
-    BandCharDesc *unk3c; // 0x3c
+    BandCharDesc *unk3c; // 0x3c - preview desc
     ClosetPanel *mCurrentClosetPanel; // 0x40
     Symbol unk44;
     BandCharDesc::OutfitPiece *mCurrentOutfitPiece; // 0x48
@@ -95,9 +103,7 @@ public:
 DECLARE_MESSAGE(CharacterFinishedLoadingMsg, "character_finished_loading_msg")
 CharacterFinishedLoadingMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(FinalizedColorsMsg, "finalized_colors_msg")
 FinalizedColorsMsg() : Message(Type()) {}
 END_MESSAGE
-;

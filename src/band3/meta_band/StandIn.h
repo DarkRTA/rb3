@@ -14,6 +14,8 @@ public:
     bool IsNone() const;
     bool IsPrefabCharacter() const;
     bool IsCustomCharacter() const;
+    Symbol GetName() const { return mName; }
+    const HxGuid &GetGuid() const { return mGuid; }
 
     static int SaveSize(int);
 

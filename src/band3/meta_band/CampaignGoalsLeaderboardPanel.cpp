@@ -1,7 +1,6 @@
 #include "meta_band/CampaignGoalsLeaderboardPanel.h"
 #include "BandProfile.h"
 #include "game/BandUser.h"
-#include "game/Game.h"
 #include "game/GameMode.h"
 #include "meta_band/Accomplishment.h"
 #include "meta_band/AccomplishmentManager.h"
@@ -17,9 +16,7 @@
 #include "utl/Symbol.h"
 #include "utl/Messages.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
 #include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 CampaignGoalsLeaderboardPanel::CampaignGoalsLeaderboardPanel()
     : mCampaignGoalsLeaderboardProvider(0), mGoal(gNullStr) {}
@@ -112,19 +109,19 @@ void CampaignGoalsLeaderboardPanel::CycleMode() {
 
 BEGIN_HANDLERS(CampaignGoalsLeaderboardPanel)
     HANDLE_ACTION(set_goal, SetGoal(_msg->Sym(2)))
-    HANDLE_EXPR(get_goal, mGoal)
+    HANDLE_EXPR(get_goal, GetGoal())
     HANDLE_EXPR(get_goal_units, GetGoalUnits())
     HANDLE_EXPR(get_goal_desc, GetGoalDescription())
     HANDLE_EXPR(get_goal_icon, GetGoalIcon())
-    HANDLE_EXPR(symbol, TheAccomplishmentMgr->HasAccomplishment(mGoal))
+    HANDLE_EXPR(has_goal_icon, HasGoalIcon())
     HANDLE_ACTION(cycle_mode, CycleMode())
     HANDLE_EXPR(get_mode_symbol, GetModeSymbol())
-    HANDLE_ACTION(
+    HANDLE_EXPR(
         scroll_lb_up,
         mCampaignGoalsLeaderboardProvider
             && mCampaignGoalsLeaderboardProvider->EnumerateLowerRankRange()
     )
-    HANDLE_ACTION(
+    HANDLE_EXPR(
         scroll_lb_down,
         mCampaignGoalsLeaderboardProvider
             && mCampaignGoalsLeaderboardProvider->EnumerateHigherRankRange()

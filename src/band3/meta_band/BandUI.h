@@ -95,6 +95,7 @@ public:
     void SetInviteAccepted(bool b) { mInviteAccepted = b; }
     bool GetInviteAccepted() const { return mInviteAccepted; }
     void SetDisbandStatus(DisbandStatus s) { mDisbandStatus = s; }
+    OvershellPanel *GetOvershell() { return mOvershell; }
 
     bool mShowVignettes; // 0xd4
     RndOverlay *mVignetteOverlay; // 0xd8

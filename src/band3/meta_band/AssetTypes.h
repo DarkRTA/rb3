@@ -1,5 +1,6 @@
 #pragma once
 #include "system/obj/Data.h"
+#include "bandobj/BandCharDesc.h"
 
 enum AssetType {
     kAssetType_None = 0,
@@ -25,9 +26,22 @@ enum AssetType {
 };
 
 enum AssetGender {
+    kAssetGender_None = 0,
+    kAssetGender_Male = 1,
+    kAssetGender_Female = 2
 };
 
 enum AssetBoutique {
+    kAssetBoutique_None = 0,
+    kAssetBoutique_Boss = 1,
+    kAssetBoutique_Romantic = 2,
+    kAssetBoutique_Scrapper = 3,
+    kAssetBoutique_Sheathed = 4,
+    kAssetBoutique_Showman = 5,
+    kAssetBoutique_ThatStore = 6,
+    kAssetBoutique_Warrior = 7,
+    kAssetBoutique_TShirts = 8,
+    kAssetBoutique_Premium = 9
 };
 
 Symbol GetSymbolFromAssetType(AssetType);
@@ -37,5 +51,5 @@ Symbol GetSymbolFromAssetBoutique(AssetBoutique);
 AssetBoutique GetAssetBoutiqueFromSymbol(Symbol);
 const char *GetConfigNameFromAssetType(AssetType);
 Symbol GetDefaultAssetFromAssetType(AssetType, AssetGender);
-int GetPatchCategoryFromAssetType(AssetType);
+BandCharDesc::Patch::Category GetPatchCategoryFromAssetType(AssetType);
 bool IsInstrumentAssetType(Symbol);

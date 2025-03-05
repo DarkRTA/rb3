@@ -2,6 +2,7 @@
 #include "math/Rand2.h"
 #include "types.h"
 #include "os/Platform.h"
+#include "utl/Std.h"
 #include "utl/Str.h"
 #include "utl/Symbol.h"
 #include <utility>
@@ -252,6 +253,15 @@ BinStream &operator>>(BinStream &bs, std::vector<T, Allocator> &vec) {
         bs >> *it;
     }
 
+    return bs;
+}
+
+template <class T, class Allocator>
+BinStream &operator<<(BinStream &bs, const std::list<T, Allocator> &list) {
+    bs << list.size();
+    FOREACH (it, list) {
+        bs << *it;
+    }
     return bs;
 }
 

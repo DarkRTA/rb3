@@ -2,6 +2,7 @@
 
 #include "rndobj/Tex.h"
 #include "utl/PoolAlloc.h"
+#include <set>
 
 /**
  * @brief Platform implementation of RndTex.
@@ -29,3 +30,5 @@ public:
     void *operator new(unsigned long i) { return _PoolAlloc(i, i, FastPool); }
     void operator delete(void *obj) { _PoolFree(0xd0, FastPool, obj); }
 };
+
+extern std::set<WiiTex *> gRenderTextureSet;

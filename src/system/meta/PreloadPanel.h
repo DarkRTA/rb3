@@ -24,7 +24,7 @@ public:
     virtual bool IsLoaded() const;
     virtual void PollForLoading();
     virtual void FinishLoad();
-    virtual const char *ContentDir();
+    virtual const char *ContentDir() { return nullptr; }
     virtual void ContentMounted(const char *, const char *);
     virtual void ContentFailed(const char *);
 

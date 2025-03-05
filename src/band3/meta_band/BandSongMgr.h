@@ -1,21 +1,24 @@
 #pragma once
 #include "beatmatch/TrackType.h"
+#include "game/BandUserMgr.h"
 #include "system/meta/SongMgr.h"
 #include "meta_band/SongUpgradeMgr.h"
 #include "meta_band/LicenseMgr.h"
 
 enum SongID {
     kSongID_Invalid = 0,
-    kSongID_Any,
-    kSongID_Random
+    kSongID_Any = 1,
+    kSongID_Random = 2
 };
 
 class BandSongMgr : public SongMgr {
 public:
     class SongRanking {
     public:
+        bool operator==(Symbol s) const { return mInstrument == s; }
+
         Symbol mInstrument; // 0x0
-        std::vector<int> mTierRanges; // 0x4
+        std::vector<std::pair<float, float> > mTierRanges; // 0x4
     };
 
     BandSongMgr();
@@ -71,6 +74,15 @@ public:
     void CheatToggleMaxSongCount();
     bool InqAvailableSongSources(std::set<Symbol> &);
     int NumRankedSongs(TrackType, bool, Symbol) const;
+    bool CreateSongCacheID(CacheID **);
+    int GetCurSongCount() const;
+    int GetPosInRecentList(int);
+    bool IsInExclusionList(const char *, int) const;
+    bool RemoveOldestCachedContent();
+    void WriteCachedMetadataToStream(BinStream &) const;
+    int GetPartDifficulty(Symbol, Symbol) const;
+    bool IsSongUnplayable(int, BandUserMgr &, bool) const;
+
     SongInfo *SongAudioData(Symbol s) const { return SongMgr::SongAudioData(s); }
 
     static bool GetFakeSongsAllowed();
@@ -90,7 +102,7 @@ public:
     std::vector<String> mContentAltDirs; // 0x130
     int mMaxSongCount; // 0x138
     bool unk13c; // 0x13c
-    int unk140; // 0x140
+    int unk140; // 0x140 - num valid songs
 };
 
 extern BandSongMgr &TheSongMgr;

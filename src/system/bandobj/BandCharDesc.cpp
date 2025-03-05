@@ -1,4 +1,5 @@
 #include "bandobj/BandCharDesc.h"
+#include "BandCharDesc.h"
 #include "bandobj/BandHeadShaper.h"
 #include "obj/DataFunc.h"
 #include "obj/Utl.h"
@@ -295,7 +296,8 @@ BandCharDesc::InstrumentOutfit::operator!=(const BandCharDesc::InstrumentOutfit 
 }
 
 BandCharDesc::Patch::Patch()
-    : mTexture(0), mCategory(0), mUV(0.5f, 0.5f), mRotation(0), mScale(1.0f, 1.0f) {
+    : mTexture(0), mCategory(kPatchNone), mUV(0.5f, 0.5f), mRotation(0),
+      mScale(1.0f, 1.0f) {
     mSaveSizeMethod = &SaveSize;
 }
 
@@ -329,7 +331,7 @@ DECOMP_FORCEACTIVE(BandCharDesc, "tattoo_head")
 
 void BandCharDesc::Patch::LoadFixed(FixedSizeSaveableStream &stream, int) {
     stream >> mTexture;
-    stream >> mCategory;
+    stream >> (int &)mCategory;
     FixedSizeSaveable::LoadFixedString(stream, mMeshName);
     stream >> mUV;
     stream >> mRotation;
@@ -575,7 +577,7 @@ BinStream &operator<<(BinStream &bs, const BandCharDesc::Patch &patch) {
 
 BinStream &operator>>(BinStream &bs, BandCharDesc::Patch &patch) {
     bs >> patch.mTexture;
-    bs >> patch.mCategory;
+    bs >> (int &)patch.mCategory;
     bs >> patch.mMeshName;
     bs >> patch.mUV;
     bs >> patch.mRotation;
@@ -907,7 +909,7 @@ DataNode BandCharDesc::ListOutfits(Symbol s) {
 }
 
 BEGIN_CUSTOM_PROPSYNC(BandCharDesc::Patch)
-    SYNC_PROP_MODIFY(category, o.mCategory, gBandCharDescMe->SetChanged(1))
+    SYNC_PROP_MODIFY(category, (int &)o.mCategory, gBandCharDescMe->SetChanged(1))
     SYNC_PROP_MODIFY(texture, o.mTexture, gBandCharDescMe->SetChanged(1))
     SYNC_PROP_MODIFY_ALT(mesh_name, o.mMeshName, gBandCharDescMe->SetChanged(1))
     SYNC_PROP_MODIFY(rotation, o.mRotation, gBandCharDescMe->SetChanged(1))

@@ -1,5 +1,6 @@
 #pragma once
 #include "game/Defines.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/Leaderboard.h"
 #include "net_band/DataResults.h"
 #include "obj/Msg.h"
@@ -40,6 +41,8 @@ public:
     void UpdateBandLogo(int, RndTex *, int, Hmx::Object *, int);
     void GetWebLinkStatus(const Profile *, int, DataResultList &, Hmx::Object *);
     void GetSetlistCreationStatus(const Profile *, int, DataResultList &, Hmx::Object *);
+    void
+    SyncAvailableSongs(const std::vector<BandProfile *> &, const std::vector<int> &, const std::vector<int> &, Hmx::Object *);
 };
 
 extern RockCentral TheRockCentral;

@@ -26,7 +26,7 @@ public:
     void AddAssets();
     void VerifyAssets(const char *);
     void VerifyAssets(const char *, const char *);
-    void EquipAsset(BandCharDesc *, Symbol);
+    bool EquipAsset(BandCharDesc *, Symbol);
     void EquipAssets(LocalBandUser *, const std::vector<Symbol> &);
 
     const std::map<Symbol, Asset *> &GetAssets() const { return mAssets; }
