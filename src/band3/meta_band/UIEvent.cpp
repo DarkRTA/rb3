@@ -1,4 +1,5 @@
 #include "meta_band/UIEvent.h"
+#include "meta_band/EventDialogPanel.h"
 #include "UIEventMgr.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
