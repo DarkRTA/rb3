@@ -74,3 +74,8 @@ END_MESSAGE
 
 DECLARE_MESSAGE(OvershellActiveStatusChangedMsg, "overshell_active_status_changed_msg");
 END_MESSAGE
+
+DECLARE_MESSAGE(OvershellOverrideEndedMsg, "override_ended")
+OvershellOverrideFlow GetOverrideFlowType() const;
+bool Cancelled() const;
+END_MESSAGE

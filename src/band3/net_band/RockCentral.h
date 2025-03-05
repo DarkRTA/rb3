@@ -43,6 +43,7 @@ public:
     void GetSetlistCreationStatus(const Profile *, int, DataResultList &, Hmx::Object *);
     void
     SyncAvailableSongs(const std::vector<BandProfile *> &, const std::vector<int> &, const std::vector<int> &, Hmx::Object *);
+    void GetTickerInfo(const Profile *, ScoreType, DataResultList &, Hmx::Object *);
 };
 
 extern RockCentral TheRockCentral;

@@ -1,6 +1,10 @@
 #pragma once
+#include "OvershellPanel.h"
+#include "game/Defines.h"
 #include "meta_band/BandMachineMgr.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/LockStepMgr.h"
+#include "meta_band/SessionMgr.h"
 #include "net_band/DataResults.h"
 #include "os/Timer.h"
 #include "ui/UIPanel.h"
@@ -36,6 +40,23 @@ public:
     virtual void Poll();
     virtual void Unload();
 
+    void RefreshData();
+    void SetMainHubOverride(MainHubOverride);
+    void UpdateStateView(MainHubState, MainHubState, MainHubOverride, MainHubOverride);
+    void PrepareProfilesAndMessages();
+    void UpdateHeader();
+    void CycleNextMessage();
+    void ReloadMessages();
+    void UpdateMessageProvider();
+    bool CheckProfileForTicker();
+    void UpdatePoolInfo();
+    void SetMainHubState(MainHubState);
+    void CheckStartWaitingLock();
+    void StartFinding();
+
+    DataNode OnMsg(const OvershellOverrideEndedMsg &);
+    DataNode OnMsg(const SessionDisconnectedMsg &);
+
     MainHubState mHubState; // 0x38
     MainHubOverride mHubOverride; // 0x3c
     MainHubMessageProvider *mMessageProvider; // 0x40
@@ -48,6 +69,6 @@ public:
     String unk94; // 0x94
     DataResultList mLabelUpdateResults; // 0xa0
     bool unkb8; // 0xb8
-    int unkbc; // 0xbc
-    int unkc0; // 0xc0
+    BandProfile *unkbc; // 0xbc
+    ScoreType unkc0; // 0xc0
 };
