@@ -46,9 +46,15 @@ public:
         SavedSetlist::SetSongs(songs);
         unk4d = true;
     }
-    virtual void SetTitle(const char *);
+    virtual void SetTitle(const char *title) {
+        mTitle = title;
+        unk4d = true;
+    }
     virtual void SetDateTime(const DateTime &);
-    virtual void SetDescription(const char *);
+    virtual void SetDescription(const char *desc) {
+        mDescription = desc;
+        unk4d = true;
+    }
     virtual DataNode Handle(DataArray *, bool);
     virtual int SecBetweenUploads() const;
     virtual void UploadComplete();
@@ -64,5 +70,5 @@ public:
     bool unk4d;
     HxGuid mGuid; // 0x50
     PatchDescriptor mArt; // 0x60
-    int unk64; // 0x64
+    int unk68; // 0x68
 };

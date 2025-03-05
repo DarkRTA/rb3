@@ -119,6 +119,7 @@ public:
     void IgnoreWiiSpeakFriends() { unkce5a = true; }
     DiscErrorMgrWii *GetDiscErrorMgrWii() const { return mDiscErrorMgr; }
     bool IsGuideShowing() const { return mGuideShowing; }
+    bool IsCheckingProfanity() const { return mCheckingProfanity; }
 
     LocalUser *GetOwnerUserOfGuestUser(LocalUser *);
     int GetOwnerOfGuest(int) const;
@@ -206,4 +207,7 @@ PlatformMgrOpCompleteMsg(int i) : Message(Type(), i) {}
 END_MESSAGE
 
 DECLARE_MESSAGE(DiskErrorMsg, "disk_error")
+END_MESSAGE
+
+DECLARE_MESSAGE(DWCProfanityResultMsg, "dwc_profanity_result_msg")
 END_MESSAGE
