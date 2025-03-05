@@ -1,4 +1,5 @@
 #include "meta_band/MainHubPanel.h"
+#include "BandMachine.h"
 #include "MainHubPanel.h"
 #include "OvershellPanel.h"
 #include "OvershellSlot.h"
@@ -7,6 +8,8 @@
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
+#include "game/NetGameMsgs.h"
+#include "meta_band/BandMachine.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/BandUI.h"
 #include "meta_band/LockStepMgr.h"
@@ -18,39 +21,54 @@
 #include "meta_band/MainHubMessageProvider.h"
 #include "meta_band/UIEventMgr.h"
 #include "net/NetMessage.h"
+#include "net/NetSession.h"
 #include "net/Server.h"
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Msg.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "ui/UIPanel.h"
+#include "utl/Locale.h"
 #include "utl/Messages.h"
 #include "utl/Messages3.h"
+#include "utl/Messages4.h"
 #include "utl/Symbol.h"
+#include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
 namespace {
     class MainHubAdvanceMsg : public NetMessage {
     public:
         MainHubAdvanceMsg() {}
+        MainHubAdvanceMsg(NetUIState state, const char *name) : unk4(state), unk8(name) {}
         virtual ~MainHubAdvanceMsg() {}
         virtual void Save(BinStream &bs) const {
-            bs << unk4;
+            bs << (unsigned char)unk4;
             bs << unk8;
         }
         virtual void Load(BinStream &bs) {
-            bs >> unk4;
+            unsigned char state;
+            bs >> state;
+            unk4 = (NetUIState)state;
             bs >> unk8;
         }
-        virtual void Dispatch();
+        virtual void Dispatch() {
+            MainHubPanel *panel =
+                ObjectDir::Main()->Find<MainHubPanel>(unk8.c_str(), true);
+            static Message advanceMsg("advance", 0);
+            advanceMsg[0] = unk4;
+            panel->HandleType(advanceMsg);
+        }
         NETMSG_BYTECODE(MainHubAdvanceMsg);
         NETMSG_NAME(MainHubAdvanceMsg);
 
         NETMSG_NEWNETMSG(MainHubAdvanceMsg);
 
-        bool unk4;
+        NetUIState unk4;
         String unk8;
     };
 
@@ -228,15 +246,15 @@ void MainHubPanel::SetMainHubOverride(MainHubOverride oride) {
     mHubOverride = oride;
     UpdateStateView(mHubState, mHubState, oride, old);
     CheckStartWaitingLock();
-    if (mHubOverride == kMainHubOverride_Waiting) {
+    if (mHubOverride == kMainHubOverride_Finding) {
         StartFinding();
     }
     Matchmaker *maker = TheSessionMgr->GetMatchmaker();
-    if (mHubOverride != kMainHubOverride_Waiting && maker->IsFinding()) {
+    if (mHubOverride != kMainHubOverride_Finding && maker->IsFinding()) {
         maker->CancelFind();
     }
     OvershellPanel *panel = TheBandUI.GetOvershell();
-    if (old == kMainHubOverride_Waiting && mHubOverride != kMainHubOverride_Waiting
+    if (old == kMainHubOverride_Finding && mHubOverride != kMainHubOverride_Finding
         && panel->mPanelOverrideFlow == kOverrideFlow_RegisterOnline) {
         TheSessionMgr->Disconnect();
         if (panel->mPanelOverrideFlow == kOverrideFlow_RegisterOnline)
@@ -264,7 +282,7 @@ void MainHubPanel::StartFinding() {
 }
 
 DataNode MainHubPanel::OnMsg(const OvershellOverrideEndedMsg &msg) {
-    if (msg.GetOverrideFlowType() == 2 && mHubOverride == kMainHubOverride_Waiting) {
+    if (msg.GetOverrideFlowType() == 2 && mHubOverride == kMainHubOverride_Finding) {
         if (msg.Cancelled()) {
             HandleType(cancel_find_override_msg);
         } else {
@@ -280,7 +298,7 @@ DataNode MainHubPanel::OnMsg(const OvershellOverrideEndedMsg &msg) {
 #pragma push
 #pragma pool_data off
 DataNode MainHubPanel::OnMsg(const SessionDisconnectedMsg &msg) {
-    if (mHubOverride == kMainHubOverride_Waiting) {
+    if (mHubOverride == kMainHubOverride_Finding) {
         if (!ThePlatformMgr.IsAnyUserSignedIntoLive()) {
             static Message init("init", wii_friends_session_ended);
             TheUIEventMgr->TriggerEvent(error_message, init);
@@ -306,3 +324,252 @@ void MainHubPanel::UpdateStateView(
     updateView[3] = o2;
     HandleType(updateView);
 }
+
+DataNode MainHubPanel::OnMsg(const PrimaryProfileChangedMsg &) {
+    RefreshData();
+    return DataNode(kDataUnhandled, 0);
+}
+
+DataNode MainHubPanel::OnMsg(const ProcessedJoinRequestMsg &) {
+    if (mHubOverride == kMainHubOverride_Finding && TheSessionMgr->IsLeaderLocal()
+        && !TheSessionMgr->NumOpenSlots()) {
+        AdvanceFromFinding();
+    }
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const NewRemoteMachineMsg &) {
+    CheckStartWaitingLock();
+    HandleType(update_finding_help_msg);
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const RemoteMachineLeftMsg &) {
+    CheckStartWaitingLock();
+    HandleType(update_finding_help_msg);
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const SessionMgrUpdatedMsg &) {
+    HandleType(update_finding_help_msg);
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const RemoteMachineUpdatedMsg &msg) {
+    if (msg.GetMask() & 1) {
+        CheckStartWaitingLock();
+    }
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const MatchmakerChangedMsg &) {
+    UpdatePoolInfo();
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const LockStepStartMsg &msg) {
+    bool ready = IsWaitingNetUIState(mMachineMgr->GetLocalMachine()->GetNetUIState());
+    MILO_ASSERT(ready == (mHubOverride == kMainHubOverride_Waiting), 0x23F);
+    mWaitingStateLock->RespondToLock(ready);
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const LockStepCompleteMsg &) { return 1; }
+
+DataNode MainHubPanel::OnMsg(const ReleasingLockStepMsg &msg) {
+    if (msg->Int(2)) {
+        AdvanceAll(mMachineMgr->GetLocalMachine()->GetNetUIState());
+    }
+    return 1;
+}
+
+DataNode MainHubPanel::OnMsg(const RockCentralOpCompleteMsg &msg) {
+    if (msg.Arg0() && GetState() == kUp) {
+        if (!TheProfileMgr.GetPrimaryProfile())
+            return 1;
+        unkb8 = true;
+        mLabelUpdateResults.Update(nullptr);
+        if (mLabelUpdateResults.NumDataResults() > 0) {
+            DataResult *res = mLabelUpdateResults.GetDataResult(0);
+            DataNode node8b8, node8c0, node8c8, node8d0;
+            DataNode node8d8;
+            mMessageProvider->ClearData();
+            res->GetDataResultValue("motd", node8d8);
+            if (node8d8.Str() != "") {
+                mMessageProvider->AddUnlinkedMotd(node8d8.Str());
+            }
+            res->GetDataResultValue("role_id", node8b8);
+            res->GetDataResultValue("role_rank", node8c0);
+            res->GetDataResultValue("role_is_global", node8c8);
+            res->GetDataResultValue("role_is_percentile", node8d0);
+            if (node8c0.Int() || node8c8.Int()) {
+                mMessageProvider->AddTickerData(
+                    (TickerDataType)0,
+                    node8b8.Int(),
+                    node8c0.Int(),
+                    node8c8.Int(),
+                    node8d0.Int()
+                );
+            }
+            res->GetDataResultValue("band_id", node8b8);
+            res->GetDataResultValue("band_rank", node8c0);
+            res->GetDataResultValue("band_is_global", node8c8);
+            res->GetDataResultValue("band_is_percentile", node8d0);
+            if (node8c0.Int() || node8c8.Int()) {
+                mMessageProvider->AddTickerData(
+                    (TickerDataType)1,
+                    node8b8.Int(),
+                    node8c0.Int(),
+                    node8c8.Int(),
+                    node8d0.Int()
+                );
+            }
+            res->GetDataResultValue("battle_count", node8c0);
+            if (node8c0.Int()) {
+                mMessageProvider->AddTickerData(
+                    (TickerDataType)2, 0, node8c0.Int(), false, false
+                );
+            }
+            mCurrentMessage = 0;
+            UpdateMessageProvider();
+            UpdateHeader();
+        } else
+            MILO_WARN("RockCentralOpCompleteMsg to MainHubPanel has empty results!");
+    }
+    return 1;
+}
+
+void MainHubPanel::UpdateMessageProvider() {
+    LocalBandUser *user = nullptr;
+    BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
+    if (profile) {
+        user = TheBandUserMgr->GetUserFromPad(profile->GetPadNum());
+    }
+    static Message update_messages("update_messages", user, unkb8);
+    update_messages[0] = user;
+    update_messages[1] = unkb8;
+    DataNode handled = HandleType(update_messages);
+    mMessageProvider->SetData(handled);
+    HandleType(refresh_message_provider_msg);
+}
+
+DataNode MainHubPanel::OnMsg(const UserLoginMsg &msg) {
+    BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
+    if (profile) {
+        int mypadnum = msg.GetPadNum();
+        if (mypadnum == profile->GetPadNum()) {
+            ReloadMessages();
+        }
+    }
+    return 1;
+}
+
+void MainHubPanel::CheckStartWaitingLock() {
+    if (TheSessionMgr->IsLeaderLocal() && !mWaitingStateLock->InLock()) {
+        bool b1 = true;
+        std::vector<BandMachine *> machines;
+        mMachineMgr->GetMachines(machines);
+        for (int i = 0; i < machines.size(); i++) {
+            if (!IsWaitingNetUIState(machines[i]->GetNetUIState())) {
+                b1 = false;
+                break;
+            }
+        }
+        if (b1) {
+            mWaitingStateLock->StartLock();
+        }
+    }
+}
+
+void MainHubPanel::AdvanceAll(NetUIState state) {
+    MainHubAdvanceMsg msg(state, Name());
+    TheSessionMgr->SendMsgToAll(msg, kReliable);
+    static Message advanceMsg("advance", 0);
+    advanceMsg[0] = state;
+    HandleType(advanceMsg);
+}
+
+void MainHubPanel::AdvanceFromFinding() {
+    if (mHubState == kMainHubState_Quickplay) {
+        AdvanceAll(kNetUI_WaitingChooseSong);
+    } else if (mHubState == kMainHubState_Tour) {
+        AdvanceAll(kNetUI_WaitingTour);
+    } else
+        MILO_FAIL("Trying to advance from finding in invalid state %i\n", mHubState);
+}
+
+void MainHubPanel::SetMotd(const char *motd) {
+    mMotd = motd;
+    if (GetState() == kUp) {
+        PrepareProfilesAndMessages();
+    }
+}
+
+const char *MainHubPanel::GetMotd() {
+    const char *motd = mMotd.c_str();
+    if (strlen(motd) == 0) {
+        if (!ThePlatformMgr.IsEthernetCableConnected()
+            || ThePlatformMgr.IsOnlineRestricted()) {
+            return Localize(message_motd_noconnection, nullptr);
+        } else if (!ThePlatformMgr.IsConnected()) {
+            return Localize(message_motd_signin, nullptr);
+        } else {
+            return Localize(message_motd, nullptr);
+        }
+    }
+    return motd;
+}
+
+void MainHubPanel::SetDLCMotd(const char *motd) {
+    unk94 = motd;
+    if (GetState() == kUp) {
+        PrepareProfilesAndMessages();
+    }
+}
+
+const char *MainHubPanel::GetDLCMotd() {
+    const char *motd = unk94.c_str();
+    if (strlen(motd) == 0) {
+        return Localize(message_latest_dlc, nullptr);
+    }
+    return motd;
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(MainHubPanel)
+    HANDLE_EXPR(get_message_provider, GetMessageProvider())
+    HANDLE_ACTION(cycle_next_message, CycleNextMessage())
+    HANDLE_EXPR(get_state, GetMainHubState())
+    HANDLE_ACTION(set_state, SetMainHubState((MainHubState)_msg->Int(2)))
+    HANDLE_EXPR(get_override, GetMainHubOverride())
+    HANDLE_ACTION(set_override, SetMainHubOverride((MainHubOverride)_msg->Int(2)))
+    HANDLE_EXPR(in_waiting_lock, mWaitingStateLock->InLock())
+    HANDLE_ACTION(set_motd, SetMotd(_msg->Str(2)))
+    HANDLE_EXPR(get_motd, GetMotd())
+    HANDLE_ACTION(set_dlcmotd, SetDLCMotd(_msg->Str(2)))
+    HANDLE_EXPR(get_dlcmotd, GetDLCMotd())
+    HANDLE_ACTION(advance_from_finding, AdvanceFromFinding())
+    HANDLE_EXPR(check_profile_for_message_ticker, CheckProfileForTicker())
+    HANDLE_EXPR(has_role_info, mMessageProvider->IsTickerDataValid((TickerDataType)0))
+    HANDLE_EXPR(has_band_info, mMessageProvider->IsTickerDataValid((TickerDataType)1))
+    HANDLE_EXPR(has_battles_info, mMessageProvider->IsTickerDataValid((TickerDataType)2))
+    HANDLE_EXPR(has_unlinked_motd, mMessageProvider->IsUnlinkedMotdAvailable())
+    HANDLE_MESSAGE(ProcessedJoinRequestMsg)
+    HANDLE_MESSAGE(SessionDisconnectedMsg)
+    HANDLE_MESSAGE(PrimaryProfileChangedMsg)
+    HANDLE_MESSAGE(SessionMgrUpdatedMsg)
+    HANDLE_MESSAGE(NewRemoteMachineMsg)
+    HANDLE_MESSAGE(RemoteMachineLeftMsg)
+    HANDLE_MESSAGE(RemoteMachineUpdatedMsg)
+    HANDLE_MESSAGE(LockStepStartMsg)
+    HANDLE_MESSAGE(LockStepCompleteMsg)
+    HANDLE_MESSAGE(ReleasingLockStepMsg)
+    HANDLE_MESSAGE(OvershellOverrideEndedMsg)
+    HANDLE_MESSAGE(MatchmakerChangedMsg)
+    HANDLE_MESSAGE(RockCentralOpCompleteMsg)
+    HANDLE_MESSAGE(UserLoginMsg)
+    HANDLE_SUPERCLASS(UIPanel)
+    HANDLE_CHECK(0x35D)
+END_HANDLERS
+#pragma pop

@@ -1368,7 +1368,7 @@
             "system/track/TrackWidgetImp.cpp": "NonMatching",
 
             "system/ui/CheatProvider.cpp": "Matching",
-            "system/ui/LabelNumberTicker.cpp": "Equivalent",
+            "system/ui/LabelNumberTicker.cpp": "Matching",
             "system/ui/LabelShrinkWrapper.cpp": "Matching",
             "system/ui/LocalePanel.cpp": "LinkIssues",
             "system/ui/PanelDir.cpp": "NonMatching",

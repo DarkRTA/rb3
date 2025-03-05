@@ -217,6 +217,7 @@ END_MESSAGE
 
 DECLARE_MESSAGE(UserLoginMsg, "user_login")
 UserLoginMsg() : Message(Type()) {}
+int GetPadNum() const { return mData->Int(2); }
 END_MESSAGE
 ;
 

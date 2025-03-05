@@ -130,7 +130,7 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
     }
 }
 
-void MainHubMessageProvider::AddUnlinkedMotd(const char *cc) { unk50 = cc; }
+void MainHubMessageProvider::AddUnlinkedMotd(const char *cc) { mUnlinkedMotd = cc; }
 
 void MainHubMessageProvider::AddTickerData(
     TickerDataType ty, int i1, int i2, bool b1, bool b2
