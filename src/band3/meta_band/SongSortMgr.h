@@ -24,7 +24,6 @@ public:
         SongFilter() : requiredTrackType(kTrackNone) { filters.resize(0xB); }
         ~SongFilter() {}
 
-        // GetFilterSet__Q211SongSortMgr10SongFilterCF10FilterType
         const std::set<Symbol> &GetFilterSet(FilterType type) const {
             MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x66);
             return filters[type];
