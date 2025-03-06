@@ -262,7 +262,7 @@
             "band3/meta_band/SigninScreen.cpp": "MISSING",
             "band3/meta_band/SongRecord.cpp": "MISSING",
             "band3/meta_band/SongSelectPanel.cpp": "MISSING",
-            "band3/meta_band/SongSetlistProvider.cpp": "MISSING",
+            "band3/meta_band/SongSetlistProvider.cpp": "Matching",
             "band3/meta_band/SongSort.cpp": "MISSING",
             "band3/meta_band/SongSortByArtist.cpp": "MISSING",
             "band3/meta_band/SongSortByDiff.cpp": "MISSING",

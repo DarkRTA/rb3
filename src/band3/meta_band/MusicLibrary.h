@@ -83,6 +83,9 @@ public:
     int GetMaxSetlistSize();
     void SetTask(MusicLibraryTask &);
     SongSortMgr::SongFilter &GetFilter();
+    int SongAtSetlistIndex(int);
+    int SetlistSize();
+    bool SetlistIsFull();
 
     static void Init(SongPreview &);
 
