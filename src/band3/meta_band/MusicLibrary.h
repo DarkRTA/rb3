@@ -86,6 +86,7 @@ public:
     int SongAtSetlistIndex(int);
     int SetlistSize();
     bool SetlistIsFull();
+    bool CanHeadersBeSelected();
 
     static void Init(SongPreview &);
 
