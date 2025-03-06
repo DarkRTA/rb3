@@ -48,7 +48,12 @@ public:
         std::vector<int> excludedSongs; // 0xc
     };
 
+    SongSortMgr();
+    virtual ~SongSortMgr();
+
     bool DoesSongMatchFilter(int, const SongFilter *, Symbol) const;
+
+    static void Init();
 };
 
 extern SongSortMgr *TheSongSortMgr;
