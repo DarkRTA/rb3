@@ -1,6 +1,13 @@
 #pragma once
+#include "meta/HAQManager.h"
+#include "meta/MetaMusicManager.h"
+#include "meta/SongPreview.h"
+#include "meta_band/Campaign.h"
+#include "meta_band/NameGenerator.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
+#include "synth/MetaMusic.h"
+#include "tour/Tour.h"
 #include "ui/UIPanel.h"
 
 class MetaPanel : public UIPanel {
@@ -31,4 +38,16 @@ public:
     static DataNode ToggleUnlockAll(DataArray *);
     static DataNode ToggleIsPlaytest(DataArray *);
     static DataNode ToggleLaunchedGoalMsgsOnly(DataArray *);
+
+    Tour *mTour; // 0x38
+    Campaign *mCampaign; // 0x3c
+    NameGenerator *mNameGenerator; // 0x40
+    int unk44; // 0x44
+    MetaMusicManager *mMetaMusicMgr; // 0x48
+    HAQManager *mHAQMgr; // 0x4c
+    std::vector<int> mRecentIndices; // 0x50
+    int unk58;
+    MetaMusic *mMusic; // 0x5c
+    SongPreview mSongPreview; // 0x60
+    bool unkd4;
 };

@@ -17,18 +17,26 @@
 #include "GameTimePanel.h"
 #include "ManageBandPanel.h"
 #include "NewAwardPanel.h"
+#include "game/BandUserMgr.h"
 #include "meta/CreditsPanel.h"
+#include "meta/HAQManager.h"
 #include "meta/HeldButtonPanel.h"
 #include "meta/Meta.h"
+#include "meta/MetaMusicManager.h"
 #include "meta/MoviePanel.h"
 #include "meta_band/BandPreloadPanel.h"
+#include "meta_band/BandSongMgr.h"
+#include "meta_band/BandUI.h"
 #include "meta_band/CampaignGoalsLeaderboardPanel.h"
 #include "meta_band/EventDialogPanel.h"
 #include "meta_band/InterstitialPanel.h"
 #include "meta_band/MainHubPanel.h"
 #include "meta_band/MetaNetMsgs.h"
+#include "meta_band/NameGenerator.h"
 #include "meta_band/OvershellPanel.h"
 #include "net/NetMessage.h"
+#include "obj/Dir.h"
+#include "os/PlatformMgr.h"
 
 bool MetaPanel::sUnlockAll;
 bool MetaPanel::sIsPlaytest;
@@ -84,4 +92,27 @@ void MetaPanel::Init() {
     MoviePanel::Init();
 }
 
-MetaPanel::MetaPanel() {}
+MetaPanel::MetaPanel()
+    : mTour(new Tour(SystemConfig("tour"), TheSongMgr, *TheBandUserMgr, true)),
+      mCampaign(new Campaign(SystemConfig("campaign"))),
+      mNameGenerator(new NameGenerator(SystemConfig("name_generator"))),
+      mMetaMusicMgr(new MetaMusicManager(SystemConfig("synth", "metamusic"))),
+      mHAQMgr(new HAQManager()), unk58(0), mMusic(0), mSongPreview(TheSongMgr), unkd4(0) {
+    mSongPreview.SetName("song_preview", ObjectDir::Main());
+    // MusicLibrary::Init(this + 0x60);
+    mRecentIndices.reserve(3);
+    for (int i = 0; i < 3; i++)
+        mRecentIndices.push_back(-1);
+    ThePlatformMgr.AddSink(this, "xmp_state_changed");
+    TheBandUI.AddSink(this, "current_screen_changed");
+    mHAQMgr->Init();
+}
+
+MetaPanel::~MetaPanel() {
+    RELEASE(mTour);
+    RELEASE(mCampaign);
+    RELEASE(mNameGenerator);
+    RELEASE(mMetaMusicMgr);
+    RELEASE(mHAQMgr);
+    TheBandUI.RemoveSink(this, "current_screen_changed");
+}

@@ -38,7 +38,7 @@ public:
     void ToggleEnabled();
     void DisplayAll();
 
-    static void Init();
+    void Init();
     static void PrintSongInfo(Symbol, float);
     static void Print(HAQType, Hmx::Object *, int);
     static void Print(HAQType);
