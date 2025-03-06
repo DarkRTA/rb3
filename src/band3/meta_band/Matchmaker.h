@@ -1,4 +1,8 @@
 #pragma once
+#include "game/GameMode.h"
+#include "net/MatchmakingSettings.h"
+#include "net/NetSearchResult.h"
+#include "net/NetSession.h"
 #include "obj/Msg.h"
 #include "os/Timer.h"
 #include <algorithm>
@@ -20,6 +24,7 @@ public:
     MatchmakerPoolStats();
     void ClearStats();
     SlotRating GetSlotRating(int) const;
+    void ReadStats(const std::vector<NetSearchResult *> &);
     bool HasCurrentStats() const { return mHasCurrentStats; }
 
     int mRatingThresholds[3]; // 0x0, 0x4, 0x8
@@ -104,6 +109,9 @@ public:
 
 class BandMatchmaker : public Matchmaker {
 public:
+    enum CustomSettingsType {
+        kGeneralSearch = 2
+    };
     BandMatchmaker();
     virtual DataNode Handle(DataArray *, bool);
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
@@ -113,6 +121,15 @@ public:
     virtual void UpdateMatchmakingSettings();
     virtual void FindPlayersImpl();
     virtual void CancelFindImpl();
+
+    void StartSearch(bool);
+    void SetChannel(int);
+    bool HasCompatibleInstruments(NetSearchResult *);
+    void AddCustomSettings(MatchmakingSettings *, CustomSettingsType);
+
+    DataNode OnSearchFinished();
+    DataNode OnMsg(const JoinResultMsg &);
+    DataNode OnMsg(const ModeChangedMsg &);
 
     bool mSearching; // 0x30
     bool unk31; // 0x31

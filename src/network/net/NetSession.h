@@ -3,6 +3,7 @@
 #include "game/Game.h"
 #include "meta_band/BandNetGameData.h"
 #include "net/NetMessage.h"
+#include "net/NetSearchResult.h"
 #include "net/SessionMessages.h"
 #include "obj/Data.h"
 #include "obj/Msg.h"
@@ -135,6 +136,7 @@ public:
     void GetUserList(std::vector<User *> &) const;
     bool IsInGame() const;
     bool IsStartingGame() const;
+    void Join(class NetSearchResult *);
 
     bool OnMsg(const JoinRequestMsg &);
     bool OnMsg(const JoinResponseMsg &);
@@ -147,6 +149,7 @@ public:
     bool OnMsg(const FinishedArbitrationMsg &);
     bool OnMsg(const StartGameOnTimeMsg &);
     bool OnMsg(const EndGameMsg &);
+    SessionSettings *GetSessionSettings() const { return mSettings; }
 
     DataNode OnSendMsg(DataArray *);
     DataNode OnSendMsgToAll(DataArray *);

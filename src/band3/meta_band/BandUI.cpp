@@ -59,7 +59,7 @@ BandUI::~BandUI() {}
 void BandUI::Init() {
     TheNetSession->AddSink(this, ProcessedJoinRequestMsg::Type());
     TheNetSession->AddSink(this, LocalUserLeftMsg::Type());
-    TheNet.GetSessionSearcher()->AddSink(this, InviteAcceptedMsg::Type());
+    TheNet.GetSearcher()->AddSink(this, InviteAcceptedMsg::Type());
     ThePlatformMgr.AddSink(this, "connection_status_changed");
     ThePlatformMgr.AddSink(this, "disk_error");
     TheGameMicManager->AddSink(this, GameMicsChangedMsg::Type());
@@ -101,7 +101,7 @@ void BandUI::Terminate() {
     UIEventMgr::Terminate();
     NetSync::Terminate();
     TheNet.GetNetSession()->RemoveSink(this);
-    TheNet.GetSessionSearcher()->RemoveSink(this);
+    TheNet.GetSearcher()->RemoveSink(this);
     ThePlatformMgr.RemoveSink(this);
     TheGameMicManager->RemoveSink(this);
     TheSaveLoadMgr->RemoveSink(this);

@@ -1,8 +1,10 @@
 #pragma once
 #include "MatchmakingSettings.h"
-#include "NetSession.h"
+// #include "NetSession.h"
 #include "obj/Object.h"
 #include "utl/BinStream.h"
+
+class SessionData;
 
 class NetSearchResult : public Hmx::Object {
 public:

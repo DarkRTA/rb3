@@ -1,6 +1,7 @@
 #pragma once
 #include "MatchmakingSettings.h"
 #include "net/NetSearchResult.h"
+#include "net/NetSession.h"
 #include "obj/Msg.h"
 #include "os/User.h"
 
@@ -19,6 +20,7 @@ public:
     void GetSearchResults(std::vector<NetSearchResult *> &);
     NetSearchResult *GetNextResult();
     void UpdateSearchList(NetSearchResult *);
+    bool Searching() const { return mSearching; }
 
     NetSearchResult *mLastInviteResult; // 0x1c
     bool mSearching; // 0x20
