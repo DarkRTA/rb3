@@ -15,10 +15,9 @@ public:
 
     DataNode OnMsg(const ProcessedButtonDownMsg &);
 
+    NEW_OBJ(HeldButtonPanel)
     static void Init() { REGISTER_OBJ_FACTORY(HeldButtonPanel) }
 
     ButtonHolder *mHolder; // 0x38
     bool mHandling; // 0x3c
-
-    NEW_OBJ(HeldButtonPanel)
 };

@@ -30,6 +30,8 @@ public:
     void GotoShot(Symbol);
     void SetPortraitRenderer(RndTexRenderer *);
     BandUser *GetUser() const { return mClosetMgr->GetUser(); }
+    NEW_OBJ(ClosetPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(ClosetPanel); }
 
     ClosetMgr *mClosetMgr; // 0x88
     CameraManager *mCameraManager; // 0x8c

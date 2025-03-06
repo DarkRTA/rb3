@@ -55,6 +55,8 @@ public:
     DataNode OnMsg(const KeyboardKeyPressedMsg &);
 
     static float kAnimPerceptualOffset;
+    NEW_OBJ(CalibrationPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CalibrationPanel); }
 
     float mCycleTimeMs; // 0x38
     Stream *mStream; // 0x3c
@@ -130,6 +132,8 @@ public:
     DataNode OnMsg(const InputStatusChangedMsg &);
 
     static bool HaveCalbertConnected();
+    NEW_OBJ(CalibrationWelcomePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CalibrationWelcomePanel); }
 
     CalibrationModesProvider mModesProvider; // 0x38
 };

@@ -24,6 +24,8 @@ public:
     int GetCurrentColor();
     void PreviewColor(int);
     ColorPalette *GetColorPalette() { return mColorOptions[mCurrentOption]; }
+    NEW_OBJ(ChooseColorPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(ChooseColorPanel); }
 
     ClosetMgr *mClosetMgr; // 0x38
     OutfitConfig *mCurrentOutfitConfig; // 0x3c

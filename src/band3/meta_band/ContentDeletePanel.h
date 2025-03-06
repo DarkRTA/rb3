@@ -21,6 +21,8 @@ public:
     void SetupDeletion(int, bool);
 
     DataNode OnMsg(const UITransitionCompleteMsg &);
+    NEW_OBJ(ContentDeletePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(ContentDeletePanel); }
 
     bool unk3c;
     int mContent; // 0x40

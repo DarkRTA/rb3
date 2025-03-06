@@ -23,6 +23,8 @@ public:
 
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
+    NEW_OBJ(BandScreen);
+    static void Init() { REGISTER_OBJ_FACTORY(BandScreen); }
 
     std::vector<UIPanel *> mExtraPanels; // 0x34
 };

@@ -253,6 +253,8 @@ public:
     DataNode Goal_HandleButtonDownMsg(const ButtonDownMsg &);
     DataNode Details_HandleButtonDownMsg(const ButtonDownMsg &);
     DataNode OnMsg(const ButtonDownMsg &);
+    NEW_OBJ(AccomplishmentPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(AccomplishmentPanel); }
 
     CareerState mCareerState; // 0x4c
     Symbol mGoal; // 0x50

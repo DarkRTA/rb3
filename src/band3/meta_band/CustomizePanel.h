@@ -128,6 +128,8 @@ public:
     DataNode OnMsg(const UIComponentScrollMsg &);
 
     static CustomizeState sBackStates[];
+    NEW_OBJ(CustomizePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CustomizePanel); }
 
     CustomizeState mCustomizeState; // 0x3c
     CustomizeState mPendingState; // 0x40

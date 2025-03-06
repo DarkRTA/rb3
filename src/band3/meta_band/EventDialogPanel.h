@@ -27,4 +27,6 @@ public:
     DataNode OnMsg(const EventDialogStartMsg &);
     DataNode OnMsg(const EventDialogDismissMsg &);
     DataNode OnMsg(const UIComponentSelectDoneMsg &);
+    NEW_OBJ(EventDialogPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(EventDialogPanel); }
 };

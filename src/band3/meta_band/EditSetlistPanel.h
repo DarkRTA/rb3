@@ -50,6 +50,8 @@ public:
     DataNode OnMsg(const UITransitionCompleteMsg &);
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const DWCProfanityResultMsg &);
+    NEW_OBJ(EditSetlistPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(EditSetlistPanel); }
 
     String mSetlistName; // 0x38
     String mSetlistDescription; // 0x44

@@ -25,6 +25,8 @@ public:
     void SetBlocking(bool);
     void ShowIfPossible();
     void UpdateMeterValues();
+    NEW_OBJ(ContentLoadingPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(ContentLoadingPanel); }
 
     int unk3c; // 0x3c
     int unk40; // 0x40

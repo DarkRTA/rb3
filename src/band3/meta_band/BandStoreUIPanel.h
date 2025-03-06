@@ -11,4 +11,6 @@ public:
     virtual ~BandStoreUIPanel() {}
 
     DataNode FilterButtonMsg(const ButtonDownMsg &);
+    NEW_OBJ(BandStoreUIPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(BandStoreUIPanel); }
 };

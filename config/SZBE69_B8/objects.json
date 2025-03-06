@@ -220,7 +220,7 @@
             "band3/meta_band/ManageBandPanel.cpp": "NonMatching",
             "band3/meta_band/Matchmaker.cpp": "NonMatching",
             "band3/meta_band/MetaNetMsgs.cpp": "NonMatching",
-            "band3/meta_band/MetaPanel.cpp": "MISSING",
+            "band3/meta_band/MetaPanel.cpp": "NonMatching",
             "band3/meta_band/MetaPerformer.cpp": "NonMatching",
             "band3/meta_band/ModifierMgr.cpp": "Matching",
             "band3/meta_band/MultiSelectListPanel.cpp": "MISSING",

@@ -66,6 +66,8 @@ public:
 
     DataNode OnMsg(const SigninChangedMsg &);
     DataNode OnMsg(const ProfileChangedMsg &);
+    NEW_OBJ(ManageBandPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(ManageBandPanel); }
 
     ManageBandState mManageBandState; // 0x38
     int unk3c; // 0x3c

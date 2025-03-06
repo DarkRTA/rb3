@@ -29,4 +29,6 @@ public:
     virtual void StoreUserProfileSwappedToUser(LocalUser *);
 
     static BandStorePanel *Instance();
+    NEW_OBJ(BandStorePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(BandStorePanel); }
 };

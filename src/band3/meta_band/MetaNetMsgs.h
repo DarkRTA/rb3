@@ -9,14 +9,14 @@ void SendJunkPatchesToAll();
 
 class BandEventPreviewMsg : public NetMessage {
 public:
-    BandEventPreviewMsg() {}
+    BandEventPreviewMsg() : unk4(1) {}
     virtual ~BandEventPreviewMsg() {}
     virtual void Save(BinStream &) const;
     virtual void Load(BinStream &);
     virtual void Dispatch();
     NETMSG_BYTECODE(BandEventPreviewMsg);
     NETMSG_NAME(BandEventPreviewMsg);
-    // NETMSG_NEWNETMSG(BandEventPreviewMsg);
+    NETMSG_NEWNETMSG(BandEventPreviewMsg);
 
     bool unk4;
 };
@@ -30,8 +30,7 @@ public:
     virtual void Dispatch();
     NETMSG_BYTECODE(VerifyBuildVersionMsg);
     NETMSG_NAME(VerifyBuildVersionMsg);
-
-    // NETMSG_NEWNETMSG(VerifyBuildVersionMsg);
+    NETMSG_NEWNETMSG(VerifyBuildVersionMsg);
 
     String mVersion; // 0x4
 };
@@ -57,17 +56,19 @@ public:
     virtual void Dispatch();
     NETMSG_BYTECODE(TriggerBackSoundMsg);
     NETMSG_NAME(TriggerBackSoundMsg);
+    NETMSG_NEWNETMSG(TriggerBackSoundMsg);
 };
 
 class AppendSongToSetlistMsg : public NetMessage {
 public:
-    AppendSongToSetlistMsg() {}
+    AppendSongToSetlistMsg() : unk4(0) {}
     virtual ~AppendSongToSetlistMsg() {}
     virtual void Save(BinStream &bs) const { bs << unk4; }
     virtual void Load(BinStream &bs) { bs >> unk4; }
     virtual void Dispatch();
     NETMSG_BYTECODE(AppendSongToSetlistMsg);
     NETMSG_NAME(AppendSongToSetlistMsg);
+    NETMSG_NEWNETMSG(AppendSongToSetlistMsg);
 
     int unk4;
 };
@@ -81,4 +82,5 @@ public:
     virtual void Dispatch();
     NETMSG_BYTECODE(RemoveLastSongFromSetlistMsg);
     NETMSG_NAME(RemoveLastSongFromSetlistMsg);
+    NETMSG_NEWNETMSG(RemoveLastSongFromSetlistMsg);
 };

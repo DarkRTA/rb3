@@ -63,6 +63,8 @@ public:
 
     Symbol SelectedGoal();
     void LoadIcons();
+    NEW_OBJ(CampaignGoalsLeaderboardChoicePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CampaignGoalsLeaderboardChoicePanel); }
 
     CampaignGoalsLeaderboardChoiceProvider *mCampaignGoalsLeaderboardChoiceProvider; // 0x4c
 };

@@ -84,6 +84,8 @@ public:
     DataNode OnMsg(const ReleasingLockStepMsg &);
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const UserLoginMsg &);
+    NEW_OBJ(MainHubPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(MainHubPanel); }
 
     MainHubState mHubState; // 0x38
     MainHubOverride mHubOverride; // 0x3c

@@ -15,6 +15,8 @@ public:
     virtual void Unload();
 
     void SetCamshotDone();
+    NEW_OBJ(InterstitialPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(InterstitialPanel); }
 
     bool mCamshotDone; // 0x85
     int unk88; // 0x88
@@ -33,6 +35,8 @@ public:
     virtual bool Exiting() const;
 
     void SetOutroDone();
+    NEW_OBJ(BackdropPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(BackdropPanel); }
 
     bool mOutroDone; // 0x85
 };
