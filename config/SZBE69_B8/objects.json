@@ -260,7 +260,7 @@
             "band3/meta_band/SetlistToStorePanel.cpp": "MISSING",
             "band3/meta_band/ShellInputInterceptor.cpp": "NonMatching",
             "band3/meta_band/SigninScreen.cpp": "MISSING",
-            "band3/meta_band/SongRecord.cpp": "MISSING",
+            "band3/meta_band/SongRecord.cpp": "NonMatching",
             "band3/meta_band/SongSelectPanel.cpp": "MISSING",
             "band3/meta_band/SongSetlistProvider.cpp": "Matching",
             "band3/meta_band/SongSort.cpp": "NonMatching",
