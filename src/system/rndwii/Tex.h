@@ -1,5 +1,6 @@
 #pragma once
 
+#include "revolution/gx/GXTypes.h"
 #include "rndobj/Tex.h"
 #include "utl/PoolAlloc.h"
 #include <set>
@@ -14,12 +15,16 @@ public:
     OBJ_CLASSNAME(WiiTex)
     OBJ_SET_TYPE(WiiTex)
     NEW_OBJ(WiiTex)
+    virtual void unk(bool);
 
     void PresyncBitmap();
     void DeleteSurface();
     void MovieSwapFrames();
     void CopyFromFB(int, int, int, int, bool, bool);
     void CreateScreenShot();
+    void DisableFiltering(bool);
+    void Select(_GXTexMapID);
+    void *ImgData() { return mImageData; }
 
     u8 pad[32];
     void *mImageData; // 0x84

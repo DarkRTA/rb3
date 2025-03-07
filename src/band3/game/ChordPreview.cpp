@@ -10,6 +10,8 @@ DECOMP_FORCEACTIVE(
     ChordPreview, "sound", "song_select", "fade_time", __FILE__, "contentName"
 )
 
+DECOMP_FORCEBLOCK(ChordPreview, (void), Hmx::Object::New<Fader>(); new ContentMgr::Callback;)
+
 void ForceContentMgrCBDtor(ContentMgr::Callback *cb) { delete cb; }
 
 void ChordPreview::Start(Symbol s) {

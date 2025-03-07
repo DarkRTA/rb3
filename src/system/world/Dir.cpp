@@ -32,8 +32,8 @@ WorldDir::WorldDir()
       mCameraManager(this), mPresetManager(this), mEchoMsgs(0), mFirstPoll(0),
       mPollCamera(1), mTestPreset1(this), mTestPreset2(this), mTestAnimationTime(10.0f) {
     mGlowMat = Hmx::Object::New<RndMat>();
-    mGlowMat->SetBlend(kBlendSrcAlpha);
-    mGlowMat->SetZMode(kZModeDisable);
+    mGlowMat->SetBlend(RndMat::kBlendSrcAlpha);
+    mGlowMat->SetZMode(RndMat::kZModeDisable);
     mGlowMat->SetPreLit(true);
     ClearDeltas();
 }

@@ -162,7 +162,7 @@ void RndText::Load(BinStream &bs) {
             int i = 0;
             if (b)
                 i = 2;
-            mFont->GetMat()->SetZMode((ZMode)i);
+            mFont->GetMat()->SetZMode((RndMat::ZMode)i);
         }
     }
     if (gRev > 7)

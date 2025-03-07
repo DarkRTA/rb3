@@ -6,6 +6,13 @@
 #include "rndobj/Rnd.h"
 #include <vector>
 
+class WiiOrthoProj {
+public:
+    WiiOrthoProj();
+    ~WiiOrthoProj();
+    float proj[8];
+};
+
 class WiiRnd : public Rnd {
 public:
     enum SharedTexType {
@@ -21,6 +28,7 @@ public:
     void DoPointTests();
     bool GetProgressiveScan();
     void DrawQuad(const Hmx::Rect &);
+    void DrawQuad(int, int);
     void DrawLine(const Vector3 &, const Vector3 &, const Hmx::Color &, bool);
     void WiiPreInit();
     void SetFullScrProj();

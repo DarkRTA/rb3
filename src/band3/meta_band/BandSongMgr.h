@@ -63,6 +63,15 @@ public:
     Symbol RankTierToken(int) const;
     void GetRankedSongs(std::vector<int> &, bool, bool) const;
     int GetValidSongCount(const std::map<int, SongMetadata *> &) const;
+    int GetValidSongs(
+        const std::vector<int> &,
+        BandUserMgr &,
+        std::vector<int> &,
+        float,
+        float,
+        bool,
+        bool
+    ) const;
     bool IsRestricted(int) const;
     int RankTier(float, Symbol) const;
     int GetNumVocalParts(Symbol) const;

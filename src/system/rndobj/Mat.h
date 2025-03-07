@@ -6,37 +6,6 @@
 #include "obj/ObjPtr_p.h"
 #include "rndobj/Tex.h"
 
-enum Blend {
-    /** "Don't show this material at all; just show the frame buffer" */
-    kBlendDest = 0,
-    /** "Don't blend this material at all" */
-    kBlendSrc = 1,
-    /** "Output is material + frame buffer" */
-    kBlendAdd = 2,
-    /** "Output is (material x mat alpha) + (frame buffer x (1 - mat alpha))" */
-    kBlendSrcAlpha = 3,
-    /** "Output is (material x mat alpha) + frame buffer" */
-    kBlendSrcAlphaAdd = 4,
-    /** "Output is frame buffer - material" */
-    kBlendSubtract = 5,
-    /** "Output is frame buffer x material" */
-    kBlendMultiply = 6,
-    /** "Output is material + (frame buffer x (1 - mat alpha)" */
-    kPreMultAlpha = 7,
-};
-enum ZMode {
-    /** "always draw but don't update z-buffer" */
-    kZModeDisable = 0,
-    /** "draw and update z-buffer if closer than z-buffer" */
-    kZModeNormal = 1,
-    /** "draw if closer than or equal z-buffer but don't update z-buffer. Often used with
-     * SrcAlpha or Add blending so those objects don't occlude other similar objects" */
-    kZModeTransparent = 2,
-    /** "always draw and update z-buffer" */
-    kZModeForce = 3,
-    /** "draw and update z-buffer if closer than or equal to z-buffer" */
-    kZModeDecal = 4,
-};
 enum StencilMode {
     kStencilIgnore = 0,
     kStencilWrite = 1,
@@ -153,6 +122,39 @@ public:
         kColorModAlphaUnpackModulate = 2,
         kColorModModulate = 3,
         kColorModNum = 3
+    };
+
+    enum Blend {
+        /** "Don't show this material at all; just show the frame buffer" */
+        kBlendDest = 0,
+        /** "Don't blend this material at all" */
+        kBlendSrc = 1,
+        /** "Output is material + frame buffer" */
+        kBlendAdd = 2,
+        /** "Output is (material x mat alpha) + (frame buffer x (1 - mat alpha))" */
+        kBlendSrcAlpha = 3,
+        /** "Output is (material x mat alpha) + frame buffer" */
+        kBlendSrcAlphaAdd = 4,
+        /** "Output is frame buffer - material" */
+        kBlendSubtract = 5,
+        /** "Output is frame buffer x material" */
+        kBlendMultiply = 6,
+        /** "Output is material + (frame buffer x (1 - mat alpha)" */
+        kPreMultAlpha = 7,
+    };
+    enum ZMode {
+        /** "always draw but don't update z-buffer" */
+        kZModeDisable = 0,
+        /** "draw and update z-buffer if closer than z-buffer" */
+        kZModeNormal = 1,
+        /** "draw if closer than or equal z-buffer but don't update z-buffer. Often used
+         * with SrcAlpha or Add blending so those objects don't occlude other similar
+         * objects" */
+        kZModeTransparent = 2,
+        /** "always draw and update z-buffer" */
+        kZModeForce = 3,
+        /** "draw and update z-buffer if closer than or equal to z-buffer" */
+        kZModeDecal = 4,
     };
 
     RndMat();
@@ -323,7 +325,10 @@ public:
     /** "Is the Mat affected its Environment's color adjust?" */
     bool mColorAdjust : 1;
     /* ------------------------------------------------------------------------ */
-    unsigned char unkbool : 3;
+
+    unsigned char unk_0xAD_5 : 1;
+    unsigned char unk_0xAD_6 : 1; // referenced in WiiMat::SetModelviewTexGen
+    unsigned char unk_0xAD_7 : 1; // referenced in WiiMat::WiiMat
     // 0xb0
     /** "How to blend poly into screen" */
     Blend mBlend : 8;

@@ -556,7 +556,7 @@ void RndMesh::PreLoad(BinStream &bs) {
         mGeomOwner = this;
     if (gRev < 0x14 && mMat) {
         if (zmode == 0 || mMat->GetZMode()) {
-            mMat->SetZMode((ZMode)zmode);
+            mMat->SetZMode((RndMat::ZMode)zmode);
         }
     }
     if (gRev < 0xD) {

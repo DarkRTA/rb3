@@ -47,6 +47,7 @@ public:
     void UpdateNowBar();
     void SetDejitteredTime(float);
     void UpdateDeltaTimeOverlay();
+    void UpdateLatency();
     void PlayBandDiedCue();
     void SendRestartGameNetMsg(bool);
     void SendResumeNoScoreGameNetMsg(float);

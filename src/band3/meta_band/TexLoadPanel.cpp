@@ -24,10 +24,10 @@ DynamicTex::DynamicTex(const char *c1, const char *c2, bool b1, bool b2)
     if (b1) {
         mMat = Hmx::Object::New<RndMat>();
         if (unk1c)
-            mMat->SetZMode(kZModeNormal);
+            mMat->SetZMode(RndMat::kZModeNormal);
         else
-            mMat->SetZMode(kZModeDisable);
-        mMat->SetBlend(kBlendSrcAlpha);
+            mMat->SetZMode(RndMat::kZModeDisable);
+        mMat->SetBlend(RndMat::kBlendSrcAlpha);
     }
 }
 

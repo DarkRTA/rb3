@@ -1,4 +1,6 @@
 #include "utl/Wav.h"
+#include "decomp.h"
+#include "milo_types.h"
 #include "os/Debug.h"
 #include "os/Endian.h"
 #include "os/File.h"
@@ -25,3 +27,10 @@ void WriteWav(const char *fname, int, const void *, int) {
 
     FileClose(fd);
 }
+
+#pragma push
+#pragma dont_inline on
+DECOMP_FORCEBLOCK(Wav, (void), uint x = 2; uint& ui = x; EndianSwapEq(ui);)
+DECOMP_FORCEBLOCK(Wav, (void), ushort x = 2; ushort& us = x; EndianSwapEq(us);)
+DECOMP_FORCEBLOCK(Wav, (void), short x = 2; short& ui = x; EndianSwapEq(ui);)
+#pragma pop
