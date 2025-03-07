@@ -32,11 +32,19 @@ void OnDrawSync(u16 s) {
     TheWiiRnd.DoPointTests();
 }
 
-/*
-WiiRnd::WiiRnd() : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false),
-unk_0x2BC(false), mFramesBuffered(2) { mColor.Set(0, 0, 0, 0); unk_0x2B4.reserve(0x20);
+WiiOrthoProj::WiiOrthoProj() {
+    GXGetProjectionv(proj);
+    TheWiiRnd.SetOrthoProj();
 }
-*/
+
+WiiOrthoProj::~WiiOrthoProj() { GXSetProjectionv(proj); }
+
+WiiRnd::WiiRnd()
+    : unk_0x2B0(false), unk_0x2B1(false), unk_0x2B2(false), unk_0x2B3(false),
+      unk_0x2BC(false), mFramesBuffered(2) {
+    mClearColor.Set(0, 0, 0, 0);
+    unk_0x2B4.reserve(0x20);
+}
 
 WiiRnd::~WiiRnd() {}
 

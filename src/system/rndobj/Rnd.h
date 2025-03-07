@@ -163,6 +163,7 @@ public:
     int Width() const { return mWidth; }
     int Height() const { return mHeight; }
     int ScreenBpp() const { return mScreenBpp; }
+    bool DisablePP() const { return mDisablePostProc; }
     RndTex *GetNullTexture();
 
     Hmx::Color mClearColor; // 0x20

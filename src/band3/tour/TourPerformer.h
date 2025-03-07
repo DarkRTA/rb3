@@ -13,6 +13,7 @@ enum TourSetlistType {
 class GigData {
 public:
     GigData() : unk4(0), unk8(0), unkc(0) {}
+    GigData(int) {}
     Symbol unk0; // 0x0
     int unk4; // 0x4
     int unk8; // 0x8

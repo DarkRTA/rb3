@@ -30,11 +30,14 @@
 #include "os/System.h"
 #include "os/Timer.h"
 #include "rndobj/Overlay.h"
+#include "rndobj/PostProc.h"
 #include "rndobj/Rnd.h"
+#include "rndwii/Rnd.h"
 #include "synth/Synth.h"
 #include "ui/UI.h"
 #include "ui/UIPanel.h"
 #include "utl/Loader.h"
+#include "utl/MBT.h"
 #include "utl/Messages.h"
 #include "utl/Messages2.h"
 #include "utl/Messages3.h"
@@ -273,7 +276,39 @@ void GamePanel::StartIntro() {
     mGame->StartIntro();
 }
 
-void GamePanel::UpdateNowBar() { MILO_ASSERT(mGame, 0x212); }
+void GamePanel::UpdateNowBar() {
+    MILO_ASSERT(mGame, 0x212);
+    float t1 = TheTaskMgr.Seconds(TaskMgr::kRealTime);
+    float t2 = TheSongDB->GetSongDurationMs();
+    float time = t2 / 1000 - t1;
+    char surprise_tool = '-';
+    if (time < 0) {
+        time = -time;
+        surprise_tool = '+';
+    }
+    *mTime << MakeString(
+        "MBT %d:%d:%03d [%s %c%s %4.1f%%] (%.2fsec %dtk)\n",
+        TheTaskMgr.GetSongPos().GetMeasure() + 1,
+        TheTaskMgr.GetSongPos().GetBeat() + 1,
+        TheTaskMgr.GetSongPos().GetTick(),
+        FormatTimeMSH(t1 * 1000),
+        surprise_tool,
+        FormatTimeMSH(time * 1000),
+        0.f,
+        0.f,
+        (int)TheTaskMgr.GetSongPos().GetTotalTick()
+    );
+}
+
+void GamePanel::UpdateLatency() {
+    static DataNode latency_test = Symbol("latency_test");
+    static DataNode pad_button = Symbol("pad_button");
+    if (latency_test.Int() == 0) {
+        mLatency->mShowing = false;
+        mLatency->mTimer.Restart();
+    } else {
+    }
+}
 
 void GamePanel::SetDejitteredTime(float f1) {
     unk6c = unk70;
@@ -307,6 +342,18 @@ void GamePanel::PlayBandDiedCue() {
         TheSynth->Play("band_fail_rock.cue", 0, 0, 0);
     } else {
         TheSynth->Play(cue.c_str(), 0, 0, 0);
+    }
+}
+
+void GamePanel::ClearDrawGlitch() {
+    TheGameMode->Property(game_screen, true)->Obj<UIScreen>()->SetShowing(false);
+    RndPostProc::Reset();
+    TheRnd->ForceColorClear();
+    for (int i = 0; i < TheWiiRnd.mFramesBuffered; i++) {
+        TheRnd->BeginDrawing();
+        TheRnd->EndWorld();
+        TheUI.Draw();
+        TheRnd->EndDrawing();
     }
 }
 
