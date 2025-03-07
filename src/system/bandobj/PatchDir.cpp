@@ -62,13 +62,13 @@ void PatchSticker::Unload() {
 void PatchSticker::SetOnMat(RndMat *mat) const {
     mat->SetDiffuseTex(mTex);
     mat->SetAlpha(mTex ? 1.0f : 0.0f);
-    mat->SetBlend(kPreMultAlpha);
+    mat->SetBlend(RndMat::kPreMultAlpha);
 }
 
 void PatchSticker::SetIconOnMat(RndMat *mat) const {
     mat->SetDiffuseTex(unk30);
     mat->SetAlpha(unk30 ? 1.0f : 0.0f);
-    mat->SetBlend(kPreMultAlpha);
+    mat->SetBlend(RndMat::kPreMultAlpha);
 }
 
 void PatchLayer::Init() {

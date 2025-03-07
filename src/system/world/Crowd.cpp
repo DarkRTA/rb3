@@ -61,8 +61,8 @@ WorldCrowd::WorldCrowd()
         gImpostorMat = Hmx::Object::New<RndMat>();
         gImpostorMat->SetUseEnv(true);
         gImpostorMat->SetPreLit(false);
-        gImpostorMat->SetBlend(kBlendSrc);
-        gImpostorMat->SetZMode(kZModeNormal);
+        gImpostorMat->SetBlend(RndMat::kBlendSrc);
+        gImpostorMat->SetZMode(RndMat::kZModeNormal);
         gImpostorMat->SetAlphaCut(true);
         gImpostorMat->SetAlphaThreshold(0x80);
         gImpostorMat->SetTexWrap(kTexWrapClamp);

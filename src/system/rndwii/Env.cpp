@@ -36,8 +36,8 @@ static DataNode DebugToggleShowShadowTextureOnScreen(DataArray *array) {
 WiiEnviron::WiiEnviron() {
     if (mShadowMat == nullptr) {
         mShadowMat = New<RndMat>();
-        mShadowMat->SetBlend(kBlendSrc);
-        mShadowMat->SetZMode(kZModeDisable);
+        mShadowMat->SetBlend(RndMat::kBlendSrc);
+        mShadowMat->SetZMode(RndMat::kZModeDisable);
         mShadowMat->SetTexWrap(kTexWrapClamp);
         mShadowMat->SetDiffuseTex(NULL);
         mShadowMat->SetAlpha(1);
