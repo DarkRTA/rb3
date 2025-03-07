@@ -1,10 +1,7 @@
 #pragma once
 #include "obj/Object.h"
 #include "ui/UIListProvider.h"
-
-class HeaderSortNode;
-class LeafSortNode;
-class ShortcutNode;
+#include "meta_band/SongSortNode.h"
 
 class NodeSort : public UIListProvider, public Hmx::Object {
 public:
@@ -28,8 +25,17 @@ public:
     virtual void MakeReady();
     virtual void CancelMakeReady();
 
-    std::vector<int> unk20; // 0x20
-    std::list<int> mFunctions; // 0x28
-    std::vector<int> unk30; // 0x30
-    Symbol unk38; // 0x38
+    void DeleteList();
+    SortNode *GetNode(Symbol) const;
+    SortNode *GetNode(int) const;
+    int GetDataCount() const;
+    int FirstActiveIxForShortcut(int) const;
+    int GetShortcutIx(SortNode *) const;
+
+    static Symbol FirstChar(const char *, bool);
+
+    std::vector<ShortcutNode *> mTree; // 0x20
+    std::list<SortNode *> mFunctions; // 0x28
+    std::vector<SortNode *> mList; // 0x30
+    Symbol mShortName; // 0x38
 };

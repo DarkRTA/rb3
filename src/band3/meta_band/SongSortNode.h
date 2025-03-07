@@ -1,8 +1,11 @@
 #pragma once
-#include "meta_band/SongSort.h"
+#include "meta_band/SongRecord.h"
+// #include "meta_band/SongSort.h"
 #include "obj/Object.h"
 #include "os/DateTime.h"
 #include "utl/Symbol.h"
+
+class NodeSort;
 
 enum SongNodeType {
     kNodeNone = 0,
@@ -57,6 +60,7 @@ struct CompareLeaves {
 };
 
 class SortNode;
+class LeafSortNode;
 
 class ShortcutNode : public Node {
 public:
@@ -221,5 +225,30 @@ public:
     virtual const char *GetAlbum() const;
     virtual int GetTier(Symbol) const;
 
-    int unk34; // 0x34 - ptr to a SongRecord*
+    int GetTotalScore();
+    int GetTotalStars(bool);
+    int GetPotentialStars();
+
+    SongRecord *mSongRecord; // 0x34
+};
+
+class SetlistSortNode : public LeafSortNode {
+public:
+    SetlistSortNode(SongSortCmp *cmp, SetlistRecord *r)
+        : LeafSortNode(cmp), mSetlistRecord(r) {}
+    virtual ~SetlistSortNode() {}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual SongNodeType GetType() const { return kNodeSetlist; }
+    virtual Symbol GetToken() const;
+    virtual int GetSongCount();
+    virtual SortNode *GetFirstActive() { return this; }
+    virtual bool IsActive() const;
+    virtual bool IsEnabled() const;
+    virtual const char *GetAlbumArtPath();
+    virtual int GetTotalMs() const;
+    virtual int GetTotalScore();
+    virtual int GetTotalStars(bool);
+    virtual int GetPotentialStars();
+
+    SetlistRecord *mSetlistRecord; // 0x34
 };

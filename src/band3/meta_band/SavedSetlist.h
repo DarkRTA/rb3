@@ -24,6 +24,8 @@ public:
     virtual void SetDateTime(const DateTime &);
     virtual void SetDescription(const char *);
 
+    int GetLengthMs() const;
+
     String mTitle; // 0x4
     std::vector<int> mSongs; // 0x10
     DateTime mDateTime; // 0x18

@@ -1,5 +1,7 @@
 #include "meta_band/SongSortNode.h"
+#include "meta_band/SongSort.h"
 #include "decomp.h"
+#include "meta_band/BandSongMgr.h"
 #include "meta_band/MusicLibrary.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -231,4 +233,50 @@ BEGIN_HANDLERS(SongSortNode)
     HANDLE_EXPR(get_total_ms, GetTotalMs())
     HANDLE_SUPERCLASS(SortNode)
     HANDLE_CHECK(0x226)
+END_HANDLERS
+
+Symbol OwnedSongSortNode::GetToken() const { return mSongRecord->mShortName; }
+
+bool OwnedSongSortNode::IsEnabled() const { return IsActive(); }
+
+const char *OwnedSongSortNode::GetAlbumArtPath() {
+    if (mSongRecord->mData->HasAlbumArt()) {
+        return TheSongMgr.GetAlbumArtPath(GetToken());
+    } else
+        return "ui/image/blank_album_art_keep.png";
+}
+
+const char *OwnedSongSortNode::GetTitle() const { return mSongRecord->mData->Title(); }
+const char *OwnedSongSortNode::GetArtist() const { return mSongRecord->mData->Artist(); }
+bool OwnedSongSortNode::GetIsCover() const {
+    return !mSongRecord->mData->IsMasterRecording();
+}
+const char *OwnedSongSortNode::GetAlbum() const { return mSongRecord->mData->Album(); }
+int OwnedSongSortNode::GetTotalMs() const { return mSongRecord->mData->LengthMs(); }
+int OwnedSongSortNode::GetTotalScore() { return mSongRecord->GetScore(); }
+
+int OwnedSongSortNode::GetTier(Symbol s) const { return mSongRecord->GetTier(s); }
+
+BEGIN_HANDLERS(OwnedSongSortNode)
+    HANDLE_MEMBER_PTR(mSongRecord)
+    HANDLE_SUPERCLASS(SongSortNode)
+    HANDLE_CHECK(0x289)
+END_HANDLERS
+
+int SetlistSortNode::GetSongCount() { return mSetlistRecord->mSetlist->mSongs.size(); }
+Symbol SetlistSortNode::GetToken() const { return mSetlistRecord->mToken; }
+
+const char *SetlistSortNode::GetAlbumArtPath() {
+    return "ui/image/song_select_setlist_keep.png";
+}
+
+int SetlistSortNode::GetTotalMs() const {
+    return mSetlistRecord->mSetlist->GetLengthMs();
+}
+
+BEGIN_HANDLERS(SetlistSortNode)
+    HANDLE_EXPR(get_record, mSetlistRecord)
+    HANDLE_MEMBER_PTR(mSetlistRecord)
+    HANDLE_SUPERCLASS(SortNode)
+    HANDLE_CHECK(0x2D0)
 END_HANDLERS

@@ -1,6 +1,7 @@
 #pragma once
 #include "game/Defines.h"
 #include "meta_band/BandSongMetadata.h"
+#include "meta_band/SavedSetlist.h"
 #include "obj/Object.h"
 
 class SongRecord : public Hmx::Object {
@@ -35,4 +36,12 @@ public:
     int mReview; // 0xf4
     int unkf8;
     BandSongMetadata *mData; // 0xfc
+};
+
+class SetlistRecord : public Hmx::Object {
+public:
+    SetlistRecord(SavedSetlist *);
+
+    SavedSetlist *mSetlist; // 0x1c
+    Symbol mToken; // 0x20
 };
