@@ -2,6 +2,7 @@
 #include "meta_band/SongSort.h"
 #include "obj/Object.h"
 #include "os/DateTime.h"
+#include "utl/Symbol.h"
 
 enum SongNodeType {
     kNodeNone = 0,
@@ -34,9 +35,25 @@ public:
 
     bool Compare(const Node *, SongNodeType) const;
     void SetParent(Node *parent) { mParent = parent; }
+    SongSortCmp *Cmp() const { return mCmp; }
 
     SongSortCmp *mCmp; // 0x1c
     Node *mParent; // 0x20
+};
+
+struct CompareLeaves {
+    bool operator()(const Node *n1, const Node *n2) const {
+        if (n2->GetType() == kNodeSong) {
+            return n1->Compare(n2, kNodeSong);
+        } else if (n2->GetType() == kNodeStoreSong) {
+            return n1->Compare(n2, kNodeStoreSong);
+        } else if (n2->GetType() == kNodeSetlist) {
+            return n1->Compare(n2, kNodeSetlist);
+        } else {
+            MILO_FAIL("bad leaf node comparison");
+            return false;
+        }
+    }
 };
 
 class SortNode;
@@ -58,6 +75,7 @@ public:
     bool IsActive() const;
     SortNode *GetFirstActive();
     const char *ShortcutStr();
+    int GetIndex() const { return mIndex; }
 
     int mIndex; // 0x24
     Symbol mToken; // 0x28
@@ -85,6 +103,7 @@ public:
     virtual int GetPotentialStars();
 
     void SetShortcut(ShortcutNode *);
+    int GetIndex() const { return mStartIx; }
 
     std::list<SortNode *> mChildren; // 0x24
     ShortcutNode *mShortcut; // 0x2c
@@ -104,7 +123,7 @@ public:
     HeaderSortNode(SongSortCmp *, Symbol, bool);
     virtual ~HeaderSortNode();
     virtual DataNode Handle(DataArray *, bool);
-    virtual SongNodeType GetType() const;
+    virtual SongNodeType GetType() const { return kNodeHeader; }
     virtual Symbol GetToken() const;
     virtual bool LocalizeToken() const;
     virtual DateTime *GetDateTime() const;
@@ -122,4 +141,85 @@ public:
     Symbol mToken; // 0x40
     bool mLocalizeToken; // 0x44
     DateTime *mDateTime; // 0x48
+};
+
+// SongSortNode : LeafSortNode
+class SongSortNode : public LeafSortNode {
+public:
+    SongSortNode(SongSortCmp *cmp) : LeafSortNode(cmp) {}
+    virtual ~SongSortNode() {}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual void FinishSort(NodeSort *);
+    virtual int GetSongCount() { return 1; }
+    virtual SortNode *GetFirstActive() { return IsActive() ? this : nullptr; }
+    virtual bool IsActive() const { return true; }
+    virtual int GetTotalMs() const = 0;
+    virtual const char *GetTitle() const = 0;
+    virtual const char *GetArtist() const = 0;
+    virtual bool GetIsCover() const = 0;
+    virtual const char *GetAlbum() const = 0;
+    virtual int GetTier(Symbol) const = 0;
+};
+
+class FunctionSortNode : public LeafSortNode {
+public:
+    FunctionSortNode(
+        SongSortCmp *cmp,
+        bool active,
+        Symbol token,
+        Symbol byline,
+        const char *artpath,
+        const char *rowmatpath
+    )
+        : LeafSortNode(cmp), mActive(active), mArtPath(artpath), mRowMatPath(rowmatpath),
+          mToken(token), mByline(byline) {}
+    virtual ~FunctionSortNode() {}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual SongNodeType GetType() const { return kNodeFunction; }
+    virtual Symbol GetToken() const;
+    virtual int GetSongCount() { return 0; }
+    virtual SortNode *GetFirstActive() { return nullptr; }
+    virtual bool IsActive() const;
+    virtual bool IsEnabled() const;
+    virtual const char *GetAlbumArtPath() { return mArtPath.c_str(); }
+    virtual int GetTier() const { return -1; }
+    virtual const char *GetShortcutStr() { return gNullStr; }
+
+    bool mActive; // 0x34
+    String mArtPath; // 0x38
+    String mRowMatPath; // 0x44
+    Symbol mToken; // 0x50
+    Symbol mByline; // 0x54
+};
+
+class SubheaderSortNode : public HeaderSortNode {
+public:
+    SubheaderSortNode(SongSortCmp *, Symbol, bool);
+    virtual ~SubheaderSortNode() {}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual SongNodeType GetType() const { return kNodeSubheader; }
+    virtual void FinishSort(NodeSort *node) { SortNode::FinishSort(node); }
+    virtual const char *GetAlbumArtPath();
+    virtual void Insert(LeafSortNode *, NodeSort *, bool);
+    virtual const char *GetArtist() const;
+    virtual SortNode *GetFirstChildSong() const; // fix ret type?
+};
+
+class OwnedSongSortNode : public SongSortNode {
+public:
+    OwnedSongSortNode(SongSortCmp *cmp) : SongSortNode(cmp) {}
+    virtual ~OwnedSongSortNode() {}
+    virtual DataNode Handle(DataArray *, bool);
+    virtual SongNodeType GetType() const { return kNodeSong; }
+    virtual Symbol GetToken() const;
+    virtual bool IsEnabled() const;
+    virtual const char *GetAlbumArtPath();
+    virtual int GetTotalMs() const;
+    virtual const char *GetTitle() const;
+    virtual const char *GetArtist() const;
+    virtual bool GetIsCover() const;
+    virtual const char *GetAlbum() const;
+    virtual int GetTier(Symbol) const;
+
+    int unk34; // 0x34 - ptr to a SongRecord*
 };

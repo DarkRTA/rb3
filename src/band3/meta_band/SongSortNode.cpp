@@ -1,8 +1,10 @@
 #include "meta_band/SongSortNode.h"
+#include "decomp.h"
 #include "meta_band/MusicLibrary.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/DateTime.h"
+#include "os/Debug.h"
 #include "utl/Locale.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -10,9 +12,11 @@
 
 Node::~Node() { RELEASE(mCmp); }
 
+FORCE_LOCAL_INLINE
 bool Node::Compare(const Node *n, SongNodeType ty) const {
-    return mCmp->Compare(n->mCmp, ty);
+    return mCmp->Compare(n->Cmp(), ty);
 }
+END_FORCE_LOCAL_INLINE
 
 ShortcutNode::ShortcutNode(SongSortCmp *cmp, Symbol token, bool localize)
     : Node(cmp), mToken(token), mLocalizeToken(localize), mDateTime(0) {
@@ -25,7 +29,7 @@ bool ShortcutNode::LocalizeToken() const { return mLocalizeToken; }
 DateTime *ShortcutNode::GetDateTime() const { return mDateTime; }
 
 void ShortcutNode::DeleteAll() {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         (*it)->DeleteAll();
         RELEASE(*it);
     }
@@ -33,19 +37,19 @@ void ShortcutNode::DeleteAll() {
 }
 
 void ShortcutNode::FinishSort(NodeSort *node) {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         (*it)->FinishSort(node);
     }
 }
 
 void ShortcutNode::Renumber(std::vector<SortNode *> &nodes) {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         (*it)->Renumber(nodes);
     }
 }
 
 bool ShortcutNode::IsActive() const {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         if ((*it)->IsEnabled())
             return true;
     }
@@ -53,7 +57,7 @@ bool ShortcutNode::IsActive() const {
 }
 
 SortNode *ShortcutNode::GetFirstActive() {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         SortNode *node = (*it)->GetFirstActive();
         if (node)
             return node;
@@ -69,7 +73,7 @@ const char *ShortcutNode::ShortcutStr() {
 }
 
 BEGIN_HANDLERS(ShortcutNode)
-    HANDLE_EXPR(get_index, mIndex)
+    HANDLE_EXPR(get_index, GetIndex())
     HANDLE_EXPR(shortcut_str, ShortcutStr())
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x9E)
@@ -78,7 +82,7 @@ END_HANDLERS
 SortNode::~SortNode() { RELEASE(mCmp); }
 
 void SortNode::DeleteAll() {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         (*it)->DeleteAll();
         RELEASE(*it);
     }
@@ -88,13 +92,13 @@ void SortNode::DeleteAll() {
 void SortNode::Renumber(std::vector<SortNode *> &nodes) {
     mStartIx = nodes.size();
     nodes.push_back(this);
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         (*it)->Renumber(nodes);
     }
 }
 
 void SortNode::FinishSort(NodeSort *node) {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         (*it)->FinishSort(node);
     }
 }
@@ -136,7 +140,7 @@ int SortNode::GetPotentialStars() {
 BEGIN_HANDLERS(SortNode)
     HANDLE_EXPR(album_art_path, GetAlbumArtPath())
     HANDLE_EXPR(get_node_type, GetType())
-    HANDLE_EXPR(get_index, mStartIx)
+    HANDLE_EXPR(get_index, GetIndex())
     HANDLE_EXPR(get_token, GetToken())
     HANDLE_EXPR(get_total_ms, GetTotalMs())
     HANDLE_EXPR(get_total_score, GetTotalScore())
@@ -154,7 +158,7 @@ bool HeaderSortNode::LocalizeToken() const { return mLocalizeToken; }
 DateTime *HeaderSortNode::GetDateTime() const { return mDateTime; }
 
 SortNode *HeaderSortNode::GetFirstActive() {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         SortNode *node = (*it)->GetFirstActive();
         if (node) {
             return TheMusicLibrary->CanHeadersBeSelected() ? this : node;
@@ -168,7 +172,7 @@ bool HeaderSortNode::IsActive() const {
 }
 
 bool HeaderSortNode::IsEnabled() const {
-    FOREACH (it, mChildren) {
+    FOREACH_POST (it, mChildren) {
         SortNode *cur = *it;
         if (cur->GetType() == 3) {
             if (cur->IsEnabled())
@@ -189,4 +193,42 @@ BEGIN_HANDLERS(HeaderSortNode)
     HANDLE_EXPR(get_token, mToken)
     HANDLE_SUPERCLASS(SortNode)
     HANDLE_CHECK(0x1C4)
+END_HANDLERS
+
+SubheaderSortNode::SubheaderSortNode(SongSortCmp *cmp, Symbol token, bool localize)
+    : HeaderSortNode(cmp, token, localize) {}
+
+void SubheaderSortNode::Insert(LeafSortNode *node, NodeSort *n2, bool b3) {
+    MILO_ASSERT(Compare(node, kNodeSubheader) == 0, 0x1D2);
+    std::list<SortNode *>::iterator it =
+        std::lower_bound(mChildren.begin(), mChildren.end(), node, CompareLeaves());
+    node->SetShortcut(mShortcut);
+    node->SetParent(this);
+    mChildren.insert(it, node);
+}
+
+BEGIN_HANDLERS(SubheaderSortNode)
+    HANDLE_SUPERCLASS(HeaderSortNode)
+    HANDLE_MEMBER_PTR(GetFirstChildSong())
+    HANDLE_CHECK(0x1FC)
+END_HANDLERS
+
+Symbol FunctionSortNode::GetToken() const { return mToken; }
+bool FunctionSortNode::IsEnabled() const { return IsActive(); }
+bool FunctionSortNode::IsActive() const { return mActive; }
+
+BEGIN_HANDLERS(FunctionSortNode)
+    HANDLE_EXPR(get_token, mToken)
+    HANDLE_EXPR(get_byline, mByline)
+    HANDLE_EXPR(get_row_mat_path, mRowMatPath.c_str())
+    HANDLE_SUPERCLASS(SortNode)
+    HANDLE_CHECK(0x215)
+END_HANDLERS
+
+void SongSortNode::FinishSort(NodeSort *) { mCmp->Finish(); }
+
+BEGIN_HANDLERS(SongSortNode)
+    HANDLE_EXPR(get_total_ms, GetTotalMs())
+    HANDLE_SUPERCLASS(SortNode)
+    HANDLE_CHECK(0x226)
 END_HANDLERS
