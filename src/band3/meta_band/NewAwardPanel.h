@@ -57,6 +57,8 @@ public:
     void PopAndShowFirstAward();
     void LoadIcons();
     int GetNumAssets() const;
+    NEW_OBJ(NewAwardPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(NewAwardPanel); }
 
     LocalBandUser *mUser; // 0x4c
     Symbol mAwardName; // 0x50

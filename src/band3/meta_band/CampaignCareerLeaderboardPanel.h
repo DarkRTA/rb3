@@ -23,6 +23,8 @@ public:
     Symbol GetScoreType() const;
     void SetUseDLC(bool);
     void CycleMode();
+    NEW_OBJ(CampaignCareerLeaderboardPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CampaignCareerLeaderboardPanel); }
 
     PlayerCampaignCareerLeaderboard *mCampaignCareerLeaderboardProvider; // 0x3c
     ScoreType mScoreType; // 0x40

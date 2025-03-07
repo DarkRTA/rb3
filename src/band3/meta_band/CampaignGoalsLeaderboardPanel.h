@@ -1,6 +1,7 @@
 #pragma once
 #include "meta_band/AccomplishmentManager.h"
 #include "meta_band/CampaignLeaderboards.h"
+#include "obj/ObjMacros.h"
 #include "ui/UIPanel.h"
 
 class CampaignGoalsLeaderboardPanel : public Leaderboard::Callback, public UIPanel {
@@ -29,6 +30,9 @@ public:
     }
     Symbol GetGoal() const { return mGoal; }
     bool HasGoalIcon() const { return TheAccomplishmentMgr->HasAccomplishment(mGoal); }
+
+    NEW_OBJ(CampaignGoalsLeaderboardPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CampaignGoalsLeaderboardPanel); }
 
     PlayerCampaignGoalLeaderboard *mCampaignGoalsLeaderboardProvider; // 0x3c
     Symbol mGoal; // 0x40

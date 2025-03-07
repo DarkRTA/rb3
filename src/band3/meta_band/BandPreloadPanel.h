@@ -15,6 +15,8 @@ public:
 
     DataNode OnMsg(const LockStepStartMsg &);
     DataNode OnMsg(const LockStepCompleteMsg &);
+    NEW_OBJ(BandPreloadPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(BandPreloadPanel); }
 
     bool mLockInProgress; // 0x69
     LockStepMgr *mPreloadLock; // 0x6c

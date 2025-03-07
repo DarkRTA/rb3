@@ -42,6 +42,8 @@ public:
     Symbol GetMusicLibraryNextScreen();
     void CreateAndSubmitMusicLibraryTask();
     void Launch();
+    NEW_OBJ(CampaignSongInfoPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CampaignSongInfoPanel); }
 
     CampaignSourceProvider *mCampaignSourceProvider; // 0x38
 };

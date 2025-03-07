@@ -9,6 +9,8 @@
 #include "meta_band/Leaderboard.h"
 #include "meta_band/MainHubPanel.h"
 
+class Node;
+
 class AppLabel : public BandLabel {
 public:
     AppLabel() {}
@@ -41,4 +43,5 @@ public:
     void SetLeaderboardName(const LeaderboardRow &);
     void SetPitch(int, int);
     void SetSectionName(const PracticeSection &);
+    void SetFromSongSelectNode(const Node *);
 };

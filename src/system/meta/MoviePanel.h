@@ -39,6 +39,8 @@ public:
     bool IsMenuShown() const { return mShowMenu; }
 
     static bool sUseSubtitles;
+    NEW_OBJ(MoviePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(MoviePanel); }
 
     bool mPreload; // 0x40
     bool mAudio; // 0x41

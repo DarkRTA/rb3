@@ -29,6 +29,8 @@ public:
     void PausePanel(bool);
     void DebugToggleAutoScroll();
     DataNode OnMsg(const ButtonDownMsg &);
+    NEW_OBJ(CreditsPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CreditsPanel); }
 
 #ifdef MILO_DEBUG
     bool mCheatOn; // 0x3c

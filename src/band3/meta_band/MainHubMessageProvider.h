@@ -34,11 +34,12 @@ public:
     void ClearData();
     bool IsTickerDataValid(TickerDataType);
     void AddTickerData(TickerDataType, int, int, bool, bool);
+    bool IsUnlinkedMotdAvailable() { return !mUnlinkedMotd.empty(); }
 
     DataNode mMessages; // 0x20
     MainHubPanel *mMainHub; // 0x28
     TickerData mRoleStanding; // 0x2c
     TickerData mBandStanding; // 0x38
     TickerData mBattleStanding; // 0x44
-    String unk50; // 0x50
+    String mUnlinkedMotd; // 0x50
 };

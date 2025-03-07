@@ -13,6 +13,8 @@ public:
     virtual void Poll();
     virtual void Load();
     virtual void Unload();
+    NEW_OBJ(GameTimePanel);
+    static void Init() { REGISTER_OBJ_FACTORY(GameTimePanel); }
 
     Timer mTimer; // 0x38
     float mTempo; // 0x68

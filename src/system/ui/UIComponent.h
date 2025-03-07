@@ -129,6 +129,8 @@ END_MESSAGE
 DECLARE_MESSAGE(UIComponentSelectDoneMsg, "component_select_done");
 UIComponentSelectDoneMsg(UIComponent *comp, LocalUser *user)
     : Message(Type(), comp, user) {}
+UIComponent *GetComponent() const { return mData->Obj<UIComponent>(2); }
+LocalUser *GetUser() const { return mData->Obj<LocalUser>(3); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select");

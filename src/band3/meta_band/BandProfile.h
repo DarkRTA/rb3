@@ -81,7 +81,7 @@ public:
     SongStatusMgr *GetSongStatusMgr() const;
     int GetSongHighScore(int, ScoreType) const;
     const std::vector<LocalSavedSetlist *> &GetSavedSetlists() const;
-    SavedSetlist *
+    LocalSavedSetlist *
     AddSavedSetlist(const char *, const char *, bool, const PatchDescriptor &, const std::vector<int> &);
     void DeleteSavedSetlist(LocalSavedSetlist *);
     void SetlistChanged(LocalSavedSetlist *);

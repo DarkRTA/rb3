@@ -3,7 +3,7 @@
 #include "meta/DeJitterPanel.h"
 #include "meta/HeldButtonPanel.h"
 #include "meta/PreloadPanel.h"
-#include "obj/ObjMacros.h"
+#include "meta/Meta.h"
 
 void MetaTerminate() { Achievements::Terminate(); }
 

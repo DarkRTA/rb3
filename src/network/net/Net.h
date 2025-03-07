@@ -19,7 +19,7 @@ public:
     NetGameData *GetGameData();
     NetSession *GetNetSession() const { return mSession; }
     Server *GetServer() const { return mServer; }
-    SessionSearcher *GetSessionSearcher() const { return unk24; }
+    SessionSearcher *GetSearcher() const { return unk24; }
 
     NetGameData *mGameData; // 0x1c
     NetSession *mSession; // 0x20

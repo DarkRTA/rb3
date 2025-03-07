@@ -102,6 +102,8 @@ public:
     DataNode LeaveState();
 
     static CharCreatorState sCancelStates[18];
+    NEW_OBJ(CharacterCreatorPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(CharacterCreatorPanel); }
 
     CharCreatorState mCharCreatorState; // 0x4C
     std::map<int, UIComponent *> mFocusComponents; // 0x50

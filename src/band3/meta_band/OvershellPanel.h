@@ -1,6 +1,7 @@
 #pragma once
 #include "game/BandUser.h"
 #include "meta_band/CharData.h"
+#include "obj/ObjMacros.h"
 #include "ui/UIPanel.h"
 #include "net/Synchronize.h"
 #include "obj/Msg.h"
@@ -19,7 +20,7 @@ enum OvershellActiveStatus {
 
 class OvershellPanel : public UIPanel, public Synchronizable, public MsgSource {
 public:
-    OvershellPanel(SessionMgr *, BandUserMgr *);
+    OvershellPanel(SessionMgr * = nullptr, BandUserMgr * = nullptr);
     OBJ_CLASSNAME(OvershellPanel);
     OBJ_SET_TYPE(OvershellPanel);
     virtual DataNode Handle(DataArray *, bool);
@@ -29,7 +30,7 @@ public:
     virtual bool Exiting() const;
     virtual void Poll();
     virtual void FinishLoad();
-    virtual void SyncSave(BinStream &, unsigned int);
+    virtual void SyncSave(BinStream &, unsigned int) const;
     virtual void SyncLoad(BinStream &, unsigned int);
     virtual bool HasSyncPermission() const;
     virtual void OnSynchronized(unsigned int);
@@ -43,6 +44,8 @@ public:
     void BeginOverrideFlow(OvershellOverrideFlow);
     bool IsAnySlotEditingChar(CharData *) const;
     bool AreAllLocalSlotsAllowingInputToShell();
+    NEW_OBJ(OvershellPanel);
+    static void Init() { REGISTER_OBJ_FACTORY(OvershellPanel); }
 
     std::vector<OvershellSlot *> mSlots; // 0x70
     std::vector<int> unk78; // 0x78
@@ -73,4 +76,9 @@ DECLARE_MESSAGE(OvershellAllowingInputChangedMsg, "overshell_allowing_input_chan
 END_MESSAGE
 
 DECLARE_MESSAGE(OvershellActiveStatusChangedMsg, "overshell_active_status_changed_msg");
+END_MESSAGE
+
+DECLARE_MESSAGE(OvershellOverrideEndedMsg, "override_ended")
+OvershellOverrideFlow GetOverrideFlowType() const;
+bool Cancelled() const;
 END_MESSAGE

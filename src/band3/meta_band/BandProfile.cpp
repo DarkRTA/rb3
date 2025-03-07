@@ -310,7 +310,7 @@ const std::vector<LocalSavedSetlist *> &BandProfile::GetSavedSetlists() const {
     return mSavedSetlists;
 }
 
-SavedSetlist *BandProfile::AddSavedSetlist(
+LocalSavedSetlist *BandProfile::AddSavedSetlist(
     const char *c1,
     const char *c2,
     bool b3,

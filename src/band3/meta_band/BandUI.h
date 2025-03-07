@@ -17,6 +17,7 @@
 #include "ui/UIComponent.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
+#include "meta_band/EventDialogPanel.h"
 
 enum UIFlowType {
     kUIFlowType_None,

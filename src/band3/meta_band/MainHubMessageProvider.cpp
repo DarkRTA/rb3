@@ -39,6 +39,7 @@ int MainHubMessageProvider::NumData() const {
 void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
     DataArray *messageArray = mMessages.Array();
     MILO_ASSERT(idx < messageArray->Size(), 0x43);
+    Symbol s28;
     switch (messageArray->Type(idx)) {
     case kDataArray:
         label->SetTokenFmt(messageArray->Array(idx));
@@ -55,12 +56,12 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
             MILO_ASSERT(mBandStanding.isSet, 0x57);
             if (mBandStanding.unk8) {
                 if (mBandStanding.unk9) {
-                    Symbol perc("message_band_summary_percentile");
-                    label->SetTokenFmt(perc, MakeString("%i", mBandStanding.unk4));
+                    s28 = Symbol("message_band_summary_percentile");
+                    label->SetTokenFmt(s28, MakeString("%i", mBandStanding.unk4));
                 } else {
-                    Symbol global("message_band_summary_global");
+                    s28 = Symbol("message_band_summary_global");
                     label->SetTokenFmt(
-                        global,
+                        s28,
                         LocalizeOrdinal(
                             mBandStanding.unk4,
                             LocaleGenderMasculine,
@@ -70,9 +71,9 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
                     );
                 }
             } else {
-                Symbol summary("message_band_summary");
+                s28 = Symbol("message_band_summary");
                 label->SetTokenFmt(
-                    summary,
+                    s28,
                     LocalizeOrdinal(
                         mBandStanding.unk4, LocaleGenderMasculine, LocaleSingular, false
                     )
@@ -82,16 +83,16 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
             MILO_ASSERT(mRoleStanding.isSet, 0x6E);
             if (mRoleStanding.unk8) {
                 if (mRoleStanding.unk9) {
-                    Symbol perc("message_leaderboard_summary_perc");
+                    s28 = Symbol("message_leaderboard_summary_percentile");
                     label->SetTokenFmt(
-                        perc,
+                        s28,
                         MakeString("%i", mRoleStanding.unk4),
                         ScoreTypeToSym(mRoleStanding.unk0)
                     );
                 } else {
-                    Symbol global("message_leaderboard_summary_glob");
+                    s28 = Symbol("message_leaderboard_summary_global");
                     label->SetTokenFmt(
-                        global,
+                        s28,
                         LocalizeOrdinal(
                             mRoleStanding.unk4,
                             LocaleGenderMasculine,
@@ -102,9 +103,9 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
                     );
                 }
             } else {
-                Symbol summary("message_leaderboard_summary");
+                s28 = Symbol("message_leaderboard_summary");
                 label->SetTokenFmt(
-                    summary,
+                    s28,
                     LocalizeOrdinal(
                         mRoleStanding.unk4, LocaleGenderMasculine, LocaleSingular, false
                     ),
@@ -113,12 +114,11 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
             }
         } else if (sym == Symbol("battles_summary")) {
             MILO_ASSERT(mBattleStanding.isSet, 0x87);
-            if (mBattleStanding.unk4 == 1) {
-                label->SetTokenFmt(
-                    "message_battle_summary_singular", mBattleStanding.unk4
-                );
+            int val4 = mBattleStanding.unk4;
+            if (val4 == 1) {
+                label->SetTokenFmt(Symbol("message_battle_summary_singular"), val4);
             } else {
-                label->SetTokenFmt("message_battle_summary", mBattleStanding.unk4);
+                label->SetTokenFmt(Symbol("message_battle_summary"), val4);
             }
         } else {
             label->SetTextToken(messageArray->Sym(idx));
@@ -130,7 +130,7 @@ void MainHubMessageProvider::SetMessageLabel(AppLabel *label, int idx) const {
     }
 }
 
-void MainHubMessageProvider::AddUnlinkedMotd(const char *cc) { unk50 = cc; }
+void MainHubMessageProvider::AddUnlinkedMotd(const char *cc) { mUnlinkedMotd = cc; }
 
 void MainHubMessageProvider::AddTickerData(
     TickerDataType ty, int i1, int i2, bool b1, bool b2

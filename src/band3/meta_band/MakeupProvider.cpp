@@ -58,11 +58,11 @@ RndMat *MakeupProvider::Mat(int, int data, UIListMesh *slot) const {
 
 void MakeupProvider::UpdateExtendedText(int, int i_iData, UILabel *label) const {
     MILO_ASSERT(i_iData < NumData(), 99);
-    const char *name = label->Name();
-    if (strcmp(name, "asset_desc_makeup.lbl") == 0) {
-        Symbol descSym(MakeString("%s_desc", DataSymbol(i_iData).Str()));
+    if (strcmp(label->Name(), "asset_desc_makeup.lbl") == 0) {
+        Symbol data = DataSymbol(i_iData);
+        Symbol descSym(MakeString("%s_desc", data.Str()));
         label->SetTextToken(descSym);
-    } else if (strcmp(name, "asset_progress_makeup.lbl") == 0) {
+    } else if (strcmp(label->Name(), "asset_progress_makeup.lbl") == 0) {
         label->SetTokenFmt(customize_asset_progress, i_iData + 1, NumData());
     } else
         label->SetTextToken(gNullStr);

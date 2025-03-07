@@ -85,21 +85,8 @@ DECLARE_MESSAGE(UITransitionCompleteMsg, "transition_complete");
 UITransitionCompleteMsg(UIScreen *s1, UIScreen *s2) : Message(Type(), s1, s2) {}
 UIScreen *GetScreen1() const { return mData->Obj<UIScreen>(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(UIScreenChangeMsg, "screen_change");
 UIScreenChangeMsg(UIScreen *s1, UIScreen *s2, bool b) : Message(Type(), s1, s2, b) {}
 UIScreen *GetFromScreen() const { return mData->Obj<UIScreen>(3); }
 END_MESSAGE
-;
-
-DECLARE_MESSAGE(EventDialogStartMsg, "event_dialog_start");
-EventDialogStartMsg(DataArray *a1, DataArray *a2)
-    : Message(Type(), DataNode(a1, kDataArray), DataNode(a2, kDataArray)) {}
-END_MESSAGE
-;
-
-DECLARE_MESSAGE(EventDialogDismissMsg, "event_dialog_dismiss");
-EventDialogDismissMsg() : Message(Type()) {}
-END_MESSAGE
-;

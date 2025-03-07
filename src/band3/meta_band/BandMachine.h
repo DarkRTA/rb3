@@ -90,6 +90,7 @@ public:
         static Symbol t("remote_machine_updated");
         return t;
     }
+    int GetMask() const { return mData->Int(3); }
 };
 
 class NewRemoteMachineMsg : public Message {
@@ -114,3 +115,5 @@ public:
     }
     RemoteBandMachine *GetMachine() const { return mData->Obj<RemoteBandMachine>(2); }
 };
+
+bool IsWaitingNetUIState(NetUIState state);
