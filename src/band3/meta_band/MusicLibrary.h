@@ -87,6 +87,7 @@ public:
     int SetlistSize();
     bool SetlistIsFull();
     bool CanHeadersBeSelected();
+    ScoreType ActiveScoreType() const;
 
     static void Init(SongPreview &);
 

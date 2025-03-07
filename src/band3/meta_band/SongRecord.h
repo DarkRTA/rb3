@@ -10,10 +10,11 @@ public:
     virtual ~SongRecord() {}
     virtual DataNode Handle(DataArray *, bool);
 
-    void UpdateScoreType();
-    void UpdateSharedStatus();
-    void UpdatePerformanceData();
+    bool UpdateScoreType();
+    bool UpdateSharedStatus();
+    bool UpdatePerformanceData();
     bool UpdateReview();
+    bool UpdateRestricted();
     int GetTier(Symbol) const;
     short GetInstrumentMask(ScoreType) const;
     Symbol GetShortDifficultySym(ScoreType) const;
@@ -21,9 +22,15 @@ public:
     Symbol GetShortDifficultySym() const {
         return GetShortDifficultySym(mActiveScoreType);
     }
+    int GetStars() const { return mStars[mActiveScoreType]; }
+    int GetNotesPct() const { return mNotesPct[mActiveScoreType]; }
+    short GetInstrumentMask() const { return GetInstrumentMask(mActiveScoreType); }
+    int GetReview() const { return mReview; }
+    short GetBandInstrumentMask() const { return mBandInstrumentMask; }
+    Difficulty GetDifficulty(ScoreType s) const { return mDiffs[s]; }
 
     Symbol mShortName; // 0x1c
-    bool unk20;
+    bool mIsShared; // 0x20
     bool mDemo; // 0x21
     bool mRestricted; // 0x22
     std::map<Symbol, int> mTier; // 0x24
@@ -34,8 +41,8 @@ public:
     int mNotesPct[11]; // 0xc4
     short mBandInstrumentMask; // 0xf0
     int mReview; // 0xf4
-    int unkf8;
-    BandSongMetadata *mData; // 0xfc
+    int mPlays; // 0xf8
+    const BandSongMetadata *mData; // 0xfc
 };
 
 class SetlistRecord : public Hmx::Object {
