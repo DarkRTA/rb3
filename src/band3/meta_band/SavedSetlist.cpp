@@ -197,5 +197,5 @@ const char *NetSavedSetlist::GetSongTitle(int i) const {
 void NetSavedSetlist::AddSongTitle(const char *song) { mSongTitles.push_back(song); }
 
 Symbol BattleSavedSetlist::GetIdentifyingToken() const {
-    return MakeString("btl_%i", unk68);
+    return MakeString("btl_%i", mID);
 }

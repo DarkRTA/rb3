@@ -178,8 +178,8 @@ SetlistRecord::SetlistRecord(SavedSetlist *setlist) : mSetlist(setlist) {
     mToken = setlist->GetIdentifyingToken();
     BattleSavedSetlist *battleSetlist = dynamic_cast<BattleSavedSetlist *>(setlist);
     unk24 = battleSetlist;
-    unk28 = battleSetlist ? battleSetlist->unk68 : -1;
-    unk2c = battleSetlist ? battleSetlist->unk70 : -1;
+    mID = battleSetlist ? battleSetlist->mID : -1;
+    mBattleTimeLeft = battleSetlist ? battleSetlist->mBattleTimeLeft : -1;
     unk30 = battleSetlist ? battleSetlist->unk6c : 10;
 }
 
@@ -209,7 +209,7 @@ const char *SetlistRecord::GetOwner() const {
 }
 
 BEGIN_HANDLERS(SetlistRecord)
-    HANDLE_EXPR(id, unk28)
+    HANDLE_EXPR(id, mID)
     HANDLE_EXPR(get_owner, GetOwner())
     HANDLE_EXPR(get_art_tex, mSetlist->GetArtTex())
     HANDLE_EXPR(get_setlist_type_sym, SavedSetlist::SetlistTypeToSym(mSetlist->GetType()))
@@ -222,7 +222,7 @@ BEGIN_HANDLERS(SetlistRecord)
     HANDLE_EXPR(get_length_ms, mSetlist->GetLengthMs())
     HANDLE_EXPR(get_title, mSetlist->GetTitle())
     HANDLE_EXPR(get_description, mSetlist->GetDescription())
-    HANDLE_EXPR(get_battle_time_left, unk2c)
+    HANDLE_EXPR(get_battle_time_left, mBattleTimeLeft)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_CHECK(0x17E)
 END_HANDLERS

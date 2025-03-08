@@ -1,4 +1,5 @@
 #pragma once
+#include "SongSortNode.h"
 #include "obj/Object.h"
 #include "ui/UIListProvider.h"
 #include "meta_band/SongSortNode.h"
@@ -13,9 +14,9 @@ public:
     virtual bool IsActive(int) const;
     virtual void DeleteTree();
     virtual void Init();
-    virtual int NewShortcutNode(LeafSortNode *) const = 0; // ret type?
-    virtual int NewHeaderNode(LeafSortNode *) const = 0; // ret type?
-    virtual int NewSubheaderNode(LeafSortNode *) const = 0; // ret type
+    virtual ShortcutNode *NewShortcutNode(LeafSortNode *) const = 0;
+    virtual HeaderSortNode *NewHeaderNode(LeafSortNode *) const = 0;
+    virtual SubheaderSortNode *NewSubheaderNode(LeafSortNode *) const = 0;
     virtual void ConfirmSubheaders(HeaderSortNode *);
     virtual void Clear();
     virtual bool CustomForNode(ShortcutNode *, UIListCustom *, Hmx::Object *) const;
@@ -42,4 +43,45 @@ public:
 
 class SongSort : public NodeSort {
 public:
+    SongSort() {}
+    virtual ~SongSort() {}
+    virtual ShortcutNode *NewShortcutNode(LeafSortNode *) const;
+    virtual HeaderSortNode *NewHeaderNode(LeafSortNode *) const;
+    virtual SubheaderSortNode *NewSubheaderNode(LeafSortNode *) const;
+    virtual ShortcutNode *NewShortcutNode(SongSortNode *) const = 0;
+    virtual HeaderSortNode *NewHeaderNode(SongSortNode *) const = 0;
+    virtual SubheaderSortNode *NewSubheaderNode(SongSortNode *) const {
+        MILO_FAIL("Unimplemented");
+        return nullptr;
+    }
+    virtual SongSortNode *NewSongNode(SongRecord *) const = 0;
+    virtual SongSortNode *NewSongNode(class StoreOffer *) const = 0;
+
+    void BuildSongTree(std::map<Symbol, SongRecord> &, std::vector<StoreOffer *> &);
+    void BuildSongList();
+};
+
+class SetlistSort : public NodeSort {
+public:
+    SetlistSort() {}
+    virtual ~SetlistSort() {}
+    virtual ShortcutNode *NewShortcutNode(LeafSortNode *) const;
+    virtual HeaderSortNode *NewHeaderNode(LeafSortNode *) const;
+    virtual SubheaderSortNode *NewSubheaderNode(LeafSortNode *) const;
+    virtual ShortcutNode *NewShortcutNode(SongSortNode *) const = 0;
+    virtual HeaderSortNode *NewHeaderNode(SongSortNode *) const = 0;
+    virtual SubheaderSortNode *NewSubheaderNode(SongSortNode *) const;
+    virtual ShortcutNode *NewShortcutNode(FunctionSortNode *) const = 0;
+    virtual HeaderSortNode *NewHeaderNode(FunctionSortNode *) const = 0;
+    virtual SetlistSortNode *NewSetlistNode(SetlistRecord *) const = 0;
+    virtual FunctionSortNode *NewFunctionNode(Symbol) const = 0;
+
+    void BuildSetlistTree(std::map<Symbol, SetlistRecord> &);
+    void BuildSetlistList();
+};
+
+struct CompareShortcuts {
+    bool operator()(const Node *n1, const Node *n2) const {
+        return n1->Compare(n2, kNodeShortcut);
+    }
 };

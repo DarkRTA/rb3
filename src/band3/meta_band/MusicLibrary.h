@@ -88,6 +88,9 @@ public:
     bool SetlistIsFull();
     bool CanHeadersBeSelected();
     ScoreType ActiveScoreType() const;
+    bool GetMakingSetlist(bool) const;
+    bool NetSetlistsFailed();
+    bool NetSetlistsSucceeded();
 
     static void Init(SongPreview &);
 

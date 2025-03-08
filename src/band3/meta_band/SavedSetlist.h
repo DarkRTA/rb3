@@ -78,9 +78,9 @@ public:
     virtual Symbol GetIdentifyingToken() const;
     virtual bool IsBattle() const { return true; }
 
-    int unk68; // 0x68
+    int mID; // 0x68
     int unk6c;
-    int unk70;
+    int mBattleTimeLeft; // 0x70
 };
 
 class LocalSavedSetlist : public SavedSetlist,

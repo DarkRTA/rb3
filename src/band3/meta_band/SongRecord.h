@@ -60,7 +60,7 @@ public:
     SavedSetlist *mSetlist; // 0x1c
     Symbol mToken; // 0x20
     bool unk24; // 0x24
-    int unk28; // 0x28
-    int unk2c; // 0x2c
+    int mID; // 0x28
+    int mBattleTimeLeft; // 0x2c
     int unk30; // 0x30
 };
