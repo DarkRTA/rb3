@@ -19,7 +19,7 @@ public:
     virtual int Compare(SongSortCmp const *, SongNodeType) const;
     virtual bool HasSubheader() const;
     virtual void Finish() { mTrackNum = -1; }
-    virtual ArtistCmp *GetArtistCmp() const { return (ArtistCmp *)this; }
+    virtual const ArtistCmp *GetArtistCmp() const { return this; }
 
     Symbol mShortcut; // 0x4
     const char *mArtist; // 0x8

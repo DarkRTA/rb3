@@ -9,7 +9,7 @@ public:
         : mTier(tier), mRank(rank), mName(name) {}
     virtual ~DifficultyCmp() {}
     virtual int Compare(SongSortCmp const *, SongNodeType) const;
-    virtual DifficultyCmp *GetDifficultyCmp() const { return (DifficultyCmp *)this; }
+    virtual const DifficultyCmp *GetDifficultyCmp() const { return this; }
 
     int mTier; // 0x4
     float mRank; // 0x8

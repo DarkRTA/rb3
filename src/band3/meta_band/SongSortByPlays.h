@@ -8,7 +8,7 @@ public:
     PlaysCmp(int, const char *);
     virtual ~PlaysCmp() {}
     virtual int Compare(SongSortCmp const *, SongNodeType) const;
-    virtual PlaysCmp *GetPlaysCmp() const { return (PlaysCmp *)this; }
+    virtual const PlaysCmp *GetPlaysCmp() const { return this; }
 
     int mPlays; // 0x4
     const char *mName; // 0x8
