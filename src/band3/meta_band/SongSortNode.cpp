@@ -15,7 +15,7 @@
 Node::~Node() { RELEASE(mCmp); }
 
 FORCE_LOCAL_INLINE
-bool Node::Compare(const Node *n, SongNodeType ty) const {
+int Node::Compare(const Node *n, SongNodeType ty) const {
     return mCmp->Compare(n->Cmp(), ty);
 }
 END_FORCE_LOCAL_INLINE
@@ -151,7 +151,7 @@ BEGIN_HANDLERS(SortNode)
 END_HANDLERS
 
 HeaderSortNode::HeaderSortNode(SongSortCmp *cmp, Symbol token, bool localize)
-    : SortNode(cmp), unk34(0), unk38(0), unk3c(0), mToken(token),
+    : SortNode(cmp), mCover(0), unk38(0), unk3c(0), mToken(token),
       mLocalizeToken(localize), mDateTime(0) {}
 
 HeaderSortNode::~HeaderSortNode() { delete mDateTime; }
