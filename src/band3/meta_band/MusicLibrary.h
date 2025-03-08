@@ -91,6 +91,7 @@ public:
     bool GetMakingSetlist(bool) const;
     bool NetSetlistsFailed();
     bool NetSetlistsSucceeded();
+    Symbol DifficultySortPart() const;
 
     static void Init(SongPreview &);
 

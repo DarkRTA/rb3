@@ -37,6 +37,6 @@ class SongSortByArtist : public SongSort {
     virtual ShortcutNode *NewShortcutNode(SongSortNode *) const;
     virtual HeaderSortNode *NewHeaderNode(SongSortNode *) const;
     virtual SubheaderSortNode *NewSubheaderNode(SongSortNode *) const;
-    virtual SongSortNode *NewSongNode(SongRecord *) const;
-    virtual SongSortNode *NewSongNode(class StoreOffer *) const;
+    virtual OwnedSongSortNode *NewSongNode(SongRecord *) const;
+    virtual StoreSongSortNode *NewSongNode(class StoreOffer *) const;
 };

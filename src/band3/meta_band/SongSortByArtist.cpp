@@ -70,7 +70,7 @@ void SongSortByArtist::Init() {
     }
 }
 
-SongSortNode *SongSortByArtist::NewSongNode(SongRecord *record) const {
+OwnedSongSortNode *SongSortByArtist::NewSongNode(SongRecord *record) const {
     MemDoTempAllocations m(true, false);
     const char *artist = record->Data()->Artist();
     Symbol firstChar = NodeSort::FirstChar(artist, true);
@@ -84,7 +84,7 @@ SongSortNode *SongSortByArtist::NewSongNode(SongRecord *record) const {
     return node;
 }
 
-SongSortNode *SongSortByArtist::NewSongNode(StoreOffer *offer) const {
+StoreSongSortNode *SongSortByArtist::NewSongNode(StoreOffer *offer) const {
     MemDoTempAllocations m(true, false);
     const char *artist = offer->Artist();
     Symbol firstChar = NodeSort::FirstChar(artist, true);

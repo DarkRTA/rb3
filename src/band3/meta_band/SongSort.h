@@ -1,5 +1,6 @@
 #pragma once
 #include "SongSortNode.h"
+#include "StoreSongSortNode.h"
 #include "obj/Object.h"
 #include "ui/UIListProvider.h"
 #include "meta_band/SongSortNode.h"
@@ -65,8 +66,8 @@ public:
         MILO_FAIL("Unimplemented");
         return nullptr;
     }
-    virtual SongSortNode *NewSongNode(SongRecord *) const = 0;
-    virtual SongSortNode *NewSongNode(class StoreOffer *) const = 0;
+    virtual OwnedSongSortNode *NewSongNode(SongRecord *) const = 0;
+    virtual StoreSongSortNode *NewSongNode(class StoreOffer *) const = 0;
 
     void BuildSongTree(std::map<Symbol, SongRecord> &, std::vector<StoreOffer *> &);
     void BuildSongList();
