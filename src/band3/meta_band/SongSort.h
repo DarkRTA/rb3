@@ -5,17 +5,6 @@
 #include "ui/UIListProvider.h"
 #include "meta_band/SongSortNode.h"
 
-class SongCmp : public SongSortCmp {
-public:
-    SongCmp(const char *name, Symbol header) : mName(name), mHeaderSym(header) {}
-    virtual ~SongCmp() {}
-    virtual int Compare(SongSortCmp const *, SongNodeType) const;
-    virtual SongCmp *GetSongCmp() const;
-
-    const char *mName; // 0x4
-    Symbol mHeaderSym; // 0x8
-};
-
 class NodeSort : public UIListProvider, public Hmx::Object {
 public:
     NodeSort();

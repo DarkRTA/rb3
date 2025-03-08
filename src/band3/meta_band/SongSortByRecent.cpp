@@ -110,13 +110,13 @@ ShortcutNode *SongSortByRecent::NewShortcutNode(SongSortNode *node) const {
 
     Symbol token;
     switch (ty) {
-    case 0:
+    case RecentCmp::kRecent:
         token = recently_acquired;
         break;
-    case 1:
+    case RecentCmp::kPrevious:
         token = previously_acquired;
         break;
-    case 8:
+    case RecentCmp::kNotYet:
         token = not_yet_acquired;
         break;
     default:
@@ -137,13 +137,13 @@ HeaderSortNode *SongSortByRecent::NewHeaderNode(SongSortNode *node) const {
 
     Symbol token;
     switch (ty) {
-    case 0:
+    case RecentCmp::kRecent:
         token = recently_acquired;
         break;
-    case 1:
+    case RecentCmp::kPrevious:
         token = previously_acquired;
         break;
-    case 8:
+    case RecentCmp::kNotYet:
         token = not_yet_acquired;
         break;
     default:

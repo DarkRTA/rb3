@@ -14,7 +14,7 @@ public:
         kLego = 5,
         kRB2 = 6,
         kRB1 = 7,
-        kUnk8 = 8,
+        kNotYet = 8,
         kDontHave = 9
     };
     RecentCmp(int, const char *, Symbol, bool);
