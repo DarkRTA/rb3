@@ -266,7 +266,7 @@
             "band3/meta_band/SongSort.cpp": "LinkIssues",
             "band3/meta_band/SongSortByArtist.cpp": "NonMatching",
             "band3/meta_band/SongSortByDiff.cpp": "Matching",
-            "band3/meta_band/SongSortByPlays.cpp": "MISSING",
+            "band3/meta_band/SongSortByPlays.cpp": "Matching",
             "band3/meta_band/SongSortByRank.cpp": "MISSING",
             "band3/meta_band/SongSortByRecent.cpp": "MISSING",
             "band3/meta_band/SongSortByReview.cpp": "MISSING",

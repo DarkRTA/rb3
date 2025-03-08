@@ -1,7 +1,7 @@
 #pragma once
 #include "meta_band/SongSort.h"
 #include "meta_band/SongSortNode.h"
-#include "utl/Symbols2.h"
+#include "utl/Symbols.h"
 
 class DifficultyCmp : public SongSortCmp {
 public:
