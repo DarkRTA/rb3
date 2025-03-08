@@ -79,6 +79,8 @@ public:
     virtual bool IsBattle() const { return true; }
 
     int unk68; // 0x68
+    int unk6c;
+    int unk70;
 };
 
 class LocalSavedSetlist : public SavedSetlist,

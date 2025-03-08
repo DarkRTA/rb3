@@ -39,3 +39,7 @@ public:
     std::vector<SortNode *> mList; // 0x30
     Symbol mShortName; // 0x38
 };
+
+class SongSort : public NodeSort {
+public:
+};

@@ -1,4 +1,5 @@
 #include "meta_band/SongRecord.h"
+#include "SavedSetlist.h"
 #include "decomp.h"
 #include "game/Defines.h"
 #include "meta_band/BandProfile.h"
@@ -11,6 +12,7 @@
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "stl/_pair.h"
+#include "utl/Locale.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols3.h"
 
@@ -170,4 +172,57 @@ BEGIN_HANDLERS(SongRecord)
     HANDLE_SUPERCLASS(Hmx::Object)
     HANDLE_MEMBER_PTR(((BandSongMetadata *)mData))
     HANDLE_CHECK(0x107)
+END_HANDLERS
+
+SetlistRecord::SetlistRecord(SavedSetlist *setlist) : mSetlist(setlist) {
+    mToken = setlist->GetIdentifyingToken();
+    BattleSavedSetlist *battleSetlist = dynamic_cast<BattleSavedSetlist *>(setlist);
+    unk24 = battleSetlist;
+    unk28 = battleSetlist ? battleSetlist->unk68 : -1;
+    unk2c = battleSetlist ? battleSetlist->unk70 : -1;
+    unk30 = battleSetlist ? battleSetlist->unk6c : 10;
+}
+
+bool SetlistRecord::IsLocal() const {
+    return mSetlist->GetType() == SavedSetlist::kSetlistLocal;
+}
+
+bool SetlistRecord::IsNetSetlist() const {
+    SavedSetlist::SetlistType ty = mSetlist->GetType();
+    return ty == SavedSetlist::kSetlistFriend || ty == SavedSetlist::kSetlistHarmonix
+        || ty == SavedSetlist::kBattleHarmonix || ty == SavedSetlist::kBattleFriend
+        || ty == SavedSetlist::kBattleHarmonixArchived
+        || ty == SavedSetlist::kBattleFriendArchived;
+}
+
+bool SetlistRecord::IsProfileOwner(const BandProfile *p) const {
+    LocalSavedSetlist *setlist = dynamic_cast<LocalSavedSetlist *>(mSetlist);
+    return !setlist ? false : (setlist->mOwnerProfile && setlist->mOwnerProfile == p);
+}
+
+const char *SetlistRecord::GetOwner() const {
+    const char *owner = mSetlist->GetOwner();
+    if (owner)
+        return owner;
+    else
+        Localize(harmonix, nullptr);
+}
+
+BEGIN_HANDLERS(SetlistRecord)
+    HANDLE_EXPR(id, unk28)
+    HANDLE_EXPR(get_owner, GetOwner())
+    HANDLE_EXPR(get_art_tex, mSetlist->GetArtTex())
+    HANDLE_EXPR(get_setlist_type_sym, SavedSetlist::SetlistTypeToSym(mSetlist->GetType()))
+    HANDLE_EXPR(is_local_setlist, mSetlist->GetType() == SavedSetlist::kSetlistLocal)
+    HANDLE_EXPR(is_net_setlist, IsNetSetlist())
+    HANDLE_EXPR(is_battle, mSetlist->IsBattle())
+    HANDLE_EXPR(is_profile_owner, IsProfileOwner(_msg->Obj<BandProfile>(2)))
+    HANDLE_EXPR(get_setlist, dynamic_cast<LocalSavedSetlist *>(mSetlist))
+    HANDLE_EXPR(get_song_count, (int)mSetlist->mSongs.size())
+    HANDLE_EXPR(get_length_ms, mSetlist->GetLengthMs())
+    HANDLE_EXPR(get_title, mSetlist->GetTitle())
+    HANDLE_EXPR(get_description, mSetlist->GetDescription())
+    HANDLE_EXPR(get_battle_time_left, unk2c)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0x17E)
 END_HANDLERS

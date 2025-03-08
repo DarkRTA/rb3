@@ -1,4 +1,5 @@
 #pragma once
+#include "BandProfile.h"
 #include "game/Defines.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/SavedSetlist.h"
@@ -48,7 +49,18 @@ public:
 class SetlistRecord : public Hmx::Object {
 public:
     SetlistRecord(SavedSetlist *);
+    virtual ~SetlistRecord() {}
+    virtual DataNode Handle(DataArray *, bool);
+
+    bool IsLocal() const;
+    bool IsNetSetlist() const;
+    bool IsProfileOwner(const BandProfile *) const;
+    const char *GetOwner() const;
 
     SavedSetlist *mSetlist; // 0x1c
     Symbol mToken; // 0x20
+    bool unk24; // 0x24
+    int unk28; // 0x28
+    int unk2c; // 0x2c
+    int unk30; // 0x30
 };
