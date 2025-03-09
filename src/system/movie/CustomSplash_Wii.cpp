@@ -128,7 +128,7 @@ void CustomSplash::DrawSplasher(unsigned char alpha) {
             GX_AF_NONE
         );
         GXSetNumTexGens(1);
-        GXSetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, 60);
+        GXSetTexCoordGen(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX_IDENT);
         // here lies the tev configuration. there is no honor to be gained here.
         GXColor col;
         col.r = 255;

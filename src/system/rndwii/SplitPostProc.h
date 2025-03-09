@@ -5,6 +5,7 @@
 #include "types.h"
 
 class WiiSplitPostProc : public PostProcessor {
+public:
     WiiSplitPostProc();
     virtual ~WiiSplitPostProc();
     virtual void OnGPHangRecover();

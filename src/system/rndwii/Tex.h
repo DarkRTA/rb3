@@ -1,5 +1,6 @@
 #pragma once
 
+#include "obj/ObjMacros.h"
 #include "revolution/gx/GXTypes.h"
 #include "rndobj/Tex.h"
 #include "utl/PoolAlloc.h"
@@ -25,6 +26,7 @@ public:
     void DisableFiltering(bool);
     void Select(_GXTexMapID);
     void *ImgData() { return mImageData; }
+    void *GetMovieLoadingFramePtr();
 
     u8 pad[32];
     void *mImageData; // 0x84
@@ -32,8 +34,9 @@ public:
 
     static bool bComposingOutfitTexture;
 
-    void *operator new(unsigned long i) { return _PoolAlloc(i, i, FastPool); }
-    void operator delete(void *obj) { _PoolFree(0xd0, FastPool, obj); }
+    NEW_POOL_OVERLOAD(WiiTex)
+    DELETE_POOL_OVERLOAD(WiiTex)
+    REGISTER_OBJ_FACTORY_FUNC(WiiTex)
 };
 
 extern std::set<WiiTex *> gRenderTextureSet;

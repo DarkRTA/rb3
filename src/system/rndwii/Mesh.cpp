@@ -18,6 +18,7 @@ int NUM_BUFFERS = 4;
 bool gToggleAO = true;
 void *DisplayList::sTemp;
 void *DisplayList::sCurr;
+void *gBoneTransformCache;
 
 static DataNode OnToggleAO(DataArray *) {
     gToggleAO = !gToggleAO;
@@ -106,11 +107,13 @@ DisplayList &DisplayList::operator<<(unsigned short us) {
         u8 *test = (u8 *)((u32)sCurr + 4);
         us &= 0xFF;
         sCurr = test;
+#ifdef MILO_DEBUG
         (((u32)sCurr < (u32)sTemp + kTempSize)
          || (TheDebugFailer
                  << (MakeString(kAssertStr, "Mesh.cpp", 210, "sCurr < sTemp + kTempSize")
                     ),
              0));
+#endif
         test[3] = us;
         test[2] = us;
         test[1] = us;
@@ -118,11 +121,13 @@ DisplayList &DisplayList::operator<<(unsigned short us) {
     } else {
         u16 *test = (u16 *)((u32)sCurr + 8);
         sCurr = test;
+#ifdef MILO_DEBUG
         (((u32)sCurr < (u32)sTemp + kTempSize)
          || (TheDebugFailer
                  << (MakeString(kAssertStr, "Mesh.cpp", 219, "sCurr < sTemp + kTempSize")
                     ),
              0));
+#endif
         test[3] = us;
         test[2] = us;
         test[1] = us;
@@ -183,6 +188,8 @@ void WiiMesh::Init() {
     GXSetVtxAttrFmt(GX_VTXFMT4, GX_VA_TEX0, GX_TEX_ST, (GXCompType)3, 9);
 
     DisplayList::Init();
+    gBoneTransformCache = (void *)0xe0000000;
+    MaxBones();
     DataRegisterFunc("toggle_ao", OnToggleAO);
 }
 

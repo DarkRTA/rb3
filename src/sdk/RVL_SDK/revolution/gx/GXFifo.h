@@ -8,13 +8,15 @@ extern "C" {
 
 GX_DECL_PUBLIC_STRUCT(GXFifoObj, 128);
 
-void GXGetGPStatus(u8*, u8*, u8*, u8*, u8*);
+void GXGetGPStatus(u8 *, u8 *, u8 *, u8 *, u8 *);
+u32 GXGetOverflowCount();
+void GXResetOverflowCount();
 
-void GXSetCPUFifo(GXFifoObj*);
-BOOL GXGetCPUFifo(GXFifoObj*);
+void GXSetCPUFifo(GXFifoObj *);
+BOOL GXGetCPUFifo(GXFifoObj *);
 
-u32 GXGetFifoCount(GXFifoObj*);
-u8 GXGetFifoWrap(GXFifoObj*);
+u32 GXGetFifoCount(GXFifoObj *);
+u8 GXGetFifoWrap(GXFifoObj *);
 
 #ifdef __cplusplus
 }

@@ -207,12 +207,12 @@ void Splash::SetWaitForSplash(bool b) {
     mWaitForSplash = b;
 }
 
-void Splash::AddScreen(const char *s, int i) {
+void Splash::AddScreen(const char *s, int msecs) {
     MILO_ASSERT(!gSplashing, 368);
     CriticalSection *cs = &unk_0xD4;
     ScreenParams sp;
-    sp.unk_0x0 = s;
-    sp.unk_0x4 = i;
+    sp.fname = s;
+    sp.msecs = msecs;
     if (cs)
         cs->Enter();
     mScreens.push_back(sp);

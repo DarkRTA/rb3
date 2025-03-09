@@ -48,6 +48,9 @@ public:
     void NextTest();
     void EndTest();
 
+    NEW_OBJ(BudgetScreen)
+    REGISTER_OBJ_FACTORY_FUNC(BudgetScreen)
+
 private:
     UIPanel *mTestPanel;
 

@@ -21,7 +21,7 @@ public:
     unsigned int unk_64; // 0x64
     TPLPalette *mPalette; // 0x68
     GXTexObj mGXTexObj; // 0x6C
-    char fname[0x400];
+    char fname[0x400]; // 0x8C mayhaps overkill
 
     char unk_48c; // 0x48C
     char unk_48d; // 0x48D

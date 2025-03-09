@@ -12,8 +12,9 @@ public:
 
     void Reset();
     void SelectParticles();
-    void Select(bool);
+    bool Select(bool);
     void SetModelviewTexGen();
+    void SetTexGen(GXTexCoordID, GXTexMtx);
 
     static void SetOverrideAlphaWrite(bool set) { sOverrideAlphaWrite = set; }
     static WiiMat *sCurrent;

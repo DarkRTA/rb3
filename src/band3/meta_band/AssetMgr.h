@@ -14,7 +14,7 @@ class AssetMgr : public Hmx::Object {
 public:
     AssetMgr();
     virtual ~AssetMgr();
-    void Init();
+    static void Init();
     static AssetMgr *GetAssetMgr();
     Asset *GetAsset(Symbol) const;
     bool HasAsset(Symbol) const;

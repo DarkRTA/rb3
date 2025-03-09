@@ -51,6 +51,7 @@ void ScrambleXfms(RndMultiMesh *mm);
 void RndUtlPreInit();
 void RndUtlInit();
 void RndUtlTerminate();
+void PreMultiplyAlpha(Hmx::Color &);
 
 DataNode GetNormalMapTextures(ObjectDir *);
 DataNode GetRenderTextures(ObjectDir *);

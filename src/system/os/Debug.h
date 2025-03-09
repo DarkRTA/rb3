@@ -43,7 +43,7 @@ public:
     void StartLog(const char *, bool);
     void StopLog();
     void Init();
-    void *SetModalCallback(ModalCallbackFunc *);
+    ModalCallbackFunc *SetModalCallback(ModalCallbackFunc *);
     void Exit(int, bool);
     void Modal(bool &, const char *);
 
