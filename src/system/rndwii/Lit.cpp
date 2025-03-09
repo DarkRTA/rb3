@@ -3,6 +3,7 @@
 #include "math/Rot.h"
 #include "revolution/gx/GXLight.h"
 #include "revolution/gx/GXTypes.h"
+#include "rndwii/Rnd.h"
 #include <cmath>
 
 void WiiLight::Update(GXLightID lit) {
@@ -10,7 +11,7 @@ void WiiLight::Update(GXLightID lit) {
     src_col.alpha = 0;
 
     if (!mOnlyProjection) {
-        int c = src_col.Pack(); // something like this, not sure
+        int c = MakeU32Color(src_col);
         GXInitLightColor(&mLight, *(GXColor *)&c);
     }
 

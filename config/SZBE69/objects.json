@@ -329,6 +329,7 @@
         "objects": {
             "network/Platform/BadEvents.cpp": "Matching",
             "network/Platform/DateTime.cpp": "NonMatching",
+            "network/Platform/ExceptionHandler.cpp": "Matching",
             "network/Platform/Platform.cpp": "NonMatching",
             "network/Platform/RandomNumberGenerator.cpp": "Matching",
             "network/Platform/RefCountedObject.cpp": "NonMatching",
@@ -563,6 +564,7 @@
             "system/math/StreamChecksum.cpp": "NonMatching",
             "system/math/Trig.cpp": "NonMatching",
             "system/math/Key.cpp": "NonMatching",
+            "system/math/Vec.cpp": "NonMatching",
 
             "system/meta/Achievements.cpp": "Equivalent",
             "system/meta/ButtonHolder.cpp": "NonMatching",

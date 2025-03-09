@@ -17,12 +17,13 @@ static int gCurThread;
 static int gNumThreads;
 
 static char *NextBuf() {
+#ifdef VERSION_SZBE69_B8
     if (!gLock) {
         InitMakeString();
         TheDebug << MakeString("MakeString before InitMakeString!\n");
         MILO_FAIL("MakeString before InitMakeString!");
     }
-
+#endif
     CritSecTracker tracker(gLock);
 
     int i2;

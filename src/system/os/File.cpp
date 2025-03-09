@@ -1,4 +1,5 @@
 #include "os/File.h"
+#include "decomp.h"
 #include "obj/Data.h"
 #include "os/OSFuncs.h"
 #include "os/ArkFile.h"
@@ -72,14 +73,18 @@ static DataNode OnWithFileRoot(DataArray *da) {
     return ret;
 }
 
+DECOMP_FORCEACTIVE(File, "calling synchproc on non-pc platform")
+
 static DataNode OnSynchProc(DataArray *da) {
+#ifdef VERSION_SZBE69_B8
     MILO_FAIL("calling synchproc on non-pc platform");
+#else
+
+#endif
     return "";
 }
 
 static DataNode OnToggleFakeFileErrors(DataArray *da) { return 0; }
-
-DECOMP_FORCEACTIVE(File, "_keep_%s.dta")
 
 void OnFrameRateRecurseCB(const char *cc1, const char *cc2) {
     MILO_ASSERT(gFrameRateArray, 0x148);

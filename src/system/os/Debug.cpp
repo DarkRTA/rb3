@@ -38,7 +38,7 @@ int DbgGetFrameID() {
         return 0;
 }
 
-void *Debug::SetModalCallback(ModalCallbackFunc *func) {
+ModalCallbackFunc *Debug::SetModalCallback(ModalCallbackFunc *func) {
     if (mNoModal)
         return 0;
     ModalCallbackFunc *oldFunc = mModalCallback;
@@ -110,9 +110,9 @@ void Debug::SetDisabled(bool b) { mNoDebug = b; }
 void Debug::Notify(const char *msg) {
     if (!mNoDebug) {
         if (!MainThread())
-            TheDebug << MakeString("THREAD-NOTIFY not called in MainThread: %s\n", msg);
+            MILO_LOG("THREAD-NOTIFY not called in MainThread: %s\n", msg);
         else
-            TheDebug << MakeString("NOTIFY: %s\n", msg);
+            MILO_LOG("NOTIFY: %s\n", msg);
     }
 }
 

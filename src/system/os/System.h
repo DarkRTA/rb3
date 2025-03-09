@@ -53,6 +53,7 @@ void SystemPoll(bool pollTasks);
 void SetSystemArgs(int, char **);
 void SystemPreInit(int, char **, const char *);
 void SystemPreInit(const char *);
+void SystemInit(const char *);
 
 void CaptureStackTrace(int depth, unsigned int *trace);
 void AppendStackTrace(char *msg);

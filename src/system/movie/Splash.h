@@ -23,8 +23,8 @@ public:
     };
 
     struct ScreenParams {
-        const char *unk_0x0;
-        int unk_0x4;
+        const char *fname;
+        int msecs;
     };
 
     struct PreparedScreenParams {

@@ -57,7 +57,9 @@ void __GXSetVAT(void);
 inline
 #endif
     static void
-    GXSetTexCoordGen(GXTexCoordID id, GXTexGenType type, GXTexGenSrc src, u32 texMtxIdx) {
+    GXSetTexCoordGen(
+        GXTexCoordID id, GXTexGenType type, GXTexGenSrc src, GXTexMtx texMtxIdx
+    ) {
     GXSetTexCoordGen2(id, type, src, texMtxIdx, FALSE, GX_DUALMTX_IDENT);
 }
 

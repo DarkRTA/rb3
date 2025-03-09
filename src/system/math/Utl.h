@@ -163,6 +163,8 @@ inline void Interp(float a, float b, float t, float &fres) { fres = t * (b - a) 
 
 inline void Interp(bool a, bool b, float t, bool &bres) { bres = t < 1.0f ? a : b; }
 
+inline float InterpAng(float, float, float) {}
+
 inline float InverseLerp(float min, float max, float value) {
     // Prevent divide-by-zero from zero-sized range
     if (max != min) {
