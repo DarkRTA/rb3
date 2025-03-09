@@ -2,7 +2,11 @@
 #include "SongSortByRecent.h"
 #include "SongSortByReview.h"
 #include "decomp.h"
+#include "meta_band/MusicLibrary.h"
+#include "meta_band/ProfileMgr.h"
+#include "meta_band/SavedSetlist.h"
 #include "meta_band/SetlistSortByLocation.h"
+#include "meta_band/SongRecord.h"
 #include "meta_band/SongSort.h"
 #include "meta_band/SongSortByArtist.h"
 #include "meta_band/SongSortByDiff.h"
@@ -13,6 +17,7 @@
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "os/System.h"
+#include "stl/_pair.h"
 #include "utl/Symbols3.h"
 
 SongSortMgr *TheSongSortMgr;
@@ -40,6 +45,37 @@ SongSortMgr::~SongSortMgr() {
     for (int i = 0; i < kNumSongSortTypes; i++) {
         RELEASE(mSorts[i]);
     }
+}
+
+void SongSortMgr::BuildSetlistList() {
+    mSetlists.clear();
+    if (unk3c.empty()) {
+        BuildInternalSetlists();
+    }
+    FOREACH (it, unk3c) {
+        SetlistRecord record(*it);
+        Symbol token = record.GetToken();
+        mSetlists.insert(std::make_pair(token, record));
+    }
+    std::vector<BandProfile *> profiles = TheProfileMgr.GetSignedInProfiles();
+    FOREACH (pit, profiles) {
+        const std::vector<LocalSavedSetlist *> &setlists = (*pit)->GetSavedSetlists();
+        FOREACH (it, setlists) {
+            SetlistRecord record(*it);
+            Symbol token = record.GetToken();
+            mSetlists.insert(std::make_pair(token, record));
+        }
+    }
+    if (TheMusicLibrary->NetSetlistsSucceeded()) {
+        std::vector<NetSavedSetlist *> setlists;
+        TheMusicLibrary->GetNetSetlists(setlists);
+        FOREACH (it, setlists) {
+            SetlistRecord record(*it);
+            Symbol token = record.GetToken();
+            mSetlists.insert(std::make_pair(token, record));
+        }
+    }
+    MILO_ASSERT(mSetlists.size(), 0xF0);
 }
 
 void SongSortMgr::BuildSortTree(SongSortType ty) {

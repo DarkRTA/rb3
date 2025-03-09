@@ -3,6 +3,7 @@
 #include "SongSortByReview.h"
 #include "beatmatch/TrackType.h"
 #include "meta/StoreOffer.h"
+#include "meta_band/SavedSetlist.h"
 #include "meta_band/SetlistSortByLocation.h"
 #include "meta_band/SongRecord.h"
 #include "meta_band/SongSortByArtist.h"
@@ -80,13 +81,15 @@ public:
     void BuildSortList(SongSortType);
     void ClearAllSorts();
     bool InqSongsForSetlist(Symbol, std::vector<Symbol> &);
+    void BuildSetlistList();
+    void BuildInternalSetlists();
 
     static void Init();
 
     std::map<Symbol, SongRecord> mSongs; // 0x4
     std::map<Symbol, SetlistRecord> mSetlists; // 0x1c
     std::vector<StoreOffer *> unk34;
-    std::vector<int> unk3c;
+    std::vector<SavedSetlist *> unk3c;
     NodeSort *mSorts[kNumSongSortTypes]; // 0x44
 };
 

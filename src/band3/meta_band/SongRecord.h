@@ -57,6 +57,7 @@ public:
     bool IsNetSetlist() const;
     bool IsProfileOwner(const BandProfile *) const;
     const char *GetOwner() const;
+    Symbol GetToken() const { return mToken; }
 
     SavedSetlist *mSetlist; // 0x1c
     Symbol mToken; // 0x20
