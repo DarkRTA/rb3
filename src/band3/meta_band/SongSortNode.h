@@ -22,21 +22,21 @@ class SongSortCmp {
 public:
     SongSortCmp() {}
     virtual ~SongSortCmp() {}
-    virtual bool Compare(SongSortCmp const *, SongNodeType) const = 0;
+    virtual int Compare(SongSortCmp const *, SongNodeType) const = 0;
     virtual bool HasSubheader() const { return false; }
     virtual void Finish() {}
 };
 
 class Node : public Hmx::Object {
 public:
-    Node(SongSortCmp *cmp) : mCmp(0), mParent(0) {}
+    Node(SongSortCmp *cmp) : mCmp(cmp), mParent(0) {}
     virtual ~Node();
     virtual SongNodeType GetType() const = 0;
     virtual Symbol GetToken() const = 0;
     virtual bool LocalizeToken() const { return true; }
     virtual DateTime *GetDateTime() const { return nullptr; }
 
-    bool Compare(const Node *, SongNodeType) const;
+    int Compare(const Node *, SongNodeType) const;
     void SetParent(Node *parent) { mParent = parent; }
     SongSortCmp *Cmp() const { return mCmp; }
 
@@ -47,11 +47,11 @@ public:
 struct CompareLeaves {
     bool operator()(const Node *n1, const Node *n2) const {
         if (n2->GetType() == kNodeSong) {
-            return n1->Compare(n2, kNodeSong);
+            return n1->Compare(n2, kNodeSong) < 0;
         } else if (n2->GetType() == kNodeStoreSong) {
-            return n1->Compare(n2, kNodeStoreSong);
+            return n1->Compare(n2, kNodeStoreSong) < 0;
         } else if (n2->GetType() == kNodeSetlist) {
-            return n1->Compare(n2, kNodeSetlist);
+            return n1->Compare(n2, kNodeSetlist) < 0;
         } else {
             MILO_FAIL("bad leaf node comparison");
             return false;
@@ -86,6 +86,7 @@ public:
     bool mLocalizeToken; // 0x2c
     DateTime *mDateTime; // 0x30
     std::list<SortNode *> mChildren; // 0x34
+    int unk3c;
 };
 
 class SortNode : public Node {
@@ -139,7 +140,7 @@ public:
     virtual const char *GetAlbumArtPath();
     virtual void Insert(LeafSortNode *, NodeSort *, bool);
 
-    bool unk34; // 0x34 - cover
+    bool mCover; // 0x34 - cover
     int unk38; // 0x38 - disc count
     int unk3c; // 0x3c - download count
     Symbol mToken; // 0x40
@@ -211,7 +212,8 @@ public:
 
 class OwnedSongSortNode : public SongSortNode {
 public:
-    OwnedSongSortNode(SongSortCmp *cmp) : SongSortNode(cmp) {}
+    OwnedSongSortNode(SongSortCmp *cmp, SongRecord *record)
+        : SongSortNode(cmp), mSongRecord(record) {}
     virtual ~OwnedSongSortNode() {}
     virtual DataNode Handle(DataArray *, bool);
     virtual SongNodeType GetType() const { return kNodeSong; }

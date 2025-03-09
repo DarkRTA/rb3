@@ -5,6 +5,7 @@
 #include "game/Defines.h"
 #include "meta/SongPreview.h"
 #include "meta_band/HeaderPerformanceProvider.h"
+#include "meta_band/SavedSetlist.h"
 #include "meta_band/SongSortMgr.h"
 #include "net/Synchronize.h"
 #include "net_band/DataResults.h"
@@ -87,6 +88,12 @@ public:
     int SetlistSize();
     bool SetlistIsFull();
     bool CanHeadersBeSelected();
+    ScoreType ActiveScoreType() const;
+    bool GetMakingSetlist(bool) const;
+    bool NetSetlistsFailed();
+    bool NetSetlistsSucceeded();
+    Symbol DifficultySortPart() const;
+    void GetNetSetlists(std::vector<NetSavedSetlist *> &) const;
 
     static void Init(SongPreview &);
 

@@ -500,7 +500,7 @@ bool BandProfile::HasSomethingToUpload() {
         return false;
     else {
         FOREACH (it, mSavedSetlists) {
-            if ((*it)->unk4d)
+            if ((*it)->mNeedsUpload)
                 return true;
         }
         FOREACH (it, mCharacters) {

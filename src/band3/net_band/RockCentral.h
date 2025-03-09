@@ -44,6 +44,11 @@ public:
     void
     SyncAvailableSongs(const std::vector<BandProfile *> &, const std::vector<int> &, const std::vector<int> &, Hmx::Object *);
     void GetTickerInfo(const Profile *, ScoreType, DataResultList &, Hmx::Object *);
+
+    DataResultList unk1c;
+    int unk34;
+    int unk38;
+    int unk3c;
 };
 
 extern RockCentral TheRockCentral;

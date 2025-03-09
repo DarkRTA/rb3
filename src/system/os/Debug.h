@@ -160,10 +160,8 @@ namespace {
             return false;
         }
 
-        for (std::list<String>::iterator it = notifies.begin(); it != notifies.end();
-             it++) {
-            bool equal = !strcmp(it->c_str(), name);
-            if (equal) {
+        FOREACH (it, notifies) {
+            if (streq(it->c_str(), name)) {
                 return false;
             }
         }
