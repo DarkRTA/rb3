@@ -14,14 +14,18 @@ public:
     virtual int NumData() const;
     virtual bool IsActive(int) const;
     virtual void DeleteTree();
-    virtual void Init();
+    virtual void Init() {}
     virtual ShortcutNode *NewShortcutNode(LeafSortNode *) const = 0;
     virtual HeaderSortNode *NewHeaderNode(LeafSortNode *) const = 0;
     virtual SubheaderSortNode *NewSubheaderNode(LeafSortNode *) const = 0;
-    virtual void ConfirmSubheaders(HeaderSortNode *);
-    virtual void Clear();
-    virtual bool CustomForNode(ShortcutNode *, UIListCustom *, Hmx::Object *) const;
-    virtual const char *TextForNode(ShortcutNode *, UIListLabel *, UILabel *) const;
+    virtual void ConfirmSubheaders(HeaderSortNode *) {}
+    virtual void Clear() {}
+    virtual bool CustomForNode(ShortcutNode *, UIListCustom *, Hmx::Object *) const {
+        return false;
+    }
+    virtual const char *TextForNode(ShortcutNode *, UIListLabel *, UILabel *) const {
+        return nullptr;
+    }
     virtual bool IsReady() const;
     virtual void PollReady();
     virtual void MakeReady();

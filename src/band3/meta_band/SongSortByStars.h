@@ -17,6 +17,7 @@ public:
 };
 
 class SongSortByStars : public SongSort {
+public:
     SongSortByStars() { mShortName = by_stars; }
     virtual ~SongSortByStars() {}
     virtual void Init();
@@ -26,4 +27,6 @@ class SongSortByStars : public SongSort {
     virtual HeaderSortNode *NewHeaderNode(SongSortNode *) const;
     virtual OwnedSongSortNode *NewSongNode(SongRecord *) const;
     virtual StoreSongSortNode *NewSongNode(class StoreOffer *) const;
+
+    Symbol unk3c;
 };

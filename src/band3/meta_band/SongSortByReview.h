@@ -16,6 +16,7 @@ public:
 };
 
 class SongSortByReview : public SongSort {
+public:
     SongSortByReview() { mShortName = by_review; }
     virtual ~SongSortByReview() {}
     virtual bool CustomForNode(ShortcutNode *, UIListCustom *, Hmx::Object *) const;

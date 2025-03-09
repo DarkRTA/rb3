@@ -15,6 +15,7 @@ public:
 };
 
 class SongSortBySong : public SongSort {
+public:
     SongSortBySong() { mShortName = by_song; }
     virtual ~SongSortBySong() {}
     virtual void Init();

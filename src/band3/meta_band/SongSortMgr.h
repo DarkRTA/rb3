@@ -1,5 +1,16 @@
 #pragma once
+#include "SongSortByRecent.h"
+#include "SongSortByReview.h"
 #include "beatmatch/TrackType.h"
+#include "meta/StoreOffer.h"
+#include "meta_band/SetlistSortByLocation.h"
+#include "meta_band/SongRecord.h"
+#include "meta_band/SongSortByArtist.h"
+#include "meta_band/SongSortByDiff.h"
+#include "meta_band/SongSortByPlays.h"
+#include "meta_band/SongSortByRank.h"
+#include "meta_band/SongSortBySong.h"
+#include "meta_band/SongSortByStars.h"
 #include "os/Debug.h"
 #include "utl/Symbol.h"
 #include <vector>
@@ -15,6 +26,19 @@ enum FilterType {
     kFilterGenre = 6,
     // some missing enums here
     kNumFilterTypes = 0xB
+};
+
+enum SongSortType {
+    kSongSortBySong = 0,
+    kSongSortByArtist = 1,
+    kSongSortByDiff = 2,
+    kSongSortByStars = 3,
+    kSongSortByRank = 4,
+    kSongSortByRecent = 5,
+    kSongSortByPlays = 6,
+    kSongSortByReview = 7,
+    kSetlistSortByLocation = 8,
+    kNumSongSortTypes = 9
 };
 
 class SongSortMgr {
@@ -52,8 +76,18 @@ public:
     virtual ~SongSortMgr();
 
     bool DoesSongMatchFilter(int, const SongFilter *, Symbol) const;
+    void BuildSortTree(SongSortType);
+    void BuildSortList(SongSortType);
+    void ClearAllSorts();
+    bool InqSongsForSetlist(Symbol, std::vector<Symbol> &);
 
     static void Init();
+
+    std::map<Symbol, SongRecord> mSongs; // 0x4
+    std::map<Symbol, SetlistRecord> mSetlists; // 0x1c
+    std::vector<StoreOffer *> unk34;
+    std::vector<int> unk3c;
+    NodeSort *mSorts[kNumSongSortTypes]; // 0x44
 };
 
 extern SongSortMgr *TheSongSortMgr;

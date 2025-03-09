@@ -15,6 +15,7 @@ public:
 };
 
 class SongSortByPlays : public SongSort {
+public:
     SongSortByPlays() { mShortName = by_plays; }
     virtual ~SongSortByPlays() {}
     virtual ShortcutNode *NewShortcutNode(SongSortNode *) const;

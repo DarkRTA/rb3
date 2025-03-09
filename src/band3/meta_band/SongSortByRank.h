@@ -1,6 +1,7 @@
 #pragma once
 #include "meta_band/SongSort.h"
 #include "meta_band/SongSortNode.h"
+#include "net_band/DataResults.h"
 #include "utl/Symbols.h"
 
 class RankCmp : public SongSortCmp {
@@ -22,6 +23,7 @@ public:
 };
 
 class SongSortByRank : public SongSort {
+public:
     SongSortByRank() { mShortName = by_rank; }
     virtual ~SongSortByRank() {}
     virtual DataNode Handle(DataArray *, bool);
@@ -33,4 +35,7 @@ class SongSortByRank : public SongSort {
     virtual HeaderSortNode *NewHeaderNode(SongSortNode *) const;
     virtual OwnedSongSortNode *NewSongNode(SongRecord *) const;
     virtual StoreSongSortNode *NewSongNode(class StoreOffer *) const;
+
+    std::map<int, bool> mRankings; // 0x3c
+    DataResultList mDataResults; // 0x54
 };
