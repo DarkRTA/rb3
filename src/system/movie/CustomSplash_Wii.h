@@ -14,6 +14,7 @@ public:
     void InitSplasher();
     void DrawSplasher(unsigned char);
     TPLPalette *LoadFile(const char *, uint &, void *(*)(int));
+    void SetUnk490(bool b) { unk_490 = b; }
 
     Timer mTimer1; // 0x0
     Timer mTimer2; // 0x30

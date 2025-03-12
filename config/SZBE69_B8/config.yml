@@ -28,6 +28,21 @@ block_relocations:
   end: .text:0x80A2F20C
 
 add_relocations:
+- source: .text:0x8000eba0
+  type: l
+  target: TheLoadMgr
+- source: .text:0x8000ed40
+  type: l
+  target: TheLoadMgr
+- source: .text:0x8000ef30
+  type: l
+  target: TheLoadMgr
+- source: .text:0x8000f578
+  type: l
+  target: TheLoadMgr
+- source: .text:0x8000f784
+  type: l
+  target: TheLoadMgr
 - source: .text:0x8017371c
   type: l
   target: TheLoadMgr

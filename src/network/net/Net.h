@@ -16,6 +16,7 @@ public:
 
     void Init();
     void Terminate();
+    void Poll();
     NetGameData *GetGameData();
     NetSession *GetNetSession() const { return mSession; }
     Server *GetServer() const { return mServer; }

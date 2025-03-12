@@ -112,6 +112,7 @@ public:
     BandProfile *GetProfileFromPad(int);
     void SetPrimaryProfileByUser(const LocalUser *);
     GameplayOptions *GetGameplayOptionsFromUser(LocalBandUser *);
+    void Poll();
 
     DECLARE_REVS;
 

@@ -5,4 +5,6 @@
 #include "track/TrackTest.h"
 #include "track/TrackWidget.h"
 
+void TrackInit();
+
 #endif // TRACK_TRACK_H

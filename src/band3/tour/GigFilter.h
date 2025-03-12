@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/MusicLibrary.h"
 #include "system/obj/Data.h"
 #include "meta_band/SongSortMgr.h"
 
@@ -12,8 +13,7 @@ public:
     bool IsInternal() const;
     const SongSortMgr::SongFilter &GetFilter() const;
     Symbol GetFilteredPartSym() const;
-    // void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, int, Symbol)
-    // const;
+    void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask &, int, Symbol) const;
     float GetWeight() const;
 
     Symbol mName; // 0x04

@@ -94,6 +94,7 @@ public:
     bool NetSetlistsSucceeded();
     Symbol DifficultySortPart() const;
     void GetNetSetlists(std::vector<NetSavedSetlist *> &) const;
+    void Poll();
 
     static void Init(SongPreview &);
 

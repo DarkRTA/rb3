@@ -2,6 +2,7 @@
 #include "BudgetScreen.h"
 #include "ChecksumData_wii.h"
 #include "MSL_Common/null_def.h"
+#include "beatmatch/BeatMatch.h"
 #include "bandobj/Band.h"
 #include "bandobj/PatchDir.h"
 #include "char/Char.h"
@@ -12,6 +13,7 @@
 #include "meta/Achievements.h"
 #include "meta/FixedSizeSaveable.h"
 #include "meta/WiiProfileMgr.h"
+#include "meta_band/AccomplishmentManager.h"
 #include "meta_band/AssetMgr.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/CharCache.h"
@@ -20,11 +22,16 @@
 #include "meta_band/ContextChecker.h"
 #include "meta_band/LessonMgr.h"
 #include "meta_band/MetaPanel.h"
+#include "meta_band/MusicLibrary.h"
 #include "meta_band/PrefabMgr.h"
+#include "meta_band/ProfileMgr.h"
 #include "meta_band/SaveLoadManager.h"
 #include "meta_band/TrainingMgr.h"
+#include "meta_band/UIStats.h"
 #include "movie/CustomSplash_Wii.h"
 #include "movie/Splash.h"
+#include "net/Net.h"
+#include "net_band/EntityUploader.h"
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
@@ -43,8 +50,10 @@
 #include "rndwii/Rnd.h"
 #include "synth/BinkReader.h"
 #include "synth/Synth.h"
-#include "tour/QuestManager.h"
+#include "band3/tour/QuestManager.h"
+#include "track/Track.h"
 #include "ui/UI.h"
+#include "ui/UIList.h"
 #include "utl/Cheats.h"
 #include "utl/Loader.h"
 #include "utl/Magnu.h"
@@ -52,9 +61,12 @@
 #include "utl/MemMgr.h"
 #include "utl/Rso_Utl.h"
 #include "utl/Option.h"
+#include "world/World.h"
 #include <revolution/VI.h>
 
+#ifdef VERSION_SZBE69_B8
 DECOMP_FORCEACTIVE(App, "_unresolved func.\n")
+#endif
 u64 sNullMicClientID;
 ModalCallbackFunc *gRealCallback;
 
@@ -64,6 +76,10 @@ const int regularArks = 3;
 
 extern bool gInitComplete;
 
+#ifdef VERSION_SZBE69
+#pragma push
+#pragma dont_inline on
+#endif
 void AppDebugModal(bool &b, char *abc, bool b2) {
     if (!b) {
         static DataNode &notify_level = DataVariable("notify_level");
@@ -72,11 +88,11 @@ void AppDebugModal(bool &b, char *abc, bool b2) {
             gRealCallback(b, abc, b2);
             return;
         } else if (notif_lvl == 1) {
-            Hmx::Object *disp = ObjectDir::Main()->FindObject("cheat_display", false);
+            Hmx::Object *disp = ObjectDir::sMainDir->FindObject("cheat_display", false);
             if (disp) {
                 static Message show("show_prio", 0, 0);
-                show->Node(2) = DataNode(abc);
-                show->Node(3) = DataNode(200);
+                show[0] = DataNode(abc);
+                show[1] = DataNode(200);
                 disp->Handle(show, 0);
             } else
                 goto asdf;
@@ -89,13 +105,20 @@ void AppDebugModal(bool &b, char *abc, bool b2) {
 }
 
 App::App(int argc, char **argv) {
+    static const int kESRBMs = 4000;
+    static const int kRegularSplashMs = 4000;
     Timer init_time;
     init_time.Start();
     InitMakeString();
     class String s;
     if (argc == 0) {
+#ifdef MILO_DEBUG
         s = "band_r_wii.elf";
-        argv = &s.mStr;
+#else
+        s = "band_s_wii.elf";
+#endif
+        const char *c = s.c_str();
+        argv = const_cast<char **>(&c);
         argc = 1;
     }
     RsoAddIniter(CntSdRsoInit, CntSdRsoTerminate);
@@ -103,22 +126,35 @@ App::App(int argc, char **argv) {
     SetFileChecksumData();
     SystemPreInit(argc, argv, "config/band_preinit_keep.dta");
     TheRnd->PreInit();
+    ThePlatformMgr.mDiscErrorMgr->mActive = true;
+#ifdef MILO_DEBUG
     TheRnd->SetClearColor(Hmx::Color(1, 0, 0));
+#else
+    TheRnd->SetClearColor(Hmx::Color(0, 0, 0));
+#endif
     TheRnd->Init();
     VISetBlack(true);
     VIFlush();
     bool fast = OptionBool("fast", false);
     Splash spl;
+#ifdef MILO_DEBUG
     if (fast || !UsingCD()) {
+#else
+    if (fast) {
+#endif
         spl.SetWaitForSplash(false);
     }
     if (ThePlatformMgr.GetRegion() == 1) {
-        spl.AddScreen("ui/startup/eng/startup_autosave_esrb_keep.milo", 4000);
+        spl.AddScreen("ui/startup/eng/startup_autosave_esrb_keep.milo", kRegularSplashMs);
     } else {
-        spl.AddScreen("ui/startup/eng/startup_autosave_keep.milo", 4000);
+        spl.AddScreen("ui/startup/eng/startup_autosave_keep.milo", kRegularSplashMs);
     }
     spl.AddScreen("ui/startup/startup_mtv_keep.milo", 2000);
-    if (spl.unk_0x64 && UsingCD()) {
+#ifdef VERSION_SZBE69_B8
+    if (spl.Unk64() && UsingCD()) {
+#else
+    if (spl.Unk64()) {
+#endif
         if (TheRnd->GetAspect() == Rnd::kWidescreen) {
             spl.AddScreen("ui/startup/startup_movie_keep_wide.milo", 2000);
         } else {
@@ -133,13 +169,17 @@ App::App(int argc, char **argv) {
     gInitComplete = false;
 
     CustomSplash csplash;
+#ifdef VERSION_SZBE69_B8
     if (fast || !UsingCD()) {
-        csplash.unk_490 = 0;
+#else
+    if (fast) {
+#endif
+        csplash.SetUnk490(0);
     }
     csplash.Init();
     csplash.Show();
     SynthInit();
-    //	Movie::Init();
+    Movie::Init();
     csplash.EndShow();
     gInitComplete = true;
     TheRnd->BeginDrawing();
@@ -151,80 +191,64 @@ App::App(int argc, char **argv) {
     }
     spl.PrepareRemaining();
     SystemInit("config/band_keep.dta");
+#ifdef MILO_DEBUG
     MagnuInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    if (TheSplasher)
-        TheSplasher->Poll();
+#endif
+    PollTheSplasher();
+    PollTheSplasher();
     static DataNode &notify_level = DataVariable("notify_level");
     notify_level = DataNode(1);
     gRealCallback = TheDebug.SetModalCallback(AppDebugModal);
     BinkReaderHeapInit();
     FixedSizeSaveable::Init(151, 5688);
     BandUserMgrInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    // TheNet.Init();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    // TheRockCentral.Init(false);
-    if (TheSplasher)
-        TheSplasher->Poll();
-    // TheEntityUploader->Init();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
+    TheNet.Init();
+    PollTheSplasher();
+    TheRockCentral.Init(false);
+    PollTheSplasher();
+    TheEntityUploader->Init();
+    PollTheSplasher();
     GameMicManager::Init();
     UsbMidiKeyboard::Init();
     UsbMidiGuitar::Init();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
     {
-        ObjDirPtr<ObjectDir> oPtr(0);
-        DirLoader *ldr = nullptr;
-        FilePath fp(SystemConfig("sound", "banks", "common")->Str(1));
-        if (ldr != nullptr && ldr->IsLoaded()) {
-            if (ldr != nullptr) {
-                TheLoadMgr.PollUntilLoaded(ldr, nullptr);
-                ObjectDir *dir = ldr->GetDir();
-            }
-        }
+        ObjDirPtr<ObjectDir> oPtr;
+        Loader *ldr = nullptr;
+        oPtr.LoadFile(
+            SystemConfig("sound", "banks", "common")->Str(1), 0, 1, kLoadFront, 0
+        );
+        TheSynth->SetUnk40(oPtr.Ptr());
+        PollTheSplasher();
     }
 
     SaveLoadManager::Init();
     CharInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    // BeatMatchInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    // TrackInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    // WorldInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
+    BeatMatchInit();
+    PollTheSplasher();
+    TrackInit();
+    PollTheSplasher();
+    WorldInit();
+    PollTheSplasher();
     BandInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
     TheSongMgr.Init();
     MetaPanel::Init();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
     GameInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
+#ifdef MILO_DEBUG
     // BandOffline::Init()
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
     BudgetScreen::Register();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
+#endif
     ContextCheckerInit();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    TheSynth->Init();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
+    TheSynth->SetDolby(0, 1);
+    PollTheSplasher();
     CharCache::Init();
     PrefabMgr::Init(nullptr);
     CharSync::Init(nullptr);
@@ -233,20 +257,20 @@ App::App(int argc, char **argv) {
     ClosetMgr::Init();
     TrainingMgr::Init();
     PatchDir::Init();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
     TheWiiProfileMgr.Init(151, 45);
     TheUI.Init();
     TheCharSync->UpdateCharCache();
-    if (TheSplasher)
-        TheSplasher->Poll();
+    PollTheSplasher();
     TheQuestMgr.Init(SystemConfig("tour"));
     // InitStoreOverlay();
-    if (TheSplasher)
-        TheSplasher->Poll();
-    if (UsingCD() && NewFile("charnames.zbm", 0x10002) == nullptr) {
-        ThePlatformMgr.SetDiskError(kDiskError);
-    }
+    PollTheSplasher();
+#ifdef VERSION_SZBE69_B8
+    if (UsingCD())
+#endif
+        if (NewFile("charnames.zbm", 0x10002) == nullptr) {
+            ThePlatformMgr.SetDiskError(kDiskError);
+        }
     if (TheArchive != nullptr) {
         TheArchive->SetArchivePermission(1, &charArk);
     }
@@ -254,22 +278,31 @@ App::App(int argc, char **argv) {
     float total_time = init_time.SplitMs();
     if (TheArchive != nullptr) {
         TheArchive->SetArchivePermission(7, &regularArks);
+#ifdef MILO_DEBUG
         if (Archive::DebugArkOrder()) {
             MILO_LOG("Startup Time: %f %f\n", splasher_time, splasher_time - total_time);
         }
+#else
+        Archive::DebugArkOrder();
+#endif
     }
     spl.EndSplasher();
     EnableKeyCheats(true);
+    AutoGlitchReport::EnableCallback();
     MemSetAllowTemp("main", 0);
     MemPushHeap(MemFindHeap("fast"));
     MemPushHeap(MemFindHeap("main"));
+    gGCNewLists = false;
+    // gFrameMissThreshold = 166;
 }
+#ifdef VERSION_SZBE69
+#pragma pop
+#endif
 
 App::~App() { TheDebug.Exit(0, true); }
 
-#pragma pool_data off // TODO this is wrong, but without it it uses ...bss.0
 void App::DrawRegular() {
-    if (ThePlatformMgr.mConnected)
+    if (ThePlatformMgr.mHomeMenuWii->mHomeMenuActive)
         ThePlatformMgr.Draw();
     else {
         TIMER_ACTION("begin_draw", TheRnd->BeginDrawing())
@@ -278,7 +311,6 @@ void App::DrawRegular() {
         TIMER_ACTION("end_draw", TheRnd->EndDrawing())
     }
 }
-#pragma pool_data on
 
 void App::CaptureHiRes() {
     bool notPaused = false;
@@ -305,6 +337,10 @@ void App::Draw() {
         DrawRegular();
 }
 
+void PollTriFrame(float, float) {
+    static DataNode &venue_test = DataVariable("venue_test");
+}
+
 void App::Run() { RunWithoutDebugging(); }
 
 void App::RunWithoutDebugging() {
@@ -320,13 +356,28 @@ void App::RunWithoutDebugging() {
         SetGPHangDetectEnabled(false, __FUNCTION__);
         TIMER_ACTION("poll", ;)
         TIMER_ACTION("system_poll", SystemPoll(false))
-        TIMER_ACTION("inclusive_ui_poll", { TheAchievements->Poll(); })
+        TIMER_ACTION("inclusive_ui_poll", {
+            TheAchievements->Poll();
+            TheUIStats->Poll();
+            TheAccomplishmentMgr->Poll();
+            PrefabMgr::GetPrefabMgr()->Poll();
+            TheSaveLoadMgr->Poll();
+            TheProfileMgr.Poll();
+            TheMusicLibrary->Poll();
+        })
         TIMER_ACTION("synth_poll", TheSynth->Poll())
-        // net_poll
+        TIMER_ACTION("net_poll", {
+            TheNet.Poll();
+            TheRockCentral.Poll();
+            TheEntityUploader->Poll();
+        })
         TIMER_ACTION("inclusive_ui_poll", TheUI.Poll())
+        TheTaskMgr.Poll();
+        SetGPHangDetectEnabled(1, __FUNCTION__);
         Draw();
 
-        loop_timer.Ms();
+        float f = loop_timer.SplitMs();
         loop_timer.Restart();
+        PollTriFrame(0, f);
     }
 }

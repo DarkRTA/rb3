@@ -25,6 +25,7 @@ public:
     void Begin(const char *, float, bool, bool, bool, bool, int, BinStream *);
 
     static void Validate();
+    static void Init();
 
     int mImpl; // Impl* mImpl;
 };
