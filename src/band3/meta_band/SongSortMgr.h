@@ -49,6 +49,13 @@ public:
         SongFilter() : requiredTrackType(kTrackNone) { filters.resize(0xB); }
         ~SongFilter() {}
 
+        SongFilter &operator=(const SongFilter &rhs) {
+            filters = rhs.filters;
+            requiredTrackType = rhs.requiredTrackType;
+            excludedSongs = rhs.excludedSongs;
+            return *this;
+        }
+
         const std::set<Symbol> &GetFilterSet(FilterType type) const {
             MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x66);
             return filters[type];

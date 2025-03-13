@@ -16,6 +16,8 @@ Timer Timer::sSlowFrameTimer;
 float Timer::sSlowFrameWaiver;
 const char *Timer::sSlowFrameReason;
 
+bool gGlitchCallback = false;
+
 static DataArray *tempArray = new DataArray(1);
 static std::list<Symbol> sConditionalTimersEnabled;
 
@@ -169,4 +171,8 @@ void Timer::Init() {
     Timer::sDoubleCycles2Ms = OSTicksToSeconds(1000.0);
     Timer::sLowCycles2Ms = (float)Timer::sDoubleCycles2Ms;
     Timer::sHighCycles2Ms = (float)(Timer::sDoubleCycles2Ms * UINT_MAX);
+}
+
+namespace AutoGlitchReport {
+    void EnableCallback() { gGlitchCallback = true; }
 }

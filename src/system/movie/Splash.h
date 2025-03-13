@@ -1,5 +1,6 @@
 #pragma once
 
+#include "compiler_macros.h"
 #include "movie/TexMovie.h"
 #include "os/CritSec.h"
 #include "os/SynchronizationEvent.h"
@@ -54,6 +55,8 @@ public:
     void Show();
     void CheckHomeMenuButton();
 
+    bool Unk64() { return unk_0x64; }
+
     static int ThreadStart(void *);
 
     int mSplashTime; // 0x4
@@ -81,6 +84,11 @@ public:
 };
 
 extern Splash *TheSplasher;
+
+RETAIL_DONT_INLINE_FUNC void PollTheSplasher() {
+    if (TheSplasher != nullptr)
+        TheSplasher->Poll();
+}
 
 void PollFunc();
 void SuspendFunc();

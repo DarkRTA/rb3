@@ -9,6 +9,8 @@ namespace Quazal {
         ~StringStream();
         void TestFreeRoom(unsigned int);
 
+        StringStream &operator<<(const char *);
+
         const char *m_szBuffer;
         unsigned int m_uiSize;
         const char *m_szCurrentPosition;

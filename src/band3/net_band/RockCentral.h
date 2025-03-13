@@ -45,6 +45,9 @@ public:
     SyncAvailableSongs(const std::vector<BandProfile *> &, const std::vector<int> &, const std::vector<int> &, Hmx::Object *);
     void GetTickerInfo(const Profile *, ScoreType, DataResultList &, Hmx::Object *);
 
+    void Init(bool);
+    void Poll();
+
     DataResultList unk1c;
     int unk34;
     int unk38;

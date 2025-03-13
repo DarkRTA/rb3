@@ -1,6 +1,7 @@
 #ifndef PLATFORM_MEMORYMANAGER_H
 #define PLATFORM_MEMORYMANAGER_H
 #include "Platform/RootObject.h"
+#include "types.h"
 
 namespace Quazal {
 
@@ -30,9 +31,8 @@ namespace Quazal {
         virtual void BeginProtection();
         virtual void EndProtection();
         static MemoryManager *GetDefaultMemoryManager();
-        static void *Allocate(
-            MemoryManager *, unsigned long, const char *, unsigned int, _InstructionType
-        );
+        static void *
+        Allocate(MemoryManager *, u32 size, const char *file, uint line, _InstructionType);
         static void Free(MemoryManager *, void *, _InstructionType);
 
         static void *Allocate(unsigned long size, _InstructionType inst) {
@@ -49,18 +49,20 @@ namespace Quazal {
     };
 }
 
-#define QUAZAL_DEFAULT_ALLOC(ul, ui, instType)                                           \
-    MemoryManager::Allocate(                                                             \
-        MemoryManager::GetDefaultMemoryManager(),                                        \
-        ul,                                                                              \
+#define QUAZAL_DEFAULT_ALLOC(size, line, instType)                                       \
+    Quazal::MemoryManager::Allocate(                                                     \
+        Quazal::MemoryManager::GetDefaultMemoryManager(),                                \
+        size,                                                                            \
         __FILE__,                                                                        \
-        ui,                                                                              \
-        MemoryManager::instType                                                          \
+        line,                                                                            \
+        Quazal::MemoryManager::instType                                                  \
     );
 
 #define QUAZAL_DEFAULT_FREE(memToFree, instType)                                         \
-    MemoryManager::Free(                                                                 \
-        MemoryManager::GetDefaultMemoryManager(), memToFree, MemoryManager::instType     \
+    Quazal::MemoryManager::Free(                                                         \
+        Quazal::MemoryManager::GetDefaultMemoryManager(),                                \
+        memToFree,                                                                       \
+        Quazal::MemoryManager::instType                                                  \
     );
 
 #endif

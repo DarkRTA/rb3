@@ -1,5 +1,6 @@
 #ifndef OBJ_DIR_H
 #define OBJ_DIR_H
+#include "compiler_macros.h"
 #include "obj/Object.h"
 #include "utl/BinStream.h"
 #include "utl/FilePath.h"
@@ -132,7 +133,7 @@ public:
 
     // __as__18ObjDirPtr<6RndDir>FP6RndDir
     // https://decomp.me/scratch/yVHtf - also seems to check out
-    ObjDirPtr &operator=(T *dir) {
+    RETAIL_DONT_INLINE_CLASS ObjDirPtr &operator=(T *dir) {
         if (mLoader && mLoader->IsLoaded())
             PostLoad(0);
         if ((dir != mDir) || !dir) {

@@ -2,6 +2,7 @@
 #include "meta_band/SongSortMgr.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
+#include "tour/QuestManager.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols4.h"
@@ -38,6 +39,15 @@ const SongSortMgr::SongFilter &GigFilter::GetFilter() const { return mFilter; }
 
 Symbol GigFilter::GetFilteredPartSym() const { return mFilteredPartSym; }
 
-// void InitializeMusicLibraryTask(MusicLibrary::MusicLibraryTask&, int, Symbol) const {}
+void GigFilter::InitializeMusicLibraryTask(
+    MusicLibrary::MusicLibraryTask &task, int size, Symbol s
+) const {
+    task.maxSetlistSize = size;
+    task.filter = mFilter;
+    if (s != gNullStr) {
+        GigFilter *pSecondaryFilter = TheQuestMgr.GetQuestFilter(s);
+        MILO_ASSERT(pSecondaryFilter, 102);
+    }
+}
 
 float GigFilter::GetWeight() const { return mWeight; }

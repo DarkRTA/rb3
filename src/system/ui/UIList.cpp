@@ -22,7 +22,7 @@
 #include "decomp.h"
 #include "utl/Symbols.h"
 
-static bool gGCNewLists = true;
+bool gGCNewLists = true;
 static bool gLoading = false;
 std::list<UIList *> sUIListSet;
 

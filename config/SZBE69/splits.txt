@@ -14,10 +14,12 @@ Sections:
 	.bss        type:bss align:64
 
 rb3/unknown/800/unk_8000D980.cpp:
-	.text       start:0x8000D980 end:0x8000E1BC
+	.text       start:0x8000D980 end:0x8000DD50
 
 App.cpp:
-	.text       start:0x8000E1BC end:0x8000F804
+	.text       start:0x8000DD50 end:0x8000F804
+	.data       start:0x80805638 end:0x80805960
+	.bss        start:0x808E6448 end:0x808E6470
 
 rb3/stubs/stubone.cpp:
 	.text       start:0x8000F90C end:0x8000F914

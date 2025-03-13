@@ -212,4 +212,8 @@ public:
     }
 };
 
+namespace AutoGlitchReport {
+    void EnableCallback();
+}
+
 #endif

@@ -109,6 +109,7 @@ public:
     int GetSampleMem(ObjectDir *, Platform);
     int GetSPUOverhead();
     int GetFXOverhead();
+    void SetUnk40(ObjectDir *dir) { unk40 = dir; }
 
     template <class T>
     T *Find(const char *name, bool fail) {

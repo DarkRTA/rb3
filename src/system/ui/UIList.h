@@ -151,3 +151,5 @@ public:
     // scroll time: "Time (seconds) to scroll one step - 0 for instant scrolling". Range
     // from 0 to 5
 };
+
+extern bool gGCNewLists;
