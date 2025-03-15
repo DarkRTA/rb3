@@ -211,3 +211,6 @@ END_MESSAGE
 
 DECLARE_MESSAGE(DWCProfanityResultMsg, "dwc_profanity_result_msg")
 END_MESSAGE
+
+DECLARE_MESSAGE(FriendsListChangedMsg, "friends_list_changed")
+END_MESSAGE

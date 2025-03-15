@@ -1,4 +1,5 @@
 #pragma once
+#include "meta_band/SavedSetlist.h"
 #include "net/Synchronize.h"
 #include "obj/Msg.h"
 #include "meta_band/BandSongMgr.h"
@@ -134,6 +135,8 @@ public:
     ScoreType GetBattleInstrument() const;
     void UnlockBandOrSolo();
     void SetCreditsPending();
+    void SetBattle(const BattleSavedSetlist *);
+    void SetSetlist(const SavedSetlist *);
 
     static void Init();
     static MetaPerformer *Current();

@@ -1,5 +1,4 @@
-#ifndef OBJ_TEXTFILE_H
-#define OBJ_TEXTFILE_H
+#pragma once
 #include "utl/TextStream.h"
 #include "obj/Object.h"
 #include "os/File.h"
@@ -25,5 +24,3 @@ public:
     DataNode OnPrintf(DataArray *);
     DataNode OnReflect(DataArray *);
 };
-
-#endif

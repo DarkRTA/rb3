@@ -7,6 +7,7 @@
 #include "meta_band/HeaderPerformanceProvider.h"
 #include "meta_band/SavedSetlist.h"
 #include "meta_band/SongSortMgr.h"
+#include "meta_band/SongSortNode.h"
 #include "net/Synchronize.h"
 #include "net_band/DataResults.h"
 #include "obj/Object.h"
@@ -29,10 +30,27 @@ public:
         };
 
         MusicLibraryTask();
+        MusicLibraryTask &operator=(const MusicLibraryTask &task) {
+            setlistMode = task.setlistMode;
+            filter = task.filter;
+            filterLocked = task.filterLocked;
+            allowDuplicates = task.allowDuplicates;
+            requiresStandardParts = task.requiresStandardParts;
+            backScreen = task.backScreen;
+            nextScreen = task.nextScreen;
+            maxSetlistSize = task.maxSetlistSize;
+            partSym = task.partSym;
+            scoreType = task.scoreType;
+            titleToken = task.titleToken;
+            makingSetlistToken = task.makingSetlistToken;
+            return *this;
+        }
+
         void Reset();
         void ResetWithBackScreen(Symbol);
         void GetSongFilterAsString(String &);
         void SetSongFilter(const SongSortMgr::SongFilter &);
+        const SongSortMgr::SongFilter &GetFilter() const { return filter; }
 
         int setlistMode; // 0x0
         SongSortMgr::SongFilter filter; // 0x4
@@ -43,7 +61,7 @@ public:
         Symbol nextScreen; // 0x20
         int maxSetlistSize; // 0x24
         Symbol partSym; // 0x28
-        int unk2c; // 0x2c
+        ScoreType scoreType; // 0x2c
         Symbol titleToken; // 0x30
         Symbol makingSetlistToken; // 0x34
     };
@@ -76,6 +94,8 @@ public:
     void RemoveLastSongFromSetlist();
     void OnLoad();
     void OnEnter();
+    void OnExit();
+    void ClearSongPreview();
     void ClearSetlist();
     void SetupTaskForTrainer(ControllerType);
     bool GetFilterLocked();
@@ -93,8 +113,45 @@ public:
     bool NetSetlistsFailed();
     bool NetSetlistsSucceeded();
     Symbol DifficultySortPart() const;
+    Symbol PartForFilter() const;
     void GetNetSetlists(std::vector<NetSavedSetlist *> &) const;
     void Poll();
+    void ResetFilter(FilterType);
+    void TryToSetHighlight(Symbol, SongNodeType, bool);
+    void PushHighlightToScreen(bool);
+    void PushFilterToScreen();
+    void RefreshNetSetlists();
+    void SetMakingSetlist(bool);
+    void PushSortToScreen();
+    void UpdateHeaderData();
+    void PushSetlistToScreen();
+    void SetSort(SongSortType);
+    void CheckSongPreview();
+    bool IsExiting();
+    void OnUnload();
+    void ResetFilters();
+    void ToggleFilter(FilterType, Symbol);
+    const char *GetStatusText();
+    Symbol GetCurrentSortName(bool);
+    void SetTaskScoreType(ScoreType);
+    void RebuildUserConfigData();
+    void ReportSortAndFilters();
+    void StartSongPreview();
+    SortNode *GetHighlightedNode() const;
+    NodeSort *GetCurrentSort() const;
+    void PushSonglistToScreen();
+    void SelectHighlightedNode(LocalBandUser *);
+    void SelectNode(SortNode *, LocalBandUser *, bool);
+    void PlaySetlist(bool);
+    void MakeSureSetlistIsValid();
+    void PushSetlistSaveDialog();
+    void SendSetlistToMetaPerformer();
+    void PlaySetlist(SavedSetlist *);
+    void PushMissingSetlistSongsToScreen(int);
+    void SkipToShortcut(int);
+    void SkipToNextShortcut(bool);
+    void SetHighlightIx(int, bool);
+    void ClientSetPartyShuffleMode();
 
     static void Init(SongPreview &);
 
@@ -108,11 +165,11 @@ public:
     Symbol unkcc;
     int unkd0;
     Symbol unkd4;
-    int unkd8;
-    int unkdc; // should be enum SongSortType
+    SongNodeType unkd8;
+    SongSortType unkdc; // 0xdc
     int unke0;
     int unke4;
-    int unke8;
+    SongSortType unke8;
     bool unkec;
     RndMat *mHeaderMat; // 0xf0
     RndMat *mSubheaderMat; // 0xf4

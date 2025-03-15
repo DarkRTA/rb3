@@ -1,7 +1,10 @@
 #include "meta_band/SongSortMgr.h"
 #include "SongSortByRecent.h"
 #include "SongSortByReview.h"
+#include "SongSortMgr.h"
+#include "beatmatch/TrackType.h"
 #include "decomp.h"
+#include "meta_band/BandSongMgr.h"
 #include "meta_band/MusicLibrary.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SavedSetlist.h"
@@ -18,7 +21,12 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "stl/_pair.h"
+#include "utl/BinStream.h"
+#include "utl/Std.h"
+#include "utl/Symbol.h"
+#include "utl/Symbols.h"
 #include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 SongSortMgr *TheSongSortMgr;
 
@@ -47,12 +55,42 @@ SongSortMgr::~SongSortMgr() {
     }
 }
 
+void SongSortMgr::SongFilter::IntersectFilter(SongSortMgr::SongFilter *filter) {
+    MILO_ASSERT(filter, 0x51);
+    FOREACH (it, filter->excludedSongs) {
+        filter->excludedSongs.push_back(*it); // ???
+    }
+    for (int i = 0; i < kNumFilterTypes; i++) {
+        std::set<Symbol> &curSet = filter->filters[i];
+        bool otherHasFilt = filter->HasFilterType((FilterType)i);
+        if (HasFilterType((FilterType)i) && otherHasFilt) {
+            std::vector<Symbol> v20;
+            FOREACH_CONST_POST (it, filters[i]) {
+                Symbol cur = *it;
+                if (!HasFilter((FilterType)i, cur)) {
+                    v20.push_back(cur);
+                }
+            }
+            FOREACH (it, v20) {
+                RemoveFilter((FilterType)i, *it);
+            }
+            if (!HasFilterType((FilterType)i)) {
+                MILO_WARN("Intersecting filters has resulted in an empty filter type!");
+            }
+        } else if (otherHasFilt) {
+            FOREACH_CONST_POST (it, curSet) {
+                AddFilter((FilterType)i, *it);
+            }
+        }
+    }
+}
+
 void SongSortMgr::BuildSetlistList() {
     mSetlists.clear();
-    if (unk3c.empty()) {
+    if (mInternalSetlists.empty()) {
         BuildInternalSetlists();
     }
-    FOREACH (it, unk3c) {
+    FOREACH (it, mInternalSetlists) {
         SetlistRecord record(*it);
         Symbol token = record.GetToken();
         mSetlists.insert(std::make_pair(token, record));
@@ -127,4 +165,106 @@ bool SongSortMgr::InqSongsForSetlist(Symbol s, std::vector<Symbol> &songVector) 
         }
     }
     return false;
+}
+
+void SongSortMgr::BuildInternalSetlists() {
+    DataArray *cfg = SystemConfig(song_select, internal_setlists);
+    for (int i = 1; i < cfg->Size(); i++) {
+        DataArray *curArr = cfg->Array(i);
+        bool visible = curArr->FindInt(music_library_visible);
+        if (visible) {
+            Symbol titleSym = curArr->Sym(0);
+            Symbol descSym = curArr->FindSym(desc);
+            InternalSavedSetlist *setlist = new InternalSavedSetlist(titleSym, descSym);
+            DataArray *dateArr = curArr->FindArray(date, true);
+            setlist->SetDateTime(
+                DateTime(dateArr->Int(1), dateArr->Int(2), dateArr->Int(3), 0, 0, 0)
+            );
+            bool b1 = false;
+            DataArray *songsArr = curArr->FindArray(songs, true);
+
+            int songArrIdx = 1;
+            while (songArrIdx < songsArr->Size()) {
+                int songID =
+                    TheSongMgr.GetSongIDFromShortName(songsArr->Sym(songArrIdx), false);
+                if (songID != 0) {
+                    setlist->AddSong(songID);
+                    b1 = true;
+                    songArrIdx++;
+                } else
+                    songsArr->Remove(songArrIdx);
+            }
+            if (b1) {
+                mInternalSetlists.push_back(setlist);
+            } else {
+                delete setlist;
+                cfg->Remove(i);
+                i--;
+            }
+        }
+    }
+}
+
+void SongSortMgr::ClearInternalSetlists() {
+    FOREACH (it, mInternalSetlists) {
+        delete *it;
+    }
+    mInternalSetlists.clear();
+}
+
+NodeSort *SongSortMgr::GetSort(SongSortType ty) { return mSorts[ty]; }
+
+SongRecord *SongSortMgr::GetRecord(int songID) {
+    if (TheSongMgr.Data(songID)) {
+        Symbol theShortname = TheSongMgr.GetShortNameFromSongID(songID, false);
+        if (theShortname != gNullStr) {
+            // return &mSongs[theShortname];
+        }
+    }
+    return nullptr;
+}
+
+bool SongSortMgr::IsSetlistSort(SongSortType ty) { return ty == kSetlistSortByLocation; }
+
+bool SongSortMgr::SongSortMgr::IsValidNextSortTransition(
+    SongSortType ty1, SongSortType ty2
+) {
+    if (ty1 == ty2)
+        return true;
+    else if ((ty1 == kSetlistSortByLocation && ty2 != kSetlistSortByLocation)
+             || (ty1 != kSetlistSortByLocation && ty2 == kSetlistSortByLocation))
+        return false;
+    else
+        return true;
+}
+
+BinStream &operator<<(BinStream &bs, const SongSortMgr::SongFilter &filt) {
+    bs << filt.excludedSongs;
+    bs << filt.requiredTrackType;
+    for (int i = 0; i < kNumFilterTypes; i++) {
+        const std::set<Symbol> &curSet = filt.filters[i];
+        bs << curSet.size();
+        FOREACH (it, curSet) {
+            Symbol cur = *it;
+            bs << cur;
+        }
+    }
+    return bs;
+}
+
+BinStream &operator>>(BinStream &bs, SongSortMgr::SongFilter &filt) {
+    bs >> filt.excludedSongs;
+    int t = 0;
+    bs >> t;
+    filt.requiredTrackType = (TrackType)t;
+    for (int i = 0; i < kNumFilterTypes; i++) {
+        int curSize = 0;
+        bs >> curSize;
+        for (int j = 0; j < curSize; j++) {
+            Symbol s = gNullStr;
+            bs >> s;
+            filt.AddFilter((FilterType)i, s);
+        }
+    }
+    return bs;
 }

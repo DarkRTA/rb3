@@ -9,6 +9,7 @@
 #include "tour/TourSavable.h"
 #include "meta_band/BandProfile.h"
 #include "utl/HxGuid.h"
+#include "utl/Locale.h"
 
 class SavedSetlist {
 public:
@@ -46,6 +47,18 @@ public:
     std::vector<int> mSongs; // 0x10
     DateTime mDateTime; // 0x18
     String mDescription; // 0x20
+};
+
+class InternalSavedSetlist : public SavedSetlist {
+public:
+    InternalSavedSetlist(Symbol title, Symbol desc)
+        : SavedSetlist(Localize(title, nullptr), Localize(desc, nullptr)),
+          mNameSymbol(title) {}
+    virtual ~InternalSavedSetlist() {}
+    virtual SetlistType GetType() const { return kSetlistInternal; }
+    virtual Symbol GetIdentifyingToken() const { return mNameSymbol; }
+
+    Symbol mNameSymbol; // 0x2c
 };
 
 class NetSavedSetlist : public SavedSetlist {

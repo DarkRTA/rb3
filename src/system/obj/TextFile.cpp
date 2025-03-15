@@ -18,8 +18,7 @@ inline void TextFile::GetAppendFile(const char *c, const char *tok, int tokLen) 
 
 void TextFile::SetName(const char *c, class ObjectDir *dir) {
     Hmx::Object::SetName(c, dir);
-    delete mFile;
-    mFile = 0;
+    RELEASE(mFile);
 #ifdef MILO_DEBUG
     bool holmes = UsingHolmes(4);
     if (c != 0 && *c != '\0' && holmes) {
@@ -45,32 +44,31 @@ void TextFile::Print(const char *str) {
 // FIXME: in order for this TU to link, the bss for "_s" needs to come BEFORE the bss for
 // SetType's "types"
 BEGIN_HANDLERS(TextFile)
-    ;
     HANDLE(print, OnPrint);
     HANDLE_STATIC(printf, OnPrintf)
     HANDLE(reflect, OnReflect);
     HANDLE_SUPERCLASS(Hmx::Object);
     HANDLE_CHECK(0x4D);
-END_HANDLERS;
+END_HANDLERS
 
 DataNode TextFile::OnPrint(DataArray *array) {
-    if (mFile != 0) {
+    if (mFile) {
         for (int i = 2; i < array->Size(); i++) {
             array->Evaluate(i).Print(*this, true);
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode TextFile::OnPrintf(DataArray *array) {
-    if (mFile != 0) {
+    if (mFile) {
         FormatString fs(array->Str(2));
         for (int i = 3; i < array->Size(); i++) {
             fs << array->Evaluate(i);
         }
         Print(fs.Str());
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode TextFile::OnReflect(DataArray *array) {
@@ -81,5 +79,5 @@ DataNode TextFile::OnReflect(DataArray *array) {
         }
         TheDebug.SetReflect(idk);
     }
-    return DataNode(0);
+    return 0;
 }

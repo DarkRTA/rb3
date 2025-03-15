@@ -11,4 +11,6 @@ public:
     virtual bool IsActive(int) const;
     virtual void InitData(RndDir *);
     virtual UIColor *SlotColorOverride(int, int, class UIListWidget *, UIColor *c) const;
+
+    void BuildFilters(Symbol);
 };

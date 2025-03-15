@@ -6,4 +6,7 @@ public:
     MusicLibraryNetSetlists();
     virtual ~MusicLibraryNetSetlists() {}
     virtual DataNode Handle(DataArray *, bool);
+
+    void Poll();
+    void CleanUp();
 };
