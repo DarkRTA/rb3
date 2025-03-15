@@ -115,6 +115,15 @@ public:
     SongRecord *GetRecord(int);
     bool IsValidNextSortTransition(SongSortType, SongSortType);
     void ClearInternalSetlists();
+    bool GetRandomSongs(
+        int,
+        std::vector<Symbol> *,
+        std::vector<int> *,
+        std::vector<Symbol> *,
+        std::vector<Symbol> *,
+        bool,
+        bool
+    );
 
     static bool IsSetlistSort(SongSortType);
     static void Init();

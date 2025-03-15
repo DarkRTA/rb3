@@ -30,6 +30,7 @@ public:
     short GetBandInstrumentMask() const { return mBandInstrumentMask; }
     Difficulty GetDifficulty(ScoreType s) const { return mDiffs[s]; }
     const BandSongMetadata *Data() const { return mData; }
+    bool GetRestricted() const { return mRestricted; }
 
     Symbol mShortName; // 0x1c
     bool mIsShared; // 0x20

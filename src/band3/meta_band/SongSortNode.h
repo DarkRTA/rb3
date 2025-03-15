@@ -230,6 +230,7 @@ public:
     int GetTotalScore();
     int GetTotalStars(bool);
     int GetPotentialStars();
+    SongRecord *GetSongRecord() const { return mSongRecord; }
 
     SongRecord *mSongRecord; // 0x34
 };

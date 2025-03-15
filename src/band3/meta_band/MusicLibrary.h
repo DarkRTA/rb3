@@ -152,6 +152,18 @@ public:
     void SkipToNextShortcut(bool);
     void SetHighlightIx(int, bool);
     void ClientSetPartyShuffleMode();
+    void ShuffleSetlist();
+    void BuildPartySetlist();
+    bool IsSongAllowedInSetlist(int, bool);
+    bool IsIxActive(int);
+    void SetSavedSetlistHighlight(SavedSetlist *);
+    void ReSort(SongSortType);
+    void ReSort(Symbol);
+    void RebuildAndSortSetlists();
+    SongSortType GetCurrentSortType(bool);
+    void SwitchOffRankedSort();
+
+    DataNode OnGetSortList(DataArray *);
 
     static void Init(SongPreview &);
 
@@ -163,12 +175,12 @@ public:
     Timer mSongPreviewTimer; // 0x98
     float mSongPreviewDelay; // 0xc8
     Symbol unkcc;
-    int unkd0;
+    int unkd0; // 0xd0 - highlight idx?
     Symbol unkd4;
     SongNodeType unkd8;
     SongSortType unkdc; // 0xdc
-    int unke0;
-    int unke4;
+    SongSortType unke0;
+    SongSortType unke4;
     SongSortType unke8;
     bool unkec;
     RndMat *mHeaderMat; // 0xf0

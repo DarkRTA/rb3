@@ -28,7 +28,7 @@ public:
     }
     virtual bool IsReady() const { return true; }
     virtual void PollReady() {}
-    virtual void MakeReady();
+    virtual void MakeReady() {}
     virtual void CancelMakeReady() {}
 
     void DeleteList();
@@ -37,6 +37,7 @@ public:
     int GetDataCount() const;
     int FirstActiveIxForShortcut(int) const;
     int GetShortcutIx(SortNode *) const;
+    Symbol GetName() { return mShortName; }
 
     static Symbol FirstChar(const char *, bool);
 
