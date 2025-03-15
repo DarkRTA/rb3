@@ -11,6 +11,7 @@
 #include "game/NetGameMsgs.h"
 #include "meta/Profile.h"
 #include "meta/SongPreview.h"
+#include "meta_band/AppLabel.h"
 #include "meta_band/BandMachine.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/HeaderPerformanceProvider.h"
@@ -19,6 +20,7 @@
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SavedSetlist.h"
 #include "meta_band/SessionMgr.h"
+#include "meta_band/SongRecord.h"
 #include "meta_band/SongSort.h"
 #include "meta_band/SongSortMgr.h"
 #include "meta_band/SongSortNode.h"
@@ -35,6 +37,7 @@
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "ui/UI.h"
+#include "ui/UIListLabel.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
 #include "utl/DataPointMgr.h"
@@ -755,6 +758,73 @@ void MusicLibrary::InitData(RndDir *dir) {
     mUgcMatOdd = dir->Find<RndMat>("song_ugc_light.mat", false);
     mSetlistMatEven = dir->Find<RndMat>("setlist_dark.mat", false);
     mSetlistMatOdd = dir->Find<RndMat>("setlist_light.mat", false);
+}
+
+void MusicLibrary::Text(int, int idx, UIListLabel *slot, UILabel *label) const {
+    AppLabel *p9_label = dynamic_cast<AppLabel *>(label);
+    MILO_ASSERT(p9_label, 0x638);
+    SortNode *sortNode = GetCurrentSort()->GetNode(idx);
+    switch (sortNode->GetType()) {
+    case kNodeHeader:
+        HeaderSortNode *hsn = dynamic_cast<HeaderSortNode *>(sortNode);
+        if (hsn->mCover) {
+            if (slot->Matches("famousby")) {
+                label->SetTextToken(store_famous_by);
+            } else if (slot->Matches("famousby_group")) {
+                p9_label->SetFromSongSelectNode(sortNode);
+            }
+        } else if (slot->Matches("group") && unkdc != 3 && unkdc != 7) {
+            p9_label->SetFromSongSelectNode(sortNode);
+        } else if (slot->Matches("song_count") && !SongSortMgr::IsSetlistSort(unkdc)) {
+            p9_label->SetSongCount(hsn->GetSongCount());
+        }
+        break;
+    case kNodeSubheader:
+        SubheaderSortNode *subheaderNode = dynamic_cast<SubheaderSortNode *>(sortNode);
+        if (slot->Matches("song_count") && !SongSortMgr::IsSetlistSort(unkdc)) {
+            p9_label->SetSongCount(subheaderNode->GetSongCount());
+        } else if (slot->Matches("subgroup")) {
+            MILO_ASSERT(!subheaderNode->mCover, 0x671);
+            p9_label->SetFromSongSelectNode(sortNode);
+        }
+        break;
+    case kNodeSong:
+        OwnedSongSortNode *osn = dynamic_cast<OwnedSongSortNode *>(sortNode);
+        if (slot->Matches("song")) {
+            if (unkdc != 1) {
+                p9_label->SetSongAndArtistName(osn);
+            } else
+                p9_label->SetSongName(osn);
+        } else if (slot->Matches("difficulty")) {
+            SongRecord *record = osn->GetSongRecord();
+            if (record->IsNotBand() && record->GetScore() > 0) {
+                label->SetTextToken(record->GetShortDifficultySym());
+            }
+        } else if (slot->Matches("percentage")) {
+            SongRecord *record = osn->GetSongRecord();
+            if (record->IsNotBand() && record->GetScore() > 0) {
+                label->SetTokenFmt(endgame_player_noteshit_fmt, record->GetNotesPct());
+            }
+        }
+        break;
+    case kNodeFunction:
+        if (slot->Matches("function")) {
+            p9_label->SetFromSongSelectNode(sortNode);
+        }
+        break;
+    case kNodeSetlist:
+        SetlistSortNode *ssn = dynamic_cast<SetlistSortNode *>(sortNode);
+        SavedSetlist *setlist = ssn->GetSetlistRecord()->GetSetlist();
+        if (slot->Matches("setlist_name")) {
+            p9_label->SetSetlistName(setlist);
+        } else if (slot->Matches("battle_instrument_rank") && setlist->IsBattle()) {
+            p9_label->SetBattleInstrument(ssn->GetSetlistRecord());
+        }
+        break;
+    default:
+        label->SetTextToken(gNullStr);
+        break;
+    }
 }
 
 FORCE_LOCAL_INLINE

@@ -1,4 +1,5 @@
 #pragma once
+#include "SongSortNode.h"
 #include "bandobj/BandLabel.h"
 #include "bandobj/BandTrack.h"
 #include "game/BandUser.h"
@@ -8,6 +9,7 @@
 #include "meta_band/CharData.h"
 #include "meta_band/Leaderboard.h"
 #include "meta_band/MainHubPanel.h"
+#include "meta_band/SongRecord.h"
 
 class Node;
 
@@ -44,4 +46,9 @@ public:
     void SetPitch(int, int);
     void SetSectionName(const PracticeSection &);
     void SetFromSongSelectNode(const Node *);
+    void SetSongCount(int);
+    void SetSongAndArtistName(const SongSortNode *);
+    void SetSongName(const SongSortNode *);
+    void SetSetlistName(const SavedSetlist *);
+    void SetBattleInstrument(const SetlistRecord *);
 };
