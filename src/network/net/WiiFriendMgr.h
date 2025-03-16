@@ -1,9 +1,21 @@
 #pragma once
 #include "obj/Msg.h"
 
+class WiiFriend {
+public:
+};
+
+class WiiFriendList {
+public:
+    WiiFriendList();
+    std::vector<WiiFriend> mFriends; // 0x0
+};
+
 class WiiFriendMgr : public MsgSource {
 public:
     WiiFriendMgr();
+
+    void GetCachedFriends(WiiFriendList *);
 };
 
 DECLARE_MESSAGE(WiiFriendsListChangedMsg, "wii_friends_list_changed");

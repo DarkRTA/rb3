@@ -9,4 +9,5 @@ public:
 
     void Poll();
     void CleanUp();
+    void RefreshSetlists();
 };

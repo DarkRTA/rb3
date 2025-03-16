@@ -1,11 +1,18 @@
 #include "meta_band/MusicLibrary.h"
+#include "BandProfile.h"
+#include "MusicLibrary.h"
 #include "MusicLibraryNetSetlists.h"
+#include "SavedSetlist.h"
 #include "SongSetlistProvider.h"
 #include "SongSortMgr.h"
 #include "SongSortNode.h"
 #include "ViewSetting.h"
+#include "bandobj/ReviewDisplay.h"
+#include "bandobj/StarDisplay.h"
+#include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
+#include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/GameMode.h"
 #include "game/NetGameMsgs.h"
@@ -13,17 +20,22 @@
 #include "meta/SongPreview.h"
 #include "meta_band/AppLabel.h"
 #include "meta_band/BandMachine.h"
+#include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/HeaderPerformanceProvider.h"
+#include "meta_band/MetaNetMsgs.h"
 #include "meta_band/MetaPerformer.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
+#include "meta_band/SaveLoadManager.h"
 #include "meta_band/SavedSetlist.h"
 #include "meta_band/SessionMgr.h"
+#include "meta_band/SetlistSortByLocation.h"
 #include "meta_band/SongRecord.h"
 #include "meta_band/SongSort.h"
 #include "meta_band/SongSortMgr.h"
 #include "meta_band/SongSortNode.h"
+#include "meta_band/SongStatusMgr.h"
 #include "meta_band/UIEventMgr.h"
 #include "meta_band/Utl.h"
 #include "net/NetSession.h"
@@ -37,11 +49,15 @@
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "ui/UI.h"
+#include "ui/UIComponent.h"
 #include "ui/UIListLabel.h"
+#include "ui/UIListMesh.h"
 #include "ui/UIPanel.h"
 #include "ui/UIScreen.h"
 #include "utl/DataPointMgr.h"
 #include "utl/Messages2.h"
+#include "utl/Messages3.h"
+#include "utl/Messages4.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -77,14 +93,14 @@ DECOMP_FORCEACTIVE(MusicLibrary, "TheMusicLibrary")
 MusicLibrary::MusicLibrary(SongPreview &prev)
     : Synchronizable("music_library"), unk40(0),
       mViewSettingsProvider(new ViewSettingsProvider()), mSongPreview(prev),
-      mSongPreviewDelay(0), unkcc(gNullStr), unkd0(0), unkd4(gNullStr), unkd8(kNodeNone),
-      unkdc(kSongSortBySong), unke0(kSongSortBySong), unke4(kSetlistSortByLocation),
-      unke8(kNumSongSortTypes), unkec(0), mHeaderMat(0), mSubheaderMat(0),
-      mFunctionMat(0), mFunctionSetlistMat(0), mRockCentralMat(0), mDiscMatEven(0),
-      mDiscMatOdd(0), mDlcMatEven(0), mDlcMatOdd(0), mStoreMatEven(0), mStoreMatOdd(0),
-      mUgcMatEven(0), mUgcMatOdd(0), mSetlistMatEven(0), mSetlistMatOdd(0), unk12c(0),
-      unk12d(0), mSetlistProvider(new SetlistProvider()), unk13c(0),
-      mNetSetlists(new MusicLibraryNetSetlists()), unk15c(0),
+      mSongPreviewDelay(0), mLastSongPreview(gNullStr), mCurrentHighlightIndex(0),
+      unkd4(gNullStr), unkd8(kNodeNone), unkdc(kSongSortBySong), unke0(kSongSortBySong),
+      unke4(kSetlistSortByLocation), unke8(kNumSongSortTypes), unkec(0), mHeaderMat(0),
+      mSubheaderMat(0), mFunctionMat(0), mFunctionSetlistMat(0), mRockCentralMat(0),
+      mDiscMatEven(0), mDiscMatOdd(0), mDlcMatEven(0), mDlcMatOdd(0), mStoreMatEven(0),
+      mStoreMatOdd(0), mUgcMatEven(0), mUgcMatOdd(0), mSetlistMatEven(0),
+      mSetlistMatOdd(0), unk12c(0), unk12d(0), mSetlistProvider(new SetlistProvider()),
+      unk13c(0), mNetSetlists(new MusicLibraryNetSetlists()), unk15c(0),
       mSetlistScoresProvider(new SetlistScoresProvider()), mHasHeaderData(0),
       mHeaderCareerScore(0), mHeaderCareerInstrumentMask(0), mHeaderCareerStars(0),
       mHeaderPossibleStars(0) {
@@ -131,15 +147,15 @@ void MusicLibrary::OnEnter() {
         int i5 = unkec ? unke4 : unke0;
         if (unkdc != i5) {
             unkdc = (SongSortType)i5;
-            unkd0 = 0;
+            mCurrentHighlightIndex = 0;
         }
         unkec = false;
     }
     if (TheGameMode->InMode(practice)) {
-        mTask.setlistMode = 2;
+        mTask.setlistMode = kSetlistForbidden;
     }
     if (TheGameMode->InMode(qp_coop) && !TheSessionMgr->IsLocal()) {
-        mTask.setlistMode = 1;
+        mTask.setlistMode = kSetlistForced;
     }
     NodeSort *sort = TheSongSortMgr->GetSort(unkdc);
     if (!sort->IsReady()) {
@@ -235,7 +251,7 @@ void MusicLibrary::OnUnload() {
 MusicLibrary::MusicLibraryTask::MusicLibraryTask() { Reset(); }
 
 void MusicLibrary::MusicLibraryTask::Reset() {
-    setlistMode = 0;
+    setlistMode = kSetlistOptional;
     filter.Reset();
     filterLocked = false;
     allowDuplicates = true;
@@ -348,7 +364,7 @@ void MusicLibrary::SetTaskScoreType(ScoreType ty) {
 void MusicLibrary::SetupTaskForTrainer(ControllerType ty) {
     mTask.Reset();
     mTask.filterLocked = true;
-    mTask.setlistMode = 2;
+    mTask.setlistMode = kSetlistForbidden;
     switch (ty) {
     case kControllerRealGuitar:
         mTask.filter.AddFilter(kFilterSource, has_part_yes);
@@ -377,13 +393,13 @@ void MusicLibrary::ReportSortAndFilters() {
 }
 
 void MusicLibrary::ClearSongPreview() {
-    unkcc = gNullStr;
+    mLastSongPreview = gNullStr;
     mSongPreviewTimer.Reset();
     mSongPreview.Start(gNullStr);
 }
 
 void MusicLibrary::StartSongPreview() {
-    if (TheMusicLibrary->GetHighlightedNode()->GetToken() != unkcc) {
+    if (TheMusicLibrary->GetHighlightedNode()->GetToken() != mLastSongPreview) {
         ClearSongPreview();
         mSongPreviewTimer.Start();
     }
@@ -400,7 +416,7 @@ void MusicLibrary::CheckSongPreview() {
             MILO_ASSERT(node, 0x2C0);
         }
         mSongPreviewTimer.Stop();
-        unkcc = node->GetToken();
+        mLastSongPreview = node->GetToken();
         if (node->GetType() == kNodeSong) {
             SongSortNode *sort = dynamic_cast<SongSortNode *>(node);
             if (sort) {
@@ -610,6 +626,22 @@ void MusicLibrary::SelectNode(SortNode *node, LocalBandUser *user, bool b3) {
     }
 }
 
+DECOMP_FORCEACTIVE(
+    MusicLibrary,
+    "parental_control_panel",
+    "parental_control_screen",
+    "setlistNode",
+    "leader_setlist_warning_screen",
+    "data",
+    "invalid_version_screen",
+    "demos_allowed",
+    "demo_mode_screen",
+    "demo_online_screen",
+    "demo_setlist_screen",
+    "content_restricted_screen",
+    "invalid_selection_screen"
+)
+
 bool MusicLibrary::IsIxActive(int ix) {
     MILO_ASSERT(ix >= 0 && ix < GetCurrentSort()->GetDataCount(), 0x551);
     return GetCurrentSort()->GetNode(ix)->IsActive();
@@ -628,7 +660,7 @@ void MusicLibrary::SetSavedSetlistHighlight(SavedSetlist *setlist) {
 
 FORCE_LOCAL_INLINE
 SortNode *MusicLibrary::GetHighlightedNode() const {
-    return GetCurrentSort()->GetNode(unkd0);
+    return GetCurrentSort()->GetNode(mCurrentHighlightIndex);
 }
 END_FORCE_LOCAL_INLINE
 
@@ -827,12 +859,539 @@ void MusicLibrary::Text(int, int idx, UIListLabel *slot, UILabel *label) const {
     }
 }
 
+RndMat *MusicLibrary::Mat(int, int idx, UIListMesh *slot) const {
+    SortNode *node = GetCurrentSort()->GetNode(idx);
+    switch (node->GetType()) {
+    case kNodeFunction:
+        if (slot->Matches("bg")) {
+            if (node->GetToken() == view_setlists) {
+                return mFunctionSetlistMat;
+            }
+            if (node->GetToken() == net_setlists_connect
+                || node->GetToken() == net_setlists_error
+                || node->GetToken() == net_setlists_getting) {
+                return mRockCentralMat;
+            } else
+                return mFunctionMat;
+        }
+        break;
+    case kNodeHeader:
+        if (slot->Matches("bg"))
+            return mHeaderMat;
+        break;
+    case kNodeSubheader:
+        if (slot->Matches("bg"))
+            return mSubheaderMat;
+        break;
+    case kNodeSong:
+        OwnedSongSortNode *ossn = dynamic_cast<OwnedSongSortNode *>(node);
+        MILO_ASSERT(ossn, 0x6FA);
+        SongRecord *record = ossn->GetSongRecord();
+        if (slot->Matches("bg")) {
+            if (record->Data()->IsUGC()) {
+                if (idx & 1U) {
+                    return mUgcMatOdd;
+                } else
+                    return mUgcMatEven;
+            } else if (record->Data()->IsDownload()) {
+                if (idx & 1U) {
+                    return mDlcMatOdd;
+                } else
+                    return mDlcMatEven;
+            } else {
+                if (idx & 1U) {
+                    return mDiscMatOdd;
+                } else
+                    return mDiscMatEven;
+            }
+        }
+
+        if (slot->Matches("difficulty_bg")) {
+            if (record->IsNotBand() && record->GetScore() > 0) {
+                return slot->DefaultMat();
+            }
+        }
+        break;
+    case kNodeSetlist:
+        if (slot->Matches("bg")) {
+            if (idx & 1U) {
+                return mSetlistMatOdd;
+            } else
+                return mSetlistMatEven;
+        }
+        break;
+    default:
+        break;
+    }
+    return nullptr;
+}
+
+void MusicLibrary::Custom(int, int idx, UIListCustom *slot, Hmx::Object *obj) const {
+    StarDisplay *sdisp = dynamic_cast<StarDisplay *>(obj);
+    ReviewDisplay *rdisp = dynamic_cast<ReviewDisplay *>(obj);
+    SortNode *sort = GetCurrentSort()->GetNode(idx);
+    if (slot->Matches("stars") && sort->GetType() == kNodeSong) {
+        OwnedSongSortNode *ossn = dynamic_cast<OwnedSongSortNode *>(sort);
+        int numStars = sort->GetTotalStars(true);
+        if (numStars > 0 && ossn) {
+            if (!ossn->GetSongRecord()->IsDemo()) {
+                sdisp->SetValues(numStars, 5);
+                sdisp->SetProperty(force_mixed_mode, 0);
+                sdisp->SetShowing(true);
+                return;
+            }
+        }
+    } else if (slot->Matches("stars_head")) {
+        switch (sort->GetType()) {
+        case kNodeHeader:
+        case kNodeSubheader:
+            if (unkdc != 8
+                || sort->GetToken()
+                    != LocationCmp::SetlistHeaderTypeToSym((LocationCmp::SetlistHeaderType
+                    )0)) {
+                sdisp->SetValues(sort->GetTotalStars(false), sort->GetPotentialStars());
+                sdisp->SetProperty(force_mixed_mode, 1);
+                sdisp->SetShowing(true);
+                return;
+            }
+            break;
+        case kNodeSetlist:
+            SetlistSortNode *ssn = dynamic_cast<SetlistSortNode *>(sort);
+            MILO_ASSERT(ssn, 0x74A);
+            if (!ssn->GetSetlistRecord()->GetSetlist()->IsBattle()) {
+                sdisp->SetValues(sort->GetTotalStars(false), sort->GetPotentialStars());
+                sdisp->SetProperty(force_mixed_mode, 1);
+                sdisp->SetShowing(true);
+                return;
+            }
+            break;
+        default:
+            break;
+        }
+    } else if (slot->Matches("stars_title") && sort->GetType() == 2 && unkdc == 3) {
+        HeaderSortNode *hsn = dynamic_cast<HeaderSortNode *>(sort);
+        sdisp->SetToToken(hsn->GetToken());
+        sdisp->SetShowing(true);
+        return;
+    } else if (slot->Matches("review_title") && sort->GetType() == 2 && unkdc == 7) {
+        HeaderSortNode *hsn = dynamic_cast<HeaderSortNode *>(sort);
+        rdisp->SetToToken(hsn->GetToken());
+        rdisp->SetShowing(true);
+        return;
+    }
+
+    if (sdisp)
+        sdisp->SetShowing(false);
+    if (rdisp)
+        rdisp->SetShowing(false);
+}
+
+int MusicLibrary::NumData() const { return GetCurrentSort()->GetDataCount(); }
+
+bool MusicLibrary::IsActive(int idx) const {
+    return GetCurrentSort()->GetNode(idx)->IsActive();
+}
+
+UIComponent::State
+MusicLibrary::ComponentStateOverride(int, int idx, UIComponent::State state) const {
+    if (GetCurrentSort()->GetNode(idx)->IsEnabled()) {
+        return state;
+    } else
+        return UIComponent::kDisabled;
+}
+
+int MusicLibrary::SnappableAtOrBeforeData(int idx) const {
+    for (; idx >= 0; idx--) {
+        if (IsSnappableAtData(idx))
+            break;
+    }
+    return idx;
+}
+
+bool MusicLibrary::IsSnappableAtData(int idx) const {
+    return GetCurrentSort()->GetNode(idx)->GetType() == 2;
+}
+
+Symbol MusicLibrary::DifficultySortPart() const {
+    switch (ActiveScoreType()) {
+    case kScoreBand:
+        return band;
+    case kScoreGuitar:
+        return guitar;
+    case kScoreBass:
+        return bass;
+    case kScoreDrum:
+    case kScoreRealDrum:
+        return drum;
+    case kScoreVocals:
+    case kScoreHarmony:
+        return vocals;
+    case kScoreKeys:
+        return keys;
+    case kScoreRealGuitar:
+        return real_guitar;
+    case kScoreRealBass:
+        return real_bass;
+    case kScoreRealKeys:
+        return real_keys;
+    default:
+        MILO_FAIL("Bad ScoreType in MusicLibrary::DifficultySortPart!");
+        return gNullStr;
+    }
+}
+
+ScoreType MusicLibrary::ActiveScoreType() const {
+    std::vector<BandUser *> users;
+    TheBandUserMgr->GetBandUsersInSession(users);
+    BandUser *singleUser = nullptr;
+    ScoreType sty;
+    if (users.size() != 1)
+        sty = kScoreBand;
+    else {
+        singleUser = users.front();
+        MILO_ASSERT(singleUser, 0x7D9);
+        if (singleUser->GetTrackType() != 10) {
+            sty = TrackTypeToScoreType(singleUser->GetTrackType(), false, false);
+        } else {
+            sty = TrackTypeToScoreType(
+                ControllerTypeToTrackType(singleUser->GetControllerType(), false),
+                false,
+                false
+            );
+        }
+    }
+
+    if (sty == kScoreDrum) {
+        MILO_ASSERT(singleUser, 0x7EB);
+        if (singleUser->GetPreferredScoreType() == kScoreRealDrum)
+            sty = kScoreRealDrum;
+    } else if (sty == kScoreVocals) {
+        MILO_ASSERT(singleUser, 0x7F2);
+        if (singleUser->GetPreferredScoreType() == kScoreHarmony)
+            sty = kScoreHarmony;
+    }
+
+    switch (sty) {
+    case kScoreGuitar:
+        if (mTask.scoreType == kScoreBass)
+            sty = kScoreBass;
+        break;
+    case kScoreBass:
+        if (mTask.scoreType == kScoreGuitar)
+            sty = kScoreGuitar;
+        break;
+    case kScoreDrum:
+        if (mTask.scoreType == kScoreRealDrum)
+            sty = kScoreRealDrum;
+        break;
+    case kScoreRealDrum:
+        if (mTask.scoreType == kScoreDrum)
+            sty = kScoreDrum;
+        break;
+    case kScoreVocals:
+        if (mTask.scoreType == kScoreHarmony)
+            sty = kScoreHarmony;
+        break;
+    case kScoreHarmony:
+        if (mTask.scoreType == kScoreVocals)
+            sty = kScoreVocals;
+        break;
+    case kScoreKeys:
+        if (mTask.scoreType == kScoreRealKeys)
+            sty = kScoreRealKeys;
+        break;
+    case kScoreRealKeys:
+        if (mTask.scoreType == kScoreKeys)
+            sty = kScoreKeys;
+        break;
+    case kScoreRealGuitar:
+        if (mTask.scoreType == kScoreRealBass)
+            sty = kScoreRealBass;
+        break;
+    case kScoreRealBass:
+        if (mTask.scoreType == kScoreRealGuitar)
+            sty = kScoreRealGuitar;
+        break;
+    default:
+        break;
+    }
+    return sty;
+}
+
+Symbol MusicLibrary::PartForFilter() const {
+    if (mTask.partSym == gNullStr)
+        return DifficultySortPart();
+    else
+        return mTask.partSym;
+}
+
+void MusicLibrary::SetlistArtFinished() {
+    if (GetHighlightedNode()->GetType() == 6) {
+        PushHighlightToScreen(false);
+    }
+}
+
+void MusicLibrary::SendMessageToSongSelectPanel(Message &msg) {
+    UIPanel *panel = ObjectDir::Main()->Find<UIPanel>("song_select_panel", true);
+    if (panel->GetState() == UIPanel::kUp) {
+        panel->HandleType(msg);
+    }
+}
+
+void MusicLibrary::PushHighlightToScreen(bool b1) {
+    if (b1) {
+        static Message msg(highlight_node_at_ix, 0);
+        msg[0] = mCurrentHighlightIndex;
+        SendMessageToSongSelectPanel(msg);
+    }
+    SetlistSortNode *sort = dynamic_cast<SetlistSortNode *>(GetHighlightedNode());
+    if (sort) {
+        mSetlistScoresProvider->SetSetlist(sort->GetSetlistRecord()->GetSetlist());
+    }
+    if (!TheContentMgr->RefreshInProgress()) {
+        SendMessageToSongSelectPanel(refresh_selected_song_msg);
+    }
+}
+
+void MusicLibrary::PushMakingSetlistToScreen() {
+    SendMessageToSongSelectPanel(on_change_setlist_mode_msg);
+    PushSonglistToScreen();
+    PushHighlightToScreen(true);
+}
+
+void MusicLibrary::PushFilterToScreen() {
+    SendMessageToSongSelectPanel(refresh_filter_msg);
+}
+
+void MusicLibrary::PushSortToScreen() {
+    static Message msg(refresh_sort, 0);
+    msg[0] = unke8 != 9U;
+    SendMessageToSongSelectPanel(msg);
+}
+
+void MusicLibrary::PushSetlistToScreen() {
+    unk12c = false;
+    TheSessionMgr->GetMachineMgr()->GetLocalMachine()->SetNetUIStateParam(-mSetlist.size()
+    );
+    if (!TheContentMgr->RefreshInProgress()) {
+        SendMessageToSongSelectPanel(refresh_setlist_msg);
+    }
+}
+
+void MusicLibrary::PushSonglistToScreen() {
+    if (!TheContentMgr->RefreshInProgress()) {
+        SendMessageToSongSelectPanel(refresh_songlist_msg);
+    }
+}
+
+void MusicLibrary::PushSetlistSaveDialog() {
+    SendMessageToSongSelectPanel(show_setlist_save_dialog_msg);
+}
+
+void MusicLibrary::PushHeaderDataToScreen() {
+    SendMessageToSongSelectPanel(refresh_summary_msg);
+}
+
+void MusicLibrary::PushMissingSetlistSongsToScreen(int idx) {
+    static Message msg(show_missing_setlist_songs_dialog, 0);
+    msg[0] = idx;
+    SendMessageToSongSelectPanel(msg);
+}
+
+void MusicLibrary::SetMakingSetlist(bool val) {
+    MILO_ASSERT(!(val && mTask.setlistMode == kSetlistForbidden), 0x8B1);
+    MILO_ASSERT(!(!val && mTask.setlistMode == kSetlistForced), 0x8B3);
+    if (val != unk12d) {
+        unk12d = val;
+        TheSongSortMgr->BuildSortList(unkdc);
+        TryToSetHighlight(unkd4, unkd8, true);
+        PushMakingSetlistToScreen();
+    }
+}
+
 FORCE_LOCAL_INLINE
 bool MusicLibrary::GetMakingSetlist(bool b1) const {
     return unk12d && (b1 || !SongSortMgr::IsSetlistSort(unkdc));
 }
 END_FORCE_LOCAL_INLINE
 
+void MusicLibrary::ClearSetlist() {
+    mSetlist.clear();
+    unk13c = 0;
+    unk12c = true;
+    SetSyncDirty(-1, false);
+}
+
+void MusicLibrary::AppendToSetlist(int i) {
+    if (!SetlistIsFull()) {
+        if (ContentDir()) {
+            mSetlist.push_back(i);
+            unk12c = true;
+            SetSyncDirty(-1, false);
+        } else {
+            AppendSongToSetlistMsg msg(i);
+            TheSessionMgr->SendMsg(TheSessionMgr->GetLeaderUser(), msg, kReliable);
+        }
+    }
+}
+
+void MusicLibrary::RemoveLastSongFromSetlist() {
+    if (mSetlist.size()) {
+        if (ContentDir()) {
+            mSetlist.pop_back();
+            unk12c = true;
+            SetSyncDirty(-1, false);
+        } else {
+            RemoveLastSongFromSetlistMsg msg;
+            TheSessionMgr->SendMsg(TheSessionMgr->GetLeaderUser(), msg, kReliable);
+        }
+    }
+}
+
+void MusicLibrary::ShuffleSetlist() {
+    std::random_shuffle(mSetlist.begin(), mSetlist.end());
+    SetSyncDirty(-1, false);
+}
+
+void MusicLibrary::BuildPartySetlist() {
+    if (TheGameMode->InMode(party_shuffle)) {
+        TheSongSortMgr->BuildFilteredSongList(nullptr, "band");
+    }
+    mSetlist.clear();
+    TheSongSortMgr->GetRandomSongs(0, nullptr, &mSetlist, nullptr, nullptr, true, true);
+    SetSyncDirty(-1, true);
+}
+
+void MusicLibrary::SendSetlistToMetaPerformer() {
+    MetaPerformer::Current()->SetSongs(mSetlist);
+}
+
+std::vector<int> &MusicLibrary::GetSetlist() { return mSetlist; }
+
+bool MusicLibrary::SetlistHasSong(int song) {
+    return std::find(mSetlist.begin(), mSetlist.end(), song) != mSetlist.end();
+}
+
+int MusicLibrary::SongAtSetlistIndex(int idx) {
+    if (idx >= mSetlist.size())
+        return 0;
+    else
+        return mSetlist[idx];
+}
+
 FORCE_LOCAL_INLINE
 int MusicLibrary::SetlistSize() { return mSetlist.size(); }
 END_FORCE_LOCAL_INLINE
+
+bool MusicLibrary::SetlistIsFull() {
+    if (mTask.setlistMode == kSetlistForced && mTask.maxSetlistSize != 0) {
+        return mTask.maxSetlistSize <= SetlistSize();
+    } else
+        return SetlistSize() >= 100;
+}
+
+bool MusicLibrary::AllSetlistSongsHaveScoreType(ScoreType s) {
+    switch (s) {
+    case kScoreDrum:
+    case kScoreBass:
+    case kScoreGuitar:
+    case kScoreVocals:
+    case kScoreKeys:
+    case kScoreRealDrum:
+    case kScoreRealGuitar:
+    case kScoreRealBass:
+    case kScoreRealKeys:
+        TrackType t = ScoreTypeToTrackType(s);
+        FOREACH (it, mSetlist) {
+            BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(*it);
+            if (!data || !data->HasPart(TrackTypeToSym(t), false))
+                return false;
+        }
+        break;
+    case kScoreHarmony:
+        FOREACH (it, mSetlist) {
+            BandSongMetadata *data = (BandSongMetadata *)TheSongMgr.Data(*it);
+            if (!data || !data->HasVocalHarmony())
+                return false;
+        }
+        break;
+    case kScoreBand:
+        break;
+    default:
+        MILO_FAIL("Bad ScoreType %i in AllSetlistSongsHaveScoreType!", (int)s);
+    }
+    return true;
+}
+
+bool MusicLibrary::NetSetlistsFailed() {}
+bool MusicLibrary::NetSetlistsSucceeded() {}
+
+void MusicLibrary::RefreshNetSetlists() {
+    if (unk15c) {
+        mNetSetlists->CleanUp();
+    }
+    unk15c = true;
+    mNetSetlists->RefreshSetlists();
+    RebuildAndSortSetlists();
+}
+
+bool MusicLibrary::FilterSetlist(WiiFriendList *friends, NetSavedSetlist *setlist) const {
+    switch (setlist->GetType()) {
+    case SavedSetlist::kSetlistLocal:
+    case SavedSetlist::kSetlistInternal:
+        MILO_ASSERT(0 && "Net setlist contains unusual setlist type", 0x97D);
+        return true;
+    // case SavedSetlist::kSetlistHarmonix:
+    case SavedSetlist::kBattleHarmonix:
+    case SavedSetlist::kBattleFriend:
+    case SavedSetlist::kBattleFriendArchived:
+        if (ThePlatformMgr.IsOnlineRestricted())
+            return false;
+        const char *owner = setlist->GetOwner();
+        const char *name = Localize(wii_friends_default_setlist_name, nullptr);
+        const char *desc = Localize(wii_friends_default_setlist_description, nullptr);
+        break;
+    default:
+        return true;
+    }
+}
+
+DECOMP_FORCEACTIVE(
+    MusicLibrary,
+    "pSetlist->GetArtTex() == NULL && \"NetSaveSestlist has texture?  Tell Ian S.\""
+)
+
+void MusicLibrary::GetNetSetlists(std::vector<NetSavedSetlist *> &setlists) const {
+    WiiFriendList friends;
+    TheWiiFriendMgr.GetCachedFriends(&friends);
+    setlists.clear();
+}
+
+void MusicLibrary::DeleteHighlightedSetlist() {
+    SetlistSortNode *setlistNode = dynamic_cast<SetlistSortNode *>(GetHighlightedNode());
+    MILO_ASSERT(setlistNode, 0xA11);
+    MILO_ASSERT(setlistNode->GetSetlistRecord()->IsLocal(), 0xA12);
+    LocalSavedSetlist *lss =
+        dynamic_cast<LocalSavedSetlist *>(setlistNode->GetSetlistRecord()->GetSetlist());
+    MILO_ASSERT(lss, 0xA17);
+    lss->mOwnerProfile->DeleteSavedSetlist(lss);
+    std::vector<BandProfile *> profiles = TheProfileMgr.GetSignedInProfiles();
+    TheRockCentral.SyncSetlists(profiles, mResults, this);
+    TheSaveLoadMgr->AutoSave();
+    RebuildAndSortSetlists();
+}
+
+void MusicLibrary::UpdateHeaderData() {
+    mHasHeaderData = false;
+    BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
+    if (profile) {
+        SongStatusMgr *mgr = profile->GetSongStatusMgr();
+        ScoreType s = ActiveScoreType();
+        mHasHeaderData = true;
+        mHeaderCareerScore = mgr->CalculateTotalScore(s, gNullStr);
+        mHeaderCareerInstrumentMask = 1 << s;
+        mHeaderCareerStars = mgr->GetCachedTotalStars(s);
+        mHeaderPossibleStars = mgr->GetPossibleStars(s, gNullStr);
+    }
+    PushHeaderDataToScreen();
+}

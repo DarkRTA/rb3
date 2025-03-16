@@ -21,14 +21,13 @@ class MusicLibrary : public UIListProvider,
                      public ContentMgr::Callback,
                      public Synchronizable {
 public:
+    enum SetlistMode {
+        kSetlistOptional = 0,
+        kSetlistForced = 1,
+        kSetlistForbidden = 2
+    };
     class MusicLibraryTask {
     public:
-        enum SetlistMode {
-            kSetlistOptional = 0,
-            kSetlistForced = 1,
-            kSetlistForbidden = 2
-        };
-
         MusicLibraryTask();
         MusicLibraryTask &operator=(const MusicLibraryTask &task) {
             setlistMode = task.setlistMode;
@@ -52,7 +51,7 @@ public:
         void SetSongFilter(const SongSortMgr::SongFilter &);
         const SongSortMgr::SongFilter &GetFilter() const { return filter; }
 
-        int setlistMode; // 0x0
+        SetlistMode setlistMode; // 0x0
         SongSortMgr::SongFilter filter; // 0x4
         bool filterLocked; // 0x18
         bool allowDuplicates; // 0x19
@@ -89,7 +88,7 @@ public:
     virtual bool HasSyncPermission() const;
     virtual void OnSynchronized(unsigned int);
 
-    const std::vector<int> &GetSetlist();
+    std::vector<int> &GetSetlist();
     void AppendToSetlist(int);
     void RemoveLastSongFromSetlist();
     void OnLoad();
@@ -162,6 +161,14 @@ public:
     void RebuildAndSortSetlists();
     SongSortType GetCurrentSortType(bool);
     void SwitchOffRankedSort();
+    void SetlistArtFinished();
+    void SendMessageToSongSelectPanel(Message &);
+    void PushMakingSetlistToScreen();
+    void PushHeaderDataToScreen();
+    bool SetlistHasSong(int);
+    bool AllSetlistSongsHaveScoreType(ScoreType);
+    bool FilterSetlist(WiiFriendList *, NetSavedSetlist *) const;
+    void DeleteHighlightedSetlist();
 
     DataNode OnGetSortList(DataArray *);
 
@@ -174,8 +181,8 @@ public:
     SongPreview &mSongPreview; // 0x94
     Timer mSongPreviewTimer; // 0x98
     float mSongPreviewDelay; // 0xc8
-    Symbol unkcc;
-    int unkd0; // 0xd0 - highlight idx?
+    Symbol mLastSongPreview; // 0xcc
+    int mCurrentHighlightIndex; // 0xd0
     Symbol unkd4;
     SongNodeType unkd8;
     SongSortType unkdc; // 0xdc

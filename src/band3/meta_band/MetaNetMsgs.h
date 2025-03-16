@@ -62,6 +62,7 @@ public:
 class AppendSongToSetlistMsg : public NetMessage {
 public:
     AppendSongToSetlistMsg() : unk4(0) {}
+    AppendSongToSetlistMsg(int x) : unk4(x) {}
     virtual ~AppendSongToSetlistMsg() {}
     virtual void Save(BinStream &bs) const { bs << unk4; }
     virtual void Load(BinStream &bs) { bs >> unk4; }

@@ -65,7 +65,7 @@ class NetSavedSetlist : public SavedSetlist {
 public:
     NetSavedSetlist(const char *title, const char *desc) : SavedSetlist(title, desc) {}
     virtual ~NetSavedSetlist() {}
-    virtual SetlistType GetType() const;
+    virtual SetlistType GetType() const { return mSetlistType; }
     virtual Symbol GetIdentifyingToken() const;
     virtual const char *GetOwner() const;
 
@@ -74,7 +74,7 @@ public:
     const char *GetSongTitle(int) const;
     void AddSongTitle(const char *);
 
-    int mSetlistType; // 0x2c
+    SetlistType mSetlistType; // 0x2c
     String mOwner; // 0x30
     OnlineID mOID; // 0x3c
     int unk44;

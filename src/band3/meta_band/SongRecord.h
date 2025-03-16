@@ -32,6 +32,7 @@ public:
     const BandSongMetadata *Data() const { return mData; }
     bool GetRestricted() const { return mRestricted; }
     bool IsNotBand() const { return mActiveScoreType != kScoreBand; }
+    bool IsDemo() const { return mDemo; }
 
     Symbol mShortName; // 0x1c
     bool mIsShared; // 0x20
