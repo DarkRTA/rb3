@@ -52,6 +52,7 @@ void RndUtlPreInit();
 void RndUtlInit();
 void RndUtlTerminate();
 void PreMultiplyAlpha(Hmx::Color &);
+void SwapDxtEndianness(RndBitmap *bmap);
 
 DataNode GetNormalMapTextures(ObjectDir *);
 DataNode GetRenderTextures(ObjectDir *);

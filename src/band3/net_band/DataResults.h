@@ -2,6 +2,7 @@
 #include "obj/Msg.h"
 #include "utl/Str.h"
 #include "network/Platform/String.h"
+#include "utl/TextStream.h"
 #include <list>
 #include <map>
 
@@ -34,6 +35,7 @@ public:
     virtual void SetWrapper(ContextWrapper *);
 
     void Clear();
+    void Print(TextStream &);
     DataResult *GetDataResult(int) const;
     int NumDataResults() const { return mDataResultList.size(); }
 
