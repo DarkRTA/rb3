@@ -19,6 +19,12 @@ public:
     void SetProfile(BandProfile *);
     void SetScoreType(ScoreType);
     void RefreshScores();
+    void Clear() {
+        unk20.clear();
+        unk28.clear();
+        unk30.clear();
+    }
+    void SetSetlist(SavedSetlist *);
 
     std::vector<int> unk20; // 0x20
     std::vector<int> unk28; // 0x28

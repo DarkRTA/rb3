@@ -5,10 +5,14 @@
 
 class LocationCmp : public SongSortCmp {
 public:
+    enum SetlistHeaderType {
+    };
     LocationCmp(SavedSetlist::SetlistType, const char *, const char *, int, const char *);
     virtual ~LocationCmp() {}
     virtual int Compare(SongSortCmp const *, SongNodeType) const;
     virtual const LocationCmp *GetLocationCmp() const { return this; }
+
+    static Symbol SetlistHeaderTypeToSym(SetlistHeaderType);
 };
 
 class SetlistSortByLocation : public SetlistSort {

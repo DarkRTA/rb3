@@ -30,6 +30,9 @@ public:
     short GetBandInstrumentMask() const { return mBandInstrumentMask; }
     Difficulty GetDifficulty(ScoreType s) const { return mDiffs[s]; }
     const BandSongMetadata *Data() const { return mData; }
+    bool GetRestricted() const { return mRestricted; }
+    bool IsNotBand() const { return mActiveScoreType != kScoreBand; }
+    bool IsDemo() const { return mDemo; }
 
     Symbol mShortName; // 0x1c
     bool mIsShared; // 0x20
@@ -58,6 +61,7 @@ public:
     bool IsProfileOwner(const BandProfile *) const;
     const char *GetOwner() const;
     Symbol GetToken() const { return mToken; }
+    SavedSetlist *GetSetlist() const { return mSetlist; }
 
     SavedSetlist *mSetlist; // 0x1c
     Symbol mToken; // 0x20

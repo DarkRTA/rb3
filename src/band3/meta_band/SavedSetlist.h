@@ -9,6 +9,7 @@
 #include "tour/TourSavable.h"
 #include "meta_band/BandProfile.h"
 #include "utl/HxGuid.h"
+#include "utl/Locale.h"
 
 class SavedSetlist {
 public:
@@ -48,11 +49,23 @@ public:
     String mDescription; // 0x20
 };
 
+class InternalSavedSetlist : public SavedSetlist {
+public:
+    InternalSavedSetlist(Symbol title, Symbol desc)
+        : SavedSetlist(Localize(title, nullptr), Localize(desc, nullptr)),
+          mNameSymbol(title) {}
+    virtual ~InternalSavedSetlist() {}
+    virtual SetlistType GetType() const { return kSetlistInternal; }
+    virtual Symbol GetIdentifyingToken() const { return mNameSymbol; }
+
+    Symbol mNameSymbol; // 0x2c
+};
+
 class NetSavedSetlist : public SavedSetlist {
 public:
     NetSavedSetlist(const char *title, const char *desc) : SavedSetlist(title, desc) {}
     virtual ~NetSavedSetlist() {}
-    virtual SetlistType GetType() const;
+    virtual SetlistType GetType() const { return mSetlistType; }
     virtual Symbol GetIdentifyingToken() const;
     virtual const char *GetOwner() const;
 
@@ -61,7 +74,7 @@ public:
     const char *GetSongTitle(int) const;
     void AddSongTitle(const char *);
 
-    int mSetlistType; // 0x2c
+    SetlistType mSetlistType; // 0x2c
     String mOwner; // 0x30
     OnlineID mOID; // 0x3c
     int unk44;

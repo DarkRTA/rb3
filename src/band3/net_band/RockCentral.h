@@ -47,6 +47,8 @@ public:
 
     void Init(bool);
     void Poll();
+    void SyncSetlists(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
+    void GetAllSonglists(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
 
     DataResultList unk1c;
     int unk34;

@@ -133,7 +133,7 @@ public:
     virtual bool LocalizeToken() const;
     virtual DateTime *GetDateTime() const;
     virtual void FinishSort(NodeSort *);
-    virtual int GetSongCount();
+    virtual int GetSongCount() { return unk38 + unk3c; }
     virtual SortNode *GetFirstActive();
     virtual bool IsActive() const;
     virtual bool IsEnabled() const;
@@ -230,6 +230,7 @@ public:
     int GetTotalScore();
     int GetTotalStars(bool);
     int GetPotentialStars();
+    SongRecord *GetSongRecord() const { return mSongRecord; }
 
     SongRecord *mSongRecord; // 0x34
 };
@@ -251,6 +252,8 @@ public:
     virtual int GetTotalScore();
     virtual int GetTotalStars(bool);
     virtual int GetPotentialStars();
+
+    SetlistRecord *GetSetlistRecord() const { return mSetlistRecord; }
 
     SetlistRecord *mSetlistRecord; // 0x34
 };

@@ -1,7 +1,8 @@
 #pragma once
+#include "obj/Object.h"
 #include "ui/UIListProvider.h"
 
-class ViewSettingsProvider : public UIListProvider {
+class ViewSettingsProvider : public UIListProvider, public Hmx::Object {
 public:
     ViewSettingsProvider();
     virtual ~ViewSettingsProvider() {}
@@ -11,4 +12,6 @@ public:
     virtual bool IsActive(int) const;
     virtual void InitData(RndDir *);
     virtual UIColor *SlotColorOverride(int, int, class UIListWidget *, UIColor *c) const;
+
+    void BuildFilters(Symbol);
 };

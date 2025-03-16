@@ -190,7 +190,7 @@ public:
     EnumerateFriendsCallbackFunc *mEnumerateFriendsCallback; // 0xce5c
     SendMsgCallbackFunc *mSendMsgCallback; // 0xce60
     SignInUserCallbackFunc *mSignInUserCallback; // 0xce64
-    bool mIsOnlineRestricted;
+    bool mIsOnlineRestricted; // 0xce68
     bool unkce69;
     bool unkce6a;
     bool unkce6b; // checked in Utl's MaxAllowedHmxMaturityLevel, need to come up with a
@@ -210,4 +210,7 @@ DECLARE_MESSAGE(DiskErrorMsg, "disk_error")
 END_MESSAGE
 
 DECLARE_MESSAGE(DWCProfanityResultMsg, "dwc_profanity_result_msg")
+END_MESSAGE
+
+DECLARE_MESSAGE(FriendsListChangedMsg, "friends_list_changed")
 END_MESSAGE

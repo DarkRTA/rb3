@@ -13,6 +13,7 @@
 #include "meta_band/SongSortBySong.h"
 #include "meta_band/SongSortByStars.h"
 #include "os/Debug.h"
+#include "utl/BinStream.h"
 #include "utl/Symbol.h"
 #include <vector>
 #include <set>
@@ -20,6 +21,8 @@
 enum FilterType {
     kFilterDifficulty = 0,
     kFilterVocalParts = 1,
+    // should 2 actually be has keys?
+    // should 3 actually be has pro strings?
     kFilterLength = 2,
     kFilterSource = 3,
     kFilterRating = 4,
@@ -46,7 +49,7 @@ class SongSortMgr {
 public:
     class SongFilter {
     public:
-        SongFilter() : requiredTrackType(kTrackNone) { filters.resize(0xB); }
+        SongFilter() : requiredTrackType(kTrackNone) { filters.resize(kNumFilterTypes); }
         ~SongFilter() {}
 
         SongFilter &operator=(const SongFilter &rhs) {
@@ -56,16 +59,6 @@ public:
             return *this;
         }
 
-        const std::set<Symbol> &GetFilterSet(FilterType type) const {
-            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x66);
-            return filters[type];
-        }
-
-        void AddFilter(FilterType type, Symbol s) {
-            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x5E);
-            filters[type].insert(s);
-        }
-
         void ClearFilter(int idx) { filters[idx].clear(); }
 
         void Reset() {
@@ -73,6 +66,33 @@ public:
                 ClearFilter(i);
             requiredTrackType = kTrackNone;
             excludedSongs.clear();
+        }
+
+        void IntersectFilter(SongFilter *);
+
+        bool HasFilter(FilterType type, Symbol s) const {
+            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x56);
+            return filters[type].find(s) != filters[type].end();
+        }
+
+        bool HasFilterType(FilterType type) const {
+            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x5A);
+            return filters[type].size() != 0;
+        }
+
+        void AddFilter(FilterType type, Symbol s) {
+            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x5E);
+            filters[type].insert(s);
+        }
+
+        void RemoveFilter(FilterType type, Symbol s) {
+            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x62);
+            filters[type].erase(s);
+        }
+
+        const std::set<Symbol> &GetFilterSet(FilterType type) const {
+            MILO_ASSERT_RANGE(type, 0, kNumFilterTypes, 0x66);
+            return filters[type];
         }
 
         std::vector<std::set<Symbol> > filters; // 0x0
@@ -90,14 +110,32 @@ public:
     bool InqSongsForSetlist(Symbol, std::vector<Symbol> &);
     void BuildSetlistList();
     void BuildInternalSetlists();
+    void BuildFilteredSongList(SongFilter *, Symbol);
+    NodeSort *GetSort(SongSortType);
+    SongRecord *GetRecord(int);
+    bool IsValidNextSortTransition(SongSortType, SongSortType);
+    void ClearInternalSetlists();
+    bool GetRandomSongs(
+        int,
+        std::vector<Symbol> *,
+        std::vector<int> *,
+        std::vector<Symbol> *,
+        std::vector<Symbol> *,
+        bool,
+        bool
+    );
 
+    static bool IsSetlistSort(SongSortType);
     static void Init();
 
     std::map<Symbol, SongRecord> mSongs; // 0x4
     std::map<Symbol, SetlistRecord> mSetlists; // 0x1c
-    std::vector<StoreOffer *> unk34;
-    std::vector<SavedSetlist *> unk3c;
+    std::vector<StoreOffer *> unk34; // 0x34
+    std::vector<SavedSetlist *> mInternalSetlists; // 0x3c
     NodeSort *mSorts[kNumSongSortTypes]; // 0x44
 };
+
+BinStream &operator<<(BinStream &, const SongSortMgr::SongFilter &);
+BinStream &operator>>(BinStream &, SongSortMgr::SongFilter &);
 
 extern SongSortMgr *TheSongSortMgr;

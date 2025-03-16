@@ -26,10 +26,10 @@ public:
     virtual const char *TextForNode(ShortcutNode *, UIListLabel *, UILabel *) const {
         return nullptr;
     }
-    virtual bool IsReady() const;
-    virtual void PollReady();
-    virtual void MakeReady();
-    virtual void CancelMakeReady();
+    virtual bool IsReady() const { return true; }
+    virtual void PollReady() {}
+    virtual void MakeReady() {}
+    virtual void CancelMakeReady() {}
 
     void DeleteList();
     SortNode *GetNode(Symbol) const;
@@ -37,6 +37,7 @@ public:
     int GetDataCount() const;
     int FirstActiveIxForShortcut(int) const;
     int GetShortcutIx(SortNode *) const;
+    Symbol GetName() { return mShortName; }
 
     static Symbol FirstChar(const char *, bool);
 
