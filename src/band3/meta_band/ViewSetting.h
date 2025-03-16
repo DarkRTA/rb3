@@ -1,7 +1,8 @@
 #pragma once
+#include "obj/Object.h"
 #include "ui/UIListProvider.h"
 
-class ViewSettingsProvider : public UIListProvider {
+class ViewSettingsProvider : public UIListProvider, public Hmx::Object {
 public:
     ViewSettingsProvider();
     virtual ~ViewSettingsProvider() {}

@@ -20,6 +20,7 @@
 #include "meta/SongPreview.h"
 #include "meta_band/AppLabel.h"
 #include "meta_band/BandMachine.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/BandSongMetadata.h"
 #include "meta_band/BandSongMgr.h"
 #include "meta_band/HeaderPerformanceProvider.h"
@@ -45,6 +46,8 @@
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
+#include "obj/Object.h"
 #include "os/ContentMgr.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
@@ -1395,3 +1398,332 @@ void MusicLibrary::UpdateHeaderData() {
     }
     PushHeaderDataToScreen();
 }
+
+DataNode MusicLibrary::OnMsg(const PrimaryProfileChangedMsg &) {
+    SwitchOffRankedSort();
+    UpdateHeaderData();
+    RebuildProfileData();
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const ProfileChangedMsg &) {
+    RebuildAndSortSetlists();
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const SigninChangedMsg &msg) {
+    if (msg.GetChangedMask() && unk15c) {
+        RefreshNetSetlists();
+    }
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const LocalUserLeftMsg &) {
+    SwitchOffRankedSort();
+    RebuildUserConfigData();
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const RemoteUserLeftMsg &) {
+    SwitchOffRankedSort();
+    RebuildUserConfigData();
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const AddLocalUserResultMsg &msg) {
+    if (msg.Success()) {
+        SwitchOffRankedSort();
+        RebuildUserConfigData();
+    }
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const NewRemoteUserMsg &) {
+    SwitchOffRankedSort();
+    RebuildUserConfigData();
+    if (TheGameMode->InMode(qp_coop)) {
+        MILO_ASSERT(!TheSessionMgr->IsLocal(), 0xA74);
+        mTask.setlistMode = kSetlistForced;
+        SetMakingSetlist(true);
+    }
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const RemoteMachineUpdatedMsg &msg) {
+    if (msg.GetMask() & 2U) {
+        RebuildSharedSongData();
+    }
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const RemoteMachineLeftMsg &) {
+    RebuildSharedSongData();
+    if (TheSessionMgr->IsLocal()) {
+        if (TheGameMode->InMode(qp_coop)) {
+            mTask.setlistMode = kSetlistOptional;
+        }
+    }
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const ServerStatusChangedMsg &) {}
+
+DataNode MusicLibrary::OnMsg(const FriendsListChangedMsg &) {
+    RefreshNetSetlists();
+    return 1;
+}
+
+DataNode MusicLibrary::OnMsg(const UserLoginMsg &) {
+    RefreshNetSetlists();
+    return 1;
+}
+
+void MusicLibrary::RebuildProfileData() {
+    bool b1 = false;
+    bool b2 = false;
+    std::map<Symbol, SongRecord> &theSongs = TheSongSortMgr->mSongs;
+    FOREACH (it, theSongs) {
+        if (it->second.UpdatePerformanceData())
+            b1 = true;
+        if (it->second.UpdateReview())
+            b2 = true;
+    }
+    if (b1) {
+        ReSort(kSongSortByStars);
+        PushSonglistToScreen();
+        PushHighlightToScreen(false);
+    }
+    if (b2) {
+        ReSort(kSongSortByReview);
+    }
+}
+
+void MusicLibrary::RebuildUserConfigData() {
+    bool b1 = false;
+    std::map<Symbol, SongRecord> &theSongs = TheSongSortMgr->mSongs;
+    FOREACH (it, theSongs) {
+        if (it->second.UpdateScoreType())
+            b1 = true;
+    }
+    if (b1) {
+        ReSort(kSongSortByDiff);
+        ReSort(kSongSortByStars);
+        PushSonglistToScreen();
+        PushHighlightToScreen(false);
+        UpdateHeaderData();
+    }
+}
+
+void MusicLibrary::RebuildSharedSongData() {
+    MILO_WARN("!mySharedSongChanged || aSharedSongChanged");
+}
+
+DECOMP_FORCEACTIVE(MusicLibrary, "!myRestrictedSongChanged || aRestrictedSongChanged")
+
+bool MusicLibrary::IsPurchasing() const { return false; }
+
+void MusicLibrary::GetStoreOffers(std::vector<StoreOffer *> &offers) const {
+    offers.clear();
+}
+
+void MusicLibrary::SetRandomSongs(
+    int numSongs, SongSortMgr::SongFilter &filter, Symbol s, bool b4, bool b5
+) {
+    if (s == gNullStr)
+        s = DifficultySortPart();
+    TheSongSortMgr->BuildFilteredSongList(&filter, s);
+    std::vector<Symbol> vSongs;
+    if (!TheSongSortMgr->GetRandomSongs(
+            numSongs, &vSongs, nullptr, nullptr, nullptr, b4, b5
+        )) {
+        MILO_WARN(
+            "Attempted to create a filtered random setlist but there weren't enough songs available!"
+        );
+        vSongs.clear();
+        SongSortMgr::SongFilter localFilter;
+        TheSongSortMgr->BuildFilteredSongList(&localFilter, s);
+        bool bSuccess = TheSongSortMgr->GetRandomSongs(
+            numSongs, &vSongs, nullptr, nullptr, nullptr, b4, b5
+        );
+        MILO_ASSERT(bSuccess, 0xB8F);
+    }
+    MILO_ASSERT(std::find( vSongs.begin(), vSongs.end(), gNullStr ) == vSongs.end(), 0xB92);
+    MILO_ASSERT(vSongs.size() == numSongs, 0xB93);
+    MetaPerformer *performer = MetaPerformer::Current();
+    MILO_ASSERT(performer, 0xB96);
+    performer->SetSongs(vSongs);
+}
+
+void MusicLibrary::FakeWin(int i1) {
+    short mask = 0;
+    std::vector<LocalBandUser *> users;
+    TrackType t = (TrackType)TheBandUserMgr->GetLocalParticipants(users);
+    if (users.empty())
+        return;
+    else {
+        FOREACH (it, users) {
+            t = ControllerTypeToTrackType((*it)->ConnectedControllerType(), false);
+            mask |= 1 << t;
+        }
+        ScoreType s = kScoreBand;
+        if (users.size() == 1)
+            s = TrackTypeToScoreType(t, false, false);
+        Difficulty d = (Difficulty)RandomInt(0, 4);
+        FakeWinNode(GetHighlightedNode(), users, s, d, i1, mask);
+        RebuildProfileData();
+    }
+}
+
+#pragma push
+#pragma pool_data off
+void MusicLibrary::FakeWinNode(
+    SortNode *node,
+    std::vector<LocalBandUser *> &users,
+    ScoreType sty,
+    Difficulty diff,
+    int i1,
+    short mask
+) const {
+    switch (node->GetType()) {
+    case kNodeHeader:
+    case kNodeSubheader:
+        FOREACH (it, node->mChildren) {
+            FakeWinNode(*it, users, sty, diff, i1, mask);
+        }
+        break;
+    case kNodeSong:
+        OwnedSongSortNode *songNode = dynamic_cast<OwnedSongSortNode *>(node);
+        MILO_ASSERT(songNode, 0xBCA);
+        int randScore = RandomInt(
+            i1 * users.size() * diff * 2000,
+            i1 * users.size() * (diff + kDifficultyMedium) * 2000
+        );
+        int randAccuracy = RandomInt(0, 0x65);
+        FOREACH (it, users) {
+            LocalBandUser *cur = *it;
+            if (cur->CanSaveData()) {
+                BandProfile *profile = TheProfileMgr.GetProfileForUser(cur);
+                if (profile) {
+                    PerformerStatsInfo info;
+                    info.mScore = randScore;
+                    info.mAccuracy = randAccuracy;
+                    info.mStars = i1;
+                    info.mScoreType = sty;
+                    info.mDifficulty = diff;
+                    profile->UpdateScore(
+                        songNode->GetSongRecord()->Data()->ID(), info, false
+                    );
+                    if (sty != kScoreBand) {
+                        info.mScoreType = kScoreBand;
+                        profile->UpdateScore(
+                            songNode->GetSongRecord()->Data()->ID(), info, false
+                        );
+                    }
+                    const char *msg = MakeString(
+                        "recorded %i points and %i stars on %s for user %s",
+                        randScore,
+                        i1,
+                        songNode->GetToken(),
+                        cur->UserName()
+                    );
+                    static Hmx::Object *cd =
+                        ObjectDir::Main()->Find<Hmx::Object>("cheat_display", true);
+                    static Message show("show", 0);
+                    show[0] = msg;
+                    cd->Handle(show, false);
+                }
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+#pragma pop
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(MusicLibrary)
+    HANDLE_ACTION(on_enter, OnEnter())
+    HANDLE_ACTION(on_exit, OnExit())
+    HANDLE_ACTION(on_unload, OnUnload())
+    HANDLE_ACTION(report_sort_and_filters, ReportSortAndFilters())
+    HANDLE_ACTION(
+        select_highlighted_node, SelectHighlightedNode(_msg->Obj<LocalBandUser>(2))
+    )
+    HANDLE_EXPR(
+        get_current_shortcut_ix, GetCurrentSort()->GetShortcutIx(GetHighlightedNode())
+    )
+    HANDLE_ACTION(skip_to_shortcut, SkipToShortcut(_msg->Int(2)))
+    HANDLE_ACTION(push_highlight_to_screen, PushHighlightToScreen(true))
+    HANDLE_ACTION(clear_setlist, ClearSetlist())
+    HANDLE_ACTION(play_setlist, PlaySetlist(true))
+    HANDLE_ACTION(skip_to_next_shortcut, SkipToNextShortcut(true))
+    HANDLE_ACTION(skip_to_prev_shortcut, SkipToNextShortcut(false))
+    HANDLE_ACTION(make_sure_setlist_is_valid, MakeSureSetlistIsValid())
+    HANDLE_ACTION(set_highlight_ix, SetHighlightIx(_msg->Int(2), _msg->Int(3)))
+    HANDLE_EXPR(is_ix_active, IsIxActive(_msg->Int(2)))
+    HANDLE_EXPR(can_headers_be_selected, CanHeadersBeSelected())
+    HANDLE_EXPR(get_highlighted_node, GetHighlightedNode())
+    HANDLE(get_sort_list, OnGetSortList)
+    HANDLE_EXPR(get_current_sort_name, GetCurrentSort()->GetName())
+    HANDLE_EXPR(get_shortcut_provider, GetCurrentSort())
+    HANDLE_ACTION(re_sort, ReSort(_msg->Sym(2)))
+    HANDLE_ACTION(rebuild_and_sort_setlists, RebuildAndSortSetlists())
+    HANDLE_ACTION(rebuild_restricted_data, RebuildRestrictedData())
+    HANDLE_EXPR(viewing_setlists, SongSortMgr::IsSetlistSort(unkdc))
+    HANDLE_EXPR(num_data, NumData())
+    HANDLE_EXPR(active_score_type, ActiveScoreType())
+    HANDLE_EXPR(get_making_setlist, GetMakingSetlist(false))
+    HANDLE_ACTION(set_making_setlist, SetMakingSetlist(_msg->Int(2)))
+    HANDLE_EXPR(setlist_size, SetlistSize())
+    HANDLE_EXPR(
+        all_setlist_songs_have_score_type,
+        AllSetlistSongsHaveScoreType(SymToScoreType(_msg->Sym(2)))
+    )
+    HANDLE_EXPR(get_max_setlist_size, GetMaxSetlistSize())
+    HANDLE_ACTION(remove_last_song_from_setlist, RemoveLastSongFromSetlist())
+    HANDLE_ACTION(send_setlist_to_metaperformer, SendSetlistToMetaPerformer())
+    HANDLE_ACTION(start_in_setlist_browser, unkec = true)
+    HANDLE_ACTION(delete_highlighted_setlist, DeleteHighlightedSetlist())
+    HANDLE_EXPR(net_setlist_art_ready, mNetSetlists->IsSetlistArtReady(_msg->Sym(2)))
+    HANDLE_EXPR(get_net_setlist_art, mNetSetlists->GetSetlistArt(_msg->Sym(2)))
+    HANDLE_ACTION(refresh_net_setlist_art, mNetSetlists->RefreshSetlistArt())
+    HANDLE_EXPR(get_back_screen, mTask.backScreen)
+    HANDLE_EXPR(get_next_screen, mTask.nextScreen)
+    HANDLE_EXPR(get_title_token, mTask.titleToken)
+    HANDLE_EXPR(get_making_setlist_token, mTask.makingSetlistToken)
+    HANDLE_EXPR(get_filter_locked, GetFilterLocked())
+    HANDLE_ACTION(
+        set_default_task_with_back_screen, mTask.ResetWithBackScreen(_msg->Sym(2))
+    )
+    HANDLE_EXPR(get_forced_setlist, GetForcedSetlist())
+    HANDLE_EXPR(has_header_data, HasHeaderData())
+    HANDLE_EXPR(header_career_score, HeaderCareerScore())
+    HANDLE_EXPR(header_career_instrument_mask, HeaderCareerInstrumentMask())
+    HANDLE_EXPR(header_career_stars, HeaderCareerStars())
+    HANDLE_EXPR(header_possible_stars, HeaderPossibleStars())
+    HANDLE_ACTION(reset_filters, ResetFilters())
+    HANDLE_ACTION(fake_win, FakeWin(_msg->Int(2)))
+    HANDLE_MESSAGE(PrimaryProfileChangedMsg)
+    HANDLE_MESSAGE(ProfileChangedMsg)
+    HANDLE_MESSAGE(SigninChangedMsg)
+    HANDLE_MESSAGE(LocalUserLeftMsg)
+    HANDLE_MESSAGE(RemoteUserLeftMsg)
+    HANDLE_MESSAGE(AddLocalUserResultMsg)
+    HANDLE_MESSAGE(NewRemoteUserMsg)
+    HANDLE_MESSAGE(RemoteMachineUpdatedMsg)
+    HANDLE_MESSAGE(RemoteMachineLeftMsg)
+    HANDLE_MESSAGE(ServerStatusChangedMsg)
+    HANDLE_MESSAGE(FriendsListChangedMsg)
+    HANDLE_MESSAGE(UserLoginMsg)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_CHECK(0xC7B)
+END_HANDLERS
+#pragma pop
+
+BEGIN_PROPSYNCS(MusicLibrary)
+    SYNC_PROP(setlist_provider, mSetlistProvider)
+    SYNC_PROP(setlist_scores_provider, mSetlistScoresProvider)
+    SYNC_PROP(view_settings_provider, mViewSettingsProvider)
+END_PROPSYNCS

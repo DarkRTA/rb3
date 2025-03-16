@@ -2,16 +2,23 @@
 #include "MusicLibraryNetSetlists.h"
 #include "SongSetlistProvider.h"
 #include "ViewSetting.h"
+#include "game/BandUser.h"
 #include "game/Defines.h"
+#include "meta/Profile.h"
 #include "meta/SongPreview.h"
+#include "meta_band/BandMachine.h"
 #include "meta_band/HeaderPerformanceProvider.h"
+#include "meta_band/ProfileMessages.h"
 #include "meta_band/SavedSetlist.h"
+#include "meta_band/SessionMgr.h"
 #include "meta_band/SongSortMgr.h"
 #include "meta_band/SongSortNode.h"
+#include "net/Server.h"
 #include "net/Synchronize.h"
 #include "net_band/DataResults.h"
 #include "obj/Object.h"
 #include "os/ContentMgr.h"
+#include "os/PlatformMgr.h"
 #include "os/Timer.h"
 #include "ui/UIListProvider.h"
 #include <vector>
@@ -82,7 +89,7 @@ public:
     virtual void ContentStarted();
     virtual void ContentMounted(const char *, const char *);
     virtual void ContentDone();
-    virtual const char *ContentDir();
+    virtual const char *ContentDir() { return nullptr; }
     virtual void SyncSave(BinStream &, unsigned int) const;
     virtual void SyncLoad(BinStream &, unsigned int);
     virtual bool HasSyncPermission() const;
@@ -169,8 +176,35 @@ public:
     bool AllSetlistSongsHaveScoreType(ScoreType);
     bool FilterSetlist(WiiFriendList *, NetSavedSetlist *) const;
     void DeleteHighlightedSetlist();
+    void RebuildProfileData();
+    void RebuildSharedSongData();
+    bool IsPurchasing() const;
+    void GetStoreOffers(std::vector<StoreOffer *> &) const;
+    void SetRandomSongs(int, SongSortMgr::SongFilter &, Symbol, bool, bool);
+    void FakeWin(int);
+    void FakeWinNode(
+        SortNode *, std::vector<LocalBandUser *> &, ScoreType, Difficulty, int, short
+    ) const;
+    void RebuildRestrictedData();
+    bool HasHeaderData() { return mHasHeaderData; }
+    int HeaderCareerScore() { return mHeaderCareerScore; }
+    int HeaderCareerInstrumentMask() { return mHeaderCareerInstrumentMask; }
+    int HeaderCareerStars() { return mHeaderCareerStars; }
+    int HeaderPossibleStars() { return mHeaderPossibleStars; }
 
     DataNode OnGetSortList(DataArray *);
+    DataNode OnMsg(const PrimaryProfileChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const LocalUserLeftMsg &);
+    DataNode OnMsg(const RemoteUserLeftMsg &);
+    DataNode OnMsg(const AddLocalUserResultMsg &);
+    DataNode OnMsg(const NewRemoteUserMsg &);
+    DataNode OnMsg(const RemoteMachineUpdatedMsg &);
+    DataNode OnMsg(const RemoteMachineLeftMsg &);
+    DataNode OnMsg(const ServerStatusChangedMsg &);
+    DataNode OnMsg(const FriendsListChangedMsg &);
+    DataNode OnMsg(const UserLoginMsg &);
 
     static void Init(SongPreview &);
 
