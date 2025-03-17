@@ -11,7 +11,7 @@ public:
     ChunkAllocator(int, int, int);
     void *Alloc(int);
     void Free(void *, int);
-    void UploadDebugStats();
+    static void UploadDebugStats();
 
     // *might* be wrong
     operator bool() { return mAllocs != 0; }

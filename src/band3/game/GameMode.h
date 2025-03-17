@@ -10,6 +10,7 @@ public:
     void SetMode(Symbol);
     bool InMode(Symbol);
     DataNode OnSetMode(const DataArray *);
+    Symbol GetMode() const { return mMode; }
 
     Symbol mMode; // 0x1c
     int mOverdriveEnabled; // 0x20

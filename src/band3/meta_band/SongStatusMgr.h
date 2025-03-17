@@ -9,7 +9,9 @@
 
 class PlayerScore {
 public:
-    PlayerScore() {}
+    PlayerScore()
+        : mScoreType(kScoreDrum), mScore(0), mStars(0), mPlayerID(0), unk18(-1),
+          mDiff(kDifficultyEasy), mTotalScore(0), mTotalDiscScore(0), mAccuracy(0) {}
     virtual ~PlayerScore() {}
 
     ScoreType mScoreType; // 0x4

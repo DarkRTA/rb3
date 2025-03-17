@@ -1,4 +1,6 @@
 #pragma once
+#include "game/BandUser.h"
+#include "game/GameMode.h"
 #include "meta_band/SavedSetlist.h"
 #include "net/Synchronize.h"
 #include "obj/Msg.h"
@@ -8,6 +10,9 @@
 #include "meta_band/BandProfile.h"
 #include "meta_band/Instarank.h"
 #include "net_band/DataResults.h"
+#include "ui/UILabel.h"
+
+class PlayerScore;
 
 class PerformerStatsInfo {
 public:
@@ -44,19 +49,10 @@ public:
     const PerformerStatsInfo &GetBandStats() const;
     BandProfile *GetSoloProfile(int) const;
     const PerformerStatsInfo &GetSoloStats(int) const;
+    void AddSoloStats(int, int, ScoreType, Difficulty, BandProfile *, Performer *);
 
     PerformerStatsInfo mBandStats; // 0x4
     std::vector<std::pair<BandProfile *, PerformerStatsInfo> > mSoloStats; // 0x44
-};
-
-class PendingDataInfo {
-public:
-    PendingDataInfo() {}
-
-    DataResultList ir_result; // 0x0
-    bool friendMode; // 0x18
-    BandStatsInfo stats; // 0x1c
-    Symbol song; // 0x68
 };
 
 class MetaPerformerImpl : public Hmx::Object {
@@ -82,6 +78,24 @@ public:
 
 class MetaPerformer : public Synchronizable, public MsgSource {
 public:
+    class PendingDataInfo {
+    public:
+        PendingDataInfo() {}
+        void Clear() {
+            ir_result.Clear();
+            friendMode = true;
+            stats.Clear();
+            song = "";
+        }
+
+        DataResultList ir_result; // 0x0
+        bool friendMode; // 0x18
+        BandStatsInfo stats; // 0x1c
+        Symbol song; // 0x68
+    };
+    enum WiiPendingFlags {
+    };
+
     MetaPerformer(const BandSongMgr &, const char *);
     virtual ~MetaPerformer();
     virtual void SyncSave(BinStream &, unsigned int) const;
@@ -90,15 +104,15 @@ public:
     virtual void OnSynchronized(unsigned int);
     virtual DataNode Handle(DataArray *, bool);
 
-    QuickplayPerformerImpl *CurrentImpl() const;
+    MetaPerformerImpl *CurrentImpl() const;
     Symbol GetVenue() const;
     Symbol GetVenueClass() const;
     Symbol GetLastVenueClass() const;
     bool SongEndsWithEndgameSequence() const;
     bool IsWinning() const;
     bool IsLastSong() const;
-    int NumSongs() const { return mSongs.size(); }
-    int NumCompleted() const { return unk78.size(); }
+    int NumSongs() const;
+    int NumCompleted() const;
     Symbol Song() const;
     int SongsID() const;
     bool HasSong() const;
@@ -137,12 +151,85 @@ public:
     void SetCreditsPending();
     void SetBattle(const BattleSavedSetlist *);
     void SetSetlist(const SavedSetlist *);
+    void SetSetlistImpl(const SavedSetlist *, bool);
+    int GetBattleID() const;
+    bool HasValidBattleInstarank() const;
+    const char *GetBattleName();
+    int GetBattleInstrumentMask();
+    int GetBattleScore();
+    void UpdateBattleTypeLabel(UILabel *);
+    void LockBandOrSolo();
+    int GetHighestDifficultyForPart(Symbol) const;
+    void PopulatePlayerBandScores(const BandStatsInfo &, std::vector<PlayerScore> &);
+    void
+    PopulateSoloPlayerScore(const PerformerStatsInfo &, BandProfile *, PlayerScore &);
+    void PopulatePlayerScores(const BandStatsInfo &, std::vector<PlayerScore> &);
+    void UpdateScores(Symbol, const BandStatsInfo &, bool);
+    void UpdateLastOfflineScores(Symbol, const BandStatsInfo &);
+    void
+    SaveAndUploadScores(std::vector<LocalBandUser *> &, Symbol, const BandStatsInfo &);
+    void RecordBattleScore(const BandStatsInfo &, bool);
+    ScoreType GetInstarankScoreTypeForSlot(int, const BandStatsInfo &);
+    Instarank &GetInstarankForPlayerID(int);
+    void UpdateInstarankData(DataResultList &, const BandStatsInfo &);
+    void UpdateBattleInstarankData(DataResultList &);
+    void ClearInstarankData();
+    void ClearBattleInstarankData();
+    Symbol GetVenueOverride();
+    void SetBandNoFail(bool);
+    void ExportUpdateMetaPerformer();
+    void LoadFestival();
+    void ClearVenues();
+    void ResetCompletion();
+    void HostRestartLastSong();
+    void Restart();
+    void TriggerSongCompletion();
+    void CompleteSong(std::vector<BandUser *> &, const BandStatsInfo *, bool);
+    void SetCheating(bool);
+    void
+    PotentiallyUpdateLeaderboards(std::vector<BandUser *> &, bool, Symbol, const BandStatsInfo &);
+    void IncrementSongPlayCount(std::vector<BandUser *> &, Symbol);
+    int TotalStars(bool) const;
+    bool IsRandomSetList() const;
+    void SkipSong();
+    void AdvanceSong(int);
+    bool HasBattleHighscore();
+    bool HasHighscore();
+    int GetLastOfflineScore();
+    int GetLastOfflineSoloScore(BandUser *);
+    bool HasSoloHighscore(BandUser *);
+    bool HasValidBandScore();
+    bool HasValidUserScore(BandUser *);
+    bool HasValidInstarankData() const;
+    void UpdateInstarankRankLabel(UILabel *);
+    void UpdateInstarankHighscore1Label(UILabel *);
+    void UpdateInstarankHighscore2Label(UILabel *);
+    void UpdateBattleInstarankHighscore1Label(UILabel *);
+    void UpdateBattleInstarankHighscore2Label(UILabel *);
+    const char *GetSoloScoreTypeIcon(BandUser *);
+    void UpdateSoloInstarankRankLabel(BandUser *, UILabel *);
+    void UpdateSoloInstarankHighscore1Label(BandUser *, UILabel *);
+    void UpdateSoloInstarankHighscore2Label(BandUser *, UILabel *);
+    void UploadDebugStats();
+    void ClearCreditsPending();
+    bool AreCreditsPending() const;
+    void SetWiiPending(WiiPendingFlags);
+    void ClearWiiPending(WiiPendingFlags);
+    bool IsWiiPending(WiiPendingFlags) const;
+    short GetRecentInstrumentMask() const;
+    bool CheatToggleFinale();
+    Symbol GetSongSymbol(int idx) const { return mSongs[idx]; }
+    int GetWinMetric() const { return 0; }
+    int GetPersistentGameData() { return 0; }
+
+    DataNode OnMsg(const RockCentralOpCompleteMsg &);
+    DataNode OnMsg(const ModeChangedMsg &);
 
     static void Init();
     static MetaPerformer *Current();
     static MetaPerformer *sMetaPerformer;
 
-    bool unk38;
+    unsigned char unk38;
     QuickplayPerformerImpl *mQpPerformer; // 0x3c
     bool unk40;
     Symbol mVenue; // 0x44
@@ -153,24 +240,18 @@ public:
     bool unk5d;
     int unk60;
     bool unk64;
-    int unk68;
-    int unk6c;
+    int unk68; // 0x68
+    ScoreType unk6c;
     std::vector<Symbol> mSongs; // 0x70
     std::vector<int> unk78;
     BandSongMgr *mSongMgr; // 0x80
-    Instarank unk84;
+    Instarank unk84; // 0x84 - battle instarank?
     Instarank unkdc;
-    Instarank unk134[4];
+    Instarank unk134[4]; // 0x134
     int unk294;
     int unk298;
-    int unk29c;
-    int unk2a0;
-    int unk2a4;
-    int unk2a8;
-    int unk2ac;
-    int unk2b0;
-    int unk2b4;
-    int unk2b8;
+    int unk29c[4]; // 0x29c
+    ScoreType unk2ac[4]; // 0x2ac
     bool unk2bc;
     bool unk2bd;
     int unk2c0;
@@ -180,7 +261,7 @@ public:
     bool unk334;
     int unk338;
     int unk33c;
-    int unk340;
+    int mRecordBattleContextID; // 0x340
     DataResultList unk344;
     bool unk35c;
     bool unk35d;

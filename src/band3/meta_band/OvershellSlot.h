@@ -63,7 +63,6 @@ public:
     OvershellSlotState *GetState();
     void ShowState(OvershellSlotStateID);
     void LeaveOptions();
-    bool InGame() const;
     void SelectPart(TrackType);
     void SelectPartImpl(TrackType, bool, bool);
     void SelectVocalPart(bool);
@@ -166,6 +165,8 @@ public:
     void AddValidController(ControllerType);
     void AddAutoVocalsValidController(ControllerType);
     void ToggleWiiSpeak();
+    void AddUser(LocalBandUser *);
+    bool IsValidUser(BandUser *) const;
     Hmx::Object *GetUserWiiProfile(); // TODO: change the return type once this is
                                       // implemented
 
@@ -178,6 +179,9 @@ public:
     DataNode OnMsg(const ButtonDownMsg &);
     DataNode OnMsg(const ButtonUpMsg &);
     DataNode OnMsg(const UserLoginMsg &);
+
+    bool SongOptionsRequired() const { return mSongOptionsRequired; }
+    bool InGame() const { return mInGame; }
 
     OvershellSlotStateMgr *mStateMgr; // 0x1c
     OvershellSlotState *mState; // 0x20

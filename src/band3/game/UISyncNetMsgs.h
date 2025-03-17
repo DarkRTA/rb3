@@ -42,6 +42,8 @@ public:
 
 DECLARE_MESSAGE(NetComponentSelectMsg, "net_component_select");
 NetComponentSelectMsg(User *o, const char *c) : Message(Type(), o, c) {}
+User *GetUser() const { return mData->Obj<User>(2); }
+const char *GetStr() const { return mData->Str(3); }
 END_MESSAGE
 
 class ComponentScrollNetMsg : public NetMessage {
@@ -63,9 +65,14 @@ public:
     int mFirstShowing; // 0x24
 };
 
+// NET_SCROLL_MSG (net_component_scroll ($user $component $selected_pos $first_showing)
 DECLARE_MESSAGE(NetComponentScrollMsg, "net_component_scroll");
 NetComponentScrollMsg(User *u, const char *c, int i1, int i2)
     : Message(Type(), u, c, i1, i2) {}
+User *GetUser() const { return mData->Obj<User>(2); }
+const char *GetStr() const { return mData->Str(3); }
+int GetSelectedPos() const { return mData->Int(4); }
+int GetFirstShowing() const { return mData->Int(5); }
 END_MESSAGE
 
 DECLARE_MESSAGE(NetComponentPostScrollMsg, "net_component_post_scroll");

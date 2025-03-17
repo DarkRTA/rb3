@@ -128,6 +128,7 @@ public:
     void
     DrawRectScreen(const Hmx::Rect &, const Hmx::Color &, RndMat *, const Hmx::Color *, const Hmx::Color *);
     void ResetProcCounter();
+    void UploadDebugStats();
     Mode DrawMode() const { return mDrawMode; }
     void PreClearDrawAddOrRemove(RndDrawable *, bool, bool);
     bool Unk130() const { return unk130; }

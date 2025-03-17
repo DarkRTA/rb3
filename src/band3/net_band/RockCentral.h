@@ -7,6 +7,7 @@
 #include "obj/Object.h"
 
 class PerformanceData;
+class PlayerScore;
 class AccomplishmentProgress;
 
 class RockCentral : public MsgSource {
@@ -49,6 +50,12 @@ public:
     void Poll();
     void SyncSetlists(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
     void GetAllSonglists(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
+    void
+    RecordScore(int, int, std::vector<PlayerScore> &, int, int, bool, Hmx::Object *, DataResultList &);
+    void RecordOptionData();
+    int GetActiveContextHighWatermark();
+    void
+    RecordBattleScore(int, int, std::vector<BandProfile *> &, int, DataResultList &, Hmx::Object *);
 
     DataResultList unk1c;
     int unk34;

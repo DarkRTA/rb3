@@ -7,6 +7,7 @@
 #include "rndobj/Mesh.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Trans.h"
+#include "ui/PanelDir.h"
 #include "ui/UIResource.h"
 #include "obj/Msg.h"
 #include "ui/UIScreen.h"
@@ -141,6 +142,7 @@ END_MESSAGE
 DECLARE_MESSAGE(UIComponentFocusChangeMsg, "component_focus");
 UIComponentFocusChangeMsg(UIComponent *comp1, UIComponent *comp2, PanelDir *dir, Symbol s)
     : Message(Type(), comp1, comp2, dir, s) {}
+PanelDir *GetDir() const { return mData->Obj<PanelDir>(4); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIComponentScrollStartMsg, "component_scroll_start");

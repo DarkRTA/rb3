@@ -343,7 +343,7 @@ namespace Hmx {
          * was found.
          * @returns The corresponding property's value as a DataNode pointer.
          */
-        DataNode *Property(Symbol prop, bool fail) const;
+        DataNode *Property(Symbol prop, bool fail = true) const;
 
         /** Search for a key in this Object's properties, and return the corresponding
          * value.

@@ -75,6 +75,7 @@ public:
     void SetPlayer(Player *p) { mPlayer = p; }
     void SetTrack(Track *trk) { mTrack = trk; }
     void SetAutoplay(bool play) { mAutoplay = play; }
+    OvershellSlotStateID GetOvershellState() const { return mOvershellState; }
 
     static LocalBandUser *NewLocalBandUser();
     static RemoteBandUser *NewRemoteBandUser();
