@@ -772,9 +772,7 @@ bool GemManager::IsEndOfFill(int idx) {
 
 void GemManager::ClearMissedPhrases() {
     mTrackConfig.GetBandUser()->GetPlayer()->mBand->mCommonPhraseCapturer->Reset();
-    if (!mMissedPhrases.empty()) {
-        mMissedPhrases.clear();
-    }
+    mMissedPhrases.clear();
 }
 
 TrackWidget *GemManager::GetWidgetByName(Symbol name) {
