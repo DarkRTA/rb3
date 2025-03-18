@@ -577,7 +577,7 @@ void GemManager::Released(float f1, int i2) {
         if (!gem.GetGameGem().LeftHandSlide() && !gem.Released()) {
             gem.Release();
 
-            float unk = gem.mEnd / 1000.0f;
+            float unk = f1 / 1000.0f;
             if (gem.mEnd > unk)
                 gem.mTailStart = unk - gem.GetStart();
             else
