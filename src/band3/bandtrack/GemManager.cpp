@@ -766,10 +766,9 @@ bool GemManager::IsEndOfFill(int idx) {
 }
 
 void GemManager::ClearMissedPhrases() {
+    mTrackConfig.GetBandUser()->GetPlayer()->mBand->mCommonPhraseCapturer->Reset();
     if (!mMissedPhrases.empty()) {
-        for (int i = 0; i < mMissedPhrases.size(); i++) {
-            mMissedPhrases.clear();
-        }
+        mMissedPhrases.clear();
     }
 }
 
