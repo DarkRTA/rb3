@@ -578,11 +578,11 @@ void GemManager::Released(float f1, int i2) {
             gem.Release();
 
             float unk = gem.mEnd / 1000.0f;
-            if (gem.mEnd > unk) {
+            if (gem.mEnd > unk)
                 gem.mTailStart = unk - gem.GetStart();
-
-            } else
+            else
                 gem.KillDuration();
+
             mNowBar->StopBurning(gem.Slots());
         }
     }
