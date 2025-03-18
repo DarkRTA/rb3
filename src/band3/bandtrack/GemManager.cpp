@@ -2,10 +2,12 @@
 #include "bandobj/ArpeggioShape.h"
 #include "bandtrack/NowBar.h"
 #include "bandtrack/Track.h"
+#include "bandtrack/TrackConfig.h"
 #include "beatmatch/FillInfo.h"
 #include "beatmatch/GameGem.h"
 #include "beatmatch/RGUtl.h"
 #include "game/BandUser.h"
+#include "game/CommonPhraseCapturer.h"
 #include "game/Game.h"
 #include "game/Player.h"
 #include "game/SongDB.h"
@@ -20,6 +22,7 @@
 #include "os/System.h"
 #include "rndobj/Group.h"
 #include "rndobj/Trans.h"
+#include "stl/pointers/_vector.h"
 #include "track/TrackWidget.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
@@ -762,7 +765,13 @@ bool GemManager::IsEndOfFill(int idx) {
     return ret;
 }
 
-void GemManager::ClearMissedPhrases() {}
+void GemManager::ClearMissedPhrases() {
+    if (!mMissedPhrases.empty()) {
+        for (int i = 0; i < mMissedPhrases.size(); i++) {
+            mMissedPhrases.clear();
+        }
+    }
+}
 
 TrackWidget *GemManager::GetWidgetByName(Symbol name) {
     if (mWidgets.find(name) == mWidgets.end()) {

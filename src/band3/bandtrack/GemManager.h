@@ -166,6 +166,7 @@ public:
     float unk12c;
     int unk130;
     int unk134;
+    int unk1c;
 };
 
 int GetBeardThreshold();
