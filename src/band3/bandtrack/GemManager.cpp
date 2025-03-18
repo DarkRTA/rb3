@@ -762,7 +762,12 @@ bool GemManager::IsEndOfFill(int idx) {
     return ret;
 }
 
-void GemManager::ClearMissedPhrases() {}
+void GemManager::ClearMissedPhrases() {
+    mTrackConfig.GetBandUser()->GetPlayer()->mBand->mCommonPhraseCapturer->Reset();
+    if (!mMissedPhrases.empty()) {
+        mMissedPhrases.clear();
+    }
+}
 
 TrackWidget *GemManager::GetWidgetByName(Symbol name) {
     if (mWidgets.find(name) == mWidgets.end()) {
