@@ -10,6 +10,9 @@ class BandUser;
 
 class GameConfig : public Hmx::Object {
 public:
+    enum Player {
+        kMaxPlayers = 4
+    };
     GameConfig();
     virtual ~GameConfig();
     virtual DataNode Handle(DataArray *, bool);

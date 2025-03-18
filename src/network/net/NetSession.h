@@ -34,6 +34,18 @@ DECLARE_MESSAGE(InviteAcceptedMsg, "invite_accepted")
 InviteAcceptedMsg() : Message(Type()) {}
 END_MESSAGE
 
+DECLARE_MESSAGE(InviteReceivedMsg, "invite_received")
+END_MESSAGE
+
+DECLARE_MESSAGE(InviteExpiredMsg, "invite_expired")
+END_MESSAGE
+
+DECLARE_MESSAGE(NetStartUtilityFinishedMsg, "net_start_utility_finished")
+END_MESSAGE
+
+DECLARE_MESSAGE(UserNameNewlyProfaneMsg, "user_name_newly_profane")
+END_MESSAGE
+
 DECLARE_MESSAGE(NetErrorMsg, "net_error")
 END_MESSAGE
 

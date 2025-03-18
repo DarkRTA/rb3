@@ -5,52 +5,51 @@
 #include "ui/UILabel.h"
 #include "utl/Locale.h"
 #include "utl/Std.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
+#include "utl/Symbols.h"
 #include <cstdlib>
 #include <cstring>
 
 Instarank::Instarank()
-    : mIsValid(0), unk8(0), unkc(0), unk10(kScoreBand), unk14(0), unk18(0) {}
+    : mIsValid(0), unk8(0), unkc(0), mScoreType(kScoreBand), mInstaRank(0),
+      mIsPercentile(0) {}
 
 void Instarank::Clear() {
     mIsValid = false;
     unk8 = 0;
     unkc = false;
-    unk14 = 0;
-    unk18 = false;
-    unk1c = "";
-    unk28 = "";
+    mInstaRank = 0;
+    mIsPercentile = false;
+    mStr1 = "";
+    mStr2 = "";
 }
 
 void Instarank::Init(
     int i1, bool b1, ScoreType ty, int i2, bool b2, String s1, String s2
 ) {
     mIsValid = true;
-    unk8 = i1;
-    unk10 = ty;
-    unkc = b1;
-    unk14 = i2;
-    unk18 = b2;
-    unk1c = s1;
-    unk28 = s2;
+    unk8 = i1; // id
+    mScoreType = ty;
+    unkc = b1; // is_boi
+    mInstaRank = i2;
+    mIsPercentile = b2;
+    mStr1 = s1;
+    mStr2 = s2;
 }
 
 void Instarank::UpdateRankLabel(UILabel *label) {
     MILO_ASSERT(mIsValid, 0x3A);
     MILO_ASSERT(label, 0x3B);
-    if (unk18) {
-        label->SetTokenFmt(instarank_percentile, unk14);
+    if (mIsPercentile) {
+        label->SetTokenFmt(instarank_percentile, mInstaRank);
     } else {
-        label->SetTokenFmt(instarank_rank, LocalizeSeparatedInt(unk14));
+        label->SetTokenFmt(instarank_rank, LocalizeSeparatedInt(mInstaRank));
     }
 }
 
 bool Instarank::HasHighscore() const {
     MILO_ASSERT(mIsValid, 0x4B);
     char buf[0x100];
-    strncpy(buf, unk1c.c_str(), 0xff);
+    strncpy(buf, mStr1.c_str(), 0xff);
     const char *tok = strtok(buf, "|");
     char tokc = *tok;
     return tokc == 'a' || tokc == 'b';
@@ -60,15 +59,17 @@ void Instarank::UpdateString1Label(UILabel *label) {
     MILO_ASSERT(mIsValid, 0x58);
     MILO_ASSERT(label, 0x59);
     char buf[0x100];
-    strncpy(buf, unk1c.c_str(), sizeof(buf) - 1);
+    strncpy(buf, mStr1.c_str(), sizeof(buf) - 1);
     char tokc = *strtok(buf, "|");
-    const char *fontc = GetFontCharFromScoreType(unk10, 0);
+    const char *fontc = GetFontCharFromScoreType(mScoreType, 0);
     switch (tokc) {
     case 'a':
-        label->SetTokenFmt(instarank_highscore_percentile, unk14, fontc);
+        label->SetTokenFmt(instarank_highscore_percentile, mInstaRank, fontc);
         break;
     case 'b':
-        label->SetTokenFmt(instarank_highscore_rank, LocalizeSeparatedInt(unk14), fontc);
+        label->SetTokenFmt(
+            instarank_highscore_rank, LocalizeSeparatedInt(mInstaRank), fontc
+        );
         break;
     case 'c':
         label->SetTokenFmt(
@@ -104,9 +105,9 @@ void Instarank::UpdateString2Label(UILabel *label) {
     MILO_ASSERT(mIsValid, 0x94);
     MILO_ASSERT(label, 0x95);
     char buf[0xff];
-    strncpy(buf, unk28.c_str(), sizeof(buf));
+    strncpy(buf, mStr2.c_str(), sizeof(buf));
     char tokc = *strtok(buf, "|");
-    const char *fontc = GetFontCharFromScoreType(unk10, 0);
+    const char *fontc = GetFontCharFromScoreType(mScoreType, 0);
     switch (tokc) {
     case 'f':
         label->SetTextToken(instarank_nofriend_beat);

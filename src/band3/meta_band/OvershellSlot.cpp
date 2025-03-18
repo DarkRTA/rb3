@@ -1,6 +1,7 @@
 #include "meta_band/OvershellSlot.h"
 #include "BandProfile.h"
 #include "beatmatch/TrackType.h"
+#include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
@@ -286,7 +287,7 @@ void OvershellSlot::ShowSongOptions() {
     BandUser *pUser = mBandUserMgr->GetUserFromSlot(mSlotNum);
     MILO_ASSERT(pUser->IsLocal(), 0x2DA);
     BandUser *user = mSessionMgr->mCritUserListener->mCriticalUser;
-    if (mInGame && !mSongOptionsRequired) {
+    if (InGame() && !mSongOptionsRequired) {
         pUser->SetOvershellSlotState(kState_ChooseDiff);
     } else {
         if (user && user != pUser) {
@@ -306,8 +307,6 @@ void OvershellSlot::ShowSongOptions() {
     }
     mOvershell->UpdateAll();
 }
-
-bool OvershellSlot::InGame() const { return mInGame; }
 
 void OvershellSlot::SelectPart(TrackType trackType) {
     MILO_ASSERT(trackType != kTrackVocals, 0x2FD);

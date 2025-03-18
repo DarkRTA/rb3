@@ -1,5 +1,6 @@
 #pragma once
 #include "bandobj/PatchDir.h"
+#include "game/Defines.h"
 #include "os/DateTime.h"
 #include "os/OnlineID.h"
 #include "os/User.h"
@@ -92,7 +93,7 @@ public:
     virtual bool IsBattle() const { return true; }
 
     int mID; // 0x68
-    int unk6c;
+    ScoreType unk6c; // 0x6c - score type?
     int mBattleTimeLeft; // 0x70
 };
 

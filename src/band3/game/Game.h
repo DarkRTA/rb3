@@ -172,6 +172,7 @@ public:
     void E3CheatAutoplayAccuracy();
     const char *DebugCycleAutoplay();
     const char *DebugCycleAutoplayAccuracy();
+    void SetNoFail(bool);
 
     bool InTrainer() const { return mProperties.mInTrainer; }
     bool InDrumTrainer() const { return mProperties.mInDrumTrainer; }

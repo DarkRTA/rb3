@@ -113,6 +113,7 @@ public:
     void SetPrimaryProfileByUser(const LocalUser *);
     GameplayOptions *GetGameplayOptionsFromUser(LocalBandUser *);
     void Poll();
+    std::vector<BandProfile *> GetParticipatingProfiles();
 
     DECLARE_REVS;
 

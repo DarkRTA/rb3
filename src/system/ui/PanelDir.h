@@ -39,7 +39,7 @@ public:
     virtual RndCam *CamOverride();
     virtual bool Entering() const;
     virtual bool Exiting() const;
-    virtual UIComponent *FocusComponent();
+    virtual UIComponent *FocusComponent() { return mFocusComponent; }
     virtual UIComponent *FindComponent(const char *);
     virtual void SetFocusComponent(UIComponent *, Symbol);
 
