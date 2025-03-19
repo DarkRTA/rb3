@@ -280,6 +280,11 @@ public:
     void SetHasSolos(bool solos) { mHasSolos = solos; }
     void AddTambourineSeen() { mTambourineCount++; }
     void AddTambourineHit() { mTambourineHitCount++; }
+    int GetHopoPercent() {
+        return ((float)mHopoGemsHopoed / (float)mHopoGemCount) * 100.0f;
+    }
+
+    int GetUnisonPhrasesHit() const { return mUnisonPhraseCompleted; }
 
     int GetUpstrumPercent() const {
         int count = mHitCount + m0x08;

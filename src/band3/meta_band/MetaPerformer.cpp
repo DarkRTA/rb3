@@ -36,6 +36,7 @@
 #include "os/Debug.h"
 #include "os/System.h"
 #include "rndobj/Rnd.h"
+#include "stl/_pair.h"
 #include "synth/MicManagerInterface.h"
 #include "synth/Synth.h"
 #include "tour/Tour.h"
@@ -45,9 +46,6 @@
 #include "utl/PoolAlloc.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 MetaPerformer *MetaPerformer::sMetaPerformer;
 MicClientID sNullMicClientID;
@@ -95,12 +93,12 @@ void PerformerStatsInfo::Update(
     mStars = performer->GetNumStars();
     mAccuracy = performer->GetNotesHitFraction(0) * 100.0f;
     mStreak = stats.GetLongestStreak();
-    mAwesomes = stats.mHitCount;
-    mDoubleAwesomes = stats.mDoubleHarmonyHit;
-    mTripleAwesomes = stats.mTripleHarmonyHit;
-    mSoloPercent = stats.mSoloPercentage;
-    mHOPOPercent = ((float)stats.mHopoGemsHopoed / (float)stats.mHopoGemCount) * 100.0f;
-    mUnisonPhrasesHit = stats.mUnisonPhraseCompleted;
+    mAwesomes = stats.GetHitCount();
+    mDoubleAwesomes = stats.GetDoubleHarmonyHit();
+    mTripleAwesomes = stats.GetTripleHarmonyHit();
+    mSoloPercent = stats.GetSoloPercentage();
+    mHOPOPercent = stats.GetHopoPercent();
+    mUnisonPhrasesHit = stats.GetUnisonPhrasesHit();
 }
 
 BandStatsInfo::BandStatsInfo() {}
@@ -114,6 +112,15 @@ void BandStatsInfo::Clear() {
 
 void BandStatsInfo::UpdateBandStats(Difficulty d, short s, Performer *p) {
     mBandStats.Update(-1, -1, kScoreBand, d, s, p);
+}
+
+void BandStatsInfo::AddSoloStats(
+    int i1, int i2, ScoreType s, Difficulty d, BandProfile *bp, Performer *p
+) {
+    std::pair<BandProfile *, PerformerStatsInfo> thePair;
+    thePair.second.Update(i1, i2, s, d, 0, p);
+    thePair.first = bp;
+    mSoloStats.push_back(thePair);
 }
 
 FORCE_LOCAL_INLINE
@@ -142,9 +149,10 @@ void MetaPerformer::Init() {
 }
 
 MetaPerformer::MetaPerformer(const BandSongMgr &mgr, const char *cc)
-    : Synchronizable(cc), unk38(0), unk40(0), mVenue(gNullStr), unk48(), unk4c(gNullStr),
-      unk5c(0), unk5d(0), mSongMgr((BandSongMgr *)&mgr), unk2bc(0), unk2bd(0), unk2c0(0),
-      unk2c4(0), unk2c5(0), unk334(0), unk338(0), unk33c(-1), mRecordBattleContextID(-1),
+    : Synchronizable(cc), mWiiPending(0), mCreditsPending(0), mVenue(gNullStr),
+      mLastVenue(), mSetlist(gNullStr), mSetlistIsLocal(0), mSetlistIsHmx(0),
+      mSongMgr((BandSongMgr *)&mgr), unk2bc(0), unk2bd(0), unk2c0(0), unk2c4(0),
+      mCheatInFinale(0), mCheating(0), unk338(0), unk33c(-1), mRecordBattleContextID(-1),
       unk35c(0), unk35d(0), unk360(2), mVenueOverride(gNullStr) {
     SetName(cc, ObjectDir::sMainDir);
     mQpPerformer = new QuickplayPerformerImpl();
@@ -156,7 +164,7 @@ MetaPerformer::MetaPerformer(const BandSongMgr &mgr, const char *cc)
         mVenueOverride = no_venue_override;
     TheNetSession->AddSink(this);
     TheProfileMgr.AddSink(this, Symbol("primary_profile_changed_msg"));
-    unk64 = false;
+    mIsBattle = false;
 }
 
 MetaPerformer::~MetaPerformer() {
@@ -172,31 +180,30 @@ MetaPerformer::~MetaPerformer() {
 MetaPerformer *MetaPerformer::Current() { return sMetaPerformer; }
 
 MetaPerformerImpl *MetaPerformer::CurrentImpl() const {
-    bool b2 = false;
-    bool b1 = false;
-    if (TheTour && TheGameMode->InMode(tour) && TheTour->m_pTourPerformer) {
-        return mQpPerformer;
-    }
-    // supposedly also can return this? but if that's the case then we gotta fix the
-    // return type
+    MetaPerformerImpl *ret;
+    return TheTour && TheGameMode->InMode(tour) && (ret = TheTour->GetPerformer(), ret)
+        ? ret
+        : mQpPerformer;
 }
 
+FORCE_LOCAL_INLINE
 Symbol MetaPerformer::GetVenue() const { return mVenue; }
+END_FORCE_LOCAL_INLINE
 
 Symbol MetaPerformer::GetVenueClass() const {
-    String venue(mVenue.Str());
+    String venue(GetVenue().mStr);
     unsigned int idx = venue.find_last_of('_');
     if (idx == String::npos)
-        return mVenue;
+        return GetVenue();
     else
         return venue.substr(0, idx).c_str();
 }
 
 Symbol MetaPerformer::GetLastVenueClass() const {
-    String venue(unk48.Str());
+    String venue(mLastVenue.mStr);
     unsigned int idx = venue.find_last_of('_');
     if (idx == String::npos)
-        return unk48;
+        return mLastVenue;
     else
         return venue.substr(0, idx).c_str();
 }
@@ -210,7 +217,7 @@ int MetaPerformer::NumSongs() const { return mSongs.size(); }
 END_FORCE_LOCAL_INLINE
 
 FORCE_LOCAL_INLINE
-int MetaPerformer::NumCompleted() const { return unk78.size(); }
+int MetaPerformer::NumCompleted() const { return mStars.size(); }
 END_FORCE_LOCAL_INLINE
 
 Symbol MetaPerformer::Song() const {
@@ -233,10 +240,7 @@ int MetaPerformer::SongsID() const {
 bool MetaPerformer::HasSong() const { return Song() != gNullStr; }
 
 bool MetaPerformer::IsWinning() const {
-    bool b1 = false;
-    if (unk2c5 && IsLastSong())
-        b1 = true;
-    if (b1)
+    if (InFinale())
         return true;
     else {
         MetaPerformerImpl *pImpl = CurrentImpl();
@@ -245,17 +249,17 @@ bool MetaPerformer::IsWinning() const {
     }
 }
 
-const char *MetaPerformer::GetSetlistName() const { return unk50.c_str(); }
-bool MetaPerformer::HasSetlist() const { return unk4c != gNullStr; }
+const char *MetaPerformer::GetSetlistName() const { return mSetlistTitle.c_str(); }
+bool MetaPerformer::HasSetlist() const { return mSetlist != gNullStr; }
 
 void MetaPerformer::SetSetlist(Symbol s) {
     MILO_ASSERT(HasSyncPermission(), 0x1C1);
     ResetSongs();
-    unk4c = s;
-    unk50 = Localize(unk4c, nullptr);
-    unk5c = false;
+    mSetlist = s;
+    mSetlistTitle = Localize(mSetlist, nullptr);
+    mSetlistIsLocal = false;
     std::vector<Symbol> songs;
-    TheSongSortMgr->InqSongsForSetlist(unk4c, songs);
+    TheSongSortMgr->InqSongsForSetlist(mSetlist, songs);
     MILO_ASSERT(!songs.empty(), 0x1CC);
     for (int i = 0; i < songs.size(); i++) {
         MILO_ASSERT(!songs[i].Null(), 0x1D1);
@@ -266,8 +270,9 @@ void MetaPerformer::SetSetlist(Symbol s) {
 
 void MetaPerformer::SetSetlist(const SavedSetlist *setlist) {
     SetSetlistImpl(setlist, true);
-    if (setlist->GetType() - 3U <= 1) {
-        unk5d = true;
+    SavedSetlist::SetlistType ty = setlist->GetType();
+    if (ty == SavedSetlist::kSetlistHarmonix || ty == SavedSetlist::kBattleHarmonix) {
+        mSetlistIsHmx = true;
     }
 }
 
@@ -275,9 +280,9 @@ void MetaPerformer::SetSetlistImpl(const SavedSetlist *setlist, bool reset) {
     MILO_ASSERT(HasSyncPermission(), 0x1E5);
     if (reset)
         ResetSongs();
-    unk4c = setlist->GetIdentifyingToken();
-    unk50 = setlist->GetTitle();
-    unk5c = setlist->GetType() == 0;
+    mSetlist = setlist->GetIdentifyingToken();
+    mSetlistTitle = setlist->GetTitle();
+    mSetlistIsLocal = setlist->GetType() == SavedSetlist::kSetlistLocal;
     FOREACH (it, setlist->mSongs) {
         Symbol shortName = TheSongMgr.GetShortNameFromSongID(*it, true);
         MILO_ASSERT(!shortName.Null(), 0x1FB);
@@ -287,25 +292,21 @@ void MetaPerformer::SetSetlistImpl(const SavedSetlist *setlist, bool reset) {
 }
 
 ScoreType MetaPerformer::GetBattleInstrument() const {
-    if (unk64)
-        return unk6c;
+    if (mIsBattle)
+        return mBattleScoreType;
     else
         return kScoreBand;
 }
 
 int MetaPerformer::GetBattleID() const {
-    if (unk64)
-        return unk60;
+    if (mIsBattle)
+        return mSetlistBattleID;
     else
         return 0;
 }
 
 bool MetaPerformer::HasValidBattleInstarank() const {
-    if (GetBattleID() >= 0) {
-        return false;
-    } else {
-        return unk84.mIsValid;
-    }
+    return !HasBattle() ? false : mBattleInstarank.IsValid();
 }
 
 FORCE_LOCAL_INLINE
@@ -314,34 +315,34 @@ END_FORCE_LOCAL_INLINE
 
 const char *MetaPerformer::GetBattleName() {
     MILO_ASSERT(HasBattle(), 0x22C);
-    return unk50.c_str();
+    return mSetlistTitle.c_str();
 }
 
 int MetaPerformer::GetBattleInstrumentMask() {
     MILO_ASSERT(HasBattle(), 0x233);
-    return 1 << unk6c;
+    return 1 << mBattleScoreType;
 }
 
 int MetaPerformer::GetBattleScore() {
     MILO_ASSERT(HasBattle(), 0x23D);
-    return unk68;
+    return mBattleScore;
 }
 
 void MetaPerformer::UpdateBattleTypeLabel(UILabel *label) {
     MILO_ASSERT(label, 0x244);
     MILO_ASSERT(HasBattle(), 0x245);
     ScoreType inst = GetBattleInstrument();
-    label->SetTokenFmt(
-        battle_instrument_fmt, GetFontCharFromScoreType(inst, 0), ScoreTypeToSym(inst)
-    );
+    Symbol scoreTypeSym = ScoreTypeToSym(inst);
+    const char *font = GetFontCharFromScoreType(inst, 0);
+    label->SetTokenFmt(battle_instrument_fmt, font, scoreTypeSym);
 }
 
 void MetaPerformer::SetBattle(const BattleSavedSetlist *setlist) {
     ResetSongs();
-    unk60 = setlist->mID;
-    unk6c = setlist->unk6c;
-    unk68 = 0;
-    unk64 = true;
+    mSetlistBattleID = setlist->mID;
+    mBattleScoreType = setlist->unk6c;
+    mBattleScore = 0;
+    mIsBattle = true;
     SetSetlistImpl(setlist, false);
 }
 
@@ -378,7 +379,7 @@ void MetaPerformer::SetSongs(DataArray *arr) {
 }
 
 Symbol MetaPerformer::GetCompletedSong() const {
-    if (unk78.empty()) {
+    if (mStars.empty()) {
         if (TheGameMode->Property("loop_setlist", true)->Int()) {
             MILO_ASSERT(!mSongs.empty(), 0x290);
             return mSongs.back();
@@ -387,7 +388,7 @@ Symbol MetaPerformer::GetCompletedSong() const {
             return gNullStr;
         }
     } else {
-        int idx = unk78.size() - 1;
+        int idx = mStars.size() - 1;
         MILO_ASSERT(idx < mSongs.size(), 0x29C);
         return mSongs[idx];
     }
@@ -395,12 +396,12 @@ Symbol MetaPerformer::GetCompletedSong() const {
 
 const std::vector<Symbol> &MetaPerformer::GetSongs() const { return mSongs; }
 
-bool MetaPerformer::IsFirstSong() const { return unk78.empty(); }
+bool MetaPerformer::IsFirstSong() const { return mStars.empty(); }
 
 bool MetaPerformer::IsLastSong() const {
     int num_complete = NumCompleted();
     MILO_ASSERT(num_complete < NumSongs(), 0x2B0);
-    return mSongs.size() - 1 == num_complete;
+    return NumSongs() - 1 == num_complete;
 }
 
 bool MetaPerformer::IsSetComplete() const {
@@ -440,7 +441,9 @@ int MetaPerformer::GetSetlistMaxVocalParts() const {
     int parts = 1;
     for (std::vector<Symbol>::const_iterator it = mSongs.begin(); it != mSongs.end();
          ++it) {
-        if (*it != gNullStr && *it != any && *it != random) {
+        if (*it == gNullStr || *it == any || *it == random)
+            continue;
+        else {
             BandSongMetadata *data = (BandSongMetadata *)mSongMgr->Data(
                 mSongMgr->GetSongIDFromShortName(*it, true)
             );
@@ -457,7 +460,9 @@ int MetaPerformer::GetSetlistMaxVocalParts() const {
 bool MetaPerformer::SetlistHasVocalHarmony() const {
     for (std::vector<Symbol>::const_iterator it = mSongs.begin(); it != mSongs.end();
          ++it) {
-        if (*it != gNullStr && *it != any && *it != random) {
+        if (*it == gNullStr || *it == any || *it == random)
+            continue;
+        else {
             BandSongMetadata *data = (BandSongMetadata *)mSongMgr->Data(
                 mSongMgr->GetSongIDFromShortName(*it, true)
             );
@@ -607,7 +612,8 @@ int MetaPerformer::GetHighestDifficultyForPart(Symbol s) const {
 void MetaPerformer::PopulatePlayerBandScores(
     const BandStatsInfo &info, std::vector<PlayerScore> &scores
 ) {
-    int numStats = info.mSoloStats.size();
+    const PerformerStatsInfo &perfStats = info.mBandStats;
+    int numStats = info.NumSoloStats();
     for (int i = 0; i < numStats; i++) {
         BandProfile *profile = info.GetSoloProfile(i);
         MILO_ASSERT(profile, 0x3DF);
@@ -616,7 +622,7 @@ void MetaPerformer::PopulatePlayerBandScores(
         MILO_ASSERT(netServer, 0x3E3);
         if (netServer->GetPlayerID(padnum) != 0) {
             PlayerScore score;
-            PopulateSoloPlayerScore(info.GetBandStats(), profile, score);
+            PopulateSoloPlayerScore(perfStats, profile, score);
             scores.push_back(score);
         }
     }
@@ -649,7 +655,7 @@ void MetaPerformer::PopulatePlayerScores(
     const BandStatsInfo &info, std::vector<PlayerScore> &scores
 ) {
     PopulatePlayerBandScores(info, scores);
-    int numStats = info.mSoloStats.size();
+    int numStats = info.NumSoloStats();
     for (int i = 0; i < numStats; i++) {
         const PerformerStatsInfo &curPerfInfo = info.GetSoloStats(i);
         BandProfile *profile = info.GetSoloProfile(i);
@@ -666,8 +672,9 @@ void MetaPerformer::PopulatePlayerScores(
 }
 
 void MetaPerformer::UpdateScores(Symbol s, const BandStatsInfo &info, bool b3) {
+    const PerformerStatsInfo &perfStats = info.mBandStats;
     int songID = mSongMgr->GetSongIDFromShortName(s, true);
-    int numStats = info.mSoloStats.size();
+    int numStats = info.NumSoloStats();
     for (int i = 0; i < numStats; i++) {
         BandProfile *profile = info.GetSoloProfile(i);
         MILO_ASSERT(profile, 0x432);
@@ -676,23 +683,23 @@ void MetaPerformer::UpdateScores(Symbol s, const BandStatsInfo &info, bool b3) {
         MILO_ASSERT(netServer, 0x437);
         bool b8 = netServer->GetPlayerID(padnum) != 0 && !b3;
         profile->UpdateScore(songID, info.GetSoloStats(i), b8);
-        profile->UpdateScore(songID, info.GetBandStats(), b8);
+        profile->UpdateScore(songID, perfStats, b8);
     }
 }
 
 void MetaPerformer::UpdateLastOfflineScores(Symbol s, const BandStatsInfo &info) {
-    unk294 = mSongMgr->GetSongIDFromShortName(s, true);
+    mSongID = mSongMgr->GetSongIDFromShortName(s, true);
     BandProfile *p = TheProfileMgr.GetPrimaryProfile();
     if (p) {
-        unk298 = p->GetSongHighScore(unk294, kScoreBand);
+        mSongHighscore = p->GetSongHighScore(mSongID, kScoreBand);
     }
-    int numStats = info.mSoloStats.size();
+    int numStats = info.NumSoloStats();
     for (int i = 0; i < numStats; i++) {
         const PerformerStatsInfo &stats = info.GetSoloStats(i);
         BandProfile *profile = info.GetSoloProfile(i);
         MILO_ASSERT(profile, 0x459);
         int idx = stats.unk10;
-        unk29c[idx] = profile->GetSongHighScore(unk294, stats.mScoreType);
+        unk29c[idx] = profile->GetSongHighScore(mSongID, stats.mScoreType);
         unk2ac[idx] = stats.mScoreType;
     }
 }
@@ -708,7 +715,7 @@ void MetaPerformer::SaveAndUploadScores(
         UpdateScores(s, info, !instaRankProp);
         if (instaRankProp) {
             int songID = mSongMgr->GetSongIDFromShortName(s, true);
-            unk2c8.friendMode = true;
+            mPendingData.friendMode = true;
             std::vector<PlayerScore> scores;
             PopulatePlayerScores(info, scores);
             int pID = 0;
@@ -738,13 +745,13 @@ void MetaPerformer::SaveAndUploadScores(
                     info.GetBandStats().mInstrumentMask,
                     true,
                     this,
-                    unk2c8.ir_result
+                    mPendingData.ir_result
                 );
                 TheRockCentral.RecordOptionData();
             } else
                 unk2bc = false;
         }
-        if (unk64) {
+        if (mIsBattle) {
             RecordBattleScore(info, IsLastSong());
         }
     }
@@ -761,7 +768,7 @@ MetaPerformer::GetInstarankScoreTypeForSlot(int slot, const BandStatsInfo &info)
         MILO_ASSERT(user, 0x4C6);
         int userSlot = user->GetSlot();
         if (userSlot == slot) {
-            int numStats = info.mSoloStats.size();
+            int numStats = info.NumSoloStats();
             for (int i = 0; i < numStats; i++) {
                 const PerformerStatsInfo &curPerfInfo = info.GetSoloStats(i);
                 if (curPerfInfo.unk10 == userSlot) {
@@ -814,7 +821,7 @@ void MetaPerformer::UpdateInstarankData(
         String str5c = n118.Str();
 
         if (i4) {
-            unkdc.Init(i3, i4, kScoreBand, i5, i6, str50, str5c);
+            mBandInstarank.Init(i3, i4, kScoreBand, i5, i6, str50, str5c);
         } else {
             Instarank &rank = GetInstarankForPlayerID(i10);
             ScoreType s = GetInstarankScoreTypeForSlot(i10, info);
@@ -853,12 +860,12 @@ void MetaPerformer::UpdateBattleInstarankData(DataResultList &results) {
         res->GetDataResultValue("part_2", n8e8);
         String str858 = n8e8.Str();
 
-        unk84.Init(i5, i2, GetBattleInstrument(), i6, i7, str84c, str858);
+        mBattleInstarank.Init(i5, i2, GetBattleInstrument(), i6, i7, str84c, str858);
     }
 }
 
 void MetaPerformer::ClearInstarankData() {
-    unkdc.Clear();
+    mBandInstarank.Clear();
     for (int i = 0; i < 4; i++) {
         unk134[i].Clear();
     }
@@ -868,7 +875,7 @@ void MetaPerformer::ClearInstarankData() {
     }
 }
 
-void MetaPerformer::ClearBattleInstarankData() { unk84.Clear(); }
+void MetaPerformer::ClearBattleInstarankData() { mBattleInstarank.Clear(); }
 Symbol MetaPerformer::GetVenueOverride() { return mVenueOverride; }
 
 #pragma push
@@ -880,14 +887,14 @@ DataNode MetaPerformer::OnMsg(const RockCentralOpCompleteMsg &msg) {
         unk33c = -1;
         if (msg.Arg0()) {
             ClearInstarankData();
-            unk2c8.ir_result.Update(nullptr);
-            UpdateInstarankData(unk2c8.ir_result, unk2c8.stats);
+            mPendingData.ir_result.Update(nullptr);
+            UpdateInstarankData(mPendingData.ir_result, mPendingData.stats);
             static InstarankDoneMsg instarankDoneMsg;
             Export(instarankDoneMsg, true);
         } else {
-            UpdateScores(unk2c8.song, unk2c8.stats, true);
+            UpdateScores(mPendingData.song, mPendingData.stats, true);
         }
-        unk2c8.Clear();
+        mPendingData.Clear();
     } else if (arg2 == mRecordBattleContextID) {
         mRecordBattleContextID = -1;
         if (msg.Arg0()) {
@@ -904,8 +911,9 @@ DataNode MetaPerformer::OnMsg(const RockCentralOpCompleteMsg &msg) {
 
 DataNode MetaPerformer::OnMsg(const ModeChangedMsg &) {
     int numPlayers = TheGameMode->Property(local_vocalist_player_count, true)->Int();
-    if (TheSynth->GetMicClientMapper()) {
-        TheSynth->GetMicClientMapper()->SetNumberOfPlayers(numPlayers);
+    MicClientMapper *mapper = TheSynth->GetMicClientMapper();
+    if (mapper) {
+        mapper->SetNumberOfPlayers(numPlayers);
     }
     return 1;
 }
@@ -925,15 +933,15 @@ void MetaPerformer::SelectRandomVenue() {
     bool autoVox = TheModifierMgr->IsModifierActive(mod_auto_vocals);
     BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
     if (!autoVox && profile && profile->HasCampaignKey(key_video_venues)) {
-        Symbol s50;
+        Symbol s50 = gNullStr;
         cfg = SystemConfig(video_venues, venues);
-        Symbol s54;
+        Symbol s54 = gNullStr;
         for (int i = 1; i < cfg->Size(); i++) {
             DataArray *curArr = cfg->Array(i);
             s54 = curArr->Sym(0);
             DataArray *artistArr = curArr->FindArray(artists, false);
             bool b2 = false;
-            if (artistArr && mSongs.size()) {
+            if (artistArr && !mSongs.empty()) {
                 b2 = true;
                 FOREACH (it, mSongs) {
                     Symbol cur = *it;
@@ -959,23 +967,20 @@ void MetaPerformer::SelectRandomVenue() {
             }
         }
         if (!s50.Null()) {
-            DataArray *videoVenueCfg = SystemConfig(video_venues);
-            DataArray *probArr =
-                videoVenueCfg->FindArray(artist_specific_probability, true);
-            if (RandomFloat() < probArr->Float(1) || autoVox) {
+            if (RandomFloat()
+                    < SystemConfig(video_venues)->FindFloat(artist_specific_probability)
+                || autoVox) {
                 SetVenue(s50);
                 return;
             }
         } else {
-            DataArray *videoVenueCfg = SystemConfig(video_venues);
-            DataArray *probArr = videoVenueCfg->FindArray(probability, true);
-            if (RandomFloat() < probArr->Float(1) || autoVox) {
+            if (RandomFloat() < SystemConfig(video_venues)->FindFloat(probability)
+                || autoVox) {
                 std::vector<Symbol> validVenues;
                 DataArray *venuesVideoCfg = SystemConfig(venues_video);
                 for (int i = 1; i < venuesVideoCfg->Size(); i++) {
                     Symbol curSym = venuesVideoCfg->Sym(i);
-                    DataArray *curSymArr = cfg->FindArray(curSym, true);
-                    if (!curSymArr->FindArray(artists, false)) {
+                    if (!cfg->FindArray(curSym, true)->FindArray(artists, false)) {
                         validVenues.push_back(curSym);
                     }
                 }
@@ -1005,11 +1010,11 @@ void MetaPerformer::SetVenue(Symbol s) {
     bool changed = false;
     if (mVenue != s)
         changed = true;
-    unk48 = mVenue = s;
+    mLastVenue = mVenue = s;
     if (TheNetSession && !TheNetSession->IsLocal()) {
         char videobuf[16] = "video_01";
         videobuf[7] = RandomInt(0, 7) + '1';
-        unk48 = mVenue = videobuf;
+        mLastVenue = mVenue = videobuf;
         MILO_LOG(
             "\n#\n#Wii Net Play Venue Override: %s used in place of %s\n#\n\n",
             mVenue.mStr,
@@ -1018,7 +1023,7 @@ void MetaPerformer::SetVenue(Symbol s) {
     }
     if (mVenueOverride != no_venue_override) {
         mVenue = mVenueOverride;
-        unk48 = mVenueOverride;
+        mLastVenue = mVenueOverride;
     }
     if (changed && TheSessionMgr && HasSyncPermission()) {
         SetSyncDirty(-1, false);
@@ -1047,21 +1052,21 @@ void MetaPerformer::ClearVenues() {
 void MetaPerformer::ResetSongs() {
     ResetCompletion();
     mSongs.clear();
-    unk4c = gNullStr;
-    unk5d = false;
-    unk50 = gNullStr;
-    unk5c = false;
-    unk68 = 0;
-    unk64 = false;
+    mSetlist = gNullStr;
+    mSetlistIsHmx = false;
+    mSetlistTitle = gNullStr;
+    mSetlistIsLocal = false;
+    mBattleScore = 0;
+    mIsBattle = false;
     unk2bd = false;
 }
 
-void MetaPerformer::ResetCompletion() { unk78.clear(); }
+void MetaPerformer::ResetCompletion() { mStars.clear(); }
 
 void MetaPerformer::HostRestartLastSong() {
     MILO_ASSERT(IsLeaderLocal(), 0x6C2);
     MILO_ASSERT(HasSyncPermission(), 0x6C3);
-    unk78.pop_back();
+    mStars.pop_back();
     CurrentImpl()->RestartLastSong();
     SetSyncDirty(-1, true);
 }
@@ -1074,7 +1079,7 @@ void MetaPerformer::Restart() {
 }
 
 void MetaPerformer::TriggerSongCompletion() {
-    bool m16 = unk334;
+    bool m16 = GetCheating();
     SetCheating(false);
     Difficulty d15 = kDifficultyExpert;
     short i14 = 0;
@@ -1083,7 +1088,8 @@ void MetaPerformer::TriggerSongCompletion() {
     Performer *perf = band->MainPerformer();
     std::vector<BandUser *> users;
     int numPlayers = band->NumActivePlayers();
-    int songID = TheSongMgr.GetSongIDFromShortName(Song(), true);
+    Symbol songSym = Song();
+    int songID = TheSongMgr.GetSongIDFromShortName(songSym, true);
     Symbol gameMode = TheGameMode->GetMode();
     for (int i = 0; i < numPlayers; i++) {
         Player *player = band->GetActivePlayer(i);
@@ -1155,10 +1161,10 @@ void MetaPerformer::CompleteSong(
     PotentiallyUpdateLeaderboards(users, b3, songSym, *stats);
     IncrementSongPlayCount(users, songSym);
     TheAccomplishmentMgr->HandleSongCompleted(songSym, stats->GetBandStats().mDifficulty);
-    if (IsLastSong() && !unk4c.Null() && !unk2bd) {
+    if (IsLastSong() && !mSetlist.Null() && !unk2bd) {
         int totalStars = stats->GetBandStats().mStars + TotalStars(true);
         TheAccomplishmentMgr->HandleSetlistCompleted(
-            unk4c, unk5d, stats->GetBandStats().mDifficulty, totalStars
+            mSetlist, mSetlistIsHmx, stats->GetBandStats().mDifficulty, totalStars
         );
     }
 }
@@ -1186,17 +1192,17 @@ void MetaPerformer::IncrementSongPlayCount(std::vector<BandUser *> &users, Symbo
 
 void MetaPerformer::RecordBattleScore(const BandStatsInfo &stats, bool battleFinished) {
     std::vector<BandProfile *> profiles;
-    if (unk6c == kScoreBand) {
-        unk68 += stats.GetBandStats().mScore;
+    if (mBattleScoreType == kScoreBand) {
+        mBattleScore += stats.GetBandStats().mScore;
         if (battleFinished) {
             profiles = TheProfileMgr.GetParticipatingProfiles();
         }
     } else {
-        int numStats = stats.mSoloStats.size();
+        int numStats = stats.NumSoloStats();
         for (int i = 0; i < numStats; i++) {
             const PerformerStatsInfo &curPerfInfo = stats.GetSoloStats(i);
-            if (curPerfInfo.mScoreType == unk6c) {
-                unk68 += curPerfInfo.mScore;
+            if (curPerfInfo.mScoreType == mBattleScoreType) {
+                mBattleScore += curPerfInfo.mScore;
                 if (battleFinished) {
                     BandProfile *profile = stats.GetSoloProfile(i);
                     MILO_ASSERT(profile, 0x78D);
@@ -1222,7 +1228,7 @@ void MetaPerformer::RecordBattleScore(const BandStatsInfo &stats, bool battleFin
         unk338++;
         unk344.Clear();
         TheRockCentral.RecordBattleScore(
-            unk60, mRecordBattleContextID, profiles40, unk68, unk344, this
+            mSetlistBattleID, mRecordBattleContextID, profiles40, mBattleScore, unk344, this
         );
     }
 }
@@ -1236,7 +1242,7 @@ void MetaPerformer::SkipSong() {
 
 void MetaPerformer::AdvanceSong(int x) {
     MILO_ASSERT(NumCompleted() < NumSongs(), 0x7C3);
-    unk78.push_back(x);
+    mStars.push_back(x);
     if (HasSyncPermission()) {
         SetSyncDirty(-1, false);
     }
@@ -1255,17 +1261,17 @@ void MetaPerformer::ExportUpdateMetaPerformer() {
 void MetaPerformer::SyncSave(BinStream &bs, unsigned int ui) const {
     bs << mVenue;
     bs << unk2c4;
-    bs << unk4c;
-    bs << (unk5c ? String(gNullStr) : unk50);
-    bs << unk5d;
+    bs << mSetlist;
+    bs << (mSetlistIsLocal ? String(gNullStr) : mSetlistTitle);
+    bs << mSetlistIsHmx;
     bs << mSongs;
-    bs << unk78;
+    bs << mStars;
     bs << IsBandNoFailSet();
     bs << unk2bd;
-    bs << unk64;
-    if (unk64) {
-        bs << unk60;
-        bs << unk6c;
+    bs << mIsBattle;
+    if (mIsBattle) {
+        bs << mSetlistBattleID;
+        bs << mBattleScoreType;
     }
     CurrentImpl()->SyncSave(bs, ui);
 }
@@ -1281,11 +1287,11 @@ void MetaPerformer::SyncLoad(BinStream &bs, unsigned int ui) {
             TheBandDirector->LoadVenue(mVenue, kLoadStayBack);
         }
     }
-    bs >> unk4c;
-    bs >> unk50;
-    bs >> unk5d;
+    bs >> mSetlist;
+    bs >> mSetlistTitle;
+    bs >> mSetlistIsHmx;
     bs >> mSongs;
-    bs >> unk78;
+    bs >> mStars;
     bool nofailset = IsBandNoFailSet();
     bool noFail;
     bs >> noFail;
@@ -1294,12 +1300,12 @@ void MetaPerformer::SyncLoad(BinStream &bs, unsigned int ui) {
         TheGame->SetNoFail(noFail);
     }
     bs >> unk2bd;
-    bs >> unk64;
-    if (unk64) {
-        bs >> unk60;
+    bs >> mIsBattle;
+    if (mIsBattle) {
+        bs >> mSetlistBattleID;
         int score;
         bs >> score;
-        unk6c = (ScoreType)score;
+        mBattleScoreType = (ScoreType)score;
     }
     CurrentImpl()->SyncLoad(bs, ui);
 }
@@ -1314,8 +1320,8 @@ void MetaPerformer::PotentiallyUpdateLeaderboards(
     ClearInstarankData();
     ClearBattleInstarankData();
     unk2bc = false;
-    unk2c8.stats = info;
-    unk2c8.song = s3;
+    mPendingData.stats = info;
+    mPendingData.song = s3;
     if (TheBandUserMgr && !b2 && CanUpdateScoreLeaderboards()) {
         int numUsers = users.size();
         std::vector<LocalBandUser *> users;
@@ -1342,7 +1348,7 @@ void MetaPerformer::PotentiallyUpdateLeaderboards(
 
 int MetaPerformer::TotalStars(bool b1) const {
     int stars = 0;
-    FOREACH (it, unk78) {
+    FOREACH (it, mStars) {
         if (b1) {
             stars += Min(5, *it);
         } else
@@ -1351,21 +1357,21 @@ int MetaPerformer::TotalStars(bool b1) const {
     return stars;
 }
 
-bool MetaPerformer::HasBattleHighscore() { return unk84.HasHighscore(); }
+bool MetaPerformer::HasBattleHighscore() { return mBattleInstarank.HasHighscore(); }
 
 bool MetaPerformer::HasHighscore() {
     if (unk2bc) {
-        return unkdc.HasHighscore();
+        return mBandInstarank.HasHighscore();
     } else {
         BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
         if (profile) {
-            return profile->GetSongHighScore(unk294, kScoreBand) > unk298;
+            return profile->GetSongHighScore(mSongID, kScoreBand) > mSongHighscore;
         } else
             return false;
     }
 }
 
-int MetaPerformer::GetLastOfflineScore() { return unk298; }
+int MetaPerformer::GetLastOfflineScore() { return mSongHighscore; }
 
 int MetaPerformer::GetLastOfflineSoloScore(BandUser *user) {
     if (user->IsLocal()) {
@@ -1392,11 +1398,11 @@ bool MetaPerformer::HasSoloHighscore(BandUser *user) {
                 int pID = netServer->GetPlayerID(padnum);
                 if (unk2bc && pID) {
                     Instarank &rank = GetInstarankForPlayerID(slot);
-                    if (rank.mIsValid) {
+                    if (rank.IsValid()) {
                         return rank.HasHighscore();
                     }
                 }
-                int highscore = profile->GetSongHighScore(unk294, unk2ac[slot]);
+                int highscore = profile->GetSongHighScore(mSongID, unk2ac[slot]);
                 return highscore > unk29c[slot];
             }
         }
@@ -1404,7 +1410,7 @@ bool MetaPerformer::HasSoloHighscore(BandUser *user) {
     return false;
 }
 
-bool MetaPerformer::HasValidBandScore() { return unk2c8.stats.mSoloStats.size() > 0; }
+bool MetaPerformer::HasValidBandScore() { return mPendingData.stats.NumSoloStats() > 0; }
 
 bool MetaPerformer::HasValidUserScore(BandUser *user) {
     if (user->IsLocal()) {
@@ -1412,9 +1418,9 @@ bool MetaPerformer::HasValidUserScore(BandUser *user) {
         MILO_ASSERT(localUser, 0x8B4);
         BandProfile *profile = TheProfileMgr.GetProfileForUser(localUser);
         if (profile) {
-            int numStats = unk2c8.stats.mSoloStats.size();
+            int numStats = mPendingData.stats.NumSoloStats();
             for (int i = 0; i < numStats; i++) {
-                if (unk2c8.stats.GetSoloProfile(i) == profile)
+                if (mPendingData.stats.GetSoloProfile(i) == profile)
                     return true;
             }
         }
@@ -1422,12 +1428,12 @@ bool MetaPerformer::HasValidUserScore(BandUser *user) {
     return false;
 }
 
-bool MetaPerformer::HasValidInstarankData() const { return unkdc.mIsValid; }
+bool MetaPerformer::HasValidInstarankData() const { return mBandInstarank.IsValid(); }
 
 void MetaPerformer::UpdateInstarankRankLabel(UILabel *label) {
     MILO_ASSERT(label, 0x8D0);
-    if (unkdc.mIsValid) {
-        unkdc.UpdateRankLabel(label);
+    if (mBandInstarank.IsValid()) {
+        mBandInstarank.UpdateRankLabel(label);
     } else {
         MILO_WARN(
             "can't update instarank label %s - mBandInstarank is uninitialized!\n",
@@ -1438,8 +1444,8 @@ void MetaPerformer::UpdateInstarankRankLabel(UILabel *label) {
 
 void MetaPerformer::UpdateInstarankHighscore1Label(UILabel *label) {
     MILO_ASSERT(label, 0x8DE);
-    if (unkdc.mIsValid) {
-        unkdc.UpdateString1Label(label);
+    if (mBandInstarank.IsValid()) {
+        mBandInstarank.UpdateString1Label(label);
     } else {
         MILO_WARN(
             "can't update string1 label %s - mBandInstarank is uninitialized!\n",
@@ -1450,8 +1456,8 @@ void MetaPerformer::UpdateInstarankHighscore1Label(UILabel *label) {
 
 void MetaPerformer::UpdateInstarankHighscore2Label(UILabel *label) {
     MILO_ASSERT(label, 0x8EC);
-    if (unkdc.mIsValid) {
-        unkdc.UpdateString2Label(label);
+    if (mBandInstarank.IsValid()) {
+        mBandInstarank.UpdateString2Label(label);
     } else {
         MILO_WARN(
             "can't update string2 label %s - mBandInstarank is uninitialized!\n",
@@ -1462,8 +1468,8 @@ void MetaPerformer::UpdateInstarankHighscore2Label(UILabel *label) {
 
 void MetaPerformer::UpdateBattleInstarankHighscore1Label(UILabel *label) {
     MILO_ASSERT(label, 0x8FA);
-    if (unk84.mIsValid) {
-        unk84.UpdateString1Label(label);
+    if (mBattleInstarank.IsValid()) {
+        mBattleInstarank.UpdateString1Label(label);
     } else {
         MILO_WARN(
             "can't update HighScore1 label %s - mBattleInstarank is uninitialized!\n",
@@ -1474,8 +1480,8 @@ void MetaPerformer::UpdateBattleInstarankHighscore1Label(UILabel *label) {
 
 void MetaPerformer::UpdateBattleInstarankHighscore2Label(UILabel *label) {
     MILO_ASSERT(label, 0x908);
-    if (unk84.mIsValid) {
-        unk84.UpdateString2Label(label);
+    if (mBattleInstarank.IsValid()) {
+        mBattleInstarank.UpdateString2Label(label);
     } else {
         MILO_WARN(
             "can't update HighScore2 label %s - mBattleInstarank is uninitialized!\n",
@@ -1496,8 +1502,8 @@ const char *MetaPerformer::GetSoloScoreTypeIcon(BandUser *user) {
         ScoreType s;
         if (unk2bc && pID) {
             Instarank &rank = GetInstarankForPlayerID(slot);
-            if (rank.mIsValid)
-                s = rank.mScoreType;
+            if (rank.IsValid())
+                s = rank.GetScoreType();
             else
                 s = unk2ac[slot];
         } else
@@ -1515,7 +1521,8 @@ void MetaPerformer::UpdateSoloInstarankRankLabel(BandUser *user, UILabel *label)
     } else {
         LocalBandUser *localUser = dynamic_cast<LocalBandUser *>(user);
         MILO_ASSERT(localUser, 0x946);
-        if (!localUser->GetPlayer() || localUser->GetPlayer()->GetQuarantined()) {
+        Player *player = localUser->GetPlayer();
+        if (!player || player->GetQuarantined()) {
             label->SetTextToken(gNullStr);
         } else if (!TheProfileMgr.GetProfileForUser(localUser)) {
             label->SetTextToken(gNullStr);
@@ -1528,7 +1535,7 @@ void MetaPerformer::UpdateSoloInstarankRankLabel(BandUser *user, UILabel *label)
                 label->SetTextToken(gNullStr);
             } else {
                 Instarank &rank = GetInstarankForPlayerID(slot);
-                if (rank.mIsValid) {
+                if (rank.IsValid()) {
                     rank.UpdateRankLabel(label);
                 }
             }
@@ -1544,7 +1551,8 @@ void MetaPerformer::UpdateSoloInstarankHighscore1Label(BandUser *user, UILabel *
     } else {
         LocalBandUser *localUser = dynamic_cast<LocalBandUser *>(user);
         MILO_ASSERT(localUser, 0x978);
-        if (!localUser->GetPlayer() || localUser->GetPlayer()->GetQuarantined()) {
+        Player *player = localUser->GetPlayer();
+        if (!player || player->GetQuarantined()) {
             label->SetTextToken(gNullStr);
         } else if (!TheProfileMgr.GetProfileForUser(localUser)) {
             label->SetTextToken(gNullStr);
@@ -1557,7 +1565,7 @@ void MetaPerformer::UpdateSoloInstarankHighscore1Label(BandUser *user, UILabel *
                 label->SetTextToken(gNullStr);
             } else {
                 Instarank &rank = GetInstarankForPlayerID(slot);
-                if (rank.mIsValid) {
+                if (rank.IsValid()) {
                     rank.UpdateString1Label(label);
                 }
             }
@@ -1573,7 +1581,8 @@ void MetaPerformer::UpdateSoloInstarankHighscore2Label(BandUser *user, UILabel *
     } else {
         LocalBandUser *localUser = dynamic_cast<LocalBandUser *>(user);
         MILO_ASSERT(localUser, 0x9AA);
-        if (!localUser->GetPlayer() || localUser->GetPlayer()->GetQuarantined()) {
+        Player *player = localUser->GetPlayer();
+        if (!player || player->GetQuarantined()) {
             label->SetTextToken(gNullStr);
         } else if (!TheProfileMgr.GetProfileForUser(localUser)) {
             label->SetTextToken(gNullStr);
@@ -1586,7 +1595,7 @@ void MetaPerformer::UpdateSoloInstarankHighscore2Label(BandUser *user, UILabel *
                 label->SetTextToken(gNullStr);
             } else {
                 Instarank &rank = GetInstarankForPlayerID(slot);
-                if (rank.mIsValid) {
+                if (rank.IsValid()) {
                     rank.UpdateString2Label(label);
                 }
             }
@@ -1604,23 +1613,25 @@ void MetaPerformer::SetCreditsPending() {
     static OvershellPanel *pOvershellPanel =
         ObjectDir::Main()->Find<OvershellPanel>("overshell", true);
     pOvershellPanel->UpdateAll();
-    unk40 = true;
+    mCreditsPending = true;
 }
 
 void MetaPerformer::ClearCreditsPending() {
     static OvershellPanel *pOvershellPanel =
         ObjectDir::Main()->Find<OvershellPanel>("overshell", true);
     pOvershellPanel->UpdateAll();
-    unk40 = false;
+    mCreditsPending = false;
 }
 
-bool MetaPerformer::AreCreditsPending() const { return unk40; }
-void MetaPerformer::SetWiiPending(WiiPendingFlags flags) { unk38 |= flags; }
-void MetaPerformer::ClearWiiPending(WiiPendingFlags flags) { unk38 &= ~flags; }
-bool MetaPerformer::IsWiiPending(WiiPendingFlags flags) const { return unk38 & flags; }
-void MetaPerformer::SetCheating(bool b) { unk334 = b; }
+bool MetaPerformer::AreCreditsPending() const { return mCreditsPending; }
+void MetaPerformer::SetWiiPending(WiiPendingFlags flags) { mWiiPending |= flags; }
+void MetaPerformer::ClearWiiPending(WiiPendingFlags flags) { mWiiPending &= ~flags; }
+bool MetaPerformer::IsWiiPending(WiiPendingFlags flags) const {
+    return mWiiPending & flags;
+}
+void MetaPerformer::SetCheating(bool b) { mCheating = b; }
 short MetaPerformer::GetRecentInstrumentMask() const { return 0x400; }
-bool MetaPerformer::CheatToggleFinale() { return unk2c5 = !unk2c5; }
+bool MetaPerformer::CheatToggleFinale() { return mCheatInFinale = !mCheatInFinale; }
 
 #pragma push
 #pragma dont_inline on

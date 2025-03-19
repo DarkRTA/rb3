@@ -26,6 +26,8 @@ public:
     bool HasHighscore() const;
     void UpdateString1Label(UILabel *);
     void UpdateString2Label(UILabel *);
+    bool IsValid() const { return mIsValid; }
+    ScoreType GetScoreType() const { return mScoreType; }
 };
 
 DECLARE_MESSAGE(InstarankDoneMsg, "instarank_done")

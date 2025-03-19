@@ -50,6 +50,7 @@ public:
     BandProfile *GetSoloProfile(int) const;
     const PerformerStatsInfo &GetSoloStats(int) const;
     void AddSoloStats(int, int, ScoreType, Difficulty, BandProfile *, Performer *);
+    int NumSoloStats() const { return mSoloStats.size(); }
 
     PerformerStatsInfo mBandStats; // 0x4
     std::vector<std::pair<BandProfile *, PerformerStatsInfo> > mSoloStats; // 0x44
@@ -221,6 +222,8 @@ public:
     Symbol GetSongSymbol(int idx) const { return mSongs[idx]; }
     int GetWinMetric() const { return 0; }
     int GetPersistentGameData() { return 0; }
+    bool InFinale() const { return mCheatInFinale && IsLastSong(); }
+    bool GetCheating() const { return mCheating; }
 
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const ModeChangedMsg &);
@@ -229,36 +232,36 @@ public:
     static MetaPerformer *Current();
     static MetaPerformer *sMetaPerformer;
 
-    unsigned char unk38;
+    unsigned char mWiiPending; // 0x38
     QuickplayPerformerImpl *mQpPerformer; // 0x3c
-    bool unk40;
+    bool mCreditsPending; // 0x40
     Symbol mVenue; // 0x44
-    Symbol unk48; // 0x48
-    Symbol unk4c;
-    String unk50;
-    bool unk5c;
-    bool unk5d;
-    int unk60;
-    bool unk64;
-    int unk68; // 0x68
-    ScoreType unk6c;
+    Symbol mLastVenue; // 0x48
+    Symbol mSetlist; // 0x4c
+    String mSetlistTitle; // 0x50
+    bool mSetlistIsLocal; // 0x5c
+    bool mSetlistIsHmx; // 0x5d
+    int mSetlistBattleID; // 0x60
+    bool mIsBattle; // 0x64
+    int mBattleScore; // 0x68
+    ScoreType mBattleScoreType; // 0x6c
     std::vector<Symbol> mSongs; // 0x70
-    std::vector<int> unk78;
+    std::vector<int> mStars; // 0x78
     BandSongMgr *mSongMgr; // 0x80
-    Instarank unk84; // 0x84 - battle instarank?
-    Instarank unkdc;
+    Instarank mBattleInstarank; // 0x84
+    Instarank mBandInstarank; // 0xdc
     Instarank unk134[4]; // 0x134
-    int unk294;
-    int unk298;
+    int mSongID; // 0x294
+    int mSongHighscore; // 0x298
     int unk29c[4]; // 0x29c
     ScoreType unk2ac[4]; // 0x2ac
     bool unk2bc;
     bool unk2bd;
     int unk2c0;
     bool unk2c4;
-    bool unk2c5;
-    PendingDataInfo unk2c8;
-    bool unk334;
+    bool mCheatInFinale; // 0x2c5
+    PendingDataInfo mPendingData; // 0x2c8
+    bool mCheating; // 0x334
     int unk338;
     int unk33c;
     int mRecordBattleContextID; // 0x340
