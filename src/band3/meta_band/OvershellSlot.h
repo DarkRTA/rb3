@@ -90,7 +90,7 @@ public:
     void KickUser(int);
     void ConfirmKick();
     void LeaveKickConfirmation();
-    void GenerateCurrentState();
+    OvershellSlotState *GenerateCurrentState();
     void RemoveUser();
     void ToggleMuteUser(int);
     void SelectDifficulty(Difficulty);

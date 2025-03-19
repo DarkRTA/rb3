@@ -1,5 +1,6 @@
 #include "meta_band/OvershellSlot.h"
 #include "BandProfile.h"
+#include "OvershellSlotState.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
@@ -167,7 +168,7 @@ OvershellSlotState *OvershellSlot::GetState() {
     return mState;
 }
 
-void OvershellSlot::GenerateCurrentState() {
+OvershellSlotState *OvershellSlot::GenerateCurrentState() {
     OvershellSlotStateID id = kState_NoInstrument;
     BandUser *user = GetUser();
     if (user)
@@ -200,7 +201,7 @@ void OvershellSlot::GenerateCurrentState() {
             }
         }
     }
-    mStateMgr->GetSlotState(id);
+    return mStateMgr->GetSlotState(id);
 }
 
 void OvershellSlot::RemoveUser() {
@@ -1131,7 +1132,131 @@ void OvershellSlot::SetOverrideType(OvershellOverrideFlow type, bool b) {
 }
 
 // big chunguses...chungi?
-void OvershellSlot::UpdateState() {}
+void OvershellSlot::UpdateState() {
+    BandUser *pUser = GetUser();
+    OvershellSlotState *curState = GenerateCurrentState();
+    if (!mState || (curState->GetStateID() != mState->GetStateID())) {
+        bool b2 = false;
+        if (mState) {
+            mState->HandleMsg(exit_msg);
+            if (!pUser || pUser->IsLocal()) {
+                if (mState->RetractedPosition() && !curState->RetractedPosition()) {
+                    TheSynth->Play("overshell_up.cue", 0, 0, 0);
+                }
+                if (!mState->RetractedPosition() && curState->RetractedPosition()) {
+                    TheSynth->Play("overshell_down.cue", 0, 0, 0);
+                }
+            }
+            if (mState->AllowsInputToShell() != curState->AllowsInputToShell())
+                b2 = true;
+        }
+        mState = curState;
+        if (b2) {
+            static OvershellAllowingInputChangedMsg allowingInputMsg(GetUser());
+            allowingInputMsg[0] = GetUser();
+            mOvershell->Export(allowingInputMsg, true);
+        }
+        mState->HandleMsg(enter_msg);
+    }
+
+    if (pUser && pUser->IsLocal()) {
+        LocalBandUser *localUser = pUser->GetLocalBandUser();
+        if (mState->GetStateID() == 0x2F) {
+            bool cannotSave = !localUser->CanSaveData();
+            cannotSave |= !TheServer->IsConnected();
+            if (cannotSave) {
+                CancelLinkingCode();
+                ShowState((OvershellSlotStateID)0x2D);
+            }
+        }
+        if (mState->InCharEditFlow() && !localUser->CanSaveData()) {
+            ShowState((OvershellSlotStateID)6);
+        }
+        if (mState->GetStateID() == 0x18 && !localUser->CanSaveData()) {
+            ShowState((OvershellSlotStateID)6);
+        }
+        if (mState->GetStateID() == 0x33 && localUser->CanSaveData()) {
+            ShowState((OvershellSlotStateID)6);
+        }
+        if (mState->GetStateID() == 0x10 && localUser->IsSignedInOnline()
+            && !localUser->HasOnlinePrivilege()) {
+            ShowState((OvershellSlotStateID)0x11);
+        }
+        if (mState->GetStateID() == 0x18) {
+            if (mSessionMgr->IsLocal()) {
+                if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
+                    goto next17;
+            }
+            ShowState((OvershellSlotStateID)0x30);
+        }
+    next17:
+        if (mState->GetStateID() == 0x17) {
+            if (mSessionMgr->IsLocal()) {
+                if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
+                    goto next3b;
+            }
+            ShowState((OvershellSlotStateID)0x31);
+        }
+    next3b:
+        if (mState->GetStateID() == 0x3B) {
+            if (mSessionMgr->IsLocal()) {
+                if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
+                    goto nextc9;
+            }
+            ShowState((OvershellSlotStateID)0x3C);
+        }
+    nextc9:
+        if (mState->GetStateID() == 0xC9) {
+            if (mSessionMgr->IsLocal()) {
+                if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
+                    goto nextcc;
+            }
+            ShowState((OvershellSlotStateID)0xCD);
+        }
+    nextcc:
+        if (mState->GetStateID() == 0xCC) {
+            if (mSessionMgr->IsLocal()) {
+                if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
+                    goto next13;
+            }
+            ShowState((OvershellSlotStateID)0xCE);
+        }
+    next13:
+        if (mState->GetStateID() == 0x13 && localUser->HasOnlinePrivilege()
+            && !mBandUserMgr->AllLocalUsersInSessionAreGuests()) {
+            ShowState((OvershellSlotStateID)0x14);
+        }
+
+        if (mState->GetStateID() == 0x36
+            && mOvershell->DoesAnySlotHaveChar(mCharForEdit)) {
+            ShowState((OvershellSlotStateID)0x42);
+        }
+        if (mState->GetStateID() == 0x1A && mSessionMgr->IsLocal()) {
+            ShowState((OvershellSlotStateID)0x7);
+        }
+        BandUser *pCritUser = mSessionMgr->mCritUserListener->mCriticalUser;
+        if (mState->GetStateID() == 0x41) {
+            if (pCritUser != localUser) {
+                LeaveOptions();
+            }
+        }
+        if (mState->GetStateID() == 0xCB) {
+            if (!TheProfileMgr.IsPrimaryProfileCritical(pUser->GetLocalUser())) {
+                LeaveOptions();
+            }
+        }
+        if (mState->GetStateID() == 0x37 && !localUser->CanSaveData()) {
+            LeaveOptions();
+        }
+        if (mState->GetStateID() == 0x20) {
+            LocalBandUser *swapUser = mState->Property("swap_user")->Obj<LocalBandUser>();
+            if (!swapUser->IsSignedIn() || !swapUser->IsJoypadConnected()
+                || swapUser->IsGuest()) {
+                ShowState((OvershellSlotStateID)0x1F);
+            }
+        }
+    }
+}
 
 void OvershellSlot::UpdateView() {}
 
@@ -1153,28 +1278,7 @@ DECOMP_FORCEACTIVE(
     "update_lefty_and_static_toggle",
     "set_difficulty_restriction",
     "update_mics",
-    "update_online_enabled",
-    "!InGame()",
-    "mCharForEdit != NULL",
-    "illegal attempt made to delete guest character\n",
-    "pProfile",
-    "illegal attempt made to rename guest character to %s\n",
-    "pUser && pUser->IsLocal()",
-    "button_error.cue",
-    "overshell_back.cue",
-    "on_start",
-    "Local user %s cannot join",
-    "play_instr_sfx_local",
-    "slider.cue",
-    "overshell_select.cue",
-    "mCharProvider",
-    "update_char_provider",
-    "update_users_provider",
-    "update_profiles_provider",
-    "update_part_select_provider",
-    "update_character_portrait",
-    "update_char_more_options",
-    "slot state %i is not an Enter Flow Prompt\n"
+    "update_online_enabled"
 )
 
 void OvershellSlot::Update() {
