@@ -250,24 +250,24 @@ public:
     BandSongMgr *mSongMgr; // 0x80
     Instarank mBattleInstarank; // 0x84
     Instarank mBandInstarank; // 0xdc
-    Instarank unk134[4]; // 0x134
+    Instarank mInstaranks[4]; // 0x134
     int mSongID; // 0x294
     int mSongHighscore; // 0x298
-    int unk29c[4]; // 0x29c
-    ScoreType unk2ac[4]; // 0x2ac
-    bool unk2bc;
-    bool unk2bd;
-    int unk2c0;
-    bool unk2c4;
+    int mInstarankScores[4]; // 0x29c
+    ScoreType mInstarankScoreTypes[4]; // 0x2ac
+    bool mHasOnlineScoring; // 0x2bc
+    bool mSkippedSong; // 0x2bd
+    int unk2c0; // some sort of instrument mask?
+    bool mFestivalReward; // 0x2c4
     bool mCheatInFinale; // 0x2c5
     PendingDataInfo mPendingData; // 0x2c8
     bool mCheating; // 0x334
     int unk338;
     int unk33c;
     int mRecordBattleContextID; // 0x340
-    DataResultList unk344;
-    bool unk35c;
-    bool unk35d;
-    int unk360;
+    DataResultList mDataResults; // 0x344
+    bool mHarmonyOverride; // 0x35c
+    bool mRealDrumsOverride; // 0x35d
+    int unk360; // used in lock/unlock band or solo...some kind of mask?
     Symbol mVenueOverride; // 0x364
 };
