@@ -186,7 +186,7 @@ public:
     OvershellSlotStateMgr *mStateMgr; // 0x1c
     OvershellSlotState *mState; // 0x20
     OvershellSlotStateID mOverrideFlowReturnState; // 0x24
-    int unk28; // 0x28 - OvershellSlotStateID
+    OvershellSlotStateID unk28; // 0x28 - OvershellSlotStateID
     BandLabel *mUserNameLabel; // 0x2c
     OvershellPanel *mOvershell; // 0x30
     BandUserMgr *mBandUserMgr; // 0x34
@@ -205,7 +205,7 @@ public:
     DataResultList mLinkingCodeResultList; // 0x68
     bool unk80;
     bool unk81;
-    TourCharLocal *mCharForEdit; // 0x84 - TourCharLocal*
+    TourCharLocal *mCharForEdit; // 0x84
     unsigned int mCymbalConfiguration; // 0x88
     PassiveMessageQueue *mMessageQueue; // 0x8c
     OvershellOverrideFlow mSlotOverrideFlow; // 0x90
