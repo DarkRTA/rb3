@@ -184,7 +184,7 @@ Quest *Tour::GetQuest() {
     return ret;
 }
 
-TourPerformerImpl *Tour::GetPerformer() const { return m_pTourPerformer; }
+// TourPerformerImpl *Tour::GetPerformer() const { return m_pTourPerformer; }
 
 bool Tour::HasAnnouncement() const { return GetAnnouncement() != ""; }
 

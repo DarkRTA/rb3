@@ -5,6 +5,7 @@
 #include "meta/Profile.h"
 #include "meta_band/BandProfile.h"
 #include "net_band/DataResults.h"
+#include "os/User.h"
 
 enum LagContext {
     kGame = 0,
@@ -114,6 +115,7 @@ public:
     GameplayOptions *GetGameplayOptionsFromUser(LocalBandUser *);
     void Poll();
     std::vector<BandProfile *> GetParticipatingProfiles();
+    bool IsPrimaryProfileCritical(const LocalUser *);
 
     DECLARE_REVS;
 

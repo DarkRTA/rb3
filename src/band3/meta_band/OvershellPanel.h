@@ -109,6 +109,7 @@ public:
             || mActiveStatus == kOvershellInSong;
     }
     bool SongOptionsRequired() const { return mSongOptionsRequired; }
+    bool GetUseExtendedMicArrows() const { return mUseExtendedMicArrows; }
 
     DataNode SlotHandle(OvershellSlot *, const Message &);
     DataNode ExportButtonMsg(const Message &, BandUser *, bool);
@@ -154,8 +155,8 @@ public:
     OvershellOverrideFlow mPanelOverrideFlow; // 0x80
     OvershellActiveStatus mActiveStatus; // 0x84
     bool mSongOptionsRequired; // 0x88
-    bool unk89;
-    bool unk8a;
+    bool mUseExtendedMicArrows; // 0x89
+    bool mAllowsButtonPulse; // 0x8a
     std::vector<LocalBandUser *> mQueuedJoinUsers; // 0x8c
     SessionMgr *mSessionMgr; // 0x94
     BandUserMgr *mBandUserMgr; // 0x98
@@ -163,8 +164,8 @@ public:
     TrackType mPartRestriction; // 0xa0
     Difficulty mMinimumDifficulty; // 0xa4
     Rand mPartResolver; // 0xa8
-    int unk4b8; // 0x4b8
-    bool unk4bc;
+    int mPartResolverSeed; // 0x4b8
+    bool mAllowRealGuitarFlow; // 0x4bc
     std::vector<int> unk4c0;
     bool unk4c8;
     int unk4cc;
