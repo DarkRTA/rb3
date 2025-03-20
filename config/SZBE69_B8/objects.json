@@ -223,7 +223,7 @@
             "band3/meta_band/MetaPanel.cpp": "NonMatching",
             "band3/meta_band/MetaPerformer.cpp": "NonMatching",
             "band3/meta_band/ModifierMgr.cpp": "Matching",
-            "band3/meta_band/MultiSelectListPanel.cpp": "MISSING",
+            "band3/meta_band/MultiSelectListPanel.cpp": "NonMatching",
             "band3/meta_band/MusicLibrary.cpp": "NonMatching",
             "band3/meta_band/MusicLibraryNetSetlists.cpp": "NonMatching",
             "band3/meta_band/NameGenerator.cpp": "Matching",
