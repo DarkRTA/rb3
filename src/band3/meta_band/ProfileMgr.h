@@ -1,5 +1,9 @@
 #pragma once
+#include "SaveLoadManager.h"
+#include "game/BandUser.h"
+#include "game/GameMic.h"
 #include "meta_band/GameplayOptions.h"
+#include "net/Server.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
 #include "meta/Profile.h"
@@ -129,8 +133,18 @@ public:
     bool GetHasSeenFirstTimeInstruments(const LocalUser *) const;
     void SetHasSeenFirstTimeInstruments(const LocalUser *, bool);
     void SetUsingWiiFriends(int);
+    void CheckProfileWebSetlistStatus();
+    void HandlePendingProfileUploads();
+    void SyncProfileSetlists();
+    bool NeedsUpload();
+    void UpdateAllMicLevels();
 
     bool GetBassBoost() const { return mBassBoost; }
+
+    DataNode OnMsg(const SaveLoadMgrStatusUpdateMsg &);
+    DataNode OnMsg(const UserLoginMsg &);
+    DataNode OnMsg(const ServerStatusChangedMsg &);
+    DataNode OnMsg(const GameMicsChangedMsg &);
 
     DECLARE_REVS;
 

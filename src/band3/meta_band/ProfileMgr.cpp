@@ -8,12 +8,14 @@
 #include "game/GameMicManager.h"
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
+#include "meta_band/AccomplishmentProgress.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/GameplayOptions.h"
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/SaveLoadManager.h"
 #include "meta_band/UIEventMgr.h"
+#include "net/Net.h"
 #include "net/NetSession.h"
 #include "net/Server.h"
 #include "net/WiiFriendMgr.h"
@@ -28,6 +30,7 @@
 #include "synth/FxSend.h"
 #include "synth/Synth.h"
 #include "tour/TourCharLocal.h"
+#include "utl/Symbols2.h"
 
 INIT_REVS(ProfileMgr);
 ProfileMgr TheProfileMgr;
@@ -264,8 +267,107 @@ void ProfileMgr::HandlePendingGamerpicRewards() {
 }
 
 void ProfileMgr::CheckProfileWebLinkStatus() {
-    MILO_WARN("pUser");
-    MILO_WARN("netServer");
+    if (TheRockCentral.unk3c == 2) {
+        std::vector<BandProfile *> profiles = GetSignedInProfiles();
+        FOREACH (it, profiles) {
+            BandProfile *cur = *it;
+            if (cur->HasValidSaveData()) {
+                LocalBandUser *pUser = cur->GetAssociatedLocalBandUser();
+                MILO_ASSERT(pUser, 0x29C);
+                int padnum = cur->GetPadNum();
+                Server *netServer = TheNet.GetServer();
+                MILO_ASSERT(netServer, 0x2A0);
+                if (netServer->GetPlayerID(padnum)) {
+                    const AccomplishmentProgress &prog = cur->GetAccomplishmentProgress();
+                    if (!prog.IsAccomplished(acc_accountlink)) {
+                        cur->CheckWebLinkStatus();
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ProfileMgr::CheckProfileWebSetlistStatus() {
+    if (TheRockCentral.unk3c == 2) {
+        std::vector<BandProfile *> profiles = GetSignedInProfiles();
+        FOREACH (it, profiles) {
+            BandProfile *cur = *it;
+            if (cur->HasValidSaveData()) {
+                LocalBandUser *pUser = cur->GetAssociatedLocalBandUser();
+                MILO_ASSERT(pUser, 0x2C9);
+                int padnum = cur->GetPadNum();
+                Server *netServer = TheNet.GetServer();
+                MILO_ASSERT(netServer, 0x2CD);
+                if (netServer->GetPlayerID(padnum)) {
+                    const AccomplishmentProgress &prog = cur->GetAccomplishmentProgress();
+                    if (!prog.IsAccomplished(acc_createsetlist)) {
+                        cur->CheckWebSetlistStatus();
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ProfileMgr::HandlePendingProfileUploads() {
+    if (TheRockCentral.unk3c == 2) {
+        std::vector<BandProfile *> profiles = GetSignedInProfiles();
+        FOREACH (it, profiles) {
+            BandProfile *cur = *it;
+            if (cur->HasValidSaveData()) {
+                int padnum = cur->GetPadNum();
+                Server *netServer = TheNet.GetServer();
+                MILO_ASSERT(netServer, 0x2F6);
+                if (netServer->GetPlayerID(padnum)) {
+                    cur->UploadDirtyData();
+                    AccomplishmentProgress &prog = cur->AccessAccomplishmentProgress();
+                    if (prog.IsHardCoreStatusUpdatePending()) {
+                        prog.SendHardCoreStatusUpdateToRockCentral();
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ProfileMgr::SyncProfileSetlists() {
+    if (TheRockCentral.unk3c == 2) {
+        std::vector<BandProfile *> profiles = GetSignedInProfiles();
+        TheRockCentral.SyncSetlists(profiles, unk58c, nullptr);
+    }
+}
+
+DataNode ProfileMgr::OnMsg(const SaveLoadMgrStatusUpdateMsg &msg) {
+    if (msg->Int(2) == 4) {
+        SyncProfileSetlists();
+    }
+    return 1;
+}
+
+DataNode ProfileMgr::OnMsg(const UserLoginMsg &) {
+    CheckProfileWebLinkStatus();
+    CheckProfileWebSetlistStatus();
+    HandlePendingProfileUploads();
+    return 1;
+}
+
+DataNode ProfileMgr::OnMsg(const ServerStatusChangedMsg &) { return 1; }
+
+DataNode ProfileMgr::OnMsg(const GameMicsChangedMsg &) {
+    UpdateAllMicLevels();
+    return 1;
+}
+
+bool ProfileMgr::NeedsUpload() {
+    if (mAllUnlocked)
+        return false;
+    FOREACH (it, mProfiles) {
+        BandProfile *cur = *it;
+        if (cur->HasValidSaveData() && cur->HasSomethingToUpload())
+            return true;
+    }
+    return false;
 }
 
 bool ProfileMgr::GetAllUnlocked() { return mAllUnlocked; }
