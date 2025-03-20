@@ -16,6 +16,7 @@ public:
     WiiFriendMgr();
 
     void GetCachedFriends(WiiFriendList *);
+    void UseConsoleFriends(bool);
 };
 
 DECLARE_MESSAGE(WiiFriendsListChangedMsg, "wii_friends_list_changed");

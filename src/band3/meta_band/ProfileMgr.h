@@ -43,7 +43,6 @@ public:
     void InitSliders();
     float SliderIxToDb(int) const;
     void GetMicGainInfo(const Symbol &, float &, float &, float &, float &) const;
-    bool GetBassBoost() const;
     void SetBackgroundVolume(int);
     void SetForegroundVolume(int);
     void SetFxVolume(int);
@@ -116,6 +115,22 @@ public:
     void Poll();
     std::vector<BandProfile *> GetParticipatingProfiles();
     bool IsPrimaryProfileCritical(const LocalUser *);
+    void Init();
+    std::vector<BandProfile *> GetNewlySignedInProfiles();
+    std::vector<BandProfile *> GetShouldAutosaveProfiles();
+    bool IsAutosaveEnabled(const LocalBandUser *);
+    BandProfile *GetProfileForChar(const BandCharDesc *);
+    bool HasUnsavedDataForPad(int);
+    void PurgeOldData();
+    BandProfile *FindCharOwnerFromGuid(const HxGuid &);
+    void HandlePendingGamerpicRewards();
+    void CheckProfileWebLinkStatus();
+    int GetFirstTimeInstrumentFlag(JoypadType) const;
+    bool GetHasSeenFirstTimeInstruments(const LocalUser *) const;
+    void SetHasSeenFirstTimeInstruments(const LocalUser *, bool);
+    void SetUsingWiiFriends(int);
+
+    bool GetBassBoost() const { return mBassBoost; }
 
     DECLARE_REVS;
 
@@ -123,7 +138,7 @@ public:
     float mPlatformVideoLatency; // 0x20
     float mInGameExtraVideoLatency; // 0x24
     float mInGameSyncOffsetAdjustment; // 0x28
-    float mJoypadExtraLagOffsets[0x2F][7]; // 0x2c
+    float mJoypadExtraLagOffsets[kJoypadNumTypes][kNumLagContexts]; // 0x2c
     int unk550;
     ProfileSaveState mGlobalOptionsSaveState; // 0x554
     bool mGlobalOptionsDirty; // 0x558

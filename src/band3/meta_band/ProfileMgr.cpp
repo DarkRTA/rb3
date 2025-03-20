@@ -1,12 +1,47 @@
 #include "meta_band/ProfileMgr.h"
+#include "bandobj/BandCharDesc.h"
+#include "beatmatch/BeatMaster.h"
+#include "decomp.h"
+#include "game/BandUser.h"
+#include "game/Game.h"
+#include "game/GameMic.h"
+#include "game/GameMicManager.h"
+#include "meta/Profile.h"
+#include "meta/WiiProfileMgr.h"
+#include "meta_band/BandProfile.h"
+#include "meta_band/GameplayOptions.h"
 #include "meta_band/ModifierMgr.h"
+#include "meta_band/ProfileMessages.h"
+#include "meta_band/SaveLoadManager.h"
+#include "meta_band/UIEventMgr.h"
+#include "net/NetSession.h"
+#include "net/Server.h"
+#include "net/WiiFriendMgr.h"
+#include "net_band/RockCentral.h"
+#include "obj/Data.h"
+#include "obj/Dir.h"
+#include "os/Debug.h"
+#include "os/Joypad.h"
+#include "os/PlatformMgr.h"
 #include "rndobj/Rnd.h"
+#include "synth/Faders.h"
+#include "synth/FxSend.h"
+#include "synth/Synth.h"
+#include "tour/TourCharLocal.h"
 
 INIT_REVS(ProfileMgr);
 ProfileMgr TheProfileMgr;
 
+typedef void (Game::*GameFunc)(float);
+
 namespace {
-    float kNotForcingGain = -1.0f;
+    const float kNotForcingGain = -1.0f;
+
+    void SetVolume(float f1, GameFunc func) {
+        if (TheGame) {
+            (TheGame->*func)(f1);
+        }
+    }
 }
 
 ProfileMgr::ProfileMgr()
@@ -19,7 +54,7 @@ ProfileMgr::ProfileMgr()
       mDolby(0), unk582(0), mSyncPresetIx(0), mOverscan(0), mSynapseEnabled(1), unk58a(1),
       mSecondPedalHiHat(0), mWiiSpeakToggle(1), mWiiSpeakFriendsVolume(6),
       mWiiSpeakMicrophoneSensitivity(3), mWiiSpeakHeadphoneMode(0),
-      mWiiSpeakEchoSuppression(0), unk5b2(0), mWiiFriendsPromptShown(0),
+      mWiiSpeakEchoSuppression(1), unk5b2(0), mWiiFriendsPromptShown(0),
       mUsingWiiFriends(0), unk5b8(0), mCymbalConfiguration(0), unk5d8(0),
       mAllUnlocked(0) {
     mSyncOffset = -mPlatformVideoLatency;
@@ -37,7 +72,201 @@ ProfileMgr::ProfileMgr()
     UpdatePrimaryProfile();
 }
 
-DECOMP_FORCEACTIVE(ProfileMgr, "profile_mgr", "signin_changed")
+void ProfileMgr::Init() {
+    SystemConfig("profile_mgr");
+    for (int i = 0; i < 4; i++) {
+        mProfiles.push_back(new BandProfile(i));
+    }
+    SetName("profile_mgr", ObjectDir::Main());
+    TheNetSession->AddSink(this);
+    TheServer->AddSink(this, UserLoginMsg::Type());
+    TheRockCentral.AddSink(this);
+    TheGameMicManager->AddSink(this, GameMicsChangedMsg::Type());
+    TheSaveLoadMgr->AddSink(this, SaveLoadMgrStatusUpdateMsg::Type());
+    ThePlatformMgr.AddSink(this, SigninChangedMsg::Type());
+    InitSliders();
+    SetExcessVideoLag(0);
+}
+
+DECOMP_FORCEACTIVE(ProfileMgr, "signin_changed")
+
+void ProfileMgr::Poll() {
+    FOREACH (it, mProfiles) {
+        (*it)->Poll();
+    }
+}
+
+std::vector<BandProfile *> ProfileMgr::GetParticipatingProfiles() {
+    std::vector<BandProfile *> signedInProfiles = GetSignedInProfiles();
+    std::vector<BandProfile *> profiles;
+    for (int i = 0; i < signedInProfiles.size(); i++) {
+        BandProfile *profile = signedInProfiles[i];
+        MILO_ASSERT(profile, 0x117);
+        std::vector<LocalBandUser *> users;
+        profile->GetAssociatedUsers(users);
+        bool push = false;
+        FOREACH (it, users) {
+            if ((*it)->IsParticipating()) {
+                push = true;
+                break;
+            }
+        }
+        if (push) {
+            profiles.push_back(profile);
+        }
+    }
+    return profiles;
+}
+
+std::vector<BandProfile *> ProfileMgr::GetSignedInProfiles() {
+    std::vector<BandProfile *> profiles;
+    FOREACH (it, mProfiles) {
+        if (ThePlatformMgr.IsSignedIn((*it)->GetPadNum())) {
+            profiles.push_back(*it);
+        }
+    }
+    return profiles;
+}
+
+std::vector<BandProfile *> ProfileMgr::GetNewlySignedInProfiles() {
+    std::vector<BandProfile *> profiles;
+    FOREACH (it, mProfiles) {
+        BandProfile *cur = *it;
+        int pad = cur->GetPadNum();
+        if (ThePlatformMgr.IsSignedIn(pad) && !ThePlatformMgr.IsPadAGuest(pad)
+            && !cur->GetSaveState()) {
+            profiles.push_back(*it);
+        }
+    }
+    return profiles;
+}
+
+std::vector<BandProfile *> ProfileMgr::GetShouldAutosaveProfiles() {
+    std::vector<BandProfile *> profiles;
+    FOREACH (it, mProfiles) {
+        BandProfile *cur = *it;
+        int pad = cur->GetPadNum();
+        if (ThePlatformMgr.IsSignedIn(pad) && TheWiiProfileMgr.GetIndexForPad(pad) >= 0
+            && cur->GetSaveState() == 1 && cur->IsUnsaved()) {
+            profiles.push_back(cur);
+        }
+    }
+    return profiles;
+}
+
+BandProfile *ProfileMgr::GetProfileFromPad(int pad) {
+    BandProfile *ret = nullptr;
+    FOREACH (it, mProfiles) {
+        if (pad == (*it)->GetPadNum()) {
+            ret = *it;
+            break;
+        }
+    }
+    return ret;
+}
+
+GameplayOptions *ProfileMgr::GetGameplayOptionsFromUser(LocalBandUser *user) {
+    BandProfile *profile = GetProfileForUser(user);
+    if (profile)
+        return &profile->mGameplayOptions;
+    else
+        return nullptr;
+}
+
+bool ProfileMgr::IsAutosaveEnabled(const LocalBandUser *user) {
+    BandProfile *profile = GetProfileForUser(user);
+    return profile && profile->GetSaveState() != 2;
+}
+
+BandProfile *ProfileMgr::GetProfileForUser(const LocalUser *user) {
+    if (user && user->IsLocal() && user->CanSaveData()) {
+        return GetProfileFromPad(user->GetPadNum());
+    } else
+        return nullptr;
+}
+
+BandProfile *ProfileMgr::GetProfileForChar(const TourCharLocal *tourchar) {
+    for (int i = 0; i < mProfiles.size(); i++) {
+        BandProfile *cur = mProfiles[i];
+        if (cur->HasValidSaveData() && cur->HasChar(tourchar))
+            return cur;
+    }
+    return nullptr;
+}
+
+BandProfile *ProfileMgr::GetProfileForChar(const BandCharDesc *desc) {
+    for (int i = 0; i < mProfiles.size(); i++) {
+        BandProfile *cur = mProfiles[i];
+        if (cur->HasValidSaveData()) {
+            std::vector<TourCharLocal *> chars;
+            cur->GetAllChars(chars);
+            for (int c = 0; c < chars.size(); c++) {
+                BandCharDesc *curChar = chars[c]->GetBandCharDesc();
+                if (curChar->IsSameCharDesc(*desc))
+                    return cur;
+            }
+        }
+    }
+    return nullptr;
+}
+
+bool ProfileMgr::HasUnsavedDataForPad(int padNum) {
+    MILO_ASSERT(padNum != -1, 0x214);
+    BandProfile *profile = GetProfileFromPad(padNum);
+    return ThePlatformMgr.IsSignedIn(padNum) && profile->GetSaveState() == 1
+        && profile->IsUnsaved();
+}
+
+UNPOOL_DATA
+void ProfileMgr::PurgeOldData() {
+    FOREACH (it, mProfiles) {
+        BandProfile *cur = *it;
+        if (cur->GetSaveState() == 3) {
+            static ProfilePreDeleteMsg preDeleteMsg(cur);
+            preDeleteMsg[0] = cur;
+            Handle(preDeleteMsg, false);
+            cur->DeleteAll();
+            cur->SetSaveState(kMetaProfileUnloaded);
+            static ProfileChangedMsg profileChangedMsg(cur);
+            profileChangedMsg[0] = cur;
+            Handle(profileChangedMsg, false);
+        }
+    }
+}
+END_UNPOOL_DATA
+
+BandProfile *ProfileMgr::FindTourProgressOwner(const TourProgress *tp) {
+    FOREACH (it, mProfiles) {
+        BandProfile *cur = *it;
+        if (cur->HasValidSaveData() && cur->OwnsTourProgress(tp))
+            return cur;
+    }
+    return nullptr;
+}
+
+BandProfile *ProfileMgr::FindCharOwnerFromGuid(const HxGuid &guid) {
+    FOREACH (it, mProfiles) {
+        BandProfile *cur = *it;
+        if (cur->HasValidSaveData() && cur->GetCharFromGuid(guid))
+            return cur;
+    }
+    return nullptr;
+}
+
+void ProfileMgr::HandlePendingGamerpicRewards() {
+    std::vector<BandProfile *> profiles = GetSignedInProfiles();
+    FOREACH (it, profiles) {
+        BandProfile *cur = *it;
+        if (cur->HasValidSaveData()) {
+            cur->AccessAccomplishmentProgress().HandlePendingGamerRewards();
+        }
+    }
+}
+
+void ProfileMgr::CheckProfileWebLinkStatus() {
+    MILO_WARN("pUser");
+    MILO_WARN("netServer");
+}
 
 bool ProfileMgr::GetAllUnlocked() { return mAllUnlocked; }
 int ProfileMgr::GetMaxCharacters() const { return 10; }
@@ -191,9 +420,70 @@ int ProfileMgr::GetSliderStepCount() const {
     return mSliderConfig->Size() - 1;
 }
 
-void ProfileMgr::PushAllOptions() {}
+void ProfileMgr::PushAllOptions() {
+    SetVolume(SliderIxToDb(mBackgroundVolume), &Game::SetBackgroundVolume);
+    SetVolume(SliderIxToDb(mForegroundVolume), &Game::SetForegroundVolume);
 
-bool ProfileMgr::GetBassBoost() const { return mBassBoost; }
+    Fader *bgFade = TheSynth->Find<Fader>("background_music_level.fade", true);
+    if (bgFade) {
+        bgFade->SetVal(GetBackgroundVolumeDb());
+    }
+    Fader *crowdFade = TheSynth->Find<Fader>("crowd_level.fade", true);
+    if (crowdFade) {
+        crowdFade->SetVal(GetCrowdVolumeDb());
+    }
+    if (TheGame) {
+        BeatMaster *bm = TheGame->GetBeatMaster();
+        if (bm) {
+            bm->GetAudio()->SetBaseCrowdFader(GetCrowdVolumeDb());
+        }
+    }
+    Fader *sfxFade = TheSynth->Find<Fader>("sfx_level.fade", true);
+    if (sfxFade) {
+        sfxFade->SetVal(GetFxVolumeDb());
+    }
+    Fader *instFade = TheSynth->Find<Fader>("instrument_level.fade", true);
+    if (instFade) {
+        instFade->SetVal(GetForegroundVolumeDb());
+    }
+    FxSend *bassSend = TheSynth->Find<FxSend>("bass_boost.send", true);
+    if (bassSend) {
+        if (GetBassBoost()) {
+            bassSend->SetProperty("wet_gain", 0.0f);
+            bassSend->SetProperty("dry_gain", -96.0f);
+        } else {
+            bassSend->SetProperty("wet_gain", -96.0f);
+            bassSend->SetProperty("dry_gain", 0.0f);
+        }
+    }
+    if (TheGame) {
+        TheGame->SetVocalCueVolume(GetVocalCueVolumeDb());
+        std::vector<Player *> &players = TheGame->GetActivePlayers();
+        FOREACH (it, players) {
+            BandUser *user = (*it)->GetUser();
+            int i9 = -1;
+            if (user->IsLocal()) {
+                i9 = user->GetLocalBandUser()->GetPadNum();
+            }
+            (*it)->SetSyncOffset(GetSyncOffset(i9));
+        }
+    }
+    if (mOverscan != TheRnd->GetOverscan()) {
+        TheRnd->SetOverscan(mOverscan);
+        TheRnd->ConfigureRenderMode();
+        TheRnd->ChangeYScale(true);
+    }
+    TheGameMicManager->unk2f = mSynapseEnabled;
+    TheSynth->SetDolby(mDolby, false);
+    MILO_ASSERT(mVoiceChatSliderConfig, 0x534);
+    MILO_ASSERT(0 <= mVoiceChatVolume && mVoiceChatVolume < mVoiceChatSliderConfig->Size() - 1, 0x535);
+    TheSynth->SetIncomingVoiceChatVolume(
+        mVoiceChatSliderConfig->Float(mVoiceChatVolume + 1)
+    );
+    static DataNode &cv = DataVariable("crowd_audio.volume");
+    cv = GetCrowdVolumeDb();
+    TheWiiFriendMgr.UseConsoleFriends(mUsingWiiFriends);
+}
 
 void ProfileMgr::SetBackgroundVolume(int vol) {
     mBackgroundVolume = vol;
@@ -283,6 +573,21 @@ void ProfileMgr::SetWiiSpeakMicrophoneSensitivity(int sense) {
     mGlobalOptionsDirty = true;
 }
 
+UNPOOL_DATA
+void ProfileMgr::SetWiiSpeakHeadphoneMode(bool b1) {
+    static Symbol error_message("error_message");
+    static Message msg("init", 0);
+    if (b1) {
+        msg[0] = Symbol("passive_message_use_headphones");
+    } else {
+        msg[0] = Symbol("passive_message_dont_use_headphones");
+    }
+    TheUIEventMgr->TriggerEvent(error_message, msg);
+    mWiiSpeakHeadphoneMode = b1;
+    mGlobalOptionsDirty = true;
+}
+END_UNPOOL_DATA
+
 void ProfileMgr::SetWiiSpeakEchoSuppression(bool b) {
     mWiiSpeakEchoSuppression = b;
     mGlobalOptionsDirty = true;
@@ -297,6 +602,63 @@ void ProfileMgr::SetHasSeenFirstTimeCalibration(bool b) {
     mGlobalOptionsDirty = true;
 }
 
+int ProfileMgr::GetFirstTimeInstrumentFlag(JoypadType ty) const {
+    int ret = 0;
+    switch (ty) {
+    case kJoypadNone:
+        break;
+    case kJoypadWiiCore:
+    case kJoypadWiiFS:
+        ret = 1;
+        break;
+    case kJoypadWiiGuitar:
+    case kJoypadWiiHxGuitar:
+    case kJoypadWiiHxGuitarRb2:
+    case kJoypadWiiCoreGuitar:
+        ret = 2;
+        break;
+    case kJoypadWiiDrums:
+    case kJoypadWiiHxDrums:
+    case kJoypadWiiHxDrumsRb2:
+        ret = 4;
+        break;
+    case kJoypadWiiKeytar:
+        ret = 8;
+        break;
+    case kJoypadWiiButtonGuitar:
+        ret = 0x10;
+        break;
+    case kJoypadWiiRealGuitar22Fret:
+        ret = 0x20;
+        break;
+    case kJoypadWiiMidiBoxKeyboard:
+    case kJoypadWiiMidiBoxDrums:
+        ret = 0x40;
+        break;
+    default:
+        MILO_ASSERT(0, 0x637);
+        break;
+    }
+    return ret;
+}
+
+bool ProfileMgr::GetHasSeenFirstTimeInstruments(const LocalUser *u) const {
+    if (u) {
+        int wiiFlags = TheWiiProfileMgr.GetHasSeenFirstTimeInstrumentFlagsForUser(u);
+        int userFlags = GetFirstTimeInstrumentFlag((JoypadType)u->GetPadType());
+        return wiiFlags & userFlags;
+    } else
+        return false;
+}
+
+void ProfileMgr::SetHasSeenFirstTimeInstruments(const LocalUser *u, bool high) {
+    if (u) {
+        TheWiiProfileMgr.SetHasSeenFirstTimeInstrumentFlagsForUser(
+            u, GetFirstTimeInstrumentFlag((JoypadType)u->GetPadType()), high
+        );
+    }
+}
+
 bool ProfileMgr::GetHasConnectedProGuitar() const { return mHasConnectedProGuitar; }
 
 void ProfileMgr::SetHasConnectedProGuitar(bool b) {
@@ -307,6 +669,14 @@ void ProfileMgr::SetHasConnectedProGuitar(bool b) {
 void ProfileMgr::SetWiiFriendsPromptShown() {
     mWiiFriendsPromptShown = true;
     mGlobalOptionsDirty = true;
+}
+
+void ProfileMgr::SetUsingWiiFriends(int i1) {
+    mGlobalOptionsDirty = true;
+    mUsingWiiFriends = i1 != 0;
+    TheWiiFriendMgr.UseConsoleFriends(mUsingWiiFriends);
+    TheRockCentral.UpdateOnlineStatus();
+    TheSaveLoadMgr->AutoSave();
 }
 
 bool ProfileMgr::GetUsingWiiFriends() { return mUsingWiiFriends; }
@@ -410,20 +780,36 @@ void ProfileMgr::SetExcessAudioLag(float lag) {
     SetSongToTaskMgrMsRaw(-(lag + mPlatformAudioLatency + mSyncOffset));
 }
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetBackgroundVolumeDb() const {
     return SliderIxToDb(mBackgroundVolume);
 }
+END_FORCE_LOCAL_INLINE
+
 int ProfileMgr::GetBackgroundVolume() const { return mBackgroundVolume; }
+
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetForegroundVolumeDb() const {
     return SliderIxToDb(mForegroundVolume);
 }
+END_FORCE_LOCAL_INLINE
+
 int ProfileMgr::GetForegroundVolume() const { return mForegroundVolume; }
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetFxVolumeDb() const { return SliderIxToDb(unk582 ? 0 : mFxVolume); }
+END_FORCE_LOCAL_INLINE
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetCrowdVolumeDb() { return SliderIxToDb(mCrowdVolume); }
+END_FORCE_LOCAL_INLINE
+
 int ProfileMgr::GetCrowdVolume() const { return mCrowdVolume; }
+
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetVocalCueVolumeDb() { return SliderIxToDb(mVocalCueVolume); }
+END_FORCE_LOCAL_INLINE
+
 int ProfileMgr::GetVocalCueVolume() const { return mVocalCueVolume; }
 float ProfileMgr::GetVoiceChatVolumeDb() { return SliderIxToDb(mVoiceChatVolume); }
 int ProfileMgr::GetVoiceChatVolume() const { return mVoiceChatVolume; }
