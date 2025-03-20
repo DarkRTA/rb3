@@ -1,4 +1,5 @@
 #pragma once
+#include "meta/WiiProfileMgr.h"
 #include "obj/Object.h"
 #include "net_band/DataResults.h"
 #include "game/BandUserMgr.h"
@@ -53,7 +54,6 @@ public:
     bool IsHidden() const;
     bool IsLeavingOptions() const;
     Symbol GetCurrentView() const;
-    OvershellOverrideFlow InOverrideFlow(OvershellOverrideFlow) const;
     void ClearPotentialUsers();
     void AddPotentialUser(PotentialUserEntry);
     int NumPotentialUsers() const;
@@ -90,7 +90,7 @@ public:
     void KickUser(int);
     void ConfirmKick();
     void LeaveKickConfirmation();
-    void GenerateCurrentState();
+    OvershellSlotState *GenerateCurrentState();
     void RemoveUser();
     void ToggleMuteUser(int);
     void SelectDifficulty(Difficulty);
@@ -167,8 +167,8 @@ public:
     void ToggleWiiSpeak();
     void AddUser(LocalBandUser *);
     bool IsValidUser(BandUser *) const;
-    Hmx::Object *GetUserWiiProfile(); // TODO: change the return type once this is
-                                      // implemented
+    WiiProfile *GetUserWiiProfile();
+    bool InOverrideFlow(OvershellOverrideFlow) const;
 
     DataNode OnMsg(const AddLocalUserResultMsg &);
     DataNode OnMsg(const LocalUserLeftMsg &);
@@ -182,11 +182,13 @@ public:
 
     bool SongOptionsRequired() const { return mSongOptionsRequired; }
     bool InGame() const { return mInGame; }
+    bool BlockAllInput() const { return mBlockAllInput; }
+    bool AutoHideEnabled() const { return mAutohideEnabled; }
 
     OvershellSlotStateMgr *mStateMgr; // 0x1c
     OvershellSlotState *mState; // 0x20
     OvershellSlotStateID mOverrideFlowReturnState; // 0x24
-    int unk28; // 0x28 - OvershellSlotStateID
+    OvershellSlotStateID unk28; // 0x28
     BandLabel *mUserNameLabel; // 0x2c
     OvershellPanel *mOvershell; // 0x30
     BandUserMgr *mBandUserMgr; // 0x34
@@ -205,7 +207,7 @@ public:
     DataResultList mLinkingCodeResultList; // 0x68
     bool unk80;
     bool unk81;
-    TourCharLocal *mCharForEdit; // 0x84 - TourCharLocal*
+    TourCharLocal *mCharForEdit; // 0x84
     unsigned int mCymbalConfiguration; // 0x88
     PassiveMessageQueue *mMessageQueue; // 0x8c
     OvershellOverrideFlow mSlotOverrideFlow; // 0x90

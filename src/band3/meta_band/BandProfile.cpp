@@ -3,6 +3,7 @@
 #include "ProfileMgr.h"
 #include "AccomplishmentManager.h"
 #include "SavedSetlist.h"
+#include "decomp.h"
 #include "game/BandUser.h"
 #include "game/GameMode.h"
 #include "meta/FixedSizeSaveable.h"
@@ -143,6 +144,10 @@ void BandProfile::RenameCharacter(TourCharLocal *pChar, const char *name) {
         }
     }
 }
+
+FORCE_LOCAL_INLINE
+int BandProfile::NumChars() const { return mCharacters.size(); }
+END_FORCE_LOCAL_INLINE
 
 bool BandProfile::HasChar(const TourCharLocal *character) {
     for (std::vector<TourCharLocal *>::const_iterator it = mCharacters.begin();

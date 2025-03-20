@@ -1,6 +1,5 @@
 #include "meta_band/OvershellPanel.h"
-#include "OvershellPanel.h"
-#include "OvershellSlot.h"
+#include "meta_band/OvershellSlot.h"
 #include "bandobj/OvershellDir.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
@@ -20,7 +19,6 @@
 #include "meta_band/InputMgr.h"
 #include "meta_band/Matchmaker.h"
 #include "meta_band/ModifierMgr.h"
-#include "meta_band/OvershellSlot.h"
 #include "meta_band/OvershellSlotState.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SessionMgr.h"
@@ -31,7 +29,6 @@
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/JoypadMsgs.h"
 #include "os/Joypad_Wii.h"
@@ -46,9 +43,6 @@
 #include "ui/UISlider.h"
 #include "utl/Locale.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 MicClientID sNullMicClientID;
 
@@ -73,10 +67,10 @@ OvershellAllowingInputChangedMsg::OvershellAllowingInputChangedMsg(BandUser *u)
 
 OvershellPanel::OvershellPanel(SessionMgr *smgr, BandUserMgr *umgr)
     : Synchronizable("overshell"), mPanelOverrideFlow(kOverrideFlow_None),
-      mActiveStatus(kOvershellInactive), mSongOptionsRequired(0), unk89(0), unk8a(1),
-      mPartRestrictedUser(0), mPartRestriction(kTrackNone),
-      mMinimumDifficulty(kDifficultyEasy), mPartResolver(0), unk4b8(0), unk4bc(0),
-      unk4c8(0) {
+      mActiveStatus(kOvershellInactive), mSongOptionsRequired(0),
+      mUseExtendedMicArrows(0), mAllowsButtonPulse(1), mPartRestrictedUser(0),
+      mPartRestriction(kTrackNone), mMinimumDifficulty(kDifficultyEasy), mPartResolver(0),
+      mPartResolverSeed(0), mAllowRealGuitarFlow(0), unk4c8(0) {
     if (smgr)
         mSessionMgr = smgr;
     else {
@@ -190,11 +184,11 @@ void OvershellPanel::SetSongOptionsRequired(bool b1) {
 }
 
 void OvershellPanel::SetUseExtendedMicArrows(bool b1) {
-    unk89 = b1;
+    mUseExtendedMicArrows = b1;
     UpdateAll();
 }
 
-void OvershellPanel::SetAllowsButtonPulse(bool b1) { unk8a = b1; }
+void OvershellPanel::SetAllowsButtonPulse(bool b1) { mAllowsButtonPulse = b1; }
 
 void OvershellPanel::AddQueuedJoinUsers() {
     MILO_ASSERT(mActiveStatus != kOvershellInactive, 0x126);
@@ -263,7 +257,7 @@ void OvershellPanel::BeginOverrideFlow(OvershellOverrideFlow type) {
     MILO_ASSERT(type != kOverrideFlow_None, 0x193);
     mPanelOverrideFlow = type;
     if (mSessionMgr->IsLeaderLocal()) {
-        unk4b8 = RandomInt();
+        mPartResolverSeed = RandomInt();
     }
     SetSyncDirty(-1, false);
     UpdateAll();
@@ -284,7 +278,7 @@ void OvershellPanel::EndOverrideFlow(OvershellOverrideFlow type, bool b2) {
 DECOMP_FORCEACTIVE(OvershellPanel, "!playableTracks.empty()", "!resolvingUsers.empty()")
 
 DataNode OvershellPanel::OnMsg(const SessionReadyMsg &msg) {
-    if (mPanelOverrideFlow == kOverrideFlow_RegisterOnline) {
+    if (InOverrideFlow(kOverrideFlow_RegisterOnline)) {
         if (msg->Int(2)) {
             unk4c8 = true;
         } else {
@@ -322,7 +316,7 @@ DataNode OvershellPanel::OnMsg(const ServerStatusChangedMsg &msg) {
     if (unk4cc == 2) {
         if (!msg->Int(2)) {
             TheBandUI.ShowNetError();
-            if (mPanelOverrideFlow == kOverrideFlow_RegisterOnline) {
+            if (InOverrideFlow(kOverrideFlow_RegisterOnline)) {
                 EndOverrideFlow(kOverrideFlow_RegisterOnline, true);
             }
         }
@@ -340,7 +334,7 @@ DataNode OvershellPanel::OnMsg(const NetStartUtilityFinishedMsg &msg) {
     if (unk4cc == 2) {
         if (!msg->Int(2)) {
             TheBandUI.ShowNetError();
-            if (mPanelOverrideFlow == kOverrideFlow_RegisterOnline) {
+            if (InOverrideFlow(kOverrideFlow_RegisterOnline)) {
                 EndOverrideFlow(kOverrideFlow_RegisterOnline, true);
             }
         }
@@ -595,7 +589,7 @@ bool OvershellPanel::IsNonVocalistInVocalsSlot() const {
 
 FORCE_LOCAL_INLINE
 bool OvershellPanel::IsAutoVocalsAllowed() const {
-    return !InGame() && !mSongOptionsRequired;
+    return !InGame() && !SongOptionsRequired();
 }
 END_FORCE_LOCAL_INLINE
 
@@ -873,7 +867,7 @@ bool OvershellPanel::ShouldSeeRealGuitarPrompt(
     MILO_ASSERT(user, 0x6F7);
     if (user->GetControllerType() != kControllerRealGuitar)
         return false;
-    else if (!unk4bc)
+    else if (!mAllowRealGuitarFlow)
         return false;
     else if (user->HasSeenRealGuitarPrompt())
         return false;
@@ -926,7 +920,8 @@ void OvershellPanel::FinishLoad() {
         }
         DataArray *autoVoxArrNext = voxArr->Array(i + 1);
         for (int j = 0; j < autoVoxArrNext->Size(); j++) {
-            slot->AddValidController(SymToControllerType(autoVoxArrNext->Sym(j)));
+            slot->AddAutoVocalsValidController(SymToControllerType(autoVoxArrNext->Sym(j))
+            );
         }
         AddSlot(slot, priorityArr->Int(i + 1));
     }
@@ -975,7 +970,7 @@ void OvershellPanel::Poll() {
 
 void OvershellPanel::SyncSave(BinStream &bs, unsigned int) const {
     bs << (unsigned char)mPanelOverrideFlow;
-    bs << unk4b8;
+    bs << mPartResolverSeed;
     bs << mSongOptionsRequired;
 }
 
@@ -983,7 +978,7 @@ void OvershellPanel::SyncLoad(BinStream &bs, unsigned int) {
     unsigned char flow;
     bs >> flow;
     mPanelOverrideFlow = (OvershellOverrideFlow)flow;
-    bs >> unk4b8;
+    bs >> mPartResolverSeed;
     bs >> mSongOptionsRequired;
 }
 
@@ -1187,7 +1182,7 @@ DataNode OvershellPanel::OnExportAll(DataArray *arr) {
 
 DataNode OvershellPanel::ExportButtonMsg(const Message &msg, BandUser *user, bool b3) {
     MILO_ASSERT(!mSlots.empty(), 0x95D);
-    DataNode n28;
+    DataNode n28(0);
     if (!user) {
         return DataNode(kDataUnhandled, 0);
     }
@@ -1198,8 +1193,7 @@ DataNode OvershellPanel::ExportButtonMsg(const Message &msg, BandUser *user, boo
         if (c && c->GetState() == UIComponent::kSelecting) {
             return n28;
         }
-        if (slot->GetState()->AllowsInputToShell() && i5 != 4
-            && mActiveStatus == kOvershellInSong) {
+        if (slot->GetState()->AllowsInputToShell() && i5 != 4 && InSong()) {
             return DataNode(kDataUnhandled, 0);
         }
         n28 = SlotHandle(slot, msg);
@@ -1376,7 +1370,7 @@ BEGIN_HANDLERS(OvershellPanel)
     )
     HANDLE_EXPR(is_any_slot_joinable, IsAnySlotJoinable())
     HANDLE_EXPR(is_non_vocalist_in_vocals_slot, IsNonVocalistInVocalsSlot())
-    HANDLE_ACTION(set_allow_real_guitar_flow, unk4bc = _msg->Int(2))
+    HANDLE_ACTION(set_allow_real_guitar_flow, mAllowRealGuitarFlow = _msg->Int(2))
     HANDLE_ACTION(enable_auto_vocals, EnableAutoVocals())
     HANDLE_ACTION(remove_users_requiring_song_options, RemoveUsersRequiringSongOptions())
     HANDLE_ACTION(set_song_options_required, SetSongOptionsRequired(_msg->Int(2)))

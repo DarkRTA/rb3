@@ -4,6 +4,14 @@
 #define FORCE_LOCAL_INLINE _Pragma("push") _Pragma("force_active on") inline
 #define END_FORCE_LOCAL_INLINE _Pragma("pop")
 
+#ifdef VERSION_SZBE69_B8
+#define UNPOOL_DATA _Pragma("push") _Pragma("pool_data off")
+#define END_UNPOOL_DATA _Pragma("pop")
+#else
+#define UNPOOL_DATA
+#define END_UNPOOL_DATA
+#endif
+
 /**
  * https://github.com/kiwi515/ogws/blob/master/include/decomp.h
  * Codewarrior tricks for matching decomp

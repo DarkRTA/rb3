@@ -31,6 +31,7 @@ public:
     WiiProfileListMode GetWiiProfileListMode();
     int GetWiiProfileCount(LocalBandUser *) const;
     void Reload(LocalBandUser *);
+    const char *GetWiiProfileSelectedName() const;
 
     int unk20;
     int unk24;

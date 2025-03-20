@@ -56,7 +56,6 @@ public:
     bool HasGigSpecificOutro() const;
     Symbol GetGigSpecificIntro() const;
     Symbol GetGigSpecificOutro() const;
-    TourPerformerImpl *GetPerformer() const;
     bool HasAnnouncement() const;
     Symbol GetAnnouncement() const;
     Symbol GetGigFlavor() const;
@@ -76,6 +75,8 @@ public:
     void LaunchQuestFilter(
         int, Symbol, Symbol, Symbol, TourSetlistType, Symbol, Symbol, Symbol
     );
+
+    TourPerformerImpl *GetPerformer() const { return m_pTourPerformer; }
 
     const SongMgr &mSongMgr; // 0x1c
     BandUserMgr &mBandUserMgr; // 0x20
