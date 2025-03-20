@@ -576,6 +576,14 @@ void GemManager::Released(float f1, int i2) {
     if (gem.CompareBounds()) {
         if (!gem.GetGameGem().LeftHandSlide() && !gem.Released()) {
             gem.Release();
+
+            float unk = f1 / 1000.0f;
+            if (gem.mEnd > unk)
+                gem.mTailStart = unk - gem.GetStart();
+            else
+                gem.KillDuration();
+
+            mNowBar->StopBurning(gem.Slots());
         }
     }
 }
@@ -764,9 +772,7 @@ bool GemManager::IsEndOfFill(int idx) {
 
 void GemManager::ClearMissedPhrases() {
     mTrackConfig.GetBandUser()->GetPlayer()->mBand->mCommonPhraseCapturer->Reset();
-    if (!mMissedPhrases.empty()) {
-        mMissedPhrases.clear();
-    }
+    mMissedPhrases.clear();
 }
 
 TrackWidget *GemManager::GetWidgetByName(Symbol name) {
