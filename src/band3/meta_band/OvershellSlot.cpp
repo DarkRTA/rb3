@@ -59,7 +59,7 @@ OvershellSlot::OvershellSlot(
     int i, OvershellPanel *panel, OvershellDir *dir, BandUserMgr *umgr, SessionMgr *smgr
 )
     : mStateMgr(new OvershellSlotStateMgr()), mState(0),
-      mOverrideFlowReturnState(kState_JoinedDefault), unk28((OvershellSlotStateID)0x82),
+      mOverrideFlowReturnState(kState_JoinedDefault), unk28(kState_WiiProfileOptions),
       mOvershell(panel), mBandUserMgr(umgr), mSessionMgr(smgr), mSlotNum(i),
       mOvershellDir(dir), mAutohideEnabled(0), mIsLeavingOptions(0),
       mCurrentView(gNullStr), mBlockAllInput(0), mInGame(0), mSongOptionsRequired(0),
@@ -204,7 +204,7 @@ OvershellSlotState *OvershellSlot::GenerateCurrentState() {
                     id = kState_SignIn;
                     break;
                 case (JoinState)3:
-                    id = (OvershellSlotStateID)0x39;
+                    id = kState_NoJoinInGame;
                     break;
                 default:
                     MILO_FAIL("Unknown user entry state %i\n", jstate);
@@ -655,16 +655,16 @@ void OvershellSlot::AttemptRemoveUser() {
     }
 
     if (b1) {
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x1A);
+        pUser->SetOvershellSlotState(kState_RemoveUserDisconnectConfirm);
         mOvershell->UpdateAll();
     } else if (mSessionMgr->mCritUserListener->mCriticalUser == pUser) {
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x41);
+        pUser->SetOvershellSlotState(kState_RemoveCriticalUserConfirm);
         mOvershell->UpdateAll();
     } else if (mOvershell->InSong()) {
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0x4D);
+        pUser->SetOvershellSlotState(kState_RemoveUserInSongConfirm);
         mOvershell->UpdateAll();
     } else if (TheProfileMgr.IsPrimaryProfileCritical(pUser->GetLocalUser())) {
-        pUser->SetOvershellSlotState((OvershellSlotStateID)0xCB);
+        pUser->SetOvershellSlotState(kState_RemoveUserInCampaignConfirm);
         mOvershell->UpdateAll();
     } else
         RemoveUser();
@@ -740,9 +740,9 @@ void OvershellSlot::HandleWiiProfileActResult(WiiProfileActResult res) {
         BandUser *pUser = GetUser();
         MILO_ASSERT(pUser->IsLocal(), 0x54C);
         if (mSessionMgr->IsLocal()) {
-            pUser->SetOvershellSlotState((OvershellSlotStateID)0xcc);
+            pUser->SetOvershellSlotState(kState_RegisterWiiProfile);
         } else
-            pUser->SetOvershellSlotState((OvershellSlotStateID)0xce);
+            pUser->SetOvershellSlotState(kState_RegisterWiiProfileDenial);
         mOvershell->UpdateAll();
         break;
     }
@@ -883,7 +883,7 @@ void OvershellSlot::ShowWiiProfileOptions() {
     MILO_ASSERT(pUser->IsLocal(), 0x62A);
     LocalBandUser *pLocalUser = pUser->GetLocalBandUser();
     MILO_ASSERT(pLocalUser, 0x62D);
-    unk28 = (OvershellSlotStateID)0x82;
+    unk28 = kState_WiiProfileOptions;
     pUser->SetOvershellSlotState(kState_WiiProfileOptions);
     mOvershell->UpdateAll();
 }
@@ -918,7 +918,7 @@ void OvershellSlot::ShowWiiProfileSelector(bool b) {
 }
 
 void OvershellSlot::CancelWiiProfileSelector() {
-    ShowState((OvershellSlotStateID)unk28);
+    ShowState(unk28);
     unk28 = kState_WiiProfileOptions;
 }
 
@@ -966,7 +966,7 @@ void OvershellSlot::AttemptToggleAutoVocals() {
         MILO_ASSERT(pUser->IsLocal(), 0x715);
         if (TheModifierMgr->IsModifierActive(mod_auto_vocals)) {
             if (mOvershell->IsNonVocalistInVocalsSlot() || mInGame) {
-                pUser->SetOvershellSlotState((OvershellSlotStateID)0x23);
+                pUser->SetOvershellSlotState(kState_AutoVocalsDenial);
             } else
                 TheModifierMgr->DisableAutoVocals();
         } else {
@@ -977,7 +977,7 @@ void OvershellSlot::AttemptToggleAutoVocals() {
             if (mOvershell->IsAutoVocalsAllowed() && !b1) {
                 TheUIEventMgr->TriggerEvent(auto_vocals_confirm, nullptr);
             } else
-                pUser->SetOvershellSlotState((OvershellSlotStateID)0x23);
+                pUser->SetOvershellSlotState(kState_AutoVocalsDenial);
         }
         mOvershell->UpdateAll();
     }
@@ -1091,7 +1091,7 @@ void OvershellSlot::RevertToOverrideFlowReturnState() {
     BandUser *pUser = GetUser();
     MILO_ASSERT(pUser, 0x7e7);
     MILO_ASSERT(pUser->IsLocal(), 0x7E8);
-    pUser->SetOvershellSlotState((OvershellSlotStateID)mOverrideFlowReturnState);
+    pUser->SetOvershellSlotState(mOverrideFlowReturnState);
     mOverrideFlowReturnState = kState_JoinedDefault;
     mOvershell->UpdateAll();
 }
@@ -1173,103 +1173,108 @@ void OvershellSlot::UpdateState() {
 
     if (pUser && pUser->IsLocal()) {
         LocalBandUser *localUser = pUser->GetLocalBandUser();
-        if (mState->GetStateID() == 0x2F) {
+        if (mState->GetStateID() == kState_LinkingCode) {
             bool cannotSave = !localUser->CanSaveData();
             cannotSave |= !TheServer->IsConnected();
             if (cannotSave) {
                 CancelLinkingCode();
-                ShowState((OvershellSlotStateID)0x2D);
+                ShowState(kState_OptionsExtras);
             }
         }
         if (mState->InCharEditFlow() && !localUser->CanSaveData()) {
-            ShowState((OvershellSlotStateID)6);
+            ShowState(kState_ChooseChar);
         }
-        if (mState->GetStateID() == 0x18 && !localUser->CanSaveData()) {
-            ShowState((OvershellSlotStateID)6);
+        if (mState->GetStateID() == kState_EnterCharCreator
+            && !localUser->CanSaveData()) {
+            ShowState(kState_ChooseChar);
         }
-        if (mState->GetStateID() == 0x33 && localUser->CanSaveData()) {
-            ShowState((OvershellSlotStateID)6);
+        if (mState->GetStateID() == kState_CharCreatorDenialNoProfile
+            && localUser->CanSaveData()) {
+            ShowState(kState_ChooseChar);
         }
-        if (mState->GetStateID() == 0x10 && localUser->IsSignedInOnline()
+        if (mState->GetStateID() == kState_AutoSignInSony && localUser->IsSignedInOnline()
             && !localUser->HasOnlinePrivilege()) {
-            ShowState((OvershellSlotStateID)0x11);
+            ShowState(kState_SignInSonyPrivilegeDenial);
         }
-        if (mState->GetStateID() == 0x18) {
+        if (mState->GetStateID() == kState_EnterCharCreator) {
             if (mSessionMgr->IsLocal()) {
                 if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
                     goto next17;
             }
-            ShowState((OvershellSlotStateID)0x30);
+            ShowState(kState_CharCreatorDenial);
         }
     next17:
-        if (mState->GetStateID() == 0x17) {
+        if (mState->GetStateID() == kState_EnterCalibration) {
             if (mSessionMgr->IsLocal()) {
                 if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
                     goto next3b;
             }
-            ShowState((OvershellSlotStateID)0x31);
+            ShowState(kState_CalibrationDenial);
         }
     next3b:
-        if (mState->GetStateID() == 0x3B) {
+        if (mState->GetStateID() == kState_EnterCredits) {
             if (mSessionMgr->IsLocal()) {
                 if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
                     goto nextc9;
             }
-            ShowState((OvershellSlotStateID)0x3C);
+            ShowState(kState_CreditsDenial);
         }
     nextc9:
-        if (mState->GetStateID() == 0xC9) {
+        if (mState->GetStateID() == kState_EnterWiiProfile) {
             if (mSessionMgr->IsLocal()) {
                 if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
                     goto nextcc;
             }
-            ShowState((OvershellSlotStateID)0xCD);
+            ShowState(kState_WiiProfileDenial);
         }
     nextcc:
-        if (mState->GetStateID() == 0xCC) {
+        if (mState->GetStateID() == kState_RegisterWiiProfile) {
             if (mSessionMgr->IsLocal()) {
                 if (!TheUIEventMgr->HasTransitionEvent("go_to_wiiprofilecreator"))
                     goto next13;
             }
-            ShowState((OvershellSlotStateID)0xCE);
+            ShowState(kState_RegisterWiiProfileDenial);
         }
     next13:
-        if (mState->GetStateID() == 0x13 && localUser->HasOnlinePrivilege()
+        if (mState->GetStateID() == kState_SignInToRegister
+            && localUser->HasOnlinePrivilege()
             && !mBandUserMgr->AllLocalUsersInSessionAreGuests()) {
-            ShowState((OvershellSlotStateID)0x14);
+            ShowState(kState_SignInWait);
         }
 
-        if (mState->GetStateID() == 0x36
+        if (mState->GetStateID() == kState_ChooseCharDelete
             && mOvershell->DoesAnySlotHaveChar(mCharForEdit)) {
-            ShowState((OvershellSlotStateID)0x42);
+            ShowState(kState_ChooseCharDeleteDenial);
         }
-        if (mState->GetStateID() == 0x1A && mSessionMgr->IsLocal()) {
-            ShowState((OvershellSlotStateID)0x7);
+        if (mState->GetStateID() == kState_RemoveUserDisconnectConfirm
+            && mSessionMgr->IsLocal()) {
+            ShowState(kState_Options);
         }
         BandUser *pCritUser = mSessionMgr->mCritUserListener->mCriticalUser;
-        if (mState->GetStateID() == 0x41) {
+        if (mState->GetStateID() == kState_RemoveCriticalUserConfirm) {
             if (pCritUser != localUser) {
                 LeaveOptions();
             }
         }
-        if (mState->GetStateID() == 0xCB) {
+        if (mState->GetStateID() == kState_RemoveUserInCampaignConfirm) {
             if (!TheProfileMgr.IsPrimaryProfileCritical(pUser->GetLocalUser())) {
                 LeaveOptions();
             }
         }
-        if (mState->GetStateID() == 0x37 && !localUser->CanSaveData()) {
+        if (mState->GetStateID() == kState_FirstTimeRG && !localUser->CanSaveData()) {
             LeaveOptions();
         }
-        if (mState->GetStateID() == 0x20) {
+        if (mState->GetStateID() == kState_ChooseProfileConfirm) {
             LocalBandUser *swapUser = mState->Property("swap_user")->Obj<LocalBandUser>();
             if (!swapUser->IsSignedIn() || !swapUser->IsJoypadConnected()
                 || swapUser->IsGuest()) {
-                ShowState((OvershellSlotStateID)0x1F);
+                ShowState(kState_ChooseProfile);
             }
         }
     }
 }
 
+// retail scratch: https://decomp.me/scratch/AdUgA
 UNPOOL_DATA
 void OvershellSlot::UpdateView() {
     bool b1 = false;
@@ -1563,7 +1568,7 @@ DataNode OvershellSlot::OnMsg(const VirtualKeyboardResultMsg &msg) {
 }
 
 void OvershellSlot::ShowCharEdit(int i) {
-    if (TheNetSync->GetUIState() == 0xF) {
+    if (TheNetSync->GetUIState() == kNetUI_MetaLoadingPreSave) {
         ShowState(kState_ChooseCharDenial);
     } else {
         mCharForEdit = dynamic_cast<TourCharLocal *>(mCharProvider->GetCharData(i));
@@ -1591,7 +1596,7 @@ void OvershellSlot::DeleteCharacter() {
     MILO_ASSERT(pUser->IsLocal(), 0xB40);
     LocalBandUser *localUser = pUser->GetLocalBandUser();
     BandProfile *pProfile = TheProfileMgr.GetProfileForUser(localUser);
-    if (TheNetSync->GetUIState() == 0xF) {
+    if (TheNetSync->GetUIState() == kNetUI_MetaLoadingPreSave) {
         ShowState(kState_ChooseCharDeleteDenial);
     } else if (!pProfile) {
         MILO_WARN("illegal attempt made to delete guest character\n");
@@ -1605,9 +1610,9 @@ void OvershellSlot::DeleteCharacter() {
 
 void OvershellSlot::AttemptShowCharDelete() {
     if (mOvershell->DoesAnySlotHaveChar(mCharForEdit)) {
-        ShowState((OvershellSlotStateID)0x42);
+        ShowState(kState_ChooseCharDeleteDenial);
     } else {
-        ShowState((OvershellSlotStateID)0x36);
+        ShowState(kState_ChooseCharDelete);
     }
 }
 
@@ -1631,17 +1636,17 @@ void OvershellSlot::SelectChar(int i1) {
     LocalBandUser *pLocalUser = pUser->GetLocalBandUser();
     MILO_ASSERT(pLocalUser, 0xB85);
     BandProfile *profile = TheProfileMgr.GetProfileForUser(pLocalUser);
-    if (TheNetSync->GetUIState() == 0xF) {
-        ShowState((OvershellSlotStateID)0x49);
+    if (TheNetSync->GetUIState() == kNetUI_MetaLoadingPreSave) {
+        ShowState(kState_ChooseCharDenial);
     } else if (mCharProvider->IsIndexNewChar(i1)) {
         if (!mSessionMgr->IsLocal()) {
-            ShowState((OvershellSlotStateID)0x49);
+            ShowState(kState_ChooseCharDenial);
         } else if (!profile || !profile->HasValidSaveData()) {
-            ShowState((OvershellSlotStateID)0x33);
+            ShowState(kState_CharCreatorDenialNoProfile);
         } else if (profile->NumChars() >= 10) {
-            ShowEnterFlowPrompt((OvershellSlotStateID)0x34);
+            ShowEnterFlowPrompt(kState_CharCreatorDenialMaxChars);
         } else
-            ShowState((OvershellSlotStateID)0x18);
+            ShowState(kState_EnterCharCreator);
     } else if (mCharProvider->GetCharData(i1)) {
         pUser->SetChar(mCharProvider->GetCharData(i1));
         LeaveOptions();
@@ -1817,16 +1822,16 @@ void OvershellSlot::RefreshHighlightedChar(int i1) {
 #pragma pop
 
 void OvershellSlot::ShowEnterFlowPrompt(OvershellSlotStateID id) {
-    OvershellSlotStateID outputID = (OvershellSlotStateID)0x30;
+    OvershellSlotStateID outputID = kState_CharCreatorDenial;
     switch (id) {
-    case 0x18:
-        outputID = (OvershellSlotStateID)0x30;
+    case kState_EnterCharCreator:
+        outputID = kState_CharCreatorDenial;
         break;
-    case 0x17:
-        outputID = (OvershellSlotStateID)0x31;
+    case kState_EnterCalibration:
+        outputID = kState_CalibrationDenial;
         break;
-    case 0x3B:
-        outputID = (OvershellSlotStateID)0x3C;
+    case kState_EnterCredits:
+        outputID = kState_CreditsDenial;
         break;
     default:
         MILO_FAIL("slot state %i is not an Enter Flow Prompt\n", id);
