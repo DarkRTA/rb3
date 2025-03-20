@@ -1,4 +1,5 @@
 #include "meta_band/ProfileMgr.h"
+#include "BandMachineMgr.h"
 #include "bandobj/BandCharDesc.h"
 #include "beatmatch/BeatMaster.h"
 #include "decomp.h"
@@ -6,6 +7,8 @@
 #include "game/Game.h"
 #include "game/GameMic.h"
 #include "game/GameMicManager.h"
+#include "game/GameMode.h"
+#include "math/Decibels.h"
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
 #include "meta_band/AccomplishmentProgress.h"
@@ -14,6 +17,7 @@
 #include "meta_band/ModifierMgr.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/SaveLoadManager.h"
+#include "meta_band/SessionMgr.h"
 #include "meta_band/UIEventMgr.h"
 #include "net/Net.h"
 #include "net/NetSession.h"
@@ -28,11 +32,13 @@
 #include "rndobj/Rnd.h"
 #include "synth/Faders.h"
 #include "synth/FxSend.h"
+#include "synth/MicManagerInterface.h"
 #include "synth/Synth.h"
 #include "tour/TourCharLocal.h"
 #include "utl/Symbols2.h"
 
 INIT_REVS(ProfileMgr);
+MicClientID sNullMicClientID;
 ProfileMgr TheProfileMgr;
 
 typedef void (Game::*GameFunc)(float);
@@ -57,14 +63,14 @@ ProfileMgr::ProfileMgr()
       mDolby(0), unk582(0), mSyncPresetIx(0), mOverscan(0), mSynapseEnabled(1), unk58a(1),
       mSecondPedalHiHat(0), mWiiSpeakToggle(1), mWiiSpeakFriendsVolume(6),
       mWiiSpeakMicrophoneSensitivity(3), mWiiSpeakHeadphoneMode(0),
-      mWiiSpeakEchoSuppression(1), unk5b2(0), mWiiFriendsPromptShown(0),
-      mUsingWiiFriends(0), unk5b8(0), mCymbalConfiguration(0), unk5d8(0),
+      mWiiSpeakEchoSuppression(1), mHasLoaded(0), mWiiFriendsPromptShown(0),
+      mUsingWiiFriends(0), unk5b8(0), mCymbalConfiguration(0), mPrimaryProfile(0),
       mAllUnlocked(0) {
     mSyncOffset = -mPlatformVideoLatency;
     mSongToTaskMgrMs = mPlatformVideoLatency - mPlatformAudioLatency;
     for (int i = 0; i < 3; i++) {
-        unk5bc.push_back(8);
-        unk5e0.push_back(kNotForcingGain);
+        mMicVolumes.push_back(8);
+        mForcedMicGains.push_back(kNotForcingGain);
     }
     for (int i = 0; i < kJoypadNumTypes; i++) {
         for (int j = 0; j < kNumLagContexts; j++) {
@@ -334,7 +340,7 @@ void ProfileMgr::HandlePendingProfileUploads() {
 void ProfileMgr::SyncProfileSetlists() {
     if (TheRockCentral.unk3c == 2) {
         std::vector<BandProfile *> profiles = GetSignedInProfiles();
-        TheRockCentral.SyncSetlists(profiles, unk58c, nullptr);
+        TheRockCentral.SyncSetlists(profiles, mDataResults, nullptr);
     }
 }
 
@@ -485,7 +491,7 @@ void ProfileMgr::LoadGlobalOptions(FixedSizeSaveableStream &bs) {
     }
     if (gAltRev >= 2)
         bs >> unk5b8;
-    unk5b2 = true;
+    mHasLoaded = true;
     mGlobalOptionsDirty = false;
     PushAllOptions();
 }
@@ -523,8 +529,8 @@ int ProfileMgr::GetSliderStepCount() const {
 }
 
 void ProfileMgr::PushAllOptions() {
-    SetVolume(SliderIxToDb(mBackgroundVolume), &Game::SetBackgroundVolume);
-    SetVolume(SliderIxToDb(mForegroundVolume), &Game::SetForegroundVolume);
+    SetVolume(GetBackgroundVolumeDb(), &Game::SetBackgroundVolume);
+    SetVolume(GetForegroundVolumeDb(), &Game::SetForegroundVolume);
 
     Fader *bgFade = TheSynth->Find<Fader>("background_music_level.fade", true);
     if (bgFade) {
@@ -605,12 +611,14 @@ void ProfileMgr::SetFxVolume(int vol) {
     PushAllOptions();
 }
 
+FORCE_LOCAL_INLINE
 int ProfileMgr::GetFxVolume() const {
     if (!unk582)
         return mFxVolume;
     else
         return 0;
 }
+END_FORCE_LOCAL_INLINE
 
 void ProfileMgr::SetCrowdVolume(int vol) {
     mCrowdVolume = vol;
@@ -619,7 +627,9 @@ void ProfileMgr::SetCrowdVolume(int vol) {
 }
 
 void ProfileMgr::SetVocalCueVolume(int vol) {
-    if (vol >= 0 && vol < GetSliderStepCount()) {
+    if (vol < 0 || GetSliderStepCount() <= vol)
+        return;
+    else {
         mVocalCueVolume = vol;
         mGlobalOptionsDirty = true;
         PushAllOptions();
@@ -744,6 +754,8 @@ int ProfileMgr::GetFirstTimeInstrumentFlag(JoypadType ty) const {
     return ret;
 }
 
+DECOMP_FORCEACTIVE(ProfileMgr, "PlatformAudioLatency:%f\n", "PlatformVideoLatency:%f\n")
+
 bool ProfileMgr::GetHasSeenFirstTimeInstruments(const LocalUser *u) const {
     if (u) {
         int wiiFlags = TheWiiProfileMgr.GetHasSeenFirstTimeInstrumentFlagsForUser(u);
@@ -795,7 +807,9 @@ void ProfileMgr::SetSyncPresetIx(int ix) {
     mGlobalOptionsDirty = true;
 }
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetSongToTaskMgrMsRaw() const { return mSongToTaskMgrMs; }
+END_FORCE_LOCAL_INLINE
 
 void ProfileMgr::SetSongToTaskMgrMsRaw(float ms) {
     if (mSongToTaskMgrMs != ms) {
@@ -816,9 +830,11 @@ void ProfileMgr::SetJoypadExtraLag(JoypadType type, LagContext ctx, float lag) {
     mJoypadExtraLagOffsets[type][ctx] = lag;
 }
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetPadExtraLag(int pad, LagContext ctx) const {
     return mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][ctx];
 }
+END_FORCE_LOCAL_INLINE
 
 void ProfileMgr::SetPlatformAudioLatency(float lat) { mPlatformAudioLatency = lat; }
 void ProfileMgr::SetPlatformVideoLatency(float lat) { mPlatformVideoLatency = lat; }
@@ -834,12 +850,14 @@ void ProfileMgr::SetInGameSyncOffsetAdjustment(float adj) {
 float ProfileMgr::GetSyncOffset(int pad) const {
     float lag = 0;
     if (pad != -1) {
-        lag = mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][0];
+        lag = GetPadExtraLag(pad, kGame);
     }
-    return (mSyncOffset + mInGameSyncOffsetAdjustment) - lag;
+    return (GetSyncOffsetRaw() + mInGameSyncOffsetAdjustment) - lag;
 }
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetSyncOffsetRaw() const { return mSyncOffset; }
+END_FORCE_LOCAL_INLINE
 
 void ProfileMgr::SetSyncOffsetRaw(float offset) {
     if (mSyncOffset != offset) {
@@ -850,71 +868,208 @@ void ProfileMgr::SetSyncOffsetRaw(float offset) {
 }
 
 float ProfileMgr::GetExcessVideoLag() const {
-    return -(mPlatformVideoLatency + mSyncOffset);
+    return -(mPlatformVideoLatency + GetSyncOffsetRaw());
 }
 
 void ProfileMgr::SetExcessVideoLag(float lag) {
+    float audioLag = GetExcessAudioLag();
     SetSyncOffsetRaw(-(lag + mPlatformVideoLatency));
-    SetExcessAudioLag(-(mPlatformAudioLatency + mSongToTaskMgrMs + mSyncOffset));
+    SetExcessAudioLag(audioLag);
 }
 
 float ProfileMgr::GetPlatformAudioLatency() const { return mPlatformAudioLatency; }
 float ProfileMgr::GetPlatformVideoLatency() const { return mPlatformVideoLatency; }
 
 float ProfileMgr::GetExcessAudioLagNeutral(int pad, bool b) const {
-    int i2 = 0;
-    if (b)
-        i2 = 2;
-    return mPlatformAudioLatency
-        + mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][i2];
+    return mPlatformAudioLatency + GetPadExtraLag(pad, b ? kACal : kGame);
 }
 
 float ProfileMgr::GetExcessVideoLagNeutral(int pad, bool b) const {
-    return mPlatformVideoLatency
-        + mJoypadExtraLagOffsets[JoypadGetPadData(pad)->mType][b];
+    LagContext ctx = (LagContext)(b != 0);
+    return mPlatformVideoLatency + GetPadExtraLag(pad, ctx);
 }
 
+FORCE_LOCAL_INLINE
 float ProfileMgr::GetExcessAudioLag() const {
-    return -(mPlatformAudioLatency + mSongToTaskMgrMs + mSyncOffset);
+    return -(mPlatformAudioLatency + GetSongToTaskMgrMsRaw() + GetSyncOffsetRaw());
 }
+END_FORCE_LOCAL_INLINE
 
 void ProfileMgr::SetExcessAudioLag(float lag) {
-    SetSongToTaskMgrMsRaw(-(lag + mPlatformAudioLatency + mSyncOffset));
+    SetSongToTaskMgrMsRaw(-(lag + mPlatformAudioLatency + GetSyncOffsetRaw()));
 }
 
 FORCE_LOCAL_INLINE
 float ProfileMgr::GetBackgroundVolumeDb() const {
-    return SliderIxToDb(mBackgroundVolume);
+    return SliderIxToDb(GetBackgroundVolume());
 }
 END_FORCE_LOCAL_INLINE
 
+FORCE_LOCAL_INLINE
 int ProfileMgr::GetBackgroundVolume() const { return mBackgroundVolume; }
+END_FORCE_LOCAL_INLINE
 
 FORCE_LOCAL_INLINE
 float ProfileMgr::GetForegroundVolumeDb() const {
-    return SliderIxToDb(mForegroundVolume);
+    return SliderIxToDb(GetForegroundVolume());
 }
 END_FORCE_LOCAL_INLINE
 
+FORCE_LOCAL_INLINE
 int ProfileMgr::GetForegroundVolume() const { return mForegroundVolume; }
-
-FORCE_LOCAL_INLINE
-float ProfileMgr::GetFxVolumeDb() const { return SliderIxToDb(unk582 ? 0 : mFxVolume); }
 END_FORCE_LOCAL_INLINE
 
 FORCE_LOCAL_INLINE
-float ProfileMgr::GetCrowdVolumeDb() { return SliderIxToDb(mCrowdVolume); }
+float ProfileMgr::GetFxVolumeDb() const { return SliderIxToDb(GetFxVolume()); }
 END_FORCE_LOCAL_INLINE
 
+FORCE_LOCAL_INLINE
+float ProfileMgr::GetCrowdVolumeDb() { return SliderIxToDb(GetCrowdVolume()); }
+END_FORCE_LOCAL_INLINE
+
+FORCE_LOCAL_INLINE
 int ProfileMgr::GetCrowdVolume() const { return mCrowdVolume; }
-
-FORCE_LOCAL_INLINE
-float ProfileMgr::GetVocalCueVolumeDb() { return SliderIxToDb(mVocalCueVolume); }
 END_FORCE_LOCAL_INLINE
 
+FORCE_LOCAL_INLINE
+float ProfileMgr::GetVocalCueVolumeDb() { return SliderIxToDb(GetVocalCueVolume()); }
+END_FORCE_LOCAL_INLINE
+
+FORCE_LOCAL_INLINE
 int ProfileMgr::GetVocalCueVolume() const { return mVocalCueVolume; }
-float ProfileMgr::GetVoiceChatVolumeDb() { return SliderIxToDb(mVoiceChatVolume); }
+END_FORCE_LOCAL_INLINE
+
+float ProfileMgr::GetVoiceChatVolumeDb() { return SliderIxToDb(GetVoiceChatVolume()); }
+
+FORCE_LOCAL_INLINE
 int ProfileMgr::GetVoiceChatVolume() const { return mVoiceChatVolume; }
+END_FORCE_LOCAL_INLINE
+
+void ProfileMgr::SetMicVol(int i1, int i2) {
+    if (!(i1 >= 0 && i1 < mMicVolumes.size()))
+        return;
+    if (!(i2 >= 0 && GetSliderStepCount() > i2))
+        return;
+    if (i2 != mMicVolumes[i1]) {
+        mMicVolumes[i1] = i2;
+    }
+}
+
+int ProfileMgr::GetMicVol(int i1) const {
+    if (i1 < 0 || i1 >= mMicVolumes.size())
+        return 0;
+    else
+        return mMicVolumes[i1];
+}
+
+void ProfileMgr::UpdateMicLevels(int i1) {
+    int micID = TheSynth->GetMicClientMapper()->GetMicIDForClientID(MicClientID(i1, -1));
+    if (micID != -1) {
+        Mic *mic = TheSynth->GetMic(micID);
+        if (mic && mic->IsConnected()) {
+            int vol = GetMicVol(i1);
+            float f38 = 0;
+            float f3c = 0;
+            float f40 = 1;
+            float f44 = 1;
+            GetMicGainInfo(mic->GetName(), f38, f3c, f40, f44);
+            float f1 = -1.0f;
+            if (i1 < mForcedMicGains.size()) {
+                f1 = mForcedMicGains[i1];
+            }
+            if (f1 == -1.0f) {
+                float i7 = SliderIxToDb(vol);
+                if (vol == 0)
+                    i7 = -96.0f;
+                mic->SetVolume(i7);
+                mic->SetGain(f38);
+                mic->SetOutputGain(DbToRatio(f3c));
+                mic->SetSensitivity(f40);
+                mic->unk8 = f44;
+                UpdateMultiMicDeviceSliders(mic, 9);
+            } else {
+                mic->SetVolume(SliderIxToDb(vol));
+                mic->SetGain(f1);
+            }
+#ifdef MILO_DEBUG
+            static DataNode &n = DataVariable("print_mic_gains");
+            if (n.Int()) {
+                float gain = mic->GetGain();
+                if (f1 == -1) {
+                    MILO_LOG("Mic gain is %f\n", gain);
+                } else {
+                    MILO_LOG(
+                        "Mic gain is forced to %f (would be %f if not forcing)\n",
+                        gain,
+                        f38
+                    );
+                }
+            }
+#endif
+        }
+    }
+}
+
+void ProfileMgr::UpdateAllMicLevels() {
+    for (int i = 0; i < 3; i++) {
+        UpdateMicLevels(i);
+    }
+}
+
+void ProfileMgr::UpdateMultiMicDeviceSliders(Mic *mic, int i2) {
+    MILO_ASSERT(mic, 0x8F6);
+    if (mic->IsMultiMicDevice()) {
+        for (int i = 0; i < 3; i++) {
+            int micID =
+                TheSynth->GetMicClientMapper()->GetMicIDForClientID(MicClientID(i, -1));
+            if (micID != -1) {
+                Mic *myMic = TheSynth->GetMic(micID);
+                if (mic != myMic) {
+                    if (myMic->GetName() == mic->GetName()) {
+                        if (myMic->GetGain() == mic->GetGain()) {
+                            mMicVolumes[i] = i2;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void ProfileMgr::ForceMicGain(int i1, float f2) {
+    if (i1 < 0 || i1 >= mForcedMicGains.size())
+        return;
+    if (f2 < 0)
+        f2 = -1;
+#ifdef MILO_DEBUG
+    static DataNode &n = DataVariable("print_mic_gains");
+    if (n.Int()) {
+        MILO_LOG("Mic gain forcing: %s\n", f2 == -1 ? "INACTIVE" : "ACTIVE");
+    }
+#endif
+    mForcedMicGains[i1] = f2;
+    UpdateMicLevels(i1);
+}
+
+void ProfileMgr::ForceMicOutputGain(int i1, float f2) {
+    if (i1 <= 2U) {
+#ifdef MILO_DEBUG
+        static DataNode &n = DataVariable("print_mic_gains");
+        if (n.Int()) {
+            MILO_LOG(
+                "Mic output gain forcing: %s - output gain for mic %d is %f dB\n",
+                f2 == 0 ? "INACTIVE" : "ACTIVE",
+                i1,
+                f2
+            );
+        }
+#endif
+        Mic *mic = TheSynth->GetMic(i1);
+        if (mic && mic->IsConnected()) {
+            mic->SetOutputGain(DbToRatio(f2));
+        }
+    }
+}
 
 unsigned int ProfileMgr::GetCymbalConfiguration() const { return mCymbalConfiguration; }
 
@@ -923,4 +1078,126 @@ void ProfileMgr::SetCymbalConfiguration(unsigned int ui) {
     mGlobalOptionsDirty = true;
 }
 
-bool ProfileMgr::HasLoaded() { return unk5b2; }
+bool ProfileMgr::HasLoaded() { return mHasLoaded; }
+
+int ProfileMgr::GetCount() const { return TheWiiProfileMgr.Count(0); }
+
+int ProfileMgr::GetUnregisteredCount() const {
+    return TheWiiProfileMgr.Count(0) - GetRegisteredCount();
+}
+
+FORCE_LOCAL_INLINE
+int ProfileMgr::GetRegisteredCount() const { return TheWiiProfileMgr.Count(2); }
+END_FORCE_LOCAL_INLINE
+
+DataNode ProfileMgr::OnMsg(const SigninChangedMsg &msg) {
+    for (unsigned int mask = msg.GetChangedMask(), i = 0; mask != 0; mask >>= 1, i++) {
+        if (mask & 1) {
+            BandProfile *pProfile = GetProfileFromPad(i);
+            MILO_ASSERT(pProfile, 0x980);
+            pProfile->SetSaveState(kMetaProfileDelete);
+        }
+    }
+    UpdatePrimaryProfile();
+    return 1;
+}
+
+DataNode ProfileMgr::OnMsg(const ProfileChangedMsg &) {
+    UpdatePrimaryProfile();
+    return DataNode(kDataUnhandled, 0);
+}
+
+bool ProfileMgr::ChooseNewPrimaryProfile() {
+    for (int i = 0; i < mProfiles.size(); i++) {
+        if (mProfiles[i]->HasValidSaveData()) {
+            SetPrimaryProfile(mProfiles[i]);
+            return true;
+        }
+    }
+    return false;
+}
+
+void ProfileMgr::UpdatePrimaryProfile() {
+    if (mPrimaryProfile) {
+        if (!mPrimaryProfile->HasValidSaveData() && !ChooseNewPrimaryProfile()) {
+            SetPrimaryProfile(nullptr);
+        }
+    } else
+        ChooseNewPrimaryProfile();
+}
+
+bool ProfileMgr::CanChangePrimaryProfile() const {
+    int count = 0;
+    for (int i = 0; i < mProfiles.size(); i++) {
+        BandProfile *cur = mProfiles[i];
+        if (cur->HasValidSaveData()) {
+            if (cur->GetAssociatedLocalBandUser()->IsParticipating()
+                && cur != mPrimaryProfile) {
+                count++;
+            }
+        }
+    }
+    return count > 0;
+}
+
+bool ProfileMgr::HasPrimaryProfile() const { return GetPrimaryProfile(); }
+
+bool ProfileMgr::IsPrimaryProfileCritical(const LocalUser *user) {
+    BandProfile *profile = GetPrimaryProfile();
+    if (profile && user && GetProfileForUser(user) == profile) {
+        if (TheGameMode->InMode("campaign") || TheGameMode->InMode("tour")
+            || TheGameMode->InMode("qp_career_songinfo")
+            || TheGameMode->InMode("qp_coop"))
+            return true;
+    }
+    return false;
+}
+
+BandProfile *ProfileMgr::GetPrimaryProfile() const {
+    if (mPrimaryProfile) {
+        LocalBandUser *user = mPrimaryProfile->GetAssociatedLocalBandUser();
+        MILO_ASSERT(user, 0xA07);
+        if (!user->CanSaveData())
+            return nullptr;
+    }
+    return mPrimaryProfile;
+}
+
+void ProfileMgr::SetPrimaryProfileByUser(const LocalUser *user) {
+    MILO_ASSERT(user, 0xA15);
+    BandProfile *p = GetProfileForUser(user);
+    if (p)
+        SetPrimaryProfile(p);
+}
+
+void ProfileMgr::SetPrimaryProfile(BandProfile *profile) {
+    if (profile != mPrimaryProfile) {
+        if (profile && !profile->HasValidSaveData())
+            return;
+        mPrimaryProfile = profile;
+        static PrimaryProfileChangedMsg msg;
+        Export(msg, true);
+        BandMachineMgr *pMachineMgr = TheSessionMgr->GetMachineMgr();
+        MILO_ASSERT(pMachineMgr, 0xA2A);
+        pMachineMgr->RefreshPrimaryProfileInfo();
+    }
+}
+
+void ProfileMgr::HandleProfileLoadComplete() {
+    HandlePendingProfileUploads();
+    HandlePendingGamerpicRewards();
+}
+
+void ProfileMgr::HandleProfileSaveComplete() {
+    HandlePendingProfileUploads();
+    HandlePendingGamerpicRewards();
+}
+
+void ProfileMgr::FakeProfileFill() {
+    std::vector<BandProfile *> profiles = GetParticipatingProfiles();
+    FOREACH (it, profiles) {
+        BandProfile *profile = *it;
+        MILO_ASSERT(profile, 0xA48);
+        profile->FakeProfileFill();
+    }
+}

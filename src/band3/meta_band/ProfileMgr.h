@@ -3,6 +3,7 @@
 #include "game/BandUser.h"
 #include "game/GameMic.h"
 #include "meta_band/GameplayOptions.h"
+#include "meta_band/ProfileMessages.h"
 #include "net/Server.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
@@ -138,6 +139,20 @@ public:
     void SyncProfileSetlists();
     bool NeedsUpload();
     void UpdateAllMicLevels();
+    void UpdateMicLevels(int);
+    void UpdateMultiMicDeviceSliders(Mic *, int);
+    void ForceMicGain(int, float);
+    void ForceMicOutputGain(int, float);
+    int GetCount() const;
+    int GetUnregisteredCount() const;
+    int GetRegisteredCount() const;
+    bool ChooseNewPrimaryProfile();
+    void SetPrimaryProfile(BandProfile *);
+    bool CanChangePrimaryProfile() const;
+    bool HasPrimaryProfile() const;
+    void HandleProfileLoadComplete();
+    void HandleProfileSaveComplete();
+    void FakeProfileFill();
 
     bool GetBassBoost() const { return mBassBoost; }
 
@@ -145,6 +160,8 @@ public:
     DataNode OnMsg(const UserLoginMsg &);
     DataNode OnMsg(const ServerStatusChangedMsg &);
     DataNode OnMsg(const GameMicsChangedMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
 
     DECLARE_REVS;
 
@@ -174,24 +191,24 @@ public:
     bool mSynapseEnabled; // 0x589
     bool unk58a;
     bool mSecondPedalHiHat; // 0x58b
-    DataResultList unk58c;
+    DataResultList mDataResults; // 0x58c
     bool mWiiSpeakToggle; // 0x5a4
     int mWiiSpeakFriendsVolume; // 0x5a8
     int mWiiSpeakMicrophoneSensitivity; // 0x5ac
     bool mWiiSpeakHeadphoneMode; // 0x5b0
     bool mWiiSpeakEchoSuppression; // 0x5b1
-    bool unk5b2;
+    bool mHasLoaded; // 0x5b2
     bool mWiiFriendsPromptShown; // 0x5b3
     bool mUsingWiiFriends; // 0x5b4
     int unk5b8;
-    std::vector<int> unk5bc;
+    std::vector<int> mMicVolumes; // 0x5bc
     DataArray *mSliderConfig; // 0x5c4
     DataArray *mVoiceChatSliderConfig; // 0x5c8
     unsigned int mCymbalConfiguration; // 0x5cc
     std::vector<BandProfile *> mProfiles; // 0x5d0
-    int unk5d8;
+    BandProfile *mPrimaryProfile; // 0x5d8
     bool mAllUnlocked; // 0x5dc
-    std::vector<float> unk5e0;
+    std::vector<float> mForcedMicGains; // 0x5e0
 };
 
 extern ProfileMgr TheProfileMgr;
