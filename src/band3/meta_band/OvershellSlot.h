@@ -182,6 +182,8 @@ public:
 
     bool SongOptionsRequired() const { return mSongOptionsRequired; }
     bool InGame() const { return mInGame; }
+    bool BlockAllInput() const { return mBlockAllInput; }
+    bool AutoHideEnabled() const { return mAutohideEnabled; }
 
     OvershellSlotStateMgr *mStateMgr; // 0x1c
     OvershellSlotState *mState; // 0x20

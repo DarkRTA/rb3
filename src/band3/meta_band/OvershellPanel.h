@@ -109,6 +109,7 @@ public:
             || mActiveStatus == kOvershellInSong;
     }
     bool SongOptionsRequired() const { return mSongOptionsRequired; }
+    bool GetUseExtendedMicArrows() const { return mUseExtendedMicArrows; }
 
     DataNode SlotHandle(OvershellSlot *, const Message &);
     DataNode ExportButtonMsg(const Message &, BandUser *, bool);

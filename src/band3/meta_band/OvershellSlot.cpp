@@ -1,11 +1,13 @@
 #include "meta_band/OvershellSlot.h"
 #include "BandProfile.h"
 #include "OvershellSlotState.h"
+#include "Utl.h"
 #include "beatmatch/TrackType.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
+#include "game/GameMicManager.h"
 #include "meta/WiiProfileMgr.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/CharData.h"
@@ -25,10 +27,12 @@
 #include "meta_band/ProfileMgr.h"
 #include "game/GameMode.h"
 #include "meta_band/UIEventMgr.h"
+#include "meta_band/Utl.h"
 #include "net/Server.h"
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Msg.h"
+#include "os/ContentMgr.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
 #include "os/Joypad_Wii.h"
@@ -40,9 +44,12 @@
 #include "ui/UIList.h"
 #include "utl/Messages2.h"
 #include "utl/Messages3.h"
+#include "utl/Messages4.h"
+#include "utl/Symbol.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 #include <cstddef>
 
@@ -117,12 +124,17 @@ void OvershellSlot::Poll() {
 int OvershellSlot::GetSlotNum() { return mSlotNum; }
 PanelDir *OvershellSlot::GetPanelDir() { return mOvershellDir; }
 
+FORCE_LOCAL_INLINE
 bool OvershellSlot::IsHidden() const {
     return mAutohideEnabled && mState->AllowsHiding();
 }
+END_FORCE_LOCAL_INLINE
 
 bool OvershellSlot::IsLeavingOptions() const { return mIsLeavingOptions; }
+
+FORCE_LOCAL_INLINE
 Symbol OvershellSlot::GetCurrentView() const { return mCurrentView; }
+END_FORCE_LOCAL_INLINE
 
 void OvershellSlot::ClearPotentialUsers() { mPotentialUsers.clear(); }
 
@@ -1258,28 +1270,237 @@ void OvershellSlot::UpdateState() {
     }
 }
 
-void OvershellSlot::UpdateView() {}
+UNPOOL_DATA
+void OvershellSlot::UpdateView() {
+    bool b1 = false;
+    Symbol s2ac = mState ? mState->GetView() : gNullStr;
+    Symbol s2b0 = s2ac;
+    CheckViewOverride(block_all_input, BlockAllInput(), s2ac);
+    CheckViewOverride(hidden, IsHidden(), s2ac);
+    BandUser *user = GetUser();
+    if (user && !user->IsLocal()) {
+        if (AutoHideEnabled())
+            s2ac = hidden;
+        else if (mState->UsesRemoteStatusView()) {
+            s2ac = remote_status;
+        }
+    }
+    if (s2ac != gNullStr && s2ac != GetCurrentView()) {
+        SetView(s2ac);
+    }
+    ControllerType c14 = kControllerNone;
+    if (!unk40.empty()) {
+        c14 = unk40[0];
+    }
+    if (c14 != kControllerNone) {
+        if (user && user->IsParticipating()) {
+            c14 = user->GetControllerType();
+        } else if (!mPotentialUsers.empty()) {
+            c14 = mPotentialUsers[0].mUser->ConnectedControllerType();
+        }
+        if (c14 != kControllerNone) {
+            MetaPerformer *mp = MetaPerformer::Current();
+            bool b17 = true;
+            if (!InOverrideFlow(kOverrideFlow_SongSettings)
+                && !mOvershell->SongOptionsRequired())
+                b17 = false;
+            const char *cc2;
+            if (user && user->GetTrackType() != 10 && user->GetTrackType() != 11 && b17
+                && TheContentMgr->RefreshDone()) {
+                cc2 = GetUserFontChar(user, mp, 0);
+            } else {
+                cc2 = GetFontCharFromControllerType(c14, 0);
+            }
+            static Message msgUpdateControllerType("update_controller_type", c14, cc2);
+            msgUpdateControllerType[0] = c14;
+            msgUpdateControllerType[1] = cc2;
+            mOvershellDir->HandleType(msgUpdateControllerType);
+        }
+    }
+    bool b4e = true;
+    int i18 = 0;
+    bool b17 = false;
+    if (!mState->ShowsExtendedMicArrows() && !mOvershell->GetUseExtendedMicArrows())
+        b4e = false;
+    GameMicManager *i4 = 0;
+    bool b4f = c14 == 2;
+    bool i2 = 0;
+    bool i6 = 0;
+    bool i16 = 0;
+    if (user) {
+        static Message updateNameMsg("update_user_name", 0);
+        updateNameMsg[0] = user;
+        mOvershellDir->HandleType(updateNameMsg);
+        static Message updateLocalStatusMsg("update_local_status", 0);
+        updateLocalStatusMsg[0] = user->IsLocal();
+        mOvershellDir->HandleType(updateLocalStatusMsg);
+        mSessionMgr->Disconnect();
+        static Message updateRestartAllowedMsg("update_restart_allowed", 0);
+        updateRestartAllowedMsg[0] = mSessionMgr->IsLocalToLeader(user);
+        mOvershellDir->HandleType(updateRestartAllowedMsg);
+        if (user->IsLocal()) {
+            b17 = c14 == 2;
+            LocalBandUser *l14 = user->GetLocalBandUser();
+            int i7 = 0;
+            if (l14->HasOnlinePrivilege()
+                && !mBandUserMgr->AllLocalUsersInSessionAreGuests()) {
+                i7 = 1;
+            }
+            static Message msgUpdateContinue("update_sign_in_continue", 0);
+            msgUpdateContinue[0] = i7;
+            mOvershellDir->HandleType(msgUpdateContinue);
+            static Message updatePadNumMsg("update_pad_num", 0);
+            updatePadNumMsg[0] = l14->GetPadNum() + 1;
+            mOvershellDir->HandleType(updatePadNumMsg);
+            UpdateProfilesList();
+            i4 = TheGameMicManager;
+            if (TheGameMicManager) {
+                i2 = i4->HasMic(MicClientID(0, -1));
+                i6 = i4->HasMic(MicClientID(1, -1));
+                i16 = i4->HasMic(MicClientID(2, -1));
+            }
+            if (!l14->IsGuest() && l14->IsSignedIn()) {
+                b1 = true;
+            }
+        } else {
+            if (user->IsParticipating()) {
+                i18 = 1;
+                static Message updateRemoteFocus(
+                    "update_remote_feedback", Symbol(user->GetOvershellFocus())
+                );
+                updateRemoteFocus[0] = Symbol(user->GetOvershellFocus());
+                mState->HandleMsg(updateRemoteFocus);
+                DataNode handled = Handle(get_remote_status_msg, false);
+                DataArrayPtr ptr;
+                if (handled.Type() != kDataUnhandled) {
+                    ptr = handled.Array();
+                } else {
+                    if (TheSessionMgr && TheNetSync->IsEnabled()) {
+                        if (mSessionMgr->GetLeaderUser() == user) {
+                            ptr->Insert(0, remote_status_leader_controlling);
+                        } else {
+                            ptr->Insert(0, remote_status_waiting_on_leader);
+                        }
+                    } else {
+                        ptr->Insert(0, mState->GetRemoteStatus());
+                    }
+                }
+                static Message updateRemoteStatus("update_remote_status", ptr);
+                updateRemoteStatus[0] = ptr;
+                mOvershellDir->HandleType(updateRemoteStatus);
+                i16 = 0;
+                i6 = 0;
+                i2 = 0;
+            }
+        }
+        if (MetaPerformer::Current() && mOvershell->InSong() && !IsHidden()) {
+            static Message updateShowVocalBg("update_show_vocal_bg", 0);
+            updateShowVocalBg[0] = user->GetTrackType() == 3;
+            mOvershellDir->HandleType(updateShowVocalBg);
+        }
+        if (GetState()->InSongSettingsFlow() && MetaPerformer::Current()) {
+            static Message updateSongDifficultyRanking(6);
+            updateSongDifficultyRanking.SetType("update_song_difficulty_ranking");
+            int i9 = 0;
+            bool b19 = false;
+            int i15 = 0;
+            int i8 = 0;
+            Symbol s2b8(gNullStr);
+            bool b20 = false;
+            bool b21 = false;
+            MetaPerformer *mp = MetaPerformer::Current();
+            Symbol s2bc = user->GetControllerSym();
+            bool b50 = mp->IsRandomSetList();
+            TrackType tt = user->GetTrackType();
+            if (tt - 10U < 3) {
+                DataNode handled = mState->HandleMsg(get_focus_track_type_msg);
+                if (handled.Type() != kDataUnhandled) {
+                    tt = (TrackType)handled.Int();
+                } else
+                    tt = ControllerTypeToTrackType(user->GetControllerType(), false);
+            } else {
+                b20 = mp->IsNowUsingVocalHarmony();
+                if (mp->IsUsingRealDrums())
+                    b21 = true;
+            }
+            Symbol s2c0 = TrackTypeToSym(tt);
+            if (tt - 10U > 2) {
+                i9 = mp->PartPlaysInSet(s2c0);
+                i15 = mp->GetHighestDifficultyForPart(s2c0);
+                b19 = mp->GetSongs().size() > 1;
+                if (s2bc == vocals) {
+                    if (!b20) {
+                        DataNode harmHandled =
+                            mState->HandleMsg(get_focus_is_harmony_msg);
+                        if (harmHandled.Type() != kDataUnhandled) {
+                            b20 = harmHandled.Int();
+                        }
+                    }
+                    if (b20) {
+                        if (mp->GetSetlistMaxVocalParts() == 1) {
+                            i9 = 0;
+                        }
+                        s2c0 = harmony;
+                    } else
+                        i8 = 1;
+                } else if (s2bc == drum) {
+                    DataNode drumsHandled = mState->HandleMsg(get_focus_is_prodrums_msg);
+                    if (drumsHandled.Type() != kDataUnhandled) {
+                        b21 = drumsHandled.Int();
+                    }
+                    if (b21) {
+                        s2c0 = real_drum;
+                    }
+                }
+            }
+            updateSongDifficultyRanking[0] = b50;
+            updateSongDifficultyRanking[1] = i9;
+            updateSongDifficultyRanking[2] = b19;
+            updateSongDifficultyRanking[3] = i15;
+            updateSongDifficultyRanking[4] = i8;
+            updateSongDifficultyRanking[5] = s2c0;
+            mOvershellDir->HandleType(updateSongDifficultyRanking);
+            static Message updateLeftyAndStaticToggle(
+                "update_lefty_and_static_toggle", 0, 0
+            );
+            updateLeftyAndStaticToggle[0] = user->GetGameplayOptions();
+            updateLeftyAndStaticToggle[1] = user->GetControllerType();
+            mOvershellDir->HandleType(updateLeftyAndStaticToggle);
+            if (mOvershell->GetMinimumDifficulty() != 0
+                && (mOvershell->GetPartRestriction() == 10
+                    || mOvershell->GetPartRestrictedUser() == user)) {
+                static Message setDifficultyRestriction("set_difficulty_restriction", 0);
+                setDifficultyRestriction[0] = mOvershell->GetMinimumDifficulty();
+                mOvershellDir->HandleType(setDifficultyRestriction);
+            } else {
+                mOvershellDir->HandleType(clear_difficulty_restriction_msg);
+            }
+        }
+    }
+    if (b1) {
+        HandleType(show_invitation_notification_msg);
+    } else {
+        HandleType(hide_invitation_notification_msg);
+    }
+    static Message msgUpdateMics("update_mics", i4, 0, 0, 0, 0, 0, 0);
+    msgUpdateMics[0] = i4;
+    msgUpdateMics[1] = b17;
+    msgUpdateMics[2] = b4e;
+    msgUpdateMics[3] = i2;
+    msgUpdateMics[4] = i6;
+    msgUpdateMics[5] = i16;
+    msgUpdateMics[6] = b4f;
+    mOvershellDir->HandleType(msgUpdateMics);
 
-DECOMP_FORCEACTIVE(
-    OvershellSlot,
-    "overshell_up.cue",
-    "overshell_down.cue",
-    "go_to_wiiprofilecreator",
-    "update_controller_type",
-    "update_user_name",
-    "update_local_status",
-    "update_restart_allowed",
-    "update_sign_in_continue",
-    "update_pad_num",
-    "update_remote_feedback",
-    "update_remote_status",
-    "update_show_vocal_bg",
-    "update_song_difficulty_ranking",
-    "update_lefty_and_static_toggle",
-    "set_difficulty_restriction",
-    "update_mics",
-    "update_online_enabled"
-)
+    static Message msgUpdateOnlineEnabled("update_online_enabled", 0);
+    msgUpdateOnlineEnabled[0] = i18;
+    mOvershellDir->HandleType(msgUpdateOnlineEnabled);
+
+    if (mState && s2ac == s2b0) {
+        mState->UpdateView();
+    }
+}
+END_UNPOOL_DATA
 
 void OvershellSlot::Update() {
     UpdateState();
