@@ -1,5 +1,8 @@
 #pragma once
 #include "game/BandUser.h"
+#include "meta_band/SessionMgr.h"
+#include "net/NetSession.h"
+#include "net/VoiceChatMgr.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "os/Timer.h"
@@ -115,8 +118,32 @@ public:
     void TriggerSkipSongMsg();
     void TriggerInviteFailedMsg();
     void TriggerRemoteUserLeftMsg(const char *);
+    void TriggerEarnedAccomplishmentMsg(
+        LocalBandUser *,
+        Symbol,
+        Symbol,
+        int,
+        int,
+        int,
+        int,
+        int,
+        const char *,
+        const char *,
+        const char *,
+        int
+    );
+    void TriggerEarnedCampaignLevelMsg(LocalBandUser *, Symbol);
+    void TriggerCompletedAccomplishmentCategoryMsg(LocalBandUser *, Symbol);
+    void TriggerCompletedAccomplishmentGroupMsg(LocalBandUser *, Symbol);
+    void TriggerVoiceChatDisabledMsg();
+    void TriggerSetlistSongsRemovedMsg(int);
+    bool HasMessages() const;
 
     DataNode OnMsg(const RemoteUserLeftMsg &);
+    DataNode OnMsg(const VoiceChatDisabledMsg &);
+    DataNode OnMsg(const SessionDisconnectedMsg &);
+    DataNode OnMsg(const InviteSentMsg &);
+    DataNode OnMsg(const InviteReceivedMsg &);
 
     bool unk1c;
     Timer mTimer; // 0x20

@@ -1,20 +1,25 @@
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "meta_band/PassiveMessenger.h"
+#include "game/BandUserMgr.h"
 #include "game/GameMode.h"
 #include "meta_band/BandUI.h"
+#include "meta_band/OvershellPanel.h"
 #include "meta_band/OvershellSlot.h"
 #include "meta_band/SessionMgr.h"
 #include "net/NetSession.h"
 #include "net/VoiceChatMgr.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
+#include "utl/Locale.h"
 #include "utl/Messages.h"
 #include "utl/Messages4.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 
 PassiveMessenger *ThePassiveMessenger;
@@ -266,4 +271,319 @@ DataNode PassiveMessenger::OnMsg(const RemoteUserLeftMsg &msg) {
     return 1;
 }
 
-void PassiveMessenger::TriggerRemoteUserLeftMsg(const char *cc) {}
+void PassiveMessenger::TriggerRemoteUserLeftMsg(const char *cc) {
+    DataArrayPtr ptr(passive_message_remote_user_left, cc);
+    if (TheBandUI.GetOvershell()->InSong()) {
+        TriggerMessage(
+            ptr,
+            (PassiveMessageType)0,
+            nullptr,
+            false,
+            gNullStr,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            gNullStr,
+            gNullStr,
+            gNullStr,
+            0
+        );
+    } else {
+        LocalBandUser *host = TheSessionMgr->GetLocalHost();
+        if (!host) {
+            BandUser *leader = TheSessionMgr->GetLeaderUser();
+            if (leader && leader->IsLocal()) {
+                host = leader->GetLocalBandUser();
+            }
+        }
+        if (host) {
+            TriggerMessage(
+                ptr,
+                (PassiveMessageType)0,
+                host,
+                false,
+                gNullStr,
+                -1,
+                0,
+                0,
+                0,
+                0,
+                gNullStr,
+                gNullStr,
+                gNullStr,
+                0
+            );
+        }
+    }
+}
+
+void PassiveMessenger::TriggerEarnedAccomplishmentMsg(
+    LocalBandUser *u,
+    Symbol s1,
+    Symbol s2,
+    int i4,
+    int i5,
+    int i6,
+    int i7,
+    int i8,
+    const char *c1,
+    const char *c2,
+    const char *c3,
+    int i12
+) {
+    DataArrayPtr ptr(passive_message_earned_accomplishment, Localize(s1, nullptr));
+    TriggerMessage(
+        ptr, (PassiveMessageType)3, u, false, s2, i4, i5, i6, i7, i8, c1, c2, c3, i12
+    );
+}
+
+void PassiveMessenger::TriggerEarnedCampaignLevelMsg(LocalBandUser *u, Symbol s) {
+    DataArrayPtr ptr(passive_message_earned_campaign_level, Localize(s, nullptr));
+    TriggerMessage(
+        ptr,
+        (PassiveMessageType)0,
+        u,
+        true,
+        gNullStr,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        gNullStr,
+        gNullStr,
+        gNullStr,
+        0
+    );
+}
+
+void PassiveMessenger::TriggerCompletedAccomplishmentCategoryMsg(
+    LocalBandUser *u, Symbol s
+) {
+    DataArrayPtr ptr(
+        passive_message_completed_accomplishment_category, Localize(s, nullptr)
+    );
+    TriggerMessage(
+        ptr,
+        (PassiveMessageType)0,
+        u,
+        false,
+        gNullStr,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        gNullStr,
+        gNullStr,
+        gNullStr,
+        0
+    );
+}
+
+void PassiveMessenger::TriggerCompletedAccomplishmentGroupMsg(LocalBandUser *u, Symbol s) {
+    DataArrayPtr ptr(passive_message_completed_accomplishment_group, Localize(s, nullptr));
+    TriggerMessage(
+        ptr,
+        (PassiveMessageType)0,
+        u,
+        false,
+        gNullStr,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        gNullStr,
+        gNullStr,
+        gNullStr,
+        0
+    );
+}
+
+void PassiveMessenger::TriggerVoiceChatDisabledMsg() {
+    DataArrayPtr ptr(voice_chat_disabled);
+    TriggerMessage(
+        ptr,
+        (PassiveMessageType)0,
+        nullptr,
+        false,
+        gNullStr,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        gNullStr,
+        gNullStr,
+        gNullStr,
+        0
+    );
+}
+
+void PassiveMessenger::TriggerSetlistSongsRemovedMsg(int i1) {
+    if (i1 == 1) {
+        DataArrayPtr ptr(setlist_song_removed);
+        TriggerMessage(
+            ptr,
+            (PassiveMessageType)0,
+            nullptr,
+            false,
+            gNullStr,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            gNullStr,
+            gNullStr,
+            gNullStr,
+            0
+        );
+    } else {
+        DataArrayPtr ptr(setlist_songs_removed, i1);
+        TriggerMessage(
+            ptr,
+            (PassiveMessageType)0,
+            nullptr,
+            false,
+            gNullStr,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            gNullStr,
+            gNullStr,
+            gNullStr,
+            0
+        );
+    }
+}
+
+DataNode PassiveMessenger::OnMsg(const VoiceChatDisabledMsg &) {
+    if (!unk1c) {
+        unk1c = true;
+        TriggerVoiceChatDisabledMsg();
+    }
+    return 0;
+}
+
+DataNode PassiveMessenger::OnMsg(const SessionDisconnectedMsg &) {
+    unk1c = false;
+    return 0;
+}
+
+DataNode PassiveMessenger::OnMsg(const InviteSentMsg &msg) {
+    if (msg->Int(2)) {
+        DataArrayPtr ptr(passive_message_invite_sent_success);
+        TriggerMessage(
+            ptr,
+            (PassiveMessageType)0,
+            nullptr,
+            false,
+            gNullStr,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            gNullStr,
+            gNullStr,
+            gNullStr,
+            0
+        );
+    } else {
+        DataArrayPtr ptr(passive_message_invite_sent_fail);
+        TriggerMessage(
+            ptr,
+            (PassiveMessageType)0,
+            nullptr,
+            false,
+            gNullStr,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            gNullStr,
+            gNullStr,
+            gNullStr,
+            0
+        );
+    }
+    return 1;
+}
+
+bool PassiveMessenger::HasMessages() const {
+    OvershellPanel *overshellPanel = TheBandUI.GetOvershell();
+    MILO_ASSERT(overshellPanel, 0x28A);
+    std::vector<LocalBandUser *> users;
+    TheBandUserMgr->GetLocalParticipants(users);
+    FOREACH (it, users) {
+        LocalBandUser *localUser = *it;
+        MILO_ASSERT(localUser, 0x293);
+        OvershellSlot *slot = overshellPanel->GetSlot(localUser);
+        if (slot) {
+            PassiveMessageQueue *pQueue = slot->GetMessageQueue();
+            MILO_ASSERT(pQueue, 0x299);
+            if (pQueue->mQueue.size() > 0)
+                return true;
+            if (pQueue->mTimer.Running())
+                return true;
+        }
+    }
+    return false;
+}
+
+DataNode PassiveMessenger::OnMsg(const InviteReceivedMsg &) {
+    TriggerMessage(
+        DataArrayPtr(wii_friends_invite_received),
+        (PassiveMessageType)0,
+        nullptr,
+        false,
+        gNullStr,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        gNullStr,
+        gNullStr,
+        gNullStr,
+        0
+    );
+    return 1;
+}
+
+BEGIN_HANDLERS(PassiveMessenger)
+    HANDLE_ACTION(
+        trigger_message,
+        TriggerMessage(
+            _msg->Array(2),
+            (PassiveMessageType)0,
+            _msg->Obj<LocalBandUser>(3),
+            false,
+            gNullStr,
+            -1,
+            0,
+            0,
+            0,
+            0,
+            gNullStr,
+            gNullStr,
+            gNullStr,
+            0
+        )
+    )
+    HANDLE_ACTION(trigger_skip_song_msg, TriggerSkipSongMsg())
+    HANDLE_EXPR(has_messages, HasMessages())
+    HANDLE_MESSAGE(VoiceChatDisabledMsg)
+    HANDLE_MESSAGE(InviteSentMsg)
+    HANDLE_MESSAGE(RemoteUserLeftMsg)
+    HANDLE_MESSAGE(SessionDisconnectedMsg)
+    HANDLE_MESSAGE(InviteReceivedMsg)
+    HANDLE_CHECK(0x2CB)
+END_HANDLERS
