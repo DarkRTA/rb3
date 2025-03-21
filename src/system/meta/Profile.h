@@ -19,7 +19,7 @@ public:
     virtual void SaveFixed(FixedSizeSaveableStream &) const = 0;
     virtual void LoadFixed(FixedSizeSaveableStream &, int) = 0;
     virtual DataNode Handle(DataArray *, bool);
-    virtual bool HasCheated() const;
+    virtual bool HasCheated() const { return false; }
     virtual bool IsUnsaved() const;
     virtual void SaveLoadComplete(ProfileSaveState);
     virtual bool HasSomethingToUpload();

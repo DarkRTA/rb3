@@ -155,6 +155,16 @@ public:
     void FakeProfileFill();
 
     bool GetBassBoost() const { return mBassBoost; }
+    bool GetDolby() const { return mDolby; }
+    bool GetOverscan() const { return mOverscan; }
+    bool GetWiiSpeakToggle() { return mWiiSpeakToggle; }
+    int GetWiiSpeakFriendsVolume() { return mWiiSpeakFriendsVolume; }
+    int GetWiiSpeakMicrophoneSensitivity() { return mWiiSpeakMicrophoneSensitivity; }
+    bool GetWiiSpeakHeadphoneMode() { return mWiiSpeakHeadphoneMode; }
+    bool GetWiiSpeakEchoSuppression() { return mWiiSpeakEchoSuppression; }
+    bool GetSynapseEnabled() const { return mSynapseEnabled; }
+    int GetSyncPresetIx() const { return mSyncPresetIx; }
+    bool GetShouldShowWiiFriendsPrompt();
 
     DataNode OnMsg(const SaveLoadMgrStatusUpdateMsg &);
     DataNode OnMsg(const UserLoginMsg &);

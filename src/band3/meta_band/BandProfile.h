@@ -34,7 +34,7 @@ class LocalSavedSetlist;
 
 class BandProfile : public Profile {
 public:
-    enum ProfileLimits {
+    enum {
         kMaxPerformances = 50
     };
     BandProfile(int);

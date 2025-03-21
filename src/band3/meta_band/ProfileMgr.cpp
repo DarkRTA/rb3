@@ -26,6 +26,8 @@
 #include "net_band/RockCentral.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/Msg.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/Joypad.h"
 #include "os/PlatformMgr.h"
@@ -35,7 +37,10 @@
 #include "synth/MicManagerInterface.h"
 #include "synth/Synth.h"
 #include "tour/TourCharLocal.h"
+#include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 
 INIT_REVS(ProfileMgr);
 MicClientID sNullMicClientID;
@@ -1201,3 +1206,136 @@ void ProfileMgr::FakeProfileFill() {
         profile->FakeProfileFill();
     }
 }
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(ProfileMgr)
+    HANDLE_EXPR(get_profile, GetProfileForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_EXPR(get_save_data, GetProfileForUser(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_ACTION(
+        set_primary_profile_by_user, SetPrimaryProfileByUser(_msg->Obj<LocalUser>(2))
+    )
+    HANDLE_EXPR(get_primary_profile, GetPrimaryProfile())
+    HANDLE_EXPR(has_primary_profile, HasPrimaryProfile())
+    HANDLE_EXPR(can_change_primary_profile, CanChangePrimaryProfile())
+    HANDLE_ACTION(purge_old_data, PurgeOldData())
+    HANDLE_EXPR(needs_upload, NeedsUpload())
+    HANDLE_EXPR(get_profile_from_pad, GetProfileFromPad(_msg->Int(2)))
+    HANDLE_EXPR(get_max_characters, GetMaxCharacters())
+    HANDLE_EXPR(unlock_all_songs, UnlockAllSongs())
+    HANDLE_ACTION(relock_songs, RelockSongs())
+    HANDLE_EXPR(get_all_unlocked, GetAllUnlocked())
+    HANDLE_EXPR(global_options_needs_save, GlobalOptionsNeedsSave())
+    HANDLE_EXPR(get_background_volume, GetBackgroundVolume())
+    HANDLE_EXPR(get_background_volume_db, GetBackgroundVolumeDb())
+    HANDLE_EXPR(get_foreground_volume, GetForegroundVolume())
+    HANDLE_EXPR(get_foreground_volume_db, GetForegroundVolumeDb())
+    HANDLE_EXPR(get_fx_volume, GetFxVolume())
+    HANDLE_EXPR(get_fx_volume_db, GetFxVolumeDb())
+    HANDLE_EXPR(get_crowd_volume, GetCrowdVolume())
+    HANDLE_EXPR(get_crowd_volume_db, GetCrowdVolumeDb())
+    HANDLE_EXPR(get_vocal_cue_volume, GetVocalCueVolume())
+    HANDLE_EXPR(get_vocal_cue_volume_db, GetVocalCueVolumeDb())
+    HANDLE_EXPR(get_voice_chat_volume, GetVoiceChatVolume())
+    HANDLE_EXPR(get_voice_chat_volume_db, GetVoiceChatVolumeDb())
+    HANDLE_EXPR(get_bass_boost, GetBassBoost())
+    HANDLE_EXPR(get_dolby, GetDolby())
+    HANDLE_EXPR(get_overscan, GetOverscan())
+    HANDLE_EXPR(get_wiispeak_toggle, GetWiiSpeakToggle())
+    HANDLE_EXPR(get_wiispeak_friends_volume, GetWiiSpeakFriendsVolume())
+    HANDLE_EXPR(get_wiispeak_microphone_sensitivity, GetWiiSpeakMicrophoneSensitivity())
+    HANDLE_EXPR(get_wiispeak_headphone_mode, GetWiiSpeakHeadphoneMode())
+    HANDLE_EXPR(get_wiispeak_echo_suppression, GetWiiSpeakEchoSuppression())
+    HANDLE_EXPR(get_synapse_enabled, GetSynapseEnabled())
+    HANDLE_EXPR(get_sync_preset_ix, GetSyncPresetIx())
+    HANDLE_EXPR(get_sync_offset_raw, GetSyncOffsetRaw())
+    HANDLE_EXPR(get_sync_offset, GetSyncOffset(_msg->Int(2)))
+    HANDLE_EXPR(get_song_to_taskmgr_ms, GetSongToTaskMgrMs(kGame))
+    HANDLE_EXPR(get_song_to_taskmgr_ms_raw, GetSongToTaskMgrMsRaw())
+    HANDLE_EXPR(get_excess_audio_lag, GetExcessAudioLag())
+    HANDLE_EXPR(get_excess_video_lag, GetExcessVideoLag())
+    HANDLE_EXPR(get_pad_extra_lag, GetPadExtraLag(_msg->Int(2), kGame))
+    HANDLE_EXPR(get_platform_audio_latency, GetPlatformAudioLatency())
+    HANDLE_ACTION(set_platform_audio_latency, SetPlatformAudioLatency(_msg->Float(2)))
+    HANDLE_EXPR(get_platform_video_latency, GetPlatformVideoLatency())
+    HANDLE_ACTION(set_platform_video_latency, SetPlatformVideoLatency(_msg->Float(2)))
+    HANDLE_EXPR(get_in_game_extra_video_latency, GetInGameExtraVideoLatency())
+    HANDLE_ACTION(
+        set_in_game_extra_video_latency, SetInGameExtraVideoLatency(_msg->Float(2))
+    )
+    HANDLE_EXPR(get_in_game_sync_offset_adjustment, GetInGameSyncOffsetAdjustment())
+    HANDLE_ACTION(
+        set_in_game_sync_offset_adjustment, SetInGameSyncOffsetAdjustment(_msg->Float(2))
+    )
+    HANDLE_EXPR(
+        get_joypad_extra_lag,
+        GetJoypadExtraLag((JoypadType)_msg->Int(2), (LagContext)_msg->Int(3))
+    )
+    HANDLE_ACTION(
+        set_joypad_extra_lag,
+        SetJoypadExtraLag(
+            (JoypadType)_msg->Int(2), (LagContext)_msg->Int(3), _msg->Float(4)
+        )
+    )
+    HANDLE_EXPR(get_mic_vol, GetMicVol(_msg->Int(2)))
+    HANDLE_EXPR(get_has_seen_first_time_calibration, GetHasSeenFirstTimeCalibration())
+    HANDLE_EXPR(
+        get_has_seen_first_time_instruments,
+        GetHasSeenFirstTimeInstruments(_msg->Obj<LocalBandUser>(2))
+    )
+    HANDLE_EXPR(get_second_pedal_hihat, GetSecondPedalHiHat())
+    HANDLE_ACTION(set_background_volume, SetBackgroundVolume(_msg->Int(2)))
+    HANDLE_ACTION(set_foreground_volume, SetForegroundVolume(_msg->Int(2)))
+    HANDLE_ACTION(set_fx_volume, SetFxVolume(_msg->Int(2)))
+    HANDLE_ACTION(set_crowd_volume, SetCrowdVolume(_msg->Int(2)))
+    HANDLE_ACTION(set_vocal_cue_volume, SetVocalCueVolume(_msg->Int(2)))
+    HANDLE_ACTION(set_voice_chat_volume, SetVoiceChatVolume(_msg->Int(2)))
+    HANDLE_ACTION(set_bass_boost, SetBassBoost(_msg->Int(2)))
+    HANDLE_ACTION(set_dolby, SetDolby(_msg->Int(2)))
+    HANDLE_ACTION(set_overscan, SetOverscan(_msg->Int(2)))
+    HANDLE_ACTION(set_wiispeak_toggle, SetWiiSpeakToggle(_msg->Int(2)))
+    HANDLE_ACTION(set_wiispeak_friends_volume, SetWiiSpeakFriendsVolume(_msg->Int(2)))
+    HANDLE_ACTION(
+        set_wiispeak_microphone_sensitivity,
+        SetWiiSpeakMicrophoneSensitivity(_msg->Int(2))
+    )
+    HANDLE_ACTION(set_wiispeak_headphone_mode, SetWiiSpeakHeadphoneMode(_msg->Int(2)))
+    HANDLE_ACTION(set_wiispeak_echo_suppression, SetWiiSpeakEchoSuppression(_msg->Int(2)))
+    HANDLE_ACTION(set_wii_friends_prompt_shown, SetWiiFriendsPromptShown())
+    HANDLE_EXPR(get_should_show_wii_friends_prompt, GetShouldShowWiiFriendsPrompt())
+    HANDLE_ACTION(set_using_wii_friends, SetUsingWiiFriends(_msg->Int(2)))
+    HANDLE_EXPR(get_using_wii_friends, GetUsingWiiFriends())
+    HANDLE_EXPR(get_count, GetCount())
+    HANDLE_EXPR(get_unregistered_count, GetUnregisteredCount())
+    HANDLE_EXPR(get_registered_count, GetRegisteredCount())
+    HANDLE_ACTION(set_synapse_enabled, SetSynapseEnabled(_msg->Int(2)))
+    HANDLE_ACTION(set_sync_preset_ix, SetSyncPresetIx(_msg->Int(2)))
+    HANDLE_ACTION(set_sync_offset, SetSyncOffsetRaw(_msg->Float(2)))
+    HANDLE_ACTION(set_song_to_taskmgr_ms, SetSongToTaskMgrMsRaw(_msg->Float(2)))
+    HANDLE_ACTION(set_excess_audio_lag, SetExcessAudioLag(_msg->Float(2)))
+    HANDLE_ACTION(set_excess_video_lag, SetExcessVideoLag(_msg->Float(2)))
+    HANDLE_ACTION(set_mic_vol, SetMicVol(_msg->Int(2), _msg->Int(3)))
+    HANDLE_ACTION(
+        set_has_seen_first_time_calibration, SetHasSeenFirstTimeCalibration(_msg->Int(2))
+    )
+    HANDLE_ACTION(
+        set_has_seen_first_time_instruments,
+        SetHasSeenFirstTimeInstruments(_msg->Obj<LocalBandUser>(2), _msg->Int(3))
+    )
+    HANDLE_EXPR(is_autosave_enabled, IsAutosaveEnabled(_msg->Obj<LocalBandUser>(2)))
+    HANDLE_ACTION(update_mic_levels, UpdateMicLevels(_msg->Int(2)))
+    HANDLE_ACTION(update_all_mic_levels, UpdateAllMicLevels())
+    HANDLE_ACTION(force_mic_gain, ForceMicGain(_msg->Int(2), _msg->Float(3)))
+    HANDLE_ACTION(force_mic_output_gain, ForceMicOutputGain(_msg->Int(2), _msg->Float(3)))
+    HANDLE_ACTION(fake_profile_fill, FakeProfileFill())
+    HANDLE_MESSAGE(SigninChangedMsg)
+    HANDLE_MESSAGE(ProfileChangedMsg)
+    HANDLE_MESSAGE(ServerStatusChangedMsg)
+    HANDLE_MESSAGE(SaveLoadMgrStatusUpdateMsg)
+    HANDLE_MESSAGE(UserLoginMsg)
+    HANDLE_MESSAGE(GameMicsChangedMsg)
+    HANDLE_SUPERCLASS(Hmx::Object)
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_CHECK(0xB42)
+END_HANDLERS
+#pragma pop
