@@ -22,6 +22,14 @@ unsigned int BinkFileIdle(BINKIO *bink) {
     }
 }
 
+unsigned int BinkFileGetBufferSize(BINKIO *bink, unsigned int size) {
+    unsigned int result = (size + 0x7fff) & 0xffff8000;
+    if (result < 0x10000) {
+        result = 0x10000;
+    }
+    return result;
+}
+
 bool BinkFileOpen(BINKIO *bink, const char *cc, unsigned int ui) {
     memset(bink, 0, sizeof(BINKIO));
     if (ui & 0x800000) {
