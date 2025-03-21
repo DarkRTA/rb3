@@ -238,7 +238,7 @@
             "band3/meta_band/OvershellSlot.cpp": "NonMatching",
             "band3/meta_band/OvershellSlotState.cpp": "Matching",
             "band3/meta_band/ParentalControlPanel.cpp": "Matching",
-            "band3/meta_band/PassiveMessagesPanel.cpp": "MISSING",
+            "band3/meta_band/PassiveMessagesPanel.cpp": "NonMatching",
             "band3/meta_band/PassiveMessenger.cpp": "MISSING",
             "band3/meta_band/PatchPanel.cpp": "MISSING",
             "band3/meta_band/PatchSelectPanel.cpp": "MISSING",
