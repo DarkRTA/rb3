@@ -241,7 +241,7 @@
             "band3/meta_band/PassiveMessagesPanel.cpp": "NonMatching",
             "band3/meta_band/PassiveMessenger.cpp": "NonMatching",
             "band3/meta_band/PatchPanel.cpp": "MISSING",
-            "band3/meta_band/PatchSelectPanel.cpp": "MISSING",
+            "band3/meta_band/PatchSelectPanel.cpp": "NonMatching",
             "band3/meta_band/PerformanceData.cpp": "NonMatching",
             "band3/meta_band/PlayerLeaderboards.cpp": "NonMatching",
             "band3/meta_band/PrefabMgr.cpp": "NonMatching",
