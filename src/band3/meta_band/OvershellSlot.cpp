@@ -16,7 +16,7 @@
 #include "meta_band/NetSync.h"
 #include "meta_band/OvershellPanel.h"
 #include "meta_band/OvershellSlotState.h"
-#include "meta_band/PassiveMessage.h"
+#include "meta_band/PassiveMessenger.h"
 #include "meta_band/SaveLoadManager.h"
 #include "meta_band/SessionMgr.h"
 #include "meta_band/SessionUsersProviders.h"

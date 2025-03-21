@@ -186,45 +186,37 @@ DECLARE_MESSAGE(NewRemoteUserMsg, "new_remote_user")
 NewRemoteUserMsg(RemoteUser *u) : Message(Type(), u) {}
 RemoteUser *GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(RemovingRemoteUserMsg, "removing_remote_user")
 RemovingRemoteUserMsg(RemoteUser *u) : Message(Type(), u) {}
 RemoteUser *GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(RemoteUserUpdatedMsg, "remote_user_updated")
 RemoteUserUpdatedMsg(RemoteUser *u) : Message(Type(), u) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(LocalUserLeftMsg, "local_user_left")
 LocalUserLeftMsg(LocalUser *u) : Message(Type(), u) {}
 LocalUser *GetUser() const { return mData->Obj<LocalUser>(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(RemoteUserLeftMsg, "remote_user_left")
 RemoteUserLeftMsg(RemoteUser *u) : Message(Type(), u) {}
 RemoteUser *GetUser() const { return mData->Obj<RemoteUser>(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(RemoteLeaderLeftMsg, "remote_leader_left_msg")
 RemoteLeaderLeftMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(UserLoginMsg, "user_login")
 UserLoginMsg() : Message(Type()) {}
 int GetPadNum() const { return mData->Int(2); }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(AddUserResultMsg, "add_user_result")
 AddUserResultMsg(int i) : Message(Type(), i) {}
 AddUserResultMsg(int i, User *u) : Message(Type(), i, u) {}
 int GetResult() const { return mData->Int(2); }
 END_MESSAGE
-;

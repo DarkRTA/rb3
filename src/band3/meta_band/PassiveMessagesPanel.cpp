@@ -1,4 +1,4 @@
-#include "meta_band/PassiveMessage.h"
+#include "meta_band/PassiveMessenger.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
 #include "rndobj/Anim.h"
