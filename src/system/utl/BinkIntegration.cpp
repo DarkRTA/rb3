@@ -30,6 +30,13 @@ unsigned int BinkFileGetBufferSize(BINKIO *bink, unsigned int size) {
     return result;
 }
 
+void BinkFileSetInfo(
+    BINKIO *bink, void *unk1, unsigned int unk2, unsigned int unk3, unsigned int unk4
+) {
+    bink->BufSize = 0;
+    bink->CurBufUsed = 0;
+}
+
 bool BinkFileOpen(BINKIO *bink, const char *cc, unsigned int ui) {
     memset(bink, 0, sizeof(BINKIO));
     if (ui & 0x800000) {
