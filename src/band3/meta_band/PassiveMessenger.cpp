@@ -16,11 +16,8 @@
 #include "os/PlatformMgr.h"
 #include "utl/Locale.h"
 #include "utl/Messages.h"
-#include "utl/Messages4.h"
 #include "utl/Symbol.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols3.h"
-#include "utl/Symbols4.h"
 
 PassiveMessenger *ThePassiveMessenger;
 
@@ -232,16 +229,7 @@ void PassiveMessenger::TriggerSkipSongMsg() {
             (PassiveMessageType)0,
             nullptr,
             false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
+            gNullStr
         );
         mTimer.Restart();
     }
@@ -253,16 +241,7 @@ void PassiveMessenger::TriggerInviteFailedMsg() {
         (PassiveMessageType)0,
         nullptr,
         false,
-        gNullStr,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        gNullStr,
-        gNullStr,
-        gNullStr,
-        0
+        gNullStr
     );
 }
 
@@ -274,22 +253,7 @@ DataNode PassiveMessenger::OnMsg(const RemoteUserLeftMsg &msg) {
 void PassiveMessenger::TriggerRemoteUserLeftMsg(const char *cc) {
     DataArrayPtr ptr(passive_message_remote_user_left, cc);
     if (TheBandUI.GetOvershell()->InSong()) {
-        TriggerMessage(
-            ptr,
-            (PassiveMessageType)0,
-            nullptr,
-            false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
-        );
+        TriggerMessage(ptr, (PassiveMessageType)0, nullptr, false, gNullStr);
     } else {
         LocalBandUser *host = TheSessionMgr->GetLocalHost();
         if (!host) {
@@ -299,22 +263,7 @@ void PassiveMessenger::TriggerRemoteUserLeftMsg(const char *cc) {
             }
         }
         if (host) {
-            TriggerMessage(
-                ptr,
-                (PassiveMessageType)0,
-                host,
-                false,
-                gNullStr,
-                -1,
-                0,
-                0,
-                0,
-                0,
-                gNullStr,
-                gNullStr,
-                gNullStr,
-                0
-            );
+            TriggerMessage(ptr, (PassiveMessageType)0, host, false, gNullStr);
         }
     }
 }
@@ -341,22 +290,7 @@ void PassiveMessenger::TriggerEarnedAccomplishmentMsg(
 
 void PassiveMessenger::TriggerEarnedCampaignLevelMsg(LocalBandUser *u, Symbol s) {
     DataArrayPtr ptr(passive_message_earned_campaign_level, Localize(s, nullptr));
-    TriggerMessage(
-        ptr,
-        (PassiveMessageType)0,
-        u,
-        true,
-        gNullStr,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        gNullStr,
-        gNullStr,
-        gNullStr,
-        0
-    );
+    TriggerMessage(ptr, (PassiveMessageType)0, u, true, gNullStr);
 }
 
 void PassiveMessenger::TriggerCompletedAccomplishmentCategoryMsg(
@@ -365,101 +299,26 @@ void PassiveMessenger::TriggerCompletedAccomplishmentCategoryMsg(
     DataArrayPtr ptr(
         passive_message_completed_accomplishment_category, Localize(s, nullptr)
     );
-    TriggerMessage(
-        ptr,
-        (PassiveMessageType)0,
-        u,
-        false,
-        gNullStr,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        gNullStr,
-        gNullStr,
-        gNullStr,
-        0
-    );
+    TriggerMessage(ptr, (PassiveMessageType)0, u, false, gNullStr);
 }
 
 void PassiveMessenger::TriggerCompletedAccomplishmentGroupMsg(LocalBandUser *u, Symbol s) {
     DataArrayPtr ptr(passive_message_completed_accomplishment_group, Localize(s, nullptr));
-    TriggerMessage(
-        ptr,
-        (PassiveMessageType)0,
-        u,
-        false,
-        gNullStr,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        gNullStr,
-        gNullStr,
-        gNullStr,
-        0
-    );
+    TriggerMessage(ptr, (PassiveMessageType)0, u, false, gNullStr);
 }
 
 void PassiveMessenger::TriggerVoiceChatDisabledMsg() {
     DataArrayPtr ptr(voice_chat_disabled);
-    TriggerMessage(
-        ptr,
-        (PassiveMessageType)0,
-        nullptr,
-        false,
-        gNullStr,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        gNullStr,
-        gNullStr,
-        gNullStr,
-        0
-    );
+    TriggerMessage(ptr, (PassiveMessageType)0, nullptr, false, gNullStr);
 }
 
 void PassiveMessenger::TriggerSetlistSongsRemovedMsg(int i1) {
     if (i1 == 1) {
         DataArrayPtr ptr(setlist_song_removed);
-        TriggerMessage(
-            ptr,
-            (PassiveMessageType)0,
-            nullptr,
-            false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
-        );
+        TriggerMessage(ptr, (PassiveMessageType)0, nullptr, false, gNullStr);
     } else {
         DataArrayPtr ptr(setlist_songs_removed, i1);
-        TriggerMessage(
-            ptr,
-            (PassiveMessageType)0,
-            nullptr,
-            false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
-        );
+        TriggerMessage(ptr, (PassiveMessageType)0, nullptr, false, gNullStr);
     }
 }
 
@@ -479,40 +338,10 @@ DataNode PassiveMessenger::OnMsg(const SessionDisconnectedMsg &) {
 DataNode PassiveMessenger::OnMsg(const InviteSentMsg &msg) {
     if (msg->Int(2)) {
         DataArrayPtr ptr(passive_message_invite_sent_success);
-        TriggerMessage(
-            ptr,
-            (PassiveMessageType)0,
-            nullptr,
-            false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
-        );
+        TriggerMessage(ptr, (PassiveMessageType)0, nullptr, false, gNullStr);
     } else {
         DataArrayPtr ptr(passive_message_invite_sent_fail);
-        TriggerMessage(
-            ptr,
-            (PassiveMessageType)0,
-            nullptr,
-            false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
-        );
+        TriggerMessage(ptr, (PassiveMessageType)0, nullptr, false, gNullStr);
     }
     return 1;
 }
@@ -544,16 +373,7 @@ DataNode PassiveMessenger::OnMsg(const InviteReceivedMsg &) {
         (PassiveMessageType)0,
         nullptr,
         false,
-        gNullStr,
-        -1,
-        0,
-        0,
-        0,
-        0,
-        gNullStr,
-        gNullStr,
-        gNullStr,
-        0
+        gNullStr
     );
     return 1;
 }
@@ -566,16 +386,7 @@ BEGIN_HANDLERS(PassiveMessenger)
             (PassiveMessageType)0,
             _msg->Obj<LocalBandUser>(3),
             false,
-            gNullStr,
-            -1,
-            0,
-            0,
-            0,
-            0,
-            gNullStr,
-            gNullStr,
-            gNullStr,
-            0
+            gNullStr
         )
     )
     HANDLE_ACTION(trigger_skip_song_msg, TriggerSkipSongMsg())

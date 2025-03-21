@@ -105,15 +105,15 @@ public:
         LocalBandUser *,
         bool,
         Symbol,
-        int,
-        int,
-        int,
-        int,
-        int,
-        const char *,
-        const char *,
-        const char *,
-        int
+        int = -1,
+        int = 0,
+        int = 0,
+        int = 0,
+        int = 0,
+        const char * = gNullStr,
+        const char * = gNullStr,
+        const char * = gNullStr,
+        int = 0
     );
     void TriggerSkipSongMsg();
     void TriggerInviteFailedMsg();
@@ -145,7 +145,7 @@ public:
     DataNode OnMsg(const InviteSentMsg &);
     DataNode OnMsg(const InviteReceivedMsg &);
 
-    bool unk1c;
+    bool unk1c; // 0x1c
     Timer mTimer; // 0x20
 };
 
