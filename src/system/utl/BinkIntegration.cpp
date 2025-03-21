@@ -10,6 +10,18 @@ void BinkFree(void *mem) { _MemFree(mem); }
 
 void *BinkAlloc(unsigned int size) { _MemAlloc(size, 128); }
 
+unsigned int BinkFileIdle(BINKIO *bink) {
+    if (bink->ReadError) {
+        return 0;
+    }
+    if (bink->Suspended) {
+        return 0;
+    }
+    if (bink->DoingARead) {
+        return NULL; // wtf is ReadFunc?
+    }
+}
+
 bool BinkFileOpen(BINKIO *bink, const char *cc, unsigned int ui) {
     memset(bink, 0, sizeof(BINKIO));
     if (ui & 0x800000) {
