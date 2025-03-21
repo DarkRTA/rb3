@@ -1,8 +1,11 @@
 #include "utl/BinkIntegration.h"
 #include "os/File.h"
+#include "utl/MemMgr.h"
 #include <string.h>
 
 void BinkInit() {}
+
+void BinkFree(void *mem) { _MemFree(mem); }
 
 bool BinkFileOpen(BINKIO *bink, const char *cc, unsigned int ui) {
     memset(bink, 0, sizeof(BINKIO));
