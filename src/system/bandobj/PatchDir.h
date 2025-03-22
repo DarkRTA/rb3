@@ -43,7 +43,7 @@ public:
 class PatchLayer : public Hmx::Object {
 public:
     PatchLayer();
-    virtual ~PatchLayer();
+    virtual ~PatchLayer() {}
     virtual DataNode Handle(DataArray *, bool);
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
     virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
@@ -132,6 +132,7 @@ public:
     void LoadRemote(IntPacker &);
     void FakeFill(RndTex *);
     void LoadLayerStickers();
+    void CollapseEmptyLayers();
 
     RndTex *GetTex() const { return mTex; }
 

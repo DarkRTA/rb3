@@ -1,6 +1,7 @@
 #include "meta_band/PatchPanel.h"
 #include "bandobj/InlineHelp.h"
 #include "bandobj/PatchDir.h"
+#include "decomp.h"
 #include "math/Mtx.h"
 #include "math/Rot.h"
 #include "obj/Data.h"
@@ -75,9 +76,9 @@ PatchPanel::PatchPanel()
     : mPatch(0), mCategoryProvider(0), mStickerProvider(0), mGridProvider(0),
       mLayerProvider(0), unk50(0), unk51(0), unk58(6), unk5c(6), unk60(0.15f),
       unk64(0.3f), unk68(5.0f), unk6c(30.0f), unk70(8.0f), unk74(0.1f), unk78(1.0f),
-      unk7c(0.3f), unk80(0), unk84(50.0f), unkb8(1), unkbc(1), unkc0(0), unkd0(0),
-      unkd4(0), unkd8(0), unkdc(0) {
-    unkc4.Zero();
+      unk7c(0.3f), unk80(0), unk84(50.0f), mBaseSizeX(1), mBaseSizeY(1), mUndoColorIdx(0),
+      mUndoRotation(0), mUndoScaleX(0), mUndoScaleY(0), mUndoDeformFrame(0) {
+    mUndoPosition.Zero();
 }
 
 PatchPanel::~PatchPanel() {}
@@ -125,14 +126,116 @@ void PatchPanel::Unload() {
     UIPanel::Unload();
 }
 
+FORCE_LOCAL_INLINE
 PatchLayer &PatchPanel::EditLayer() { return mPatch->Layer(mEditLayerIdx); }
+END_FORCE_LOCAL_INLINE
 
 int PatchPanel::GetEditLayerListIndex() const {
     MILO_ASSERT(mPatch, 0x31C);
     return mPatch->NumLayersUsed() - mEditLayerIdx;
 }
 
-int ConvertToLayerIndex(PatchDir *, int);
+DataNode PatchPanel::SwapLayers(DataArray *a) {
+    int i2 = a->Int(2);
+    int i3 = a->Int(3);
+    int num = mPatch->NumLayers();
+    if (i2 < num && i2 >= 0 && i3 < mPatch->NumLayers() && i3 >= 0) {
+        if (mPatch->Layer(i2).HasSticker() && mPatch->Layer(i3).HasSticker()) {
+            PatchLayer layer;
+            layer = mPatch->Layer(i2);
+            mPatch->Layer(i2) = mPatch->Layer(i3);
+            mPatch->Layer(i3) = layer;
+            mPatch->CollapseEmptyLayers();
+            return 1;
+        }
+    }
+    return 0;
+}
+
+DataNode PatchPanel::ClearLayer(DataArray *a) {
+    mPatch->Layer(a->Int(2)).ClearSticker();
+    mPatch->CollapseEmptyLayers();
+    return 0;
+}
+
+DataNode PatchPanel::DupeLayer(DataArray *a) {
+    int i1 = a->Int(2);
+    int i2 = mPatch->NumLayers();
+    if (i1 < i2 && i1 >= 0) {
+        i2 = mPatch->FindEmptyLayer();
+        if (i2 >= 0) {
+            mPatch->Layer(i2).Copy(&mPatch->Layer(i1), kCopyDeep);
+            mEditLayerIdx = i2;
+            return 1;
+        }
+    }
+    return 0;
+}
+
+void PatchPanel::ResetDirections() {
+    mDeform = 0;
+    mScaleX = mScaleY = 0;
+    mRot = 0;
+    mMoveX = mMoveY = 0;
+}
+
+void PatchPanel::ResetVelocities() {
+    mDeformVel = 0;
+    mScaleVelX = mScaleVelY = 0;
+    mRotVel = 0;
+    mMoveVelX = mMoveVelY = 0;
+}
+
+void PatchPanel::RestoreUndo() {
+    PatchLayer &layer = EditLayer();
+    ResetVelocities();
+    ResetDirections();
+    layer.mStickerCategory = mUndoStickerCategory;
+    layer.mStickerIdx = mUndoStickerIdx;
+    layer.mColorIdx = mUndoColorIdx;
+    layer.SetPosition(mUndoPosition);
+    layer.SetScaleX(mUndoScaleX);
+    layer.SetScaleY(mUndoScaleY);
+    layer.SetDeformFrame(mUndoDeformFrame);
+    layer.SetRotation(mUndoRotation);
+}
+
+void PatchPanel::StoreUndo() {
+    PatchLayer &layer = EditLayer();
+    mUndoStickerCategory = layer.mStickerCategory;
+    mUndoStickerIdx = layer.mStickerIdx;
+    mUndoColorIdx = layer.mColorIdx;
+    mUndoPosition = layer.Position();
+    mUndoScaleX = layer.ScaleX();
+    mUndoScaleY = layer.ScaleY();
+    mUndoDeformFrame = layer.DeformFrame();
+    mUndoRotation = layer.Rotation();
+}
+
+void PatchPanel::CopyFromPatch(const PatchDir *dir) { mPatch->Copy(dir, kCopyShallow); }
+
+void PatchPanel::CopyToPatch(PatchDir *dir) const {
+    dir->Copy(mPatch, kCopyShallow);
+    RndTexRenderer *tex = mDir->Find<RndTexRenderer>("patch.rndtex", true);
+    dir->CacheRenderedTex(tex->GetOutputTexture(), false);
+}
+
+void PatchPanel::SetBaseSize(float baseX, float baseY) {
+    MILO_ASSERT(baseX > 0.0f, 0x3A4);
+    MILO_ASSERT(baseY > 0.0f, 0x3A5);
+    mBaseSizeX = baseX;
+    mBaseSizeY = baseY;
+}
+
+void PatchPanel::SetStickerCategory(Symbol) {}
+
+int ConvertToLayerIndex(PatchDir *patch, int i2) {
+    MILO_ASSERT(patch, 0x3CB);
+    if (i2 == 0)
+        return patch->FindEmptyLayer();
+    else
+        return patch->NumLayersUsed() - i2;
+}
 
 #pragma push
 #pragma dont_inline on
@@ -270,7 +373,12 @@ inline void CategoryProvider::InitData(RndDir *dir) {
     }
 }
 
-inline int StickerProvider::NumData() const {}
+inline int StickerProvider::NumData() const {
+    if (mStickers)
+        return mStickers->size();
+    else
+        return 0;
+}
 
 inline RndMat *StickerProvider::Mat(int, int data, UIListMesh *slot) const {
     MILO_ASSERT(data < mStickerMats.size(), 0x7A);
