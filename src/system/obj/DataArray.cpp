@@ -89,7 +89,7 @@ void DataAppendStackTrace(char *msg) {
             if (!strncat_tofit(
                     msg,
                     msg_len,
-                    MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()),
+                    MakeString(visualStudioFmt, a->File(), a->Line(), s.c_str()),
                     0x400
                 )) {
                 TheDebug << MakeString("%s", msg);
@@ -102,8 +102,7 @@ void DataAppendStackTrace(char *msg) {
         }
 
         if (msg_full) {
-            TheDebug
-                << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
+            TheDebug << MakeString(visualStudioFmt, a->File(), a->Line(), s.c_str());
         }
     }
 
@@ -117,9 +116,7 @@ DataNode &DataArray::Node(int i) const {
     if (i >= 0 && i < mSize)
         allgood = true;
     if (!allgood)
-        MILO_FAIL(
-            "Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine
-        );
+        MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, File(), Line());
     return mNodes[i];
 }
 
@@ -128,9 +125,7 @@ DataNode &DataArray::Node(int i) {
     if (i >= 0 && i < mSize)
         allgood = true;
     if (!allgood)
-        MILO_FAIL(
-            "Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine
-        );
+        MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, File(), Line());
     return mNodes[i];
 }
 
@@ -349,7 +344,7 @@ DataArray *DataArray::FindArray(int tag, bool fail) const {
         }
     }
     if (fail)
-        MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
+        MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, File(), mLine);
     return 0;
 }
 
@@ -357,7 +352,7 @@ DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
     DataArray *found = FindArray((int)tag.mStr, false);
     if (found == 0 && fail)
         MILO_FAIL(
-            "Couldn't find '%s' in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine
+            "Couldn't find '%s' in array (file %s, line %d)", tag.mStr, File(), mLine
         );
     return found;
 }
@@ -742,7 +737,7 @@ void DataArray::Load(BinStream &bs) {
             bool readFile = false;
             DataArray *macro = DataGetMacro(path);
             if (!macro) {
-                path = FileMakePath(FileGetPath(mFile.mStr, nullptr), path, nullptr);
+                path = FileMakePath(FileGetPath(File(), nullptr), path, nullptr);
                 macro = DataReadFile(path, true);
                 readFile = true;
                 if (!macro) {

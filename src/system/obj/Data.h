@@ -17,6 +17,7 @@ namespace Hmx {
 /** A function which can be called by a script/command. */
 typedef DataNode DataFunc(DataArray *);
 
+/** The possible DataNode types. */
 enum DataType {
     kDataUnhandled = 0,
     kDataFloat = 1,
@@ -101,7 +102,7 @@ public:
     DataNode(const DataNode &);
     DataNode(const char *string);
     DataNode(const class String &string);
-    DataNode(const void *glob, int size);
+    // DataNode(const void *glob, int size); // goes unused
     DataNode(const DataArrayPtr &);
     DataNode(DataArray *array, DataType type);
 
@@ -118,7 +119,16 @@ public:
     ~DataNode();
 
     DataType Type() const { return mType; }
-    bool CompatibleType(DataType) const;
+
+    /** Is this node's type compatible with the supplied DataType?
+     * @param [in] t The DataType in question
+     * @returns True if the two types are compatible, false if not.
+     */
+    bool CompatibleType(DataType t) const;
+
+    /** Evaluate the contents of this DataNode and return the result.
+     * @returns A DataNode with the results of the evaluation.
+     */
     const DataNode &Evaluate() const;
 
     // these were implemented to match up in retail
@@ -130,24 +140,97 @@ public:
     DataNode *UncheckedVar() const { return mValue.var; }
     DataFunc *UncheckedFunc() const { return mValue.func; }
 
+    /** Evalute this DataNode, and return the resulting int.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The resulting int from this DataNode.
+     */
     int Int(const DataArray *source = nullptr) const;
+
+    /** Return the int directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned int.
+     */
     int LiteralInt(const DataArray *source = nullptr) const;
+
+    /** Evalute this DataNode, and return the resulting Symbol.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The resulting Symbol from this DataNode.
+     */
     Symbol Sym(const DataArray *source = nullptr) const;
+
+    /** Return the Symbol directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned Symbol.
+     */
     Symbol LiteralSym(const DataArray *source = nullptr) const;
     Symbol ForceSym(const DataArray *source = nullptr) const;
+
+    /** Evalute this DataNode, and return the resulting string.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The resulting string from this DataNode.
+     */
     const char *Str(const DataArray *source = nullptr) const;
+
+    /** Return the string directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned string.
+     */
     const char *LiteralStr(const DataArray *source = nullptr) const;
-    void *Glob(int *size, const DataArray *source = nullptr) const;
+
+    // void *Glob(int *size, const DataArray *source = nullptr) const; // deadstripped lol
+
+    /** Evalute this DataNode, and return the resulting float.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The resulting float from this DataNode.
+     */
     float Float(const DataArray *source = nullptr) const;
+
+    /** Return the float directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned float.
+     */
     float LiteralFloat(const DataArray *source = nullptr) const;
+
+    /** Return the DataFunc directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned DataFunc.
+     */
     DataFunc *Func(const DataArray *source = nullptr) const;
+
+    /** Evalute this DataNode, and return the resulting Hmx::Object.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The resulting Hmx::Object from this DataNode.
+     */
     Hmx::Object *GetObj(const DataArray *source = nullptr) const;
+
+    /** Evalute this DataNode, and return the resulting DataArray.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The resulting DataArray from this DataNode.
+     */
     DataArray *Array(const DataArray *source = nullptr) const;
+
+    /** Return the DataArray directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned DataArray.
+     */
     DataArray *LiteralArray(const DataArray *source = nullptr) const;
+
+    /** Return the command DataArray directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned DataArray.
+     */
     DataArray *Command(const DataArray *source = nullptr) const;
+
+    /** Return the var DataNode directly inside of this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned DataNode.
+     */
     DataNode *Var(const DataArray *source = nullptr) const;
 
-    // for retrieving a Hmx::Object derivative from a DataNode
+    /** Get the Hmx::Object derivative resulting from this DataNode.
+     * @param [in] source The DataArray this DataNode comes from.
+     * @returns The aforementioned Hmx::Object derivative.
+     */
     template <class T>
     T *Obj(const DataArray *source = nullptr) const {
         return dynamic_cast<T *>(GetObj(source));
@@ -161,9 +244,10 @@ public:
 
     /** Print the DataNode's contents to the TextStream.
      * @param [in] s The TextStream to print to.
-     * @param [in] b TODO: currently unknown
+     * @param [in] compact If true, print any strings in a compact manner.
      */
-    void Print(TextStream &s, bool) const;
+    void Print(TextStream &s, bool compact) const;
+    /** As the name would indicate, this goes unused. */
     bool PrintUnused(TextStream &, bool) const;
     /** Saves this DataNode into a BinStream. */
     void Save(BinStream &d) const;
@@ -202,34 +286,108 @@ public:
     DataArray *UncheckedArray(int i) const { return Node(i).UncheckedArray(); }
     DataFunc *UncheckedFunc(int i) const { return Node(i).UncheckedFunc(); }
 
+    /** Get the DataType at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting DataType.
+     */
     DataType Type(int i) const { return Node(i).Type(); }
+
+    /** Get the int at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting int.
+     */
     int Int(int i) const { return Node(i).Int(this); }
+
+    /** Get the Symbol at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting Symbol.
+     */
     Symbol Sym(int i) const { return Node(i).Sym(this); }
+
+    /** Get the literal Symbol at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting Symbol.
+     */
     Symbol LiteralSym(int i) const { return Node(i).LiteralSym(this); }
     Symbol ForceSym(int i) const { return Node(i).ForceSym(this); }
+
+    /** Get the string at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting string.
+     */
     const char *Str(int i) const { return Node(i).Str(this); }
+
+    /** Get the literal string at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting string.
+     */
     const char *LiteralStr(int i) const { return Node(i).LiteralStr(this); }
+
+    /** Get the float at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting float.
+     */
     float Float(int i) const { return Node(i).Float(this); }
+
+    /** Get the Hmx::Object at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting Hmx::Object.
+     */
     Hmx::Object *GetObj(int i) const { return Node(i).GetObj(this); }
+
+    /** Get the DataArray at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting DataArray.
+     */
     DataArray *Array(int i) const { return Node(i).Array(this); }
+
+    /** Get the command DataArray at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting command DataArray.
+     */
     DataArray *Command(int i) const { return Node(i).Command(this); }
+
+    /** Get the var DataNode at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting var DataNode.
+     */
     DataNode *Var(int i) const { return Node(i).Var(this); }
+
+    /** Get the Hmx::Object derivative at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting Hmx::Object derivative.
+     */
     template <class T>
     T *Obj(int i) const {
         return Node(i).Obj<T>(this);
     }
 
+    /** Increment this DataArray's reference count. */
     void AddRef() { mRefs++; }
+    /** Decrement this DataArray's reference count. */
     void Release() {
         if (--mRefs == 0)
             delete this;
     }
 
-    // these two are actually strong symbols
+    /** Get the DataNode at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting DataNode.
+     */
     DataNode &Node(int i);
+    /** Get the DataNode at the given node index.
+     * @param [in] i The node index.
+     * @returns The resulting DataNode.
+     */
     DataNode &Node(int i) const;
 
+    /** Print the DataArray's contents to the TextStream.
+     * @param [in] s The TextStream to print to.
+     * @param [in] type The type of this DataArray (array, command, property, etc)
+     * @param [in] compact If true, print any strings in a compact manner.
+     */
     void Print(TextStream &s, DataType type, bool compact) const;
+    /** As the name would indicate, this goes unused. */
     bool PrintUnused(TextStream &, DataType, bool) const;
     void Insert(int index, const DataNode &node);
     void InsertNodes(int index, const DataArray *array);
