@@ -319,10 +319,10 @@ void CrowdAudio::SetTypeDef(DataArray *arr) {
             arr->FindData("crowd_volume", mCrowdVol, false);
             DataArray *streamArr = arr->FindArray("streams", false);
             if (streamArr) {
-                mIntro = streamArr->FindArray("intro", true);
-                mLevels = streamArr->FindArray("levels", true);
-                mVenueIntro = streamArr->FindArray("venue_intro", true);
-                mVenueOutro = streamArr->FindArray("venue_outro", true);
+                mIntro = streamArr->FindArray("intro");
+                mLevels = streamArr->FindArray("levels");
+                mVenueIntro = streamArr->FindArray("venue_intro");
+                mVenueOutro = streamArr->FindArray("venue_outro");
             }
             arr->FindData("results_duck", mResultsDuck, false);
             arr->FindData("results_fade_ms", mResultsFadeDuration, false);

@@ -17,7 +17,7 @@ DECOMP_FORCEACTIVE(
 )
 
 DataArray *FakeSongMgr::GetSongConfig(Symbol sym) {
-    return gSongs->FindArray(sym, true)->FindArray("song", true);
+    return gSongs->FindArray(sym)->FindArray("song");
 }
 
 DECOMP_FORCEACTIVE(FakeSongMgr, "name")

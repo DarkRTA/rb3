@@ -223,7 +223,7 @@ int Hmx::Object::PropertySize(DataArray *prop) {
         const DataNode *a = mTypeProps.KeyValue(name, false);
         if (a == nullptr) {
             if (mTypeDef != nullptr) {
-                a = &mTypeDef->FindArray(name, true)->Evaluate(1);
+                a = &mTypeDef->FindArray(name)->Evaluate(1);
             } else
                 MILO_FAIL("%s: property %s not found", PathName(this), name);
         }

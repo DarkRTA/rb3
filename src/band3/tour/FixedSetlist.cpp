@@ -15,7 +15,7 @@ void FixedSetlist::Init(const DataArray *i_pConfig) {
 
     i_pConfig->FindData(group, mGroup, true);
     i_pConfig->FindData(weight, mWeight, false);
-    DataArray *pSongsArray = i_pConfig->FindArray(songs, true);
+    DataArray *pSongsArray = i_pConfig->FindArray(songs);
 
     MILO_ASSERT(pSongsArray, 0x2A);
     MILO_ASSERT(pSongsArray->Size() > 1, 0x2B);

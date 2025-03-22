@@ -211,9 +211,9 @@ void CheatsInit() {
         JoypadSubscribe(gCheatsManager);
         KeyboardSubscribe(gCheatsManager);
         DataArray *cheatCfg = SystemConfig("quick_cheats");
-        InitQuickJoyCheats(cheatCfg->FindArray("left", true), CheatsManager::kLeftShift);
-        InitQuickJoyCheats(cheatCfg->FindArray("right", true), CheatsManager::kRightShift);
-        InitKeyCheats(cheatCfg->FindArray("keyboard", true));
+        InitQuickJoyCheats(cheatCfg->FindArray("left"), CheatsManager::kLeftShift);
+        InitQuickJoyCheats(cheatCfg->FindArray("right"), CheatsManager::kRightShift);
+        InitKeyCheats(cheatCfg->FindArray("keyboard"));
         InitLongJoyCheats(SystemConfig("long_cheats"));
         DataRegisterFunc("set_key_cheats_enabled", SetKeyCheatsEnabled);
         DataRegisterFunc("set_cheat_mode", OnSetCheatMode);

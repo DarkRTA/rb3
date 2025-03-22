@@ -423,27 +423,27 @@ public:
      */
     bool Contains(const DataNode &node) const;
 
-    DataArray *FindArray(int tag, bool fail) const;
-    DataArray *FindArray(Symbol tag, bool fail) const;
+    DataArray *FindArray(int tag, bool fail = true) const;
+    DataArray *FindArray(Symbol tag, bool fail = true) const;
     DataArray *FindArray(Symbol s1, Symbol s2) const;
     DataArray *FindArray(Symbol s1, Symbol s2, Symbol s3) const;
     DataArray *FindArray(Symbol, const char *) const;
 
-    bool FindData(Symbol tag, const char *&ret, bool fail) const;
-    bool FindData(Symbol tag, Symbol &ret, bool fail) const;
-    bool FindData(Symbol tag, class String &ret, bool fail) const;
-    bool FindData(Symbol tag, int &ret, bool fail) const;
-    bool FindData(Symbol tag, float &ret, bool fail) const;
-    bool FindData(Symbol tag, bool &ret, bool fail) const;
-    bool FindData(Symbol tag, class Vector2 &ret, bool fail) const;
-    bool FindData(Symbol tag, class Vector3 &ret, bool fail) const;
-    bool FindData(Symbol tag, class Plane &ret, bool fail) const;
-    bool FindData(Symbol tag, Hmx::Color &ret, bool fail) const;
+    bool FindData(Symbol tag, const char *&ret, bool fail = true) const;
+    bool FindData(Symbol tag, Symbol &ret, bool fail = true) const;
+    bool FindData(Symbol tag, class String &ret, bool fail = true) const;
+    bool FindData(Symbol tag, int &ret, bool fail = true) const;
+    bool FindData(Symbol tag, float &ret, bool fail = true) const;
+    bool FindData(Symbol tag, bool &ret, bool fail = true) const;
+    bool FindData(Symbol tag, class Vector2 &ret, bool fail = true) const;
+    bool FindData(Symbol tag, class Vector3 &ret, bool fail = true) const;
+    bool FindData(Symbol tag, class Plane &ret, bool fail = true) const;
+    bool FindData(Symbol tag, Hmx::Color &ret, bool fail = true) const;
 
-    int FindInt(Symbol tag) const { return FindArray(tag, true)->Int(1); }
-    float FindFloat(Symbol tag) const { return FindArray(tag, true)->Float(1); }
-    Symbol FindSym(Symbol tag) const { return FindArray(tag, true)->Sym(1); }
-    const char *FindStr(Symbol tag) const { return FindArray(tag, true)->Str(1); }
+    int FindInt(Symbol tag) const { return FindArray(tag)->Int(1); }
+    float FindFloat(Symbol tag) const { return FindArray(tag)->Float(1); }
+    Symbol FindSym(Symbol tag) const { return FindArray(tag)->Sym(1); }
+    const char *FindStr(Symbol tag) const { return FindArray(tag)->Str(1); }
 
     /** Clone this DataArray.
      * @param [in] deep If true, perform a deep copy on this DataArray.

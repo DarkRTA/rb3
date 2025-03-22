@@ -432,7 +432,7 @@ ControllerType LocalBandUser::ConnectedControllerType() const {
         else {
             Symbol joypadType = JoypadControllerTypePadNum(GetPadNum());
             DataArray *cfg = SystemConfig(joypad, instrument_mapping);
-            int ct = cfg->FindArray(joypadType, true)->Int(1);
+            int ct = cfg->FindArray(joypadType)->Int(1);
             MILO_ASSERT_RANGE_EQ(ct, 0, kNumControllerTypes, 0x337);
             static DataNode &fake_controllers = DataVariable("fake_controllers");
             if (fake_controllers.Int() != 0 && ct == 5)

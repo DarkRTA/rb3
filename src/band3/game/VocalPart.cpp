@@ -20,21 +20,19 @@ VocalPart::~VocalPart() {}
 
 void VocalPart::SetDifficultyVariables(int diff) {
     DataArray *voxCfg = SystemConfig("scoring", "vocals");
-    mSlop = voxCfg->FindArray("slop", true)->Float(diff + 1);
-    mPitchMaximumDistance = voxCfg->FindArray("pitch_margin", true)->Float(diff + 1);
+    mSlop = voxCfg->FindArray("slop")->Float(diff + 1);
+    mPitchMaximumDistance = voxCfg->FindArray("pitch_margin")->Float(diff + 1);
     float log = std::log(0.1);
     mPitchSigma = -(mPitchMaximumDistance * mPitchMaximumDistance) / log;
-    mPhraseValue = voxCfg->FindArray("phrase_value", true)->Int(diff + 1);
-    mNoteLengthFactor = voxCfg->FindArray("note_length_factor", true)->Float(diff + 1);
-    mPitchHitMultiplier =
-        voxCfg->FindArray("pitch_hit_multiplier", true)->Float(diff + 1);
+    mPhraseValue = voxCfg->FindArray("phrase_value")->Int(diff + 1);
+    mNoteLengthFactor = voxCfg->FindArray("note_length_factor")->Float(diff + 1);
+    mPitchHitMultiplier = voxCfg->FindArray("pitch_hit_multiplier")->Float(diff + 1);
     mNonPitchHitMultiplier =
-        voxCfg->FindArray("nonpitch_hit_multiplier", true)->Float(diff + 1);
-    mNonPitchEasyMultiplier =
-        voxCfg->FindArray("nonpitch_easy_multiplier", true)->Float(1);
-    mPhraseScoreCapGrowth = voxCfg->FindArray("vocal_cap_growth", true)->Float(diff + 1);
+        voxCfg->FindArray("nonpitch_hit_multiplier")->Float(diff + 1);
+    mNonPitchEasyMultiplier = voxCfg->FindArray("nonpitch_easy_multiplier")->Float(1);
+    mPhraseScoreCapGrowth = voxCfg->FindArray("vocal_cap_growth")->Float(diff + 1);
     mShortNoteThresh = voxCfg->FindFloat("short_note_threshold_ms");
-    mShortNoteMult = voxCfg->FindArray("short_note_multiplier", true)->Float(diff + 1);
+    mShortNoteMult = voxCfg->FindArray("short_note_multiplier")->Float(diff + 1);
     mTalkyEnergyThreshold = voxCfg->FindFloat("nonpitch_energy_threshold");
 }
 

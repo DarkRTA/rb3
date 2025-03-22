@@ -24,7 +24,7 @@ void RndSet::SetTypeDef(DataArray *arr) {
     if (TypeDef() != arr) {
         Hmx::Object::SetTypeDef(arr);
         if (arr) {
-            DataArray *cfg = TypeDef()->FindArray("editor", true);
+            DataArray *cfg = TypeDef()->FindArray("editor");
             mProps.resize(cfg->Size() - 1);
             for (int i = 1; i < cfg->Size(); i++) {
                 const DataArray *thisArr = cfg->Array(i);

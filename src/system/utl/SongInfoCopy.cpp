@@ -49,9 +49,9 @@ SongInfoCopy::SongInfoCopy() : mName(), mBaseFileName(), mPackageName() {
     mVocalMuteVolume = 0.0f;
     DataArray *cfg = SystemConfig()->FindArray("beatmatcher", false);
     if (cfg) {
-        mHopoThreshold = cfg->FindArray("parser", true)->FindInt("hopo_threshold");
-        mMuteVolume = cfg->FindArray("audio", true)->FindFloat("mute_volume");
-        mVocalMuteVolume = cfg->FindArray("audio", true)->FindFloat("mute_volume_vocals");
+        mHopoThreshold = cfg->FindArray("parser")->FindInt("hopo_threshold");
+        mMuteVolume = cfg->FindArray("audio")->FindFloat("mute_volume");
+        mVocalMuteVolume = cfg->FindArray("audio")->FindFloat("mute_volume_vocals");
     }
 }
 

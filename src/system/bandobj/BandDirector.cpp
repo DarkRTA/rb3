@@ -952,7 +952,7 @@ DataNode BandDirector::OnLoadSong(DataArray *da) {
     int i4 = da->Int(4);
     Symbol s5 = da->Sym(5);
     bool i6 = da->Int(6);
-    DataArray *genrearr = TypeDef()->FindArray("anim_genres", true);
+    DataArray *genrearr = TypeDef()->FindArray("anim_genres");
     DataArray *s3arr = genrearr->FindArray(s3, false);
     if (s3arr)
         s3 = s3arr->Sym(1);

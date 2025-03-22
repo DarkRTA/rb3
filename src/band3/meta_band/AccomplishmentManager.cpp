@@ -225,19 +225,17 @@ void AccomplishmentManager::ContentDone() {
 }
 
 void AccomplishmentManager::Init(DataArray *configure) {
-    ConfigureFanValueData(configure->FindArray("fan_values", true));
-    ConfigureFanScalingData(configure->FindArray("fan_scaling", true));
-    ConfigureAwardData(configure->FindArray("awards", true));
-    ConfigurePrecachedFilterData(configure->FindArray("precached_filters", true));
-    ConfigureAccomplishmentGroupData(configure->FindArray("accomplishment_groups", true));
-    ConfigureAccomplishmentCategoryData(
-        configure->FindArray("accomplishment_categories", true)
+    ConfigureFanValueData(configure->FindArray("fan_values"));
+    ConfigureFanScalingData(configure->FindArray("fan_scaling"));
+    ConfigureAwardData(configure->FindArray("awards"));
+    ConfigurePrecachedFilterData(configure->FindArray("precached_filters"));
+    ConfigureAccomplishmentGroupData(configure->FindArray("accomplishment_groups"));
+    ConfigureAccomplishmentCategoryData(configure->FindArray("accomplishment_categories")
     );
-    ConfigureAccomplishmentData(configure->FindArray("accomplishments", true));
+    ConfigureAccomplishmentData(configure->FindArray("accomplishments"));
     ConfigureAccomplishmentCategoryGroupingData();
     ConfigureAccomplishmentGroupToCategoriesData();
-    ConfigureAccomplishmentRewardData(configure->FindArray("accomplishment_rewards", true)
-    );
+    ConfigureAccomplishmentRewardData(configure->FindArray("accomplishment_rewards"));
     TheContentMgr->RegisterCallback(this, false);
 }
 
@@ -1611,7 +1609,7 @@ Symbol AccomplishmentManager::GetTourSafeDiscSongAtDifficultyIndex(int idx) {
 
 void AccomplishmentManager::CheatReloadData(DataArray *arr) {
     Cleanup();
-    Init(arr->FindArray("accomplishment_info", true));
+    Init(arr->FindArray("accomplishment_info"));
 }
 
 #pragma push

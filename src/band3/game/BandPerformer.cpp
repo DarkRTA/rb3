@@ -185,7 +185,7 @@ float BandPerformer::WeightedCrowdLevel() const {
         return 0;
     else {
         std::sort(crowdratings.begin(), crowdratings.end());
-        DataArray *arr = unk20c->FindArray(crowdratings.size(), true)->Array(1);
+        DataArray *arr = unk20c->FindArray(crowdratings.size())->Array(1);
         float ret = 0;
         for (int i = 0; i < crowdratings.size(); i++) {
             ret += crowdratings[i] * arr->Float(i);

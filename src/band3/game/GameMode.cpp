@@ -26,8 +26,8 @@ bool GameMode::InMode(Symbol target) {
     DataArray *modes = SystemConfig("modes");
     Symbol iter = mMode;
 
-    while (modes->FindArray(iter, true)->FindArray(parent_mode, false)) {
-        iter = modes->FindArray(iter, true)->FindArray(parent_mode, true)->Sym(1);
+    while (modes->FindArray(iter)->FindArray(parent_mode, false)) {
+        iter = modes->FindArray(iter)->FindArray(parent_mode)->Sym(1);
         if (iter == target)
             return true;
     }
@@ -46,18 +46,18 @@ void GameMode::SetMode(Symbol mode) {
         DataArray *cfg = SystemConfig("modes");
         HandleType(exit_msg);
         mMode = mode;
-        DataArray *cloned = cfg->FindArray(mMode, true)->Clone(true, false, 0);
+        DataArray *cloned = cfg->FindArray(mMode)->Clone(true, false, 0);
         if (cloned->FindArray(parent_only, false)) {
-            if (cloned->FindArray(parent_only, true)->Int(1)) {
+            if (cloned->FindArray(parent_only)->Int(1)) {
                 MILO_FAIL("Trying to set mode %s, which is a parent_only mode!\n", mMode);
             }
         }
         Symbol iter = mMode;
-        while (cfg->FindArray(iter, true)->FindArray(parent_mode, false)) {
-            iter = cfg->FindArray(iter, true)->FindArray(parent_mode, true)->Sym(1);
-            DataMergeTags(cloned, cfg->FindArray(iter, true));
+        while (cfg->FindArray(iter)->FindArray(parent_mode, false)) {
+            iter = cfg->FindArray(iter)->FindArray(parent_mode)->Sym(1);
+            DataMergeTags(cloned, cfg->FindArray(iter));
         }
-        DataMergeTags(cloned, cfg->FindArray("defaults", true));
+        DataMergeTags(cloned, cfg->FindArray("defaults"));
         SetTypeDef(cloned);
         cloned->Release();
         HandleType(enter_msg);

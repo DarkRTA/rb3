@@ -68,7 +68,7 @@ void CharMirror::SyncBones() {
         return;
     else {
         std::list<CharBones::Bone> bones;
-        DataArray *mapArr = TypeDef()->FindArray("mappings", true);
+        DataArray *mapArr = TypeDef()->FindArray("mappings");
         for (int i = 1; i < mapArr->Size(); i++) {
             bones.push_back(CharBones::Bone(mapArr->Array(i)->Sym(0), 1));
         }
@@ -77,7 +77,7 @@ void CharMirror::SyncBones() {
         mOps.resize(numBones);
         for (int i = 0; i < mOps.size(); i++) {
             Symbol boneName = mBones.mBones[i].name;
-            DataArray *boneArr = mapArr->FindArray(boneName, true);
+            DataArray *boneArr = mapArr->FindArray(boneName);
             mOps[i].ptr = mMirrorServo->FindPtr(boneArr->Sym(1));
             mOps[i].op = boneArr->Size() > 2 ? boneArr->Sym(2) : Symbol();
         }

@@ -156,14 +156,14 @@ void Synth::Poll() {
 
 void Synth::SetFX(const DataArray *data) {
     MILO_ASSERT(data, 0x15F);
-    int chainData = data->FindArray("chain", true)->Int(1);
+    int chainData = data->FindArray("chain")->Int(1);
     SetFXChain(chainData);
     for (int i = 0; i < 2; i++) {
         DataArray *coreArr = data->FindArray(MakeString("core_%i", i), true);
-        int mode = coreArr->FindArray("mode", true)->Int(1);
-        float volume = coreArr->FindArray("volume", true)->Float(1);
-        float delay = coreArr->FindArray("delay", true)->Float(1);
-        float feedback = coreArr->FindArray("feedback", true)->Float(1);
+        int mode = coreArr->FindArray("mode")->Int(1);
+        float volume = coreArr->FindArray("volume")->Float(1);
+        float delay = coreArr->FindArray("delay")->Float(1);
+        float feedback = coreArr->FindArray("feedback")->Float(1);
         SetFXMode(i, (FXMode)mode);
         SetFXVolume(i, volume);
         SetFXDelay(i, delay);
@@ -217,8 +217,8 @@ void Synth::SetMic(const DataArray *data) {
         if (mic)
             mic->Set(data);
     }
-    SetMicFX(data->FindArray("fx", true)->Int(1));
-    SetMicVolume(data->FindArray("volume", true)->Float(1));
+    SetMicFX(data->FindArray("fx")->Int(1));
+    SetMicVolume(data->FindArray("volume")->Float(1));
 }
 
 DECOMP_FORCEACTIVE(Synth, "adsr", "loops", "loop not set for %s", "sequences")
@@ -226,7 +226,7 @@ DECOMP_FORCEACTIVE(Synth, "adsr", "loops", "loop not set for %s", "sequences")
 void SynthPreInit() {
     MILO_ASSERT(!TheSynth, 0x2EA);
     DataArray *cfg = SystemConfig("synth");
-    bool useNullSynth = cfg->FindArray("use_null_synth", true)->Int(1);
+    bool useNullSynth = cfg->FindArray("use_null_synth")->Int(1);
     if (useNullSynth)
         TheSynth = new Synth();
     else
@@ -243,8 +243,8 @@ void SynthInit() {
         SynthPreInit();
     DataArray *cfg = SystemConfig("synth");
     TheSynth->Init();
-    TheSynth->SetMic(cfg->FindArray("mic", true));
-    TheSynth->SetFX(cfg->FindArray("fx", true));
+    TheSynth->SetMic(cfg->FindArray("mic"));
+    TheSynth->SetFX(cfg->FindArray("fx"));
     TheDebug.AddExitCallback(SynthTerminate);
 }
 
@@ -405,13 +405,13 @@ int Synth::GetFXOverhead() {
     int overheads[10] = { 0x80,   0x26c0, 8000,    0x4c28,  0x6fe0,
                           0xade0, 0xf6c0, 0x18040, 0x18040, 0x3c00 };
     DataArray *cfg = SystemConfig("synth");
-    int mode = cfg->FindArray("fx", true)->FindArray("core_0", true)->FindInt("mode");
+    int mode = cfg->FindArray("fx")->FindArray("core_0")->FindInt("mode");
     return overheads[mode] + 0x20000;
 }
 
 int Synth::GetSPUOverhead() {
     DataArray *cfg = SystemConfig("synth");
-    int spuBufs = cfg->FindArray("iop", true)->FindInt("spu_buffers");
+    int spuBufs = cfg->FindArray("iop")->FindInt("spu_buffers");
     return spuBufs * 0x800 + 0x5010 + GetFXOverhead();
 }
 

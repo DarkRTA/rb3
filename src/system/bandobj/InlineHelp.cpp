@@ -276,10 +276,10 @@ String InlineHelp::GetIconStringFromAction(int idx) {
     String ret;
     const DataArray *t = TypeDef();
     MILO_ASSERT(t, 0x1C4);
-    DataArray *actionArr = t->FindArray(action_chars, true);
+    DataArray *actionArr = t->FindArray(action_chars);
     for (std::vector<Symbol>::iterator it = mIconTypes.begin(); it != mIconTypes.end();
          ++it) {
-        const char *str = actionArr->FindArray(*it, true)->Str(idx + 1);
+        const char *str = actionArr->FindArray(*it)->Str(idx + 1);
         char c = *str;
         if (ret.find(c) == String::npos)
             ret += c;

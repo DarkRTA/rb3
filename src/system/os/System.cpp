@@ -194,7 +194,7 @@ void PreInitSystem(const char *path) {
     MILO_ASSERT(gSystemConfig, 0x1AC);
     DataVariable("syscfg") = DataNode(gSystemConfig, kDataArray);
 
-    DataArray *mem = gSystemConfig->FindArray("mem", true);
+    DataArray *mem = gSystemConfig->FindArray("mem");
 
     SetUsingCD(usingCD);
     TheArchive = archive;
@@ -312,29 +312,26 @@ static DataArray *GetSystemConfigWith3Syms(Symbol s1, Symbol s2, Symbol s3) {
 
 #pragma push
 #pragma force_active on
-inline DataArray *SystemConfig(Symbol s) { return gSystemConfig->FindArray(s, true); }
+inline DataArray *SystemConfig(Symbol s) { return gSystemConfig->FindArray(s); }
 
 inline DataArray *SystemConfig(Symbol s1, Symbol s2) {
-    return gSystemConfig->FindArray(s1, true)->FindArray(s2, true);
+    return gSystemConfig->FindArray(s1)->FindArray(s2);
 }
 inline DataArray *SystemConfig(Symbol s1, Symbol s2, Symbol s3) {
-    return gSystemConfig->FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
+    return gSystemConfig->FindArray(s1)->FindArray(s2)->FindArray(s3);
 }
 #pragma pop
 
 DataArray *SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4) {
-    return gSystemConfig->FindArray(s1, true)
-        ->FindArray(s2, true)
-        ->FindArray(s3, true)
-        ->FindArray(s4, true);
+    return gSystemConfig->FindArray(s1)->FindArray(s2)->FindArray(s3)->FindArray(s4);
 }
 
 DataArray *SystemConfig(Symbol s1, Symbol s2, Symbol s3, Symbol s4, Symbol s5) {
-    return gSystemConfig->FindArray(s1, true)
-        ->FindArray(s2, true)
-        ->FindArray(s3, true)
-        ->FindArray(s4, true)
-        ->FindArray(s5, true);
+    return gSystemConfig->FindArray(s1)
+        ->FindArray(s2)
+        ->FindArray(s3)
+        ->FindArray(s4)
+        ->FindArray(s5);
 }
 
 Symbol SystemLanguage() { return gSystemLanguage; }

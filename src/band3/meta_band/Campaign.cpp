@@ -46,7 +46,7 @@ Campaign::Campaign(DataArray *arr)
     MILO_ASSERT(!TheCampaign, 0x34);
     TheCampaign = this;
     SetName("campaign", ObjectDir::Main());
-    DataArray *accArr = arr->FindArray("accomplishment_info", true);
+    DataArray *accArr = arr->FindArray("accomplishment_info");
     m_pAccomplishmentMgr->Init(accArr);
     Init(arr);
     m_pAccomplishmentMgr->SanityCheckAwards();
@@ -75,8 +75,8 @@ void Campaign::Cleanup() {
 }
 
 void Campaign::Init(DataArray *arr) {
-    ConfigureCampaignLevelData(arr->FindArray("campaign_levels", true));
-    ConfigureCampaignKeyData(arr->FindArray("campaign_keys", true));
+    ConfigureCampaignLevelData(arr->FindArray("campaign_levels"));
+    ConfigureCampaignKeyData(arr->FindArray("campaign_keys"));
 }
 
 void Campaign::ConfigureCampaignLevelData(DataArray *arr) {

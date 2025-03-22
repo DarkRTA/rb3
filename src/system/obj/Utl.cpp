@@ -19,8 +19,7 @@ DECOMP_FORCEACTIVE(Utl, "mem_copy", "fast", "main", "%d,%d,%d,%d\n")
 void InitObject(Hmx::Object *obj) {
     static DataArray *objects = SystemConfig("objects");
     static Symbol initSym("init");
-    DataArray *found2 =
-        objects->FindArray(obj->ClassName(), true)->FindArray(initSym, false);
+    DataArray *found2 = objects->FindArray(obj->ClassName())->FindArray(initSym, false);
     if (found2 != 0)
         found2->ExecuteScript(1, obj, 0, 1);
 }

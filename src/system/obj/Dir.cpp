@@ -778,7 +778,7 @@ void ObjectDir::Iterate(DataArray *da, bool b) {
     }
 #ifdef MILO_DEBUG
     static DataArray *objects = SystemConfig("objects");
-    objects->FindArray(sym1, true);
+    objects->FindArray(sym1);
 #endif
     DataNode *var = da->Var(3);
     DataNode node(*var);

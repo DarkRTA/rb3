@@ -6,9 +6,9 @@
 
 void Mic::Set(const DataArray *data) {
     MILO_ASSERT(data, 0x12);
-    SetGain(data->FindArray("gain", true)->Float(1));
-    SetDMA(data->FindArray("dma", true)->Int(1) != 0);
-    DataArray *compressorArr = data->FindArray("compressor", true);
+    SetGain(data->FindArray("gain")->Float(1));
+    SetDMA(data->FindArray("dma")->Int(1) != 0);
+    DataArray *compressorArr = data->FindArray("compressor");
     SetCompressor(compressorArr->Int(1) != 0);
     SetCompressorParam(compressorArr->Float(2));
 }

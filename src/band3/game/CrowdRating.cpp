@@ -16,8 +16,8 @@ CrowdRating::CrowdRating(BandUser *user, Difficulty diff) : mRunningMin(1) {
 void CrowdRating::Configure(BandUser *user, Difficulty diff) {
     DataArray *cfg = TheScoring->GetCrowdConfig(diff, user);
     mLoseLevel = cfg->FindFloat("lose_level");
-    kMin = cfg->FindArray("range", true)->Float(1);
-    kMax = cfg->FindArray("range", true)->Float(2);
+    kMin = cfg->FindArray("range")->Float(1);
+    kMax = cfg->FindArray("range")->Float(2);
     kNoteWeight = cfg->FindFloat("note_weight");
     kGreatLevel = cfg->FindFloat("great_level");
     kOkayLevel = cfg->FindFloat("okay_level");

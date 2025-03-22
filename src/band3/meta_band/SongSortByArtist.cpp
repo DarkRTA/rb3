@@ -61,7 +61,7 @@ bool ArtistCmp::HasSubheader() const { return mTrackNum != -1 || mShortcut.Null(
 
 void SongSortByArtist::Init() {
     DataArray *cfg = SystemConfig(song_select);
-    DataArray *alphas = cfg->FindArray(alpha_shortcuts, true);
+    DataArray *alphas = cfg->FindArray(alpha_shortcuts);
     for (int i = 1; i < alphas->Size(); i++) {
         MemDoTempAllocations m(true, false);
         Symbol curSym = alphas->Sym(i);

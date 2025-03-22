@@ -87,7 +87,7 @@ DataNode OnScriptTask(DataArray *arr) {
     arr->FindData(units, local_units, false);
     arr->FindData(name, local_name, false);
     ScriptTask *task = new ScriptTask(
-        arr->FindArray(script, true), local_once, arr->FindArray(preserve, false)
+        arr->FindArray(script), local_once, arr->FindArray(preserve, false)
     );
     if (local_name) {
         MILO_ASSERT(DataThis(), 0x8A);
@@ -160,7 +160,7 @@ DataNode OnThreadTask(DataArray *arr) {
     arr->FindData(delay, local_delay, false);
     arr->FindData(name, local_name, false);
     ThreadTask *task =
-        new ThreadTask(arr->FindArray(script, true), arr->FindArray(preserve, false));
+        new ThreadTask(arr->FindArray(script), arr->FindArray(preserve, false));
     if (local_name) {
         MILO_ASSERT(DataThis(), 0xF7);
         task->SetName(local_name, DataThis()->DataDir());

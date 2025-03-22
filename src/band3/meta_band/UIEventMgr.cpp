@@ -95,7 +95,7 @@ void UIEventMgr::DismissDialogEvent() { mDialogEventQueue.DismissEvent(); }
 void UIEventMgr::DismissTransitionEvent() { mTransitionEventQueue.DismissEvent(); }
 
 void UIEventMgr::TriggerEvent(Symbol s, DataArray *arr) {
-    DataArray *dialogArr = TypeDef()->FindArray(dialog_events, true);
+    DataArray *dialogArr = TypeDef()->FindArray(dialog_events);
     DataArray *sArr = dialogArr->FindArray(s, false);
     UIEvent *event;
     if (sArr) {

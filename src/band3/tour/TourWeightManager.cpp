@@ -11,7 +11,7 @@ void TourWeightManager::Cleanup() { unk4.clear(); }
 
 void TourWeightManager::Init(const DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x22);
-    ConfigureQuestWeightData(i_pConfig->FindArray("quest_weights", true));
+    ConfigureQuestWeightData(i_pConfig->FindArray("quest_weights"));
 }
 
 void TourWeightManager::ConfigureQuestWeightData(DataArray *a) {

@@ -981,7 +981,7 @@ void MetaPerformer::SelectRandomVenue() {
                 DataArray *venuesVideoCfg = SystemConfig(venues_video);
                 for (int i = 1; i < venuesVideoCfg->Size(); i++) {
                     Symbol curSym = venuesVideoCfg->Sym(i);
-                    if (!cfg->FindArray(curSym, true)->FindArray(artists, false)) {
+                    if (!cfg->FindArray(curSym)->FindArray(artists, false)) {
                         validVenues.push_back(curSym);
                     }
                 }

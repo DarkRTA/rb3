@@ -19,8 +19,8 @@ VocalNoteList::VocalNoteList(SongData *data)
         DataArray *vocalsArr = SystemConfig("scoring")->FindArray("vocals", false);
         if (vocalsArr) {
             mFreestyleMinDuration =
-                vocalsArr->FindArray("freestyle_min_duration", true)->Array(1);
-            mFreestylePad = vocalsArr->FindArray("freestyle_pad", true)->Array(1);
+                vocalsArr->FindArray("freestyle_min_duration")->Array(1);
+            mFreestylePad = vocalsArr->FindArray("freestyle_pad")->Array(1);
             if (mFreestyleMinDuration->Size() != mFreestylePad->Size()) {
                 MILO_WARN(
                     "scoring.dta: must have same number of items in both freestyle_min_duration and freestyle_pad."

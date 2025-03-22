@@ -16,7 +16,7 @@ AccomplishmentSongListConditional::~AccomplishmentSongListConditional() {}
 
 void AccomplishmentSongListConditional::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1E);
-    DataArray *pSongArray = i_pConfig->FindArray(songs, true);
+    DataArray *pSongArray = i_pConfig->FindArray(songs);
     MILO_ASSERT(pSongArray->Size() > 1, 0x25);
     for (int i = 1; i < pSongArray->Size(); i++) {
         Symbol cur = pSongArray->Node(i).Sym();

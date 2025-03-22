@@ -689,8 +689,7 @@ void DataNode::Load(BinStream &d) {
         mValue.object = gDataDir->FindObject(buf, true);
 #ifdef MILO_DEBUG
         if (mValue.object == 0 && *buf) {
-            TheDebug.Notify(MakeString("Couldn't find %s from %s", buf, gDataDir->Name())
-            );
+            MILO_WARN("Couldn't find %s from %s", buf, gDataDir->Name());
         }
 #endif
         break;

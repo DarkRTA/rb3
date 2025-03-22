@@ -363,12 +363,12 @@ DECOMP_FORCEACTIVE(DataArray, "a->Size()==3", "AddrIsInLinearMem!\n")
 
 FORCE_LOCAL_INLINE
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
-    return FindArray(s1, true)->FindArray(s2, true);
+    return FindArray(s1)->FindArray(s2);
 }
 END_FORCE_LOCAL_INLINE
 
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
-    return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
+    return FindArray(s1)->FindArray(s2)->FindArray(s3);
 }
 
 DataArray *DataArray::FindArray(Symbol s, const char *c) const {

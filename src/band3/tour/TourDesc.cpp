@@ -41,7 +41,7 @@ void TourDesc::Configure(DataArray *i_pConfig) {
     i_pConfig->FindData(tour_stars_bronze_goal, mTourStarsBronzeGoal, true);
     i_pConfig->FindData(tour_stars_silver_goal, mTourStarsSilverGoal, true);
     i_pConfig->FindData(tour_stars_gold_goal, mTourStarsGoldGoal, true);
-    DataArray *pGigArray = i_pConfig->FindArray(gigs, true);
+    DataArray *pGigArray = i_pConfig->FindArray(gigs);
     MILO_ASSERT(pGigArray, 0x51);
 
     for (int i = 1; i < pGigArray->Size(); i++) {
@@ -61,7 +61,7 @@ void TourDesc::Configure(DataArray *i_pConfig) {
         pGigEntry->FindData(map, entry->mMapScreen, true);
         pGigEntry->FindData(venue, entry->mVenue, false);
         std::vector<Symbol> &setlistTypes = entry->mSetlistTypes;
-        DataArray *pSetlistTypeArray = pGigEntry->FindArray(setlist_type, true);
+        DataArray *pSetlistTypeArray = pGigEntry->FindArray(setlist_type);
         MILO_ASSERT(pSetlistTypeArray, 0x79);
         MILO_ASSERT(pSetlistTypeArray->Size() == 4, 0x7C);
         for (int j = 1; j < pSetlistTypeArray->Size(); j++) {
