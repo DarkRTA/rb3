@@ -36,7 +36,7 @@ float CalibrationPanel::kAnimPerceptualOffset = 0;
 namespace {
     ControllerType GetControllerType() {
         BandUser *user = TheInputMgr->GetUser();
-        ControllerType ct = kNumControllerTypes;
+        ControllerType ct = kControllerNone;
         if (user) {
             ct = user->GetLocalBandUser()->ConnectedControllerType();
         }
