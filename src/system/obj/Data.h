@@ -184,7 +184,7 @@ public:
     short mRefs; // 0xA
     /** The line of the file this DataArray is in. */
     short mLine; // 0xC
-    /** unused */
+    /** unused, supposedly node number in dtb, for debugging */
     short mDeprecated; // 0xE
     static Symbol gFile;
     static DataFunc *sDefaultHandler;
@@ -360,18 +360,18 @@ public:
         mData->Node(3) = node4;
     }
 
-    DataArrayPtr(DataArray *arr) {
-        mData = arr;
+    DataArrayPtr(DataArray *da) {
+        mData = da;
         if (!mData)
             mData = new DataArray(0);
     }
 
-    DataArrayPtr &operator=(DataArray *arr) {
-        if (mData != arr) {
+    DataArrayPtr &operator=(DataArray *da) {
+        if (mData != da) {
             mData->Release();
-            mData = arr;
-            if (arr)
-                arr->AddRef();
+            mData = da;
+            if (da)
+                da->AddRef();
             else
                 mData = new DataArray(0);
         }
