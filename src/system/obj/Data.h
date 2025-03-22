@@ -389,11 +389,38 @@ public:
     void Print(TextStream &s, DataType type, bool compact) const;
     /** As the name would indicate, this goes unused. */
     bool PrintUnused(TextStream &, DataType, bool) const;
+
+    /** Insert the supplied DataNode at the supplied index.
+     * @param [in] index The index of the DataArray to insert in.
+     * @param [in] node The DataNode to insert.
+     */
     void Insert(int index, const DataNode &node);
+
+    /** Insert the supplied DataArray's DataNodes at the supplied index.
+     * @param [in] index The index of the DataArray to insert in.
+     * @param [in] array The DataArray whose DataNodes we want to insert.
+     */
     void InsertNodes(int index, const DataArray *array);
+
+    /** Resize the DataArray.
+     * @param [in] size The desired new size of the DataArray.
+     */
     void Resize(int size);
+
+    /** Remove the DataNode at the supplied index.
+     * @param [in] index The index of the DataArray to remove.
+     */
     void Remove(int index);
+
+    /** Remove the DataNode from this DataArray.
+     * @param [in] node The DataNode to remove.
+     */
     void Remove(const DataNode &node);
+
+    /** Is the supplied DataNode part of this DataArray?
+     * @param [in] node The DataNode.
+     * @returns True if the supplied DataNode is in this DataArray, false if not.
+     */
     bool Contains(const DataNode &node) const;
 
     DataArray *FindArray(int tag, bool fail) const;

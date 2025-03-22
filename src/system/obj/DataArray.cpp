@@ -345,7 +345,7 @@ DataArray *DataArray::FindArray(int tag, bool fail) const {
     }
     if (fail)
         MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, File(), mLine);
-    return 0;
+    return nullptr;
 }
 
 DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
@@ -361,16 +361,11 @@ DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
 DECOMP_FORCEACTIVE(DataArray, "a->Size()==3", "AddrIsInLinearMem!\n")
 #endif
 
-#pragma push
-#pragma force_active on
-static DataArray *FindArrayTwoSyms(DataArray *a, Symbol s1, Symbol s2) {
-    return a->FindArray(s1, s2);
-}
-
-inline DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
+FORCE_LOCAL_INLINE
+DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
     return FindArray(s1, true)->FindArray(s2, true);
 }
-#pragma pop
+END_FORCE_LOCAL_INLINE
 
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
     return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
