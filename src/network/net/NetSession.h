@@ -34,6 +34,9 @@ DECLARE_MESSAGE(InviteAcceptedMsg, "invite_accepted")
 InviteAcceptedMsg() : Message(Type()) {}
 END_MESSAGE
 
+DECLARE_MESSAGE(InviteSentMsg, "invite_sent")
+END_MESSAGE
+
 DECLARE_MESSAGE(InviteReceivedMsg, "invite_received")
 END_MESSAGE
 

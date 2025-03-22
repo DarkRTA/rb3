@@ -34,7 +34,7 @@ class LocalSavedSetlist;
 
 class BandProfile : public Profile {
 public:
-    enum ProfileLimits {
+    enum {
         kMaxPerformances = 50
     };
     BandProfile(int);
@@ -173,5 +173,6 @@ public:
 };
 
 DECLARE_MESSAGE(ProfilePreDeleteMsg, "profile_pre_delete_msg");
+ProfilePreDeleteMsg(BandProfile *p) : Message(Type(), p) {}
 BandProfile *GetProfile() const { return mData->Obj<BandProfile>(2); }
 END_MESSAGE

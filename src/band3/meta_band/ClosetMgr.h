@@ -2,6 +2,7 @@
 #include "bandobj/BandCharDesc.h"
 #include "bandobj/BandCharacter.h"
 #include "bandobj/OutfitConfig.h"
+#include "bandobj/PatchDir.h"
 #include "game/BandUser.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/CharData.h"
@@ -90,8 +91,7 @@ public:
     Symbol unk44;
     BandCharDesc::OutfitPiece *mCurrentOutfitPiece; // 0x48
     OutfitConfig *mCurrentOutfitConfig; // 0x4c
-    int unk50;
-    int unk54;
+    PatchDescriptor unk50;
     Symbol mReturnScreen; // 0x58
     Symbol mGender; // 0x5c
     bool mCharacterLoading; // 0x60

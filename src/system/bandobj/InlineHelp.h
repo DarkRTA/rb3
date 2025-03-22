@@ -55,6 +55,7 @@ public:
     void ClearActionToken(JoypadAction);
     void UpdateTextColors();
     void UpdateLabelText();
+    void ResetConfig() { mConfig.clear(); }
 
     DataNode OnSetConfig(const DataArray *);
 

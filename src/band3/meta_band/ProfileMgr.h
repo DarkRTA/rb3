@@ -1,5 +1,10 @@
 #pragma once
+#include "SaveLoadManager.h"
+#include "game/BandUser.h"
+#include "game/GameMic.h"
 #include "meta_band/GameplayOptions.h"
+#include "meta_band/ProfileMessages.h"
+#include "net/Server.h"
 #include "obj/Msg.h"
 #include "os/Joypad.h"
 #include "meta/Profile.h"
@@ -43,7 +48,6 @@ public:
     void InitSliders();
     float SliderIxToDb(int) const;
     void GetMicGainInfo(const Symbol &, float &, float &, float &, float &) const;
-    bool GetBassBoost() const;
     void SetBackgroundVolume(int);
     void SetForegroundVolume(int);
     void SetFxVolume(int);
@@ -116,6 +120,58 @@ public:
     void Poll();
     std::vector<BandProfile *> GetParticipatingProfiles();
     bool IsPrimaryProfileCritical(const LocalUser *);
+    void Init();
+    std::vector<BandProfile *> GetNewlySignedInProfiles();
+    std::vector<BandProfile *> GetShouldAutosaveProfiles();
+    bool IsAutosaveEnabled(const LocalBandUser *);
+    BandProfile *GetProfileForChar(const BandCharDesc *);
+    bool HasUnsavedDataForPad(int);
+    void PurgeOldData();
+    BandProfile *FindCharOwnerFromGuid(const HxGuid &);
+    void HandlePendingGamerpicRewards();
+    void CheckProfileWebLinkStatus();
+    int GetFirstTimeInstrumentFlag(JoypadType) const;
+    bool GetHasSeenFirstTimeInstruments(const LocalUser *) const;
+    void SetHasSeenFirstTimeInstruments(const LocalUser *, bool);
+    void SetUsingWiiFriends(int);
+    void CheckProfileWebSetlistStatus();
+    void HandlePendingProfileUploads();
+    void SyncProfileSetlists();
+    bool NeedsUpload();
+    void UpdateAllMicLevels();
+    void UpdateMicLevels(int);
+    void UpdateMultiMicDeviceSliders(Mic *, int);
+    void ForceMicGain(int, float);
+    void ForceMicOutputGain(int, float);
+    int GetCount() const;
+    int GetUnregisteredCount() const;
+    int GetRegisteredCount() const;
+    bool ChooseNewPrimaryProfile();
+    void SetPrimaryProfile(BandProfile *);
+    bool CanChangePrimaryProfile() const;
+    bool HasPrimaryProfile() const;
+    void HandleProfileLoadComplete();
+    void HandleProfileSaveComplete();
+    void FakeProfileFill();
+
+    bool GetBassBoost() const { return mBassBoost; }
+    bool GetDolby() const { return mDolby; }
+    bool GetOverscan() const { return mOverscan; }
+    bool GetWiiSpeakToggle() { return mWiiSpeakToggle; }
+    int GetWiiSpeakFriendsVolume() { return mWiiSpeakFriendsVolume; }
+    int GetWiiSpeakMicrophoneSensitivity() { return mWiiSpeakMicrophoneSensitivity; }
+    bool GetWiiSpeakHeadphoneMode() { return mWiiSpeakHeadphoneMode; }
+    bool GetWiiSpeakEchoSuppression() { return mWiiSpeakEchoSuppression; }
+    bool GetSynapseEnabled() const { return mSynapseEnabled; }
+    int GetSyncPresetIx() const { return mSyncPresetIx; }
+    bool GetShouldShowWiiFriendsPrompt();
+
+    DataNode OnMsg(const SaveLoadMgrStatusUpdateMsg &);
+    DataNode OnMsg(const UserLoginMsg &);
+    DataNode OnMsg(const ServerStatusChangedMsg &);
+    DataNode OnMsg(const GameMicsChangedMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
 
     DECLARE_REVS;
 
@@ -123,7 +179,7 @@ public:
     float mPlatformVideoLatency; // 0x20
     float mInGameExtraVideoLatency; // 0x24
     float mInGameSyncOffsetAdjustment; // 0x28
-    float mJoypadExtraLagOffsets[0x2F][7]; // 0x2c
+    float mJoypadExtraLagOffsets[kJoypadNumTypes][kNumLagContexts]; // 0x2c
     int unk550;
     ProfileSaveState mGlobalOptionsSaveState; // 0x554
     bool mGlobalOptionsDirty; // 0x558
@@ -145,24 +201,24 @@ public:
     bool mSynapseEnabled; // 0x589
     bool unk58a;
     bool mSecondPedalHiHat; // 0x58b
-    DataResultList unk58c;
+    DataResultList mDataResults; // 0x58c
     bool mWiiSpeakToggle; // 0x5a4
     int mWiiSpeakFriendsVolume; // 0x5a8
     int mWiiSpeakMicrophoneSensitivity; // 0x5ac
     bool mWiiSpeakHeadphoneMode; // 0x5b0
     bool mWiiSpeakEchoSuppression; // 0x5b1
-    bool unk5b2;
+    bool mHasLoaded; // 0x5b2
     bool mWiiFriendsPromptShown; // 0x5b3
     bool mUsingWiiFriends; // 0x5b4
     int unk5b8;
-    std::vector<int> unk5bc;
+    std::vector<int> mMicVolumes; // 0x5bc
     DataArray *mSliderConfig; // 0x5c4
     DataArray *mVoiceChatSliderConfig; // 0x5c8
     unsigned int mCymbalConfiguration; // 0x5cc
     std::vector<BandProfile *> mProfiles; // 0x5d0
-    int unk5d8;
+    BandProfile *mPrimaryProfile; // 0x5d8
     bool mAllUnlocked; // 0x5dc
-    std::vector<float> unk5e0;
+    std::vector<float> mForcedMicGains; // 0x5e0
 };
 
 extern ProfileMgr TheProfileMgr;
