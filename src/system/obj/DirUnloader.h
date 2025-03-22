@@ -1,5 +1,4 @@
-#ifndef OBJ_DIRUNLOADER_H
-#define OBJ_DIRUNLOADER_H
+#pragma once
 #include "utl/Loader.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
@@ -14,5 +13,3 @@ public:
 
     std::vector<ObjPtr<Hmx::Object> > mObjects; // 0x34
 };
-
-#endif

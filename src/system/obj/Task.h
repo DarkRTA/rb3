@@ -1,5 +1,4 @@
-#ifndef OBJ_TASK_H
-#define OBJ_TASK_H
+#pragma once
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/ObjPtr_p.h"
@@ -223,5 +222,3 @@ public:
 };
 
 extern TaskMgr TheTaskMgr;
-
-#endif

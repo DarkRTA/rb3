@@ -1,5 +1,4 @@
-#ifndef OBJ_DATAFUNC_H
-#define OBJ_DATAFUNC_H
+#pragma once
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "obj/Dir.h"
@@ -53,5 +52,3 @@ Symbol DataFuncName(DataFunc *);
 bool FileListCallBack(char *);
 void DataInitFuncs();
 void DataTermFuncs();
-
-#endif

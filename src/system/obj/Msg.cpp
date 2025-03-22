@@ -24,17 +24,14 @@ void MsgSource::Sink::Export(DataArray *da) {
 MsgSource::MsgSource() : mSinks(), mEventSinks(), mExporting(0) {}
 
 MsgSource::~MsgSource() {
-    for (std::list<Sink>::iterator it = mSinks.begin(); it != mSinks.end(); it++) {
+    FOREACH (it, mSinks) {
         Hmx::Object *o = it->obj;
         if (o)
             o->Release(this);
     }
-    for (std::list<EventSink>::iterator it = mEventSinks.begin(); it != mEventSinks.end();
-         it++) {
-        for (std::list<EventSinkElem>::iterator inner_it = it->sinks.begin();
-             inner_it != it->sinks.end();
-             inner_it++) {
-            Hmx::Object *o = inner_it->obj;
+    FOREACH (evIt, mEventSinks) {
+        FOREACH (sinkIt, evIt->sinks) {
+            Hmx::Object *o = sinkIt->obj;
             if (o)
                 o->Release(this);
         }
@@ -49,9 +46,7 @@ void MsgSource::ChainSource(MsgSource *source, MsgSource *othersource) {
     if (!mSinks.empty()) {
         source->AddSink(this);
     } else {
-        for (std::list<EventSink>::iterator it = othersource->mEventSinks.begin();
-             it != othersource->mEventSinks.end();
-             ++it) {
+        FOREACH (it, othersource->mEventSinks) {
             source->AddSink(this, it->ev);
         }
     }
@@ -74,11 +69,9 @@ void MsgSource::AddSink(
         if (handler.Null())
             handler = ev;
         MILO_ASSERT((s != this) || (handler != ev), 0x75);
-        for (std::list<EventSink>::iterator it = mEventSinks.begin();
-             it != mEventSinks.end();
-             ++it) {
-            if ((*it).ev == ev) {
-                (*it).Add(s, mode, handler, mExporting != 0);
+        FOREACH (it, mEventSinks) {
+            if (it->ev == ev) {
+                it->Add(s, mode, handler, mExporting != 0);
                 return;
             }
         }
@@ -99,10 +92,10 @@ void MsgSource::EventSink::Add(
 }
 
 void MsgSource::EventSink::Remove(Hmx::Object *o, MsgSource *src, bool exporting) {
-    for (std::list<EventSinkElem>::iterator it = sinks.begin(); it != sinks.end(); ++it) {
+    FOREACH (it, sinks) {
         if (it->obj == o) {
             it->obj->Release(src);
-            it->obj = 0;
+            it->obj = nullptr;
             if (!exporting)
                 sinks.erase(it);
             return;
@@ -114,7 +107,7 @@ void MsgSource::Replace(Hmx::Object *o1, Hmx::Object *o2) { RemoveSink(o1, Symbo
 
 void MsgSource::RemoveSink(Hmx::Object *s, Symbol ev) {
     MILO_ASSERT(s, 0xA9);
-    for (std::list<Sink>::iterator it = mSinks.begin(); it != mSinks.end(); ++it) {
+    FOREACH (it, mSinks) {
         if (it->obj == s) {
             if (!ev.Null()) {
                 MILO_WARN(
@@ -132,17 +125,13 @@ void MsgSource::RemoveSink(Hmx::Object *s, Symbol ev) {
         }
     }
     if (ev.Null()) {
-        for (std::list<EventSink>::iterator it = mEventSinks.begin();
-             it != mEventSinks.end();
-             ++it) {
-            (*it).Remove(s, this, mExporting != 0);
+        FOREACH (it, mEventSinks) {
+            it->Remove(s, this, mExporting != 0);
         }
     } else {
-        for (std::list<EventSink>::iterator it = mEventSinks.begin();
-             it != mEventSinks.end();
-             ++it) {
-            if ((*it).ev == ev) {
-                (*it).Remove(s, this, mExporting != 0);
+        FOREACH (it, mEventSinks) {
+            if (it->ev == ev) {
+                it->Remove(s, this, mExporting != 0);
                 return;
             }
         }
@@ -150,16 +139,11 @@ void MsgSource::RemoveSink(Hmx::Object *s, Symbol ev) {
 }
 
 void MsgSource::MergeSinks(MsgSource *from) {
-    for (std::list<Sink>::iterator it = from->mSinks.begin(); it != from->mSinks.end();
-         ++it) {
+    FOREACH (it, from->mSinks) {
         AddSink(it->obj, Symbol(), Symbol(), it->mode);
     }
-    for (std::list<EventSink>::iterator it = from->mEventSinks.begin();
-         it != from->mEventSinks.end();
-         ++it) {
-        for (std::list<EventSinkElem>::iterator elemIt = it->sinks.begin();
-             elemIt != it->sinks.end();
-             ++elemIt) {
+    FOREACH (it, from->mEventSinks) {
+        FOREACH (elemIt, it->sinks) {
             AddSink(elemIt->obj, it->ev, elemIt->handler, elemIt->mode);
         }
     }
@@ -180,8 +164,7 @@ void MsgSource::Export(DataArray *da, bool b) {
                 it++;
         }
     }
-    for (std::list<EventSink>::iterator it = mEventSinks.begin(); it != mEventSinks.end();
-         ++it) {
+    FOREACH (it, mEventSinks) {
         if (it->ev == da->Sym(1)) {
             DataNode node(da->Node(1));
             for (std::list<EventSinkElem>::iterator elemIt = it->sinks.begin();
@@ -208,12 +191,11 @@ void MsgSource::Export(DataArray *da, bool b) {
 }
 
 BEGIN_HANDLERS(MsgSource)
-    ;
     HANDLE(add_sink, OnAddSink);
     HANDLE(remove_sink, OnRemoveSink);
     HANDLE_VIRTUAL_SUPERCLASS(Hmx::Object);
     Export(_msg, false);
-END_HANDLERS;
+END_HANDLERS
 
 DataNode MsgSource::OnAddSink(DataArray *da) {
     if (da->Size() > 3) {
@@ -239,7 +221,7 @@ DataNode MsgSource::OnAddSink(DataArray *da) {
         }
     } else
         AddSink(da->GetObj(2), Symbol(), Symbol(), kHandle);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode MsgSource::OnRemoveSink(DataArray *da) {
@@ -250,7 +232,7 @@ DataNode MsgSource::OnRemoveSink(DataArray *da) {
         }
     } else
         RemoveSink(da->GetObj(2), Symbol());
-    return DataNode(0);
+    return 0;
 }
 
 BEGIN_CUSTOM_PROPSYNC(MsgSource::Sink)
