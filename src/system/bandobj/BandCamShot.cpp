@@ -24,18 +24,18 @@ void BandCamShot::DeleteTargetCache(std::list<TargetCache>::iterator it) {
 }
 
 BandCamShot::BandCamShot()
-    : mTargets(this), mMinTime(0), mMaxTime(0), mZeroTime(0),
-      mNextShots(this, kObjListNoNull), mCurShot(this, 0), unk15c(0), unk160(0),
-      unk164(0), unk168(0), unk169(0), unk16a(0), mAnimsDuringNextShots(0) {
+    : mTargets(this), mMinTime(0), mMaxTime(0), mZeroTime(0), mNextShots(this),
+      mCurShot(this), unk15c(0), unk160(0), unk164(0), unk168(0), unk169(0), unk16a(0),
+      mAnimsDuringNextShots(0) {
     SetNear(10.0f);
     SetFar(10000.0f);
     mShotIter = mNextShots.end();
 }
 
 RndTransformable *BandCamShot::FindTarget(Symbol s, bool b) {
-    static Message msg("find_target", DataNode(0), DataNode(1));
-    msg[0] = DataNode(s);
-    msg[1] = DataNode(b);
+    static Message msg("find_target", 0, 1);
+    msg[0] = s;
+    msg[1] = b;
     DataNode handled = HandleType(msg);
     RndTransformable *ret = 0;
     if (handled.Type() != kDataUnhandled) {
@@ -182,7 +182,7 @@ BEGIN_LOADS(BandCamShot)
         LOAD_SUPERCLASS(CamShot)
     bs >> mTargets;
     if (BandCamShot::gRev >= 2 && BandCamShot::gRev <= 18) {
-        ObjPtr<BandCamShot, ObjectDir> shotPtr(this, 0);
+        ObjPtr<BandCamShot> shotPtr(this, 0);
         bs >> shotPtr;
         if (shotPtr)
             mNextShots.push_back(shotPtr);
@@ -205,8 +205,8 @@ BEGIN_LOADS(BandCamShot)
         }
     }
     if (gRev - 0x10 <= 0xCU) {
-        ObjPtr<EventTrigger, ObjectDir> trig1(this, 0);
-        ObjPtr<EventTrigger, ObjectDir> trig2(this, 0);
+        ObjPtr<EventTrigger> trig1(this, 0);
+        ObjPtr<EventTrigger> trig2(this, 0);
         bs >> trig1;
         bs >> trig2;
     }
@@ -249,7 +249,7 @@ bool BandCamShot::IterateNextShot() {
     if (mShotIter == mNextShots.end()) {
         mShotIter = mNextShots.begin();
     } else {
-        ObjPtrList<BandCamShot, ObjectDir>::iterator curItr = mShotIter;
+        ObjPtrList<BandCamShot>::iterator curItr = mShotIter;
         ++mShotIter;
         if (mShotIter == mNextShots.end()) {
             ret = false;

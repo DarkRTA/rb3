@@ -765,7 +765,7 @@ void ObjectDir::Init() {
 void ObjectDir::Terminate() { DeleteShared(); }
 
 void ObjectDir::Iterate(DataArray *da, bool b) {
-    DataNode &eval = da->Evaluate(2);
+    const DataNode &eval = da->Evaluate(2);
     Symbol sym1;
     Symbol sym2;
     if (eval.Type() == kDataSymbol) {

@@ -343,7 +343,7 @@ namespace Hmx {
          * was found.
          * @returns The corresponding property's value as a DataNode pointer.
          */
-        DataNode *Property(Symbol prop, bool fail = true) const;
+        const DataNode *Property(Symbol prop, bool fail = true) const;
 
         /** Search for a key in this Object's properties, and return the corresponding
          * value.
@@ -353,7 +353,7 @@ namespace Hmx {
          * was found.
          * @returns The corresponding property's value as a DataNode pointer.
          */
-        DataNode *Property(DataArray *prop, bool fail) const;
+        const DataNode *Property(DataArray *prop, bool fail) const;
 
         /** Either adds or updates the key/value pair in the properties.
          * @param [in] prop The key to either add or update

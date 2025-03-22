@@ -281,7 +281,7 @@ void BandUser::UpdateData(unsigned int data) {
 }
 
 DataNode BandUser::OnSetDifficulty(DataArray *da) {
-    DataNode &eval = da->Node(2).Evaluate();
+    const DataNode &eval = da->Node(2).Evaluate();
     if (eval.Type() == kDataInt) {
         SetDifficulty((Difficulty)eval.Int());
     } else if (eval.Type() == kDataSymbol) {
@@ -294,7 +294,7 @@ DataNode BandUser::OnSetDifficulty(DataArray *da) {
 }
 
 DataNode BandUser::OnSetTrackType(DataArray *da) {
-    DataNode &eval = da->Node(2).Evaluate();
+    const DataNode &eval = da->Node(2).Evaluate();
     if (eval.Type() == kDataInt) {
         SetTrackType((TrackType)eval.Int());
     } else if (eval.Type() == kDataSymbol || eval.Type() == kDataString) {
@@ -305,7 +305,7 @@ DataNode BandUser::OnSetTrackType(DataArray *da) {
 }
 
 DataNode BandUser::OnSetHas22FretGuitar(DataArray *da) {
-    DataNode &eval = da->Node(2).Evaluate();
+    const DataNode &eval = da->Node(2).Evaluate();
     if (eval.Type() == kDataInt) {
         SetHas22FretGuitar(eval.Int());
     } else
@@ -314,7 +314,7 @@ DataNode BandUser::OnSetHas22FretGuitar(DataArray *da) {
 }
 
 DataNode BandUser::OnSetPreferredScoreType(DataArray *da) {
-    DataNode &eval = da->Node(2).Evaluate();
+    const DataNode &eval = da->Node(2).Evaluate();
     if (eval.Type() == kDataInt) {
         SetPreferredScoreType((ScoreType)eval.Int());
     } else
@@ -323,7 +323,7 @@ DataNode BandUser::OnSetPreferredScoreType(DataArray *da) {
 }
 
 DataNode BandUser::OnSetControllerType(DataArray *da) {
-    DataNode &eval = da->Node(2).Evaluate();
+    const DataNode &eval = da->Node(2).Evaluate();
     if (eval.Type() == kDataInt) {
         SetControllerType((ControllerType)eval.Int());
     } else if (eval.Type() == kDataSymbol || eval.Type() == kDataString) {

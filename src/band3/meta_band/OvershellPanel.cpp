@@ -1159,7 +1159,7 @@ DataNode OvershellPanel::OnMsg(const UserNameNewlyProfaneMsg &msg) {
 }
 
 DataNode OvershellPanel::OnUpdate(DataArray *arr) {
-    DataNode &n = arr->Node(2).Evaluate();
+    const DataNode &n = arr->Node(2).Evaluate();
     Update(n.Obj<OvershellSlot>());
     return 1;
 }

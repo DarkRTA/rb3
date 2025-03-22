@@ -1572,7 +1572,7 @@ DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray *da) {
 
 DataNode BandDirector::OnForcePreset(DataArray *da) {
     if (LightPresetMgr()) {
-        DataNode &eval = da->Evaluate(2);
+        const DataNode &eval = da->Evaluate(2);
         float f3 = da->Size() > 3 ? da->Float(3) : 0;
         LightPreset *lp;
         if (eval.Type() == kDataSymbol || eval.Type() == kDataString) {
@@ -1586,8 +1586,8 @@ DataNode BandDirector::OnForcePreset(DataArray *da) {
 
 DataNode BandDirector::OnStompPresets(DataArray *da) {
     if (LightPresetMgr()) {
-        DataNode &eval2 = da->Evaluate(2);
-        DataNode &eval3 = da->Evaluate(3);
+        const DataNode &eval2 = da->Evaluate(2);
+        const DataNode &eval3 = da->Evaluate(3);
         LightPreset *lp1;
         LightPreset *lp2;
 

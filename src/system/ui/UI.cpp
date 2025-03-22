@@ -742,7 +742,7 @@ bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray *da) {
             UIPanel *focus = FocusPanel();
             if (focus) {
                 DataArray *arr;
-                DataNode *prop = focus->Property(allowed_transition_actions, false);
+                const DataNode *prop = focus->Property(allowed_transition_actions, false);
                 if (prop)
                     arr = prop->Array();
                 else

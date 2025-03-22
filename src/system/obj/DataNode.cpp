@@ -56,7 +56,7 @@ DataNode &UseQueue(const DataNode &node) {
     return gEvalNode[i];
 }
 
-DataNode &DataNode::Evaluate() const {
+const DataNode &DataNode::Evaluate() const {
     if (mType == kDataCommand) {
         DataNode lol = mValue.array->Execute();
         return UseQueue(lol);
@@ -64,14 +64,14 @@ DataNode &DataNode::Evaluate() const {
         return *mValue.var;
     } else if (mType == kDataProperty) {
         MILO_ASSERT(gDataThis, 0x78);
-        DataNode *n = gDataThis->Property(mValue.array, true);
+        const DataNode *n = gDataThis->Property(mValue.array, true);
         return UseQueue(*n);
     } else
-        return (DataNode &)*this;
+        return *this;
 }
 
 int DataNode::Int(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
 #ifdef MILO_DEBUG
     if (n.mType != kDataInt) {
         String s;
@@ -110,7 +110,7 @@ int DataNode::LiteralInt(const DataArray *source) const {
 }
 
 Symbol DataNode::Sym(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
 #ifdef MILO_DEBUG
     if (n.mType != kDataSymbol) {
         String s;
@@ -149,7 +149,7 @@ Symbol DataNode::LiteralSym(const DataArray *source) const {
 }
 
 Symbol DataNode::ForceSym(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
     if (n.mType == kDataSymbol) {
         return STR_TO_SYM(n.mValue.symbol);
     } else {
@@ -173,7 +173,7 @@ Symbol DataNode::ForceSym(const DataArray *source) const {
 }
 
 const char *DataNode::Str(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
     if (n.mType == kDataSymbol) {
         return n.mValue.symbol;
     } else {
@@ -226,7 +226,7 @@ DECOMP_FORCEACTIVE(
 #endif
 
 float DataNode::Float(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
     if (n.mType == kDataInt) {
         return n.mValue.integer;
     } else {
@@ -292,7 +292,7 @@ DataFunc *DataNode::Func(const DataArray *source) const {
 }
 
 Hmx::Object *DataNode::GetObj(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
     if (n.mType == kDataObject)
         return n.mValue.object;
     else {
@@ -316,7 +316,7 @@ Hmx::Object *DataNode::GetObj(const DataArray *source) const {
 }
 
 DataArray *DataNode::Array(const DataArray *source) const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
 #ifdef MILO_DEBUG
     if (n.mType != kDataArray) {
         String s;
@@ -463,7 +463,7 @@ bool DataNode::operator==(const DataNode &node) const {
 bool DataNode::operator!=(const DataNode &dn) const { return !(*this == dn); }
 
 bool DataNode::NotNull() const {
-    DataNode &n = Evaluate();
+    const DataNode &n = Evaluate();
     DataType t = n.Type();
     if (t == kDataSymbol) {
         return n.mValue.symbol[0] != 0;

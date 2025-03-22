@@ -576,7 +576,7 @@ void CharClip::SortEvents() {
 int CharClip::TransitionVersion() {
     int version = -1;
     if (!Type().Null()) {
-        DataNode *prop = Property("transition_version", false);
+        const DataNode *prop = Property("transition_version", false);
         if (prop)
             version = prop->Int();
     }

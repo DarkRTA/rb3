@@ -39,8 +39,8 @@ void CharInterest::Highlight() {
         oneframe->AddString(MakeString("%s", Name()), vec2, Hmx::Color(1.0f, 1.0f, 1.0f));
     }
     if (mDartOverride) {
-        DataNode *minrad = mDartOverride->Property("min_radius", false);
-        DataNode *maxrad = mDartOverride->Property("max_radius", false);
+        const DataNode *minrad = mDartOverride->Property("min_radius", false);
+        const DataNode *maxrad = mDartOverride->Property("max_radius", false);
         if (minrad && maxrad) {
             oneframe->AddSphere(
                 WorldXfm().v, minrad->Float(), Hmx::Color(0.7f, 0.7f, 0.7f)

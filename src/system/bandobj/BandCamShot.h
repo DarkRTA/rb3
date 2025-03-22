@@ -29,7 +29,7 @@ public:
         Symbol mAnimGroup; // 0x18
         float mFastForward; // 0x1c
         Symbol mForwardEvent; // 0x20
-        ObjPtr<RndEnviron, ObjectDir> mEnvOverride; // 0x24
+        ObjPtr<RndEnviron> mEnvOverride; // 0x24
         // 0x30 bitfields
         int mForceLod : 4;
         int mTeleport : 2;
@@ -106,9 +106,9 @@ public:
     int mMinTime; // 0x130
     int mMaxTime; // 0x134
     float mZeroTime; // 0x138
-    ObjPtrList<BandCamShot, ObjectDir> mNextShots; // 0x13c
-    ObjPtrList<BandCamShot, ObjectDir>::iterator mShotIter; // 0x14c
-    ObjPtr<BandCamShot, ObjectDir> mCurShot; // 0x150
+    ObjPtrList<BandCamShot> mNextShots; // 0x13c
+    ObjPtrList<BandCamShot>::iterator mShotIter; // 0x14c
+    ObjPtr<BandCamShot> mCurShot; // 0x150
     float unk15c;
     float unk160;
     float unk164;

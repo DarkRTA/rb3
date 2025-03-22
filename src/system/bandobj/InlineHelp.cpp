@@ -54,7 +54,7 @@ void InlineHelp::ActionElement::SetConfig(DataNode &dn, bool b) {
             return;
         FormatString fs(Localize(da->Sym(0), NULL));
         for (int i = 1; i < da->Size(); i++) {
-            DataNode &dn2 = da->Evaluate(i);
+            const DataNode &dn2 = da->Evaluate(i);
             if (dn2.Type() == kDataSymbol) {
                 fs << Localize(dn2.Sym(), NULL);
             } else {

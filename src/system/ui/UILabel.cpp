@@ -464,7 +464,7 @@ void UILabel::SetDateTime(const DateTime &dt, Symbol s) {
 void UILabel::SetSubtitle(const DataArray *da) { SetDisplayText(da->Str(2), true); }
 
 void UILabel::SetTokenFmt(const DataArray *da) {
-    DataNode &n = da->Evaluate(0);
+    const DataNode &n = da->Evaluate(0);
     bool b = false;
     if (da->Size() > 1) {
         if (da->Evaluate(1).Type() == kDataArray)
@@ -790,7 +790,7 @@ void UILabel::OnSetIcon(const char *cc) {
 }
 
 DataNode UILabel::OnSetTokenFmt(const DataArray *da) {
-    DataNode &n = da->Evaluate(2);
+    const DataNode &n = da->Evaluate(2);
     if (n.Type() == kDataArray) {
         DataArray *arr = n.Array();
         bool b = arr->Size() > 1 && arr->Evaluate(1).Type() == kDataArray;
@@ -822,7 +822,7 @@ void UILabel::SetTokenFmtImp(
             SuperFormatString str(localized, da1, b);
             if (da2) {
                 for (; i < da2->Size(); i++) {
-                    DataNode &n = da2->Evaluate(i);
+                    const DataNode &n = da2->Evaluate(i);
                     if (n.Type() == kDataSymbol) {
                         str << Localize(n.Sym(), 0);
                     } else

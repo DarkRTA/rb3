@@ -300,7 +300,7 @@ DataNode BandUI::OnMsg(const UITransitionCompleteMsg &msg) {
     UIScreen *screen = msg.GetScreen1();
     if (screen) {
         s38 = screen->Name();
-        DataNode *prop = screen->Property("disable_screen_saver", false);
+        const DataNode *prop = screen->Property("disable_screen_saver", false);
         ThePlatformMgr.SetScreenSaver(!prop || prop->Int() == 0);
     }
     if (TheUIEventMgr->HasActiveTransitionEvent()

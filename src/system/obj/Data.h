@@ -119,7 +119,7 @@ public:
 
     DataType Type() const { return mType; }
     bool CompatibleType(DataType) const;
-    DataNode &Evaluate() const;
+    const DataNode &Evaluate() const;
 
     // these were implemented to match up in retail
     // please do not use these in regular code
@@ -285,7 +285,7 @@ public:
     void LoadGlob(BinStream &d, bool str);
     DataNode
     ExecuteScript(int firstCmd, Hmx::Object *_this, const DataArray *_args, int firstArg);
-    DataNode &Evaluate(int i) const { return Node(i).Evaluate(); }
+    const DataNode &Evaluate(int i) const { return Node(i).Evaluate(); }
 
     NEW_POOL_OVERLOAD(DataArray);
     DELETE_POOL_OVERLOAD(DataArray);

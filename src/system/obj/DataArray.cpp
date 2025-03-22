@@ -568,7 +568,7 @@ DataNode DataArray::Execute() {
 #endif
     START_AUTO_TIMER_CALLBACK("array_exec", DataArrayGlitchCB, this);
 
-    DataNode &node = Evaluate(0);
+    DataNode &node = (DataNode &)Evaluate(0);
     switch (node.Type()) {
     case kDataFunc:
         return node.mValue.func(this);

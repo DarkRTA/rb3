@@ -85,7 +85,7 @@ int BandWardrobe::GetShotFlags(CamShot *shot) {
         const char *cat = shot->Category().Str();
         if (strncmp(cat, "directed_", 9) == 0) {
             flags |= 0x200;
-            DataNode *prop = shot->Property("free_dircuts", false);
+            const DataNode *prop = shot->Property("free_dircuts", false);
             if (prop) {
                 DataArray *proparr = prop->Array();
                 for (int i = 0; i < proparr->Size(); i++) {

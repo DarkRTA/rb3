@@ -137,7 +137,7 @@ void CopyTypeProperties(Hmx::Object *from, Hmx::Object *to) {
                     ;
                 if (toIt != toProps.end()) {
                     if (*toIt == prop) {
-                        DataNode *fromVal = from->Property(prop, true);
+                        const DataNode *fromVal = from->Property(prop, true);
                         DataType fromType = fromVal->Type();
                         DataType toType = to->Property(prop, true)->Type();
                         if (fromType == toType) {
@@ -485,7 +485,7 @@ bool PathCompare(DataArray *arr1, DataArray *arr2) {
 
 DataNode *GetPropertyVal(Hmx::Object *o, DataArray *prop, bool fail) {
     if (IsPropPathValid(o, prop)) {
-        return o->Property(prop, fail);
+        return (DataNode *)o->Property(prop, fail);
     } else
         return 0;
 }

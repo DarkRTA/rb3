@@ -339,7 +339,7 @@ bool BandCharacter::ValidateInterest(CharInterest *ci, ObjectDir *dir) {
             if (ci->CategoryFlags() & 0x200)
                 return false;
         }
-        DataNode *prop = dir->Property("lookat_cameras", false);
+        const DataNode *prop = dir->Property("lookat_cameras", false);
         if (prop && (ci->CategoryFlags() & 1) && !prop->Int())
             return false;
     }
