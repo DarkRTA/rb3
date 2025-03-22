@@ -1,4 +1,5 @@
 #pragma once
+#include "utl/MemMgr.h"
 #include <vector>
 #include "math/Color.h"
 #include "math/Mtx.h"
@@ -256,6 +257,7 @@ public:
 
     DECLARE_REVS
     NEW_OVERLOAD
+    DELETE_OVERLOAD
     NEW_OBJ(RndMat)
     static void Init() { REGISTER_OBJ_FACTORY(RndMat) }
 

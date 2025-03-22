@@ -38,6 +38,10 @@ public:
         mDraw = draw;
         mDirty = true;
     }
+    void SetForce(bool force) {
+        mForce = force;
+        mDirty = true;
+    }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

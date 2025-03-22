@@ -131,6 +131,7 @@ public:
     void SaveRemote(IntPacker &);
     void LoadRemote(IntPacker &);
     void FakeFill(RndTex *);
+    void LoadLayerStickers();
 
     RndTex *GetTex() const { return mTex; }
 
