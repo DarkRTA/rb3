@@ -109,14 +109,7 @@ BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
         tgt.unk1 = 0;
         tgt.unk2 = 1;
     }
-    if (BandCamShot::gRev == 8 || BandCamShot::gRev == 9 || BandCamShot::gRev == 10
-        || BandCamShot::gRev == 11 || BandCamShot::gRev == 12 || BandCamShot::gRev == 13
-        || BandCamShot::gRev == 14 || BandCamShot::gRev == 15 || BandCamShot::gRev == 16
-        || BandCamShot::gRev == 17 || BandCamShot::gRev == 18 || BandCamShot::gRev == 19
-        || BandCamShot::gRev == 20 || BandCamShot::gRev == 21 || BandCamShot::gRev == 22
-        || BandCamShot::gRev == 23 || BandCamShot::gRev == 24 || BandCamShot::gRev == 25
-        || BandCamShot::gRev == 26 || BandCamShot::gRev == 27
-        || BandCamShot::gRev == 28) {
+    if (BandCamShot::gRev >= 8 && BandCamShot::gRev <= 28) {
         Symbol s;
         bs >> s;
         bs >> s;
@@ -127,11 +120,7 @@ BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
     }
     if (BandCamShot::gRev > 9)
         bs >> tgt.mEnvOverride;
-    if (BandCamShot::gRev == 17 || BandCamShot::gRev == 18 || BandCamShot::gRev == 19
-        || BandCamShot::gRev == 20 || BandCamShot::gRev == 21 || BandCamShot::gRev == 22
-        || BandCamShot::gRev == 23 || BandCamShot::gRev == 24 || BandCamShot::gRev == 25
-        || BandCamShot::gRev == 26 || BandCamShot::gRev == 27
-        || BandCamShot::gRev == 28) {
+    if (BandCamShot::gRev >= 17 && BandCamShot::gRev <= 28) {
         bool b;
         bs >> b;
     }
@@ -154,9 +143,7 @@ BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
             tgt.mForceLod = -1;
         }
     }
-    if (BandCamShot::gRev == 22 || BandCamShot::gRev == 23 || BandCamShot::gRev == 24
-        || BandCamShot::gRev == 25 || BandCamShot::gRev == 26 || BandCamShot::gRev == 27
-        || BandCamShot::gRev == 28) {
+    if (BandCamShot::gRev >= 22 && BandCamShot::gRev <= 28) {
         String s48;
         int i;
         bs >> s48;
@@ -194,12 +181,7 @@ BEGIN_LOADS(BandCamShot)
     if (gRev > 4)
         LOAD_SUPERCLASS(CamShot)
     bs >> mTargets;
-    if (BandCamShot::gRev == 2 || BandCamShot::gRev == 3 || BandCamShot::gRev == 4
-        || BandCamShot::gRev == 5 || BandCamShot::gRev == 6 || BandCamShot::gRev == 7
-        || BandCamShot::gRev == 8 || BandCamShot::gRev == 9 || BandCamShot::gRev == 10
-        || BandCamShot::gRev == 11 || BandCamShot::gRev == 12 || BandCamShot::gRev == 13
-        || BandCamShot::gRev == 14 || BandCamShot::gRev == 15 || BandCamShot::gRev == 16
-        || BandCamShot::gRev == 17 || BandCamShot::gRev == 18) {
+    if (BandCamShot::gRev >= 2 && BandCamShot::gRev <= 18) {
         ObjPtr<BandCamShot, ObjectDir> shotPtr(this, 0);
         bs >> shotPtr;
         if (shotPtr)
