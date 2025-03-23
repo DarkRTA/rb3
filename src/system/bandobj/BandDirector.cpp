@@ -1,9 +1,13 @@
 #include "bandobj/BandDirector.h"
 #include "bandobj/BandWardrobe.h"
 #include "decomp.h"
+#include "math/Utl.h"
+#include "obj/Data.h"
 #include "obj/Object.h"
+#include "obj/Task.h"
 #include "rndobj/Group.h"
 #include "bandobj/CrowdAudio.h"
+#include "utl/Loader.h"
 #include "world/Dir.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
@@ -61,14 +65,14 @@ void BandDirector::Init() {
 void BandDirector::Terminate() { sPropArr->Release(); }
 
 BandDirector::BandDirector()
-    : mPropAnim(this, 0), mMerger(this, 0), mCurWorld(this, 0), unk58(0),
-      mWorldPostProc(this, 0), mCamPostProc(this, 0), mPostProcA(this, 0),
-      mPostProcB(this, 0), mPostProcBlend(0), mLightPresetCatBlend(0),
-      mLightPresetInterpEnabled(1), mDisabled(0), mAsyncLoad(0), mCurShot(this, 0),
-      mNextShot(this, 0), mIntroShot(this, 0), unke0(-1e+30f), mDisablePicking(0),
-      unke5(1), unk108(-1.0f), mEndOfSongSec(0), unk110(0), mSongPref(0) {
+    : mPropAnim(this), mMerger(this), mCurWorld(this), unk58(0), mWorldPostProc(this),
+      mCamPostProc(this), mPostProcA(this), mPostProcB(this), mPostProcBlend(0),
+      mLightPresetCatBlend(0), mLightPresetInterpEnabled(1), mDisabled(0), mAsyncLoad(0),
+      mCurShot(this), mNextShot(this), mIntroShot(this), unke0(-kHugeFloat),
+      mDisablePicking(0), unke5(1), unk108(-1.0f), mEndOfSongSec(0), unk110(0),
+      mSongPref(0) {
     static DataNode &banddirector = DataVariable("banddirector");
-    banddirector = DataNode(this);
+    banddirector = this;
     mAsyncLoad = !LOADMGR_EDITMODE;
     if (TheBandDirector) {
         MILO_WARN("Trying to make > 1 BandDirector, which should be single");
@@ -80,8 +84,8 @@ BandDirector::BandDirector()
 BandDirector::~BandDirector() {
     if (TheBandDirector == this) {
         static DataNode &banddirector = DataVariable("banddirector");
-        banddirector = DataNode((Hmx::Object *)0);
-        TheBandDirector = 0;
+        banddirector = NULL_OBJ;
+        TheBandDirector = nullptr;
     } else
         MILO_WARN("Deleting second BandDirector, should be singleton");
 }
@@ -129,18 +133,18 @@ void BandDirector::Enter() {
         mCurWorld = 0;
         if (mPropAnim) {
             mPropAnim->StartAnim();
-            mPropAnim->SetFrame(-1e+30f, 1.0f);
+            mPropAnim->SetFrame(-kHugeFloat, 1.0f);
         }
         EnterVenue();
         mDisablePicking = 0;
         mNextShot = 0;
-        static Message allowMsg("allow_intro_shot", DataNode(0));
+        static Message allowMsg("allow_intro_shot", 0);
         int handled = HandleType(allowMsg).Int();
         if (handled && !mIntroShot)
             PickIntroShot();
         if (handled && mIntroShot) {
-            static Message msg("set_intro_shot", DataNode(0));
-            msg[0] = DataNode(mIntroShot);
+            static Message msg("set_intro_shot", 0);
+            msg[0] = mIntroShot.Ptr();
             DataNode handled = HandleType(msg);
             mNextShot = mIntroShot;
             mIntroShot = 0;
@@ -156,7 +160,7 @@ void BandDirector::Enter() {
                 grp->SetShowing(thismode != hidden);
         }
         if (mPropAnim && unk110) {
-            DataArrayPtr ptr(DataNode(Symbol("stagekit_fog")));
+            DataArrayPtr ptr(Symbol("stagekit_fog"));
             SymbolKeys *skeys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
             if (!skeys) {
                 AddStageKitKeys(mPropAnim, this);
@@ -188,8 +192,8 @@ bool BandDirector::PostProcsFromPresets(
     const RndPostProc *&p1, const RndPostProc *&p2, float &fref
 ) {
     MILO_ASSERT(IsMusicVideo() && LightPresetMgr(), 0x161);
-    LightPreset *mgr1 = 0;
-    LightPreset *mgr2 = 0;
+    LightPreset *mgr1 = nullptr;
+    LightPreset *mgr2 = nullptr;
     LightPresetMgr()->GetPresets(mgr1, mgr2);
     if (!mgr1)
         mgr1 = mgr2;
@@ -228,8 +232,8 @@ void BandDirector::Poll() {
         }
     }
     if (mWorldPostProc) {
-        const RndPostProc *p1 = 0;
-        const RndPostProc *p2 = 0;
+        const RndPostProc *p1 = nullptr;
+        const RndPostProc *p2 = nullptr;
         float fref = 1.0f;
         const char *presets = "";
         if (mCamPostProc) {
@@ -384,10 +388,10 @@ void BandDirector::FindNextShot() {
             CameraManager::PropertyFilter curfilt;
             BandCamShot *shot = mCurShot;
             if (!FacingCamera(mShotCategory))
-                shot = 0;
+                shot = nullptr;
             if (shot && !BehindCamera(shot->Category())) {
-                curfilt.prop = DataNode(flags_any);
-                curfilt.match = DataNode(1);
+                curfilt.prop = flags_any;
+                curfilt.match = 1;
                 curfilt.mask = ~shot->Flags() & 0x7000;
                 filts.push_back(curfilt);
             }
@@ -412,7 +416,7 @@ void BandDirector::PlayNextShot() {
     unk58 = false;
     if (mNextShot) {
         BandCamShot *oldnextshot = mNextShot;
-        mNextShot = 0;
+        mNextShot = nullptr;
         if (oldnextshot && DirectedCut(oldnextshot->Category())) {
             float oldz = oldnextshot->mZeroTime;
             oldnextshot->ConvertFrames(oldz);
@@ -442,7 +446,7 @@ void BandDirector::PlayNextShot() {
                 if (b2)
                     unke0 = TheTaskMgr.Seconds(TaskMgr::kRealTime) + 1.0f;
                 else
-                    unke0 = -1.0E+30f;
+                    unke0 = -kHugeFloat;
             }
         }
         mCurShot = oldnextshot;
@@ -537,9 +541,9 @@ void BandDirector::SetShot(Symbol cat, Symbol s2) {
 
 bool BandDirector::ReadyForMidiParsers() {
     if (!mPropAnim && gIsLoadingDlc) {
-        static Message msg("on_pre_merge", DataNode(0), DataNode(0), DataNode(0));
-        msg[0] = DataNode(song);
-        msg[1] = DataNode((Hmx::Object *)0);
+        static Message msg("on_pre_merge", 0, 0, 0);
+        msg[0] = song;
+        msg[1] = NULL_OBJ;
         OnFileLoaded(msg);
     }
     bool ret = false;
@@ -599,10 +603,10 @@ DataNode BandDirector::OnGetFaceOverrideClips(DataArray *da) {
         }
     }
     DataArray *arr = new DataArray(syms.size() + 1);
-    arr->Node(0) = DataNode(Symbol());
+    arr->Node(0) = Symbol();
     int idx = 1;
     for (std::list<Symbol>::iterator it = syms.begin(); it != syms.end(); ++it, ++idx) {
-        arr->Node(idx) = DataNode(*it);
+        arr->Node(idx) = *it;
     }
     DataNode ret(arr, kDataArray);
     arr->Release();
@@ -615,10 +619,10 @@ void BandDirector::ForceShot(BandCamShot *shot) {
 }
 
 void BandDirector::PickIntroShot() {
-    mNextShot = 0;
+    mNextShot = nullptr;
     DataNode handled = HandleType(pick_intro_shot_msg);
     mIntroShot = mNextShot;
-    mNextShot = 0;
+    mNextShot = nullptr;
 }
 
 Symbol GetShotTrack() {
@@ -640,7 +644,7 @@ void BandDirector::AddDircut(Symbol cat, float frame) {
     );
     if (TheBandWardrobe && !TheBandWardrobe->AddDircut(shot)) {
         MILO_WARN("Too many non-free Dircuts, not playing %s", PathName(shot));
-        shot = 0;
+        shot = nullptr;
     }
     if (shot) {
         float f2c = shot->mZeroTime;
@@ -658,7 +662,7 @@ void BandDirector::HarvestDircuts() {
     if (mPropAnim && mVenue.Dir()) {
         mDircuts.clear();
         TheBandWardrobe->ClearDircuts();
-        mIntroShot = 0;
+        mIntroShot = nullptr;
         if (!TheBandWardrobe->DemandLoadSym()) {
             CameraManager::PropertyFilter filt;
             int mask = 0;
@@ -672,13 +676,8 @@ void BandDirector::HarvestDircuts() {
                     mask = 0x200000;
             }
             WorldDir *wdir = mVenue.Dir();
-            for (std::vector<CameraManager::Category VECTOR_SIZE_LARGE>::iterator it =
-                     wdir->mCameraManager.mCameraShotCategories.begin();
-                 it != wdir->mCameraManager.mCameraShotCategories.end();
-                 ++it) {
-                for (ObjPtrList<CamShot, ObjectDir>::iterator cit = it->unk4->begin();
-                     cit != it->unk4->end();
-                     ++cit) {
+            FOREACH (it, wdir->mCameraManager.mCameraShotCategories) {
+                FOREACH_PTR (cit, it->unk4) {
                     CamShot *shot = *cit;
                     shot->Disable(!TheBandWardrobe->ValidGenreGender(shot), 2);
                     shot->Disable((mask & shot->Flags()) == 0, 4);
@@ -686,8 +685,7 @@ void BandDirector::HarvestDircuts() {
             }
             PickIntroShot();
             DataArrayPtr ptr(GetShotTrack());
-            SymbolKeys *skeys =
-                dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, (DataArray *)ptr));
+            SymbolKeys *skeys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
             if (skeys) {
                 Keys<Symbol, Symbol> &keys = skeys->AsSymbolKeys();
                 for (int i = 0; i < keys.size(); i++) {
@@ -708,9 +706,8 @@ void BandDirector::HarvestDircuts() {
 
 void BandDirector::AddSymbolKey(Symbol s1, Symbol s2, float f) {
     if (mPropAnim) {
-        DataArrayPtr ptr = DataArrayPtr(DataNode(s1));
-        SymbolKeys *keys =
-            dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, (DataArray *)ptr));
+        DataArrayPtr ptr(s1);
+        SymbolKeys *keys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
         if (keys)
             keys->Add(s2, f * 30.0f, false);
     }
@@ -718,9 +715,8 @@ void BandDirector::AddSymbolKey(Symbol s1, Symbol s2, float f) {
 
 void BandDirector::ClearSymbolKeys(Symbol s) {
     if (mPropAnim) {
-        DataArrayPtr ptr = DataArrayPtr(DataNode(s));
-        SymbolKeys *keys =
-            dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, (DataArray *)ptr));
+        DataArrayPtr ptr(s);
+        SymbolKeys *keys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
         if (keys)
             keys->clear();
     }
@@ -728,12 +724,11 @@ void BandDirector::ClearSymbolKeys(Symbol s) {
 
 void BandDirector::ClearSymbolKeysFrameRange(Symbol s, float fstart, float fend) {
     if (mPropAnim) {
-        DataArrayPtr ptr = DataArrayPtr(DataNode(s));
-        SymbolKeys *keys =
-            dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, (DataArray *)ptr));
+        DataArrayPtr ptr(s);
+        SymbolKeys *keys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
         if (keys) {
             int numkeys = keys->NumKeys();
-            for (int i = 0; i < numkeys; i) {
+            for (int i = 0; i < numkeys;) {
                 float frame = 0;
                 keys->FrameFromIndex(i, frame);
                 frame /= 30.0f;
@@ -788,7 +783,7 @@ BEGIN_HANDLERS(BandDirector)
 #endif
     HANDLE(cur_postprocs, OnPostProcs)
     HANDLE_EXPR(get_curworld, mCurWorld.Ptr())
-    HANDLE_EXPR(get_world, mMerger ? mMerger->Dir() : (ObjectDir *)0)
+    HANDLE_EXPR(get_world, mMerger ? mMerger->Dir() : (ObjectDir *)nullptr)
     HANDLE(set_dircut, OnSetDircut)
     HANDLE(force_preset, OnForcePreset)
     HANDLE(stomp_presets, OnStompPresets)
@@ -921,8 +916,7 @@ lol:
         }
         buf[u5] = 0;
     }
-    return DataNode(Symbol(MakeString("coop_%s_%s%s", buf, PickDist(fls, buf, buf2), buf2)
-    ));
+    return Symbol(MakeString("coop_%s_%s%s", buf, PickDist(fls, buf, buf2), buf2));
 }
 
 DataNode BandDirector::OnCycleShot(DataArray *da) {
@@ -932,7 +926,7 @@ DataNode BandDirector::OnCycleShot(DataArray *da) {
             dynamic_cast<BandCamShot *>(wdir->CamManager().ShotAfter(mCurShot));
         ForceShot(shot);
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnForceShot(DataArray *da) {
@@ -940,7 +934,7 @@ DataNode BandDirector::OnForceShot(DataArray *da) {
     if (wdir) {
         ForceShot(wdir->Find<BandCamShot>(da->Str(2), false));
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnLoadSong(DataArray *da) {
@@ -977,7 +971,7 @@ DataNode BandDirector::OnLoadSong(DataArray *da) {
     mMerger->Select("song", FilePath(songfile), true);
     if (i6)
         mMerger->StartLoad(mAsyncLoad);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnFileLoaded(DataArray *da) {
@@ -1000,79 +994,63 @@ DataNode BandDirector::OnFileLoaded(DataArray *da) {
             mPropAnim->SetName("song.anim", mMerger->Dir());
             mPropAnim->SetType("song_anim");
             mPropAnim->SetRate(RndAnimatable::k480_fpb);
+            mPropAnim->AddKeys(this, DataArrayPtr(Symbol("shot_bg")), PropKeys::kSymbol);
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("shot_bg"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("bass_intensity")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("bass_intensity"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("drum_intensity")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("drum_intensity"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("guitar_intensity")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this,
-                DataArrayPtr(DataNode(Symbol("guitar_intensity"))),
-                PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("mic_intensity")), PropKeys::kSymbol
+            );
+            mPropAnim->AddKeys(this, DataArrayPtr(Symbol("crowd")), PropKeys::kSymbol);
+            mPropAnim->AddKeys(
+                this, DataArrayPtr(Symbol("world_event")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("mic_intensity"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("lightpreset")), PropKeys::kSymbol
+            );
+            mPropAnim->SetInterpHandler(
+                this, DataArrayPtr(Symbol("lightpreset")), Symbol("lightpreset_interp")
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("crowd"))), PropKeys::kSymbol
-            );
-            mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("world_event"))), PropKeys::kSymbol
-            );
-            mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("lightpreset"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("lightpreset_keyframe")), PropKeys::kSymbol
             );
             mPropAnim->SetInterpHandler(
                 this,
-                DataArrayPtr(DataNode(Symbol("lightpreset"))),
-                Symbol("lightpreset_interp")
-            );
-            mPropAnim->AddKeys(
-                this,
-                DataArrayPtr(DataNode(Symbol("lightpreset_keyframe"))),
-                PropKeys::kSymbol
-            );
-            mPropAnim->SetInterpHandler(
-                this,
-                DataArrayPtr(DataNode(Symbol("lightpreset_keyframe"))),
+                DataArrayPtr(Symbol("lightpreset_keyframe")),
                 Symbol("lightpreset_keyframe_interp")
             );
-            mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("postproc"))), PropKeys::kObject
-            );
+            mPropAnim->AddKeys(this, DataArrayPtr(Symbol("postproc")), PropKeys::kObject);
             mPropAnim->SetInterpHandler(
-                this,
-                DataArrayPtr(DataNode(Symbol("postproc"))),
-                Symbol("postproc_interp")
+                this, DataArrayPtr(Symbol("postproc")), Symbol("postproc_interp")
+            );
+            mPropAnim->AddKeys(this, DataArrayPtr(Symbol("spot_bass")), PropKeys::kSymbol);
+            mPropAnim->AddKeys(
+                this, DataArrayPtr(Symbol("spot_drums")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("spot_bass"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("spot_guitar")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("spot_drums"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("spot_keyboard")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("spot_guitar"))), PropKeys::kSymbol
-            );
-            mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("spot_keyboard"))), PropKeys::kSymbol
-            );
-            mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("spot_vocal"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("spot_vocal")), PropKeys::kSymbol
             );
             AddStageKitKeys(mPropAnim, this);
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("part2_sing"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("part2_sing")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("part3_sing"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("part3_sing")), PropKeys::kSymbol
             );
             mPropAnim->AddKeys(
-                this, DataArrayPtr(DataNode(Symbol("part4_sing"))), PropKeys::kSymbol
+                this, DataArrayPtr(Symbol("part4_sing")), PropKeys::kSymbol
             );
         } else
             unk110 = false;
@@ -1080,7 +1058,7 @@ DataNode BandDirector::OnFileLoaded(DataArray *da) {
                                           "drum_intensity", "guitar_intensity",
                                           "key_intensity",  0 };
         for (const char **ptr = instIntensities; *ptr != 0; ptr++) {
-            DataArrayPtr dptr = DataArrayPtr(DataNode(Symbol(*ptr)));
+            DataArrayPtr dptr = DataArrayPtr(Symbol(*ptr));
             SymbolKeys *skeys =
                 dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, dptr));
             if (skeys)
@@ -1104,10 +1082,10 @@ DataNode BandDirector::OnFileLoaded(DataArray *da) {
                     Symbol drummodeinst = mSongPref ? GetModeInst(mSongPref->Part3Inst())
                                                     : GetModeInst("drum");
 
-                    BandCharacter *bchar2 = 0;
-                    BandCharacter *bchar3 = 0;
-                    BandCharacter *bchar4 = 0;
-                    CharLipSyncDriver *thelipsyncdriver = 0;
+                    BandCharacter *bchar2 = nullptr;
+                    BandCharacter *bchar3 = nullptr;
+                    BandCharacter *bchar4 = nullptr;
+                    CharLipSyncDriver *thelipsyncdriver = nullptr;
                     for (int i = 0; i < 4; i++) {
                         BandCharacter *bcharcur = TheBandWardrobe->GetCharacter(i);
                         Symbol bcharinst = bcharcur->InstrumentType();
@@ -1163,7 +1141,7 @@ DataNode BandDirector::OnFileLoaded(DataArray *da) {
             }
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 void BandDirector::LoadVenue(Symbol s, LoaderPos pos) {
@@ -1174,16 +1152,39 @@ void BandDirector::LoadVenue(Symbol s, LoaderPos pos) {
 
 void BandDirector::UnloadVenue(bool b) { mVenue.Unload(b); }
 
-DataNode BandDirector::OnSaveSong(DataArray *da) { return DataNode(0); }
+DataNode BandDirector::OnSaveSong(DataArray *da) { return 0; }
+
+DataNode BandDirector::OnSelectCamera(DataArray *a) {
+    if (!mDisabled) {
+        if (mPropAnim) {
+            float f3 = Max(TheTaskMgr.Seconds(TaskMgr::kRealTime) * 30.0f, 0.0f);
+            if (LOADMGR_EDITMODE) {
+                if (f3 == mPropAnim->GetFrame())
+                    goto ok;
+            }
+            mPropAnim->SetFrame(f3, 1);
+        }
+    ok:
+        if (LOADMGR_EDITMODE && TheTaskMgr.DeltaSeconds() < 0) {
+            unke0 = -kHugeFloat;
+        }
+        if (!mNextShot && TheTaskMgr.Seconds(TaskMgr::kRealTime) >= unke0
+            && !NoWorlds()) {
+            mNextShot = FindNextDircut();
+            if (!mNextShot && unk58)
+                FindNextShot();
+        }
+    }
+    PlayNextShot();
+    return 0;
+}
 
 void ExtractPstCatAdjs(DataArray *arr, Symbol &s1, Symbol &s2) {
     DataNode eval2(arr->Evaluate(2));
     if (eval2.Type() == kDataSymbol) {
         s1 = eval2.Sym(arr);
     } else {
-        MILO_WARN(
-            "unhandled light preset category at %f seconds\n", DataNode(arr->Evaluate(4))
-        );
+        MILO_WARN("unhandled light preset category at %f seconds\n", arr->Evaluate(4));
     }
     DataNode eval3(arr->Evaluate(3));
     if (eval3.Type() == kDataArray) {
@@ -1195,7 +1196,7 @@ void ExtractPstCatAdjs(DataArray *arr, Symbol &s1, Symbol &s2) {
                 MILO_WARN(
                     "unhandled light preset adjective: %s, %f secs\n",
                     evalarr->Str(1),
-                    DataNode(arr->Evaluate(4))
+                    arr->Evaluate(4)
                 );
             }
         }
@@ -1228,7 +1229,7 @@ Symbol ConcatCatAdj(Symbol s1, Symbol s2) {
 void BandDirector::OnMidiPresetCleanup() {
     if (!mPropAnim || !mVenue.Dir())
         return;
-    DataArrayPtr dptr(DataNode(Symbol("lightpreset")));
+    DataArrayPtr dptr(Symbol("lightpreset"));
     PropKeys *keys = mPropAnim->GetKeys(this, dptr);
     if (!keys)
         return;
@@ -1264,7 +1265,7 @@ void BandDirector::OnMidiPresetCleanup() {
 
 DataNode BandDirector::OnMidiAddPreset(DataArray *da) {
     MILO_ASSERT(mPropAnim, 0x7C4);
-    DataArrayPtr dptr(DataNode(Symbol("lightpreset")));
+    DataArrayPtr dptr(Symbol("lightpreset"));
     SymbolKeys *skeys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, dptr));
     if (skeys) {
         Symbol s1, s2;
@@ -1294,7 +1295,7 @@ DataNode BandDirector::OnMidiAddPreset(DataArray *da) {
                 skeys->Add(s60, frame, false);
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 BandCamShot *BandDirector::FindNextDircut() {
@@ -1344,26 +1345,26 @@ DataNode BandDirector::OnDebugInterestsForNextCharacter(DataArray *da) {
                 bc->SetDebugDrawInterestObjects(false);
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnToggleInterestDebugOverlay(DataArray *da) {
     RndOverlay *o = RndOverlay::Find("eye_status", false);
     if (o)
         o->SetShowing(o->Showing() == 0);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnShotAnnotate(DataArray *da) {
     if (!mPropAnim)
-        return DataNode(0);
+        return 0;
     else {
         RndPropAnim *propanim = da->Obj<RndPropAnim>(2);
         DataArray *arr3 = da->Array(3);
         PropKeys *keys = propanim->GetKeys(this, arr3);
         int i7 = da->Int(4);
         if (!keys || i7 < 0)
-            return DataNode(0);
+            return 0;
         else {
             Keys<Symbol, Symbol> &skeys = keys->AsSymbolKeys();
             Key<Symbol> &skey = skeys[i7];
@@ -1373,12 +1374,7 @@ DataNode BandDirector::OnShotAnnotate(DataArray *da) {
             if (i7 + 1 < skeys.size()) {
                 f1 = (skeys[i7 + 1].frame - skey.frame) / 30.0f;
             }
-            ptr->Insert(
-                ptr->Size(),
-                DataNode(DataArrayPtr(
-                    DataNode(skey.frame), DataNode(MakeString("%.1f sec", f1))
-                ))
-            );
+            ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame, MakeString("%.1f sec", f1)));
             if (strneq(symval.mStr, "directed_", 9)) {
                 static DataArray *limits =
                     SystemConfig(
@@ -1407,49 +1403,20 @@ DataNode BandDirector::OnShotAnnotate(DataArray *da) {
                 } else
                     MILO_NOTIFY_ONCE("could not find %s in dircut_limits", symval);
 
-                ptr->Insert(
-                    ptr->Size(),
-                    DataNode(DataArrayPtr(
-                        DataNode(skey.frame + 7.5f), DataNode("fallback_end")
-                    ))
-                );
-                ptr->Insert(
-                    ptr->Size(),
-                    DataNode(
-                        DataArrayPtr(DataNode(skey.frame - f21), DataNode("zero_time"))
-                    )
-                );
-                ptr->Insert(
-                    ptr->Size(),
-                    DataNode(
-                        DataArrayPtr(DataNode(skey.frame + f20), DataNode("min_time"))
-                    )
-                );
-                ptr->Insert(
-                    ptr->Size(),
-                    DataNode(DataArrayPtr(DataNode(skey.frame + f18), DataNode("dur_min"))
-                    )
-                );
-                ptr->Insert(
-                    ptr->Size(),
-                    DataNode(DataArrayPtr(DataNode(skey.frame + f19), DataNode("dur_max"))
-                    )
-                );
+                ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame + 7.5f, "fallback_end"));
+                ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame - f21, "zero_time"));
+                ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame + f20, "min_time"));
+                ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame + f18, "dur_min"));
+                ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame + f19, "dur_max"));
 
                 for (int i = 0; i < freeDircuts->Size(); i++) {
                     if (symval == freeDircuts->Sym(i)) {
-                        ptr->Insert(
-                            ptr->Size(),
-                            DataNode(DataArrayPtr(
-                                DataNode(skey.frame), DataNode("free_dircut")
-                            ))
-                        );
+                        ptr->Insert(ptr->Size(), DataArrayPtr(skey.frame, "free_dircut"));
                         break;
                     }
                 }
             }
             DataNode ret = DataNode(ptr, kDataArray);
-            // return DataNode(ret);
         }
     }
 }
@@ -1458,17 +1425,17 @@ DataNode BandDirector::OnPostProcs(DataArray *da) {
     DataNode *v2 = da->Var(2);
     DataNode *v3 = da->Var(3);
     DataNode *v4 = da->Var(4);
-    *v2 = DataNode(mPostProcA);
-    *v3 = DataNode(mPostProcB);
-    *v4 = DataNode(mPostProcBlend);
-    return DataNode(0);
+    *v2 = mPostProcA.Ptr();
+    *v3 = mPostProcB.Ptr();
+    *v4 = mPostProcBlend;
+    return 0;
 }
 
 DataNode BandDirector::OnPostProcInterp(DataArray *da) {
     mPostProcA = da->Obj<RndPostProc>(2);
     mPostProcB = da->Obj<RndPostProc>(3);
     mPostProcBlend = da->Float(4);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnShotOver(DataArray *da) {
@@ -1478,7 +1445,7 @@ DataNode BandDirector::OnShotOver(DataArray *da) {
         unke0 = -1000.0f;
     } else
         unke0 = -1e+30f;
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnSetDircut(DataArray *da) {
@@ -1489,7 +1456,7 @@ DataNode BandDirector::OnSetDircut(DataArray *da) {
         mNextShot =
             dynamic_cast<BandCamShot *>(wdir->CamManager().FindCameraShot(sym, filts));
     }
-    return DataNode(mNextShot);
+    return mNextShot.Ptr();
 }
 
 DataNode BandDirector::OnLightPresetInterp(DataArray *da) {
@@ -1505,7 +1472,7 @@ DataNode BandDirector::OnLightPresetInterp(DataArray *da) {
         } else
             mLightPresetCatB = mLightPresetCatA;
     }
-    return DataNode(0);
+    return 0;
 }
 
 float FindFrameWithLeadIn() {
@@ -1515,13 +1482,13 @@ float FindFrameWithLeadIn() {
 }
 
 void BandDirector::FindNextPstKeyframe(float f1, float f2, Symbol s) {
-    unk108 = 1e+30f;
+    unk108 = kHugeFloat;
     float stb = SecondsToBeat(f2 / 30.0f);
     float beat = TheTaskMgr.Beat();
     if ((stb - beat) + 1.1920929E-7f > 4.0f)
         unk108 = f2;
     else {
-        DataArrayPtr ptr(DataNode(Symbol("lightpreset_keyframe")));
+        DataArrayPtr ptr(Symbol("lightpreset_keyframe"));
         SymbolKeys *skeys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
         if (skeys) {
             int idx = skeys->KeyGreaterEq(f1);
@@ -1539,13 +1506,13 @@ void BandDirector::FindNextPstKeyframe(float f1, float f2, Symbol s) {
 
 DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray *da) {
     if (!mCurWorld)
-        return DataNode(0);
+        return 0;
     else {
         float leadin = FindFrameWithLeadIn();
         bool b10 = unk108 < 0.0f;
         if (leadin >= unk108) {
             Symbol s58;
-            DataArrayPtr ptr(DataNode(Symbol("lightpreset_keyframe")));
+            DataArrayPtr ptr(Symbol("lightpreset_keyframe"));
             SymbolKeys *skeys = dynamic_cast<SymbolKeys *>(mPropAnim->GetKeys(this, ptr));
             if (skeys) {
                 int idx = skeys->KeyLessEq(unk108);
@@ -1566,7 +1533,7 @@ DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray *da) {
             if (!b10 && f108 != unk108)
                 LightPreset::ResetEvents();
         }
-        return DataNode(0);
+        return 0;
     }
 }
 
@@ -1581,7 +1548,7 @@ DataNode BandDirector::OnForcePreset(DataArray *da) {
             lp = eval.Obj<LightPreset>();
         LightPresetMgr()->ForcePreset(lp, f3);
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnStompPresets(DataArray *da) {
@@ -1603,7 +1570,7 @@ DataNode BandDirector::OnStompPresets(DataArray *da) {
 
         LightPresetMgr()->StompPresets(lp1, lp2);
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode BandDirector::OnGetCatList(DataArray *da) {
@@ -1617,7 +1584,7 @@ DataNode BandDirector::OnGetCatList(DataArray *da) {
         if (RemapCat(cursym, s2) != cursym) {
             // ???
         } else {
-            arr->Node(i1++) = DataNode(cursym);
+            arr->Node(i1++) = cursym;
         }
     }
     arr->Resize(i1);
@@ -1628,17 +1595,16 @@ DataNode BandDirector::OnGetCatList(DataArray *da) {
 
 DataNode BandDirector::OnCopyCats(DataArray *da) {
     if (!mPropAnim)
-        return DataNode(0);
+        return 0;
     else {
         Symbol s2 = da->Sym(2);
         String str30(s2.Str());
         str30.replace(0, 4, "shot");
         PropKeys *shotkeys =
-            mPropAnim->GetKeys(this, DataArrayPtr(DataNode(Symbol(str30.c_str()))));
-        PropKeys *shot5keys =
-            mPropAnim->GetKeys(this, DataArrayPtr(DataNode(Symbol("shot_5"))));
+            mPropAnim->GetKeys(this, DataArrayPtr(Symbol(str30.c_str())));
+        PropKeys *shot5keys = mPropAnim->GetKeys(this, DataArrayPtr(Symbol("shot_5")));
         if (!shotkeys || !shot5keys)
-            return DataNode(0);
+            return 0;
         else {
             Keys<Symbol, Symbol> &sym5keys = shot5keys->AsSymbolKeys();
             Keys<Symbol, Symbol> &symkeys = shotkeys->AsSymbolKeys();
@@ -1649,13 +1615,13 @@ DataNode BandDirector::OnCopyCats(DataArray *da) {
                 symkeys.push_back(curkey);
             }
         }
-        return DataNode(0);
+        return 0;
     }
 }
 
 void BandDirector::OnMidiAddPostProc(Symbol s, float f1, float f2) {
     MILO_ASSERT(mPropAnim, 0x9A1);
-    DataArrayPtr dptr(DataNode(Symbol("postproc")));
+    DataArrayPtr dptr(Symbol("postproc"));
     ObjectKeys *okeys = dynamic_cast<ObjectKeys *>(mPropAnim->GetKeys(this, dptr));
     if (okeys && mVenue.Dir()) {
         RndPostProc *proc = mVenue.Dir()->Find<RndPostProc>(s.Str(), false);
@@ -1726,9 +1692,9 @@ Symbol BandDirector::GetModeInst(Symbol s) {
 DataNode BandDirector::OnFirstShotOK(DataArray *da) {
     Symbol s2 = da->Sym(2);
     if (strncmp(s2.mStr, "coop_", 5) != 0)
-        return DataNode(0);
+        return 0;
     else {
-        float f3c = 1e+30f;
+        float f3c = kHugeFloat;
         float f10 = mPropAnim->GetFrame();
         Symbol symshottouse =
             TheBandWardrobe->PlayShot5() ? shot_5 : TheBandWardrobe->GetPlayMode();
@@ -1739,7 +1705,7 @@ DataNode BandDirector::OnFirstShotOK(DataArray *da) {
         else if (symshottouse == coop_gk)
             symshottouse = shot_gk;
 
-        sPropArr->Node(0) = DataNode(symshottouse);
+        sPropArr->Node(0) = symshottouse;
         Keys<Symbol, Symbol> &skeys = mPropAnim->GetKeys(this, sPropArr)->AsSymbolKeys();
 
         Keys<Symbol, Symbol> *keys = &skeys;
@@ -1764,10 +1730,10 @@ DataNode BandDirector::OnFirstShotOK(DataArray *da) {
                     float fr = skeys[idxafter + 1].frame;
                     f3c = fr;
                 } else
-                    f3c = 1e+30f;
+                    f3c = kHugeFloat;
             }
         }
-        if (f3c == 1e+30f)
+        if (f3c == kHugeFloat)
             f3c = mEndOfSongSec * 30.0f;
 
         int dircutidxafter =
@@ -1796,7 +1762,7 @@ BEGIN_PROPSYNCS(BandDirector)
     SYNC_PROP_SET(shot_bg, mShotCategory, SetShot(_val.Sym(), coop_bg))
     SYNC_PROP_SET(shot_bk, mShotCategory, SetShot(_val.Sym(), coop_bk))
     SYNC_PROP_SET(shot_gk, mShotCategory, SetShot(_val.Sym(), coop_gk))
-    SYNC_PROP_SET(postproc, (Hmx::Object *)0, )
+    SYNC_PROP_SET(postproc, NULL_OBJ, )
     SYNC_PROP_SET(lightpreset, verse, )
     SYNC_PROP_SET(lightpreset_keyframe, next, )
     SYNC_PROP_SET(world_event, none, ExportWorldEvent(_val.Sym()))

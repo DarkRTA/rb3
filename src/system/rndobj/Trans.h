@@ -110,6 +110,11 @@ public:
         mLocalXfm.Reset();
     }
 
+    void SetLocalXfm(const TransformNoScale &tf) {
+        tf.ToTransform(mLocalXfm);
+        SetDirty();
+    }
+
     void SetLocalXfm(const Transform &tf) {
         mLocalXfm = tf;
         SetDirty();

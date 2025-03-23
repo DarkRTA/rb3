@@ -149,17 +149,17 @@ public:
     static float sMotionBlurBlendAmount;
 
     ObjDirPtr<RndDir> mChars; // 0x28
-    ObjPtr<RndPropAnim, ObjectDir> mPropAnim; // 0x34
-    ObjPtr<FileMerger, ObjectDir> mMerger; // 0x40
-    ObjPtr<WorldDir, ObjectDir> mCurWorld; // 0x4c
+    ObjPtr<RndPropAnim> mPropAnim; // 0x34
+    ObjPtr<FileMerger> mMerger; // 0x40
+    ObjPtr<WorldDir> mCurWorld; // 0x4c
     bool unk58; // 0x58
     int mNumPlayersFailed; // 0x5c
     int mExcitement; // 0x60 - ExcitementLevel?
     Symbol mForceAttention[4]; // 0x64
-    ObjPtr<RndPostProc, ObjectDir> mWorldPostProc; // 0x74
-    ObjPtr<RndPostProc, ObjectDir> mCamPostProc; // 0x80
-    ObjPtr<RndPostProc, ObjectDir> mPostProcA; // 0x8c
-    ObjPtr<RndPostProc, ObjectDir> mPostProcB; // 0x98
+    ObjPtr<RndPostProc> mWorldPostProc; // 0x74
+    ObjPtr<RndPostProc> mCamPostProc; // 0x80
+    ObjPtr<RndPostProc> mPostProcA; // 0x8c
+    ObjPtr<RndPostProc> mPostProcB; // 0x98
     float mPostProcBlend; // 0xa4
     Symbol mLightPresetCatA; // 0xa8
     Symbol mLightPresetCatB; // 0xac
@@ -167,9 +167,9 @@ public:
     bool mLightPresetInterpEnabled; // 0xb4
     bool mDisabled; // 0xb5
     bool mAsyncLoad; // 0xb6
-    ObjPtr<BandCamShot, ObjectDir> mCurShot; // 0xb8
-    ObjPtr<BandCamShot, ObjectDir> mNextShot; // 0xc4
-    ObjPtr<BandCamShot, ObjectDir> mIntroShot; // 0xd0
+    ObjPtr<BandCamShot> mCurShot; // 0xb8
+    ObjPtr<BandCamShot> mNextShot; // 0xc4
+    ObjPtr<BandCamShot> mIntroShot; // 0xd0
     Symbol mShotCategory; // 0xdc
     float unke0; // 0xe0
     bool mDisablePicking; // 0xe4

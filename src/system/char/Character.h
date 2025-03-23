@@ -124,6 +124,8 @@ public:
     int LastLod() const { return mLastLod; }
     void SetMinLod(int lod) { mMinLod = lod; }
     CharDriver *GetDriver() const { return mDriver; }
+    void SetTeleported(bool b) { mTeleported = b; }
+    void SetSelfShadow(bool b) { mSelfShadow = b; }
 
     DataNode OnPlayClip(DataArray *);
     DataNode OnCopyBoundingSphere(DataArray *);

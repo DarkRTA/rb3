@@ -20,8 +20,8 @@ public:
         void SetVal(float);
         bool Used() const { return mUsed; }
 
-        ObjPtr<CrowdMeterIcon, ObjectDir> unk0; // 0x0
-        ObjPtr<RndGroup, ObjectDir> unkc; // 0xc
+        ObjPtr<CrowdMeterIcon> unk0; // 0x0
+        ObjPtr<RndGroup> unkc; // 0xc
         bool unk18; // 0x18
         bool unk19; // 0x19
         bool unk1a; // 0x1a
@@ -84,21 +84,21 @@ public:
     float mPeakValue; // 0x198
     bool mDisabled; // 0x19c
     std::vector<Hmx::Color> mLevelColors; // 0x1a0
-    int unk1a8; // 0x1a8 - excitementlevel mexcitement?
+    int mExcitement; // 0x1a8 - excitementlevel
     TrackPanelInterface *mTrackPanel; // 0x1ac
-    ObjPtrList<RndGroup, ObjectDir> mOrderedPeaks; // 0x1b0
-    ObjPtr<EventTrigger, ObjectDir> mBandEnergyDeployTrig; // 0x1c0
-    ObjPtr<EventTrigger, ObjectDir> mBandEnergyStopTrig; // 0x1cc
-    ObjPtr<EventTrigger, ObjectDir> mDisabledStartTrig; // 0x1d8
-    ObjPtr<EventTrigger, ObjectDir> mDisabledStopTrig; // 0x1e4
-    ObjPtr<EventTrigger, ObjectDir> mShowPeakArrowTrig; // 0x1f0
-    ObjPtr<EventTrigger, ObjectDir> mHidePeakArrowTrig; // 0x1fc
-    std::vector<ObjPtr<EventTrigger, ObjectDir> > mExcitementTrigs; // 0x208
-    ObjPtr<EventTrigger, ObjectDir> mCanJoinTrig; // 0x210
-    ObjPtr<EventTrigger, ObjectDir> mCannotJoinTrig; // 0x21c
-    ObjPtr<EventTrigger, ObjectDir> mJoinInvalidTrig; // 0x228
+    ObjPtrList<RndGroup> mOrderedPeaks; // 0x1b0
+    ObjPtr<EventTrigger> mBandEnergyDeployTrig; // 0x1c0
+    ObjPtr<EventTrigger> mBandEnergyStopTrig; // 0x1cc
+    ObjPtr<EventTrigger> mDisabledStartTrig; // 0x1d8
+    ObjPtr<EventTrigger> mDisabledStopTrig; // 0x1e4
+    ObjPtr<EventTrigger> mShowPeakArrowTrig; // 0x1f0
+    ObjPtr<EventTrigger> mHidePeakArrowTrig; // 0x1fc
+    std::vector<ObjPtr<EventTrigger> > mExcitementTrigs; // 0x208
+    ObjPtr<EventTrigger> mCanJoinTrig; // 0x210
+    ObjPtr<EventTrigger> mCannotJoinTrig; // 0x21c
+    ObjPtr<EventTrigger> mJoinInvalidTrig; // 0x228
     int unk234; // 0x234
-    ObjPtr<RndMatAnim, ObjectDir> mCrowdMeterAnim; // 0x238
+    ObjPtr<RndMatAnim> mCrowdMeterAnim; // 0x238
     float mValue; // 0x244
     float mIconValues[5]; // 0x248
 };
