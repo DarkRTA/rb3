@@ -1,6 +1,8 @@
 #include "bandobj/BandCrowdMeter.h"
+#include "bandobj/CrowdMeterIcon.h"
 #include "bandobj/TrackPanelDirBase.h"
 #include "bandobj/TrackPanelInterface.h"
+#include "math/Color.h"
 #include "rndobj/Utl.h"
 #include "utl/Symbols.h"
 #include <algorithm>
@@ -8,16 +10,17 @@
 INIT_REVS(BandCrowdMeter);
 
 BandCrowdMeter::BandCrowdMeter()
-    : mMaxed(0), mPeakValue(1.0f), mDisabled(0), unk1a8(2), mTrackPanel(0),
-      mOrderedPeaks(this, kObjListNoNull), mBandEnergyDeployTrig(this, 0),
-      mBandEnergyStopTrig(this, 0), mDisabledStartTrig(this, 0),
-      mDisabledStopTrig(this, 0), mShowPeakArrowTrig(this, 0),
-      mHidePeakArrowTrig(this, 0), mCanJoinTrig(this, 0), mCannotJoinTrig(this, 0),
-      mJoinInvalidTrig(this, 0), unk234(2), mCrowdMeterAnim(this, 0), mValue(0.5f) {
-    for (int i = 0; i < 5; i++)
+    : mMaxed(0), mPeakValue(1.0f), mDisabled(0), mExcitement(2), mTrackPanel(0),
+      mOrderedPeaks(this), mBandEnergyDeployTrig(this), mBandEnergyStopTrig(this),
+      mDisabledStartTrig(this), mDisabledStopTrig(this), mShowPeakArrowTrig(this),
+      mHidePeakArrowTrig(this), mCanJoinTrig(this), mCannotJoinTrig(this),
+      mJoinInvalidTrig(this), unk234(2), mCrowdMeterAnim(this), mValue(0.5f) {
+    for (int i = 0; i < 5; i++) {
         mLevelColors.push_back(Hmx::Color(0));
-    for (int i = 0; i < 5; i++)
+    }
+    for (int i = 0; i < 5; i++) {
         mIconValues[i] = 0.5f;
+    }
 }
 
 BandCrowdMeter::~BandCrowdMeter() {}
@@ -227,17 +230,17 @@ void BandCrowdMeter::SetCrowd(float f) {
 
 void BandCrowdMeter::UpdateExcitement(bool b) {
     if (!mDisabled) {
-        int i = unk1a8;
+        int i = mExcitement;
         if (mTrackPanel)
             i = mTrackPanel->GetGameExcitement();
-        if (i != unk1a8 || b) {
-            unk1a8 = i;
-            bool peak = unk1a8 == 4;
+        if (i != mExcitement || b) {
+            mExcitement = i;
+            bool peak = mExcitement == 4;
             if (mMaxed != peak) {
                 SetMaxed(peak);
             }
             if (!Draining())
-                mExcitementTrigs[unk1a8]->Trigger();
+                mExcitementTrigs[mExcitement]->Trigger();
         }
     }
 }
@@ -443,11 +446,10 @@ void BandCrowdMeter::SyncObjects() {
     if (mIconData.size() != 5) {
         mIconData.clear();
         for (int i = 0; i < 5; i++) {
-            mIconData.push_back(IconData(
-                this,
-                Find<CrowdMeterIcon>(MakeString("icon_%1d", i), true),
-                Find<RndGroup>(MakeString("icon_%d.grp", i), true)
-            ));
+            CrowdMeterIcon *cmi = Find<CrowdMeterIcon>(MakeString("icon_%1d", i), true);
+            mIconData.push_back(
+                IconData(this, cmi, Find<RndGroup>(MakeString("icon_%d.grp", i), true))
+            );
         }
     }
     if (mExcitementTrigs.size() != 5) {
