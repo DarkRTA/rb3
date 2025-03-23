@@ -37,7 +37,7 @@ void KeysFx::Poll(bool b1, bool b2, float f3, float f4, float f5) {
     float freq = 1.0f - f5;
     for (; it != 0; ++it) {
         it->EnableUpdates(false);
-        DataNode *tempoprop = it->Property(tempo_sync, false);
+        const DataNode *tempoprop = it->Property(tempo_sync, false);
         if (tempoprop && tempoprop->Int()) {
             it->SetProperty(tempo, f3);
         }

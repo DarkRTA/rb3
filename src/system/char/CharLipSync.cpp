@@ -155,14 +155,14 @@ DECOMP_FORCEACTIVE(
 )
 
 void CharLipSync::Parse(DataArray *arr) {
-    DataArray *visemesArr = arr->FindArray("visemes", true);
+    DataArray *visemesArr = arr->FindArray("visemes");
     mVisemes.resize(visemesArr->Size() - 1);
     for (int i = 1; i < visemesArr->Size(); i++) {
         mVisemes[i - 1] = visemesArr->Str(i);
     }
     Generator gen;
     gen.Init(this);
-    DataArray *framesArr = arr->FindArray("frames", true);
+    DataArray *framesArr = arr->FindArray("frames");
     for (int i = 1; i < framesArr->Size(); i++) {
         DataArray *innerArr = framesArr->Array(i);
         for (int j = 0; j < innerArr->Size(); j++) {

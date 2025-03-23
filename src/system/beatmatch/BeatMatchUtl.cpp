@@ -93,9 +93,9 @@ float GetRollIntervalMs(const DataArray *cfg, TrackType ty, int idx, bool twoLan
         if (symType == ty) {
             if (ty == kTrackDrum) {
                 if (twoLanes)
-                    foundArr = foundArr->FindArray("double_lane", true)->Array(1);
+                    foundArr = foundArr->FindArray("double_lane")->Array(1);
                 else
-                    foundArr = foundArr->FindArray("single_lane", true)->Array(1);
+                    foundArr = foundArr->FindArray("single_lane")->Array(1);
             } else
                 foundArr = foundArr->Array(1);
 

@@ -27,7 +27,7 @@ void MetaMusicManager::Cleanup() {
 }
 
 void MetaMusicManager::Init(DataArray *da) {
-    ConfigureMetaMusicSceneData(da->FindArray("scenes", true));
+    ConfigureMetaMusicSceneData(da->FindArray("scenes"));
 }
 
 // fn_80511280

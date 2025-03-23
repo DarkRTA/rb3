@@ -367,7 +367,7 @@ void VocalTrack::Init() {
         SetVocalStyle(options->GetVocalStyle());
     }
 next:
-    ReadTimingData(SystemConfig()->FindArray("track_graphics", true));
+    ReadTimingData(SystemConfig()->FindArray("track_graphics"));
     unk1c8 = mDir->Find<RndGroup>("markers.grp", true);
     unk19c = 0;
     for (int i = 0; i < 0x20; i++) {
@@ -383,12 +383,12 @@ void VocalTrack::ResetTimingData() {
 
 void VocalTrack::ReadTimingData(const DataArray *a) {
     mLyricOverlapWindowMs = a->FindFloat("lyric_overlap_ms");
-    DataArray *staticCfg = a->FindArray("static_vocal_parameters", true);
+    DataArray *staticCfg = a->FindArray("static_vocal_parameters");
     mStaticDeployZoneXSize = staticCfg->FindFloat("static_deploy_x_size");
     mStaticDeployBufferX = staticCfg->FindFloat("static_deploy_buffer_x");
     mStaticDeployMarginX = staticCfg->FindFloat("static_phrase_margin_x");
-    mLyricShiftMs = staticCfg->FindArray("lyric_shift_ms", true)->Float(1);
-    mLyricShiftQuickMs = staticCfg->FindArray("lyric_shift_ms", true)->Float(2);
+    mLyricShiftMs = staticCfg->FindArray("lyric_shift_ms")->Float(1);
+    mLyricShiftQuickMs = staticCfg->FindArray("lyric_shift_ms")->Float(2);
     mLyricShiftAnticipationMs = staticCfg->FindFloat("lyric_shift_anticipation_ms");
     mMinLyricHighlightMs = staticCfg->FindFloat("min_lyric_highlight_ms");
     mMinPhraseHighlightMs = staticCfg->FindFloat("phrase_highlight_ms");

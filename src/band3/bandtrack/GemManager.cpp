@@ -682,7 +682,7 @@ bool GemManager::GetChordWidgetName(Symbol s1, Symbol s2, Symbol &sref) {
 }
 
 int GemManager::GetSlotIntData(int i1, Symbol s2) {
-    DataArray *arr = mGemData->FindArray(i1, true);
+    DataArray *arr = mGemData->FindArray(i1);
     return arr->FindInt(s2);
 }
 

@@ -1,5 +1,4 @@
-#ifndef OBJ_DIR_H
-#define OBJ_DIR_H
+#pragma once
 #include "compiler_macros.h"
 #include "obj/Object.h"
 #include "utl/BinStream.h"
@@ -426,5 +425,3 @@ public:
     T *mObj;
     int mWhich;
 };
-
-#endif

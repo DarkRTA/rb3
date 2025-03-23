@@ -62,7 +62,7 @@ void UIComponent::SetTypeDef(DataArray *da) {
         DataArray *cfg = SystemConfig("objects", ClassName());
         DataArray *found = cfg->FindArray("init", false);
         if (found) {
-            DataArray *typesArr = cfg->FindArray("types", true);
+            DataArray *typesArr = cfg->FindArray("types");
             DataArray *defaultArr = typesArr->FindArray("default", false);
             if (defaultArr) {
                 MILO_WARN(

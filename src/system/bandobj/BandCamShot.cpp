@@ -24,18 +24,18 @@ void BandCamShot::DeleteTargetCache(std::list<TargetCache>::iterator it) {
 }
 
 BandCamShot::BandCamShot()
-    : mTargets(this), mMinTime(0), mMaxTime(0), mZeroTime(0),
-      mNextShots(this, kObjListNoNull), mCurShot(this, 0), unk15c(0), unk160(0),
-      unk164(0), unk168(0), unk169(0), unk16a(0), mAnimsDuringNextShots(0) {
+    : mTargets(this), mMinTime(0), mMaxTime(0), mZeroTime(0), mNextShots(this),
+      mCurShot(this), unk15c(0), unk160(0), unk164(0), unk168(0), unk169(0), unk16a(0),
+      mAnimsDuringNextShots(0) {
     SetNear(10.0f);
     SetFar(10000.0f);
     mShotIter = mNextShots.end();
 }
 
 RndTransformable *BandCamShot::FindTarget(Symbol s, bool b) {
-    static Message msg("find_target", DataNode(0), DataNode(1));
-    msg[0] = DataNode(s);
-    msg[1] = DataNode(b);
+    static Message msg("find_target", 0, 1);
+    msg[0] = s;
+    msg[1] = b;
     DataNode handled = HandleType(msg);
     RndTransformable *ret = 0;
     if (handled.Type() != kDataUnhandled) {
@@ -109,14 +109,7 @@ BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
         tgt.unk1 = 0;
         tgt.unk2 = 1;
     }
-    if (BandCamShot::gRev == 8 || BandCamShot::gRev == 9 || BandCamShot::gRev == 10
-        || BandCamShot::gRev == 11 || BandCamShot::gRev == 12 || BandCamShot::gRev == 13
-        || BandCamShot::gRev == 14 || BandCamShot::gRev == 15 || BandCamShot::gRev == 16
-        || BandCamShot::gRev == 17 || BandCamShot::gRev == 18 || BandCamShot::gRev == 19
-        || BandCamShot::gRev == 20 || BandCamShot::gRev == 21 || BandCamShot::gRev == 22
-        || BandCamShot::gRev == 23 || BandCamShot::gRev == 24 || BandCamShot::gRev == 25
-        || BandCamShot::gRev == 26 || BandCamShot::gRev == 27
-        || BandCamShot::gRev == 28) {
+    if (BandCamShot::gRev >= 8 && BandCamShot::gRev <= 28) {
         Symbol s;
         bs >> s;
         bs >> s;
@@ -127,11 +120,7 @@ BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
     }
     if (BandCamShot::gRev > 9)
         bs >> tgt.mEnvOverride;
-    if (BandCamShot::gRev == 17 || BandCamShot::gRev == 18 || BandCamShot::gRev == 19
-        || BandCamShot::gRev == 20 || BandCamShot::gRev == 21 || BandCamShot::gRev == 22
-        || BandCamShot::gRev == 23 || BandCamShot::gRev == 24 || BandCamShot::gRev == 25
-        || BandCamShot::gRev == 26 || BandCamShot::gRev == 27
-        || BandCamShot::gRev == 28) {
+    if (BandCamShot::gRev >= 17 && BandCamShot::gRev <= 28) {
         bool b;
         bs >> b;
     }
@@ -154,9 +143,7 @@ BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
             tgt.mForceLod = -1;
         }
     }
-    if (BandCamShot::gRev == 22 || BandCamShot::gRev == 23 || BandCamShot::gRev == 24
-        || BandCamShot::gRev == 25 || BandCamShot::gRev == 26 || BandCamShot::gRev == 27
-        || BandCamShot::gRev == 28) {
+    if (BandCamShot::gRev >= 22 && BandCamShot::gRev <= 28) {
         String s48;
         int i;
         bs >> s48;
@@ -194,13 +181,8 @@ BEGIN_LOADS(BandCamShot)
     if (gRev > 4)
         LOAD_SUPERCLASS(CamShot)
     bs >> mTargets;
-    if (BandCamShot::gRev == 2 || BandCamShot::gRev == 3 || BandCamShot::gRev == 4
-        || BandCamShot::gRev == 5 || BandCamShot::gRev == 6 || BandCamShot::gRev == 7
-        || BandCamShot::gRev == 8 || BandCamShot::gRev == 9 || BandCamShot::gRev == 10
-        || BandCamShot::gRev == 11 || BandCamShot::gRev == 12 || BandCamShot::gRev == 13
-        || BandCamShot::gRev == 14 || BandCamShot::gRev == 15 || BandCamShot::gRev == 16
-        || BandCamShot::gRev == 17 || BandCamShot::gRev == 18) {
-        ObjPtr<BandCamShot, ObjectDir> shotPtr(this, 0);
+    if (BandCamShot::gRev >= 2 && BandCamShot::gRev <= 18) {
+        ObjPtr<BandCamShot> shotPtr(this, 0);
         bs >> shotPtr;
         if (shotPtr)
             mNextShots.push_back(shotPtr);
@@ -223,8 +205,8 @@ BEGIN_LOADS(BandCamShot)
         }
     }
     if (gRev - 0x10 <= 0xCU) {
-        ObjPtr<EventTrigger, ObjectDir> trig1(this, 0);
-        ObjPtr<EventTrigger, ObjectDir> trig2(this, 0);
+        ObjPtr<EventTrigger> trig1(this, 0);
+        ObjPtr<EventTrigger> trig2(this, 0);
         bs >> trig1;
         bs >> trig2;
     }
@@ -267,7 +249,7 @@ bool BandCamShot::IterateNextShot() {
     if (mShotIter == mNextShots.end()) {
         mShotIter = mNextShots.begin();
     } else {
-        ObjPtrList<BandCamShot, ObjectDir>::iterator curItr = mShotIter;
+        ObjPtrList<BandCamShot>::iterator curItr = mShotIter;
         ++mShotIter;
         if (mShotIter == mNextShots.end()) {
             ret = false;

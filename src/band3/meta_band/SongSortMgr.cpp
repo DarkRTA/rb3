@@ -156,7 +156,7 @@ bool SongSortMgr::InqSongsForSetlist(Symbol s, std::vector<Symbol> &songVector) 
     for (int i = 1; i < cfg->Size(); i++) {
         DataArray *arr = cfg->Array(i);
         if (arr->Sym(0) == s) {
-            DataArray *songsArr = arr->FindArray(songs, true);
+            DataArray *songsArr = arr->FindArray(songs);
             for (int j = 1; j < songsArr->Size(); j++) {
                 Symbol curSym = songsArr->Sym(j);
                 songVector.push_back(curSym);
@@ -176,12 +176,12 @@ void SongSortMgr::BuildInternalSetlists() {
             Symbol titleSym = curArr->Sym(0);
             Symbol descSym = curArr->FindSym(desc);
             InternalSavedSetlist *setlist = new InternalSavedSetlist(titleSym, descSym);
-            DataArray *dateArr = curArr->FindArray(date, true);
+            DataArray *dateArr = curArr->FindArray(date);
             setlist->SetDateTime(
                 DateTime(dateArr->Int(1), dateArr->Int(2), dateArr->Int(3), 0, 0, 0)
             );
             bool b1 = false;
-            DataArray *songsArr = curArr->FindArray(songs, true);
+            DataArray *songsArr = curArr->FindArray(songs);
 
             int songArrIdx = 1;
             while (songArrIdx < songsArr->Size()) {

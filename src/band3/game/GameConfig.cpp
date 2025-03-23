@@ -71,7 +71,7 @@ Symbol GameConfig::GetController(BandUser *user) const {
     int padnum = user->IsLocal() ? user->GetLocalUser()->GetPadNum() : -1;
     Symbol cnttype = JoypadControllerTypePadNum(padnum);
     DataArray *cfg = SystemConfig(joypad, controller_mapping);
-    DataArray *assoc = cfg->FindArray(cnttype, true);
+    DataArray *assoc = cfg->FindArray(cnttype);
     MILO_ASSERT(assoc, 0x85);
     if (assoc->Type(1) == kDataSymbol)
         return assoc->Sym(1);

@@ -35,7 +35,7 @@ void AccomplishmentTourConditional::UpdateConditionOptionalData(
 
 void AccomplishmentTourConditional::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x3E);
-    DataArray *pConditionArray = i_pConfig->FindArray(conditions, true);
+    DataArray *pConditionArray = i_pConfig->FindArray(conditions);
     if (pConditionArray) {
         MILO_ASSERT(pConditionArray->Size() > 1, 0x46);
         for (int i = 1; i < pConditionArray->Size(); i++) {

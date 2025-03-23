@@ -129,7 +129,7 @@ void ClipCollide::SetTypeDef(DataArray *da) {
     if (mTypeDef != da) {
         Hmx::Object::SetTypeDef(da);
         if (da) {
-            DataArray *modesArr = da->FindArray("modes", true);
+            DataArray *modesArr = da->FindArray("modes");
             mMode = modesArr->Array(1)->Sym(0);
         }
     }

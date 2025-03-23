@@ -952,7 +952,7 @@ DataNode BandDirector::OnLoadSong(DataArray *da) {
     int i4 = da->Int(4);
     Symbol s5 = da->Sym(5);
     bool i6 = da->Int(6);
-    DataArray *genrearr = TypeDef()->FindArray("anim_genres", true);
+    DataArray *genrearr = TypeDef()->FindArray("anim_genres");
     DataArray *s3arr = genrearr->FindArray(s3, false);
     if (s3arr)
         s3 = s3arr->Sym(1);
@@ -1572,7 +1572,7 @@ DataNode BandDirector::OnLightPresetKeyframeInterp(DataArray *da) {
 
 DataNode BandDirector::OnForcePreset(DataArray *da) {
     if (LightPresetMgr()) {
-        DataNode &eval = da->Evaluate(2);
+        const DataNode &eval = da->Evaluate(2);
         float f3 = da->Size() > 3 ? da->Float(3) : 0;
         LightPreset *lp;
         if (eval.Type() == kDataSymbol || eval.Type() == kDataString) {
@@ -1586,8 +1586,8 @@ DataNode BandDirector::OnForcePreset(DataArray *da) {
 
 DataNode BandDirector::OnStompPresets(DataArray *da) {
     if (LightPresetMgr()) {
-        DataNode &eval2 = da->Evaluate(2);
-        DataNode &eval3 = da->Evaluate(3);
+        const DataNode &eval2 = da->Evaluate(2);
+        const DataNode &eval3 = da->Evaluate(3);
         LightPreset *lp1;
         LightPreset *lp2;
 

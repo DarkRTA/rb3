@@ -20,7 +20,7 @@ LessonMgr::LessonMgr() {
     MILO_ASSERT(mLessonsMap.empty(), 0x1D);
     DataArray *pTrainerConfig = SystemConfig("trainer");
     MILO_ASSERT(pTrainerConfig, 0x20);
-    DataArray *pTrainers = pTrainerConfig->FindArray("trainers", true);
+    DataArray *pTrainers = pTrainerConfig->FindArray("trainers");
     MILO_ASSERT(pTrainers, 0x23);
     for (int i = 1; i < pTrainers->Size(); i++) {
         DataArray *pTrainer = pTrainers->Array(i);

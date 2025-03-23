@@ -501,7 +501,7 @@ int CharacterCreatorPanel::GetFeatureIndex(Symbol s) {
         return 0;
     else {
         DataArrayPtr ptr(head, s);
-        DataNode *featureIndex = mPreviewDesc->Property(ptr, true);
+        const DataNode *featureIndex = mPreviewDesc->Property(ptr, true);
         MILO_ASSERT(featureIndex, 0x36D);
         return featureIndex->Int();
     }

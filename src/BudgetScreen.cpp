@@ -182,7 +182,7 @@ void BudgetScreen::Enter(UIScreen *screen) {
 
     mTestPanel = nullptr;
     UIScreen::Enter(screen);
-    mTestPanel = mTypeDef->FindArray("test_panel", true)->Obj<UIPanel>(1);
+    mTestPanel = mTypeDef->FindArray("test_panel")->Obj<UIPanel>(1);
 
     TheRnd->SetGSTiming(true);
     TheRnd->BeginDrawing();

@@ -896,16 +896,16 @@ bool OvershellPanel::ShouldSeeRealGuitarPrompt(
 
 void OvershellPanel::FinishLoad() {
     UIPanel::FinishLoad();
-    DataArray *playerPanelsArr = TypeDef()->FindArray("player_panels", true);
-    DataArray *typeArr = playerPanelsArr->FindArray("type", true);
+    DataArray *playerPanelsArr = TypeDef()->FindArray("player_panels");
+    DataArray *typeArr = playerPanelsArr->FindArray("type");
     DataArray *slots = playerPanelsArr->FindArray("slots", false);
     MILO_ASSERT(slots, 0x72F);
-    DataArray *validControllers = slots->FindArray("valid_controllers", true);
+    DataArray *validControllers = slots->FindArray("valid_controllers");
     MILO_ASSERT(validControllers, 0x731);
-    DataArray *normalArr = validControllers->FindArray("normal", true);
-    DataArray *voxArr = validControllers->FindArray("auto_vocals", true);
+    DataArray *normalArr = validControllers->FindArray("normal");
+    DataArray *voxArr = validControllers->FindArray("auto_vocals");
     int size = normalArr->Size() - 1;
-    DataArray *priorityArr = slots->FindArray("joining_priority", true);
+    DataArray *priorityArr = slots->FindArray("joining_priority");
     ClearSlots();
     mSlots.reserve(size);
     for (int i = 0; i < size; i++) {
@@ -1159,7 +1159,7 @@ DataNode OvershellPanel::OnMsg(const UserNameNewlyProfaneMsg &msg) {
 }
 
 DataNode OvershellPanel::OnUpdate(DataArray *arr) {
-    DataNode &n = arr->Node(2).Evaluate();
+    const DataNode &n = arr->Node(2).Evaluate();
     Update(n.Obj<OvershellSlot>());
     return 1;
 }

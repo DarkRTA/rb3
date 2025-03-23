@@ -773,7 +773,7 @@ BEGIN_LOADS(CamShot)
         if (gRev < 0x2A)
             bs >> csc.mCrowd;
     } else {
-        DataNode *prop = Property("hide_crowd", false);
+        const DataNode *prop = Property("hide_crowd", false);
         if (!prop || prop->Int() == 0) {
             ObjDirItr<WorldCrowd> iter(Dir(), true);
             if (iter) {

@@ -479,7 +479,7 @@ void Game::Jump(float f1, bool b2) {
 void Game::Replay() { unk120 = true; }
 
 DataNode Game::OnJump(const DataArray *a) {
-    DataNode &node = a->Evaluate(2);
+    const DataNode &node = a->Evaluate(2);
     DataType ty = node.Type();
     if (ty == kDataFloat || ty == kDataInt) {
         Jump(node.Float(), true);

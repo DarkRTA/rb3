@@ -141,7 +141,7 @@ bool CharDriver::Starved() {
 }
 
 CharClip *MyFindClip(const DataNode &n, ObjectDir *dir) {
-    DataNode &node = n.Evaluate();
+    const DataNode &node = n.Evaluate();
     Hmx::Object *obj;
     if (node.Type() == kDataObject) {
         obj = node.mValue.object;

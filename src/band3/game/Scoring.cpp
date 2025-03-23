@@ -25,23 +25,22 @@ OverdriveConfig::OverdriveConfig(DataArray *cfg) {
 }
 
 Scoring::Scoring()
-    : mConfig(SystemConfig("scoring")),
-      mOverdriveConfig(mConfig->FindArray("overdrive", true)), unkc0(0) {
+    : mConfig(SystemConfig("scoring")), mOverdriveConfig(mConfig->FindArray("overdrive")),
+      unkc0(0) {
     MILO_ASSERT(!TheScoring, 0x2C);
     TheScoring = this;
 
-    mConfig->FindArray("points", true);
-    DataArray *streakarr = mConfig->FindArray("streaks", true);
-    DataArray *multarr = streakarr->FindArray("multipliers", true);
-    DataArray *energyarr = streakarr->FindArray("energy", true);
+    mConfig->FindArray("points");
+    DataArray *streakarr = mConfig->FindArray("streaks");
+    DataArray *multarr = streakarr->FindArray("multipliers");
+    DataArray *energyarr = streakarr->FindArray("energy");
 
-    mCommonPhraseReward = mConfig->FindArray("unison_phrase", true)->FindFloat("reward");
-    mCommonPhrasePenalty =
-        mConfig->FindArray("unison_phrase", true)->FindFloat("penalty");
+    mCommonPhraseReward = mConfig->FindArray("unison_phrase")->FindFloat("reward");
+    mCommonPhrasePenalty = mConfig->FindArray("unison_phrase")->FindFloat("penalty");
     InitializeStreakList(mStreakMultLists, multarr);
     InitializeStreakList(mStreakEnergyLists, energyarr);
 
-    DataArray *pointarr = mConfig->FindArray("points", true);
+    DataArray *pointarr = mConfig->FindArray("points");
     for (int i = 1; i < pointarr->Size(); i++) {
         int idx = SymToTrackType(pointarr->Array(i)->Sym(0));
         int head = pointarr->Array(i)->FindInt("head");
@@ -65,12 +64,11 @@ void Scoring::ComputeStarThresholds(bool debug) const {
     std::vector<PlayerScoreInfo> &scoreinfos = TheSongDB->GetBaseScores();
     int i12 = 10;
     mStarThresholds.clear();
-    DataArray *starRatings = mConfig->FindArray("star_ratings", true);
+    DataArray *starRatings = mConfig->FindArray("star_ratings");
 
-    DataArray *thresholds = starRatings->FindArray("new_instrument_thresholds", true);
-    DataArray *newNumInstMults =
-        starRatings->FindArray("new_num_instruments_multiplier", true);
-    DataArray *newBonusThreshes = starRatings->FindArray("new_bonus_thresholds", true);
+    DataArray *thresholds = starRatings->FindArray("new_instrument_thresholds");
+    DataArray *newNumInstMults = starRatings->FindArray("new_num_instruments_multiplier");
+    DataArray *newBonusThreshes = starRatings->FindArray("new_bonus_thresholds");
 
     float fb8[10];
     for (int i = 0; i < 10; i++)
@@ -105,7 +103,7 @@ void Scoring::ComputeStarThresholds(bool debug) const {
 
     for (int i = 0; i < scoreinfos.size(); i++) {
         Symbol trackSym = TrackTypeToSym(scoreinfos[i].mTrackType);
-        DataArray *a = thresholds->FindArray(trackSym, true);
+        DataArray *a = thresholds->FindArray(trackSym);
         MILO_ASSERT(a->Size() < DIM(thresholds), 0x8B);
         i12 = Min(i12, a->Size());
         scoreinfos[i].mSoloStarThresholds.clear();
@@ -225,13 +223,13 @@ float Scoring::GetPartialStreakFraction(int i1, Symbol s2) const {
 }
 
 DataArray *Scoring::GetCrowdConfig(Difficulty diff, BandUser *user) const {
-    DataArray *diffarr = mConfig->FindArray("crowd", true)->FindArray(diff, true);
+    DataArray *diffarr = mConfig->FindArray("crowd")->FindArray(diff);
     Symbol key = user ? user->GetTrackSym() : "default";
     DataArray *ret = diffarr->FindArray(key, false);
     if (ret)
         return ret;
     else
-        return diffarr->FindArray("default", true);
+        return diffarr->FindArray("default");
 }
 
 int Scoring::GetBandNumStars(int i) const {
@@ -336,7 +334,7 @@ int Scoring::GetNotesPerMultiplier(Symbol s) const {
 
 void Scoring::GetSoloAward(int i, Symbol s, int &iref, Symbol &sref) {
     DataArray *soloblock = GetSoloBlock(s);
-    DataArray *awardarr = soloblock->FindArray("awards", true);
+    DataArray *awardarr = soloblock->FindArray("awards");
     for (int idx = awardarr->Size() - 1; idx >= 1; idx--) {
         DataArray *arr = awardarr->Array(idx);
         if (i >= arr->Int(0)) {
@@ -349,17 +347,17 @@ void Scoring::GetSoloAward(int i, Symbol s, int &iref, Symbol &sref) {
 }
 
 DataArray *Scoring::GetSoloBlock(Symbol s) const {
-    DataArray *soloarr = mConfig->FindArray("solo", true);
+    DataArray *soloarr = mConfig->FindArray("solo");
     DataArray *blockarr = soloarr->FindArray(s, false);
-    return blockarr ? blockarr : soloarr->FindArray("default", true);
+    return blockarr ? blockarr : soloarr->FindArray("default");
 }
 
 float Scoring::GetSoloGemReward(Symbol s) {
-    return GetSoloBlock(s)->FindArray("reward", true)->Float(1);
+    return GetSoloBlock(s)->FindArray("reward")->Float(1);
 }
 
 float Scoring::GetSoloGemPenalty(Symbol s) {
-    return GetSoloBlock(s)->FindArray("penalty", true)->Float(1);
+    return GetSoloBlock(s)->FindArray("penalty")->Float(1);
 }
 
 void Scoring::PrintStarThresholds() const {}

@@ -241,13 +241,13 @@ void BandUI::GetCurrentScreenState(std::vector<UIScreen *> &screens) {
 DECOMP_FORCEACTIVE(BandUI, "qp_coop")
 
 UIScreen *BandUI::GetJoinEntryPointForFlowType(UIFlowType ft) const {
-    DataArray *flowDef = TypeDef()->FindArray("ui_flows", true)->FindArray(ft, true);
+    DataArray *flowDef = TypeDef()->FindArray("ui_flows")->FindArray(ft);
     DataArray *joinArr = flowDef->FindArray("join_entry_point", false);
     return joinArr ? joinArr->Obj<UIScreen>(1) : nullptr;
 }
 
 void BandUI::TriggerOnFinishedJoin(UIFlowType ft) {
-    DataArray *flowDef = TypeDef()->FindArray("ui_flows", true)->FindArray(ft, true);
+    DataArray *flowDef = TypeDef()->FindArray("ui_flows")->FindArray(ft);
     DataArray *joinArr = flowDef->FindArray("on_finished_join", false);
     if (joinArr) {
         joinArr->ExecuteScript(1, nullptr, nullptr, 1);
@@ -300,7 +300,7 @@ DataNode BandUI::OnMsg(const UITransitionCompleteMsg &msg) {
     UIScreen *screen = msg.GetScreen1();
     if (screen) {
         s38 = screen->Name();
-        DataNode *prop = screen->Property("disable_screen_saver", false);
+        const DataNode *prop = screen->Property("disable_screen_saver", false);
         ThePlatformMgr.SetScreenSaver(!prop || prop->Int() == 0);
     }
     if (TheUIEventMgr->HasActiveTransitionEvent()

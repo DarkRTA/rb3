@@ -16,7 +16,7 @@ AccomplishmentTrainerListConditional::~AccomplishmentTrainerListConditional() {}
 
 void AccomplishmentTrainerListConditional::Configure(DataArray *i_pConfig) {
     MILO_ASSERT(i_pConfig, 0x1B);
-    DataArray *pEntryArray = i_pConfig->FindArray(lessons, true);
+    DataArray *pEntryArray = i_pConfig->FindArray(lessons);
     MILO_ASSERT(pEntryArray->Size() > 1, 0x22);
     for (int i = 1; i < pEntryArray->Size(); i++) {
         Symbol sym = pEntryArray->Node(i).Sym();

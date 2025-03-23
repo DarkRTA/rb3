@@ -184,6 +184,7 @@ public:
     bool InGame() const { return mInGame; }
     bool BlockAllInput() const { return mBlockAllInput; }
     bool AutoHideEnabled() const { return mAutohideEnabled; }
+    PassiveMessageQueue *GetMessageQueue() const { return mMessageQueue; }
 
     OvershellSlotStateMgr *mStateMgr; // 0x1c
     OvershellSlotState *mState; // 0x20

@@ -194,7 +194,7 @@ void GameMicManager::Poll(float f1) {
     if (unk20) {
         FxSendDelay *send = unk20->Find<FxSendDelay>("delay.send", true);
         if (send) {
-            DataNode *syncProp = send->Property(tempo_sync, false);
+            const DataNode *syncProp = send->Property(tempo_sync, false);
             if (syncProp && syncProp->Int()) {
                 send->SetProperty(tempo, f1);
             }

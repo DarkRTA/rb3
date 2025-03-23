@@ -57,6 +57,7 @@ public:
     void
     RecordBattleScore(int, int, std::vector<BandProfile *> &, int, DataResultList &, Hmx::Object *);
     void GetLinkingCode(int, DataResultList &, Hmx::Object *);
+    void UpdateOnlineStatus();
 
     DataResultList unk1c;
     int unk34;

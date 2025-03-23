@@ -58,14 +58,14 @@ DataArraySongInfo::DataArraySongInfo(
         }
     }
     if (FIND_WITH_BACKUP(drum_solo)) {
-        DataArray *solo_arr = member_arr->FindArray("seqs", true)->Array(1);
+        DataArray *solo_arr = member_arr->FindArray("seqs")->Array(1);
         mDrumSoloSamples.reserve(solo_arr->Size());
         for (int i = 0; i < solo_arr->Size(); i++) {
             mDrumSoloSamples.push_back(solo_arr->Sym(i));
         }
     }
     if (FIND_WITH_BACKUP(drum_freestyle)) {
-        DataArray *freestyle_arr = member_arr->FindArray("seqs", true)->Array(1);
+        DataArray *freestyle_arr = member_arr->FindArray("seqs")->Array(1);
         mDrumFreestyleSamples.reserve(freestyle_arr->Size());
         for (int i = 0; i < freestyle_arr->Size(); i++) {
             mDrumFreestyleSamples.push_back(freestyle_arr->Sym(i));

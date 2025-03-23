@@ -29,8 +29,8 @@ namespace {
 ClosetMgr::ClosetMgr()
     : mUser(0), mSlot(-1), mNoUserMode(0), unk28(0), mCurrentCharacter(0),
       mPreviousCharacter(0), mBandCharacter(0), mBandCharDesc(0), mCurrentClosetPanel(0),
-      unk44(gNullStr), mCurrentOutfitPiece(0), mCurrentOutfitConfig(0), unk50(0),
-      unk54(0), mGender(gNullStr), mCharacterLoading(0), unk61(0) {
+      unk44(gNullStr), mCurrentOutfitPiece(0), mCurrentOutfitConfig(0), mGender(gNullStr),
+      mCharacterLoading(0), unk61(0) {
     SetName("closet_mgr", ObjectDir::Main());
     unk3c = dynamic_cast<BandCharDesc *>(BandCharDesc::NewObject());
     ThePlatformMgr.AddSink(this, ProfileSwappedMsg::Type());
@@ -254,7 +254,7 @@ void ClosetMgr::PreviewCharacter(bool b1, bool b2) {
 }
 
 void ClosetMgr::FinalizeBodyChanges(Symbol s) {
-    DataNode *prop = unk3c->Property(s, true);
+    const DataNode *prop = unk3c->Property(s, true);
     mBandCharDesc->SetProperty(s, *prop);
     PlayFinalizedSound(false);
 }
@@ -326,21 +326,21 @@ void ClosetMgr::SetCurrentCharacterPatch(
     int idx = unk3c->FindPatchIndex(cat, cc);
     if (idx == -1) {
         unk3c->AddNewPatch(cat, cc);
-        unk50 = 0;
+        unk50.patchType = 0;
     } else {
-        unk54 = unk3c->GetPatch(idx)->mTexture;
+        unk50.patchIndex = unk3c->GetPatch(idx)->mTexture;
     }
     PreviewCharacter(true, false);
 }
 
 void ClosetMgr::UpdateCharacterPatch(BandCharDesc::Patch::Category cat, const char *cc) {
-    if (unk50 == 0)
+    if (unk50.patchType == 0)
         unk3c->ClearPatch(cat, cc);
     else {
         int idx = unk3c->FindPatchIndex(cat, cc);
         if (idx != -1) {
             BandCharDesc::Patch *patch = unk3c->GetPatch(idx);
-            patch->mTexture = unk54;
+            patch->mTexture = unk50.patchIndex;
         }
     }
 }

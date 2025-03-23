@@ -179,14 +179,14 @@ void MetaMusic::UpdateMix() {
         }
     } else {
         MILO_ASSERT(m_CurrentFxConfig, 0x16F);
-        DataArray *volsArr = m_CurrentFxConfig->FindArray(vols, true);
-        DataArray *pansArr = m_CurrentFxConfig->FindArray(pans, true);
+        DataArray *volsArr = m_CurrentFxConfig->FindArray(vols);
+        DataArray *pansArr = m_CurrentFxConfig->FindArray(pans);
         float f15 = SomeMinusFunc();
         float f16 = SomePlusFunc();
         int numChannels = Min(mStream->GetNumChannels(), 6);
         if (unk80 && unk84 <= 90) {
-            DataArray *volsArr80 = unk80->FindArray(vols, true);
-            DataArray *pansArr80 = unk80->FindArray(pans, true);
+            DataArray *volsArr80 = unk80->FindArray(vols);
+            DataArray *pansArr80 = unk80->FindArray(pans);
             for (int i = 0; i < numChannels; i++) {
                 char buf[16];
                 sprintf(buf, "channel_%d", i + 1);

@@ -239,11 +239,10 @@ namespace Hmx {
 
         /** Execute code based on the contents of a received message.
          * @param [in] _msg The received message.
-         * @param [in] _warn Whether or not to print the unhandled message to the debug
-         * console.
+         * @param [in] _warn If true, and the message goes unhandled, print to console.
          * @returns The return value of whatever code was executed.
          */
-        virtual DataNode Handle(DataArray *_msg, bool _warn);
+        virtual DataNode Handle(DataArray *_msg, bool _warn = true);
 
         /** Syncs an Object's property to or from a supplied DataNode.
          * @param [out] _val A DataNode to either place the property val into, or set the
@@ -343,7 +342,7 @@ namespace Hmx {
          * was found.
          * @returns The corresponding property's value as a DataNode pointer.
          */
-        DataNode *Property(Symbol prop, bool fail = true) const;
+        const DataNode *Property(Symbol prop, bool fail = true) const;
 
         /** Search for a key in this Object's properties, and return the corresponding
          * value.
@@ -353,7 +352,7 @@ namespace Hmx {
          * was found.
          * @returns The corresponding property's value as a DataNode pointer.
          */
-        DataNode *Property(DataArray *prop, bool fail) const;
+        const DataNode *Property(DataArray *prop, bool fail = true) const;
 
         /** Either adds or updates the key/value pair in the properties.
          * @param [in] prop The key to either add or update

@@ -135,17 +135,17 @@ DEF_DATA_FUNC(DataUnless) {
 
 /** Verifies if two DataNodes are equivalent. */
 DEF_DATA_FUNC(DataEq) {
-    DataNode *dn1 = &array->Evaluate(1);
-    DataNode *dn2 = &array->Evaluate(2);
-    return dn1->operator==(*dn2);
+    const DataNode &dn1 = array->Evaluate(1);
+    const DataNode &dn2 = array->Evaluate(2);
+    return dn1 == dn2;
 }
 
 DEF_DATA_FUNC(DataFindElem) {
     DataArray *arr = array->Array(1);
     arr->AddRef();
-    DataNode *dn = &array->Evaluate(2);
+    const DataNode &dn = array->Evaluate(2);
     for (int i = 0; i < arr->Size(); i++) {
-        if (!(arr->Node(i).operator==(*dn)))
+        if (!(arr->Node(i) == dn))
             continue;
         if (array->Size() > 3) {
             array->Var(3)->operator=(DataNode(i));
@@ -331,8 +331,8 @@ DEF_DATA_FUNC(DataDo) {
 }
 
 DEF_DATA_FUNC(DataMin) {
-    DataNode &n1 = array->Evaluate(1);
-    DataNode &n2 = array->Evaluate(2);
+    const DataNode &n1 = array->Evaluate(1);
+    const DataNode &n2 = array->Evaluate(2);
     if (n1.Type() == kDataFloat || n2.Type() == kDataFloat) {
         return Min<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
     } else {
@@ -341,8 +341,8 @@ DEF_DATA_FUNC(DataMin) {
 }
 
 DEF_DATA_FUNC(DataMax) {
-    DataNode &n1 = array->Evaluate(1);
-    DataNode &n2 = array->Evaluate(2);
+    const DataNode &n1 = array->Evaluate(1);
+    const DataNode &n2 = array->Evaluate(2);
     if (n1.Type() == kDataFloat || n2.Type() == kDataFloat) {
         return Max<float>(n1.LiteralFloat(array), n2.LiteralFloat(array));
     } else {
@@ -351,7 +351,7 @@ DEF_DATA_FUNC(DataMax) {
 }
 
 DEF_DATA_FUNC(DataAbs) {
-    DataNode &n = array->Evaluate(1);
+    const DataNode &n = array->Evaluate(1);
     float f = std::fabs(n.LiteralFloat(array));
     if (n.Type() == kDataInt)
         return (int)f;
@@ -365,7 +365,7 @@ DEF_DATA_FUNC(DataAdd) {
     int cnt = array->Size();
     int i;
     for (i = 1; i < cnt; i++) {
-        DataNode &n = array->Evaluate(i);
+        const DataNode &n = array->Evaluate(i);
         if (n.Type() != kDataInt) {
             sum_f = sum_int + n.LiteralFloat(array);
             break;
@@ -391,14 +391,14 @@ DEF_DATA_FUNC(DataAddEq) {
 }
 
 DEF_DATA_FUNC(DataSub) {
-    DataNode &dn = array->Evaluate(1);
+    const DataNode &dn = array->Evaluate(1);
     if (array->Size() == 2) {
         if (dn.Type() == kDataFloat) {
             return -dn.LiteralFloat(array);
         } else
             return -dn.LiteralInt(array);
     } else {
-        DataNode &dn2 = array->Evaluate(2);
+        const DataNode &dn2 = array->Evaluate(2);
         if (dn.Type() == kDataFloat || dn2.Type() == kDataFloat) {
             return dn.LiteralFloat(array) - dn2.LiteralFloat(array);
         } else {
@@ -417,9 +417,9 @@ DEF_DATA_FUNC(DataMean) {
 }
 
 DEF_DATA_FUNC(DataClamp) {
-    DataNode &n1 = array->Evaluate(1);
-    DataNode &n2 = array->Evaluate(2);
-    DataNode &n3 = array->Evaluate(3);
+    const DataNode &n1 = array->Evaluate(1);
+    const DataNode &n2 = array->Evaluate(2);
+    const DataNode &n3 = array->Evaluate(3);
     if (n1.Type() == kDataFloat || n2.Type() == kDataFloat || n3.Type() == kDataFloat) {
         return Clamp<float>(
             n2.LiteralFloat(array), n3.LiteralFloat(array), n1.LiteralFloat(array)
@@ -452,8 +452,8 @@ DEF_DATA_FUNC(DataClampEq) {
 }
 
 DEF_DATA_FUNC(DataMultiply) {
-    DataNode &dn1 = array->Evaluate(1);
-    DataNode &dn2 = array->Evaluate(2);
+    const DataNode &dn1 = array->Evaluate(1);
+    const DataNode &dn2 = array->Evaluate(2);
     if (dn1.Type() == kDataFloat || dn2.Type() == kDataFloat) {
         return dn1.LiteralFloat(array) * dn2.LiteralFloat(array);
     } else
@@ -485,8 +485,8 @@ DEF_DATA_FUNC(DataDivideEq) {
 DEF_DATA_FUNC(DataSqrt) { return std::sqrt(array->Float(1)); }
 
 DEF_DATA_FUNC(DataMod) {
-    DataNode &n1 = array->Evaluate(1);
-    DataNode &n2 = array->Evaluate(2);
+    const DataNode &n1 = array->Evaluate(1);
+    const DataNode &n2 = array->Evaluate(2);
     if (n1.Type() == kDataFloat || n2.Type() == kDataFloat)
         return Modulo(n1.LiteralFloat(array), n2.LiteralFloat(array));
     else
@@ -506,14 +506,14 @@ DEF_DATA_FUNC(DataSymbol) { return array->ForceSym(1); }
 
 DEF_DATA_FUNC(DataChar) {
     static char newChar[2];
-    DataNode &n = array->Evaluate(1);
+    const DataNode &n = array->Evaluate(1);
     newChar[0] = n.Int();
     newChar[1] = '\0';
     return newChar;
 }
 
 DEF_DATA_FUNC(DataInt) {
-    DataNode &n = array->Evaluate(1);
+    const DataNode &n = array->Evaluate(1);
     if (n.Type() == kDataSymbol)
         return atoi(n.UncheckedStr());
     else if (n.Type() == kDataObject || n.Type() == kDataInt)
@@ -602,7 +602,7 @@ DEF_DATA_FUNC(DataGetLastElem) {
 }
 
 DEF_DATA_FUNC(DataObject) {
-    DataNode &n = array->Evaluate(1);
+    const DataNode &n = array->Evaluate(1);
     if (n.Type() == kDataObject)
         return n;
     else {
@@ -765,7 +765,7 @@ DEF_DATA_FUNC(DataCond) {
 
 // naming from RBVR PDB build
 namespace {
-    inline bool SwitchMatch(DataNode &dn1, DataNode &dn2) {
+    inline bool SwitchMatch(const DataNode &dn1, const DataNode &dn2) {
         if (dn1.Type() == kDataArray) {
             DataArray *arr = dn1.mValue.array;
             for (int i = 0; i < arr->Size(); i++) {
@@ -781,12 +781,12 @@ namespace {
 }
 
 DEF_DATA_FUNC(DataSwitch) {
-    DataNode &n = array->Evaluate(1);
+    const DataNode &n = array->Evaluate(1);
     for (int i = 2; i < array->Size(); i++) {
         DataNode &work = array->Node(i);
         if (work.Type() == kDataArray) {
             DataArray *nextarr = work.mValue.array;
-            DataNode &next = nextarr->Node(0);
+            const DataNode &next = nextarr->Node(0);
             if (SwitchMatch(next, n)) {
                 return nextarr->ExecuteScript(1, gDataThis, 0, 1);
             }
@@ -834,7 +834,7 @@ DEF_DATA_FUNC(DataResize) {
 }
 
 DEF_DATA_FUNC(DataNewArray) {
-    DataNode &n = array->Evaluate(1);
+    const DataNode &n = array->Evaluate(1);
     DataArrayPtr ptr;
     if (n.Type() == kDataInt) {
         ptr->Resize(n.LiteralInt());
@@ -848,7 +848,7 @@ DEF_DATA_FUNC(DataNewArray) {
 DEF_DATA_FUNC(DataSetElem) {
     DataArray *aaaa = array->Array(1);
     int i = array->Int(2);
-    DataNode &n = array->Evaluate(3);
+    const DataNode &n = array->Evaluate(3);
     return aaaa->Node(i) = n;
 }
 
@@ -903,7 +903,7 @@ DEF_DATA_FUNC(DataHandleType) {
     for (int i = 1; i < array->Size(); i++) {
         DataArray *a = array->Array(i);
         Hmx::Object *o;
-        DataNode &n = a->Evaluate(0);
+        const DataNode &n = a->Evaluate(0);
         if (n.Type() == kDataObject)
             o = n.UncheckedObj();
         else
@@ -917,7 +917,7 @@ DEF_DATA_FUNC(DataHandleType) {
 DEF_DATA_FUNC(DataHandleTypeRet) {
     DataArray *a = array->Array(1);
     Hmx::Object *o;
-    DataNode &n = a->Evaluate(0);
+    const DataNode &n = a->Evaluate(0);
     if (n.Type() == kDataObject)
         o = n.UncheckedObj();
     else
@@ -940,7 +940,7 @@ DEF_DATA_FUNC(DataHandleTypeRet) {
 DEF_DATA_FUNC(DataExport) {
     DataArray *a = array->Array(1);
     bool i = array->Int(2);
-    DataNode &n = a->Evaluate(0);
+    const DataNode &n = a->Evaluate(0);
     Hmx::Object *obj;
     if (n.Type() == kDataObject)
         obj = n.UncheckedObj();
@@ -954,7 +954,7 @@ DEF_DATA_FUNC(DataExport) {
 DEF_DATA_FUNC(DataHandle) {
     for (int i = 1; i < array->Size(); i++) {
         DataArray *handlo = array->Array(i);
-        DataNode &n = handlo->Evaluate(0);
+        const DataNode &n = handlo->Evaluate(0);
         Hmx::Object *obj;
         if (n.Type() == kDataObject)
             obj = n.UncheckedObj();
@@ -972,7 +972,7 @@ DEF_DATA_FUNC(DataHandle) {
 DEF_DATA_FUNC(DataHandleRet) {
     DataArray *a = array->Array(1);
     Hmx ::Object *o;
-    DataNode &n = a->Evaluate(0);
+    const DataNode &n = a->Evaluate(0);
     if (n.Type() == kDataObject)
         o = n.UncheckedObj();
     else
@@ -1031,7 +1031,7 @@ DEF_DATA_FUNC(DataExit) {
 
 DEF_DATA_FUNC(DataContains) {
     DataArray *w = array->Array(1);
-    DataNode &n = array->Evaluate(2);
+    const DataNode &n = array->Evaluate(2);
     bool b = !w->Contains(n.UncheckedInt());
     if (b)
         return DataNode(kDataUnhandled, 0);
@@ -1042,7 +1042,7 @@ DEF_DATA_FUNC(DataContains) {
 DEF_DATA_FUNC(DataFindExists) {
     DataArray *a = array->Array(1);
     for (int i = 2; i < array->Size(); i++) {
-        DataNode &n = array->Evaluate(i);
+        const DataNode &n = array->Evaluate(i);
         if (n.Type() == kDataInt || n.Type() == kDataSymbol) {
             a = a->FindArray(n.mValue.integer, false);
             if (!a) {
@@ -1071,7 +1071,7 @@ DEF_DATA_FUNC(DataFindObj) {
     class ObjectDir *d = ObjectDir::sMainDir;
     int i;
     for (i = 1; i < array->Size() - 1; i++) {
-        DataNode &n = array->Evaluate(i);
+        const DataNode &n = array->Evaluate(i);
         if (n.Type() == kDataObject)
             d = n.Obj<class ObjectDir>();
         else

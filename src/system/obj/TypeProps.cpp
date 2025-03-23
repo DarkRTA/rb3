@@ -12,7 +12,7 @@ DataArray *TypeProps::GetArray(Symbol prop, DataArray *typeDef, Hmx::Object *ref
     if (n == nullptr) {
         MILO_ASSERT(typeDef, 0x16);
         DataArray *clonedPropArr =
-            typeDef->FindArray(prop, true)->Array(1)->Clone(true, false, 0);
+            typeDef->FindArray(prop)->Array(1)->Clone(true, false, 0);
         SetKeyValue(prop, DataNode(clonedPropArr, kDataArray), true, ref);
         clonedPropArr->Release();
         ret = clonedPropArr;

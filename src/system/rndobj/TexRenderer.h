@@ -33,9 +33,14 @@ public:
 
     void DrawToTexture();
     void InitTexture();
+    RndTex *GetOutputTexture() const { return mOutputTexture; }
     DataNode OnGetRenderTextures(DataArray *);
     void SetDraw(RndDrawable *draw) {
         mDraw = draw;
+        mDirty = true;
+    }
+    void SetForce(bool force) {
+        mForce = force;
         mDirty = true;
     }
 
@@ -55,10 +60,10 @@ public:
     bool mFirstDraw; // 0x3f
     bool mForceMips; // 0x40
     float mImposterHeight; // 0x44
-    ObjPtr<RndTex, ObjectDir> mOutputTexture; // 0x48
-    ObjPtr<RndDrawable, ObjectDir> mDraw; // 0x54
-    ObjPtr<RndCam, ObjectDir> mCam; // 0x60
-    ObjPtr<RndCam, ObjectDir> mMirrorCam; // 0x6c
+    ObjPtr<RndTex> mOutputTexture; // 0x48
+    ObjPtr<RndDrawable> mDraw; // 0x54
+    ObjPtr<RndCam> mCam; // 0x60
+    ObjPtr<RndCam> mMirrorCam; // 0x6c
 };
 
 #endif

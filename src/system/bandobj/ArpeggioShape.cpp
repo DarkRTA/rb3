@@ -93,13 +93,13 @@ void ArpeggioShape::ShowChordShape(bool show) {
     mFretNumbersChord->SetShowing(show);
 }
 
-void ArpeggioShape::SetChordLabel(const String &str, float f, bool b) {
+void ArpeggioShape::SetChordLabel(const String &str, float f, bool not_lefty) {
     mChordLabel->SetText(str.c_str());
     Vector3 v(mChordLabel->mLocalXfm.v);
     v.x = f;
     mChordLabel->SetLocalPos(v);
     mChordLabel->SetShowing(str != "");
-    if (b) {
+    if (not_lefty) {
         RndText::Alignment a = mChordLabel->GetAlignment();
         if (a != RndText::kBottomLeft)
             mChordLabel->SetAlignment(RndText::kBottomLeft);

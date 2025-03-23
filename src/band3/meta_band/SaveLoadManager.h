@@ -10,4 +10,7 @@ public:
     static void Init();
 };
 
+DECLARE_MESSAGE(SaveLoadMgrStatusUpdateMsg, "saveloadmgr_status_update_msg")
+END_MESSAGE
+
 extern SaveLoadManager *TheSaveLoadMgr;

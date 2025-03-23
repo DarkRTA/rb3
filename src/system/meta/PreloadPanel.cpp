@@ -93,7 +93,7 @@ void PreloadPanel::Load() {
 }
 
 inline SongMgr *PreloadPanel::SongMgr() const {
-    return TypeDef()->FindArray(song_mgr, true)->Obj<class SongMgr>(1);
+    return TypeDef()->FindArray(song_mgr)->Obj<class SongMgr>(1);
 }
 
 void PreloadPanel::PollForLoading() {
@@ -163,7 +163,7 @@ void PreloadPanel::StartCache() {
     sCache->Clear();
     sCache->StartSet(0);
     if (!unk68 && mPreloadResult != 2) {
-        DataArray *preloadFilesArr = TypeDef()->FindArray(preload_files, true);
+        DataArray *preloadFilesArr = TypeDef()->FindArray(preload_files);
         for (int i = 1; i < preloadFilesArr->Size(); i++) {
             DataArray *innerArr = preloadFilesArr->Array(i);
             const char *path = innerArr->Str(0);

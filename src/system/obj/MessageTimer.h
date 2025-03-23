@@ -1,5 +1,4 @@
-#ifndef OBJ_MESSAGETIMER_H
-#define OBJ_MESSAGETIMER_H
+#pragma once
 #include "os/Timer.h"
 #include "os/Debug.h"
 #include "utl/Symbol.h"
@@ -95,5 +94,3 @@ public:
     static void Stop();
     static void Dump();
 };
-
-#endif

@@ -24,7 +24,7 @@ BeatMaster::BeatMaster(SongData *data, int num_players)
         TheBeatMatchPlayback.LoadFile(str);
     }
     Reset();
-    mAudio = new MasterAudio(cfg->FindArray("audio", true), num_players, this, mSongData);
+    mAudio = new MasterAudio(cfg->FindArray("audio"), num_players, this, mSongData);
 }
 
 BeatMaster::~BeatMaster() {

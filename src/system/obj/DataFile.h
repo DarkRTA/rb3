@@ -1,6 +1,4 @@
-#ifndef OBJ_DATAFILE_H
-#define OBJ_DATAFILE_H
-
+#pragma once
 #include "obj/Data.h"
 #include "os/ThreadCall.h"
 #include "utl/Loader.h"
@@ -62,5 +60,3 @@ DataArray *LoadDtz(const char *, int);
 
 void BeginDataRead();
 void FinishDataRead();
-
-#endif
