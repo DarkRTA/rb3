@@ -1,12 +1,17 @@
 #include "bandobj/BandCamShot.h"
 #include "char/Character.h"
 #include "char/CharDriver.h"
+#include "decomp.h"
 #include "obj/Msg.h"
 #include "obj/Utl.h"
+#include "rndobj/Anim.h"
+#include "rndobj/EventTrigger.h"
+#include "rndobj/Rnd.h"
 #include "utl/Std.h"
 #include "world/EventAnim.h"
 #include "utl/Symbols.h"
 #include "utl/Messages.h"
+#include <cfloat>
 
 INIT_REVS(BandCamShot)
 
@@ -14,9 +19,25 @@ std::list<BandCamShot::TargetCache> BandCamShot::sCache;
 BandCamShot *gBandCamShotOwner;
 
 std::list<BandCamShot::TargetCache>::iterator BandCamShot::CreateTargetCache(Symbol s) {
-    sCache.push_back(TargetCache());
-    sCache.back().unk4 = FindTarget(s, true);
+    sCache.push_front(TargetCache());
+    sCache.front().unk0 = s;
+    sCache.front().unk4 = FindTarget(s, true);
     return sCache.begin();
+}
+
+std::list<BandCamShot::TargetCache>::iterator BandCamShot::GetTargetCache(Symbol s) {
+    FOREACH (it, sCache) {
+        if (s == it->unk0)
+            return it;
+    }
+    if (!LOADMGR_EDITMODE) {
+        MILO_WARN(
+            "%s creating target cache for %s, targets changed while playing camera",
+            PathName(this),
+            s
+        );
+    }
+    return CreateTargetCache(s);
 }
 
 void BandCamShot::DeleteTargetCache(std::list<TargetCache>::iterator it) {
@@ -47,6 +68,8 @@ RndTransformable *BandCamShot::FindTarget(Symbol s, bool b) {
     }
     return ret;
 }
+
+DECOMP_FORCEACTIVE(BandCamShot, "ObjPtr_p.h", "f.Owner()", "")
 
 BinStream &operator>>(BinStream &bs, BandCamShot::Target &tgt) {
     bs >> tgt.mTarget;
@@ -182,7 +205,7 @@ BEGIN_LOADS(BandCamShot)
         LOAD_SUPERCLASS(CamShot)
     bs >> mTargets;
     if (BandCamShot::gRev >= 2 && BandCamShot::gRev <= 18) {
-        ObjPtr<BandCamShot> shotPtr(this, 0);
+        ObjPtr<BandCamShot> shotPtr(this);
         bs >> shotPtr;
         if (shotPtr)
             mNextShots.push_back(shotPtr);
@@ -196,19 +219,50 @@ BEGIN_LOADS(BandCamShot)
         bs >> b;
         mPS3PerPixel = b;
     }
-    EventAnim *anim = 0;
-    if (gRev - 0xF <= 0xDU) {
+    EventAnim *anim = nullptr;
+    if (gRev >= 15 && gRev <= 28) {
         std::vector<OldTrigger> trigs;
         bs >> trigs;
-        if (!trigs.empty()) {
+        if (trigs.size() != 0) {
             anim = MakeEventAnim(this);
+            ObjList<EventAnim::KeyFrame> &keys = anim->mKeys;
+            for (int i = 0; i < trigs.size(); i++) {
+                ObjList<EventAnim::EventCall> *calls;
+                if (trigs[i].frame == 0) {
+                    calls = &anim->mStart;
+                } else {
+                    keys.push_back();
+                    keys.back().mTime = trigs[i].frame;
+                    calls = &keys.back().mCalls;
+                }
+                calls->push_back();
+                calls->back().mDir = Dir();
+                calls->back().mEvent =
+                    Dir()->Find<EventTrigger>(trigs[i].trigger.mStr, false);
+            }
         }
     }
-    if (gRev - 0x10 <= 0xCU) {
-        ObjPtr<EventTrigger> trig1(this, 0);
-        ObjPtr<EventTrigger> trig2(this, 0);
+    if (gRev >= 16 && gRev <= 28) {
+        ObjPtr<EventTrigger> trig1(this);
+        ObjPtr<EventTrigger> trig2(this);
         bs >> trig1;
         bs >> trig2;
+        if (trig1 || trig2) {
+            if (!anim)
+                anim = MakeEventAnim(this);
+            if (trig1) {
+                ObjList<EventAnim::EventCall> &start = anim->mStart;
+                start.push_back();
+                anim->mStart.back().mDir = trig1->Dir();
+                anim->mStart.back().mEvent = trig1;
+            }
+            if (trig2) {
+                ObjList<EventAnim::EventCall> &end = anim->mEnd;
+                end.push_back();
+                anim->mEnd.back().mDir = trig2->Dir();
+                anim->mEnd.back().mEvent = trig2;
+            }
+        }
     }
     if (gRev > 0x11) {
         bs >> mMinTime;
@@ -216,12 +270,15 @@ BEGIN_LOADS(BandCamShot)
     }
     if (gRev > 0x12)
         bs >> mNextShots;
-    if (gRev - 0x14 < 0xBU) {
+    if (gRev >= 20 && gRev <= 30) {
         int i;
         bs >> i;
     }
-    if (gRev - 0x17 < 6) {
-        bs >> anim->mResetStart;
+    if (gRev >= 23 && gRev <= 28) {
+        bool reset;
+        bs >> reset;
+        if (anim)
+            anim->SetResetStart(reset);
     }
     if (gRev == 0x1C)
         bs >> mAnims;
@@ -242,6 +299,80 @@ BEGIN_COPYS(BandCamShot)
         ResetNextShot();
     END_COPYING_MEMBERS
 END_COPYS
+
+void BandCamShot::TeleportTarget(
+    RndTransformable *t, const TransformNoScale &tns, bool b3
+) {
+    t->SetLocalXfm(tns);
+    Character *charObj = dynamic_cast<Character *>(t);
+    if (charObj) {
+        charObj->SetTeleported(true);
+        static Message msg("teleport_char", 0, 0);
+        msg[0] = t;
+        msg[1] = b3;
+        HandleType(msg);
+    }
+}
+
+void BandCamShot::StartAnim() {
+    if (mCurShot && mCurShot != this) {
+        mCurShot->EndAnim();
+    }
+    ResetNextShot();
+    CamShot::StartAnim();
+    int numChars = 0;
+    Character *chars[32];
+    FOREACH (it, mTargets) {
+        if (!it->mTarget.Null()) {
+            Target &cur = *it;
+            std::list<BandCamShot::TargetCache>::iterator cache =
+                CreateTargetCache(cur.mTarget);
+            if (cache->unk4) {
+                cache->unkc.Set(cache->unk4->mLocalXfm);
+                if (cur.mTeleport != 0) {
+                    TeleportTarget(cache->unk4, cur.mXfm, false);
+                }
+            }
+            Character *charObj = dynamic_cast<Character *>(cache->unk4);
+            if (charObj) {
+                MILO_ASSERT(numChars < 32, 0x231);
+                chars[numChars] = charObj;
+                numChars++;
+                charObj->mSelfShadow = cur.mSelfShadow;
+                charObj->SetMinLod(cur.mForceLod);
+                charObj->SetShowing(!cur.mHide);
+                static Message msg("play_group", 0, 0, 0, 0, 0);
+                msg[0] = charObj;
+                msg[1] = cur.mAnimGroup;
+                msg[2] = cur.mFastForward / FramesPerUnit();
+                msg[3] = Units();
+                msg[4] = cur.mForwardEvent;
+                HandleType(msg);
+                if (cur.mEnvOverride) {
+                    cache->unk8 = charObj->GetEnv();
+                    charObj->SetEnv(cur.mEnvOverride);
+                }
+            }
+        }
+    }
+    unk164 = GetTotalDuration();
+    DoHide();
+    if (!sHideAllCharactersHack) {
+        int showing = 0;
+        for (int i = 0; i < numChars; i++) {
+            showing |= chars[i]->Showing();
+        }
+        if (numChars != 0 && showing == 0 && TheRnd->InGame()) {
+            for (int i = 0; i < numChars; i++) {
+                chars[i]->SetShowing(true);
+            }
+        }
+    } else {
+        for (int i = 0; i < numChars; i++) {
+            chars[i]->SetShowing(false);
+        }
+    }
+}
 
 bool BandCamShot::IterateNextShot() {
     bool ret = true;
@@ -266,6 +397,63 @@ void BandCamShot::ResetNextShot() {
     unk160 = 0;
 }
 
+void BandCamShot::SetPreFrame(float f1, float f2) {
+    unk16a = true;
+    if (ShouldSetNextShot(f1)) {
+        if (mCurShot != this)
+            mCurShot->ResetNextShot();
+    } else {
+        float sub = f1 - Duration();
+        while (sub < unk15c && mShotIter != mNextShots.begin()) {
+            ++mShotIter;
+            unk160 = (*mShotIter)->GetTotalDuration();
+            unk15c -= unk160;
+            mCurShot = *mShotIter;
+        }
+        f1 = sub - unk15c;
+        while (f1 >= unk160) {
+            if (IterateNextShot()) {
+                f1 -= unk160;
+                unk15c += unk160;
+                if (mCurShot)
+                    mCurShot->EndAnim();
+                mCurShot = *mShotIter;
+                mCurShot->StartAnim();
+                unk160 = (*mShotIter)->GetTotalDuration();
+            } else
+                unk160 = FLT_MAX;
+        }
+    }
+    if (mCurShot != this) {
+        mCurShot->SetPreFrame(f1, 1);
+    }
+}
+
+void BandCamShot::SetFrame(float frame, float blend) {
+    if (!unk16a) {
+        SetPreFrame(frame, blend);
+    }
+    float f4 = frame;
+    if (!ShouldSetNextShot(frame)) {
+        f4 = frame - (unk15c + Duration());
+    }
+    if (CheckShotOver(frame)) {
+        SetShotOver();
+    }
+    if (this == mCurShot) {
+        AnimateShot(f4, blend);
+    } else {
+        if (mAnimsDuringNextShots) {
+            FOREACH (it, mAnims) {
+                (*it)->SetFrame(frame, 1);
+            }
+        }
+        mCurShot->SetFrameEx(f4, blend);
+        RndAnimatable::SetFrame(frame, blend);
+    }
+    unk16a = false;
+}
+
 void BandCamShot::SetFrameEx(float frame, float blend) {
     unk168 = true;
     SetFrame(frame, blend);
@@ -273,14 +461,43 @@ void BandCamShot::SetFrameEx(float frame, float blend) {
 }
 
 void BandCamShot::AnimateShot(float frame, float blend) {
-    for (ObjVector<Target>::iterator it = mTargets.begin(); it != mTargets.end(); ++it)
-        ;
+    FOREACH (it, mTargets) {
+    }
     CamShot::SetFrame(frame, blend);
 }
 
+void BandCamShot::EndAnim() {
+    if (mCurShot && mCurShot != this) {
+        mCurShot->EndAnim();
+        ResetNextShot();
+    } else {
+        FOREACH (it, mTargets) {
+            if (!(*it).mTarget.Null()) {
+                Target &cur = *it;
+                std::list<BandCamShot::TargetCache>::iterator cache =
+                    GetTargetCache(cur.mTarget);
+                if (cur.mTeleport && cur.mReturn && cache->unk4) {
+                    TeleportTarget(cache->unk4, cache->unkc, true);
+                }
+                Character *charObj = dynamic_cast<Character *>(cache->unk4);
+                if (charObj) {
+                    charObj->SetMinLod(-1);
+                    charObj->SetSelfShadow(true);
+                    charObj->SetShowing(true);
+                    if (cur.mEnvOverride) {
+                        charObj->SetEnv(cache->unk8);
+                    }
+                }
+                DeleteTargetCache(cache);
+            }
+        }
+        CamShot::EndAnim();
+    }
+}
+
 void BandCamShot::Store() {
-    for (ObjVector<Target>::iterator it = mTargets.begin(); it != mTargets.end(); ++it) {
-        (*it).Store(this);
+    FOREACH (it, mTargets) {
+        it->Store(this);
     }
 }
 
@@ -291,14 +508,14 @@ DataNode BandCamShot::AddTarget(DataArray *target) {
     mTargets.push_back(Target(this));
     mTargets.back().mTarget = target->Sym(2);
     mTargets.back().Store(this);
-    return DataNode(0);
+    return 0;
 }
 
 float BandCamShot::GetTotalDuration() {
     float sum = Duration();
     std::list<BandCamShot *> shots;
     ListNextShots(shots);
-    for (std::list<BandCamShot *>::iterator it = shots.begin(); it != shots.end(); ++it) {
+    FOREACH (it, shots) {
         sum += (*it)->Duration();
     }
     return sum;

@@ -29,7 +29,7 @@ public:
         last = t;
     }
 
-    void operator=(const ObjList<T> &oList) {
+    void operator=(const ObjList &oList) {
         if (this != &oList) {
             resize(oList.size());
             Base::operator=((Base &)oList);

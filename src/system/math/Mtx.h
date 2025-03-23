@@ -248,6 +248,7 @@ public:
     void Set(const TransformNoScale &);
     void SetRot(const Hmx::Matrix3 &);
     void Reset();
+    void ToTransform(Transform &) const;
     TransformNoScale &operator=(const TransformNoScale &t) { Set(t); }
 
     ShortQuat q; // 0x0/2/4/6
