@@ -45,8 +45,8 @@ TrackWatcherImpl::TrackWatcherImpl(
         cfg->FindData("pitch_bend_range", mPitchBendRange, false);
         cfg->FindData("ms_to_full_pitch_bend", mPitchBendMsToFull, false);
         cfg->FindData("cymbal_autoplay_ms", mCymbalAutoplayMs, false);
-        mRollIntervalsConfig = cfg->FindArray("roll_interval_ms", true);
-        mTrillIntervalsConfig = cfg->FindArray("trill_interval_ms", true)->Array(1);
+        mRollIntervalsConfig = cfg->FindArray("roll_interval_ms");
+        mTrillIntervalsConfig = cfg->FindArray("trill_interval_ms")->Array(1);
         DataArray *autoplayArr = cfg->FindArray("autoplay_accuracy", false);
         if (autoplayArr) {
             mAutoplayAccuracy = autoplayArr->Float(1) / 100.0f;

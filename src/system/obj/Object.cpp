@@ -120,14 +120,14 @@ void Hmx::Object::SetTypeDef(DataArray *da) {
     }
 }
 
-DataNode *Hmx::Object::Property(DataArray *prop, bool fail) const {
+const DataNode *Hmx::Object::Property(DataArray *prop, bool fail) const {
     static DataNode n(0);
     // if prop was synced, return the prop node n
     if (const_cast<Hmx::Object *>(this)->SyncProperty(n, prop, 0, kPropGet))
         return &n;
     Symbol propKey = prop->Sym(0);
     // retrieve property val from typeprops array
-    DataNode *propValue = mTypeProps.KeyValue(propKey, false);
+    const DataNode *propValue = mTypeProps.KeyValue(propKey, false);
     // if it wasn't found, search typedef array
     if (!propValue) {
         if (mTypeDef) {
@@ -155,7 +155,7 @@ DataNode *Hmx::Object::Property(DataArray *prop, bool fail) const {
     return nullptr;
 }
 
-DataNode *Hmx::Object::Property(Symbol prop, bool fail) const {
+const DataNode *Hmx::Object::Property(Symbol prop, bool fail) const {
     static DataArrayPtr d(1);
     d.Node(0) = prop;
     return Property(d, fail);
@@ -164,14 +164,14 @@ DataNode *Hmx::Object::Property(Symbol prop, bool fail) const {
 #pragma push
 #pragma pool_data off
 DataNode Hmx::Object::PropertyArray(Symbol sym) {
-    static DataArrayPtr d(DataNode(1));
-    d.Node(0) = DataNode(sym);
+    static DataArrayPtr d(1);
+    d.Node(0) = sym;
     int size = PropertySize(d.mData);
     DataArray *newArr = new DataArray(size);
     static DataArrayPtr path(new DataArray(2));
-    path.Node(0) = DataNode(sym);
+    path.Node(0) = sym;
     for (int i = 0; i < size; i++) {
-        path.Node(1) = DataNode(i);
+        path.Node(1) = i;
         newArr->Node(i) = *Property(path.mData, true);
     }
     DataNode ret = DataNode(newArr, kDataArray);
@@ -183,7 +183,7 @@ DataNode Hmx::Object::PropertyArray(Symbol sym) {
 DataNode Hmx::Object::HandleProperty(DataArray *prop, DataArray *a2, bool fail) {
     static DataNode n(a2, kDataArray);
     if (SyncProperty(n, prop, 0, kPropHandle)) {
-        return DataNode(n);
+        return n;
     }
     if (fail) {
         MILO_FAIL(
@@ -192,7 +192,7 @@ DataNode Hmx::Object::HandleProperty(DataArray *prop, DataArray *a2, bool fail) 
             (prop != 0) ? prop->Sym(0) : "<none>"
         );
     }
-    return DataNode(0);
+    return 0;
 }
 
 void Hmx::Object::SetProperty(DataArray *prop, const DataNode &val) {
@@ -220,10 +220,10 @@ int Hmx::Object::PropertySize(DataArray *prop) {
     } else {
         MILO_ASSERT(prop->Size() == 1, 0x192);
         Symbol name = prop->Sym(0);
-        DataNode *a = mTypeProps.KeyValue(name, false);
+        const DataNode *a = mTypeProps.KeyValue(name, false);
         if (a == nullptr) {
             if (mTypeDef != nullptr) {
-                a = &mTypeDef->FindArray(name, true)->Evaluate(1);
+                a = &mTypeDef->FindArray(name)->Evaluate(1);
             } else
                 MILO_FAIL("%s: property %s not found", PathName(this), name);
         }
@@ -437,7 +437,7 @@ DataNode Hmx::Object::OnIterateRefs(const DataArray *da) {
         }
     }
     *var = node;
-    return DataNode(0);
+    return 0;
 }
 
 DataNode Hmx::Object::OnSet(const DataArray *da) {
@@ -447,7 +447,7 @@ DataNode Hmx::Object::OnSet(const DataArray *da) {
         );
     }
     for (int i = 2; i < da->Size(); i += 2) {
-        DataNode &node = da->Evaluate(i);
+        const DataNode &node = da->Evaluate(i);
         if (node.Type() == kDataSymbol) {
             SetProperty(STR_TO_SYM(node.mValue.symbol), da->Evaluate(i + 1));
         } else {
@@ -464,7 +464,7 @@ DataNode Hmx::Object::OnSet(const DataArray *da) {
             SetProperty(node.mValue.array, da->Evaluate(i + 1));
         }
     }
-    return DataNode(0);
+    return 0;
 }
 
 DECOMP_FORCEACTIVE(Object, "%s")
@@ -473,18 +473,18 @@ DataNode Hmx::Object::OnPropertyAppend(const DataArray *da) {
     DataArray *arr = da->Array(2);
     int size = PropertySize(arr);
     DataArray *cloned = arr->Clone(true, false, 1);
-    cloned->Node(cloned->Size() - 1) = DataNode(size);
+    cloned->Node(cloned->Size() - 1) = size;
     InsertProperty(cloned, da->Evaluate(3));
     cloned->Release();
-    return DataNode(size);
+    return size;
 }
 
 DataNode Hmx::Object::OnGet(const DataArray *da) {
-    DataNode &node = da->Evaluate(2);
+    const DataNode &node = da->Evaluate(2);
     if (node.Type() == kDataSymbol) {
-        DataNode *prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() < 4);
+        const DataNode *prop = Property(STR_TO_SYM(node.mValue.symbol), da->Size() < 4);
         if (prop)
-            return DataNode(*prop);
+            return *prop;
     } else {
         if (node.Type() != kDataArray) {
             String str;
@@ -497,13 +497,12 @@ DataNode Hmx::Object::OnGet(const DataArray *da) {
             );
         }
         bool size = da->Size() < 4;
-        DataNode *prop = Property(node.mValue.array, size);
+        const DataNode *prop = Property(node.mValue.array, size);
         if (prop)
-            return DataNode(*prop);
+            return *prop;
     }
-    return DataNode(da->Node(3));
+    return da->Node(3);
 }
 
 BEGIN_PROPSYNCS(Hmx::Object)
-    ;
-END_PROPSYNCS;
+END_PROPSYNCS

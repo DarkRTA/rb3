@@ -36,7 +36,7 @@ void Quest::Configure(DataArray *i_pConfig) {
     mPrerequisites.Init(i_pConfig->FindArray(prereqs, false));
     mSuccessReward.Init(i_pConfig->FindArray(success_reward, false));
     mFailureReward.Init(i_pConfig->FindArray(failure_reward, false));
-    mGameRules.Init(i_pConfig->FindArray(game_rules, true));
+    mGameRules.Init(i_pConfig->FindArray(game_rules));
 }
 
 Symbol Quest::GetName() const { return mName; }

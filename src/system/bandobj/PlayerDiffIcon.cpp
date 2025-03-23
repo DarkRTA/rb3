@@ -95,14 +95,14 @@ void PlayerDiffIcon::Update() {
     RndDir *dir = mResource->Dir();
     MILO_ASSERT(dir, 0x9D);
     mPlayerMeshes.clear();
-    DataArray *arr = t->FindArray(player_meshes, true);
+    DataArray *arr = t->FindArray(player_meshes);
     for (int i = 1; i < arr->Size(); i++) {
         mPlayerMeshes.push_back(dir->Find<RndMesh>(arr->Str(i), true));
     }
     mPlayerMat = dir->Find<RndMat>(t->FindStr(player_mat), true);
     mNoPlayerMat = dir->Find<RndMat>(t->FindStr(no_player_mat), true);
     mDiffLabels.clear();
-    DataArray *arr2 = t->FindArray(diff_labels, true);
+    DataArray *arr2 = t->FindArray(diff_labels);
     for (int i = 1; i < arr2->Size(); i++) {
         mDiffLabels.push_back(dir->Find<BandLabel>(arr2->Str(i), true));
     }

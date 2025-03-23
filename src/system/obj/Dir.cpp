@@ -765,7 +765,7 @@ void ObjectDir::Init() {
 void ObjectDir::Terminate() { DeleteShared(); }
 
 void ObjectDir::Iterate(DataArray *da, bool b) {
-    DataNode &eval = da->Evaluate(2);
+    const DataNode &eval = da->Evaluate(2);
     Symbol sym1;
     Symbol sym2;
     if (eval.Type() == kDataSymbol) {
@@ -778,7 +778,7 @@ void ObjectDir::Iterate(DataArray *da, bool b) {
     }
 #ifdef MILO_DEBUG
     static DataArray *objects = SystemConfig("objects");
-    objects->FindArray(sym1, true);
+    objects->FindArray(sym1);
 #endif
     DataNode *var = da->Var(3);
     DataNode node(*var);

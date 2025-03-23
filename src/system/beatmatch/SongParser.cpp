@@ -45,18 +45,18 @@ SongParser::SongParser(
       unk1f0(-1), unk1f4(-1), mRGSlashesStartTick(-1), mRGSlashesEndTick(-1),
       mRGChordNamingStartTick(-1), mRGChordNamingEndTick(-1), mRGEnharmonicStartTick(-1),
       mRGEnharmonicEndTick(-1) {
-    DataArray *cfg = SystemConfig()->FindArray("beatmatcher", true);
+    DataArray *cfg = SystemConfig()->FindArray("beatmatcher");
     DataArray *watcherArr = cfg->FindArray("watcher", false);
     if (watcherArr) {
         watcherArr->FindData("ignore_durations", mIgnoreGemDurations, false);
-        mRollIntervals = watcherArr->FindArray("roll_interval_ms", true);
-        mTrillIntervals = watcherArr->FindArray("trill_interval_ms", true)->Array(1);
+        mRollIntervals = watcherArr->FindArray("roll_interval_ms");
+        mTrillIntervals = watcherArr->FindArray("trill_interval_ms")->Array(1);
     }
-    DataArray *parserArr = cfg->FindArray("parser", true);
+    DataArray *parserArr = cfg->FindArray("parser");
     parserArr->FindData("player_slot", mPlayerSlot, false);
     parserArr->FindData("low_vocal_pitch", mLowVocalPitch, false);
     parserArr->FindData("high_vocal_pitch", mHighVocalPitch, false);
-    mTrackNameMapping = parserArr->FindArray("track_mapping", true);
+    mTrackNameMapping = parserArr->FindArray("track_mapping");
 
     DataArray *drumInstArr = parserArr->FindArray("drum_style_instruments", false);
     if (drumInstArr) {
@@ -74,7 +74,7 @@ SongParser::SongParser(
 
     mKeyboardRangeShiftDuration =
         parserArr->FindFloat("keyboard_range_shift_duration_ms");
-    mSubMixes = cfg->FindArray("audio", true)->FindArray("submixes", false);
+    mSubMixes = cfg->FindArray("audio")->FindArray("submixes", false);
     for (int i = 0; i < diff_nums; i++) {
         mDifficultyInfos.push_back(32);
     }

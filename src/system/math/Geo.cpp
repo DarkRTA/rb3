@@ -17,11 +17,11 @@ static DataNode SetBSPParams(DataArray *da) {
 
 void GeoInit() {
     DataArray *cfg = SystemConfig("math");
-    float scale = cfg->FindArray("bsp_check_scale", true)->Float(1);
-    int candidates = cfg->FindArray("bsp_max_candidates", true)->Int(1);
-    int depth = cfg->FindArray("bsp_max_depth", true)->Int(1);
-    float dirtol = cfg->FindArray("bsp_dir_tol", true)->Float(1);
-    float postol = cfg->FindArray("bsp_pos_tol", true)->Float(1);
+    float scale = cfg->FindArray("bsp_check_scale")->Float(1);
+    int candidates = cfg->FindArray("bsp_max_candidates")->Int(1);
+    int depth = cfg->FindArray("bsp_max_depth")->Int(1);
+    float dirtol = cfg->FindArray("bsp_dir_tol")->Float(1);
+    float postol = cfg->FindArray("bsp_pos_tol")->Float(1);
     SetBSPParams(postol, dirtol, depth, candidates, scale);
     DataRegisterFunc("set_bsp_params", SetBSPParams);
 }

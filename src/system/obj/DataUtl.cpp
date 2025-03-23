@@ -159,7 +159,7 @@ Hmx::Object *DataSetThis(Hmx::Object *o) {
     old = gDataThis;
     gDataThis = o;
     static DataNode &thisVar = DataVariable("this");
-    thisVar = DataNode(o);
+    thisVar = o;
     o = old;
     return o;
 }
@@ -177,6 +177,6 @@ void DataPushVar(DataNode *var) {
 void DataPopVar() {
     MILO_ASSERT(gVarStackPtr > gVarStack, 0x13E);
     *gVarStackPtr->var = gVarStackPtr->value;
-    gVarStackPtr->value = DataNode(0);
+    gVarStackPtr->value = 0;
     gVarStackPtr--;
 }

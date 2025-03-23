@@ -106,7 +106,7 @@ ObjectDir *OvershellSlot::DataDir() { return mOvershellDir; }
 void OvershellSlot::SetTypeDef(DataArray *da) {
     if (TypeDef() != da) {
         Hmx::Object::SetTypeDef(da);
-        mStateMgr->Init(da->FindArray(state_handlers, true), this);
+        mStateMgr->Init(da->FindArray(state_handlers), this);
         float dur = 0;
         if (da->FindData(msg_duration, dur, false)) {
             mMessageQueue->SetMessageDuration(dur);

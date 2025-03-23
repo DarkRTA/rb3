@@ -131,7 +131,7 @@ void RndConsole::SetBreak(DataArray *arr) {
             Hmx::Object *myObj = arr->Obj<Hmx::Object>(1);
             if (myObj) {
                 if (myObj->TypeDef()) {
-                    arr9 = myObj->TypeDef()->FindArray(arr->Sym(2), true);
+                    arr9 = myObj->TypeDef()->FindArray(arr->Sym(2));
                 }
             } else if (arr->Size() > 3) {
                 arr9 = SystemConfig(
@@ -139,7 +139,7 @@ void RndConsole::SetBreak(DataArray *arr) {
                 );
             }
         } else if (DataThis()->TypeDef()) {
-            arr9 = DataThis()->TypeDef()->FindArray(arr->Sym(1), true);
+            arr9 = DataThis()->TypeDef()->FindArray(arr->Sym(1));
         }
         if (arr9) {
             for (int i = 0; i < arr9->Size(); i++) {

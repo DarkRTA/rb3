@@ -42,9 +42,9 @@ void QuestManager::Cleanup() {
 }
 
 void QuestManager::Init(DataArray *da) {
-    ConfigureQuestData(da->FindArray("quests", true));
-    ConfigureQuestFilterData(da->FindArray("quest_filters", true));
-    ConfigureFixedSetlistData(da->FindArray("tour_fixed_sets", true));
+    ConfigureQuestData(da->FindArray("quests"));
+    ConfigureQuestFilterData(da->FindArray("quest_filters"));
+    ConfigureFixedSetlistData(da->FindArray("tour_fixed_sets"));
 }
 
 void QuestManager::ConfigureQuestFilterData(DataArray *da) {

@@ -28,8 +28,8 @@ int Splash::ThreadStart(void *spl) {
 }
 
 Splash::Splash()
-    : mSplashTime(SystemConfig("ui")->FindArray("splash_time", true)->Float(1) * 1000),
-      mWaitForSplash(SystemConfig("ui")->FindArray("wait_for_splash", true)->Int(1)),
+    : mSplashTime(SystemConfig("ui")->FindArray("splash_time")->Float(1) * 1000),
+      mWaitForSplash(SystemConfig("ui")->FindArray("wait_for_splash")->Int(1)),
       mLastSplash(NULL), unk_0x4C(0), unk_0x50(0), unk_0x54(0), unk_0x58(-1),
       mSuspendCount(0), unk_0x64(1), unk_0x68(0), mState(0) {}
 

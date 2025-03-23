@@ -92,7 +92,7 @@ void GuitarFx::Poll(
     float negf6 = -f6;
     for (; it != 0; ++it) {
         it->EnableUpdates(false);
-        DataNode *tempoprop = it->Property(tempo_sync, false);
+        const DataNode *tempoprop = it->Property(tempo_sync, false);
         if (tempoprop && tempoprop->Int()) {
             it->SetProperty(tempo, f4);
         }

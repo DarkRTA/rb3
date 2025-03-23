@@ -15,10 +15,8 @@ TambourineManager::TambourineManager(VocalPlayer &p)
     DataArray *cfg = SystemConfig("scoring", "vocals");
     int diff = mPlayerRef.GetUser()->GetDifficulty();
     mTambourineWindowTicks = cfg->FindInt("tambourine_window_ticks");
-    mTambourineCrowdSuccess =
-        cfg->FindArray("tambourine_crowd_success", true)->Float(diff + 1);
-    mTambourineCrowdFailure =
-        cfg->FindArray("tambourine_crowd_failure", true)->Float(diff + 1);
+    mTambourineCrowdSuccess = cfg->FindArray("tambourine_crowd_success")->Float(diff + 1);
+    mTambourineCrowdFailure = cfg->FindArray("tambourine_crowd_failure")->Float(diff + 1);
     mTambourinePoints = cfg->FindFloat("tambourine_points");
 }
 

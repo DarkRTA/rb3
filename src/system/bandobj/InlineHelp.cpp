@@ -54,7 +54,7 @@ void InlineHelp::ActionElement::SetConfig(DataNode &dn, bool b) {
             return;
         FormatString fs(Localize(da->Sym(0), NULL));
         for (int i = 1; i < da->Size(); i++) {
-            DataNode &dn2 = da->Evaluate(i);
+            const DataNode &dn2 = da->Evaluate(i);
             if (dn2.Type() == kDataSymbol) {
                 fs << Localize(dn2.Sym(), NULL);
             } else {
@@ -276,10 +276,10 @@ String InlineHelp::GetIconStringFromAction(int idx) {
     String ret;
     const DataArray *t = TypeDef();
     MILO_ASSERT(t, 0x1C4);
-    DataArray *actionArr = t->FindArray(action_chars, true);
+    DataArray *actionArr = t->FindArray(action_chars);
     for (std::vector<Symbol>::iterator it = mIconTypes.begin(); it != mIconTypes.end();
          ++it) {
-        const char *str = actionArr->FindArray(*it, true)->Str(idx + 1);
+        const char *str = actionArr->FindArray(*it)->Str(idx + 1);
         char c = *str;
         if (ret.find(c) == String::npos)
             ret += c;

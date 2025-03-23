@@ -114,32 +114,32 @@ void MicInputArrow::Update() {
     RndDir *dir = mResource->Dir();
     MILO_ASSERT(dir, 199);
     mConnectedTrigs.clear();
-    DataArray *arr = t->FindArray(connected_triggers, true);
+    DataArray *arr = t->FindArray(connected_triggers);
     for (int i = 1; i < arr->Size(); i++) {
         mConnectedTrigs.push_back(dir->Find<EventTrigger>(arr->Str(i), true));
     }
     mDisconnectedTrigs.clear();
-    DataArray *arr2 = t->FindArray(disconnected_triggers, true);
+    DataArray *arr2 = t->FindArray(disconnected_triggers);
     for (int i = 1; i < arr2->Size(); i++) {
         mDisconnectedTrigs.push_back(dir->Find<EventTrigger>(arr2->Str(i), true));
     }
     mHiddenTrigs.clear();
-    DataArray *arr3 = t->FindArray(hidden_triggers, true);
+    DataArray *arr3 = t->FindArray(hidden_triggers);
     for (int i = 1; i < arr3->Size(); i++) {
         mHiddenTrigs.push_back(dir->Find<EventTrigger>(arr3->Str(i), true));
     }
     mPreviewTrigs.clear();
-    DataArray *arr4 = t->FindArray(preview_triggers, true);
+    DataArray *arr4 = t->FindArray(preview_triggers);
     for (int i = 1; i < arr4->Size(); i++) {
         mPreviewTrigs.push_back(dir->Find<EventTrigger>(arr4->Str(i), true));
     }
     mExtendedTrigs.clear();
-    DataArray *arr5 = t->FindArray(extended_triggers, true);
+    DataArray *arr5 = t->FindArray(extended_triggers);
     for (int i = 1; i < arr5->Size(); i++) {
         mExtendedTrigs.push_back(dir->Find<EventTrigger>(arr5->Str(i), true));
     }
     mLevelAnims.clear();
-    DataArray *arr6 = t->FindArray(level_anims, true);
+    DataArray *arr6 = t->FindArray(level_anims);
     for (int i = 1; i < arr6->Size(); i++) {
         mLevelAnims.push_back(dir->Find<RndAnimatable>(arr6->Str(i), true));
     }

@@ -1,5 +1,4 @@
-#ifndef OBJ_UTL_H
-#define OBJ_UTL_H
+#pragma once
 #include "utl/Symbol.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
@@ -180,5 +179,3 @@ void MergeObject(Hmx::Object *, Hmx::Object *, ObjectDir *, MergeFilter::Action)
 void MergeObject(Hmx::Object *, Hmx::Object *, ObjectDir *, MergeFilter &);
 void MergeObjectsRecurse(ObjectDir *, ObjectDir *, MergeFilter &, bool);
 void MergeDirs(ObjectDir *, ObjectDir *, MergeFilter &);
-
-#endif

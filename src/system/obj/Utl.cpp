@@ -19,8 +19,7 @@ DECOMP_FORCEACTIVE(Utl, "mem_copy", "fast", "main", "%d,%d,%d,%d\n")
 void InitObject(Hmx::Object *obj) {
     static DataArray *objects = SystemConfig("objects");
     static Symbol initSym("init");
-    DataArray *found2 =
-        objects->FindArray(obj->ClassName(), true)->FindArray(initSym, false);
+    DataArray *found2 = objects->FindArray(obj->ClassName())->FindArray(initSym, false);
     if (found2 != 0)
         found2->ExecuteScript(1, obj, 0, 1);
 }
@@ -137,7 +136,7 @@ void CopyTypeProperties(Hmx::Object *from, Hmx::Object *to) {
                     ;
                 if (toIt != toProps.end()) {
                     if (*toIt == prop) {
-                        DataNode *fromVal = from->Property(prop, true);
+                        const DataNode *fromVal = from->Property(prop, true);
                         DataType fromType = fromVal->Type();
                         DataType toType = to->Property(prop, true)->Type();
                         if (fromType == toType) {
@@ -485,7 +484,7 @@ bool PathCompare(DataArray *arr1, DataArray *arr2) {
 
 DataNode *GetPropertyVal(Hmx::Object *o, DataArray *prop, bool fail) {
     if (IsPropPathValid(o, prop)) {
-        return o->Property(prop, fail);
+        return (DataNode *)o->Property(prop, fail);
     } else
         return 0;
 }

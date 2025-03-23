@@ -89,7 +89,7 @@ void DataAppendStackTrace(char *msg) {
             if (!strncat_tofit(
                     msg,
                     msg_len,
-                    MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str()),
+                    MakeString(visualStudioFmt, a->File(), a->Line(), s.c_str()),
                     0x400
                 )) {
                 TheDebug << MakeString("%s", msg);
@@ -102,8 +102,7 @@ void DataAppendStackTrace(char *msg) {
         }
 
         if (msg_full) {
-            TheDebug
-                << MakeString(visualStudioFmt, a->mFile.Str(), (int)a->mLine, s.c_str());
+            TheDebug << MakeString(visualStudioFmt, a->File(), a->Line(), s.c_str());
         }
     }
 
@@ -117,9 +116,7 @@ DataNode &DataArray::Node(int i) const {
     if (i >= 0 && i < mSize)
         allgood = true;
     if (!allgood)
-        MILO_FAIL(
-            "Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine
-        );
+        MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, File(), Line());
     return mNodes[i];
 }
 
@@ -128,9 +125,7 @@ DataNode &DataArray::Node(int i) {
     if (i >= 0 && i < mSize)
         allgood = true;
     if (!allgood)
-        MILO_FAIL(
-            "Array doesn't have node %d (file %s, line %d)", i, mFile.mStr, (int)mLine
-        );
+        MILO_FAIL("Array doesn't have node %d (file %s, line %d)", i, File(), Line());
     return mNodes[i];
 }
 
@@ -349,15 +344,15 @@ DataArray *DataArray::FindArray(int tag, bool fail) const {
         }
     }
     if (fail)
-        MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, mFile.mStr, mLine);
-    return 0;
+        MILO_FAIL("Couldn't find %d in array (file %s, line %d)", tag, File(), mLine);
+    return nullptr;
 }
 
 DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
     DataArray *found = FindArray((int)tag.mStr, false);
     if (found == 0 && fail)
         MILO_FAIL(
-            "Couldn't find '%s' in array (file %s, line %d)", tag.mStr, mFile.mStr, mLine
+            "Couldn't find '%s' in array (file %s, line %d)", tag.mStr, File(), mLine
         );
     return found;
 }
@@ -366,19 +361,14 @@ DataArray *DataArray::FindArray(Symbol tag, bool fail) const {
 DECOMP_FORCEACTIVE(DataArray, "a->Size()==3", "AddrIsInLinearMem!\n")
 #endif
 
-#pragma push
-#pragma force_active on
-static DataArray *FindArrayTwoSyms(DataArray *a, Symbol s1, Symbol s2) {
-    return a->FindArray(s1, s2);
+FORCE_LOCAL_INLINE
+DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
+    return FindArray(s1)->FindArray(s2);
 }
-
-inline DataArray *DataArray::FindArray(Symbol s1, Symbol s2) const {
-    return FindArray(s1, true)->FindArray(s2, true);
-}
-#pragma pop
+END_FORCE_LOCAL_INLINE
 
 DataArray *DataArray::FindArray(Symbol s1, Symbol s2, Symbol s3) const {
-    return FindArray(s1, true)->FindArray(s2, true)->FindArray(s3, true);
+    return FindArray(s1)->FindArray(s2)->FindArray(s3);
 }
 
 DataArray *DataArray::FindArray(Symbol s, const char *c) const {
@@ -568,7 +558,7 @@ DataNode DataArray::Execute() {
 #endif
     START_AUTO_TIMER_CALLBACK("array_exec", DataArrayGlitchCB, this);
 
-    DataNode &node = Evaluate(0);
+    DataNode &node = (DataNode &)Evaluate(0);
     switch (node.Type()) {
     case kDataFunc:
         return node.mValue.func(this);
@@ -742,7 +732,7 @@ void DataArray::Load(BinStream &bs) {
             bool readFile = false;
             DataArray *macro = DataGetMacro(path);
             if (!macro) {
-                path = FileMakePath(FileGetPath(mFile.mStr, nullptr), path, nullptr);
+                path = FileMakePath(FileGetPath(File(), nullptr), path, nullptr);
                 macro = DataReadFile(path, true);
                 readFile = true;
                 if (!macro) {

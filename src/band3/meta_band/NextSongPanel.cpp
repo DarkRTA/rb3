@@ -232,8 +232,8 @@ void NextSongPanel::FillExpandedDetails(int slot) {
     f1 = 0;
     const DataArray *t = TypeDef();
     MILO_ASSERT(t, 0x19A);
-    DataArray *detailTypesArr = t->FindArray(detail_types, true);
-    DataArray *defaultTypeArr = detailTypesArr->FindArray(default_type, true);
+    DataArray *detailTypesArr = t->FindArray(detail_types);
+    DataArray *defaultTypeArr = detailTypesArr->FindArray(default_type);
     mDetailCounts.clear();
     Symbol symb4(gNullStr);
     int i12 = 0;

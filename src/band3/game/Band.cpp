@@ -31,11 +31,11 @@ Band::Band(bool bbb, int i2, BandUser *user, BeatMaster *bm)
       mMsWithMultiplier(0), mMsWhenMultiplierStarted(0), mMultiplierActive(1), unk60(0) {
     DataArray *cfg = SystemConfig("scoring", "bonuses");
     mMaxBonusLevel = cfg->FindInt("max_bonus");
-    DataArray *multArr = cfg->FindArray("multiplier", true)->Array(1);
+    DataArray *multArr = cfg->FindArray("multiplier")->Array(1);
     for (int i = 0; i < multArr->Size(); i++) {
         unk68.push_back(multArr->Int(i));
     }
-    DataArray *crowdArr = cfg->FindArray("crowd_boost", true)->Array(1);
+    DataArray *crowdArr = cfg->FindArray("crowd_boost")->Array(1);
     for (int i = 0; i < crowdArr->Size(); i++) {
         unk70.push_back(crowdArr->Int(i));
     }

@@ -30,7 +30,7 @@ void MoviePanel::Load() {
 
     DataArray *config = SystemConfig("videos", Property("videos", true)->Str());
 
-    DataArray *files = config->FindArray("files", true);
+    DataArray *files = config->FindArray("files");
     for (int i = 1; i < files->Size(); i++) {
         mMovies.push_back(files->Str(i));
     }

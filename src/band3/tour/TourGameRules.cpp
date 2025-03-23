@@ -11,7 +11,7 @@ void TourGameRules::Init(const DataArray *i_pConfig) {
     int x = 0;
     i_pConfig->FindData(type, x, true);
     mGameType = (TourGameType)x;
-    DataArray *pTargetArray = i_pConfig->FindArray(target, true);
+    DataArray *pTargetArray = i_pConfig->FindArray(target);
     MILO_ASSERT(pTargetArray, 37);
     MILO_ASSERT(pTargetArray->Size() > 1, 40);
     for (int i = 1; i < pTargetArray->Size(); i++) {

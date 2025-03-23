@@ -254,7 +254,7 @@ void ClosetMgr::PreviewCharacter(bool b1, bool b2) {
 }
 
 void ClosetMgr::FinalizeBodyChanges(Symbol s) {
-    DataNode *prop = unk3c->Property(s, true);
+    const DataNode *prop = unk3c->Property(s, true);
     mBandCharDesc->SetProperty(s, *prop);
     PlayFinalizedSound(false);
 }

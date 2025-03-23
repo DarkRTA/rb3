@@ -162,7 +162,7 @@ GemPlayer::GemPlayer(
         mDrumSlotWeights = SystemConfig("scoring", "crowd", "drum_slot_weights");
         mDrumSlotWeightMapping = mDrumSlotWeights->FindSym("default_weights");
         DataArray *drumCfg = SystemConfig("scoring", "drums");
-        mDrumCymbalPointBonus = drumCfg->FindArray("pro_drum_bonus", true);
+        mDrumCymbalPointBonus = drumCfg->FindArray("pro_drum_bonus");
     }
 
     SongInfoCopy songInfo(TheSongMgr.SongAudioData(MetaPerformer::Current()->Song()));
@@ -220,9 +220,8 @@ GemPlayer::GemPlayer(
     }
 
     DataArray *ttypeArr =
-        SystemConfig("in_game_tutorials")->FindArray(TrackTypeToSym(GetTrackType()), true);
-    mSustainsReleasedBeforePopup =
-        ttypeArr->FindArray("released_before_popup", true)->Int(1);
+        SystemConfig("in_game_tutorials")->FindArray(TrackTypeToSym(GetTrackType()));
+    mSustainsReleasedBeforePopup = ttypeArr->FindArray("released_before_popup")->Int(1);
     mHeldNotes.resize(5);
     mUpcomingFretReleases.reserve(10);
 };

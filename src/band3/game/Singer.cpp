@@ -30,7 +30,7 @@ Singer::Singer(VocalPlayer *vp, int n)
     CreateMicClientID();
     Difficulty diff = mPlayer->GetUser()->GetDifficulty();
     DataArray *cfg = SystemConfig("scoring", "vocals");
-    cfg->FindArray("pitch_margin", true)->Float(diff + 1); // lol what happened to this
+    cfg->FindArray("pitch_margin")->Float(diff + 1); // lol what happened to this
     mMaxDetune = cfg->FindFloat("max_detune");
     mScreamEnergyThreshold = cfg->FindFloat("scream_energy_threshold");
     unk38 = cfg->FindFloat("tambourine_deployment_suppress_ms");

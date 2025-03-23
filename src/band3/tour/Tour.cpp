@@ -45,10 +45,10 @@ void Tour::Cleanup() {
 }
 
 void Tour::Init(DataArray *arr) {
-    ConfigureTourPropertyData(arr->FindArray("tour_properties", true));
-    ConfigureTourStatusData(arr->FindArray("tour_status_info", true));
-    ConfigureTourDescData(arr->FindArray("tour_desc_info", true));
-    mWeightManager.Init(arr->FindArray("tour_weight_info", true));
+    ConfigureTourPropertyData(arr->FindArray("tour_properties"));
+    ConfigureTourStatusData(arr->FindArray("tour_status_info"));
+    ConfigureTourDescData(arr->FindArray("tour_desc_info"));
+    mWeightManager.Init(arr->FindArray("tour_weight_info"));
     arr->FindData(tour_show_post_seldiff_screen, mTourShowPostSeldiffScreen, false);
 }
 

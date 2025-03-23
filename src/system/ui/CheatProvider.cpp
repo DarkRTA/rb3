@@ -92,7 +92,7 @@ void CheatProvider::Text(int i, int j, UIListLabel *listlabel, UILabel *label) c
             } else {
                 DataArray *value_arr = cheat.mScript->FindArray(value, false);
                 if (value_arr) {
-                    DataNode &n = value_arr->Node(1).Evaluate();
+                    const DataNode &n = value_arr->Node(1).Evaluate();
                     if (n.Type() == kDataSymbol || n.Type() == kDataString) {
                         label->SetEditText(n.Str());
                     } else if (n.Type() == kDataInt) {

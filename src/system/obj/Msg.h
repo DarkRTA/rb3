@@ -9,18 +9,18 @@ public:
 
     Message(Symbol type) {
         mData = new DataArray(2);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
     }
 
     Message(Symbol type, const DataNode &arg1) {
         mData = new DataArray(3);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
     }
 
     Message(Symbol type, const DataNode &arg1, const DataNode &arg2) {
         mData = new DataArray(4);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
     }
@@ -29,7 +29,7 @@ public:
         Symbol type, const DataNode &arg1, const DataNode &arg2, const DataNode &arg3
     ) {
         mData = new DataArray(5);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -43,7 +43,7 @@ public:
         const DataNode &arg4
     ) {
         mData = new DataArray(6);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -59,7 +59,7 @@ public:
         const DataNode &arg5
     ) {
         mData = new DataArray(7);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -77,7 +77,7 @@ public:
         const DataNode &arg6
     ) {
         mData = new DataArray(8);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -97,7 +97,7 @@ public:
         const DataNode &arg7
     ) {
         mData = new DataArray(9);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -119,7 +119,7 @@ public:
         const DataNode &arg8
     ) {
         mData = new DataArray(10);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -143,7 +143,7 @@ public:
         const DataNode &arg9
     ) {
         mData = new DataArray(11);
-        mData->Node(1) = DataNode(type);
+        mData->Node(1) = type;
         mData->Node(2) = arg1;
         mData->Node(3) = arg2;
         mData->Node(4) = arg3;
@@ -166,7 +166,7 @@ public:
     operator DataArray *() const { return mData; }
     DataArray *operator->() const { return mData; }
 
-    void SetType(Symbol type) { mData->Node(1) = DataNode(type); }
+    void SetType(Symbol type) { mData->Node(1) = type; }
 
     Symbol Type() const { return mData->Sym(1); }
 

@@ -295,7 +295,7 @@ void UIManager::Init() {
     mTransitionScreen = nullptr;
     mWentBack = false;
     mCam = ObjectDir::Main()->New<RndCam>("[ui.cam]");
-    DataArray *camCfg = cfg->FindArray("cam", true);
+    DataArray *camCfg = cfg->FindArray("cam");
     mCam->SetFrustum(
         camCfg->FindFloat("near"),
         camCfg->FindFloat("far"),
@@ -303,11 +303,11 @@ void UIManager::Init() {
         1.0f
     );
     mCam->SetLocalPos(0, camCfg->FindFloat("y"), 0);
-    DataArray *zArr = camCfg->FindArray("z-range", true);
+    DataArray *zArr = camCfg->FindArray("z-range");
     mCam->SetZRange(zArr->Float(1), zArr->Float(2));
     mEnv = Hmx::Object::New<RndEnviron>();
     Hmx::Color envAmbientColor;
-    cfg->FindArray("env", true)->FindData("ambient", envAmbientColor, true);
+    cfg->FindArray("env")->FindData("ambient", envAmbientColor, true);
     mEnv->SetAmbientColor(envAmbientColor);
     cfg->FindData("max_push_depth", mMaxPushDepth, false);
     cfg->FindData("cancel_transition_notify", mCancelTransitionNotify, false);
@@ -611,7 +611,7 @@ UIResource *UIManager::Resource(const UIComponent *comp) {
 
 void UIManager::InitResources(Symbol s) {
     DataArray *cfg = SystemConfig("objects", s);
-    DataArray *typesArr = cfg->FindArray(types, true);
+    DataArray *typesArr = cfg->FindArray(types);
     if (typesArr) {
         for (int i = 1; i < typesArr->Size(); i++) {
             DataArray *curArr = typesArr->Array(i);
@@ -742,7 +742,7 @@ bool UIManager::BlockHandlerDuringTransition(Symbol s, DataArray *da) {
             UIPanel *focus = FocusPanel();
             if (focus) {
                 DataArray *arr;
-                DataNode *prop = focus->Property(allowed_transition_actions, false);
+                const DataNode *prop = focus->Property(allowed_transition_actions, false);
                 if (prop)
                     arr = prop->Array();
                 else

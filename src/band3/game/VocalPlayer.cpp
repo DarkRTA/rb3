@@ -68,13 +68,12 @@ VocalPlayer::VocalPlayer(
     SetDifficultyVariables(mUser->GetDifficulty());
     DataArray *cfg = SystemConfig("scoring", "vocals");
     mTrackWrappingMargin = cfg->FindFloat("track_wrapping_margin");
-    mFreestyleDeploymentTimes =
-        cfg->FindArray("freestyle_deployment_time", true)->Array(1);
-    mFreestyleMinDurations = cfg->FindArray("freestyle_min_duration", true)->Array(1);
+    mFreestyleDeploymentTimes = cfg->FindArray("freestyle_deployment_time")->Array(1);
+    mFreestyleMinDurations = cfg->FindArray("freestyle_min_duration")->Array(1);
     mMaxDetune = cfg->FindFloat("max_detune");
     mPacketPeriodMs = cfg->FindFloat("packet_period");
-    mPartScoreMultipliers = cfg->FindArray("part_score_multiplier", true);
-    mRatingThresholds = cfg->FindArray("rating_thresholds", true);
+    mPartScoreMultipliers = cfg->FindArray("part_score_multiplier");
+    mRatingThresholds = cfg->FindArray("rating_thresholds");
     mNonpitchStickiness = cfg->FindFloat("nonpitch_stickiness");
     JoypadSubscribe(this);
     TheGameMicManager->AddSink(this, GameMicsChangedMsg::Type());
@@ -125,14 +124,13 @@ void VocalPlayer::Leave() {
 
 void VocalPlayer::SetDifficultyVariables(int diff) {
     DataArray *voxCfg = SystemConfig("scoring", "vocals");
-    mPitchMaximumDistance = voxCfg->FindArray("pitch_margin", true)->Float(diff + 1);
-    mSynapseProximitySolo =
-        voxCfg->FindArray("synapse_proximity_solo", true)->Float(diff + 1);
-    mSynapseFocusSolo = voxCfg->FindArray("synapse_focus_solo", true)->Float(diff + 1);
+    mPitchMaximumDistance = voxCfg->FindArray("pitch_margin")->Float(diff + 1);
+    mSynapseProximitySolo = voxCfg->FindArray("synapse_proximity_solo")->Float(diff + 1);
+    mSynapseFocusSolo = voxCfg->FindArray("synapse_focus_solo")->Float(diff + 1);
     mSynapseProximityHarmony =
-        voxCfg->FindArray("synapse_proximity_harm", true)->Float(diff + 1);
-    mSynapseFocusHarmony = voxCfg->FindArray("synapse_focus_harm", true)->Float(diff + 1);
-    mPhraseValue = voxCfg->FindArray("phrase_value", true)->Int(diff + 1);
+        voxCfg->FindArray("synapse_proximity_harm")->Float(diff + 1);
+    mSynapseFocusHarmony = voxCfg->FindArray("synapse_focus_harm")->Float(diff + 1);
+    mPhraseValue = voxCfg->FindArray("phrase_value")->Int(diff + 1);
     FOREACH (it, mVocalParts) {
         (*it)->SetDifficultyVariables(diff);
     }

@@ -12,7 +12,7 @@
 BeatMatchController::BeatMatchController(User *user, const DataArray *cfg, bool lefty)
     : mUser(user), mForceMercuryBut(-1), mLefty(lefty), unk25(0),
       mGemMapping(kDefaultGemMapping), mHitSink(0) {
-    mSlots = cfg->FindArray("slots", true);
+    mSlots = cfg->FindArray("slots");
     mLeftySlots = cfg->FindArray("lefty_slots", false);
     mRightySlots = cfg->FindArray("righty_slots", false);
     cfg->FindData("force_mercury", mForceMercuryBut, false);

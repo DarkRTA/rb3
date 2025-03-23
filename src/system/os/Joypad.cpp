@@ -254,15 +254,15 @@ void JoypadInitCommon(DataArray *joypad_config) {
         gJoypadData[i].mDistFromRest = thresh;
         gJoypadDisabled[i] = 0;
     }
-    DataArray *ignores = joypad_config->FindArray("ignore", true);
+    DataArray *ignores = joypad_config->FindArray("ignore");
     for (i = 1; i < ignores->Size(); i++) {
         int nodeInt = ignores->Int(i);
         if (nodeInt == 0 || nodeInt == 1 || nodeInt == 2 || nodeInt == 3) {
             gJoypadDisabled[nodeInt] = true;
         }
     }
-    gControllersCfg = joypad_config->FindArray("controllers", true);
-    gButtonMeanings = joypad_config->FindArray("button_meanings", true);
+    gControllersCfg = joypad_config->FindArray("controllers");
+    gButtonMeanings = joypad_config->FindArray("button_meanings");
     DataRegisterFunc("joypad_reset", DataJoypadReset);
     DataRegisterFunc("joypad_vibrate", OnJoypadVibrate);
     DataRegisterFunc("joypad_set_vibrate", OnJoypadSetVibrate);
@@ -396,7 +396,7 @@ bool JoypadIsControllerTypePadNum(int padNum, Symbol controller_type) {
     DataArray *type_cfg = gControllersCfg->FindArray(controller_type, false);
     if (!type_cfg)
         return false;
-    DataArray *detect_cfg = type_cfg->FindArray("detect", true);
+    DataArray *detect_cfg = type_cfg->FindArray("detect");
     if (detect_cfg->Size() == 1
         || IsJoypadDetectMatch(detect_cfg->Array(1), gJoypadData[padNum])) {
         theData->mControllerType = controller_type;
@@ -509,20 +509,17 @@ bool UserHasButtonGuitar(LocalUser *user) {
 }
 
 bool JoypadTypeHasLeftyFlip(Symbol type) {
-    DataArray *found =
-        gControllersCfg->FindArray(type, true)->FindArray(lefty_flip, true);
+    DataArray *found = gControllersCfg->FindArray(type)->FindArray(lefty_flip);
     return found->Int(1) != 0;
 }
 
 int JoypadTypePadShiftButton(Symbol type) {
-    DataArray *found =
-        gControllersCfg->FindArray(type, true)->FindArray(pad_shift_button, true);
+    DataArray *found = gControllersCfg->FindArray(type)->FindArray(pad_shift_button);
     return found->Int(1);
 }
 
 int JoypadTypeCymbalShiftButton(Symbol type) {
-    DataArray *found =
-        gControllersCfg->FindArray(type, true)->FindArray(cymbal_shift_button, true);
+    DataArray *found = gControllersCfg->FindArray(type)->FindArray(cymbal_shift_button);
     return found->Int(1);
 }
 
@@ -530,13 +527,11 @@ bool JoypadIsShiftButton(int padNum, JoypadButton btn) {
     DataArray *type_array =
         gControllersCfg->FindArray(JoypadControllerTypePadNum(padNum), false);
     MILO_ASSERT(type_array, 0x702);
-    if (btn == (JoypadButton)type_array->FindArray(cymbal_shift_button, true)->Int(1)) {
+    if (btn == (JoypadButton)type_array->FindArray(cymbal_shift_button)->Int(1)) {
         return true;
-    } else if (btn
-               == (JoypadButton)type_array->FindArray(pad_shift_button, true)->Int(1)) {
+    } else if (btn == (JoypadButton)type_array->FindArray(pad_shift_button)->Int(1)) {
         return true;
-    } else if (btn
-               == (JoypadButton)type_array->FindArray(guitar_shift_button, true)->Int(1)) {
+    } else if (btn == (JoypadButton)type_array->FindArray(guitar_shift_button)->Int(1)) {
         return true;
     } else
         return false;

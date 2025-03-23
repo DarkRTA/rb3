@@ -117,7 +117,7 @@ inline int GemRepTemplate::GetRequiredFaceCount(int i) const {
 #pragma pop
 
 RndMat *GemRepTemplate::GetMatByTag(const char *c, int slot) {
-    const char *s = mConfig->FindArray("mat_formats", true)->FindStr(c);
+    const char *s = mConfig->FindArray("mat_formats")->FindStr(c);
     return mObjectDir->Find<RndMat>(
         MakeString(
             "%s.mat",
