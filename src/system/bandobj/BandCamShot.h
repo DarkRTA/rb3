@@ -84,7 +84,7 @@ public:
     int GetNumShots();
     bool IterateNextShot();
     void AnimateShot(float, float);
-    void ListNextShots(std::list<BandCamShot *> &);
+    bool ListNextShots(std::list<BandCamShot *> &);
     void TeleportTarget(RndTransformable *, const TransformNoScale &, bool);
     std::list<TargetCache>::iterator CreateTargetCache(Symbol);
     std::list<TargetCache>::iterator GetTargetCache(Symbol);

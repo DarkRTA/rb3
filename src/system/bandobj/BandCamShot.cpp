@@ -3,10 +3,14 @@
 #include "char/CharDriver.h"
 #include "decomp.h"
 #include "obj/Msg.h"
+#include "obj/ObjMacros.h"
+#include "obj/Task.h"
 #include "obj/Utl.h"
+#include "os/Debug.h"
 #include "rndobj/Anim.h"
 #include "rndobj/EventTrigger.h"
 #include "rndobj/Rnd.h"
+#include "rndobj/Trans.h"
 #include "utl/Std.h"
 #include "world/EventAnim.h"
 #include "utl/Symbols.h"
@@ -501,7 +505,64 @@ void BandCamShot::Store() {
     }
 }
 
+void BandCamShot::View() {
+    FOREACH (it, mTargets) {
+        RndTransformable *t;
+        bool b = false;
+        Target &cur = *it;
+        if (!(*it).mTarget.Null()) {
+            t = GetTargetCache(cur.mTarget)->unk4;
+            if (t)
+                b = true;
+        }
+        if (b) {
+            TeleportTarget(t, cur.mXfm, false);
+            Character *charObj = dynamic_cast<Character *>(t);
+            if (charObj)
+                FreezeChar(charObj, false);
+        }
+    }
+    StartAnim();
+}
+
+void BandCamShot::ViewFreeze() {
+    View();
+    TheTaskMgr.SetSecondsAndBeat(
+        TheTaskMgr.Seconds(TaskMgr::kRealTime), TheTaskMgr.Beat(), false
+    );
+    FOREACH (it, mTargets) {
+        Character *charObj;
+        bool b = false;
+        Target &cur = *it;
+        if (!(*it).mTarget.Null()) {
+            charObj = dynamic_cast<Character *>(GetTargetCache(cur.mTarget)->unk4);
+            if (charObj)
+                b = true;
+        }
+        if (b) {
+            charObj->Poll();
+            FreezeChar(charObj, true);
+        }
+    }
+}
+
 void BandCamShot::FreezeChar(Character *c, bool b) { c->mFrozen = b; }
+
+void BandCamShot::Freeze() {
+    FOREACH (it, mTargets) {
+        Character *charObj;
+        bool b = false;
+        Target &cur = *it;
+        if (!(*it).mTarget.Null()) {
+            charObj = dynamic_cast<Character *>(GetTargetCache(cur.mTarget)->unk4);
+            if (charObj)
+                b = true;
+        }
+        if (b) {
+            FreezeChar(charObj, true);
+        }
+    }
+}
 
 DataNode BandCamShot::AddTarget(DataArray *target) {
     MILO_ASSERT(target->Size() != 2, 0x3AD);
@@ -522,13 +583,9 @@ float BandCamShot::GetTotalDuration() {
 }
 
 int BandCamShot::GetNumShots() {
-    int size;
-    {
-        std::list<BandCamShot *> shots;
-        ListNextShots(shots);
-        size = shots.size();
-    }
-    return size + 1;
+    std::list<BandCamShot *> shots;
+    ListNextShots(shots);
+    return shots.size() + 1;
 }
 
 float BandCamShot::GetTotalDurationSeconds() {
@@ -546,6 +603,50 @@ void BandCamShot::CheckNextShots() {
     ListNextShots(shots);
 }
 
+BandCamShot *BandCamShot::InitialShot() {
+    BandCamShot *initialShot = this;
+    std ::vector<ObjRef *>::const_reverse_iterator ref = Refs().rbegin();
+    std ::vector<ObjRef *>::const_reverse_iterator refEnd = Refs().rend();
+    for (; ref != refEnd;) {
+        BandCamShot *cur = dynamic_cast<BandCamShot *>((*ref)->RefOwner());
+        if (cur) {
+            FOREACH (it, cur->mNextShots) {
+                if (*it == initialShot) {
+                    initialShot = cur;
+                    MILO_ASSERT(cur != this, 0x3FC);
+                    ref = cur->Refs().rbegin();
+                    refEnd = cur->Refs().rend();
+                    break;
+                }
+            }
+        } else
+            ++ref;
+    }
+    return initialShot;
+}
+
+bool BandCamShot::ListNextShots(std::list<BandCamShot *> &shots) {
+    if (unk169) {
+        MILO_WARN("%s infinite camera shot loop detected!", PathName(this));
+        return false;
+    } else {
+        unk169 = true;
+        for (ObjPtrList<BandCamShot>::iterator it = mNextShots.begin();
+             it != mNextShots.end();) {
+            shots.push_back(*it);
+            if (!(*it)->ListNextShots(shots)) {
+                ObjPtrList<BandCamShot>::iterator yeet = it;
+                ++it;
+                mNextShots.erase(yeet);
+            } else {
+                ++it;
+            }
+        }
+        unk169 = false;
+        return true;
+    }
+}
+
 float BandCamShot::EndFrame() { return GetTotalDuration(); }
 
 bool BandCamShot::CheckShotStarted() { return !unk168 && CamShot::CheckShotStarted(); }
@@ -559,7 +660,7 @@ void BandCamShot::Target::Store(BandCamShot *shot) {
         std::list<BandCamShot::TargetCache>::iterator it =
             shot->CreateTargetCache(mTarget);
         if (it->unk4) {
-            mXfm.Set(it->unkc);
+            mXfm.Set(it->unk4->mLocalXfm);
             shot->DeleteTargetCache(it);
         }
     }
@@ -674,38 +775,45 @@ DataNode BandCamShot::OnListTargets(const DataArray *da) {
 
 DataNode BandCamShot::OnListAnimGroups(const DataArray *da) {
     Symbol sym = da->Sym(2);
-    static Message m("list_anim_groups", DataNode(0));
-    m[0] = DataNode(sym);
+    static Message m("list_anim_groups", 0);
+    m[0] = sym;
     DataNode handled = HandleType(m);
     if (handled.Type() != kDataUnhandled) {
         return DataNode(handled.Array(), kDataArray);
     } else {
         Character *c = dynamic_cast<Character *>(FindTarget(sym, false));
         if (c) {
-            bool usechardir = false;
-            if (c->GetDriver() && c->GetDriver()->ClipDir())
-                usechardir = true;
-            ObjectDir *thedir;
-            if (usechardir) {
-                thedir = c->GetDriver()->ClipDir();
-            } else
-                thedir = Dir();
+            ObjectDir *thedir = c->GetDriver() && c->GetDriver()->ClipDir()
+                ? c->GetDriver()->ClipDir()
+                : Dir();
             return ObjectList(thedir, "CharClipGroup", true);
         } else {
             handled = DataNode(new DataArray(1), kDataArray);
-            handled.Array()->Node(0) = DataNode(Symbol());
-            return DataNode(handled);
+            handled.Array()->Node(0) = Symbol();
+            return handled;
         }
     }
 }
 
+DataNode BandCamShot::OnTestDelta(DataArray *arr) {
+    float f4 = arr->Float(2);
+    bool ret = true;
+    if (f4 != 0) {
+        if ((mMinTime != 0 || !(f4 >= mMinTime)) && (mMaxTime != 0 || !(f4 <= mMaxTime)))
+            ret = false;
+    }
+    return ret;
+}
+
 DataNode BandCamShot::OnAllowableNextShots(const DataArray *da) {
     DataArrayPtr ptr;
-    for (ObjDirItr<BandCamShot> it(Dir(), true); it != 0; ++it) {
-        if (mNextShots.find(it) != mNextShots.end()) {
+    for (ObjDirItr<BandCamShot> it(Dir(), true); it != nullptr; ++it) {
+        if (this != it && mNextShots.find(it) == mNextShots.end()) {
             std::list<BandCamShot *> shots;
-            ListNextShots(shots);
-            // more
+            it->ListNextShots(shots);
+            if (std::find(shots.begin(), shots.end(), this) == shots.end()) {
+                ptr->Insert(ptr->Size(), &*it);
+            }
         }
     }
     static DataNode &milo_prop_path = DataVariable("milo_prop_path");
@@ -716,7 +824,7 @@ DataNode BandCamShot::OnAllowableNextShots(const DataArray *da) {
             );
         }
     }
-    return DataNode(ptr);
+    return ptr;
 }
 
 DataNode BandCamShot::OnListAllNextShots(const DataArray *da) {
@@ -726,5 +834,5 @@ DataNode BandCamShot::OnListAllNextShots(const DataArray *da) {
     for (std::list<BandCamShot *>::iterator it = shots.begin(); it != shots.end(); ++it) {
         ptr->Insert(ptr->Size(), DataNode(*it));
     }
-    return DataNode(ptr);
+    return ptr;
 }
