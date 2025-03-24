@@ -15,7 +15,6 @@ public:
     virtual void Poll();
     virtual bool IsLoaded() const;
     virtual void PollForLoading();
-    virtual void FinishLoad();
     virtual void ContentMounted(const char *, const char *);
     virtual const char *ContentDir() { return nullptr; }
 

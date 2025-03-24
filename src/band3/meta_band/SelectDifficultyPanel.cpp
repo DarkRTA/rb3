@@ -42,7 +42,13 @@ void SelectDifficultyPanel::PollForLoading() {
     }
 }
 
-UNPOOL_DATA
+#pragma push
+#pragma auto_inline on
+// band aid fix for this particular function
+// i think we might need to change the global compiler settings to just O4?
+// except doing that breaks inline settings
+// whatever the case may be, using O4 seems to fix weird pooling/the dreaded bss meme
+// either that, or changing the order of flags to go "-inline noauto -O4,p"
 void SelectDifficultyPanel::Enter() {
     UIPanel::Enter();
     mCurrentSongIx = 0;
@@ -110,7 +116,7 @@ void SelectDifficultyPanel::Enter() {
     }
     TheContentMgr->RegisterCallback(this, false);
 }
-END_UNPOOL_DATA
+#pragma pop
 
 void SelectDifficultyPanel::Poll() {
     UIPanel::Poll();
@@ -182,3 +188,7 @@ BEGIN_HANDLERS(SelectDifficultyPanel)
     HANDLE_SUPERCLASS(UIPanel)
     HANDLE_CHECK(0xFC)
 END_HANDLERS
+
+DECOMP_FORCEFUNC(SelectDifficultyPanel, SelectDifficultyPanel, ContentDir())
+DECOMP_FORCEFUNC(SelectDifficultyPanel, SelectDifficultyPanel, ClassName())
+DECOMP_FORCEFUNC(SelectDifficultyPanel, SelectDifficultyPanel, SetType(0))

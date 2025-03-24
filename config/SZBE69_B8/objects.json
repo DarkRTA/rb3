@@ -251,7 +251,7 @@
             "band3/meta_band/SaveLoadManager.cpp": "MISSING",
             "band3/meta_band/SaveLoadStatusPanel.cpp": "Matching",
             "band3/meta_band/SavedSetlist.cpp": "NonMatching",
-            "band3/meta_band/SelectDifficultyPanel.cpp": "NonMatching",
+            "band3/meta_band/SelectDifficultyPanel.cpp": "LinkIssues",
             "band3/meta_band/SessionMgr.cpp": "NonMatching",
             "band3/meta_band/SessionUsersProviders.cpp": "NonMatching",
             "band3/meta_band/SetlistMergePanel.cpp": "NonMatching",
@@ -1130,9 +1130,10 @@
             "system/obj/Object.cpp": "NonMatching",
             "system/obj/PropSync.cpp": "NonMatching",
             "system/obj/Task.cpp": "NonMatching",
-            "system/obj/TextFile.cpp": {
-                "status": "LinkIssues",
-                "comment": "TextFile::SetType(Symbol)::types swapped with TextFile::Handle(DataArray*, bool)::_s"
+            "system/obj/TextFile.cpp":{
+                "status": "Matching",
+                "extra_cflags": [ "-inline noauto -O4,p" ],
+                "comment": "don't ask me how, but swapping these two flags' order seems to fix the bss meme. just using O4 also achieves the same effect."
             },
             "system/obj/TypeProps.cpp": "Matching",
             "system/obj/Utl.cpp": "NonMatching",
