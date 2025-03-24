@@ -261,7 +261,7 @@
             "band3/meta_band/ShellInputInterceptor.cpp": "NonMatching",
             "band3/meta_band/SigninScreen.cpp": "NonMatching",
             "band3/meta_band/SongRecord.cpp": "NonMatching",
-            "band3/meta_band/SongSelectPanel.cpp": "MISSING",
+            "band3/meta_band/SongSelectPanel.cpp": "NonMatching",
             "band3/meta_band/SongSetlistProvider.cpp": "Matching",
             "band3/meta_band/SongSort.cpp": "LinkIssues",
             "band3/meta_band/SongSortByArtist.cpp": "NonMatching",
