@@ -43,6 +43,7 @@ public:
 
     /** Sorts the key triggers by time. */
     void RefreshKeys();
+    void SetResetStart(bool b) { mResetStart = b; }
 
     static void TriggerEvents(ObjList<EventCall> &);
     static void ResetEvents(ObjList<EventCall> &);

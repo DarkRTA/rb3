@@ -515,12 +515,12 @@ const char *PathName(const class Hmx::Object *obj);
 #define FOREACH_OBJREF(it, obj)                                                          \
     std::vector<ObjRef *>::const_reverse_iterator it = obj->Refs().rbegin();             \
     std::vector<ObjRef *>::const_reverse_iterator it##End = obj->Refs().rend();          \
-    for (; it != itEnd; ++it)
+    for (; it != it##End; ++it)
 
 #define FOREACH_OBJREF_POST(it, obj)                                                     \
     std::vector<ObjRef *>::const_reverse_iterator it = obj->Refs().rbegin();             \
     std::vector<ObjRef *>::const_reverse_iterator it##End = obj->Refs().rend();          \
-    for (; it != itEnd; it++)
+    for (; it != it##End; it++)
 
 // END OBJREF ITERATION MACROS
 // -------------------------------------------------------------------------

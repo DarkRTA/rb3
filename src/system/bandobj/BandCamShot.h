@@ -1,5 +1,6 @@
 #pragma once
 #include "obj/ObjMacros.h"
+#include "rndobj/Trans.h"
 #include "world/CameraShot.h"
 #include "rndobj/Env.h"
 #include "math/Mtx.h"
@@ -17,10 +18,11 @@ public:
     class Target {
     public:
         Target(Hmx::Object *o)
-            : mFastForward(0), mEnvOverride(o, 0), mForceLod(-1), mTeleport(1),
-              mReturn(1), mSelfShadow(1), unk1(0), unk2(1), mHide(0) {
+            : mFastForward(0), mEnvOverride(o), mForceLod(-1), mTeleport(1), mReturn(1),
+              mSelfShadow(1), unk1(0), unk2(1), mHide(0) {
             mXfm.Reset();
         }
+
         void Store(BandCamShot *);
         void UpdateTarget(Symbol, BandCamShot *);
 
@@ -45,7 +47,7 @@ public:
     public:
         Symbol unk0;
         RndTransformable *unk4;
-        int unk8;
+        RndEnviron *unk8;
         TransformNoScale unkc;
     };
 
@@ -66,6 +68,7 @@ public:
     virtual CamShot *CurrentShot() { return mCurShot; }
     virtual bool CheckShotStarted();
     virtual bool CheckShotOver(float);
+    virtual void SetFrameEx(float, float);
 
     RndTransformable *FindTarget(Symbol, bool);
     void CheckNextShots();
@@ -80,11 +83,17 @@ public:
     BandCamShot *InitialShot();
     int GetNumShots();
     bool IterateNextShot();
-    void SetFrameEx(float, float);
     void AnimateShot(float, float);
-    void ListNextShots(std::list<BandCamShot *> &);
-    static void DeleteTargetCache(std::list<TargetCache>::iterator);
+    bool ListNextShots(std::list<BandCamShot *> &);
+    void TeleportTarget(RndTransformable *, const TransformNoScale &, bool);
     std::list<TargetCache>::iterator CreateTargetCache(Symbol);
+    std::list<TargetCache>::iterator GetTargetCache(Symbol);
+
+    static void DeleteTargetCache(std::list<TargetCache>::iterator);
+
+    bool ShouldSetNextShot(float f1) const {
+        return f1 < Duration() || mNextShots.empty();
+    }
 
     DataNode OnTestDelta(DataArray *);
     DataNode AddTarget(DataArray *);
@@ -109,11 +118,11 @@ public:
     ObjPtrList<BandCamShot> mNextShots; // 0x13c
     ObjPtrList<BandCamShot>::iterator mShotIter; // 0x14c
     ObjPtr<BandCamShot> mCurShot; // 0x150
-    float unk15c;
-    float unk160;
-    float unk164;
-    bool unk168;
-    bool unk169;
-    bool unk16a;
+    float unk15c; // 0x15c
+    float unk160; // 0x160
+    float unk164; // 0x164
+    bool unk168; // 0x168
+    bool unk169; // 0x169
+    bool unk16a; // 0x16a
     bool mAnimsDuringNextShots; // 0x16b
 };

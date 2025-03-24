@@ -1,4 +1,5 @@
 #include "bandobj/BandFaceDeform.h"
+#include "decomp.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(BandFaceDeform);
@@ -30,6 +31,8 @@ int BandFaceDeform::DeltaArray::NumVerts() {
     return num;
 }
 
+DECOMP_FORCEACTIVE(BandFaceDeform, "")
+
 void BandFaceDeform::DeltaArray::AppendDeltas(
     const std::vector<Vector3> &pos, const std::vector<Vector3> &base
 ) {
@@ -37,6 +40,13 @@ void BandFaceDeform::DeltaArray::AppendDeltas(
         MILO_FAIL("AppendDeltas pos has %d points, base has %d", pos.size(), base.size());
     }
 }
+
+DECOMP_FORCEACTIVE(
+    BandFaceDeform,
+    "BandFaceDeform",
+    "   run from %d to %d waste %g \n",
+    "   is size %d total %d av runlength %g totalWaste %d md %g\n"
+)
 
 void BandFaceDeform::DeltaArray::SetSize(int i) {
     if (mSize != i) {
