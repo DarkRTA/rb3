@@ -257,7 +257,7 @@
             "band3/meta_band/SetlistMergePanel.cpp": "NonMatching",
             "band3/meta_band/SetlistSortByLength.cpp": "Matching",
             "band3/meta_band/SetlistSortByLocation.cpp": "NonMatching",
-            "band3/meta_band/SetlistToStorePanel.cpp": "MISSING",
+            "band3/meta_band/SetlistToStorePanel.cpp": "NonMatching",
             "band3/meta_band/ShellInputInterceptor.cpp": "NonMatching",
             "band3/meta_band/SigninScreen.cpp": "NonMatching",
             "band3/meta_band/SongRecord.cpp": "NonMatching",
