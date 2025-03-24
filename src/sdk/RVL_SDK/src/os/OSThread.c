@@ -931,7 +931,23 @@ void OSGetIdleFunction(){
 }
 
 //unused
-void CheckThreadQueue(){
+BOOL CheckThreadQueue(OSThreadQueue* queue){
+    if(!(queue->head == NULL || queue->head->link.prev == NULL))
+        return FALSE;
+
+    if(!(queue->tail == NULL || queue->tail->link.next == NULL))
+        return FALSE;
+
+    for (OSThread* thread = queue->head; thread; thread = thread->link.next) {
+        if(!(thread->link.next == NULL || thread == thread->link.next->link.prev))
+            return FALSE;
+
+        if(!(thread->link.prev == NULL || thread == thread->link.prev->link.next))
+            return FALSE;
+    }
+
+    return TRUE;
+
 }
 
 //unused
