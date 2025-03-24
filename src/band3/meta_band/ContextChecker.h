@@ -1,5 +1,6 @@
 #pragma once
 #include "utl/Symbol.h"
+#include "obj/Data.h"
 
 struct WeightedEntry {
     WeightedEntry(int i, Symbol s, const char *c) : unk0(i), unk4(s), unk8(c) {}
@@ -9,3 +10,4 @@ struct WeightedEntry {
 };
 
 void ContextCheckerInit();
+const char *RandomContextSensitiveItem(const DataArray *a, bool b);

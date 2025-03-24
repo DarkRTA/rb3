@@ -15,11 +15,17 @@ public:
     virtual void Poll();
     virtual void Unload();
     virtual void PollForLoading();
-    virtual const char *ContentDir();
+    virtual const char *ContentDir() { return nullptr; }
     virtual void ContentMounted(const char *, const char *);
     virtual void ContentFailed(const char *);
-    virtual bool ShouldHandleFadeOutOnExit() const;
+    virtual bool ShouldHandleFadeOutOnExit() const { return true; }
     virtual bool ShouldFade() { return true; }
+
+    bool LoadingFailed() const { return mLoadingFailed; }
+    bool DoneLoading() const {
+        return !LoadingFailed() && (mWaitingForLoad || mWaitingForMount);
+    }
+    BinkClip *GetVoiceover() const { return mVoiceOver; }
 
     void FadeOutVoiceover();
     void UpdateVoiceoverState();
