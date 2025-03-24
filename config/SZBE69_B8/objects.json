@@ -286,7 +286,7 @@
             "band3/meta_band/StoreOfferProvider.cpp": "MISSING",
             "band3/meta_band/StoreRootPanel.cpp": "MISSING",
             "band3/meta_band/StoreSongSortNode.cpp": "MISSING",
-            "band3/meta_band/TabInterfacePanel.cpp": "MISSING",
+            "band3/meta_band/TabInterfacePanel.cpp": "Matching",
             "band3/meta_band/TexLoadPanel.cpp": "NonMatching",
             "band3/meta_band/TokenRedemptionPanel.cpp": "NonMatching",
             "band3/meta_band/TrainerProvider.cpp": "Matching",
@@ -295,7 +295,7 @@
                 "status": "Equivalent",
                 "comment": "bss meme"
             },
-            "band3/meta_band/UGCPurchasePanel.cpp": "MISSING",
+            "band3/meta_band/UGCPurchasePanel.cpp": "NonMatching",
             "band3/meta_band/UIEvent.cpp": "NonMatching",
             "band3/meta_band/UIEventMgr.cpp": "Matching",
             "band3/meta_band/UIStats.cpp": "NonMatching",
