@@ -303,7 +303,7 @@
             "band3/meta_band/Utl.cpp": "Matching",
             "band3/meta_band/ViewSetting.cpp": "MISSING",
             "band3/meta_band/VoiceMgr.cpp": "Matching",
-            "band3/meta_band/VoiceoverPanel.cpp": "MISSING",
+            "band3/meta_band/VoiceoverPanel.cpp": "NonMatching",
             "band3/meta_band/WaitingUserGate.cpp": "MISSING",
             "band3/meta_band/WiiBufStreamMgr.cpp": "MISSING",
             "band3/meta_band/WiiFriendsList.cpp": "MISSING",
