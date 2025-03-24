@@ -75,6 +75,7 @@ public:
     void LaunchQuestFilter(
         int, Symbol, Symbol, Symbol, TourSetlistType, Symbol, Symbol, Symbol
     );
+    String GetCurrentFilterName() const;
 
     TourPerformerImpl *GetPerformer() const { return m_pTourPerformer; }
 

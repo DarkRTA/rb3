@@ -90,3 +90,6 @@ DECLARE_MESSAGE(UIScreenChangeMsg, "screen_change");
 UIScreenChangeMsg(UIScreen *s1, UIScreen *s2, bool b) : Message(Type(), s1, s2, b) {}
 UIScreen *GetFromScreen() const { return mData->Obj<UIScreen>(3); }
 END_MESSAGE
+
+DECLARE_MESSAGE(UIChangedMsg, "ui_changed")
+END_MESSAGE
