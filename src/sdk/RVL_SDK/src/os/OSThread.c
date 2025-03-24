@@ -114,7 +114,10 @@ static void __OSSwitchThread(OSThread* thread) {
 
 //unused
 BOOL OSIsThreadSuspended(OSThread* thread) {
-    return (-thread->suspend & ~thread->suspend) >> 31;
+    if(thread->suspend > 0)
+        return TRUE;
+
+    return FALSE;
 }
 
 BOOL OSIsThreadTerminated(OSThread* thread) {
