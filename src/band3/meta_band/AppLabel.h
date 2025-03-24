@@ -10,6 +10,7 @@
 #include "meta_band/Leaderboard.h"
 #include "meta_band/MainHubPanel.h"
 #include "meta_band/SongRecord.h"
+#include "meta_band/TokenRedemptionPanel.h"
 
 class Node;
 
@@ -51,4 +52,5 @@ public:
     void SetSongName(const SongSortNode *);
     void SetSetlistName(const SavedSetlist *);
     void SetBattleInstrument(const SetlistRecord *);
+    void SetTokenRedemptionString(const TokenRedemptionPanel *, int);
 };
