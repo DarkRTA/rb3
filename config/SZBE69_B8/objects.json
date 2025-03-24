@@ -254,7 +254,7 @@
             "band3/meta_band/SelectDifficultyPanel.cpp": "NonMatching",
             "band3/meta_band/SessionMgr.cpp": "NonMatching",
             "band3/meta_band/SessionUsersProviders.cpp": "NonMatching",
-            "band3/meta_band/SetlistMergePanel.cpp": "MISSING",
+            "band3/meta_band/SetlistMergePanel.cpp": "NonMatching",
             "band3/meta_band/SetlistSortByLength.cpp": "Matching",
             "band3/meta_band/SetlistSortByLocation.cpp": "NonMatching",
             "band3/meta_band/SetlistToStorePanel.cpp": "MISSING",

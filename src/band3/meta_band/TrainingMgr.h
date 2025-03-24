@@ -26,6 +26,7 @@ public:
     Symbol GetSongFromLessonName(Symbol);
     Difficulty GetDifficultyFromLessonName(Symbol);
     LocalBandUser *GetUser() const { return mUser; }
+    Difficulty GetMinimumDifficulty() const { return mMinimumDifficulty; }
 
     static void Init();
     static TrainingMgr *GetTrainingMgr();

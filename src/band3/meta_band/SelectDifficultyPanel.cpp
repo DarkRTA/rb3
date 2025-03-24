@@ -102,7 +102,7 @@ void SelectDifficultyPanel::Enter() {
         MILO_ASSERT(trainingMgr, 0x86);
         overshell->SetPartRestrictedUser(trainingMgr->GetUser());
         overshell->SetPartRestriction(kNumTrackTypes);
-        overshell->SetMinimumDifficulty(trainingMgr->mMinimumDifficulty);
+        overshell->SetMinimumDifficulty(trainingMgr->GetMinimumDifficulty());
     } else {
         overshell->SetPartRestrictedUser(nullptr);
         overshell->SetPartRestriction(kNumTrackTypes);
