@@ -1,3 +1,6 @@
+#include "revolution/os/OSThread.h"
+#include "decomp.h"
+#include "types.h"
 #include <revolution/OS.h>
 #include <revolution/os/__ppc_eabi_init.h>
 
@@ -110,7 +113,8 @@ static void __OSSwitchThread(OSThread* thread) {
 }
 
 //unused
-BOOL OSIsThreadSuspended(){
+BOOL OSIsThreadSuspended(OSThread* thread) {
+    return (-thread->suspend & ~thread->suspend) >> 31;
 }
 
 BOOL OSIsThreadTerminated(OSThread* thread) {
