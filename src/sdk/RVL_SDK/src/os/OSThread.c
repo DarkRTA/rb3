@@ -1,6 +1,3 @@
-#include "revolution/os/OSThread.h"
-#include "decomp.h"
-#include "types.h"
 #include <revolution/OS.h>
 #include <revolution/os/__ppc_eabi_init.h>
 
