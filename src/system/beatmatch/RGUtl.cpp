@@ -410,6 +410,13 @@ bool RGGetHeldFretRange(const RGState &state, int &i1, int &i2) {
 
 const char *RGFretNumberToString(int i) { return MakeString("%c", i + 0x41); }
 
-const char *RGGetNoteName(unsigned char note, int) {
+const char *RGGetNoteName(unsigned char note, int a) {
     MILO_ASSERT(note < sizeof(gNoteNames), 0x34E);
+    bool isFlat;
+    if (a - 1 <= 9 && ((1 << (a - 1)) & 0x295) != 0)
+        isFlat = 1;
+    if (isFlat)
+        return gNoteFlatNames[note];
+    else
+        return gNoteNames[note];
 }
