@@ -119,7 +119,7 @@ bool RealGuitarGemPlayer::GetTrillSlots(int i2, std::pair<int, int> &slots) cons
     if (!data->GetRGTrillAtTick(mTrackNum, i2, trill)) {
         return false;
     } else {
-        slots.second = slots.first = trill.unk0;
+        slots.second = slots.first = trill.mString;
         return true;
     }
 }

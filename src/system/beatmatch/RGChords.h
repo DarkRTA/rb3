@@ -4,16 +4,17 @@ class RGRollChord {
 public:
     RGRollChord() {
         for (int i = 0; i < 6; i++)
-            unk0[i] = -1;
+            mString[i] = -1;
     }
-    int unk0[6];
+    int mString[6];
 };
 
 class RGTrill {
 public:
-    RGTrill() : unk0(-1) { unk4 = unk8 = -1; }
-    int unk0;
+    RGTrill() : mString(-1) { mFrets[0] = mFrets[1] = -1; }
+    int mString;
     // unk4 and unk8 could actually be a std::pair<int, int>?
-    int unk4;
-    int unk8;
+    // int unk4;
+    // int unk8;
+    int mFrets[2]; // I think?
 };
