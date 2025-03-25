@@ -503,7 +503,7 @@ unsigned int BeatMatcher::GetRGRollSlots(int i1) const {
     RGRollChord chord = mSongData->GetRGRollingSlotsAtTick(mCurTrack, i1);
     unsigned int slots = 0;
     for (int i = 0, mask = 1; i < 6; i++, mask <<= 1) {
-        if (chord.unk0[i] != -1) {
+        if (chord.mString[i] != -1) {
             slots |= mask;
         }
     }
