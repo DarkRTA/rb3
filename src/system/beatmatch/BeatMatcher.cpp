@@ -30,14 +30,15 @@ BeatMatcher::BeatMatcher(
     DataArray *arr,
     BeatMaster *bm
 )
-    : mWaitingForAudio(1), mUserGuid(u), unk1c(i1), unk20(i2), mControllerType(s),
-      mSongData(data), mCfg(arr), mSink(0), mAudio(bm->GetAudio()), mController(0),
-      mMercurySwitchFilter(0), mWatcher(0), mDrumPlayer(new DrumPlayer(info)),
-      mCurTrack(-1), unk60(1), mNow(0), mTick(0), mLastSwing(0), mLastReleaseSwing(0),
-      mLastVelocityBucket(0), mRawMercurySwitchState(0), mMercurySwitchState(0),
-      mForceMercurySwitch(0), mSyncOffset(0), mDrivingPitchBendExternally(0),
-      mFillStartTick(0x7fffffff), mLastFillEndTick(-1), mCodaStartTick(-1), mAutoplay(0),
-      mForceFill(0), mNoFills(0), mFillAudio(1), mEnableWhammy(1), mEnableCapStrip(1) {
+    : mWaitingForAudio(1), mUserGuid(u), mPlayerSlot(i1), mNumPlayers(i2),
+      mControllerType(s), mSongData(data), mCfg(arr), mSink(0), mAudio(bm->GetAudio()),
+      mController(0), mMercurySwitchFilter(0), mWatcher(0),
+      mDrumPlayer(new DrumPlayer(info)), mCurTrack(-1), unk60(1), mNow(0), mTick(0),
+      mLastSwing(0), mLastReleaseSwing(0), mLastVelocityBucket(0),
+      mRawMercurySwitchState(0), mMercurySwitchState(0), mForceMercurySwitch(0),
+      mSyncOffset(0), mDrivingPitchBendExternally(0), mFillStartTick(0x7fffffff),
+      mLastFillEndTick(-1), mCodaStartTick(-1), mAutoplay(0), mForceFill(0), mNoFills(0),
+      mFillAudio(1), mEnableWhammy(1), mEnableCapStrip(1) {
     mSongData->AddBeatMatcher(this);
     DataArray *filterArr = arr->FindArray("mercury_switch_filter", false);
     if (filterArr) {
@@ -289,7 +290,7 @@ void BeatMatcher::SetTrack(int track) {
         mWatcher = new TrackWatcher(
             track,
             mUserGuid,
-            unk1c,
+            mPlayerSlot,
             mControllerType,
             mSongData,
             this,

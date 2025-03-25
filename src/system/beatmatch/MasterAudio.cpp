@@ -199,16 +199,16 @@ void MasterAudio::SetupTracks(SongInfo *info, PlayerTrackConfigList *pList) {
                 mSubmixes,
                 curChannels,
                 mSongData->TrackHasIndependentSlots(i),
-                extraInfo.unka
+                extraInfo.mVocal
             ));
 
-            ChannelSetupFunc func = extraInfo.unk0
+            ChannelSetupFunc func = extraInfo.mPlayable
                 ? &MasterAudio::SetupTrackChannel_
                 : &MasterAudio::SetupBackgroundChannel_;
             for (int j = 0; j < curChannels.size(); j++) {
                 // (func)(curChannels[j], info);
             }
-            if (extraInfo.unka) {
+            if (extraInfo.mVocal) {
                 SetNonmutable(AudioTrackNum(i));
             }
         }
@@ -233,26 +233,26 @@ void MasterAudio::GetExtraTrackInfo(
     MILO_ASSERT(player_track_config_list, 0x24F);
     const UserGuid &player = player_track_config_list->InstrumentPlayer(audioTy, 0);
     if (audioTy == kAudioTypeVocals) {
-        trackInfo.unka = true;
+        trackInfo.mVocal = true;
     }
     if (!player.IsNull()) {
         if (audioTy == kAudioTypeVocals) {
             if (player_track_config_list->IsUserRemote(player)) {
-                trackInfo.unk8 = true;
-                trackInfo.unk0 = true;
+                trackInfo.mDuckable = true;
+                trackInfo.mPlayable = true;
             } else {
                 trackInfo.unk4 = mCueVolume;
-                trackInfo.unk0 = true;
-                trackInfo.unk9 = true;
+                trackInfo.mPlayable = true;
+                trackInfo.mVocalCue = true;
             }
         } else
-            trackInfo.unk0 = true;
+            trackInfo.mPlayable = true;
     } else
-        trackInfo.unk0 = false;
+        trackInfo.mPlayable = false;
 }
 
 void MasterAudio::SetupTrackChannel_(int i, ExtraTrackInfo &info) {
-    SetupTrackChannel(i, info.unka, info.unk4, info.unk9, info.unk8);
+    SetupTrackChannel(i, info.mVocal, info.unk4, info.mVocalCue, info.mDuckable);
 }
 
 void MasterAudio::SetupTrackChannel(int chan, bool b2, float f3, bool b4, bool b5) {
@@ -277,7 +277,7 @@ void MasterAudio::SetupTrackChannel(int chan, bool b2, float f3, bool b4, bool b
 }
 
 void MasterAudio::SetupBackgroundChannel_(int i, ExtraTrackInfo &info) {
-    SetupBackgroundChannel(i, info.unka, info.unk4, info.unk9, info.unk8);
+    SetupBackgroundChannel(i, info.mVocal, info.unk4, info.mVocalCue, info.mDuckable);
 }
 
 void MasterAudio::SetupBackgroundChannel(int chan, bool b2, float f3, bool b4, bool b5) {

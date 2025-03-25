@@ -115,12 +115,12 @@ class MasterAudio : public BeatMasterSink,
 public:
     class ExtraTrackInfo {
     public:
-        ExtraTrackInfo() : unk0(0), unk4(0), unk8(0), unk9(0), unka(0) {}
-        bool unk0;
+        ExtraTrackInfo() : mPlayable(0), unk4(0), mDuckable(0), mVocalCue(0), mVocal(0) {}
+        bool mPlayable;
         float unk4;
-        bool unk8;
-        bool unk9;
-        bool unka;
+        bool mDuckable;
+        bool mVocalCue;
+        bool mVocal;
     };
 
     enum DontPlayReason {

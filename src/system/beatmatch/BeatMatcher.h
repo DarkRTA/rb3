@@ -106,8 +106,8 @@ public:
 
     bool mWaitingForAudio; // 0x8
     UserGuid mUserGuid; // 0xc
-    int unk1c; // 0x1c
-    int unk20; // 0x20
+    int mPlayerSlot; // 0x1c
+    int mNumPlayers; // 0x20
     Symbol mControllerType; // 0x24
     SongData *mSongData; // 0x28
     DataArray *mCfg; // 0x2c
