@@ -1,6 +1,8 @@
 #include "meta_band/UIEvent.h"
+#include "meta_band/BandUI.h"
 #include "meta_band/EventDialogPanel.h"
 #include "UIEventMgr.h"
+#include "meta_band/SessionMgr.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
@@ -70,7 +72,18 @@ DestructiveTransitionEvent::DestructiveTransitionEvent(
 )
     : TransitionEvent(a1, a2), mNetSync(sync) {}
 
-void DestructiveTransitionEvent::OnActivate() {}
+void DestructiveTransitionEvent::OnActivate() {
+    TheBandUI.SetDisbandStatus(BandUI::kDisbandsDisabled);
+    if (!TheSessionMgr->IsLocal()) {
+        TheSessionMgr->Disconnect();
+    }
+    DataArray *arr = mEventDef->FindArray("init", false);
+    if (arr) {
+        arr->ExecuteScript(1, nullptr, mEventInit, 2);
+    }
+    SetTransitionAndDestination();
+    mNetSync->AttemptTransition(mTransitionScreen, 0);
+}
 
 void DestructiveTransitionEvent::SetTransitionAndDestination() {
     mTransitionScreen =
@@ -107,18 +120,7 @@ void NonDestructiveTransitionEvent::Poll() {
 
 bool NonDestructiveTransitionEvent::IsDestination(const std::vector<UIScreen *> &screens
 ) const {
-    bool samesizes = mDestState.size() == screens.size();
-    if (samesizes) {
-        std::vector<UIScreen *>::const_iterator sit = mDestState.begin();
-        for (std::vector<UIScreen *>::const_iterator it = screens.begin();
-             it != screens.end();
-             ++it, ++sit) {
-            if (*it != *sit)
-                return false;
-        }
-        return true;
-    }
-    return samesizes;
+    return screens == mDestState;
 }
 
 bool NonDestructiveTransitionEvent::IsTransitionAllowed(UIScreen *screen) const {
@@ -131,4 +133,17 @@ bool NonDestructiveTransitionEvent::IsTransitionAllowed(UIScreen *screen) const 
 
 void NonDestructiveTransitionEvent::OnActivate() { AttemptNextTransition(); }
 
-void NonDestructiveTransitionEvent::AttemptNextTransition() {}
+void NonDestructiveTransitionEvent::AttemptNextTransition() {
+    std::vector<UIScreen *> currentState;
+    TheBandUI.GetCurrentScreenState(currentState);
+    MILO_ASSERT(!currentState.empty(), 0xD3);
+    MILO_ASSERT(currentState.size() <= 2, 0xD4);
+    if (currentState.front() != mDestState.front()) {
+        mNetSync->AttemptTransition(mDestState.front(), 0);
+    } else if (currentState.size() > mDestState.size()) {
+        TheBandUI.PopScreen(nullptr);
+    } else if (currentState.size() < mDestState.size()
+               || currentState.back() != mDestState.back()) {
+        mNetSync->AttemptTransition(mDestState.back(), 1);
+    }
+}

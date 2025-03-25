@@ -60,6 +60,7 @@ public:
     void UpdateOnlineStatus();
     void RedeemToken(int, String, DataResultList &, Hmx::Object *);
     void GetRedeemedTokensByPlayer(int, DataResultList &, Hmx::Object *);
+    void GetSongFullOffer(int, DataResultList &, Hmx::Object *);
 
     DataResultList unk1c;
     int unk34;

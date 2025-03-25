@@ -1,5 +1,6 @@
 #include "meta_band/InterstitialPanel.h"
 #include "InterstitialPanel.h"
+#include "decomp.h"
 #include "meta/DeJitterPanel.h"
 #include "obj/ObjMacros.h"
 #include "ui/PanelDir.h"
@@ -68,3 +69,10 @@ BEGIN_HANDLERS(BackdropPanel)
     HANDLE_SUPERCLASS(UIPanel)
     HANDLE_CHECK(0x8A)
 END_HANDLERS
+
+DECOMP_FORCEFUNC(InterstitialPanel, BackdropPanel, ClassName())
+DECOMP_FORCEFUNC(InterstitialPanel, BackdropPanel, SetType(0))
+DECOMP_FORCEFUNC(InterstitialPanel, InterstitialPanel, ClassName())
+DECOMP_FORCEFUNC(InterstitialPanel, InterstitialPanel, SetType(0))
+DECOMP_FORCEDTOR(InterstitialPanel, InterstitialPanel)
+DECOMP_FORCEDTOR(InterstitialPanel, BackdropPanel)
