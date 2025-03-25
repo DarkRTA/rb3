@@ -636,7 +636,7 @@
             "network/Protocol/JobProcessProtocolEvent.cpp": "MISSING",
             "network/Protocol/JobProcessProtocolMessage.cpp": "MISSING",
             "network/Protocol/LogToClientController.cpp": "MISSING",
-            "network/Protocol/Protocol.cpp": "MISSING",
+            "network/Protocol/Protocol.cpp": "NonMatching",
             "network/Protocol/ProtocolCallContext.cpp": "NonMatching",
             "network/Protocol/ProtocolRequestBroker.cpp": "MISSING",
             "network/Protocol/ServerProtocol.cpp": "MISSING",

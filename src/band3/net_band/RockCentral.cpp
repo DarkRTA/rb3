@@ -1,5 +1,9 @@
 #include "net_band/RockCentral.h"
 #include "ContextWrapper.h"
+#include "RBBinaryDataDDL_Wii.h"
+#include "RBDataDDL_Wii.h"
+#include "RBTestDDL_Wii.h"
+#include "Services/ServiceClient.h"
 #include "band3/meta_band/PerformanceData.h"
 #include "decomp.h"
 #include "game/GamePanel.h"
@@ -9,6 +13,7 @@
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SaveLoadManager.h"
+#include "meta_band/UIEventMgr.h"
 #include "net/Net.h"
 #include "net/NetSession.h"
 #include "net/Server.h"
@@ -16,12 +21,16 @@
 #include "net/WiiMessenger.h"
 #include "net_band/DataResults.h"
 #include "obj/Dir.h"
+#include "obj/Msg.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
+#include "os/System.h"
+#include "stl/_pair.h"
 #include "ui/UIPanel.h"
 #include "utl/DataPointMgr.h"
 #include "utl/Option.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/TextFileStream.h"
 
 DECOMP_FORCEACTIVE(RockCentral, __FILE__, "mUpdated")
@@ -178,109 +187,48 @@ DataNode RockCentral::OnMsg(const ConnectionStatusChangedMsg &msg) {
     return 1;
 }
 
-DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &) {
-    // clang-format off
-    // iVar1 = fn_800BED14(msg);
-    // if ((iVar1 == 0) || (DAT_809009c4 != 0x0)) {
-    //   iVar1 = fn_800BED14(msg);
-    //   if (iVar1 == 0) {
-    //     if (*(this + 0x3c) == 3) {
-    //       *(this + 0x3c) = 0;
-    //       dVar6 = Timer::Ms(this + 0x40);
-    //       *(this + 0x70) = dVar6 + 8000.0;
-    //     }
-    //     else {
-    //       *(this + 0x3c) = 4;
-    //       dVar6 = Timer::Ms(this + 0x40);
-    //       *(this + 0x70) = dVar6 + 40000.0;
-    //       iVar1 = IsLoginMandatory(this);
-    //       if (iVar1 != 0) {
-    //         if (lbl_808E4379 == '\0') {
-    //           DataNode::DataNode(auStack_48,1);
-    //           uVar2 = Symbol::Symbol(auStack_64,&DAT_8084ff54);
-    //           Message::Message(&DAT_80900a00,uVar2,auStack_48);
-    //           DataNode::~DataNode(auStack_48,0xffffffff);
-    //           __register_global_object(&DAT_80900a00,Message::~Message,&DAT_809009f0);
-    //           lbl_808E4379 = '\x01';
-    //         }
-    //         local_68 = SymLostConnection;
-    //         uVar2 = MergedGet0x4(&DAT_80900a00);
-    //         UIEventMgr::TriggerEvent(TheUIEventMgr,&local_68,uVar2);
-    //       }
-    //     }
-    //     piVar4 = *(this + 0x38);
-    //     if (piVar4 != 0x0) {
-    //       (**(*piVar4 + 8))(piVar4,1);
-    //     }
-    //     piVar4 = *(this + 0x34);
-    //     *(this + 0x38) = 0;
-    //     if (piVar4 != 0x0) {
-    //       (**(*piVar4 + 8))(piVar4,1);
-    //     }
-    //     *(this + 0x34) = 0;
-    //     if (DAT_809009c4 != 0x0) {
-    //       (**(*DAT_809009c4 + 8))(DAT_809009c4,1);
-    //     }
-    //     DAT_809009c4 = 0x0;
-    //   }
-    // }
-    // else {
-    //   *(this + 0x3c) = 2;
-    //   iVar1 = MergedGet0x28(TheNet);
-    //   (**(*(iVar1 + 4) + 0x58))();
-    //   iVar1 = MergedGet0x28(TheNet);
-    //   uVar2 = (**(*(iVar1 + 4) + 0x54))();
-    //   pvVar3 = Quazal::RootObject::operator_new(0x80900838);
-    //   if (pvVar3 != 0x0) {
-    //     pvVar3 = fn_802C4788();
-    //   }
-    //   *(this + 0x38) = pvVar3;
-    //   fn_80092F8C(uVar2,pvVar3,0x74);
-    //   piVar4 = Quazal::RootObject::operator_new(0x80900838);
-    //   if (piVar4 != 0x0) {
-    //     piVar4 = fn_802C4748();
-    //   }
-    //   DAT_809009c4 = piVar4;
-    //   fn_80092F8C(uVar2,piVar4,0x75);
-    //   pvVar3 = Quazal::RootObject::operator_new(0x80900838);
-    //   if (pvVar3 != 0x0) {
-    //     pvVar3 = fn_802C4708();
-    //   }
-    //   *(this + 0x34) = pvVar3;
-    //   fn_80092F8C(uVar2,pvVar3,0x76);
-    //   local_2c = 0xffffffff;
-    //   local_30 = 0xffffffff;
-    //   iVar1 = fn_807BDBA0(&local_30);
-    //   if (iVar1 == 0) {
-    //     snprintf(lbl_80900838 + 0x10,0x18,&DAT_8084ff44);
-    //   }
-    //   if (lbl_808E4378 == '\0') {
-    //     DataPoint::DataPoint(&DAT_809009d4);
-    //     __register_global_object(&DAT_809009d4,fn_8012BE94,&DAT_809009c8);
-    //     lbl_808E4378 = '\x01';
-    //   }
-    //   fn_802C4704(&DAT_809009d8);
-    //   uVar2 = Symbol::Symbol(auStack_58,s_config/get_8084ff49);
-    //   Symbol::Symbol(&DAT_809009d4,uVar2);
-    //   local_60 = SystemLanguage();
-    //   local_5c = SymLocale;
-    //   fn_802C4700(auStack_40,&local_5c,&local_60);
-    //   fn_802C46B0(auStack_28,auStack_40);
-    //   fn_802C46AC(auStack_38,&DAT_809009d8,auStack_28);
-    //   VarStack::~VarStack(auStack_28,0xffffffff);
-    //   pRVar5 = this;
-    //   if (this != 0x0) {
-    //     pRVar5 = *this;
-    //   }
-    //   fn_802CF1CC(&DAT_809009d4,0,this + 0x1c,pRVar5);
-    //   fn_802CD8D4(this);
-    // }
-    // uVar2 = MergedGet0x4(msg);
-    // MsgSource::Handle(auStack_50,this,uVar2,0);
-    // DataNode::~DataNode(auStack_50,0xffffffff);
-    // DataNode::DataNode(out,1);
-    // return;
-    // clang-format on
+DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &msg) {
+    if (msg.Success() && !mRBData) {
+        mState = 2;
+        TheNet.GetServer()->GetCompetitionClient();
+        Quazal::ServiceClient *client = TheNet.GetServer()->GetPersistentStoreClient();
+        mRBTest = new Quazal::RBTestClient(1);
+        if (!client->RegisterExtraProtocol(mRBTest, 't')) {
+            MILO_WARN("Couldn't register RB test protocol\n");
+        }
+        mRBData = new Quazal::RBDataClient(1);
+        if (!client->RegisterExtraProtocol(mRBBinaryData, 'u')) {
+            MILO_WARN("Couldn't register RB data protocol\n");
+        }
+        mRBBinaryData = new Quazal::RBBinaryDataClient(1);
+        if (!client->RegisterExtraProtocol(mRBBinaryData, 'v')) {
+            MILO_WARN("Couldn't register RB binary data protocol\n");
+        }
+
+        static DataPoint dataPoint;
+        dataPoint.mNameValPairs.clear();
+        dataPoint.mType = "config/get";
+        dataPoint.mNameValPairs.insert(std::make_pair(locale, SystemLanguage()));
+        RecordDataPoint(dataPoint, 0, mConfigResultList, this);
+        DeleteNextUser();
+    } else if (!msg.Success()) {
+        if (mState == 3) {
+            mState = 0;
+            mRetryTime = mTime.Ms() + 8000.0f;
+        } else {
+            mState = 4;
+            mRetryTime = mTime.Ms() + 40000.0f;
+            if (IsLoginMandatory()) {
+                static Message init("init", 1);
+                TheUIEventMgr->TriggerEvent(lost_connection, init);
+            }
+        }
+        RELEASE(mRBTest);
+        RELEASE(mRBBinaryData);
+        RELEASE(mRBData);
+    }
+    MsgSource::Handle(msg, false);
+    return 1;
 }
 
 Symbol PerformanceData::GetMode() const { return mMode; }

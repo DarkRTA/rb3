@@ -2,6 +2,7 @@
 #include "obj/Msg.h"
 #include "os/CritSec.h"
 #include "os/OnlineID.h"
+#include "network/Services/ServiceClient.h"
 
 class Server : public MsgSource {
 public:
@@ -36,9 +37,9 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetPersistentStoreClient() {
+    virtual Quazal::ServiceClient *GetPersistentStoreClient() {
         MILO_FAIL("not implemented for this platform");
-        return 0;
+        return nullptr;
     }
     virtual int GetCompetitionClient() {
         MILO_FAIL("not implemented for this platform");

@@ -7,6 +7,7 @@
 
 namespace Quazal {
     class SystemComponent : public RefCountedObject {
+    public:
         enum _State {
             Uninitialized = 0x1,
             Initializing = 0x2,
@@ -34,11 +35,9 @@ namespace Quazal {
 
         SystemComponent(const String &);
         virtual ~SystemComponent(); // 0x8
-        virtual RefCountedObject *AcquireRef(); // 0xC
-        virtual void ReleaseRef(); // 0x10
         virtual const char *GetType() const { return type(); } // 0x14
         virtual bool IsAKindOf(const char *str) const { return type() == str; } // 0x18
-        virtual void V_Unk7() = 0; // 0x1C
+        virtual void EnforceDeclareSysComponentMacro() = 0; // 0x1C
         virtual void TraceImpl(uint) const; // 0x20
         virtual _State StateTransition(_State); // 0x24
         virtual void OnInitialize(); // 0x28

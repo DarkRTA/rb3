@@ -1,5 +1,8 @@
 #pragma once
 #include "ContextWrapper.h"
+#include "RBBinaryDataDDL_Wii.h"
+#include "RBDataDDL_Wii.h"
+#include "RBTestDDL_Wii.h"
 #include "game/Defines.h"
 #include "meta/ConnectionStatusPanel.h"
 #include "meta_band/BandProfile.h"
@@ -74,6 +77,9 @@ public:
     void Terminate();
     void ExecuteConfig(const char *);
     bool IsLoginMandatory();
+    void RecordDataPoint(DataPoint &, int, DataResultList &, Hmx::Object *);
+    void DeleteNextUser();
+
     bool IsOnline() { return mState == 2; }
 
     static bool EnumerateFriends(int, std::vector<Friend *> &, Hmx::Object *);
@@ -81,14 +87,15 @@ public:
     static void RecordDataPointNoRet(DataPoint &, int);
     static String kServerVer;
     static ContextWrapperPool *mContextWrapperPool;
+    static Quazal::RBDataClient *mRBData;
 
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const ConnectionStatusChangedMsg &);
     DataNode OnMsg(const ServerStatusChangedMsg &);
 
     DataResultList mConfigResultList; // 0x1c
-    int mRBBinaryData; // 0x34 - Quazal::RBBinaryDataClient
-    int mRBTest; // 0x38 - Quazal::RBTestClient
+    Quazal::RBBinaryDataClient *mRBBinaryData; // 0x34
+    Quazal::RBTestClient *mRBTest; // 0x38
     int mState; // 0x3c - anon enum State
     Timer mTime; // 0x40
     float mRetryTime; // 0x70
