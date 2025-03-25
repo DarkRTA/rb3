@@ -49,7 +49,7 @@ public:
     }
 
     bool mDisabled;
-    bool unk3d;
+    bool mUseDpad;
     bool mAlternateMapping;
     unsigned int mFretMask;
     SecondaryPedalFunction mSecondaryPedalFunction;
