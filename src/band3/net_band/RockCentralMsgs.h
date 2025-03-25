@@ -12,7 +12,7 @@ public:
         static Symbol t("rock_central_op_complete_msg");
         return t;
     }
-    bool Arg0() const { return mData->Int(2); } // success
+    bool Success() const { return mData->Int(2); }
     int Arg1() const { return mData->Int(3); }
     DataNode Arg2() const;
 };

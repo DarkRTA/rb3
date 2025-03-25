@@ -95,4 +95,7 @@ public:
     bool mDirty; // 0x1d1
 };
 
+DECLARE_MESSAGE(DeleteQueueUpdatedMsg, "delete_queue_update")
+END_MESSAGE
+
 extern WiiProfileMgr TheWiiProfileMgr;

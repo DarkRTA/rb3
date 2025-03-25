@@ -826,7 +826,7 @@ void OvershellPanel::ResolveAutoSignInStates() {
                     } else if (!ThePlatformMgr.mTimer.Running()) {
                         ThePlatformMgr.RunNetStartUtility();
                     }
-                } else if (ossID == 0x12 && TheRockCentral.unk3c == 2) {
+                } else if (ossID == 0x12 && TheRockCentral.IsOnline()) {
                     curSlot->ShowState(kState_SignInWait);
                 }
             }

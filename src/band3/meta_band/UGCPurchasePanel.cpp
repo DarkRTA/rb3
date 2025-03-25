@@ -89,7 +89,7 @@ DataNode UGCPurchasePanel::OnMsg(const SigninChangedMsg &) {
 
 DataNode UGCPurchasePanel::OnMsg(const RockCentralOpCompleteMsg &msg) {
     if (mPurchaseState == 2) {
-        if (msg.Arg0()) {
+        if (msg.Success()) {
             mResultList.Update(nullptr);
             DataNode n28;
             DataResult *res = mResultList.GetDataResult(0);

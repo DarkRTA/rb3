@@ -1,10 +1,20 @@
 #pragma once
+#include "ContextWrapper.h"
 #include "game/Defines.h"
+#include "meta/ConnectionStatusPanel.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/Leaderboard.h"
+#include "net/Server.h"
+#include "net/WiiFriendMgr.h"
+#include "net/WiiMessenger.h"
 #include "net_band/DataResults.h"
 #include "obj/Msg.h"
 #include "obj/Object.h"
+#include "os/Friend.h"
+#include "utl/DataPointMgr.h"
+#include "utl/HxGuid.h"
+#include "utl/JobMgr.h"
+#include "utl/MemStream.h"
 
 class PerformanceData;
 class PlayerScore;
@@ -61,11 +71,41 @@ public:
     void RedeemToken(int, String, DataResultList &, Hmx::Object *);
     void GetRedeemedTokensByPlayer(int, DataResultList &, Hmx::Object *);
     void GetSongFullOffer(int, DataResultList &, Hmx::Object *);
+    void Terminate();
+    void ExecuteConfig(const char *);
+    bool IsLoginMandatory();
+    bool IsOnline() { return mState == 2; }
 
-    DataResultList unk1c;
-    int unk34;
-    int unk38;
-    int unk3c;
+    static bool EnumerateFriends(int, std::vector<Friend *> &, Hmx::Object *);
+    static bool SendMsg(Friend *, const char *, const char *, MemStream &);
+    static void RecordDataPointNoRet(DataPoint &, int);
+    static String kServerVer;
+    static ContextWrapperPool *mContextWrapperPool;
+
+    DataNode OnMsg(const RockCentralOpCompleteMsg &);
+    DataNode OnMsg(const ConnectionStatusChangedMsg &);
+    DataNode OnMsg(const ServerStatusChangedMsg &);
+
+    DataResultList mConfigResultList; // 0x1c
+    int mRBBinaryData; // 0x34 - Quazal::RBBinaryDataClient
+    int mRBTest; // 0x38 - Quazal::RBTestClient
+    int mState; // 0x3c - anon enum State
+    Timer mTime; // 0x40
+    float mRetryTime; // 0x70
+    JobMgr mJobMgr; // 0x74
+    bool mLoginBlocked; // 0x84
+    bool unk85;
+    HxGuid unk88;
+    WiiFriendList *unk98; // 0x98
+    WiiFriendList *unk9c; // 0x9c
+    int unka0;
+    int unka4;
+    Timer unka8;
+    WiiMessageList *unkd8; // 0xd8
+    Timer unke0;
+    bool unk110;
+    bool unk111;
+    bool unk112;
 };
 
 extern RockCentral TheRockCentral;

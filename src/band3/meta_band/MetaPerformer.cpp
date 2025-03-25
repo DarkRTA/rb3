@@ -886,7 +886,7 @@ DataNode MetaPerformer::OnMsg(const RockCentralOpCompleteMsg &msg) {
     int arg2 = msg.Arg2().Int();
     if (arg2 == unk33c) {
         unk33c = -1;
-        if (msg.Arg0()) {
+        if (msg.Success()) {
             ClearInstarankData();
             mPendingData.ir_result.Update(nullptr);
             UpdateInstarankData(mPendingData.ir_result, mPendingData.stats);
@@ -898,7 +898,7 @@ DataNode MetaPerformer::OnMsg(const RockCentralOpCompleteMsg &msg) {
         mPendingData.Clear();
     } else if (arg2 == mRecordBattleContextID) {
         mRecordBattleContextID = -1;
-        if (msg.Arg0()) {
+        if (msg.Success()) {
             ClearBattleInstarankData();
             mDataResults.Update(nullptr);
             UpdateBattleInstarankData(mDataResults);

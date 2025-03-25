@@ -307,7 +307,7 @@
             "band3/meta_band/WiiFriendsProvider.cpp": "MISSING",
             "band3/meta_band/WiiProfilePanel.cpp": "MISSING",
 
-            "band3/net_band/ContextWrapper.cpp": "MISSING",
+            "band3/net_band/ContextWrapper.cpp": "NonMatching",
             "band3/net_band/DataResults.cpp": "NonMatching",
             "band3/net_band/EntityUploader_Wii.cpp": "MISSING",
             "band3/net_band/EntityUploader.cpp": "MISSING",
@@ -354,7 +354,7 @@
         "cflags": "network",
         "objects": {
             "network/Core/CacheManager.cpp": "Matching",
-            "network/Core/CallContext.cpp": "MISSING",
+            "network/Core/CallContext.cpp": "NonMatching",
             "network/Core/CallContextRegister.cpp": "MISSING",
             "network/Core/Core.cpp": "MISSING",
             "network/Core/InstanceControl.cpp": "MISSING",
@@ -637,7 +637,7 @@
             "network/Protocol/JobProcessProtocolMessage.cpp": "MISSING",
             "network/Protocol/LogToClientController.cpp": "MISSING",
             "network/Protocol/Protocol.cpp": "MISSING",
-            "network/Protocol/ProtocolCallContext.cpp": "MISSING",
+            "network/Protocol/ProtocolCallContext.cpp": "NonMatching",
             "network/Protocol/ProtocolRequestBroker.cpp": "MISSING",
             "network/Protocol/ServerProtocol.cpp": "MISSING",
 

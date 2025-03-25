@@ -282,7 +282,7 @@ void Leaderboard::Poll() {
 DataNode Leaderboard::OnMsg(const RockCentralOpCompleteMsg &msg) {
     switch (mEnumState) {
     case kEnumWaiting:
-        if (msg.Arg0()) {
+        if (msg.Success()) {
             mDataResultList.Update(0);
             if (mDataResultList.NumDataResults() != 0) {
                 DataResult *res = mDataResultList.GetDataResult(0);
@@ -300,7 +300,7 @@ DataNode Leaderboard::OnMsg(const RockCentralOpCompleteMsg &msg) {
         }
         break;
     case kEnumState2:
-        if (msg.Arg0()) {
+        if (msg.Success()) {
             mEnumState = kEnumSuccess;
         } else {
             mEnumState = kEnumFailure;

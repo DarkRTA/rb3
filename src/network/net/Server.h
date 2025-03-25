@@ -79,4 +79,5 @@ public:
 extern Server *TheServer;
 
 DECLARE_MESSAGE(ServerStatusChangedMsg, "server_status_changed");
+bool Success() const { return mData->Int(2); }
 END_MESSAGE

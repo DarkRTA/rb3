@@ -278,7 +278,7 @@ void ProfileMgr::HandlePendingGamerpicRewards() {
 }
 
 void ProfileMgr::CheckProfileWebLinkStatus() {
-    if (TheRockCentral.unk3c == 2) {
+    if (TheRockCentral.IsOnline()) {
         std::vector<BandProfile *> profiles = GetSignedInProfiles();
         FOREACH (it, profiles) {
             BandProfile *cur = *it;
@@ -300,7 +300,7 @@ void ProfileMgr::CheckProfileWebLinkStatus() {
 }
 
 void ProfileMgr::CheckProfileWebSetlistStatus() {
-    if (TheRockCentral.unk3c == 2) {
+    if (TheRockCentral.IsOnline()) {
         std::vector<BandProfile *> profiles = GetSignedInProfiles();
         FOREACH (it, profiles) {
             BandProfile *cur = *it;
@@ -322,7 +322,7 @@ void ProfileMgr::CheckProfileWebSetlistStatus() {
 }
 
 void ProfileMgr::HandlePendingProfileUploads() {
-    if (TheRockCentral.unk3c == 2) {
+    if (TheRockCentral.IsOnline()) {
         std::vector<BandProfile *> profiles = GetSignedInProfiles();
         FOREACH (it, profiles) {
             BandProfile *cur = *it;
@@ -343,7 +343,7 @@ void ProfileMgr::HandlePendingProfileUploads() {
 }
 
 void ProfileMgr::SyncProfileSetlists() {
-    if (TheRockCentral.unk3c == 2) {
+    if (TheRockCentral.IsOnline()) {
         std::vector<BandProfile *> profiles = GetSignedInProfiles();
         TheRockCentral.SyncSetlists(profiles, mDataResults, nullptr);
     }

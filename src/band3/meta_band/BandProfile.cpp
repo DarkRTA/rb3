@@ -761,7 +761,7 @@ void BandProfile::UpdatePerformanceData(
 }
 
 DataNode BandProfile::OnMsg(const RockCentralOpCompleteMsg &msg) {
-    bool b2 = msg.Arg0();
+    bool b2 = msg.Success();
     int arg2 = msg.Arg2().Int();
     if (arg2 == mPerformanceDataUploadContextID) {
         mPerformanceDataUploadContextID = -1;

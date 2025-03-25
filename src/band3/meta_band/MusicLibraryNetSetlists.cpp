@@ -74,7 +74,7 @@ void MusicLibraryNetSetlists::CleanUp() {
 
 DataNode MusicLibraryNetSetlists::OnMsg(const RockCentralOpCompleteMsg &msg) {
     if (!mPendingSetlistArt) {
-        if (msg.Arg0()) {
+        if (msg.Success()) {
             mDataResults.Update(nullptr);
             ParseDataResultsIntoSetlists(unk48);
             mDataResults.Clear();
@@ -91,7 +91,7 @@ DataNode MusicLibraryNetSetlists::OnMsg(const RockCentralOpCompleteMsg &msg) {
         }
         TheMusicLibrary->RebuildAndSortSetlists();
     } else
-        FinishGettingSetlistArt(msg.Arg0());
+        FinishGettingSetlistArt(msg.Success());
     return 1;
 }
 
