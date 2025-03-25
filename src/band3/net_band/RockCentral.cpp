@@ -20,6 +20,7 @@
 #include "net/WiiFriendMgr.h"
 #include "net/WiiMessenger.h"
 #include "net_band/DataResults.h"
+#include "net_band/RockCentralJobs.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
 #include "os/Debug.h"
@@ -204,7 +205,7 @@ DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &msg) {
         if (!client->RegisterExtraProtocol(mRBBinaryData, 'v')) {
             MILO_WARN("Couldn't register RB binary data protocol\n");
         }
-
+        MILO_WARN("%llu"); // something with NWC24GetMyUserId happens here
         static DataPoint dataPoint;
         dataPoint.mNameValPairs.clear();
         dataPoint.mType = "config/get";
@@ -228,6 +229,30 @@ DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &msg) {
         RELEASE(mRBData);
     }
     MsgSource::Handle(msg, false);
+    return 1;
+}
+
+DataNode RockCentral::OnMsg(const UserLoginMsg &msg) {
+    int padnum = msg.GetPadNum();
+    int pid = TheServer->GetPlayerID(padnum);
+    WiiProfile *profile = TheWiiProfileMgr.GetProfileForPad(padnum);
+    if (profile && pid != profile->mId) {
+        MILO_WARN(
+            "Save Data PID for %s (%d) does not match Rock Central PID (%d) - you'd better have changed sandboxes recently!\n",
+            profile->GetName(),
+            profile->mId,
+            pid
+        );
+        unk112 = true;
+    }
+    UpdateOnlineStatus();
+    mJobMgr.QueueJob(new UpdateFriendsListJob(msg.GetPadNum()));
+    return 1;
+}
+
+DataNode RockCentral::OnMsg(const FriendsListChangedMsg &msg) {
+    mJobMgr.QueueJob(new UpdateFriendsListJob(msg.GetPadNum()));
+    mJobMgr.QueueJob(new UpdateMasterProfileFriendsListJob());
     return 1;
 }
 

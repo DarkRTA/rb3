@@ -317,7 +317,7 @@
             "band3/net_band/RBTestDDL_Wii.cpp": "MISSING",
             "band3/net_band/RockBandDDF_Wii.cpp": "MISSING",
             "band3/net_band/RockCentral.cpp": "NonMatching",
-            "band3/net_band/RockCentralJobs.cpp": "MISSING",
+            "band3/net_band/RockCentralJobs.cpp": "NonMatching",
 
             "band3/tour/FixedSetlist.cpp": "Matching",
             "band3/tour/GigFilter.cpp": "NonMatching",

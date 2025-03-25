@@ -14,6 +14,7 @@
 #include "obj/Msg.h"
 #include "obj/Object.h"
 #include "os/Friend.h"
+#include "os/PlatformMgr.h"
 #include "utl/DataPointMgr.h"
 #include "utl/HxGuid.h"
 #include "utl/JobMgr.h"
@@ -92,6 +93,8 @@ public:
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const ConnectionStatusChangedMsg &);
     DataNode OnMsg(const ServerStatusChangedMsg &);
+    DataNode OnMsg(const UserLoginMsg &);
+    DataNode OnMsg(const FriendsListChangedMsg &);
 
     DataResultList mConfigResultList; // 0x1c
     Quazal::RBBinaryDataClient *mRBBinaryData; // 0x34
