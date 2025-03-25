@@ -41,8 +41,9 @@ SongParser::SongParser(
       mDrumSubmixDifficultyMask(0), mCodaStartTick(-1), mCodaEndTick(-1),
       mSoloGemDifficultyMask(0), mVocalPhraseStartTick(-1), mLastTambourineGemTick(-1),
       mLastTambourineAutoTick(-1), mLastBeatTick(-1), mLastBeatType(-1),
-      mHaveBeatFailure(0), mSoloPitch(0), mRGHandPos(-1), mRGRootNote(-1), unk1ec(-1),
-      unk1f0(-1), unk1f4(-1), mRGSlashesStartTick(-1), mRGSlashesEndTick(-1),
+      mHaveBeatFailure(0), mSoloPitch(0), mRGHandPos(-1), mRGRootNote(-1),
+      mChordMarkupMedInProgress(-1), mChordMarkupHrdInProgress(-1),
+      mChordMarkupExpInProgress(-1), mRGSlashesStartTick(-1), mRGSlashesEndTick(-1),
       mRGChordNamingStartTick(-1), mRGChordNamingEndTick(-1), mRGEnharmonicStartTick(-1),
       mRGEnharmonicEndTick(-1) {
     DataArray *cfg = SystemConfig()->FindArray("beatmatcher");
@@ -1982,15 +1983,15 @@ bool SongParser::HandleRGSlashes(int tick, unsigned char pitch) {
 
 bool SongParser::HandleRGChordMarkup(int tick, unsigned char pitch) {
     if (pitch == 45) {
-        unk1ec = tick;
+        mChordMarkupMedInProgress = tick;
         return true;
     }
     if (pitch == 69) {
-        unk1f0 = tick;
+        mChordMarkupHrdInProgress = tick;
         return true;
     }
     if (pitch == 93) {
-        unk1f4 = tick;
+        mChordMarkupExpInProgress = tick;
         return true;
     }
     return false;
@@ -1998,9 +1999,9 @@ bool SongParser::HandleRGChordMarkup(int tick, unsigned char pitch) {
 
 bool SongParser::HandleRGChordMarkupStop(int tick, unsigned char pitch) {
     if (pitch == 45) {
-        if (unk1ec != -1) {
-            AddPhrase(kChordMarkupPhrase, 1, unk1ec, tick);
-            unk1ec = -1;
+        if (mChordMarkupMedInProgress != -1) {
+            AddPhrase(kChordMarkupPhrase, 1, mChordMarkupMedInProgress, tick);
+            mChordMarkupMedInProgress = -1;
             return true;
         }
         MILO_WARN(
@@ -2008,9 +2009,9 @@ bool SongParser::HandleRGChordMarkupStop(int tick, unsigned char pitch) {
         );
     }
     if (pitch == 69) {
-        if (unk1f0 != -1) {
-            AddPhrase(kChordMarkupPhrase, 2, unk1f0, tick);
-            unk1f0 = -1;
+        if (mChordMarkupHrdInProgress != -1) {
+            AddPhrase(kChordMarkupPhrase, 2, mChordMarkupHrdInProgress, tick);
+            mChordMarkupHrdInProgress = -1;
             return true;
         }
         MILO_WARN(
@@ -2018,9 +2019,9 @@ bool SongParser::HandleRGChordMarkupStop(int tick, unsigned char pitch) {
         );
     }
     if (pitch == 93) {
-        if (unk1f4 != -1) {
-            AddPhrase(kChordMarkupPhrase, 3, unk1f4, tick);
-            unk1f4 = -1;
+        if (mChordMarkupExpInProgress != -1) {
+            AddPhrase(kChordMarkupPhrase, 3, mChordMarkupExpInProgress, tick);
+            mChordMarkupExpInProgress = -1;
             return true;
         }
         MILO_WARN(
@@ -2172,21 +2173,21 @@ int SongParser::RGGetDifficultyLevel(unsigned char pitch) {
         return diff;
 }
 
-MidiTrackLister::MidiTrackLister(std::vector<Symbol> &s, BinStream &bs) : unk8(0) {
+MidiTrackLister::MidiTrackLister(std::vector<Symbol> &s, BinStream &bs) : mTrackList(0) {
     FillTrackList(s, bs);
 }
 
 MidiTrackLister::~MidiTrackLister() {}
 
 void MidiTrackLister::FillTrackList(std::vector<Symbol> &syms, BinStream &bs) {
-    unk8 = &syms;
+    mTrackList = &syms;
     MidiReader reader(bs, *this, nullptr);
     reader.ReadAllTracks();
 }
 
 void MidiTrackLister::OnText(int i1, const char *cc, unsigned char uc) {
     if (uc == 3) {
-        unk8->push_back(cc);
+        mTrackList->push_back(cc);
         SkipCurrentTrack();
     }
 }

@@ -336,9 +336,9 @@ public:
     unsigned char mSoloPitch; // 0x1e0
     int mRGHandPos; // 0x1e4
     int mRGRootNote; // 0x1e8
-    int unk1ec; // 0x1ec
-    int unk1f0; // 0x1f0
-    int unk1f4; // 0x1f4
+    int mChordMarkupMedInProgress; // 0x1ec
+    int mChordMarkupHrdInProgress; // 0x1f0
+    int mChordMarkupExpInProgress; // 0x1f4
     int mRGSlashesStartTick; // 0x1f8
     int mRGSlashesEndTick; // 0x1fc
     int mRGChordNamingStartTick; // 0x200
@@ -359,7 +359,7 @@ public:
 
     void FillTrackList(std::vector<Symbol> &, BinStream &);
 
-    std::vector<Symbol> *unk8; // 0x8
+    std::vector<Symbol> *mTrackList; // 0x8
 };
 
 extern Timer gSongLoadTimer;
