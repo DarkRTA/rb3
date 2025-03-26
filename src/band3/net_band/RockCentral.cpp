@@ -43,6 +43,12 @@
 #define ADD_DATA_PAIR(first, second)                                                     \
     dataPoint.mNameValPairs.insert(std::make_pair(first, second));
 
+#define ADD_DATA_PAIR_BUFFER(buffer, second, ...)                                        \
+    snprintf(buffer, sizeof(buffer), __VA_ARGS__);                                       \
+    ADD_DATA_PAIR(buffer, second)
+
+#define RECORD_DATA_POINT(num, results, obj) RecordDataPoint(dataPoint, num, results, obj)
+
 DECOMP_FORCEACTIVE(RockCentral, __FILE__, "mUpdated")
 
 namespace {
@@ -395,7 +401,7 @@ void RockCentral::GetLinkingCode(int i1, DataResultList &results, Hmx::Object *o
     if (server) {
         INIT_DATAPOINT("entities/linkcode/get");
         ADD_DATA_PAIR(pid, server->GetPlayerID(i1));
-        RecordDataPoint(dataPoint, 0, results, o);
+        RECORD_DATA_POINT(0, results, o);
     }
 }
 
@@ -409,7 +415,7 @@ void RockCentral::GetTickerInfo(
         ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
         ADD_DATA_PAIR(role_id, (char)s);
         ADD_DATA_PAIR(locale, SystemLanguage());
-        RecordDataPoint(dataPoint, 0, results, o);
+        RECORD_DATA_POINT(0, results, o);
     }
 }
 
@@ -425,7 +431,7 @@ void RockCentral::GetSongFullOffer(int i1, DataResultList &results, Hmx::Object 
         } else {
             ADD_DATA_PAIR(region, PlatformRegionToSymbol(kRegionNA));
         }
-        RecordDataPoint(dataPoint, 0, results, o);
+        RECORD_DATA_POINT(0, results, o);
     }
 }
 
@@ -444,11 +450,10 @@ void RockCentral::GetMaxRank(
         ADD_DATA_PAIR(song_id, i1);
         ADD_DATA_PAIR(lb_type, l);
         for (int i = 0; i < vec.size(); i++) {
-            char buf[16];
-            snprintf(buf, 12, "pid%03d", i);
-            ADD_DATA_PAIR(buf, vec[i]);
+            char buf[12];
+            ADD_DATA_PAIR_BUFFER(buf, vec[i], "pid%03d", i);
         }
-        RecordDataPoint(dataPoint, 0, results, o);
+        RECORD_DATA_POINT(0, results, o);
     }
 }
 
@@ -460,11 +465,10 @@ void RockCentral::GetAccMaxRank(
         INIT_DATAPOINT("leaderboards/acc_maxrank/get");
         ADD_DATA_PAIR(acc_id, sym.Str());
         for (int i = 0; i < vec.size(); i++) {
-            char buf[16];
-            snprintf(buf, 12, "pid%03d", i);
-            ADD_DATA_PAIR(buf, vec[i]);
+            char buf[12];
+            ADD_DATA_PAIR_BUFFER(buf, vec[i], "pid%03d", i);
         }
-        RecordDataPoint(dataPoint, 0, results, o);
+        RECORD_DATA_POINT(0, results, o);
     }
 }
 
@@ -476,11 +480,10 @@ void RockCentral::GetBattleMaxRank(
         INIT_DATAPOINT("leaderboards/battle_maxrank/get");
         ADD_DATA_PAIR(battle_id, i1);
         for (int i = 0; i < vec.size(); i++) {
-            char buf[16];
-            snprintf(buf, 12, "pid%03d", i);
-            ADD_DATA_PAIR((const char *)buf, vec[i]);
+            char buf[12];
+            ADD_DATA_PAIR_BUFFER(buf, vec[i], "pid%03d", i);
         }
-        RecordDataPoint(dataPoint, 0, results, o);
+        RECORD_DATA_POINT(0, results, o);
     }
 }
 
@@ -533,81 +536,93 @@ void RockCentral::RecordPerformance(
         const std::vector<Symbol> &awards = stats.GetPerformanceAwards();
         int numAwards = awards.size();
         for (int i = 0; i < numAwards; i++) {
-            snprintf(buf, 64, "award%03d", i);
-            ADD_DATA_PAIR(buf, awards[i]);
+            ADD_DATA_PAIR_BUFFER(buf, awards[i], "award%03d", i);
         }
         int numFailurePts = stats.GetFailurePoints().size();
         for (int i = 0; i < numFailurePts; i++) {
-            snprintf(buf, 64, "failure_point%03d", i);
-            ADD_DATA_PAIR(buf, stats.GetFailurePoints()[i]);
+            ADD_DATA_PAIR_BUFFER(buf, stats.GetFailurePoints()[i], "failure_point%03d", i);
         }
         int numSavedPts = stats.GetSavedPoints().size();
         for (int i = 0; i < numSavedPts; i++) {
-            snprintf(buf, 64, "save_point%03d", i);
-            ADD_DATA_PAIR(buf, stats.GetSavedPoints()[i]);
+            ADD_DATA_PAIR_BUFFER(buf, stats.GetSavedPoints()[i], "save_point%03d", i);
         }
         int numClosestTimesSaved = stats.GetClosestTimesSaved().size();
         for (int i = 0; i < numClosestTimesSaved; i++) {
-            snprintf(buf, 64, "times_saved%03d", i);
-            ADD_DATA_PAIR(buf, stats.GetClosestTimesSaved()[i]);
+            ADD_DATA_PAIR_BUFFER(
+                buf, stats.GetClosestTimesSaved()[i], "times_saved%03d", i
+            );
         }
         int numClosestPlayersSaved = stats.GetClosestPlayersSaved().size();
         for (int i = 0; i < numClosestPlayersSaved; i++) {
-            snprintf(buf, 64, "players_saved%03d", i);
-            ADD_DATA_PAIR(buf, stats.GetClosestPlayersSaved()[i]);
+            ADD_DATA_PAIR_BUFFER(
+                buf, stats.GetClosestPlayersSaved()[i], "players_saved%03d", i
+            );
         }
         int numBestSolos = stats.GetBestSolos().size();
         for (int i = 0; i < numBestSolos; i++) {
-            snprintf(buf, 64, "best_solo%03d", i);
-            ADD_DATA_PAIR(buf, stats.GetBestSolos()[i]);
+            ADD_DATA_PAIR_BUFFER(buf, stats.GetBestSolos()[i], "best_solo%03d", i);
         }
         int numHitStreaks = stats.GetHitStreakCount();
         ADD_DATA_PAIR(hit_streak_count, numHitStreaks);
         for (int i = 0; i < numHitStreaks; i++) {
             const Stats::StreakInfo &curStreak = stats.GetHitStreak(i);
-            snprintf(buf, 64, "hit_streak_start%03d", i);
-            ADD_DATA_PAIR(buf, curStreak.mStart);
-            snprintf(buf, 64, "hit_streak_duration%03d", i);
-            ADD_DATA_PAIR(buf, curStreak.mDuration);
+            ADD_DATA_PAIR_BUFFER(buf, curStreak.mStart, "hit_streak_start%03d", i);
+            ADD_DATA_PAIR_BUFFER(buf, curStreak.mDuration, "hit_streak_duration%03d", i);
         }
         int numMissStreaks = stats.GetMissStreakCount();
         ADD_DATA_PAIR(miss_streak_count, numMissStreaks);
         for (int i = 0; i < numMissStreaks; i++) {
             const Stats::StreakInfo &curStreak = stats.GetMissStreak(i);
-            snprintf(buf, 64, "miss_streak_start%03d", i);
-            ADD_DATA_PAIR(buf, curStreak.mStart);
-            snprintf(buf, 64, "miss_streak_duration%03d", i);
-            ADD_DATA_PAIR(buf, curStreak.mDuration);
+            ADD_DATA_PAIR_BUFFER(buf, curStreak.mStart, "miss_streak_start%03d", i);
+            ADD_DATA_PAIR_BUFFER(buf, curStreak.mDuration, "miss_streak_duration%03d", i);
         }
         int numBestODs = stats.GetBestOverdriveDeploymentsCount();
         ADD_DATA_PAIR(best_od_deployment_count, numBestODs);
         for (int i = 0; i < numBestODs; i++) {
             const Stats::MultiplierInfo &curInfo = stats.GetBestOverdriveDeployment(i);
-            snprintf(buf, 64, "best_od_deployment_start%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mStartMs);
-            snprintf(buf, 64, "best_od_deployment_duration%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mDurationMs);
-            snprintf(buf, 64, "best_od_deployment_starting_multiplier%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mStartingMultiplier);
-            snprintf(buf, 64, "best_od_deployment_ending_multiplier%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mEndingMultiplier);
-            snprintf(buf, 64, "best_od_deployment_points%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mPoints);
+            ADD_DATA_PAIR_BUFFER(buf, curInfo.mStartMs, "best_od_deployment_start%03d", i);
+            ADD_DATA_PAIR_BUFFER(
+                buf, curInfo.mDurationMs, "best_od_deployment_duration%03d", i
+            );
+            ADD_DATA_PAIR_BUFFER(
+                buf,
+                curInfo.mStartingMultiplier,
+                "best_od_deployment_starting_multiplier%03d",
+                i
+            );
+            ADD_DATA_PAIR_BUFFER(
+                buf,
+                curInfo.mEndingMultiplier,
+                "best_od_deployment_ending_multiplier%03d",
+                i
+            );
+            ADD_DATA_PAIR_BUFFER(buf, curInfo.mPoints, "best_od_deployment_points%03d", i);
         }
         int numBestStreakMults = stats.GetBestStreakMultipliersCount();
         ADD_DATA_PAIR(best_streak_multipliers_count, numBestStreakMults);
         for (int i = 0; i < numBestStreakMults; i++) {
             const Stats::MultiplierInfo &curInfo = stats.GetBestStreakMultiplier(i);
-            snprintf(buf, 64, "best_streak_multiplier_start%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mStartMs);
-            snprintf(buf, 64, "best_streak_multiplier_duration%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mDurationMs);
-            snprintf(buf, 64, "best_streak_multiplier_starting_multiplier%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mStartingMultiplier);
-            snprintf(buf, 64, "best_streak_multiplier_ending_multiplier%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mEndingMultiplier);
-            snprintf(buf, 64, "best_streak_multiplier_points%03d", i);
-            ADD_DATA_PAIR(buf, curInfo.mPoints);
+            ADD_DATA_PAIR_BUFFER(
+                buf, curInfo.mStartMs, "best_streak_multiplier_start%03d", i
+            );
+            ADD_DATA_PAIR_BUFFER(
+                buf, curInfo.mDurationMs, "best_streak_multiplier_duration%03d", i
+            );
+            ADD_DATA_PAIR_BUFFER(
+                buf,
+                curInfo.mStartingMultiplier,
+                "best_streak_multiplier_starting_multiplier%03d",
+                i
+            );
+            ADD_DATA_PAIR_BUFFER(
+                buf,
+                curInfo.mEndingMultiplier,
+                "best_streak_multiplier_ending_multiplier%03d",
+                i
+            );
+            ADD_DATA_PAIR_BUFFER(
+                buf, curInfo.mPoints, "best_streak_multiplier_points%03d", i
+            );
         }
         ADD_DATA_PAIR(total_od_duration, stats.GetTotalOverdriveDuration());
         ADD_DATA_PAIR(total_multiplier_duration, stats.GetTotalMultiplierDuration());
@@ -640,19 +655,19 @@ void RockCentral::RecordPerformance(
             const SingerStats &curStats = stats.GetSingerStats(i);
             for (int j = 0; j < numVocalParts; j++) {
                 const std::pair<int, float> &curRankData = curStats.GetRankData(j);
-                snprintf(buf, 64, "singer%03d_part%03d_part", i, j);
-                ADD_DATA_PAIR(buf, curRankData.first);
-                snprintf(buf, 64, "singer%03d_part%03d_pct", i, j);
-                ADD_DATA_PAIR(buf, curRankData.second);
+                ADD_DATA_PAIR_BUFFER(
+                    buf, curRankData.first, "singer%03d_part%03d_part", i, j
+                );
+                ADD_DATA_PAIR_BUFFER(
+                    buf, curRankData.second, "singer%03d_part%03d_pct", i, j
+                );
             }
             float f920, f924;
             curStats.GetPitchDeviationInfo(f920, f924);
-            snprintf(buf, 64, "singer%03d_pitch_deviation", i);
-            ADD_DATA_PAIR(buf, f920);
-            snprintf(buf, 64, "singer%03d_pitch_deviation_of_deviation", i);
-            ADD_DATA_PAIR(buf, f924);
+            ADD_DATA_PAIR_BUFFER(buf, f920, "singer%03d_pitch_deviation", i);
+            ADD_DATA_PAIR_BUFFER(buf, f924, "singer%03d_pitch_deviation_of_deviation", i);
         }
-        RecordDataPoint(dataPoint, i3, results, o);
+        RECORD_DATA_POINT(i3, results, o);
     }
 }
 #pragma pop

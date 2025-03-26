@@ -206,9 +206,9 @@ public:
     int GetTrillsHitCompletely() const { return mTrillsHitCompletely; }
     int GetTrillsHitPartially() const { return mTrillsHitPartially; }
     int GetTrillCount() const { return mTrillCount; }
-    int GetCymbalGemsHitOnCymbals() const { return mCymbalGemInfo2; }
-    int GetCymbalGemsHitOnPads() const { return mCymbalGemInfo3; }
-    int GetCymbalGemCount() const { return mCymbalGemInfo1; }
+    int GetCymbalGemsHitOnCymbals() const { return mCymbalGemsHitOnCymbals; }
+    int GetCymbalGemsHitOnPads() const { return mCymbalGemsHitOnPads; }
+    int GetCymbalGemCount() const { return mCymbalGemCount; }
     int GetNumberOfVocalParts() const { return mVocalPartCount; }
 
     // These are implemented in PerformanceData
@@ -457,9 +457,9 @@ public:
     int mTrillCount; // 0x1a0
     int mTrillsHitCompletely; // 0x1a4
     int mTrillsHitPartially; // 0x1a8
-    int mCymbalGemInfo1; // 0x1ac
-    int mCymbalGemInfo2; // 0x1b0
-    int mCymbalGemInfo3; // 0x1b4
+    int mCymbalGemCount; // 0x1ac
+    int mCymbalGemsHitOnCymbals; // 0x1b0
+    int mCymbalGemsHitOnPads; // 0x1b4
     std::vector<SectionInfo> mSections; // 0x1b8
     float unk1c0;
     float unk1c4;
