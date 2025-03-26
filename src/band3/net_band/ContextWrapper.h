@@ -25,6 +25,8 @@ class ContextWrapperPool {
 public:
     ContextWrapperPool();
     void Poll();
+    void CancelOutstandingContexts(Hmx::Object *);
+    void FailAllContexts();
 
     ContextWrapper mContextWrappers[500]; // 0x0
     int unk8ca0; // 0x8ca0

@@ -5,6 +5,9 @@
 #include "utl/Str.h"
 #include <vector>
 
+enum _WiiMessageType {
+};
+
 class WiiMessage {
 public:
     int unk0;
@@ -25,6 +28,7 @@ public:
 class WiiMessenger : public MsgSource {
 public:
     void EnumerateMessages(WiiMessageList *, Hmx::Object *);
+    void SendMessage(int, const char *, const char *, Hmx::Object *, int);
 };
 
 extern WiiMessenger TheWiiMessenger;

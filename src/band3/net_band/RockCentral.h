@@ -5,8 +5,12 @@
 #include "RBTestDDL_Wii.h"
 #include "game/Defines.h"
 #include "meta/ConnectionStatusPanel.h"
+#include "meta/Profile.h"
+#include "meta/WiiProfileMgr.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/Leaderboard.h"
+#include "meta_band/ProfileMessages.h"
+#include "net/NetSession.h"
 #include "net/Server.h"
 #include "net/WiiFriendMgr.h"
 #include "net/WiiMessenger.h"
@@ -78,23 +82,36 @@ public:
     void Terminate();
     void ExecuteConfig(const char *);
     bool IsLoginMandatory();
-    void RecordDataPoint(DataPoint &, int, DataResultList &, Hmx::Object *);
     void DeleteNextUser();
 
     bool IsOnline() { return mState == 2; }
 
-    static bool EnumerateFriends(int, std::vector<Friend *> &, Hmx::Object *);
-    static bool SendMsg(Friend *, const char *, const char *, MemStream &);
-    static void RecordDataPointNoRet(DataPoint &, int);
     static String kServerVer;
     static ContextWrapperPool *mContextWrapperPool;
     static Quazal::RBDataClient *mRBData;
+    static bool EnumerateFriends(int, std::vector<Friend *> &, Hmx::Object *);
+    static bool SendMsg(Friend *, const char *, const char *, MemStream &);
+    static void RecordDataPointNoRet(DataPoint &, int);
+    static String EncodeMessage(_WiiMessageType, unsigned int, const char *);
+    static _WiiFriendStatus StringToFriendStatus(const char *);
+    static const char *FriendStatusToString(_WiiFriendStatus);
+    static Server *IsConnected(Hmx::Object *, int, bool);
+    static void SendFailure(Hmx::Object *, int, int);
+    static void RecordDataPoint(DataPoint &, int, DataResultList &, Hmx::Object *);
 
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const ConnectionStatusChangedMsg &);
     DataNode OnMsg(const ServerStatusChangedMsg &);
     DataNode OnMsg(const UserLoginMsg &);
     DataNode OnMsg(const FriendsListChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
+    DataNode OnMsg(const DeleteQueueUpdatedMsg &);
+    DataNode OnMsg(const DeleteUserCompleteMsg &);
+    DataNode OnMsg(const WiiFriendMgrOpCompleteMsg &);
+    DataNode OnMsg(const WiiFriendsListChangedMsg &);
+    DataNode OnMsg(const EnumerateMessagesCompleteMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const InviteReceivedMsg &);
 
     DataResultList mConfigResultList; // 0x1c
     Quazal::RBBinaryDataClient *mRBBinaryData; // 0x34
@@ -108,8 +125,8 @@ public:
     HxGuid unk88;
     WiiFriendList *unk98; // 0x98
     WiiFriendList *unk9c; // 0x9c
-    int unka0;
-    int unka4;
+    std::vector<Friend *> *unka0;
+    Hmx::Object *unka4;
     Timer unka8;
     WiiMessageList *unkd8; // 0xd8
     Timer unke0;

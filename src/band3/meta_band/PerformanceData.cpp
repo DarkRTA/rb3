@@ -59,7 +59,7 @@ void PerformanceData::SaveFixed(FixedSizeSaveableStream &stream) const {
     stream << mStars;
     stream << mBattleId;
     stream << mTimestamp;
-    FixedSizeSaveable::SaveStd(stream, mStats.mAccessPerformanceAwards, 0x32);
+    FixedSizeSaveable::SaveStd(stream, mStats.mPerformanceAwards, 0x32);
     stream << mStats.mEndGameScore;
     stream << mStats.mNotesHitFraction;
     stream << mStats.mHitCount;

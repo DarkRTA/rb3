@@ -10,6 +10,7 @@
 #include "meta/ConnectionStatusPanel.h"
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SaveLoadManager.h"
@@ -26,13 +27,21 @@
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
 #include "os/System.h"
-#include "stl/_pair.h"
 #include "ui/UIPanel.h"
 #include "utl/DataPointMgr.h"
 #include "utl/Option.h"
-#include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
+#include "utl/Symbols.h"
+#include "utl/Symbols4.h"
 #include "utl/TextFileStream.h"
+#include <utility>
+
+#define INIT_DATAPOINT(type)                                                             \
+    static DataPoint dataPoint;                                                          \
+    dataPoint.mNameValPairs.clear();                                                     \
+    dataPoint.mType = type;
+
+#define ADD_DATA_PAIR(first, second)                                                     \
+    dataPoint.mNameValPairs.insert(std::make_pair(first, second));
 
 DECOMP_FORCEACTIVE(RockCentral, __FILE__, "mUpdated")
 
@@ -44,6 +53,8 @@ ContextWrapperPool *RockCentral::mContextWrapperPool;
 TextFileStream *gDataPointLog;
 RockCentral TheRockCentral;
 String RockCentral::kServerVer = "3";
+const char *g_pStatusStrings[3] = { "Offline", "Channel", "Online" };
+const char *g_WiiMessageDelimiter = ":";
 
 RockCentral::RockCentral()
     : mRBTest(0), mState(0), mJobMgr(this), mLoginBlocked(0), unk85(0), unk98(0),
@@ -206,10 +217,8 @@ DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &msg) {
             MILO_WARN("Couldn't register RB binary data protocol\n");
         }
         MILO_WARN("%llu"); // something with NWC24GetMyUserId happens here
-        static DataPoint dataPoint;
-        dataPoint.mNameValPairs.clear();
-        dataPoint.mType = "config/get";
-        dataPoint.mNameValPairs.insert(std::make_pair(locale, SystemLanguage()));
+        INIT_DATAPOINT("config/get");
+        ADD_DATA_PAIR(locale, SystemLanguage());
         RecordDataPoint(dataPoint, 0, mConfigResultList, this);
         DeleteNextUser();
     } else if (!msg.Success()) {
@@ -250,32 +259,400 @@ DataNode RockCentral::OnMsg(const UserLoginMsg &msg) {
     return 1;
 }
 
+DECOMP_FORCEACTIVE(RockCentral, "")
+
 DataNode RockCentral::OnMsg(const FriendsListChangedMsg &msg) {
     mJobMgr.QueueJob(new UpdateFriendsListJob(msg.GetPadNum()));
     mJobMgr.QueueJob(new UpdateMasterProfileFriendsListJob());
     return 1;
 }
 
-Symbol PerformanceData::GetMode() const { return mMode; }
+DataNode RockCentral::OnMsg(const ProfileChangedMsg &msg) {
+    BandProfile *p = msg.GetProfile();
+    int padnum = p->GetPadNum();
+    if (p->HasValidSaveData() && TheNet.GetServer()->GetPlayerID(padnum)) {
+        mJobMgr.QueueJob(new UpdateFriendsListJob(padnum));
+    }
+    return 1;
+}
 
-int PerformanceData::GetSongID() const { return mSongId; }
+DataNode RockCentral::OnMsg(const DeleteQueueUpdatedMsg &) {
+    DeleteNextUser();
+    return 1;
+}
 
-bool PerformanceData::IsPlaytest() const { return mIsPlaytest; }
+DataNode RockCentral::OnMsg(const DeleteUserCompleteMsg &msg) {
+    if (msg.IsComplete()) {
+        TheWiiProfileMgr.RemoveIdFromDeleteQueue(msg.GetUserID());
+        TheSaveLoadMgr->AutoSaveNow();
+    }
+    DeleteNextUser();
+    return 1;
+}
 
-bool PerformanceData::IsOnline() const { return mIsOnline; }
+DataNode RockCentral::OnMsg(const EnumerateMessagesCompleteMsg &) {
+    unk110 = false;
+    return 1;
+}
 
-bool PerformanceData::IsCheating() const { return mIsCheating; }
+DataNode RockCentral::OnMsg(const SigninChangedMsg &) {
+    UpdateOnlineStatus();
+    return 1;
+}
 
-ScoreType PerformanceData::GetScoreType() const { return mScoreType; }
+DataNode RockCentral::OnMsg(const InviteReceivedMsg &) {
+    unk111 = true;
+    return 1;
+}
 
-Difficulty PerformanceData::GetDifficulty() const { return mDifficulty; }
+void RockCentral::UpdateOnlineStatus() {
+    if (TheProfileMgr.GetUsingWiiFriends()) {
+        for (int i = 0; i < 4; i++) {
+            TheWiiFriendMgr.SetProfileStatus(i, FriendStatusToString(kOffline));
+        }
+        for (int i = 0; i < 4; i++) {
+            int idx = TheWiiProfileMgr.GetIndexForPad(i);
+            if (idx >= 0) {
+                TheWiiFriendMgr.SetProfileStatus(idx, FriendStatusToString(kOnline));
+            }
+        }
+        TheWiiFriendMgr.SetMasterProfileStatus(FriendStatusToString(kOnline));
+    }
+}
 
-int PerformanceData::GetTimeStamp() const { return mTimestamp; }
+bool RockCentral::EnumerateFriends(
+    int i1, std::vector<Friend *> &friends, Hmx::Object *obj
+) {
+    if (TheRockCentral.unka0 != 0)
+        return false;
+    else if (!TheProfileMgr.GetUsingWiiFriends()) {
+        if (obj) {
+            PlatformMgrOpCompleteMsg msg(1);
+            obj->Handle(msg, true);
+        }
+        return true;
+    } else {
+        TheRockCentral.unka0 = &friends;
+        TheRockCentral.unka4 = obj;
+        TheWiiFriendMgr.EnumerateFriends(TheRockCentral.unk98, &TheRockCentral);
+        return true;
+    }
+}
 
-// Stats& PerformanceData::GetStats() const {
-//     return mStats;
-// }
+bool RockCentral::SendMsg(
+    Friend *friendObj, const char *c1, const char *c2, MemStream &ms
+) {
+    String str;
+    str = EncodeMessage((_WiiMessageType)1, (int)ms.Buffer()[0], c2);
+    TheWiiMessenger.SendMessage(friendObj->mFriendKey, c1, str.c_str(), nullptr, 600);
+    return true;
+}
 
-int PerformanceData::GetStars() const { return mStars; }
+_WiiFriendStatus RockCentral::StringToFriendStatus(const char *str) {
+    if (str) {
+        for (int i = 0; i < 3; i++) {
+            if (strcmp(str, g_pStatusStrings[i]) == 0)
+                return (_WiiFriendStatus)i;
+        }
+    }
+    return (_WiiFriendStatus)-1;
+}
 
-int PerformanceData::GetBattleID() const { return mBattleId; }
+const char *RockCentral::FriendStatusToString(_WiiFriendStatus status) {
+    if (status <= 2U)
+        return g_pStatusStrings[status];
+    else
+        return "Unknown";
+}
+
+void RockCentral::ForceLogout() {
+    if (mState == 1 || mState == 2) {
+        mState = 3;
+        TheNet.GetServer()->Logout();
+    }
+}
+
+void RockCentral::CancelOutstandingCalls(Hmx::Object *o) {
+    mContextWrapperPool->CancelOutstandingContexts(o);
+}
+
+void RockCentral::FailAllOutstandingCalls() { mContextWrapperPool->FailAllContexts(); }
+
+Server *RockCentral::IsConnected(Hmx::Object *o, int i, bool b) {
+    Server *server = TheNet.GetServer();
+    if ((server && !server->IsConnected()) || b) {
+        if (i != -1) {
+            SendFailure(o, 0, 0);
+        } else
+            SendFailure(o, 1, i);
+        return nullptr;
+    }
+    return server;
+}
+
+void RockCentral::GetLinkingCode(int i1, DataResultList &results, Hmx::Object *o) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("entities/linkcode/get");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(i1));
+        RecordDataPoint(dataPoint, 0, results, o);
+    }
+}
+
+void RockCentral::GetTickerInfo(
+    const Profile *profile, ScoreType s, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        MILO_ASSERT(profile, 0x43C);
+        INIT_DATAPOINT("ticker/info/get");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(role_id, (char)s);
+        ADD_DATA_PAIR(locale, SystemLanguage());
+        RecordDataPoint(dataPoint, 0, results, o);
+    }
+}
+
+void RockCentral::GetSongFullOffer(int i1, DataResultList &results, Hmx::Object *o) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("entities/song_offer/get");
+        ADD_DATA_PAIR(song_id, i1);
+        ADD_DATA_PAIR(locale, SystemLanguage());
+        PlatformRegion regionEnum = ThePlatformMgr.GetRegion();
+        if (regionEnum - 1 <= 1U) {
+            ADD_DATA_PAIR(region, PlatformRegionToSymbol(regionEnum));
+        } else {
+            ADD_DATA_PAIR(region, PlatformRegionToSymbol(kRegionNA));
+        }
+        RecordDataPoint(dataPoint, 0, results, o);
+    }
+}
+
+void RockCentral::GetMaxRank(
+    std::vector<int> &vec,
+    int i1,
+    ScoreType s,
+    LeaderboardType l,
+    DataResultList &results,
+    Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("leaderboards/maxrank/get");
+        ADD_DATA_PAIR(role_id, (char)s);
+        ADD_DATA_PAIR(song_id, i1);
+        ADD_DATA_PAIR(lb_type, l);
+        for (int i = 0; i < vec.size(); i++) {
+            char buf[16];
+            snprintf(buf, 12, "pid%03d", i);
+            ADD_DATA_PAIR(buf, vec[i]);
+        }
+        RecordDataPoint(dataPoint, 0, results, o);
+    }
+}
+
+void RockCentral::GetAccMaxRank(
+    std::vector<int> &vec, Symbol &sym, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("leaderboards/acc_maxrank/get");
+        ADD_DATA_PAIR(acc_id, sym.Str());
+        for (int i = 0; i < vec.size(); i++) {
+            char buf[16];
+            snprintf(buf, 12, "pid%03d", i);
+            ADD_DATA_PAIR(buf, vec[i]);
+        }
+        RecordDataPoint(dataPoint, 0, results, o);
+    }
+}
+
+void RockCentral::GetBattleMaxRank(
+    std::vector<int> &vec, int i1, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("leaderboards/battle_maxrank/get");
+        ADD_DATA_PAIR(battle_id, i1);
+        for (int i = 0; i < vec.size(); i++) {
+            char buf[16];
+            snprintf(buf, 12, "pid%03d", i);
+            ADD_DATA_PAIR((const char *)buf, vec[i]);
+        }
+        RecordDataPoint(dataPoint, 0, results, o);
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+void RockCentral::RecordPerformance(
+    const Profile *profile,
+    const PerformanceData *data,
+    int i3,
+    Hmx::Object *o,
+    DataResultList &results
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        MILO_ASSERT(profile, 0x69B);
+        INIT_DATAPOINT("performance/record");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(mode, data->GetMode());
+        ADD_DATA_PAIR(song_id, data->GetSongID());
+        ADD_DATA_PAIR(is_playtest, data->IsPlaytest());
+        ADD_DATA_PAIR(is_online, data->IsOnline());
+        ADD_DATA_PAIR(is_cheating, data->IsCheating());
+        ADD_DATA_PAIR(score_type, data->GetScoreType());
+        ADD_DATA_PAIR(difficulty, data->GetDifficulty());
+        ADD_DATA_PAIR(time_stamp, data->GetTimeStamp());
+        const Stats &stats = data->GetStats();
+        ADD_DATA_PAIR(end_game_score, stats.GetEndGameScore());
+        ADD_DATA_PAIR(stars, data->GetStars());
+        int battleID = data->GetBattleID();
+        if (battleID > 0) {
+            ADD_DATA_PAIR(battle_id, battleID);
+        }
+        ADD_DATA_PAIR(notes_hit_fraction, stats.GetNotesHitFraction());
+        ADD_DATA_PAIR(hit_count, stats.GetHitCount());
+        ADD_DATA_PAIR(miss_count, stats.GetMissCount());
+        ADD_DATA_PAIR(times_saved, stats.GetTimesSaved());
+        ADD_DATA_PAIR(players_saved, stats.GetPlayersSaved());
+        ADD_DATA_PAIR(hit_streak_start, stats.GetCurrentStreakInfo().mStart);
+        ADD_DATA_PAIR(hit_streak_duration, stats.GetCurrentStreakInfo().mDuration);
+        ADD_DATA_PAIR(end_game_overdrive, stats.GetEndGameOverdrive());
+        ADD_DATA_PAIR(end_game_crowdlevel, stats.GetEndGameCrowdLevel());
+        ADD_DATA_PAIR(coda_points, stats.GetCodaPoints());
+        ADD_DATA_PAIR(od_phrases_completed, stats.GetOverdrivePhrasesCompleted());
+        ADD_DATA_PAIR(od_phrase_count, stats.GetOverdrivePhraseCount());
+        ADD_DATA_PAIR(unison_phrases_completed, stats.GetUnisonPhrasesCompleted());
+        ADD_DATA_PAIR(unison_phrase_count, stats.GetUnisonPhraseCount());
+        ADD_DATA_PAIR(average_ms_error, stats.GetAverageMsError());
+
+        char buf[64];
+        const std::vector<Symbol> &awards = stats.GetPerformanceAwards();
+        int numAwards = awards.size();
+        for (int i = 0; i < numAwards; i++) {
+            snprintf(buf, 64, "award%03d", i);
+            ADD_DATA_PAIR(buf, awards[i]);
+        }
+        int numFailurePts = stats.GetFailurePoints().size();
+        for (int i = 0; i < numFailurePts; i++) {
+            snprintf(buf, 64, "failure_point%03d", i);
+            ADD_DATA_PAIR(buf, stats.GetFailurePoints()[i]);
+        }
+        int numSavedPts = stats.GetSavedPoints().size();
+        for (int i = 0; i < numSavedPts; i++) {
+            snprintf(buf, 64, "save_point%03d", i);
+            ADD_DATA_PAIR(buf, stats.GetSavedPoints()[i]);
+        }
+        int numClosestTimesSaved = stats.GetClosestTimesSaved().size();
+        for (int i = 0; i < numClosestTimesSaved; i++) {
+            snprintf(buf, 64, "times_saved%03d", i);
+            ADD_DATA_PAIR(buf, stats.GetClosestTimesSaved()[i]);
+        }
+        int numClosestPlayersSaved = stats.GetClosestPlayersSaved().size();
+        for (int i = 0; i < numClosestPlayersSaved; i++) {
+            snprintf(buf, 64, "players_saved%03d", i);
+            ADD_DATA_PAIR(buf, stats.GetClosestPlayersSaved()[i]);
+        }
+        int numBestSolos = stats.GetBestSolos().size();
+        for (int i = 0; i < numBestSolos; i++) {
+            snprintf(buf, 64, "best_solo%03d", i);
+            ADD_DATA_PAIR(buf, stats.GetBestSolos()[i]);
+        }
+        int numHitStreaks = stats.GetHitStreakCount();
+        ADD_DATA_PAIR(hit_streak_count, numHitStreaks);
+        for (int i = 0; i < numHitStreaks; i++) {
+            const Stats::StreakInfo &curStreak = stats.GetHitStreak(i);
+            snprintf(buf, 64, "hit_streak_start%03d", i);
+            ADD_DATA_PAIR(buf, curStreak.mStart);
+            snprintf(buf, 64, "hit_streak_duration%03d", i);
+            ADD_DATA_PAIR(buf, curStreak.mDuration);
+        }
+        int numMissStreaks = stats.GetMissStreakCount();
+        ADD_DATA_PAIR(miss_streak_count, numMissStreaks);
+        for (int i = 0; i < numMissStreaks; i++) {
+            const Stats::StreakInfo &curStreak = stats.GetMissStreak(i);
+            snprintf(buf, 64, "miss_streak_start%03d", i);
+            ADD_DATA_PAIR(buf, curStreak.mStart);
+            snprintf(buf, 64, "miss_streak_duration%03d", i);
+            ADD_DATA_PAIR(buf, curStreak.mDuration);
+        }
+        int numBestODs = stats.GetBestOverdriveDeploymentsCount();
+        ADD_DATA_PAIR(best_od_deployment_count, numBestODs);
+        for (int i = 0; i < numBestODs; i++) {
+            const Stats::MultiplierInfo &curInfo = stats.GetBestOverdriveDeployment(i);
+            snprintf(buf, 64, "best_od_deployment_start%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mStartMs);
+            snprintf(buf, 64, "best_od_deployment_duration%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mDurationMs);
+            snprintf(buf, 64, "best_od_deployment_starting_multiplier%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mStartingMultiplier);
+            snprintf(buf, 64, "best_od_deployment_ending_multiplier%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mEndingMultiplier);
+            snprintf(buf, 64, "best_od_deployment_points%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mPoints);
+        }
+        int numBestStreakMults = stats.GetBestStreakMultipliersCount();
+        ADD_DATA_PAIR(best_streak_multipliers_count, numBestStreakMults);
+        for (int i = 0; i < numBestStreakMults; i++) {
+            const Stats::MultiplierInfo &curInfo = stats.GetBestStreakMultiplier(i);
+            snprintf(buf, 64, "best_streak_multiplier_start%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mStartMs);
+            snprintf(buf, 64, "best_streak_multiplier_duration%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mDurationMs);
+            snprintf(buf, 64, "best_streak_multiplier_starting_multiplier%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mStartingMultiplier);
+            snprintf(buf, 64, "best_streak_multiplier_ending_multiplier%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mEndingMultiplier);
+            snprintf(buf, 64, "best_streak_multiplier_points%03d", i);
+            ADD_DATA_PAIR(buf, curInfo.mPoints);
+        }
+        ADD_DATA_PAIR(total_od_duration, stats.GetTotalOverdriveDuration());
+        ADD_DATA_PAIR(total_multiplier_duration, stats.GetTotalMultiplierDuration());
+        ADD_DATA_PAIR(rolls_hit_completely, stats.GetRollsHitCompletely());
+        ADD_DATA_PAIR(roll_count, stats.GetRollCount());
+        ADD_DATA_PAIR(hopo_gems_hopoed, stats.GetHopoGemsHopoed());
+        ADD_DATA_PAIR(hopo_gem_count, stats.GetHopoGemCount());
+        ADD_DATA_PAIR(high_gems_hit_high, stats.GetHighGemsHitHigh());
+        ADD_DATA_PAIR(high_gems_hit_low, stats.GetHighGemsHitLow());
+        ADD_DATA_PAIR(high_fret_gem_count, stats.GetHighFretGemCount());
+        ADD_DATA_PAIR(sustain_gems_hit_completely, stats.GetSustainGemsHitCompletely());
+        ADD_DATA_PAIR(sustain_gems_hit_partially, stats.GetSustainGemsHitPartially());
+        ADD_DATA_PAIR(sustain_gems_count, stats.GetSustainGemCount());
+        ADD_DATA_PAIR(trills_hit_completely, stats.GetTrillsHitCompletely());
+        ADD_DATA_PAIR(trills_hit_partially, stats.GetTrillsHitPartially());
+        ADD_DATA_PAIR(trill_count, stats.GetTrillCount());
+        ADD_DATA_PAIR(cymbal_gems_hit_on_cymbals, stats.GetCymbalGemsHitOnCymbals());
+        ADD_DATA_PAIR(cymbal_gems_hit_on_pads, stats.GetCymbalGemsHitOnPads());
+        ADD_DATA_PAIR(cymbal_gem_count, stats.GetCymbalGemCount());
+        ADD_DATA_PAIR(double_harmony_hit, stats.GetDoubleHarmonyHit())
+        ADD_DATA_PAIR(double_harmony_phrase_count, stats.GetDoubleHarmonyPhraseCount());
+        ADD_DATA_PAIR(triple_harmony_hit, stats.GetTripleHarmonyHit());
+        ADD_DATA_PAIR(triple_harmony_phrase_count, stats.GetTripleHarmonyPhraseCount());
+
+        int numSingers = stats.GetNumberOfSingers();
+        ADD_DATA_PAIR(num_singers, numSingers);
+        int numVocalParts = stats.GetNumberOfVocalParts();
+        ADD_DATA_PAIR(num_vocal_parts, numVocalParts);
+        for (int i = 0; i < numSingers; i++) {
+            const SingerStats &curStats = stats.GetSingerStats(i);
+            for (int j = 0; j < numVocalParts; j++) {
+                const std::pair<int, float> &curRankData = curStats.GetRankData(j);
+                snprintf(buf, 64, "singer%03d_part%03d_part", i, j);
+                ADD_DATA_PAIR(buf, curRankData.first);
+                snprintf(buf, 64, "singer%03d_part%03d_pct", i, j);
+                ADD_DATA_PAIR(buf, curRankData.second);
+            }
+            float f920, f924;
+            curStats.GetPitchDeviationInfo(f920, f924);
+            snprintf(buf, 64, "singer%03d_pitch_deviation", i);
+            ADD_DATA_PAIR(buf, f920);
+            snprintf(buf, 64, "singer%03d_pitch_deviation_of_deviation", i);
+            ADD_DATA_PAIR(buf, f924);
+        }
+        RecordDataPoint(dataPoint, i3, results, o);
+    }
+}
+#pragma pop

@@ -17,17 +17,17 @@ public:
     void Initialize(const Stats &, int, ScoreType, Difficulty, Symbol, int, int, bool);
 
     // Located in RockCentral.cpp
-    Symbol GetMode() const;
-    int GetSongID() const;
-    bool IsPlaytest() const;
-    bool IsOnline() const;
-    bool IsCheating() const;
-    ScoreType GetScoreType() const;
-    Difficulty GetDifficulty() const;
-    int GetTimeStamp() const;
-    Stats GetStats() const;
-    int GetStars() const;
-    int GetBattleID() const;
+    Symbol GetMode() const { return mMode; }
+    int GetSongID() const { return mSongId; }
+    bool IsPlaytest() const { return mIsPlaytest; }
+    bool IsOnline() const { return mIsOnline; }
+    bool IsCheating() const { return mIsCheating; }
+    ScoreType GetScoreType() const { return mScoreType; }
+    Difficulty GetDifficulty() const { return mDifficulty; }
+    int GetTimeStamp() const { return mTimestamp; }
+    const Stats &GetStats() const { return mStats; }
+    int GetStars() const { return mStars; }
+    int GetBattleID() const { return mBattleId; }
 
     static int SaveSize(int);
 

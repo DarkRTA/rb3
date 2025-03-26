@@ -218,3 +218,6 @@ END_MESSAGE
 
 DECLARE_MESSAGE(PartyMembersChangedMsg, "party_members_changed")
 END_MESSAGE
+
+DECLARE_MESSAGE(EnumerateMessagesCompleteMsg, "enumerate_messages_complete")
+END_MESSAGE
