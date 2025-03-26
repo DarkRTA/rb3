@@ -87,6 +87,9 @@ public:
     void
     UpdateFriendList(Profile *, std::vector<Friend *>, DataResultList &, Hmx::Object *);
     char GetDifficultyID(int);
+    void
+    GetMultipleRankingsForPlayer(Profile *, ScoreType, std::vector<int> &, DataResultList &, Hmx::Object *);
+    void GetClosedBattles(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
 
     bool IsOnline() { return mState == 2; }
 

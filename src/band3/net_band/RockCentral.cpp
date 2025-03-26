@@ -41,6 +41,7 @@
 #include "utl/Std.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 #include "utl/TextFileStream.h"
 #include <utility>
@@ -1174,3 +1175,76 @@ void RockCentral::RecordOptionData() {
 DECOMP_FORCEACTIVE(
     RockCentral, "reviews/song/review", "reviews/song/get", "reviews/song/get_by_player"
 )
+
+void RockCentral::GetMultipleRankingsForPlayer(
+    Profile *profile,
+    ScoreType s,
+    std::vector<int> &vec,
+    DataResultList &results,
+    Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        MILO_ASSERT(profile, 0x8B7);
+        INIT_DATAPOINT("leaderboards/playerranks/get");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(role_id, (char)s);
+        for (int i = 0; i < vec.size(); i++) {
+            char buf[12];
+            ADD_BUFFER_PAIR(buf, vec[i], "song_id%03d", i);
+        }
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+void RockCentral::GetAllSonglists(
+    std::vector<BandProfile *> &profiles, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, profiles.empty());
+    if (server) {
+        std::vector<int> playerIds;
+        FOREACH (it, profiles) {
+            playerIds.push_back(server->GetPlayerID((*it)->GetPadNum()));
+        }
+        MILO_ASSERT(!playerIds.empty(), 0x8D6);
+        INIT_DATAPOINT("songlists/get");
+        for (int i = 0; i < playerIds.size(); i++) {
+            char buf[12];
+            ADD_BUFFER_PAIR(buf, playerIds[i], "pid%03d", i);
+        }
+        ADD_DATA_PAIR(locale, SystemLanguage());
+        PlatformRegion regionEnum = ThePlatformMgr.GetRegion();
+        if (regionEnum - 1 <= 1U) {
+            ADD_DATA_PAIR(region, PlatformRegionToSymbol(regionEnum));
+        } else {
+            ADD_DATA_PAIR(region, PlatformRegionToSymbol(kRegionNA));
+        }
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+void RockCentral::GetClosedBattles(
+    std::vector<BandProfile *> &profiles, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, profiles.empty());
+    if (server) {
+        std::vector<int> playerIds;
+        FOREACH (it, profiles) {
+            playerIds.push_back(server->GetPlayerID((*it)->GetPadNum()));
+        }
+        MILO_ASSERT(!playerIds.empty(), 0x8FF);
+        INIT_DATAPOINT("battles/closed/get");
+        for (int i = 0; i < playerIds.size(); i++) {
+            char buf[12];
+            ADD_BUFFER_PAIR(buf, playerIds[i], "pid%03d", i);
+        }
+        ADD_DATA_PAIR(locale, SystemLanguage());
+        PlatformRegion regionEnum = ThePlatformMgr.GetRegion();
+        if (regionEnum - 1 <= 1U) {
+            ADD_DATA_PAIR(region, PlatformRegionToSymbol(regionEnum));
+        } else {
+            ADD_DATA_PAIR(region, PlatformRegionToSymbol(kRegionNA));
+        }
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
