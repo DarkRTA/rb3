@@ -19,7 +19,7 @@ public:
     int mStars; // 0xc
     int mPlayerID; // 0x10
     int unk14;
-    int unk18;
+    int unk18; // 0x18 - slot
     Difficulty mDiff; // 0x1c
     int mTotalScore; // 0x20
     int mTotalDiscScore; // 0x24

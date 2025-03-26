@@ -14,6 +14,7 @@
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SaveLoadManager.h"
+#include "meta_band/SongStatusMgr.h"
 #include "meta_band/UIEventMgr.h"
 #include "net/Net.h"
 #include "net/NetSession.h"
@@ -652,6 +653,107 @@ void RockCentral::GetBattleLeaderboardByRankRange(
             }
             RECORD_DATA_POINT(0, results, o);
         }
+    }
+}
+
+void RockCentral::UpdateFriendList(
+    int i1, std::vector<Friend *> friends, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("leaderboards/friends/update");
+        ADD_DATA_PAIR(pid, i1);
+        for (int i = 0; i < friends.size(); i++) {
+            String str;
+            str = friends[i]->mName.c_str();
+            unsigned long long key = friends[i]->mFriendKey;
+            char buf[8];
+            char buf2[0x18];
+            ADD_BUFFER_PAIR(buf, str, "name%03d", i);
+            snprintf(buf, 8, "guid%03d", i);
+            snprintf(buf2, 0x18, "%lld", key);
+            ADD_DATA_PAIR(buf2, buf);
+        }
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+void RockCentral::RecordBattleScore(
+    int i1,
+    int i2,
+    std::vector<BandProfile *> &profiles,
+    int i4,
+    DataResultList &results,
+    Hmx::Object *o
+) {
+    Server *server = IsConnected(o, i2, profiles.empty());
+    if (server) {
+        std::vector<int> playerIds;
+        std::vector<int> vec8a0;
+        FOREACH (it, profiles) {
+            BandProfile *cur = *it;
+            playerIds.push_back(server->GetPlayerID(cur->GetPadNum()));
+            vec8a0.push_back(cur->GetPadNum());
+        }
+        MILO_ASSERT(!playerIds.empty(), 0x62D);
+        INIT_DATAPOINT("battles/record");
+        ADD_DATA_PAIR(battle_id, i1);
+        ADD_DATA_PAIR(score, i4);
+        for (int i = 0; i < playerIds.size(); i++) {
+            char buf[0x14];
+            ADD_BUFFER_PAIR(buf, playerIds[i], "pid%03d", i);
+            ADD_BUFFER_PAIR(buf, vec8a0[i], "slot%03d", i);
+            if (playerIds[i] == 0) {
+                MILO_WARN("RecordBattleScore() - PID == 0!");
+            }
+        }
+        RECORD_DATA_POINT(i2, results, o);
+    }
+}
+
+void RockCentral::RecordScore(
+    int i1,
+    int i2,
+    std::vector<PlayerScore> &scores,
+    int i4,
+    int i5,
+    bool b6,
+    Hmx::Object *o,
+    DataResultList &results
+) {
+    Server *server = IsConnected(o, i2, false);
+    if (server) {
+        if (!scores.empty()) {
+            INIT_DATAPOINT("scores/record");
+            ADD_DATA_PAIR(song_id, i1);
+            ADD_DATA_PAIR(boi_id, i4);
+            ADD_DATA_PAIR(band_mask, i5);
+            ADD_DATA_PAIR(provide_insta_rank, (int)b6);
+            for (int i = 0; i < scores.size(); i++) {
+                char buf[0x14];
+                ADD_BUFFER_PAIR(buf, scores[i].mScoreType, "role_id%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].mScore, "score%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].mStars, "stars%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].mPlayerID, "pid%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].unk18, "slot%03d", i);
+                if (scores[i].mPlayerID == 0) {
+                    MILO_WARN("RecordScore() - PID == 0!");
+                }
+                ADD_BUFFER_PAIR(buf, GetDifficultyID(scores[i].mDiff), "diff_id%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].mTotalScore, "c_score%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].mTotalDiscScore, "cc_score%03d", i);
+                ADD_BUFFER_PAIR(buf, scores[i].mAccuracy, "percent%03d", i);
+            }
+            ADD_DATA_PAIR(locale, SystemLanguage());
+            PlatformRegion regionEnum = ThePlatformMgr.GetRegion();
+            if (regionEnum - 1 <= 1U) {
+                ADD_DATA_PAIR(region, PlatformRegionToSymbol(regionEnum));
+            } else {
+                ADD_DATA_PAIR(region, PlatformRegionToSymbol(kRegionNA));
+            }
+            RECORD_DATA_POINT(i2, results, o);
+        } else
+            MILO_WARN("RecordScore() - no players!");
     }
 }
 

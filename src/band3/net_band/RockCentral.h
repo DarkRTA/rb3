@@ -83,6 +83,10 @@ public:
     void ExecuteConfig(const char *);
     bool IsLoginMandatory();
     void DeleteNextUser();
+    void UpdateFriendList(int, std::vector<Friend *>, DataResultList &, Hmx::Object *);
+    void
+    UpdateFriendList(Profile *, std::vector<Friend *>, DataResultList &, Hmx::Object *);
+    char GetDifficultyID(int);
 
     bool IsOnline() { return mState == 2; }
 
