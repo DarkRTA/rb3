@@ -6,11 +6,13 @@
 #include "Services/ServiceClient.h"
 #include "band3/meta_band/PerformanceData.h"
 #include "decomp.h"
+#include "game/Defines.h"
 #include "game/GamePanel.h"
 #include "meta/ConnectionStatusPanel.h"
 #include "meta/Profile.h"
 #include "meta/WiiProfileMgr.h"
 #include "meta_band/BandProfile.h"
+#include "meta_band/Campaign.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SaveLoadManager.h"
@@ -32,9 +34,9 @@
 #include "ui/UIPanel.h"
 #include "utl/DataPointMgr.h"
 #include "utl/Option.h"
+#include "utl/Std.h"
 #include "utl/Symbols.h"
 #include "utl/Symbols2.h"
-#include "utl/Symbols3.h"
 #include "utl/Symbols4.h"
 #include "utl/TextFileStream.h"
 #include <utility>
@@ -926,6 +928,176 @@ void RockCentral::RecordPerformance(
             curStats.GetPitchDeviationInfo(f920, f924);
             ADD_BUFFER_PAIR(buf, f920, "singer%03d_pitch_deviation", i);
             ADD_BUFFER_PAIR(buf, f924, "singer%03d_pitch_deviation_of_deviation", i);
+        }
+        RECORD_DATA_POINT(i3, results, o);
+    }
+}
+
+void RockCentral::RecordAccomplishmentData(
+    const Profile *profile,
+    AccomplishmentProgress *prog,
+    int i3,
+    Hmx::Object *o,
+    DataResultList &results
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        MILO_ASSERT(profile, 0x79E);
+        INIT_DATAPOINT("accomplishment/record");
+        if (server->GetPlayerID(profile->GetPadNum()) == 0) {
+            MILO_WARN("RecordAccomplishmentData() - PID == 0!");
+        }
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(num_completed, prog->GetNumCompleted());
+        ADD_DATA_PAIR(meta_score, prog->GetMetaScore());
+        ADD_DATA_PAIR(
+            campaign_level,
+            TheCampaign->GetCampaignLevelForMetaScore(prog->GetMetaScore())
+        );
+        ADD_DATA_PAIR(tot_gems_smashed, prog->GetTotalGemsSmashed());
+        ADD_DATA_PAIR(tot_guitar_hopos, prog->GetTotalGuitarHopos());
+        ADD_DATA_PAIR(tot_bass_hopos, prog->GetTotalBassHopos());
+        ADD_DATA_PAIR(tot_upstrums, prog->GetTotalUpstrums());
+        ADD_DATA_PAIR(tot_times_revived, prog->GetTotalTimesRevived());
+        ADD_DATA_PAIR(tot_saves, prog->GetTotalSaves());
+        ADD_DATA_PAIR(tot_awesomes, prog->GetTotalAwesomes());
+        ADD_DATA_PAIR(tot_double_awesomes, prog->GetTotalDoubleAwesomes());
+        ADD_DATA_PAIR(tot_triple_awesomes, prog->GetTotalTripleAwesomes());
+        char buf[64];
+        for (int i = 0; i < kNumScoreTypes; i++) {
+            ADD_BUFFER_PAIR(buf, prog->GetBestStreak((ScoreType)i), "best_streak%03d", i);
+            ADD_BUFFER_PAIR(
+                buf, prog->GetTotalOverdriveDeploys((ScoreType)i), "tot_od_deploys%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetTotalOverdriveTime((ScoreType)i), "tot_od_time%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetTotalOverdrivePhrases((ScoreType)i), "tot_od_phrases%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetTotalUnisonPhrases((ScoreType)i), "tot_unison_phrases%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetMostOverdriveDeploys((ScoreType)i), "most_od_deploys%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetMostOverdriveTime((ScoreType)i), "most_od_time%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetMostUnisonPhrases((ScoreType)i), "most_unison_phrases%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetTotalBREsHit((ScoreType)i), "tot_bres_hit%03d", i
+            );
+            for (int j = 0; j < kNumDifficulties; j++) {
+                ADD_BUFFER_PAIR(
+                    buf,
+                    prog->GetBestStars((ScoreType)i, (Difficulty)j),
+                    "best_stars%03d_%03d",
+                    i,
+                    j
+                );
+                ADD_BUFFER_PAIR(
+                    buf,
+                    prog->GetBestSolo((ScoreType)i, (Difficulty)j),
+                    "best_solo%03d_%03d",
+                    i,
+                    j
+                );
+                ADD_BUFFER_PAIR(
+                    buf,
+                    prog->GetBestAccuracy((ScoreType)i, (Difficulty)j),
+                    "best_accuracy%03d_%03d",
+                    i,
+                    j
+                );
+                ADD_BUFFER_PAIR(
+                    buf,
+                    prog->GetBestHoposPercent((ScoreType)i, (Difficulty)j),
+                    "best_hopos_percent%03d_%03d",
+                    i,
+                    j
+                );
+            }
+        }
+
+        for (int i = 0; i < kNumDifficulties; i++) {
+            ADD_BUFFER_PAIR(
+                buf,
+                prog->GetBestPercussionPercent((Difficulty)i),
+                "best_perc_percent%03d",
+                i
+            );
+            ADD_BUFFER_PAIR(
+                buf,
+                prog->GetTotalDrumRollCount((Difficulty)i),
+                "total_drumroll_count%03d",
+                i
+            );
+            ADD_BUFFER_PAIR(
+                buf,
+                prog->GetTotalProDrumRollCount((Difficulty)i),
+                "total_pro_drumroll_count%03d",
+                i
+            );
+            ADD_BUFFER_PAIR(
+                buf, prog->GetBestKickPercent((Difficulty)i), "best_kick_percent%03d", i
+            );
+            ADD_BUFFER_PAIR(
+                buf,
+                prog->GetBestProKickPercent((Difficulty)i),
+                "best_pro_kick_percent%03d",
+                i
+            );
+            ADD_BUFFER_PAIR(
+                buf,
+                prog->GetBestDrumRollPercent((Difficulty)i),
+                "best_drumroll_percent%03d",
+                i
+            );
+            ADD_BUFFER_PAIR(
+                buf,
+                prog->GetBestSoloButtonPercent((Difficulty)i),
+                "best_solo_but_percent%03d",
+                i
+            );
+        }
+
+        ADD_DATA_PAIR(tot_songs_played, prog->GetTotalSongsPlayed());
+        ADD_DATA_PAIR(tour_tot_songs_played, prog->GetTourTotalSongsPlayed());
+        std::map<Symbol, int>::const_iterator it;
+        for (it = prog->GetToursPlayedMap().begin();
+             it != prog->GetToursPlayedMap().end();
+             it++) {
+            ADD_BUFFER_PAIR(buf, it->second, "tour_%s_played", it->first.Str());
+        }
+        for (it = prog->GetToursMostStarsMap().begin();
+             it != prog->GetToursMostStarsMap().end();
+             it++) {
+            ADD_BUFFER_PAIR(buf, it->second, "tour_%s_most_stars", it->first.Str());
+        }
+        for (it = prog->GetToursGotAllStarsMap().begin();
+             it != prog->GetToursGotAllStarsMap().end();
+             it++) {
+            ADD_BUFFER_PAIR(buf, it->second, "tour_%s_got_all_stars", it->first.Str());
+        }
+        std::map<int, int>::const_iterator git;
+        for (git = prog->GetGigTypeCompletedMap().begin();
+             git != prog->GetGigTypeCompletedMap().end();
+             git++) {
+            ADD_BUFFER_PAIR(buf, git->second, "gig_%03d_completed", git->first);
+        }
+
+        std::map<Symbol, int> goalLBData;
+        prog->InqGoalLeaderboardData(goalLBData);
+        for (it = goalLBData.begin(); it != goalLBData.end(); it++) {
+            ADD_BUFFER_PAIR(buf, it->second, "lb_goal_value_%s", it->first.Str());
+        }
+        const std::set<Symbol> &goals = prog->GetNewGoalsSet();
+        FOREACH_POST (it, goals) {
+            Symbol cur = *it;
+            ADD_BUFFER_PAIR(buf, 0, "earned_accomplishment_%s", cur.Str());
         }
         RECORD_DATA_POINT(i3, results, o);
     }

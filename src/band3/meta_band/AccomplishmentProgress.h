@@ -126,6 +126,17 @@ public:
     void HandleUploadStarted();
     void HandleSuccessfulUpload();
     void FakeFill();
+    const std::map<Symbol, int> &GetToursMostStarsMap() const {
+        return mTourMostStarsMap;
+    }
+    const std::map<Symbol, int> &GetToursPlayedMap() const { return mToursPlayedMap; }
+    const std::map<Symbol, int> &GetToursGotAllStarsMap() const {
+        return mToursGotAllStarsMap;
+    }
+    const std::map<int, int> &GetGigTypeCompletedMap() const {
+        return mGigTypeCompletedMap;
+    }
+    const std::set<Symbol> &GetNewGoalsSet() const { return unk64; }
     // // int GetTotalGemsSmashed() const;
     // // int GetTotalGuitarHopos() const;
     // // int GetTotalBassHopos() const;
