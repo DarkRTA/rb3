@@ -9,7 +9,7 @@
 
 Tail::Tail(GemRepTemplate &tmp)
     : mGroup(Hmx::Object::New<RndGroup>()), mTail1(Hmx::Object::New<RndMesh>()),
-      mTail2(Hmx::Object::New<RndMesh>()), unk10(0), unk14("normal"), unk1c(-1),
+      mTail2(Hmx::Object::New<RndMesh>()), unk10(0), unk14("normal"), mSlot(-1),
       mTemplate(tmp), mTailGeomOwner(0), unk28(0), unk4e4(0), unk4e8(0), unk4ec(0),
       unk4f0(0), unk4f4(0) {
     mGroup->AddObject(mTail1);
@@ -35,8 +35,8 @@ void Tail::Init(
     const Tail::SlideInfo &info,
     Tail *tail
 ) {
-    unk18 = 0;
-    unk1c = i1;
+    mState = 0;
+    mSlot = i1;
     mSlideInfo = info;
     if (mSlideInfo.unk0) {
         static float severity = 3.5f;
@@ -73,21 +73,21 @@ void Tail::SetType(Symbol s, bool b) {
     }
     bool isStar = unk14 == "star";
     RndMat *tailMat;
-    if (unk18 == 1) {
+    if (mState == 1) {
         tailMat = mTemplate.GetTailMiss();
     } else if (isStar) {
         tailMat = mTemplate.GetTailBonus();
     } else if (b) {
         tailMat = mTemplate.GetTailChord();
     } else {
-        tailMat = mTemplate.GetSlotMat(0, unk1c);
+        tailMat = mTemplate.GetSlotMat(0, mSlot);
     }
     MILO_ASSERT(tailMat, 0x8A);
     mTail1->SetMat(tailMat);
     mTail2->SetMat(tailMat);
     mTail1->SetShowing(unk14 != "invisible");
     mTail2->SetShowing(false);
-    if (unk18 == 2)
+    if (mState == 2)
         Hit();
 }
 
@@ -119,8 +119,8 @@ void Tail::ReleaseMeshes() {
 }
 
 void Tail::SetDuration(float f1, float f2, float f3) {
-    if (unk18 != 4) {
-        if (unk18 == 2) {
+    if (mState != 4) {
+        if (mState == 2) {
             unk10 = Max(f1, unk10);
         } else {
             unk10 = Max(f2, unk10);
@@ -131,7 +131,7 @@ void Tail::SetDuration(float f1, float f2, float f3) {
 }
 
 void Tail::Hit() {
-    unk18 = 2;
+    mState = 2;
     if (!mSlideInfo.unk0) {
         mTail2->SetShowing(true);
     }
@@ -140,15 +140,15 @@ void Tail::Hit() {
 }
 
 void Tail::Release() {
-    if (unk18 != 4) {
-        unk18 = 3;
+    if (mState != 4) {
+        mState = 3;
         HandleMistake();
     }
 }
 
 void Tail::Done() {
-    if (unk18 == 2) {
-        unk18 = 4;
+    if (mState == 2) {
+        mState = 4;
         unk10 = 0;
         unk4ec = 0;
         mTail1->SetShowing(false);
@@ -160,7 +160,7 @@ void Tail::HandleMistake() { mTail2->SetShowing(false); }
 
 void Tail::Poll(float f1, float f2, float f3) {
     if (mTailGeomOwner) {
-        bool t3 = unk18 == 2 && !mSlideInfo.unk0;
+        bool t3 = mState == 2 && !mSlideInfo.unk0;
         float fvar1 = t3 ? mTemplate.kTailOffsetX * mTemplate.GetTailScaleX() : 0;
         mTail1->SetLocalPos(Vector3(-fvar1, unk10, 0));
         mTail2->SetLocalPos(Vector3(fvar1, unk10, 0));

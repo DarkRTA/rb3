@@ -1,6 +1,6 @@
 #include "Lyric.h"
 #include "math/Color.h"
-#include "rndobj/Group.h";
+#include "rndobj/Group.h"
 
 int kMaxLyricPlateChars = 0x64;
 int kMaxLyricPlateLines = 0x1E;
@@ -121,10 +121,10 @@ void LyricPlate::HookUpParents(RndGroup *group, RndTransformable *trans) {
 
 void LyricPlate::BakeLyric(Lyric *lyric) {
     if (mWidthX < 0.01f) {
-        mText->SetLocalPos(lyric->unk48);
+        mText->SetLocalPos(lyric->mBeginPos);
     }
-    float f7 = lyric->unk48.x - mText->mLocalXfm.v.x;
-    float fsub = lyric->unk48.z - mText->mLocalXfm.v.z;
+    float f7 = lyric->mBeginPos.x - mText->mLocalXfm.v.x;
+    float fsub = lyric->mBeginPos.z - mText->mLocalXfm.v.z;
     lyric->mXWidth = 0;
     Transform tf68;
     tf68.Reset();
@@ -190,7 +190,7 @@ float LyricPlate::GetLastLyricXBeforeMS(float ms) const {
         Lyric *curLyric = mSyllables[i];
         if (curLyric->mActiveMs > ms)
             break;
-        MaxEq(f24, curLyric->unk48.x + curLyric->mXWidth);
+        MaxEq(f24, curLyric->mBeginPos.x + curLyric->mXWidth);
     }
     return f24;
 }
@@ -212,7 +212,7 @@ int Lyric::StartTick() const { return mVocalNotes[0]->GetTick(); }
 inline float Lyric::Width() const { return mXWidth; }
 #pragma pop
 
-float Lyric::EndPos() const { return Width() + unk48.x; }
+float Lyric::EndPos() const { return Width() + mBeginPos.x; }
 bool Lyric::PitchNote() const { return !mVocalNotes[0]->mUnpitchedNote; }
 void Lyric::SetChunkEnd(bool chunkEnd) { mChunkEnd = chunkEnd; }
 void Lyric::SetAfterDeploy(int deploy) { mDeployIdx = deploy; }

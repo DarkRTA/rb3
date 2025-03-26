@@ -87,7 +87,7 @@ void VocalTrack::ClearMarkers() {
 void VocalTrack::UpdateTubePlates(
     std::deque<TubePlate *> &deque, float f2, float f3, bool b4
 ) {
-    if (unk60 || deque.empty())
+    if (mIntroPlaying || deque.empty())
         return;
     while (!deque.empty() && !deque.front()->NoVerts()
            && (deque.front()->CurrentEndX(f3) < mDir->mTrackLeftX - unk78
@@ -265,7 +265,7 @@ TubePlate *VocalTrack::GetCurrentPlate(std::deque<TubePlate *> &plates, int i2) 
     static Symbol harmDeployMat = "deploy_mask_harmony.mat";
 
     String matName = plates.front()->GetMatName();
-    if (!unk60 && matName != leadDeployMat && matName != harmDeployMat) {
+    if (!mIntroPlaying && matName != leadDeployMat && matName != harmDeployMat) {
         MILO_WARN(
             "%s new plate added.  Please alert HUD/Track owner and include the Watson output.",
             matName.c_str()
@@ -763,7 +763,7 @@ void VocalTrack::DumpLyricPlates(std::deque<LyricPlate *> &plates, bool lead) {
                     MILO_LOG(
                         " %s x:%.2f (%.2f - %.2f)\n",
                         curLyric->mText.c_str(),
-                        curLyric->unk48.x,
+                        curLyric->mBeginPos.x,
                         curLyric->mActiveMs / 1000.0f,
                         curLyric->mEndMs / 1000.0f
                     );
@@ -852,7 +852,7 @@ void UpdateSyllableText(String &str, bool b2, bool &bref) {
 }
 
 void PrintLyricOneLine(const Lyric &lyric) {
-    MILO_LOG("\t%3.2f\t(%6.2fms)\t", lyric.unk48.x, lyric.mActiveMs);
+    MILO_LOG("\t%3.2f\t(%6.2fms)\t", lyric.mBeginPos.x, lyric.mActiveMs);
     if (lyric.mDeployIdx > -1) {
         MILO_LOG("| ");
     }

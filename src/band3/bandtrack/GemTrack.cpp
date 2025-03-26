@@ -47,9 +47,9 @@ DataNode ToggleShift(DataArray *arr) {
 GemTrack::GemTrack(BandUser *user)
     : Track(user), mResetFills(0),
       mUseFills(SystemConfig("scoring", "overdrive")->FindInt("fills")), mTrackDir(this),
-      mLastTopTick(-1), mLastBottomTick(-1), mGemManager(0), unkb4(0), mUpdateShifting(0),
-      mEnableShifting(1), mRange(-1.0f), mOffset(-1.0f), mUpcomingShiftMaskAnim(this),
-      mKeyIntroTasks(this) {
+      mLastTopTick(-1), mLastBottomTick(-1), mGemManager(0), mKickPassCounter(0),
+      mUpdateShifting(0), mEnableShifting(1), mRange(-1.0f), mOffset(-1.0f),
+      mUpcomingShiftMaskAnim(this), mKeyIntroTasks(this) {
     DataRegisterFunc("toggle_key_shifting", ToggleShift);
 }
 

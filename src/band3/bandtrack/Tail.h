@@ -37,8 +37,8 @@ public:
     RndMesh *mTail2; // 0xc
     float unk10; // 0x10
     Symbol unk14; // 0x14
-    int unk18; // 0x18 - state?
-    int unk1c; // 0x1c
+    int mState; // 0x18 - state?
+    int mSlot; // 0x1c
     GemRepTemplate &mTemplate; // 0x20
     RndMesh *mTailGeomOwner; // 0x24
     bool unk28; // 0x28

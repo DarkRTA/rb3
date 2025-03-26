@@ -42,8 +42,8 @@ TrackPanelDirBase *GetTrackPanelDir() { return TheTrackPanel->mTrackPanelDir; }
 TrackPanel::TrackPanel()
     : mConfig(SystemConfig("track_graphics")), mReservedVocalSlot(2),
       mScoreboard(this, 0), unk5c(0), unk5d(0), unk5e(0), unk5f(0), unk60(0), unk61(1),
-      unk62(0), mAutoVocals(0), unk7c(0), mTrackPanelDir(0), unk84(0),
-      mTourGoalConfig(kConfigInvalid), unk8c(-1.0f) {
+      unk62(0), mAutoVocals(0), mNextReloadTime(0), mTrackPanelDir(0), unk84(0),
+      mTourGoalConfig(kConfigInvalid), mLastCrowdRating(-1.0f) {
     for (int i = 0; i < 5; i++) {
         mTrackSlots.push_back(TrackSlot());
     }
@@ -150,7 +150,7 @@ void TrackPanel::CreateTracks() {
             if (curuser && curuser->IsParticipating() && curuser->IsFullyInGame()) {
                 Track *curtrack = NewTrack(curuser);
                 curtrack->SetName(MakeString("track%d", i), ObjectDir::Main());
-                curtrack->unk58 = i;
+                curtrack->mSlotIdx = i;
                 mTracks.push_back(curtrack);
                 curuser->mTrack = curtrack;
                 TrackSlot &curslot = mTrackSlots[i];
@@ -164,7 +164,7 @@ void TrackPanel::CreateTracks() {
             int idx = mReservedVocalSlot;
             Track *nulltrack = NewTrack(nulluser);
             nulltrack->SetName(MakeString("track%d", idx), ObjectDir::Main());
-            nulltrack->unk58 = idx;
+            nulltrack->mSlotIdx = idx;
             mTracks.push_back(nulltrack);
             nulluser->mTrack = nulltrack;
             TrackSlot &curslot = mTrackSlots[idx];
@@ -179,7 +179,7 @@ void TrackPanel::Reset() {
     CleanUpTracks();
     CreateTracks();
     AssignAndInitTracks();
-    unk8c = -1.0f;
+    mLastCrowdRating = -1.0f;
     if (mScoreboard)
         mScoreboard->Reset();
     float secs = TheTaskMgr.Seconds(TaskMgr::kRealTime) * 1000.0f;
@@ -191,7 +191,7 @@ void TrackPanel::Reset() {
     MainGoalReset();
     TrackerDisplayReset();
     SetSuppressTambourineDisplay(false);
-    unk7c = secs;
+    mNextReloadTime = secs;
     unk84 = 0;
     unk5c = true;
     unk5f = false;
@@ -274,7 +274,7 @@ void TrackPanel::HandleAddUser(BandUser *user) {
     bool pushed = false;
 
     for (int i = 0; i < mTracks.size(); i++) {
-        if (mTracks[i]->unk58 > userslot) {
+        if (mTracks[i]->mSlotIdx > userslot) {
             // mTracks.push_back(newtrack);
             pushed = true;
             break;
@@ -284,7 +284,7 @@ void TrackPanel::HandleAddUser(BandUser *user) {
         mTracks.push_back(newtrack);
     }
     unk5d = true;
-    newtrack->unk58 = userslot;
+    newtrack->mSlotIdx = userslot;
     user->mTrack = newtrack;
     slot.mTrack = newtrack;
     slot.mInstrument = GetTrackInstrument(user->GetTrackSym());
@@ -553,11 +553,12 @@ void TrackPanel::PopSmasher(int iii) {
 }
 
 void TrackPanel::CleanUpReloadChecks() {
-    for (std::map<Symbol, DepChecker *>::iterator it = unk64.begin(); it != unk64.end();
+    for (std::map<Symbol, DepChecker *>::iterator it = mReloadChecks.begin();
+         it != mReloadChecks.end();
          ++it) {
         delete it->second;
     }
-    unk64.clear();
+    mReloadChecks.clear();
 }
 
 DataNode TrackPanel::ForEachTrack(const DataArray *arr) {
@@ -613,7 +614,7 @@ void TrackPanel::UnisonStart(int iii) {
         for (int i = 0; i < mTracks.size(); i++) {
             int tracknum = mTracks[i]->GetTrackNum();
             if (iii & (1 << tracknum)) {
-                u3 |= (1 << mTracks[i]->unk58);
+                u3 |= (1 << mTracks[i]->mSlotIdx);
             }
         }
         bonus->UnisonStart(u3);

@@ -111,12 +111,12 @@ public:
     bool unk61; // 0x61
     bool unk62; // 0x62
     bool mAutoVocals; // 0x63
-    std::map<Symbol, DepChecker *> unk64; // 0x64
-    float unk7c;
+    std::map<Symbol, DepChecker *> mReloadChecks; // 0x64
+    float mNextReloadTime;
     TrackPanelDirBase *mTrackPanelDir; // 0x80
     int unk84;
     TourGoalConfig mTourGoalConfig; // 0x88
-    float unk8c;
+    float mLastCrowdRating;
 };
 
 TrackPanel *GetTrackPanel();

@@ -214,8 +214,8 @@ bool RealGuitarTrackWatcherImpl::AreSlotsInRoll(unsigned int i1, int i2) const {
     unsigned int mask = 1;
     bool ret = false;
     for (int i = 0; i < 6; i++, mask <<= 1) {
-        if ((i1 & mask) && chord.unk0[i] != -1) {
-            if (chord.unk0[i] != (int)state->GetFret(i)) {
+        if ((i1 & mask) && chord.mString[i] != -1) {
+            if (chord.mString[i] != (int)state->GetFret(i)) {
                 return false;
             }
             ret = true;
@@ -233,7 +233,7 @@ bool RealGuitarTrackWatcherImpl::GetNextRoll(int i1, unsigned int &uiRef, int &e
     if (mSongData->GetNextRGRoll(Track(), tick, chord, endTick)) {
         uiRef = 0;
         for (int i = 0; i < 6; i++) {
-            if (chord.unk0[i] != -1) {
+            if (chord.mString[i] != -1) {
                 uiRef |= 1 << i;
             }
         }

@@ -16,7 +16,7 @@ GuitarController::GuitarController(
 )
     : BeatMatchController(user, cfg, lefty), mDisabled(disabled), mAutoSoloButtons(0),
       mFretMask(0), mShiftButtonMask(0), mSink(bsink), mControllerStyle(kPS2),
-      mStrumBarButtons(), unk58(0) {
+      mStrumBarButtons(), mMercuryButton(kPad_L2) {
     JoypadSubscribe(this);
     Symbol cntType;
     if (cfg->FindData("controller_style", cntType, false)) {
@@ -36,11 +36,11 @@ GuitarController::GuitarController(
             MILO_FAIL("Bad controller style %s\n", cntType);
     }
     if (mControllerStyle == kHxXbox)
-        unk58 = 3;
+        mMercuryButton = kPad_Xbox_RB;
     if (mControllerStyle == kPS3)
-        unk58 = 3;
+        mMercuryButton = kPad_R1;
     if (mControllerStyle == kHxWii)
-        unk58 = 3;
+        mMercuryButton = kPad_R1;
     if (!disabled)
         ReconcileFretState();
     DataArray *strum_buttons = cfg->FindArray("strum_buttons", false);
@@ -157,7 +157,7 @@ int GuitarController::OnMsg(const ButtonDownMsg &msg) {
         if (btn == mForceMercuryBut) {
             mSink->ForceMercurySwitch(true);
             RegisterHit(kHitSelect);
-        } else if (mControllerStyle != kRoXbox && btn == unk58) {
+        } else if (mControllerStyle != kRoXbox && btn == mMercuryButton) {
             mSink->MercurySwitch(1);
         } else {
             int slot = ButtonToSlot((JoypadButton)btn);
@@ -210,7 +210,7 @@ int GuitarController::OnMsg(const ButtonUpMsg &msg) {
         std::find(mStrumBarButtons.begin(), mStrumBarButtons.end(), btn);
     if (btnIter != mStrumBarButtons.end()) {
         mSink->ReleaseSwing();
-    } else if (mControllerStyle != kRoXbox && btn == unk58) {
+    } else if (mControllerStyle != kRoXbox && btn == mMercuryButton) {
         mSink->MercurySwitch(0);
     } else if (btn == mForceMercuryBut) {
         mSink->ForceMercurySwitch(false);
@@ -252,7 +252,7 @@ void GuitarController::ReconcileFretState() {
         mFretMask = mask;
         mSink->ForceMercurySwitch(padData->IsButtonInMask(mForceMercuryBut));
         if (mControllerStyle != kRoXbox) {
-            mSink->MercurySwitch(padData->IsButtonInMask(unk58) ? 1.0f : 0.0f);
+            mSink->MercurySwitch(padData->IsButtonInMask(mMercuryButton) ? 1.0f : 0.0f);
         }
     }
 }

@@ -9,7 +9,7 @@ JoypadController::JoypadController(
     bool disabled,
     bool lefty
 )
-    : BeatMatchController(user, cfg, lefty), mDisabled(disabled), unk3d(0),
+    : BeatMatchController(user, cfg, lefty), mDisabled(disabled), mUseDpad(0),
       mAlternateMapping(0), mFretMask(0), mSecondaryPedalFunction(kHiHatPedal),
       mCymbalConfiguration(0), mSink(bsink) {
     mVelocityAxes = cfg->FindArray("velocity_axes", false);

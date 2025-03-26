@@ -31,7 +31,7 @@ public:
     bool mChunkEnd; // 0x3d
     int mDeployIdx; // 0x40
     bool mAfterMidPhraseShift; // 0x44
-    Vector3 unk48; // 0x48
+    Vector3 mBeginPos; // 0x48
     float mXWidth; // 0x54
     float mHighlightMs; // 0x58
     float mActiveMs; // 0x5c

@@ -1940,7 +1940,7 @@ bool GemPlayer::InRGRoll(int idx) const {
     RGRollChord chord = data->GetRGRollingSlotsAtTick(
         mTrackNum, TheSongDB->GetGem(mTrackNum, idx).GetTick()
     );
-    return chord.unk0[0] != -1;
+    return chord.mString[0] != -1;
 }
 
 void GemPlayer::CheckFretReleases(float f1) {

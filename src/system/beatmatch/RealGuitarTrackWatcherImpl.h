@@ -31,7 +31,7 @@ public:
 
     bool StrumOK(int) const;
     int GetNextTrillSlot(int i, RGTrill &trill) {
-        return i == trill.unk4 ? trill.unk8 : trill.unk4;
+        return i == trill.mFrets[0] ? trill.mFrets[1] : trill.mFrets[0];
     }
 
     RGGemMatcher mMatcher; // 0xe8

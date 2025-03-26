@@ -42,5 +42,5 @@ public:
     BeatMatchControllerSink *mSink; // 0x48
     ControllerStyle mControllerStyle; // 0x4c
     std::vector<int> mStrumBarButtons; // 0x50
-    int unk58; // 0x58
+    JoypadButton mMercuryButton; // 0x58
 };

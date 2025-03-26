@@ -19,10 +19,10 @@ Gem::Gem(
     const GameGem &gg, unsigned int ui, float f1, float f2, bool b1, int i1, int i2, bool b2
 )
     : mGameGem(gg), mStart(f1), mEnd(f2), mTailStart(0), mSlots(ui), mBeardTick(i1),
-      unk_0x3C(0), unk_0x40(0), unk_0x44(0), unk_0x48(0), mChordLabel(""),
-      mFirstFretString(-1), mFretPos(0), unk_0x65(-1), mHit(0), mMissed(0), mReleased(0),
-      mHopo(0), mInvisible(0), mBeard(0), unk_0x67_0(0), unk_0x67_1(0), unk_0x67_2(0),
-      unk_0x67_3(0), unk_0x67_4(0) {
+      mArrhythmicDurationSeconds(0), unk_0x40(0), unk_0x44(0), unk_0x48(0),
+      mChordLabel(""), mFirstFretString(-1), mFretPos(0), mKeyFingerNumber(-1), mHit(0),
+      mMissed(0), mReleased(0), mHopo(0), mInvisible(0), mBeard(0), unk_0x67_0(0),
+      unk_0x67_1(0), unk_0x67_2(0), unk_0x67_3(0), unk_0x67_4(0) {
     InitChordInfo(i2, b2);
 }
 
@@ -41,8 +41,11 @@ Gem &Gem::operator=(const Gem &g) {
     mInvisible = g.mInvisible;
     mTails = g.mTails;
     mWidgets = g.mWidgets;
-    unk_0x3C = g.unk_0x3C;
+    mArrhythmicDurationSeconds = g.mArrhythmicDurationSeconds;
     unk_0x40 = g.unk_0x40;
+    mChordLabel = g.mChordLabel;
+    mFirstFretString = g.mFirstFretString;
+    mKeyFingerNumber = g.mKeyFingerNumber;
 }
 
 bool Gem::OnScreen(float ms) {
@@ -139,7 +142,7 @@ void Gem::AddInstance(Symbol s1, int i2) {
             s1bc = MakeString("%s_cymbal", s1bc.mStr);
         }
 
-        if (unk_0x66_6) {
+        if (mInArrhythmic) {
             s1bc = MakeString("%s_arrhythmic", s1bc.mStr);
         }
 
@@ -170,17 +173,17 @@ void Gem::AddInstance(Symbol s1, int i2) {
             }
         }
 
-        if (unk_0x3C != 0) {
+        if (mArrhythmicDurationSeconds != 0) {
             Symbol s1c4;
             if (mGemManager->GetWidgetName(s1c4, i2, mash)) {
                 TrackWidget *w2 = mGemManager->GetWidgetByName(s1c4);
                 Transform tf98;
                 mGemManager->mTrackDir->MakeWidgetXfm(i2, mGameGem.mMs / 1000.0f, tf98);
-                w2->AddInstance(tf98, unk_0x3C);
+                w2->AddInstance(tf98, mArrhythmicDurationSeconds);
             }
         }
 
-        if (unk_0x65 != -1) {
+        if (mKeyFingerNumber != -1) {
             Symbol s1c8;
             if (mGemManager->GetWidgetName(s1c8, i2, fret_num)) {
                 TrackWidget *wcc = mGemManager->GetWidgetByName(s1c8);
@@ -192,7 +195,7 @@ void Gem::AddInstance(Symbol s1, int i2) {
                 }
                 Multiply(v164, tfc8, tfc8.v);
                 int i1 = mGemManager->GetSlotIntData(i2, is_white);
-                String str170(1, unk_0x65 + 'A');
+                String str170(1, mKeyFingerNumber + 'A');
                 wcc->AddTextInstance(tfc8, str170, i1 == 0);
                 mWidgets.insert(wcc);
             }
@@ -371,7 +374,7 @@ void Gem::AddWidgetInstanceImpl(TrackWidget *w, int i) {
 
 void Gem::AddHopoTails(Symbol s1) {
     if (!mGemManager || !mGemManager->mTrackDir
-        || !mGemManager->mTrackConfig.IsRealGuitarTrack() || !mHopo || unk_0x66_6)
+        || !mGemManager->mTrackConfig.IsRealGuitarTrack() || !mHopo || mInArrhythmic)
         return;
     else {
         Symbol hopoSym = s1 == miss ? hopo_tail_miss : hopo_tail;
@@ -457,7 +460,7 @@ void Gem::CreateWidgetInstances(Symbol s) {
                     static DataNode &key_gem_fingering =
                         DataVariable("key_gem_fingering");
                     if (key_gem_fingering.Int()) {
-                        unk_0x65 = RandomFloat() * 5.0f + 1.0f;
+                        mKeyFingerNumber = RandomFloat() * 5.0f + 1.0f;
                     }
                     AddInstance(s, i);
                 }
