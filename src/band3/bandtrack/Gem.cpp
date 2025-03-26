@@ -43,6 +43,7 @@ Gem &Gem::operator=(const Gem &g) {
     mWidgets = g.mWidgets;
     mArrhythmicDurationSeconds = g.mArrhythmicDurationSeconds;
     unk_0x40 = g.unk_0x40;
+    mChordLabel = g.mChordLabel;
     mFirstFretString = g.mFirstFretString;
     mKeyFingerNumber = g.mKeyFingerNumber;
 }

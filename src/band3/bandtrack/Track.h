@@ -1,6 +1,7 @@
 #pragma once
 #include "TrackConfig.h"
 #include "bandobj/BandTrack.h"
+#include "bandobj/CrowdMeterIcon.h"
 #include "bandobj/TrackInterface.h"
 #include "game/BandUser.h"
 #include "game/Defines.h"
@@ -71,14 +72,14 @@ public:
     int GetTrackNum() const;
 
     TrackConfig mTrackConfig; // 0x1c
-    float unk48; // 0x48
-    int unk4c; // 0x4c
+    float mLastRating; // 0x48
+    CrowdMeterState mLastRatingState; // 0x4c
     bool unk50; // 0x50
-    int unk54; // 0x54
-    int unk58; // 0x58
-    GameplayOptions *unk5c; // 0x5c
-    bool unk60; // 0x60
-    float unk64; // 0x64
+    int mLastStreakCount; // 0x54
+    int mSlotIdx; // 0x58
+    GameplayOptions *mGameplayOptions; // 0x5c
+    bool mIntroPlaying; // 0x60
+    float mIntroEndMs; // 0x64
 };
 
 Track *NewTrack(BandUser *);

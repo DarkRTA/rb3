@@ -11,7 +11,7 @@
 #include "utl/Std.h"
 
 NowBar::NowBar(TrackDir *trackDir, const TrackConfig &trackConfig)
-    : mSmashers(), mCurrentGem(-1), unk_0xc(0), mTrackDir(trackDir),
+    : mSmashers(), mCurrentGem(-1), mBurning(0), mTrackDir(trackDir),
       mTrackCfg(trackConfig) {
     MILO_ASSERT(mTrackDir, 0x1e);
     RndDir *smasherPlateDir = mTrackDir->SmasherPlate();
@@ -32,7 +32,7 @@ void NowBar::Reset(bool reset) {
     FOREACH (it, mSmashers) {
         (*it)->Reset(reset);
     }
-    unk_0xc = 0;
+    mBurning = 0;
 }
 
 void NowBar::Hit(float f1, int gemID, bool coda, int i4, bool chord) {
@@ -97,7 +97,7 @@ void NowBar::Hit(float f1, int gemID, bool coda, int i4, bool chord) {
         }
     }
     if (burn)
-        unk_0xc |= slots;
+        mBurning |= slots;
     mCurrentGem = gemID;
 }
 
@@ -146,7 +146,7 @@ void NowBar::PartialHit(int gemID, unsigned int slots, bool b3, int i4) {
         }
     }
     if (burn)
-        unk_0xc |= slots;
+        mBurning |= slots;
     mCurrentGem = gemID;
 }
 
@@ -187,7 +187,7 @@ void NowBar::SetSmasherGlowing(int slot, bool glowing) {
 void NowBar::StopBurning(unsigned int index) {
     mCurrentGem = -1;
 
-    if (unk_0xc != 0) {
+    if (mBurning != 0) {
         for (int i = 0; i < mTrackCfg.GetMaxSlots(); i++) {
             if (1 << i & index) {
                 GemSmasher *smasher = FindSmasher(i);
@@ -195,7 +195,7 @@ void NowBar::StopBurning(unsigned int index) {
                     smasher->StopBurn();
             }
         }
-        unk_0xc &= ~index;
+        mBurning &= ~index;
     }
 }
 

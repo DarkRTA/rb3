@@ -45,18 +45,18 @@ class GemManager {
 public:
     class HitGem {
     public:
-        HitGem(float f, int x, int y) : unk0(f), unk4(x), unk8(y) {}
-        float unk0;
-        int unk4;
-        unsigned int unk8;
+        HitGem(float f, int x, int y) : mStartTime(f), mGemId(x), mSlotsHit(y) {}
+        float mStartTime; // 0x0
+        int mGemId; // 0x4
+        unsigned int mSlotsHit; // 0x8
     };
     class ArpeggioPhrase {
     public:
         ArpeggioPhrase(int x, int y, int z)
-            : unk0(x), unk4(y), unk8(z), mShape(0), unk10(0) {}
-        int unk0;
-        int unk4;
-        int unk8;
+            : mStartTick(x), mEndTick(y), mGemId(z), mShape(0), unk10(0) {}
+        int mStartTick; // 0x0
+        int mEndTick; // 0x4
+        int mGemId; // 0x8
         ArpeggioShape *mShape; // 0xc
         bool unk10;
     };
@@ -136,7 +136,7 @@ public:
     const TrackConfig &mTrackConfig; // 0x4
     std::vector<Gem> mGems; // 0x8
     DataArray *mGemData; // 0x10
-    float unk14;
+    float mGemsEnabledStart;
     std::vector<Extent> mMissedPhrases; // 0x18
     std::list<HitGem> mHitGems; // 0x20
     int mBegin; // 0x28
@@ -160,7 +160,7 @@ public:
     unsigned int mEnabledSlots; // 0x108
     int unk10c;
     std::vector<ArpeggioPhrase> mArpeggioPhrases; // 0x110
-    int unk118;
+    int mNextArpeggioPhrase;
     std::vector<ArpeggioPhrase *> mActiveArpeggios; // 0x11c
     std::vector<ArpeggioPhrase *> mExpiredArpeggios; // 0x124
     float unk12c;

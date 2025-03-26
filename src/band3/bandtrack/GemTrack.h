@@ -97,7 +97,7 @@ public:
     GemManager *mGemManager; // 0x80
     PlayerState mPlayerState; // 0x84
     PlayerState mLastPlayerState; // 0x9c
-    unsigned short unkb4; // 0xb4
+    unsigned short mKickPassCounter; // 0xb4
     bool mUpdateShifting; // 0xb6
     bool mEnableShifting; // 0xb7
     std::vector<RangeShift> mRangeShifts; // 0xb8
@@ -105,6 +105,6 @@ public:
     float mRange; // 0xc4
     float mOffset; // 0xc8
     ObjPtr<RndAnimatable> mUpcomingShiftMaskAnim; // 0xcc
-    int unkd8; // 0xd8 - mBeatLineSubdivisionTicks?
+    int mBeatLineSubdivisionTicks; // 0xd8
     ObjPtrList<Task> mKeyIntroTasks; // 0xdc
 };

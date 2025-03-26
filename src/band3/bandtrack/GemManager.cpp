@@ -37,12 +37,12 @@ DataNode SetKeyGlow(DataArray *arr) {
 
 GemManager::GemManager(const TrackConfig &cfg, TrackDir *dir)
     : mTrackDir(dir), mTrackConfig(cfg), mTemplate(cfg),
-      mConfig(SystemConfig("track_graphics")), mGemData(0), unk14(0), mBegin(0), mEnd(0),
-      unkb8(0), mNowBar(0), mBonusGems(0), mInCoda(0), unkc4(0),
+      mConfig(SystemConfig("track_graphics")), mGemData(0), mGemsEnabledStart(0),
+      mBegin(0), mEnd(0), unkb8(0), mNowBar(0), mBonusGems(0), mInCoda(0), unkc4(0),
       unkc8(dir->SecondsToY(dir->TopSeconds())),
       unkcc(dir->SecondsToY(dir->BottomSeconds())), mTailsGrp(0), unkfc(0), unk100(0),
-      unk104(0), mEnabledSlots(0), unk10c(0), unk118(0), unk12c(0), unk130(-1),
-      unk134(960) {
+      unk104(0), mEnabledSlots(0), unk10c(0), mNextArpeggioPhrase(0), unk12c(0),
+      unk130(-1), unk134(960) {
     mNowBar = new NowBar(mTrackDir, mTrackConfig);
     mTemplate.Init(mTrackDir->Find<ObjectDir>("gem_tail", true));
     static bool firstPass = true;
@@ -117,17 +117,17 @@ void GemManager::DrawTrackMasks(int i1, int i2) {
         }
     }
 
-    for (; unk118 < mArpeggioPhrases.size(); unk118++) {
-        ArpeggioPhrase *curPhrase = &mArpeggioPhrases[unk118];
-        if (curPhrase->unk4 >= i2)
+    for (; mNextArpeggioPhrase < mArpeggioPhrases.size(); mNextArpeggioPhrase++) {
+        ArpeggioPhrase *curPhrase = &mArpeggioPhrases[mNextArpeggioPhrase];
+        if (curPhrase->mEndTick >= i2)
             continue;
-        if (curPhrase->unk0 > i1)
+        if (curPhrase->mStartTick > i1)
             break;
-        Gem &curGem = mGems[curPhrase->unk8];
+        Gem &curGem = mGems[curPhrase->mGemId];
         ArpeggioShapePool *pool = mTrackDir->GetArpeggioShapePool();
         ArpeggioShape *poolShape = pool->GetArpeggioShape();
         bool lefty = mTrackConfig.IsLefty();
-        float f11 = mTrackDir->SecondsToY(TickToSeconds(curPhrase->unk0));
+        float f11 = mTrackDir->SecondsToY(TickToSeconds(curPhrase->mStartTick));
         if (curPhrase->unk10) {
             poolShape->ShowChordShape(false);
         } else {
@@ -136,18 +136,20 @@ void GemManager::DrawTrackMasks(int i1, int i2) {
             Transform tfc8;
             tfc8.Reset();
             tfc8.v.y = f11;
-            int i10 = curPhrase->unk4;
+            int i10 = curPhrase->mEndTick;
             if (TheTrainerPanel && TheGame->InTrainer()) {
                 i10 = Min(
-                    curPhrase->unk4,
-                    (curPhrase->unk0
-                     - (GetLoopTick(curPhrase->unk0)
+                    curPhrase->mEndTick,
+                    (curPhrase->mStartTick
+                     - (GetLoopTick(curPhrase->mStartTick)
                         - TheTrainerPanel->GetCurrentStartTick()))
                         + TheTrainerPanel->GetLoopTicks(TheTrainerPanel->GetCurrSection())
                 );
-                curPhrase->unk4 = i10;
+                curPhrase->mEndTick = i10;
             }
-            w5->AddInstance(tfc8, TickToSeconds(i10) - TickToSeconds(curPhrase->unk0));
+            w5->AddInstance(
+                tfc8, TickToSeconds(i10) - TickToSeconds(curPhrase->mStartTick)
+            );
             RndMesh *mesh = mTrackDir->GetChordMesh(curGem.unk_0x48, lefty);
             poolShape->SetChordShape(mesh);
             poolShape->ShowChordShape(true);
@@ -188,10 +190,11 @@ void GemManager::ClearArpeggios() {
 
 void GemManager::ResetArpeggios(float f1) {
     ClearArpeggios();
-    unk118 = 0;
+    mNextArpeggioPhrase = 0;
     int tick = MsToTickInt(f1);
-    for (; unk118 < mArpeggioPhrases.size() && mArpeggioPhrases[unk118].unk4 < tick;
-         unk118++)
+    for (; mNextArpeggioPhrase < mArpeggioPhrases.size()
+         && mArpeggioPhrases[mNextArpeggioPhrase].mEndTick < tick;
+         mNextArpeggioPhrase++)
         ;
 }
 
@@ -201,14 +204,14 @@ void GemManager::UpdateArpeggios(float f1, bool b2) {
     while (!mActiveArpeggios.empty()) {
         ArpeggioPhrase *currentArpeggio = mActiveArpeggios.front();
         MILO_ASSERT(currentArpeggio->mShape, 0x185);
-        if (currentArpeggio->unk4 < i1) {
+        if (currentArpeggio->mEndTick < i1) {
             currentArpeggio->mShape->FadeOutChordShape();
             mExpiredArpeggios.push_back(currentArpeggio);
             mActiveArpeggios.erase(mActiveArpeggios.begin());
         } else {
             if (!b2 || !currentArpeggio->unk10) {
-                if (currentArpeggio->unk0 > i1) {
-                    ms = TickToMs(currentArpeggio->unk0);
+                if (currentArpeggio->mStartTick > i1) {
+                    ms = TickToMs(currentArpeggio->mStartTick);
                 }
                 currentArpeggio->mShape->SetYPos(mTrackDir->SecondsToY(ms / 1000.0f));
             }
@@ -421,7 +424,7 @@ bool GemManager::TrillStartsAt(int i1, const GameGem &gem, int &iref) const {
 }
 
 void GemManager::SetGemsEnabled(float f) {
-    unk14 = f;
+    mGemsEnabledStart = f;
     UpdateGemStates();
 }
 
@@ -506,7 +509,7 @@ void GemManager::ReleaseSlot(int gem_id, int slot) {
 
 void GemManager::ReleaseHitGems() {
     FOREACH (it, mHitGems) {
-        Gem &gem = mGems[it->unk4];
+        Gem &gem = mGems[it->mGemId];
         if (gem.CompareBounds() && !gem.Released()) {
             gem.KillDuration();
             gem.Release();
@@ -517,7 +520,7 @@ void GemManager::ReleaseHitGems() {
 
 void GemManager::PruneHitGems(float f1) {
     while (!mHitGems.empty()) {
-        if (mGems[mHitGems.front().unk4].OnScreen(f1))
+        if (mGems[mHitGems.front().mGemId].OnScreen(f1))
             break;
         else
             mHitGems.pop_front();

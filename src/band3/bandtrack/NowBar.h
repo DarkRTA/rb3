@@ -23,7 +23,7 @@ public:
 
     std::vector<GemSmasher *> mSmashers; // 0x0
     int mCurrentGem; // 0x8
-    unsigned int unk_0xc; // 0xc - slots?
+    unsigned int mBurning; // 0xc
     TrackDir *mTrackDir; // 0x10
     const TrackConfig &mTrackCfg; // 0x14
 };

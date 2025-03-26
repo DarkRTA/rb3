@@ -1,5 +1,6 @@
 #include "bandtrack/Track.h"
 #include "bandobj/BandTrack.h"
+#include "bandobj/CrowdMeterIcon.h"
 #include "bandtrack/TrackPanel.h"
 #include "decomp.h"
 #include "game/Band.h"
@@ -19,15 +20,16 @@
 #include "utl/Symbols4.h"
 
 Track::Track(BandUser *user)
-    : mTrackConfig(user), unk48(-1.0f), unk4c(3), unk50(0), unk54(-1), unk58(-1),
-      unk60(0), unk64(-3.4028235E+38f) {}
+    : mTrackConfig(user), mLastRating(-1.0f), mLastRatingState(kCrowdMeterInvalidState),
+      unk50(0), mLastStreakCount(-1), mSlotIdx(-1), mIntroPlaying(0),
+      mIntroEndMs(-3.4028235E+38f) {}
 
 void Track::Poll(float f) {
     Player *player = mTrackConfig.GetBandUser()->GetPlayer();
     if (player) {
         float dispval = player->mCrowd->GetDisplayValue();
         bool warning = player->AllowWarningState();
-        if (unk48 != dispval || warning != unk50) {
+        if (mLastRating != dispval || warning != unk50) {
             CrowdMeterState cty;
             if (!player->mCrowd->IsBelowLoseLevel() || IsNoFailActive()
                 || GetPlayerDifficulty() == kDifficultyEasy) {
@@ -38,18 +40,18 @@ void Track::Poll(float f) {
             } else {
                 cty = kCrowdMeterFailed;
             }
-            if (unk4c == cty) {
+            if (mLastRatingState == cty) {
                 cty = kCrowdMeterInvalidState;
             } else {
-                unk4c = cty;
+                mLastRatingState = cty;
             }
             GetBandTrack()->SetCrowdRating(dispval, cty);
-            unk48 = dispval;
+            mLastRating = dispval;
             unk50 = warning;
         }
 
         int curstreak = player->mStats.GetCurrentStreak();
-        if (curstreak != unk54) {
+        if (curstreak != mLastStreakCount) {
             if (!GetBandTrack()) {
                 MILO_FAIL(
                     "no track dir for track %s (%s)!",
@@ -57,12 +59,12 @@ void Track::Poll(float f) {
                     mTrackConfig.GetBandUser()->mUserGuid.ToString()
                 );
             }
-            unk54 = curstreak;
+            mLastStreakCount = curstreak;
         }
 
-        if (unk60 && f > unk64) {
-            unk60 = false;
-            unk64 = -3.4028235E+38f;
+        if (mIntroPlaying && f > mIntroEndMs) {
+            mIntroPlaying = false;
+            mIntroEndMs = -3.4028235E+38f;
         }
     }
 }
@@ -191,7 +193,8 @@ int Track::GetBandMultiplier() const {
 }
 
 void Track::PushGameplayOptions(VocalParam, int) {
-    unk5c = mTrackConfig.GetBandUser()->GetPlayer()->GetUser()->GetGameplayOptions();
+    mGameplayOptions =
+        mTrackConfig.GetBandUser()->GetPlayer()->GetUser()->GetGameplayOptions();
 }
 
 int Track::GetNoBackFromBrink() const {
