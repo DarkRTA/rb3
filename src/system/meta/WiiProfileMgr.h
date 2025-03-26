@@ -83,6 +83,7 @@ public:
     int GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser *) const;
     void SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser *, int, bool);
     void RemoveIdFromDeleteQueue(unsigned int);
+    int GetNextDeleteQueueId() const;
 
     static int sSaveVersion;
     static int sSaveVersionWii;

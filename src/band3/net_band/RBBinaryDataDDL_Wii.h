@@ -8,7 +8,7 @@ namespace Quazal {
 
     class RBBinaryDataClient : public ClientProtocol {
     public:
-        RBBinaryDataClient(unsigned int ui) : ClientProtocol(ui) {}
+        RBBinaryDataClient() : ClientProtocol(1) {}
         virtual ~RBBinaryDataClient() {}
         virtual void ExtractCallSpecificResults(Message *, ProtocolCallContext *);
     };

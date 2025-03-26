@@ -8,7 +8,7 @@ namespace Quazal {
 
     class RBTestClient : public ClientProtocol {
     public:
-        RBTestClient(unsigned int ui) : ClientProtocol(ui) {}
+        RBTestClient() : ClientProtocol(1) {}
         virtual ~RBTestClient() {}
         virtual void ExtractCallSpecificResults(Message *, ProtocolCallContext *);
     };

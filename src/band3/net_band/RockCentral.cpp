@@ -5,6 +5,7 @@
 #include "RBTestDDL_Wii.h"
 #include "Services/ServiceClient.h"
 #include "band3/meta_band/PerformanceData.h"
+#include "bandobj/PatchDir.h"
 #include "decomp.h"
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
@@ -33,10 +34,13 @@
 #include "obj/Dir.h"
 #include "obj/Msg.h"
 #include "os/Debug.h"
+#include "os/OnlineID.h"
 #include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "ui/UIPanel.h"
+#include "utl/BinStream.h"
 #include "utl/DataPointMgr.h"
+#include "utl/MemStream.h"
 #include "utl/Option.h"
 #include "utl/Std.h"
 #include "utl/Symbols.h"
@@ -221,15 +225,15 @@ DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &msg) {
         mState = 2;
         TheNet.GetServer()->GetCompetitionClient();
         Quazal::ServiceClient *client = TheNet.GetServer()->GetPersistentStoreClient();
-        mRBTest = new Quazal::RBTestClient(1);
+        mRBTest = new Quazal::RBTestClient();
         if (!client->RegisterExtraProtocol(mRBTest, 't')) {
             MILO_WARN("Couldn't register RB test protocol\n");
         }
-        mRBData = new Quazal::RBDataClient(1);
+        mRBData = new Quazal::RBDataClient();
         if (!client->RegisterExtraProtocol(mRBBinaryData, 'u')) {
             MILO_WARN("Couldn't register RB data protocol\n");
         }
-        mRBBinaryData = new Quazal::RBBinaryDataClient(1);
+        mRBBinaryData = new Quazal::RBBinaryDataClient();
         if (!client->RegisterExtraProtocol(mRBBinaryData, 'v')) {
             MILO_WARN("Couldn't register RB binary data protocol\n");
         }
@@ -1247,4 +1251,208 @@ void RockCentral::GetClosedBattles(
         }
         RECORD_DATA_POINT(0, results, o);
     }
+}
+
+void RockCentral::SyncSetlists(
+    std::vector<BandProfile *> &profiles, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, profiles.empty());
+    if (server) {
+        std::vector<int> playerIds;
+        std::vector<std::pair<int, const char *> > pairs;
+        FOREACH (it, profiles) {
+            BandProfile *cur = *it;
+            int pid = server->GetPlayerID(cur->GetPadNum());
+            playerIds.push_back(pid);
+            std::vector<LocalSavedSetlist *> setlists = cur->GetSavedSetlists();
+            FOREACH (sit, setlists) {
+                pairs.push_back(std::make_pair(pid, (*sit)->mGuid.ToString()));
+            }
+        }
+        MILO_ASSERT(!playerIds.empty(), 0x938);
+        INIT_DATAPOINT("setlists/sync");
+        for (int i = 0; i < playerIds.size(); i++) {
+            char buf[15];
+            ADD_BUFFER_PAIR(buf, playerIds[i], "pid%03d", i);
+            for (int j = 0; j < pairs.size(); j++) {
+                MILO_WARN("pid%03d_guid%03d");
+            }
+        }
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+void RockCentral::ConvertToStr(PatchDir *dir, String &str) {
+    MemStream ms;
+    dir->Save(ms);
+    ConvertToStr(ms, str);
+}
+
+void RockCentral::ConvertToStr(MemStream &ms, String &str) {
+    str.reserve(ms.BufferSize() * 2 + 1);
+    ms.Seek(0, BinStream::kSeekBegin);
+    while (!ms.Eof()) {
+        char uc;
+        ms >> uc;
+        short us = uc >> 4;
+        if (us > 9) {
+            str = str + (us + 0x37);
+        } else {
+            str = str + (us + 0x30);
+        }
+        us = uc & 0xF;
+        if (us > 9) {
+            str = str + (us + 0x37);
+        } else {
+            str = str + (us + 0x30);
+        }
+    }
+}
+
+void RockCentral::UpdateSetlist(
+    LocalSavedSetlist *setlist, DataResultList &results, Hmx::Object *o, int i4, int i5
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        BandProfile *profile = setlist->GetOwnerProfile();
+        MILO_ASSERT(profile, 0x979);
+        PatchDir *p6 = nullptr;
+        if (setlist->mArt.patchType == 1) {
+            p6 = profile->mPatches[setlist->mArt.patchIndex];
+        }
+        INIT_DATAPOINT("setlists/update");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(name, setlist->GetTitle());
+        ADD_DATA_PAIR(description, setlist->GetDescription());
+        ADD_DATA_PAIR(type, SavedSetlist::kSetlistLocal);
+        ADD_DATA_PAIR(shared, setlist->GetShared() ? "t" : "f")
+        ADD_DATA_PAIR(list_guid, setlist->mGuid.ToString())
+        ADD_DATA_PAIR(flags, i5)
+        if (p6) {
+            String str;
+            ConvertToStr(p6, str);
+            ADD_DATA_PAIR(art, str.c_str())
+        }
+        std::vector<int> &songs = setlist->mSongs;
+        for (int i = 0; i < songs.size(); i++) {
+            char buf[12];
+            ADD_BUFFER_PAIR(buf, songs[i], "song_id%03d", i);
+        }
+        RECORD_DATA_POINT(i4, results, o);
+    }
+}
+
+void RockCentral::UpdateBand(
+    TourBand *band, DataResultList &results, Hmx::Object *o, int i4, int i5
+) {
+    Server *server = IsConnected(o, i4, false);
+    if (server) {
+        PatchDir *dir = nullptr;
+        BandProfile *profile = band->unk1c;
+        if (band->mBandLogo->patchType == 1) {
+            dir = profile->mPatches[band->mBandLogo->patchIndex];
+        }
+        INIT_DATAPOINT("entities/band/update");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(name, band->GetName());
+        ADD_DATA_PAIR(flags, i5);
+        if (dir) {
+            String str;
+            ConvertToStr(dir, str);
+            ADD_DATA_PAIR(art, str.c_str())
+        }
+        RECORD_DATA_POINT(i4, results, o);
+    }
+}
+
+void RockCentral::CheckBattleLimits(
+    BandProfile *profile, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("battles/limit/check");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+void RockCentral::CreateBattle(
+    BandProfile *profile,
+    const char *nameStr,
+    const char *descStr,
+    const std::vector<int> &vec,
+    PatchDescriptor &desc,
+    int i6,
+    ScoreType s,
+    int timeEnd,
+    BattleTimeUnits units,
+    DataResultList &results,
+    Hmx::Object *o,
+    int i12,
+    int i13
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        MILO_ASSERT(profile, 0x9E7);
+        const char *battleStr = GetBattleEndTimeStr(units);
+        PatchDir *pDir = nullptr;
+        if (desc.patchType == 1) {
+            pDir = profile->mPatches[desc.patchIndex];
+        }
+        INIT_DATAPOINT("battles/create");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        ADD_DATA_PAIR(name, nameStr);
+        ADD_DATA_PAIR(description, descStr);
+        ADD_DATA_PAIR(type, 1000);
+        ADD_DATA_PAIR(instrument, (char)s);
+        ADD_DATA_PAIR(time_end_val, timeEnd);
+        ADD_DATA_PAIR(time_end_units, battleStr);
+        ADD_DATA_PAIR(flags, i13);
+        if (i6 > 0) {
+            ADD_DATA_PAIR(art_id, i6);
+        }
+        if (pDir) {
+            String str;
+            ConvertToStr(pDir, str);
+            ADD_DATA_PAIR(art, str.c_str())
+        }
+        for (int i = 0; i < vec.size(); i++) {
+            char buf[12];
+            ADD_BUFFER_PAIR(buf, vec[i], "song_id%03d", i);
+        }
+        RECORD_DATA_POINT(i12, results, o);
+    }
+}
+
+void RockCentral::DeleteNextUser() {
+    int id = TheWiiProfileMgr.GetNextDeleteQueueId();
+    if (id != 0) {
+        OnlineID oid;
+        oid.SetPrincipalID(id);
+        TheNet.GetServer()->DeleteProfile(oid);
+    }
+}
+
+void RockCentral::UpdateSetlistArt(
+    LocalSavedSetlist *setlist, int i2, Hmx::Object *o, int i4
+) {
+    HxGuid guid = setlist->mGuid;
+    String str(MakeString(
+        "{\"type\": \"setlist_art\", \"setlist_guid\": \"%s\", \"revision\": %d}",
+        guid.ToString(),
+        i2
+    ));
+    SaveBinaryData(setlist->GetArtTex(), str, o, i4);
+}
+
+void RockCentral::UpdateBattleArt(RndTex *tex, Hmx::Object *o, int i) {
+    String str(MakeString("{\"type\": \"battle_art\", \"revision\": 1 }"));
+    SaveBinaryData(tex, str, o, i);
+}
+
+void RockCentral::UpdateBandLogo(int i1, RndTex *tex, int i3, Hmx::Object *o, int i5) {
+    String str(MakeString(
+        "{\"type\": \"band_logo\", \"band_id\": %d, \"revision\": %d }", i1, i3
+    ));
+    SaveBinaryData(tex, str, o, i5);
 }

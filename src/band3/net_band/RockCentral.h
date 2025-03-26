@@ -3,6 +3,7 @@
 #include "RBBinaryDataDDL_Wii.h"
 #include "RBDataDDL_Wii.h"
 #include "RBTestDDL_Wii.h"
+#include "bandobj/PatchDir.h"
 #include "game/Defines.h"
 #include "meta/ConnectionStatusPanel.h"
 #include "meta/Profile.h"
@@ -19,6 +20,7 @@
 #include "obj/Object.h"
 #include "os/Friend.h"
 #include "os/PlatformMgr.h"
+#include "tour/TourBand.h"
 #include "utl/DataPointMgr.h"
 #include "utl/HxGuid.h"
 #include "utl/JobMgr.h"
@@ -27,6 +29,9 @@
 class PerformanceData;
 class PlayerScore;
 class AccomplishmentProgress;
+
+enum BattleTimeUnits {
+};
 
 class RockCentral : public MsgSource {
 public:
@@ -90,6 +95,30 @@ public:
     void
     GetMultipleRankingsForPlayer(Profile *, ScoreType, std::vector<int> &, DataResultList &, Hmx::Object *);
     void GetClosedBattles(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
+    void ConvertToStr(PatchDir *, String &);
+    void ConvertToStr(MemStream &, String &);
+    void UpdateSetlist(LocalSavedSetlist *, DataResultList &, Hmx::Object *, int, int);
+    void UpdateBand(TourBand *, DataResultList &, Hmx::Object *, int, int);
+    void CheckBattleLimits(BandProfile *, DataResultList &, Hmx::Object *);
+    void CreateBattle(
+        BandProfile *,
+        const char *,
+        const char *,
+        const std::vector<int> &,
+        PatchDescriptor &,
+        int,
+        ScoreType,
+        int,
+        BattleTimeUnits,
+        DataResultList &,
+        Hmx::Object *,
+        int,
+        int
+    );
+    const char *GetBattleEndTimeStr(BattleTimeUnits);
+    void SaveBinaryData(RndTex *, String &, Hmx::Object *, int);
+    void UpdateSetlistArt(LocalSavedSetlist *, int, Hmx::Object *, int);
+    void UpdateBattleArt(RndTex *, Hmx::Object *, int);
 
     bool IsOnline() { return mState == 2; }
 

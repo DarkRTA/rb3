@@ -143,6 +143,7 @@ public:
         mIsShared = b;
         mNeedsUpload = true;
     }
+    BandProfile *GetOwnerProfile() const { return mOwnerProfile; }
 
     static int SaveSize(int);
 
