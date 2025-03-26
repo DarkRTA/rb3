@@ -136,6 +136,7 @@ public:
     RndTex *GetPictureTex();
     void AutoFakeFill(int);
     int NumChars() const;
+    GameplayOptions *GetGameplayOptions() { return &mGameplayOptions; }
 
     static int SaveSize(int);
 

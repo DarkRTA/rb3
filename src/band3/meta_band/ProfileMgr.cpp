@@ -911,17 +911,9 @@ float ProfileMgr::GetBackgroundVolumeDb() const {
 END_FORCE_LOCAL_INLINE
 
 FORCE_LOCAL_INLINE
-int ProfileMgr::GetBackgroundVolume() const { return mBackgroundVolume; }
-END_FORCE_LOCAL_INLINE
-
-FORCE_LOCAL_INLINE
 float ProfileMgr::GetForegroundVolumeDb() const {
     return SliderIxToDb(GetForegroundVolume());
 }
-END_FORCE_LOCAL_INLINE
-
-FORCE_LOCAL_INLINE
-int ProfileMgr::GetForegroundVolume() const { return mForegroundVolume; }
 END_FORCE_LOCAL_INLINE
 
 FORCE_LOCAL_INLINE
@@ -933,22 +925,10 @@ float ProfileMgr::GetCrowdVolumeDb() { return SliderIxToDb(GetCrowdVolume()); }
 END_FORCE_LOCAL_INLINE
 
 FORCE_LOCAL_INLINE
-int ProfileMgr::GetCrowdVolume() const { return mCrowdVolume; }
-END_FORCE_LOCAL_INLINE
-
-FORCE_LOCAL_INLINE
 float ProfileMgr::GetVocalCueVolumeDb() { return SliderIxToDb(GetVocalCueVolume()); }
 END_FORCE_LOCAL_INLINE
 
-FORCE_LOCAL_INLINE
-int ProfileMgr::GetVocalCueVolume() const { return mVocalCueVolume; }
-END_FORCE_LOCAL_INLINE
-
 float ProfileMgr::GetVoiceChatVolumeDb() { return SliderIxToDb(GetVoiceChatVolume()); }
-
-FORCE_LOCAL_INLINE
-int ProfileMgr::GetVoiceChatVolume() const { return mVoiceChatVolume; }
-END_FORCE_LOCAL_INLINE
 
 void ProfileMgr::SetMicVol(int i1, int i2) {
     if (!(i1 >= 0 && i1 < mMicVolumes.size()))

@@ -6,6 +6,8 @@
 #include "Services/ServiceClient.h"
 #include "band3/meta_band/PerformanceData.h"
 #include "decomp.h"
+#include "game/BandUser.h"
+#include "game/BandUserMgr.h"
 #include "game/Defines.h"
 #include "game/GamePanel.h"
 #include "meta/ConnectionStatusPanel.h"
@@ -13,6 +15,8 @@
 #include "meta/WiiProfileMgr.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/Campaign.h"
+#include "meta_band/GameplayOptions.h"
+#include "meta_band/ModifierMgr.h"
 #include "meta_band/ProfileMessages.h"
 #include "meta_band/ProfileMgr.h"
 #include "meta_band/SaveLoadManager.h"
@@ -1103,3 +1107,70 @@ void RockCentral::RecordAccomplishmentData(
     }
 }
 #pragma pop
+
+void RockCentral::RecordOptionData() {
+    Server *server = IsConnected(nullptr, -1, false);
+    if (server) {
+        INIT_DATAPOINT("misc/option_data");
+        ADD_DATA_PAIR("cymbal_config", (int)TheProfileMgr.GetCymbalConfiguration());
+        ADD_DATA_PAIR("overscan", (int)TheProfileMgr.GetOverscan());
+        ADD_DATA_PAIR("secondpedal_hihat", (int)TheProfileMgr.GetSecondPedalHiHat());
+        ADD_DATA_PAIR("izotope", (int)TheProfileMgr.GetSynapseEnabled());
+        ADD_DATA_PAIR("bg_vol", (int)TheProfileMgr.GetBackgroundVolume());
+        ADD_DATA_PAIR("fg_vol", (int)TheProfileMgr.GetForegroundVolume());
+        ADD_DATA_PAIR("fx_vol", (int)TheProfileMgr.GetFxVolume());
+        ADD_DATA_PAIR("crowd_vol", (int)TheProfileMgr.GetCrowdVolume());
+        ADD_DATA_PAIR("vocalcue_vol", (int)TheProfileMgr.GetVocalCueVolume());
+        ADD_DATA_PAIR("voicechat_vol", (int)TheProfileMgr.GetVoiceChatVolume());
+        ADD_DATA_PAIR("bass_boost", (int)TheProfileMgr.GetBassBoost());
+        ADD_DATA_PAIR("dolby", (int)TheProfileMgr.GetDolby());
+        //
+        ADD_DATA_PAIR("video_cal", TheProfileMgr.GetSyncOffsetRaw());
+        ADD_DATA_PAIR("audio_cal", TheProfileMgr.GetSongToTaskMgrMsRaw());
+        //
+        ADD_DATA_PAIR(
+            "pro_guitar_connected", (int)TheProfileMgr.GetHasConnectedProGuitar()
+        );
+        ADD_DATA_PAIR(
+            mod_auto_vocals, (int)TheModifierMgr->IsModifierActive(mod_auto_vocals)
+        );
+        ADD_DATA_PAIR(
+            mod_no_fail_band, (int)TheModifierMgr->IsModifierActive(mod_no_fail_band)
+        );
+        ADD_DATA_PAIR(
+            mod_drum_surface_navigation,
+            (int)TheModifierMgr->IsModifierActive(mod_drum_surface_navigation)
+        );
+        ADD_DATA_PAIR(
+            mod_miss_sounds, (int)TheModifierMgr->IsModifierActive(mod_miss_sounds)
+        );
+        ADD_DATA_PAIR(
+            mod_drum_fills, (int)TheModifierMgr->IsModifierActive(mod_drum_fills)
+        );
+        std::vector<LocalBandUser *> users;
+        TheBandUserMgr->GetLocalBandUsersInSession(users);
+        int idx = 0;
+        FOREACH (it, users) {
+            LocalBandUser *pUser = *it;
+            MILO_ASSERT(pUser, 0x866);
+            BandProfile *profile = TheProfileMgr.GetProfileForUser(pUser);
+            if (profile && profile->HasValidSaveData()) {
+                char buf[12];
+                ADD_BUFFER_PAIR(
+                    buf, server->GetPlayerID(pUser->GetPadNum()), "pid_%i", idx
+                );
+                ADD_BUFFER_PAIR(buf, pUser->GetSlot(), "slot_%i", idx);
+                GameplayOptions *pOptions = profile->GetGameplayOptions();
+                MILO_ASSERT(pOptions, 0x874);
+                ADD_BUFFER_PAIR(buf, (int)pOptions->GetLefty(), "leftyflip_%i", idx);
+                ADD_BUFFER_PAIR(buf, (int)pOptions->GetVocalStyle(), "vocalmode_%i", idx);
+            }
+            idx++;
+        }
+        RecordDataPointNoRet(dataPoint, 0);
+    }
+}
+
+DECOMP_FORCEACTIVE(
+    RockCentral, "reviews/song/review", "reviews/song/get", "reviews/song/get_by_player"
+)

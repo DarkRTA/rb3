@@ -97,16 +97,16 @@ public:
     float GetExcessVideoLagNeutral(int, bool) const;
     float GetExcessAudioLag() const;
     float GetBackgroundVolumeDb() const;
-    int GetBackgroundVolume() const;
+    int GetBackgroundVolume() const { return mBackgroundVolume; }
     float GetForegroundVolumeDb() const;
-    int GetForegroundVolume() const;
+    int GetForegroundVolume() const { return mForegroundVolume; }
     float GetFxVolumeDb() const;
     float GetCrowdVolumeDb();
-    int GetCrowdVolume() const;
+    int GetCrowdVolume() const { return mCrowdVolume; }
     float GetVocalCueVolumeDb();
-    int GetVocalCueVolume() const;
+    int GetVocalCueVolume() const { return mVocalCueVolume; }
     float GetVoiceChatVolumeDb();
-    int GetVoiceChatVolume() const;
+    int GetVoiceChatVolume() const { return mVoiceChatVolume; }
     unsigned int GetCymbalConfiguration() const;
     bool HasLoaded();
     float GetSongToTaskMgrMs(LagContext) const;
