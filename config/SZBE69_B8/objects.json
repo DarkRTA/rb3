@@ -307,7 +307,7 @@
             "band3/meta_band/WiiFriendsProvider.cpp": "MISSING",
             "band3/meta_band/WiiProfilePanel.cpp": "MISSING",
 
-            "band3/net_band/ContextWrapper.cpp": "NonMatching",
+            "band3/net_band/ContextWrapper.cpp": "Matching",
             "band3/net_band/DataResults.cpp": "NonMatching",
             "band3/net_band/EntityUploader_Wii.cpp": "MISSING",
             "band3/net_band/EntityUploader.cpp": "MISSING",

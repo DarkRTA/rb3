@@ -11,7 +11,7 @@ public:
 
     void SetCallbackObject(Hmx::Object *, Updatable *, bool, int);
     void Reset();
-    void Poll();
+    int Poll();
 
     Hmx::Object *mCallbackObject; // 0x0
     Updatable *mUpdatable; // 0x4
