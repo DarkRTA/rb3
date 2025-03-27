@@ -1,6 +1,7 @@
 #include "net_band/DataResults.h"
 #include "net/JsonUtils.h"
 #include "os/Debug.h"
+#include "utl/Std.h"
 
 bool DataResult::GetDataResultValue(String str, DataNode &node) const {
     bool found = false;
@@ -85,3 +86,18 @@ void DataResultList::Update(Message *msg) {
     }
     mUpdated = true;
 }
+
+void DataResultList::Clear() {
+    *mQDataResultString = 0;
+    mUpdated = false;
+}
+
+DataResult *DataResultList::GetDataResult(int ix) const {
+    MILO_ASSERT(mDataResultList.size() > 0, 0xA3);
+    MILO_ASSERT_RANGE(ix, 0, mDataResultList.size(), 0xA4);
+    std::list<DataResult>::const_iterator it = mDataResultList.begin();
+    NextItr(it, ix);
+    // return *it;
+}
+
+void DataResultList::Print(TextStream &ts) { ts.Print(mQDataResultString->m_szContent); }
