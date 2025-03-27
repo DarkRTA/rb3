@@ -22,10 +22,10 @@ class IdUpdater : public Updatable {
 public:
     IdUpdater(unsigned int id) : mRetCode(0), mID(id) {}
     virtual ~IdUpdater() {}
-    virtual void Update(Message *);
+    virtual void Update(Message *msg) { (*msg)[1] = mRetCode; }
 
-    char mRetCode; // 0x4
-    unsigned int mID; // 0x8
+    char mRetCode; // 0x8
+    unsigned int mID; // 0xc
 };
 
 class DataResult {

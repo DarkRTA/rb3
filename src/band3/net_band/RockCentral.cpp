@@ -37,6 +37,7 @@
 #include "obj/DataFile.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/NetworkSocket.h"
 #include "os/OnlineID.h"
@@ -76,11 +77,12 @@ namespace {
     void RockCentralTerminate() { TheRockCentral.Terminate(); }
 }
 
-ContextWrapperPool *RockCentral::mContextWrapperPool;
+const char *g_szMachineIdString;
 TextFileStream *gDataPointLog;
 RockCentral TheRockCentral;
 String RockCentral::kServerVer = "3";
-const char *g_szMachineIdString;
+ContextWrapperPool *RockCentral::mContextWrapperPool;
+Quazal::RBDataClient *RockCentral::mRBData;
 const char *g_pStatusStrings[3] = { "Offline", "Channel", "Online" };
 const char *g_WiiMessageDelimiter = ":";
 
@@ -1794,5 +1796,39 @@ void RockCentral::ExecuteConfig(const char *cc) {
         n18.Array()->Command(0)->Execute();
     } else {
         n18.Array()->Execute();
+    }
+}
+
+#pragma push
+#pragma dont_inline on
+BEGIN_HANDLERS(RockCentral)
+    HANDLE_MESSAGE(ServerStatusChangedMsg)
+    HANDLE_MESSAGE(UserLoginMsg)
+    HANDLE_MESSAGE(FriendsListChangedMsg)
+    HANDLE_MESSAGE(ConnectionStatusChangedMsg)
+    HANDLE_MESSAGE(ProfileChangedMsg)
+    HANDLE_MESSAGE(RockCentralOpCompleteMsg)
+    HANDLE_MESSAGE(DeleteQueueUpdatedMsg)
+    HANDLE_MESSAGE(DeleteUserCompleteMsg)
+    HANDLE_MESSAGE(WiiFriendMgrOpCompleteMsg)
+    HANDLE_MESSAGE(WiiFriendsListChangedMsg)
+    HANDLE_MESSAGE(EnumerateMessagesCompleteMsg)
+    HANDLE_MESSAGE(SigninChangedMsg)
+    HANDLE_MESSAGE(InviteReceivedMsg)
+    HANDLE_ACTION(clear_pending_invitations, ClearPendingInvitations())
+    HANDLE_EXPR(state, mState)
+    HANDLE_ACTION(force_logout, ForceLogout())
+    HANDLE_EXPR(is_online, IsOnline())
+    HANDLE_EXPR(toggle_block_login, BlockLoginToggle())
+    HANDLE_ACTION(block_login, BlockLogin(_msg->Int(2)))
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_CHECK(0xD98)
+END_HANDLERS
+#pragma pop
+
+void RockCentral::SendFailure(Hmx::Object *o, int i2, int i3) {
+    if (o) {
+        RockCentralOpCompleteMsg msg(false, i2, i3);
+        o->Handle(msg, true);
     }
 }

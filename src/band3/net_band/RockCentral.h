@@ -133,7 +133,10 @@ public:
     void VerifyBandName(const char *, DataResultList &, Hmx::Object *, int, int);
     bool GetIsDiskSong(int);
 
+    void ClearPendingInvitations() { unk111 = false; }
     bool IsOnline() { return mState == 2; }
+    bool BlockLoginToggle() { return mLoginBlocked = !mLoginBlocked; }
+    void BlockLogin(bool b) { mLoginBlocked = b; }
 
     static String kServerVer;
     static ContextWrapperPool *mContextWrapperPool;
