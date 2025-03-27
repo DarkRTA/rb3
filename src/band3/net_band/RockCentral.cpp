@@ -3,6 +3,7 @@
 #include "RBBinaryDataDDL_Wii.h"
 #include "RBDataDDL_Wii.h"
 #include "RBTestDDL_Wii.h"
+#include "RockCentral.h"
 #include "Services/ServiceClient.h"
 #include "band3/meta_band/PerformanceData.h"
 #include "bandobj/PatchDir.h"
@@ -10,6 +11,7 @@
 #include "game/BandUser.h"
 #include "game/BandUserMgr.h"
 #include "game/Defines.h"
+#include "game/GameMode.h"
 #include "game/GamePanel.h"
 #include "meta/ConnectionStatusPanel.h"
 #include "meta/Profile.h"
@@ -31,15 +33,19 @@
 #include "net_band/DataResults.h"
 #include "net_band/RockCentralJobs.h"
 #include "net_band/RockCentralMsgs.h"
+#include "obj/Data.h"
+#include "obj/DataFile.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
 #include "os/Debug.h"
+#include "os/NetworkSocket.h"
 #include "os/OnlineID.h"
 #include "os/PlatformMgr.h"
 #include "os/System.h"
 #include "ui/UIPanel.h"
 #include "utl/BinStream.h"
 #include "utl/DataPointMgr.h"
+#include "utl/Loader.h"
 #include "utl/MemStream.h"
 #include "utl/Option.h"
 #include "utl/Std.h"
@@ -74,6 +80,7 @@ ContextWrapperPool *RockCentral::mContextWrapperPool;
 TextFileStream *gDataPointLog;
 RockCentral TheRockCentral;
 String RockCentral::kServerVer = "3";
+const char *g_szMachineIdString;
 const char *g_pStatusStrings[3] = { "Offline", "Channel", "Online" };
 const char *g_WiiMessageDelimiter = ":";
 
@@ -1455,4 +1462,337 @@ void RockCentral::UpdateBandLogo(int i1, RndTex *tex, int i3, Hmx::Object *o, in
         "{\"type\": \"band_logo\", \"band_id\": %d, \"revision\": %d }", i1, i3
     ));
     SaveBinaryData(tex, str, o, i5);
+}
+
+void RockCentral::GetSetlistArt(const char *cc, RndTex *tex, Hmx::Object *o, int i) {
+    String str(MakeString(
+        "{\"type\": \"setlist_art\", \"setlist_guid\": \"%s\", \"revision\": -1}", cc
+    ));
+    GetArtFile(str, tex, nullptr, o, i);
+}
+
+void RockCentral::GetBattleArt(int i1, RndTex *tex, Hmx::Object *o, int i4) {
+    String str(
+        MakeString("{\"type\": \"battle_art\", \"battle_id\": %d, \"revision\": -1}", i1)
+    );
+    GetArtFile(str, tex, nullptr, o, i4);
+}
+
+DECOMP_FORCEACTIVE(RockCentral, "band")
+
+void RockCentral::RedeemToken(
+    int i1, String str, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("trs/redeem_token");
+        ADD_DATA_PAIR(tr_pid, i1);
+        ADD_DATA_PAIR(token, str);
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+DECOMP_FORCEACTIVE(RockCentral, "trs/complete_purchase")
+
+void RockCentral::GetRedeemedTokensByPlayer(
+    int i1, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("trs/redeemed_tokens");
+        ADD_DATA_PAIR(tr_pid, i1);
+        RECORD_DATA_POINT(0, results, o);
+    }
+}
+
+DECOMP_FORCEACTIVE(RockCentral, "entities/online_friends/get")
+
+void RockCentral::UpdateChar(
+    TourCharLocal *tcl, DataResultList &results, Hmx::Object *o, int i4, int i5
+) {
+    Server *server = IsConnected(o, i4, false);
+    if (server) {
+        BandProfile *profile = TheProfileMgr.FindCharOwnerFromGuid(tcl->GetGuid());
+        if (profile) {
+            MILO_ASSERT(profile, 0xB35);
+            MemStream ms;
+            tcl->SaveDb(ms);
+            INIT_DATAPOINT("entities/character/update");
+            ADD_DATA_PAIR(guid, tcl->GetGuid().ToString());
+            ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+            ADD_DATA_PAIR(name, tcl->GetCharacterName());
+            ADD_DATA_PAIR(flags, i5);
+            String str;
+            ConvertToStr(ms, str);
+            ADD_DATA_PAIR(char_data, str);
+            RECORD_DATA_POINT(i4, results, o);
+        }
+    }
+}
+
+void RockCentral::VerifyCharName(
+    const char *cc, DataResultList &results, Hmx::Object *o, int i4, int i5
+) {
+    Server *server = IsConnected(o, i4, false);
+    if (server) {
+        INIT_DATAPOINT("entities/character/name/check");
+        ADD_DATA_PAIR(name, cc);
+        ADD_DATA_PAIR(flags, i5);
+        RECORD_DATA_POINT(i4, results, o);
+    }
+}
+
+void RockCentral::VerifyBandName(
+    const char *cc, DataResultList &results, Hmx::Object *o, int i4, int i5
+) {
+    Server *server = IsConnected(o, i4, false);
+    if (server) {
+        INIT_DATAPOINT("entities/band/name/check");
+        ADD_DATA_PAIR(name, cc);
+        ADD_DATA_PAIR(flags, i5);
+        RECORD_DATA_POINT(i4, results, o);
+    }
+}
+
+DECOMP_FORCEACTIVE(RockCentral, "store/get_index_page")
+
+void RockCentral::GetWebLinkStatus(
+    const Profile *profile, int i2, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, i2, false);
+    if (server) {
+        MILO_ASSERT(profile, 0xB97);
+        INIT_DATAPOINT("misc/get_accounts_web_linked_status");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        RECORD_DATA_POINT(i2, results, o);
+    }
+}
+
+void RockCentral::GetSetlistCreationStatus(
+    const Profile *profile, int i2, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, i2, false);
+    if (server) {
+        MILO_ASSERT(profile, 0xBA9);
+        INIT_DATAPOINT("misc/get_accounts_setlist_creation_status");
+        ADD_DATA_PAIR(pid, server->GetPlayerID(profile->GetPadNum()));
+        RECORD_DATA_POINT(i2, results, o);
+    }
+}
+
+bool RockCentral::GetIsDiskSong(int songID) {
+    bool ret = false;
+    if (songID - 0x3e9U > 0x69)
+        return ret;
+    static const int sSongIds[] = {
+        0x3e9, 0x3eb, 0x3ec, 0x3f0, 0x3f1, 0x3f3, 0x3f4, 0x3f5, 0x3f6, 0x3f7, 0x3f8,
+        0x3fa, 0x3fd, 0x400, 0x401, 0x404, 0x405, 0x406, 0x407, 0x408, 0x409, 0x40a,
+        0x40b, 0x40c, 0x40d, 0x40e, 0x413, 0x414, 0x415, 0x416, 0x417, 0x418, 0x419,
+        0x41a, 0x41c, 0x41d, 0x41e, 0x41f, 0x420, 0x421, 0x422, 0x424, 0x425, 0x427,
+        0x428, 0x42a, 0x42b, 0x42d, 0x42e, 0x42f, 0x430, 0x431, 0x432, 0x433, 0x434,
+        0x435, 0x436, 0x437, 0x438, 0x439, 0x43a, 0x43b, 0x43c, 0x43d, 0x43e, 0x43f,
+        0x440, 0x441, 0x442, 0x443, 0x444, 0x445, 0x446, 0x447, 0x449, 0x44a, 0x44c,
+        0x44d, 0x44e, 0x44f, 0x450, 0x451, 0x452
+    };
+    for (int i = 0; i < 83; i++) {
+        if (songID == sSongIds[i]) {
+            ret = true;
+            break;
+        } else if (sSongIds[i] > songID)
+            break;
+    }
+    return ret;
+}
+
+void RockCentral::SyncAvailableSongs(
+    const std::vector<BandProfile *> &profiles,
+    const std::vector<int> &ivec1,
+    const std::vector<int> &ivec2,
+    Hmx::Object *o
+) {
+    Server *server = IsConnected(o, -1, false);
+    if (server) {
+        INIT_DATAPOINT("misc/sync_available_songs");
+        for (int i = 0; i < profiles.size(); i++) {
+            char buf[8];
+            ADD_BUFFER_PAIR(
+                buf, server->GetPlayerID(profiles[i]->GetPadNum()), "pid%03d", i
+            );
+        }
+        String str;
+        char strBuf[0x18];
+        FOREACH (it, ivec1) {
+            int cur = *it;
+            if (!GetIsDiskSong(cur)) {
+                if (str.length() != 0) {
+                    str += ",";
+                }
+                snprintf(strBuf, 0x18, "%d", cur);
+                str += strBuf;
+            }
+        }
+        ADD_DATA_PAIR(sids, str);
+
+        String ustr;
+        FOREACH (it, ivec2) {
+            int cur = *it;
+            if (!GetIsDiskSong(cur)) {
+                if (ustr.length() != 0) {
+                    ustr += ",";
+                }
+                snprintf(strBuf, 0x18, "%d", cur);
+                ustr += strBuf;
+            }
+        }
+        ADD_DATA_PAIR(usids, ustr);
+        RecordDataPointNoRet(dataPoint, 0);
+    }
+}
+
+void RockCentral::DataPointToQString(const DataPoint &, Quazal::String &) {
+    MILO_WARN("RockCentral::DataPointToQString - Unsupported type %d!");
+}
+
+void RockCentral::AddBuildInfoToDP(DataPoint &dataPoint) {
+    String str14;
+    str14 = "n/a";
+    ADD_DATA_PAIR(h_sdkVer, str14);
+    ADD_DATA_PAIR(h_drs, "r");
+
+    String str20 = SystemConfig()->File();
+    ADD_DATA_PAIR(h_cfgName, str20);
+
+    String str2c;
+    SystemConfig()->FindData("version", str2c, false);
+    ADD_DATA_PAIR(h_buildVersion, str2c);
+    ADD_DATA_PAIR(h_host, NetworkSocket::GetHostName());
+    ADD_DATA_PAIR(h_plat, PlatformSymbol(TheLoadMgr.GetPlatform()));
+    ADD_DATA_PAIR(h_lang, SystemLanguage());
+    ADD_DATA_PAIR(h_cd, (int)UsingCD());
+}
+
+void RockCentral::RecordDataPoint(
+    DataPoint &dataPoint, int i2, DataResultList &results, Hmx::Object *o
+) {
+    Server *server = IsConnected(o, i2, false);
+    if (server) {
+        MILO_ASSERT(!dataPoint.mType.Null(), 0xC9F);
+        if (dataPoint.mType.Null())
+            SendFailure(o, 0, i2);
+        else {
+            results.Clear();
+            DataArray *cfg = SystemConfig("data_point_mgr", "filters");
+            if (cfg) {
+                int numCfg = cfg->Size();
+                for (int i = 1; i < numCfg; i++) {
+                    if (dataPoint.mType == cfg->Sym(i)) {
+                        SendFailure(o, 0, i2);
+                        return;
+                    }
+                }
+            }
+            IdUpdater *u = new IdUpdater(i2);
+            ContextWrapper *wrapper =
+                mContextWrapperPool->NewContextWrapper(o, u, true, i2);
+            if (!wrapper) {
+                delete u;
+            } else {
+                u->SetWrapper(wrapper);
+                AddBuildInfoToDP(dataPoint);
+                ADD_DATA_PAIR(machine_id, g_szMachineIdString);
+                ADD_DATA_PAIR(system_ms, SystemMs());
+                ADD_DATA_PAIR(region, PlatformRegionToSymbol(ThePlatformMgr.GetRegion()));
+                ADD_DATA_PAIR(session_guid, TheRockCentral.unk88.ToString());
+                static Quazal::String qString;
+                qString = "";
+                DataPointToQString(dataPoint, qString);
+                if (gDataPointLog) {
+                    *gDataPointLog << qString.m_szContent << "\n";
+                    gDataPointLog->mFile.Flush();
+                }
+                if (mRBData) {
+                    if (o) {
+                        mRBData->CallDataPoint(
+                            wrapper->mContext, qString, results.mQDataResultString
+                        );
+                    } else {
+                        mRBData->CallDataPointNoRet(wrapper->mContext, qString);
+                    }
+                }
+            }
+        }
+    }
+}
+
+DECOMP_FORCEACTIVE(RockCentral, "QUAZAL CALL FAILED", "NOT LOGGED IN")
+
+void RockCentral::RecordDataPointNoRet(DataPoint &dp, int i2) {
+    DataResultList list;
+    RecordDataPoint(dp, i2, list, nullptr);
+}
+
+bool RockCentral::IsLoginMandatory() {
+    if (TheGameMode) {
+        if (TheGameMode->Property("online_play_required")->Int()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+const char *RockCentral::GetBattleEndTimeStr(BattleTimeUnits units) {
+    switch (units) {
+    case kBattleTimeSeconds:
+        return "seconds";
+    case kBattleTimeMinutes:
+        return "minutes";
+    case kBattleTimeHours:
+        return "hours";
+    case kBattleTimeDays:
+        return "days";
+    case kBattleTimeWeeks:
+        return "weeks";
+    default:
+        MILO_FAIL("Bad time unit in GetBattleEndTimeStr");
+        return nullptr;
+    }
+}
+
+char RockCentral::GetDifficultyID(int x) {
+    switch (x) {
+    case 0:
+        return 1;
+    case 1:
+        return 2;
+    case 2:
+        return 3;
+    case 3:
+        return 4;
+    default:
+        MILO_WARN("Bad difficulty state in Rock Central call: %i", x);
+        return 1;
+    }
+}
+
+DECOMP_FORCEACTIVE(RockCentral, "Bad difficulty state in Rock Central call")
+
+int RockCentral::GetActiveContextHighWatermark() {
+    if (mContextWrapperPool)
+        return mContextWrapperPool->unk8ca0;
+    else
+        return 0;
+}
+
+void RockCentral::ExecuteConfig(const char *cc) {
+    DataArray *cfg = SystemConfig("objects");
+    if (!*cc || unk85)
+        return;
+    DataNode n18(0);
+    n18 = DataNode(DataReadString(cc), kDataArray);
+    n18.Array()->Release();
+    if (n18.Array()->Type(0) == kDataCommand && n18.Array()->Size() == 1) {
+        n18.Array()->Command(0)->Execute();
+    } else {
+        n18.Array()->Execute();
+    }
 }

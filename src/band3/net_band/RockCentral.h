@@ -1,5 +1,6 @@
 #pragma once
 #include "ContextWrapper.h"
+#include "Platform/String.h"
 #include "RBBinaryDataDDL_Wii.h"
 #include "RBDataDDL_Wii.h"
 #include "RBTestDDL_Wii.h"
@@ -31,6 +32,11 @@ class PlayerScore;
 class AccomplishmentProgress;
 
 enum BattleTimeUnits {
+    kBattleTimeSeconds = 0,
+    kBattleTimeMinutes = 1,
+    kBattleTimeHours = 2,
+    kBattleTimeDays = 3,
+    kBattleTimeWeeks = 4
 };
 
 class RockCentral : public MsgSource {
@@ -119,6 +125,13 @@ public:
     void SaveBinaryData(RndTex *, String &, Hmx::Object *, int);
     void UpdateSetlistArt(LocalSavedSetlist *, int, Hmx::Object *, int);
     void UpdateBattleArt(RndTex *, Hmx::Object *, int);
+    void GetArtFile(String, RndTex *, unsigned int *, Hmx::Object *, int);
+    void GetSetlistArt(const char *, RndTex *, Hmx::Object *, int);
+    void GetBattleArt(int, RndTex *, Hmx::Object *, int);
+    void UpdateChar(TourCharLocal *, DataResultList &, Hmx::Object *, int, int);
+    void VerifyCharName(const char *, DataResultList &, Hmx::Object *, int, int);
+    void VerifyBandName(const char *, DataResultList &, Hmx::Object *, int, int);
+    bool GetIsDiskSong(int);
 
     bool IsOnline() { return mState == 2; }
 
@@ -134,6 +147,8 @@ public:
     static Server *IsConnected(Hmx::Object *, int, bool);
     static void SendFailure(Hmx::Object *, int, int);
     static void RecordDataPoint(DataPoint &, int, DataResultList &, Hmx::Object *);
+    static void DataPointToQString(const DataPoint &, Quazal::String &);
+    static void AddBuildInfoToDP(DataPoint &);
 
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
     DataNode OnMsg(const ConnectionStatusChangedMsg &);

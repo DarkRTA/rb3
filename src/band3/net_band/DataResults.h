@@ -10,10 +10,22 @@ class ContextWrapper;
 
 class Updatable {
 public:
-    Updatable() {}
+    Updatable() : mContextWrapper(0) {}
     virtual ~Updatable() {}
     virtual void Update(Message *) = 0;
-    virtual void SetWrapper(ContextWrapper *) = 0;
+    virtual void SetWrapper(ContextWrapper *);
+
+    ContextWrapper *mContextWrapper; // 0x4
+};
+
+class IdUpdater : public Updatable {
+public:
+    IdUpdater(unsigned int id) : mRetCode(0), mID(id) {}
+    virtual ~IdUpdater() {}
+    virtual void Update(Message *);
+
+    char mRetCode; // 0x4
+    unsigned int mID; // 0x8
 };
 
 class DataResult {
@@ -39,7 +51,6 @@ public:
     DataResult *GetDataResult(int) const;
     int NumDataResults() const { return mDataResultList.size(); }
 
-    int unk4; // 0x4
     Quazal::String *mQDataResultString; // 0x8
     std::list<DataResult> mDataResultList; // 0xc
     bool mUpdated; // 0x14

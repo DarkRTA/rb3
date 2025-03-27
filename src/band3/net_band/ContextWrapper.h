@@ -27,6 +27,7 @@ public:
     void Poll();
     void CancelOutstandingContexts(Hmx::Object *);
     void FailAllContexts();
+    ContextWrapper *NewContextWrapper(Hmx::Object *, Updatable *, bool, int);
 
     ContextWrapper mContextWrappers[500]; // 0x0
     int unk8ca0; // 0x8ca0
