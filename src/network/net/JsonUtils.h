@@ -10,9 +10,19 @@ public:
     JsonObject();
     virtual ~JsonObject();
 
+    enum JsonType {
+        kType_Null = 0,
+        kType_Boolean = 1,
+        kType_Double = 2,
+        kType_Int = 3,
+        kType_Object = 4,
+        kType_Array = 5,
+        kType_String = 6
+    };
+
     json_object *GetObject() { return mObject; }
     const char *GetObjectAsString() const;
-    enum json_type GetType() const;
+    JsonType GetType() const;
 
     friend class JsonConverter;
 
@@ -27,10 +37,6 @@ public:
 
     void AddMember(JsonObject *);
     int GetSize() const;
-
-    // Necessary to match JsonConverter::GetElement while
-    // still generating `GetSize() const` in the compiled object
-    int GetSize() { return json_object_array_length(mObject); }
 };
 
 class JsonString : public JsonObject {
