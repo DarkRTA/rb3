@@ -713,7 +713,7 @@ void Player::DeterminePerformanceAwards() {
     for (int i = 1; i < cfg->Size(); i++) {
         DataArray *arr = cfg->Array(i);
         if (arr->Int(1)) {
-            mStats.mAccessPerformanceAwards.push_back(arr->Sym(0));
+            mStats.AccessPerformanceAwards().push_back(arr->Sym(0));
         }
     }
     playerNode = n30;

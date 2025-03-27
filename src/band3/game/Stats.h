@@ -77,7 +77,7 @@ public:
     //     mTambourineCount(s.mTambourineCount), m0x64(s.m0x64), m0x68(s.m0x68),
     //     m0x6c(s.m0x6c), mVocalPartPercentages(s.mVocalPartPercentages),
     //     mSingerStats(s.mSingerStats),
-    //     mAccessPerformanceAwards(s.mAccessPerformanceAwards), mAccuracy(s.mAccuracy),
+    //     mPerformanceAwards(s.mPerformanceAwards), mAccuracy(s.mAccuracy),
     //     m0x8c(s.m0x8c), mSolo(s.mSolo), mOverdrive(s.mOverdrive), mSustain(s.mSustain),
     //     mScoreStreak(s.mScoreStreak), mBandContribution(s.mBandContribution),
     //     mCodaPoints(s.mCodaPoints), mHasCoda(s.mHasCoda), mHasSolos(s.mHasSolos),
@@ -168,9 +168,51 @@ public:
     int GetSoloPercentage() const { return mSoloPercentage; }
     bool GetPerfectSoloWithSoloButtons() const { return mPerfectSoloWithSoloButtons; }
     bool GetFinalized() const { return mFinalized; }
+    int GetMissCount() const { return mMissCount; }
+    int GetTimesSaved() const { return mTimesSaved; }
+    const StreakInfo &GetCurrentStreakInfo() const { return mCurrentHitStreak; }
+    float GetEndGameOverdrive() const { return mEndGameOverdrive; }
+    float GetEndGameCrowdLevel() const { return mEndGameCrowdLevel; }
+    int GetOverdrivePhrasesCompleted() const { return mOverdrivePhrasesCompleted; }
+    int GetOverdrivePhraseCount() const { return mOverdrivePhraseCount; }
+    int GetUnisonPhrasesCompleted() const { return mUnisonPhraseCompleted; }
+    int GetUnisonPhraseCount() const { return mUnisonPhraseCount; }
+    const std::vector<Symbol> &GetPerformanceAwards() const { return mPerformanceAwards; }
+    const std::vector<float> &GetFailurePoints() const { return mFailurePoints; }
+    const std::vector<float> &GetSavedPoints() const { return mSavedPoints; }
+    const std::vector<float> &GetClosestTimesSaved() const { return mClosestTimesSaved; }
+    const std::vector<float> &GetClosestPlayersSaved() const {
+        return mClosestPlayersSaved;
+    }
+    const std::vector<int> &GetBestSolos() const { return mBestSolos; }
+    int GetHitStreakCount() const { return mHitStreaks.size(); }
+    int GetMissStreakCount() const { return mMissStreaks.size(); }
+    int GetBestOverdriveDeploymentsCount() const {
+        return mBestOverdriveDeployments.size();
+    }
+    int GetBestStreakMultipliersCount() const { return mBestStreakMultipliers.size(); }
+    float GetTotalOverdriveDuration() const { return mTotalOverdriveDurationMs; }
+    float GetTotalMultiplierDuration() const { return mTotalMultiplierDuration; }
+    int GetRollsHitCompletely() const { return mRollsHitCompletely; }
+    int GetRollCount() const { return mRollCount; }
+    int GetHopoGemsHopoed() const { return mHopoGemsHopoed; }
+    int GetHopoGemCount() const { return mHopoGemCount; }
+    int GetHighGemsHitHigh() const { return mHighGemsHitHigh; }
+    int GetHighGemsHitLow() const { return mHighGemsHitLow; }
+    int GetHighFretGemCount() const { return mHighFretGemCount; }
+    int GetSustainGemsHitCompletely() const { return mSustainGemsHitCompletely; }
+    int GetSustainGemsHitPartially() const { return mSustainGemsHitPartially; }
+    int GetSustainGemCount() const { return mSustainGemCount; }
+    int GetTrillsHitCompletely() const { return mTrillsHitCompletely; }
+    int GetTrillsHitPartially() const { return mTrillsHitPartially; }
+    int GetTrillCount() const { return mTrillCount; }
+    int GetCymbalGemsHitOnCymbals() const { return mCymbalGemsHitOnCymbals; }
+    int GetCymbalGemsHitOnPads() const { return mCymbalGemsHitOnPads; }
+    int GetCymbalGemCount() const { return mCymbalGemCount; }
+    int GetNumberOfVocalParts() const { return mVocalPartCount; }
 
     // These are implemented in PerformanceData
-    std::vector<Symbol> &AccessPerformanceAwards() { return mAccessPerformanceAwards; }
+    std::vector<Symbol> &AccessPerformanceAwards() { return mPerformanceAwards; }
     void SetEndGameScore(int endGameScore) { mEndGameScore = endGameScore; }
     void SetNotesHitFraction(float notesHitFraction) {
         mNotesHitFraction = notesHitFraction;
@@ -298,6 +340,27 @@ public:
     void SetVocalPartPercentage(int part, float pct) {
         mVocalPartPercentages[part] = pct;
     }
+    int GetEndGameScore() const { return mEndGameScore; }
+    const StreakInfo &GetHitStreak(int index) const {
+        MILO_ASSERT_RANGE(index, 0, mHitStreaks.size(), 0x1CA);
+        return mHitStreaks[index];
+    }
+    const StreakInfo &GetMissStreak(int index) const {
+        MILO_ASSERT_RANGE(index, 0, mMissStreaks.size(), 0x1D8);
+        return mMissStreaks[index];
+    }
+    const MultiplierInfo &GetBestOverdriveDeployment(int index) const {
+        MILO_ASSERT_RANGE(index, 0, mBestOverdriveDeployments.size(), 0x1E6);
+        return mBestOverdriveDeployments[index];
+    }
+    const MultiplierInfo &GetBestStreakMultiplier(int index) const {
+        MILO_ASSERT_RANGE(index, 0, mBestStreakMultipliers.size(), 500);
+        return mBestStreakMultipliers[index];
+    }
+    const SingerStats &GetSingerStats(int index) const {
+        MILO_ASSERT_RANGE(index, 0, mSingerStats.size(), 0xCB);
+        return mSingerStats[index];
+    }
 
     template <class T>
     void SaveHighest(std::vector<T> &, const T &);
@@ -338,7 +401,7 @@ public:
     int m0x6c; // 0x06c
     std::vector<float> mVocalPartPercentages; // 0x070
     std::vector<SingerStats> mSingerStats; // 0x078
-    std::vector<Symbol> mAccessPerformanceAwards; // 0x080
+    std::vector<Symbol> mPerformanceAwards; // 0x080
     int mAccuracy; // 0x88
     int m0x8c;
     int mSolo; // 0x90
@@ -394,9 +457,9 @@ public:
     int mTrillCount; // 0x1a0
     int mTrillsHitCompletely; // 0x1a4
     int mTrillsHitPartially; // 0x1a8
-    int mCymbalGemInfo1; // 0x1ac
-    int mCymbalGemInfo2; // 0x1b0
-    int mCymbalGemInfo3; // 0x1b4
+    int mCymbalGemCount; // 0x1ac
+    int mCymbalGemsHitOnCymbals; // 0x1b0
+    int mCymbalGemsHitOnPads; // 0x1b4
     std::vector<SectionInfo> mSections; // 0x1b8
     float unk1c0;
     float unk1c4;

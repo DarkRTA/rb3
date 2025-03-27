@@ -1,6 +1,4 @@
-#ifndef UTL_DATAPOINTMGR_H
-#define UTL_DATAPOINTMGR_H
-
+#pragma once
 #include "obj/Data.h"
 #include <map>
 
@@ -78,5 +76,3 @@ void SendDataPoint(
     point.AddPair(name4, value4);
     TheDataPointMgr.RecordDataPoint(point, 1);
 }
-
-#endif

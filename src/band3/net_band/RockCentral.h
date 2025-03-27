@@ -1,14 +1,43 @@
 #pragma once
+#include "ContextWrapper.h"
+#include "Platform/String.h"
+#include "RBBinaryDataDDL_Wii.h"
+#include "RBDataDDL_Wii.h"
+#include "RBTestDDL_Wii.h"
+#include "bandobj/PatchDir.h"
 #include "game/Defines.h"
+#include "meta/ConnectionStatusPanel.h"
+#include "meta/Profile.h"
+#include "meta/WiiProfileMgr.h"
 #include "meta_band/BandProfile.h"
 #include "meta_band/Leaderboard.h"
+#include "meta_band/ProfileMessages.h"
+#include "net/NetSession.h"
+#include "net/Server.h"
+#include "net/WiiFriendMgr.h"
+#include "net/WiiMessenger.h"
 #include "net_band/DataResults.h"
 #include "obj/Msg.h"
 #include "obj/Object.h"
+#include "os/Friend.h"
+#include "os/PlatformMgr.h"
+#include "tour/TourBand.h"
+#include "utl/DataPointMgr.h"
+#include "utl/HxGuid.h"
+#include "utl/JobMgr.h"
+#include "utl/MemStream.h"
 
 class PerformanceData;
 class PlayerScore;
 class AccomplishmentProgress;
+
+enum BattleTimeUnits {
+    kBattleTimeSeconds = 0,
+    kBattleTimeMinutes = 1,
+    kBattleTimeHours = 2,
+    kBattleTimeDays = 3,
+    kBattleTimeWeeks = 4
+};
 
 class RockCentral : public MsgSource {
 public:
@@ -60,11 +89,104 @@ public:
     void UpdateOnlineStatus();
     void RedeemToken(int, String, DataResultList &, Hmx::Object *);
     void GetRedeemedTokensByPlayer(int, DataResultList &, Hmx::Object *);
+    void GetSongFullOffer(int, DataResultList &, Hmx::Object *);
+    void Terminate();
+    void ExecuteConfig(const char *);
+    bool IsLoginMandatory();
+    void DeleteNextUser();
+    void UpdateFriendList(int, std::vector<Friend *>, DataResultList &, Hmx::Object *);
+    void
+    UpdateFriendList(Profile *, std::vector<Friend *>, DataResultList &, Hmx::Object *);
+    char GetDifficultyID(int);
+    void
+    GetMultipleRankingsForPlayer(Profile *, ScoreType, std::vector<int> &, DataResultList &, Hmx::Object *);
+    void GetClosedBattles(std::vector<BandProfile *> &, DataResultList &, Hmx::Object *);
+    void ConvertToStr(PatchDir *, String &);
+    void ConvertToStr(MemStream &, String &);
+    void UpdateSetlist(LocalSavedSetlist *, DataResultList &, Hmx::Object *, int, int);
+    void UpdateBand(TourBand *, DataResultList &, Hmx::Object *, int, int);
+    void CheckBattleLimits(BandProfile *, DataResultList &, Hmx::Object *);
+    void CreateBattle(
+        BandProfile *,
+        const char *,
+        const char *,
+        const std::vector<int> &,
+        PatchDescriptor &,
+        int,
+        ScoreType,
+        int,
+        BattleTimeUnits,
+        DataResultList &,
+        Hmx::Object *,
+        int,
+        int
+    );
+    const char *GetBattleEndTimeStr(BattleTimeUnits);
+    void SaveBinaryData(RndTex *, String &, Hmx::Object *, int);
+    void UpdateSetlistArt(LocalSavedSetlist *, int, Hmx::Object *, int);
+    void UpdateBattleArt(RndTex *, Hmx::Object *, int);
+    void GetArtFile(String, RndTex *, unsigned int *, Hmx::Object *, int);
+    void GetSetlistArt(const char *, RndTex *, Hmx::Object *, int);
+    void GetBattleArt(int, RndTex *, Hmx::Object *, int);
+    void UpdateChar(TourCharLocal *, DataResultList &, Hmx::Object *, int, int);
+    void VerifyCharName(const char *, DataResultList &, Hmx::Object *, int, int);
+    void VerifyBandName(const char *, DataResultList &, Hmx::Object *, int, int);
+    bool GetIsDiskSong(int);
 
-    DataResultList unk1c;
-    int unk34;
-    int unk38;
-    int unk3c;
+    void ClearPendingInvitations() { unk111 = false; }
+    bool IsOnline() { return mState == 2; }
+    bool BlockLoginToggle() { return mLoginBlocked = !mLoginBlocked; }
+    void BlockLogin(bool b) { mLoginBlocked = b; }
+
+    static String kServerVer;
+    static ContextWrapperPool *mContextWrapperPool;
+    static Quazal::RBDataClient *mRBData;
+    static bool EnumerateFriends(int, std::vector<Friend *> &, Hmx::Object *);
+    static bool SendMsg(Friend *, const char *, const char *, MemStream &);
+    static void RecordDataPointNoRet(DataPoint &, int);
+    static String EncodeMessage(_WiiMessageType, unsigned int, const char *);
+    static _WiiFriendStatus StringToFriendStatus(const char *);
+    static const char *FriendStatusToString(_WiiFriendStatus);
+    static Server *IsConnected(Hmx::Object *, int, bool);
+    static void SendFailure(Hmx::Object *, int, int);
+    static void RecordDataPoint(DataPoint &, int, DataResultList &, Hmx::Object *);
+    static void DataPointToQString(const DataPoint &, Quazal::String &);
+    static void AddBuildInfoToDP(DataPoint &);
+
+    DataNode OnMsg(const RockCentralOpCompleteMsg &);
+    DataNode OnMsg(const ConnectionStatusChangedMsg &);
+    DataNode OnMsg(const ServerStatusChangedMsg &);
+    DataNode OnMsg(const UserLoginMsg &);
+    DataNode OnMsg(const FriendsListChangedMsg &);
+    DataNode OnMsg(const ProfileChangedMsg &);
+    DataNode OnMsg(const DeleteQueueUpdatedMsg &);
+    DataNode OnMsg(const DeleteUserCompleteMsg &);
+    DataNode OnMsg(const WiiFriendMgrOpCompleteMsg &);
+    DataNode OnMsg(const WiiFriendsListChangedMsg &);
+    DataNode OnMsg(const EnumerateMessagesCompleteMsg &);
+    DataNode OnMsg(const SigninChangedMsg &);
+    DataNode OnMsg(const InviteReceivedMsg &);
+
+    DataResultList mConfigResultList; // 0x1c
+    Quazal::RBBinaryDataClient *mRBBinaryData; // 0x34
+    Quazal::RBTestClient *mRBTest; // 0x38
+    int mState; // 0x3c - anon enum State
+    Timer mTime; // 0x40
+    float mRetryTime; // 0x70
+    JobMgr mJobMgr; // 0x74
+    bool mLoginBlocked; // 0x84
+    bool unk85;
+    HxGuid unk88;
+    WiiFriendList *unk98; // 0x98
+    WiiFriendList *unk9c; // 0x9c
+    std::vector<Friend *> *unka0;
+    Hmx::Object *unka4;
+    Timer unka8;
+    WiiMessageList *unkd8; // 0xd8
+    Timer unke0;
+    bool unk110;
+    bool unk111;
+    bool unk112;
 };
 
 extern RockCentral TheRockCentral;

@@ -11,7 +11,7 @@ public:
     virtual ~MemStream() {}
     virtual void Flush();
     virtual int Tell() { return mTell; }
-    virtual EofType Eof();
+    virtual EofType Eof() { return (EofType)(mBuffer.size() == mTell); }
     virtual bool Fail();
     virtual void ReadImpl(void *, int);
     virtual void WriteImpl(const void *, int);

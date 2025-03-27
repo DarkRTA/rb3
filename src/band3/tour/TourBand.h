@@ -25,6 +25,6 @@ public:
 
     BandProfile *unk1c; // 0x1c
     String mBandName; // 0x20
-    PatchDescriptor *mBandLogo; // ptr to some struct
+    PatchDescriptor *mBandLogo; // 0x2c
     int unk30; // 0x30
 };

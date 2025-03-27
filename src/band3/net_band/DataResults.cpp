@@ -10,7 +10,7 @@ bool DataResult::GetDataResultValue(String str, DataNode &node) const {
     return found;
 }
 
-DataResultList::DataResultList() : unk4(0) {
+DataResultList::DataResultList() {
     mQDataResultString = new Quazal::String();
     mUpdated = 0;
 }

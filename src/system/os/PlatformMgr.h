@@ -213,7 +213,11 @@ DECLARE_MESSAGE(DWCProfanityResultMsg, "dwc_profanity_result_msg")
 END_MESSAGE
 
 DECLARE_MESSAGE(FriendsListChangedMsg, "friends_list_changed")
+int GetPadNum() const { return mData->Int(2); }
 END_MESSAGE
 
 DECLARE_MESSAGE(PartyMembersChangedMsg, "party_members_changed")
+END_MESSAGE
+
+DECLARE_MESSAGE(EnumerateMessagesCompleteMsg, "enumerate_messages_complete")
 END_MESSAGE

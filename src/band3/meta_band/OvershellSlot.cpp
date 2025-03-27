@@ -1010,8 +1010,8 @@ void OvershellSlot::CancelLinkingCode() {
 DataNode OvershellSlot::OnMsg(const RockCentralOpCompleteMsg &msg) {
     MILO_ASSERT(mState->GetStateID() == kState_LinkingCode, 0x777);
     mState->SetProperty(waiting, 0);
-    mState->SetProperty(success, msg.Arg0());
-    if (msg.Arg0()) {
+    mState->SetProperty(success, msg.Success());
+    if (msg.Success()) {
         DataNode node(0);
         mLinkingCodeResultList.Update(nullptr);
         mLinkingCodeResultList.GetDataResult(0)->GetDataResultValue("code", node);

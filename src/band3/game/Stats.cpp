@@ -37,8 +37,9 @@ Stats::Stats()
       mHighGemsHitHigh(0), mHighGemsHitLow(0), mHighFretGemCount(0),
       mSustainGemsHitCompletely(0), mSustainGemsHitPartially(0), mSustainGemCount(0),
       mAverageMultiplier(0), mRollCount(0), mRollsHitCompletely(0), mTrillCount(0),
-      mTrillsHitCompletely(0), mTrillsHitPartially(0), mCymbalGemInfo1(0),
-      mCymbalGemInfo2(0), mCymbalGemInfo3(0), unk1c0(0), unk1c4(0), unk1c8(0) {}
+      mTrillsHitCompletely(0), mTrillsHitPartially(0), mCymbalGemCount(0),
+      mCymbalGemsHitOnCymbals(0), mCymbalGemsHitOnPads(0), unk1c0(0), unk1c4(0),
+      unk1c8(0) {}
 
 void Stats::BuildHitStreak(int i, float f) {
     mHitCount++;
@@ -396,9 +397,9 @@ void Stats::IncrementTrillsHit(bool b) {
 }
 
 void Stats::SetCymbalGemInfo(int i1, int i2, int i3) {
-    mCymbalGemInfo1 = i3;
-    mCymbalGemInfo2 = i1;
-    mCymbalGemInfo3 = i2;
+    mCymbalGemCount = i3;
+    mCymbalGemsHitOnCymbals = i1;
+    mCymbalGemsHitOnPads = i2;
 }
 
 void Stats::SetSectionInfo(int index, Symbol s, float f1, float f2) {

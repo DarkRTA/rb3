@@ -82,6 +82,8 @@ public:
     bool IsDeleteQueueFull() const;
     int GetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser *) const;
     void SetHasSeenFirstTimeInstrumentFlagsForUser(const LocalUser *, int, bool);
+    void RemoveIdFromDeleteQueue(unsigned int);
+    int GetNextDeleteQueueId() const;
 
     static int sSaveVersion;
     static int sSaveVersionWii;
@@ -94,5 +96,13 @@ public:
     bool mHasLoaded; // 0x1d0
     bool mDirty; // 0x1d1
 };
+
+DECLARE_MESSAGE(DeleteQueueUpdatedMsg, "delete_queue_update")
+END_MESSAGE
+
+DECLARE_MESSAGE(DeleteUserCompleteMsg, "delete_user_complete")
+int GetUserID() const { return mData->Int(2); }
+bool IsComplete() const { return mData->Int(3); }
+END_MESSAGE
 
 extern WiiProfileMgr TheWiiProfileMgr;

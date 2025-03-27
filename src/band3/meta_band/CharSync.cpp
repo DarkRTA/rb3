@@ -68,14 +68,14 @@ void CharSync::UpdateCharCache() {
     for (int i = 0; i < 4; i++) {
         CharData *charDesc = nullptr;
         if (profile) {
-            const StandIn &standin = profile->GetStandIn(i);
-            if (standin.IsNone())
+            const StandIn &standIn = profile->GetStandIn(i);
+            if (standIn.IsNone())
                 charDesc = nullptr;
-            else if (standin.IsPrefabCharacter()) {
-                charDesc = prefabMgr->GetPrefab(standin.GetName());
+            else if (standIn.IsPrefabCharacter()) {
+                charDesc = prefabMgr->GetPrefab(standIn.GetName());
             } else {
-                MILO_ASSERT(standin.IsCustomCharacter(), 0x7E);
-                charDesc = profile->GetCharFromGuid(standin.GetGuid());
+                MILO_ASSERT(standIn.IsCustomCharacter(), 0x7E);
+                charDesc = profile->GetCharFromGuid(standIn.GetGuid());
                 MILO_ASSERT(charDesc, 0x81);
             }
         }

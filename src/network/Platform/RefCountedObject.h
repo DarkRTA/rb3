@@ -1,5 +1,4 @@
-#ifndef PLATFORM_REFCOUNTEDOBJECT_H
-#define PLATFORM_REFCOUNTEDOBJECT_H
+#pragma once
 #include "Platform/RootObject.h"
 #include "Platform/CriticalSection.h"
 
@@ -15,8 +14,6 @@ namespace Quazal {
 
         unsigned short GetRefCount() const;
 
-        unsigned short m_ui16RefCount;
+        unsigned short m_ui16RefCount; // 0x4
     };
 }
-
-#endif

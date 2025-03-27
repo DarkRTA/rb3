@@ -1,5 +1,4 @@
-#ifndef PLATFORM_ROOTOBJECT_H
-#define PLATFORM_ROOTOBJECT_H
+#pragma once
 
 namespace Quazal {
     class RootObject {
@@ -12,5 +11,3 @@ namespace Quazal {
         static void operator delete[](void *);
     };
 }
-
-#endif

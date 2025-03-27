@@ -384,7 +384,7 @@ DataNode MainHubPanel::OnMsg(const ReleasingLockStepMsg &msg) {
 }
 
 DataNode MainHubPanel::OnMsg(const RockCentralOpCompleteMsg &msg) {
-    if (msg.Arg0() && GetState() == kUp) {
+    if (msg.Success() && GetState() == kUp) {
         if (!TheProfileMgr.GetPrimaryProfile())
             return 1;
         unkb8 = true;

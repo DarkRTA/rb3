@@ -18,7 +18,7 @@ public:
     virtual int GetMessagingClient();
     virtual int GetMatchMakingClient();
     virtual int GetCustomMatchMakingClient();
-    virtual int GetPersistentStoreClient();
+    virtual Quazal::ServiceClient *GetPersistentStoreClient();
     virtual int GetCompetitionClient();
     virtual int GetSecureConnectionClient();
     virtual int GetAccountManagementClient();

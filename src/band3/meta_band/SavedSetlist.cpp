@@ -140,7 +140,7 @@ void LocalSavedSetlist::UploadComplete() {
 
 DataNode LocalSavedSetlist::OnMsg(const RockCentralOpCompleteMsg &msg) {
     msg.Arg1();
-    msg.Arg0();
+    msg.Success();
     return 1;
 }
 

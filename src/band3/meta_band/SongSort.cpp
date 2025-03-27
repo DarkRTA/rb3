@@ -249,7 +249,7 @@ void SetlistSort::BuildSetlistTree(std::map<Symbol, SetlistRecord> &records) {
     }
     FunctionSortNode *fsn = nullptr;
     if (TheMusicLibrary->NetSetlistsFailed()) {
-        if (TheRockCentral.unk3c != 2) {
+        if (TheRockCentral.mState != 2) {
             fsn = NewFunctionNode(net_setlists_connect);
         } else
             fsn = NewFunctionNode(net_setlists_error);
