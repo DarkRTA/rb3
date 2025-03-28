@@ -137,6 +137,7 @@ public:
     void AutoFakeFill(int);
     int NumChars() const;
     GameplayOptions *GetGameplayOptions() { return &mGameplayOptions; }
+    TourCharLocal *CharAt(int idx) const { return mCharacters[idx]; }
 
     static int SaveSize(int);
 

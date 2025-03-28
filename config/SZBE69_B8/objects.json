@@ -310,7 +310,7 @@
             "band3/net_band/ContextWrapper.cpp": "Matching",
             "band3/net_band/DataResults.cpp": "NonMatching",
             "band3/net_band/EntityUploader_Wii.cpp": "MISSING",
-            "band3/net_band/EntityUploader.cpp": "MISSING",
+            "band3/net_band/EntityUploader.cpp": "NonMatching",
             "band3/net_band/RBBinaryBufferDDL_Wii.cpp": "MISSING",
             "band3/net_band/RBBinaryDataDDL_Wii.cpp": "MISSING",
             "band3/net_band/RBDataDDL_Wii.cpp": "MISSING",

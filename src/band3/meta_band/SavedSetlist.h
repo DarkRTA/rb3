@@ -144,6 +144,7 @@ public:
         mNeedsUpload = true;
     }
     BandProfile *GetOwnerProfile() const { return mOwnerProfile; }
+    bool NeedsUpload() const { return mNeedsUpload; }
 
     static int SaveSize(int);
 
