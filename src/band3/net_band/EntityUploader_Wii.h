@@ -1,6 +1,7 @@
 #pragma once
 #include "net_band/EntityUploader.h"
 #include "obj/Data.h"
+#include "os/PlatformMgr.h"
 
 class WiiEntityUploader : public EntityUploader {
 public:
@@ -17,12 +18,15 @@ public:
 
     void CleanupCall(bool);
     void BeginStringVerification();
+    void SetStringPassedStatus(TourSavable *, int, int, bool);
+    void ProcessStringResponses();
+    bool OnMsg(const DWCProfanityResultMsg &);
 
-    unsigned short **unk40;
-    int unk44;
-    int unk48;
-    int unk4c;
-    char *unk50;
-    DataArray *unk54;
-    bool unk58;
+    const unsigned short **unk40; // 0x40
+    int unk44; // 0x44
+    int mNumStringsEnroute; // 0x48
+    int unk4c; // 0x4c
+    char *unk50; // 0x50
+    DataArray *unk54; // 0x54
+    bool mbCheckInProgress; // 0x58
 };

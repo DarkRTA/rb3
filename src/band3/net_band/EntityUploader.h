@@ -23,6 +23,10 @@ public:
 
 class EntityUploader : public Hmx::Object {
 public:
+    enum {
+        kInactive = 0,
+        kPlatformChecking = 1
+    };
     EntityUploader();
     virtual ~EntityUploader() {}
     virtual DataNode Handle(DataArray *, bool);
