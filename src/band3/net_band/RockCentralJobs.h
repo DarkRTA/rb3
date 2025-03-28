@@ -26,6 +26,8 @@ public:
     virtual bool IsFinished();
     virtual DataNode Handle(DataArray *, bool);
 
+    void GetFriendsListToken();
+
     DataNode OnMsg(const PlatformMgrOpCompleteMsg &);
     DataNode OnMsg(const RockCentralOpCompleteMsg &);
 
@@ -49,7 +51,7 @@ public:
 
     int unk24;
     WiiFriendList unk28; // 0x28
-    std::vector<int> unk30; // 0x30
+    std::vector<Friend *> mFriends; // 0x30
     DataResultList unk38;
     int mState; // 0x50
 };

@@ -1,6 +1,8 @@
 #include "net_band/RockCentralJobs.h"
+#include "meta_band/BandProfile.h"
 #include "meta_band/ProfileMgr.h"
 #include "net/WiiFriendMgr.h"
+#include "net_band/RockCentral.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -22,6 +24,17 @@ void UpdateFriendsListJob::Start() {
 
 DataNode UpdateFriendsListJob::OnMsg(const PlatformMgrOpCompleteMsg &msg) {
     MILO_ASSERT(mState == kEnumeratingFriends, 0x36);
+    GetFriendsListToken();
+    int token = 0;
+    BandProfile *profile = TheProfileMgr.GetProfileFromPad(unk24);
+    if (profile)
+        token = profile->GetUploadFriendsToken();
+    if (msg.Success() && profile && profile->HasValidSaveData() && unk28 != token) {
+        mState = 2;
+        TheRockCentral.UpdateFriendList(profile, mFriends, unk34, this);
+    } else
+        mState = 3;
+    return 1;
 }
 
 DataNode UpdateFriendsListJob::OnMsg(const RockCentralOpCompleteMsg &msg) {
@@ -38,6 +51,25 @@ DataNode UpdateFriendsListJob::OnMsg(const RockCentralOpCompleteMsg &msg) {
 
 bool UpdateFriendsListJob::IsFinished() { return mState == 3; }
 
+void UpdateFriendsListJob::GetFriendsListToken() {
+    unk28 = 0;
+    for (int i = 0; i < mFriends.size(); i++) {
+        const char *name = mFriends[i]->mName.c_str();
+        for (int j = 0; j < strlen(name); j += 4) {
+            int hash[4];
+            hash[0] = 0;
+            int len = strlen(name);
+            if (len - j >= 4U) {
+                len = 4;
+            } else {
+                len = strlen(name) - j;
+            }
+            memcpy(hash, name + j, len);
+            unk28 ^= hash[0];
+        }
+    }
+}
+
 BEGIN_HANDLERS(UpdateFriendsListJob)
     HANDLE_MESSAGE(PlatformMgrOpCompleteMsg)
     HANDLE_MESSAGE(RockCentralOpCompleteMsg)
@@ -46,11 +78,20 @@ END_HANDLERS
 
 UpdateMasterProfileFriendsListJob::UpdateMasterProfileFriendsListJob() : mState(0) {}
 
-UpdateMasterProfileFriendsListJob::~UpdateMasterProfileFriendsListJob() {}
+UpdateMasterProfileFriendsListJob::~UpdateMasterProfileFriendsListJob() {
+    DeleteAll(mFriends);
+}
 
 void UpdateMasterProfileFriendsListJob::Start() {
     mState = 1;
     TheWiiFriendMgr.EnumerateFriends(&unk28, this);
+}
+
+DataNode UpdateMasterProfileFriendsListJob::OnMsg(const WiiFriendMgrOpCompleteMsg &msg) {
+    MILO_ASSERT(mState == kEnumeratingFriends, 0x9A);
+    for (int i = 0; i < unk28.mFriends.size(); i++) {
+    }
+    return 1;
 }
 
 bool UpdateMasterProfileFriendsListJob::IsFinished() { return mState == 3; }

@@ -9,12 +9,21 @@ enum _WiiFriendStatus {
 
 class WiiFriend {
 public:
+    String unk0;
+    int unkc;
+    int unk10;
+    int unk14;
+    std::vector<int> unk18;
+    int unk20;
+    int unk24;
 };
 
 class WiiFriendList {
 public:
     WiiFriendList();
     ~WiiFriendList();
+    WiiFriend *GetFriendByIdx(int) const;
+
     std::vector<WiiFriend> mFriends; // 0x0
 };
 
