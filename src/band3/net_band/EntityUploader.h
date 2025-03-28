@@ -65,4 +65,4 @@ public:
     int mOpIdGenerator; // 0x3c
 };
 
-extern EntityUploader *TheEntityUploader;
+extern EntityUploader &TheEntityUploader;

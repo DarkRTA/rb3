@@ -207,7 +207,7 @@ App::App(int argc, char **argv) {
     PollTheSplasher();
     TheRockCentral.Init(false);
     PollTheSplasher();
-    TheEntityUploader->Init();
+    TheEntityUploader.Init();
     PollTheSplasher();
     GameMicManager::Init();
     UsbMidiKeyboard::Init();
@@ -369,7 +369,7 @@ void App::RunWithoutDebugging() {
         TIMER_ACTION("net_poll", {
             TheNet.Poll();
             TheRockCentral.Poll();
-            TheEntityUploader->Poll();
+            TheEntityUploader.Poll();
         })
         TIMER_ACTION("inclusive_ui_poll", TheUI.Poll())
         TheTaskMgr.Poll();
