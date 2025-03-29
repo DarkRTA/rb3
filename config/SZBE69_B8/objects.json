@@ -434,7 +434,7 @@
             "network/net/HarmonixGameDDF_Wii.cpp": "MISSING",
             "network/net/HarmonixGatheringDDL_Wii.cpp": "MISSING",
             "network/net/Jobs_RV.cpp": "MISSING",
-            "network/net/Jobs_Wii.cpp": "MISSING",
+            "network/net/Jobs_Wii.cpp": "NonMatching",
             "network/net/JsonUtils.cpp": "Equivalent",
             "network/net/MatchmakingSettings.cpp": "NonMatching",
             "network/net/MessageBroker.cpp": "MISSING",

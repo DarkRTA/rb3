@@ -9,5 +9,8 @@ namespace Quazal {
         NintendoManagementProtocolClient() : ClientProtocol(1) {}
         virtual ~NintendoManagementProtocolClient() {}
         virtual void ExtractCallSpecificResults(Message *, ProtocolCallContext *);
+
+        bool
+        CallGetConsoleUsernames(ProtocolCallContext *, const unsigned long long &, qList<String> *);
     };
 }

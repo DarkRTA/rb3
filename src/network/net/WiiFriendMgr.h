@@ -91,7 +91,7 @@ public:
     bool unk2c;
     bool unk2d; // 0x2d - has_nwc24_lib_failed
     Timer unk30;
-    int unk60;
+    int unk60; // 0x60 - Quazal::NintendoManagementProtocolClient*
     int unk64; // 0x64 - Quazal::NintendoManagementProtocolClient*
     bool unk68;
     int unk6c;
