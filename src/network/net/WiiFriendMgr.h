@@ -80,16 +80,19 @@ public:
     void SetProfileStatus(int, String);
     void SetMasterProfileStatus(String);
     void SetStatusDelimiter(char);
+    void Init();
+    void Terminate();
+
     static String GetMasterProfileName(unsigned long long);
 
-    int unk1c;
-    int unk20;
+    int unk1c; // 0x1c - JobDeleteOrphanedProfiles*
+    int unk20; // 0x20 - JobEnumerateFriends*
     WiiFriendList unk24;
     bool unk2c;
-    bool unk2d;
+    bool unk2d; // 0x2d - has_nwc24_lib_failed
     Timer unk30;
     int unk60;
-    int unk64;
+    int unk64; // 0x64 - Quazal::NintendoManagementProtocolClient*
     bool unk68;
     int unk6c;
     int unk70;
@@ -97,9 +100,10 @@ public:
     String unk78[4];
     String unka8;
     int unkb4;
-    int unkb8;
+    char unkb8;
+    bool unkb9;
     Timer unkc0;
-    String unkf0;
+    String unkf0; // 0xf0 - get_nwc24_error_text
 };
 
 DECLARE_MESSAGE(WiiFriendsListChangedMsg, "wii_friends_list_changed")

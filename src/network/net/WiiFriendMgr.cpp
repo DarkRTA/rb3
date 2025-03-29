@@ -1,8 +1,13 @@
 #include "network/net/WiiFriendMgr.h"
 #include "Platform/StringStream.h"
+#include "net/Server.h"
+#include "obj/Dir.h"
+#include "os/Debug.h"
 #include "utl/MemMgr.h"
 #include "utl/Std.h"
 #include "utl/UTF8.h"
+
+WiiFriendMgr TheWiiFriendMgr;
 
 WiiFriendProfile::WiiFriendProfile() : mPrincipalID(0), mName(""), mStatus("") {}
 WiiFriendProfile::~WiiFriendProfile() {}
@@ -201,3 +206,29 @@ WiiFriendMgr::WiiFriendMgr()
 }
 
 WiiFriendMgr::~WiiFriendMgr() {}
+
+void WiiFriendMgr::Init() {
+    SetName("wii_friend_mgr", ObjectDir::Main());
+    TheServer->AddSink(this, ServerStatusChangedMsg::Type());
+}
+
+void WiiFriendMgr::Terminate() {
+    TheServer->RemoveSink(this, ServerStatusChangedMsg::Type());
+}
+
+void WiiFriendMgr::GetCachedFriends(WiiFriendList *list) { *list = unk24; }
+
+void WiiFriendMgr::UseConsoleFriends(bool b1) {
+    if (!b1) {
+        DeleteAll(unk24.mFriends);
+    }
+    unk68 = b1;
+}
+
+void WiiFriendMgr::SetStatusDelimiter(char iDelimiter) {
+    MILO_ASSERT(iDelimiter, 0x2C7);
+    if (iDelimiter) {
+        unkb8 = iDelimiter;
+        unkb9 = false;
+    }
+}
