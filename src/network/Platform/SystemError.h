@@ -10,4 +10,9 @@ namespace Quazal {
         u32 unk_0x0;
         char **unk_0x4;
     };
+
+    class SystemError {
+    public:
+        static void SignalError(char *, unsigned int, unsigned int, unsigned int);
+    };
 }
