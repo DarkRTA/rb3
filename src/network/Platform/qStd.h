@@ -1,4 +1,5 @@
 #pragma once
+#include "Platform/MemoryManager.h"
 #include <vector>
 #include <list>
 #include "Platform/RootObject.h"
@@ -74,7 +75,11 @@ namespace Quazal {
         }
 
         void deallocate(pointer ptr, size_type count) const {
-            _MemOrPoolFreeSTL(count * sizeof(T), FastPool, ptr);
+            MemoryManager::Free(
+                MemoryManager::GetDefaultMemoryManager(),
+                ptr,
+                (MemoryManager::_InstructionType)7
+            );
         }
 
         void construct(pointer ptr, const_reference value) const { new (ptr) T(value); }

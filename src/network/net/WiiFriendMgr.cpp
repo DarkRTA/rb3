@@ -214,6 +214,18 @@ void WiiFriendMgr::Init() {
 
 void WiiFriendMgr::Terminate() {
     TheServer->RemoveSink(this, ServerStatusChangedMsg::Type());
+    if (unk1c)
+        unk1c->ReleaseRef();
+    if (unk20)
+        unk20->ReleaseRef();
+    if (unk64) {
+        RELEASE(unk64);
+    }
+    if (unkb4) {
+    }
+    if (unk2c) {
+        unk2c = false;
+    }
 }
 
 void WiiFriendMgr::GetCachedFriends(WiiFriendList *list) { *list = unk24; }

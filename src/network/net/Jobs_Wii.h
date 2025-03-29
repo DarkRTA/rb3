@@ -29,3 +29,9 @@ public:
     Quazal::qList<Quazal::BasicAccountInfo> unkd8;
     int unke0;
 };
+
+class JobEnumerateFriends : public Quazal::StepSequenceJob {
+public:
+    JobEnumerateFriends(class WiiFriendList *, Quazal::NintendoManagementProtocolClient *);
+    virtual ~JobEnumerateFriends();
+};
