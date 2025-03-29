@@ -375,7 +375,7 @@
             "network/Core/SecurityContextManager.cpp": "MISSING",
             "network/Core/SingleThreadCallPolicy.cpp": "MISSING",
             "network/Core/StateMachine.cpp": "MISSING",
-            "network/Core/StepSequenceJob.cpp": "MISSING",
+            "network/Core/StepSequenceJob.cpp": "NonMatching",
             "network/Core/SystemComponent.cpp": "NonMatching",
             "network/Core/SystemComponentGroup.cpp": "MISSING",
             "network/Core/SystemComponents.cpp": "MISSING",

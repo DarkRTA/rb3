@@ -5,7 +5,6 @@
 
 namespace Quazal {
     // forward decl cause i can't find the bastard
-    class DebugString;
     class UserContext;
     class Job;
 
