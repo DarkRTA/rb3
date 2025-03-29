@@ -456,7 +456,7 @@
             "network/net/SyncStore.cpp": "Equivalent",
             "network/net/Synchronize.cpp": "NonMatching",
             "network/net/VoiceChatMgr.cpp": "MISSING",
-            "network/net/WiiFriendMgr.cpp": "MISSING",
+            "network/net/WiiFriendMgr.cpp": "NonMatching",
             "network/net/WiiMessenger.cpp": "MISSING",
 
             "network/ObjDup/ActiveDOCallContext.cpp": "MISSING",

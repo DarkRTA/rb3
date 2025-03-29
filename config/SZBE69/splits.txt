@@ -110,8 +110,9 @@ rb3/unknown/800/unk_800AC804.cpp:
 rb3/unknown/800/unk_800B4630.cpp:
 	.text       start:0x800B4630 end:0x800BC50C
 
-rb3/unknown/800/unk_800BF1A8.cpp:
-	.text       start:0x800BF1A8 end:0x800C239C
+network/net/WiiFriendMgr.cpp:
+	.text       start:0x800BF234 end:0x800C2474
+	.ctors      start:0x807EFE40 end:0x807EFE44
 
 network/net/json-c/arraylist.c:
 	.text       start:0x800C68E0 end:0x800C6B4C
