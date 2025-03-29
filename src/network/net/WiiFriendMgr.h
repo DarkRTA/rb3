@@ -16,9 +16,12 @@ public:
     ~WiiFriendProfile();
     WiiFriendProfile &operator=(const WiiFriendProfile &);
 
+    const char *Name() const { return mName.c_str(); }
+    void SetStatus(const char *stat) { mStatus = stat; }
+
     int mPrincipalID; // 0x0
-    String unk4; // 0x4
-    String unk10; // 0x10
+    String mName; // 0x4
+    String mStatus; // 0x10
     WiiFriend *unk1c; // 0x1c
 };
 
@@ -38,12 +41,14 @@ public:
     void SetMasterProfileStatus(const char *);
     bool PromoteMasterProfile();
     int NumProfiles() const { return unk18.size(); }
+    unsigned long long ConsoleCode() const { return mConsoleCode; }
+    WiiFriendProfile *MasterProfile() const { return mMasterProfile; }
 
     String unk0; // 0x0
     int unkc;
-    unsigned long long unk10;
-    std::vector<WiiFriendProfile *> unk18;
-    WiiFriendProfile *unk20; // 0x20
+    unsigned long long mConsoleCode; // 0x10
+    std::vector<WiiFriendProfile *> unk18; // 0x18
+    WiiFriendProfile *mMasterProfile; // 0x20
     int unk24;
 };
 
@@ -55,6 +60,9 @@ public:
     WiiFriend *GetFriendByIdx(int) const;
     WiiFriend *GetFriendByMasterPrincipalID(int) const;
     WiiFriend *GetFriendByConsoleCode(unsigned long long) const;
+    WiiFriendProfile *GetProfile(int) const;
+    WiiFriend *AddFriend(unsigned long long, String);
+    bool RemoveFriend(unsigned long long);
     void Sort(WiiFriendSortFunc);
 
     std::vector<WiiFriend *> mFriends; // 0x0
