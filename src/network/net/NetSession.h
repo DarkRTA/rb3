@@ -166,6 +166,8 @@ public:
     bool OnMsg(const EndGameMsg &);
     SessionSettings *GetSessionSettings() const { return mSettings; }
 
+    static NetSession *New();
+
     DataNode OnSendMsg(DataArray *);
     DataNode OnSendMsgToAll(DataArray *);
 

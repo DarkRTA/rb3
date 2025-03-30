@@ -32,3 +32,11 @@ public:
     TPLPalette *mRetryErrorTpl; // 0x8
     std::list<Callback *> mCallbacks; // 0xc
 };
+
+class WiiDiscErrorSessionTerminatior : public DiscErrorMgrWii::Callback {
+public:
+    WiiDiscErrorSessionTerminatior() {}
+    virtual void DiscErrorStart() {}
+};
+
+extern WiiDiscErrorSessionTerminatior TheWiiDiscErrorSessionTerminator;

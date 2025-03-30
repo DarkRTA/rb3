@@ -1,5 +1,3 @@
-namespace Quazal {
-    namespace SystemChecker {
-        int s_pfGetSystemCheckInfo = 0;
-    }
-}
+#include "network/Platform/SystemChecker.h"
+
+SystemCheckCallbackFunc *Quazal::SystemChecker::s_pfGetSystemCheckInfo;
