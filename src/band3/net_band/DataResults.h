@@ -1,32 +1,14 @@
 #pragma once
 #include "obj/Msg.h"
+#include "os/Debug.h"
 #include "utl/Str.h"
 #include "network/Platform/String.h"
+#include "net_band/Updatable.h"
 #include "utl/TextStream.h"
 #include <list>
 #include <map>
 
 class ContextWrapper;
-
-class Updatable {
-public:
-    Updatable() : mContextWrapper(0) {}
-    virtual ~Updatable() {}
-    virtual void Update(Message *) = 0;
-    virtual void SetWrapper(ContextWrapper *);
-
-    ContextWrapper *mContextWrapper; // 0x4
-};
-
-class IdUpdater : public Updatable {
-public:
-    IdUpdater(unsigned int id) : mRetCode(0), mID(id) {}
-    virtual ~IdUpdater() {}
-    virtual void Update(Message *msg) { (*msg)[1] = mRetCode; }
-
-    char mRetCode; // 0x8
-    unsigned int mID; // 0xc
-};
 
 class DataResult {
 public:

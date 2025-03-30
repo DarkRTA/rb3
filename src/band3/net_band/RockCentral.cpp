@@ -25,6 +25,7 @@
 #include "meta_band/SaveLoadManager.h"
 #include "meta_band/SongStatusMgr.h"
 #include "meta_band/UIEventMgr.h"
+#include "net/JsonUtils.h"
 #include "net/Net.h"
 #include "net/NetSession.h"
 #include "net/Server.h"
@@ -1651,8 +1652,39 @@ void RockCentral::SyncAvailableSongs(
     }
 }
 
-void RockCentral::DataPointToQString(const DataPoint &, Quazal::String &) {
-    MILO_WARN("RockCentral::DataPointToQString - Unsupported type %d!");
+void RockCentral::DataPointToQString(const DataPoint &dataPoint, Quazal::String &str) {
+    JsonConverter jc;
+    JsonArray *jArr = jc.NewArray();
+    jArr->AddMember(jc.NewString(dataPoint.mType.Str()));
+    JsonArray *jArr0 = jc.NewArray();
+    JsonArray *jArr1 = jc.NewArray();
+    FOREACH (it, dataPoint.mNameValPairs) {
+        DataType dTy = it->second.Type();
+        if (dTy == kDataString || dTy == kDataSymbol) {
+            jArr0->AddMember(jc.NewString(it->first.Str()));
+            jArr1->AddMember(jc.NewString(it->second.Str()));
+        } else {
+            switch (dTy) {
+            case kDataInt:
+                jArr0->AddMember(jc.NewString(it->first.Str()));
+                jArr1->AddMember(jc.NewInt(it->second.Int()));
+                break;
+            case kDataFloat:
+                jArr0->AddMember(jc.NewString(it->first.Str()));
+                jArr1->AddMember(jc.NewDouble(it->second.Float()));
+                break;
+            default:
+                MILO_FAIL("RockCentral::DataPointToQString - Unsupported type %d!", dTy);
+                break;
+            }
+        }
+    }
+    JsonArray *jArr2 = jc.NewArray();
+    jArr2->AddMember(jArr0);
+    jArr2->AddMember(jArr1);
+    jArr->AddMember(jArr2);
+    jc.AddMember(jArr);
+    str = jc.GetObjectAsString();
 }
 
 void RockCentral::AddBuildInfoToDP(DataPoint &dataPoint) {

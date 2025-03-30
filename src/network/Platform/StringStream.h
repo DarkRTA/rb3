@@ -10,6 +10,7 @@ namespace Quazal {
         void TestFreeRoom(unsigned int);
 
         StringStream &operator<<(const char *);
+        StringStream &operator<<(unsigned long long);
 
         const char *m_szBuffer;
         unsigned int m_uiSize;

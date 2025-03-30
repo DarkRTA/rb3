@@ -5,6 +5,10 @@
 #include "types.h"
 
 namespace Quazal {
+    class DebugString {
+    public:
+    };
+
     class String : public RootObject {
     public:
         String();

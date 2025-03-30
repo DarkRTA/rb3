@@ -1,4 +1,5 @@
 #include "JsonUtils.h"
+#include "decomp.h"
 #include "json-c/printbuf.h"
 #include "system/os/Debug.h"
 
@@ -10,7 +11,9 @@ const char *JsonObject::GetObjectAsString() const {
     return json_object_get_string(mObject);
 }
 
-enum json_type JsonObject::GetType() const { return json_object_get_type(mObject); }
+JsonObject::JsonType JsonObject::GetType() const {
+    return (JsonType)json_object_get_type(mObject);
+}
 
 JsonArray::JsonArray() { mObject = json_object_new_array(); }
 
@@ -25,7 +28,11 @@ void JsonArray::AddMember(JsonObject *obj) {
     json_object_array_add(mObject, obj->GetObject());
 }
 
+DECOMP_FORCEFUNC(JsonArray, JsonArray, GetSize())
+
+FORCE_LOCAL_INLINE
 int JsonArray::GetSize() const { return json_object_array_length(mObject); }
+END_FORCE_LOCAL_INLINE
 
 JsonString::JsonString(const char *s) { mObject = json_object_new_string(s); }
 

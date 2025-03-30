@@ -15,6 +15,8 @@ namespace Quazal {
         virtual void BeginTransition(_State, qResult, bool);
         virtual void ProcessCallCompletion();
 
+        _State GetState() const { return unkc; }
+
         unsigned int unk8; // 0x8
         _State unkc; // 0xc
         qList<int> unk10; // 0x10

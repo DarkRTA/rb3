@@ -1,5 +1,4 @@
-#ifndef PLATFORM_SCOPEDCS_H
-#define PLATFORM_SCOPEDCS_H
+#pragma once
 #include "Platform/CriticalSection.h"
 #include "Platform/RootObject.h"
 #include "Platform/MutexPrimitive.h"
@@ -26,5 +25,3 @@ namespace Quazal {
         CriticalSection *critSec;
     };
 }
-
-#endif
