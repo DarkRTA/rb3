@@ -1,4 +1,5 @@
 #include "net/NetSession.h"
+#include "decomp.h"
 #include "meta_band/SessionMgr.h"
 #include "MatchmakingSettings.h"
 #include "Net.h"
@@ -6,11 +7,15 @@
 #include "NetSession.h"
 #include "SessionMessages.h"
 #include "game/BandUser.h"
+#include "net/Net.h"
 #include "net/NetMessenger.h"
+#include "net/NetSearchResult.h"
+#include "net/QuazalSession.h"
 #include "net/SessionMessages.h"
 #include "net/SyncStore.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "obj/Msg.h"
 #include "obj/ObjMacros.h"
 #include "os/Debug.h"
 #include "os/PlatformMgr.h"
@@ -25,6 +30,7 @@
 #include <vector>
 #include <algorithm>
 
+NetSession *TheNetSession;
 std::vector<LocalUser *> gLocalUsersRemovedThisFrame;
 
 NetMessage *JoinRequestMsg::NewNetMessage() { return new JoinRequestMsg(); }
@@ -65,11 +71,15 @@ namespace {
 
 NetSession::NetSession()
     : mData(0), mLocalHost(0), mJoinData(0), mSettings(new SessionSettings()),
-      mJobMgr(this), unk44(-1), mGameState(kInLobby), mRevertingJoinResult(0),
-      mGameStartTime(0), mState(kIdle), mOnlineEnabled(0), mQNet(0) {
+      mJobMgr(this), mCurrentStateJobID(-1), mGameState(kInLobby),
+      mRevertingJoinResult(0), mGameStartTime(0), mState(kIdle), mOnlineEnabled(0),
+      mQNet(0) {
     SetName("session", ObjectDir::Main());
     DataArray *cfg = SystemConfig("net", "session");
     cfg->FindData("game_start_delay", mGameStartDelay, true);
+
+    cfg->FindInt("connection_timeout");
+    cfg->FindInt("max_connection_silence");
 
     RegisterSessionMessages();
     TheDebug.AddExitCallback(DisconnectOnFail);
@@ -77,7 +87,33 @@ NetSession::NetSession()
     TheNetSession = this;
 }
 
-NetSession::~NetSession() {}
+NetSession::~NetSession() {
+    RELEASE(mData);
+    RELEASE(mJoinData);
+    RELEASE(mGameStartTime);
+    RELEASE(mQNet);
+    RELEASE(mSettings);
+    QuazalSession::KillSession();
+    while (QuazalSession::StillDeleting()) {
+        QuazalSession::Poll();
+    }
+    gLocalUsersRemovedThisFrame.clear();
+    TheNetSession = nullptr;
+}
+
+void NetSession::RegisterOnline() {
+    MILO_ASSERT(!IsOnlineEnabled(), 0x78);
+    if (IsBusy()) {
+        MILO_FAIL("NetSession::!IsBusy %d\n", mState);
+    }
+    AssignLocalOwner();
+    MILO_ASSERT(!mData, 0x7C);
+    mData = SessionData::New();
+    SetState(kCreatingHostSession);
+    Job *job = new MakeQuazalSessionJob(&mQNet, true);
+    mCurrentStateJobID = job->ID();
+    mJobMgr.QueueJob(job);
+}
 
 void NetSession::AssignLocalOwner() {
     MILO_ASSERT(!mLocalHost, 0x89);
@@ -92,25 +128,28 @@ void NetSession::OnCreateSessionJobComplete(bool b) {
     if (mState == kCreatingHostSession) {
         if (b) {
             SetState(kRegisteringHostSession);
-            PrepareRegisterHostSessionJob();
-            mJobMgr.QueueJob(0);
+            Job *job = PrepareRegisterHostSessionJob();
+            mCurrentStateJobID = job->ID();
+            mJobMgr.QueueJob(job);
         } else {
             SetState(kIdle);
             static SessionReadyMsg msg(0);
-            Handle(msg, false);
+            MsgSource::Handle(msg, false);
         }
     } else if (mState == kCreatingJoinSession) {
         if (b) {
             SetState(kConnectingToSession);
-            PrepareConnectSessionJob();
-            mJobMgr.QueueJob(0);
+            Job *job = PrepareConnectSessionJob();
+            mCurrentStateJobID = job->ID();
+            mJobMgr.QueueJob(job);
         } else {
-            OnMsg(JoinResponseMsg(kCannotConnect, 0));
+            JoinResponseMsg msg(kCannotConnect, 0);
+            OnMsg(msg);
         }
     } else {
         SetState(kIdle);
         MILO_ASSERT(mRevertingJoinResult, 0xD2);
-        JoinResultMsg msg = *mRevertingJoinResult;
+        JoinResultMsg msg = mRevertingJoinResult->Data();
         RELEASE(mRevertingJoinResult);
         Handle(msg, false);
         if (!b)
@@ -145,7 +184,7 @@ void NetSession::OnRegisterSessionJobComplete(bool b) {
 void NetSession::OnConnectSessionJobComplete(bool b) {
     MILO_ASSERT(mState == kConnectingToSession, 0x103);
     if (b) {
-        if (!mOnlineEnabled) {
+        if (!IsOnlineEnabled()) {
             std::vector<LocalUser *> users;
             GetLocalUserList(users);
             for (int i = 0; i < users.size(); i++) {
@@ -153,7 +192,10 @@ void NetSession::OnConnectSessionJobComplete(bool b) {
             }
         }
         SetState(kRequestingJoin);
-        JoinRequestMsg(mUsers, 0);
+        JoinRequestMsg msg(mUsers, mSettings->ModeFilter());
+        // quazal session get instance
+        unsigned int masterID; // quazal duplicated object get master id
+        TheNetMessenger.DeliverMsg(masterID, msg, kReliable);
     } else {
         static JoinResponseMsg response(kCannotConnect, 0);
         OnMsg(response);
@@ -172,8 +214,7 @@ void NetSession::Clear() {
     mSettings->Clear();
 }
 
-#pragma push
-#pragma pool_data off
+UNPOOL_DATA
 void NetSession::Disconnect() {
     if (mState == kRequestingNewUser) {
         SetState(kIdle);
@@ -185,13 +226,13 @@ void NetSession::Disconnect() {
         OnMsg(response);
     }
 
-    for (int jobID = unk44; jobID != -1;) {
-        unk44 = -1;
+    for (int jobID = mCurrentStateJobID; jobID != -1;) {
+        mCurrentStateJobID = -1;
         MILO_ASSERT(mJobMgr.HasJob(jobID), 0x14C);
         mJobMgr.CancelJob(jobID);
     }
 
-    // release quazal object at 0x58
+    RELEASE(mGameStartTime);
 
     if (mGameState == kInOnlineGame) {
         EndSession(false);
@@ -204,6 +245,7 @@ void NetSession::Disconnect() {
         RemoveLocalFromSession(localusers[i]);
     }
     mOnlineEnabled = false;
+    RELEASE(mQNet);
     RELEASE(mRevertingJoinResult);
     mLocalHost = nullptr;
     mStillArbitrating.clear();
@@ -213,7 +255,7 @@ void NetSession::Disconnect() {
     for (int i = 0; i < localusers.size(); i++) {
         AddLocalToSession(localusers[i]);
     }
-    for (int i = 0; i < mUsers.size(); i) {
+    for (int i = 0; i < mUsers.size();) {
         if (!mUsers[i]->IsLocal()) {
             ProcessUserLeftMsg(UserLeftMsg(mUsers[i]));
             i = 0;
@@ -223,7 +265,52 @@ void NetSession::Disconnect() {
     static SessionDisconnectedMsg msg;
     Handle(msg, false);
 }
-#pragma pop
+END_UNPOOL_DATA
+
+// enum GameState {
+//     kInLobby = 0,
+//     kGameNeedIntro = 0,
+//     kStartingGame = 1,
+//     kGameNeedStart = 1,
+//     kInOnlineGame = 2,
+//     kGamePlaying = 2,
+//     kGameOver = 3,
+//     kInLocalGame = 3
+// };
+
+void NetSession::Poll() {
+    mJobMgr.Poll();
+    bool b2 = false;
+    if (mGameState == (GameState)1) {
+        bool b1 = true;
+        if (mGameStartTime) {
+            b1 = false;
+        }
+        if (b1)
+            b2 = true;
+    }
+    if (b2)
+        EnterInGameState();
+    if (mQNet) {
+        if (mQNet->HasHostLeft()) {
+            if (!(mState >= 3 && mState <= 6)) {
+                Disconnect();
+            } else if (mState == 5) {
+                static JoinResponseMsg response(kCannotConnect, 0);
+                OnMsg(response);
+            }
+        } else {
+            std::vector<int> clients;
+            if (mQNet->HaveClientsLeft(clients)) {
+                FOREACH (it, clients) {
+                    RemoveClient(*it);
+                }
+            }
+        }
+    }
+    QuazalSession::Poll();
+    gLocalUsersRemovedThisFrame.clear();
+}
 
 bool NetSession::IsLocal() const {
     if (mState - 3U <= 3) {
@@ -241,7 +328,33 @@ bool NetSession::IsLocal() const {
     }
 }
 
+FORCE_LOCAL_INLINE
 bool NetSession::IsOnlineEnabled() const { return mOnlineEnabled; }
+END_FORCE_LOCAL_INLINE
+
+UNPOOL_DATA
+void NetSession::Join(NetSearchResult *res) {
+    MILO_ASSERT(mState == kIdle, 0x1CC);
+    if (mOnlineEnabled && mData->Equals(res->mSessionData)) {
+        static JoinResultMsg msg(kNoSelfJoin, 0);
+        Handle(msg, false);
+    } else if (!IsLocal()) {
+        static JoinResultMsg msg(kAlreadyHosting, 0);
+        Handle(msg, false);
+    } else {
+        if (!mOnlineEnabled)
+            AssignLocalOwner();
+        SetState(kCreatingJoinSession);
+        RELEASE(mJoinData);
+        mJoinData = SessionData::New();
+        res->mSessionData->CopyInto(mJoinData);
+        RELEASE(mQNet);
+        Job *job = new MakeQuazalSessionJob(&mQNet, false);
+        mCurrentStateJobID = job->ID();
+        mJobMgr.QueueJob(job);
+    }
+}
+END_UNPOOL_DATA
 
 namespace {
     void DenyRequest(unsigned int ui, JoinResponseError err, int custom) {
@@ -253,6 +366,40 @@ namespace {
     }
 }
 
+bool NetSession::CheckJoinable(
+    JoinResponseError &err, int &iref, std::vector<UserGuid> users, BinStream &bs
+) {
+    if (!IsHost()) {
+        err = kNotHosting;
+        return false;
+    } else if (IsBusy()) {
+        err = kBusy;
+        return false;
+    } else {
+        int numUsers = mUsers.size();
+        int numAllowedPlayers = TheNet.GetGameData()->GetNumPlayersAllowed();
+        if (numAllowedPlayers - numUsers < users.size()) {
+            err = kNoRoom;
+            return false;
+        } else {
+            for (int i = 0; i < users.size(); i++) {
+                User *curUser = TheUserMgr->GetUser(users[i], false);
+                if (curUser && HasUser(curUser)) {
+                    err = kSameGuid;
+                    return false;
+                }
+            }
+            int num;
+            if (!TheNet.GetGameData()->AuthenticateJoin(bs, num)) {
+                err = kCustom;
+                iref = num;
+                return false;
+            } else
+                return true;
+        }
+    }
+}
+
 void NetSession::UpdateSyncStore(const User *user) {
     unsigned int machineID = user->mMachineID;
     TheSyncStore->SyncUser(user);
@@ -261,6 +408,66 @@ void NetSession::UpdateSyncStore(const User *user) {
     SyncAllMsg allmsg;
     unsigned int ui = machineID;
     TheNetMessenger.DeliverMsg(ui, allmsg, kReliable);
+}
+
+bool NetSession::OnMsg(const JoinRequestMsg &msg) {
+    unsigned int sender = TheNetMessenger.LastSender();
+    if (IsJoining()) {
+        TheNetMessenger.FlushClientMessages(sender);
+        return false;
+    } else {
+        int curNumUsers = msg.NumUsers();
+        JoinResponseError err;
+        int unk11c = -1;
+        MemStream ms;
+        msg.GetAuthenticationData(ms);
+        ms.Seek(0, BinStream::kSeekBegin);
+        std::vector<UserGuid> users;
+        for (int i = 0; i < curNumUsers; i++) {
+            users.push_back(msg.GetUserGuid(i));
+        }
+        if (!CheckJoinable(err, unk11c, users, ms)) {
+            DenyRequest(sender, err, unk11c);
+            TheNetMessenger.FlushClientMessages(sender);
+            return false;
+        } else if (mSettings->ModeFilter() != msg.GameMode()) {
+            DenyRequest(sender, kWrongMode, -1);
+            TheNetMessenger.FlushClientMessages(sender);
+            return false;
+        } else {
+            JoinResponseMsg respMsg(kSuccess, 0);
+            std::vector<User *> joiners;
+            for (int i = 0; i < curNumUsers; i++) {
+                RemoteUser *remoteUser = GetNewRemoteUser();
+                remoteUser->SetUserGuid(msg.GetUserGuid(i));
+                MemStream rms;
+                msg.GetUserData(i, rms);
+                rms.Seek(0, BinStream::kSeekBegin);
+                remoteUser->SyncLoad(rms, -1);
+                remoteUser->mMachineID = sender;
+                AddRemoteToSession(remoteUser);
+                joiners.push_back(remoteUser);
+                NewUserMsg userMsg(remoteUser);
+                SendToAllClientsExcept(userMsg, kReliable, sender);
+                NewRemoteUserMsg remoteUserMsg(remoteUser);
+                Handle(remoteUserMsg, false);
+            }
+            TheNetMessenger.DeliverMsg(sender, respMsg, kReliable);
+            std::vector<User *> usersInList;
+            GetUserList(usersInList);
+            FOREACH (it, usersInList) {
+                if (sender != (*it)->mMachineID) {
+                    NewUserMsg userMsg(*it);
+                    TheNetMessenger.DeliverMsg(sender, userMsg, kReliable);
+                }
+            }
+            MILO_ASSERT(!joiners.empty(), 0x28D);
+            UpdateSyncStore(joiners.front());
+            static ProcessedJoinRequestMsg acceptedMsg(true);
+            MsgSource::Handle(acceptedMsg, false);
+        }
+    }
+    return true;
 }
 
 bool NetSession::OnMsg(const AddUserRequestMsg &msg) {
@@ -560,6 +767,10 @@ void NetSession::RemoveClient(unsigned int ui) {
         }
     }
 }
+
+FORCE_LOCAL_INLINE
+bool NetSession::IsJoining() const { return mState - 3 <= 3U; }
+END_FORCE_LOCAL_INLINE
 
 void NetSession::HandleSessionMsg(SessionMsg *smsg) {
     int targetByteCode = smsg->ByteCode();

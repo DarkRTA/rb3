@@ -13,7 +13,7 @@ public:
 
     int ID() const { return mID; }
 
-    int mID;
+    int mID; // 0x4
 };
 
 class JobMgr {

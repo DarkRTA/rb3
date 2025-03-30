@@ -1,6 +1,7 @@
 #pragma once
 #include "game/NetGameMsgs.h"
 #include "obj/Data.h"
+#include "obj/Msg.h"
 #include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
@@ -25,6 +26,7 @@ public:
     NETMSG_NEWNETMSG(JoinRequestMsg);
 
     int NumUsers() const { return mUserDatas.size(); }
+    int GameMode() const { return mGameMode; }
     void GetUserData(int, BinStream &) const;
     const UserGuid &GetUserGuid(int) const;
     void GetAuthenticationData(BinStream &) const;
@@ -67,6 +69,11 @@ public:
     JoinResponseError mError; // 0x4
     int mCustomError; // 0x8
 };
+
+DECLARE_MESSAGE(JoinResultMsg, "join_result")
+JoinResultMsg() : Message(Type()) {}
+JoinResultMsg(JoinResponseError e, int i) : Message(Type(), e, i) {}
+END_MESSAGE
 
 class NewUserMsg : public SessionMsg {
 public:

@@ -4,6 +4,7 @@
 #include "meta_band/BandNetGameData.h"
 #include "net/NetMessage.h"
 #include "net/NetSearchResult.h"
+#include "net/QuazalSession.h"
 #include "net/SessionMessages.h"
 #include "obj/Data.h"
 #include "obj/Msg.h"
@@ -16,10 +17,6 @@
 DECLARE_MESSAGE(ProcessedJoinRequestMsg, "processed_join_request")
 ProcessedJoinRequestMsg(bool b) : Message(Type(), b) {}
 bool GetProcessed() const { return mData->Int(2); }
-END_MESSAGE
-
-DECLARE_MESSAGE(JoinResultMsg, "join_result")
-JoinResultMsg() : Message(Type()) {}
 END_MESSAGE
 
 DECLARE_MESSAGE(SyncStartGameMsg, "sync_start_game")
@@ -70,7 +67,7 @@ public:
     virtual void Load(BinStream &) = 0;
     virtual bool Equals(const SessionData *) const = 0;
 
-    static RVSessionData *New();
+    static SessionData *New();
 };
 
 class NetSession : public MsgSource {
@@ -95,7 +92,7 @@ public:
     virtual void WriteStats(const std::vector<UserStat> &) = 0;
     virtual void SetInvitesAllowed(bool) = 0;
     virtual void InviteFriend(Friend *, const char *, const char *) {}
-    virtual void PrepareRegisterHostSessionJob() = 0;
+    virtual Job *PrepareRegisterHostSessionJob() = 0;
     virtual void AddLocalToSession(LocalUser *);
     virtual void AddRemoteToSession(RemoteUser *);
     virtual void RemoveLocalFromSession(LocalUser *);
@@ -103,7 +100,7 @@ public:
     virtual void StartSession() = 0;
     virtual void EndSession(bool) = 0;
     virtual void DeleteSession() = 0;
-    virtual void PrepareConnectSessionJob() = 0;
+    virtual Job *PrepareConnectSessionJob() = 0;
     virtual void FinishJoin(const JoinResponseMsg &) = 0;
     virtual int PrepareRegisterArbitrationJob() = 0;
     virtual void UpdateSettings() = 0;
@@ -177,7 +174,7 @@ public:
     SessionData *mJoinData; // 0x2c
     SessionSettings *mSettings; // 0x30
     JobMgr mJobMgr; // 0x34
-    int unk44; // 0x44
+    int mCurrentStateJobID; // 0x44
     GameState mGameState; // 0x48
     JoinResultMsg *mRevertingJoinResult; // 0x4c
     std::vector<int> mStillArbitrating; // 0x50
@@ -185,7 +182,7 @@ public:
     int mGameStartDelay; // 0x5c
     SessionState mState; // 0x60
     bool mOnlineEnabled; // 0x64
-    int mQNet; // 0x68 - QuazalSession
+    QuazalSession *mQNet; // 0x68
 };
 
 extern NetSession *TheNetSession;

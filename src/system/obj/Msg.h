@@ -165,6 +165,7 @@ public:
 
     operator DataArray *() const { return mData; }
     DataArray *operator->() const { return mData; }
+    DataArray *Data() const { return mData; }
 
     void SetType(Symbol type) { mData->Node(1) = type; }
 

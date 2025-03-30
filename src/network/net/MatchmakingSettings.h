@@ -19,6 +19,7 @@ public:
     int GetCustomValueByID(int) const;
     void Save(BinStream &) const;
     void Load(BinStream &);
+    int ModeFilter() const { return mModeFilter; }
 
     Symbol mModeName; // 0x4
     int mModeFilter; // 0x8

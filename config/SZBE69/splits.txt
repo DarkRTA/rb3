@@ -111,11 +111,9 @@ rb3/unknown/800/unk_800AB914.cpp:
 	.text       start:0x800AB914 end:0x800AB960
 	.data       start:0x8082ADF0 end:0x8082AE04
 
-rb3/unknown/800/unk_800AC804.cpp:
-	.text       start:0x800AC804 end:0x800B45D0
-
-rb3/unknown/800/unk_800B4630.cpp:
-	.text       start:0x800B4630 end:0x800BC50C
+network/net/NetSession.cpp:
+	.text       start:0x800ACBC4 end:0x800B46BC
+	.ctors      start:0x807EFE34 end:0x807EFE38
 
 network/net/WiiFriendMgr.cpp:
 	.text       start:0x800BF234 end:0x800C2474
