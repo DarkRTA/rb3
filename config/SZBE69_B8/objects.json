@@ -763,7 +763,7 @@
         "cflags": "network/Platform",
         "objects": {
             "network/Platform/BadEvents.cpp": "Matching",
-            "network/Platform/BandwidthCounter.cpp": "MISSING",
+            "network/Platform/BandwidthCounter.cpp": "NonMatching",
             "network/Platform/BerkeleySocketDriver.cpp": "MISSING",
             "network/Platform/CIDLogFilter.cpp": "Matching",
             "network/Platform/CriticalSection.cpp": "Matching",

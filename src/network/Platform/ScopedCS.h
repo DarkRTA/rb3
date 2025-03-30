@@ -15,8 +15,9 @@ namespace Quazal {
 
         void EndScope() {
             if (unk0) {
+                CriticalSection *cs = critSec;
                 if (!MutexPrimitive::s_bNoOp)
-                    critSec->LeaveImpl();
+                    cs->LeaveImpl();
                 unk0 = false;
             }
         }
