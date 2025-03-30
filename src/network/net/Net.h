@@ -20,6 +20,9 @@ public:
     void Terminate();
     void Poll();
     NetGameData *GetGameData();
+    void UpdateNetOverlay();
+    void SetGameData(NetGameData *);
+    void ToggleLogging();
     NetSession *GetNetSession() const { return mSession; }
     Server *GetServer() const { return mServer; }
     SessionSearcher *GetSearcher() const { return mSearcher; }

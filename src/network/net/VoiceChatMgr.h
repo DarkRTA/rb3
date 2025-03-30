@@ -10,6 +10,7 @@ public:
 
     void ToggleMuteStatus(User *);
     bool IsMuted(User *) const;
+    void Poll();
 };
 
 DECLARE_MESSAGE(VoiceChatDisabledMsg, "voice_chat_disabled")

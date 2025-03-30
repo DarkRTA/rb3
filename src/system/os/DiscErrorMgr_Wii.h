@@ -36,7 +36,7 @@ public:
 class WiiDiscErrorSessionTerminatior : public DiscErrorMgrWii::Callback {
 public:
     WiiDiscErrorSessionTerminatior() {}
-    virtual void DiscErrorStart() {}
+    virtual void DiscErrorStart();
 };
 
 extern WiiDiscErrorSessionTerminatior TheWiiDiscErrorSessionTerminator;

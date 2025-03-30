@@ -29,6 +29,7 @@ class WiiMessenger : public MsgSource {
 public:
     void EnumerateMessages(WiiMessageList *, Hmx::Object *);
     void SendMessage(int, const char *, const char *, Hmx::Object *, int);
+    void Poll();
 };
 
 extern WiiMessenger TheWiiMessenger;

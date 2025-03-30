@@ -60,6 +60,7 @@ public:
 class SyncStore {
 public:
     SyncStore();
+    ~SyncStore() {}
     void Poll();
     void AddSyncObj(Synchronizable *, String &);
     void RemoveSyncObj(String &);

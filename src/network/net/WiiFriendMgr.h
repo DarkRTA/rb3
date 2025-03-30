@@ -83,6 +83,7 @@ public:
     void SetStatusDelimiter(char);
     void Init();
     void Terminate();
+    void Poll();
 
     static String GetMasterProfileName(unsigned long long);
 
