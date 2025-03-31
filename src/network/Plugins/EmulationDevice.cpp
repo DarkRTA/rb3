@@ -6,8 +6,6 @@ namespace Quazal {
           m_uiJitter(0), m_rPacketDropProbability(0.0f) {}
     EmulationDevice::~EmulationDevice() {}
 
-    void EmulationDevice::Enable() { m_bEnabled = true; }
-
     void EmulationDevice::SetLatency(unsigned int latency) { m_uiLatency = latency; }
 
     void EmulationDevice::SetJitter(unsigned int jitter) { m_uiJitter = jitter; }
