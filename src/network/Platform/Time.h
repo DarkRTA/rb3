@@ -10,6 +10,7 @@ namespace Quazal {
         void GetTime();
         Time &operator=(const Time &);
         Time &operator=(unsigned long long);
+        Time operator+(int) const;
         operator unsigned long long();
         operator unsigned long long() const;
 

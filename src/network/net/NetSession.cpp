@@ -18,6 +18,7 @@
 #include "net/VoiceChatMgr.h"
 #include "network/ObjDup/Session.h"
 #include "network/ObjDup/Station.h"
+#include "network/Extensions/SessionClock.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
@@ -270,17 +271,6 @@ void NetSession::Disconnect() {
     Handle(msg, false);
 }
 END_UNPOOL_DATA
-
-// enum GameState {
-//     kInLobby = 0,
-//     kGameNeedIntro = 0,
-//     kStartingGame = 1,
-//     kGameNeedStart = 1,
-//     kInOnlineGame = 2,
-//     kGamePlaying = 2,
-//     kGameOver = 3,
-//     kInLocalGame = 3
-// };
 
 void NetSession::Poll() {
     mJobMgr.Poll();
@@ -543,21 +533,21 @@ void NetSession::AddLocalUser(LocalUser *newUser) {
 }
 
 bool NetSession::OnMsg(const AddUserRequestMsg &msg) {
-    unsigned int lastsender = TheNetMessenger.mLastSender;
+    unsigned int lastsender = TheNetMessenger.LastSender();
     int ie4 = -1;
     JoinResponseError err;
     MemStream stream(false);
     msg.GetAuthenticationData(stream);
     stream.Seek(0, BinStream::kSeekBegin);
     std::vector<UserGuid> guids;
-    guids.push_back(msg.mUserGuid);
+    guids.push_back(msg.GetUserGuid());
     if (!CheckJoinable(err, ie4, guids, stream)) {
         AddUserResponseMsg msg(0);
         TheNetMessenger.DeliverMsg(lastsender, msg, kReliable);
         return false;
     } else {
         RemoteUser *newremote = GetNewRemoteUser();
-        newremote->SetUserGuid(msg.mUserGuid);
+        newremote->SetUserGuid(msg.GetUserGuid());
         MemStream ustream(false);
         msg.GetUserData(ustream);
         ustream.Seek(0, BinStream::kSeekBegin);
@@ -709,7 +699,8 @@ void NetSession::BeginGameStartCountdown() {
     int i2 = IsLocal() ? 0 : mGameStartDelay;
     MILO_ASSERT(!mGameStartTime, 0x427);
     if (i2) {
-        StartGameOnTimeMsg msg;
+        mGameStartTime = new Quazal::Time(Quazal::SessionClock::GetTime() + i2);
+        StartGameOnTimeMsg msg(*mGameStartTime);
         SendToAllClientsExcept(msg, kReliable, -1);
     }
 }
@@ -837,14 +828,24 @@ void NetSession::SendMsg(User *destUser, NetMessage &msg, PacketType ptype) {
     SendMsg(remoteusers, msg, ptype);
 }
 
+using namespace Quazal;
+
 void NetSession::SendMsg(
     const std::vector<RemoteUser *> &users, NetMessage &msg, PacketType ptype
 ) {
-    if (mOnlineEnabled && mQNet) {
-        std::vector<RemoteUser *> rusers;
+    if (!mOnlineEnabled || !mQNet)
+        return;
+    else {
+        std::vector<unsigned int> machineIDs;
         for (int i = 0; i < users.size(); i++) {
-            std::vector<RemoteUser *>::const_iterator it =
-                std::find(users.begin(), users.end(), users[i]); // probably wrong lol
+            unsigned int machineID = users[i]->GetMachineID();
+            std::vector<unsigned int>::iterator it =
+                std::find(machineIDs.begin(), machineIDs.end(), machineID);
+            if (it == machineIDs.end()) {
+                MILO_ASSERT(machineID != Station::GetLocalInstance()->GetStationID(), 0x4EA);
+                TheNetMessenger.DeliverMsg(machineID, msg, ptype);
+                machineIDs.push_back(machineID);
+            }
         }
     }
 }
@@ -872,7 +873,25 @@ DataNode NetSession::OnSendMsgToAll(DataArray *a) {
     return 1;
 }
 
-void NetSession::SendToAllClientsExcept(const NetMessage &, PacketType, unsigned int) {}
+void NetSession::SendToAllClientsExcept(
+    const NetMessage &msg, PacketType ptype, unsigned int ui
+) {
+    if (mQNet) {
+        MILO_ASSERT(Station::GetLocalInstance(), 0x516);
+        std::vector<unsigned int> machineIDs;
+        machineIDs.push_back(Station::GetLocalInstance()->GetStationID());
+        machineIDs.push_back(ui);
+        for (int i = 0; i < mUsers.size(); i++) {
+            unsigned int machineID = mUsers[i]->GetMachineID();
+            std::vector<unsigned int>::iterator it =
+                std::find(machineIDs.begin(), machineIDs.end(), machineID);
+            if (it == machineIDs.end()) {
+                TheNetMessenger.DeliverMsg(machineID, msg, ptype);
+                machineIDs.push_back(machineID);
+            }
+        }
+    }
+}
 
 void NetSession::AddLocalToSession(LocalUser *user) {
     user->UpdateOnlineID();

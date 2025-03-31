@@ -124,6 +124,7 @@ public:
 
     void GetUserData(BinStream &) const;
     void GetAuthenticationData(BinStream &) const;
+    const UserGuid &GetUserGuid() const { return mUserGuid; }
 
     UserGuid mUserGuid; // 0x4
     MemStream mUserData; // 0x14
