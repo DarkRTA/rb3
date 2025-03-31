@@ -65,6 +65,8 @@ public:
     NETMSG_NEWNETMSG(JoinResponseMsg);
 
     bool Joined() const;
+    JoinResponseError Error() const { return mError; }
+    int CustomError() const { return mCustomError; }
 
     JoinResponseError mError; // 0x4
     int mCustomError; // 0x8

@@ -13,6 +13,7 @@
 #include "net/QuazalSession.h"
 #include "net/SessionMessages.h"
 #include "net/SyncStore.h"
+#include "net/VoiceChatMgr.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
@@ -468,6 +469,73 @@ bool NetSession::OnMsg(const JoinRequestMsg &msg) {
         }
     }
     return true;
+}
+
+bool NetSession::OnMsg(const JoinResponseMsg &msg) {
+    MILO_ASSERT(mState == kRequestingJoin || mState == kConnectingToSession || mState == kCreatingJoinSession, 0x29B);
+    if (msg.Joined()) {
+        std::vector<LocalUser *> users;
+        GetLocalUserList(users);
+        FOREACH (it, users) {
+            if (!(*it)->HasOnlinePrivilege()) {
+                JoinResponseMsg respMsg(kCannotConnect, 0);
+                return OnMsg(respMsg);
+            }
+        }
+        FOREACH (it, users) {
+            RemoveLocalFromSession(*it);
+        }
+        mOnlineEnabled = true;
+        FinishJoin(msg);
+        delete mData;
+        mData = mJoinData;
+        mJoinData = nullptr;
+        FOREACH (it, users) {
+            AddLocalToSession(*it);
+        }
+        TheVoiceChatMgr->JoinVoiceChannel();
+        SetState(kIdle);
+        JoinResultMsg jMsg(msg.Error(), msg.CustomError());
+        Handle(jMsg, false);
+    } else {
+        FinishJoin(msg);
+        RELEASE(mJoinData);
+        RELEASE(mQNet);
+        if (mOnlineEnabled) {
+            MILO_ASSERT(!mRevertingJoinResult, 0x2E0);
+            mRevertingJoinResult = new JoinResultMsg(msg.Error(), msg.CustomError());
+            SetState(kRevertingToHost);
+            Job *job = new MakeQuazalSessionJob(&mQNet, true);
+            mCurrentStateJobID = job->ID();
+            mJobMgr.QueueJob(job);
+        } else {
+            MILO_ASSERT(mLocalHost, 0x2EC);
+            mLocalHost = nullptr;
+            SetState(kIdle);
+            JoinResultMsg jMsg(msg.Error(), msg.CustomError());
+            Handle(jMsg, false);
+        }
+    }
+    return true;
+}
+
+void NetSession::AddLocalUser(LocalUser *newUser) {
+    MILO_ASSERT(mState == kIdle, 0x2F9);
+    MILO_ASSERT(newUser, 0x2FA);
+    MILO_ASSERT(!HasUser(newUser), 0x2FC);
+    if (IsHost()) {
+        AddLocalToSession(newUser);
+        NewUserMsg msg(newUser);
+        SendToAllClientsExcept(msg, kReliable, -1);
+        static AddUserResultMsg successMsg(1);
+        Handle(successMsg, false);
+    } else {
+        SetState(kRequestingNewUser);
+        newUser->UpdateOnlineID();
+        AddUserRequestMsg msg(newUser);
+        unsigned int masterID;
+        TheNetMessenger.DeliverMsg(masterID, msg, kReliable);
+    }
 }
 
 bool NetSession::OnMsg(const AddUserRequestMsg &msg) {
