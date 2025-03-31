@@ -1,5 +1,7 @@
 #include "net/NetSession.h"
+#include "Platform/Time.h"
 #include "decomp.h"
+#include "game/Game.h"
 #include "meta_band/SessionMgr.h"
 #include "MatchmakingSettings.h"
 #include "Net.h"
@@ -14,6 +16,7 @@
 #include "net/SessionMessages.h"
 #include "net/SyncStore.h"
 #include "net/VoiceChatMgr.h"
+#include "network/ObjDup/Session.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
@@ -27,7 +30,6 @@
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
 #include "utl/Symbols.h"
-#include "utl/Symbols4.h"
 #include <vector>
 #include <algorithm>
 
@@ -194,9 +196,9 @@ void NetSession::OnConnectSessionJobComplete(bool b) {
         }
         SetState(kRequestingJoin);
         JoinRequestMsg msg(mUsers, mSettings->ModeFilter());
-        // quazal session get instance
-        unsigned int masterID; // quazal duplicated object get master id
-        TheNetMessenger.DeliverMsg(masterID, msg, kReliable);
+        TheNetMessenger.DeliverMsg(
+            Quazal::Session::GetInstance()->GetMasterID(), msg, kReliable
+        );
     } else {
         static JoinResponseMsg response(kCannotConnect, 0);
         OnMsg(response);
@@ -363,7 +365,7 @@ namespace {
         JoinResponseMsg respMsg(err, custom);
         TheNetMessenger.DeliverMsg(ui, respMsg, kReliable);
         ProcessedJoinRequestMsg pjReqMsg(false);
-        TheNet.Handle(pjReqMsg, false);
+        TheNet.GetNetSession()->Handle(pjReqMsg, false);
     }
 }
 
@@ -533,8 +535,9 @@ void NetSession::AddLocalUser(LocalUser *newUser) {
         SetState(kRequestingNewUser);
         newUser->UpdateOnlineID();
         AddUserRequestMsg msg(newUser);
-        unsigned int masterID;
-        TheNetMessenger.DeliverMsg(masterID, msg, kReliable);
+        TheNetMessenger.DeliverMsg(
+            Quazal::Session::GetInstance()->GetMasterID(), msg, kReliable
+        );
     }
 }
 
@@ -598,6 +601,28 @@ bool NetSession::OnMsg(const NewUserMsg &msg) {
     return true;
 }
 
+void NetSession::RemoveLocalUser(LocalUser *user) {
+    MILO_ASSERT(user, 0x36E);
+    if (HasUser(user)) {
+        RemoveLocalFromSession(user);
+        if ((IsOnlineEnabled() && !IsJoining()) || mState == kRequestingJoin) {
+            UserLeftMsg msg(user);
+            if (IsHost()) {
+                SendToAllClientsExcept(msg, kReliable, -1);
+            } else {
+                TheNetMessenger.DeliverMsg(
+                    Quazal::Session::GetInstance()->GetMasterID(), msg, kReliable
+                );
+            }
+        }
+        user->Reset();
+        LocalUserLeftMsg msg(user);
+        Export(msg, true);
+        if (user == mLocalHost)
+            Disconnect();
+    }
+}
+
 bool NetSession::OnMsg(const UserLeftMsg &msg) {
     ProcessUserLeftMsg(msg);
     return true;
@@ -643,6 +668,13 @@ void NetSession::StartArbitration() {
     SendToAllClientsExcept(amsg, kReliable, -1);
 }
 
+bool NetSession::OnMsg(const BeginArbitrationMsg &) {
+    MILO_ASSERT(mState == kIdle, 0x3E9);
+    SetState(kClientsArbitrating);
+    mJobMgr.QueueJob(PrepareRegisterArbitrationJob());
+    return true;
+}
+
 bool NetSession::OnMsg(const FinishedArbitrationMsg &msg) {
     SetDoneArbitrating(msg.mMachineID);
     return true;
@@ -657,8 +689,13 @@ void NetSession::SetDoneArbitrating(int id) {
     mStillArbitrating.erase(it);
     if (mStillArbitrating.empty()) {
         SetState(kHostArbitrating);
+        Job *job = PrepareRegisterArbitrationJob();
+        mCurrentStateJobID = job->ID();
+        mJobMgr.QueueJob(job);
     }
 }
+
+DECOMP_FORCEACTIVE(NetSession, "mState == kHostArbitrating")
 
 void NetSession::BeginGameStartCountdown() {
     MILO_ASSERT(IsHost(), 0x421);
@@ -680,11 +717,30 @@ bool NetSession::OnMsg(const StartGameOnTimeMsg &msg) {
     MILO_ASSERT(!mGameStartTime, 0x434);
     MILO_ASSERT(mGameState == kInLobby, 0x435);
     SetState(kIdle);
+    mGameState = kStartingGame;
+    mGameStartTime = new Quazal::Time(msg.mStartTime);
     return true;
 }
 
+void NetSession::EndGame(int i, bool reportResult, float f) {
+    MILO_ASSERT(IsInGame(), 0x43E);
+    if (IsHost()) {
+        bool ranked = mSettings->Ranked();
+        if (ranked)
+            MILO_ASSERT(reportResult, 0x444);
+        EndGameMsg msg(i, ranked, f);
+        SendToAllClientsExcept(msg, kReliable, -1);
+        LeaveInGameState(i, reportResult, f);
+    } else {
+        EndGameMsg msg(i, reportResult, f);
+        TheNetMessenger.DeliverMsg(
+            Quazal::Session::GetInstance()->GetMasterID(), msg, kReliable
+        );
+    }
+}
+
 bool NetSession::OnMsg(const EndGameMsg &msg) {
-    if (mGameState == kInLocalGame || mGameState == kInOnlineGame) {
+    if (IsInGame()) {
         if (IsHost()) {
             EndGame(msg.mResultCode, msg.mReportStats, msg.unkc);
         } else {
@@ -693,6 +749,8 @@ bool NetSession::OnMsg(const EndGameMsg &msg) {
     }
     return true;
 }
+
+LocalUser *NetSession::GetLocalHost() const { return mLocalHost; }
 
 bool NetSession::HasUser(const User *user) const {
     MILO_ASSERT(user, 0x470);
@@ -723,6 +781,10 @@ void NetSession::GetUserList(std::vector<User *> &users) const {
     }
 }
 
+int NetSession::NumOpenSlots() const {
+    return TheNet.GetGameData()->GetNumPlayersAllowed() - mUsers.size();
+}
+
 RemoteUser *NetSession::GetNewRemoteUser() {
     std::vector<RemoteUser *> rusers;
     TheUserMgr->GetRemoteUsers(rusers);
@@ -732,6 +794,21 @@ RemoteUser *NetSession::GetNewRemoteUser() {
     }
     MILO_FAIL("No more free Remote Users to be assigned!");
     return nullptr;
+}
+
+void NetSession::UpdateUserData(User *user, unsigned int ui) {
+    MILO_ASSERT(user, 0x4A6);
+    MILO_ASSERT(user->IsLocal(), 0x4A7);
+    if (HasUser(user) && !IsBusy()) {
+        UpdateUserDataMsg msg(user, ui);
+        if (IsHost()) {
+            SendToAllClientsExcept(msg, kReliable, -1);
+        } else {
+            TheNetMessenger.DeliverMsg(
+                Quazal::Session::GetInstance()->GetMasterID(), msg, kReliable
+            );
+        }
+    }
 }
 
 bool NetSession::OnMsg(const UpdateUserDataMsg &msg) {
@@ -838,6 +915,12 @@ void NetSession::RemoveClient(unsigned int ui) {
 
 FORCE_LOCAL_INLINE
 bool NetSession::IsJoining() const { return mState - 3 <= 3U; }
+END_FORCE_LOCAL_INLINE
+
+FORCE_LOCAL_INLINE
+bool NetSession::IsInGame() const {
+    return mGameState == kInLocalGame || mGameState == kInOnlineGame;
+}
 END_FORCE_LOCAL_INLINE
 
 void NetSession::HandleSessionMsg(SessionMsg *smsg) {

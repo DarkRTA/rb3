@@ -102,7 +102,7 @@ public:
     virtual void DeleteSession() = 0;
     virtual Job *PrepareConnectSessionJob() = 0;
     virtual void FinishJoin(const JoinResponseMsg &) = 0;
-    virtual int PrepareRegisterArbitrationJob() = 0;
+    virtual Job *PrepareRegisterArbitrationJob() = 0;
     virtual void UpdateSettings() = 0;
     virtual void OnSetPublic(bool) {}
     virtual bool OnMsg(const VoiceDataMsg &) { return false; }

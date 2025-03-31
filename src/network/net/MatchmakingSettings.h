@@ -20,6 +20,7 @@ public:
     void Save(BinStream &) const;
     void Load(BinStream &);
     int ModeFilter() const { return mModeFilter; }
+    bool Ranked() const { return mRanked; }
 
     Symbol mModeName; // 0x4
     int mModeFilter; // 0x8
