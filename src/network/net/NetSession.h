@@ -85,6 +85,13 @@ public:
         kHostArbitrating = 9
     };
 
+    enum GameState {
+        kInLobby = 0,
+        kStartingGame = 1,
+        kInOnlineGame = 2,
+        kInLocalGame = 3
+    };
+
     NetSession();
     virtual DataNode Handle(DataArray *, bool);
     virtual ~NetSession();

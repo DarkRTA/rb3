@@ -187,6 +187,7 @@ public:
     NETMSG_NAME(FinishedArbitrationMsg);
 
     NETMSG_NEWNETMSG(FinishedArbitrationMsg);
+    unsigned int MachineID() const { return mMachineID; }
 
     unsigned int mMachineID; // 0x4
 };

@@ -28,6 +28,7 @@ namespace Quazal {
         virtual void UpdateCellStats(int, int, int);
 
         unsigned int GetMasterID() const;
+        bool IsADuplicationMaster() const;
     };
 
 }

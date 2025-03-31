@@ -17,6 +17,7 @@
 #include "net/SyncStore.h"
 #include "net/VoiceChatMgr.h"
 #include "network/ObjDup/Session.h"
+#include "network/ObjDup/Station.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
 #include "obj/Msg.h"
@@ -646,7 +647,7 @@ void NetSession::ProcessUserLeftMsg(const UserLeftMsg &msg) {
 void NetSession::StartGame() {
     MILO_ASSERT(IsHost(), 0x3C3);
     MILO_ASSERT(mState == kIdle, 0x3C4);
-    if (mSettings->mRanked)
+    if (mSettings->Ranked())
         StartArbitration();
     else
         BeginGameStartCountdown();
@@ -671,12 +672,14 @@ void NetSession::StartArbitration() {
 bool NetSession::OnMsg(const BeginArbitrationMsg &) {
     MILO_ASSERT(mState == kIdle, 0x3E9);
     SetState(kClientsArbitrating);
-    mJobMgr.QueueJob(PrepareRegisterArbitrationJob());
+    Job *job = PrepareRegisterArbitrationJob();
+    job->ID();
+    mJobMgr.QueueJob(job);
     return true;
 }
 
 bool NetSession::OnMsg(const FinishedArbitrationMsg &msg) {
-    SetDoneArbitrating(msg.mMachineID);
+    SetDoneArbitrating(msg.MachineID());
     return true;
 }
 
@@ -702,7 +705,7 @@ void NetSession::BeginGameStartCountdown() {
     MILO_ASSERT(mState == kIdle || mState == kHostArbitrating, 0x422);
     MILO_ASSERT(mGameState == kInLobby, 0x423);
     SetState(kIdle);
-    mGameState = kGameNeedStart;
+    mGameState = kStartingGame;
     int i2 = IsLocal() ? 0 : mGameStartDelay;
     MILO_ASSERT(!mGameStartTime, 0x427);
     if (i2) {
@@ -871,7 +874,13 @@ DataNode NetSession::OnSendMsgToAll(DataArray *a) {
 
 void NetSession::SendToAllClientsExcept(const NetMessage &, PacketType, unsigned int) {}
 
-void NetSession::AddLocalToSession(LocalUser *user) {}
+void NetSession::AddLocalToSession(LocalUser *user) {
+    user->UpdateOnlineID();
+    if (mOnlineEnabled) {
+        user->mMachineID = Quazal::Station::GetLocalInstance()->GetStationID();
+    }
+    mUsers.push_back(user);
+}
 
 void NetSession::AddRemoteToSession(RemoteUser *user) { mUsers.push_back(user); }
 
@@ -895,6 +904,22 @@ void NetSession::EnterInGameState() {
     Handle(start, false);
 }
 
+void NetSession::LeaveInGameState(int i1, bool b2, float f3) {
+    switch (mGameState) {
+    case kInOnlineGame:
+        EndSession(b2);
+        break;
+    case kInLocalGame:
+        break;
+    default:
+        MILO_FAIL("NetSession::LeaveInGameState while in state %i", mGameState);
+    }
+    mGameState = kInLobby;
+    RELEASE(mGameStartTime);
+    GameEndedMsg msg(i1, f3);
+    Handle(msg, false);
+}
+
 void NetSession::RemoveClient(unsigned int ui) {
     TheNetMessenger.FlushClientMessages(ui);
     if (IsHost()) {
@@ -913,6 +938,37 @@ void NetSession::RemoveClient(unsigned int ui) {
     }
 }
 
+bool NetSession::IsHost() const {
+    if (mState == kRequestingNewUser || IsJoining())
+        return false;
+    if (mState == kCreatingHostSession || mState == kRegisteringHostSession) {
+        return true;
+    } else if (mQNet) {
+        return Quazal::Session::GetInstance()->IsADuplicationMaster();
+    } else
+        return true;
+}
+
+bool NetSession::IsBusy() const {
+    switch (mState) {
+    case kCreatingHostSession:
+    case kRegisteringHostSession:
+    case kCreatingJoinSession:
+    case kConnectingToSession:
+    case kRequestingJoin:
+    case kRevertingToHost:
+    case kRequestingNewUser:
+        return true;
+    case kIdle:
+    case kClientsArbitrating:
+    case kHostArbitrating:
+        return false;
+    default:
+        MILO_FAIL("Invalid state %i in NetSession::IsBusy()", mState);
+        return false;
+    }
+}
+
 FORCE_LOCAL_INLINE
 bool NetSession::IsJoining() const { return mState - 3 <= 3U; }
 END_FORCE_LOCAL_INLINE
@@ -922,6 +978,18 @@ bool NetSession::IsInGame() const {
     return mGameState == kInLocalGame || mGameState == kInOnlineGame;
 }
 END_FORCE_LOCAL_INLINE
+
+bool NetSession::IsStartingGame() const { return mGameState == kStartingGame; }
+
+void NetSession::SetState(SessionState state) {
+    bool oldbusy = IsBusy();
+    mState = state;
+    mCurrentStateJobID = -1;
+    if (oldbusy != IsBusy()) {
+        static SessionBusyMsg msg;
+        MsgSource::Handle(msg, false);
+    }
+}
 
 void NetSession::HandleSessionMsg(SessionMsg *smsg) {
     int targetByteCode = smsg->ByteCode();

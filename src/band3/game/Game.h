@@ -19,14 +19,10 @@
 #include "utl/SongPos.h"
 
 enum GameState {
-    kInLobby = 0,
     kGameNeedIntro = 0,
-    kStartingGame = 1,
     kGameNeedStart = 1,
-    kInOnlineGame = 2,
     kGamePlaying = 2,
-    kGameOver = 3,
-    kInLocalGame = 3
+    kGameOver = 3
 };
 
 enum EndGameResult {
@@ -252,9 +248,9 @@ public:
 };
 
 DECLARE_MESSAGE(GameEndedMsg, "game_ended");
+GameEndedMsg(int i, float f) : Message(Type(), i, f) {}
 EndGameResult GetResult() const { return (EndGameResult)mData->Int(2); }
 END_MESSAGE
-;
 
 void GameInit();
 void GameTerminate();
