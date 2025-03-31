@@ -160,6 +160,7 @@ public:
     NETMSG_NEWNETMSG(UpdateUserDataMsg);
 
     void GetUserData(BinStream &) const;
+    unsigned int GetDirtyMask() const { return mDirtyMask; }
 
     UserGuid mUserGuid; // 0x4
     unsigned int mDirtyMask; // 0x14
@@ -204,6 +205,7 @@ public:
     NETMSG_NAME(StartGameOnTimeMsg);
 
     NETMSG_NEWNETMSG(StartGameOnTimeMsg);
+    unsigned long long GetStartTime() const { return mStartTime; }
 
     unsigned long long mStartTime; // 0x8
 };

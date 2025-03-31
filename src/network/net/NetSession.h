@@ -169,6 +169,7 @@ public:
     bool OnMsg(const StartGameOnTimeMsg &);
     bool OnMsg(const EndGameMsg &);
     SessionSettings *GetSessionSettings() const { return mSettings; }
+    int NumUsers() const { return mUsers.size(); }
 
     static NetSession *New();
 

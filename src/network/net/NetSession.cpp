@@ -32,6 +32,9 @@
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
 #include "utl/Symbols.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include <vector>
 #include <algorithm>
 
@@ -712,7 +715,7 @@ bool NetSession::OnMsg(const StartGameOnTimeMsg &msg) {
     MILO_ASSERT(mGameState == kInLobby, 0x435);
     SetState(kIdle);
     mGameState = kStartingGame;
-    mGameStartTime = new Quazal::Time(msg.mStartTime);
+    mGameStartTime = new Quazal::Time(msg.GetStartTime());
     return true;
 }
 
@@ -775,9 +778,11 @@ void NetSession::GetUserList(std::vector<User *> &users) const {
     }
 }
 
+FORCE_LOCAL_INLINE
 int NetSession::NumOpenSlots() const {
-    return TheNet.GetGameData()->GetNumPlayersAllowed() - mUsers.size();
+    return TheNet.GetGameData()->GetNumPlayersAllowed() - NumUsers();
 }
+END_FORCE_LOCAL_INLINE
 
 RemoteUser *NetSession::GetNewRemoteUser() {
     std::vector<RemoteUser *> rusers;
@@ -811,9 +816,9 @@ bool NetSession::OnMsg(const UpdateUserDataMsg &msg) {
         MemStream stream(false);
         msg.GetUserData(stream);
         stream.Seek(0, BinStream::kSeekBegin);
-        ruser->SyncLoad(stream, msg.mDirtyMask);
+        ruser->SyncLoad(stream, msg.GetDirtyMask());
         if (IsHost()) {
-            SendToAllClientsExcept(msg, kReliable, ruser->mMachineID);
+            SendToAllClientsExcept(msg, kReliable, ruser->GetMachineID());
         }
         RemoteUserUpdatedMsg msg(ruser);
         Handle(msg, false);
@@ -833,7 +838,7 @@ using namespace Quazal;
 void NetSession::SendMsg(
     const std::vector<RemoteUser *> &users, NetMessage &msg, PacketType ptype
 ) {
-    if (!mOnlineEnabled || !mQNet)
+    if (!IsOnlineEnabled() || !mQNet)
         return;
     else {
         std::vector<unsigned int> machineIDs;
@@ -851,7 +856,7 @@ void NetSession::SendMsg(
 }
 
 void NetSession::SendMsgToAll(NetMessage &msg, PacketType ptype) {
-    if (!mOnlineEnabled || !mQNet)
+    if (!IsOnlineEnabled() || !mQNet)
         return;
     SendToAllClientsExcept(msg, ptype, -1);
 }
@@ -1044,5 +1049,16 @@ BEGIN_HANDLERS(NetSession)
     HANDLE_ACTION(clear, Clear())
     HANDLE(send_msg, OnSendMsg)
     HANDLE(send_msg_to_all, OnSendMsgToAll)
-    HANDLE_EXPR(num_users, (int)mUsers.size())
+    HANDLE_EXPR(num_users, NumUsers())
+    HANDLE_EXPR(num_open_slots, NumOpenSlots())
+    HANDLE_EXPR(is_local, IsLocal())
+    HANDLE_EXPR(is_in_game, IsInGame())
+    HANDLE_EXPR(is_joining, IsJoining())
+    HANDLE_EXPR(has_user, HasUser(_msg->Obj<User>(2)))
+    HANDLE_EXPR(is_busy, IsBusy())
+    HANDLE_ACTION(remove_local_user, RemoveLocalUser(_msg->Obj<LocalUser>(2)))
+    HANDLE_ACTION(add_local_user, AddLocalUser(_msg->Obj<LocalUser>(2)))
+    HANDLE_ACTION(end_game, EndGame(_msg->Int(2), false, 0))
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_CHECK(0x623)
 END_HANDLERS
