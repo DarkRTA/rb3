@@ -340,6 +340,8 @@
             "network/Platform/StringConversion.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
 
+            "network/Core/StepSequenceJob.cpp": "NonMatching",
+
             "network/Products/ProductSpecifics.cpp": "NonMatching",           
 
             "network/net/CustomMatchMakingDDL_Wii.cpp": "MISSING",

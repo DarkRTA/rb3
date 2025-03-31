@@ -14,24 +14,26 @@ JobDeleteOrphanedProfiles::JobDeleteOrphanedProfiles(
             unk64 = client;
             if (unk64) {
                 SetStep(Step(
-                    &JobDeleteOrphanedProfiles::StepGetProfiles,
+                    static_cast<JobStateFunc>(&JobDeleteOrphanedProfiles::StepGetProfiles
+                    ),
                     "JobDeleteOrphanedProfiles::StepGetProfiles"
                 ));
             } else {
                 SetStep(Step(
-                    &JobDeleteOrphanedProfiles::StepCompleteJob,
+                    static_cast<JobStateFunc>(&JobDeleteOrphanedProfiles::StepCompleteJob
+                    ),
                     "JobDeleteOrphanedProfiles::StepCompleteJob"
                 ));
             }
         } else {
             SetStep(Step(
-                &JobDeleteOrphanedProfiles::StepCompleteJob,
+                static_cast<JobStateFunc>(&JobDeleteOrphanedProfiles::StepCompleteJob),
                 "JobDeleteOrphanedProfiles::StepCompleteJob"
             ));
         }
     } else {
         SetStep(Step(
-            &JobDeleteOrphanedProfiles::StepCompleteJob,
+            static_cast<JobStateFunc>(&JobDeleteOrphanedProfiles::StepCompleteJob),
             "JobDeleteOrphanedProfiles::StepCompleteJob"
         ));
     }
@@ -43,14 +45,23 @@ void JobDeleteOrphanedProfiles::StepGetProfiles() {
     if (unk64->CallGetConsoleUsernames(&unk68, unk58, &unkc0)) {
         unke0 = 300;
         SetStep(Step(
-            &JobDeleteOrphanedProfiles::StepPrepareToDeleteProfiles,
+            static_cast<JobStateFunc>(
+                &JobDeleteOrphanedProfiles::StepPrepareToDeleteProfiles
+            ),
             "JobDeleteOrphanedProfiles::StepPrepareToDeleteProfiles"
         ));
     } else
         CompleteJob(false);
 }
 
-void JobDeleteOrphanedProfiles::StepPrepareToDeleteProfiles() {}
+void JobDeleteOrphanedProfiles::StepPrepareToDeleteProfiles() {
+    if (unke0 == 0) {
+        CompleteJob(false);
+    } else {
+        SetToWaiting(100);
+        unke0--;
+    }
+}
 
 void JobDeleteOrphanedProfiles::StepCompleteJob() { CompleteJob(false); }
 void JobDeleteOrphanedProfiles::CompleteJob(bool) { SetToComplete(); }
