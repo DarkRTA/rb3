@@ -212,6 +212,7 @@ DECLARE_MESSAGE(DiskErrorMsg, "disk_error")
 END_MESSAGE
 
 DECLARE_MESSAGE(DWCProfanityResultMsg, "dwc_profanity_result_msg")
+bool Success() const { return mData->Int(2); }
 END_MESSAGE
 
 DECLARE_MESSAGE(FriendsListChangedMsg, "friends_list_changed")

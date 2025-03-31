@@ -2,6 +2,7 @@
 #include "obj/Msg.h"
 #include "os/CritSec.h"
 #include "os/OnlineID.h"
+#include "network/Services/AccountManagementClient.h"
 #include "network/Services/ServiceClient.h"
 
 class Server : public MsgSource {
@@ -16,11 +17,11 @@ public:
     virtual void Logout() = 0;
     virtual bool IsConnected() { return mLoginState == 2; }
     virtual bool IsLoggingIn() { return mLoginState == 1; }
-    // fix all of these return types
     virtual int GetPlayerID(int) {
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
+    // fix all of these return types
     virtual int GetFriendsClient() {
         MILO_FAIL("not implemented for this platform");
         return 0;
@@ -49,7 +50,7 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetAccountManagementClient() {
+    virtual Quazal::AccountManagementClient *GetAccountManagementClient() {
         MILO_FAIL("not implemented for this platform");
         return 0;
     }

@@ -21,7 +21,7 @@ public:
     virtual Quazal::ServiceClient *GetPersistentStoreClient();
     virtual int GetCompetitionClient();
     virtual int GetSecureConnectionClient();
-    virtual int GetAccountManagementClient();
+    virtual Quazal::AccountManagementClient *GetAccountManagementClient();
     virtual int GetMasterProfileID();
     virtual int CreateProfile(String);
     virtual int DeleteProfile(OnlineID &);
