@@ -115,6 +115,9 @@ network/net/NetSession.cpp:
 	.text       start:0x800ACBC4 end:0x800B46BC
 	.ctors      start:0x807EFE34 end:0x807EFE38
 
+network/net/SessionMessages.cpp:
+	.text       start:0x800B82EC end:0x800B9DA8
+
 network/net/WiiFriendMgr.cpp:
 	.text       start:0x800BF234 end:0x800C2474
 	.ctors      start:0x807EFE40 end:0x807EFE44

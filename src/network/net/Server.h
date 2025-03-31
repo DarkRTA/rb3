@@ -8,7 +8,7 @@ class Server : public MsgSource {
 public:
     Server();
     virtual DataNode Handle(DataArray *, bool);
-    virtual ~Server();
+    virtual ~Server() {}
     virtual void Init();
     virtual void Terminate() {}
     virtual void Poll() = 0;

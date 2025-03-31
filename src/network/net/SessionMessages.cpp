@@ -1,9 +1,12 @@
 #include "net/SessionMessages.h"
+#include "net/Net.h"
 #include "obj/Data.h"
 #include "os/Debug.h"
 #include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
+
+void SessionMsg::Dispatch() { TheNet.GetNetSession()->HandleSessionMsg(this); }
 
 JoinRequestMsg::JoinRequestMsg(const std::vector<User *> &users, int gamemode)
     : mAuthData(false) {
@@ -14,6 +17,7 @@ JoinRequestMsg::JoinRequestMsg(const std::vector<User *> &users, int gamemode)
         (*it)->SyncSave(stream, -1);
         mUserDatas.push_back(stream);
     }
+    TheNet.GetGameData()->AuthenticationData(mAuthData, nullptr);
     mAuthData.Seek(0, BinStream::kSeekBegin);
     mGameMode = gamemode;
 }
@@ -123,7 +127,9 @@ void UserLeftMsg::Load(BinStream &bs) { bs >> mUserGuid; }
 
 AddUserRequestMsg::AddUserRequestMsg(const User *user)
     : mUserData(false), mAuthData(false) {
-    mUserGuid = user->mUserGuid;
+    mUserGuid = user->GetUserGuid();
+    user->SyncSave(mUserData, -1);
+    TheNet.GetGameData()->AuthenticationData(mAuthData, user);
 }
 
 void AddUserRequestMsg::GetUserData(BinStream &bs) const {
@@ -153,8 +159,9 @@ void AddUserRequestMsg::Load(BinStream &bs) {
     bs.Read((void *)mAuthData.Buffer(), size);
 }
 
-AddUserResponseMsg::AddUserResponseMsg(User *user) : mSuccess(user) {
-    if (user) {
+AddUserResponseMsg::AddUserResponseMsg(User *user) {
+    mSuccess = user;
+    if (mSuccess) {
         mUserGuid = user->mUserGuid;
     }
 }
@@ -172,9 +179,10 @@ void AddUserResponseMsg::Load(BinStream &bs) {
 }
 
 UpdateUserDataMsg::UpdateUserDataMsg(const User *user, unsigned int mask)
-    : mDirtyMask(mask), mUserData(false) {
+    : mUserData(false) {
+    mDirtyMask = mask;
     mUserGuid = user->mUserGuid;
-    user->SyncSave(mUserData, mDirtyMask);
+    user->SyncSave(mUserData, mask);
 }
 
 void UpdateUserDataMsg::GetUserData(BinStream &bs) const {

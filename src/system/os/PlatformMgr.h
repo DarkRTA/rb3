@@ -102,6 +102,7 @@ public:
     bool IsPadAGuest(int) const;
     bool IsGuestOnlineID(const OnlineID *) const;
     bool StartProfanity(const unsigned short **, int, char *, Hmx::Object *);
+    void HandleNetError(int, Symbol);
 
     bool OnMsg(const ButtonDownMsg &);
     bool OnMsg(const ButtonUpMsg &);

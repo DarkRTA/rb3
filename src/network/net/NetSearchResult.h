@@ -16,6 +16,7 @@ public:
     virtual bool Equals(const NetSearchResult *) const;
 
     static NetSearchResult *New();
+    int NumOpenSlots() const { return mNumOpenSlots; }
 
     SessionData *mSessionData; // 0x1c
     MatchmakingSettings *mSettings; // 0x20
