@@ -125,6 +125,10 @@ network/net/WiiFriendMgr.cpp:
 network/net/Jobs_Wii.cpp:
 	.text       start:0x800C2474 end:0x800C5890
 
+network/net/WiiMessenger.cpp:
+	.text       start:0x800C5890 end:0x800C68E0
+	.ctors      start:0x807EFE44 end:0x807EFE48
+
 network/net/json-c/arraylist.c:
 	.text       start:0x800C68E0 end:0x800C6B4C
 
