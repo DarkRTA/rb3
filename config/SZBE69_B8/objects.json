@@ -395,7 +395,7 @@
             "network/Extensions/ChannelMemberSink.cpp": "MISSING",
             "network/Extensions/ChannelMembers.cpp": "MISSING",
             "network/Extensions/ChannelMembersDDL.cpp": "MISSING",
-            "network/Extensions/Codec.cpp": "MISSING",
+            "network/Extensions/Codec.cpp": "Matching",
             "network/Extensions/CodecManager.cpp": "MISSING",
             "network/Extensions/DefaultCellDDL.cpp": "MISSING",
             "network/Extensions/DefaultCellParameterDDL.cpp": "MISSING",
