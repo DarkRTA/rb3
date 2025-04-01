@@ -1,9 +1,11 @@
 #pragma once
+#include "Services/Data.h"
 #include "obj/Msg.h"
 #include "os/CritSec.h"
 #include "os/OnlineID.h"
 #include "network/Services/AccountManagementClient.h"
 #include "network/Services/ServiceClient.h"
+#include "network/Platform/Holder.h"
 
 class Server : public MsgSource {
 public:
@@ -66,7 +68,11 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetCustomAuthData();
+    virtual Quazal::Data *GetCustomAuthData() {
+        MILO_FAIL("not implemented for this platform");
+        static Quazal::AnyObjectHolder<Quazal::Data, Quazal::String> emptyDataHolder;
+        return emptyDataHolder.mPtr;
+    }
 
     CriticalSection mLogoutCritSec; // 0x1c
     int mLoginState; // 0x38 - enum
@@ -78,7 +84,7 @@ public:
     unsigned int mPlayerIDs[4]; // 0x58
 };
 
-extern Server *TheServer;
+extern Server &TheServer;
 
 DECLARE_MESSAGE(ServerStatusChangedMsg, "server_status_changed");
 bool Success() const { return mData->Int(2); }

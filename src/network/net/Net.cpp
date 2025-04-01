@@ -69,8 +69,8 @@ void Net::Init() {
     mSyncStore = new SyncStore();
     mSession = NetSession::New();
     mSearcher = SessionSearcher::New();
-    TheServer->Init();
-    mServer = TheServer;
+    TheServer.Init();
+    mServer = &TheServer;
     mEmulator = new NetworkEmulator();
     mVoiceChatMgr = new VoiceChatMgr();
     TheNetMessenger.Init();
@@ -98,7 +98,7 @@ void Net::Terminate() {
     }
     delete mVoiceChatMgr;
     delete mEmulator;
-    TheServer->Terminate();
+    TheServer.Terminate();
     delete mSearcher;
     delete mSession;
     delete mSyncStore;

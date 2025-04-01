@@ -16,7 +16,7 @@ JobDeleteOrphanedProfiles::JobDeleteOrphanedProfiles(
     : Quazal::StepSequenceJob(Quazal::DebugString()), unk58(0), unk60(0), unk64(0),
       unkcc(0, 20) {
     if (NWC24GetMyUserId(unk58) == 0) {
-        unk60 = TheServer->GetAccountManagementClient();
+        unk60 = TheServer.GetAccountManagementClient();
         if (unk60) {
             unk64 = client;
             if (unk64) {
@@ -71,8 +71,8 @@ void JobDeleteOrphanedProfiles::CompleteJob(bool) { SetToComplete(); }
 JobCreateProfile::JobCreateProfile(const char *cc, int i2)
     : Quazal::StepSequenceJob(Quazal::DebugString()), unk74(cc), unk78(0), unk7c(4),
       unk108(i2) {
-    if (!cc || !*cc || !TheServer->IsConnected()
-        || !TheServer->GetAccountManagementClient()) {
+    if (!cc || !*cc || !TheServer.IsConnected()
+        || !TheServer.GetAccountManagementClient()) {
         SET_STEP(JobCreateProfile::StepCompleteJob);
         return;
     } else {
@@ -114,8 +114,7 @@ END_HANDLERS
 
 JobDeleteProfile::JobDeleteProfile(unsigned int ui)
     : Quazal::StepSequenceJob(Quazal::DebugString()), unk5c(ui) {
-    if (ui == 0 || !TheServer->IsConnected()
-        || !TheServer->GetAccountManagementClient()) {
+    if (ui == 0 || !TheServer.IsConnected() || !TheServer.GetAccountManagementClient()) {
         SET_STEP(JobDeleteProfile::StepCompleteJob);
         return;
     } else {
@@ -126,7 +125,7 @@ JobDeleteProfile::JobDeleteProfile(unsigned int ui)
 JobDeleteProfile::~JobDeleteProfile() {}
 
 void JobDeleteProfile::StepDeleteProfile() {
-    Quazal::AccountManagementClient *client = TheServer->GetAccountManagementClient();
+    Quazal::AccountManagementClient *client = TheServer.GetAccountManagementClient();
     bool remove = false;
     if (client) {
         remove = client->DeleteAccount(&unk60, unk5c);

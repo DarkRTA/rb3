@@ -99,7 +99,7 @@ void MainHubPanel::Enter() {
     if (rotMsArr)
         mMessageRotationMs = rotMsArr->Float(1);
     mMessageProvider = new MainHubMessageProvider(this);
-    TheServer->AddSink(this, UserLoginMsg::Type());
+    TheServer.AddSink(this, UserLoginMsg::Type());
     UIPanel::Enter();
     RefreshData();
     SetMainHubOverride(kMainHubOverride_None);
@@ -144,7 +144,7 @@ void MainHubPanel::Exit() {
     TheSessionMgr->GetMatchmaker()->RemoveSink(this);
     TheSessionMgr->RemoveSink(this);
     TheProfileMgr.RemoveSink(this, PrimaryProfileChangedMsg::Type());
-    TheServer->RemoveSink(this, UserLoginMsg::Type());
+    TheServer.RemoveSink(this, UserLoginMsg::Type());
     TheBandUI.GetOvershell()->RemoveSink(this, "override_ended");
     unkbc = 0;
     unkc0 = kScoreBand;
@@ -164,7 +164,7 @@ void MainHubPanel::ReloadMessages() {
     if (profile) {
         LocalBandUser *user = TheBandUserMgr->GetUserFromPad(profile->GetPadNum());
         if (user) {
-            if (TheServer->GetPlayerID(profile->GetPadNum())) {
+            if (TheServer.GetPlayerID(profile->GetPadNum())) {
                 TrackType ty = user->GetTrackType();
                 if (ty - 10U <= 2) {
                     ty = ControllerTypeToTrackType(
@@ -202,8 +202,8 @@ void MainHubPanel::PrepareProfilesAndMessages() {
 
 bool MainHubPanel::CheckProfileForTicker() {
     BandProfile *profile = TheProfileMgr.GetPrimaryProfile();
-    if (profile && TheServer->IsConnected()) {
-        if (TheServer->GetPlayerID(profile->GetPadNum()))
+    if (profile && TheServer.IsConnected()) {
+        if (TheServer.GetPlayerID(profile->GetPadNum()))
             return true;
     }
     return false;

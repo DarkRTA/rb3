@@ -93,7 +93,7 @@ void ProfileMgr::Init() {
     }
     SetName("profile_mgr", ObjectDir::Main());
     TheNetSession->AddSink(this);
-    TheServer->AddSink(this, UserLoginMsg::Type());
+    TheServer.AddSink(this, UserLoginMsg::Type());
     TheRockCentral.AddSink(this);
     TheGameMicManager->AddSink(this, GameMicsChangedMsg::Type());
     TheSaveLoadMgr->AddSink(this, SaveLoadMgrStatusUpdateMsg::Type());

@@ -111,14 +111,14 @@ void TokenRedemptionPanel::Unload() {
 void TokenRedemptionPanel::GetOffersForToken(const char *token, LocalBandUser *user) {
     mActiveToken = token;
     mResultList.Clear();
-    int id = TheServer->GetMasterProfileID();
+    int id = TheServer.GetMasterProfileID();
     mRedemptionState = 2;
     TheRockCentral.RedeemToken(id, mActiveToken.c_str(), mResultList, this);
 }
 
 void TokenRedemptionPanel::GetPreviousOffersForUser(LocalBandUser *user) {
     mResultList.Clear();
-    int id = TheServer->GetMasterProfileID();
+    int id = TheServer.GetMasterProfileID();
     mRedemptionState = 5;
     TheRockCentral.GetRedeemedTokensByPlayer(id, mResultList, this);
 }

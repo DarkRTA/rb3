@@ -215,11 +215,11 @@ WiiFriendMgr::~WiiFriendMgr() {}
 
 void WiiFriendMgr::Init() {
     SetName("wii_friend_mgr", ObjectDir::Main());
-    TheServer->AddSink(this, ServerStatusChangedMsg::Type());
+    TheServer.AddSink(this, ServerStatusChangedMsg::Type());
 }
 
 void WiiFriendMgr::Terminate() {
-    TheServer->RemoveSink(this, ServerStatusChangedMsg::Type());
+    TheServer.RemoveSink(this, ServerStatusChangedMsg::Type());
     if (unk1c)
         unk1c->ReleaseRef();
     if (unk20)

@@ -25,7 +25,7 @@ public:
     virtual int GetMasterProfileID();
     virtual int CreateProfile(String);
     virtual int DeleteProfile(OnlineID &);
-    virtual int GetCustomAuthData();
+    virtual Quazal::Data *GetCustomAuthData();
 
     bool unk68;
     bool unk69;
