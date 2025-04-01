@@ -5,9 +5,13 @@
 class VoiceChatMgr : public MsgSource {
 public:
     VoiceChatMgr();
+    virtual DataNode Handle(DataArray *, bool);
+    virtual ~VoiceChatMgr();
 
     void ToggleMuteStatus(User *);
     bool IsMuted(User *) const;
+    void Poll();
+    void JoinVoiceChannel();
 };
 
 DECLARE_MESSAGE(VoiceChatDisabledMsg, "voice_chat_disabled")

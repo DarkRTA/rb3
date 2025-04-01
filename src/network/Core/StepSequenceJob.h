@@ -1,18 +1,20 @@
 #pragma once
+#include "Core/CallContext.h"
 #include "Core/Job.h"
+#include "Core/SystemComponent.h"
 #include "Platform/RootObject.h"
 #include "Platform/Time.h"
-
-class JobDeleteOrphanedProfiles;
-typedef void (JobDeleteOrphanedProfiles::*JobStateFunc)(void);
 
 namespace Quazal {
 
     class StepSequenceJob : public Job {
     public:
+        typedef void (StepSequenceJob::*JobStateFunc)(void);
+
         class Step : public RootObject {
         public:
-            Step(JobStateFunc func = 0, const char *cc = 0) : mState(0), mName(0) {}
+            Step() : mState(0), mName(0) {}
+            Step(JobStateFunc func, const char *cc) : mState(func), mName(cc) {}
             ~Step() {}
 
             JobStateFunc mState; // 0x0
@@ -27,6 +29,8 @@ namespace Quazal {
 
         void SetStep(const Step &);
         void ProcessCallResult(Step *);
+        void ResumeOnCallCompletion(CallContext *, Step *);
+        void TerminateComponent(SystemComponent *, const Step &);
 
         Time unk38;
         int unk40;

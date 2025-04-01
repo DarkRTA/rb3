@@ -35,7 +35,7 @@ void TourBand::ChooseBandLogo(int i, int j) {
     SetDirty(true, 3);
 }
 
-int TourBand::GetBandID() const { return TheServer->GetPlayerID(unk1c->GetPadNum()); }
+int TourBand::GetBandID() const { return TheServer.GetPlayerID(unk1c->GetPadNum()); }
 
 void TourBand::ProcessRetCode(int code) {
     static Message msg("init", 0, 0);

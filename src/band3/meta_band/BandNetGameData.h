@@ -11,6 +11,11 @@ class NetGameData {
 public:
     NetGameData() {}
     virtual ~NetGameData() {}
+    virtual int GetNumPlayersAllowed() const = 0;
+    virtual void GetEndGameStats(std::vector<UserStat> &) const = 0;
+    virtual int PublicID() const = 0;
+    virtual void AuthenticationData(BinStream &, const User *) const = 0;
+    virtual bool AuthenticateJoin(BinStream &, int &) const = 0;
 };
 
 class BandNetGameData : public NetGameData, public Hmx::Object {

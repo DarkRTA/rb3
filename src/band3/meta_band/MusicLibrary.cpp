@@ -192,7 +192,7 @@ void MusicLibrary::OnEnter() {
     TheProfileMgr.AddSink(this, ProfileChangedMsg::Type());
     ThePlatformMgr.AddSink(this, SigninChangedMsg::Type());
     ThePlatformMgr.AddSink(this, FriendsListChangedMsg::Type());
-    TheServer->AddSink(this, UserLoginMsg::Type());
+    TheServer.AddSink(this, UserLoginMsg::Type());
     TheSessionMgr->AddSink(this, LocalUserLeftMsg::Type());
     TheSessionMgr->AddSink(this, RemoteUserLeftMsg::Type());
     TheSessionMgr->AddSink(this, AddLocalUserResultMsg::Type());
@@ -212,7 +212,7 @@ void MusicLibrary::OnExit() {
     TheProfileMgr.RemoveSink(this, ProfileChangedMsg::Type());
     ThePlatformMgr.RemoveSink(this, SigninChangedMsg::Type());
     ThePlatformMgr.RemoveSink(this, FriendsListChangedMsg::Type());
-    TheServer->RemoveSink(this, UserLoginMsg::Type());
+    TheServer.RemoveSink(this, UserLoginMsg::Type());
     TheSessionMgr->RemoveSink(this, LocalUserLeftMsg::Type());
     TheSessionMgr->RemoveSink(this, RemoteUserLeftMsg::Type());
     TheSessionMgr->RemoveSink(this, AddLocalUserResultMsg::Type());

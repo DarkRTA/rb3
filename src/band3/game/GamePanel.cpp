@@ -53,7 +53,7 @@ GamePanel::GamePanel()
     : mGame(0), mTime(RndOverlay::Find("time", true)),
       mLatency(RndOverlay::Find("latency", true)),
       mDeltaTime(RndOverlay::Find("delta_time", true)), unk64(1), unk68(0), unk6c(0),
-      unk70(0), mStartPaused(0), mGameState(kInLobby), mMultiEvent(0), mScoring(0),
+      unk70(0), mStartPaused(0), mGameState(kGameNeedIntro), mMultiEvent(0), mScoring(0),
       mLoadProf("game_panel_load", 1), mExcitement(kNumExcitements),
       mLastExcitement(kNumExcitements), mReplay(0), unk150(1), unk151(0), unk154(0),
       mLoadingState(kLoadingState_NotReady), mHitTracker(new HitTracker()),
@@ -73,7 +73,7 @@ GamePanel::~GamePanel() {
 
 void GamePanel::Reset() {
     mGame->Reset();
-    mGameState = kInLobby;
+    mGameState = kGameNeedIntro;
     mExcitement = kNumExcitements;
     mLastExcitement = kNumExcitements;
     Export(reset_msg, true);
@@ -267,7 +267,7 @@ void GamePanel::SetPlayingTrackIntroUntil(float f1) {
 }
 
 void GamePanel::StartIntro() {
-    mGameState = kStartingGame;
+    mGameState = kGameNeedStart;
     HandleType(pick_intro_msg);
     if (mStartPaused) {
         mGame->SetPaused(true, true, true);
@@ -396,7 +396,7 @@ DataNode GamePanel::OnStartLoadSong(DataArray *a) {
 BEGIN_HANDLERS(GamePanel)
     HANDLE_ACTION(set_start_paused, mStartPaused = _msg->Int(2))
     HANDLE_EXPR(lost, mGameState == kGameOver && mGame->mResult == kLost)
-    HANDLE_EXPR(in_intro, mGameState == kStartingGame)
+    HANDLE_EXPR(in_intro, mGameState == kGameNeedStart)
     HANDLE_EXPR(is_game_over, mGameState == kGameOver)
     HANDLE_EXPR(is_playing, mGameState == kGamePlaying)
     HANDLE_ACTION(start_game, StartGame())

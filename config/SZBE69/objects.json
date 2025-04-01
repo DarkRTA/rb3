@@ -328,6 +328,7 @@
         "cflags": "network",
         "objects": {
             "network/Platform/BadEvents.cpp": "Matching",
+            "network/Platform/BandwidthCounter.cpp": "NonMatching",
             "network/Platform/DateTime.cpp": "NonMatching",
             "network/Platform/ExceptionHandler.cpp": "Matching",
             "network/Platform/Platform.cpp": "NonMatching",
@@ -338,6 +339,10 @@
             "network/Platform/String.cpp": "NonMatching",
             "network/Platform/StringConversion.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
+
+            "network/Core/StepSequenceJob.cpp": "NonMatching",
+
+            "network/Extensions/CodecManager.cpp": "NonMatching",
 
             "network/Products/ProductSpecifics.cpp": "NonMatching",           
 

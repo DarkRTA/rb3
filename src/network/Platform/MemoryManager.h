@@ -3,6 +3,9 @@
 #include "Platform/RootObject.h"
 #include "types.h"
 
+typedef void *AllocFunc(unsigned long);
+typedef void FreeFunc(void *);
+
 namespace Quazal {
 
     // forward declarations
@@ -30,6 +33,7 @@ namespace Quazal {
         virtual ~MemoryManager();
         virtual void BeginProtection();
         virtual void EndProtection();
+
         static MemoryManager *GetDefaultMemoryManager();
         static void *
         Allocate(MemoryManager *, u32 size, const char *file, uint line, _InstructionType);
@@ -40,6 +44,10 @@ namespace Quazal {
             return Allocate(memMgr, size, "Unknown", 0, inst);
         }
 
+        static AllocFunc *s_fcnMalloc;
+        static FreeFunc *s_fcnFree;
+        static bool s_bIsMemoryFunctionSet;
+
         int GetHeaderSize();
 
         char *unk4;
@@ -48,6 +56,10 @@ namespace Quazal {
         MutexPrimitive *unk18;
     };
 }
+
+void *QuazalUserThread(void *);
+void *QuazalMemAlloc(unsigned long);
+void QuazalMemFree(void *);
 
 #define QUAZAL_DEFAULT_ALLOC(size, line, instType)                                       \
     Quazal::MemoryManager::Allocate(                                                     \

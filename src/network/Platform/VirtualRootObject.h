@@ -1,5 +1,4 @@
-#ifndef PLATFORM_VIRTUALROOTOBJECT_H
-#define PLATFORM_VIRTUALROOTOBJECT_H
+#pragma once
 
 namespace Quazal {
     class VirtualRootObject {
@@ -8,5 +7,3 @@ namespace Quazal {
         static void operator delete(void *);
     };
 }
-
-#endif // PLATFORM_VIRTUALROOTOBJECT_H

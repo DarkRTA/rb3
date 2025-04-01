@@ -1,6 +1,7 @@
 #pragma once
 #include "game/NetGameMsgs.h"
 #include "obj/Data.h"
+#include "obj/Msg.h"
 #include "utl/BinStream.h"
 #include "utl/HxGuid.h"
 #include "utl/MemStream.h"
@@ -25,6 +26,7 @@ public:
     NETMSG_NEWNETMSG(JoinRequestMsg);
 
     int NumUsers() const { return mUserDatas.size(); }
+    int GameMode() const { return mGameMode; }
     void GetUserData(int, BinStream &) const;
     const UserGuid &GetUserGuid(int) const;
     void GetAuthenticationData(BinStream &) const;
@@ -63,10 +65,17 @@ public:
     NETMSG_NEWNETMSG(JoinResponseMsg);
 
     bool Joined() const;
+    JoinResponseError Error() const { return mError; }
+    int CustomError() const { return mCustomError; }
 
     JoinResponseError mError; // 0x4
     int mCustomError; // 0x8
 };
+
+DECLARE_MESSAGE(JoinResultMsg, "join_result")
+JoinResultMsg() : Message(Type()) {}
+JoinResultMsg(JoinResponseError e, int i) : Message(Type(), e, i) {}
+END_MESSAGE
 
 class NewUserMsg : public SessionMsg {
 public:
@@ -115,6 +124,7 @@ public:
 
     void GetUserData(BinStream &) const;
     void GetAuthenticationData(BinStream &) const;
+    const UserGuid &GetUserGuid() const { return mUserGuid; }
 
     UserGuid mUserGuid; // 0x4
     MemStream mUserData; // 0x14
@@ -150,6 +160,7 @@ public:
     NETMSG_NEWNETMSG(UpdateUserDataMsg);
 
     void GetUserData(BinStream &) const;
+    unsigned int GetDirtyMask() const { return mDirtyMask; }
 
     UserGuid mUserGuid; // 0x4
     unsigned int mDirtyMask; // 0x14
@@ -178,6 +189,7 @@ public:
     NETMSG_NAME(FinishedArbitrationMsg);
 
     NETMSG_NEWNETMSG(FinishedArbitrationMsg);
+    unsigned int MachineID() const { return mMachineID; }
 
     unsigned int mMachineID; // 0x4
 };
@@ -193,6 +205,7 @@ public:
     NETMSG_NAME(StartGameOnTimeMsg);
 
     NETMSG_NEWNETMSG(StartGameOnTimeMsg);
+    unsigned long long GetStartTime() const { return mStartTime; }
 
     unsigned long long mStartTime; // 0x8
 };

@@ -9,6 +9,9 @@ public:
 
     void DeliverMsg(const unsigned int &, const NetMessage &, PacketType);
     void FlushClientMessages(unsigned int);
+    void Init();
+    void Poll();
+    unsigned int LastSender() const { return mLastSender; }
 
     unsigned int mLastSender; // 0x0
 };

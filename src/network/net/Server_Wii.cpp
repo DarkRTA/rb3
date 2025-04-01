@@ -1,6 +1,10 @@
 #include "net/Server_Wii.h"
+#include "net/Server.h"
+#include "os/Timer.h"
 
 WiiServer gWiiServer;
+Server &TheServer = gWiiServer;
+Timer g_LoginTimer;
 
 WiiServer::WiiServer()
     : unk68(0), unk69(0), unk6a(0), unk6b(0), unk6c(0), unk70(0), unk74(0), unk78(0),

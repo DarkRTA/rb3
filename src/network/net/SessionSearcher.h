@@ -22,6 +22,8 @@ public:
     void UpdateSearchList(NetSearchResult *);
     bool Searching() const { return mSearching; }
 
+    static SessionSearcher *New();
+
     NetSearchResult *mLastInviteResult; // 0x1c
     bool mSearching; // 0x20
     std::vector<NetSearchResult *> mSearchList; // 0x24

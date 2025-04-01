@@ -13,7 +13,7 @@
 
 namespace {
     bool NumPlayersGreaterThan(const NetSearchResult *n1, const NetSearchResult *n2) {
-        return n1->mNumOpenSlots > n2->mNumOpenSlots;
+        return n1->NumOpenSlots() < n2->NumOpenSlots();
     }
 }
 

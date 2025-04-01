@@ -165,7 +165,7 @@ void RockCentral::Poll() {
 #ifdef MILO_DEBUG
         if (unk112) {
             for (int i = 0; i < 4; i++) {
-                int pid = TheServer->GetPlayerID(i);
+                int pid = TheServer.GetPlayerID(i);
                 if (pid != 0) {
                     WiiProfile *profile = TheWiiProfileMgr.GetProfileForPad(i);
                     if (profile) {
@@ -178,7 +178,7 @@ void RockCentral::Poll() {
             unk112 = false;
         }
 #endif
-        if (TheServer->IsConnected() && !ThePlatformMgr.IsOnlineRestricted()
+        if (TheServer.IsConnected() && !ThePlatformMgr.IsOnlineRestricted()
             && TheProfileMgr.GetUsingWiiFriends()) {
             if (!unka8.Running() || unka8.SplitMs() > 60000.0f) {
                 unka8.Restart();
@@ -274,7 +274,7 @@ DataNode RockCentral::OnMsg(const ServerStatusChangedMsg &msg) {
 
 DataNode RockCentral::OnMsg(const UserLoginMsg &msg) {
     int padnum = msg.GetPadNum();
-    int pid = TheServer->GetPlayerID(padnum);
+    int pid = TheServer.GetPlayerID(padnum);
     WiiProfile *profile = TheWiiProfileMgr.GetProfileForPad(padnum);
     if (profile && pid != profile->mId) {
         MILO_WARN(

@@ -1,6 +1,4 @@
-#ifndef PLUGINS_EMULATIONDEVICE_H
-#define PLUGINS_EMULATIONDEVICE_H
-
+#pragma once
 #include "Platform/RootObject.h"
 
 namespace Quazal {
@@ -8,7 +6,7 @@ namespace Quazal {
     public:
         EmulationDevice();
         virtual ~EmulationDevice();
-        virtual void Enable();
+        virtual void Enable() { m_bEnabled = true; }
 
         void SetLatency(unsigned int);
         void SetJitter(unsigned int);
@@ -18,6 +16,7 @@ namespace Quazal {
         unsigned int GetJitter();
         unsigned int GetBandwidth();
         float GetPacketDropProbability();
+        bool Enabled() const { return m_bEnabled; }
 
     private:
         bool m_bEnabled; // 0x4
@@ -28,5 +27,3 @@ namespace Quazal {
         float m_rPacketDropProbability; // 0x18
     };
 }
-
-#endif // PLUGINS_EMULATIONDEVICE_H

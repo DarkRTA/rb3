@@ -27,5 +27,3 @@ BEGIN_HANDLERS(Server)
     HANDLE_SUPERCLASS(MsgSource)
     HANDLE_CHECK(0x32)
 END_HANDLERS
-
-Server::~Server() {}

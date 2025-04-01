@@ -1,4 +1,5 @@
 #pragma once
+#include "Server.h"
 #include "net/Jobs_Wii.h"
 #include "obj/Data.h"
 #include "obj/Msg.h"
@@ -83,6 +84,12 @@ public:
     void SetStatusDelimiter(char);
     void Init();
     void Terminate();
+    void Poll();
+    void HandleNWC24LibError(Symbol, int);
+    void DeleteOrphanedProfiles();
+    void UpdateLibraryStartup();
+
+    DataNode OnMsg(const ServerStatusChangedMsg &);
 
     static String GetMasterProfileName(unsigned long long);
 

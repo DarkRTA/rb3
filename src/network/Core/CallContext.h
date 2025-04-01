@@ -5,6 +5,8 @@
 #include "Platform/qStd.h"
 
 namespace Quazal {
+    class CallbackRoot;
+
     class CallContext : public RefCountedObject {
     public:
         enum _State {
@@ -14,6 +16,8 @@ namespace Quazal {
         virtual bool FlagsAreValid() const;
         virtual void BeginTransition(_State, qResult, bool);
         virtual void ProcessCallCompletion();
+
+        void RegisterCompletionCallback(CallbackRoot *, bool, bool);
 
         _State GetState() const { return unkc; }
 

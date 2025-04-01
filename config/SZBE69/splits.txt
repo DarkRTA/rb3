@@ -34,6 +34,13 @@ network/Platform/BadEvents.cpp:
 	.text       start:0x80011754 end:0x80011778
 	.bss        start:0x808F0950 end:0x808F0954
 
+network/Platform/BandwidthCounter.cpp:
+	.text       start:0x80011778 end:0x8001270C
+	.ctors      start:0x807EFD28 end:0x807EFD2C
+
+network/Platform/CriticalSection.cpp:
+	.text       start:0x8001270C end:0x800127E4
+
 network/Platform/DateTime.cpp:
 	.text       start:0x800127E4 end:0x80012A38
 	.ctors      start:0x807EFD2C end:0x807EFD30
@@ -75,12 +82,19 @@ network/Platform/StringConverter.cpp:
 network/Platform/StringStream.cpp:
 	.text       start:0x80018C64 end:0x800190E0
 
+network/Core/StepSequenceJob.cpp:
+	.text       start:0x800250DC end:0x80025530
+
 network/Plugins/Stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
 rb3/stubs/stubzerof.cpp:
 	.text       start:0x8005C7AC end:0x8005C7B8
+
+network/Extensions/CodecManager.cpp:
+	.text       start:0x8007C15C end:0x8007CADC
+	.ctors      start:0x807EFDD0 end:0x807EFDD4
 
 network/Products/ProductSpecifics.cpp:
 	.text       start:0x800A515C end:0x800A51AC
@@ -104,11 +118,15 @@ rb3/unknown/800/unk_800AB914.cpp:
 	.text       start:0x800AB914 end:0x800AB960
 	.data       start:0x8082ADF0 end:0x8082AE04
 
-rb3/unknown/800/unk_800AC804.cpp:
-	.text       start:0x800AC804 end:0x800B45D0
+network/net/NetSession.cpp:
+	.text       start:0x800ACBC4 end:0x800B46BC
+	.ctors      start:0x807EFE34 end:0x807EFE38
 
-rb3/unknown/800/unk_800B4630.cpp:
-	.text       start:0x800B4630 end:0x800BC50C
+network/net/Server.cpp:
+	.text       start:0x800B60BC end:0x800B65A4
+
+network/net/SessionMessages.cpp:
+	.text       start:0x800B82EC end:0x800B9DA8
 
 network/net/WiiFriendMgr.cpp:
 	.text       start:0x800BF234 end:0x800C2474
@@ -116,6 +134,10 @@ network/net/WiiFriendMgr.cpp:
 
 network/net/Jobs_Wii.cpp:
 	.text       start:0x800C2474 end:0x800C5890
+
+network/net/WiiMessenger.cpp:
+	.text       start:0x800C5890 end:0x800C68E0
+	.ctors      start:0x807EFE44 end:0x807EFE48
 
 network/net/json-c/arraylist.c:
 	.text       start:0x800C68E0 end:0x800C6B4C

@@ -2,9 +2,15 @@
 #include "Platform/StringStream.h"
 #include "net/Server.h"
 #include "obj/Dir.h"
+#include "obj/Msg.h"
+#include "obj/ObjMacros.h"
 #include "os/Debug.h"
+#include "os/PlatformMgr.h"
 #include "utl/MemMgr.h"
 #include "utl/Std.h"
+#include "utl/Symbols2.h"
+#include "utl/Symbols3.h"
+#include "utl/Symbols4.h"
 #include "utl/UTF8.h"
 
 WiiFriendMgr TheWiiFriendMgr;
@@ -209,11 +215,11 @@ WiiFriendMgr::~WiiFriendMgr() {}
 
 void WiiFriendMgr::Init() {
     SetName("wii_friend_mgr", ObjectDir::Main());
-    TheServer->AddSink(this, ServerStatusChangedMsg::Type());
+    TheServer.AddSink(this, ServerStatusChangedMsg::Type());
 }
 
 void WiiFriendMgr::Terminate() {
-    TheServer->RemoveSink(this, ServerStatusChangedMsg::Type());
+    TheServer.RemoveSink(this, ServerStatusChangedMsg::Type());
     if (unk1c)
         unk1c->ReleaseRef();
     if (unk20)
@@ -228,7 +234,37 @@ void WiiFriendMgr::Terminate() {
     }
 }
 
+void WiiFriendMgr::EnumerateFriends(WiiFriendList *pFriendList, Hmx::Object *) {
+    MILO_ASSERT(pFriendList, 0x24C);
+}
+
 void WiiFriendMgr::GetCachedFriends(WiiFriendList *list) { *list = unk24; }
+
+void WiiFriendMgr::SetProfileStatus(int i1, String str) {
+    const char *pInvalidChar = strstr(str.c_str(), &unkb8);
+    MILO_ASSERT(!pInvalidChar && "Status includes status delimiter.  Either change the text of the status or change the delimiter", 0x28D);
+    if (!str.c_str()) {
+        str = "";
+    }
+    if (!pInvalidChar && i1 <= 3U) {
+        if (unk78[i1] != str) {
+            unk78[i1] = str;
+            unk74 = true;
+        }
+    }
+}
+
+void WiiFriendMgr::SetMasterProfileStatus(String str) {
+    const char *pInvalidChar = strstr(str.c_str(), &unkb8);
+    MILO_ASSERT(!pInvalidChar && "Status includes status delimiter.  Either change the text of the status or change the delimiter", 0x2A6);
+    if (!str.c_str()) {
+        str = "";
+    }
+    if (!pInvalidChar && unka8 != str) {
+        unka8 = str;
+        unk74 = true;
+    }
+}
 
 void WiiFriendMgr::UseConsoleFriends(bool b1) {
     if (!b1) {
@@ -244,3 +280,29 @@ void WiiFriendMgr::SetStatusDelimiter(char iDelimiter) {
         unkb9 = false;
     }
 }
+
+DataNode WiiFriendMgr::OnMsg(const ServerStatusChangedMsg &) {
+    MILO_WARN("pAccountManagementClient");
+}
+
+void WiiFriendMgr::HandleNWC24LibError(Symbol s, int i) {
+    s = wii_error_nwc24_generic;
+    if (i == 0)
+        i = 109999;
+    ThePlatformMgr.HandleNetError(i, s);
+    unkf0 = ThePlatformMgr.GetNetErrorString(false);
+    unk2d = true;
+}
+
+void WiiFriendMgr::UpdateLibraryStartup() {
+    MILO_ASSERT(0 && "NWC24 user error - alert Ian S.", 0x0);
+}
+
+BEGIN_HANDLERS(WiiFriendMgr)
+    HANDLE_ACTION(delete_orphaned_profiles, DeleteOrphanedProfiles())
+    HANDLE_EXPR(has_nwc24_lib_failed, unk2d)
+    HANDLE_EXPR(get_nwc24_error_text, unkf0.c_str())
+    HANDLE_MESSAGE(ServerStatusChangedMsg)
+    HANDLE_SUPERCLASS(MsgSource)
+    HANDLE_CHECK(0x44E)
+END_HANDLERS
