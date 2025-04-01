@@ -342,6 +342,8 @@
 
             "network/Core/StepSequenceJob.cpp": "NonMatching",
 
+            "network/Extensions/CodecManager.cpp": "NonMatching",
+
             "network/Products/ProductSpecifics.cpp": "NonMatching",           
 
             "network/net/CustomMatchMakingDDL_Wii.cpp": "MISSING",

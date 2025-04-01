@@ -92,6 +92,10 @@ network/Plugins/Stream.cpp:
 rb3/stubs/stubzerof.cpp:
 	.text       start:0x8005C7AC end:0x8005C7B8
 
+network/Extensions/CodecManager.cpp:
+	.text       start:0x8007C15C end:0x8007CADC
+	.ctors      start:0x807EFDD0 end:0x807EFDD4
+
 network/Products/ProductSpecifics.cpp:
 	.text       start:0x800A515C end:0x800A51AC
 	.data       start:0x8082A5C0 end:0x8082A608
