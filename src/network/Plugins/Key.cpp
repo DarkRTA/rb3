@@ -3,6 +3,12 @@
 namespace Quazal {
     Key::Key() {}
 
+    Key::Key(unsigned char *uc, unsigned int ui) {
+        for (int i = 0; i < ui; i++) {
+            mData[i] = uc[i];
+        }
+    }
+
     Key::~Key() {}
 
     Key &Key::operator=(const Key &key) {

@@ -345,7 +345,9 @@
             "network/Extensions/CodecManager.cpp": "NonMatching",
             "network/Extensions/SpeexCodec.cpp": "NonMatching",
 
-            "network/Products/ProductSpecifics.cpp": "NonMatching",           
+            "network/Products/ProductSpecifics.cpp": "NonMatching",
+            
+            "network/Plugins/Key.cpp": "NonMatching",
 
             "network/net/CustomMatchMakingDDL_Wii.cpp": "MISSING",
             "network/net/HarmonixGameDDF_Wii.cpp": "MISSING",

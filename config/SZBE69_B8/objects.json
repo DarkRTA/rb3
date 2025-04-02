@@ -552,9 +552,9 @@
             "network/ObjDup/UserDefinedStateDDL.cpp": "MISSING",
             "network/ObjDup/WKHandle.cpp": "MISSING",
 
-            "network/Plugins/BitStream.cpp": "MISSING",
-            "network/Plugins/Buffer.cpp": "MISSING",
-            "network/Plugins/ByteStream.cpp": "MISSING",
+            "network/Plugins/BitStream.cpp": "NonMatching",
+            "network/Plugins/Buffer.cpp": "NonMatching",
+            "network/Plugins/ByteStream.cpp": "NonMatching",
             "network/Plugins/ChecksumAlgorithm.cpp": "MISSING",
             "network/Plugins/CompressionAlgorithm.cpp": "MISSING",
             "network/Plugins/ConnectionManager.cpp": "MISSING",
