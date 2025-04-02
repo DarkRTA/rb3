@@ -4,7 +4,7 @@
 namespace Quazal {
     class Buffer : public RefCountedObject {
     public:
-        Buffer(unsigned int);
+        Buffer(unsigned int = 0x400);
         Buffer(const Buffer &);
         virtual ~Buffer();
 
