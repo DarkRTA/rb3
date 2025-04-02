@@ -26,7 +26,8 @@ namespace Quazal {
             _InstType6,
             _InstType7,
             _InstType8,
-            _InstType9
+            _InstType9,
+            _InstType10
         };
 
         MemoryManager(char *);
