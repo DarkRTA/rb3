@@ -14,6 +14,8 @@ namespace Quazal {
         bool AppendRaw(const unsigned char *, unsigned int);
         bool ValidateBufferLimit(unsigned int);
         bool SetPosition(unsigned int);
+        bool Append(const unsigned char *, unsigned int, unsigned int);
+        bool Extract(unsigned char *, unsigned int, unsigned int);
 
         ByteStream &operator<<(const Buffer &);
         ByteStream &operator>>(Buffer &);

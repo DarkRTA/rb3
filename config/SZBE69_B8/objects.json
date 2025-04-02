@@ -574,7 +574,7 @@
             "network/Plugins/LANSessionDiscovery.cpp": "MISSING",
             "network/Plugins/MD5.cpp": "NonMatching",
             "network/Plugins/MD5Checksum.cpp": "MISSING",
-            "network/Plugins/Message.cpp": "MISSING",
+            "network/Plugins/Message.cpp": "NonMatching",
             "network/Plugins/NATRelayInterface.cpp": "MISSING",
             "network/Plugins/NATTraversalEngine.cpp": "MISSING",
             "network/Plugins/NATTraversalStream.cpp": "MISSING",
