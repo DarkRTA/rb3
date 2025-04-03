@@ -13,5 +13,7 @@ namespace Quazal {
 
         bool
         RegisterGathering(ProtocolCallContext *, const AnyObjectHolder<Gathering, String> &);
+        bool Participate(ProtocolCallContext *, unsigned int, const String &);
+        bool LaunchSession(ProtocolCallContext *, unsigned int, const char *);
     };
 }

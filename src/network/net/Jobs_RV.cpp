@@ -2,6 +2,7 @@
 #include "Jobs_RV.h"
 #include "Protocol/ProtocolCallContext.h"
 #include "net/Net.h"
+#include "net/NetSession.h"
 #include "obj/Object.h"
 
 RVJob::RVJob() : mAsync(new Quazal::ProtocolCallContext()) {}
@@ -35,4 +36,49 @@ void MakeSessionJob::Start() {
                )) {
         mState = 4;
     }
+}
+
+bool MakeSessionJob::IsFinished() {
+    if (!TheNet.GetServer()->IsConnected())
+        return true;
+    else if (mState - 3U <= 1)
+        return true;
+    else if (!mGathering->mPtr)
+        return true;
+    else if (mAsync->GetState() != 1) {
+        if (mAsync->GetState() == 3)
+            return true;
+        Quazal::MatchMakingClient *client = TheNet.GetServer()->GetMatchMakingClient();
+        bool i4 = true;
+        switch (mState) {
+        case 0:
+            mState = 1;
+            i4 = client->Participate(mAsync, 0, "");
+            break;
+        case 1:
+            mState = 2;
+            i4 = client->LaunchSession(mAsync, 0, "");
+            break;
+        case 2:
+            mState = 3;
+            break;
+        default:
+            MILO_FAIL("MakeSessionJob in invalid state");
+            break;
+        }
+        if (!i4) {
+            mState = 4;
+            return true;
+        }
+    }
+    return false;
+}
+
+void MakeSessionJob::Cancel(Hmx::Object *) {
+    RELEASE(mAsync);
+    TheNetSession->OnRegisterSessionJobComplete(false);
+}
+
+void MakeSessionJob::OnCompletion(Hmx::Object *) {
+    TheNetSession->OnRegisterSessionJobComplete(mState == 3);
 }
