@@ -1,3 +1,4 @@
+#include "revolution/os/OSThread.h"
 #include <revolution/BASE.h>
 #include <revolution/DVD.h>
 #include <revolution/OS.h>
@@ -236,7 +237,7 @@ void OSSetAlarmTag(OSAlarm* alarm, u32 tag) {
 }
 
 //unused
-void OSCancelAlarms(){
+void OSCancelAlarms(OSThread*){
 }
 
 static BOOL OnReset(BOOL final, u32 event) {

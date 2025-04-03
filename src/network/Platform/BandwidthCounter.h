@@ -2,6 +2,7 @@
 #include "Platform/CriticalSection.h"
 #include "Platform/RootObject.h"
 #include "Platform/String.h"
+#include "Platform/qChain.h"
 #include "Platform/qStd.h"
 
 namespace Quazal {

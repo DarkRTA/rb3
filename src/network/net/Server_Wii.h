@@ -16,11 +16,11 @@ public:
     virtual int GetPlayerID(int);
     virtual int GetFriendsClient();
     virtual int GetMessagingClient();
-    virtual int GetMatchMakingClient();
-    virtual int GetCustomMatchMakingClient();
+    virtual Quazal::MatchMakingClient *GetMatchMakingClient();
+    virtual Quazal::CustomMatchMakingClient *GetCustomMatchMakingClient();
     virtual Quazal::ServiceClient *GetPersistentStoreClient();
     virtual int GetCompetitionClient();
-    virtual int GetSecureConnectionClient();
+    virtual Quazal::SecureConnectionClient *GetSecureConnectionClient();
     virtual Quazal::AccountManagementClient *GetAccountManagementClient();
     virtual int GetMasterProfileID();
     virtual int CreateProfile(String);

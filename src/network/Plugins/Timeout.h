@@ -1,6 +1,4 @@
-#ifndef PLUGINS_TIMEOUT_H
-#define PLUGINS_TIMEOUT_H
-
+#pragma once
 #include "Platform/RootObject.h"
 #include "Platform/Time.h"
 
@@ -15,7 +13,7 @@ namespace Quazal {
         bool IsAwaited() const;
         void SetRTO(unsigned int);
         void Start();
-        unsigned int GetAwaitedTime();
+        Time GetAwaitedTime();
 
     private:
         int m_oRTO;
@@ -23,5 +21,3 @@ namespace Quazal {
         class Time m_oExpirationTime;
     };
 }
-
-#endif // PLUGINS_TIMEOUT_H

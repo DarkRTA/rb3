@@ -8,10 +8,10 @@ namespace Quazal {
         _DDL_AudioStreamFormat() {}
         virtual ~_DDL_AudioStreamFormat() {}
 
-        unsigned int mNbSamplesPerPacket;
-        unsigned int mNbChannels;
-        unsigned int mNbSamplesPerSec;
-        unsigned int mNbBitsPerSample;
+        unsigned int mNbSamplesPerPacket; // 0x4
+        unsigned int mNbChannels; // 0x8
+        unsigned int mNbSamplesPerSec; // 0xc
+        unsigned int mNbBitsPerSample; // 0x10
     };
 
     class AudioStreamFormat : public _DDL_AudioStreamFormat {

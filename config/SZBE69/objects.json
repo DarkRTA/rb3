@@ -343,13 +343,16 @@
             "network/Core/StepSequenceJob.cpp": "NonMatching",
 
             "network/Extensions/CodecManager.cpp": "NonMatching",
+            "network/Extensions/SpeexCodec.cpp": "NonMatching",
 
-            "network/Products/ProductSpecifics.cpp": "NonMatching",           
+            "network/Products/ProductSpecifics.cpp": "NonMatching",
+            
+            "network/Plugins/Key.cpp": "NonMatching",
 
             "network/net/CustomMatchMakingDDL_Wii.cpp": "MISSING",
             "network/net/HarmonixGameDDF_Wii.cpp": "MISSING",
             "network/net/HarmonixGatheringDDL_Wii.cpp": "MISSING",
-            "network/net/Jobs_RV.cpp": "MISSING",
+            "network/net/Jobs_RV.cpp": "NonMatching",
             "network/net/Jobs_Wii.cpp": "NonMatching",
             "network/net/JsonUtils.cpp": "NonMatching",
             "network/net/MatchmakingSettings.cpp": "NonMatching",
@@ -361,7 +364,7 @@
             "network/net/NetMessenger.cpp": "NonMatching",
             "network/net/NetSearchResult.cpp": "NonMatching",
             "network/net/NetSession.cpp": "NonMatching",
-            "network/net/NetSession_RV.cpp": "MISSING",
+            "network/net/NetSession_RV.cpp": "NonMatching",
             "network/net/NetworkEmulator.cpp": "MISSING",
             "network/net/QuazalSession.cpp": "MISSING",
             "network/net/Server_Wii.cpp": "NonMatching",

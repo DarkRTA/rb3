@@ -18,6 +18,8 @@ namespace Quazal {
         virtual void ProcessCallCompletion();
 
         void RegisterCompletionCallback(CallbackRoot *, bool, bool);
+        void SetFlag(unsigned int);
+        void Reset();
 
         _State GetState() const { return unkc; }
 

@@ -29,6 +29,7 @@ END_MESSAGE
 
 DECLARE_MESSAGE(InviteAcceptedMsg, "invite_accepted")
 InviteAcceptedMsg() : Message(Type()) {}
+InviteAcceptedMsg(int x, int y, bool b) : Message(Type(), x, y, b) {}
 END_MESSAGE
 
 DECLARE_MESSAGE(InviteSentMsg, "invite_sent")
@@ -62,7 +63,7 @@ class SessionData {
 public:
     SessionData() {}
     virtual ~SessionData() {}
-    virtual void CopyInto(const SessionData *) = 0;
+    virtual void CopyInto(SessionData *) = 0;
     virtual void Save(BinStream &) const = 0;
     virtual void Load(BinStream &) = 0;
     virtual bool Equals(const SessionData *) const = 0;
