@@ -4,7 +4,7 @@
 namespace Quazal {
     class ExceptionHandler {
     public:
-        void CheckCrtExceptions();
+        static void CheckCrtExceptions();
         void Initialize();
     };
 }
