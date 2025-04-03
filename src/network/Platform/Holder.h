@@ -5,6 +5,20 @@ namespace Quazal {
     class Holder {
     public:
         Holder(T *ptr = nullptr) : mPtr(ptr) {}
+        ~Holder() {
+            if (mPtr)
+                delete mPtr;
+        }
+        Holder &operator=(T *item) {
+            if (mPtr)
+                delete mPtr;
+            mPtr = item;
+            return *this;
+        }
+
+        operator T *() { return mPtr; }
+        T *operator->() { return mPtr; }
+
         T *mPtr; // 0x0
     };
 
@@ -13,5 +27,10 @@ namespace Quazal {
     public:
         AnyObjectHolder(T1 *ptr = nullptr) : Holder(ptr) {}
         virtual ~AnyObjectHolder() {}
+
+        AnyObjectHolder &operator=(T1 *item) {
+            Holder<T1>::operator=(item);
+            return *this;
+        }
     };
 }

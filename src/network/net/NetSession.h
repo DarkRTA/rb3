@@ -62,7 +62,7 @@ class SessionData {
 public:
     SessionData() {}
     virtual ~SessionData() {}
-    virtual void CopyInto(const SessionData *) = 0;
+    virtual void CopyInto(SessionData *) = 0;
     virtual void Save(BinStream &) const = 0;
     virtual void Load(BinStream &) = 0;
     virtual bool Equals(const SessionData *) const = 0;

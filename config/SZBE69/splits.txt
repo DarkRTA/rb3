@@ -131,6 +131,9 @@ network/net/NetSession.cpp:
 	.text       start:0x800ACBC4 end:0x800B46BC
 	.ctors      start:0x807EFE34 end:0x807EFE38
 
+network/net/NetSession_RV.cpp:
+	.text       start:0x800B46BC end:0x800B5980
+
 network/net/Server.cpp:
 	.text       start:0x800B60BC end:0x800B65A4
 

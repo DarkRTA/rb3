@@ -82,3 +82,8 @@ void MakeSessionJob::Cancel(Hmx::Object *) {
 void MakeSessionJob::OnCompletion(Hmx::Object *) {
     TheNetSession->OnRegisterSessionJobComplete(mState == 3);
 }
+
+JoinSessionJob::JoinSessionJob(RVSessionData *data)
+    : mData(data), mAsync(new Quazal::ProtocolCallContext()), mState(0) {}
+
+JoinSessionJob::~JoinSessionJob() { delete mAsync; }

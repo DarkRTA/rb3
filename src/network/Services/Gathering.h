@@ -6,7 +6,7 @@ namespace Quazal {
     class Gathering : public _DDL_Gathering {
     public:
         Gathering();
-        virtual ~Gathering() {}
+        virtual ~Gathering();
         virtual void Trace(unsigned int) const;
     };
 }
