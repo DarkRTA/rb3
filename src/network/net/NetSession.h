@@ -29,6 +29,7 @@ END_MESSAGE
 
 DECLARE_MESSAGE(InviteAcceptedMsg, "invite_accepted")
 InviteAcceptedMsg() : Message(Type()) {}
+InviteAcceptedMsg(int x, int y, bool b) : Message(Type(), x, y, b) {}
 END_MESSAGE
 
 DECLARE_MESSAGE(InviteSentMsg, "invite_sent")

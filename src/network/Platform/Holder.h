@@ -4,7 +4,7 @@ namespace Quazal {
     template <class T>
     class Holder {
     public:
-        Holder(T *ptr = nullptr) : mPtr(ptr) {}
+        Holder(T *ptr = 0) : mPtr(ptr) {}
         ~Holder() {
             if (mPtr)
                 delete mPtr;
@@ -18,6 +18,7 @@ namespace Quazal {
 
         operator T *() { return mPtr; }
         T *operator->() { return mPtr; }
+        T *Ptr() { return mPtr; }
 
         T *mPtr; // 0x0
     };
@@ -25,7 +26,7 @@ namespace Quazal {
     template <class T1, class T2>
     class AnyObjectHolder : public Holder<T1> {
     public:
-        AnyObjectHolder(T1 *ptr = nullptr) : Holder(ptr) {}
+        AnyObjectHolder(T1 *ptr = 0) : Holder(ptr) {}
         virtual ~AnyObjectHolder() {}
 
         AnyObjectHolder &operator=(T1 *item) {

@@ -20,5 +20,7 @@ namespace Quazal {
         void
         UpdateGathering(ProtocolCallContext *, const AnyObjectHolder<Gathering, String> &);
         void SetState(ProtocolCallContext *, unsigned int, unsigned int);
+        bool
+        FindByID(ProtocolCallContext *, unsigned int, AnyObjectHolder<Gathering, String> *);
     };
 }

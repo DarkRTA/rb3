@@ -7,6 +7,7 @@
 #include "network/Services/ServiceClient.h"
 #include "network/Services/MatchMakingClient.h"
 #include "network/Services/SecureConnectionClient.h"
+#include "network/Services/CustomMatchMakingClient.h"
 #include "network/Platform/Holder.h"
 
 class Server : public MsgSource {
@@ -38,7 +39,7 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetCustomMatchMakingClient() {
+    virtual Quazal::CustomMatchMakingClient *GetCustomMatchMakingClient() {
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
