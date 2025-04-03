@@ -6,6 +6,7 @@
 #include "network/Services/AccountManagementClient.h"
 #include "network/Services/ServiceClient.h"
 #include "network/Services/MatchMakingClient.h"
+#include "network/Services/SecureConnectionClient.h"
 #include "network/Platform/Holder.h"
 
 class Server : public MsgSource {
@@ -49,7 +50,7 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetSecureConnectionClient() {
+    virtual Quazal::SecureConnectionClient *GetSecureConnectionClient() {
         MILO_FAIL("not implemented for this platform");
         return 0;
     }

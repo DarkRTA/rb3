@@ -15,6 +15,7 @@ public:
     static void KillSession();
     static bool StillDeleting();
     static void Poll();
+    static void CancelJoinSession();
     static Quazal::CallContext *mTerminatingContext;
     // static NetZ* mTerminatingNetZ
 };

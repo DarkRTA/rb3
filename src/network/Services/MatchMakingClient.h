@@ -17,5 +17,8 @@ namespace Quazal {
         bool LaunchSession(ProtocolCallContext *, unsigned int, const char *);
         void CancelParticipation(ProtocolCallContext *, unsigned int, const String &);
         void UnregisterGathering(ProtocolCallContext *, unsigned int);
+        void
+        UpdateGathering(ProtocolCallContext *, const AnyObjectHolder<Gathering, String> &);
+        void SetState(ProtocolCallContext *, unsigned int, unsigned int);
     };
 }

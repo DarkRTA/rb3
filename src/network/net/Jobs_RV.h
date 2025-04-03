@@ -48,7 +48,7 @@ public:
 class UpdateSettingsJob : public RVJob {
 public:
     UpdateSettingsJob(Quazal::AnyObjectHolder<Quazal::Gathering, Quazal::String> *);
-    virtual ~UpdateSettingsJob();
+    virtual ~UpdateSettingsJob() {}
     virtual void Start();
     virtual void Cancel(Hmx::Object *);
     virtual void OnCompletion(Hmx::Object *);
@@ -59,7 +59,7 @@ public:
 class ChangeSessionStateJob : public RVJob {
 public:
     ChangeSessionStateJob(unsigned int, unsigned int);
-    virtual ~ChangeSessionStateJob();
+    virtual ~ChangeSessionStateJob() {}
     virtual void Start();
 
     unsigned int mSessionID; // 0xc
