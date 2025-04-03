@@ -16,7 +16,7 @@ public:
     virtual int GetPlayerID(int);
     virtual int GetFriendsClient();
     virtual int GetMessagingClient();
-    virtual int GetMatchMakingClient();
+    virtual Quazal::MatchMakingClient *GetMatchMakingClient();
     virtual int GetCustomMatchMakingClient();
     virtual Quazal::ServiceClient *GetPersistentStoreClient();
     virtual int GetCompetitionClient();

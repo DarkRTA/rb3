@@ -5,6 +5,7 @@
 #include "os/OnlineID.h"
 #include "network/Services/AccountManagementClient.h"
 #include "network/Services/ServiceClient.h"
+#include "network/Services/MatchMakingClient.h"
 #include "network/Platform/Holder.h"
 
 class Server : public MsgSource {
@@ -32,7 +33,7 @@ public:
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
-    virtual int GetMatchMakingClient() {
+    virtual Quazal::MatchMakingClient *GetMatchMakingClient() {
         MILO_FAIL("not implemented for this platform");
         return 0;
     }
