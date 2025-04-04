@@ -342,6 +342,8 @@
 
             "network/Core/StepSequenceJob.cpp": "NonMatching",
 
+            "network/Extensions/ChannelInfo.cpp": "NonMatching",
+            "network/Extensions/ChannelMembers.cpp": "NonMatching",
             "network/Extensions/CodecManager.cpp": "NonMatching",
             "network/Extensions/SpeexCodec.cpp": "NonMatching",
 

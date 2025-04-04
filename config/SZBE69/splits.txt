@@ -102,6 +102,12 @@ network/Extensions/CodecManager.cpp:
 	.text       start:0x8007C15C end:0x8007CADC
 	.ctors      start:0x807EFDD0 end:0x807EFDD4
 
+network/Extensions/ChannelInfo.cpp:
+	.text       start:0x800853AC end:0x800854D4
+
+network/Extensions/ChannelMembers.cpp:
+	.text       start:0x800856C0 end:0x80085948
+
 network/Products/ProductSpecifics.cpp:
 	.text       start:0x800A515C end:0x800A51AC
 	.data       start:0x8082A5C0 end:0x8082A608

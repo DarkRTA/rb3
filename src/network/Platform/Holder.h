@@ -1,10 +1,11 @@
 #pragma once
+#include <cstddef>
 
 namespace Quazal {
     template <class T>
     class Holder {
     public:
-        Holder(T *ptr = 0) : mPtr(ptr) {}
+        Holder(T *ptr = nullptr) : mPtr(ptr) {}
         ~Holder() {
             if (mPtr)
                 delete mPtr;
@@ -26,7 +27,7 @@ namespace Quazal {
     template <class T1, class T2>
     class AnyObjectHolder : public Holder<T1> {
     public:
-        AnyObjectHolder(T1 *ptr = 0) : Holder(ptr) {}
+        AnyObjectHolder(T1 *ptr = nullptr) : Holder(ptr) {}
         virtual ~AnyObjectHolder() {}
 
         AnyObjectHolder &operator=(T1 *item) {

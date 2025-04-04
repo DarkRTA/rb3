@@ -1,7 +1,10 @@
 #pragma once
 #include "Core/Operation.h"
 #include "Core/StateMachine.h"
+#include "DOHandle.h"
+#include "ObjDup/MasterStationRef.h"
 #include "ObjDup/DOOperation.h"
+#include "Selection.h"
 
 namespace Quazal {
 
@@ -29,6 +32,15 @@ namespace Quazal {
 
         unsigned int GetMasterID() const;
         bool IsADuplicationMaster() const;
+        void SetInitialState(const QEvent &);
+
+        unsigned short m_uiRefCount; // 0x1c
+        unsigned short m_uiRelevanceCount; // 0x1e
+        MasterStationRef m_refMasterStation; // 0x20
+        unsigned short m_uiFlags; // 0x2c
+        Selection m_setDuplicationSet; // 0x30
+        DOHandle m_dohMyself; // 0x50
+        Selection m_setCachedDuplicationSet; // 0x54
     };
 
 }

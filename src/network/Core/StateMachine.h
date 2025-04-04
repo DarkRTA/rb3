@@ -22,8 +22,8 @@ namespace Quazal {
 
         void TopState(const QEvent &);
 
-        StateMachineFunc mCurrentState; // 0x0
-        StateMachineFunc mSourceState; // 0xc
+        StateMachineFunc mCurrentState; // 0x4
+        StateMachineFunc mSourceState; // 0x10
     };
 
 }
