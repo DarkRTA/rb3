@@ -4,18 +4,12 @@
 #include <cstddef>
 
 namespace Quazal {
-    InstantiationContext::InstantiationContext() {
-        for (int i = 0; i < 11; i++) {
-            m_icInstanceContext[i] = nullptr;
-        }
+    InstantiationContext::InstantiationContext() : m_IsValid(false) {
+        InitContext();
         m_IsValid = true;
     }
 
-    InstantiationContext::~InstantiationContext() {
-        for (int i = 0; i < 11; i++) {
-            m_icInstanceContext[i] = nullptr;
-        }
-    }
+    InstantiationContext::~InstantiationContext() { InitContext(); }
 
     bool InstantiationContext::AddInstance(InstanceControl *ic, unsigned int idx) {
         if (idx >= 11) {

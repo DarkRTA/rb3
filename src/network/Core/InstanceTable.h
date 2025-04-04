@@ -1,6 +1,7 @@
 #pragma once
 #include "Core/InstantiationContext.h"
 #include "Platform/RootObject.h"
+#include "Platform/SystemError.h"
 #include "Platform/qStd.h"
 
 namespace Quazal {
@@ -14,6 +15,28 @@ namespace Quazal {
         unsigned int GetHighestID() const;
         bool AddInstance(InstanceControl *, unsigned int, unsigned int);
         bool DelInstance(InstanceControl *, unsigned int, unsigned int);
+
+        bool
+        AddInstanceToVector(InstanceControl *ic, unsigned int ui1, unsigned int ui2) {
+            if (ui2 < m_pvContextVector->size()) {
+                InstantiationContext *ctx = (*m_pvContextVector)[ui2];
+                if (ctx) {
+                    if (ctx->AddInstance(ic, ui1) == true) {
+                        return true;
+                    }
+                } else {
+                    SystemError::SignalError(0, 0, 0xe0000008, 0);
+                    return false;
+                }
+            }
+            SystemError::SignalError(0, 0, 0xe0000003, 0);
+            return false;
+        }
+
+        bool
+        DelInstanceFromVector(InstanceControl *ic, unsigned int ui, unsigned int idx) {
+            return (*m_pvContextVector)[idx]->DelInstance(ic, ui);
+        }
 
         bool ContextIsValid(unsigned int ui) {
             if (ui == 0)
