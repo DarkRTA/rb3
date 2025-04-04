@@ -340,6 +340,9 @@
             "network/Platform/StringConversion.cpp": "NonMatching",
             "network/Platform/StringStream.cpp": "NonMatching",
 
+            "network/Core/InstanceControl.cpp": "NonMatching",
+            "network/Core/InstanceTable.cpp": "NonMatching",
+            "network/Core/InstantiationContext.cpp": "NonMatching",
             "network/Core/StepSequenceJob.cpp": "NonMatching",
 
             "network/Extensions/ChannelInfo.cpp": "NonMatching",
