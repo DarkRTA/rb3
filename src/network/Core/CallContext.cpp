@@ -1,5 +1,6 @@
 #include "Core/CallContext.h"
 #include "Platform/Result.h"
+#include "Scheduler.h"
 
 namespace Quazal {
 
@@ -8,5 +9,7 @@ namespace Quazal {
         unk8 = 0;
         unk40 = 0;
     }
+
+    CallContext::~CallContext() { Scheduler::GetInstance(); }
 
 }

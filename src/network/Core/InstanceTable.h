@@ -38,6 +38,17 @@ namespace Quazal {
             return (*m_pvContextVector)[idx]->DelInstance(ic, ui);
         }
 
+        unsigned int GetInstanceFromVector(unsigned int ui, unsigned int idx) {
+            if (idx == 0) {
+                return m_oDefaultContext.GetInstance(ui);
+            } else if (idx >= m_pvContextVector->size()) {
+                SystemError::SignalError(0, 0, 0xe0000003, 0);
+                return -1;
+            } else {
+                return (*m_pvContextVector)[idx]->GetInstance(ui);
+            }
+        }
+
         bool ContextIsValid(unsigned int ui) {
             if (ui == 0)
                 return true;
