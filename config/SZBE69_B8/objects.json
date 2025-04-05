@@ -355,7 +355,7 @@
         "objects": {
             "network/Core/CacheManager.cpp": "Matching",
             "network/Core/CallContext.cpp": "NonMatching",
-            "network/Core/CallContextRegister.cpp": "MISSING",
+            "network/Core/CallContextRegister.cpp": "NonMatching",
             "network/Core/Core.cpp": "NonMatching",
             "network/Core/InstanceControl.cpp": "Matching",
             "network/Core/InstanceTable.cpp": "Matching",
@@ -365,7 +365,7 @@
             "network/Core/MemoryStorageDevice.cpp": "MISSING",
             "network/Core/Operation.cpp": "MISSING",
             "network/Core/OperationManager.cpp": "MISSING",
-            "network/Core/PeriodicJob.cpp": "MISSING",
+            "network/Core/PeriodicJob.cpp": "Matching",
             "network/Core/PollForCompletionJob.cpp": "MISSING",
             "network/Core/PseudoGlobalVariableList.cpp": "Matching",
             "network/Core/PseudoGlobalVariableRoot.cpp": "Matching",
