@@ -99,6 +99,10 @@ network/Core/InstanceTable.cpp:
 network/Core/InstantiationContext.cpp:
 	.text       start:0x8001FCF0 end:0x8001FEC0
 
+network/Core/Scheduler.cpp:
+	.text       start:0x80021318 end:0x80022EFC
+	.ctors      start:0x807EFD68 end:0x807EFD6C
+
 network/Core/StepSequenceJob.cpp:
 	.text       start:0x800250DC end:0x80025530
 

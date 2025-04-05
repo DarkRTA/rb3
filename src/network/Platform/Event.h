@@ -1,10 +1,9 @@
 #pragma once
-
 #include "Platform/RootObject.h"
 #include "Platform/EventHandler.h"
 
 namespace Quazal {
-    class Event : public Quazal::RootObject {
+    class Event : public RootObject {
         Event(EventHandler *, unsigned int, unsigned int);
         ~Event();
         void Set();

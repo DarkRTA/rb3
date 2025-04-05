@@ -35,6 +35,7 @@ namespace Quazal {
         virtual ~ObjectThreadRoot();
         virtual void CallObjectMethod() = 0;
 
+        static unsigned int GetCurrentThreadID();
         static unsigned int s_uiDefaultPrio;
 
         String mName; // 0x4
