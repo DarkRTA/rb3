@@ -30,6 +30,7 @@ namespace Quazal {
         void StartDispatcherThread();
         void Dispatch(unsigned int, unsigned int);
         void Queue(Job *, bool);
+        bool Cancel(Job *);
 
         static bool CurrentThreadCanWaitForJob();
         static CriticalSection s_csGlobalSystemLock;

@@ -21,9 +21,9 @@ namespace Quazal {
         };
         Job(const DebugString &);
         virtual ~Job();
-        virtual void DecoratedExecute();
+        virtual void DecoratedExecute() { Execute(); }
         virtual void Execute() = 0;
-        virtual void TestSuspendedJobState();
+        virtual void TestSuspendedJobState() {}
         virtual void AddActivity(const char *);
         virtual String GetTraceInfo() const;
         virtual void SetDefaultPostExecutionState();

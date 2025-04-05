@@ -18,7 +18,7 @@ namespace Quazal {
         virtual bool EndInitialization(); // 0x34
         virtual bool BeginTermination(); // 0x38
         virtual bool EndTermination(); // 0x3C
-        virtual void TestState(); // 0x48
+        virtual _State TestState(); // 0x48
         virtual void DoWork(); // 0x4C
 
         void RegisterComponent(SystemComponent *);

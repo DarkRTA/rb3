@@ -9,6 +9,6 @@ namespace Quazal {
         virtual void SetDefaultPostExecutionState();
         virtual bool SkipWaitDelayAtTermination();
 
-        int unk34;
+        int m_tiPeriod; // 0x34
     };
 }
