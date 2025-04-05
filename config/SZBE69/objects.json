@@ -348,6 +348,7 @@
             "network/Core/InstantiationContext.cpp": "NonMatching",
             "network/Core/Scheduler.cpp": "NonMatching",
             "network/Core/StepSequenceJob.cpp": "NonMatching",
+            "network/Core/TimedSignal.cpp": "NonMatching",
             "network/Core/WorkerThreads.cpp": "NonMatching",
 
             "network/Extensions/ChannelInfo.cpp": "NonMatching",

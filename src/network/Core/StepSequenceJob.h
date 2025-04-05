@@ -25,7 +25,7 @@ namespace Quazal {
         virtual void Execute();
         virtual void AddActivity(const char *);
         virtual String GetTraceInfo() const;
-        virtual void CheckExceptions();
+        virtual void CheckExceptions() {}
 
         void SetStep(const Step &);
         void ProcessCallResult(Step *);
