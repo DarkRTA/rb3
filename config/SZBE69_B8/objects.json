@@ -357,7 +357,7 @@
             "network/Core/CallContext.cpp": "NonMatching",
             "network/Core/CallContextRegister.cpp": "MISSING",
             "network/Core/Core.cpp": "NonMatching",
-            "network/Core/InstanceControl.cpp": "NonMatching",
+            "network/Core/InstanceControl.cpp": "Matching",
             "network/Core/InstanceTable.cpp": "Matching",
             "network/Core/InstantiationContext.cpp": "Matching",
             "network/Core/Job.cpp": "NonMatching",

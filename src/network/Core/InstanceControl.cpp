@@ -28,17 +28,17 @@ namespace Quazal {
     }
 
     void InstanceControl::SetDelegatorInstance(void *v) {
-        ScopedCS cs(Scheduler::s_csGlobalSystemLock);
+        volatile ScopedCS cs(Scheduler::s_csGlobalSystemLock);
         m_pDelegatorInstance = v;
     }
 
     unsigned int InstanceControl::GetHighestID() {
-        ScopedCS cs(Scheduler::s_csGlobalSystemLock);
+        volatile ScopedCS cs(Scheduler::s_csGlobalSystemLock);
         return s_oInstanceTable.GetHighestID();
     }
 
     bool InstanceControl::ContextIsValid(unsigned int ui) {
-        ScopedCS cs(Scheduler::s_csGlobalSystemLock);
+        volatile ScopedCS cs(Scheduler::s_csGlobalSystemLock);
         return s_oInstanceTable.ContextIsValid(ui);
     }
 
