@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Platform/RefCountedObject.h"
+#include "Platform/Result.h"
 #include "Platform/RootObject.h"
 #include "Platform/String.h"
 #include "types.h"
@@ -57,7 +58,7 @@ namespace Quazal {
         void Trace(unsigned int, bool) const;
         _State Initialize();
         _State Terminate();
-        void WaitForTerminatedState(unsigned int);
+        qResult WaitForTerminatedState(unsigned int);
 
         Quazal::String mName; // 0x8
         _State mState; // 0xC

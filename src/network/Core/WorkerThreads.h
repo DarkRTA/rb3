@@ -7,6 +7,11 @@
 namespace Quazal {
     class WorkerThreads : public RootObject {
     public:
+        enum State {
+            Running = 0,
+            Stopping = 1,
+            Stopped = 2
+        };
         WorkerThreads();
         virtual ~WorkerThreads();
         virtual void Initialize() {}
@@ -19,7 +24,7 @@ namespace Quazal {
         unsigned int GetNbWorkers() const;
 
         CriticalSection m_csState; // 0x4
-        int m_eState; // 0x18
+        State m_eState; // 0x18
         qVector<ObjectThread<WorkerThreads, int> *> m_vecThreads; // 0x1c
     };
 }

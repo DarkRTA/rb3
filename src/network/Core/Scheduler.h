@@ -51,7 +51,7 @@ namespace Quazal {
         qChain<Job *> unk60;
         qChain<Job *> unk70;
         qChain<Job *> unk80;
-        qMap<Time, Job *> unk90;
+        qMap<Time, Job *> unk90; // multimap?
         bool unka8;
         WaterMark unkac;
         WaterMark unkdc;

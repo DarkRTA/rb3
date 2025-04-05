@@ -220,7 +220,7 @@ namespace Quazal {
         }
     }
 
-    void SystemComponent::WaitForTerminatedState(unsigned int ui) { // returns struct
+    qResult SystemComponent::WaitForTerminatedState(unsigned int ui) { // returns struct
         Terminate();
         if (ui != 0 && Scheduler::CurrentThreadCanWaitForJob()) {
             if (PseudoSingleton::GetCurrentContext() == 0) {
