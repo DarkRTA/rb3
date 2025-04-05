@@ -6,6 +6,13 @@
 namespace Quazal {
     class Scheduler : public RootObject {
     public:
+        class SchedulerWorkerThread {
+        public:
+        };
+
+        Scheduler(unsigned char, SchedulerWorkerThread *);
+        void StartDispatcherThread();
+
         static bool CurrentThreadCanWaitForJob();
         static CriticalSection s_csGlobalSystemLock;
         static Scheduler *GetInstance() {

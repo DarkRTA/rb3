@@ -356,7 +356,7 @@
             "network/Core/CacheManager.cpp": "Matching",
             "network/Core/CallContext.cpp": "NonMatching",
             "network/Core/CallContextRegister.cpp": "MISSING",
-            "network/Core/Core.cpp": "MISSING",
+            "network/Core/Core.cpp": "NonMatching",
             "network/Core/InstanceControl.cpp": "NonMatching",
             "network/Core/InstanceTable.cpp": "Matching",
             "network/Core/InstantiationContext.cpp": "Matching",
