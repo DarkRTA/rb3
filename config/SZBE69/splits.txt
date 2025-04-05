@@ -106,6 +106,9 @@ network/Core/Scheduler.cpp:
 network/Core/StepSequenceJob.cpp:
 	.text       start:0x800250DC end:0x80025530
 
+network/Core/WorkerThreads.cpp:
+	.text       start:0x80026C1C end:0x800272AC
+
 network/Plugins/Key.cpp:
 	.text       start:0x8002C31C end:0x8002C938
 
