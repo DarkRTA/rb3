@@ -2,6 +2,7 @@
 #include "Core/CallContextRegister.h"
 #include "Core/InstanceControl.h"
 #include "Core/PseudoSingleton.h"
+#include "Core/SystemComponents.h"
 #include "Platform/RefCountedObject.h"
 #include "SecurityContextManager.h"
 
@@ -29,7 +30,7 @@ namespace Quazal {
 
         Scheduler *m_pScheduler; // 0x8
         CallContextRegister *m_pCallContextRegister; // 0xc
-        int unk10; // 0x10 - SystemComponents*
+        SystemComponents *m_pSystemComponents; // 0x10
         SecurityContextManager *m_pSecurityContextManager; // 0x14
         PseudoSingleton m_psInstance; // 0x18
     };

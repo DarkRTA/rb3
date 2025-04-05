@@ -1,6 +1,8 @@
 #include "network/Core/Core.h"
 #include "CallContextRegister.h"
 #include "Core.h"
+#include "Core/SecurityContextManager.h"
+#include "Core/SystemComponents.h"
 #include "Platform/MutexPrimitive.h"
 #include "Platform/ScopedCS.h"
 #include "Scheduler.h"
@@ -27,7 +29,7 @@ namespace Quazal {
             MutexPrimitive::s_bNoOp = true;
         }
         {
-            ScopedCS cs(Scheduler::s_csGlobalSystemLock);
+            volatile ScopedCS cs(Scheduler::s_csGlobalSystemLock);
             s_uiCoreCount++;
         }
         m_psInstance.SetDelegatorInstance(this);
@@ -36,9 +38,26 @@ namespace Quazal {
             m_pScheduler->StartDispatcherThread();
         }
         m_pCallContextRegister = new (__FILE__, 0x59) CallContextRegister();
+        m_pSystemComponents = new (__FILE__, 0x5A) SystemComponents();
+        m_pSystemComponents->unk2c->RegisterComponent(m_pCallContextRegister);
+        m_pSecurityContextManager = new (__FILE__, 0x5C) SecurityContextManager();
+        ScopedCS cs(Scheduler::GetInstance()->unk38);
+        m_pSystemComponents->unk2c->Initialize();
     }
 
-    Core::~Core() {}
+    Core::~Core() {
+        {
+            ScopedCS cs(Scheduler::GetInstance()->unk38);
+            m_pSystemComponents->unk2c->Terminate();
+        }
+        m_pSystemComponents->WaitForTerminatedState(-1);
+        m_pSystemComponents->unk2c->UnregisterComponent(m_pCallContextRegister);
+        delete m_pScheduler;
+        delete m_pSystemComponents;
+        delete m_pSecurityContextManager;
+        volatile ScopedCS cs(Scheduler::s_csGlobalSystemLock);
+        s_uiCoreCount--;
+    }
 
     void Core::AcquireInstance() {
         ScopedCS cs(Scheduler::s_csGlobalSystemLock);
