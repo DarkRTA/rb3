@@ -10,6 +10,8 @@ namespace Quazal {
         DORef();
         ~DORef();
 
+        void SetSoft();
+
         DuplicatedObject *m_poReferencedDO; // 0x0
         DOHandle m_hReferencedDO; // 0x4
         bool m_bLockRelevance; // 0x8

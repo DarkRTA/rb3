@@ -106,6 +106,9 @@ network/Core/Scheduler.cpp:
 	.text       start:0x80021318 end:0x80022EFC
 	.ctors      start:0x807EFD68 end:0x807EFD6C
 
+network/Core/StateMachine.cpp:
+	.text       start:0x80024310 end:0x800250DC
+
 network/Core/StepSequenceJob.cpp:
 	.text       start:0x800250DC end:0x80025530
 
@@ -122,8 +125,9 @@ network/Plugins/Stream.cpp:
 	.text       start:0x80038924 end:0x80038978
 	.data       start:0x8081ADD0 end:0x8081ADE8
 
-rb3/stubs/stubzerof.cpp:
-	.text       start:0x8005C7AC end:0x8005C7B8
+network/ObjDup/DuplicatedObject.cpp:
+	.text       start:0x80058234 end:0x8005C804
+	.ctors      start:0x807EFDA4 end:0x807EFDA8
 
 network/Extensions/SpeexCodec.cpp:
 	.text       start:0x8007B9D8 end:0x8007BF20

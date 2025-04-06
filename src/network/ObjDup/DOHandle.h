@@ -5,7 +5,7 @@ namespace Quazal {
     class DOHandle : public RootObject {
     public:
         DOHandle(unsigned int val = 0) : mValue(val) {}
-        ~DOHandle();
+        ~DOHandle() {}
 
         void SetDOClassID(unsigned int);
 

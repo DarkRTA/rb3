@@ -8,22 +8,46 @@ namespace Quazal {
     public:
         class QEvent : public RootObject {
         public:
-            QEvent() : mRepeatEvent(0) {}
+            QEvent() : m_bRepeatEvent(0) {}
             virtual ~QEvent() {}
-            virtual short GetSignal() const = 0;
+            virtual unsigned short GetSignal() const = 0;
 
-            bool mRepeatEvent;
+            bool m_bRepeatEvent; // 0x4
         };
 
-        typedef void (StateMachine::*StateMachineFunc)(const QEvent &);
+        class QSimpleEvent : public QEvent {
+        public:
+            QSimpleEvent(unsigned short sig) : m_uiSignal(sig) {}
+            virtual ~QSimpleEvent() {}
+            virtual unsigned short GetSignal() const { return m_uiSignal; }
 
-        StateMachine(StateMachineFunc);
+            unsigned short m_uiSignal; // 0x6
+        };
+
+        class TransitionPath {
+        public:
+        };
+
+        typedef void (StateMachine::*StateMachineVoidFunc)(const QEvent &);
+        typedef StateMachineVoidFunc (StateMachine::*StateMachineFPFunc)(const QEvent &);
+
+        StateMachine(StateMachineVoidFunc);
         virtual ~StateMachine();
 
-        void TopState(const QEvent &);
+        StateMachineVoidFunc TopState(const QEvent &);
+        void InitialTransition();
+        void StaticStateTransition(TransitionPath *, StateMachineFPFunc);
+        void DispatchEvent(const QEvent &);
+        void TransitionPathSetup(TransitionPath *, StateMachineFPFunc);
 
-        StateMachineFunc mCurrentState; // 0x4
-        StateMachineFunc mSourceState; // 0x10
+        StateMachineVoidFunc Trigger(StateMachineFPFunc func, unsigned short us) {
+            QSimpleEvent event(us);
+            StateMachineVoidFunc ret = (this->*func)(event);
+            return ret;
+        }
+
+        StateMachineFPFunc mCurrentState; // 0x4
+        StateMachineVoidFunc mSourceState; // 0x10
     };
 
 }
