@@ -51,7 +51,7 @@ namespace Quazal {
         }
 
         StateFuncFactory mCurrentState; // 0x4
-        StateFunc mSourceState; // 0x10
+        StateFuncFactory mSourceState; // 0x10
     };
 
 }
