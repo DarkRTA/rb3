@@ -363,7 +363,7 @@
             "network/Core/Job.cpp": "NonMatching",
             "network/Core/JobQueue.cpp": "Matching",
             "network/Core/MemoryStorageDevice.cpp": "MISSING",
-            "network/Core/Operation.cpp": "MISSING",
+            "network/Core/Operation.cpp": "NonMatching",
             "network/Core/OperationManager.cpp": "MISSING",
             "network/Core/PeriodicJob.cpp": "Matching",
             "network/Core/PollForCompletionJob.cpp": "NonMatching",

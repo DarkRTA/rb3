@@ -37,7 +37,8 @@ namespace Quazal {
         void SetStationSpecialRelevance();
 
         void SetInitialState(const QEvent &);
-        StateFunc ValidState(const QEvent &);
+        StateFuncFactory ValidState(const QEvent &);
+        StateFuncFactory InvalidState(const QEvent &);
 
         void AcquireMainReference() {
             volatile ScopedCS cs(s_csRefCount);

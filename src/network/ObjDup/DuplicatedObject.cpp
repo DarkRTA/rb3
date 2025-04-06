@@ -30,7 +30,29 @@ namespace Quazal {
     }
 
     void DuplicatedObject::SetInitialState(const QEvent &) {
-        mCurrentState = static_cast<StateFuncFactory>(&DuplicatedObject::ValidState);
+        mCurrentState = reinterpret_cast<StateFuncFactory>(&DuplicatedObject::ValidState);
+    }
+
+    StateMachine::StateFuncFactory DuplicatedObject::InvalidState(const QEvent &e) {
+        return static_cast<StateFuncFactory>(&StateMachine::TopState);
+    }
+
+    StateMachine::StateFuncFactory DuplicatedObject::ValidState(const QEvent &e) {
+        if ((int)e.GetSignal() == 1) {
+            mCurrentState =
+                reinterpret_cast<StateFuncFactory>(&DuplicatedObject::ValidState);
+            return 0;
+        } else if ((e.GetSignal() & 0xFFFF) - 4 >= 0) {
+            static_cast<const Operation &>(e).Trace(1);
+            Trace(1);
+            static TransitionPath t_;
+            StaticStateTransition(
+                &t_, reinterpret_cast<StateFuncFactory>(&DuplicatedObject::InvalidState)
+            );
+            return 0;
+        } else {
+            return static_cast<StateFuncFactory>(&StateMachine::TopState);
+        }
     }
 
 }
