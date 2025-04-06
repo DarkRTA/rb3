@@ -24,30 +24,34 @@ namespace Quazal {
             unsigned short m_uiSignal; // 0x6
         };
 
+        // Type for a pointer to a member function that takes QEvent and returns void
+        typedef void (StateMachine::*StateFunc)(const QEvent &);
+        // Type for a pointer to a member function that takes QEvent
+        // and returns another StateFunc
+        typedef StateFunc (StateMachine::*StateFuncFactory)(const QEvent &);
+
         class TransitionPath {
         public:
+            StateFuncFactory unk0;
         };
 
-        typedef void (StateMachine::*StateMachineVoidFunc)(const QEvent &);
-        typedef StateMachineVoidFunc (StateMachine::*StateMachineFPFunc)(const QEvent &);
-
-        StateMachine(StateMachineVoidFunc);
+        StateMachine(StateFunc);
         virtual ~StateMachine();
 
-        StateMachineVoidFunc TopState(const QEvent &);
+        StateFunc TopState(const QEvent &);
         void InitialTransition();
-        void StaticStateTransition(TransitionPath *, StateMachineFPFunc);
+        void StaticStateTransition(TransitionPath *, StateFuncFactory);
         void DispatchEvent(const QEvent &);
-        void TransitionPathSetup(TransitionPath *, StateMachineFPFunc);
+        void TransitionPathSetup(TransitionPath *, StateFuncFactory);
 
-        StateMachineVoidFunc Trigger(StateMachineFPFunc func, unsigned short us) {
+        StateFunc Trigger(StateFuncFactory func, unsigned short us) {
             QSimpleEvent event(us);
-            StateMachineVoidFunc ret = (this->*func)(event);
+            StateFunc ret = (this->*func)(event);
             return ret;
         }
 
-        StateMachineFPFunc mCurrentState; // 0x4
-        StateMachineVoidFunc mSourceState; // 0x10
+        StateFuncFactory mCurrentState; // 0x4
+        StateFunc mSourceState; // 0x10
     };
 
 }

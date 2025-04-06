@@ -10,7 +10,7 @@ namespace Quazal {
         };
         Operation(unsigned int);
         virtual ~Operation() {}
-        virtual short GetSignal() const;
+        virtual unsigned short GetSignal() const;
         // 4 pures
     };
 

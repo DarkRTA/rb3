@@ -9,9 +9,7 @@ namespace Quazal {
     CriticalSection DuplicatedObject::s_csRefCount(0x40000000);
 
     DuplicatedObject::DuplicatedObject()
-        : StateMachine(
-              static_cast<StateMachineVoidFunc>(&DuplicatedObject::SetInitialState)
-          ),
+        : StateMachine(static_cast<StateFunc>(&DuplicatedObject::SetInitialState)),
           m_setDuplicationSet(3), m_setCachedDuplicationSet(0) {
         m_uiRefCount = 0;
         m_uiRelevanceCount = 0;
@@ -32,7 +30,7 @@ namespace Quazal {
     }
 
     void DuplicatedObject::SetInitialState(const QEvent &) {
-        mCurrentState = static_cast<StateMachineFPFunc>(&DuplicatedObject::ValidState);
+        mCurrentState = static_cast<StateFuncFactory>(&DuplicatedObject::ValidState);
     }
 
 }
