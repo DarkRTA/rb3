@@ -35,6 +35,9 @@ namespace Quazal {
         unsigned int GetMasterID() const;
         bool IsADuplicationMaster() const;
         void SetStationSpecialRelevance();
+        void ReleaseReferenceToMaster();
+        void AcquireReferenceToMaster();
+        bool IsInDuplicationSet(DOHandle) const;
 
         void SetInitialState(const QEvent &);
         StateFuncFactory ValidState(const QEvent &);

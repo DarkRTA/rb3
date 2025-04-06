@@ -11,6 +11,14 @@ namespace Quazal {
         ~DORef();
 
         void SetSoft();
+        void Release();
+        void Acquire();
+
+        void EmptyInit() {
+            m_bLockRelevance = true;
+            m_hReferencedDO = 0;
+            m_poReferencedDO = 0;
+        }
 
         DuplicatedObject *m_poReferencedDO; // 0x0
         DOHandle m_hReferencedDO; // 0x4

@@ -7,6 +7,8 @@ namespace Quazal {
         DOHandle(unsigned int val = 0) : mValue(val) {}
         ~DOHandle() {}
 
+        bool operator<(const DOHandle &h) const { return mValue < h.mValue; }
+
         void SetDOClassID(unsigned int);
 
         unsigned int mValue; // 0x0

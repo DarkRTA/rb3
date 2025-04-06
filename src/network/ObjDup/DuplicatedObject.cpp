@@ -1,6 +1,7 @@
 #include "network/ObjDup/DuplicatedObject.h"
 #include "Core/Scheduler.h"
 #include "Core/StateMachine.h"
+#include "ObjDup/DOOperation.h"
 #include "Platform/CriticalSection.h"
 #include "Platform/ScopedCS.h"
 
@@ -27,6 +28,21 @@ namespace Quazal {
     void DuplicatedObject::SetStationSpecialRelevance() {
         m_refMasterStation.SetSoft();
         m_setDuplicationSet.SetFlags(1);
+    }
+
+    void DuplicatedObject::OperationBegin(DOOperation *) {}
+    void DuplicatedObject::OperationEnd(DOOperation *) {}
+    float DuplicatedObject::ComputeDistance(DuplicatedObject *) { return -1; }
+    void DuplicatedObject::ReleaseReferenceToMaster() { m_refMasterStation.Release(); }
+
+    void DuplicatedObject::AcquireReferenceToMaster() {
+        if (!m_refMasterStation.m_poReferencedDO) {
+            m_refMasterStation.Acquire();
+        }
+    }
+
+    bool DuplicatedObject::IsInDuplicationSet(DOHandle h) const {
+        return m_setDuplicationSet.m_map.find(h) != m_setDuplicationSet.m_map.end();
     }
 
     void DuplicatedObject::SetInitialState(const QEvent &) {

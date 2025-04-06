@@ -357,6 +357,8 @@
             "network/Extensions/CodecManager.cpp": "NonMatching",
             "network/Extensions/SpeexCodec.cpp": "NonMatching",
 
+            "network/ObjDup/DOOperation.cpp": "NonMatching",
+            "network/ObjDup/DORef.cpp": "NonMatching",
             "network/ObjDup/DuplicatedObject.cpp": "NonMatching",
 
             "network/Products/ProductSpecifics.cpp": "NonMatching",
