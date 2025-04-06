@@ -460,14 +460,36 @@ public:
     void SetFileLine(Symbol, int);
     /** Sort the nodes in this DataArray. */
     void SortNodes();
+
+    /** Execute the value of this DataNode.
+     * If the value is a DataFunc, call it directly.
+     * Else, if the value is not a number,
+     * retrieve the corresponding Object and call its handler.
+     * @returns The return value of whatever code was executed.
+     */
     DataNode Execute();
-    DataNode ExecuteBlock(int);
+
+    /** Execute each Command in this DataArray, starting at the given index.
+     * The final DataNode in the DataArray will be evaluated separately,
+     * so it can be any DataType.
+     * @param [in] idx The index to begin retrieving and executing commands from.
+     * @returns The results of the evaluated final DataNode.
+     */
+    DataNode ExecuteBlock(int idx);
     /** Saves this DataArray into a BinStream. */
     void Save(BinStream &d) const;
     /** Loads this DataArray from a BinStream. */
     void Load(BinStream &d);
     void SaveGlob(BinStream &d, bool str) const;
     void LoadGlob(BinStream &d, bool str);
+
+    /** Execute a script in dta.
+     * @param [in] firstCmd The index of this DataArray containing the first Command.
+     * @param [in] _this The value gDataThis should be during execution.
+     * @param [in] _args The DataArray containing any input parameters for the script.
+     * @param [in] firstArg The index in _args containing the first input parameter.
+     * @returns The return value of the dta script.
+     */
     DataNode
     ExecuteScript(int firstCmd, Hmx::Object *_this, const DataArray *_args, int firstArg);
     const DataNode &Evaluate(int i) const { return Node(i).Evaluate(); }

@@ -1,12 +1,13 @@
 #include "network/Core/Job.h"
+#include "network/Platform/UserContext.h"
 
 namespace Quazal {
 
-    Job::Job(const DebugString &) : unk8(0), unkc(0), unk14(0) {
-        unk1c = Initial;
+    Job::Job(const DebugString &) : unk8(0), unkc(0) {
+        m_eState = Initial;
         unk20 = 0;
         unk24 = 0;
-        unk10 = 0;
+        m_pfCompletionCallback = 0;
         unk30 = 0;
         unk31 = 0;
     }
@@ -14,63 +15,63 @@ namespace Quazal {
     Job::~Job() {}
 
     void Job::PerformExecution(const Time &time) {
-        unk28 = time;
+        m_tDeadline = time;
         DecoratedExecute();
-        if (unk1c == 4) {
+        if (m_eState == 4) {
             SetDefaultPostExecutionState();
         }
         unk24++;
     }
 
     void Job::SetDefaultPostExecutionState() {
-        ValidateTransition(unk1c, Complete);
-        unk1c = Complete;
-        if (unk10) {
-            (*unk10)(this, unk14);
+        ValidateTransition(m_eState, Complete);
+        m_eState = Complete;
+        if (m_pfCompletionCallback) {
+            (*m_pfCompletionCallback)(this, &m_oContext);
         }
     }
 
     String Job::GetTraceInfo() const { return ""; }
 
     void Job::Resume() {
-        ValidateTransition(unk1c, Ready);
-        unk1c = Ready;
+        ValidateTransition(m_eState, Ready);
+        m_eState = Ready;
     }
 
     void Job::SetToWaiting(int i) {
-        ValidateTransition(unk1c, Waiting);
-        unk1c = Waiting;
+        ValidateTransition(m_eState, Waiting);
+        m_eState = Waiting;
         unk20 = i;
     }
 
     void Job::SetToSuspended() {
-        ValidateTransition(unk1c, Suspended);
-        unk1c = Suspended;
+        ValidateTransition(m_eState, Suspended);
+        m_eState = Suspended;
     }
 
     void Job::SetToReady() {
-        ValidateTransition(unk1c, Ready);
-        unk1c = Ready;
+        ValidateTransition(m_eState, Ready);
+        m_eState = Ready;
     }
 
     void Job::SetToRunning() {
-        ValidateTransition(unk1c, Running);
-        unk1c = Running;
+        ValidateTransition(m_eState, Running);
+        m_eState = Running;
     }
 
     void Job::SetToComplete() {
-        ValidateTransition(unk1c, Complete);
-        unk1c = Complete;
+        ValidateTransition(m_eState, Complete);
+        m_eState = Complete;
     }
 
     void Job::SetToCancel() {
-        ValidateTransition(unk1c, Complete);
-        unk1c = Complete;
+        ValidateTransition(m_eState, Complete);
+        m_eState = Complete;
     }
 
     void Job::SetToInitial() {
-        ValidateTransition(unk1c, Initial);
-        unk1c = Initial;
+        ValidateTransition(m_eState, Initial);
+        m_eState = Initial;
     }
 
     // what even is the point of this function lmao

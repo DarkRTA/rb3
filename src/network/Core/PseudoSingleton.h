@@ -11,7 +11,7 @@ namespace Quazal {
         void SetContextIfRequired(unsigned int);
         bool UsingInstantiationContext();
 
-        static int GetCurrentContext();
+        static unsigned int GetCurrentContext();
         static bool s_bUseInstantiationContext;
     };
 }

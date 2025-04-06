@@ -13,6 +13,8 @@ namespace Quazal {
 
     StepSequenceJob::~StepSequenceJob() {}
 
+    void StepSequenceJob::Execute() {}
+
     void StepSequenceJob::ResumeOnCallCompletion(CallContext *ctx, Step *step) {
         AcquireRef();
         ctx->RegisterCompletionCallback(

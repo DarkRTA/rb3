@@ -18,7 +18,7 @@ namespace Quazal {
     }
 
     void PseudoSingleton::SetContextIfRequired(unsigned int) {}
-    int PseudoSingleton::GetCurrentContext() { return 0; }
+    unsigned int PseudoSingleton::GetCurrentContext() { return 0; }
 
     bool PseudoSingleton::UsingInstantiationContext() {
         return s_bUseInstantiationContext;

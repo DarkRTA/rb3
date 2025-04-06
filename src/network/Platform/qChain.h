@@ -19,10 +19,11 @@ namespace Quazal {
         };
 
         qChain() : mNBLinks(0) {}
-        ~qChain() { clear(); }
+        ~qChain() { erase(mItFirst, mItEnd); }
 
         void clear();
-        void erase(iterator);
+        iterator erase(iterator);
+        iterator erase(iterator, iterator);
         void push_back(const T &item) {
             if (mItFirst.mLink == mItEnd.mLink) {
                 mItFirst.mLink = item;

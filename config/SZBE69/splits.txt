@@ -82,8 +82,38 @@ network/Platform/StringConverter.cpp:
 network/Platform/StringStream.cpp:
 	.text       start:0x80018C64 end:0x800190E0
 
+network/Core/CallContext.cpp:
+	.text       start:0x8001D238 end:0x8001E2AC
+
+network/Core/CallContextRegister.cpp:
+	.text       start:0x8001E2AC end:0x8001F270
+
+network/Core/Core.cpp:
+	.text       start:0x8001F270 end:0x8001F6D0
+	.ctors      start:0x807EFD5C end:0x807EFD60
+
+network/Core/InstanceControl.cpp:
+	.text       start:0x8001F6D0 end:0x8001F9B0
+	.ctors      start:0x807EFD60 end:0x807EFD64
+
+network/Core/InstanceTable.cpp:
+	.text       start:0x8001F9B0 end:0x8001FCF0
+
+network/Core/InstantiationContext.cpp:
+	.text       start:0x8001FCF0 end:0x8001FEC0
+
+network/Core/Scheduler.cpp:
+	.text       start:0x80021318 end:0x80022EFC
+	.ctors      start:0x807EFD68 end:0x807EFD6C
+
 network/Core/StepSequenceJob.cpp:
 	.text       start:0x800250DC end:0x80025530
+
+network/Core/TimedSignal.cpp:
+	.text       start:0x800269AC end:0x80026C1C
+
+network/Core/WorkerThreads.cpp:
+	.text       start:0x80026C1C end:0x800272AC
 
 network/Plugins/Key.cpp:
 	.text       start:0x8002C31C end:0x8002C938
@@ -101,6 +131,12 @@ network/Extensions/SpeexCodec.cpp:
 network/Extensions/CodecManager.cpp:
 	.text       start:0x8007C15C end:0x8007CADC
 	.ctors      start:0x807EFDD0 end:0x807EFDD4
+
+network/Extensions/ChannelInfo.cpp:
+	.text       start:0x800853AC end:0x800854D4
+
+network/Extensions/ChannelMembers.cpp:
+	.text       start:0x800856C0 end:0x80085948
 
 network/Products/ProductSpecifics.cpp:
 	.text       start:0x800A515C end:0x800A51AC

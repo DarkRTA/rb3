@@ -13,6 +13,7 @@ namespace Quazal {
         virtual void Trace(unsigned int) const;
 
         static bool JoinSessionImpl(CallContext *, const qList<Quazal::StationURL> &);
+        static void RegisterWellKnownDOsFactory(void (*)(void));
         static Session *GetInstance();
     };
 }

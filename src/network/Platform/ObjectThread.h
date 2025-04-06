@@ -35,6 +35,11 @@ namespace Quazal {
         virtual ~ObjectThreadRoot();
         virtual void CallObjectMethod() = 0;
 
+        void Launch();
+        bool Wait(unsigned int);
+        void ReadyToRun();
+
+        static unsigned int GetCurrentThreadID();
         static unsigned int s_uiDefaultPrio;
 
         String mName; // 0x4
@@ -44,5 +49,35 @@ namespace Quazal {
         bool mLaunched; // 0x14
         bool mRunning; // 0x15
         bool mFinished; // 0x16
+    };
+
+    template <class T1, class T2>
+    class ObjectThread : public ObjectThreadRoot {
+    public:
+        typedef void (T1::*ObjectFunc)(T2);
+
+        ObjectThread(const String &s) : ObjectThreadRoot(s), m_pTargetObject(0) {
+            m_pMethod = 0;
+        }
+        virtual ~ObjectThread() {}
+        virtual void CallObjectMethod() {
+            T1 *obj = m_pTargetObject;
+            T2 arg = m_arg;
+            ReadyToRun();
+            (obj->*m_pMethod)(arg);
+        }
+
+        void Update(T1 *obj, ObjectFunc func, T2 arg, bool scheduled) {
+            m_pTargetObject = obj;
+            m_pMethod = func;
+            m_arg = arg;
+            m_bScheduled = scheduled;
+            Launch();
+        }
+
+        ObjectFunc m_pMethod; // 0x18
+        T1 *m_pTargetObject; // 0x24
+        T2 m_arg; // 0x28
+        bool m_bScheduled;
     };
 }

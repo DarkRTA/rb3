@@ -2,10 +2,9 @@
 #include "Platform/RefCountedObject.h"
 #include "Platform/String.h"
 #include "Platform/Time.h"
+#include "Platform/UserContext.h"
 
 namespace Quazal {
-    // forward decl cause i can't find the bastard
-    class UserContext;
     class Job;
 
     typedef void CompletionCallbackFunc(Job *, UserContext *);
@@ -22,9 +21,9 @@ namespace Quazal {
         };
         Job(const DebugString &);
         virtual ~Job();
-        virtual void DecoratedExecute();
+        virtual void DecoratedExecute() { Execute(); }
         virtual void Execute() = 0;
-        virtual void TestSuspendedJobState();
+        virtual void TestSuspendedJobState() {}
         virtual void AddActivity(const char *);
         virtual String GetTraceInfo() const;
         virtual void SetDefaultPostExecutionState();
@@ -43,14 +42,14 @@ namespace Quazal {
 
         int unk8;
         int unkc;
-        CompletionCallbackFunc *unk10; // funcptr
-        UserContext *unk14;
-        int unk18;
-        State unk1c; // 0x1c
-        int unk20;
-        int unk24;
-        Time unk28;
-        bool unk30;
-        bool unk31;
+        CompletionCallbackFunc *m_pfCompletionCallback; // 0x10
+        UserContext m_oContext; // 0x14
+        DebugString m_strJobDescription; // 0x18
+        State m_eState; // 0x1c
+        int unk20; // 0x20
+        int unk24; // 0x24
+        Time m_tDeadline; // 0x28
+        bool unk30; // 0x30
+        bool unk31; // 0x31
     };
 }

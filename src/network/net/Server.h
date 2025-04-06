@@ -74,7 +74,7 @@ public:
     virtual Quazal::Data *GetCustomAuthData() {
         MILO_FAIL("not implemented for this platform");
         static Quazal::AnyObjectHolder<Quazal::Data, Quazal::String> emptyDataHolder;
-        return emptyDataHolder.mPtr;
+        return emptyDataHolder;
     }
 
     CriticalSection mLogoutCritSec; // 0x1c
