@@ -347,6 +347,7 @@
             "network/Core/InstanceTable.cpp": "NonMatching",
             "network/Core/InstantiationContext.cpp": "NonMatching",
             "network/Core/Scheduler.cpp": "NonMatching",
+            "network/Core/StateMachine.cpp": "NonMatching",
             "network/Core/StepSequenceJob.cpp": "NonMatching",
             "network/Core/TimedSignal.cpp": "NonMatching",
             "network/Core/WorkerThreads.cpp": "NonMatching",
@@ -355,6 +356,10 @@
             "network/Extensions/ChannelMembers.cpp": "NonMatching",
             "network/Extensions/CodecManager.cpp": "NonMatching",
             "network/Extensions/SpeexCodec.cpp": "NonMatching",
+
+            "network/ObjDup/DOOperation.cpp": "NonMatching",
+            "network/ObjDup/DORef.cpp": "NonMatching",
+            "network/ObjDup/DuplicatedObject.cpp": "NonMatching",
 
             "network/Products/ProductSpecifics.cpp": "NonMatching",
             

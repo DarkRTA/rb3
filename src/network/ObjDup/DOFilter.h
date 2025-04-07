@@ -1,15 +1,12 @@
-#ifndef OBJDUP_DOFILTER_H
-#define OBJDUP_DOFILTER_H
-
+#pragma once
+#include "DOHandle.h"
 #include "Platform/RefCountedObject.h"
 
 namespace Quazal {
     class DOFilter : public RefCountedObject {
         DOFilter();
         virtual ~DOFilter();
-        virtual int GetMinimumValidHandle(); // these both return a struct
-        virtual int GetMaximumValidHandle();
+        virtual DOHandle GetMinimumValidHandle(); // these both return a struct
+        virtual DOHandle GetMaximumValidHandle();
     };
 }
-
-#endif // OBJDUP_DOFILTER_H

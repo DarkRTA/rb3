@@ -3,6 +3,6 @@
 namespace Quazal {
     DOFilter::DOFilter() {}
     DOFilter::~DOFilter() {}
-    int DOFilter::GetMinimumValidHandle() { return 0; }
-    int DOFilter::GetMaximumValidHandle() { return -1; }
+    DOHandle DOFilter::GetMinimumValidHandle() { return 0; }
+    DOHandle DOFilter::GetMaximumValidHandle() { return -1; }
 }

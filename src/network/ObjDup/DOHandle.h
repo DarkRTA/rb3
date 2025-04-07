@@ -5,7 +5,9 @@ namespace Quazal {
     class DOHandle : public RootObject {
     public:
         DOHandle(unsigned int val = 0) : mValue(val) {}
-        ~DOHandle();
+        ~DOHandle() {}
+
+        bool operator<(const DOHandle &h) const { return mValue < h.mValue; }
 
         void SetDOClassID(unsigned int);
 
