@@ -4,6 +4,7 @@
 #include "obj/ObjPtr_p.h"
 #include "os/System.h"
 #include "rndobj/Bitmap.h"
+#include "rndobj/Tex.h"
 #include "utl/BinStream.h"
 #include "utl/MemMgr.h"
 #include <string.h>

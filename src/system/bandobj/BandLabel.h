@@ -1,5 +1,4 @@
-#ifndef BANDOBJ_BANDLABEL_H
-#define BANDOBJ_BANDLABEL_H
+#pragma once
 #include "ui/UITransitionHandler.h"
 #include "ui/UILabel.h"
 #include "math/Key.h"
@@ -41,6 +40,3 @@ public:
 DECLARE_MESSAGE(BandLabelCountDoneMsg, "count_done")
 BandLabelCountDoneMsg(BandLabel *label) : Message(Type(), label) {}
 END_MESSAGE
-;
-
-#endif // BANDOBJ_BANDLABEL_H
