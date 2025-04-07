@@ -1,8 +1,8 @@
-#ifndef UTL_MULTITEMPOTEMPOMAP_H
-#define UTL_MULTITEMPOTEMPOMAP_H
+#pragma once
 #include "utl/TempoMap.h"
 #include <vector>
 
+/** A tempomap with multiple tempos throughout the song. */
 class MultiTempoTempoMap : public TempoMap {
 public:
     struct TempoInfoPoint {
@@ -31,9 +31,9 @@ public:
     virtual int GetLoopTick(int) const;
     virtual float GetTimeInLoop(float);
 
-    bool AddTempoInfoPoint(int, int);
-    const TempoInfoPoint *PointForTick(float) const;
-    const TempoInfoPoint *PointForTime(float) const;
+    bool AddTempoInfoPoint(int tick, int tempo);
+    const TempoInfoPoint *PointForTick(float tick) const;
+    const TempoInfoPoint *PointForTime(float time) const;
     static bool CompareTick(float, const TempoInfoPoint &);
     static bool CompareTime(float, const TempoInfoPoint &);
 
@@ -43,5 +43,3 @@ public:
     float mStartLoopTime; // 0x14
     float mEndLoopTime; // 0x18
 };
-
-#endif
