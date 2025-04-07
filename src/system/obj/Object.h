@@ -440,7 +440,12 @@ namespace Hmx {
         void LoadType(BinStream &);
         void LoadRest(BinStream &);
 
-        DataNode HandleType(DataArray *);
+        /** Execute script in this Object's TypeDef,
+         * based on the contents of a received message.
+         * @param [in] _msg The received message.
+         * @returns The return value of whatever script was executed.
+         */
+        DataNode HandleType(DataArray *msg);
         DataNode PropertyArray(Symbol);
         DataNode HandleProperty(DataArray *, DataArray *, bool);
 
