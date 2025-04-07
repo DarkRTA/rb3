@@ -198,9 +198,16 @@ namespace Hmx {
      * class has Object as a superclass."
      */
     class Object : public ObjRef {
-    public:
+    protected:
         /** An array of properties this Object can have. */
         TypeProps mTypeProps; // 0x4
+
+        /** An Object in the process of being deleted. */
+        static Object *sDeleting;
+
+        DataNode OnGet(const DataArray *);
+
+    private:
         /** A collection of handler methods this Object can have.
          *  More specifically, this is an array of arrays, with each array
          *  housing a name, followed by a handler script.
@@ -217,9 +224,17 @@ namespace Hmx {
 
         /** A collection of Object class names and their corresponding instantiators. */
         static std::map<Symbol, ObjectFunc *> sFactories;
-        /** An Object in the process of being deleted. */
-        static Object *sDeleting;
 
+        /** Remove this Object from its associated ObjectDir. */
+        void RemoveFromDir();
+
+        DataNode OnIterateRefs(const DataArray *);
+        DataNode OnSet(const DataArray *);
+        DataNode OnPropertyAppend(const DataArray *);
+
+        const char *AllocHeapName();
+
+    public:
         // o7 farts, you will be missed
         enum CopyType {
             kCopyDeep = 0,
@@ -317,7 +332,7 @@ namespace Hmx {
 
         const DataArray *TypeDef() const { return mTypeDef; }
         Symbol Type() const {
-            if (mTypeDef != 0)
+            if (mTypeDef)
                 return mTypeDef->Sym(0);
             else
                 return Symbol();
@@ -332,8 +347,6 @@ namespace Hmx {
         /** Check if an Object derivative has an entry in the factory list. */
         static bool RegisteredFactory(Symbol);
         Object &operator=(const Object &);
-        /** Remove this Object from its associated ObjectDir. */
-        void RemoveFromDir(); // probably private
 
         /** Search for a key in this Object's properties, and return the corresponding
          * value.
@@ -406,15 +419,9 @@ namespace Hmx {
         void LoadType(BinStream &);
         void LoadRest(BinStream &);
 
-        DataNode OnGet(const DataArray *);
-        DataNode OnSet(const DataArray *);
-        DataNode OnIterateRefs(const DataArray *);
         DataNode HandleType(DataArray *);
         DataNode PropertyArray(Symbol);
-        DataNode OnPropertyAppend(const DataArray *);
         DataNode HandleProperty(DataArray *, DataArray *, bool);
-
-        const char *AllocHeapName();
 
         static unsigned short gRev;
         static unsigned short gAltRev;

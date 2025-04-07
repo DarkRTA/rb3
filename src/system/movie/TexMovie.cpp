@@ -145,7 +145,7 @@ void TexMovie::UpdatePreClearState() {
         TheRnd->PreClearDrawAddOrRemove(this, mTex, TheRnd->Unk130());
 }
 
-DataNode TexMovie::OnGetRenderTextures(DataArray *) { return GetRenderTextures(mDir); }
+DataNode TexMovie::OnGetRenderTextures(DataArray *) { return GetRenderTextures(Dir()); }
 
 DataNode TexMovie::OnPlayMovie(DataArray *da) {
     if (da->Int(2)) {

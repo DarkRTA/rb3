@@ -586,7 +586,7 @@ ShadowBone *Character::AddShadowBone(RndTransformable *trans) {
 void Character::UnhookShadow() {
     for (int i = 0; i < mShadowBones.size(); i++) {
         ShadowBone *cur = mShadowBones[i];
-        std::vector<ObjRef *> &refs = cur->mRefs;
+        const std::vector<ObjRef *> &refs = cur->Refs();
         while (!refs.empty()) {
             ObjRef *curRef = refs.back();
             curRef->Replace(cur, cur->Parent());

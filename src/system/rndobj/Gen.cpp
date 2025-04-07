@@ -80,7 +80,7 @@ BEGIN_LOADS(RndGenerator)
         u8 x;
         bs >> x;
         if (!x)
-            MILO_WARN("%s no longer supports childOfGen", mName);
+            MILO_WARN("%s no longer supports childOfGen", Name());
     }
     if (rev < 1) {
         bs >> mRateGenHigh;

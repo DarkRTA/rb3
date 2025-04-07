@@ -122,13 +122,13 @@ void MidiParser::SetTypeDef(DataArray *arr) {
             if (mGemParser || mNoteParser || mTextParser || mLyricParser || mIdleParser)
                 allgood = true;
             if (!allgood)
-                MILO_FAIL("%s has no parser", mName);
+                MILO_FAIL("%s has no parser", Name());
             if (mGemParser && mNoteParser)
-                MILO_FAIL("%s has both gem and note parsers, disallowed", mName);
+                MILO_FAIL("%s has both gem and note parsers, disallowed", Name());
             DataArray *allowedArr = arr->FindArray("allowed_notes", false);
             mAllowedNotes = allowedArr ? allowedArr->Array(1) : 0;
             if (!mNoteParser && allowedArr)
-                MILO_FAIL("%s has no midi parser but has allowed_notes", mName);
+                MILO_FAIL("%s has no midi parser but has allowed_notes", Name());
         }
     }
 }

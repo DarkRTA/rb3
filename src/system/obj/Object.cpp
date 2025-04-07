@@ -69,7 +69,7 @@ Hmx::Object::~Object() {
     std::vector<ObjRef *>::reverse_iterator rit = mRefs.rbegin();
     std::vector<ObjRef *>::reverse_iterator ritEnd = mRefs.rend();
     for (; rit != ritEnd; rit++) {
-        (*rit)->Replace(this, 0);
+        (*rit)->Replace(this, nullptr);
     }
     sDeleting = tmp;
     if (gDataThis == this)
@@ -263,16 +263,18 @@ void Hmx::Object::AddRef(ObjRef *ref) {
 }
 
 void Hmx::Object::Release(ObjRef *o) {
-    if (sDeleting != this && o->RefOwner() != this) {
-        for (std::vector<ObjRef *>::reverse_iterator i = mRefs.rbegin();
-             i != mRefs.rend();
-             i++) {
-            if (*(i.base()) == o) {
-                MILO_ASSERT(*(i.base()) == o, 0x1E6);
-                mRefs.erase(i.base());
-                return;
-            }
-        }
+    if (sDeleting == this || o->RefOwner() == this)
+        return;
+
+    std::vector<ObjRef *>::reverse_iterator i = mRefs.rbegin();
+    std::vector<ObjRef *>::reverse_iterator iEnd = mRefs.rend();
+    for (; i != iEnd; i++) {
+        if (*i++ == o) {
+            MILO_ASSERT(*(i.base()) == o, 0x1E6);
+            mRefs.erase(i.base());
+            return;
+        } else
+            i--;
     }
 }
 
@@ -429,9 +431,9 @@ DataNode Hmx::Object::HandleType(DataArray *msg) {
 DataNode Hmx::Object::OnIterateRefs(const DataArray *da) {
     DataNode *var = da->Var(2);
     DataNode node(*var);
-    for (std::vector<ObjRef *>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend();
-         ++it) {
-        *var = (*it)->RefOwner();
+    for (std::vector<ObjRef *>::const_reverse_iterator it = Refs().rbegin();
+         it != Refs().rend();) {
+        *var = (*it++)->RefOwner();
         for (int i = 3; i < da->Size(); i++) {
             da->Command(i)->Execute();
         }

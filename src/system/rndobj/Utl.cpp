@@ -1298,8 +1298,8 @@ void ConvertBonesToTranses(class ObjectDir *dir, bool b) {
         } else {
             if (b) {
                 bool b1 = false;
-                std::vector<ObjRef *>::reverse_iterator rit = it->mRefs.rbegin();
-                std::vector<ObjRef *>::reverse_iterator ritEnd = it->mRefs.rend();
+                std::vector<ObjRef *>::const_reverse_iterator rit = it->Refs().rbegin();
+                std::vector<ObjRef *>::const_reverse_iterator ritEnd = it->Refs().rend();
                 for (; !b1 && rit != ritEnd; ++rit) {
                     RndMesh *curRefOwner = dynamic_cast<RndMesh *>((*rit)->RefOwner());
                     if (curRefOwner) {

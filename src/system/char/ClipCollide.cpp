@@ -126,7 +126,7 @@ void ClipCollide::Demonstrate() {
 }
 
 void ClipCollide::SetTypeDef(DataArray *da) {
-    if (mTypeDef != da) {
+    if (TypeDef() != da) {
         Hmx::Object::SetTypeDef(da);
         if (da) {
             DataArray *modesArr = da->FindArray("modes");
@@ -171,7 +171,7 @@ bool ClipCollide::ValidClip(CharClip *clip) {
 
 void ClipCollide::TestChars() {
     if (mChar) {
-        DataArray *td = mTypeDef;
+        const DataArray *td = TypeDef();
         if (td) {
             DataArray *charsArr = td->FindArray("chars", false);
             if (charsArr) {
