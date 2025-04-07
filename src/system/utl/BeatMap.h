@@ -6,10 +6,14 @@ struct BeatInfo {
     BeatInfo(int t, int l) : mTick(t), mLevel(l) {}
     /** This beat marker's tick. */
     int mTick; // 0x0
-    /** This beat marker's level (up or down beat?) */
+    /** This beat marker's level (up or down beat?)
+     * midi note of 12 = down beat, level = 1
+     * midi note of 13 = up beat, level = 0
+     */
     int mLevel; // 0x4
 };
 
+/** The map of beats for the current song. */
 class BeatMap {
 private:
     /** The collection of beat markers. */
