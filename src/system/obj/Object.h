@@ -205,7 +205,15 @@ namespace Hmx {
         /** An Object in the process of being deleted. */
         static Object *sDeleting;
 
-        DataNode OnGet(const DataArray *);
+        /** Handler to get the value of a given Object property.
+         * @param [in] arr The supplied DataArray.
+         * @returns The property value.
+         * Expected DataArray contents:
+         *     Node 2: The property to search for, either as a Symbol or DataArray.
+         *     Node 3: The fallback value if no property is found.
+         * Example usage: {$this get some_value 69}
+         */
+        DataNode OnGet(const DataArray *arr);
 
     private:
         /** A collection of handler methods this Object can have.
@@ -228,8 +236,23 @@ namespace Hmx {
         /** Remove this Object from its associated ObjectDir. */
         void RemoveFromDir();
 
-        DataNode OnIterateRefs(const DataArray *);
-        DataNode OnSet(const DataArray *);
+        /** Handler to execute dta for each of this Object's refs.
+         * @param [in] arr The supplied DataArray.
+         * Expected DataArray contents:
+         *     Node 2: The variable representing the current ObjRef's owner.
+         *     Node 3+: Any commands to execute.
+         * Example usage: {$this iterate_refs $ref {$ref set 0}}
+         */
+        DataNode OnIterateRefs(const DataArray *arr);
+
+        /** Handler to set this Object's properties.
+         * @param [in] arr The supplied DataArray.
+         * Expected DataArray contents:
+         *     Node 2+: The property key to set. Must be either a Symbol or a DataArray.
+         *     Node 3+: The corresponding property value to set.
+         * Example usage: {$this set key1 val1 key2 val2 key3 val3}
+         */
+        DataNode OnSet(const DataArray *arr);
         DataNode OnPropertyAppend(const DataArray *);
 
         const char *AllocHeapName();
@@ -315,8 +338,6 @@ namespace Hmx {
         virtual const char *FindPathName();
         virtual void Replace(Hmx::Object *, Hmx::Object *);
 
-        const char *Name() const { return mName; }
-
         /** Create a new Object derivative based on its entry in the factory list. */
         template <class T>
         static T *New() {
@@ -328,16 +349,16 @@ namespace Hmx {
             return obj;
         }
 
-        const std::vector<ObjRef *> &Refs() const { return mRefs; }
-
         const DataArray *TypeDef() const { return mTypeDef; }
+        const char *Name() const { return mName; }
+        class ObjectDir *Dir() const { return mDir; }
+        const std::vector<ObjRef *> &Refs() const { return mRefs; }
         Symbol Type() const {
             if (mTypeDef)
                 return mTypeDef->Sym(0);
             else
                 return Symbol();
         }
-        class ObjectDir *Dir() const { return mDir; }
 
         NEW_OBJ(Object)
         static void Init() { REGISTER_OBJ_FACTORY(Object) }
