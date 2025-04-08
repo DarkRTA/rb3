@@ -36,6 +36,8 @@ public:
         mLength = 0;
         bs >> mLength;
     }
+    unsigned int Length() const { return mLength; }
+
     // total size: 0x8
     MidiChunkID mID; // offset 0x0, size 0x4
     unsigned int mLength; // offset 0x4, size 0x4
@@ -65,8 +67,11 @@ public:
 class MidiReader {
 public:
     struct Midi {
+        // the status byte
         unsigned char mStat;
+        // data1
         unsigned char mD1;
+        // data2
         unsigned char mD2;
     };
 

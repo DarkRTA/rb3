@@ -14,61 +14,29 @@ MidiChunkID MidiChunkID::kMTrk("MTrk");
 bool MidiReader::sVerify = false;
 
 namespace {
+    inline int MidiRank(unsigned char status) {
+        switch (status & 0xF0) {
+        case kNoteOff:
+            return 1;
+        case kController:
+            return 2;
+        case kProgramChange:
+            return 3;
+        case kChannelPressure:
+            return 4;
+        case kPitchModulation:
+            return 5;
+        case kAfterTouch:
+            return 6;
+        case kNoteOn:
+            return 7;
+        default:
+            return 8;
+        }
+    }
+
     bool DefaultMidiLess(const MidiReader::Midi &m1, const MidiReader::Midi &m2) {
-        int ui1, ui2;
-        switch (m1.mStat & 0xF0) {
-        case 0x80:
-            ui1 = 1;
-            break;
-        case 0xB0:
-            ui1 = 2;
-            break;
-        case 0xC0:
-            ui1 = 3;
-            break;
-        case 0xD0:
-            ui1 = 4;
-            break;
-        case 0xE0:
-            ui1 = 5;
-            break;
-        case 0xA0:
-            ui1 = 6;
-            break;
-        case 0x90:
-            ui1 = 7;
-            break;
-        default:
-            ui1 = 8;
-            break;
-        }
-        switch (m2.mStat & 0xF0) {
-        case 0x80:
-            ui2 = 1;
-            break;
-        case 0xB0:
-            ui2 = 2;
-            break;
-        case 0xC0:
-            ui2 = 3;
-            break;
-        case 0xD0:
-            ui2 = 4;
-            break;
-        case 0xE0:
-            ui2 = 5;
-            break;
-        case 0xA0:
-            ui2 = 6;
-            break;
-        case 0x90:
-            ui2 = 7;
-            break;
-        default:
-            ui2 = 8;
-            break;
-        }
-        return ui1 < ui2;
+        return MidiRank(m1.mStat) < MidiRank(m2.mStat);
     }
 }
 
@@ -176,7 +144,7 @@ void MidiReader::ReadNextEventImpl() {
 void MidiReader::ReadFileHeader(BinStream &bs) {
     MILO_ASSERT(mState == kStart, 0x146);
     MidiChunkHeader header(bs);
-    if (!strneq(header.mID.Str(), MidiChunkID::kMThd.Str(), 4) || header.mLength != 6U) {
+    if (!strneq(header.mID.Str(), MidiChunkID::kMThd.Str(), 4) || header.Length() != 6U) {
         MILO_WARN("%s: MIDI file header is corrupt", mStreamName.c_str());
     }
     short midiType;
@@ -279,30 +247,30 @@ void MidiReader::ReadMidiEvent(
     int tick, unsigned char status, unsigned char data1, BinStream &bs
 ) {
     int bit = status & 0xF0;
-    unsigned char uc;
+    unsigned char data2;
     bool queue = false;
     switch (bit) {
     case 0x90:
-        bs >> uc;
+        bs >> data2;
         queue = true;
-        if (uc == 0)
+        if (data2 == 0)
             status = status & 0xF | 0x80;
         break;
     case 0x80:
-        bs >> uc;
+        bs >> data2;
         queue = true;
         break;
     case 0xB0:
-        bs >> uc;
+        bs >> data2;
         queue = true;
         break;
     case 0xE0:
     case 0xA0:
-        bs >> uc;
+        bs >> data2;
         break;
     case 0xC0:
     case 0xD0:
-        uc = 0;
+        data2 = 0;
         break;
     default:
         MILO_WARN(
@@ -314,19 +282,19 @@ void MidiReader::ReadMidiEvent(
         break;
     }
     if (queue)
-        QueueChannelMsg(tick, status, data1, uc);
+        QueueChannelMsg(tick, status, data1, data2);
 }
 
 // fn_805344C0
-void MidiReader::ReadSystemEvent(int tick, unsigned char uc, BinStream &bs) {
-    switch (uc) {
-    case 0xF0:
-    case 0xF7: {
+void MidiReader::ReadSystemEvent(int tick, unsigned char type, BinStream &bs) {
+    switch (type) {
+    case 0xF0: // sysexstart
+    case 0xF7: { // sysexend
         MidiVarLenNumber num(bs);
         bs.Seek(num.mValue, BinStream::kSeekCur);
         break;
     }
-    case 0xFF: {
+    case 0xFF: { // meta event incoming
         unsigned char read;
         bs >> read;
         ReadMetaEvent(tick, read, bs);
@@ -337,7 +305,7 @@ void MidiReader::ReadSystemEvent(int tick, unsigned char uc, BinStream &bs) {
             "%s (%s): Cannot parse system event %i",
             mStreamName.c_str(),
             mCurTrackName.c_str(),
-            uc
+            type
         );
         break;
     }
@@ -517,24 +485,23 @@ void MidiReader::ReadMetaEvent(int tick, unsigned char type, BinStream &bs) {
 }
 
 void MidiReader::QueueChannelMsg(
-    int i, unsigned char uc1, unsigned char uc2, unsigned char uc3
+    int tick, unsigned char status, unsigned char data1, unsigned char data2
 ) {
     if (!mLessFunc) {
-        mRcvr.OnMidiMessage(i, uc1, uc2, uc3);
+        mRcvr.OnMidiMessage(tick, status, data1, data2);
     } else {
         Midi mid;
-        mid.mStat = uc1;
-        mid.mD1 = uc2;
-        mid.mD2 = uc3;
+        mid.mStat = status;
+        mid.mD1 = data1;
+        mid.mD2 = data2;
         mMidiList.push_back(mid);
     }
 }
 
 void MidiReader::ProcessMidiList() {
     std::sort(mMidiList.begin(), mMidiList.end(), mLessFunc);
-    for (std::vector<Midi>::iterator it = mMidiList.begin(); it != mMidiList.end();
-         it++) {
-        mRcvr.OnMidiMessage(mMidiListTick, (*it).mStat, (*it).mD1, (*it).mD2);
+    FOREACH (it, mMidiList) {
+        mRcvr.OnMidiMessage(mMidiListTick, it->mStat, it->mD1, it->mD2);
         if (mState != kInTrack)
             break;
     }
