@@ -198,65 +198,6 @@ namespace Hmx {
      * class has Object as a superclass."
      */
     class Object : public ObjRef {
-    protected:
-        /** An array of properties this Object can have. */
-        TypeProps mTypeProps; // 0x4
-
-        /** An Object in the process of being deleted. */
-        static Object *sDeleting;
-
-        /** Handler to get the value of a given Object property.
-         * @param [in] arr The supplied DataArray.
-         * @returns The property value.
-         * Expected DataArray contents:
-         *     Node 2: The property to search for, either as a Symbol or DataArray.
-         *     Node 3: The fallback value if no property is found.
-         * Example usage: {$this get some_value 69}
-         */
-        DataNode OnGet(const DataArray *arr);
-
-    private:
-        /** A collection of handler methods this Object can have.
-         *  More specifically, this is an array of arrays, with each array
-         *  housing a name, followed by a handler script.
-         *  Formatted in the style of:
-         *  ( (name1 {handler1}) (name2 {handler2}) (name3 {handler3}) )
-         */
-        DataArray *mTypeDef; // 0x8
-        /** This Object's name. */
-        const char *mName; // 0xc
-        /** The ObjectDir in which this Object resides. */
-        class ObjectDir *mDir; // 0x10
-        /** A collection of object instances which reference this Object. */
-        std::vector<ObjRef *> mRefs; // 0x14
-
-        /** A collection of Object class names and their corresponding instantiators. */
-        static std::map<Symbol, ObjectFunc *> sFactories;
-
-        /** Remove this Object from its associated ObjectDir. */
-        void RemoveFromDir();
-
-        /** Handler to execute dta for each of this Object's refs.
-         * @param [in] arr The supplied DataArray.
-         * Expected DataArray contents:
-         *     Node 2: The variable representing the current ObjRef's owner.
-         *     Node 3+: Any commands to execute.
-         * Example usage: {$this iterate_refs $ref {$ref set 0}}
-         */
-        DataNode OnIterateRefs(const DataArray *arr);
-
-        /** Handler to set this Object's properties.
-         * @param [in] arr The supplied DataArray.
-         * Expected DataArray contents:
-         *     Node 2+: The property key to set. Must be either a Symbol or a DataArray.
-         *     Node 3+: The corresponding property value to set.
-         * Example usage: {$this set key1 val1 key2 val2 key3 val3}
-         */
-        DataNode OnSet(const DataArray *arr);
-        DataNode OnPropertyAppend(const DataArray *);
-
-        const char *AllocHeapName();
-
     public:
         // o7 farts, you will be missed
         enum CopyType {
@@ -451,6 +392,65 @@ namespace Hmx {
 
         static unsigned short gRev;
         static unsigned short gAltRev;
+
+    protected:
+        /** An array of properties this Object can have. */
+        TypeProps mTypeProps; // 0x4
+
+        /** An Object in the process of being deleted. */
+        static Object *sDeleting;
+
+        /** Handler to get the value of a given Object property.
+         * @param [in] arr The supplied DataArray.
+         * @returns The property value.
+         * Expected DataArray contents:
+         *     Node 2: The property to search for, either as a Symbol or DataArray.
+         *     Node 3: The fallback value if no property is found.
+         * Example usage: {$this get some_value 69}
+         */
+        DataNode OnGet(const DataArray *arr);
+
+    private:
+        /** A collection of handler methods this Object can have.
+         *  More specifically, this is an array of arrays, with each array
+         *  housing a name, followed by a handler script.
+         *  Formatted in the style of:
+         *  ( (name1 {handler1}) (name2 {handler2}) (name3 {handler3}) )
+         */
+        DataArray *mTypeDef; // 0x8
+        /** This Object's name. */
+        const char *mName; // 0xc
+        /** The ObjectDir in which this Object resides. */
+        class ObjectDir *mDir; // 0x10
+        /** A collection of object instances which reference this Object. */
+        std::vector<ObjRef *> mRefs; // 0x14
+
+        /** A collection of Object class names and their corresponding instantiators. */
+        static std::map<Symbol, ObjectFunc *> sFactories;
+
+        /** Remove this Object from its associated ObjectDir. */
+        void RemoveFromDir();
+
+        /** Handler to execute dta for each of this Object's refs.
+         * @param [in] arr The supplied DataArray.
+         * Expected DataArray contents:
+         *     Node 2: The variable representing the current ObjRef's owner.
+         *     Node 3+: Any commands to execute.
+         * Example usage: {$this iterate_refs $ref {$ref set 0}}
+         */
+        DataNode OnIterateRefs(const DataArray *arr);
+
+        /** Handler to set this Object's properties.
+         * @param [in] arr The supplied DataArray.
+         * Expected DataArray contents:
+         *     Node 2+: The property key to set. Must be either a Symbol or a DataArray.
+         *     Node 3+: The corresponding property value to set.
+         * Example usage: {$this set key1 val1 key2 val2 key3 val3}
+         */
+        DataNode OnSet(const DataArray *arr);
+        DataNode OnPropertyAppend(const DataArray *);
+
+        const char *AllocHeapName();
     };
 }
 
