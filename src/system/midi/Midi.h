@@ -62,6 +62,7 @@ public:
 
     MidiReader *GetMidiReader() const { return mReader; }
 
+private:
     /** Reads the midi information. */
     MidiReader *mReader; // 0x4
 };
@@ -90,22 +91,17 @@ public:
 
     MidiReader(BinStream &, MidiReceiver &, const char *);
     ~MidiReader();
-    void Init();
+    /** Read all tracks in the midi. */
     void ReadAllTracks();
-    bool ReadTrack();
-    bool ReadSomeEvents(int);
+    /** Read the next num_events tracks in the midi.
+     * @param [in] num_events The number of tracks to read.
+     * @returns True if we've read to the end, false if not.
+     */
+    bool ReadSomeEvents(int num_events);
+    /** Get the midi's file name. */
     const char *GetFilename() const;
+    /** Skip reading the current track. */
     void SkipCurrentTrack();
-    void ReadNextEvent();
-    void ReadNextEventImpl();
-    void ReadEvent(BinStream &);
-    void ReadTrackHeader(BinStream &);
-    void ReadFileHeader(BinStream &);
-    void ProcessMidiList();
-    void ReadMidiEvent(int, unsigned char, unsigned char, BinStream &);
-    void ReadSystemEvent(int, unsigned char, BinStream &);
-    void QueueChannelMsg(int, unsigned char, unsigned char, unsigned char);
-    void ReadMetaEvent(int, unsigned char, BinStream &);
 
     /** Print a midi validation error message to the console.
      * @param [in] msg The message to print.
@@ -118,6 +114,40 @@ public:
     const char *CurrentTrackName() const { return mCurTrackName.c_str(); }
 
     static bool sVerify;
+
+private:
+    /** Initialize the MidiReader's tempo and measure maps, and the MidiReceiver. */
+    void Init();
+    /** Safely read the next event. */
+    void ReadNextEvent();
+    /** Implementation to read the next event. */
+    void ReadNextEventImpl();
+    /** Read a midi event from the stream. */
+    void ReadEvent(BinStream &);
+    /** Read this track's header from the stream. */
+    void ReadTrackHeader(BinStream &);
+    /** Read the midi's file header from the stream. */
+    void ReadFileHeader(BinStream &);
+    void ProcessMidiList();
+    void ReadMidiEvent(int, unsigned char, unsigned char, BinStream &);
+    /** Read a SysEx event.
+     * @param [in] tick The tick this event occurs at.
+     * @param [in] type The SysEx event type.
+     * @param [in] stream The stream to read from.
+     */
+    void ReadSystemEvent(int tick, unsigned char type, BinStream &stream);
+    /** Read a meta event.
+     * @param [in] tick The tick this event occurs at.
+     * @param [in] type The meta event type.
+     * @param [in] stream The stream to read from.
+     */
+    void ReadMetaEvent(int tick, unsigned char type, BinStream &stream);
+    void QueueChannelMsg(int, unsigned char, unsigned char, unsigned char);
+    /** Read the next track from the midi.
+     @returns True if another track is up next, false if we've reached the end of the
+     file.
+    */
+    bool ReadTrack();
 
     /** The stream containing the midi. */
     class BinStream *mStream; // offset 0x0, size 0x4

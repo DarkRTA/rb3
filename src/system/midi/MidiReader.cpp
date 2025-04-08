@@ -195,9 +195,7 @@ void MidiReader::ReadTrackHeader(BinStream &bs) {
         );
         mFail = true;
     } else {
-        int headerlen = header.Length();
-        int tell = bs.Tell();
-        mTrackEndPos = tell + headerlen;
+        mTrackEndPos = bs.Tell() + header.Length();
         mCurTrackIndex++;
         mPrevStatus = 0;
         mCurTick = 0;
