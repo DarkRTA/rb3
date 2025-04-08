@@ -2,11 +2,10 @@
 #include "obj/Data.h"
 #include "utl/VectorSizeDefs.h"
 #include <vector>
-#include <list>
 
 class DataEvent {
 public:
-    DataEvent() : start(0.0f), end(0.0f), mMsg(0) {}
+    DataEvent() : start(0), end(0), mMsg(0) {}
     DataEvent(float s, float e, DataArray *da) : start(s), end(e), mMsg(da) {
         if (mMsg)
             mMsg->AddRef();
@@ -47,19 +46,20 @@ public:
 
     DataEventList();
     ~DataEventList();
-    void InsertEvent(float, float, const DataNode &, int);
-    void Reset(float f);
+    void InsertEvent(float start, float end, const DataNode &ev, int at);
+    void Reset(float frame);
     void Clear();
-    void Compress(DataArray *, int);
+    void Compress(DataArray *temp, int element);
     void SecOffset(float);
-    int Size() const { return mSize; }
     int FindStartFromBack(float) const;
     const DataEvent &Event(int) const;
-    DataEvent *NextEvent(float);
-    float *EndPtr(int);
+    const DataEvent *NextEvent(float);
+    float *EndPtr(int index);
     void Invert(float);
     void Compact();
+
     int CurIndex() const { return mCurIndex; }
+    int Size() const { return mSize; }
 
     int mCurIndex; // 0x0
     int mSize; // 0x4

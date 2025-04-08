@@ -150,7 +150,7 @@ void MidiParser::Poll() {
     static DataNode &parser = DataVariable("mp.parser");
     parser = this;
     while (true) {
-        mEvent = mEvents->NextEvent(beat);
+        mEvent = (DataEvent *)mEvents->NextEvent(beat);
         if (!mEvent)
             break;
         *mpStart = mEvent->start;

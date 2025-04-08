@@ -1097,7 +1097,7 @@
             "system/meta/StreamPlayer.cpp": "Matching",
             "system/meta/WiiProfileMgr.cpp": "NonMatching",
 
-            "system/midi/DataEventList.cpp": "NonMatching",
+            "system/midi/DataEventList.cpp": "Equivalent",
             "system/midi/DisplayEvents.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
             "system/midi/MidiParserMgr.cpp": "NonMatching",
