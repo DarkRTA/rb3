@@ -31,7 +31,7 @@ enum MidiStatusType {
     kSysEx = 0xF0
 };
 
-unsigned char MidiGetStatus(unsigned char uc) {}
+inline unsigned char MidiGetStatus(unsigned char uc) {}
 
 /** Does this midi message have a status? */
 inline bool MidiIsStatus(unsigned char status) { return status & 0x80; }
