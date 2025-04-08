@@ -13,6 +13,9 @@ class GemListInterface; // forward dec
  * "Parses midi files into messages to send to other objects or itself"
  */
 class MidiParser : public MsgSource { // 0xd0
+    friend class MidiParserMgr;
+    friend class Song;
+
 public:
     struct PostProcess {
         PostProcess();
@@ -59,19 +62,7 @@ public:
 
     void Clear();
     void Reset(float);
-    bool InsertIdle(float, int);
-    bool AllowedNote(int);
-    bool AddMessage(float, float, DataArray *, int);
-    float ConvertToBeats(float, float);
-    float GetStart(int);
-    float GetEnd(int);
-    void SetIndex(int);
-    int GetIndex();
-    void SetGlobalVars(int, int, const DataNode &);
-    void HandleEvent(int, int, const DataNode &);
     void Poll();
-    void FixGap(float *);
-    void InsertDataEvent(float, float, const DataNode &);
 
     /** Parse everything - the current notes this MidiParser has,
      * plus the supplied gems and text events.
@@ -80,8 +71,27 @@ public:
      * @returns The number of midi notes after parsing is complete.
      */
     int ParseAll(GemListInterface *gems, std::vector<VocalEvent VECTOR_SIZE_LARGE> &text);
-    void PushIdle(float, float, int, Symbol);
-    void ParseNote(int, int, unsigned char);
+    void ParseNote(int startTick, int endTick, unsigned char data1);
+
+    static void ClearManagedParsers();
+    static void Init();
+    NEW_OBJ(MidiParser)
+    static void Register() { REGISTER_OBJ_FACTORY(MidiParser) }
+
+private:
+    bool AllowedNote(int note);
+    int GetIndex();
+    float GetStart(int);
+    float GetEnd(int);
+    void FixGap(float *);
+    bool InsertIdle(float, int);
+    void PushIdle(float start, float end, int at, Symbol idleMessage);
+    void SetGlobalVars(int startTick, int endTick, const DataNode &data);
+    void HandleEvent(int startTick, int endTick, const DataNode &data);
+    void InsertDataEvent(float start, float end, const DataNode &ev);
+    bool AddMessage(float start, float end, DataArray *msg, int firstArg);
+    void SetIndex(int idx);
+    float ConvertToBeats(float, float);
 
     DataNode OnGetStart(DataArray *);
     DataNode OnGetEnd(DataArray *);
@@ -143,11 +153,6 @@ public:
     int mVocalIndex; // 0xa4
     float mStart; // 0xa8
     int mBefore; // 0xac
-
-    static void ClearManagedParsers();
-    static void Init();
-    NEW_OBJ(MidiParser)
-    static void Register() { REGISTER_OBJ_FACTORY(MidiParser) }
 
     static DataNode *mpStart;
     static DataNode *mpEnd;
