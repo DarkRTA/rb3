@@ -201,15 +201,15 @@ void MidiParserMgr::OnText(int i1, const char *cc, unsigned char uc) {
     else if (uc == 5 || uc == 1) {
         MemDoTempAllocations m(true, false);
         MidiParser::VocalEvent vocEv;
-        vocEv.unk8 = i1;
+        vocEv.mTick = i1;
         if (*cc == '[') {
             DataArray *parsed = ParseText(cc, i1);
             if (!parsed)
                 return;
-            vocEv.unk0 = DataNode(parsed, kDataArray);
+            vocEv.mTextContent = DataNode(parsed, kDataArray);
             parsed->Release();
         } else
-            vocEv.unk0 = cc;
+            vocEv.mTextContent = cc;
         unk30.push_back(vocEv);
     }
 }

@@ -10,6 +10,7 @@
 #include "rndobj/Rnd.h"
 #include "midi/DisplayEvents.h"
 #include "utl/Symbols.h"
+#include <climits>
 
 std::list<MidiParser *> MidiParser::sParsers;
 DataNode *MidiParser::mpStart;
@@ -257,8 +258,8 @@ void MidiParser::SetIndex(int idx) {
         } else if (mCurParser == mTextParser || mCurParser == mLyricParser) {
             if (idx < mVocalEvents->size()) {
                 mVocalIndex = idx;
-                VocalEvent &ev = mVocalEvents->operator[](idx);
-                SetGlobalVars(ev.unk8, ev.unk8, ev.unk0);
+                VocalEvent &ev = (*mVocalEvents)[idx];
+                SetGlobalVars(ev.mTick, ev.mTick, ev.mTextContent);
                 return;
             }
         } else
@@ -284,42 +285,40 @@ int MidiParser::ParseAll(
     mGems = mGemParser ? gems : nullptr;
     mVocalEvents = mTextParser || mLyricParser ? &text : nullptr;
     while (true) {
-        int loc44 = 0x7FFFFFFF;
-        int i4 = -1;
+        int startTick = INT_MAX;
+        int which = -1;
         int loc48, loc4c, loc50;
         if (mVocalEvents) {
-            unsigned int numVocalEvents = mVocalEvents->size();
-            if (mVocalIndex < numVocalEvents
-                && MinEq(loc44, (*mVocalEvents)[mVocalIndex].unk8)) {
-                i4 = 0;
+            if (mVocalIndex < mVocalEvents->size()
+                && MinEq(startTick, (*mVocalEvents)[mVocalIndex].mTick)) {
+                which = 0;
             }
         }
         if (mNoteParser) {
-            unsigned int numNoteEvents = mNotes.size();
-            if (mNoteIndex < numNoteEvents
-                && MinEq(loc44, mNotes[mNoteIndex].startTick)) {
-                i4 = 1;
+            if (mNoteIndex < mNotes.size()
+                && MinEq(startTick, mNotes[mNoteIndex].startTick)) {
+                which = 1;
             }
         }
         if (mGems && mGems->GetGem(mGemIndex, loc48, loc4c, loc50)
-            && MinEq(loc44, loc48)) {
-            i4 = 2;
+            && MinEq(startTick, loc48)) {
+            which = 2;
         }
-        if (i4 == 0) {
+        if (which == 0) {
             VocalEvent &vocEv = (*mVocalEvents)[mVocalIndex];
             if ((vocEv.GetTextType() == VocalEvent::kLyric && mLyricParser)
                 || (vocEv.GetTextType() == VocalEvent::kText && mTextParser)) {
                 mCurParser = vocEv.GetTextType() == VocalEvent::kLyric ? mLyricParser
                                                                        : mTextParser;
-                HandleEvent(vocEv.unk8, vocEv.unk8, vocEv.unk0);
+                HandleEvent(vocEv.mTick, vocEv.mTick, vocEv.mTextContent);
             }
             mVocalIndex++;
-        } else if (i4 == 1) {
+        } else if (which == 1) {
             mCurParser = mNoteParser;
             Note &curNote = mNotes[mNoteIndex];
             HandleEvent(curNote.startTick, curNote.endTick, curNote.note);
             mNoteIndex++;
-        } else if (i4 == 2) {
+        } else if (which == 2) {
             mCurParser = mGemParser;
             HandleEvent(loc48, loc4c, loc50);
             mGemIndex++;
@@ -622,7 +621,7 @@ DataNode MidiParser::OnGetEnd(DataArray *arr) { return GetEnd(arr->Int(2)); }
 DataNode MidiParser::OnDebugDraw(DataArray *arr) {
     float f2 = arr->Float(2);
     float f3 = arr->Float(3);
-    TheRnd->DrawString(Name(), Vector2(0.0f, f2), Hmx::Color(1.0f, 1.0f, 1.0f), true);
+    TheRnd->DrawString(Name(), Vector2(0, f2), Hmx::Color(1, 1, 1), true);
     return DisplayEvents(mEvents, f2 + 12.0f, f3);
 }
 

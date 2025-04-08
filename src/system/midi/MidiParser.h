@@ -41,11 +41,11 @@ public:
             kLyric
         };
 
-        DataNode unk0; // 0x0
-        int unk8; // tick
+        DataNode mTextContent; // 0x0
+        int mTick; // 0x8
 
         TextType GetTextType() const {
-            return unk0.Type() == kDataString ? kLyric : kText;
+            return mTextContent.Type() == kDataString ? kLyric : kText;
         }
     };
 
@@ -72,7 +72,14 @@ public:
     void Poll();
     void FixGap(float *);
     void InsertDataEvent(float, float, const DataNode &);
-    int ParseAll(GemListInterface *, std::vector<VocalEvent VECTOR_SIZE_LARGE> &);
+
+    /** Parse everything - the current notes this MidiParser has,
+     * plus the supplied gems and text events.
+     * @param [in] gems The supplied gems for this MidiParser.
+     * @param [in] text The supplied text events for this MidiParser.
+     * @returns The number of midi notes after parsing is complete.
+     */
+    int ParseAll(GemListInterface *gems, std::vector<VocalEvent VECTOR_SIZE_LARGE> &text);
     void PushIdle(float, float, int, Symbol);
     void ParseNote(int, int, unsigned char);
 
@@ -96,16 +103,25 @@ public:
     DataEventList *mEvents; // 0x1c
     /** The midi track's name. */
     Symbol mTrackName; // 0x20
+    /** The typedef array to use when parsing gems. */
     DataArray *mGemParser; // 0x24
+    /** The typedef array to use when parsing midi notes. */
     DataArray *mNoteParser; // 0x28
+    /** The typedef array to use when parsing text. */
     DataArray *mTextParser; // 0x2c
+    /** The typedef array to use when parsing lyrics. */
     DataArray *mLyricParser; // 0x30
+    /** The typedef array to use when inserting idle events. */
     DataArray *mIdleParser; // 0x34
+    /** The current parser in use. */
     DataArray *mCurParser; // 0x38
     /** The list of allowed midi notes for this track. */
     DataArray *mAllowedNotes; // 0x3c
+    /** The list of vocal events for this track. */
     std::vector<VocalEvent VECTOR_SIZE_LARGE> *mVocalEvents; // 0x40
+    /** The list of midi notes for this track. */
     std::vector<Note VECTOR_SIZE_LARGE> mNotes; // 0x44
+    /** The list of gems for this track. */
     GemListInterface *mGems; // 0x50
     bool mInverted; // 0x54
     PostProcess mProcess; // 0x58
@@ -119,8 +135,11 @@ public:
     float mVariableBlendPct; // 0x94
     bool mMessageSelf; // 0x98
     bool mCompressed; // 0x99
+    /** The index of the current gem being parsed. */
     int mGemIndex; // 0x9c
+    /** The index of the current note being parsed. */
     int mNoteIndex; // 0xa0
+    /** The index of the current vocal event being parsed. */
     int mVocalIndex; // 0xa4
     float mStart; // 0xa8
     int mBefore; // 0xac
