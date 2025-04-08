@@ -72,7 +72,7 @@ void MidiParserMgr::FreeAllData() {
     ClearAndShrink(mNoteOns);
 }
 
-void MidiParserMgr::OnNewTrack(int i) {
+void MidiParserMgr::OnNewTrack(int) {
     MemDoTempAllocations m(true, false);
     MILO_ASSERT(!mSongName.Null(), 0x7C);
     FreeAllData();

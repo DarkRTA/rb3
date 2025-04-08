@@ -7,6 +7,7 @@
 
 class GemListInterface; // forward dec
 
+/** Manager for all midi parsers. */
 class MidiParserMgr : public MidiReceiver, public Hmx::Object {
 public:
     MidiParserMgr(GemListInterface *, Symbol);
