@@ -33,16 +33,19 @@ enum MidiStatusType {
 
 unsigned char MidiGetStatus(unsigned char uc) {}
 
-// is the status byte of a midi message high?
+/** Does this midi message have a status? */
 inline bool MidiIsStatus(unsigned char status) { return status & 0x80; }
 
+/** Get the MidiStatusType of this midi message. */
 inline unsigned char MidiGetType(unsigned char status) {
     MILO_ASSERT(MidiIsStatus(status), 0x2f);
     return status & 0xF0;
 }
 
+/** Is this midi message a SysEx message? */
 inline bool MidiIsSystem(unsigned char uc) { return MidiGetType(uc) == kSysEx; }
 
+/** Get the channel associated with this midi message. */
 inline unsigned char MidiGetChannel(unsigned char status) {
     MILO_ASSERT(MidiIsStatus(status), 0x40);
     MILO_ASSERT(!MidiIsSystem(status), 0x41);

@@ -1,7 +1,5 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
-#include "math/Utl.h"
-#include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
 #include "midi/MidiConstants.h"
@@ -144,7 +142,8 @@ void MidiReader::ReadNextEventImpl() {
 void MidiReader::ReadFileHeader(BinStream &bs) {
     MILO_ASSERT(mState == kStart, 0x146);
     MidiChunkHeader header(bs);
-    if (!strneq(header.mID.Str(), MidiChunkID::kMThd.Str(), 4) || header.Length() != 6U) {
+
+    if ((header.mID != MidiChunkID::kMThd) || header.Length() != 6U) {
         MILO_WARN("%s: MIDI file header is corrupt", mStreamName.c_str());
     }
     short midiType;
@@ -196,7 +195,7 @@ void MidiReader::ReadTrackHeader(BinStream &bs) {
         );
         mFail = true;
     } else {
-        int headerlen = header.mLength;
+        int headerlen = header.Length();
         int tell = bs.Tell();
         mTrackEndPos = tell + headerlen;
         mCurTrackIndex++;
@@ -246,30 +245,30 @@ void MidiReader::ReadEvent(BinStream &bs) {
 void MidiReader::ReadMidiEvent(
     int tick, unsigned char status, unsigned char data1, BinStream &bs
 ) {
-    int bit = status & 0xF0;
+    int statusType = status & 0xF0;
     unsigned char data2;
     bool queue = false;
-    switch (bit) {
-    case 0x90:
+    switch (statusType) {
+    case kNoteOn:
         bs >> data2;
         queue = true;
         if (data2 == 0)
-            status = status & 0xF | 0x80;
+            status = status & 0xF | kNoteOff;
         break;
-    case 0x80:
+    case kNoteOff:
         bs >> data2;
         queue = true;
         break;
-    case 0xB0:
+    case kController:
         bs >> data2;
         queue = true;
         break;
-    case 0xE0:
-    case 0xA0:
+    case kPitchModulation:
+    case kAfterTouch:
         bs >> data2;
         break;
-    case 0xC0:
-    case 0xD0:
+    case kProgramChange:
+    case kChannelPressure:
         data2 = 0;
         break;
     default:
@@ -277,7 +276,7 @@ void MidiReader::ReadMidiEvent(
             "%s (%s): Cannot parse event %i",
             mStreamName.c_str(),
             mCurTrackName.c_str(),
-            bit
+            statusType
         );
         break;
     }
