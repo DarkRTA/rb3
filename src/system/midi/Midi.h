@@ -42,13 +42,29 @@ public:
     MidiReceiver();
     virtual ~MidiReceiver() {}
     virtual void OnNewTrack(int) = 0;
+    /** Routine to run when the end of a track is reached. */
     virtual void OnEndOfTrack() = 0;
+    /** Routine to run when all tracks in the midi have been read. */
     virtual void OnAllTracksRead() = 0;
-    virtual void OnMidiMessage(int, unsigned char, unsigned char, unsigned char) = 0;
-    virtual void OnText(int, const char *, unsigned char) = 0;
+    /** Routine to run when handling a midi message.
+     * @param [in] tick The tick at which this midi message occurs.
+     * @param [in] status The midi message's status type.
+     * @param [in] data1 The midi message's first data value.
+     * @param [in] data2 The midi message's second data value.
+     */
+    virtual void OnMidiMessage(
+        int tick, unsigned char status, unsigned char data1, unsigned char data2
+    ) = 0;
+    /** Routine to run whenever handling text in a midi.
+     * @param [in] tick The tick at which this event occurs.
+     * @param [in] text The text to handle.
+     * @param [in] type The MidiMetaEvent type (track name, text, lyric)
+     */
+    virtual void OnText(int tick, const char *text, unsigned char type) = 0;
     virtual void OnTempo(int, int) {}
     virtual void OnTimeSig(int, int, int) {}
     virtual bool OnAcceptMaps(TempoMap *, MeasureMap *) { return false; }
+    /** Set the MidiReader associated with this MidiReceiver. */
     virtual void SetMidiReader(MidiReader *mr) { mReader = mr; }
 
     /** Print a midi validation error message to the console.

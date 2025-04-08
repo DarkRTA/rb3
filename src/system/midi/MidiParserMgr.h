@@ -21,17 +21,36 @@ public:
     virtual bool SyncProperty(DataNode &, DataArray *, int, PropOp);
 
     void Reset();
-    void Reset(int);
+    void Reset(int tick);
+    /** Routine to run when parsing is complete. */
     void FinishLoad();
     void Poll();
-    void FreeAllData();
+    /** Get the DataEventList from the events_parser. */
     DataEventList *GetEventsList();
-    MidiParser *GetParser(Symbol);
-    bool CreateNote(int, unsigned char, unsigned char, int &);
-    char *StripEndBracket(char *, const char *);
-    DataArray *ParseText(const char *, int);
-    void OnTrackName(Symbol);
+    /** Get the parser with the supplied name. */
+    MidiParser *GetParser(Symbol name);
     const char *GetSongName() const { return mSongName.Str(); }
+
+private:
+    /** Strip the end bracket from the input string. (i.e. remove the ']')
+     * @param [in] new_str The buffer where the output string will go.
+     * @param [in] old_str The input string we want to strip ']' from.
+     * returns The buffer with the removed ']'.
+     */
+    char *StripEndBracket(char *new_str, const char *old_str);
+    /** Parse the text at the supplied tick.
+     * @param [in] str The text.
+     * @param [in] tick The tick at which this occurs.
+     * @returns The DataArray corresponding to the text.
+     */
+    DataArray *ParseText(const char *str, int tick);
+    bool CreateNote(int tick, unsigned char status, unsigned char data1, int &start_tick);
+    /** Routine to run when parsing a track name event.
+     * @param [in] trackname The track name.
+     */
+    void OnTrackName(Symbol trackname);
+    /** Clear the lists of parsed note-ons and text events. */
+    void FreeAllData();
 
     std::vector<int VECTOR_SIZE_LARGE> mNoteOns; // 0x24
     std::vector<MidiParser::VocalEvent VECTOR_SIZE_LARGE> mText; // 0x30

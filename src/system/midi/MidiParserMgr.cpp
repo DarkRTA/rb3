@@ -128,15 +128,15 @@ void MidiParserMgr::FinishLoad() {
 }
 
 void MidiParserMgr::OnMidiMessage(
-    int tick, unsigned char c1, unsigned char c2, unsigned char c3
+    int tick, unsigned char status, unsigned char data1, unsigned char data2
 ) {
     int i28;
-    bool created = CreateNote(tick, c1, c2, i28);
+    bool created = CreateNote(tick, status, data1, i28);
     if (created) {
         FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == mTrackName) {
-                cur->ParseNote(i28, tick, c2);
+                cur->ParseNote(i28, tick, data1);
             }
         }
     }
@@ -195,26 +195,28 @@ void MidiParserMgr::OnTrackName(Symbol s) {
     mTrackName = s;
 }
 
-void MidiParserMgr::OnText(int i1, const char *cc, unsigned char uc) {
-    if (uc == 3)
-        OnTrackName(cc);
-    else if (uc == 5 || uc == 1) {
+void MidiParserMgr::OnText(int tick, const char *text, unsigned char type) {
+    if (type == kTrackname)
+        OnTrackName(text);
+    else if (type == kLyricEvent || type == kTextEvent) {
         MemDoTempAllocations m(true, false);
         MidiParser::VocalEvent vocEv;
-        vocEv.mTick = i1;
-        if (*cc == '[') {
-            DataArray *parsed = ParseText(cc, i1);
+        vocEv.mTick = tick;
+        if (*text == '[') {
+            DataArray *parsed = ParseText(text, tick);
             if (!parsed)
                 return;
             vocEv.mTextContent = DataNode(parsed, kDataArray);
             parsed->Release();
         } else
-            vocEv.mTextContent = cc;
+            vocEv.mTextContent = text;
         mText.push_back(vocEv);
     }
 }
 
-bool MidiParserMgr::CreateNote(int i1, unsigned char uc1, unsigned char uc2, int &iref) {
+bool MidiParserMgr::CreateNote(
+    int tick, unsigned char status, unsigned char data1, int &start_tick
+) {
     if (mNoteOns.empty()) {
         if (unk58) {
             MILO_WARN("%s has a track that was not named.", mFilename);
@@ -222,20 +224,20 @@ bool MidiParserMgr::CreateNote(int i1, unsigned char uc1, unsigned char uc2, int
         }
         return true;
     } else {
-        switch (MidiGetType(uc1)) {
-        case 0x90:
-            if (mNoteOns[uc2] == -1) {
-                mNoteOns[uc2] = i1;
+        switch (MidiGetType(status)) {
+        case kNoteOn:
+            if (mNoteOns[data1] == -1) {
+                mNoteOns[data1] = tick;
             } else
-                Error(MakeString("Double note-on (%d)", uc2), i1);
+                Error(MakeString("Double note-on (%d)", data1), tick);
             break;
-        case 0x80:
-            int ref = mNoteOns[uc2];
-            if (ref == -1) {
-                Error(MakeString("Double note-off (%d)", uc2), i1);
+        case kNoteOff:
+            int onTick = mNoteOns[data1];
+            if (onTick == -1) {
+                Error(MakeString("Double note-off (%d)", data1), tick);
             } else {
-                mNoteOns[uc2] = -1;
-                iref = ref;
+                mNoteOns[data1] = -1;
+                start_tick = onTick;
                 return true;
             }
             break;
