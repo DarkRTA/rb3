@@ -1100,7 +1100,7 @@
             "system/midi/DataEventList.cpp": "Equivalent",
             "system/midi/DisplayEvents.cpp": "NonMatching",
             "system/midi/MidiParser.cpp": "NonMatching",
-            "system/midi/MidiParserMgr.cpp": "NonMatching",
+            "system/midi/MidiParserMgr.cpp": "Equivalent",
             "system/midi/MidiReader.cpp": "Matching",
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",

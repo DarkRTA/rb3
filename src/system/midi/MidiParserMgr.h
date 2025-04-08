@@ -32,15 +32,16 @@ public:
     void OnTrackName(Symbol);
     const char *GetSongName() const { return mSongName.Str(); }
 
-    std::vector<int VECTOR_SIZE_LARGE> unk24; // 0x24
-    std::vector<MidiParser::VocalEvent VECTOR_SIZE_LARGE> unk30; // 0x30
+    std::vector<int VECTOR_SIZE_LARGE> mNoteOns; // 0x24
+    std::vector<MidiParser::VocalEvent VECTOR_SIZE_LARGE> mText; // 0x30
     GemListInterface *mGems; // 0x3c
     bool mLoaded; // 0x40
     const char *mFilename; // 0x44
     Symbol mTrackName; // 0x48
     Symbol mSongName; // 0x4c
-    std::vector<Symbol> unk50; // 0x50
-    bool unk58, unk59;
+    std::vector<Symbol> mTrackNames; // 0x50
+    bool unk58; // 0x58
+    bool unk59; // 0x59
 };
 
 extern MidiParserMgr *TheMidiParserMgr;
