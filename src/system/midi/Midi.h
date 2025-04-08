@@ -1,5 +1,4 @@
-#ifndef MIDI_MIDI_H
-#define MIDI_MIDI_H
+#pragma once
 #include "utl/BinStream.h"
 #include "utl/TempoMap.h"
 #include "utl/ChunkIDs.h"
@@ -119,5 +118,3 @@ public:
     class MeasureMap *mMeasureMap; // 0x60
     bool mFail; // 0x64
 };
-
-#endif

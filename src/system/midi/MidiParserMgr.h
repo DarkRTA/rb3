@@ -23,7 +23,6 @@ public:
     void Reset(int);
     void FinishLoad();
     void Poll();
-    void ClearManagedParsers();
     void FreeAllData();
     DataEventList *GetEventsList();
     MidiParser *GetParser(Symbol);

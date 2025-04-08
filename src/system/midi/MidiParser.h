@@ -7,6 +7,11 @@
 
 class GemListInterface; // forward dec
 
+/**
+ * @brief: A parser for a single Midi track.
+ * Original _objects description:
+ * "Parses midi files into messages to send to other objects or itself"
+ */
 class MidiParser : public MsgSource { // 0xd0
 public:
     struct PostProcess {
@@ -36,7 +41,7 @@ public:
             kLyric
         };
 
-        DataNode unk0;
+        DataNode unk0; // 0x0
         int unk8; // tick
 
         TextType GetTextType() const {
@@ -70,8 +75,6 @@ public:
     int ParseAll(GemListInterface *, std::vector<VocalEvent VECTOR_SIZE_LARGE> &);
     void PushIdle(float, float, int, Symbol);
     void ParseNote(int, int, unsigned char);
-    DataEventList *Events() const { return mEvents; }
-    Symbol TrackName() const { return mTrackName; }
 
     DataNode OnGetStart(DataArray *);
     DataNode OnGetEnd(DataArray *);
@@ -87,7 +90,11 @@ public:
     DataNode OnHasSpace(DataArray *);
     DataNode OnRtComputeSpace(DataArray *);
 
+    DataEventList *Events() const { return mEvents; }
+    Symbol TrackName() const { return mTrackName; }
+
     DataEventList *mEvents; // 0x1c
+    /** The midi track's name. */
     Symbol mTrackName; // 0x20
     DataArray *mGemParser; // 0x24
     DataArray *mNoteParser; // 0x28
@@ -95,6 +102,7 @@ public:
     DataArray *mLyricParser; // 0x30
     DataArray *mIdleParser; // 0x34
     DataArray *mCurParser; // 0x38
+    /** The list of allowed midi notes for this track. */
     DataArray *mAllowedNotes; // 0x3c
     std::vector<VocalEvent VECTOR_SIZE_LARGE> *mVocalEvents; // 0x40
     std::vector<Note VECTOR_SIZE_LARGE> mNotes; // 0x44

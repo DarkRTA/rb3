@@ -38,7 +38,7 @@ MidiParserMgr::MidiParserMgr(GemListInterface *gListInt, Symbol sym)
 }
 
 MidiParserMgr::~MidiParserMgr() {
-    ClearManagedParsers();
+    MidiParser::ClearManagedParsers();
     TheMidiParserMgr = nullptr;
 }
 

@@ -1099,7 +1099,7 @@
 
             "system/midi/DataEventList.cpp": "Equivalent",
             "system/midi/DisplayEvents.cpp": "NonMatching",
-            "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
+            "system/midi/MidiParser.cpp": "NonMatching",
             "system/midi/MidiParserMgr.cpp": "NonMatching",
             "system/midi/MidiReader.cpp": "Matching",
             "system/midi/MidiReceiver.cpp": "Matching",

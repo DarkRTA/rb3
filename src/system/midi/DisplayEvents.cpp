@@ -11,8 +11,8 @@ float DisplayEvents(DataEventList *events, float f1, float f2) {
     while (min < events->Size() && events->Event(min).end < f2)
         min++;
     float f10 = -1.0f;
-    while (min < events->Size()
-           && events->Event(min).start < f2 + (float)TheRnd->Width() / 200.0f) {
+    float fsum = f2 + (float)TheRnd->Width() / 200.0f;
+    while (min < events->Size() && events->Event(min).start < fsum) {
         DataEvent curEvent(events->Event(min));
         float start14c = (curEvent.start - f2) * 200.0f + 5.0f;
         float start150 = (curEvent.end - f2) * 200.0f + 5.0f;
