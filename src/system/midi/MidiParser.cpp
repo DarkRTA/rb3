@@ -151,10 +151,7 @@ void MidiParser::Poll() {
     float beat = TheTaskMgr.Beat();
     static DataNode &parser = DataVariable("mp.parser");
     parser = this;
-    while (true) {
-        mEvent = (DataEvent *)mEvents->NextEvent(beat);
-        if (!mEvent)
-            break;
+    while (mEvent = (DataEvent *)mEvents->NextEvent(beat), mEvent) {
         *mpStart = mEvent->start;
         *mpEnd = mEvent->end;
         *mpLength = Max(0.0f, mEvent->end - beat);
