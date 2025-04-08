@@ -188,7 +188,7 @@ void MidiReader::ReadFileHeader(BinStream &bs) {
 void MidiReader::ReadTrackHeader(BinStream &bs) {
     MILO_ASSERT(mState == kNewTrack, 0x180);
     MidiChunkHeader header(bs);
-    if (!CheckChunkID(header.mID.Str(), MidiChunkID::kMTrk.Str())) {
+    if (header.mID != MidiChunkID::kMTrk) {
         MILO_WARN(
             "%s: MIDI track header for track %d is corrupt",
             mStreamName.c_str(),
