@@ -297,7 +297,7 @@ DataNode BandUI::OnMsg(const UITransitionCompleteMsg &msg) {
     HAQManager::Print(kHAQType_Screen);
     HAQManager::Print(kHAQType_Focus);
     Symbol s38 = gNullStr;
-    UIScreen *screen = msg.GetScreen1();
+    UIScreen *screen = msg.GetNewScreen();
     if (screen) {
         s38 = screen->Name();
         const DataNode *prop = screen->Property("disable_screen_saver", false);

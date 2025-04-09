@@ -52,9 +52,7 @@ extern InputMgr *TheInputMgr;
 DECLARE_MESSAGE(InputStatusChangedMsg, "input_status_changed")
 InputStatusChangedMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(InputUserLeftMsg, "input_user_left")
 InputUserLeftMsg() : Message(Type()) {}
 END_MESSAGE
-;

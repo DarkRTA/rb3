@@ -45,4 +45,3 @@ extern GameMode *TheGameMode;
 DECLARE_MESSAGE(ModeChangedMsg, "mode_changed")
 ModeChangedMsg() : Message(Type()) {}
 END_MESSAGE
-;

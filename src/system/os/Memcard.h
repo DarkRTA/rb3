@@ -72,4 +72,5 @@ public:
 
 DECLARE_MESSAGE(DeviceChosenMsg, "device_chosen")
 DeviceChosenMsg(int i) : Message(Type(), i) {}
+int Device() const { return mData->Int(2); }
 END_MESSAGE

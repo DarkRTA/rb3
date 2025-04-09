@@ -14,7 +14,6 @@ JoypadAction GetAction() const { return (JoypadAction)mData->Int(4); }
 int GetPadNum() const { return mData->Int(5); }
 bool IsHeldDown() const { return mData->Int(6) != 0; }
 END_MESSAGE
-;
 
 struct PressRec {
     LocalUser *iUser; // 0x0

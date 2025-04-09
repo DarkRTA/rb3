@@ -29,5 +29,5 @@ public:
 
 DECLARE_MESSAGE(PreviewDownloadCompleteMsg, "preview_download_complete_msg")
 PreviewDownloadCompleteMsg(bool b) : Message(Type(), b) {}
+bool Success() const { return mData->Int(2); }
 END_MESSAGE
-;

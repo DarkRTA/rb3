@@ -209,6 +209,7 @@ bool Success() const { return mData->Int(2); }
 END_MESSAGE
 
 DECLARE_MESSAGE(DiskErrorMsg, "disk_error")
+// arg here is a bool
 END_MESSAGE
 
 DECLARE_MESSAGE(DWCProfanityResultMsg, "dwc_profanity_result_msg")

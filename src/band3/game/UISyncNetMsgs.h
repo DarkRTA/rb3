@@ -43,7 +43,7 @@ public:
 DECLARE_MESSAGE(NetComponentSelectMsg, "net_component_select");
 NetComponentSelectMsg(User *o, const char *c) : Message(Type(), o, c) {}
 User *GetUser() const { return mData->Obj<User>(2); }
-const char *GetStr() const { return mData->Str(3); }
+const char *GetStr() const { return mData->Str(3); } // this arg is apparently component?
 END_MESSAGE
 
 class ComponentScrollNetMsg : public NetMessage {

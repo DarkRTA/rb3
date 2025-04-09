@@ -5,27 +5,24 @@
 #include "decomp.h"
 
 class MsgSource *gSource;
-ObjPtr<Hmx::Object, ObjectDir> gObjOverride(0, 0);
+ObjPtr<Hmx::Object, ObjectDir> gObjOverride(nullptr);
 
 void KeyboardInitCommon() {
     MILO_ASSERT(!gSource, 0x12);
     gSource = Hmx::Object::New<MsgSource>();
 }
 
-void KeyboardTerminateCommon() {
-    delete gSource;
-    gSource = 0;
-}
+void KeyboardTerminateCommon() { RELEASE(gSource); }
 
 void KeyboardSubscribe(Hmx::Object *o) {
     if (gSource) {
-        gSource->AddSink(o, Symbol(), Symbol(), MsgSource::kHandle);
+        gSource->AddSink(o);
     }
 }
 
 void KeyboardUnsubscribe(Hmx::Object *o) {
     if (gSource) {
-        gSource->RemoveSink(o, Symbol());
+        gSource->RemoveSink(o);
     }
 }
 
@@ -35,10 +32,10 @@ Hmx::Object *KeyboardOverride(Hmx::Object *o) {
     return d;
 }
 
-void KeyboardSendMsg(int i, bool b1, bool b2, bool b3) {
-    KeyboardKeyMsg msg(i, b1, b2, b3);
-    if (gObjOverride.mPtr) {
-        gObjOverride.mPtr->Handle(msg, false);
+void KeyboardSendMsg(int key, bool shift, bool ctrl, bool alt) {
+    KeyboardKeyMsg msg(key, shift, ctrl, alt);
+    if (gObjOverride) {
+        gObjOverride->Handle(msg, false);
     } else {
         gSource->Handle(msg, false);
     }
