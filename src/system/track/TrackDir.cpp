@@ -184,24 +184,23 @@ void TrackDir::DrawShowing() {
             v148.Zero();
             RndEnvironTracker tracker(mTrack, &v148);
             RndCam *i7 = nullptr;
-            RndCam *i5 = GetCam();
-            RndCam *i3 = RndCam::sCurrent;
-            RndCam *i6 = RndCam::sCurrent;
-            if (i5) {
-                i5->Select();
-                i6 = i5;
-                i7 = i3;
-            } else
+            RndCam *cur;
+            RndCam *i6 = GetCam();
+            if (i6) {
+                cur = RndCam::sCurrent;
+                i6->Select();
+                i7 = cur;
+            } else {
                 MILO_ASSERT(TheLoadMgr.EditMode(), 0x109);
+                i6 = RndCam::sCurrent;
+            }
             PreDraw();
             if (mShowingWhenEnabled->Showing()) {
                 Transform tf50(i6->WorldXfm());
                 float mult = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::kRealTime);
                 Transform tf80(tf50);
-                bool b2 = false;
                 tf50.m.x.z += mult;
-                if (mKeyShiftStationaryBack->Showing() && mRotatorCam)
-                    b2 = true;
+                bool b2 = (mKeyShiftStationaryBack->Showing() && mRotatorCam);
                 Transform tfb0;
                 Transform tfe0;
                 if (b2) {
@@ -242,7 +241,7 @@ void TrackDir::DrawShowing() {
                 mStationaryMiddle->DrawShowing();
                 {
                     RndEnvironTracker tracker2(mTrackGems, &v148);
-                    if (b2) {
+                    if (!b2) {
                         i6->SetWorldXfm(tfe0);
                         i6->Select();
                         mKeyShiftMovingFront->DrawShowing();

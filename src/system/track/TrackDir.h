@@ -106,6 +106,7 @@ public:
     float mBottomY; // 0x1f8
     std::vector<Transform> mSlots; // 0x1fc
     std::vector<Transform> vec2; // 0x204
+    /** "WARN if widget instances are added out of order? (can be off for prototyping)" */
     bool mWarnOnResort; // 0x20c
     std::vector<TrackWidget *> mActiveWidgets; // 0x210
     ObjPtr<RndGroup> mShowingWhenEnabled; // 0x218

@@ -1,6 +1,4 @@
-#ifndef TRACK_TRACKWIDGETIMP_H
-#define TRACK_TRACKWIDGETIMP_H
-
+#pragma once
 #include "math/Mtx.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
@@ -41,7 +39,9 @@ public:
     virtual void Poll() {} // 0x40
     virtual void Init() {} // 0x44
     virtual void SetScale(float) {} // 0x48
+#ifdef MILO_DEBUG
     virtual void CheckValid(const char *) const {} // 0x4C
+#endif
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
@@ -94,7 +94,16 @@ public:
 
     void DoRemoveAt(std::list<T> &insts, float f1, float f2, float f3) {}
 
-    void DoRemoveUntil(std::list<T> &insts, float f1, float f2) {}
+    void DoRemoveUntil(std::list<T> &insts, float f1, float f2) {
+        if (!insts.empty()) {
+            std::list<T>::iterator it = insts.begin();
+            for (; it != insts.end() && f2 * it->mXfm.m.y.y + it->mXfm.v.y < f1; ++it) {
+            }
+            if (it != insts.end()) {
+                RemoveInstances(insts, insts.begin(), it);
+            }
+        }
+    }
 
     void DoSort(std::list<T> &insts) { insts.sort(WidgetInstanceCmp<T>()); }
 
@@ -125,7 +134,9 @@ public:
     virtual void SetDirty(bool);
     virtual void Poll();
     virtual void SetScale(float);
+#ifdef MILO_DEBUG
     virtual void CheckValid(const char *) const;
+#endif
     virtual std::list<TextInstance> &Instances();
     virtual void RemoveInstances(
         std::list<TextInstance> &,
@@ -207,5 +218,3 @@ public:
     std::list<RndMultiMesh::Instance> mInstances;
     bool unk_0xC;
 };
-
-#endif // TRACK_TRACKWIDGETIMP_H

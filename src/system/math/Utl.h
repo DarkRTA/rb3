@@ -136,7 +136,9 @@ inline int Mod(int num, int modbase) {
 
 inline bool IsFloatZero(float f) { return std::abs(f) < 0.0001f; }
 
-inline bool IsFloatOne(float f) { return std::abs(f - 1.0f) < 0.000099999997f; }
+inline bool IsFloatOne(float f) {
+    return std::abs(f - 1.0f) < 0.000099999997f ? true : false;
+}
 
 inline bool IsFabsZero(float f) { return std::fabs(f) < 0.000099999997f ? true : false; }
 
