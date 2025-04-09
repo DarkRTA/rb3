@@ -1,5 +1,6 @@
 #pragma once
 #include "math/Mtx.h"
+#include "math/Utl.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -92,7 +93,33 @@ public:
         return list.back().mXfm.v.y;
     }
 
-    void DoRemoveAt(std::list<T> &insts, float f1, float f2, float f3) {}
+    void DoRemoveAt(std::list<T> &insts, float f1, float f2, float f3) {
+        if (!insts.empty()) {
+            std::list<T>::iterator it5c = insts.end();
+            std::list<T>::iterator it = insts.begin();
+            for (; it != insts.end(); ++it) {
+                if (IsFabsZero(it->mXfm.v.y - f1)) {
+                    if (f3 < 0 || Abs<float>(it->mXfm.v.x - f2) <= f3) {
+                        if (it5c == insts.end()) {
+                            it5c = it;
+                        }
+                    } else if (it5c != insts.end()) {
+                        RemoveInstances(insts, it5c, it);
+                        it5c = insts.end();
+                    }
+                } else if (it->mXfm.v.y > f1) {
+                    if (it5c != insts.end()) {
+                        RemoveInstances(insts, it5c, it);
+                        it5c = insts.end();
+                    }
+                    break;
+                }
+            }
+            if (it5c != insts.end()) {
+                RemoveInstances(insts, it5c, it);
+            }
+        }
+    }
 
     void DoRemoveUntil(std::list<T> &insts, float f1, float f2) {
         if (!insts.empty()) {
