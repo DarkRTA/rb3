@@ -92,7 +92,7 @@ void ReplaceObject(
     to->SetName(name, dir);
     if (copyDeep)
         CopyObject(from, to, Hmx::Object::kCopyDeep, setProxyFile);
-    const std::vector<ObjRef *> &refs = from->mRefs;
+    const std::vector<ObjRef *> &refs = from->Refs();
     while (!refs.empty()) {
         ObjRef *cur = refs.back();
         cur->Replace(from, to);
@@ -253,14 +253,14 @@ void MergeObjectsRecurse(ObjectDir *fromDir, ObjectDir *toDir, MergeFilter &filt
         default:
             break;
         }
-        std::vector<ObjRef *>::reverse_iterator itStart = fromDir->mRefs.rbegin();
-        std::vector<ObjRef *>::reverse_iterator itEnd = fromDir->mRefs.rend();
+        std::vector<ObjRef *>::const_reverse_iterator itStart = fromDir->Refs().rbegin();
+        std::vector<ObjRef *>::const_reverse_iterator itEnd = fromDir->Refs().rend();
         while (itStart != itEnd) {
             Hmx::Object *owner = (*itStart)->RefOwner();
             if (owner && owner->Dir() == fromDir) {
                 (*itStart)->Replace(fromDir, toDir);
-                itStart = fromDir->mRefs.rbegin();
-                itEnd = fromDir->mRefs.rend();
+                itStart = fromDir->Refs().rbegin();
+                itEnd = fromDir->Refs().rend();
             } else {
                 ++itStart;
             }

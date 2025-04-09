@@ -12,7 +12,7 @@ public:
     GeneratePair(CharClip *, CharClip *, ClipDistMap::Node *, ClipDistMap::Node *);
     DataNode OnGenerateTransitions(DataArray *);
 
-    DataArray *unk1c;
+    const DataArray *unk1c;
     ClipDistMap *mDmap; // 0x20
     CharClip *mClipA; // 0x24
     CharClip *mClipB; // 0x28

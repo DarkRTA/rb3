@@ -4,20 +4,18 @@
 
 MidiReceiver::MidiReceiver() : mReader(0) {}
 
-void MidiReceiver::Error(const char *cc, int i) {
+void MidiReceiver::Error(const char *msg, int tick) {
     MILO_ASSERT(mReader, 0x16);
-    if (i != -1) {
+    if (tick != -1) {
         MILO_WARN(
             "%s (%s): %s at %s",
             mReader->GetFilename(),
-            mReader->mCurTrackName.c_str(),
-            cc,
-            TickFormat(i, *mReader->mMeasureMap)
+            mReader->CurrentTrackName(),
+            msg,
+            TickFormat(tick, *mReader->GetMeasureMap())
         );
     } else
-        MILO_WARN(
-            "%s (%s): %s", mReader->GetFilename(), mReader->mCurTrackName.c_str(), cc
-        );
+        MILO_WARN("%s (%s): %s", mReader->GetFilename(), mReader->CurrentTrackName(), msg);
 }
 
 void MidiReceiver::SkipCurrentTrack() {

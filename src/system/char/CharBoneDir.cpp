@@ -172,7 +172,7 @@ void CharBoneDir::MergeCharacter(const FilePath &fp) {
                 charTrans = backTrans;
             } else {
                 charTrans->Copy(backTrans, Hmx::Object::kCopyDeep);
-                std::vector<ObjRef *> &refs = backTrans->mRefs;
+                const std::vector<ObjRef *> &refs = backTrans->Refs();
                 while (!refs.empty()) {
                     refs.back()->Replace(backTrans, charTrans);
                 }

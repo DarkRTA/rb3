@@ -5,11 +5,10 @@
 #include "decomp.h"
 
 void ChunkHeader::Read(BinStream &bs) {
-    bs.Read((void *)mID.Str(), 4);
+    mID.Load(bs);
     bs >> mLength;
-    if (CheckChunkID(mID.Str(), kListChunkID.Str())
-        || CheckChunkID(mID.Str(), kRiffChunkID.Str())) {
-        bs.Read((void *)mID.Str(), 4);
+    if (mID == kListChunkID || mID == kRiffChunkID) {
+        mID.Load(bs);
         mIsList = true;
         mLength -= 4;
         MILO_ASSERT(mLength == 0 || mLength >= kDataHeaderSize, 0x26);
@@ -146,7 +145,7 @@ ChunkHeader *IListChunk::Next() {
 
         unsigned int newlen = mSubHeader.GetNewLength();
         ChunkID theID = mSubHeader.mID;
-        if (!CheckChunkID(theID.Str(), kMidiTrackChunkID.Str())) {
+        if (theID != kMidiTrackChunkID) {
             // probably a branchless comparison
             unsigned int tmp = newlen >> 0x1FU;
             newlen += ((newlen & 1) ^ tmp) - tmp;
@@ -161,7 +160,7 @@ ChunkHeader *IListChunk::Next(ChunkID id) {
     MILO_ASSERT(!mLocked, 0x155);
     while (Next()) {
         ChunkID theID = mSubHeader.mID;
-        if (CheckChunkID(id.Str(), theID.Str()))
+        if (id == theID)
             return &mSubHeader;
     }
     return 0;

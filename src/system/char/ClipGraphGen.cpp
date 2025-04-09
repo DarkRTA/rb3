@@ -12,7 +12,7 @@ ClipDistMap *ClipGraphGenerator::GeneratePair(
 ) {
     c1->mTransitions.RemoveNodes(c2);
     bool b2 = true;
-    unk1c = c1->mTypeDef;
+    unk1c = c1->TypeDef();
     bool b1 = true;
     if (unk1c) {
         if (c2->Type() == c1->Type())

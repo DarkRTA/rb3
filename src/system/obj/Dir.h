@@ -7,7 +7,6 @@
 #include "utl/KeylessHash.h"
 #include "utl/Loader.h"
 #include "obj/DirLoader.h"
-#include "rndobj/Tex.h"
 
 enum ViewportId {
     kPerspective = 0,

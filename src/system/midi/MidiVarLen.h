@@ -1,5 +1,4 @@
-#ifndef MIDI_MIDIVARLEN_H
-#define MIDI_MIDIVARLEN_H
+#pragma once
 #include "utl/BinStream.h"
 
 class MidiVarLenNumber {
@@ -9,5 +8,3 @@ public:
     MidiVarLenNumber(BinStream &);
     BinStream &Read(BinStream &);
 };
-
-#endif // MIDI_MIDIVARLEN_H

@@ -520,7 +520,7 @@ void WorldDir::BitmapOverride::Sync(bool b) {
         std::vector<ObjRef *> texrefs;
         {
             MemDoTempAllocations m(true, false);
-            texrefs = replacement->mRefs;
+            texrefs = replacement->Refs();
         }
         std::vector<ObjRef *>::const_reverse_iterator rit = texrefs.rbegin();
         std::vector<ObjRef *>::const_reverse_iterator ritEnd = texrefs.rend();
@@ -535,7 +535,7 @@ void WorldDir::BitmapOverride::Sync(bool b) {
         std::vector<ObjRef *> texrefs;
         {
             MemDoTempAllocations m(true, false);
-            texrefs = replacement->mRefs;
+            texrefs = replacement->Refs();
         }
         std::vector<ObjRef *>::const_reverse_iterator rit = texrefs.rbegin();
         std::vector<ObjRef *>::const_reverse_iterator ritEnd = texrefs.rend();

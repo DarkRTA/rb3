@@ -918,7 +918,7 @@ ObjectDir *SyncSubDir(const FilePath &fp, ObjectDir *dir) {
                                 PathName(found)
                             );
                             while (!it->Refs().empty()) {
-                                it->mRefs.back()->Replace(it, found);
+                                it->Refs().back()->Replace(it, found);
                             }
                             delete it;
                         }

@@ -2,6 +2,7 @@
 #include "os/Debug.h"
 #include "math/Utl.h"
 #include "utl/MemMgr.h"
+#include "utl/Std.h"
 #include <algorithm>
 
 MultiTempoTempoMap::MultiTempoTempoMap() : mStartLoopTick(-1.0f), mEndLoopTick(-1.0f) {}
@@ -152,7 +153,7 @@ int MultiTempoTempoMap::GetLoopTick(int tick, int &asdf) const {
 
         int loopTick = tick - startTick;
         int loopLength = endTick - startTick;
-        int newTick = loopTick - (loopTick / loopLength) * loopLength + startTick;
+        int newTick = (loopTick % loopLength) + startTick;
         asdf = tick - newTick;
         return newTick;
     }
@@ -190,10 +191,7 @@ int MultiTempoTempoMap::GetTempoChangePoint(int index) const {
     return mTempoPoints[index].mTick;
 }
 
-void MultiTempoTempoMap::Finalize() {
-    std::vector<TempoInfoPoint> v(mTempoPoints);
-    mTempoPoints.swap(v);
-}
+void MultiTempoTempoMap::Finalize() { TrimExcess(mTempoPoints); }
 
 const MultiTempoTempoMap::TempoInfoPoint *MultiTempoTempoMap::PointForTick(float tick
 ) const {

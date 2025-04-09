@@ -1,7 +1,5 @@
 #include "midi/Midi.h"
 #include "os/Debug.h"
-#include "math/Utl.h"
-#include "utl/Chunks.h"
 #include "utl/MultiTempoTempoMap.h"
 #include "utl/MeasureMap.h"
 #include "midi/MidiConstants.h"
@@ -14,61 +12,29 @@ MidiChunkID MidiChunkID::kMTrk("MTrk");
 bool MidiReader::sVerify = false;
 
 namespace {
+    inline int MidiRank(unsigned char status) {
+        switch (status & 0xF0) {
+        case kNoteOff:
+            return 1;
+        case kController:
+            return 2;
+        case kProgramChange:
+            return 3;
+        case kChannelPressure:
+            return 4;
+        case kPitchModulation:
+            return 5;
+        case kAfterTouch:
+            return 6;
+        case kNoteOn:
+            return 7;
+        default:
+            return 8;
+        }
+    }
+
     bool DefaultMidiLess(const MidiReader::Midi &m1, const MidiReader::Midi &m2) {
-        int ui1, ui2;
-        switch (m1.mStat & 0xF0) {
-        case 0x80:
-            ui1 = 1;
-            break;
-        case 0xB0:
-            ui1 = 2;
-            break;
-        case 0xC0:
-            ui1 = 3;
-            break;
-        case 0xD0:
-            ui1 = 4;
-            break;
-        case 0xE0:
-            ui1 = 5;
-            break;
-        case 0xA0:
-            ui1 = 6;
-            break;
-        case 0x90:
-            ui1 = 7;
-            break;
-        default:
-            ui1 = 8;
-            break;
-        }
-        switch (m2.mStat & 0xF0) {
-        case 0x80:
-            ui2 = 1;
-            break;
-        case 0xB0:
-            ui2 = 2;
-            break;
-        case 0xC0:
-            ui2 = 3;
-            break;
-        case 0xD0:
-            ui2 = 4;
-            break;
-        case 0xE0:
-            ui2 = 5;
-            break;
-        case 0xA0:
-            ui2 = 6;
-            break;
-        case 0x90:
-            ui2 = 7;
-            break;
-        default:
-            ui2 = 8;
-            break;
-        }
-        return ui1 < ui2;
+        return MidiRank(m1.mStat) < MidiRank(m2.mStat);
     }
 }
 
@@ -106,8 +72,8 @@ void MidiReader::ReadAllTracks() {
         ;
 }
 
-bool MidiReader::ReadSomeEvents(int cnt) {
-    for (int i2 = 0; i2 < cnt; i2++) {
+bool MidiReader::ReadSomeEvents(int num_events) {
+    for (int i2 = 0; i2 < num_events; i2++) {
         ReadNextEvent();
         if (mState == kEnd || mFail)
             return true;
@@ -176,8 +142,8 @@ void MidiReader::ReadNextEventImpl() {
 void MidiReader::ReadFileHeader(BinStream &bs) {
     MILO_ASSERT(mState == kStart, 0x146);
     MidiChunkHeader header(bs);
-    bool kmthdcmp = strncmp(header.mID.Str(), MidiChunkID::kMThd.Str(), 4) == 0;
-    if (!kmthdcmp || header.mLength != 6U) {
+
+    if ((header.mID != MidiChunkID::kMThd) || header.Length() != 6U) {
         MILO_WARN("%s: MIDI file header is corrupt", mStreamName.c_str());
     }
     short midiType;
@@ -221,7 +187,7 @@ void MidiReader::ReadFileHeader(BinStream &bs) {
 void MidiReader::ReadTrackHeader(BinStream &bs) {
     MILO_ASSERT(mState == kNewTrack, 0x180);
     MidiChunkHeader header(bs);
-    if (!CheckChunkID(header.mID.Str(), MidiChunkID::kMTrk.Str())) {
+    if (header.mID != MidiChunkID::kMTrk) {
         MILO_WARN(
             "%s: MIDI track header for track %d is corrupt",
             mStreamName.c_str(),
@@ -229,9 +195,7 @@ void MidiReader::ReadTrackHeader(BinStream &bs) {
         );
         mFail = true;
     } else {
-        int headerlen = header.mLength;
-        int tell = bs.Tell();
-        mTrackEndPos = tell + headerlen;
+        mTrackEndPos = bs.Tell() + header.Length();
         mCurTrackIndex++;
         mPrevStatus = 0;
         mCurTick = 0;
@@ -279,58 +243,58 @@ void MidiReader::ReadEvent(BinStream &bs) {
 void MidiReader::ReadMidiEvent(
     int tick, unsigned char status, unsigned char data1, BinStream &bs
 ) {
-    int bit = status & 0xF0;
-    unsigned char uc;
+    int statusType = status & 0xF0;
+    unsigned char data2;
     bool queue = false;
-    switch (bit) {
-    case 0x90:
-        bs >> uc;
+    switch (statusType) {
+    case kNoteOn:
+        bs >> data2;
         queue = true;
-        if (uc == 0)
-            status = status & 0xF | 0x80;
+        if (data2 == 0)
+            status = status & 0xF | kNoteOff;
         break;
-    case 0x80:
-        bs >> uc;
-        queue = true;
-        break;
-    case 0xB0:
-        bs >> uc;
+    case kNoteOff:
+        bs >> data2;
         queue = true;
         break;
-    case 0xE0:
-    case 0xA0:
-        bs >> uc;
+    case kController:
+        bs >> data2;
+        queue = true;
         break;
-    case 0xC0:
-    case 0xD0:
-        uc = 0;
+    case kPitchModulation:
+    case kAfterTouch:
+        bs >> data2;
+        break;
+    case kProgramChange:
+    case kChannelPressure:
+        data2 = 0;
         break;
     default:
         MILO_WARN(
             "%s (%s): Cannot parse event %i",
             mStreamName.c_str(),
             mCurTrackName.c_str(),
-            bit
+            statusType
         );
         break;
     }
     if (queue)
-        QueueChannelMsg(tick, status, data1, uc);
+        QueueChannelMsg(tick, status, data1, data2);
 }
 
 // fn_805344C0
-void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream &bs) {
-    switch (uc) {
-    case 0xF0:
-    case 0xF7: {
+void MidiReader::ReadSystemEvent(int tick, unsigned char type, BinStream &bs) {
+    switch (type) {
+    case 0xF0: // sysexstart
+    case 0xF7: { // sysexend
         MidiVarLenNumber num(bs);
         bs.Seek(num.mValue, BinStream::kSeekCur);
         break;
     }
-    case 0xFF: {
+    case 0xFF: { // meta event incoming
         unsigned char read;
         bs >> read;
-        ReadMetaEvent(i, read, bs);
+        ReadMetaEvent(tick, read, bs);
         break;
     }
     default:
@@ -338,23 +302,23 @@ void MidiReader::ReadSystemEvent(int i, unsigned char uc, BinStream &bs) {
             "%s (%s): Cannot parse system event %i",
             mStreamName.c_str(),
             mCurTrackName.c_str(),
-            uc
+            type
         );
         break;
     }
 }
 
 // fn_80534568
-void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
+void MidiReader::ReadMetaEvent(int tick, unsigned char type, BinStream &bs) {
     MidiVarLenNumber num(bs);
     unsigned int numVal = num.mValue;
     int oldtell = bs.Tell();
 
-    switch (uc) {
-    case 0x1:
-    case 0x2:
-    case 0x3:
-    case 0x5: {
+    switch (type) {
+    case kTextEvent:
+    case kCopyrightNotice:
+    case kTrackname:
+    case kLyricEvent: {
         char buf[0x100];
         if (numVal >= 0x100) {
             bs.Read(buf, 8);
@@ -370,15 +334,15 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
         } else {
             bs.Read(buf, numVal);
             buf[numVal] = 0;
-            if (uc == 3) {
-                if (i != 0) {
+            if (type == 3) {
+                if (tick != 0) {
                     MILO_WARN(
                         "%s (%s): MIDI track name event must appear at %s; found track name '%s' at %s",
                         mStreamName.c_str(),
                         buf,
                         TickFormat(0, *mMeasureMap),
                         buf,
-                        TickFormat(i, *mMeasureMap)
+                        TickFormat(tick, *mMeasureMap)
                     );
                     mFail = true;
                     return;
@@ -399,11 +363,11 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
                 }
                 mCurTrackName = buf;
             }
-            mRcvr.OnText(i, buf, uc);
+            mRcvr.OnText(tick, buf, type);
         }
         break;
     }
-    case 0x51: {
+    case kTempoSetting: {
         unsigned char c, b, a;
         bs >> c >> b >> a;
         int product = a + c * 0x10000 + b * 0x100;
@@ -412,7 +376,7 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
                 "%s (%s): Tempo marker at %s (%f bpm) is too fast; maximum is 300 bpm",
                 mStreamName.c_str(),
                 mCurTrackName.c_str(),
-                TickFormat(i, *mMeasureMap),
+                TickFormat(tick, *mMeasureMap),
                 6e+07f / (float)product
             );
         }
@@ -421,24 +385,24 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
                 "%s (%s): Tempo marker at %s (%f bpm) is too slow; minimum is 40 bpm",
                 mStreamName.c_str(),
                 mCurTrackName.c_str(),
-                TickFormat(i, *mMeasureMap),
+                TickFormat(tick, *mMeasureMap),
                 6e+07f / (float)product
             );
         }
-        if (mTempoMap->AddTempoInfoPoint(i, product)) {
-            mRcvr.OnTempo(i, product);
+        if (mTempoMap->AddTempoInfoPoint(tick, product)) {
+            mRcvr.OnTempo(tick, product);
         } else {
             MILO_WARN(
                 "%s (%s): Tempo marker at %s (%.f bpm) conflicts with other tempo markers",
                 mStreamName.c_str(),
                 mCurTrackName.c_str(),
-                TickFormat(i, *mMeasureMap),
+                TickFormat(tick, *mMeasureMap),
                 6e+07f / (float)product
             );
         }
         break;
     }
-    case 0x2F: {
+    case kEndOfTrack: {
         ProcessMidiList();
         if (mCurTrackIndex == mNumTracks) {
             mState = kEnd;
@@ -453,7 +417,7 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
         }
         break;
     }
-    case 0x58: {
+    case kTimeSignature: {
         unsigned char ts_num, ts_den;
         bs >> ts_num >> ts_den;
         if (ts_den > 6) {
@@ -461,7 +425,7 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
                 "%s (%s): Time signature at %s has invalid denominator (2^%d); max is 64 (2^6)",
                 mStreamName.c_str(),
                 mCurTrackName.c_str(),
-                TickFormat(i, *mMeasureMap),
+                TickFormat(tick, *mMeasureMap),
                 ts_den
             );
         } else {
@@ -474,14 +438,14 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
                     mCurTrackName.c_str(),
                     ts_num,
                     powed,
-                    TickFormat(i, *mMeasureMap),
+                    TickFormat(tick, *mMeasureMap),
                     ts_num
                 );
             }
             int ts_m, ts_b, ts_t;
-            mMeasureMap->TickToMeasureBeatTick(i, ts_m, ts_b, ts_t);
+            mMeasureMap->TickToMeasureBeatTick(tick, ts_m, ts_b, ts_t);
             if (mMeasureMap->AddTimeSignature(ts_m, ts_num, powed, true)) {
-                mRcvr.OnTimeSig(i, ts_num, powed);
+                mRcvr.OnTimeSig(tick, ts_num, powed);
             } else {
                 MILO_WARN(
                     "%s (%s): Time signature %d/%d at %s overlaps or conflicts with nearby time signatures",
@@ -489,27 +453,27 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
                     mCurTrackName.c_str(),
                     ts_num,
                     powed,
-                    TickFormat(i, *mMeasureMap)
+                    TickFormat(tick, *mMeasureMap)
                 );
             }
             bs.Seek(2, BinStream::kSeekCur);
         }
         break;
     }
-    case 4:
-    case 6:
-    case 7:
-    case 0x20:
-    case 0x21:
-    case 0x54:
-    case 0x59:
+    case kInstrumentName:
+    case kMarkerText:
+    case kCuePoint:
+    case kChannelPrefix:
+    case kMidiPort:
+    case kSMPTEOffset:
+    case kKeySignature:
         break;
     default:
         MILO_WARN(
             "%s (%s): Cannot parse meta event %i",
             mStreamName.c_str(),
             mCurTrackName.c_str(),
-            uc
+            type
         );
         break;
     }
@@ -518,24 +482,23 @@ void MidiReader::ReadMetaEvent(int i, unsigned char uc, BinStream &bs) {
 }
 
 void MidiReader::QueueChannelMsg(
-    int i, unsigned char uc1, unsigned char uc2, unsigned char uc3
+    int tick, unsigned char status, unsigned char data1, unsigned char data2
 ) {
     if (!mLessFunc) {
-        mRcvr.OnMidiMessage(i, uc1, uc2, uc3);
+        mRcvr.OnMidiMessage(tick, status, data1, data2);
     } else {
         Midi mid;
-        mid.mStat = uc1;
-        mid.mD1 = uc2;
-        mid.mD2 = uc3;
+        mid.mStat = status;
+        mid.mD1 = data1;
+        mid.mD2 = data2;
         mMidiList.push_back(mid);
     }
 }
 
 void MidiReader::ProcessMidiList() {
     std::sort(mMidiList.begin(), mMidiList.end(), mLessFunc);
-    for (std::vector<Midi>::iterator it = mMidiList.begin(); it != mMidiList.end();
-         it++) {
-        mRcvr.OnMidiMessage(mMidiListTick, (*it).mStat, (*it).mD1, (*it).mD2);
+    FOREACH (it, mMidiList) {
+        mRcvr.OnMidiMessage(mMidiListTick, it->mStat, it->mD1, it->mD2);
         if (mState != kInTrack)
             break;
     }

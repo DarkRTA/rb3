@@ -58,8 +58,8 @@
 
 DataNode OnPaletteSync(DataArray *array) {
     ColorPalette *colpal = array->Obj<ColorPalette>(1);
-    for (std::vector<ObjRef *>::reverse_iterator rit = colpal->mRefs.rbegin();
-         rit != colpal->mRefs.rend();
+    for (std::vector<ObjRef *>::const_reverse_iterator rit = colpal->Refs().rbegin();
+         rit != colpal->Refs().rend();
          rit++) {
         Hmx::Object *refowner = (*rit)->RefOwner();
         OutfitConfig *outcfg = dynamic_cast<OutfitConfig *>(refowner);

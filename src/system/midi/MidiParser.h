@@ -7,7 +7,15 @@
 
 class GemListInterface; // forward dec
 
+/**
+ * @brief: A parser for a single Midi track.
+ * Original _objects description:
+ * "Parses midi files into messages to send to other objects or itself"
+ */
 class MidiParser : public MsgSource { // 0xd0
+    friend class MidiParserMgr;
+    friend class Song;
+
 public:
     struct PostProcess {
         PostProcess();
@@ -36,11 +44,11 @@ public:
             kLyric
         };
 
-        DataNode unk0;
-        int unk8; // tick
+        DataNode mTextContent; // 0x0
+        int mTick; // 0x8
 
         TextType GetTextType() const {
-            return unk0.Type() == kDataString ? kLyric : kText;
+            return mTextContent.Type() == kDataString ? kLyric : kText;
         }
     };
 
@@ -54,24 +62,36 @@ public:
 
     void Clear();
     void Reset(float);
-    bool InsertIdle(float, int);
-    bool AllowedNote(int);
-    bool AddMessage(float, float, DataArray *, int);
-    float ConvertToBeats(float, float);
+    void Poll();
+
+    /** Parse everything - the current notes this MidiParser has,
+     * plus the supplied gems and text events.
+     * @param [in] gems The supplied gems for this MidiParser.
+     * @param [in] text The supplied text events for this MidiParser.
+     * @returns The number of midi notes after parsing is complete.
+     */
+    int ParseAll(GemListInterface *gems, std::vector<VocalEvent VECTOR_SIZE_LARGE> &text);
+    void ParseNote(int startTick, int endTick, unsigned char data1);
+
+    static void ClearManagedParsers();
+    static void Init();
+    NEW_OBJ(MidiParser)
+    static void Register() { REGISTER_OBJ_FACTORY(MidiParser) }
+
+private:
+    bool AllowedNote(int note);
+    int GetIndex();
     float GetStart(int);
     float GetEnd(int);
-    void SetIndex(int);
-    int GetIndex();
-    void SetGlobalVars(int, int, const DataNode &);
-    void HandleEvent(int, int, const DataNode &);
-    void Poll();
     void FixGap(float *);
-    void InsertDataEvent(float, float, const DataNode &);
-    int ParseAll(GemListInterface *, std::vector<VocalEvent VECTOR_SIZE_LARGE> &);
-    void PushIdle(float, float, int, Symbol);
-    void ParseNote(int, int, unsigned char);
-    DataEventList *Events() const { return mEvents; }
-    Symbol TrackName() const { return mTrackName; }
+    bool InsertIdle(float, int);
+    void PushIdle(float start, float end, int at, Symbol idleMessage);
+    void SetGlobalVars(int startTick, int endTick, const DataNode &data);
+    void HandleEvent(int startTick, int endTick, const DataNode &data);
+    void InsertDataEvent(float start, float end, const DataNode &ev);
+    bool AddMessage(float start, float end, DataArray *msg, int firstArg);
+    void SetIndex(int idx);
+    float ConvertToBeats(float, float);
 
     DataNode OnGetStart(DataArray *);
     DataNode OnGetEnd(DataArray *);
@@ -87,17 +107,31 @@ public:
     DataNode OnHasSpace(DataArray *);
     DataNode OnRtComputeSpace(DataArray *);
 
+    DataEventList *Events() const { return mEvents; }
+    Symbol TrackName() const { return mTrackName; }
+
     DataEventList *mEvents; // 0x1c
+    /** The midi track's name. */
     Symbol mTrackName; // 0x20
+    /** The typedef array to use when parsing gems. */
     DataArray *mGemParser; // 0x24
+    /** The typedef array to use when parsing midi notes. */
     DataArray *mNoteParser; // 0x28
+    /** The typedef array to use when parsing text. */
     DataArray *mTextParser; // 0x2c
+    /** The typedef array to use when parsing lyrics. */
     DataArray *mLyricParser; // 0x30
+    /** The typedef array to use when inserting idle events. */
     DataArray *mIdleParser; // 0x34
+    /** The current parser in use. */
     DataArray *mCurParser; // 0x38
+    /** The list of allowed midi notes for this track. */
     DataArray *mAllowedNotes; // 0x3c
+    /** The list of vocal events for this track. */
     std::vector<VocalEvent VECTOR_SIZE_LARGE> *mVocalEvents; // 0x40
+    /** The list of midi notes for this track. */
     std::vector<Note VECTOR_SIZE_LARGE> mNotes; // 0x44
+    /** The list of gems for this track. */
     GemListInterface *mGems; // 0x50
     bool mInverted; // 0x54
     PostProcess mProcess; // 0x58
@@ -111,16 +145,14 @@ public:
     float mVariableBlendPct; // 0x94
     bool mMessageSelf; // 0x98
     bool mCompressed; // 0x99
+    /** The index of the current gem being parsed. */
     int mGemIndex; // 0x9c
+    /** The index of the current note being parsed. */
     int mNoteIndex; // 0xa0
+    /** The index of the current vocal event being parsed. */
     int mVocalIndex; // 0xa4
     float mStart; // 0xa8
     int mBefore; // 0xac
-
-    static void ClearManagedParsers();
-    static void Init();
-    NEW_OBJ(MidiParser)
-    static void Register() { REGISTER_OBJ_FACTORY(MidiParser) }
 
     static DataNode *mpStart;
     static DataNode *mpEnd;

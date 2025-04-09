@@ -1,14 +1,8 @@
-#ifndef UTL_CHUNKS_H
-#define UTL_CHUNKS_H
+#pragma once
 #include "utl/BinStream.h"
 #include "utl/ChunkIDs.h"
-#include <string.h>
 
 #define kDataHeaderSize 8
-
-inline bool CheckChunkID(const char *str, const char *id) {
-    return strncmp(str, id, 4) == 0;
-}
 
 class ChunkHeader {
 public:
@@ -77,5 +71,3 @@ public:
     virtual void WriteImpl(const void *, int) {}
     virtual void SeekImpl(int, SeekType);
 };
-
-#endif

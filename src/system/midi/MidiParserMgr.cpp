@@ -18,7 +18,7 @@ inline DataArray *MidiParserArray() {
 }
 
 MidiParserMgr::MidiParserMgr(GemListInterface *gListInt, Symbol sym)
-    : mGems(gListInt), mLoaded(0), mFilename(0), mTrackName(), mSongName(), unk50(),
+    : mGems(gListInt), mLoaded(0), mFilename(0), mTrackName(), mSongName(), mTrackNames(),
       unk58(true), unk59(true) {
     MILO_ASSERT(!TheMidiParserMgr, 0x27);
     TheMidiParserMgr = this;
@@ -38,7 +38,7 @@ MidiParserMgr::MidiParserMgr(GemListInterface *gListInt, Symbol sym)
 }
 
 MidiParserMgr::~MidiParserMgr() {
-    ClearManagedParsers();
+    MidiParser::ClearManagedParsers();
     TheMidiParserMgr = nullptr;
 }
 
@@ -68,27 +68,27 @@ void MidiParserMgr::Poll() {
 }
 
 void MidiParserMgr::FreeAllData() {
-    ClearAndShrink(unk30);
-    ClearAndShrink(unk24);
+    ClearAndShrink(mText);
+    ClearAndShrink(mNoteOns);
 }
 
-void MidiParserMgr::OnNewTrack(int i) {
+void MidiParserMgr::OnNewTrack(int) {
     MemDoTempAllocations m(true, false);
     MILO_ASSERT(!mSongName.Null(), 0x7C);
     FreeAllData();
-    unk24.resize(128);
-    unk30.reserve(2000);
+    mNoteOns.resize(128);
+    mText.reserve(2000);
     unk58 = true;
 }
 
 void MidiParserMgr::OnEndOfTrack() {
     if (!mTrackName.Null()) {
-        if (unk30.size() > 2000) {
+        if (mText.size() > 2000) {
             MILO_WARN(
                 "%s track %s has %d text events which is over the limit of %d, if that is correct contact James to increase kMaxTextSize",
                 mFilename,
                 mTrackName,
-                unk30.size(),
+                mText.size(),
                 2000
             );
         }
@@ -97,7 +97,7 @@ void MidiParserMgr::OnEndOfTrack() {
         FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == mTrackName) {
-                int numnotes = cur->ParseAll(mGems, unk30);
+                int numnotes = cur->ParseAll(mGems, mText);
                 if (numnotes > 20000) {
                     MILO_WARN(
                         "%s track %s has %d notes which is over the limit of %d, if that is correct contact James to increase kMaxNoteSize",
@@ -128,15 +128,15 @@ void MidiParserMgr::FinishLoad() {
 }
 
 void MidiParserMgr::OnMidiMessage(
-    int tick, unsigned char c1, unsigned char c2, unsigned char c3
+    int tick, unsigned char status, unsigned char data1, unsigned char data2
 ) {
     int i28;
-    bool created = CreateNote(tick, c1, c2, i28);
+    bool created = CreateNote(tick, status, data1, i28);
     if (created) {
         FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == mTrackName) {
-                cur->ParseNote(i28, tick, c2);
+                cur->ParseNote(i28, tick, data1);
             }
         }
     }
@@ -144,22 +144,22 @@ void MidiParserMgr::OnMidiMessage(
 
 char *MidiParserMgr::StripEndBracket(char *c1, const char *cc2) {
     char *ret = c1;
-    for (const char *ptr = cc2; *ptr != '\0'; ptr++) {
-        char ptrChar = *ptr;
-        if (ptrChar == ']')
-            goto finalize;
-        else
-            *ret++ = ptrChar;
+    const char *ptr;
+    for (ptr = cc2; *ptr != '\0' && *ptr != ']'; ptr++) {
+        *ret++ = *ptr;
     }
-    MILO_WARN(
-        "MidiParser: %s, track %s event \"%s\" is missing right bracket",
-        mFilename,
-        mTrackName,
-        cc2
-    );
-finalize:
+
+    if (*ptr == '\0') {
+        MILO_WARN(
+            "MidiParser: %s, track %s event \"%s\" is missing right bracket",
+            mFilename,
+            mTrackName,
+            cc2
+        );
+    }
+
     *ret = '\0';
-    return ret;
+    return c1;
 }
 
 DataArray *MidiParserMgr::ParseText(const char *str, int tick) {
@@ -183,7 +183,7 @@ DataArray *MidiParserMgr::ParseText(const char *str, int tick) {
 }
 
 void MidiParserMgr::OnTrackName(Symbol s) {
-    if (std::find(unk50.begin(), unk50.end(), s) != unk50.end()) {
+    if (std::find(mTrackNames.begin(), mTrackNames.end(), s) != mTrackNames.end()) {
         FOREACH_CONST (it, MidiParser::sParsers) {
             MidiParser *cur = *it;
             if (cur->TrackName() == s) {
@@ -191,51 +191,53 @@ void MidiParserMgr::OnTrackName(Symbol s) {
             }
         }
     } else
-        unk50.push_back(s);
+        mTrackNames.push_back(s);
     mTrackName = s;
 }
 
-void MidiParserMgr::OnText(int i1, const char *cc, unsigned char uc) {
-    if (uc == 3)
-        OnTrackName(cc);
-    else if (uc == 5 || uc == 1) {
+void MidiParserMgr::OnText(int tick, const char *text, unsigned char type) {
+    if (type == kTrackname)
+        OnTrackName(text);
+    else if (type == kLyricEvent || type == kTextEvent) {
         MemDoTempAllocations m(true, false);
         MidiParser::VocalEvent vocEv;
-        vocEv.unk8 = i1;
-        if (*cc == '[') {
-            DataArray *parsed = ParseText(cc, i1);
+        vocEv.mTick = tick;
+        if (*text == '[') {
+            DataArray *parsed = ParseText(text, tick);
             if (!parsed)
                 return;
-            vocEv.unk0 = DataNode(parsed, kDataArray);
+            vocEv.mTextContent = DataNode(parsed, kDataArray);
             parsed->Release();
         } else
-            vocEv.unk0 = cc;
-        unk30.push_back(vocEv);
+            vocEv.mTextContent = text;
+        mText.push_back(vocEv);
     }
 }
 
-bool MidiParserMgr::CreateNote(int i1, unsigned char uc1, unsigned char uc2, int &iref) {
-    if (unk24.empty()) {
+bool MidiParserMgr::CreateNote(
+    int tick, unsigned char status, unsigned char data1, int &start_tick
+) {
+    if (mNoteOns.empty()) {
         if (unk58) {
             MILO_WARN("%s has a track that was not named.", mFilename);
             unk58 = false;
         }
         return true;
     } else {
-        switch (MidiGetType(uc1)) {
-        case 0x90:
-            if (unk24[uc2] == -1) {
-                unk24[uc2] = i1;
+        switch (MidiGetType(status)) {
+        case kNoteOn:
+            if (mNoteOns[data1] == -1) {
+                mNoteOns[data1] = tick;
             } else
-                Error(MakeString("Double note-on (%d)", uc2), i1);
+                Error(MakeString("Double note-on (%d)", data1), tick);
             break;
-        case 0x80:
-            int ref = unk24[uc2];
-            if (ref == -1) {
-                Error(MakeString("Double note-off (%d)", uc2), i1);
+        case kNoteOff:
+            int onTick = mNoteOns[data1];
+            if (onTick == -1) {
+                Error(MakeString("Double note-off (%d)", data1), tick);
             } else {
-                unk24[uc2] = -1;
-                iref = ref;
+                mNoteOns[data1] = -1;
+                start_tick = onTick;
                 return true;
             }
             break;

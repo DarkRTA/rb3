@@ -55,7 +55,7 @@ void RndScreenMask::Load(BinStream &bs) {
 
 void RndScreenMask::DrawShowing() {
     MILO_NOTIFY_ONCE(
-        "%s: Overriding camera screen_rect not supported with render texture", mName
+        "%s: Overriding camera screen_rect not supported with render texture", Name()
     );
     if (!mUseCurrentRect && !RndCam::sCurrent->mTargetTex.mPtr) {
         // TheRnd->PostSave();

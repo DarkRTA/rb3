@@ -229,7 +229,7 @@ void WorldInstance::DeleteTransientObjects() {
                 std::vector<ObjRef *> refs;
                 {
                     MemDoTempAllocations m(true, false);
-                    refs = obj->mRefs;
+                    refs = obj->Refs();
                 }
                 std::vector<ObjRef *>::const_reverse_iterator it = refs.rbegin();
                 std::vector<ObjRef *>::const_reverse_iterator itEnd = refs.rend();
@@ -362,7 +362,7 @@ void WorldInstance::SyncDir() {
             for (std::list<ObjPair>::iterator p = objPairs.begin(); p != objPairs.end();
                  ++p) {
                 MILO_ASSERT(p->from->Dir(), 0x2CA);
-                std::vector<ObjRef *> fromRefs = p->from->mRefs;
+                std::vector<ObjRef *> fromRefs = p->from->Refs();
                 std::vector<ObjRef *>::reverse_iterator it = fromRefs.rbegin();
                 std::vector<ObjRef *>::reverse_iterator itEnd = fromRefs.rend();
                 while (it != itEnd) {

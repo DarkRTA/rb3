@@ -83,13 +83,14 @@ int DataEventList::FindStartFromBack(float start) const {
 }
 
 void DataEventList::Reset(float f) {
+    EventTimeCompComp compcomp;
+    EventTimeComp comp;
+
     if (mElement >= 0) {
-        CompEv *lower =
-            std::lower_bound(mComps.begin(), mComps.end(), f, EventTimeCompComp());
+        CompEv *lower = std::lower_bound(mComps.begin(), mComps.end(), f, compcomp);
         mCurIndex = lower - mComps.begin();
     } else {
-        DataEvent *lower =
-            std::lower_bound(mEvents.begin(), mEvents.end(), f, EventTimeComp());
+        DataEvent *lower = std::lower_bound(mEvents.begin(), mEvents.end(), f, comp);
         mCurIndex = lower - mEvents.begin();
     }
 }
@@ -106,7 +107,7 @@ const DataEvent &DataEventList::Event(int idx) const {
     }
 }
 
-DataEvent *DataEventList::NextEvent(float f) {
+const DataEvent *DataEventList::NextEvent(float f) {
     if (mCurIndex >= mSize)
         return 0;
     if (mElement >= 0) {
@@ -114,7 +115,7 @@ DataEvent *DataEventList::NextEvent(float f) {
             return 0;
     } else if (f < mEvents[mCurIndex].start)
         return 0;
-    return &(DataEvent &)Event(mCurIndex++);
+    return &Event(mCurIndex++);
 }
 
 float *DataEventList::EndPtr(int index) {

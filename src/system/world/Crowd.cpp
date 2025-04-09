@@ -32,8 +32,8 @@ INIT_REVS(WorldCrowd)
 
 namespace {
     void GetMeshShaderFlags(RndMat *mat, std::list<unsigned int> &flags) {
-        std::vector<ObjRef *>::reverse_iterator it = mat->mRefs.rbegin();
-        std::vector<ObjRef *>::reverse_iterator itEnd = mat->mRefs.rend();
+        std::vector<ObjRef *>::const_reverse_iterator it = mat->Refs().rbegin();
+        std::vector<ObjRef *>::const_reverse_iterator itEnd = mat->Refs().rend();
         for (; it != itEnd; ++it) {
             RndMesh *mesh = dynamic_cast<RndMesh *>((*it)->RefOwner());
             if (mesh) {

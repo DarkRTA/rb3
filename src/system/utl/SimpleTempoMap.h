@@ -1,7 +1,7 @@
-#ifndef UTL_SIMPLETEMPOMAP_H
-#define UTL_SIMPLETEMPOMAP_H
+#pragma once
 #include "utl/TempoMap.h"
 
+/** A tempomap with one single tempo for the whole song (i.e. an electronic song). */
 class SimpleTempoMap : public TempoMap {
 public:
     SimpleTempoMap(float f) { mTempo = f / 480.0f; }
@@ -19,7 +19,6 @@ public:
     virtual int GetLoopTick(int) const;
     virtual float GetTimeInLoop(float);
 
-    float mTempo;
+    /** The tempo, in ms. */
+    float mTempo; // 0x4
 };
-
-#endif

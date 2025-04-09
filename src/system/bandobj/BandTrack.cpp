@@ -343,7 +343,7 @@ void BandTrack::GameOver() {
 BandCrowdMeter *BandTrack::GetCrowdMeter() {
     BandCrowdMeter *meter;
     if (mShowCrowdMeter != false) {
-        ObjectDir *objDir = ThisDir()->mDir;
+        ObjectDir *objDir = ThisDir()->Dir();
         TrackPanelDirBase *tpDirBase = dynamic_cast<TrackPanelDirBase *>(objDir);
         meter = tpDirBase->GetCrowdMeter();
     } else {

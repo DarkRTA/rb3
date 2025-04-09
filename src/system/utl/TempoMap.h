@@ -1,30 +1,28 @@
-#ifndef UTL_TEMPOMAP_H
-#define UTL_TEMPOMAP_H
+#pragma once
 
+/** The map of tempos for the current song. */
 class TempoMap {
 public:
-    // TempoMap();
+    TempoMap() {}
     virtual ~TempoMap() {}
-    virtual float TickToTime(float) const = 0;
-    virtual float TimeToTick(float) const = 0;
-    virtual float GetTempo(int) const = 0;
-    virtual int GetTempoInMicroseconds(int i) const = 0;
-    virtual float GetTempoBPM(int) const = 0;
+    virtual float TickToTime(float tick) const = 0;
+    virtual float TimeToTick(float time) const = 0;
+    virtual float GetTempo(int tick) const = 0;
+    virtual int GetTempoInMicroseconds(int tick) const = 0;
+    virtual float GetTempoBPM(int tick) const = 0;
     virtual int GetNumTempoChangePoints() const = 0;
-    virtual int GetTempoChangePoint(int) const = 0;
+    virtual int GetTempoChangePoint(int index) const = 0;
     virtual void Finalize() {}
     virtual void ClearLoopPoints() = 0;
-    virtual void SetLoopPoints(int, int) = 0;
-    virtual int GetLoopTick(int, int &) const = 0;
-    virtual int GetLoopTick(int) const = 0;
-    virtual float GetTimeInLoop(float) = 0;
+    virtual void SetLoopPoints(int start, int end) = 0;
+    virtual int GetLoopTick(int tick, int &) const = 0;
+    virtual int GetLoopTick(int tick) const = 0;
+    virtual float GetTimeInLoop(float time) = 0;
 
-    float TickToTime(int i) const { return TickToTime((float)i); }
+    float TickToTime(int tick) const { return TickToTime((float)tick); }
 };
 
 void SetTheTempoMap(TempoMap *);
 void ResetTheTempoMap();
 
 extern TempoMap *TheTempoMap;
-
-#endif

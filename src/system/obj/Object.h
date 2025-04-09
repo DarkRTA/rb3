@@ -199,27 +199,6 @@ namespace Hmx {
      */
     class Object : public ObjRef {
     public:
-        /** An array of properties this Object can have. */
-        TypeProps mTypeProps; // 0x4
-        /** A collection of handler methods this Object can have.
-         *  More specifically, this is an array of arrays, with each array
-         *  housing a name, followed by a handler script.
-         *  Formatted in the style of:
-         *  ( (name1 {handler1}) (name2 {handler2}) (name3 {handler3}) )
-         */
-        DataArray *mTypeDef; // 0x8
-        /** This Object's name. */
-        const char *mName; // 0xc
-        /** The ObjectDir in which this Object resides. */
-        class ObjectDir *mDir; // 0x10
-        /** A collection of object instances which reference this Object. */
-        std::vector<ObjRef *> mRefs; // 0x14
-
-        /** A collection of Object class names and their corresponding instantiators. */
-        static std::map<Symbol, ObjectFunc *> sFactories;
-        /** An Object in the process of being deleted. */
-        static Object *sDeleting;
-
         // o7 farts, you will be missed
         enum CopyType {
             kCopyDeep = 0,
@@ -300,8 +279,6 @@ namespace Hmx {
         virtual const char *FindPathName();
         virtual void Replace(Hmx::Object *, Hmx::Object *);
 
-        const char *Name() const { return mName; }
-
         /** Create a new Object derivative based on its entry in the factory list. */
         template <class T>
         static T *New() {
@@ -313,16 +290,16 @@ namespace Hmx {
             return obj;
         }
 
-        const std::vector<ObjRef *> &Refs() const { return mRefs; }
-
         const DataArray *TypeDef() const { return mTypeDef; }
+        const char *Name() const { return mName; }
+        class ObjectDir *Dir() const { return mDir; }
+        const std::vector<ObjRef *> &Refs() const { return mRefs; }
         Symbol Type() const {
-            if (mTypeDef != 0)
+            if (mTypeDef)
                 return mTypeDef->Sym(0);
             else
                 return Symbol();
         }
-        class ObjectDir *Dir() const { return mDir; }
 
         NEW_OBJ(Object)
         static void Init() { REGISTER_OBJ_FACTORY(Object) }
@@ -332,8 +309,6 @@ namespace Hmx {
         /** Check if an Object derivative has an entry in the factory list. */
         static bool RegisteredFactory(Symbol);
         Object &operator=(const Object &);
-        /** Remove this Object from its associated ObjectDir. */
-        void RemoveFromDir(); // probably private
 
         /** Search for a key in this Object's properties, and return the corresponding
          * value.
@@ -406,18 +381,76 @@ namespace Hmx {
         void LoadType(BinStream &);
         void LoadRest(BinStream &);
 
-        DataNode OnGet(const DataArray *);
-        DataNode OnSet(const DataArray *);
-        DataNode OnIterateRefs(const DataArray *);
-        DataNode HandleType(DataArray *);
+        /** Execute script in this Object's TypeDef,
+         * based on the contents of a received message.
+         * @param [in] _msg The received message.
+         * @returns The return value of whatever script was executed.
+         */
+        DataNode HandleType(DataArray *msg);
         DataNode PropertyArray(Symbol);
-        DataNode OnPropertyAppend(const DataArray *);
         DataNode HandleProperty(DataArray *, DataArray *, bool);
-
-        const char *AllocHeapName();
 
         static unsigned short gRev;
         static unsigned short gAltRev;
+
+    protected:
+        /** An array of properties this Object can have. */
+        TypeProps mTypeProps; // 0x4
+
+        /** An Object in the process of being deleted. */
+        static Object *sDeleting;
+
+        /** Handler to get the value of a given Object property.
+         * @param [in] arr The supplied DataArray.
+         * @returns The property value.
+         * Expected DataArray contents:
+         *     Node 2: The property to search for, either as a Symbol or DataArray.
+         *     Node 3: The fallback value if no property is found.
+         * Example usage: {$this get some_value 69}
+         */
+        DataNode OnGet(const DataArray *arr);
+
+    private:
+        /** A collection of handler methods this Object can have.
+         *  More specifically, this is an array of arrays, with each array
+         *  housing a name, followed by a handler script.
+         *  Formatted in the style of:
+         *  ( (name1 {handler1}) (name2 {handler2}) (name3 {handler3}) )
+         */
+        DataArray *mTypeDef; // 0x8
+        /** This Object's name. */
+        const char *mName; // 0xc
+        /** The ObjectDir in which this Object resides. */
+        class ObjectDir *mDir; // 0x10
+        /** A collection of object instances which reference this Object. */
+        std::vector<ObjRef *> mRefs; // 0x14
+
+        /** A collection of Object class names and their corresponding instantiators. */
+        static std::map<Symbol, ObjectFunc *> sFactories;
+
+        /** Remove this Object from its associated ObjectDir. */
+        void RemoveFromDir();
+
+        /** Handler to execute dta for each of this Object's refs.
+         * @param [in] arr The supplied DataArray.
+         * Expected DataArray contents:
+         *     Node 2: The variable representing the current ObjRef's owner.
+         *     Node 3+: Any commands to execute.
+         * Example usage: {$this iterate_refs $ref {$ref set 0}}
+         */
+        DataNode OnIterateRefs(const DataArray *arr);
+
+        /** Handler to set this Object's properties.
+         * @param [in] arr The supplied DataArray.
+         * Expected DataArray contents:
+         *     Node 2+: The property key to set. Must be either a Symbol or a DataArray.
+         *     Node 3+: The corresponding property value to set.
+         * Example usage: {$this set key1 val1 key2 val2 key3 val3}
+         */
+        DataNode OnSet(const DataArray *arr);
+        DataNode OnPropertyAppend(const DataArray *);
+
+        const char *AllocHeapName();
     };
 }
 

@@ -138,7 +138,7 @@ END_LOADS
 
 void TrackWidget::CheckValid() const {
     if (LOADMGR_EDITMODE && mImp)
-        mImp->CheckValid(mName);
+        mImp->CheckValid(Name());
 }
 
 void TrackWidget::Init() { mImp->Init(); }
@@ -168,7 +168,7 @@ void TrackWidget::AddInstance(Transform tf, float f) {
         tf.m.y.y = NewYOffset(f) / mBaseLength;
     ApplyOffsets(tf);
     if (mImp->AddInstance(Transform(tf), 0) && mTrackDir->WarnOnResort()) {
-        MILO_WARN("%s instances resorted", mName);
+        MILO_WARN("%s instances resorted", Name());
     }
     UpdateActiveStatus();
 }
@@ -177,13 +177,13 @@ void TrackWidget::AddTextInstance(const Transform &Ct, class String s, bool b) {
     Transform t = Ct;
     ApplyOffsets(t);
     if (mImp->AddTextInstance(t, s, b) && mTrackDir->WarnOnResort())
-        MILO_WARN("%s instances resorted", mName);
+        MILO_WARN("%s instances resorted", Name());
     UpdateActiveStatus();
 }
 
 void TrackWidget::AddMeshInstance(const Transform &Ct, RndMesh *m, float f) {
     if (mImp->AddMeshInstance(Ct, m, f) && mTrackDir->WarnOnResort())
-        MILO_WARN("%s instances resorted", mName);
+        MILO_WARN("%s instances resorted", Name());
     UpdateActiveStatus();
 }
 

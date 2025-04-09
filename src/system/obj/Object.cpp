@@ -69,7 +69,7 @@ Hmx::Object::~Object() {
     std::vector<ObjRef *>::reverse_iterator rit = mRefs.rbegin();
     std::vector<ObjRef *>::reverse_iterator ritEnd = mRefs.rend();
     for (; rit != ritEnd; rit++) {
-        (*rit)->Replace(this, 0);
+        (*rit)->Replace(this, nullptr);
     }
     sDeleting = tmp;
     if (gDataThis == this)
@@ -166,13 +166,13 @@ const DataNode *Hmx::Object::Property(Symbol prop, bool fail) const {
 DataNode Hmx::Object::PropertyArray(Symbol sym) {
     static DataArrayPtr d(1);
     d.Node(0) = sym;
-    int size = PropertySize(d.mData);
+    int size = PropertySize(d);
     DataArray *newArr = new DataArray(size);
     static DataArrayPtr path(new DataArray(2));
     path.Node(0) = sym;
     for (int i = 0; i < size; i++) {
         path.Node(1) = i;
-        newArr->Node(i) = *Property(path.mData, true);
+        newArr->Node(i) = *Property(path, true);
     }
     DataNode ret = DataNode(newArr, kDataArray);
     newArr->Release();
@@ -263,16 +263,18 @@ void Hmx::Object::AddRef(ObjRef *ref) {
 }
 
 void Hmx::Object::Release(ObjRef *o) {
-    if (sDeleting != this && o->RefOwner() != this) {
-        for (std::vector<ObjRef *>::reverse_iterator i = mRefs.rbegin();
-             i != mRefs.rend();
-             i++) {
-            if (*(i.base()) == o) {
-                MILO_ASSERT(*(i.base()) == o, 0x1E6);
-                mRefs.erase(i.base());
-                return;
-            }
-        }
+    if (sDeleting == this || o->RefOwner() == this)
+        return;
+
+    std::vector<ObjRef *>::reverse_iterator i = mRefs.rbegin();
+    std::vector<ObjRef *>::reverse_iterator iEnd = mRefs.rend();
+    for (; i != iEnd; i++) {
+        if (*i++ == o) {
+            MILO_ASSERT(*(i.base()) == o, 0x1E6);
+            mRefs.erase(i.base());
+            return;
+        } else
+            i--;
     }
 }
 
@@ -414,9 +416,9 @@ DataNode Hmx::Object::HandleType(DataArray *msg) {
     Symbol t = msg->Sym(1);
     bool found = false;
     DataArray *handler;
-    if (mTypeDef != 0) {
+    if (mTypeDef) {
         handler = mTypeDef->FindArray(t, false);
-        if (handler != 0)
+        if (handler)
             found = true;
     }
     if (found) {
@@ -429,9 +431,9 @@ DataNode Hmx::Object::HandleType(DataArray *msg) {
 DataNode Hmx::Object::OnIterateRefs(const DataArray *da) {
     DataNode *var = da->Var(2);
     DataNode node(*var);
-    for (std::vector<ObjRef *>::reverse_iterator it = mRefs.rbegin(); it != mRefs.rend();
-         ++it) {
-        *var = (*it)->RefOwner();
+    for (std::vector<ObjRef *>::const_reverse_iterator it = Refs().rbegin();
+         it != Refs().rend();) {
+        *var = (*it++)->RefOwner();
         for (int i = 3; i < da->Size(); i++) {
             da->Command(i)->Execute();
         }
@@ -496,8 +498,7 @@ DataNode Hmx::Object::OnGet(const DataArray *da) {
                 da->Line()
             );
         }
-        bool size = da->Size() < 4;
-        const DataNode *prop = Property(node.mValue.array, size);
+        const DataNode *prop = Property(node.mValue.array, da->Size() < 4);
         if (prop)
             return *prop;
     }

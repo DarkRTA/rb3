@@ -1,6 +1,8 @@
 #include "MidiParser.h"
+#include "math/Utl.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
+#include "os/Debug.h"
 #include "utl/TimeConversion.h"
 #include "beatmatch/GemListInterface.h"
 #include "obj/Task.h"
@@ -8,28 +10,27 @@
 #include "rndobj/Rnd.h"
 #include "midi/DisplayEvents.h"
 #include "utl/Symbols.h"
+#include <climits>
 
 std::list<MidiParser *> MidiParser::sParsers;
-DataNode *MidiParser::mpStart = 0;
-DataNode *MidiParser::mpEnd = 0;
-DataNode *MidiParser::mpLength = 0;
-DataNode *MidiParser::mpPrevStartDelta = 0;
-DataNode *MidiParser::mpPrevEndDelta = 0;
-DataNode *MidiParser::mpVal = 0;
-DataNode *MidiParser::mpSingleBit = 0;
-DataNode *MidiParser::mpLowestBit = 0;
-DataNode *MidiParser::mpLowestSlot = 0;
-DataNode *MidiParser::mpHighestSlot = 0;
-DataNode *MidiParser::mpData = 0;
-DataNode *MidiParser::mpOutOfBounds = 0;
-DataNode *MidiParser::mpBeforeDeltaSec = 0;
-DataNode *MidiParser::mpAfterDeltaSec = 0;
+DataNode *MidiParser::mpStart;
+DataNode *MidiParser::mpEnd;
+DataNode *MidiParser::mpLength;
+DataNode *MidiParser::mpPrevStartDelta;
+DataNode *MidiParser::mpPrevEndDelta;
+DataNode *MidiParser::mpVal;
+DataNode *MidiParser::mpSingleBit;
+DataNode *MidiParser::mpLowestBit;
+DataNode *MidiParser::mpLowestSlot;
+DataNode *MidiParser::mpHighestSlot;
+DataNode *MidiParser::mpData;
+DataNode *MidiParser::mpOutOfBounds;
+DataNode *MidiParser::mpBeforeDeltaSec;
+DataNode *MidiParser::mpAfterDeltaSec;
 
 void MidiParser::ClearManagedParsers() {
     std::list<MidiParser *> parsers;
-    for (std::list<MidiParser *>::const_iterator it = sParsers.begin();
-         it != sParsers.end();
-         ++it) {
+    FOREACH (it, sParsers) {
         MidiParser *curParser = *it;
         if (curParser) {
             if (!ObjectDir::sMainDir->Find<MsgSource>(curParser->Name(), false)) {
@@ -38,9 +39,7 @@ void MidiParser::ClearManagedParsers() {
                 parsers.push_back(curParser);
         }
     }
-    for (std::list<MidiParser *>::const_iterator it = parsers.begin();
-         it != parsers.end();
-         ++it) {
+    FOREACH (it, parsers) {
         delete *it;
     }
 }
@@ -64,15 +63,16 @@ void MidiParser::Init() {
 }
 
 MidiParser::PostProcess::PostProcess()
-    : zeroLength(false), startOffset(0), endOffset(0), minLength(0), maxLength(1e30),
-      minGap(-1e30), maxGap(1e30), useRealtimeGaps(false), variableBlendPct(0) {}
+    : zeroLength(false), startOffset(0), endOffset(0), minLength(0),
+      maxLength(kHugeFloat), minGap(-kHugeFloat), maxGap(kHugeFloat),
+      useRealtimeGaps(false), variableBlendPct(0) {}
 
 MidiParser::MidiParser()
     : mTrackName(), mGemParser(0), mNoteParser(0), mTextParser(0), mLyricParser(0),
       mCurParser(0), mVocalEvents(0), mNotes(), mGems(0), mInverted(0),
-      mLastStart(-1e+30f), mLastEnd(-1e+30f), mFirstEnd(-1e+30f), mMessageType(),
-      mAppendLength(false), mUseVariableBlending(false), mMessageSelf(false),
-      mCompressed(false), mStart(0.0f), mBefore(0) {
+      mLastStart(-kHugeFloat), mLastEnd(-kHugeFloat), mFirstEnd(-kHugeFloat),
+      mMessageType(), mAppendLength(false), mUseVariableBlending(false),
+      mMessageSelf(false), mCompressed(false), mStart(0), mBefore(0) {
     mEvents = new DataEventList();
     sParsers.push_back(this);
 }
@@ -82,7 +82,6 @@ MidiParser::~MidiParser() {
     RELEASE(mEvents);
 }
 
-// matches fine in retail
 void MidiParser::SetTypeDef(DataArray *arr) {
     if (TypeDef() != arr) {
         Hmx::Object::SetTypeDef(arr);
@@ -118,17 +117,20 @@ void MidiParser::SetTypeDef(DataArray *arr) {
             mTextParser = arr->FindArray("text", false);
             mLyricParser = arr->FindArray("lyric", false);
             mIdleParser = arr->FindArray("idle", false);
-            bool allgood = false;
-            if (mGemParser || mNoteParser || mTextParser || mLyricParser || mIdleParser)
-                allgood = true;
-            if (!allgood)
-                MILO_FAIL("%s has no parser", mName);
-            if (mGemParser && mNoteParser)
-                MILO_FAIL("%s has both gem and note parsers, disallowed", mName);
+            MILO_ASSERT_FMT(
+                mGemParser || mNoteParser || mTextParser || mLyricParser || mIdleParser,
+                "%s has no parser",
+                Name()
+            );
+            MILO_ASSERT_FMT(
+                !(mGemParser && mNoteParser),
+                "%s has both gem and note parsers, disallowed",
+                Name()
+            );
             DataArray *allowedArr = arr->FindArray("allowed_notes", false);
-            mAllowedNotes = allowedArr ? allowedArr->Array(1) : 0;
-            if (!mNoteParser && allowedArr)
-                MILO_FAIL("%s has no midi parser but has allowed_notes", mName);
+            mAllowedNotes = allowedArr ? allowedArr->Array(1) : nullptr;
+            if (!mNoteParser && mAllowedNotes)
+                MILO_FAIL("%s has no midi parser but has allowed_notes", Name());
         }
     }
 }
@@ -149,10 +151,7 @@ void MidiParser::Poll() {
     float beat = TheTaskMgr.Beat();
     static DataNode &parser = DataVariable("mp.parser");
     parser = this;
-    while (true) {
-        mEvent = mEvents->NextEvent(beat);
-        if (!mEvent)
-            break;
+    while (mEvent = (DataEvent *)mEvents->NextEvent(beat), mEvent) {
         *mpStart = mEvent->start;
         *mpEnd = mEvent->end;
         *mpLength = Max(0.0f, mEvent->end - beat);
@@ -181,12 +180,12 @@ bool MidiParser::InsertIdle(float f, int i) {
     return false;
 }
 
-bool MidiParser::AllowedNote(int i) {
+bool MidiParser::AllowedNote(int note) {
     if (!mAllowedNotes)
         return true;
     else {
         for (int i = 0; i < mAllowedNotes->Size(); i++) {
-            if (i == mAllowedNotes->Int(i))
+            if (note == mAllowedNotes->Int(i))
                 return true;
         }
         return false;
@@ -207,10 +206,10 @@ void MidiParser::ParseNote(int startTick, int endTick, unsigned char data1) {
     }
 }
 
-void MidiParser::PushIdle(float f1, float f2, int i3, Symbol s4) {
+void MidiParser::PushIdle(float start, float end, int at, Symbol idleMessage) {
     DataNode node;
     if (mCompressed)
-        node = s4;
+        node = idleMessage;
     else {
         DataArray *arr = new DataArray(!mMessageType.Null() + 2 + mAppendLength);
         arr->Node(0) = 0;
@@ -218,12 +217,12 @@ void MidiParser::PushIdle(float f1, float f2, int i3, Symbol s4) {
         if (!mMessageType.Null()) {
             arr->Node(idx++) = mMessageType;
         }
-        arr->Node(idx++) = s4;
+        arr->Node(idx++) = idleMessage;
         node = DataNode(arr, kDataArray);
         arr->Release();
     }
     MemDoTempAllocations m(true, false);
-    mEvents->InsertEvent(f1, f2, node, i3);
+    mEvents->InsertEvent(start, end, node, at);
 }
 
 int MidiParser::GetIndex() {
@@ -256,8 +255,8 @@ void MidiParser::SetIndex(int idx) {
         } else if (mCurParser == mTextParser || mCurParser == mLyricParser) {
             if (idx < mVocalEvents->size()) {
                 mVocalIndex = idx;
-                VocalEvent &ev = mVocalEvents->operator[](idx);
-                SetGlobalVars(ev.unk8, ev.unk8, ev.unk0);
+                VocalEvent &ev = (*mVocalEvents)[idx];
+                SetGlobalVars(ev.mTick, ev.mTick, ev.mTextContent);
                 return;
             }
         } else
@@ -268,7 +267,7 @@ void MidiParser::SetIndex(int idx) {
 
 // matches in retail
 int MidiParser::ParseAll(
-    GemListInterface *gemInterface, std::vector<VocalEvent VECTOR_SIZE_LARGE> &vocalEvents
+    GemListInterface *gems, std::vector<VocalEvent VECTOR_SIZE_LARGE> &text
 ) {
     mLastStart = -kHugeFloat;
     mLastEnd = -kHugeFloat;
@@ -280,45 +279,43 @@ int MidiParser::ParseAll(
     mGemIndex = 0;
     mNoteIndex = 0;
     mVocalIndex = 0;
-    mGems = mGemParser ? gemInterface : nullptr;
-    mVocalEvents = mTextParser || mLyricParser ? &vocalEvents : nullptr;
+    mGems = mGemParser ? gems : nullptr;
+    mVocalEvents = mTextParser || mLyricParser ? &text : nullptr;
     while (true) {
-        int loc44 = 0x7FFFFFFF;
-        int i4 = -1;
+        int startTick = INT_MAX;
+        int which = -1;
         int loc48, loc4c, loc50;
         if (mVocalEvents) {
-            unsigned int numVocalEvents = mVocalEvents->size();
-            if (mVocalIndex < numVocalEvents
-                && MinEq(loc44, (*mVocalEvents)[mVocalIndex].unk8)) {
-                i4 = 0;
+            if (mVocalIndex < mVocalEvents->size()
+                && MinEq(startTick, (*mVocalEvents)[mVocalIndex].mTick)) {
+                which = 0;
             }
         }
         if (mNoteParser) {
-            unsigned int numNoteEvents = mNotes.size();
-            if (mNoteIndex < numNoteEvents
-                && MinEq(loc44, mNotes[mNoteIndex].startTick)) {
-                i4 = 1;
+            if (mNoteIndex < mNotes.size()
+                && MinEq(startTick, mNotes[mNoteIndex].startTick)) {
+                which = 1;
             }
         }
         if (mGems && mGems->GetGem(mGemIndex, loc48, loc4c, loc50)
-            && MinEq(loc44, loc48)) {
-            i4 = 2;
+            && MinEq(startTick, loc48)) {
+            which = 2;
         }
-        if (i4 == 0) {
+        if (which == 0) {
             VocalEvent &vocEv = (*mVocalEvents)[mVocalIndex];
             if ((vocEv.GetTextType() == VocalEvent::kLyric && mLyricParser)
                 || (vocEv.GetTextType() == VocalEvent::kText && mTextParser)) {
                 mCurParser = vocEv.GetTextType() == VocalEvent::kLyric ? mLyricParser
                                                                        : mTextParser;
-                HandleEvent(vocEv.unk8, vocEv.unk8, vocEv.unk0);
+                HandleEvent(vocEv.mTick, vocEv.mTick, vocEv.mTextContent);
             }
             mVocalIndex++;
-        } else if (i4 == 1) {
+        } else if (which == 1) {
             mCurParser = mNoteParser;
             Note &curNote = mNotes[mNoteIndex];
             HandleEvent(curNote.startTick, curNote.endTick, curNote.note);
             mNoteIndex++;
-        } else if (i4 == 2) {
+        } else if (which == 2) {
             mCurParser = mGemParser;
             HandleEvent(loc48, loc4c, loc50);
             mGemIndex++;
@@ -392,48 +389,48 @@ void MidiParser::SetGlobalVars(int startTick, int endTick, const DataNode &data)
     mLastEnd = endBeat;
 }
 
-void MidiParser::HandleEvent(int start, int end, const DataNode &data) {
+void MidiParser::HandleEvent(int startTick, int endTick, const DataNode &data) {
     MILO_ASSERT(mCurParser, 0x27F);
-    SetGlobalVars(start, end, data);
+    SetGlobalVars(startTick, endTick, data);
     mCurParser->ExecuteScript(1, this, 0, 1);
     *mpData = 0;
 }
 
-void MidiParser::InsertDataEvent(float f1, float f2, const DataNode &node) {
-    float f7 = f1 + mProcess.startOffset;
+void MidiParser::InsertDataEvent(float start, float end, const DataNode &ev) {
+    float f7 = start + mProcess.startOffset;
     if (mProcess.zeroLength)
-        f2 = f7;
-    f2 += mProcess.endOffset;
+        end = f7;
+    end += mProcess.endOffset;
     int back = mEvents->FindStartFromBack(f7);
     if (InsertIdle(f7, back)) {
         back++;
     } else {
         FixGap(mBefore < 0 ? &mFirstEnd : mEvents->EndPtr(mBefore));
     }
-    float clamped = Clamp(mProcess.minLength, mProcess.maxLength, f2 - f7);
+    float clamped = Clamp(mProcess.minLength, mProcess.maxLength, end - f7);
     MemDoTempAllocations m(true, false);
-    mEvents->InsertEvent(f7, f7 + clamped, node, back + 1);
+    mEvents->InsertEvent(f7, f7 + clamped, ev, back + 1);
 }
 
-bool MidiParser::AddMessage(float f1, float f2, DataArray *arr, int idx) {
-    DataNode node(arr->Evaluate(idx));
+bool MidiParser::AddMessage(float start, float end, DataArray *msg, int firstArg) {
+    DataNode node(msg->Evaluate(firstArg));
     if (node.Type() == kDataUnhandled)
         return false;
     if (!mCompressed) {
         int arr_size;
         if (node.Type() == kDataArray) {
-            arr = node.Array();
-            idx = 0;
-            arr_size = arr->Size();
+            msg = node.Array();
+            firstArg = 0;
+            arr_size = msg->Size();
             arr_size++;
             if (arr_size == 1)
                 return false;
-            node = arr->Evaluate(0);
+            node = msg->Evaluate(0);
             if (node.Type() == kDataUnhandled)
                 return false;
         } else {
-            arr_size = arr->Size();
-            arr_size = (arr_size - idx) + 1;
+            arr_size = msg->Size();
+            arr_size = (arr_size - firstArg) + 1;
         }
         int i4 = 1;
         if (!mMessageType.Null()) {
@@ -448,7 +445,7 @@ bool MidiParser::AddMessage(float f1, float f2, DataArray *arr, int idx) {
         new_arr->Node(i4) = node;
         int i3;
         for (i3 = 1; i3 < arr_size - i4; i3++) {
-            new_arr->Node(i3 + i4) = arr->Evaluate(i3 + idx);
+            new_arr->Node(i3 + i4) = msg->Evaluate(i3 + firstArg);
         }
         if (mAppendLength) {
             new_arr->Node(i3 + i4) = 0.0f;
@@ -456,13 +453,13 @@ bool MidiParser::AddMessage(float f1, float f2, DataArray *arr, int idx) {
         node = DataNode(new_arr, kDataArray);
         new_arr->Release();
     }
-    InsertDataEvent(f1, f2, node);
+    InsertDataEvent(start, end, node);
     return true;
 }
 
 float MidiParser::GetStart(int i) {
     if (i < 0)
-        return -1e30f;
+        return -kHugeFloat;
     else {
         MILO_ASSERT(mCurParser, 0x307);
         if (mCurParser == mGemParser) {
@@ -483,7 +480,7 @@ float MidiParser::GetStart(int i) {
 
 float MidiParser::GetEnd(int i) {
     if (i < 0)
-        return -1e30f;
+        return -kHugeFloat;
     else {
         MILO_ASSERT(mCurParser, 0x321);
         if (mCurParser == mGemParser) {
@@ -498,7 +495,7 @@ float MidiParser::GetEnd(int i) {
         } else {
             MILO_WARN("%s calling get_end outside of gem or note parser", Name());
         }
-        return 1e30f;
+        return kHugeFloat;
     }
 }
 
@@ -579,9 +576,11 @@ float MidiParser::ConvertToBeats(float f1, float f2) {
     return SecondsToBeat(secs + f1) - f2;
 }
 
+#pragma push
+#pragma fp_contract off
 void MidiParser::FixGap(float *fp) {
     if (mUseVariableBlending) {
-        float f4 = -1e+30f;
+        float f4 = -kHugeFloat;
         if (mBefore >= 0) {
             f4 = mEvents->Event(mBefore).start;
         }
@@ -600,12 +599,13 @@ void MidiParser::FixGap(float *fp) {
         *fp = mStart - f4;
     }
 }
+#pragma pop
 
 DataNode MidiParser::OnNextStartDelta(DataArray *arr) {
     int curidx = mEvents->CurIndex();
     float f;
     if (curidx >= mEvents->Size())
-        f = 1e+30f;
+        f = kHugeFloat;
     else
         f = mEvents->Event(curidx).start;
     return f - mEvent->start;
@@ -618,7 +618,7 @@ DataNode MidiParser::OnGetEnd(DataArray *arr) { return GetEnd(arr->Int(2)); }
 DataNode MidiParser::OnDebugDraw(DataArray *arr) {
     float f2 = arr->Float(2);
     float f3 = arr->Float(3);
-    TheRnd->DrawString(Name(), Vector2(0.0f, f2), Hmx::Color(1.0f, 1.0f, 1.0f), true);
+    TheRnd->DrawString(Name(), Vector2(0, f2), Hmx::Color(1, 1, 1), true);
     return DisplayEvents(mEvents, f2 + 12.0f, f3);
 }
 

@@ -259,11 +259,11 @@ void AccomplishmentPanel::HandleSoundToggle(LocalUser *user) {
 
 DataNode AccomplishmentPanel::OnMsg(const UIComponentScrollMsg &msg) {
     if (GetState() == kUp) {
-        if (strcmp(msg.GetUIComponent()->mName, "details.lst") == 0) {
+        if (strcmp(msg.GetUIComponent()->Name(), "details.lst") == 0) {
             // lol
-        } else if (strcmp(msg.GetUIComponent()->mName, "categories.lst") == 0) {
+        } else if (strcmp(msg.GetUIComponent()->Name(), "categories.lst") == 0) {
             UpdateForCategorySelection();
-        } else if (strcmp(msg.GetUIComponent()->mName, "groups.lst") == 0) {
+        } else if (strcmp(msg.GetUIComponent()->Name(), "groups.lst") == 0) {
             UpdateForGroupSelection();
         } else
             UpdateForGoalSelection();

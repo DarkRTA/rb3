@@ -1097,10 +1097,10 @@
             "system/meta/StreamPlayer.cpp": "Matching",
             "system/meta/WiiProfileMgr.cpp": "NonMatching",
 
-            "system/midi/DataEventList.cpp": "NonMatching",
+            "system/midi/DataEventList.cpp": "Equivalent",
             "system/midi/DisplayEvents.cpp": "NonMatching",
-            "system/midi/MidiParser.cpp": { "status": "NonMatching", "extra_cflags": [ "-fp_contract off" ] },
-            "system/midi/MidiParserMgr.cpp": "NonMatching",
+            "system/midi/MidiParser.cpp": "NonMatching",
+            "system/midi/MidiParserMgr.cpp": "Equivalent",
             "system/midi/MidiReader.cpp": "Matching",
             "system/midi/MidiReceiver.cpp": "Matching",
             "system/midi/MidiVarLen.cpp": "Matching",
@@ -1114,7 +1114,7 @@
             "system/obj/DataArray.cpp": "Equivalent",
             "system/obj/DataFile.cpp": "NonMatching",
             "system/obj/DataFunc.cpp": "Equivalent",
-            "system/obj/DataNode.cpp": "NonMatching",
+            "system/obj/DataNode.cpp": "Equivalent",
             "system/obj/DataUtl.cpp": {
                 "status": "LinkIssues",
                 "comment": "TextFile::StaticClassName()::name swapped with DataSetThis(Hmx::Object*)::thisVar"
@@ -1124,7 +1124,7 @@
             "system/obj/DirUnloader.cpp": "Equivalent",
             "system/obj/MessageTimer.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
-            "system/obj/Object.cpp": "NonMatching",
+            "system/obj/Object.cpp": "Equivalent",
             "system/obj/PropSync.cpp": "NonMatching",
             "system/obj/Task.cpp": "NonMatching",
             "system/obj/TextFile.cpp":{
