@@ -1,6 +1,7 @@
 #pragma once
 #include "obj/Object.h"
 #include "os/Debug.h"
+#include "rndobj/Group.h"
 #include "ui/PanelDir.h"
 #include "obj/ObjPtr_p.h"
 
@@ -10,6 +11,8 @@ class TrackTest;
 class TrackWidget;
 class ArpeggioShapePool;
 
+/** "Base class for track system. Contains configuration for
+ * track speed, length, slot positions. Manages TrackWidget instances." */
 class TrackDir : public PanelDir {
 public:
     TrackDir();
@@ -26,6 +29,7 @@ public:
     virtual void SyncObjects();
     virtual void DrawShowing();
     virtual void Poll();
+    // everything below this is for TrackDir (i.e. not from PanelDir)
     virtual void SyncFingerFeedback();
     virtual void SetDisplayRange(float) {}
     virtual void SetDisplayOffset(float, bool) {}
@@ -61,6 +65,7 @@ public:
     void AddTestWidget(class TrackWidget *, int);
     void ClearAllWidgets();
     void ClearAllGemWidgets();
+    /** "Toggle running the track in test mode" */
     void ToggleRunning();
     float CutOffY() const;
     void SetupKeyShifting(RndDir *);
@@ -79,6 +84,9 @@ public:
     void SetRunning(bool);
     bool WarnOnResort() const { return mWarnOnResort; }
     const Transform &SlotAt(int idx) const { return mSlots[idx]; }
+    bool IsEnabled() const {
+        return IsActiveInSession() || mShowingWhenEnabled->Showing();
+    }
 
     DECLARE_REVS;
     NEW_OBJ(TrackDir)
@@ -86,10 +94,15 @@ public:
     static void Register() { REGISTER_OBJ_FACTORY(TrackDir); }
 
     bool mRunning; // 0x1d6
+    /** "Should contain everything to draw (except widget resources)" */
     ObjPtr<RndGroup> mDrawGroup; // 0x1d8
+    /** "Animated at rate where frame=y position of now bar" */
     ObjPtr<RndGroup> mAnimGroup; // 0x1e4
+    /** "World units widgets move per second". Ranges from 1 to 10000. */
     float mYPerSecond; // 0x1f0
+    /** "Distance where widgets are pushed onto track" */
     float mTopY; // 0x1f4
+    /** "Distance where widgets are pruned from track" */
     float mBottomY; // 0x1f8
     std::vector<Transform> mSlots; // 0x1fc
     std::vector<Transform> vec2; // 0x204
@@ -111,10 +124,10 @@ public:
     ObjPtr<RndTransformable> mRotatorCam; // 0x2b4
     ObjPtr<RndEnviron> mTrack; // 0x2c0
     ObjPtr<RndEnviron> mTrackGems; // 0x2cc
-    Transform unk2d8;
-    Transform unk308;
-    Transform unk338;
-    float unk368;
+    Transform unk2d8; // 0x2d8
+    Transform unk308; // 0x308
+    Transform unk338; // 0x338
+    float unk368; // 0x368
 #ifdef MILO_DEBUG
     TrackTest *mTest; // 0x36c
 #endif

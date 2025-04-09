@@ -2,6 +2,9 @@
 #include "compiler_macros.h"
 #include "decomp.h"
 #include "obj/ObjMacros.h"
+#include "obj/Task.h"
+#include "rndobj/Cam.h"
+#include "rndobj/Env.h"
 #include "ui/PanelDir.h"
 #include "utl/Loader.h"
 #include "rndobj/Group.h"
@@ -13,22 +16,20 @@
 INIT_REVS(TrackDir)
 
 TrackDir::TrackDir()
-    : mRunning(!LOADMGR_EDITMODE), mDrawGroup(this, 0), mAnimGroup(this, 0),
-      mYPerSecond(10.0f), mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false),
-      mShowingWhenEnabled(this, 0), mStationaryBack(this, 0),
-      mKeyShiftStationaryBack(this, 0), mStationaryBackAfterKeyShift(this, 0),
-      mMovingBack(this, 0), mKeyShiftMovingBack(this, 0),
-      mKeyShiftStationaryMiddle(this, 0), mStationaryMiddle(this, 0),
-      mMovingFront(this, 0), mKeyShiftMovingFront(this, 0),
-      mKeyShiftStationaryFront(this, 0), mStationaryFront(this, 0),
-      mAlwaysShowing(this, 0), mRotatorCam(this, 0), mTrack(this, 0), mTrackGems(this, 0),
+    : mRunning(!LOADMGR_EDITMODE), mDrawGroup(this), mAnimGroup(this), mYPerSecond(10.0f),
+      mTopY(10.0f), mBottomY(-3.0f), mWarnOnResort(false), mShowingWhenEnabled(this),
+      mStationaryBack(this), mKeyShiftStationaryBack(this),
+      mStationaryBackAfterKeyShift(this), mMovingBack(this), mKeyShiftMovingBack(this),
+      mKeyShiftStationaryMiddle(this), mStationaryMiddle(this), mMovingFront(this),
+      mKeyShiftMovingFront(this), mKeyShiftStationaryFront(this), mStationaryFront(this),
+      mAlwaysShowing(this), mRotatorCam(this), mTrack(this), mTrackGems(this),
       unk368(1.0f)
 #ifdef MILO_DEBUG
       ,
       mTest(new TrackTest(this))
 #endif
 {
-    mActiveWidgets.reserve(0x32);
+    mActiveWidgets.reserve(50);
     unk2d8.Reset();
     unk308.Reset();
     unk338.Reset();
@@ -43,7 +44,7 @@ TrackDir::~TrackDir() {
 // fn_8053E7D4
 void TrackDir::SyncObjects() {
     PanelDir::SyncObjects();
-    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
+    for (ObjDirItr<TrackWidget> it(this, true); it != nullptr; ++it) {
         it->Init();
         it->Clear();
     }
@@ -84,8 +85,9 @@ void TrackDir::SyncObjects() {
 
 void TrackDir::SetupKeyShifting(RndDir *rnddir) {
     mRotatorCam = rnddir->Find<RndTransformable>("rotator_cam.trans", true);
+    float order = 1 / rnddir->mLocalXfm.m.x.x;
     unk2d8.Reset();
-    Scale(unk2d8.m, Vector3(1.0f / rnddir->mOrder, 1.0f, 1.0f), unk2d8.m);
+    Scale(unk2d8.m, Vector3(order, 1.0f, 1.0f), unk2d8.m);
     unk308.Reset();
     unk308.v = mRotatorCam->WorldXfm().v;
     unk338.Reset();
@@ -149,7 +151,7 @@ void TrackDir::PostLoad(BinStream &bs) {
             else {
                 unsigned int num = 0;
                 bs >> num;
-                mSlots.resize(num, Transform());
+                mSlots.resize(num);
                 for (int i = 0; i < num; i++) {
                     mSlots[i].Reset();
                     bs >> mSlots[i].v.x >> mSlots[i].v.z;
@@ -170,19 +172,107 @@ void TrackDir::PostLoad(BinStream &bs) {
         }
 #endif
     }
-    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
+    for (ObjDirItr<TrackWidget> it(this, true); it != nullptr; ++it) {
         it->SetTrackDir(this);
     }
 }
 
-void TrackDir::DrawShowing() { MILO_ASSERT(TheLoadMgr.EditMode(), 0x109); }
+void TrackDir::DrawShowing() {
+    if (IsEnabled()) {
+        if (mRunning || IsProxy()) {
+            Vector3 v148;
+            v148.Zero();
+            RndEnvironTracker tracker(mTrack, &v148);
+            RndCam *i7 = nullptr;
+            RndCam *i5 = GetCam();
+            RndCam *i3 = RndCam::sCurrent;
+            RndCam *i6 = RndCam::sCurrent;
+            if (i5) {
+                i5->Select();
+                i6 = i5;
+                i7 = i3;
+            } else
+                MILO_ASSERT(TheLoadMgr.EditMode(), 0x109);
+            PreDraw();
+            if (mShowingWhenEnabled->Showing()) {
+                Transform tf50(i6->WorldXfm());
+                float mult = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::kRealTime);
+                Transform tf80(tf50);
+                bool b2 = false;
+                tf50.m.x.z += mult;
+                if (mKeyShiftStationaryBack->Showing() && mRotatorCam)
+                    b2 = true;
+                Transform tfb0;
+                Transform tfe0;
+                if (b2) {
+                    Transform tf110;
+                    Vector3 vec;
+                    vec.Zero();
+                    tf110.m = mRotatorCam->WorldXfm().m;
+                    tfb0 = tf50;
+                    Multiply(tfb0, unk2d8, tfb0);
+                    Multiply(tfb0, unk338, tfb0);
+                    Multiply(tfb0, tf110, tfb0);
+                    Multiply(tfb0, unk308, tfb0);
+                    tfe0 = tfb0;
+                    tfb0.m.x.z += mult;
+                }
+                mStationaryBack->DrawShowing();
+                if (b2) {
+                    i6->SetWorldXfm(tfb0);
+                    i6->Select();
+                    mKeyShiftStationaryBack->DrawShowing();
+                    i6->SetWorldXfm(tf50);
+                    i6->Select();
+                }
+                mStationaryBackAfterKeyShift->DrawShowing();
+                i6->SetWorldXfm(tf80);
+                i6->Select();
+                mMovingBack->DrawShowing();
+                if (b2) {
+                    i6->SetWorldXfm(tfe0);
+                    i6->Select();
+                    mKeyShiftMovingBack->DrawShowing();
+                    i6->SetWorldXfm(tfb0);
+                    i6->Select();
+                    mKeyShiftStationaryMiddle->DrawShowing();
+                }
+                i6->SetWorldXfm(tf50);
+                i6->Select();
+                mStationaryMiddle->DrawShowing();
+                {
+                    RndEnvironTracker tracker2(mTrackGems, &v148);
+                    if (b2) {
+                        i6->SetWorldXfm(tfe0);
+                        i6->Select();
+                        mKeyShiftMovingFront->DrawShowing();
+                    } else {
+                        i6->SetWorldXfm(tf80);
+                        i6->Select();
+                        mMovingFront->DrawShowing();
+                    }
+                }
+                if (b2) {
+                    i6->SetWorldXfm(tfb0);
+                    i6->Select();
+                    mKeyShiftStationaryFront->DrawShowing();
+                }
+                i6->SetWorldXfm(tf50);
+                i6->Select();
+                mStationaryFront->DrawShowing();
+            }
+            mAlwaysShowing->DrawShowing();
+            PostDraw();
+            if (i7) {
+                i7->Select();
+            }
+        } else
+            PanelDir::DrawShowing();
+    }
+}
 
 void TrackDir::Poll() {
-    bool b = false;
-    if (IsActiveInSession() || mShowingWhenEnabled->Showing()) {
-        b = true;
-    }
-    if (b) {
+    if (IsEnabled()) {
         RndDir::Poll();
         float secs = mYPerSecond * TheTaskMgr.Seconds(TaskMgr::kRealTime);
         if (mAnimGroup && mRunning) {
@@ -219,13 +309,9 @@ float TrackDir::TopSeconds() const { return mTopY / mYPerSecond; }
 
 float TrackDir::BottomSeconds() const { return mBottomY / mYPerSecond; }
 
-RETAIL_DONT_INLINE_FUNC float TrackDir::SecondsToY(float f) const {
-    return f * mYPerSecond;
-}
-#pragma push
-#pragma dont_inline on
-DECOMP_FORCELITERAL(TrackDir, ((TrackDir *)NULL)->SecondsToY(3))
-#pragma pop
+FORCE_LOCAL_INLINE
+float TrackDir::SecondsToY(float f) const { return f * mYPerSecond; }
+END_FORCE_LOCAL_INLINE
 
 float TrackDir::YToSeconds(float f) const { return f / mYPerSecond; }
 
@@ -258,14 +344,14 @@ void TrackDir::SetSlotXfm(int i, const Transform &tf) {
     mSlots[i] = tf;
 }
 
-void TrackDir::MakeSecondsXfm(float f, Transform &tf) const {
+void TrackDir::MakeSecondsXfm(float secs, Transform &tf) const {
     tf.Reset();
-    tf.v.y = SecondsToY(f);
+    tf.v.y = SecondsToY(secs);
 }
 
-void TrackDir::MakeWidgetXfm(int i, float f, Transform &tf) const {
-    MakeSlotXfm(i, tf);
-    tf.v.y = SecondsToY(f);
+void TrackDir::MakeWidgetXfm(int slot, float secs, Transform &tf) const {
+    MakeSlotXfm(slot, tf);
+    tf.v.y = SecondsToY(secs);
 }
 
 void TrackDir::MakeSlotXfm(int slot, Transform &tf) const {
@@ -288,14 +374,14 @@ float TrackDir::ViewTimeSeconds() const {
 }
 
 void TrackDir::ClearAllWidgets() {
-    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
+    for (ObjDirItr<TrackWidget> it(this, true); it != nullptr; ++it) {
         it->Clear();
     }
 }
 
 // fn_8053FED4
 void TrackDir::ClearAllGemWidgets() {
-    for (ObjDirItr<TrackWidget> it(this, true); it != 0; ++it) {
+    for (ObjDirItr<TrackWidget> it(this, true); it != nullptr; ++it) {
         if (strncmp(it->Name(), "gem_", 4) == 0)
             it->Clear();
         else if (strncmp(it->Name(), "drum_", 5) == 0)
@@ -311,27 +397,27 @@ void TrackDir::ClearAllGemWidgets() {
     }
 }
 
-void TrackDir::ToggleRunning() { SetRunning(mRunning == 0); }
+void TrackDir::ToggleRunning() { SetRunning(!mRunning); }
 
-void TrackDir::SetRunning(bool b) {
-    if (mRunning && !b) {
-        mAnimGroup->SetFrame(0.0f, 1.0f);
+void TrackDir::SetRunning(bool running) {
+    if (mRunning && !running) {
+        mAnimGroup->SetFrame(0, 1);
     }
-    mRunning = b;
+    mRunning = running;
 }
 
-void TrackDir::AddTestWidget(TrackWidget *widget, int i) {
+void TrackDir::AddTestWidget(TrackWidget *widget, int slot) {
     if (!mRunning)
         MILO_WARN("Track is not running");
     else if (!widget)
         MILO_WARN("No test widget selected");
-    else if (i >= mSlots.size())
-        MILO_WARN("Can't add widget on slot %i, only %i slots", i, mSlots.size());
+    else if (slot >= mSlots.size())
+        MILO_WARN("Can't add widget on slot %i, only %i slots", slot, mSlots.size());
     else {
         Transform tf;
-        MakeWidgetXfm(i, TheTaskMgr.Seconds(TaskMgr::kRealTime), tf);
+        MakeWidgetXfm(slot, TheTaskMgr.Seconds(TaskMgr::kRealTime), tf);
         tf.v.y += mTopY;
-        widget->AddInstance(tf, 0.0f);
+        widget->AddInstance(tf, 0);
     }
 }
 

@@ -1,5 +1,4 @@
-#ifndef TRACK_TRACKTEST_H
-#define TRACK_TRACKTEST_H
+#pragma once
 #include "obj/ObjPtr_p.h"
 #include "obj/PropSync_p.h"
 #include "track/TrackDir.h"
@@ -10,10 +9,10 @@ public:
     TrackTest(TrackDir *);
 
     TrackDir *mDir;
-    ObjPtr<TrackWidget, class ObjectDir> mWidget;
+    /** "Widget to test" */
+    ObjPtr<TrackWidget> mWidget;
+    /** "Slot to add widgets in". Ranges from 0 to 10. */
     int mSlot;
 };
 
 bool PropSync(TrackTest &, DataNode &, DataArray *, int, PropOp);
-
-#endif // TRACK_TRACKTEST_H
