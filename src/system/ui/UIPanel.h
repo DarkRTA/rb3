@@ -60,13 +60,16 @@ public:
     class PanelDir *mDir; // 0x8
     DirLoader *mLoader; // 0xc
     class String mFocusName; // 0x10
+    /** The panel's current state. */
     mutable State mState; // 0x1c
     bool mLoaded; // 0x20
     bool mPaused; // 0x21
     bool mShowing; // 0x22
     bool mForceExit; // 0x23
+    /** The number of refs to this loaded UIPanel. */
     int mLoadRefs; // 0x24
     FilePath mFilePath; // 0x28
+    /** This panel's ID. */
     int mPanelId; // 0x34
 
     static int sMaxPanelId;
