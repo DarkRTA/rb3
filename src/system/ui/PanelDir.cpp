@@ -12,6 +12,7 @@
 #include "ui/UI.h"
 #include "obj/DirLoader.h"
 #include "utl/Messages.h"
+#include "utl/Symbol.h"
 #include "utl/Symbols.h"
 
 INIT_REVS(PanelDir)
@@ -19,7 +20,7 @@ bool gSendFocusMsg = true;
 bool PanelDir::sAlwaysNeedFocus = true;
 
 PanelDir::PanelDir()
-    : mFocusComponent(0), mOwnerPanel(0), mCam(this, 0), mCanEndWorld(1),
+    : mFocusComponent(0), mOwnerPanel(0), mCam(this), mCanEndWorld(1),
       mUseSpecifiedCam(0), mShowEditModePanels(0), mShowFocusComponent(1) {
     if (LOADMGR_EDITMODE)
         mShowEditModePanels = true;
@@ -115,9 +116,19 @@ void PanelDir::SyncObjects() {
 }
 
 void PanelDir::RemovingObject(Hmx::Object *o) {
-    ObjMatchPr pr;
-    pr.obj = o;
-    // mComponents.remove_if(pr);
+    ObjMatchPr pr(o);
+    mComponents.remove_if(pr);
+    mTriggers.remove_if(pr);
+    if (sAlwaysNeedFocus) {
+        if (mFocusComponent == o) {
+            mFocusComponent = nullptr;
+            UIComponent *focus = GetFirstFocusableComponent();
+            if (focus) {
+                SetFocusComponent(focus, gNullStr);
+            }
+        }
+    }
+    RndDir::RemovingObject(o);
 }
 
 RndCam *PanelDir::CamOverride() {

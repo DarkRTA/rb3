@@ -462,7 +462,8 @@ struct ObjPair {
 };
 
 struct ObjMatchPr {
-    bool operator()(const Hmx::Object *&value) { return value == obj; }
+    ObjMatchPr(Hmx::Object *o) : obj(o) {}
+    bool operator()(const Hmx::Object *value) const { return obj == value; }
     Hmx::Object *obj;
 };
 
