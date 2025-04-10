@@ -160,6 +160,15 @@ public:
         const String &, const Transform &, const RndText::Style &, float *, bool *, int
     );
     void UpdateLineColor(unsigned int, const Hmx::Color32 &, bool *);
+    void ReplaceLineText(
+        unsigned int,
+        const String &,
+        const Transform &,
+        const RndText::Style &,
+        float *,
+        bool *,
+        int
+    );
     int NumLines() const { return mLines.size(); }
     const char *RawText() const { return mText.c_str(); }
 
