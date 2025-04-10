@@ -1369,7 +1369,7 @@
             "system/ui/LabelNumberTicker.cpp": "Matching",
             "system/ui/LabelShrinkWrapper.cpp": "Matching",
             "system/ui/LocalePanel.cpp": "LinkIssues",
-            "system/ui/PanelDir.cpp": "NonMatching",
+            "system/ui/PanelDir.cpp": "Equivalent",
             "system/ui/Screenshot.cpp": "Equivalent",
             "system/ui/ScrollSelect.cpp": "LinkIssues",
             "system/ui/UI.cpp": "NonMatching",

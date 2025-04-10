@@ -174,9 +174,9 @@ void PanelDir::Exit() {
 #pragma push
 #pragma pool_data off
 // fn_8054C070
-void PanelDir::SendTransition(const Message &msg, Symbol s1, Symbol s2) {
+void PanelDir::SendTransition(const Message &msg, Symbol forward, Symbol back) {
     static Message dirMsg = Message("");
-    dirMsg.SetType(TheUI.WentBack() ? s2 : s1);
+    dirMsg.SetType(TheUI.WentBack() ? back : forward);
     RndDir::Handle(msg, false);
     RndDir::Handle(dirMsg, false);
 }
@@ -210,23 +210,25 @@ UIComponent *PanelDir::FindComponent(const char *name) {
     return Find<UIComponent>(name, false);
 }
 
-void PanelDir::AddComponent(UIComponent *c) { mComponents.push_back(c); }
+void PanelDir::AddComponent(UIComponent *component) { mComponents.push_back(component); }
 
-void PanelDir::SetFocusComponent(UIComponent *c, Symbol s) {
-    if (c && !c->CanHaveFocus())
+void PanelDir::SetFocusComponent(UIComponent *newComponent, Symbol nav_type) {
+    if (newComponent && !newComponent->CanHaveFocus())
         MILO_WARN(
             "Trying to set focus on a component that can't have focus.  Component: %s",
-            c->Name()
+            newComponent->Name()
         );
-    else if (c != mFocusComponent) {
+    else if (newComponent != mFocusComponent) {
         UIComponent *focused = FocusComponent();
         if (mFocusComponent && mFocusComponent->GetState() != UIComponent::kDisabled) {
             mFocusComponent->SetState(UIComponent::kNormal);
         }
-        mFocusComponent = c;
+        mFocusComponent = newComponent;
         UpdateFocusComponentState();
         if (gSendFocusMsg) {
-            TheUI.Handle(UIComponentFocusChangeMsg(c, focused, this, s), false);
+            TheUI.Handle(
+                UIComponentFocusChangeMsg(newComponent, focused, this, nav_type), false
+            );
         }
     }
 }
@@ -245,11 +247,12 @@ void PanelDir::UpdateFocusComponentState() {
         mFocusComponent->SetState(UIComponent::kNormal);
 }
 
-void PanelDir::EnableComponent(UIComponent *c, PanelDir::RequestFocus req) {
+void PanelDir::EnableComponent(UIComponent *c, PanelDir::RequestFocus focusable) {
     if (c->GetState() == UIComponent::kDisabled)
         c->SetState(UIComponent::kNormal);
     if (c->CanHaveFocus()
-        && (req == kAlwaysFocus || (req == kMaybeFocus && !mFocusComponent))) {
+        && (focusable == kAlwaysFocus || (focusable == kMaybeFocus && !mFocusComponent)
+        )) {
         SetFocusComponent(c, gNullStr);
     }
 }
@@ -316,19 +319,19 @@ BEGIN_HANDLERS(PanelDir)
 END_HANDLERS
 
 // fn_8054CF34
-bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s) {
+bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol controller_type) {
     UIComponent *comp = mFocusComponent;
     if (comp) {
-        while (comp = ComponentNav(comp, act, btn, s)) {
+        while (comp = ComponentNav(comp, act, btn, controller_type)) {
             if (comp == mFocusComponent)
                 break;
             if (comp->GetState() == UIComponent::kDisabled) {
                 continue;
             }
-            if (s != none) {
+            if (controller_type != none) {
                 TheUI.Handle(panel_navigated_msg, false);
             }
-            SetFocusComponent(comp, s);
+            SetFocusComponent(comp, controller_type);
             return true;
         }
     }
@@ -336,13 +339,14 @@ bool PanelDir::PanelNav(JoypadAction act, JoypadButton btn, Symbol s) {
 }
 
 // fn_8054D04C - componentnav
-UIComponent *
-PanelDir::ComponentNav(UIComponent *comp, JoypadAction act, JoypadButton btn, Symbol s) {
+UIComponent *PanelDir::ComponentNav(
+    UIComponent *comp, JoypadAction act, JoypadButton btn, Symbol controller_type
+) {
     UIComponent *compIt = nullptr;
-    bool overloaded = TheUI.OverloadHorizontalNav(act, btn, s);
+    bool overloaded = TheUI.OverloadHorizontalNav(act, btn, controller_type);
     if (act == kAction_Down)
         compIt = comp->NavDown();
-    if (!compIt && act == kAction_Right || (overloaded && act == kAction_Down)) {
+    if (!compIt && (act == kAction_Right || (overloaded && act == kAction_Down))) {
         compIt = comp->NavRight();
     }
     if (!compIt && act == kAction_Up) {
@@ -353,7 +357,7 @@ PanelDir::ComponentNav(UIComponent *comp, JoypadAction act, JoypadButton btn, Sy
             }
         }
     }
-    if (!compIt && act == kAction_Left || (overloaded && act == kAction_Up)) {
+    if (!compIt && (act == kAction_Left || (overloaded && act == kAction_Up))) {
         FOREACH (it, mComponents) {
             if ((*it)->NavRight() == comp) {
                 compIt = *it;
@@ -386,7 +390,7 @@ DataNode PanelDir::OnEnableComponent(const DataArray *da) {
     if (da->Size() == 4) {
         EnableComponent(c, (RequestFocus)da->Int(3));
     } else if (da->Size() == 3) {
-        EnableComponent(c, (RequestFocus)0);
+        EnableComponent(c, kNoFocus);
     } else
         MILO_WARN("wrong number of args to PanelDir enable");
     return 0;
@@ -440,15 +444,15 @@ void PanelDir::SyncEditModePanels() {
 }
 
 bool PanelDir::PropSyncEditModePanels(
-    std::vector<FilePath> &panels, DataNode &val, DataArray *prop, int i, PropOp op
+    std::vector<FilePath> &paths, DataNode &val, DataArray *prop, int i, PropOp op
 ) {
     if (op == kPropSize) {
         MILO_ASSERT(i == prop->Size(), 0x29F);
-        val = (int)panels.size();
+        val = (int)paths.size();
         return true;
     } else {
         MILO_ASSERT(i == prop->Size() - 1, 0x2A4);
-        std::vector<FilePath>::iterator it = panels.begin() + prop->Int(i);
+        std::vector<FilePath>::iterator it = paths.begin() + prop->Int(i);
         switch (op) {
         case kPropGet:
             val = *it;
@@ -458,11 +462,11 @@ bool PanelDir::PropSyncEditModePanels(
             SyncEditModePanels();
             break;
         case kPropRemove:
-            panels.erase(it);
+            paths.erase(it);
             SyncEditModePanels();
             break;
         case kPropInsert:
-            panels.insert(it, val.Str());
+            paths.insert(it, val.Str());
             SyncEditModePanels();
             break;
         default:

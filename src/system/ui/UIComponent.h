@@ -142,10 +142,14 @@ LocalUser *GetUser() const { return mData->Obj<LocalUser>(3); }
 bool GetSelected() const { return mData->Int(4); }
 END_MESSAGE
 
+// #define FOCUS_MSG (component_focus ($new_focus $old_focus $panel_dir $nav_type))
 DECLARE_MESSAGE(UIComponentFocusChangeMsg, "component_focus");
 UIComponentFocusChangeMsg(UIComponent *comp1, UIComponent *comp2, PanelDir *dir, Symbol s)
     : Message(Type(), comp1, comp2, dir, s) {}
+UIComponent *GetNewFocus() const { return mData->Obj<UIComponent>(2); }
+UIComponent *GetOldFocus() const { return mData->Obj<UIComponent>(3); }
 PanelDir *GetDir() const { return mData->Obj<PanelDir>(4); }
+Symbol GetNavType() const { return mData->Sym(5); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIComponentScrollStartMsg, "component_scroll_start");
