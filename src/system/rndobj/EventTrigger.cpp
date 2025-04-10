@@ -4,8 +4,6 @@
 #include "math/Utl.h"
 #include "obj/Data.h"
 #include "obj/Dir.h"
-#include "obj/ObjMacros.h"
-#include "obj/ObjPtr_p.h"
 #include "obj/Object.h"
 #include "obj/Task.h"
 #include "obj/Utl.h"
@@ -40,33 +38,25 @@ DataArray *EventTrigger::SupportedEvents() {
 DataNode EventTrigger::Cleanup(DataArray *arr) {
     class ObjectDir *dir = arr->Obj<class ObjectDir>(1);
     std::list<EventTrigger *> trigList;
-    for (ObjDirItr<EventTrigger> iter(dir, true); iter != 0; ++iter) {
+    for (ObjDirItr<EventTrigger> iter(dir, true); iter != nullptr; ++iter) {
         trigList.push_back(iter);
-        for (std::vector<Symbol>::iterator iter2 = iter->mTriggerEvents.begin();
-             iter2 != iter->mTriggerEvents.end();
-             iter2++) {
+        FOREACH_POST (iter2, iter->mTriggerEvents) {
             char buf[0x80];
             strcpy(buf, iter2->Str());
             FileNormalizePath(buf);
             *iter2 = buf;
         }
-        for (ObjVector<Anim>::iterator iter2 = iter->mAnims.begin();
-             iter2 != iter->mAnims.end();
-             iter2++) {
+        FOREACH_POST (iter2, iter->mAnims) {
             RndAnimFilter *filter = dynamic_cast<RndAnimFilter *>(iter2->mAnim.Ptr());
             if (filter) {
-                std::vector<ObjRef *>::const_reverse_iterator rit =
-                    filter->Refs().rbegin();
-                std::vector<ObjRef *>::const_reverse_iterator rEnd =
-                    filter->Refs().rend();
-                for (; rit != rEnd; ++rit) {
+                FOREACH_OBJREF (rit, filter) {
                     if ((*rit)->RefOwner() && (*rit)->RefOwner() != iter) {
                         break;
                     }
                 }
-                if (!(rit != rEnd) && filter->GetType() != RndAnimFilter::kShuttle) {
+                if (!(rit != ritEnd) && filter->GetType() != RndAnimFilter::kShuttle) {
                     iter2->mAnim = filter->Anim();
-                    iter2->mEnable = 1;
+                    iter2->mEnable = true;
                     iter2->mRate = filter->GetRate();
                     iter2->mStart = filter->Start();
                     iter2->mEnd = filter->End();
@@ -81,9 +71,7 @@ DataNode EventTrigger::Cleanup(DataArray *arr) {
             }
         }
     }
-    for (std::list<EventTrigger *>::iterator iter = trigList.begin();
-         iter != trigList.end();
-         ++iter) {
+    FOREACH (iter, trigList) {
         EventTrigger *curTrig = *iter;
         for (std::list<EventTrigger *>::iterator iter2 = iter; iter2 != trigList.end();) {
             EventTrigger *curTrig2 = *iter2;
@@ -163,8 +151,8 @@ BinStream &operator>>(BinStream &bs, EventTrigger::Anim &anim) {
 }
 
 EventTrigger::Anim::Anim(Hmx::Object *o)
-    : mAnim(o, 0), mBlend(0.0f), mDelay(0.0f), mWait(0), mEnable(0), mRate(0),
-      mStart(0.0f), mEnd(0.0f), mPeriod(0.0f), mScale(1.0f) {
+    : mAnim(o), mBlend(0), mDelay(0), mWait(0), mEnable(0), mRate(0), mStart(0), mEnd(0),
+      mPeriod(0), mScale(1) {
     mType = range;
 }
 
@@ -176,44 +164,33 @@ BinStream &operator>>(BinStream &bs, EventTrigger::ProxyCall &pcall) {
     return bs;
 }
 
-EventTrigger::ProxyCall::ProxyCall(Hmx::Object *o) : mProxy(o, 0), mEvent(o, 0) {}
+EventTrigger::ProxyCall::ProxyCall(Hmx::Object *o) : mProxy(o), mEvent(o) {}
 
 EventTrigger::EventTrigger()
-    : mAnims(this), mSpawnedTasks(this, kObjListNoNull), mProxyCalls(this),
-      mSounds(this, kObjListNoNull), mShows(this, kObjListNoNull),
-      mResetTriggers(this, kObjListNoNull), mHideDelays(this), mNextLink(this),
-      mPartLaunchers(this, kObjListNoNull), mAnimFrame(0.0f),
-      mHidden(this, kObjListNoNull), mShown(this, kObjListNoNull), mTriggerOrder(0),
+    : mAnims(this), mSpawnedTasks(this), mProxyCalls(this), mSounds(this), mShows(this),
+      mResetTriggers(this), mHideDelays(this), mNextLink(this), mPartLaunchers(this),
+      mAnimFrame(0), mHidden(this), mShown(this), mTriggerOrder(0),
       mAnimTrigger(kTriggerAnimNone), mLastTriggerIndex(-1), unkdf(0), mEnabled(1),
       mEnabledAtStart(1), mWaiting(0), mTriggered(0) {
     RegisterEvents();
 }
 
-EventTrigger::HideDelay::HideDelay(Hmx::Object *o)
-    : mHide(o, 0), mDelay(0.0f), mRate(0) {}
+EventTrigger::HideDelay::HideDelay(Hmx::Object *o) : mHide(o, 0), mDelay(0), mRate(0) {}
 
 void EventTrigger::RegisterEvents() {
     MsgSource *src = dynamic_cast<MsgSource *>(Dir());
     if (src) {
-        for (std::vector<Symbol>::iterator it = mTriggerEvents.begin();
-             it != mTriggerEvents.end();
-             ++it) {
-            src->AddSink(this, *it, trigger, MsgSource::kHandle);
+        FOREACH (it, mTriggerEvents) {
+            src->AddSink(this, *it, trigger);
         }
-        for (std::vector<Symbol>::iterator it = mEnableEvents.begin();
-             it != mEnableEvents.end();
-             ++it) {
-            src->AddSink(this, *it, enable, MsgSource::kHandle);
+        FOREACH (it, mEnableEvents) {
+            src->AddSink(this, *it, enable);
         }
-        for (std::vector<Symbol>::iterator it = mDisableEvents.begin();
-             it != mDisableEvents.end();
-             ++it) {
-            src->AddSink(this, *it, disable, MsgSource::kHandle);
+        FOREACH (it, mDisableEvents) {
+            src->AddSink(this, *it, disable);
         }
-        for (std::vector<Symbol>::iterator it = mWaitForEvents.begin();
-             it != mWaitForEvents.end();
-             ++it) {
-            src->AddSink(this, *it, wait_for, MsgSource::kHandle);
+        FOREACH (it, mWaitForEvents) {
+            src->AddSink(this, *it, wait_for);
         }
         mEnabled = mEnabledAtStart;
     }
@@ -222,24 +199,16 @@ void EventTrigger::RegisterEvents() {
 void EventTrigger::UnregisterEvents() {
     MsgSource *src = dynamic_cast<MsgSource *>(Dir());
     if (src) {
-        for (std::vector<Symbol>::iterator it = mTriggerEvents.begin();
-             it != mTriggerEvents.end();
-             ++it) {
+        FOREACH (it, mTriggerEvents) {
             src->RemoveSink(this, *it);
         }
-        for (std::vector<Symbol>::iterator it = mEnableEvents.begin();
-             it != mEnableEvents.end();
-             ++it) {
+        FOREACH (it, mEnableEvents) {
             src->RemoveSink(this, *it);
         }
-        for (std::vector<Symbol>::iterator it = mDisableEvents.begin();
-             it != mDisableEvents.end();
-             ++it) {
+        FOREACH (it, mDisableEvents) {
             src->RemoveSink(this, *it);
         }
-        for (std::vector<Symbol>::iterator it = mWaitForEvents.begin();
-             it != mWaitForEvents.end();
-             ++it) {
+        FOREACH (it, mWaitForEvents) {
             src->RemoveSink(this, *it);
         }
     }
@@ -368,8 +337,7 @@ void EventTrigger::LoadOldEvent(
         float f50;
         bs >> f50;
         if (f50 != 0) {
-            for (ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end();
-                 ++it) {
+            FOREACH (it, mAnims) {
                 if (it->mAnim->Units() == 0) {
                     it->mDelay += f50;
                 } else {
@@ -388,7 +356,7 @@ void EventTrigger::LoadOldEvent(
 }
 
 void EventTrigger::CleanupEventCase(std::vector<Symbol> &syms) {
-    for (std::vector<Symbol>::iterator it = syms.begin(); it != syms.end(); ++it) {
+    FOREACH (it, syms) {
         const char *lightStr = strstr(it->mStr, "lighting_");
         if (lightStr) {
             String str(*it);
@@ -425,19 +393,15 @@ BEGIN_LOADS(EventTrigger)
         int count;
         bs >> count;
         mHideDelays.resize(count);
-        for (ObjVector<HideDelay>::iterator it = mHideDelays.begin();
-             it != mHideDelays.end();
-             ++it) {
+        FOREACH (it, mHideDelays) {
             bs >> it->mHide;
             bs >> it->mDelay;
         }
     } else if (gRev > 6) {
-        ObjPtrList<RndDrawable> drawList(this, kObjListNoNull);
+        ObjPtrList<RndDrawable> drawList(this);
         bs >> drawList;
         mHideDelays.clear();
-        for (ObjPtrList<RndDrawable>::iterator it = drawList.begin();
-             it != drawList.end();
-             ++it) {
+        FOREACH (it, drawList) {
             mHideDelays.push_back();
             mHideDelays.back().mHide = *it;
         }
@@ -474,9 +438,7 @@ BEGIN_LOADS(EventTrigger)
         RemoveNullEvents(mWaitForEvents);
     }
     if (gRev < 7) {
-        for (std::list<EventTrigger *>::const_iterator it = triggers.begin();
-             it != triggers.end();
-             ++it) {
+        FOREACH (it, triggers) {
             (*it)->mEnableEvents = mEnableEvents;
             (*it)->mDisableEvents = mDisableEvents;
             (*it)->mWaitForEvents = mWaitForEvents;
@@ -544,13 +506,10 @@ void EventTrigger::Trigger() {
 #pragma push
 #pragma pool_data off
 void EventTrigger::TriggerSelf() {
-    for (ObjPtrList<EventTrigger>::iterator it = mResetTriggers.begin();
-         it != mResetTriggers.end();
-         ++it) {
+    FOREACH (it, mResetTriggers) {
         (*it)->BasicReset();
     }
-    for (ObjVector<ProxyCall>::iterator it = mProxyCalls.begin(); it != mProxyCalls.end();
-         ++it) {
+    FOREACH (it, mProxyCalls) {
         if (it->mProxy) {
             if (!it->mCall.Null()) {
                 static Message msg(0);
@@ -562,7 +521,7 @@ void EventTrigger::TriggerSelf() {
             }
         }
     }
-    for (ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it) {
+    FOREACH (it, mAnims) {
         if (it->mAnim) {
             if (it->mEnable) {
                 mSpawnedTasks.push_back(it->mAnim->Animate(
@@ -583,11 +542,10 @@ void EventTrigger::TriggerSelf() {
             }
         }
     }
-    for (ObjPtrList<Sequence>::iterator it = mSounds.begin(); it != mSounds.end(); ++it) {
+    FOREACH (it, mSounds) {
         (*it)->Play(0, 0, 0);
     }
-    for (ObjPtrList<RndDrawable>::iterator it = mShows.begin(); it != mShows.end();
-         ++it) {
+    FOREACH (it, mShows) {
         if (!(*it)->Showing()) {
             if (!mTriggered) {
                 mShown.push_back(*it);
@@ -595,8 +553,7 @@ void EventTrigger::TriggerSelf() {
             (*it)->SetShowing(true);
         }
     }
-    for (ObjVector<HideDelay>::iterator it = mHideDelays.begin(); it != mHideDelays.end();
-         ++it) {
+    FOREACH (it, mHideDelays) {
         if (it->mHide) {
             if (it->mHide->Showing()) {
                 if (!mTriggered) {
@@ -617,10 +574,7 @@ void EventTrigger::TriggerSelf() {
             }
         }
     }
-
-    for (ObjPtrList<RndPartLauncher>::iterator it = mPartLaunchers.begin();
-         it != mPartLaunchers.end();
-         ++it) {
+    FOREACH (it, mPartLaunchers) {
         (*it)->LaunchParticles();
     }
     if (TypeDef()) {
@@ -632,22 +586,19 @@ void EventTrigger::TriggerSelf() {
 
 void EventTrigger::BasicReset() {
     mSpawnedTasks.DeleteAll();
-    for (ObjPtrList<RndDrawable>::iterator it = mShown.begin(); it != mShown.end();
-         ++it) {
+    FOREACH (it, mShown) {
         (*it)->SetShowing(false);
     }
-    for (ObjPtrList<RndDrawable>::iterator it = mHidden.begin(); it != mHidden.end();
-         ++it) {
+    FOREACH (it, mHidden) {
         (*it)->SetShowing(true);
     }
     CleanupHideShow();
-    for (ObjVector<ProxyCall>::iterator it = mProxyCalls.begin(); it != mProxyCalls.end();
-         ++it) {
+    FOREACH (it, mProxyCalls) {
         if (it->mProxy && it->mEvent) {
             it->mEvent->BasicReset();
         }
     }
-    for (ObjPtrList<Sequence>::iterator it = mSounds.begin(); it != mSounds.end(); ++it) {
+    FOREACH (it, mSounds) {
         (*it)->Stop(false);
     }
     if (TypeDef()) {
@@ -715,14 +666,14 @@ DataNode EventTrigger::OnProxyCalls(DataArray *) {
 
     DataArrayPtr ptr(new DataArray(0x200));
     int idx = 0;
-    ptr.Node(idx++) = Symbol();
+    ptr->Node(idx++) = Symbol();
     if (propDir) {
         const DataArray *tdef = propDir->TypeDef();
         if (tdef) {
             for (int i = 1; i < tdef->Size(); i++) {
                 DataArray *curArr = tdef->Array(i);
                 if (curArr->Size() > 1 && curArr->Type(1) == kDataCommand) {
-                    ptr.Node(idx++) = curArr->Sym(0);
+                    ptr->Node(idx++) = curArr->Sym(0);
                 }
             }
         }
