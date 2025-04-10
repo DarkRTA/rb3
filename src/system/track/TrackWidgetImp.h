@@ -50,7 +50,7 @@ public:
 
 class WidgetInstance {
 public:
-    WidgetInstance(Transform t) : mXfm(t) {}
+    WidgetInstance(const Transform &t) : mXfm(t) {}
 
     Transform mXfm;
 };
@@ -154,7 +154,7 @@ public:
 
 class TextInstance : public WidgetInstance {
 public:
-    TextInstance(Transform t, String s, bool alt)
+    TextInstance(const Transform &t, const String &s, bool alt)
         : WidgetInstance(t), mText(s), mLineId(-1), mUseAltStyle(alt) {}
 
     String mText;
@@ -221,9 +221,9 @@ public:
 
 class MeshInstance : public WidgetInstance {
 public:
-    MeshInstance(Transform t) : WidgetInstance(t) {}
+    MeshInstance(const Transform &t, RndMesh *mesh) : WidgetInstance(t), mMesh(mesh) {}
 
-    int unk;
+    RndMesh *mMesh;
 };
 
 class MatWidgetImp : public TrackWidgetImp<MeshInstance> {
@@ -232,7 +232,7 @@ public:
     virtual ~MatWidgetImp() {}
     virtual int AddMeshInstance(Transform, RndMesh *, float);
     virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
-    virtual std::list<MeshInstance> &Instances();
+    virtual std::list<MeshInstance> &Instances() { return mInstances; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
@@ -253,7 +253,17 @@ public:
     virtual void Clear();
     virtual void RemoveAt(float, float, float);
     virtual void RemoveUntil(float, float);
-    virtual int AddInstance(Transform, float);
+    virtual int AddInstance(Transform tf, float) {
+        bool b2 = false;
+        if (!Empty() && tf.v.y < GetLastInstanceY()) {
+            b2 = true;
+        }
+        RndMultiMesh::Instance inst(tf);
+        PushInstance(inst);
+        if (b2)
+            Sort();
+        return b2;
+    }
     virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
     virtual void Init();
     virtual std::list<RndMultiMesh::Instance> &Instances();
@@ -271,9 +281,19 @@ class ImmediateWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> {
 public:
     ImmediateWidgetImp(bool b) : mAllowRotation(b) {}
     virtual ~ImmediateWidgetImp() {}
-    virtual int AddInstance(Transform, float);
+    virtual int AddInstance(Transform tf, float) {
+        bool b2 = false;
+        if (!Empty() && tf.v.y < GetLastInstanceY()) {
+            b2 = true;
+        }
+        RndMultiMesh::Instance inst(tf);
+        PushInstance(inst);
+        if (b2)
+            Sort();
+        return b2;
+    }
     virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
-    virtual std::list<RndMultiMesh::Instance> &Instances();
+    virtual std::list<RndMultiMesh::Instance> &Instances() { return mInstances; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD

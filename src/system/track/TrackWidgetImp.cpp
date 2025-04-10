@@ -311,23 +311,32 @@ void CharWidgetImp::DrawInstances(const ObjPtrList<RndMesh> &, int) {
     }
 }
 
-void CharWidgetImp::Clear() {
-    Instances().clear();
-    SetDirty(true);
+void CharWidgetImp::Clear() { TrackWidgetImp<TextInstance>::Clear(); }
+
+void MatWidgetImp::DrawInstances(const ObjPtrList<RndMesh> &, int) {
+    std::list<MeshInstance>::iterator it = Instances().begin();
+    std::list<MeshInstance>::iterator itEnd = Instances().end();
+    for (; it != itEnd; ++it) {
+        RndMesh *curMesh = it->mMesh;
+        curMesh->SetWorldXfm(it->mXfm);
+        curMesh->SetMat(mMat);
+        curMesh->DrawShowing();
+    }
+}
+
+int MatWidgetImp::AddMeshInstance(Transform tf, RndMesh *mesh, float f3) {
+    bool b2 = false;
+    if (!Empty() && tf.v.y < GetLastInstanceY()) {
+        b2 = true;
+    }
+    MeshInstance inst(tf, mesh);
+    PushInstance(inst);
+    if (b2)
+        Sort();
+    return b2;
 }
 
 // std::list<MeshInstance>* MatWidgetImp::Instances() { return &mInstances; }
-
-// void CharWidgetImp::SetDirty(bool b) { mDirty = b; }
-
-// int CharWidgetImp::AddTextInstance(Transform t, String s, bool b) {
-//     int x = 0;
-//     if (!Empty() && t.v.y < GetLastInstanceY()) x = 1;
-//     TextInstance i(t, s);
-//     PushInstance(i);
-//     if (x) Sort();
-//     return x;
-// }
 
 // int MultiMeshWidgetImp::AddInstance(Transform t, float) {
 //     int x = 0;
