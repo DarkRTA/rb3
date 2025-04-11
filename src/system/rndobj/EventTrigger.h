@@ -84,7 +84,6 @@ public:
     virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
     virtual void Load(BinStream &);
     virtual ~EventTrigger() {}
-    virtual bool Loop();
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);
