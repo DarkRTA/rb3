@@ -2,12 +2,11 @@
 #include "ui/UIComponent.h"
 #include "obj/Task.h"
 #include "utl/Symbols.h"
-// #include "utl/ClassSymbols.h"
 
 INIT_REVS(UITrigger)
 
 UITrigger::UITrigger()
-    : mCallbackObject(this, 0), mEndTime(0.0f), unkfc(1), mBlockTransition(0) {}
+    : mCallbackObject(this), mEndTime(0), unkfc(1), mBlockTransition(0) {}
 
 BEGIN_COPYS(UITrigger)
     COPY_SUPERCLASS(EventTrigger)
@@ -33,7 +32,7 @@ BEGIN_LOADS(UITrigger)
         mTriggerEvents.clear();
         mTriggerEvents.push_back(sym);
         RegisterEvents();
-        ObjPtr<RndAnimatable, ObjectDir> animPtr(this, 0);
+        ObjPtr<RndAnimatable> animPtr(this);
         bs >> animPtr;
         mAnims.clear();
         mAnims.push_back();
@@ -46,52 +45,28 @@ END_LOADS
 
 void UITrigger::Enter() {
     mStartTime = TheTaskMgr.UISeconds();
-    mEndTime = 0.0f;
+    mEndTime = 0;
 }
 
 bool UITrigger::IsBlocking() const {
     if (mStartTime > TheTaskMgr.UISeconds()) {
-        const_cast<UITrigger *>(this)->mEndTime = 0.0f;
+        const_cast<UITrigger *>(this)->mEndTime = 0;
     }
     return mBlockTransition && mEndTime && !IsDone();
 }
-
-// class Anim {
-// public:
-//     Anim(Hmx::Object*);
-
-//     ObjOwnerPtr<RndAnimatable> mAnim; // 0x0
-//     float mBlend; // 0xc
-//     float mDelay; // 0x10
-//     bool mWait; // 0x14
-//     /** "Enable animation filtering" */
-//     bool mEnable; // 0x15
-//     /** "Rate to animate" */
-//     unsigned char mRate; // 0x16 - enum?
-//     /** "Start frame of animation" */
-//     float mStart; // 0x18
-//     /** "End frame of animation" */
-//     float mEnd; // 0x1c
-//     /** "Period of animation if non-zero" */
-//     float mPeriod; // 0x20
-//     /** "Scale of animation" */
-//     float mScale; // 0x24
-//     /** "Type of animation" */
-//     Symbol mType; // 0x28
-// };
 
 void UITrigger::Trigger() {
     EventTrigger::Trigger();
     mStartTime = TheTaskMgr.UISeconds();
     mEndTime = 0;
-    for (ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it) {
+    FOREACH (it, mAnims) {
         Anim &curAnim = *it;
         if (curAnim.mAnim) {
             float f4;
             if (curAnim.mEnable) {
-                if (curAnim.mPeriod * 30.0f == 0.0f) {
+                if (!(curAnim.mPeriod * 30.0f)) {
                     f4 = curAnim.mScale;
-                    if (f4 == 0)
+                    if (!f4)
                         f4 = 1.0f;
                     f4 = std::fabs(curAnim.mStart - curAnim.mEnd) / f4;
                 }
@@ -114,7 +89,7 @@ void UITrigger::Trigger() {
 }
 
 void UITrigger::CheckAnims() {
-    for (ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end(); ++it) {
+    FOREACH (it, mAnims) {
         Anim &curAnim = *it;
         RndAnimatable *anim = curAnim.mAnim;
         if (anim && anim->GetRate() != RndAnimatable::k30_fps_ui) {
@@ -128,8 +103,7 @@ void UITrigger::CheckAnims() {
 }
 
 void UITrigger::StopAnimations() {
-    for (ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end();
-         it++) {
+    FOREACH (it, mAnims) {
         RndAnimatable *anim = (*it).mAnim;
         if (anim && anim->IsAnimating())
             anim->StopAnimation();
@@ -137,8 +111,7 @@ void UITrigger::StopAnimations() {
 }
 
 void UITrigger::PlayStartOfAnims() {
-    for (ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end();
-         it++) {
+    FOREACH (it, mAnims) {
         Anim &curAnim = *it;
         RndAnimatable *anim = curAnim.mAnim;
         if (anim) {
@@ -156,8 +129,7 @@ void UITrigger::PlayStartOfAnims() {
 }
 
 void UITrigger::PlayEndOfAnims() {
-    for (ObjVector<EventTrigger::Anim>::iterator it = mAnims.begin(); it != mAnims.end();
-         it++) {
+    FOREACH (it, mAnims) {
         Anim &curAnim = *it;
         RndAnimatable *anim = curAnim.mAnim;
         if (anim) {

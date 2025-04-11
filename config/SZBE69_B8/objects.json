@@ -1232,7 +1232,7 @@
             "system/rndobj/Dxt1Compress.cpp": "MISSING",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
-            "system/rndobj/EventTrigger.cpp": "NonMatching",
+            "system/rndobj/EventTrigger.cpp": "Equivalent",
             "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Font.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",

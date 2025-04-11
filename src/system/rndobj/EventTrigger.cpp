@@ -22,6 +22,7 @@
 
 INIT_REVS(EventTrigger)
 
+// matches in retail
 DataArray *EventTrigger::SupportedEvents() {
     if (Type() == "endgame_action") {
         return SystemConfig(
@@ -41,7 +42,7 @@ DataNode EventTrigger::Cleanup(DataArray *arr) {
     for (ObjDirItr<EventTrigger> iter(dir, true); iter != nullptr; ++iter) {
         trigList.push_back(iter);
         FOREACH_POST (iter2, iter->mTriggerEvents) {
-            char buf[0x80];
+            char buf[128];
             strcpy(buf, iter2->Str());
             FileNormalizePath(buf);
             *iter2 = buf;
@@ -284,6 +285,7 @@ void EventTrigger::LoadOldAnim(BinStream &bs, RndAnimatable *anim) {
     }
 }
 
+// matches on retail
 void EventTrigger::LoadOldEvent(
     BinStream &bs, Hmx::Object *obj, const char *trigName, ObjectDir *dir
 ) {
@@ -306,7 +308,7 @@ void EventTrigger::LoadOldEvent(
         bs >> count;
         EventTrigger *curTrig = this;
         while (count-- != 0) {
-            LoadOldAnim(bs, anim);
+            curTrig->LoadOldAnim(bs, anim);
             if (count != 0) {
                 EventTrigger *newTrig = new EventTrigger();
                 mNextLink = newTrig;
@@ -367,6 +369,7 @@ void EventTrigger::CleanupEventCase(std::vector<Symbol> &syms) {
     }
 }
 
+// matches in retail
 BEGIN_LOADS(EventTrigger)
     LOAD_REVS(bs)
     ASSERT_REVS(0x11, 0)
@@ -404,20 +407,21 @@ BEGIN_LOADS(EventTrigger)
         mHideDelays.clear();
         FOREACH (it, drawList) {
             mHideDelays.push_back();
-            mHideDelays.back().mHide = *it;
+            HideDelay &hd = mHideDelays.back();
+            hd.mHide = *it;
         }
     } else {
         ObjPtr<Hmx::Object> objPtr(this);
         bs >> objPtr;
         unsigned int count;
         bs >> count;
-        String str(FileGetBase(Name(), 0));
-        bool oldMode = TheLoadMgr.EditMode();
-        TheLoadMgr.SetEditMode(true);
         EventTrigger *curTrig = this;
+        String str(FileGetBase(Name(), 0));
+        bool oldMode = LOADMGR_EDITMODE;
+        TheLoadMgr.SetEditMode(true);
         while (count-- != 0) {
             curTrig->LoadOldEvent(
-                bs, objPtr, count != 0 || curTrig != this ? str.c_str() : 0, Dir()
+                bs, objPtr, count != 0 || curTrig != this ? str.c_str() : nullptr, Dir()
             );
             if (count != 0) {
                 curTrig = new EventTrigger();
@@ -440,7 +444,8 @@ BEGIN_LOADS(EventTrigger)
         RemoveNullEvents(mWaitForEvents);
     }
     if (gRev < 7) {
-        FOREACH (it, triggers) {
+        std::list<EventTrigger *>::iterator it;
+        for (it = triggers.begin(); it != triggers.end(); ++it) {
             (*it)->mEnableEvents = mEnableEvents;
             (*it)->mDisableEvents = mDisableEvents;
             (*it)->mWaitForEvents = mWaitForEvents;
@@ -637,9 +642,9 @@ void EventTrigger::SetFrame(float frame, float blend) {
 
 BEGIN_HANDLERS(EventTrigger)
     HANDLE(trigger, OnTrigger)
-    HANDLE_ACTION(enable, unkdf = true)
-    HANDLE_ACTION(disable, unkdf = false)
-    HANDLE_ACTION(wait_for, (unkdf = true, Trigger()))
+    HANDLE_ACTION(enable, mEnabled = true)
+    HANDLE_ACTION(disable, mEnabled = false)
+    HANDLE_ACTION_IF(wait_for, mWaiting, Trigger())
     HANDLE(proxy_calls, OnProxyCalls)
     HANDLE_EXPR(supported_events, DataNode(SupportedEvents(), kDataArray))
     HANDLE_ACTION(basic_cleanup, BasicReset())
@@ -658,6 +663,7 @@ DataNode EventTrigger::OnTrigger(DataArray *) {
     return 0;
 }
 
+// matches in retail
 DataNode EventTrigger::OnProxyCalls(DataArray *) {
     DataNode &var = DataVariable("milo_prop_path");
     DataArray *miloArr = var.Array();
@@ -696,6 +702,7 @@ void EventTrigger::SetNextLink(EventTrigger *trig) {
     mNextLink = trig;
 }
 
+// also appears to match up in retail
 void EventTrigger::Replace(Hmx::Object *from, Hmx::Object *to) {
     Hmx::Object::Replace(from, to);
     for (ObjVector<Anim>::iterator it = mAnims.begin(); it != mAnims.end();) {
