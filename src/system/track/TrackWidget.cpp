@@ -1,9 +1,11 @@
 #include "TrackWidget.h"
+#include "decomp.h"
 #include "math/Mtx.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
 #include "rndobj/Draw.h"
 #include "rndobj/Env.h"
+#include "rndobj/Mat.h"
 #include "rndobj/Text.h"
 #include "utl/Loader.h"
 #include "utl/Symbols.h"
@@ -15,20 +17,17 @@
 INIT_REVS(TrackWidget)
 
 TrackWidget::TrackWidget()
-    : mMeshes(this, kObjListNoNull), mMeshesLeft(this, kObjListNoNull),
-      mMeshesSpan(this, kObjListNoNull), mMeshesRight(this, kObjListNoNull),
-      mEnviron(this, 0), mBaseLength(1.0f), mBaseWidth(1.0f), mXOffset(0), mYOffset(0),
-      mZOffset(0), mTrackDir(0), mImp(0), mFont(this, 0), mTextObj(this, 0),
-      mTextAlignment(RndText::kMiddleCenter), mTextColor(1.0f, 1.0f, 1.0f),
-      mAltTextColor(1.0f, 1.0f, 1.0f), mMat(this, 0), mActive(0), mWideWidget(0),
-      mAllowRotation(0), mAllowShift(0), mAllowLineRotation(0), mMaxTextInstances(0) {
+    : mMeshes(this), mMeshesLeft(this), mMeshesSpan(this), mMeshesRight(this),
+      mEnviron(this), mBaseLength(1), mBaseWidth(1), mXOffset(0), mYOffset(0),
+      mZOffset(0), mTrackDir(0), mImp(0), mFont(this), mTextObj(this),
+      mTextAlignment(RndText::kMiddleCenter), mTextColor(1, 1, 1), mAltTextColor(1, 1, 1),
+      mMat(this), mActive(0), mWideWidget(0), mAllowRotation(0), mAllowShift(0),
+      mAllowLineRotation(0), mWidgetType(kImmediateWidget), mMaxMeshes(-1),
+      mCharsPerInst(0), mMaxTextInstances(0) {
     SyncImp();
 }
 
-TrackWidget::~TrackWidget() {
-    delete mImp;
-    mImp = 0;
-}
+TrackWidget::~TrackWidget() { RELEASE(mImp); }
 
 BEGIN_COPYS(TrackWidget)
     CREATE_COPY_AS(TrackWidget, tw)
@@ -80,11 +79,11 @@ BEGIN_LOADS(TrackWidget)
         bs >> mBaseLength;
     if (gRev > 8)
         bs >> mBaseWidth;
-    if (gRev == 2 || gRev == 3 || gRev == 4 || gRev == 5 || gRev == 6 || gRev == 7) {
-        bool bbb;
+    if (gRev >= 2 && gRev <= 7) {
+        bool bbb = 0;
         bs >> bbb;
         if (bbb)
-            mWidgetType = 1;
+            mWidgetType = kMultiMeshWidget;
     }
     if (gRev > 3) {
         LOAD_BITFIELD(bool, mAllowRotation)
@@ -92,21 +91,26 @@ BEGIN_LOADS(TrackWidget)
     if (gRev > 5) {
         bs >> mFont;
         if (gRev < 8) {
-            bool bbb;
+            bool bbb = 0;
             bs >> bbb;
             if (bbb)
-                mWidgetType = 2;
+                mWidgetType = kTextWidget;
         }
     }
     if (gRev > 6) {
         bs >> mTextObj;
-        int u____;
-        bs >> u____;
-        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 0xAF);
-        mCharsPerInst = u____;
-        bs >> u____;
-        MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 0xB0);
-        mMaxTextInstances = u____;
+        {
+            int u____;
+            bs >> u____;
+            MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 0xAF);
+            mCharsPerInst = u____;
+        }
+        {
+            int u____;
+            bs >> u____;
+            MILO_ASSERT(u____ >= 0 && u____ <= ((1<<( 10 - 1)) - 1), 0xB0);
+            mMaxTextInstances = u____;
+        }
     }
     if (gRev > 7) {
         int u____;
@@ -136,17 +140,19 @@ BEGIN_LOADS(TrackWidget)
     SyncImp();
 END_LOADS
 
+#ifdef MILO_DEBUG
 void TrackWidget::CheckValid() const {
     if (LOADMGR_EDITMODE && mImp)
         mImp->CheckValid(Name());
 }
+#endif
 
 void TrackWidget::Init() { mImp->Init(); }
 
 void TrackWidget::DrawShowing() {
     if (!mImp->Empty()) {
         if (mEnviron && mEnviron != RndEnviron::sCurrent)
-            mEnviron->Select(0);
+            mEnviron->Select(nullptr);
         mImp->DrawInstances(mMeshes, mMaxMeshes);
     }
 }
@@ -158,16 +164,21 @@ void TrackWidget::Poll() {
     }
 }
 
+FORCE_LOCAL_INLINE
 bool TrackWidget::Empty() { return mImp->Empty(); }
+END_FORCE_LOCAL_INLINE
 
+FORCE_LOCAL_INLINE
 int TrackWidget::Size() const { return mImp->Size(); }
+END_FORCE_LOCAL_INLINE
+
 float TrackWidget::GetFirstInstanceY() { return mImp->GetFirstInstanceY(); }
 
 void TrackWidget::AddInstance(Transform tf, float f) {
     if (f)
         tf.m.y.y = NewYOffset(f) / mBaseLength;
     ApplyOffsets(tf);
-    if (mImp->AddInstance(Transform(tf), 0) && mTrackDir->WarnOnResort()) {
+    if (mImp->AddInstance(tf, 0) && mTrackDir->WarnOnResort()) {
         MILO_WARN("%s instances resorted", Name());
     }
     UpdateActiveStatus();
@@ -176,7 +187,8 @@ void TrackWidget::AddInstance(Transform tf, float f) {
 void TrackWidget::AddTextInstance(const Transform &Ct, class String s, bool b) {
     Transform t = Ct;
     ApplyOffsets(t);
-    if (mImp->AddTextInstance(t, s, b) && mTrackDir->WarnOnResort())
+    int ret = mImp->AddTextInstance(t, s, b);
+    if (ret && mTrackDir->WarnOnResort())
         MILO_WARN("%s instances resorted", Name());
     UpdateActiveStatus();
 }
@@ -215,16 +227,28 @@ void TrackWidget::SetTextAlignment(RndText::Alignment a) {
     SyncImp();
 }
 
-// void TrackWidget::Mats(std::list<class RndMat*>& mats, bool) {
-//     for (std::list<class RndMat*>::iterator i = mats.begin(); *i != NULL; i++) {
-
-//     }
-// }
+void TrackWidget::Mats(std::list<class RndMat *> &mats, bool) {
+    FOREACH (it, mMeshes) {
+        RndMesh *cur = *it;
+        if (cur) {
+            RndMat *mat = cur->Mat();
+            if (mat) {
+                MatShaderOptions opts;
+                if (opts.shader_struct.i5 == 1) {
+                    cur->TransConstraint();
+                } else {
+                    opts.SetLast5(0x12);
+                }
+                mats.push_back(mat);
+            }
+        }
+    }
+}
 
 void TrackWidget::SyncImp() {
     RELEASE(mImp);
     switch (mWidgetType) {
-    case 2:
+    case kTextWidget:
         mImp = new CharWidgetImp(
             mFont,
             mTextObj,
@@ -236,10 +260,10 @@ void TrackWidget::SyncImp() {
             mAllowLineRotation
         );
         break;
-    case 3:
+    case kMatWidget:
         mImp = new MatWidgetImp(mMat);
         break;
-    case 1:
+    case kMultiMeshWidget:
         mImp = new MultiMeshWidgetImp(mMeshes, mAllowRotation);
         break;
     default:
@@ -255,9 +279,7 @@ void TrackWidget::SetScale(float f) { mImp->SetScale(f); }
 
 void TrackWidget::CheckScales() const {
     if (!mAllowRotation) {
-        for (ObjPtrList<RndMesh, ObjectDir>::iterator it = mMeshes.begin();
-             it != mMeshes.end();
-             ++it) {
+        FOREACH (it, mMeshes) {
             RndMesh *cur = *it;
             if (!IsFloatOne(cur->mLocalXfm.m.x.x) || !IsFloatOne(cur->mLocalXfm.m.y.y)
                 || !IsFloatOne(cur->mLocalXfm.m.z.z)) {
@@ -275,7 +297,7 @@ DataNode TrackWidget::OnSetMeshes(const DataArray *da) {
     for (int i = 2; i < da->Size(); i++) {
         mMeshes.push_back(da->Obj<RndMesh>(i));
     }
-    return DataNode(0);
+    return 0;
 }
 
 DataNode TrackWidget::OnAddInstance(const DataArray *da) {
@@ -285,7 +307,7 @@ DataNode TrackWidget::OnAddInstance(const DataArray *da) {
     t.v.y = da->Float(3);
     t.v.z = da->Float(4);
     AddInstance(t, 0);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode TrackWidget::OnAddTextInstance(const DataArray *da) {
@@ -296,7 +318,7 @@ DataNode TrackWidget::OnAddTextInstance(const DataArray *da) {
     t.v.z = da->Float(4);
     class String s(da->Str(5));
     AddTextInstance(t, s, false);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode TrackWidget::OnAddMeshInstance(const DataArray *da) {
@@ -306,7 +328,7 @@ DataNode TrackWidget::OnAddMeshInstance(const DataArray *da) {
     t.v.y = da->Float(3);
     t.v.z = da->Float(4);
     AddMeshInstance(t, da->Obj<RndMesh>(5), 0);
-    return DataNode(0);
+    return 0;
 }
 
 void TrackWidget::UpdateActiveStatus() {

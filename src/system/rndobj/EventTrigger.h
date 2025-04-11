@@ -84,7 +84,6 @@ public:
     virtual void Copy(const Hmx::Object *, Hmx::Object::CopyType);
     virtual void Load(BinStream &);
     virtual ~EventTrigger() {}
-    virtual bool Loop();
     virtual void StartAnim();
     virtual void EndAnim();
     virtual void SetFrame(float, float);
@@ -151,7 +150,7 @@ public:
     /** "Sets whether and how this will trigger itself based on Anim calls to it" */
     unsigned char mAnimTrigger; // 0xdd
     unsigned char mLastTriggerIndex; // 0xde
-    bool unkdf : 1; // 0xdf >> 7 & 1 - apparently can also be enabled? tf?
+    bool unkdf : 1; // 0xdf >> 7 & 1
     /** "State of the event trigger. If TRUE, this EventTrigger can be triggered, if FALSE
      * the EventTrigger can't be triggered. This value is not saved, so feel free to
      * change it for debugging" */

@@ -136,7 +136,7 @@ struct ProGuitarData {
     unsigned char mString1FretBottomHalf : 3;
     unsigned char mString2Fret : 5;
 
-    bool unk3upper : 1;
+    bool unk3upper : 1; // shifted?
     unsigned char mString0Fret : 5;
     unsigned char mString1FretTopHalf : 2;
 

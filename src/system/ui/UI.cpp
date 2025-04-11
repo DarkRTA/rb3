@@ -151,7 +151,7 @@ inline void Automator::StartAuto(UIScreen *screen) {
 
 DataNode Automator::OnMsg(const UITransitionCompleteMsg &msg) {
     if (mScreenScripts && !mRecord)
-        StartAuto(msg.GetScreen1());
+        StartAuto(msg.GetOldScreen());
     return DataNode(kDataUnhandled, 0);
 }
 

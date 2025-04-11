@@ -17,7 +17,6 @@ class Matchmaker;
 DECLARE_MESSAGE(SessionMgrUpdatedMsg, "session_mgr_updated_msg")
 SessionMgrUpdatedMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(AddLocalUserResultMsg, "add_local_user_result_msg")
 AddLocalUserResultMsg(int i, LocalUser *u) : Message(Type(), i, u) {}
@@ -27,22 +26,18 @@ BandUser *GetBandUser() const {
     return mData->Obj<BandUser>(3);
 }
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(SessionDisconnectedMsg, "session_disconnected")
 SessionDisconnectedMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(SessionBusyMsg, "session_busy")
 SessionBusyMsg() : Message(Type()) {}
 END_MESSAGE
-;
 
 DECLARE_MESSAGE(SessionReadyMsg, "session_ready")
 SessionReadyMsg(int i) : Message(Type(), i) {}
 END_MESSAGE
-;
 
 class SavePlayer {
 public:

@@ -83,12 +83,15 @@ public:
 
 DECLARE_MESSAGE(UITransitionCompleteMsg, "transition_complete");
 UITransitionCompleteMsg(UIScreen *s1, UIScreen *s2) : Message(Type(), s1, s2) {}
-UIScreen *GetScreen1() const { return mData->Obj<UIScreen>(2); }
+UIScreen *GetNewScreen() const { return mData->Obj<UIScreen>(2); }
+UIScreen *GetOldScreen() const { return mData->Obj<UIScreen>(3); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIScreenChangeMsg, "screen_change");
 UIScreenChangeMsg(UIScreen *s1, UIScreen *s2, bool b) : Message(Type(), s1, s2, b) {}
-UIScreen *GetFromScreen() const { return mData->Obj<UIScreen>(3); }
+UIScreen *GetNewScreen() const { return mData->Obj<UIScreen>(2); }
+UIScreen *GetOldScreen() const { return mData->Obj<UIScreen>(3); }
+bool GetBack() const { return mData->Int(4); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIChangedMsg, "ui_changed")

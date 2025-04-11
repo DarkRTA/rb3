@@ -43,10 +43,11 @@ public:
 };
 
 DECLARE_MESSAGE(VirtualKeyboardResultMsg, "virtual_keyboard_result_msg");
-VirtualKeyboardResultMsg(int i, const char *c)
-    : Message(Type(), DataNode(i), DataNode(c ? c : gNullStr)) {}
+VirtualKeyboardResultMsg(int ok, const char *text)
+    : Message(Type(), ok, text ? text : gNullStr) {}
+bool IsOK() const { return mData->Int(2); }
+const char *Text() const { return mData->Str(3); }
 END_MESSAGE
-;
 
 extern VirtualKeyboard TheVirtualKeyboard;
 

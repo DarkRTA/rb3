@@ -1125,7 +1125,10 @@
             "system/obj/MessageTimer.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": "Equivalent",
-            "system/obj/PropSync.cpp": "NonMatching",
+            "system/obj/PropSync.cpp": {
+                "status": "Equivalent",
+                "comment": "using auto_inline on seems to fix issues we've had where we'd need to unpool data, but then we'd have a floatbase"
+            },
             "system/obj/Task.cpp": "NonMatching",
             "system/obj/TextFile.cpp":{
                 "status": "Matching",
@@ -1229,7 +1232,7 @@
             "system/rndobj/Dxt1Compress.cpp": "MISSING",
             "system/rndobj/Env.cpp": "NonMatching",
             "system/rndobj/EnvAnim.cpp": "NonMatching",
-            "system/rndobj/EventTrigger.cpp": "NonMatching",
+            "system/rndobj/EventTrigger.cpp": "Equivalent",
             "system/rndobj/Flare.cpp": "NonMatching",
             "system/rndobj/Font.cpp": "NonMatching",
             "system/rndobj/Fur.cpp": "Matching",
@@ -1369,7 +1372,7 @@
             "system/ui/LabelNumberTicker.cpp": "Matching",
             "system/ui/LabelShrinkWrapper.cpp": "Matching",
             "system/ui/LocalePanel.cpp": "LinkIssues",
-            "system/ui/PanelDir.cpp": "NonMatching",
+            "system/ui/PanelDir.cpp": "Equivalent",
             "system/ui/Screenshot.cpp": "Equivalent",
             "system/ui/ScrollSelect.cpp": "LinkIssues",
             "system/ui/UI.cpp": "NonMatching",
@@ -1388,7 +1391,7 @@
             "system/ui/UIListHighlight.cpp": "Matching",
             "system/ui/UIListLabel.cpp": "Matching",
             "system/ui/UIListMesh.cpp": "Equivalent",
-            "system/ui/UIListProvider.cpp": "LinkIssues",
+            "system/ui/UIListProvider.cpp": "Matching",
             "system/ui/UIListSlot.cpp": "NonMatching",
             "system/ui/UIListState.cpp": "NonMatching",
             "system/ui/UIListSubList.cpp": "NonMatching",

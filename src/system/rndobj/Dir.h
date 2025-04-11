@@ -1,5 +1,4 @@
-#ifndef RNDOBJ_DIR_H
-#define RNDOBJ_DIR_H
+#pragma once
 #include "obj/Msg.h" // MsgSource : public virtual Object
 #include "rndobj/Poll.h" // RndPollable : public virtual Object
 #include "rndobj/Trans.h" // RndTransformable : public virtual RndHighlightable
@@ -100,5 +99,3 @@ public:
     NEW_OBJ(RndDir)
     static void Init() { REGISTER_OBJ_FACTORY(RndDir) }
 };
-
-#endif

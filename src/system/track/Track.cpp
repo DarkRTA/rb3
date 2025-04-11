@@ -1,5 +1,5 @@
-#include "Track.h"
-#include "obj/Object.h"
+#include "track/TrackDir.h"
+#include "track/TrackWidget.h"
 
 void TrackInit() {
     TrackDir::Register();

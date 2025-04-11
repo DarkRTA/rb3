@@ -1,7 +1,6 @@
-#ifndef TRACK_TRACKWIDGETIMP_H
-#define TRACK_TRACKWIDGETIMP_H
-
+#pragma once
 #include "math/Mtx.h"
+#include "math/Utl.h"
 #include "obj/Data.h"
 #include "obj/Object.h"
 #include "os/Debug.h"
@@ -36,21 +35,32 @@ public:
         MILO_ASSERT(0, 42);
         return 0;
     } // 0x34
-    virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir> &, int) = 0; // 0x38
+    virtual void DrawInstances(const ObjPtrList<RndMesh> &, int) = 0; // 0x38
     virtual void SetDirty(bool) {} // 0x3C
     virtual void Poll() {} // 0x40
     virtual void Init() {} // 0x44
     virtual void SetScale(float) {} // 0x48
+#ifdef MILO_DEBUG
     virtual void CheckValid(const char *) const {} // 0x4C
+#endif
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 };
 
+class WidgetInstance {
+public:
+    WidgetInstance(const Transform &t) : mXfm(t) {}
+
+    Transform mXfm;
+};
+
 template <typename T>
 class WidgetInstanceCmp {
 public:
-    bool operator()(const T &, const T &) const { return false; }
+    bool operator()(const T &t1, const T &t2) const {
+        return t1.mXfm.v.y < t2.mXfm.v.y ? true : false;
+    }
 };
 
 template <typename T>
@@ -92,9 +102,44 @@ public:
         return list.back().mXfm.v.y;
     }
 
-    void DoRemoveAt(std::list<T> &insts, float f1, float f2, float f3) {}
+    void DoRemoveAt(std::list<T> &insts, float f1, float f2, float f3) {
+        if (!insts.empty()) {
+            std::list<T>::iterator it5c = insts.end();
+            std::list<T>::iterator it = insts.begin();
+            for (; it != insts.end(); ++it) {
+                if (IsFabsZero(it->mXfm.v.y - f1)) {
+                    if (f3 < 0 || Abs<float>(it->mXfm.v.x - f2) <= f3) {
+                        if (it5c == insts.end()) {
+                            it5c = it;
+                        }
+                    } else if (it5c != insts.end()) {
+                        RemoveInstances(insts, it5c, it);
+                        it5c = insts.end();
+                    }
+                } else if (it->mXfm.v.y > f1) {
+                    if (it5c != insts.end()) {
+                        RemoveInstances(insts, it5c, it);
+                        it5c = insts.end();
+                    }
+                    break;
+                }
+            }
+            if (it5c != insts.end()) {
+                RemoveInstances(insts, it5c, it);
+            }
+        }
+    }
 
-    void DoRemoveUntil(std::list<T> &insts, float f1, float f2) {}
+    void DoRemoveUntil(std::list<T> &insts, float f1, float f2) {
+        if (!insts.empty()) {
+            std::list<T>::iterator it = insts.begin();
+            for (; it != insts.end() && f2 * it->mXfm.m.y.y + it->mXfm.v.y < f1; ++it) {
+            }
+            if (it != insts.end()) {
+                RemoveInstances(insts, insts.begin(), it);
+            }
+        }
+    }
 
     void DoSort(std::list<T> &insts) { insts.sort(WidgetInstanceCmp<T>()); }
 
@@ -107,11 +152,15 @@ public:
     DELETE_OVERLOAD
 };
 
-class TextInstance {
+class TextInstance : public WidgetInstance {
 public:
-    TextInstance(Transform t, String s) : mXfm(t) {}
-    Transform mXfm;
-}; // ????
+    TextInstance(const Transform &t, const String &s, bool alt)
+        : WidgetInstance(t), mText(s), mLineId(-1), mUseAltStyle(alt) {}
+
+    String mText;
+    int mLineId;
+    bool mUseAltStyle;
+};
 
 class CharWidgetImp : public TrackWidgetImp<TextInstance> {
 public:
@@ -120,12 +169,31 @@ public:
     );
     virtual ~CharWidgetImp() {}
     virtual void Clear();
-    virtual int AddTextInstance(Transform, String, bool);
-    virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir> &, int);
-    virtual void SetDirty(bool);
+    virtual int AddTextInstance(Transform tf, String s, bool alt) {
+        bool b2 = false;
+        if (!Empty() && tf.v.y < GetLastInstanceY()) {
+            b2 = true;
+        }
+        TextInstance inst(tf, s, alt);
+        PushInstance(inst);
+        if (b2)
+            Sort();
+        return b2;
+    }
+    virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
+    virtual void SetDirty(bool dirty) { mNeedRebuild = dirty; }
     virtual void Poll();
     virtual void SetScale(float);
-    virtual void CheckValid(const char *) const;
+#ifdef MILO_DEBUG
+    virtual void CheckValid(const char *name) const {
+        if (!Valid()) {
+            MILO_WARN(
+                "WARNING: Text widget \"%s\" won't be drawn under the current parameters.  It needs a valid text obj, valid font, max instances > 0 , and chars per instance > 0.",
+                name
+            );
+        }
+    }
+#endif
     virtual std::list<TextInstance> &Instances();
     virtual void RemoveInstances(
         std::list<TextInstance> &,
@@ -134,22 +202,28 @@ public:
     );
     virtual void PushInstance(TextInstance &);
 
+    bool Valid() const {
+        return mText && mFont && mCharsPerInst > 0 && mMaxInstances > 0;
+    }
+
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    bool mDirty; // 0x4
-    bool unk_0x5;
-    int unk_0x8, unk_0xC;
-    RndText *unk_0x10;
+    bool mNeedRebuild; // 0x4
+    bool mNeedSync; // 0x5
+    int mCharsPerInst; // 0x8
+    int mMaxInstances; // 0xc
+    RndText *mText; // 0x10
     std::list<TextInstance> mInstances; // 0x14
-    RndFont *unk_0x1C;
-    std::vector<int> unk_0x20;
+    RndFont *mFont; // 0x1c
+    std::vector<int> mReusableLines; // 0x20
 };
 
-class MeshInstance {
+class MeshInstance : public WidgetInstance {
 public:
-    Transform mXfm;
-    int unk;
+    MeshInstance(const Transform &t, RndMesh *mesh) : WidgetInstance(t), mMesh(mesh) {}
+
+    RndMesh *mMesh;
 };
 
 class MatWidgetImp : public TrackWidgetImp<MeshInstance> {
@@ -157,8 +231,8 @@ public:
     MatWidgetImp(RndMat *m) : mMat(m) {}
     virtual ~MatWidgetImp() {}
     virtual int AddMeshInstance(Transform, RndMesh *, float);
-    virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir> &, int);
-    virtual std::list<MeshInstance> &Instances();
+    virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
+    virtual std::list<MeshInstance> &Instances() { return mInstances; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
@@ -169,7 +243,7 @@ public:
 
 class MultiMeshWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> {
 public:
-    MultiMeshWidgetImp(const ObjPtrList<RndMesh, ObjectDir> &, bool);
+    MultiMeshWidgetImp(const ObjPtrList<RndMesh> &, bool);
     virtual ~MultiMeshWidgetImp();
     virtual bool Empty();
     virtual int Size();
@@ -179,8 +253,18 @@ public:
     virtual void Clear();
     virtual void RemoveAt(float, float, float);
     virtual void RemoveUntil(float, float);
-    virtual int AddInstance(Transform, float);
-    virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir> &, int);
+    virtual int AddInstance(Transform tf, float) {
+        bool b2 = false;
+        if (!Empty() && tf.v.y < GetLastInstanceY()) {
+            b2 = true;
+        }
+        RndMultiMesh::Instance inst(tf);
+        PushInstance(inst);
+        if (b2)
+            Sort();
+        return b2;
+    }
+    virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
     virtual void Init();
     virtual std::list<RndMultiMesh::Instance> &Instances();
     virtual void PushInstance(RndMultiMesh::Instance &);
@@ -189,23 +273,31 @@ public:
     DELETE_OVERLOAD
 
     std::vector<RndMultiMesh *> mMultiMeshes; // 0x4
-    const ObjPtrList<RndMesh, ObjectDir> &mMeshes; // 0xc
+    const ObjPtrList<RndMesh> &mMeshes; // 0xc
     bool unk10; // 0x10
 };
 
 class ImmediateWidgetImp : public TrackWidgetImp<RndMultiMesh::Instance> {
 public:
-    ImmediateWidgetImp(bool b) : unk_0xC(b) {}
+    ImmediateWidgetImp(bool b) : mAllowRotation(b) {}
     virtual ~ImmediateWidgetImp() {}
-    virtual int AddInstance(Transform, float);
-    virtual void DrawInstances(const ObjPtrList<RndMesh, ObjectDir> &, int);
-    virtual std::list<RndMultiMesh::Instance> &Instances();
+    virtual int AddInstance(Transform tf, float) {
+        bool b2 = false;
+        if (!Empty() && tf.v.y < GetLastInstanceY()) {
+            b2 = true;
+        }
+        RndMultiMesh::Instance inst(tf);
+        PushInstance(inst);
+        if (b2)
+            Sort();
+        return b2;
+    }
+    virtual void DrawInstances(const ObjPtrList<RndMesh> &, int);
+    virtual std::list<RndMultiMesh::Instance> &Instances() { return mInstances; }
 
     NEW_OVERLOAD
     DELETE_OVERLOAD
 
-    std::list<RndMultiMesh::Instance> mInstances;
-    bool unk_0xC;
+    std::list<RndMultiMesh::Instance> mInstances; // 0x4
+    bool mAllowRotation; // 0xc
 };
-
-#endif // TRACK_TRACKWIDGETIMP_H

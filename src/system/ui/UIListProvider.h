@@ -64,6 +64,7 @@ public:
     virtual ~DataProvider() {}
     virtual void Text(int, int, UIListLabel *, UILabel *) const;
     virtual RndMat *Mat(int, int, UIListMesh *) const;
+    virtual Symbol DataSymbol(int) const;
     virtual int NumData() const { return mData->Size() - mOffset; }
     virtual bool IsActive(int) const;
     virtual float GapSize(int, int, int, int) const;

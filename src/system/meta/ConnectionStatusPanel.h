@@ -5,6 +5,7 @@
 
 DECLARE_MESSAGE(ConnectionStatusChangedMsg, "connection_status_changed")
 ConnectionStatusChangedMsg(int);
+bool Connected() const { return mData->Int(2); }
 END_MESSAGE
 
 /** A panel to convey the current network connection status. */

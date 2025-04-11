@@ -66,7 +66,7 @@ DataNode UIStats::OnMsg(const UIComponentFocusChangeMsg &) {
 }
 
 DataNode UIStats::OnMsg(const UIScreenChangeMsg &msg) {
-    MaybePublish(msg.GetFromScreen());
+    MaybePublish(msg.GetOldScreen());
     return DataNode(kDataUnhandled, 0);
 }
 

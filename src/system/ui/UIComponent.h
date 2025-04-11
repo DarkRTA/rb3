@@ -135,17 +135,26 @@ LocalUser *GetUser() const { return mData->Obj<LocalUser>(3); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIComponentScrollSelectMsg, "component_scroll_select");
-UIComponentScrollSelectMsg(UIComponent *comp, LocalUser *user, bool b)
-    : Message(Type(), comp, user, b) {}
+UIComponentScrollSelectMsg(UIComponent *comp, LocalUser *user, bool selected)
+    : Message(Type(), comp, user, selected) {}
+UIComponent *GetComponent() const { return mData->Obj<UIComponent>(2); }
+LocalUser *GetUser() const { return mData->Obj<LocalUser>(3); }
+bool GetSelected() const { return mData->Int(4); }
 END_MESSAGE
 
+// #define FOCUS_MSG (component_focus ($new_focus $old_focus $panel_dir $nav_type))
 DECLARE_MESSAGE(UIComponentFocusChangeMsg, "component_focus");
 UIComponentFocusChangeMsg(UIComponent *comp1, UIComponent *comp2, PanelDir *dir, Symbol s)
     : Message(Type(), comp1, comp2, dir, s) {}
+UIComponent *GetNewFocus() const { return mData->Obj<UIComponent>(2); }
+UIComponent *GetOldFocus() const { return mData->Obj<UIComponent>(3); }
 PanelDir *GetDir() const { return mData->Obj<PanelDir>(4); }
+Symbol GetNavType() const { return mData->Sym(5); }
 END_MESSAGE
 
 DECLARE_MESSAGE(UIComponentScrollStartMsg, "component_scroll_start");
 UIComponentScrollStartMsg(UIComponent *comp, LocalUser *user)
-    : Message(Type(), DataNode(comp), DataNode(user)) {}
+    : Message(Type(), comp, user) {}
+UIComponent *GetComponent() const { return mData->Obj<UIComponent>(2); }
+LocalUser *GetUser() const { return mData->Obj<LocalUser>(3); }
 END_MESSAGE
