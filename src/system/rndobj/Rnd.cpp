@@ -130,14 +130,13 @@ void Rnd::Modal(bool &b, char *c, bool bb) {
 Rnd::Rnd()
     : mClearColor(0.3f, 0.3f, 0.3f), mWidth(640), mHeight(480), mScreenBpp(16),
       mDrawCount(0), mDrawTimer(), mTimersOverlay(0), mRateOverlay(0), mHeapOverlay(0),
-      mStatsOverlay(0), unk84(0), unk88(0), unk8c(0), mDefaultCam(0), unk94(0), unk98(0),
-      unk9c(0), unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "), mSync(1), mGsTiming(0),
-      mShowSafeArea(0), mDrawing(0), unkdf(1), mAspect(kWidescreen),
-      mDrawMode(kDrawNormal), unke8(0), unke9(0), mShrinkToSafe(1), mInGame(0),
-      mVerboseTimers(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0), unkf4(0),
-      unkf8(0), mPostProcOverride(0), unk110(this, kObjListNoNull),
-      mDraws(this, kObjListNoNull), unk130(0), unk131(1), mProcCounter(),
-      mProcCmds(kProcessAll), mLastProcCmds(kProcessAll)
+      mStatsOverlay(0), mDefaultMat(0), mOverlayMat(0), mOverdrawMat(0), mDefaultCam(0),
+      unk94(0), unk98(0), unk9c(0), unkc0(0.0f), unkc8(6), mFrameID(0), unkd0("    "),
+      mSync(1), mGsTiming(0), mShowSafeArea(0), mDrawing(0), unkdf(1),
+      mAspect(kWidescreen), mDrawMode(kDrawNormal), unke8(0), unke9(0), mShrinkToSafe(1),
+      mInGame(0), mVerboseTimers(0), mDisablePostProc(0), unkee(0), unkef(0), unkf0(0),
+      unkf4(0), unkf8(0), mPostProcOverride(0), unk110(this), mDraws(this), unk130(0),
+      unk131(1), mProcCounter(), mProcCmds(kProcessAll), mLastProcCmds(kProcessAll)
 #ifdef MILO_DEBUG
       ,
       mForceCharLod(-1) // jank it up!

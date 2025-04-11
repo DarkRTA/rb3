@@ -165,6 +165,7 @@ public:
     int Height() const { return mHeight; }
     int ScreenBpp() const { return mScreenBpp; }
     bool DisablePP() const { return mDisablePostProc; }
+    RndMat *OverlayMat() const { return mOverlayMat; }
     RndTex *GetNullTexture();
 
     Hmx::Color mClearColor; // 0x20
@@ -178,9 +179,9 @@ public:
     RndOverlay *mHeapOverlay; // 0x78
     RndOverlay *mStatsOverlay; // 0x7c
     RndConsole *mConsole; // 0x80
-    RndMat *unk84; // 0x84
-    RndMat *unk88; // 0x88
-    RndMat *unk8c; // 0x8c
+    RndMat *mDefaultMat; // 0x84
+    RndMat *mOverlayMat; // 0x88
+    RndMat *mOverdrawMat; // 0x8c
     RndCam *mDefaultCam; // 0x90
     RndCam *unk94; // 0x94
     RndEnviron *unk98; // 0x98
@@ -216,8 +217,8 @@ public:
     std::list<PointTest> mPointTests; // 0xfc
     std::list<PostProcessor *> mPostProcessors; // 0x104
     PostProcessor *mPostProcOverride; // 0x10c
-    ObjPtrList<RndDrawable, ObjectDir> unk110; // 0x110
-    ObjPtrList<RndDrawable, ObjectDir> mDraws; // 0x120
+    ObjPtrList<RndDrawable> unk110; // 0x110
+    ObjPtrList<RndDrawable> mDraws; // 0x120
     bool unk130; // 0x130
     bool unk131; // 0x131
     ProcCounter mProcCounter; // 0x134

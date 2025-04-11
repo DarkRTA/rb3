@@ -287,6 +287,7 @@ public:
     }
 
     // returns the first Key that fits in the range of frames f1 to f2
+    // TODO: DC has this as T1* Cross(float, float) const
     Key<T1> *GetFirstInRange(float f1, float f2) {
         int idx = KeyLessEq(f1);
         if (idx == -1)
