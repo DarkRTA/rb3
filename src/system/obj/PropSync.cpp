@@ -31,7 +31,7 @@ bool PropSync(Hmx::Color &color, DataNode &node, DataArray *prop, int i, PropOp 
 }
 
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 bool PropSync(Hmx::Matrix3 &mtx, DataNode &node, DataArray *_prop, int _i, PropOp _op) {
     MILO_ASSERT(_i == _prop->Size() - 1 && (_op & (kPropSet|kPropGet|kPropInsert)), 0x45);
     Symbol sym = _prop->Sym(_i);

@@ -1125,7 +1125,10 @@
             "system/obj/MessageTimer.cpp": "NonMatching",
             "system/obj/Msg.cpp": "NonMatching",
             "system/obj/Object.cpp": "Equivalent",
-            "system/obj/PropSync.cpp": "NonMatching",
+            "system/obj/PropSync.cpp": {
+                "status": "Equivalent",
+                "comment": "using auto_inline on seems to fix issues we've had where we'd need to unpool data, but then we'd have a floatbase"
+            },
             "system/obj/Task.cpp": "NonMatching",
             "system/obj/TextFile.cpp":{
                 "status": "Matching",

@@ -258,6 +258,7 @@ DECOMP_FORCEACTIVE(EventTrigger, "ObjPtr_p.h", "f.Owner()", "")
 
 SAVE_OBJ(EventTrigger, 406)
 
+// matches in retail
 void EventTrigger::LoadOldAnim(BinStream &bs, RndAnimatable *anim) {
     Anim eventAnim(this);
     bs >> (int &)eventAnim.mRate;
@@ -336,7 +337,7 @@ void EventTrigger::LoadOldEvent(
     if (gRev > 1) {
         float f50;
         bs >> f50;
-        if (f50 != 0) {
+        if (f50) {
             FOREACH (it, mAnims) {
                 if (it->mAnim->Units() == 0) {
                     it->mDelay += f50;
@@ -411,6 +412,7 @@ BEGIN_LOADS(EventTrigger)
         unsigned int count;
         bs >> count;
         String str(FileGetBase(Name(), 0));
+        bool oldMode = TheLoadMgr.EditMode();
         TheLoadMgr.SetEditMode(true);
         EventTrigger *curTrig = this;
         while (count-- != 0) {
@@ -422,7 +424,7 @@ BEGIN_LOADS(EventTrigger)
                 triggers.push_back(curTrig);
             }
         }
-        TheLoadMgr.SetEditMode(false);
+        TheLoadMgr.SetEditMode(oldMode);
     }
     if (gRev > 2) {
         bs >> mEnableEvents;
@@ -504,7 +506,7 @@ void EventTrigger::Trigger() {
 }
 
 #pragma push
-#pragma pool_data off
+#pragma auto_inline on
 void EventTrigger::TriggerSelf() {
     FOREACH (it, mResetTriggers) {
         (*it)->BasicReset();
