@@ -125,12 +125,12 @@ float RndOverlay::Draw(float topY) {
         str4c += String("_");
         TheRnd->DrawStringScreen(str4c.c_str(), pos, mTextColor, true);
     }
-    for (std::list<String>::iterator it = mLines.begin(); it != mLines.end(); ++it) {
+    FOREACH (it, mLines) {
         pos.y = TheRnd->DrawStringScreen(it->c_str(), pos, mTextColor, true).y;
     }
     if (mDumpCount > 0) {
         mDumpCount--;
-        for (std::list<String>::iterator it = mLines.begin(); it != mLines.end(); ++it) {
+        FOREACH (it, mLines) {
             TheDebug << it->c_str() << "\n";
         }
     }
