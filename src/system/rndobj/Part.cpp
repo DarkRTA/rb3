@@ -1,10 +1,12 @@
 #include "rndobj/Part.h"
+#include "math/Mtx.h"
 #include "math/Rand.h"
 #include "math/Rot.h"
 #include "math/Trig.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
+#include "obj/Task.h"
 #include "os/Debug.h"
 #include "os/File.h"
 #include "os/System.h"
@@ -723,7 +725,220 @@ RndParticle *RndParticleSys::FreeParticle(RndParticle *p) {
     }
 }
 
-BinStream &operator>>(BinStream &, RndParticle &);
+void RndParticleSys::SetSubSamples(int num) {
+    mSubSamples = num;
+    Transpose(mRelativeXfm, mSubSampleXfm);
+    Multiply(WorldXfm(), mSubSampleXfm, mSubSampleXfm);
+}
+
+void RndParticleSys::SetRelativeMotion(float motion, RndTransformable *parent) {
+    mRelativeParent = parent ? parent : this;
+    mRelativeMotion = motion;
+    if (motion == 1) {
+        mRelativeXfm = mRelativeParent->WorldXfm();
+    } else {
+        mLastWorldXfm = mRelativeParent->WorldXfm();
+        mRelativeXfm.Reset();
+    }
+}
+
+void RndParticleSys::DrawShowing() {
+    if (mFrameDrive) {
+        UpdateRelativeXfm();
+    } else {
+        if (unke8 > 1) {
+            UpdateRelativeXfm();
+            UpdateParticles();
+        } else if (mRelativeMotion == 1) {
+            UpdateRelativeXfm();
+        }
+        unke8 = 0;
+    }
+}
+
+void RndParticleSys::UpdateSphere() {
+    Sphere s;
+    MakeWorldSphere(s, true);
+    Transform tf;
+    FastInvert(WorldXfm(), tf);
+    Multiply(s, tf, s);
+    SetSphere(s);
+}
+
+bool RndParticleSys::MakeWorldSphere(Sphere &s, bool b2) {
+    if (b2) {
+        s.Zero();
+        for (RndParticle *p = mActiveParticles; p != nullptr; p = p->next) {
+            Sphere s38;
+            Multiply(p->Pos3(), mRelativeXfm, s38.center);
+            s38.radius = p->size * 0.5f;
+            s.GrowToContain(s38);
+        }
+        return true;
+    } else {
+        Sphere &mySphere = mSphere;
+        if (mySphere.GetRadius()) {
+            Multiply(mySphere, WorldXfm(), s);
+            return true;
+        } else
+            return false;
+    }
+}
+
+void RndParticleSys::SetFrameDrive(bool b) {
+    mFrameDrive = b;
+    if (mFrameDrive) {
+        unke4 = GetFrame();
+    } else
+        unke8 = 0;
+    unkec = 0;
+}
+
+void RndParticleSys::SetPauseOffscreen(bool b) {
+    mPauseOffscreen = b;
+    unkec = 0;
+}
+
+void RndParticleSys::SetFrame(float frame, float blend) {
+    RndAnimatable::SetFrame(frame, blend);
+    if (mFrameDrive) {
+        UpdateParticles();
+        unke4 = frame;
+        unkec = 0;
+    }
+}
+
+float RndParticleSys::EndFrame() {
+    if (mFrameDrive) {
+        return Max(mLife.x, mLife.y);
+    } else
+        return 0;
+}
+
+void RndParticleSys::Poll() {
+    if (!mFrameDrive) {
+        unk2e8 += (GetRate() == k30_fps_ui ? TheTaskMgr.DeltaUISeconds()
+                                           : TheTaskMgr.DeltaSeconds())
+            * 30.0f;
+        if (unke8 == 0) {
+            if (Showing()
+                && (mActiveParticles || unk2e4 || mEmitRate.x > 0 || mEmitRate.y > 0
+                    || mMaxBurst > 0)) {
+                UpdateRelativeXfm();
+                UpdateParticles();
+            } else
+                unke4 = CalcFrame();
+        } else if (mActiveParticles && unke8 % 60 == 0 && !mPreserveParticles) {
+            float calced = CalcFrame();
+            RndParticle *p = mActiveParticles;
+            while (p) {
+                if (CheckParticleLife(calced, p)) {
+                    p = FreeParticle(p);
+                } else
+                    p = p->next;
+            }
+        }
+        if (mSubSamples > 0 && Dirty()) {
+            MakeLocToRel(mSubSampleXfm);
+        }
+        unke8++;
+    }
+}
+
+void RndParticleSys::MakeLocToRel(Transform &tf) {
+    if (mRelativeMotion == 1) {
+        if (mRelativeParent == this) {
+            tf.Reset();
+            return;
+        }
+    }
+    Transpose(mRelativeXfm, tf);
+    Multiply(WorldXfm(), tf, tf);
+}
+
+void RndParticleSys::CreateParticles(float f1, float f2, const Transform &tf) {
+    if (f2 <= 0 || mNumActive >= mMaxParticles)
+        return;
+    else {
+        unke0 += f2 * RandomFloat(mEmitRate.x, mEmitRate.y);
+        unke0 += CheckBursts(f2) + (float)unk2e4;
+        unk2e4 = 0;
+        while (unke0 >= 1.0f && mNumActive < mMaxParticles) {
+            RndParticle *p = AllocParticle();
+            if (!p) {
+                unke0 = 0;
+                return;
+            }
+            InitParticle(f1, p, &tf, gNoPartOverride);
+            unke0 -= 1.0f;
+        }
+    }
+}
+
+void RndParticleSys::UpdateRelativeXfm() {
+    if (mRelativeMotion == 1) {
+        mRelativeXfm = mRelativeParent->WorldXfm();
+    } else if (mRelativeMotion) {
+        Transform &worldXfm = mRelativeParent->WorldXfm();
+        Invert(mLastWorldXfm.m, mLastWorldXfm.m);
+        Multiply(mLastWorldXfm.m, worldXfm.m, mLastWorldXfm.m);
+        Hmx::Quat q28(0, 0, 0, 1);
+        FastInterp(q28, Hmx::Quat(mLastWorldXfm.m), mRelativeMotion, q28);
+        MakeRotMatrix(q28, mLastWorldXfm.m);
+        Subtract(mRelativeXfm.v, mLastWorldXfm.v, mRelativeXfm.v);
+        Multiply(mRelativeXfm, mLastWorldXfm.m, mRelativeXfm);
+        Normalize(mRelativeXfm.m, mRelativeXfm.m);
+        Interp(mLastWorldXfm.v, worldXfm.v, mRelativeMotion, mLastWorldXfm.v);
+        Add(mRelativeXfm.v, mLastWorldXfm.v, mRelativeXfm.v);
+        mLastWorldXfm = worldXfm;
+    }
+}
+
+void RndParticleSys::Enter() {
+    unk2e8 = 0;
+    mPreSpawn = false;
+    RndPollable::Enter();
+}
+
+void RndParticleSys::RunFastForward() {
+    unkap3 = false;
+    float f1 = (mEmitRate.x + mEmitRate.y) * 0.5f;
+    if (f1 < 0.0001f)
+        return;
+    else {
+        float f6 = 1.0f / f1;
+        float f3 = Min(f6 * (float)MaxParticles(), (mLife.x + mLife.y) * 0.5f);
+        f6 = Max(1.0f, f6);
+        float f4 = CalcFrame();
+        Transform tf78;
+        MakeLocToRel(tf78);
+        for (float f5 = f4 - f3; f5 <= f4; f5 += f6) {
+            MoveParticles(f5, f6);
+            CreateParticles(f5, f6, tf78);
+        }
+    }
+}
+
+void RndParticleSys::ExplicitParticles(int i1, bool b2, PartOverride &partOverride) {
+    if (b2) {
+        float calced = CalcFrame();
+        Transform tf48;
+        MakeLocToRel(tf48);
+        for (int i = 0; i < i1 && mNumActive < mMaxParticles; i++) {
+            RndParticle *p = AllocParticle();
+            if (!p)
+                break;
+            InitParticle(calced, p, &tf48, partOverride);
+        }
+    } else
+        unk2e4 += i1;
+}
+
+void RndParticleSys::FreeAllParticles() {
+    for (RndParticle *p = mActiveParticles; p != nullptr; p = FreeParticle(p))
+        ;
+    unke0 = 0;
+}
 
 void RndParticleSys::MoveParticles(float, float) { START_AUTO_TIMER("psysmove"); }
 

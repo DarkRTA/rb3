@@ -326,6 +326,7 @@ void Multiply(const Vector3 &, const Transform &, Vector3 &);
 void Multiply(const Plane &, const Transform &, Plane &);
 void Multiply(const Hmx::Matrix3 &, const Hmx::Matrix3 &, Hmx::Matrix3 &);
 void IdentityInterp(const Hmx::Quat &, float, const Hmx::Quat &);
+void Multiply(const Transform &, const Hmx::Matrix3 &, Transform &);
 
 inline void Multiply(const Frustum &fin, const Transform &tf, Frustum &fout) {
     Multiply(fin.front, tf, fout.front);

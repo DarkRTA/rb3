@@ -170,6 +170,11 @@ public:
     RndParticle *FreeParticle(RndParticle *);
     void MoveParticles(float, float);
     void MakeLocToRel(Transform &);
+    void UpdateRelativeXfm();
+    void UpdateParticles();
+    void CreateParticles(float, float, const Transform &);
+    float CheckBursts(float);
+    void RunFastForward();
 
     DataNode OnSetStartColor(const DataArray *);
     DataNode OnSetStartColorInt(const DataArray *);
@@ -261,6 +266,14 @@ public:
             return unk2e8;
     }
 
+    bool CheckParticleLife(float frame, RndParticle *particle) {
+        bool ret = false;
+        if (frame >= particle->deathFrame || frame < particle->birthFrame)
+            ret = true;
+
+        return ret;
+    }
+
     DECLARE_REVS;
     NEW_OVERLOAD;
     DELETE_OVERLOAD;
@@ -273,7 +286,7 @@ public:
     RndParticle *mPersistentParticles; // 0xd0
     RndParticle *mFreeParticles; // 0xd4
     RndParticle *mActiveParticles; // 0xd8
-    int mNumActive; // 0xdcc
+    int mNumActive; // 0xdc
     float unke0; // 0xe0
     float unke4; // 0xe4
     int unke8; // 0xe8
@@ -311,7 +324,7 @@ public:
     ObjPtr<RndMat> mMat; // 0x19c
     bool mPreserveParticles; // 0x1a8
     Transform mRelativeXfm; // 0x1ac
-    Transform mLastWorldXfm; // 0x1ec
+    Transform mLastWorldXfm; // 0x1dc
     float mRelativeMotion; // 0x20c
     ObjOwnerPtr<RndTransformable> mRelativeParent; // 0x210
     /** "Specify a collide plane to reflect particles. Used to bounce particles off
