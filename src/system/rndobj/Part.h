@@ -1,5 +1,6 @@
 #pragma once
 #include "math/Color.h"
+#include "math/Mtx.h"
 #include "math/Vec.h"
 #include "obj/ObjMacros.h"
 #include "rndobj/Trans.h"
@@ -16,6 +17,9 @@ class RndParticle {
 public:
     NEW_ARRAY_OVERLOAD;
     DELETE_ARRAY_OVERLOAD;
+
+    Vector3 &Pos3() { return reinterpret_cast<Vector3 &>(pos); }
+    Vector3 &Vel3() { return reinterpret_cast<Vector3 &>(vel); }
 
     Hmx::Color col; // 0x0
     Hmx::Color colVel; // 0x10
@@ -35,19 +39,21 @@ BinStream &operator>>(BinStream &, RndParticle &);
 
 class RndFancyParticle : public RndParticle {
 public:
-    float growFrame;
-    float growVel;
-    float shrinkFrame;
-    float shrinkVel;
-    Hmx::Color midcolVel;
-    float midcolFrame;
-    float beginGrow;
-    float midGrow;
-    float endGrow;
-    Vector4 bubbleDir;
-    float bubbleFreq;
-    float bubblePhase;
-    float RPF;
+    Vector3 &Bubble3() { return reinterpret_cast<Vector3 &>(bubbleDir); }
+
+    float growFrame; // 0x60
+    float growVel; // 0x64
+    float shrinkFrame; // 0x68
+    float shrinkVel; // 0x6c
+    Hmx::Color midcolVel; // 0x70
+    float midcolFrame; // 0x80
+    float beginGrow; // 0x84
+    float midGrow; // 0x88
+    float endGrow; // 0x8c
+    Vector4 bubbleDir; // 0x90
+    float bubbleFreq; // 0xa0
+    float bubblePhase; // 0xa4
+    float RPF; // 0xa8
     float swingArmVel; // 0xac
 };
 
@@ -118,10 +124,10 @@ public:
 
     class Burst {
     public:
-        int unk0;
-        int unk4;
-        int unk8;
-        int unkc;
+        float unk0;
+        float unk4;
+        float unk8;
+        float unkc;
     };
 
     RndParticleSys();
@@ -156,12 +162,14 @@ public:
     void SetFrameDrive(bool);
     void SetPauseOffscreen(bool);
     void InitParticle(RndParticle *, const Transform *);
+    void InitParticle(float, RndParticle *, const Transform *, PartOverride &);
     void ExplicitParticles(int, bool, PartOverride &);
     void FreeAllParticles();
     int MaxParticles() const;
     RndParticle *AllocParticle();
     RndParticle *FreeParticle(RndParticle *);
     void MoveParticles(float, float);
+    void MakeLocToRel(Transform &);
 
     DataNode OnSetStartColor(const DataArray *);
     DataNode OnSetStartColorInt(const DataArray *);
@@ -245,6 +253,13 @@ public:
     RndMesh *GetMesh() const { return mMesh; }
     Type GetType() const { return mType; }
     RndMat *GetMat() const { return mMat; }
+
+    float CalcFrame() {
+        if (mFrameDrive)
+            return GetFrame();
+        else
+            return unk2e8;
+    }
 
     DECLARE_REVS;
     NEW_OVERLOAD;

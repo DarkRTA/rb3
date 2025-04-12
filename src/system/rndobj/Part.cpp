@@ -1,4 +1,7 @@
 #include "rndobj/Part.h"
+#include "math/Rand.h"
+#include "math/Rot.h"
+#include "math/Trig.h"
 #include "obj/Data.h"
 #include "obj/ObjMacros.h"
 #include "obj/Object.h"
@@ -437,6 +440,259 @@ BEGIN_LOADS(RndParticleSys)
     unkec = 0;
     unke4 = GetFrame();
 END_LOADS
+
+RndParticle *RndParticleSys::AllocParticle() {
+    RndParticle *p;
+    if (mPreserveParticles) {
+        p = mFreeParticles;
+        if (!mFreeParticles)
+            return nullptr;
+        mFreeParticles = p->next;
+    } else {
+        p = gParticlePool->AllocateParticle();
+        if (!p) {
+            ParticlePoolSize();
+            return nullptr;
+        }
+    }
+    p->prev = p;
+    if (mActiveParticles) {
+        mActiveParticles->prev = p;
+    }
+    p->next = mActiveParticles;
+    mActiveParticles = p;
+    mNumActive++;
+    return p;
+}
+
+void RndParticleSys::InitParticle(RndParticle *p, const Transform *t) {
+    InitParticle(CalcFrame(), p, t, gNoPartOverride);
+}
+
+void RndParticleSys::InitParticle(
+    float frame, RndParticle *particle, const Transform *tf, PartOverride &partOverride
+) {
+    particle->birthFrame = frame;
+    if (partOverride.mask & 1) {
+        particle->deathFrame = particle->birthFrame + partOverride.life;
+    } else {
+        particle->deathFrame = particle->birthFrame + RandomFloat(mLife.x, mLife.y);
+    }
+
+    particle->pos.w = particle->deathFrame > particle->birthFrame
+        ? 1.0f / (particle->deathFrame - particle->birthFrame)
+        : 0;
+
+    RndMesh *mesh = mMesh;
+    if (partOverride.mask & 0x100) {
+        mesh = partOverride.mesh;
+    }
+
+    if (mesh && !mesh->Faces().empty()) {
+        RandomPointOnMesh(mesh, particle->Pos3(), particle->Vel3());
+    } else {
+        if (partOverride.mask & 0x200) {
+            particle->pos.x =
+                RandomFloat(partOverride.box.mMin.x, partOverride.box.mMax.x);
+            particle->pos.y =
+                RandomFloat(partOverride.box.mMin.y, partOverride.box.mMax.y);
+            particle->pos.z =
+                RandomFloat(partOverride.box.mMin.z, partOverride.box.mMax.z);
+        } else {
+            particle->pos.x = RandomFloat(mBoxExtent1.x, mBoxExtent2.x);
+            particle->pos.y = RandomFloat(mBoxExtent1.y, mBoxExtent2.y);
+            particle->pos.z = RandomFloat(mBoxExtent1.z, mBoxExtent2.z);
+        }
+        float f8, f9;
+        if (partOverride.mask & 0x80) {
+            f8 = RandomFloat(partOverride.pitch.x, partOverride.pitch.y);
+            f9 = RandomFloat(partOverride.yaw.x, partOverride.yaw.y);
+        } else {
+            f8 = RandomFloat(mPitch.x, mPitch.y);
+            f9 = RandomFloat(mYaw.x, mYaw.y);
+        }
+
+        float cosPitch = FastCos(f8);
+        float sinPitch = FastSin(f9);
+        particle->vel.x = -cosPitch * sinPitch;
+        particle->vel.y = cosPitch * FastCos(f9);
+        particle->vel.z = FastSin(f8);
+    }
+
+    particle->Vel3() *=
+        partOverride.mask & 2 ? partOverride.speed : RandomFloat(mSpeed.x, mSpeed.y);
+    float f11 = particle->deathFrame != particle->birthFrame
+        ? 1.0f / (particle->deathFrame - particle->birthFrame)
+        : 0;
+    if (mSpin) {
+        particle->angle = RandomFloat(0, PI * 2);
+        particle->swingArm = RandomFloat(mStartOffset.x, mStartOffset.y);
+    } else {
+        particle->angle = 0;
+        particle->swingArm = 0;
+    }
+    if (partOverride.mask & 0x10) {
+        particle->col = partOverride.startColor;
+    } else {
+        particle->col.red = RandomFloat(mStartColorLow.red, mStartColorHigh.red);
+        particle->col.green = RandomFloat(mStartColorLow.green, mStartColorHigh.green);
+        particle->col.blue = RandomFloat(mStartColorLow.blue, mStartColorHigh.blue);
+        particle->col.alpha = RandomFloat(mStartColorLow.alpha, mStartColorHigh.alpha);
+    }
+    if (partOverride.mask & 4) {
+        particle->size = partOverride.size;
+    } else {
+        particle->size = RandomFloat(mStartSize.x, mStartSize.y);
+    }
+    if (partOverride.mask & 8) {
+        particle->sizeVel = partOverride.deltaSize;
+    } else {
+        particle->sizeVel = RandomFloat(mDeltaSize.x, mDeltaSize.y);
+    }
+    if (particle->sizeVel < -particle->size) {
+        particle->sizeVel = -particle->size;
+    }
+    if (partOverride.mask & 0x40) {
+        particle->colVel = partOverride.endColor;
+    } else {
+        particle->colVel.red = RandomFloat(mEndColorLow.red, mEndColorHigh.red);
+        particle->colVel.green = RandomFloat(mEndColorLow.green, mEndColorHigh.green);
+        particle->colVel.blue = RandomFloat(mEndColorLow.blue, mEndColorHigh.blue);
+        particle->colVel.alpha = RandomFloat(mEndColorLow.alpha, mEndColorHigh.alpha);
+    }
+
+    if (mType == kFancy) {
+        RndFancyParticle *fancyParticle = static_cast<RndFancyParticle *>(particle);
+        if (mBubble) {
+            fancyParticle->bubbleFreq =
+                (PI * 2) / RandomFloat(mBubblePeriod.x, mBubblePeriod.y);
+            fancyParticle->bubblePhase = RandomFloat(0, PI * 2);
+            float f8 = RandomFloat(0, PI * 2);
+            Scale(
+                Vector3(FastSin(f8), 0, FastCos(f8)),
+                RandomFloat(mBubbleSize.x, mBubbleSize.y),
+                fancyParticle->Bubble3()
+            );
+            Vector3 vac;
+            Scale(fancyParticle->Bubble3(), FastSin(fancyParticle->bubblePhase), vac);
+            Add(fancyParticle->Pos3(), vac, fancyParticle->Pos3());
+            fancyParticle->bubblePhase =
+                -(frame * fancyParticle->bubbleFreq - fancyParticle->bubblePhase);
+        }
+        if (mSpin) {
+            fancyParticle->RPF = RandomFloat(mRPM.x, mRPM.y) * 0.003490658709779382f;
+            if (mRandomDirection && RandomInt() & 0x100000) {
+                fancyParticle->RPF = -fancyParticle->RPF;
+            }
+            fancyParticle->swingArmVel =
+                f11 * (RandomFloat(mEndOffset.x, mEndOffset.y) - fancyParticle->swingArm);
+        } else {
+            fancyParticle->RPF = 0;
+            fancyParticle->swingArmVel = 0;
+        }
+        if (mGrowRatio) {
+            fancyParticle->growFrame =
+                Interp(fancyParticle->birthFrame, fancyParticle->deathFrame, mGrowRatio);
+            fancyParticle->growVel = fancyParticle->growFrame != fancyParticle->birthFrame
+                ? fancyParticle->size
+                    / (fancyParticle->growFrame - fancyParticle->birthFrame)
+                : 0;
+
+        } else {
+            fancyParticle->growFrame = fancyParticle->birthFrame;
+            fancyParticle->growVel = 0;
+        }
+        if (mShrinkRatio != 1) {
+            fancyParticle->shrinkFrame = Interp(
+                fancyParticle->birthFrame, fancyParticle->deathFrame, mShrinkRatio
+            );
+            fancyParticle->shrinkVel =
+                fancyParticle->shrinkFrame != fancyParticle->deathFrame
+                ? (fancyParticle->size + fancyParticle->sizeVel)
+                    / (fancyParticle->shrinkFrame - fancyParticle->deathFrame)
+                : 0;
+        } else {
+            fancyParticle->shrinkFrame = fancyParticle->deathFrame;
+            fancyParticle->shrinkVel = 0;
+        }
+
+        fancyParticle->beginGrow = fancyParticle->growFrame > fancyParticle->birthFrame
+            ? 1.0f / (fancyParticle->growFrame - fancyParticle->birthFrame)
+            : 0;
+
+        fancyParticle->midGrow = fancyParticle->shrinkFrame > fancyParticle->growFrame
+            ? 1.0f / (fancyParticle->shrinkFrame - fancyParticle->growFrame)
+            : 0;
+
+        fancyParticle->endGrow = fancyParticle->deathFrame > fancyParticle->shrinkFrame
+            ? 1.0f / (fancyParticle->deathFrame - fancyParticle->shrinkFrame)
+            : 0;
+
+        if (mGrowRatio) {
+            fancyParticle->size = 0;
+        }
+        if (fancyParticle->shrinkFrame != fancyParticle->growFrame) {
+            f11 = 1.0f / (fancyParticle->shrinkFrame - fancyParticle->growFrame);
+        }
+        fancyParticle->midcolFrame =
+            Interp(fancyParticle->birthFrame, fancyParticle->deathFrame, mMidColorRatio);
+        if (partOverride.mask & 0x20) {
+            fancyParticle->midcolVel = partOverride.midColor;
+        } else {
+            fancyParticle->midcolVel.red =
+                RandomFloat(mMidColorLow.red, mMidColorHigh.red);
+            fancyParticle->midcolVel.green =
+                RandomFloat(mMidColorLow.green, mMidColorHigh.green);
+            fancyParticle->midcolVel.blue =
+                RandomFloat(mMidColorLow.blue, mMidColorHigh.blue);
+            fancyParticle->midcolVel.alpha =
+                RandomFloat(mMidColorLow.alpha, mMidColorHigh.alpha);
+        }
+        fancyParticle->vel.w = fancyParticle->midcolFrame > fancyParticle->birthFrame
+            ? 1.0f / (fancyParticle->midcolFrame - fancyParticle->birthFrame)
+            : 0;
+        fancyParticle->bubbleDir.w =
+            fancyParticle->deathFrame > fancyParticle->midcolFrame
+            ? 1.0f / (fancyParticle->deathFrame - fancyParticle->midcolFrame)
+            : 0;
+        Subtract(fancyParticle->colVel, fancyParticle->midcolVel, fancyParticle->colVel);
+        if (fancyParticle->deathFrame != fancyParticle->midcolFrame) {
+            Multiply(
+                fancyParticle->colVel,
+                1.0f / (fancyParticle->deathFrame - fancyParticle->midcolFrame),
+                fancyParticle->colVel
+            );
+        }
+        if (fancyParticle->midcolFrame != fancyParticle->birthFrame) {
+            Subtract(
+                fancyParticle->midcolVel, fancyParticle->col, fancyParticle->midcolVel
+            );
+            if (fancyParticle->midcolFrame != fancyParticle->birthFrame) {
+                Multiply(
+                    fancyParticle->colVel,
+                    1.0f / (fancyParticle->midcolFrame - fancyParticle->birthFrame),
+                    fancyParticle->colVel
+                );
+            }
+        }
+    } else {
+        Subtract(particle->colVel, particle->col, particle->colVel);
+        Multiply(particle->colVel, f11, particle->colVel);
+    }
+
+    particle->sizeVel *= f11;
+    Transform tfa0;
+    if (!tf) {
+        MakeLocToRel(tfa0);
+        tf = &tfa0;
+    }
+    Multiply(particle->Pos3(), *tf, particle->Pos3());
+    Multiply(particle->Vel3(), *tf, particle->Vel3());
+    if (mBubble && mType == kFancy) {
+        RndFancyParticle *fancyParticle = static_cast<RndFancyParticle *>(particle);
+        Multiply(fancyParticle->Bubble3(), *tf, fancyParticle->Bubble3());
+    }
+}
 
 RndParticle *RndParticleSys::FreeParticle(RndParticle *p) {
     if (!p)

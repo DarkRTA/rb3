@@ -47,6 +47,7 @@ void ScaleXfms(RndMultiMesh *mm, const Vector3 &v);
 void SortXfms(RndMultiMesh *, const Vector3 &);
 void RandomXfms(RndMultiMesh *);
 void ScrambleXfms(RndMultiMesh *mm);
+void RandomPointOnMesh(RndMesh *m, Vector3 &v1, Vector3 &v2);
 
 void RndUtlPreInit();
 void RndUtlInit();

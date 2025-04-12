@@ -156,11 +156,15 @@ inline void Add(const Hmx::Color &c1, const Hmx::Color &c2, Hmx::Color &res) {
 }
 
 inline void Subtract(const Hmx::Color &c1, const Hmx::Color &c2, Hmx::Color &res) {
+#ifdef VERSION_SZBE69_B8
     float alpha = c1.alpha - c2.alpha;
     res.blue = c1.blue - c2.blue;
     res.green = c1.green - c2.green;
     res.red = c1.red - c2.red;
     res.alpha = alpha;
+#else
+    res.Set(c1.red - c2.red, c1.green - c2.green, c1.blue - c2.blue, c1.alpha - c2.alpha);
+#endif
 }
 
 inline void Multiply(const Hmx::Color &c1, float f, Hmx::Color &res) {
