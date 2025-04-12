@@ -264,6 +264,7 @@ public:
 
     void Set(const Vector3 &, const Vector3 &);
     float Dot(const Vector3 &vec) const { return a * vec.x + b * vec.y + c * vec.z + d; }
+    Vector3 On() const;
 
     float a, b, c, d;
 };

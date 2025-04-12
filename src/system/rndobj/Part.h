@@ -6,12 +6,17 @@
 #include "rndobj/Draw.h"
 #include "rndobj/Poll.h"
 #include "rndobj/Anim.h"
+#include "utl/BinStream.h"
+#include "utl/MemMgr.h"
 
 class RndMesh;
 class RndMat;
 
 class RndParticle {
 public:
+    NEW_ARRAY_OVERLOAD;
+    DELETE_ARRAY_OVERLOAD;
+
     Hmx::Color col; // 0x0
     Hmx::Color colVel; // 0x10
     Vector4 pos; // 0x20
@@ -25,6 +30,8 @@ public:
     RndParticle *prev; // 0x58
     RndParticle *next; // 0x5c
 };
+
+BinStream &operator>>(BinStream &, RndParticle &);
 
 class RndFancyParticle : public RndParticle {
 public:
@@ -109,7 +116,13 @@ public:
         kFancy = 1
     };
 
-    struct Burst {};
+    class Burst {
+    public:
+        int unk0;
+        int unk4;
+        int unk8;
+        int unkc;
+    };
 
     RndParticleSys();
     OBJ_CLASSNAME(ParticleSys);
@@ -220,9 +233,9 @@ public:
     void SetConstantArea(bool b) { mConstantArea = b; }
 
     void SetMaxBurst(int i) { mMaxBurst = i; }
-    void SetTimeBetweenBursts(float f1, float f2) { mTimeBetween.Set(f1, f2); }
-    void SetPeakRate(float f1, float f2) { mPeakRate.Set(f1, f2); }
-    void SetDuration(float f1, float f2) { mDuration.Set(f1, f2); }
+    void SetTimeBetweenBursts(float f1, float f2) { mBurstInterval.Set(f1, f2); }
+    void SetPeakRate(float f1, float f2) { mBurstPeak.Set(f1, f2); }
+    void SetDuration(float f1, float f2) { mBurstLength.Set(f1, f2); }
     void SetRPM(float f1, float f2) { mRPM.Set(f1, f2); }
     void SetRPMDrag(float f) { mRPMDrag = f; }
     void SetStartOffset(float f1, float f2) { mStartOffset.Set(f1, f2); }
@@ -242,14 +255,14 @@ public:
     Type mType; // 0xc8
     /** "maximum number of particles". Ranges from 0 to 3072. */
     int mMaxParticles; // 0xcc
-    RndParticle *unkd0;
-    RndParticle *unkd4;
-    RndParticle *unkd8;
-    int unkdc;
-    float unke0;
-    float unke4;
-    int unke8;
-    float unkec;
+    RndParticle *mPersistentParticles; // 0xd0
+    RndParticle *mFreeParticles; // 0xd4
+    RndParticle *mActiveParticles; // 0xd8
+    int mNumActive; // 0xdcc
+    float unke0; // 0xe0
+    float unke4; // 0xe4
+    int unke8; // 0xe8
+    float unkec; // 0xec
     Vector2 mBubblePeriod; // 0xf0
     Vector2 mBubbleSize; // 0xf8
     /** "Frame range of particle life." */
@@ -307,12 +320,12 @@ public:
     float mMidColorRatio; // 0x298
     Hmx::Color mMidColorLow; // 0x29c
     Hmx::Color mMidColorHigh; // 0x2ac
-    std::vector<int> unk2bc;
+    std::vector<Burst> mBursts; // 0x2bc
     int mMaxBurst; // 0x2c4
-    float unk2c8;
-    Vector2 mTimeBetween; // 0x2cc
-    Vector2 mPeakRate; // 0x2d4
-    Vector2 mDuration; // 0x2dc
+    float mTimeTillBurst; // 0x2c8
+    Vector2 mBurstInterval; // 0x2cc
+    Vector2 mBurstPeak; // 0x2d4
+    Vector2 mBurstLength; // 0x2dc
     int unk2e4;
     float unk2e8;
 };
