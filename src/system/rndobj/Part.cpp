@@ -25,22 +25,26 @@ namespace {
         return SystemConfig("rnd", "particlesys", "global_limit")->Int(1);
     }
 
-    DataNode PrintParticlePoolSize(DataArray *da) {
+    DataNode PrintParticlePoolSize(DataArray *) {
         MILO_LOG("Particle Pool Size:\n");
         if (gParticlePool) {
             int size = ParticlePoolSize();
-            MILO_LOG("   %d particles can be allocated, %.1f KB.\n", size, (float)size);
+            MILO_LOG(
+                "   %d particles can be allocated, %.1f KB.\n",
+                size,
+                (float)(size * 176 * 0.0009765625f)
+            );
             MILO_LOG(
                 "   %d particles active, %d is the high water mark.\n",
-                gParticlePool->mNumActiveParticles,
-                gParticlePool->mHighWaterMark
+                gParticlePool->NumActiveParticles(),
+                gParticlePool->HighWaterMark()
             );
             MILO_LOG(
                 "   Adding 30%%, suggesting a particle global limit of %d (set in default.dta).\n",
-                (int)(gParticlePool->mHighWaterMark * 1.3f)
+                (int)(gParticlePool->HighWaterMark() * 1.3f)
             );
         }
-        return DataNode(0);
+        return 0;
     }
 }
 
@@ -60,14 +64,94 @@ int GetParticleHighWaterMark() {
 }
 
 void ParticleCommonPool::InitPool() {
-    static int x = MemFindHeap("main");
-    MemPushHeap(x);
-    mPoolParticles = new RndFancyParticle[0xb0];
+    static int _x = MemFindHeap("main");
+    MemTempHeap tmp(_x);
+    int size = ParticlePoolSize();
+    mPoolParticles = new RndFancyParticle[size];
+    for (int i = 0; i < size - 1; i++) {
+        mPoolParticles[i].prev = nullptr;
+        mPoolParticles[i].next = &mPoolParticles[i + 1];
+    }
+    mPoolParticles[size - 1].prev = nullptr;
+    mPoolParticles[size - 1].next = nullptr;
+    mPoolFreeParticles = mPoolParticles;
 }
 
-void RndParticleSys::SetPool(int max, RndParticleSys::Type ty) {
+RndParticle *ParticleCommonPool::AllocateParticle() {
+    RndParticle *cur = mPoolFreeParticles;
+    RndParticle *ret = nullptr;
+    if (cur) {
+        mPoolFreeParticles = mPoolFreeParticles->next;
+        cur->prev = cur;
+        mNumActiveParticles++;
+        ret = cur;
+        if (mNumActiveParticles > mHighWaterMark) {
+            mHighWaterMark = mNumActiveParticles;
+        }
+    }
+    return ret;
+}
+
+RndParticle *ParticleCommonPool::FreeParticle(RndParticle *p) {
+    if (!p)
+        return nullptr;
+    else {
+        RndParticle *ret = p->next;
+        p->next = mPoolFreeParticles;
+        p->prev = nullptr;
+        mPoolFreeParticles = p;
+        mNumActiveParticles--;
+        return ret;
+    }
+}
+
+void RndParticleSys::SetPersistentPool(int i1, Type ty) {
+    delete[] unkd0;
+    mMaxParticles = i1;
+    mType = ty;
+    if (mMaxParticles != 0) {
+        RndParticle *p = nullptr;
+        if (ty == 1) {
+            unkd0 = new RndFancyParticle[i1];
+            RndFancyParticle *fp = (RndFancyParticle *)p;
+            for (int i = 0; i != i1; i++) {
+                (fp++)->next = fp;
+            }
+            p = fp;
+        } else {
+            unkd0 = new RndParticle[i1];
+            for (int i = 0; i != i1; i++) {
+                (p++)->next = p;
+            }
+        }
+        p->next = nullptr;
+    } else
+        unkd0 = 0;
+    unkd4 = unkd0;
+    unkd8 = 0;
+    unkdc = 0;
+    unke0 = 0;
+}
+
+void RndParticleSys::SetPool(int max, Type ty) {
     mMaxParticles = max;
     DataArray *cfg = SystemConfig("rnd", "particlesys", "local_limit");
+    int limit = cfg->Int(1);
+    if (mMaxParticles > limit) {
+        mMaxParticles = limit;
+    }
+    if (mPreserveParticles) {
+        SetPersistentPool(max, ty);
+    } else {
+        if (unkd8) {
+            for (RndParticle *p = unkd8; p != nullptr; p = FreeParticle(p))
+                ;
+        }
+        mType = ty;
+        unkd8 = 0;
+        unkdc = 0;
+        unke0 = 0;
+    }
 }
 
 BEGIN_COPYS(RndParticleSys)
@@ -80,7 +164,17 @@ BEGIN_COPYS(RndParticleSys)
     COPY_SUPERCLASS(RndDrawable)
     COPY_MEMBER_FROM(f, mPreserveParticles)
     if (mPreserveParticles) {
-        SetPool(mMaxParticles, mType);
+        SetPool(f->mMaxParticles, f->mType);
+        for (RndParticle *p = f->unkd8; p != nullptr; p = p->next) {
+            RndParticle *alloced = AllocParticle();
+            if (!alloced)
+                break;
+            RndParticle *next = alloced->next;
+            RndParticle *prev = alloced->prev;
+            *alloced = *p;
+            alloced->next = next;
+            alloced->prev = prev;
+        }
     }
     COPY_MEMBER_FROM(f, unkdc)
     unke4 = GetFrame();
@@ -108,8 +202,70 @@ BEGIN_COPYS(RndParticleSys)
         COPY_MEMBER_FROM(f, mMat)
         COPY_MEMBER_FROM(f, mBubblePeriod)
         COPY_MEMBER_FROM(f, mBubbleSize)
-        // bitfield shenanigans here
+        COPY_MEMBER_FROM(f, mBubble)
+        COPY_MEMBER_FROM(f, mSpin)
+        COPY_MEMBER_FROM(f, mRPM)
+        COPY_MEMBER_FROM(f, mRPMDrag)
+        COPY_MEMBER_FROM(f, mRandomDirection)
+        COPY_MEMBER_FROM(f, mDrag)
+        COPY_MEMBER_FROM(f, mStartOffset)
+        COPY_MEMBER_FROM(f, mEndOffset)
+        COPY_MEMBER_FROM(f, mVelocityAlign)
+        COPY_MEMBER_FROM(f, mStretchWithVelocity)
+        COPY_MEMBER_FROM(f, mConstantArea)
+        COPY_MEMBER_FROM(f, mPerspective)
+        COPY_MEMBER_FROM(f, mStretchScale)
+        COPY_MEMBER_FROM(f, mPreSpawn)
+        // unkap3 = 0;
+        COPY_MEMBER_FROM(f, unkap3)
+        COPY_MEMBER_FROM(f, mGrowRatio)
+        COPY_MEMBER_FROM(f, mShrinkRatio)
+        COPY_MEMBER_FROM(f, mMidColorRatio)
+        COPY_MEMBER_FROM(f, mMidColorLow)
+        COPY_MEMBER_FROM(f, mMidColorHigh)
+        COPY_MEMBER_FROM(f, mMesh)
+        COPY_MEMBER_FROM(f, mFrameDrive)
+        COPY_MEMBER_FROM(f, mPauseOffscreen)
+        unkec = 0;
+        unk2e8 = 0;
+        if (!mPreserveParticles) {
+            SetPool(f->mMaxParticles, f->mType);
+        }
+        RndTransformable *parent = f->mRelativeParent;
+        if (parent != f)
+            parent = f->mRelativeParent;
+        else
+            parent = this;
+        SetRelativeMotion(f->mRelativeMotion, parent);
+        SetSubSamples(f->mSubSamples);
     }
+    // clang-format off
+    // puVar8 = __dynamic_cast(param_1,0,&__RTTI,&Hmx::Object::__RTTI,0);
+
+    // if (param_2 != 2) {
+    
+    //   pRVar8 = MergedGet0x8(puVar8 + 0x210);
+    //   if (pRVar8 != 0x0) {
+    //     pRVar8 = **pRVar8;
+    //   }
+    //   pRVar6 = puVar8;
+    //   if (puVar8 != 0x0) {
+    //     pRVar6 = *puVar8;
+    //   }
+    //   if (pRVar8 == pRVar6) { f->mRelativeParent == f
+    //     pRVar8 = this;
+    //     if (this != 0x0) {
+    //       pRVar8 = this + 0x18;
+    //     }
+    //   }
+    //   else {
+    //     pRVar8 = MergedGet0x8(puVar8 + 0x210);
+    //   }
+    //   SetRelativeMotion(*(puVar8 + 0x20c),this,pRVar8);
+    //   SetSubSamples(this,*(puVar8 + 0x25c));
+    // }
+    // return;
+    // clang-format on
 END_COPYS
 
 SAVE_OBJ(RndParticleSys, 0x13D)
@@ -157,19 +313,17 @@ void RndParticleSys::MoveParticles(float, float) { START_AUTO_TIMER("psysmove");
 RndParticleSys::~RndParticleSys() {}
 
 RndParticleSys::RndParticleSys()
-    : mType(t0), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0.0f),
-      unke4(0.0f), unke8(0), unkec(0.0f), mBubblePeriod(10.0f, 10.0f),
-      mBubbleSize(1.0f, 1.0f), mLife(100.0f, 100.0f), mBoxExtent1(0.0f, 0.0f, 0.0f),
-      mBoxExtent2(0.0f, 0.0f, 0.0f), mSpeed(1.0f, 1.0f), mPitch(0.0f, 0.0f),
-      mYaw(0.0f, 0.0f), mEmitRate(1.0f, 1.0f), mStartSize(1.0f, 1.0f),
-      mDeltaSize(0.0f, 0.0f), mMesh(this), mMat(this), mPreserveParticles(0),
-      mRelativeParent(this), mBounce(this), mForceDir(0.0f, 0.0f, 0.0f), mDrag(0.0f),
-      mRPM(0.0f, 0.0f), mRPMDrag(0.0f), mStartOffset(0.0f, 0.0f), mEndOffset(0.0f, 0.0f),
-      mStretchScale(1.0f), mScreenAspect(1.0f), mSubSamples(0), mGrowRatio(0.0f),
-      mShrinkRatio(1.0f), mMidColorRatio(0.5f), mMaxBurst(0), unk2c8(0.0f),
-      mTimeBetween(15.0f, 35.0f), mPeakRate(4.0f, 8.0f), mDuration(20.0f, 30.0f),
-      unk2e4(0), unk2e8(0.0f) {
-    SetRelativeMotion(0.0f, this);
+    : mType(kBasic), mMaxParticles(0), unkd0(0), unkd4(0), unkd8(0), unkdc(0), unke0(0),
+      unke4(0), unke8(0), unkec(0), mBubblePeriod(10, 10), mBubbleSize(1, 1),
+      mLife(100, 100), mBoxExtent1(0, 0, 0), mBoxExtent2(0, 0, 0), mSpeed(1, 1),
+      mPitch(0, 0), mYaw(0, 0), mEmitRate(1, 1), mStartSize(1, 1), mDeltaSize(0, 0),
+      mMesh(this), mMat(this), mPreserveParticles(0), mRelativeParent(this),
+      mBounce(this), mForceDir(0, 0, 0), mDrag(0), mRPM(0, 0), mRPMDrag(0),
+      mStartOffset(0, 0), mEndOffset(0, 0), mStretchScale(1), mScreenAspect(1),
+      mSubSamples(0), mGrowRatio(0), mShrinkRatio(1), mMidColorRatio(0.5), mMaxBurst(0),
+      unk2c8(0), mTimeBetween(15, 35), mPeakRate(4, 8), mDuration(20, 30), unk2e4(0),
+      unk2e8(0) {
+    SetRelativeMotion(0, this);
     SetSubSamples(0);
 }
 
@@ -266,7 +420,7 @@ DataNode RndParticleSys::OnSetStartColor(const DataArray *da) {
         Hmx::Color(arr1->Float(0), arr1->Float(1), arr1->Float(2), arr1->Float(3)),
         Hmx::Color(arr2->Float(0), arr2->Float(1), arr2->Float(2), arr2->Float(3))
     );
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetStartColorInt(const DataArray *da) {
@@ -275,12 +429,12 @@ DataNode RndParticleSys::OnSetStartColorInt(const DataArray *da) {
     col1.alpha = da->Float(4);
     col2.alpha = da->Float(5);
     SetStartColor(col1, col2);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetEmitRate(const DataArray *da) {
     SetEmitRate(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnAddEmitRate(const DataArray *da) {
@@ -293,22 +447,22 @@ DataNode RndParticleSys::OnAddEmitRate(const DataArray *da) {
 DataNode RndParticleSys::OnSetBurstInterval(const DataArray *da) {
     SetMaxBurst(da->Int(2));
     SetTimeBetweenBursts(da->Float(3), da->Float(4));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetBurstPeak(const DataArray *da) {
     SetPeakRate(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetBurstLength(const DataArray *da) {
     SetDuration(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnExplicitPart(const DataArray *da) {
     ExplicitParticles(1, false, gNoPartOverride);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnExplicitParts(const DataArray *da) {
@@ -316,35 +470,35 @@ DataNode RndParticleSys::OnExplicitParts(const DataArray *da) {
     if (da->Size() >= 4 && da->Int(3) != 0)
         b = true;
     ExplicitParticles(da->Int(2), b, gNoPartOverride);
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetLife(const DataArray *da) {
     SetLife(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetSpeed(const DataArray *da) {
     SetSpeed(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetRotate(const DataArray *da) {
     SetSpin(da->Int(2));
     SetRPM(da->Float(3), da->Float(4));
     SetRPMDrag(da->Float(4));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetSwingArm(const DataArray *da) {
     SetStartOffset(da->Float(2), da->Float(3));
     SetEndOffset(da->Float(4), da->Float(5));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetDrag(const DataArray *da) {
     SetDrag(da->Float(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetAlignment(const DataArray *da) {
@@ -352,17 +506,17 @@ DataNode RndParticleSys::OnSetAlignment(const DataArray *da) {
     SetStretchWithVelocity(da->Int(3));
     SetConstantArea(da->Int(4));
     SetStretchScale(da->Float(5));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetStartSize(const DataArray *da) {
     SetStartSize(da->Float(2), da->Float(3));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetMat(const DataArray *da) {
     SetMat(da->Obj<RndMat>(2));
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnSetPos(const DataArray *da) {
@@ -370,7 +524,7 @@ DataNode RndParticleSys::OnSetPos(const DataArray *da) {
         Vector3(da->Float(2), da->Float(3), da->Float(4)),
         Vector3(da->Float(5), da->Float(6), da->Float(7))
     );
-    return DataNode(0);
+    return 0;
 }
 
 DataNode RndParticleSys::OnActiveParticles(const DataArray *da) {

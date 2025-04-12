@@ -10,9 +10,8 @@
 class RndMesh;
 class RndMat;
 
-struct RndParticle {
-    RndParticle() {}
-
+class RndParticle {
+public:
     Hmx::Color col; // 0x0
     Hmx::Color colVel; // 0x10
     Vector4 pos; // 0x20
@@ -27,9 +26,8 @@ struct RndParticle {
     RndParticle *next; // 0x5c
 };
 
-struct RndFancyParticle : RndParticle {
-    RndFancyParticle() {}
-
+class RndFancyParticle : public RndParticle {
+public:
     float growFrame;
     float growVel;
     float shrinkFrame;
@@ -43,7 +41,7 @@ struct RndFancyParticle : RndParticle {
     float bubbleFreq;
     float bubblePhase;
     float RPF;
-    float swingArmVel;
+    float swingArmVel; // 0xac
 };
 
 class ParticleCommonPool {
@@ -52,10 +50,14 @@ public:
         : mPoolParticles(0), mPoolFreeParticles(0), mNumActiveParticles(0),
           mHighWaterMark(0) {}
     void InitPool();
+    RndParticle *AllocateParticle();
     RndParticle *FreeParticle(RndParticle *);
 
-    RndFancyParticle *mPoolParticles; // 0x0
-    RndFancyParticle *mPoolFreeParticles; // 0x4
+    int NumActiveParticles() const { return mNumActiveParticles; }
+    int HighWaterMark() const { return mHighWaterMark; }
+
+    RndParticle *mPoolParticles; // 0x0
+    RndParticle *mPoolFreeParticles; // 0x4
     int mNumActiveParticles; // 0x8
     int mHighWaterMark; // 0xc
 };
@@ -103,9 +105,8 @@ class RndParticleSys : public RndAnimatable,
                        public RndDrawable {
 public:
     enum Type {
-        t0,
-        t1,
-        t2
+        kBasic = 0,
+        kFancy = 1
     };
 
     struct Burst {};
@@ -145,6 +146,7 @@ public:
     void ExplicitParticles(int, bool, PartOverride &);
     void FreeAllParticles();
     int MaxParticles() const;
+    RndParticle *AllocParticle();
     RndParticle *FreeParticle(RndParticle *);
     void MoveParticles(float, float);
 
@@ -236,12 +238,11 @@ public:
     DELETE_OVERLOAD;
     NEW_OBJ(RndParticleSys)
     static void Init() { REGISTER_OBJ_FACTORY(RndParticleSys) }
-    static RndParticle *AllocParticle();
 
-    Type mType; // fancy?
+    Type mType; // 0xc8
     /** "maximum number of particles". Ranges from 0 to 3072. */
     int mMaxParticles; // 0xcc
-    int unkd0;
+    RndParticle *unkd0;
     RndParticle *unkd4;
     RndParticle *unkd8;
     int unkdc;
