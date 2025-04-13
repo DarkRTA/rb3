@@ -1137,6 +1137,25 @@ DataNode RndParticleSys::OnSetStartColorInt(const DataArray *da) {
     return 0;
 }
 
+DataNode RndParticleSys::OnSetEndColor(const DataArray *da) {
+    DataArray *arr1 = da->Array(2);
+    DataArray *arr2 = da->Array(3);
+    SetEndColor(
+        Hmx::Color(arr1->Float(0), arr1->Float(1), arr1->Float(2), arr1->Float(3)),
+        Hmx::Color(arr2->Float(0), arr2->Float(1), arr2->Float(2), arr2->Float(3))
+    );
+    return 0;
+}
+
+DataNode RndParticleSys::OnSetEndColorInt(const DataArray *da) {
+    Hmx::Color col1(da->Int(2));
+    Hmx::Color col2(da->Int(3));
+    col1.alpha = da->Float(4);
+    col2.alpha = da->Float(5);
+    SetEndColor(col1, col2);
+    return 0;
+}
+
 DataNode RndParticleSys::OnSetEmitRate(const DataArray *da) {
     SetEmitRate(da->Float(2), da->Float(3));
     return 0;
@@ -1233,7 +1252,7 @@ DataNode RndParticleSys::OnSetPos(const DataArray *da) {
 }
 
 DataNode RndParticleSys::OnActiveParticles(const DataArray *da) {
-    return DataNode(mActiveParticles != 0);
+    return mActiveParticles != nullptr;
 }
 
 BinStream &operator>>(BinStream &bs, RndParticle &part) {
@@ -1246,18 +1265,24 @@ bool AngleVectorSync(Vector2 &vec, DataNode &_val, DataArray *_prop, int _i, Pro
         return true;
     else {
         Symbol sym = _prop->Sym(_i);
+        float *coord = nullptr;
         if (sym == x) {
-            if (_op == kPropSet)
-                vec.x = DegreesToRadians(_val.Float());
-            else if (_op == kPropGet)
-                _val = RadiansToDegrees(vec.x);
-            else
-                return false;
+            coord = &vec.x;
+            goto sync;
         } else if (sym == y) {
-            vec.x = vec.y;
+            coord = &vec.y;
+            goto sync;
         } else
             return false;
+    sync:
+        if (_op == kPropSet)
+            *coord = DegreesToRadians(_val.Float());
+        else if (_op == kPropGet)
+            _val = RadiansToDegrees(*coord);
+        else
+            return false;
     }
+    return true;
 }
 
 #pragma push
@@ -1296,7 +1321,7 @@ BEGIN_PROPSYNCS(RndParticleSys)
             if (_op == kPropSet) {
                 mBubble = _val.Int();
             } else
-                _val = DataNode(mBubble);
+                _val = mBubble;
             return true;
         }
     }
