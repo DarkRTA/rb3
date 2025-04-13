@@ -124,6 +124,9 @@ public:
 
     class Burst {
     public:
+        bool Set(float, float);
+        float Emit(float);
+
         float unk0;
         float unk4;
         float unk8;
@@ -165,7 +168,6 @@ public:
     void InitParticle(float, RndParticle *, const Transform *, PartOverride &);
     void ExplicitParticles(int, bool, PartOverride &);
     void FreeAllParticles();
-    int MaxParticles() const;
     RndParticle *AllocParticle();
     RndParticle *FreeParticle(RndParticle *);
     void MoveParticles(float, float);
@@ -240,8 +242,8 @@ public:
         mDeltaSize.y = y;
     }
 
-    void SetSpin(bool b) { mSpin = b; }
-    void SetVelocityAlign(bool b) { mVelocityAlign = b; }
+    void SetRotate(bool b) { mRotate = b; }
+    void SetAlignWithVelocity(bool b) { mAlignWithVelocity = b; }
     void SetStretchWithVelocity(bool b) { mStretchWithVelocity = b; }
     void SetConstantArea(bool b) { mConstantArea = b; }
 
@@ -258,12 +260,13 @@ public:
     RndMesh *GetMesh() const { return mMesh; }
     Type GetType() const { return mType; }
     RndMat *GetMat() const { return mMat; }
+    int MaxParticles() const { return mMaxParticles; }
 
     float CalcFrame() {
         if (mFrameDrive)
             return GetFrame();
         else
-            return unk2e8;
+            return mElapsedTime;
     }
 
     bool CheckParticleLife(float frame, RndParticle *particle) {
@@ -287,7 +290,7 @@ public:
     RndParticle *mFreeParticles; // 0xd4
     RndParticle *mActiveParticles; // 0xd8
     int mNumActive; // 0xdc
-    float unke0; // 0xe0
+    float mEmitCount; // 0xe0
     float unke4; // 0xe4
     int unke8; // 0xe8
     float unkec; // 0xec
@@ -354,8 +357,8 @@ public:
     Vector2 mBurstInterval; // 0x2cc
     Vector2 mBurstPeak; // 0x2d4
     Vector2 mBurstLength; // 0x2dc
-    int unk2e4;
-    float unk2e8;
+    int mExplicitParts; // 0x2e4
+    float mElapsedTime; // 0x2e8
 };
 
 extern ParticleCommonPool *gParticlePool;
