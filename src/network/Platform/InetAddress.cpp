@@ -197,3 +197,5 @@ namespace Quazal {
         return this;
     }
 }
+
+DECOMP_FORCEACTIVE(str, "%d", ":")

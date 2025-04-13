@@ -1,6 +1,7 @@
 #pragma once
 
 #include "types.h"
+#include "decomp.h"
 #include "Platform/RootObject.h"
 
 namespace Quazal {
