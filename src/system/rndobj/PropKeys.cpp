@@ -319,7 +319,7 @@ int FloatKeys::FloatAt(float frame, float &fl) {
             float points[4];
             points[1] = prev->value;
             points[2] = next->value;
-            int idx = prev->value == begin()->value;
+            int idx = (prev - begin());
             if (idx == 0) {
                 points[0] = prev->value;
             } else {
