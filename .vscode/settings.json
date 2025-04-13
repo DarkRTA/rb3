@@ -13,6 +13,7 @@
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "files.associations": {
+    "*.cp": "cpp",
     "algorithm": "cpp",
     "bitset": "cpp",
     "cassert": "cpp",
@@ -71,8 +72,8 @@
     "utility": "cpp",
     "valarray": "cpp",
     "vector": "cpp",
-
     ".clangd": "yaml",
+    "string.h": "c"
   },
   "C/C++ Include Guard.Macro Type": "Filepath",
   "C/C++ Include Guard.Prefix": "",
