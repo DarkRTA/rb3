@@ -176,6 +176,22 @@ namespace Quazal {
         return ntohs(this->port);
     }
 
+    // Nonmatching: https://decomp.me/scratch/IYV0H
+    s32 InetAddress::operator<(const Quazal::InetAddress& b) const {
+        s32 curr_addr;
+        u16 check_port;
+        s32 check_addr;
+        u16 curr_port;
+    
+        check_addr = b.address;
+        check_port = ntohs(b.port);
+        curr_addr = this->address;
+        curr_port = ntohs(this->port);
+        
+        return -((curr_addr ^ 0x80000000) < (check_addr ^ 0x80000000)) + (u32)(curr_port < check_port);
+        // (curr_addr ^ 0x80000000) < (u32)(curr_port < check_port) + (check_addr ^ 0x80000000)
+    }
+
     bool InetAddress::operator==(const InetAddress& b) const {
         s32 temp_r31;
         u16 temp_r30;

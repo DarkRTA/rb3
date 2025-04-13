@@ -28,7 +28,7 @@ namespace Quazal {
         void SetPortNumber(u16);
         s16 GetPortNumber() const;
 
-        bool operator<(const InetAddress&) const;
+        s32 operator<(const InetAddress&) const;
         bool operator==(const InetAddress&) const;
         InetAddress* operator=(const InetAddress&);
     };
