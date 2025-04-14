@@ -387,8 +387,10 @@ void Rnd::BeginDrawing() {
     mDrawing = true;
     mWorldEnded = false;
     mDrawTimer.Restart();
+    // clang-format off
     { START_AUTO_TIMER("gs"); }
     { START_AUTO_TIMER("world"); }
+    // clang-format on
     mLastProcCmds = mProcCmds;
     mProcCmds = mProcCounter.ProcCommands();
     mDefaultCam->Select();
