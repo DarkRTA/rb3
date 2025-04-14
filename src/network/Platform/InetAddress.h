@@ -5,7 +5,6 @@
 #include "Platform/RootObject.h"
 
 namespace Quazal {
-
     class InetAddress : public RootObject {
     public:
         u8 unk0;
