@@ -455,19 +455,19 @@ void GemPlayer::SwingAtHopo(int, float, int) {
 
 void GemPlayer::FillSwing(int i1, int i2, int i3, int i4, bool b5) {
     if (IsLocal()) {
-        if (b5 && !unk268) {
+        if (b5 && !mIsInCoda) {
             EnterCoda();
         }
         if (i2 >= 0) {
             FillInProgress(i2, i3);
         }
-        if (unk268) {
+        if (mIsInCoda) {
             PopupHelp("rock_ending", false);
         } else {
             PopupHelp("fill", false);
         }
         int tick = TheSongDB->GetCodaStartTick();
-        if (!unk268 && (tick >= 0 && (tick - i4 < 0x1E0))) {
+        if (!mIsInCoda && (tick >= 0 && (tick - i4 < 0x1E0))) {
             mNumFillSwings = 100;
         }
         mLastFillHitTick = i4;
@@ -480,17 +480,17 @@ void GemPlayer::FillSwing(int i1, int i2, int i3, int i4, bool b5) {
 void GemPlayer::ShowFillHit(int i1) {
     if (IsLocal()) {
         mNumFillSwings++;
-        LocalShowFillHit(i1, mController->GetVelocityBucket(i1), unk268);
+        LocalShowFillHit(i1, mController->GetVelocityBucket(i1), mIsInCoda);
         static Message msg("send_fill_hit", 0, 0, 0);
         msg[0] = i1;
         msg[1] = mNumFillSwings;
-        msg[2] = unk268;
+        msg[2] = mIsInCoda;
         HandleType(msg);
     }
 }
 
 void GemPlayer::OnRemoteFillHit(int i1, int i2, bool b3) {
-    if (b3 && !unk268) {
+    if (b3 && !mIsInCoda) {
         EnterCoda();
     }
     mNumFillSwings = i2;
@@ -502,7 +502,7 @@ void GemPlayer::LocalShowFillHit(int i1, int i2, bool b3) {
     if (mTrack) {
         GemTrackDir *dir = mTrack->GetTrackDir();
         mTrack->FillHit(i1, i2);
-        if (unk268 || b3) {
+        if (mIsInCoda || b3) {
             dir->Mash(i1);
         } else {
             MILO_ASSERT(mTrackType == kTrackDrum, 0x5B6);
@@ -728,7 +728,7 @@ void GemPlayer::JumpReset(float f1) {
         mLastCodaSwing[i] = 0;
     }
     FinishAllHeldNotes(f1);
-    unk268 = false;
+    mIsInCoda = false;
     unk315 = false;
     unk316 = false;
     unk314 = false;
@@ -907,7 +907,7 @@ bool GemPlayer::FillsEnabled(int i1) {
 }
 
 void GemPlayer::EnterCoda() {
-    if (!unk268) {
+    if (!mIsInCoda) {
         Player::EnterCoda();
         if (TheGame->mProperties.mEnableCoda) {
             if (mMatcher) {
@@ -1254,7 +1254,7 @@ void GemPlayer::Rollback(float f1, float f2) {
         mMatcher->Jump(f2);
         SetAutoOn(true);
 
-        if (unk268) {
+        if (mIsInCoda) {
             FillExtent ext(0, 0, false);
             TheSongDB->GetData()->GetFillInfo(mTrackNum)->FillAt(
                 MsToTickInt(f1), ext, false
@@ -1419,7 +1419,7 @@ void GemPlayer::UpdateCrowdMeter(float noteScore, int) {
 #define kMaxTrackSlots 6
 
 void GemPlayer::FillInProgress(int i1, int slot) {
-    if (unk268 && i1 >= 0) {
+    if (mIsInCoda && i1 >= 0) {
         if (!InRollback()) {
             float ms = PollMs();
             if (slot == -1)
@@ -1456,7 +1456,7 @@ void GemPlayer::SendPenalize() {
 }
 
 void GemPlayer::Penalize(float f1, int i2, float f3) {
-    if (unk268)
+    if (mIsInCoda)
         SendPenalize();
     else {
         unk1fe = false;

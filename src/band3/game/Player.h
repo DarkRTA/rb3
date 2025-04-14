@@ -47,13 +47,14 @@ public:
     float mCrowdSaveLevel; // 0x0
     float mMsToReturnFromBrink; // 0x4
     float mCrowdLossPerMs; // 0x8
-    float unkc;
-    float unk10;
-    float unk14;
-    float unk18;
-    float unk1c;
+    // (unverified) How many beats OD lasts
+    float mDeployBeats;
+    float mDeployBonus;
+    float mSpotlightPhrase;
+    float mDeployThreshold;
+    float mSaveEnergy;
     float unk20;
-    float unk24; // 0x24
+    float mPointBonus; // 0x24
 };
 
 class Player : public Performer, public MsgSource {
@@ -209,7 +210,7 @@ public:
     float mEnableMs; // 0x258
     float unk25c;
     std::vector<Extent> unk260;
-    bool unk268;
+    bool mIsInCoda;
     float mBandEnergy; // 0x26c
     bool mDeployingBandEnergy; // 0x270
     int unk274;

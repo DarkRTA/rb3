@@ -153,7 +153,7 @@ void Scoring::InitializeStreakList(std::vector<StreakList> &streaks, DataArray *
         streaks.push_back(StreakList(a->Sym(0)));
         for (int j = 1; j < a->Size(); j++) {
             DataArray *a2 = a->Array(j);
-            streaks.back().unk4.push_back(StreakItem(a2->Int(0), a2->Float(1)));
+            streaks.back().streaks.push_back(StreakItem(a2->Int(0), a2->Float(1)));
         }
     }
 }
@@ -175,12 +175,12 @@ int Scoring::GetChordPoints(TrackType instrument) const {
 }
 
 const Scoring::StreakList *
-Scoring::GetStreakList(const std::vector<StreakList> &streaks, Symbol s) const {
+Scoring::GetStreakList(const std::vector<StreakList> &streaks, Symbol streakType) const {
     const StreakList *default_list = nullptr;
     for (int i = 0; i < streaks.size(); i++) {
-        if (streaks[i].unk0 == s)
+        if (streaks[i].streakType == streakType)
             return &streaks[i];
-        else if (streaks[i].unk0 == "default") {
+        else if (streaks[i].streakType == "default") {
             default_list = &streaks[i];
         }
     }
@@ -188,36 +188,41 @@ Scoring::GetStreakList(const std::vector<StreakList> &streaks, Symbol s) const {
     return default_list;
 }
 
-float Scoring::GetStreakData(int i1, Symbol s2, const std::vector<StreakList> &streaks)
-    const {
+float Scoring::GetStreakData(
+    int streak, Symbol streakType, const std::vector<StreakList> &streaks
+) const {
     float f1 = 0;
     bool b2 = false;
-    const std::vector<StreakItem> &items = GetStreakList(streaks, s2)->unk4;
+    const std::vector<StreakItem> &items = GetStreakList(streaks, streakType)->streaks;
     for (int i = 0; i < items.size(); i++) {
-        if (i1 < items[i].unk0)
+        if (streak < items[i].streakThreshold)
             break;
-        f1 = items[i].unk4;
+        f1 = items[i].multiplier;
         b2 = true;
     }
 
     if (!b2) {
-        MILO_FAIL("Scoring::GetStreakData failed %s %d\n", s2, i1);
+        MILO_FAIL("Scoring::GetStreakData failed %s %d\n", streakType, streak);
     }
     return f1;
 }
 
-int Scoring::GetStreakMult(int i, Symbol s) const {
-    return GetStreakData(i, s, mStreakMultLists);
+int Scoring::GetStreakMult(int streak, Symbol streakType) const {
+    return GetStreakData(streak, streakType, mStreakMultLists);
 }
 
-float Scoring::GetPartialStreakFraction(int i1, Symbol s2) const {
-    const std::vector<StreakItem> &items = GetStreakList(mStreakMultLists, s2)->unk4;
-    int i5 = 0;
+// Finds the fraction of the current streak the player has completed.
+// Used for the meter in the multiplier ring.
+float Scoring::GetPartialStreakFraction(int streak, Symbol streakType) const {
+    const std::vector<StreakItem> &items =
+        GetStreakList(mStreakMultLists, streakType)->streaks;
+    int baseline = 0;
     for (int i = 0; i < items.size(); i++) {
-        if (i1 < items[i].unk0) {
-            return (float)(i1 - i5) / (float)(items[i].unk0 - i5);
+        if (streak < items[i].streakThreshold) {
+            return (float)(streak - baseline)
+                / (float)(items[i].streakThreshold - baseline);
         }
-        i5 = items[i].unk0;
+        baseline = items[i].streakThreshold;
     }
     return 1;
 }
@@ -326,10 +331,10 @@ Symbol Scoring::GetStarRating(int numStars) const {
 
 int Scoring::GetNotesPerMultiplier(Symbol s) const {
     const StreakList *streaks = GetStreakList(s);
-    if (!streaks || streaks->unk4.size() <= 1)
+    if (!streaks || streaks->streaks.size() <= 1)
         return 0;
     else
-        return streaks->unk4[1].unk0;
+        return streaks->streaks[1].streakThreshold;
 }
 
 void Scoring::GetSoloAward(int i, Symbol s, int &iref, Symbol &sref) {
