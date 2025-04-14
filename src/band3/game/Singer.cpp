@@ -148,7 +148,7 @@ void Singer::DetectScream(float f1, float f2, float f3) {
     if (f3 >= mScreamEnergyThreshold) {
         if (unk48 < 0) {
             unk48 = f1;
-        } else if (f1 - unk48 > unk50 && mPlayer->unk268 && !unk80) {
+        } else if (f1 - unk48 > unk50 && mPlayer->mIsInCoda && !unk80) {
             unk80 = true;
             mPlayer->HitCoda();
         }
